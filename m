@@ -1,10 +1,8 @@
-From: selva.nair@...277...
-Date: Mon, 20 Nov 2017 20:43:25 -0500
-Message-Id: <1511228605-23207-1-git-send-email-selva.nair@...277...>
-In-Reply-To: <1494859203-21904-1-git-send-email-selva.nair@...277...>
-References: <1494859203-21904-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH] Correct the declaration of handle in
- 'struct openvpn_plugin_args_open_return'
+From: Ilya Shipitsin <chipitsine@...277...>
+Date: Tue, 21 Nov 2017 11:36:18 +0500
+Message-Id: <20171121063618.13749-1-chipitsine@...277...>
+Subject: [Openvpn-devel] [PATCH] travis-ci: enable ccache for osx and mingw
+ builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,55 +15,54 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
-
-- This is an opaque pointer so the change should not affect
-  existing plugins. But it makes the code consistent and clears up
-  the documentation as the handle pointer is treated as of type
-  "openvpn_plugin_handle_t" in the rest of the code.
-
-Signed-off-by: Selva Nair <selva.nair@...277...>
+--
+ccache was now tested by me and works for osx
+and mingw builds as well
 ---
- v2: no change
+ .travis.yml           |  2 +-
+ .travis/build-deps.sh | 14 ++++++--------
+ 2 files changed, 7 insertions(+), 9 deletions(-)
 
- include/openvpn-plugin.h.in | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/include/openvpn-plugin.h.in b/include/openvpn-plugin.h.in
-index f29b3a0..dfc8e1e 100644
---- a/include/openvpn-plugin.h.in
-+++ b/include/openvpn-plugin.h.in
-@@ -355,7 +355,7 @@ struct openvpn_plugin_args_open_in
-  *              type_mask = OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_CLIENT_CONNECT)
-  *                         | OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_CLIENT_DISCONNECT)
-  *
-- * *handle :    Pointer to a global plug-in context, created by the plug-in.  This pointer
-+ * handle :     Pointer to a global plug-in context, created by the plug-in.  This pointer
-  *              is passed on to the other plug-in calls.
-  *
-  * return_list : used to return data back to OpenVPN.
-@@ -364,7 +364,7 @@ struct openvpn_plugin_args_open_in
- struct openvpn_plugin_args_open_return
- {
-     int type_mask;
--    openvpn_plugin_handle_t *handle;
-+    openvpn_plugin_handle_t handle;
-     struct openvpn_plugin_string_list **return_list;
- };
+diff --git a/.travis.yml b/.travis.yml
+index 366e6599..8efb1cbd 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -88,7 +88,7 @@ cache:
  
-@@ -386,9 +386,9 @@ struct openvpn_plugin_args_open_return
-  *        these variables are not actually written to the "official"
-  *        environmental variable store of the process.
-  *
-- * *handle : Pointer to a global plug-in context, created by the plug-in's openvpn_plugin_open_v3().
-+ * handle : Pointer to a global plug-in context, created by the plug-in's openvpn_plugin_open_v3().
-  *
-- * *per_client_context : the per-client context pointer which was returned by
-+ * per_client_context : the per-client context pointer which was returned by
-  *        openvpn_plugin_client_constructor_v1, if defined.
-  *
-  * current_cert_depth : Certificate depth of the certificate being passed over (only if compiled with ENABLE_CRYPTO defined)
+ before_install:
+   - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew update     ; fi
+-  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew install lzo; fi
++  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew install lzo ccache; fi
+ 
+ install:
+   - if [ ! -z "${CHOST}" ]; then unset CC; fi
+diff --git a/.travis/build-deps.sh b/.travis/build-deps.sh
+index e787abab..001565f3 100755
+--- a/.travis/build-deps.sh
++++ b/.travis/build-deps.sh
+@@ -130,15 +130,13 @@ build_openssl () {
+     fi
+ }
+ 
+-# Enable ccache
+-if [ "${TRAVIS_OS_NAME}" != "osx" ] && [ -z ${CHOST+x} ]; then
+-    # ccache not available on osx, see:
+-    # https://github.com/travis-ci/travis-ci/issues/5567
+-    # also ccache not enabled for cross builds
+-    mkdir -p "${HOME}/bin"
+-    ln -s "$(which ccache)" "${HOME}/bin/${CC}"
+-    PATH="${HOME}/bin:${PATH}"
++mkdir -p "${HOME}/bin"
++if [ -z ${CHOST+x} ]; then
++        ln -s "$(which ccache)" "${HOME}/bin/${CC}"
++else
++        ln -s "$(which ccache)" "${HOME}/bin/${CHOST}-cc"
+ fi
++PATH="${HOME}/bin:${PATH}"
+ 
+ if [ ! -z ${CHOST+x} ]; then
+       #
 -- 
-2.1.4
+2.13.3
 
 
