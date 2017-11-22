@@ -1,14 +1,10 @@
-Date: Wed, 22 Nov 2017 17:42:12 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20171122164212.GD631@...1296...>
-References: <00bb01d363a1$2428e260$6c7aa720$@carroll.com>
+Message-ID: <84a29b8afab02733064c2cf715ae0b8c.squirrel@...2257...>
+Date: Wed, 22 Nov 2017 17:58:22 +0100
+From: "Simon Matter" <simon.matter@...2249...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="MAH+hnPXVZWQ5cD/"
-Content-Disposition: inline
-In-Reply-To: <00bb01d363a1$2428e260$6c7aa720$@carroll.com>
-Subject: Re: [Openvpn-devel] OpenVPN + OpenSSL FIPS Object Module v2.0
- causes OpenVPN to SIGSEGV
+Content-Type: multipart/mixed;boundary="----=_20171122175822_97632"
+Subject: [Openvpn-devel] Add --up-pre with the same functionality as
+ --down-pre
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,58 +13,175 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jim Carroll <jim@...2322...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
---MAH+hnPXVZWQ5cD/
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+------=_20171122175822_97632
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
 Hi,
 
-On Wed, Nov 22, 2017 at 09:49:47AM -0500, Jim Carroll wrote:
-> I'm not sure how to resolve this issue. tls1_PRF() is building data chann=
-el
-> keys exchanged between the client and server. It would appear to me that =
-MD5
-> is "baked into" the OpenVPN key negotiation in away that cannot be simply
-> omitted/skip/replaced, without a coordinated code change to all downstream
-> client code as well (including IOS). Is that correct?
+In our situation we have the requirement to run scripts before tun/tap is
+opened, not after. While this could be hacked into the init script, the
+proper way seems to add it to openvpn as --up-pre option. That's
+independent from any init scripts / systemd service file and works the
+same way as --down-pre, only for the up status.
 
-This is correct.  MD5 for the PRF is essential for the wire protocol,
-and changing this will be incompatible with all unchanged clients.
+My initial feature wish, posted 5 years ago, was turned down as won't fix:
+https://community.openvpn.net/openvpn/ticket/284
 
-OTOH, MD5 is perfectly fine in FIPS code *iff* it's not used as a hash
-but for other purposes.  I seem to remember that there is a magic call
-you need to do to tell the FIPS side of things "hey, this invocation of
-MD5 is good".
+But there are people who wish it and they have good reasons to wish it.
+Just yesterday someone asked again:
+https://community.openvpn.net/openvpn/ticket/284#comment:10
 
-We had the discussion on the openvpn-devel list some time ago (two years
-maybe?) so google might find something more authoritative here.
+Without going into much details just one thing why --up + --up-pre is
+better than hacking around outside of openvpn: the command called with
+--up also gets additional run time information from openvpn by parameters
+and environmental variables. You don't get all those information when
+calling anything from outside of openvpn before openvpn actually starts.
 
-gert
---=20
-now what should I write here...
+If you feel there are good reasons to still refuse this patch, please let
+me know.
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Regards,
+Simon
+------=_20171122175822_97632
+Content-Type: text/x-patch; name="openvpn-2.4.0-up-pre.patch"
+Content-Transfer-Encoding: 8bit
+Content-Disposition: attachment; filename="openvpn-2.4.0-up-pre.patch"
 
---MAH+hnPXVZWQ5cD/
-Content-Type: application/pgp-signature; name="signature.asc"
+diff -Naur openvpn-2.4.0.orig/doc/openvpn.8 openvpn-2.4.0/doc/openvpn.8
+--- openvpn-2.4.0.orig/doc/openvpn.8	2016-12-26 14:01:34.000000000 +0100
++++ openvpn-2.4.0/doc/openvpn.8	2016-12-30 11:45:16.000000000 +0100
+@@ -1845,6 +1845,12 @@
+ .B route add \-net 10.0.0.0 netmask 255.255.255.0 gw $5
+ .\"*********************************************************
+ .TP
++.B \-\-up\-pre
++Call
++.B \-\-up
++cmd/script before, rather than after, TUN/TAP open.
++.\"*********************************************************
++.TP
+ .B \-\-up\-delay
+ Delay TUN/TAP open and possible
+ .B \-\-up
+diff -Naur openvpn-2.4.0.orig/src/openvpn/init.c openvpn-2.4.0/src/openvpn/init.c
+--- openvpn-2.4.0.orig/src/openvpn/init.c	2016-12-26 12:51:00.000000000 +0100
++++ openvpn-2.4.0/src/openvpn/init.c	2016-12-30 12:05:15.000000000 +0100
+@@ -1573,6 +1573,27 @@
+     }
+ #endif
+ 
++    /* actually run the up script based on --up-pre flag */
++    if (c->options.up_pre)
++    {
++        run_up_down (c->options.up_script,
++                     c->plugins,
++                     OPENVPN_PLUGIN_UP,
++                     "[unknown-dev]",
++#ifdef _WIN32
++                     TUN_ADAPTER_INDEX_INVALID,
++#endif
++                     dev_type_string (c->options.dev, c->options.dev_type),
++                     TUN_MTU_SIZE (&c->c2.frame),
++                     EXPANDED_SIZE (&c->c2.frame),
++                     NULL,
++                     NULL,
++                     "init",
++                     NULL,
++                     "up",
++                     c->c2.es);
++    }
++
+     /* initialize (but do not open) tun/tap object */
+     do_init_tun(c);
+ 
+@@ -1639,23 +1660,26 @@
+         do_ifconfig(c->c1.tuntap, c->c1.tuntap->actual_name, TUN_MTU_SIZE(&c->c2.frame), c->c2.es);
+     }
+ 
+-    /* run the up script */
+-    run_up_down(c->options.up_script,
+-                c->plugins,
+-                OPENVPN_PLUGIN_UP,
+-                c->c1.tuntap->actual_name,
++    /* actually run the up script based on --up-pre flag */
++    if (!c->options.up_pre)
++    {
++        run_up_down(c->options.up_script,
++                    c->plugins,
++                    OPENVPN_PLUGIN_UP,
++                    c->c1.tuntap->actual_name,
+ #ifdef _WIN32
+-                c->c1.tuntap->adapter_index,
++                    c->c1.tuntap->adapter_index,
+ #endif
+-                dev_type_string(c->options.dev, c->options.dev_type),
+-                TUN_MTU_SIZE(&c->c2.frame),
+-                EXPANDED_SIZE(&c->c2.frame),
+-                print_in_addr_t(c->c1.tuntap->local, IA_EMPTY_IF_UNDEF, &gc),
+-                print_in_addr_t(c->c1.tuntap->remote_netmask, IA_EMPTY_IF_UNDEF, &gc),
+-                "init",
+-                NULL,
+-                "up",
+-                c->c2.es);
++                    dev_type_string(c->options.dev, c->options.dev_type),
++                    TUN_MTU_SIZE(&c->c2.frame),
++                    EXPANDED_SIZE(&c->c2.frame),
++                    print_in_addr_t(c->c1.tuntap->local, IA_EMPTY_IF_UNDEF, &gc),
++                    print_in_addr_t(c->c1.tuntap->remote_netmask, IA_EMPTY_IF_UNDEF, &gc),
++                    "init",
++                    NULL,
++                    "up",
++                    c->c2.es);
++    }
+ 
+ #if defined(_WIN32)
+     if (c->options.block_outside_dns)
+diff -Naur openvpn-2.4.0.orig/src/openvpn/options.c openvpn-2.4.0/src/openvpn/options.c
+--- openvpn-2.4.0.orig/src/openvpn/options.c	2016-12-26 12:51:00.000000000 +0100
++++ openvpn-2.4.0/src/openvpn/options.c	2016-12-30 12:09:19.000000000 +0100
+@@ -301,6 +301,7 @@
+     "                  Execute as: cmd tun/tap-dev tun-mtu link-mtu \\\n"
+     "                              ifconfig-local-ip ifconfig-remote-ip\n"
+     "                  (pre --user or --group UID/GID change)\n"
++    "--up-pre        : Run --up command before TUN/TAP open.\n"
+     "--up-delay      : Delay tun/tap open and possible --up script execution\n"
+     "                  until after TCP/UDP connection establishment with peer.\n"
+     "--down cmd      : Run command cmd after tun device close.\n"
+@@ -1623,6 +1624,7 @@
+     SHOW_STR(up_script);
+     SHOW_STR(down_script);
+     SHOW_BOOL(down_pre);
++    SHOW_BOOL(up_pre);
+     SHOW_BOOL(up_restart);
+     SHOW_BOOL(up_delay);
+     SHOW_BOOL(daemon);
+@@ -5530,6 +5532,11 @@
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+         options->down_pre = true;
+     }
++    else if (streq(p[0], "up-pre") && !p[1])
++    {
++        VERIFY_PERMISSION(OPT_P_GENERAL);
++        options->up_pre = true;
++    }
+     else if (streq(p[0], "up-delay") && !p[1])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+diff -Naur openvpn-2.4.0.orig/src/openvpn/options.h openvpn-2.4.0/src/openvpn/options.h
+--- openvpn-2.4.0.orig/src/openvpn/options.h	2016-12-26 12:51:00.000000000 +0100
++++ openvpn-2.4.0/src/openvpn/options.h	2016-12-30 12:09:47.000000000 +0100
+@@ -285,6 +285,7 @@
+     const char *down_script;
+     bool user_script_used;
+     bool down_pre;
++    bool up_pre;
+     bool up_delay;
+     bool up_restart;
+     bool daemon;
+------=_20171122175822_97632--
 
------BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJaFajkAAoJEB2Cnv7KVigS00IL/jyOMjh7rekn3DT4wFA2URZB
-RHt77Om0lnmwU3QoIPxbnLFwOYOdSkTlBXx8WDerLCMso6zJvSID013tO7+nj1IU
-pgTll3wlivMlKYs30gnxTCgjxjp0vYvtPAi5dFaK2xT4kmLjQuA7zkLQFzzuf/WU
-cL5O3AiJ2Plmg++tajfnBjwDULFwDP2YBDOyts+q4mYgaqSLIu/aYfWc84Ep6ntZ
-udKpdJp6HusiXoet+RVfTlX05/XjoENo0gL3Ws2upryTgKKRAyNfSh4IF9CtTalO
-3irOglyPdBXSFlfWoeSf4sROBxLs1DJTOgIsl4PxoehRP7KiafMdtabGHwF00mP0
-XWC+dad3T9xV+CBBTRv1m1bIhC3I7chzv+4HxnVIne2xhP+5ugatCWmWLn+glgLj
-Hn/hmSJG/28fgQfyKxolvt4Fe/phKOY9FvFPP1Bn99RAPM4piPQ70g/OkwJCzDHa
-OMV6WtwclUrj5KqXiYQw03IoJL0xLsc+daVwLWf+9Q==
-=RS60
------END PGP SIGNATURE-----
-
---MAH+hnPXVZWQ5cD/--
 
