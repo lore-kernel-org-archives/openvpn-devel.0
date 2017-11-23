@@ -1,9 +1,9 @@
-Date: Thu, 23 Nov 2017 08:15:42 +0100 (CET)
-Message-Id: <201711230715.vAN7FgQe021255@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <8760a6kjwc.fsf@...2274...>
-References: <8760a6kjwc.fsf@...2274...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix build with LibreSSL
+From: fragmentux <fragmentux@...277...>
+Message-ID: <45635479-7296-752e-193c-083d189cc3a7@...277...>
+Date: Thu, 23 Nov 2017 18:34:40 +0000
+MIME-Version: 1.0
+Content-Language: en-GB
+Subject: [Openvpn-devel]  Suggestion: openvpn-GUI --help style
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,32 +12,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Jeremie Courreges-Anglas <jca@...2272...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Thanks.  Tested on OpenBSD 6.0, fixes compilation again.
+Hi,
 
-Your patch has been applied to the master and release/2.4 branch.
+I would like to suggest that, instead of having to run the GUI to
+retrieve the help, like so:
 
-commit 88a827f25cb4a79f06597ca438f8f04d37a03d4e (master)
-commit eac1e089239999a161d81e0222d461c8b580a776 (release/2.4)
-Author: Jeremie Courreges-Anglas
-Date:   Sun Nov 19 22:57:56 2017 +0100
+'C:\Program Files\Openvpn\bin\openvpn-gui --help'
 
-     Fix build with LibreSSL
+the 'help window' can be retrieved via the GUI itself.
+A menu option or Help button ..
 
-     Signed-off-by: Jeremie Courreges-Anglas <jca@...2272...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <8760a6kjwc.fsf@...2274...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15902.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Otherwise, because teh GUI is set on install to run by default at user
+logon it is not possible to run another instance to retrieve the help.
+Unless you quit the running GUI first.
 
+(Feels like Spike Milligan got into this mix somehow .. )
 
---
-kind regards,
-
-Gert Doering
+Thanks
 
 
