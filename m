@@ -1,12 +1,7 @@
-From: "Jim Carroll" <jim@...2322...>
-References: <040701d36546$f3cc1270$db643750$@carroll.com>
- <20171124180207.GO631@...1296...>
-In-Reply-To: <20171124180207.GO631@...1296...>
-Date: Fri, 24 Nov 2017 15:12:33 -0500
-Message-ID: <047101d36560$90a737a0$b1f5a6e0$@carroll.com>
-Content-Language: en-us
-Subject: Re: [Openvpn-devel] [PATCH] Added OpenSSL FIPS 2.0 support to
- OpenVPN
+From: jim@...2322...
+Date: Fri, 24 Nov 2017 15:23:02 -0500
+Message-Id: <1511554982-875-1-git-send-email-jim@...2322...>
+Subject: [Openvpn-devel] [PATCH] Added OpenSSL FIPS 2.0 support to OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,121 +12,423 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: 'Gert Doering' <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Sigh...Outlook is always such a mess.  Sorry, I'll resend.
+From: JimC <jim@...2322...>
 
-Jim
+Modified the autoconf, automake and code to support building OpenVPN with
+OpenSSL FIPS Object Module v2.0 validated encryption.
 
+        * Adds: --enable-fips-mode switch to configure.ac
+        * Adds: --enable-fips-mode command line switch to openvpn
+---
+ INSTALL                      | 72 ++++++++++++++++++++++++++++++++++++++++++++
+ Makefile.am                  |  5 +++
+ configure.ac                 | 42 ++++++++++++++++++++++++++
+ src/openvpn/crypto.c         |  2 +-
+ src/openvpn/crypto_backend.h |  3 +-
+ src/openvpn/crypto_openssl.c | 15 ++++++++-
+ src/openvpn/crypto_openssl.h |  8 +++++
+ src/openvpn/ntlm.c           |  2 +-
+ src/openvpn/openvpn.c        |  7 +++++
+ src/openvpn/options.c        | 16 ++++++++++
+ src/openvpn/options.h        |  1 +
+ src/openvpn/ssl.c            | 12 ++++++--
+ src/openvpn/ssl.h            |  4 +++
+ 13 files changed, 183 insertions(+), 6 deletions(-)
 
-begin 666 smime.p7s
-M,( &"2J&2(;W#0$'`J" ,( "`0$Q"S )!@4K#@,"&@4`,( &"2J&2(;W#0$'
-M`0``H((.$3""!#8P@@,>H ,"`0("`0$P#08)*H9(AO<-`0$%!0`P;S$+, D&
-M`U4$!A,"4T4Q%# 2!@-5! H3"T%D9%1R=7-T($%",28P) 8#500+$QU!9&14
-M<G5S="!%>'1E<FYA;"!45% @3F5T=V]R:S$B," &`U4$`Q,9061D5')U<W0@
-M17AT97)N86P@...2323...$@4F]O=# >%PTP,# U,S Q,#0X,SA:%PTR,# U,S Q,#0X
-M,SA:,&\Q"S )!@-5! 83`E-%,10P$@8#500*$PM!9&14<G5S="!!0C$F,"0&
-M`U4$"Q,=061D5')U<W0@...2324...)N86P@...1481...%10($YE='=O<FLQ(C @!@-5! ,3
-M&4%D9%1R=7-T($5X=&5R;F%L($-!(%)O;W0P@@$B, T&"2J&2(;W#0$!`04`
-M`X(!#P`P@@$*`H(!`0"W]QHSYO(`!"TYX$Y;[1^\; _-M?HCML[>FQ$SEZ0I
-M3'V3G[U*O)/M`QKCC\_E;5!:UI<IE%J L$EZVRZ5_;C*OS<X+1X^D4&M<%;'
-M\$\_Z#*>=,K(D%3IQE\/>)V:0#P.K&&J7A2/GH>A:E#<UYI.KP6SIG&4G'&S
-M4& *QQ.=. >&`JCIJ&DF&)"K3+!/(ZLZ3X38W\Z?X6EON]="UVM$Y,>M[FU!
-M7W):<0@...2325...%F@...1652...#?W`"\-PI)RVM X<ML4J$7$72I]M[36Q.ZLS1-$M\DK
-MW4,`)?IAN6EJ6",1MZ<SCU9U6?7-*==&MPHK9;;30F\5LKA[^^_I75/5-%HG
-M`@,!``&C@=PP@=DP'08#51T.!!8$%*V]F'HTM";W^L0F5.\#O> DRU0:, L&
-M`U4=#P0$`P(!!C /!@-5'1,!`?\$!3 #`0'_,(&9!@-5'2,$@9$P@...2326... %*V]
-MF'HTM";W^L0F5.\#O> DRU0:H7.D<3!O,0LP"08#500&$P)313$4,!(&`U4$
-M"A,+061D5')U<W0@...2327...(Q)C D!@-5! L3'4%D9%1R=7-T($5X=&5R;F%L(%14
-M4"!.971W;W)K,2(P( 8#500#$QE!9&14<G5S="!%>'1E<FYA;"!#02!2;V]T
-M@@$!, T&"2J&2(;W#0$!!04``X(!`0"PF^"%)<+6(^(/E@:2G4&8G-F$>8'9
-M'EL4!R,V98^PV'>[K$%L1V"#4;#Y,CWG_/8F$\> %J6_6OR'SWAYB2&:XDP'
-M"H8UO/+>4<32EK?<?D[N</T<.>L,`E$4+8Z]%N#!WT9UYR2M[/1"M(63<!!G
-MNIT&-4H8TRMZS%%"H7ICT>:[H<4KPC:^$PWFO6-^>7NG"0U JVK=CXK#]O:,
-M&D(%4=1%]9^G8B%H%2!#/)GG?+TDV*F1%W.(/U8;,3@...2328...'$/FLW(#IZ.+AOA
-MC)B#RQ\Q\41,Q@...2329...@#\?XO1> :R[IS$P.6IIY#R *+M6>8R8>59*4V((7
-M6GO0O,>/3H8$,(($KS""`Y>@`P(!`@(1`. CRQ42@...2330...)K6%N>E1G:R$P#08)
-M*H9(AO<-`0$+!0`P;S$+, D&`U4$!A,"4T4Q%# 2!@-5! H3"T%D9%1R=7-T
-M($%",28P) 8#500+$QU!9&14<G5S="!%>'1E<FYA;"!45% @3F5T=V]R:S$B
-M," &`U4$`Q,9061D5')U<W0@...2324...)N86P@...2323...$@4F]O=# >%PTQ-#$R,C(P
-M,# P,#!:%PTR,# U,S Q,#0X,SA:,(&;,0LP"08#500&$P)'0C$;,!D&`U4$
-M"!,21W)E871E<B!-86YC:&5S=&5R,1 P#@8#500'$P=386QF;W)D,1HP& 8#
-M500*$Q%#3TU/1$\@0T$@3&EM:71E9#%!,#\&`U4$`Q,X0T]-3T1/(%-(02TR
-M-38@...2331...($%U=&AE;G1I8V%T:6]N(&%N9"!396-U<F4@...2332...:6P@...2323...$P
-M@@$B, T&"2J&2(;W#0$!`04``X(!#P`P@@$*`H(!`0")L0W:>E,93G!2';Q6
-MI@...2333...[A)X);G4:OQ\%H3216CM(P;8+QZ44*G>8RD(M\784Z1U78C"A332@)_
-MMAT)@&ZE!#W9NKL6_J&'J2Y#4D,6?*\R4,BF3UKI"-C/DR6<>XCH,&3FI/A6
-M@/TJ)!0S%YFL1.5IBZ-&!DO",]3I0)\&L+&LDT"YM0B3.IPJ4Z,0VST@...2334...
-M`X[93G8E`B$I^J-\<79/[N%?@>G[5(#;PWLU4K>$WB(]+# M,7]9O5(WL#-I
-M+4/K^M:E\9=W9U&,V>XGZ[RE!SAVC*2I./_?C/4#K$F^RO=SF3H/,JN<E3H3
-M/0Y&.E=T85"^QD _R^3BGZ(A`@,!``&C@@$7,((!$S ?!@-5'2,$&# 6@!2M
-MO9AZ-+0F]_K$)E3O`[W@),M4&C =!@-5'0X$%@04DF%K@...1630...&BH*I/[&?QPJ/W
-MM( `P>PP#@8#51T/`0'_! 0#`@&&,!(&`U4=$P$!_P0(, 8!`?\"`0`P'08#
-M51TE!!8P% 8(*P8!!04'`P(&""L&`04%!P,$,!$&`U4=( 0*, @P!@8$51T@
-M`#!$!@-5'1\$/3 [,#F@...2335... UAC-H='1P.B\O8W)L+G5S97)T<G5S="YC;VTO
-M061D5')U<W1%>'1E<FYA;$-!4F]O="YC<FPP-08(*P8!!04'`0$$*3 G,"4&
-M""L&`04%!S !AAEH='1P.B\O;V-S<"YU<V5R=')U<W0N8V]M, T&"2J&2(;W
-M#0$!"P4``X(!`0`;*FZL5<$ZJXC%V.W-5?.J:V$KP D0(YD/Q69J;['UM+5W
-M7@\"80#??07^$K.D@( `_/L=6VIR`@I!O 6ZP5C5)L+JU4V$^_Z"F,]8&^,B
-M8YQ2^+L%-JM]6*7>JSMCY=K5<^_LX/M[XJ/_\$(CG,JVC4T^Y$L8`[*H+=38
-MNT)+D&F%$-NF-S3H>^ !$*6<RCK'GT^(-&Z*9= :BKNIW,K*-M'T_,)D*36O
-MUK&G<1'2`T.QCSZ:[)XR4_1VDLJ&- >Y+,KF'$K8F0W!AN*0DOM:0FHC(1#I
-M9<?UU;M^ZHR%( )BZM$Z!RQ9Q9DS\CB)Y;;I%GH?>13V2A :)OI\BON;,((%
-M(#""! B@`P(!`@(1`(+-2':;XZ#&U!G>^P&7OJPP#08)*H9(AO<-`0$+!0`P
-M@...2336..."S )!@-5! 83`D=",1LP&08#500($Q)'<F5A=&5R($UA;F-H97-T97(Q
-M$# .!@-5! <3!U-A;&9O<F0Q&C 8!@-5! H3$4-/34]$3R!#02!,:6UI=&5D
-M,4$P/P8#500#$SA#3TU/1$\@4TA!+3(U-B!#;&EE;G0@...2337...:&5N=&EC871I
-M;VX@...2338...(%-E8W5R92!%;6%I;"!#03 >%PTQ-S Q,3@...1595...,# P,#!:%PTR,# Q
-M,3@...1561...,S4Y-3E:," Q'C <!@DJADB&]PT!"0$6#VII;4!C87)R;VQL+F-O;3""
-M`2(P#08)*H9(AO<-`0$!!0`#@@$/`#""`0H"@@$!`+>;EY]ERMD$,P;8"I7X
-M?^ /F69VS8/L_HEV(J#N= $S];)Z)NSNCEKQQL*V\)X*[3:U#K&RT"]7`^(9
-M/]<<)D]QC$]^CQB)W6&GH=]!S)"#BX#@1Q)ZRNK%`>L!^4T4%*7SH4#L9W*4
-MT$5<*UR%\T_56N':G<DYHV-9.='BNEU"'%TY+[]LYZ=B>CA]ND5XQ(/B6G)$
-M+.45284OBU4BNP&F^_G1,%^"$.,_`")HQ!K_IW :.=0"J38^R&!!*H#$V>"H
-M\A*[L =HF*&;G2L'<8*^T%BY+7S.3D[>P=G4O*#;+C4>,]Q8'MX2A9@...2339...$#LC
-M'5]WL4$YZ?=VZ+H"B_33;&T"`P$``:."`=<P@@'3,!\&`U4=(P08,!: %))A
-M:X+AHJ"J3^QG\<*C][2 `,'L,!T&`U4=#@06!!2S>P/T;X" O18ML(68VK@...2340...
-M(7<123 .!@-5'0\!`?\$! ,"!: P# 8#51T3`0'_! (P`# =!@-5'24$%C 4
-M!@@K!@$%!0<#! 8(*P8!!04'`P(P1@...1499...#51T@!#\P/3 [!@PK!@$$`;(Q`0(!
-M`P4P*S I!@@K!@$%!0<"`18=:'1T<',Z+R]S96-U<F4N8V]M;V1O+FYE="]#
-M4%,P708#51T?!%8P5#!2H%"@3H9,:'1T<#HO+V-R;"YC;VUO9&]C82YC;VTO
-M0T]-3T1/4TA!,C4V0VQI96YT075T:&5N=&EC871I;VYA;F1396-U<F5%;6%I
-M;$-!+F-R;#"!D 8(*P8!!04'`0$$@8,P@...1499... P6 8(*P8!!04', *&3&AT=' Z
-M+R]C<G0N8V]M;V1O8V$N8V]M+T-/34]$3U-(03(U-D-L:65N=$%U=&AE;G1I
-M8V%T:6]N86YD4V5C=7)E16UA:6Q#02YC<G0P) 8(*P8!!04', &&&&AT=' Z
-M+R]O8W-P+F-O;6]D;V-A+F-O;3 :!@-5'1$$$S 1@...150...]J:6U 8V%R<F]L;"YC
-M;VTP#08)*H9(AO<-`0$+!0`#@@$!`'W33 4"-'Y3RQ+/>:PFSC@...2341... 1V
-MH"=?*@"]NZ7+1X&;TMD)/=KS<3BZN1X<*%FAF5TT8@\9&Y)W7&M28.,GF/5,
-MV'!"E<-"(+ZQU&<SFY>52)<8(H0D6.RB<5"5L#EHH-[8IB]:W7W0)9<VHV>A
-M3OF,X]<-(XS5!1:<VY>/Q-+\ZA; \X:\/*#59:$JD)8S.TZ20:Q(!CUZ+E[A
-M!-V6+Y9+9_#2CX G4C7LD,*>D_T?J?X.7^&M(*ZE=+5X$_)7^:4-5GJCO[GY
-MC*7/4G($(0<G(B/8FO<=,%\M\-V**+[KKM<%HL@...2342...,=HU Y_GU3PBE![J;
-MWYTVZ97^?=PQ@@0C,(($'P(!`3"!L3"!FS$+, D&`U4$!A,"1T(Q&S 9!@-5
-M! @3$D=R96%T97(@36%N8VAE<W1E<C$0, X&`U4$!Q,'4V%L9F]R9#$:,!@&
-M`U4$"A,10T]-3T1/($-!($QI;6ET960Q03 _!@-5! ,3.$-/34]$3R!32$$M
-M,C4V($-L:65N="!!=71H96YT:6-A=&EO;B!A;F0@...2343...=7)E($5M86EL($-!
-M`A$`@LU(=IOCH,;4&=[[`9>^K# )!@4K#@,"&@4`H(("1C 8!@DJADB&]PT!
-M"0,Q"P8)*H9(AO<-`0<!,!P&"2J&2(;W#0$)!3$/%PTQ-S$Q,C0R,#$R,S-:
-M,",&"2J&2(;W#0$)!#$6!!2-R($=(;B!D<<_F+K@;@-\PGP###!;!@DJADB&
-M]PT!"0\Q3C!,, H&""J&2(;W#0,', X&""J&2(;W#0,"`@(`@# -!@@JADB&
-M]PT#`@(!0# '!@4K#@,"!S -!@@JADB&]PT#`@(!*# '!@4K#@,"&C"!P@...1499...)
-M*P8!! &"-Q $,8&T,(&Q,(&;,0LP"08#500&$P)'0C$;,!D&`U4$"!,21W)E
-M871E<B!-86YC:&5S=&5R,1 P#@8#500'$P=386QF;W)D,1HP& 8#500*$Q%#
-M3TU/1$\@0T$@3&EM:71E9#%!,#\&`U4$`Q,X0T]-3T1/(%-(02TR-38@...2344...
-M96YT($%U=&AE;G1I8V%T:6]N(&%N9"!396-U<F4@...2332...:6P@...2323...$"$0""S4AV
-MF^.@...2345...!E[ZL,('$!@LJADB&]PT!"1 ""S&!M*"!L3"!FS$+, D&`U4$
-M!A,"1T(Q&S 9!@-5! @3$D=R96%T97(@36%N8VAE<W1E<C$0, X&`U4$!Q,'
-M4V%L9F]R9#$:,!@&`U4$"A,10T]-3T1/($-!($QI;6ET960Q03 _!@-5! ,3
-M.$-/34]$3R!32$$M,C4V($-L:65N="!!=71H96YT:6-A=&EO;B!A;F0@...2343...
-M=7)E($5M86EL($-!`A$`@LU(=IOCH,;4&=[[`9>^K# -!@DJADB&]PT!`0$%
-M``2"`0!8-G_[VH2<91"[V6D..'.55L-F`\ :.RZ R ,<!<U$7RX;B7"X\PYH
-M5./%T8D@(:F0DK%E8 T8F*VZ0)+;L*]_(AGFPEL(D";7_*?'0$_'B2Z/4BH%
-MWC `!U0J$']"*L\]9??WX*J]CC)Q/N'S'ZTT7E<BO>0,,CLBL^GI-J81K9:/
-MZ8?VP"]](8=#C ZA5H%L2F_JEE/XU\KC<-]1OCQ!!2<I!E2V]9HE:RFL1U!4
-MA:E5S=16@...1965...+31/">^^U"6Z&.O6[6XDORMCY^TBW)B0]R%K3DAU:5OZJ FF>X
-JD-^>$C+FO25F0@^3Q4=E).NE,-A(X#^(JZ%WK$$J6W;@6=]7````````
-`
-end
+diff --git a/INSTALL b/INSTALL
+index 3a31e6f..adb3df8 100644
+--- a/INSTALL
++++ b/INSTALL
+@@ -305,6 +305,78 @@ TUN/TAP Driver Configuration:
+ 
+ *************************************************************************
+ 
++OpenSSL FIPS Object Module v2.0 Configuration:
++
++These instructions were adapted from 
++
++    https://www.openssl.org/docs/fipsnotes.html
++
++Requirements:
++
++    * OpenSSL 1.0.2m
++    * openssl-fips-2.0.2
++
++WARNING
++
++To install FIPS validated encryption, you must follow the instructions in the
++FIPS 2.0 User's Guide precisely. You are not permitted to modify any of the FIPS
++build artifacts, makefiles or scripts. The FIPS 2.0 module is only compatible with
++OpenSSL 1.0.1 and 1.0.2. 
++
++These instructions describe the use of OpenSSL 1.0.2m.
++
++INSTALLATION:
++
++    1. Surf to https://www.openssl.org/source/
++    2. Download source and validate the download (preferably using PGP)
++    3. Untar and uncompress tarball
++    4. You must build using this precise command (do NOT choose any other options):
++
++            # ./config && make install
++
++            (you may optionally pass 'no-asm' to config)
++
++       If the above procedure does not build on your system -- STOP. You are not
++       building on a FIPS supported platform, and therefore will not have a
++       FIPS validated encryption environment. See chapter 3 of the FIPS 2.0
++       User's Guide for the complete list of supported platforms:
++
++            https://openssl.org/docs/fips/UserGuide-2.0.pdf
++
++    5. Download, build & install openssl 1.0.2m (you are permitted to
++       modify this step to suite your preferences):
++
++            # git clone https://github.com/openssl/openssl.git
++            # (cd openssl && \
++                    git checkout OpenSSL_1_0_2m && \
++                    ./config fips && \
++                    make depend && \
++                    make install)
++
++    6. Now build openvpn and tell it where to find you recently installed OpenSSL
++
++            # ./configure --enable-fips-mode \
++                    OPENSSL_CFLAGS=-/usr/local/ss/include \
++                    OPENSSL_LIBS="-ldl -L/usr/local/ssl/lib -lssl -lcrypto"
++
++            # make install
++
++    7. You can confirm FIPS mode is available with the command
++
++            # ./openvpn --version | grep 'library version'
++            library versions: OpenSSL 1.0.2m-fips  2 Nov 2017, LZO 2.08
++
++USAGE:
++
++The above adds a new '--enable-fips-mode' command line option to OpenVPN. Add this to your
++invocation statement. If you've successfully configured OpenVPN for FIPS mode, check your
++OpenVPN logs for the statement:
++
++    *** FIPS MODE ENABLE ***
++
++
++*************************************************************************
++
+ CAVEATS & BUGS:
+ 
+ * I have noticed cases where TCP sessions tunneled over the Linux
+diff --git a/Makefile.am b/Makefile.am
+index 773b786..6d571ec 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -83,6 +83,11 @@ rootdir=$(prefix)
+ root_DATA = version.sh
+ endif
+ 
++if FIPSMODE
++export CC
++export FIPSLD_CC
++endif
++
+ config-version.h:
+ 	@CONFIGURE_GIT_CHFILES="`GIT_DIR=\"$(top_srcdir)/.git\" $(GIT) diff-files --name-status -r --ignore-submodules --quiet -- || echo \"+\"`"; \
+ 	CONFIGURE_GIT_UNCOMMITTED="`GIT_DIR=\"$(top_srcdir)/.git\" $(GIT) diff-index --cached  --quiet --ignore-submodules HEAD || echo \"*\"`"; \
+diff --git a/configure.ac b/configure.ac
+index 7f2e34f..83ac18d 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -293,6 +293,17 @@ AC_ARG_WITH(
+ 	[with_crypto_library="openssl"]
+ )
+ 
++AC_ARG_ENABLE(
++    [fips-mode],
++    [AS_HELP_STRING([--enable-fips-mode], [OpenSSL FIPS Object Module 2.0 @<:@default=no@:>@])],
++    [
++        if test "${with_crypto_library}" != "openssl"; then
++            AC_MSG_ERROR([enable_fips_mode requires --with_crypto_library=openssl])
++        fi
++    ],
++    [enable_fips_mode="no"]
++)
++
+ AC_ARG_VAR([PLUGINDIR], [Path of plug-in directory @<:@default=LIBDIR/openvpn/plugins@:>@])
+ if test -n "${PLUGINDIR}"; then
+ 	plugindir="${PLUGINDIR}"
+@@ -954,6 +965,35 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
+ 		]
+ 	)
+ 
++    if test "${enable_fips_mode}" = "yes"; then
++        AC_CHECK_FUNCS(
++            [ \
++                FIPS_mode \
++                FIPS_mode_set \
++                SSLeay_version
++            ],
++            [],
++            [AC_MSG_ERROR([Incorrect version of OpenSSL, require 1.0.2])]
++            )
++        AC_RUN_IFELSE(
++            [AC_LANG_PROGRAM(
++                [[#include <openssl/crypto.h>]],
++                [[printf("%s\n", SSLeay_version(SSLEAY_DIR));]])
++            ],
++            [AC_SUBST(OPENSSLDIR,
++                [[`./conftest$EXEEXT | $SED -n 's/.*"\(.*\)".*/\1/p'`]])
++            ]
++        )
++        if ! test -x "${OPENSSLDIR}/fips-2.0/bin/fipsld"; then
++            AC_MSG_ERROR([Incomplete OpenSSL FIPS installation; missing fipsld])
++        fi
++        AC_SUBST([FIPSLD_CC], ["${CC}"])
++        AC_SUBST([CC], ["${OPENSSLDIR}/fips-2.0/bin/fipsld"])
++        export CC
++        export FIPSLD_CC
++        AC_DEFINE([ENABLE_FIPS], [1], [Enable OpenSSL FIPS 2.0 Options])
++    fi
++
+ 	CFLAGS="${saved_CFLAGS}"
+ 	LIBS="${saved_LIBS}"
+ 
+@@ -1373,6 +1413,7 @@ AM_CONDITIONAL([ENABLE_PLUGIN_AUTH_PAM], [test "${enable_plugin_auth_pam}" = "ye
+ AM_CONDITIONAL([ENABLE_PLUGIN_DOWN_ROOT], [test "${enable_plugin_down_root}" = "yes"])
+ AM_CONDITIONAL([ENABLE_CRYPTO], [test "${enable_crypto}" = "yes"])
+ AM_CONDITIONAL([HAVE_LD_WRAP_SUPPORT], [test "${have_ld_wrap_support}" = "yes"])
++AM_CONDITIONAL([FIPSMODE], [test "${enable_fips_mode}" = "yes"])
+ 
+ sampledir="\$(docdir)/sample"
+ AC_SUBST([plugindir])
+@@ -1441,4 +1482,5 @@ AC_CONFIG_FILES([
+ 	sample/Makefile
+ ])
+ AC_CONFIG_FILES([tests/t_client.sh], [chmod +x tests/t_client.sh])
++
+ AC_OUTPUT
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 3f3caa1..0c05859 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -854,7 +854,7 @@ init_key_ctx(struct key_ctx *ctx, const struct key *key,
+     if (kt->digest && kt->hmac_length > 0)
+     {
+         ctx->hmac = hmac_ctx_new();
+-        hmac_ctx_init(ctx->hmac, key->hmac, kt->hmac_length, kt->digest);
++        hmac_ctx_init(ctx->hmac, key->hmac, kt->hmac_length, kt->digest, false);
+ 
+         msg(D_HANDSHAKE,
+             "%s: Using %d bit message hash '%s' for HMAC authentication",
+diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
+index 567fd9b..d92ab7c 100644
+--- a/src/openvpn/crypto_backend.h
++++ b/src/openvpn/crypto_backend.h
+@@ -604,10 +604,11 @@ void hmac_ctx_free(hmac_ctx_t *ctx);
+  * @param key           The key to use for the HMAC
+  * @param key_len       The key length to use
+  * @param kt            Static message digest parameters
++ * @param prf_use       Inteded use for PRF in TLS protocol
+  *
+  */
+ void hmac_ctx_init(hmac_ctx_t *ctx, const uint8_t *key, int key_length,
+-                   const md_kt_t *kt);
++                   const md_kt_t *kt, bool prf_use);
+ 
+ /*
+  * Free the given HMAC context.
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 0134e55..caef17b 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -159,6 +159,17 @@ crypto_init_lib(void)
+ #endif
+ }
+ 
++int
++crypto_enable_fips_mode(int mode)
++{
++	if (!FIPS_mode_set(mode)) {
++		ERR_print_errors_fp(stderr);
++		return 1;
++		}
++	msg(M_INFO, "*** IN FIPS MODE ***\n");
++	return 0;
++}
++
+ void
+ crypto_uninit_lib(void)
+ {
+@@ -926,11 +937,13 @@ hmac_ctx_free(HMAC_CTX *ctx)
+ 
+ void
+ hmac_ctx_init(HMAC_CTX *ctx, const uint8_t *key, int key_len,
+-              const EVP_MD *kt)
++              const EVP_MD *kt, bool prf_use)
+ {
+     ASSERT(NULL != kt && NULL != ctx);
+ 
+     HMAC_CTX_reset(ctx);
++	if (kt == EVP_md5() && prf_use)
++		HMAC_CTX_set_flags(ctx, EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);
+     HMAC_Init_ex(ctx, key, key_len, kt, NULL);
+ 
+     /* make sure we used a big enough key */
+diff --git a/src/openvpn/crypto_openssl.h b/src/openvpn/crypto_openssl.h
+index 60a2812..11f3378 100644
+--- a/src/openvpn/crypto_openssl.h
++++ b/src/openvpn/crypto_openssl.h
+@@ -102,4 +102,12 @@ void crypto_print_openssl_errors(const unsigned int flags);
+     } while (false)
+ 
+ 
++/**
++ * Enable FIPS Mode. Returns non-zero to indicate an error.
++ *
++ * @param mode         Should be 1. Future versions of OpenSSL FIPS
++ * 					   code are expected to accept extended modes.
++ */
++int crypto_enable_fips_mode(int mode);
++
+ #endif /* CRYPTO_OPENSSL_H_ */
+diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c
+index 077fa3e..fe39ab1 100644
+--- a/src/openvpn/ntlm.c
++++ b/src/openvpn/ntlm.c
+@@ -88,7 +88,7 @@ gen_hmac_md5(const uint8_t *data, int data_len, const uint8_t *key, int key_len,
+     const md_kt_t *md5_kt = md_kt_get("MD5");
+     hmac_ctx_t *hmac_ctx = hmac_ctx_new();
+ 
+-    hmac_ctx_init(hmac_ctx, key, key_len, md5_kt);
++    hmac_ctx_init(hmac_ctx, key, key_len, md5_kt, false);
+     hmac_ctx_update(hmac_ctx, data, data_len);
+     hmac_ctx_final(hmac_ctx, result);
+     hmac_ctx_cleanup(hmac_ctx);
+diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
+index e237ee5..beb1d2a 100644
+--- a/src/openvpn/openvpn.c
++++ b/src/openvpn/openvpn.c
+@@ -210,6 +210,13 @@ openvpn_main(int argc, char *argv[])
+             /* parse command line options, and read configuration file */
+             parse_argv(&c.options, argc, argv, M_USAGE, OPT_P_DEFAULT, NULL, c.es);
+ 
++#if ENABLE_FIPS
++			if (c.options.fips_mode) {
++				if (enable_fips_mode(c.options.fips_mode)) {
++					break;
++					}
++				}
++#endif
+ #ifdef ENABLE_PLUGIN
+             /* plugins may contribute options configuration */
+             init_verb_mute(&c, IVM_LEVEL_1);
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 8e5cdf7..8a1501c 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -522,6 +522,11 @@ static const char usage_message[] =
+     "\n"
+     "Data Channel Encryption Options (must be compatible between peers):\n"
+     "(These options are meaningful for both Static Key & TLS-mode)\n"
++#ifdef ENABLE_FIPS
++	"--enable-fips-mode : Enable OpenSSL FIPS Object Module v2.0.\n"
++	"                  Setting this on the server will enforce FIPS validated\n"
++	"                  encryption on both client and server.\n"
++#endif
+     "--secret f [d]  : Enable Static Key encryption mode (non-TLS).\n"
+     "                  Use shared secret file f, generate with --genkey.\n"
+     "                  The optional d parameter controls key directionality.\n"
+@@ -854,6 +859,9 @@ init_options(struct options *o, const bool init_gc)
+ #endif
+ #ifdef ENABLE_CRYPTO
+     o->ciphername = "BF-CBC";
++#ifdef ENABLE_FIPS
++	o->fips_mode = 0;
++#endif
+ #ifdef HAVE_AEAD_CIPHER_MODES /* IV_NCP=2 requires GCM support */
+     o->ncp_enabled = true;
+ #else
+@@ -1561,6 +1569,7 @@ show_settings(const struct options *o)
+ #endif
+ 
+ #ifdef ENABLE_CRYPTO
++	SHOW_INT(fips_mode);
+     SHOW_BOOL(show_ciphers);
+     SHOW_BOOL(show_digests);
+     SHOW_BOOL(show_engines);
+@@ -7442,6 +7451,13 @@ add_option(struct options *options,
+     }
+ #endif /* USE_COMP */
+ #ifdef ENABLE_CRYPTO
++#ifdef ENABLE_FIPS
++	else if (streq(p[0], "enable-fips-mode") && !p[1])
++	{
++        VERIFY_PERMISSION(OPT_P_GENERAL);
++		options->fips_mode = 1;
++	}
++#endif
+     else if (streq(p[0], "show-ciphers") && !p[1])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 035c6d1..55d2248 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -189,6 +189,7 @@ struct options
+     int persist_mode;
+ 
+ #ifdef ENABLE_CRYPTO
++	int fips_mode;
+     const char *key_pass_file;
+     bool show_ciphers;
+     bool show_digests;
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 843bc39..6a212b8 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -354,6 +354,14 @@ init_ssl_lib(void)
+     crypto_init_lib();
+ }
+ 
++#if ENABLE_FIPS
++int
++enable_fips_mode(int mode)
++{
++	return crypto_enable_fips_mode(mode);
++}
++#endif
++
+ void
+ free_ssl_lib(void)
+ {
+@@ -1640,8 +1648,8 @@ tls1_P_hash(const md_kt_t *md_kt,
+     chunk = md_kt_size(md_kt);
+     A1_len = md_kt_size(md_kt);
+ 
+-    hmac_ctx_init(ctx, sec, sec_len, md_kt);
+-    hmac_ctx_init(ctx_tmp, sec, sec_len, md_kt);
++    hmac_ctx_init(ctx, sec, sec_len, md_kt, true);
++    hmac_ctx_init(ctx_tmp, sec, sec_len, md_kt, true);
+ 
+     hmac_ctx_update(ctx,seed,seed_len);
+     hmac_ctx_final(ctx, A1);
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index 0e0f68f..ae23423 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -600,6 +600,10 @@ bool is_hard_reset(int op, int key_method);
+ 
+ void delayed_auth_pass_purge(void);
+ 
++#if ENABLE_FIPS
++int enable_fips_mode(int mode);
++#endif
++
+ #endif /* ENABLE_CRYPTO */
+ 
+ #endif /* ifndef OPENVPN_SSL_H */
+-- 
+2.1.4
 
 
