@@ -1,10 +1,9 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Sun, 26 Nov 2017 15:15:55 +0100
-Message-Id: <20171126141555.25930-3-steffan@...1856...>
-In-Reply-To: <20171126141555.25930-1-steffan@...1856...>
-References: <20171126141555.25930-1-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH 3/3] tls_ctx_set_tls_versions: move
- verify_flags to where it is used
+Date: Sun, 26 Nov 2017 16:04:01 +0100
+Message-Id: <20171126150401.28565-2-steffan@...1856...>
+In-Reply-To: <20171126150401.28565-1-steffan@...1856...>
+References: <20171126150401.28565-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH 2/2] openssl: add missing #include statements
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,54 +16,68 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Minor cleanup of this function now that we are allowed to write C99: move
-(and rename) flags to the code where it's actually used to improve
-readability.
+Compiling our current master against OpenSSL 1.1 with
+-DOPENSSL_API_COMPAT=0x10100000L screams bloody murder.  This patch fixes
+the errors caused by missing includes.  Previous openssl versions would
+usually include 'the rest of the world', but they're fixing that.  So we
+should no longer rely on it.
 
-(I originally did this as part of the tls-version-{min,max} patch for
-openssl 1.1, but that made the diff hard to read.)
+(And sneaking in alphabetic ordering of the includes while touching them.)
 
 Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
- src/openvpn/ssl_openssl.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ src/openvpn/openssl_compat.h     | 1 +
+ src/openvpn/ssl_openssl.c        | 6 +++++-
+ src/openvpn/ssl_verify_openssl.c | 3 ++-
+ 3 files changed, 8 insertions(+), 2 deletions(-)
 
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index 9eb427da..6d7f7d02 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -42,6 +42,7 @@
+ 
+ #include "buffer.h"
+ 
++#include <openssl/rsaerr.h>
+ #include <openssl/ssl.h>
+ #include <openssl/x509.h>
+ 
 diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 18c0ba5f..10d161ef 100644
+index 18ceecb4..79121049 100644
 --- a/src/openvpn/ssl_openssl.c
 +++ b/src/openvpn/ssl_openssl.c
-@@ -262,9 +262,6 @@ tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags)
- {
-     ASSERT(NULL != ctx);
+@@ -52,10 +52,14 @@
  
--    /* default certificate verification flags */
--    int flags = SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT;
--
-     /* process SSL options */
-     long sslopt = SSL_OP_SINGLE_DH_USE | SSL_OP_NO_TICKET;
- #ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
-@@ -282,17 +279,18 @@ tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags)
-     SSL_CTX_set_default_passwd_cb(ctx->ctx, pem_password_callback);
+ #include "ssl_verify_openssl.h"
  
-     /* Require peer certificate verification */
-+    int verify_flags = SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT;
- #if P2MP_SERVER
-     if (ssl_flags & SSLF_CLIENT_CERT_NOT_REQUIRED)
-     {
--        flags = 0;
-+        verify_flags = 0;
-     }
-     else if (ssl_flags & SSLF_CLIENT_CERT_OPTIONAL)
-     {
--        flags = SSL_VERIFY_PEER;
-+        verify_flags = SSL_VERIFY_PEER;
-     }
++#include <openssl/bn.h>
++#include <openssl/crypto.h>
++#include <openssl/dh.h>
++#include <openssl/dsa.h>
+ #include <openssl/err.h>
+ #include <openssl/pkcs12.h>
++#include <openssl/rsa.h>
+ #include <openssl/x509.h>
+-#include <openssl/crypto.h>
+ #ifndef OPENSSL_NO_EC
+ #include <openssl/ec.h>
  #endif
--    SSL_CTX_set_verify(ctx->ctx, flags, verify_callback);
-+    SSL_CTX_set_verify(ctx->ctx, verify_flags, verify_callback);
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
+index 2f3b10b9..4a1d1cf8 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -44,8 +44,9 @@
+ #include "ssl_verify_backend.h"
+ #include "openssl_compat.h"
  
-     SSL_CTX_set_info_callback(ctx->ctx, info_callback);
- }
+-#include <openssl/x509v3.h>
++#include <openssl/bn.h>
+ #include <openssl/err.h>
++#include <openssl/x509v3.h>
+ 
+ int
+ verify_callback(int preverify_ok, X509_STORE_CTX *ctx)
 -- 
 2.14.1
 
