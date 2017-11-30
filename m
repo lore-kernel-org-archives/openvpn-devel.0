@@ -1,10 +1,9 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <2b9ae1ef-05fc-6631-38ff-c355bedc6c7b@...515...>
-Date: Tue, 28 Nov 2017 16:47:01 +0200
 MIME-Version: 1.0
-Content-Language: en-US
-Subject: [Openvpn-devel] Vagrant-based OpenVPN build environments now
- available
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 29 Nov 2017 21:03:12 -0500
+Message-ID: <CAKuzo_jPThhvXTJAtzhqVUVOLPW1VGu6h2jQhVsHicY8P2WRqA@...278...>
+Content-Type: multipart/alternative; boundary="001a113ad3b4bc64f4055f29a87d"
+Subject: [Openvpn-devel] Follow up on sending messages to the GUI
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,51 +12,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"
+To: "openvpn users list (openvpn-users@lists.sourceforge.net)" <openvpn-users@lists.sourceforge.net>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--001a113ad3b4bc64f4055f29a87d
+Content-Type: text/plain; charset="UTF-8"
+
+Cross-posting to users and devel as this may be of interest to both.
+
+Hi,
+
+I have made a draft implementation of this feature that was discussed in a
+previous thread. A test executable (GUI only) is in this pre-release:
+
+https://github.com/selvanair/openvpn-gui/releases/tag/v11-echo-msg
+
+It would be great if anyone can test this out[*].
+
+Thanks,
+
+Selva
+
+[*] Although virtually any text can be sent, some familiarity with openvpn
+config/ccd parsing/quoting and push processing is necessary to get it right
+for non-trivial messages that contain comment characters, commas, new lines
+etc... Short and simple messages must be easy, though.
+
+Also see some technical notes included in the above link.
+
+--001a113ad3b4bc64f4055f29a87d
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
 
-Hi all,
+<div dir=3D"ltr"><div>Cross-posting to users and <span class=3D"" id=3D":64=
+w.1" tabindex=3D"-1">devel</span> as this may be of interest to both.</div>=
+<div><br></div>Hi,<div><br></div><div>I have made a draft implementation of=
+ this feature that was discussed in a previous thread. A test executable (G=
+UI only) is in this <span class=3D"" id=3D":64w.2" tabindex=3D"-1">pre</spa=
+n>-release:</div><div><br></div><div><a href=3D"https://github.com/selvanai=
+r/openvpn-gui/releases/tag/v11-echo-msg" target=3D"_blank">https://<span cl=
+ass=3D"" id=3D":64w.3" tabindex=3D"-1">github</span>.com/<span class=3D"" i=
+d=3D":64w.4" tabindex=3D"-1">selvanair</span>/<wbr><span class=3D"" id=3D":=
+64w.5" tabindex=3D"-1">openvpn</span>-<span class=3D"" id=3D":64w.6" tabind=
+ex=3D"-1">gui</span>/releases/tag/v11-<wbr>echo-<span class=3D"" id=3D":64w=
+.7" tabindex=3D"-1">msg</span></a><br></div><div><br></div><div>It would be=
+ great if anyone can test this out[*].</div><div><br></div><div>Thanks,</di=
+v><div><br></div><div><span class=3D"" id=3D":64w.8" tabindex=3D"-1">Selva<=
+/span></div><div><br></div><div>[*] Although virtually any text can be sent=
+, some familiarity with <span class=3D"" id=3D":64w.9" tabindex=3D"-1">open=
+vpn</span> <span class=3D"" id=3D":64w.10" tabindex=3D"-1">config</span>/<s=
+pan class=3D"" id=3D":64w.11" tabindex=3D"-1">ccd</span> parsing/quoting an=
+d push processing is necessary to get it right for non-trivial messages tha=
+t contain comment characters, commas, new lines etc... Short and simple mes=
+sages must be easy, though.</div><div><br></div><div>Also see some technica=
+l notes included in the above link.</div></div>
 
-It is now possible to easily test building of OpenVPN on various
-operating systems using Vagrant and Virtualbox:
-
-<https://github.com/OpenVPN/openvpn-vagrant>
-
-All the build dependencies get installed during VM provisioning. Right
-now the following operating systems are supported:
-
-centos-7
-debian-9
-freebsd-11
-openbsd-6
-ubuntu-1604
-netbsd-7
-solaris-113 (see recipes/Solaris113.txt)
-
-The goal is to allow any developer to test his code on platforms other
-than his/her own.
-
-There is also a VM called "openvpn-build". It can be used to
-cross-compile OpenVPN for Windows.
-
-We plan to provide a test server VM next. It will run several OpenVPN
-server instances with varying configurations, something akin to current
-t_client test server. Later on we will attempt to integrate "testing:
-Add vagrant based integration tests" PR[1] to this new repository. This
-will make testing more automatic. At this point the setup will be quite
-similar to Buildbot, but usable by "external" developers also.
-
-The provisioning scripts in the repository can also be used to configure
-more long-running test instances: there is nothing inherently
-Vagrant-specific in them.
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
-[1] <https://github.com/OpenVPN/openvpn/pull/45>
+--001a113ad3b4bc64f4055f29a87d--
 
