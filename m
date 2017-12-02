@@ -1,8 +1,12 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Sat,  2 Dec 2017 16:54:38 +0800
-Message-Id: <20171202085438.2393-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH v2] ifconfig-ipv6(-push): allow using
- hostnames
+MIME-Version: 1.0
+In-Reply-To: <CAKuzo_gAZSaVvfSiaZSHC5ESXJ2Q8mEBPq6oV6Wk+AfDidqoXA@...278...>
+References: <CAKuzo_jPThhvXTJAtzhqVUVOLPW1VGu6h2jQhVsHicY8P2WRqA@...278...>
+ <56fd237f-ba3f-c65d-9831-bf75d4dd139d@...1227...>
+ <CAKuzo_gAZSaVvfSiaZSHC5ESXJ2Q8mEBPq6oV6Wk+AfDidqoXA@...278...>
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Sat, 2 Dec 2017 07:08:46 -0500
+Message-ID: <CAEsd45QPMD57_L-yWHORqumv_-MT6rjC++FVCDRos9F0tTvMvw@...278...>
+Subject: Re: [Openvpn-devel] Follow up on sending messages to the GUI
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,313 +15,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: Selva Nair <selva.nair@...277...>
+Cc: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Similarly to ifconfig(-push), its IPv6 counterpart is now able to
-accept hostnames as well instead of IP addresses in numeric form.
+Hi,
 
-Basically this means that the user is now allowed to specify
-something like this:
+On Fri, Dec 1, 2017 at 10:58 AM, Selva Nair <selva.nair@...277...> wrote:
+>
+> Hi,
+>
+> On Fri, Dec 1, 2017 at 8:53 AM, Arne Schwabe <arne@...1227...> wrote:
+>>
+>> Am 30.11.2017 um 03:03 schrieb Selva Nair:
+>>
+>> Cross-posting to users and devel as this may be of interest to both.
+>>
+>> Hi,
+>>
+>> I have made a draft implementation of this feature that was discussed in=
+ a previous thread. A test executable (GUI only) is in this pre-release:
+>>
+>> https://github.com/selvanair/openvpn-gui/releases/tag/v11-echo-msg
+>>
+>> It would be great if anyone can test this out[*].
+>>
+>> Thanks,
+>>
+>> Selva
+>>
+>> [*] Although virtually any text can be sent, some familiarity with openv=
+pn config/ccd parsing/quoting and push processing is necessary to get it ri=
+ght for non-trivial messages that contain comment characters, commas, new l=
+ines etc... Short and simple messages must be easy, though.
+>>
+>>
+>> Could we have some text stating that clients might only display one mess=
+age per connect? At the moment you can have multiple "echo msg-notify messa=
+ge-title" pushed by the server. I would like to avoid in my client to imple=
+ment logic to display multiple messages. If one message allowed the message=
+ can become just an Android notification without special logic
+>
+>
+> Yes, we can and probably should document that some clients may only
+> display one message. Do you also want to say that some clients may
+> interpret msg-window as msg-notify?
+>
+> Even in case of Windows desktop, I think it may be better to display
+> only one message per connection as otherwise it starts to get very
+> noisy. At most one message window and one notification.
+>
+> Jon, do you plan to document the proposed "echo msg" specs in management
+> notes or elsewhere?  The single message per connect limitation
+> could be specified there.
 
-ifconfig-ipv6-push my.hostname.cx/64
+I'll be happy to try to document the protocol between OpenVPN and the
+GUI, including the "msg*" commands and others such as
+"forget-passwords", "setenv", etc., which we've discussed. However,
+I'm thinking it should be a separate "doc/gui-notes.txt" document.
 
-This is exactly the same behaviour that we already have with
-ifconfig(-push).
-
-The generic code introduced in this patch will be later used to
-implement the /bits parsing support for IPv4 addresses.
-
-Trac: #808
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
-
-v2:
-- rebased on top of master
-- style adapted to new CodingStyle
-
- src/openvpn/options.c |  61 ------------------------
- src/openvpn/options.h |   4 --
- src/openvpn/socket.c  | 126 +++++++++++++++++++++++++++++++++++++++++++++-----
- src/openvpn/socket.h  |  12 +++++
- 4 files changed, 126 insertions(+), 77 deletions(-)
-
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 8e5cdf7f..767cdaeb 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -1033,67 +1033,6 @@ get_ip_addr(const char *ip_string, int msglevel, bool *error)
-     return ret;
- }
- 
--/* helper: parse a text string containing an IPv6 address + netbits
-- * in "standard format" (2001:dba::/32)
-- * "/nn" is optional, default to /64 if missing
-- *
-- * return true if parsing succeeded, modify *network and *netbits
-- */
--bool
--get_ipv6_addr( const char *prefix_str, struct in6_addr *network,
--               unsigned int *netbits, int msglevel)
--{
--    char *sep, *endp;
--    int bits;
--    struct in6_addr t_network;
--
--    sep = strchr( prefix_str, '/' );
--    if (sep == NULL)
--    {
--        bits = 64;
--    }
--    else
--    {
--        bits = strtol( sep+1, &endp, 10 );
--        if (*endp != '\0' || bits < 0 || bits > 128)
--        {
--            msg(msglevel, "IPv6 prefix '%s': invalid '/bits' spec", prefix_str);
--            return false;
--        }
--    }
--
--    /* temporary replace '/' in caller-provided string with '\0', otherwise
--     * inet_pton() will refuse prefix string
--     * (alternative would be to strncpy() the prefix to temporary buffer)
--     */
--
--    if (sep != NULL)
--    {
--        *sep = '\0';
--    }
--
--    if (inet_pton( AF_INET6, prefix_str, &t_network ) != 1)
--    {
--        msg(msglevel, "IPv6 prefix '%s': invalid IPv6 address", prefix_str);
--        return false;
--    }
--
--    if (sep != NULL)
--    {
--        *sep = '/';
--    }
--
--    if (netbits != NULL)
--    {
--        *netbits = bits;
--    }
--    if (network != NULL)
--    {
--        *network = t_network;
--    }
--    return true;                /* parsing OK, values set */
--}
--
- /**
-  * Returns newly allocated string containing address part without "/nn".
-  *
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 035c6d15..d67c2785 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -817,8 +817,4 @@ void options_string_import(struct options *options,
-                            unsigned int *option_types_found,
-                            struct env_set *es);
- 
--bool get_ipv6_addr( const char *prefix_str, struct in6_addr *network,
--                    unsigned int *netbits, int msglevel );
--
--
- #endif /* ifndef OPTIONS_H */
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 0fc91f21..4cadae23 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -74,12 +74,102 @@ sf2gaf(const unsigned int getaddr_flags,
- /*
-  * Functions related to the translation of DNS names to IP addresses.
-  */
-+static int
-+get_addr_generic(sa_family_t af, unsigned int flags, const char *hostname,
-+                 void *network, unsigned int *netbits,
-+                 int resolve_retry_seconds, volatile int *signal_received,
-+                 int msglevel)
-+{
-+    char *endp, *sep, *var_host;
-+    uint8_t bits, max_bits;
-+    struct addrinfo *ai;
-+    int ret = -1;
-+
-+    ASSERT(hostname);
-+
-+    /* assign family specific default values */
-+    switch (af)
-+    {
-+        case AF_INET:
-+            bits = 0;
-+            max_bits = sizeof(in_addr_t) * 8;
-+            break;
-+        case AF_INET6:
-+            bits = 64;
-+            max_bits = sizeof(struct in6_addr) * 8;
-+            break;
-+        default:
-+            ASSERT(0);
-+    }
-+
-+    /* we need to modify the hostname received as input, but we don't want to
-+     * touch it directly as it might be a constant string.
-+     *
-+     * Therefore, we clone the string here and free it at the end of the
-+     * function */
-+    var_host = strdup(hostname);
-+    ASSERT(var_host);
-+
-+    /* check if this hostname has a /bits suffix */
-+    sep = strchr(var_host , '/');
-+    if (sep)
-+    {
-+        bits = strtoul(sep + 1, &endp, 10);
-+        if ((*endp != '\0') || (bits > max_bits))
-+        {
-+            msg(msglevel, "IP prefix '%s': invalid '/bits' spec", hostname);
-+            goto out;
-+        }
-+        /* temporary truncate string at '/'. This allows the IP
-+         * parsing routines to properly work. Will be restored later.
-+         */
-+        *sep = '\0';
-+    }
-+
-+    ret = openvpn_getaddrinfo(flags & ~GETADDR_HOST_ORDER, var_host, NULL,
-+                              resolve_retry_seconds, signal_received, af, &ai);
-+    if ((ret == 0) && network)
-+    {
-+        struct in6_addr *ip6;
-+        in_addr_t *ip4;
-+
-+        switch (af)
-+        {
-+            case AF_INET:
-+                ip4 = network;
-+                *ip4 = ((struct sockaddr_in *)ai->ai_addr)->sin_addr.s_addr;
-+
-+                if (flags & GETADDR_HOST_ORDER)
-+                {
-+                    *ip4 = ntohl(*ip4);
-+                }
-+                break;
-+            case AF_INET6:
-+                ip6 = network;
-+                *ip6 = ((struct sockaddr_in6 *)ai->ai_addr)->sin6_addr;
-+                break;
-+            default:
-+                ASSERT(0);
-+        }
-+        freeaddrinfo(ai);
-+    }
-+
-+    if (netbits)
-+    {
-+        *netbits = bits;
-+    }
-+
-+    /* restore '/' separator, if any */
-+    if (sep)
-+    {
-+        *sep = '/';
-+    }
-+out:
-+    free(var_host);
-+
-+    return ret;
-+}
- 
--/*
-- * Translate IP addr or hostname to in_addr_t.
-- * If resolve error, try again for
-- * resolve_retry_seconds seconds.
-- */
- in_addr_t
- getaddr(unsigned int flags,
-         const char *hostname,
-@@ -87,20 +177,19 @@ getaddr(unsigned int flags,
-         bool *succeeded,
-         volatile int *signal_received)
- {
--    struct addrinfo *ai;
-+    in_addr_t addr;
-     int status;
--    status = openvpn_getaddrinfo(flags & ~GETADDR_HOST_ORDER, hostname, NULL,
--                                 resolve_retry_seconds, signal_received, AF_INET, &ai);
-+
-+    status = get_addr_generic(AF_INET, flags, hostname, &addr, NULL,
-+                              resolve_retry_seconds, signal_received,
-+                              M_WARN);
-     if (status==0)
-     {
--        struct in_addr ia;
-         if (succeeded)
-         {
-             *succeeded = true;
-         }
--        ia = ((struct sockaddr_in *)ai->ai_addr)->sin_addr;
--        freeaddrinfo(ai);
--        return (flags & GETADDR_HOST_ORDER) ? ntohl(ia.s_addr) : ia.s_addr;
-+        return addr;
-     }
-     else
-     {
-@@ -112,6 +201,19 @@ getaddr(unsigned int flags,
-     }
- }
- 
-+bool
-+get_ipv6_addr(const char *hostname, struct in6_addr *network,
-+              unsigned int *netbits, int msglevel)
-+{
-+    if (get_addr_generic(AF_INET6, GETADDR_RESOLVE, hostname, network, netbits,
-+                         0, NULL, msglevel) < 0)
-+    {
-+        return false;
-+    }
-+
-+    return true;                /* parsing OK, values set */
-+}
-+
- static inline bool
- streqnull(const char *a, const char *b)
- {
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index 2d7f2187..81e9e9ae 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -532,12 +532,24 @@ bool unix_socket_get_peer_uid_gid(const socket_descriptor_t sd, int *uid, int *g
- 
- #define GETADDR_CACHE_MASK              (GETADDR_DATAGRAM|GETADDR_PASSIVE)
- 
-+/**
-+ * Translate an IPv4 addr or hostname from string form to in_addr_t
-+ *
-+ * In case of resolve error, it will try again for
-+ * resolve_retry_seconds seconds.
-+ */
- in_addr_t getaddr(unsigned int flags,
-                   const char *hostname,
-                   int resolve_retry_seconds,
-                   bool *succeeded,
-                   volatile int *signal_received);
- 
-+/**
-+ * Translate an IPv6 addr or hostname from string form to in6_addr
-+ */
-+bool get_ipv6_addr(const char *hostname, struct in6_addr *network,
-+                   unsigned int *netbits, int msglevel);
-+
- int openvpn_getaddrinfo(unsigned int flags,
-                         const char *hostname,
-                         const char *servname,
--- 
-2.15.1
-
+In a separate document it would be easier to make it clear that it is
+describing the protocol between the configuration and the GUIs and not
+get lost in the complexity of the management interface itself.
 
