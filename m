@@ -1,9 +1,9 @@
 From: Simon Rozman <simon@...2293...>
-Date: Sun,  3 Dec 2017 21:20:51 +0100
-Message-Id: <20171203202051.7848-1-simon@...2293...>
-In-Reply-To: <CAKuzo_jFkLexh20dyeX-kSqCLyhGWmVKsC+DBwF+3sAi2optyA@...278...>
-References: <CAKuzo_jFkLexh20dyeX-kSqCLyhGWmVKsC+DBwF+3sAi2optyA@...278...>
-Subject: [Openvpn-devel] [PATCH] openvpnserv: Review MSVC down-casting
+Date: Sun,  3 Dec 2017 21:30:07 +0100
+Message-Id: <20171203203007.6628-1-simon@...2293...>
+In-Reply-To: <20171203202051.7848-1-simon@...2293...>
+References: <20171203202051.7848-1-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH v5] openvpnserv: Review MSVC down-casting
  warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -22,12 +22,12 @@ Data size arithmetic was reviewed according to 64-bit MSVC complaints.
 The warnings were addressed by migrating to size_t, rewriting the code,
 or silencing the warnings by an explicit cast where appropriate.
 ---
- src/openvpnserv/automatic.c   | 19 +++++++------------
+ src/openvpnserv/automatic.c   | 17 ++++++-----------
  src/openvpnserv/interactive.c | 12 ++++++------
- 2 files changed, 13 insertions(+), 18 deletions(-)
+ 2 files changed, 12 insertions(+), 17 deletions(-)
 
 diff --git a/src/openvpnserv/automatic.c b/src/openvpnserv/automatic.c
-index 75c3be2..28f21cc 100644
+index 75c3be2..6f82b4e 100644
 --- a/src/openvpnserv/automatic.c
 +++ b/src/openvpnserv/automatic.c
 @@ -115,25 +115,20 @@ close_if_open(HANDLE h)
@@ -42,20 +42,19 @@ index 75c3be2..28f21cc 100644
      }
  
 -    if (!_tcslen(ext))
--    {
--        return true;
--    }
--
--    i = _tcslen(find->cFileName) - _tcslen(ext) - 1;
--    if (i < 1)
 +    if (*ext == TEXT('\0'))
      {
-         return false;
+         return true;
      }
  
--    return find->cFileName[i] == '.' && !_tcsicmp(find->cFileName + i + 1, ext);
+-    i = _tcslen(find->cFileName) - _tcslen(ext) - 1;
+-    if (i < 1)
+-    {
+-        return false;
+-    }
 +    /* find the pointer to that last '.' in filename and match ext against the rest */
-+
+ 
+-    return find->cFileName[i] == '.' && !_tcsicmp(find->cFileName + i + 1, ext);
 +    const TCHAR *p = _tcsrchr(find->cFileName, TEXT('.'));
 +    return p && p != find->cFileName && _tcsicmp(p + 1, ext) == 0;
  }
@@ -134,10 +133,12 @@ index ed4603e..5d58ceb 100644
 -- 
 2.9.0.windows.1
 
-Hi,
+Hi Selva,
 
-My mistake. Here's the v4 of the patch.
+After more careful review of your `if (*ext == TEXT('\0'))` proposal in reply to v1 patch, I noticed you changed the return value for empty ext string from true to false.
 
-Regards,
+This version of the patch returns the same result for empty ext string as the original version of the function. When HKLM\Software\OpenVPN\config_ext is set to an empty string the automatic service starts openvpn.exe on all files found as previous versions.
+
+Best regards,
 Simon
 
