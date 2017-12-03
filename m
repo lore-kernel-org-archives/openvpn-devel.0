@@ -1,13 +1,12 @@
-Date: Sun, 3 Dec 2017 19:54:07 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20171203185407.GK69387@...1296...>
+MIME-Version: 1.0
+In-Reply-To: <20171203185407.GK69387@...1296...>
 References: <20171202085438.2393-1-a@...2181...>
  <CAKuzo_h9kcCyDFqdyS50yeCt10n7jdjXm1Qmae+cVjWqYGrhUA@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="bO4vSxwwZtUjUWHo"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_h9kcCyDFqdyS50yeCt10n7jdjXm1Qmae+cVjWqYGrhUA@...278...>
+ <20171203185407.GK69387@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sun, 3 Dec 2017 14:19:19 -0500
+Message-ID: <CAKuzo_gksuz3JF7fVY=S+0K+1Se_0zjBSxQNsP3zCjcbEP+TCg@...278...>
+Content-Type: multipart/alternative; boundary="001a114ff326ba807e055f747b5b"
 Subject: Re: [Openvpn-devel] [PATCH v2] ifconfig-ipv6(-push): allow using
  hostnames
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,61 +17,107 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
+To: Gert Doering <gert@...1296...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---bO4vSxwwZtUjUWHo
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+--001a114ff326ba807e055f747b5b
+Content-Type: text/plain; charset="UTF-8"
 
-Hi,,
+On Sun, Dec 3, 2017 at 1:54 PM, Gert Doering <gert@...1296...> wrote:
 
-On Sat, Dec 02, 2017 at 11:38:28PM -0500, Selva Nair wrote:
-> Responding to this old version just to be on record.
->=20
-> I realized patch this was assigned to Gert on patchwork too late after
-> started responding on my own. Sorry for jumping the gun. Have to make
-> keeping an eye on patchwork a habit..
->=20
-> I'll leave the latest v4 alone.
+> Hi,,
+>
+> On Sat, Dec 02, 2017 at 11:38:28PM -0500, Selva Nair wrote:
+> > Responding to this old version just to be on record.
+> >
+> > I realized patch this was assigned to Gert on patchwork too late after
+> > started responding on my own. Sorry for jumping the gun. Have to make
+> > keeping an eye on patchwork a habit..
+> >
+> > I'll leave the latest v4 alone.
 
 If that is the consequence of assigning patches to people on patchwork,
-we should stop doing so (Antonio, are you listening? :-) ).  Obviously=20
-the patch was in dire need of a good review, and if you have time while=20
-I am busy with family things, this is more than welcome.
+> we should stop doing so (Antonio, are you listening? :-) ).
 
-Voluntarily *taking* a patch for review is useful as a flag "I'm going to
-handle this", but third-party-tagging "this is for Gert!" seems to have
-potential for backfiring, so maybe we shouldn't do that, then.
 
-(There currently is one patch in patchwork which I took myself, and that's=
-=20
-the "lowest metric interface" one)
+I didn't want to step on anyone's toes... But based on Antonio's
+explanation,
+I take that remark back. Will look into v4 as soon as I get some time to
+test it.
 
-gert
 
---=20
-now what should I write here...
+> Obviously
+> the patch was in dire need of a good review, and if you have time while
+> I am busy with family things, this is more than welcome.
+>
+> Voluntarily *taking* a patch for review is useful as a flag "I'm going to
+> handle this", but third-party-tagging "this is for Gert!" seems to have
+> potential for backfiring, so maybe we shouldn't do that, then.
 
-Gert Doering - Munich, Germany                             gert@...1296...
 
---bO4vSxwwZtUjUWHo
-Content-Type: application/pgp-signature; name="signature.asc"
+Agreed. I just didn't realize Antonio delegated it to you and assumed
+all "delegation" are indications that the person has volunteered to look
+into it. As for me, I totally welcome others reviewing something I delegated
+to myself, or commenting/criticizing/extoling (or tipping :) my reviews
+(multiple reviews are indeed great).
 
------BEGIN PGP SIGNATURE-----
+But I wouldn't particularly want others delegating work to me :)
+So let's continue the practice of delegating to self, not to others.
+We can always use the list (or IRC for those who frequent the channel)
+for requesting reviews etc.
 
-iQGcBAEBAgAGBQJaJEhPAAoJEB2Cnv7KVigSyzoL/ji1UkZGa3N0yG72c6KHXk4i
-YnPLQyWk4T24o8ziIrhJGGeBczFqj6Qg2mGtdKNTrIOS6HZC8PABtV+h5lGqFj9y
-Ddz7aJY53BwU+JI29AWnU1WStcC+g6rxRccp1sHOvvjoH4Dk7y0CRqg0GghbE45n
-1fO5TJ/heRKC8a7axW1BeKVEcjRJtfSgmgy/TYXW0cSyMaDuUDQNTd+QfB1fWgsm
-qV1gBfYDdyRr7pYYv321uWbD7MFTZ8ozV0CzE2hQmvkvNJnHa2esiaHgZ34tfx+T
-RSfePhh2ZNSZNAqpuacbg/QvdXWkw+9KeAg3EI4foErALdjcURtHver+J5++0g/p
-S21C8DkJ62v5SqWIHY/IgaP/baVhG6wbDH4u/6hxWBXbPiCkJSroA8tZ/TwT5N1n
-00VmxH/qyDbyIMVQEMrhpG3reOUBssha9T71bm+DkYEUGHn7EHSGhRkMPw7xcMrl
-zSFJ34oUZTYxn+HzN0QpXLtzqhV23F9yTfMDPeNt5g==
-=WywN
------END PGP SIGNATURE-----
+Best,
 
---bO4vSxwwZtUjUWHo--
+Selva
+
+--001a114ff326ba807e055f747b5b
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Sun, Dec 3, 2017 at 1:54 PM, Gert Doering <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</span=
+> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
+rder-left:1px #ccc solid;padding-left:1ex">Hi,,<br>
+<span class=3D""><br>
+On Sat, Dec 02, 2017 at 11:38:28PM -0500, Selva Nair wrote:<br>
+&gt; Responding to this old version just to be on record.<br>
+&gt;<br>
+&gt; I realized patch this was assigned to Gert on patchwork too late after=
+<br>
+&gt; started responding on my own. Sorry for jumping the gun. Have to make<=
+br>
+&gt; keeping an eye on patchwork a habit..<br>
+&gt;<br>
+&gt; I&#39;ll leave the latest v4 alone.</span>=C2=A0</blockquote><blockquo=
+te class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc so=
+lid;padding-left:1ex">If that is the consequence of assigning patches to pe=
+ople on patchwork,<br>
+we should stop doing so (Antonio, are you listening? :-) ).=C2=A0 </blockqu=
+ote><div><br></div><div>I didn&#39;t want to step on anyone&#39;s toes... B=
+ut based on Antonio&#39;s explanation,</div><div>I take that remark back. W=
+ill look into v4 as soon as I get some time to test it.</div><div>=C2=A0</d=
+iv><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left=
+:1px #ccc solid;padding-left:1ex">Obviously<br>
+the patch was in dire need of a good review, and if you have time while<br>
+I am busy with family things, this is more than welcome.<br>
+<br>
+Voluntarily *taking* a patch for review is useful as a flag &quot;I&#39;m g=
+oing to<br>
+handle this&quot;, but third-party-tagging &quot;this is for Gert!&quot; se=
+ems to have<br>
+potential for backfiring, so maybe we shouldn&#39;t do that, then.</blockqu=
+ote><div><br></div><div>Agreed. I just didn&#39;t realize Antonio delegated=
+ it to you and assumed</div><div>all &quot;delegation&quot; are indications=
+ that the person has volunteered to look</div><div>into it. As for me, I to=
+tally welcome others reviewing something I delegated</div><div>to myself, o=
+r commenting/criticizing/extoling (or tipping :) my reviews=C2=A0</div><div=
+>(multiple reviews are indeed great).</div><div><br></div><div>But I wouldn=
+&#39;t particularly want others delegating work to me :)=C2=A0</div><div>So=
+ let&#39;s continue the practice of delegating to self, not to others.</div=
+><div>We can always use the list (or IRC for those who frequent the channel=
+)</div><div>for requesting reviews etc.</div><div><br></div><div>Best,</div=
+><div><br></div><div>Selva</div></div></div></div>
+
+--001a114ff326ba807e055f747b5b--
 
