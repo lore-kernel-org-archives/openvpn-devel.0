@@ -1,13 +1,12 @@
-References: <20171202134541.7688-2-a@...2181...>
- <20171203124952.15220-1-a@...2181...>
+References: <20171202134541.7688-1-a@...2181...>
+ <20171202134541.7688-3-a@...2181...>
 From: Steffan Karger <steffan@...1856...>
-Message-ID: <984980dc-0897-164d-2c29-e3c3297c08c8@...1856...>
-Date: Sun, 3 Dec 2017 15:14:56 +0100
+Message-ID: <2498f713-fd9a-84a4-5bcd-4df033a719e3@...1856...>
+Date: Sun, 3 Dec 2017 15:15:45 +0100
 MIME-Version: 1.0
-In-Reply-To: <20171203124952.15220-1-a@...2181...>
+In-Reply-To: <20171202134541.7688-3-a@...2181...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v2 2/7] Remove option to disable crypto
- engine
+Subject: Re: [Openvpn-devel] [PATCH 3/7] Remove ENABLE_PUSH_PEER_INFO
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,199 +21,167 @@ To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On 03-12-17 13:49, Antonio Quartulli wrote:
-> With this patch we remove the possibility to disable the crypto engine
-> (ENABLE_CRYPTO define) at configuration time.
-> 
-> [--disable-crypto has been removed from .travis.yml too]
+On 02-12-17 14:45, Antonio Quartulli wrote:
+> ENABLE_PUSH_PEER_INFO depended on ENABLE_CRYPTO that now does
+> not exist anymore.
+> Get rid of ENABLE_PUSH_PEER_INFO by assuming that it is always
+> enabled and simplify the code.
 > 
 > Signed-off-by: Antonio Quartulli <a@...2181...>
 > ---
+>  src/openvpn/init.c       |  2 --
+>  src/openvpn/options.c    | 10 ----------
+>  src/openvpn/options.h    |  2 --
+>  src/openvpn/ssl.c        |  2 --
+>  src/openvpn/ssl_common.h |  2 --
+>  src/openvpn/syshead.h    |  5 -----
+>  6 files changed, 23 deletions(-)
 > 
-> v2:
-> - .travis.yml: move "make distcheck" to other entry in the matrix
-> - move to second spot in the set to avoid having a point in the tree
->   where encryption is not enabled
-> - rename CRYPTO_MBEDTLS/OPENSSL back to ENABLE_CRYPTO_MBEDTLS/OPENSSL in configure.ac
-> 
->  .travis.yml                                        |  5 +---
->  config-msvc.h                                      |  1 -
->  configure.ac                                       | 29 ++++++----------------
->  doc/doxygen/openvpn.doxyfile.in                    |  2 +-
->  .../keyingmaterialexporter.c                       |  2 --
->  sample/sample-plugins/log/log_v3.c                 |  2 --
->  tests/Makefile.am                                  |  2 --
->  7 files changed, 9 insertions(+), 34 deletions(-)
-> 
-> diff --git a/.travis.yml b/.travis.yml
-> index 366e6599..1f669b30 100644
-> --- a/.travis.yml
-> +++ b/.travis.yml
-> @@ -59,10 +59,7 @@ matrix:
->      - env: SSLLIB="openssl" CHOST=i686-w64-mingw32
->        os: linux
->        compiler: ": Win32 build only"
-> -    - env: SSLLIB="openssl" EXTRA_CONFIG="--disable-crypto" EXTRA_SCRIPT="make distcheck"
-> -      os: linux
-> -      compiler: clang
-> -    - env: SSLLIB="openssl" EXTRA_CONFIG="--disable-lzo"
-> +    - env: SSLLIB="openssl" EXTRA_CONFIG="--disable-lzo" EXTRA_SCRIPT="make distcheck"
->        os: linux
->        compiler: clang
->      - env: SSLLIB="openssl" EXTRA_CONFIG="--enable-small"
-> diff --git a/config-msvc.h b/config-msvc.h
-> index 0bb153df..8be9195f 100644
-> --- a/config-msvc.h
-> +++ b/config-msvc.h
-> @@ -4,7 +4,6 @@
+> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+> index bfc80ebf..e013e9ca 100644
+> --- a/src/openvpn/init.c
+> +++ b/src/openvpn/init.c
+> @@ -2686,7 +2686,6 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
+>      to.single_session = options->single_session;
+>      to.mode = options->mode;
+>      to.pull = options->pull;
+> -#ifdef ENABLE_PUSH_PEER_INFO
+>      if (options->push_peer_info)        /* all there is */
+>      {
+>          to.push_peer_info_detail = 2;
+> @@ -2699,7 +2698,6 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
+>      {
+>          to.push_peer_info_detail = 0;
+>      }
+> -#endif
 >  
->  #define ENABLE_DEF_AUTH 1
->  #define ENABLE_PF 1
-> -#define ENABLE_CRYPTO 1
->  #define ENABLE_CRYPTO_OPENSSL 1
->  #define ENABLE_DEBUG 1
->  #define ENABLE_EUREPHIA 1
-> diff --git a/configure.ac b/configure.ac
-> index acfddb22..b4fd1b3f 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -77,13 +77,6 @@ AC_ARG_ENABLE(comp-stub,
->  	[enable_comp_stub="no"]
->  )
+>      /* should we not xmit any packets until we get an initial
+>       * response from client? */
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index 49afb4e4..9d9798f7 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -225,9 +225,7 @@ static const char usage_message[] =
+>      "--redirect-private [flags]: Like --redirect-gateway, but omit actually changing\n"
+>      "                  the default gateway.  Useful when pushing private subnets.\n"
+>      "--client-nat snat|dnat network netmask alias : on client add 1-to-1 NAT rule.\n"
+> -#ifdef ENABLE_PUSH_PEER_INFO
+>      "--push-peer-info : (client only) push client info to server.\n"
+> -#endif
+>      "--setenv name value : Set a custom environmental variable to pass to script.\n"
+>      "--setenv FORWARD_COMPATIBLE 1 : Relax config file syntax checking to allow\n"
+>      "                  directives for future OpenVPN versions to be ignored.\n"
+> @@ -1772,9 +1770,7 @@ show_settings(const struct options *o)
+>      SHOW_INT(transition_window);
 >  
-> -AC_ARG_ENABLE(
-> -	[crypto],
-> -	[AS_HELP_STRING([--disable-crypto], [disable crypto support @<:@default=yes@:>@])],
-> -	,
-> -	[enable_crypto="yes"]
-> -)
+>      SHOW_BOOL(single_session);
+> -#ifdef ENABLE_PUSH_PEER_INFO
+>      SHOW_BOOL(push_peer_info);
+> -#endif
+>      SHOW_BOOL(tls_exit);
+>  
+>      SHOW_STR(tls_auth_file);
+> @@ -2732,9 +2728,7 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
+>          MUST_BE_UNDEF(tls_auth_file);
+>          MUST_BE_UNDEF(tls_crypt_file);
+>          MUST_BE_UNDEF(single_session);
+> -#ifdef ENABLE_PUSH_PEER_INFO
+>          MUST_BE_UNDEF(push_peer_info);
+> -#endif
+>          MUST_BE_UNDEF(tls_exit);
+>          MUST_BE_UNDEF(crl_file);
+>          MUST_BE_UNDEF(key_method);
+> @@ -6344,12 +6338,10 @@ add_option(struct options *options,
+>              msg(msglevel, "this is a generic configuration and cannot directly be used");
+>              goto err;
+>          }
+> -#ifdef ENABLE_PUSH_PEER_INFO
+>          else if (streq(p[1], "PUSH_PEER_INFO") && !p[2])
+>          {
+>              options->push_peer_info = true;
+>          }
+> -#endif
+>          else if (streq(p[1], "SERVER_POLL_TIMEOUT") && p[2])
+>          {
+>              options->ce.connect_timeout = positive_atoi(p[2]);
+> @@ -7778,13 +7770,11 @@ add_option(struct options *options,
+>          VERIFY_PERMISSION(OPT_P_GENERAL);
+>          options->single_session = true;
+>      }
+> -#ifdef ENABLE_PUSH_PEER_INFO
+>      else if (streq(p[0], "push-peer-info") && !p[1])
+>      {
+>          VERIFY_PERMISSION(OPT_P_GENERAL);
+>          options->push_peer_info = true;
+>      }
+> -#endif
+>      else if (streq(p[0], "tls-exit") && !p[1])
+>      {
+>          VERIFY_PERMISSION(OPT_P_GENERAL);
+> diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+> index d7b46219..6d7fcc08 100644
+> --- a/src/openvpn/options.h
+> +++ b/src/openvpn/options.h
+> @@ -569,9 +569,7 @@ struct options
+>      /* Allow only one session */
+>      bool single_session;
+>  
+> -#ifdef ENABLE_PUSH_PEER_INFO
+>      bool push_peer_info;
+> -#endif
+>  
+>      bool tls_exit;
+>  
+> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+> index d9439062..a95ef7e2 100644
+> --- a/src/openvpn/ssl.c
+> +++ b/src/openvpn/ssl.c
+> @@ -2235,7 +2235,6 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+>      struct gc_arena gc = gc_new();
+>      bool ret = false;
+>  
+> -#ifdef ENABLE_PUSH_PEER_INFO
+>      if (session->opt->push_peer_info_detail > 0)
+>      {
+>          struct env_set *es = session->opt->es;
+> @@ -2316,7 +2315,6 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+>          }
+>      }
+>      else
+> -#endif /* ifdef ENABLE_PUSH_PEER_INFO */
+>      {
+>          if (!write_empty_string(buf)) /* no peer info */
+>          {
+> diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+> index 25bffd5b..60ed5f8a 100644
+> --- a/src/openvpn/ssl_common.h
+> +++ b/src/openvpn/ssl_common.h
+> @@ -249,9 +249,7 @@ struct tls_options
+>  #endif
+>      int mode;
+>      bool pull;
+> -#ifdef ENABLE_PUSH_PEER_INFO
+>      int push_peer_info_detail;
+> -#endif
+>      int transition_window;
+>      int handshake_window;
+>      interval_t packet_timeout;
+> diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
+> index 594ddf17..83904af9 100644
+> --- a/src/openvpn/syshead.h
+> +++ b/src/openvpn/syshead.h
+> @@ -673,11 +673,6 @@ socket_defined(const socket_descriptor_t sd)
+>  #define ENABLE_CLIENT_CR
+>  #endif
+>  
+> -/*
+> - * Do we support pushing peer info?
+> - */
+> -#define ENABLE_PUSH_PEER_INFO
 > -
->  AC_ARG_ENABLE(
->  	[ofb-cfb],
->  	[AS_HELP_STRING([--disable-ofb-cfb], [disable support for OFB and CFB cipher modes @<:@default=yes@:>@])],
-> @@ -843,7 +836,7 @@ PKG_CHECK_MODULES(
->  	[]
->  )
->  
-> -if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
-> +if test "${with_crypto_library}" = "openssl"; then
->  	AC_ARG_VAR([OPENSSL_CFLAGS], [C compiler flags for OpenSSL])
->  	AC_ARG_VAR([OPENSSL_LIBS], [linker flags for OpenSSL])
->  
-> @@ -958,11 +951,10 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
->  	CFLAGS="${saved_CFLAGS}"
->  	LIBS="${saved_LIBS}"
->  
-> -	have_crypto="yes"
->  	AC_DEFINE([ENABLE_CRYPTO_OPENSSL], [1], [Use OpenSSL library])
->  	CRYPTO_CFLAGS="${OPENSSL_CFLAGS}"
->  	CRYPTO_LIBS="${OPENSSL_LIBS}"
-> -elif test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "mbedtls"; then
-> +elif test "${with_crypto_library}" = "mbedtls"; then
->  	AC_ARG_VAR([MBEDTLS_CFLAGS], [C compiler flags for mbedtls])
->  	AC_ARG_VAR([MBEDTLS_LIBS], [linker flags for mbedtls])
->  
-> @@ -1041,11 +1033,10 @@ elif test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "mbedtls"; th
->  
->  	CFLAGS="${saved_CFLAGS}"
->  	LIBS="${saved_LIBS}"
-> -	have_crypto="yes"
->  	AC_DEFINE([ENABLE_CRYPTO_MBEDTLS], [1], [Use mbed TLS library])
->  	CRYPTO_CFLAGS="${MBEDTLS_CFLAGS}"
->  	CRYPTO_LIBS="${MBEDTLS_LIBS}"
-> -elif test "${enable_crypto}" = "yes"; then
-> +else
->  	AC_MSG_ERROR([Invalid crypto library: ${with_crypto_library}])
->  fi
->  
-> @@ -1245,14 +1236,10 @@ test "${enable_def_auth}" = "yes" && AC_DEFINE([ENABLE_DEF_AUTH], [1], [Enable d
->  test "${enable_pf}" = "yes" && AC_DEFINE([ENABLE_PF], [1], [Enable internal packet filter])
->  test "${enable_strict_options}" = "yes" && AC_DEFINE([ENABLE_STRICT_OPTIONS_CHECK], [1], [Enable strict options check between peers])
->  
-> -if test "${enable_crypto}" = "yes"; then
-> -	test "${have_crypto}" != "yes" && AC_MSG_ERROR([${with_crypto_library} crypto is required but missing])
-> -	test "${enable_crypto_ofb_cfb}" = "yes" && AC_DEFINE([ENABLE_OFB_CFB_MODE], [1], [Enable OFB and CFB cipher modes])
-> -	test "${have_crypto_aead_modes}" = "yes" && AC_DEFINE([HAVE_AEAD_CIPHER_MODES], [1], [Use crypto library])
-> -	OPTIONAL_CRYPTO_CFLAGS="${OPTIONAL_CRYPTO_CFLAGS} ${CRYPTO_CFLAGS}"
-> -	OPTIONAL_CRYPTO_LIBS="${OPTIONAL_CRYPTO_LIBS} ${CRYPTO_LIBS}"
-> -	AC_DEFINE([ENABLE_CRYPTO], [1], [Enable crypto library])
-> -fi
-> +test "${enable_crypto_ofb_cfb}" = "yes" && AC_DEFINE([ENABLE_OFB_CFB_MODE], [1], [Enable OFB and CFB cipher modes])
-> +test "${have_crypto_aead_modes}" = "yes" && AC_DEFINE([HAVE_AEAD_CIPHER_MODES], [1], [Use crypto library])
-> +OPTIONAL_CRYPTO_CFLAGS="${OPTIONAL_CRYPTO_CFLAGS} ${CRYPTO_CFLAGS}"
-> +OPTIONAL_CRYPTO_LIBS="${OPTIONAL_CRYPTO_LIBS} ${CRYPTO_LIBS}"
->  
->  if test "${enable_plugins}" = "yes"; then
->  	OPTIONAL_DL_LIBS="${DL_LIBS}"
-> @@ -1292,7 +1279,6 @@ fi
->  
->  if test "${enable_pkcs11}" = "yes"; then
->  	test "${have_pkcs11_helper}" != "yes" && AC_MSG_ERROR([PKCS11 enabled but libpkcs11-helper is missing])
-> -	test "${enable_crypto}" != "yes" && AC_MSG_ERROR([PKCS11 can be enabled only if crypto is enabled])
->  	OPTIONAL_PKCS11_HELPER_CFLAGS="${PKCS11_HELPER_CFLAGS}"
->  	OPTIONAL_PKCS11_HELPER_LIBS="${PKCS11_HELPER_LIBS}"
->  	AC_DEFINE([ENABLE_PKCS11], [1], [Enable PKCS11])
-> @@ -1372,7 +1358,6 @@ AM_CONDITIONAL([WIN32], [test "${WIN32}" = "yes"])
->  AM_CONDITIONAL([GIT_CHECKOUT], [test "${GIT_CHECKOUT}" = "yes"])
->  AM_CONDITIONAL([ENABLE_PLUGIN_AUTH_PAM], [test "${enable_plugin_auth_pam}" = "yes"])
->  AM_CONDITIONAL([ENABLE_PLUGIN_DOWN_ROOT], [test "${enable_plugin_down_root}" = "yes"])
-> -AM_CONDITIONAL([ENABLE_CRYPTO], [test "${enable_crypto}" = "yes"])
->  AM_CONDITIONAL([HAVE_LD_WRAP_SUPPORT], [test "${have_ld_wrap_support}" = "yes"])
->  
->  sampledir="\$(docdir)/sample"
-> diff --git a/doc/doxygen/openvpn.doxyfile.in b/doc/doxygen/openvpn.doxyfile.in
-> index bb56fff4..d9e9ed08 100644
-> --- a/doc/doxygen/openvpn.doxyfile.in
-> +++ b/doc/doxygen/openvpn.doxyfile.in
-> @@ -235,7 +235,7 @@ EXPAND_ONLY_PREDEF     = NO
->  SEARCH_INCLUDES        = YES
->  INCLUDE_PATH           =
->  INCLUDE_FILE_PATTERNS  =
-> -PREDEFINED             = _WIN32 NTLM USE_LZO ENABLE_FRAGMENT P2MP P2MP_SERVER ENABLE_CRYPTO ENABLE_CRYPTO_OPENSSL ENABLE_PLUGIN ENABLE_MANAGEMENT ENABLE_OCC HAVE_GETTIMEOFDAY
-> +PREDEFINED             = _WIN32 NTLM USE_LZO ENABLE_FRAGMENT P2MP P2MP_SERVER ENABLE_CRYPTO_OPENSSL ENABLE_PLUGIN ENABLE_MANAGEMENT ENABLE_OCC HAVE_GETTIMEOFDAY
->  EXPAND_AS_DEFINED      =
->  SKIP_FUNCTION_MACROS   = YES
->  #---------------------------------------------------------------------------
-> diff --git a/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c b/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c
-> index c4839077..8ee78c53 100644
-> --- a/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c
-> +++ b/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c
-> @@ -27,8 +27,6 @@
->   * See the README file for build instructions.
->   */
->  
-> -#define ENABLE_CRYPTO
-> -
->  #include <stdio.h>
->  #include <string.h>
->  #include <stdlib.h>
-> diff --git a/sample/sample-plugins/log/log_v3.c b/sample/sample-plugins/log/log_v3.c
-> index 98d80d95..3ff80290 100644
-> --- a/sample/sample-plugins/log/log_v3.c
-> +++ b/sample/sample-plugins/log/log_v3.c
-> @@ -35,8 +35,6 @@
->  #include <string.h>
->  #include <stdlib.h>
->  
-> -#define ENABLE_CRYPTO
-> -
->  #include "openvpn-plugin.h"
->  
 >  /*
-> diff --git a/tests/Makefile.am b/tests/Makefile.am
-> index 0795680c..53313de4 100644
-> --- a/tests/Makefile.am
-> +++ b/tests/Makefile.am
-> @@ -15,9 +15,7 @@ MAINTAINERCLEANFILES = \
->  SUBDIRS = unit_tests
->  
->  test_scripts = t_client.sh
-> -if ENABLE_CRYPTO
->  test_scripts += t_lpback.sh t_cltsrv.sh
-> -endif
->  
->  TESTS_ENVIRONMENT = top_srcdir="$(top_srcdir)"
->  TESTS = $(test_scripts)
+>   * Compression support
+>   */
 > 
 
 Acked-by: Steffan Karger <steffan@...1856...>
