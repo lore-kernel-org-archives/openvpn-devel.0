@@ -1,12 +1,12 @@
-References: <20171202134541.7688-1-a@...2181...>
- <20171202134541.7688-7-a@...2181...>
+References: <20171203131651.622-1-a@...2181...>
 From: Steffan Karger <steffan@...1856...>
-Message-ID: <d78b43c2-0140-7b15-34ed-949636ad444d@...1856...>
-Date: Sun, 3 Dec 2017 15:45:41 +0100
+Message-ID: <8607686f-75ac-ab6a-21a9-5aab8aea34c3@...1856...>
+Date: Sun, 3 Dec 2017 16:02:13 +0100
 MIME-Version: 1.0
-In-Reply-To: <20171202134541.7688-7-a@...2181...>
+In-Reply-To: <20171203131651.622-1-a@...2181...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH 7/7] Remove TLS_MODE
+Subject: Re: [Openvpn-devel] [PATCH v2] reload HTTP proxy credentials when
+ moving to the next connection profile
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,82 +21,61 @@ To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On 02-12-17 14:45, Antonio Quartulli wrote:
-> Now that ENABLE_CRYPTO has been removed, TLS_MODE is basically
-> a useless shortcut which does not really help the readability of the
-> code.
+Feature-ACK, but one implementation concern:
 
-So I don't really agree here.  As we've just experienced while
-discussing this on IRC, the meaning of 'c->c2.tls_multi != NULL' is not
-that trivial.  At first sight it seems to suggest 'we have multiple
-peers' (i.e. mode server), but it really does just mean 'this is a TLS
-mode connection' (ie, not a static key connection).
-
-So even though I would have preferred this to be an inline function, I
-think it *does* add to readability.  So I'd prefer to either keep it, or
-change it to a static inline function for type safety.
-
-> Remove it and use its expanded expression instead.
+On 03-12-17 14:16, Antonio Quartulli wrote:
+> The HTTP proxy credentials are stored in a static variable that is
+> possibly initialized before each connection attempt.
 > 
+> However, the variable is never "released" therefore get_user_pass()
+> refuses to overwrite its content and leaves it as it is.
+> Consequently, if the user config contains multiple connection profiles
+> with different http-proxy, each having its own credentials, only the
+> first user/pass couple is loaded and the others are all ignored.
+> This leads to connection failures because the proper credentials are
+> not associated with the right proxy server.
+> 
+> The root of the misbehaviour seems to be located in the fact that,
+> despite the argument force passed to get_user_pass_http() being true,
+> no action is taken to release the static object containing the
+> credentials.
+> 
+> Fix the misbehaviour by releasing the http-proxy credential object
+> when the reload is "forced".
+> 
+> Trac: #836
 > Signed-off-by: Antonio Quartulli <a@...2181...>
 > ---
->  src/openvpn/forward.c | 2 +-
->  src/openvpn/init.c    | 2 +-
->  src/openvpn/occ.c     | 3 ++-
->  src/openvpn/openvpn.h | 1 -
->  4 files changed, 4 insertions(+), 4 deletions(-)
 > 
-> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-> index 9bf9483e..85ec71ae 100644
-> --- a/src/openvpn/forward.c
-> +++ b/src/openvpn/forward.c
-> @@ -948,7 +948,7 @@ process_incoming_link_part2(struct context *c, struct link_socket_info *lsi, con
->           *
->           * Also, update the persisted version of our packet-id.
->           */
-> -        if (!TLS_MODE(c))
-> +        if (!c->c2.tls_multi)
->          {
->              link_socket_set_outgoing_addr(&c->c2.buf, lsi, &c->c2.from, NULL, c->c2.es);
->          }
-> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index f8034ec7..7fe50628 100644
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -1306,7 +1306,7 @@ do_init_timers(struct context *c, bool deferred)
->          /* initialize occ timers */
->  
->          if (c->options.occ
-> -            && !TLS_MODE(c)
-> +            && !c->c2.tls_multi
->              && c->c2.options_string_local && c->c2.options_string_remote)
->          {
->              event_timeout_init(&c->c2.occ_interval, OCC_INTERVAL_SECONDS, now);
-> diff --git a/src/openvpn/occ.c b/src/openvpn/occ.c
-> index 40f7e768..8434920c 100644
-> --- a/src/openvpn/occ.c
-> +++ b/src/openvpn/occ.c
-> @@ -378,7 +378,8 @@ process_received_occ_msg(struct context *c)
->  
->          case OCC_REPLY:
->              dmsg(D_PACKET_CONTENT, "RECEIVED OCC_REPLY");
-> -            if (c->options.occ && !TLS_MODE(c) && c->c2.options_string_remote)
-> +            if (c->options.occ && !c->c2.tls_multi
-> +                && c->c2.options_string_remote)
->              {
->                  if (!options_cmp_equal_safe((char *) BPTR(&c->c2.buf),
->                                              c->c2.options_string_remote,
-> diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-> index fe8324ab..b36ca319 100644
-> --- a/src/openvpn/openvpn.h
-> +++ b/src/openvpn/openvpn.h
-> @@ -556,7 +556,6 @@ struct context
->   * have been compiled in.
->   */
->  
-> -#define TLS_MODE(c) ((c)->c2.tls_multi != NULL)
->  #define PROTO_DUMP_FLAGS (check_debug_level(D_LINK_RW_VERBOSE) ? (PD_SHOW_DATA|PD_VERBOSE) : 0)
->  #define PROTO_DUMP(buf, gc) protocol_dump((buf), \
->                                            PROTO_DUMP_FLAGS   \
+> v2:
+> - rebased on current master
 > 
+>  src/openvpn/proxy.c | 11 ++++++++++-
+>  1 file changed, 10 insertions(+), 1 deletion(-)
+> 
+> diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
+> index fdc73b4a..cfc1d11c 100644
+> --- a/src/openvpn/proxy.c
+> +++ b/src/openvpn/proxy.c
+> @@ -255,7 +255,16 @@ username_password_as_base64(const struct http_proxy_info *p,
+>  static void
+>  get_user_pass_http(struct http_proxy_info *p, const bool force)
+>  {
+> -    if (!static_proxy_user_pass.defined || force)
+> +    /*
+> +     * in case of forced (re)load, make sure the static storage is set as
+> +     * undefined, otherwise get_user_pass() won't try to load any credential
+> +     */
+> +    if (force)
+> +    {
+> +        static_proxy_user_pass.defined = false;
+> +    }
+
+I'm wondering, shouldn't we clear the username/password in the struct if
+we set defined=false as a hardening measure?  And shouldn't we then just
+replace this if(force) block with a call to purge_user_pass(up, force)?
+Or should we be careful to not clear the other members of
+static_proxy_user_pass?
+
+-Steffan
 
