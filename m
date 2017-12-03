@@ -1,14 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <20171203185407.GK69387@...1296...>
-References: <20171202085438.2393-1-a@...2181...>
- <CAKuzo_h9kcCyDFqdyS50yeCt10n7jdjXm1Qmae+cVjWqYGrhUA@...278...>
- <20171203185407.GK69387@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Sun, 3 Dec 2017 14:19:19 -0500
-Message-ID: <CAKuzo_gksuz3JF7fVY=S+0K+1Se_0zjBSxQNsP3zCjcbEP+TCg@...278...>
-Content-Type: multipart/alternative; boundary="001a114ff326ba807e055f747b5b"
-Subject: Re: [Openvpn-devel] [PATCH v2] ifconfig-ipv6(-push): allow using
- hostnames
+From: Simon Rozman <simon@...2293...>
+Date: Sun,  3 Dec 2017 21:20:51 +0100
+Message-Id: <20171203202051.7848-1-simon@...2293...>
+In-Reply-To: <CAKuzo_jFkLexh20dyeX-kSqCLyhGWmVKsC+DBwF+3sAi2optyA@...278...>
+References: <CAKuzo_jFkLexh20dyeX-kSqCLyhGWmVKsC+DBwF+3sAi2optyA@...278...>
+Subject: [Openvpn-devel] [PATCH] openvpnserv: Review MSVC down-casting
+ warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,107 +13,131 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---001a114ff326ba807e055f747b5b
-Content-Type: text/plain; charset="UTF-8"
+Data size arithmetic was reviewed according to 64-bit MSVC complaints.
 
-On Sun, Dec 3, 2017 at 1:54 PM, Gert Doering <gert@...1296...> wrote:
+The warnings were addressed by migrating to size_t, rewriting the code,
+or silencing the warnings by an explicit cast where appropriate.
+---
+ src/openvpnserv/automatic.c   | 19 +++++++------------
+ src/openvpnserv/interactive.c | 12 ++++++------
+ 2 files changed, 13 insertions(+), 18 deletions(-)
 
-> Hi,,
->
-> On Sat, Dec 02, 2017 at 11:38:28PM -0500, Selva Nair wrote:
-> > Responding to this old version just to be on record.
-> >
-> > I realized patch this was assigned to Gert on patchwork too late after
-> > started responding on my own. Sorry for jumping the gun. Have to make
-> > keeping an eye on patchwork a habit..
-> >
-> > I'll leave the latest v4 alone.
+diff --git a/src/openvpnserv/automatic.c b/src/openvpnserv/automatic.c
+index 75c3be2..28f21cc 100644
+--- a/src/openvpnserv/automatic.c
++++ b/src/openvpnserv/automatic.c
+@@ -115,25 +115,20 @@ close_if_open(HANDLE h)
+ static bool
+ match(const WIN32_FIND_DATA *find, LPCTSTR ext)
+ {
+-    int i;
+-
+     if (find->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+     {
+         return false;
+     }
+ 
+-    if (!_tcslen(ext))
+-    {
+-        return true;
+-    }
+-
+-    i = _tcslen(find->cFileName) - _tcslen(ext) - 1;
+-    if (i < 1)
++    if (*ext == TEXT('\0'))
+     {
+         return false;
+     }
+ 
+-    return find->cFileName[i] == '.' && !_tcsicmp(find->cFileName + i + 1, ext);
++    /* find the pointer to that last '.' in filename and match ext against the rest */
++
++    const TCHAR *p = _tcsrchr(find->cFileName, TEXT('.'));
++    return p && p != find->cFileName && _tcsicmp(p + 1, ext) == 0;
+ }
+ 
+ /*
+@@ -142,14 +137,14 @@ match(const WIN32_FIND_DATA *find, LPCTSTR ext)
+ static bool
+ modext(LPTSTR dest, int size, LPCTSTR src, LPCTSTR newext)
+ {
+-    int i;
++    size_t i;
+ 
+     if (size > 0 && (_tcslen(src) + 1) <= size)
+     {
+         _tcscpy(dest, src);
+         dest [size - 1] = TEXT('\0');
+         i = _tcslen(dest);
+-        while (--i >= 0)
++        while (i-- > 0)
+         {
+             if (dest[i] == TEXT('\\'))
+             {
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index ed4603e..5d58ceb 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -280,7 +280,7 @@ ReturnProcessId(HANDLE pipe, DWORD pid, DWORD count, LPHANDLE events)
+     swprintf(buf, _countof(buf), L"0x%08x\n0x%08x\n%s", 0, pid, msg);
+     buf[_countof(buf) - 1] = '\0';
+ 
+-    WritePipeAsync(pipe, buf, wcslen(buf) * 2, count, events);
++    WritePipeAsync(pipe, buf, (DWORD)(wcslen(buf) * 2), count, events);
+ }
+ 
+ static VOID
+@@ -308,7 +308,7 @@ ReturnError(HANDLE pipe, DWORD error, LPCWSTR func, DWORD count, LPHANDLE events
+                                 L"0x%1!08x!\n%2!s!\n%3!s!", 0, 0,
+                                 (LPWSTR) &result, 0, (va_list *) args);
+ 
+-    WritePipeAsync(pipe, result, wcslen(result) * 2, count, events);
++    WritePipeAsync(pipe, result, (DWORD)(wcslen(result) * 2), count, events);
+ #ifdef UNICODE
+     MsgToEventLog(MSG_FLAGS_ERROR, result);
+ #else
+@@ -452,10 +452,10 @@ out:
+ static BOOL
+ GetStartupData(HANDLE pipe, STARTUP_DATA *sud)
+ {
+-    size_t len;
++    size_t size, len;
+     BOOL ret = FALSE;
+     WCHAR *data = NULL;
+-    DWORD size, bytes, read;
++    DWORD bytes, read;
+ 
+     bytes = PeekNamedPipeAsync(pipe, 1, &exit_event);
+     if (bytes == 0)
+@@ -1051,7 +1051,7 @@ netsh_dns_cmd(const wchar_t *action, const wchar_t *proto, const wchar_t *if_nam
+     const wchar_t *fmt = L"netsh interface %s %s dns \"%s\" %s";
+ 
+     /* max cmdline length in wchars -- include room for worst case and some */
+-    int ncmdline = wcslen(fmt) + wcslen(if_name) + wcslen(addr) + 32 + 1;
++    size_t ncmdline = wcslen(fmt) + wcslen(if_name) + wcslen(addr) + 32 + 1;
+     wchar_t *cmdline = malloc(ncmdline*sizeof(wchar_t));
+     if (!cmdline)
+     {
+@@ -1571,7 +1571,7 @@ RunOpenvpn(LPVOID p)
+     {
+         DWORD written;
+         WideCharToMultiByte(CP_UTF8, 0, sud.std_input, -1, input, input_size, NULL, NULL);
+-        WriteFile(stdin_write, input, strlen(input), &written, NULL);
++        WriteFile(stdin_write, input, (DWORD)strlen(input), &written, NULL);
+         free(input);
+     }
+ 
+-- 
+2.9.0.windows.1
 
-If that is the consequence of assigning patches to people on patchwork,
-> we should stop doing so (Antonio, are you listening? :-) ).
+Hi,
 
+My mistake. Here's the v4 of the patch.
 
-I didn't want to step on anyone's toes... But based on Antonio's
-explanation,
-I take that remark back. Will look into v4 as soon as I get some time to
-test it.
-
-
-> Obviously
-> the patch was in dire need of a good review, and if you have time while
-> I am busy with family things, this is more than welcome.
->
-> Voluntarily *taking* a patch for review is useful as a flag "I'm going to
-> handle this", but third-party-tagging "this is for Gert!" seems to have
-> potential for backfiring, so maybe we shouldn't do that, then.
-
-
-Agreed. I just didn't realize Antonio delegated it to you and assumed
-all "delegation" are indications that the person has volunteered to look
-into it. As for me, I totally welcome others reviewing something I delegated
-to myself, or commenting/criticizing/extoling (or tipping :) my reviews
-(multiple reviews are indeed great).
-
-But I wouldn't particularly want others delegating work to me :)
-So let's continue the practice of delegating to self, not to others.
-We can always use the list (or IRC for those who frequent the channel)
-for requesting reviews etc.
-
-Best,
-
-Selva
-
---001a114ff326ba807e055f747b5b
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Sun, Dec 3, 2017 at 1:54 PM, Gert Doering <span dir=3D"ltr">&lt;<a href=
-=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</span=
-> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
-rder-left:1px #ccc solid;padding-left:1ex">Hi,,<br>
-<span class=3D""><br>
-On Sat, Dec 02, 2017 at 11:38:28PM -0500, Selva Nair wrote:<br>
-&gt; Responding to this old version just to be on record.<br>
-&gt;<br>
-&gt; I realized patch this was assigned to Gert on patchwork too late after=
-<br>
-&gt; started responding on my own. Sorry for jumping the gun. Have to make<=
-br>
-&gt; keeping an eye on patchwork a habit..<br>
-&gt;<br>
-&gt; I&#39;ll leave the latest v4 alone.</span>=C2=A0</blockquote><blockquo=
-te class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc so=
-lid;padding-left:1ex">If that is the consequence of assigning patches to pe=
-ople on patchwork,<br>
-we should stop doing so (Antonio, are you listening? :-) ).=C2=A0 </blockqu=
-ote><div><br></div><div>I didn&#39;t want to step on anyone&#39;s toes... B=
-ut based on Antonio&#39;s explanation,</div><div>I take that remark back. W=
-ill look into v4 as soon as I get some time to test it.</div><div>=C2=A0</d=
-iv><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left=
-:1px #ccc solid;padding-left:1ex">Obviously<br>
-the patch was in dire need of a good review, and if you have time while<br>
-I am busy with family things, this is more than welcome.<br>
-<br>
-Voluntarily *taking* a patch for review is useful as a flag &quot;I&#39;m g=
-oing to<br>
-handle this&quot;, but third-party-tagging &quot;this is for Gert!&quot; se=
-ems to have<br>
-potential for backfiring, so maybe we shouldn&#39;t do that, then.</blockqu=
-ote><div><br></div><div>Agreed. I just didn&#39;t realize Antonio delegated=
- it to you and assumed</div><div>all &quot;delegation&quot; are indications=
- that the person has volunteered to look</div><div>into it. As for me, I to=
-tally welcome others reviewing something I delegated</div><div>to myself, o=
-r commenting/criticizing/extoling (or tipping :) my reviews=C2=A0</div><div=
->(multiple reviews are indeed great).</div><div><br></div><div>But I wouldn=
-&#39;t particularly want others delegating work to me :)=C2=A0</div><div>So=
- let&#39;s continue the practice of delegating to self, not to others.</div=
-><div>We can always use the list (or IRC for those who frequent the channel=
-)</div><div>for requesting reviews etc.</div><div><br></div><div>Best,</div=
-><div><br></div><div>Selva</div></div></div></div>
-
---001a114ff326ba807e055f747b5b--
+Regards,
+Simon
 
