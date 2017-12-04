@@ -1,15 +1,9 @@
-Date: Mon, 4 Dec 2017 19:45:25 +0100
+Date: Mon, 4 Dec 2017 19:48:38 +0100 (CET)
+Message-Id: <201712041848.vB4ImcmT057474@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20171204184525.GY69387@...1296...>
-References: <20171202134541.7688-1-a@...2181...>
- <20171202134541.7688-5-a@...2181...>
- <ead35daf-765c-9e74-2cac-d8f98e6d0c85@...1856...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="9sSKoi6Rw660DLir"
-Content-Disposition: inline
-In-Reply-To: <ead35daf-765c-9e74-2cac-d8f98e6d0c85@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH 5/7] Remove CIPHER_ENABLED
+In-Reply-To: <20171202134541.7688-4-a@...2181...>
+References: <20171202134541.7688-4-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove SSL_LIB_VER_STR
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,58 +12,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---9sSKoi6Rw660DLir
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Your patch has been applied to the master branch.
 
-Hi,
+commit ca78395352e90c5b30015e23f1918a72a6c4a6ab
+Author: Antonio Quartulli
+Date:   Sat Dec 2 21:45:38 2017 +0800
 
-On Sun, Dec 03, 2017 at 03:17:51PM +0100, Steffan Karger wrote:
-> On 02-12-17 14:45, Antonio Quartulli wrote:
-> > Now that ENABLE_CRYPTO has been removed, CIPHER_ENABLED is basically
-> > a useless shortcut which does not really help the readability of the
-> > code.
+     Remove SSL_LIB_VER_STR
 
-Call me silly, but CIPHER_ENABLED has nothing to do with ENABLE_CRYPTO,
-but more with "--cipher none", no?
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <20171202134541.7688-4-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15951.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-So at least the commit message is misleading...
 
-> >       * Set adjustment factor for buffer alignment when no
-> >       * cipher is used.
-> >       */
-> > -    if (!CIPHER_ENABLED(c))
-> > +    if (!c->c1.ks.key_type.cipher)
+--
+kind regards,
 
-... and I don't really find the second one more easily understandable
-than the first one...
+Gert Doering
 
-gert
---=20
-now what should I write here...
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---9sSKoi6Rw660DLir
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJaJZfFAAoJEB2Cnv7KVigSdpkL/jYRsP3IV3YEju5I2kXg9qno
-2I3PYnZpL6PrWj4chf/aoI9udGGiEqgmAgGW0MCQjE1hDGeBzrAjV16FW6/KfO4p
-+BRqpBbAJ6UnmBj4mZI/O02ntmMXvTXIhidBo4kiMsArXPd5YxKkG+/Bd4M9FQ2U
-cqaKCHgenW2ZPZh69s+7OVowrDkGeLZxcZ9VTIWWRDKiG18sma/hoZhrxWizfLoB
-n5cvWIFPOpqawMaLTJv+RH3PG6SSXm4hA743Rj7NmTGsMKjnWQ5RCsLJP9nmIchZ
-ozQQwHP0z6h+z/x2WJQYHlSuvLkLMDnozlMPLMutuEmIX8GxSofrQ5cioSUuBkqV
-0eJWma1pRXcMb7ejeugcc+NHeLOsCcteqHGpqG1tDjXhUltglOzmbKw703Wu0gFE
-AtO2FkV3MdR9XThU1lZjYo6EJZAoDrESBg/3I6AOIy/nEFTpNcioOvQZB5KODpyo
-tebLZ2rwa8Ri58KA3ZItJHQ5hqsIwrzM6oxDxdv3Cw==
-=jl3t
------END PGP SIGNATURE-----
-
---9sSKoi6Rw660DLir--
 
