@@ -1,9 +1,8 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <0e05c2dd-0b20-4ddd-bd16-dbd2426d38b1@...515...>
-Date: Tue, 5 Dec 2017 15:38:08 +0200
-MIME-Version: 1.0
-Content-Language: en-US
-Subject: [Openvpn-devel] Topics for the community meeting (Wed, 6th Dec 2017)
+Message-ID: <1512503184.3019.29.camel@...2316...>
+From: James Bottomley <James.Bottomley@...2316...>
+Date: Tue, 05 Dec 2017 11:46:24 -0800
+Mime-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v2 0/1] add engine keys keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,37 +11,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-NOTE: This meeting starts at 11:30 CET.
+Engine keys are an openssl concept for a key file which can only be
+understood by an engine (usually because it's been wrapped by the
+engine itself).  We use this for TPM engine keys, so you can either
+generate them within your TPM or wrap them from existing private keys.
+ Once wrapped, the keys will only function in the TPM that generated
+them, so it means the VPN keys are tied to the physical platform, which
+is very useful.  Engine keys have to be loaded via a specific callback,
+so use this as a fallback in openvpn if an engine is specified and if
+the PEM read of the private key fails.
 
----
+James Bottomley (1):
+  openssl: add engine method for loading the key
 
-Hi,
+ src/openvpn/crypto_openssl.c | 55 ++++++++++++++++++++++++++++++++++++++++++++
+ src/openvpn/crypto_openssl.h | 12 ++++++++++
+ src/openvpn/ssl_openssl.c    |  6 ++++-
+ 3 files changed, 72 insertions(+), 1 deletion(-)
 
-
-We're going to have an IRC meeting tomorrow starting at 11:30 CET
-(10:30 UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have
-to be logged in to Freenode to join the channel.
-
-Current topic list along with basic information is here:
-
-<https://community.openvpn.net/openvpn/wiki/Topics-2017-12-06>
-
-If you have any other things you'd like to bring up, respond to this
-mail, send me mail privately or add them to the list yourself.
-
-In case you can't attend the meeting, please feel free to make comments
-on the topics by responding to this email or to the summary email sent
-after the meeting. Whenever possible, we'll also respond to existing,
-related email threads.
-
---
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
+-- 
+2.12.3
 
