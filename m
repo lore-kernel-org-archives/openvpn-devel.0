@@ -1,15 +1,9 @@
+From: =?UTF-8?q?Ji=C5=99=C3=AD=20Engelthaler?= <EngyCZ@...277...>
+Date: Tue,  5 Dec 2017 13:19:52 +0100
+Message-Id: <20171205121952.13008-1-EngyCZ@...277...>
 MIME-Version: 1.0
-In-Reply-To: <58f2d393-0e3c-c4ec-1573-9ae58e420914@...515...>
-References: <20171203211654.1044-1-simon@...2293...>
- <201712041759.vB4HxJaT048678@...2054...>
- <99D61A626FDA8A4B90A270669121BE1085B4B134@...2294...>
- <58f2d393-0e3c-c4ec-1573-9ae58e420914@...515...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Tue, 5 Dec 2017 16:21:37 +0500
-Message-ID: <CAFHpkQGSx5hjLhGYgUyqYCKZJ9MMWL1sYT2cSd5y5wy+=j6iAw@...278...>
-Content-Type: multipart/alternative; boundary="001a11458a32cb1125055f960951"
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: openvpnserv: Add support
- for multi-instances
+Subject: [Openvpn-devel] [PATCH] Add a warning for disabled DHCP media sense
+ on Window
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,137 +12,115 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: Simon Rozman <simon@...2293...>, Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---001a11458a32cb1125055f960951
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+When DHCP media sense configuration is disabled, network applications
+including DHCP client will not receive information about link status
+changes and the link seems to be always connected. This lead to the
+non-renewal DHCP address on OpenVPN connect.
 
-2017-12-05 16:19 GMT+05:00 Samuli Sepp=C3=A4nen <samuli@...515...>:
+DHCP media sense status can by shown with command
+"netsh interface ipv4 show global"
 
-> Il 05/12/2017 13:01, Simon Rozman ha scritto:
-> > Hi,
-> >
-> >> I've done a bit of staring at the code as well, and it seems to make
-> sense (but
-> >> thanks to Selva for a thorough review and actually testing this :-) ).
-> >>
-> >> Given the interaction with EduVPN 2.4, and the fairly well localized
-> changes, I
-> >> agree to Selva's suggestion of having it in 2.4 as well.
-> >>
-> >> Your patch has been applied to the master branch and release/2.4 branc=
-h.
-> >
-> > This is excellent. This allows the eduVPN to switch to official
-> openvpnserv.exe when 2.4.5 is released.
-> >
-> > Should we/I document how to setup secondary instance of Interactive
-> service?
-> > I am new here and I would appreciate some guidance where and how to
-> document it. Before I forget. ;)
-> >
->
-> Hi,
->
-> I think we should have that documentation somewhere. I think it would be
->  of interest mostly to developers. What about creating a new text file
-> to the repository. For example:
->
->   doc/interactive-service-notes.txt
->
+There are several reports of problems with DHCP address renewal.
+https://community.openvpn.net/openvpn/ticket/665
+https://community.openvpn.net/openvpn/ticket/807
 
-doc/interactive-service-notes.rst ?
+Added checking of disabled DHCP media sense and print a warning with
+forced dhcp-renew option and suggestion to enable DHCP media sense.
 
+Signed-off-by: Jiří Engelthaler <EngyCZ@...277...>
+---
+ src/openvpn/tun.c | 59 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 59 insertions(+)
 
->
-> Thoughts?
->
-> --
-> Samuli Sepp=C3=A4nen
-> Community Manager
-> OpenVPN Technologies, Inc
->
-> irc freenode net: mattock
->
-> ------------------------------------------------------------
-> ------------------
-> Check out the vibrant tech community on one of the world's most
-> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 25831ce3..35811975 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -62,6 +62,8 @@
+ #define NI_IP_NETMASK  (1<<1)
+ #define NI_OPTIONS     (1<<2)
+ 
++#define TCPIP_PARAMS "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters"
++
+ static void netsh_ifconfig(const struct tuntap_options *to,
+                            const char *flex_name,
+                            const in_addr_t ip,
+@@ -3827,6 +3829,56 @@ get_panel_reg(struct gc_arena *gc)
+     return first;
+ }
+ 
++/*
++ * Return DhcpMediaSense enabled value
++ */
++static bool
++get_dhcp_media_sense(void)
++{
++    HKEY tcpip_params;
++    LONG status;
++    DWORD len;
++    char  disable_dhcp_media_sense_string[] = "DisableDHCPMediaSense";
++    DWORD disable_dhcp_media_sense;
++    DWORD data_type;
++    bool ret_value = true;
++
++    status = RegOpenKeyEx(
++        HKEY_LOCAL_MACHINE,
++        TCPIP_PARAMS,
++        0,
++        KEY_READ,
++        &tcpip_params);
++    
++    if (status != ERROR_SUCCESS)
++    {
++        msg(M_WARN, "Error opening registry key: %s", TCPIP_PARAMS);
++    }
++    else
++    {
++        len = sizeof(disable_dhcp_media_sense);
++        status = RegQueryValueEx(
++            tcpip_params,
++            disable_dhcp_media_sense_string,
++            NULL,
++            &data_type,
++            (PBYTE)&disable_dhcp_media_sense,
++            &len);
++
++        if (status == ERROR_SUCCESS && data_type == REG_DWORD)
++        {
++            if (disable_dhcp_media_sense != 0)
++            {
++                ret_value = false;
++            }
++        }
++
++        RegCloseKey(tcpip_params);
++    }
++
++    return ret_value;
++}
++
+ /*
+  * Check that two addresses are part of the same 255.255.255.252 subnet.
+  */
+@@ -5901,6 +5953,13 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+     {
+         uint32_t ep[4];
+ 
++        /* Check DHCP media sense value */
++        if (!tt->options.dhcp_renew && !get_dhcp_media_sense())
++        {
++            msg(M_WARN, "WARNING: DHCP media sense disabled, dhcp_renew option forced. You can enable media sense with \"netsh interface ipv4 set global dhcpmediasense=enabled\" shell command");
++            tt->options.dhcp_renew = true;
++        }
++
+         /* We will answer DHCP requests with a reply to set IP/subnet to these values */
+         ep[0] = htonl(tt->local);
+         ep[1] = htonl(tt->adapter_netmask);
+-- 
+2.14.2.windows.3
 
---001a11458a32cb1125055f960951
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">2017-12-05 16:19 GMT+05:00 Samuli Sepp=C3=A4nen <span dir=3D"ltr">&lt;<=
-a href=3D"mailto:samuli@...515..." target=3D"_blank">samuli@...515...</a>&g=
-t;</span>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px=
- 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><span class=
-=3D"gmail-">Il 05/12/2017 13:01, Simon Rozman ha scritto:<br>
-&gt; Hi,<br>
-&gt;<br>
-&gt;&gt; I&#39;ve done a bit of staring at the code as well, and it seems t=
-o make sense (but<br>
-&gt;&gt; thanks to Selva for a thorough review and actually testing this :-=
-) ).<br>
-&gt;&gt;<br>
-&gt;&gt; Given the interaction with EduVPN 2.4, and the fairly well localiz=
-ed changes, I<br>
-&gt;&gt; agree to Selva&#39;s suggestion of having it in 2.4 as well.<br>
-&gt;&gt;<br>
-&gt;&gt; Your patch has been applied to the master branch and release/2.4 b=
-ranch.<br>
-&gt;<br>
-&gt; This is excellent. This allows the eduVPN to switch to official openvp=
-nserv.exe when 2.4.5 is released.<br>
-&gt;<br>
-&gt; Should we/I document how to setup secondary instance of Interactive se=
-rvice?<br>
-&gt; I am new here and I would appreciate some guidance where and how to do=
-cument it. Before I forget. ;)<br>
-&gt;<br>
-<br>
-</span>Hi,<br>
-<br>
-I think we should have that documentation somewhere. I think it would be<br>
-=C2=A0of interest mostly to developers. What about creating a new text file=
-<br>
-to the repository. For example:<br>
-<br>
-=C2=A0 doc/interactive-service-notes.<wbr>txt<br></blockquote><div><br>doc/=
-interactive-service-notes.<wbr>rst ?<br>=C2=A0</div><blockquote class=3D"gm=
-ail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,=
-204,204);padding-left:1ex">
-<br>
-Thoughts?<br>
-<span class=3D"gmail-HOEnZb"><font color=3D"#888888"><br>
---<br>
-Samuli Sepp=C3=A4nen<br>
-Community Manager<br>
-OpenVPN Technologies, Inc<br>
-<br>
-irc freenode net: mattock<br>
-</font></span><div class=3D"gmail-HOEnZb"><div class=3D"gmail-h5"><br>
-------------------------------<wbr>------------------------------<wbr>-----=
--------------<br>
-Check out the vibrant tech community on one of the world&#39;s most<br>
-engaging tech sites, Slashdot.org! <a href=3D"http://sdm.link/slashdot" rel=
-=3D"noreferrer" target=3D"_blank">http://sdm.link/slashdot</a><br>
-______________________________<wbr>_________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...2155...=
-9...<wbr>sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
-=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/<wbr>lists/=
-listinfo/openvpn-devel</a><br>
-</div></div></blockquote></div><br></div></div>
-
---001a11458a32cb1125055f960951--
 
