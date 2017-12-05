@@ -1,9 +1,9 @@
-From: =?UTF-8?q?Ji=C5=99=C3=AD=20Engelthaler?= <EngyCZ@...277...>
-Date: Tue,  5 Dec 2017 13:19:52 +0100
-Message-Id: <20171205121952.13008-1-EngyCZ@...277...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <0e05c2dd-0b20-4ddd-bd16-dbd2426d38b1@...515...>
+Date: Tue, 5 Dec 2017 15:38:08 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Add a warning for disabled DHCP media sense
- on Window
+Content-Language: en-US
+Subject: [Openvpn-devel] Topics for the community meeting (Wed, 6th Dec 2017)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,115 +12,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-When DHCP media sense configuration is disabled, network applications
-including DHCP client will not receive information about link status
-changes and the link seems to be always connected. This lead to the
-non-renewal DHCP address on OpenVPN connect.
+NOTE: This meeting starts at 11:30 CET.
 
-DHCP media sense status can by shown with command
-"netsh interface ipv4 show global"
-
-There are several reports of problems with DHCP address renewal.
-https://community.openvpn.net/openvpn/ticket/665
-https://community.openvpn.net/openvpn/ticket/807
-
-Added checking of disabled DHCP media sense and print a warning with
-forced dhcp-renew option and suggestion to enable DHCP media sense.
-
-Signed-off-by: Jiří Engelthaler <EngyCZ@...277...>
 ---
- src/openvpn/tun.c | 59 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 59 insertions(+)
 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 25831ce3..35811975 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -62,6 +62,8 @@
- #define NI_IP_NETMASK  (1<<1)
- #define NI_OPTIONS     (1<<2)
- 
-+#define TCPIP_PARAMS "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters"
-+
- static void netsh_ifconfig(const struct tuntap_options *to,
-                            const char *flex_name,
-                            const in_addr_t ip,
-@@ -3827,6 +3829,56 @@ get_panel_reg(struct gc_arena *gc)
-     return first;
- }
- 
-+/*
-+ * Return DhcpMediaSense enabled value
-+ */
-+static bool
-+get_dhcp_media_sense(void)
-+{
-+    HKEY tcpip_params;
-+    LONG status;
-+    DWORD len;
-+    char  disable_dhcp_media_sense_string[] = "DisableDHCPMediaSense";
-+    DWORD disable_dhcp_media_sense;
-+    DWORD data_type;
-+    bool ret_value = true;
-+
-+    status = RegOpenKeyEx(
-+        HKEY_LOCAL_MACHINE,
-+        TCPIP_PARAMS,
-+        0,
-+        KEY_READ,
-+        &tcpip_params);
-+    
-+    if (status != ERROR_SUCCESS)
-+    {
-+        msg(M_WARN, "Error opening registry key: %s", TCPIP_PARAMS);
-+    }
-+    else
-+    {
-+        len = sizeof(disable_dhcp_media_sense);
-+        status = RegQueryValueEx(
-+            tcpip_params,
-+            disable_dhcp_media_sense_string,
-+            NULL,
-+            &data_type,
-+            (PBYTE)&disable_dhcp_media_sense,
-+            &len);
-+
-+        if (status == ERROR_SUCCESS && data_type == REG_DWORD)
-+        {
-+            if (disable_dhcp_media_sense != 0)
-+            {
-+                ret_value = false;
-+            }
-+        }
-+
-+        RegCloseKey(tcpip_params);
-+    }
-+
-+    return ret_value;
-+}
-+
- /*
-  * Check that two addresses are part of the same 255.255.255.252 subnet.
-  */
-@@ -5901,6 +5953,13 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
-     {
-         uint32_t ep[4];
- 
-+        /* Check DHCP media sense value */
-+        if (!tt->options.dhcp_renew && !get_dhcp_media_sense())
-+        {
-+            msg(M_WARN, "WARNING: DHCP media sense disabled, dhcp_renew option forced. You can enable media sense with \"netsh interface ipv4 set global dhcpmediasense=enabled\" shell command");
-+            tt->options.dhcp_renew = true;
-+        }
-+
-         /* We will answer DHCP requests with a reply to set IP/subnet to these values */
-         ep[0] = htonl(tt->local);
-         ep[1] = htonl(tt->adapter_netmask);
--- 
-2.14.2.windows.3
+Hi,
 
+
+We're going to have an IRC meeting tomorrow starting at 11:30 CET
+(10:30 UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have
+to be logged in to Freenode to join the channel.
+
+Current topic list along with basic information is here:
+
+<https://community.openvpn.net/openvpn/wiki/Topics-2017-12-06>
+
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
+
+In case you can't attend the meeting, please feel free to make comments
+on the topics by responding to this email or to the summary email sent
+after the meeting. Whenever possible, we'll also respond to existing,
+related email threads.
+
+--
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
