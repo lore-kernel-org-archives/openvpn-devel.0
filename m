@@ -1,13 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <CAFHpkQF2UWhycTjrG2ZXsN3ySM=RxacYdvadKLDV1M5gfvP49A@...278...>
-References: <1509903249-10979-1-git-send-email-selva.nair@...277...>
- <1509930876-30728-1-git-send-email-selva.nair@...277...>
- <CAFHpkQF2UWhycTjrG2ZXsN3ySM=RxacYdvadKLDV1M5gfvP49A@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 6 Dec 2017 10:01:58 -0500
-Message-ID: <CAKuzo_h2gNDO2weVPkg7=XzjRHc=ZmDiYsX=cOo01Ujhi88G=w@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Use lowest metric interface when
- multiple interfaces match a route
+From: Antonio Quartulli <a@...2181...>
+Date: Wed,  6 Dec 2017 23:43:56 +0800
+Message-Id: <20171206154356.30764-1-a@...2181...>
+In-Reply-To: <20171202140902.19292-1-a@...2181...>
+References: <20171202140902.19292-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH v3] Allow learning iroutes with network made
+ up of all 0s (only if netbits < 8)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,44 +13,157 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-On Wed, Dec 6, 2017 at 8:28 AM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=
-=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...> wrote:
->
->
-> 2017-11-06 6:14 GMT+05:00 <selva.nair@...277...>:
->>
->>
-..
->> +/**
->> + * Given an interface index return the interface metric.
->> + *
->> + * Arguments:
->> + *   index         : The index of the interface
->> + *   family        : AF_INET for IPv4 or AF_INET6 for IPv6
->> + * On error returns -1
->> + */
->> +
->> +/* function signature missing in mingw iphlpapi.h */
->
->
-> that definition apparently present in mingw since 2015
->
-> https://sourceforge.net/p/mingw-w64/mingw-w64/ci/ea95d55e3387353e453d6ae8=
-fc5cb8f7503947c2/tree/mingw-w64-headers/include/netioapi.h
->
->
->>
->> +VOID NETIOAPI_API_
->> +InitializeIpInterfaceEntry(PMIB_IPINTERFACE_ROW Row);
->>
+It is plausible for a user to be willing to add a route for a network
+made up of all 0s via a VPN client (i.e. 0.0.0.0/1), therefore such
+iroute should be supported.
 
-2015 may sound old,  but we are targeting ubuntu 16.04 which has mingw 3.1.0
-from mid 2014.
+As of now the option parsing code will accept such iroute, but
+the learning routine will (silently) reject it after a sanity check.
 
-Selva
+Such check prevents routes with network made up of all 0s to be
+learnt at all..
+
+Change the sanity check so that it will reject iroutes to network
+made up of 0s only when netbits is greater than 7.
+
+The reason for choosing 7 is because anything within 0.0.0.0/8 is not
+really routable among networks.
+
+While at it, make the sanity check louder so that it can print the
+reason why a route is being rejected.
+
+Trac: #726
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+
+v3:
+- rebased on top of master
+- removed msglevel argument as per David's suggestion
+
+v2:
+- rebased on to pof master
+
+ src/openvpn/mroute.c | 36 ++++++++++++++++++++++++++++++------
+ src/openvpn/mroute.h |  3 ++-
+ src/openvpn/multi.c  |  8 +++-----
+ 3 files changed, 35 insertions(+), 12 deletions(-)
+
+diff --git a/src/openvpn/mroute.c b/src/openvpn/mroute.c
+index 74ee360c..bf174ad4 100644
+--- a/src/openvpn/mroute.c
++++ b/src/openvpn/mroute.c
+@@ -65,25 +65,49 @@ is_mac_mcast_maddr(const struct mroute_addr *addr)
+  * Don't learn certain addresses.
+  */
+ bool
+-mroute_learnable_address(const struct mroute_addr *addr)
++mroute_learnable_address(const struct mroute_addr *addr, struct gc_arena *gc)
+ {
+     int i;
+-    bool not_all_zeros = false;
+-    bool not_all_ones = false;
++    bool all_zeros = true;
++    bool all_ones = true;
+ 
+     for (i = 0; i < addr->len; ++i)
+     {
+         int b = addr->raw_addr[i];
+         if (b != 0x00)
+         {
+-            not_all_zeros = true;
++            all_zeros = false;
+         }
+         if (b != 0xFF)
+         {
+-            not_all_ones = true;
++            all_ones = false;
+         }
+     }
+-    return not_all_zeros && not_all_ones && !is_mac_mcast_maddr(addr);
++
++    /* only networkss shorter than 8 bits are allowed to be all 0s. */
++    if (all_zeros
++        && !((addr->type & MR_WITH_NETBITS) && (addr->netbits < 8)))
++    {
++        msg(D_MULTI_LOW, "Can't learn %s: network is all 0s, but netbits >= 8",
++            mroute_addr_print(addr, gc));
++        return false;
++    }
++
++    if (all_ones)
++    {
++        msg(D_MULTI_LOW, "Can't learn %s: network is all 1s",
++            mroute_addr_print(addr, gc));
++        return false;
++    }
++
++    if (is_mac_mcast_maddr(addr))
++    {
++        msg(D_MULTI_LOW, "Can't learn %s: network is a multicast address",
++            mroute_addr_print(addr, gc));
++        return false;
++    }
++
++    return true;
+ }
+ 
+ static inline void
+diff --git a/src/openvpn/mroute.h b/src/openvpn/mroute.h
+index 35361fbd..6a85b0e2 100644
+--- a/src/openvpn/mroute.h
++++ b/src/openvpn/mroute.h
+@@ -141,7 +141,8 @@ bool mroute_extract_openvpn_sockaddr(struct mroute_addr *addr,
+                                      const struct openvpn_sockaddr *osaddr,
+                                      bool use_port);
+ 
+-bool mroute_learnable_address(const struct mroute_addr *addr);
++bool mroute_learnable_address(const struct mroute_addr *addr,
++                              struct gc_arena *gc);
+ 
+ uint32_t mroute_addr_hash_function(const void *key, uint32_t iv);
+ 
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 82a0b9d9..25b2d097 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -1074,6 +1074,7 @@ multi_learn_addr(struct multi_context *m,
+     struct hash_bucket *bucket = hash_bucket(m->vhash, hv);
+     struct multi_route *oldroute = NULL;
+     struct multi_instance *owner = NULL;
++    struct gc_arena gc = gc_new();
+ 
+     /* if route currently exists, get the instance which owns it */
+     he = hash_lookup_fast(m->vhash, bucket, addr, hv);
+@@ -1087,11 +1088,9 @@ multi_learn_addr(struct multi_context *m,
+     }
+ 
+     /* do we need to add address to hash table? */
+-    if ((!owner || owner != mi)
+-        && mroute_learnable_address(addr)
++    if ((!owner || owner != mi) && mroute_learnable_address(addr, &gc)
+         && !mroute_addr_equal(addr, &m->local))
+     {
+-        struct gc_arena gc = gc_new();
+         struct multi_route *newroute;
+         bool learn_succeeded = false;
+ 
+@@ -1148,9 +1147,8 @@ multi_learn_addr(struct multi_context *m,
+         {
+             free(newroute);
+         }
+-
+-        gc_free(&gc);
+     }
++    gc_free(&gc);
+ 
+     return owner;
+ }
+-- 
+2.15.1
+
 
