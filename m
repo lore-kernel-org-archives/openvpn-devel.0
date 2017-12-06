@@ -1,13 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <99D61A626FDA8A4B90A270669121BE1085B4CA9F@...2294...>
-References: <1512534521-14760-1-git-send-email-selva.nair@...277...>
- <99D61A626FDA8A4B90A270669121BE1085B4CA9F@...2294...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 6 Dec 2017 12:49:11 -0500
-Message-ID: <CAKuzo_jSTnc7-x6U3fVD7ozn5AFc5BtkpmP41rahSufuZ9VB-Q@...278...>
-Content-Type: multipart/alternative; boundary="001a114ff326de5c18055faf92e9"
-Subject: Re: [Openvpn-devel] [PATCH] Refactor get_interface_metric to return
- metric and auto flag separately
+From: David Sommerseth <davids@...515...>
+Date: Wed,  6 Dec 2017 22:09:43 +0100
+Message-Id: <20171206210943.20451-1-davids@...515...>
+In-Reply-To: <20171204044907.32261-1-a@...2181...>
+References: <20171204044907.32261-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH applied] reload HTTP proxy credentials
+ when moving to the next connection profile
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,87 +13,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Simon Rozman <simon@...2293...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: a@...2181...
+Cc: openvpn-devel@lists.sourceforge.net
 
---001a114ff326de5c18055faf92e9
-Content-Type: text/plain; charset="UTF-8"
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
 
-Hi,
+ACK from me as well.  Code looks sane and have tested this against
+a quickly patched tinyproxy [1] with basic auth support.  The client
+switched between three different connection blocks, all depending on
+which tinyproxy instance I brought up or took down.
 
-On Wed, Dec 6, 2017 at 12:18 PM, Simon Rozman <simon@...2293...> wrote:
+[1] <https://github.com/dsommers/tinyproxy
 
-> Hi,
->
-> I have briefly reviewed this patch. If you look at each
-> get_interface_metric() call you'll notice exactly the same repeating
-> pattern:
->
->         tap_metric_v4 = get_interface_metric(index, AF_INET, &is_auto);
->         if (is_auto)
->         {
->             tap_metric_v4 = 0;
->         }
->         tap_metric_v6 = get_interface_metric(index, AF_INET6, &is_auto);
->         if (is_auto)
->         {
->             tap_metric_v6 = 0;
->         }
->
-> Should the get_interface_metric() be rewritten to return:
-> 0 = automatic metric
-> n = manual metric
->
->
-That's exactly what the original version does and the purpose of the patch
-is to not do so. Else this function is not useful when someone really wants
-to
-find what the metric is as the value of 0 hides that info. Note that even
-when
-automatic metric is in use the interface has some metric set.
+Your patch has been applied to the following branches
 
-I want to use it in another patch where the actual metric is required even
-if automatic metric is in use.
+commit 86b58ceb29cf1cc3acf32e2ff370d9a4af68c051  (master)
+commit fbc50963b9f8a4bac4362d472366730fed23aae9  (release/2.4)
+Author: Antonio Quartulli
+Date:   Mon Dec 4 12:49:07 2017 +0800
 
-Selva
+     reload HTTP proxy credentials when moving to the next connection profile
 
---001a114ff326de5c18055faf92e9
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+     Trac: #836
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Steffan Karger <steffan@...1856...>
+     Acked-by: David Sommerseth <davids@...515...>
+     Tested-by: David Sommerseth <davids@...515...>
+     Message-Id: <20171204044907.32261-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16007.html
+     Signed-off-by: David Sommerseth <davids@...515...>
 
-<div dir=3D"ltr">Hi,<br><div class=3D"gmail_extra"><br><div class=3D"gmail_=
-quote">On Wed, Dec 6, 2017 at 12:18 PM, Simon Rozman <span dir=3D"ltr">&lt;=
-<a href=3D"mailto:simon@...2293..." target=3D"_blank">simon@...2293...</a>&=
-gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 =
-0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Hi,<br>
-<br>
-I have briefly reviewed this patch. If you look at each get_interface_metri=
-c() call you&#39;ll notice exactly the same repeating pattern:<br>
-<span><br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 tap_metric_v4 =3D get_interface_metric(index, A=
-F_INET, &amp;is_auto);<br>
-</span>=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (is_auto)<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 tap_metric_v4 =3D 0;<br>
-<span>=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 tap_metric_v6 =3D get_interface_metric(index, A=
-F_INET6, &amp;is_auto);<br>
-</span>=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (is_auto)<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 tap_metric_v6 =3D 0;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
-<br>
-Should the get_interface_metric() be rewritten to return:<br>
-0 =3D automatic metric<br>
-n =3D manual metric<br>
-<br></blockquote><div><br></div><div>That&#39;s exactly what the original v=
-ersion does and the purpose of the patch</div><div>is to not do so. Else th=
-is function is not useful when someone really wants to</div><div>find what =
-the metric is as the value of 0 hides that info. Note that even when</div><=
-div>automatic metric is in use the interface has some metric set.</div><div=
-><br></div><div>I want to use it in another patch where the actual metric i=
-s required even</div><div>if automatic metric is in use.</div><div><br></di=
-v><div>Selva</div></div></div></div>
 
---001a114ff326de5c18055faf92e9--
+- --
+kind regards,
+
+David Sommerseth
+OpenVPN Inc.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJaKFx8AAoJEIbPlEyWcf3yxJIQAL6ABxeacMYBJuFamF8gEoL+
+W0a+grWzL7wNQ7n05pc/2UuOgbpliyGerhBx85VCFPTdYN6JBuVUEEDj67CptVL9
+N3zSCbzVxeX21oaLfyoeYVypTopOBHB1rxBhwdC8MBdLBNPhZQ2Qy1r7XWLDX1mH
+4vY1SP/X25NJcU71dmDN8zCimEPns/ANTjMf0r8lyQAdvMuSZE5sCRCutwTRNh/S
+REAcXHtgFRfmNsmDRRCJvTvm+XiPNNY15EH/NmmHFquZAJuj2GkpGeBYa59q9l3D
+tHcPzwes2xc1Te4kbca1tXAx6XCt/6e7FwENCQHCrwC0/NRSdmOFg89BiIZVnodh
+L9NbVte8f+jFuV8DuBDqHIQdodry0JKD4YnC+QQhTJChGWwexyimLuxKMNANVEmb
+6KRJvaUKzOyrsh8ct6ZMG35AgXM6MKQqMwmP+VB/SJrh6uCOZkxxxQMY5/vXL+hp
+Zlzxs9WS/p2MbO9igHcMGXPGBEuzsp4KFKyMBAjrlpCFCFJFJfPPThi2eaiPSkXt
+StFkSCLu1CnKifbB7KiLL2YORy3QyITDVshUbaBVZRl7g1Jlr+4UzG48NR9RIWE0
+59XGJARegLPtxevO/DyArPOU+Ls5HQfN8YNCIf/dj41GuuYx4AdiKD1KSkClQHRK
+83xeFyq2p7wWcIilIXXY
+=NQs1
+-----END PGP SIGNATURE-----
 
