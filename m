@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Wed,  6 Dec 2017 22:09:43 +0100
-Message-Id: <20171206210943.20451-1-davids@...515...>
-In-Reply-To: <20171204044907.32261-1-a@...2181...>
-References: <20171204044907.32261-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH applied] reload HTTP proxy credentials
- when moving to the next connection profile
+Date: Wed,  6 Dec 2017 22:35:26 +0100
+Message-Id: <20171206213526.20213-1-davids@...515...>
+In-Reply-To: <20171206154356.30764-1-a@...2181...>
+References: <20171206154356.30764-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Allow learning iroutes with
+ network made up of all 0s (only if netbits < 8)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,29 +21,23 @@ Cc: openvpn-devel@lists.sourceforge.net
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA512
 
-ACK from me as well.  Code looks sane and have tested this against
-a quickly patched tinyproxy [1] with basic auth support.  The client
-switched between three different connection blocks, all depending on
-which tinyproxy instance I brought up or took down.
-
-[1] <https://github.com/dsommers/tinyproxy
+ACK.  Code makes sense and seems not to break an existing server
+configuration I have.
 
 Your patch has been applied to the following branches
 
-commit 86b58ceb29cf1cc3acf32e2ff370d9a4af68c051  (master)
-commit fbc50963b9f8a4bac4362d472366730fed23aae9  (release/2.4)
+commit a19c56db9bd42b7b8c4a8f353f7db92781397cec  (master)
+commit 80614c7c547c84e0884cf2bde1dbbac76b4767c3  (release/2.4)
 Author: Antonio Quartulli
-Date:   Mon Dec 4 12:49:07 2017 +0800
+Date:   Wed Dec 6 23:43:56 2017 +0800
 
-     reload HTTP proxy credentials when moving to the next connection profile
+     Allow learning iroutes with network made up of all 0s (only if netbits < 8)
 
-     Trac: #836
+     Trac: #726
      Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Steffan Karger <steffan@...1856...>
      Acked-by: David Sommerseth <davids@...515...>
-     Tested-by: David Sommerseth <davids@...515...>
-     Message-Id: <20171204044907.32261-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16007.html
+     Message-Id: <20171206154356.30764-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16044.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -51,22 +45,22 @@ Date:   Mon Dec 4 12:49:07 2017 +0800
 kind regards,
 
 David Sommerseth
-OpenVPN Inc.
+
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJaKFx8AAoJEIbPlEyWcf3yxJIQAL6ABxeacMYBJuFamF8gEoL+
-W0a+grWzL7wNQ7n05pc/2UuOgbpliyGerhBx85VCFPTdYN6JBuVUEEDj67CptVL9
-N3zSCbzVxeX21oaLfyoeYVypTopOBHB1rxBhwdC8MBdLBNPhZQ2Qy1r7XWLDX1mH
-4vY1SP/X25NJcU71dmDN8zCimEPns/ANTjMf0r8lyQAdvMuSZE5sCRCutwTRNh/S
-REAcXHtgFRfmNsmDRRCJvTvm+XiPNNY15EH/NmmHFquZAJuj2GkpGeBYa59q9l3D
-tHcPzwes2xc1Te4kbca1tXAx6XCt/6e7FwENCQHCrwC0/NRSdmOFg89BiIZVnodh
-L9NbVte8f+jFuV8DuBDqHIQdodry0JKD4YnC+QQhTJChGWwexyimLuxKMNANVEmb
-6KRJvaUKzOyrsh8ct6ZMG35AgXM6MKQqMwmP+VB/SJrh6uCOZkxxxQMY5/vXL+hp
-Zlzxs9WS/p2MbO9igHcMGXPGBEuzsp4KFKyMBAjrlpCFCFJFJfPPThi2eaiPSkXt
-StFkSCLu1CnKifbB7KiLL2YORy3QyITDVshUbaBVZRl7g1Jlr+4UzG48NR9RIWE0
-59XGJARegLPtxevO/DyArPOU+Ls5HQfN8YNCIf/dj41GuuYx4AdiKD1KSkClQHRK
-83xeFyq2p7wWcIilIXXY
-=NQs1
+iQIcBAEBCgAGBQJaKGJuAAoJEIbPlEyWcf3yEWoQAJ9T+3H4EzmfvH3JKuLoQZpc
+galt9+wDH1raFEGBUAECf+wnEgNA+QGbM7Sv0E1xXaqAfuRup7A1GJyIKqN2yaLN
+SF2RMiihmnu9S33qUkiBMzH9KiU974G6zwZVRtd+NpeEak7a3PaHM0nyIyOvuX5Y
+cm/npJTAvgolxW7WvPQrmuJ9qwKFitGD4d4KMU6AmA7Bs+Jfk2MFwfjpZTx9UxEa
+YR9EdZU7kVxF/H5mai8xdsTkLUpccdywaDet2TOjEYU+4gTZdBEP5afRrO8VU27b
+U6ynTmny94LYGBG1mnSj4f/l3gMSfPWLKm/nw1s0FyoBRKme0Wp637NJfqRBQj25
+KQJXye8dR80Dlf2UjDpEARNPeb81CNFpYx2q6tnO1iMjLXH+SB10Glmp4qh81nuA
+Gp4DyNRSj8DGx/ocWqVKldCVpH4swlFVG2HNA3b6E2pFt5Y+0qmIsizywxbT0NzX
+aL2FDNU+ibhgoFcW08pEFUtFmmMlAfq4Nb3cMJziebQYEVyFFupM4ajZ41Esxd2+
+1XfwHrLblgNHQ5j3+p6uO1Hgy4lb4IyrNEqmEFzX+MbcLimva4dWvaTccFHHt0jX
+4snpPc7zN4s9Ir/pc5hQUd9mkY/Vd1NrOnCwBJh0KB9WTivBCMFk1Qo+AOJEfl7e
+B0SE4yDZTUWM8ANmavQw
+=77MP
 -----END PGP SIGNATURE-----
 
