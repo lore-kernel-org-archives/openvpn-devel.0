@@ -1,5 +1,6 @@
-MIME-Version: 1.0
-In-Reply-To: <99D61A626FDA8A4B90A270669121BE1085B4CA4D@...2294...>
+From: Simon Rozman <simon@...2293...>
+Date: Thu, 7 Dec 2017 06:41:03 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE1085B4D703@...2294...>
 References: <20171010231130.6832-1-simon@...2293...>
  <20171010231130.6832-9-simon@...2293...>
  <20171105192019.GM958@...1296...>
@@ -12,9 +13,10 @@ References: <20171010231130.6832-1-simon@...2293...>
  <99D61A626FDA8A4B90A270669121BE1085B4AC9A@...2294...>
  <CAKuzo_hJdNEMMmUqa4d=n4k9vZXoYtkC9CFcvAkW9cDgzT2wCA@...278...>
  <99D61A626FDA8A4B90A270669121BE1085B4CA4D@...2294...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 6 Dec 2017 20:02:37 -0500
-Message-ID: <CAKuzo_iAJxP9AmGvApNXno7yw5q_rn5jQko+bUePmdXqUXgmgQ@...278...>
+ <CAKuzo_iAJxP9AmGvApNXno7yw5q_rn5jQko+bUePmdXqUXgmgQ@...278...>
+In-Reply-To: <CAKuzo_iAJxP9AmGvApNXno7yw5q_rn5jQko+bUePmdXqUXgmgQ@...278...>
+Content-Language: en-US
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] [PATCH 09/13] Signed/unsigned warnings of MSVC
  resolved
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -25,37 +27,17 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Simon Rozman <simon@...2293...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Selva Nair <selva.nair@...277...>
 Cc: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
-
-On Wed, Dec 6, 2017 at 12:10 PM, Simon Rozman <simon@...2293...> wrote:
-> Hi,
->
->> > The get_interface_metric() function should get a more thorough rewrite
->> than just a compiler warning shut-up. So the patch will probably get divided
->> in two - the simple signed/unsigned fixes and get_interface_metric()
->> redesign.
->>
->> For the latter, I had "re-invented" the get_interface_metric function for the
->> pending "use lowest metric interface when multiple interfaces match a
->> route" patch.
->>
->> Obviously, its better to refactor this one and use it there, so I just copied the
->> implementation and submitted a patch to do so. Unlike I had thought earlier,
->> this has to stay in block_dns.h for ease of sharing with the service.
->>
->> Could you please take a look and see whether it addresses MSVC's concerns
->> among other things?
->
-> I have tested and am confirming MSVC is happy with the block_dns.c now.
->
-> Should your patch be merged, I shall rebase the "[PATCH 09/13] Signed/unsigned warnings of MSVC resolved" to the new master and deliver the next version.
-
-Yes, if you can review and ack/nak it :)
-
-Selva
-
+SGksDQoNCj4gPiBTaG91bGQgeW91ciBwYXRjaCBiZSBtZXJnZWQsIEkgc2hhbGwgcmViYXNlIHRo
+ZSAiW1BBVENIIDA5LzEzXQ0KPiBTaWduZWQvdW5zaWduZWQgd2FybmluZ3Mgb2YgTVNWQyByZXNv
+bHZlZCIgdG8gdGhlIG5ldyBtYXN0ZXIgYW5kIGRlbGl2ZXINCj4gdGhlIG5leHQgdmVyc2lvbi4N
+Cj4NCj4gWWVzLCBpZiB5b3UgY2FuIHJldmlldyBhbmQgYWNrL25hayBpdCA6KQ0KDQpZb3UgbWVh
+biBHZXJ0IHRvIGFjay9uYWsgaXQ/IEkgZG9uJ3QgYmVsaWV2ZSBJIGhhdmUgZWFybmVkIGVub3Vn
+aCByZXB1dGF0aW9uIHRvIGRvIGl0IHlldC4NCg0KSG93ZXZlciwgSSBkaWQgc3RhcmUtcmV2aWV3
+IHlvdXIgY29kZToNCi0gSXQgZG9lcyBub3QgaW50cm9kdWNlIGFueSBuZXcgV2luZG93cyBBUEkg
+Y2FsbHMgaXQgaGFzIG5vdCB1c2VkIGJlZm9yZS4NCi0gSXQgY29tcGlsZXMgZmluZS4NCg0KUmVn
+YXJkcywNClNpbW9uDQo=
