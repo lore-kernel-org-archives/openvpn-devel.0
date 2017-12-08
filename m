@@ -1,11 +1,11 @@
 From: Steffan Karger <steffan.karger@...1435...>
-Date: Fri, 8 Dec 2017 13:07:47 +0100
-Message-ID: <1512734870-17133-8-git-send-email-steffan.karger@...1435...>
+Date: Fri, 8 Dec 2017 13:07:49 +0100
+Message-ID: <1512734870-17133-10-git-send-email-steffan.karger@...1435...>
 In-Reply-To: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
 References: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 07/10] Move env helper functions into their
- own module/file
+Subject: [Openvpn-devel] [PATCH 09/10] Move execve/run_script helper
+ functions to run_command.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,56 +17,454 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Steffan Karger <steffan.karger@...1435...>, Antonio Quartulli <antonio@...515...>
 
-To avoid a dependency on misc.c - which is a dependency mess - in the
-tls-crypt unit tests, split the env_set functionality out into it's own
-file.
+From: Steffan Karger <steffan@...1856...>
 
-Signed-off-by: Antonio Quartulli <antonio@...515...>
+To avoid having to include misc.c - which is a dependency mess - in the
+tls-crypt unit tests, move the command execution helper functions to a new
+run_command.c module.
+
+While at it, abstract away the script_security global variable.
+
 Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
- src/openvpn/Makefile.am              |   1 +
- src/openvpn/argv.c                   |   1 +
- src/openvpn/env_set.c                | 459 +++++++++++++++++++++++++++++++++++
- src/openvpn/env_set.h                | 121 +++++++++
- src/openvpn/misc.c                   | 441 ---------------------------------
- src/openvpn/misc.h                   |  73 +-----
- tests/unit_tests/openvpn/Makefile.am |   1 +
- 7 files changed, 584 insertions(+), 513 deletions(-)
- create mode 100644 src/openvpn/env_set.c
- create mode 100644 src/openvpn/env_set.h
+ src/openvpn/Makefile.am                |   1 +
+ src/openvpn/env_set.c                  |   6 +-
+ src/openvpn/init.c                     |   5 +-
+ src/openvpn/lladdr.c                   |   1 +
+ src/openvpn/misc.c                     | 218 ---------------------------
+ src/openvpn/misc.h                     |  32 ----
+ src/openvpn/multi.c                    |   2 +-
+ src/openvpn/options.c                  |   3 +-
+ src/openvpn/route.c                    |   2 +-
+ src/openvpn/run_command.c              | 267 +++++++++++++++++++++++++++++++++
+ src/openvpn/run_command.h              |  63 ++++++++
+ src/openvpn/socket.c                   |   1 +
+ src/openvpn/ssl_verify.c               |   4 +-
+ src/openvpn/tls_crypt.c                |   1 +
+ src/openvpn/tun.c                      |   2 +-
+ src/openvpn/win32.c                    |   4 +-
+ tests/unit_tests/openvpn/Makefile.am   |   3 +-
+ tests/unit_tests/openvpn/test_crypto.c |   2 -
+ 18 files changed, 351 insertions(+), 266 deletions(-)
+ create mode 100644 src/openvpn/run_command.c
+ create mode 100644 src/openvpn/run_command.h
 
 diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index fcc22d6..441700a 100644
+index 441700a..86bb40a 100644
 --- a/src/openvpn/Makefile.am
 +++ b/src/openvpn/Makefile.am
-@@ -51,6 +51,7 @@ openvpn_SOURCES = \
- 	crypto_openssl.c crypto_openssl.h \
- 	crypto_mbedtls.c crypto_mbedtls.h \
- 	dhcp.c dhcp.h \
-+	env_set.c env_set.h \
- 	errlevel.h \
- 	error.c error.h \
- 	event.c event.h \
-diff --git a/src/openvpn/argv.c b/src/openvpn/argv.c
-index 95bdfea..7a41169 100644
---- a/src/openvpn/argv.c
-+++ b/src/openvpn/argv.c
-@@ -37,6 +37,7 @@
- 
- #include "argv.h"
- #include "integer.h"
-+#include "env_set.h"
- #include "options.h"
- 
- static void
+@@ -102,6 +102,7 @@ openvpn_SOURCES = \
+ 	pushlist.h \
+ 	reliable.c reliable.h \
+ 	route.c route.h \
++	run_command.c run_command.h \
+ 	schedule.c schedule.h \
+ 	session_id.c session_id.h \
+ 	shaper.c shaper.h \
 diff --git a/src/openvpn/env_set.c b/src/openvpn/env_set.c
-new file mode 100644
-index 0000000..2a22e0b
---- /dev/null
+index 2a22e0b..4a9de1a 100644
+--- a/src/openvpn/env_set.c
 +++ b/src/openvpn/env_set.c
-@@ -0,0 +1,459 @@
+@@ -32,10 +32,10 @@
+ 
+ #include "syshead.h"
+ 
+-#include "misc.h"
+-
+ #include "env_set.h"
+ 
++#include "run_command.h"
++
+ /*
+  * Set environmental variable (int or string).
+  *
+@@ -414,7 +414,7 @@ setenv_str_i(struct env_set *es, const char *name, const char *value, const int
+ bool
+ env_allowed(const char *str)
+ {
+-    return (script_security >= SSEC_PW_ENV || !is_password_env_var(str));
++    return (script_security() >= SSEC_PW_ENV || !is_password_env_var(str));
+ }
+ 
+ /* Make arrays of strings */
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 4055f28..93143b1 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -35,6 +35,7 @@
+ 
+ #include "win32.h"
+ #include "init.h"
++#include "run_command.h"
+ #include "sig.h"
+ #include "occ.h"
+ #include "list.h"
+@@ -3153,11 +3154,11 @@ do_option_warnings(struct context *c)
+     /* If a script is used, print appropiate warnings */
+     if (o->user_script_used)
+     {
+-        if (script_security >= SSEC_SCRIPTS)
++        if (script_security() >= SSEC_SCRIPTS)
+         {
+             msg(M_WARN, "NOTE: the current --script-security setting may allow this configuration to call user-defined scripts");
+         }
+-        else if (script_security >= SSEC_PW_ENV)
++        else if (script_security() >= SSEC_PW_ENV)
+         {
+             msg(M_WARN, "WARNING: the current --script-security setting may allow passwords to be passed to scripts via environmental variables");
+         }
+diff --git a/src/openvpn/lladdr.c b/src/openvpn/lladdr.c
+index ff71e48..f24596b 100644
+--- a/src/openvpn/lladdr.c
++++ b/src/openvpn/lladdr.c
+@@ -11,6 +11,7 @@
+ #include "syshead.h"
+ #include "error.h"
+ #include "misc.h"
++#include "run_command.h"
+ 
+ int
+ set_lladdr(const char *ifname, const char *lladdr,
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index b04a9d7..b2c5626 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -51,9 +51,6 @@
+ const char *iproute_path = IPROUTE_PATH; /* GLOBAL */
+ #endif
+ 
+-/* contains an SSEC_x value defined in misc.h */
+-int script_security = SSEC_BUILT_IN; /* GLOBAL */
+-
+ /*
+  * Set standard file descriptors to /dev/null
+  */
+@@ -99,221 +96,6 @@ save_inetd_socket_descriptor(void)
+ }
+ 
+ /*
+- * Print an error message based on the status code returned by system().
+- */
+-const char *
+-system_error_message(int stat, struct gc_arena *gc)
+-{
+-    struct buffer out = alloc_buf_gc(256, gc);
+-#ifdef _WIN32
+-    if (stat == -1)
+-    {
+-        buf_printf(&out, "external program did not execute -- ");
+-    }
+-    buf_printf(&out, "returned error code %d", stat);
+-#else  /* ifdef _WIN32 */
+-    if (stat == -1)
+-    {
+-        buf_printf(&out, "external program fork failed");
+-    }
+-    else if (!WIFEXITED(stat))
+-    {
+-        buf_printf(&out, "external program did not exit normally");
+-    }
+-    else
+-    {
+-        const int cmd_ret = WEXITSTATUS(stat);
+-        if (!cmd_ret)
+-        {
+-            buf_printf(&out, "external program exited normally");
+-        }
+-        else if (cmd_ret == 127)
+-        {
+-            buf_printf(&out, "could not execute external program");
+-        }
+-        else
+-        {
+-            buf_printf(&out, "external program exited with error status: %d", cmd_ret);
+-        }
+-    }
+-#endif /* ifdef _WIN32 */
+-    return (const char *)out.data;
+-}
+-
+-/*
+- * Wrapper around openvpn_execve
+- */
+-bool
+-openvpn_execve_check(const struct argv *a, const struct env_set *es, const unsigned int flags, const char *error_message)
+-{
+-    struct gc_arena gc = gc_new();
+-    const int stat = openvpn_execve(a, es, flags);
+-    int ret = false;
+-
+-    if (platform_system_ok(stat))
+-    {
+-        ret = true;
+-    }
+-    else
+-    {
+-        if (error_message)
+-        {
+-            msg(((flags & S_FATAL) ? M_FATAL : M_WARN), "%s: %s",
+-                error_message,
+-                system_error_message(stat, &gc));
+-        }
+-    }
+-    gc_free(&gc);
+-    return ret;
+-}
+-
+-bool
+-openvpn_execve_allowed(const unsigned int flags)
+-{
+-    if (flags & S_SCRIPT)
+-    {
+-        return script_security >= SSEC_SCRIPTS;
+-    }
+-    else
+-    {
+-        return script_security >= SSEC_BUILT_IN;
+-    }
+-}
+-
+-
+-#ifndef _WIN32
+-/*
+- * Run execve() inside a fork().  Designed to replicate the semantics of system() but
+- * in a safer way that doesn't require the invocation of a shell or the risks
+- * assocated with formatting and parsing a command line.
+- */
+-int
+-openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned int flags)
+-{
+-    struct gc_arena gc = gc_new();
+-    int ret = -1;
+-    static bool warn_shown = false;
+-
+-    if (a && a->argv[0])
+-    {
+-#if defined(ENABLE_FEATURE_EXECVE)
+-        if (openvpn_execve_allowed(flags))
+-        {
+-            const char *cmd = a->argv[0];
+-            char *const *argv = a->argv;
+-            char *const *envp = (char *const *)make_env_array(es, true, &gc);
+-            pid_t pid;
+-
+-            pid = fork();
+-            if (pid == (pid_t)0) /* child side */
+-            {
+-                execve(cmd, argv, envp);
+-                exit(127);
+-            }
+-            else if (pid < (pid_t)0) /* fork failed */
+-            {
+-                msg(M_ERR, "openvpn_execve: unable to fork");
+-            }
+-            else /* parent side */
+-            {
+-                if (waitpid(pid, &ret, 0) != pid)
+-                {
+-                    ret = -1;
+-                }
+-            }
+-        }
+-        else if (!warn_shown && (script_security < SSEC_SCRIPTS))
+-        {
+-            msg(M_WARN, SCRIPT_SECURITY_WARNING);
+-            warn_shown = true;
+-        }
+-#else  /* if defined(ENABLE_FEATURE_EXECVE) */
+-        msg(M_WARN, "openvpn_execve: execve function not available");
+-#endif /* if defined(ENABLE_FEATURE_EXECVE) */
+-    }
+-    else
+-    {
+-        msg(M_FATAL, "openvpn_execve: called with empty argv");
+-    }
+-
+-    gc_free(&gc);
+-    return ret;
+-}
+-#endif /* ifndef _WIN32 */
+-
+-/*
+- * Run execve() inside a fork(), duping stdout.  Designed to replicate the semantics of popen() but
+- * in a safer way that doesn't require the invocation of a shell or the risks
+- * assocated with formatting and parsing a command line.
+- */
+-int
+-openvpn_popen(const struct argv *a,  const struct env_set *es)
+-{
+-    struct gc_arena gc = gc_new();
+-    int ret = -1;
+-    static bool warn_shown = false;
+-
+-    if (a && a->argv[0])
+-    {
+-#if defined(ENABLE_FEATURE_EXECVE)
+-        if (script_security >= SSEC_BUILT_IN)
+-        {
+-            const char *cmd = a->argv[0];
+-            char *const *argv = a->argv;
+-            char *const *envp = (char *const *)make_env_array(es, true, &gc);
+-            pid_t pid;
+-            int pipe_stdout[2];
+-
+-            if (pipe(pipe_stdout) == 0)
+-            {
+-                pid = fork();
+-                if (pid == (pid_t)0)       /* child side */
+-                {
+-                    close(pipe_stdout[0]);         /* Close read end */
+-                    dup2(pipe_stdout[1],1);
+-                    execve(cmd, argv, envp);
+-                    exit(127);
+-                }
+-                else if (pid > (pid_t)0)       /* parent side */
+-                {
+-                    int status = 0;
+-
+-                    close(pipe_stdout[1]);        /* Close write end */
+-                    waitpid(pid, &status, 0);
+-                    ret = pipe_stdout[0];
+-                }
+-                else       /* fork failed */
+-                {
+-                    close(pipe_stdout[0]);
+-                    close(pipe_stdout[1]);
+-                    msg(M_ERR, "openvpn_popen: unable to fork %s", cmd);
+-                }
+-            }
+-            else
+-            {
+-                msg(M_WARN, "openvpn_popen: unable to create stdout pipe for %s", cmd);
+-                ret = -1;
+-            }
+-        }
+-        else if (!warn_shown && (script_security < SSEC_SCRIPTS))
+-        {
+-            msg(M_WARN, SCRIPT_SECURITY_WARNING);
+-            warn_shown = true;
+-        }
+-#else  /* if defined(ENABLE_FEATURE_EXECVE) */
+-        msg(M_WARN, "openvpn_popen: execve function not available");
+-#endif /* if defined(ENABLE_FEATURE_EXECVE) */
+-    }
+-    else
+-    {
+-        msg(M_FATAL, "openvpn_popen: called with empty argv");
+-    }
+-
+-    gc_free(&gc);
+-    return ret;
+-}
+-
+-/*
+  * Prepend a random string to hostname to prevent DNS caching.
+  * For example, foo.bar.gov would be modified to <random-chars>.foo.bar.gov.
+  * Of course, this requires explicit support in the DNS server (wildcard).
+diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
+index 82bff9a..491906b 100644
+--- a/src/openvpn/misc.h
++++ b/src/openvpn/misc.h
+@@ -38,30 +38,6 @@
+ /* forward declarations */
+ struct plugin_list;
+ 
+-/* system flags */
+-#define S_SCRIPT (1<<0)
+-#define S_FATAL  (1<<1)
+-
+-const char *system_error_message(int, struct gc_arena *gc);
+-
+-/* wrapper around the execve() call */
+-int openvpn_popen(const struct argv *a,  const struct env_set *es);
+-
+-int openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned int flags);
+-
+-bool openvpn_execve_check(const struct argv *a, const struct env_set *es, const unsigned int flags, const char *error_message);
+-
+-bool openvpn_execve_allowed(const unsigned int flags);
+-
+-static inline bool
+-openvpn_run_script(const struct argv *a, const struct env_set *es, const unsigned int flags, const char *hook)
+-{
+-    char msg[256];
+-
+-    openvpn_snprintf(msg, sizeof(msg), "WARNING: Failed running command (%s)", hook);
+-    return openvpn_execve_check(a, es, flags | S_SCRIPT, msg);
+-}
+-
+ 
+ /* Set standard file descriptors to /dev/null */
+ void set_std_files_to_null(bool stdin_only);
+@@ -198,14 +174,6 @@ void get_user_pass_auto_userid(struct user_pass *up, const char *tag);
+ extern const char *iproute_path;
+ #endif
+ 
+-/* Script security */
+-#define SSEC_NONE      0 /* strictly no calling of external programs */
+-#define SSEC_BUILT_IN  1 /* only call built-in programs such as ifconfig, route, netsh, etc.*/
+-#define SSEC_SCRIPTS   2 /* allow calling of built-in programs and user-defined scripts */
+-#define SSEC_PW_ENV    3 /* allow calling of built-in programs and user-defined scripts that may receive a password as an environmental variable */
+-extern int script_security; /* GLOBAL */
+-
+-
+ #define COMPAT_FLAG_QUERY         0       /** compat_flags operator: Query for a flag */
+ #define COMPAT_FLAG_SET           (1<<0)  /** compat_flags operator: Set a compat flag */
+ #define COMPAT_NAMES              (1<<1)  /** compat flag: --compat-names set */
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index acc6912..2818b9a 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -38,7 +38,7 @@
+ 
+ #include "multi.h"
+ #include "push.h"
+-#include "misc.h"
++#include "run_command.h"
+ #include "otime.h"
+ #include "gremlin.h"
+ #include "mstats.h"
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 89bff1e..2d577f8 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -41,6 +41,7 @@
+ #include "buffer.h"
+ #include "error.h"
+ #include "common.h"
++#include "run_command.h"
+ #include "shaper.h"
+ #include "crypto.h"
+ #include "ssl.h"
+@@ -6386,7 +6387,7 @@ add_option(struct options *options,
+     else if (streq(p[0], "script-security") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+-        script_security = atoi(p[1]);
++        script_security_set(atoi(p[1]));
+     }
+     else if (streq(p[0], "mssfix") && !p[2])
+     {
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 8c71e6e..955e15f 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -36,7 +36,7 @@
+ #include "common.h"
+ #include "error.h"
+ #include "route.h"
+-#include "misc.h"
++#include "run_command.h"
+ #include "socket.h"
+ #include "manage.h"
+ #include "win32.h"
+diff --git a/src/openvpn/run_command.c b/src/openvpn/run_command.c
+new file mode 100644
+index 0000000..4e19867
+--- /dev/null
++++ b/src/openvpn/run_command.c
+@@ -0,0 +1,267 @@
 +/*
 + *  OpenVPN -- An application to securely tunnel IP networks
 + *             over a single TCP/UDP port, with support for SSL/TLS-based
@@ -75,8 +473,6 @@ index 0000000..2a22e0b
 + *             packet compression.
 + *
 + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
-+ *  Copyright (C) 2014-2015 David Sommerseth <davids@...1347...>
-+ *  Copyright (C) 2016-2017 David Sommerseth <davids@...515...>
 + *
 + *  This program is free software; you can redistribute it and/or modify
 + *  it under the terms of the GNU General Public License version 2
@@ -87,10 +483,9 @@ index 0000000..2a22e0b
 + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 + *  GNU General Public License for more details.
 + *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program (see the file COPYING included with this
-+ *  distribution); if not, write to the Free Software Foundation, Inc.,
-+ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 + */
 +
 +#ifdef HAVE_CONFIG_H
@@ -101,437 +496,248 @@ index 0000000..2a22e0b
 +
 +#include "syshead.h"
 +
-+#include "misc.h"
++#include "buffer.h"
++#include "error.h"
++#include "platform.h"
++#include "win32.h"
 +
-+#include "env_set.h"
++#include "memdbg.h"
++
++#include "run_command.h"
++
++/* contains an SSEC_x value defined in platform.h */
++static int script_security_level = SSEC_BUILT_IN; /* GLOBAL */
++
++int script_security(void)
++{
++    return script_security_level;
++}
++
++void script_security_set(int level)
++{
++    script_security_level = level;
++}
 +
 +/*
-+ * Set environmental variable (int or string).
-+ *
-+ * On Posix, we use putenv for portability,
-+ * and put up with its painful semantics
-+ * that require all the support code below.
++ * Print an error message based on the status code returned by system().
 + */
-+
-+/* General-purpose environmental variable set functions */
-+
-+static char *
-+construct_name_value(const char *name, const char *value, struct gc_arena *gc)
++static const char *
++system_error_message(int stat, struct gc_arena *gc)
 +{
-+    struct buffer out;
-+
-+    ASSERT(name);
-+    if (!value)
++    struct buffer out = alloc_buf_gc(256, gc);
++#ifdef _WIN32
++    if (stat == -1)
 +    {
-+        value = "";
++        buf_printf(&out, "external program did not execute -- ");
 +    }
-+    out = alloc_buf_gc(strlen(name) + strlen(value) + 2, gc);
-+    buf_printf(&out, "%s=%s", name, value);
-+    return BSTR(&out);
-+}
-+
-+static bool
-+env_string_equal(const char *s1, const char *s2)
-+{
-+    int c1, c2;
-+    ASSERT(s1);
-+    ASSERT(s2);
-+
-+    while (true)
++    buf_printf(&out, "returned error code %d", stat);
++#else  /* ifdef _WIN32 */
++    if (stat == -1)
 +    {
-+        c1 = *s1++;
-+        c2 = *s2++;
-+        if (c1 == '=')
++        buf_printf(&out, "external program fork failed");
++    }
++    else if (!WIFEXITED(stat))
++    {
++        buf_printf(&out, "external program did not exit normally");
++    }
++    else
++    {
++        const int cmd_ret = WEXITSTATUS(stat);
++        if (!cmd_ret)
 +        {
-+            c1 = 0;
++            buf_printf(&out, "external program exited normally");
 +        }
-+        if (c2 == '=')
++        else if (cmd_ret == 127)
 +        {
-+            c2 = 0;
++            buf_printf(&out, "could not execute external program");
 +        }
-+        if (!c1 && !c2)
++        else
 +        {
-+            return true;
-+        }
-+        if (c1 != c2)
-+        {
-+            break;
++            buf_printf(&out, "external program exited with error status: %d", cmd_ret);
 +        }
 +    }
-+    return false;
-+}
-+
-+static bool
-+remove_env_item(const char *str, const bool do_free, struct env_item **list)
-+{
-+    struct env_item *current, *prev;
-+
-+    ASSERT(str);
-+    ASSERT(list);
-+
-+    for (current = *list, prev = NULL; current != NULL; current = current->next)
-+    {
-+        if (env_string_equal(current->string, str))
-+        {
-+            if (prev)
-+            {
-+                prev->next = current->next;
-+            }
-+            else
-+            {
-+                *list = current->next;
-+            }
-+            if (do_free)
-+            {
-+                secure_memzero(current->string, strlen(current->string));
-+                free(current->string);
-+                free(current);
-+            }
-+            return true;
-+        }
-+        prev = current;
-+    }
-+    return false;
-+}
-+
-+static void
-+add_env_item(char *str, const bool do_alloc, struct env_item **list, struct gc_arena *gc)
-+{
-+    struct env_item *item;
-+
-+    ASSERT(str);
-+    ASSERT(list);
-+
-+    ALLOC_OBJ_GC(item, struct env_item, gc);
-+    item->string = do_alloc ? string_alloc(str, gc) : str;
-+    item->next = *list;
-+    *list = item;
-+}
-+
-+/* struct env_set functions */
-+
-+static bool
-+env_set_del_nolock(struct env_set *es, const char *str)
-+{
-+    return remove_env_item(str, es->gc == NULL, &es->list);
-+}
-+
-+static void
-+env_set_add_nolock(struct env_set *es, const char *str)
-+{
-+    remove_env_item(str, es->gc == NULL, &es->list);
-+    add_env_item((char *)str, true, &es->list, es->gc);
-+}
-+
-+struct env_set *
-+env_set_create(struct gc_arena *gc)
-+{
-+    struct env_set *es;
-+    ALLOC_OBJ_CLEAR_GC(es, struct env_set, gc);
-+    es->list = NULL;
-+    es->gc = gc;
-+    return es;
-+}
-+
-+void
-+env_set_destroy(struct env_set *es)
-+{
-+    if (es && es->gc == NULL)
-+    {
-+        struct env_item *e = es->list;
-+        while (e)
-+        {
-+            struct env_item *next = e->next;
-+            free(e->string);
-+            free(e);
-+            e = next;
-+        }
-+        free(es);
-+    }
++#endif /* ifdef _WIN32 */
++    return (const char *)out.data;
 +}
 +
 +bool
-+env_set_del(struct env_set *es, const char *str)
++openvpn_execve_allowed(const unsigned int flags)
 +{
-+    bool ret;
-+    ASSERT(es);
-+    ASSERT(str);
-+    ret = env_set_del_nolock(es, str);
++    if (flags & S_SCRIPT)
++    {
++        return script_security() >= SSEC_SCRIPTS;
++    }
++    else
++    {
++        return script_security() >= SSEC_BUILT_IN;
++    }
++}
++
++
++#ifndef _WIN32
++/*
++ * Run execve() inside a fork().  Designed to replicate the semantics of system() but
++ * in a safer way that doesn't require the invocation of a shell or the risks
++ * assocated with formatting and parsing a command line.
++ */
++int
++openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned int flags)
++{
++    struct gc_arena gc = gc_new();
++    int ret = -1;
++    static bool warn_shown = false;
++
++    if (a && a->argv[0])
++    {
++#if defined(ENABLE_FEATURE_EXECVE)
++        if (openvpn_execve_allowed(flags))
++        {
++            const char *cmd = a->argv[0];
++            char *const *argv = a->argv;
++            char *const *envp = (char *const *)make_env_array(es, true, &gc);
++            pid_t pid;
++
++            pid = fork();
++            if (pid == (pid_t)0) /* child side */
++            {
++                execve(cmd, argv, envp);
++                exit(127);
++            }
++            else if (pid < (pid_t)0) /* fork failed */
++            {
++                msg(M_ERR, "openvpn_execve: unable to fork");
++            }
++            else /* parent side */
++            {
++                if (waitpid(pid, &ret, 0) != pid)
++                {
++                    ret = -1;
++                }
++            }
++        }
++        else if (!warn_shown && (script_security() < SSEC_SCRIPTS))
++        {
++            msg(M_WARN, SCRIPT_SECURITY_WARNING);
++            warn_shown = true;
++        }
++#else  /* if defined(ENABLE_FEATURE_EXECVE) */
++        msg(M_WARN, "openvpn_execve: execve function not available");
++#endif /* if defined(ENABLE_FEATURE_EXECVE) */
++    }
++    else
++    {
++        msg(M_FATAL, "openvpn_execve: called with empty argv");
++    }
++
++    gc_free(&gc);
++    return ret;
++}
++#endif /* ifndef _WIN32 */
++
++/*
++ * Wrapper around openvpn_execve
++ */
++bool
++openvpn_execve_check(const struct argv *a, const struct env_set *es, const unsigned int flags, const char *error_message)
++{
++    struct gc_arena gc = gc_new();
++    const int stat = openvpn_execve(a, es, flags);
++    int ret = false;
++
++    if (platform_system_ok(stat))
++    {
++        ret = true;
++    }
++    else
++    {
++        if (error_message)
++        {
++            msg(((flags & S_FATAL) ? M_FATAL : M_WARN), "%s: %s",
++                error_message,
++                system_error_message(stat, &gc));
++        }
++    }
++    gc_free(&gc);
 +    return ret;
 +}
 +
-+void
-+env_set_add(struct env_set *es, const char *str)
-+{
-+    ASSERT(es);
-+    ASSERT(str);
-+    env_set_add_nolock(es, str);
-+}
-+
-+const char *
-+env_set_get(const struct env_set *es, const char *name)
-+{
-+    const struct env_item *item = es->list;
-+    while (item && !env_string_equal(item->string, name))
-+    {
-+        item = item->next;
-+    }
-+    return item ? item->string : NULL;
-+}
-+
-+void
-+env_set_print(int msglevel, const struct env_set *es)
-+{
-+    if (check_debug_level(msglevel))
-+    {
-+        const struct env_item *e;
-+        int i;
-+
-+        if (es)
-+        {
-+            e = es->list;
-+            i = 0;
-+
-+            while (e)
-+            {
-+                if (env_safe_to_print(e->string))
-+                {
-+                    msg(msglevel, "ENV [%d] '%s'", i, e->string);
-+                }
-+                ++i;
-+                e = e->next;
-+            }
-+        }
-+    }
-+}
-+
-+void
-+env_set_inherit(struct env_set *es, const struct env_set *src)
-+{
-+    const struct env_item *e;
-+
-+    ASSERT(es);
-+
-+    if (src)
-+    {
-+        e = src->list;
-+        while (e)
-+        {
-+            env_set_add_nolock(es, e->string);
-+            e = e->next;
-+        }
-+    }
-+}
-+
-+
-+/* add/modify/delete environmental strings */
-+
-+void
-+setenv_counter(struct env_set *es, const char *name, counter_type value)
-+{
-+    char buf[64];
-+    openvpn_snprintf(buf, sizeof(buf), counter_format, value);
-+    setenv_str(es, name, buf);
-+}
-+
-+void
-+setenv_int(struct env_set *es, const char *name, int value)
-+{
-+    char buf[64];
-+    openvpn_snprintf(buf, sizeof(buf), "%d", value);
-+    setenv_str(es, name, buf);
-+}
-+
-+void
-+setenv_long_long(struct env_set *es, const char *name, long long value)
-+{
-+    char buf[64];
-+    openvpn_snprintf(buf, sizeof(buf), "%lld", value);
-+    setenv_str(es, name, buf);
-+}
-+
-+void
-+setenv_str(struct env_set *es, const char *name, const char *value)
-+{
-+    setenv_str_ex(es, name, value, CC_NAME, 0, 0, CC_PRINT, 0, 0);
-+}
-+
-+void
-+setenv_str_safe(struct env_set *es, const char *name, const char *value)
-+{
-+    uint8_t b[64];
-+    struct buffer buf;
-+    buf_set_write(&buf, b, sizeof(b));
-+    if (buf_printf(&buf, "OPENVPN_%s", name))
-+    {
-+        setenv_str(es, BSTR(&buf), value);
-+    }
-+    else
-+    {
-+        msg(M_WARN, "setenv_str_safe: name overflow");
-+    }
-+}
-+
-+void
-+setenv_str_incr(struct env_set *es, const char *name, const char *value)
-+{
-+    unsigned int counter = 1;
-+    const size_t tmpname_len = strlen(name) + 5; /* 3 digits counter max */
-+    char *tmpname = gc_malloc(tmpname_len, true, NULL);
-+    strcpy(tmpname, name);
-+    while (NULL != env_set_get(es, tmpname) && counter < 1000)
-+    {
-+        ASSERT(openvpn_snprintf(tmpname, tmpname_len, "%s_%u", name, counter));
-+        counter++;
-+    }
-+    if (counter < 1000)
-+    {
-+        setenv_str(es, tmpname, value);
-+    }
-+    else
-+    {
-+        msg(D_TLS_DEBUG_MED, "Too many same-name env variables, ignoring: %s", name);
-+    }
-+    free(tmpname);
-+}
-+
-+void
-+setenv_del(struct env_set *es, const char *name)
-+{
-+    ASSERT(name);
-+    setenv_str(es, name, NULL);
-+}
-+
-+void
-+setenv_str_ex(struct env_set *es,
-+              const char *name,
-+              const char *value,
-+              const unsigned int name_include,
-+              const unsigned int name_exclude,
-+              const char name_replace,
-+              const unsigned int value_include,
-+              const unsigned int value_exclude,
-+              const char value_replace)
-+{
-+    struct gc_arena gc = gc_new();
-+    const char *name_tmp;
-+    const char *val_tmp = NULL;
-+
-+    ASSERT(name && strlen(name) > 1);
-+
-+    name_tmp = string_mod_const(name, name_include, name_exclude, name_replace, &gc);
-+
-+    if (value)
-+    {
-+        val_tmp = string_mod_const(value, value_include, value_exclude, value_replace, &gc);
-+    }
-+
-+    ASSERT(es);
-+
-+    if (val_tmp)
-+    {
-+        const char *str = construct_name_value(name_tmp, val_tmp, &gc);
-+        env_set_add(es, str);
-+#if DEBUG_VERBOSE_SETENV
-+        msg(M_INFO, "SETENV_ES '%s'", str);
-+#endif
-+    }
-+    else
-+    {
-+        env_set_del(es, name_tmp);
-+    }
-+
-+    gc_free(&gc);
-+}
-+
 +/*
-+ * Setenv functions that append an integer index to the name
++ * Run execve() inside a fork(), duping stdout.  Designed to replicate the semantics of popen() but
++ * in a safer way that doesn't require the invocation of a shell or the risks
++ * assocated with formatting and parsing a command line.
 + */
-+static const char *
-+setenv_format_indexed_name(const char *name, const int i, struct gc_arena *gc)
++int
++openvpn_popen(const struct argv *a,  const struct env_set *es)
 +{
-+    struct buffer out = alloc_buf_gc(strlen(name) + 16, gc);
-+    if (i >= 0)
++    struct gc_arena gc = gc_new();
++    int ret = -1;
++    static bool warn_shown = false;
++
++    if (a && a->argv[0])
 +    {
-+        buf_printf(&out, "%s_%d", name, i);
++#if defined(ENABLE_FEATURE_EXECVE)
++        if (script_security() >= SSEC_BUILT_IN)
++        {
++            const char *cmd = a->argv[0];
++            char *const *argv = a->argv;
++            char *const *envp = (char *const *)make_env_array(es, true, &gc);
++            pid_t pid;
++            int pipe_stdout[2];
++
++            if (pipe(pipe_stdout) == 0)
++            {
++                pid = fork();
++                if (pid == (pid_t)0)       /* child side */
++                {
++                    close(pipe_stdout[0]);         /* Close read end */
++                    dup2(pipe_stdout[1],1);
++                    execve(cmd, argv, envp);
++                    exit(127);
++                }
++                else if (pid > (pid_t)0)       /* parent side */
++                {
++                    int status = 0;
++
++                    close(pipe_stdout[1]);        /* Close write end */
++                    waitpid(pid, &status, 0);
++                    ret = pipe_stdout[0];
++                }
++                else       /* fork failed */
++                {
++                    close(pipe_stdout[0]);
++                    close(pipe_stdout[1]);
++                    msg(M_ERR, "openvpn_popen: unable to fork %s", cmd);
++                }
++            }
++            else
++            {
++                msg(M_WARN, "openvpn_popen: unable to create stdout pipe for %s", cmd);
++                ret = -1;
++            }
++        }
++        else if (!warn_shown && (script_security() < SSEC_SCRIPTS))
++        {
++            msg(M_WARN, SCRIPT_SECURITY_WARNING);
++            warn_shown = true;
++        }
++#else  /* if defined(ENABLE_FEATURE_EXECVE) */
++        msg(M_WARN, "openvpn_popen: execve function not available");
++#endif /* if defined(ENABLE_FEATURE_EXECVE) */
 +    }
 +    else
 +    {
-+        buf_printf(&out, "%s", name);
++        msg(M_FATAL, "openvpn_popen: called with empty argv");
 +    }
-+    return BSTR(&out);
-+}
 +
-+void
-+setenv_int_i(struct env_set *es, const char *name, const int value, const int i)
-+{
-+    struct gc_arena gc = gc_new();
-+    const char *name_str = setenv_format_indexed_name(name, i, &gc);
-+    setenv_int(es, name_str, value);
 +    gc_free(&gc);
++    return ret;
 +}
-+
-+void
-+setenv_str_i(struct env_set *es, const char *name, const char *value, const int i)
-+{
-+    struct gc_arena gc = gc_new();
-+    const char *name_str = setenv_format_indexed_name(name, i, &gc);
-+    setenv_str(es, name_str, value);
-+    gc_free(&gc);
-+}
-+
-+bool
-+env_allowed(const char *str)
-+{
-+    return (script_security >= SSEC_PW_ENV || !is_password_env_var(str));
-+}
-+
-+/* Make arrays of strings */
-+
-+const char **
-+make_env_array(const struct env_set *es,
-+               const bool check_allowed,
-+               struct gc_arena *gc)
-+{
-+    char **ret = NULL;
-+    struct env_item *e = NULL;
-+    int i = 0, n = 0;
-+
-+    /* figure length of es */
-+    if (es)
-+    {
-+        for (e = es->list; e != NULL; e = e->next)
-+        {
-+            ++n;
-+        }
-+    }
-+
-+    /* alloc return array */
-+    ALLOC_ARRAY_CLEAR_GC(ret, char *, n+1, gc);
-+
-+    /* fill return array */
-+    if (es)
-+    {
-+        i = 0;
-+        for (e = es->list; e != NULL; e = e->next)
-+        {
-+            if (!check_allowed || env_allowed(e->string))
-+            {
-+                ASSERT(i < n);
-+                ret[i++] = e->string;
-+            }
-+        }
-+    }
-+
-+    ret[i] = NULL;
-+    return (const char **)ret;
-+}
-diff --git a/src/openvpn/env_set.h b/src/openvpn/env_set.h
+diff --git a/src/openvpn/run_command.h b/src/openvpn/run_command.h
 new file mode 100644
-index 0000000..5dc3348
+index 0000000..4501a5c
 --- /dev/null
-+++ b/src/openvpn/env_set.h
-@@ -0,0 +1,121 @@
++++ b/src/openvpn/run_command.h
+@@ -0,0 +1,63 @@
 +/*
 + *  OpenVPN -- An application to securely tunnel IP networks
 + *             over a single TCP/UDP port, with support for SSL/TLS-based
@@ -550,687 +756,156 @@ index 0000000..5dc3348
 + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 + *  GNU General Public License for more details.
 + *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program (see the file COPYING included with this
-+ *  distribution); if not, write to the Free Software Foundation, Inc.,
-+ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 + */
 +
-+#ifndef ENV_SET_H
-+#define ENV_SET_H
++#ifndef RUN_COMMAND_H
++#define RUN_COMMAND_H
 +
-+#include "argv.h"
 +#include "basic.h"
-+#include "buffer.h"
-+#include "common.h"
-+
-+/*
-+ * Handle environmental variable lists
-+ */
-+
-+struct env_item {
-+    char *string;
-+    struct env_item *next;
-+};
-+
-+struct env_set {
-+    struct gc_arena *gc;
-+    struct env_item *list;
-+};
-+
-+/* set/delete environmental variable */
-+void setenv_str_ex(struct env_set *es,
-+                   const char *name,
-+                   const char *value,
-+                   const unsigned int name_include,
-+                   const unsigned int name_exclude,
-+                   const char name_replace,
-+                   const unsigned int value_include,
-+                   const unsigned int value_exclude,
-+                   const char value_replace);
-+
-+void setenv_counter(struct env_set *es, const char *name, counter_type value);
-+
-+void setenv_int(struct env_set *es, const char *name, int value);
-+
-+void setenv_long_long(struct env_set *es, const char *name, long long value);
-+
-+void setenv_str(struct env_set *es, const char *name, const char *value);
-+
-+void setenv_str_safe(struct env_set *es, const char *name, const char *value);
-+
-+void setenv_del(struct env_set *es, const char *name);
-+
-+/**
-+ * Store the supplied name value pair in the env_set.  If the variable with the
-+ * supplied name  already exists, append _N to the name, starting at N=1.
-+ */
-+void setenv_str_incr(struct env_set *es, const char *name, const char *value);
-+
-+void setenv_int_i(struct env_set *es, const char *name, const int value, const int i);
-+
-+void setenv_str_i(struct env_set *es, const char *name, const char *value, const int i);
-+
-+/* struct env_set functions */
-+
-+struct env_set *env_set_create(struct gc_arena *gc);
-+
-+void env_set_destroy(struct env_set *es);
-+
-+bool env_set_del(struct env_set *es, const char *str);
-+
-+void env_set_add(struct env_set *es, const char *str);
-+
-+const char *env_set_get(const struct env_set *es, const char *name);
-+
-+void env_set_print(int msglevel, const struct env_set *es);
-+
-+void env_set_inherit(struct env_set *es, const struct env_set *src);
-+
-+/* returns true if environmental variable name starts with 'password' */
-+static inline bool is_password_env_var(const char *str)
-+{
-+    return (strncmp(str, "password", 8) == 0);
-+}
-+
-+/* returns true if environmental variable safe to print to log */
-+static inline bool env_safe_to_print(const char *str)
-+{
-+#ifndef UNSAFE_DEBUG
-+    if (is_password_env_var(str))
-+    {
-+        return false;
-+    }
-+#endif
-+    return true;
-+}
-+
-+/* returns true if environmental variable may be passed to an external program */
-+bool env_allowed(const char *str);
-+
-+const char **make_env_array(const struct env_set *es,
-+                            const bool check_allowed,
-+                            struct gc_arena *gc);
-+
-+#endif /* ifndef ENV_SET_H */
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index 76b592f..ad26f3d 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -314,382 +314,6 @@ openvpn_popen(const struct argv *a,  const struct env_set *es)
- }
- 
- 
--
--/*
-- * Set environmental variable (int or string).
-- *
-- * On Posix, we use putenv for portability,
-- * and put up with its painful semantics
-- * that require all the support code below.
-- */
--
--/* General-purpose environmental variable set functions */
--
--static char *
--construct_name_value(const char *name, const char *value, struct gc_arena *gc)
--{
--    struct buffer out;
--
--    ASSERT(name);
--    if (!value)
--    {
--        value = "";
--    }
--    out = alloc_buf_gc(strlen(name) + strlen(value) + 2, gc);
--    buf_printf(&out, "%s=%s", name, value);
--    return BSTR(&out);
--}
--
--static bool
--env_string_equal(const char *s1, const char *s2)
--{
--    int c1, c2;
--    ASSERT(s1);
--    ASSERT(s2);
--
--    while (true)
--    {
--        c1 = *s1++;
--        c2 = *s2++;
--        if (c1 == '=')
--        {
--            c1 = 0;
--        }
--        if (c2 == '=')
--        {
--            c2 = 0;
--        }
--        if (!c1 && !c2)
--        {
--            return true;
--        }
--        if (c1 != c2)
--        {
--            break;
--        }
--    }
--    return false;
--}
--
--static bool
--remove_env_item(const char *str, const bool do_free, struct env_item **list)
--{
--    struct env_item *current, *prev;
--
--    ASSERT(str);
--    ASSERT(list);
--
--    for (current = *list, prev = NULL; current != NULL; current = current->next)
--    {
--        if (env_string_equal(current->string, str))
--        {
--            if (prev)
--            {
--                prev->next = current->next;
--            }
--            else
--            {
--                *list = current->next;
--            }
--            if (do_free)
--            {
--                secure_memzero(current->string, strlen(current->string));
--                free(current->string);
--                free(current);
--            }
--            return true;
--        }
--        prev = current;
--    }
--    return false;
--}
--
--static void
--add_env_item(char *str, const bool do_alloc, struct env_item **list, struct gc_arena *gc)
--{
--    struct env_item *item;
--
--    ASSERT(str);
--    ASSERT(list);
--
--    ALLOC_OBJ_GC(item, struct env_item, gc);
--    item->string = do_alloc ? string_alloc(str, gc) : str;
--    item->next = *list;
--    *list = item;
--}
--
--/* struct env_set functions */
--
--static bool
--env_set_del_nolock(struct env_set *es, const char *str)
--{
--    return remove_env_item(str, es->gc == NULL, &es->list);
--}
--
--static void
--env_set_add_nolock(struct env_set *es, const char *str)
--{
--    remove_env_item(str, es->gc == NULL, &es->list);
--    add_env_item((char *)str, true, &es->list, es->gc);
--}
--
--struct env_set *
--env_set_create(struct gc_arena *gc)
--{
--    struct env_set *es;
--    ALLOC_OBJ_CLEAR_GC(es, struct env_set, gc);
--    es->list = NULL;
--    es->gc = gc;
--    return es;
--}
--
--void
--env_set_destroy(struct env_set *es)
--{
--    if (es && es->gc == NULL)
--    {
--        struct env_item *e = es->list;
--        while (e)
--        {
--            struct env_item *next = e->next;
--            free(e->string);
--            free(e);
--            e = next;
--        }
--        free(es);
--    }
--}
--
--bool
--env_set_del(struct env_set *es, const char *str)
--{
--    bool ret;
--    ASSERT(es);
--    ASSERT(str);
--    ret = env_set_del_nolock(es, str);
--    return ret;
--}
--
--void
--env_set_add(struct env_set *es, const char *str)
--{
--    ASSERT(es);
--    ASSERT(str);
--    env_set_add_nolock(es, str);
--}
--
--const char *
--env_set_get(const struct env_set *es, const char *name)
--{
--    const struct env_item *item = es->list;
--    while (item && !env_string_equal(item->string, name))
--    {
--        item = item->next;
--    }
--    return item ? item->string : NULL;
--}
--
--void
--env_set_print(int msglevel, const struct env_set *es)
--{
--    if (check_debug_level(msglevel))
--    {
--        const struct env_item *e;
--        int i;
--
--        if (es)
--        {
--            e = es->list;
--            i = 0;
--
--            while (e)
--            {
--                if (env_safe_to_print(e->string))
--                {
--                    msg(msglevel, "ENV [%d] '%s'", i, e->string);
--                }
--                ++i;
--                e = e->next;
--            }
--        }
--    }
--}
--
--void
--env_set_inherit(struct env_set *es, const struct env_set *src)
--{
--    const struct env_item *e;
--
--    ASSERT(es);
--
--    if (src)
--    {
--        e = src->list;
--        while (e)
--        {
--            env_set_add_nolock(es, e->string);
--            e = e->next;
--        }
--    }
--}
--
--
--/* add/modify/delete environmental strings */
--
--void
--setenv_counter(struct env_set *es, const char *name, counter_type value)
--{
--    char buf[64];
--    openvpn_snprintf(buf, sizeof(buf), counter_format, value);
--    setenv_str(es, name, buf);
--}
--
--void
--setenv_int(struct env_set *es, const char *name, int value)
--{
--    char buf[64];
--    openvpn_snprintf(buf, sizeof(buf), "%d", value);
--    setenv_str(es, name, buf);
--}
--
--void
--setenv_long_long(struct env_set *es, const char *name, long long value)
--{
--    char buf[64];
--    openvpn_snprintf(buf, sizeof(buf), "%lld", value);
--    setenv_str(es, name, buf);
--}
--
--void
--setenv_str(struct env_set *es, const char *name, const char *value)
--{
--    setenv_str_ex(es, name, value, CC_NAME, 0, 0, CC_PRINT, 0, 0);
--}
--
--void
--setenv_str_safe(struct env_set *es, const char *name, const char *value)
--{
--    uint8_t b[64];
--    struct buffer buf;
--    buf_set_write(&buf, b, sizeof(b));
--    if (buf_printf(&buf, "OPENVPN_%s", name))
--    {
--        setenv_str(es, BSTR(&buf), value);
--    }
--    else
--    {
--        msg(M_WARN, "setenv_str_safe: name overflow");
--    }
--}
--
--void
--setenv_str_incr(struct env_set *es, const char *name, const char *value)
--{
--    unsigned int counter = 1;
--    const size_t tmpname_len = strlen(name) + 5; /* 3 digits counter max */
--    char *tmpname = gc_malloc(tmpname_len, true, NULL);
--    strcpy(tmpname, name);
--    while (NULL != env_set_get(es, tmpname) && counter < 1000)
--    {
--        ASSERT(openvpn_snprintf(tmpname, tmpname_len, "%s_%u", name, counter));
--        counter++;
--    }
--    if (counter < 1000)
--    {
--        setenv_str(es, tmpname, value);
--    }
--    else
--    {
--        msg(D_TLS_DEBUG_MED, "Too many same-name env variables, ignoring: %s", name);
--    }
--    free(tmpname);
--}
--
--void
--setenv_del(struct env_set *es, const char *name)
--{
--    ASSERT(name);
--    setenv_str(es, name, NULL);
--}
--
--void
--setenv_str_ex(struct env_set *es,
--              const char *name,
--              const char *value,
--              const unsigned int name_include,
--              const unsigned int name_exclude,
--              const char name_replace,
--              const unsigned int value_include,
--              const unsigned int value_exclude,
--              const char value_replace)
--{
--    struct gc_arena gc = gc_new();
--    const char *name_tmp;
--    const char *val_tmp = NULL;
--
--    ASSERT(name && strlen(name) > 1);
--
--    name_tmp = string_mod_const(name, name_include, name_exclude, name_replace, &gc);
--
--    if (value)
--    {
--        val_tmp = string_mod_const(value, value_include, value_exclude, value_replace, &gc);
--    }
--
--    ASSERT(es);
--
--    if (val_tmp)
--    {
--        const char *str = construct_name_value(name_tmp, val_tmp, &gc);
--        env_set_add(es, str);
--#if DEBUG_VERBOSE_SETENV
--        msg(M_INFO, "SETENV_ES '%s'", str);
--#endif
--    }
--    else
--    {
--        env_set_del(es, name_tmp);
--    }
--
--    gc_free(&gc);
--}
--
--/*
-- * Setenv functions that append an integer index to the name
-- */
--static const char *
--setenv_format_indexed_name(const char *name, const int i, struct gc_arena *gc)
--{
--    struct buffer out = alloc_buf_gc(strlen(name) + 16, gc);
--    if (i >= 0)
--    {
--        buf_printf(&out, "%s_%d", name, i);
--    }
--    else
--    {
--        buf_printf(&out, "%s", name);
--    }
--    return BSTR(&out);
--}
--
--void
--setenv_int_i(struct env_set *es, const char *name, const int value, const int i)
--{
--    struct gc_arena gc = gc_new();
--    const char *name_str = setenv_format_indexed_name(name, i, &gc);
--    setenv_int(es, name_str, value);
--    gc_free(&gc);
--}
--
--void
--setenv_str_i(struct env_set *es, const char *name, const char *value, const int i)
--{
--    struct gc_arena gc = gc_new();
--    const char *name_str = setenv_format_indexed_name(name, i, &gc);
--    setenv_str(es, name_str, value);
--    gc_free(&gc);
--}
--
- /* return true if filename can be opened for read */
- bool
- test_file(const char *filename)
-@@ -1288,71 +912,6 @@ safe_print(const char *str, struct gc_arena *gc)
-     return string_mod_const(str, CC_PRINT, CC_CRLF, '.', gc);
- }
- 
--static bool
--is_password_env_var(const char *str)
--{
--    return (strncmp(str, "password", 8) == 0);
--}
--
--bool
--env_allowed(const char *str)
--{
--    return (script_security >= SSEC_PW_ENV || !is_password_env_var(str));
--}
--
--bool
--env_safe_to_print(const char *str)
--{
--#ifndef UNSAFE_DEBUG
--    if (is_password_env_var(str))
--    {
--        return false;
--    }
--#endif
--    return true;
--}
--
--/* Make arrays of strings */
--
--const char **
--make_env_array(const struct env_set *es,
--               const bool check_allowed,
--               struct gc_arena *gc)
--{
--    char **ret = NULL;
--    struct env_item *e = NULL;
--    int i = 0, n = 0;
--
--    /* figure length of es */
--    if (es)
--    {
--        for (e = es->list; e != NULL; e = e->next)
--        {
--            ++n;
--        }
--    }
--
--    /* alloc return array */
--    ALLOC_ARRAY_CLEAR_GC(ret, char *, n+1, gc);
--
--    /* fill return array */
--    if (es)
--    {
--        i = 0;
--        for (e = es->list; e != NULL; e = e->next)
--        {
--            if (!check_allowed || env_allowed(e->string))
--            {
--                ASSERT(i < n);
--                ret[i++] = e->string;
--            }
--        }
--    }
--
--    ret[i] = NULL;
--    return (const char **)ret;
--}
--
- const char **
- make_arg_array(const char *first, const char *parms, struct gc_arena *gc)
- {
-diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
-index ec20ee7..3725fcf 100644
---- a/src/openvpn/misc.h
-+++ b/src/openvpn/misc.h
-@@ -27,6 +27,7 @@
- #include "argv.h"
- #include "basic.h"
- #include "common.h"
 +#include "env_set.h"
- #include "integer.h"
- #include "buffer.h"
++
++/* Script security */
++#define SSEC_NONE      0 /* strictly no calling of external programs */
++#define SSEC_BUILT_IN  1 /* only call built-in programs such as ifconfig, route, netsh, etc.*/
++#define SSEC_SCRIPTS   2 /* allow calling of built-in programs and user-defined scripts */
++#define SSEC_PW_ENV    3 /* allow calling of built-in programs and user-defined scripts that may receive a password as an environmental variable */
++
++int script_security(void);
++
++void script_security_set(int level);
++
++/* openvpn_execve flags */
++#define S_SCRIPT (1<<0)
++#define S_FATAL  (1<<1)
++
++/* wrapper around the execve() call */
++int openvpn_popen(const struct argv *a,  const struct env_set *es);
++
++bool openvpn_execve_allowed(const unsigned int flags);
++
++bool openvpn_execve_check(const struct argv *a, const struct env_set *es,
++                          const unsigned int flags, const char *error_message);
++
++static inline bool
++openvpn_run_script(const struct argv *a, const struct env_set *es,
++                   const unsigned int flags, const char *hook)
++{
++    char msg[256];
++
++    openvpn_snprintf(msg, sizeof(msg),
++                     "WARNING: Failed running command (%s)", hook);
++    return openvpn_execve_check(a, es, flags | S_SCRIPT, msg);
++}
++
++#endif /* ifndef RUN_COMMAND_H */
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 0fc91f2..e7126da 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -35,6 +35,7 @@
+ #include "gremlin.h"
+ #include "plugin.h"
+ #include "ps.h"
++#include "run_command.h"
+ #include "manage.h"
+ #include "misc.h"
+ #include "manage.h"
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 3568bad..6e7b0b0 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -34,10 +34,10 @@
+ 
+ #include "syshead.h"
+ 
+-#include "misc.h"
++#include "base64.h"
+ #include "manage.h"
+ #include "otime.h"
+-#include "base64.h"
++#include "run_command.h"
+ #include "ssl_verify.h"
+ #include "ssl_verify_backend.h"
+ 
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index 0c94d73..6fbe3e5 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -32,6 +32,7 @@
+ #include "base64.h"
+ #include "crypto.h"
  #include "platform.h"
-@@ -37,20 +38,6 @@
- /* forward declarations */
- struct plugin_list;
++#include "run_command.h"
+ #include "session_id.h"
+ #include "ssl.h"
  
--/*
-- * Handle environmental variable lists
-- */
--
--struct env_item {
--    char *string;
--    struct env_item *next;
--};
--
--struct env_set {
--    struct gc_arena *gc;
--    struct env_item *list;
--};
--
- /* system flags */
- #define S_SCRIPT (1<<0)
- #define S_FATAL  (1<<1)
-@@ -83,61 +70,8 @@ void set_std_files_to_null(bool stdin_only);
- extern int inetd_socket_descriptor;
- void save_inetd_socket_descriptor(void);
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 25831ce..6103163 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -40,7 +40,7 @@
+ #include "tun.h"
+ #include "fdmisc.h"
+ #include "common.h"
+-#include "misc.h"
++#include "run_command.h"
+ #include "socket.h"
+ #include "manage.h"
+ #include "route.h"
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index 95fea5d..1e5d871 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -39,9 +39,9 @@
+ #include "buffer.h"
+ #include "error.h"
+ #include "mtu.h"
++#include "run_command.h"
+ #include "sig.h"
+ #include "win32.h"
+-#include "misc.h"
+ #include "openvpn-msg.h"
  
--/* set/delete environmental variable */
--void setenv_str_ex(struct env_set *es,
--                   const char *name,
--                   const char *value,
--                   const unsigned int name_include,
--                   const unsigned int name_exclude,
--                   const char name_replace,
--                   const unsigned int value_include,
--                   const unsigned int value_exclude,
--                   const char value_replace);
--
--void setenv_counter(struct env_set *es, const char *name, counter_type value);
--
--void setenv_int(struct env_set *es, const char *name, int value);
--
--void setenv_long_long(struct env_set *es, const char *name, long long value);
--
--void setenv_str(struct env_set *es, const char *name, const char *value);
--
--void setenv_str_safe(struct env_set *es, const char *name, const char *value);
--
--void setenv_del(struct env_set *es, const char *name);
--
--/**
-- * Store the supplied name value pair in the env_set.  If the variable with the
-- * supplied name  already exists, append _N to the name, starting at N=1.
-- */
--void setenv_str_incr(struct env_set *es, const char *name, const char *value);
--
--void setenv_int_i(struct env_set *es, const char *name, const int value, const int i);
--
--void setenv_str_i(struct env_set *es, const char *name, const char *value, const int i);
--
--/* struct env_set functions */
--
--struct env_set *env_set_create(struct gc_arena *gc);
--
--void env_set_destroy(struct env_set *es);
--
--bool env_set_del(struct env_set *es, const char *str);
--
--void env_set_add(struct env_set *es, const char *str);
--
--const char *env_set_get(const struct env_set *es, const char *name);
--
--void env_set_print(int msglevel, const struct env_set *es);
--
--void env_set_inherit(struct env_set *es, const struct env_set *src);
--
- /* Make arrays of strings */
- 
--const char **make_env_array(const struct env_set *es,
--                            const bool check_allowed,
--                            struct gc_arena *gc);
--
- const char **make_arg_array(const char *first, const char *parms, struct gc_arena *gc);
- 
- const char **make_extended_arg_array(char **p, struct gc_arena *gc);
-@@ -259,11 +193,6 @@ void set_auth_token(struct user_pass *up, const char *token);
-  */
- const char *safe_print(const char *str, struct gc_arena *gc);
- 
--/* returns true if environmental variable safe to print to log */
--bool env_safe_to_print(const char *str);
--
--/* returns true if environmental variable may be passed to an external program */
--bool env_allowed(const char *str);
- 
- void configure_path(void);
- 
+ #include "memdbg.h"
+@@ -1137,7 +1137,7 @@ openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned in
+             free(env);
+             gc_free(&gc);
+         }
+-        else if (!exec_warn && (script_security < SSEC_SCRIPTS))
++        else if (!exec_warn && (script_security() < SSEC_SCRIPTS))
+         {
+             msg(M_WARN, SCRIPT_SECURITY_WARNING);
+             exec_warn = true;
 diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index c457ef9..7b41363 100644
+index b69da84..a5d7f01 100644
 --- a/tests/unit_tests/openvpn/Makefile.am
 +++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -39,6 +39,7 @@ crypto_testdriver_SOURCES = test_crypto.c mock_msg.c \
- 	$(openvpn_srcdir)/crypto.c \
- 	$(openvpn_srcdir)/crypto_mbedtls.c \
- 	$(openvpn_srcdir)/crypto_openssl.c \
-+	$(openvpn_srcdir)/env_set.c \
+@@ -44,7 +44,8 @@ crypto_testdriver_SOURCES = test_crypto.c mock_msg.c \
+ 	$(openvpn_srcdir)/env_set.c \
  	$(openvpn_srcdir)/otime.c \
  	$(openvpn_srcdir)/packet_id.c \
- 	$(openvpn_srcdir)/platform.c
+-	$(openvpn_srcdir)/platform.c
++	$(openvpn_srcdir)/platform.c \
++	$(openvpn_srcdir)/run_command.c
+ 
+ packet_id_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+ 	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir) \
+diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
+index 62d5b3f..b4ef668 100644
+--- a/tests/unit_tests/openvpn/test_crypto.c
++++ b/tests/unit_tests/openvpn/test_crypto.c
+@@ -41,8 +41,6 @@
+ 
+ #include "mock_msg.h"
+ 
+-int script_security = 0; /* Avoid including misc.c */
+-
+ static const char testtext[] = "Dummy text to test PEM encoding";
+ 
+ /**
 -- 
 2.7.4
 
