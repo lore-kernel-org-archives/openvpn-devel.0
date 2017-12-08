@@ -1,7 +1,8 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Fri,  8 Dec 2017 10:12:18 +0100
-Message-Id: <1512724338-22197-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] Fix memory leak in buffer unit tests
+Date: Fri,  8 Dec 2017 11:33:31 +0100
+Message-Id: <1512729211-8407-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Don't throw fatal errors from
+ verify_cert_export_cert()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,32 +15,40 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-buffer_list_push_data does not take ownership of the memory, so just feed
-it stack data to plug the leak.
+From: Steffan Karger <steffan.karger@...1435...>
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
+As with create_temp_file(), this function is called on client connects and
+should not cause fatal errors when I/O (possibly temporarily) fails.
+
+The callers of this function are already fixed in the commit that does the
+same for create_temp_file().
+
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
- tests/unit_tests/openvpn/test_buffer.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ src/openvpn/ssl_verify.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/openvpn/test_buffer.c
-index ba5aa67..c2b7f30 100644
---- a/tests/unit_tests/openvpn/test_buffer.c
-+++ b/tests/unit_tests/openvpn/test_buffer.c
-@@ -77,10 +77,9 @@ static int test_buffer_list_setup(void **state)
-     buffer_list_push(ctx->zero_length_strings, "");
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index ebb1da2..12cff9a 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -557,13 +557,14 @@ verify_cert_export_cert(openvpn_x509_cert_t *peercert, const char *tmp_dir, stru
+     peercert_file = fopen(peercert_filename, "w+");
+     if (!peercert_file)
+     {
+-        msg(M_ERR, "Failed to open temporary file : %s", peercert_filename);
++        msg(M_ERRNO, "Failed to open temporary file : %s", peercert_filename);
+         return NULL;
+     }
  
-     ctx->empty_buffers = buffer_list_new(2);
--    uint8_t *data1 = malloc(1);
--    uint8_t *data2 = malloc(1);
--    buffer_list_push_data(ctx->empty_buffers, data1, 0);
--    buffer_list_push_data(ctx->empty_buffers, data2, 0);
-+    uint8_t data = 0;
-+    buffer_list_push_data(ctx->empty_buffers, &data, 0);
-+    buffer_list_push_data(ctx->empty_buffers, &data, 0);
+     if (SUCCESS != x509_write_pem(peercert_file, peercert))
+     {
+-        msg(M_ERR, "Error writing PEM file containing certificate");
++        msg(M_WARN, "Error writing PEM file containing certificate");
++        peercert_filename = NULL;
+     }
  
-     *state = ctx;
-     return 0;
+     fclose(peercert_file);
 -- 
 2.7.4
 
