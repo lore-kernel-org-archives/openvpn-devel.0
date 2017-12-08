@@ -1,11 +1,14 @@
-From: Steffan Karger <steffan.karger@...1435...>
-Date: Fri, 8 Dec 2017 13:07:49 +0100
-Message-ID: <1512734870-17133-10-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
-References: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 09/10] Move execve/run_script helper
- functions to run_command.c
+From: "Jim Carroll" <jim@...2322...>
+References: <1511554982-875-1-git-send-email-jim@...2322...>
+ <14a28e53-a002-8c03-69e1-44af1529f080@...2181...>
+ <18ff01d36c48$e396eac0$aac4c040$@carroll.com>
+ <57908e74-0039-0021-26f1-0ca2df32d53c@...2080...> 
+In-Reply-To: 
+Date: Fri, 8 Dec 2017 07:34:50 -0500
+Message-ID: <17c701d37020$f0ef10e0$d2cd32a0$@carroll.com>
+Content-Language: en-us
+Subject: Re: [Openvpn-devel] [PATCH] Added OpenSSL FIPS 2.0 support to
+ OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,895 +21,122 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Steffan Karger <steffan@...1856...>
+I'm curious about the openvpn-devel process related to patch acceptance. Does 
+the fact that the conversation has ended mean the patch is scheduled to be 
+added -- or does it instead mean there is no interest and the patch is being 
+denied?
 
-To avoid having to include misc.c - which is a dependency mess - in the
-tls-crypt unit tests, move the command execution helper functions to a new
-run_command.c module.
+Thanks
+Jim
 
-While at it, abstract away the script_security global variable.
 
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
----
- src/openvpn/Makefile.am                |   1 +
- src/openvpn/env_set.c                  |   6 +-
- src/openvpn/init.c                     |   5 +-
- src/openvpn/lladdr.c                   |   1 +
- src/openvpn/misc.c                     | 218 ---------------------------
- src/openvpn/misc.h                     |  32 ----
- src/openvpn/multi.c                    |   2 +-
- src/openvpn/options.c                  |   3 +-
- src/openvpn/route.c                    |   2 +-
- src/openvpn/run_command.c              | 267 +++++++++++++++++++++++++++++++++
- src/openvpn/run_command.h              |  63 ++++++++
- src/openvpn/socket.c                   |   1 +
- src/openvpn/ssl_verify.c               |   4 +-
- src/openvpn/tls_crypt.c                |   1 +
- src/openvpn/tun.c                      |   2 +-
- src/openvpn/win32.c                    |   4 +-
- tests/unit_tests/openvpn/Makefile.am   |   3 +-
- tests/unit_tests/openvpn/test_crypto.c |   2 -
- 18 files changed, 351 insertions(+), 266 deletions(-)
- create mode 100644 src/openvpn/run_command.c
- create mode 100644 src/openvpn/run_command.h
-
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index 441700a..86bb40a 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -102,6 +102,7 @@ openvpn_SOURCES = \
- 	pushlist.h \
- 	reliable.c reliable.h \
- 	route.c route.h \
-+	run_command.c run_command.h \
- 	schedule.c schedule.h \
- 	session_id.c session_id.h \
- 	shaper.c shaper.h \
-diff --git a/src/openvpn/env_set.c b/src/openvpn/env_set.c
-index 2a22e0b..4a9de1a 100644
---- a/src/openvpn/env_set.c
-+++ b/src/openvpn/env_set.c
-@@ -32,10 +32,10 @@
- 
- #include "syshead.h"
- 
--#include "misc.h"
--
- #include "env_set.h"
- 
-+#include "run_command.h"
-+
- /*
-  * Set environmental variable (int or string).
-  *
-@@ -414,7 +414,7 @@ setenv_str_i(struct env_set *es, const char *name, const char *value, const int
- bool
- env_allowed(const char *str)
- {
--    return (script_security >= SSEC_PW_ENV || !is_password_env_var(str));
-+    return (script_security() >= SSEC_PW_ENV || !is_password_env_var(str));
- }
- 
- /* Make arrays of strings */
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 4055f28..93143b1 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -35,6 +35,7 @@
- 
- #include "win32.h"
- #include "init.h"
-+#include "run_command.h"
- #include "sig.h"
- #include "occ.h"
- #include "list.h"
-@@ -3153,11 +3154,11 @@ do_option_warnings(struct context *c)
-     /* If a script is used, print appropiate warnings */
-     if (o->user_script_used)
-     {
--        if (script_security >= SSEC_SCRIPTS)
-+        if (script_security() >= SSEC_SCRIPTS)
-         {
-             msg(M_WARN, "NOTE: the current --script-security setting may allow this configuration to call user-defined scripts");
-         }
--        else if (script_security >= SSEC_PW_ENV)
-+        else if (script_security() >= SSEC_PW_ENV)
-         {
-             msg(M_WARN, "WARNING: the current --script-security setting may allow passwords to be passed to scripts via environmental variables");
-         }
-diff --git a/src/openvpn/lladdr.c b/src/openvpn/lladdr.c
-index ff71e48..f24596b 100644
---- a/src/openvpn/lladdr.c
-+++ b/src/openvpn/lladdr.c
-@@ -11,6 +11,7 @@
- #include "syshead.h"
- #include "error.h"
- #include "misc.h"
-+#include "run_command.h"
- 
- int
- set_lladdr(const char *ifname, const char *lladdr,
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index b04a9d7..b2c5626 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -51,9 +51,6 @@
- const char *iproute_path = IPROUTE_PATH; /* GLOBAL */
- #endif
- 
--/* contains an SSEC_x value defined in misc.h */
--int script_security = SSEC_BUILT_IN; /* GLOBAL */
--
- /*
-  * Set standard file descriptors to /dev/null
-  */
-@@ -99,221 +96,6 @@ save_inetd_socket_descriptor(void)
- }
- 
- /*
-- * Print an error message based on the status code returned by system().
-- */
--const char *
--system_error_message(int stat, struct gc_arena *gc)
--{
--    struct buffer out = alloc_buf_gc(256, gc);
--#ifdef _WIN32
--    if (stat == -1)
--    {
--        buf_printf(&out, "external program did not execute -- ");
--    }
--    buf_printf(&out, "returned error code %d", stat);
--#else  /* ifdef _WIN32 */
--    if (stat == -1)
--    {
--        buf_printf(&out, "external program fork failed");
--    }
--    else if (!WIFEXITED(stat))
--    {
--        buf_printf(&out, "external program did not exit normally");
--    }
--    else
--    {
--        const int cmd_ret = WEXITSTATUS(stat);
--        if (!cmd_ret)
--        {
--            buf_printf(&out, "external program exited normally");
--        }
--        else if (cmd_ret == 127)
--        {
--            buf_printf(&out, "could not execute external program");
--        }
--        else
--        {
--            buf_printf(&out, "external program exited with error status: %d", cmd_ret);
--        }
--    }
--#endif /* ifdef _WIN32 */
--    return (const char *)out.data;
--}
--
--/*
-- * Wrapper around openvpn_execve
-- */
--bool
--openvpn_execve_check(const struct argv *a, const struct env_set *es, const unsigned int flags, const char *error_message)
--{
--    struct gc_arena gc = gc_new();
--    const int stat = openvpn_execve(a, es, flags);
--    int ret = false;
--
--    if (platform_system_ok(stat))
--    {
--        ret = true;
--    }
--    else
--    {
--        if (error_message)
--        {
--            msg(((flags & S_FATAL) ? M_FATAL : M_WARN), "%s: %s",
--                error_message,
--                system_error_message(stat, &gc));
--        }
--    }
--    gc_free(&gc);
--    return ret;
--}
--
--bool
--openvpn_execve_allowed(const unsigned int flags)
--{
--    if (flags & S_SCRIPT)
--    {
--        return script_security >= SSEC_SCRIPTS;
--    }
--    else
--    {
--        return script_security >= SSEC_BUILT_IN;
--    }
--}
--
--
--#ifndef _WIN32
--/*
-- * Run execve() inside a fork().  Designed to replicate the semantics of system() but
-- * in a safer way that doesn't require the invocation of a shell or the risks
-- * assocated with formatting and parsing a command line.
-- */
--int
--openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned int flags)
--{
--    struct gc_arena gc = gc_new();
--    int ret = -1;
--    static bool warn_shown = false;
--
--    if (a && a->argv[0])
--    {
--#if defined(ENABLE_FEATURE_EXECVE)
--        if (openvpn_execve_allowed(flags))
--        {
--            const char *cmd = a->argv[0];
--            char *const *argv = a->argv;
--            char *const *envp = (char *const *)make_env_array(es, true, &gc);
--            pid_t pid;
--
--            pid = fork();
--            if (pid == (pid_t)0) /* child side */
--            {
--                execve(cmd, argv, envp);
--                exit(127);
--            }
--            else if (pid < (pid_t)0) /* fork failed */
--            {
--                msg(M_ERR, "openvpn_execve: unable to fork");
--            }
--            else /* parent side */
--            {
--                if (waitpid(pid, &ret, 0) != pid)
--                {
--                    ret = -1;
--                }
--            }
--        }
--        else if (!warn_shown && (script_security < SSEC_SCRIPTS))
--        {
--            msg(M_WARN, SCRIPT_SECURITY_WARNING);
--            warn_shown = true;
--        }
--#else  /* if defined(ENABLE_FEATURE_EXECVE) */
--        msg(M_WARN, "openvpn_execve: execve function not available");
--#endif /* if defined(ENABLE_FEATURE_EXECVE) */
--    }
--    else
--    {
--        msg(M_FATAL, "openvpn_execve: called with empty argv");
--    }
--
--    gc_free(&gc);
--    return ret;
--}
--#endif /* ifndef _WIN32 */
--
--/*
-- * Run execve() inside a fork(), duping stdout.  Designed to replicate the semantics of popen() but
-- * in a safer way that doesn't require the invocation of a shell or the risks
-- * assocated with formatting and parsing a command line.
-- */
--int
--openvpn_popen(const struct argv *a,  const struct env_set *es)
--{
--    struct gc_arena gc = gc_new();
--    int ret = -1;
--    static bool warn_shown = false;
--
--    if (a && a->argv[0])
--    {
--#if defined(ENABLE_FEATURE_EXECVE)
--        if (script_security >= SSEC_BUILT_IN)
--        {
--            const char *cmd = a->argv[0];
--            char *const *argv = a->argv;
--            char *const *envp = (char *const *)make_env_array(es, true, &gc);
--            pid_t pid;
--            int pipe_stdout[2];
--
--            if (pipe(pipe_stdout) == 0)
--            {
--                pid = fork();
--                if (pid == (pid_t)0)       /* child side */
--                {
--                    close(pipe_stdout[0]);         /* Close read end */
--                    dup2(pipe_stdout[1],1);
--                    execve(cmd, argv, envp);
--                    exit(127);
--                }
--                else if (pid > (pid_t)0)       /* parent side */
--                {
--                    int status = 0;
--
--                    close(pipe_stdout[1]);        /* Close write end */
--                    waitpid(pid, &status, 0);
--                    ret = pipe_stdout[0];
--                }
--                else       /* fork failed */
--                {
--                    close(pipe_stdout[0]);
--                    close(pipe_stdout[1]);
--                    msg(M_ERR, "openvpn_popen: unable to fork %s", cmd);
--                }
--            }
--            else
--            {
--                msg(M_WARN, "openvpn_popen: unable to create stdout pipe for %s", cmd);
--                ret = -1;
--            }
--        }
--        else if (!warn_shown && (script_security < SSEC_SCRIPTS))
--        {
--            msg(M_WARN, SCRIPT_SECURITY_WARNING);
--            warn_shown = true;
--        }
--#else  /* if defined(ENABLE_FEATURE_EXECVE) */
--        msg(M_WARN, "openvpn_popen: execve function not available");
--#endif /* if defined(ENABLE_FEATURE_EXECVE) */
--    }
--    else
--    {
--        msg(M_FATAL, "openvpn_popen: called with empty argv");
--    }
--
--    gc_free(&gc);
--    return ret;
--}
--
--/*
-  * Prepend a random string to hostname to prevent DNS caching.
-  * For example, foo.bar.gov would be modified to <random-chars>.foo.bar.gov.
-  * Of course, this requires explicit support in the DNS server (wildcard).
-diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
-index 82bff9a..491906b 100644
---- a/src/openvpn/misc.h
-+++ b/src/openvpn/misc.h
-@@ -38,30 +38,6 @@
- /* forward declarations */
- struct plugin_list;
- 
--/* system flags */
--#define S_SCRIPT (1<<0)
--#define S_FATAL  (1<<1)
--
--const char *system_error_message(int, struct gc_arena *gc);
--
--/* wrapper around the execve() call */
--int openvpn_popen(const struct argv *a,  const struct env_set *es);
--
--int openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned int flags);
--
--bool openvpn_execve_check(const struct argv *a, const struct env_set *es, const unsigned int flags, const char *error_message);
--
--bool openvpn_execve_allowed(const unsigned int flags);
--
--static inline bool
--openvpn_run_script(const struct argv *a, const struct env_set *es, const unsigned int flags, const char *hook)
--{
--    char msg[256];
--
--    openvpn_snprintf(msg, sizeof(msg), "WARNING: Failed running command (%s)", hook);
--    return openvpn_execve_check(a, es, flags | S_SCRIPT, msg);
--}
--
- 
- /* Set standard file descriptors to /dev/null */
- void set_std_files_to_null(bool stdin_only);
-@@ -198,14 +174,6 @@ void get_user_pass_auto_userid(struct user_pass *up, const char *tag);
- extern const char *iproute_path;
- #endif
- 
--/* Script security */
--#define SSEC_NONE      0 /* strictly no calling of external programs */
--#define SSEC_BUILT_IN  1 /* only call built-in programs such as ifconfig, route, netsh, etc.*/
--#define SSEC_SCRIPTS   2 /* allow calling of built-in programs and user-defined scripts */
--#define SSEC_PW_ENV    3 /* allow calling of built-in programs and user-defined scripts that may receive a password as an environmental variable */
--extern int script_security; /* GLOBAL */
--
--
- #define COMPAT_FLAG_QUERY         0       /** compat_flags operator: Query for a flag */
- #define COMPAT_FLAG_SET           (1<<0)  /** compat_flags operator: Set a compat flag */
- #define COMPAT_NAMES              (1<<1)  /** compat flag: --compat-names set */
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index acc6912..2818b9a 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -38,7 +38,7 @@
- 
- #include "multi.h"
- #include "push.h"
--#include "misc.h"
-+#include "run_command.h"
- #include "otime.h"
- #include "gremlin.h"
- #include "mstats.h"
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 89bff1e..2d577f8 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -41,6 +41,7 @@
- #include "buffer.h"
- #include "error.h"
- #include "common.h"
-+#include "run_command.h"
- #include "shaper.h"
- #include "crypto.h"
- #include "ssl.h"
-@@ -6386,7 +6387,7 @@ add_option(struct options *options,
-     else if (streq(p[0], "script-security") && p[1] && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_GENERAL);
--        script_security = atoi(p[1]);
-+        script_security_set(atoi(p[1]));
-     }
-     else if (streq(p[0], "mssfix") && !p[2])
-     {
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 8c71e6e..955e15f 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -36,7 +36,7 @@
- #include "common.h"
- #include "error.h"
- #include "route.h"
--#include "misc.h"
-+#include "run_command.h"
- #include "socket.h"
- #include "manage.h"
- #include "win32.h"
-diff --git a/src/openvpn/run_command.c b/src/openvpn/run_command.c
-new file mode 100644
-index 0000000..4e19867
---- /dev/null
-+++ b/src/openvpn/run_command.c
-@@ -0,0 +1,267 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+ */
-+
-+#ifdef HAVE_CONFIG_H
-+#include "config.h"
-+#elif defined(_MSC_VER)
-+#include "config-msvc.h"
-+#endif
-+
-+#include "syshead.h"
-+
-+#include "buffer.h"
-+#include "error.h"
-+#include "platform.h"
-+#include "win32.h"
-+
-+#include "memdbg.h"
-+
-+#include "run_command.h"
-+
-+/* contains an SSEC_x value defined in platform.h */
-+static int script_security_level = SSEC_BUILT_IN; /* GLOBAL */
-+
-+int script_security(void)
-+{
-+    return script_security_level;
-+}
-+
-+void script_security_set(int level)
-+{
-+    script_security_level = level;
-+}
-+
-+/*
-+ * Print an error message based on the status code returned by system().
-+ */
-+static const char *
-+system_error_message(int stat, struct gc_arena *gc)
-+{
-+    struct buffer out = alloc_buf_gc(256, gc);
-+#ifdef _WIN32
-+    if (stat == -1)
-+    {
-+        buf_printf(&out, "external program did not execute -- ");
-+    }
-+    buf_printf(&out, "returned error code %d", stat);
-+#else  /* ifdef _WIN32 */
-+    if (stat == -1)
-+    {
-+        buf_printf(&out, "external program fork failed");
-+    }
-+    else if (!WIFEXITED(stat))
-+    {
-+        buf_printf(&out, "external program did not exit normally");
-+    }
-+    else
-+    {
-+        const int cmd_ret = WEXITSTATUS(stat);
-+        if (!cmd_ret)
-+        {
-+            buf_printf(&out, "external program exited normally");
-+        }
-+        else if (cmd_ret == 127)
-+        {
-+            buf_printf(&out, "could not execute external program");
-+        }
-+        else
-+        {
-+            buf_printf(&out, "external program exited with error status: %d", cmd_ret);
-+        }
-+    }
-+#endif /* ifdef _WIN32 */
-+    return (const char *)out.data;
-+}
-+
-+bool
-+openvpn_execve_allowed(const unsigned int flags)
-+{
-+    if (flags & S_SCRIPT)
-+    {
-+        return script_security() >= SSEC_SCRIPTS;
-+    }
-+    else
-+    {
-+        return script_security() >= SSEC_BUILT_IN;
-+    }
-+}
-+
-+
-+#ifndef _WIN32
-+/*
-+ * Run execve() inside a fork().  Designed to replicate the semantics of system() but
-+ * in a safer way that doesn't require the invocation of a shell or the risks
-+ * assocated with formatting and parsing a command line.
-+ */
-+int
-+openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned int flags)
-+{
-+    struct gc_arena gc = gc_new();
-+    int ret = -1;
-+    static bool warn_shown = false;
-+
-+    if (a && a->argv[0])
-+    {
-+#if defined(ENABLE_FEATURE_EXECVE)
-+        if (openvpn_execve_allowed(flags))
-+        {
-+            const char *cmd = a->argv[0];
-+            char *const *argv = a->argv;
-+            char *const *envp = (char *const *)make_env_array(es, true, &gc);
-+            pid_t pid;
-+
-+            pid = fork();
-+            if (pid == (pid_t)0) /* child side */
-+            {
-+                execve(cmd, argv, envp);
-+                exit(127);
-+            }
-+            else if (pid < (pid_t)0) /* fork failed */
-+            {
-+                msg(M_ERR, "openvpn_execve: unable to fork");
-+            }
-+            else /* parent side */
-+            {
-+                if (waitpid(pid, &ret, 0) != pid)
-+                {
-+                    ret = -1;
-+                }
-+            }
-+        }
-+        else if (!warn_shown && (script_security() < SSEC_SCRIPTS))
-+        {
-+            msg(M_WARN, SCRIPT_SECURITY_WARNING);
-+            warn_shown = true;
-+        }
-+#else  /* if defined(ENABLE_FEATURE_EXECVE) */
-+        msg(M_WARN, "openvpn_execve: execve function not available");
-+#endif /* if defined(ENABLE_FEATURE_EXECVE) */
-+    }
-+    else
-+    {
-+        msg(M_FATAL, "openvpn_execve: called with empty argv");
-+    }
-+
-+    gc_free(&gc);
-+    return ret;
-+}
-+#endif /* ifndef _WIN32 */
-+
-+/*
-+ * Wrapper around openvpn_execve
-+ */
-+bool
-+openvpn_execve_check(const struct argv *a, const struct env_set *es, const unsigned int flags, const char *error_message)
-+{
-+    struct gc_arena gc = gc_new();
-+    const int stat = openvpn_execve(a, es, flags);
-+    int ret = false;
-+
-+    if (platform_system_ok(stat))
-+    {
-+        ret = true;
-+    }
-+    else
-+    {
-+        if (error_message)
-+        {
-+            msg(((flags & S_FATAL) ? M_FATAL : M_WARN), "%s: %s",
-+                error_message,
-+                system_error_message(stat, &gc));
-+        }
-+    }
-+    gc_free(&gc);
-+    return ret;
-+}
-+
-+/*
-+ * Run execve() inside a fork(), duping stdout.  Designed to replicate the semantics of popen() but
-+ * in a safer way that doesn't require the invocation of a shell or the risks
-+ * assocated with formatting and parsing a command line.
-+ */
-+int
-+openvpn_popen(const struct argv *a,  const struct env_set *es)
-+{
-+    struct gc_arena gc = gc_new();
-+    int ret = -1;
-+    static bool warn_shown = false;
-+
-+    if (a && a->argv[0])
-+    {
-+#if defined(ENABLE_FEATURE_EXECVE)
-+        if (script_security() >= SSEC_BUILT_IN)
-+        {
-+            const char *cmd = a->argv[0];
-+            char *const *argv = a->argv;
-+            char *const *envp = (char *const *)make_env_array(es, true, &gc);
-+            pid_t pid;
-+            int pipe_stdout[2];
-+
-+            if (pipe(pipe_stdout) == 0)
-+            {
-+                pid = fork();
-+                if (pid == (pid_t)0)       /* child side */
-+                {
-+                    close(pipe_stdout[0]);         /* Close read end */
-+                    dup2(pipe_stdout[1],1);
-+                    execve(cmd, argv, envp);
-+                    exit(127);
-+                }
-+                else if (pid > (pid_t)0)       /* parent side */
-+                {
-+                    int status = 0;
-+
-+                    close(pipe_stdout[1]);        /* Close write end */
-+                    waitpid(pid, &status, 0);
-+                    ret = pipe_stdout[0];
-+                }
-+                else       /* fork failed */
-+                {
-+                    close(pipe_stdout[0]);
-+                    close(pipe_stdout[1]);
-+                    msg(M_ERR, "openvpn_popen: unable to fork %s", cmd);
-+                }
-+            }
-+            else
-+            {
-+                msg(M_WARN, "openvpn_popen: unable to create stdout pipe for %s", cmd);
-+                ret = -1;
-+            }
-+        }
-+        else if (!warn_shown && (script_security() < SSEC_SCRIPTS))
-+        {
-+            msg(M_WARN, SCRIPT_SECURITY_WARNING);
-+            warn_shown = true;
-+        }
-+#else  /* if defined(ENABLE_FEATURE_EXECVE) */
-+        msg(M_WARN, "openvpn_popen: execve function not available");
-+#endif /* if defined(ENABLE_FEATURE_EXECVE) */
-+    }
-+    else
-+    {
-+        msg(M_FATAL, "openvpn_popen: called with empty argv");
-+    }
-+
-+    gc_free(&gc);
-+    return ret;
-+}
-diff --git a/src/openvpn/run_command.h b/src/openvpn/run_command.h
-new file mode 100644
-index 0000000..4501a5c
---- /dev/null
-+++ b/src/openvpn/run_command.h
-@@ -0,0 +1,63 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+ */
-+
-+#ifndef RUN_COMMAND_H
-+#define RUN_COMMAND_H
-+
-+#include "basic.h"
-+#include "env_set.h"
-+
-+/* Script security */
-+#define SSEC_NONE      0 /* strictly no calling of external programs */
-+#define SSEC_BUILT_IN  1 /* only call built-in programs such as ifconfig, route, netsh, etc.*/
-+#define SSEC_SCRIPTS   2 /* allow calling of built-in programs and user-defined scripts */
-+#define SSEC_PW_ENV    3 /* allow calling of built-in programs and user-defined scripts that may receive a password as an environmental variable */
-+
-+int script_security(void);
-+
-+void script_security_set(int level);
-+
-+/* openvpn_execve flags */
-+#define S_SCRIPT (1<<0)
-+#define S_FATAL  (1<<1)
-+
-+/* wrapper around the execve() call */
-+int openvpn_popen(const struct argv *a,  const struct env_set *es);
-+
-+bool openvpn_execve_allowed(const unsigned int flags);
-+
-+bool openvpn_execve_check(const struct argv *a, const struct env_set *es,
-+                          const unsigned int flags, const char *error_message);
-+
-+static inline bool
-+openvpn_run_script(const struct argv *a, const struct env_set *es,
-+                   const unsigned int flags, const char *hook)
-+{
-+    char msg[256];
-+
-+    openvpn_snprintf(msg, sizeof(msg),
-+                     "WARNING: Failed running command (%s)", hook);
-+    return openvpn_execve_check(a, es, flags | S_SCRIPT, msg);
-+}
-+
-+#endif /* ifndef RUN_COMMAND_H */
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 0fc91f2..e7126da 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -35,6 +35,7 @@
- #include "gremlin.h"
- #include "plugin.h"
- #include "ps.h"
-+#include "run_command.h"
- #include "manage.h"
- #include "misc.h"
- #include "manage.h"
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index 3568bad..6e7b0b0 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -34,10 +34,10 @@
- 
- #include "syshead.h"
- 
--#include "misc.h"
-+#include "base64.h"
- #include "manage.h"
- #include "otime.h"
--#include "base64.h"
-+#include "run_command.h"
- #include "ssl_verify.h"
- #include "ssl_verify_backend.h"
- 
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index 0c94d73..6fbe3e5 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -32,6 +32,7 @@
- #include "base64.h"
- #include "crypto.h"
- #include "platform.h"
-+#include "run_command.h"
- #include "session_id.h"
- #include "ssl.h"
- 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 25831ce..6103163 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -40,7 +40,7 @@
- #include "tun.h"
- #include "fdmisc.h"
- #include "common.h"
--#include "misc.h"
-+#include "run_command.h"
- #include "socket.h"
- #include "manage.h"
- #include "route.h"
-diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index 95fea5d..1e5d871 100644
---- a/src/openvpn/win32.c
-+++ b/src/openvpn/win32.c
-@@ -39,9 +39,9 @@
- #include "buffer.h"
- #include "error.h"
- #include "mtu.h"
-+#include "run_command.h"
- #include "sig.h"
- #include "win32.h"
--#include "misc.h"
- #include "openvpn-msg.h"
- 
- #include "memdbg.h"
-@@ -1137,7 +1137,7 @@ openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned in
-             free(env);
-             gc_free(&gc);
-         }
--        else if (!exec_warn && (script_security < SSEC_SCRIPTS))
-+        else if (!exec_warn && (script_security() < SSEC_SCRIPTS))
-         {
-             msg(M_WARN, SCRIPT_SECURITY_WARNING);
-             exec_warn = true;
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index b69da84..a5d7f01 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -44,7 +44,8 @@ crypto_testdriver_SOURCES = test_crypto.c mock_msg.c \
- 	$(openvpn_srcdir)/env_set.c \
- 	$(openvpn_srcdir)/otime.c \
- 	$(openvpn_srcdir)/packet_id.c \
--	$(openvpn_srcdir)/platform.c
-+	$(openvpn_srcdir)/platform.c \
-+	$(openvpn_srcdir)/run_command.c
- 
- packet_id_testdriver_CFLAGS  = @TEST_CFLAGS@ \
- 	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir) \
-diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
-index 62d5b3f..b4ef668 100644
---- a/tests/unit_tests/openvpn/test_crypto.c
-+++ b/tests/unit_tests/openvpn/test_crypto.c
-@@ -41,8 +41,6 @@
- 
- #include "mock_msg.h"
- 
--int script_security = 0; /* Avoid including misc.c */
--
- static const char testtext[] = "Dummy text to test PEM encoding";
- 
- /**
--- 
-2.7.4
+begin 666 smime.p7s
+M,( &"2J&2(;W#0$'`J" ,( "`0$Q"S )!@4K#@,"&@4`,( &"2J&2(;W#0$'
+M`0``H((.$3""!#8P@@,>H ,"`0("`0$P#08)*H9(AO<-`0$%!0`P;S$+, D&
+M`U4$!A,"4T4Q%# 2!@-5! H3"T%D9%1R=7-T($%",28P) 8#500+$QU!9&14
+M<G5S="!%>'1E<FYA;"!45% @3F5T=V]R:S$B," &`U4$`Q,9061D5')U<W0@
+M17AT97)N86P@...2323...$@4F]O=# >%PTP,# U,S Q,#0X,SA:%PTR,# U,S Q,#0X
+M,SA:,&\Q"S )!@-5! 83`E-%,10P$@8#500*$PM!9&14<G5S="!!0C$F,"0&
+M`U4$"Q,=061D5')U<W0@...2324...)N86P@...1481...%10($YE='=O<FLQ(C @!@-5! ,3
+M&4%D9%1R=7-T($5X=&5R;F%L($-!(%)O;W0P@@$B, T&"2J&2(;W#0$!`04`
+M`X(!#P`P@@$*`H(!`0"W]QHSYO(`!"TYX$Y;[1^\; _-M?HCML[>FQ$SEZ0I
+M3'V3G[U*O)/M`QKCC\_E;5!:UI<IE%J L$EZVRZ5_;C*OS<X+1X^D4&M<%;'
+M\$\_Z#*>=,K(D%3IQE\/>)V:0#P.K&&J7A2/GH>A:E#<UYI.KP6SIG&4G'&S
+M4& *QQ.=. >&`JCIJ&DF&)"K3+!/(ZLZ3X38W\Z?X6EON]="UVM$Y,>M[FU!
+M7W):<0@...2325...%F@...1652...#?W`"\-PI)RVM X<ML4J$7$72I]M[36Q.ZLS1-$M\DK
+MW4,`)?IAN6EJ6",1MZ<SCU9U6?7-*==&MPHK9;;30F\5LKA[^^_I75/5-%HG
+M`@,!``&C@=PP@=DP'08#51T.!!8$%*V]F'HTM";W^L0F5.\#O> DRU0:, L&
+M`U4=#P0$`P(!!C /!@-5'1,!`?\$!3 #`0'_,(&9!@-5'2,$@9$P@...2326... %*V]
+MF'HTM";W^L0F5.\#O> DRU0:H7.D<3!O,0LP"08#500&$P)313$4,!(&`U4$
+M"A,+061D5')U<W0@...2327...(Q)C D!@-5! L3'4%D9%1R=7-T($5X=&5R;F%L(%14
+M4"!.971W;W)K,2(P( 8#500#$QE!9&14<G5S="!%>'1E<FYA;"!#02!2;V]T
+M@@$!, T&"2J&2(;W#0$!!04``X(!`0"PF^"%)<+6(^(/E@:2G4&8G-F$>8'9
+M'EL4!R,V98^PV'>[K$%L1V"#4;#Y,CWG_/8F$\> %J6_6OR'SWAYB2&:XDP'
+M"H8UO/+>4<32EK?<?D[N</T<.>L,`E$4+8Z]%N#!WT9UYR2M[/1"M(63<!!G
+MNIT&-4H8TRMZS%%"H7ICT>:[H<4KPC:^$PWFO6-^>7NG"0U JVK=CXK#]O:,
+M&D(%4=1%]9^G8B%H%2!#/)GG?+TDV*F1%W.(/U8;,3@...2328...'$/FLW(#IZ.+AOA
+MC)B#RQ\Q\41,Q@...2329...@#\?XO1> :R[IS$P.6IIY#R *+M6>8R8>59*4V((7
+M6GO0O,>/3H8$,(($KS""`Y>@`P(!`@(1`. CRQ42@...2330...)K6%N>E1G:R$P#08)
+M*H9(AO<-`0$+!0`P;S$+, D&`U4$!A,"4T4Q%# 2!@-5! H3"T%D9%1R=7-T
+M($%",28P) 8#500+$QU!9&14<G5S="!%>'1E<FYA;"!45% @3F5T=V]R:S$B
+M," &`U4$`Q,9061D5')U<W0@...2324...)N86P@...2323...$@4F]O=# >%PTQ-#$R,C(P
+M,# P,#!:%PTR,# U,S Q,#0X,SA:,(&;,0LP"08#500&$P)'0C$;,!D&`U4$
+M"!,21W)E871E<B!-86YC:&5S=&5R,1 P#@8#500'$P=386QF;W)D,1HP& 8#
+M500*$Q%#3TU/1$\@0T$@3&EM:71E9#%!,#\&`U4$`Q,X0T]-3T1/(%-(02TR
+M-38@...2331...($%U=&AE;G1I8V%T:6]N(&%N9"!396-U<F4@...2332...:6P@...2323...$P
+M@@$B, T&"2J&2(;W#0$!`04``X(!#P`P@@$*`H(!`0")L0W:>E,93G!2';Q6
+MI@...2333...[A)X);G4:OQ\%H3216CM(P;8+QZ44*G>8RD(M\784Z1U78C"A332@)_
+MMAT)@&ZE!#W9NKL6_J&'J2Y#4D,6?*\R4,BF3UKI"-C/DR6<>XCH,&3FI/A6
+M@/TJ)!0S%YFL1.5IBZ-&!DO",]3I0)\&L+&LDT"YM0B3.IPJ4Z,0VST@...2334...
+M`X[93G8E`B$I^J-\<79/[N%?@>G[5(#;PWLU4K>$WB(]+# M,7]9O5(WL#-I
+M+4/K^M:E\9=W9U&,V>XGZ[RE!SAVC*2I./_?C/4#K$F^RO=SF3H/,JN<E3H3
+M/0Y&.E=T85"^QD _R^3BGZ(A`@,!``&C@@$7,((!$S ?!@-5'2,$&# 6@!2M
+MO9AZ-+0F]_K$)E3O`[W@),M4&C =!@-5'0X$%@04DF%K@...1630...&BH*I/[&?QPJ/W
+MM( `P>PP#@8#51T/`0'_! 0#`@&&,!(&`U4=$P$!_P0(, 8!`?\"`0`P'08#
+M51TE!!8P% 8(*P8!!04'`P(&""L&`04%!P,$,!$&`U4=( 0*, @P!@8$51T@
+M`#!$!@-5'1\$/3 [,#F@...2335... UAC-H='1P.B\O8W)L+G5S97)T<G5S="YC;VTO
+M061D5')U<W1%>'1E<FYA;$-!4F]O="YC<FPP-08(*P8!!04'`0$$*3 G,"4&
+M""L&`04%!S !AAEH='1P.B\O;V-S<"YU<V5R=')U<W0N8V]M, T&"2J&2(;W
+M#0$!"P4``X(!`0`;*FZL5<$ZJXC%V.W-5?.J:V$KP D0(YD/Q69J;['UM+5W
+M7@\"80#??07^$K.D@( `_/L=6VIR`@I!O 6ZP5C5)L+JU4V$^_Z"F,]8&^,B
+M8YQ2^+L%-JM]6*7>JSMCY=K5<^_LX/M[XJ/_\$(CG,JVC4T^Y$L8`[*H+=38
+MNT)+D&F%$-NF-S3H>^ !$*6<RCK'GT^(-&Z*9= :BKNIW,K*-M'T_,)D*36O
+MUK&G<1'2`T.QCSZ:[)XR4_1VDLJ&- >Y+,KF'$K8F0W!AN*0DOM:0FHC(1#I
+M9<?UU;M^ZHR%( )BZM$Z!RQ9Q9DS\CB)Y;;I%GH?>13V2A :)OI\BON;,((%
+M(#""! B@`P(!`@(1`(+-2':;XZ#&U!G>^P&7OJPP#08)*H9(AO<-`0$+!0`P
+M@...2336..."S )!@-5! 83`D=",1LP&08#500($Q)'<F5A=&5R($UA;F-H97-T97(Q
+M$# .!@-5! <3!U-A;&9O<F0Q&C 8!@-5! H3$4-/34]$3R!#02!,:6UI=&5D
+M,4$P/P8#500#$SA#3TU/1$\@4TA!+3(U-B!#;&EE;G0@...2337...:&5N=&EC871I
+M;VX@...2338...(%-E8W5R92!%;6%I;"!#03 >%PTQ-S Q,3@...1595...,# P,#!:%PTR,# Q
+M,3@...1561...,S4Y-3E:," Q'C <!@DJADB&]PT!"0$6#VII;4!C87)R;VQL+F-O;3""
+M`2(P#08)*H9(AO<-`0$!!0`#@@$/`#""`0H"@@$!`+>;EY]ERMD$,P;8"I7X
+M?^ /F69VS8/L_HEV(J#N= $S];)Z)NSNCEKQQL*V\)X*[3:U#K&RT"]7`^(9
+M/]<<)D]QC$]^CQB)W6&GH=]!S)"#BX#@1Q)ZRNK%`>L!^4T4%*7SH4#L9W*4
+MT$5<*UR%\T_56N':G<DYHV-9.='BNEU"'%TY+[]LYZ=B>CA]ND5XQ(/B6G)$
+M+.45284OBU4BNP&F^_G1,%^"$.,_`")HQ!K_IW :.=0"J38^R&!!*H#$V>"H
+M\A*[L =HF*&;G2L'<8*^T%BY+7S.3D[>P=G4O*#;+C4>,]Q8'MX2A9@...2339...$#LC
+M'5]WL4$YZ?=VZ+H"B_33;&T"`P$``:."`=<P@@'3,!\&`U4=(P08,!: %))A
+M:X+AHJ"J3^QG\<*C][2 `,'L,!T&`U4=#@06!!2S>P/T;X" O18ML(68VK@...2340...
+M(7<123 .!@-5'0\!`?\$! ,"!: P# 8#51T3`0'_! (P`# =!@-5'24$%C 4
+M!@@K!@$%!0<#! 8(*P8!!04'`P(P1@...1499...#51T@!#\P/3 [!@PK!@$$`;(Q`0(!
+M`P4P*S I!@@K!@$%!0<"`18=:'1T<',Z+R]S96-U<F4N8V]M;V1O+FYE="]#
+M4%,P708#51T?!%8P5#!2H%"@3H9,:'1T<#HO+V-R;"YC;VUO9&]C82YC;VTO
+M0T]-3T1/4TA!,C4V0VQI96YT075T:&5N=&EC871I;VYA;F1396-U<F5%;6%I
+M;$-!+F-R;#"!D 8(*P8!!04'`0$$@8,P@...1499... P6 8(*P8!!04', *&3&AT=' Z
+M+R]C<G0N8V]M;V1O8V$N8V]M+T-/34]$3U-(03(U-D-L:65N=$%U=&AE;G1I
+M8V%T:6]N86YD4V5C=7)E16UA:6Q#02YC<G0P) 8(*P8!!04', &&&&AT=' Z
+M+R]O8W-P+F-O;6]D;V-A+F-O;3 :!@-5'1$$$S 1@...150...]J:6U 8V%R<F]L;"YC
+M;VTP#08)*H9(AO<-`0$+!0`#@@$!`'W33 4"-'Y3RQ+/>:PFSC@...2341... 1V
+MH"=?*@"]NZ7+1X&;TMD)/=KS<3BZN1X<*%FAF5TT8@\9&Y)W7&M28.,GF/5,
+MV'!"E<-"(+ZQU&<SFY>52)<8(H0D6.RB<5"5L#EHH-[8IB]:W7W0)9<VHV>A
+M3OF,X]<-(XS5!1:<VY>/Q-+\ZA; \X:\/*#59:$JD)8S.TZ20:Q(!CUZ+E[A
+M!-V6+Y9+9_#2CX G4C7LD,*>D_T?J?X.7^&M(*ZE=+5X$_)7^:4-5GJCO[GY
+MC*7/4G($(0<G(B/8FO<=,%\M\-V**+[KKM<%HL@...2342...,=HU Y_GU3PBE![J;
+MWYTVZ97^?=PQ@@0C,(($'P(!`3"!L3"!FS$+, D&`U4$!A,"1T(Q&S 9!@-5
+M! @3$D=R96%T97(@36%N8VAE<W1E<C$0, X&`U4$!Q,'4V%L9F]R9#$:,!@&
+M`U4$"A,10T]-3T1/($-!($QI;6ET960Q03 _!@-5! ,3.$-/34]$3R!32$$M
+M,C4V($-L:65N="!!=71H96YT:6-A=&EO;B!A;F0@...2343...=7)E($5M86EL($-!
+M`A$`@LU(=IOCH,;4&=[[`9>^K# )!@4K#@,"&@4`H(("1C 8!@DJADB&]PT!
+M"0,Q"P8)*H9(AO<-`0<!,!P&"2J&2(;W#0$)!3$/%PTQ-S$R,#@Q,C,T-#E:
+M,",&"2J&2(;W#0$)!#$6!!3Q(7\97V_)*Y^_3S@\J"=D9)@3ZC!;!@DJADB&
+M]PT!"0\Q3C!,, H&""J&2(;W#0,', X&""J&2(;W#0,"`@(`@# -!@@JADB&
+M]PT#`@(!0# '!@4K#@,"!S -!@@JADB&]PT#`@(!*# '!@4K#@,"&C"!P@...1499...)
+M*P8!! &"-Q $,8&T,(&Q,(&;,0LP"08#500&$P)'0C$;,!D&`U4$"!,21W)E
+M871E<B!-86YC:&5S=&5R,1 P#@8#500'$P=386QF;W)D,1HP& 8#500*$Q%#
+M3TU/1$\@0T$@3&EM:71E9#%!,#\&`U4$`Q,X0T]-3T1/(%-(02TR-38@...2344...
+M96YT($%U=&AE;G1I8V%T:6]N(&%N9"!396-U<F4@...2332...:6P@...2323...$"$0""S4AV
+MF^.@...2345...!E[ZL,('$!@LJADB&]PT!"1 ""S&!M*"!L3"!FS$+, D&`U4$
+M!A,"1T(Q&S 9!@-5! @3$D=R96%T97(@36%N8VAE<W1E<C$0, X&`U4$!Q,'
+M4V%L9F]R9#$:,!@&`U4$"A,10T]-3T1/($-!($QI;6ET960Q03 _!@-5! ,3
+M.$-/34]$3R!32$$M,C4V($-L:65N="!!=71H96YT:6-A=&EO;B!A;F0@...2343...
+M=7)E($5M86EL($-!`A$`@LU(=IOCH,;4&=[[`9>^K# -!@DJADB&]PT!`0$%
+M``2"`0`DFGL?$I"_5WZ,A> 6R2C-T>PYX"KK0WC:I-YG+&\@VH#6,;LB;P4@
+MC%Z8A??V0;=>78H[=F*L0(+,+@`/+Z_M]-5K73,"F32G4VT8:*,MP#VW2^J 
+MNU<*6+IO*DK3">RA;%7BC[^SY5=-W]0+-80VX_'$00]P5+I B>Q$,J )5"1J
+M&GQE_,WQ6>5Y,T=L27Z[TGAM\#2Z.7\X%L.1G!RA+EU.XRK[HL^RDF.KE#N5
+M'HBX11D37NR62[N*KW+U'.A 2/6L!M>X<NP-$>!M1KVL<3^1R-0]K+C#7CF9
+JF>ERD?,.L;PV1F&5_ YMX$G('0T%`])'%X2$0$QZ'S-N`I![````````
+`
+end
 
 
