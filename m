@@ -1,11 +1,11 @@
 From: Steffan Karger <steffan.karger@...1435...>
-Date: Fri, 8 Dec 2017 13:07:46 +0100
-Message-ID: <1512734870-17133-7-git-send-email-steffan.karger@...1435...>
+Date: Fri, 8 Dec 2017 13:07:47 +0100
+Message-ID: <1512734870-17133-8-git-send-email-steffan.karger@...1435...>
 In-Reply-To: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
 References: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 06/10] tls-crypt-v2: implement tls-crypt-v2
- handshake
+Subject: [Openvpn-devel] [PATCH 07/10] Move env helper functions into their
+ own module/file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,395 +17,1220 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Steffan Karger <steffan.karger@...1435...>, Antonio Quartulli <antonio@...515...>
 
-This makes clients send-and-use, and servers receive-unwrap-and-use
-tls-crypt-v2 client keys, which completes the on-the-wire work.
+To avoid a dependency on misc.c - which is a dependency mess - in the
+tls-crypt unit tests, split the env_set functionality out into it's own
+file.
 
+Signed-off-by: Antonio Quartulli <antonio@...515...>
 Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
- src/openvpn/init.c                   | 39 +++++++++++++++++-
- src/openvpn/openvpn.h                |  2 +
- src/openvpn/options.c                |  5 +++
- src/openvpn/ssl.c                    | 79 ++++++++++++++++++++++++++++--------
- src/openvpn/ssl_common.h             |  6 +++
- src/openvpn/tls_crypt.c              | 50 +++++++++++++++++++++++
- src/openvpn/tls_crypt.h              | 14 +++++++
- tests/unit_tests/openvpn/Makefile.am |  2 +-
- 8 files changed, 179 insertions(+), 18 deletions(-)
+ src/openvpn/Makefile.am              |   1 +
+ src/openvpn/argv.c                   |   1 +
+ src/openvpn/env_set.c                | 459 +++++++++++++++++++++++++++++++++++
+ src/openvpn/env_set.h                | 121 +++++++++
+ src/openvpn/misc.c                   | 441 ---------------------------------
+ src/openvpn/misc.h                   |  73 +-----
+ tests/unit_tests/openvpn/Makefile.am |   1 +
+ 7 files changed, 584 insertions(+), 513 deletions(-)
+ create mode 100644 src/openvpn/env_set.c
+ create mode 100644 src/openvpn/env_set.h
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 3e694b9..a4603b3 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2432,6 +2432,9 @@ key_schedule_free(struct key_schedule *ks, bool free_ssl_ctx)
-     {
-         tls_ctx_free(&ks->ssl_ctx);
-         free_key_ctx_bi(&ks->tls_wrap_key);
-+        free_key_ctx(&ks->tls_crypt_v2_server_key);
-+        buf_clear(&ks->tls_crypt_v2_wkc);
-+        free_buf(&ks->tls_crypt_v2_wkc);
-     }
-     CLEAR(*ks);
- }
-@@ -2600,6 +2603,24 @@ do_init_crypto_tls_c1(struct context *c)
-                                options->tls_crypt_inline, options->tls_server);
-         }
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index fcc22d6..441700a 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -51,6 +51,7 @@ openvpn_SOURCES = \
+ 	crypto_openssl.c crypto_openssl.h \
+ 	crypto_mbedtls.c crypto_mbedtls.h \
+ 	dhcp.c dhcp.h \
++	env_set.c env_set.h \
+ 	errlevel.h \
+ 	error.c error.h \
+ 	event.c event.h \
+diff --git a/src/openvpn/argv.c b/src/openvpn/argv.c
+index 95bdfea..7a41169 100644
+--- a/src/openvpn/argv.c
++++ b/src/openvpn/argv.c
+@@ -37,6 +37,7 @@
  
-+        /* tls-crypt with client-specific keys (--tls-crypt-v2) */
-+        if (options->tls_crypt_v2_file)
+ #include "argv.h"
+ #include "integer.h"
++#include "env_set.h"
+ #include "options.h"
+ 
+ static void
+diff --git a/src/openvpn/env_set.c b/src/openvpn/env_set.c
+new file mode 100644
+index 0000000..2a22e0b
+--- /dev/null
++++ b/src/openvpn/env_set.c
+@@ -0,0 +1,459 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
++ *  Copyright (C) 2014-2015 David Sommerseth <davids@...1347...>
++ *  Copyright (C) 2016-2017 David Sommerseth <davids@...515...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program (see the file COPYING included with this
++ *  distribution); if not, write to the Free Software Foundation, Inc.,
++ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ */
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#elif defined(_MSC_VER)
++#include "config-msvc.h"
++#endif
++
++#include "syshead.h"
++
++#include "misc.h"
++
++#include "env_set.h"
++
++/*
++ * Set environmental variable (int or string).
++ *
++ * On Posix, we use putenv for portability,
++ * and put up with its painful semantics
++ * that require all the support code below.
++ */
++
++/* General-purpose environmental variable set functions */
++
++static char *
++construct_name_value(const char *name, const char *value, struct gc_arena *gc)
++{
++    struct buffer out;
++
++    ASSERT(name);
++    if (!value)
++    {
++        value = "";
++    }
++    out = alloc_buf_gc(strlen(name) + strlen(value) + 2, gc);
++    buf_printf(&out, "%s=%s", name, value);
++    return BSTR(&out);
++}
++
++static bool
++env_string_equal(const char *s1, const char *s2)
++{
++    int c1, c2;
++    ASSERT(s1);
++    ASSERT(s2);
++
++    while (true)
++    {
++        c1 = *s1++;
++        c2 = *s2++;
++        if (c1 == '=')
 +        {
-+            if (options->tls_server)
++            c1 = 0;
++        }
++        if (c2 == '=')
++        {
++            c2 = 0;
++        }
++        if (!c1 && !c2)
++        {
++            return true;
++        }
++        if (c1 != c2)
++        {
++            break;
++        }
++    }
++    return false;
++}
++
++static bool
++remove_env_item(const char *str, const bool do_free, struct env_item **list)
++{
++    struct env_item *current, *prev;
++
++    ASSERT(str);
++    ASSERT(list);
++
++    for (current = *list, prev = NULL; current != NULL; current = current->next)
++    {
++        if (env_string_equal(current->string, str))
++        {
++            if (prev)
 +            {
-+                tls_crypt_v2_init_server_key(&c->c1.ks.tls_crypt_v2_server_key,
-+                                             true, options->tls_crypt_v2_file,
-+                                             options->tls_crypt_v2_inline);
++                prev->next = current->next;
 +            }
 +            else
 +            {
-+                tls_crypt_v2_init_client_key(&c->c1.ks.tls_wrap_key,
-+                                             &c->c1.ks.tls_crypt_v2_wkc,
-+                                             options->tls_crypt_v2_file,
-+                                             options->tls_crypt_v2_inline);
++                *list = current->next;
 +            }
++            if (do_free)
++            {
++                secure_memzero(current->string, strlen(current->string));
++                free(current->string);
++                free(current);
++            }
++            return true;
 +        }
-+
-         c->c1.ciphername = options->ciphername;
-         c->c1.authname = options->authname;
-         c->c1.keysize = options->keysize;
-@@ -2819,13 +2840,28 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
-     }
- 
-     /* TLS handshake encryption (--tls-crypt) */
--    if (options->tls_crypt_file)
-+    if (options->tls_crypt_file
-+        || (options->tls_crypt_v2_file && options->tls_client))
-     {
-         to.tls_wrap.mode = TLS_WRAP_CRYPT;
-         to.tls_wrap.opt.key_ctx_bi = c->c1.ks.tls_wrap_key;
-         to.tls_wrap.opt.pid_persist = &c->c1.pid_persist;
-         to.tls_wrap.opt.flags |= CO_PACKET_ID_LONG_FORM;
-         tls_crypt_adjust_frame_parameters(&to.frame);
-+
-+        if (options->tls_crypt_v2_file)
-+        {
-+            to.tls_wrap.tls_crypt_v2_wkc = &c->c1.ks.tls_crypt_v2_wkc;
-+        }
++        prev = current;
 +    }
-+
-+    if (options->tls_crypt_v2_file)
-+    {
-+        to.tls_crypt_v2 = true;
-+        if (options->tls_server)
-+        {
-+            to.tls_wrap.tls_crypt_v2_server_key = c->c1.ks.tls_crypt_v2_server_key;
-+        }
-     }
- 
-     /* If we are running over TCP, allow for
-@@ -4349,6 +4385,7 @@ inherit_context_child(struct context *dest,
-     dest->c1.ks.ssl_ctx = src->c1.ks.ssl_ctx;
-     dest->c1.ks.tls_wrap_key = src->c1.ks.tls_wrap_key;
-     dest->c1.ks.tls_auth_key_type = src->c1.ks.tls_auth_key_type;
-+    dest->c1.ks.tls_crypt_v2_server_key = src->c1.ks.tls_crypt_v2_server_key;
-     /* inherit pre-NCP ciphers */
-     dest->c1.ciphername = src->c1.ciphername;
-     dest->c1.authname = src->c1.authname;
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index db16842..38b4822 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -66,6 +66,8 @@ struct key_schedule
-     /* optional TLS control channel wrapping */
-     struct key_type tls_auth_key_type;
-     struct key_ctx_bi tls_wrap_key;
-+    struct key_ctx tls_crypt_v2_server_key;
-+    struct buffer tls_crypt_v2_wkc;             /**< Wrapped client key */
- };
- 
- /*
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index aa73fd9..89bff1e 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2704,6 +2704,11 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-         {
-             msg(M_USAGE, "--tls-auth and --tls-crypt are mutually exclusive");
-         }
-+        if (options->client && options->tls_crypt_v2_file
-+            && (options->tls_auth_file || options->tls_crypt_file))
-+        {
-+            msg(M_USAGE, "--tls-crypt-v2, --tls-auth and --tls-crypt are mutually exclusive in client mode");
-+        }
-     }
-     else
-     {
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index d45cfe4..6090826 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1048,6 +1048,23 @@ tls_session_user_pass_enabled(struct tls_session *session)
- /** @addtogroup control_processor
-  *  @{ */
- 
-+/** Free the elements of a tls_wrap_ctx structure */
-+static void tls_wrap_free(struct tls_wrap_ctx *tls_wrap)
-+{
-+    if (packet_id_initialized(&tls_wrap->opt.packet_id))
-+    {
-+        packet_id_free(&tls_wrap->opt.packet_id);
-+    }
-+
-+    if (tls_wrap->cleanup_key_ctx)
-+    {
-+        free_key_ctx_bi(&tls_wrap->opt.key_ctx_bi);
-+    }
-+
-+    free_buf(&tls_wrap->tls_crypt_v2_metadata);
-+    free_buf(&tls_wrap->work);
++    return false;
 +}
 +
- /** @name Functions for initialization and cleanup of tls_session structures
-  *  @{ */
- 
-@@ -1140,16 +1157,9 @@ tls_session_init(struct tls_multi *multi, struct tls_session *session)
- static void
- tls_session_free(struct tls_session *session, bool clear)
- {
--    int i;
--
--    if (packet_id_initialized(&session->tls_wrap.opt.packet_id))
--    {
--        packet_id_free(&session->tls_wrap.opt.packet_id);
--    }
-+    tls_wrap_free(&session->tls_wrap);
- 
--    free_buf(&session->tls_wrap.work);
--
--    for (i = 0; i < KS_SIZE; ++i)
-+    for (size_t i = 0; i < KS_SIZE; ++i)
-     {
-         key_state_free(&session->key[i], false);
-     }
-@@ -1475,6 +1485,8 @@ write_control_auth(struct tls_session *session,
-     ASSERT(reliable_ack_write
-                (ks->rec_ack, buf, &ks->session_id_remote, max_ack, prepend_ack));
- 
-+    msg(D_TLS_DEBUG, "%s(): %s", __func__, packet_opcode_name(opcode));
++static void
++add_env_item(char *str, const bool do_alloc, struct env_item **list, struct gc_arena *gc)
++{
++    struct env_item *item;
 +
-     if (session->tls_wrap.mode == TLS_WRAP_AUTH
-         || session->tls_wrap.mode == TLS_WRAP_NONE)
-     {
-@@ -1492,17 +1504,26 @@ write_control_auth(struct tls_session *session,
-         ASSERT(buf_init(&session->tls_wrap.work, buf->offset));
-         ASSERT(buf_write(&session->tls_wrap.work, &header, sizeof(header)));
-         ASSERT(session_id_write(&session->session_id, &session->tls_wrap.work));
--        if (tls_crypt_wrap(buf, &session->tls_wrap.work, &session->tls_wrap.opt))
--        {
--            /* Don't change the original data in buf, it's used by the reliability
--             * layer to resend on failure. */
--            *buf = session->tls_wrap.work;
--        }
--        else
-+        if (!tls_crypt_wrap(buf, &session->tls_wrap.work, &session->tls_wrap.opt))
-         {
-             buf->len = 0;
-             return;
-         }
++    ASSERT(str);
++    ASSERT(list);
 +
-+        if (opcode == P_CONTROL_HARD_RESET_CLIENT_V3)
++    ALLOC_OBJ_GC(item, struct env_item, gc);
++    item->string = do_alloc ? string_alloc(str, gc) : str;
++    item->next = *list;
++    *list = item;
++}
++
++/* struct env_set functions */
++
++static bool
++env_set_del_nolock(struct env_set *es, const char *str)
++{
++    return remove_env_item(str, es->gc == NULL, &es->list);
++}
++
++static void
++env_set_add_nolock(struct env_set *es, const char *str)
++{
++    remove_env_item(str, es->gc == NULL, &es->list);
++    add_env_item((char *)str, true, &es->list, es->gc);
++}
++
++struct env_set *
++env_set_create(struct gc_arena *gc)
++{
++    struct env_set *es;
++    ALLOC_OBJ_CLEAR_GC(es, struct env_set, gc);
++    es->list = NULL;
++    es->gc = gc;
++    return es;
++}
++
++void
++env_set_destroy(struct env_set *es)
++{
++    if (es && es->gc == NULL)
++    {
++        struct env_item *e = es->list;
++        while (e)
 +        {
-+            if (!buf_copy(&session->tls_wrap.work,
-+                          session->tls_wrap.tls_crypt_v2_wkc))
++            struct env_item *next = e->next;
++            free(e->string);
++            free(e);
++            e = next;
++        }
++        free(es);
++    }
++}
++
++bool
++env_set_del(struct env_set *es, const char *str)
++{
++    bool ret;
++    ASSERT(es);
++    ASSERT(str);
++    ret = env_set_del_nolock(es, str);
++    return ret;
++}
++
++void
++env_set_add(struct env_set *es, const char *str)
++{
++    ASSERT(es);
++    ASSERT(str);
++    env_set_add_nolock(es, str);
++}
++
++const char *
++env_set_get(const struct env_set *es, const char *name)
++{
++    const struct env_item *item = es->list;
++    while (item && !env_string_equal(item->string, name))
++    {
++        item = item->next;
++    }
++    return item ? item->string : NULL;
++}
++
++void
++env_set_print(int msglevel, const struct env_set *es)
++{
++    if (check_debug_level(msglevel))
++    {
++        const struct env_item *e;
++        int i;
++
++        if (es)
++        {
++            e = es->list;
++            i = 0;
++
++            while (e)
 +            {
-+                msg(D_TLS_ERRORS, "Could not append tls-crypt-v2 client key");
-+                buf->len = 0;
-+                return;
++                if (env_safe_to_print(e->string))
++                {
++                    msg(msglevel, "ENV [%d] '%s'", i, e->string);
++                }
++                ++i;
++                e = e->next;
 +            }
 +        }
-+
-+        /* Don't change the original data in buf, it's used by the reliability
-+         * layer to resend on failure. */
-+        *buf = session->tls_wrap.work;
-     }
-     *to_link_addr = &ks->remote_addr;
- }
-@@ -1518,6 +1539,16 @@ read_control_auth(struct buffer *buf,
-     struct gc_arena gc = gc_new();
-     bool ret = false;
- 
-+    const uint8_t opcode = *(BPTR(buf)) >> P_OPCODE_SHIFT;
-+    if (opcode == P_CONTROL_HARD_RESET_CLIENT_V3
-+        && !tls_crypt_v2_extract_client_key(buf, ctx))
-+    {
-+        msg (D_TLS_ERRORS,
-+             "TLS Error: can not extract tls-crypt-v2 client key from %s",
-+             print_link_socket_actual(from, &gc));
-+        goto cleanup;
 +    }
++}
 +
-     if (ctx->mode == TLS_WRAP_AUTH)
-     {
-         struct buffer null = clear_buf();
-@@ -1557,6 +1588,18 @@ read_control_auth(struct buffer *buf,
-         ASSERT(buf_copy(buf, &tmp));
-         buf_clear(&tmp);
-     }
-+    else if (ctx->tls_crypt_v2_server_key.cipher)
-+    {
-+        /* If tls-crypt-v2 is enabled, require *some* wrapping */
-+        msg(D_TLS_ERRORS, "TLS Error: could not determine wrapping from %s",
-+            print_link_socket_actual(from, &gc));
-+        /* TODO Do we want to support using tls-crypt-v2 and no control channel
-+         * wrapping at all simultaneously?  That would allow server admins to
-+         * upgrade clients one-by-one without running a second instance, but we
-+         * should not enable it by default because it breaks DoS-protection.
-+         * So, add something like --tls-crypt-v2-allow-insecure-fallback ? */
-+        goto cleanup;
-+    }
- 
-     if (ctx->mode == TLS_WRAP_NONE || ctx->mode == TLS_WRAP_AUTH)
-     {
-@@ -3854,6 +3897,10 @@ tls_pre_decrypt_lite(const struct tls_auth_standalone *tas,
-             /* HMAC test, if --tls-auth was specified */
-             status = read_control_auth(&newbuf, &tls_wrap_tmp, from);
-             free_buf(&newbuf);
-+            if (tls_wrap_tmp.cleanup_key_ctx)
-+            {
-+                free_key_ctx_bi(&tls_wrap_tmp.opt.key_ctx_bi);
-+            }
-             if (!status)
-             {
-                 goto error;
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 7e8f7d9..d6e0d1b 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -213,6 +213,12 @@ struct tls_wrap_ctx
-     } mode;                     /**< Control channel wrapping mode */
-     struct crypto_options opt;  /**< Crypto state */
-     struct buffer work;         /**< Work buffer (only for --tls-crypt) */
-+    struct key_ctx tls_crypt_v2_server_key;  /**< Decrypts client keys */
-+    const struct buffer *tls_crypt_v2_wkc;   /**< Wrapped client key,
-+                                                  sent to server */
-+    struct buffer tls_crypt_v2_metadata;     /**< Received from client */
-+    bool cleanup_key_ctx;                    /**< opt.key_ctx_bi is owned by
-+                                                  this context */
- };
- 
- /*
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index 82d7037..0c94d73 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -33,6 +33,7 @@
- #include "crypto.h"
- #include "platform.h"
- #include "session_id.h"
-+#include "ssl.h"
- 
- #include "tls_crypt.h"
- 
-@@ -519,6 +520,55 @@ error_exit:
-     return ret;
- }
- 
-+bool
-+tls_crypt_v2_extract_client_key(struct buffer *buf,
-+                                struct tls_wrap_ctx *ctx)
++void
++env_set_inherit(struct env_set *es, const struct env_set *src)
 +{
-+    static const int hard_reset_length =
-+            TLS_CRYPT_OFF_CT + sizeof(uint8_t) + sizeof(packet_id_type);
++    const struct env_item *e;
 +
-+    if (!ctx->tls_crypt_v2_server_key.cipher)
++    ASSERT(es);
++
++    if (src)
 +    {
-+        msg (D_TLS_ERRORS,
-+             "Client want tls-crypt-v2, but no server key present.");
-+        return false;
++        e = src->list;
++        while (e)
++        {
++            env_set_add_nolock(es, e->string);
++            e = e->next;
++        }
++    }
++}
++
++
++/* add/modify/delete environmental strings */
++
++void
++setenv_counter(struct env_set *es, const char *name, counter_type value)
++{
++    char buf[64];
++    openvpn_snprintf(buf, sizeof(buf), counter_format, value);
++    setenv_str(es, name, buf);
++}
++
++void
++setenv_int(struct env_set *es, const char *name, int value)
++{
++    char buf[64];
++    openvpn_snprintf(buf, sizeof(buf), "%d", value);
++    setenv_str(es, name, buf);
++}
++
++void
++setenv_long_long(struct env_set *es, const char *name, long long value)
++{
++    char buf[64];
++    openvpn_snprintf(buf, sizeof(buf), "%lld", value);
++    setenv_str(es, name, buf);
++}
++
++void
++setenv_str(struct env_set *es, const char *name, const char *value)
++{
++    setenv_str_ex(es, name, value, CC_NAME, 0, 0, CC_PRINT, 0, 0);
++}
++
++void
++setenv_str_safe(struct env_set *es, const char *name, const char *value)
++{
++    uint8_t b[64];
++    struct buffer buf;
++    buf_set_write(&buf, b, sizeof(b));
++    if (buf_printf(&buf, "OPENVPN_%s", name))
++    {
++        setenv_str(es, BSTR(&buf), value);
++    }
++    else
++    {
++        msg(M_WARN, "setenv_str_safe: name overflow");
++    }
++}
++
++void
++setenv_str_incr(struct env_set *es, const char *name, const char *value)
++{
++    unsigned int counter = 1;
++    const size_t tmpname_len = strlen(name) + 5; /* 3 digits counter max */
++    char *tmpname = gc_malloc(tmpname_len, true, NULL);
++    strcpy(tmpname, name);
++    while (NULL != env_set_get(es, tmpname) && counter < 1000)
++    {
++        ASSERT(openvpn_snprintf(tmpname, tmpname_len, "%s_%u", name, counter));
++        counter++;
++    }
++    if (counter < 1000)
++    {
++        setenv_str(es, tmpname, value);
++    }
++    else
++    {
++        msg(D_TLS_DEBUG_MED, "Too many same-name env variables, ignoring: %s", name);
++    }
++    free(tmpname);
++}
++
++void
++setenv_del(struct env_set *es, const char *name)
++{
++    ASSERT(name);
++    setenv_str(es, name, NULL);
++}
++
++void
++setenv_str_ex(struct env_set *es,
++              const char *name,
++              const char *value,
++              const unsigned int name_include,
++              const unsigned int name_exclude,
++              const char name_replace,
++              const unsigned int value_include,
++              const unsigned int value_exclude,
++              const char value_replace)
++{
++    struct gc_arena gc = gc_new();
++    const char *name_tmp;
++    const char *val_tmp = NULL;
++
++    ASSERT(name && strlen(name) > 1);
++
++    name_tmp = string_mod_const(name, name_include, name_exclude, name_replace, &gc);
++
++    if (value)
++    {
++        val_tmp = string_mod_const(value, value_include, value_exclude, value_replace, &gc);
 +    }
 +
-+    msg (D_HANDSHAKE, "Control Channel: using tls-crypt-v2 key");
++    ASSERT(es);
 +
-+    struct buffer wrapped_client_key = *buf;
-+    if (!buf_advance(&wrapped_client_key, hard_reset_length))
++    if (val_tmp)
 +    {
-+        msg (D_TLS_ERRORS, "Can not locate tls-crypt-v2 client key");
-+        return false;
++        const char *str = construct_name_value(name_tmp, val_tmp, &gc);
++        env_set_add(es, str);
++#if DEBUG_VERBOSE_SETENV
++        msg(M_INFO, "SETENV_ES '%s'", str);
++#endif
++    }
++    else
++    {
++        env_set_del(es, name_tmp);
 +    }
 +
-+    struct key2 client_key = { 0 };
-+    ctx->tls_crypt_v2_metadata = alloc_buf(TLS_CRYPT_V2_MAX_METADATA_LEN);
-+    if (!tls_crypt_v2_unwrap_client_key(&client_key,
-+                                        &ctx->tls_crypt_v2_metadata,
-+                                        wrapped_client_key,
-+                                        &ctx->tls_crypt_v2_server_key))
++    gc_free(&gc);
++}
++
++/*
++ * Setenv functions that append an integer index to the name
++ */
++static const char *
++setenv_format_indexed_name(const char *name, const int i, struct gc_arena *gc)
++{
++    struct buffer out = alloc_buf_gc(strlen(name) + 16, gc);
++    if (i >= 0)
 +    {
-+        msg (D_TLS_ERRORS, "Can not unwrap tls-crypt-v2 client key");
-+        secure_memzero(&client_key, sizeof(client_key));
-+        return false;
++        buf_printf(&out, "%s_%d", name, i);
++    }
++    else
++    {
++        buf_printf(&out, "%s", name);
++    }
++    return BSTR(&out);
++}
++
++void
++setenv_int_i(struct env_set *es, const char *name, const int value, const int i)
++{
++    struct gc_arena gc = gc_new();
++    const char *name_str = setenv_format_indexed_name(name, i, &gc);
++    setenv_int(es, name_str, value);
++    gc_free(&gc);
++}
++
++void
++setenv_str_i(struct env_set *es, const char *name, const char *value, const int i)
++{
++    struct gc_arena gc = gc_new();
++    const char *name_str = setenv_format_indexed_name(name, i, &gc);
++    setenv_str(es, name_str, value);
++    gc_free(&gc);
++}
++
++bool
++env_allowed(const char *str)
++{
++    return (script_security >= SSEC_PW_ENV || !is_password_env_var(str));
++}
++
++/* Make arrays of strings */
++
++const char **
++make_env_array(const struct env_set *es,
++               const bool check_allowed,
++               struct gc_arena *gc)
++{
++    char **ret = NULL;
++    struct env_item *e = NULL;
++    int i = 0, n = 0;
++
++    /* figure length of es */
++    if (es)
++    {
++        for (e = es->list; e != NULL; e = e->next)
++        {
++            ++n;
++        }
 +    }
 +
-+    /* Load the decrypted key */
-+    ctx->mode = TLS_WRAP_CRYPT;
-+    ctx->cleanup_key_ctx = true;
-+    ctx->opt.flags |= CO_PACKET_ID_LONG_FORM;
-+    memset(&ctx->opt.key_ctx_bi, 0, sizeof(ctx->opt.key_ctx_bi));
-+    tls_crypt_v2_load_client_key(&ctx->opt.key_ctx_bi, &client_key, true);
-+    secure_memzero(&client_key, sizeof(client_key));
++    /* alloc return array */
++    ALLOC_ARRAY_CLEAR_GC(ret, char *, n+1, gc);
 +
-+    /* Remove client key from buffer so tls-crypt code can unwrap message */
-+    ASSERT(buf_inc_len(buf, -(BLEN(&wrapped_client_key))));
++    /* fill return array */
++    if (es)
++    {
++        i = 0;
++        for (e = es->list; e != NULL; e = e->next)
++        {
++            if (!check_allowed || env_allowed(e->string))
++            {
++                ASSERT(i < n);
++                ret[i++] = e->string;
++            }
++        }
++    }
 +
++    ret[i] = NULL;
++    return (const char **)ret;
++}
+diff --git a/src/openvpn/env_set.h b/src/openvpn/env_set.h
+new file mode 100644
+index 0000000..5dc3348
+--- /dev/null
++++ b/src/openvpn/env_set.h
+@@ -0,0 +1,121 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program (see the file COPYING included with this
++ *  distribution); if not, write to the Free Software Foundation, Inc.,
++ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ */
++
++#ifndef ENV_SET_H
++#define ENV_SET_H
++
++#include "argv.h"
++#include "basic.h"
++#include "buffer.h"
++#include "common.h"
++
++/*
++ * Handle environmental variable lists
++ */
++
++struct env_item {
++    char *string;
++    struct env_item *next;
++};
++
++struct env_set {
++    struct gc_arena *gc;
++    struct env_item *list;
++};
++
++/* set/delete environmental variable */
++void setenv_str_ex(struct env_set *es,
++                   const char *name,
++                   const char *value,
++                   const unsigned int name_include,
++                   const unsigned int name_exclude,
++                   const char name_replace,
++                   const unsigned int value_include,
++                   const unsigned int value_exclude,
++                   const char value_replace);
++
++void setenv_counter(struct env_set *es, const char *name, counter_type value);
++
++void setenv_int(struct env_set *es, const char *name, int value);
++
++void setenv_long_long(struct env_set *es, const char *name, long long value);
++
++void setenv_str(struct env_set *es, const char *name, const char *value);
++
++void setenv_str_safe(struct env_set *es, const char *name, const char *value);
++
++void setenv_del(struct env_set *es, const char *name);
++
++/**
++ * Store the supplied name value pair in the env_set.  If the variable with the
++ * supplied name  already exists, append _N to the name, starting at N=1.
++ */
++void setenv_str_incr(struct env_set *es, const char *name, const char *value);
++
++void setenv_int_i(struct env_set *es, const char *name, const int value, const int i);
++
++void setenv_str_i(struct env_set *es, const char *name, const char *value, const int i);
++
++/* struct env_set functions */
++
++struct env_set *env_set_create(struct gc_arena *gc);
++
++void env_set_destroy(struct env_set *es);
++
++bool env_set_del(struct env_set *es, const char *str);
++
++void env_set_add(struct env_set *es, const char *str);
++
++const char *env_set_get(const struct env_set *es, const char *name);
++
++void env_set_print(int msglevel, const struct env_set *es);
++
++void env_set_inherit(struct env_set *es, const struct env_set *src);
++
++/* returns true if environmental variable name starts with 'password' */
++static inline bool is_password_env_var(const char *str)
++{
++    return (strncmp(str, "password", 8) == 0);
++}
++
++/* returns true if environmental variable safe to print to log */
++static inline bool env_safe_to_print(const char *str)
++{
++#ifndef UNSAFE_DEBUG
++    if (is_password_env_var(str))
++    {
++        return false;
++    }
++#endif
 +    return true;
 +}
 +
- void
- tls_crypt_v2_write_server_key_file(const char *filename)
- {
-diff --git a/src/openvpn/tls_crypt.h b/src/openvpn/tls_crypt.h
-index f4d3ca7..e720729 100644
---- a/src/openvpn/tls_crypt.h
-+++ b/src/openvpn/tls_crypt.h
-@@ -83,6 +83,7 @@
- #include "buffer.h"
- #include "crypto.h"
- #include "session_id.h"
-+#include "ssl_common.h"
- 
- #define TLS_CRYPT_TAG_SIZE (256/8)
- #define TLS_CRYPT_PID_SIZE (sizeof(packet_id_type) + sizeof(net_time_t))
-@@ -182,6 +183,19 @@ void tls_crypt_v2_init_client_key(struct key_ctx_bi *key,
-                                   const char *key_inline);
- 
- /**
-+ * Extract a tls-crypt-v2 client key from a P_CONTROL_HARD_RESET_CLIENT_V3
-+ * message, and load the key into the supplied tls wrap context.
-+ *
-+ * @param buf   Buffer containing a received P_CONTROL_HARD_RESET_CLIENT_V3
-+ *              message.
-+ * @param ctx   tls-wrap context to be initialized with the client key.
-+ *
-+ * @returns true if a key was successfully extracted.
-+ */
-+bool tls_crypt_v2_extract_client_key(struct buffer *buf,
-+                                     struct tls_wrap_ctx *ctx);
++/* returns true if environmental variable may be passed to an external program */
++bool env_allowed(const char *str);
 +
-+/**
-  * Generate a tls-crypt-v2 server key, and write to file.
-  *
-  * @param filename          Filename of the server key file to create.
++const char **make_env_array(const struct env_set *es,
++                            const bool check_allowed,
++                            struct gc_arena *gc);
++
++#endif /* ifndef ENV_SET_H */
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index 76b592f..ad26f3d 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -314,382 +314,6 @@ openvpn_popen(const struct argv *a,  const struct env_set *es)
+ }
+ 
+ 
+-
+-/*
+- * Set environmental variable (int or string).
+- *
+- * On Posix, we use putenv for portability,
+- * and put up with its painful semantics
+- * that require all the support code below.
+- */
+-
+-/* General-purpose environmental variable set functions */
+-
+-static char *
+-construct_name_value(const char *name, const char *value, struct gc_arena *gc)
+-{
+-    struct buffer out;
+-
+-    ASSERT(name);
+-    if (!value)
+-    {
+-        value = "";
+-    }
+-    out = alloc_buf_gc(strlen(name) + strlen(value) + 2, gc);
+-    buf_printf(&out, "%s=%s", name, value);
+-    return BSTR(&out);
+-}
+-
+-static bool
+-env_string_equal(const char *s1, const char *s2)
+-{
+-    int c1, c2;
+-    ASSERT(s1);
+-    ASSERT(s2);
+-
+-    while (true)
+-    {
+-        c1 = *s1++;
+-        c2 = *s2++;
+-        if (c1 == '=')
+-        {
+-            c1 = 0;
+-        }
+-        if (c2 == '=')
+-        {
+-            c2 = 0;
+-        }
+-        if (!c1 && !c2)
+-        {
+-            return true;
+-        }
+-        if (c1 != c2)
+-        {
+-            break;
+-        }
+-    }
+-    return false;
+-}
+-
+-static bool
+-remove_env_item(const char *str, const bool do_free, struct env_item **list)
+-{
+-    struct env_item *current, *prev;
+-
+-    ASSERT(str);
+-    ASSERT(list);
+-
+-    for (current = *list, prev = NULL; current != NULL; current = current->next)
+-    {
+-        if (env_string_equal(current->string, str))
+-        {
+-            if (prev)
+-            {
+-                prev->next = current->next;
+-            }
+-            else
+-            {
+-                *list = current->next;
+-            }
+-            if (do_free)
+-            {
+-                secure_memzero(current->string, strlen(current->string));
+-                free(current->string);
+-                free(current);
+-            }
+-            return true;
+-        }
+-        prev = current;
+-    }
+-    return false;
+-}
+-
+-static void
+-add_env_item(char *str, const bool do_alloc, struct env_item **list, struct gc_arena *gc)
+-{
+-    struct env_item *item;
+-
+-    ASSERT(str);
+-    ASSERT(list);
+-
+-    ALLOC_OBJ_GC(item, struct env_item, gc);
+-    item->string = do_alloc ? string_alloc(str, gc) : str;
+-    item->next = *list;
+-    *list = item;
+-}
+-
+-/* struct env_set functions */
+-
+-static bool
+-env_set_del_nolock(struct env_set *es, const char *str)
+-{
+-    return remove_env_item(str, es->gc == NULL, &es->list);
+-}
+-
+-static void
+-env_set_add_nolock(struct env_set *es, const char *str)
+-{
+-    remove_env_item(str, es->gc == NULL, &es->list);
+-    add_env_item((char *)str, true, &es->list, es->gc);
+-}
+-
+-struct env_set *
+-env_set_create(struct gc_arena *gc)
+-{
+-    struct env_set *es;
+-    ALLOC_OBJ_CLEAR_GC(es, struct env_set, gc);
+-    es->list = NULL;
+-    es->gc = gc;
+-    return es;
+-}
+-
+-void
+-env_set_destroy(struct env_set *es)
+-{
+-    if (es && es->gc == NULL)
+-    {
+-        struct env_item *e = es->list;
+-        while (e)
+-        {
+-            struct env_item *next = e->next;
+-            free(e->string);
+-            free(e);
+-            e = next;
+-        }
+-        free(es);
+-    }
+-}
+-
+-bool
+-env_set_del(struct env_set *es, const char *str)
+-{
+-    bool ret;
+-    ASSERT(es);
+-    ASSERT(str);
+-    ret = env_set_del_nolock(es, str);
+-    return ret;
+-}
+-
+-void
+-env_set_add(struct env_set *es, const char *str)
+-{
+-    ASSERT(es);
+-    ASSERT(str);
+-    env_set_add_nolock(es, str);
+-}
+-
+-const char *
+-env_set_get(const struct env_set *es, const char *name)
+-{
+-    const struct env_item *item = es->list;
+-    while (item && !env_string_equal(item->string, name))
+-    {
+-        item = item->next;
+-    }
+-    return item ? item->string : NULL;
+-}
+-
+-void
+-env_set_print(int msglevel, const struct env_set *es)
+-{
+-    if (check_debug_level(msglevel))
+-    {
+-        const struct env_item *e;
+-        int i;
+-
+-        if (es)
+-        {
+-            e = es->list;
+-            i = 0;
+-
+-            while (e)
+-            {
+-                if (env_safe_to_print(e->string))
+-                {
+-                    msg(msglevel, "ENV [%d] '%s'", i, e->string);
+-                }
+-                ++i;
+-                e = e->next;
+-            }
+-        }
+-    }
+-}
+-
+-void
+-env_set_inherit(struct env_set *es, const struct env_set *src)
+-{
+-    const struct env_item *e;
+-
+-    ASSERT(es);
+-
+-    if (src)
+-    {
+-        e = src->list;
+-        while (e)
+-        {
+-            env_set_add_nolock(es, e->string);
+-            e = e->next;
+-        }
+-    }
+-}
+-
+-
+-/* add/modify/delete environmental strings */
+-
+-void
+-setenv_counter(struct env_set *es, const char *name, counter_type value)
+-{
+-    char buf[64];
+-    openvpn_snprintf(buf, sizeof(buf), counter_format, value);
+-    setenv_str(es, name, buf);
+-}
+-
+-void
+-setenv_int(struct env_set *es, const char *name, int value)
+-{
+-    char buf[64];
+-    openvpn_snprintf(buf, sizeof(buf), "%d", value);
+-    setenv_str(es, name, buf);
+-}
+-
+-void
+-setenv_long_long(struct env_set *es, const char *name, long long value)
+-{
+-    char buf[64];
+-    openvpn_snprintf(buf, sizeof(buf), "%lld", value);
+-    setenv_str(es, name, buf);
+-}
+-
+-void
+-setenv_str(struct env_set *es, const char *name, const char *value)
+-{
+-    setenv_str_ex(es, name, value, CC_NAME, 0, 0, CC_PRINT, 0, 0);
+-}
+-
+-void
+-setenv_str_safe(struct env_set *es, const char *name, const char *value)
+-{
+-    uint8_t b[64];
+-    struct buffer buf;
+-    buf_set_write(&buf, b, sizeof(b));
+-    if (buf_printf(&buf, "OPENVPN_%s", name))
+-    {
+-        setenv_str(es, BSTR(&buf), value);
+-    }
+-    else
+-    {
+-        msg(M_WARN, "setenv_str_safe: name overflow");
+-    }
+-}
+-
+-void
+-setenv_str_incr(struct env_set *es, const char *name, const char *value)
+-{
+-    unsigned int counter = 1;
+-    const size_t tmpname_len = strlen(name) + 5; /* 3 digits counter max */
+-    char *tmpname = gc_malloc(tmpname_len, true, NULL);
+-    strcpy(tmpname, name);
+-    while (NULL != env_set_get(es, tmpname) && counter < 1000)
+-    {
+-        ASSERT(openvpn_snprintf(tmpname, tmpname_len, "%s_%u", name, counter));
+-        counter++;
+-    }
+-    if (counter < 1000)
+-    {
+-        setenv_str(es, tmpname, value);
+-    }
+-    else
+-    {
+-        msg(D_TLS_DEBUG_MED, "Too many same-name env variables, ignoring: %s", name);
+-    }
+-    free(tmpname);
+-}
+-
+-void
+-setenv_del(struct env_set *es, const char *name)
+-{
+-    ASSERT(name);
+-    setenv_str(es, name, NULL);
+-}
+-
+-void
+-setenv_str_ex(struct env_set *es,
+-              const char *name,
+-              const char *value,
+-              const unsigned int name_include,
+-              const unsigned int name_exclude,
+-              const char name_replace,
+-              const unsigned int value_include,
+-              const unsigned int value_exclude,
+-              const char value_replace)
+-{
+-    struct gc_arena gc = gc_new();
+-    const char *name_tmp;
+-    const char *val_tmp = NULL;
+-
+-    ASSERT(name && strlen(name) > 1);
+-
+-    name_tmp = string_mod_const(name, name_include, name_exclude, name_replace, &gc);
+-
+-    if (value)
+-    {
+-        val_tmp = string_mod_const(value, value_include, value_exclude, value_replace, &gc);
+-    }
+-
+-    ASSERT(es);
+-
+-    if (val_tmp)
+-    {
+-        const char *str = construct_name_value(name_tmp, val_tmp, &gc);
+-        env_set_add(es, str);
+-#if DEBUG_VERBOSE_SETENV
+-        msg(M_INFO, "SETENV_ES '%s'", str);
+-#endif
+-    }
+-    else
+-    {
+-        env_set_del(es, name_tmp);
+-    }
+-
+-    gc_free(&gc);
+-}
+-
+-/*
+- * Setenv functions that append an integer index to the name
+- */
+-static const char *
+-setenv_format_indexed_name(const char *name, const int i, struct gc_arena *gc)
+-{
+-    struct buffer out = alloc_buf_gc(strlen(name) + 16, gc);
+-    if (i >= 0)
+-    {
+-        buf_printf(&out, "%s_%d", name, i);
+-    }
+-    else
+-    {
+-        buf_printf(&out, "%s", name);
+-    }
+-    return BSTR(&out);
+-}
+-
+-void
+-setenv_int_i(struct env_set *es, const char *name, const int value, const int i)
+-{
+-    struct gc_arena gc = gc_new();
+-    const char *name_str = setenv_format_indexed_name(name, i, &gc);
+-    setenv_int(es, name_str, value);
+-    gc_free(&gc);
+-}
+-
+-void
+-setenv_str_i(struct env_set *es, const char *name, const char *value, const int i)
+-{
+-    struct gc_arena gc = gc_new();
+-    const char *name_str = setenv_format_indexed_name(name, i, &gc);
+-    setenv_str(es, name_str, value);
+-    gc_free(&gc);
+-}
+-
+ /* return true if filename can be opened for read */
+ bool
+ test_file(const char *filename)
+@@ -1288,71 +912,6 @@ safe_print(const char *str, struct gc_arena *gc)
+     return string_mod_const(str, CC_PRINT, CC_CRLF, '.', gc);
+ }
+ 
+-static bool
+-is_password_env_var(const char *str)
+-{
+-    return (strncmp(str, "password", 8) == 0);
+-}
+-
+-bool
+-env_allowed(const char *str)
+-{
+-    return (script_security >= SSEC_PW_ENV || !is_password_env_var(str));
+-}
+-
+-bool
+-env_safe_to_print(const char *str)
+-{
+-#ifndef UNSAFE_DEBUG
+-    if (is_password_env_var(str))
+-    {
+-        return false;
+-    }
+-#endif
+-    return true;
+-}
+-
+-/* Make arrays of strings */
+-
+-const char **
+-make_env_array(const struct env_set *es,
+-               const bool check_allowed,
+-               struct gc_arena *gc)
+-{
+-    char **ret = NULL;
+-    struct env_item *e = NULL;
+-    int i = 0, n = 0;
+-
+-    /* figure length of es */
+-    if (es)
+-    {
+-        for (e = es->list; e != NULL; e = e->next)
+-        {
+-            ++n;
+-        }
+-    }
+-
+-    /* alloc return array */
+-    ALLOC_ARRAY_CLEAR_GC(ret, char *, n+1, gc);
+-
+-    /* fill return array */
+-    if (es)
+-    {
+-        i = 0;
+-        for (e = es->list; e != NULL; e = e->next)
+-        {
+-            if (!check_allowed || env_allowed(e->string))
+-            {
+-                ASSERT(i < n);
+-                ret[i++] = e->string;
+-            }
+-        }
+-    }
+-
+-    ret[i] = NULL;
+-    return (const char **)ret;
+-}
+-
+ const char **
+ make_arg_array(const char *first, const char *parms, struct gc_arena *gc)
+ {
+diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
+index ec20ee7..3725fcf 100644
+--- a/src/openvpn/misc.h
++++ b/src/openvpn/misc.h
+@@ -27,6 +27,7 @@
+ #include "argv.h"
+ #include "basic.h"
+ #include "common.h"
++#include "env_set.h"
+ #include "integer.h"
+ #include "buffer.h"
+ #include "platform.h"
+@@ -37,20 +38,6 @@
+ /* forward declarations */
+ struct plugin_list;
+ 
+-/*
+- * Handle environmental variable lists
+- */
+-
+-struct env_item {
+-    char *string;
+-    struct env_item *next;
+-};
+-
+-struct env_set {
+-    struct gc_arena *gc;
+-    struct env_item *list;
+-};
+-
+ /* system flags */
+ #define S_SCRIPT (1<<0)
+ #define S_FATAL  (1<<1)
+@@ -83,61 +70,8 @@ void set_std_files_to_null(bool stdin_only);
+ extern int inetd_socket_descriptor;
+ void save_inetd_socket_descriptor(void);
+ 
+-/* set/delete environmental variable */
+-void setenv_str_ex(struct env_set *es,
+-                   const char *name,
+-                   const char *value,
+-                   const unsigned int name_include,
+-                   const unsigned int name_exclude,
+-                   const char name_replace,
+-                   const unsigned int value_include,
+-                   const unsigned int value_exclude,
+-                   const char value_replace);
+-
+-void setenv_counter(struct env_set *es, const char *name, counter_type value);
+-
+-void setenv_int(struct env_set *es, const char *name, int value);
+-
+-void setenv_long_long(struct env_set *es, const char *name, long long value);
+-
+-void setenv_str(struct env_set *es, const char *name, const char *value);
+-
+-void setenv_str_safe(struct env_set *es, const char *name, const char *value);
+-
+-void setenv_del(struct env_set *es, const char *name);
+-
+-/**
+- * Store the supplied name value pair in the env_set.  If the variable with the
+- * supplied name  already exists, append _N to the name, starting at N=1.
+- */
+-void setenv_str_incr(struct env_set *es, const char *name, const char *value);
+-
+-void setenv_int_i(struct env_set *es, const char *name, const int value, const int i);
+-
+-void setenv_str_i(struct env_set *es, const char *name, const char *value, const int i);
+-
+-/* struct env_set functions */
+-
+-struct env_set *env_set_create(struct gc_arena *gc);
+-
+-void env_set_destroy(struct env_set *es);
+-
+-bool env_set_del(struct env_set *es, const char *str);
+-
+-void env_set_add(struct env_set *es, const char *str);
+-
+-const char *env_set_get(const struct env_set *es, const char *name);
+-
+-void env_set_print(int msglevel, const struct env_set *es);
+-
+-void env_set_inherit(struct env_set *es, const struct env_set *src);
+-
+ /* Make arrays of strings */
+ 
+-const char **make_env_array(const struct env_set *es,
+-                            const bool check_allowed,
+-                            struct gc_arena *gc);
+-
+ const char **make_arg_array(const char *first, const char *parms, struct gc_arena *gc);
+ 
+ const char **make_extended_arg_array(char **p, struct gc_arena *gc);
+@@ -259,11 +193,6 @@ void set_auth_token(struct user_pass *up, const char *token);
+  */
+ const char *safe_print(const char *str, struct gc_arena *gc);
+ 
+-/* returns true if environmental variable safe to print to log */
+-bool env_safe_to_print(const char *str);
+-
+-/* returns true if environmental variable may be passed to an external program */
+-bool env_allowed(const char *str);
+ 
+ void configure_path(void);
+ 
 diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index 937393d..c457ef9 100644
+index c457ef9..7b41363 100644
 --- a/tests/unit_tests/openvpn/Makefile.am
 +++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -56,7 +56,7 @@ packet_id_testdriver_SOURCES = test_packet_id.c mock_msg.c \
- 
- tls_crypt_testdriver_CFLAGS  = @TEST_CFLAGS@ \
- 	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir) \
--	$(OPTIONAL_CRYPTO_CFLAGS)
-+	$(OPTIONAL_CRYPTO_CFLAGS) $(OPTIONAL_PKCS11_HELPER_CFLAGS)
- tls_crypt_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
- 	$(OPTIONAL_CRYPTO_LIBS)
- tls_crypt_testdriver_SOURCES = test_tls_crypt.c mock_msg.c \
+@@ -39,6 +39,7 @@ crypto_testdriver_SOURCES = test_crypto.c mock_msg.c \
+ 	$(openvpn_srcdir)/crypto.c \
+ 	$(openvpn_srcdir)/crypto_mbedtls.c \
+ 	$(openvpn_srcdir)/crypto_openssl.c \
++	$(openvpn_srcdir)/env_set.c \
+ 	$(openvpn_srcdir)/otime.c \
+ 	$(openvpn_srcdir)/packet_id.c \
+ 	$(openvpn_srcdir)/platform.c
 -- 
 2.7.4
 
