@@ -1,12 +1,25 @@
 MIME-Version: 1.0
-In-Reply-To: <1512729211-8407-1-git-send-email-steffan@...1856...>
-References: <1512729211-8407-1-git-send-email-steffan@...1856...>
+In-Reply-To: <21d0b41e-6665-a27b-a8a1-596f34a000cf@...277...>
+References: <20171010231130.6832-1-simon@...2293...>
+ <20171010231130.6832-9-simon@...2293...>
+ <20171105192019.GM958@...1296...>
+ <99D61A626FDA8A4B90A270669121BE108587DA0D@...2294...>
+ <CAKuzo_hTnJVcEuCqCQ-ZR3swbkio7CWZgy3z5C0fWVJ-E0PCvQ@...278...>
+ <99D61A626FDA8A4B90A270669121BE108587DF29@...2294...>
+ <CAKuzo_jFp86anFk6mgavBoYhmCCHUeJ_EQpb6Z05PTNJxBYWWw@...278...>
+ <99D61A626FDA8A4B90A270669121BE10858830C4@...2294...>
+ <20171204192515.GA69387@...1296...>
+ <99D61A626FDA8A4B90A270669121BE1085B4AC9A@...2294...>
+ <CAKuzo_hJdNEMMmUqa4d=n4k9vZXoYtkC9CFcvAkW9cDgzT2wCA@...278...>
+ <99D61A626FDA8A4B90A270669121BE1085B4CA4D@...2294...>
+ <CAKuzo_iAJxP9AmGvApNXno7yw5q_rn5jQko+bUePmdXqUXgmgQ@...278...>
+ <99D61A626FDA8A4B90A270669121BE1085B4D703@...2294...>
+ <21d0b41e-6665-a27b-a8a1-596f34a000cf@...277...>
 From: Selva Nair <selva.nair@...277...>
-Date: Fri, 8 Dec 2017 10:16:03 -0500
-Message-ID: <CAKuzo_jJx0U0hEnuv=BFGm_d6ME4JP44mDCCoBPwzCBdRs+dVA@...278...>
-Content-Type: multipart/alternative; boundary="94eb2c076b9ae6a7ba055fd5aaff"
-Subject: Re: [Openvpn-devel] [PATCH] Don't throw fatal errors from
- verify_cert_export_cert()
+Date: Sat, 9 Dec 2017 20:17:15 -0500
+Message-ID: <CAKuzo_hp_cLUQ-R6njmPxsbtC_nXgpud5F5YqW7Ubsq2SxtvZA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 09/13] Signed/unsigned warnings of MSVC
+ resolved
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,94 +28,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---94eb2c076b9ae6a7ba055fd5aaff
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Gisle Vanem <gisle.vanem@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Fri, Dec 8, 2017 at 5:33 AM, Steffan Karger <steffan@...1856...> wrote:
+On Thu, Dec 7, 2017 at 12:32 PM, Gisle Vanem <gisle.vanem@...277...> wrote:
+> Simon Rozman wrote:
+>
+>> However, I did stare-review your code:
+>> - It does not introduce any new Windows API calls it has not used before.
+>> - It compiles fine.
+>
+> It also builds fine here with cl v19.11.
+> But using clang-cl v5, I'm getting:
+>   In file included from src/openvpn/argv.c:36:
+>   ./src/openvpn/syshead.h(368,13) :  error: typedef redefinition with
+> different types ('int' vs 'enum MIB_TCP_STATE')
+>   typedef int MIB_TCP_STATE;
+>               ^
+>   f:\ProgramFiler-x86\WindowsKits\Include\10.0.15063.0\shared\tcpmib.h(56,3)
+> :  note: previous definition is here
+>   } MIB_TCP_STATE;
+>     ^
+>   1 error generated.
+>
+> I fail to why I don't get this error with MSVC.
+> But the lines in syshead.h should simply not assume
+> MinGW is the only compiler on Windows. Line 365:
+>
+>   #ifdef _WIN32
+>   /* Missing declarations for old-school MinGW32 or MinGW-w64 v1.x.
+>    */
+>   #if defined(__MINGW32__) && !(defined(__MINGW64_VERSION_MAJOR) &&
+> __MINGW64_VERSION_MAJOR < 2)
+>   typedef int MIB_TCP_STATE;
+>   #endif
 
-> From: Steffan Karger <steffan.karger@...1435...>
->
-> As with create_temp_file(), this function is called on client connects and
-> should not cause fatal errors when I/O (possibly temporarily) fails.
->
-> The callers of this function are already fixed in the commit that does the
-> same for create_temp_file().
->
-> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-> ---
->  src/openvpn/ssl_verify.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-> index ebb1da2..12cff9a 100644
-> --- a/src/openvpn/ssl_verify.c
-> +++ b/src/openvpn/ssl_verify.c
-> @@ -557,13 +557,14 @@ verify_cert_export_cert(openvpn_x509_cert_t
-> *peercert, const char *tmp_dir, stru
->      peercert_file = fopen(peercert_filename, "w+");
->      if (!peercert_file)
->      {
-> -        msg(M_ERR, "Failed to open temporary file : %s",
-> peercert_filename);
-> +        msg(M_ERRNO, "Failed to open temporary file : %s",
-> peercert_filename);
->
+Are you referring to the patch under discussion or something else?
 
-I think M_ERRNO alone is not a good flag  -- if you OR it with M_NONFATAL,
-syslog
-will get level = LOG_ERR, management will get the 'N' flag etc.
+The code you quote above is not in current master nor in 2.4. In fact that
+!(defined(__MINGW64_VERSION_MAJOR) &&__MINGW64_VERSION_MAJOR < 2
+even contradicts the comment above it. Its likely not from the
+official codebase.
+
+Anyway, MIB_TCP_STATE is typedef-ed to int in syshead.h whenever
+ _WIN32 is defined. We may not need it anymore, but it hasn't so
+far interfered with any builds.
+
+Indeed its an enum as per MSDN (vista+ addition?). If clang doesn't
+like passing an int as enum and is using Microsoft's headers, it could
+trip there even if MSVC allows it. Such a combination has never been
+tested before, I suppose.
 
 Selva
-
---94eb2c076b9ae6a7ba055fd5aaff
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Hi,<br><div class=3D"gmail_extra"><br><div class=3D"gmail_=
-quote">On Fri, Dec 8, 2017 at 5:33 AM, Steffan Karger <span dir=3D"ltr">&lt=
-;<a href=3D"mailto:steffan@...1856..." target=3D"_blank">steffan@...1856...=
-</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin=
-:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">From: Steffan Karg=
-er &lt;<a href=3D"mailto:steffan.karger@...1435...">steffan.karger@...2191...=
-..</a>&gt;<br>
-<br>
-As with create_temp_file(), this function is called on client connects and<=
-br>
-should not cause fatal errors when I/O (possibly temporarily) fails.<br>
-<br>
-The callers of this function are already fixed in the commit that does the<=
-br>
-same for create_temp_file().<br>
-<br>
-Signed-off-by: Steffan Karger &lt;<a href=3D"mailto:steffan.karger@...2191...=
-..">steffan.karger@...1435...</a>&gt;<br>
----<br>
-=C2=A0src/openvpn/ssl_verify.c | 5 +++--<br>
-=C2=A01 file changed, 3 insertions(+), 2 deletions(-)<br>
-<br>
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c<br>
-index ebb1da2..12cff9a 100644<br>
---- a/src/openvpn/ssl_verify.c<br>
-+++ b/src/openvpn/ssl_verify.c<br>
-@@ -557,13 +557,14 @@ verify_cert_export_cert(<wbr>openvpn_x509_cert_t *pee=
-rcert, const char *tmp_dir, stru<br>
-=C2=A0 =C2=A0 =C2=A0peercert_file =3D fopen(peercert_filename, &quot;w+&quo=
-t;);<br>
-=C2=A0 =C2=A0 =C2=A0if (!peercert_file)<br>
-=C2=A0 =C2=A0 =C2=A0{<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(M_ERR, &quot;Failed to open temporary file=
- : %s&quot;, peercert_filename);<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(M_ERRNO, &quot;Failed to open temporary fi=
-le : %s&quot;, peercert_filename);<br></blockquote><div><br></div><div>I th=
-ink M_ERRNO alone is not a good flag=C2=A0 -- if you OR it with M_NONFATAL,=
- syslog</div><div>will get level =3D LOG_ERR, management will get the &#39;=
-N&#39; flag etc.</div><div><br></div><div>Selva=C2=A0</div></div></div></di=
-v>
-
---94eb2c076b9ae6a7ba055fd5aaff--
 
