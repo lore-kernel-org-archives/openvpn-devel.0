@@ -1,17 +1,11 @@
-From: Simon Rozman <simon@...2293...>
-Date: Sun, 10 Dec 2017 12:25:38 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE1085B531DD@...2294...>
-References: <1512534521-14760-1-git-send-email-selva.nair@...277...>
- <99D61A626FDA8A4B90A270669121BE1085B4CA9F@...2294...>
- <CAKuzo_jSTnc7-x6U3fVD7ozn5AFc5BtkpmP41rahSufuZ9VB-Q@...278...>
-In-Reply-To: <CAKuzo_jSTnc7-x6U3fVD7ozn5AFc5BtkpmP41rahSufuZ9VB-Q@...278...>
-Content-Language: en-US
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
- micalg=2.16.840.1.101.3.4.2.1;
- boundary="----=_NextPart_000_0000_01D371BA.5DC391B0"
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Mon, 11 Dec 2017 12:41:58 +0100
+Message-ID: <1512992518-29910-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1498913642-32459-2-git-send-email-steffan.karger@...1435...>
+References: <1498913642-32459-2-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] Refactor get_interface_metric to return
- metric and auto flag separately
+Subject: [Openvpn-devel] [PATCH 2/5 v2] buffer_list_aggregate_separator():
+ update list size after aggregating
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,98 +14,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-------=_NextPart_000_0000_01D371BA.5DC391B0
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: 7bit
+After aggregating a buffer_list, the size should be adjusted accordingly.
 
-Hi,
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+---
+v2: rebase on master
 
-> That's exactly what the original version does and the purpose of the patch 
-> is
-> to not do so. Else this function is not useful when someone really wants to
-> find what the metric is as the value of 0 hides that info. Note that even 
-> when
-> automatic metric is in use the interface has some metric set.
->
-> I want to use it in another patch where the actual metric is required even 
-> if
-> automatic metric is in use.
+ src/openvpn/buffer.c                   |  1 +
+ tests/unit_tests/openvpn/test_buffer.c | 15 +++++----------
+ 2 files changed, 6 insertions(+), 10 deletions(-)
 
-Makes sense now. Sorry for the delay.
+diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
+index ecd3b17..28ac508 100644
+--- a/src/openvpn/buffer.c
++++ b/src/openvpn/buffer.c
+@@ -1257,6 +1257,7 @@ buffer_list_aggregate_separator(struct buffer_list *bl, const size_t max, const
+                 e = next;
+             }
+             bl->head = f;
++            bl->size -= count-1;
+             f->next = more;
+             if (!more)
+             {
+diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/openvpn/test_buffer.c
+index ba5aa67..f5830a1 100644
+--- a/tests/unit_tests/openvpn/test_buffer.c
++++ b/tests/unit_tests/openvpn/test_buffer.c
+@@ -139,8 +139,7 @@ test_buffer_list_aggregate_separator_two(void **state)
+     /* Aggregate the first two elements */
+     /* FIXME this exceeds the supplied max */
+     buffer_list_aggregate_separator(ctx->one_two_three, 4, testsep);
+-    /* FIXME size does not get adjusted after aggregating */
+-    assert_int_equal(ctx->one_two_three->size, 3);
++    assert_int_equal(ctx->one_two_three->size, 2);
+     struct buffer *buf = buffer_list_peek(ctx->one_two_three);
+     assert_buf_equals_str(buf, teststr1 testsep teststr2 testsep);
+ }
+@@ -152,8 +151,7 @@ test_buffer_list_aggregate_separator_all(void **state)
+ 
+     /* Aggregate all */
+     buffer_list_aggregate_separator(ctx->one_two_three, 1<<16, testsep);
+-    /* FIXME size does not get adjusted after aggregating */
+-    assert_int_equal(ctx->one_two_three->size, 3);
++    assert_int_equal(ctx->one_two_three->size, 1);
+     struct buffer *buf = buffer_list_peek(ctx->one_two_three);
+     assert_buf_equals_str(buf,
+                           teststr1 testsep teststr2 testsep teststr3 testsep);
+@@ -166,8 +164,7 @@ test_buffer_list_aggregate_separator_nosep(void **state)
+ 
+     /* Aggregate all */
+     buffer_list_aggregate_separator(ctx->one_two_three, 1<<16, testnosep);
+-    /* FIXME size does not get adjusted after aggregating */
+-    assert_int_equal(ctx->one_two_three->size, 3);
++    assert_int_equal(ctx->one_two_three->size, 1);
+     struct buffer *buf = buffer_list_peek(ctx->one_two_three);
+     assert_buf_equals_str(buf, teststr1 teststr2 teststr3);
+ }
+@@ -180,8 +177,7 @@ test_buffer_list_aggregate_separator_zerolen(void **state)
+ 
+     /* Aggregate all */
+     buffer_list_aggregate_separator(bl_zerolen, 1<<16, testnosep);
+-    /* FIXME size does not get adjusted after aggregating */
+-    assert_int_equal(bl_zerolen->size, 2);
++    assert_int_equal(bl_zerolen->size, 1);
+     struct buffer *buf = buffer_list_peek(bl_zerolen);
+     assert_buf_equals_str(buf, "");
+ }
+@@ -194,8 +190,7 @@ test_buffer_list_aggregate_separator_emptybuffers(void **state)
+ 
+     /* Aggregate all */
+     buffer_list_aggregate_separator(bl_emptybuffers, 1<<16, testnosep);
+-    /* FIXME size does not get adjusted after aggregating */
+-    assert_int_equal(bl_emptybuffers->size, 2);
++    assert_int_equal(bl_emptybuffers->size, 1);
+     struct buffer *buf = buffer_list_peek(bl_emptybuffers);
+     assert_int_equal(BLEN(buf), 0);
+ }
+-- 
+2.7.4
 
-Acked-by: Simon Rozman <simon@...2293...>
-
-Best regards,
-Simon
-
-
-------=_NextPart_000_0000_01D371BA.5DC391B0
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-
-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
-
-------=_NextPart_000_0000_01D371BA.5DC391B0--
 
