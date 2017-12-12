@@ -1,10 +1,8 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <a0f3334f-fd8f-4998-4935-274b1f9dc64b@...515...>
-Date: Tue, 12 Dec 2017 11:00:52 +0200
+Date: Tue, 12 Dec 2017 13:46:48 +0200
+From: Borodin Oleg <borodin@...2368...>
+Message-ID: <20171212134648.286e2416@...2368...>
 MIME-Version: 1.0
-Content-Language: en-US
-Subject: [Openvpn-devel] Topics for the community meeting (Wed,
- 13th Dec 2017)
+Subject: [Openvpn-devel] openvpn web frontend, vpnsw
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,37 +11,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-NOTE: This meeting starts at 11:30 CET.
 
----
+Hi!
 
-Hi,
+I wrote a small web interface for managing openvpn services and obtaining detail network information. 
+http://wiki.unix7.org/vpnsw
 
+I wrote it to replace a legacy corporate vpn-crutch. 
+It is already quite working, we manage more 400 tunnels/1200 workplaces.
 
-We're going to have an IRC meeting tomorrow starting at 11:30 CET
-(10:30 UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have
-to be logged in to Freenode to join the channel.
+I have a question: how interesting this product is for continue developing? 
+As opensource, of course.
 
-Current topic list along with basic information is here:
+[Sorry, I sent this also to openvpn-users@]
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2017-12-13>
+-- 
+With best regards,
 
-If you have any other things you'd like to bring up, respond to this
-mail, send me mail privately or add them to the list yourself.
-
-In case you can't attend the meeting, please feel free to make comments
-on the topics by responding to this email or to the summary email sent
-after the meeting. Whenever possible, we'll also respond to existing,
-related email threads.
-
---
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
+Oleg Borodin
+Senior IT engeneer
+borodin@...2368...
+onborodin@...277...
 
