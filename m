@@ -1,11 +1,10 @@
-From: Steffan Karger <steffan.karger@...1435...>
-Date: Mon, 11 Dec 2017 12:41:58 +0100
-Message-ID: <1512992518-29910-1-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <1498913642-32459-2-git-send-email-steffan.karger@...1435...>
-References: <1498913642-32459-2-git-send-email-steffan.karger@...1435...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <a0f3334f-fd8f-4998-4935-274b1f9dc64b@...515...>
+Date: Tue, 12 Dec 2017 11:00:52 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/5 v2] buffer_list_aggregate_separator():
- update list size after aggregating
+Content-Language: en-US
+Subject: [Openvpn-devel] Topics for the community meeting (Wed,
+ 13th Dec 2017)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,87 +13,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-After aggregating a buffer_list, the size should be adjusted accordingly.
+NOTE: This meeting starts at 11:30 CET.
 
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
-v2: rebase on master
 
- src/openvpn/buffer.c                   |  1 +
- tests/unit_tests/openvpn/test_buffer.c | 15 +++++----------
- 2 files changed, 6 insertions(+), 10 deletions(-)
+Hi,
 
-diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
-index ecd3b17..28ac508 100644
---- a/src/openvpn/buffer.c
-+++ b/src/openvpn/buffer.c
-@@ -1257,6 +1257,7 @@ buffer_list_aggregate_separator(struct buffer_list *bl, const size_t max, const
-                 e = next;
-             }
-             bl->head = f;
-+            bl->size -= count-1;
-             f->next = more;
-             if (!more)
-             {
-diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/openvpn/test_buffer.c
-index ba5aa67..f5830a1 100644
---- a/tests/unit_tests/openvpn/test_buffer.c
-+++ b/tests/unit_tests/openvpn/test_buffer.c
-@@ -139,8 +139,7 @@ test_buffer_list_aggregate_separator_two(void **state)
-     /* Aggregate the first two elements */
-     /* FIXME this exceeds the supplied max */
-     buffer_list_aggregate_separator(ctx->one_two_three, 4, testsep);
--    /* FIXME size does not get adjusted after aggregating */
--    assert_int_equal(ctx->one_two_three->size, 3);
-+    assert_int_equal(ctx->one_two_three->size, 2);
-     struct buffer *buf = buffer_list_peek(ctx->one_two_three);
-     assert_buf_equals_str(buf, teststr1 testsep teststr2 testsep);
- }
-@@ -152,8 +151,7 @@ test_buffer_list_aggregate_separator_all(void **state)
- 
-     /* Aggregate all */
-     buffer_list_aggregate_separator(ctx->one_two_three, 1<<16, testsep);
--    /* FIXME size does not get adjusted after aggregating */
--    assert_int_equal(ctx->one_two_three->size, 3);
-+    assert_int_equal(ctx->one_two_three->size, 1);
-     struct buffer *buf = buffer_list_peek(ctx->one_two_three);
-     assert_buf_equals_str(buf,
-                           teststr1 testsep teststr2 testsep teststr3 testsep);
-@@ -166,8 +164,7 @@ test_buffer_list_aggregate_separator_nosep(void **state)
- 
-     /* Aggregate all */
-     buffer_list_aggregate_separator(ctx->one_two_three, 1<<16, testnosep);
--    /* FIXME size does not get adjusted after aggregating */
--    assert_int_equal(ctx->one_two_three->size, 3);
-+    assert_int_equal(ctx->one_two_three->size, 1);
-     struct buffer *buf = buffer_list_peek(ctx->one_two_three);
-     assert_buf_equals_str(buf, teststr1 teststr2 teststr3);
- }
-@@ -180,8 +177,7 @@ test_buffer_list_aggregate_separator_zerolen(void **state)
- 
-     /* Aggregate all */
-     buffer_list_aggregate_separator(bl_zerolen, 1<<16, testnosep);
--    /* FIXME size does not get adjusted after aggregating */
--    assert_int_equal(bl_zerolen->size, 2);
-+    assert_int_equal(bl_zerolen->size, 1);
-     struct buffer *buf = buffer_list_peek(bl_zerolen);
-     assert_buf_equals_str(buf, "");
- }
-@@ -194,8 +190,7 @@ test_buffer_list_aggregate_separator_emptybuffers(void **state)
- 
-     /* Aggregate all */
-     buffer_list_aggregate_separator(bl_emptybuffers, 1<<16, testnosep);
--    /* FIXME size does not get adjusted after aggregating */
--    assert_int_equal(bl_emptybuffers->size, 2);
-+    assert_int_equal(bl_emptybuffers->size, 1);
-     struct buffer *buf = buffer_list_peek(bl_emptybuffers);
-     assert_int_equal(BLEN(buf), 0);
- }
--- 
-2.7.4
 
+We're going to have an IRC meeting tomorrow starting at 11:30 CET
+(10:30 UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have
+to be logged in to Freenode to join the channel.
+
+Current topic list along with basic information is here:
+
+<https://community.openvpn.net/openvpn/wiki/Topics-2017-12-13>
+
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
+
+In case you can't attend the meeting, please feel free to make comments
+on the topics by responding to this email or to the summary email sent
+after the meeting. Whenever possible, we'll also respond to existing,
+related email threads.
+
+--
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
