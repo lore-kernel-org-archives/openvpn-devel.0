@@ -1,11 +1,10 @@
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <c01383c9-231a-a3c7-db92-b31fee0ce681@...515...>
+Date: Tue, 19 Dec 2017 17:07:09 +0200
 MIME-Version: 1.0
-In-Reply-To: <1513450642-29687-1-git-send-email-Michael.Karvan@...277...>
-References: <1513450642-29687-1-git-send-email-Michael.Karvan@...277...>
-From: Selva Nair <selva.nair@...277...>
-Date: Sat, 16 Dec 2017 16:48:51 -0500
-Message-ID: <CAKuzo_h5j47vjO65KUSmXwm5zwTnzNpaJCmLeGh-6Uq5nZnxVA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Add common_name to the conv method.
- This allows the common_name to be accessible in PAM.
+Content-Language: en-US
+Subject: [Openvpn-devel] Topics for the community meeting (Wed,
+ 20th Dec 2017)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,43 +13,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Michael Karvan <michael.karvan@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
+
+NOTE: This meeting starts at 11:30 CET.
+
+---
 
 Hi,
 
-On Sat, Dec 16, 2017 at 1:57 PM, Michael Karvan
-<michael.karvan@...277...> wrote:
-> ---
->  src/plugins/auth-pam/auth-pam.c | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
->
-> diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
-> index ae514d7..c64e14b 100644
-> --- a/src/plugins/auth-pam/auth-pam.c
-> +++ b/src/plugins/auth-pam/auth-pam.c
-> @@ -637,9 +637,16 @@ my_conv(int n, const struct pam_message **msg_array,
->                          ret = PAM_CONV_ERR;
->                      }
->                      break;
-> +
-> +                case PAM_TEXT_INFO:
-> +                    aresp[i].resp = strdup(up->common_name);
-> +                    if (aresp[i].resp == NULL)
-> +                    {
-> +                        ret = PAM_CONV_ERR;
-> +                    }
-> +                    break;
+We're going to have an IRC meeting tomorrow starting at 11:30 CET
+(10:30 UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have
+to be logged in to Freenode to join the channel.
 
-The purpose of PAM_TEXT_INFO is for the module to send an info message
-to the user. Using it to send the common name back to the module is
-hackish. Yes, it can work in a custom module but its not right to
-interpret every
-PAM_TEXT_INFO msg as a request for common name.
+Current topic list along with basic information is here:
 
-Why not prompt for it just like username and have the plugin return it?
+<https://community.openvpn.net/openvpn/wiki/Topics-2017-12-20>
 
-Selva
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
+
+In case you can't attend the meeting, please feel free to make comments
+on the topics by responding to this email or to the summary email sent
+after the meeting. Whenever possible, we'll also respond to existing,
+related email threads.
+
+--
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
