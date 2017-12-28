@@ -1,12 +1,15 @@
-Reply-To: openvpn-devel@lists.sourceforge.net
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <b261efe6-c16e-5780-86a9-ec361b353c0d@...2080...>
-Date: Fri, 22 Dec 2017 11:48:28 +0100
+From: Antonio Quartulli <a@...2181...>
+References: <1498913642-32459-2-git-send-email-steffan.karger@...1435...>
+ <1512992518-29910-1-git-send-email-steffan.karger@...1435...>
+Message-ID: <d4afae6b-30f3-f5cd-3b66-8649aaa9bd65@...2181...>
+Date: Fri, 29 Dec 2017 06:50:43 +0800
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
+In-Reply-To: <1512992518-29910-1-git-send-email-steffan.karger@...1435...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="0jckvAKSB3y7Mcdgm1CYAErQ7TWJm0KT7"
-Subject: [Openvpn-devel] OpenVPN 3 Linux client
+ boundary="qSVZEtmPLNPxr8epxOdnrtyHwvqp7mZI7"
+Subject: Re: [Openvpn-devel] [PATCH 2/5 v2]
+ buffer_list_aggregate_separator(): update list size after aggregating
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,116 +18,97 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Steffan Karger <steffan.karger@...1435...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---0jckvAKSB3y7Mcdgm1CYAErQ7TWJm0KT7
-Content-Type: multipart/mixed; boundary="kvDWNCs15gnrcDp6rZSfEX4D5MmK4ortL";
+--qSVZEtmPLNPxr8epxOdnrtyHwvqp7mZI7
+Content-Type: multipart/mixed; boundary="uurvmupXzIOiTFS55t9WE4L8R3G7a97qE";
  protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: "openvpn-devel@lists.sourceforge.net"
- <openvpn-devel@lists.sourceforge.net>
-Message-ID: <b261efe6-c16e-5780-86a9-ec361b353c0d@...2080...>
-Subject: OpenVPN 3 Linux client
+From: Antonio Quartulli <a@...2181...>
+To: Steffan Karger <steffan.karger@...1435...>,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <d4afae6b-30f3-f5cd-3b66-8649aaa9bd65@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH 2/5 v2] buffer_list_aggregate_separator():
+ update list size after aggregating
+References: <1498913642-32459-2-git-send-email-steffan.karger@...1435...>
+ <1512992518-29910-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1512992518-29910-1-git-send-email-steffan.karger@...1435...>
 
---kvDWNCs15gnrcDp6rZSfEX4D5MmK4ortL
-Content-Language: en-GB
+--uurvmupXzIOiTFS55t9WE4L8R3G7a97qE
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-
 Hi,
 
-We are starting Christmas a few days early with a bigger present.
+the patch looks good and finally gets rid of some FIXMEs in the buffer
+unit-test.
 
-We are now releasing a brand new OpenVPN 3 based client for Linux.  This mi=
-ght
-build on other platforms which can provide the needed dependencies, but
-currently Linux is the main target.
+However, the field fixed by this patch is not really used anywhere, thus
+no real logic flaw is being corrected (Steffan, correct me if I am wrong).
 
-This is a very different client from what you are used to with OpenVPN 2.x.
-It aims to target several of the issues found in modern Linux distributions
-and have in particular a different approach to privilege separation between
-the various steps a VPN tunnel setup depends on.
+For this reason, I think that backporting this patch to older releases
+is entirely up to the maintainers.
 
-This new client consists of three backend services, a logger and front-ends.
-The communication between them are entirely based on D-Bus, so this is a ha=
-rd
-dependency now.  We might look into making it possible to swap out D-Bus wi=
-th
-other types of IPC alternatives (zeroMQ might interesting) - but D-Bus has =
-the
-advantage of providing a good way to automatically start services as needed=
- as
-well as authorization controls.
+On 11/12/17 19:41, Steffan Karger wrote:
+> After aggregating a buffer_list, the size should be adjusted accordingly.
+>=20
+> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 
-More details can be found in the README file in the git repos, and I have e=
-ven
-more documentation describing the implementation in far more details in the
-pipe.  I plan to release that documentation once I've had a chance to review
-it once again.
+Acked-by: Antonio Quartulli <a@...2181...>
 
-This project is quite a bit from being production ready, but is functional.
-I've used this new client both against OpenVPN Access Server (with and with=
-out
-dynamic challenge activated) as well as Private Tunnel.  There will be sharp
-edges many places and bugs to be discovered.  But I hope more users and
-developers are interested enough to try this out and help out wherever poss=
-ible.
+except for a little style issue remarked below:
 
-Feel free to grab me on IRC (#openvpn-devel @ FreeNode, nick: dazo) or send=
- an
-e-mail to me or this mailing list - and we'll figure out how to improve thi=
-ngs.
+> ---
+> v2: rebase on master
+>=20
+>  src/openvpn/buffer.c                   |  1 +
+>  tests/unit_tests/openvpn/test_buffer.c | 15 +++++----------
+>  2 files changed, 6 insertions(+), 10 deletions(-)
+>=20
+> diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
+> index ecd3b17..28ac508 100644
+> --- a/src/openvpn/buffer.c
+> +++ b/src/openvpn/buffer.c
+> @@ -1257,6 +1257,7 @@ buffer_list_aggregate_separator(struct buffer_list =
+*bl, const size_t max, const
+>                  e =3D next;
+>              }
+>              bl->head =3D f;
+> +            bl->size -=3D count-1;
 
-So to the sources .... (I bet quite some of you scrolled down here first ..=
-..)
+the '-' sign should be surrounded by spaces.
 
-<https://gitlab.com/openvpn/openvpn3-linux/>
-<https://github.com/OpenVPN/openvpn3-linux/>
-
-In regards to patch contribution ... Patches need to go this mailing list.
-Pull requests can only be used during the discussion phase and the final
-patches *MUST* go to this mailing list.
-
-
-Enjoy!  And Merry Christmas!
-
+Cheers,
 
 --=20
-kind regards,
-
-David Sommerseth
-davids .{at}. openvpn.net
-OpenVPN Inc
+Antonio Quartulli
 
 
 
---kvDWNCs15gnrcDp6rZSfEX4D5MmK4ortL--
+--uurvmupXzIOiTFS55t9WE4L8R3G7a97qE--
 
---0jckvAKSB3y7Mcdgm1CYAErQ7TWJm0KT7
+--qSVZEtmPLNPxr8epxOdnrtyHwvqp7mZI7
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJaPOL8AAoJEIbPlEyWcf3yUlsQALL/F1UXb0P4ATjeH0tXOi4v
-ki3WW7rmC0UPWKTKekhimidII2Gd7ZvfAUkOUVk9gE0d5CTMQAljjkgj/dw8onYF
-rFR3SOc4rEj9bDofXMOAfAVatzPLHQu1lQ8+6fAunyoN/qlt/WDHDk6HKHEj6WXa
-fGurgKsry2k5pY4NuSH2882u/X3byXuV/zSwgrR5ykSd/lPntm9ddKs4cMzT/iZH
-iOPLcBctHUN0xdXT1UOhmeFz4TytB2oKvaD5UMF+zCFiTA3Pfa2fDwpQLh9Bb8v2
-NCXO/LJBYx+aI7dFV9/QmpVkSk8dnK4SEQjaWTQXFhM7nXFQh4EYtsRin88LrWKk
-2ursWLNwHfTsZXyAqKYKreqGdNVgDjjoLUTilkFI7irAwD2/UbMWVgh7GgDjOYkY
-Y5Y7tMc7n7GbXfRoLYDKAJ5PVYaEs5Y2kYBuK9+VgceT7DH7ry5poODV99vont49
-BfdmRBZfIluClR8cXOhjJDIfR5QoarjHaueXrMp4R8HeWD/J8/pcPDSpGtCssf0Z
-FW4bTzk2bi+QfkHnMsk1hwslKHBmY7/hB3WIJwb7b5261aQh+ZAyU4emjB8OLAmc
-VVQjgVZsJeO7EFMw8rNlad7WRSIvHV5Yx+OO05eR4Jisg4x1zoG7QWKi6lyBYXC7
-+mTdqaZg4/fJcbkLChaF
-=R0nZ
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlpFdUMACgkQB6U8WA7y
+zXR/fg//QFQ9pjLt27kPmG7Zhmy6T9bNIT4VNg0fT7ruYN7O3IxpfNJ8+1VwoYcj
+Zs1QaZM8sYfN3kqIJwkLbRNgtTsxeX+qXmzOed8lLEP5t5zv84z2WWhzt4VnTO3v
+Fr+EE39Q9ZRuoLhT39oS31TvaFKfiUyOk6tKPdVosDO22/fWquJRn7r+QMTgB8y5
+US9Q0gWUdFPlGWd4bdPaMRjXVRBhjxLxJNc6QxEfp9bisAxuauxMOANeX0mwZqsK
+efF6ZztCeECtEzwz6n4eZQjl5kc8UGbkjJ1hw0BcvYSGhURrPTl8P6w5K0GIt9P8
+8AsOnuFTYs5xLhDR3wn6K2m/ikho2mAwsCVwo89cy6gYDRaW/2TZtlxu/OtDqE1V
+TgII9qcw9AD70H3KEePjn3QWrKtnNKBstQnAa3lJJsG9Z1sRJZWLCSypLQ1pWegm
+/E5WXueAZmZyXvIG4RzEer6pWIdj0v2+l9OU3YuaOzo3oHQDEXLemmzhvRDkiz6d
+XHRr53nFFxJXwGDWkam8xxPAX6LOr1ey6xynZzuBn6DnPujK/ljqN0l9AGuu+/qx
+m7UcXDDJe4+gcveI8cUHA8Ut1zO5+ylppKC3CKpOjDX9hObS0wioc02dFxvpwhy6
+EJrEzSJL2VMewsxkzS+9SoPN19YEARhTGF4dadn7Uz7pslp3UrY=
+=B8G4
 -----END PGP SIGNATURE-----
 
---0jckvAKSB3y7Mcdgm1CYAErQ7TWJm0KT7--
+--qSVZEtmPLNPxr8epxOdnrtyHwvqp7mZI7--
 
