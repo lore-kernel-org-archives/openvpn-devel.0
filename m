@@ -1,11 +1,11 @@
 From: Steffan Karger <steffan.karger@...1435...>
-Date: Fri, 29 Dec 2017 10:52:24 +0100
-Message-ID: <1514541144-19407-1-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <d4afae6b-30f3-f5cd-3b66-8649aaa9bd65@...2181...>
-References: <d4afae6b-30f3-f5cd-3b66-8649aaa9bd65@...2181...>
+Date: Fri, 29 Dec 2017 10:53:11 +0100
+Message-ID: <1514541191-19471-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <d19475e8-d4b4-56ac-7899-53b3aec2d4f3@...2181...>
+References: <d19475e8-d4b4-56ac-7899-53b3aec2d4f3@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/5 v3] buffer_list_aggregate_separator():
- update list size after aggregating
+Subject: [Openvpn-devel] [PATCH 3/5 v3] buffer_list_aggregate_separator():
+ don't exceed max_len
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,83 +18,91 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-After aggregating a buffer_list, the size should be adjusted accordingly.
+buffer_list_aggregate_separator() would merge buffer_list entries until it
+had exceeded the provided max_len, instead of stopping *before* exceeding
+the max value.
 
 Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
-v2: rebase on master
-v3: add spaces around '-'
+v2: rebase on 1/5 v2 (other patches should still apply)
+v3: as suggested by ordex, reorder if contitions and add spaces around '+'
 
- src/openvpn/buffer.c                   |  1 +
- tests/unit_tests/openvpn/test_buffer.c | 15 +++++----------
- 2 files changed, 6 insertions(+), 10 deletions(-)
+ src/openvpn/buffer.c                   | 13 ++++++++++---
+ src/openvpn/buffer.h                   |  3 ++-
+ tests/unit_tests/openvpn/test_buffer.c | 11 +++++++----
+ 3 files changed, 19 insertions(+), 8 deletions(-)
 
 diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
-index e601a31..28ce8ca 100644
+index 28ce8ca..2656702 100644
 --- a/src/openvpn/buffer.c
 +++ b/src/openvpn/buffer.c
-@@ -1257,6 +1257,7 @@ buffer_list_aggregate_separator(struct buffer_list *bl, const size_t max, const
-                 e = next;
-             }
-             bl->head = f;
-+            bl->size -= count - 1;
-             f->next = more;
-             if (!more)
-             {
+@@ -1223,7 +1223,8 @@ buffer_list_peek(struct buffer_list *ol)
+ }
+ 
+ void
+-buffer_list_aggregate_separator(struct buffer_list *bl, const size_t max, const char *sep)
++buffer_list_aggregate_separator(struct buffer_list *bl, const size_t max_len,
++                                const char *sep)
+ {
+     int sep_len = strlen(sep);
+ 
+@@ -1232,9 +1233,15 @@ buffer_list_aggregate_separator(struct buffer_list *bl, const size_t max, const
+         struct buffer_entry *more = bl->head;
+         size_t size = 0;
+         int count = 0;
+-        for (count = 0; more && size <= max; ++count)
++        for (count = 0; more; ++count)
+         {
+-            size += BLEN(&more->buf) + sep_len;
++            size_t extra_len = BLEN(&more->buf) + sep_len;
++            if (size + extra_len > max_len)
++            {
++                break;
++            }
++
++            size += extra_len;
+             more = more->next;
+         }
+ 
+diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
+index b73f6c8..e588b80 100644
+--- a/src/openvpn/buffer.h
++++ b/src/openvpn/buffer.h
+@@ -1107,7 +1107,8 @@ void buffer_list_pop(struct buffer_list *ol);
+ 
+ void buffer_list_aggregate(struct buffer_list *bl, const size_t max);
+ 
+-void buffer_list_aggregate_separator(struct buffer_list *bl, const size_t max, const char *sep);
++void buffer_list_aggregate_separator(struct buffer_list *bl,
++                                     const size_t max_len, const char *sep);
+ 
+ struct buffer_list *buffer_list_file(const char *fn, int max_line_len);
+ 
 diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/openvpn/test_buffer.c
-index b4625bb..bddb30a 100644
+index bddb30a..5af9332 100644
 --- a/tests/unit_tests/openvpn/test_buffer.c
 +++ b/tests/unit_tests/openvpn/test_buffer.c
-@@ -138,8 +138,7 @@ test_buffer_list_aggregate_separator_two(void **state)
-     /* Aggregate the first two elements */
-     /* FIXME this exceeds the supplied max */
-     buffer_list_aggregate_separator(ctx->one_two_three, 4, testsep);
--    /* FIXME size does not get adjusted after aggregating */
--    assert_int_equal(ctx->one_two_three->size, 3);
-+    assert_int_equal(ctx->one_two_three->size, 2);
+@@ -134,13 +134,16 @@ static void
+ test_buffer_list_aggregate_separator_two(void **state)
+ {
+     struct test_buffer_list_aggregate_ctx *ctx = *state;
++    const char *expected = teststr1 testsep teststr2 testsep;
+ 
+-    /* Aggregate the first two elements */
+-    /* FIXME this exceeds the supplied max */
+-    buffer_list_aggregate_separator(ctx->one_two_three, 4, testsep);
++    /* Aggregate the first two elements
++     * (add 1 to max_len to test if "three" is not sneaked in too)
++     */
++    buffer_list_aggregate_separator(ctx->one_two_three, strlen(expected) + 1,
++                                    testsep);
+     assert_int_equal(ctx->one_two_three->size, 2);
      struct buffer *buf = buffer_list_peek(ctx->one_two_three);
-     assert_buf_equals_str(buf, teststr1 testsep teststr2 testsep);
+-    assert_buf_equals_str(buf, teststr1 testsep teststr2 testsep);
++    assert_buf_equals_str(buf, expected);
  }
-@@ -151,8 +150,7 @@ test_buffer_list_aggregate_separator_all(void **state)
  
-     /* Aggregate all */
-     buffer_list_aggregate_separator(ctx->one_two_three, 1<<16, testsep);
--    /* FIXME size does not get adjusted after aggregating */
--    assert_int_equal(ctx->one_two_three->size, 3);
-+    assert_int_equal(ctx->one_two_three->size, 1);
-     struct buffer *buf = buffer_list_peek(ctx->one_two_three);
-     assert_buf_equals_str(buf,
-                           teststr1 testsep teststr2 testsep teststr3 testsep);
-@@ -165,8 +163,7 @@ test_buffer_list_aggregate_separator_nosep(void **state)
- 
-     /* Aggregate all */
-     buffer_list_aggregate_separator(ctx->one_two_three, 1<<16, testnosep);
--    /* FIXME size does not get adjusted after aggregating */
--    assert_int_equal(ctx->one_two_three->size, 3);
-+    assert_int_equal(ctx->one_two_three->size, 1);
-     struct buffer *buf = buffer_list_peek(ctx->one_two_three);
-     assert_buf_equals_str(buf, teststr1 teststr2 teststr3);
- }
-@@ -179,8 +176,7 @@ test_buffer_list_aggregate_separator_zerolen(void **state)
- 
-     /* Aggregate all */
-     buffer_list_aggregate_separator(bl_zerolen, 1<<16, testnosep);
--    /* FIXME size does not get adjusted after aggregating */
--    assert_int_equal(bl_zerolen->size, 2);
-+    assert_int_equal(bl_zerolen->size, 1);
-     struct buffer *buf = buffer_list_peek(bl_zerolen);
-     assert_buf_equals_str(buf, "");
- }
-@@ -193,8 +189,7 @@ test_buffer_list_aggregate_separator_emptybuffers(void **state)
- 
-     /* Aggregate all */
-     buffer_list_aggregate_separator(bl_emptybuffers, 1<<16, testnosep);
--    /* FIXME size does not get adjusted after aggregating */
--    assert_int_equal(bl_emptybuffers->size, 2);
-+    assert_int_equal(bl_emptybuffers->size, 1);
-     struct buffer *buf = buffer_list_peek(bl_emptybuffers);
-     assert_int_equal(BLEN(buf), 0);
- }
+ static void
 -- 
 2.7.4
 
