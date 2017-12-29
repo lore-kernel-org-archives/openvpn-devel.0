@@ -1,13 +1,16 @@
-MIME-Version: 1.0
-In-Reply-To: <5d048ecc-a9db-b448-71e7-ec874b5fb15f@...2181...>
+Reply-To: openvpn-devel@lists.sourceforge.net
 References: <1514540857-19290-1-git-send-email-steffan.karger@...1435...>
  <CAFHpkQG56wpZzN2KD3BYmcSDFFLi8Jpq0e-ZN-=9yJH4VWybiQ@...278...>
  <f6271a6e-0a17-a678-05c8-9b3b7912766d@...1435...>
  <5d048ecc-a9db-b448-71e7-ec874b5fb15f@...2181...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Fri, 29 Dec 2017 16:16:11 +0500
-Message-ID: <CAFHpkQE+d1Nj-DM_YhTk9r0BZdXdh=WUhhvPdv4Qqku73X96TQ@...278...>
-Content-Type: multipart/alternative; boundary="001a113ecd9e969d9a056178c2a0"
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <ffa065ae-0078-3271-1300-00594cbe3b52@...2080...>
+Date: Fri, 29 Dec 2017 22:14:26 +0100
+MIME-Version: 1.0
+In-Reply-To: <5d048ecc-a9db-b448-71e7-ec874b5fb15f@...2181...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="GW38ymH105SBIl2FckJsBDH90rNyg5zyB"
 Subject: Re: [Openvpn-devel] --with-mem-check, what to do with it?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -17,116 +20,108 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: Steffan Karger <steffan.karger@...1435...>, openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>, Steffan Karger <steffan.karger@...1435...>, =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---001a113ecd9e969d9a056178c2a0
-Content-Type: text/plain; charset="UTF-8"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--GW38ymH105SBIl2FckJsBDH90rNyg5zyB
+Content-Type: multipart/mixed; boundary="uwvnD75ht43ITPX5phFkQ6DYpPfhj7BJB";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>,
+ Steffan Karger <steffan.karger@...1435...>,
+ =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
+Message-ID: <ffa065ae-0078-3271-1300-00594cbe3b52@...2080...>
+Subject: Re: [Openvpn-devel] --with-mem-check, what to do with it?
+References: <1514540857-19290-1-git-send-email-steffan.karger@...1435...>
+ <CAFHpkQG56wpZzN2KD3BYmcSDFFLi8Jpq0e-ZN-=9yJH4VWybiQ@...278...>
+ <f6271a6e-0a17-a678-05c8-9b3b7912766d@...1435...>
+ <5d048ecc-a9db-b448-71e7-ec874b5fb15f@...2181...>
+In-Reply-To: <5d048ecc-a9db-b448-71e7-ec874b5fb15f@...2181...>
+
+--uwvnD75ht43ITPX5phFkQ6DYpPfhj7BJB
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-2017-12-29 16:02 GMT+05:00 Antonio Quartulli <a@...2181...>:
-
+On 29/12/17 12:02, Antonio Quartulli wrote:
 > Hi,
->
+>=20
 > On 29/12/17 18:23, Steffan Karger wrote:
-> > Hi,
-> >
-> > On 29-12-17 11:11, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=
+>> Hi,
+>>
+>> On 29-12-17 11:11, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=
 =86=D0=B8=D0=BD wrote:
-> >> thank for the patch.
-> >>
-> >> not directly related to the patch itself, but openvpn is shipped with
-> >> several memory debugging options
-> >>
-> >> --with-mem-check=3DTYPE   build with debug memory checking
-> >>
-> >>
-> >> should we get rid of them (in favour of sanitizers) ? or, maybe add to
-> >> tests instead ?
-> >
-> > I've tried to use those in the past, but found them hard to use.  I
-> > think they're a remnant of the past.  I would personally prefer to get
-> > rid of them and use the (nowadays much better) fully external memory
-> > checking tools instead (sanitizers, valgrind, etc).
->
+>>> thank for the patch.
+>>>
+>>> not directly related to the patch itself, but openvpn is shipped with
+>>> several memory debugging options
+>>>
+>>> --with-mem-check=3DTYPE=C2=A0=C2=A0 build with debug memory checking
+>>>
+>>>
+>>> should we get rid of them (in favour of sanitizers) ? or, maybe add to
+>>> tests instead ?
+>>
+>> I've tried to use those in the past, but found them hard to use.  I
+>> think they're a remnant of the past.  I would personally prefer to get
+>> rid of them and use the (nowadays much better) fully external memory
+>> checking tools instead (sanitizers, valgrind, etc).
+>=20
 > As Selva pointed out, we don't use --with-mem-check in any test,
 > therefore I am not even sure it still works as expected.
->
+>=20
 > I am also in favour in of getting rid of our custom made check and use
 > compilers provided sanitizers instead (also gcc provides interesting
 > sanitizers, thus everybody should be bale to enable them).
->
+>=20
+When compiling with --with-mem-check=3Dvalgrind ... a lot of the noise from
+OpenSSL (and other external issues) vanishes when running OpenVPN via
+valgrind.  So I find that feature very useful.  It's really handy to use th=
+is
+approach when checking for memory leaks in plug-ins.
 
-I played with those sanitizers, they are nice. But memory sanitizers are
-noisy on openssl.
-seem to need some work (either resolving issues on openssl side or muting
-them)
+There might be better checks, granted.  But not sure how well they will play
+with plug-ins.  The valgrind type works fine.  Not sure how well the other
+--with-mem-check alternatives (dmalloc, ssl) works, so can't speak for them.
+If they don't build or work, then we should consider to remove what doesn't=
+ work.
 
 
->
-> Cheers,
->
-> --
-> Antonio Quartulli
->
->
+--=20
+kind regards,
 
---001a113ecd9e969d9a056178c2a0
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+David Sommerseth
+OpenVPN Inc
 
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">2017-12-29 16:02 GMT+05:00 Antonio Quartulli <span dir=3D"ltr">&lt;<a h=
-ref=3D"mailto:a@...2181..." target=3D"_blank">a@...2181...</a>&gt;</span>:<=
-br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left=
-:1px #ccc solid;padding-left:1ex">Hi,<br>
-<span class=3D""><br>
-On 29/12/17 18:23, Steffan Karger wrote:<br>
-&gt; Hi,<br>
-&gt;<br>
-&gt; On 29-12-17 11:11, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=
-=D1=86=D0=B8=D0=BD wrote:<br>
-&gt;&gt; thank for the patch.<br>
-&gt;&gt;<br>
-&gt;&gt; not directly related to the patch itself, but openvpn is shipped w=
-ith<br>
-&gt;&gt; several memory debugging options<br>
-&gt;&gt;<br>
-&gt;&gt; --with-mem-check=3DTYPE=C2=A0=C2=A0 build with debug memory checki=
-ng<br>
-&gt;&gt;<br>
-&gt;&gt;<br>
-&gt;&gt; should we get rid of them (in favour of sanitizers) ? or, maybe ad=
-d to<br>
-&gt;&gt; tests instead ?<br>
-&gt;<br>
-&gt; I&#39;ve tried to use those in the past, but found them hard to use.=
-=C2=A0 I<br>
-&gt; think they&#39;re a remnant of the past.=C2=A0 I would personally pref=
-er to get<br>
-&gt; rid of them and use the (nowadays much better) fully external memory<b=
-r>
-&gt; checking tools instead (sanitizers, valgrind, etc).<br>
-<br>
-</span>As Selva pointed out, we don&#39;t use --with-mem-check in any test,=
-<br>
-therefore I am not even sure it still works as expected.<br>
-<br>
-I am also in favour in of getting rid of our custom made check and use<br>
-compilers provided sanitizers instead (also gcc provides interesting<br>
-sanitizers, thus everybody should be bale to enable them).<br></blockquote>=
-<div><br></div><div>I played with those sanitizers, they are nice. But memo=
-ry sanitizers are noisy on openssl.</div><div>seem to need some work (eithe=
-r resolving issues on openssl side or muting them)<br></div><div>=C2=A0</di=
-v><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:=
-1px #ccc solid;padding-left:1ex">
-<br>
-Cheers,<br>
-<span class=3D"HOEnZb"><font color=3D"#888888"><br>
---<br>
-Antonio Quartulli<br>
-<br>
-</font></span></blockquote></div><br></div></div>
 
---001a113ecd9e969d9a056178c2a0--
+
+--uwvnD75ht43ITPX5phFkQ6DYpPfhj7BJB--
+
+--GW38ymH105SBIl2FckJsBDH90rNyg5zyB
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJaRrA3AAoJEIbPlEyWcf3yeykQAKf3jEeAaASjVTipRMJnsHWd
+rSjggeokT/KCvI6ShGYXUn+csglcjA2pQeZAFF8/LeHVrlMGgzFv8CYheJBBukvs
+4rbw14IR/PbkO2lFbf78BJFJgKcrAjqKZCIxT0UonP8cEQBbu3MB7S9ecF7NptkL
+2VSOxziO/6dNJ/h3vlt/WvM9HIqhCoXnuUPTGY7fHBi3/alpwjjrDC1cMosLL5JZ
+NgOC6Dgb4bFoivhHs5vFaxi31NTwxokYxTclLkAneY4x4gI05J9LNE56yn5duly5
+JX3PsqRKPLDXAnZMt2qUhUnyeipoNdkyELEbF2zRBkBPuTkE2GGFS2rOL4vRKeXq
+baILCNOTNF15svfbH+QZNB+1Rz9xf5xs5WkbvilsXDwFb6NcFCfE6kNEI2NIWdmg
+JqnqUgpykCPhFWOStQg7c0GNQfs5wrjkIjzHC5zO1PrRb59MU2hNXQJjueaditwB
+2FSo4Ekx+B7eTBtwb52Vny5xCU5RtMwrYNppZ4FMDcYZK8FwY7lmqpqAtUpC0WYa
+5x5Ufh3x1fj5I6BxMJKe37FKfZYzWmEG/M3QJGK4Zh9ttPLRbfATvuxxLv4S5fcs
+QzGdxaQx5k2AgMff+QNMM0MfHFjQy9hRY0WWY/QYwTrvy/Mh8l0rIuRfSrVrt6eS
+o7Z+NW9+WDWQ8d/myoJE
+=+tRc
+-----END PGP SIGNATURE-----
+
+--GW38ymH105SBIl2FckJsBDH90rNyg5zyB--
 
