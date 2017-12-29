@@ -1,11 +1,15 @@
-From: Steffan Karger <steffan.karger@...1435...>
-Date: Fri, 29 Dec 2017 11:18:58 +0100
-Message-ID: <1514542738-20402-1-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <CAKuzo_jJx0U0hEnuv=BFGm_d6ME4JP44mDCCoBPwzCBdRs+dVA@...278...>
-References: <CAKuzo_jJx0U0hEnuv=BFGm_d6ME4JP44mDCCoBPwzCBdRs+dVA@...278...>
+References: <1514540857-19290-1-git-send-email-steffan.karger@...1435...>
+ <7adfcf57-b3dd-0e6a-ced0-2767a5462699@...1435...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <c6a491fe-17d2-445c-e99d-511992c33f38@...2181...>
+Date: Fri, 29 Dec 2017 18:32:46 +0800
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Don't throw fatal errors from
- verify_cert_export_cert()
+In-Reply-To: <7adfcf57-b3dd-0e6a-ced0-2767a5462699@...1435...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="wlGikPWlqK2xhxfbzrPyZridCFruq2lc0"
+Subject: Re: [Openvpn-devel] [PATCH] travis: use clang's -fsanitize=address
+ to catch more bugs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,55 +18,78 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Steffan Karger <steffan.karger@...1435...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--wlGikPWlqK2xhxfbzrPyZridCFruq2lc0
+Content-Type: multipart/mixed; boundary="rNrn7a9BAFLBreuheel1G6U1MFEWDTEqy";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: Steffan Karger <steffan.karger@...1435...>,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <c6a491fe-17d2-445c-e99d-511992c33f38@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH] travis: use clang's -fsanitize=address to
+ catch more bugs
+References: <1514540857-19290-1-git-send-email-steffan.karger@...1435...>
+ <7adfcf57-b3dd-0e6a-ced0-2767a5462699@...1435...>
+In-Reply-To: <7adfcf57-b3dd-0e6a-ced0-2767a5462699@...1435...>
+
+--rNrn7a9BAFLBreuheel1G6U1MFEWDTEqy
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-As with create_temp_file(), this function is called on client connects and
-should not cause fatal errors when I/O (possibly temporarily) fails.
+Hi,
 
-The callers of this function are already fixed in the commit that does the
-same for create_temp_file().
+On 29/12/17 18:00, Steffan Karger wrote:
+> On 29-12-17 10:47, Steffan Karger wrote:
+>> The clang address sanitizer is able to catch quite a number of
+>> memory-related bugs, such add memory leaks and buffer under/overruns.
+>> So, enable the address sanitizer for one openssl and one mbedtls build.
+>>
+>> This would have caught the buffer list unittest memory leak that
+>> <1512724338-22197-1-git-send-email-steffan@...1856...> wants to fix.
+>=20
+> For reference, I've pushed this commit to my own gh fork.  This would be
+> the result based on current master:
+> https://travis-ci.org/syzzer/openvpn/builds/322839893\
 
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
----
-v2: Use M_NONFATAL (instead of M_WARN/M_ERRNO), as suggested by Selva.
+your travis build is failing and throwing out quite some "errors".
 
- src/openvpn/ssl_verify.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+I personally think we should fix them all before adding the new sanitize
+flag, otherwise travis will just always fail until we fix them all.
 
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index ebb1da2..0ba9f41 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -549,7 +549,7 @@ verify_cert_export_cert(openvpn_x509_cert_t *peercert, const char *tmp_dir, stru
-     if (!tmp_dir
-         || !(peercert_filename = create_temp_file(tmp_dir, "pcf", gc)))
-     {
--        msg (M_WARN, "Failed to create peer cert file");
-+        msg(M_NONFATAL, "Failed to create peer cert file");
-         return NULL;
-     }
- 
-@@ -557,13 +557,15 @@ verify_cert_export_cert(openvpn_x509_cert_t *peercert, const char *tmp_dir, stru
-     peercert_file = fopen(peercert_filename, "w+");
-     if (!peercert_file)
-     {
--        msg(M_ERR, "Failed to open temporary file : %s", peercert_filename);
-+        msg(M_NONFATAL|M_ERRNO, "Failed to open temporary file: %s",
-+            peercert_filename);
-         return NULL;
-     }
- 
-     if (SUCCESS != x509_write_pem(peercert_file, peercert))
-     {
--        msg(M_ERR, "Error writing PEM file containing certificate");
-+        msg(M_NONFATAL, "Error writing PEM file containing certificate");
-+        peercert_filename = NULL;
-     }
- 
-     fclose(peercert_file);
--- 
-2.7.4
+Cheers,
 
+
+
+--=20
+Antonio Quartulli
+
+
+--rNrn7a9BAFLBreuheel1G6U1MFEWDTEqy--
+
+--wlGikPWlqK2xhxfbzrPyZridCFruq2lc0
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlpGGc4ACgkQB6U8WA7y
+zXR4VhAAgkBMlYuv+VGR8WFtX2e2PbKnFMmzIGmIbfY392sEuT21YCO+wG7mC3QY
+QFy2qKbOXra8FPKA7HRS4ULE3NFn6bppInfoY/9XlRf/hg4WBFfxhj5K8u3YLgbW
+dSCnMAjE3SxqBJIRdPQIsw2MOI3UFl03cz6Pn156cUj9knxVvEGUHOD6P3jT4dNv
+bxVwH+kf1VPh/cvqbx6o9LbsGKtoNuuXJ5KgQH3ARnC6J9Ta/GJRsxo+zIQxGOF2
+y0fj//MM//IS0CUKccF9c4CA0Fc7engZZev/lr8p8os7hwoR2iZe0+bl+6yitwp5
++G+yhwAJFriI2EFUApWU8GVOQ5uG+kNE9ePivtfwQ9hX6dmna1OPIV869wysWsMa
+mGjUOWU6S7EEMZt27G0ZQNpoxBeDghcBht9Gw5ILGt28dLemIcRQ1x/RXY2NJx7y
+YQRdZrHZ44iJVQi6AwxJun5FxwH40BZf3knDVyzpRN/DYuhIAUsL50sZQajjs9PX
+SC9o3+/OsyyY02XjLn9Wy2O6DbNWRn2+d4YPnpLQ/mMWEWW0uUbuMh9IgIP/CxY7
+0sAdgzbZyZoDnhmotyASpNYg1wvI2Nc05gSmy17pRY7KdmuUePs6uCuzzX3uto6s
+3xcuied77tneYPFoMeeFsAhEDnSpSFlLk2BBpKpeArW1rDr4jZs=
+=wx/N
+-----END PGP SIGNATURE-----
+
+--wlGikPWlqK2xhxfbzrPyZridCFruq2lc0--
 
