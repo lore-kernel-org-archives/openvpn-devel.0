@@ -1,11 +1,15 @@
-From: Steffan Karger <steffan.karger@...1435...>
-Date: Fri, 29 Dec 2017 10:54:31 +0100
-Message-ID: <1514541271-19597-1-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <1498913642-32459-5-git-send-email-steffan.karger@...1435...>
-References: <1498913642-32459-5-git-send-email-steffan.karger@...1435...>
+References: <d4afae6b-30f3-f5cd-3b66-8649aaa9bd65@...2181...>
+ <1514541144-19407-1-git-send-email-steffan.karger@...1435...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <c9c3af16-c5df-6e7a-4cc8-e748c0aa62f6@...2181...>
+Date: Fri, 29 Dec 2017 17:56:47 +0800
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 5/5 v2] buffer_list_aggregate_separator():
- simplify code
+In-Reply-To: <1514541144-19407-1-git-send-email-steffan.karger@...1435...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="r8PBLMGLb00DP3IxRgv4VhiR9HxazFOgC"
+Subject: Re: [Openvpn-devel] [PATCH 2/5 v3]
+ buffer_list_aggregate_separator(): update list size after aggregating
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,109 +18,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Steffan Karger <steffan.karger@...1435...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--r8PBLMGLb00DP3IxRgv4VhiR9HxazFOgC
+Content-Type: multipart/mixed; boundary="Zp2daIFoOV1Gd1X9Vx4AA5WcQ2k9MXJvo";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: Steffan Karger <steffan.karger@...1435...>,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <c9c3af16-c5df-6e7a-4cc8-e748c0aa62f6@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH 2/5 v3] buffer_list_aggregate_separator():
+ update list size after aggregating
+References: <d4afae6b-30f3-f5cd-3b66-8649aaa9bd65@...2181...>
+ <1514541144-19407-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1514541144-19407-1-git-send-email-steffan.karger@...1435...>
+
+--Zp2daIFoOV1Gd1X9Vx4AA5WcQ2k9MXJvo
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-Clean up the function by slightly simplifying the logic.
+Hi,
 
-Mostly witespace changes, so best reviewed using 'git diff -w'.
+On 29/12/17 17:52, Steffan Karger wrote:
+> After aggregating a buffer_list, the size should be adjusted accordingly.
+>=20
+> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
----
-v2: rebase on new version of preceding patches
+Acked-by: Antonio Quartulli <a@...2181...>
 
- src/openvpn/buffer.c | 71 ++++++++++++++++++++++++----------------------------
- 1 file changed, 33 insertions(+), 38 deletions(-)
 
-diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
-index cfe6f2c..858bb08 100644
---- a/src/openvpn/buffer.c
-+++ b/src/openvpn/buffer.c
-@@ -1226,49 +1226,44 @@ void
- buffer_list_aggregate_separator(struct buffer_list *bl, const size_t max_len,
-                                 const char *sep)
- {
--    int sep_len = strlen(sep);
-+    const int sep_len = strlen(sep);
-+    struct buffer_entry *more = bl->head;
-+    size_t size = 0;
-+    int count = 0;
-+    for (count = 0; more; ++count)
-+    {
-+        size_t extra_len = BLEN(&more->buf) + sep_len;
-+        if (size + extra_len > max_len)
-+        {
-+            break;
-+        }
-+
-+        size += extra_len;
-+        more = more->next;
-+    }
- 
--    if (bl->head)
-+    if (count >= 2)
-     {
--        struct buffer_entry *more = bl->head;
--        size_t size = 0;
--        int count = 0;
--        for (count = 0; more; ++count)
--        {
--            size_t extra_len = BLEN(&more->buf) + sep_len;
--            if (size + extra_len > max_len)
--            {
--                break;
--            }
-+        struct buffer_entry *f;
-+        ALLOC_OBJ_CLEAR(f, struct buffer_entry);
-+        f->buf = alloc_buf(size + 1); /* prevent 0-byte malloc */
- 
--            size += extra_len;
--            more = more->next;
-+        struct buffer_entry *e = bl->head;
-+        for (size_t i = 0; e && i < count; ++i)
-+        {
-+            struct buffer_entry *next = e->next;
-+            buf_copy(&f->buf, &e->buf);
-+            buf_write(&f->buf, sep, sep_len);
-+            free_buf(&e->buf);
-+            free(e);
-+            e = next;
-         }
--
--        if (count >= 2)
-+        bl->head = f;
-+        bl->size -= count - 1;
-+        f->next = more;
-+        if (!more)
-         {
--            int i;
--            struct buffer_entry *e = bl->head, *f;
--
--            ALLOC_OBJ_CLEAR(f, struct buffer_entry);
--            f->buf = alloc_buf(size + 1); /* prevent 0-byte malloc */
--            f->buf.capacity = size;
--            for (i = 0; e && i < count; ++i)
--            {
--                struct buffer_entry *next = e->next;
--                buf_copy(&f->buf, &e->buf);
--                buf_write(&f->buf, sep, sep_len);
--                free_buf(&e->buf);
--                free(e);
--                e = next;
--            }
--            bl->head = f;
--            bl->size -= count - 1;
--            f->next = more;
--            if (!more)
--            {
--                bl->tail = f;
--            }
-+            bl->tail = f;
-         }
-     }
- }
--- 
-2.7.4
 
+--=20
+Antonio Quartulli
+
+
+--Zp2daIFoOV1Gd1X9Vx4AA5WcQ2k9MXJvo--
+
+--r8PBLMGLb00DP3IxRgv4VhiR9HxazFOgC
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlpGEV8ACgkQB6U8WA7y
+zXTWDw/8C15ANNHhKVu7YEh2yxHgQvdSv+kCaSccYgU16/JAKwkXjJx0sAZF2JLH
+DoLyobjnsg2PqBWxr62vx/6DQOh4/mBt11f6kZ761/CwnpLm1bNg7lYqXyLF7vtP
+4ScGEi/r+R60JJbHn+wYIjZI73/y4X3aKMJu2IGhYrcxfULH0IrF/1CPEQ8scQL9
+k15RIqne9th6lfYt2ngwT4z+aH/FzrWbSDDPpj9i3sbU5RLCl5tWw0e+BAzHk/dr
+Re3KVgfApHSn+Zpuk6kofWzkL7Sw4wIAgMOST6GKwiWNoipPk21wymzsPRU+9D1H
+I32YMojLC5WgFGxrpR6LUGsv5xGqqpzpAEPc3rzep7F6VjVSt/sidnNtW/mOYGTj
+mG6ltKLahVCbE/s54pTW9+58vIDzHQAY6LbYEtkGV2VV0dOxcONYbKOfgJwos0Pf
+exa7Al8MfdP8yrsoGybF+z+jvXwazj3KXf5nWd7K6KiZE1GPrYY9K6U6buUeNQLW
+BpRdRW9+S/bqFQxTOkcWsybz8F1pQzD365K6eZ3qJyJe5uNhwVWo4bQKcpFgYcQX
+OTrhlXHCM4/ZAmyRqIaLLkcavEBLd3foSF5mhK1eaYApdRrjl8/coDRJ8ca65djB
+g3aJDJpiivCpoYnA5/yq0Kqsn7KS0p3Dq7fCrhyTds3sOJdNOrU=
+=9wI/
+-----END PGP SIGNATURE-----
+
+--r8PBLMGLb00DP3IxRgv4VhiR9HxazFOgC--
 
