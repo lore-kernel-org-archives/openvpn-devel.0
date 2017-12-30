@@ -1,17 +1,13 @@
-Reply-To: openvpn-devel@lists.sourceforge.net
-References: <1514540857-19290-1-git-send-email-steffan.karger@...1435...>
- <CAFHpkQG56wpZzN2KD3BYmcSDFFLi8Jpq0e-ZN-=9yJH4VWybiQ@...278...>
- <f6271a6e-0a17-a678-05c8-9b3b7912766d@...1435...>
- <5d048ecc-a9db-b448-71e7-ec874b5fb15f@...2181...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <ffa065ae-0078-3271-1300-00594cbe3b52@...2080...>
-Date: Fri, 29 Dec 2017 22:14:26 +0100
+From: Steffan Karger <steffan@...1856...>
+References: <20171126141555.25930-1-steffan@...1856...>
+ <20171130085330.mftz2f3vnx53vrz6@...2352...>
+Message-ID: <06b2118d-61b7-aa56-93ba-b2d342c78d34@...1856...>
+Date: Sat, 30 Dec 2017 12:00:49 +0100
 MIME-Version: 1.0
-In-Reply-To: <5d048ecc-a9db-b448-71e7-ec874b5fb15f@...2181...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="GW38ymH105SBIl2FckJsBDH90rNyg5zyB"
-Subject: Re: [Openvpn-devel] --with-mem-check, what to do with it?
+In-Reply-To: <20171130085330.mftz2f3vnx53vrz6@...2352...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH 1/3] Fix --tls-version-min and
+ --tls-version-max for OpenSSL 1.1+
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,108 +16,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>, Steffan Karger <steffan.karger@...1435...>, =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: Bernhard Schmidt <berni@...376...>
+Cc: openvpn-devel@lists.sourceforge.net, Kurt Roeckx <kurt@...2310...>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---GW38ymH105SBIl2FckJsBDH90rNyg5zyB
-Content-Type: multipart/mixed; boundary="uwvnD75ht43ITPX5phFkQ6DYpPfhj7BJB";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Antonio Quartulli <a@...2181...>,
- Steffan Karger <steffan.karger@...1435...>,
- =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <ffa065ae-0078-3271-1300-00594cbe3b52@...2080...>
-Subject: Re: [Openvpn-devel] --with-mem-check, what to do with it?
-References: <1514540857-19290-1-git-send-email-steffan.karger@...1435...>
- <CAFHpkQG56wpZzN2KD3BYmcSDFFLi8Jpq0e-ZN-=9yJH4VWybiQ@...278...>
- <f6271a6e-0a17-a678-05c8-9b3b7912766d@...1435...>
- <5d048ecc-a9db-b448-71e7-ec874b5fb15f@...2181...>
-In-Reply-To: <5d048ecc-a9db-b448-71e7-ec874b5fb15f@...2181...>
+Hi Bernard, Kurt,
 
---uwvnD75ht43ITPX5phFkQ6DYpPfhj7BJB
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-
-On 29/12/17 12:02, Antonio Quartulli wrote:
-> Hi,
->=20
-> On 29/12/17 18:23, Steffan Karger wrote:
->> Hi,
+On 30-11-17 09:53, Bernhard Schmidt wrote:
+>> As described in <80e6b449-c536-dc87-7215-3693872bce5a@...376...> on
+>> the openvpn-devel mailing list, --tls-version-min no longer works with
+>> OpenSSL 1.1.  Kurt Roeckx posted in a debian bug report:
 >>
->> On 29-12-17 11:11, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=
-=86=D0=B8=D0=BD wrote:
->>> thank for the patch.
->>>
->>> not directly related to the patch itself, but openvpn is shipped with
->>> several memory debugging options
->>>
->>> --with-mem-check=3DTYPE=C2=A0=C2=A0 build with debug memory checking
->>>
->>>
->>> should we get rid of them (in favour of sanitizers) ? or, maybe add to
->>> tests instead ?
+>> "This is marked as important because if you switch to openssl 1.1.0
+>> the defaults minimum version in Debian is currently TLS 1.2 and
+>> you can't override it with the options that you're currently using
+>> (and are deprecated)."
 >>
->> I've tried to use those in the past, but found them hard to use.  I
->> think they're a remnant of the past.  I would personally prefer to get
->> rid of them and use the (nowadays much better) fully external memory
->> checking tools instead (sanitizers, valgrind, etc).
->=20
-> As Selva pointed out, we don't use --with-mem-check in any test,
-> therefore I am not even sure it still works as expected.
->=20
-> I am also in favour in of getting rid of our custom made check and use
-> compilers provided sanitizers instead (also gcc provides interesting
-> sanitizers, thus everybody should be bale to enable them).
->=20
-When compiling with --with-mem-check=3Dvalgrind ... a lot of the noise from
-OpenSSL (and other external issues) vanishes when running OpenVPN via
-valgrind.  So I find that feature very useful.  It's really handy to use th=
-is
-approach when checking for memory leaks in plug-ins.
+>> This patch is loosely based on the original patch by Kurt, but solves the
+>> issue by adding functions to openssl-compat.h, like we also did for all
+>> other openssl 1.1. breakage.  This results in not having to add more ifdefs
+>> in ssl_openssl.c and thus cleaner code.
+> 
+> I have forwarded your patch to Kurt and asked for feedback. See attached
+> mail.
+> 
+> https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=873302#32
 
-There might be better checks, granted.  But not sure how well they will play
-with plug-ins.  The valgrind type works fine.  Not sure how well the other
---with-mem-check alternatives (dmalloc, ssl) works, so can't speak for them.
-If they don't build or work, then we should consider to remove what doesn't=
- work.
+Thanks!
 
+On 29-11-17 20:14, Kurt Roeckx wrote:
+> I have some comments:
 
---=20
-kind regards,
+Also thanks!
 
-David Sommerseth
-OpenVPN Inc
+> - It has:
+> +/* TLS Version defines are new in OpenSSL 1.1 */
+> +#ifndef TLS1_0_VERSION
+> +#define TLS1_0_VERSION 0x0301
+> +#endif
+> +#ifndef TLS1_1_VERSION
+> +#define TLS1_1_VERSION 0x0302
+> +#endif
+> +#ifndef TLS1_2_VERSION
+> +#define TLS1_2_VERSION 0x0303
+> +#endif
+> 
+> It's TLS1_VERSION (not TLS1_0_VERSION)
 
+Oops, will fix.
 
+> The defines all exist in at least 1.0.1, the version that added
+> support for TLS 1.1 and 1.2
 
---uwvnD75ht43ITPX5phFkQ6DYpPfhj7BJB--
+Good, then we won't need this in master.  (But we do in release/2.4
+because there we still support 0.9.8 as suse still maintains it.)
 
---GW38ymH105SBIl2FckJsBDH90rNyg5zyB
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+> - It calls SSL_CTX_set_min_proto_version() unconditionally,
+>   overriding the library default. In the 1.0.2 case SSLv2 and
+>   SSLv3 are then disabled, in the 1.1 case it could enable SSLv3.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+This is something I pondered about, and once again now you mention it.
+OpenVPN < 2.3.4 (and OpenSSL < 1.0.1), which are still widely used by
+our user base, do not support TLS 1.1+.  Combined with the fact that
+many HTTPS-style TLS attacks do not work for OpenVPN (the record layer
+data is not attacker controlled like in browser), I opted to just fix
+the minimum at 1.0 and keep the code slightly simpler.
 
-iQIcBAEBCgAGBQJaRrA3AAoJEIbPlEyWcf3yeykQAKf3jEeAaASjVTipRMJnsHWd
-rSjggeokT/KCvI6ShGYXUn+csglcjA2pQeZAFF8/LeHVrlMGgzFv8CYheJBBukvs
-4rbw14IR/PbkO2lFbf78BJFJgKcrAjqKZCIxT0UonP8cEQBbu3MB7S9ecF7NptkL
-2VSOxziO/6dNJ/h3vlt/WvM9HIqhCoXnuUPTGY7fHBi3/alpwjjrDC1cMosLL5JZ
-NgOC6Dgb4bFoivhHs5vFaxi31NTwxokYxTclLkAneY4x4gI05J9LNE56yn5duly5
-JX3PsqRKPLDXAnZMt2qUhUnyeipoNdkyELEbF2zRBkBPuTkE2GGFS2rOL4vRKeXq
-baILCNOTNF15svfbH+QZNB+1Rz9xf5xs5WkbvilsXDwFb6NcFCfE6kNEI2NIWdmg
-JqnqUgpykCPhFWOStQg7c0GNQfs5wrjkIjzHC5zO1PrRb59MU2hNXQJjueaditwB
-2FSo4Ekx+B7eTBtwb52Vny5xCU5RtMwrYNppZ4FMDcYZK8FwY7lmqpqAtUpC0WYa
-5x5Ufh3x1fj5I6BxMJKe37FKfZYzWmEG/M3QJGK4Zh9ttPLRbfATvuxxLv4S5fcs
-QzGdxaQx5k2AgMff+QNMM0MfHFjQy9hRY0WWY/QYwTrvy/Mh8l0rIuRfSrVrt6eS
-o7Z+NW9+WDWQ8d/myoJE
-=+tRc
------END PGP SIGNATURE-----
+But I think it's okay to confront users with old cruft, and follow the
+system defaults.  Since users can re-enable TLS 1.0 if they really want,
+I think that should be okay.  The v2 of this patch will obey the system
+defaults.
 
---GW38ymH105SBIl2FckJsBDH90rNyg5zyB--
+> - openssl_tls_version() should probably add SSL3_VERSION support.
+
+Nope - OpenVPN never supported SSLv3 and never will.
+
+-Steffan
 
