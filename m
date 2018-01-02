@@ -1,7 +1,9 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Tue,  2 Jan 2018 23:20:02 +0100
-Message-Id: <20180102222002.21454-1-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] Check for time_t overflow in
+Date: Tue,  2 Jan 2018 23:28:54 +0100
+Message-Id: <20180102222854.29198-1-steffan@...1856...>
+In-Reply-To: <20180102222002.21454-1-steffan@...1856...>
+References: <20180102222002.21454-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH v2] Check for time_t overflow in
  event_timeout_trigger()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -37,14 +39,23 @@ be an "integer type", and all systems I know of use a long int or long
 long int.  To be sure that this assumption holds, this patch uses static
 asserts.
 
+Since I can't come up with anything useful to do if this check fails,
+and the input are not based on remote input, this patch just turns the
+undefined behaviour into a defined ASSERT().
+
+And while we touch this function, make it obey the 80-char line length
+limit.
+
 So much for this "simple" overflow check.
 
 Trac: #922
 Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
+v2: Fix (#if 0'd) debug print format specifier for changed type.
+
  src/openvpn/integer.h  | 14 ++++++++++++++
- src/openvpn/interval.c |  5 +++--
- 2 files changed, 17 insertions(+), 2 deletions(-)
+ src/openvpn/interval.c |  9 ++++++---
+ 2 files changed, 20 insertions(+), 3 deletions(-)
 
 diff --git a/src/openvpn/integer.h b/src/openvpn/integer.h
 index 9bb00a38..51085450 100644
@@ -72,10 +83,10 @@ index 9bb00a38..51085450 100644
   * Functions used for circular buffer index arithmetic.
   */
 diff --git a/src/openvpn/interval.c b/src/openvpn/interval.c
-index 16343865..1f067cd2 100644
+index 16343865..909e3fcd 100644
 --- a/src/openvpn/interval.c
 +++ b/src/openvpn/interval.c
-@@ -51,7 +51,8 @@ event_timeout_trigger(struct event_timeout *et,
+@@ -51,11 +51,13 @@ event_timeout_trigger(struct event_timeout *et,
  
      if (et->defined)
      {
@@ -85,12 +96,19 @@ index 16343865..1f067cd2 100644
          if (wakeup <= 0)
          {
  #if INTERVAL_DEBUG
-@@ -72,7 +73,7 @@ event_timeout_trigger(struct event_timeout *et,
+-            dmsg(D_INTERVAL, "EVENT event_timeout_trigger (%d) etcr=%d", et->n, et_const_retry);
++            dmsg(D_INTERVAL, "EVENT event_timeout_trigger (%d) etcr=%d", et->n,
++                 et_const_retry);
+ #endif
+             if (et_const_retry < 0)
+             {
+@@ -72,7 +74,8 @@ event_timeout_trigger(struct event_timeout *et,
          if (tv && wakeup < tv->tv_sec)
          {
  #if INTERVAL_DEBUG
 -            dmsg(D_INTERVAL, "EVENT event_timeout_wakeup (%d/%d) etcr=%d", wakeup, et->n, et_const_retry);
-+            dmsg(D_INTERVAL, "EVENT event_timeout_wakeup (%ld/%d) etcr=%d", wakeup, et->n, et_const_retry);
++            dmsg(D_INTERVAL, "EVENT event_timeout_wakeup (%ld/%d) etcr=%d",
++                 (long) wakeup, et->n, et_const_retry);
  #endif
              tv->tv_sec = wakeup;
              tv->tv_usec = 0;
