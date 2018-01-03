@@ -1,13 +1,8 @@
-References: <CAKuzo_gJK_1jU5juC1YQzKzm=25Cm+c-3X7-pT1DW_fkkW_9dQ@...278...>
- <6fd65f21-7f90-b2a1-7cb6-67559d60d8e1@...1435...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <a5a2341f-ff5f-0f7a-f2ca-da576bd4d76d@...1227...>
-Date: Wed, 3 Jan 2018 09:34:29 +0100
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Wed, 3 Jan 2018 10:40:48 +0100
+Message-ID: <1514972448-7010-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-In-Reply-To: <6fd65f21-7f90-b2a1-7cb6-67559d60d8e1@...1435...>
-Content-Language: de-DE
-Subject: Re: [Openvpn-devel] openvpn segfaults on --management-external-key
- with ECC certificate
+Subject: [Openvpn-devel] [PATCH] reliable: remove reliable_unique_retry()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,42 +11,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Steffan Karger <steffan.karger@...1435...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Am 03.01.18 um 09:19 schrieb Steffan Karger:
-> On 03-01-18 03:22, Selva Nair wrote:
->> This is with openssl 1.0.1 and that could be the problem -- it may not
->> have EVP_PKEY_get0_RSA() in which case the compatibility interface in
->> use is probably not smart enough...
-> 
-> Exactly this is the case I think.  The following should solve the issue:
-> 
-> --- a/src/openvpn/openssl_compat.h
-> +++ b/src/openvpn/openssl_compat.h
-> @@ -240,7 +240,7 @@ X509_OBJECT_get_type(const X509_OBJECT *obj)
->  static inline RSA *
->  EVP_PKEY_get0_RSA(EVP_PKEY *pkey)
->  {
-> -    return pkey ? pkey->pkey.rsa : NULL;
-> +    return (pkey && pkey->type == EVP_PKEY_RSA) ? pkey->pkey.rsa : NULL;
->  }
->  #endif
-> 
-> (No time to properly test and send a patch now, will look into it more
-> later if nobody else does.)
+This function has been in the code since 2005, and enabled since 2010, but
+it's not clear why we'd want this behaviour.
 
-You are right. This is also what OpenSSL 1.1.0  does:
+Running some simple tests, where I simulate an server->client link of
+1mbit with 30ms delay and 1% packet loss, and a client->server link of
+200kbit, 200ms delay, I get the following connection setup times over
+100 runs when pushing ~100kb of options (e.g. a lot of routes):
 
-RSA *EVP_PKEY_get0_RSA(EVP_PKEY *pkey)
-{
-    if (pkey->type != EVP_PKEY_RSA) {
-        EVPerr(EVP_F_EVP_PKEY_GET0_RSA, EVP_R_EXPECTING_AN_RSA_KEY);
-        return NULL;
-    }
-    return pkey->pkey.rsa;
-}
+With reliable_unique_retry:    Mean: 14.9 s, Std dev: 9.1 s
+Without reliable_unique_retry: Mean: 11.8 s, Std dev: 5.8 s
 
-Arne
+For more standard push sizes (~1kb), the effect is of course smaller:
+
+With reliable_unique_retry:    Mean: 2.7 s, Std dev: 0.6 s
+Without reliable_unique_retry: Mean: 2.6 s, Std dev: 0.7 s
+
+This shows that this mechanism hurts performance under packet loss
+conditions.  (Without packet loss, there are no retransmissions and this
+has no influence, of course.)  Querying the openvpn collective memory
+(read: James, David and Gert) did not yield any arguments to keep it.
+James even mentioned that OpenVPN 3 doesn't include this mechanism.
+
+So, improve our connection setup performance by removing some code :)
+
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+---
+ src/openvpn/reliable.c | 26 +-------------------------
+ 1 file changed, 1 insertion(+), 25 deletions(-)
+
+diff --git a/src/openvpn/reliable.c b/src/openvpn/reliable.c
+index 972af61..f484483 100644
+--- a/src/openvpn/reliable.c
++++ b/src/openvpn/reliable.c
+@@ -565,30 +565,6 @@ reliable_can_send(const struct reliable *rel)
+     return n_current > 0 && !rel->hold;
+ }
+ 
+-#ifdef EXPONENTIAL_BACKOFF
+-/* return a unique point-in-time to trigger retry */
+-static time_t
+-reliable_unique_retry(struct reliable *rel, time_t retry)
+-{
+-    int i;
+-    while (true)
+-    {
+-        for (i = 0; i < rel->size; ++i)
+-        {
+-            struct reliable_entry *e = &rel->array[i];
+-            if (e->active && e->next_try == retry)
+-            {
+-                goto again;
+-            }
+-        }
+-        break;
+-again:
+-        ++retry;
+-    }
+-    return retry;
+-}
+-#endif /* ifdef EXPONENTIAL_BACKOFF */
+-
+ /* return next buffer to send to remote */
+ struct buffer *
+ reliable_send(struct reliable *rel, int *opcode)
+@@ -612,7 +588,7 @@ reliable_send(struct reliable *rel, int *opcode)
+     {
+ #ifdef EXPONENTIAL_BACKOFF
+         /* exponential backoff */
+-        best->next_try = reliable_unique_retry(rel, local_now + best->timeout);
++        best->next_try = local_now + best->timeout;
+         best->timeout *= 2;
+ #else
+         /* constant timeout, no backoff */
+-- 
+2.7.4
+
 
