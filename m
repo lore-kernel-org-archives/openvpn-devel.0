@@ -1,12 +1,11 @@
-References: <CAKuzo_gJK_1jU5juC1YQzKzm=25Cm+c-3X7-pT1DW_fkkW_9dQ@...278...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <b789e1b3-8ed2-f4d9-b311-b76d063b79a8@...1227...>
-Date: Wed, 3 Jan 2018 09:05:20 +0100
+References: <1514952123-26616-1-git-send-email-selva.nair@...277...>
+From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <8edb6cb2-d9fd-b961-4170-464d6ae60813@...1435...>
+Date: Wed, 3 Jan 2018 09:10:41 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_gJK_1jU5juC1YQzKzm=25Cm+c-3X7-pT1DW_fkkW_9dQ@...278...>
-Content-Language: de-DE
-Subject: Re: [Openvpn-devel] openvpn segfaults on --management-external-key
- with ECC certificate
+In-Reply-To: <1514952123-26616-1-git-send-email-selva.nair@...277...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] Return NULL if GetAdaptersInfo fails
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,38 +14,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-Am 03.01.18 um 03:22 schrieb Selva Nair:
-> Hi,
-> 
-> I expected an error message saying only RSA certs are supported for
-> --management-external-key, but openvpn appears to segfault if a cert
-> with an ECC key is used with that option.
-> 
-> A stack trace shows it fails in ssl_openssl.c line 1117 when trying to
-> copy n and e. In fact the call
-> 
-> pub_rsa = EVP_PKEY_get0_RSA(pkey);
-> 
-> before that (line 1104) should have failed and the code does correctly
-> check its return value. But that call succeeds for some reason.
-> Instead, RSA_get0_key() returns invalid n and e pointers and passing
-> those to BN_dup() fails.
-> 
-> This is with openssl 1.0.1 and that could be the problem -- it may not
-> have EVP_PKEY_get0_RSA() in which case the compatibility interface in
-> use is probably not smart enough...
-> 
-> Is this a known issue or is it just me?
+Hi,
 
-There in acked patch from me for that issue that got commited
-(bb23eca/4b8d654) that introduces the first check. So the question is
-what strange certificate/config do you have so that the first call
-succeeds. Also might be OpenSSL 1.0.1 that does not behave correctly.
+On 03-01-18 05:02, selva.nair@...277... wrote:
+> From: Selva Nair <selva.nair@...277...>
+> 
+> - Currently a pointer to potentially uninitialized IP_ADAPTER_INFO
+>   struct is returned on error causing ill-defined behaviour.
+> 
+> Signed-off-by: Selva Nair <selva.nair@...277...>
+> ---
+> 
+> There have been some reports of unexpected failure in GetAdaptersInfo.
+> When and why that happens is still unclear but this bug could explain
+> why the process goes into a tailspin in such occasions.
+> 
+>  src/openvpn/tun.c | 7 ++-----
+>  1 file changed, 2 insertions(+), 5 deletions(-)
+> 
+> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+> index 25831ce..6e16348 100644
+> --- a/src/openvpn/tun.c
+> +++ b/src/openvpn/tun.c
+> @@ -4178,15 +4178,12 @@ get_adapter_info_list(struct gc_arena *gc)
+>      else
+>      {
+>          pi = (PIP_ADAPTER_INFO) gc_malloc(size, false, gc);
+> -        if ((status = GetAdaptersInfo(pi, &size)) == NO_ERROR)
+> -        {
+> -            return pi;
+> -        }
+> -        else
+> +        if ((status = GetAdaptersInfo(pi, &size)) != NO_ERROR)
+>          {
+>              msg(M_INFO, "GetAdaptersInfo #2 failed (status=%u) : %s",
+>                  (unsigned int)status,
+>                  strerror_win32(status, gc));
+> +            pi = NULL;
+>          }
+>      }
+>      return pi;
+> 
 
-Arne
+Less lines, *and* less bugs.  Very good.
+
+Acked-by: Steffan Karger <steffan.karger@...1435...>
+
+-Steffan
 
