@@ -1,17 +1,14 @@
-Date: Fri, 5 Jan 2018 12:21:47 -0800
-From: Gregory Sloop <gregs@...1934...>
-Reply-To: Greg Sloop <gregs@...1934...>
-Message-ID: <961580051.20180105122147@...1934...>
-In-Reply-To: <d92ef8b9-fb9a-4cd0-ac6c-ebd04853311e@...2030...>
-References: <7f72b2de-f411-c4a0-bd1e-f343543cb8e2@...2030...> 
- <CAAjorqWaFY+XdD5XZ95rPyXJHd9MfPv3Xmv3M1gKfWHbnJXL9w@...278...>
- <6ad04520-6e42-51aa-bd38-b2285e7adaab@...2030...>
- <4da8bb9a-7118-e0ab-ba7d-bc813e33d7c4@...515...>
- <d92ef8b9-fb9a-4cd0-ac6c-ebd04853311e@...2030...>
+References: <1515067670-13094-1-git-send-email-steffan.karger@...1435...>
+ <6b64631e-2dbe-e4d8-e32f-4c22c394ceea@...2080...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <2c70d0cb-365b-2885-33cb-2dad2e845d86@...1856...>
+Date: Fri, 5 Jan 2018 22:30:45 +0100
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
- boundary="----------0D00C117A168F7907"
-Subject: Re: [Openvpn-devel] OVPN vs IPSec performance as a transport
+In-Reply-To: <6b64631e-2dbe-e4d8-e32f-4c22c394ceea@...2080...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="VO6l8jvMrp2woq7hdibvioasLqSiS8bfJ"
+Subject: Re: [Openvpn-devel] [PATCH] Check for more data in control channel
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,109 +19,93 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
-------------0D00C117A168F7907
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--VO6l8jvMrp2woq7hdibvioasLqSiS8bfJ
+Content-Type: multipart/mixed; boundary="i5l1PEV3LsHRa2eLjEkHfeM864e82k2Q2";
+ protected-headers="v1"
+From: Steffan Karger <steffan@...1856...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <2c70d0cb-365b-2885-33cb-2dad2e845d86@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH] Check for more data in control channel
+References: <1515067670-13094-1-git-send-email-steffan.karger@...1435...>
+ <6b64631e-2dbe-e4d8-e32f-4c22c394ceea@...2080...>
+In-Reply-To: <6b64631e-2dbe-e4d8-e32f-4c22c394ceea@...2080...>
+
+--i5l1PEV3LsHRa2eLjEkHfeM864e82k2Q2
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
--SNIP-
-I haven't taken the time to fully understand the tests you've done etc.=20
-[And it does seem you are not some neophyte blindly hacking your way throug=
-h this...]
+Hi David,
 
-However, I will tell you that it's *very* common for people to do things th=
-at appear very similarly as you describe, and find the IPSec throughput is =
-vastly better then OpenVPN. [That's always been my experience in any benchm=
-arking I've done - and I've done some.]  Each time I've seen it discussed -=
- I've seen repeated threads all pointing to the kernel vs user space argume=
-nts.
+On 05-01-18 20:48, David Sommerseth wrote:
+> On 04/01/18 13:07, Steffan Karger wrote:
+>> If control channel packets arrive quickly after each other, or out of
+>> order, there might be more data available than we can read in one
+>> tls_process() call.  If that happened, and no further control channel
+>> packet arrived (e.g. because the last two packets arrived out-of-order),
+>> we would wait for 16 second ("coarse timer") before we would read the
+>> remaining data.  To avoid that, always schedule ourself again if there
+>> was control channel data, to check whether more data is available.
+>>
+>> For mbedtls, we could implement a slightly more elegant "is there more
+>> data?" function, instead of blindly rescheduling.  But I can't find a way
+>> to implement that for OpenSSL, and the current solution is very simple a=
+nd
+>> still has quite low overhead.
+>=20
+> I haven't looked at the code paths yet (except of the patch itself) ... b=
+ut
+> how will this affect a server config with a bit of load?  Like some hundr=
+ed
+> connected clients or more?  Will these other clients notice that a client=
+ gets
+> rescheduled instantly?  And as well, what if more clients trigger this
+> behaviour approximately in the same time window?
+Good question.  One extra tls_process() loop for each connecting client
+should have barely any effect.  Based on the code, I would expect it to
+be less processing than a single data channel packet.  For more
+certainty, I ran some tests.
 
-And all my own testing also shows that to be the case.=20
+This is the average time for setting up 50 connections simultaneously
+without bandwidth limits or packet loss (om my 5-year old dual core
+laptop), and waiting for all 50 to finish (average over 20 runs):
 
-IIRC, in the platforms I've tested, OVPN isn't CPU constrained - the connec=
-tion will max out throughput far earlier than CPU exhaustion. IPSec will sc=
-ale more or less directly with CPU performance - and at max throughput the =
-CPU handling encryption will max out. (I suppose this might not be true in =
-a system with in-hardware AES or other encryption off-loading - and the eth=
-ernet interface will become the bottleneck, not the CPU - but where I've ru=
-n tests, that was never the case. It's, admittedly, been a while since I've=
- done any real throughput tests on a test-bed setup.)
+Without the patch: Mean: 11.16 Stdev: 0.35
+With the patch: Mean: 11.14 Stdev: 0.36
 
-TK> Again, keep in mind that full wire speed is realized with no vpn, and
-TK> with IPSec.=20
-TK> So, to reason this through a little:
+Same test, but now with an iperf maxing out the data channel at the same
+time (laptop turns into a blowdryer...):
 
-1) TK> - No vpn =3D fast.
-2) TK> - IPSec =3D fast.
-3) - OVPN->>OVPN =3D even faster
-4) - OVPN->>OVPN->routing/hardware =3D slow, down to about 200Mbps from 1+G=
-bps.
+Without the patch: Mean: 11.17 Stdev: 0.68
+With the patch: Mean: 11.33 Stdev: 0.55
+
+(iperf reported for both a little over 400 Mbit/s)
+
+I think these numbers are a strong indication that my 'barely any
+effect' estimate is correct.
+
+-Steffan
 
 
-I may certainly be wrong, but I'd be *really* skeptical about #3. I've *nev=
-er* seen a case where the performance of OpenVPN is better than IPSec on th=
-e same platform.
+--i5l1PEV3LsHRa2eLjEkHfeM864e82k2Q2--
 
-And if #3 is wrong, your "tinkering" with #4 will never yield something use=
-ful.
-Obviously, I'd want to be pretty sure the straight OVPN <-> OVPN tests are =
-accurate before trying to solve #4.
+--VO6l8jvMrp2woq7hdibvioasLqSiS8bfJ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
--Greg=
+-----BEGIN PGP SIGNATURE-----
 
-------------0D00C117A168F7907
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+iQEvBAEBCAAZBQJaT+6JEhxzdGVmZmFuQGthcmdlci5tZQAKCRCYAso9AH7SiGe4
+B/wKTIEkh2r1lY3dUuzJaG71RXd/9GGP8lmbVFD5jRrCl5Ydc8uJvHBi8yH3R/XJ
+iOVM3i8GXyFW2qClkhTiQiMqiteDLCX2bkPa8IRMQKAKzzmiSxRMX61BDGjPQ2o3
+mCaouah7hilcev8Q9MHw6SntjL2SAlIw+jnn232dmw4+B+UZMPauIdqHP05i3l4O
+vY8nMVPf85k4y1oYvjCPN6OEbZvCwgBCeZYzHLmqNdgO025A0eUD8HQALtqNHiIk
+EsMm/tkn7rpUeWVe043dl1YfqvNycYvnr3rEVj01ml8RRWzJ7HSsz0qvXmp4j6mu
+KuTrrpKCvzX6YePYmYjwjHR7
+=8uvI
+-----END PGP SIGNATURE-----
 
-<html><head><title>Re: [Openvpn-devel] OVPN vs IPSec performance as a trans=
-port</title>
-</head>
-<body>
-<span style=3D" font-family:'Courier New'; font-size: 9pt;">-SNIP-<br>
-I haven't taken the time to fully understand the tests you've done etc. <br>
-[And it does seem you are not some neophyte blindly hacking your way throug=
-h this...]<br>
-<br>
-However, I will tell you that it's *very* common for people to do things th=
-at appear very similarly as you describe, and find the IPSec throughput is =
-vastly better then OpenVPN. [That's always been my experience in any benchm=
-arking I've done - and I've done some.] &nbsp;Each time I've seen it discus=
-sed - I've seen repeated threads all pointing to the kernel vs user space a=
-rguments.<br>
-<br>
-And all my own testing also shows that to be the case. <br>
-<br>
-IIRC, in the platforms I've tested, OVPN isn't CPU constrained - the connec=
-tion will max out throughput far earlier than CPU exhaustion. IPSec will sc=
-ale more or less directly with CPU performance - and at max throughput the =
-CPU handling encryption will max out. (I suppose this might not be true in =
-a system with in-hardware AES or other encryption off-loading - and the eth=
-ernet interface will become the bottleneck, not the CPU - but where I've ru=
-n tests, that was never the case. It's, admittedly, been a while since I've=
- done any real throughput tests on a test-bed setup.)<br>
-<br>
-<span style=3D" color: #800000;"><b>TK&gt; Again, keep in mind that full wi=
-re speed is realized with no vpn, and<br>
-TK&gt; with IPSec. <br>
-TK&gt; So, to reason this through a little:<br>
-<br>
-1) TK&gt; - No vpn =3D fast.<br>
-2) TK&gt; - IPSec =3D fast.<br>
-3) - OVPN-&gt;&gt;OVPN =3D even faster<br>
-4) - OVPN-&gt;&gt;OVPN-&gt;routing/hardware =3D slow, down to about 200Mbps=
- from 1+Gbps.<br>
-<br>
-<br>
-</b><span style=3D" color: #000000;">I may certainly be wrong, but I'd be *=
-really* skeptical about #3. I've *never* seen a case where the performance =
-of OpenVPN is better than IPSec on the same platform.<br>
-<br>
-And if #3 is wrong, your "tinkering" with #4 will never yield something use=
-ful.<br>
-Obviously, I'd want to be pretty sure the straight OVPN &lt;-&gt; OVPN test=
-s are accurate before trying to solve #4.<br>
-<br>
--Greg</body></html>=
-
-------------0D00C117A168F7907--
-
+--VO6l8jvMrp2woq7hdibvioasLqSiS8bfJ--
 
