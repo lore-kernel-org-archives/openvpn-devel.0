@@ -1,13 +1,13 @@
+References: <7f72b2de-f411-c4a0-bd1e-f343543cb8e2@...2030...>
+ <CAAjorqWaFY+XdD5XZ95rPyXJHd9MfPv3Xmv3M1gKfWHbnJXL9w@...278...>
+ <6ad04520-6e42-51aa-bd38-b2285e7adaab@...2030...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <4da8bb9a-7118-e0ab-ba7d-bc813e33d7c4@...515...>
+Date: Fri, 5 Jan 2018 08:08:05 +0200
 MIME-Version: 1.0
-In-Reply-To: <9cb3e4fc-a681-484a-2712-8483835901d5@...2181...>
-References: <20180104193710.23778-1-chipitsine@...277...>
- <9cb3e4fc-a681-484a-2712-8483835901d5@...2181...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Fri, 5 Jan 2018 06:42:39 +0500
-Message-ID: <CAFHpkQGpU007WMz6GYDGvJ6_WbCjHZ3wxAa8c3eBgFtpHDftzQ@...278...>
-Content-Type: multipart/alternative; boundary="94eb2c05bd205b65a20561fd9066"
-Subject: Re: [Openvpn-devel] [PATCH v3] travis-ci: add brew cache,
- remove ccache
+In-Reply-To: <6ad04520-6e42-51aa-bd38-b2285e7adaab@...2030...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] OVPN vs IPSec performance as a transport
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,83 +16,199 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Tom Kunz <tkunz@...2030...>, "Greg Sloop <gregs@...1934...>" <gregs@...1934...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---94eb2c05bd205b65a20561fd9066
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This does not answer your question, either, but there are more details
+on OpenVPN performance optimization here:
 
-2018-01-05 3:23 GMT+05:00 Antonio Quartulli <a@...2181...>:
+<https://community.openvpn.net/openvpn/wiki/Gigabit_Networks_Linux>
 
->
->
-> On 05/01/18 03:37, Ilya Shipitsin wrote:
-> > 1-2 minutes speedup osx builds by using brew cache.
-> > Also, ccache was removed for a while (builds fail
-> > after travis-ci upgraded clang to version 5.0.0)
-> > ---
-> > v2: this is a "v2" of previously issued "enable ccache for osx and mingw
-> builds"
-> > patch. I decided not to enable ccache for mingw builds as it does not
-> > speedup them
-> >
-> > v3: removed ccache at all, because it fails on clang-5.0.0
->
-> Does this patch make "[PATCH] travis-ci: speedup osx build by enabling
-> brew cache=E2=80=8B" obsolete?
->
+Increasing the MTU helps as it reduces the number of user<->kernel-space
+switches.
 
-yes
+-- 
+Samuli Seppänen
+Community Manager
+OpenVPN Technologies, Inc
 
+irc freenode net: mattock
 
->
->
-> Regards,
->
->
-> --
-> Antonio Quartulli
->
->
+Il 05/01/2018 01:52, Tom Kunz ha scritto:
+> That would explain it if it always worked that way.
+> But I can get 400%+ wire speed from A to B with compressible data, and
+> 102% with incompressible data.  If I do the same test from B to A or A
+> to B, I get those results.  If I hop off of that to C, speed goes from
+>>1Gbps to sub-200Mbps.  In either case, the data has left the kernel
+> space to arrive at "nc", so just simply saying "it's kernel vs user"
+> doesn't answer it.
+> 
+> 
+> On 01/04/2018 06:37 PM, Greg Sloop <gregs@...1934...> wrote:
+>> I'm sure someone else, or a Google search will get you a more detailed
+>> run-down - but the gist of the "problem" is this;
+>>
+>> OpenVPN is run in user-space, not kernel space. IPSec  runs in kernel
+>> space, and the difference is vastly diminished throughput.
+>>
+>> HTH
+>>
+>> -Greg
+>>
+>> On Jan 4, 2018 3:23 PM, "Tom Kunz" <tkunz@...2030...
+>> <mailto:tkunz@...2030...>> wrote:
+>>
+>>     Hi,
+>>
+>>     I have been testing OVPN 2.4.4 vs StrongSwan IPSec, to be used as
+>>     transport, and I have found something that I think might be a
+>>     performance issue.  I have 3 linux boxes, A, B, and C.  All interfaces
+>>     are 1Gbps.  Each has an interface to the next one downstream:
+>>
+>>     A - eth0=10.10.10.10/24 <http://10.10.10.10/24> and
+>>     eth1=172.16.0.10/24 <http://172.16.0.10/24>
+>>
+>>     B - eth0=172.16.0.11/24 <http://172.16.0.11/24> and
+>>     eth1=172.30.0.11/24 <http://172.30.0.11/24>
+>>
+>>     C - eth0=172.30.0.10/24 <http://172.30.0.10/24> and
+>>     eth1=192.168.168.10/24 <http://192.168.168.10/24>
+>>
+>>     Packets route as usual through this with no encryption, and throughput
+>>     from A to C is at wire speed.  With IPSec between A&B, from
+>>     172.16.0.10-172.16.0.11, I can still get wire speed from A to C. 
+>>     Then I
+>>     turn off IPSec, and I setup A as the server and B as the client, with
+>>     A's config being:
+>>
+>>     =====
+>>
+>>     dev tun
+>>
+>>     topology subnet
+>>     server 172.17.0.0 255.255.255.0
+>>     port 1194
+>>     proto udp
+>>     dh /etc/openvpn/keys/dh2048.pem
+>>     ca /etc/openvpn/keys/ca.crt
+>>     cert /etc/openvpn/keys/server.crt
+>>     key /etc/openvpn/keys/server.key
+>>     verb 3
+>>     keepalive 10 45
+>>     cipher aes-256-cbc
+>>     comp-lzo
+>>
+>>     tun-mtu 50000
+>>
+>>     mssfix 0
+>>
+>>     fragment 0
+>>
+>>     client-config-dir ccd
+>>
+>>     push "route 10.10.10.0 255.255.255.0"
+>>
+>>     =====
+>>
+>>     and the client B config file is
+>>
+>>     =====
+>>
+>>     verb 3
+>>     client
+>>     cipher AES-256-CBC
+>>     comp-lzo
+>>     tun-mtu 50000
+>>     mssfix 0
+>>     fragment 0
+>>     remote 172.16.0.10  1194
+>>
+>>     dev tun
+>>     redirect-private local
+>>     tls-client
+>>
+>>     ca /etc/openvpn/keys/ca.crt
+>>     cert /etc/openvpn/keys/client1.crt
+>>     key /etc/openvpn/keys/client1.key
+>>
+>>     =====
+>>
+>>     and I setup static routes on each side so that traffic is going
+>>     through
+>>     the tunnel from A to C and vice versa.
+>>
+>>     I can pass traffic over this link, however when I do tests for
+>>     speed, I
+>>     am only getting about 200Mbps instead of 1Gbps.
+>>
+>>     The funny thing is, I know that each of these machines can easily do
+>>     1Gbps.  If I do my performance test from A to B, over the above ovpn
+>>     configs, I can get just over 1Gbps because of the MTU overhead being
+>>     removed. But as soon as I have it make the leap downstream once
+>>     more, I
+>>     lose 80+% of the speed.  And again, both non-encrypted traffic and
+>>     IPSec
+>>     do the exact same test at wire speed or just slightly under wire
+>>     speed.
+>>
+>>     The way I do a speed test is on A:
+>>
+>>     # nc -l -p 5555 > /dev/null
+>>
+>>     and over on C:
+>>
+>>     # dd if=/dev/urandom of=blob.random.1G bs=10M count=100
+>>
+>>     # time cat blob.random.1G | nc 10.10.10.10 5555
+>>
+>>     tcpdumps over each interface confirm traffic is flowing in the
+>>     expected
+>>     fashion.
+>>
+>>     Over unencrypted or IPSec, I am looking at about 4s to move 1G of data
+>>     from one end to the other, and with ovpn, 15-22s.  The machines
+>>     involved
+>>     are 2 Dell R720's with 8+G ram and a homebrew machine with several
+>>     Xeons
+>>     and 32G RAM.  Network cards involved are a mix of BCM Tigon3 "tg3"
+>>     driver and IGB driver gigabit NICs.
+>>
+>>     Anyone have any suggestions or thoughts as to why the big perf
+>>     decrease
+>>     and what might be done to improve it?
+>>
+>>     Thanks, 
+>>
+>>     Tom
+>>
+>>
+>>
+>>
+>>     ------------------------------------------------------------------------------
+>>     Check out the vibrant tech community on one of the world's most
+>>     engaging tech sites, Slashdot.org! http://sdm.link/slashdot
+>>     _______________________________________________
+>>     Openvpn-devel mailing list
+>>     Openvpn-devel@lists.sourceforge.net
+>>     <mailto:Openvpn-devel@lists.sourceforge.net>
+>>     https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>>     <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>
+>>
+> 
+> 
+> 
+> ------------------------------------------------------------------------------
+> Check out the vibrant tech community on one of the world's most
+> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
+> 
+> 
+> 
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+> 
 
---94eb2c05bd205b65a20561fd9066
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">2018-01-05 3:23 GMT+05:00 Antonio Quartulli <span dir=3D"ltr">&lt;<a hr=
-ef=3D"mailto:a@...2181..." target=3D"_blank">a@...2181...</a>&gt;</span>:<b=
-r><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:=
-1px #ccc solid;padding-left:1ex"><span class=3D""><br>
-<br>
-On 05/01/18 03:37, Ilya Shipitsin wrote:<br>
-&gt; 1-2 minutes speedup osx builds by using brew cache.<br>
-&gt; Also, ccache was removed for a while (builds fail<br>
-&gt; after travis-ci upgraded clang to version 5.0.0)<br>
-&gt; ---<br>
-&gt; v2: this is a &quot;v2&quot; of previously issued &quot;enable ccache =
-for osx and mingw builds&quot;<br>
-&gt; patch. I decided not to enable ccache for mingw builds as it does not<=
-br>
-&gt; speedup them<br>
-&gt;<br>
-&gt; v3: removed ccache at all, because it fails on clang-5.0.0<br>
-<br>
-</span>Does this patch make &quot;[PATCH] travis-ci: speedup osx build by e=
-nabling<br>
-brew cache=E2=80=8B&quot; obsolete?<br></blockquote><div><br></div><div>yes=
-<br></div><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margi=
-n:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
-<br>
-<br>
-Regards,<br>
-<span class=3D"HOEnZb"><font color=3D"#888888"><br>
-<br>
---<br>
-Antonio Quartulli<br>
-<br>
-</font></span></blockquote></div><br></div></div>
-
---94eb2c05bd205b65a20561fd9066--
 
