@@ -1,13 +1,16 @@
-References: <7f72b2de-f411-c4a0-bd1e-f343543cb8e2@...2030...>
+Date: Fri, 5 Jan 2018 12:21:47 -0800
+From: Gregory Sloop <gregs@...1934...>
+Reply-To: Greg Sloop <gregs@...1934...>
+Message-ID: <961580051.20180105122147@...1934...>
+In-Reply-To: <d92ef8b9-fb9a-4cd0-ac6c-ebd04853311e@...2030...>
+References: <7f72b2de-f411-c4a0-bd1e-f343543cb8e2@...2030...> 
  <CAAjorqWaFY+XdD5XZ95rPyXJHd9MfPv3Xmv3M1gKfWHbnJXL9w@...278...>
  <6ad04520-6e42-51aa-bd38-b2285e7adaab@...2030...>
  <4da8bb9a-7118-e0ab-ba7d-bc813e33d7c4@...515...>
-From: Tom Kunz <tkunz@...2030...>
-Message-ID: <d92ef8b9-fb9a-4cd0-ac6c-ebd04853311e@...2030...>
-Date: Fri, 5 Jan 2018 14:56:14 -0500
+ <d92ef8b9-fb9a-4cd0-ac6c-ebd04853311e@...2030...>
 MIME-Version: 1.0
-In-Reply-To: <4da8bb9a-7118-e0ab-ba7d-bc813e33d7c4@...515...>
-Content-Language: en-US
+Content-Type: multipart/alternative;
+ boundary="----------0D00C117A168F7907"
 Subject: Re: [Openvpn-devel] OVPN vs IPSec performance as a transport
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -17,78 +20,111 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: openvpn-devel@lists.sourceforge.net
+
+------------0D00C117A168F7907
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>, "Greg Sloop <gregs@...1934...>" <gregs@...1934...>
-Cc: openvpn-devel@lists.sourceforge.net
 
-Hi Samuli,
+-SNIP-
+I haven't taken the time to fully understand the tests you've done etc.=20
+[And it does seem you are not some neophyte blindly hacking your way throug=
+h this...]
 
-Yes, that was the document that I read before going down this path.=C2=A0 I
-did a bunch of testing and found the optimum MTU range in my setup is
-47500 to 52500, and 50000 is probably as close to the peak as necessary.
+However, I will tell you that it's *very* common for people to do things th=
+at appear very similarly as you describe, and find the IPSec throughput is =
+vastly better then OpenVPN. [That's always been my experience in any benchm=
+arking I've done - and I've done some.]  Each time I've seen it discussed -=
+ I've seen repeated threads all pointing to the kernel vs user space argume=
+nts.
 
-When I have 2 nodes, nothing between them and not routing to elsewhere,
-the extra bandwidth from the large MTU gives me 102% or so of wire speed
-throughput when I transfer incompressible data (derived from
-/dev/urandom).=C2=A0 I can do this very reproducibly and predictably.=C2=A0=
- For
-data-compressibility tests, I used two different forms, one was highly
-compressible data (derived from /dev/zero) and the other was the tarball
-(not gzipped, just tar) of linux kernel source code.=C2=A0 With the file
-created from uncompressed linux kernel source, where lzo can do some
-work, I can regularly get 140-150% wire speed, and with
-highly-compressible data I get just over 400%.=C2=A0 Meaning, I can transfer
-all-nulls over a 1Gbps link as if it was a 4Gbps link, and text as if it
-was a 1.5Gbps link.=C2=A0 This is good stuff for the bandwidth-constrained!
+And all my own testing also shows that to be the case.=20
 
-So really the only problem is getting that data back out of ovpn and
-onto a physical hardware interface to another place.=C2=A0 OVPN is absolute=
-ly
-awesome, otherwise.
+IIRC, in the platforms I've tested, OVPN isn't CPU constrained - the connec=
+tion will max out throughput far earlier than CPU exhaustion. IPSec will sc=
+ale more or less directly with CPU performance - and at max throughput the =
+CPU handling encryption will max out. (I suppose this might not be true in =
+a system with in-hardware AES or other encryption off-loading - and the eth=
+ernet interface will become the bottleneck, not the CPU - but where I've ru=
+n tests, that was never the case. It's, admittedly, been a while since I've=
+ done any real throughput tests on a test-bed setup.)
 
-The things I have already tried to mess around with to affect performance:
-- Toggle comp-lzo on/off.=C2=A0 No effect.
-- Change encryption algorithm, including change to "none".=C2=A0 No effect.
-- Change sndbuf/rcvbuf socket buffers to 425984(basically doubling
-defaults).=C2=A0 No effect.
-- Change tun-mtu.=C2=A0 Any changes too far off of my existing 50000 cause
-perf degradation.
-- Change txqueuelen on all interfaces to 1000000.=C2=A0 Slight effect, maybe
-5-10% gains or so. (Possibly trimmed 1-2s off a ~20s transfer)
-- Turning off checksumming on all interfaces: ethtool -K {dev} rx off tx
-off=C2=A0=C2=A0 No effect.
-- No iptables running at all on anything.
+TK> Again, keep in mind that full wire speed is realized with no vpn, and
+TK> with IPSec.=20
+TK> So, to reason this through a little:
 
-Again, keep in mind that full wire speed is realized with no vpn, and
-with IPSec.=C2=A0
-So, to reason this through a little:
-- No vpn =3D fast.
-- IPSec =3D fast.
-- OVPN->OVPN =3D even faster
-- OVPN->OVPN->routing/hardware =3D slow, down to about 200Mbps from 1+Gbps.
-
-I'm wondering if the bottleneck is in the tun/tap driver's ability to
-copy data out to the hardware device or to the buffers to be processed
-for routing?=C2=A0
-BTW, the host OS is Ubuntu server 16.04.3 on all of these, kernel
-4.4.0-104-generic and the TUN is built-in to the kernel, not a module.=C2=A0
-I have not experimented with other kernel versions.
-
-Thanks for any thoughts,
-Tom
+1) TK> - No vpn =3D fast.
+2) TK> - IPSec =3D fast.
+3) - OVPN->>OVPN =3D even faster
+4) - OVPN->>OVPN->routing/hardware =3D slow, down to about 200Mbps from 1+G=
+bps.
 
 
-On 01/05/2018 01:08 AM, Samuli Sepp=C3=A4nen wrote:
-> This does not answer your question, either, but there are more details
-> on OpenVPN performance optimization here:
->
-> <https://community.openvpn.net/openvpn/wiki/Gigabit_Networks_Linux>
->
-> Increasing the MTU helps as it reduces the number of user<->kernel-space
-> switches.
->
+I may certainly be wrong, but I'd be *really* skeptical about #3. I've *nev=
+er* seen a case where the performance of OpenVPN is better than IPSec on th=
+e same platform.
 
+And if #3 is wrong, your "tinkering" with #4 will never yield something use=
+ful.
+Obviously, I'd want to be pretty sure the straight OVPN <-> OVPN tests are =
+accurate before trying to solve #4.
 
+-Greg=
+
+------------0D00C117A168F7907
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+<html><head><title>Re: [Openvpn-devel] OVPN vs IPSec performance as a trans=
+port</title>
+</head>
+<body>
+<span style=3D" font-family:'Courier New'; font-size: 9pt;">-SNIP-<br>
+I haven't taken the time to fully understand the tests you've done etc. <br>
+[And it does seem you are not some neophyte blindly hacking your way throug=
+h this...]<br>
+<br>
+However, I will tell you that it's *very* common for people to do things th=
+at appear very similarly as you describe, and find the IPSec throughput is =
+vastly better then OpenVPN. [That's always been my experience in any benchm=
+arking I've done - and I've done some.] &nbsp;Each time I've seen it discus=
+sed - I've seen repeated threads all pointing to the kernel vs user space a=
+rguments.<br>
+<br>
+And all my own testing also shows that to be the case. <br>
+<br>
+IIRC, in the platforms I've tested, OVPN isn't CPU constrained - the connec=
+tion will max out throughput far earlier than CPU exhaustion. IPSec will sc=
+ale more or less directly with CPU performance - and at max throughput the =
+CPU handling encryption will max out. (I suppose this might not be true in =
+a system with in-hardware AES or other encryption off-loading - and the eth=
+ernet interface will become the bottleneck, not the CPU - but where I've ru=
+n tests, that was never the case. It's, admittedly, been a while since I've=
+ done any real throughput tests on a test-bed setup.)<br>
+<br>
+<span style=3D" color: #800000;"><b>TK&gt; Again, keep in mind that full wi=
+re speed is realized with no vpn, and<br>
+TK&gt; with IPSec. <br>
+TK&gt; So, to reason this through a little:<br>
+<br>
+1) TK&gt; - No vpn =3D fast.<br>
+2) TK&gt; - IPSec =3D fast.<br>
+3) - OVPN-&gt;&gt;OVPN =3D even faster<br>
+4) - OVPN-&gt;&gt;OVPN-&gt;routing/hardware =3D slow, down to about 200Mbps=
+ from 1+Gbps.<br>
+<br>
+<br>
+</b><span style=3D" color: #000000;">I may certainly be wrong, but I'd be *=
+really* skeptical about #3. I've *never* seen a case where the performance =
+of OpenVPN is better than IPSec on the same platform.<br>
+<br>
+And if #3 is wrong, your "tinkering" with #4 will never yield something use=
+ful.<br>
+Obviously, I'd want to be pretty sure the straight OVPN &lt;-&gt; OVPN test=
+s are accurate before trying to solve #4.<br>
+<br>
+-Greg</body></html>=
+
+------------0D00C117A168F7907--
 
 
