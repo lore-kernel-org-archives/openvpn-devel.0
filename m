@@ -1,10 +1,11 @@
-From: selva.nair@...277...
-Date: Sun,  7 Jan 2018 21:21:16 -0500
-Message-Id: <1515378076-5774-3-git-send-email-selva.nair@...277...>
+MIME-Version: 1.0
 In-Reply-To: <1515378076-5774-1-git-send-email-selva.nair@...277...>
 References: <1515378076-5774-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH 2/2] TLS v1.2 support for cryptoapicert --
- RSA only
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Tue, 9 Jan 2018 11:00:18 +0500
+Message-ID: <CAFHpkQG9UOK7U+=-dh8EVmeo141iYZMx4JdTNVLz_fssrjWkKg@...278...>
+Content-Type: multipart/alternative; boundary="001a114f5cce263bb0056251a1a0"
+Subject: Re: [Openvpn-devel] [PATCH 0/2] Make cryptoapicert work with TLS 1.2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,229 +14,148 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+--001a114f5cce263bb0056251a1a0
+Content-Type: text/plain; charset="UTF-8"
 
-- If an NCRYPT handle for the private key can be obtained, use
-  NCryptSignHash from the Cryptography NG API to sign the hash.
+2018-01-08 7:21 GMT+05:00 <selva.nair@...277...>:
 
-  This should work for all keys in the Windows certifiate stores
-  but may fail for keys in a legacy token, for example. In such
-  cases, we disable TLS v1.2 and fall back to the current
-  behaviour. A warning is logged unless TLS version is already
-  restricted to <= 1.1
+> From: Selva Nair <selva.nair@...277...>
+>
+> Hi,
+>
+> I am not sure how receptive the crypto maintaineres are to the
+> idea of adding more code into cryptoapi.c, but here goes:
+>
+> I've been wanting to add TLS 1.2 support for certs in the
+> Windows cert store using management external key. But that's
+> a lot more work than extending cryptoapicert support. And,
+> rather surprsingly, it turns out that the CNG API for signing is
+> easy to use (well after some groping in the dark..) and doesn't
+> take much to implement.
+>
+> So these patches..
+>
+> The first patch is not really related and to make the existing code
+> "openssl-1.1 ready" (missed by past patches as no one probably builds
+> Windows binary with 1.1..).
+>
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
-Tested on Windows 10 with openssl 1.0.1r and 1.1.0g
-with certificate/key in Windows user store
+there was an agreement on one of the recent community meetings to
+gracefully deprecate both libressl and openssl-1.0.X in favour of
+openssl-1.1.X
 
- src/openvpn/Makefile.am |  2 +-
- src/openvpn/cryptoapi.c | 86 ++++++++++++++++++++++++++++++++++++++++++++++---
- src/openvpn/options.c   | 18 -----------
- 3 files changed, 83 insertions(+), 23 deletions(-)
+so, we should learn how to build windows binary with 1.1.X :)
 
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index fcc22d6..1a2f42e 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -132,5 +132,5 @@ openvpn_LDADD = \
- 	$(OPTIONAL_DL_LIBS)
- if WIN32
- openvpn_SOURCES += openvpn_win32_resources.rc block_dns.c block_dns.h
--openvpn_LDADD += -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwinmm -lfwpuclnt -lrpcrt4
-+openvpn_LDADD += -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwinmm -lfwpuclnt -lrpcrt4 -lncrypt
- endif
-diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
-index 7052e4e..cd3f023 100644
---- a/src/openvpn/cryptoapi.c
-+++ b/src/openvpn/cryptoapi.c
-@@ -42,6 +42,7 @@
- #include <openssl/err.h>
- #include <windows.h>
- #include <wincrypt.h>
-+#include <ncrypt.h>
- #include <stdio.h>
- #include <ctype.h>
- #include <assert.h>
-@@ -68,6 +69,14 @@
- #define CERT_STORE_OPEN_EXISTING_FLAG 0x00004000
- #endif
- 
- /* Size of an SSL signature: MD5+SHA1 */
- #define SSL_SIG_LENGTH  36
- 
-@@ -83,6 +92,7 @@
- #define CRYPTOAPI_F_CRYPT_SIGN_HASH                         106
- #define CRYPTOAPI_F_LOAD_LIBRARY                            107
- #define CRYPTOAPI_F_GET_PROC_ADDRESS                        108
-+#define CRYPTOAPI_F_NCRYPT_SIGN_HASH                        109
- 
- static ERR_STRING_DATA CRYPTOAPI_str_functs[] = {
-     { ERR_PACK(ERR_LIB_CRYPTOAPI, 0, 0),                                    "microsoft cryptoapi"},
-@@ -95,12 +105,13 @@ static ERR_STRING_DATA CRYPTOAPI_str_functs[] = {
-     { ERR_PACK(0, CRYPTOAPI_F_CRYPT_SIGN_HASH, 0),                          "CryptSignHash" },
-     { ERR_PACK(0, CRYPTOAPI_F_LOAD_LIBRARY, 0),                             "LoadLibrary" },
-     { ERR_PACK(0, CRYPTOAPI_F_GET_PROC_ADDRESS, 0),                         "GetProcAddress" },
-+    { ERR_PACK(0, CRYPTOAPI_F_NCRYPT_SIGN_HASH, 0),                         "NCryptSignHash" },
-     { 0, NULL }
- };
- 
- typedef struct _CAPI_DATA {
-     const CERT_CONTEXT *cert_context;
--    HCRYPTPROV crypt_prov;
-+    HCRYPTPROV_OR_NCRYPT_KEY_HANDLE crypt_prov;
-     DWORD key_spec;
-     BOOL free_crypt_prov;
- } CAPI_DATA;
-@@ -210,6 +221,41 @@ rsa_pub_dec(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, in
-     return 0;
- }
- 
-+/**
-+ * Sign the hash in 'from' using NCryptSignHash(). This requires an NCRYPT
-+ * key handle in cd->crypt_prov. On return the signature is in 'to'. Returns
-+ * the length of the signature or 0 on error.
-+ * For now we support only RSA and the padding is assumed to be PKCS1 v1.5
-+ */
-+static int
-+priv_enc_CNG(const CAPI_DATA *cd, const unsigned char *from, int flen,
-+              unsigned char *to, int tlen, int padding)
-+{
-+    NCRYPT_KEY_HANDLE hkey = cd->crypt_prov;
-+    DWORD len;
-+    ASSERT(cd->key_spec == CERT_NCRYPT_KEY_SPEC);
-+
-+    msg(M_INFO, "Signing hash using CNG: data size = %d", flen);
-+
-+    /* The hash OID is already in 'from'.  So set the hash algorithm
-+     * in the padding info struct to NULL.
-+     */
-+    BCRYPT_PKCS1_PADDING_INFO padinfo = {NULL};
-+    DWORD status;
-+
-+    status = NCryptSignHash(hkey, padding? &padinfo : NULL, (BYTE*) from, flen,
-+                            to, tlen, &len, padding? BCRYPT_PAD_PKCS1 : 0);
-+    if (status != ERROR_SUCCESS)
-+    {
-+        SetLastError(status);
-+        CRYPTOAPIerr(CRYPTOAPI_F_NCRYPT_SIGN_HASH);
-+        len = 0;
-+    }
-+
-+    /* Unlike CAPI, CNG signature is in big endian order. No reversing needed. */
-+    return len;
-+}
-+
- /* sign arbitrary data */
- static int
- rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding)
-@@ -230,6 +276,11 @@ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
-         RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE);
-         return 0;
-     }
-+    if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
-+    {
-+        return priv_enc_CNG(cd, from, flen, to, RSA_size(rsa), padding);
-+    }
-+
-     /* Unfortunately, there is no "CryptSign()" function in CryptoAPI, that would
-      * be way to straightforward for M$, I guess... So we have to do it this
-      * tricky way instead, by creating a "Hash", and load the already-made hash
-@@ -322,7 +373,14 @@ finish(RSA *rsa)
-     }
-     if (cd->crypt_prov && cd->free_crypt_prov)
-     {
--        CryptReleaseContext(cd->crypt_prov, 0);
-+        if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
-+        {
-+            NCryptFreeObject(cd->crypt_prov);
-+        }
-+        else
-+        {
-+            CryptReleaseContext(cd->crypt_prov, 0);
-+        }
-     }
-     if (cd->cert_context)
-     {
-@@ -458,7 +516,9 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
-     }
- 
-     /* set up stuff to use the private key */
--    if (!CryptAcquireCertificatePrivateKey(cd->cert_context, CRYPT_ACQUIRE_COMPARE_KEY_FLAG,
-+    /* We prefer to get an NCRYPT key handle so that TLS1.2 can be supported */
-+    DWORD flags = CRYPT_ACQUIRE_COMPARE_KEY_FLAG|CRYPT_ACQUIRE_PREFER_NCRYPT_KEY_FLAG;
-+    if (!CryptAcquireCertificatePrivateKey(cd->cert_context, flags,
-                                            NULL, &cd->crypt_prov, &cd->key_spec, &cd->free_crypt_prov))
-     {
-         /* if we don't have a smart card reader here, and we try to access a
-@@ -470,6 +530,17 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
-     /* here we don't need to do CryptGetUserKey() or anything; all necessary key
-      * info is in cd->cert_context, and then, in cd->crypt_prov.  */
- 
-+    /* If we do not have an NCRYPT key handle disable TLS v1.2 */
-+    if (cd->key_spec != CERT_NCRYPT_KEY_SPEC)
-+    {
-+        if (!(SSL_CTX_get_options(ssl_ctx) & SSL_OP_NO_TLSv1_2))
-+        {
-+            msg(M_WARN, "WARNING: cryptapicert: only legacy private key handle is available."
-+                        "Disabling TLS v1.2");
-+            SSL_CTX_set_options(ssl_ctx, SSL_OP_NO_TLSv1_2);
-+        }
-+    }
-+
-     my_rsa_method = RSA_meth_new("Microsoft Cryptography API RSA Method",
-                                   RSA_METHOD_FLAG_NO_CHECK);
-     check_malloc_return(my_rsa_method);
-@@ -551,7 +622,14 @@ err:
-         {
-             if (cd->free_crypt_prov && cd->crypt_prov)
-             {
--                CryptReleaseContext(cd->crypt_prov, 0);
-+                if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
-+                {
-+                    NCryptFreeObject(cd->crypt_prov);
-+                }
-+                else
-+                {
-+                    CryptReleaseContext(cd->crypt_prov, 0);
-+                }
-             }
-             if (cd->cert_context)
-             {
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 7be5f38..e4fbade 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3018,24 +3018,6 @@ options_postprocess_mutate(struct options *o)
-     }
- #endif
- 
--#ifdef ENABLE_CRYPTOAPI
--    if (o->cryptoapi_cert)
--    {
--        const int tls_version_max =
--            (o->ssl_flags >> SSLF_TLS_VERSION_MAX_SHIFT)
--            &SSLF_TLS_VERSION_MAX_MASK;
--
--        if (tls_version_max == TLS_VER_UNSPEC || tls_version_max > TLS_VER_1_1)
--        {
--            msg(M_WARN, "Warning: cryptapicert used, setting maximum TLS "
--                "version to 1.1.");
--            o->ssl_flags &= ~(SSLF_TLS_VERSION_MAX_MASK
--                              <<SSLF_TLS_VERSION_MAX_SHIFT);
--            o->ssl_flags |= (TLS_VER_1_1 << SSLF_TLS_VERSION_MAX_SHIFT);
--        }
--    }
--#endif /* ENABLE_CRYPTOAPI */
--
- #if P2MP
-     /*
-      * Save certain parms before modifying options via --pull
--- 
-2.1.4
 
+
+
+>
+> The second patch is not dependent on this, but close-by code paths
+> are touched by both.
+>
+> Selva
+>
+> Selva Nair (2):
+>   Bring cryptoapi.c upto speed with openssl 1.1
+>   TLS v1.2 support for cryptoapicert -- RSA only
+>
+>  configure.ac                 |   1 +
+>  src/openvpn/Makefile.am      |   2 +-
+>  src/openvpn/cryptoapi.c      | 155 ++++++++++++++++++++++++++++++
+> ++++---------
+>  src/openvpn/openssl_compat.h |  14 ++++
+>  src/openvpn/options.c        |  18 -----
+>  5 files changed, 140 insertions(+), 50 deletions(-)
+>
+> --
+> 2.1.4
+>
+>
+> ------------------------------------------------------------
+> ------------------
+> Check out the vibrant tech community on one of the world's most
+> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
+
+--001a114f5cce263bb0056251a1a0
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
+te">2018-01-08 7:21 GMT+05:00  <span dir=3D"ltr">&lt;<a href=3D"mailto:selv=
+a.nair@...277..." target=3D"_blank">selva.nair@...277...</a>&gt;</span>:<br=
+><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1=
+px #ccc solid;padding-left:1ex">From: Selva Nair &lt;<a href=3D"mailto:selv=
+a.nair@...277...">selva.nair@...277...</a>&gt;<br>
+<br>
+Hi,<br>
+<br>
+I am not sure how receptive the crypto maintaineres are to the<br>
+idea of adding more code into cryptoapi.c, but here goes:<br>
+<br>
+I&#39;ve been wanting to add TLS 1.2 support for certs in the<br>
+Windows cert store using management external key. But that&#39;s<br>
+a lot more work than extending cryptoapicert support. And,<br>
+rather surprsingly, it turns out that the CNG API for signing is<br>
+easy to use (well after some groping in the dark..) and doesn&#39;t<br>
+take much to implement.<br>
+<br>
+So these patches..<br>
+<br>
+The first patch is not really related and to make the existing code<br>
+&quot;openssl-1.1 ready&quot; (missed by past patches as no one probably bu=
+ilds<br>
+Windows binary with 1.1..).<br></blockquote><div><br></div><div>there was a=
+n agreement on one of the recent community meetings to</div><div>gracefully=
+ deprecate both libressl and openssl-1.0.X in favour of</div><div>openssl-1=
+.1.X</div><div><br></div><div>so, we should learn how to build windows bina=
+ry with 1.1.X :)<br></div><div><br></div><div><br></div><div>=C2=A0</div><b=
+lockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px =
+#ccc solid;padding-left:1ex">
+<br>
+The second patch is not dependent on this, but close-by code paths<br>
+are touched by both.<br>
+<br>
+Selva<br>
+<br>
+Selva Nair (2):<br>
+=C2=A0 Bring cryptoapi.c upto speed with openssl 1.1<br>
+=C2=A0 TLS v1.2 support for cryptoapicert -- RSA only<br>
+<br>
+=C2=A0<a href=3D"http://configure.ac" rel=3D"noreferrer" target=3D"_blank">=
+configure.ac</a>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0|=C2=A0 =C2=A01 +<br>
+=C2=A0src/openvpn/Makefile.am=C2=A0 =C2=A0 =C2=A0 |=C2=A0 =C2=A02 +-<br>
+=C2=A0src/openvpn/cryptoapi.c=C2=A0 =C2=A0 =C2=A0 | 155 +++++++++++++++++++=
++++++++++++<wbr>++++---------<br>
+=C2=A0src/openvpn/openssl_compat.h |=C2=A0 14 ++++<br>
+=C2=A0src/openvpn/options.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 |=C2=A0 18 -----<br>
+=C2=A05 files changed, 140 insertions(+), 50 deletions(-)<br>
+<span class=3D"HOEnZb"><font color=3D"#888888"><br>
+--<br>
+2.1.4<br>
+<br>
+<br>
+------------------------------<wbr>------------------------------<wbr>-----=
+-------------<br>
+Check out the vibrant tech community on one of the world&#39;s most<br>
+engaging tech sites, Slashdot.org! <a href=3D"http://sdm.link/slashdot" rel=
+=3D"noreferrer" target=3D"_blank">http://sdm.link/slashdot</a><br>
+______________________________<wbr>_________________<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...2155...=
+9...<wbr>sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
+=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/<wbr>lists/=
+listinfo/openvpn-devel</a><br>
+</font></span></blockquote></div><br></div></div>
+
+--001a114f5cce263bb0056251a1a0--
 
