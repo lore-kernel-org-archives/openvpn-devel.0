@@ -1,10 +1,10 @@
-Date: Tue, 9 Jan 2018 15:13:21 +0100 (CET)
-Message-Id: <201801091413.w09EDLi3070195@...2054...>
+Date: Tue, 9 Jan 2018 15:31:40 +0100 (CET)
+Message-Id: <201801091431.w09EVeSP070386@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1512724338-22197-1-git-send-email-steffan@...1856...>
-References: <1512724338-22197-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix memory leak in buffer unit
- tests
+In-Reply-To: <1514540857-19290-1-git-send-email-steffan.karger@...1435...>
+References: <1514540857-19290-1-git-send-email-steffan.karger@...1435...>
+Subject: [Openvpn-devel] [PATCH applied] Re: travis: use clang's
+ -fsanitize=address to catch more bugs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,22 +15,23 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
+To: Steffan Karger <steffan.karger@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.4 branch.
+ACK, makes sense.
 
-commit 2c7c760dfbddbc9cf348bce06fa922c1217a2039 (master)
-commit 888204a1e9a4278a62e9a1cb0ea1c0cdff95473e (release/2.4)
+Your patch has been applied to the master branch.
+
+commit 7b11915ddfe97d8c28f998db54c40384a4eafb93
 Author: Steffan Karger
-Date:   Fri Dec 8 10:12:18 2017 +0100
+Date:   Fri Dec 29 10:47:37 2017 +0100
 
-     Fix memory leak in buffer unit tests
+     travis: use clang's -fsanitize=address to catch more bugs
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <1512724338-22197-1-git-send-email-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16055.html
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1514540857-19290-1-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16102.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
