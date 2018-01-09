@@ -1,10 +1,10 @@
-Date: Tue, 9 Jan 2018 17:00:45 +0100 (CET)
-Message-Id: <201801091600.w09G0jFO079797@...2054...>
+Date: Tue, 9 Jan 2018 17:26:40 +0100 (CET)
+Message-Id: <201801091626.w09GQeIG080010@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20180102140938.16467-1-bertrandbc@...277...>
-References: <20180102140938.16467-1-bertrandbc@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix typo in error message:
- optione -> option
+In-Reply-To: <1514541144-19407-1-git-send-email-steffan.karger@...1435...>
+References: <1514541144-19407-1-git-send-email-steffan.karger@...1435...>
+Subject: [Openvpn-devel] [PATCH applied] Re:
+ buffer_list_aggregate_separator(): update list size after aggregating
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,23 +15,22 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Bertrand Bonnefoy-Claudet <bertrandbc@...277...>
+To: Steffan Karger <steffan.karger@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK, thanks.  Funny (and long standing) bug.
+Your patch has been applied to the master and release/2.4 branch (bugfix).
 
-Your patch has been applied to the master and release/2.4 branch.
+commit 463afdf57c52891936b9a856e1030b7ebc55e75c (master)
+commit 9abfb754a7dfa77ac90e7580d2250912fbdb45f6 (release/2.4)
+Author: Steffan Karger
+Date:   Fri Dec 29 10:52:24 2017 +0100
 
-commit f447bc63c3928fd9b71e3df3768900a328f4f41a (master)
-commit 22bffd6816d916bfa89256e695987e7e29231fb8 (release/2.4)
-Author: Bertrand Bonnefoy-Claudet
-Date:   Tue Jan 2 15:09:38 2018 +0100
+     buffer_list_aggregate_separator(): update list size after aggregating
 
-     Fix typo in error message: optione -> option
-
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20180102140938.16467-1-bertrandbc@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16131.html
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <1514541144-19407-1-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16103.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
