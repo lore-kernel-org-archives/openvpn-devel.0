@@ -1,10 +1,10 @@
-Date: Thu, 11 Jan 2018 12:49:08 +0100 (CET)
-Message-Id: <201801111149.w0BBn8aN001981@...2054...>
+Date: Thu, 11 Jan 2018 12:59:29 +0100 (CET)
+Message-Id: <201801111159.w0BBxTFv009429@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1515573259-20968-1-git-send-email-steffan.karger@...1435...>
-References: <1515573259-20968-1-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix types around
- buffer_list_push(_data)
+In-Reply-To: <1513246897-28171-1-git-send-email-steffan@...1856...>
+References: <1513246897-28171-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: ssl_openssl: fix compiler
+ warning by removing getbio() wrapper
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +15,22 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan.karger@...1435...>
+To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
-
-Acked-by: Gert Doering <gert@...1296...>
-
-.. because it gets rid of lots of extra casts that are only there because
-the base types have been wrong, and people added casts to make compilers
-happy...  (my favourite gripe).
 
 Your patch has been applied to the master and release/2.4 branch.
 
-commit b395f36e578b2def9da8e9347c0afa79814c0c7d (master)
-commit c4c7f9208057ee6551d37c0bdab3896f1f549ce1 (release/2.4)
+commit 006d6a57b8835c15222359bfb42c95005723394c (master)
+commit 041b94c0ab1981c35f4294afc3f9e4f73ba9056c (release/2.4)
 Author: Steffan Karger
-Date:   Wed Jan 10 09:34:19 2018 +0100
+Date:   Thu Dec 14 11:21:37 2017 +0100
 
-     Fix types around buffer_list_push(_data)
+     ssl_openssl: fix compiler warning by removing getbio() wrapper
 
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1515573259-20968-1-git-send-email-steffan.karger@...1435...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16186.html
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <1513246897-28171-1-git-send-email-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16083.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
