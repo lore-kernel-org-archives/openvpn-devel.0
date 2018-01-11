@@ -1,10 +1,13 @@
-Date: Thu, 11 Jan 2018 12:59:29 +0100 (CET)
-Message-Id: <201801111159.w0BBxTFv009429@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1513246897-28171-1-git-send-email-steffan@...1856...>
-References: <1513246897-28171-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: ssl_openssl: fix compiler
- warning by removing getbio() wrapper
+From: Steffan Karger <steffan.karger@...1435...>
+References: <1514540857-19290-1-git-send-email-steffan.karger@...1435...>
+ <201801091431.w09EVeSP070386@...2054...>
+Message-ID: <c2b39501-3ec7-0c62-f1c6-96da33c46173@...1435...>
+Date: Thu, 11 Jan 2018 14:55:37 +0100
+MIME-Version: 1.0
+In-Reply-To: <201801091431.w09EVeSP070386@...2054...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: travis: use clang's
+ -fsanitize=address to catch more bugs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,29 +17,19 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.4 branch.
+Hi,
 
-commit 006d6a57b8835c15222359bfb42c95005723394c (master)
-commit 041b94c0ab1981c35f4294afc3f9e4f73ba9056c (release/2.4)
-Author: Steffan Karger
-Date:   Thu Dec 14 11:21:37 2017 +0100
+On 09-01-18 15:31, Gert Doering wrote:
+> ACK, makes sense.
+> 
+> Your patch has been applied to the master branch.
 
-     ssl_openssl: fix compiler warning by removing getbio() wrapper
+Thanks.  Can you also cherry-pick this one to release/2.4?  Because
+there the clang builds are now screaming bloody murder (and sometimes
+failing) because of ccache too.
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1513246897-28171-1-git-send-email-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16083.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+-Steffan
 
