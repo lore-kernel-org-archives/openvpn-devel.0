@@ -1,10 +1,10 @@
-Date: Thu, 11 Jan 2018 12:38:11 +0100 (CET)
-Message-Id: <201801111138.w0BBcBar094335@...2054...>
+Date: Thu, 11 Jan 2018 12:49:08 +0100 (CET)
+Message-Id: <201801111149.w0BBn8aN001981@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1514541240-19536-1-git-send-email-steffan.karger@...1435...>
-References: <1514541240-19536-1-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH applied] Re:
- buffer_list_aggregate_separator(): prevent 0-byte malloc
+In-Reply-To: <1515573259-20968-1-git-send-email-steffan.karger@...1435...>
+References: <1515573259-20968-1-git-send-email-steffan.karger@...1435...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix types around
+ buffer_list_push(_data)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,19 +18,25 @@ Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan.karger@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
 
+Acked-by: Gert Doering <gert@...1296...>
+
+.. because it gets rid of lots of extra casts that are only there because
+the base types have been wrong, and people added casts to make compilers
+happy...  (my favourite gripe).
+
 Your patch has been applied to the master and release/2.4 branch.
 
-commit 748902f46260fe11cb25726d2bf93bb06ad338f2 (master)
-commit ef4b827d68d8fef75b04f23e6322aa9d2d4ad8a8 (release/2.4)
+commit b395f36e578b2def9da8e9347c0afa79814c0c7d (master)
+commit c4c7f9208057ee6551d37c0bdab3896f1f549ce1 (release/2.4)
 Author: Steffan Karger
-Date:   Fri Dec 29 10:54:00 2017 +0100
+Date:   Wed Jan 10 09:34:19 2018 +0100
 
-     buffer_list_aggregate_separator(): prevent 0-byte malloc
+     Fix types around buffer_list_push(_data)
 
      Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <1514541240-19536-1-git-send-email-steffan.karger@...1435...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16106.html
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1515573259-20968-1-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16186.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
