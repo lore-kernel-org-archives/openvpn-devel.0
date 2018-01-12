@@ -1,13 +1,13 @@
 Sender: Emmanuel Deloget <emmanueldeloget53@...277...>
 From: Emmanuel Deloget <logout@...260...>
-Date: Fri, 12 Jan 2018 17:48:24 +0100
-Message-Id: <e8333f0b838670e558a9fe292cea8988484cd77f.1515775195.git.logout@...260...>
+Date: Fri, 12 Jan 2018 17:48:25 +0100
+Message-Id: <3ea860bd412bbc9638cb54ade1a85ee08caf1b42.1515775195.git.logout@...260...>
 In-Reply-To: <cover.1515775195.git.logout@...260...>
 References: <cover.1515775195.git.logout@...260...>
 In-Reply-To: <cover.1515775195.git.logout@...260...>
 References: <cover.1515775195.git.logout@...260...>
-Subject: [Openvpn-devel] [PATCH 1/3] OpenSSL: check EVP_PKEY key types
- before returning the pkey
+Subject: [Openvpn-devel] [PATCH 2/3] OpenSSL: remove some EVP_PKEY type
+ checks
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,44 +20,69 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The internal EVP_PKEY::pkey member is an union thus we need to check for
-the real key type before we can return the corresponding RSA, DSA or EC
-public key.
+Calling EVP_KEY_id() before EVP_PKEY_get0_*() is unnecessary as
+the same check is also performed in the later.
 
-Reported-by: Selva Nair <selva.nair@...277...>
+We also make the code a bit better by not calling the various
+EVP_PKEY_get0_*() functions twice (this needs a bit or reordering to
+avoid introducing yet another #ifndef OPENSSL_NO_EC in the code).
+
 Signed-off-by: Emmanuel Deloget <logout@...260...>
 
-diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index 70b19aea..8b29cdaf 100644
---- a/src/openvpn/openssl_compat.h
-+++ b/src/openvpn/openssl_compat.h
-@@ -240,7 +240,7 @@ X509_OBJECT_get_type(const X509_OBJECT *obj)
- static inline RSA *
- EVP_PKEY_get0_RSA(EVP_PKEY *pkey)
- {
--    return pkey ? pkey->pkey.rsa : NULL;
-+    return (pkey && pkey->type == EVP_PKEY_RSA) ? pkey->pkey.rsa : NULL;
- }
- #endif
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 711bba11..9f74acaa 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -1699,22 +1699,13 @@ print_details(struct key_state_ssl *ks_ssl, const char *prefix)
+         EVP_PKEY *pkey = X509_get_pubkey(cert);
+         if (pkey != NULL)
+         {
+-            if ((EVP_PKEY_id(pkey) == EVP_PKEY_RSA) && (EVP_PKEY_get0_RSA(pkey) != NULL))
+-            {
+-                RSA *rsa = EVP_PKEY_get0_RSA(pkey);
+-                openvpn_snprintf(s2, sizeof(s2), ", %d bit RSA",
+-                                 RSA_bits(rsa));
+-            }
+-            else if ((EVP_PKEY_id(pkey) == EVP_PKEY_DSA) && (EVP_PKEY_get0_DSA(pkey) != NULL))
+-            {
+-                DSA *dsa = EVP_PKEY_get0_DSA(pkey);
+-                openvpn_snprintf(s2, sizeof(s2), ", %d bit DSA",
+-                                 DSA_bits(dsa));
+-            }
++            RSA *rsa = NULL;
++            DSA *dsa = NULL;
+ #ifndef OPENSSL_NO_EC
+-            else if ((EVP_PKEY_id(pkey) == EVP_PKEY_EC) && (EVP_PKEY_get0_EC_KEY(pkey) != NULL))
++            EC *ec = NULL;
++
++            if ((ec = EVP_PKEY_get0_EC_KEY(pkey)) != NULL)
+             {
+-                EC_KEY *ec = EVP_PKEY_get0_EC_KEY(pkey);
+                 const EC_GROUP *group = EC_KEY_get0_group(ec);
+                 const char* curve;
  
-@@ -254,7 +254,7 @@ EVP_PKEY_get0_RSA(EVP_PKEY *pkey)
- static inline EC_KEY *
- EVP_PKEY_get0_EC_KEY(EVP_PKEY *pkey)
- {
--    return pkey ? pkey->pkey.ec : NULL;
-+    return (pkey && pkey->type == EVP_PKEY_EC) ? pkey->pkey.ec : NULL;
- }
- #endif
+@@ -1726,9 +1717,19 @@ print_details(struct key_state_ssl *ks_ssl, const char *prefix)
  
-@@ -282,7 +282,7 @@ EVP_PKEY_id(const EVP_PKEY *pkey)
- static inline DSA *
- EVP_PKEY_get0_DSA(EVP_PKEY *pkey)
- {
--    return pkey ? pkey->pkey.dsa : NULL;
-+    return (pkey && pkey->type == EVP_PKEY_DSA) ? pkey->pkey.dsa : NULL;
- }
+                 openvpn_snprintf(s2, sizeof(s2), ", %d bit EC, curve: %s",
+                                  EC_GROUP_order_bits(group), curve);
+-
+-            }
++            } else
  #endif
- 
++            if ((rsa = EVP_PKEY_get0_RSA(pkey)) != NULL)
++            {
++                openvpn_snprintf(s2, sizeof(s2), ", %d bit RSA",
++                                 RSA_bits(rsa));
++            }
++            else if ((dsa = EVP_PKEY_get0_DSA(pkey)) != NULL)
++            {
++                openvpn_snprintf(s2, sizeof(s2), ", %d bit DSA",
++                                 DSA_bits(dsa));
++            }
++
+             EVP_PKEY_free(pkey);
+         }
+         X509_free(cert);
 -- 
 2.11.0
 
