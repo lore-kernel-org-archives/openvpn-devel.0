@@ -1,11 +1,12 @@
-Sender: Emmanuel Deloget <emmanueldeloget53@...277...>
+MIME-Version: 1.0
+Sender: emmanueldeloget53@...277...
+In-Reply-To: <cover.1515775195.git.logout@...260...>
+References: <cover.1515775195.git.logout@...260...>
 From: Emmanuel Deloget <logout@...260...>
-Date: Fri, 12 Jan 2018 22:37:52 +0100
-Message-Id: <6a6ede658da2e35b718a9ccb733b132a955ffefe.1515792908.git.logout@...260...>
-In-Reply-To: <CAKh=nwFOSOCugW1JWYfiQFZLTKRBc6qoi=U9ewzjOSpaGP1-Kg@...278...>
-References: <CAKh=nwFOSOCugW1JWYfiQFZLTKRBc6qoi=U9ewzjOSpaGP1-Kg@...278...>
-Subject: [Openvpn-devel] [PATCH v2 2/3] OpenSSL: remove some EVP_PKEY type
- checks
+Date: Fri, 12 Jan 2018 22:43:38 +0100
+Message-ID: <CAKh=nwE4chyW3YWQ4kvyoBa9jfVmPhM9k+Z9bTVgjTV3tvT13Q@...278...>
+Content-Type: multipart/alternative; boundary="001a113ad7504ad54505629b28b3"
+Subject: Re: [Openvpn-devel] [PATCH 0/3] Fix EVP_PKEY key types handling
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,74 +15,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Calling EVP_KEY_id() before EVP_PKEY_get0_*() is unnecessary as
-the same check is also performed in the later.
+--001a113ad7504ad54505629b28b3
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-We also make the code a bit better by not calling the various
-EVP_PKEY_get0_*() functions twice (this needs a bit or reordering to
-avoid introducing yet another #ifndef OPENSSL_NO_EC in the code).
+Hello,
 
-Signed-off-by: Emmanuel Deloget <logout@...260...>
+The whole series is also viewable on github at
 
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 711bba11..7943fb2c 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -1699,22 +1699,13 @@ print_details(struct key_state_ssl *ks_ssl, const char *prefix)
-         EVP_PKEY *pkey = X509_get_pubkey(cert);
-         if (pkey != NULL)
-         {
--            if ((EVP_PKEY_id(pkey) == EVP_PKEY_RSA) && (EVP_PKEY_get0_RSA(pkey) != NULL))
--            {
--                RSA *rsa = EVP_PKEY_get0_RSA(pkey);
--                openvpn_snprintf(s2, sizeof(s2), ", %d bit RSA",
--                                 RSA_bits(rsa));
--            }
--            else if ((EVP_PKEY_id(pkey) == EVP_PKEY_DSA) && (EVP_PKEY_get0_DSA(pkey) != NULL))
--            {
--                DSA *dsa = EVP_PKEY_get0_DSA(pkey);
--                openvpn_snprintf(s2, sizeof(s2), ", %d bit DSA",
--                                 DSA_bits(dsa));
--            }
-+            RSA *rsa = NULL;
-+            DSA *dsa = NULL;
- #ifndef OPENSSL_NO_EC
--            else if ((EVP_PKEY_id(pkey) == EVP_PKEY_EC) && (EVP_PKEY_get0_EC_KEY(pkey) != NULL))
-+            EC_KEY *ec = NULL;
-+
-+            if ((ec = EVP_PKEY_get0_EC_KEY(pkey)) != NULL)
-             {
--                EC_KEY *ec = EVP_PKEY_get0_EC_KEY(pkey);
-                 const EC_GROUP *group = EC_KEY_get0_group(ec);
-                 const char* curve;
- 
-@@ -1726,9 +1717,19 @@ print_details(struct key_state_ssl *ks_ssl, const char *prefix)
- 
-                 openvpn_snprintf(s2, sizeof(s2), ", %d bit EC, curve: %s",
-                                  EC_GROUP_order_bits(group), curve);
--
--            }
-+            } else
- #endif
-+            if ((rsa = EVP_PKEY_get0_RSA(pkey)) != NULL)
-+            {
-+                openvpn_snprintf(s2, sizeof(s2), ", %d bit RSA",
-+                                 RSA_bits(rsa));
-+            }
-+            else if ((dsa = EVP_PKEY_get0_DSA(pkey)) != NULL)
-+            {
-+                openvpn_snprintf(s2, sizeof(s2), ", %d bit DSA",
-+                                 DSA_bits(dsa));
-+            }
-+
-             EVP_PKEY_free(pkey);
-         }
-         X509_free(cert);
--- 
-2.11.0
+https://github.com/emmanuel-deloget/openvpn/commits/fix-evp-pkey
 
+Best regards,
+
+=E2=80=8B-- Emmanuel Deloget=E2=80=8B
+
+--001a113ad7504ad54505629b28b3
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_default" style=3D"font-family:monospac=
+e,monospace">Hello,=C2=A0</div><div class=3D"gmail_default" style=3D"font-f=
+amily:monospace,monospace"><br></div><div class=3D"gmail_default" style=3D"=
+font-family:monospace,monospace">The whole series is also viewable on githu=
+b at</div><div class=3D"gmail_default" style=3D"font-family:monospace,monos=
+pace"><br></div><div class=3D"gmail_default"><font face=3D"monospace, monos=
+pace"><a href=3D"https://github.com/emmanuel-deloget/openvpn/commits/fix-ev=
+p-pkey">https://github.com/emmanuel-deloget/openvpn/commits/fix-evp-pkey</a=
+></font><br></div><div class=3D"gmail_default"><font face=3D"monospace, mon=
+ospace"><br></font></div><div class=3D"gmail_default"><font face=3D"monospa=
+ce, monospace">Best regards,=C2=A0</font></div><div class=3D"gmail_extra"><=
+br><div class=3D"gmail_quote"><div class=3D"gmail_default" style=3D"font-fa=
+mily:monospace,monospace">=E2=80=8B-- Emmanuel Deloget=E2=80=8B</div><br></=
+div></div></div>
+
+--001a113ad7504ad54505629b28b3--
 
