@@ -1,7 +1,8 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Fri, 12 Jan 2018 17:14:14 +0800
-Message-Id: <20180112091414.16271-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH] manpage: fix simple typ0
+Sender: Emmanuel Deloget <emmanueldeloget53@...277...>
+From: Emmanuel Deloget <logout@...260...>
+Date: Fri, 12 Jan 2018 17:48:22 +0100
+Message-Id: <cover.1515775195.git.logout@...260...>
+Subject: [Openvpn-devel] [PATCH 0/3] Fix EVP_PKEY key types handling
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,27 +14,43 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
- doc/openvpn.8 | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hello, 
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 2b5cab12..43389cd3 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -1621,7 +1621,7 @@ and
- .B \-\-ping\-restart.
- 
- This option can be used on both client and server side, but it is
--in enough to add this on the server side as it will push appropriate
-+enough to add this on the server side as it will push appropriate
- .B \-\-ping
- and
- .B \-\-ping\-restart
+The dubious commiter of the OpenSSL 1.1 changes got it wrong again. 
+Not sure if I can trust this guy. Not to mention that he pretends to 
+be /me/... :)
+
+Anyway, I fixed some of his mistakes again.
+
+For reference, this fixes a bug reported by Selva (hence the Reported-By 
+tag on the first patch) where openvpn crashes when it's feeded with an 
+ECC key (same bug shall arise when using a DSA key).
+
+The first patch in the series is necessary (it's the one that fixes 
+the bugs). Patch 2 remove code that is no longer necessary. Patch 3
+then remove an entire function which is no longer used (although I'd 
+understand if one wants to keep this function around).
+
+Hopefully, this is the last time I have to correct a bug by the previous 
+commiter (I will not name him. That would sound too weird). Next time, 
+he'll have to do it by himself :)
+
+Best regards, 
+
+-- Emmanuel Deloget
+
+Emmanuel Deloget (3):
+  OpenSSL: check EVP_PKEY key types before returning the pkey
+  OpenSSL: remove some EVP_PKEY type checks
+  OpenSSL: remove EVP_PKEY_id()
+
+ configure.ac                 |  1 -
+ src/openvpn/openssl_compat.h | 20 +++-----------------
+ src/openvpn/ssl_openssl.c    | 33 +++++++++++++++++----------------
+ 3 files changed, 20 insertions(+), 34 deletions(-)
+
 -- 
-2.15.1
+2.11.0
 
 
