@@ -1,8 +1,13 @@
 Sender: Emmanuel Deloget <emmanueldeloget53@...277...>
 From: Emmanuel Deloget <logout@...260...>
-Date: Fri, 12 Jan 2018 17:48:22 +0100
-Message-Id: <cover.1515775195.git.logout@...260...>
-Subject: [Openvpn-devel] [PATCH 0/3] Fix EVP_PKEY key types handling
+Date: Fri, 12 Jan 2018 17:48:24 +0100
+Message-Id: <e8333f0b838670e558a9fe292cea8988484cd77f.1515775195.git.logout@...260...>
+In-Reply-To: <cover.1515775195.git.logout@...260...>
+References: <cover.1515775195.git.logout@...260...>
+In-Reply-To: <cover.1515775195.git.logout@...260...>
+References: <cover.1515775195.git.logout@...260...>
+Subject: [Openvpn-devel] [PATCH 1/3] OpenSSL: check EVP_PKEY key types
+ before returning the pkey
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,41 +20,44 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hello, 
+The internal EVP_PKEY::pkey member is an union thus we need to check for
+the real key type before we can return the corresponding RSA, DSA or EC
+public key.
 
-The dubious commiter of the OpenSSL 1.1 changes got it wrong again. 
-Not sure if I can trust this guy. Not to mention that he pretends to 
-be /me/... :)
+Reported-by: Selva Nair <selva.nair@...277...>
+Signed-off-by: Emmanuel Deloget <logout@...260...>
 
-Anyway, I fixed some of his mistakes again.
-
-For reference, this fixes a bug reported by Selva (hence the Reported-By 
-tag on the first patch) where openvpn crashes when it's feeded with an 
-ECC key (same bug shall arise when using a DSA key).
-
-The first patch in the series is necessary (it's the one that fixes 
-the bugs). Patch 2 remove code that is no longer necessary. Patch 3
-then remove an entire function which is no longer used (although I'd 
-understand if one wants to keep this function around).
-
-Hopefully, this is the last time I have to correct a bug by the previous 
-commiter (I will not name him. That would sound too weird). Next time, 
-he'll have to do it by himself :)
-
-Best regards, 
-
--- Emmanuel Deloget
-
-Emmanuel Deloget (3):
-  OpenSSL: check EVP_PKEY key types before returning the pkey
-  OpenSSL: remove some EVP_PKEY type checks
-  OpenSSL: remove EVP_PKEY_id()
-
- configure.ac                 |  1 -
- src/openvpn/openssl_compat.h | 20 +++-----------------
- src/openvpn/ssl_openssl.c    | 33 +++++++++++++++++----------------
- 3 files changed, 20 insertions(+), 34 deletions(-)
-
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index 70b19aea..8b29cdaf 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -240,7 +240,7 @@ X509_OBJECT_get_type(const X509_OBJECT *obj)
+ static inline RSA *
+ EVP_PKEY_get0_RSA(EVP_PKEY *pkey)
+ {
+-    return pkey ? pkey->pkey.rsa : NULL;
++    return (pkey && pkey->type == EVP_PKEY_RSA) ? pkey->pkey.rsa : NULL;
+ }
+ #endif
+ 
+@@ -254,7 +254,7 @@ EVP_PKEY_get0_RSA(EVP_PKEY *pkey)
+ static inline EC_KEY *
+ EVP_PKEY_get0_EC_KEY(EVP_PKEY *pkey)
+ {
+-    return pkey ? pkey->pkey.ec : NULL;
++    return (pkey && pkey->type == EVP_PKEY_EC) ? pkey->pkey.ec : NULL;
+ }
+ #endif
+ 
+@@ -282,7 +282,7 @@ EVP_PKEY_id(const EVP_PKEY *pkey)
+ static inline DSA *
+ EVP_PKEY_get0_DSA(EVP_PKEY *pkey)
+ {
+-    return pkey ? pkey->pkey.dsa : NULL;
++    return (pkey && pkey->type == EVP_PKEY_DSA) ? pkey->pkey.dsa : NULL;
+ }
+ #endif
+ 
 -- 
 2.11.0
 
