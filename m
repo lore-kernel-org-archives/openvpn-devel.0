@@ -1,13 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <cdf688fd-a19f-a045-ecf3-e770031c6516@...1856...>
-References: <20180114140627.25331-1-chipitsine@...277...>
- <cdf688fd-a19f-a045-ecf3-e770031c6516@...1856...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Sun, 14 Jan 2018 23:33:36 +0500
-Message-ID: <CAFHpkQFVWH3HEObgUp0qVU7WGvsoiucqnD4bix_uxzB3LR7Bbg@...278...>
-Content-Type: multipart/alternative; boundary="001a1144a2b45e0c160562c0bc68"
-Subject: Re: [Openvpn-devel] [PATCH] travis-ci: modify openssl build script
- to support openssl-1.1.0
+From: selva.nair@...277...
+Date: Sun, 14 Jan 2018 14:04:22 -0500
+Message-Id: <1515956662-30572-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <bb21c180-2618-6d83-e7e1-dbc8479e8d6e@...1856...>
+References: <bb21c180-2618-6d83-e7e1-dbc8479e8d6e@...1856...>
+Subject: [Openvpn-devel] [PATCH v2 1/2] Bring cryptoapi.c upto speed with
+ openssl 1.1
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,135 +13,232 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---001a1144a2b45e0c160562c0bc68
-Content-Type: text/plain; charset="UTF-8"
+From: Selva Nair <selva.nair@...277...>
 
-2018-01-14 21:05 GMT+05:00 Steffan Karger <steffan@...1856...>:
+- Replace direct access to internals of openssl structs
+  by corresponding methods.
 
-> Hi,
->
-> On 14-01-18 15:06, Ilya Shipitsin wrote:
-> > no-multilib is only supported on openssl-1.0.X, do not use it
-> > if OPENSSL_VERSION is 1.1.0
-> >
-> > Signed-off-by: Ilya Shipitsin <chipitsine@...277...>
-> > ---
-> >  .travis/build-deps.sh | 5 +++--
-> >  1 file changed, 3 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/.travis/build-deps.sh b/.travis/build-deps.sh
-> > index bc538853..1761932e 100755
-> > --- a/.travis/build-deps.sh
-> > +++ b/.travis/build-deps.sh
-> > @@ -110,8 +110,9 @@ build_openssl_mingw () {
-> >              export TARGET=mingw64
-> >          fi
-> >
-> > -        ./Configure --cross-compile-prefix=${CHOST}- shared \
-> > -           ${TARGET} no-multilib no-capieng --prefix="${PREFIX}"
-> --openssldir="${PREFIX}" -static-libgcc
-> > +        ./Configure --cross-compile-prefix=${CHOST}- shared ${TARGET} \
-> > +           $([[ ${OPENSSL_VERSION} == "1.0."* ]] && echo "no-multilib")
-> \
-> > +           no-capieng --prefix="${PREFIX}" --openssldir="${PREFIX}"
-> -static-libgcc
-> >          make install
-> >      )
-> >  }
-> >
->
-> Do we need no-multilib for 1.0.x builds?  If not, I'd prefer to just get
-> rid of it.
->
+v2: Remove the call to EVP_PKEY_id() as its slated for removal
+    from the compat layer (see also review by Stefan)
 
-it came from windows installer.
-let me build windows installer without no-multilib and test
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+Freeing rsa_method in this code path requires more fixup than
+just use of RSA_meth_free (not freed at in n some errors etc.),
+so will be addressed in a separate patch.
 
+ configure.ac                 |  1 +
+ src/openvpn/cryptoapi.c      | 68 ++++++++++++++++++++++++++------------------
+ src/openvpn/openssl_compat.h | 14 +++++++++
+ 3 files changed, 56 insertions(+), 27 deletions(-)
 
+diff --git a/configure.ac b/configure.ac
+index b4fd1b3..2c1937e 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -944,6 +944,7 @@ if test "${with_crypto_library}" = "openssl"; then
+ 			RSA_meth_set_init \
+ 			RSA_meth_set_finish \
+ 			RSA_meth_set0_app_data \
++			RSA_meth_get0_app_data \
+ 			EC_GROUP_order_bits
+ 		]
+ 	)
+diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
+index d90cc5d..4f2c636 100644
+--- a/src/openvpn/cryptoapi.c
++++ b/src/openvpn/cryptoapi.c
+@@ -47,6 +47,7 @@
+ #include <assert.h>
+ 
+ #include "buffer.h"
++#include "openssl_compat.h"
+ 
+ /* MinGW w32api 3.17 is still incomplete when it comes to CryptoAPI while
+  * MinGW32-w64 defines all macros used. This is a hack around that problem.
+@@ -213,20 +214,20 @@ rsa_pub_dec(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, in
+ static int
+ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding)
+ {
+-    CAPI_DATA *cd = (CAPI_DATA *) rsa->meth->app_data;
++    CAPI_DATA *cd = (CAPI_DATA *) RSA_meth_get0_app_data(RSA_get_method(rsa));
+     HCRYPTHASH hash;
+     DWORD hash_size, len, i;
+     unsigned char *buf;
+ 
+     if (cd == NULL)
+     {
+-        RSAerr(RSA_F_RSA_EAY_PRIVATE_ENCRYPT, ERR_R_PASSED_NULL_PARAMETER);
++        RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, ERR_R_PASSED_NULL_PARAMETER);
+         return 0;
+     }
+     if (padding != RSA_PKCS1_PADDING)
+     {
+         /* AFAICS, CryptSignHash() *always* uses PKCS1 padding. */
+-        RSAerr(RSA_F_RSA_EAY_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE);
++        RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE);
+         return 0;
+     }
+     /* Unfortunately, there is no "CryptSign()" function in CryptoAPI, that would
+@@ -236,7 +237,7 @@ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
+     /* For now, we only support NID_md5_sha1 */
+     if (flen != SSL_SIG_LENGTH)
+     {
+-        RSAerr(RSA_F_RSA_EAY_PRIVATE_ENCRYPT, RSA_R_INVALID_MESSAGE_LENGTH);
++        RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, RSA_R_INVALID_MESSAGE_LENGTH);
+         return 0;
+     }
+     if (!CryptCreateHash(cd->crypt_prov, CALG_SSL3_SHAMD5, 0, 0, &hash))
+@@ -253,7 +254,7 @@ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
+     }
+     if ((int) hash_size != flen)
+     {
+-        RSAerr(RSA_F_RSA_EAY_PRIVATE_ENCRYPT, RSA_R_INVALID_MESSAGE_LENGTH);
++        RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, RSA_R_INVALID_MESSAGE_LENGTH);
+         CryptDestroyHash(hash);
+         return 0;
+     }
+@@ -268,7 +269,7 @@ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
+     buf = malloc(len);
+     if (buf == NULL)
+     {
+-        RSAerr(RSA_F_RSA_EAY_PRIVATE_ENCRYPT, ERR_R_MALLOC_FAILURE);
++        RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, ERR_R_MALLOC_FAILURE);
+         CryptDestroyHash(hash);
+         return 0;
+     }
+@@ -312,7 +313,8 @@ init(RSA *rsa)
+ static int
+ finish(RSA *rsa)
+ {
+-    CAPI_DATA *cd = (CAPI_DATA *) rsa->meth->app_data;
++    const RSA_METHOD *rsa_meth = RSA_get_method(rsa);
++    CAPI_DATA *cd = (CAPI_DATA *) RSA_meth_get0_app_data(rsa_meth);
+ 
+     if (cd == NULL)
+     {
+@@ -326,9 +328,8 @@ finish(RSA *rsa)
+     {
+         CertFreeCertificateContext(cd->cert_context);
+     }
+-    free(rsa->meth->app_data);
+-    free((char *) rsa->meth);
+-    rsa->meth = NULL;
++    free(cd);
++    RSA_meth_free((RSA_METHOD*) rsa_meth);
+     return 1;
+ }
+ 
+@@ -412,9 +413,9 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
+     X509 *cert = NULL;
+     RSA *rsa = NULL, *pub_rsa;
+     CAPI_DATA *cd = calloc(1, sizeof(*cd));
+-    RSA_METHOD *my_rsa_method = calloc(1, sizeof(*my_rsa_method));
++    RSA_METHOD *my_rsa_method = NULL;
+ 
+-    if (cd == NULL || my_rsa_method == NULL)
++    if (cd == NULL)
+     {
+         SSLerr(SSL_F_SSL_CTX_USE_CERTIFICATE_FILE, ERR_R_MALLOC_FAILURE);
+         goto err;
+@@ -469,15 +470,16 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
+     /* here we don't need to do CryptGetUserKey() or anything; all necessary key
+      * info is in cd->cert_context, and then, in cd->crypt_prov.  */
+ 
+-    my_rsa_method->name = "Microsoft CryptoAPI RSA Method";
+-    my_rsa_method->rsa_pub_enc = rsa_pub_enc;
+-    my_rsa_method->rsa_pub_dec = rsa_pub_dec;
+-    my_rsa_method->rsa_priv_enc = rsa_priv_enc;
+-    my_rsa_method->rsa_priv_dec = rsa_priv_dec;
+-    /* my_rsa_method->init = init; */
+-    my_rsa_method->finish = finish;
+-    my_rsa_method->flags = RSA_METHOD_FLAG_NO_CHECK;
+-    my_rsa_method->app_data = (char *) cd;
++    my_rsa_method = RSA_meth_new("Microsoft Cryptography API RSA Method",
++                                  RSA_METHOD_FLAG_NO_CHECK);
++    check_malloc_return(my_rsa_method);
++    RSA_meth_set_pub_enc(my_rsa_method, rsa_pub_enc);
++    RSA_meth_set_pub_dec(my_rsa_method, rsa_pub_dec);
++    RSA_meth_set_priv_enc(my_rsa_method, rsa_priv_enc);
++    RSA_meth_set_priv_dec(my_rsa_method, rsa_priv_dec);
++    RSA_meth_set_init(my_rsa_method, NULL);
++    RSA_meth_set_finish(my_rsa_method, finish);
++    RSA_meth_set0_app_data(my_rsa_method, cd);
+ 
+     rsa = RSA_new();
+     if (rsa == NULL)
+@@ -486,23 +488,35 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
+         goto err;
+     }
+ 
+-    /* cert->cert_info->key->pkey is NULL until we call SSL_CTX_use_certificate(),
++    /* Public key in cert is NULL until we call SSL_CTX_use_certificate(),
+      * so we do it here then...  */
+     if (!SSL_CTX_use_certificate(ssl_ctx, cert))
+     {
+         goto err;
+     }
+     /* the public key */
+-    pub_rsa = cert->cert_info->key->pkey->pkey.rsa;
++    EVP_PKEY *pkey = X509_get0_pubkey(cert);
++
+     /* SSL_CTX_use_certificate() increased the reference count in 'cert', so
+      * we decrease it here with X509_free(), or it will never be cleaned up. */
+     X509_free(cert);
+     cert = NULL;
+ 
+-    /* I'm not sure about what we have to fill in in the RSA, trying out stuff... */
+-    /* rsa->n indicates the key size */
+-    rsa->n = BN_dup(pub_rsa->n);
+-    rsa->flags |= RSA_FLAG_EXT_PKEY;
++    if (!(pub_rsa = EVP_PKEY_get0_RSA(pkey)))
++    {
++        msg(M_WARN, "cryptoapicert requires an RSA certificate");
++        goto err;
++    }
++
++    /* Our private key is external, so we fill in only n and e from the public key */
++    const BIGNUM *n = NULL;
++    const BIGNUM *e = NULL;
++    RSA_get0_key(pub_rsa, &n, &e, NULL);
++    if (!RSA_set0_key(rsa, BN_dup(n), BN_dup(e), NULL))
++    {
++        goto err;
++    }
++    RSA_set_flags(rsa, RSA_flags(rsa) | RSA_FLAG_EXT_PKEY);
+     if (!RSA_set_method(rsa, my_rsa_method))
+     {
+         goto err;
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index 70b19ae..bc7dbdd 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -624,6 +624,20 @@ RSA_meth_set0_app_data(RSA_METHOD *meth, void *app_data)
+ }
+ #endif
+ 
++#if !defined(HAVE_RSA_METH_GET0_APP_DATA)
++/**
++ * Get the application data of an RSA_METHOD object
++ *
++ * @param meth               The RSA_METHOD object
++ * @return                   pointer to application data, may be NULL
++ */
++static inline void *
++RSA_meth_get0_app_data(const RSA_METHOD *meth)
++{
++    return meth ? meth->app_data : NULL;
++}
++#endif
++
+ #if !defined(HAVE_EC_GROUP_ORDER_BITS) && !defined(OPENSSL_NO_EC)
+ /**
+  * Gets the number of bits of the order of an EC_GROUP
+-- 
+2.1.4
 
->
-> -Steffan
->
-> ------------------------------------------------------------
-> ------------------
-> Check out the vibrant tech community on one of the world's most
-> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
-
---001a1144a2b45e0c160562c0bc68
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">2018-01-14 21:05 GMT+05:00 Steffan Karger <span dir=3D"ltr">&lt;<a href=
-=3D"mailto:steffan@...1856..." target=3D"_blank">steffan@...1856...</a>&gt;=
-</span>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
-rder-left:1px #ccc solid;padding-left:1ex">Hi,<br>
-<span class=3D""><br>
-On 14-01-18 15:06, Ilya Shipitsin wrote:<br>
-&gt; no-multilib is only supported on openssl-1.0.X, do not use it<br>
-&gt; if OPENSSL_VERSION is 1.1.0<br>
-&gt;<br>
-&gt; Signed-off-by: Ilya Shipitsin &lt;<a href=3D"mailto:chipitsine@...1354...=
-..">chipitsine@...277...</a>&gt;<br>
-&gt; ---<br>
-&gt;=C2=A0 .travis/build-deps.sh | 5 +++--<br>
-&gt;=C2=A0 1 file changed, 3 insertions(+), 2 deletions(-)<br>
-&gt;<br>
-&gt; diff --git a/.travis/build-deps.sh b/.travis/build-deps.sh<br>
-&gt; index bc538853..1761932e 100755<br>
-&gt; --- a/.travis/build-deps.sh<br>
-&gt; +++ b/.travis/build-deps.sh<br>
-&gt; @@ -110,8 +110,9 @@ build_openssl_mingw () {<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 export TARGET=3Dmingw6=
-4<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 fi<br>
-&gt;<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 =C2=A0 ./Configure --cross-compile-prefix=3D${<w=
-br>CHOST}- shared \<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0${TARGET} no-multilib no-cap=
-ieng --prefix=3D&quot;${PREFIX}&quot; --openssldir=3D&quot;${PREFIX}&quot; =
--static-libgcc<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 ./Configure --cross-compile-prefix=3D${<w=
-br>CHOST}- shared ${TARGET} \<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0$([[ ${OPENSSL_VERSION} =3D=
-=3D &quot;1.0.&quot;* ]] &amp;&amp; echo &quot;no-multilib&quot;) \<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0no-capieng --prefix=3D&quot;=
-${PREFIX}&quot; --openssldir=3D&quot;${PREFIX}&quot; -static-libgcc<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 make install<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 )<br>
-&gt;=C2=A0 }<br>
-&gt;<br>
-<br>
-</span>Do we need no-multilib for 1.0.x builds?=C2=A0 If not, I&#39;d prefe=
-r to just get<br>
-rid of it.<br></blockquote><div><br></div><div>it came from windows install=
-er.</div><div>let me build windows installer without no-multilib and test<b=
-r></div><div><br></div><div>=C2=A0</div><blockquote class=3D"gmail_quote" s=
-tyle=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
-<br>
--Steffan<br>
-<br>
-------------------------------<wbr>------------------------------<wbr>-----=
--------------<br>
-Check out the vibrant tech community on one of the world&#39;s most<br>
-engaging tech sites, Slashdot.org! <a href=3D"http://sdm.link/slashdot" rel=
-=3D"noreferrer" target=3D"_blank">http://sdm.link/slashdot</a><br>
-______________________________<wbr>_________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...2155...=
-9...<wbr>sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
-=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/<wbr>lists/=
-listinfo/openvpn-devel</a><br>
-</blockquote></div><br></div></div>
-
---001a1144a2b45e0c160562c0bc68--
 
