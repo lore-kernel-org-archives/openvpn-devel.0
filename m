@@ -1,15 +1,10 @@
-References: <1515378076-5774-1-git-send-email-selva.nair@...277...>
- <1515378076-5774-2-git-send-email-selva.nair@...277...>
- <bb21c180-2618-6d83-e7e1-dbc8479e8d6e@...1856...>
- <CAKuzo_hkT_pRGO1GOUm_6pVS9DC0V-OxUS1zMTYCiKHG6afiNQ@...278...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <5c03528d-e075-e182-af49-cc9f9cfeabc3@...1856...>
-Date: Sun, 14 Jan 2018 17:35:31 +0100
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_hkT_pRGO1GOUm_6pVS9DC0V-OxUS1zMTYCiKHG6afiNQ@...278...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH 1/2] Bring cryptoapi.c upto speed with
- openssl 1.1
+Date: Sun, 14 Jan 2018 19:03:53 +0100 (CET)
+Message-Id: <201801141803.w0EI3rDE040606@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <e8333f0b838670e558a9fe292cea8988484cd77f.1515775195.git.logout@...260...>
+References: <e8333f0b838670e558a9fe292cea8988484cd77f.1515775195.git.logout@...260...>
+Subject: [Openvpn-devel] [PATCH applied] Re: OpenSSL: check EVP_PKEY key
+ types before returning the pkey
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,57 +13,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Selva Nair <selva.nair@...277...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Emmanuel Deloget <logout@...260...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Your patch has been applied to the master and release/2.4 branch.
 
-On 14-01-18 17:31, Selva Nair wrote:
-> On Sun, Jan 14, 2018 at 6:28 AM, Steffan Karger <steffan@...1856...> wrote:
->> On 08-01-18 03:21, selva.nair@...277... wrote:
->>> From: Selva Nair <selva.nair@...277...>
->>>
->>> - Replace direct access to internals of openssl structs
->>>   by corresponding methods.
->>>
->>> Signed-off-by: Selva Nair <selva.nair@...277...>
->>> ---
->>> Tested on Windows 10 with openssl 1.0.1r and 1.1.0g
->>>
->>>  configure.ac                 |  1 +
->>>  src/openvpn/cryptoapi.c      | 69 +++++++++++++++++++++++++++-----------------
->>>  src/openvpn/openssl_compat.h | 14 +++++++++
->>>  3 files changed, 57 insertions(+), 27 deletions(-)
->>>
->>>
-> ..
-> 
->>> -    rsa->n = BN_dup(pub_rsa->n);
->>> -    rsa->flags |= RSA_FLAG_EXT_PKEY;
->>> +    if (EVP_PKEY_id(pkey) != EVP_PKEY_RSA)
->>> +    {
->>> +        msg(M_WARN, "cryptoapicert requires an RSA certificate");
->>> +        goto err;
->>> +    }
->>> +    pub_rsa = EVP_PKEY_get0_RSA(pkey);
->>
->> This conflicts with the patch set from Emmanuel, where he removes
->> EVP_PKEY_id().  Canbe easily resolved by changing the if to
->>
->>    if (!(pub_rsa = EVP_PKEY_get0_RSA))
->>
->> ... but only once the NULL-check patch for openssl_compat.h is applied.
-> 
-> I'll send a v2 assuming that patch will get merged eventually.
-> 
-> I would have preferred to have  EVP_PKEY_id() retained in the compat layer
-> as its much more convenient to use it when multiple key types are to be
-> differentiated.. (read as: I want to support EC certs here).
+commit e603afabb845d2552198843a987b5d9b0b7ac404 (master)
+commit  (release/2.4)
+Author: Emmanuel Deloget
+Date:   Fri Jan 12 17:48:24 2018 +0100
 
-That should still be possible just fine, see e.g. how Emmanuel does that
-in "OpenSSL: remove some EVP_PKEY type checks".
+     OpenSSL: check EVP_PKEY key types before returning the pkey
 
--Steffan
+     Signed-off-by: Emmanuel Deloget <logout@...260...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <e8333f0b838670e558a9fe292cea8988484cd77f.1515775195.git.logout@...260...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16202.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
