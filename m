@@ -1,11 +1,13 @@
-References: <1515884446-27152-1-git-send-email-selva.nair@...277...>
+References: <cover.1515775195.git.logout@...260...>
+ <e8333f0b838670e558a9fe292cea8988484cd77f.1515775195.git.logout@...260...>
 From: Steffan Karger <steffan@...1856...>
-Message-ID: <5216e629-2cc3-a46e-c8f7-6d975231caed@...1856...>
-Date: Sun, 14 Jan 2018 10:53:21 +0100
+Message-ID: <09416d88-d456-4ba6-a889-6274b5775a25@...1856...>
+Date: Sun, 14 Jan 2018 11:06:36 +0100
 MIME-Version: 1.0
-In-Reply-To: <1515884446-27152-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <e8333f0b838670e558a9fe292cea8988484cd77f.1515775195.git.logout@...260...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Use RSA_meth_free instead of free
+Subject: Re: [Openvpn-devel] [PATCH 1/3] OpenSSL: check EVP_PKEY key types
+ before returning the pkey
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,36 +22,48 @@ To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On 14-01-18 00:00, selva.nair@...277... wrote:
-> From: Selva Nair <selva.nair@...277...>
+On 12-01-18 17:48, Emmanuel Deloget wrote:
+> The internal EVP_PKEY::pkey member is an union thus we need to check for
+> the real key type before we can return the corresponding RSA, DSA or EC
+> public key.
 > 
-> - RSA_meth_new allocates memory for the name string
->   and must be released using RSA_meth_free
+> Reported-by: Selva Nair <selva.nair@...277...>
+> Signed-off-by: Emmanuel Deloget <logout@...260...>
 > 
-> Signed-off-by: Selva Nair <selva.nair@...277...>
-> ---
->  src/openvpn/ssl_openssl.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-> index 34c31b9..d6d9acf 100644
-> --- a/src/openvpn/ssl_openssl.c
-> +++ b/src/openvpn/ssl_openssl.c
-> @@ -1144,7 +1144,7 @@ err:
->      {
->          if (rsa_meth)
->          {
-> -            free(rsa_meth);
-> +            RSA_meth_free(rsa_meth);
->          }
->      }
->      crypto_msg(M_FATAL, "Cannot enable SSL external private key capability");
+> diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+> index 70b19aea..8b29cdaf 100644
+> --- a/src/openvpn/openssl_compat.h
+> +++ b/src/openvpn/openssl_compat.h
+> @@ -240,7 +240,7 @@ X509_OBJECT_get_type(const X509_OBJECT *obj)
+>  static inline RSA *
+>  EVP_PKEY_get0_RSA(EVP_PKEY *pkey)
+>  {
+> -    return pkey ? pkey->pkey.rsa : NULL;
+> +    return (pkey && pkey->type == EVP_PKEY_RSA) ? pkey->pkey.rsa : NULL;
+>  }
+>  #endif
+>  
+> @@ -254,7 +254,7 @@ EVP_PKEY_get0_RSA(EVP_PKEY *pkey)
+>  static inline EC_KEY *
+>  EVP_PKEY_get0_EC_KEY(EVP_PKEY *pkey)
+>  {
+> -    return pkey ? pkey->pkey.ec : NULL;
+> +    return (pkey && pkey->type == EVP_PKEY_EC) ? pkey->pkey.ec : NULL;
+>  }
+>  #endif
+>  
+> @@ -282,7 +282,7 @@ EVP_PKEY_id(const EVP_PKEY *pkey)
+>  static inline DSA *
+>  EVP_PKEY_get0_DSA(EVP_PKEY *pkey)
+>  {
+> -    return pkey ? pkey->pkey.dsa : NULL;
+> +    return (pkey && pkey->type == EVP_PKEY_DSA) ? pkey->pkey.dsa : NULL;
+>  }
+>  #endif
+>  
 > 
 
-Good find, seems we missed that in the transition to OpenSSL 1.1.
-
-(I see we have the same pattern in cryptapi.c, but you fix that as part
-of your cryptoapi.c patches.)
+Looks good and passes my tests.
 
 Acked-by: Steffan Karger <steffan@...1856...>
 
