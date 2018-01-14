@@ -1,10 +1,10 @@
-Date: Sun, 14 Jan 2018 19:03:53 +0100 (CET)
-Message-Id: <201801141803.w0EI3rDE040606@...2054...>
+Date: Sun, 14 Jan 2018 19:09:54 +0100 (CET)
+Message-Id: <201801141809.w0EI9sVw054132@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <e8333f0b838670e558a9fe292cea8988484cd77f.1515775195.git.logout@...260...>
-References: <e8333f0b838670e558a9fe292cea8988484cd77f.1515775195.git.logout@...260...>
-Subject: [Openvpn-devel] [PATCH applied] Re: OpenSSL: check EVP_PKEY key
- types before returning the pkey
+In-Reply-To: <1515884446-27152-1-git-send-email-selva.nair@...277...>
+References: <1515884446-27152-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Use RSA_meth_free instead of
+ free
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,22 +15,23 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Emmanuel Deloget <logout@...260...>
+To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master and release/2.4 branch.
 
-commit e603afabb845d2552198843a987b5d9b0b7ac404 (master)
-commit  (release/2.4)
-Author: Emmanuel Deloget
-Date:   Fri Jan 12 17:48:24 2018 +0100
+commit 508741c1cf99b8a24205601800fa5056c6d0192b (master)
+commit 73bb2a7d32069343b8bfd211bd5783482c8a490d (release/2.4)
+Author: Selva Nair
+Date:   Sat Jan 13 18:00:46 2018 -0500
 
-     OpenSSL: check EVP_PKEY key types before returning the pkey
+     Use RSA_meth_free instead of free
 
-     Signed-off-by: Emmanuel Deloget <logout@...260...>
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Emmanuel Deloget <logout@...260...>
      Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <e8333f0b838670e558a9fe292cea8988484cd77f.1515775195.git.logout@...260...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16202.html
+     Message-Id: <1515884446-27152-1-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16207.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
