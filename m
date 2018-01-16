@@ -1,11 +1,8 @@
-MIME-Version: 1.0
-In-Reply-To: <CAFHpkQG9Y4NYnv0ACSj72dNwVpjRggBXvBHMoOwUMnhdVBnL+w@...278...>
-References: <CAKuzo_gBhwmAkc8EpaE62NpEhQcGPHkASesiurnF9pcghuv2tA@...278...>
- <CAFHpkQG9Y4NYnv0ACSj72dNwVpjRggBXvBHMoOwUMnhdVBnL+w@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 16 Jan 2018 12:38:03 -0500
-Message-ID: <CAKuzo_jSURqxSnFWHetd_4yW9ieMzVWZ1fg_xKKYa8dj0gWiCg@...278...>
-Subject: Re: [Openvpn-devel] travis builds
+From: Arne Schwabe <arne@...1227...>
+Date: Tue, 16 Jan 2018 22:24:08 +0100
+Message-Id: <1516137848-22565-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Replace buffer backed strings for
+ management_android_control with simple stack variables
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,35 +11,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-On Tue, Jan 16, 2018 at 3:16 AM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=
-=BF=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...> wrote:
->
->
-> 2018-01-15 22:28 GMT+05:00 Selva Nair <selva.nair@...277...>:
->>
->> Hi,
->>
->> Out of the 12 or so jobs we have in the travis build matrix a few
->> sometime fail with "write error" (happened a number of times for some
->> local feature branches). On restarting only the failed jobs, one by
->> one, they succeed indicating possible resource starvation?
->>
->> Is there anything one can do to avoid this?
->>
->> Thanks,
->>
->> Selva
->
-> it started to happen after travis-ci image was updated to
-> clang-5.0, somehow it does not work well with ccache (that's why
-> we removed ccache recently)
+This simplifies the code a bit and also silences compiler warnings about uint8_t pointers passed to char pointers without cast
+---
+ src/openvpn/route.c | 14 +++++++-------
+ src/openvpn/tun.c   | 12 ++++++------
+ 2 files changed, 13 insertions(+), 13 deletions(-)
 
-Indeed, on removing ccache builds do not error anymore. Thanks.
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 2bd5845b..6826b4cc 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -1610,17 +1610,17 @@ add_route(struct route_ipv4 *r,
+     status = openvpn_execve_check(&argv, es, 0, "ERROR: Linux route add command failed");
+ 
+ #elif defined (TARGET_ANDROID)
+-    struct buffer out = alloc_buf_gc(128, &gc);
++    char out[128];
+ 
+     if (rgi)
+     {
+-        buf_printf(&out, "%s %s %s dev %s", network, netmask, gateway, rgi->iface);
++        snprintf(out, sizeof(out), "%s %s %s dev %s", network, netmask, gateway, rgi->iface);
+     }
+     else
+     {
+-        buf_printf(&out, "%s %s %s", network, netmask, gateway);
++        snprintf(out, sizeof(out), "%s %s %s", network, netmask, gateway);
+     }
+-    management_android_control(management, "ROUTE", buf_bptr(&out));
++    management_android_control(management, "ROUTE", out);
+ 
+ #elif defined (_WIN32)
+     {
+@@ -1963,11 +1963,11 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt, unsigned int flag
+     status = openvpn_execve_check(&argv, es, 0, "ERROR: Linux route -6/-A inet6 add command failed");
+ 
+ #elif defined (TARGET_ANDROID)
+-    struct buffer out = alloc_buf_gc(64, &gc);
++    char out[64];
+ 
+-    buf_printf(&out, "%s/%d %s", network, r6->netbits, device);
++    snprintf(out, sizeof(out), "%s/%d %s", network, r6->netbits, device);
+ 
+-    management_android_control(management, "ROUTE6", buf_bptr(&out));
++    management_android_control(management, "ROUTE6", out);
+ 
+ #elif defined (_WIN32)
+ 
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 6e163489..46ed5d0d 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -1031,12 +1031,12 @@ do_ifconfig(struct tuntap *tt,
+ 
+         if (do_ipv6)
+         {
+-            struct buffer out6 = alloc_buf_gc(64, &gc);
+-            buf_printf(&out6, "%s/%d", ifconfig_ipv6_local,tt->netbits_ipv6);
+-            management_android_control(management, "IFCONFIG6",buf_bptr(&out6));
++            char out6[64];
++            snprintf(out6, sizeof(out6), "%s/%d", ifconfig_ipv6_local,tt->netbits_ipv6);
++            management_android_control(management, "IFCONFIG6", out6);
+         }
+ 
+-        struct buffer out = alloc_buf_gc(64, &gc);
++        char out[64];
+ 
+         char *top;
+         switch (tt->topology)
+@@ -1057,8 +1057,8 @@ do_ifconfig(struct tuntap *tt,
+                 top = "undef";
+         }
+ 
+-        buf_printf(&out, "%s %s %d %s", ifconfig_local, ifconfig_remote_netmask, tun_mtu, top);
+-        management_android_control(management, "IFCONFIG", buf_bptr(&out));
++        snprintf(out, sizeof(out), "%s %s %d %s", ifconfig_local, ifconfig_remote_netmask, tun_mtu, top);
++        management_android_control(management, "IFCONFIG", out);
+ 
+ #elif defined(TARGET_SOLARIS)
+         /* Solaris 2.6 (and 7?) cannot set all parameters in one go...
+-- 
+2.15.1
 
-Selva
 
