@@ -1,8 +1,13 @@
+References: <1515959073-10376-1-git-send-email-selva.nair@...277...>
+ <1515959073-10376-3-git-send-email-selva.nair@...277...>
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 16 Jan 2018 22:24:08 +0100
-Message-Id: <1516137848-22565-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Replace buffer backed strings for
- management_android_control with simple stack variables
+Message-ID: <e059b07e-5684-1dbe-cfdf-1271efc594dc@...1227...>
+Date: Tue, 16 Jan 2018 23:40:14 +0100
+MIME-Version: 1.0
+In-Reply-To: <1515959073-10376-3-git-send-email-selva.nair@...277...>
+Content-Language: de-DE
+Subject: Re: [Openvpn-devel] [PATCH 2/3] Allow external EC key through
+ --management-external-key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,90 +16,212 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: selva.nair@...277...
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This simplifies the code a bit and also silences compiler warnings about uint8_t pointers passed to char pointers without cast
----
- src/openvpn/route.c | 14 +++++++-------
- src/openvpn/tun.c   | 12 ++++++------
- 2 files changed, 13 insertions(+), 13 deletions(-)
+Am 14.01.18 um 20:44 schrieb selva.nair@...277...:
+> From: Selva Nair <selva.nair@...277...>
+> 
+> - This automatically supports EC certificates through
+>   --management-external-cert
+> - EC signature request from management has the same format
+>   as for rsa with >RSA_SIGN replaced by >ECDSA_SIGN
+>   Response should be of the form 'ecdsa-sig' followed
+>   by DER encoded signature as base64 followed by 'END'
+> 
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 2bd5845b..6826b4cc 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -1610,17 +1610,17 @@ add_route(struct route_ipv4 *r,
-     status = openvpn_execve_check(&argv, es, 0, "ERROR: Linux route add command failed");
- 
- #elif defined (TARGET_ANDROID)
--    struct buffer out = alloc_buf_gc(128, &gc);
-+    char out[128];
- 
-     if (rgi)
-     {
--        buf_printf(&out, "%s %s %s dev %s", network, netmask, gateway, rgi->iface);
-+        snprintf(out, sizeof(out), "%s %s %s dev %s", network, netmask, gateway, rgi->iface);
-     }
-     else
-     {
--        buf_printf(&out, "%s %s %s", network, netmask, gateway);
-+        snprintf(out, sizeof(out), "%s %s %s", network, netmask, gateway);
-     }
--    management_android_control(management, "ROUTE", buf_bptr(&out));
-+    management_android_control(management, "ROUTE", out);
- 
- #elif defined (_WIN32)
-     {
-@@ -1963,11 +1963,11 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt, unsigned int flag
-     status = openvpn_execve_check(&argv, es, 0, "ERROR: Linux route -6/-A inet6 add command failed");
- 
- #elif defined (TARGET_ANDROID)
--    struct buffer out = alloc_buf_gc(64, &gc);
-+    char out[64];
- 
--    buf_printf(&out, "%s/%d %s", network, r6->netbits, device);
-+    snprintf(out, sizeof(out), "%s/%d %s", network, r6->netbits, device);
- 
--    management_android_control(management, "ROUTE6", buf_bptr(&out));
-+    management_android_control(management, "ROUTE6", out);
- 
- #elif defined (_WIN32)
- 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 6e163489..46ed5d0d 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -1031,12 +1031,12 @@ do_ifconfig(struct tuntap *tt,
- 
-         if (do_ipv6)
-         {
--            struct buffer out6 = alloc_buf_gc(64, &gc);
--            buf_printf(&out6, "%s/%d", ifconfig_ipv6_local,tt->netbits_ipv6);
--            management_android_control(management, "IFCONFIG6",buf_bptr(&out6));
-+            char out6[64];
-+            snprintf(out6, sizeof(out6), "%s/%d", ifconfig_ipv6_local,tt->netbits_ipv6);
-+            management_android_control(management, "IFCONFIG6", out6);
-         }
- 
--        struct buffer out = alloc_buf_gc(64, &gc);
-+        char out[64];
- 
-         char *top;
-         switch (tt->topology)
-@@ -1057,8 +1057,8 @@ do_ifconfig(struct tuntap *tt,
-                 top = "undef";
-         }
- 
--        buf_printf(&out, "%s %s %d %s", ifconfig_local, ifconfig_remote_netmask, tun_mtu, top);
--        management_android_control(management, "IFCONFIG", buf_bptr(&out));
-+        snprintf(out, sizeof(out), "%s %s %d %s", ifconfig_local, ifconfig_remote_netmask, tun_mtu, top);
-+        management_android_control(management, "IFCONFIG", out);
- 
- #elif defined(TARGET_SOLARIS)
-         /* Solaris 2.6 (and 7?) cannot set all parameters in one go...
--- 
-2.15.1
+
+Thanks for the code. I implemented and tested this on my Android client.
+It works very well. However I found some minor issues (see below).
+
+Tested-By: Arne Schwabe <arne@...1227...>
+
+But first a high level issue. I think if you enable manange-external-key
+with an "old" ui that only understand rsa keys the OpenVPN client will
+hang after ECDSA prompt since the ui will never reply with anything.
+
+We might need an argument to management-external-key to say "yes I am
+ecdsa ready".
+
+
+
+>  
+>  static void
+> +man_ecdsa_sig(struct management *man)
+> +{
+> +    struct man_connection *mc = &man->connection;
+> +    if (mc->ext_key_state == EKS_SOLICIT)
+> +    {
+> +        mc->ext_key_state = EKS_INPUT;
+> +        mc->in_extra_cmd = IEC_ECDSA_SIGN;
+> +        in_extra_reset(mc, IER_NEW);
+> +    }
+> +    else
+> +    {
+> +        msg(M_CLIENT, "ERROR: The ecdsa-sig command is not currently available");
+> +    }
+> +}
+> +
+
+This function is almost identical to man_rsa_sign. I would like to have
+them both combined into one and then called by man_ecdsa_sig/man_rsa_sig.
+
+>
+>  
+> +char *
+> +management_query_ecdsa_sig(struct management *man,
+> +                           const char *b64_data)
+> +{
+> +    return management_query_multiline_flatten(man, b64_data, "ECDSA_SIGN", "ecdsa-sign",
+> +                                              &man->connection.ext_key_state, &man->connection.ext_key_input);
+> +}
+
+Hm, could be merged with management_query_rsa_sig but since it a one
+liner I have no strong preference.
+
+
+> +#if OPENSSL_VERSION_NUMBER >= 0x10100001L && !defined(OPENSSL_NO_EC)
+> +
+> +/* called when EC_KEY is destroyed */
+> +static void
+> +openvpn_extkey_ec_finish(EC_KEY *ec)
+> +{
+> +    /* release the method structure */
+> +    const EC_KEY_METHOD *ec_meth = EC_KEY_get_method(ec);
+> +    EC_KEY_METHOD_free((EC_KEY_METHOD *) ec_meth);
+> +}
+> +
+> +/* EC_KEY_METHOD callback: sign().
+> + * Sign the hash using EC key and return DER encoded signature in sig,
+> + * its length in siglen. Return value is 1 on success, 0 on error.
+> + */
+> +static int
+> +ecdsa_sign(int type, const unsigned char *dgst, int dgstlen, unsigned char *sig,
+> +           unsigned int *siglen, const BIGNUM *kinv, const BIGNUM *r, EC_KEY *ec)
+> +{
+> +    char *in_b64 = NULL;
+> +    char *out_b64 = NULL;
+> +    int ret = 0;
+> +    int len;
+
+len could just as well be done als inline C99 decleration. But no
+problem. (Also I am not so firm on our new style here)
+
+> +
+> +    /* convert 'from' to base64 *
+> +    if (openvpn_base64_encode(dgst, dgstlen, &in_b64) <= 0)
+> +    {
+> +        goto done;
+> +    }
+> +
+> +    /* call MI for signature */
+> +    if (management)
+> +    {
+> +        out_b64 = management_query_ecdsa_sig(management, in_b64);
+> +    }
+> +    if (!out_b64)
+> +    {
+> +        goto done;
+> +    }
+> +
+> +    /* decode base64 signature to binary */
+> +    len = ECDSA_size(ec);
+> +    *siglen = openvpn_base64_decode(out_b64, sig, len);
+> +    if (*siglen > 0)
+> +    {
+> +        ret = 1;
+> +    }
+> +
+> +done:
+> +    if (in_b64)
+> +    {
+> +        free(in_b64);
+> +    }
+> +    if (out_b64)
+> +    {
+> +        free(out_b64);
+> +    }
+> +    return ret;
+> +}
+
+
+This method has a bit code duplication to rsa_priv_enc but I think it is
+still okay here since you have an rather ugly looking function that is
+hard to read.
+
+> +
+> +/* EC_KEY_METHOD callback: sign_setup(). We do no precomputations */
+> +static int
+> +ecdsa_sign_setup(EC_KEY *ec, BN_CTX *ctx_in, BIGNUM **kinvp, BIGNUM **rp)
+> +{
+> +    return 1;
+> +}
+> +
+> +/* EC_KEY_METHOD callback: sign_sig().
+> + * Sign the hash and return the result as a newly allocated ECDS_SIG
+> + * struct or NULL on error.
+> + */
+> +static ECDSA_SIG *
+> +ecdsa_sign_sig(const unsigned char *dgst, int dgstlen, const BIGNUM *in_kinv,
+> +               const BIGNUM *in_r, EC_KEY *ec)
+> +{
+> +    ECDSA_SIG *ecsig = NULL;
+> +    int len = ECDSA_size(ec);
+> +    struct gc_arena gc = gc_new();
+> +
+> +    unsigned char *buf = gc_malloc(len, false, &gc);
+> +    if (1 != ecdsa_sign(0, dgst, dgstlen, buf, &len, NULL, NULL, ec))
+
+I am not sure about 1!= style here. Might be okay. I would try to avoid
+this.
+
+len should be size_t. My compiler agrees:
+
+ssl_openssl.c:1215:48: warning: passing 'int *' to parameter of type
+'unsigned int *' converts between pointers to integer types with
+different sign [-Wpointer-sign]
+    if (1 != ecdsa_sign(0, dgst, dgstlen, buf, &len, NULL, NULL, ec))
+                                               ^~~~
+
+ssl_openssl.c:1152:26: note: passing argument to parameter 'siglen' here
+           unsigned int *siglen, const BIGNUM *kinv, const BIGNUM *r,
+EC_KEY *ec)
+                         ^
+1 warning generated.
+
+
+
+
+>  int
+>  tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
+>                                   const char *cert_file, const char *cert_file_inline)
+> @@ -1156,11 +1310,26 @@ tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
+>              goto err;
+>          }
+>      }
+> +#if OPENSSL_VERSION_NUMBER >= 0x10100001L && !defined(OPENSSL_NO_EC)
+> +    else if (EVP_PKEY_get0_EC_KEY(pkey))
+> +    {
+> +        if (!tls_ctx_use_external_ec_key(ctx, pkey))
+> +        {
+> +            goto err;
+> +        }
+> +    }
+> +    else
+> +    {
+> +        crypto_msg(M_WARN, "management-external-key requires an RSA or EC certificate");
+> +        goto err;
+> +    }
+> +#else
+>      else
+>      {
+>          crypto_msg(M_WARN, "management-external-key requires a RSA certificate");
+
+If you touch that line you can as well fix the grammar in the existing
+string that you fixed in the new string :)
+
+Arne
 
 
