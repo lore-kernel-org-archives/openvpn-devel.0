@@ -1,14 +1,8 @@
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Wed, 17 Jan 2018 14:16:24 +0100
+Message-ID: <1516194984-1540-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Sender: emmanueldeloget53@...277...
-In-Reply-To: <20180117131046.32402-2-logout@...260...>
-References: <CAKh=nwEOYB6Ab42xZUPkaHEWDwx-ECJVn79kh-rz0Y8HvG4Dbw@...278...>
- <20180117131046.32402-1-logout@...260...>
- <20180117131046.32402-2-logout@...260...>
-From: Emmanuel Deloget <logout@...260...>
-Date: Wed, 17 Jan 2018 14:14:04 +0100
-Message-ID: <CAKh=nwEfmTeh12nJzOycun60KMtgNN5B7SShrHvNV=xt2xBPwA@...278...>
-Content-Type: multipart/alternative; boundary="001a1146eef028b9190562f89f93"
-Subject: Re: [Openvpn-devel] [PATCH v3 2/2] OpenSSL: remove EVP_PKEY_id()
+Subject: [Openvpn-devel] [PATCH] Plug memory leak if push is interrupted
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,40 +11,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---001a1146eef028b9190562f89f93
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+If a push is interrupted due to a timeout, c->c2.pulled_options_state is
+never freed.  Fix that by always cleaning up any remaining pulled
+options state when we close a connection.
 
-=E2=80=8BOf course, this one is not strictly needed. If you want to keep the
-function around, feel free to ignore the patch.
+This changes the mbedtls implementation of md_ctx_cleanup to actually
+clean up the context, which was not needed earlier.
 
-Given the relative simplicity of the change, one can also consider that if
-the function is needed again we could simply revert this patch.
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+---
+ src/openvpn/crypto_mbedtls.c | 1 +
+ src/openvpn/init.c           | 6 ++++++
+ 2 files changed, 7 insertions(+)
 
-Best regards,
+diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
+index 8fa03da..8fc252f 100644
+--- a/src/openvpn/crypto_mbedtls.c
++++ b/src/openvpn/crypto_mbedtls.c
+@@ -804,6 +804,7 @@ md_ctx_init(mbedtls_md_context_t *ctx, const mbedtls_md_info_t *kt)
+ void
+ md_ctx_cleanup(mbedtls_md_context_t *ctx)
+ {
++    mbedtls_md_free(ctx);
+ }
+ 
+ int
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 30beadb..abf8da2 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -3384,6 +3384,12 @@ do_close_tls(struct context *c)
+     }
+     c->c2.options_string_local = c->c2.options_string_remote = NULL;
+ #endif
++
++    if (c->c2.pulled_options_state)
++    {
++        md_ctx_cleanup(c->c2.pulled_options_state);
++        md_ctx_free(c->c2.pulled_options_state);
++    }
+ }
+ 
+ /*
+-- 
+2.7.4
 
--- Emmanuel Deloget=E2=80=8B
-=E2=80=8B
-
---001a1146eef028b9190562f89f93
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail_default" style=3D"font-family:monospac=
-e,monospace">=E2=80=8BOf course, this one is not strictly needed. If you wa=
-nt to keep the function around, feel free to ignore the patch.=C2=A0</div><=
-div class=3D"gmail_default" style=3D"font-family:monospace,monospace"><br><=
-/div><div class=3D"gmail_default" style=3D"font-family:monospace,monospace"=
->Given the relative simplicity of the change, one can also consider that if=
- the function is needed again we could simply revert this patch.=C2=A0</div=
-><div class=3D"gmail_default" style=3D"font-family:monospace,monospace"><br=
-></div><div class=3D"gmail_default" style=3D"font-family:monospace,monospac=
-e">Best regards,=C2=A0</div><div class=3D"gmail_default" style=3D"font-fami=
-ly:monospace,monospace"><br></div><div class=3D"gmail_default" style=3D"fon=
-t-family:monospace,monospace">-- Emmanuel Deloget=E2=80=8B</div>=E2=80=8B</=
-div>
-
---001a1146eef028b9190562f89f93--
 
