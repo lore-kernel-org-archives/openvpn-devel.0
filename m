@@ -1,12 +1,15 @@
-References: <1516137848-22565-1-git-send-email-arne@...1227...>
+References: <1515959073-10376-1-git-send-email-selva.nair@...277...>
+ <1515959073-10376-4-git-send-email-selva.nair@...277...>
+ <d272283b-a764-8380-6616-85b0817cade1@...1227...>
+ <CAKuzo_jAKoBBi8oWu23mgSFCru=Uv9_gVQhQ9y_PwvNA9NsvSg@...278...>
 From: Steffan Karger <steffan.karger@...1435...>
-Message-ID: <608a626b-1aae-0215-ea96-fc3280aaafdd@...1435...>
-Date: Wed, 17 Jan 2018 09:41:52 +0100
+Message-ID: <2d083ef5-1af0-43cc-d9dc-bf5a076f5d5b@...1435...>
+Date: Wed, 17 Jan 2018 09:47:39 +0100
 MIME-Version: 1.0
-In-Reply-To: <1516137848-22565-1-git-send-email-arne@...1227...>
+In-Reply-To: <CAKuzo_jAKoBBi8oWu23mgSFCru=Uv9_gVQhQ9y_PwvNA9NsvSg@...278...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Replace buffer backed strings for
- management_android_control with simple stack variables
+Subject: Re: [Openvpn-devel] [PATCH 3/3] Document management request
+ >ECDSA_SIGN and response ecdsa-sig
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,98 +24,108 @@ To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-The commit message summary and description lines are slightly long.  Try
-to not exceed 72 chars line length.
+Quickly replying without proper reading, to not postpone my response.
 
-On 16-01-18 22:24, Arne Schwabe wrote:
-> This simplifies the code a bit and also silences compiler warnings about uint8_t pointers passed to char pointers without cast
-> ---
->  src/openvpn/route.c | 14 +++++++-------
->  src/openvpn/tun.c   | 12 ++++++------
->  2 files changed, 13 insertions(+), 13 deletions(-)
+On 17-01-18 05:41, Selva Nair wrote:
+> FWIW, some remarks on the hash and the signature below.
 > 
-> diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-> index 2bd5845b..6826b4cc 100644
-> --- a/src/openvpn/route.c
-> +++ b/src/openvpn/route.c
-> @@ -1610,17 +1610,17 @@ add_route(struct route_ipv4 *r,
->      status = openvpn_execve_check(&argv, es, 0, "ERROR: Linux route add command failed");
->  
->  #elif defined (TARGET_ANDROID)
-> -    struct buffer out = alloc_buf_gc(128, &gc);
-> +    char out[128];
->  
->      if (rgi)
->      {
-> -        buf_printf(&out, "%s %s %s dev %s", network, netmask, gateway, rgi->iface);
-> +        snprintf(out, sizeof(out), "%s %s %s dev %s", network, netmask, gateway, rgi->iface);
-
-We have an openvpn_snprintf to account for "certain bugger snprintf
-implementations that do not null-terminate" (see buffer.c).    I have no
-idea what implementation that actually are (or whether it's still valid
-at all), but let's use openvpn_snprintf() to be sure until we know :)
-
->      }
->      else
->      {
-> -        buf_printf(&out, "%s %s %s", network, netmask, gateway);
-> +        snprintf(out, sizeof(out), "%s %s %s", network, netmask, gateway);
->      }
-> -    management_android_control(management, "ROUTE", buf_bptr(&out));
-> +    management_android_control(management, "ROUTE", out);
->  
->  #elif defined (_WIN32)
->      {
-> @@ -1963,11 +1963,11 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt, unsigned int flag
->      status = openvpn_execve_check(&argv, es, 0, "ERROR: Linux route -6/-A inet6 add command failed");
->  
->  #elif defined (TARGET_ANDROID)
-> -    struct buffer out = alloc_buf_gc(64, &gc);
-> +    char out[64];
->  
-> -    buf_printf(&out, "%s/%d %s", network, r6->netbits, device);
-> +    snprintf(out, sizeof(out), "%s/%d %s", network, r6->netbits, device);
->  
-> -    management_android_control(management, "ROUTE6", buf_bptr(&out));
-> +    management_android_control(management, "ROUTE6", out);
->  
->  #elif defined (_WIN32)
->  
-> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-> index 6e163489..46ed5d0d 100644
-> --- a/src/openvpn/tun.c
-> +++ b/src/openvpn/tun.c
-> @@ -1031,12 +1031,12 @@ do_ifconfig(struct tuntap *tt,
->  
->          if (do_ipv6)
->          {
-> -            struct buffer out6 = alloc_buf_gc(64, &gc);
-> -            buf_printf(&out6, "%s/%d", ifconfig_ipv6_local,tt->netbits_ipv6);
-> -            management_android_control(management, "IFCONFIG6",buf_bptr(&out6));
-> +            char out6[64];
-> +            snprintf(out6, sizeof(out6), "%s/%d", ifconfig_ipv6_local,tt->netbits_ipv6);
-> +            management_android_control(management, "IFCONFIG6", out6);
->          }
->  
-> -        struct buffer out = alloc_buf_gc(64, &gc);
-> +        char out[64];
->  
->          char *top;
->          switch (tt->topology)
-> @@ -1057,8 +1057,8 @@ do_ifconfig(struct tuntap *tt,
->                  top = "undef";
->          }
->  
-> -        buf_printf(&out, "%s %s %d %s", ifconfig_local, ifconfig_remote_netmask, tun_mtu, top);
-> -        management_android_control(management, "IFCONFIG", buf_bptr(&out));
-> +        snprintf(out, sizeof(out), "%s %s %d %s", ifconfig_local, ifconfig_remote_netmask, tun_mtu, top);
-> +        management_android_control(management, "IFCONFIG", out);
->  
->  #elif defined(TARGET_SOLARIS)
->          /* Solaris 2.6 (and 7?) cannot set all parameters in one go...
+> On Tue, Jan 16, 2018 at 5:23 PM, Arne Schwabe <arne@...1227...> wrote:
+>> Am 14.01.18 um 20:44 schrieb selva.nair@...277...:
+>>> From: Selva Nair <selva.nair@...277...>
+>>>
+>>> Signed-off-by: Selva Nair <selva.nair@...277...>
+>>> ---
+>>>  doc/management-notes.txt | 30 ++++++++++++++++++++++++++++++
+>>>  1 file changed, 30 insertions(+)
+>>>
+>>> diff --git a/doc/management-notes.txt b/doc/management-notes.txt
+>>> index a9ba18a..e2e8249 100644
+>>> --- a/doc/management-notes.txt
+>>> +++ b/doc/management-notes.txt
+>>> @@ -795,6 +795,36 @@ Base64 encoded output of RSA_private_encrypt() (OpenSSL) or mbedtls_pk_sign()
+>>>  This capability is intended to allow the use of arbitrary cryptographic
+>>>  service providers with OpenVPN via the management interface.
+>>>
+>>> +COMMAND -- ecdsa-sig (OpenVPN 2.5 or higher)
+>>> +------------------------------------------
+>>> +Same as rsa-sig but for EC keys: requires openssl 1.1
+>>> +
+>>> +Provides support for external storage of the EC private key. Requires the
+>>> +--management-external-key option. This option can be used instead of "key"
+>>> +in client mode, and allows the client to run without the need to load the
+>>> +actual private key. When the SSL protocol needs to perform a sign
+>>> +operation, the data to be signed will be sent to the management interface
+>>> +via a notification as follows:
+>>> +
+>>> +>ECDSA_SIGN:[BASE64_DATA]
+>>> +
+>>> +The management interface client should then create a DER encoded signature of
+>>> +the (decoded) BASE64_DATA using the private key and return the SSL signature as
+>>> +follows:
+>>> +
+>>> +ecdsa-sig
+>>> +[BASE64_SIG_LINE]
+>>> +.
+>>> +.
+>>> +.
+>>> +END
+>>> +
+>>> +Base64 encoded output of ECDSA_sign() (OpenSSL) or mbedtls_pk_sign()
+>>> +(mbed TLS) will provide a correct signature.
+>>> +
+>>
+>> Signature.getInstance("NONEwithECDSA") worked for me in Java for this.
+>> Any other signature algorithm did _NOT_ work e.g. SHA384withECDSA. I
+>> think ecdsa-sign might already provided a hash to sign.
 > 
+> Yes, the hash is what is provided in this signature request. In this
+> particular case,
+> the data is handshake history and may not be even saved. Its the accumulated
+> hash that is passed in by the SSL/TLS library to the callback.
+> 
+> So "NONEwithECDSA" should be the right choice for Java (Sun/Oracle) -- or
+> ECDSAforSSL in case of IBM Java.
+> 
+>>
+>> On the other hand mbedtls documentation states:
+>>
+>>    For RSA, md_alg may be MBEDTLS_MD_NONE if hash_len != 0. For
+>>    ECDSA md_alg may never be MBEDTLS_MD_NONE.
+> 
+> External RSA keys currently work with both openssl and mbedtls.
+> 
+> To elaborate, for RSA, its more complicated as the hash to be encoded
+> with the OID of the hash algo prepended to it as specified in PKCS1 v1.5,
+> then padded and signed. Unless the pre TLS1.2  MD5+SHA1 mixed hash is
+> in use. In the latter case only padding is needed and that's the case where
+> mbedtls specifies hash type as none.
+> 
+> For RSA, openssl callback gets the encoded hash (not padded) and signing
+> involves padding + encryption only (hash type is not needed). But mbedtls
+> provides the hash and hash algorithm and the signing routine has to encode it.
+> However, the pkcs1 v1.5 encoding part is already present in ssl_mbedtls.c
+> (implemented by Stefan, I suppose) so what the management interface gets is
+> the same  data for both openssl and  mbedtls builds as far as RSA is concerned.
 
-Otherwise this looks good.
+This was written by a colleague of mine, but I sent patches to refactor
+this a little while ago:
+
+https://patchwork.openvpn.net/project/openvpn2/list/?series=57
+
+Those are still awaiting review and might be worth to check out in this
+context.
+
+>> So this interface might not work with mbedtls.
+> 
+> It should work if only we could find a way to set a callback for this
+> in mbedtls.
+> It seems they provide that facility only for RSA keys. Stefan may know.
+> Not sure how pkcs11-helper hooks on to it -- does it support EC keys?
+
+Last time I checked there was only a way to externally sign using RSA
+(in mbed), but I haven't checked in a while.  I'm fine with leaving mbed
+aside in this patch set for now, as long as it doesn't break it.  I'll
+then later look into implementing the mbed equivalent.
 
 -Steffan
 
