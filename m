@@ -1,7 +1,17 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Wed, 17 Jan 2018 13:17:34 +0100
-Message-Id: <1516191454-29034-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Treat dhcp-option DNS6 and DNS identical
+MIME-Version: 1.0
+In-Reply-To: <20180116082652.GJ69387@...1296...>
+References: <CAKh=nwFOSOCugW1JWYfiQFZLTKRBc6qoi=U9ewzjOSpaGP1-Kg@...278...>
+ <6a6ede658da2e35b718a9ccb733b132a955ffefe.1515792908.git.logout@...260...>
+ <183bd138-e733-042e-9cc3-c66bbf6ea9bd@...1856...>
+ <CAKh=nwEeSBgkbz5-_R_eU7rK9fYpDQ=1jsY+02+vMxRJ8=wZxg@...278...>
+ <CAKuzo_j6Uuw8minumYHECmqtE9ocvrzGtO0_3FUcGnNy4q3Bqw@...278...>
+ <CAKh=nwGDv2fKJ6STqYthwpH+1SkztkLj1=KH4MWJ58ifc_byog@...278...>
+ <20180116082652.GJ69387@...1296...>
+From: Steffan Karger <steffan@...1856...>
+Date: Wed, 17 Jan 2018 13:16:56 +0100
+Message-ID: <CAA1AbxLqiVhodTpNzX4qdgx3w8tWaCVpJCXHQRnfzFNXiKa9TQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v2 2/3] OpenSSL: remove some EVP_PKEY
+ type checks
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,101 +20,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: Emmanuel Deloget <logout@...260...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-OpenVPN3 accepts both IPv4 and IPv6 with option-dhcp DNS but throws
-an error for option-dhcp DNS6.
+Hi,
 
-This patch makes OpenVPN2 accept IPv4/IPv6 for both DNS and DNS6
----
- doc/openvpn.8         |  8 ++------
- src/openvpn/options.c | 33 ++++++++++++++++++---------------
- 2 files changed, 20 insertions(+), 21 deletions(-)
+On 15 January 2018 at 23:33, Emmanuel Deloget <logout@...260...> wrote:
+> For the variables outside the ifs, the next C standard should allow us to
+> write something like:
+>
+> if ((RSA *rsa = EVP_PKEY_get0_RSA(pkey)) != NULL) {
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 43bbc217..f9ccbb30 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -5886,14 +5886,10 @@ across the VPN.
- Set Connection\-specific DNS Suffix.
- 
- .B DNS addr \-\-
--Set primary domain name server IPv4 address.  Repeat
-+Set primary domain name server IPv4 or IPv6 address.  Repeat
- this option to set secondary DNS server addresses.
- 
--.B DNS6 addr \-\-
--Set primary domain name server IPv6 address.  Repeat
--this option to set secondary DNS server IPv6 addresses.
--
--Note: currently this is handled using netsh (the
-+Note: DNS IPv6 server are currently handled using netsh (the
- existing DHCP code can only do IPv4 DHCP, and that protocol only
- permits IPv4 addresses anywhere).  The option will be put into the
- environment, so an
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 7c6528bc..48e6dbf6 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -7088,6 +7088,7 @@ add_option(struct options *options,
-     {
-         struct tuntap_options *o = &options->tuntap_options;
-         VERIFY_PERMISSION(OPT_P_IPWIN32);
-+        bool ipv6dns = false;
- 
-         if (streq(p[1], "DOMAIN") && p[2])
-         {
-@@ -7108,22 +7109,24 @@ add_option(struct options *options,
-             }
-             o->netbios_node_type = t;
-         }
--        else if (streq(p[1], "DNS") && p[2])
-+        else if ((streq(p[1], "DNS") || streq(p[1], "DNS6")) && p[2] && (!strstr(p[2], ":") || ipv6_addr_safe(p[2])))
-         {
--            dhcp_option_address_parse("DNS", p[2], o->dns, &o->dns_len, msglevel);
--        }
--        else if (streq(p[1], "DNS6") && p[2] && ipv6_addr_safe(p[2]))
--        {
--            struct in6_addr addr;
--            foreign_option(options, p, 3, es);
--            if (o->dns6_len >= N_DHCP_ADDR)
--            {
--                msg(msglevel, "--dhcp-option DNS6: maximum of %d dns servers can be specified",
--                    N_DHCP_ADDR);
--            }
--            else if (get_ipv6_addr(p[2], &addr, NULL, msglevel))
-+            if (strstr(p[2], ":"))
-             {
--                o->dns6[o->dns6_len++] = addr;
-+                ipv6dns=true;
-+                struct in6_addr addr;
-+                foreign_option(options, p, 3, es);
-+                if (o->dns6_len >= N_DHCP_ADDR)
-+                {
-+                    msg(msglevel, "--dhcp-option DNS: maximum of %d IPv6 dns servers can be specified",
-+                        N_DHCP_ADDR);
-+                }
-+                else if (get_ipv6_addr(p[2], &addr, NULL, msglevel))
-+                {
-+                    o->dns6[o->dns6_len++] = addr;
-+                }
-+            } else {
-+                dhcp_option_address_parse("DNS", p[2], o->dns, &o->dns_len, msglevel);
-             }
-         }
-         else if (streq(p[1], "WINS") && p[2])
-@@ -7151,7 +7154,7 @@ add_option(struct options *options,
-         /* flag that we have options to give to the TAP driver's DHCPv4 server
-          *  - skipped for "DNS6", as that's not a DHCPv4 option
-          */
--        if (!streq(p[1], "DNS6"))
-+        if (!ipv6dns)
-         {
-             o->dhcp_options = true;
-         }
--- 
-2.15.1
+Yeah, such a shame that this didn't make it into C11.  Scoping a
+variable to an if block is often useful.  If only for error checking
+like if(int err = foo()) { handle error }.  Anyway, we can't have it
+:(
 
+On 16 January 2018 at 09:26, Gert Doering <gert@...1296...> wrote:
+> On Tue, Jan 16, 2018 at 01:56:11AM +0100, Emmanuel Deloget wrote:
+>> 3) rework it as proposed in the patch
+>>
+>> RSA *rsa = NULL;
+>> if ((rsa = EVP_PKEY_get0_RSA(pkey)) != NULL) { ... }
+>
+> I do not particularily like assignments in if() clauses, especially when
+> the variable is declared right above it.  So if we go for (3), my
+> favourite would be
+>
+> RSA *rsa = EVP_PKEY_get0_RSA(pkey);
+> if (rsa != NULL) { ... }
+>
+>
+> but this is just a side remark.  The question on "1, 2 or 3" I'll defer
+> to you folks that are maintaing this code (Steffan and Selva, mostly :) ).
+
+This indeed looks a bit better that initializing to NULL if we're
+going to take the variables outside the scope.
+
+Seems I've been overruled by majority regarding the way to go, and
+with the suggestion from cron2 taken into account I think 3 is the way
+to go.
+
+-Steffan
 
