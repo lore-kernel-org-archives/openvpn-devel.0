@@ -1,12 +1,14 @@
-Sender: Emmanuel Deloget <emmanueldeloget53@...277...>
-From: Emmanuel Deloget <logout@...260...>
-Date: Wed, 17 Jan 2018 14:10:46 +0100
-Message-Id: <20180117131046.32402-2-logout@...260...>
-In-Reply-To: <20180117131046.32402-1-logout@...260...>
-References: <20180117131046.32402-1-logout@...260...>
-In-Reply-To: <CAKh=nwEOYB6Ab42xZUPkaHEWDwx-ECJVn79kh-rz0Y8HvG4Dbw@...278...>
+MIME-Version: 1.0
+Sender: emmanueldeloget53@...277...
+In-Reply-To: <20180117131046.32402-2-logout@...260...>
 References: <CAKh=nwEOYB6Ab42xZUPkaHEWDwx-ECJVn79kh-rz0Y8HvG4Dbw@...278...>
-Subject: [Openvpn-devel] [PATCH v3 2/2] OpenSSL: remove EVP_PKEY_id()
+ <20180117131046.32402-1-logout@...260...>
+ <20180117131046.32402-2-logout@...260...>
+From: Emmanuel Deloget <logout@...260...>
+Date: Wed, 17 Jan 2018 14:14:04 +0100
+Message-ID: <CAKh=nwEfmTeh12nJzOycun60KMtgNN5B7SShrHvNV=xt2xBPwA@...278...>
+Content-Type: multipart/alternative; boundary="001a1146eef028b9190562f89f93"
+Subject: Re: [Openvpn-devel] [PATCH v3 2/2] OpenSSL: remove EVP_PKEY_id()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,57 +17,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-The function is no longer used so we don't need to keep it in the
-OpenSSL 1.1 compatibility layer.
+--001a1146eef028b9190562f89f93
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Emmanuel Deloget <logout@...260...>
----
- configure.ac                 |  1 -
- src/openvpn/openssl_compat.h | 14 --------------
- 2 files changed, 15 deletions(-)
+=E2=80=8BOf course, this one is not strictly needed. If you want to keep the
+function around, feel free to ignore the patch.
 
-diff --git a/configure.ac b/configure.ac
-index 2c1937e5..e855a241 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -925,7 +925,6 @@ if test "${with_crypto_library}" = "openssl"; then
- 			X509_STORE_get0_objects \
- 			X509_OBJECT_free \
- 			X509_OBJECT_get_type \
--			EVP_PKEY_id \
- 			EVP_PKEY_get0_RSA \
- 			EVP_PKEY_get0_DSA \
- 			EVP_PKEY_get0_EC_KEY \
-diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index 05ec4e95..2c8913e1 100644
---- a/src/openvpn/openssl_compat.h
-+++ b/src/openvpn/openssl_compat.h
-@@ -258,20 +258,6 @@ EVP_PKEY_get0_EC_KEY(EVP_PKEY *pkey)
- }
- #endif
- 
--#if !defined(HAVE_EVP_PKEY_ID)
--/**
-- * Get the PKEY type
-- *
-- * @param pkey                Public key object
-- * @return                    The key type
-- */
--static inline int
--EVP_PKEY_id(const EVP_PKEY *pkey)
--{
--    return pkey ? pkey->type : EVP_PKEY_NONE;
--}
--#endif
--
- #if !defined(HAVE_EVP_PKEY_GET0_DSA)
- /**
-  * Get the DSA object of a public key
--- 
-2.11.0
+Given the relative simplicity of the change, one can also consider that if
+the function is needed again we could simply revert this patch.
 
+Best regards,
+
+-- Emmanuel Deloget=E2=80=8B
+=E2=80=8B
+
+--001a1146eef028b9190562f89f93
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_default" style=3D"font-family:monospac=
+e,monospace">=E2=80=8BOf course, this one is not strictly needed. If you wa=
+nt to keep the function around, feel free to ignore the patch.=C2=A0</div><=
+div class=3D"gmail_default" style=3D"font-family:monospace,monospace"><br><=
+/div><div class=3D"gmail_default" style=3D"font-family:monospace,monospace"=
+>Given the relative simplicity of the change, one can also consider that if=
+ the function is needed again we could simply revert this patch.=C2=A0</div=
+><div class=3D"gmail_default" style=3D"font-family:monospace,monospace"><br=
+></div><div class=3D"gmail_default" style=3D"font-family:monospace,monospac=
+e">Best regards,=C2=A0</div><div class=3D"gmail_default" style=3D"font-fami=
+ly:monospace,monospace"><br></div><div class=3D"gmail_default" style=3D"fon=
+t-family:monospace,monospace">-- Emmanuel Deloget=E2=80=8B</div>=E2=80=8B</=
+div>
+
+--001a1146eef028b9190562f89f93--
 
