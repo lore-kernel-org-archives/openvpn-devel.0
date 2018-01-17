@@ -1,8 +1,9 @@
-From: Steffan Karger <steffan.karger@...1435...>
-Date: Wed, 17 Jan 2018 14:16:24 +0100
-Message-ID: <1516194984-1540-1-git-send-email-steffan.karger@...1435...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Plug memory leak if push is interrupted
+From: Arne Schwabe <arne@...1227...>
+Date: Wed, 17 Jan 2018 14:49:09 +0100
+Message-Id: <1516196949-29752-1-git-send-email-arne@...1227...>
+In-Reply-To: <1516191454-29034-1-git-send-email-arne@...1227...>
+References: <1516191454-29034-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v2] Treat dhcp-option DNS6 and DNS identical
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,49 +16,112 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-If a push is interrupted due to a timeout, c->c2.pulled_options_state is
-never freed.  Fix that by always cleaning up any remaining pulled
-options state when we close a connection.
+OpenVPN3 accepts both IPv4 and IPv6 with option-dhcp DNS but throws
+an error for option-dhcp DNS6.
 
-This changes the mbedtls implementation of md_ctx_cleanup to actually
-clean up the context, which was not needed earlier.
+This patch makes OpenVPN2 accept IPv4/IPv6 for both DNS and DNS6
 
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+Patch V2: Put IPv6 parsing logic into own function similar as for for IPv4 DNS
 ---
- src/openvpn/crypto_mbedtls.c | 1 +
- src/openvpn/init.c           | 6 ++++++
- 2 files changed, 7 insertions(+)
+ doc/openvpn.8         |  8 ++------
+ src/openvpn/options.c | 38 ++++++++++++++++++++++++--------------
+ 2 files changed, 26 insertions(+), 20 deletions(-)
 
-diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index 8fa03da..8fc252f 100644
---- a/src/openvpn/crypto_mbedtls.c
-+++ b/src/openvpn/crypto_mbedtls.c
-@@ -804,6 +804,7 @@ md_ctx_init(mbedtls_md_context_t *ctx, const mbedtls_md_info_t *kt)
- void
- md_ctx_cleanup(mbedtls_md_context_t *ctx)
- {
-+    mbedtls_md_free(ctx);
- }
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 43bbc217..f9ccbb30 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -5886,14 +5886,10 @@ across the VPN.
+ Set Connection\-specific DNS Suffix.
  
- int
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 30beadb..abf8da2 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -3384,6 +3384,12 @@ do_close_tls(struct context *c)
-     }
-     c->c2.options_string_local = c->c2.options_string_remote = NULL;
- #endif
-+
-+    if (c->c2.pulled_options_state)
+ .B DNS addr \-\-
+-Set primary domain name server IPv4 address.  Repeat
++Set primary domain name server IPv4 or IPv6 address.  Repeat
+ this option to set secondary DNS server addresses.
+ 
+-.B DNS6 addr \-\-
+-Set primary domain name server IPv6 address.  Repeat
+-this option to set secondary DNS server IPv6 addresses.
+-
+-Note: currently this is handled using netsh (the
++Note: DNS IPv6 server are currently handled using netsh (the
+ existing DHCP code can only do IPv4 DHCP, and that protocol only
+ permits IPv4 addresses anywhere).  The option will be put into the
+ environment, so an
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 7c6528bc..d67044fc 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1228,6 +1228,20 @@ show_tuntap_options(const struct tuntap_options *o)
+ 
+ #if defined(_WIN32) || defined(TARGET_ANDROID)
+ static void
++dhcp_option_dns6_parse(const char *parm, struct in6_addr *dns6_list, int *len, int msglevel)
++{
++    struct in6_addr addr;
++    if (*len >= N_DHCP_ADDR)
 +    {
-+        md_ctx_cleanup(c->c2.pulled_options_state);
-+        md_ctx_free(c->c2.pulled_options_state);
++        msg(msglevel, "--dhcp-option DNS: maximum of %d IPv6 dns servers can be specified",
++            N_DHCP_ADDR);
 +    }
- }
++    else if (get_ipv6_addr(parm, &addr, NULL, msglevel))
++    {
++        dns6_list[(*len)++] = addr;
++    }
++}
++static void
+ dhcp_option_address_parse(const char *name, const char *parm, in_addr_t *array, int *len, int msglevel)
+ {
+     if (*len >= N_DHCP_ADDR)
+@@ -7088,6 +7102,7 @@ add_option(struct options *options,
+     {
+         struct tuntap_options *o = &options->tuntap_options;
+         VERIFY_PERMISSION(OPT_P_IPWIN32);
++        bool ipv6dns = false;
  
- /*
+         if (streq(p[1], "DOMAIN") && p[2])
+         {
+@@ -7108,22 +7123,17 @@ add_option(struct options *options,
+             }
+             o->netbios_node_type = t;
+         }
+-        else if (streq(p[1], "DNS") && p[2])
++        else if ((streq(p[1], "DNS") || streq(p[1], "DNS6")) && p[2] && (!strstr(p[2], ":") || ipv6_addr_safe(p[2])))
+         {
+-            dhcp_option_address_parse("DNS", p[2], o->dns, &o->dns_len, msglevel);
+-        }
+-        else if (streq(p[1], "DNS6") && p[2] && ipv6_addr_safe(p[2]))
+-        {
+-            struct in6_addr addr;
+-            foreign_option(options, p, 3, es);
+-            if (o->dns6_len >= N_DHCP_ADDR)
++            if (strstr(p[2], ":"))
+             {
+-                msg(msglevel, "--dhcp-option DNS6: maximum of %d dns servers can be specified",
+-                    N_DHCP_ADDR);
+-            }
+-            else if (get_ipv6_addr(p[2], &addr, NULL, msglevel))
++                ipv6dns=true;
++                foreign_option(options, p, 3, es);
++                dhcp_option_dns6_parse(p[2], o->dns6, &o->dns6_len, msglevel);
++            } 
++            else 
+             {
+-                o->dns6[o->dns6_len++] = addr;
++                dhcp_option_address_parse("DNS", p[2], o->dns, &o->dns_len, msglevel);
+             }
+         }
+         else if (streq(p[1], "WINS") && p[2])
+@@ -7151,7 +7161,7 @@ add_option(struct options *options,
+         /* flag that we have options to give to the TAP driver's DHCPv4 server
+          *  - skipped for "DNS6", as that's not a DHCPv4 option
+          */
+-        if (!streq(p[1], "DNS6"))
++        if (!ipv6dns)
+         {
+             o->dhcp_options = true;
+         }
 -- 
-2.7.4
+2.15.1
 
 
