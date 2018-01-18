@@ -1,17 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <caf0faaa-428f-29c4-797f-8be8ac4f0f47@...1435...>
-References: <1515959073-10376-1-git-send-email-selva.nair@...277...>
- <1515959073-10376-3-git-send-email-selva.nair@...277...>
- <e059b07e-5684-1dbe-cfdf-1271efc594dc@...1227...>
- <CAKuzo_jN9EOK5aPr2dn+m+ynarY-Snt2pwOmz9cV32BpKSFq=w@...278...>
- <CAKuzo_hYwcRDJjYW7i=Ekmi93TAXRb+n=sNyi4y=+gS+vbbtAA@...278...>
- <caf0faaa-428f-29c4-797f-8be8ac4f0f47@...1435...>
+In-Reply-To: <CAFHpkQGe-aeaV2we=M_xB41W36dwAa8rRRzmt6rteVvAHuXFKA@...278...>
+References: <CAFHpkQGe-aeaV2we=M_xB41W36dwAa8rRRzmt6rteVvAHuXFKA@...278...>
 From: Selva Nair <selva.nair@...277...>
-Date: Thu, 18 Jan 2018 10:49:33 -0500
-Message-ID: <CAKuzo_jRh+7KSfw6GTVuXTDnMQCDfrH3g5m=N9GGDTDVLijBhg@...278...>
-Content-Type: multipart/alternative; boundary="001a113a60d23964f605630eea16"
-Subject: Re: [Openvpn-devel] [PATCH 2/3] Allow external EC key through
- --management-external-key
+Date: Thu, 18 Jan 2018 12:11:53 -0500
+Message-ID: <CAKuzo_i_J7+yFwv60gd3MinAOu7SdoUmvVMKsHZG-3Fep5EFmw@...278...>
+Content-Type: multipart/alternative; boundary="001a114c908eaf0dd505631010fe"
+Subject: Re: [Openvpn-devel] consider exe_path optional ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,113 +14,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan.karger@...1435...>
+To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---001a113a60d23964f605630eea16
+--001a114c908eaf0dd505631010fe
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi
+On Thu, Jan 18, 2018 at 3:49 AM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=
+=BF=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...> wrote:
 
-On Wed, Jan 17, 2018 at 3:53 AM, Steffan Karger <steffan.karger@...1435...>
-wrote:
-
-> Hi,
+> Hello,
 >
-> On 17-01-18 05:24, Selva Nair wrote:
-> > Also I'm toying with the idea of renaming ecdsa-sig/ECDSA-SIGN by
-> > pkey-sig/PKEY-SIGN so that eventually we may be able to use it for
-> > all types of keys and retire rsa-sig. Any thoughts on that?
+> changes https://github.com/OpenVPN/openvpn-gui/pull/197 actually make
+> openvpn-gui less dependent on registry
 >
-> This was my first though when looking at these patches.  Haven't looked
-> at the code yet, but functionally I think that's the way to go.  Even if
-> it were that Ed25519 / Ed448 sigs are technically not ECDSA sigs.
+>
+> we sometimes see similar issue with interactive service:
+>
+> openvpnserv error: =D0=9D=D0=B5 =D1=83=D0=B4=D0=B0=D0=B5=D1=82=D1=81=D1=
+=8F =D0=BD=D0=B0=D0=B9=D1=82=D0=B8 =D1=83=D0=BA=D0=B0=D0=B7=D0=B0=D0=BD=D0=
+=BD=D1=8B=D0=B9 =D1=84=D0=B0=D0=B9=D0=BB. (0x2) Error querying
+> registry value: HKLM\SOFTWARE\OpenVPN\exe_path
+>
+> (I've no idea why "exe_path" was deleted)
+>
+> @selvanair , what do you think if we'll try to guess exe_path by picking
+> directory from where openvpnserv was started ? (it is a good guess to
+> assume openvpn.exe is in the same directory)
 >
 
-I was waiting for the chatlog before finalizing v2. Looks like there are a
-number of opinions
-that seem to converge towards the same view.
+Patch 86 (https://patchwork.openvpn.net/patch/86/) does this. The only
+registry key that will be required would be HKLM\Software\OpenVPN whose
+default value should point to the installation directory.
 
-This is what I have in my current v2 ready to go out:
+One of the security features of the service is that it starts only
+"authorized" openvpn.exe executables -- so we need to have at least the
+installed location set by the admin. Then we can safely guess the rest of
+the parameters if not explicitly set. Eliminating all registry dependence
+wouldn't be safe for the service.
 
-(i) Current behaviour for rsa signatures stays for now: daemon sends
->RSA_SIGN  client responds
-with rsa-sig
-(ii) Daemon sends >PK_SIG client responds with pk-sig [*]
-Initially this will be used only for EC, but trivial to switch RSA to this
-in future.
-So document that new mgmt clients should be prepared to handle all supported
-key types via >PK_SIGN/pk-sig and >RSA_SIGN will be eventually removed.
-
-As a nice side effect, clients are allowed to respond with pk-sig even if
-the challenge was
->RSA_SIGN. As a not so nice side effect, the daemon will reply with
-"SUCCESS rsa-sign
-succeeded" because that's what it asked for -- I suppose we can live with
-that.
-
-We can deprecate and remove >RSA_SIGN at a later date by a hard switch when
-all known clients are capable of handling >PK_SIGN
-
-Does this sound like an acceptable solution?
-
-Question: while at it should we alter the syntax to
->PK_SIGN,xxx,<base64>
-
-where xxx will be empty for now, but it reserves space for extra info that
-may come handy for some future signature types (like use PSS padding for
-RSA or use PureEdDSA or whatever).
-
-Thanks,
+That wouldn't fix issues faced by users who delete registry keys or use
+non-standard installation methods. Generally those are power users who can
+fix things on their own. If not, just ask them to re-install openvpn.
 
 Selva
 
---001a113a60d23964f605630eea16
+--001a114c908eaf0dd505631010fe
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">Hi<br><div class=3D"gmail_extra"><br><div class=3D"gmail_q=
-uote">On Wed, Jan 17, 2018 at 3:53 AM, Steffan Karger <span dir=3D"ltr">&lt=
-;<a href=3D"mailto:steffan.karger@...1435..." target=3D"_blank">steffan.kar=
-ger@...1435...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" s=
-tyle=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);pad=
-ding-left:1ex">Hi,<br>
-<span class=3D"gmail-"><br>
-On 17-01-18 05:24, Selva Nair wrote:<br>
-&gt; Also I&#39;m toying with the idea of renaming ecdsa-sig/ECDSA-SIGN by<=
-br>
-&gt; pkey-sig/PKEY-SIGN so that eventually we may be able to use it for<br>
-&gt; all types of keys and retire rsa-sig. Any thoughts on that?<br>
-<br>
-</span>This was my first though when looking at these patches.=C2=A0 Haven&=
-#39;t looked<br>
-at the code yet, but functionally I think that&#39;s the way to go.=C2=A0 E=
-ven if<br>
-it were that Ed25519 / Ed448 sigs are technically not ECDSA sigs.<br></bloc=
-kquote><div><br></div><div>I was waiting for the chatlog before finalizing =
-v2. Looks like there are a number of opinions</div><div>that seem to conver=
-ge towards the same view.</div><div><br></div><div>This is what I have in m=
-y current v2 ready to go out:</div><div><br></div><div>(i) Current behaviou=
-r for rsa signatures stays for now: daemon sends &gt;RSA_SIGN=C2=A0 client =
-responds</div><div>with rsa-sig</div><div>(ii) Daemon sends &gt;PK_SIG clie=
-nt responds with pk-sig [*]=C2=A0</div><div>Initially this will be used onl=
-y for EC, but trivial to switch RSA to this in future.</div><div>So documen=
-t that new mgmt clients should be prepared to handle all supported</div><di=
-v>key types via &gt;PK_SIGN/pk-sig and &gt;RSA_SIGN will be eventually remo=
-ved.</div><div><br></div><div>As a nice side effect, clients are allowed to=
- respond with pk-sig even if the challenge was</div><div>&gt;RSA_SIGN. As a=
- not so nice side effect, the daemon will reply with &quot;SUCCESS rsa-sign=
-</div><div>succeeded&quot; because that&#39;s what it asked for -- I suppos=
-e we can live with that.</div><div><br></div><div>We can deprecate and remo=
-ve &gt;RSA_SIGN at a later date by a hard switch when</div><div>all known c=
-lients are capable of handling &gt;PK_SIGN</div><div><div><br></div><div>Do=
-es this sound like an acceptable solution?</div></div><div><br></div><div>Q=
-uestion: while at it should we alter the syntax to</div><div>&gt;PK_SIGN,xx=
-x,&lt;base64&gt;</div><div><br></div><div>where xxx will be empty for now, =
-but it reserves space for extra info that may come handy for some future si=
-gnature types (like use PSS padding for RSA or use PureEdDSA or whatever).=
-=C2=A0</div><div><br></div><div>Thanks,</div><div><br></div><div>Selva</div=
-></div></div></div>
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Thu, Jan 18, 2018 at 3:49 AM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=
+=BF=D0=B8=D1=86=D0=B8=D0=BD <span dir=3D"ltr">&lt;<a href=3D"mailto:chipits=
+ine@...277..." target=3D"_blank">chipitsine@...277...</a>&gt;</span> wrote:=
+<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;bor=
+der-left:1px solid rgb(204,204,204);padding-left:1ex"><div dir=3D"ltr"><div=
+><div><div><div><div><div>Hello,<br><br></div>changes <a href=3D"https://gi=
+thub.com/OpenVPN/openvpn-gui/pull/197" target=3D"_blank">https://github.com=
+/OpenVPN/<wbr>openvpn-gui/pull/197</a> actually make openvpn-gui less depen=
+dent on registry<br><br><br></div>we sometimes see similar issue with inter=
+active service:<br><br>openvpnserv error: =D0=9D=D0=B5 =D1=83=D0=B4=D0=B0=
+=D0=B5=D1=82=D1=81=D1=8F =D0=BD=D0=B0=D0=B9=D1=82=D0=B8 =D1=83=D0=BA=D0=B0=
+=D0=B7=D0=B0=D0=BD=D0=BD=D1=8B=D0=B9 =D1=84=D0=B0=D0=B9=D0=BB. (0x2) Error =
+querying registry value: HKLM\SOFTWARE\OpenVPN\exe_path<br><br></div>(I&#39=
+;ve no idea why &quot;exe_path&quot; was deleted)<br><br></div>@selvanair ,=
+ what do you think if we&#39;ll try to guess exe_path by picking directory =
+from where openvpnserv was started ? (it is a good guess to assume openvpn.=
+exe is in the same directory)<br></div></div></div></blockquote><div><br></=
+div><div>Patch 86 (<a href=3D"https://patchwork.openvpn.net/patch/86/">http=
+s://patchwork.openvpn.net/patch/86/</a>) does this. The only registry key t=
+hat will be required would be HKLM\Software\OpenVPN whose default value sho=
+uld point to the installation directory.=C2=A0</div><div><br></div><div>One=
+ of the security features of the service is that it starts only &quot;autho=
+rized&quot; openvpn.exe executables -- so we need to have at least the inst=
+alled location set by the admin. Then we can safely guess the rest of the p=
+arameters if not explicitly set. Eliminating all registry dependence wouldn=
+&#39;t be safe for the service.=C2=A0</div><div><br></div><div>That wouldn&=
+#39;t fix issues faced by users who delete registry keys or use non-standar=
+d installation methods. Generally those are power users who can fix things =
+on their own. If not, just ask them to re-install openvpn.</div><div><br></=
+div><div>Selva</div></div></div></div>
 
---001a113a60d23964f605630eea16--
+--001a114c908eaf0dd505631010fe--
 
