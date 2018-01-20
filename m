@@ -1,10 +1,13 @@
-Date: Sat, 20 Jan 2018 14:07:49 +0100 (CET)
-Message-Id: <201801201307.w0KD7nen027458@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20171126141555.25930-2-steffan@...1856...>
-References: <20171126141555.25930-2-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add support for TLS 1.3 in
- --tls-version-{min, max}
+MIME-Version: 1.0
+In-Reply-To: <88d38df9-45fb-2b1e-e6b8-311f9abad125@...1856...>
+References: <1516423647-21932-1-git-send-email-selva.nair@...277...>
+ <e99f70db-3d9e-cb44-649c-02d2a73674a2@...1856...>
+ <88d38df9-45fb-2b1e-e6b8-311f9abad125@...1856...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sat, 20 Jan 2018 08:22:01 -0500
+Message-ID: <CAKuzo_jEiZ2Z1mj5_55mC1mddOybzTm1qwFy8vhx+cFM-55gyw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Add SSL_CTX_get_max_proto_version() not
+ in openssl 1.0
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,37 +16,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Acked-by: Gert Doering <gert@...1296...>
+Hi,
 
-Straightforward extention of the current code to add another branch
-for 1.3.  Since it's really trivial, does not change existing code paths,
-and we want 2.4 to be "ready for TLS 1.3 when it shows up", applied to 2.4 
-as well.
+On Sat, Jan 20, 2018 at 5:14 AM, Steffan Karger <steffan@...1856...> wrote:
+> Hi,
+>
+> On 20-01-18 10:50, Steffan Karger wrote:
+>> On 20-01-18 05:47, selva.nair@...277... wrote:
+>>> From: Selva Nair <selva.nair@...277...>
+>>>
+>>> - No change in functionality. This is used in a subsequent
+>>>   patch for extending TLS1.2 support with cryptoapicert
+>>>
+>>> Signed-off-by: Selva Nair <selva.nair@...277...>
+>>> ---
+>>>  src/openvpn/openssl_compat.h | 23 +++++++++++++++++++++++
+>>>  1 file changed, 23 insertions(+)
+>>>
+>>> diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+>>> index 9f1e92a..c94341a 100644
+>>> --- a/src/openvpn/openssl_compat.h
+>>> +++ b/src/openvpn/openssl_compat.h
+>>> @@ -670,6 +670,29 @@ SSL_CTX_get_min_proto_version(SSL_CTX *ctx)
+>>>  }
+>>>  #endif /* SSL_CTX_get_min_proto_version */
+>>>
+>>> +#ifndef SSL_CTX_get_max_proto_version
+>>> +/** Return the max SSL protocol version currently enabled in the context.
+>>> + *  If no valid version >= TLS1.0 is found, return 0. */
+>>> +static inline int
+>>> +SSL_CTX_get_max_proto_version(SSL_CTX *ctx)
+>>> +{
+>>> +    long sslopt = SSL_CTX_get_options(ctx);
+>>> +    if (!(sslopt & SSL_OP_NO_TLSv1_2))
+>>> +    {
+>>> +    return TLS1_2_VERSION;
+>>> +    }
+>>> +    if (!(sslopt & SSL_OP_NO_TLSv1_1))
+>>> +    {
+>>> +    return TLS1_1_VERSION;
+>>> +    }
+>>> +    if (!(sslopt & SSL_OP_NO_TLSv1))
+>>> +    {
+>>> +    return TLS1_VERSION;
+>>> +    }
+>>> +    return 0;
+>>> +}
+>>> +#endif /* SSL_CTX_get_max_proto_version */
+>>> +
+>>>  #ifndef SSL_CTX_set_min_proto_version
+>>>  /** Mimics SSL_CTX_set_min_proto_version for OpenSSL < 1.1 */
+>>>  static inline int
+>>>
+>>
+>> Looks good and compiles fine.
+>>
+>> Acked-by: Steffan Karger <steffan@...1856...>
+>
+> Sorry, one more thing:  the current patch is only okay for master, as
+> 2.4 still supports openssl 0.9.8 and 1.0.0, which do not have the
+> SSL_OP_NO_TLSv1_1 and SSL_OP_NO_TLSv1_2 defines (the TLSx_VERSION ones
+> *are* available though).  If you want this patch backported to
+> release/2.4, it needs #ifdefs like get_min_proto_version has.
 
-Your patch has been applied to the master and release/2.4 branch.
+Yeah, I meant it to go into master only (hence no ifdefs). Is it good
+to have it in 2.4 too?
+If so I will send a back-ported patch.
 
-commit 8ca9eda119638a88863118affd69dfaf8b867c92 (master)
-commit 59dbb8602f30d278bd152a4a736c2af8345368eb (release/2.4)
-Author: Steffan Karger
-Date:   Sun Nov 26 15:15:54 2017 +0100
-
-     Add support for TLS 1.3 in --tls-version-{min, max}
-
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20171126141555.25930-2-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15932.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+Selva
 
