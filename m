@@ -1,10 +1,12 @@
-Date: Sat, 20 Jan 2018 14:49:12 +0100 (CET)
-Message-Id: <201801201349.w0KDnCFs029682@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20171126141555.25930-3-steffan@...1856...>
-References: <20171126141555.25930-3-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: tls_ctx_set_tls_versions: move
- verify_flags to where it is used
+MIME-Version: 1.0
+In-Reply-To: <201801201336.w0KDajf8027638@...2054...>
+References: <1516423647-21932-1-git-send-email-selva.nair@...277...>
+ <201801201336.w0KDajf8027638@...2054...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sat, 20 Jan 2018 09:05:50 -0500
+Message-ID: <CAKuzo_hnkVLOLi1sxs_7kbcCKZ6=kbbV+a6njKh4=5LX=R5srA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Add
+ SSL_CTX_get_max_proto_version() not in openssl 1.0
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,33 +15,22 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Acked-by: Gert Doering <gert@...1296...>
+Hi,
 
-Cleanup, no effective code change.
+If/when the TLS1.2+ support for cryptoapicert is ready for merge, is
+it a candidate for 2.4? Technically its a new feature but considering
+the "popular belief" that TLS1.1 needs to be shunned, and 2.5 is still
+far away, its worth considering..
 
-Your patch has been applied to the master branch.
+In that case this patch would need to be backported to 2.4, so good to
+know what's the general consensus.
 
-commit e05aca4517b666740b384399348b995a3a646629
-Author: Steffan Karger
-Date:   Sun Nov 26 15:15:55 2017 +0100
+Thanks,
 
-     tls_ctx_set_tls_versions: move verify_flags to where it is used
-
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20171126141555.25930-3-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15931.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+Selva
 
