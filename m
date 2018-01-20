@@ -1,10 +1,10 @@
-From: selva.nair@...277...
-Date: Fri, 19 Jan 2018 23:52:54 -0500
-Message-Id: <1516423974-22159-1-git-send-email-selva.nair@...277...>
-In-Reply-To: <1515378076-5774-3-git-send-email-selva.nair@...277...>
-References: <1515378076-5774-3-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH v2 2/2] TLS v1.2 support for cryptoapicert
- -- RSA only
+From: Steffan Karger <steffan@...1856...>
+Date: Sat, 20 Jan 2018 10:42:28 +0100
+Message-Id: <20180120094228.13285-1-steffan@...1856...>
+In-Reply-To: <20180119212721.25177-1-steffan@...1856...>
+References: <20180119212721.25177-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH (2.4)] Fix --tls-version-min and
+ --tls-version-max for OpenSSL 1.1+
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,235 +17,296 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+As described in <80e6b449-c536-dc87-7215-3693872bce5a@...376...> on
+the openvpn-devel mailing list, --tls-version-min no longer works with
+OpenSSL 1.1.  Kurt Roeckx posted in a debian bug report:
 
-- If an NCRYPT handle for the private key can be obtained, use
-  NCryptSignHash from the Cryptography NG API to sign the hash.
+"This is marked as important because if you switch to openssl 1.1.0
+the defaults minimum version in Debian is currently TLS 1.2 and
+you can't override it with the options that you're currently using
+(and are deprecated)."
 
-  This should work for all keys in the Windows certifiate stores
-  but may fail for keys in a legacy token, for example. In such
-  cases, we disable TLS v1.2 and fall back to the current
-  behaviour. A warning is logged unless TLS version is already
-  restricted to <= 1.1
+This patch is loosely based on the original patch by Kurt, but solves the
+issue by adding functions to openssl-compat.h, like we also did for all
+other openssl 1.1. breakage.  This results in not having to add more ifdefs
+in ssl_openssl.c and thus cleaner code.
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
+Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
+Note: This is cherry-pick to release/2.4 of the v4 patch for master.
+      Tested to compile and work against OpenSSL 0.9.8 (for as far as
+      possible; 0.9.8 only does TLS 1.0).
 
-Depends on patches: 
-patch 200: https://patchwork.openvpn.net/patch/200/
-patch 201: https://patchwork.openvpn.net/patch/201/
+ src/openvpn/openssl_compat.h |  67 ++++++++++++++++++++++++++++
+ src/openvpn/ssl.c            |   5 ++-
+ src/openvpn/ssl_backend.h    |   4 +-
+ src/openvpn/ssl_mbedtls.c    |   3 +-
+ src/openvpn/ssl_openssl.c    | 102 +++++++++++++++++++++++++++----------------
+ 5 files changed, 141 insertions(+), 40 deletions(-)
 
-v2: Based on Stefan's review:
-- Replace SSL_CTX_get(set)_option with SSL_CTX_get(set)_max_proto_version
-- Wrap some lines to 80 chars
-- replace M_INFO by D_LOW in a low level debug message
-
-Also removed some defines added in v1 that are actually present in mingw 
-versions that we target
-
- src/openvpn/Makefile.am |  2 +-
- src/openvpn/cryptoapi.c | 85 ++++++++++++++++++++++++++++++++++++++++++++++---
- src/openvpn/options.c   | 18 -----------
- 3 files changed, 81 insertions(+), 24 deletions(-)
-
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index fcc22d6..1a2f42e 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -132,5 +132,5 @@ openvpn_LDADD = \
- 	$(OPTIONAL_DL_LIBS)
- if WIN32
- openvpn_SOURCES += openvpn_win32_resources.rc block_dns.c block_dns.h
--openvpn_LDADD += -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwinmm -lfwpuclnt -lrpcrt4
-+openvpn_LDADD += -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwinmm -lfwpuclnt -lrpcrt4 -lncrypt
- endif
-diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
-index 4f2c636..f155123 100644
---- a/src/openvpn/cryptoapi.c
-+++ b/src/openvpn/cryptoapi.c
-@@ -42,6 +42,7 @@
- #include <openssl/err.h>
- #include <windows.h>
- #include <wincrypt.h>
-+#include <ncrypt.h>
- #include <stdio.h>
- #include <ctype.h>
- #include <assert.h>
-@@ -83,6 +84,7 @@
- #define CRYPTOAPI_F_CRYPT_SIGN_HASH                         106
- #define CRYPTOAPI_F_LOAD_LIBRARY                            107
- #define CRYPTOAPI_F_GET_PROC_ADDRESS                        108
-+#define CRYPTOAPI_F_NCRYPT_SIGN_HASH                        109
- 
- static ERR_STRING_DATA CRYPTOAPI_str_functs[] = {
-     { ERR_PACK(ERR_LIB_CRYPTOAPI, 0, 0),                                    "microsoft cryptoapi"},
-@@ -95,12 +97,13 @@ static ERR_STRING_DATA CRYPTOAPI_str_functs[] = {
-     { ERR_PACK(0, CRYPTOAPI_F_CRYPT_SIGN_HASH, 0),                          "CryptSignHash" },
-     { ERR_PACK(0, CRYPTOAPI_F_LOAD_LIBRARY, 0),                             "LoadLibrary" },
-     { ERR_PACK(0, CRYPTOAPI_F_GET_PROC_ADDRESS, 0),                         "GetProcAddress" },
-+    { ERR_PACK(0, CRYPTOAPI_F_NCRYPT_SIGN_HASH, 0),                         "NCryptSignHash" },
-     { 0, NULL }
- };
- 
- typedef struct _CAPI_DATA {
-     const CERT_CONTEXT *cert_context;
--    HCRYPTPROV crypt_prov;
-+    HCRYPTPROV_OR_NCRYPT_KEY_HANDLE crypt_prov;
-     DWORD key_spec;
-     BOOL free_crypt_prov;
- } CAPI_DATA;
-@@ -210,6 +213,41 @@ rsa_pub_dec(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, in
-     return 0;
- }
- 
-+/**
-+ * Sign the hash in 'from' using NCryptSignHash(). This requires an NCRYPT
-+ * key handle in cd->crypt_prov. On return the signature is in 'to'. Returns
-+ * the length of the signature or 0 on error.
-+ * For now we support only RSA and the padding is assumed to be PKCS1 v1.5
-+ */
-+static int
-+priv_enc_CNG(const CAPI_DATA *cd, const unsigned char *from, int flen,
-+              unsigned char *to, int tlen, int padding)
-+{
-+    NCRYPT_KEY_HANDLE hkey = cd->crypt_prov;
-+    DWORD len;
-+    ASSERT(cd->key_spec == CERT_NCRYPT_KEY_SPEC);
-+
-+    msg(D_LOW, "Signing hash using CNG: data size = %d", flen);
-+
-+    /* The hash OID is already in 'from'.  So set the hash algorithm
-+     * in the padding info struct to NULL.
-+     */
-+    BCRYPT_PKCS1_PADDING_INFO padinfo = {NULL};
-+    DWORD status;
-+
-+    status = NCryptSignHash(hkey, padding? &padinfo : NULL, (BYTE*) from, flen,
-+                            to, tlen, &len, padding? BCRYPT_PAD_PKCS1 : 0);
-+    if (status != ERROR_SUCCESS)
-+    {
-+        SetLastError(status);
-+        CRYPTOAPIerr(CRYPTOAPI_F_NCRYPT_SIGN_HASH);
-+        len = 0;
-+    }
-+
-+    /* Unlike CAPI, CNG signature is in big endian order. No reversing needed. */
-+    return len;
-+}
-+
- /* sign arbitrary data */
- static int
- rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding)
-@@ -230,6 +268,11 @@ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
-         RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE);
-         return 0;
-     }
-+    if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
-+    {
-+        return priv_enc_CNG(cd, from, flen, to, RSA_size(rsa), padding);
-+    }
-+
-     /* Unfortunately, there is no "CryptSign()" function in CryptoAPI, that would
-      * be way to straightforward for M$, I guess... So we have to do it this
-      * tricky way instead, by creating a "Hash", and load the already-made hash
-@@ -322,7 +365,14 @@ finish(RSA *rsa)
-     }
-     if (cd->crypt_prov && cd->free_crypt_prov)
-     {
--        CryptReleaseContext(cd->crypt_prov, 0);
-+        if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
-+        {
-+            NCryptFreeObject(cd->crypt_prov);
-+        }
-+        else
-+        {
-+            CryptReleaseContext(cd->crypt_prov, 0);
-+        }
-     }
-     if (cd->cert_context)
-     {
-@@ -458,8 +508,11 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
-     }
- 
-     /* set up stuff to use the private key */
--    if (!CryptAcquireCertificatePrivateKey(cd->cert_context, CRYPT_ACQUIRE_COMPARE_KEY_FLAG,
--                                           NULL, &cd->crypt_prov, &cd->key_spec, &cd->free_crypt_prov))
-+    /* We prefer to get an NCRYPT key handle so that TLS1.2 can be supported */
-+    DWORD flags = CRYPT_ACQUIRE_COMPARE_KEY_FLAG
-+                  | CRYPT_ACQUIRE_PREFER_NCRYPT_KEY_FLAG;
-+    if (!CryptAcquireCertificatePrivateKey(cd->cert_context, flags, NULL,
-+                    &cd->crypt_prov, &cd->key_spec, &cd->free_crypt_prov))
-     {
-         /* if we don't have a smart card reader here, and we try to access a
-          * smart card certificate, we get:
-@@ -470,6 +523,21 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
-     /* here we don't need to do CryptGetUserKey() or anything; all necessary key
-      * info is in cd->cert_context, and then, in cd->crypt_prov.  */
- 
-+    /* if we do not have an NCRYPT key handle restrict TLS to v1.1 or lower */
-+    int max_version = SSL_CTX_get_max_proto_version(ssl_ctx);
-+    if ((!max_version || max_version > TLS1_1_VERSION)
-+        && cd->key_spec != CERT_NCRYPT_KEY_SPEC)
-+    {
-+        msg(M_WARN,"WARNING: cryptoapicert: private key is in a legacy store."
-+            " Restricting TLS version to 1.1");
-+        if (!SSL_CTX_set_max_proto_version(ssl_ctx, TLS1_1_VERSION))
-+        {
-+            msg(M_NONFATAL,"ERROR: cryptoapicert: unable to set max TLS version"
-+                " to 1.1. Try config option --tls-version-min 1.1");
-+            goto err;
-+        }
-+    }
-+
-     my_rsa_method = RSA_meth_new("Microsoft Cryptography API RSA Method",
-                                   RSA_METHOD_FLAG_NO_CHECK);
-     check_malloc_return(my_rsa_method);
-@@ -550,7 +618,14 @@ err:
-         {
-             if (cd->free_crypt_prov && cd->crypt_prov)
-             {
--                CryptReleaseContext(cd->crypt_prov, 0);
-+                if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
-+                {
-+                    NCryptFreeObject(cd->crypt_prov);
-+                }
-+                else
-+                {
-+                    CryptReleaseContext(cd->crypt_prov, 0);
-+                }
-             }
-             if (cd->cert_context)
-             {
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index b240e2e..220c2e5 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3018,24 +3018,6 @@ options_postprocess_mutate(struct options *o)
-     }
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index 05ec4e95..9f1e92a1 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -661,4 +661,71 @@ EC_GROUP_order_bits(const EC_GROUP *group)
+ #define RSA_F_RSA_OSSL_PRIVATE_ENCRYPT       RSA_F_RSA_EAY_PRIVATE_ENCRYPT
  #endif
  
--#ifdef ENABLE_CRYPTOAPI
--    if (o->cryptoapi_cert)
++#ifndef SSL_CTX_get_min_proto_version
++/** Dummy SSL_CTX_get_min_proto_version for OpenSSL < 1.1 (not really needed) */
++static inline int
++SSL_CTX_get_min_proto_version(SSL_CTX *ctx)
++{
++    return 0;
++}
++#endif /* SSL_CTX_get_min_proto_version */
++
++#ifndef SSL_CTX_set_min_proto_version
++/** Mimics SSL_CTX_set_min_proto_version for OpenSSL < 1.1 */
++static inline int
++SSL_CTX_set_min_proto_version(SSL_CTX *ctx, long tls_ver_min)
++{
++    long sslopt = SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3; /* Never do < TLS 1.0 */
++
++    if (tls_ver_min > TLS1_VERSION)
++    {
++        sslopt |= SSL_OP_NO_TLSv1;
++    }
++#ifdef SSL_OP_NO_TLSv1_1
++    if (tls_ver_min > TLS1_1_VERSION)
++    {
++        sslopt |= SSL_OP_NO_TLSv1_1;
++    }
++#endif
++#ifdef SSL_OP_NO_TLSv1_2
++    if (tls_ver_min > TLS1_2_VERSION)
++    {
++        sslopt |= SSL_OP_NO_TLSv1_2;
++    }
++#endif
++    SSL_CTX_set_options(ctx, sslopt);
++
++    return 1;
++}
++#endif /* SSL_CTX_set_min_proto_version */
++
++#ifndef SSL_CTX_set_max_proto_version
++/** Mimics SSL_CTX_set_max_proto_version for OpenSSL < 1.1 */
++static inline int
++SSL_CTX_set_max_proto_version(SSL_CTX *ctx, long tls_ver_max)
++{
++    long sslopt = 0;
++
++    if (tls_ver_max < TLS1_VERSION)
++    {
++        sslopt |= SSL_OP_NO_TLSv1;
++    }
++#ifdef SSL_OP_NO_TLSv1_1
++    if (tls_ver_max < TLS1_1_VERSION)
++    {
++        sslopt |= SSL_OP_NO_TLSv1_1;
++    }
++#endif
++#ifdef SSL_OP_NO_TLSv1_2
++    if (tls_ver_max < TLS1_2_VERSION)
++    {
++        sslopt |= SSL_OP_NO_TLSv1_2;
++    }
++#endif
++    SSL_CTX_set_options(ctx, sslopt);
++
++    return 1;
++}
++#endif /* SSL_CTX_set_max_proto_version */
++
+ #endif /* OPENSSL_COMPAT_H_ */
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 08e4b121..0841cd09 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -624,7 +624,10 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx)
+      * cipher restrictions before loading certificates */
+     tls_ctx_restrict_ciphers(new_ctx, options->cipher_list);
+ 
+-    tls_ctx_set_options(new_ctx, options->ssl_flags);
++    if (!tls_ctx_set_options(new_ctx, options->ssl_flags))
++    {
++        goto err;
++    }
+ 
+     if (options->pkcs12_file)
+     {
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index f588110c..bdef634a 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -164,8 +164,10 @@ bool tls_ctx_initialised(struct tls_root_ctx *ctx);
+  *
+  * @param ctx           TLS context to set options on
+  * @param ssl_flags     SSL flags to set
++ *
++ * @return true on success, false otherwise.
+  */
+-void tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags);
++bool tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags);
+ 
+ /**
+  * Restrict the list of ciphers that can be used within the TLS context.
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index 09829ebb..2752a4e0 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -206,9 +206,10 @@ key_state_export_keying_material(struct key_state_ssl *ssl,
+ {
+ }
+ 
+-void
++bool
+ tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags)
+ {
++    return true;
+ }
+ 
+ static const char *
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 8338800e..5e869f2c 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -206,16 +206,65 @@ info_callback(INFO_CALLBACK_SSL_CONST SSL *s, int where, int ret)
+ int
+ tls_version_max(void)
+ {
+-#if defined(SSL_OP_NO_TLSv1_2)
++#if defined(TLS1_2_VERSION) || defined(SSL_OP_NO_TLSv1_2)
+     return TLS_VER_1_2;
+-#elif defined(SSL_OP_NO_TLSv1_1)
++#elif defined(TLS1_1_VERSION) || defined(SSL_OP_NO_TLSv1_1)
+     return TLS_VER_1_1;
+ #else
+     return TLS_VER_1_0;
+ #endif
+ }
+ 
+-void
++/** Convert internal version number to openssl version number */
++static int
++openssl_tls_version(int ver)
++{
++    if (ver == TLS_VER_1_0)
++    {
++        return TLS1_VERSION;
++    }
++    else if (ver == TLS_VER_1_1)
++    {
++        return TLS1_1_VERSION;
++    }
++    else if (ver == TLS_VER_1_2)
++    {
++        return TLS1_2_VERSION;
++    }
++    return 0;
++}
++
++static bool
++tls_ctx_set_tls_versions(struct tls_root_ctx *ctx, unsigned int ssl_flags)
++{
++    int tls_ver_min = openssl_tls_version(
++        (ssl_flags >> SSLF_TLS_VERSION_MIN_SHIFT) & SSLF_TLS_VERSION_MIN_MASK);
++    int tls_ver_max = openssl_tls_version(
++        (ssl_flags >> SSLF_TLS_VERSION_MAX_SHIFT) & SSLF_TLS_VERSION_MAX_MASK);
++
++    if (!tls_ver_min)
++    {
++        /* Enforce at least TLS 1.0 */
++        int cur_min = SSL_CTX_get_min_proto_version(ctx->ctx);
++        tls_ver_min = cur_min < TLS1_VERSION ? TLS1_VERSION : cur_min;
++    }
++
++    if (!SSL_CTX_set_min_proto_version(ctx->ctx, tls_ver_min))
++    {
++        msg(D_TLS_ERRORS, "%s: failed to set minimum TLS version", __func__);
++        return false;
++    }
++
++    if (tls_ver_max && !SSL_CTX_set_max_proto_version(ctx->ctx, tls_ver_max))
++    {
++        msg(D_TLS_ERRORS, "%s: failed to set maximum TLS version", __func__);
++        return false;
++    }
++
++    return true;
++}
++
++bool
+ tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags)
+ {
+     ASSERT(NULL != ctx);
+@@ -223,44 +272,21 @@ tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags)
+     /* default certificate verification flags */
+     int flags = SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT;
+ 
+-    /* process SSL options including minimum TLS version we will accept from peer */
 -    {
--        const int tls_version_max =
--            (o->ssl_flags >> SSLF_TLS_VERSION_MAX_SHIFT)
--            &SSLF_TLS_VERSION_MAX_MASK;
+-        long sslopt = SSL_OP_SINGLE_DH_USE | SSL_OP_NO_TICKET | SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3;
+-        int tls_ver_max = TLS_VER_UNSPEC;
+-        const int tls_ver_min =
+-            (ssl_flags >> SSLF_TLS_VERSION_MIN_SHIFT) & SSLF_TLS_VERSION_MIN_MASK;
 -
--        if (tls_version_max == TLS_VER_UNSPEC || tls_version_max > TLS_VER_1_1)
+-        tls_ver_max =
+-            (ssl_flags >> SSLF_TLS_VERSION_MAX_SHIFT) & SSLF_TLS_VERSION_MAX_MASK;
+-        if (tls_ver_max <= TLS_VER_UNSPEC)
 -        {
--            msg(M_WARN, "Warning: cryptapicert used, setting maximum TLS "
--                "version to 1.1.");
--            o->ssl_flags &= ~(SSLF_TLS_VERSION_MAX_MASK
--                              <<SSLF_TLS_VERSION_MAX_SHIFT);
--            o->ssl_flags |= (TLS_VER_1_1 << SSLF_TLS_VERSION_MAX_SHIFT);
+-            tls_ver_max = tls_version_max();
 -        }
--    }
--#endif /* ENABLE_CRYPTOAPI */
 -
- #if P2MP
-     /*
-      * Save certain parms before modifying options via --pull
+-        if (tls_ver_min > TLS_VER_1_0 || tls_ver_max < TLS_VER_1_0)
+-        {
+-            sslopt |= SSL_OP_NO_TLSv1;
+-        }
+-#ifdef SSL_OP_NO_TLSv1_1
+-        if (tls_ver_min > TLS_VER_1_1 || tls_ver_max < TLS_VER_1_1)
+-        {
+-            sslopt |= SSL_OP_NO_TLSv1_1;
+-        }
+-#endif
+-#ifdef SSL_OP_NO_TLSv1_2
+-        if (tls_ver_min > TLS_VER_1_2 || tls_ver_max < TLS_VER_1_2)
+-        {
+-            sslopt |= SSL_OP_NO_TLSv1_2;
+-        }
+-#endif
++    /* process SSL options */
++    long sslopt = SSL_OP_SINGLE_DH_USE | SSL_OP_NO_TICKET;
+ #ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
+-        sslopt |= SSL_OP_CIPHER_SERVER_PREFERENCE;
++    sslopt |= SSL_OP_CIPHER_SERVER_PREFERENCE;
+ #endif
+ #ifdef SSL_OP_NO_COMPRESSION
+-        /* Disable compression - flag not available in OpenSSL 0.9.8 */
+-        sslopt |= SSL_OP_NO_COMPRESSION;
++    /* Disable compression - flag not available in OpenSSL 0.9.8 */
++    sslopt |= SSL_OP_NO_COMPRESSION;
+ #endif
+-        SSL_CTX_set_options(ctx->ctx, sslopt);
++
++    SSL_CTX_set_options(ctx->ctx, sslopt);
++
++    if (!tls_ctx_set_tls_versions(ctx, ssl_flags))
++    {
++        return false;
+     }
+ 
+ #ifdef SSL_MODE_RELEASE_BUFFERS
+@@ -283,6 +309,8 @@ tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags)
+     SSL_CTX_set_verify(ctx->ctx, flags, verify_callback);
+ 
+     SSL_CTX_set_info_callback(ctx->ctx, info_callback);
++
++    return true;
+ }
+ 
+ void
 -- 
-2.1.4
+2.14.1
 
 
