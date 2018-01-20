@@ -1,12 +1,10 @@
-Date: Sat, 20 Jan 2018 19:00:42 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180120180042.GO69387@...1296...>
 References: <CAKuzo_jF_fHfcEPUXeo6WKWQ4tw7T72-cexEUda=USGd9Ref7g@...278...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <2e8cdc1d-ac4b-13bd-a16e-7888a84b22b2@...1856...>
+Date: Sat, 20 Jan 2018 19:24:34 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="Ft0o2zvssPbUStej"
-Content-Disposition: inline
 In-Reply-To: <CAKuzo_jF_fHfcEPUXeo6WKWQ4tw7T72-cexEUda=USGd9Ref7g@...278...>
+Content-Language: en-US
 Subject: Re: [Openvpn-devel] On testing with openssl 0.9.8
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -16,54 +14,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---Ft0o2zvssPbUStej
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Sat, Jan 20, 2018 at 12:22:52PM -0500, Selva Nair wrote:
+On 20-01-18 18:22, Selva Nair wrote:
 > Does openvpn-vagrant include any VM provisioning with openssl-0.9.8?
-
-"Not that I'm aware of"...
-
 > Until recently I had access to a few old debian boxes but now all
 > updated and 0.9.8 testing is getting harder.
 
-... but it should be fairly easy to find a suitable base OS "box", and
-add our provisioning to it...   which debian versions would be suitable?
+To test against various openssl versions, I statically compile against
+them, like this:
 
-My buildbots, unfortunately, all have 1.0.1+ or 1.1 even today given
-that master won't build otherwise (0.9.8 is still there on some of the
-older FreeBSDs, but hidden behind symlinks pointing to newer versions...)
+git clone https://github.com/openssl/openssl.git --branch
+OpenSSL_0_9_8-stable
+git clone https://github.com/OpenVPN/openvpn.git --branch release/2.4
 
-gert
+(cd openssl && ./config -v -d no-shared && make build_libs)
 
---=20
-now what should I write here...
+cd openvpn
 
-Gert Doering - Munich, Germany                             gert@...1296...
+autoreconf -vif
 
---Ft0o2zvssPbUStej
-Content-Type: application/pgp-signature; name="signature.asc"
+OPENSSL_CFLAGS="-I$(pwd)/../openssl/include" \
+OPENSSL_LIBS="-L$(pwd)/../openssl -lssl -lcrypto -lpthread -ldl" \
+./configure --enable-strict
 
------BEGIN PGP SIGNATURE-----
+make check
 
-iQGcBAEBAgAGBQJaY4PKAAoJEB2Cnv7KVigSSNQMAIk2XWPeYgCjxjm0tkCzOEKw
-J1+SJuhKd/IL0Gfy89mNGk3KUFdGkUJiHoCpGLg3L8OlVVTYbFCVIxQyFJYggNsw
-otncJmrEYe9Nhoa6KjEhcM39mXPlpeY3dY3x4awYKZS20s/xbtHpTLWac5v1ex3p
-+DwmV5+Hwi9YxwmqTnzDgYuimTlOB/rZ5O6nSzpYQNQFf+3U5+GE1II0AwakdaTD
-MuQkToVu2UswGQi1RRD5QdiUGMmBGLmRzq35SYpPel8hkJEK+xCEPLLDwuSMpGnj
-+unlCESigXkMs9ziuOuuNSep/R94Z0kY776RuLuv44thpWyo1c+WSbfiDwwz0jJl
-20lN3DI4bvTOnJCeNUtpUiDHzIpFIabCLZuROlr3TjtfFHDgvxy5nsZ2LwpdYzs1
-xXq0HNEEzVquAvbQdZuXka0sI+39RDoEQ10G++1gQu6J3InshleYgV13UerYkOlI
-lZwr+KPe87PTeiRTNPstKmBNwt35lh1Cs5Phs+4VBw==
-=lf89
------END PGP SIGNATURE-----
+That of course doesn't catch platform-specific things, but it does catch
+almost all issues we've encountered so far.
 
---Ft0o2zvssPbUStej--
+-Steffan
+
+PS: it could be that libpthead and libdl are only needed for newer
+openssl version, but I use the same scripts to build for all versions.
 
