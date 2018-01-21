@@ -1,12 +1,11 @@
-From: "Jim Carroll" <jim@...2322...>
-References: <1512422193-8184-1-git-send-email-jim@...2322...>
- <7228a583-01f9-7150-ebb4-42a975a5af47@...1856...>
-In-Reply-To: <7228a583-01f9-7150-ebb4-42a975a5af47@...1856...>
-Date: Sun, 21 Jan 2018 11:37:18 -0500
-Message-ID: <422801d392d6$1a7bbd50$4f7337f0$@carroll.com>
-Content-Language: en-us
-Subject: Re: [Openvpn-devel] [PATCH 1/2] Added support for OpenSSL FIPS
- Object Module v2.0 validated encryption
+MIME-Version: 1.0
+In-Reply-To: <1515482173-29447-1-git-send-email-eyal.birger@...277...>
+References: <1515482173-29447-1-git-send-email-eyal.birger@...277...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sun, 21 Jan 2018 13:45:26 -0500
+Message-ID: <CAKuzo_hN5A=LB7sp7m3REEpMsePSm-8dpXQUNtbQJz6y8w7zOw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Windows: Set interface IPv6 prefix
+ length when configuring address
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,256 +14,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: 'Steffan Karger' <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+To: Eyal Birger <eyal.birger@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-> > +    if test "${enable_fips_mode}" = "yes"; then
-> > +        AC_CHECK_FUNCS(
-> > +            [ \
-> > +                FIPS_mode \
-> > +                FIPS_mode_set \
-> > +                SSLeay_version
-> > +            ],
-> > +            [],
-> > +            [AC_MSG_ERROR([Incorrect version of OpenSSL, require
-> 1.0.2])]
-> 
-> This isn't really the version check that fails, right?  Something like
-> "Couldn't find functions required for FIPS" sounds more accurate.
+Hi,
 
-The intention was to ensure the right version is being used.
-SSLeay_version() doesn't exists in 1.1+. If they are using a newer version
-of OpenSSL, the FIPS module is not valid. We also need the SSLeay_version()
-function so we can extract the openssl installation directory.
+I'm on a reviewing spree (doing my penance), so here goes..
 
+Thanks for the patch
 
-> > +            )
-> > +        AC_RUN_IFELSE(
-> > +            [AC_LANG_PROGRAM(
-> > +                [[#include <openssl/crypto.h>]],
-> > +                [[printf("%s\n", SSLeay_version(SSLEAY_DIR));]])
-> > +            ],
-> > +            [AC_SUBST(OPENSSLDIR,
-> > +                [[`./conftest$EXEEXT | $SED -n
-> 's/.*"\(.*\)".*/\1/p'`]])
-> > +            ]
-> > +        )
-> 
-> Instead of calling SSLeay_version(), consider using the OPENSSL_VERSION
-> define, like we already do elsewhere in configure.ac.  That will not
-> break as soon as there is a FIPS-compliant 1.1 release (which the
-> openssl devs say there will be "soon").
+On Tue, Jan 9, 2018 at 2:16 AM, Eyal Birger <eyal.birger@...277...> wrote:
+> Address prefix length defaults to /64 on Windows. This change allows using
+> Windows clients in setups that use a different prefix length.
+>
+> Note: the ability to set the prefix length is documented in the netsh
+> 'add address' command, but works on the 'set address' command as well.
 
-We are not interested in the version here -- we are trying to set OPENSSLDIR
-to the directory where openssl is installed, which we capture from the
-output of SSLeay_version(). We need the openssldir so we can find fipld and
-use this during the build process.
+Aside:
+If interactive service is in use, the ip helper API is used and setting
+prefix already works.  Ideally I would like to see openvpn on Windows
+used only with the interactive service, but we are not there yet --
+instances started by the automatic service does not use it and there
+are some users still running the GUI as admin for some inexplicable
+reasons.
 
+So we need to continue supporting these code paths.
 
-> >  void hmac_ctx_init(hmac_ctx_t *ctx, const uint8_t *key, int
-> key_length,
-> > -                   const md_kt_t *kt);
-> > +                   const md_kt_t *kt, bool prf_use);
-> 
-> Instead of adding this parameter, I'd prefer to add a
-> hmac_ctx_set_fips_prf() function.  That way all the non-prf hmac calls
-> don't have to change.
+>
+> Signed-off-by: Eyal Birger <eyal.birger@...277...>
+> ---
+>  src/openvpn/tun.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+>
+> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+> index 25831ce..b2b4795 100644
+> --- a/src/openvpn/tun.c
+> +++ b/src/openvpn/tun.c
+> @@ -1561,15 +1561,16 @@ do_ifconfig(struct tuntap *tt,
+>              }
+>              else
+>              {
+> -                /* example: netsh interface ipv6 set address interface=42 2001:608:8003::d store=active */
+> +                /* example: netsh interface ipv6 set address interface=42 2001:608:8003::d/64 store=active */
+>                  char iface[64];
+>                  openvpn_snprintf(iface, sizeof(iface), "interface=%lu", tt->adapter_index );
+>                  argv_printf(&argv,
+> -                            "%s%sc interface ipv6 set address %s %s store=active",
+> +                            "%s%sc interface ipv6 set address %s %s/%d store=active",
+>                              get_win_sys_path(),
+>                              NETSH_PATH_SUFFIX,
+>                              iface,
+> -                            ifconfig_ipv6_local );
+> +                            ifconfig_ipv6_local,
+> +                            tt->netbits_ipv6);
+>                  netsh_command(&argv, 4, M_FATAL);
+>                  /* set ipv6 dns servers if any are specified */
+>                  netsh_set_dns6_servers(tt->options.dns6, tt->options.dns6_len, actual);
 
-The function is called from three places (all of which we have patched).
-You'd prefer to add create a largely duplicate function and then if/else
-tests to those three calls rather than just add a parameter?  
+Works as expected and the code is good.
 
+Currently, on setting the address, a default route gets set with
+prefix /64 with gateway as OnLink (does not happen when iphelper api
+is used). Although our explicit route to fe80::8 may override it, it
+looks better to set the correct prefix in the address. So:
 
-> >      HMAC_CTX_reset(ctx);
-> > +    if (kt == EVP_md5() && prf_use)
-> > +        HMAC_CTX_set_flags(ctx, EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);
-> 
-> Please always use braces for a branch.
+Acked-by: Selva Nair <selva.nair@...277...>
 
+Selva
 
-Agreed. I tried to follow the coding conventions in the project, but missed
-this one.
-
-
-> > +#ifdef ENABLE_FIPS
-> > +	int fips_mode;
-> > +#endif
-> 
-> Use spaces for indentation.  Also, sounds like this should be bool,
-> rather than an int?
-
-
-It is strongly advised to use an int. Future versions of OpenSSL
-FIPS_mode_set() are expected to accept extended modes. From
-https://wiki.openssl.org/index.php/FIPS_mode_set()
-
-		Currently all non-zero values of ONOFF enable 
-		FIPS mode. In the future other values may specify 
-		additional actions beyond enabling FIPS mode, such 
-		as a value of 2 to designate an additional 
-		restriction to Suite B algorithms. To avoid 
-		further compatibility issues, a program is 
-		encouraged to call FIPS_mode_set() with a ONOFF 
-		value of 1 (rather than an arbitrary non-zero value).
-
-
-> I hope to look into this patch more, and run some test later.
-> 
-> Thanks so far,
-> -Steffan
-
-Thanks Steffan
-
-
-BTW: I just remembered, there are two more small changes I would like to
-suggest. One is to fix a typo in the documentation, and the second was to
-test the returned value from FIPS_mode_set() and to clean up error
-reporting:
-
-
-
-
-diff --git a/INSTALL b/INSTALL
-index 0bb25b4..62a2bee 100644
---- a/INSTALL
-+++ b/INSTALL
-@@ -378,7 +378,7 @@ The above adds a new '--enable-fips-mode' command line
-option to OpenVPN. Add th
- invocation statement. If you've successfully configured OpenVPN for FIPS
-mode, check your
- OpenVPN logs for the statement:
-
--    *** FIPS MODE ENABLE ***
-+    *** FIPS MODE ENABLED ***
-
-
- *************************************************************************
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index fe4cef3..b55bad8 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -162,9 +162,9 @@ crypto_init_lib(void)
- int
- crypto_enable_fips_mode(int mode)
- {
--    if (!FIPS_mode_set(mode))
-+    if (FIPS_mode_set(mode) != mode)
-     {
--        ERR_print_errors_fp(stderr);
-+        crypto_msg(M_FATAL, "Unable to set fips mode");
-         return 1;
-     }
-     msg(M_INFO, "*** FIPS MODE ENABLED ***");
-
-
-begin 666 smime.p7s
-M,( &"2J&2(;W#0$'`J" ,( "`0$Q"S )!@4K#@,"&@4`,( &"2J&2(;W#0$'
-M`0``H((.$3""!#8P@@,>H ,"`0("`0$P#08)*H9(AO<-`0$%!0`P;S$+, D&
-M`U4$!A,"4T4Q%# 2!@-5! H3"T%D9%1R=7-T($%",28P) 8#500+$QU!9&14
-M<G5S="!%>'1E<FYA;"!45% @3F5T=V]R:S$B," &`U4$`Q,9061D5')U<W0@
-M17AT97)N86P@...2323...$@4F]O=# >%PTP,# U,S Q,#0X,SA:%PTR,# U,S Q,#0X
-M,SA:,&\Q"S )!@-5! 83`E-%,10P$@8#500*$PM!9&14<G5S="!!0C$F,"0&
-M`U4$"Q,=061D5')U<W0@...2324...)N86P@...1481...%10($YE='=O<FLQ(C @!@-5! ,3
-M&4%D9%1R=7-T($5X=&5R;F%L($-!(%)O;W0P@@$B, T&"2J&2(;W#0$!`04`
-M`X(!#P`P@@$*`H(!`0"W]QHSYO(`!"TYX$Y;[1^\; _-M?HCML[>FQ$SEZ0I
-M3'V3G[U*O)/M`QKCC\_E;5!:UI<IE%J L$EZVRZ5_;C*OS<X+1X^D4&M<%;'
-M\$\_Z#*>=,K(D%3IQE\/>)V:0#P.K&&J7A2/GH>A:E#<UYI.KP6SIG&4G'&S
-M4& *QQ.=. >&`JCIJ&DF&)"K3+!/(ZLZ3X38W\Z?X6EON]="UVM$Y,>M[FU!
-M7W):<0@...2325...%F@...1652...#?W`"\-PI)RVM X<ML4J$7$72I]M[36Q.ZLS1-$M\DK
-MW4,`)?IAN6EJ6",1MZ<SCU9U6?7-*==&MPHK9;;30F\5LKA[^^_I75/5-%HG
-M`@,!``&C@=PP@=DP'08#51T.!!8$%*V]F'HTM";W^L0F5.\#O> DRU0:, L&
-M`U4=#P0$`P(!!C /!@-5'1,!`?\$!3 #`0'_,(&9!@-5'2,$@9$P@...2326... %*V]
-MF'HTM";W^L0F5.\#O> DRU0:H7.D<3!O,0LP"08#500&$P)313$4,!(&`U4$
-M"A,+061D5')U<W0@...2327...(Q)C D!@-5! L3'4%D9%1R=7-T($5X=&5R;F%L(%14
-M4"!.971W;W)K,2(P( 8#500#$QE!9&14<G5S="!%>'1E<FYA;"!#02!2;V]T
-M@@$!, T&"2J&2(;W#0$!!04``X(!`0"PF^"%)<+6(^(/E@:2G4&8G-F$>8'9
-M'EL4!R,V98^PV'>[K$%L1V"#4;#Y,CWG_/8F$\> %J6_6OR'SWAYB2&:XDP'
-M"H8UO/+>4<32EK?<?D[N</T<.>L,`E$4+8Z]%N#!WT9UYR2M[/1"M(63<!!G
-MNIT&-4H8TRMZS%%"H7ICT>:[H<4KPC:^$PWFO6-^>7NG"0U JVK=CXK#]O:,
-M&D(%4=1%]9^G8B%H%2!#/)GG?+TDV*F1%W.(/U8;,3@...2328...'$/FLW(#IZ.+AOA
-MC)B#RQ\Q\41,Q@...2329...@#\?XO1> :R[IS$P.6IIY#R *+M6>8R8>59*4V((7
-M6GO0O,>/3H8$,(($KS""`Y>@`P(!`@(1`. CRQ42@...2330...)K6%N>E1G:R$P#08)
-M*H9(AO<-`0$+!0`P;S$+, D&`U4$!A,"4T4Q%# 2!@-5! H3"T%D9%1R=7-T
-M($%",28P) 8#500+$QU!9&14<G5S="!%>'1E<FYA;"!45% @3F5T=V]R:S$B
-M," &`U4$`Q,9061D5')U<W0@...2324...)N86P@...2323...$@4F]O=# >%PTQ-#$R,C(P
-M,# P,#!:%PTR,# U,S Q,#0X,SA:,(&;,0LP"08#500&$P)'0C$;,!D&`U4$
-M"!,21W)E871E<B!-86YC:&5S=&5R,1 P#@8#500'$P=386QF;W)D,1HP& 8#
-M500*$Q%#3TU/1$\@0T$@3&EM:71E9#%!,#\&`U4$`Q,X0T]-3T1/(%-(02TR
-M-38@...2331...($%U=&AE;G1I8V%T:6]N(&%N9"!396-U<F4@...2332...:6P@...2323...$P
-M@@$B, T&"2J&2(;W#0$!`04``X(!#P`P@@$*`H(!`0")L0W:>E,93G!2';Q6
-MI@...2333...[A)X);G4:OQ\%H3216CM(P;8+QZ44*G>8RD(M\784Z1U78C"A332@)_
-MMAT)@&ZE!#W9NKL6_J&'J2Y#4D,6?*\R4,BF3UKI"-C/DR6<>XCH,&3FI/A6
-M@/TJ)!0S%YFL1.5IBZ-&!DO",]3I0)\&L+&LDT"YM0B3.IPJ4Z,0VST@...2334...
-M`X[93G8E`B$I^J-\<79/[N%?@>G[5(#;PWLU4K>$WB(]+# M,7]9O5(WL#-I
-M+4/K^M:E\9=W9U&,V>XGZ[RE!SAVC*2I./_?C/4#K$F^RO=SF3H/,JN<E3H3
-M/0Y&.E=T85"^QD _R^3BGZ(A`@,!``&C@@$7,((!$S ?!@-5'2,$&# 6@!2M
-MO9AZ-+0F]_K$)E3O`[W@),M4&C =!@-5'0X$%@04DF%K@...1630...&BH*I/[&?QPJ/W
-MM( `P>PP#@8#51T/`0'_! 0#`@&&,!(&`U4=$P$!_P0(, 8!`?\"`0`P'08#
-M51TE!!8P% 8(*P8!!04'`P(&""L&`04%!P,$,!$&`U4=( 0*, @P!@8$51T@
-M`#!$!@-5'1\$/3 [,#F@...2335... UAC-H='1P.B\O8W)L+G5S97)T<G5S="YC;VTO
-M061D5')U<W1%>'1E<FYA;$-!4F]O="YC<FPP-08(*P8!!04'`0$$*3 G,"4&
-M""L&`04%!S !AAEH='1P.B\O;V-S<"YU<V5R=')U<W0N8V]M, T&"2J&2(;W
-M#0$!"P4``X(!`0`;*FZL5<$ZJXC%V.W-5?.J:V$KP D0(YD/Q69J;['UM+5W
-M7@\"80#??07^$K.D@( `_/L=6VIR`@I!O 6ZP5C5)L+JU4V$^_Z"F,]8&^,B
-M8YQ2^+L%-JM]6*7>JSMCY=K5<^_LX/M[XJ/_\$(CG,JVC4T^Y$L8`[*H+=38
-MNT)+D&F%$-NF-S3H>^ !$*6<RCK'GT^(-&Z*9= :BKNIW,K*-M'T_,)D*36O
-MUK&G<1'2`T.QCSZ:[)XR4_1VDLJ&- >Y+,KF'$K8F0W!AN*0DOM:0FHC(1#I
-M9<?UU;M^ZHR%( )BZM$Z!RQ9Q9DS\CB)Y;;I%GH?>13V2A :)OI\BON;,((%
-M(#""! B@`P(!`@(1`(+-2':;XZ#&U!G>^P&7OJPP#08)*H9(AO<-`0$+!0`P
-M@...2336..."S )!@-5! 83`D=",1LP&08#500($Q)'<F5A=&5R($UA;F-H97-T97(Q
-M$# .!@-5! <3!U-A;&9O<F0Q&C 8!@-5! H3$4-/34]$3R!#02!,:6UI=&5D
-M,4$P/P8#500#$SA#3TU/1$\@4TA!+3(U-B!#;&EE;G0@...2337...:&5N=&EC871I
-M;VX@...2338...(%-E8W5R92!%;6%I;"!#03 >%PTQ-S Q,3@...1595...,# P,#!:%PTR,# Q
-M,3@...1561...,S4Y-3E:," Q'C <!@DJADB&]PT!"0$6#VII;4!C87)R;VQL+F-O;3""
-M`2(P#08)*H9(AO<-`0$!!0`#@@$/`#""`0H"@@$!`+>;EY]ERMD$,P;8"I7X
-M?^ /F69VS8/L_HEV(J#N= $S];)Z)NSNCEKQQL*V\)X*[3:U#K&RT"]7`^(9
-M/]<<)D]QC$]^CQB)W6&GH=]!S)"#BX#@1Q)ZRNK%`>L!^4T4%*7SH4#L9W*4
-MT$5<*UR%\T_56N':G<DYHV-9.='BNEU"'%TY+[]LYZ=B>CA]ND5XQ(/B6G)$
-M+.45284OBU4BNP&F^_G1,%^"$.,_`")HQ!K_IW :.=0"J38^R&!!*H#$V>"H
-M\A*[L =HF*&;G2L'<8*^T%BY+7S.3D[>P=G4O*#;+C4>,]Q8'MX2A9@...2339...$#LC
-M'5]WL4$YZ?=VZ+H"B_33;&T"`P$``:."`=<P@@'3,!\&`U4=(P08,!: %))A
-M:X+AHJ"J3^QG\<*C][2 `,'L,!T&`U4=#@06!!2S>P/T;X" O18ML(68VK@...2340...
-M(7<123 .!@-5'0\!`?\$! ,"!: P# 8#51T3`0'_! (P`# =!@-5'24$%C 4
-M!@@K!@$%!0<#! 8(*P8!!04'`P(P1@...1499...#51T@!#\P/3 [!@PK!@$$`;(Q`0(!
-M`P4P*S I!@@K!@$%!0<"`18=:'1T<',Z+R]S96-U<F4N8V]M;V1O+FYE="]#
-M4%,P708#51T?!%8P5#!2H%"@3H9,:'1T<#HO+V-R;"YC;VUO9&]C82YC;VTO
-M0T]-3T1/4TA!,C4V0VQI96YT075T:&5N=&EC871I;VYA;F1396-U<F5%;6%I
-M;$-!+F-R;#"!D 8(*P8!!04'`0$$@8,P@...1499... P6 8(*P8!!04', *&3&AT=' Z
-M+R]C<G0N8V]M;V1O8V$N8V]M+T-/34]$3U-(03(U-D-L:65N=$%U=&AE;G1I
-M8V%T:6]N86YD4V5C=7)E16UA:6Q#02YC<G0P) 8(*P8!!04', &&&&AT=' Z
-M+R]O8W-P+F-O;6]D;V-A+F-O;3 :!@-5'1$$$S 1@...150...]J:6U 8V%R<F]L;"YC
-M;VTP#08)*H9(AO<-`0$+!0`#@@$!`'W33 4"-'Y3RQ+/>:PFSC@...2341... 1V
-MH"=?*@"]NZ7+1X&;TMD)/=KS<3BZN1X<*%FAF5TT8@\9&Y)W7&M28.,GF/5,
-MV'!"E<-"(+ZQU&<SFY>52)<8(H0D6.RB<5"5L#EHH-[8IB]:W7W0)9<VHV>A
-M3OF,X]<-(XS5!1:<VY>/Q-+\ZA; \X:\/*#59:$JD)8S.TZ20:Q(!CUZ+E[A
-M!-V6+Y9+9_#2CX G4C7LD,*>D_T?J?X.7^&M(*ZE=+5X$_)7^:4-5GJCO[GY
-MC*7/4G($(0<G(B/8FO<=,%\M\-V**+[KKM<%HL@...2342...,=HU Y_GU3PBE![J;
-MWYTVZ97^?=PQ@@0C,(($'P(!`3"!L3"!FS$+, D&`U4$!A,"1T(Q&S 9!@-5
-M! @3$D=R96%T97(@36%N8VAE<W1E<C$0, X&`U4$!Q,'4V%L9F]R9#$:,!@&
-M`U4$"A,10T]-3T1/($-!($QI;6ET960Q03 _!@-5! ,3.$-/34]$3R!32$$M
-M,C4V($-L:65N="!!=71H96YT:6-A=&EO;B!A;F0@...2343...=7)E($5M86EL($-!
-M`A$`@LU(=IOCH,;4&=[[`9>^K# )!@4K#@,"&@4`H(("1C 8!@DJADB&]PT!
-M"0,Q"P8)*H9(AO<-`0<!,!P&"2J&2(;W#0$)!3$/%PTQ.# Q,C$Q-C,W,3=:
-M,",&"2J&2(;W#0$)!#$6!!2(2QGD8INMP%+TJF-J.[*+:SM#23!;!@DJADB&
-M]PT!"0\Q3C!,, H&""J&2(;W#0,', X&""J&2(;W#0,"`@(`@# -!@@JADB&
-M]PT#`@(!0# '!@4K#@,"!S -!@@JADB&]PT#`@(!*# '!@4K#@,"&C"!P@...1499...)
-M*P8!! &"-Q $,8&T,(&Q,(&;,0LP"08#500&$P)'0C$;,!D&`U4$"!,21W)E
-M871E<B!-86YC:&5S=&5R,1 P#@8#500'$P=386QF;W)D,1HP& 8#500*$Q%#
-M3TU/1$\@0T$@3&EM:71E9#%!,#\&`U4$`Q,X0T]-3T1/(%-(02TR-38@...2344...
-M96YT($%U=&AE;G1I8V%T:6]N(&%N9"!396-U<F4@...2332...:6P@...2323...$"$0""S4AV
-MF^.@...2345...!E[ZL,('$!@LJADB&]PT!"1 ""S&!M*"!L3"!FS$+, D&`U4$
-M!A,"1T(Q&S 9!@-5! @3$D=R96%T97(@36%N8VAE<W1E<C$0, X&`U4$!Q,'
-M4V%L9F]R9#$:,!@&`U4$"A,10T]-3T1/($-!($QI;6ET960Q03 _!@-5! ,3
-M.$-/34]$3R!32$$M,C4V($-L:65N="!!=71H96YT:6-A=&EO;B!A;F0@...2343...
-M=7)E($5M86EL($-!`A$`@LU(=IOCH,;4&=[[`9>^K# -!@DJADB&]PT!`0$%
-M``2"`0"G<36):2:'LF4&CFW*R[&09 'LQ['W1%FZ%E5R"@(-GVD<4*8."3Q?
-MI>;4"7U4;9) &8G A%AO-S?Y3EO3@"\?1#-K(V$>-+O0GDLH_3B0ZX=NTEXG
-M5MW:#VT;%KJ]!2\<>6/D8O)+:<*\FQ4J`%0<U%#F'9DCZQ[1K$"ATK7Y@+O9
-M-5F$+_C5J;A\UO[!DMRF&O&R!#R<X+Q]A.^^CV[]\61J!OM(/2^,; `FRMYS
-M3@...2374...:5"[I593HUV+1"/<A/\Z0KNUI<CWN34Y>)/:6Q96@@=/(FE<INF+T8ZW
-J(M&D&2&:5@,@7=/JI!\(&A&LRF2C-VFUFTZE%9,#-H3U3=??````````
-`
-end
-
+P.S. While going through this I noticed a bug in our route deletion code
+for ipv6: only when using netsh (not the interactiveservice), so gone
+unnoticed. Will report separately.
 
