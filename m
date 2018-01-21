@@ -1,13 +1,12 @@
-References: <1515378076-5774-3-git-send-email-selva.nair@...277...>
- <1516423974-22159-1-git-send-email-selva.nair@...277...>
-From: Steffan Karger <steffan.karger@...1435...>
-Message-ID: <a73a10b5-1e54-7c18-edae-7a6ad8b28620@...1435...>
-Date: Sun, 21 Jan 2018 11:58:37 +0100
+References: <1512422193-8184-1-git-send-email-jim@...2322...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <7228a583-01f9-7150-ebb4-42a975a5af47@...1856...>
+Date: Sun, 21 Jan 2018 13:10:55 +0100
 MIME-Version: 1.0
-In-Reply-To: <1516423974-22159-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1512422193-8184-1-git-send-email-jim@...2322...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v2 2/2] TLS v1.2 support for
- cryptoapicert -- RSA only
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Added support for OpenSSL FIPS
+ Object Module v2.0 validated encryption
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,252 +15,455 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On 20-01-18 05:52, selva.nair@...277... wrote:
-> From: Selva Nair <selva.nair@...277...>
+Sorry for taking so long to review.  At least some early review comments:
+
+On 04-12-17 22:16, jim@...2322... wrote:
+> From: Jim Carroll <jim@...2322...>
 > 
-> - If an NCRYPT handle for the private key can be obtained, use
->   NCryptSignHash from the Cryptography NG API to sign the hash.
-> 
->   This should work for all keys in the Windows certifiate stores
->   but may fail for keys in a legacy token, for example. In such
->   cases, we disable TLS v1.2 and fall back to the current
->   behaviour. A warning is logged unless TLS version is already
->   restricted to <= 1.1
-> 
-> Signed-off-by: Selva Nair <selva.nair@...277...>
+> Signed-off-by: Jim Carroll <jim@...2322...>
 > ---
+>  INSTALL                      | 78 ++++++++++++++++++++++++++++++++++++++++++++
+>  Makefile.am                  |  5 +++
+>  configure.ac                 | 41 +++++++++++++++++++++++
+>  src/openvpn/crypto.c         |  2 +-
+>  src/openvpn/crypto_backend.h |  3 +-
+>  src/openvpn/crypto_openssl.c | 16 ++++++++-
+>  src/openvpn/crypto_openssl.h |  8 +++++
+>  src/openvpn/ntlm.c           |  2 +-
+>  src/openvpn/openvpn.c        |  9 +++++
+>  src/openvpn/options.c        | 18 ++++++++++
+>  src/openvpn/options.h        |  3 ++
+>  src/openvpn/ssl.c            | 12 +++++--
+>  src/openvpn/ssl.h            |  4 +++
+>  13 files changed, 195 insertions(+), 6 deletions(-)
 > 
-> Depends on patches: 
-> patch 200: https://patchwork.openvpn.net/patch/200/
-> patch 201: https://patchwork.openvpn.net/patch/201/
-> 
-> v2: Based on Stefan's review:
-> - Replace SSL_CTX_get(set)_option with SSL_CTX_get(set)_max_proto_version
-> - Wrap some lines to 80 chars
-> - replace M_INFO by D_LOW in a low level debug message
-> 
-> Also removed some defines added in v1 that are actually present in mingw 
-> versions that we target
-> 
->  src/openvpn/Makefile.am |  2 +-
->  src/openvpn/cryptoapi.c | 85 ++++++++++++++++++++++++++++++++++++++++++++++---
->  src/openvpn/options.c   | 18 -----------
->  3 files changed, 81 insertions(+), 24 deletions(-)
-> 
-> diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-> index fcc22d6..1a2f42e 100644
-> --- a/src/openvpn/Makefile.am
-> +++ b/src/openvpn/Makefile.am
-> @@ -132,5 +132,5 @@ openvpn_LDADD = \
->  	$(OPTIONAL_DL_LIBS)
->  if WIN32
->  openvpn_SOURCES += openvpn_win32_resources.rc block_dns.c block_dns.h
-> -openvpn_LDADD += -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwinmm -lfwpuclnt -lrpcrt4
-> +openvpn_LDADD += -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwinmm -lfwpuclnt -lrpcrt4 -lncrypt
+> diff --git a/INSTALL b/INSTALL
+> index 3a31e6f..b001cb1 100644
+> --- a/INSTALL
+> +++ b/INSTALL
+> @@ -305,6 +305,84 @@ TUN/TAP Driver Configuration:
+>  
+>  *************************************************************************
+>  
+> +OpenSSL FIPS Object Module v2.0 Configuration:
+> +
+> +These instructions were adapted from
+> +
+> +    https://www.openssl.org/docs/fipsnotes.html
+> +
+> +Requirements:
+> +
+> +    * OpenSSL 1.0.2m
+> +    * openssl-fips-2.0.2
+> +
+> +WARNING
+> +
+> +To install FIPS Validated encryption, you must follow the instructions in the
+> +FIPS 2.0 User's Guide precisely. You are not permitted to modify any of the FIPS
+> +build artifacts, makefiles or scripts. The FIPS 2.0 module is only compatible with
+> +OpenSSL 1.0.1 and 1.0.2.
+> +
+> +These instructions describe the use of OpenSSL 1.0.2m.
+> +
+> +PRE-INSTALLATION CHECKUP:
+> +
+> +    The INSTALLATION procecure describes how to install an OpenSSL library that
+> +    is built with FIPS support. If your platform already provides a FIPS
+> +    enabled library you can skip to step 6 (build OpenVPN).
+> +
+> +INSTALLATION:
+> +
+> +    1. Surf to https://www.openssl.org/source/
+> +    2. Download source AND validate the download was correct (preferably using PGP)
+> +    3. Untar and uncompress tarball
+> +    4. You must build using this precise command (do NOT choose any other options):
+> +
+> +            # ./config && make install
+> +
+> +            (you may optionslly pass 'no-asm' to config)
+> +
+> +       If the above procedure does not build on your system -- STOP. You are not
+> +       building on a FIPS supported platform, and therefore will not have a
+> +       FIPS validated encryption environment. See chapter 3 of the FIPS 2.0
+> +       User's Guide for the complete list of supported platforms:
+> +
+> +            https://openssl.org/docs/fips/UserGuide-2.0.pdf
+> +
+> +    5. Download, build & install openssl 1.0.2m (you are permitted to
+> +       modify this step to suite your preferences):
+> +
+> +            # git clone https://github.com/openssl/openssl.git
+> +            # (cd openssl && \
+> +                    git checkout OpenSSL_1_0_2m && \
+> +                    ./config fips && \
+> +                    make depend && \
+> +                    make install)
+> +
+> +    6. Now build openvpn and tell it where to find you recently installed OpenSSL
+> +
+> +            # ./configure --enable-fips-mode \
+> +                    OPENSSL_CFLAGS=-I/usr/local/ssl/include \
+> +                    OPENSSL_LIBS="-ldl -L/usr/local/ssl/lib -lssl -lcrypto"
+> +
+> +            # make install
+> +
+> +    7. You can confirm FIPS mode is available with the command
+> +
+> +            # ./openvpn --version | grep 'library version'
+> +            library versions: OpenSSL 1.0.2m-fips  2 Nov 2017, LZO 2.08
+> +
+> +USAGE:
+> +
+> +The above adds a new '--enable-fips-mode' command line option to OpenVPN. Add this to your
+> +invocation statement. If you've successfully configured OpenVPN for FIPS mode, check your
+> +OpenVPN logs for the statement:
+> +
+> +    *** FIPS MODE ENABLE ***
+> +
+> +
+> +*************************************************************************
+> +
+>  CAVEATS & BUGS:
+>  
+>  * I have noticed cases where TCP sessions tunneled over the Linux
+> diff --git a/Makefile.am b/Makefile.am
+> index 773b786..6d571ec 100644
+> --- a/Makefile.am
+> +++ b/Makefile.am
+> @@ -83,6 +83,11 @@ rootdir=$(prefix)
+>  root_DATA = version.sh
 >  endif
-> diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
-> index 4f2c636..f155123 100644
-> --- a/src/openvpn/cryptoapi.c
-> +++ b/src/openvpn/cryptoapi.c
-> @@ -42,6 +42,7 @@
->  #include <openssl/err.h>
->  #include <windows.h>
->  #include <wincrypt.h>
-> +#include <ncrypt.h>
->  #include <stdio.h>
->  #include <ctype.h>
->  #include <assert.h>
-> @@ -83,6 +84,7 @@
->  #define CRYPTOAPI_F_CRYPT_SIGN_HASH                         106
->  #define CRYPTOAPI_F_LOAD_LIBRARY                            107
->  #define CRYPTOAPI_F_GET_PROC_ADDRESS                        108
-> +#define CRYPTOAPI_F_NCRYPT_SIGN_HASH                        109
 >  
->  static ERR_STRING_DATA CRYPTOAPI_str_functs[] = {
->      { ERR_PACK(ERR_LIB_CRYPTOAPI, 0, 0),                                    "microsoft cryptoapi"},
-> @@ -95,12 +97,13 @@ static ERR_STRING_DATA CRYPTOAPI_str_functs[] = {
->      { ERR_PACK(0, CRYPTOAPI_F_CRYPT_SIGN_HASH, 0),                          "CryptSignHash" },
->      { ERR_PACK(0, CRYPTOAPI_F_LOAD_LIBRARY, 0),                             "LoadLibrary" },
->      { ERR_PACK(0, CRYPTOAPI_F_GET_PROC_ADDRESS, 0),                         "GetProcAddress" },
-> +    { ERR_PACK(0, CRYPTOAPI_F_NCRYPT_SIGN_HASH, 0),                         "NCryptSignHash" },
->      { 0, NULL }
->  };
+> +if FIPSMODE
+> +export CC
+> +export FIPSLD_CC
+> +endif
+> +
+>  config-version.h:
+>  	@CONFIGURE_GIT_CHFILES="`GIT_DIR=\"$(top_srcdir)/.git\" $(GIT) diff-files --name-status -r --ignore-submodules --quiet -- || echo \"+\"`"; \
+>  	CONFIGURE_GIT_UNCOMMITTED="`GIT_DIR=\"$(top_srcdir)/.git\" $(GIT) diff-index --cached  --quiet --ignore-submodules HEAD || echo \"*\"`"; \
+> diff --git a/configure.ac b/configure.ac
+> index b4fd1b3..dc74230 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -286,6 +286,17 @@ AC_ARG_WITH(
+>  	[with_crypto_library="openssl"]
+>  )
 >  
->  typedef struct _CAPI_DATA {
->      const CERT_CONTEXT *cert_context;
-> -    HCRYPTPROV crypt_prov;
-> +    HCRYPTPROV_OR_NCRYPT_KEY_HANDLE crypt_prov;
->      DWORD key_spec;
->      BOOL free_crypt_prov;
->  } CAPI_DATA;
-> @@ -210,6 +213,41 @@ rsa_pub_dec(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, in
->      return 0;
+> +AC_ARG_ENABLE(
+> +    [fips-mode],
+> +    [AS_HELP_STRING([--enable-fips-mode], [OpenSSL FIPS Object Module 2.0 @<:@default=no@:>@])],
+> +    [
+> +        if test "${with_crypto_library}" != "openssl"; then
+> +            AC_MSG_ERROR([enable_fips_mode requires --with_crypto_library=openssl])
+> +        fi
+> +    ],
+> +    [enable_fips_mode="no"]
+> +)
+> +
+>  AC_ARG_VAR([PLUGINDIR], [Path of plug-in directory @<:@default=LIBDIR/openvpn/plugins@:>@])
+>  if test -n "${PLUGINDIR}"; then
+>  	plugindir="${PLUGINDIR}"
+> @@ -948,6 +959,35 @@ if test "${with_crypto_library}" = "openssl"; then
+>  		]
+>  	)
+>  
+> +    if test "${enable_fips_mode}" = "yes"; then
+> +        AC_CHECK_FUNCS(
+> +            [ \
+> +                FIPS_mode \
+> +                FIPS_mode_set \
+> +                SSLeay_version
+> +            ],
+> +            [],
+> +            [AC_MSG_ERROR([Incorrect version of OpenSSL, require 1.0.2])]
+
+This isn't really the version check that fails, right?  Something like
+"Couldn't find functions required for FIPS" sounds more accurate.
+
+> +            )
+> +        AC_RUN_IFELSE(
+> +            [AC_LANG_PROGRAM(
+> +                [[#include <openssl/crypto.h>]],
+> +                [[printf("%s\n", SSLeay_version(SSLEAY_DIR));]])
+> +            ],
+> +            [AC_SUBST(OPENSSLDIR,
+> +                [[`./conftest$EXEEXT | $SED -n 's/.*"\(.*\)".*/\1/p'`]])
+> +            ]
+> +        )
+
+Instead of calling SSLeay_version(), consider using the OPENSSL_VERSION
+define, like we already do elsewhere in configure.ac.  That will not
+break as soon as there is a FIPS-compliant 1.1 release (which the
+openssl devs say there will be "soon").
+
+> +        if ! test -x "${OPENSSLDIR}/fips-2.0/bin/fipsld"; then
+> +            AC_MSG_ERROR([Incomplete OpenSSL FIPS installation; missing fipsld])
+> +        fi
+> +        AC_SUBST([FIPSLD_CC], ["${CC}"])
+> +        AC_SUBST([CC], ["${OPENSSLDIR}/fips-2.0/bin/fipsld"])
+> +        export CC
+> +        export FIPSLD_CC
+> +        AC_DEFINE([ENABLE_FIPS], [1], [Enable OpenSSL FIPS 2.0 Options])
+> +    fi
+> +
+>  	CFLAGS="${saved_CFLAGS}"
+>  	LIBS="${saved_LIBS}"
+>  
+> @@ -1359,6 +1399,7 @@ AM_CONDITIONAL([GIT_CHECKOUT], [test "${GIT_CHECKOUT}" = "yes"])
+>  AM_CONDITIONAL([ENABLE_PLUGIN_AUTH_PAM], [test "${enable_plugin_auth_pam}" = "yes"])
+>  AM_CONDITIONAL([ENABLE_PLUGIN_DOWN_ROOT], [test "${enable_plugin_down_root}" = "yes"])
+>  AM_CONDITIONAL([HAVE_LD_WRAP_SUPPORT], [test "${have_ld_wrap_support}" = "yes"])
+> +AM_CONDITIONAL([FIPSMODE], [test "${enable_fips_mode}" = "yes"])
+>  
+>  sampledir="\$(docdir)/sample"
+>  AC_SUBST([plugindir])
+> diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+> index 3096f3b..97d117b 100644
+> --- a/src/openvpn/crypto.c
+> +++ b/src/openvpn/crypto.c
+> @@ -852,7 +852,7 @@ init_key_ctx(struct key_ctx *ctx, const struct key *key,
+>      if (kt->digest && kt->hmac_length > 0)
+>      {
+>          ctx->hmac = hmac_ctx_new();
+> -        hmac_ctx_init(ctx->hmac, key->hmac, kt->hmac_length, kt->digest);
+> +        hmac_ctx_init(ctx->hmac, key->hmac, kt->hmac_length, kt->digest, false);
+>  
+>          msg(D_HANDSHAKE,
+>              "%s: Using %d bit message hash '%s' for HMAC authentication",
+> diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
+> index 567fd9b..8790ca5 100644
+> --- a/src/openvpn/crypto_backend.h
+> +++ b/src/openvpn/crypto_backend.h
+> @@ -604,10 +604,11 @@ void hmac_ctx_free(hmac_ctx_t *ctx);
+>   * @param key           The key to use for the HMAC
+>   * @param key_len       The key length to use
+>   * @param kt            Static message digest parameters
+> + * @param prf_use       Intended use for PRF in TLS protocol
+>   *
+>   */
+>  void hmac_ctx_init(hmac_ctx_t *ctx, const uint8_t *key, int key_length,
+> -                   const md_kt_t *kt);
+> +                   const md_kt_t *kt, bool prf_use);
+
+Instead of adding this parameter, I'd prefer to add a
+hmac_ctx_set_fips_prf() function.  That way all the non-prf hmac calls
+don't have to change.
+
+>  /*
+>   * Free the given HMAC context.
+> diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+> index 20a519e..fe4cef3 100644
+> --- a/src/openvpn/crypto_openssl.c
+> +++ b/src/openvpn/crypto_openssl.c
+> @@ -159,6 +159,18 @@ crypto_init_lib(void)
+>  #endif
 >  }
 >  
-> +/**
-> + * Sign the hash in 'from' using NCryptSignHash(). This requires an NCRYPT
-> + * key handle in cd->crypt_prov. On return the signature is in 'to'. Returns
-> + * the length of the signature or 0 on error.
-> + * For now we support only RSA and the padding is assumed to be PKCS1 v1.5
-> + */
-> +static int
-> +priv_enc_CNG(const CAPI_DATA *cd, const unsigned char *from, int flen,
-> +              unsigned char *to, int tlen, int padding)
+> +int
+> +crypto_enable_fips_mode(int mode)
 > +{
-> +    NCRYPT_KEY_HANDLE hkey = cd->crypt_prov;
-> +    DWORD len;
-> +    ASSERT(cd->key_spec == CERT_NCRYPT_KEY_SPEC);
-> +
-> +    msg(D_LOW, "Signing hash using CNG: data size = %d", flen);
-> +
-> +    /* The hash OID is already in 'from'.  So set the hash algorithm
-> +     * in the padding info struct to NULL.
-> +     */
-> +    BCRYPT_PKCS1_PADDING_INFO padinfo = {NULL};
-> +    DWORD status;
-> +
-> +    status = NCryptSignHash(hkey, padding? &padinfo : NULL, (BYTE*) from, flen,
-> +                            to, tlen, &len, padding? BCRYPT_PAD_PKCS1 : 0);
-> +    if (status != ERROR_SUCCESS)
+> +    if (!FIPS_mode_set(mode))
 > +    {
-> +        SetLastError(status);
-> +        CRYPTOAPIerr(CRYPTOAPI_F_NCRYPT_SIGN_HASH);
-> +        len = 0;
+> +        ERR_print_errors_fp(stderr);
+> +        return 1;
 > +    }
-> +
-> +    /* Unlike CAPI, CNG signature is in big endian order. No reversing needed. */
-> +    return len;
+> +    msg(M_INFO, "*** FIPS MODE ENABLED ***");
+> +    return 0;
 > +}
 > +
->  /* sign arbitrary data */
->  static int
->  rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding)
-> @@ -230,6 +268,11 @@ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
->          RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE);
->          return 0;
->      }
-> +    if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
-> +    {
-> +        return priv_enc_CNG(cd, from, flen, to, RSA_size(rsa), padding);
-> +    }
-> +
->      /* Unfortunately, there is no "CryptSign()" function in CryptoAPI, that would
->       * be way to straightforward for M$, I guess... So we have to do it this
->       * tricky way instead, by creating a "Hash", and load the already-made hash
-> @@ -322,7 +365,14 @@ finish(RSA *rsa)
->      }
->      if (cd->crypt_prov && cd->free_crypt_prov)
->      {
-> -        CryptReleaseContext(cd->crypt_prov, 0);
-> +        if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
-> +        {
-> +            NCryptFreeObject(cd->crypt_prov);
-> +        }
-> +        else
-> +        {
-> +            CryptReleaseContext(cd->crypt_prov, 0);
-> +        }
->      }
->      if (cd->cert_context)
->      {
-> @@ -458,8 +508,11 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
->      }
+>  void
+>  crypto_uninit_lib(void)
+>  {
+> @@ -926,11 +938,13 @@ hmac_ctx_free(HMAC_CTX *ctx)
 >  
->      /* set up stuff to use the private key */
-> -    if (!CryptAcquireCertificatePrivateKey(cd->cert_context, CRYPT_ACQUIRE_COMPARE_KEY_FLAG,
-> -                                           NULL, &cd->crypt_prov, &cd->key_spec, &cd->free_crypt_prov))
-> +    /* We prefer to get an NCRYPT key handle so that TLS1.2 can be supported */
-> +    DWORD flags = CRYPT_ACQUIRE_COMPARE_KEY_FLAG
-> +                  | CRYPT_ACQUIRE_PREFER_NCRYPT_KEY_FLAG;
-> +    if (!CryptAcquireCertificatePrivateKey(cd->cert_context, flags, NULL,
-> +                    &cd->crypt_prov, &cd->key_spec, &cd->free_crypt_prov))
->      {
->          /* if we don't have a smart card reader here, and we try to access a
->           * smart card certificate, we get:
-> @@ -470,6 +523,21 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
->      /* here we don't need to do CryptGetUserKey() or anything; all necessary key
->       * info is in cd->cert_context, and then, in cd->crypt_prov.  */
+>  void
+>  hmac_ctx_init(HMAC_CTX *ctx, const uint8_t *key, int key_len,
+> -              const EVP_MD *kt)
+> +              const EVP_MD *kt, bool prf_use)
+>  {
+>      ASSERT(NULL != kt && NULL != ctx);
 >  
-> +    /* if we do not have an NCRYPT key handle restrict TLS to v1.1 or lower */
-> +    int max_version = SSL_CTX_get_max_proto_version(ssl_ctx);
-> +    if ((!max_version || max_version > TLS1_1_VERSION)
-> +        && cd->key_spec != CERT_NCRYPT_KEY_SPEC)
-> +    {
-> +        msg(M_WARN,"WARNING: cryptoapicert: private key is in a legacy store."
-> +            " Restricting TLS version to 1.1");
-> +        if (!SSL_CTX_set_max_proto_version(ssl_ctx, TLS1_1_VERSION))
-> +        {
-> +            msg(M_NONFATAL,"ERROR: cryptoapicert: unable to set max TLS version"
-> +                " to 1.1. Try config option --tls-version-min 1.1");
-> +            goto err;
-> +        }
-> +    }
+>      HMAC_CTX_reset(ctx);
+> +    if (kt == EVP_md5() && prf_use)
+> +        HMAC_CTX_set_flags(ctx, EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);
+
+Please always use braces for a branch.
+
+>      HMAC_Init_ex(ctx, key, key_len, kt, NULL);
+>  
+>      /* make sure we used a big enough key */
+> diff --git a/src/openvpn/crypto_openssl.h b/src/openvpn/crypto_openssl.h
+> index 60a2812..fbc8b2a 100644
+> --- a/src/openvpn/crypto_openssl.h
+> +++ b/src/openvpn/crypto_openssl.h
+> @@ -102,4 +102,12 @@ void crypto_print_openssl_errors(const unsigned int flags);
+>      } while (false)
+>  
+>  
+> +/**
+> + * Enable FIPS Mode. Returns non-zero to indicate an error.
+> + *
+> + * @param mode         Should be 1. Future versions of OpenSSL FIPS
+> + *                     code are expected to accept extended modes.
+> + */
+> +int crypto_enable_fips_mode(int mode);
 > +
->      my_rsa_method = RSA_meth_new("Microsoft Cryptography API RSA Method",
->                                    RSA_METHOD_FLAG_NO_CHECK);
->      check_malloc_return(my_rsa_method);
-> @@ -550,7 +618,14 @@ err:
->          {
->              if (cd->free_crypt_prov && cd->crypt_prov)
->              {
-> -                CryptReleaseContext(cd->crypt_prov, 0);
-> +                if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
+>  #endif /* CRYPTO_OPENSSL_H_ */
+> diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c
+> index 077fa3e..fe39ab1 100644
+> --- a/src/openvpn/ntlm.c
+> +++ b/src/openvpn/ntlm.c
+> @@ -88,7 +88,7 @@ gen_hmac_md5(const uint8_t *data, int data_len, const uint8_t *key, int key_len,
+>      const md_kt_t *md5_kt = md_kt_get("MD5");
+>      hmac_ctx_t *hmac_ctx = hmac_ctx_new();
+>  
+> -    hmac_ctx_init(hmac_ctx, key, key_len, md5_kt);
+> +    hmac_ctx_init(hmac_ctx, key, key_len, md5_kt, false);
+>      hmac_ctx_update(hmac_ctx, data, data_len);
+>      hmac_ctx_final(hmac_ctx, result);
+>      hmac_ctx_cleanup(hmac_ctx);
+> diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
+> index e237ee5..da8e852 100644
+> --- a/src/openvpn/openvpn.c
+> +++ b/src/openvpn/openvpn.c
+> @@ -210,6 +210,15 @@ openvpn_main(int argc, char *argv[])
+>              /* parse command line options, and read configuration file */
+>              parse_argv(&c.options, argc, argv, M_USAGE, OPT_P_DEFAULT, NULL, c.es);
+>  
+> +#if ENABLE_FIPS
+> +            if (c.options.fips_mode)
+> +            {
+> +                if (enable_fips_mode(c.options.fips_mode))
 > +                {
-> +                    NCryptFreeObject(cd->crypt_prov);
+> +                    break;
 > +                }
-> +                else
-> +                {
-> +                    CryptReleaseContext(cd->crypt_prov, 0);
-> +                }
->              }
->              if (cd->cert_context)
->              {
+> +            }
+> +#endif
+>  #ifdef ENABLE_PLUGIN
+>              /* plugins may contribute options configuration */
+>              init_verb_mute(&c, IVM_LEVEL_1);
 > diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index b240e2e..220c2e5 100644
+> index 7be5f38..99d3ccc 100644
 > --- a/src/openvpn/options.c
 > +++ b/src/openvpn/options.c
-> @@ -3018,24 +3018,6 @@ options_postprocess_mutate(struct options *o)
->      }
+> @@ -517,6 +517,11 @@ static const char usage_message[] =
+>      "\n"
+>      "Data Channel Encryption Options (must be compatible between peers):\n"
+>      "(These options are meaningful for both Static Key & TLS-mode)\n"
+> +#ifdef ENABLE_FIPS
+> +	"--enable-fips-mode : Enable OpenSSL FIPS Object Module v2.0.\n"
+> +	"                  Setting this on the server will enforce FIPS validated\n"
+> +	"                  encryption on both client and server.\n"
+> +#endif
+>      "--secret f [d]  : Enable Static Key encryption mode (non-TLS).\n"
+>      "                  Use shared secret file f, generate with --genkey.\n"
+>      "                  The optional d parameter controls key directionality.\n"
+> @@ -847,6 +852,9 @@ init_options(struct options *o, const bool init_gc)
+>      o->scheduled_exit_interval = 5;
+>  #endif
+>      o->ciphername = "BF-CBC";
+> +#ifdef ENABLE_FIPS
+> +	o->fips_mode = 0;
+> +#endif
+>  #ifdef HAVE_AEAD_CIPHER_MODES /* IV_NCP=2 requires GCM support */
+>      o->ncp_enabled = true;
+>  #else
+> @@ -1550,6 +1558,9 @@ show_settings(const struct options *o)
+>      SHOW_INT(persist_mode);
 >  #endif
 >  
-> -#ifdef ENABLE_CRYPTOAPI
-> -    if (o->cryptoapi_cert)
-> -    {
-> -        const int tls_version_max =
-> -            (o->ssl_flags >> SSLF_TLS_VERSION_MAX_SHIFT)
-> -            &SSLF_TLS_VERSION_MAX_MASK;
-> -
-> -        if (tls_version_max == TLS_VER_UNSPEC || tls_version_max > TLS_VER_1_1)
-> -        {
-> -            msg(M_WARN, "Warning: cryptapicert used, setting maximum TLS "
-> -                "version to 1.1.");
-> -            o->ssl_flags &= ~(SSLF_TLS_VERSION_MAX_MASK
-> -                              <<SSLF_TLS_VERSION_MAX_SHIFT);
-> -            o->ssl_flags |= (TLS_VER_1_1 << SSLF_TLS_VERSION_MAX_SHIFT);
-> -        }
-> -    }
-> -#endif /* ENABLE_CRYPTOAPI */
-> -
->  #if P2MP
->      /*
->       * Save certain parms before modifying options via --pull
+> +#ifdef ENABLE_FIPS
+> +    SHOW_INT(fips_mode);
+> +#endif
+>      SHOW_BOOL(show_ciphers);
+>      SHOW_BOOL(show_digests);
+>      SHOW_BOOL(show_engines);
+> @@ -7389,6 +7400,13 @@ add_option(struct options *options,
+>          }
+>      }
+>  #endif /* USE_COMP */
+> +#ifdef ENABLE_FIPS
+> +    else if (streq(p[0], "enable-fips-mode") && !p[1])
+> +    {
+> +        VERIFY_PERMISSION(OPT_P_GENERAL);
+> +        options->fips_mode = 1;
+> +    }
+> +#endif
+>      else if (streq(p[0], "show-ciphers") && !p[1])
+>      {
+>          VERIFY_PERMISSION(OPT_P_GENERAL);
+> diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+> index f70760c..6ffe646 100644
+> --- a/src/openvpn/options.h
+> +++ b/src/openvpn/options.h
+> @@ -186,6 +186,9 @@ struct options
+>      bool persist_config;
+>      int persist_mode;
+>  
+> +#ifdef ENABLE_FIPS
+> +	int fips_mode;
+> +#endif
+
+Use spaces for indentation.  Also, sounds like this should be bool,
+rather than an int?
+
+>      const char *key_pass_file;
+>      bool show_ciphers;
+>      bool show_digests;
+> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+> index 7b42845..3992f4d 100644
+> --- a/src/openvpn/ssl.c
+> +++ b/src/openvpn/ssl.c
+> @@ -352,6 +352,14 @@ init_ssl_lib(void)
+>      crypto_init_lib();
+>  }
+>  
+> +#if ENABLE_FIPS
+> +int
+> +enable_fips_mode(int mode)
+> +{
+> +	return crypto_enable_fips_mode(mode);
+> +}
+> +#endif
+> +
+>  void
+>  free_ssl_lib(void)
+>  {
+> @@ -1638,8 +1646,8 @@ tls1_P_hash(const md_kt_t *md_kt,
+>      chunk = md_kt_size(md_kt);
+>      A1_len = md_kt_size(md_kt);
+>  
+> -    hmac_ctx_init(ctx, sec, sec_len, md_kt);
+> -    hmac_ctx_init(ctx_tmp, sec, sec_len, md_kt);
+> +    hmac_ctx_init(ctx, sec, sec_len, md_kt, true);
+> +    hmac_ctx_init(ctx_tmp, sec, sec_len, md_kt, true);
+>  
+>      hmac_ctx_update(ctx,seed,seed_len);
+>      hmac_ctx_final(ctx, A1);
+> diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+> index dd1ab0f..f251765 100644
+> --- a/src/openvpn/ssl.h
+> +++ b/src/openvpn/ssl.h
+> @@ -598,4 +598,8 @@ bool is_hard_reset(int op, int key_method);
+>  
+>  void delayed_auth_pass_purge(void);
+>  
+> +#if ENABLE_FIPS
+> +int enable_fips_mode(int mode);
+> +#endif
+> +
+>  #endif /* ifndef OPENVPN_SSL_H */
 > 
 
-Code looks good, and now nicely connects using TLS 1.2 with a
-certificate from the windows certificate store, nice!
+I hope to look into this patch more, and run some test later.
 
-I don't know how to trigger the 'legacy store' code path.  Have you
-tested that yourself?  If you can confirm that you've tested it:
-
-Acked-by: Steffan Karger <steffan.karger@...1435...>
-
-Thanks for fixing this long-standing shortcoming!
-
+Thanks so far,
 -Steffan
 
