@@ -1,12 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_h5j47vjO65KUSmXwm5zwTnzNpaJCmLeGh-6Uq5nZnxVA@...278...>
-References: <1513450642-29687-1-git-send-email-Michael.Karvan@...277...>
- <CAKuzo_h5j47vjO65KUSmXwm5zwTnzNpaJCmLeGh-6Uq5nZnxVA@...278...>
+In-Reply-To: <20180120164114.12478-1-steffan@...1856...>
+References: <20180120164114.12478-1-steffan@...1856...>
 From: Selva Nair <selva.nair@...277...>
-Date: Sat, 20 Jan 2018 15:28:05 -0500
-Message-ID: <CAKuzo_jnMiQxN3gDV2QNkFyuvp3DC0aHsSpXHF-bo_Ud08a4ww@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Add common_name to the conv method.
- This allows the common_name to be accessible in PAM.
+Date: Sun, 21 Jan 2018 00:37:00 -0500
+Message-ID: <CAKuzo_hZh0+P2-CjdQ9Y4xVMxB5WsJEEOt8nR7rG72fGCdie7Q@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Enable extra compiler warnings by
+ default
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,47 +16,54 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: Michael Karvan <michael.karvan@...277...>
+To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Sat, Dec 16, 2017 at 4:48 PM, Selva Nair <selva.nair@...277...> wrote:
-> Hi,
+On Sat, Jan 20, 2018 at 11:41 AM, Steffan Karger <steffan@...1856...> wrote:
 >
-> On Sat, Dec 16, 2017 at 1:57 PM, Michael Karvan
-> <michael.karvan@...277...> wrote:
->> ---
->>  src/plugins/auth-pam/auth-pam.c | 9 ++++++++-
->>  1 file changed, 8 insertions(+), 1 deletion(-)
->>
->> diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
->> index ae514d7..c64e14b 100644
->> --- a/src/plugins/auth-pam/auth-pam.c
->> +++ b/src/plugins/auth-pam/auth-pam.c
->> @@ -637,9 +637,16 @@ my_conv(int n, const struct pam_message **msg_array,
->>                          ret = PAM_CONV_ERR;
->>                      }
->>                      break;
->> +
->> +                case PAM_TEXT_INFO:
->> +                    aresp[i].resp = strdup(up->common_name);
->> +                    if (aresp[i].resp == NULL)
->> +                    {
->> +                        ret = PAM_CONV_ERR;
->> +                    }
->> +                    break;
+> This by default enables the compiler warnings any could previously
+> enable using the --enable-strict configure option.  I think it is
+> okay to do so now, because we've taken care of many warnings in the
+> more standard builds.  (Most of those were totally harmless, but they
+> prevented us from spotting new more serious mistakes.)
 >
-> The purpose of PAM_TEXT_INFO is for the module to send an info message
-> to the user. Using it to send the common name back to the module is
-> hackish. Yes, it can work in a custom module but its not right to
-> interpret every
-> PAM_TEXT_INFO msg as a request for common name.
->
-> Why not prompt for it just like username and have the plugin return it?
+> Those who prefer a more silent build can use --disable-strict to revert
+> to the old default behaviour.
 
-In case I was not clear enough. NAK on the current patch. A modified one
-could be considered.
+I think --enable-strict by default is good to have. In fact its needed to
+keep on bugging us about many of those printf format spec issues we
+still have with mingw.
+
+>
+>
+> Signed-off-by: Steffan Karger <steffan@...1856...>
+> ---
+>  configure.ac | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/configure.ac b/configure.ac
+> index 2c1937e5..2b5fa533 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -209,9 +209,9 @@ AC_ARG_ENABLE(
+>
+>  AC_ARG_ENABLE(
+>         [strict],
+> -       [AS_HELP_STRING([--enable-strict], [enable strict compiler warnings (debugging option) @<:@default=no@:>@])],
+> +       [AS_HELP_STRING([--disable-strict], [enable strict compiler warnings (debugging option) @<:@default=yes@:>@])],
+
+The description should now read "disable strict compiler warnings...",
+isn't it? Could be fixed while merging..
+
+>
+>         ,
+> -       [enable_strict="no"]
+> +       [enable_strict="yes"]
+>  )
+>
+>  AC_ARG_ENABLE(
 
 Selva
 
