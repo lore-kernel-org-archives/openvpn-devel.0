@@ -1,13 +1,16 @@
+Date: Mon, 22 Jan 2018 17:21:21 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180122162121.GV69387@...1296...>
 References: <CAKuzo_jF_fHfcEPUXeo6WKWQ4tw7T72-cexEUda=USGd9Ref7g@...278...>
  <e09e95cd-a6d1-e1c0-9c05-738362207278@...2080...>
  <98ce7083179e0a097b35953a9ef3879c.squirrel@...2257...>
  <91ffd543-3f5a-e08d-ac89-379770b46b96@...2080...>
-From: Steffan Karger <steffan.karger@...1435...>
-Message-ID: <1f480b84-a0f8-a0a0-7bf7-0081e44d1c06@...1435...>
-Date: Mon, 22 Jan 2018 17:05:35 +0100
+ <1f480b84-a0f8-a0a0-7bf7-0081e44d1c06@...1435...>
 MIME-Version: 1.0
-In-Reply-To: <91ffd543-3f5a-e08d-ac89-379770b46b96@...2080...>
-Content-Language: en-US
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="n8d7KAgWmJ23Ts4y"
+Content-Disposition: inline
+In-Reply-To: <1f480b84-a0f8-a0a0-7bf7-0081e44d1c06@...1435...>
 Subject: Re: [Openvpn-devel] On testing with openssl 0.9.8
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -17,59 +20,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan.karger@...1435...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--n8d7KAgWmJ23Ts4y
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-Didn't we have this discussion before?  Gert basically NAK'd removing
-support for a library version in a dot-release, which I think is valid
-reasoning (even though I really would like to drop 0.9.8).
+On Mon, Jan 22, 2018 at 05:05:35PM +0100, Steffan Karger wrote:
+> > So if we don't have really strong arguments keeping support for
+> > this old version, we should carefully consider our options.
+>=20
+> We already removed support for < 1.0.1 in the master branch.  Maybe
+> just make sure we can get 2.5 out, and move forward that way :)
 
-Anyway, to fill in the facts:
+So, what's missing for 2.5?  :-)
 
-On 22-01-18 15:55, David Sommerseth wrote:
-> On 22/01/18 15:12, Simon Matter wrote:
->>> On 20/01/18 18:22, Selva Nair wrote:
->>>> Does openvpn-vagrant include any VM provisioning with
->>>> openssl-0.9.8? Until recently I had access to a few old
->>>> debian boxes but now all updated and 0.9.8 testing is getting
->>>> harder.
->>> 
->>> Let me rather twist this question around ... Do we want to
->>> support OpenSSL 0.9.8?  Are there any Linux distributions or
->>> other OSes out there in the wild which is still supported which
->>> are also based on openssl-0.9.8?
->> 
->> If it's possible without too many headaches, I'd appreciate if 
->> openssl-0.9.8 support would be kept in during the 2.4 series.
-> 
-> Can you elaborate more on your use case?  Keeping something just to
-> keep something is kind of a poor argument.  But of course, it goes
-> the other way around too, we shouldn't kick it out just to kick it
-> out either.
-> 
-> Currently, I'm mostly concerned that keeping the support span from
-> 0.9.8 to 1.1.x can lead to maintenance challenges in the longer run
-> - especially if the use cases are poor.
-> 
-> To me it then gets crucial that users needing openssl-0.9.8 have
-> access to a maintained distribution of that particular OpenSSL
-> version.  Otherwise, we're deluding OpenVPN users it is safe to use
-> openssl-0.9.8.
+I can see "tls crypt v2", "refactor route.c and tun.c", "netlink"=20
+here - what else?
 
-SLES11 supports 0.9.8 upto 2022:
+gert
 
-https://www.suse.com/LinuxPackages/packageRouter.jsp?product=server&version=11&service_pack=&architecture=i386&package_name=openssl
+--=20
+now what should I write here...
 
-https://www.suse.com/lifecycle/
+Gert Doering - Munich, Germany                             gert@...1296...
 
-> So if we don't have really strong arguments keeping support for
-> this old version, we should carefully consider our options.
+--n8d7KAgWmJ23Ts4y
+Content-Type: application/pgp-signature; name="signature.asc"
 
-We already removed support for < 1.0.1 in the master branch.  Maybe
-just make sure we can get 2.5 out, and move forward that way :)
+-----BEGIN PGP SIGNATURE-----
 
--Steffan
+iQGcBAEBAgAGBQJaZg+AAAoJEB2Cnv7KVigSHi4MAKjrrEY3Ndy9U98qh1UfLYKQ
+NNlIO6qbCZKKeyrwIywoKqF9FfWDup4mpRw6i1UfTNez3EEXzeqea+44ETwkvKJT
+TyVNggpN8xQovmfx/yhhX1iCPa2Q6wwqWvNXH9ueo9PTYk+VVInTm75T+Y5Y1B5j
+oDiryalTOCz1guKy5Y7beUu5OxrVbzAKvm6G4cE3O5leBDIYzFdXBH5JkKgwqZPa
+ejkgxI7kOSnHgzkjzM6ONNXk5XdkTdnsFCpbU8RSADh3lDUfIdQhOM6Xuugp5L+c
+gtlaoO8oeqngvCxRzi04poZh9mhfsAEG2pDh+Ad+TgmtNJhRbZQ/cobp8kjzmSPa
+7xkV8QR+y5wLd0/lKYms4zh3ZwkfqHoFPhWBQDl3bxo61/oCaYgtru+LzS/ZswCq
+rLqTckX2fl8DKgMEP/7ZfSAfwLDwYT+cVEOydE8ojcdyJVqpaS0Vp6NKSUZorQ7F
+7fbe1zFVDpexio7pQnjKWnAl05vv623ytXNJf+ulDA==
+=gLzI
+-----END PGP SIGNATURE-----
+
+--n8d7KAgWmJ23Ts4y--
 
