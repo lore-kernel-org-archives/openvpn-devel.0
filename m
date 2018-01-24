@@ -1,16 +1,10 @@
-Date: Wed, 24 Jan 2018 17:50:42 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180124165042.GO69387@...1296...>
-References: <57da8cf7-0162-7798-7ae5-5851e36cca4a@...515...>
- <184564da-92d3-7bb5-21f1-8b7c7ddb201f@...515...>
- <CAKuzo_hF2VK_-7XuRLTyJPu2OssqaM2Z+BdN7S6tCigvxEEatg@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="5okFfQlUf1yFo9NP"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_hF2VK_-7XuRLTyJPu2OssqaM2Z+BdN7S6tCigvxEEatg@...278...>
-Subject: Re: [Openvpn-devel] Summary of the community meeting (Wed,
- 24th Jan 2018)
+From: selva.nair@...277...
+Date: Wed, 24 Jan 2018 12:31:45 -0500
+Message-Id: <1516815105-17882-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1509930876-30728-1-git-send-email-selva.nair@...277...>
+References: <1509930876-30728-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH v3] Use lowest metric interface when
+ multiple interfaces match a route
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,47 +13,112 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---5okFfQlUf1yFo9NP
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: Selva Nair <selva.nair@...277...>
 
-Hi,
+Currently a route addition using IPAPI or service is skipped if the
+route gateway is reachable by multiple interfaces. This changes that
+to use the interface with lowest metric. Implemented by
 
-On Wed, Jan 24, 2018 at 10:45:12AM -0500, Selva Nair wrote:
-> I understand why Gert has stopped reviewing my Windows-related patches :)
+(i)  Do not over-write the return value with TUN_ADAPTER_INDEX_INVALID in
+     windows_route_find_if_index() if multiple interfaces match a route.
+(ii) Select the interface with lowest metric in adapter_index_of_ip()
+     instead of the first one found when multiple interfaces match.
 
-It's more like "stopped reviewing anything" because "busy" :-/ - but
-things are getting better.
+Reported by Jan Just Keijser <janjust@...1147...>
 
-Get already-ACKed stuff in, test, ship, then review / comment on discussion=
-s.
+Signed-off-by: Selva Nair <selva.nair@...277...>
 
-gert
---=20
-now what should I write here...
+---
+NOTE: depends on https://patchwork.openvpn.net/patch/136/
 
-Gert Doering - Munich, Germany                             gert@...1296...
+v3: Simpliyfy the patch using get_interface_metric from block_dns.c
+    Simpler is also easier to review :)
+    (requires patch 136 https://patchwork.openvpn.net/patch/136/)
+v2:
+    - Revert an unintented edit of route.c (a_index = ...)
+    - Improve the commit message
 
---5okFfQlUf1yFo9NP
-Content-Type: application/pgp-signature; name="signature.asc"
+ src/openvpn/route.c |  1 -
+ src/openvpn/tun.c   | 17 +++++++++++++++--
+ 2 files changed, 15 insertions(+), 3 deletions(-)
 
------BEGIN PGP SIGNATURE-----
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index f121d3f..218ca96 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -2785,7 +2785,6 @@ windows_route_find_if_index(const struct route_ipv4 *r, const struct tuntap *tt)
+         msg(M_WARN, "Warning: route gateway is ambiguous: %s (%d matches)",
+             print_in_addr_t(r->gateway, 0, &gc),
+             count);
+-        ret = TUN_ADAPTER_INDEX_INVALID;
+     }
+ 
+     dmsg(D_ROUTE_DEBUG, "DEBUG: route find if: on_tun=%d count=%d index=%d",
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 2644d99..f424f82 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -45,6 +45,7 @@
+ #include "manage.h"
+ #include "route.h"
+ #include "win32.h"
++#include "block_dns.h"
+ 
+ #include "memdbg.h"
+ 
+@@ -4480,6 +4481,7 @@ adapter_index_of_ip(const IP_ADAPTER_INFO *list,
+     struct gc_arena gc = gc_new();
+     DWORD ret = TUN_ADAPTER_INDEX_INVALID;
+     in_addr_t highest_netmask = 0;
++    int lowest_metric = INT_MAX;
+     bool first = true;
+ 
+     if (count)
+@@ -4493,9 +4495,14 @@ adapter_index_of_ip(const IP_ADAPTER_INFO *list,
+ 
+         if (is_ip_in_adapter_subnet(list, ip, &hn))
+         {
++            int metric = get_interface_metric(list->Index, AF_INET, NULL);
+             if (first || hn > highest_netmask)
+             {
+                 highest_netmask = hn;
++                if (metric >= 0)
++                {
++                    lowest_metric = metric;
++                }
+                 if (count)
+                 {
+                     *count = 1;
+@@ -4509,16 +4516,22 @@ adapter_index_of_ip(const IP_ADAPTER_INFO *list,
+                 {
+                     ++*count;
+                 }
++                if (metric >= 0 && metric < lowest_metric)
++                {
++                    ret = list->Index;
++                    lowest_metric = metric;
++                }
+             }
+         }
+         list = list->Next;
+     }
+ 
+-    dmsg(D_ROUTE_DEBUG, "DEBUG: IP Locate: ip=%s nm=%s index=%d count=%d",
++    dmsg(D_ROUTE_DEBUG, "DEBUG: IP Locate: ip=%s nm=%s index=%d count=%d metric=%d",
+          print_in_addr_t(ip, 0, &gc),
+          print_in_addr_t(highest_netmask, 0, &gc),
+          (int)ret,
+-         count ? *count : -1);
++         count ? *count : -1,
++         lowest_metric);
+ 
+     if (ret == TUN_ADAPTER_INDEX_INVALID && count)
+     {
+-- 
+2.1.4
 
-iQGcBAEBAgAGBQJaaLlhAAoJEB2Cnv7KVigSQQoL/iDtHRdfrIH8qinjKqv1K4A3
-HBOW9VDwhRL3Z7XO60SHZyLDR/gBmiSFBbTu+Yg87SiYLK6ISzAPDfpWbNBRUnL1
-jTjGnjFCu8KiyQhbVZa1LnTDARSqO6kwhnuIK74WNe+mvaeeNagIxhVOwZ28upMN
-Crisx5B8vndreMFS1bzNzBeIeT4oaSFoBkqRtrVTVz0bWzeNmYPlV9vT1fYm6cfK
-SvzfIXiJR8fRtO7lmU6plVAcnNBvJqSqE7d2B4jaLSuqF8+fylenvc4TjSrBgHW2
-CL88ja+JDMyb1mRSG5qM+Flm4KGf+rlkFnrGGpA5vAP1oJqiH+9YlLUrJ9QCjr9N
-08LFV1D/oz/H3XWQatyrId6/4Gj5bAMfyTySKRK9ZwhvnoGe8tyxlGzNNGz1augu
-OeMAF+uKVrDW4+zLpJFtUyarMcU8K2fswUW0R/8dLe9HlcPhIh8NkqE/uR81m9pV
-nGjFyRfcYbvWyh+wJ19+hW430c/SUogAOZeePZy9+w==
-=Vflt
------END PGP SIGNATURE-----
-
---5okFfQlUf1yFo9NP--
 
