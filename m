@@ -1,10 +1,10 @@
 From: selva.nair@...277...
-Date: Wed, 24 Jan 2018 00:06:20 -0500
-Message-Id: <1516770381-29466-3-git-send-email-selva.nair@...277...>
+Date: Wed, 24 Jan 2018 00:06:21 -0500
+Message-Id: <1516770381-29466-4-git-send-email-selva.nair@...277...>
 In-Reply-To: <1516770381-29466-1-git-send-email-selva.nair@...277...>
 References: <1516770381-29466-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH 2/3] Move setting private key to a function
- in prep for EC support
+Subject: [Openvpn-devel] [PATCH 3/3] Support EC certificates with
+ cryptoapicert
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,219 +19,238 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-- Also add reference counting to CAPI_DATA (application data):
-
-  When the application data is assigned to the private key
-  we free it in the key's finish method. Proper error handling
-  requires to keep track of whether data is assigned to the
-  key or not before an error occurs. For this purpose, add a
-  reference count to CAPI_DATA struct and increment it when it is
-  assigned to the key or its method.
-
-  CAPI_DATA_free now frees the data only if ref_count <= 0
+Requires openssl 1.1.0 or higher
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- src/openvpn/cryptoapi.c | 140 ++++++++++++++++++++++++++++--------------------
- 1 file changed, 81 insertions(+), 59 deletions(-)
+ src/openvpn/cryptoapi.c | 198 +++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 197 insertions(+), 1 deletion(-)
 
 diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
-index 00e78b6..d6a9dd4 100644
+index d6a9dd4..36faa63 100644
 --- a/src/openvpn/cryptoapi.c
 +++ b/src/openvpn/cryptoapi.c
-@@ -106,12 +106,13 @@ typedef struct _CAPI_DATA {
-     HCRYPTPROV_OR_NCRYPT_KEY_HANDLE crypt_prov;
-     DWORD key_spec;
-     BOOL free_crypt_prov;
-+    int ref_count;
- } CAPI_DATA;
+@@ -101,6 +101,9 @@ static ERR_STRING_DATA CRYPTOAPI_str_functs[] = {
+     { 0, NULL }
+ };
  
- static void
- CAPI_DATA_free(CAPI_DATA *cd)
- {
--    if (!cd)
-+    if (!cd || cd->ref_count-- > 0)
-     {
-         return;
-     }
-@@ -467,14 +468,81 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
-     return rv;
++/* index for storing external data in EC_KEY: < 0 means uninitialized */
++static int ec_data_idx = -1;
++
+ typedef struct _CAPI_DATA {
+     const CERT_CONTEXT *cert_context;
+     HCRYPTPROV_OR_NCRYPT_KEY_HANDLE crypt_prov;
+@@ -395,6 +398,190 @@ finish(RSA *rsa)
+     return 1;
  }
  
-+static int
-+ssl_ctx_set_rsakey(SSL_CTX *ssl_ctx, CAPI_DATA *cd, EVP_PKEY *pkey)
++#if (OPENSSL_VERSION_NUMBER >= 0x10100000L) && !defined(OPENSSL_NO_EC)
++
++static EC_KEY_METHOD *ec_method = NULL;
++
++/** EC_KEY_METHOD callback: called when the key is freed */
++static void
++ec_finish(EC_KEY *ec)
 +{
-+    RSA *rsa = NULL, *pub_rsa;
-+    RSA_METHOD *my_rsa_method = NULL;
-+    bool rsa_method_set = false;
++    EC_KEY_METHOD_free(ec_method);
++    ec_method = NULL;
++    CAPI_DATA *cd = EC_KEY_get_ex_data(ec, ec_data_idx);
++    CAPI_DATA_free(cd);
++    EC_KEY_set_ex_data(ec, ec_data_idx, NULL);
++}
 +
-+    my_rsa_method = RSA_meth_new("Microsoft Cryptography API RSA Method",
-+                                  RSA_METHOD_FLAG_NO_CHECK);
-+    check_malloc_return(my_rsa_method);
-+    RSA_meth_set_pub_enc(my_rsa_method, rsa_pub_enc);
-+    RSA_meth_set_pub_dec(my_rsa_method, rsa_pub_dec);
-+    RSA_meth_set_priv_enc(my_rsa_method, rsa_priv_enc);
-+    RSA_meth_set_priv_dec(my_rsa_method, rsa_priv_dec);
-+    RSA_meth_set_init(my_rsa_method, NULL);
-+    RSA_meth_set_finish(my_rsa_method, finish);
-+    RSA_meth_set0_app_data(my_rsa_method, cd);
++/** EC_KEY_METHOD callback sign_setup(): we do nothing here */
++static int
++ecdsa_sign_setup(EC_KEY *eckey, BN_CTX *ctx_in, BIGNUM **kinvp, BIGNUM **rp)
++{
++    return 1;
++}
 +
-+    rsa = RSA_new();
-+    if (rsa == NULL)
-+    {
-+        SSLerr(SSL_F_SSL_CTX_USE_CERTIFICATE_FILE, ERR_R_MALLOC_FAILURE);
-+        goto err;
-+    }
-+
-+    pub_rsa = EVP_PKEY_get0_RSA(pkey);
-+
-+    /* Our private key is external, so we fill in only n and e from the public key */
-+    const BIGNUM *n = NULL;
-+    const BIGNUM *e = NULL;
-+    RSA_get0_key(pub_rsa, &n, &e, NULL);
-+    BIGNUM *rsa_n = BN_dup(n);
-+    BIGNUM *rsa_e = BN_dup(e);
-+    if (!rsa_n || !rsa_e || !RSA_set0_key(rsa, rsa_n, rsa_e, NULL))
-+    {
-+        BN_free(rsa_n); /* ok to free even if NULL */
-+        BN_free(rsa_e);
-+        msg(M_NONFATAL, "ERROR: %s: out of memory", __func__);
-+        goto err;
-+    }
-+    RSA_set_flags(rsa, RSA_flags(rsa) | RSA_FLAG_EXT_PKEY);
-+    if (!RSA_set_method(rsa, my_rsa_method))
++/**
++ * Helper to convert ECDSA signature returned by NCryptSignHash
++ * to an ECDSA_SIG structure.
++ * On entry 'buf[]' of length len contains r and s contcatenated.
++ * Returns a newly allocated ECDSA_SIG or NULL (on error).
++ */
++static ECDSA_SIG *
++ecdsa_bin2sig(unsigned char *buf, int len)
++{
++    ECDSA_SIG *ecsig = NULL;
++    DWORD rlen = len/2;
++    BIGNUM *r = BN_bin2bn(buf, rlen, NULL);
++    BIGNUM *s = BN_bin2bn(buf+rlen, rlen, NULL);
++    if (!r || !s)
 +    {
 +        goto err;
 +    }
-+    rsa_method_set = true; /* flag that method pointer will get freed with the key */
-+    cd->ref_count++;       /* with method, cd gets assigned to the key as well */
-+
-+    if (!SSL_CTX_use_RSAPrivateKey(ssl_ctx, rsa))
++    ecsig = ECDSA_SIG_new(); /* in openssl 1.1 this does not allocate r, s */
++    if (!ecsig)
 +    {
 +        goto err;
 +    }
-+    /* SSL_CTX_use_RSAPrivateKey() increased the reference count in 'rsa', so
-+     * we decrease it here with RSA_free(), or it will never be cleaned up. */
-+    RSA_free(rsa);
++    ECDSA_SIG_set0(ecsig, r, s); /* ecsig takes ownership of r and s */
++    return ecsig;
++err:
++    BN_free(r); /* it is ok to free NULL BN */
++    BN_free(s);
++    return NULL;
++}
++
++/** EC_KEY_METHOD callback sign_sig(): sign and return an ECDSA_SIG pointer. */
++static ECDSA_SIG*
++ecdsa_sign_sig(const unsigned char *dgst, int dgstlen,
++               const BIGNUM *in_kinv, const BIGNUM *in_r, EC_KEY *ec)
++{
++    ECDSA_SIG *ecsig = NULL;
++    CAPI_DATA *cd = (CAPI_DATA *) EC_KEY_get_ex_data(ec, ec_data_idx);
++
++    ASSERT(cd->key_spec == CERT_NCRYPT_KEY_SPEC);
++
++    NCRYPT_KEY_HANDLE hkey = cd->crypt_prov;
++    BYTE buf[512]; /* large enough buffer for signature to avoid malloc */
++    DWORD len = _countof(buf);
++
++    msg(D_LOW, "Signing hash using EC key: data size = %d", dgstlen);
++
++    DWORD status = NCryptSignHash(hkey, NULL, (BYTE*) dgst, dgstlen, (BYTE*) buf, len, &len, 0);
++    if (status != ERROR_SUCCESS)
++    {
++        SetLastError(status);
++        CRYPTOAPIerr(CRYPTOAPI_F_NCRYPT_SIGN_HASH);
++    }
++    else
++    {
++        /* NCryptSignHash returns r, s concatenated in buf[] */
++        ecsig = ecdsa_bin2sig(buf, len);
++    }
++    return ecsig;
++}
++
++/** EC_KEY_METHOD callback sign(): sign and return a DER encoded signature */
++static int
++ecdsa_sign(int type, const unsigned char *dgst, int dgstlen, unsigned char *sig,
++           unsigned int *siglen, const BIGNUM *kinv, const BIGNUM *r, EC_KEY *ec)
++{
++    ECDSA_SIG *s;
++
++    s = ecdsa_sign_sig(dgst, dgstlen, NULL, NULL, ec);
++    if (s == NULL)
++    {
++        *siglen = 0;
++        return 0;
++    }
++
++    /* convert internal signature structure 's' to DER encoded byte array in sig */
++    *siglen = i2d_ECDSA_SIG((ECDSA_SIG *)s, &sig);
++    ECDSA_SIG_free(s);
++
++    return 1;
++}
++
++static int
++ssl_ctx_set_eckey(SSL_CTX *ssl_ctx, CAPI_DATA *cd, EVP_PKEY *pkey)
++{
++    EC_KEY *ec = NULL;
++    EVP_PKEY *privkey = NULL;
++
++    if (cd->key_spec != CERT_NCRYPT_KEY_SPEC)
++    {
++        msg(M_NONFATAL, "ERROR: cryptoapicert with only legacy private key handle available."
++                    " EC certificate not supported.");
++        goto err;
++    }
++    /* create a method struct with default callbacks filled in */
++    ec_method = EC_KEY_METHOD_new(EC_KEY_OpenSSL());
++    if (!ec_method)
++    {
++        goto err;
++    }
++
++    /* We only need to set finish among init methods, and sign methods */
++    EC_KEY_METHOD_set_init(ec_method, NULL, ec_finish, NULL, NULL, NULL, NULL);
++    EC_KEY_METHOD_set_sign(ec_method, ecdsa_sign, ecdsa_sign_setup, ecdsa_sign_sig);
++
++    ec = EC_KEY_dup(EVP_PKEY_get0_EC_KEY(pkey));
++    if (!ec)
++    {
++        goto err;
++    }
++    if (!EC_KEY_set_method(ec, ec_method))
++    {
++        goto err;
++    }
++
++    /* get an index to store cd as external data */
++    if (ec_data_idx < 0)
++    {
++        ec_data_idx = EC_KEY_get_ex_new_index(0, "cryptapicert ec key", NULL, NULL, NULL);
++        if (ec_data_idx < 0)
++        {
++            goto err;
++        }
++    }
++    EC_KEY_set_ex_data(ec, ec_data_idx, cd);
++
++    /* cd assigned to ec as ex_data, increase its refcount */
++    cd->ref_count++;
++
++    privkey = EVP_PKEY_new();
++    if (!EVP_PKEY_assign_EC_KEY(privkey, ec))
++    {
++        EC_KEY_free(ec);
++        goto err;
++    }
++    /* from here on ec will get freed with privkey */
++
++    if (!SSL_CTX_use_PrivateKey(ssl_ctx, privkey))
++    {
++        goto err;
++    }
++    EVP_PKEY_free(privkey); /* this will dn_ref or free ec as well */
 +    return 1;
 +
 +err:
-+    if (rsa)
++    if (privkey)
 +    {
-+        RSA_free(rsa);
++        EVP_PKEY_free(privkey);
 +    }
-+    if (my_rsa_method && !rsa_method_set)
++    else if (ec)
 +    {
-+        RSA_meth_free(my_rsa_method);
++        EC_KEY_free(ec);
++    }
++    if (ec_method) /* do always set ec_method = NULL after freeing it */
++    {
++        EC_KEY_METHOD_free(ec_method);
++        ec_method = NULL;
 +    }
 +    return 0;
 +}
 +
- int
- SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
++#endif /* OPENSSL_VERSION_NUMBER >= 1.1.0 */
++
+ static const CERT_CONTEXT *
+ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
  {
-     HCERTSTORE cs;
-     X509 *cert = NULL;
--    RSA *rsa = NULL, *pub_rsa;
-     CAPI_DATA *cd = calloc(1, sizeof(*cd));
--    RSA_METHOD *my_rsa_method = NULL;
- 
-     if (cd == NULL)
-     {
-@@ -549,30 +617,13 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
+@@ -639,9 +826,18 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
+             goto err;
          }
      }
- 
--    my_rsa_method = RSA_meth_new("Microsoft Cryptography API RSA Method",
--                                  RSA_METHOD_FLAG_NO_CHECK);
--    check_malloc_return(my_rsa_method);
--    RSA_meth_set_pub_enc(my_rsa_method, rsa_pub_enc);
--    RSA_meth_set_pub_dec(my_rsa_method, rsa_pub_dec);
--    RSA_meth_set_priv_enc(my_rsa_method, rsa_priv_enc);
--    RSA_meth_set_priv_dec(my_rsa_method, rsa_priv_dec);
--    RSA_meth_set_init(my_rsa_method, NULL);
--    RSA_meth_set_finish(my_rsa_method, finish);
--    RSA_meth_set0_app_data(my_rsa_method, cd);
--
--    rsa = RSA_new();
--    if (rsa == NULL)
--    {
--        SSLerr(SSL_F_SSL_CTX_USE_CERTIFICATE_FILE, ERR_R_MALLOC_FAILURE);
--        goto err;
--    }
--
-     /* Public key in cert is NULL until we call SSL_CTX_use_certificate(),
-      * so we do it here then...  */
-     if (!SSL_CTX_use_certificate(ssl_ctx, cert))
-     {
-         goto err;
-     }
-+
-     /* the public key */
-     EVP_PKEY *pkey = X509_get0_pubkey(cert);
- 
-@@ -581,52 +632,23 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
-     X509_free(cert);
-     cert = NULL;
- 
--    if (!(pub_rsa = EVP_PKEY_get0_RSA(pkey)))
--    {
--        msg(M_WARN, "cryptoapicert requires an RSA certificate");
--        goto err;
--    }
--
--    /* Our private key is external, so we fill in only n and e from the public key */
--    const BIGNUM *n = NULL;
--    const BIGNUM *e = NULL;
--    RSA_get0_key(pub_rsa, &n, &e, NULL);
--    if (!RSA_set0_key(rsa, BN_dup(n), BN_dup(e), NULL))
-+    if (EVP_PKEY_id(pkey) == EVP_PKEY_RSA)
-     {
--        goto err;
--    }
--    RSA_set_flags(rsa, RSA_flags(rsa) | RSA_FLAG_EXT_PKEY);
--    if (!RSA_set_method(rsa, my_rsa_method))
--    {
--        goto err;
-+        if (!ssl_ctx_set_rsakey(ssl_ctx, cd, pkey))
++#if (OPENSSL_VERSION_NUMBER >= 0x10100000L) && !defined(OPENSSL_NO_EC)
++    else if (EVP_PKEY_id(pkey) == EVP_PKEY_EC)
++    {
++        if (!ssl_ctx_set_eckey(ssl_ctx, cd, pkey))
 +        {
 +            goto err;
 +        }
-     }
--
--    if (!SSL_CTX_use_RSAPrivateKey(ssl_ctx, rsa))
-+    else
++    }
++#endif /* OPENSSL_VERSION_NUMBER >= 1.1.0 */
+     else
      {
-+        msg(M_WARN, "cryptoapicert requires an RSA certificate");
+-        msg(M_WARN, "cryptoapicert requires an RSA certificate");
++        msg(M_WARN, "WARNING: cryptoapicert: certificate type not supported");
          goto err;
      }
--    /* SSL_CTX_use_RSAPrivateKey() increased the reference count in 'rsa', so
--    * we decrease it here with RSA_free(), or it will never be cleaned up. */
--    RSA_free(rsa);
-+    cd->ref_count--; /* so that cd will get freed with the private key */
-     return 1;
- 
- err:
--    if (cert)
--    {
--        X509_free(cert);
--    }
--    if (rsa)
--    {
--        RSA_free(rsa);
--    }
--    else
--    {
--        if (my_rsa_method)
--        {
--            free(my_rsa_method);
--        }
--        CAPI_DATA_free(cd);
--    }
-+    CAPI_DATA_free(cd);
-     return 0;
- }
- 
+     cd->ref_count--; /* so that cd will get freed with the private key */
 -- 
 2.1.4
 
