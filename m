@@ -1,10 +1,10 @@
 From: selva.nair@...277...
-Date: Wed, 24 Jan 2018 12:31:45 -0500
-Message-Id: <1516815105-17882-1-git-send-email-selva.nair@...277...>
-In-Reply-To: <1509930876-30728-1-git-send-email-selva.nair@...277...>
-References: <1509930876-30728-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH v3] Use lowest metric interface when
- multiple interfaces match a route
+Date: Wed, 24 Jan 2018 17:37:33 -0500
+Message-Id: <1516833453-18991-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1494008642-7239-2-git-send-email-selva.nair@...277...>
+References: <1494008642-7239-2-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH] Parse static challenge response in auth-pam
+ plugin
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,105 +19,205 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-Currently a route addition using IPAPI or service is skipped if the
-route gateway is reachable by multiple interfaces. This changes that
-to use the interface with lowest metric. Implemented by
+If static challenge is in use, the password passed to the plugin by openvpn
+is of the form "SCRV1:base64-pass:base64-response". Parse this string to
+separate it into password and response and use them to respond to queries
+in the pam conversation function.
 
-(i)  Do not over-write the return value with TUN_ADAPTER_INDEX_INVALID in
-     windows_route_find_if_index() if multiple interfaces match a route.
-(ii) Select the interface with lowest metric in adapter_index_of_ip()
-     instead of the first one found when multiple interfaces match.
+On the plugin parameters line the substitution keyword for the static
+challenge response is "OTP". For example, for pam config named "test" that
+prompts for "user", "password" and "pin", use
 
-Reported by Jan Just Keijser <janjust@...1147...>
+plugin openvpn-auth-pam.so "test user USERNAME password PASSWORD pin OTP"
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 
+v2: Depends on the base64 export patch
+
+v3: BUMP++
 ---
-NOTE: depends on https://patchwork.openvpn.net/patch/136/
+ src/plugins/auth-pam/README.auth-pam | 15 +++++---
+ src/plugins/auth-pam/auth-pam.c      | 74 +++++++++++++++++++++++++++++++++++-
+ 2 files changed, 83 insertions(+), 6 deletions(-)
 
-v3: Simpliyfy the patch using get_interface_metric from block_dns.c
-    Simpler is also easier to review :)
-    (requires patch 136 https://patchwork.openvpn.net/patch/136/)
-v2:
-    - Revert an unintented edit of route.c (a_index = ...)
-    - Improve the commit message
-
- src/openvpn/route.c |  1 -
- src/openvpn/tun.c   | 17 +++++++++++++++--
- 2 files changed, 15 insertions(+), 3 deletions(-)
-
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index f121d3f..218ca96 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -2785,7 +2785,6 @@ windows_route_find_if_index(const struct route_ipv4 *r, const struct tuntap *tt)
-         msg(M_WARN, "Warning: route gateway is ambiguous: %s (%d matches)",
-             print_in_addr_t(r->gateway, 0, &gc),
-             count);
--        ret = TUN_ADAPTER_INDEX_INVALID;
-     }
+diff --git a/src/plugins/auth-pam/README.auth-pam b/src/plugins/auth-pam/README.auth-pam
+index e123690..9081565 100644
+--- a/src/plugins/auth-pam/README.auth-pam
++++ b/src/plugins/auth-pam/README.auth-pam
+@@ -36,19 +36,20 @@ pairs to answer PAM module queries.
  
-     dmsg(D_ROUTE_DEBUG, "DEBUG: route find if: on_tun=%d count=%d index=%d",
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 2644d99..f424f82 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -45,6 +45,7 @@
- #include "manage.h"
- #include "route.h"
- #include "win32.h"
-+#include "block_dns.h"
+ For example:
  
- #include "memdbg.h"
+-  plugin openvpn-auth-pam.so "login login USERNAME password PASSWORD"
++  plugin openvpn-auth-pam.so "login login USERNAME password PASSWORD pin OTP"
  
-@@ -4480,6 +4481,7 @@ adapter_index_of_ip(const IP_ADAPTER_INFO *list,
-     struct gc_arena gc = gc_new();
-     DWORD ret = TUN_ADAPTER_INDEX_INVALID;
-     in_addr_t highest_netmask = 0;
-+    int lowest_metric = INT_MAX;
-     bool first = true;
+ tells auth-pam to (a) use the "login" PAM module, (b) answer a
+-"login" query with the username given by the OpenVPN client, and
+-(c) answer a "password" query with the password given by the
+-OpenVPN client.  This provides flexibility in dealing with the different
++"login" query with the username given by the OpenVPN client,
++(c) answer a "password" query with the password, and (d) answer a
++"pin" query with the OTP given by the OpenVPN client.
++This provides flexibility in dealing with different
+ types of query strings which different PAM modules might generate.
+ For example, suppose you were using a PAM module called
+ "test" which queried for "name" rather than "login":
  
-     if (count)
-@@ -4493,9 +4495,14 @@ adapter_index_of_ip(const IP_ADAPTER_INFO *list,
+   plugin openvpn-auth-pam.so "test name USERNAME password PASSWORD"
  
-         if (is_ip_in_adapter_subnet(list, ip, &hn))
-         {
-+            int metric = get_interface_metric(list->Index, AF_INET, NULL);
-             if (first || hn > highest_netmask)
-             {
-                 highest_netmask = hn;
-+                if (metric >= 0)
-+                {
-+                    lowest_metric = metric;
-+                }
-                 if (count)
-                 {
-                     *count = 1;
-@@ -4509,16 +4516,22 @@ adapter_index_of_ip(const IP_ADAPTER_INFO *list,
-                 {
-                     ++*count;
+-While "USERNAME" "COMMONNAME" and "PASSWORD" are special strings which substitute
++While "USERNAME" "COMMONNAME" "PASSWORD" and "OTP" are special strings which substitute
+ to client-supplied values, it is also possible to name literal values
+ to use as PAM module query responses.  For example, suppose that the
+ login module queried for a third parameter, "domain" which
+@@ -61,6 +62,10 @@ the operation of this plugin:
+ 
+   client-cert-not-required
+   username-as-common-name
++  static-challenge
++
++Use of --static challenege is required to pass a pin (represented by "OTP" in
++parameter substituion) or a second password.
+ 
+ Run OpenVPN with --verb 7 or higher to get debugging output from
+ this plugin, including the list of queries presented by the
+diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
+index ae514d7..2d25af3 100644
+--- a/src/plugins/auth-pam/auth-pam.c
++++ b/src/plugins/auth-pam/auth-pam.c
+@@ -64,6 +64,7 @@
+ 
+ /* Pointers to functions exported from openvpn */
+ static plugin_secure_memzero_t plugin_secure_memzero = NULL;
++static plugin_base64_decode_t plugin_base64_decode = NULL;
+ 
+ /*
+  * Plugin state, used by foreground
+@@ -87,6 +88,7 @@ struct auth_pam_context
+  *  "USERNAME" -- substitute client-supplied username
+  *  "PASSWORD" -- substitute client-specified password
+  *  "COMMONNAME" -- substitute client certificate common name
++ *  "OTP" -- substitute static challenge response if available
+  */
+ 
+ #define N_NAME_VALUE 16
+@@ -111,6 +113,7 @@ struct user_pass {
+     char username[128];
+     char password[128];
+     char common_name[128];
++    char response[128];
+ 
+     const struct name_value_list *name_value_list;
+ };
+@@ -276,6 +279,66 @@ name_value_match(const char *query, const char *match)
+     return strncasecmp(match, query, strlen(match)) == 0;
+ }
+ 
++/*
++ * Split and decode up->password in the form SCRV1:base64_pass:base64_response
++ * into pass and response and save in up->password and up->response.
++ * If the password is not in the expected format, input is not changed.
++ */
++static void
++split_scrv1_password(struct user_pass *up)
++{
++    const int skip = sizeof("SCRV1") - 1;
++    if (strncmp(up->password, "SCRV1:", skip) != 0)
++    {
++        return;
++    }
++
++    char *tmp = strdup(up->password);
++    if (!tmp)
++    {
++        fprintf(stderr, "AUTH-PAM: out of memory parsing static challenge password\n");
++        goto out;
++    }
++
++    char *pass = tmp + skip;
++    char *resp = strchr(pass, ':');
++    if (!resp) /* string not in SCRV1:xx:yy format */
++    {
++        goto out;
++    }
++    *resp++ = '\0';
++
++    int n = plugin_base64_decode(pass, up->password, sizeof(up->password)-1);
++    if (n > 0)
++    {
++        up->password[n] = '\0';
++        n = plugin_base64_decode(resp, up->response, sizeof(up->response)-1);
++        if (n > 0)
++        {
++            up->response[n] = '\0';
++            if (DEBUG(up->verb))
++            {
++                fprintf(stderr, "AUTH-PAM: BACKGROUND: parsed static challenge password\n");
++            }
++            goto out;
++        }
++    }
++
++    /* decode error: reinstate original value of up->password and return */
++    plugin_secure_memzero(up->password, sizeof(up->password));
++    plugin_secure_memzero(up->response, sizeof(up->response));
++    strcpy(up->password, tmp); /* tmp is guaranteed to fit in up->password */
++
++    fprintf(stderr, "AUTH-PAM: base64 decode error while parsing static challenge password\n");
++
++out:
++    if (tmp)
++    {
++        plugin_secure_memzero(tmp, strlen(tmp));
++        free(tmp);
++    }
++}
++
+ OPENVPN_EXPORT int
+ openvpn_plugin_open_v3(const int v3structver,
+                        struct openvpn_plugin_args_open_in const *args,
+@@ -316,6 +379,7 @@ openvpn_plugin_open_v3(const int v3structver,
+ 
+     /* Save global pointers to functions exported from openvpn */
+     plugin_secure_memzero = args->callbacks->plugin_secure_memzero;
++    plugin_base64_decode = args->callbacks->plugin_base64_decode;
+ 
+     /*
+      * Make sure we have two string arguments: the first is the .so name,
+@@ -599,6 +663,10 @@ my_conv(int n, const struct pam_message **msg_array,
+                     {
+                         aresp[i].resp = searchandreplace(match_value, "COMMONNAME", up->common_name);
+                     }
++                    else if (strstr(match_value, "OTP"))
++                    {
++                        aresp[i].resp = searchandreplace(match_value, "OTP", up->response);
++                    }
+                     else
+                     {
+                         aresp[i].resp = strdup(match_value);
+@@ -787,6 +855,9 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
+ #endif
                  }
-+                if (metric >= 0 && metric < lowest_metric)
-+                {
-+                    ret = list->Index;
-+                    lowest_metric = metric;
-+                }
-             }
+ 
++                /* If password is of the form SCRV1:base64:base64 split it up */
++                split_scrv1_password(&up);
++
+                 if (pam_auth(service, &up)) /* Succeeded */
+                 {
+                     if (send_control(fd, RESPONSE_VERIFY_SUCCEEDED) == -1)
+@@ -818,10 +889,11 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
+                         command);
+                 goto done;
          }
-         list = list->Next;
++        plugin_secure_memzero(up.response, sizeof(up.response));
      }
- 
--    dmsg(D_ROUTE_DEBUG, "DEBUG: IP Locate: ip=%s nm=%s index=%d count=%d",
-+    dmsg(D_ROUTE_DEBUG, "DEBUG: IP Locate: ip=%s nm=%s index=%d count=%d metric=%d",
-          print_in_addr_t(ip, 0, &gc),
-          print_in_addr_t(highest_netmask, 0, &gc),
-          (int)ret,
--         count ? *count : -1);
-+         count ? *count : -1,
-+         lowest_metric);
- 
-     if (ret == TUN_ADAPTER_INDEX_INVALID && count)
-     {
+ done:
+-
+     plugin_secure_memzero(up.password, sizeof(up.password));
++    plugin_secure_memzero(up.response, sizeof(up.response));
+ #ifdef USE_PAM_DLOPEN
+     dlclose_pam();
+ #endif
 -- 
 2.1.4
 
