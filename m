@@ -1,10 +1,14 @@
-MIME-Version: 1.0
-In-Reply-To: <184564da-92d3-7bb5-21f1-8b7c7ddb201f@...515...>
+Date: Wed, 24 Jan 2018 17:50:42 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180124165042.GO69387@...1296...>
 References: <57da8cf7-0162-7798-7ae5-5851e36cca4a@...515...>
  <184564da-92d3-7bb5-21f1-8b7c7ddb201f@...515...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 24 Jan 2018 10:45:12 -0500
-Message-ID: <CAKuzo_hF2VK_-7XuRLTyJPu2OssqaM2Z+BdN7S6tCigvxEEatg@...278...>
+ <CAKuzo_hF2VK_-7XuRLTyJPu2OssqaM2Z+BdN7S6tCigvxEEatg@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="5okFfQlUf1yFo9NP"
+Content-Disposition: inline
+In-Reply-To: <CAKuzo_hF2VK_-7XuRLTyJPu2OssqaM2Z+BdN7S6tCigvxEEatg@...278...>
 Subject: Re: [Openvpn-devel] Summary of the community meeting (Wed,
  24th Jan 2018)
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,51 +19,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+To: Selva Nair <selva.nair@...277...>
+Cc: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--5okFfQlUf1yFo9NP
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
 Hi,
 
-On Wed, Jan 24, 2018 at 9:50 AM, Samuli Sepp=C3=A4nen <samuli@...515...> wr=
-ote:
-> Hi,
->
-> Here's the summary of the IRC meeting.
-> ---
->
-..
+On Wed, Jan 24, 2018 at 10:45:12AM -0500, Selva Nair wrote:
+> I understand why Gert has stopped reviewing my Windows-related patches :)
 
-> Discussed the OpenVPN 2.4.5 release. The release was postponed to next
-> Wednesday (31st Jan) to get some fixes and enhancements in.
->
-> # openvpn
->
-> Ensure strings read from registry are null-terminated:
->
-> <https://patchwork.openvpn.net/project/openvpn2/list/?series=3D59>
->
-> Plug memory leak if push is interrupted:
->
-> <https://patchwork.openvpn.net/patch/195>
->
-> TLS v1.2 support for cryptoapicert -- RSA only:
->
-> <https://patchwork.openvpn.net/patch/202/>
+It's more like "stopped reviewing anything" because "busy" :-/ - but
+things are getting better.
 
-This has already been ack-ed, so its a "simple matter of merging"
-right? Also tested by the two most seemingly conscientious people
-(including self :)
+Get already-ACKed stuff in, test, ship, then review / comment on discussion=
+s.
 
-Others need review --- the hardest part of review is testing, and at
-least for me it takes ages as nothing is automated here, and when
-Windows is involved its  just pure pain .. Full disclosure:
-although I test every patch on my Linux desktop and a WIn10 laptop
-before ACK, never test the 32 bit Windows binary these days. It would
-be prudent to do a quick test of the 32 bit version before release.
+gert
+--=20
+now what should I write here...
 
-I understand why Gert has stopped reviewing my Windows-related patches :)
+Gert Doering - Munich, Germany                             gert@...1296...
 
-Selva
+--5okFfQlUf1yFo9NP
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJaaLlhAAoJEB2Cnv7KVigSQQoL/iDtHRdfrIH8qinjKqv1K4A3
+HBOW9VDwhRL3Z7XO60SHZyLDR/gBmiSFBbTu+Yg87SiYLK6ISzAPDfpWbNBRUnL1
+jTjGnjFCu8KiyQhbVZa1LnTDARSqO6kwhnuIK74WNe+mvaeeNagIxhVOwZ28upMN
+Crisx5B8vndreMFS1bzNzBeIeT4oaSFoBkqRtrVTVz0bWzeNmYPlV9vT1fYm6cfK
+SvzfIXiJR8fRtO7lmU6plVAcnNBvJqSqE7d2B4jaLSuqF8+fylenvc4TjSrBgHW2
+CL88ja+JDMyb1mRSG5qM+Flm4KGf+rlkFnrGGpA5vAP1oJqiH+9YlLUrJ9QCjr9N
+08LFV1D/oz/H3XWQatyrId6/4Gj5bAMfyTySKRK9ZwhvnoGe8tyxlGzNNGz1augu
+OeMAF+uKVrDW4+zLpJFtUyarMcU8K2fswUW0R/8dLe9HlcPhIh8NkqE/uR81m9pV
+nGjFyRfcYbvWyh+wJ19+hW430c/SUogAOZeePZy9+w==
+=Vflt
+-----END PGP SIGNATURE-----
+
+--5okFfQlUf1yFo9NP--
 
