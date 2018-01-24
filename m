@@ -1,10 +1,8 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <57da8cf7-0162-7798-7ae5-5851e36cca4a@...515...>
-Date: Tue, 23 Jan 2018 11:57:29 +0200
-MIME-Version: 1.0
-Content-Language: en-US
-Subject: [Openvpn-devel] Topics for the community meeting (Wed,
- 24th Jan 2018)
+From: selva.nair@...277...
+Date: Wed, 24 Jan 2018 00:06:18 -0500
+Message-Id: <1516770381-29466-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH 0/3]
+ Support-EC-certificates-with-cryptoapicert
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,32 +11,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+From: Selva Nair <selva.nair@...277...>
 
-We're going to have an IRC meeting starting at 11:30 CET
-(10:30 UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have
-to be logged in to Freenode to join the channel.
+With ecdsa signature support via management-external-key in limbo,
+let's try to get EC support for Windows users through cryptoapicert.
 
-Current topic list along with basic information is here:
+Patch 1 and 2 are some code refactoring to make it easy for
+the 3rd patch that implements ECDSA signing using NCryptSignHash().
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2018-01-24>
+Tested on Windows 10 and Windows 7 with openssl 1.1.0g and 
+an EC cert in user's certificate store.
 
-If you have any other things you'd like to bring up, respond to this
-mail, send me mail privately or add them to the list yourself.
+Selva Nair (3):
+  Move code to free cd to a function CAPI_DATA_free()
+  Move setting private key to a function in prep for EC support
+  Support EC certificates with cryptoapicert
 
-In case you can't attend the meeting, please feel free to make comments
-on the topics by responding to this email or to the summary email sent
-after the meeting. Whenever possible, we'll also respond to existing,
-related email threads.
+ src/openvpn/cryptoapi.c | 381 +++++++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 296 insertions(+), 85 deletions(-)
 
---
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+-- 
+2.1.4
 
-irc freenode net: mattock
 
