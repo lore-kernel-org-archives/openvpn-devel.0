@@ -1,16 +1,13 @@
+References: <57da8cf7-0162-7798-7ae5-5851e36cca4a@...515...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <184564da-92d3-7bb5-21f1-8b7c7ddb201f@...515...>
+Date: Wed, 24 Jan 2018 16:50:37 +0200
 MIME-Version: 1.0
-Sender: emmanueldeloget53@...277...
-In-Reply-To: <CAKuzo_jG-O8tc5RH5h-ZhS+HqYvqifdP7wwj3BLdf_LKEv-_og@...278...>
-References: <CAKh=nwEOYB6Ab42xZUPkaHEWDwx-ECJVn79kh-rz0Y8HvG4Dbw@...278...>
- <20180117131046.32402-1-logout@...260...>
- <1308db23-8bcc-83e9-ffb7-d6badff095e1@...1856...>
- <CAKuzo_jG-O8tc5RH5h-ZhS+HqYvqifdP7wwj3BLdf_LKEv-_og@...278...>
-From: Emmanuel Deloget <logout@...260...>
-Date: Wed, 24 Jan 2018 12:33:01 +0100
-Message-ID: <CAKh=nwHSuaHjDRHFw3b_kaASDyYMCrjph8i77NmzgjEvEVrjYA@...278...>
-Content-Type: multipart/alternative; boundary="001a11426a08b59ee90563840610"
-Subject: Re: [Openvpn-devel] [PATCH v3 1/2] OpenSSL: remove some EVP_PKEY
- type checks
+In-Reply-To: <57da8cf7-0162-7798-7ae5-5851e36cca4a@...515...>
+Content-Type: multipart/mixed; boundary="------------B66FFC7212A0354FEB998B2D"
+Content-Language: en-US
+Subject: [Openvpn-devel] Summary of the community meeting (Wed,
+ 24th Jan 2018)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,221 +16,202 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: Steffan Karger <steffan@...1856...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---001a11426a08b59ee90563840610
-Content-Type: text/plain; charset="UTF-8"
+This is a multi-part message in MIME format.
+--------------B66FFC7212A0354FEB998B2D
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-Hello,
+Hi,
 
-and sorry for the delay (things like 'real life', you know).
+Here's the summary of the IRC meeting.
+---
 
-On Sat, Jan 20, 2018 at 3:22 PM, Selva Nair <selva.nair@...277...> wrote:
+COMMUNITY MEETING
 
-> Hi,
->
-> On Sat, Jan 20, 2018 at 6:30 AM, Steffan Karger <steffan@...1856...> wrot=
-e:
-> > Hi,
-> >
-> > On 17-01-18 14:10, Emmanuel Deloget wrote:
-> >> Calling EVP_KEY_id() before EVP_PKEY_get0_*() is unnecessary as
-> >> the same check is also performed in the later.
-> >>
-> >> We also make the code a bit better by not calling the various
-> >> EVP_PKEY_get0_*() functions twice (this needs a bit or reordering to
-> >> avoid introducing yet another #ifndef OPENSSL_NO_EC in the code).
-> >>
-> >> Signed-off-by: Emmanuel Deloget <logout@...260...>
-> >> ---
->
-> ..
->
-> > Unfortunately, OpenSSL 1.1.0 treats calling EVP_PKEY_get0_foo on a
-> > non-foo key as an error.  Running 'make check' with this patch and
-> > openssl 1.1.0 fails:
-> >
-> > Sat Jan 20 12:23:41 2018 Control Channel: TLSv1.2, cipher TLSv1.2
-> > ECDHE-RSA-AES256-GCM-SHA384, 2048 bit RSA
-> > Sat Jan 20 12:23:41 2018 OpenSSL: error:06078081:digital envelope
-> > routines:EVP_PKEY_get0_DSA:expecting a dsa key
-> > Sat Jan 20 12:23:41 2018 OpenSSL: error:0608308E:digital envelope
-> > routines:EVP_PKEY_get0_EC_KEY:expecting a ec key
-> > Sat Jan 20 12:23:41 2018 TLS_ERROR: BIO read tls_read_plaintext error
-> >
-> > So, NAK.  (And Selva gets to keep EPV_PKEY_id() ;-) )
-> >
-> > Sorry for not spotting this earlier, could have saved us quite a bit of
-> > work...
->
+Place: #openvpn-meeting on irc.freenode.net
+Date: Wednesday 24th Jan 2018
+Time: 11:30 CET (10:30 UTC)
 
+Planned meeting topics for this meeting were here:
 
-=E2=80=8BI should have spotted that before I sent the change, but I only te=
-sted it
-with 1.0.2 and compile-tested it against 1.1. I'm going to refactor my test
-environment in order to avoid any further error like this one.
+<https://community.openvpn.net/openvpn/wiki/Topics-2018-01-24>
 
+The next meeting has not been scheduled yet.
 
+Your local meeting time is easy to check from services such as
 
->
-> I'm surprised that my argument about
->
-> if (EVP_PKEY_id(foo) =3D=3D ...EC..) { do EC stuff }
-> else if (EVP_PKEY_id(foo) =3D=3D ..RSA..) { do RSA stuff }
->
-> or switch(EVP_PKEY_id(foo))
->
-> being stylistically better[tm] did not work!
->
-> Still pleased by the end result. Now I get to spit out some of the
-> "if (EVP_PKEY_get0_RSA(..))"  that was pushed down my throat :).
-> For patches already on the ML will do so after review.
->
->
-=E2=80=8BI like the switch - I find it elegant - but it does not avoid an i=
-nternal
-'if', so the code would look like:
+<http://www.timeanddate.com/worldclock>
 
-switch (EVP_PKEY_id(foo)) {
-case ..RSA..: {
-    RSA *rsa =3D EVP_PKEY_get0_RSA(foo);
-    if (rsa) {
-       openvpn_printf(...);
-    }
-  }
-  break;
-case ...
-}
+SUMMARY
 
-=E2=80=8BIf this is acceptable, I can =E2=80=8Brespin patch 2. Otherwise, f=
-eel free to
-discard both patch 2 and patch 3 of the series as any change in patch 2
-would not be a largen enhancement of the already existing code.
+chipitsine, cron2, mattock and syzzer participated in this meeting.
+
+--
+
+Discussed the OpenVPN 2.4.5 release. The release was postponed to next
+Wednesday (31st Jan) to get some fixes and enhancements in.
+
+# openvpn
+
+Ensure strings read from registry are null-terminated:
+
+<https://patchwork.openvpn.net/project/openvpn2/list/?series=3D59>
+
+Plug memory leak if push is interrupted:
+
+<https://patchwork.openvpn.net/patch/195>
+
+TLS v1.2 support for cryptoapicert -- RSA only:
+
+<https://patchwork.openvpn.net/patch/202/>
+
+# openvpn-gui
+
+Update openvpn-gui-res-dk.rc:
+
+<https://github.com/OpenVPN/openvpn-gui/pull/190>
+
+Update Ukrainian localization:
+
+<https://github.com/OpenVPN/openvpn-gui/pull/167>
+
+# openvpn-build
+
+Ensure that NSIS installer/uninstaller correctly manages new OpenSSL
+(1.1.0) libraries (names have changed since 1.0.x).
+
+---
+
+Full chatlog attached.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
 
 
-> Selva
->
->
-=E2=80=8BBest regards,
-
--- Emmanuel Deloget
-=E2=80=8B
-
---001a11426a08b59ee90563840610
-Content-Type: text/html; charset="UTF-8"
+--------------B66FFC7212A0354FEB998B2D
+Content-Type: text/plain; charset=UTF-8;
+ name="openvpn_irc_meeting_chatlog_2018-01-24.txt"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="openvpn_irc_meeting_chatlog_2018-01-24.txt"
 
-<div dir=3D"ltr"><div class=3D"gmail_default" style=3D"font-family:monospac=
-e,monospace">Hello,=C2=A0</div><div class=3D"gmail_default" style=3D"font-f=
-amily:monospace,monospace"><br></div><div class=3D"gmail_default" style=3D"=
-font-family:monospace,monospace">and sorry for the delay (things like &#39;=
-real life&#39;, you know).=C2=A0</div><div class=3D"gmail_extra"><br><div c=
-lass=3D"gmail_quote">On Sat, Jan 20, 2018 at 3:22 PM, Selva Nair <span dir=
-=3D"ltr">&lt;<a href=3D"mailto:selva.nair@...277..." target=3D"_blank">selv=
-a.nair@...277...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote"=
- style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);p=
-adding-left:1ex">Hi,<br>
-<span class=3D"gmail-"><br>
-On Sat, Jan 20, 2018 at 6:30 AM, Steffan Karger &lt;<a href=3D"mailto:steff=
-an@...1856...">steffan@...1856...</a>&gt; wrote:<br>
-&gt; Hi,<br>
-&gt;<br>
-&gt; On 17-01-18 14:10, Emmanuel Deloget wrote:<br>
-&gt;&gt; Calling EVP_KEY_id() before EVP_PKEY_get0_*() is unnecessary as<br>
-&gt;&gt; the same check is also performed in the later.<br>
-&gt;&gt;<br>
-&gt;&gt; We also make the code a bit better by not calling the various<br>
-&gt;&gt; EVP_PKEY_get0_*() functions twice (this needs a bit or reordering =
-to<br>
-&gt;&gt; avoid introducing yet another #ifndef OPENSSL_NO_EC in the code).<=
-br>
-&gt;&gt;<br>
-&gt;&gt; Signed-off-by: Emmanuel Deloget &lt;<a href=3D"mailto:logout@...2375...=
-0...">logout@...260...</a>&gt;<br>
-&gt;&gt; ---<br>
-<br>
-</span>..<br>
-<span class=3D"gmail-"><br>
-&gt; Unfortunately, OpenSSL 1.1.0 treats calling EVP_PKEY_get0_foo on a<br>
-&gt; non-foo key as an error.=C2=A0 Running &#39;make check&#39; with this =
-patch and<br>
-&gt; openssl 1.1.0 fails:<br>
-&gt;<br>
-&gt; Sat Jan 20 12:23:41 2018 Control Channel: TLSv1.2, cipher TLSv1.2<br>
-&gt; ECDHE-RSA-AES256-GCM-SHA384, 2048 bit RSA<br>
-&gt; Sat Jan 20 12:23:41 2018 OpenSSL: error:06078081:digital envelope<br>
-&gt; routines:EVP_PKEY_get0_DSA:<wbr>expecting a dsa key<br>
-&gt; Sat Jan 20 12:23:41 2018 OpenSSL: error:0608308E:digital envelope<br>
-&gt; routines:EVP_PKEY_get0_EC_KEY:<wbr>expecting a ec key<br>
-&gt; Sat Jan 20 12:23:41 2018 TLS_ERROR: BIO read tls_read_plaintext error<=
-br>
-&gt;<br>
-&gt; So, NAK.=C2=A0 (And Selva gets to keep EPV_PKEY_id() ;-) )<br>
-&gt;<br>
-&gt; Sorry for not spotting this earlier, could have saved us quite a bit o=
-f<br>
-&gt; work...<br></span></blockquote><div><br></div><div><div class=3D"gmail=
-_default" style=3D"font-family:monospace,monospace"><br></div><div class=3D=
-"gmail_default" style=3D"font-family:monospace,monospace">=E2=80=8BI should=
- have spotted that before I sent the change, but I only tested it with 1.0.=
-2 and compile-tested it against 1.1. I&#39;m going to refactor my test envi=
-ronment in order to avoid any further error like this one.=C2=A0</div><br><=
-/div><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0px=
- 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><sp=
-an class=3D"gmail-">
-<br>
-</span>I&#39;m surprised that my argument about<br>
-<br>
-if (EVP_PKEY_id(foo) =3D=3D ...EC..) { do EC stuff }<br>
-else if (EVP_PKEY_id(foo) =3D=3D ..RSA..) { do RSA stuff }<br>
-<br>
-or switch(EVP_PKEY_id(foo))<br>
-<br>
-being stylistically better[tm] did not work!<br>
-<br>
-Still pleased by the end result. Now I get to spit out some of the<br>
-&quot;if (EVP_PKEY_get0_RSA(..))&quot;=C2=A0 that was pushed down my throat=
- :).<br>
-For patches already on the ML will do so after review.<br>
-<span class=3D"gmail-HOEnZb"><font color=3D"#888888"><br></font></span></bl=
-ockquote><div><br></div><div><div class=3D"gmail_default" style=3D"font-fam=
-ily:monospace,monospace">=E2=80=8BI like the switch - I find it elegant - b=
-ut it does not avoid an internal &#39;if&#39;, so the code would look like:=
-</div><div class=3D"gmail_default" style=3D"font-family:monospace,monospace=
-"><br></div><div class=3D"gmail_default" style=3D"font-family:monospace,mon=
-ospace">switch (EVP_PKEY_id(foo)) {</div><div class=3D"gmail_default" style=
-=3D"font-family:monospace,monospace">case ..RSA..: {</div><div class=3D"gma=
-il_default" style=3D"font-family:monospace,monospace">=C2=A0 =C2=A0 RSA *rs=
-a =3D EVP_PKEY_get0_RSA(foo);</div><div class=3D"gmail_default" style=3D"fo=
-nt-family:monospace,monospace">=C2=A0 =C2=A0 if (rsa) {</div><div class=3D"=
-gmail_default" style=3D"font-family:monospace,monospace">=C2=A0 =C2=A0 =C2=
-=A0 =C2=A0openvpn_printf(...);</div><div class=3D"gmail_default" style=3D"f=
-ont-family:monospace,monospace">=C2=A0 =C2=A0 }</div><div class=3D"gmail_de=
-fault" style=3D"font-family:monospace,monospace">=C2=A0 }</div><div class=
-=3D"gmail_default" style=3D"font-family:monospace,monospace">=C2=A0 break;<=
-/div><div class=3D"gmail_default" style=3D"font-family:monospace,monospace"=
->case ...</div><div class=3D"gmail_default" style=3D"font-family:monospace,=
-monospace">}<br></div><br></div><div><div class=3D"gmail_default" style=3D"=
-font-family:monospace,monospace">=E2=80=8BIf this is acceptable, I can =E2=
-=80=8Brespin patch 2. Otherwise, feel free to discard both patch 2 and patc=
-h 3 of the series as any change in patch 2 would not be a largen enhancemen=
-t of the already existing code.=C2=A0</div><br></div><div><div class=3D"gma=
-il_default" style=3D"font-family:monospace,monospace"><span style=3D"font-f=
-amily:arial,sans-serif">=C2=A0</span><br></div></div><blockquote class=3D"g=
-mail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204=
-,204,204);padding-left:1ex"><span class=3D"gmail-HOEnZb"><font color=3D"#88=
-8888">
-Selva<br>
-</font></span><div class=3D"gmail-HOEnZb"><div class=3D"gmail-h5"><br></div=
-></div></blockquote><div><br></div><div class=3D"gmail_default" style=3D"fo=
-nt-family:monospace,monospace">=E2=80=8BBest regards,=C2=A0</div><div><div =
-class=3D"gmail_default" style=3D"font-family:monospace,monospace"><br></div=
-><div class=3D"gmail_default" style=3D"font-family:monospace,monospace">-- =
-Emmanuel Deloget</div></div><div class=3D"gmail_default" style=3D"font-fami=
-ly:monospace,monospace">=E2=80=8B</div></div></div></div>
+(12:28:49) cron2: meow
+(12:31:42) mattock: howdy
+(12:31:47) syzzer: hi!
+(12:32:42) mattock: shall we begin?
+(12:33:56) syzzer: yup
+(12:34:28) chipitsine: as for windows installer 2.4.5 + openssl-1,1,0
+(12:34:31) chipitsine: [ilia@...23... bin]$ ls
+(12:34:33) chipitsine: c_rehash  libcrypto-1_1-x64.dll  liblzo2-2.dll  li=
+bpkcs11-helper-1.dll  libssl-1_1-x64.dll  openssl.exe  openvpn.exe  openv=
+pn-gui.exe  openvpnserv.exe
+(12:34:37) chipitsine: [ilia@...23... bin]$=20
+(12:34:39) chipitsine: openssl libs changed their names
+(12:34:50) chipitsine: I'm still working on openvpn.nsi
+(12:35:25) chipitsine: not sure if I can finish it today
+(12:36:42) cron2: I would also propose to postpone by one week
+(12:36:52) cron2: there's patches we want in, and I've been distracted by=
+ icky hardware
+(12:36:55) mattock: postponing is good
+(12:37:10) syzzer: I have no opinion
+(12:37:11) mattock: I failed to build with openssl 1.1.0
+(12:37:23) chipitsine: or we can release windows installer with openssl-1=
+=2E0.2
+(12:37:29) mattock: we could yes
+(12:37:30) cron2: tincantech posted build errors with 1.1.0 that showed "=
+built wrong branch"
+(12:37:42) mattock: cron2: ok
+(12:37:42) cron2: 2.4.4 will *not* build with 1.1, release/2.4 *should* b=
+uild
+(12:37:47) mattock: ah, ok
+(12:37:58) mattock: I didn't have time to test release/2.4 yet
+(12:37:59) cron2: (you need the cryptoapi patch from Selva, which has bee=
+n merged, but came after 2.4.4 release)
+(12:38:16) mattock: but NSIS needs to be modified if openssl filenames ch=
+anged
+(12:38:41) mattock: are there any openvpn patches that are still missing =
+from 2.4.5?
+(12:38:43) chipitsine: 1-2 days for NSIS
+(12:39:04) cron2: there's the ccd cipher one
+(12:39:05) mattock: chipitsine: sounds good
+(12:39:49) chipitsine: it would be nice to merge https://patchwork.openvp=
+n.net/project/openvpn2/list/?series=3D59 before 2.4.5
+(12:39:50) vpnHelper: Title: OpenVPN 2 - Patchwork (at patchwork.openvpn.=
+net)
+(12:40:07) chipitsine: it improves UX on windows a bit
+(12:40:26) cron2: indeed.  I'll see that I can review this on thursday
+(12:42:01) mattock: new release date?
+(12:42:13) mattock: I could do wed next week, but not thu or fri
+(12:42:14) cron2: oh, and we have more ACKs that I failed to merge (TLSv1=
+=2E2 for cryptoapicert)
+(12:42:29) cron2: lets go for wed then
+(12:42:40) mattock: ok
+(12:43:02) mattock: let's compile a list of missing things
+(12:43:08) syzzer: I'll be snowboard by then, but will read up in the eve=
+nings :)
+(12:43:11) mattock: https://patchwork.openvpn.net/project/openvpn2/list/?=
+series=3D59
+(12:43:12) vpnHelper: Title: OpenVPN 2 - Patchwork (at patchwork.openvpn.=
+net)
+(12:43:13) syzzer: *snowboarding
+(12:43:18) mattock: the ccd cipher one
+(12:43:29) mattock: NSIS fixes for openssl libraries
+(12:43:36) cron2: TLSv1.2 for cryptoapicert
+(12:43:55) mattock: anything else?
+(12:44:34) syzzer: maybe this: https://patchwork.openvpn.net/patch/195/
+(12:44:36) vpnHelper: Title: [Openvpn-devel] Plug memory leak if push is =
+interrupted - Patchwork (at patchwork.openvpn.net)
+(12:44:51) mattock: there are some openvpn-gui translation updates that w=
+ould be good to have, but not blockers (danish and ukrainian)
+(12:44:52) syzzer: but quite a corner case, so not critical
+(12:44:55) cron2: sounds bugfixy, soyes
+(12:45:21) mattock: syzzer: looks fairly trivial to review
+(12:47:26) mattock: so this is the TLSv2 cryptoapicert thing right:https:=
+//patchwork.openvpn.net/patch/202/
+(12:47:28) vpnHelper: Title: [Openvpn-devel,v2,2/2] TLS v1.2 support for =
+cryptoapicert -- RSA only - Patchwork (at patchwork.openvpn.net)
+(12:47:31) cron2: yep
+(12:47:33) syzzer: mattock: change looks simple, but testing it is annoyi=
+ng because the issue usually doesn't occur
+(12:47:58) mattock: you've tested it, right?
+(12:48:05) syzzer: yeah, I did
+(12:48:20) mattock: do we need independent tests or just code review, in =
+your opinion?
+(12:48:21) syzzer: but a second pair of eyes is good
+(12:48:54) syzzer: depends on the change, but I try to test every patch I=
+ ACK.  If I don't I state so in the ack mail.
+(12:49:25) mattock: that's a good policy
+(12:49:35) cron2: indeed :)
+(12:49:45) mattock: maybe you could share your testing instructions?
+(12:49:49) mattock: and/or scripts
+(12:52:13) syzzer: mattock: I have a test suite @ work for mbedtls-relate=
+d stuff, but other that that it is usually just "make check" (including t=
+_client if I think that's useful) + manual testing of the code that chang=
+ed
+(12:52:22) syzzer: so not much to share unfortunately
+(12:53:36) mattock: ok
+(12:53:55) mattock: are we done with 2.4.5 planning?
+(12:55:06) cron2: I'm done
+(12:55:44) mattock: any other topics worthy of discussion?
+(12:56:11) ***cron2 has none
+(12:56:17) cron2: except "$wife is hungry" :)
+(12:56:27) syzzer: me neither
+(12:56:27) cron2: and "I want to go snowboarding as well!!"
+(12:56:27) mattock: $me is hungry :P
+(12:56:33) mattock: let's conclude this meeting then
+(12:56:39) mattock: 26 minutes is a good achievement :)
+(12:56:43) cron2: yep :-)
+(12:56:55) mattock: ok bye guys! I will write the summary later today
+(12:57:02) cron2: thanks
+(12:57:20) syzzer: great!
+(12:57:24) syzzer: enjoy lunch :)
 
---001a11426a08b59ee90563840610--
+--------------B66FFC7212A0354FEB998B2D--
 
