@@ -1,5 +1,5 @@
 MIME-Version: 1.0
-In-Reply-To: <CAEsd45Q+4GYFhf1Jmn-UrPVKFHoGsE3NP9oq13mh8_p1wqxLog@...278...>
+In-Reply-To: <CAEsd45QqwxqTfWrhfD3i7VScTzQiEDeFJrbk9Nky05THGMnrcQ@...278...>
 References: <1515959073-10376-1-git-send-email-selva.nair@...277...>
  <1515959073-10376-3-git-send-email-selva.nair@...277...>
  <e059b07e-5684-1dbe-cfdf-1271efc594dc@...1227...>
@@ -12,10 +12,11 @@ References: <1515959073-10376-1-git-send-email-selva.nair@...277...>
  <f06320ac-5b89-0cdd-9ef1-eddde02b848a@...2080...>
  <CAKuzo_gpcR9PrVcPWYRsa7v7sATsbj=2hQYNzaJ-hpjjk7ZeAw@...278...>
  <CAEsd45Q+4GYFhf1Jmn-UrPVKFHoGsE3NP9oq13mh8_p1wqxLog@...278...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Thu, 25 Jan 2018 13:36:20 -0500
-Message-ID: <CAEsd45QqwxqTfWrhfD3i7VScTzQiEDeFJrbk9Nky05THGMnrcQ@...278...>
-Subject: [Openvpn-devel] Fwd: [PATCH 2/3] Allow external EC key through
+ <CAEsd45QqwxqTfWrhfD3i7VScTzQiEDeFJrbk9Nky05THGMnrcQ@...278...>
+From: Selva Nair <selva.nair@...277...>
+Date: Thu, 25 Jan 2018 13:46:51 -0500
+Message-ID: <CAKuzo_gW6+8BRqx9+uGHOOmVtqpLgnzev96TV3Y2jxky_tWxMA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 2/3] Allow external EC key through
  --management-external-key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -27,28 +28,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net, Selva Nair <selva.nair@...277...>
+To: "Jonathan K. Bullard" <jkbullard@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi.
+Hi,
 
-On Mon, Jan 22, 2018 at 12:31 PM, Selva Nair <selva.nair@...277...> wrote:
-> What about extending the current "version" command with an argument
-> where the client states the version of "management-speak" that it
-> supports. Current management version is 1, we increase it to 1.1 and
-> unless the client says "version 1.1" or more we do not send PK_SIGN.
-> The client could do that when it gets the version message or any time
-> later. The response to version command (current management version and
-> openvpn daemon's version stays the same). No full-fledged cap
-> negotiation, but good enough.
+On Thu, Jan 25, 2018 at 1:36 PM, Jonathan K. Bullard
+<jkbullard@...277...> wrote:
+> Hi.
+>
+> On Mon, Jan 22, 2018 at 12:31 PM, Selva Nair <selva.nair@...277...> wrote:
+>> What about extending the current "version" command with an argument
+>> where the client states the version of "management-speak" that it
+>> supports. Current management version is 1, we increase it to 1.1 and
+>> unless the client says "version 1.1" or more we do not send PK_SIGN.
+>> The client could do that when it gets the version message or any time
+>> later. The response to version command (current management version and
+>> openvpn daemon's version stays the same). No full-fledged cap
+>> negotiation, but good enough.
+>
+> That sounds reasonable; easy to implement in Tunnelblick
+>
+>
+>> The UX would be much better that way.
+>
+> Absolutely.
+>
 
-That sounds reasonable; easy to implement in Tunnelblick
+Encouraged by Jonathan's reply I have made a patch to rename RSA_SIGN
+to PK_SIGN if client announces a version > 1. Will send it and a
+modified EC key patch soon.
 
-
-> The UX would be much better that way.
-
-Absolutely.
-
-Best regards,
-
-Jon Bullard
+Selva
 
