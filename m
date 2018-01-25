@@ -1,14 +1,22 @@
 MIME-Version: 1.0
-In-Reply-To: <857ede9e-80ec-fab5-7c57-00873ed2e33f@...1435...>
-References: <1516423974-22159-1-git-send-email-selva.nair@...277...>
- <201801251118.w0PBIn3d083413@...2054...>
- <CAKuzo_i5qGrDQoJK8nb0P2WQHQnRmBzxR_m6W56Y5gq5HhnfFA@...278...>
- <857ede9e-80ec-fab5-7c57-00873ed2e33f@...1435...>
-From: Selva Nair <selva.nair@...277...>
-Date: Thu, 25 Jan 2018 13:08:20 -0500
-Message-ID: <CAKuzo_hkSd8PJsfNJ9pTNqdh8mOcaoxr-+kx_d7EayPE6+3w0w@...278...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: TLS v1.2 support for
- cryptoapicert -- RSA only
+In-Reply-To: <CAEsd45Q+4GYFhf1Jmn-UrPVKFHoGsE3NP9oq13mh8_p1wqxLog@...278...>
+References: <1515959073-10376-1-git-send-email-selva.nair@...277...>
+ <1515959073-10376-3-git-send-email-selva.nair@...277...>
+ <e059b07e-5684-1dbe-cfdf-1271efc594dc@...1227...>
+ <CAKuzo_jN9EOK5aPr2dn+m+ynarY-Snt2pwOmz9cV32BpKSFq=w@...278...>
+ <CAKuzo_hYwcRDJjYW7i=Ekmi93TAXRb+n=sNyi4y=+gS+vbbtAA@...278...>
+ <caf0faaa-428f-29c4-797f-8be8ac4f0f47@...1435...>
+ <CAKuzo_jRh+7KSfw6GTVuXTDnMQCDfrH3g5m=N9GGDTDVLijBhg@...278...>
+ <07f28923-1023-fe7b-2b3e-e57ad3f6bc8f@...2080...>
+ <CAKuzo_iVUouudtkpuRBJj_x2RrgD0q07RUg4T1q6RNghAwCbOg@...278...>
+ <f06320ac-5b89-0cdd-9ef1-eddde02b848a@...2080...>
+ <CAKuzo_gpcR9PrVcPWYRsa7v7sATsbj=2hQYNzaJ-hpjjk7ZeAw@...278...>
+ <CAEsd45Q+4GYFhf1Jmn-UrPVKFHoGsE3NP9oq13mh8_p1wqxLog@...278...>
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Thu, 25 Jan 2018 13:36:20 -0500
+Message-ID: <CAEsd45QqwxqTfWrhfD3i7VScTzQiEDeFJrbk9Nky05THGMnrcQ@...278...>
+Subject: [Openvpn-devel] Fwd: [PATCH 2/3] Allow external EC key through
+ --management-external-key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,29 +27,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan.karger@...1435...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net, Selva Nair <selva.nair@...277...>
 
-Hi,
+Hi.
 
-On Thu, Jan 25, 2018 at 12:00 PM, Steffan Karger
-<steffan.karger@...1435...> wrote:
-> On 25-01-18 16:14, Selva Nair wrote:
->> A more useful thing to do is to catch the case of user setting min =
->> 1.2 (as in trac 977) and we changing max to 1.1 when key is in a
->> legacy key store. That would cause a handshake failure with a cryptic
->> error. Better to catch early with a helpful warning. Will consider a
->> patch for that and trim down the above log message at that time.
->
-> Ah, I actually have a patch ready for that in my local master branch,
-> but still needed to send it out.  So if you haven't started yet, I can
-> send that out to the list.  Otherwise I'll happily discard mine :)
+On Mon, Jan 22, 2018 at 12:31 PM, Selva Nair <selva.nair@...277...> wrote:
+> What about extending the current "version" command with an argument
+> where the client states the version of "management-speak" that it
+> supports. Current management version is 1, we increase it to 1.1 and
+> unless the client says "version 1.1" or more we do not send PK_SIGN.
+> The client could do that when it gets the version message or any time
+> later. The response to version command (current management version and
+> openvpn daemon's version stays the same). No full-fledged cap
+> negotiation, but good enough.
 
-No, I'll defer to you, I haven't written one. Was just looking into it
-and realized it may require a better get_min_proto_version
-compatibility function (current one returns 0).
+That sounds reasonable; easy to implement in Tunnelblick
 
-Thanks,
 
-Selva
+> The UX would be much better that way.
+
+Absolutely.
+
+Best regards,
+
+Jon Bullard
 
