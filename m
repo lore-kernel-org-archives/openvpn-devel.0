@@ -1,9 +1,10 @@
-Date: Thu, 25 Jan 2018 13:56:43 +0100 (CET)
-Message-Id: <201801251256.w0PCuhB1083848@...2054...>
+Date: Thu, 25 Jan 2018 14:29:55 +0100 (CET)
+Message-Id: <201801251329.w0PDTt7A091990@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20180115114728.13672-1-simon@...2293...>
-References: <20180115114728.13672-1-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Document missing OpenVPN states
+In-Reply-To: <1516194984-1540-1-git-send-email-steffan.karger@...1435...>
+References: <1516194984-1540-1-git-send-email-steffan.karger@...1435...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Plug memory leak if push is
+ interrupted
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,21 +15,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Simon Rozman <simon@...2293...>
+To: Steffan Karger <steffan.karger@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
+
+ACK.  Makes sense.
+
+The changes to crypto_mbedtls.c match the documentation for the mbedtls
+md functions, and the rest is just basic "if you make it, clean it up 
+later on again" :-) - lightly tested ("t_client"), too lazy to come up
+with a test rig to trigger and truly test this.
 
 Your patch has been applied to the master and release/2.4 branch.
 
-commit 12b12ff944a378dbb14cc508f887191303b24703 (master)
-commit e10f32174cf17b77896fc92744974352a3ee1874 (release/2.4)
-Author: Simon Rozman
-Date:   Mon Jan 15 12:47:28 2018 +0100
+commit 07036fd3c456ed4ebf1809d8d9f34941d42865d0 (master)
+commit d04032c3f236cf7c726d6b162686bcb71fda2e15 (release/2.4)
+Author: Steffan Karger
+Date:   Wed Jan 17 14:16:24 2018 +0100
 
-     Document missing OpenVPN states
+     Plug memory leak if push is interrupted
 
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20180115114728.13672-1-simon@...2293...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16232.html
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1516194984-1540-1-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16265.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
