@@ -1,10 +1,10 @@
-Date: Thu, 25 Jan 2018 14:29:55 +0100 (CET)
-Message-Id: <201801251329.w0PDTt7A091990@...2054...>
+Date: Thu, 25 Jan 2018 14:56:39 +0100 (CET)
+Message-Id: <201801251356.w0PDuddT094182@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1516194984-1540-1-git-send-email-steffan.karger@...1435...>
-References: <1516194984-1540-1-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Plug memory leak if push is
- interrupted
+In-Reply-To: <1515959073-10376-2-git-send-email-selva.nair@...277...>
+References: <1515959073-10376-2-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Refactor ssl_openssl.c in prep
+ for external EC key support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,29 +15,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan.karger@...1435...>
+To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.  Makes sense.
+Your patch has been applied to the master branch.
 
-The changes to crypto_mbedtls.c match the documentation for the mbedtls
-md functions, and the rest is just basic "if you make it, clean it up 
-later on again" :-) - lightly tested ("t_client"), too lazy to come up
-with a test rig to trigger and truly test this.
+For the time being, I've decided to follow the rule "refactoring and
+new features go to master", and since this "refactoring in preparation
+for a new feature" (EC external key), it falls under this rule.
 
-Your patch has been applied to the master and release/2.4 branch.
+If there's good arguments we should have it in 2.4, I won't stand in 
+the way, though.
 
-commit 07036fd3c456ed4ebf1809d8d9f34941d42865d0 (master)
-commit d04032c3f236cf7c726d6b162686bcb71fda2e15 (release/2.4)
-Author: Steffan Karger
-Date:   Wed Jan 17 14:16:24 2018 +0100
+commit d59a1c2f488cc3f4725df1e053592d53c30cf0eb
+Author: Selva Nair
+Date:   Sun Jan 14 14:44:31 2018 -0500
 
-     Plug memory leak if push is interrupted
+     Refactor ssl_openssl.c in prep for external EC key support
 
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1516194984-1540-1-git-send-email-steffan.karger@...1435...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16265.html
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <1515959073-10376-2-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16227.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
