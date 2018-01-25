@@ -1,10 +1,9 @@
-Date: Thu, 25 Jan 2018 12:18:49 +0100 (CET)
-Message-Id: <201801251118.w0PBIn3d083413@...2054...>
+Date: Thu, 25 Jan 2018 13:56:43 +0100 (CET)
+Message-Id: <201801251256.w0PCuhB1083848@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1516423974-22159-1-git-send-email-selva.nair@...277...>
-References: <1516423974-22159-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: TLS v1.2 support for
- cryptoapicert -- RSA only
+In-Reply-To: <20180115114728.13672-1-simon@...2293...>
+References: <20180115114728.13672-1-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Document missing OpenVPN states
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,47 +14,21 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
+To: Simon Rozman <simon@...2293...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master and release/2.4 branch.
 
-I have tested on unix (where it obviously did not make a difference),
-compile-tested on my old ubuntu 14.04 build environment (fails with 
-CERT_NCRYPT_KEY_SPEC not being defined, because mingw *there* needs 
-"_WIN32_WINNT >= 0x0601") and successfully built on a brand new ubuntu 
-16.04 build environment, which adds a new "wincrypt.h" file with new 
-#if WINAPI_FAMILY_PARTITION fun... :-) 
+commit 12b12ff944a378dbb14cc508f887191303b24703 (master)
+commit e10f32174cf17b77896fc92744974352a3ee1874 (release/2.4)
+Author: Simon Rozman
+Date:   Mon Jan 15 12:47:28 2018 +0100
 
-[short summary: throw away your 14.04 build systems, we have decided to
- break them, and that's what they are: broken!]
+     Document missing OpenVPN states
 
-There is one thing I'm not sure I understand in the code, which might
-warrant a typo-fix patch:
-
-+        msg(M_WARN,"WARNING: cryptoapicert: private key is in a legacy store."
-+            " Restricting TLS version to 1.1");
-+        if (!SSL_CTX_set_max_proto_version(ssl_ctx, TLS1_1_VERSION))
-+        {
-+            msg(M_NONFATAL,"ERROR: cryptoapicert: unable to set max TLS version"
-+                " to 1.1. Try config option --tls-version-min 1.1");
-+            goto err;
-+        }
-
-should that be "--tls-version-*max* 1.1"?
-
-
-commit 51d57d7dad6c6380df7b76bbec1897ea4f98474d (master)
-commit 6c54745b8d417a534a6081588b1ecc7ff01fa9f7 (release/2.4)
-Author: Selva Nair
-Date:   Fri Jan 19 23:52:54 2018 -0500
-
-     TLS v1.2 support for cryptoapicert -- RSA only
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1516423974-22159-1-git-send-email-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16288.html
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20180115114728.13672-1-simon@...2293...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16232.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
