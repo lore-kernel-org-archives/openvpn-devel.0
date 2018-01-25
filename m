@@ -1,10 +1,10 @@
 From: selva.nair@...277...
-Date: Thu, 25 Jan 2018 14:41:01 -0500
-Message-Id: <1516909261-31623-2-git-send-email-selva.nair@...277...>
-In-Reply-To: <1516909261-31623-1-git-send-email-selva.nair@...277...>
-References: <1516909261-31623-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH 2/2] Prompt for signature using '>PK_SIGN'
- if the client supports it
+Date: Thu, 25 Jan 2018 14:45:13 -0500
+Message-Id: <1516909513-31683-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1516301696-11308-1-git-send-email-selva.nair@...277...>
+References: <1516301696-11308-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH v3 2/3] Allow external EC key through
+ --management-external-key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,219 +19,317 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-- Increase the management version from 1 to 2
-- If the client announces support for management version > 1
-  prompt for signature using >PK_SIGN to which the client
-  responds using 'pk-sig'
-  Older (current) clients will be continued to be prompted
-  by '>RSA_SIGN' and can respond using 'rsa-sig'
-- Remove an unused rsa_sig buffer-list variable
+- This automatically supports EC certificates through
+  --management-external-cert
+- EC signature request from management is prompted by
+  >PK_SIGN if the client supports it (or >RSA_SIGN)
+  Response should be of the form 'pk-sig' (or rsa-sig
+  by older clients) followed by DER encoded signature
+  as base64 terminated by 'END' on a new line.
 
-This facilitates a transparent transition to PK_SIG and future deprecation
-of RSA_SIGN
+v3: This is v2 adapted to the client_version capability
+Requires pacthes 1 and 2 of the series 147:
+https://patchwork.openvpn.net/project/openvpn2/list/?series=147
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- doc/management-notes.txt  | 13 +++++++++----
- src/openvpn/manage.c      | 32 ++++++++++++++++++++++----------
- src/openvpn/manage.h      |  8 +++-----
- src/openvpn/ssl_mbedtls.c |  2 +-
- src/openvpn/ssl_openssl.c |  2 +-
- 5 files changed, 36 insertions(+), 21 deletions(-)
+ doc/management-notes.txt  |   9 +-
+ src/openvpn/ssl_openssl.c | 210 +++++++++++++++++++++++++++++++++++++---------
+ 2 files changed, 176 insertions(+), 43 deletions(-)
 
 diff --git a/doc/management-notes.txt b/doc/management-notes.txt
-index e03cd39..070c2d6 100644
+index 070c2d6..96470d0 100644
 --- a/doc/management-notes.txt
 +++ b/doc/management-notes.txt
-@@ -773,8 +773,9 @@ To accept connecting to the host and port directly, use this command:
- 
-   proxy NONE
- 
--COMMAND -- rsa-sig (OpenVPN 2.3 or higher)
--------------------------------------------
-+COMMAND -- pk-sig (OpenVPN 2.5 or higher, management version > 1)
-+COMMAND -- rsa-sig (OpenVPN 2.3 or higher, management version <= 1)
-+-----------------------------------------------------------------
+@@ -779,14 +779,14 @@ COMMAND -- rsa-sig (OpenVPN 2.3 or higher, management version <= 1)
  Provides support for external storage of the private key. Requires the
  --management-external-key option. This option can be used instead of "key"
  in client mode, and allows the client to run without the need to load the
-@@ -782,13 +783,14 @@ actual private key. When the SSL protocol needs to perform an RSA sign
+-actual private key. When the SSL protocol needs to perform an RSA sign
++actual private key. When the SSL protocol needs to perform a sign
  operation, the data to be signed will be sent to the management interface
  via a notification as follows:
  
-->RSA_SIGN:[BASE64_DATA]
-+>PK_SIGN:[BASE64_DATA] (if client announces support for management version > 1)
-+>RSA_SIGN:[BASE64_DATA] (only older clients will be prompted like this)
+ >PK_SIGN:[BASE64_DATA] (if client announces support for management version > 1)
+ >RSA_SIGN:[BASE64_DATA] (only older clients will be prompted like this)
  
- The management interface client should then create a PKCS#1 v1.5 signature of
+-The management interface client should then create a PKCS#1 v1.5 signature of
++The management interface client should then create an appropriate signature of
  the (decoded) BASE64_DATA using the private key and return the SSL signature as
  follows:
  
--rsa-sig
-+pk-sig   (or rsa-sig)
- [BASE64_SIG_LINE]
+@@ -797,8 +797,9 @@ pk-sig   (or rsa-sig)
  .
- .
-@@ -801,6 +803,9 @@ Base64 encoded output of RSA_private_encrypt() (OpenSSL) or mbedtls_pk_sign()
+ END
+ 
+-Base64 encoded output of RSA_private_encrypt() (OpenSSL) or mbedtls_pk_sign()
+-(mbed TLS) will provide a correct signature.
++Base64 encoded output of RSA_private_encrypt for RSA or ECDSA_sign() for EC
++using OpenSSL or mbedtls_pk_sign() using mbed TLS will provide a correct
++signature.
+ 
  This capability is intended to allow the use of arbitrary cryptographic
  service providers with OpenVPN via the management interface.
- 
-+New and updated clients are expected to use the version command to announce
-+a version > 1 and handle '>PK_SIGN' prompt and respond with 'pk-sig'.
-+
- COMMAND -- certificate (OpenVPN 2.4 or higher)
- ----------------------------------------------
- Provides support for external storage of the certificate. Requires the
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index c36d94d..ca793a9 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -111,7 +111,9 @@ man_help(void)
- #endif
- #endif
- #ifdef MANAGMENT_EXTERNAL_KEY
--    msg(M_CLIENT, "rsa-sig                : Enter an RSA signature in response to >RSA_SIGN challenge");
-+    msg(M_CLIENT, "rsa-sig                : Enter a signature in response to >RSA_SIGN challenge");
-+    msg(M_CLIENT, "                         Enter signature base64 on subsequent lines followed by END");
-+    msg(M_CLIENT, "pk-sig                 : Enter a signature in response to >PK_SIGN challenge");
-     msg(M_CLIENT, "                         Enter signature base64 on subsequent lines followed by END");
-     msg(M_CLIENT, "certificate            : Enter a client certificate in response to >NEED-CERT challenge");
-     msg(M_CLIENT, "                         Enter certificate base64 on subsequent lines followed by END");
-@@ -935,7 +937,7 @@ in_extra_dispatch(struct management *man)
- 
- #endif /* ifdef MANAGEMENT_PF */
- #ifdef MANAGMENT_EXTERNAL_KEY
--        case IEC_RSA_SIGN:
-+        case IEC_PK_SIGN:
-             man->connection.ext_key_state = EKS_READY;
-             buffer_list_free(man->connection.ext_key_input);
-             man->connection.ext_key_input = man->connection.in_extra;
-@@ -1103,18 +1105,18 @@ man_client_pf(struct management *man, const char *cid_str)
- #ifdef MANAGMENT_EXTERNAL_KEY
- 
- static void
--man_rsa_sig(struct management *man)
-+man_pk_sig(struct management *man, const char *cmd_name)
- {
-     struct man_connection *mc = &man->connection;
-     if (mc->ext_key_state == EKS_SOLICIT)
-     {
-         mc->ext_key_state = EKS_INPUT;
--        mc->in_extra_cmd = IEC_RSA_SIGN;
-+        mc->in_extra_cmd = IEC_PK_SIGN;
-         in_extra_reset(mc, IER_NEW);
-     }
-     else
-     {
--        msg(M_CLIENT, "ERROR: The rsa-sig command is not currently available");
-+        msg(M_CLIENT, "ERROR: The %s command is not currently available", cmd_name);
-     }
- }
- 
-@@ -1527,7 +1529,11 @@ man_dispatch_command(struct management *man, struct status_output *so, const cha
- #ifdef MANAGMENT_EXTERNAL_KEY
-     else if (streq(p[0], "rsa-sig"))
-     {
--        man_rsa_sig(man);
-+        man_pk_sig(man, "rsa-sig");
-+    }
-+    else if (streq(p[0], "pk-sig"))
-+    {
-+        man_pk_sig(man, "pk-sig");
-     }
-     else if (streq(p[0], "certificate"))
-     {
-@@ -3663,14 +3669,20 @@ management_query_multiline_flatten(struct management *man,
- 
- char *
- /* returns allocated base64 signature */
--management_query_rsa_sig(struct management *man,
-+management_query_pk_sig(struct management *man,
-                          const char *b64_data)
- {
--    return management_query_multiline_flatten(man, b64_data, "RSA_SIGN", "rsa-sign",
--                                              &man->connection.ext_key_state, &man->connection.ext_key_input);
-+    const char *prompt = "PK_SIGN";
-+    const char *desc = "pk-sign";
-+    if (man->connection.client_version <= 1)
-+    {
-+        prompt = "RSA_SIGN";
-+        desc = "rsa-sign";
-+    }
-+    return management_query_multiline_flatten(man, b64_data, prompt, desc,
-+            &man->connection.ext_key_state, &man->connection.ext_key_input);
- }
- 
--
- char *
- management_query_cert(struct management *man, const char *cert_name)
- {
-diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index 3bd4e50..1b3a393 100644
---- a/src/openvpn/manage.h
-+++ b/src/openvpn/manage.h
-@@ -31,7 +31,7 @@
- #include "socket.h"
- #include "mroute.h"
- 
--#define MANAGEMENT_VERSION                      1
-+#define MANAGEMENT_VERSION                      2
- #define MANAGEMENT_N_PASSWORD_RETRIES           3
- #define MANAGEMENT_LOG_HISTORY_INITIAL_SIZE   100
- #define MANAGEMENT_ECHO_BUFFER_SIZE           100
-@@ -281,6 +281,7 @@ struct man_connection {
- #define IEC_CLIENT_PF   2
- #define IEC_RSA_SIGN    3
- #define IEC_CERTIFICATE 4
-+#define IEC_PK_SIGN     5
-     int in_extra_cmd;
-     struct buffer_list *in_extra;
- #ifdef MANAGEMENT_DEF_AUTH
-@@ -311,9 +312,6 @@ struct man_connection {
-     int up_query_mode;
-     struct user_pass up_query;
- 
--#ifdef MANAGMENT_EXTERNAL_KEY
--    struct buffer_list *rsa_sig;
--#endif
- #ifdef TARGET_ANDROID
-     int fdtosend;
-     int lastfdreceived;
-@@ -440,7 +438,7 @@ void management_learn_addr(struct management *management,
- 
- #ifdef MANAGMENT_EXTERNAL_KEY
- 
--char *management_query_rsa_sig(struct management *man, const char *b64_data);
-+char *management_query_pk_sig(struct management *man, const char *b64_data);
- 
- char *management_query_cert(struct management *man, const char *cert_name);
- 
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index d503162..b65db3f 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -583,7 +583,7 @@ external_pkcs1_sign( void *ctx_voidptr,
-     /* call MI for signature */
-     if (management)
-     {
--        out_b64 = management_query_rsa_sig(management, in_b64);
-+        out_b64 = management_query_pk_sig(management, in_b64);
-     }
-     if (!out_b64)
-     {
 diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 01be656..242b464 100644
+index 242b464..74ce596 100644
 --- a/src/openvpn/ssl_openssl.c
 +++ b/src/openvpn/ssl_openssl.c
-@@ -1068,7 +1068,7 @@ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
-     /* call MI for signature */
-     if (management)
+@@ -1043,58 +1043,51 @@ openvpn_extkey_rsa_finish(RSA *rsa)
+     return 1;
+ }
+ 
+-/* sign arbitrary data */
++/* Pass the input hash in 'dgst' to management and get the signature back.
++ * On input siglen contains the capacity of the buffer 'sig'.
++ * On return signature is in sig.
++ * Return value is signature length or -1 on error.
++ */
+ static int
+-rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding)
++get_sig_from_man(const unsigned char *dgst, unsigned int dgstlen,
++                 unsigned char *sig, unsigned int siglen)
+ {
+-    /* optional app data in rsa->meth->app_data; */
+     char *in_b64 = NULL;
+     char *out_b64 = NULL;
+-    int ret = -1;
+-    int len;
++    int len = -1;
+ 
+-    if (padding != RSA_PKCS1_PADDING)
+-    {
+-        RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE);
+-        goto done;
+-    }
+-
+-    /* convert 'from' to base64 */
+-    if (openvpn_base64_encode(from, flen, &in_b64) <= 0)
+-    {
+-        goto done;
+-    }
+-
+-    /* call MI for signature */
+-    if (management)
++    /* convert 'dgst' to base64 */
++    if (management
++        && openvpn_base64_encode(dgst, dgstlen, &in_b64) > 0)
      {
--        out_b64 = management_query_rsa_sig(management, in_b64);
-+        out_b64 = management_query_pk_sig(management, in_b64);
+         out_b64 = management_query_pk_sig(management, in_b64);
      }
-     if (!out_b64)
+-    if (!out_b64)
++    if (out_b64)
      {
+-        goto done;
++        len = openvpn_base64_decode(out_b64, sig, siglen);
+     }
+ 
+-    /* decode base64 signature to binary */
+-    len = RSA_size(rsa);
+-    ret = openvpn_base64_decode(out_b64, to, len);
++    free(in_b64);
++    free(out_b64);
++    return len;
++}
+ 
+-    /* verify length */
+-    if (ret != len)
+-    {
+-        ret = -1;
+-    }
++/* sign arbitrary data */
++static int
++rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding)
++{
++    unsigned int len = RSA_size(rsa);
++    int ret = -1;
+ 
+-done:
+-    if (in_b64)
+-    {
+-        free(in_b64);
+-    }
+-    if (out_b64)
++    if (padding != RSA_PKCS1_PADDING)
+     {
+-        free(out_b64);
++        RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE);
++        return -1;
+     }
+-    return ret;
++
++    ret = get_sig_from_man(from, flen, to, len);
++
++    return (ret == len)? ret : -1;
+ }
+ 
+ static int
+@@ -1166,6 +1159,130 @@ err:
+     return 0;
+ }
+ 
++#if OPENSSL_VERSION_NUMBER > 0x10100000L && !defined(OPENSSL_NO_EC)
++
++/* called when EC_KEY is destroyed */
++static void
++openvpn_extkey_ec_finish(EC_KEY *ec)
++{
++    /* release the method structure */
++    const EC_KEY_METHOD *ec_meth = EC_KEY_get_method(ec);
++    EC_KEY_METHOD_free((EC_KEY_METHOD *) ec_meth);
++}
++
++/* EC_KEY_METHOD callback: sign().
++ * Sign the hash using EC key and return DER encoded signature in sig,
++ * its length in siglen. Return value is 1 on success, 0 on error.
++ */
++static int
++ecdsa_sign(int type, const unsigned char *dgst, int dgstlen, unsigned char *sig,
++           unsigned int *siglen, const BIGNUM *kinv, const BIGNUM *r, EC_KEY *ec)
++{
++    int capacity = ECDSA_size(ec);
++    int len = get_sig_from_man(dgst, dgstlen, sig, capacity);
++
++    if (len > 0)
++    {
++        *siglen = len;
++        return 1;
++    }
++    return 0;
++}
++
++/* EC_KEY_METHOD callback: sign_setup(). We do no precomputations */
++static int
++ecdsa_sign_setup(EC_KEY *ec, BN_CTX *ctx_in, BIGNUM **kinvp, BIGNUM **rp)
++{
++    return 1;
++}
++
++/* EC_KEY_METHOD callback: sign_sig().
++ * Sign the hash and return the result as a newly allocated ECDS_SIG
++ * struct or NULL on error.
++ */
++static ECDSA_SIG *
++ecdsa_sign_sig(const unsigned char *dgst, int dgstlen, const BIGNUM *in_kinv,
++               const BIGNUM *in_r, EC_KEY *ec)
++{
++    ECDSA_SIG *ecsig = NULL;
++    unsigned int len = ECDSA_size(ec);
++    struct gc_arena gc = gc_new();
++
++    unsigned char *buf = gc_malloc(len, false, &gc);
++    if (ecdsa_sign(0, dgst, dgstlen, buf, &len, NULL, NULL, ec) != 1)
++    {
++        goto out;
++    }
++    /* const char ** should be avoided: not up to us, so we cast our way through */
++    ecsig = d2i_ECDSA_SIG(NULL, (const unsigned char **)&buf, len);
++
++out:
++    gc_free(&gc);
++    return ecsig;
++}
++
++static int
++tls_ctx_use_external_ec_key(struct tls_root_ctx *ctx, EVP_PKEY *pkey)
++{
++    EC_KEY *ec = NULL;
++    EVP_PKEY *privkey = NULL;
++    EC_KEY_METHOD *ec_method;
++
++    ASSERT(ctx);
++
++    ec_method = EC_KEY_METHOD_new(EC_KEY_OpenSSL());
++    if (!ec_method)
++    {
++        goto err;
++    }
++
++    /* Among init methods, we only need the finish method */
++    EC_KEY_METHOD_set_init(ec_method, NULL, openvpn_extkey_ec_finish, NULL, NULL, NULL, NULL);
++    EC_KEY_METHOD_set_sign(ec_method, ecdsa_sign, ecdsa_sign_setup, ecdsa_sign_sig);
++
++    ec = EC_KEY_dup(EVP_PKEY_get0_EC_KEY(pkey));
++    if (!ec)
++    {
++        EC_KEY_METHOD_free(ec_method);
++        goto err;
++    }
++    if (!EC_KEY_set_method(ec, ec_method))
++    {
++        EC_KEY_METHOD_free(ec_method);
++        goto err;
++    }
++    /* from this point ec_method will get freed when ec is freed */
++
++    privkey = EVP_PKEY_new();
++    if (!EVP_PKEY_assign_EC_KEY(privkey, ec))
++    {
++        goto err;
++    }
++    /* from this point ec will get freed when privkey is freed */
++
++    if (!SSL_CTX_use_PrivateKey(ctx->ctx, privkey))
++    {
++        ec = NULL; /* avoid double freeing it below */
++        goto err;
++    }
++
++    EVP_PKEY_free(privkey); /* this will down ref privkey and ec */
++    return 1;
++
++err:
++    /* Reach here only when ec and privkey can be independenly freed */
++    if (privkey)
++    {
++        EVP_PKEY_free(privkey);
++    }
++    if(ec)
++    {
++        EC_KEY_free(ec);
++    }
++    return 0;
++}
++#endif /* OPENSSL_VERSION_NUMBER > 1.1.0 dev */
++
+ int
+ tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
+                                  const char *cert_file, const char *cert_file_inline)
+@@ -1183,18 +1300,33 @@ tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
+     ASSERT(pkey); /* NULL before SSL_CTX_use_certificate() is called */
+     X509_free(cert);
+ 
+-    if (EVP_PKEY_get0_RSA(pkey))
++    if (EVP_PKEY_id(pkey) == EVP_PKEY_RSA)
+     {
+         if (!tls_ctx_use_external_rsa_key(ctx, pkey))
+         {
+             goto err;
+         }
+     }
++#if OPENSSL_VERSION_NUMBER > 0x10100000L && !defined(OPENSSL_NO_EC)
++    else if (EVP_PKEY_id(pkey) == EVP_PKEY_EC)
++    {
++        if (!tls_ctx_use_external_ec_key(ctx, pkey))
++        {
++            goto err;
++        }
++    }
++    else
++    {
++        crypto_msg(M_WARN, "management-external-key requires an RSA or EC certificate");
++        goto err;
++    }
++#else
+     else
+     {
+-        crypto_msg(M_WARN, "management-external-key requires a RSA certificate");
++        crypto_msg(M_WARN, "management-external-key requires an RSA certificate");
+         goto err;
+     }
++#endif /* OPENSSL_VERSION_NUMBER > 1.1.0 dev */
+     return 1;
+ 
+ err:
 -- 
 2.1.4
 
