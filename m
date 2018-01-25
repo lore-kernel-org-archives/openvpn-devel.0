@@ -1,12 +1,23 @@
+Date: Thu, 25 Jan 2018 17:00:37 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180125160037.GT69387@...1296...>
+References: <20171105192019.GM958@...1296...>
+ <99D61A626FDA8A4B90A270669121BE108587DA0D@...2294...>
+ <CAKuzo_hTnJVcEuCqCQ-ZR3swbkio7CWZgy3z5C0fWVJ-E0PCvQ@...278...>
+ <99D61A626FDA8A4B90A270669121BE108587DF29@...2294...>
+ <CAKuzo_jFp86anFk6mgavBoYhmCCHUeJ_EQpb6Z05PTNJxBYWWw@...278...>
+ <99D61A626FDA8A4B90A270669121BE10858830C4@...2294...>
+ <20171204192515.GA69387@...1296...>
+ <99D61A626FDA8A4B90A270669121BE1085B4AC9A@...2294...>
+ <CAKuzo_hJdNEMMmUqa4d=n4k9vZXoYtkC9CFcvAkW9cDgzT2wCA@...278...>
+ <99D61A626FDA8A4B90A270669121BE1085B4CA4D@...2294...>
 MIME-Version: 1.0
-In-Reply-To: <201801251118.w0PBIn3d083413@...2054...>
-References: <1516423974-22159-1-git-send-email-selva.nair@...277...>
- <201801251118.w0PBIn3d083413@...2054...>
-From: Selva Nair <selva.nair@...277...>
-Date: Thu, 25 Jan 2018 10:14:20 -0500
-Message-ID: <CAKuzo_i5qGrDQoJK8nb0P2WQHQnRmBzxR_m6W56Y5gq5HhnfFA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: TLS v1.2 support for
- cryptoapicert -- RSA only
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="Kjn60822oUuI93ff"
+Content-Disposition: inline
+In-Reply-To: <99D61A626FDA8A4B90A270669121BE1085B4CA4D@...2294...>
+Subject: Re: [Openvpn-devel] [PATCH 09/13] Signed/unsigned warnings of MSVC
+ resolved
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,65 +26,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Simon Rozman <simon@...2293...>
+Cc: Selva Nair <selva.nair@...277...>, Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--Kjn60822oUuI93ff
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
+On Wed, Dec 06, 2017 at 05:10:45PM +0000, Simon Rozman wrote:
+> > > The get_interface_metric() function should get a more thorough rewrite
+> > than just a compiler warning shut-up. So the patch will probably get di=
+vided
+> > in two - the simple signed/unsigned fixes and get_interface_metric()
+> > redesign.
+[..]
+> I have tested and am confirming MSVC is happy with the block_dns.c now.
+>=20
+> Should your patch be merged, I shall rebase the "[PATCH 09/13] Signed/uns=
+igned warnings of MSVC resolved" to the new master and deliver the next ver=
+sion.
 
-On Thu, Jan 25, 2018 at 6:18 AM, Gert Doering <gert@...1296...> wrote:
-> Your patch has been applied to the master and release/2.4 branch.
->
-> I have tested on unix (where it obviously did not make a difference),
-> compile-tested on my old ubuntu 14.04 build environment (fails with
-> CERT_NCRYPT_KEY_SPEC not being defined, because mingw *there* needs
-> "_WIN32_WINNT >= 0x0601") and successfully built on a brand new ubuntu
-> 16.04 build environment, which adds a new "wincrypt.h" file with new
-> #if WINAPI_FAMILY_PARTITION fun... :-)
->
-> [short summary: throw away your 14.04 build systems, we have decided to
->  break them, and that's what they are: broken!]
->
-> There is one thing I'm not sure I understand in the code, which might
-> warrant a typo-fix patch:
->
-> +        msg(M_WARN,"WARNING: cryptoapicert: private key is in a legacy store."
-> +            " Restricting TLS version to 1.1");
-> +        if (!SSL_CTX_set_max_proto_version(ssl_ctx, TLS1_1_VERSION))
-> +        {
-> +            msg(M_NONFATAL,"ERROR: cryptoapicert: unable to set max TLS version"
-> +                " to 1.1. Try config option --tls-version-min 1.1");
-> +            goto err;
-> +        }
->
-> should that be "--tls-version-*max* 1.1"?
+I finally came around to merging the get_interface_metric() patch from
+Selva today, so I await your fixup patch of the remaining MSVC warnings :-)
 
-In short, there was a reasoning behind that "min" and not "max" but it
-turns out to be not really useful. For details (which is more of a
-note to self) read on:
+thanks,
 
---tls-version-max 1.1 will make the same call as what we do here, so
-if this fails that would also.
+gert
 
-The reason for that hint to set min version instead of max was this:
-If the user has set tls-version-min to, say, 1.2 and openssl enforces
-max >= min, the call could fail and asking the user to set the min
-version to 1.1 (or lower) was thought of as a helpful hint.
+--=20
+now what should I write here...
 
-But it turns out openssl does not impose max >= min (though such a
-situation will eventually cause a handshake failure), and are unlikely
-to add such a check for legitimate reasons. In openssl 1.1.0, that
-call could fail only if min==max==1.1 and 1.1 is explicitly disabled
---  hard to tell the user what to do in that case as it just should
-not happen in our current code base.
+Gert Doering - Munich, Germany                             gert@...1296...
 
-A more useful thing to do is to catch the case of user setting min =
-1.2 (as in trac 977) and we changing max to 1.1 when key is in a
-legacy key store. That would cause a handshake failure with a cryptic
-error. Better to catch early with a helpful warning. Will consider a
-patch for that and trim down the above log message at that time.
+--Kjn60822oUuI93ff
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Selva
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJaaf8lAAoJEB2Cnv7KVigS1UsL/RPkqLGf8xS5cg0FYQbVTY47
+TwrzRifb3HPzyJtUpMd6DHFrIhLL5UsVZI9w0rVdBIIn7tMdqK8NZfp8gR1LNf1b
+gLI27HOsLvKgtpkS23LlMlawko+HAQqeT3W08HuDRKsU2pw665ZX4YUk3BuaYBfB
+lcv0PVtBmbVQPtlC0NLzaXJHQKzrnuAMgrWQN2K3UgRheBQ/c4Xn+PAPiUZP+zhZ
+/k7Ry2cRAaMPT3EwGIWk0G2rnUNxIrBy+nI/zwPjojL5nOKU+S4fnsIktTNA1Rfk
+W035UiNi3UWRIp5xGwLj7ywVcBsPvThBQf28WQ5IKgoUg59/xFZBbxTAQTXite8g
+Sdf+TqqBPptolmfBrQxfwUx4wAyJJTcZAWlSx3c4TMJRzgTMqPIF+9Y2howxay+7
+mTgbHYZzS7wdAF7UyUe6EB7I9OQtX0ilcg/gotupx6KNT+EyJlNyY0sVGpD6yxpb
+iAi3Z8VeMOx1po5g1Cpu/x9GpjHqZnV6wi3xqjvEyA==
+=T9tH
+-----END PGP SIGNATURE-----
+
+--Kjn60822oUuI93ff--
 
