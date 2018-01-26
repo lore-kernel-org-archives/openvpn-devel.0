@@ -1,10 +1,10 @@
 From: selva.nair@...277...
-Date: Fri, 26 Jan 2018 10:53:10 -0500
-Message-Id: <1516981990-4610-1-git-send-email-selva.nair@...277...>
-In-Reply-To: <93167c2a-c7a2-de57-f793-7fdc2004bfb2@...1435...>
-References: <93167c2a-c7a2-de57-f793-7fdc2004bfb2@...1435...>
-Subject: [Openvpn-devel] [PATCH v2 2/3] Move setting private key to a
- function in prep for EC support
+Date: Fri, 26 Jan 2018 11:05:32 -0500
+Message-Id: <1516982732-24145-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <e8846dfb-4d69-3e70-2602-0ed516f7a760@...1435...>
+References: <e8846dfb-4d69-3e70-2602-0ed516f7a760@...1435...>
+Subject: [Openvpn-devel] [PATCH v2 1/3] Move code to free cd to a function
+ CAPI_DATA_free()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,226 +19,103 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-- Also add reference counting to CAPI_DATA (application data):
-
-  When the application data is assigned to the private key
-  we free it in the key's finish method. Proper error handling
-  requires to keep track of whether data is assigned to the
-  key or not before an error occurs. For this purpose, add a
-  reference count to CAPI_DATA struct and increment it when it is
-  assigned to the key or its method.
-
-  CAPI_DATA_free now frees the data only if ref_count <= 0
+- Avoids code-repetition especially so when support
+  for more key types are added.
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
-v2: In response to Steffan's review:
-    check the return value of EVP_PKEY_get0_RSA()
+v2: Same as the ACK-ed v1 but the extra newline removed.
 
- src/openvpn/cryptoapi.c | 144 ++++++++++++++++++++++++++++--------------------
- 1 file changed, 85 insertions(+), 59 deletions(-)
+ src/openvpn/cryptoapi.c | 62 +++++++++++++++++++++----------------------------
+ 1 file changed, 27 insertions(+), 35 deletions(-)
 
 diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
-index 0349191..8c66b5f 100644
+index f155123..0349191 100644
 --- a/src/openvpn/cryptoapi.c
 +++ b/src/openvpn/cryptoapi.c
-@@ -106,12 +106,13 @@ typedef struct _CAPI_DATA {
-     HCRYPTPROV_OR_NCRYPT_KEY_HANDLE crypt_prov;
-     DWORD key_spec;
+@@ -108,6 +108,31 @@ typedef struct _CAPI_DATA {
      BOOL free_crypt_prov;
-+    int ref_count;
  } CAPI_DATA;
  
- static void
- CAPI_DATA_free(CAPI_DATA *cd)
- {
--    if (!cd)
-+    if (!cd || cd->ref_count-- > 0)
-     {
-         return;
-     }
-@@ -466,14 +467,85 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
-     return rv;
- }
- 
-+static int
-+ssl_ctx_set_rsakey(SSL_CTX *ssl_ctx, CAPI_DATA *cd, EVP_PKEY *pkey)
++static void
++CAPI_DATA_free(CAPI_DATA *cd)
 +{
-+    RSA *rsa = NULL, *pub_rsa;
-+    RSA_METHOD *my_rsa_method = NULL;
-+    bool rsa_method_set = false;
-+
-+    my_rsa_method = RSA_meth_new("Microsoft Cryptography API RSA Method",
-+                                  RSA_METHOD_FLAG_NO_CHECK);
-+    check_malloc_return(my_rsa_method);
-+    RSA_meth_set_pub_enc(my_rsa_method, rsa_pub_enc);
-+    RSA_meth_set_pub_dec(my_rsa_method, rsa_pub_dec);
-+    RSA_meth_set_priv_enc(my_rsa_method, rsa_priv_enc);
-+    RSA_meth_set_priv_dec(my_rsa_method, rsa_priv_dec);
-+    RSA_meth_set_init(my_rsa_method, NULL);
-+    RSA_meth_set_finish(my_rsa_method, finish);
-+    RSA_meth_set0_app_data(my_rsa_method, cd);
-+
-+    rsa = RSA_new();
-+    if (rsa == NULL)
++    if (!cd)
 +    {
-+        SSLerr(SSL_F_SSL_CTX_USE_CERTIFICATE_FILE, ERR_R_MALLOC_FAILURE);
-+        goto err;
++        return;
 +    }
-+
-+    pub_rsa = EVP_PKEY_get0_RSA(pkey);
-+    if (!pub_rsa)
++    if (cd->free_crypt_prov && cd->crypt_prov)
 +    {
-+        goto err;
++        if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
++        {
++            NCryptFreeObject(cd->crypt_prov);
++        }
++        else
++        {
++            CryptReleaseContext(cd->crypt_prov, 0);
++        }
 +    }
-+
-+    /* Our private key is external, so we fill in only n and e from the public key */
-+    const BIGNUM *n = NULL;
-+    const BIGNUM *e = NULL;
-+    RSA_get0_key(pub_rsa, &n, &e, NULL);
-+    BIGNUM *rsa_n = BN_dup(n);
-+    BIGNUM *rsa_e = BN_dup(e);
-+    if (!rsa_n || !rsa_e || !RSA_set0_key(rsa, rsa_n, rsa_e, NULL))
++    if (cd->cert_context)
 +    {
-+        BN_free(rsa_n); /* ok to free even if NULL */
-+        BN_free(rsa_e);
-+        msg(M_NONFATAL, "ERROR: %s: out of memory", __func__);
-+        goto err;
++        CertFreeCertificateContext(cd->cert_context);
 +    }
-+    RSA_set_flags(rsa, RSA_flags(rsa) | RSA_FLAG_EXT_PKEY);
-+    if (!RSA_set_method(rsa, my_rsa_method))
-+    {
-+        goto err;
-+    }
-+    rsa_method_set = true; /* flag that method pointer will get freed with the key */
-+    cd->ref_count++;       /* with method, cd gets assigned to the key as well */
-+
-+    if (!SSL_CTX_use_RSAPrivateKey(ssl_ctx, rsa))
-+    {
-+        goto err;
-+    }
-+    /* SSL_CTX_use_RSAPrivateKey() increased the reference count in 'rsa', so
-+     * we decrease it here with RSA_free(), or it will never be cleaned up. */
-+    RSA_free(rsa);
-+    return 1;
-+
-+err:
-+    if (rsa)
-+    {
-+        RSA_free(rsa);
-+    }
-+    if (my_rsa_method && !rsa_method_set)
-+    {
-+        RSA_meth_free(my_rsa_method);
-+    }
-+    return 0;
++    free(cd);
 +}
 +
- int
- SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
+ static char *
+ ms_error_text(DWORD ms_err)
  {
-     HCERTSTORE cs;
-     X509 *cert = NULL;
--    RSA *rsa = NULL, *pub_rsa;
-     CAPI_DATA *cd = calloc(1, sizeof(*cd));
--    RSA_METHOD *my_rsa_method = NULL;
- 
-     if (cd == NULL)
+@@ -363,22 +388,7 @@ finish(RSA *rsa)
      {
-@@ -548,30 +620,13 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
-         }
+         return 0;
      }
- 
--    my_rsa_method = RSA_meth_new("Microsoft Cryptography API RSA Method",
--                                  RSA_METHOD_FLAG_NO_CHECK);
--    check_malloc_return(my_rsa_method);
--    RSA_meth_set_pub_enc(my_rsa_method, rsa_pub_enc);
--    RSA_meth_set_pub_dec(my_rsa_method, rsa_pub_dec);
--    RSA_meth_set_priv_enc(my_rsa_method, rsa_priv_enc);
--    RSA_meth_set_priv_dec(my_rsa_method, rsa_priv_dec);
--    RSA_meth_set_init(my_rsa_method, NULL);
--    RSA_meth_set_finish(my_rsa_method, finish);
--    RSA_meth_set0_app_data(my_rsa_method, cd);
--
--    rsa = RSA_new();
--    if (rsa == NULL)
+-    if (cd->crypt_prov && cd->free_crypt_prov)
 -    {
--        SSLerr(SSL_F_SSL_CTX_USE_CERTIFICATE_FILE, ERR_R_MALLOC_FAILURE);
--        goto err;
--    }
--
-     /* Public key in cert is NULL until we call SSL_CTX_use_certificate(),
-      * so we do it here then...  */
-     if (!SSL_CTX_use_certificate(ssl_ctx, cert))
-     {
-         goto err;
-     }
-+
-     /* the public key */
-     EVP_PKEY *pkey = X509_get0_pubkey(cert);
- 
-@@ -580,52 +635,23 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
-     X509_free(cert);
-     cert = NULL;
- 
--    if (!(pub_rsa = EVP_PKEY_get0_RSA(pkey)))
-+    if (EVP_PKEY_id(pkey) == EVP_PKEY_RSA)
-     {
--        msg(M_WARN, "cryptoapicert requires an RSA certificate");
--        goto err;
--    }
--
--    /* Our private key is external, so we fill in only n and e from the public key */
--    const BIGNUM *n = NULL;
--    const BIGNUM *e = NULL;
--    RSA_get0_key(pub_rsa, &n, &e, NULL);
--    if (!RSA_set0_key(rsa, BN_dup(n), BN_dup(e), NULL))
--    {
--        goto err;
--    }
--    RSA_set_flags(rsa, RSA_flags(rsa) | RSA_FLAG_EXT_PKEY);
--    if (!RSA_set_method(rsa, my_rsa_method))
--    {
--        goto err;
-+        if (!ssl_ctx_set_rsakey(ssl_ctx, cd, pkey))
-+        {
-+            goto err;
-+        }
-     }
--
--    if (!SSL_CTX_use_RSAPrivateKey(ssl_ctx, rsa))
-+    else
-     {
-+        msg(M_WARN, "cryptoapicert requires an RSA certificate");
-         goto err;
-     }
--    /* SSL_CTX_use_RSAPrivateKey() increased the reference count in 'rsa', so
--    * we decrease it here with RSA_free(), or it will never be cleaned up. */
--    RSA_free(rsa);
-+    cd->ref_count--; /* so that cd will get freed with the private key */
-     return 1;
- 
- err:
--    if (cert)
--    {
--        X509_free(cert);
--    }
--    if (rsa)
--    {
--        RSA_free(rsa);
--    }
--    else
--    {
--        if (my_rsa_method)
+-        if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
 -        {
--            free(my_rsa_method);
+-            NCryptFreeObject(cd->crypt_prov);
 -        }
--        CAPI_DATA_free(cd);
+-        else
+-        {
+-            CryptReleaseContext(cd->crypt_prov, 0);
+-        }
 -    }
+-    if (cd->cert_context)
+-    {
+-        CertFreeCertificateContext(cd->cert_context);
+-    }
+-    free(cd);
 +    CAPI_DATA_free(cd);
+     RSA_meth_free((RSA_METHOD*) rsa_meth);
+     return 1;
+ }
+@@ -614,25 +624,7 @@ err:
+         {
+             free(my_rsa_method);
+         }
+-        if (cd)
+-        {
+-            if (cd->free_crypt_prov && cd->crypt_prov)
+-            {
+-                if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
+-                {
+-                    NCryptFreeObject(cd->crypt_prov);
+-                }
+-                else
+-                {
+-                    CryptReleaseContext(cd->crypt_prov, 0);
+-                }
+-            }
+-            if (cd->cert_context)
+-            {
+-                CertFreeCertificateContext(cd->cert_context);
+-            }
+-            free(cd);
+-        }
++        CAPI_DATA_free(cd);
+     }
      return 0;
  }
- 
 -- 
 2.1.4
 
