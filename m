@@ -1,25 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <468ef4ed-11f2-0095-bc96-ab0fe23a91aa@...2080...>
-References: <1515959073-10376-1-git-send-email-selva.nair@...277...>
- <1515959073-10376-3-git-send-email-selva.nair@...277...>
- <e059b07e-5684-1dbe-cfdf-1271efc594dc@...1227...>
- <CAKuzo_jN9EOK5aPr2dn+m+ynarY-Snt2pwOmz9cV32BpKSFq=w@...278...>
- <CAKuzo_hYwcRDJjYW7i=Ekmi93TAXRb+n=sNyi4y=+gS+vbbtAA@...278...>
- <caf0faaa-428f-29c4-797f-8be8ac4f0f47@...1435...>
- <CAKuzo_jRh+7KSfw6GTVuXTDnMQCDfrH3g5m=N9GGDTDVLijBhg@...278...>
- <07f28923-1023-fe7b-2b3e-e57ad3f6bc8f@...2080...>
- <CAKuzo_iVUouudtkpuRBJj_x2RrgD0q07RUg4T1q6RNghAwCbOg@...278...>
- <f06320ac-5b89-0cdd-9ef1-eddde02b848a@...2080...>
- <CAKuzo_gpcR9PrVcPWYRsa7v7sATsbj=2hQYNzaJ-hpjjk7ZeAw@...278...>
- <CAEsd45Q+4GYFhf1Jmn-UrPVKFHoGsE3NP9oq13mh8_p1wqxLog@...278...>
- <CAEsd45QqwxqTfWrhfD3i7VScTzQiEDeFJrbk9Nky05THGMnrcQ@...278...>
- <CAKuzo_gW6+8BRqx9+uGHOOmVtqpLgnzev96TV3Y2jxky_tWxMA@...278...>
- <468ef4ed-11f2-0095-bc96-ab0fe23a91aa@...2080...>
+In-Reply-To: <c777ae0c-985f-3d1e-d585-efa5d64f33e6@...1856...>
+References: <20180120164114.12478-1-steffan@...1856...>
+ <CAKuzo_hZh0+P2-CjdQ9Y4xVMxB5WsJEEOt8nR7rG72fGCdie7Q@...278...>
+ <c777ae0c-985f-3d1e-d585-efa5d64f33e6@...1856...>
 From: Selva Nair <selva.nair@...277...>
-Date: Thu, 25 Jan 2018 18:23:54 -0500
-Message-ID: <CAKuzo_j0qHeZTxo=k+4BrNTR3zgrrJjkOnGct9RicgLxEV3RoA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 2/3] Allow external EC key through
- --management-external-key
+Date: Thu, 25 Jan 2018 20:08:13 -0500
+Message-ID: <CAKuzo_hkp28Z0Sab4G1ct=8sZOudX_phEcSLZpnkULrNaSmEjg@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Enable extra compiler warnings by
+ default
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -30,52 +18,60 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Thu, Jan 25, 2018 at 6:01 PM, David Sommerseth
-<openvpn@...2080...> wrote:
-> On 25/01/18 19:46, Selva Nair wrote:
->> Hi,
->>
->> On Thu, Jan 25, 2018 at 1:36 PM, Jonathan K. Bullard
->> <jkbullard@...277...> wrote:
->>> Hi.
->>>
->>> On Mon, Jan 22, 2018 at 12:31 PM, Selva Nair <selva.nair@...277...> wrote:
->>>> What about extending the current "version" command with an argument
->>>> where the client states the version of "management-speak" that it
->>>> supports. Current management version is 1, we increase it to 1.1 and
->>>> unless the client says "version 1.1" or more we do not send PK_SIGN.
->>>> The client could do that when it gets the version message or any time
->>>> later. The response to version command (current management version and
->>>> openvpn daemon's version stays the same). No full-fledged cap
->>>> negotiation, but good enough.
->>>
->>> That sounds reasonable; easy to implement in Tunnelblick
->>>
->>>
->>>> The UX would be much better that way.
->>>
->>> Absolutely.
->>>
->>
->> Encouraged by Jonathan's reply I have made a patch to rename RSA_SIGN
->> to PK_SIGN if client announces a version > 1. Will send it and a
->> modified EC key patch soon.
+On Sun, Jan 21, 2018 at 4:17 AM, Steffan Karger <steffan@...1856...> wrote:
+> Hi,
 >
-> Sounds good!  Just one question ... any reason why to complicate the version
-> number with decimals?  Why not just version 1, 2,...X?  Coding wise, this is
-> much easier too, as we don't need to do more complicated conversion steps from
-> strings to float.
+> On 21-01-18 06:37, Selva Nair wrote:
+>>
+>> On Sat, Jan 20, 2018 at 11:41 AM, Steffan Karger <steffan@...1856...> wrote:
+>>>
+>>> This by default enables the compiler warnings any could previously
+>>> enable using the --enable-strict configure option.  I think it is
+>>> okay to do so now, because we've taken care of many warnings in the
+>>> more standard builds.  (Most of those were totally harmless, but they
+>>> prevented us from spotting new more serious mistakes.)
+>>>
+>>> Those who prefer a more silent build can use --disable-strict to revert
+>>> to the old default behaviour.
+>>
+>> I think --enable-strict by default is good to have. In fact its needed to
+>> keep on bugging us about many of those printf format spec issues we
+>> still have with mingw.
+>>
+>>>
+>>> Signed-off-by: Steffan Karger <steffan@...1856...>
+>>> ---
+>>>  configure.ac | 4 ++--
+>>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/configure.ac b/configure.ac
+>>> index 2c1937e5..2b5fa533 100644
+>>> --- a/configure.ac
+>>> +++ b/configure.ac
+>>> @@ -209,9 +209,9 @@ AC_ARG_ENABLE(
+>>>
+>>>  AC_ARG_ENABLE(
+>>>         [strict],
+>>> -       [AS_HELP_STRING([--enable-strict], [enable strict compiler warnings (debugging option) @<:@default=no@:>@])],
+>>> +       [AS_HELP_STRING([--disable-strict], [enable strict compiler warnings (debugging option) @<:@default=yes@:>@])],
+>>
+>> The description should now read "disable strict compiler warnings...",
+>> isn't it? Could be fixed while merging..
+>>
+>
+> Yeah, it should.  Though while brushing my teeth last night, I was
+> wondering whether it's worth to have --disable-strict at all.  Shouldn't
+> we just unconditionally enable the current strict compiler flags?  We
+> could then make the --enable-strict flags a bit stricter to catch more
+> mistakes.
 
-Yes, patch submitted this afternoon uses just a single integer -- so
-the version goes up to 2.  My plan was to split "1.1" into major +
-minor (float in the RFC patch was just for amusement) but as you say a
-single integer is so much easier and good enough for this.
-
-Thanks,
+Personally either way would be great improvement as I forget to enable
+-Wall almost every time and have to re-configure.
 
 Selva
 
