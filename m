@@ -1,3 +1,6 @@
+Date: Fri, 26 Jan 2018 16:35:05 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180126153505.GY69387@...1296...>
 References: <1509930876-30728-1-git-send-email-selva.nair@...277...>
  <1516815105-17882-1-git-send-email-selva.nair@...277...>
  <2f187b23-c53f-94cb-6a58-d5c9c14b5da1@...1147...>
@@ -5,12 +8,11 @@ References: <1509930876-30728-1-git-send-email-selva.nair@...277...>
  <CAKuzo_i4Ge=3cbg3zZY61ps+wDi8eCC1M4dopNJKGoB-LmT0Qw@...278...>
  <cba28408-81d0-5295-c882-f4bfdfcc20c3@...1147...>
  <CAKuzo_gCvfSYi+u4XJd88te-B_XbW1AkEQ3LxsuHaAH29EDVrw@...278...>
-From: Jan Just Keijser <janjust@...1147...>
-Message-ID: <d6470547-c05a-926e-6f30-4a2f6342cccf@...1147...>
-Date: Fri, 26 Jan 2018 16:33:18 +0100
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="Ec463DdZaKtRhMf1"
+Content-Disposition: inline
 In-Reply-To: <CAKuzo_gCvfSYi+u4XJd88te-B_XbW1AkEQ3LxsuHaAH29EDVrw@...278...>
-Content-Language: en-US
 Subject: Re: [Openvpn-devel] [PATCH v3] Use lowest metric interface when
  multiple interfaces match a route
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,66 +23,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
 To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: Jan Just Keijser <janjust@...1147...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--Ec463DdZaKtRhMf1
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On 26/01/18 16:26, Selva Nair wrote:
-> On Fri, Jan 26, 2018 at 10:20 AM, Jan Just Keijser <janjust@...1147...> wrote:
->>
->> On 26-Jan-18 16:08, Selva Nair wrote:
->>
->>>> arrrgh, the important line is missing:
->>>>    ERROR: Windows route add ipv6 command failed: returned error code 1
->>> Gert has explained the fe80::8 magic.
->>>
->>> Here is my guess about the ERROR: The route already existed and so
->>> errored trying to add again -- most likely from a previous run as it
->>> seems we have a problem in deleting the route on exit (I guess this is
->>> on Windows 10) (see Trac 1003:
->>> https://community.openvpn.net/openvpn/ticket/1003 )
->>>
->>> "netsh int ipv6 show route" will confirm that.
->>>
->>> The route destinations have their host bits zeroed out before setting
->>> route, but those bits reappear (which is strange)  in route delete.
->>> And netsh doesnt like that at least on Windows 10. Gert, any idea why
->>> this happens?
->>>
->> this is on *Windows 7*  and indeed that route is never deleted when OpenVPN
->> exits. Here's the error associated with *that*:
->>
->> Fri Jan 26 16:13:08 2018 ERROR: Windows route delete ipv6 command failed:
->> returned error code 1
->> Fri Jan 26 16:13:09 2018 NETSH: C:\Windows\system32\netsh.exe interface ipv6
->> delete address vpn0 2001:610:120::200:0:1001 store=active
->> Fri Jan 26 16:13:09 2018 TAP: DHCP address released
->>
->> C:\Users\janjust\OpenVPN\config> C:\Windows\system32\netsh.exe interface
->> ipv6 delete route 2001:610:120::200:0:1001/112
->> interface=17 fe80::8 store=active
->> The parameter is incorrect.
-> The error is due to the host part (1001) in the route destination --
-> changing that to
-> C:\Windows\system32\netsh.exe interface  ipv6 delete route
-> 2001:610:120::200:0:/112
-> should succeed.
->
+On Fri, Jan 26, 2018 at 10:26:58AM -0500, Selva Nair wrote:
 > The mystery (at least for me)  is where that host part is coming
 > from... Its zeroed out before setting the route, and I thought the
-> same (?) route list pointer is passed in while deleting routes.
->
->
-that also did not work; what does work is:
-   C:\Windows\system32\netsh.exe interface ipv6 delete route 2001:610:120::200:0:0/112
+> same (?) route list pointer is
+> passed in while deleting routes.
 
-so indeed, the host part is added at deletion time.
+"I seem to remember code changes related to that, possibly related to
+the introduction of the interactive service handle"
 
-HTH,
+Can't look right now, but I think we had 2x zeroing and that was=20
+unified and stored, or something like that... need to check, later
+this evening.
 
-JJK
+gert
 
+--=20
+now what should I write here...
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--Ec463DdZaKtRhMf1
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJaa0qoAAoJEB2Cnv7KVigSxY0MAIRn0EL/OB2nXwbTL8BU0GVy
+fLViZ6AirHCYf7pc+AQCcA7rShko+UouT+Pzvhnl0G5y5wSO4dxn3+pWMjjBH0Kl
+yoKAkbDM0OEwFrB3+wfEzHfUTHRIHKfKOqIoWvL76twyrgN7Vccr8UBI5rgnBk0H
+WxfefPC8ej19dIypjgZJihrnnKovmQW6QKMEFxJ86/WkoL8h/tu8xH0b55C+a1r4
+onofosz9AeH29/rSAnxgl5ariOdVtSMgD0ryTdhuBh+/UyikeQ7vW74SsEqDyvQQ
+1wGPbzhbl01bE1fa7MSIqZRpMByGct8uqCvtMHqtbLeRh4ZhwXgIOmt2+K35gTdu
+mAPm3GPnDYSyALm7EfMlZrgr++k8v5xgZAP03e96LkIaIRSqxu77y98OwVNNo1VF
+JTZti1KSpthHuZctiXb+tU9abuRucDFUn4MrCQMvRlHYsPVYLtqKsQzCPjyWlvO4
+xWDpOfJ9cOPHR0A3FClNT8+iAj2NIO8MG4t0aWfNyA==
+=hLo4
+-----END PGP SIGNATURE-----
+
+--Ec463DdZaKtRhMf1--
 
