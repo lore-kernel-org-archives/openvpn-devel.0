@@ -1,13 +1,13 @@
+From: Steffan Karger <steffan.karger@...1435...>
+References: <1516770381-29466-1-git-send-email-selva.nair@...277...>
+ <1516770381-29466-2-git-send-email-selva.nair@...277...>
+Message-ID: <e8846dfb-4d69-3e70-2602-0ed516f7a760@...1435...>
+Date: Fri, 26 Jan 2018 11:26:42 +0100
 MIME-Version: 1.0
-In-Reply-To: <c777ae0c-985f-3d1e-d585-efa5d64f33e6@...1856...>
-References: <20180120164114.12478-1-steffan@...1856...>
- <CAKuzo_hZh0+P2-CjdQ9Y4xVMxB5WsJEEOt8nR7rG72fGCdie7Q@...278...>
- <c777ae0c-985f-3d1e-d585-efa5d64f33e6@...1856...>
-From: Selva Nair <selva.nair@...277...>
-Date: Thu, 25 Jan 2018 20:08:13 -0500
-Message-ID: <CAKuzo_hkp28Z0Sab4G1ct=8sZOudX_phEcSLZpnkULrNaSmEjg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Enable extra compiler warnings by
- default
+In-Reply-To: <1516770381-29466-2-git-send-email-selva.nair@...277...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH 1/3] Move code to free cd to a function
+ CAPI_DATA_free()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,62 +16,119 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Sun, Jan 21, 2018 at 4:17 AM, Steffan Karger <steffan@...1856...> wrote:
-> Hi,
->
-> On 21-01-18 06:37, Selva Nair wrote:
->>
->> On Sat, Jan 20, 2018 at 11:41 AM, Steffan Karger <steffan@...1856...> wrote:
->>>
->>> This by default enables the compiler warnings any could previously
->>> enable using the --enable-strict configure option.  I think it is
->>> okay to do so now, because we've taken care of many warnings in the
->>> more standard builds.  (Most of those were totally harmless, but they
->>> prevented us from spotting new more serious mistakes.)
->>>
->>> Those who prefer a more silent build can use --disable-strict to revert
->>> to the old default behaviour.
->>
->> I think --enable-strict by default is good to have. In fact its needed to
->> keep on bugging us about many of those printf format spec issues we
->> still have with mingw.
->>
->>>
->>> Signed-off-by: Steffan Karger <steffan@...1856...>
->>> ---
->>>  configure.ac | 4 ++--
->>>  1 file changed, 2 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/configure.ac b/configure.ac
->>> index 2c1937e5..2b5fa533 100644
->>> --- a/configure.ac
->>> +++ b/configure.ac
->>> @@ -209,9 +209,9 @@ AC_ARG_ENABLE(
->>>
->>>  AC_ARG_ENABLE(
->>>         [strict],
->>> -       [AS_HELP_STRING([--enable-strict], [enable strict compiler warnings (debugging option) @<:@default=no@:>@])],
->>> +       [AS_HELP_STRING([--disable-strict], [enable strict compiler warnings (debugging option) @<:@default=yes@:>@])],
->>
->> The description should now read "disable strict compiler warnings...",
->> isn't it? Could be fixed while merging..
->>
->
-> Yeah, it should.  Though while brushing my teeth last night, I was
-> wondering whether it's worth to have --disable-strict at all.  Shouldn't
-> we just unconditionally enable the current strict compiler flags?  We
-> could then make the --enable-strict flags a bit stricter to catch more
-> mistakes.
+On 24-01-18 06:06, selva.nair@...277... wrote:
+> From: Selva Nair <selva.nair@...277...>
+> 
+> - Avoids code-repetition especially so when support
+>   for more key types are added.
+> 
+> Signed-off-by: Selva Nair <selva.nair@...277...>
+> ---
+>  src/openvpn/cryptoapi.c | 63 ++++++++++++++++++++++---------------------------
+>  1 file changed, 28 insertions(+), 35 deletions(-)
+> 
+> diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
+> index f155123..00e78b6 100644
+> --- a/src/openvpn/cryptoapi.c
+> +++ b/src/openvpn/cryptoapi.c
+> @@ -108,6 +108,32 @@ typedef struct _CAPI_DATA {
+>      BOOL free_crypt_prov;
+>  } CAPI_DATA;
+>  
+> +static void
+> +CAPI_DATA_free(CAPI_DATA *cd)
+> +{
+> +    if (!cd)
+> +    {
+> +        return;
+> +    }
+> +    if (cd->free_crypt_prov && cd->crypt_prov)
+> +    {
+> +        if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
+> +        {
+> +            NCryptFreeObject(cd->crypt_prov);
+> +        }
+> +        else
+> +        {
+> +            CryptReleaseContext(cd->crypt_prov, 0);
+> +        }
+> +    }
+> +    if (cd->cert_context)
+> +    {
+> +        CertFreeCertificateContext(cd->cert_context);
+> +    }
+> +    free(cd);
+> +}
+> +
+> +
 
-Personally either way would be great improvement as I forget to enable
--Wall almost every time and have to re-configure.
+This could have been a single newline.
 
-Selva
+>  static char *
+>  ms_error_text(DWORD ms_err)
+>  {
+> @@ -363,22 +389,7 @@ finish(RSA *rsa)
+>      {
+>          return 0;
+>      }
+> -    if (cd->crypt_prov && cd->free_crypt_prov)
+> -    {
+> -        if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
+> -        {
+> -            NCryptFreeObject(cd->crypt_prov);
+> -        }
+> -        else
+> -        {
+> -            CryptReleaseContext(cd->crypt_prov, 0);
+> -        }
+> -    }
+> -    if (cd->cert_context)
+> -    {
+> -        CertFreeCertificateContext(cd->cert_context);
+> -    }
+> -    free(cd);
+> +    CAPI_DATA_free(cd);
+>      RSA_meth_free((RSA_METHOD*) rsa_meth);
+>      return 1;
+>  }
+> @@ -614,25 +625,7 @@ err:
+>          {
+>              free(my_rsa_method);
+>          }
+> -        if (cd)
+> -        {
+> -            if (cd->free_crypt_prov && cd->crypt_prov)
+> -            {
+> -                if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
+> -                {
+> -                    NCryptFreeObject(cd->crypt_prov);
+> -                }
+> -                else
+> -                {
+> -                    CryptReleaseContext(cd->crypt_prov, 0);
+> -                }
+> -            }
+> -            if (cd->cert_context)
+> -            {
+> -                CertFreeCertificateContext(cd->cert_context);
+> -            }
+> -            free(cd);
+> -        }
+> +        CAPI_DATA_free(cd);
+>      }
+>      return 0;
+>  }
+> 
+
+Other than that, looks good and works as expected.  So:
+
+Acked-by: Steffan Karger <steffan.karger@...1435...>
+
+-Steffan
 
