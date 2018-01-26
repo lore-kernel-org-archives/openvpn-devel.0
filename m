@@ -1,10 +1,8 @@
-From: selva.nair@...277...
-Date: Fri, 26 Jan 2018 11:05:32 -0500
-Message-Id: <1516982732-24145-1-git-send-email-selva.nair@...277...>
-In-Reply-To: <e8846dfb-4d69-3e70-2602-0ed516f7a760@...1435...>
-References: <e8846dfb-4d69-3e70-2602-0ed516f7a760@...1435...>
-Subject: [Openvpn-devel] [PATCH v2 1/3] Move code to free cd to a function
- CAPI_DATA_free()
+Message-ID: <1516998568.3034.15.camel@...2316...>
+From: James Bottomley <James.Bottomley@...2316...>
+Date: Fri, 26 Jan 2018 12:29:28 -0800
+Mime-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v3 0/2] add engine keys keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,106 +15,47 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+Engine keys are an openssl concept for a key file which can only be
+understood by an engine (usually because it's been wrapped by the
+engine itself).  We use this for TPM engine keys, so you can either
+generate them within your TPM or wrap them from existing private keys.
+ Once wrapped, the keys will only function in the TPM that generated
+them, so it means the VPN keys are tied to the physical platform, which
+is very useful.  Engine keys have to be loaded via a specific callback,
+so use this as a fallback in openvpn if an engine is specified and if
+the PEM read of the private key fails.
 
-- Avoids code-repetition especially so when support
-  for more key types are added.
+Adding a unit test for this type of key proved particularly
+problematic: there's apparently no simple engine you can use to check
+the functionality, so after a bit of googling, I just wrote one as part
+of the test.  You can see that the unit test converts an existing key
+to engine format (which is simply changing the PEM guards), tries to
+start openvpn with the key and verifies that the engine methods are
+called and the password correctly retrieved.  To make the test simple,
+it relies on openssl detecting a mismatch between the certificate and
+the key after the key has been loaded rather than going on to bring up
+an openvpn loop, but I think that's sufficient to test out the engine
+patch fully.
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
-v2: Same as the ACK-ed v1 but the extra newline removed.
+James Bottomley (2):
+  openssl: add engine method for loading the key
+  Add unit tests for engine keys
 
- src/openvpn/cryptoapi.c | 62 +++++++++++++++++++++----------------------------
- 1 file changed, 27 insertions(+), 35 deletions(-)
+ configure.ac                                     |   2 +
+ src/openvpn/crypto_openssl.c                     |  55 ++++++++++++
+ src/openvpn/crypto_openssl.h                     |  12 +++
+ src/openvpn/ssl_openssl.c                        |   6 +-
+ tests/unit_tests/Makefile.am                     |   6 +-
+ tests/unit_tests/engine-key/Makefile.am          |  14 ++++
+ tests/unit_tests/engine-key/check_engine_keys.sh |  30 +++++++
+ tests/unit_tests/engine-key/libtestengine.c      | 102 +++++++++++++++++++++++
+ tests/unit_tests/engine-key/openssl.cnf          |  12 +++
+ 9 files changed, 237 insertions(+), 2 deletions(-)
+ create mode 100644 tests/unit_tests/engine-key/Makefile.am
+ create mode 100755 tests/unit_tests/engine-key/check_engine_keys.sh
+ create mode 100644 tests/unit_tests/engine-key/libtestengine.c
+ create mode 100644 tests/unit_tests/engine-key/openssl.cnf
 
-diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
-index f155123..0349191 100644
---- a/src/openvpn/cryptoapi.c
-+++ b/src/openvpn/cryptoapi.c
-@@ -108,6 +108,31 @@ typedef struct _CAPI_DATA {
-     BOOL free_crypt_prov;
- } CAPI_DATA;
- 
-+static void
-+CAPI_DATA_free(CAPI_DATA *cd)
-+{
-+    if (!cd)
-+    {
-+        return;
-+    }
-+    if (cd->free_crypt_prov && cd->crypt_prov)
-+    {
-+        if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
-+        {
-+            NCryptFreeObject(cd->crypt_prov);
-+        }
-+        else
-+        {
-+            CryptReleaseContext(cd->crypt_prov, 0);
-+        }
-+    }
-+    if (cd->cert_context)
-+    {
-+        CertFreeCertificateContext(cd->cert_context);
-+    }
-+    free(cd);
-+}
-+
- static char *
- ms_error_text(DWORD ms_err)
- {
-@@ -363,22 +388,7 @@ finish(RSA *rsa)
-     {
-         return 0;
-     }
--    if (cd->crypt_prov && cd->free_crypt_prov)
--    {
--        if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
--        {
--            NCryptFreeObject(cd->crypt_prov);
--        }
--        else
--        {
--            CryptReleaseContext(cd->crypt_prov, 0);
--        }
--    }
--    if (cd->cert_context)
--    {
--        CertFreeCertificateContext(cd->cert_context);
--    }
--    free(cd);
-+    CAPI_DATA_free(cd);
-     RSA_meth_free((RSA_METHOD*) rsa_meth);
-     return 1;
- }
-@@ -614,25 +624,7 @@ err:
-         {
-             free(my_rsa_method);
-         }
--        if (cd)
--        {
--            if (cd->free_crypt_prov && cd->crypt_prov)
--            {
--                if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
--                {
--                    NCryptFreeObject(cd->crypt_prov);
--                }
--                else
--                {
--                    CryptReleaseContext(cd->crypt_prov, 0);
--                }
--            }
--            if (cd->cert_context)
--            {
--                CertFreeCertificateContext(cd->cert_context);
--            }
--            free(cd);
--        }
-+        CAPI_DATA_free(cd);
-     }
-     return 0;
- }
 -- 
-2.1.4
-
+2.12.3
 
