@@ -1,13 +1,9 @@
-References: <1516301696-11308-1-git-send-email-selva.nair@...277...>
- <1516909513-31683-1-git-send-email-selva.nair@...277...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <02b6e2e4-64c9-75de-40ce-0a820117b07d@...1227...>
-Date: Mon, 29 Jan 2018 11:18:57 +0100
 MIME-Version: 1.0
-In-Reply-To: <1516909513-31683-1-git-send-email-selva.nair@...277...>
-Content-Language: de-DE
-Subject: Re: [Openvpn-devel] [PATCH v3 2/3] Allow external EC key through
- --management-external-key
+From: Martin T <m4rtntns@...277...>
+Date: Mon, 29 Jan 2018 13:30:59 +0200
+Message-ID: <CAJx5YvH_iw_+NHqKzvQax70RpXfzvRSV-pZC2BaV5auKGKN3fQ@...278...>
+Subject: [Openvpn-devel] patch for openvpn-auth-pam plugin to pass PAM_RHOST
+ variable
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,31 +12,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Am 25.01.18 um 20:45 schrieb selva.nair@...277...:
-> From: Selva Nair <selva.nair@...277...>
-> 
-> - This automatically supports EC certificates through
->   --management-external-cert
-> - EC signature request from management is prompted by
->   >PK_SIGN if the client supports it (or >RSA_SIGN)
->   Response should be of the form 'pk-sig' (or rsa-sig
->   by older clients) followed by DER encoded signature
->   as base64 terminated by 'END' on a new line.
-> 
->
+Hi!
 
-Acked-by: Arne Schwabe <arne@...1227...>
+Currently openvpn-auth-pam plugin does not set PAM_RHOST(requesting
+host) variable. This is needed when for example pam_access.so plugin
+is used and based on OpenVPN client network, different authentication
+methods are desired. Proof of concept patch for PAM_RHOST is
+following:
 
-Ack from my side. Note that this patch will ask for a ec signatre with >
-RSA-SIGN when the user has put a EC certificate in the config and the ui
-does not send "version 2". I am not sure that we need to address this
-tough. That kind of configuration will break anyway. It just now does at
-a different point. And putting an EC certificate is not something that
-should happen on accident.
+--- /var/tmp/auth-pam.c.orig 2018-01-24 21:26:06.262178266 +0200
++++ auth-pam.c 2018-01-25 01:23:14.669019911 +0200
+@@ -110,6 +110,8 @@
 
-Arne
+     char username[128];
+     char password[128];
++    char untrusted_ip[128];
++    char untrusted_ip6[128];
+     char common_name[128];
+
+     const struct name_value_list *name_value_list;
+@@ -451,6 +453,8 @@
+         /* get username/password from envp string array */
+         const char *username = get_env("username", envp);
+         const char *password = get_env("password", envp);
++        const char *untrusted_ip = get_env ("untrusted_ip", envp) ?
+get_env("untrusted_ip", envp) : "";
++        const char *untrusted_ip6 = get_env ("untrusted_ip6", envp) ?
+get_env("untrusted_ip6", envp) : "";
+         const char *common_name = get_env("common_name", envp) ?
+get_env("common_name", envp) : "";
+
+         if (username && strlen(username) > 0 && password)
+@@ -458,6 +462,8 @@
+             if (send_control(context->foreground_fd, COMMAND_VERIFY) == -1
+                 || send_string(context->foreground_fd, username) == -1
+                 || send_string(context->foreground_fd, password) == -1
++                || send_string(context->foreground_fd, untrusted_ip) == -1
++                || send_string(context->foreground_fd, untrusted_ip6) == -1
+                 || send_string(context->foreground_fd, common_name) == -1)
+             {
+                 fprintf(stderr, "AUTH-PAM: Error sending auth info to
+background process\n");
+@@ -681,6 +687,16 @@
+     status = pam_start(service, name_value_list_provided ? NULL :
+up->username, &conv, &pamh);
+     if (status == PAM_SUCCESS)
+     {
++
++        if (strlen(up->untrusted_ip) > 0)
++        {
++            pam_set_item(pamh, PAM_RHOST, up->untrusted_ip);
++        }
++        else
++        {
++            pam_set_item(pamh, PAM_RHOST, up->untrusted_ip6);
++        }
++
+         /* Call PAM to verify username/password */
+         status = pam_authenticate(pamh, 0);
+         if (status == PAM_SUCCESS)
+@@ -770,6 +786,8 @@
+             case COMMAND_VERIFY:
+                 if (recv_string(fd, up.username, sizeof(up.username)) == -1
+                     || recv_string(fd, up.password, sizeof(up.password)) == -1
++                    || recv_string(fd, up.untrusted_ip,
+sizeof(up.untrusted_ip)) == -1
++                    || recv_string(fd, up.untrusted_ip6,
+sizeof(up.untrusted_ip6)) == -1
+                     || recv_string(fd, up.common_name,
+sizeof(up.common_name)) == -1)
+                 {
+                     fprintf(stderr, "AUTH-PAM: BACKGROUND: read error
+on command channel: code=%d, exiting\n",
+
+
+WBR,
+Martin
 
