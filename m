@@ -1,12 +1,13 @@
+References: <1516998568.3034.15.camel@...2316...>
+ <1516998620.3034.16.camel@...2316...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <955e1519-6ecb-6e5e-bc95-eab7db284848@...1227...>
+Date: Mon, 29 Jan 2018 08:43:44 +0100
 MIME-Version: 1.0
-In-Reply-To: <20180126105803.26646-1-steffan@...1856...>
-References: <20180120164114.12478-1-steffan@...1856...>
- <20180126105803.26646-1-steffan@...1856...>
-From: Selva Nair <selva.nair@...277...>
-Date: Sat, 27 Jan 2018 11:47:49 -0500
-Message-ID: <CAKuzo_iwkWNzJqRN24LUTaL4G0B_nnDTpCMRAwSrQ_srMzLDxg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Enable stricter compiler warnings by
- default
+In-Reply-To: <1516998620.3034.16.camel@...2316...>
+Content-Language: de-DE
+Subject: Re: [Openvpn-devel] PATCH v3 1/2] openssl: add engine method for
+ loading the key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,68 +16,104 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: James Bottomley <James.Bottomley@...2316...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
-
-On Fri, Jan 26, 2018 at 5:58 AM, Steffan Karger <steffan@...1856...> wrote:
-> This by default enables the compiler warnings one could previously
-> enable using the --enable-strict configure option.  I think it is
-> okay to do so now, because we've taken care of many warnings in the
-> more standard builds.  (Most of those were totally harmless, but they
-> prevented us from spotting new more serious mistakes.)
->
-> The --enable-strict flag now enables two extra warning flags that I
-> think can be useful:
->
-> -Wsign-compare warns when the compiler promotes a signed type to
-> unsigned before comparing, which can lead to unexpected behaviour.
->
-> -Wuninitialized adds extra warnings about usage of uninitialized variables
-> or struct elements.
->
-> Signed-off-by: Steffan Karger <steffan@...1856...>
+Am 26.01.18 um 21:30 schrieb James Bottomley:
+> As well as doing crypto acceleration, engines can also be used to load
+> key files.  If the engine is set, and the private key loading fails
+> for bio methods, this patch makes openvpn try to get the engine to
+> load the key.  If that succeeds, we end up using an engine based key.
+> This can be used with the openssl tpm engines to make openvpn use a
+> TPM wrapped key file.
+> 
+> Signed-off-by: James Bottomley <James.Bottomley@...2316...>
+> 
 > ---
-> v2: Just move forward with warnings, don't add --disable-strict.
->
->  configure.ac | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/configure.ac b/configure.ac
-> index 2c1937e5..4d415565 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -1292,13 +1292,14 @@ if test "${enable_pkcs11}" = "yes"; then
->         )
->  fi
->
-> +CFLAGS="${CFLAGS} -Wall -Wno-unused-parameter -Wno-unused-function"
+> 
+> v2: add better configuration guarding
+> ---
+>  src/openvpn/crypto_openssl.c | 55 ++++++++++++++++++++++++++++++++++++++++++++
+>  src/openvpn/crypto_openssl.h | 12 ++++++++++
+>  src/openvpn/ssl_openssl.c    |  6 ++++-
+>  3 files changed, 72 insertions(+), 1 deletion(-)
+> 
+> diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+> index 20a519ec..d3f35030 100644
+> --- a/src/openvpn/crypto_openssl.c
+> +++ b/src/openvpn/crypto_openssl.c
+> @@ -969,4 +969,59 @@ hmac_ctx_final(HMAC_CTX *ctx, uint8_t *dst)
+>      HMAC_Final(ctx, dst, &in_hmac_len);
+>  }
+>  
+> +#if HAVE_OPENSSL_ENGINE
+> +static int
+> +ui_read(UI *ui, UI_STRING *uis)
 
-As this is added by default (not in response to --enable/--disable
-directives), may be better to prepend to user's CFLAGS? I'm not sure
-what the standard practice is, though.. Considering the complexity of
-configury, preserving user's input is hard, so may be ok like this.
+I would rather a bit more verbose method name here. ui_read seems a bit
+too generic.
 
->  if test "${enable_pedantic}" = "yes"; then
->         enable_strict="yes"
->         CFLAGS="${CFLAGS} -pedantic"
->         AC_DEFINE([PEDANTIC], [1], [Enable pedantic mode])
->  fi
->  if test "${enable_strict}" = "yes"; then
-> -       CFLAGS="${CFLAGS} -Wall -Wno-unused-parameter -Wno-unused-function"
-> +       CFLAGS="${CFLAGS} -Wsign-compare -Wuninitialized"
+> +{
+> +    SSL_CTX *ctx = UI_get0_user_data(ui);
+> +
+> +    if (UI_get_string_type(uis) == UIT_PROMPT) {
+> +        pem_password_cb *cb = SSL_CTX_get_default_passwd_cb(ctx);
+> +        void *d = SSL_CTX_get_default_passwd_cb_userdata(ctx);
 
-I'm no fan of -Wsign-compare, but it does warn against some sloppy
-coding, is not on by default, so fine by me.
+This pointer is never used and the function also seem to have no side
+effects. So seem like this can be removed.
 
-And, I very much like -Wall -Wno-unused-foo becoming the "new normal".
+> +        char password[64];
+> +
+> +        cb(password, sizeof(password), 0, d);
+> +        UI_set_result(ui, uis, password);
+> +
+> +        return 1;
+> +    }
+> +    return 0;
+> +}
+> +#endif
+> +
+> +EVP_PKEY *
+> +engine_load_key(const char *file, SSL_CTX *ctx)
+> +{
+> +#if HAVE_OPENSSL_ENGINE
+> +    UI_METHOD *ui;
+> +    EVP_PKEY *pkey;
+> +
+> +    if (!engine_persist)
+> +        return NULL;
+> +
+> +    ui = UI_create_method("openvpn");
+> +
+> +    if (!ui)
+> +        return NULL;
+> +
+> +    UI_method_set_reader(ui, ui_read);
+> +
+> +    ERR_clear_error();		/* BIO read failure */
+> +    if (!ENGINE_init(engine_persist)) {
+> +	ERR_print_errors_fp(stderr);
 
-Just one thing: if we support compilers other than gcc/clang (say,
-xlc) this would need a test like AX_CHECK_COMPILE_FLAG(). Otherwise
-looks good.
+This should use our standard openssl error reporting. Not directly
+writing to stderr.
 
-Selva
+> +	pkey = NULL;
+> +	goto out;
+> +    }
+> +    pkey = ENGINE_load_private_key(engine_persist, file, ui, ctx);
+> +    ENGINE_finish(engine_persist);
+> +    if (!pkey)
+> +	ERR_print_errors_fp(stderr);
+
+Same as above.
+
+> + out:
+> +    UI_destroy_method(ui);
+> +    return pkey;
+> +#else
+> +    return NULL;
+> +#endif
+> +}
 
