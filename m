@@ -1,14 +1,12 @@
-Reply-To: openvpn-devel@lists.sourceforge.net
-References: <20180129084320.3157-1-list@...1798...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <3b592f08-2574-f482-cc18-2b1bf517b1eb@...2080...>
-Date: Wed, 31 Jan 2018 14:31:04 +0100
 MIME-Version: 1.0
-In-Reply-To: <20180129084320.3157-1-list@...1798...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="lvmjHVdP88Qzi0k0QDOORmd1OjgrBXniP"
-Subject: Re: [Openvpn-devel] [PATCH 1/1] Update copyright notes
+In-Reply-To: <CAKuzo_g6YTkx+-3i=TEFn9b2yPjx9rBweTz=4H7uuOT8VokEdg@...278...>
+References: <20171205121952.13008-1-EngyCZ@...277...>
+ <CAKuzo_g6YTkx+-3i=TEFn9b2yPjx9rBweTz=4H7uuOT8VokEdg@...278...>
+From: =?UTF-8?B?SmnFmcOtIEVuZ2VsdGhhbGVy?= <engycz@...277...>
+Date: Wed, 31 Jan 2018 14:37:52 +0100
+Message-ID: <CAHODtZSTyD8NOc8cVNaGaZ9z+HZrKK-+L6h_t0gqhAh3pJMk+w@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Add a warning for disabled DHCP media
+ sense on Window
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,92 +15,252 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Christian Hesse <list@...1798...>, OpenVPN Development <openvpn-devel@lists.sourceforge.net>
-Cc: Christian Hesse <mail@...1798...>
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---lvmjHVdP88Qzi0k0QDOORmd1OjgrBXniP
-Content-Type: multipart/mixed; boundary="bRxf6EmZLmV6yUlRdTNgHeuoOAOu7Art2";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Christian Hesse <list@...1798...>,
- OpenVPN Development <openvpn-devel@lists.sourceforge.net>
-Cc: Christian Hesse <mail@...1798...>
-Message-ID: <3b592f08-2574-f482-cc18-2b1bf517b1eb@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH 1/1] Update copyright notes
-References: <20180129084320.3157-1-list@...1798...>
-In-Reply-To: <20180129084320.3157-1-list@...1798...>
-
---bRxf6EmZLmV6yUlRdTNgHeuoOAOu7Art2
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On 29/01/18 09:43, Christian Hesse wrote:
-> From: Christian Hesse <mail@...1798...>
->=20
-> Now that the first release in 2018 is imminent let's update
-> the copyright notes.
->=20
-> Signed-off-by: Christian Hesse <mail@...1798...>
-> ---
-[...snip...]
->  217 files changed, 252 insertions(+), 252 deletions(-)
-
-Thanks a lot.  This can easily turn into yet another bike shed discussion. =
- I
-do not want that to happen though.  But based on history, these changes
-happened more frequently before the community stepped in and took over more=
- of
-the "daily maintenance" of the OpenVPN 2 project.
-
-That said, this copyright change should also change "OpenVPN Technologies,
-Inc" to "OpenVPN Inc".  Last autumn, the company change name, so we should
-reflect that.  This has already happened in other projects and products we'=
-re
-involved in.
-
-I will follow-up with this change as well.  I don't see any value of splitt=
-ing
-it out in a separate patch, as it is essentially just the change in options=
-.c
-which is affecting real (executable) code.  The rest is documentation or co=
-mments.
+Comments accepted. Thank you Selva. This patch is also as pull request
+https://github.com/OpenVPN/openvpn/pull/97
 
 
+When DHCP media sense configuration is disabled, network applications
+including DHCP client will not receive information about link status
+changes and the link seems to be always connected. This lead to the
+non-renewal DHCP address on OpenVPN connect.
+
+DHCP media sense status can by shown with command
+"netsh interface ipv4 show global"
+
+There are several reports of problems with DHCP address renewal.
+https://community.openvpn.net/openvpn/ticket/665
+https://community.openvpn.net/openvpn/ticket/807
+
+Added checking of disabled DHCP media sense and print a warning with
+forced dhcp-renew option and suggestion to enable DHCP media sense.
+
+Signed-off-by: Ji=C4=B9=E2=84=A2=C4=82=C2=AD Engelthaler <EngyCZ@...277...>
+---
+ src/openvpn/tun.c | 47 +++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 47 insertions(+)
+
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 2644d996..c8ab8796 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -3827,6 +3827,46 @@ get_panel_reg(struct gc_arena *gc)
+     return first;
+ }
+
++/*
++ * Return DhcpMediaSense enabled value
++ */
++static bool
++get_dhcp_media_sense(void)
++{
++    const char registry_tcpip_params[] =3D
+"SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters";
++    const char disable_dhcp_media_sense_string[] =3D "DisableDHCPMediaSens=
+e";
++    HKEY tcpip_params;
++    LONG status;
++    DWORD len;
++    DWORD disable_dhcp_media_sense;
++    DWORD data_type;
++    bool ret_value =3D true;
++
++    status =3D RegOpenKeyEx(HKEY_LOCAL_MACHINE, registry_tcpip_params,
+0, KEY_READ, &tcpip_params);
++
++    if (status !=3D ERROR_SUCCESS)
++    {
++        msg(M_WARN, "Error opening registry key: %s", registry_tcpip_param=
+s);
++    }
++    else
++    {
++        len =3D sizeof(disable_dhcp_media_sense);
++        status =3D RegQueryValueEx(tcpip_params,
+disable_dhcp_media_sense_string, NULL, &data_type,
+(PBYTE)&disable_dhcp_media_sense, &len);
++
++        if (status =3D=3D ERROR_SUCCESS && data_type =3D=3D REG_DWORD)
++        {
++            if (disable_dhcp_media_sense !=3D 0)
++            {
++                ret_value =3D false;
++            }
++        }
++
++        RegCloseKey(tcpip_params);
++    }
++
++    return ret_value;
++}
++
+ /*
+  * Check that two addresses are part of the same 255.255.255.252 subnet.
+  */
+@@ -5898,6 +5938,13 @@ open_tun(const char *dev, const char *dev_type,
+const char *dev_node, struct tun
+     {
+         uint32_t ep[4];
+
++        /* Check DHCP media sense value */
++        if (!tt->options.dhcp_renew && !get_dhcp_media_sense())
++        {
++            msg(M_WARN, "WARNING: DHCP media sense disabled,
+dhcp_renew option forced. You can enable media sense with \"netsh
+interface ipv4 set global dhcpmediasense=3Denabled\" shell command");
++            tt->options.dhcp_renew =3D true;
++        }
++
+         /* We will answer DHCP requests with a reply to set IP/subnet
+to these values */
+         ep[0] =3D htonl(tt->local);
+         ep[1] =3D htonl(tt->adapter_netmask);
 --=20
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
+2.14.2.windows.3
 
 
 
---bRxf6EmZLmV6yUlRdTNgHeuoOAOu7Art2--
-
---lvmjHVdP88Qzi0k0QDOORmd1OjgrBXniP
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJaccUcAAoJEIbPlEyWcf3yC8MQAI5XR7f4UKpt4UOXKe11rrrq
-ydcXz8O+LCyTJNEIyaXDi9j+w/DVaDqmJSHAhtX98SxhOVPl77V/52bn4Fqo5b/Y
-t+qwgtoDPSaK4JXunKMd0Tt9fQbTWvbhLnRvq825ElFtBa/6n6gXWgjIH58hyQz6
-hVggS7ZEkK+2ucv3oaYAZYFxdNwhxe60L0YWj8/H9Ov8KeKhed/Q6h/CLtlNZii5
-Iv0THX0m9BHbKH+87r4LLviL9XSRpVCpXZ0O7yq9emwGbGSbnGd5KondLIQB4sCP
-02EJ2PZmVphNJy1liMEf8lqFukRErfqw+TFZa1c/IZuiZS6tq3q4Uc/z3HmofZem
-HE0aikcUYgjGaMozx3ypCXxUSJIQCp6DYD0H2c8rhwp04PPIN5PiUZhVUmKiBEjw
-P5jNifvL1rqg05zNVSObpNZmTeR2ZT1qikGhPwBZYPX8c54W3bEhr1zKD6aQgIF8
-fNzkb1qKDm2sVw9AnzTz1hru/GELqeYXlMTN5tbS/KAj/lnYO2Tl6QMEyui31mDx
-rk+h7ojiPfeRfjk97hBXi1E6XOJZVBLU2fq39J+NOuUc1cTKWWHARiqcD/sMsUaP
-mgNWMVsXA6GurE1p12vNEX/3VbhbGH+CQe2RaQsJJwCDJbjt5hkMvvfCzwvXT6lP
-IAyNUAJUfEGlYEH4pjGA
-=W9t5
------END PGP SIGNATURE-----
-
---lvmjHVdP88Qzi0k0QDOORmd1OjgrBXniP--
+2018-01-21 23:21 GMT+01:00 Selva Nair <selva.nair@...277...>:
+> Hi,
+>
+> I haven't tested this, but looks like a useful thing to do. The code
+> looks good too. Some minor comments below:
+>
+> On Tue, Dec 5, 2017 at 7:19 AM, Ji=C5=99=C3=AD Engelthaler <EngyCZ@...1482...=
+...> wrote:
+>> When DHCP media sense configuration is disabled, network applications
+>> including DHCP client will not receive information about link status
+>> changes and the link seems to be always connected. This lead to the
+>> non-renewal DHCP address on OpenVPN connect.
+>>
+>> DHCP media sense status can by shown with command
+>> "netsh interface ipv4 show global"
+>>
+>> There are several reports of problems with DHCP address renewal.
+>> https://community.openvpn.net/openvpn/ticket/665
+>> https://community.openvpn.net/openvpn/ticket/807
+>>
+>> Added checking of disabled DHCP media sense and print a warning with
+>> forced dhcp-renew option and suggestion to enable DHCP media sense.
+>
+> Typo in commit header: "Window" should be "Windows"
+>
+>>
+>> Signed-off-by: Ji=C5=99=C3=AD Engelthaler <EngyCZ@...277...>
+>> ---
+>>  src/openvpn/tun.c | 59 ++++++++++++++++++++++++++++++++++++++++++++++++=
++++++++
+>>  1 file changed, 59 insertions(+)
+>>
+>> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+>> index 25831ce3..35811975 100644
+>> --- a/src/openvpn/tun.c
+>> +++ b/src/openvpn/tun.c
+>> @@ -62,6 +62,8 @@
+>>  #define NI_IP_NETMASK  (1<<1)
+>>  #define NI_OPTIONS     (1<<2)
+>>
+>> +#define TCPIP_PARAMS "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Param=
+eters"
+>> +
+>
+> This is only used inside get_dhcp_media_sense. Better move it there as
+> a const char *. Less macros, the better.
+>
+>>  static void netsh_ifconfig(const struct tuntap_options *to,
+>>                             const char *flex_name,
+>>                             const in_addr_t ip,
+>> @@ -3827,6 +3829,56 @@ get_panel_reg(struct gc_arena *gc)
+>>      return first;
+>>  }
+>>
+>> +/*
+>> + * Return DhcpMediaSense enabled value
+>> + */
+>> +static bool
+>> +get_dhcp_media_sense(void)
+>> +{
+>> +    HKEY tcpip_params;
+>> +    LONG status;
+>> +    DWORD len;
+>> +    char  disable_dhcp_media_sense_string[] =3D "DisableDHCPMediaSense";
+>
+> This would benefit from a const.
+>
+>> +    DWORD disable_dhcp_media_sense;
+>> +    DWORD data_type;
+>> +    bool ret_value =3D true;
+>> +
+>> +    status =3D RegOpenKeyEx(
+>> +        HKEY_LOCAL_MACHINE,
+>> +        TCPIP_PARAMS,
+>> +        0,
+>> +        KEY_READ,
+>> +        &tcpip_params);
+>
+> I'm not sure whether its specified in the newly adopted style, but
+> please avoid writing one argument per line.  Original has many such,
+> but not preferred in new code.
+>
+>> +
+>> +    if (status !=3D ERROR_SUCCESS)
+>> +    {
+>> +        msg(M_WARN, "Error opening registry key: %s", TCPIP_PARAMS);
+>> +    }
+>> +    else
+>> +    {
+>> +        len =3D sizeof(disable_dhcp_media_sense);
+>> +        status =3D RegQueryValueEx(
+>> +            tcpip_params,
+>> +            disable_dhcp_media_sense_string,
+>> +            NULL,
+>> +            &data_type,
+>> +            (PBYTE)&disable_dhcp_media_sense,
+>> +            &len);
+>
+> Same here.
+>
+>> +
+>> +        if (status =3D=3D ERROR_SUCCESS && data_type =3D=3D REG_DWORD)
+>> +        {
+>> +            if (disable_dhcp_media_sense !=3D 0)
+>> +            {
+>> +                ret_value =3D false;
+>> +            }
+>> +        }
+>> +
+>> +        RegCloseKey(tcpip_params);
+>> +    }
+>> +
+>> +    return ret_value;
+>> +}
+>> +
+>>  /*
+>>   * Check that two addresses are part of the same 255.255.255.252 subnet.
+>>   */
+>> @@ -5901,6 +5953,13 @@ open_tun(const char *dev, const char *dev_type, c=
+onst char *dev_node, struct tun
+>>      {
+>>          uint32_t ep[4];
+>>
+>> +        /* Check DHCP media sense value */
+>> +        if (!tt->options.dhcp_renew && !get_dhcp_media_sense())
+>> +        {
+>> +            msg(M_WARN, "WARNING: DHCP media sense disabled, dhcp_renew=
+ option forced. You can enable media sense with \"netsh interface ipv4 set =
+global dhcpmediasense=3Denabled\" shell command");
+>> +            tt->options.dhcp_renew =3D true;
+>> +        }
+>> +
+>>          /* We will answer DHCP requests with a reply to set IP/subnet t=
+o these values */
+>>          ep[0] =3D htonl(tt->local);
+>>          ep[1] =3D htonl(tt->adapter_netmask);
+>
+> Thanks,
+>
+> Selva
 
