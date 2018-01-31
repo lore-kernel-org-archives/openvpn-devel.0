@@ -1,13 +1,9 @@
-MIME-Version: 1.0
-In-Reply-To: <20180130205821.GS69387@...1296...>
-References: <6a3cabee-e9ea-bea6-cca7-d3f9672f292f@...515...>
- <CAKuzo_jTyA42EJtwcr5xsRRVbMy5WzPibbZHSPEa9piBJ14ozg@...278...>
- <20180130205821.GS69387@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 30 Jan 2018 16:13:05 -0500
-Message-ID: <CAKuzo_jC4DTJmoerPUgPYqA86Bd840+Sn_ju_e10Q5z9Ad-q-g@...278...>
-Subject: Re: [Openvpn-devel] Topics for the community meeting (Wed,
- 31st Jan 2018)
+From: Arne Schwabe <arne@...1227...>
+Date: Wed, 31 Jan 2018 10:41:02 +0100
+Message-Id: <1517391662-21325-1-git-send-email-arne@...1227...>
+In-Reply-To: <1516191454-29034-1-git-send-email-arne@...1227...>
+References: <1516191454-29034-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v3] Treat dhcp-option DNS6 and DNS identical
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,50 +12,131 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+OpenVPN3 accepts both IPv4 and IPv6 with option-dhcp DNS but throws
+an error for option-dhcp DNS6.
 
-On Tue, Jan 30, 2018 at 3:58 PM, Gert Doering <gert@...1296...> wrote:
-> Hi,
->
-> On Tue, Jan 30, 2018 at 12:21:58PM -0500, Selva Nair wrote:
->> A quick comment regarding item 2 in topics:
->> > 2 mgmt version 2 / pk-sign and 2.4
->> >  Is this something we want in 2.4? If not, how's the GUI going to deal with 2.4 and master being different?"
->>
->> Unless 2.4 is getting EC cert external signing support, we do not need
->> this in there, do we?
->>
->> I think it shouldn't be a problem for UI's as the master will behave
->> the same way as 2.4 towards old UI's. New/updated UI's are expected to
->> first check the management version of the daemon, then optionally
->> announce version 2 support, and be prepared to handle old and
->> new-style requests.
->
-> This is the part I was missing - that the GUI knows what version the
-> openvpn.exe process can handle.  So a "master GUI" would send "version 2",
-> while a "2.4 GUI" would see "openvpn.exe can only do 1" and send "version".
->
-> Good - that basically concludes the topic for tomorrow :-) (unless someone
-> convinces me that we want EC cert external signing in 2.4)
->
->> Anyway, "The Windows GUI" doesn't care as it does not handle signature
->> requests. Jonathan said the same about Tunneblick.
->
-> Oh?  I missed that part.  So who is using --management-external-key, then,
-> if neither of the "two main GUIs" are doing it?
+This patch makes OpenVPN2 accept IPv4/IPv6 for both DNS and DNS6
 
-I was surprised that Tunnelblick doesn't use it. May be just
-Android... EduVPN was concerned about lack of TLS 1.2, so their UI
-wants to use it?
+Patch V2: Put IPv6 parsing logic into own function similar as for for IPv4 DNS
+---
+ doc/openvpn.8         | 14 +++++---------
+ src/openvpn/options.c | 39 ++++++++++++++++++++++++---------------
+ 2 files changed, 29 insertions(+), 24 deletions(-)
 
-On windows we have cryptoapicert that can handle software keys in
-windows key-stores and hardware tokens. Though we'll implement this
-"one day" just to be feature-complete :)
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 43bbc217..d083b908 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -5886,17 +5886,13 @@ across the VPN.
+ Set Connection\-specific DNS Suffix.
+ 
+ .B DNS addr \-\-
+-Set primary domain name server IPv4 address.  Repeat
++Set primary domain name server IPv4 or IPv6 address.  Repeat
+ this option to set secondary DNS server addresses.
+ 
+-.B DNS6 addr \-\-
+-Set primary domain name server IPv6 address.  Repeat
+-this option to set secondary DNS server IPv6 addresses.
+-
+-Note: currently this is handled using netsh (the
+-existing DHCP code can only do IPv4 DHCP, and that protocol only
+-permits IPv4 addresses anywhere).  The option will be put into the
+-environment, so an
++Note: DNS IPv6 servers are currently set using netsh (the existing
++DHCP code can only do IPv4 DHCP, and that protocol only permits IPv4
++addresses anywhere).  The option will be put into the environment, so
++an
+ .B \-\-up
+ script could act upon it if needed.
+ 
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 75def7b6..f405d8a2 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -705,8 +705,7 @@ static const char usage_message[] =
+     "                    which allow multiple addresses,\n"
+     "                    --dhcp-option must be repeated.\n"
+     "                    DOMAIN name : Set DNS suffix\n"
+-    "                    DNS addr    : Set domain name server address(es) (IPv4)\n"
+-    "                    DNS6 addr   : Set domain name server address(es) (IPv6)\n"
++    "                    DNS addr    : Set domain name server address(es) (IPv4 and IPv6)\n"
+     "                    NTP         : Set NTP server address(es)\n"
+     "                    NBDD        : Set NBDD server address(es)\n"
+     "                    WINS addr   : Set WINS server address(es)\n"
+@@ -1228,6 +1227,20 @@ show_tuntap_options(const struct tuntap_options *o)
+ 
+ #if defined(_WIN32) || defined(TARGET_ANDROID)
+ static void
++dhcp_option_dns6_parse(const char *parm, struct in6_addr *dns6_list, int *len, int msglevel)
++{
++    struct in6_addr addr;
++    if (*len >= N_DHCP_ADDR)
++    {
++        msg(msglevel, "--dhcp-option DNS: maximum of %d IPv6 dns servers can be specified",
++            N_DHCP_ADDR);
++    }
++    else if (get_ipv6_addr(parm, &addr, NULL, msglevel))
++    {
++        dns6_list[(*len)++] = addr;
++    }
++}
++static void
+ dhcp_option_address_parse(const char *name, const char *parm, in_addr_t *array, int *len, int msglevel)
+ {
+     if (*len >= N_DHCP_ADDR)
+@@ -7070,6 +7083,7 @@ add_option(struct options *options,
+     {
+         struct tuntap_options *o = &options->tuntap_options;
+         VERIFY_PERMISSION(OPT_P_IPWIN32);
++        bool ipv6dns = false;
+ 
+         if (streq(p[1], "DOMAIN") && p[2])
+         {
+@@ -7090,22 +7104,17 @@ add_option(struct options *options,
+             }
+             o->netbios_node_type = t;
+         }
+-        else if (streq(p[1], "DNS") && p[2])
++        else if ((streq(p[1], "DNS") || streq(p[1], "DNS6")) && p[2] && (!strstr(p[2], ":") || ipv6_addr_safe(p[2])))
+         {
+-            dhcp_option_address_parse("DNS", p[2], o->dns, &o->dns_len, msglevel);
+-        }
+-        else if (streq(p[1], "DNS6") && p[2] && ipv6_addr_safe(p[2]))
+-        {
+-            struct in6_addr addr;
+-            foreign_option(options, p, 3, es);
+-            if (o->dns6_len >= N_DHCP_ADDR)
++            if (strstr(p[2], ":"))
+             {
+-                msg(msglevel, "--dhcp-option DNS6: maximum of %d dns servers can be specified",
+-                    N_DHCP_ADDR);
++                ipv6dns=true;
++                foreign_option(options, p, 3, es);
++                dhcp_option_dns6_parse(p[2], o->dns6, &o->dns6_len, msglevel);
+             }
+-            else if (get_ipv6_addr(p[2], &addr, NULL, msglevel))
++            else
+             {
+-                o->dns6[o->dns6_len++] = addr;
++                dhcp_option_address_parse("DNS", p[2], o->dns, &o->dns_len, msglevel);
+             }
+         }
+         else if (streq(p[1], "WINS") && p[2])
+@@ -7133,7 +7142,7 @@ add_option(struct options *options,
+         /* flag that we have options to give to the TAP driver's DHCPv4 server
+          *  - skipped for "DNS6", as that's not a DHCPv4 option
+          */
+-        if (!streq(p[1], "DNS6"))
++        if (!ipv6dns)
+         {
+             o->dhcp_options = true;
+         }
+-- 
+2.15.1
 
-Selva
 
