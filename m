@@ -1,17 +1,10 @@
-Date: Thu, 1 Feb 2018 08:27:31 +0100
+Date: Thu, 1 Feb 2018 09:00:46 +0100 (CET)
+Message-Id: <201802010800.w1180kOd009288@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20180201072731.GU69387@...1296...>
-References: <20180120164114.12478-1-steffan@...1856...>
- <20180126105803.26646-1-steffan@...1856...>
- <CAKuzo_iwkWNzJqRN24LUTaL4G0B_nnDTpCMRAwSrQ_srMzLDxg@...278...>
- <12ec1e85-3ded-86e3-002b-bd98ec2c8372@...1856...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="4Cp72eN6HUuZZoDF"
-Content-Disposition: inline
-In-Reply-To: <12ec1e85-3ded-86e3-002b-bd98ec2c8372@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Enable stricter compiler warnings by
- default
+In-Reply-To: <20180131140314.11103-1-davids@...515...>
+References: <20180131140314.11103-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Update copyright to include
+ 2018 plus company name change
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,51 +13,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: Selva Nair <selva.nair@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: David Sommerseth <davids@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---4Cp72eN6HUuZZoDF
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+ACK ("only code changes are in comments and version message, and I'm 
+aware of the company name change")
 
-Hi,
+Your patch has been applied to the master branch and release/2.4 branch
+(excluding those three files that do not exist in 2.4 yet).
 
-On Thu, Feb 01, 2018 at 07:34:44AM +0100, Steffan Karger wrote:
-> > Just one thing: if we support compilers other than gcc/clang (say,
-> > xlc) this would need a test like AX_CHECK_COMPILE_FLAG().
->=20
-> Hm, I don't think we do for configure.ac.  We do sort-of support MSVC,
-> but that doesn't use this build system.  Gert, David, any opinions?
+commit 499794596deb16965164b611ff61c8609c6cd08e (master)
+commit 6da18bf370bbf7d163e1daf0c998bbafd6d2764d (release/2.4)
+Author: David Sommerseth
+Date:   Wed Jan 31 15:03:14 2018 +0100
 
-Well, on systems that have no gcc, configure will use whatever it finds
-- on Solaris this could be some Sun CC, on AIX it will be xlc.  We should
-not break that gratuitously.
+     Update copyright to include 2018 plus company name change
 
-So, gcc-specific flags need a test on whether they work with "OS cc"
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20180131140314.11103-1-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16418.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-gert
---=20
-now what should I write here...
 
-Gert Doering - Munich, Germany                             gert@...1296...
+--
+kind regards,
 
---4Cp72eN6HUuZZoDF
-Content-Type: application/pgp-signature; name="signature.asc"
+Gert Doering
 
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJacsFiAAoJEB2Cnv7KVigSj7UL/14ueWGHBdtUJoogLy6lrduv
-Ud2kL60+XcZsUUSvnt5h/DvYcc/bjZX5QSHn4WTZKiyvR0KQa0seMAQwcXYAy2tB
-0YWkclNVBKWbloetJoy+due8QVfMXgnmeHM8mTTXbAQpPLOFEn8QEWnOgWsyAQS8
-0XCH1C5aHTl6MwAfAvdZpZdFRyBC/RxmgdeCVe6bJqamiiMMb91ZciPSnLZwawNF
-PdUrJzXa016qKiYqUfJZeISZn7R39cwuhciBtzvkaKptCmmye9hR5UjR11Xtdmfx
-zEFwd3slVYakgbJ3H4rBlM8iOKY0mFQNUtA5TzUjVFEdzxSQNQAyXbNOjAA4pIry
-iQjkwbQCW6/3A49T1Dc6SR8IumPzrM3CNqbYgw0nE32gePs40ZyUjdu8iHFGkivl
-BgkLKnUi8woVFNfIT42OqtsQ8Q5FJPKhyb2PxeXKV/d76c+aiyjbT2pz+H6QK6Uu
-/m/dOdKDpd7C5sns2qtLEt5zOUCLTlCn5Lksl7Q2lA==
-=xs9M
------END PGP SIGNATURE-----
-
---4Cp72eN6HUuZZoDF--
 
