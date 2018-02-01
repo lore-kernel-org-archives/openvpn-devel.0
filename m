@@ -1,9 +1,14 @@
-Date: Thu, 1 Feb 2018 09:00:46 +0100 (CET)
-Message-Id: <201802010800.w1180kOd009288@...2054...>
+Date: Thu, 1 Feb 2018 09:07:11 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20180131140314.11103-1-davids@...515...>
+Message-ID: <20180201080711.GW69387@...1296...>
 References: <20180131140314.11103-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Update copyright to include
+ <201802010800.w1180kOd009288@...2054...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="jmfxxgLgPT+fSo7V"
+Content-Disposition: inline
+In-Reply-To: <201802010800.w1180kOd009288@...2054...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Update copyright to include
  2018 plus company name change
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -13,34 +18,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-ACK ("only code changes are in comments and version message, and I'm 
-aware of the company name change")
+--jmfxxgLgPT+fSo7V
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Your patch has been applied to the master branch and release/2.4 branch
-(excluding those three files that do not exist in 2.4 yet).
+Hi,
 
-commit 499794596deb16965164b611ff61c8609c6cd08e (master)
-commit 6da18bf370bbf7d163e1daf0c998bbafd6d2764d (release/2.4)
-Author: David Sommerseth
-Date:   Wed Jan 31 15:03:14 2018 +0100
+for the sake of patchwork without leading blanks:
 
-     Update copyright to include 2018 plus company name change
+Acked-by: Gert Doering <gert@...1296...>
 
-     Signed-off-by: David Sommerseth <davids@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20180131140314.11103-1-davids@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16418.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+(Samuli, could you adjust the match-regex for A to accept leading blanks?
+that way, it would auto-parse our commit mails...)
 
+gert
 
---
-kind regards,
+--=20
+now what should I write here...
 
-Gert Doering
+Gert Doering - Munich, Germany                             gert@...1296...
 
+--jmfxxgLgPT+fSo7V
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJacsquAAoJEB2Cnv7KVigSGq0L/0GUVj0UBIL4PvShNwTYMj/s
+7Y1NQKDdKbDfH16sebSOAzt7Rz6OXbI1FRRMeTmf8lNyESN5VijOHs+2XdtoqAKP
++zERxKi69QVnAUGSArwjHxxXvdUoulXwW76YiBnF7257YJ90DS017k4RK3nc6xk7
+386ix1yONIAB1zI6YO8yfFIijj4uGKhqknf3h2KHxMl8rdx7pQUtsWfYibVQeGsn
+iDRBhj8Edpq3hBNLboBwIkms0VIWREXwYuoWArcukbcwoOLDX2l95MUX0zB6es+c
+/xoVijUcpimAWzhFyZ47g3pJyaW4m0B6c1kNeWwfAlxgGMpoJVgoJyM6rCKX5eed
+b9JtfFrjlBAwW6ta6meVBDU2G7rposKz38AFyh9NIAe415+oATauSMfjRqREQNhJ
+ql6RqkrKQu36p7mFFteg3s3Lp1v+miOOb+I+q1OVsEny1TZHhlbFAFZFRlYyxzL+
+qeb+MYGqBhudi1AL0UJWvyMrwBj+l8f/kiHJAuQsNg==
+=ZCc1
+-----END PGP SIGNATURE-----
+
+--jmfxxgLgPT+fSo7V--
 
