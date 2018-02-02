@@ -1,25 +1,12 @@
-From: Simon Rozman <simon@...2293...>
-Date: Fri, 2 Feb 2018 01:00:07 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE1085FA3762@...2294...>
-References: <20171105192019.GM958@...1296...>
- <99D61A626FDA8A4B90A270669121BE108587DA0D@...2294...>
- <CAKuzo_hTnJVcEuCqCQ-ZR3swbkio7CWZgy3z5C0fWVJ-E0PCvQ@...278...>
- <99D61A626FDA8A4B90A270669121BE108587DF29@...2294...>
- <CAKuzo_jFp86anFk6mgavBoYhmCCHUeJ_EQpb6Z05PTNJxBYWWw@...278...>
- <99D61A626FDA8A4B90A270669121BE10858830C4@...2294...>
- <20171204192515.GA69387@...1296...>
- <99D61A626FDA8A4B90A270669121BE1085B4AC9A@...2294...>
- <CAKuzo_hJdNEMMmUqa4d=n4k9vZXoYtkC9CFcvAkW9cDgzT2wCA@...278...>
- <99D61A626FDA8A4B90A270669121BE1085B4CA4D@...2294...>
- <20180125160037.GT69387@...1296...>
-In-Reply-To: <20180125160037.GT69387@...1296...>
-Content-Language: en-US
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
- micalg=2.16.840.1.101.3.4.2.1;
- boundary="----=_NextPart_000_0025_01D39BC9.8C5F1650"
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 09/13] Signed/unsigned warnings of MSVC
- resolved
+In-Reply-To: <20180201154521.7642-1-steffan@...1856...>
+References: <20180201072731.GU69387@...1296...>
+ <20180201154521.7642-1-steffan@...1856...>
+From: Selva Nair <selva.nair@...277...>
+Date: Thu, 1 Feb 2018 23:43:39 -0500
+Message-ID: <CAKuzo_jyu-zuJDTXJkB2iV=MQ=Yx74uo_Eo8XN3Sgr5YLR460g@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v3] Enable stricter compiler warnings by
+ default
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -28,133 +15,196 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: Selva Nair <selva.nair@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
-------=_NextPart_000_0025_01D39BC9.8C5F1650
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-> > I have tested and am confirming MSVC is happy with the block_dns.c now.
-> >
-> > Should your patch be merged, I shall rebase the "[PATCH 09/13]
-> Signed/unsigned warnings of MSVC resolved" to the new master and deliver
-> the next version.
-> 
-> I finally came around to merging the get_interface_metric() patch from
+On Thu, Feb 1, 2018 at 10:45 AM, Steffan Karger <steffan@...1856...> wrote:
+> This by default enables the compiler warnings one could previously
+> enable using the --enable-strict configure option.  I think it is
+> okay to do so now, because we've taken care of many warnings in the
+> more standard builds.  (Most of those were totally harmless, but they
+> prevented us from spotting new more serious mistakes.)
+>
+> The --enable-strict flag now enables two extra warning flags that I
+> think can be useful:
+>
+> -Wsign-compare warns when the compiler promotes a signed type to
+> unsigned before comparing, which can lead to unexpected behaviour.
+>
+> -Wuninitialized adds extra warnings about usage of uninitialized variables
+> or struct elements.
+>
+> Signed-off-by: Steffan Karger <steffan@...1856...>
+> ---
+> v2: Just move forward with warnings, don't add --disable-strict.
+> v3: Nothing is as simple as it seems:
+
+:)
+
+>     put user-supplied CFLAGS behind
+>     default flags, check that potential esotheric compiler supports
+>     flags before enabling them.
+>
+>  configure.ac                | 12 +++++++-
+>  m4/ax_check_compile_flag.m4 | 74 +++++++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 85 insertions(+), 1 deletion(-)
+>  create mode 100644 m4/ax_check_compile_flag.m4
+>
+> diff --git a/configure.ac b/configure.ac
+> index 2cbf3358..33b6bc8e 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -1292,13 +1292,23 @@ if test "${enable_pkcs11}" = "yes"; then
+>         )
+>  fi
+>
+> +AX_CHECK_COMPILE_FLAG(
+> +    [-Wno-unused-function],
+> +    [CFLAGS="-Wno-unused-function ${CFLAGS}"]
+> +)
+
+As Steffan himself noted, need tabs instead of spaces for consistency
+
+> +AX_CHECK_COMPILE_FLAG(
+> +    [-Wno-unused-parameter],
+> +    [CFLAGS="-Wno-unused-parameter ${CFLAGS}"]
+> +)
+
+same here
+
+> +AX_CHECK_COMPILE_FLAG([-Wall], [CFLAGS="-Wall ${CFLAGS}"])
+
+The three options could have checked together, but this is fine too.
+
+All said and done, the check is not as useful as I had imagined..
+AX_CHECK_COMPLIE_FLAG only catches errors, not warnings.
+For instance, IBM's xlc, at least on Linux, only warns about unknown options.
+So nothing gained -- in fact 4 warning lines per source file caused by
+these options.
+Hopefully, its still useful on some other never used build envs..
+
+Anyway, the check protects against probable build failures on some unknown
+systems, and I won't waste any more time dwelling on this.
+
+> +
+>  if test "${enable_pedantic}" = "yes"; then
+>         enable_strict="yes"
+>         CFLAGS="${CFLAGS} -pedantic"
+>         AC_DEFINE([PEDANTIC], [1], [Enable pedantic mode])
+>  fi
+>  if test "${enable_strict}" = "yes"; then
+> -       CFLAGS="${CFLAGS} -Wall -Wno-unused-parameter -Wno-unused-function"
+> +       CFLAGS="${CFLAGS} -Wsign-compare -Wuninitialized"
+>  fi
+>  if test "${enable_werror}" = "yes"; then
+>         CFLAGS="${CFLAGS} -Werror"
+> diff --git a/m4/ax_check_compile_flag.m4 b/m4/ax_check_compile_flag.m4
+> new file mode 100644
+> index 00000000..dcabb92a
+> --- /dev/null
+> +++ b/m4/ax_check_compile_flag.m4
+> @@ -0,0 +1,74 @@
+> +# ===========================================================================
+> +#  https://www.gnu.org/software/autoconf-archive/ax_check_compile_flag.html
+> +# ===========================================================================
+> +#
+> +# SYNOPSIS
+> +#
+> +#   AX_CHECK_COMPILE_FLAG(FLAG, [ACTION-SUCCESS], [ACTION-FAILURE], [EXTRA-FLAGS], [INPUT])
+> +#
+> +# DESCRIPTION
+> +#
+> +#   Check whether the given FLAG works with the current language's compiler
+> +#   or gives an error.  (Warnings, however, are ignored)
+> +#
+> +#   ACTION-SUCCESS/ACTION-FAILURE are shell commands to execute on
+> +#   success/failure.
+> +#
+> +#   If EXTRA-FLAGS is defined, it is added to the current language's default
+> +#   flags (e.g. CFLAGS) when the check is done.  The check is thus made with
+> +#   the flags: "CFLAGS EXTRA-FLAGS FLAG".  This can for example be used to
+> +#   force the compiler to issue an error when a bad flag is given.
+> +#
+> +#   INPUT gives an alternative input source to AC_COMPILE_IFELSE.
+> +#
+> +#   NOTE: Implementation based on AX_CFLAGS_GCC_OPTION. Please keep this
+> +#   macro in sync with AX_CHECK_{PREPROC,LINK}_FLAG.
+> +#
+> +# LICENSE
+> +#
+> +#   Copyright (c) 2008 Guido U. Draheim <guidod@...68...>
+> +#   Copyright (c) 2011 Maarten Bosmans <mkbosmans@...277...>
+> +#
+> +#   This program is free software: you can redistribute it and/or modify it
+> +#   under the terms of the GNU General Public License as published by the
+> +#   Free Software Foundation, either version 3 of the License, or (at your
+> +#   option) any later version.
+> +#
+> +#   This program is distributed in the hope that it will be useful, but
+> +#   WITHOUT ANY WARRANTY; without even the implied warranty of
+> +#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+> +#   Public License for more details.
+> +#
+> +#   You should have received a copy of the GNU General Public License along
+> +#   with this program. If not, see <https://www.gnu.org/licenses/>.
+> +#
+> +#   As a special exception, the respective Autoconf Macro's copyright owner
+> +#   gives unlimited permission to copy, distribute and modify the configure
+> +#   scripts that are the output of Autoconf when processing the Macro. You
+> +#   need not follow the terms of the GNU General Public License when using
+> +#   or distributing such scripts, even though portions of the text of the
+> +#   Macro appear in them. The GNU General Public License (GPL) does govern
+> +#   all other use of the material that constitutes the Autoconf Macro.
+> +#
+> +#   This special exception to the GPL applies to versions of the Autoconf
+> +#   Macro released by the Autoconf Archive. When you make and distribute a
+> +#   modified version of the Autoconf Macro, you may extend this special
+> +#   exception to the GPL to apply to your modified version as well.
+> +
+> +#serial 5
+> +
+> +AC_DEFUN([AX_CHECK_COMPILE_FLAG],
+> +[AC_PREREQ(2.64)dnl for _AC_LANG_PREFIX and AS_VAR_IF
+> +AS_VAR_PUSHDEF([CACHEVAR],[ax_cv_check_[]_AC_LANG_ABBREV[]flags_$4_$1])dnl
+> +AC_CACHE_CHECK([whether _AC_LANG compiler accepts $1], CACHEVAR, [
+> +  ax_check_save_flags=$[]_AC_LANG_PREFIX[]FLAGS
+> +  _AC_LANG_PREFIX[]FLAGS="$[]_AC_LANG_PREFIX[]FLAGS $4 $1"
+> +  AC_COMPILE_IFELSE([m4_default([$5],[AC_LANG_PROGRAM()])],
+> +    [AS_VAR_SET(CACHEVAR,[yes])],
+> +    [AS_VAR_SET(CACHEVAR,[no])])
+> +  _AC_LANG_PREFIX[]FLAGS=$ax_check_save_flags])
+> +AS_VAR_IF(CACHEVAR,yes,
+> +  [m4_default([$2], :)],
+> +  [m4_default([$3], :)])
+> +AS_VAR_POPDEF([CACHEVAR])dnl
+> +])dnl AX_CHECK_COMPILE_FLAGS
+> --
+> 2.14.1
+
+This macro is a part of autoconf archive which, I thought, is
+prerequisite for building from the repo. One anyway needs autotools
+installed. Can't we not insist on having these common macros be present
+as well? After all this is for building from git sources, not from a
+dist tarball
+which needs no autotools.
+
+Also the notes in the macro file says "Please keep this macro in sync with
+AX_CHECK_{PREPROC,LINK}_FLAG." which is easier to do if we use the
+system's installed copy.
+
+Anyway, if including such m4 macros in the repo is the policy,  this
+is fine.
+
+Having done the self-satisfying nitpicking:
+
+Acked-by: Selva Nair <selva.nair@...277...>
+
+(compile tested: --Wall is surprisingly quiet on linux, but exposes
+lots of warnings on Windows (mingw) some of which are not benign)
+
 Selva
-> today, so I await your fixup patch of the remaining MSVC warnings :-)
-> 
-> thanks,
-> 
-> gert
-
-I have been insanely busy for the last few months and the OpenVPN
-contribution was one of the sacrifices I had to make. Please apologize for
-the inconvenience.
-
-After I get back to my-old-self, count my children and see if my wife still
-recognizes me, I shall address all the OpenVPN things. I have quite some
-messages flagged for a follow-up here. Including this thread.
-
-Best regards,
-Simon
-
-------=_NextPart_000_0025_01D39BC9.8C5F1650
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCD9Qw
-ggSKMIIC8qADAgECAg0AkK53dgAAAABXHdBvMA0GCSqGSIb3DQEBCwUAMFwxCzAJBgNVBAYTAlNJ
-MRwwGgYDVQQKExNSZXB1Ymxpa2EgU2xvdmVuaWphMRcwFQYDVQRhEw5WQVRTSS0xNzY1OTk1NzEW
-MBQGA1UEAxMNU0ktVFJVU1QgUm9vdDAeFw0xNjA0MjUwNzM4MTdaFw0zNzEyMjUwODA4MTdaMFwx
-CzAJBgNVBAYTAlNJMRwwGgYDVQQKExNSZXB1Ymxpa2EgU2xvdmVuaWphMRcwFQYDVQRhEw5WQVRT
-SS0xNzY1OTk1NzEWMBQGA1UEAxMNU0ktVFJVU1QgUm9vdDCCAaIwDQYJKoZIhvcNAQEBBQADggGP
-ADCCAYoCggGBANPLnC3C4DBDZTEk/0uwONmpU9c10du3S5O0co3xy5XSUyt0mzKapC8+Agbdr3AV
-oarPEYeKZnvLzB1wRFyPrMrmw1sntI2jjhC/blR0CHCKI+jKx3TEZpEg3UvopYR1pZiVgosb4SAk
-B0arDGU2QGeLde6p2ZEpG+1vLUXC1uJgAbHzTjkrO28/hb4I9lMre6LJRaFEgYBmmmA6G8S+DMww
-EH8RNjhK5puhllOclMwRxgRMolVL/4Dhr4wcNfy5kzff+V093OsNJ2xEyVlmK1Zv/wQb9/Vpw13D
-GP69p9lkL6KfYNlybD08dfIlJ5guOrjJ3U11vauwImFYATcopiCdLmBc+5C8RkO4/m3YwGYiJGs0
-eCLlueJY6Ug47ky9AXtuPkDq0cIKQpNnwyYvPwdbz6/jHeg64mXhhJE/9WYA/aozRkLsFj7SE2Uv
-DglT9uQqdRScGTMWmkXh21fPzzjUp/ftWEPkDphcxOAxP5Skb0tKotVKjSapHWQlCDUN5wIDAQAB
-o0swSTAPBgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB/wQEAwIBBjATBgNVHSMEDDAKgAhMo8NoXggC
-YzARBgNVHQ4ECgQITKPDaF4IAmMwDQYJKoZIhvcNAQELBQADggGBACYjhbtdQRlukoOK7gGLBDUZ
-f6uP3NYzwfl5ll4j9fDO3erbYTtar91Y6UKJQO/52WcRf03x7ekRe7FBD+2k0ha278H9i/YRKyzv
-/AcGRgzPAgvtO96PCbkzqyaAVERCZdfnr81QDsrIiKESnCqVOz5UPEhz9nx41Jv/k/dF5CmEY/z6
-fhrnXOByV7AveB0wxhP9iF+xZYjaXpcTgXv+Hs97v1cwwXCSQ6aZ8FWfmMUjQr10HDGOEqXZRWoq
-WshYzb3W3T41Cxl/AxzOBw+HRZMVoWu9NBzg3vXUuOWRHEsFtScmvM/RCZgWxuHxVUs6e23exme2
-wTctn6iOWce3psXv3xbi7d6yt/OiNqQoMjoKlMs/Xv5uWe26NrKT1sbDGf71mXjrR0flrUJ67Lx7
-yS5BTk0PBA6KSzOH3PF2fFoYjJwKEteis8KFh65tMVBiMiGgaBZflDV0VSnScYEISuHXXapUAbMb
-fFmuvqwMyrhAZGdbneoGBhHW0DBzHuO8KzCCBVkwggRBoAMCAQICBDtKDS4wDQYJKoZIhvcNAQEF
-BQAwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMI
-c2lnZW4tY2EwHhcNMTYwMjE5MTc1NDQxWhcNMjEwMjE5MjEzODE1WjCBgDELMAkGA1UEBhMCU0kx
-GzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMIc2lnZW4tY2ExFDASBgNVBAsT
-C2luZGl2aWR1YWxzMSswEwYDVQQDEwxTaW1vbiBSb3ptYW4wFAYDVQQFEw0yMzQ1Njc5NTEyMDQy
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA/ixFbpZjenz5GnanvNlfDNca0OdgWBg5
-GsalcP7RMGpaShIjEegzvFXwqZI49SmuSRKFNtUq5tTBYOk5KLfW/MpBwBhFhmpAUQUoCRgQUAKo
-jvJJ47ULqIV0gBXlFoyzHwN5jmRvKyWxqwsoN/RZptY3ns1mLgf+7Nsa6iu0rXPxsyIXqrGBND8N
-RYarRAgOdibs6CLTl9+vHd9bTfztcp5B+xdE18uPBhZ3JquWInd3d0FTpNakAuvJaCC8EkpCwOcT
-leph8/15QAG/43zS37CMsU9UTuPqz5TrpU2FXsf238ZWyhlzeKnyv6POExal1tXWw1Cu40vT8zMb
-YVqU3wIDAQABo4ICGzCCAhcwDgYDVR0PAQH/BAQDAgWgMEsGA1UdIAREMEIwNgYLKwYBBAGvWQIC
-AwMwJzAlBggrBgEFBQcCARYZaHR0cDovL3d3dy5jYS5nb3Yuc2kvY3BzLzAIBgYEAIswAQIwGAYI
-KwYBBQUHAQMEDDAKMAgGBgQAjkYBATAaBgNVHREEEzARgQ9zaW1vbkByb3ptYW4uc2kwge4GA1Ud
-HwSB5jCB4zBWoFSgUqRQME4xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJzdGF0ZS1pbnN0aXR1dGlv
-bnMxETAPBgNVBAsTCHNpZ2VuLWNhMQ8wDQYDVQQDEwZDUkw0NTUwgYiggYWggYKGV2xkYXA6Ly94
-NTAwLmdvdi5zaS9vdT1zaWdlbi1jYSxvPXN0YXRlLWluc3RpdHV0aW9ucyxjPXNpP2NlcnRpZmlj
-YXRlUmV2b2NhdGlvbkxpc3Q/YmFzZYYnaHR0cDovL3d3dy5zaWdlbi1jYS5zaS9jcmwvc2lnZW4t
-Y2EuY3JsMCsGA1UdEAQkMCKADzIwMTYwMjE5MTc1NDQxWoEPMjAyMTAyMTkyMTM4MTVaMB8GA1Ud
-IwQYMBaAFHF7igYfMQVVq2ASd0cgHgOIGOyJMB0GA1UdDgQWBBS7/7AHyQYI0e8GOPmwTc1ZTNw5
-lzAJBgNVHRMEAjAAMBkGCSqGSIb2fQdBAAQMMAobBFY4LjEDAgOoMA0GCSqGSIb3DQEBBQUAA4IB
-AQBBUL4KG1Z1oBIIdKIZs9yJxnJg/LfEPVvzNH8+CCqegq0D6k48Doo72oVEiskjqggdbUGj30uA
-H8PjCD5kLGVoDwh5a2atQ3qQzaYA/lj2Js2f4fdXNn60vRp7XzbGsQdwYYecIrKzO5x6XVAIRb+T
-HZNjXL3VX6vOozwBQv/+dx1P9H/rMUn7d8ci7v4PeqShbWbWwi6ez19cZvSKSkz/lWf4tj8QbA0n
-WeUBlk3Bx6/TRda7kwXzcFExt+ROGt0YJjbZCN3kd7swcRvRT6gEi9L6n1XLghwPSYhzZjaL5fXv
-I11JuSoQCy13XWBkq35Moo4iY19wanS1W6UM8Yq0MIIF5TCCBE2gAwIBAgINAKZovVEAAAAAVx3Q
-6DANBgkqhkiG9w0BAQsFADBcMQswCQYDVQQGEwJTSTEcMBoGA1UEChMTUmVwdWJsaWthIFNsb3Zl
-bmlqYTEXMBUGA1UEYRMOVkFUU0ktMTc2NTk5NTcxFjAUBgNVBAMTDVNJLVRSVVNUIFJvb3QwHhcN
-MTYwNTI0MTE1ODI3WhcNMjEwNjI3MjIwMDAwWjA9MQswCQYDVQQGEwJzaTEbMBkGA1UEChMSc3Rh
-dGUtaW5zdGl0dXRpb25zMREwDwYDVQQLEwhzaWdlbi1jYTCCASIwDQYJKoZIhvcNAQEBBQADggEP
-ADCCAQoCggEBALDlZbLArGSW8ogbs+2e5ALGTyuIzi6KUYB1rxBb8ss4ZpuiDm00R5alkhGv9jVH
-onciDM4WiGKq00luGLwuRNi+xp7CGhmsQY78MAcC8sZq1FsjAO9BNNikc2PfIpIzhAGljfODXPq4
-1Ho13+z4bQ/gTO2tnDp9htalCJS+fXoRH/6FP1RaiGOHnKWxp07Nt0Rzr8+KSWsf483XSU1aKxfm
-XHazu3K5byfSm4kViN8QX3YhAWrHFTEK0ZxY+CgWBW3ZTtmh1wcgy0smiU2Ssqe6lujjWI8inAGW
-WsT3MU0LSbXheGHiVBgGu55UNH4MPuvutYAf3RaEHWg4Zmdz+JECAwEAAaOCAkMwggI/MBIGA1Ud
-EwEB/wQIMAYBAf8CAQAwDgYDVR0PAQH/BAQDAgEGMDoGA1UdIAQzMDEwLwYEVR0gADAnMCUGCCsG
-AQUFBwIBFhlodHRwOi8vd3d3LmNhLmdvdi5zaS9jcHMvMGkGCCsGAQUFBwEBBF0wWzA2BggrBgEF
-BQcwAoYqaHR0cDovL3d3dy5jYS5nb3Yuc2kvY3J0L3NpLXRydXN0LXJvb3QuY3J0MCEGCCsGAQUF
-BzABhhVodHRwOi8vb2NzcC5jYS5nb3Yuc2kwHQYDVR0OBBYEFHF7igYfMQVVq2ASd0cgHgOIGOyJ
-MIIBPAYDVR0fBIIBMzCCAS8wgbeggbSggbGGKmh0dHA6Ly93d3cuY2EuZ292LnNpL2NybC9zaS10
-cnVzdC1yb290LmNybIaBgmxkYXA6Ly94NTAwLmdvdi5zaS9jbj1TSS1UUlVTVCUyMFJvb3Qsb3Jn
-YW5pemF0aW9uSWRlbnRpZmllcj1WQVRTSS0xNzY1OTk1NyxvPVJlcHVibGlrYSUyMFNsb3Zlbmlq
-YSxjPVNJP2NlcnRpZmljYXRlUmV2b2NhdGlvbkxpc3Qwc6BxoG+kbTBrMQswCQYDVQQGEwJTSTEc
-MBoGA1UEChMTUmVwdWJsaWthIFNsb3ZlbmlqYTEXMBUGA1UEYRMOVkFUU0ktMTc2NTk5NTcxFjAU
-BgNVBAMTDVNJLVRSVVNUIFJvb3QxDTALBgNVBAMTBENSTDEwEwYDVR0jBAwwCoAITKPDaF4IAmMw
-DQYJKoZIhvcNAQELBQADggGBAHuvNSPhY4qcirWJkTwkqaOPqOSV06J/ZepFQfUEJ87TlrGjp4XR
-5FLktTAEY/7R4Sgeb2K8OWEl/Koc1BbH6+uyZYvfa+WnnJEWeWOmyPy/vooO7eZyOVvaORxurWOL
-CCVDW2wBkbtUoKZaUyzgP+ZPPGRV8GFlbZLCzGmArMGXJXe8t/XNiJDLehGqSWT49NYjyYQdIgI+
-qi9W+A6BSUQ9jsMdYJqKhXQcosfH51sc6gZVxTKMr3PsItsa8XFiNazECAAFr0ms7HB6zb8QvHRF
-eBGk/CLrW4VkZEBN/JtuyhvgktQ2BvuGtauEvHZQAYpMSh35D7pwtavRMpmhaAsQb4yPqhIMcztw
-RqsKPBhWoaFEVZ+Vn3wxap5h/oAhocifNzkWJTNWjxnoPM2eNz2uWFJsgsNhlwteUvnq7+bKTNte
-SKWKr6pI+GUsZhmCh5URpUnqUanp0Uie0MD9f3tiOLOp711sNb0xwi+VdDuDB37IddOIsfhPBood
-wpoFrTGCAzkwggM1AgEBMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0
-aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4wDQYJYIZIAWUDBAIBBQCgggHFMBgGCSqGSIb3
-DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE4MDIwMjAxMDAwNlowLwYJKoZIhvcN
-AQkEMSIEIAclDQoyE804jme5dkyAT2mWzI2+kU0RznIHtW4UH5eCMFQGCSsGAQQBgjcQBDFHMEUw
-PTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMIc2ln
-ZW4tY2ECBDtKDS4wVgYLKoZIhvcNAQkQAgsxR6BFMD0xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJz
-dGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsTCHNpZ2VuLWNhAgQ7Sg0uMIGrBgkqhkiG9w0BCQ8x
-gZ0wgZowCwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQBFjAKBggqhkiG9w0DBzALBglghkgBZQMEAQIw
-DgYIKoZIhvcNAwICAgCAMAcGBSsOAwIHMA0GCCqGSIb3DQMCAgFAMA0GCCqGSIb3DQMCAgEoMAsG
-CWCGSAFlAwQCATALBglghkgBZQMEAgMwCwYJYIZIAWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEB
-AQUABIIBADXug4Hl4M76tie4zkUS2pbE9W9i+ShoOz9e+y/ibu7EXLW3WI/ODrbxTqJSmQ+3kVdL
-XucG7J/8DQwDYs/or8p8PLDvZFi53bBONDwBd6nb/abIkgnvDBzZOMGD1FW5sJJBBuCeZHb/vrKE
-/cKxeI8Gd67pXdg4vfmwqbjA+Y8/4vAN+cGYzyql8HiJcZVz7NwaxGbtBjltuGDvcT4SWUiqypya
-8cJcZzGbCUzfxmAVxEzKHDZtIenTEIV7HNdubXcwIHKKIcM10u/Wkjs8QVshyWdOFU9lueHJbvq3
-h1XzVMlFYPS5zjzCSdQqDJIAgkv7a9ReN1oyldzH8HwAgPoAAAAAAAA=
-
-------=_NextPart_000_0025_01D39BC9.8C5F1650--
 
