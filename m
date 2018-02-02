@@ -1,14 +1,16 @@
-References: <20180201072731.GU69387@...1296...>
- <20180201154521.7642-1-steffan@...1856...>
- <CAKuzo_jyu-zuJDTXJkB2iV=MQ=Yx74uo_Eo8XN3Sgr5YLR460g@...278...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <b1f23a13-e547-be90-9c7d-690245c86fdd@...1856...>
-Date: Fri, 2 Feb 2018 07:32:54 +0100
+References: <20180131140314.11103-1-davids@...515...>
+ <201802010800.w1180kOd009288@...2054...>
+ <20180201080711.GW69387@...1296...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <6e2b0090-298c-e8f0-848c-d3fcc5c0a346@...515...>
+Date: Fri, 2 Feb 2018 09:34:54 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_jyu-zuJDTXJkB2iV=MQ=Yx74uo_Eo8XN3Sgr5YLR460g@...278...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v3] Enable stricter compiler warnings by
- default
+In-Reply-To: <20180201080711.GW69387@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="G1dxyDJyFgvpHOeB5wHZq7YLo3VJGS2E8"
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Update copyright to include
+ 2018 plus company name change
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,68 +19,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--G1dxyDJyFgvpHOeB5wHZq7YLo3VJGS2E8
+Content-Type: multipart/mixed; boundary="GR4RM7dsQlFWTl4Hpqh8a82cAhiOW7uXd";
+ protected-headers="v1"
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <6e2b0090-298c-e8f0-848c-d3fcc5c0a346@...515...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Update copyright to include
+ 2018 plus company name change
+References: <20180131140314.11103-1-davids@...515...>
+ <201802010800.w1180kOd009288@...2054...>
+ <20180201080711.GW69387@...1296...>
+In-Reply-To: <20180201080711.GW69387@...1296...>
 
-On 02-02-18 05:43, Selva Nair wrote:
-> On Thu, Feb 1, 2018 at 10:45 AM, Steffan Karger <steffan@...1856...> wrote:
->> [...]
->>
->> +AX_CHECK_COMPILE_FLAG([-Wall], [CFLAGS="-Wall ${CFLAGS}"])
-> 
-> The three options could have checked together, but this is fine too.
-> 
-> All said and done, the check is not as useful as I had imagined..
-> AX_CHECK_COMPLIE_FLAG only catches errors, not warnings.
-> For instance, IBM's xlc, at least on Linux, only warns about unknown options.
-> So nothing gained -- in fact 4 warning lines per source file caused by
-> these options.
-> Hopefully, its still useful on some other never used build envs..
-> 
-> Anyway, the check protects against probable build failures on some unknown
-> systems, and I won't waste any more time dwelling on this.
-> 
->> diff --git a/m4/ax_check_compile_flag.m4 b/m4/ax_check_compile_flag.m4
->> new file mode 100644
->> [...]
-> 
-> This macro is a part of autoconf archive which, I thought, is
-> prerequisite for building from the repo. One anyway needs autotools
-> installed. Can't we not insist on having these common macros be present
-> as well? After all this is for building from git sources, not from a
-> dist tarball
-> which needs no autotools.
-> 
-> Also the notes in the macro file says "Please keep this macro in sync with
-> AX_CHECK_{PREPROC,LINK}_FLAG." which is easier to do if we use the
-> system's installed copy.
-> 
-> Anyway, if including such m4 macros in the repo is the policy,  this
-> is fine.
+--GR4RM7dsQlFWTl4Hpqh8a82cAhiOW7uXd
+Content-Language: en-US
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-We previously did not depend on it (I didn't have the archive installed)
-and thought we didn't want to pull in another dependency.  Also, the
-error when the archive is missing is quite terrible and will cost a lot
-of people time to understand.  Autoconf happily continues, then
-configure fails with:
+Il 01/02/2018 10:07, Gert Doering ha scritto:
+> Hi,
+>=20
+> for the sake of patchwork without leading blanks:
+>=20
+> Acked-by: Gert Doering <gert@...1296...>
+>=20
+> (Samuli, could you adjust the match-regex for A to accept leading blanks?
+> that way, it would auto-parse our commit mails...)
 
-./configure: line 17861: syntax error near unexpected token `newline'
-./configure: line 17861: `AX_CHECK_COMPILE_FLAG('
+I can have a look and can probably fix this if it is configurable at all.
 
-That said, if we prefer to not include the macro, it can simply be
-removed from the commit.  I could even rewrite then to directly use
-AC_COMPILE_IFELSE, which is bulkier and less clear but doesn't need the
-include.
 
-> Having done the self-satisfying nitpicking:
-> 
-> Acked-by: Selva Nair <selva.nair@...277...>
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-Thanks :)
+irc freenode net: mattock
 
--Steffan
+
+--GR4RM7dsQlFWTl4Hpqh8a82cAhiOW7uXd--
+
+--G1dxyDJyFgvpHOeB5wHZq7YLo3VJGS2E8
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAlp0FKIACgkQKVhNn0CG
+RXiaIAf/aljptCz5p4xd6RvlxJT/UTFPHeDimreH9cbMCnjXssEo25t1ND8EDgcd
+7Tmi6MQN8oe3tylm9pgGIysAjRDLrRmlHoG0wmIvv2qWHFD6X0Z7SvNBU3Qsf0eF
+Ta53ZqxD19r7jpXdQFBa7yyE+3Ya36FmV+GfCKp7B1xuawYU7Q76qECCnF7R5VfX
+7LQY/RZ9o4giuKq1B6rIlQe8eTiTsuNe3be6mPRXQr3zAM1MAfR0g3BUdOHH6JbH
+4vEJ+5Ay5TPeRqs9YJ2BD/OLPhGFR6/4er1LMq4qmv1WSwddLTnHJdWfNza6YGYe
+AIe0HXruBoj/SeCcwRjq0qE96Wh+Wg==
+=9jKt
+-----END PGP SIGNATURE-----
+
+--G1dxyDJyFgvpHOeB5wHZq7YLo3VJGS2E8--
 
