@@ -1,13 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <20180204180104.GA65347@...1296...>
-References: <1517391662-21325-1-git-send-email-arne@...1227...>
- <201802041050.w14Ao3W3061831@...2054...>
- <20180204180104.GA65347@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Sun, 4 Feb 2018 13:25:01 -0500
-Message-ID: <CAKuzo_i3VH54an0r4dG8qKg=BUUmJaug13JOD6acddtmqAmHKg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Treat dhcp-option DNS6 and
- DNS identical
+In-Reply-To: <1460475732-10951-1-git-send-email-fish.thss@...277...>
+References: <1460475732-10951-1-git-send-email-fish.thss@...277...>
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Mon, 5 Feb 2018 19:52:29 -0500
+Message-ID: <CAEsd45SVTP0gp0k=Pc=qDYhabZaVK6z8L4LYLrG_PH=cwAqFJQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Properly respond to SIGTERM received
+ during DNS resolution.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,74 +16,101 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: Arne Schwabe <arne@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Fish <fish.thss@...277...>, Arne Schwabe <arne@...1227...>, Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Hi, I'd like to reopen this patch -- it seems to have gotten lost.
 
-On Sun, Feb 4, 2018 at 1:01 PM, Gert Doering <gert@...1296...> wrote:
-> Hi,
+The patch is so old the line numbers are wrong but the code doesn't
+seem to have changed.
+
+I'm top-posting because this thread doesn't show up in the SourceForge
+archive[1] (???) so I've extracted the relevant parts below. There was
+some top-posting but nothing was really out-of-order, so I've tried to
+make the thread intelligible and include everything relevant below.
+
+On Tue, Apr 12, 2016 at 11:42 AM, Fish <fish.thss@...277...> wrote:
+> In `link_socket_init_phase2`, it used to be the case that any received
+> signal will be overwritten by SIGUSR1 if the socket cannot be created
+> (e.g. when DNS resolution fails), which consequently prevents OpenVPN from
+> responding to SIGTERM and exiting. This patch adds an additional check of
+> whether the received signal during DNS resolution is SIGTERM or not, and
+> prematurely exits from `link_socket_init_phase2` when receiving a SIGTERM.
+> ---
+>  src/openvpn/socket.c | 5 +++++
+>  1 file changed, 5 insertions(+)
 >
-> On Sun, Feb 04, 2018 at 11:50:03AM +0100, Gert Doering wrote:
->> I've taken the liberty to change the commit message and mention that it's
->> "v3" here :-)
->>
->> commit 849006bf17bba524e6f3344598adcbe41bedf450 (master)
->> commit 61a72ecd59a57a50d0757b56b16f4ed3ce700f3f (release/2.4)
->> Author: Arne Schwabe
->> Date:   Wed Jan 31 10:41:02 2018 +0100
->>
->>      Treat dhcp-option DNS6 and DNS identical
+> diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+> index 9bcf4d4..5e8abe1 100644
+> --- a/src/openvpn/socket.c
+> +++ b/src/openvpn/socket.c
+> @@ -1905,6 +1905,11 @@ link_socket_init_phase2 (struct link_socket *sock,
+>             }
+>         }
 >
-> This is... interesting.  The change is minor, but seems to have pushed the
-> endless if/else if/else construction in options.c over an invisible cliff,
-> and some buildbots (FreeBSD 7.4, Debian 8.5) now *sometimes* bomb with
-> "signal 11" when gcc is compiling options.c ...
+> +      if (sig_info->signal_received == SIGTERM)
+> +       {
+> +         goto done;
+> +       }
+> +
+>        /* Socket still undefined, give a warning and abort connection */
+>        if (sock->sd == SOCKET_UNDEFINED)
+>         {
+
+On Tue, Apr 12, 2016 at 11:46 AM, Gert Doering <gert@...1296...> wrote:
+> That is the "on DNS failure, the client loops forever and is not killable"
+> problem, right?
 >
->   gcc -DHAVE_CONFIG_H -I. -I../.. -I../../include  -I../../include  -I../../src/compat           -DPLUGIN_LIBDIR=\"/usr/local/lib/openvpn/plugins\"  -g -O2 -std=c99 -MT options.o -MD -MP -MF .deps/options.Tpo -c -o options.o options.c
->   gcc: Internal error: Killed: 9 (program cc1)
->   Please submit a full bug report.
->   See <URL:http://gcc.gnu.org/bugs.html> for instructions.
+> (I'm not sure I'm reading the description right, to understand the
+> actual issue this is fixing - but if I'm reading it right, then this
+> makes sense :-)  - what about SIGINT?)
 
-Interesting indeed. In fact, 2 years ago, we had a report of msvc
-failing (literally stack overflow !) on the long if-else chain in
-option.c:
 
-quoting from an old thread:
+On Tue, Apr 12, 2016 at 11:48 AM, Fish Wang <fish.thss@...277...> wrote:
+>
+> Right, it's for the "on DNS failure, the client loops forever and is not killable" problem.
 
->On Thu, Dec 10, 2015 at 9:47 AM, Selva Nair <selva.nair@...277...> wrote:
->>Hi,
->>
->>On Wed, Dec 9, 2015 at 5:05 PM, Gisle Vanem <gvanem@...2101...> wrote:
->>
->>>While compiling src/openvpn/options.c with MSVC 2015, I got this
->>>
->>>error:
->>>
->>>  src/openvpn/options.c(5944): fatal error C1026: parser stack overflow, program too complex
->>>
->>>As a quick fix you can locally edit options.c to split the large if ..endif block with 300 or so  else-if's into two groups with a couple of goto's. I've no idea how msvc parses code, so this may or may not work.
->>>
->>>I've also seen such error in GeoIP-lib due to all the 'if..else if' statements.
->>>
->>>Can this be written using some kind of a table-lookup code instead?
->>
->>
->>The option parser code using if-else is very standard and the logic easy to follow, so I doubt there is a strong reason for re-writing it.
->>
->>Selva
 
-At that time I had done some tests. from my notes:
+On Tue, Apr 12, 2016 at 12:25 PM, Jonathan K. Bullard
+<jkbullard@...277...> wrote:
+> Feature ACK; this should make DNS hangs much easier to deal with for
+> GUIs such as Tunnelblick.
+>
+> The "hang forever" problem can be avoided by using --resolve-retry.
+>
 
-"gcc with 100,000 if else
-compiles using
-~250 MB memory and ~8 minutes on 1 core of an 8 year old athlon.
-So apparently there is no limit except for memory exhaustion."
+On Tue, Apr 12, 2016 at 1:18 PM, Arne Schwabe <arne@...1227...> wrote:
+> Am 12.04.16 um 17:42 schrieb Fish:
+>> In `link_socket_init_phase2`, it used to be the case that any received
+>> signal will be overwritten by SIGUSR1 if the socket cannot be created
+>> (e.g. when DNS resolution fails)
+>
+> That should not happen in the first place, doesn't register_signal keep
+> care of not overwriting higher priority signals?
 
-I can't recall what version of gcc I had used. Its a bit surprising
-that we now exhaust memory (even on a VM with only 512 MB memory).
-Possibly newer gcc versions are approaching msvc efficiency in this
-regard?
+On Tue, Apr 12, 2016 at 10:07 PM, Fish Wang <fish.thss@...277...> wrote:
+>
+> No, the patch won't fix that issue. I may send out another patch later to fix that problem if I have free time this week.
 
-Selva
+On Tue, Apr 12, 2016 at 10:11 PM, Fish Wang <fish.thss@...277...> wrote:
+> Check out the code in socket.c [1]. This is where the received signal is overwritten by SIGUSR1.
+>
+>       /* Socket still undefined, give a warning and abort connection */
+>       if (sock->sd == SOCKET_UNDEFINED)
+>         {
+>           msg (M_WARN, "Could not determine IPv4/IPv6 protocol");
+>           sig_info->signal_received = SIGUSR1;
+>           goto done;
+>         }
+> [1] https://github.com/OpenVPN/openvpn/blob/master/src/openvpn/socket.c#L1909
+
+Note that theses lines are immediately below the patch. The last three
+lines of the patch (which are not changed in the patch) are the same
+as the first three lines shown above.
+
+Best regards,
+
+Jon Bullard
+
+[1] https://sourceforge.net/p/openvpn/mailman/openvpn-devel/?viewmonth=201604&limit=250&style=threaded
 
