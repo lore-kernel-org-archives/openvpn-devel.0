@@ -1,16 +1,17 @@
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_hYfnm3G_zNJ4iX_ONAJkR_=0L4GWhSMqi9NV17+u7n1Q@...278...>
 References: <CAFHpkQEFPO+TsXdqva=OGg_9FnErDH7Uw9fs876Co_q2A4=rmA@...278...>
  <CAKuzo_hdyx3MH5Cw=gEujHhEvQ1wnOaZ2r0n7=j3GSsv_C1Z2Q@...278...>
  <CAFHpkQFtN6jk5bNcksmoBDjjMd3UbW4sN+y5rH0zUb2sgDq=gg@...278...>
  <6febf54c-f7ab-2297-2c75-72235e14e1c5@...2080...>
  <CAKuzo_gQaniVbD2QuEBb1x+xe8wULUjJkhXMWocyxi=oDknz0w@...278...>
- <CAFHpkQF7qhc+4coTN5Tf=Ez5nioUyQG1N8GW6mzQPy4gWoY_XQ@...278...>
- <CAKuzo_hYfnm3G_zNJ4iX_ONAJkR_=0L4GWhSMqi9NV17+u7n1Q@...278...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Thu, 8 Feb 2018 02:45:00 +0500
-Message-ID: <CAFHpkQGeEW5OL5cGu0tHBuasreNx2mYHfSt+tc2AE+YQXwk-ng@...278...>
-Content-Type: multipart/alternative; boundary="001a114cbd740f5b6e0564a635ac"
+ <66f25180-945c-1dc9-a5ca-62d3cacdff2c@...2080...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <87b2c993-9711-a7f5-fb3f-d3e2a26da610@...2181...>
+Date: Thu, 8 Feb 2018 11:36:42 +0800
+MIME-Version: 1.0
+In-Reply-To: <66f25180-945c-1dc9-a5ca-62d3cacdff2c@...2080...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="zTpVxd3TdAJWORIvm3PKZr3XYz76uws58"
 Subject: Re: [Openvpn-devel] [Openvpn-users] "Reconnect" button in
  openvpn-gui
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,187 +22,92 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, "openvpn users list (openvpn-users@lists.sourceforge.net)" <openvpn-users@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net, David Sommerseth <openvpn@...2080...>, Selva Nair <selva.nair@...277...>
+Cc: "openvpn users list (openvpn-users@lists.sourceforge.net)" <openvpn-users@lists.sourceforge.net>
 
---001a114cbd740f5b6e0564a635ac
-Content-Type: text/plain; charset="UTF-8"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--zTpVxd3TdAJWORIvm3PKZr3XYz76uws58
+Content-Type: multipart/mixed; boundary="gCfmNA9JsbpLtH06jkJwiEk7yir6ii7EO";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: openvpn-devel@lists.sourceforge.net,
+ David Sommerseth <openvpn@...2080...>,
+ Selva Nair <selva.nair@...277...>
+Cc: "openvpn users list (openvpn-users@lists.sourceforge.net)"
+ <openvpn-users@lists.sourceforge.net>
+Message-ID: <87b2c993-9711-a7f5-fb3f-d3e2a26da610@...2181...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] "Reconnect" button in openvpn-gui
+References: <CAFHpkQEFPO+TsXdqva=OGg_9FnErDH7Uw9fs876Co_q2A4=rmA@...278...>
+ <CAKuzo_hdyx3MH5Cw=gEujHhEvQ1wnOaZ2r0n7=j3GSsv_C1Z2Q@...278...>
+ <CAFHpkQFtN6jk5bNcksmoBDjjMd3UbW4sN+y5rH0zUb2sgDq=gg@...278...>
+ <6febf54c-f7ab-2297-2c75-72235e14e1c5@...2080...>
+ <CAKuzo_gQaniVbD2QuEBb1x+xe8wULUjJkhXMWocyxi=oDknz0w@...278...>
+ <66f25180-945c-1dc9-a5ca-62d3cacdff2c@...2080...>
+In-Reply-To: <66f25180-945c-1dc9-a5ca-62d3cacdff2c@...2080...>
+
+--gCfmNA9JsbpLtH06jkJwiEk7yir6ii7EO
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-2018-02-08 1:43 GMT+05:00 Selva Nair <selva.nair@...277...>:
-
-> Hi,
->
-> On Wed, Feb 7, 2018 at 3:30 PM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=
-=BF=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...> wrote:
-> >
-> >
-> > 2018-02-08 1:21 GMT+05:00 Selva Nair <selva.nair@...277...>:
-> >>
-> >> Hi,
-> >>
-> >> On Wed, Feb 7, 2018 at 2:58 PM, David Sommerseth
-> >> <openvpn@...2080...> wrote:
-> >> > On 07/02/18 20:32, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=
-=D1=86=D0=B8=D0=BD wrote:
-> >> >> After auth-token were introduced, when user press "Reconnect", it
-> leads
-> >> >> to
-> >> >> auth fail (saved password is forgotten), we run about 1000 users,
-> >> >> nobody
-> >> >> complains.
-> >> >
-> >> > This is actually expected, I'd say - but smells like a bug on the
-> server
-> >> > side
-> >> > authentication.
-> >> >
-> >> > Selva may correct me if I'm wrong, but my understanding of it when
-> >> > clicking
-> >> > "Reconnect", the local OpenVPN process which caches the auth-token is
-> >> > stopped
-> >> > and a new OpenVPN process is started.  The client should in this case
-> >> > ask for
-> >> > username/password again.  So in this case, the server side should
-> treat
-> >> > this
-> >> > connection as a fresh connection with no initial state.
-> >>
-> >> GUI's reconnect button is wired to send a SIGHUP to the client openvpn
-> >> process. The problem is that if auth-token is in use, the client
-> >> openvpn.exe does not forget it it when restarting the connection by
-> >> SIGHUP or SIGUSR1 -- I think it should but it doesn't. That leads to
-> >> an AUTH_FAILED from server. The GUI has hard time distinguishing
-> >> between reasons for AUTH_FAILED, so it just assumes that password
-> >> verification failed and clears the saved password and prompts for a
-> >> new one. Obviously users are not happy.
-> >
-> >
-> > users don't care :)
-> >
-> > if they we ever unhappy, we should fix it.
-> >
-> > currently, I'm open to ideas how to perform a (proper) investigation in
-> > order to actually remove "Reconnect" button
->
-> I do not understand why you keep harping about removing the reconnect
-> button.
->
-> If you are angry with auth-token do not take it out on the wrong
-> victim. Its not reconnect button's fault. In fact if your users do not
-> use it, why bother?
->
 
 
-those victims are not mutually exclusive.
+On 08/02/18 04:41, David Sommerseth wrote:
+> On 07/02/18 21:21, Selva Nair wrote:
+>=20
+>> In my view auth-token handling in openvpn.exe is broken at multiple leve=
+ls:
+>>
+>> Client process:
+>> (i) it should not remember the token after a reconnect is issued
+>=20
+> Agreed.  This should trigger retrieving new user input in regards to SIGH=
+UP at
+> least.  Not sure yet about SIGUSR1 though.  SIGHUP has a cleared semantic
+> though (hang-up).
 
-I noticed that nobody cares of broken behaviour of "REconnect" button. So,
-I suggest to remove it (as a user, I cannot imagine when
-I would press it ... probably something like "change IP address on
-reconnect", like I do with Tor)
+I discussed this Arne as well as he also had users complaining about this.
 
-Also, I think that auth-token should be handled in better way.
+The conclusion we came was that it may be meaningful, upon reconnection,
+to try sending the token once (the token might be handled by external
+server side scripts and might still be alive, so one attempt is worth)
+and if it fails then we should dump the token, ask the user for the
+password and reconnect.
 
 
->
-> Selva
->
+This way we still save all those setups where the token survives fast
+reconenctions on the server side
 
---001a114cbd740f5b6e0564a635ac
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Cheers,
 
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">2018-02-08 1:43 GMT+05:00 Selva Nair <span dir=3D"ltr">&lt;<a href=3D"m=
-ailto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>&gt;<=
-/span>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bor=
-der-left:1px #ccc solid;padding-left:1ex">Hi,<br>
-<div><div class=3D"h5"><br>
-On Wed, Feb 7, 2018 at 3:30 PM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=
-=D0=B8=D1=86=D0=B8=D0=BD &lt;<a href=3D"mailto:chipitsine@...277...">chipit=
-sine@...277...</a>&gt; wrote:<br>
-&gt;<br>
-&gt;<br>
-&gt; 2018-02-08 1:21 GMT+05:00 Selva Nair &lt;<a href=3D"mailto:selva.nair@=
-...277...">selva.nair@...277...</a>&gt;:<br>
-&gt;&gt;<br>
-&gt;&gt; Hi,<br>
-&gt;&gt;<br>
-&gt;&gt; On Wed, Feb 7, 2018 at 2:58 PM, David Sommerseth<br>
-&gt;&gt; &lt;<a href=3D"mailto:openvpn@...2080...">openvpn@...2142...<wbr>t=
-opphemmelig.net</a>&gt; wrote:<br>
-&gt;&gt; &gt; On 07/02/18 20:32, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=
-=BF=D0=B8=D1=86=D0=B8=D0=BD wrote:<br>
-&gt;&gt; &gt;&gt; After auth-token were introduced, when user press &quot;R=
-econnect&quot;, it leads<br>
-&gt;&gt; &gt;&gt; to<br>
-&gt;&gt; &gt;&gt; auth fail (saved password is forgotten), we run about 100=
-0 users,<br>
-&gt;&gt; &gt;&gt; nobody<br>
-&gt;&gt; &gt;&gt; complains.<br>
-&gt;&gt; &gt;<br>
-&gt;&gt; &gt; This is actually expected, I&#39;d say - but smells like a bu=
-g on the server<br>
-&gt;&gt; &gt; side<br>
-&gt;&gt; &gt; authentication.<br>
-&gt;&gt; &gt;<br>
-&gt;&gt; &gt; Selva may correct me if I&#39;m wrong, but my understanding o=
-f it when<br>
-&gt;&gt; &gt; clicking<br>
-&gt;&gt; &gt; &quot;Reconnect&quot;, the local OpenVPN process which caches=
- the auth-token is<br>
-&gt;&gt; &gt; stopped<br>
-&gt;&gt; &gt; and a new OpenVPN process is started.=C2=A0 The client should=
- in this case<br>
-&gt;&gt; &gt; ask for<br>
-&gt;&gt; &gt; username/password again.=C2=A0 So in this case, the server si=
-de should treat<br>
-&gt;&gt; &gt; this<br>
-&gt;&gt; &gt; connection as a fresh connection with no initial state.<br>
-&gt;&gt;<br>
-&gt;&gt; GUI&#39;s reconnect button is wired to send a SIGHUP to the client=
- openvpn<br>
-&gt;&gt; process. The problem is that if auth-token is in use, the client<b=
-r>
-&gt;&gt; openvpn.exe does not forget it it when restarting the connection b=
-y<br>
-&gt;&gt; SIGHUP or SIGUSR1 -- I think it should but it doesn&#39;t. That le=
-ads to<br>
-&gt;&gt; an AUTH_FAILED from server. The GUI has hard time distinguishing<b=
-r>
-&gt;&gt; between reasons for AUTH_FAILED, so it just assumes that password<=
-br>
-&gt;&gt; verification failed and clears the saved password and prompts for =
-a<br>
-&gt;&gt; new one. Obviously users are not happy.<br>
-&gt;<br>
-&gt;<br>
-&gt; users don&#39;t care :)<br>
-&gt;<br>
-&gt; if they we ever unhappy, we should fix it.<br>
-&gt;<br>
-&gt; currently, I&#39;m open to ideas how to perform a (proper) investigati=
-on in<br>
-&gt; order to actually remove &quot;Reconnect&quot; button<br>
-<br>
-</div></div>I do not understand why you keep harping about removing the rec=
-onnect button.<br>
-<br>
-If you are angry with auth-token do not take it out on the wrong<br>
-victim. Its not reconnect button&#39;s fault. In fact if your users do not<=
-br>
-use it, why bother?<br></blockquote><div><br></div><div><br></div><div>thos=
-e victims are not mutually exclusive.</div><div><br></div><div>I noticed th=
-at nobody cares of broken behaviour of &quot;REconnect&quot; button. So, I =
-suggest to remove it (as a user, I cannot imagine when <br></div><div>I wou=
-ld press it ... probably something like &quot;change IP address on reconnec=
-t&quot;, like I do with Tor)</div><div><br></div><div>Also, I think that au=
-th-token should be handled in better way.<br></div><div>=C2=A0</div><blockq=
-uote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc =
-solid;padding-left:1ex">
-<span class=3D"HOEnZb"><font color=3D"#888888"><br>
-Selva<br>
-</font></span></blockquote></div><br></div></div>
 
---001a114cbd740f5b6e0564a635ac--
+--=20
+Antonio Quartulli
+
+
+--gCfmNA9JsbpLtH06jkJwiEk7yir6ii7EO--
+
+--zTpVxd3TdAJWORIvm3PKZr3XYz76uws58
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlp7xcoACgkQB6U8WA7y
+zXROLA//c3tofMKgJ4DGsXKndf4c+qDwlC4sDcigVSiHFA+s0CbHrnKc0pI0MfGH
+sBeV+dKeQT79ROwv8AxbaUI/2jPChmvgVLqnQ29ld2lVCjQJz18jemKIfGjRgHwK
+5/8v+HLgJFT7fVTsKekPb1KOwXjrmMeCbZX5Rezlw6SlL6oxCKPq2sQI4nj7OsnY
+TSxWTzVR7BujAoieZTQmMERAKukNPd35ZFeVUeu1KiV+YVMQcLc6JAoUgDI8gCod
+cvB+L0l98nPpv9sORfn+j8d2UE99Zgwy8ealXbu3XavlaTgcCMmdhRUA1EMIXzb9
+TY6f+DhPxkLAEZky47PM/DDRL4JQlH1IdvFS8nyJgVklrLlC79xsOn0imU5R2YIu
+K+VumB0F6CkQjjn7ty/6jitP+IEoA7MM4rSMWuVcxLqRaJ3wFghkDBe+G5R5Ydge
+Ja5CO1mEjCK6/5BX8V0IukN4xr2WeD5XTd7+eSk50hlW9fpiLzkrElY2UJNKQWY6
+wtTRT4DTWDnodc+BuoEJfnIAyH/Kr6HS2qIUsMASgz0KIuSlvUDVjzTTWUpHUI4R
+56/dqZG2062yvC4Yt10++XETKflOjatpV8VmGcnL2RXDcg5+HY83obogt4tFA91q
+bHfIRH22GpXd4ITTZvVRsBbMnA4bpaeZMAJJMFZc6zhjwULiok0=
+=nxtY
+-----END PGP SIGNATURE-----
+
+--zTpVxd3TdAJWORIvm3PKZr3XYz76uws58--
 
