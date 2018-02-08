@@ -2,16 +2,14 @@ References: <CAFHpkQEFPO+TsXdqva=OGg_9FnErDH7Uw9fs876Co_q2A4=rmA@...278...>
  <CAKuzo_hdyx3MH5Cw=gEujHhEvQ1wnOaZ2r0n7=j3GSsv_C1Z2Q@...278...>
  <CAFHpkQFtN6jk5bNcksmoBDjjMd3UbW4sN+y5rH0zUb2sgDq=gg@...278...>
  <6febf54c-f7ab-2297-2c75-72235e14e1c5@...2080...>
- <CAKuzo_gQaniVbD2QuEBb1x+xe8wULUjJkhXMWocyxi=oDknz0w@...278...>
- <66f25180-945c-1dc9-a5ca-62d3cacdff2c@...2080...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <87b2c993-9711-a7f5-fb3f-d3e2a26da610@...2181...>
-Date: Thu, 8 Feb 2018 11:36:42 +0800
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <17c77ed3-840e-7624-9e23-6ae8de04bf3e@...515...>
+Date: Thu, 8 Feb 2018 10:15:40 +0200
 MIME-Version: 1.0
-In-Reply-To: <66f25180-945c-1dc9-a5ca-62d3cacdff2c@...2080...>
+In-Reply-To: <6febf54c-f7ab-2297-2c75-72235e14e1c5@...2080...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="zTpVxd3TdAJWORIvm3PKZr3XYz76uws58"
+ boundary="Qs6SdmjgeXaX2bx6AZpBMOwp5tRow6Drl"
 Subject: Re: [Openvpn-devel] [Openvpn-users] "Reconnect" button in
  openvpn-gui
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,92 +20,102 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net, David Sommerseth <openvpn@...2080...>, Selva Nair <selva.nair@...277...>
+To: openvpn-devel@lists.sourceforge.net, David Sommerseth <openvpn@...2080...>, =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, Selva Nair <selva.nair@...277...>
 Cc: "openvpn users list (openvpn-users@lists.sourceforge.net)" <openvpn-users@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---zTpVxd3TdAJWORIvm3PKZr3XYz76uws58
-Content-Type: multipart/mixed; boundary="gCfmNA9JsbpLtH06jkJwiEk7yir6ii7EO";
+--Qs6SdmjgeXaX2bx6AZpBMOwp5tRow6Drl
+Content-Type: multipart/mixed; boundary="jRP2kifYO9XtVmq4QhOUkrlzkOtzRzhQn";
  protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
 To: openvpn-devel@lists.sourceforge.net,
  David Sommerseth <openvpn@...2080...>,
+ =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>,
  Selva Nair <selva.nair@...277...>
 Cc: "openvpn users list (openvpn-users@lists.sourceforge.net)"
  <openvpn-users@lists.sourceforge.net>
-Message-ID: <87b2c993-9711-a7f5-fb3f-d3e2a26da610@...2181...>
+Message-ID: <17c77ed3-840e-7624-9e23-6ae8de04bf3e@...515...>
 Subject: Re: [Openvpn-devel] [Openvpn-users] "Reconnect" button in openvpn-gui
 References: <CAFHpkQEFPO+TsXdqva=OGg_9FnErDH7Uw9fs876Co_q2A4=rmA@...278...>
  <CAKuzo_hdyx3MH5Cw=gEujHhEvQ1wnOaZ2r0n7=j3GSsv_C1Z2Q@...278...>
  <CAFHpkQFtN6jk5bNcksmoBDjjMd3UbW4sN+y5rH0zUb2sgDq=gg@...278...>
  <6febf54c-f7ab-2297-2c75-72235e14e1c5@...2080...>
- <CAKuzo_gQaniVbD2QuEBb1x+xe8wULUjJkhXMWocyxi=oDknz0w@...278...>
- <66f25180-945c-1dc9-a5ca-62d3cacdff2c@...2080...>
-In-Reply-To: <66f25180-945c-1dc9-a5ca-62d3cacdff2c@...2080...>
+In-Reply-To: <6febf54c-f7ab-2297-2c75-72235e14e1c5@...2080...>
 
---gCfmNA9JsbpLtH06jkJwiEk7yir6ii7EO
+--jRP2kifYO9XtVmq4QhOUkrlzkOtzRzhQn
 Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-
-
-On 08/02/18 04:41, David Sommerseth wrote:
-> On 07/02/18 21:21, Selva Nair wrote:
+Il 07/02/2018 21:58, David Sommerseth ha scritto:
+> On 07/02/18 20:32, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=
+=86=D0=B8=D0=BD wrote:
+>> After auth-token were introduced, when user press "Reconnect", it leads =
+to
+>> auth fail (saved password is forgotten), we run about 1000 users, nobody
+>> complains.
 >=20
->> In my view auth-token handling in openvpn.exe is broken at multiple leve=
-ls:
+> This is actually expected, I'd say - but smells like a bug on the server =
+side
+> authentication.
+>=20
+> Selva may correct me if I'm wrong, but my understanding of it when clicki=
+ng
+> "Reconnect", the local OpenVPN process which caches the auth-token is sto=
+pped
+> and a new OpenVPN process is started.  The client should in this case ask=
+ for
+> username/password again.  So in this case, the server side should treat t=
+his
+> connection as a fresh connection with no initial state.
+>=20
+> The step of stopping the local client and starting a new and fresh one is
+> definitely not a bad feature to have on clients.
+>=20
+>> It looks like nobody uses that button.
 >>
->> Client process:
->> (i) it should not remember the token after a reconnect is issued
+>> So, I asked several users, they confirmed they do not use Reconnect.
 >=20
-> Agreed.  This should trigger retrieving new user input in regards to SIGH=
-UP at
-> least.  Not sure yet about SIGUSR1 though.  SIGHUP has a cleared semantic
-> though (hang-up).
+> This is no good argument for me.  This is one specific setup with 1000 us=
+ers.
+> It would be more valuable with 50 different setups having 20 users each. =
+ Your
+> conclusion is based on a very homogeneous environment.
 
-I discussed this Arne as well as he also had users complaining about this.
+I agree. I also agree that the underlying problem should be fixed.
 
-The conclusion we came was that it may be meaningful, upon reconnection,
-to try sending the token once (the token might be handled by external
-server side scripts and might still be alive, so one attempt is worth)
-and if it fails then we should dump the token, ask the user for the
-password and reconnect.
-
-
-This way we still save all those setups where the token survives fast
-reconenctions on the server side
-
-Cheers,
-
+That said, Ilya's message was sent to both openvpn-users and
+openvpn-devel and nobody has screamed "do not remove the Reconnect
+button" :). The only additional thing we can do is post a message to the
+forums. As usual, the only sure way to get feedback (read: complaints)
+is to release the changes in an official build/installer.
 
 --=20
-Antonio Quartulli
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
 
---gCfmNA9JsbpLtH06jkJwiEk7yir6ii7EO--
+--jRP2kifYO9XtVmq4QhOUkrlzkOtzRzhQn--
 
---zTpVxd3TdAJWORIvm3PKZr3XYz76uws58
+--Qs6SdmjgeXaX2bx6AZpBMOwp5tRow6Drl
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlp7xcoACgkQB6U8WA7y
-zXROLA//c3tofMKgJ4DGsXKndf4c+qDwlC4sDcigVSiHFA+s0CbHrnKc0pI0MfGH
-sBeV+dKeQT79ROwv8AxbaUI/2jPChmvgVLqnQ29ld2lVCjQJz18jemKIfGjRgHwK
-5/8v+HLgJFT7fVTsKekPb1KOwXjrmMeCbZX5Rezlw6SlL6oxCKPq2sQI4nj7OsnY
-TSxWTzVR7BujAoieZTQmMERAKukNPd35ZFeVUeu1KiV+YVMQcLc6JAoUgDI8gCod
-cvB+L0l98nPpv9sORfn+j8d2UE99Zgwy8ealXbu3XavlaTgcCMmdhRUA1EMIXzb9
-TY6f+DhPxkLAEZky47PM/DDRL4JQlH1IdvFS8nyJgVklrLlC79xsOn0imU5R2YIu
-K+VumB0F6CkQjjn7ty/6jitP+IEoA7MM4rSMWuVcxLqRaJ3wFghkDBe+G5R5Ydge
-Ja5CO1mEjCK6/5BX8V0IukN4xr2WeD5XTd7+eSk50hlW9fpiLzkrElY2UJNKQWY6
-wtTRT4DTWDnodc+BuoEJfnIAyH/Kr6HS2qIUsMASgz0KIuSlvUDVjzTTWUpHUI4R
-56/dqZG2062yvC4Yt10++XETKflOjatpV8VmGcnL2RXDcg5+HY83obogt4tFA91q
-bHfIRH22GpXd4ITTZvVRsBbMnA4bpaeZMAJJMFZc6zhjwULiok0=
-=nxtY
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAlp8BzUACgkQKVhNn0CG
+RXhmpwf9HN2s4dGSnLVeD6/Wj5VX5uKTo0OFlxQnt9/FMomf3VH5ME6gDZO/8APo
+IDAcTq1LgilGN0+XBbv6mcZtouRbx12+NtH7o9bEJ0lNw604+t/GttHJoXBsrzOt
+RbHLAeFa3rbsjnv0OWvFFy2T+DkPqVVWtYqmLva/RvW2kPVyD8ziYWfukkoi1CQk
+dH0RbnIKo4FYoV6bbmyyZ/fQg5cCl+W+rd7VcB2PplnjAqTqTk5t78kvIlZpDd9t
+KDQLw+Zn8zR/xy6nl1gFML1+AqeDvWvyPh51fcKj9kuAcBi5wTyoaLdcpvHzISGs
+3JPVc5X2zGeqItzwwvyWTt5QdQY8BQ==
+=0WVQ
 -----END PGP SIGNATURE-----
 
---zTpVxd3TdAJWORIvm3PKZr3XYz76uws58--
+--Qs6SdmjgeXaX2bx6AZpBMOwp5tRow6Drl--
 
