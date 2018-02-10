@@ -1,12 +1,8 @@
-Reply-To: openvpn-devel@lists.sourceforge.net
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <a181790c-4385-4062-62b4-2658e4539c76@...2080...>
-Date: Fri, 9 Feb 2018 19:52:49 +0100
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="dDab5wkhdKbFpWR8yaPW6pEfL5BgVed3y"
-Subject: [Openvpn-devel] Test builds of OpenVPN 3 Linux client (Fedora/EPEL)
+Message-ID: <1518302884.3072.1.camel@...2316...>
+From: James Bottomley <James.Bottomley@...2316...>
+Date: Sat, 10 Feb 2018 14:48:04 -0800
+Mime-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v4 0/2] add engine keys keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,135 +11,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---dDab5wkhdKbFpWR8yaPW6pEfL5BgVed3y
-Content-Type: multipart/mixed; boundary="DOjecHsNtPOmZDGoedxhrpjOXwwAJapbg";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: "openvpn-devel@lists.sourceforge.net"
- <openvpn-devel@lists.sourceforge.net>
-Message-ID: <a181790c-4385-4062-62b4-2658e4539c76@...2080...>
-Subject: Test builds of OpenVPN 3 Linux client (Fedora/EPEL)
+Engine keys are an openssl concept for a key file which can only be
+understood by an engine (usually because it's been wrapped by the
+engine itself).  We use this for TPM engine keys, so you can either
+generate them within your TPM or wrap them from existing private keys.
+ Once wrapped, the keys will only function in the TPM that generated
+them, so it means the VPN keys are tied to the physical platform, which
+is very useful.  Engine keys have to be loaded via a specific callback,
+so use this as a fallback in openvpn if an engine is specified and if
+the PEM read of the private key fails.
 
---DOjecHsNtPOmZDGoedxhrpjOXwwAJapbg
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Adding a unit test for this type of key proved particularly
+problematic: there's apparently no simple engine you can use to check
+the functionality, so after a bit of googling, I just wrote one as part
+of the test.  You can see that the unit test converts an existing key
+to engine format (which is simply changing the PEM guards), tries to
+start openvpn with the key and verifies that the engine methods are
+called and the password correctly retrieved.  To make the test simple,
+it relies on openssl detecting a mismatch between the certificate and
+the key after the key has been loaded rather than going on to bring up
+an openvpn loop, but I think that's sufficient to test out the engine
+patch fully.
 
+James Bottomley (2):
+  openssl: add engine method for loading the key
+  Add unit tests for engine keys
 
-Hi,
+ configure.ac                                     |   2 +
+ src/openvpn/crypto_openssl.c                     |  54 ++++++++++++
+ src/openvpn/crypto_openssl.h                     |  12 +++
+ src/openvpn/ssl_openssl.c                        |   6 +-
+ tests/unit_tests/Makefile.am                     |   6 +-
+ tests/unit_tests/engine-key/Makefile.am          |  14 ++++
+ tests/unit_tests/engine-key/check_engine_keys.sh |  30 +++++++
+ tests/unit_tests/engine-key/libtestengine.c      | 102 +++++++++++++++++++++++
+ tests/unit_tests/engine-key/openssl.cnf          |  12 +++
+ 9 files changed, 236 insertions(+), 2 deletions(-)
+ create mode 100644 tests/unit_tests/engine-key/Makefile.am
+ create mode 100755 tests/unit_tests/engine-key/check_engine_keys.sh
+ create mode 100644 tests/unit_tests/engine-key/libtestengine.c
+ create mode 100644 tests/unit_tests/engine-key/openssl.cnf
 
-I've just recently prepared a Copr build of the new OpenVPN 3 Linux client,
-which provides pre-built binaries for Fedora 26, 27 and EPEL-7 (RHEL/CentOS=
-).
-
-To get started quickly, ensure you have the copr plugin for yum/dnf install=
-ed.
- Then do:
-
-   # {yum,dnf} copr enable dsommers/openvpn3
-   # {yum,dnf} install openvpn3-client
-
-If you do not have a copr plug-in available, you can download the .repo file
-from here: <https://copr.fedorainfracloud.org/coprs/dsommers/openvpn3/>
-
-Once installed, you will have access to both the openvpn2 and openvpn3 comm=
-and
-line front-ends to this new client.
-
-A few words of caution though:
-
- * This is bleeding edge code, still under heavy development.  It is far fr=
-om
-   perfect, still lacks features and there will be bugs here and there.
-
- * This new client does not look like the more commonly used OpenVPN 2.x
-   clients.  It is different in almost every way.  The closest you will get=
- to
-   the more common OpenVPN 2.x, is via the openvpn2 command line interface.
-
- * It is built with the OpenVPN 3 Core library, which is essentially protoc=
-ol
-   compatible with OpenVPN 2 servers.  But it does lack some features.  If
-   your VPN connection works with the official OpenVPN Connect clients on
-   Android or iOS, chances are that it will work just fine with this new
-   client too.
-
- * Options, arguments, etc used by openvpn3 is not set in stone yet.  They =
-may
-   change.
-
- * And, this is a pure _VPN_ _client_ _only_ currently.  Sorry, no server
-   support yet.
-
-
-To quickly get started.
-
- - Logging: Start this in a separate terminal
-     $ /usr/libexec/openvpn3-linux/openvpn3-service-logger \
-		--timestamp --session-manager --vpn-backend
-
- - Start a VPN tunnel:
-
-     $ openvpn2 --config $CFGFILE [--daemon]
-     $ openvpn3 session-start --config $CFGFILE
-
-   (openvpn2 is capable of parsing PKCS12 files, openvpn3 is not)
-
- - More fine grained tunnel management:
-     $ openvpn3 config-import --config $CFGFILE
-     $ openvpn3 configs-list
-     $ openvpn3 session-start --config-path $CFG_PATH
-       ($CFG_PATH can be found with configs-list)
-     $ openvpn3 sessions-list
-
-   And see also:
-     $ openvpn3 session-manage --help
-     $ openvpn3 session-stats --path ${SESSION_PATH}
-     $ openvpn3 log --session-path ${SESSION_PATH}
-     $ openvpn3 help
-
- - Ensure you have bash-completion installed, then tab-completion will work
-   for most of the options and arguments in openvpn3.
-
-And yes, you can do all this as an unprivileged user.
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
-
-
-
---DOjecHsNtPOmZDGoedxhrpjOXwwAJapbg--
-
---dDab5wkhdKbFpWR8yaPW6pEfL5BgVed3y
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJafe4BAAoJEIbPlEyWcf3yzvsQAKSeCnjNVCC9itlD3rmAqGgN
-lmKUXrmcDTY7XX5BsyY8cgCpEoIA3IhqbM5DeDHmHjkjsOeciwiWHCsmzHDEn9u4
-YIlSGoovZKC683xd/DJaPiW9bzZcc97bc40CRN29zmt24y1Dmp+TOSPCn633nTPp
-+PIQwZAFB+o2SHmNwBpIspw7XWymNpupfjHC+88NRVaAJ9lW3m2UTI53nnvXBB33
-vF+zUyy2zQKJ4ANNveQyRwgmjtRFz4zF/hkqO1UA1d+aSMk/nxeU/GbuaddtFA4t
-518s8MqBH1+Xdzi2i03ziL9eofw6i9xyfeBDprTy7qcZ/KGnevZ1s1q/1lZgdY23
-G3tUrPAHjfEmeS2WSk6dyMa6u0mzi3uXzf+/LIhAT3F3zxnI3J2CgknmxfPEXOx2
-3Z2f0HNdvQ6UQvANK4J/L8bUQy/+LzhcMj7szgLDbIQG5YHzq0TBEGUTDq09L+4n
-j9ini97ozkcs5kIq3hanF+WSmsqTZZwkrLlWrTklR4M+J03ZOnh5CRu1KbaMPsBN
-VpKoJC6ykszl+ET77FJqrNTd6yO5weWw16lowz62UvEj1ik6sRMgiTadfc8hZBFK
-1e03P4Hd00pD7KDkR9QdwnWQJ/OHdHxR9VY8ixXT8HqUgKkS1E43/yIbHOO5KyEE
-tBA1/KnV7wpoDdscR1Ek
-=1EIp
------END PGP SIGNATURE-----
-
---dDab5wkhdKbFpWR8yaPW6pEfL5BgVed3y--
+-- 
+2.12.3
 
