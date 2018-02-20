@@ -1,12 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <201802201223.w1KCNrwC066890@...2054...>
-References: <1511026858-23281-1-git-send-email-selva.nair@...277...>
- <201802201223.w1KCNrwC066890@...2054...>
+In-Reply-To: <20180220082043.GC69387@...1296...>
+References: <1519071994-20797-1-git-send-email-selva.nair@...277...>
+ <20180220082043.GC69387@...1296...>
 From: Selva Nair <selva.nair@...277...>
-Date: Tue, 20 Feb 2018 09:47:43 -0500
-Message-ID: <CAKuzo_jfNBA2MrsSmhVGp+muGBHP61VdGbY92p7uEQbVtWePvw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Ensure strings read from
- registry are null-terminated
+Date: Tue, 20 Feb 2018 10:42:46 -0500
+Message-ID: <CAKuzo_hCwWxyBUDar_5xgrKdtjfjVE7H5jYMkqu2gZ5eR8gKwA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix format spec errors in Windows builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,33 +21,69 @@ Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Tue, Feb 20, 2018 at 7:23 AM, Gert Doering <gert@...1296...> wrote:
-> Acked-by: Gert Doering <gert@...1296...>
+On Tue, Feb 20, 2018 at 3:20 AM, Gert Doering <gert@...1296...> wrote:
+> Hi,
 >
-> "Because it makes sense" (checked with the Windows API documentation, and
-> compile-tested on ubuntu 16.04).
+> On Mon, Feb 19, 2018 at 03:26:34PM -0500, selva.nair@...277... wrote:
+>> - In route.c print adapter_index as unsigned int as in the rest
+>>   of the code.
 >
-> Your patch has been applied to the master and release/2.4 branch.
+> That one confuses me, but that is most likely me vs. windows types.
 >
-> There was one issue with your patch that you might want to look into - it
-> seems to be based on a private branch that has a "#define REG_KEY" which
-> does not exist in my tree, and which I could not find any references to
-> on the mailing list either.  It broke applying the patch as it appeared
-> in patch context - but since none of the actual code line reference this,
-> I decided to apply the patch nonetheless (it has been lingering for way
-> too long already).
+> adapter_index is declared as "DWORD" in tun.h, and
+>
+>   https://msdn.microsoft.com/en-us/library/cc230318.aspx
+>
+> says that DWORD is "typedef unsigned long DWORD".
+>
+> Since that particular code is only relevant on windows, why not just
+> use "%lu" and avoid the cast?
 
-That line got removed by the following commit (multiple service instances):
+You are absolutely right. But, we have several places where DWORD is
+cast to (unsigned int) before printing, so I just decided to follow
+that "style".
 
-commit f3fec49b1c916a701058ef2445b4c07005c30673
-Author: Simon Rozman <simon@...2293...>
-Date:   Sun Dec 3 22:16:54 2017 +0100
-openvpnserv: Add support for multi-instances
+Anyway, don't want to change all those cases, but will change all
+instances of adapter_index to use %lu (only ~3 locations other than
+the ones touched here) and send a v2.
 
-So it was a rebase conflict. I scanned through the patch as applied
-and all look ok.
+>
+>
+> The rest looks reasonable to me, and I'm not strictly opposed to the
+> adapter_index one, just confused.
+>
+> (As a side note, I assume that this patch is "master only", and have
+> not looked at which bits and pieces apply to release/2.4 - the error.c
+> one does not, because the surrounding code is different, plus, I've
+> already merged Steffan's patch for error.c to 2.4)
 
-Thanks,
+Oh, yes, a separate 2.4 version may be needed. Will check.
+
+>
+> [..]
+>> @@ -3003,7 +3003,7 @@ do_route_service(const bool add, const route_message_t *rt, const size_t size, H
+>>
+>>      if (ack.error_number != NO_ERROR)
+>>      {
+>> -        msg(M_WARN, "ROUTE: route %s failed using service: %s [status=%u if_index=%lu]",
+>> +        msg(M_WARN, "ROUTE: route %s failed using service: %s [status=%u if_index=%d]",
+>>              (add ? "addition" : "deletion"), strerror_win32(ack.error_number, &gc),
+>>              ack.error_number, rt->iface.index);
+>>          goto out;
+>
+> That one is correct, but arguably a bit annoying - openvpn-msg.h /
+> struct interface_t uses "int index", which maybe should have been a
+> DWORD to keep the windows types.  Or not?
+>
+> I wouldn't change the message types, though - as it would introduce
+> possible compatibility issues between openvpn and iservice (if one
+> ends up having different versions installed and running).
+
+This is something we better live with. That said even if we change the
+msg types to use DWORD, binary compatibility with older versions would
+not break as sizeof(DWORD) is 32 bits, same as int, isn't it? For the
+same reason no real need to change this as no information is really
+lost.
 
 Selva
 
