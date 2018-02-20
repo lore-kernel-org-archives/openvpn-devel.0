@@ -1,10 +1,10 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <cfe3db2b-9b0a-c420-01df-02b8d67cfa06@...515...>
-Date: Tue, 20 Feb 2018 15:28:42 +0200
-MIME-Version: 1.0
-Content-Language: en-US
-Subject: [Openvpn-devel] Topics for the community meeting (Wed,
- 21st Feb 2018)
+Date: Tue, 20 Feb 2018 14:46:14 +0100 (CET)
+Message-Id: <201802201346.w1KDkEAs068040@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1514972448-7010-1-git-send-email-steffan.karger@...1435...>
+References: <1514972448-7010-1-git-send-email-steffan.karger@...1435...>
+Subject: [Openvpn-devel] [PATCH applied] Re: reliable: remove
+ reliable_unique_retry()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,32 +13,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan.karger@...1435...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Acked-by: Gert Doering <gert@...1296...>
 
-We're going to have an IRC meeting starting at 11:30 CET
-(10:30 UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have
-to be logged in to Freenode to join the channel.
+Note that this change does not actually remove the exponential backoff
+logic, just some magic extra bits added to it - possibly to avoid server 
+side synchronization if there are lots of clients that all have packet 
+loss.  Since ovpn3 has no server side, it's not exactly surprising that
+it does not have code to handle such a situation :-)
 
-Current topic list along with basic information is here:
+Your patch has been applied to the master branch.
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2018-02-21>
+commit 2af8853ec23ac33f02cce816f686702e7c6516a7
+Author: Steffan Karger
+Date:   Wed Jan 3 10:40:48 2018 +0100
 
-If you have any other things you'd like to bring up, respond to this
-mail, send me mail privately or add them to the list yourself.
+     reliable: remove reliable_unique_retry()
 
-In case you can't attend the meeting, please feel free to make comments
-on the topics by responding to this email or to the summary email sent
-after the meeting. Whenever possible, we'll also respond to existing,
-related email threads.
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1514972448-7010-1-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16146.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
 
 --
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+kind regards,
 
-irc freenode net: mattock
+Gert Doering
+
 
