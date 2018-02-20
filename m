@@ -1,16 +1,14 @@
-Date: Tue, 20 Feb 2018 20:59:20 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180220195920.GQ69387@...1296...>
-References: <1511026858-23281-1-git-send-email-selva.nair@...277...>
- <1511026858-23281-2-git-send-email-selva.nair@...277...>
- <20180220161429.GB69696@...1296...>
- <CAKuzo_iDwg6YJX4GaXPOU8tGhRoKL3-025N9=a+jNwDaZWSy2A@...278...>
+References: <20180201154521.7642-1-steffan@...1856...>
+ <201802200941.w1K9f8NK054824@...2054...>
+ <20180220100026.GI69387@...1296...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <81af546a-ae8e-62b1-9f47-54647dda0672@...1856...>
+Date: Tue, 20 Feb 2018 20:40:31 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="fKMJiToQsVzOkqLC"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_iDwg6YJX4GaXPOU8tGhRoKL3-025N9=a+jNwDaZWSy2A@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 2/2] Make most registry values optional
+In-Reply-To: <20180220100026.GI69387@...1296...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Enable stricter compiler
+ warnings by default
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,81 +17,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---fKMJiToQsVzOkqLC
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Tue, Feb 20, 2018 at 11:19:23AM -0500, Selva Nair wrote:
-> Hmm.. I thought I had tested the patch.. Looking at it right now -- hold =
-on :)
+On 20-02-18 11:00, Gert Doering wrote:
+> On Tue, Feb 20, 2018 at 10:41:08AM +0100, Gert Doering wrote:
+>> Your patch has been applied to the master and release/2.4 branch.
+>>
+>> Tested on FreeBSD 10, Linux and, indeed, AIX 7 :-) - Linux/gcc is nicely
+>> clean, FreeBSD/clang finds a few that are silly and want fixing...
+> 
+> Yeah.  Right.  And it blows up on centos-6 and opensolaris-10.
+> 
+> Now I can't claim that I understand this...  David double-checked this
+> macro and m4/ stuff, so "everything should have been good", but it
+> isn't.
+> 
+> CentOS 6:
+> 
+> checking lz4.h usability... no
+> checking lz4.h presence... no
+> checking for lz4.h... no
+>                 usable LZ4 library or header not found, using version in src/com
+> +pat/compat-lz4.*
+> checking git checkout... yes
+> ./configure: line 24067: syntax error near unexpected token `newline'
+> ./configure: line 24067: `AX_CHECK_COMPILE_FLAG('
+> make: *** [config.status] Error 2
 
-Missed you on IRC...
+They both already fail in the step before it seems:
 
-18:21 < selvanair> cron2: iservives in 2.4 local build and snapshot build w=
-orks=20
-                   on Windows 10. Have to go now, but will test Win7 later=
-=20
-                   today when I can get hold of a one.
-18:22 < selvanair> s/iservives/iservice
+> configure.ac:1295: error: Autoconf version 2.64 or higher is required
 
-... seems this is different on Win7...?
+ContOS 6 ships with autoconf 2.63, I don't know what opensolaris-10 has.
 
-To be sure it's not something messed up on my system, I have checked
-the HKLM\Software\OpenVPN\(null) path that it's trying to access - and
-all is there
+We could revert to an older version of the macro we ship, or to a
+simpler (though less clear) AC_CHECK_COMPILE-based check.
 
-(standard)  REG_SZ  c:\Program Files\OpenVPN
-config_dir  REG_SZ  c:\Program Files\OpenVPN\config
-...
+I'm tempted to ditch the macro and go for the AC_CHECK_COMPILE.
 
-
-and according to the documentation in
-
-https://msdn.microsoft.com/en-us/library/windows/desktop/ms724868(v=3Dvs.85=
-).aspx
-
-passing "lpValue =3D NULL" really should work...  the error code 0x57
-OTOH is documented as
-
-	ERROR_INVALID_PARAMETER
-	87 (0x57)
-	The parameter is incorrect.
-
-... which isn't exactly helpful to see *which* argument it does not like=20
-- everything *should* be according to specification...
-
-(It does happen for my own binary and for the installers Samuli builds,
-so it's not "my build environment" - theoretically it could be part 1/2
-of that patch set, which I haven't run yet)
-
-gert
---=20
-now what should I write here...
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---fKMJiToQsVzOkqLC
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJajH4YAAoJEB2Cnv7KVigSzpQL/Atjmi0vkZ1P75vK2zIsueVC
-kkWVogTRu7Sb0m2GzRkuxrwNC9xgzLTmYL6FZD8D5Lby/SvX1EnvQbjbEv/s5pzf
-+pGT24MHw0ZDUYZ6H56x1CQVd9TAB4Kx+YtmZAN59YCbYc7W5y5G7Cyno1SL9K0G
-3ptjVgy0jDHKlLHIAwuqcSceiLrjw3ja1Myv2M7/a+eBRt10iisJID+Kitw/KyoK
-MFD9JlDQUtu5+m+YaDvVYItjnUqhIrWx9etVOoXMlxr/6NtoLOw052vS7wCemjhi
-oqo9ZBlNQR+IAakK1hMaj6PT1YwNc69H/djKhOzIqe/HfPXEVS4CRjMkiLiWNLYT
-Ff+OhPNe3uOGgVduneseGMGCemMytjHEhg9i9o8TbVOZKZOCXltJP61Ut6Y5SMkr
-BEN3BONXeBL/S6gA22MzSjPLkDc+PWgOxgo3VZNrCCXW/BATInp54k4D0xtOGa63
-/nBrVQz/vYKAL7trlf+B54XIiLanE+xoQ97wRQtYGw==
-=e6a1
------END PGP SIGNATURE-----
-
---fKMJiToQsVzOkqLC--
+-Steffan
 
