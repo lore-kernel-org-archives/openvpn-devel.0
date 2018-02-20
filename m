@@ -1,10 +1,10 @@
-Date: Tue, 20 Feb 2018 14:07:28 +0100 (CET)
-Message-Id: <201802201307.w1KD7SSm067564@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20180115080555.18202-1-chipitsine@...277...>
-References: <20180115080555.18202-1-chipitsine@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: travis-ci: modify openssl build
- script to support openssl-1.1.0
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <cfe3db2b-9b0a-c420-01df-02b8d67cfa06@...515...>
+Date: Tue, 20 Feb 2018 15:28:42 +0200
+MIME-Version: 1.0
+Content-Language: en-US
+Subject: [Openvpn-devel] Topics for the community meeting (Wed,
+ 21st Feb 2018)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,30 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Ilya Shipitsin <chipitsine@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.4 branch.
+Hi,
 
-commit 437be780996501becb18f0d34c256ab9c9fe27af (master)
-commit b7aea67aa11b73417eeff595d13b0e2a7b9c925c (release/2.4)
-Author: Ilya Shipitsin
-Date:   Mon Jan 15 13:05:55 2018 +0500
+We're going to have an IRC meeting starting at 11:30 CET
+(10:30 UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have
+to be logged in to Freenode to join the channel.
 
-     travis-ci: modify openssl build script to support openssl-1.1.0
+Current topic list along with basic information is here:
 
-     Signed-off-by: Ilya Shipitsin <chipitsine@...277...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <20180115080555.18202-1-chipitsine@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16229.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+<https://community.openvpn.net/openvpn/wiki/Topics-2018-02-21>
 
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
+
+In case you can't attend the meeting, please feel free to make comments
+on the topics by responding to this email or to the summary email sent
+after the meeting. Whenever possible, we'll also respond to existing,
+related email threads.
 
 --
-kind regards,
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-Gert Doering
-
+irc freenode net: mattock
 
