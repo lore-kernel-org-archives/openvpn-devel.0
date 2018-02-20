@@ -1,18 +1,17 @@
-Date: Wed, 21 Feb 2018 08:36:10 +0100
+Date: Tue, 20 Feb 2018 20:44:10 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20180221073610.GS69387@...1296...>
-References: <1516909513-31683-1-git-send-email-selva.nair@...277...>
- <201802201030.w1KAUZKR065496@...2054...>
- <20180220120355.GA66512@...1296...>
- <CAKuzo_g2Rhkh10PMp7cuCW8m7zpMESQ4fq9TBz202zbaB2Zj7A@...278...>
- <CAKuzo_gCQBNWcxhsVKn86xM5sRr38fS2HCqgz0NS1Y8vxbtQAw@...278...>
+Message-ID: <20180220194410.GP69387@...1296...>
+References: <20180201154521.7642-1-steffan@...1856...>
+ <201802200941.w1K9f8NK054824@...2054...>
+ <20180220100026.GI69387@...1296...>
+ <81af546a-ae8e-62b1-9f47-54647dda0672@...1856...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="3KjGcObhCP65ZtLm"
+ protocol="application/pgp-signature"; boundary="NGFy4aho5lLhScak"
 Content-Disposition: inline
-In-Reply-To: <CAKuzo_gCQBNWcxhsVKn86xM5sRr38fS2HCqgz0NS1Y8vxbtQAw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Allow external EC key
- through --management-external-key
+In-Reply-To: <81af546a-ae8e-62b1-9f47-54647dda0672@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Enable stricter compiler
+ warnings by default
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,50 +20,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Steffan Karger <steffan@...1856...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
---3KjGcObhCP65ZtLm
+--NGFy4aho5lLhScak
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Wed, Feb 21, 2018 at 02:07:03AM -0500, Selva Nair wrote:
-> >> *This* one breaks LibreSSL compilation (namely, the OpenBSD buildbot),
-> >> because
-[..]
-> Tested using the freebsd-11 box in openvpn-vagrant and did pkg install
-> libressl-2.6.4 (that replaces openssl 1.1.0).
+On Tue, Feb 20, 2018 at 08:40:31PM +0100, Steffan Karger wrote:
+> We could revert to an older version of the macro we ship, or to a
+> simpler (though less clear) AC_CHECK_COMPILE-based check.
 >=20
-> This particular error gets fixed by adding
-> !defined(LIBRESSL_VERSION_NUMBER) in two places.
->=20
-> I can send a patch for this.=20
+> I'm tempted to ditch the macro and go for the AC_CHECK_COMPILE.
 
-This would be appreciated (please --cc me directly as the list is still
-not working properly).
+The macro seems to be more painful than expected - so I tend to agree
+with you :-) - patches welcome.
 
-> But there are other errors:
->=20
-> In file included from crypto_openssl.c:44:
-> ./openssl_compat.h:699:1: error: static declaration of
-> 'SSL_CTX_set_min_proto_version' follows
-[..]
-> ./openssl_compat.h:728:1: error: static declaration of
-> 'SSL_CTX_set_max_proto_version' follows
->       non-static declaration
-[..]
-> In openssl those are macros but not in libressl so the current
-> openssl_compat.h defs don't work.
-
-This is interesting.  Seems my OpenBSD version is too old, as I've not
-seen these errors in my buildbots.
-
-Let's fix one thing at a time, and start with the easy ones, which will
-make the buildbots happy for the time being :-) - and then look at
-"more recent LibreSSL fallouts".
+Though with the state of the sf.net list, patch handling is quite=20
+annoying :-/  (read: some mails get through, some mails take ages,
+patchwork isn't seeing stuff, the list archive isn't seeing stuff that
+I could reference on merging, etc. - gah)
 
 gert
 
@@ -73,22 +51,22 @@ now what should I write here...
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---3KjGcObhCP65ZtLm
+--NGFy4aho5lLhScak
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJajSFqAAoJEB2Cnv7KVigSEbkL/1dtFpZD4lb19Z3eWVBVLtWD
-XqQo7FAaXlQg76kk5P6jLUbqQ/dzaYFNoFm7z74nYTbrwmq6wGJ+LXkmNJ0XrZUq
-0+xyYPUSqvakCDTLlU1QaL5DyJ7DNEBZZI/BwY3zvhIKpUPhYDIvRijo++P2fioY
-xPD2Of5Q1GILBfwZcIv7PNJoc42Tp0xmEFtuj6wBmDIzSr25SEhBKDwCMLUCF1AW
-3pko0LM7q8y4UfP/mge9BX5NI42cMvcPuEexLBjyIzzRcSfy+oqk1MRXYX6n0TzT
-zvJHCzachRdx3PzGIzvm1f41ne9Zc6fGLpesoYHSlFIRNhUIma0AW2WZG6HIfGwU
-M4hGLHTxWrrSuU+5G4ACPsN5Jll8h0m/pAegWkd1PuGIEb4dtdfr6LW/A/jnJo1Z
-GIgEYfLYpfwapU4gLwCEWpzQ1/8zUK+PY3/FbjLVHD9MbRls9aBOqhNiOKBmbdPi
-Lsc2IabPbFj2u+zrkdWhG/oqzEETtzW8NAk2nHYsRQ==
-=n3T9
+iQGcBAEBAgAGBQJajHqKAAoJEB2Cnv7KVigS5JoL/Rh8RBdX8pEffffTHaqgv4MP
+Vg92pxkiJPRr9LMpAvRZBXzcAC16NofuJh3f/FCWbKyUBW9d2jXv6fuupvAe4ezM
+4xrhogqGzDaXB7pSX2YNvLvSaG6wyfIkJzry9W1F7BFQ3PLLDRn/c/iCSpm8HKwp
+7DAYOzU/JHqVDjs8t7f8yOOarriEeo/z01Y0McYbmlCWIa52nuWQe2/3bZTl8lLC
+mLZXfIgRo/2UUw8Cl7RPL3HCqNPRebaCwC67RQ2CjsmRS4/4FwAvOUcj+vXwbS8D
+IUkvtyZwbJRYe4dQrTKvlrXIuvrYe7PI5NTNFQfJhRrj9+NHeXWJYQs2l/Daz+Af
+98kvxxSkmuStSGGL55+nwZRS3MsBj5TCteJLiQm3MUw/QJj5Tcoz6YX3o/yJA2bn
+4o8txF40eyuTTtiMqWEnGoBgkMXRvHqPrrF0BP5HI3rXRdhIDZrFM3CA0qPLr84L
+J/cl2ypwHFQsfIX3BCM2wLJy+XsP+m0HIdRv7dNA/g==
+=5TW2
 -----END PGP SIGNATURE-----
 
---3KjGcObhCP65ZtLm--
+--NGFy4aho5lLhScak--
 
