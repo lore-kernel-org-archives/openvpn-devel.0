@@ -1,10 +1,10 @@
-Date: Tue, 20 Feb 2018 13:23:53 +0100 (CET)
-Message-Id: <201802201223.w1KCNrwC066890@...2054...>
+Date: Tue, 20 Feb 2018 13:23:56 +0100 (CET)
+Message-Id: <201802201223.w1KCNueS066894@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1511026858-23281-1-git-send-email-selva.nair@...277...>
-References: <1511026858-23281-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Ensure strings read from
- registry are null-terminated
+In-Reply-To: <1511026858-23281-2-git-send-email-selva.nair@...277...>
+References: <1511026858-23281-2-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Make most registry values
+ optional
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,30 +20,25 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-"Because it makes sense" (checked with the Windows API documentation, and
-compile-tested on ubuntu 16.04).
+"Because it makes sense".  Stared at the code, compile-tested on 16.04.
+
+Same issue as in 1/2 with the "reg_path" change...  but again, only
+conflicts in context, not actual code, and context that is not affected 
+by the code changes.
 
 Your patch has been applied to the master and release/2.4 branch.
 
-There was one issue with your patch that you might want to look into - it
-seems to be based on a private branch that has a "#define REG_KEY" which
-does not exist in my tree, and which I could not find any references to
-on the mailing list either.  It broke applying the patch as it appeared
-in patch context - but since none of the actual code line reference this,
-I decided to apply the patch nonetheless (it has been lingering for way
-too long already).
-
-commit b1263b06db40f21a8fd20e0efd0c12e37ce89a2c (master)
-commit b00dab5422669fca7304f4af111b7c259b8a0a55 (release/2.4)
+commit db04bca6729e9fe1ea60f0b3bd0329244a6ed611 (master)
+commit c07bdace820753ab29def5edc3a6cadbf233cd03 (release/2.4)
 Author: Selva Nair
-Date:   Sat Nov 18 12:40:57 2017 -0500
+Date:   Sat Nov 18 12:40:58 2017 -0500
 
-     Ensure strings read from registry are null-terminated
+     Make most registry values optional
 
      Signed-off-by: Selva Nair <selva.nair@...277...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1511026858-23281-1-git-send-email-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15893.html
+     Message-Id: <1511026858-23281-2-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15892.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
