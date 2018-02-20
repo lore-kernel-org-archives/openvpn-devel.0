@@ -1,8 +1,13 @@
-From: Gert Doering <gert@...1296...>
-Date: Tue, 20 Feb 2018 17:00:16 +0100
-Message-Id: <20180220160016.69786-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH] Fix removal of on-link prefix on windows
- with netsh
+MIME-Version: 1.0
+In-Reply-To: <20180220120355.GA66512@...1296...>
+References: <1516909513-31683-1-git-send-email-selva.nair@...277...>
+ <201802201030.w1KAUZKR065496@...2054...>
+ <20180220120355.GA66512@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Tue, 20 Feb 2018 10:14:13 -0500
+Message-ID: <CAKuzo_g2Rhkh10PMp7cuCW8m7zpMESQ4fq9TBz202zbaB2Zj7A@...278...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Allow external EC key
+ through --management-external-key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,66 +16,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: gert@...2377...
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-When adding / removing IPv6 routes, the host bits need to be zeroed or
-netsh.exe will refuse to handle the route.
+Hi,
 
-Commit a24dd2e31 changed the way this is done, breaking removal of
-the on-link IPv6 prefix for windows + netsh.exe.
+On Tue, Feb 20, 2018 at 7:03 AM, Gert Doering <gert@...1296...> wrote:
+> Hi,
+>
+> On Tue, Feb 20, 2018 at 11:30:35AM +0100, Gert Doering wrote:
+>> Your patch has been applied to the master branch.
+>>
+>> (I have not done any real review on it, except "compile test" and "stare
+>> a bit at the code for really obvious issues" - trusting Arne since his
+>> GUI seems to be the only thing really using it today, so if he's happy,
+>> I am as well)
+>>
+>> commit 7eca140c70ff76177371dc94c19aeb8644c2c3b5
+>> Author: Selva Nair
+>> Date:   Thu Jan 25 14:45:13 2018 -0500
+>>
+>>      Allow external EC key through --management-external-key
+>
+> *sigh*
+>
+> Today's the day of buildbot exploisions.
+>
+> *This* one breaks LibreSSL compilation (namely, the OpenBSD buildbot),
+> because
+>
+> ssl_openssl.c: In function 'tls_ctx_use_external_ec_key':
+> ssl_openssl.c:1229: error: 'EC_KEY_METHOD' undeclared (first use in this function)
+> ssl_openssl.c:1229: error: 'ec_method' undeclared (first use in this function)
+> ssl_openssl.c:1233: warning: implicit declaration of function 'EC_KEY_METHOD_new'
+> ssl_openssl.c:1233: warning: implicit declaration of function 'EC_KEY_OpenSSL'
+> ssl_openssl.c:1240: warning: implicit declaration of function 'EC_KEY_METHOD_set_init'
+> ssl_openssl.c:1241: warning: implicit declaration of function 'EC_KEY_METHOD_set_sign'
+> ssl_openssl.c:1249: warning: implicit declaration of function 'EC_KEY_set_method'
+>
+> So we need another "&& !defined(LIBRESSL)" here, I think.
+>
+> (And this, dear OpenBSD folks, is why application developers are just
+> a tiny little bit unhappy with the way LibreSSL claims OpenSSL "recent API"
+> compatibility by means of OPENSSL_VERSION but then... doesn't)
 
-Fix by adding explicitly calling route_ipv6_clear_host_bits() from
-delete_route_connected_v6_net().
+Adding && !defined(LIBRESSL_VERSION_NUMBER)
+to the line
+#if OPENSSL_VERSION_NUMBER > 0x10100000L && !defined(OPENSSL_NO_EC)
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/openvpn/route.c | 2 +-
- src/openvpn/route.h | 2 ++
- src/openvpn/tun.c   | 1 +
- 3 files changed, 4 insertions(+), 1 deletion(-)
+should fix it, I think. I don't have a freebsd build env to test this.
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index ca8b182b..27b39c41 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -1820,7 +1820,7 @@ done:
- }
- 
- 
--static void
-+void
- route_ipv6_clear_host_bits( struct route_ipv6 *r6 )
- {
-     /* clear host bit parts of route
-diff --git a/src/openvpn/route.h b/src/openvpn/route.h
-index 2c6f9f16..69420228 100644
---- a/src/openvpn/route.h
-+++ b/src/openvpn/route.h
-@@ -254,6 +254,8 @@ void copy_route_ipv6_option_list(struct route_ipv6_option_list *dest,
-                                  const struct route_ipv6_option_list *src,
-                                  struct gc_arena *a);
- 
-+void route_ipv6_clear_host_bits( struct route_ipv6 *r6 );
-+
- void add_route_ipv6(struct route_ipv6 *r, const struct tuntap *tt, unsigned int flags, const struct env_set *es);
- 
- void delete_route_ipv6(const struct route_ipv6 *r, const struct tuntap *tt, unsigned int flags, const struct env_set *es);
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 253d884b..1399aa83 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -839,6 +839,7 @@ delete_route_connected_v6_net(struct tuntap *tt,
-     r6.gateway = tt->local_ipv6;
-     r6.metric  = 0;                     /* connected route */
-     r6.flags   = RT_DEFINED | RT_ADDED | RT_METRIC_DEFINED;
-+    route_ipv6_clear_host_bits(&r6);
-     delete_route_ipv6(&r6, tt, 0, es);
- }
- #endif /* if defined(_WIN32) || defined(TARGET_DARWIN) || defined(TARGET_NETBSD) || defined(TARGET_OPENBSD) */
--- 
-2.16.1
+Thanks,
 
+Selva
 
