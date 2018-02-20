@@ -1,9 +1,12 @@
 MIME-Version: 1.0
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Tue, 20 Feb 2018 20:10:29 +0500
-Message-ID: <CAFHpkQGwrOTkOy0UDNUkAa3m4YZeUb7ZpKRjFWaj50KaAX47_Q@...278...>
-Content-Type: multipart/alternative; boundary="94eb2c1c22221ead1a0565a636f4"
-Subject: [Openvpn-devel] challenge/response example ?
+In-Reply-To: <201802201223.w1KCNrwC066890@...2054...>
+References: <1511026858-23281-1-git-send-email-selva.nair@...277...>
+ <201802201223.w1KCNrwC066890@...2054...>
+From: Selva Nair <selva.nair@...277...>
+Date: Tue, 20 Feb 2018 09:47:43 -0500
+Message-ID: <CAKuzo_jfNBA2MrsSmhVGp+muGBHP61VdGbY92p7uEQbVtWePvw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Ensure strings read from
+ registry are null-terminated
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,23 +15,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---94eb2c1c22221ead1a0565a636f4
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hello,
+Hi,
 
-is there any step-by-step example of implementing either static or dynamic
-challenge response ?
+On Tue, Feb 20, 2018 at 7:23 AM, Gert Doering <gert@...1296...> wrote:
+> Acked-by: Gert Doering <gert@...1296...>
+>
+> "Because it makes sense" (checked with the Windows API documentation, and
+> compile-tested on ubuntu 16.04).
+>
+> Your patch has been applied to the master and release/2.4 branch.
+>
+> There was one issue with your patch that you might want to look into - it
+> seems to be based on a private branch that has a "#define REG_KEY" which
+> does not exist in my tree, and which I could not find any references to
+> on the mailing list either.  It broke applying the patch as it appeared
+> in patch context - but since none of the actual code line reference this,
+> I decided to apply the patch nonetheless (it has been lingering for way
+> too long already).
 
-Cheers,
-Ilya Shipitsin
+That line got removed by the following commit (multiple service instances):
 
---94eb2c1c22221ead1a0565a636f4
-Content-Type: text/html; charset="UTF-8"
+commit f3fec49b1c916a701058ef2445b4c07005c30673
+Author: Simon Rozman <simon@...2293...>
+Date:   Sun Dec 3 22:16:54 2017 +0100
+openvpnserv: Add support for multi-instances
 
-<div dir="ltr"><div><div><div>Hello,<br><br></div>is there any step-by-step example of implementing either static or dynamic challenge response ?<br><br></div>Cheers,<br></div>Ilya Shipitsin<br></div>
+So it was a rebase conflict. I scanned through the patch as applied
+and all look ok.
 
---94eb2c1c22221ead1a0565a636f4--
+Thanks,
+
+Selva
 
