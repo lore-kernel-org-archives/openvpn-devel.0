@@ -1,13 +1,10 @@
-Date: Tue, 20 Feb 2018 09:20:43 +0100
+Date: Tue, 20 Feb 2018 10:12:11 +0100 (CET)
+Message-Id: <201802200912.w1K9CBxZ038368@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20180220082043.GC69387@...1296...>
-References: <1519071994-20797-1-git-send-email-selva.nair@...277...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="9BaxaTZrvsRxcpDQ"
-Content-Disposition: inline
-In-Reply-To: <1519071994-20797-1-git-send-email-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix format spec errors in Windows builds
+In-Reply-To: <20180211101929.4535-1-steffan@...1856...>
+References: <20180211101929.4535-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Log pre-handshake packet drops
+ using D_MULTI_DROPPED
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,85 +13,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: selva.nair@...277...
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---9BaxaTZrvsRxcpDQ
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Acked-by: Gert Doering <gert@...1296...>
 
-Hi,
+"because the reasoning make sense, and the code change is trivial enough"
 
-On Mon, Feb 19, 2018 at 03:26:34PM -0500, selva.nair@...277... wrote:
-> - In route.c print adapter_index as unsigned int as in the rest
->   of the code.
+Your patch has been applied to the master and release/2.4 branch.
 
-That one confuses me, but that is most likely me vs. windows types.
+commit c215c58f2393e881e16f9805549316a1e257a682 (master)
+commit 38595e9b1f337ee22a94154323eb14408ed86ef8 (release/2.4)
+Author: Steffan Karger
+Date:   Sun Feb 11 11:19:29 2018 +0100
 
-adapter_index is declared as "DWORD" in tun.h, and=20
+     Log pre-handshake packet drops using D_MULTI_DROPPED
 
-  https://msdn.microsoft.com/en-us/library/cc230318.aspx=20
-
-says that DWORD is "typedef unsigned long DWORD".
-
-Since that particular code is only relevant on windows, why not just
-use "%lu" and avoid the cast?
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20180211101929.4535-1-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16477.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-The rest looks reasonable to me, and I'm not strictly opposed to the
-adapter_index one, just confused.
+--
+kind regards,
 
-(As a side note, I assume that this patch is "master only", and have
-not looked at which bits and pieces apply to release/2.4 - the error.c
-one does not, because the surrounding code is different, plus, I've
-already merged Steffan's patch for error.c to 2.4)
+Gert Doering
 
-[..]
-> @@ -3003,7 +3003,7 @@ do_route_service(const bool add, const route_messag=
-e_t *rt, const size_t size, H
->=20=20
->      if (ack.error_number !=3D NO_ERROR)
->      {
-> -        msg(M_WARN, "ROUTE: route %s failed using service: %s [status=3D=
-%u if_index=3D%lu]",
-> +        msg(M_WARN, "ROUTE: route %s failed using service: %s [status=3D=
-%u if_index=3D%d]",
->              (add ? "addition" : "deletion"), strerror_win32(ack.error_nu=
-mber, &gc),
->              ack.error_number, rt->iface.index);
->          goto out;
-
-That one is correct, but arguably a bit annoying - openvpn-msg.h /=20
-struct interface_t uses "int index", which maybe should have been a=20
-DWORD to keep the windows types.  Or not?
-
-I wouldn't change the message types, though - as it would introduce
-possible compatibility issues between openvpn and iservice (if one=20
-ends up having different versions installed and running).
-
-gert
---=20
-now what should I write here...
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---9BaxaTZrvsRxcpDQ
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJai9paAAoJEB2Cnv7KVigSLqoL/iEUPY9FfPirwTyozG2i7AaL
-0gTgsGBnIrlXv/jWmiMRFcl0+9yvBT9Qeg7ui9fg3HQJRMhdQpYhJQK0ahmsJjDw
-NGCfiVccs9hAvznUrRFY0oXbyGXhkKYPBe97ECcQ5KFNkr5qz56/ESXk5FCEixwU
-sDaaBFf2/9nIqMr5GvKAMhWTNRHuF8DpTGHb1a+7WYeN4jVPKo0P5u2aKuBzk3qq
-muSmiytnK4ohkNoG8pHryjGJFwLaOu/MHJOVkgEwbu0eGjZefbWrXbC049/g+cem
-NpEo8LXhg5olr4aqVIMa14QEU9Wuvnnig3VklF58MWR9B0RI+/KCRXoozV0OZSjl
-0hCT6pHcStBbelIrNoYzchBP8x+IflRM8EwBPG0EV7mVsjLLr2WAkzv4e9wvULg1
-6Uu/WU2ptaW0aQIa9pfGMd2kYUbouRqYHPGX601/hzEN7LYE8gyfLUh2+Y+tcSI9
-d186k72EK+7cf0S4uKVcskcUSagaNSHrQeWblJ0+gg==
-=mhzi
------END PGP SIGNATURE-----
-
---9BaxaTZrvsRxcpDQ--
 
