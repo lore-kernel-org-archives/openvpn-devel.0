@@ -1,17 +1,17 @@
-Date: Tue, 20 Feb 2018 20:44:10 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180220194410.GP69387@...1296...>
-References: <20180201154521.7642-1-steffan@...1856...>
- <201802200941.w1K9f8NK054824@...2054...>
- <20180220100026.GI69387@...1296...>
- <81af546a-ae8e-62b1-9f47-54647dda0672@...1856...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="NGFy4aho5lLhScak"
-Content-Disposition: inline
-In-Reply-To: <81af546a-ae8e-62b1-9f47-54647dda0672@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Enable stricter compiler
- warnings by default
+In-Reply-To: <CAKuzo_iu-PeP6qHtMbQi69=3RSN1U9JNTFwso32s_H96KM3uNA@...278...>
+References: <1511026858-23281-1-git-send-email-selva.nair@...277...>
+ <1511026858-23281-2-git-send-email-selva.nair@...277...>
+ <20180220161429.GB69696@...1296...>
+ <CAKuzo_iDwg6YJX4GaXPOU8tGhRoKL3-025N9=a+jNwDaZWSy2A@...278...>
+ <20180220195920.GQ69387@...1296...>
+ <CAKuzo_iiv+3GJXuAV1rD+ZH9ijUybqVVNBW1iaV5KzNTDZgyfQ@...278...>
+ <20180221074259.GT69387@...1296...>
+ <CAKuzo_iu-PeP6qHtMbQi69=3RSN1U9JNTFwso32s_H96KM3uNA@...278...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 21 Feb 2018 08:40:15 -0500
+Message-ID: <CAKuzo_ivjHaivpKBvgL=GmxbabyUJf0g6O2ZYKDbf=FU4Z9NTw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 2/2] Make most registry values optional
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,53 +20,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
-
---NGFy4aho5lLhScak
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Tue, Feb 20, 2018 at 08:40:31PM +0100, Steffan Karger wrote:
-> We could revert to an older version of the macro we ship, or to a
-> simpler (though less clear) AC_CHECK_COMPILE-based check.
->=20
-> I'm tempted to ditch the macro and go for the AC_CHECK_COMPILE.
+On Wed, Feb 21, 2018 at 8:20 AM, Selva Nair <selva.nair@...277...> wrote:
+> Hi,
+>
+> On Wed, Feb 21, 2018 at 2:42 AM, Gert Doering <gert@...1296...> wrote:
+>> Hi,
+>>
+>> On Tue, Feb 20, 2018 at 06:33:35PM -0500, Selva Nair wrote:
+>>> > (It does happen for my own binary and for the installers Samuli builds,
+>>> > so it's not "my build environment" - theoretically it could be part 1/2
+>>> > of that patch set, which I haven't run yet)
+>>>
+>>> Yeah, I could reproduce it on Windows 7. And, at last,  after several
+>>> painful Windows builds, it turns out:
+>>>
+>>> RegGetValue with RRF_RT_REG_EXPAND_SZ|RRF_RT_REG_SZ is broken on
+>>> Windows 7 (and most likely Vista too).
+>>
+>> Thanks for investigating and finding the root cause.  "This is not what
+>> the documentation says...!" -> I need to actually *run* these things, not
+>> just test compile.
+>
+> When I say painful builds, I mean edit build[*], copy to Windows, run
+> in a few configurations, look through the event viewer, rinse rather
+> repeat. And finally when it seems to start working connect to a my
+> work VPN,  remove the registry keys and try to break it etc..
+>
+> FYI, I don't just "test compile", and leave it at that.
 
-The macro seems to be more painful than expected - so I tend to agree
-with you :-) - patches welcome.
+On re-reading, it sounds different from what I wanted to say. I was
+just cursing stupid Windows that's no fun to debug on... In this
+particular case it was my fault that I never tested the patch on
+Windows 7 in the first place. I used to run a Win7 VM, but now all my
+desktop memory is eaten by those 50 chrome tabs..
 
-Though with the state of the sf.net list, patch handling is quite=20
-annoying :-/  (read: some mails get through, some mails take ages,
-patchwork isn't seeing stuff, the list archive isn't seeing stuff that
-I could reference on merging, etc. - gah)
+Anyway, sorry to all (and to myself) for causing a "must-fix" bug
+close to a release.
 
-gert
-
---=20
-now what should I write here...
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---NGFy4aho5lLhScak
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJajHqKAAoJEB2Cnv7KVigS5JoL/Rh8RBdX8pEffffTHaqgv4MP
-Vg92pxkiJPRr9LMpAvRZBXzcAC16NofuJh3f/FCWbKyUBW9d2jXv6fuupvAe4ezM
-4xrhogqGzDaXB7pSX2YNvLvSaG6wyfIkJzry9W1F7BFQ3PLLDRn/c/iCSpm8HKwp
-7DAYOzU/JHqVDjs8t7f8yOOarriEeo/z01Y0McYbmlCWIa52nuWQe2/3bZTl8lLC
-mLZXfIgRo/2UUw8Cl7RPL3HCqNPRebaCwC67RQ2CjsmRS4/4FwAvOUcj+vXwbS8D
-IUkvtyZwbJRYe4dQrTKvlrXIuvrYe7PI5NTNFQfJhRrj9+NHeXWJYQs2l/Daz+Af
-98kvxxSkmuStSGGL55+nwZRS3MsBj5TCteJLiQm3MUw/QJj5Tcoz6YX3o/yJA2bn
-4o8txF40eyuTTtiMqWEnGoBgkMXRvHqPrrF0BP5HI3rXRdhIDZrFM3CA0qPLr84L
-J/cl2ypwHFQsfIX3BCM2wLJy+XsP+m0HIdRv7dNA/g==
-=5TW2
------END PGP SIGNATURE-----
-
---NGFy4aho5lLhScak--
+Selva
 
