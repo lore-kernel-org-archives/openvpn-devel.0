@@ -1,14 +1,16 @@
-References: <20180201154521.7642-1-steffan@...1856...>
- <201802200941.w1K9f8NK054824@...2054...>
- <20180220100026.GI69387@...1296...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <81af546a-ae8e-62b1-9f47-54647dda0672@...1856...>
-Date: Tue, 20 Feb 2018 20:40:31 +0100
 MIME-Version: 1.0
-In-Reply-To: <20180220100026.GI69387@...1296...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Enable stricter compiler
- warnings by default
+In-Reply-To: <20180221073610.GS69387@...1296...>
+References: <1516909513-31683-1-git-send-email-selva.nair@...277...>
+ <201802201030.w1KAUZKR065496@...2054...>
+ <20180220120355.GA66512@...1296...>
+ <CAKuzo_g2Rhkh10PMp7cuCW8m7zpMESQ4fq9TBz202zbaB2Zj7A@...278...>
+ <CAKuzo_gCQBNWcxhsVKn86xM5sRr38fS2HCqgz0NS1Y8vxbtQAw@...278...>
+ <20180221073610.GS69387@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 21 Feb 2018 11:09:55 -0500
+Message-ID: <CAKuzo_gG9bk6LQkqYhukMUM8SNOFFhpREWs3Agq97+VoHeCY_A@...278...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Allow external EC key
+ through --management-external-key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,48 +19,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On 20-02-18 11:00, Gert Doering wrote:
-> On Tue, Feb 20, 2018 at 10:41:08AM +0100, Gert Doering wrote:
->> Your patch has been applied to the master and release/2.4 branch.
+On Wed, Feb 21, 2018 at 2:36 AM, Gert Doering <gert@...1296...> wrote:
+> Hi,
+>
+> On Wed, Feb 21, 2018 at 02:07:03AM -0500, Selva Nair wrote:
+>> >> *This* one breaks LibreSSL compilation (namely, the OpenBSD buildbot),
+>> >> because
+> [..]
+>> Tested using the freebsd-11 box in openvpn-vagrant and did pkg install
+>> libressl-2.6.4 (that replaces openssl 1.1.0).
 >>
->> Tested on FreeBSD 10, Linux and, indeed, AIX 7 :-) - Linux/gcc is nicely
->> clean, FreeBSD/clang finds a few that are silly and want fixing...
-> 
-> Yeah.  Right.  And it blows up on centos-6 and opensolaris-10.
-> 
-> Now I can't claim that I understand this...  David double-checked this
-> macro and m4/ stuff, so "everything should have been good", but it
-> isn't.
-> 
-> CentOS 6:
-> 
-> checking lz4.h usability... no
-> checking lz4.h presence... no
-> checking for lz4.h... no
->                 usable LZ4 library or header not found, using version in src/com
-> +pat/compat-lz4.*
-> checking git checkout... yes
-> ./configure: line 24067: syntax error near unexpected token `newline'
-> ./configure: line 24067: `AX_CHECK_COMPILE_FLAG('
-> make: *** [config.status] Error 2
+>> This particular error gets fixed by adding
+>> !defined(LIBRESSL_VERSION_NUMBER) in two places.
+>>
+>> I can send a patch for this.
+>
+> This would be appreciated (please --cc me directly as the list is still
+> not working properly).
+>
+>> But there are other errors:
+>>
+>> In file included from crypto_openssl.c:44:
+>> ./openssl_compat.h:699:1: error: static declaration of
+>> 'SSL_CTX_set_min_proto_version' follows
+> [..]
+>> ./openssl_compat.h:728:1: error: static declaration of
+>> 'SSL_CTX_set_max_proto_version' follows
+>>       non-static declaration
+> [..]
+>> In openssl those are macros but not in libressl so the current
+>> openssl_compat.h defs don't work.
+>
+> This is interesting.  Seems my OpenBSD version is too old, as I've not
+> seen these errors in my buildbots.
 
-They both already fail in the step before it seems:
+This could be also because of using the vagrant box with freebsd-11.
+It came up with openssl 1.0 (not libressl) installed -- is that the
+default? And there were no build errors as external-ec-key gets
+disabled with openssl 1.0. On installing openssl 1.1.0g and
+rebuilding, again, no errors as expected.
 
-> configure.ac:1295: error: Autoconf version 2.64 or higher is required
+The only libressl package that showed up with  "pkg search" was 2.6.4
+and installing that removed openssl 1.1.0g (which it shouldn't but
+that's a different topic). Then the missing EC_KEY_METHOD and
+conflicting signatures for SSL_CTX_set_max_proto_version etc showed
+up.
 
-ContOS 6 ships with autoconf 2.63, I don't know what opensolaris-10 has.
+Anyway, I am sending a patch for disabling external-ec-key code when
+libressl is in use.
 
-We could revert to an older version of the macro we ship, or to a
-simpler (though less clear) AC_CHECK_COMPILE-based check.
-
-I'm tempted to ditch the macro and go for the AC_CHECK_COMPILE.
-
--Steffan
+Selva
 
