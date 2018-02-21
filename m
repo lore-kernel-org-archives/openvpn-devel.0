@@ -1,10 +1,9 @@
-MIME-Version: 1.0
-In-Reply-To: <CAFHpkQGwrOTkOy0UDNUkAa3m4YZeUb7ZpKRjFWaj50KaAX47_Q@...278...>
-References: <CAFHpkQGwrOTkOy0UDNUkAa3m4YZeUb7ZpKRjFWaj50KaAX47_Q@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 21 Feb 2018 12:03:16 -0500
-Message-ID: <CAKuzo_gdOZq1m_fmV6NA2uM7+_5v-R9Pbsgut=C5yELx7bEp+g@...278...>
-Subject: Re: [Openvpn-devel] challenge/response example ?
+Resent-Message-ID: <20180221171750.GA5755@...2378...>
+Resent-To: openvpn-devel@lists.sourceforge.net
+From: selva.nair@...277...
+Date: Wed, 21 Feb 2018 00:38:30 -0500
+Message-Id: <1519191510-3826-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH] Adapt to RegGetValue brokenness in Windows 7
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,31 +12,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+From: Selva Nair <selva.nair@...277...>
 
-On Tue, Feb 20, 2018 at 10:10 AM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=
-=BF=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...> wrote:
-> Hello,
->
-> is there any step-by-step example of implementing either static or dynamic
-> challenge response ?
+- RegGetValue with flags = RRF_RT_REG_SZ|RRF_RT_REG_EXPAND_SZ
+  fails in Windows 7 with an "invalid parameter" error.
+  Fix by using RRF_RT_REG_SZ alone.
 
-Static is easy:
-On client: add --static-challenge "Enter OTP" 1 to the client config.
-On server, merge my auth-pam plugin patch :)
-https://patchwork.openvpn.net/patch/212/
-and see the commit message for examples on using the plugin
+Note: This is not a regression as in no released version did the
+service support expandable strings (ones with embedded %FOO%) in
+the registry. However, the GUI does expand such strings. The two
+can be made consistent by explicitly expanding the strings -- that
+is left for a future patch.
 
-Dynamic is even easier on the client side, if Windows -- just use
-OpenVPN Windows GUI
-But for server side, the only way I know is to consult the
-management-notes.txt and implement a custom setup using
-management-client-auth.
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpnserv/common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Selva
+diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
+index 6c29f57..dc47666 100644
+--- a/src/openvpnserv/common.c
++++ b/src/openvpnserv/common.c
+@@ -59,7 +59,7 @@ openvpn_sntprintf(LPTSTR str, size_t size, LPCTSTR format, ...)
+ static DWORD
+ GetRegString(HKEY key, LPCTSTR value, LPTSTR data, DWORD size, LPCTSTR default_value)
+ {
+-    LONG status = RegGetValue(key, NULL, value, RRF_RT_REG_SZ|RRF_RT_REG_EXPAND_SZ,
++    LONG status = RegGetValue(key, NULL, value, RRF_RT_REG_SZ,
+                               NULL, (LPBYTE) data, &size);
+ 
+     if (status == ERROR_FILE_NOT_FOUND && default_value)
+-- 
+2.1.4
+
 
