@@ -1,9 +1,10 @@
-Resent-Message-ID: <20180221171750.GA5755@...2378...>
-Resent-To: openvpn-devel@lists.sourceforge.net
-From: selva.nair@...277...
-Date: Wed, 21 Feb 2018 00:38:30 -0500
-Message-Id: <1519191510-3826-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH] Adapt to RegGetValue brokenness in Windows 7
+Date: Wed, 21 Feb 2018 19:04:25 +0100 (CET)
+Message-Id: <201802211804.w1LI4PZA085714@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1519231562-5641-1-git-send-email-selva.nair@...277...>
+References: <1519231562-5641-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Disable external ec key support
+ when building with libressl
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,39 +15,37 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+Acked-by: Gert Doering <gert@...1296...>
 
-- RegGetValue with flags = RRF_RT_REG_SZ|RRF_RT_REG_EXPAND_SZ
-  fails in Windows 7 with an "invalid parameter" error.
-  Fix by using RRF_RT_REG_SZ alone.
+Tested on the OpenBSD 6.0 buildslave that was failing previously, and
+things are happy now (did not test "FreeBSD + LibreSSL", that's a 
+different issue which we might want to fix, but since it's not the
+default SSL library there, it's not as annoying as OpenBSD breakage.
+FTR, OpenBSD 6.0 has LibreSSL 2.4.2, so that could explain the 
+difference...).
 
-Note: This is not a regression as in no released version did the
-service support expandable strings (ones with embedded %FOO%) in
-the registry. However, the GUI does expand such strings. The two
-can be made consistent by explicitly expanding the strings -- that
-is left for a future patch.
+Your patch has been applied to the master branch.
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- src/openvpnserv/common.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+commit 028b501734b4a57dc53edb8b11a4b370f5b99e38
+Author: Selva Nair
+Date:   Wed Feb 21 11:46:02 2018 -0500
 
-diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
-index 6c29f57..dc47666 100644
---- a/src/openvpnserv/common.c
-+++ b/src/openvpnserv/common.c
-@@ -59,7 +59,7 @@ openvpn_sntprintf(LPTSTR str, size_t size, LPCTSTR format, ...)
- static DWORD
- GetRegString(HKEY key, LPCTSTR value, LPTSTR data, DWORD size, LPCTSTR default_value)
- {
--    LONG status = RegGetValue(key, NULL, value, RRF_RT_REG_SZ|RRF_RT_REG_EXPAND_SZ,
-+    LONG status = RegGetValue(key, NULL, value, RRF_RT_REG_SZ,
-                               NULL, (LPBYTE) data, &size);
- 
-     if (status == ERROR_FILE_NOT_FOUND && default_value)
--- 
-2.1.4
+     Disable external ec key support when building with libressl
+
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1519231562-5641-1-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16510.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
