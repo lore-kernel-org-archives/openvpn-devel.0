@@ -1,12 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_gdOZq1m_fmV6NA2uM7+_5v-R9Pbsgut=C5yELx7bEp+g@...278...>
-References: <CAFHpkQGwrOTkOy0UDNUkAa3m4YZeUb7ZpKRjFWaj50KaAX47_Q@...278...>
- <CAKuzo_gdOZq1m_fmV6NA2uM7+_5v-R9Pbsgut=C5yELx7bEp+g@...278...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Thu, 22 Feb 2018 06:44:10 +0500
-Message-ID: <CAFHpkQF-ZzVwJYwFppb7rJOkQ+Sc7PGZ0TPO7Ei4goszA55pmA@...278...>
-Content-Type: multipart/alternative; boundary="089e082f54882fbd9d0565c32e81"
-Subject: Re: [Openvpn-devel] challenge/response example ?
+In-Reply-To: <20180220160016.69786-1-gert@...1296...>
+References: <20180220160016.69786-1-gert@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 21 Feb 2018 21:19:23 -0500
+Message-ID: <CAKuzo_gqfCdxSMDRTsA3pHDaHp2o9Ar3ebWT+-ZJDEi2ApbyZw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix removal of on-link prefix on
+ windows with netsh
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,84 +14,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---089e082f54882fbd9d0565c32e81
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, gert@...2377...
 
-2018-02-21 22:03 GMT+05:00 Selva Nair <selva.nair@...277...>:
+Hi,
 
-> Hi,
+Hope this still can get in to 2.4.5
+
+On Tue, Feb 20, 2018 at 11:00 AM, Gert Doering <gert@...1296...> wrote:
+> When adding / removing IPv6 routes, the host bits need to be zeroed or
+> netsh.exe will refuse to handle the route.
 >
-> On Tue, Feb 20, 2018 at 10:10 AM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=
-=D0=BF=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...>
-> wrote:
-> > Hello,
-> >
-> > is there any step-by-step example of implementing either static or
-> dynamic
-> > challenge response ?
+> Commit a24dd2e31 changed the way this is done, breaking removal of
+> the on-link IPv6 prefix for windows + netsh.exe.
 >
-> Static is easy:
-> On client: add --static-challenge "Enter OTP" 1 to the client config.
-> On server, merge my auth-pam plugin patch :)
-> https://patchwork.openvpn.net/patch/212/
-> and see the commit message for examples on using the plugin
+> Fix by adding explicitly calling route_ipv6_clear_host_bits() from
+> delete_route_connected_v6_net().
 >
-> Dynamic is even easier on the client side, if Windows -- just use
-> OpenVPN Windows GUI
-> But for server side, the only way I know is to consult the
-> management-notes.txt and implement a custom setup using
-> management-client-auth.
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>  src/openvpn/route.c | 2 +-
+>  src/openvpn/route.h | 2 ++
+>  src/openvpn/tun.c   | 1 +
+>  3 files changed, 4 insertions(+), 1 deletion(-)
 >
-
-any known example of such an implementation?
-
-
+> diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+> index ca8b182b..27b39c41 100644
+> --- a/src/openvpn/route.c
+> +++ b/src/openvpn/route.c
+> @@ -1820,7 +1820,7 @@ done:
+>  }
 >
-> Selva
 >
+> -static void
+> +void
+>  route_ipv6_clear_host_bits( struct route_ipv6 *r6 )
+>  {
+>      /* clear host bit parts of route
+> diff --git a/src/openvpn/route.h b/src/openvpn/route.h
+> index 2c6f9f16..69420228 100644
+> --- a/src/openvpn/route.h
+> +++ b/src/openvpn/route.h
+> @@ -254,6 +254,8 @@ void copy_route_ipv6_option_list(struct route_ipv6_option_list *dest,
+>                                   const struct route_ipv6_option_list *src,
+>                                   struct gc_arena *a);
+>
+> +void route_ipv6_clear_host_bits( struct route_ipv6 *r6 );
+> +
+>  void add_route_ipv6(struct route_ipv6 *r, const struct tuntap *tt, unsigned int flags, const struct env_set *es);
+>
+>  void delete_route_ipv6(const struct route_ipv6 *r, const struct tuntap *tt, unsigned int flags, const struct env_set *es);
+> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+> index 253d884b..1399aa83 100644
+> --- a/src/openvpn/tun.c
+> +++ b/src/openvpn/tun.c
+> @@ -839,6 +839,7 @@ delete_route_connected_v6_net(struct tuntap *tt,
+>      r6.gateway = tt->local_ipv6;
+>      r6.metric  = 0;                     /* connected route */
+>      r6.flags   = RT_DEFINED | RT_ADDED | RT_METRIC_DEFINED;
+> +    route_ipv6_clear_host_bits(&r6);
+>      delete_route_ipv6(&r6, tt, 0, es);
+>  }
+>  #endif /* if defined(_WIN32) || defined(TARGET_DARWIN) || defined(TARGET_NETBSD) || defined(TARGET_OPENBSD) */
 
---089e082f54882fbd9d0565c32e81
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+The reason why the host bits need to be cleared again (it is deleted
+in add routes) is complex, but this does the right thing and is
+required in some versions of Windows. So ACK.
 
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">2018-02-21 22:03 GMT+05:00 Selva Nair <span dir=3D"ltr">&lt;<a href=3D"=
-mailto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>&gt;=
-</span>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
-rder-left:1px #ccc solid;padding-left:1ex">Hi,<br>
-<span class=3D""><br>
-On Tue, Feb 20, 2018 at 10:10 AM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=
-=BF=D0=B8=D1=86=D0=B8=D0=BD &lt;<a href=3D"mailto:chipitsine@...277...">chi=
-pitsine@...277...</a>&gt; wrote:<br>
-&gt; Hello,<br>
-&gt;<br>
-&gt; is there any step-by-step example of implementing either static or dyn=
-amic<br>
-&gt; challenge response ?<br>
-<br>
-</span>Static is easy:<br>
-On client: add --static-challenge &quot;Enter OTP&quot; 1 to the client con=
-fig.<br>
-On server, merge my auth-pam plugin patch :)<br>
-<a href=3D"https://patchwork.openvpn.net/patch/212/" rel=3D"noreferrer" tar=
-get=3D"_blank">https://patchwork.openvpn.net/<wbr>patch/212/</a><br>
-and see the commit message for examples on using the plugin<br>
-<br>
-Dynamic is even easier on the client side, if Windows -- just use<br>
-OpenVPN Windows GUI<br>
-But for server side, the only way I know is to consult the<br>
-management-notes.txt and implement a custom setup using<br>
-management-client-auth.<br></blockquote><div><br></div><div>any known examp=
-le of such an implementation?<br></div><div>=C2=A0</div><blockquote class=
-=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padd=
-ing-left:1ex">
-<span class=3D"HOEnZb"><font color=3D"#888888"><br>
-Selva<br>
-</font></span></blockquote></div><br></div></div>
+Why I say "some versions" is that my old Windows 7 never failed with
+the original delete route code that did not clear the host bits.
+Windows 10 did fail, but even that has appeared to have learned to
+ignore the host bits after some very recent updates (surprise).. But
+JJK had reported failure in Windows 7.
 
---089e082f54882fbd9d0565c32e81--
+Acked-by: Selva Nair <selva.nair@...277...>
+
+Fixes Trac #1003.
+
+Selva
 
