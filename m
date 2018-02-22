@@ -1,10 +1,10 @@
-Date: Thu, 22 Feb 2018 16:43:41 +0100 (CET)
-Message-Id: <201802221543.w1MFhfuZ095845@...2054...>
+Date: Thu, 22 Feb 2018 16:52:25 +0100 (CET)
+Message-Id: <201802221552.w1MFqPMi095918@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20180220160016.69786-1-gert@...1296...>
-References: <20180220160016.69786-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix removal of on-link prefix
- on windows with netsh
+In-Reply-To: <1516982732-24145-1-git-send-email-selva.nair@...277...>
+References: <1516982732-24145-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Move code to free cd to a
+ function CAPI_DATA_free()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,24 +15,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Thanks.
+Acked-by: Gert Doering <gert@...1296...>
 
-Patch has been applied to the master and release/2.4 branch.
+Your patch has been applied to the master branch.
 
-commit 2cea72005cb5a825c25494959d550ae16562676a (master)
-commit b8f56fadbe459423b673886c785b7ed6f3a37c36 (release/2.4)
-Author: Gert Doering
-Date:   Tue Feb 20 17:00:16 2018 +0100
+(I took the ACK from Steffan for v1, and verified that v2 is really idential
+except for the extra empty line - so line numbers differ, but code is the
+same.  Adding an extra ACK from me for staring-at-the-code - trivial
+enough in this case)
 
-     Fix removal of on-link prefix on windows with netsh
+commit 29a475c6ce0fa51b173121033cbd0f280948e06c
+Author: Selva Nair
+Date:   Fri Jan 26 11:05:32 2018 -0500
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Selva Nair <selva.nair@...277...>
-     Message-Id: <20180220160016.69786-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16508.html
+     Move code to free cd to a function CAPI_DATA_free()
+
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1516982732-24145-1-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16383.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
