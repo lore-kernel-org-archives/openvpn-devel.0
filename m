@@ -1,9 +1,13 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Sat, 24 Feb 2018 18:04:49 +0100
-Message-Id: <20180224170449.25194-1-steffan@...1856...>
-In-Reply-To: <CAKuzo_hkSd8PJsfNJ9pTNqdh8mOcaoxr-+kx_d7EayPE6+3w0w@...278...>
-References: <CAKuzo_hkSd8PJsfNJ9pTNqdh8mOcaoxr-+kx_d7EayPE6+3w0w@...278...>
-Subject: [Openvpn-devel] [PATCH] Warn if tls-version-max < tls-version-min
+MIME-Version: 1.0
+In-Reply-To: <9d49e636-9208-772e-7669-1bbe98a440c4@...1856...>
+References: <1516770381-29466-4-git-send-email-selva.nair@...277...>
+ <1519409439-8439-1-git-send-email-selva.nair@...277...>
+ <9d49e636-9208-772e-7669-1bbe98a440c4@...1856...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sat, 24 Feb 2018 15:37:13 -0500
+Message-ID: <CAKuzo_jTcSKz0bqWzjne_gwL=3o_xQh5On9o-GE1cg1Vyr5Zxg@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v2 3/3] Support EC certificates with
+ cryptoapicert
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,122 +16,319 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This adds warnings for when a user or our code tries to set a maximum
-TLS version that's smaller then the current configured minimum TLS
-version.
+Hi,
 
-(And fixes some related whitespace now I touch it anyway.)
+Thanks a bunch for the review..
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- src/openvpn/cryptoapi.c      | 12 +++++++++---
- src/openvpn/openssl_compat.h | 22 ++++++++++++++++++----
- src/openvpn/options.c        | 12 ++++++++++++
- 3 files changed, 39 insertions(+), 7 deletions(-)
+All good points:
 
-diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
-index 1097286c..28f217f4 100644
---- a/src/openvpn/cryptoapi.c
-+++ b/src/openvpn/cryptoapi.c
-@@ -610,12 +610,18 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
-     if ((!max_version || max_version > TLS1_1_VERSION)
-         && cd->key_spec != CERT_NCRYPT_KEY_SPEC)
-     {
--        msg(M_WARN,"WARNING: cryptoapicert: private key is in a legacy store."
-+        msg(M_WARN, "WARNING: cryptoapicert: private key is in a legacy store."
-             " Restricting TLS version to 1.1");
-+        if (SSL_CTX_get_min_proto_version(ssl_ctx) > TLS1_1_VERSION)
-+        {
-+            msg(M_NONFATAL,
-+                "ERROR: cryptoapicert: min TLS version larger than 1.1."
-+                " Try config option --tls-version-min 1.1");
-+            goto err;
-+        }
-         if (!SSL_CTX_set_max_proto_version(ssl_ctx, TLS1_1_VERSION))
-         {
--            msg(M_NONFATAL,"ERROR: cryptoapicert: unable to set max TLS version"
--                " to 1.1. Try config option --tls-version-min 1.1");
-+            msg(M_NONFATAL, "ERROR: cryptoapicert: set max TLS version failed");
-             goto err;
-         }
-     }
-diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index 8ef86649..d375fabd 100644
---- a/src/openvpn/openssl_compat.h
-+++ b/src/openvpn/openssl_compat.h
-@@ -662,10 +662,24 @@ EC_GROUP_order_bits(const EC_GROUP *group)
- #endif
- 
- #ifndef SSL_CTX_get_min_proto_version
--/** Dummy SSL_CTX_get_min_proto_version for OpenSSL < 1.1 (not really needed) */
-+/** Return the min SSL protocol version currently enabled in the context.
-+ *  If no valid version >= TLS1.0 is found, return 0. */
- static inline int
- SSL_CTX_get_min_proto_version(SSL_CTX *ctx)
- {
-+    long sslopt = SSL_CTX_get_options(ctx);
-+    if (!(sslopt & SSL_OP_NO_TLSv1))
-+    {
-+        return TLS1_VERSION;
-+    }
-+    if (!(sslopt & SSL_OP_NO_TLSv1_1))
-+    {
-+        return TLS1_1_VERSION;
-+    }
-+    if (!(sslopt & SSL_OP_NO_TLSv1_2))
-+    {
-+        return TLS1_2_VERSION;
-+    }
-     return 0;
- }
- #endif /* SSL_CTX_get_min_proto_version */
-@@ -679,15 +693,15 @@ SSL_CTX_get_max_proto_version(SSL_CTX *ctx)
-     long sslopt = SSL_CTX_get_options(ctx);
-     if (!(sslopt & SSL_OP_NO_TLSv1_2))
-     {
--	return TLS1_2_VERSION;
-+        return TLS1_2_VERSION;
-     }
-     if (!(sslopt & SSL_OP_NO_TLSv1_1))
-     {
--	return TLS1_1_VERSION;
-+        return TLS1_1_VERSION;
-     }
-     if (!(sslopt & SSL_OP_NO_TLSv1))
-     {
--	return TLS1_VERSION;
-+        return TLS1_VERSION;
-     }
-     return 0;
- }
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 95fb4de3..41a42cf2 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2522,6 +2522,18 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-             "in the configuration file, which is the recommended approach.");
-     }
- 
-+    const int tls_version_max =
-+        (options->ssl_flags >> SSLF_TLS_VERSION_MAX_SHIFT)
-+        & SSLF_TLS_VERSION_MAX_MASK;
-+    const int tls_version_min =
-+        (options->ssl_flags >> SSLF_TLS_VERSION_MIN_SHIFT)
-+        & SSLF_TLS_VERSION_MIN_MASK;
-+
-+    if (tls_version_max > 0 && tls_version_max < tls_version_min)
-+    {
-+        msg(M_USAGE, "--tls-version-min bigger than --tls-version-max");
-+    }
-+
-     if (options->tls_server || options->tls_client)
-     {
- #ifdef ENABLE_PKCS11
--- 
-2.14.1
+On Sat, Feb 24, 2018 at 11:52 AM, Steffan Karger <steffan@...1856...> wrote:
+> Hi,
+>
+> Patch looks good in general, and works as expected on my Win 10 test
+> box.  Some minor comments below:
+>
+> On 23-02-18 19:10, selva.nair@...277... wrote:
+>> From: Selva Nair <selva.nair@...277...>
+>>
+>> Requires openssl 1.1.0 or higher
+>>
+>> Signed-off-by: Selva Nair <selva.nair@...277...>
+>> ---
+>> v3 of 2/3 changed the context of one chunk, so sending a v2 rebased
+>> to current master.
+>>
+>>  src/openvpn/cryptoapi.c | 199 +++++++++++++++++++++++++++++++++++++++++++++++-
+>>  1 file changed, 198 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
+>> index 1097286..995b463 100644
+>> --- a/src/openvpn/cryptoapi.c
+>> +++ b/src/openvpn/cryptoapi.c
+>> @@ -1,5 +1,6 @@
+>>  /*
+>>   * Copyright (c) 2004 Peter 'Luna' Runestig <peter@...292...>
+>> + * Copyright (c) 2018 Selva Nair <selva.nair@...277...>
+>>   * All rights reserved.
+>>   *
+>>   * Redistribution and use in source and binary forms, with or without modifi-
+>> @@ -101,6 +102,9 @@ static ERR_STRING_DATA CRYPTOAPI_str_functs[] = {
+>>      { 0, NULL }
+>>  };
+>>
+>> +/* index for storing external data in EC_KEY: < 0 means uninitialized */
+>> +static int ec_data_idx = -1;
+>> +
+>>  typedef struct _CAPI_DATA {
+>>      const CERT_CONTEXT *cert_context;
+>>      HCRYPTPROV_OR_NCRYPT_KEY_HANDLE crypt_prov;
+>> @@ -394,6 +398,190 @@ finish(RSA *rsa)
+>>      return 1;
+>>  }
+>>
+>> +#if (OPENSSL_VERSION_NUMBER >= 0x10100000L) && !defined(OPENSSL_NO_EC)
+>> +
+>> +static EC_KEY_METHOD *ec_method = NULL;
+>> +
+>> +/** EC_KEY_METHOD callback: called when the key is freed */
+>> +static void
+>> +ec_finish(EC_KEY *ec)
+>> +{
+>> +    EC_KEY_METHOD_free(ec_method);
+>> +    ec_method = NULL;
+>> +    CAPI_DATA *cd = EC_KEY_get_ex_data(ec, ec_data_idx);
+>> +    CAPI_DATA_free(cd);
+>> +    EC_KEY_set_ex_data(ec, ec_data_idx, NULL);
+>> +}
+>> +
+>> +/** EC_KEY_METHOD callback sign_setup(): we do nothing here */
+>> +static int
+>> +ecdsa_sign_setup(EC_KEY *eckey, BN_CTX *ctx_in, BIGNUM **kinvp, BIGNUM **rp)
+>> +{
+>> +    return 1;
+>> +}
+>> +
+>> +/**
+>> + * Helper to convert ECDSA signature returned by NCryptSignHash
+>> + * to an ECDSA_SIG structure.
+>> + * On entry 'buf[]' of length len contains r and s contcatenated.
+>
+> Typo in concatenated.
 
+Noted..
+
+>
+>> + * Returns a newly allocated ECDSA_SIG or NULL (on error).
+>> + */
+>> +static ECDSA_SIG *
+>> +ecdsa_bin2sig(unsigned char *buf, int len)
+>> +{
+>> +    ECDSA_SIG *ecsig = NULL;
+>> +    DWORD rlen = len/2;
+>> +    BIGNUM *r = BN_bin2bn(buf, rlen, NULL);
+>> +    BIGNUM *s = BN_bin2bn(buf+rlen, rlen, NULL);
+>> +    if (!r || !s)
+>> +    {
+>> +        goto err;
+>> +    }
+>> +    ecsig = ECDSA_SIG_new(); /* in openssl 1.1 this does not allocate r, s */
+>> +    if (!ecsig)
+>> +    {
+>> +        goto err;
+>> +    }
+>> +    ECDSA_SIG_set0(ecsig, r, s); /* ecsig takes ownership of r and s */
+>
+> According to the docs, EDSA_SIG_set0 can fail.  Shouldn't we clean up
+> and return NULL is that case?
+
+In the current openssl code the only way this can fail (return 0) is
+if r or s is NULL. But, I agree this could change upstream and we
+should be more defensive.
+
+>
+>> +    return ecsig;
+>> +err:
+>> +    BN_free(r); /* it is ok to free NULL BN */
+>
+> I would expect so, and at least in the current OpenSSL implementation,
+> it is.
+
+This is the documented behaviour of BN_free, so should be safe.
+
+>
+>> +    BN_free(s);
+>> +    return NULL;
+>> +}
+>> +
+>> +/** EC_KEY_METHOD callback sign_sig(): sign and return an ECDSA_SIG pointer. */
+>> +static ECDSA_SIG *
+>> +ecdsa_sign_sig(const unsigned char *dgst, int dgstlen,
+>> +               const BIGNUM *in_kinv, const BIGNUM *in_r, EC_KEY *ec)
+>> +{
+>> +    ECDSA_SIG *ecsig = NULL;
+>> +    CAPI_DATA *cd = (CAPI_DATA *)EC_KEY_get_ex_data(ec, ec_data_idx);
+>> +
+>> +    ASSERT(cd->key_spec == CERT_NCRYPT_KEY_SPEC);
+>> +
+>> +    NCRYPT_KEY_HANDLE hkey = cd->crypt_prov;
+>> +    BYTE buf[512]; /* large enough buffer for signature to avoid malloc */
+>> +    DWORD len = _countof(buf);
+>> +
+>> +    msg(D_LOW, "Signing hash using EC key: data size = %d", dgstlen);
+>
+> Maybe prefix this with "cryptoapi:" or so?
+
+Will do.
+
+>
+>> +
+>> +    DWORD status = NCryptSignHash(hkey, NULL, (BYTE *)dgst, dgstlen, (BYTE *)buf, len, &len, 0);
+>> +    if (status != ERROR_SUCCESS)
+>> +    {
+>> +        SetLastError(status);
+>> +        CRYPTOAPIerr(CRYPTOAPI_F_NCRYPT_SIGN_HASH);
+>> +    }
+>> +    else
+>> +    {
+>> +        /* NCryptSignHash returns r, s concatenated in buf[] */
+>> +        ecsig = ecdsa_bin2sig(buf, len);
+>> +    }
+>> +    return ecsig;
+>> +}
+>> +
+>> +/** EC_KEY_METHOD callback sign(): sign and return a DER encoded signature */
+>> +static int
+>> +ecdsa_sign(int type, const unsigned char *dgst, int dgstlen, unsigned char *sig,
+>> +           unsigned int *siglen, const BIGNUM *kinv, const BIGNUM *r, EC_KEY *ec)
+>> +{
+>> +    ECDSA_SIG *s;
+>> +
+>> +    s = ecdsa_sign_sig(dgst, dgstlen, NULL, NULL, ec);
+>> +    if (s == NULL)
+>> +    {
+>> +        *siglen = 0;
+>> +        return 0;
+>> +    }
+>> +
+>> +    /* convert internal signature structure 's' to DER encoded byte array in sig */
+>> +    *siglen = i2d_ECDSA_SIG((ECDSA_SIG *)s, &sig);
+>
+> Totally weird that i2d_ECDSA_SIG takes a **, but doesn't allocate
+> memory...  Are we sure that sig is always big enough?  Otherwise we'd
+> need to first do a i2d_ECDSA_SIG(s, NULL) to figure out how much data
+> we'll be writing.
+
+Yes it has a very strange signature -- for some reason the the pointer
+sig is moved to its end on return so the callee does use the address.
+The above code is almost exactly the same as the default
+implementation in openssl sources: see  ossl_ecdsa_sign() in
+crypto/ec/ecdsa_ossl.c (1.1.0 sources).
+
+That said, while we can check the required size of buffer for i2d_ECDSA_SIG
+using NULL, but  we'll have to just assume that sig has a capacity of
+ECDSA_size(). Wonder why *siglen on entry does not contain the
+capacity of sig (or does it, but undocumented?) -- poor design.
+
+Anyway, buffer overflow is bad. FWIW, I'll add a check.
+
+>
+>> +    ECDSA_SIG_free(s);
+>> +
+>> +    return 1;
+>> +}
+>> +
+>> +static int
+>> +ssl_ctx_set_eckey(SSL_CTX *ssl_ctx, CAPI_DATA *cd, EVP_PKEY *pkey)
+>> +{
+>> +    EC_KEY *ec = NULL;
+>> +    EVP_PKEY *privkey = NULL;
+>> +
+>> +    if (cd->key_spec != CERT_NCRYPT_KEY_SPEC)
+>> +    {
+>> +        msg(M_NONFATAL, "ERROR: cryptoapicert with only legacy private key handle available."
+>> +                    " EC certificate not supported.");
+>> +        goto err;
+>> +    }
+>> +    /* create a method struct with default callbacks filled in */
+>> +    ec_method = EC_KEY_METHOD_new(EC_KEY_OpenSSL());
+>> +    if (!ec_method)
+>> +    {
+>> +        goto err;
+>> +    }
+>> +
+>> +    /* We only need to set finish among init methods, and sign methods */
+>> +    EC_KEY_METHOD_set_init(ec_method, NULL, ec_finish, NULL, NULL, NULL, NULL);
+>> +    EC_KEY_METHOD_set_sign(ec_method, ecdsa_sign, ecdsa_sign_setup, ecdsa_sign_sig);
+>> +
+>> +    ec = EC_KEY_dup(EVP_PKEY_get0_EC_KEY(pkey));
+>> +    if (!ec)
+>> +    {
+>> +        goto err;
+>> +    }
+>> +    if (!EC_KEY_set_method(ec, ec_method))
+>> +    {
+>> +        goto err;
+>> +    }
+>> +
+>> +    /* get an index to store cd as external data */
+>> +    if (ec_data_idx < 0)
+>> +    {
+>> +        ec_data_idx = EC_KEY_get_ex_new_index(0, "cryptapicert ec key", NULL, NULL, NULL);
+>> +        if (ec_data_idx < 0)
+>> +        {
+>> +            goto err;
+>> +        }
+>> +    }
+>> +    EC_KEY_set_ex_data(ec, ec_data_idx, cd);
+>> +
+>> +    /* cd assigned to ec as ex_data, increase its refcount */
+>> +    cd->ref_count++;
+>> +
+>> +    privkey = EVP_PKEY_new();
+>> +    if (!EVP_PKEY_assign_EC_KEY(privkey, ec))
+>> +    {
+>> +        EC_KEY_free(ec);
+>> +        goto err;
+>> +    }
+>> +    /* from here on ec will get freed with privkey */
+>> +
+>> +    if (!SSL_CTX_use_PrivateKey(ssl_ctx, privkey))
+>> +    {
+>> +        goto err;
+>> +    }
+>> +    EVP_PKEY_free(privkey); /* this will dn_ref or free ec as well */
+>> +    return 1;
+>> +
+>> +err:
+>> +    if (privkey)
+>> +    {
+>> +        EVP_PKEY_free(privkey);
+>> +    }
+>> +    else if (ec)
+>> +    {
+>> +        EC_KEY_free(ec);
+>> +    }
+>> +    if (ec_method) /* do always set ec_method = NULL after freeing it */
+>> +    {
+>> +        EC_KEY_METHOD_free(ec_method);
+>> +        ec_method = NULL;
+>> +    }
+>> +    return 0;
+>> +}
+>> +
+>> +#endif /* OPENSSL_VERSION_NUMBER >= 1.1.0 */
+>> +
+>>  static const CERT_CONTEXT *
+>>  find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
+>>  {
+>> @@ -642,9 +830,18 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
+>>              goto err;
+>>          }
+>>      }
+>> +#if (OPENSSL_VERSION_NUMBER >= 0x10100000L) && !defined(OPENSSL_NO_EC)
+>> +    else if (EVP_PKEY_id(pkey) == EVP_PKEY_EC)
+>> +    {
+>> +        if (!ssl_ctx_set_eckey(ssl_ctx, cd, pkey))
+>> +        {
+>> +            goto err;
+>> +        }
+>> +    }
+>> +#endif /* OPENSSL_VERSION_NUMBER >= 1.1.0 */
+>>      else
+>>      {
+>> -        msg(M_WARN, "cryptoapicert requires an RSA certificate");
+>> +        msg(M_WARN, "WARNING: cryptoapicert: certificate type not supported");
+>>          goto err;
+>>      }
+>>      CAPI_DATA_free(cd); /* this will do a ref_count-- */
+>>
+
+Thanks again. v3 is coming.
+
+Selva
 
