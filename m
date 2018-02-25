@@ -1,10 +1,15 @@
-Date: Mon, 26 Feb 2018 19:38:56 +0100 (CET)
-Message-Id: <201802261838.w1QIcuev071132@...2054...>
+Date: Sun, 25 Feb 2018 18:49:01 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1518006166-14285-1-git-send-email-steffan.karger@...1435...>
-References: <1518006166-14285-1-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH applied] Re: mbedtls: don't use API
- deprecated in mbed 2.7
+Message-ID: <20180225174901.GM69387@...1296...>
+References: <CAKuzo_g8HrdHNM666wqtPTsw6M8++=k7zYZN-XdaCNfonDnawA@...278...>
+ <20180225082228.GK69387@...1296...>
+ <CAKuzo_ihbV4ah4vhV+SFSpMw1h+5QKVuPrz3aOeKR_gtWwB+kg@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="/rpqzglUoB70AQHl"
+Content-Disposition: inline
+In-Reply-To: <CAKuzo_ihbV4ah4vhV+SFSpMw1h+5QKVuPrz3aOeKR_gtWwB+kg@...278...>
+Subject: Re: [Openvpn-devel] patch emails to the list
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +18,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan.karger@...1435...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Your patch has been applied to the master and release/2.4 branch.
+--/rpqzglUoB70AQHl
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-(release/2.4 due to "long term compatibility" reasoning)
+Hi,
 
-Smoke-tested 2.4 vs. mbedTLS 2.7 on Gentoo ("works").
+On Sun, Feb 25, 2018 at 11:24:16AM -0500, Selva Nair wrote:
+> It turns out their spam filter is scoring based on my residential IP
+> (that of the MUA) instead of using the MTA IP (gmail.com). As if I
+> relayed the mail. My home IP is in some RBL but that's unavoidable as
+> every residential IP blocks are in some black list or other these
+> days. If this continues it will become impossible to send patches
+> using git-send-email.
 
-commit f22e89bd2311d3cab511e574746c6f82f1fa1a54 (master)
-commit 7c913600105505bd7f539d6b4206d358b6811943 (release/2.4)
-Author: Steffan Karger
-Date:   Wed Feb 7 13:22:46 2018 +0100
+Oh the fun of anti-spam rules breaking normal list usage.
 
-     mbedtls: don't use API deprecated in mbed 2.7
+Right now, the list is totally broken anyway... most of the day, their
+MXes returned "user unknown" in response to "RCPT TO: <openvpn-devel@...2380...=
+...>",
+not we're at
 
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <1518006166-14285-1-git-send-email-steffan.karger@...1435...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16445.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+<openvpn-devel@lists.sourceforge.net>... Connecting to mx.sourceforge.net. =
+via esmtp...
+<openvpn-devel@lists.sourceforge.net>... Deferred: Connection reset by mx.s=
+ourceforge.net.
+Closing connection to mx.sourceforge.net.
 
 
---
-kind regards,
+(mailed their support around noon, no reply yet - will have to remember
+which mails I sent to the list today so I can re-send them when they're
+back to normal.  Yay)
 
-Gert Doering
+gert
+--=20
+now what should I write here...
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--/rpqzglUoB70AQHl
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJakvcNAAoJEB2Cnv7KVigSkkcL/1+gnepgn/R066z04kdHuSFN
+ULwvJw5HdZmMbAKbEl6+5+WDBbkmnHKzUTicOn4u2XJ3vooFs321IUw/sgoBl1gD
+mk0+wcc3UnixZWy1P0x04LU+tY2B7RONYpt4OQ79Jm9BjLrD1eosBiylNuQi9VwE
+yq4QUa556A9L5i9V5l8oQ8fwV1msL+4aCJ9oYTG1X9iZl/RhIRu7SZHrzLXi6MJK
+pmEJgo74EkzoyWCwcUa3Rq25zT6t0OXTFJNo1Sl8e03LuqfPZ2pxVtLzBwahqSQJ
+gsrp2xXs5pLaAWqLBafKk+DOiGKuU5Yk6qwQ2QpkgO+3jAsP4p6A11pUDKM8iqv5
+HhHgFNwmNaTD6lprAMf2XceAKl1BTG34171pi1u94zN7PFVl1yYVO7YcXZyBw5fZ
+dcmT6jHEY73Tx+S+bJy7oU6WjIAzlRuFeMvk/1rLN8j0zql5cQ7NLwzWUzF11PNl
+NREQmEFc/JuZd2jsBSwp6Btne9BNHKi5DlW6o7RF0Q==
+=z1Ct
+-----END PGP SIGNATURE-----
+
+--/rpqzglUoB70AQHl--
 
 
