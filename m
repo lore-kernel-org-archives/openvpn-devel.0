@@ -1,13 +1,9 @@
-Date: Sun, 25 Feb 2018 09:22:28 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180225082228.GK69387@...1296...>
-References: <CAKuzo_g8HrdHNM666wqtPTsw6M8++=k7zYZN-XdaCNfonDnawA@...278...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="g/2gxic02LijnRx4"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_g8HrdHNM666wqtPTsw6M8++=k7zYZN-XdaCNfonDnawA@...278...>
-Subject: Re: [Openvpn-devel] patch emails to the list
+From: =?UTF-8?Q?Erik_Lark=C3=B6?= <erik@...2382...>
+Date: Tue, 27 Feb 2018 19:47:58 +0100
+Message-ID: <CADReyb2aGWw2iFJWh=VStOAbHq-kr6V-JD6bVBYYVv_CB+9ggw@...278...>
+Content-Type: multipart/alternative; boundary="001a113eba0cc23474056636103c"
+Subject: [Openvpn-devel] Patch submission : AUTH_FAILED event for plugins
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,59 +12,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---g/2gxic02LijnRx4
-Content-Type: text/plain; charset="us-ascii"
+--001a113eba0cc23474056636103c
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+We're developing a new version of our client at =E2=80=8BMullvad
+<https://mullvad.net/en/guides/beta-app/> and we're using a plugin to
+listen to events from OpenVPN. We have found however that we very much
+would like to receive an event when authentication fails.
 
-On Sun, Feb 25, 2018 at 12:13:10AM -0500, Selva Nair wrote:
-> Sourceforge keeps rejecting my attempts to send a patch through
-> gmail.com as smtp server. Something like "this message scored x.y.
-> Congratulations!" is the response from mx.sourceforge.net. Tripping
-> some spam filter? I had to send it via another server to get through.
->=20
-> This started only a couple of days ago, but was only a temporary issue
-> in the beginning. Now it just fails repeatedly. Anyone else has seen
-> this?
+The patch at =E2=80=8Bhttps://github.com/mullvad/openvpn/pull/1 basically c=
+opies
+the same event on the management interface side but sends it to plugins
+instead.
 
-I haven't seen it, but it might be related to their datacenter move
-(which they did last week, and which caused the big mailing list outage
-because the list relays moved to new IP addresses which became grey-
-and blacklisted all over the place, due to the sudden high volume of
-mail sent...).
+Please note that I'm not a C developer and might be doing some very silly
+mistakes. I apologize in advance for any glaring faults and humbly accept
+any feedback you might have.
+Cheers!
 
-Unfortunately, I do not think we have any influence on their spam scoring
-(except send mail to their support... sfnet_ops@...2381...)
+--001a113eba0cc23474056636103c
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-gert
+<div dir=3D"ltr"><p>
+We&#39;re developing a new version of our client at <a class=3D"ext-link" h=
+ref=3D"https://mullvad.net/en/guides/beta-app/"><span class=3D"gmail-icon">=
+=E2=80=8B</span>Mullvad</a>
+ and we&#39;re using a plugin to listen to events from OpenVPN. We have=20
+found however that we very much would like to receive an event when=20
+authentication fails.<br>
+</p>
+<p>
+The patch at <a class=3D"ext-link" href=3D"https://github.com/mullvad/openv=
+pn/pull/1"><span class=3D"gmail-icon">=E2=80=8B</span>https://github.com/mu=
+llvad/openvpn/pull/1</a> basically copies the same event on the management =
+interface side but sends it to plugins instead.<br>
+</p>
+<p>
+Please note that I&#39;m not a C developer and might be doing some very=20
+silly mistakes. I apologize in advance for any glaring faults and humbly
+ accept any feedback you might have. </p>Cheers!<br></div>
 
---=20
-now what should I write here...
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---g/2gxic02LijnRx4
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJaknJEAAoJEB2Cnv7KVigS1zEL/iJdBhpVioxGVcyN205zs/YM
-Ld3hVyn2xyAzGWNwzMy8mWK1eTq67XNVsP/dRs75qZdRURBgkEoWS00Nh+SEqSBl
-C5MiYIbGsH2uzPS9p3fR1MmrdzH+xwwFvvD4RhCECVSYZmWddWBdiQ4IEC2qsg6a
-MEHne2oQPJjanNdIiU7Oa0clhqQ1KGmpWgzmE1D5vOCRBJOLjKEpBoz9tPXWLrf2
-/72J8F9qvKh3QHarwgdcVJw9GlKyjbFif+LaSyfl/OyTU66Gofvjy/ec7uBmH2JQ
-JsMTvJ8Ew18rXe9CqPDEx5VpGEpGnnHzj8Qexo73BMp7+MV9uTMKbqumsNiM3TF2
-K/q0/7QPUmAnfhX2/yS4pZhvz2GRUMCK7kPjFh1Vdr5PQ4IMCsvHv3Vam0g9VKFa
-dS3nkcQr1W2jYV4Vb6kBqJ51U/xvh7wIp25GIbv8XCNTdsptzr06RzW8lMUMkwsx
-0BSCrFX00enPDpkyISbuSsAIX+3eCHvrinysCptfFw==
-=AgOn
------END PGP SIGNATURE-----
-
---g/2gxic02LijnRx4--
-
+--001a113eba0cc23474056636103c--
 
