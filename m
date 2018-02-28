@@ -1,13 +1,7 @@
-References: <20180228131918.12954-1-davids@...515...>
- <20180228131918.12954-3-davids@...515...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <2cdaf8b4-cc76-d7e5-a718-bd321d575acd@...1227...>
-Date: Wed, 28 Feb 2018 14:34:33 +0100
-MIME-Version: 1.0
-In-Reply-To: <20180228131918.12954-3-davids@...515...>
-Content-Language: de-DE
-Subject: Re: [Openvpn-devel] [PATCH 3/3] management: Warn if TCP port is
- used without password
+From: Joost Rijneveld <joost@...2383...>
+Date: Wed, 28 Feb 2018 14:52:40 +0100
+Message-Id: <20180228135240.22945-1-joost@...2383...>
+Subject: [Openvpn-devel] [PATCH] Make return code external tls key match docs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,52 +10,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: David Sommerseth <davids@...515...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Am 28.02.18 um 14:19 schrieb David Sommerseth:
-> It is not recommended to use --management on a TCP port without also
-> adding a password authentication, as this can easily be abused by other
-> users or processes being able to connect to the managmement interface.
-> 
-> Thus issue a warning that this configuration is strongly discouraged.
-> 
-> Signed-off-by: David Sommerseth <davids@...515...>
-> ---
->  src/openvpn/options.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index 41a42cf2..e0c0894b 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -2170,6 +2170,14 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
->      {
->          msg(M_USAGE, "--management-client-(user|group) can only be used on unix domain sockets");
->      }
-> +
-> +    if (!(options->management_flags & MF_UNIX_SOCK)
-> +        && (!options->management_user_pass))
-> +    {
-> +        msg(M_WARN, "WARNING: Using --management on a TCP port WITHOUT "
-> +            "passwords is STRONGLY discouraged and considered insecure");
-> +    }
-> +
->  #endif
->  
->      /*
-> 
+In tls_ctx_use_external_private_key, the return codes were inverted
+compared to what is documented in ssl_backend.h (and what can
+reasonably be expected). Internally the return code is never checked,
+so this did not directly result in any change of behavior.
+---
+ src/openvpn/ssl_mbedtls.c | 6 +++---
+ src/openvpn/ssl_openssl.c | 4 ++--
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-Does not break existing configs and warns about a real problem. Some
-users of management might scream that, users now get a warning none was
-before but honestely I don't care.
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index 3906cd55..8e31980a 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -630,7 +630,7 @@ tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
+ 
+     if (ctx->crt_chain == NULL)
+     {
+-        return 0;
++        return 1;
+     }
+ 
+     ALLOC_OBJ_CLEAR(ctx->external_key, struct external_context);
+@@ -640,10 +640,10 @@ tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
+     if (!mbed_ok(mbedtls_pk_setup_rsa_alt(ctx->priv_key, ctx->external_key,
+                                           NULL, external_pkcs1_sign, external_key_len)))
+     {
+-        return 0;
++        return 1;
+     }
+ 
+-    return 1;
++    return 0;
+ }
+ #endif /* ifdef MANAGMENT_EXTERNAL_KEY */
+ 
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index d91458b0..8ef68ebd 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -1327,11 +1327,11 @@ tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
+         goto err;
+     }
+ #endif /* OPENSSL_VERSION_NUMBER > 1.1.0 dev */
+-    return 1;
++    return 0;
+ 
+ err:
+     crypto_msg(M_FATAL, "Cannot enable SSL external private key capability");
+-    return 0;
++    return 1;
+ }
+ 
+ #endif /* ifdef MANAGMENT_EXTERNAL_KEY */
+-- 
+2.16.2
 
-@All does our own Windows UI use management and if yes does it set a
-random user/pw to connect to it?
-
-
-Acked-By: Arne Schwabe <arne@...1227...>
-
-Arne
 
