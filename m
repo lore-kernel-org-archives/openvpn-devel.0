@@ -1,16 +1,7 @@
-MIME-Version: 1.0
-In-Reply-To: <20180221074259.GT69387@...1296...>
-References: <1511026858-23281-1-git-send-email-selva.nair@...277...>
- <1511026858-23281-2-git-send-email-selva.nair@...277...>
- <20180220161429.GB69696@...1296...>
- <CAKuzo_iDwg6YJX4GaXPOU8tGhRoKL3-025N9=a+jNwDaZWSy2A@...278...>
- <20180220195920.GQ69387@...1296...>
- <CAKuzo_iiv+3GJXuAV1rD+ZH9ijUybqVVNBW1iaV5KzNTDZgyfQ@...278...>
- <20180221074259.GT69387@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 21 Feb 2018 08:20:34 -0500
-Message-ID: <CAKuzo_iu-PeP6qHtMbQi69=3RSN1U9JNTFwso32s_H96KM3uNA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 2/2] Make most registry values optional
+From: David Sommerseth <davids@...515...>
+Date: Wed, 28 Feb 2018 14:19:16 +0100
+Message-Id: <20180228131918.12954-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH 1/3] man: Add .TQ groff support macro
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,41 +10,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+This introduces the .TQ groff macro.  Even though this can be found
+in newer groff versions, not all platforms we support carries this one.
 
-On Wed, Feb 21, 2018 at 2:42 AM, Gert Doering <gert@...1296...> wrote:
-> Hi,
->
-> On Tue, Feb 20, 2018 at 06:33:35PM -0500, Selva Nair wrote:
->> > (It does happen for my own binary and for the installers Samuli builds,
->> > so it's not "my build environment" - theoretically it could be part 1/2
->> > of that patch set, which I haven't run yet)
->>
->> Yeah, I could reproduce it on Windows 7. And, at last,  after several
->> painful Windows builds, it turns out:
->>
->> RegGetValue with RRF_RT_REG_EXPAND_SZ|RRF_RT_REG_SZ is broken on
->> Windows 7 (and most likely Vista too).
->
-> Thanks for investigating and finding the root cause.  "This is not what
-> the documentation says...!" -> I need to actually *run* these things, not
-> just test compile.
+This macro makes it possible to have mulitple lines of options as
+headers before describing all of these options in the same segment.
 
-When I say painful builds, I mean edit build[*], copy to Windows, run
-in a few configurations, look through the event viewer, rinse rather
-repeat. And finally when it seems to start working connect to a my
-work VPN,  remove the registry keys and try to break it etc..
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ doc/openvpn.8 | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-FYI, I don't just "test compile", and leave it at that.
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 364aee8a..bd9f2606 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -33,7 +33,15 @@
+ .\" .ft -- normal face
+ .\" .in +|-{n} -- indent
+ .\"
+-.TH openvpn 8 "31 January 2018"
++.\" Support macros - this is not present on all platforms
++.\" Continuation line for .TP header.
++.de TQ
++.  br
++.  ns
++.  TP \\$1\" no doublequotes around argument!
++..
++.\" End of TQ macro
++.TH openvpn 8 "28 February 2018"
+ .\"*********************************************************
+ .SH NAME
+ openvpn \- secure IP tunnel daemon.
+-- 
+2.13.5
 
-Selva
-
-[*] Yes, that fetch-all and rebuild from scratch part of openvpn-build
-is very time consuming. Making it work the usual "remake only what
-changed" way would save a lot of time and frustration.
 
