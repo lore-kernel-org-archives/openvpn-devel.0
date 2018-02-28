@@ -1,10 +1,10 @@
-Date: Wed, 28 Feb 2018 17:24:44 +0100 (CET)
-Message-Id: <201802281624.w1SGOi3H085473@...2054...>
+Date: Wed, 28 Feb 2018 18:17:19 +0100 (CET)
+Message-Id: <201802281717.w1SHHJCT085808@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20180228131918.12954-2-davids@...515...>
-References: <20180228131918.12954-2-davids@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: man: Reword --management to
- prefer unix sockets over TCP
+In-Reply-To: <1519534935-16053-1-git-send-email-selva.nair@...277...>
+References: <1519534935-16053-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Support EC certificates with
+ cryptoapicert
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +15,26 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: David Sommerseth <davids@...515...>
+To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Compile-tested on OpenBSD 6.0 (no EC/LibreSSL hickup, good :-) ) and
+mingw / ubuntu 16.04.  All well.
 
-as discussed on IRC this morning.
+Your patch has been applied to the master branch.
 
-Your patch has been applied to the master and release/2.4 branch.
+(Is there a strong case for including it in 2.4?)
 
-commit ec100d7e4ce7aaeb731c22b0d86826bf295df6cd (master)
-commit e5ee5121cbbeca6dcbee38dea5b40779e3f6da83 (release/2.4)
-Author: David Sommerseth
-Date:   Wed Feb 28 14:19:17 2018 +0100
+commit a6f38bafbbbd291d57ecb3610c2844e7f7e01412
+Author: Selva Nair
+Date:   Sun Feb 25 00:02:15 2018 -0500
 
-     man: Reword --management to prefer unix sockets over TCP
+     Support EC certificates with cryptoapicert
 
-     Signed-off-by: David Sommerseth <davids@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20180228131918.12954-2-davids@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16573.html
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <1519534935-16053-1-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16553.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
