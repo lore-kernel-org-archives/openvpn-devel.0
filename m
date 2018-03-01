@@ -1,10 +1,11 @@
-Date: Thu, 1 Mar 2018 09:31:35 +0100 (CET)
-Message-Id: <201803010831.w218VZU5008999@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20180228131918.12954-3-davids@...515...>
-References: <20180228131918.12954-3-davids@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: management: Warn if TCP port is
- used without password
+MIME-Version: 1.0
+In-Reply-To: <20180228231123.27782-1-steffan@...1856...>
+References: <20180228231123.27782-1-steffan@...1856...>
+From: Steffan Karger <steffan@...1856...>
+Date: Thu, 1 Mar 2018 10:08:04 +0100
+Message-ID: <CAA1Abx+Eu3v7TVuSu2TX9PqUnP8tk4U4r=Q9u6edmh-ucUS+FQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Add a warning that we do not officially
+ support LibreSSL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,30 +14,18 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Your patch has been applied to the master and release/2.4 branch.
+[resending because the list rejected my mail from yesterday...]
 
-commit 4db7715a3aa62f2e8d8234c1852fb141f62318e2 (master)
-commit ab218befec67dc0f5bb08973d2ec3476350f9ab3 (release/2.4)
-Author: David Sommerseth
-Date:   Wed Feb 28 14:19:18 2018 +0100
+On 1 March 2018 at 00:11, Steffan Karger <steffan@...1856...> wrote:
+> +    msg(M_WARN, "WARNING: This OpenVPN was built against LibreSSL. "
+> +        "This might work, but is *not* supported and can break at any time.")
 
-     management: Warn if TCP port is used without password
+Gah, this of course needs a ; at the end of the line - forgot to amend
+the commit before git send-email...
 
-     Signed-off-by: David Sommerseth <davids@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20180228131918.12954-3-davids@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16574.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+-Steffan
 
