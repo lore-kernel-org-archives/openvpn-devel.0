@@ -1,10 +1,10 @@
-Date: Thu, 1 Mar 2018 12:23:53 +0100
+Date: Thu, 1 Mar 2018 12:26:22 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20180301112353.GX69387@...1296...>
+Message-ID: <20180301112622.GZ69387@...1296...>
 References: <52e860ea74ac958309368374049f14bd.squirrel@...2257...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="OEp3pE+VUYV0MT2S"
+ protocol="application/pgp-signature"; boundary="aQCvZzThlHwFiHtP"
 Content-Disposition: inline
 In-Reply-To: <52e860ea74ac958309368374049f14bd.squirrel@...2257...>
 Subject: Re: [Openvpn-devel] tls fix for upcoming 2.4.5
@@ -19,7 +19,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Simon Matter <simon.matter@...2249...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---OEp3pE+VUYV0MT2S
+--aQCvZzThlHwFiHtP
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
@@ -32,34 +32,33 @@ On Thu, Mar 01, 2018 at 12:14:06PM +0100, Simon Matter wrote:
 > Attached patch makes it build with older systems. Do you see any issue
 > with the change?
 
-Which SSL library version needs this?
-
-(I thought we have test systems for everything we officially support, plus
-a few more to catch avoidable LibreSSL breakage etc)
+As a side note: this won't make 2.4.5 release, which is already "mostly
+done" (things are built, release announcement coming) - but if it's
+needed I see no issue with having it in 2.4.6, and release that "quicker
+than only in 5 month time" :-)
 
 gert
-
 --=20
 now what should I write here...
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---OEp3pE+VUYV0MT2S
+--aQCvZzThlHwFiHtP
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJal+LIAAoJEB2Cnv7KVigSU50MAJvRjNjjsrhxO2MJClj4Hy7t
-pB48nEyQGhGdDEMCs7MXztO2EqJZIsUoRk0vGcJg4FBLIXnBMfFCu4DoR030WfxZ
-j31VNNUhwg6NTPxTXGxf9WagTkqNo3cQ0+pCapD/o2V7z9ADZteev8XnbnMhDeJk
-K75IYOhLaI+xc/DYWpY6Z+f3KIdvodwkmbbxp5/0Y8u8oC8qtciaBrnSD0DlOPIB
-NURwaVeu+4ZCoVCwwHkESaOktrsGFErhtVXgulP+Hve00MJ/K82RaPk3hwSjzg9L
-iuVdtBfE5k5AkI/hdeFxhJsW51eeS8fJp8Bvg8fX/09R+0mQ8GhcvelBMpGGTt2F
-Dflop7MuHzgHj7+Qe9Pzp2Ga6Xvbob2baLhXNZe4gZ1I6k/hkP5USSO3MfP36UJl
-sI28p3/EIKgCUbK2yUu9+MlTvNFrXB/r8eFeSKcUncTP4QMbLxOejCb/Z9nIUEtb
-jQj9fVUVeE4Z2PtRHTZ3Zol74EXBulTeTLUIGme7aw==
-=NP/9
+iQGcBAEBAgAGBQJal+NdAAoJEB2Cnv7KVigSIEML/jsks/U0D66rk54epeAxxIy5
+0buLTN77UyteQZqWyOXkRy4fEGeBGH8CN9sfqcvpy1OZcVCvDk+2jqyVgt/GP9kM
+P7tvbV1WlmgkCQEWBA3R+NCaiXyXM9a+qYOKJCD7rqdNUqXMrHkDSJtA9XwgcBi6
+QNhK9PqX1QSikj16vUQxkKRYS74l1QoFugKYFbTTI0ODHJ9glNDwAZj8ob2qW7ZL
+xm+P64VYxyrwxZg0Eoex/0M3BQWzvdsRm6nENV0LDOhKYu5AQxqA9QQd7W41Ns7+
+KntUQhx2eZOoCdsuF+XiVXBiJpxD9mkIPMjWqzqN5iaJWd8lNREsk4O9D27DDlTN
+elmfKJTgu1zoDWxDgA35NMq74C6NIxQs+AHbFXTs8XV7MA/C6p7oexGOMtRuN7tY
+eeCJSkOQUf4YEyVNP8+S0rLDF7YsfyjX3yAdVF1F0peYHnVVM//x6C71lWHeMd7d
+MsHiMCWJdCy+wRA3itGnbHIkPfiL96neiyEWn1lcYA==
+=Xypn
 -----END PGP SIGNATURE-----
 
---OEp3pE+VUYV0MT2S--
+--aQCvZzThlHwFiHtP--
 
