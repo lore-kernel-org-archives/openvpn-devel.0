@@ -1,12 +1,9 @@
-Date: Thu, 1 Mar 2018 12:26:22 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180301112622.GZ69387@...1296...>
-References: <52e860ea74ac958309368374049f14bd.squirrel@...2257...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="aQCvZzThlHwFiHtP"
-Content-Disposition: inline
 In-Reply-To: <52e860ea74ac958309368374049f14bd.squirrel@...2257...>
+References: <52e860ea74ac958309368374049f14bd.squirrel@...2257...>
+From: Selva Nair <selva.nair@...277...>
+Date: Thu, 1 Mar 2018 10:17:18 -0500
+Message-ID: <CAKuzo_jEv2d7sNpi_ER-BFCeyOhmvGvV3GTKdw_L9Y0s=a6euA@...278...>
 Subject: Re: [Openvpn-devel] tls fix for upcoming 2.4.5
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -16,49 +13,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 To: Simon Matter <simon.matter@...2249...>
-Cc: openvpn-devel@lists.sourceforge.net
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---aQCvZzThlHwFiHtP
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-Hi,
-
-On Thu, Mar 01, 2018 at 12:14:06PM +0100, Simon Matter wrote:
+On Thu, Mar 1, 2018 at 6:14 AM, Simon Matter <simon.matter@...2249...> wrote:
+> Hi,
+>
 > I've just done some test builds with 2.4.5 tagged version.
->=20
+>
 > Attached patch makes it build with older systems. Do you see any issue
 > with the change?
 
-As a side note: this won't make 2.4.5 release, which is already "mostly
-done" (things are built, release announcement coming) - but if it's
-needed I see no issue with having it in 2.4.6, and release that "quicker
-than only in 5 month time" :-)
+.. from the attachment
 
-gert
---=20
-now what should I write here...
+> --- openvpn-2.4.5/src/openvpn/openssl_compat.h.orig 2018-02-28 21:56:54.000000000 +0100
+> +++ openvpn-2.4.5/src/openvpn/openssl_compat.h 2018-03-01 11:44:57.000000000 +0100
+> @@ -672,14 +672,18 @@
+>      {
+>          return TLS1_VERSION;
+>      }
+> +#ifdef SSL_OP_NO_TLSv1_1
+>      if (!(sslopt & SSL_OP_NO_TLSv1_1))
+>      {
+>          return TLS1_1_VERSION;
+>      }
+> +#endif
+> +#ifdef SSL_OP_NO_TLSv1_2
+>      if (!(sslopt & SSL_OP_NO_TLSv1_2))
+>      {
+>          return TLS1_2_VERSION;
+>      }
+> +#endif
+>      return 0;
+>  }
+>
+> #endif /* SSL_CTX_get_min_proto_version */
 
-Gert Doering - Munich, Germany                             gert@...1296...
+These ifdefs are needed for older openssl (e.g., 0.9.8), but how did we miss it?
 
---aQCvZzThlHwFiHtP
-Content-Type: application/pgp-signature; name="signature.asc"
+Turns out commit 2d705accea3e538a555631ef7c39eb4bc4fd4acf cherry-picked
+from f8a92a4393a was not fully ripe..
 
------BEGIN PGP SIGNATURE-----
+As we do not support Windows build using pre 1.0 openssl, this is the
+only change needed. So ACK, assuming a commit message and Author: may
+be slapped on during merge.
 
-iQGcBAEBAgAGBQJal+NdAAoJEB2Cnv7KVigSIEML/jsks/U0D66rk54epeAxxIy5
-0buLTN77UyteQZqWyOXkRy4fEGeBGH8CN9sfqcvpy1OZcVCvDk+2jqyVgt/GP9kM
-P7tvbV1WlmgkCQEWBA3R+NCaiXyXM9a+qYOKJCD7rqdNUqXMrHkDSJtA9XwgcBi6
-QNhK9PqX1QSikj16vUQxkKRYS74l1QoFugKYFbTTI0ODHJ9glNDwAZj8ob2qW7ZL
-xm+P64VYxyrwxZg0Eoex/0M3BQWzvdsRm6nENV0LDOhKYu5AQxqA9QQd7W41Ns7+
-KntUQhx2eZOoCdsuF+XiVXBiJpxD9mkIPMjWqzqN5iaJWd8lNREsk4O9D27DDlTN
-elmfKJTgu1zoDWxDgA35NMq74C6NIxQs+AHbFXTs8XV7MA/C6p7oexGOMtRuN7tY
-eeCJSkOQUf4YEyVNP8+S0rLDF7YsfyjX3yAdVF1F0peYHnVVM//x6C71lWHeMd7d
-MsHiMCWJdCy+wRA3itGnbHIkPfiL96neiyEWn1lcYA==
-=Xypn
------END PGP SIGNATURE-----
+Acked-by: Selva Nair <selva.nair@...277...>
 
---aQCvZzThlHwFiHtP--
+Selva
 
