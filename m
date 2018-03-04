@@ -1,12 +1,13 @@
-From: Jeremie Courreges-Anglas <jca@...2272...>
 References: <1520185442-22901-1-git-send-email-selva.nair@...277...>
  <87efkz7k42.fsf@...2274...>
  <CAKuzo_jGB0mHc7kKu-pdzTEt3FZst75PL6GKy73A6_eakRh6dw@...278...>
-Date: Mon, 05 Mar 2018 00:13:48 +0100
-Message-ID: <87sh9fzb6b.fsf@...2274...>
+ <87sh9fzb6b.fsf@...2274...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <3db71e73-589c-afbf-e0cc-16a205dc7b30@...1856...>
+Date: Mon, 5 Mar 2018 00:22:06 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
- micalg=pgp-sha512; protocol="application/pgp-signature"
+In-Reply-To: <87sh9fzb6b.fsf@...2274...>
+Content-Language: en-US
 Subject: Re: [Openvpn-devel] [PATCH] Do not assume that
  SSL_CTX_get/set_min/max_proto_version are macros
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,41 +18,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---=-=-=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Sun, Mar 04 2018, Selva Nair <selva.nair@...277...> wrote:
-> Hi,
->
-> On Sun, Mar 4, 2018 at 1:48 PM, Jeremie Courreges-Anglas <jca@...2272...>=
- wrote:
->> On Sun, Mar 04 2018, selva.nair@...277... wrote:
->>> From: Selva Nair <selva.nair@...277...>
->>>
->>> Openssl docs do not explicitly state these to be macros although they
->>> are currently defined as such.
->>
->> Actually they are documented as macros by OpenSSL since day 1, see
->> NOTES.
->
-> You are right, I missed that in the docs. In that case my patch is not
-> needed especially so if libressl will provide those macros.
+On 05-03-18 00:13, Jeremie Courreges-Anglas wrote:
+> On Sun, Mar 04 2018, Selva Nair <selva.nair@...277...> wrote:
+> --8<--
+> [...]. OpenSSL itself only provided said setters (since 2015)[2].  The
+>  getters were added to OpenSSL later (Sep 2017)[3].
+> 
+> [2] https://github.com/openssl/openssl/commit/7946ab33cecce60afcc00afc8fc18f31f9e66bff
+> [3] https://github.com/openssl/openssl/commit/3edabd3ccb7aac89af5a63cfb2378e33a8be05d7
+> -->8--
+> 
+> IIUC there are OpenSSL 1.1.0 releases out there that provide only the
+> setters, and that would also be affected by the requirement you propose.
+> 
+> Github suggests that besides the master branch, the following tags have
+> the setters[2]:
+> 
+>     OpenSSL_1_1_1-pre2 OpenSSL_1_1_1-pre1 OpenSSL_1_1_0 OpenSSL_1_1_0g
+>     OpenSSL_1_1_0f OpenSSL_1_1_0e OpenSSL_1_1_0d OpenSSL_1_1_0c
+>     OpenSSL_1_1_0b OpenSSL_1_1_0a OpenSSL_1_1_0-pre6 OpenSSL_1_1_0-pre5
+>     OpenSSL_1_1_0-pre4 OpenSSL_1_1_0-pre3 OpenSSL_1_1_0-pre2
+> 
+> while support for getters[3] is only in:
+> 
+>     OpenSSL_1_1_1-pre2 OpenSSL_1_1_1-pre1
 
-It all depends if you want to support LibreSSL 2.6.x installations, as
-I'm not sure I'll be able to backport this in the 2.6 branch (which
-is supposed to receive security/reliability fixes only).
+That commit was cherry-picked to the OpenSSL_1_1_0-stable branch, and is
+available int 1.1.0g+:
+https://github.com/openssl/openssl/commit/af51a74ade8bbab5ed49a3560dcb70d89896dc29
 
-> I'm still concerned about set and get functions coming from different
-> sources
+But yeah, that's still something we might need to think about.
 
-Indeed.  A diff is floating to also add the getters to LibreSSL,
-hopefully this will make it in the upcoming 2.7.x release.
+-Steffan
 
-> and may be we should fix that by requiring that if set is
-> defined we need get too. But that will once again break libressl
-> compatibility.
---=-=-=--
