@@ -1,14 +1,14 @@
 From: Jeremie Courreges-Anglas <jca@...2272...>
-References: <20180228231123.27782-1-steffan@...1856...>
- <20180304090817.GL69387@...1296...>
- <1999112e-8de3-5ac2-e9a2-0f499e69b123@...1856...>
-Date: Sun, 04 Mar 2018 17:22:00 +0100
-Message-ID: <87muznkdzr.fsf@...2274...>
+References: <f2QLEJM1WzOC1xj4piTlsJBomEfPUdWmlThT__H6xyGvqxgyw4KunQ0wTkM-JAVhB0oHDaqI3J5ls6QggiH6jwAzrxHWKtR5ck9vnpwQLVo=@protonmail.com>
+ <20180304161716.GN69387@...1296...>
+Date: Sun, 04 Mar 2018 17:47:16 +0100
+In-Reply-To: <20180304161716.GN69387@...1296...> (Gert Doering's message
+ of "Sun, 4 Mar 2018 17:17:16 +0100")
+Message-ID: <87d10jkctn.fsf@...2274...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; boundary="=-=-=";
  micalg=pgp-sha512; protocol="application/pgp-signature"
-Subject: Re: [Openvpn-devel] [PATCH] Add a warning that we do not officially
- support LibreSSL
+Subject: Re: [Openvpn-devel] LibreSSL support in OpenVPN 2.4.5
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,50 +17,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: Mina Barret <mina.barret@...2282...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 --=-=-=
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Mar 04 2018, Steffan Karger <steffan@...1856...> wrote:
-> Hi,
+On Sun, Mar 04 2018, Gert Doering <gert@...1296...> wrote:
+
+[...]
+
+> "Please note that LibreSSL is not a supported crypto backend. We
+>  accept patches and we do test on OpenBSD 6.0 which comes with
+>  LibreSSL, but if newer versions of LibreSSL break API compatibility
+>  we do not take responsibility to fix that."
 >
-> On 04-03-18 10:08, Gert Doering wrote:
->> On Thu, Mar 01, 2018 at 12:11:23AM +0100, Steffan Karger wrote:
->>> As discussed in the community meeting of 13-12-2017, we should warn our
->>> users that LibreSSL is not officially supported.  We expect that it
->>> currently works, but it might suddenly break or we might decide to no
->>> longer build against LibreSSL in the future.
->>=20
->> Generally speaking, I agree.
->>=20
->> Should we also add a warning (+ sleep 60 to be extra-annoying?) to
->> configure if LibreSSL is detected?
 >
-> I considered that (modulo the sleep 60) and wrote the code to do the
-> configure check, but then thought that a not-suppressible warning in the
-> logs would be sufficient.  I still think it is, but don't mind re-adding
-> it to configure.ac if you prefer that.
+> I think a patch adding these LIBRESSL_VERSION checks has a reasonable
+> chance of being ACKed and merged :-) - but LibreSSL support stuff has
+> to come from some who cares, so Steffan or Antonio are not going to
+> go out and check patches for "will it break LibreSSL?"...
 
-As an OpenBSD developer and the maintainer of our OpenVPN port,
-I certainly care about building and using OpenVPN with LibreSSL.
-I have already provided patches in the past, and yesterday I pushed
-compat glue in LibreSSL so that openvpn-2.4.5 can build on OpenBSD
-(-current).
-
-So I'm wondering what would be needed to consider LibreSSL "supported".
-
-I hear that there are concerns over LibreSSL not being API-compatible
-with OpenSSL.  As you may have noticed, LibreSSL recently introduced
-lots of OpenSSL-1.1+ interfaces.  While there is no plan to support the
-full OpenSSL-1.1 API (tons of functions were added, not all of them seem
-useful...), the intent is to provide what the ecosystem actually needs.
-I can probably serve as a bridge between the two projects here.
-
-If you see other points where I - or anyone else - can help, please
-share. :)
+I don't think adding "&& !defined(LIBRESSL_VERSION_NUMBER)" in more
+places would be a good idea.  Those checks would do more harm than good
+in the long run, preventing the use of new interfaces when they get
+implemented by LibreSSL.  Better use function availability checks IMHO.
 
 --=20
 jca | PGP : 0x1524E7EE / 5135 92C1 AD36 5293 2BDF  DDCC 0DFA 74AE 1524 E7EE
@@ -70,19 +52,19 @@ Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCgAdFiEEUTWSwa02UpMr393MDfp0rhUk5+4FAlqcHSgACgkQDfp0rhUk
-5+4f3xAAkkr5N6BkpTFCJfTwxIEtRdyiSAc04QHbov342WGDu8fcuf/hTOQH/SH4
-KCu0oFYaQ7bkejDSFi/gyp/rDPMNpZMvdnbvYU1K4qHuuNqE35Rby4UOsKHEbPA9
-MBjNquLejRPptS8tHDUy91r9aByHr5dLrE6OAowdC90SBOzc1le3i4oaXfqRxTv/
-ZXIU5z/wvM++uqR3sn8P9hrxBxAgoxRT2eLOOZ4JiK9Nz12VmjlhRUH2fHFXISmY
-QyRIiEv07EZ4636tu0EKH0BCRUfWwCiuI7zA1VpuobLvPyY/N2BUkz5JfYSi81x2
-NqxbO03qCFXsVUKaS6CT896imPZS+t/aHOV2kkpo+oq3SshEkkMhrmC0vwLxrf46
-QnFTs0HHln1FBnu1+96n9924Sb4g2Ryab2kO3jKubPLEdfXrgCaXKoDr38yO8y52
-kqaSAVrUK92MGXW0k23dHALRgWN6bzPvEL/T4aJqJ6fC2mjVXx8bUGwPUgUaPyvX
-ES4ZBsPFMnqRSfj7xTgtEK8yZLh4zGHkfxZ2dlybiorLRHpYeJabP3jcAXeUeSfL
-zyCVW2cgoDWRUI/CbWPxTVu+6IAEsolqfjdt09GQlj7DD0NMlTKvQtVjGYjsTLoQ
-xkCna6gGofdUAhuECr6NNZQ207H91x+/ZUobTBldX8hSfumhFD0=
-=40TB
+iQIzBAEBCgAdFiEEUTWSwa02UpMr393MDfp0rhUk5+4FAlqcIxQACgkQDfp0rhUk
+5+6YsQ//T3aOOUpCh7azbb08S3bOa1KD6oatXXYkG94sPpRsSlwgo7mVbZM8zF5K
+9MlSWqpxBqzGmTZT4a2Ojm/RBlfzG5ZjxI617NzKNocYVW7cGw9dB1NwFQfQBs3D
+o0lDRuaG4TVMfO77eWGQT4WVLO4Cpp9ameJRB+a/O65PChZ90fccjGDv2Z6UJD8a
+ZTboyNSmvRAu5Lvy69m6pUHrdyW9LWRKLEQZewAUGLwsPAwFKehFTcCzpPskQllt
+oes5EqDtthAEMtGPR/Z6dQkkLLPHeszKjqQnr1sJdTe1fOtPsZ7NvTX9EmwCVplv
+QF9B1aEOO8yckm/pUHwD3O8BxPaD0eTDnRMJahTxZbU3BRjqEzpypSPw74NoEsfR
+nfQE3O2yQeA7siF33v5+1FijYCFtwagbSI5Ufo7O+Vqdt9DYikBrha2zsMrGnX1l
+V9wXd3ZIIdRsIG2vnK4sjg3U8Q/dGBtapaZc0mZkLhIBCfGc/TXby3BnYuvQwU80
+X39WXdZ7KW0B5AEkYLr2NPwpYdaY+3jzL17EevmdEhP0StX4bg7NNQF4xk/3xFAt
+eTNP3MkyrRCKTF6l8gOpmng+b/t95fr+nBebpbumqM0Dz2vaplLckc9osUSjbVoW
+/J58PF21VO2opj0+LwkcVyoBpjOBqwgW96J90DUuBIeJkbSKbTU=
+=HsOi
 -----END PGP SIGNATURE-----
 --=-=-=--
 
