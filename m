@@ -1,15 +1,17 @@
-References: <1520185442-22901-1-git-send-email-selva.nair@...277...>
- <87efkz7k42.fsf@...2274...>
- <CAKuzo_jGB0mHc7kKu-pdzTEt3FZst75PL6GKy73A6_eakRh6dw@...278...>
- <87sh9fzb6b.fsf@...2274...>
+References: <20171112163636.17434-1-steffan@...1856...>
+ <201711192037.vAJKbuHH080370@...2054...>
+ <20171119213837.GA80839@...1296...> <8760a6kjwc.fsf@...2274...>
+ <87vai5kj4z.fsf@...2274...>
+ <551aeb2a-1ea1-9c3b-06dd-ead9fc809340@...1856...>
+ <87muzn650h.fsf@...2274...>
 From: Steffan Karger <steffan@...1856...>
-Message-ID: <3db71e73-589c-afbf-e0cc-16a205dc7b30@...1856...>
-Date: Mon, 5 Mar 2018 00:22:06 +0100
+Message-ID: <c94fa7e7-204d-b27c-251a-46cfcfc24e45@...1856...>
+Date: Mon, 5 Mar 2018 00:26:33 +0100
 MIME-Version: 1.0
-In-Reply-To: <87sh9fzb6b.fsf@...2274...>
+In-Reply-To: <87muzn650h.fsf@...2274...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Do not assume that
- SSL_CTX_get/set_min/max_proto_version are macros
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Add --tls-cert-profile
+ option for mbedtls builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,37 +24,38 @@ Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+Hi,
 
-On 05-03-18 00:13, Jeremie Courreges-Anglas wrote:
-> On Sun, Mar 04 2018, Selva Nair <selva.nair@...277...> wrote:
-> --8<--
-> [...]. OpenSSL itself only provided said setters (since 2015)[2].  The
->  getters were added to OpenSSL later (Sep 2017)[3].
+On 04-03-18 19:59, Jeremie Courreges-Anglas wrote:
+> On Thu, Dec 14 2017, Steffan Karger <steffan@...1856...> wrote:
 > 
-> [2] https://github.com/openssl/openssl/commit/7946ab33cecce60afcc00afc8fc18f31f9e66bff
-> [3] https://github.com/openssl/openssl/commit/3edabd3ccb7aac89af5a63cfb2378e33a8be05d7
-> -->8--
+> [...]
 > 
-> IIUC there are OpenSSL 1.1.0 releases out there that provide only the
-> setters, and that would also be affected by the requirement you propose.
+>> NAK.
+>>
+>> Looking at this patch again I realize I have misunderstood the
+>> intentions when first looking at it.  I thought LibreSSL *did* have an
+>> SSL_CTX_get0_certificate() and this patch would make us use it (instead
+>> of the workaround in the #else).  But this is just about replacing the
+>> version check with a configure check.
 > 
-> Github suggests that besides the master branch, the following tags have
-> the setters[2]:
-> 
->     OpenSSL_1_1_1-pre2 OpenSSL_1_1_1-pre1 OpenSSL_1_1_0 OpenSSL_1_1_0g
->     OpenSSL_1_1_0f OpenSSL_1_1_0e OpenSSL_1_1_0d OpenSSL_1_1_0c
->     OpenSSL_1_1_0b OpenSSL_1_1_0a OpenSSL_1_1_0-pre6 OpenSSL_1_1_0-pre5
->     OpenSSL_1_1_0-pre4 OpenSSL_1_1_0-pre3 OpenSSL_1_1_0-pre2
-> 
-> while support for getters[3] is only in:
-> 
->     OpenSSL_1_1_1-pre2 OpenSSL_1_1_1-pre1
+> Are you still opposed to such a diff (updated version attached), now
+> that LibreSSL HEAD provides SSL_CTX_get0_certificate?
 
-That commit was cherry-picked to the OpenSSL_1_1_0-stable branch, and is
-available int 1.1.0g+:
-https://github.com/openssl/openssl/commit/af51a74ade8bbab5ed49a3560dcb70d89896dc29
+Yes, I'd rather not use the workaround if not needed.  Still not very
+happy about the approach though.  Why not simply add || LIBRESSL_VERSION
+> x.y.z ?
 
-But yeah, that's still something we might need to think about.
+>> I oppose that change because it
+>> hides information I want to have:  "what code can be purged when we drop
+>> support for openssl 1.0 and libressl?".
+> 
+> Maybe there's another way to encode that information?  Like,
+> consistently formatted comments describing the first OpenSSL (and
+> LibreSSL) releases that provided a function?
+
+Yes, we could do that.  But if we're going to put that info into the
+code anyway, why not just use the define?
 
 -Steffan
 
