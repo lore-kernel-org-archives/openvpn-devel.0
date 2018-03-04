@@ -1,12 +1,14 @@
-References: <20180228135240.22945-1-joost@...2383...>
+References: <20180102222002.21454-1-steffan@...1856...>
+ <20180102222854.29198-1-steffan@...1856...>
+ <CAKuzo_gLMrhLj9CiHBkvG18_AOm1Ex=ktPNA-Ye9eDW9iF=P8w@...278...>
 From: Steffan Karger <steffan@...1856...>
-Message-ID: <ed37713b-f538-f74a-a4c1-00990e465dea@...1856...>
-Date: Sun, 4 Mar 2018 10:38:17 +0100
+Message-ID: <3b2cb21d-5748-2b8c-67ab-8cb23d13a371@...1856...>
+Date: Sun, 4 Mar 2018 10:58:06 +0100
 MIME-Version: 1.0
-In-Reply-To: <20180228135240.22945-1-joost@...2383...>
+In-Reply-To: <CAKuzo_gLMrhLj9CiHBkvG18_AOm1Ex=ktPNA-Ye9eDW9iF=P8w@...278...>
 Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH] Make return code external tls key match
- docs
+Subject: Re: [Openvpn-devel] [PATCH v2] Check for time_t overflow in
+ event_timeout_trigger()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,75 +18,34 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 7bit
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On 28-02-18 14:52, Joost Rijneveld wrote:
-> In tls_ctx_use_external_private_key, the return codes were inverted
-> compared to what is documented in ssl_backend.h (and what can
-> reasonably be expected). Internally the return code is never checked,
-> so this did not directly result in any change of behavior.
-> ---
->  src/openvpn/ssl_mbedtls.c | 6 +++---
->  src/openvpn/ssl_openssl.c | 4 ++--
->  2 files changed, 5 insertions(+), 5 deletions(-)
+On 01-03-18 05:15, Selva Nair wrote:
+> We can avoid all overflow and eliminate the check and the ASSERT
+> by writing it as
 > 
-> diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-> index 3906cd55..8e31980a 100644
-> --- a/src/openvpn/ssl_mbedtls.c
-> +++ b/src/openvpn/ssl_mbedtls.c
-> @@ -630,7 +630,7 @@ tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
->  
->      if (ctx->crt_chain == NULL)
->      {
-> -        return 0;
-> +        return 1;
->      }
->  
->      ALLOC_OBJ_CLEAR(ctx->external_key, struct external_context);
-> @@ -640,10 +640,10 @@ tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
->      if (!mbed_ok(mbedtls_pk_setup_rsa_alt(ctx->priv_key, ctx->external_key,
->                                            NULL, external_pkcs1_sign, external_key_len)))
->      {
-> -        return 0;
-> +        return 1;
->      }
->  
-> -    return 1;
-> +    return 0;
->  }
->  #endif /* ifdef MANAGMENT_EXTERNAL_KEY */
->  
-> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-> index d91458b0..8ef68ebd 100644
-> --- a/src/openvpn/ssl_openssl.c
-> +++ b/src/openvpn/ssl_openssl.c
-> @@ -1327,11 +1327,11 @@ tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
->          goto err;
->      }
->  #endif /* OPENSSL_VERSION_NUMBER > 1.1.0 dev */
-> -    return 1;
-> +    return 0;
->  
->  err:
->      crypto_msg(M_FATAL, "Cannot enable SSL external private key capability");
-> -    return 0;
-> +    return 1;
->  }
->  
->  #endif /* ifdef MANAGMENT_EXTERNAL_KEY */
+> time_t wakeup = (et->last - local_now) + et->n; // parens added for clarity
 > 
+> For the first subtraction to overflow, last and now have to differ by
+>> INT_MAX (for 32 bit time_t), not something we should worry about
+> (can't happen in normal operation).
+> Further, the term in brackets is always negative (as now >= last),
+> while et->n is positive and < INT_MAX by construction. So the final
+> addition also cannot overflow. All assuming that 32 bit "now" and
+> "last" are not used beyond 2037.
+> 
+> That would take care of this particular overflow concern.
 
-Thanks for the patch, and pointing out this inconsistency.  Changes make
-sense and make this function follow what seems to be the default pattern
-in the surrounding code.
+Looking more closely at the "now" handling, I see that it indeed can not
+go back (our notion of time can, but that is managed through now_adj,
+not by setting now back).
 
-Acked-by: Steffan Karger <steffan@...1856...>
-
-(What bothers me more is that we don't actually check the return values,
-but I'll send a follow-up patch to fix that.)
+So your approach is much simpler and better.  Since that is your
+solution, do mind sending a patch?  I'll then do the review-and-ack.
 
 -Steffan
 
