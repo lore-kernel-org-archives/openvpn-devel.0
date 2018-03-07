@@ -1,12 +1,16 @@
-MIME-Version: 1.0
-In-Reply-To: <b53bcb01-6a0b-be13-c2df-0a7f7bc848b5@...1227...>
+Reply-To: openvpn-devel@lists.sourceforge.net
 References: <1520262951-1807-1-git-send-email-arne@...1227...>
  <1520265024-2129-1-git-send-email-arne@...1227...>
  <CAKuzo_hC11dM1t5sPY9MV1AVzXLr+ZxD+BF3EFQv4e4o87BxGg@...278...>
  <b53bcb01-6a0b-be13-c2df-0a7f7bc848b5@...1227...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 7 Mar 2018 10:47:58 -0500
-Message-ID: <CAKuzo_gO3-+Au9SJg6n8uD-mbFeyCMUANux6St0kbTznUPOcJw@...278...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <b598f4ba-320b-c3bb-8189-ca013b3f1a0a@...2080...>
+Date: Wed, 7 Mar 2018 13:13:12 +0100
+MIME-Version: 1.0
+In-Reply-To: <b53bcb01-6a0b-be13-c2df-0a7f7bc848b5@...1227...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="2XGeKmPyo7wVFnFfXM5cfNuMrxCDvFFvb"
 Subject: Re: [Openvpn-devel] [PATCH v2] Rework OpenVPN auth-token support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -16,109 +20,103 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Arne Schwabe <arne@...1227...>, Selva Nair <selva.nair@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--2XGeKmPyo7wVFnFfXM5cfNuMrxCDvFFvb
+Content-Type: multipart/mixed; boundary="tMnzA7ngptZxhgnDuoformJNLD0b230I6";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>, Selva Nair <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net"
+ <openvpn-devel@lists.sourceforge.net>
+Message-ID: <b598f4ba-320b-c3bb-8189-ca013b3f1a0a@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Rework OpenVPN auth-token support
+References: <1520262951-1807-1-git-send-email-arne@...1227...>
+ <1520265024-2129-1-git-send-email-arne@...1227...>
+ <CAKuzo_hC11dM1t5sPY9MV1AVzXLr+ZxD+BF3EFQv4e4o87BxGg@...278...>
+ <b53bcb01-6a0b-be13-c2df-0a7f7bc848b5@...1227...>
+In-Reply-To: <b53bcb01-6a0b-be13-c2df-0a7f7bc848b5@...1227...>
+
+--tMnzA7ngptZxhgnDuoformJNLD0b230I6
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+On 07/03/18 12:52, Arne Schwabe wrote:
+>> So, failure due to token expiry that normally happens during a reneg[*]
+>> will not trigger AUTH_FAILED and the client will continue trying reneg
+>> until the previous TLS session expires (1 hour?). This is a
+>> basic limitation of the present implementation and I do not see it
+>> being addressed by the patch.
+>
+> I will look into sending AUTH_FAILED also without management-client-auth.
+
+Just a quick response.  AUTH_FAILED can provide an explanation which the
+client can pick up and act upon.  I did that in an earlier attempt, but it
+required lots of refactoring as the send_control() function depends on a few
+structs not being available where the token failures can be tackled.
+
+See this mail thread for details:
+   Message-Id: 1477918318-18561-1-git-send-email-davids@...515...
+   Mail archive:
+<https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12848.=
+html>
+
+This approach is what James initially recommended me to do, and this approa=
+ch
+of providing a failure message back to the client should already be support=
+ed
+in OpenVPN 3 and the OpenVPN Connect clients.  This messaging I believe is
+already used by the Access Server and Private Tunnel.  OpenVPN 2 in client
+mode, could in these cases catch this "message" and ask for user credentials
+again.
+
+In regards to having the tokens survive reconnect, I agree.  But lets try to
+split this challenge into a few more minor patches.
+
+The challenge I see with starting with a new IV_PROTO=3D3 is that this also
+requires support in the OpenVPN 3 library as well.  I believe the "expiring
+auth-token" feature would be better handled with proper AUTH_FAILED signall=
+ing.
+
+I'll have a closer look (hopefully) later today, just wanted to give this
+quick feedback before its too late.
 
 
-On Wed, Mar 7, 2018 at 6:52 AM, Arne Schwabe <arne@...1227...> wrote:
-> Am 06.03.18 um 22:04 schrieb Selva Nair:
->
-..
+--=20
+kind regards,
 
->> I want to stress this point: when the server sends back AUTH_FAILED,
->> the client does behave somewhat sanely, but not otherwise. And on that
->> count this patch appears to be lacking. It teaches the client to forget the
->> token during SIGUSR1 restarts which is good, but does not teach the server
->> to send back AUTH_FAILED in all instances of auth failures.
->
->
-> I think failed authentication during a renogiation is also a valid issue
-> that this patch does not address and the behaviour is somewhat broken,
-> also for non auth-token usage. I would prefer to fix that thing in a
-> sperate patch. This patch mainly focuses on fixing auth-gen-token and
-> client interaction as much as possible.
+David Sommerseth
+OpenVPN Inc
 
-That is fine. In that case let's not pretend that an expiring
-auth-token using auth-gen-token is a supported feature. Disable it in
-the server until we have the ability to send AUTH_FAILED in such
-cases.
 
->
->
->>>
->>> This patch changes the client behaviour:
->>>
->>> - Treat a failed auth when using an auth-token as a soft error (USR1)
->>>   and clean the auth-token falling back to the original auth method
->>
->> We could be more graceful here by not triggering USR1 -- clearing the
->> token is enough as that will automatically cause the client to fall
->> back to auth-user-pass prompting. I say graceful because some failures
->> do not need a restart, only a re-attempt to authenticate with
->> a valid username/password.
->>
->
-> Currently this code is only triggered on inital connnection (as the
-> server fails to send AUTH_FAILED as you noted before). I have not
-> checked how easy it is for the client to send a second key_exchange message.
+--tMnzA7ngptZxhgnDuoformJNLD0b230I6--
 
-Agreed SIGUSR1 is appropriate for initial failure, but initial failure
-happens with auth-token only because the client does not forget the
-token during SIGUSR1/SIGHUP reconnects. Once it learns to do that (as
-this patch does), there are no "initial failures" with auth-token
-(more on that below).
+--2XGeKmPyo7wVFnFfXM5cfNuMrxCDvFFvb
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
->
->
->>>
->>> - Implement a new pushable option forget-token-reconnect that forces
->>>   to forget an auth-token when reconnecting
->>
->> I would have liked to see this as the default behaviour: IMO the "right"
->> way to use auth-token is to expire it on reconnect but if some
->> existing external scripts want it otherwise, fine...
->
-> That is something we should discuss. I did here err on the side of
-> caution and not break existing setups since currently the only working
-> that that does not break on reconnect is one where auth-tokens are valid
-> after reconnect and changing this default would break those scnearios
-> and in the past we have most times erred on the side of caution and
-> compatibility.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-Agreed, if external scripts that implement auth-token without using
-auth-gen-token wants to reuse the token, fine..
+iQIcBAEBCgAGBQJan9deAAoJEIbPlEyWcf3ypR0P/0M7Dquee4+k2A6iFewWO9nj
+5cFhkgLFH6LZ+66ZwG+1YAHQlQ9usDmROIyzFVOXJfT6cJVfpXLPP7cl/l+Yvfr0
+bXawT+QUBba5cRmnwAQeHC+779cvc6s3GXOwBnsrsBW209luIjZ3HXIxADdN8ldT
+/awKxxgGsxHCRALw/YWdVUeM/y5rPJUwWkimlNpuOGRGw2Fty4pME20kTteR6Z34
+dTKcmq82iXQvtUhsI5XD2+D5HIg1o854CQIPEUkHuzx3K9FCVoFdpARbk+L5PhFB
+fORBrB4G155LjszTJnDDo1Og5au8/lBbvlzKqBu9/fAHQTv0dzqMfcrKubFysa7I
+Ijw3v9ZUXeXkNA0Vj02UGhVS3SvXeh6Ai8JeJzzez8bwbCigbZI9mRGgvteuKyUP
+YVToxEtdYX0iVo7BEcskB04YLQ1bd9dggHzB/lTA1vDbuhpQ7c4gaLsyHA2COV5f
+fUH/wX2XFyfnGpSoC6skcadAz/nwfyGgZGzHC9rO3OkHlT3Ln0PMGAvmrB90+CAY
+P5wJl11VSYXR9QDOAtawS6fwC+FS5SRpDaAsN4MehyTSJz+yP4LnLrVwuaRTfZwi
+Al/QiQU7qxsZrVdmWVl1qo5m6Y2Jfhe75y9t5q9+Y6BdysrBFfQ9uJ34H/spuLvy
+4cCUS6325VApTFxJyLh8
+=z3HX
+-----END PGP SIGNATURE-----
 
->
->
->
->>> -        switch (auth_retry_get())
->>> +    if (c->options.pull) {
->>> +        /* Before checking how to react on AUTH_FAILED, first check if the failed authed might be
->>> +         * the result of an expired auth-token */
->>> +        if (ssl_clean_auth_token())
->>>          {
->>
->> This is not going to work. The only time the server sends back
->> AUTH_FAILED is during the initial connection. See that
->> send_auth_failed() is called only during PUSH request processing[*].
->
-> At least it fixes a client's behaviour with this patch with server that
-> has the default auth-gen-token without expiry set. :)
-
-Not really -- that gets fixed by forget-token-reconnect which is
-pushed when auth-gen-token is set. So I think this code path will
-never get exercised. As this patch will push forget-token-reconnect,
-every restart will call ssl_clean_auth_token() from init.c so the
-client will use the username/password, not any previously set token.
-As AUTH_FAILED is received only during such first attempts, there is
-no token to clean at that point and thus this will be skipped. It will
-"mysteriously" start to get exercised if/when we later fix
-AUTH_FAILED. So better leave it out of this patch. Or am I missing
-something?
-
-Selva
+--2XGeKmPyo7wVFnFfXM5cfNuMrxCDvFFvb--
 
