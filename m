@@ -1,13 +1,10 @@
-References: <1520262951-1807-1-git-send-email-arne@...1227...>
- <1520265024-2129-1-git-send-email-arne@...1227...>
- <CAKuzo_hC11dM1t5sPY9MV1AVzXLr+ZxD+BF3EFQv4e4o87BxGg@...278...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <b53bcb01-6a0b-be13-c2df-0a7f7bc848b5@...1227...>
-Date: Wed, 7 Mar 2018 12:52:03 +0100
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_hC11dM1t5sPY9MV1AVzXLr+ZxD+BF3EFQv4e4o87BxGg@...278...>
-Content-Language: de-DE
-Subject: Re: [Openvpn-devel] [PATCH v2] Rework OpenVPN auth-token support
+Date: Wed,  7 Mar 2018 13:29:56 +0100
+Message-Id: <1520425796-22486-1-git-send-email-arne@...1227...>
+In-Reply-To: <500813015-27739-1-git-send-email-arne@...1227...>
+References: <500813015-27739-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v4] Print ec bit details,
+ refuse management-external-key if key is not RSA
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,152 +13,147 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Am 06.03.18 um 22:04 schrieb Selva Nair:
-> Hi,
-> 
-> Based on the commit message this appears to cover all that is wrong
-> with current auth-token implementation. I haven't carefully reviewed the
-> code or tested it, but some initial remarks that looks relevant.
-> 
-> On Mon, Mar 5, 2018 at 10:50 AM, Arne Schwabe <arne@...1227...> wrote:
->> Auth-token is documented as a token that the client will use instead
->> of a auth-token. When using an external auth-token script and OTP
->> authentication, it is useful to have this token survive on reconnect
->> (e.g. mobile device roaming).  On the other hand if the token does
->> expire, the client should fall back to the previous authentication
->> methd (e.g. user/pass) or ask for a OTP password again.
->>
->> Behaviour of OpenVPN client (prior to this patch) is to never fallback
->> to the previous authentication method. Depending on auth-retry it
->> either quit or tried endlessly with an expired token. Since
->> auth-gen-token tokens expire on reconnect, a client will not survive a
->> reconnect.
-> 
-> While this is mostly true, there is one point missing here. That being
-> the main reason for this email, here goes:
-> 
-> While its true that, on SIGUSR1, the client does retry with auth-token
-> it's only a minor nuisance:  it leads to an AUTH_FAILED and
-> then the client does go back to prompting for username/password
-> (assuming auth-retry is enabled). The real sticky problem is when
-> authentication fails during a TLS reneg due to an expired auth-token.
-> The client won't realize why the reneg did not complete and will
-> repeatedly try to renegotiate using the expired (or invalid) token. The
-> reason for this is that the server does not send back an AUTH_FAILED
-> message in such cases.
-> 
-> I want to stress this point: when the server sends back AUTH_FAILED,
-> the client does behave somewhat sanely, but not otherwise. And on that
-> count this patch appears to be lacking. It teaches the client to forget the
-> token during SIGUSR1 restarts which is good, but does not teach the server
-> to send back AUTH_FAILED in all instances of auth failures.
+V2: Print also curve details, add missing ifdef
+V3: Goto err instead of using M_FATAL, format fixes, use EC_GROUP_get_curve_name + OBJ_nid2sn instead of ECPKParameters_print, add compat headers for 1.0.2
+V4: Formatting changes and change M_ERR to M_WARN
+---
+ configure.ac                 |  2 ++
+ src/openvpn/openssl_compat.h | 32 ++++++++++++++++++++++++++++++++
+ src/openvpn/ssl_openssl.c    | 29 +++++++++++++++++++++++++++--
+ 3 files changed, 61 insertions(+), 2 deletions(-)
 
+diff --git a/configure.ac b/configure.ac
+index 39d992c0..f6eeb40d 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -934,6 +934,7 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
+ 			EVP_PKEY_id \
+ 			EVP_PKEY_get0_RSA \
+ 			EVP_PKEY_get0_DSA \
++			EVP_PKEY_get0_EC_KEY \
+ 			RSA_set_flags \
+ 			RSA_bits \
+ 			RSA_get0_key \
+@@ -949,6 +950,7 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
+ 			RSA_meth_set_init \
+ 			RSA_meth_set_finish \
+ 			RSA_meth_set0_app_data \
++			EC_GROUP_order_bits
+ 		]
+ 	)
+ 
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index 36f68b01..70b19aea 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -244,6 +244,20 @@ EVP_PKEY_get0_RSA(EVP_PKEY *pkey)
+ }
+ #endif
+ 
++#if !defined(HAVE_EVP_PKEY_GET0_EC_KEY) && !defined(OPENSSL_NO_EC)
++/**
++ * Get the EC_KEY object of a public key
++ *
++ * @param pkey                Public key object
++ * @return                    The underlying EC_KEY object
++ */
++static inline EC_KEY *
++EVP_PKEY_get0_EC_KEY(EVP_PKEY *pkey)
++{
++    return pkey ? pkey->pkey.ec : NULL;
++}
++#endif
++
+ #if !defined(HAVE_EVP_PKEY_ID)
+ /**
+  * Get the PKEY type
+@@ -610,6 +624,24 @@ RSA_meth_set0_app_data(RSA_METHOD *meth, void *app_data)
+ }
+ #endif
+ 
++#if !defined(HAVE_EC_GROUP_ORDER_BITS) && !defined(OPENSSL_NO_EC)
++/**
++ * Gets the number of bits of the order of an EC_GROUP
++ *
++ *  @param  group               EC_GROUP object
++ *  @return                     number of bits of group order.
++ */
++static inline int
++EC_GROUP_order_bits(const EC_GROUP *group)
++{
++    BIGNUM* order = BN_new();
++    EC_GROUP_get_order(group, order, NULL);
++    int bits = BN_num_bits(order);
++    BN_free(order);
++    return bits;
++}
++#endif
++
+ /* SSLeay symbols have been renamed in OpenSSL 1.1 */
+ #if !defined(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT)
+ #define RSA_F_RSA_OSSL_PRIVATE_ENCRYPT       RSA_F_RSA_EAY_PRIVATE_ENCRYPT
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 11f4a567..459fe371 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -1077,6 +1077,13 @@ tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
+     ASSERT(pkey); /* NULL before SSL_CTX_use_certificate() is called */
+     pub_rsa = EVP_PKEY_get0_RSA(pkey);
+ 
++    /* Certificate might not be RSA but DSA or EC */
++    if (!pub_rsa)
++    {
++        crypto_msg(M_WARN, "management-external-key requires a RSA certificate");
++        goto err;
++    }
++        
+     /* initialize RSA object */
+     const BIGNUM *n = NULL;
+     const BIGNUM *e = NULL;
+@@ -1683,18 +1690,36 @@ print_details(struct key_state_ssl *ks_ssl, const char *prefix)
+         EVP_PKEY *pkey = X509_get_pubkey(cert);
+         if (pkey != NULL)
+         {
+-            if (EVP_PKEY_id(pkey) == EVP_PKEY_RSA && EVP_PKEY_get0_RSA(pkey) != NULL)
++            if ((EVP_PKEY_id(pkey) == EVP_PKEY_RSA) && (EVP_PKEY_get0_RSA(pkey) != NULL))
+             {
+                 RSA *rsa = EVP_PKEY_get0_RSA(pkey);
+                 openvpn_snprintf(s2, sizeof(s2), ", %d bit RSA",
+                                  RSA_bits(rsa));
+             }
+-            else if (EVP_PKEY_id(pkey) == EVP_PKEY_DSA && EVP_PKEY_get0_DSA(pkey) != NULL)
++            else if ((EVP_PKEY_id(pkey) == EVP_PKEY_DSA) && (EVP_PKEY_get0_DSA(pkey) != NULL))
+             {
+                 DSA *dsa = EVP_PKEY_get0_DSA(pkey);
+                 openvpn_snprintf(s2, sizeof(s2), ", %d bit DSA",
+                                  DSA_bits(dsa));
+             }
++#ifndef OPENSSL_NO_EC
++            else if ((EVP_PKEY_id(pkey) == EVP_PKEY_EC) && (EVP_PKEY_get0_EC_KEY(pkey) != NULL))
++            {
++                EC_KEY *ec = EVP_PKEY_get0_EC_KEY(pkey);
++                const EC_GROUP *group = EC_KEY_get0_group(ec);
++                const char* curve;
++                
++                int nid = EC_GROUP_get_curve_name(group);
++                if (nid == 0 || (curve = OBJ_nid2sn(nid)) == NULL)
++                {
++                    curve = "Error getting curve name";
++                }
++                
++                openvpn_snprintf(s2, sizeof(s2), ", %d bit EC, curve: %s",
++                                 EC_GROUP_order_bits(group), curve);
++                
++            }
++#endif
+             EVP_PKEY_free(pkey);
+         }
+         X509_free(cert);
+-- 
+2.13.3
 
-I think failed authentication during a renogiation is also a valid issue
-that this patch does not address and the behaviour is somewhat broken,
-also for non auth-token usage. I would prefer to fix that thing in a
-sperate patch. This patch mainly focuses on fixing auth-gen-token and
-client interaction as much as possible.
-
-
->>
->> This patch changes the client behaviour:
->>
->> - Treat a failed auth when using an auth-token as a soft error (USR1)
->>   and clean the auth-token falling back to the original auth method
-> 
-> We could be more graceful here by not triggering USR1 -- clearing the
-> token is enough as that will automatically cause the client to fall
-> back to auth-user-pass prompting. I say graceful because some failures
-> do not need a restart, only a re-attempt to authenticate with
-> a valid username/password.
-> 
-
-Currently this code is only triggered on inital connnection (as the
-server fails to send AUTH_FAILED as you noted before). I have not
-checked how easy it is for the client to send a second key_exchange message.
-
-
->>
->> - Implement a new pushable option forget-token-reconnect that forces
->>   to forget an auth-token when reconnecting
-> 
-> I would have liked to see this as the default behaviour: IMO the "right"
-> way to use auth-token is to expire it on reconnect but if some
-> existing external scripts want it otherwise, fine...
-
-That is something we should discuss. I did here err on the side of
-caution and not break existing setups since currently the only working
-that that does not break on reconnect is one where auth-tokens are valid
-after reconnect and changing this default would break those scnearios
-and in the past we have most times erred on the side of caution and
-compatibility.
-
->>
->> - Sending IV_PROTO=3 to signal that it is safe to send this client an
->>   expiring auth-token
-> 
-> Once the server side auth-failure handling is fixed this will be less
-> of a concern. But a new IV_PROTO value cant hurt.
-
-
-You still need the ability in the client to actually be able to forget
-and the server needs to know if the client supports forgetting and it is
-safe to send the auth-token.
-
-> 
->>
->> The behaviour of the server option auth-gen-token:
->>
->> - Automatically push forget-token-reconnect to avoid a failed
->>   authentication after reconnect
-> 
-> Yes. Unless "forget on reconnect" becomes the only possible client
-> behaviour :)
-
-Sure but then we should add a keep-token-reconnect to support "OTP with
-often roaming clients" scenario.
-
-> 
->>
->> - By default only send auth-token to clients that will gracefully
->>   handle auth-token to avoid having clients not able to reconnect
-> 
-> I suppose this is regarding expiring tokens, not permanent tokens.
-
-
-Yes, since auth-gen-token has no permanent tokens (they only valid for
-the session and after reconnect are invalid), they expire instantly when
-a client reconnects.
-
-
-
->> -        switch (auth_retry_get())
->> +    if (c->options.pull) {
->> +        /* Before checking how to react on AUTH_FAILED, first check if the failed authed might be
->> +         * the result of an expired auth-token */
->> +        if (ssl_clean_auth_token())
->>          {
-> 
-> This is not going to work. The only time the server sends back
-> AUTH_FAILED is during the initial connection. See that
-> send_auth_failed() is called only during PUSH request processing[*].
-
-At least it fixes a client's behaviour with this patch with server that
-has the default auth-gen-token without expiry set. :)
-
-> So, failure due to token expiry that normally happens during a reneg[*]
-> will not trigger AUTH_FAILED and the client will continue trying reneg
-> until the previous TLS session expires (1 hour?). This is a
-> basic limitation of the present implementation and I do not see it
-> being addressed by the patch.
-
-I will look into sending AUTH_FAILED also without management-client-auth.
-
-Arne
 
