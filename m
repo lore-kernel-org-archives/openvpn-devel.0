@@ -1,17 +1,10 @@
-Reply-To: openvpn-devel@lists.sourceforge.net
-References: <1520262951-1807-1-git-send-email-arne@...1227...>
- <1520265024-2129-1-git-send-email-arne@...1227...>
- <CAKuzo_hC11dM1t5sPY9MV1AVzXLr+ZxD+BF3EFQv4e4o87BxGg@...278...>
- <b53bcb01-6a0b-be13-c2df-0a7f7bc848b5@...1227...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <b598f4ba-320b-c3bb-8189-ca013b3f1a0a@...2080...>
-Date: Wed, 7 Mar 2018 13:13:12 +0100
-MIME-Version: 1.0
-In-Reply-To: <b53bcb01-6a0b-be13-c2df-0a7f7bc848b5@...1227...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="2XGeKmPyo7wVFnFfXM5cfNuMrxCDvFFvb"
-Subject: Re: [Openvpn-devel] [PATCH v2] Rework OpenVPN auth-token support
+From: David Sommerseth <davids@...515...>
+Date: Wed,  7 Mar 2018 23:11:08 +0100
+Message-Id: <20180307221108.9545-1-davids@...515...>
+In-Reply-To: <1515067670-13094-1-git-send-email-steffan.karger@...1435...>
+References: <1515067670-13094-1-git-send-email-steffan.karger@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Check for more data in control
+ channel
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,103 +13,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>, Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---2XGeKmPyo7wVFnFfXM5cfNuMrxCDvFFvb
-Content-Type: multipart/mixed; boundary="tMnzA7ngptZxhgnDuoformJNLD0b230I6";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Arne Schwabe <arne@...1227...>, Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net"
- <openvpn-devel@lists.sourceforge.net>
-Message-ID: <b598f4ba-320b-c3bb-8189-ca013b3f1a0a@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Rework OpenVPN auth-token support
-References: <1520262951-1807-1-git-send-email-arne@...1227...>
- <1520265024-2129-1-git-send-email-arne@...1227...>
- <CAKuzo_hC11dM1t5sPY9MV1AVzXLr+ZxD+BF3EFQv4e4o87BxGg@...278...>
- <b53bcb01-6a0b-be13-c2df-0a7f7bc848b5@...1227...>
-In-Reply-To: <b53bcb01-6a0b-be13-c2df-0a7f7bc848b5@...1227...>
-
---tMnzA7ngptZxhgnDuoformJNLD0b230I6
-Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: steffan.karger@...1435...
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 07/03/18 12:52, Arne Schwabe wrote:
->> So, failure due to token expiry that normally happens during a reneg[*]
->> will not trigger AUTH_FAILED and the client will continue trying reneg
->> until the previous TLS session expires (1 hour?). This is a
->> basic limitation of the present implementation and I do not see it
->> being addressed by the patch.
->
-> I will look into sending AUTH_FAILED also without management-client-auth.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
 
-Just a quick response.  AUTH_FAILED can provide an explanation which the
-client can pick up and act upon.  I did that in an earlier attempt, but it
-required lots of refactoring as the send_control() function depends on a few
-structs not being available where the token failures can be tackled.
+So I've glared a bit on the code, and it makes sense to me (while not
+claiming I fully understand the full timer logic and scheduling).
 
-See this mail thread for details:
-   Message-Id: 1477918318-18561-1-git-send-email-davids@...515...
-   Mail archive:
-<https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12848.=
-html>
+Smoke tested patch on RHEL7 (client) and Fedora 27 (server) and tested
+server code using the openvpn3-linux client as well.  Everything seems
+to work as expected, including 'make check'.  And since James didn't
+have any objections to this approach, I consider this safe to go.
 
-This approach is what James initially recommended me to do, and this approa=
-ch
-of providing a failure message back to the client should already be support=
-ed
-in OpenVPN 3 and the OpenVPN Connect clients.  This messaging I believe is
-already used by the Access Server and Private Tunnel.  OpenVPN 2 in client
-mode, could in these cases catch this "message" and ask for user credentials
-again.
-
-In regards to having the tokens survive reconnect, I agree.  But lets try to
-split this challenge into a few more minor patches.
-
-The challenge I see with starting with a new IV_PROTO=3D3 is that this also
-requires support in the OpenVPN 3 library as well.  I believe the "expiring
-auth-token" feature would be better handled with proper AUTH_FAILED signall=
-ing.
-
-I'll have a closer look (hopefully) later today, just wanted to give this
-quick feedback before its too late.
+Acked-by: David Sommerseth <davids@...515...>
 
 
---=20
+Your patch has been applied to the following branches
+
+commit b00d56e1b0cf4d71dc4944ef14ea7eca2fc8c519  (master)
+commit 8f15fa94dd9d7c4ce2dfe3378bd6311e2ad121ba  (release/2.4)
+Author: Steffan Karger
+Date:   Thu Jan 4 13:07:50 2018 +0100
+
+     Check for more data in control channel
+
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: David Sommerseth <davids@...515...>
+     Message-Id: <1515067670-13094-1-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16151.html
+     Signed-off-by: David Sommerseth <davids@...515...>
+
+
+- --
 kind regards,
 
 David Sommerseth
-OpenVPN Inc
-
-
---tMnzA7ngptZxhgnDuoformJNLD0b230I6--
-
---2XGeKmPyo7wVFnFfXM5cfNuMrxCDvFFvb
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJan9deAAoJEIbPlEyWcf3ypR0P/0M7Dquee4+k2A6iFewWO9nj
-5cFhkgLFH6LZ+66ZwG+1YAHQlQ9usDmROIyzFVOXJfT6cJVfpXLPP7cl/l+Yvfr0
-bXawT+QUBba5cRmnwAQeHC+779cvc6s3GXOwBnsrsBW209luIjZ3HXIxADdN8ldT
-/awKxxgGsxHCRALw/YWdVUeM/y5rPJUwWkimlNpuOGRGw2Fty4pME20kTteR6Z34
-dTKcmq82iXQvtUhsI5XD2+D5HIg1o854CQIPEUkHuzx3K9FCVoFdpARbk+L5PhFB
-fORBrB4G155LjszTJnDDo1Og5au8/lBbvlzKqBu9/fAHQTv0dzqMfcrKubFysa7I
-Ijw3v9ZUXeXkNA0Vj02UGhVS3SvXeh6Ai8JeJzzez8bwbCigbZI9mRGgvteuKyUP
-YVToxEtdYX0iVo7BEcskB04YLQ1bd9dggHzB/lTA1vDbuhpQ7c4gaLsyHA2COV5f
-fUH/wX2XFyfnGpSoC6skcadAz/nwfyGgZGzHC9rO3OkHlT3Ln0PMGAvmrB90+CAY
-P5wJl11VSYXR9QDOAtawS6fwC+FS5SRpDaAsN4MehyTSJz+yP4LnLrVwuaRTfZwi
-Al/QiQU7qxsZrVdmWVl1qo5m6Y2Jfhe75y9t5q9+Y6BdysrBFfQ9uJ34H/spuLvy
-4cCUS6325VApTFxJyLh8
-=z3HX
+iQIcBAEBCgAGBQJaoGN5AAoJEIbPlEyWcf3ywZwQAJk0JkYcEw0PX0QbWGDsaY7F
+QqRMtp4kH9Agsx1/P2Sr5B8H08XBaWDrf+2u/qcZxefB5J7b6CCAR8ueqz+vBtOv
+PmUvHGrGKOZiqF2pQdqcZ+3pvljLVgXcw0uKOu4MM7TBeVhIN93F902xJE3r4cju
+G3K3Nv4CkgokNI2I/XBrZWJxeBSUn7gwuAwpIEcvo9LVMoaA1H24xdpIj39W7GdO
+qnouQUyQSo7UIufrkfqc06+inGGlQzSm31nVM3nGVMLOSnPi6Mjpo6GVhfLhEZMT
+R/IHnSL1P0/b1GXXe1OFmTw2NSIj+L2dixxFEhaaaUcfWzHn+EfnZiQNd6b+AEMV
+aqhJZfoQncIKLS3P4by27PSGEs3L416HGDUUGnFHtQxLw1YCUv8E1QvAznrGi2Ek
+m8lNntoW70y8jrHMnnkdrWI+/Ert0G0ZPDgl0O2ejnje7Y6FLgeU7HDu6dIC/2xs
+Xe55bdZi5rxVtgjh/jsrIZpi+yYorBKJSGKcZvappwjCGwzjY42biSOlo3dMrvFJ
+ASHYrzH47lRz+Wxl8Eixy43hcVqYYuebEkbzuLcMOF5LlNjX1biE8CrCgbNkL59t
+9ClW9uglx7yfUP+BwgIzo/sD4s2IcAdE3dd3+v2QBvownuC6su+PQzo7GXfeeMlJ
+Xg514b81EsUdEeT4r5gY
+=C8xP
 -----END PGP SIGNATURE-----
-
---2XGeKmPyo7wVFnFfXM5cfNuMrxCDvFFvb--
 
