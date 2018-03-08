@@ -1,11 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-References: <1520262951-1807-1-git-send-email-arne@...1227...>
-Message-ID: <4c8dbc1b-71c9-6187-5ecf-f1dbfb957561@...1227...>
-Date: Thu, 8 Mar 2018 16:02:22 +0100
-MIME-Version: 1.0
-In-Reply-To: <1520262951-1807-1-git-send-email-arne@...1227...>
-Content-Language: de-DE
-Subject: Re: [Openvpn-devel] [PATCH] Rework OpenVPN auth-token support
+Date: Thu, 8 Mar 2018 17:02:58 +0100 (CET)
+Message-Id: <201803081602.w28G2wft090849@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1512734870-17133-8-git-send-email-steffan.karger@...1435...>
+References: <1512734870-17133-8-git-send-email-steffan.karger@...1435...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Move env helper functions into
+ their own module/file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,100 +13,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan.karger@...1435...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-The discussion has gone on a bit about this patch. I would like to step
-back and give an overview to make this mess better understandable as we
-have multiple problem mixed together.
+Acked-by: Gert Doering <gert@...1296...>
 
-Current client behaviour:
+Does what it says on the lid: code is moved 1:1 with no code changes, 
+and only #include lines are adjusted elsewhere (which is actually painful
+to review in this case, as the "moved out" stuff was scattered along
+misc.c and parts ended in env_set.h, so "plain diff" between old-misc.c 
+and new-env_set.c didn't help much).
 
-- (a) OpenVPN 3. Forgets auth-token on reconnect, can be told to forget
-auth-token during a session with AUTH_FAILED,SESSION
+One small catch: this collided with 06ad53e067d9a8b and setenv_long_long()
+being changed from "%lld" to PRIi64 - so I changed the patch accordingly
+so that it still only moves lines from misc.c to env_set.c
 
-- (b) OpenVPN 2.x Once it gets an auth-token, the auth-token replace the
-password and the client will never anything else from that point on
+Your patch has been applied to the master branch.
 
-Proposed new behaviour:
+commit 0afe0ca5620d5ab7cec3380d40048dce2286f048
+Author: Steffan Karger
+Date:   Fri Dec 8 13:07:47 2017 +0100
 
-- (c) OpenVPN 2.x should behave exactly like OpenVPN 3
+     Move env helper functions into their own module/file
 
-- (d) OpenVPN 2.x if not intrustucted otherwise will keep auth-token on
-reconnect but will forget it as soon as it gets an AUTH-FAILED (what my
-patch proposed)
-
-
-Current OpenVPN server behaviour:
-
-- (i) Custom client-connect script with auth-token can send an
-auth-token and can also check the same token on reconnect
-
-- (ii) auth-gen-token sends an auth-token but the auth-token is only
-valid for the session. The token can also set to expiry earlier in which
-case the server fails to notify the client about th failed auth-token.
+     Signed-off-by: Antonio Quartulli <antonio@...515...>
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1512734870-17133-8-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16066.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-Currently working combinations are (i)+(a) and ii+b. OpenVpn 3 with
-custom script (i+b) will also work but will query for password/OTP
-password on every reconnect/network change.
+--
+kind regards,
 
-Current problems:
+Gert Doering
 
-- (1) OpenVPN 2.x server does only signal AUTH-FAILED on the initial tls
-session but not on later ones (I am ingoring the management special case
-here)
-
-- (2) OpenVPN 2.x client does not understand AUTH_FAILED,SESSION
-
-
-- (3) OpenVPN 2.x client (b) against an auth-gen-token server (ii):
-Client will use the auth-token buth the server does not know anything
-anymore about the token and the authentication fails
-
-
-Problem (1) and (2) are unproblematic as far as the discussion goes as
-there is no doubt that we should "just" implement them in 2.x.
-
-
-Fixes for (3), client side:
-
-- Using new behaviour (c), like OpenVPN 3. This will work but will make
-the custom script solution (i) worse and also has more real
-authentication on network changes. At least I see no reason why a token
-after an OTP password should be invalidated after a network change.
-
-
-- Using new behaviour (d): Will continue to work with custom script as
-before. Will also be able to recover when connecting to to an
-*unpatched* auth-gen-token server but will need two attempts on a
-reconnect since the first fails with an AUTH_FAILED.
-
-
-- In either (c) and (d) as new client behaviour, there should be a
-pushable option that allows the server to select the auth-token
-behaviour on reconnect (forget or keep)
-
-
-Fixes for the server side for (3):
-
-- implement persistent auth-tokens: Will allow old clients (b) to
-reconnect. Maybe change expire time to be "after not being used for x
-hours". Old clients will still fail to reconnect if the server is
-restarted unless tokens survive server restart.
-
-- do not send auth-token to client that have behaviour (b). For this to
-happen the server needs to know if a client has behaviour (b) or not.
-
-My suggestion here was to increase IV_PROTO to 3. The 3 here should only
-signal that the client has some way of dealng with an expiring token on
-reconnect and that the current behaviour of auth-gen-token is safe to
-use. It does not matter if the client recovers from AUTH-FAILED when a
-token is in use or if the client forgets the token. (minimal common
-behsaviour).  IV_PROTO should also include "understand AUTH_FAILED,SESSION"
-
-This has been a long mail but I hope it clear ups some of the confusion.
-
-Arne
 
