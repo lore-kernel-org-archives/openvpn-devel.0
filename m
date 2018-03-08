@@ -1,15 +1,11 @@
-References: <1477918318-18561-1-git-send-email-davids@...515...>
- <1477918318-18561-2-git-send-email-davids@...515...>
- <a1d526a0-3203-2033-5e95-b912c3793414@...1227...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <bbdbdbe9-9cde-2137-9e99-1f7a1a35155d@...2080...>
-Date: Thu, 8 Mar 2018 15:25:00 +0100
+From: Arne Schwabe <arne@...1227...>
+References: <1520262951-1807-1-git-send-email-arne@...1227...>
+Message-ID: <4c8dbc1b-71c9-6187-5ecf-f1dbfb957561@...1227...>
+Date: Thu, 8 Mar 2018 16:02:22 +0100
 MIME-Version: 1.0
-In-Reply-To: <a1d526a0-3203-2033-5e95-b912c3793414@...1227...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH 1/2] Refactor to provide struct context
- object inside key_method_2_read()
+In-Reply-To: <1520262951-1807-1-git-send-email-arne@...1227...>
+Content-Language: de-DE
+Subject: Re: [Openvpn-devel] [PATCH] Rework OpenVPN auth-token support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,57 +16,98 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On 08/03/18 15:18, Arne Schwabe wrote:
-> Am 31.10.16 um 13:51 schrieb David Sommerseth:
->> This refactors the call chain of  tls_multi_process(), tls_process()
->> and key_method_2_read() so the the latter function have access
->> to the struct context object.
->>
->> This change is needed for the following patch where verify_user_pass()
->> will need to call send_auth_failed(), which depends on direct access
->> to the the context object.
->>
->> Signed-off-by: David Sommerseth <davids@...515...>
->> ---
->>  src/openvpn/forward.c |  2 +-
->>  src/openvpn/ssl.c     | 28 ++++++++++++++++------------
->>  src/openvpn/ssl.h     |  6 +-----
->>  3 files changed, 18 insertions(+), 18 deletions(-)
->>
->> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
->> index b3077ed..7dafd53 100644
->> --- a/src/openvpn/forward.c
->> +++ b/src/openvpn/forward.c
->> @@ -96,7 +96,7 @@ check_tls_dowork (struct context *c)
->>  
->>    if (interval_test (&c->c2.tmp_int))
->>      {
->> -      const int tmp_status = tls_multi_process
->> +      const int tmp_status = tls_multi_process(c, &wakeup);
->>  	(c->c2.tls_multi, &c->c2.to_link, &c->c2.to_link_addr,
->>
-> 
-> This part of the patch looks just wrong. The
-> 
->  	(c->c2.tls_multi, &c->c2.to_link, &c->c2.to_link_addr,
->  	 get_link_socket_info (c), &wakeup);
-> 
-> will stand alone.
+The discussion has gone on a bit about this patch. I would like to step
+back and give an overview to make this mess better understandable as we
+have multiple problem mixed together.
 
-Yeah, that gotta be a commit error.  That said, I remember Steffan not
-agreeing with this re-factoring approach.  As, we're passing quite some data
-around in these large and more global structs.  We need to look into how to
-make send_auth_failed() work in a smaller set of context than the main 'c'
-context.
+Current client behaviour:
+
+- (a) OpenVPN 3. Forgets auth-token on reconnect, can be told to forget
+auth-token during a session with AUTH_FAILED,SESSION
+
+- (b) OpenVPN 2.x Once it gets an auth-token, the auth-token replace the
+password and the client will never anything else from that point on
+
+Proposed new behaviour:
+
+- (c) OpenVPN 2.x should behave exactly like OpenVPN 3
+
+- (d) OpenVPN 2.x if not intrustucted otherwise will keep auth-token on
+reconnect but will forget it as soon as it gets an AUTH-FAILED (what my
+patch proposed)
 
 
--- 
-kind regards,
+Current OpenVPN server behaviour:
 
-David Sommerseth
-OpenVPN Inc
+- (i) Custom client-connect script with auth-token can send an
+auth-token and can also check the same token on reconnect
 
+- (ii) auth-gen-token sends an auth-token but the auth-token is only
+valid for the session. The token can also set to expiry earlier in which
+case the server fails to notify the client about th failed auth-token.
+
+
+Currently working combinations are (i)+(a) and ii+b. OpenVpn 3 with
+custom script (i+b) will also work but will query for password/OTP
+password on every reconnect/network change.
+
+Current problems:
+
+- (1) OpenVPN 2.x server does only signal AUTH-FAILED on the initial tls
+session but not on later ones (I am ingoring the management special case
+here)
+
+- (2) OpenVPN 2.x client does not understand AUTH_FAILED,SESSION
+
+
+- (3) OpenVPN 2.x client (b) against an auth-gen-token server (ii):
+Client will use the auth-token buth the server does not know anything
+anymore about the token and the authentication fails
+
+
+Problem (1) and (2) are unproblematic as far as the discussion goes as
+there is no doubt that we should "just" implement them in 2.x.
+
+
+Fixes for (3), client side:
+
+- Using new behaviour (c), like OpenVPN 3. This will work but will make
+the custom script solution (i) worse and also has more real
+authentication on network changes. At least I see no reason why a token
+after an OTP password should be invalidated after a network change.
+
+
+- Using new behaviour (d): Will continue to work with custom script as
+before. Will also be able to recover when connecting to to an
+*unpatched* auth-gen-token server but will need two attempts on a
+reconnect since the first fails with an AUTH_FAILED.
+
+
+- In either (c) and (d) as new client behaviour, there should be a
+pushable option that allows the server to select the auth-token
+behaviour on reconnect (forget or keep)
+
+
+Fixes for the server side for (3):
+
+- implement persistent auth-tokens: Will allow old clients (b) to
+reconnect. Maybe change expire time to be "after not being used for x
+hours". Old clients will still fail to reconnect if the server is
+restarted unless tokens survive server restart.
+
+- do not send auth-token to client that have behaviour (b). For this to
+happen the server needs to know if a client has behaviour (b) or not.
+
+My suggestion here was to increase IV_PROTO to 3. The 3 here should only
+signal that the client has some way of dealng with an expiring token on
+reconnect and that the current behaviour of auth-gen-token is safe to
+use. It does not matter if the client recovers from AUTH-FAILED when a
+token is in use or if the client forgets the token. (minimal common
+behsaviour).  IV_PROTO should also include "understand AUTH_FAILED,SESSION"
+
+This has been a long mail but I hope it clear ups some of the confusion.
+
+Arne
 
