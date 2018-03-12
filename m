@@ -1,10 +1,14 @@
-MIME-Version: 1.0
-In-Reply-To: <20180312082122.GP69387@...1296...>
+Date: Mon, 12 Mar 2018 17:15:31 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180312161531.GV69387@...1296...>
 References: <1520817479-17203-1-git-send-email-selva.nair@...277...>
  <20180312082122.GP69387@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 12 Mar 2018 10:37:53 -0400
-Message-ID: <CAKuzo_hnjcLSAi0PxFUC+KxtahUAgdt_qRMKZJCsjvmT3WWLvQ@...278...>
+ <CAKuzo_hnjcLSAi0PxFUC+KxtahUAgdt_qRMKZJCsjvmT3WWLvQ@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="mnamcX5BDF+ZiagH"
+Content-Disposition: inline
+In-Reply-To: <CAKuzo_hnjcLSAi0PxFUC+KxtahUAgdt_qRMKZJCsjvmT3WWLvQ@...278...>
 Subject: Re: [Openvpn-devel] [PATCH 1/2] Skip expired certificates in
  Windows certificate store
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,45 +19,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Selva Nair <selva.nair@...277...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--mnamcX5BDF+ZiagH
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On Mon, Mar 12, 2018 at 4:21 AM, Gert Doering <gert@...1296...> wrote:
->
-> Hi Selva,
->
-> On Sun, Mar 11, 2018 at 09:17:58PM -0400, selva.nair@...277... wrote:
-> > From: Selva Nair <selva.nair@...277...>
-> >
-> > Have the cryptoapicert option find the first matching certificate
-> > in store that is valid at the present time. Currently the first
-> > found item, even if expired, is returned.
->
-> Are these two intended for master only or master+2.4?
->
-> (I admit that I am too lazy right now to go and actually look at the
-> surrounding code :-) - but with all the recent work wrt cryptoapi and
-> external management key, I lost track which bits are considered "new
-> goodies for master only")
->
-> Functionality-wise this makes sense (feature-ACK), and it also makes
-> sense for 2.4 - because "if there are two certificates, an expired and
-> a valid one, and we take the expired one" smells very much like a bug
-> to me :-)
+On Mon, Mar 12, 2018 at 10:37:53AM -0400, Selva Nair wrote:
+> Agree, this could qualify for 2.4. Anyway, the context is the same and
+> it applies/cherry-picks to 2.4 without issues.
 
+OK, thanks.
 
-Agree, this could qualify for 2.4. Anyway, the context is the same and
-it applies/cherry-picks to 2.4 without issues.
+> Elsewhere in the code we only warn about expired certs (like those
+> read from a file) and continue with the connection to eventually end
+> up with the unhelpful "TLS key negotiation failed to complete. Check
+> your network..." error [*].  In that sense this is a regression. IMO, the=
+ client
+> should error out on invalid certs from other sources as well.
 
-Elsewhere in the code we only warn about expired certs (like those
-read from a file) and continue with the connection to eventually end
-up with the unhelpful "TLS key negotiation failed to complete. Check
-your network..." error [*].  In that sense this is a regression. IMO, the client
-should error out on invalid certs from other sources as well.
+Well.  In other cases, we do not have anything else to try, and when
+Steffan added the "oh, this might have expired!" warning, it was much
+better than the "mysterious TLS handshake failure" we had before.
 
-Selva
+The reason it's only a warning was a conscious decision: our clock might
+be wrong, or sufficiently different from the server's clock that it
+actually *could* be valid on his side.  So we print a warning so it's
+more obvious why it fails, but try anyway.
+
+But I do not have strong feelings either way, so if "you" (for an=20
+unspecified value of "you") want to change this to error out, fine with=20
+me :-) - I just wanted to provide background.
+
+gert
+--=20
+now what should I write here...
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--mnamcX5BDF+ZiagH
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJapqejAAoJEB2Cnv7KVigSPV4L/RK5K1iR3+fWmgUnclsOxFzv
+aqRNxbofdnmnZWxViqkE08j5POl1gN4vU8jCMYFiadCcOLDbv5HwQIJy7MSgqn1g
+7t+agP3QWqPwp+KmNCAUFY8lf8pnDsayI6cDKGrpwkkaHzadXpF38ZCHHP4p+1QU
+6NS6ZKaFKvFIcLpS3ZEMGb0WHZC+U8bKqPEdsQcYvw5dsApSIhScTQbq6h0tJJUl
+8dsMt7gP19Xt3l7vwjtJr2rsLUxPq2ftbP9mcTx2Cqul7+sxz5K+AzgmWSZWkLYo
+3perFvsnG3LCuCUR0Qn8oavUgR48wyer/UIDoQBLBZcUGQmnIyu8u/yq2REbWNES
+oAZNqaib8g50p7+wQkkXH2ZQi+nYF3kt3pjSjn4L01kjJQUE9HHpsuJwVOfRMVkT
+c8ZArp1U76CLwCl+hC+JMgpaGDLSo/zxCXfVbmCE6Dylyvdtpw6oTMmTO702AunY
+bvvV4Pi5Un8RiK1C6aCKqx/Q+b6TOI0nO52Xco5miw==
+=wgxG
+-----END PGP SIGNATURE-----
+
+--mnamcX5BDF+ZiagH--
 
