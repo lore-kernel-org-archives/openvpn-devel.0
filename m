@@ -1,12 +1,8 @@
-MIME-Version: 1.0
-In-Reply-To: <20180308200848.5908-1-steffan@...1856...>
-References: <CAKuzo_gvG3_Xz0qdHEyVOaEAB2CfSA3GNj7jYwHBkEb-kTMPLA@...278...>
- <20180308200848.5908-1-steffan@...1856...>
-From: Selva Nair <selva.nair@...277...>
-Date: Thu, 8 Mar 2018 22:38:05 -0500
-Message-ID: <CAKuzo_hYvB2JjxZ3S8W4dB1+AOJqQW3VZJ2FgRXQJrDArkcFAQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Improve management-external-key/cert
- error handling
+From: selva.nair@...277...
+Date: Sun, 11 Mar 2018 21:17:58 -0400
+Message-Id: <1520817479-17203-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH 1/2] Skip expired certificates in Windows
+ certificate store
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,95 +11,111 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+From: Selva Nair <selva.nair@...277...>
 
-I wanted to give this a quick test, but it doesn't apply.
+Have the cryptoapicert option find the first matching certificate
+in store that is valid at the present time. Currently the first
+found item, even if expired, is returned.
 
-It seems you have patch 116 (Antonio's "inline-tag changed to bool"
-patch) in your local repo.
+This makes it possible to update certifiates in store without having
+to delete old ones. As a side effect, if only expired certificates are
+found, the connection fails.
 
-By the way, the M_FATAL after management_query_cert() looks like a
-regression. One problem with these FATAL exits is that it makes it
-hard for the GUI to gracefully handle when user presses cancel on some
-dialogs. Anyway that's beyond this patch... So just saying..
+Also remove some unnecessary casts.
 
-On Thu, Mar 8, 2018 at 3:08 PM, Steffan Karger <steffan@...1856...> wrote:
-> Check the return values of management_query_cert() and
-> tls_ctx_use_external_private_key(), and error out with a more descriptive
-> error message.  To do so, we make the openssl-backed implementation of
-> tls_ctx_use_external_private_key() not throw fatal error anymore.
->
-> (And fix line wrapping while touching this code.)
->
-> Signed-off-by: Steffan Karger <steffan@...1856...>
-> ---
-> v2: error out with M_FATAL as suggested by Selva.
->
->  src/openvpn/ssl.c         | 28 ++++++++++++++++++++--------
->  src/openvpn/ssl_openssl.c |  2 +-
->  2 files changed, 21 insertions(+), 9 deletions(-)
->
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 1756f8a2..1882db52 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -660,18 +660,30 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx)
->      else if ((options->management_flags & MF_EXTERNAL_KEY)
->               && (options->cert_file || options->management_flags & MF_EXTERNAL_CERT))
->      {
-> -        if (options->cert_file)
-> +        if (options->cert_file
-> +            && 0 != tls_ctx_use_external_private_key(new_ctx,
-> +                                                     options->cert_file,
-> +                                                     options->cert_file_inline))
->          {
-> -            tls_ctx_use_external_private_key(new_ctx, options->cert_file,
-> -                                             options->cert_file_inline);
-> +            msg(M_FATAL, "Failed to initialize management-external-key");
->          }
->          else
->          {
-> -            char *external_certificate = management_query_cert(management,
-> -                                                               options->management_certificate);
-> -            tls_ctx_use_external_private_key(new_ctx, external_certificate,
-> -                                             true);
-> -            free(external_certificate);
-> +            char *external_cert = management_query_cert(
-> +                            management, options->management_certificate);
-> +
-> +            if (!external_cert)
-> +            {
-> +                msg(M_FATAL, "Failed to initialize management-external-cert");
-> +            }
-> +
-> +            if (0 != tls_ctx_use_external_private_key(new_ctx, external_cert,
-> +                                                      true))
-> +            {
-> +                msg(M_FATAL, "Failed to initialize management-external-key");
-> +            }
-> +
-> +            free(external_cert);
->          }
->      }
->  #endif
-> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-> index 66d98c54..87f67680 100644
-> --- a/src/openvpn/ssl_openssl.c
-> +++ b/src/openvpn/ssl_openssl.c
-> @@ -1327,7 +1327,7 @@ tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
->      return 0;
->
->  err:
-> -    crypto_msg(M_FATAL, "Cannot enable SSL external private key capability");
-> +    crypto_msg(M_WARN, "Cannot enable SSL external private key capability");
->      return 1;
->  }
->
+Tested on Windows 10.
+Trac #966
 
-Selva
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/cryptoapi.c | 41 ++++++++++++++++++++++++++++++-----------
+ 1 file changed, 30 insertions(+), 11 deletions(-)
+
+diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
+index 11b971f..a579854 100644
+--- a/src/openvpn/cryptoapi.c
++++ b/src/openvpn/cryptoapi.c
+@@ -601,27 +601,31 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
+      * SUBJ:<certificate substring to match>
+      * THUMB:<certificate thumbprint hex value>, e.g.
+      *     THUMB:f6 49 24 41 01 b4 fb 44 0c ce f4 36 ae d0 c4 c9 df 7a b6 28
++     * The first matching certificate that has not expired is returned.
+      */
+     const CERT_CONTEXT *rv = NULL;
++    DWORD find_type;
++    const void *find_param;
++    unsigned char hash[255];
++    CRYPT_HASH_BLOB blob = {.cbData = 0, .pbData = hash};
+ 
+     if (!strncmp(cert_prop, "SUBJ:", 5))
+     {
+         /* skip the tag */
+-        cert_prop += 5;
+-        rv = CertFindCertificateInStore(cert_store, X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
+-                                        0, CERT_FIND_SUBJECT_STR_A, cert_prop, NULL);
+-
++        find_param = cert_prop + 5;
++        find_type = CERT_FIND_SUBJECT_STR_A;
+     }
+     else if (!strncmp(cert_prop, "THUMB:", 6))
+     {
+-        unsigned char hash[255];
+-        char *p;
++        const char *p;
+         int i, x = 0;
+-        CRYPT_HASH_BLOB blob;
++        find_type = CERT_FIND_HASH;
++        find_param = &blob;
+ 
+         /* skip the tag */
+         cert_prop += 6;
+-        for (p = (char *) cert_prop, i = 0; *p && i < sizeof(hash); i++) {
++        for (p = cert_prop, i = 0; *p && i < sizeof(hash); i++)
++        {
+             if (*p >= '0' && *p <= '9')
+             {
+                 x = (*p - '0') << 4;
+@@ -636,6 +640,8 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
+             }
+             if (!*++p)  /* unexpected end of string */
+             {
++                msg(M_WARN, "WARNING: cryptoapicert: error parsing <%s>.", cert_prop);
++                return NULL;
+                 break;
+             }
+             if (*p >= '0' && *p <= '9')
+@@ -657,10 +663,23 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
+             }
+         }
+         blob.cbData = i;
+-        blob.pbData = (unsigned char *) &hash;
++    }
++    while(true)
++    {
++        int validity = 1;
++        /* this frees previous rv, if not NULL */
+         rv = CertFindCertificateInStore(cert_store, X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
+-                                        0, CERT_FIND_HASH, &blob, NULL);
+-
++                                        0, find_type, find_param, rv);
++        if (rv)
++        {
++            validity = CertVerifyTimeValidity(NULL, rv->pCertInfo);
++        }
++        if (!rv || validity == 0)
++        {
++            break;
++        }
++        msg(M_WARN, "WARNING: cryptoapicert: ignoring certificate in store %s.",
++            validity < 0 ? "not yet valid" : "that has expired");
+     }
+ 
+     return rv;
+-- 
+2.1.4
+
 
