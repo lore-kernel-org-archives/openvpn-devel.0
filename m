@@ -1,7 +1,7 @@
 From: Ning Wei <xiaoningning@...109...>
-Date: Wed, 14 Mar 2018 16:40:08 -0700
-Message-Id: <20180314234008.15112-1-xiaoningning@...109...>
-Subject: [Openvpn-devel] [PATCH] Increase TLC Control Channel Buffer Size
+Date: Fri, 16 Mar 2018 09:40:59 -0700
+Message-Id: <20180316164059.9120-1-xiaoningning@...109...>
+Subject: [Openvpn-devel] [PATCH] Increase TLS Control Channel Buffer Size
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
