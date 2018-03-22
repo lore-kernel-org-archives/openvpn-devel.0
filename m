@@ -1,14 +1,12 @@
-Reply-To: openvpn-devel@lists.sourceforge.net
 References: <8a2c220c-e169-0cb1-c8b4-3c8af5fab82a@...515...>
  <c573880b-af3b-0876-d00f-70e7a06c69fa@...515...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <b2ad8955-512b-086b-1b5a-bcf0faa77db4@...2080...>
-Date: Wed, 21 Mar 2018 14:22:51 +0100
+From: Eric Thorpe <eric@...1918...>
+Message-ID: <003a7779-3f07-5335-4fd4-8f62aadf6134@...1918...>
+Date: Thu, 22 Mar 2018 14:25:56 +1100
 MIME-Version: 1.0
 In-Reply-To: <c573880b-af3b-0876-d00f-70e7a06c69fa@...515...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="vsUEd4ycLp5V7Fy8OdwB0YiubBZcnFUuM"
+Content-Type: multipart/mixed; boundary="------------FA2C64BD016E3F4F524B4418"
+Content-Language: en-US
 Subject: Re: [Openvpn-devel] Summary of the community meeting (Wed,
  21st Mar 2018)
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,161 +19,344 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---vsUEd4ycLp5V7Fy8OdwB0YiubBZcnFUuM
-Content-Type: multipart/mixed; boundary="RgedLC8cRrJ6p0U1NXxehtzFassjLfLkf";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <b2ad8955-512b-086b-1b5a-bcf0faa77db4@...2080...>
-Subject: Re: [Openvpn-devel] Summary of the community meeting (Wed, 21st Mar
- 2018)
-References: <8a2c220c-e169-0cb1-c8b4-3c8af5fab82a@...515...>
- <c573880b-af3b-0876-d00f-70e7a06c69fa@...515...>
-In-Reply-To: <c573880b-af3b-0876-d00f-70e7a06c69fa@...515...>
+This is a multi-part message in MIME format.
+--------------FA2C64BD016E3F4F524B4418
+Content-Type: multipart/alternative;
+ boundary="------------A5B6078E7494BB926BD6C86B"
 
---RgedLC8cRrJ6p0U1NXxehtzFassjLfLkf
-Content-Language: en-GB
-Content-Type: text/plain; charset="windows-1252"
+--------------A5B6078E7494BB926BD6C86B
+Content-Type: text/plain; charset="windows-1252"; format="flowed"
 Content-Transfer-Encoding: quoted-printable
 
-On 21/03/18 12:45, Samuli Sepp=E4nen wrote:
->=20
+Hi All,
+
+One of the Viscosity developers here. The TAP driver used by Viscosity=20
+is based on the OpenVPN TAP-Windows driver. We're surprised to hear of=20
+any performance differences, as the changes we've made are very minimal.
+
+Besides a name and version number change, the only other modification is=20
+a change to the reported network adapter speed, which has Windows report=20
+the driver as 1000 Mbit instead of 100 Mbit.
+
+This change was made not because of any actual performance gains, but=20
+because of user reports that certain firewall or AV software tries to=20
+QoS the adapter based on its reported adapter speed, which is of course=20
+a problem if the VPN connection is capable of more than 100 Mbit.
+
+Please find a patch file of the changes attached.
+
+Regards,
+Eric
+
+--
+Eric Thorpe
+SparkLabs Developer
+https://www.sparklabs.com
+https://twitter.com/sparklabs
+support@...1918...
+
+On 21/03/2018 10:45 PM, Samuli Sepp=E4nen wrote:
+> Hi,
+>
+> Here's the summary of the IRC meeting.
+> ---
+>
+> COMMUNITY MEETING
+>
+> Place: #openvpn-meeting on irc.freenode.net
+> Date: Wednesday 21st Mar 2018
+> Time: 11:30 CET (10:30 UTC)
+>
+> Planned meeting topics for this meeting were here:
+>
+> <https://community.openvpn.net/openvpn/wiki/Topics-2018-03-21>
+>
+> The next meeting has not been scheduled yet.
+>
+> Your local meeting time is easy to check from services such as
+>
+> <http://www.timeanddate.com/worldclock>
+>
+> SUMMARY
+>
+> cron2, dazo, janjust, mattock, ordex and syzzer participated in
+> this meeting.
+>
+> --
+>
+> Janjust initialized the meeting with virtual group hug.
+>
+> --
+>
+> Discussed the security issue in tap-windows6 reported to the security
+> mailing list. While the issue is not critical it needs to be fixed.
+> Mattock will produce an installer with the fix. Cron2 will compare
+> unfixed and fixed versions to verify that the problem is gone. Dazo will
+> get us a CVE for the problem. Once this is done we will release new
+> Windows installers for OpenVPN 2.4.5.
+>
+> --
+>
+> Discussed "multi-port/multi-ip listening support: config format". The
+> format agreed upon in the meeting was this:
+>
+>    local IP [port] [proto]
+>
+> Where IP can be an IPv4 address, and IPv6 address, or * which means
+> dual-stack IPv4/IPv6. Proto can be either udp or tcp; the udp6 and tcp6
+> variants are not needed as they can be deduced from the IP address.
+>
+> Note that on OpenBSD "local *" will bind to IPv6 addresses only. This is
+> because v4-mapped v6 sockets are not available on that platform.
+>
+> --
+>
+> Discussed Viscosity's patches to OpenVPN and their tap-windows adapter.
+> According to janjust Viscosity's tap-windows6 adapter performs
+> significantly better than our tap-windows6 adapter. Agreed that we
+> should first verify that they're using tap-windows6 and not something
+> they wrote themselves. If yes, we should check if their source code is
+> available. And if not, we should ask them to publish it according
+> GPLv2's requirements.
+>
+> Janjust will do more testing with Viscosity's driver and report the
+> results to mattock who will start bugging Viscosity as necessary.
+>
+> --
+>
+> Discussed the "netlink support: quick roadmap recap" topic. Previously
+> we have agreed on providing unit tests to check the output of netlink
+> with what is expected from using ip/route/ifconfig. Agreed that we
+> should have unit tests in place at merge time. Otherwise we fear the
+> unit tests will never arrive.
+>
+> Also agreed that we should try to provide testing Debian/Ubuntu package
+> for this. While that is doable right now, it requires manual work. It
+> would thus make more sense to automate the package creation process.
+>
+> --
+>
 > Dazo informed that OpenVPN 3 developers will start using openvpn-devel
 > for their patches. We will need to figure out how to make patchwork
 > detech whether a patch belongs to openvpn2 or openvpn3.
-
-Just to elaborate a bit more on this topic.  I will try to explain a bit mo=
-re
-in detail how OpenVPN Inc staffers will contribute to the development more
-openly and in a publicly, auditable approach.
-
-Current situation: OpenVPN Inc developers push changes to a private git
-repository for peer-review, and at random intervals these changes are pushed
-out to the public.  This is not considered a good long-term approach when
-wanting to have the community involved in the further development.  So we a=
-re
-adjusting our own processes to be far more community friendly.
-
-This is our current proposal:
-
-Patches submitted with the patch author carrying an @openvpn.net address wi=
-ll
-in most cases have been through internal peer-review before being accepted.
-These patches will thus have at minimum one "Approved-By:" tag line.  This =
-is
-similar to the Acked-by: tag-line used in OpenVPN 2 patches.  The reason
-"Approved-by:" is used is simply due to the internal tools used by OpenVPN =
-Inc
-for peer-review - which adds this automatically.  But seeing an "Approved-b=
-y:"
-line means the commit has been through peer-review by OpenVPN Inc developers
-and was ACKed.
-
-It is also preferred that OpenVPN Inc developers which have their patches
-reviewed internally to make patches available in a publicly available git
-repository (like GitHub, GitLab, Bitbucket, etc) - at any time.  This enabl=
-es
-the use of a git feature we've not used before for OpenVPN - git request-pu=
-ll.
- This combined with git format-patch with the --cover-letter option will
-generate a e-mail template where it is possible to validate the authenticity
-of the patches on the ML against an external git repository.
-
-Patches sent through the git request-pull approach can then be merged direc=
-tly
-into the official openvpn3 git repository.  We also try to ensure that as m=
-any
- commits as possible added to the openvpn3 git repository are PGP signed.  =
-But
-we have to find a good way to tackle this as automated as possible.
-
-The community may, of course, dispute commits post-merge, where after a
-discussion with the OpenVPN Inc developers will figure out if this needs to=
- be
-reverted or if it can be improved by adding another patch fixing issues.  B=
-ut
-we are open and happy to take those discussions whenever needed.
-
-
-The rest of the OpenVPN community may also use the 'git request-pull'
-approach, or take the approach used for OpenVPN 2.x patches over many years.
-But all patches from the community [1] need to receive a public "Acked-by:"
-response, sent explicitly to the mailing list.  We do not restrict the
-Acked-by to be by OpenVPN Inc developers only; we use the same approach as
-with OpenVPN 2 patches - contributors who have built up credibility among t=
-he
-core developers over time will have their Acked-by responses handled easier
-and quicker.  But any Acked-by: responses are valuable.
-
-
-And even though a lot of the process is pretty much laid out - nothing is s=
-et
-in stone yet.  But we (OpenVPN Inc) needed to find an approach which works
-well for us and at the same time encourage the community to participate in =
-the
-development.  We do a lot of work on the OpenVPN 3 code base but also want
-this development to happen in the open and public space as well.  But as we
-gain experience, we will adopt this process to what works best for both the
-community and OpenVPN Inc.  The main goal is to make OpenVPN 3 as attractive
-for contribution as what we have managed with OpenVPN 2.
-
-But see this mail as an early heads-up.  OpenVPN Inc is still adjusting the
-internal tooling and processes.  But we expect to be ready internally in not
-too long (a few weeks, not months - unless we hit some nasty challenges).  =
-And
-if there are ideas how to make things better, please let us know asap!
-
-All this said ... In todays community meeting concerns about Patchwork was
-raised.  We will need to ensure that OpenVPN 3 related patches won't affect
-and make a big mess of the OpenVPN 2.x development and the Patchwork
-integration used there.  And we (OpenVPN Inc) would like to make Patchwork
-work well with OpenVPN 3 patches as well.  So this is something needed to be
-handled properly before we start for real.  But we will do a few tests and =
-see
-what happens.
-
-
-[1] With "the community" it is meant: Patch from a sender _not_ carrying an
-    @openvpn.net address with at least one "Approved-by: " tag-line with an
-    @openvpn.net address.  Both addresses needs to be well known OpenVPN Inc
-    employees.
+>
+> ---
+>
+> Full chatlog attached.
+>
+>
+>
+> -------------------------------------------------------------------------=
+-----
+> Check out the vibrant tech community on one of the world's most
+> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
+>
+>
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
 
 
---=20
-kind regards,
+--------------A5B6078E7494BB926BD6C86B
+Content-Type: text/html; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-David Sommerseth
-OpenVPN Inc
+<html>
+  <head>
 
+    <meta http-equiv=3D"content-type" content=3D"text/html; charset=3Dwindo=
+ws-1252">
+  </head>
+  <body text=3D"#000000" bgcolor=3D"#FFFFFF">
+    <p>Hi All,<br>
+      <br>
+      One of the Viscosity developers here. The TAP driver used by
+      Viscosity is based on the OpenVPN TAP-Windows driver. We're
+      surprised to hear of any performance differences, as the changes
+      we've made are very minimal.<br>
+      <br>
+      Besides a name and version number change, the only other
+      modification is a change to the reported network adapter speed,
+      which has Windows report the driver as 1000 Mbit instead of 100
+      Mbit.<br>
+      <br>
+      This change was made not because of any actual performance gains,
+      but because of user reports that certain firewall or AV software
+      tries to QoS the adapter based on its reported adapter speed,
+      which is of course a problem if the VPN connection is capable of
+      more than 100 Mbit.<br>
+      <br>
+      Please find a patch file of the changes attached.<br>
+    </p>
+    <p>Regards,<br>
+      Eric<br>
+    </p>
+    <pre class=3D"moz-signature" cols=3D"72">--
+Eric Thorpe
+SparkLabs Developer
+<a class=3D"moz-txt-link-freetext" href=3D"https://www.sparklabs.com">https=
+://www.sparklabs.com</a>
+<a class=3D"moz-txt-link-freetext" href=3D"https://twitter.com/sparklabs">h=
+ttps://twitter.com/sparklabs</a>
+<a class=3D"moz-txt-link-abbreviated" href=3D"mailto:support@...1918...">su=
+pport@...1918...</a></pre>
+    <div class=3D"moz-cite-prefix">On 21/03/2018 10:45 PM, Samuli Sepp=E4nen
+      wrote:<br>
+    </div>
+    <blockquote type=3D"cite"
+      cite=3D"mid:c573880b-af3b-0876-d00f-70e7a06c69fa@...515..."
+      id=3D"mid_c573880b_af3b_0876_d00f_70e7a06c69fa_openvpn_net" class=3D"
+      cite">
+      <pre wrap=3D"">Hi,
 
+Here's the summary of the IRC meeting.
+---
 
---RgedLC8cRrJ6p0U1NXxehtzFassjLfLkf--
+COMMUNITY MEETING
 
---vsUEd4ycLp5V7Fy8OdwB0YiubBZcnFUuM
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Place: #openvpn-meeting on irc.freenode.net
+Date: Wednesday 21st Mar 2018
+Time: 11:30 CET (10:30 UTC)
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+Planned meeting topics for this meeting were here:
 
-iQIcBAEBCgAGBQJaslywAAoJEIbPlEyWcf3ypOYQALB0gcuM0tp4bhLBMVbpsjR5
-05+H6BM2aYBihNpsHZobgRCciHWonFDjnUQMGyZn1ZL5WeeoRqumfksvmK4QbLJS
-FcuggECS0dmKhnShVDaQ8VxB74YIMBQuTV58saWVY6HHjVWwkh7oRxIg2eSh2iuX
-N2C9ZMzqQ3FwYelfiW5BtLvydYLmaZFvsCNfsppOrbKIhD4V4AlQo/npp5SAY6BZ
-X9m66VLe6K5m8e7WI/AmTTr66P9jRw2YIEiG/Q/dyZ3JUMuAoz8m45rFzmNM6xmv
-0EMD4fEEdNGvl5Cswrv+g1X3TGgpDP3NRHgbn1uo41u9o1HaXEPqbIesWoYB9AIt
-xPfY8e0mZgPopkjD2lb/GCHCieUtkBKX1p8Zw50tlFios1xKwVuYV++xWppnlcwb
-StmY2PQOgRMO+6GzpLQFOlorffGxXAGqx7WUJBLM9qlOeSXjyBvXc1M3LhZBkFrz
-IYLUz3WqPzhPRDEv+PFlAa569T2/3xcvHUjkitp0Pc+4PhMsW61ihn3fPU8tKUBo
-6WN6jstYejByBww0BNIZehc8wPChBisrX7ZrvGEzBg1OwCACD4Y/4iXm1/TXqqqv
-rFOwF1vpQ3oCuwA7K9/FPnzbCUJeGSfI+El1tGiBKnKrsbW3nfkrv2JPpVRkrhXb
-w6wun6v3DI+mpBDGYdJy
-=+t7N
------END PGP SIGNATURE-----
+<a class=3D"moz-txt-link-rfc2396E" href=3D"https://community.openvpn.net/op=
+envpn/wiki/Topics-2018-03-21">&lt;https://community.openvpn.net/openvpn/wik=
+i/Topics-2018-03-21&gt;</a>
 
---vsUEd4ycLp5V7Fy8OdwB0YiubBZcnFUuM--
+The next meeting has not been scheduled yet.
+
+Your local meeting time is easy to check from services such as
+
+<a class=3D"moz-txt-link-rfc2396E" href=3D"http://www.timeanddate.com/world=
+clock">&lt;http://www.timeanddate.com/worldclock&gt;</a>
+
+SUMMARY
+
+cron2, dazo, janjust, mattock, ordex and syzzer participated in
+this meeting.
+
+--
+
+Janjust initialized the meeting with virtual group hug.
+
+--
+
+Discussed the security issue in tap-windows6 reported to the security
+mailing list. While the issue is not critical it needs to be fixed.
+Mattock will produce an installer with the fix. Cron2 will compare
+unfixed and fixed versions to verify that the problem is gone. Dazo will
+get us a CVE for the problem. Once this is done we will release new
+Windows installers for OpenVPN 2.4.5.
+
+--
+
+Discussed "multi-port/multi-ip listening support: config format". The
+format agreed upon in the meeting was this:
+
+  local IP [port] [proto]
+
+Where IP can be an IPv4 address, and IPv6 address, or * which means
+dual-stack IPv4/IPv6. Proto can be either udp or tcp; the udp6 and tcp6
+variants are not needed as they can be deduced from the IP address.
+
+Note that on OpenBSD "local *" will bind to IPv6 addresses only. This is
+because v4-mapped v6 sockets are not available on that platform.
+
+--
+
+Discussed Viscosity's patches to OpenVPN and their tap-windows adapter.
+According to janjust Viscosity's tap-windows6 adapter performs
+significantly better than our tap-windows6 adapter. Agreed that we
+should first verify that they're using tap-windows6 and not something
+they wrote themselves. If yes, we should check if their source code is
+available. And if not, we should ask them to publish it according
+GPLv2's requirements.
+
+Janjust will do more testing with Viscosity's driver and report the
+results to mattock who will start bugging Viscosity as necessary.
+
+--
+
+Discussed the "netlink support: quick roadmap recap" topic. Previously
+we have agreed on providing unit tests to check the output of netlink
+with what is expected from using ip/route/ifconfig. Agreed that we
+should have unit tests in place at merge time. Otherwise we fear the
+unit tests will never arrive.
+
+Also agreed that we should try to provide testing Debian/Ubuntu package
+for this. While that is doable right now, it requires manual work. It
+would thus make more sense to automate the package creation process.
+
+--
+
+Dazo informed that OpenVPN 3 developers will start using openvpn-devel
+for their patches. We will need to figure out how to make patchwork
+detech whether a patch belongs to openvpn2 or openvpn3.
+
+---
+
+Full chatlog attached.
+
+</pre>
+      <br>
+      <fieldset class=3D"mimeAttachmentHeader"></fieldset>
+      <br>
+      <pre wrap=3D"">------------------------------------------------------=
+------------------------
+Check out the vibrant tech community on one of the world's most
+engaging tech sites, Slashdot.org! <a class=3D"moz-txt-link-freetext" href=
+=3D"http://sdm.link/slashdot">http://sdm.link/slashdot</a></pre>
+      <br>
+      <fieldset class=3D"mimeAttachmentHeader"></fieldset>
+      <br>
+      <pre wrap=3D"">_______________________________________________
+Openvpn-devel mailing list
+<a class=3D"moz-txt-link-abbreviated" href=3D"mailto:Openvpn-devel@lists.so=
+urceforge.net">Openvpn-devel@lists.sourceforge.net</a>
+<a class=3D"moz-txt-link-freetext" href=3D"https://lists.sourceforge.net/li=
+sts/listinfo/openvpn-devel">https://lists.sourceforge.net/lists/listinfo/op=
+envpn-devel</a>
+</pre>
+    </blockquote>
+    <br>
+    <br>
+  </body>
+</html>
+
+--------------A5B6078E7494BB926BD6C86B--
+
+--------------FA2C64BD016E3F4F524B4418
+Content-Type: text/plain; charset=UTF-8;
+ name="tap_constants.h.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="tap_constants.h.patch"
+
+--- constants.h	Thu Mar 22 12:30:50 2018
++++ constants.h	Mon Oct 26 14:25:14 2015
+@@ -38,7 +38,7 @@
+ #ifndef TAP_DRIVER_MAJOR_VERSION
+ 
+ #define TAP_DRIVER_MAJOR_VERSION           0x04
+-#define TAP_DRIVER_MINOR_VERSION           0x02
++#define TAP_DRIVER_MINOR_VERSION           0x03
+ 
+ #endif
+ 
+@@ -102,8 +102,8 @@
+ // If you have physical hardware on 802.3, use NdisPhysicalMedium802_3.
+ #define TAP_PHYSICAL_MEDIUM         NdisPhysicalMediumUnspecified
+ 
+-// Claim to be 100mbps duplex
+-#define MEGABITS_PER_SECOND                1000000ULL
++// Claim to be 100mbps duplex - VISC update to 1gbit
++#define MEGABITS_PER_SECOND                10000000ULL
+ #define TAP_XMIT_SPEED                     (100ULL*MEGABITS_PER_SECOND)
+ #define TAP_RECV_SPEED                     (100ULL*MEGABITS_PER_SECOND)
+ 
+
+--------------FA2C64BD016E3F4F524B4418--
 
