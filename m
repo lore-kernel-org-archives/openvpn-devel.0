@@ -1,10 +1,10 @@
-Date: Sat, 24 Mar 2018 17:45:51 +0100 (CET)
-Message-Id: <201803241645.w2OGjppj054556@...2054...>
+Date: Sat, 24 Mar 2018 19:26:47 +0100 (CET)
+Message-Id: <201803241826.w2OIQlVE055033@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1520316568-8983-1-git-send-email-selva.nair@...277...>
-References: <1520316568-8983-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Avoid overflow in wakeup time
- computation
+In-Reply-To: <20171111161122.30087-1-gert@...2298...>
+References: <20171111161122.30087-1-gert@...2298...>
+Subject: [Openvpn-devel] [PATCH applied] Re: manpage: improve description of
+ --status and --status-version
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +15,26 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
+To: Gert van Dijk <gert@...2298...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.4 branch (bugfix).
+Acked-by: Gert Doering <gert@...1296...>
 
-Tested by running with the config from #922, which leads to
+Documentation is always welcome, and the new text is an improvement.
 
-./../../openvpn/src/openvpn/interval.c:54:37: runtime error: signed integer overflow: 1521909676 + 1000000000 cannot be represented in type 'int'
+Your patch has been applied to the master and release/2.4 branch.
 
-without the patch, and no error with it (Linux/amd64).
+commit 308c9d7f001a97daebcccf503f255947c0e09183 (master)
+commit 5213573f7d6ba41639edc362801efe076906a7e4 (release/2.4)
+Author: Gert van Dijk
+Date:   Sat Nov 11 17:11:21 2017 +0100
 
-commit f158c0e1df13ae1b697cdc7f189ddd1575a0c1aa (master)
-commit 6d16c87de38610b05ec768af28a76a9389791134 (release/2.4)
-Author: Selva Nair
-Date:   Tue Mar 6 01:09:28 2018 -0500
+     manpage: improve description of --status and --status-version
 
-     Avoid overflow in wakeup time computation
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1520316568-8983-1-git-send-email-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16634.html
+     Signed-off-by: Gert van Dijk <gert@...2298...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20171111161122.30087-1-gert@...2298...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15818.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
