@@ -1,15 +1,17 @@
-Date: Mon, 26 Mar 2018 16:36:44 +0000 (UTC)
-From: Ning Wei <xiaoningning@...109...>
-Message-ID: <2645433.792870.1522082204205@...2084...>
-In-Reply-To: <CAKuzo_jpgG8V-Y5ikxW1uwGNvoQoTJeCca=Wosg9UC_dPGJj6Q@...278...>
-References: <20180316164059.9120-1-xiaoningning@...109...>
- <CAKuzo_h9=+BeTmg5t=H9nUQbqqi8r4DFd7oPrSBOSArQepj3_w@...278...>
- <1783935013.3421880.1521493221569@...2084...>
- <CAKuzo_jpgG8V-Y5ikxW1uwGNvoQoTJeCca=Wosg9UC_dPGJj6Q@...278...>
+References: <8a2c220c-e169-0cb1-c8b4-3c8af5fab82a@...515...>
+ <c573880b-af3b-0876-d00f-70e7a06c69fa@...515...>
+ <003a7779-3f07-5335-4fd4-8f62aadf6134@...1918...>
+ <9678ca1e-2ef6-22ff-7992-c579902fe15a@...1147...>
+ <CAKuzo_gx7Y28dtT+85HtSkKMh_UMU_+ZmbPV7-CLtLSrRP6mag@...278...>
+ <7c8cb31e-13be-d4d2-7833-5503d1b385c8@...1147...>
+From: fragmentux <fragmentux@...277...>
+Message-ID: <02c60a84-e208-d4a4-491f-d18a2dab2934@...277...>
+Date: Mon, 26 Mar 2018 22:21:47 +0100
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
- boundary="----=_Part_792869_301385780.1522082204203"
-Subject: Re: [Openvpn-devel] [PATCH] Increase TLS Control Channel Buffer Size
+In-Reply-To: <7c8cb31e-13be-d4d2-7833-5503d1b385c8@...1147...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] Summary of the community meeting (Wed,
+ 21st Mar 2018)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,251 +20,239 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-------=_Part_792869_301385780.1522082204203
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
- Both of key_method_2_write and key_method_2_read take TLS_Channel_Bug_Size=
- as buffer size.=C2=A0 The current size, 2048 is not enough to read/write a=
- long password response.=C2=A0 I have notice the management interface has a=
- much smaller than 2048 buffer size to read/write.=C2=A0 Currently, if the =
-management interface is not used, increasing tls channel buffer size will s=
-erve the need.
-As token provider, the size of token can be bigger or smaller.=C2=A0 Someti=
-me, it has more than 1600 as a token.=C2=A0 To accommodate that, a bigger b=
-uffer size will be needed.
-ThanksNing
-    On Monday, March 19, 2018, 10:11:25 PM PDT, Selva Nair <selva.nair@...1665...=
-77...> wrote:=20=20
-=20
- Hi,
 
-On Mon, Mar 19, 2018 at 5:00 PM, Ning Wei <xiaoningning@...109...> wrote:
-> Sorry, I did not state the intent clearly in the request.
->
-> We wanted to use password field to pass authentication string, such as To=
-ken
-> string,
-> which can be long, the user auth plug in on the sever side can validate t=
-he
-> token as
-> the part authentication step.
->
-> Acquiring a token, such as JWT, usually involves user interaction with the
-> token broker
-> service provider.=C2=A0 So it is better to do this on the client side.
+On 22/03/18 19:33, Jan Just Keijser wrote:
+> Hi Selva,
+> 
+> On 22/03/18 18:12, Selva Nair wrote:
+>> On Thu, Mar 22, 2018 at 12:16 PM, Jan Just Keijser <janjust@...1147...> 
+>> wrote:
+>>> Hi Eric, all,
+>>>
+>>> On 22/03/18 04:25, Eric Thorpe wrote:
+>>>
+>>> Hi All,
+>>>
+>>> One of the Viscosity developers here. The TAP driver used by 
+>>> Viscosity is
+>>> based on the OpenVPN TAP-Windows driver. We're surprised to hear of any
+>>> performance differences, as the changes we've made are very minimal.
+>>>
+>>> Besides a name and version number change, the only other modification 
+>>> is a
+>>> change to the reported network adapter speed, which has Windows 
+>>> report the
+>>> driver as 1000 Mbit instead of 100 Mbit.
+>>>
+>>> This change was made not because of any actual performance gains, but
+>>> because of user reports that certain firewall or AV software tries to 
+>>> QoS
+>>> the adapter based on its reported adapter speed, which is of course a
+>>> problem if the VPN connection is capable of more than 100 Mbit.
+>>>
+>>> Please find a patch file of the changes attached.
+>>>
+>>>
+>>> first of all, thanks for responding so quickly.
+>>> I've done some further testing with Viscosity 1.6.8 (openvpn 2.3.14 
+>>> based)
+>>> compared to OpenVPN 2.4.5 and I am seeing a performance difference in a
+>>> gigabit test setup.  Strangely enough, it turns out that it's the 
+>>> *absence
+>>> of* AES256-GCM that makes my Viscosity client faster.
+>>> My test setup is as follows:
+>>>
+>>> - server: CentOS 7, openvpn 2.4.4, gigabit ethernet
+>>> - client: Win7 Pro, gigabit ethernet:
+>>>
+>>> Speeds (using "iperf -s" and "iperf -c 10.200.0.1 -r -l 4M -t 30"):
+>>>
+>>> viscosity:
+>>> 380 Mbps +/- 10 Mbps to server
+>>> 100 Mbps +/- 5 Mpbs from server
+>>>
+>>> Openvpn 2.4.5  --ncp-disable --cipher aes-256-cbc --auth sha256
+>>> 377 Mbps +/- 10 Mbps to server
+>>>    99 Mbps +/- 5 Mpbs from server
+>>>
+>>> Openvpn 2.4.5 (aes256-gcm)
+>>>   240 Mbps +/- 8 Mbps to server
+>>>    55 Mbps +/- 5 Mpbs from server
+>>>
+>>> So strangely enough it seems that AES-256-GCM is **slower** for Windows
+>>> clients. Note that in this setup the server config never changed.
+>> I haven't tested openvpn itself but have noticed in openssl speed
+>> tests that AES-256-CBC is significantly faster than AES-256-GCM on
+>> Windows (opposite to Linux). That was with openssl 1.0.x, probably
+>> 1.1.0 is similar (2.4.5 Windows release is built with 1.1.0).
+>>
+>> However, the raw cipher speeds are much larger than these throughputs
+>> so its surprising that the change of cipher alone makes such a
+>> difference.
+>>
+>> Why is the throughput so asymmetric?
+>>
+>>
+> thanks for the confirmation; as for the assymmetry: that can be due to 
+> many factors, including hardware differences (there is asymmetry on 
+> Linux as well). It could also be due to the way the tap driver works, 
+> but I have never been able to get my finger on that , and I don't use 
+> Windows often enough to bother.
+> 
 
-Its hard for me to imagine what authentication would need to pass more
-than ~1600 bytes=C2=A0 (that's about the current limit based on the 2048
-byte buffer).
-Unless you are trying to fit in data unrelated to auth in the token. The U2F
-registration case I mentioned earlier would be such an example.
 
-How large is the data you need to transfer? If its not purely
-authentication data
-(i.e., a challenge string + signature at most), sending it as password is n=
-ot
-the right approach. If there is extra text included for convenience,
-pre-compressing
-may help.
+Thought I would have a look at this and I do not find this asymmetry ..
 
-How do you plan to pass the "password" to openvpn client -- from stdin? The
-management i/f will not let you pass such a long password or username.
 
->
-> I agreed on the following statement.=C2=A0 To support a long password fie=
-ld in
-> TLS channels,
-> the Buf size of 4096 is not enough in key_method_2_write.=C2=A0 Should we=
- propose
-> to
-> increase the buffer size further?
+vpn & iperf server = Linux debian 8
+iperf version 2.0.5 (08 Jul 2010) pthreads
 
-Increasing to 4096 looks marginally useful to me and will fit a reasonably =
-sized
-user name (say < 128 bytes) and a largish challenge-response (upto ~3400 by=
-tes)
-leaving space for other things. Beyond that is unlikely to be necessary.
+Mon Mar 26 12:39:03 2018 us=287116 OpenVPN 2.5_git+ipv6pf 
+[git:master/1111902c1f1c71ac+] x86_64-unknown-linux-gnu [SSL (OpenSSL)] 
+[LZO] [LZ4] [EPOLL] [MH/PKTINFO] [AEAD] built on Jan  1 2018
+Mon Mar 26 12:39:03 2018 us=287135 library versions: OpenSSL 1.0.1t  3 
+May 2016, LZO 2.08
 
-I mentioned the overhead in key_method_2_write only because your logic
-behind this increase didn't make sense to me.
 
->
-> "Further, even a TLS_CHANNEL_BUF_SIZE of 4096 does not support a
-> password that long as there are other things like username, key-source,
-> local-options that have to fit into the buffer (see key_method_2_write). =
-So
-> what's the logic behind 4096?"
->
-> Regards,
-> Ning
-> On Friday, March 16, 2018, 10:30:45 AM PDT, Selva Nair
-> <selva.nair@...277...> wrote:
->
->
-> Hi,
->
-> Apologies in advance if I'm misreading the intent of this patch.
->
-> On Fri, Mar 16, 2018 at 12:40 PM, Ning Wei via Openvpn-devel
-> <openvpn-devel@lists.sourceforge.net> wrote:
->> Increase TLS_CHANNEL_BUF_SIZE to 4096. When the build is enabled with
->> ENABLE_PKCS11, the password field can be 4096.=C2=A0 The old size of
->> TLS_CHANNEL_BUF_SIZE was 2048, which is not enough.
->
-> I do not follow the logic behind this. Sure, ENABLE_PKCS11 increases the
-> password buffer size to 4096, but pkcs11 password is only consumed
-> locally, not sent out to the remote.
->
-> Now, even if a auth-user-pass password or challenge response gets as
-> large as 4096 bytes, there are other places in the code that
-> need "fixing" to permit such long "passwords" (or response) -- e.g., it
-> cannot
-> be submitted via the management as the parser expects a max line
-> length of 255 and word length of 255.
->
-> Further, even a TLS_CHANNEL_BUF_SIZE of 4096 does not support a
-> password that long as there are other things like username, key-source,
-> local-options that have to fit into the buffer (see key_method_2_write). =
-So
-> what's the logic behind 4096?
->
-> Finally, are there any particular challenge-response framework that requi=
-res
-> such long responses? Even for U2F, we wouldn't need to send a response
-> that large. U2F registration response could get very long (still mostly
-> under
-> 2000 bytes), but doing U2F key registration via the authentication channel
-> is
-> not a good implementation. Authentication responses are much smaller.
->
-> In short, it looks premature to increase this value before we start
-> supporting long responses via the management, and a real practical
-> need for long challenge response strings that won't fit in the current
-> 2048 bytes (minus overhead) arise.
->
-> Selva
+vpn & iperf client (1) = Windows 10
+iperf version 2.0.10 (11 Aug 2017) pthreads
 
-Selva
-=20=20=
+Mon Mar 26 21:25:46 2018 us=107859 OpenVPN 2.4.5 
+[git:2.4/161afbebdc2b7e24+] x86_64-w64-mingw32 [SSL (OpenSSL)] [LZO] 
+[LZ4] [PKCS11] [AEAD] built on Mar  1 2018
 
-------=_Part_792869_301385780.1522082204203
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Mon Mar 26 21:25:46 2018 us=107859 Windows version 6.2 (Windows 8 or 
+greater) 64bit
 
-<html><head></head><body><div style=3D"font-family:Helvetica Neue, Helvetic=
-a, Arial, sans-serif;font-size:13px;"><div></div>
-            <div>Both of key_method_2_write and key_method_2_read take TLS_=
-Channel_Bug_Size as buffer size.&nbsp; The current size, 2048 is not enough=
- to read/write a long password response.&nbsp; I have notice the management=
- interface has a much smaller than 2048 buffer size to read/write.&nbsp; Cu=
-rrently, if the management interface is not used, increasing tls channel bu=
-ffer size will serve the need.</div><div><br></div><div>As token provider, =
-the size of token can be bigger or smaller.&nbsp; Sometime, it has more tha=
-n 1600 as a token.&nbsp; To accommodate that, a bigger buffer size will be =
-needed.</div><div><br></div><div>Thanks</div><div>Ning</div><div><br></div>
-=20=20=20=20=20=20=20=20=20=20=20=20
-            <div id=3D"yahoo_quoted_2420554380" class=3D"yahoo_quoted">
-                <div style=3D"font-family:'Helvetica Neue', Helvetica, Aria=
-l, sans-serif;font-size:13px;color:#26282a;">
-=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20
-                    <div>
-                        On Monday, March 19, 2018, 10:11:25 PM PDT, Selva N=
-air &lt;selva.nair@...277...&gt; wrote:
-                    </div>
-                    <div><br></div>
-                    <div><br></div>
-                    <div><div dir=3D"ltr">Hi,<br clear=3D"none"><br clear=
-=3D"none">On Mon, Mar 19, 2018 at 5:00 PM, Ning Wei &lt;<a shape=3D"rect" y=
-mailto=3D"mailto:xiaoningning@...109..." href=3D"mailto:xiaoningning@...2386...=
-...">xiaoningning@...109...</a>&gt; wrote:<br clear=3D"none">&gt; Sorry, I =
-did not state the intent clearly in the request.<br clear=3D"none">&gt;<br =
-clear=3D"none">&gt; We wanted to use password field to pass authentication =
-string, such as Token<br clear=3D"none">&gt; string,<br clear=3D"none">&gt;=
- which can be long, the user auth plug in on the sever side can validate th=
-e<br clear=3D"none">&gt; token as<br clear=3D"none">&gt; the part authentic=
-ation step.<br clear=3D"none">&gt;<br clear=3D"none">&gt; Acquiring a token=
-, such as JWT, usually involves user interaction with the<br clear=3D"none"=
->&gt; token broker<br clear=3D"none">&gt; service provider.&nbsp; So it is =
-better to do this on the client side.<br clear=3D"none"><br clear=3D"none">=
-Its hard for me to imagine what authentication would need to pass more<br c=
-lear=3D"none">than ~1600 bytes&nbsp; (that's about the current limit based =
-on the 2048<br clear=3D"none">byte buffer).<br clear=3D"none">Unless you ar=
-e trying to fit in data unrelated to auth in the token. The U2F<br clear=3D=
-"none">registration case I mentioned earlier would be such an example.<br c=
-lear=3D"none"><br clear=3D"none">How large is the data you need to transfer=
-? If its not purely<br clear=3D"none">authentication data<br clear=3D"none"=
->(i.e., a challenge string + signature at most), sending it as password is =
-not<br clear=3D"none">the right approach. If there is extra text included f=
-or convenience,<br clear=3D"none">pre-compressing<br clear=3D"none">may hel=
-p.<br clear=3D"none"><br clear=3D"none">How do you plan to pass the "passwo=
-rd" to openvpn client -- from stdin? The<br clear=3D"none">management i/f w=
-ill not let you pass such a long password or username.<br clear=3D"none"><b=
-r clear=3D"none">&gt;<br clear=3D"none">&gt; I agreed on the following stat=
-ement.&nbsp; To support a long password field in<br clear=3D"none">&gt; TLS=
- channels,<br clear=3D"none">&gt; the Buf size of 4096 is not enough in key=
-_method_2_write.&nbsp; Should we propose<br clear=3D"none">&gt; to<br clear=
-=3D"none">&gt; increase the buffer size further?<br clear=3D"none"><br clea=
-r=3D"none">Increasing to 4096 looks marginally useful to me and will fit a =
-reasonably sized<br clear=3D"none">user name (say &lt; 128 bytes) and a lar=
-gish challenge-response (upto ~3400 bytes)<br clear=3D"none">leaving space =
-for other things. Beyond that is unlikely to be necessary.<br clear=3D"none=
-"><br clear=3D"none">I mentioned the overhead in key_method_2_write only be=
-cause your logic<br clear=3D"none">behind this increase didn't make sense t=
-o me.<div class=3D"yqt2558482608" id=3D"yqtfd33968"><br clear=3D"none"><br =
-clear=3D"none">&gt;<br clear=3D"none">&gt; "Further, even a TLS_CHANNEL_BUF=
-_SIZE of 4096 does not support a<br clear=3D"none">&gt; password that long =
-as there are other things like username, key-source,<br clear=3D"none">&gt;=
- local-options that have to fit into the buffer (see key_method_2_write). S=
-o<br clear=3D"none">&gt; what's the logic behind 4096?"<br clear=3D"none">&=
-gt;<br clear=3D"none">&gt; Regards,<br clear=3D"none">&gt; Ning<br clear=3D=
-"none">&gt; On Friday, March 16, 2018, 10:30:45 AM PDT, Selva Nair<br clear=
-=3D"none">&gt; &lt;<a shape=3D"rect" ymailto=3D"mailto:selva.nair@...277...=
-" href=3D"mailto:selva.nair@...277...">selva.nair@...277...</a>&gt; wrote:<=
-br clear=3D"none">&gt;<br clear=3D"none">&gt;<br clear=3D"none">&gt; Hi,<br=
- clear=3D"none">&gt;<br clear=3D"none">&gt; Apologies in advance if I'm mis=
-reading the intent of this patch.<br clear=3D"none">&gt;<br clear=3D"none">=
-&gt; On Fri, Mar 16, 2018 at 12:40 PM, Ning Wei via Openvpn-devel<br clear=
-=3D"none">&gt; &lt;<a shape=3D"rect" ymailto=3D"mailto:openvpn-devel@...1199...=
-sourceforge.net" href=3D"mailto:openvpn-devel@lists.sourceforge.net">openvp=
-n-devel@lists.sourceforge.net</a>&gt; wrote:<br clear=3D"none">&gt;&gt; Inc=
-rease TLS_CHANNEL_BUF_SIZE to 4096. When the build is enabled with<br clear=
-=3D"none">&gt;&gt; ENABLE_PKCS11, the password field can be 4096.&nbsp; The=
- old size of<br clear=3D"none">&gt;&gt; TLS_CHANNEL_BUF_SIZE was 2048, whic=
-h is not enough.<br clear=3D"none">&gt;<br clear=3D"none">&gt; I do not fol=
-low the logic behind this. Sure, ENABLE_PKCS11 increases the<br clear=3D"no=
-ne">&gt; password buffer size to 4096, but pkcs11 password is only consumed=
-<br clear=3D"none">&gt; locally, not sent out to the remote.<br clear=3D"no=
-ne">&gt;<br clear=3D"none">&gt; Now, even if a auth-user-pass password or c=
-hallenge response gets as<br clear=3D"none">&gt; large as 4096 bytes, there=
- are other places in the code that<br clear=3D"none">&gt; need "fixing" to =
-permit such long "passwords" (or response) -- e.g., it<br clear=3D"none">&g=
-t; cannot<br clear=3D"none">&gt; be submitted via the management as the par=
-ser expects a max line<br clear=3D"none">&gt; length of 255 and word length=
- of 255.<br clear=3D"none">&gt;<br clear=3D"none">&gt; Further, even a TLS_=
-CHANNEL_BUF_SIZE of 4096 does not support a<br clear=3D"none">&gt; password=
- that long as there are other things like username, key-source,<br clear=3D=
-"none">&gt; local-options that have to fit into the buffer (see key_method_=
-2_write). So<br clear=3D"none">&gt; what's the logic behind 4096?<br clear=
-=3D"none">&gt;<br clear=3D"none">&gt; Finally, are there any particular cha=
-llenge-response framework that requires<br clear=3D"none">&gt; such long re=
-sponses? Even for U2F, we wouldn't need to send a response<br clear=3D"none=
-">&gt; that large. U2F registration response could get very long (still mos=
-tly<br clear=3D"none">&gt; under<br clear=3D"none">&gt; 2000 bytes), but do=
-ing U2F key registration via the authentication channel<br clear=3D"none">&=
-gt; is<br clear=3D"none">&gt; not a good implementation. Authentication res=
-ponses are much smaller.<br clear=3D"none">&gt;<br clear=3D"none">&gt; In s=
-hort, it looks premature to increase this value before we start<br clear=3D=
-"none">&gt; supporting long responses via the management, and a real practi=
-cal<br clear=3D"none">&gt; need for long challenge response strings that wo=
-n't fit in the current<br clear=3D"none">&gt; 2048 bytes (minus overhead) a=
-rise.<br clear=3D"none">&gt;<br clear=3D"none">&gt; Selva<br clear=3D"none"=
-><br clear=3D"none">Selva<br clear=3D"none"></div></div></div>
-                </div>
-            </div></div></body></html>=
+Mon Mar 26 21:25:46 2018 us=107859 library versions: OpenSSL 1.1.0g  2 
+Nov 2017, LZO 2.10
 
-------=_Part_792869_301385780.1522082204203--
+
+vpn & iperf client (2) = Linux Arch
+iperf version 2.0.10 (11 Aug 2017) pthreads
+
+Mon Mar 26 21:36:17 2018 us=258243 OpenVPN 2.4.4 
+x86_64-unknown-linux-gnu [SSL (OpenSSL)] [LZO] [LZ4] [EPOLL] [PKCS11] 
+[MH/PKTINFO] [AEAD] built on Sep 26 2017
+Mon Mar 26 21:36:17 2018 us=258256 library versions: OpenSSL 1.1.0g  2 
+Nov 2017, LZO 2.10
+
+
+
+
+*** Output from server iperf:
+
+
+client: iperf -c 10.56.101.238 -r -l 4M -t 30
+
+* Linux server (vpn and iperf) -- AES-256-CBC **
+
+iperf -s
+------------------------------------------------------------
+Server listening on TCP port 5001
+TCP window size: 85.3 KByte (default)
+------------------------------------------------------------
+
+
+* Windows client (vpn and iperf)
+
+[  4] local 10.56.101.238 port 5001 connected with 10.56.101.110 port 51370
+[ ID] Interval       Transfer     Bandwidth
+[  4]  0.0-30.1 sec   480 MBytes   134 Mbits/sec
+------------------------------------------------------------
+Client connecting to 10.56.101.110, TCP port 5001
+TCP window size:  416 KByte (WARNING: requested  867 MByte)
+------------------------------------------------------------
+[  4] local 10.56.101.238 port 48867 connected with 10.56.101.110 port 5001
+[  4]  0.0-30.3 sec   568 MBytes   157 Mbits/sec
+
+
+iperf -s
+------------------------------------------------------------
+Server listening on TCP port 5001
+TCP window size: 85.3 KByte (default)
+------------------------------------------------------------
+
+
+* Linux client (vpn and iperf)
+
+[  4] local 10.56.101.238 port 5001 connected with 10.56.101.226 port 40284
+[ ID] Interval       Transfer     Bandwidth
+[  4]  0.0-30.2 sec   708 MBytes   197 Mbits/sec
+------------------------------------------------------------
+Client connecting to 10.56.101.226, TCP port 5001
+TCP window size:  416 KByte (WARNING: requested  867 MByte)
+------------------------------------------------------------
+[  4] local 10.56.101.238 port 36629 connected with 10.56.101.226 port 5001
+[  4]  0.0-30.3 sec   728 MBytes   201 Mbits/sec
+
+
+
+
+
+* Linux server (vpn and iperf) -- AES-256-GCM **
+
+iperf -s
+------------------------------------------------------------
+Server listening on TCP port 5001
+TCP window size: 85.3 KByte (default)
+------------------------------------------------------------
+
+
+* Windows client (vpn and iperf)
+
+[  4] local 10.56.101.238 port 5001 connected with 10.56.101.110 port 51345
+[ ID] Interval       Transfer     Bandwidth
+[  4]  0.0-30.2 sec   528 MBytes   147 Mbits/sec
+------------------------------------------------------------
+Client connecting to 10.56.101.110, TCP port 5001
+TCP window size:  416 KByte (WARNING: requested  867 MByte)
+------------------------------------------------------------
+[  4] local 10.56.101.238 port 48864 connected with 10.56.101.110 port 5001
+[  4]  0.0-30.5 sec   548 MBytes   151 Mbits/sec
+
+
+* Linux client (vpn and iperf)
+
+[  5] local 10.56.101.238 port 5001 connected with 10.56.101.226 port 40280
+[  5]  0.0-30.2 sec   812 MBytes   226 Mbits/sec
+------------------------------------------------------------
+Client connecting to 10.56.101.226, TCP port 5001
+TCP window size:  416 KByte (WARNING: requested  867 MByte)
+------------------------------------------------------------
+[  5] local 10.56.101.238 port 36626 connected with 10.56.101.226 port 5001
+[  5]  0.0-30.3 sec   844 MBytes   234 Mbits/sec
+
+
+
+For clarity, my network is a little unusual.
+
+The Windows vpn/iperf client is real hardware running Hyper-V
+The debian and Arch Linux are Hyper-V clients on the Win10 host above.
+
+eth0 IPs for these machines:
+Win10 : 10.10.201.110/24 (Gb ethernet net binding to Hyper-V Switch)
+Deb8  : 10.10.201.238/24 (Hyper-V Switch above)
+Arch  : 10.10.201.226/24 (Hyper-V Switch above)
+
+I don't know to what extent that will effect the results.
+
+Note for JJK, you asked if maybe you had done something wrong .. well ..
+
+When I first ran the tests I did find a huge asymmetry but I found the
+cause, in my case.  Initially the Win10 machine was in subnet 
+10.10.101.0/24 not .201.0/24 (that is a little quirk I had setup to test
+routing (and some other odds and ends), the router supports multiple IPs
+per interface, so i was tempted away from the true path but I restored
+all machines to the .201.0/24 subnet and found my asymmetry had gone.
+Aping your favourite sig. "HTH" somehow :-)
+
+
+Best regards
+fragmentux (aka tincantech)
 
