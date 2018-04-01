@@ -1,12 +1,16 @@
-Mime-Version: 1.0 (1.0)
-From: Marvin Adeff <volleynbike@...277...>
-In-Reply-To: <CAEsd45QQ-j=R9mWDuKkpvwgFMnFY4sSUdoZtYodKxxio8iR+6w@...278...>
-Date: Sun, 1 Apr 2018 11:19:57 -0700
-Message-Id: <BC0A595E-A0E3-4355-BAB3-37E9FA75DD37@...277...>
+Date: Sun, 1 Apr 2018 20:39:28 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180401183928.GH69387@...1296...>
 References: <20180401063058.23913-1-gert@...1296...>
  <CAKuzo_gRyd++KVmH=iGALbz0kjPiXLhK6DkAGA0Uu0mcV6RG8A@...278...>
  <20180401153422.GE69387@...1296...>
  <CAEsd45QQ-j=R9mWDuKkpvwgFMnFY4sSUdoZtYodKxxio8iR+6w@...278...>
+ <BC0A595E-A0E3-4355-BAB3-37E9FA75DD37@...277...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="wjVsQm+Lgir5jV8i"
+Content-Disposition: inline
+In-Reply-To: <BC0A595E-A0E3-4355-BAB3-37E9FA75DD37@...277...>
 Subject: Re: [Openvpn-devel] [PATCH] Depreciate IPv4-related options.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -16,55 +20,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Marvin Adeff <volleynbike@...277...>
+Cc: "Jonathan K. Bullard" <jkbullard@...277...>, Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--wjVsQm+Lgir5jV8i
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: "Jonathan K. Bullard" <jkbullard@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
-Think of us poor mail list lurkers. Practically gave this one a heart attac=
-k!  Not having seen that private reply, I hope that means I can discard the=
- long-ass (and quite irate) reply I was working on?
+Hi,
 
-Marvin
-(Sent from an ipv4 address)
+On Sun, Apr 01, 2018 at 11:19:57AM -0700, Marvin Adeff wrote:
+> Think of us poor mail list lurkers. Practically gave this one a heart att=
+ack!  Not having seen that private reply, I hope that means I can discard t=
+he long-ass (and quite irate) reply I was working on?
 
-> On Apr 1, 2018, at 8:52 AM, Jonathan K. Bullard <jkbullard@...277...> wro=
-te:
->=20
-> Hi,
->=20
->> On Sun, Apr 1, 2018 at 11:34 AM, Gert Doering <gert@...1296...> wrote:
->> Hi,
->>=20
->>> On Sun, Apr 01, 2018 at 10:19:37AM -0400, Selva Nair wrote:
->>>> On Sun, Apr 1, 2018 at 2:30 AM, Gert Doering <gert@...1296...> wrote:
->>>>=20
->>>> As discussed in trac #208 and on IRC with Antonio, OpenVPN 2.5 will
->>>> be IPv6-only.  Removal of IPv4-related code and options will dramatica=
-lly
->>>> reduce code complexity, confusing options, bugs and user questions.
->> [..]
->>>=20
->>> Nice try :)
->>=20
->> Hah, caught in the act ;-)
->>=20
->> (Apologies to Jonathan for scaring you about new user support issues...)
->=20
-> No apologies necessary! I fell for it completely and have no excuse. I
-> probably laughed as hard as anyone else when I read your private reply
-> that pointed out today's date.
->=20
-> Best regards,
->=20
-> Jon
->=20
-> -------------------------------------------------------------------------=
------
-> Check out the vibrant tech community on one of the world's most
-> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+Please share!
+
+> (Sent from an ipv4 address)
+
+Whatever journey OpenVPN takes, the Internet as a whole will need to=20
+either finish the move to IPv6, or give up and return to IPv4-only -
+running dual-stack is just too expensive in the long run.  Like, twice
+the amount of code needed for routing, address parsing, firewalling, ...
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--wjVsQm+Lgir5jV8i
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJawSdfAAoJEB2Cnv7KVigSKRcMALUQwDsqQJhv0LKa+q3vrsK/
+bPljl4dFmSlgpFac8/nDrIELasLfkRyYwPIPbh6vAdDwMTvpr2Uq3/xI5bbRv/yt
+nsoBWUD83C8nw7ZXQXkSXU376lYUgHSxeYigfLK/YSYYprqdPHnsdrLfUZZrbClG
+UcBxvfy2LH3UNHxSehmXCRMMZqmNrG1nkEKLDTGybIa+QtuSSLTrMCNMyOJPASAy
+uzbKr3+bvCNi28zTHxDzlP43b2rFGdDC4XF+SEc1pTGzSwgG1Z1B5SWqyDKfHVga
+Yb9bYDwDPF3mIItMPKWQZhwx8cMNgvCGTgWqE4ZDZl9dG4LcA1RiJIi1eD7jZ0mE
+L1GbFqTs57hICf+/PEXp9kImShsWbMpqIIPuuSeZV0isj/A53f+iOySIW1c4ktjm
++yDIzIR6AwLLfdAKKEsWqsPL8VzyZFRc6MoBtGnAClrQVnlthXpCKh0AFMEWv7cm
+q16Kmfir0388OCVQ2+ZVScVeTAcrKbOmZ1yK52t1eg==
+=6qP/
+-----END PGP SIGNATURE-----
+
+--wjVsQm+Lgir5jV8i--
 
