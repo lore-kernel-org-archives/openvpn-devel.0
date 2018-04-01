@@ -1,10 +1,8 @@
 From: Christian Hesse <list@...1798...>
-Date: Sun,  1 Apr 2018 21:13:09 +0200
-Message-Id: <20180401191309.32211-4-list@...1798...>
-In-Reply-To: <20180401191309.32211-1-list@...1798...>
-References: <20180401191309.32211-1-list@...1798...>
-Subject: [Openvpn-devel] [RFC 3/3] systemd: create configuration directories
- from tmpfiles
+Date: Sun,  1 Apr 2018 21:13:06 +0200
+Message-Id: <20180401191309.32211-1-list@...1798...>
+Subject: [Openvpn-devel] [RFC 0/3] follow-up netlink support,
+ systemd integration
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,26 +14,22 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: OpenVPN Development <openvpn-devel@lists.sourceforge.net>
-Cc: Christian Hesse <mail@...1798...>
 
-From: Christian Hesse <mail@...1798...>
+This series is a follow-up to 'add netlink support for Linux' by Antonio
+Quartulli. It enhances integration with systemd and improves system security
+by running the openvpn process with a dedicated user.
 
-We have a dedicated user created by systemd-sysusers, so create
-configuration directories from systemd-tmpfiles for proper permissions.
-This mitigates a race condition at packaging/install time.
+Christian Hesse (3):
+  systemd: run openvpn with dedicated user
+  systemd: do not downgrade UID/GID
+  systemd: create configuration directories from tmpfiles
 
-Signed-off-by: Christian Hesse <mail@...1798...>
----
- distro/systemd/tmpfiles-openvpn.conf | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/distro/systemd/tmpfiles-openvpn.conf b/distro/systemd/tmpfiles-openvpn.conf
-index 835dc1c8..0f96baa5 100644
---- a/distro/systemd/tmpfiles-openvpn.conf
-+++ b/distro/systemd/tmpfiles-openvpn.conf
-@@ -1,2 +1,4 @@
- d /run/openvpn-client 0750 openvpn openvpn -
- d /run/openvpn-server 0750 openvpn openvpn -
-+d /etc/openvpn/client 0750 openvpn openvpn -
-+d /etc/openvpn/server 0750 openvpn openvpn -
+ configure.ac                              | 8 ++++++++
+ distro/systemd/Makefile.am                | 4 ++++
+ distro/systemd/openvpn-client@...2221... | 4 +++-
+ distro/systemd/openvpn-server@...2221... | 4 +++-
+ distro/systemd/sysusers-openvpn.conf      | 1 +
+ distro/systemd/tmpfiles-openvpn.conf      | 6 ++++--
+ src/openvpn/init.c                        | 8 ++++++++
+ 7 files changed, 31 insertions(+), 4 deletions(-)
 
