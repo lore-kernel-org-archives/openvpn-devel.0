@@ -1,7 +1,9 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Sun,  1 Apr 2018 21:16:11 +0800
-Message-Id: <20180401131615.12567-1-a@...2181...>
-Subject: [Openvpn-devel] [RFC 0/4] add netlink support for Linux
+Date: Sun,  1 Apr 2018 21:16:12 +0800
+Message-Id: <20180401131615.12567-2-a@...2181...>
+In-Reply-To: <20180401131615.12567-1-a@...2181...>
+References: <20180401131615.12567-1-a@...2181...>
+Subject: [Openvpn-devel] [RFC 1/4] configure: add LINUX conditional variable
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,69 +17,36 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <a@...2181...>
 
-Hi all,
+This variable is helpful when the configure script
+has to take actions that are strictly limited to
+the LINUX platform, as required by the introduction
+of netlink support.
 
-this patchset introduces native netlink support for the Linux platform.
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+ configure.ac | 2 ++
+ 1 file changed, 2 insertions(+)
 
-At the moment openvpn operates on the tun interface and on the routing
-table by directly invoking the "ip" command (or ifconfig/route if
-nettools is selected at compile time).
-
-With this patchset, openvpn would not need to fork new processes to
-run the "ip" binary any longer, but would directly talk to the kernel
-by means of the netlink interface.
-This means simpler/cleaner code and, possibly, faster execution.
-
-Another important advantage of this change is that the openvpn
-process will be in charge of directly working with the kernel, thus
-it can be granted special capabilities so that interfaces/routes
-operations can be carried out even when running as non-root.
-
-Christian Hesse is working on a follow-up patch to properly allow the
-above.
-
-This patchset also offers a first step towards a refactoring
-of the tun.c and route.c code.
-
-
-The idea moving forward is to drop nettools support once this patchset
-is merged, but to retain support for ip and the --ifconfig/route-noexec
-options.
-
-
-Feedback of any type is of course welcome.
-
-
-This patch is posted as RFC because, as agreed during the last
-Hackathon, it will be considered for merging only when unit-tests
-will also be available. On to pof that, several aspects (like
-allowing iproute2 to be still used) have to be properly implemented.
-
-
-This code can also be found on GitHub (based on latest master) at:
-https://github.com/ordex/openvpn/tree/sitnl
-
-
-Regards,
-
-
-Antonio Quartulli (4):
-  configure: add LINUX conditional variable
-  introduce sitnl: Simplified Interface To NetLink
-  tun.c: use sitnl to handle tun configuration on Linux
-  route.c: use sitnl to handle route configuration on Linux
-
- configure.ac            |    2 +
- src/openvpn/Makefile.am |    3 +
- src/openvpn/errlevel.h  |    1 +
- src/openvpn/route.c     |  364 +++------------
- src/openvpn/sitnl.c     | 1195 +++++++++++++++++++++++++++++++++++++++++++++++
- src/openvpn/sitnl.h     |  217 +++++++++
- src/openvpn/tun.c       |  199 +++-----
- 7 files changed, 1547 insertions(+), 434 deletions(-)
- create mode 100644 src/openvpn/sitnl.c
- create mode 100644 src/openvpn/sitnl.h
-
+diff --git a/configure.ac b/configure.ac
+index 626b4dd4..f2e4aa47 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -298,6 +298,7 @@ case "$host" in
+ 	*-*-linux*)
+ 		AC_DEFINE([TARGET_LINUX], [1], [Are we running on Linux?])
+ 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["L"], [Target prefix])
++		LINUX=yes
+ 		;;
+ 	*-*-solaris*)
+ 		AC_DEFINE([TARGET_SOLARIS], [1], [Are we running on Solaris?])
+@@ -1367,6 +1368,7 @@ AC_SUBST([OPTIONAL_PKCS11_HELPER_LIBS])
+ AC_SUBST([PLUGIN_AUTH_PAM_CFLAGS])
+ AC_SUBST([PLUGIN_AUTH_PAM_LIBS])
+ 
++AM_CONDITIONAL([LINUX], [test "${LINUX}" = "yes"])
+ AM_CONDITIONAL([WIN32], [test "${WIN32}" = "yes"])
+ AM_CONDITIONAL([GIT_CHECKOUT], [test "${GIT_CHECKOUT}" = "yes"])
+ AM_CONDITIONAL([ENABLE_PLUGIN_AUTH_PAM], [test "${enable_plugin_auth_pam}" = "yes"])
 -- 
 2.16.3
 
