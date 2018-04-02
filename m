@@ -1,19 +1,10 @@
-Mime-Version: 1.0 (1.0)
-From: Marvin Adeff <volleynbike@...277...>
-In-Reply-To: <b8362b6f-99d4-c034-3d1f-977f6cdd919f@...2181...>
-Date: Sun, 1 Apr 2018 23:12:00 -0700
-Message-Id: <7D59BD63-7113-4310-B5AF-A09CB093AE8E@...277...>
-References: <20180401063058.23913-1-gert@...1296...>
- <CAKuzo_gRyd++KVmH=iGALbz0kjPiXLhK6DkAGA0Uu0mcV6RG8A@...278...>
- <20180401153422.GE69387@...1296...>
- <CAEsd45QQ-j=R9mWDuKkpvwgFMnFY4sSUdoZtYodKxxio8iR+6w@...278...>
- <BC0A595E-A0E3-4355-BAB3-37E9FA75DD37@...277...>
- <20180401183928.GH69387@...1296...>
- <9FAA40DB-C459-47AF-92B3-B02FD769886E@...277...>
- <20180401193456.GI69387@...1296...>
- <8EB0586C-A6D5-48D8-AC4A-35A0836F3197@...277...>
- <b8362b6f-99d4-c034-3d1f-977f6cdd919f@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] Depreciate IPv4-related options.
+From: Steffan Karger <steffan@...1856...>
+Date: Mon,  2 Apr 2018 13:44:36 +0200
+Message-Id: <20180402114436.13662-1-steffan@...1856...>
+In-Reply-To: <CAKuzo_hYvB2JjxZ3S8W4dB1+AOJqQW3VZJ2FgRXQJrDArkcFAQ@...278...>
+References: <CAKuzo_hYvB2JjxZ3S8W4dB1+AOJqQW3VZJ2FgRXQJrDArkcFAQ@...278...>
+Subject: [Openvpn-devel] [PATCH v3] Improve management-external-key/cert
+ error handling
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,51 +14,82 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Antonio,
-I certainly don=E2=80=99t disagree with you.=20
+Check the return values of management_query_cert() and
+tls_ctx_use_external_private_key(), and error out with a more descriptive
+error message.  To do so, we make the openssl-backed implementation of
+tls_ctx_use_external_private_key() not throw fatal error anymore.
 
-However I think I=E2=80=99ve taken up enough bandwidth over this topic on O=
-penvpn-devel. Thank you all.=20
+(And fix line wrapping while touching this code.)
 
-Marvin
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+v2: error out with M_FATAL as suggested by Selva.
+v3: rebase on master (without extra patches)
 
-> On Apr 1, 2018, at 7:20 PM, Antonio Quartulli <a@...2181...> wrote:
->=20
->> On 02/04/18 10:12, Marvin Adeff wrote:
->> Even on the internet I can tell country, ISP etc. Very useful for securi=
-ty ACLs etc. Unless I=E2=80=99m completely mistaken, I don=E2=80=99t believ=
-e this is easily done in ipv6.=20
->=20
-> mostly because at this very moment Tunnel Brokers are widely used and
-> they act as a "proxy", effectively covering the real location of the
-> client host.
->=20
-> Many websites just show you (client) as connecting from the country
-> where your Tunnel Broker is located.
->=20
-> When using native IPv6 this problem does not exists anymore.
->=20
-> Therefore, the proper way to get over this "limitation" (even though I
-> don't think is a real problem, but this is of course my perspective) is
-> to speed up the transition and move everybody over native IPv6 (which is
-> something we can't achieve if we continue to be "afraid" of using IPv6
-> in our everyday life).
->=20
-> Cheers,
->=20
-> --=20
-> Antonio Quartulli
->=20
-> -------------------------------------------------------------------------=
------
-> Check out the vibrant tech community on one of the world's most
-> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+ src/openvpn/ssl.c         | 28 ++++++++++++++++++++--------
+ src/openvpn/ssl_openssl.c |  2 +-
+ 2 files changed, 21 insertions(+), 9 deletions(-)
+
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 669f941b..b06820ba 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -660,18 +660,30 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx)
+     else if ((options->management_flags & MF_EXTERNAL_KEY)
+              && (options->cert_file || options->management_flags & MF_EXTERNAL_CERT))
+     {
+-        if (options->cert_file)
++        if (options->cert_file
++            && 0 != tls_ctx_use_external_private_key(new_ctx,
++                                                     options->cert_file,
++                                                     options->cert_file_inline))
+         {
+-            tls_ctx_use_external_private_key(new_ctx, options->cert_file,
+-                                             options->cert_file_inline);
++            msg(M_FATAL, "Failed to initialize management-external-key");
+         }
+         else
+         {
+-            char *external_certificate = management_query_cert(management,
+-                                                               options->management_certificate);
+-            tls_ctx_use_external_private_key(new_ctx, INLINE_FILE_TAG,
+-                                             external_certificate);
+-            free(external_certificate);
++            char *external_cert = management_query_cert(
++                            management, options->management_certificate);
++
++            if (!external_cert)
++            {
++                msg(M_FATAL, "Failed to initialize management-external-cert");
++            }
++
++            if (0 != tls_ctx_use_external_private_key(new_ctx, INLINE_FILE_TAG,
++                                                      external_cert))
++            {
++                msg(M_FATAL, "Failed to initialize management-external-key");
++            }
++
++            free(external_cert);
+         }
+     }
+ #endif
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 8ef68ebd..4d434fa2 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -1330,7 +1330,7 @@ tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
+     return 0;
+ 
+ err:
+-    crypto_msg(M_FATAL, "Cannot enable SSL external private key capability");
++    crypto_msg(M_WARN, "Cannot enable SSL external private key capability");
+     return 1;
+ }
+ 
+-- 
+2.14.1
+
 
