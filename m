@@ -1,13 +1,12 @@
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_hYvB2JjxZ3S8W4dB1+AOJqQW3VZJ2FgRXQJrDArkcFAQ@...278...>
-References: <CAKuzo_gvG3_Xz0qdHEyVOaEAB2CfSA3GNj7jYwHBkEb-kTMPLA@...278...>
- <20180308200848.5908-1-steffan@...1856...>
- <CAKuzo_hYvB2JjxZ3S8W4dB1+AOJqQW3VZJ2FgRXQJrDArkcFAQ@...278...>
+References: <1520817479-17203-1-git-send-email-selva.nair@...277...>
 From: Steffan Karger <steffan@...1856...>
-Date: Mon, 2 Apr 2018 13:50:26 +0200
-Message-ID: <CAA1AbxLDvujop2b_bXsdQ4G2UGQmsy_NgkNGopHG7fGER+TowA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Improve management-external-key/cert
- error handling
+Message-ID: <2a4823ad-f915-610e-d3e6-5fc04abea366@...1856...>
+Date: Mon, 2 Apr 2018 14:37:27 +0200
+MIME-Version: 1.0
+In-Reply-To: <1520817479-17203-1-git-send-email-selva.nair@...277...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Skip expired certificates in
+ Windows certificate store
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,37 +15,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On 9 March 2018 at 04:38, Selva Nair <selva.nair@...277...> wrote:
-> I wanted to give this a quick test, but it doesn't apply.
->
-> It seems you have patch 116 (Antonio's "inline-tag changed to bool"
-> patch) in your local repo.
+One comment based on stare-at-code only:
 
-Oops, you're right - this was based on top of my local working branch,
-which indeed includes Antonio's inline-tag cleanup patch. Just sent a
-version based on current public master.
+On 12-03-18 02:17, selva.nair@...277... wrote:
+> @@ -636,6 +640,8 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
+>              }
+>              if (!*++p)  /* unexpected end of string */
+>              {
+> +                msg(M_WARN, "WARNING: cryptoapicert: error parsing <%s>.", cert_prop);
+> +                return NULL;
+>                  break;
+>              }
 
-> By the way, the M_FATAL after management_query_cert() looks like a
-> regression. One problem with these FATAL exits is that it makes it
-> hard for the GUI to gracefully handle when user presses cancel on some
-> dialogs. Anyway that's beyond this patch... So just saying..
+The break after the return looks a bit strange, maybe remove it?
 
-Not really a regression, right?  Previously, management_query_cert()
-would return NULL, which would cause
-tls_ctx_use_external_private_key() to ASSERT out, because
-tls_ctx_load_cert_file_and_copy() would not be able to return a valid
-"cert" pointer.
+Also, this looks like a somewhat unrelated fix.  I would have personally
+preferred it in a separate patch (so we can e.g. backport it easily even
+if we decide not not backport the functional change).
 
-But you're definitely right that the error handling over the
-management interface could benefit greatly from some rework. (Beyond
-this patch, indeed.)
+Otherwise the code and functional changes look good to me.  I'll try to
+find some time to compile this and test it on windows later.
 
 -Steffan
 
