@@ -1,14 +1,12 @@
-References: <1520817479-17203-1-git-send-email-selva.nair@...277...>
- <2a4823ad-f915-610e-d3e6-5fc04abea366@...1856...>
- <CAKuzo_jkwr-9yweCb5jufTmdjo-Oz1odqE0QDR=GWZfDQc3-GQ@...278...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <18b889b2-6c9e-b8ad-d86f-f51441e5b731@...1856...>
-Date: Mon, 2 Apr 2018 18:04:03 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_jkwr-9yweCb5jufTmdjo-Oz1odqE0QDR=GWZfDQc3-GQ@...278...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH 1/2] Skip expired certificates in
- Windows certificate store
+In-Reply-To: <20180402114436.13662-1-steffan@...1856...>
+References: <CAKuzo_hYvB2JjxZ3S8W4dB1+AOJqQW3VZJ2FgRXQJrDArkcFAQ@...278...>
+ <20180402114436.13662-1-steffan@...1856...>
+From: Selva Nair <selva.nair@...277...>
+Date: Mon, 2 Apr 2018 22:53:07 -0400
+Message-ID: <CAKuzo_gOrByNN1AQ89hwR8ugc5coR58YnqdwqamKWEkGPdEQtg@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v3] Improve management-external-key/cert
+ error handling
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,28 +15,97 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Selva Nair <selva.nair@...277...>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On 02-04-18 16:58, Selva Nair wrote:
-> On Mon, Apr 2, 2018 at 8:37 AM, Steffan Karger <steffan@...1856...> wrote:
->> Also, this looks like a somewhat unrelated fix.  I would have personally
->> preferred it in a separate patch (so we can e.g. backport it easily even
->> if we decide not not backport the functional change).
-> 
-> The original did the search based on subject and hash separately,
-> which is now combined into a loop below this parsing chunk. So a
-> return, in place of break, is required here. The warning on parse error
-> is new (instead of silently returning NULL). But the end result of that
-> is still a FATAL error later in the code, as before.
-> 
-> I'm ok to leave out the warning from this patch, though..
+This one applies cleanly on top of master.
 
-Ah, ok.  If it's not independent, let's just keep it in this patch.
+On Mon, Apr 2, 2018 at 7:44 AM, Steffan Karger <steffan@...1856...> wrote:
+>
+> Check the return values of management_query_cert() and
+> tls_ctx_use_external_private_key(), and error out with a more descriptive
+> error message.  To do so, we make the openssl-backed implementation of
+> tls_ctx_use_external_private_key() not throw fatal error anymore.
+>
+> (And fix line wrapping while touching this code.)
+>
+> Signed-off-by: Steffan Karger <steffan@...1856...>
+> ---
+> v2: error out with M_FATAL as suggested by Selva.
+> v3: rebase on master (without extra patches)
+>
+>  src/openvpn/ssl.c         | 28 ++++++++++++++++++++--------
+>  src/openvpn/ssl_openssl.c |  2 +-
+>  2 files changed, 21 insertions(+), 9 deletions(-)
+>
+> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+> index 669f941b..b06820ba 100644
+> --- a/src/openvpn/ssl.c
+> +++ b/src/openvpn/ssl.c
+> @@ -660,18 +660,30 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx)
+>      else if ((options->management_flags & MF_EXTERNAL_KEY)
+>               && (options->cert_file || options->management_flags & MF_EXTERNAL_CERT))
+>      {
+> -        if (options->cert_file)
+> +        if (options->cert_file
+> +            && 0 != tls_ctx_use_external_private_key(new_ctx,
+> +                                                     options->cert_file,
+> +                                                     options->cert_file_inline))
+>          {
+> -            tls_ctx_use_external_private_key(new_ctx, options->cert_file,
+> -                                             options->cert_file_inline);
+> +            msg(M_FATAL, "Failed to initialize management-external-key");
+>          }
+>          else
 
--Steffan
+But I can't believe I missed this in the last round. This else clause
+will now get executed not only if options->cert_file is false, but
+also if its true and the call to tls_ctx_use_external_private_key()
+succeeds! That would be wrong and is not what we want.
+
+>
+>          {
+> -            char *external_certificate = management_query_cert(management,
+> -                                                               options->management_certificate);
+> -            tls_ctx_use_external_private_key(new_ctx, INLINE_FILE_TAG,
+> -                                             external_certificate);
+> -            free(external_certificate);
+> +            char *external_cert = management_query_cert(
+> +                            management, options->management_certificate);
+> +
+>
+> +            if (!external_cert)
+> +            {
+> +                msg(M_FATAL, "Failed to initialize management-external-cert");
+> +            }
+> +
+> +            if (0 != tls_ctx_use_external_private_key(new_ctx, INLINE_FILE_TAG,
+> +                                                      external_cert))
+> +            {
+> +                msg(M_FATAL, "Failed to initialize management-external-key");
+> +            }
+> +
+> +            free(external_cert);
+>          }
+>      }
+>  #endif
+> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+> index 8ef68ebd..4d434fa2 100644
+> --- a/src/openvpn/ssl_openssl.c
+> +++ b/src/openvpn/ssl_openssl.c
+> @@ -1330,7 +1330,7 @@ tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
+>      return 0;
+>
+>  err:
+> -    crypto_msg(M_FATAL, "Cannot enable SSL external private key capability");
+> +    crypto_msg(M_WARN, "Cannot enable SSL external private key capability");
+>      return 1;
+>  }
+
+
+Selva
 
