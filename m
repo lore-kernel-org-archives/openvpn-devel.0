@@ -1,9 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Wed,  4 Apr 2018 18:57:00 +0200
-Message-Id: <1522861020-21528-1-git-send-email-arne@...1227...>
+Date: Wed,  4 Apr 2018 18:53:11 +0200
+Message-Id: <1522860791-21425-1-git-send-email-arne@...1227...>
 In-Reply-To: <1520262951-1807-1-git-send-email-arne@...1227...>
 References: <1520262951-1807-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v4] Revert to original password
+Subject: [Openvpn-devel] [PATCH v3] Revert to original password
  authentication after failed auth-token
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -35,16 +35,13 @@ Patch V2: properly formatted commit message, fix openvpn3 detection
 Patch V3: remove all server changes, include only minimal non
 intrusive client changes that only improve error recovery but don't
 change overall behaviour.
-
-Patch V4: forget add push.c to git index, now also included
 ---
  doc/openvpn.8      |  8 +++++++-
  src/openvpn/misc.c | 16 ++++++++++------
  src/openvpn/misc.h |  3 +--
- src/openvpn/push.c | 16 ++++++++++++++--
  src/openvpn/ssl.c  | 36 ++++++++++++++++++++++--------------
  src/openvpn/ssl.h  |  2 ++
- 6 files changed, 56 insertions(+), 25 deletions(-)
+ 5 files changed, 42 insertions(+), 23 deletions(-)
 
 diff --git a/doc/openvpn.8 b/doc/openvpn.8
 index 6ced4e4b..dc210890 100644
@@ -123,42 +120,6 @@ index 5680c274..29a6b89a 100644
  
  /*
   * Process string received by untrusted peer before
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 6a30e479..43df91ba 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -55,8 +55,19 @@ receive_auth_failed(struct context *c, const struct buffer *buffer)
- 
-     if (c->options.pull)
-     {
--        switch (auth_retry_get())
-+        /* Before checking how to react on AUTH_FAILED, first check if the failed authed might be
-+         * the result of an expired auth-token.
-+         * Note that a server restart will trigger a generic AUTH_FAILED instead an AUTH_FAILED,SESSION so 
-+         * handle all AUTH_FAILED message identical for this scenario */
-+        if (ssl_clean_auth_token())
-         {
-+            c->sig->signal_received = SIGUSR1; /* SOFT-SIGUSR1 -- Auth failure error */
-+            c->sig->signal_text = "auth-failure (auth-token)";
-+        }
-+        else
-+        {
-+            switch (auth_retry_get())
-+            {
-             case AR_NONE:
-                 c->sig->signal_received = SIGTERM; /* SOFT-SIGTERM -- Auth failure error */
-                 break;
-@@ -70,8 +81,9 @@ receive_auth_failed(struct context *c, const struct buffer *buffer)
- 
-             default:
-                 ASSERT(0);
-+            }
-+            c->sig->signal_text = "auth-failure";
-         }
--        c->sig->signal_text = "auth-failure";
- #ifdef ENABLE_MANAGEMENT
-         if (management)
-         {
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
 index 669f941b..1c1ba305 100644
 --- a/src/openvpn/ssl.c
