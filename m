@@ -1,7 +1,13 @@
-From: Ilya Shipitsin <chipitsine@...277...>
-Date: Mon,  9 Apr 2018 14:10:38 +0500
-Message-Id: <20180409091038.12348-1-chipitsine@...277...>
-Subject: [Openvpn-devel] [PATCH] travis-ci: cleanup and upgrade ssl libraries
+Date: Wed, 11 Apr 2018 09:15:42 +0200
+From: Christian Hesse <list@...1798...>
+Message-ID: <20180411091542.39c8c01d@...1799...>
+In-Reply-To: <e3d48a12-7f25-1ec0-ad7a-52c1330f43c0@...2181...>
+References: <20180401131615.12567-1-a@...2181...>
+ <e3d48a12-7f25-1ec0-ad7a-52c1330f43c0@...2181...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ boundary="Sig_/qdaXkNbL9m.T/7DfWxbjEgc"; protocol="application/pgp-signature"
+Subject: Re: [Openvpn-devel] [RFC 0/4] add netlink support for Linux: update
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,70 +16,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net, David Sommerseth <davids@...515...>
 
-both "compiler" and "exclude" are redundant, so remove them
+--Sig_/qdaXkNbL9m.T/7DfWxbjEgc
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Ilya Shipitsin <chipitsine@...277...>
----
- .travis.yml | 13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
+Antonio Quartulli <a@...2181...> on Fri, 2018/04/06 15:43:
+> Two new files, namely networking_sitnl.c and networking_ip.c, provides
+> two implementations for this API: one uses the new sitnl code (netlink)
+> and one uses iproute2.
 
-diff --git a/.travis.yml b/.travis.yml
-index 51645924..1cbd96bc 100644
---- a/.travis.yml
-+++ b/.travis.yml
-@@ -5,9 +5,6 @@ os: linux
- 
- language: c
- 
--compiler:
--  - gcc
--
- env:
-   global:
-     - JOBS=3
-@@ -15,10 +12,10 @@ env:
-     - TAP_WINDOWS_VERSION=9.21.2
-     - LZO_VERSION=2.10
-     - PKCS11_HELPER_VERSION=1.22
--    - MBEDTLS_VERSION="2.5.1"
-+    - MBEDTLS_VERSION="2.8.0"
-     - MBEDTLS_CFLAGS="-I${PREFIX}/include"
-     - MBEDTLS_LIBS="-L${PREFIX}/lib -lmbedtls -lmbedx509 -lmbedcrypto"
--    - OPENSSL_VERSION="1.0.2l"
-+    - OPENSSL_VERSION="1.0.2o"
-     - OPENSSL_CFLAGS="-I${PREFIX}/include"
-     - OPENSSL_LIBS="-L${PREFIX}/lib -lssl -lcrypto"
-     # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
-@@ -30,13 +27,13 @@ matrix:
-     - env: SSLLIB="openssl" RUN_COVERITY="1"
-       os: linux
-       compiler: gcc
--    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.0f"
-+    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.0h"
-       os: linux
-       compiler: gcc
-     - env: SSLLIB="openssl" CFLAGS="-fsanitize=address"
-       os: linux
-       compiler: clang
--    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.0f"
-+    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.0h"
-       os: linux
-       compiler: clang
-     - env: SSLLIB="mbedtls"
-@@ -65,8 +62,6 @@ matrix:
-     - env: SSLLIB="openssl" EXTRA_CONFIG="--enable-small"
-       os: linux
-       compiler: clang
--  exclude:
--    - compiler: gcc
- 
- addons:
-   apt:
--- 
-2.14.3
+This complicates the situation for my followup code: Running the process wi=
+th
+unprivileged user works with netlink interface only. If we want to support
+netlink and iproute2 we end up with creating the files from templates (or
+carry static files in at least two versions).
 
+This kicks into the discussion we had about supporting newer systemd featur=
+es
+selectively... Shipping different static files for distributions and/or
+systemd versions duplicates the number of files.
+--=20
+main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
+"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
++];)
+putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
+
+--Sig_/qdaXkNbL9m.T/7DfWxbjEgc
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAlrNth4ACgkQiUUh18yA
+9HaSQQf/fVazc6SGZQxmZiqyTbVguRdp/SlKGHy2vTvnzG3uAE1/B18Ci8LPBNJs
+JWLXwYP65aehdOLMWjIzHmdPtPp2lGSY2ayPbWXTEvNiYPrzNa1CHXOa8ojI3am5
+UokFi0JVyctjHIHpA+61eOI/B+qz2THyy4ViJLCjfE4f4Ow0c59gnH2tsrKvhU1I
+LxcVAK7ojrGbRmEUBveczxW9Znamo1ce0mxzuwN54laGfCeUwjBMEA1r6Kn3TRSB
+40Vi934lr127/vYr/Om2ApAYJYiy/M9bmfXR9e9IlUqIQ38XhzRV8qSvDRA9Tqf2
+lJSXTy6fz0p42sCOzzLC257gSdAA7g==
+=um8y
+-----END PGP SIGNATURE-----
+
+--Sig_/qdaXkNbL9m.T/7DfWxbjEgc--
 
