@@ -1,9 +1,9 @@
 From: Simon Rozman <simon@...2293...>
-Date: Thu, 12 Apr 2018 20:48:45 +0200
-Message-Id: <20180412184845.1175-1-simon@...2293...>
-In-Reply-To: <CAFHpkQGSx5hjLhGYgUyqYCKZJ9MMWL1sYT2cSd5y5wy+=j6iAw@...278...>
-References: <CAFHpkQGSx5hjLhGYgUyqYCKZJ9MMWL1sYT2cSd5y5wy+=j6iAw@...278...>
-Subject: [Openvpn-devel] [PATCH] Add Interactive Service developer
+Date: Thu, 12 Apr 2018 21:39:51 +0200
+Message-Id: <20180412193951.1447-1-simon@...2293...>
+In-Reply-To: <20180412184845.1175-1-simon@...2293...>
+References: <20180412184845.1175-1-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH v2] Add Interactive Service developer
  documentation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -22,10 +22,28 @@ https://community.openvpn.net/openvpn/wiki/OpenVPNInteractiveService was
 upgraded with a description of the client-service communication flow,
 service registry configuration, and non-default instance installation.
 ---
+ doc/Makefile.am                   |   2 +-
  doc/interactive-service-notes.txt | 316 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 316 insertions(+)
+ 2 files changed, 317 insertions(+), 1 deletion(-)
  create mode 100644 doc/interactive-service-notes.txt
 
+diff --git a/doc/Makefile.am b/doc/Makefile.am
+index cd1bcfdf..4e307c4b 100644
+--- a/doc/Makefile.am
++++ b/doc/Makefile.am
+@@ -17,6 +17,7 @@ CLEANFILES = openvpn.8.html
+ SUBDIRS = doxygen
+
+ dist_doc_DATA = \
++	interactive-service-notes.txt \
+ 	management-notes.txt
+
+ dist_noinst_DATA = \
+@@ -30,4 +31,3 @@ openvpn.8.html: $(srcdir)/openvpn.8
+ else
+ dist_man_MANS = openvpn.8
+ endif
+-
 diff --git a/doc/interactive-service-notes.txt b/doc/interactive-service-notes.txt
 new file mode 100644
 index 00000000..9b3b8f6c
@@ -353,24 +371,9 @@ index 00000000..9b3b8f6c
 
 Hi,
 
-I'm back. :)
-
-I took the short Interactive Service introduction found at
-https://community.openvpn.net/openvpn/wiki/OpenVPNInteractiveService and
-extended it with my experience while developing the eduVPN client.
-
-This document is not up to the RFC standards nor it intends to be.
-
-It's written using reStructuredText markup as suggested by Iliya, but keeping
-the filename and ".txt" extension as suggested by Samuli.
-
-I suggest replacing the
-https://community.openvpn.net/openvpn/wiki/OpenVPNInteractiveService wiki page
-with this document analogous to the Management Interface Notes document
-published online at
-https://openvpn.net/index.php/open-source/documentation/miscellaneous/79-management-interface.html.
-
-Your comments are welcome.
+I forgot to update the doc/Makefile.am in the original version of this patch.
+Perhaps this is not relevant anyway. So, feel free to discard the v2 version of
+this patch if the update to doc/Makefile.am is not required or desired.
 
 Best regards,
 Simon
