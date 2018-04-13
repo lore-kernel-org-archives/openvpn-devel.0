@@ -1,11 +1,14 @@
-MIME-Version: 1.0
-In-Reply-To: <20180413171009.GQ69387@...1296...>
+Date: Fri, 13 Apr 2018 19:29:40 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180413172940.GR69387@...1296...>
 References: <CAAF3xa-+k10J4URGr+6zfua-p2KmoGUniejfBWDB7nNJ6p03kA@...278...>
  <20180413171009.GQ69387@...1296...>
-From: Marvin <volleynbike@...277...>
-Date: Fri, 13 Apr 2018 10:24:18 -0700
-Message-ID: <CAAF3xa8wuk=+Mssvs1PuGvhPgBBPbe1W+dgLJxeO7GwYekQOdg@...278...>
-Content-Type: multipart/alternative; boundary="00000000000067491d0569be2482"
+ <CAAF3xa8wuk=+Mssvs1PuGvhPgBBPbe1W+dgLJxeO7GwYekQOdg@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="dQfkJaMeTXB/ayZA"
+Content-Disposition: inline
+In-Reply-To: <CAAF3xa8wuk=+Mssvs1PuGvhPgBBPbe1W+dgLJxeO7GwYekQOdg@...278...>
 Subject: Re: [Openvpn-devel] Viscosity patch to TAP driver
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -15,92 +18,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: "<openvpn-devel@lists.sourceforge.net>" <openvpn-devel@lists.sourceforge.net>
+To: Marvin <volleynbike@...277...>
+Cc: Gert Doering <gert@...1296...>, "<openvpn-devel@lists.sourceforge.net>" <openvpn-devel@lists.sourceforge.net>
 
---00000000000067491d0569be2482
-Content-Type: text/plain; charset="UTF-8"
-
-HI Gert,
-
-Only that here we need to run Gava's patches for active-ftp and client-nat
-(submitted to openvpn-dev several years ago but not accepted).  He has not
-had time to port those patches to 2.4.x yet.  So for now we are stuck at
-2.3.18.
-
-Marvin
-
-On Fri, Apr 13, 2018 at 10:10 AM, Gert Doering <gert@...1296...> wrote:
-
-> Hi,
->
-> On Fri, Apr 13, 2018 at 10:03:55AM -0700, Marvin wrote:
-> > Would there be any problem with updating the tap-windows6 to the
-> Viscosity
-> > patched version on an older openvpn build (e.g. 2.3.18 on Windows 10)?
->
-> "Why?"
->
-> There is nothing in 2.3.x (... that we are aware of) that makes it more
-> suitable than 2.4.x - and lots of goodness is missing, like being able
-> to run GUI and openvpn.exe without admin privileges.
->
-> gert
->
-> --
-> "If was one thing all people took for granted, was conviction that if you
->  feed honest figures into a computer, honest figures come out. Never
-> doubted
->  it myself till I met a computer with a sense of humor."
->                              Robert A. Heinlein, The Moon is a Harsh
-> Mistress
->
-> Gert Doering - Munich, Germany
-> gert@...1296...
->
-
---00000000000067491d0569be2482
-Content-Type: text/html; charset="UTF-8"
+--dQfkJaMeTXB/ayZA
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-<div dir=3D"ltr">HI Gert,<div><br></div><div>Only that here we need to run =
-Gava&#39;s patches for active-ftp and client-nat (submitted to openvpn-dev =
-several years ago but not accepted).=C2=A0 He has not had time to port thos=
-e patches to 2.4.x yet.=C2=A0 So for now we are stuck at 2.3.18.</div><div>=
-<br></div><div>Marvin</div></div><div class=3D"gmail_extra"><br><div class=
-=3D"gmail_quote">On Fri, Apr 13, 2018 at 10:10 AM, Gert Doering <span dir=
-=3D"ltr">&lt;<a href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1386...=
-296...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"=
-margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Hi,<br>
-<span class=3D""><br>
-On Fri, Apr 13, 2018 at 10:03:55AM -0700, Marvin wrote:<br>
-&gt; Would there be any problem with updating the tap-windows6 to the Visco=
-sity<br>
-&gt; patched version on an older openvpn build (e.g. 2.3.18 on Windows 10)?=
-<br>
-<br>
-</span>&quot;Why?&quot;<br>
-<br>
-There is nothing in 2.3.x (... that we are aware of) that makes it more<br>
-suitable than 2.4.x - and lots of goodness is missing, like being able<br>
-to run GUI and openvpn.exe without admin privileges.<br>
-<span class=3D"HOEnZb"><font color=3D"#888888"><br>
-gert<br>
-<br>
--- <br>
-&quot;If was one thing all people took for granted, was conviction that if =
-you <br>
-=C2=A0feed honest figures into a computer, honest figures come out. Never d=
-oubted <br>
-=C2=A0it myself till I met a computer with a sense of humor.&quot;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Robert A. Heinlein, The Moon is a Harsh Mist=
-ress<br>
-<br>
-Gert Doering - Munich, Germany=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<a href=3D"mailt=
-o:gert@...1296...">gert@...1296...</a><br>
-</font></span></blockquote></div><br></div>
+Hi,
 
---00000000000067491d0569be2482--
+On Fri, Apr 13, 2018 at 10:24:18AM -0700, Marvin wrote:
+> Only that here we need to run Gava's patches for active-ftp and client-nat
+> (submitted to openvpn-dev several years ago but not accepted).  He has not
+> had time to port those patches to 2.4.x yet.  So for now we are stuck at
+> 2.3.18.
+
+If you run your own build anyway, just package with the new driver as
+soon as it's released - as today, there will be a signed .exe for the
+tap driver, which gets embedded into whatever installer you build,
+2.3.x or 2.4.x
+
+(Note: active-ftp NAT will never be merged - that is way too intrusive.
+The other NAT patch got lost somewhere but still has chances)
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--dQfkJaMeTXB/ayZA
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJa0OkDAAoJEB2Cnv7KVigSFaUL/RQdUEzqAsdw+By/rr+3Tys0
+iqbHr7tC8H8+dzolqdL0kE36eW31MpOab1fft4K1h6Ea2oWr//20HZi2stqhxst1
+iY+4ASr62gnmmyjTulxYMU+OVqCh1TpZF8yZuVFbiAtfPpV65H3xyAcJw37l73CF
+1zGtatTlHR4wzruLJsJAta8IHa7x2K5lSTZd2VI490Qr0vzH01y75N6BpfA50rrk
+Cq2Zl0DpMSdOLBrP6YetaQzjy9Z1W58tf33FybDRpG1j90BJv6xIf/7sUnL59jHJ
+wzMfmuQyokxeQ6XUuw3SWxztSF1zfjiwPDzlrm4JLGKvriELqYmWYIUJHRhMZp0b
+dYs0acuP4Ml+2yOSUAFisqpUtun0XI4CACBkHNcW9791v4vXgNgrNhRgfSgRT6nq
+d7vRU6mFl6r1fLfPL3hvjn63a/+coj2TLgTn0+1/30JnbLski03EH0LtcuKWGIwg
+UCUE08Qf28EDg8ULI5tyfQfl5KQrWiWeusN5M5EjRQ==
+=qYW9
+-----END PGP SIGNATURE-----
+
+--dQfkJaMeTXB/ayZA--
 
