@@ -2,17 +2,14 @@ References: <8a2c220c-e169-0cb1-c8b4-3c8af5fab82a@...515...>
  <c573880b-af3b-0876-d00f-70e7a06c69fa@...515...>
  <003a7779-3f07-5335-4fd4-8f62aadf6134@...1918...>
  <20180412082603.GT69387@...1296...>
- <CAKuzo_g9Pabn1JSCXJxTse2u9-Laj+Ejc3mG94xQk=UOT4GUNw@...278...>
- <20180412145052.GC69387@...1296...>
- <e06e75c5-06fb-000f-f5c6-4d1949cf1b45@...1147...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <9ff9a0fd-e5ca-2c53-6094-560caa316aa3@...2181...>
-Date: Fri, 13 Apr 2018 09:10:21 +0800
+From: Eric Thorpe <eric@...1918...>
+Message-ID: <afa08ec6-eef6-c9f9-6c7e-af71ad069d48@...1918...>
+Date: Fri, 13 Apr 2018 13:45:03 +1000
 MIME-Version: 1.0
-In-Reply-To: <e06e75c5-06fb-000f-f5c6-4d1949cf1b45@...1147...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="EkD8UAxvQEXWD37e6TmfQFd2Uc8S6pWHE"
+In-Reply-To: <20180412082603.GT69387@...1296...>
+Content-Type: multipart/alternative;
+ boundary="------------CD77C2073C6BD6DE0E695FEE"
+Content-Language: en-US
 Subject: Re: [Openvpn-devel] Viscosity patch to TAP driver
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -22,96 +19,134 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jan Just Keijser <janjust@...1147...>, Gert Doering <gert@...1296...>, Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---EkD8UAxvQEXWD37e6TmfQFd2Uc8S6pWHE
-Content-Type: multipart/mixed; boundary="8fPOFvaaz3wmX2xQoesdLSYGwUJm7IaBu";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Jan Just Keijser <janjust@...1147...>, Gert Doering <gert@...1296...>,
- Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Message-ID: <9ff9a0fd-e5ca-2c53-6094-560caa316aa3@...2181...>
-Subject: Re: [Openvpn-devel] Viscosity patch to TAP driver
-References: <8a2c220c-e169-0cb1-c8b4-3c8af5fab82a@...515...>
- <c573880b-af3b-0876-d00f-70e7a06c69fa@...515...>
- <003a7779-3f07-5335-4fd4-8f62aadf6134@...1918...>
- <20180412082603.GT69387@...1296...>
- <CAKuzo_g9Pabn1JSCXJxTse2u9-Laj+Ejc3mG94xQk=UOT4GUNw@...278...>
- <20180412145052.GC69387@...1296...>
- <e06e75c5-06fb-000f-f5c6-4d1949cf1b45@...1147...>
-In-Reply-To: <e06e75c5-06fb-000f-f5c6-4d1949cf1b45@...1147...>
+This is a multi-part message in MIME format.
+--------------CD77C2073C6BD6DE0E695FEE
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 
---8fPOFvaaz3wmX2xQoesdLSYGwUJm7IaBu
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Hi Gert,
 
+PR #47 has been submitted to tap-windows6 on github.
 
+Regards,
+Eric
 
-On 13/04/18 04:22, Jan Just Keijser wrote:
-> Hi,
->=20
-> On 12/04/18 16:50, Gert Doering wrote:
->> Hi,
+--
+Eric Thorpe
+SparkLabs Developer
+https://www.sparklabs.com
+https://twitter.com/sparklabs
+support@...1918...
+
+On 12/04/2018 6:26 PM, Gert Doering wrote:
+> Hi Eric,
+>
+> On Thu, Mar 22, 2018 at 02:25:56PM +1100, Eric Thorpe wrote:
+>> One of the Viscosity developers here. The TAP driver used by Viscosity
+>> is based on the OpenVPN TAP-Windows driver. We're surprised to hear of
+>> any performance differences, as the changes we've made are very minimal.
 >>
->> On Thu, Apr 12, 2018 at 10:27:08AM -0400, Selva Nair wrote:
->>>>> This change was made not because of any actual performance gains, but
->>>>> because of user reports that certain firewall or AV software tries to
->>>>> QoS the adapter based on its reported adapter speed, which is of
->>>>> course
->>>>> a problem if the VPN connection is capable of more than 100 Mbit.
->> [..]
->>> Or am I mistaken -- does this setting really affect the max throughput?
->> Not normally, but when certain 'helpful' software is around...
+>> Besides a name and version number change, the only other modification is
+>> a change to the reported network adapter speed, which has Windows report
+>> the driver as 1000 Mbit instead of 100 Mbit.
 >>
+>> This change was made not because of any actual performance gains, but
+>> because of user reports that certain firewall or AV software tries to
+>> QoS the adapter based on its reported adapter speed, which is of course
+>> a problem if the VPN connection is capable of more than 100 Mbit.
 >>
-> as a side note: there is one thing to keep in mind when changing this:
-> Windows calculates its automatic routing metrics based on the adapter
-> speed. So if we increase the speed then there are scenarios possible
-> where the tun adapter route will take precedence over a lan route : in
-> most cases that is what a user would want, but there are (rare)
-> scenarios where that could have nasty side effects (including the
-> "biting your own tail" problem)
-
-Can't we come up with a reasonable default that works for 99.9% of the
-users (i.e. 1Gbps) and allow experts to tweak that? or tweak the metric
-(I think this is already possible, given what Selva said)?
-
-
-Cheers,
-
-
-
---=20
-Antonio Quartulli
+>> Please find a patch file of the changes attached.
+> I think it would make sense for us to merge that patch - for two reasons,
+> one is "the change could indeed help performance in high-bandwidth
+> situtions", and the more important one is "another patch to tap-windows6
+> is forthcoming, and that way we can keep the version numbers aligned
+> so people can know what is inside".
+>
+> Do you have the patch in git?  If yes, could you please do the commit
+> with "-s" (so the signed-off-by: line is added) and send it as regular
+> git commit (git-send-email)?  Alternatively a PR against tap-windows6
+> on github should do as well.
+>
+> Thanks in advance,
+>
+> gert
+>
 
 
---8fPOFvaaz3wmX2xQoesdLSYGwUJm7IaBu--
 
---EkD8UAxvQEXWD37e6TmfQFd2Uc8S6pWHE
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+--------------CD77C2073C6BD6DE0E695FEE
+Content-Type: text/html; charset=windows-1252
+Content-Transfer-Encoding: 7bit
 
------BEGIN PGP SIGNATURE-----
+<html>
+  <head>
 
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlrQA30ACgkQB6U8WA7y
-zXQbqA/9EXuvBsCa8r8EL2b18ppwVTSQVuWx31kMxpvXDFdge45XNgR0+9OhkhLF
-9RAK5xXHeyCCH0BeHX4p/LfY9Pt73w6XE7bkfdesZd58wk4ubkqz1llxnlR/y6pb
-rxd3i/Zt2aR1hF7ZN3RRKYbC3DRfdbR1o3pFsS57nGa4prx6qkquu1JNFIxUpulx
-nhhWcdGQWGDSSQqBfCxWsXzI8DPWJzopa+y+kz09RCy8di0Pi+UmiMMUzng/Uw0C
-8RFGzoIASXJIIbj3CxrYjip8zHHbZT1XzIUKy7RZP9kc/eu5pYttNevHpZchNRp5
-9Bj6h5ZlCFivEdjYE1r1nqbAFU6Ts/WO/JoWuMjuv68oMdGRRN8PgJT6X6lueD3v
-4gpWGQhN1ZAuxoSqeTvDRpzWM65RbHusIuewMtCNUjF3/i99XMqPG/4K16LAKSSM
-U5YYXGLT3lHYq2PS/LdZjJYbHHDJ4S+CXCA9yNxxvKG0ALhzhCJcB87k+/rbRwPj
-1Bt+6h9mttCklJ5N7tH3zJvi5EcABazcZI+Q25AH92XHe9K6A++dHAdS3nf92a1Y
-kjaqyCRF2iW0Djhf2bEHFjA+VkFURA81Dhe5Uak60ely6S0hLTuEqele5uFiqQSp
-/eEPvQITdOaHGxAW6rGkkCrR+9LTsVVOmuhs7w5vn207oev8ghM=
-=1uKD
------END PGP SIGNATURE-----
+    <meta http-equiv="content-type" content="text/html; charset=windows-1252">
+  </head>
+  <body text="#000000" bgcolor="#FFFFFF">
+    <p>Hi Gert,</p>
+    <p>PR #47 has been submitted to tap-windows6 on github.<br>
+    </p>
+    <p>Regards,<br>
+      Eric<br>
+    </p>
+    <pre class="moz-signature" cols="72">--
+Eric Thorpe
+SparkLabs Developer
+<a class="moz-txt-link-freetext" href="https://www.sparklabs.com">https://www.sparklabs.com</a>
+<a class="moz-txt-link-freetext" href="https://twitter.com/sparklabs">https://twitter.com/sparklabs</a>
+<a class="moz-txt-link-abbreviated" href="mailto:support@...1918...">support@...1918...</a></pre>
+    <div class="moz-cite-prefix">On 12/04/2018 6:26 PM, Gert Doering
+      wrote:<br>
+    </div>
+    <blockquote type="cite"
+      cite="mid:20180412082603.GT69387@...1296..."
+      id="mid_20180412082603_GT69387_greenie_muc_de" class=" cite">
+      <pre wrap="">Hi Eric,
 
---EkD8UAxvQEXWD37e6TmfQFd2Uc8S6pWHE--
+On Thu, Mar 22, 2018 at 02:25:56PM +1100, Eric Thorpe wrote:
+</pre>
+      <blockquote type="cite" id="Cite_7807" class=" cite">
+        <pre wrap="">One of the Viscosity developers here. The TAP driver used by Viscosity 
+is based on the OpenVPN TAP-Windows driver. We're surprised to hear of 
+any performance differences, as the changes we've made are very minimal.
+
+Besides a name and version number change, the only other modification is 
+a change to the reported network adapter speed, which has Windows report 
+the driver as 1000 Mbit instead of 100 Mbit.
+
+This change was made not because of any actual performance gains, but 
+because of user reports that certain firewall or AV software tries to 
+QoS the adapter based on its reported adapter speed, which is of course 
+a problem if the VPN connection is capable of more than 100 Mbit.
+
+Please find a patch file of the changes attached.
+</pre>
+      </blockquote>
+      <pre wrap="">I think it would make sense for us to merge that patch - for two reasons,
+one is "the change could indeed help performance in high-bandwidth
+situtions", and the more important one is "another patch to tap-windows6
+is forthcoming, and that way we can keep the version numbers aligned
+so people can know what is inside".
+
+Do you have the patch in git?  If yes, could you please do the commit
+with "-s" (so the signed-off-by: line is added) and send it as regular
+git commit (git-send-email)?  Alternatively a PR against tap-windows6
+on github should do as well.
+
+Thanks in advance,
+
+gert
+
+</pre>
+    </blockquote>
+    <br>
+    <br>
+  </body>
+</html>
+
+--------------CD77C2073C6BD6DE0E695FEE--
 
