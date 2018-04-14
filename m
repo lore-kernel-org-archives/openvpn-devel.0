@@ -1,8 +1,12 @@
-From: selva.nair@...277...
-Date: Tue, 24 Apr 2018 22:25:20 -0400
-Message-Id: <1524623120-23498-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH tap-windows6] Have the driver version
- display as major.minor.revision.build
+Resent-Message-ID: <20180425060759.GM69387@...1296...>
+Resent-To: openvpn-devel@lists.sourceforge.net
+From: Gert Doering <gert@...1296...>
+Date: Sat, 14 Apr 2018 09:26:17 +0200
+Message-Id: <20180414072617.25075-1-gert@...1296...>
+In-Reply-To: <CAKuzo_jtPA4=NMeER1YwjRwGkq3NG39aqxHN3NCPGY+3KkAHpg@...278...>
+References: <CAKuzo_jtPA4=NMeER1YwjRwGkq3NG39aqxHN3NCPGY+3KkAHpg@...278...>
+Subject: [Openvpn-devel] [PATCH v2] Fix potential double-free() in
+ Interactive Service (CVE-2018-9336)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,89 +17,123 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: security@...515...
+Cc: selva.nair@...277..., jbaines@...2391...
 
-From: Selva Nair <selva.nair@...277...>
+Malformed input data on the service pipe towards the OpenVPN interactive
+service (normally used by the OpenVPN GUI to request openvpn instances
+from the service) can result in a double free() in the error handling code.
 
-The driver version (taken from the INF) and the file version of
-tap0901.sys file (from its resource) will now display like
-9.22.1.601.
+This usually only leads to a process crash (DoS by an unprivileged local
+account) but since it could possibly lead to memory corruption if
+happening while multiple other threads are active at the same time,
+CVE-2018-9336 has been assigned to acknowledge this risk.
 
-The driver details tab will continue to show the text form of
-the version as "major.minor.revision (major/minor)".
-Eg., "9.22.1 (9/22)"
+Fix by ensuring that sud->directory is set to NULL in GetStartUpData()
+for all error cases (thus not being free()ed in FreeStartupData()).
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
+Rewrite control flow to use explicit error label for error exit.
+
+Discovered and reported by Jacob Baines <jbaines@...2391...>.
+
+CVE: 2018-9336
+
+Signed-off-by: Gert Doering <gert@...1296...>
+
+--
+v2: reword commit message, no code changes
 ---
+ src/openvpnserv/interactive.c | 23 +++++++++++------------
+ 1 file changed, 11 insertions(+), 12 deletions(-)
 
-Not sure this should be submitted as a PR  or like this..
-
-An image showing the version is here
-https://user-images.githubusercontent.com/3981391/39222715-29500c5a-480c-11e8-823a-73328baf69dd.PNG
-But I would like to test again using a properly signed version 
-
- src/OemVista.inf.in | 2 +-
- src/config.h.in     | 2 ++
- src/resource.rc     | 2 +-
- version.m4          | 4 ++--
- 4 files changed, 6 insertions(+), 4 deletions(-)
-
-diff --git a/src/OemVista.inf.in b/src/OemVista.inf.in
-index 004ed62..26152f5 100644
---- a/src/OemVista.inf.in
-+++ b/src/OemVista.inf.in
-@@ -55,7 +55,7 @@
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index fbc32f90..861f5e70 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -453,7 +453,6 @@ static BOOL
+ GetStartupData(HANDLE pipe, STARTUP_DATA *sud)
+ {
+     size_t size, len;
+-    BOOL ret = FALSE;
+     WCHAR *data = NULL;
+     DWORD bytes, read;
  
- ; This version number should match the version
- ; number given in SOURCES.
--   DriverVer=@PRODUCT_TAP_WIN_RELDATE@,@PRODUCT_TAP_WIN_MAJOR@...1678...@PRODUCT_TAP_WIN_MINOR@
-+   DriverVer=@PRODUCT_TAP_WIN_RELDATE@,@PRODUCT_TAP_WIN_MAJOR@...220...@PRODUCT_TAP_WIN_MINOR@...220...@PRODUCT_TAP_WIN_REVISION@...220...@PRODUCT_TAP_WIN_BUILD@
+@@ -462,7 +461,7 @@ GetStartupData(HANDLE pipe, STARTUP_DATA *sud)
+     {
+         MsgToEventLog(M_SYSERR, TEXT("PeekNamedPipeAsync failed"));
+         ReturnLastError(pipe, L"PeekNamedPipeAsync");
+-        goto out;
++        goto err;
+     }
  
- [Strings]
-    DeviceDescription = "@PRODUCT_TAP_WIN_DEVICE_DESCRIPTION@"
-diff --git a/src/config.h.in b/src/config.h.in
-index 322afa8..c013348 100644
---- a/src/config.h.in
-+++ b/src/config.h.in
-@@ -7,3 +7,5 @@
- #define PRODUCT_TAP_WIN_PROVIDER		"@PRODUCT_TAP_WIN_PROVIDER@"
- #define PRODUCT_TAP_WIN_DEVICE_DESCRIPTION	"@PRODUCT_TAP_WIN_DEVICE_DESCRIPTION@"
- #define PRODUCT_TAP_WIN_RELDATE		"@PRODUCT_TAP_WIN_RELDATE@"
-+#define PRODUCT_TAP_WIN_REVISION	@PRODUCT_TAP_WIN_REVISION@
-+#define PRODUCT_TAP_WIN_BUILD		@PRODUCT_TAP_WIN_BUILD@
-diff --git a/src/resource.rc b/src/resource.rc
-index 3c40d03..229e437 100644
---- a/src/resource.rc
-+++ b/src/resource.rc
-@@ -44,7 +44,7 @@
+     size = bytes / sizeof(*data);
+@@ -470,7 +469,7 @@ GetStartupData(HANDLE pipe, STARTUP_DATA *sud)
+     {
+         MsgToEventLog(M_SYSERR, TEXT("malformed startup data: 1 byte received"));
+         ReturnError(pipe, ERROR_STARTUP_DATA, L"GetStartupData", 1, &exit_event);
+-        goto out;
++        goto err;
+     }
+ 
+     data = malloc(bytes);
+@@ -478,7 +477,7 @@ GetStartupData(HANDLE pipe, STARTUP_DATA *sud)
+     {
+         MsgToEventLog(M_SYSERR, TEXT("malloc failed"));
+         ReturnLastError(pipe, L"malloc");
+-        goto out;
++        goto err;
+     }
+ 
+     read = ReadPipeAsync(pipe, data, bytes, 1, &exit_event);
+@@ -486,14 +485,14 @@ GetStartupData(HANDLE pipe, STARTUP_DATA *sud)
+     {
+         MsgToEventLog(M_SYSERR, TEXT("ReadPipeAsync failed"));
+         ReturnLastError(pipe, L"ReadPipeAsync");
+-        goto out;
++        goto err;
+     }
+ 
+     if (data[size - 1] != 0)
+     {
+         MsgToEventLog(M_ERR, TEXT("Startup data is not NULL terminated"));
+         ReturnError(pipe, ERROR_STARTUP_DATA, L"GetStartupData", 1, &exit_event);
+-        goto out;
++        goto err;
+     }
+ 
+     sud->directory = data;
+@@ -503,7 +502,7 @@ GetStartupData(HANDLE pipe, STARTUP_DATA *sud)
+     {
+         MsgToEventLog(M_ERR, TEXT("Startup data ends at working directory"));
+         ReturnError(pipe, ERROR_STARTUP_DATA, L"GetStartupData", 1, &exit_event);
+-        goto out;
++        goto err;
+     }
+ 
+     sud->options = sud->directory + len;
+@@ -513,16 +512,16 @@ GetStartupData(HANDLE pipe, STARTUP_DATA *sud)
+     {
+         MsgToEventLog(M_ERR, TEXT("Startup data ends at command line options"));
+         ReturnError(pipe, ERROR_STARTUP_DATA, L"GetStartupData", 1, &exit_event);
+-        goto out;
++        goto err;
+     }
+ 
+     sud->std_input = sud->options + len;
+-    data = NULL; /* don't free data */
+-    ret = TRUE;
++    return TRUE;
+ 
+-out:
++err:
++    sud->directory = NULL;		/* caller must not free() */
+     free(data);
+-    return ret;
++    return FALSE;
+ }
  
  
- #define VER_PRODUCTNAME_STR         VER_FILEDESCRIPTION_STR
--#define VER_PRODUCTVERSION	    PRODUCT_TAP_WIN_MAJOR,00,00,PRODUCT_TAP_WIN_MINOR
-+#define VER_PRODUCTVERSION	    PRODUCT_TAP_WIN_MAJOR,PRODUCT_TAP_WIN_MINOR,PRODUCT_TAP_WIN_REVISION,PRODUCT_TAP_WIN_BUILD
- 
- #define XSTR(s) STR(s)
- #define STR(s) #s
-diff --git a/version.m4 b/version.m4
-index 1d7f92e..955b418 100644
---- a/version.m4
-+++ b/version.m4
-@@ -2,7 +2,7 @@ dnl define the TAP version
- define([PRODUCT_NAME], [TAP-Windows])
- define([PRODUCT_PUBLISHER], [OpenVPN Technologies, Inc.])
- define([PRODUCT_VERSION], [9.22.1])
--define([PRODUCT_VERSION_RESOURCE], [9,0,0,22])
-+define([PRODUCT_VERSION_RESOURCE], [9,22,1,601])
- define([PRODUCT_TAP_WIN_COMPONENT_ID], [tap0901])
- define([PRODUCT_TAP_WIN_MAJOR], [9])
- define([PRODUCT_TAP_WIN_MINOR], [22])
-@@ -11,4 +11,4 @@ define([PRODUCT_TAP_WIN_BUILD], [601])
- define([PRODUCT_TAP_WIN_PROVIDER], [TAP-Windows Provider V9])
- define([PRODUCT_TAP_WIN_CHARACTERISTICS], [0x81])
- define([PRODUCT_TAP_WIN_DEVICE_DESCRIPTION], [TAP-Windows Adapter V9])
--define([PRODUCT_TAP_WIN_RELDATE], [04/15/2018])
-+define([PRODUCT_TAP_WIN_RELDATE], [04/24/2018])
 -- 
-2.6.2
+2.16.1
 
 
