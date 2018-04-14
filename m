@@ -1,14 +1,15 @@
-Date: Wed, 25 Apr 2018 08:12:49 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180425061248.GN69387@...1296...>
-References: <1524623120-23498-1-git-send-email-selva.nair@...277...>
+Resent-Message-ID: <20180425061259.GO69387@...1296...>
+Resent-To: openvpn-devel@lists.sourceforge.net
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="ktcjVa9z86pLVIU/"
-Content-Disposition: inline
-In-Reply-To: <1524623120-23498-1-git-send-email-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH tap-windows6] Have the driver version
- display as major.minor.revision.build
+In-Reply-To: <20180414072617.25075-1-gert@...1296...>
+References: <CAKuzo_jtPA4=NMeER1YwjRwGkq3NG39aqxHN3NCPGY+3KkAHpg@...278...>
+ <20180414072617.25075-1-gert@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sat, 14 Apr 2018 12:44:57 -0400
+Message-ID: <CAKuzo_h-GusttjiFUeV2tivFAKHFdqTnDseg9KiVru5ftWszyg@...278...>
+Content-Type: multipart/alternative; boundary="000000000000b571d50569d1b62b"
+Subject: Re: [Openvpn-devel] [PATCH v2] Fix potential double-free() in
+ Interactive Service (CVE-2018-9336)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,69 +18,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: selva.nair@...277...
-Cc: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: security@...515..., jbaines@...2391...
 
---ktcjVa9z86pLVIU/
-Content-Type: text/plain; charset="us-ascii"
+--000000000000b571d50569d1b62b
+Content-Type: text/plain; charset="UTF-8"
+
+On Sat, Apr 14, 2018 at 3:26 AM, Gert Doering <gert@...1296...> wrote:
+
+> Malformed input data on the service pipe towards the OpenVPN interactive
+> service (normally used by the OpenVPN GUI to request openvpn instances
+> from the service) can result in a double free() in the error handling code.
+>
+> This usually only leads to a process crash (DoS by an unprivileged local
+> account) but since it could possibly lead to memory corruption if
+> happening while multiple other threads are active at the same time,
+> CVE-2018-9336 has been assigned to acknowledge this risk.
+>
+> Fix by ensuring that sud->directory is set to NULL in GetStartUpData()
+> for all error cases (thus not being free()ed in FreeStartupData()).
+>
+> Rewrite control flow to use explicit error label for error exit.
+>
+> Discovered and reported by Jacob Baines <jbaines@...2391...>.
+>
+> CVE: 2018-9336
+>
+> Signed-off-by: Gert Doering <gert@...1296...>
+>
+> --
+> v2: reword commit message, no code changes
+
+
+Just for completeness: all good so ACK again.
+
+Selva
+
+--000000000000b571d50569d1b62b
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+<div dir=3D"ltr"><div class=3D"gmail_extra"><div class=3D"gmail_quote">On S=
+at, Apr 14, 2018 at 3:26 AM, Gert Doering <span dir=3D"ltr">&lt;<a href=3D"=
+mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</span> wr=
+ote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border=
+-left:1px #ccc solid;padding-left:1ex">Malformed input data on the service =
+pipe towards the OpenVPN interactive<br>
+service (normally used by the OpenVPN GUI to request openvpn instances<br>
+from the service) can result in a double free() in the error handling code.=
+<br>
+<br>
+This usually only leads to a process crash (DoS by an unprivileged local<br>
+account) but since it could possibly lead to memory corruption if<br>
+happening while multiple other threads are active at the same time,<br>
+CVE-2018-9336 has been assigned to acknowledge this risk.<br>
+<br>
+Fix by ensuring that sud-&gt;directory is set to NULL in GetStartUpData()<b=
+r>
+for all error cases (thus not being free()ed in FreeStartupData()).<br>
+<br>
+Rewrite control flow to use explicit error label for error exit.<br>
+<br>
+Discovered and reported by Jacob Baines &lt;<a href=3D"mailto:jbaines@...2392...=
+91...">jbaines@...2391...</a>&gt;.<br>
+<br>
+CVE: 2018-9336<br>
+<br>
+Signed-off-by: Gert Doering &lt;<a href=3D"mailto:gert@...1296...">gert@...493...=
+1296...</a>&gt;<br>
+<br>
+--<br>
+v2: reword commit message, no code changes</blockquote><div><br></div><div>=
+Just for completeness: all good so ACK again.=C2=A0</div><div><br></div><di=
+v>Selva</div></div></div></div>
 
-On Tue, Apr 24, 2018 at 10:25:20PM -0400, selva.nair@...277... wrote:
-> From: Selva Nair <selva.nair@...277...>
->=20
-> The driver version (taken from the INF) and the file version of
-> tap0901.sys file (from its resource) will now display like
-> 9.22.1.601.
->=20
-> The driver details tab will continue to show the text form of
-> the version as "major.minor.revision (major/minor)".
-> Eg., "9.22.1 (9/22)"
->=20
-> Signed-off-by: Selva Nair <selva.nair@...277...>
-> ---
->=20
-> Not sure this should be submitted as a PR  or like this..
+--000000000000b571d50569d1b62b--
 
-Not sure either (tap-windows6 has seen so little development that we
-never defined a proper process, I think).=20=20
-
-So I just ACK this here on the basis of "we did not know how to do it,=20
-but this is what we wanted to achieve" - it *looks* reasonable.
-
-So if Samuli can be convinced to build a driver with this merged and
-a signature, I'm happy to give it a test run and see if everything is
-happy...
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---ktcjVa9z86pLVIU/
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJa4BxgAAoJEB2Cnv7KVigSYVEL/1tXxcy855Ixi33QDjpVqOpu
-ruhMcM0d20orG8/Mgfnt2Qlak7Z1krfO+mkossqGHsygC2vP/6A55fYFqXeiRMBV
-P7Dm9Meggy6v4zL7ShzFIQJULpvqxKZj5KVDZSPpTJrCqOiT4djs9UtNihDh9WNb
-q0/WwFQDriMYtqQl+ACFqfeEogWVDhn+Z1v4X/D1/qWrmZO+G8JdPPbGtbHfEmA0
-or4Cp9wrKTkRQhgfE3dtS9/fAMfEbsyg6TGx5sKVsrjhx0jGZ2WVMqRqJtzDbndV
-KpyQuyZGtDCgtm0/gH1//cvy89GOplLIgJfOAHCqq9RNSpZkB5UY/1yJKQRgCgem
-LwiTm9Pp7CmmYMQl6WoZTm6wLBI5Cfkl2HcHYBCq1obCN4LAp1Tuci06npjVvUkE
-kB/yYV9VB6KtIdcrZjRQ5Iwr3Q3dPyhxmZt4hLvRsh6dv64up2erbnV5Wctd556I
-Fmvu1GAi6+pDb8UG+GcBvrRNLg9jzWCfpPW6dmFrKA==
-=FETS
------END PGP SIGNATURE-----
-
---ktcjVa9z86pLVIU/--
 
