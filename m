@@ -1,14 +1,12 @@
-References: <CAJ-EccN7eQsSaFn4MH4qRTKx+zZ-1YcGAe0XU8813p7k=W2i4g@...278...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <a0dcaae0-d775-c776-a1da-7546875d6f49@...1227...>
-Date: Sat, 14 Apr 2018 01:24:31 +0200
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <c113c9a5-198e-775b-c183-f319c35bdb28@...515...>
+Date: Mon, 16 Apr 2018 10:20:28 +0300
 MIME-Version: 1.0
-In-Reply-To: <CAJ-EccN7eQsSaFn4MH4qRTKx+zZ-1YcGAe0XU8813p7k=W2i4g@...278...>
-Content-Type: multipart/alternative;
- boundary="------------236D344A0FA1043641F36FFB"
-Content-Language: de-DE
-Subject: Re: [Openvpn-devel] [PATCH] Specify platform and version on command
- line.
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="KVyscUKdMwCQ1IZZeAm9unbquHz4hCOXR"
+Subject: [Openvpn-devel] New tap-windows6 driver (9.21.3) available for
+ testing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,97 +15,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Micah Morton <mortonm@...1913...>, openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------236D344A0FA1043641F36FFB
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--KVyscUKdMwCQ1IZZeAm9unbquHz4hCOXR
+Content-Type: multipart/mixed; boundary="WpJ1J7eFT58BjzwNAnrR7AxICmWVOrZfG";
+ protected-headers="v1"
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+To: "openvpn-devel@lists.sourceforge.net"
+ <openvpn-devel@lists.sourceforge.net>
+Message-ID: <c113c9a5-198e-775b-c183-f319c35bdb28@...515...>
+Subject: New tap-windows6 driver (9.21.3) available for testing
 
-Am 13.04.2018 um 19:23 schrieb Micah Morton:
-> From 557d2e73bf21ddb9d07b43f716c7914d610e7392 Mon Sep 17 00:00:00 2001
-> From: Micah Morton <mortonm@...1913... <mailto:mortonm@...1913...>>
-> Date: Fri, 13 Apr 2018 09:55:22 -0700
-> Subject: [PATCH] Specify platform and version on command line.
->
-> Add --iv-plat and --iv-plat-rel command line args, and use the values
-> passed to these args to set IV_PLAT and IV_PLAT_REL info that is pushed
-> to the server.
->
-> IV_PLAT (platform type) is normally inferred from the build target, but
-> it would be useful to be able to override this from the command line
-> (e.g. for client to set platform as ChromeOS instead of Linux).
->
-> IV_PLAT_REL (platform release version) would allow for pushing the
-> platform (e.g. ChromeOS) release version to the server.
->
-My Android client already uses
+--WpJ1J7eFT58BjzwNAnrR7AxICmWVOrZfG
+Content-Language: en-US
+Content-Type: text/plain; charset="iso-8859-15"
+Content-Transfer-Encoding: quoted-printable
 
-setenv IV_PLAT_VER to send platform specific information. I think
-setting IV_PLAT_VER (and extend that to other platforms, might be
-android specific at the moment) should also work for you. E.g..
+Hi,
 
-setenv IV_PLAT_VER "27 8.1.0 arm64-v8a google taimen Pixel 2 XL"
+We're bundling a tap-windows6 driver (9.21.3) with OpenVPN 2.4.6 that is
+due later this week:
 
-Arne
+https://build.openvpn.net/downloads/temp/tap-windows-9.21.3-I601.exe
 
---------------236D344A0FA1043641F36FFB
-Content-Type: text/html; charset=utf-8
-Content-Transfer-Encoding: 7bit
+The main difference to the old driver (9.21.2) is that the driver and
+installer have only a SHA2 Authenticode signature[*]. This means that
+Windows Vista should refuse to install the driver. Some outdated Windows
+7 installations might behave the same. This is intentional on our part,
+as Vista is EOL and we don't want to support Windows 7 installations
+that are horribly outdated.
 
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  </head>
-  <body text="#000000" bgcolor="#FFFFFF">
-    <div class="moz-cite-prefix">Am 13.04.2018 um 19:23 schrieb Micah
-      Morton:<br>
-    </div>
-    <blockquote type="cite"
-cite="mid:CAJ-EccN7eQsSaFn4MH4qRTKx+zZ-1YcGAe0XU8813p7k=W2i4g@...278...">
-      <div dir="ltr">
-        <div>From 557d2e73bf21ddb9d07b43f716c7914d610e7392 Mon Sep 17
-          00:00:00 2001</div>
-        <div>From: Micah Morton &lt;<a
-            href="mailto:mortonm@...1913..." moz-do-not-send="true">mortonm@...1913...</a>&gt;</div>
-        <div>Date: Fri, 13 Apr 2018 09:55:22 -0700</div>
-        <div>Subject: [PATCH] Specify platform and version on command
-          line.</div>
-        <div><br>
-        </div>
-        <div>Add --iv-plat and --iv-plat-rel command line args, and use
-          the values</div>
-        <div>passed to these args to set IV_PLAT and IV_PLAT_REL info
-          that is pushed</div>
-        <div>to the server.</div>
-        <div><br>
-        </div>
-        <div>IV_PLAT (platform type) is normally inferred from the build
-          target, but</div>
-        <div>it would be useful to be able to override this from the
-          command line</div>
-        <div>(e.g. for client to set platform as ChromeOS instead of
-          Linux).</div>
-        <div><br>
-        </div>
-        <div>IV_PLAT_REL (platform release version) would allow for
-          pushing the</div>
-        <div>platform (e.g. ChromeOS) release version to the server.</div>
-        <div><br>
-        </div>
-      </div>
-    </blockquote>
-    My Android client already uses <br>
-    <br>
-    setenv IV_PLAT_VER to send platform specific information. I think
-    setting IV_PLAT_VER (and extend that to other platforms, might be
-    android specific at the moment) should also work for you. E.g..<br>
-    <br>
-    setenv IV_PLAT_VER "27 8.1.0 arm64-v8a google taimen Pixel 2 XL"<br>
-    <br>
-    Arne<br>
-  </body>
-</html>
+I've tested installing this driver on Windows 7 Pro (64-bit) and Windows
+2012r2 (64-bit) and I did not encounter any installation issues.
+However, I do not have access to Windows 8 or Windows 10, nor to 32-bit
+platforms.
 
---------------236D344A0FA1043641F36FFB--
+I would appreciate somebody could do additional driver installation
+tests. This would help build confidence in the driver before we push it
+out. Verifying that the driver installs fine is enough.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+
+[*] The earlier driver has SHA1 as the primary signature and SHA2 as
+secondary signature.
+
+
+--WpJ1J7eFT58BjzwNAnrR7AxICmWVOrZfG--
+
+--KVyscUKdMwCQ1IZZeAm9unbquHz4hCOXR
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAlrUTr0ACgkQKVhNn0CG
+RXj9sAf/YJabehQtBMJNJbNFf9NWb9VNtBrIwppEGJ80yT7ay57LZGPEAov0qLR4
+oZOuCGG/zXDvR34/g+mCkgGvT2S7DzPHHEB1Y2/ZbHOPDmuHC0dwZiDi1vgOa5eV
+r6hbSVe9F9XMosvfx19kCzLHSYzDbtoO1Rg48mXq2XeZnFQhUHMLwlm0j7I5zFou
+yJ82BcYVOLKWYcJ8A+RJSzKeVDtvtnM2LHMMU01Nht7UReRb7+tXd/9WqBAMSAD7
+YBMVBUc0ZHPUc58Prigz//CBInwjHW/6NporyDvG5SPjsYFjXPH/pImFCIh0gvk1
+0Sv5w5VRG8yPpoJXVjp/5t9xyJCwgg==
+=YuRm
+-----END PGP SIGNATURE-----
+
+--KVyscUKdMwCQ1IZZeAm9unbquHz4hCOXR--
 
