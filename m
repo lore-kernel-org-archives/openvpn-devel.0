@@ -1,10 +1,13 @@
+References: <c113c9a5-198e-775b-c183-f319c35bdb28@...515...>
+ <3ed13a6a-07fd-3f0c-100c-148099bc8971@...277...>
 From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <b7bfc99a-51e5-0fa7-9598-067a264564a6@...515...>
-Date: Wed, 18 Apr 2018 10:01:08 +0300
+Message-ID: <5933800c-2302-8064-3458-a1941141158c@...515...>
+Date: Wed, 18 Apr 2018 10:19:58 +0300
 MIME-Version: 1.0
+In-Reply-To: <3ed13a6a-07fd-3f0c-100c-148099bc8971@...277...>
 Content-Language: en-US
-Subject: [Openvpn-devel] Topics for the community meeting (Wed,
- 18th Apr 2018)
+Subject: Re: [Openvpn-devel] New tap-windows6 driver (9.21.3) available for
+ testing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,32 +16,102 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="iso-8859-15"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+To: fragmentux <fragmentux@...277...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-We're going to have an IRC meeting starting at 11:30 CET
-(10:30 UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have
-to be logged in to Freenode to join the channel.
+A couple of follow-up questions from a fellow tap-windows6 builder:
 
-Current topic list along with basic information is here:
+- Is you Windows 10 system a clean install (not upgraded from 7/8)?
+- Is secure boot turned on?
+- Is your Windows 10 64-bit?
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2018-04-18>
+If the answer to all of these is "yes" then I think we're pretty safe as
+far as the signature is concerned.
 
-If you have any other things you'd like to bring up, respond to this
-mail, send me mail privately or add them to the list yourself.
-
-In case you can't attend the meeting, please feel free to make comments
-on the topics by responding to this email or to the summary email sent
-after the meeting. Whenever possible, we'll also respond to existing,
-related email threads.
-
---
+--=20
 Samuli Sepp=E4nen
 Community Manager
 OpenVPN Technologies, Inc
 
 irc freenode net: mattock
+
+Il 16/04/2018 16:56, fragmentux ha scritto:
+> Hi,
+>=20
+> I have successfully installed and am currently using this driver
+> on Windows 10 fully upto date.
+>=20
+> Aside from the usual windblows crap (new layers of BS between *Programs
+> and Features and Network Connections .. you know what I mean) the
+> installation went smoothly.
+>=20
+> However, some issues encountered:
+>=20
+> * On first running my normal (unchanged) server config, openvpn bombed
+> out with "Cannot retrieve password" .. on second run the error was gone.
+> Tried uninstall/reinstall TAP driver and the same error did NOT occur.
+>=20
+> * During install Windows asked "If i wanted to trust openvpn inc .."
+> to which I replied NO.=A0 On the second install Windows did NOT ask "if
+> I wanted to trust openvpn inc." .. I don't know what that means ..
+> Perhaps, the install cert was installed anyway ?
+>=20
+> HTH
+>=20
+>=20
+>=20
+>=20
+> On 16/04/18 08:20, Samuli Sepp=E4nen wrote:
+>> Hi,
+>>
+>> We're bundling a tap-windows6 driver (9.21.3) with OpenVPN 2.4.6 that is
+>> due later this week:
+>>
+>> https://build.openvpn.net/downloads/temp/tap-windows-9.21.3-I601.exe
+>>
+>> The main difference to the old driver (9.21.2) is that the driver and
+>> installer have only a SHA2 Authenticode signature[*]. This means that
+>> Windows Vista should refuse to install the driver. Some outdated Windows
+>> 7 installations might behave the same. This is intentional on our part,
+>> as Vista is EOL and we don't want to support Windows 7 installations
+>> that are horribly outdated.
+>>
+>> I've tested installing this driver on Windows 7 Pro (64-bit) and Windows
+>> 2012r2 (64-bit) and I did not encounter any installation issues.
+>> However, I do not have access to Windows 8 or Windows 10, nor to 32-bit
+>> platforms.
+>>
+>> I would appreciate somebody could do additional driver installation
+>> tests. This would help build confidence in the driver before we push it
+>> out. Verifying that the driver installs fine is enough.
+>>
+>>
+>>
+>> ------------------------------------------------------------------------=
+------
+>>
+>> Check out the vibrant tech community on one of the world's most
+>> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
+>>
+>>
+>>
+>> _______________________________________________
+>> Openvpn-devel mailing list
+>> Openvpn-devel@lists.sourceforge.net
+>> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>>
+>=20
+> -------------------------------------------------------------------------=
+-----
+>=20
+> Check out the vibrant tech community on one of the world's most
+> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
 
