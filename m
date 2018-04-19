@@ -1,14 +1,11 @@
-Resent-Message-ID: <20180425061259.GO69387@...1296...>
+Resent-Message-ID: <20180425061419.GP69387@...1296...>
 Resent-To: openvpn-devel@lists.sourceforge.net
-MIME-Version: 1.0
+Date: Thu, 19 Apr 2018 17:24:49 +0200 (CEST)
+Message-Id: <201804191524.w3JFOnGd007014@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20180414072617.25075-1-gert@...1296...>
-References: <CAKuzo_jtPA4=NMeER1YwjRwGkq3NG39aqxHN3NCPGY+3KkAHpg@...278...>
- <20180414072617.25075-1-gert@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Sat, 14 Apr 2018 12:44:57 -0400
-Message-ID: <CAKuzo_h-GusttjiFUeV2tivFAKHFdqTnDseg9KiVru5ftWszyg@...278...>
-Content-Type: multipart/alternative; boundary="000000000000b571d50569d1b62b"
-Subject: Re: [Openvpn-devel] [PATCH v2] Fix potential double-free() in
+References: <20180414072617.25075-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix potential double-free() in
  Interactive Service (CVE-2018-9336)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -18,80 +15,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: Gert Doering <gert@...1296...>
-Cc: security@...515..., jbaines@...2391...
+Cc: openvpn-devel@lists.sourceforge.net
 
---000000000000b571d50569d1b62b
-Content-Type: text/plain; charset="UTF-8"
+Your patch has been applied to the master and release/2.4 branch.
 
-On Sat, Apr 14, 2018 at 3:26 AM, Gert Doering <gert@...1296...> wrote:
+commit 1394192b210cb3c6624a7419bcf3ff966742e79b (master)
+commit da242af8d3750a231bfd687d0a92cf2004dae988 (release/2.4)
+Author: Gert Doering
+Date:   Sat Apr 14 09:26:17 2018 +0200
 
-> Malformed input data on the service pipe towards the OpenVPN interactive
-> service (normally used by the OpenVPN GUI to request openvpn instances
-> from the service) can result in a double free() in the error handling code.
->
-> This usually only leads to a process crash (DoS by an unprivileged local
-> account) but since it could possibly lead to memory corruption if
-> happening while multiple other threads are active at the same time,
-> CVE-2018-9336 has been assigned to acknowledge this risk.
->
-> Fix by ensuring that sud->directory is set to NULL in GetStartUpData()
-> for all error cases (thus not being free()ed in FreeStartupData()).
->
-> Rewrite control flow to use explicit error label for error exit.
->
-> Discovered and reported by Jacob Baines <jbaines@...2391...>.
->
-> CVE: 2018-9336
->
-> Signed-off-by: Gert Doering <gert@...1296...>
->
-> --
-> v2: reword commit message, no code changes
+     Fix potential double-free() in Interactive Service (CVE-2018-9336)
+
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Selva Nair <selva.nair@...277...>
+     Message-Id: <20180414072617.25075-1-gert@...1296...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20180414072617.25075-1-gert@...1296...
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-Just for completeness: all good so ACK again.
+--
+kind regards,
 
-Selva
-
---000000000000b571d50569d1b62b
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail_extra"><div class=3D"gmail_quote">On S=
-at, Apr 14, 2018 at 3:26 AM, Gert Doering <span dir=3D"ltr">&lt;<a href=3D"=
-mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</span> wr=
-ote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border=
--left:1px #ccc solid;padding-left:1ex">Malformed input data on the service =
-pipe towards the OpenVPN interactive<br>
-service (normally used by the OpenVPN GUI to request openvpn instances<br>
-from the service) can result in a double free() in the error handling code.=
-<br>
-<br>
-This usually only leads to a process crash (DoS by an unprivileged local<br>
-account) but since it could possibly lead to memory corruption if<br>
-happening while multiple other threads are active at the same time,<br>
-CVE-2018-9336 has been assigned to acknowledge this risk.<br>
-<br>
-Fix by ensuring that sud-&gt;directory is set to NULL in GetStartUpData()<b=
-r>
-for all error cases (thus not being free()ed in FreeStartupData()).<br>
-<br>
-Rewrite control flow to use explicit error label for error exit.<br>
-<br>
-Discovered and reported by Jacob Baines &lt;<a href=3D"mailto:jbaines@...2392...=
-91...">jbaines@...2391...</a>&gt;.<br>
-<br>
-CVE: 2018-9336<br>
-<br>
-Signed-off-by: Gert Doering &lt;<a href=3D"mailto:gert@...1296...">gert@...493...=
-1296...</a>&gt;<br>
-<br>
---<br>
-v2: reword commit message, no code changes</blockquote><div><br></div><div>=
-Just for completeness: all good so ACK again.=C2=A0</div><div><br></div><di=
-v>Selva</div></div></div></div>
-
---000000000000b571d50569d1b62b--
+Gert Doering
 
 
