@@ -1,15 +1,12 @@
-References: <c113c9a5-198e-775b-c183-f319c35bdb28@...515...>
- <99D61A626FDA8A4B90A270669121BE10862C1C09@...2294...>
- <a2e0b87d-19bc-3b7b-4873-b211edab78a0@...515...>
- <CAKuzo_gTpFDQ9YV70WDD_EEMiScAJL+eQ9wZWyT2REg43yHGCg@...278...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <32e0ce4f-014c-2804-b005-044c4d44f752@...515...>
-Date: Wed, 18 Apr 2018 20:46:52 +0300
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_gTpFDQ9YV70WDD_EEMiScAJL+eQ9wZWyT2REg43yHGCg@...278...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] New tap-windows6 driver (9.21.3) available for
- testing
+In-Reply-To: <20180413142402.686-1-simon@...2293...>
+References: <20180413075755.1445-1-simon@...2293...>
+ <20180413142402.686-1-simon@...2293...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 18 Apr 2018 23:59:37 -0400
+Message-ID: <CAKuzo_gJjQR4-RC=FbmzNgVHRh2L57bbgJku1gchhzH1e6RFFA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v4] Add Interactive Service developer
+ documentation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,78 +15,119 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: Simon Rozman <simon@...2293...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-Il 18/04/2018 20:22, Selva Nair ha scritto:
-> 
+Looks good now except for an error introduced by my sloppy comment. See bel=
+ow:
+
+On Fri, Apr 13, 2018 at 10:24 AM, Simon Rozman <simon@...2293...> wrote:
+> The OpenVPN Interactive Service documentation from
+> https://community.openvpn.net/openvpn/wiki/OpenVPNInteractiveService was
+> upgraded with a description of the client-service communication flow,
+> service registry configuration, and non-default instance installation.
+> ---
+
+BTW, additional comments not to be included in the commit message
+could go here instead of at the bottom. Easier to read/notice, but either
+way is fine by me.
+
+>  doc/interactive-service-notes.txt | 329 ++++++++++++++++++++++++++++++++=
+++++++
+>  1 file changed, 329 insertions(+)
+>  create mode 100644 doc/interactive-service-notes.txt
+>
+> diff --git a/doc/interactive-service-notes.txt b/doc/interactive-service-=
+notes.txt
+> new file mode 100644
+> index 00000000..6f716800
+> --- /dev/null
+> +++ b/doc/interactive-service-notes.txt
+> @@ -0,0 +1,329 @@
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +OpenVPN Interactive Service Notes
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +
+
+..snipped..
+
+>
+>
+> +
+> +openvpn.exe Termination
+> +-----------------------
+> +
+> +The pipe between the client and the service is kept open until the openv=
+pn.exe
+> +process terminates.
+> +
+> +Should the openvpn.exe process terminate with an error, the Interactive =
+Service
+> +sends an error message to the client before disconnecting the pipe.
+> +
+> +Note that Interactive Service never terminates the openvpn.exe process. =
+Not even
+> +when the service is stopped or restarted. Therefore, the client must mon=
+itor the
+> +openvpn.exe process itself. OpenVPN Management Interface is recommended =
+for
+> +this.
+
+I was confused when I suggested to add this. In fact iservice does force-ki=
+ll
+openvpn.exe processes at service termination. The process is not killed
+if the pipe client disconnects. So the above needs to be reworded --
+may be revert to your original?
+
+Sorry about that.
+..
+
 > Hi,
-> 
-> On Tue, Apr 17, 2018 at 3:01 AM, Samuli Seppänen <samuli@...515...
-> <mailto:samuli@...515...>> wrote:
-> 
-> 
-> 
->     Excellent and thanks for testing! This gives me a lot more confidence in
->     the Authenticode signature.
-> 
-> 
-> I don't want to question that as none of my Windows hosts complains
-> about the signature. But the driver details tab shows the file as not
-> digitally signed. That's as in, adapter properties -> driver -> driver
-> details. One level before that it shows Digital signer: OpenVPN Tech..
-> Go figure.. And likely this "problem" existed in previous version too.
-> This is on Windows 7.
+>
+> The inclusion of the doc/interactive-service-notes.txt file in the doc/Ma=
+kefile.am introduced in v2 was dropped in v3. Giving it a second thought, t=
+here is no point into packaging this file for non-Windows distributions, si=
+nce the Interactive Service is Windows-specific.
+>
+> I am reluctant to rewrite the "How It Works" section to a more formal lan=
+guage. Nor do I feel a need to. Gert's easy-going language describes the bi=
+g picture of the Interactive Service idea anyone can understand in ten seco=
+nds. Not something you can easily achieve using a formal language. In v3 of=
+ this patch, I did made it a bit more formal nevertheless.
+>
+> Selva, thank you for your remarks. I have updated the text.
+>
+> BTW, the "_" after the quoted section name is a reStructuredText markup t=
+hat renders the section name as a reference/hyperlink to that section. You =
+don't need to install the Docutils -- use a nice reStructuredText online ed=
+itor/renderer at http://rst.ninjs.org to get the final document look. Nice =
+thing with reStructuredText is that the markup clutters the original text a=
+ bit less than Markdown.
 
-This has always been the same afaik. I think it is an inconsistency in
-how Windows checks the signature.
+I was convinced even without seeing the rendered version. But wow, it
+does look good.
 
-> Looking into this further using pnputil and sigverify:
-> 
-> C:\Windows\System32>pnputil -e
-> Microsoft PnP Utility
-> 
-> .. snipped...
-> 
-> Published name :            oem13.inf
-> Driver package provider :   Microsoft
-> Class :                     Printers
-> Driver date and version :   05/28/2012 15.0.4128.4000
-> Signer name :               Microsoft Windows Hardware Compatibility
-> Publisher
-> 
-> Published name :            oem14.inf
-> Driver package provider :   TAP-Windows Provider V9
-> Class :                     Network adapters
-> Driver date and version :   04/13/2018 9.00.00.21
-> Signer name :
-> 
-> ...snipped...
-> 
-> C:\Windows\System32\catroot>  sigverify
-> 
-> This also lists tap0901.sys as unsigned.
-> 
-> Is this a known Windows 7 issue? Will check Windows 10 later tonight.
-> 
-> Selva
+>
+>
+> I don't plan to document the service pipe between Interactive Service and=
+ openvpn.exe. I am not experienced in it. The service pipe is internal Open=
+VPN affair, not something you need to know when developing a custom OpenVPN=
+ frontend. The target audience of doc/interactive-service-notes.txt documen=
+t as it is now are developers looking to automate openvpn.exe use on Window=
+s. However, I don't mind somebody extend it with service pipe documentation.
 
-I believe it is enough if the catalog file is signed. If my memory
-serves me correctly the sys file could be signed at some point in the
-history of Windows.
+OK, leave that for another day.
 
-If you can test 64-bit Windows 10 with Secure boot enabled which is not
-an upgrade from Windows 7/8 that would be optimal. I've been told that
-combo is the most picky about signatures.
+ACK from me once the point mentioned above is addressed.
 
--- 
-Samuli Seppänen
-Community Manager
-OpenVPN Technologies, Inc
+Thanks for doing this,
 
-irc freenode net: mattock
+Selva
 
