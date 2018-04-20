@@ -1,10 +1,10 @@
-From: Simon Rozman <simon@...2293...>
-Date: Thu, 19 Apr 2018 13:23:13 +0200
-Message-Id: <20180419112313.1013-1-simon@...2293...>
-In-Reply-To: <CAKuzo_gJjQR4-RC=FbmzNgVHRh2L57bbgJku1gchhzH1e6RFFA@...278...>
-References: <CAKuzo_gJjQR4-RC=FbmzNgVHRh2L57bbgJku1gchhzH1e6RFFA@...278...>
-Subject: [Openvpn-devel] [PATCH v5] Add Interactive Service developer
- documentation
+From: Eric Thorpe <eric@...1918...>
+Message-ID: <d75b57da-d1ca-d4ca-41c1-f9af06ec54bb@...1918...>
+Date: Fri, 20 Apr 2018 15:20:26 +1000
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="------------72D65BE447B1BC7813BDFFFE"
+Content-Language: en-US
+Subject: [Openvpn-devel] [Patch] Support client reason from auth plugin
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,371 +13,140 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The OpenVPN Interactive Service documentation from
-https://community.openvpn.net/openvpn/wiki/OpenVPNInteractiveService was
-upgraded with a description of the client-service communication flow,
-service registry configuration, and non-default instance installation.
----
-Thank you Selva for your review.
+This is a multi-part message in MIME format.
+--------------72D65BE447B1BC7813BDFFFE
+Content-Type: multipart/alternative;
+ boundary="------------E4B7A9C271B48D194E3677C6"
 
-Changes from [PATCH v4]:
+--------------E4B7A9C271B48D194E3677C6
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-1. git mv doc/interactive-service-notes.txt doc/interactive-service-notes.rst
-2. The section headings were restyled
-3. Selva's remark on openvpn.exe process termination has been taken into
-   consideration. The entire `openvpn.exe Termination` was reworded into a new
-   section `openvpn.exe Monitoring and Termination`.
+Hi All,
 
-Rationale behind 1. and 2. is unification with documents located in tap-windows6
-repository.
+This patch allows for a client reason to be returned from an auth plugin 
+and sent to the connecting client on an auth fail. This change is 
+backwards compatible with existing plugins and hasn't caused issues with 
+existing plugins like the included pam plugin in our testing. The main 
+purpose of this change is to support dynamic challenge/response from 
+plugins, currently this is only possible from the management interface.
 
-Best regards,
-Simon
+Example usage for this change can be found in a new plugin here modified 
+from the included PAM plugin - 
+https://github.com/thesparklabs/openvpn-two-factor-extensions/tree/master/yubikey-u2f-pam-plugin
 
- doc/interactive-service-notes.rst | 330 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 330 insertions(+)
- create mode 100644 doc/interactive-service-notes.rst
+Regards,
+Eric
 
-diff --git a/doc/interactive-service-notes.rst b/doc/interactive-service-notes.rst
-new file mode 100644
-index 00000000..32c7f2bd
---- /dev/null
-+++ b/doc/interactive-service-notes.rst
-@@ -0,0 +1,330 @@
-+OpenVPN Interactive Service Notes
-+=================================
-+
-+
-+Introduction
-+------------
-+
-+OpenVPN Interactive Service, also known as "iservice" or
-+"OpenVPNServiceInteractive", is a Windows system service which allows
-+unprivileged openvpn.exe process to do certain privileged operations, such as
-+adding routes. This removes the need to always run OpenVPN as administrator,
-+which was the case for a long time, and continues to be the case for OpenVPN
-+2.3.x.
-+
-+The 2.4.x release and git "master" versions of OpenVPN contain the Interactive
-+Service code and OpenVPN-GUI is setup to use it by default. Starting from
-+version 2.4.0, OpenVPN-GUI is expected to be started as user (do not right-click
-+and "run as administrator" or do not set the shortcut to run as administrator).
-+This ensures that OpenVPN and the GUI run with limited privileges.
-+
-+
-+How It Works
-+------------
-+
-+Here is a brief explanation of how the Interactive Service works, based on
-+`Gert's email`_ to openvpn-devel mailing list. The example user, *joe*, is not
-+an administrator, and does not have any other extra privileges.
-+
-+- OpenVPN-GUI runs as user *joe*.
-+
-+- Interactive Service runs as a local Windows service with maximum privileges.
-+
-+- OpenVPN-GUI connects to the Interactive Service and asks it to "run
-+  openvpn.exe with the given command line options".
-+
-+- Interactive Service starts openvpn.exe process as user *joe*, and keeps a
-+  service pipe between Interactive Service and openvpn.exe.
-+
-+- When openvpn.exe wants to perform any operation that require elevation (e.g.
-+  ipconfig, route, configure DNS), it sends a request over the service pipe to
-+  the Interactive Service, which will then execute it (and clean up should
-+  openvpn.exe crash).
-+
-+- ``--up`` scripts are run by openvpn.exe itself, which is running as user
-+  *joe*, all privileges are nicely in place.
-+
-+- Scripts run by the GUI will run as user *joe*, so that automated tasks like
-+  mapping of drives work as expected.
-+
-+This avoids the use of scripts for privilege escalation (as was possible by
-+running an ``--up`` script from openvpn.exe which is run as administrator).
-+
-+
-+Client-Service Communication
-+----------------------------
-+
-+Connecting
-+~~~~~~~~~~
-+
-+The client (OpenVPN GUI) and the Interactive Service communicate using a named
-+message pipe. By default, the service provides the ``\\.\pipe\openvpn\service``
-+named pipe.
-+
-+The client connects to the pipe for read/write and sets the pipe state to
-+``PIPE_READMODE_MESSAGE``::
-+
-+   HANDLE pipe = CreateFile(_T("\\\\.\\pipe\\openvpn\\service"),
-+       GENERIC_READ | GENERIC_WRITE,
-+       0,
-+       NULL,
-+       OPEN_EXISTING,
-+       FILE_FLAG_OVERLAPPED,
-+       NULL);
-+
-+   if (pipe == INVALID_HANDLE_VALUE)
-+   {
-+       // Error
-+   }
-+
-+   DWORD dwMode = PIPE_READMODE_MESSAGE;
-+   if (!SetNamedPipeHandleState(pipe, &dwMode, NULL, NULL)
-+   {
-+       // Error
-+   }
-+
-+
-+openvpn.exe Startup
-+~~~~~~~~~~~~~~~~~~~
-+
-+After the client is connected to the service, the client must send a startup
-+message to have the service start the openvpn.exe process. The startup message
-+is comprised of three UTF-16 strings delimited by U0000 zero characters::
-+
-+   startupmsg     = workingdir WZERO openvpnoptions WZERO stdin WZERO
-+
-+   workingdir     = WSTRING
-+   openvpnoptions = WSTRING
-+   stdin          = WSTRING
-+
-+   WSTRING        = *WCHAR
-+   WCHAR          = %x0001-FFFF
-+   WZERO          = %x0000
-+
-+``workingdir``
-+   Represents the folder openvpn.exe process should be started in.
-+
-+``openvpnoptions``
-+   String contains ``--config`` and other OpenVPN command line options, without
-+   the ``argv[0]`` executable name ("openvpn" or "openvpn.exe"). When there is
-+   only one option specified, the ``--config`` option is assumed and the option
-+   is the configuration filename.
-+
-+   Note that the interactive service validates the options. OpenVPN
-+   configuration file must reside in the configuration folder defined by
-+   ``config_dir`` registry value. The configuration file can also reside in any
-+   subfolder of the configuration folder. For all other folders the invoking
-+   user must be a member of local Administrators group, or a member of the group
-+   defined by ``ovpn_admin_group`` registry value ("OpenVPN Administrators" by
-+   default).
-+
-+``stdin``
-+   The content of the ``stdin`` string is sent to the openvpn.exe process to its
-+   stdin stream after it starts.
-+
-+   When a ``--management ... stdin`` option is present, the openvpn.exe process
-+   will prompt for the management interface password on start. In this case, the
-+   ``stdin`` must contain the password appended with an LF (U000A) to simulate
-+   the [Enter] key after the password is "typed" in.
-+
-+   The openvpn.exe's stdout is redirected to ``NUL``. Should the client require
-+   openvpn.exe's stdout, one should specify ``--log`` option.
-+
-+The message must be written in a single ``WriteFile()`` call.
-+
-+Example::
-+
-+   // Prepare the message.
-+   size_t msg_len =
-+       wcslen(workingdir) + 1 +
-+       wcslen(options   ) + 1 +
-+       wcslen(manage_pwd) + 1;
-+   wchar_t *msg_data = (wchar_t*)malloc(msg_len*sizeof(wchar_t));
-+   _snwprintf(msg_data, msg_len, L"%s%c%s%c%s",
-+       workingdir, L'\0',
-+       options, L'\0',
-+       manage_pwd)
-+
-+   // Send the message.
-+   DWORD dwBytesWritten;
-+   if (!WriteFile(pipe,
-+       msg_data,
-+       msg_len*sizeof(wchar_t),
-+       &dwBytesWritten,
-+       NULL))
-+   {
-+       // Error
-+   }
-+
-+   // Sanitize memory, since the stdin component of the message
-+   // contains the management interface password.
-+   SecureZeroMemory(msg_data, msg_len*sizeof(wchar_t));
-+   free(msg_data);
-+
-+
-+openvpn.exe Process ID
-+~~~~~~~~~~~~~~~~~~~~~~
-+
-+After receiving the startup message, the Interactive Service validates the user
-+and specified options before launching the openvpn.exe process.
-+
-+The Interactive Service replies with a process ID message. The process ID
-+message is comprised of three UTF-16 strings delimited by LFs (U000A)::
-+
-+   pidmsg  = L"0x00000000" WLF L"0x" pid WLF L"Process ID"
-+
-+   pid     = 8*8WHEXDIG
-+
-+   WHEXDIG = WDIGIT / L"A" / L"B" / L"C" / L"D" / L"E" / L"F"
-+   WDIGIT  = %x0030-0039
-+   WLF     = %x000a
-+
-+``pid``
-+   A UTF-16 eight-character hexadecimal process ID of the openvpn.exe process
-+   the Interactive Service launched on client's behalf.
-+
-+
-+openvpn.exe Monitoring and Termination
-+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-+
-+After the openvpn.exe process is launched, the client can disconnect the pipe to
-+the interactive service. However, it should monitor the openvpn.exe process
-+itself. OpenVPN Management Interface is recommended for this.
-+
-+The client may choose to stay connected to the pipe. When the openvpn.exe
-+process terminates, the service disconnects the pipe. Should the openvpn.exe
-+process terminate with an error, the service sends an error message to the
-+client before disconnecting the pipe.
-+
-+Note that Interactive Service terminates all child openvpn.exe processes when
-+the service is stopped or restarted. This allows a graceful elevation-required
-+clean-up (e.g. restore ipconfig, route, DNS).
-+
-+
-+Error Messages
-+~~~~~~~~~~~~~~
-+
-+In case of an error, the Interactive Service sends an error message to the
-+client. Error messages are comprised of three UTF-16 strings delimited by LFs
-+(U000A)::
-+
-+   errmsg = L"0x" errnum WLF func WLF msg
-+
-+   errnum = 8*8WHEXDIG
-+   func   = WSTRING
-+   msg    = WSTRING
-+
-+``errnum``
-+   A UTF-16 eight-character hexadecimal error code. Typically, it is one of the
-+   Win32 error codes returned by ``GetLastError()``.
-+
-+   However, it can be one of the Interactive Service specific error codes:
-+
-+   ===================== ==========
-+   Error                 Code
-+   ===================== ==========
-+   ERROR_OPENVPN_STARTUP 0x20000000
-+   ERROR_STARTUP_DATA    0x20000001
-+   ERROR_MESSAGE_DATA    0x20000002
-+   ERROR_MESSAGE_TYPE    0x20000003
-+   ===================== ==========
-+
-+``func``
-+   The name of the function call that failed or an error description.
-+
-+``msg``
-+  The error description returned by a
-+  ``FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM, 0, errnum, ...)`` call.
-+
-+
-+Interactive Service Configuration
-+---------------------------------
-+
-+The Interactive Service settings are read from the
-+``HKEY_LOCAL_MACHINE\SOFTWARE\OpenVPN`` registry key by default.
-+
-+All the following registry values are of the ``REG_SZ`` type:
-+
-+*Default*
-+   Installation folder (required, hereinafter ``install_dir``)
-+
-+``exe_path``
-+   The absolute path to the openvpn.exe binary; defaults to
-+   ``install_dir "\bin\openvpn.exe"``.
-+
-+``config_dir``
-+   The path to the configuration folder; defaults to ``install_dir "\config"``.
-+
-+``priority``
-+   openvpn.exe process priority; one of the following strings:
-+
-+   - ``"IDLE_PRIORITY_CLASS"``
-+   - ``"BELOW_NORMAL_PRIORITY_CLASS"``
-+   - ``"NORMAL_PRIORITY_CLASS"`` (default)
-+   - ``"ABOVE_NORMAL_PRIORITY_CLASS"``
-+   - ``"HIGH_PRIORITY_CLASS"``
-+
-+``ovpn_admin_group``
-+   The name of the local group, whose members are authorized to use the
-+   Interactive Service unrestricted; defaults to ``"OpenVPN Administrators"``
-+
-+
-+Multiple Interactive Service Instances
-+--------------------------------------
-+
-+OpenVPN 2.4.5 extended the Interactive Service to support multiple side-by-side
-+running instances. This allows clients to use different Interactive Service
-+versions with different settings and/or openvpn.exe binary version on the same
-+computer.
-+
-+OpenVPN installs the default Interactive Service instance only. The default
-+instance is used by OpenVPN GUI client and also provides backward compatibility.
-+
-+
-+Installing a Non-default Interactive Service Instance
-+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-+
-+1. Choose a unique instance name. For example: "$v2.5-test". The instance name
-+   is appended to the default registry path and service name. We choose to start
-+   it with a dollar "$" sign analogous to Microsoft SQL Server instance naming
-+   scheme. However, this is not imperative.
-+
-+   Appending the name to the registry path and service name also implies the
-+   name cannot contain characters not allowed in Windows paths: "<", ">", double
-+   quote etc.
-+
-+2. Create an ``HKEY_LOCAL_MACHINE\SOFTWARE\OpenVPN$v2.5-test`` registry key and
-+   configure the Interactive Service instance configuration appropriately.
-+
-+   This allows using slightly or completely different settings from the default
-+   instance.
-+
-+   See the `Interactive Service Configuration`_ section for the list of registry
-+   values.
-+
-+3. Create and start the instance's Windows service from an elevated command
-+   prompt::
-+
-+      sc create "OpenVPNServiceInteractive$v2.5-test" \
-+         start= auto \
-+         binPath= "<path to openvpnserv.exe> -instance interactive $v2.5-test" \
-+         depend= tap0901/Dhcp \
-+         DisplayName= "OpenVPN Interactive Service (v2.5-test)"
-+
-+      sc start "OpenVPNServiceInteractive$v2.5-test"
-+
-+   This allows using the same or a different version of openvpnserv.exe than the
-+   default instance.
-+
-+   Note the space after "=" character in ``sc`` command line options.
-+
-+4. Set your OpenVPN client to connect to the
-+   ``\\.\pipe\openvpn$v2.5-test\service``.
-+
-+   This allows the client to select a different installed Interactive Service
-+   instance at run-time, thus allowing different OpenVPN settings and versions.
-+
-+   At the time writing, the OpenVPN GUI client supports connecting to the
-+   default Interactive Service instance only.
-+
-+.. _`Gert's email`: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg00097.html
+-- 
 --
-2.15.1 (Apple Git-101)
+Eric Thorpe
+SparkLabs Developer
+https://www.sparklabs.com
+https://twitter.com/sparklabs
+support@...1918...
+
+
+--------------E4B7A9C271B48D194E3677C6
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  </head>
+  <body text="#000000" bgcolor="#FFFFFF">
+    <p>Hi All,</p>
+    <p>This patch allows for a client reason to be returned from an auth
+      plugin and sent to the connecting client on an auth fail. This
+      change is backwards compatible with existing plugins and hasn't
+      caused issues with existing plugins like the included pam plugin
+      in our testing. The main purpose of this change is to support
+      dynamic challenge/response from plugins, currently this is only
+      possible from the management interface.<br>
+    </p>
+    <p>Example usage for this change can be found in a new plugin here
+      modified from the included PAM plugin - <a
+        class="moz-txt-link-freetext"
+href="https://github.com/thesparklabs/openvpn-two-factor-extensions/tree/master/yubikey-u2f-pam-plugin">https://github.com/thesparklabs/openvpn-two-factor-extensions/tree/master/yubikey-u2f-pam-plugin</a></p>
+    <p>Regards,<br>
+      Eric<br>
+    </p>
+    <pre class="moz-signature" cols="72">-- 
+--
+Eric Thorpe
+SparkLabs Developer
+<a class="moz-txt-link-freetext" href="https://www.sparklabs.com">https://www.sparklabs.com</a>
+<a class="moz-txt-link-freetext" href="https://twitter.com/sparklabs">https://twitter.com/sparklabs</a>
+<a class="moz-txt-link-abbreviated" href="mailto:support@...1918...">support@...1918...</a></pre>
+  </body>
+</html>
+
+--------------E4B7A9C271B48D194E3677C6--
+
+--------------72D65BE447B1BC7813BDFFFE
+Content-Type: text/plain; charset=UTF-8;
+ name="0001-Modify-verify_user_pass_plugin-to-support-returning-.patch"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename*0="0001-Modify-verify_user_pass_plugin-to-support-returning-.pa";
+ filename*1="tch"
+
+RnJvbSAwOTcwZjE2YzI3YzJiOTBkZjA0YWQxNDhiZWE4NGE5YmZkM2FkNGEwIE1vbiBTZXAg
+MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBldGhvcnBlIDxlcmljQHNwYXJrbGFicy5jb20+CkRh
+dGU6IFdlZCwgMTggQXByIDIwMTggMTk6MDU6NTQgKzEwMDAKU3ViamVjdDogW1BBVENIXSBN
+b2RpZnkgdmVyaWZ5X3VzZXJfcGFzc19wbHVnaW4gdG8gc3VwcG9ydCByZXR1cm5pbmcgYQog
+Y2xpZW50X3JlYXNvbiB3aGVuCgphdXRoIGlzIHJlamVjdGVkLiBUaGlzIGlzIGJhY2t3YXJk
+cyBjb21wYXRpYmxlIHdpdGggZXhpc3RpbmcgcGx1Z2lucy4KLS0tCiBzcmMvb3BlbnZwbi9z
+c2xfdmVyaWZ5LmMgfCAyNSArKysrKysrKysrKysrKysrKysrKysrLS0tCiAxIGZpbGUgY2hh
+bmdlZCwgMjIgaW5zZXJ0aW9ucygrKSwgMyBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9z
+cmMvb3BlbnZwbi9zc2xfdmVyaWZ5LmMgYi9zcmMvb3BlbnZwbi9zc2xfdmVyaWZ5LmMKaW5k
+ZXggMjUzOTViMi4uNjI2NmZiMyAxMDA2NDQKLS0tIGEvc3JjL29wZW52cG4vc3NsX3Zlcmlm
+eS5jCisrKyBiL3NyYy9vcGVudnBuL3NzbF92ZXJpZnkuYwpAQCAtMTE2Nyw3ICsxMTY3LDcg
+QEAgZG9uZToKICAqIFZlcmlmeSB0aGUgdXNlcm5hbWUgYW5kIHBhc3N3b3JkIHVzaW5nIGEg
+cGx1Z2luCiAgKi8KIHN0YXRpYyBpbnQKLXZlcmlmeV91c2VyX3Bhc3NfcGx1Z2luKHN0cnVj
+dCB0bHNfc2Vzc2lvbiAqc2Vzc2lvbiwgY29uc3Qgc3RydWN0IHVzZXJfcGFzcyAqdXAsIGNv
+bnN0IGNoYXIgKnJhd191c2VybmFtZSkKK3ZlcmlmeV91c2VyX3Bhc3NfcGx1Z2luKHN0cnVj
+dCB0bHNfc2Vzc2lvbiAqc2Vzc2lvbiwgc3RydWN0IHRsc19tdWx0aSAqbXVsdGksIGNvbnN0
+IHN0cnVjdCB1c2VyX3Bhc3MgKnVwLCBjb25zdCBjaGFyICpyYXdfdXNlcm5hbWUpCiB7CiAg
+ICAgaW50IHJldHZhbCA9IE9QRU5WUE5fUExVR0lOX0ZVTkNfRVJST1I7CiAjaWZkZWYgUExV
+R0lOX0RFRl9BVVRICkBAIC0xMTc3LDYgKzExNzcsOSBAQCB2ZXJpZnlfdXNlcl9wYXNzX3Bs
+dWdpbihzdHJ1Y3QgdGxzX3Nlc3Npb24gKnNlc3Npb24sIGNvbnN0IHN0cnVjdCB1c2VyX3Bh
+c3MgKnVwLAogICAgIC8qIElzIHVzZXJuYW1lIGRlZmluZWQ/ICovCiAgICAgaWYgKChzZXNz
+aW9uLT5vcHQtPnNzbF9mbGFncyAmIFNTTEZfQVVUSF9VU0VSX1BBU1NfT1BUSU9OQUwpIHx8
+IHN0cmxlbih1cC0+dXNlcm5hbWUpKQogICAgIHsKKyAgICAgICAgc3RydWN0IHBsdWdpbl9y
+ZXR1cm4gcHIsIHByZmV0Y2g7CisgICAgICAgIHBsdWdpbl9yZXR1cm5faW5pdCgmcHIpOwor
+CiAgICAgICAgIC8qIHNldCB1c2VybmFtZS9wYXNzd29yZCBpbiBwcml2YXRlIGVudiBzcGFj
+ZSAqLwogICAgICAgICBzZXRlbnZfc3RyKHNlc3Npb24tPm9wdC0+ZXMsICJ1c2VybmFtZSIs
+IChyYXdfdXNlcm5hbWUgPyByYXdfdXNlcm5hbWUgOiB1cC0+dXNlcm5hbWUpKTsKICAgICAg
+ICAgc2V0ZW52X3N0cihzZXNzaW9uLT5vcHQtPmVzLCAicGFzc3dvcmQiLCB1cC0+cGFzc3dv
+cmQpOwpAQCAtMTE5OCw3ICsxMjAxLDIzIEBAIHZlcmlmeV91c2VyX3Bhc3NfcGx1Z2luKHN0
+cnVjdCB0bHNfc2Vzc2lvbiAqc2Vzc2lvbiwgY29uc3Qgc3RydWN0IHVzZXJfcGFzcyAqdXAs
+CiAjZW5kaWYKIAogICAgICAgICAvKiBjYWxsIGNvbW1hbmQgKi8KLSAgICAgICAgcmV0dmFs
+ID0gcGx1Z2luX2NhbGwoc2Vzc2lvbi0+b3B0LT5wbHVnaW5zLCBPUEVOVlBOX1BMVUdJTl9B
+VVRIX1VTRVJfUEFTU19WRVJJRlksIE5VTEwsIE5VTEwsIHNlc3Npb24tPm9wdC0+ZXMpOwor
+ICAgICAgICByZXR2YWwgPSBwbHVnaW5fY2FsbChzZXNzaW9uLT5vcHQtPnBsdWdpbnMsIE9Q
+RU5WUE5fUExVR0lOX0FVVEhfVVNFUl9QQVNTX1ZFUklGWSwgTlVMTCwgJnByLCBzZXNzaW9u
+LT5vcHQtPmVzKTsKKworICAgICAgICAvKiBGZXRjaCBjbGllbnQgcmVhc29uICovCisgICAg
+ICAgIHBsdWdpbl9yZXR1cm5fZ2V0X2NvbHVtbigmcHIsICZwcmZldGNoLCAiY2xpZW50X3Jl
+YXNvbiIpOworICAgICAgICBpZiAocGx1Z2luX3JldHVybl9kZWZpbmVkKCZwcmZldGNoKSkK
+KyAgICAgICAgeworICAgICAgICAgICAgaW50IGk7CisgICAgICAgICAgICBmb3IgKGkgPSAw
+OyBpIDwgcHJmZXRjaC5uOyArK2kpCisgICAgICAgICAgICB7CisgICAgICAgICAgICAgICAg
+aWYgKHByZmV0Y2gubGlzdFtpXSAmJiBwcmZldGNoLmxpc3RbaV0tPnZhbHVlKQorICAgICAg
+ICAgICAgICAgIHsKKyAgICAgICAgICAgICAgICAgICAgbWFuX2RlZl9hdXRoX3NldF9jbGll
+bnRfcmVhc29uKG11bHRpLCBwcmZldGNoLmxpc3RbaV0tPnZhbHVlKTsKKyAgICAgICAgICAg
+ICAgICB9CisgICAgICAgICAgICB9CisgICAgICAgIH0KKworICAgICAgICBwbHVnaW5fcmV0
+dXJuX2ZyZWUoJnByKTsKIAogI2lmZGVmIFBMVUdJTl9ERUZfQVVUSAogICAgICAgICAvKiBw
+dXJnZSBhdXRoIGNvbnRyb2wgZmlsZW5hbWUgKGFuZCBmaWxlIGl0c2VsZikgZm9yIG5vbi1k
+ZWZlcnJlZCByZXR1cm5zICovCkBAIC0xMzc4LDcgKzEzOTcsNyBAQCB2ZXJpZnlfdXNlcl9w
+YXNzKHN0cnVjdCB1c2VyX3Bhc3MgKnVwLCBzdHJ1Y3QgdGxzX211bHRpICptdWx0aSwKICNl
+bmRpZgogICAgIGlmIChwbHVnaW5fZGVmaW5lZChzZXNzaW9uLT5vcHQtPnBsdWdpbnMsIE9Q
+RU5WUE5fUExVR0lOX0FVVEhfVVNFUl9QQVNTX1ZFUklGWSkpCiAgICAgewotICAgICAgICBz
+MSA9IHZlcmlmeV91c2VyX3Bhc3NfcGx1Z2luKHNlc3Npb24sIHVwLCByYXdfdXNlcm5hbWUp
+OworICAgICAgICBzMSA9IHZlcmlmeV91c2VyX3Bhc3NfcGx1Z2luKHNlc3Npb24sIG11bHRp
+LCB1cCwgcmF3X3VzZXJuYW1lKTsKICAgICB9CiAgICAgaWYgKHNlc3Npb24tPm9wdC0+YXV0
+aF91c2VyX3Bhc3NfdmVyaWZ5X3NjcmlwdCkKICAgICB7Ci0tIAoyLjcuNAoK
+--------------72D65BE447B1BC7813BDFFFE--
 
