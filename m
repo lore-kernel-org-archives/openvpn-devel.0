@@ -1,11 +1,15 @@
+References: <20180420111624.7230-1-a@...2181...>
+ <20180420111624.7230-3-a@...2181...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <09ce3f2e-cd16-933d-1a52-b8d89e68ac74@...2181...>
+Date: Sat, 21 Apr 2018 12:41:28 +0800
 MIME-Version: 1.0
-In-Reply-To: <20180420080026.GZ69387@...1296...>
-References: <d75b57da-d1ca-d4ca-41c1-f9af06ec54bb@...1918...>
- <20180420080026.GZ69387@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Fri, 20 Apr 2018 10:12:21 -0400
-Message-ID: <CAKuzo_jZtgqbNoOifLqhscveDu1gbfVgznx0i1cBpWz25yo9AQ@...278...>
-Subject: Re: [Openvpn-devel] [Patch] Support client reason from auth plugin
+In-Reply-To: <20180420111624.7230-3-a@...2181...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="RauYINXqhskykXbSfjmWKOotg3Un2zc6K"
+Subject: Re: [Openvpn-devel] [PATCH 2/8] implement networking API for
+ iproute2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,29 +18,86 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: Eric Thorpe <eric@...1918...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hi
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--RauYINXqhskykXbSfjmWKOotg3Un2zc6K
+Content-Type: multipart/mixed; boundary="cmKUMcSQyAchvBmv7rTb9JKblsiTl0Gvm";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <09ce3f2e-cd16-933d-1a52-b8d89e68ac74@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH 2/8] implement networking API for iproute2
+References: <20180420111624.7230-1-a@...2181...>
+ <20180420111624.7230-3-a@...2181...>
+In-Reply-To: <20180420111624.7230-3-a@...2181...>
 
-On Fri, Apr 20, 2018 at 4:00 AM, Gert Doering <gert@...1296...> wrote:
-> Hi,
->
-> On Fri, Apr 20, 2018 at 03:20:26PM +1000, Eric Thorpe wrote:
->> This patch allows for a client reason to be returned from an auth plugin
->> and sent to the connecting client on an auth fail. This change is
->> backwards compatible with existing plugins and hasn't caused issues with
->> existing plugins like the included pam plugin in our testing. The main
->> purpose of this change is to support dynamic challenge/response from
->> plugins, currently this is only possible from the management interface.
->
-> I find this highly interesting, so "feature ACK".  No idea about the
-> code though... David and Selva understand plugins :-)
+--cmKUMcSQyAchvBmv7rTb9JKblsiTl0Gvm
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-Just to say "me too" for the highly interesting part. Its in my TODO, hopefully
-I will get to it soon unless David provides a review in the mean time.
+Hi,
 
-Selva
+there is one little "open" thing in this patch that I wanted to
+highlight. See below:
+
+
+On 20/04/18 19:16, Antonio Quartulli wrote:
+> +static struct env_set *es =3D NULL;
+> +
+.....
+> +    openvpn_execve_check(&argv, es, S_FATAL, "Linux ip link set failed");
+
+Right now the code initializing the environment set to be passed to
+openvpn_execve() with NULL.
+This means that not ENV is passed to the iproute commands.
+
+This behaviour does not reflect the original one as in the current code
+we always pass the complete ENV coming from the openvpn context.
+
+This begs two questions:
+
+1) how can we pass the env_set without making the API dependent on that?
+(this is really just an iproute thing, unlreated to the networking side
+of things)
+
+2) do we really need to pass the entire ENV to iproute commands?
+
+I understand it is needed for the scripts, but why passing it to these
+commands too?
+Shouldn't we expect them to work by using only the commandline arguments?
+
+
+Cheers,
+
+--=20
+Antonio Quartulli
+
+
+--cmKUMcSQyAchvBmv7rTb9JKblsiTl0Gvm--
+
+--RauYINXqhskykXbSfjmWKOotg3Un2zc6K
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlrawPgACgkQB6U8WA7y
+zXTIIg//XUnO+5T+h1CFlyJAlQ+qQrxoy55Ba8g11rLTbdFio8AzQt9vvvFuizQs
+WBh8i78SoRs0JjR4BIipBp6VMNKpfCTlLAJhKEBrM2mWd6nkGVFwe8/Dxz1211pz
+5v6wY4V9Aj1OBV1mWasMqeKz5PDua12kZnro0wehdLR7K7EWcOeqlf/alMYbywKT
+CCNFIj++VzQlCHFnYVSJ6bMQRlZUxD9x3xtz1vwl1VzPmsRai8djg5+Xg6zJeQMX
+VGrrvNztPaNExogocyidsy3lXH/5nVZ5LOSJEqfZ0imEXCgsdnS5DLg3E+ofEblv
+uFeMWBhVIZV1NMm+UCp/qp9eKQgQwhCI2bxlhslTEd/vAdBpJ3Vw/veqCfFHIa2N
+vEByf1a7VBNIu+9WP5CAcQzJgNhIQ4RbxWCyDN4Z1ueJPtq2Lt9gA70GHIl4mzr/
+zeJSL2mngyvhCKq6teIHAjRcWQ86At065RUJpqVAbGIpR319JqusbukmhQj+91cg
+Pui/r2R4Q12uQUGtz2qtkKpWFaYNMBEOyUKIrHZPwLV64MOxPEHwN+Hw1nKUHUSY
+RGpjk/TNwOeqNS/OfoS1H91nXAUNK+ze8vZON9SAsBqnTbE9D/sKBiQOG3WX3EUt
+EnGcM0k9NYiGXpcDKinYWL7IBtW5Z+9nQGyR1o4LvKhUFKKyZyQ=
+=JgcJ
+-----END PGP SIGNATURE-----
+
+--RauYINXqhskykXbSfjmWKOotg3Un2zc6K--
 
