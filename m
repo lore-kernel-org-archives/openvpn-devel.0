@@ -1,14 +1,15 @@
+Date: Tue, 24 Apr 2018 22:16:36 +0200
+From: Christian Hesse <list@...1798...>
+Message-ID: <20180424221636.257dd814@...1799...>
+In-Reply-To: <a0da03f3-a1bb-6d2b-bdb5-500db52c5dc1@...2181...>
 References: <20180423092813.24844-1-list@...1798...>
- <20180424083801.GB24895@...2161...> <20180424120337.0fab107d@...1799...>
+ <20180424083801.GB24895@...2161...>
+ <20180424120337.0fab107d@...1799...>
  <20180424130817.GA20143@...2161...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <a0da03f3-a1bb-6d2b-bdb5-500db52c5dc1@...2181...>
-Date: Tue, 24 Apr 2018 23:08:22 +0800
+ <a0da03f3-a1bb-6d2b-bdb5-500db52c5dc1@...2181...>
 MIME-Version: 1.0
-In-Reply-To: <20180424130817.GA20143@...2161...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="D1OBxlwclPietP2UDFhWNaubdjnsIFmC1"
+ boundary="Sig_/vdgSo2xN=pC1_4voelDsEe2"; protocol="application/pgp-signature"
 Subject: Re: [Openvpn-devel] [PATCH 1/1] systemd: run openvpn with dedicated
  user
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,120 +20,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Simon Ruderich <simon@...2161...>, Christian Hesse <list@...1798...>
-Cc: OpenVPN Development <openvpn-devel@lists.sourceforge.net>
+To: Antonio Quartulli <a@...2181...>
+Cc: Simon Ruderich <simon@...2161...>, OpenVPN Development <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---D1OBxlwclPietP2UDFhWNaubdjnsIFmC1
-Content-Type: multipart/mixed; boundary="QTQDFlQwLEENIwrNHnZslBvnFaIqVYzQN";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Simon Ruderich <simon@...2161...>, Christian Hesse <list@...1798...>
-Cc: OpenVPN Development <openvpn-devel@lists.sourceforge.net>
-Message-ID: <a0da03f3-a1bb-6d2b-bdb5-500db52c5dc1@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH 1/1] systemd: run openvpn with dedicated
- user
-References: <20180423092813.24844-1-list@...1798...>
- <20180424083801.GB24895@...2161...> <20180424120337.0fab107d@...1799...>
- <20180424130817.GA20143@...2161...>
-In-Reply-To: <20180424130817.GA20143@...2161...>
-
---QTQDFlQwLEENIwrNHnZslBvnFaIqVYzQN
-Content-Language: en-US
-Content-Type: text/plain; charset="windows-1252"
+--Sig_/vdgSo2xN=pC1_4voelDsEe2
+Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
-
-On 24/04/18 21:08, Simon Ruderich wrote:
->> I do not agree that the process is running with root privileges. It has =
-some
->> extra capabilities, but it can not kill processes, fork away and change
->> cgroups, etc.
->> IMHO that is what we want to achieve.
+Antonio Quartulli <a@...2181...> on Tue, 2018/04/24 23:08:
+> OTOH I understand that there are people that don't care about having a
+> working tunnel reconfiguration and are fine with starting openvpn as
+> root (and then dropping privileges).
 >=20
-> I disagree. A process with CAP_DAC_OVERRIDE can read/write
-> _every_ file on the system (man 7 capabilities)! This equals root
-> privileges. Even CAP_NET_ADMIN is very powerful as it allows
-> modifying the firewall which might give access to sensitive
-> services which are normally not exposed.
+> For these people, adding the above capabilities results in giving the
+> openvpn process more power than before.
 >=20
->> For this patch I took the current set of capabilities and stripped CAP_S=
-ETGID
->> and CAP_SETUID for the netlink version. Whether or not the other capabil=
-ities
->> are required should be discussed independently. Wondering why we have
->> CAP_DAC_OVERRIDE in our capability capability set... That looks suspicio=
-us
->> indeed.
->=20
-> Even with CAP_DAC_OVERRIDE stripped this change keeps openvpn
-> running with (much) more privileges than before. Is this
-> desirable?
+> Maybe users willing to adopt this stricter behaviour should have a knob
+> somewhere that will enable the usual
+> run-as-root-and-then-drop-priv-with-no-caps?
 
-I think it depends on your perspective.
+NAK. :-p
 
-What Christian says is that with this patch:
+I think the solution for this dilemma is pretty easy: I should strip the pa=
+rt
+from my patch that disables user switching when started from systemd. We can
+start as user "openvpn" any way - as long as the process has capabilities
+CAP_SETGID and CAP_SETUID it still can switch user context and drop
+privileges.
 
-1) you can start openvpn as non-root directly (impossible right now)
+So users have two options: keep the process running as user "openvpn" with
+capabilities for more flexibility or switch to unprivileged user for more
+security.
 
-2) you have full support for tunnel reconfiguration even when running as
-non-root (people willing to achieve this now must start and keep openvpn
-running as root)
-
-I consider both points above steps forward towards a better security
-model for OpenVPN.
-
-
-OTOH I understand that there are people that don't care about having a
-working tunnel reconfiguration and are fine with starting openvpn as
-root (and then dropping privileges).
-
-For these people, adding the above capabilities results in giving the
-openvpn process more power than before.
-
-Maybe users willing to adopt this stricter behaviour should have a knob
-somewhere that will enable the usual
-run-as-root-and-then-drop-priv-with-no-caps?
-
-Generally speaking I believe that openvpn, as a VPN and partly routing
-daemon, should be allowed to run with CAP_NET_ADMIN set as it enables
-more features (tunnel reconfiguration to start with).
-
-Maybe clients should run with the caps by default while servers should
-be launched with the original behaviour? Not sure, honestly.
-
-Cheers,
-
-
-
+No need to have root involved. Sounds good?
 --=20
-Antonio Quartulli
+main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
+"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
++];)
+putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
 
-
---QTQDFlQwLEENIwrNHnZslBvnFaIqVYzQN--
-
---D1OBxlwclPietP2UDFhWNaubdjnsIFmC1
-Content-Type: application/pgp-signature; name="signature.asc"
+--Sig_/vdgSo2xN=pC1_4voelDsEe2
+Content-Type: application/pgp-signature
 Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlrfSGYACgkQB6U8WA7y
-zXQpYg/7Beu/bNZlC65BpU4KV1vTVO9buBvUXi8rQxUZcVSEl43Od1XgnoIkKP/e
-sZtcp32BY1SD2oDYm8LWTRNVvrMlB/uRQfctEA6azyHrzVPfpQIMFdgTjSbR3rwe
-CJ9FDenPPthJyhfIa+NDq9jFj4mNaFmkQU+KjZgdH3UXgZJ2NkQ2PVFIHkMidTS3
-HgN/bGo4hghcxx8uSp1n/CFSNH0ZzpRPgCER4PNl6U5bALUEo0rxzHIB34jhoqxi
-272NkMM0bvtLd/nmJ/ENuHkqOZGGNWlQS9wT3ynVEWhIlQJnfGI1oa35oA/yJkJq
-BRglTLCMDmwHPFAXSd1QGaXKHX3VF2elFNM9x3zlUqugmARCPaP4DtXUVy2jyoVS
-klNu8ReZi+lB2Ne//uiD3lFPnrd7Rm9ZStLxlKaM+umoc1hqjc0v43wrqkX7wYGe
-ByKxvGLoekIrJTe9d3SfduWS+xjEHLM/GR4mxK24xmg8yNAgKoPauGN5aPIT0q20
-rm/kmlBwhgWoiHqEXpJ9U9I5oNNp0PQaeqPjzxGb/jsVqH1AI5ihMyHYTC7bQvzn
-YtwZCuhyJBc5sbOKQxfnw0+lxSXQ24q1FNe1jvJf0M7OOYxsDmMmhZ9vE8O4axV+
-RKgzVeST9ssp7Etcqjnt5wcnH4ITQHNt7Tfzfeqv9iQqHuRpBlo=
-=IZDN
+iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAlrfkKUACgkQiUUh18yA
+9HYBKQgAzkEqUuRe8ldXZaNTtQreCZOM2F04Vwq69wMz6GQNppy6V/w/zjfJ6Esq
+zO3wfDOdeTkkNCPhBG+cjVjCiwP9CPD7VOR4IF63vnnIcx1cSmiRf+N8CC0KMiqZ
+LbZdX29q0IedcpYr05pMBLV86u6bMXseOPnbuVTIEfY9KXdRYCJdjcguDh72UbAj
+AvZc/6LSTw4Oy6/0tkNd6iNqq5Wj8/MOihT3C7lU2Qc6GGHQA7JEPszK8RgdeL+d
+yGdMK3DBliwWabLrrR8kiZ7lIIkk5JiGiTsVBVPAhZe1DCDUW3bRSLRzKzHx+uJ5
+kC8W6+eCN2yj6K5ubm7ZrkqTC9bVQw==
+=vGUi
 -----END PGP SIGNATURE-----
 
---D1OBxlwclPietP2UDFhWNaubdjnsIFmC1--
+--Sig_/vdgSo2xN=pC1_4voelDsEe2--
 
