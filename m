@@ -1,7 +1,15 @@
-From: Christian Hesse <list@...1798...>
-Date: Mon, 23 Apr 2018 11:28:13 +0200
-Message-Id: <20180423092813.24844-1-list@...1798...>
-Subject: [Openvpn-devel] [PATCH 1/1] systemd: run openvpn with dedicated user
+Date: Tue, 24 Apr 2018 10:38:01 +0200
+From: Simon Ruderich <simon@...2161...>
+Message-ID: <20180424083801.GB24895@...2161...>
+References: <20180423092813.24844-1-list@...1798...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="=_zucker.schokokeks.org-30625-1524559108-0001-2"
+Content-Disposition: inline
+In-Reply-To: <20180423092813.24844-1-list@...1798...>
+Subject: Re: [Openvpn-devel] [PATCH 1/1] systemd: run openvpn with dedicated
+ user
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,211 +18,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: OpenVPN Development <openvpn-devel@lists.sourceforge.net>
-Cc: Christian Hesse <mail@...1798...>
+To: Christian Hesse <list@...1798...>
+Cc: OpenVPN Development <openvpn-devel@lists.sourceforge.net>, Christian Hesse <mail@...1798...>
 
-From: Christian Hesse <mail@...1798...>
+This is a MIME-formatted message.  If you see this text it means that your
+E-mail software does not support MIME-formatted messages.
 
-Now that we have a native netlink interface run the process with dedicated
-user 'openvpn'. This is possible by granting ambient capabilities, see
-systemd.exec(5).
+--=_zucker.schokokeks.org-30625-1524559108-0001-2
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Signed-off-by: Christian Hesse <mail@...1798...>
----
- .gitignore                                |  1 +
- configure.ac                              |  9 +++++++++
- distro/systemd/Makefile.am                | 24 ++++++++++++++++++++++-
- distro/systemd/openvpn-client@...2221... |  4 +++-
- distro/systemd/openvpn-server@...2221... |  4 +++-
- distro/systemd/sysusers-openvpn.conf      |  1 +
- distro/systemd/tmpfiles-openvpn.conf      |  2 --
- distro/systemd/tmpfiles-openvpn.conf.in   |  4 ++++
- src/openvpn/init.c                        |  8 ++++++++
- 9 files changed, 52 insertions(+), 5 deletions(-)
- create mode 100644 distro/systemd/sysusers-openvpn.conf
- delete mode 100644 distro/systemd/tmpfiles-openvpn.conf
- create mode 100644 distro/systemd/tmpfiles-openvpn.conf.in
+Hello,
 
-diff --git a/.gitignore b/.gitignore
-index 25009d81..00abdd5a 100644
---- a/.gitignore
-+++ b/.gitignore
-@@ -55,6 +55,7 @@ doc/openvpn.8.html
- /doc/doxygen/openvpn.doxyfile
- distro/rpm/openvpn.spec
- distro/systemd/*.service
-+distro/systemd/tmpfiles-openvpn.conf
- sample/sample-keys/sample-ca/
- vendor/.build
- vendor/dist
-diff --git a/configure.ac b/configure.ac
-index 251cb9a2..ef8f5864 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -367,6 +367,7 @@ AC_ARG_VAR([GIT], [path to git utility])
- AC_ARG_VAR([SYSTEMD_ASK_PASSWORD], [path to systemd-ask-password utility])
- AC_ARG_VAR([SYSTEMD_UNIT_DIR], [Path of systemd unit directory @<:@default=LIBDIR/systemd/system@:>@])
- AC_ARG_VAR([TMPFILES_DIR], [Path of tmpfiles directory @<:@default=LIBDIR/tmpfiles.d@:>@])
-+AC_ARG_VAR([SYSUSERS_DIR], [Path of sysusers directory @<:@default=LIBDIR/sysusers.d@:>@])
- AC_PATH_PROGS([IFCONFIG], [ifconfig],, [$PATH:/usr/local/sbin:/usr/sbin:/sbin])
- AC_PATH_PROGS([ROUTE], [route],, [$PATH:/usr/local/sbin:/usr/sbin:/sbin])
- AC_PATH_PROGS([IPROUTE], [ip],, [$PATH:/usr/local/sbin:/usr/sbin:/sbin])
-@@ -1200,6 +1201,12 @@ if test "$enable_systemd" = "yes" ; then
-     else
-         tmpfilesdir="\${libdir}/tmpfiles.d"
-     fi
-+
-+    if test -n "${SYSUSERS_DIR}"; then
-+        sysusersdir="${SYSUSERS_DIR}"
-+    else
-+        sysusersdir="\${libdir}/sysusers.d"
-+    fi
- fi
- 
- 
-@@ -1375,6 +1382,7 @@ AM_CONDITIONAL([GIT_CHECKOUT], [test "${GIT_CHECKOUT}" = "yes"])
- AM_CONDITIONAL([ENABLE_PLUGIN_AUTH_PAM], [test "${enable_plugin_auth_pam}" = "yes"])
- AM_CONDITIONAL([ENABLE_PLUGIN_DOWN_ROOT], [test "${enable_plugin_down_root}" = "yes"])
- AM_CONDITIONAL([HAVE_LD_WRAP_SUPPORT], [test "${have_ld_wrap_support}" = "yes"])
-+AM_CONDITIONAL([ENABLE_IPROUTE], [test "${enable_iproute2}" = "yes"])
- 
- sampledir="\$(docdir)/sample"
- AC_SUBST([plugindir])
-@@ -1382,6 +1390,7 @@ AC_SUBST([sampledir])
- 
- AC_SUBST([systemdunitdir])
- AC_SUBST([tmpfilesdir])
-+AC_SUBST([sysusersdir])
- 
- VENDOR_SRC_ROOT="\$(abs_top_srcdir)/vendor/"
- VENDOR_DIST_ROOT="\$(abs_top_builddir)/vendor/dist"
-diff --git a/distro/systemd/Makefile.am b/distro/systemd/Makefile.am
-index 69e12699..1b7ce5f9 100644
---- a/distro/systemd/Makefile.am
-+++ b/distro/systemd/Makefile.am
-@@ -10,14 +10,35 @@
- 
- %.service: %.service.in Makefile
- 	$(AM_V_GEN)sed -e 's|\@sbindir\@|$(sbindir)|' \
-+		-e 's|\@SYSTEMD_USER\@|$(SYSTEMD_USER)|' \
-+		-e 's|\@SYSTEMD_CAPS_OPTION\@|$(SYSTEMD_CAPS_OPTION)|' \
-+		-e 's|\@SYSTEMD_CAPS_VALUES\@|$(SYSTEMD_CAPS_VALUES)|' \
-+		$< > $@.tmp && mv $@.tmp $@
-+
-+%.conf: %.conf.in Makefile
-+	$(AM_V_GEN)sed -e 's|\@SYSTEMD_USER\@|$(SYSTEMD_USER)|g' \
- 		$< > $@.tmp && mv $@.tmp $@
- 
- EXTRA_DIST = \
--	tmpfiles-openvpn.conf \
-+	sysusers-openvpn.conf \
-+	tmpfiles-openvpn.conf.in \
- 	openvpn-client@...2221... \
- 	openvpn-server@...2221...
- 
- if ENABLE_SYSTEMD
-+if ENABLE_IPROUTE
-+SYSTEMD_USER=root
-+SYSTEMD_CAPS_OPTION=CapabilityBoundingSet
-+SYSTEMD_CAPS_VALUES=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
-+else
-+SYSTEMD_USER=openvpn
-+SYSTEMD_CAPS_OPTION=AmbientCapabilities
-+SYSTEMD_CAPS_VALUES=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SYS_CHROOT CAP_DAC_OVERRIDE
-+
-+sysusers_DATA = \
-+	sysusers-openvpn.conf
-+endif
-+
- systemdunit_DATA = \
- 	openvpn-client@...1685... \
- 	openvpn-server@...1685...
-@@ -28,6 +49,7 @@ dist_doc_DATA = \
- 
- install-data-hook:
- 	mv $(DESTDIR)$(tmpfilesdir)/tmpfiles-openvpn.conf $(DESTDIR)$(tmpfilesdir)/openvpn.conf
-+	mv $(DESTDIR)$(sysusersdir)/sysusers-openvpn.conf $(DESTDIR)$(sysusersdir)/openvpn.conf || true
- endif
- 
- MAINTAINERCLEANFILES = \
-diff --git a/distro/systemd/openvpn-client@...2221... b/distro/systemd/openvpn-client@...2221...
-index cbcef653..96cbf68e 100644
---- a/distro/systemd/openvpn-client@...2221...
-+++ b/distro/systemd/openvpn-client@...2221...
-@@ -9,9 +9,11 @@ Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
- [Service]
- Type=notify
- PrivateTmp=true
-+User=@SYSTEMD_USER@
-+Group=@SYSTEMD_USER@
- WorkingDirectory=/etc/openvpn/client
- ExecStart=@sbindir@/openvpn --suppress-timestamps --nobind --config %i.conf
--CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
-+@SYSTEMD_CAPS_OPTION@=@SYSTEMD_CAPS_VALUES@
- LimitNPROC=10
- DeviceAllow=/dev/null rw
- DeviceAllow=/dev/net/tun rw
-diff --git a/distro/systemd/openvpn-server@...2221... b/distro/systemd/openvpn-server@...2221...
-index a8366a04..3f00642e 100644
---- a/distro/systemd/openvpn-server@...2221...
-+++ b/distro/systemd/openvpn-server@...2221...
-@@ -9,9 +9,11 @@ Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
- [Service]
- Type=notify
- PrivateTmp=true
-+User=@SYSTEMD_USER@
-+Group=@SYSTEMD_USER@
- WorkingDirectory=/etc/openvpn/server
- ExecStart=@sbindir@/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
--CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
-+@SYSTEMD_CAPS_OPTION@=@SYSTEMD_CAPS_VALUES@
- LimitNPROC=10
- DeviceAllow=/dev/null rw
- DeviceAllow=/dev/net/tun rw
-diff --git a/distro/systemd/sysusers-openvpn.conf b/distro/systemd/sysusers-openvpn.conf
-new file mode 100644
-index 00000000..d200852b
---- /dev/null
-+++ b/distro/systemd/sysusers-openvpn.conf
-@@ -0,0 +1 @@
-+u openvpn - "OpenVPN user" /
-diff --git a/distro/systemd/tmpfiles-openvpn.conf b/distro/systemd/tmpfiles-openvpn.conf
-deleted file mode 100644
-index bb79671e..00000000
---- a/distro/systemd/tmpfiles-openvpn.conf
-+++ /dev/null
-@@ -1,2 +0,0 @@
--d /run/openvpn-client 0710 root root -
--d /run/openvpn-server 0710 root root -
-diff --git a/distro/systemd/tmpfiles-openvpn.conf.in b/distro/systemd/tmpfiles-openvpn.conf.in
-new file mode 100644
-index 00000000..f58d2967
---- /dev/null
-+++ b/distro/systemd/tmpfiles-openvpn.conf.in
-@@ -0,0 +1,4 @@
-+d /run/openvpn-client 0750 @SYSTEMD_USER@ @SYSTEMD_USER@ -
-+d /run/openvpn-server 0750 @SYSTEMD_USER@ @SYSTEMD_USER@ -
-+d /etc/openvpn/client 0750 @SYSTEMD_USER@ @SYSTEMD_USER@ -
-+d /etc/openvpn/server 0750 @SYSTEMD_USER@ @SYSTEMD_USER@ -
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 36c1a4c4..0fc60d62 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1151,6 +1151,14 @@ do_uid_gid_chroot(struct context *c, bool no_delay)
-         /* set user and/or group if we want to setuid/setgid */
-         if (c0->uid_gid_specified)
-         {
-+#ifdef ENABLE_SYSTEMD
-+            if (sd_notify(0, "READY=0") > 0 && getuid() != 0)
-+            {
-+                msg(M_INFO, "NOTE: Running from systemd with non-root uid, skipping downgrade");
-+                return;
-+            }
-+#endif
-+
-             if (no_delay)
-             {
-                 platform_group_set(&c0->platform_state_group);
+I haven't followed the netlink conversion in detail, so please
+tell me if the following was already discussed and I've just
+missed it.
+
+On Mon, Apr 23, 2018 at 11:28:13AM +0200, Christian Hesse wrote:
+>  if ENABLE_SYSTEMD
+> +if ENABLE_IPROUTE
+> +SYSTEMD_USER=3Droot
+> +SYSTEMD_CAPS_OPTION=3DCapabilityBoundingSet
+> +SYSTEMD_CAPS_VALUES=3DCAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CA=
+P_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
+> +else
+> +SYSTEMD_USER=3Dopenvpn
+> +SYSTEMD_CAPS_OPTION=3DAmbientCapabilities
+> +SYSTEMD_CAPS_VALUES=3DCAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CA=
+P_NET_RAW CAP_SYS_CHROOT CAP_DAC_OVERRIDE
+
+Are those capabilities dropped after initialization? If they are
+not this sounds like a serious issue as the process is basically
+running as root even if it's using another user (CAP_NET_ADMIN
+and CAP_DAC_OVERRIDE). Or am I missing something here?
+
+Regarding the netlink change in general: From what I understand
+it means that openvpn will always run with CAP_NET_ADMIN
+capabilities. Is this correct? If so, this sounds like it
+requires much more privileges than before for the normal
+operation (unless I misunderstand the current setup - to my
+knowledge it only requires a normal user after setup and no
+further capabilities or privileges once setup/connected).
+
+Regards
+Simon
+--=20
++ privacy is necessary
++ using gnupg http://gnupg.org
++ public key id: 0x92FEFDB7E44C32F9
+
+--=_zucker.schokokeks.org-30625-1524559108-0001-2
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEO7rfWMMObpFkF3n0kv79t+RMMvkFAlre7OIACgkQkv79t+RM
+MvnhmBAAjft29m7qT3LsBc0m09AhLSogps55/V47wwS2kOMsNgJ3U5uFKaYMa7yz
+ztqMTPdZ0Syq5qXD8tLEQW6EdRrc8XbSYS712cCo5kpH7R3I6SI+CEOB+0Q2IJIl
+bNArwF9apfwIxzzs81bQwtUfURLKHhJAzR/z8nMvp/qqIbzhXmMevK9nChOhebc2
+j0Q1ovypZIVqDv0USHy94Pxd2vruJv6DNkuapFloiOV66q829T+fB+/rkklo1Rhu
+LagSb5KmwybmXBMUoUWTtcrQXGt0OSVZqXm3lviW69ru45topwipwjNsRtH5JR5d
+sHB88ntGl473Ghif5SAZSephKoZlpaAMigtOTiZVasgFSiHroYx4AMmPah0oE5FS
+uOdl/rV0LvD5oQo1ZJx42BL9cFJ5sjyzgnd9oNUwLPe4iIxic4dAxSG8sEvW5a80
+1TNPf8xyDyVvlKHDgM/Tu6SGGlqLWGTF5kDnnCEB2l675W8+hZvMsrqWf/Fg0Ky1
+60ugxqhdZb3Oe2Nh16rb5aMJVf8zbPbvu/P9V27tTYAZit7faDg1QxPH9gbl3FDx
+Ka1mLNVgY0eckiC43r2VjmNd4wO3cBWQuYIIerJifuzIbsi8Xt9YrmEBL2p8/Lrt
+J64cjrsKo7CdTbpBg07CVVXI+Ync/eF7NZJ+SnoS71kI5o6mp5k=
+=nHo4
+-----END PGP SIGNATURE-----
+
+--=_zucker.schokokeks.org-30625-1524559108-0001-2--
 
