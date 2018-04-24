@@ -1,15 +1,12 @@
-Date: Tue, 24 Apr 2018 10:38:01 +0200
-From: Simon Ruderich <simon@...2161...>
-Message-ID: <20180424083801.GB24895@...2161...>
-References: <20180423092813.24844-1-list@...1798...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="=_zucker.schokokeks.org-30625-1524559108-0001-2"
-Content-Disposition: inline
-In-Reply-To: <20180423092813.24844-1-list@...1798...>
-Subject: Re: [Openvpn-devel] [PATCH 1/1] systemd: run openvpn with dedicated
- user
+Message-ID: <93ac3d2a9b3c523e97e2e9123f38e2ea.squirrel@...2260...>
+In-Reply-To: <4a54f829-1f12-4f1e-baf7-8fc93c5c4885@...515...>
+References: <b7bfc99a-51e5-0fa7-9598-067a264564a6@...515...>
+ <4a54f829-1f12-4f1e-baf7-8fc93c5c4885@...515...>
+Date: Tue, 24 Apr 2018 11:33:19 +0200
+From: "Simon Matter" <simon.matter@...2249...>
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] Summary of the community meeting (Wed,
+ 18th Apr 2018)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,76 +15,93 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Christian Hesse <list@...1798...>
-Cc: OpenVPN Development <openvpn-devel@lists.sourceforge.net>, Christian Hesse <mail@...1798...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: =?utf-8?B?IlNhbXVsaSBTZXBww6RuZW4i?= <samuli@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is a MIME-formatted message.  If you see this text it means that your
-E-mail software does not support MIME-formatted messages.
+Hi,
 
---=_zucker.schokokeks.org-30625-1524559108-0001-2
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+I'm just wondering what happened to the proposed 2.4.6 release? Will it
+come anytime soon?
 
-Hello,
-
-I haven't followed the netlink conversion in detail, so please
-tell me if the following was already discussed and I've just
-missed it.
-
-On Mon, Apr 23, 2018 at 11:28:13AM +0200, Christian Hesse wrote:
->  if ENABLE_SYSTEMD
-> +if ENABLE_IPROUTE
-> +SYSTEMD_USER=3Droot
-> +SYSTEMD_CAPS_OPTION=3DCapabilityBoundingSet
-> +SYSTEMD_CAPS_VALUES=3DCAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CA=
-P_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
-> +else
-> +SYSTEMD_USER=3Dopenvpn
-> +SYSTEMD_CAPS_OPTION=3DAmbientCapabilities
-> +SYSTEMD_CAPS_VALUES=3DCAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CA=
-P_NET_RAW CAP_SYS_CHROOT CAP_DAC_OVERRIDE
-
-Are those capabilities dropped after initialization? If they are
-not this sounds like a serious issue as the process is basically
-running as root even if it's using another user (CAP_NET_ADMIN
-and CAP_DAC_OVERRIDE). Or am I missing something here?
-
-Regarding the netlink change in general: From what I understand
-it means that openvpn will always run with CAP_NET_ADMIN
-capabilities. Is this correct? If so, this sounds like it
-requires much more privileges than before for the normal
-operation (unless I misunderstand the current setup - to my
-knowledge it only requires a normal user after setup and no
-further capabilities or privileges once setup/connected).
-
-Regards
+Regards,
 Simon
---=20
-+ privacy is necessary
-+ using gnupg http://gnupg.org
-+ public key id: 0x92FEFDB7E44C32F9
 
---=_zucker.schokokeks.org-30625-1524559108-0001-2
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Transfer-Encoding: 7bit
+> Hi,
+>
+> Here's the summary of the IRC meeting.
+> ---
+>
+> COMMUNITY MEETING
+>
+> Place: #openvpn-meeting on irc.freenode.net
+> Date: Wednesday 18th Apr 2018
+> Time: 11:30 CET (10:30 UTC)
+>
+> Planned meeting topics for this meeting were here:
+>
+> <https://community.openvpn.net/openvpn/wiki/Topics-2018-04-18>
+>
+> The next meeting has not been scheduled yet.
+>
+> Your local meeting time is easy to check from services such as
+>
+> <http://www.timeanddate.com/worldclock>
+>
+> SUMMARY
+>
+> cron2, dazo, mattock, ordex, plaisthos and syzzer participated in
+> this meeting.
+>
+> --
+>
+> Discussed upcoming OpenVPN 2.4.6 release. It will contain what
+> release/2.4 has now, plus one security fix which is under embargo. The
+> tree will be pushed to buildbot tomorrow afternoon after which the
+> release machinery starts for good.
+>
+> The 2.4.6 release will include an updated tap-windows6 driver with a
+> small security fix. The fix will not get a CVE as exploitation requires
+> local admin privileges and is not remotely exploitable. It was agreed
+> that we should update PRODUCT_VERSION in tap-windows6 from 9,0,0,21 to
+> 9,22,1,601. This means it will be in-line with the real version
+> (9.22.1). The old, confusing PRODUCT_VERSION string seems to be just
+> historic baggage brought over from tap-windows (i.e. the old NDIS 5
+> driver).
+>
+> --
+>
+> Discussed unit testing the netlink code and in particular the msg()
+> function. Noted that we have mock_msg.c already which does minimal
+> logging, which renders it more suitable for unit testing.
+>
+> --
+>
+> Discussed the location of the next hackathon. One possibility is Lviv,
+> Ukraine, where OpenVPN Inc. has a rather large team. It is easily
+> accessible for EU citizens as no visa is required.
+>
+> ---
+>
+> Full chatlog attached.
+>
+> --
+> Samuli Seppänen
+> Community Manager
+> OpenVPN Technologies, Inc
+>
+> irc freenode net: mattock
+>
+>
+> ------------------------------------------------------------------------------
+> Check out the vibrant tech community on one of the world's most
+> engaging tech sites, Slashdot.org!
+> http://sdm.link/slashdot_______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
 
------BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCgAdFiEEO7rfWMMObpFkF3n0kv79t+RMMvkFAlre7OIACgkQkv79t+RM
-MvnhmBAAjft29m7qT3LsBc0m09AhLSogps55/V47wwS2kOMsNgJ3U5uFKaYMa7yz
-ztqMTPdZ0Syq5qXD8tLEQW6EdRrc8XbSYS712cCo5kpH7R3I6SI+CEOB+0Q2IJIl
-bNArwF9apfwIxzzs81bQwtUfURLKHhJAzR/z8nMvp/qqIbzhXmMevK9nChOhebc2
-j0Q1ovypZIVqDv0USHy94Pxd2vruJv6DNkuapFloiOV66q829T+fB+/rkklo1Rhu
-LagSb5KmwybmXBMUoUWTtcrQXGt0OSVZqXm3lviW69ru45topwipwjNsRtH5JR5d
-sHB88ntGl473Ghif5SAZSephKoZlpaAMigtOTiZVasgFSiHroYx4AMmPah0oE5FS
-uOdl/rV0LvD5oQo1ZJx42BL9cFJ5sjyzgnd9oNUwLPe4iIxic4dAxSG8sEvW5a80
-1TNPf8xyDyVvlKHDgM/Tu6SGGlqLWGTF5kDnnCEB2l675W8+hZvMsrqWf/Fg0Ky1
-60ugxqhdZb3Oe2Nh16rb5aMJVf8zbPbvu/P9V27tTYAZit7faDg1QxPH9gbl3FDx
-Ka1mLNVgY0eckiC43r2VjmNd4wO3cBWQuYIIerJifuzIbsi8Xt9YrmEBL2p8/Lrt
-J64cjrsKo7CdTbpBg07CVVXI+Ync/eF7NZJ+SnoS71kI5o6mp5k=
-=nHo4
------END PGP SIGNATURE-----
-
---=_zucker.schokokeks.org-30625-1524559108-0001-2--
 
