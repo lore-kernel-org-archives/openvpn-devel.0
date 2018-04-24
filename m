@@ -1,16 +1,17 @@
-Date: Tue, 24 Apr 2018 13:11:47 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180424111147.GC69387@...1296...>
-References: <b7bfc99a-51e5-0fa7-9598-067a264564a6@...515...>
- <4a54f829-1f12-4f1e-baf7-8fc93c5c4885@...515...>
- <93ac3d2a9b3c523e97e2e9123f38e2ea.squirrel@...2260...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="7yOawlA+vXT2u9S7"
+Date: Tue, 24 Apr 2018 15:08:17 +0200
+From: Simon Ruderich <simon@...2161...>
+Message-ID: <20180424130817.GA20143@...2161...>
+References: <20180423092813.24844-1-list@...1798...>
+ <20180424083801.GB24895@...2161...>
+ <20180424120337.0fab107d@...1799...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="=_zucker.schokokeks.org-12453-1524575325-0001-2"
 Content-Disposition: inline
-In-Reply-To: <93ac3d2a9b3c523e97e2e9123f38e2ea.squirrel@...2260...>
-Subject: Re: [Openvpn-devel] Summary of the community meeting (Wed,
- 18th Apr 2018)
+In-Reply-To: <20180424120337.0fab107d@...1799...>
+Subject: Re: [Openvpn-devel] [PATCH 1/1] systemd: run openvpn with dedicated
+ user
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,51 +20,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Simon Matter <simon.matter@...2249...>
-Cc: =?iso-8859-1?Q?=22Samuli_Sepp=E4nen=22?= <samuli@...515...>, openvpn-devel@lists.sourceforge.net
+To: Christian Hesse <list@...1798...>
+Cc: OpenVPN Development <openvpn-devel@lists.sourceforge.net>
 
---7yOawlA+vXT2u9S7
+This is a MIME-formatted message.  If you see this text it means that your
+E-mail software does not support MIME-formatted messages.
+
+--=_zucker.schokokeks.org-12453-1524575325-0001-2
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-Hi,
+On Tue, Apr 24, 2018 at 12:03:37PM +0200, Christian Hesse wrote:
+> The above snippet holds code for both, netlink and iproute2 versions.
+>
+> The iproute2 version (that is what is used currently) uses systemd option
+> "CapabilityBoundingSet" to limit the capabilities to the given set. If
+> configured openvpn will drop privileges after setup.
+>
+> With netlink and my patch on top we go the other way: The process runs (a=
+nd
+> is started) with user "openvpn". To grant required privileges we use
+> systemd option "AmbientCapabilities" and give capabilities to the process.
+> The process keeps these capabilities, but that's a benefit: The process
+> survives a reconnect that requires configuration changes and shuts down
+> cleanly (takes down routes and addresses).
 
-On Tue, Apr 24, 2018 at 11:33:19AM +0200, Simon Matter wrote:
-> I'm just wondering what happened to the proposed 2.4.6 release? Will it
-> come anytime soon?
+Hello Christian,
 
-Windows driver signing did not work as planned.
+Thanks for the confirmation, that's what I assumed.
 
-Right now it looks like "release will happen today", stay tuned :-)
+> I do not agree that the process is running with root privileges. It has s=
+ome
+> extra capabilities, but it can not kill processes, fork away and change
+> cgroups, etc.
+> IMHO that is what we want to achieve.
 
-gert
+I disagree. A process with CAP_DAC_OVERRIDE can read/write
+_every_ file on the system (man 7 capabilities)! This equals root
+privileges. Even CAP_NET_ADMIN is very powerful as it allows
+modifying the firewall which might give access to sensitive
+services which are normally not exposed.
+
+> For this patch I took the current set of capabilities and stripped CAP_SE=
+TGID
+> and CAP_SETUID for the netlink version. Whether or not the other capabili=
+ties
+> are required should be discussed independently. Wondering why we have
+> CAP_DAC_OVERRIDE in our capability capability set... That looks suspicious
+> indeed.
+
+Even with CAP_DAC_OVERRIDE stripped this change keeps openvpn
+running with (much) more privileges than before. Is this
+desirable?
+
+Regards
+Simon
 --=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
++ privacy is necessary
++ using gnupg http://gnupg.org
++ public key id: 0x92FEFDB7E44C32F9
 
-Gert Doering - Munich, Germany                             gert@...1296...
-
---7yOawlA+vXT2u9S7
+--=_zucker.schokokeks.org-12453-1524575325-0001-2
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Transfer-Encoding: 7bit
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJa3xDzAAoJEB2Cnv7KVigSUsEL/AnuZE4DK/w/TeX/igrMYQMw
-qlT9mA/aXZBjkTqNHyaZIpQJ3bOrtLwJVmcR16qfwDms+uOWSsp4swXbxWWWEgoc
-OQ8URWKVBJED7IiuJjI4K4RWWn2WMJMf9bcd7AGLAAzddcngaAQYe6s8tqETcPTJ
-6i+LinQKcyAYkkzl4Y9UovmFcauLAfC3bezdchgHAv85WekoAFLSi/l8NL6EaTLV
-WAbcweK4MT0YzCYo30lztd++6vj+M7+SSwbObq0CapkhUd3S2x8jl7bGavudKdjW
-tsLlPcobz0Odfc0Cg2aAmeHHuMD3E71T/9sJdh88Hasfawtkz7IT+FGd2+OP77A8
-D67HdJa8Oc2m/ieJ0dEBg1LF1oD02vxYq+3iUNQG7fWLgpHiN/NkJLFEv73LClAi
-9ZWBdYZqLPXfXzP679bREEGkkogcw/KkvJB0iPoTntRUgE6juG85fXyYemaD4dvA
-s65CARXYHt0c2g6kj+0bjUffK4Pdu84LBy6BcFkisA==
-=HTDX
+iQIzBAEBCgAdFiEEO7rfWMMObpFkF3n0kv79t+RMMvkFAlrfLDkACgkQkv79t+RM
+MvkmgA/9GDnML8AGlg2KbH9FzLBxFH0Qu0LwQFzB/Tt9L/Mlclsqj03Kt+8aJ1gC
+WGMmnf57AAkysXahUQLmVzV0OX0nilvhQmrdtHaP5aEa6RD9H8NK9iasbVmRqSzB
+INWnNBqiC7+8uHxbLC7f2JdYMP2NpBVT3QslC3J4+2najBlgTZ+bOJWBnW7Lr7tL
+rR9AtylP+A9fRq9zhG4g/IZAtcp7PAc+IYic5E/qfWy95p67MIij7GdnUGXpZow/
+tc5+bTEM9YKh6rI8TnDmgOXWIgN0WJxoRBzf/+vSb7XSMkKhWfs2e/H2p253YOnQ
+HJ7dRmSeI+6D8p/6AluHoM+ufe8a4yhppEbUrt6q6XNGavC4EM0YDsZQUWFmDRFU
+v6rsx0Ynfj1yQL7TtyL2eExF+ELnDyPGjbQuDWTXSluXuEe6PFU2LewK00Uez8vK
+16HZzhQEXi9E1bw1xJ26qTawfOB8+YE9feg5LxRoSpWnDqbm8NPaaEfqr+GhoklY
+PP2/c3IuccGWaxicmXbt4EYWxeXZhSeYRQrxXL4w7DbMy+UAJ5MUIv9ZUo8onYHh
+DT7Pbk2EXhC+O0IpScAtxlYXlnDHM6m9NzNDoV+ZBxSmyIDw53iJLXQMG9+ZrxBI
++YcQSeNlyXcu77otfmPIczcwsojueEdrjRJJlXlzjWXfgHat5z4=
+=O3rx
 -----END PGP SIGNATURE-----
 
---7yOawlA+vXT2u9S7--
+--=_zucker.schokokeks.org-12453-1524575325-0001-2--
 
