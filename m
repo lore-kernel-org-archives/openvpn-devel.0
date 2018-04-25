@@ -1,16 +1,17 @@
-Date: Wed, 25 Apr 2018 14:57:31 +0200
+Date: Wed, 25 Apr 2018 15:01:03 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20180425125731.GZ69387@...1296...>
+Message-ID: <20180425130103.GA69387@...1296...>
 References: <20180423092813.24844-1-list@...1798...>
  <20180424083801.GB24895@...2161...>
  <20180424120337.0fab107d@...1799...>
  <20180424130817.GA20143@...2161...>
  <a0da03f3-a1bb-6d2b-bdb5-500db52c5dc1@...2181...>
+ <20180424221636.257dd814@...1799...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="UJZgE5sa6ExqK3JD"
+ protocol="application/pgp-signature"; boundary="ViugPjSMr9TemhdD"
 Content-Disposition: inline
-In-Reply-To: <a0da03f3-a1bb-6d2b-bdb5-500db52c5dc1@...2181...>
+In-Reply-To: <20180424221636.257dd814@...1799...>
 Subject: Re: [Openvpn-devel] [PATCH 1/1] systemd: run openvpn with dedicated
  user
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,28 +22,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: Simon Ruderich <simon@...2161...>, Christian Hesse <list@...1798...>, OpenVPN Development <openvpn-devel@lists.sourceforge.net>
+To: Christian Hesse <list@...1798...>
+Cc: Antonio Quartulli <a@...2181...>, OpenVPN Development <openvpn-devel@lists.sourceforge.net>
 
---UJZgE5sa6ExqK3JD
+--ViugPjSMr9TemhdD
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Tue, Apr 24, 2018 at 11:08:22PM +0800, Antonio Quartulli wrote:
-> Generally speaking I believe that openvpn, as a VPN and partly routing
-> daemon, should be allowed to run with CAP_NET_ADMIN set as it enables
-> more features (tunnel reconfiguration to start with).
+On Tue, Apr 24, 2018 at 10:16:36PM +0200, Christian Hesse wrote:
+> No need to have root involved. Sounds good?
 
-If we go there, we might consider dropping all non-default capabilities
-before running external programs (--up, --client-connect, ...)
+This is not our traditional approach of "give people rope to hang themselves
+if they want so".  So I'll NAK any patch that *requires* use of systemd,
+capabilities and non-root users on Linux.
 
+As an option, welcome.
 
-This patch is a bit "gallopping ahead", though - it needs a somewhat
-more solid agreement on our privilege model before modifying systemd
-unit files...
+(I'm not finding a really good reason right now why I would need to run
+openvpn as root which couldn't be done with CAP_NET_ADMIN, so the=20
+recommendation should certainly be "use non-root" - but then, we're not
+enforcing --setuid today either)
 
 gert
 
@@ -56,22 +58,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---UJZgE5sa6ExqK3JD
+--ViugPjSMr9TemhdD
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJa4Hs6AAoJEB2Cnv7KVigSOU4L/3C50U0VcPpr5PRvplRUmWWI
-kjTfaxTzL1yqez4fIaSxD0mwSu5Rk4q1OP4KlY/QapGZs9rZGdD+GUAIajrzdWir
-ClSP2RtLqUAes3VESbX28apV7x5szXaLQf3Dg9wffSByJe2/2SsmwtbkZ/5/XZTd
-oqeHLHkEQABN3JCOIrhtuF/wLX0VhrjA/20k4wW60E+8EBNt9/rxK6DhTmUBJCPr
-E7NMoWnAOov9XvVoymqBfX9k5157Eo6NcqT8Qigcmtv4JK+h0o3d6xKVLidYi7AQ
-2xi+D/3V8EkK4ssu6G7BBqZmnwwYQvD1+UP98iz78SPq0kg+eNPymcm1O1CV0bAs
-im9pIVHBruT+fvUa8phZjUvUmQgflruE4mGIgBp3N/kzjbbGaUnPnoNZWRgfKNDd
-iQ3Tc7De8kpik4UJOKje9MOMP58laB79YkbQCABa81D2dkICT6z7AP1VNl24+yh7
-EBuZIaToh+65RLhBer532kVtsoAb+y5Yi2HMC4SbCQ==
-=BHzG
+iQGcBAEBAgAGBQJa4HwOAAoJEB2Cnv7KVigSm/IL/RFM0g87SAz3rXj6k54oM1fn
+g2r8Z74fIMzBCYPO5H1vHDarjveuLhRdqjzxKRnxrNao29TsJ2gd2ix5NPEXjr5h
+PhOR0BIlu4cWeFlLErVQQVX4C5C0bte3Yvxcil30/5ID+ebPoBchy2Ea2JGariir
+nJN4qbTZ6Szi2uVMzjEBK/wKnL6OhaNDBRVTQggSFnSdmba+E323qrvBbd76ofaN
+axxyJnvQrgYGnsm41ycbI628wiRD1aB4+5JpwrNUiAwG7jvAMbpiV7LUbgjZZGRK
+cuIUF5OCu2dPdl7u4EFbGyFQRxVMtDdoWh1UpaG56oQCxwMdRaF/3IUgDe1Jt0nB
+XFCCnTP354fqvp5PKHeSGJE7MvoUi+bmd56o8sZeI834hjlfCg/x9BHdXU+E4A6i
+OPoIZp4yVE5E3YkqdTy/EeFLyCuima7IHMnlaRRxSMVeFbULvI7/1IIsJCUqQuiZ
+wRpv+P0kwxnt/e/YeZ6dHkrHZcFbn4p72Jb6jc57CA==
+=u/w+
 -----END PGP SIGNATURE-----
 
---UJZgE5sa6ExqK3JD--
+--ViugPjSMr9TemhdD--
 
