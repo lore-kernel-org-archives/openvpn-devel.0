@@ -1,8 +1,10 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Thu, 26 Apr 2018 03:57:14 +0800
-Message-Id: <20180425195722.20744-1-a@...2181...>
-Subject: [Openvpn-devel] [RFC 0/8] server: support listening on multiple
- ports/IPs
+Date: Thu, 26 Apr 2018 03:57:17 +0800
+Message-Id: <20180425195722.20744-4-a@...2181...>
+In-Reply-To: <20180425195722.20744-1-a@...2181...>
+References: <20180425195722.20744-1-a@...2181...>
+Subject: [Openvpn-devel] [RFC 3/8] io_work: convert shift argument to
+ uintptr_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,82 +18,84 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <a@...2181...>
 
-This patchset allows a server to listen on multiple sockets
-concurrently.
+Instead of passing the shift argument as pointer, pass
+directly its integer value. This will allow the code to
+distinguish a shift value from a real object pointer,
+like we already do in multi_tcp_process_io().
 
-Practically this means that an admin can configure his/her server to
-listen on multiple IPs and/or multiple ports at the same time.
+This change will allow us later to pass an event_arg
+object as event handler argument instead of a simple
+integer value.
 
-The new behaviour can be configured by using an extension of the current
-"--local" option.
-In particular, the new directive syntax is  "--local IP [port]" and it
-can appear multiple times in the same server config. Each occurrence
-represents a single socket.
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+ src/openvpn/forward.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-"IP" can be an IPv4, IPv6, an hostname or *.
-Multiple "--local" directives can combine all of the above.
-
-The special case "*" will mimic what currently happens on a server when
-no "--local" is specified, but in this case it gives a chance to specify
-a port.
-
-The special addresses 0.0.0.0 and :: are also allowed and they can be
-used to explicitly bind only IPv4 o v6.
-
-If no port is specified, the value coming from "lport" is used
-(1194 by default).
-
-At the moment the protocol cannot be customized and the one specified by
-the "--proto" directive will always be used.
-Future development will aim at making the protocol part of the "--local"
-directive and finally have multi protocol support on the same instance.
-
-
-This patchset is an RFC because it requires feedback and testing,
-especially when used in client mode with all kind of weird options.
-
-
-It currently passes "make check" and our "internal buildbot"
-tests.
-
-Interested users can also get this code branch from:
-https://github.com/ordex/openvpn/tree/multiport
-
-Cheers,
-
-
-Antonio Quartulli (8):
-  event/multi: add event_arg object to make event handling more generic
-  pass link_socket object to i/o functions
-  io_work: convert shift argument to uintptr_t
-  io_work: pass event_arg object to event handler in case of socket
-    event
-  allow tcp/udp server to listen on multiple ports at the same time
-  if a local IPv6 address is provided, socket must be v6-only
-  allow user to specify 'local' multiple times in config files
-  override ai_family if 'local' numeric address was specified
-
- doc/openvpn.8                |  10 +-
- src/openvpn/event.h          |  22 ++++
- src/openvpn/forward-inline.h |  15 ++-
- src/openvpn/forward.c        | 137 +++++++++++++++---------
- src/openvpn/forward.h        |  35 ++++---
- src/openvpn/init.c           | 198 +++++++++++++++++++++++------------
- src/openvpn/init.h           |   3 +-
- src/openvpn/mtcp.c           | 113 ++++++++++++--------
- src/openvpn/mudp.c           |  19 +++-
- src/openvpn/mudp.h           |   6 +-
- src/openvpn/multi.c          |  27 +++--
- src/openvpn/multi.h          |  15 ++-
- src/openvpn/openvpn.c        |   2 +-
- src/openvpn/openvpn.h        |   9 +-
- src/openvpn/options.c        | 162 +++++++++++++++++++++++-----
- src/openvpn/options.h        |  15 ++-
- src/openvpn/ping-inline.h    |   2 +-
- src/openvpn/socket.c         |  55 ++++++++--
- src/openvpn/socket.h         |   8 +-
- 19 files changed, 602 insertions(+), 251 deletions(-)
-
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index c5ddf385..a4e4d98a 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1607,11 +1607,11 @@ io_wait_dowork(struct context *c, const unsigned int flags)
+     struct event_set_return esr[4];
+ 
+     /* These shifts all depend on EVENT_READ and EVENT_WRITE */
+-    static int socket_shift = 0;   /* depends on SOCKET_READ and SOCKET_WRITE */
+-    static int tun_shift = 2;      /* depends on TUN_READ and TUN_WRITE */
+-    static int err_shift = 4;      /* depends on ES_ERROR */
++    static uintptr_t socket_shift = 0;   /* depends on SOCKET_READ and SOCKET_WRITE */
++    static uintptr_t tun_shift = 2;      /* depends on TUN_READ and TUN_WRITE */
++    static uintptr_t err_shift = 4;      /* depends on ES_ERROR */
+ #ifdef ENABLE_MANAGEMENT
+-    static int management_shift = 6; /* depends on MANAGEMENT_READ and MANAGEMENT_WRITE */
++    static uintptr_t management_shift = 6; /* depends on MANAGEMENT_READ and MANAGEMENT_WRITE */
+ #endif
+ #ifdef ENABLE_ASYNC_PUSH
+     static int file_shift = 8;     /* listening inotify events */
+@@ -1628,7 +1628,7 @@ io_wait_dowork(struct context *c, const unsigned int flags)
+      */
+     if (flags & IOW_WAIT_SIGNAL)
+     {
+-        wait_signal(c->c2.event_set, (void *)&err_shift);
++        wait_signal(c->c2.event_set, (void *)err_shift);
+     }
+ 
+     /*
+@@ -1714,13 +1714,13 @@ io_wait_dowork(struct context *c, const unsigned int flags)
+     /*
+      * Configure event wait based on socket, tuntap flags.
+      */
+-    socket_set(c->c2.link_socket, c->c2.event_set, socket, (void *)&socket_shift, NULL);
+-    tun_set(c->c1.tuntap, c->c2.event_set, tuntap, (void *)&tun_shift, NULL);
++    socket_set(c->c2.link_socket, c->c2.event_set, socket, (void *)socket_shift, NULL);
++    tun_set(c->c1.tuntap, c->c2.event_set, tuntap, (void *)tun_shift, NULL);
+ 
+ #ifdef ENABLE_MANAGEMENT
+     if (management)
+     {
+-        management_socket_set(management, c->c2.event_set, (void *)&management_shift, NULL);
++        management_socket_set(management, c->c2.event_set, (void *)management_shift, NULL);
+     }
+ #endif
+ 
+@@ -1728,7 +1728,7 @@ io_wait_dowork(struct context *c, const unsigned int flags)
+     /* arm inotify watcher */
+     if (c->options.mode == MODE_SERVER)
+     {
+-        event_ctl(c->c2.event_set, c->c2.inotify_fd, EVENT_READ, (void *)&file_shift);
++        event_ctl(c->c2.event_set, c->c2.inotify_fd, EVENT_READ, (void *)file_shift);
+     }
+ #endif
+ 
+@@ -1771,7 +1771,7 @@ io_wait_dowork(struct context *c, const unsigned int flags)
+                 for (i = 0; i < status; ++i)
+                 {
+                     const struct event_set_return *e = &esr[i];
+-                    c->c2.event_set_status |= ((e->rwflags & 3) << *((int *)e->arg));
++                    c->c2.event_set_status |= ((e->rwflags & 3) << (uintptr_t)e->arg);
+                 }
+             }
+             else if (status == 0)
 -- 
 2.17.0
 
