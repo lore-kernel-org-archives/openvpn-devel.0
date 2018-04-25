@@ -1,10 +1,13 @@
-From: selva.nair@...277...
-Date: Wed, 25 Apr 2018 12:03:11 -0400
-Message-Id: <1524672191-25259-1-git-send-email-selva.nair@...277...>
-In-Reply-To: <1524623120-23498-1-git-send-email-selva.nair@...277...>
-References: <1524623120-23498-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH tap-windows6,
- v2] Have the driver version display as major.minor.revision.build
+Date: Wed, 25 Apr 2018 19:09:13 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180425170913.GG69387@...1296...>
+References: <CAJ_FkANDLWH0Azus9S=OcK79Udwzsny8fQOA7Fza=CB+mcUh9g@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="kATYhdbhnsgsRzfj"
+Content-Disposition: inline
+In-Reply-To: <CAJ_FkANDLWH0Azus9S=OcK79Udwzsny8fQOA7Fza=CB+mcUh9g@...278...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN memory usage stats
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,91 +16,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Yury Shefer <shefys@...277...>
+Cc: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+--kATYhdbhnsgsRzfj
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-The driver version (taken from the INF) and the file version of
-tap0901.sys file (from its resource) will now display like
-9.22.1.601.
+Hi,
 
-The driver details tab will continue to show the text form of
-the version as "major.minor.revision major/minor".
-Eg., "9.22.1 9/22"
+came across an old posting today, by chance - cc'ing openvpn-devel,
+because that's really more of a -devel question...
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
-v2: reverted the date back to 04/15/2018 assuming both
-    version and date will be changed at release time
+On Thu, May 18, 2017 at 02:47:37PM -0700, Yury Shefer wrote:
+> Here is what I noticed:
+> 1) when I hit max-sessions and the daemon no longer accepts new
+> connections (by logging "new incoming connection would exceed maximum
+> number of clients (16200)"), the memory usage by the process
+> continuously increases (by ~30 MB per minute). For 16K connections
+> OpenVPN will consume around 3-3.2Gb of RAM and then, in a period of
+> ~2-3 hours, it will consume the rest of VM RAM (8 GB total) and gets
+> killed by the kernel.
 
-Note: PRODUCT_VERSION_RESOURCE in version.m4 appears to be unused,
-so it may be an unnecessary burden to keep it up to date? FWIW, I've
-updated it to the 9,22,1,601 form.
+This looks like we do not properly clean up memory when refusing a
+new session (every new session needs memory, which is expected, but
+if we do not actually accept the session, memory needs to be returned).
 
-Not sure this should be submitted as a PR  or like this..
+I guess that you see quite a number of incoming connections on top of
+the allowed limit, and thus the "continuous increase".
 
-An image showing the version is here
-https://user-images.githubusercontent.com/3981391/39222715-29500c5a-480c-11e8-823a-73328baf69dd.PNG
-But I would like to test again using a properly signed version
+[..]
+> 2) run the process with valgrind (valgrind --leak-check=3Dyes) but it
+> reported no errors. Logging with verb 9 with such amount of sessions
+> is a bit unrealistic.
 
- src/OemVista.inf.in | 2 +-
- src/config.h.in     | 2 ++
- src/resource.rc     | 2 +-
- version.m4          | 2 +-
- 4 files changed, 5 insertions(+), 3 deletions(-)
+Valgrind might not notice because our memory management is... quite
+a bit advanced...
 
-diff --git a/src/OemVista.inf.in b/src/OemVista.inf.in
-index 004ed62..26152f5 100644
---- a/src/OemVista.inf.in
-+++ b/src/OemVista.inf.in
-@@ -55,7 +55,7 @@
- 
- ; This version number should match the version
- ; number given in SOURCES.
--   DriverVer=@PRODUCT_TAP_WIN_RELDATE@,@PRODUCT_TAP_WIN_MAJOR@...1678...@PRODUCT_TAP_WIN_MINOR@
-+   DriverVer=@PRODUCT_TAP_WIN_RELDATE@,@PRODUCT_TAP_WIN_MAJOR@...220...@PRODUCT_TAP_WIN_MINOR@...220...@PRODUCT_TAP_WIN_REVISION@...220...@PRODUCT_TAP_WIN_BUILD@
- 
- [Strings]
-    DeviceDescription = "@PRODUCT_TAP_WIN_DEVICE_DESCRIPTION@"
-diff --git a/src/config.h.in b/src/config.h.in
-index 322afa8..c013348 100644
---- a/src/config.h.in
-+++ b/src/config.h.in
-@@ -7,3 +7,5 @@
- #define PRODUCT_TAP_WIN_PROVIDER		"@PRODUCT_TAP_WIN_PROVIDER@"
- #define PRODUCT_TAP_WIN_DEVICE_DESCRIPTION	"@PRODUCT_TAP_WIN_DEVICE_DESCRIPTION@"
- #define PRODUCT_TAP_WIN_RELDATE		"@PRODUCT_TAP_WIN_RELDATE@"
-+#define PRODUCT_TAP_WIN_REVISION	@PRODUCT_TAP_WIN_REVISION@
-+#define PRODUCT_TAP_WIN_BUILD		@PRODUCT_TAP_WIN_BUILD@
-diff --git a/src/resource.rc b/src/resource.rc
-index 3c40d03..229e437 100644
---- a/src/resource.rc
-+++ b/src/resource.rc
-@@ -44,7 +44,7 @@
- 
- 
- #define VER_PRODUCTNAME_STR         VER_FILEDESCRIPTION_STR
--#define VER_PRODUCTVERSION	    PRODUCT_TAP_WIN_MAJOR,00,00,PRODUCT_TAP_WIN_MINOR
-+#define VER_PRODUCTVERSION	    PRODUCT_TAP_WIN_MAJOR,PRODUCT_TAP_WIN_MINOR,PRODUCT_TAP_WIN_REVISION,PRODUCT_TAP_WIN_BUILD
- 
- #define XSTR(s) STR(s)
- #define STR(s) #s
-diff --git a/version.m4 b/version.m4
-index 1d7f92e..027167c 100644
---- a/version.m4
-+++ b/version.m4
-@@ -2,7 +2,7 @@ dnl define the TAP version
- define([PRODUCT_NAME], [TAP-Windows])
- define([PRODUCT_PUBLISHER], [OpenVPN Technologies, Inc.])
- define([PRODUCT_VERSION], [9.22.1])
--define([PRODUCT_VERSION_RESOURCE], [9,0,0,22])
-+define([PRODUCT_VERSION_RESOURCE], [9,22,1,601])
- define([PRODUCT_TAP_WIN_COMPONENT_ID], [tap0901])
- define([PRODUCT_TAP_WIN_MAJOR], [9])
- define([PRODUCT_TAP_WIN_MINOR], [22])
--- 
-2.6.2
+Can you reproduce this with a much lower limit, like "max-sessions 5"?
 
+gert
+
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--kATYhdbhnsgsRzfj
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJa4LY4AAoJEB2Cnv7KVigSZt4L/j4b2k5gXBiS5ZyqJVfcs3/8
+kukz96PKlVY4whwUJ5CiuWYPL1n6Tg/AeucEFhJtst+hrJJ7Z9g3zi5puEjen7ng
+vdeegHb+ACZB0gQZMcUa2OUAoK1pQyGm++5boj5G9a7+LZ6DO4zBHpY3lAUQEC2s
+ki8o48oEMuYDWNrTDusGx51yQSWykelR9I18N456MdtwTOwJZQQJfoKgC+V4KhJ5
+AslTOVmQjWEiT/nmCa9rG6LGJ7S1j8evfsByJ2jMe7LVPPATKspkt5hng2vIP13p
+6PWtFNnAHjOFbc5ws9OYtR1DRYXuC8+HrWElqs6VNLTIE85EgxTDdfTFZsGg74Fy
+WEQIMoD0r6LL5hybv4LN1ignYQJOcSE0uXlBB0KTzogt+T9b30KVr/jnB0AdyRPO
+fUQjKSRwDw1ex96Rv1SzUf25C1pFBoNZxUIteDA+Tco3rnn4F3QH39t2PNaazetb
+kefF4b/I1Or2aa1+R6oKIo742AwvgPFyGCRkrrgbfw==
+=M3xi
+-----END PGP SIGNATURE-----
+
+--kATYhdbhnsgsRzfj--
 
