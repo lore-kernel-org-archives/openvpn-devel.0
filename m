@@ -1,17 +1,8 @@
-Date: Tue, 24 Apr 2018 22:16:36 +0200
-From: Christian Hesse <list@...1798...>
-Message-ID: <20180424221636.257dd814@...1799...>
-In-Reply-To: <a0da03f3-a1bb-6d2b-bdb5-500db52c5dc1@...2181...>
-References: <20180423092813.24844-1-list@...1798...>
- <20180424083801.GB24895@...2161...>
- <20180424120337.0fab107d@...1799...>
- <20180424130817.GA20143@...2161...>
- <a0da03f3-a1bb-6d2b-bdb5-500db52c5dc1@...2181...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_/vdgSo2xN=pC1_4voelDsEe2"; protocol="application/pgp-signature"
-Subject: Re: [Openvpn-devel] [PATCH 1/1] systemd: run openvpn with dedicated
- user
+From: selva.nair@...277...
+Date: Tue, 24 Apr 2018 22:25:20 -0400
+Message-Id: <1524623120-23498-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH tap-windows6] Have the driver version
+ display as major.minor.revision.build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,60 +11,91 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: Simon Ruderich <simon@...2161...>, OpenVPN Development <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---Sig_/vdgSo2xN=pC1_4voelDsEe2
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: quoted-printable
+From: Selva Nair <selva.nair@...277...>
 
-Antonio Quartulli <a@...2181...> on Tue, 2018/04/24 23:08:
-> OTOH I understand that there are people that don't care about having a
-> working tunnel reconfiguration and are fine with starting openvpn as
-> root (and then dropping privileges).
->=20
-> For these people, adding the above capabilities results in giving the
-> openvpn process more power than before.
->=20
-> Maybe users willing to adopt this stricter behaviour should have a knob
-> somewhere that will enable the usual
-> run-as-root-and-then-drop-priv-with-no-caps?
+The driver version (taken from the INF) and the file version of
+tap0901.sys file (from its resource) will now display like
+9.22.1.601.
 
-NAK. :-p
+The driver details tab will continue to show the text form of
+the version as "major.minor.revision (major/minor)".
+Eg., "9.22.1 (9/22)"
 
-I think the solution for this dilemma is pretty easy: I should strip the pa=
-rt
-from my patch that disables user switching when started from systemd. We can
-start as user "openvpn" any way - as long as the process has capabilities
-CAP_SETGID and CAP_SETUID it still can switch user context and drop
-privileges.
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
 
-So users have two options: keep the process running as user "openvpn" with
-capabilities for more flexibility or switch to unprivileged user for more
-security.
+Not sure this should be submitted as a PR  or like this..
 
-No need to have root involved. Sounds good?
---=20
-main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
-"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
-+];)
-putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
+An image showing the version is here
+https://user-images.githubusercontent.com/3981391/39222715-29500c5a-480c-11e8-823a-73328baf69dd.PNG
+But I would like to test again using a properly signed version 
 
---Sig_/vdgSo2xN=pC1_4voelDsEe2
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+ src/OemVista.inf.in | 2 +-
+ src/config.h.in     | 2 ++
+ src/resource.rc     | 2 +-
+ version.m4          | 4 ++--
+ 4 files changed, 6 insertions(+), 4 deletions(-)
 
------BEGIN PGP SIGNATURE-----
+diff --git a/src/OemVista.inf.in b/src/OemVista.inf.in
+index 004ed62..26152f5 100644
+--- a/src/OemVista.inf.in
++++ b/src/OemVista.inf.in
+@@ -55,7 +55,7 @@
+ 
+ ; This version number should match the version
+ ; number given in SOURCES.
+-   DriverVer=@PRODUCT_TAP_WIN_RELDATE@,@PRODUCT_TAP_WIN_MAJOR@...1678...@PRODUCT_TAP_WIN_MINOR@
++   DriverVer=@PRODUCT_TAP_WIN_RELDATE@,@PRODUCT_TAP_WIN_MAJOR@...220...@PRODUCT_TAP_WIN_MINOR@...220...@PRODUCT_TAP_WIN_REVISION@...220...@PRODUCT_TAP_WIN_BUILD@
+ 
+ [Strings]
+    DeviceDescription = "@PRODUCT_TAP_WIN_DEVICE_DESCRIPTION@"
+diff --git a/src/config.h.in b/src/config.h.in
+index 322afa8..c013348 100644
+--- a/src/config.h.in
++++ b/src/config.h.in
+@@ -7,3 +7,5 @@
+ #define PRODUCT_TAP_WIN_PROVIDER		"@PRODUCT_TAP_WIN_PROVIDER@"
+ #define PRODUCT_TAP_WIN_DEVICE_DESCRIPTION	"@PRODUCT_TAP_WIN_DEVICE_DESCRIPTION@"
+ #define PRODUCT_TAP_WIN_RELDATE		"@PRODUCT_TAP_WIN_RELDATE@"
++#define PRODUCT_TAP_WIN_REVISION	@PRODUCT_TAP_WIN_REVISION@
++#define PRODUCT_TAP_WIN_BUILD		@PRODUCT_TAP_WIN_BUILD@
+diff --git a/src/resource.rc b/src/resource.rc
+index 3c40d03..229e437 100644
+--- a/src/resource.rc
++++ b/src/resource.rc
+@@ -44,7 +44,7 @@
+ 
+ 
+ #define VER_PRODUCTNAME_STR         VER_FILEDESCRIPTION_STR
+-#define VER_PRODUCTVERSION	    PRODUCT_TAP_WIN_MAJOR,00,00,PRODUCT_TAP_WIN_MINOR
++#define VER_PRODUCTVERSION	    PRODUCT_TAP_WIN_MAJOR,PRODUCT_TAP_WIN_MINOR,PRODUCT_TAP_WIN_REVISION,PRODUCT_TAP_WIN_BUILD
+ 
+ #define XSTR(s) STR(s)
+ #define STR(s) #s
+diff --git a/version.m4 b/version.m4
+index 1d7f92e..955b418 100644
+--- a/version.m4
++++ b/version.m4
+@@ -2,7 +2,7 @@ dnl define the TAP version
+ define([PRODUCT_NAME], [TAP-Windows])
+ define([PRODUCT_PUBLISHER], [OpenVPN Technologies, Inc.])
+ define([PRODUCT_VERSION], [9.22.1])
+-define([PRODUCT_VERSION_RESOURCE], [9,0,0,22])
++define([PRODUCT_VERSION_RESOURCE], [9,22,1,601])
+ define([PRODUCT_TAP_WIN_COMPONENT_ID], [tap0901])
+ define([PRODUCT_TAP_WIN_MAJOR], [9])
+ define([PRODUCT_TAP_WIN_MINOR], [22])
+@@ -11,4 +11,4 @@ define([PRODUCT_TAP_WIN_BUILD], [601])
+ define([PRODUCT_TAP_WIN_PROVIDER], [TAP-Windows Provider V9])
+ define([PRODUCT_TAP_WIN_CHARACTERISTICS], [0x81])
+ define([PRODUCT_TAP_WIN_DEVICE_DESCRIPTION], [TAP-Windows Adapter V9])
+-define([PRODUCT_TAP_WIN_RELDATE], [04/15/2018])
++define([PRODUCT_TAP_WIN_RELDATE], [04/24/2018])
+-- 
+2.6.2
 
-iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAlrfkKUACgkQiUUh18yA
-9HYBKQgAzkEqUuRe8ldXZaNTtQreCZOM2F04Vwq69wMz6GQNppy6V/w/zjfJ6Esq
-zO3wfDOdeTkkNCPhBG+cjVjCiwP9CPD7VOR4IF63vnnIcx1cSmiRf+N8CC0KMiqZ
-LbZdX29q0IedcpYr05pMBLV86u6bMXseOPnbuVTIEfY9KXdRYCJdjcguDh72UbAj
-AvZc/6LSTw4Oy6/0tkNd6iNqq5Wj8/MOihT3C7lU2Qc6GGHQA7JEPszK8RgdeL+d
-yGdMK3DBliwWabLrrR8kiZ7lIIkk5JiGiTsVBVPAhZe1DCDUW3bRSLRzKzHx+uJ5
-kC8W6+eCN2yj6K5ubm7ZrkqTC9bVQw==
-=vGUi
------END PGP SIGNATURE-----
-
---Sig_/vdgSo2xN=pC1_4voelDsEe2--
 
