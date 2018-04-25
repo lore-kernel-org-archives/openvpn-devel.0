@@ -1,12 +1,18 @@
+Date: Wed, 25 Apr 2018 14:57:31 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180425125731.GZ69387@...1296...>
+References: <20180423092813.24844-1-list@...1798...>
+ <20180424083801.GB24895@...2161...>
+ <20180424120337.0fab107d@...1799...>
+ <20180424130817.GA20143@...2161...>
+ <a0da03f3-a1bb-6d2b-bdb5-500db52c5dc1@...2181...>
 MIME-Version: 1.0
-In-Reply-To: <712cbadd-34a2-b5b2-345e-9c19d237285d@...515...>
-References: <1524623120-23498-1-git-send-email-selva.nair@...277...>
- <712cbadd-34a2-b5b2-345e-9c19d237285d@...515...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 25 Apr 2018 08:42:55 -0400
-Message-ID: <CAKuzo_jZrCruiZ6u5Ep440FBPUmrH6N45P1PszGxU8EPe6hu0A@...278...>
-Subject: Re: [Openvpn-devel] [PATCH tap-windows6] Have the driver version
- display as major.minor.revision.build
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="UJZgE5sa6ExqK3JD"
+Content-Disposition: inline
+In-Reply-To: <a0da03f3-a1bb-6d2b-bdb5-500db52c5dc1@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH 1/1] systemd: run openvpn with dedicated
+ user
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,30 +21,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+To: Antonio Quartulli <a@...2181...>
+Cc: Simon Ruderich <simon@...2161...>, Christian Hesse <list@...1798...>, OpenVPN Development <openvpn-devel@lists.sourceforge.net>
+
+--UJZgE5sa6ExqK3JD
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
 Hi,
 
-On Wed, Apr 25, 2018 at 3:04 AM, Samuli Sepp=C3=A4nen <samuli@...515...> wr=
-ote:
-> Feature-ACK, but I have not tested this yet. I think we should increment
-> version to 9.22.2 (a.k.a. 9,22,2,601) though. The current release is 9.22=
-.1.
+On Tue, Apr 24, 2018 at 11:08:22PM +0800, Antonio Quartulli wrote:
+> Generally speaking I believe that openvpn, as a VPN and partly routing
+> daemon, should be allowed to run with CAP_NET_ADMIN set as it enables
+> more features (tunnel reconfiguration to start with).
 
-Treating this like any other patch, I think version bump should not be
-a part of it, but done only at the point of release as usual. So let's keep
-the purpose here to just change how version is displayed.
+If we go there, we might consider dropping all non-default capabilities
+before running external programs (--up, --client-connect, ...)
 
-But I did change the date by mistake (left behind from testing) -- will send
-a v2 which keeps the version number and date as is (and update the PR as
-well).
 
-That said, when a signed test version is made, please bump the version
-and date for testing that it does get recognized as the latest by Windows.
-I could not properly test that due to lack of signature
+This patch is a bit "gallopping ahead", though - it needs a somewhat
+more solid agreement on our privilege model before modifying systemd
+unit files...
 
-Selva
+gert
+
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--UJZgE5sa6ExqK3JD
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJa4Hs6AAoJEB2Cnv7KVigSOU4L/3C50U0VcPpr5PRvplRUmWWI
+kjTfaxTzL1yqez4fIaSxD0mwSu5Rk4q1OP4KlY/QapGZs9rZGdD+GUAIajrzdWir
+ClSP2RtLqUAes3VESbX28apV7x5szXaLQf3Dg9wffSByJe2/2SsmwtbkZ/5/XZTd
+oqeHLHkEQABN3JCOIrhtuF/wLX0VhrjA/20k4wW60E+8EBNt9/rxK6DhTmUBJCPr
+E7NMoWnAOov9XvVoymqBfX9k5157Eo6NcqT8Qigcmtv4JK+h0o3d6xKVLidYi7AQ
+2xi+D/3V8EkK4ssu6G7BBqZmnwwYQvD1+UP98iz78SPq0kg+eNPymcm1O1CV0bAs
+im9pIVHBruT+fvUa8phZjUvUmQgflruE4mGIgBp3N/kzjbbGaUnPnoNZWRgfKNDd
+iQ3Tc7De8kpik4UJOKje9MOMP58laB79YkbQCABa81D2dkICT6z7AP1VNl24+yh7
+EBuZIaToh+65RLhBer532kVtsoAb+y5Yi2HMC4SbCQ==
+=BHzG
+-----END PGP SIGNATURE-----
+
+--UJZgE5sa6ExqK3JD--
 
