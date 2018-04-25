@@ -1,17 +1,12 @@
-Date: Wed, 25 Apr 2018 15:01:03 +0200
+Date: Wed, 25 Apr 2018 15:03:47 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20180425130103.GA69387@...1296...>
+Message-ID: <20180425130347.GB69387@...1296...>
 References: <20180423092813.24844-1-list@...1798...>
- <20180424083801.GB24895@...2161...>
- <20180424120337.0fab107d@...1799...>
- <20180424130817.GA20143@...2161...>
- <a0da03f3-a1bb-6d2b-bdb5-500db52c5dc1@...2181...>
- <20180424221636.257dd814@...1799...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="ViugPjSMr9TemhdD"
+ protocol="application/pgp-signature"; boundary="tPd0sWeG03BgIodG"
 Content-Disposition: inline
-In-Reply-To: <20180424221636.257dd814@...1799...>
+In-Reply-To: <20180423092813.24844-1-list@...1798...>
 Subject: Re: [Openvpn-devel] [PATCH 1/1] systemd: run openvpn with dedicated
  user
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,31 +18,40 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Christian Hesse <list@...1798...>
-Cc: Antonio Quartulli <a@...2181...>, OpenVPN Development <openvpn-devel@lists.sourceforge.net>
+Cc: OpenVPN Development <openvpn-devel@lists.sourceforge.net>, Christian Hesse <mail@...1798...>
 
---ViugPjSMr9TemhdD
+--tPd0sWeG03BgIodG
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Tue, Apr 24, 2018 at 10:16:36PM +0200, Christian Hesse wrote:
-> No need to have root involved. Sounds good?
+On Mon, Apr 23, 2018 at 11:28:13AM +0200, Christian Hesse wrote:
+> @@ -1151,6 +1151,14 @@ do_uid_gid_chroot(struct context *c, bool no_delay)
+>          /* set user and/or group if we want to setuid/setgid */
+>          if (c0->uid_gid_specified)
+>          {
+> +#ifdef ENABLE_SYSTEMD
+> +            if (sd_notify(0, "READY=3D0") > 0 && getuid() !=3D 0)
+> +            {
+> +                msg(M_INFO, "NOTE: Running from systemd with non-root ui=
+d, skipping downgrade");
+> +                return;
+> +            }
+> +#endif
+> +
+>              if (no_delay)
 
-This is not our traditional approach of "give people rope to hang themselves
-if they want so".  So I'll NAK any patch that *requires* use of systemd,
-capabilities and non-root users on Linux.
+This is not a good approach.=20=20
 
-As an option, welcome.
-
-(I'm not finding a really good reason right now why I would need to run
-openvpn as root which couldn't be done with CAP_NET_ADMIN, so the=20
-recommendation should certainly be "use non-root" - but then, we're not
-enforcing --setuid today either)
+If you run with a limited capability model, then just do not set "setuid"=20
+in your config files, and document clearly that this is incompatible.  But
+do not litter general-purpose code with #ifdef SYSTEMD bits that will rando=
+mly
+ignore user-specified options.
 
 gert
-
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -58,22 +62,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---ViugPjSMr9TemhdD
+--tPd0sWeG03BgIodG
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJa4HwOAAoJEB2Cnv7KVigSm/IL/RFM0g87SAz3rXj6k54oM1fn
-g2r8Z74fIMzBCYPO5H1vHDarjveuLhRdqjzxKRnxrNao29TsJ2gd2ix5NPEXjr5h
-PhOR0BIlu4cWeFlLErVQQVX4C5C0bte3Yvxcil30/5ID+ebPoBchy2Ea2JGariir
-nJN4qbTZ6Szi2uVMzjEBK/wKnL6OhaNDBRVTQggSFnSdmba+E323qrvBbd76ofaN
-axxyJnvQrgYGnsm41ycbI628wiRD1aB4+5JpwrNUiAwG7jvAMbpiV7LUbgjZZGRK
-cuIUF5OCu2dPdl7u4EFbGyFQRxVMtDdoWh1UpaG56oQCxwMdRaF/3IUgDe1Jt0nB
-XFCCnTP354fqvp5PKHeSGJE7MvoUi+bmd56o8sZeI834hjlfCg/x9BHdXU+E4A6i
-OPoIZp4yVE5E3YkqdTy/EeFLyCuima7IHMnlaRRxSMVeFbULvI7/1IIsJCUqQuiZ
-wRpv+P0kwxnt/e/YeZ6dHkrHZcFbn4p72Jb6jc57CA==
-=u/w+
+iQGcBAEBAgAGBQJa4HyzAAoJEB2Cnv7KVigSqqsMAJfDzszHyDw86A/Ei+XXwFyL
+uS7fEZFvOijH7hwD783qWsN2IQVgMKhDt8nHoRSNPO6TFjJY716KPigclqmjeA4F
+QhwW0ERLIJDc9w64jIQyhjneqSZy3SJgHR+c/2EliKQuLccjOk0kn3aokZuNRadg
+51FAmjKASIfPjgvALnsYp5dpUvmiG3lmMElsKRxh5pH0TBRtyt1zt6fWjt5PE5K9
+tZazhOpHSD/IdknRpPP6bF3QpSmaVDZhmH573S/YljoNPgxOsOZjZyJK3z7w10+3
+//CMydFWX6XnJiP8x5ICBkA4GJLG4DNmYNBraqhwFUwRpsVUb5bc3p/c42ZrG7aR
+oAEARDAkECZgJypkFHtg93lUuWIpq4ZwDgFzXx/HBEcIWG8aNn8JKeTq1Q5mT+t8
+BrBDOSQHhjZU4vCtXKtfrx7qNEWV6E1GDZgQu4ESC7knsfA11vRG9KyjbeePF5p2
+pZrHi4re1nX5K0cMr3yjDsBlvYTsec2fwwTssHk8PQ==
+=KZ5n
 -----END PGP SIGNATURE-----
 
---ViugPjSMr9TemhdD--
+--tPd0sWeG03BgIodG--
 
