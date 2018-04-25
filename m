@@ -1,12 +1,13 @@
-Date: Wed, 25 Apr 2018 15:03:47 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180425130347.GB69387@...1296...>
-References: <20180423092813.24844-1-list@...1798...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="tPd0sWeG03BgIodG"
-Content-Disposition: inline
-In-Reply-To: <20180423092813.24844-1-list@...1798...>
+In-Reply-To: <20180424221636.257dd814@...1799...>
+References: <20180423092813.24844-1-list@...1798...>
+ <20180424083801.GB24895@...2161...>
+ <20180424120337.0fab107d@...1799...> <20180424130817.GA20143@...2161...>
+ <a0da03f3-a1bb-6d2b-bdb5-500db52c5dc1@...2181...>
+ <20180424221636.257dd814@...1799...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 25 Apr 2018 11:36:48 -0400
+Message-ID: <CAKuzo_gzEdJCYQCQ8k=t0kkPv2Jabb5ZCNgOqM1fYjV8+SuafA@...278...>
 Subject: Re: [Openvpn-devel] [PATCH 1/1] systemd: run openvpn with dedicated
  user
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,67 +18,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 To: Christian Hesse <list@...1798...>
-Cc: OpenVPN Development <openvpn-devel@lists.sourceforge.net>, Christian Hesse <mail@...1798...>
-
---tPd0sWeG03BgIodG
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Cc: Antonio Quartulli <a@...2181...>, OpenVPN Development <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Mon, Apr 23, 2018 at 11:28:13AM +0200, Christian Hesse wrote:
-> @@ -1151,6 +1151,14 @@ do_uid_gid_chroot(struct context *c, bool no_delay)
->          /* set user and/or group if we want to setuid/setgid */
->          if (c0->uid_gid_specified)
->          {
-> +#ifdef ENABLE_SYSTEMD
-> +            if (sd_notify(0, "READY=3D0") > 0 && getuid() !=3D 0)
-> +            {
-> +                msg(M_INFO, "NOTE: Running from systemd with non-root ui=
-d, skipping downgrade");
-> +                return;
-> +            }
-> +#endif
-> +
->              if (no_delay)
+On Tue, Apr 24, 2018 at 4:16 PM, Christian Hesse <list@...1798...> wrote:
+> Antonio Quartulli <a@...2181...> on Tue, 2018/04/24 23:08:
+>> OTOH I understand that there are people that don't care about having a
+>> working tunnel reconfiguration and are fine with starting openvpn as
+>> root (and then dropping privileges).
+>>
+>> For these people, adding the above capabilities results in giving the
+>> openvpn process more power than before.
+>>
+>> Maybe users willing to adopt this stricter behaviour should have a knob
+>> somewhere that will enable the usual
+>> run-as-root-and-then-drop-priv-with-no-caps?
+>
+> NAK. :-p
+>
+> I think the solution for this dilemma is pretty easy: I should strip the part
+> from my patch that disables user switching when started from systemd. We can
+> start as user "openvpn" any way - as long as the process has capabilities
+> CAP_SETGID and CAP_SETUID it still can switch user context and drop
+> privileges
 
-This is not a good approach.=20=20
+I'm not yet up to speed with capabilities in recent versions of linux,
+but some of the proposed ideas look unsafe to me. In particular:
 
-If you run with a limited capability model, then just do not set "setuid"=20
-in your config files, and document clearly that this is incompatible.  But
-do not litter general-purpose code with #ifdef SYSTEMD bits that will rando=
-mly
-ignore user-specified options.
+Be careful setting CAP_SETUID on the file without code changes. Once
+that is set, starting as root and dropping privileges is not the same as
+starting  as non-root and dropping privileges. In the former case all
+capabilities will get cleared (which is good) but not so in the latter case.
+The process can elevate back to root in the second case which is bad.
+We'll need to add some code to clear all caps before the setuid() call
+to do this safely.
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Also, if the server is using pam for user-auth, the forked copy needs to run
+as root which is currently handled by forking before the setuid call.  Need to
+consider how that will work with capabilities without handing out cap_setuid
+to all.
 
-Gert Doering - Munich, Germany                             gert@...1296...
+As Gert said, looks like we are jumping the gun here. First thoroughly  test
+and evaluate the nuances of the use of capabilities in context before
+deciding on how to make use of it.
 
---tPd0sWeG03BgIodG
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJa4HyzAAoJEB2Cnv7KVigSqqsMAJfDzszHyDw86A/Ei+XXwFyL
-uS7fEZFvOijH7hwD783qWsN2IQVgMKhDt8nHoRSNPO6TFjJY716KPigclqmjeA4F
-QhwW0ERLIJDc9w64jIQyhjneqSZy3SJgHR+c/2EliKQuLccjOk0kn3aokZuNRadg
-51FAmjKASIfPjgvALnsYp5dpUvmiG3lmMElsKRxh5pH0TBRtyt1zt6fWjt5PE5K9
-tZazhOpHSD/IdknRpPP6bF3QpSmaVDZhmH573S/YljoNPgxOsOZjZyJK3z7w10+3
-//CMydFWX6XnJiP8x5ICBkA4GJLG4DNmYNBraqhwFUwRpsVUb5bc3p/c42ZrG7aR
-oAEARDAkECZgJypkFHtg93lUuWIpq4ZwDgFzXx/HBEcIWG8aNn8JKeTq1Q5mT+t8
-BrBDOSQHhjZU4vCtXKtfrx7qNEWV6E1GDZgQu4ESC7knsfA11vRG9KyjbeePF5p2
-pZrHi4re1nX5K0cMr3yjDsBlvYTsec2fwwTssHk8PQ==
-=KZ5n
------END PGP SIGNATURE-----
-
---tPd0sWeG03BgIodG--
+Selva
 
