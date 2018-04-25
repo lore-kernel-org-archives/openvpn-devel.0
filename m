@@ -1,10 +1,10 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Thu, 26 Apr 2018 03:57:17 +0800
-Message-Id: <20180425195722.20744-4-a@...2181...>
+Date: Thu, 26 Apr 2018 03:57:18 +0800
+Message-Id: <20180425195722.20744-5-a@...2181...>
 In-Reply-To: <20180425195722.20744-1-a@...2181...>
 References: <20180425195722.20744-1-a@...2181...>
-Subject: [Openvpn-devel] [RFC 3/8] io_work: convert shift argument to
- uintptr_t
+Subject: [Openvpn-devel] [RFC 4/8] io_work: pass event_arg object to event
+ handler in case of socket event
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,84 +18,104 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <a@...2181...>
 
-Instead of passing the shift argument as pointer, pass
-directly its integer value. This will allow the code to
-distinguish a shift value from a real object pointer,
-like we already do in multi_tcp_process_io().
+In order to allow the code to work with multiple listening sockets
+it is essential to allow the generic multi_io event handler
+to distinguish between the various socket objects.
 
-This change will allow us later to pass an event_arg
-object as event handler argument instead of a simple
-integer value.
+This can be achieved by passing an event_arg object that contains
+a pointer to the link_socket.
+
+This code path is used on clients as well as UDP servers.
 
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- src/openvpn/forward.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ src/openvpn/event.h   |  6 ++++++
+ src/openvpn/forward.c | 25 +++++++++++++++++++++++--
+ src/openvpn/mtcp.c    |  4 +---
+ 3 files changed, 30 insertions(+), 5 deletions(-)
 
+diff --git a/src/openvpn/event.h b/src/openvpn/event.h
+index be199ad9..fd0ede04 100644
+--- a/src/openvpn/event.h
++++ b/src/openvpn/event.h
+@@ -41,6 +41,12 @@
+ #define EVENT_METHOD_US_TIMEOUT   (1<<0)
+ #define EVENT_METHOD_FAST         (1<<1)
+ 
++/*
++ * The following constant is used as boundary between integer value
++ * and real addresses when passing arguments to event handlers as (void *)
++ */
++#define MULTI_N           ((void *)16) /* upper bound on MTCP_x */
++
+ #ifdef _WIN32
+ 
+ typedef const struct rw_handle *event_t;
 diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index c5ddf385..a4e4d98a 100644
+index a4e4d98a..1b5dad9b 100644
 --- a/src/openvpn/forward.c
 +++ b/src/openvpn/forward.c
-@@ -1607,11 +1607,11 @@ io_wait_dowork(struct context *c, const unsigned int flags)
-     struct event_set_return esr[4];
- 
-     /* These shifts all depend on EVENT_READ and EVENT_WRITE */
--    static int socket_shift = 0;   /* depends on SOCKET_READ and SOCKET_WRITE */
--    static int tun_shift = 2;      /* depends on TUN_READ and TUN_WRITE */
--    static int err_shift = 4;      /* depends on ES_ERROR */
-+    static uintptr_t socket_shift = 0;   /* depends on SOCKET_READ and SOCKET_WRITE */
-+    static uintptr_t tun_shift = 2;      /* depends on TUN_READ and TUN_WRITE */
-+    static uintptr_t err_shift = 4;      /* depends on ES_ERROR */
- #ifdef ENABLE_MANAGEMENT
--    static int management_shift = 6; /* depends on MANAGEMENT_READ and MANAGEMENT_WRITE */
-+    static uintptr_t management_shift = 6; /* depends on MANAGEMENT_READ and MANAGEMENT_WRITE */
- #endif
- #ifdef ENABLE_ASYNC_PUSH
-     static int file_shift = 8;     /* listening inotify events */
-@@ -1628,7 +1628,7 @@ io_wait_dowork(struct context *c, const unsigned int flags)
-      */
-     if (flags & IOW_WAIT_SIGNAL)
-     {
--        wait_signal(c->c2.event_set, (void *)&err_shift);
-+        wait_signal(c->c2.event_set, (void *)err_shift);
-     }
- 
-     /*
-@@ -1714,13 +1714,13 @@ io_wait_dowork(struct context *c, const unsigned int flags)
+@@ -1714,7 +1714,8 @@ io_wait_dowork(struct context *c, const unsigned int flags)
      /*
       * Configure event wait based on socket, tuntap flags.
       */
--    socket_set(c->c2.link_socket, c->c2.event_set, socket, (void *)&socket_shift, NULL);
--    tun_set(c->c1.tuntap, c->c2.event_set, tuntap, (void *)&tun_shift, NULL);
-+    socket_set(c->c2.link_socket, c->c2.event_set, socket, (void *)socket_shift, NULL);
-+    tun_set(c->c1.tuntap, c->c2.event_set, tuntap, (void *)tun_shift, NULL);
+-    socket_set(c->c2.link_socket, c->c2.event_set, socket, (void *)socket_shift, NULL);
++    socket_set(c->c2.link_socket, c->c2.event_set, socket,
++               &c->c2.link_socket->ev_arg, NULL);
+     tun_set(c->c1.tuntap, c->c2.event_set, tuntap, (void *)tun_shift, NULL);
  
  #ifdef ENABLE_MANAGEMENT
-     if (management)
-     {
--        management_socket_set(management, c->c2.event_set, (void *)&management_shift, NULL);
-+        management_socket_set(management, c->c2.event_set, (void *)management_shift, NULL);
-     }
- #endif
- 
-@@ -1728,7 +1728,7 @@ io_wait_dowork(struct context *c, const unsigned int flags)
-     /* arm inotify watcher */
-     if (c->options.mode == MODE_SERVER)
-     {
--        event_ctl(c->c2.event_set, c->c2.inotify_fd, EVENT_READ, (void *)&file_shift);
-+        event_ctl(c->c2.event_set, c->c2.inotify_fd, EVENT_READ, (void *)file_shift);
-     }
- #endif
- 
-@@ -1771,7 +1771,7 @@ io_wait_dowork(struct context *c, const unsigned int flags)
+@@ -1771,7 +1772,27 @@ io_wait_dowork(struct context *c, const unsigned int flags)
                  for (i = 0; i < status; ++i)
                  {
                      const struct event_set_return *e = &esr[i];
--                    c->c2.event_set_status |= ((e->rwflags & 3) << *((int *)e->arg));
-+                    c->c2.event_set_status |= ((e->rwflags & 3) << (uintptr_t)e->arg);
+-                    c->c2.event_set_status |= ((e->rwflags & 3) << (uintptr_t)e->arg);
++                    uintptr_t shift;
++
++                    if (e->arg >= MULTI_N)
++                    {
++                        struct event_arg *ev_arg = (struct event_arg *)e->arg;
++                        if (ev_arg->type != EVENT_ARG_LINK_SOCKET)
++                        {
++                            c->c2.event_set_status = ES_ERROR;
++                            msg(D_LINK_ERRORS,
++                                "io_work: non socket event delivered");
++                            return;
++                        }
++
++                        shift = socket_shift;
++                    }
++                    else
++                    {
++                        shift = (uintptr_t)e->arg;
++                    }
++
++                    c->c2.event_set_status |= ((e->rwflags & 3) << shift);
                  }
              }
              else if (status == 0)
+diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
+index 51f339d0..0be97ae4 100644
+--- a/src/openvpn/mtcp.c
++++ b/src/openvpn/mtcp.c
+@@ -68,8 +68,6 @@
+ #define MTCP_FILE_CLOSE_WRITE ((void *)5)
+ #endif
+ 
+-#define MTCP_N           ((void *)16) /* upper bound on MTCP_x */
+-
+ struct ta_iow_flags
+ {
+     unsigned int flags;
+@@ -682,7 +680,7 @@ multi_tcp_process_io(struct multi_context *m)
+         struct event_arg *ev_arg = (struct event_arg *)e->arg;
+ 
+         /* incoming data for instance or listening socket? */
+-        if (e->arg >= MTCP_N)
++        if (e->arg >= MULTI_N)
+         {
+             switch (ev_arg->type)
+             {
 -- 
 2.17.0
 
