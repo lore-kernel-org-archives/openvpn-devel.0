@@ -1,8 +1,10 @@
-From: selva.nair@...277...
-Date: Thu, 26 Apr 2018 10:24:24 -0400
-Message-Id: <1524752664-27946-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH] Pass the hash without the DigestInfo header
- to NCryptSignHash()
+From: Jon Kunkee <jkunkee@...2393...>
+Date: Fri, 27 Apr 2018 20:26:40 +0000
+Message-ID: <DM5PR21MB0185C678B00052EFCFF10283B08D0@...2394...>
+Content-Language: en-US
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH: tap-windows6] Fix missing PRODUCT_PUBLISHER
+ field in installer
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,161 +13,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-From: Selva Nair <selva.nair@...277...>
+Hi all,
 
-In case of TLS 1.2 signatures, the callback rsa_priv_enc() gets
-the hash with the DigestInfo prepended. Signing this using
-NCryptSignHash() with hash algorithm id set to NULL works in most cases.
-But when using some hardware tokens, the data gets interpreted as the pre
-TLS 1.2 MD5+SHA1 hash and is silently truncated to 36 bytes.
-Avoid this by passing the raw hash to NCryptSignHash() and let it
-add the DigestInfo.
+While working on ARM64 tap-windows6, I came up with this quick fix for a mi=
+nor issue recently reported via IRC.
 
-To get the raw hash we set the RSA_sign() method in the rsa_method
-structure. This callback bypasses rsa_priv_enc() and gets called with
-the hash type and the hash.
+This is also a Github PR:
+https://github.com/OpenVPN/tap-windows6/pull/51
 
-Fixes Trac #1050
+(The ARM64 work is still underway; I'll start a separate thread about its c=
+urrent state in a few hours.)
+
+Thanks,
+Jon
+
+
+From 6eee7713363947083e76dbe5cf2ebf8eaf3936df Mon Sep 17 00:00:00 2001
+From: Jon Kunkee <jkunkee@...2393...>
+Date: Fri, 27 Apr 2018 12:01:07 -0700
+Subject: [PATCH: tap-windows6] Fix missing PRODUCT_PUBLISHER field in
+ installer
+
+On Windows, the Product Publisher in Programs and Features is listed as
+`${PRODUCT_PUBLISHER}` instead of "OpenVPN Technologies, Inc." as
+reported on IRC.
+
+This patch adds the `PRODUCT_PUBLISHER` variable to the buildtap.py
+invocation of MakeNSIS. It also allows for `MakeNSIS` invocations with
+spaces in them.
 ---
+ buildtap.py | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Tested by JJK and gizi as described in Trac #1050
-
- src/openvpn/cryptoapi.c | 84 ++++++++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 79 insertions(+), 5 deletions(-)
-
-diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
-index 89d253c..d765954 100644
---- a/src/openvpn/cryptoapi.c
-+++ b/src/openvpn/cryptoapi.c
-@@ -217,14 +217,16 @@ rsa_pub_dec(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, in
-  * Sign the hash in 'from' using NCryptSignHash(). This requires an NCRYPT
-  * key handle in cd->crypt_prov. On return the signature is in 'to'. Returns
-  * the length of the signature or 0 on error.
-+ * If the hash_algo is not NULL, PKCS #1 DigestInfo header gets added
-+ * to 'from', else it is signed as is.
-  * For now we support only RSA and the padding is assumed to be PKCS1 v1.5
-  */
- static int
--priv_enc_CNG(const CAPI_DATA *cd, const unsigned char *from, int flen,
--              unsigned char *to, int tlen, int padding)
-+priv_enc_CNG(const CAPI_DATA *cd, const wchar_t *hash_algo, const unsigned char *from,
-+             int flen, unsigned char *to, int tlen, int padding)
- {
-     NCRYPT_KEY_HANDLE hkey = cd->crypt_prov;
--    DWORD len;
-+    DWORD len = 0;
-     ASSERT(cd->key_spec == CERT_NCRYPT_KEY_SPEC);
- 
-     msg(D_LOW, "Signing hash using CNG: data size = %d", flen);
-@@ -232,7 +234,7 @@ priv_enc_CNG(const CAPI_DATA *cd, const unsigned char *from, int flen,
-     /* The hash OID is already in 'from'.  So set the hash algorithm
-      * in the padding info struct to NULL.
-      */
--    BCRYPT_PKCS1_PADDING_INFO padinfo = {NULL};
-+    BCRYPT_PKCS1_PADDING_INFO padinfo = {hash_algo};
-     DWORD status;
- 
-     status = NCryptSignHash(hkey, padding? &padinfo : NULL, (BYTE*) from, flen,
-@@ -270,7 +272,7 @@ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
-     }
-     if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
-     {
--        return priv_enc_CNG(cd, from, flen, to, RSA_size(rsa), padding);
-+        return priv_enc_CNG(cd, NULL, from, flen, to, RSA_size(rsa), padding);
-     }
- 
-     /* Unfortunately, there is no "CryptSign()" function in CryptoAPI, that would
-@@ -334,6 +336,69 @@ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
-     return len;
- }
- 
-+/*
-+ * Sign the hash in |m| and return the signature in |sig|.
-+ * Returns 1 on success, 0 on error.
-+ * NCryptSignHash() is used to sign and it is instructed to add the
-+ * the PKCS #1 DigestInfo header to |m| unless the hash algorithm is
-+ * the MD5/SHA1 combination used in TLS 1.1 and earlier versions.
-+ */
-+static int
-+rsa_sign_CNG(int type, const unsigned char *m, unsigned int m_len,
-+              unsigned char *sig, unsigned int *siglen, const RSA *rsa)
-+{
-+    CAPI_DATA *cd = (CAPI_DATA *) RSA_meth_get0_app_data(RSA_get_method(rsa));
-+    const wchar_t *alg = NULL;
-+    int padding = RSA_PKCS1_PADDING;
-+
-+    *siglen = 0;
-+    if (cd == NULL)
-+    {
-+        RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, ERR_R_PASSED_NULL_PARAMETER);
-+        return 0;
-+    }
-+
-+    switch (type)
-+    {
-+        case NID_md5:
-+            alg = BCRYPT_MD5_ALGORITHM;
-+            break;
-+
-+        case NID_sha1:
-+            alg = BCRYPT_SHA1_ALGORITHM;
-+            break;
-+
-+        case NID_sha256:
-+            alg = BCRYPT_SHA256_ALGORITHM;
-+            break;
-+
-+        case NID_sha384:
-+            alg = BCRYPT_SHA384_ALGORITHM;
-+            break;
-+
-+        case NID_sha512:
-+            alg = BCRYPT_SHA512_ALGORITHM;
-+            break;
-+
-+        case NID_md5_sha1:
-+            if (m_len != SSL_SIG_LENGTH)
-+            {
-+                RSAerr(RSA_F_RSA_SIGN, RSA_R_INVALID_MESSAGE_LENGTH);
-+                return 0;
-+            }
-+            /* No DigestInfo header is required -- set alg-name to NULL */
-+            alg = NULL;
-+            break;
-+        default:
-+            msg(M_WARN, "cryptoapicert: Unknown hash type NID=0x%x", type);
-+            RSAerr(RSA_F_RSA_SIGN, RSA_R_UNKNOWN_ALGORITHM_TYPE);
-+            return 0;
-+    }
-+
-+    *siglen = priv_enc_CNG(cd, alg, m, (int)m_len, sig, RSA_size(rsa), padding);
-+    return (siglen == 0) ? 0 : 1;
-+}
-+
- /* decrypt */
- static int
- rsa_priv_dec(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding)
-@@ -555,6 +620,15 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
-     RSA_meth_set_finish(my_rsa_method, finish);
-     RSA_meth_set0_app_data(my_rsa_method, cd);
- 
-+    /* For CNG, set the RSA_sign method which gets priority over priv_enc().
-+     * This method is called with the raw hash without the digestinfo
-+     * header and works better when using NCryptSignHash() with some tokens.
-+     */
-+    if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
-+    {
-+        RSA_meth_set_sign(my_rsa_method, rsa_sign_CNG);
-+    }
-+
-     rsa = RSA_new();
-     if (rsa == NULL)
-     {
--- 
-2.1.4
+diff --git a/buildtap.py b/buildtap.py
+index 6f506cd..9154ea7 100644
+--- a/buildtap.py
++++ b/buildtap.py
+@@ -328,13 +328,14 @@ class BuildTAPWindows(object):
+             installer_type =3D "-oas"
+         installer_file=3Dos.path.join(self.top, 'tap-windows'+installer_ty=
+pe+'-'+kv['PRODUCT_VERSION']+'-I'+kv['PRODUCT_TAP_WIN_BUILD']+'.exe')
+=20
+-        installer_cmd =3D "\"%s\" -DDEVCON32=3D%s -DDEVCON64=3D%s -DDEVCON=
+_BASENAME=3D%s -DPRODUCT_TAP_WIN_COMPONENT_ID=3D%s -DPRODUCT_NAME=3D%s -DPR=
+ODUCT_VERSION=3D%s -DPRODUCT_TAP_WIN_BUILD=3D%s -DOUTPUT=3D%s -DIMAGE=3D%s =
+%s" % \
++        installer_cmd =3D "\"\"%s\" -DDEVCON32=3D%s -DDEVCON64=3D%s -DDEVC=
+ON_BASENAME=3D%s -DPRODUCT_TAP_WIN_COMPONENT_ID=3D%s -DPRODUCT_NAME=3D%s -D=
+PRODUCT_PUBLISHER=3D\"%s\" -DPRODUCT_VERSION=3D%s -DPRODUCT_TAP_WIN_BUILD=
+=3D%s -DOUTPUT=3D%s -DIMAGE=3D%s %s\"" % \
+                         (self.makensis,
+                          self.tifile(x64=3DFalse),
+                          self.tifile(x64=3DTrue),
+                          'tapinstall.exe',
+                          kv['PRODUCT_TAP_WIN_COMPONENT_ID'],
+                          kv['PRODUCT_NAME'],
++                         kv['PRODUCT_PUBLISHER'],
+                          kv['PRODUCT_VERSION'],
+                          kv['PRODUCT_TAP_WIN_BUILD'],
+                          installer_file,
+--=20
+2.16.1.windows.4
 
 
