@@ -1,17 +1,13 @@
-References: <20180316164059.9120-1-xiaoningning@...109...>
- <CAKuzo_h9=+BeTmg5t=H9nUQbqqi8r4DFd7oPrSBOSArQepj3_w@...278...>
- <1783935013.3421880.1521493221569@...2084...>
- <CAKuzo_jpgG8V-Y5ikxW1uwGNvoQoTJeCca=Wosg9UC_dPGJj6Q@...278...>
- <2645433.792870.1522082204205@...2084...>
- <7694eb51-64cb-44ba-4333-280b2cab76f8@...1856...>
- <CAKuzo_iDp1FLkFxFgy7jfND3viVgf2nraNv=8Oa3uwbAVX63-Q@...278...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <39f4bd5e-50a1-ebe4-7591-9c135dc44c81@...1856...>
-Date: Wed, 2 May 2018 21:37:47 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_iDp1FLkFxFgy7jfND3viVgf2nraNv=8Oa3uwbAVX63-Q@...278...>
+From: Jon Kunkee <jkunkee@...2393...>
+Date: Wed, 2 May 2018 23:15:47 +0000
+Message-ID: <DM5PR21MB0185BFF553A864FE338B6EC9B0800@...2394...>
+References: <DM5PR21MB0185FC110A99E76426A1603FB08D0@...2394...>
+ <9fb8c0a0-b1d1-2834-dd42-d0abece8529e@...515...>
+ <99D61A626FDA8A4B90A270669121BE10862E0950@...2294...>
+In-Reply-To: <99D61A626FDA8A4B90A270669121BE10862E0950@...2294...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Increase TLS Control Channel Buffer Size
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] OpenVPN on ARM64 Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,54 +16,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: Simon Rozman <simon@...2293...>, =?iso-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Cc: Marc Sweetgall <marcs@...2393...>
+
+Hi Simon,
+
+What system are you using to generate MSIs? Marc (CC'd) has a
+patch for WIX that adds support for generating ARM64 MSIs.
+
+Are you wrapping two arch-specific MSIs in an EXE, or doing one
+mixed MSI? Two MSIs will be very simple to add ARM64 to, while
+one mixed MSI will be harder.
+
+As for tapinstall, a standalone tapinstall under VS2017 will work
+perfectly with what I'm building since the EWDK consumes the
+vcxproj and sln files directly.
+
+In other news, I should have a groundwork/cleanup PR ready today!=20
+
+Thanks,
+Jon
+
+-----Original Message-----
+From: Simon Rozman <simon@...2293...>=20
+Sent: 05/02/2018 9:36 AM
+To: Samuli Sepp=E4nen <samuli@...515...>; Jon Kunkee <jkunkee@...2393...>; =
+openvpn-devel@lists.sourceforge.net
+Cc: Marc Sweetgall <marcs@...2393...>
+Subject: RE: [Openvpn-devel] OpenVPN on ARM64 Windows
 
 Hi,
-Hi,
 
-On 02-05-18 20:40, Selva Nair wrote:
-> On Wed, May 2, 2018 at 2:30 PM, Steffan Karger <steffan@...1856...> wrote:
->> On 26-03-18 18:36, Ning Wei via Openvpn-devel wrote:
->>> Both of key_method_2_write and key_method_2_read take
->>> TLS_Channel_Bug_Size as buffer size.  The current size, 2048 is not
->>> enough to read/write a long password response.  I have notice the
->>> management interface has a much smaller than 2048 buffer size to
->>> read/write.  Currently, if the management interface is not used,
->>> increasing tls channel buffer size will serve the need.
->>>
->>> As token provider, the size of token can be bigger or smaller.
->>> Sometime, it has more than 1600 as a token.  To accommodate that, a
->>> bigger buffer size will be needed.
->>
->> I don't think this is achieving what you want.  The username/password
->> size on the OpenVPN protocol are fixed at 128 bytes max, and can not be
->> changes without introducing a new protocol version or interoperability
->> problems.  See the USER_PASS_LEN variable used in key_method_2_read.
-> 
-> USER_PASS_LEN is 4096 (not 128) for builds with ENABLE_PKCS11 and that was
-> the assumption behind this patch.
-> 
-> I'm not endorsing this patch but we do need changes to management interface and
-> option parsing to allow long user/pass strings to support newer
-> challenge-response
-> protocols. Those changes are not hard but this patch falls short as I
-> had pointed
-> out earlier.
+> We intend to switch away from NSIS to MSI packages. I believe Simon
+> already did some work in there but he was rather busy for an extended
+> period of time. But now he is back, so migrating away from NSIS might make
+> sense at this point. Thoughts Simon?
 
-You're of course absolutely right.  USER_PASS_LEN is not actually an
-interop issue here, the user/pass strings are not fixed length.  Too
-quick with the answer, apologies.
+I have already started working on it. I am writing a tapinstall.exe utility
+from scratch. I am using Visual Studio 2017 for building, so this is pretty
+much inline with what Jon is using. Otherwise, the utility will be quite
+simple to build using a Makefile approach too, so it could use existing TAP
+driver build system as well.
 
-But I think changing TLS_CHANNEL_BUF_SIZE will result in tricky
-behaviour; when reading from the TLS channel, current implementations
-read upto 2048 bytes, and pass that to key_method_2_read() as if it was
-the whole message.  If the user/pass exceeds the old max, that will
-result in truncated username/passwords, and finally password
-verification errors.  It's not fatal, but sounds like really annoying to
-debug...
-
--Steffan
+Regards,
+Simon
 
