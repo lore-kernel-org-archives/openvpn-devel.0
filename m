@@ -1,15 +1,14 @@
-From: Simon Rozman <simon@...2293...>
-Date: Wed, 2 May 2018 16:36:21 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE10862E0950@...2294...>
-References: <DM5PR21MB0185FC110A99E76426A1603FB08D0@...2394...>
- <9fb8c0a0-b1d1-2834-dd42-d0abece8529e@...515...>
-In-Reply-To: <9fb8c0a0-b1d1-2834-dd42-d0abece8529e@...515...>
-Content-Language: en-US
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
- micalg=2.16.840.1.101.3.4.2.1;
- boundary="----=_NextPart_000_0034_01D3E244.76A9CF50"
+References: <12f1f4f7-0b03-3f45-c06b-aec77e4e1ef1@...2181...>
+ <20180308202303.6492-1-steffan@...1856...>
+ <596506ef-7229-8d5c-f772-bc94473fe408@...2181...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <07bb3a3f-673d-2312-5c4e-6993aa0f6126@...1856...>
+Date: Wed, 2 May 2018 19:51:48 +0200
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] OpenVPN on ARM64 Windows
+In-Reply-To: <596506ef-7229-8d5c-f772-bc94473fe408@...2181...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH v2] tls-crypt-v2: add specification to
+ doc/
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,93 +17,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?iso-8859-2?Q?Samuli_Sepp=E4nen?= <samuli@...515...>, Jon Kunkee <jkunkee@...2393...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Cc: Marc Sweetgall <marcs@...2393...>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-------=_NextPart_000_0034_01D3E244.76A9CF50
-Content-Type: text/plain;
-	charset="iso-8859-2"
-Content-Transfer-Encoding: 7bit
+Hi Antonio,
 
-Hi,
+Sorry for taking so long to respond - life was getting in the way.
 
-> We intend to switch away from NSIS to MSI packages. I believe Simon
-> already did some work in there but he was rather busy for an extended
-> period of time. But now he is back, so migrating away from NSIS might make
-> sense at this point. Thoughts Simon?
+On 16-04-18 15:03, Antonio Quartulli wrote:
+> there was a comment in my previous review that remained unanswer.
+> Please, see it below
+> 
+> On 09/03/18 04:23, Steffan Karger wrote:
+> [CUT]
+>> +   The metadata is checked *after* the OpenVPN three-way handshake has
+>> +   completed, to prevent DoS attacks.  (That is, once the client has proved to
+>> +   the server that it possesses Kc, by authenticating a packet that contains the
+>> +   session ID picked by the server.)
+> 
+> 
+> just a thought here: the metadata is actually created by the
+> server/provider and it is authenticated/encrypted with the server key.
+> 
+> Isn't this enough to ensure that its content is not malicious and thus
+> allow the server to parse it right after having received the
+> HARD_RESET_V3 (instead of performing a "three-way handshake" first)?
 
-I have already started working on it. I am writing a tapinstall.exe utility
-from scratch. I am using Visual Studio 2017 for building, so this is pretty
-much inline with what Jon is using. Otherwise, the utility will be quite
-simple to build using a Makefile approach too, so it could use existing TAP
-driver build system as well.
+Not really, because a mitm attacker can simply record the cookie, and
+replay it.  By postponing our parsing, we reduce the impact of a DoS by
+an attacker that is setting up many new connections with the cookie
+attached.  Instead of performing a potential expensive check (running a
+script) for each HARD_RESET_V3, all we do is unwrap and reply.  In more
+formal terms, we require a proof-of-possession of Kc before we will do
+any (potential) expensive operations.
 
-Regards,
-Simon
-
-------=_NextPart_000_0034_01D3E244.76A9CF50
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-
-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
-
-------=_NextPart_000_0034_01D3E244.76A9CF50--
+-Steffan
 
