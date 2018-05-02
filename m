@@ -1,14 +1,15 @@
-References: <12f1f4f7-0b03-3f45-c06b-aec77e4e1ef1@...2181...>
- <20180308202303.6492-1-steffan@...1856...>
- <596506ef-7229-8d5c-f772-bc94473fe408@...2181...>
+References: <20180316164059.9120-1-xiaoningning@...109...>
+ <CAKuzo_h9=+BeTmg5t=H9nUQbqqi8r4DFd7oPrSBOSArQepj3_w@...278...>
+ <1783935013.3421880.1521493221569@...2084...>
+ <CAKuzo_jpgG8V-Y5ikxW1uwGNvoQoTJeCca=Wosg9UC_dPGJj6Q@...278...>
+ <2645433.792870.1522082204205@...2084...>
 From: Steffan Karger <steffan@...1856...>
-Message-ID: <07bb3a3f-673d-2312-5c4e-6993aa0f6126@...1856...>
-Date: Wed, 2 May 2018 19:51:48 +0200
+Message-ID: <7694eb51-64cb-44ba-4333-280b2cab76f8@...1856...>
+Date: Wed, 2 May 2018 20:30:19 +0200
 MIME-Version: 1.0
-In-Reply-To: <596506ef-7229-8d5c-f772-bc94473fe408@...2181...>
+In-Reply-To: <2645433.792870.1522082204205@...2084...>
 Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH v2] tls-crypt-v2: add specification to
- doc/
+Subject: Re: [Openvpn-devel] [PATCH] Increase TLS Control Channel Buffer Size
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,41 +18,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Hi Antonio,
+Hi,
 
-Sorry for taking so long to respond - life was getting in the way.
+On 26-03-18 18:36, Ning Wei via Openvpn-devel wrote:
+> Both of key_method_2_write and key_method_2_read take
+> TLS_Channel_Bug_Size as buffer size.  The current size, 2048 is not
+> enough to read/write a long password response.  I have notice the
+> management interface has a much smaller than 2048 buffer size to
+> read/write.  Currently, if the management interface is not used,
+> increasing tls channel buffer size will serve the need.
+> 
+> As token provider, the size of token can be bigger or smaller. 
+> Sometime, it has more than 1600 as a token.  To accommodate that, a
+> bigger buffer size will be needed.
 
-On 16-04-18 15:03, Antonio Quartulli wrote:
-> there was a comment in my previous review that remained unanswer.
-> Please, see it below
-> 
-> On 09/03/18 04:23, Steffan Karger wrote:
-> [CUT]
->> +   The metadata is checked *after* the OpenVPN three-way handshake has
->> +   completed, to prevent DoS attacks.  (That is, once the client has proved to
->> +   the server that it possesses Kc, by authenticating a packet that contains the
->> +   session ID picked by the server.)
-> 
-> 
-> just a thought here: the metadata is actually created by the
-> server/provider and it is authenticated/encrypted with the server key.
-> 
-> Isn't this enough to ensure that its content is not malicious and thus
-> allow the server to parse it right after having received the
-> HARD_RESET_V3 (instead of performing a "three-way handshake" first)?
+I don't think this is achieving what you want.  The username/password
+size on the OpenVPN protocol are fixed at 128 bytes max, and can not be
+changes without introducing a new protocol version or interoperability
+problems.  See the USER_PASS_LEN variable used in key_method_2_read.
 
-Not really, because a mitm attacker can simply record the cookie, and
-replay it.  By postponing our parsing, we reduce the impact of a DoS by
-an attacker that is setting up many new connections with the cookie
-attached.  Instead of performing a potential expensive check (running a
-script) for each HARD_RESET_V3, all we do is unwrap and reply.  In more
-formal terms, we require a proof-of-possession of Kc before we will do
-any (potential) expensive operations.
+So, NAK to this patch.
 
 -Steffan
 
