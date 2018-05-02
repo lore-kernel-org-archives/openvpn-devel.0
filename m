@@ -1,10 +1,9 @@
 From: Jon Kunkee <jkunkee@...2393...>
-Date: Wed, 2 May 2018 23:15:47 +0000
-Message-ID: <DM5PR21MB0185BFF553A864FE338B6EC9B0800@...2394...>
+Date: Wed, 2 May 2018 23:55:30 +0000
+Message-ID: <DM5PR21MB01856478CE8839E44C23BE7BB0800@...2394...>
 References: <DM5PR21MB0185FC110A99E76426A1603FB08D0@...2394...>
  <9fb8c0a0-b1d1-2834-dd42-d0abece8529e@...515...>
- <99D61A626FDA8A4B90A270669121BE10862E0950@...2294...>
-In-Reply-To: <99D61A626FDA8A4B90A270669121BE10862E0950@...2294...>
+In-Reply-To: <9fb8c0a0-b1d1-2834-dd42-d0abece8529e@...515...>
 Content-Language: en-US
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] OpenVPN on ARM64 Windows
@@ -18,48 +17,65 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: Simon Rozman <simon@...2293...>, =?iso-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: =?iso-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 Cc: Marc Sweetgall <marcs@...2393...>
 
-Hi Simon,
 
-What system are you using to generate MSIs? Marc (CC'd) has a
-patch for WIX that adds support for generating ARM64 MSIs.
+First, apologies to all those using PINE and similar. Outlook doesn't know =
+what
+linebreaks or columns are, so I'm stuck compensating with Notepad++. :/
 
-Are you wrapping two arch-specific MSIs in an EXE, or doing one
-mixed MSI? Two MSIs will be very simple to add ARM64 to, while
-one mixed MSI will be harder.
 
-As for tapinstall, a standalone tapinstall under VS2017 will work
-perfectly with what I'm building since the EWDK consumes the
-vcxproj and sln files directly.
+>From: Samuli Sepp=E4nen <samuli@...515...>=20
+>Sent: 04/29/2018 5:27 AM
+>
+>Hi and welcome!
 
-In other news, I should have a groundwork/cleanup PR ready today!=20
+Thank you!
+
+
+>> Appveyor will need to be updated to handle the environment and output ch=
+anges;
+>> I'm happy to explain what's needed, but I have no previous experience wi=
+th the
+>> service.
+>
+>Ilya may be able to help you with that: he has written all our AppVeyor
+>integrations so far.
+
+I'm tweaking my changes so setting up the build environment is a matter of
+mounting the WDK ISO and tweaking paths.py. Hopefully that helps.
+
+
+>I'm very interested in seeing and testing these changes. I think porting
+>the buildsystem to a newer SDK would be a good candidate for a PR.
+
+>> Along with the SDK changes, the build script needed many changes to add a
+>> third architecture (ARM64).
+>
+>These changes would make another PR.
+
+>One final note on PRs/patches: keep them as small and atomic as possible
+>and they will be easy to review and marge. Just like you did with your
+>first PR :).
+
+I think I see a pattern here, and I like it. :)
+
+This PR contains several simple commits:
+https://github.com/OpenVPN/tap-windows6/pull/52
+
+Would that be better as several PRs (except the two commits that overlap)?
+
+With this groundwork laid, here's my PR plan:
+ * change the build system version
+ * move to a newer NDIS version
+ * build for ARM64
+ * pack ARM64 in the installer
+
+Each of these would be a sequence of fairly small, concise commits to aid r=
+eview.
 
 Thanks,
 Jon
 
------Original Message-----
-From: Simon Rozman <simon@...2293...>=20
-Sent: 05/02/2018 9:36 AM
-To: Samuli Sepp=E4nen <samuli@...515...>; Jon Kunkee <jkunkee@...2393...>; =
-openvpn-devel@lists.sourceforge.net
-Cc: Marc Sweetgall <marcs@...2393...>
-Subject: RE: [Openvpn-devel] OpenVPN on ARM64 Windows
-
-Hi,
-
-> We intend to switch away from NSIS to MSI packages. I believe Simon
-> already did some work in there but he was rather busy for an extended
-> period of time. But now he is back, so migrating away from NSIS might make
-> sense at this point. Thoughts Simon?
-
-I have already started working on it. I am writing a tapinstall.exe utility
-from scratch. I am using Visual Studio 2017 for building, so this is pretty
-much inline with what Jon is using. Otherwise, the utility will be quite
-simple to build using a Makefile approach too, so it could use existing TAP
-driver build system as well.
-
-Regards,
-Simon
 
