@@ -1,14 +1,9 @@
-From: Simon Rozman <simon@...2293...>
-Date: Thu, 3 May 2018 10:13:21 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE10862E0F5C@...2294...>
-References: <DM5PR21MB0185FC110A99E76426A1603FB08D0@...2394...>
- <9fb8c0a0-b1d1-2834-dd42-d0abece8529e@...515...>
- <99D61A626FDA8A4B90A270669121BE10862E0950@...2294...>
- <DM5PR21MB0185BFF553A864FE338B6EC9B0800@...2394...>
-In-Reply-To: <DM5PR21MB0185BFF553A864FE338B6EC9B0800@...2394...>
-Content-Language: en-US
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] OpenVPN on ARM64 Windows
+From: Derek Zimmer <derek@...2095...>
+Date: Fri, 4 May 2018 09:41:56 -0500
+Message-ID: <CAJY0qZKNO_aamQfi56BG_XK2vrOCyPAQf-My1N56qqV7TsUG7A@...278...>
+Content-Type: multipart/alternative; boundary="0000000000006ae739056b6252b3"
+Subject: [Openvpn-devel] Does the OpenVPN protocol itself handle windowing?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,62 +12,135 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-2"
+To: openvpn-devel@lists.sourceforge.net
+
+--0000000000006ae739056b6252b3
+Content-Type: text/plain; charset="UTF-8"
+
+Hello everyone,
+
+Derek from OSTIF here. I've been working with OpenVPN for a few years and
+there's a few curious performance anomalies that i've ran into that add up
+to a possible performance opportunity. My experience lies closer to
+networking protocols and cryptography rather than programming, so i'd need
+some help confirming my suspicions to see if this is an opportunity for us.
+
+I've been having some discussions with Mattock related to performance,
+specifically the way that OpenVPN performance scales on fast networks.
+
+The interesting symptoms:
+-OpenVPN performance appears to decrease linearly with increases in latency.
+-OpenVPN performance seems consistent regardless of the OS of the
+client/server.
+-OpenVPN performance seems to adjust/scale with the speed of the
+client/server, but always seems limited to roughly 25% of the line speed of
+the fastest device when you scale up to fiber speeds. The interesting part
+is that 1Gb servers will top out around 220-275Mbit, and 10Gb servers will
+top out around 2.5Gbit.
+-OpenVPN performance increases when you manually increase the size of the
+packets to oversized (MTU 9000+).
+-Performance is similar between TCP/UDP barring confounding issues like
+packet loss.
+
+What conclusions can we draw from this?
+
+My network experience points to something going awry with windowing with
+TCP, but UDP does not apply any sort of windowing (no ACKs = no windowing)
+but the OpenVPN protocol itself does have an ACK system, which suggests
+that OpenVPN may apply its own windowing.
+
+From my network brain: These 4 factors all point to the same problem with
+regular TCP networks, not enough packets are "allowed" to be in flight by
+the protocol. This is why performance scales linearly with
+distance/latency. The maximum number of packets in flight gets reached, and
+the client/server then waits to send more or throttles back the rate to hit
+the target number of packets per second based on the latency (how this is
+done depends on how windowing is implemented). This is also why making the
+packets larger increases performance. The OpenVPN protocol allows more
+packets to be in flight indirectly, because a 9000 bit packet is broken
+down into 1500 bit packets by the network protocol outside of OpenVPN, so
+it sees fewer "packets in flight" at the OpenVPN level.
+
+I'm also hesitant to blame issues like task-switching as the primary cause
+of the issue because of the behavior being OS agnostic, and 10Gb
+connections being able to move 2.5Gbit/sec.
+
+This problem only seems to surface with high latency connections, or
+particularly fast networks (over 1Gb),
+
+Let me know if i'm drawing the wrong conclusions from the evidence here. I
+think we may have a performance opportunity if we hack away at this issue
+and come to a greater understanding of why OpenVPN behaves this way in
+these cases. I'm also willing to do some Wireshark work to see how OpenVPN
+behaves in these edge cases if we think it would be valuable.
+
+Increasing performance for long-distance VPNs, and being able to
+accommodate users in a fiber-to-the-home world would be a huge benefit for
+all OpenVPN users.
+
+Thanks for taking the time to read and respond!
+
+Derek Zimmer
+Chief Executive Officer
+Open Source Technology Improvement Fund
+
+--0000000000006ae739056b6252b3
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: Jon Kunkee <jkunkee@...2393...>, =?iso-8859-2?Q?Samuli_Sepp=E4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Cc: Marc Sweetgall <marcs@...2393...>
 
-Hi Jon,
+<div dir=3D"ltr"><div><div>Hello everyone,<br><br></div>Derek from OSTIF he=
+re. I&#39;ve been working with OpenVPN for a few years and there&#39;s a fe=
+w curious performance anomalies that i&#39;ve ran into that add up to a pos=
+sible performance opportunity. My experience lies closer to networking prot=
+ocols and cryptography rather than programming, so i&#39;d need some help c=
+onfirming my suspicions to see if this is an opportunity for us.<br><br></d=
+iv>I&#39;ve been having some discussions with Mattock related to performanc=
+e, specifically the way that OpenVPN performance scales on fast networks.<b=
+r><br><div><div><div>The interesting symptoms:<br></div><div>-OpenVPN perfo=
+rmance appears to decrease linearly with increases in latency.<br></div><di=
+v>-OpenVPN performance seems consistent regardless of the OS of the client/=
+server.<br></div><div>-OpenVPN performance seems to adjust/scale with the s=
+peed of the client/server, but always seems limited to roughly 25% of the l=
+ine speed of the fastest device when you scale up to fiber speeds. The inte=
+resting part is that 1Gb servers will top out around 220-275Mbit, and 10Gb =
+servers will top out around 2.5Gbit.<br></div><div>-OpenVPN performance inc=
+reases when you manually increase the size of the packets to oversized (MTU=
+ 9000+).<br></div><div>-Performance is similar between TCP/UDP barring conf=
+ounding issues like packet loss.<br></div><div><br></div><div>What conclusi=
+ons can we draw from this?<br></div><div><br></div><div>My network experien=
+ce points to something going awry with windowing with TCP, but UDP does not=
+ apply any sort of windowing (no ACKs =3D no windowing) but the OpenVPN pro=
+tocol itself does have an ACK system, which suggests that OpenVPN may apply=
+ its own windowing.<br></div><div><br><div>From my network brain: These 4 f=
+actors all point to the same problem with=20
+regular TCP networks, not enough packets are &quot;allowed&quot; to be in f=
+light=20
+by the protocol. This is why performance scales linearly with=20
+distance/latency. The maximum number of packets in flight gets reached,=20
+and the client/server then waits to send more or throttles back the rate
+ to hit the target number of packets per second based on the latency (how t=
+his is done depends on how windowing is implemented). This is also why maki=
+ng the packets larger increases performance. The OpenVPN protocol allows mo=
+re packets to be in flight indirectly, because a 9000 bit packet is broken =
+down into 1500 bit packets by the network protocol outside of OpenVPN, so i=
+t sees fewer &quot;packets in flight&quot; at the OpenVPN level.<br><br></d=
+iv><div>I&#39;m also hesitant to blame issues like task-switching as the pr=
+imary cause of the issue because of the behavior being OS agnostic, and 10G=
+b connections being able to move 2.5Gbit/sec.<br></div><div><br></div><div>=
+This problem only seems to surface with high latency connections, or partic=
+ularly fast networks (over 1Gb),<br></div><br></div><div>Let me know if i&#=
+39;m drawing the wrong conclusions from the evidence here. I think we may h=
+ave a performance opportunity if we hack away at this issue and come to a g=
+reater understanding of why OpenVPN behaves this way in these cases. I&#39;=
+m also willing to do some Wireshark work to see how OpenVPN behaves in thes=
+e edge cases if we think it would be valuable.<br><br></div><div>Increasing=
+ performance for long-distance VPNs, and being able to accommodate users in=
+ a fiber-to-the-home world would be a huge benefit for all OpenVPN users.<b=
+r><br></div><div>Thanks for taking the time to read and respond!<br></div><=
+div><br clear=3D"all"><div><div class=3D"gmail_signature" data-smartmail=3D=
+"gmail_signature">Derek Zimmer<br>Chief Executive Officer<br>Open Source Te=
+chnology Improvement Fund</div></div>
+</div></div></div></div>
 
-> What system are you using to generate MSIs? Marc (CC'd) has a patch for W=
-IX
-> that adds support for generating ARM64 MSIs.
-
-I am using a WiX to make two separate MSI files (x86 and x64). This is the =
-easy part - I had the WiX MSI package ready back at Hackatlon in an hour or=
- so. However, those MSI files do not create a TAP interface on install -- w=
-hich is a regression.
-
-The TAP interface will be created on install using a custom action (DLL). I=
- want to support MSI custom action deferred/commit/rollback functionality i=
-n full.
-
-An additional EXE command line utility will be included in the install to a=
-llow later TAP interface management completely replacing the tapinstall.exe=
-/devcon.exe.
-
-> Are you wrapping two arch-specific MSIs in an EXE, or doing one mixed MSI?
-> Two MSIs will be very simple to add ARM64 to, while one mixed MSI will be
-> harder.
-
-I see no drawbacks compiling the custom action DLL and EXE command line uti=
-lity for ARM64 platform and providing a third MSI file for ARM64 platform a=
-s you suggest. This is the best way to go in my opinion too.
-
-Finally, the plan is to offer TAP driver binaries for download as separate =
-platform-specific MSI files (for IT admins) and a simple self-extractable x=
-86 EXE containing all the MSI files and a "detect-platform-and-launch-appro=
-priate-MSI" bootstrapper (for end-users). For this EXE bundle WiX, 7-Zip or=
- some other easy to implement and maintain framework is to be used.
-
-> As for tapinstall, a standalone tapinstall under VS2017 will work perfect=
-ly with
-> what I'm building since the EWDK consumes the vcxproj and sln files direc=
-tly.=20
-
-The new MSI custom action and EXE utility I am working on it are built usin=
-g vcxproj. If we get a green light to port the driver building itself to a =
-vcxproj as well, the TAP driver build environment could move from Python to=
- VS2017.
-
-However, while we can potentially renew the TAP driver build process (being=
- Windows-only), we are limited with options when packaging OpenVPN for Wind=
-ows. For OpenVPN Windows packaging, the requirement to prepare MSI files wi=
-thin the Linux environment remains. After a discussion msitools package was=
- chosen for the job.
-
-Yes, I must kick myself and start working on this seriously!?
-
-Best regards,
-Simon
+--0000000000006ae739056b6252b3--
 
