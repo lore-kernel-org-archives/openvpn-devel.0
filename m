@@ -1,15 +1,11 @@
-Date: Wed, 16 May 2018 23:08:59 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180516210859.GR1207@...1296...>
-References: <2f575943f32de2328843b3cec3286ca1@...2399...>
- <20180516121616.GO1207@...1296...>
- <e47e242be0df9e29aa850d658a52149b@...2399...>
+References: <20180417165000.3872-1-Jason@...2390...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <10978590-889a-0ccc-4cb8-31c862ee565c@...1856...>
+Date: Thu, 17 May 2018 20:31:31 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="hCenlVgnDQUGHXTR"
-Content-Disposition: inline
-In-Reply-To: <e47e242be0df9e29aa850d658a52149b@...2399...>
-Subject: Re: [Openvpn-devel] Darwin tap ipv6 fix
+In-Reply-To: <20180417165000.3872-1-Jason@...2390...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] Support fingerprint authentication
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,71 +14,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Scott Shambarger <devel@...2399...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
---hCenlVgnDQUGHXTR
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hi Jason,
 
-Hi,
+[ Dumping my thoughts so this doesn't remain completely unanswered for
+even longer. ]
 
-On Wed, May 16, 2018 at 11:26:15AM -0700, Scott Shambarger via Openvpn-deve=
-l wrote:
-> On 2018-05-16 05:16, Gert Doering wrote:
-> > This part will break routes that need to go over the LAN interface, not
-> > over the tap interface - namely, the /128 that is installed if you
-> > have overlapping v6-over-v6 setups (... if you have link-local next
-> > hops).
->=20
-> Are you sure it won't work? There's some code higher up in the function=20
-> that appears to handle that case:
->=20
-> #ifndef _WIN32
->      if (r6->iface !=3D NULL)              /* vpn server special route */
->      {
->          device =3D r6->iface;
->          if (!IN6_IS_ADDR_UNSPECIFIED(&r6->gateway) )
->          {
->              gateway_needed =3D true;
->          }
->      }
+On 17-04-18 18:50, Jason A. Donenfeld wrote:
+> OpenVPN traditionally works around CAs. However many TLS-based protocols also
+> allow an alternative simpler mode in which rather than verify certificates
+> against CAs, the certificate itself is hashed and compared against a
+> pre-known set of acceptable hashes. This is usually referred to as
+> "fingerprint verification". It's popular across SMTP servers, IRC servers,
+> XMPP servers, and even in the context of HTTP with pinning.
+> 
+> So, I'd like to propose an extremely simple and non-invasive way of
+> supporting this in OpenVPN, by re-using several features that already
+> basically support it. Namely, what I propose is:
+> 
+>    * Allow specifying 'none' to the --ca parameter, to specify that
+>      certificates should not be checked against a CA. Note that 'none'
+>      is already used in other similar options as a special placeholder.
+> 
+>    * When '--ca none' is in use, --verify-hash checks all depths instead
+>      of just level 1.
+> 
+> With these very simple changes, fingerprint authentication is easily achieved
+> via the --tls-verify script on the server and via --verify-hash on the client.
 
-You might be right.
+Adding support for fingerprint authentication sounds like a good idea to
+me.  Even if it was just to simplify config for peer-to-peer and small
+(home) setups by getting rid of the need to create and maintain a CA.
+So: feature Ack.
 
-Need to look more closely at the whole #ifdef mess - and look at our
-MacOS X buildslave, which seems to work just fine with the current code
-in tap mode... but I might have managed (again) to build a test rig
-that does not excercise all relevant code paths.
+However, if we were to add this, I think I'd rather make it a
+first-class citizen.  For example by adding a peer fingerprint
+verification option that works in both client and server configs, and is
+mutually exclusive with --ca.  I'd expect such an option to accept an
+(inline-able) file that contains a list of fingerprints, so one can make
+a config like:
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+<allowed-peers>
+AA:BB:CC:DD:..
+AA:BB:CC:DE:..
+</allowed-peers>
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Or maybe base64 fingerprints, because a lot of people have been trained
+by SSH to recognize short base64 strings as fingerprints.
 
---hCenlVgnDQUGHXTR
-Content-Type: application/pgp-signature; name="signature.asc"
+Anyone else from the community that has some thoughts on this?
 
------BEGIN PGP SIGNATURE-----
+As for implementation:  I'm already having problems getting to my review
+queue, so am not promising to implement this.  I would definitely put a
+patch for this on my review queue though :)
 
-iQGcBAEBAgAGBQJa/J3qAAoJEB2Cnv7KVigSpgoL/3pjuRJF3wxUMPecidcN3fDK
-2CdcSFSr9JOz1c4R9SniOY6BkZvC/pKUwzCYgUh48GOpjhibwS+vT2cWcrns9rIC
-o7hrE3GyW/LQUmW21WJTng8mSIMc36fxRqdn7BYtfPbJlAbkAs8W13LIJFRrQ9cu
-90zlL/lFboA6vcGXzJYCh7OModNnuQ9C9LHNUx8Oq0bKiDSHkoCcr7MAKjIcQop7
-sUYvrFTYUclNN4OczsLUQ0YiCumP8+eOmRZdxwQ1Acs06+ku0T3RuZ0EaZ/NldiY
-sZLY6RmAalmsQMSwkspptJ4Fg7NkuzYCgxuOyKdeMbO2YiqS1pPmObx/OTdwGvLr
-LCJzFSMXef6CR1ew0mqKN0mzw4QZNPFWzTiyvAU2nKPMljUHcHql0zhRa49aKmqb
-HI0VBg7W0yCUWuvJOkzGs9PV3pOGxRtcoA+d5t9K9gY/dJzk+kIYy3wtxuFWACCi
-AIwlEkCgjGT7qmwFXKqz4x5zenjWIazPYNlLGEHQ3A==
-=+70p
------END PGP SIGNATURE-----
-
---hCenlVgnDQUGHXTR--
+-Steffan
 
