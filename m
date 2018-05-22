@@ -1,13 +1,13 @@
-Reply-To: openvpn-devel@lists.sourceforge.net
+Date: Tue, 22 May 2018 22:47:02 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180522204702.GT79551@...1296...>
 References: <CAAF3xa85gmN5GEjguVA6cpUPFZuSOKP39g1FKf1hYfmyoo9X5w@...278...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <d42dfd0b-8309-2409-0a21-aa97c8a3b651@...2080...>
-Date: Tue, 22 May 2018 21:10:10 +0200
+ <d42dfd0b-8309-2409-0a21-aa97c8a3b651@...2080...>
 MIME-Version: 1.0
-In-Reply-To: <CAAF3xa85gmN5GEjguVA6cpUPFZuSOKP39g1FKf1hYfmyoo9X5w@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="F2urCrmFKBMeYTXaXYlFa8BGG1frcIsCc"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="UExESr5xZTMxdOWv"
+Content-Disposition: inline
+In-Reply-To: <d42dfd0b-8309-2409-0a21-aa97c8a3b651@...2080...>
 Subject: Re: [Openvpn-devel] Minimum Linux Version for OpenVPN 2.4.x
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -17,79 +17,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Marvin <volleynbike@...277...>, "<openvpn-devel@lists.sourceforge.net>" <Openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---F2urCrmFKBMeYTXaXYlFa8BGG1frcIsCc
-Content-Type: multipart/mixed; boundary="1ODMzyvzp1ASlDypEHUYkmA2Dsji1UWtN";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Marvin <volleynbike@...277...>,
- "<openvpn-devel@lists.sourceforge.net>" <Openvpn-devel@lists.sourceforge.net>
-Message-ID: <d42dfd0b-8309-2409-0a21-aa97c8a3b651@...2080...>
-Subject: Re: [Openvpn-devel] Minimum Linux Version for OpenVPN 2.4.x
-References: <CAAF3xa85gmN5GEjguVA6cpUPFZuSOKP39g1FKf1hYfmyoo9X5w@...278...>
-In-Reply-To: <CAAF3xa85gmN5GEjguVA6cpUPFZuSOKP39g1FKf1hYfmyoo9X5w@...278...>
-
---1ODMzyvzp1ASlDypEHUYkmA2Dsji1UWtN
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
+--UExESr5xZTMxdOWv
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 22/05/18 19:32, Marvin wrote:
-> Can someone tell me the minimum Linux version that OpenVPN 2.4.x will bui=
-ld
-> and run on?=C2=A0 We have an older appliance the runs on an older 2.4.31 =
-kernel
-> (cannot be upgraded -- but it's very hardened so really doesn't need to b=
-e for
-> our use.)
+Hi,
 
-First of all, kernel 2.4.31 is very old - hardened or not.  I might work if
-you don't attempt any IPv6 features at all.  But I do know there has been s=
-ome
-code changes over the years which is strictly 2.6 kernel and newer; but its
-quite a long time ago so I don't recall exactly what and when.
+On Tue, May 22, 2018 at 09:10:10PM +0200, David Sommerseth wrote:
+> On 22/05/18 19:32, Marvin wrote:
+> > Can someone tell me the minimum Linux version that OpenVPN 2.4.x will b=
+uild
+> > and run on?=A0 We have an older appliance the runs on an older 2.4.31 k=
+ernel
+> > (cannot be upgraded -- but it's very hardened so really doesn't need to=
+ be for
+> > our use.)
+>=20
+> First of all, kernel 2.4.31 is very old - hardened or not.  I might work =
+if
+> you don't attempt any IPv6 features at all.=20=20
 
-IIRC, since OpenVPN 2.2, we have had RHEL 5 as the oldest supported Linux
-distribution, which was based on kernel 2.6.18.  With OpenVPN 2.4, that mov=
-ed
-up to RHEL 6 (kernel 2.6.32 baseline).
+IPv6 has been there since waaay longer, like, "last century" :-) - so
+in regards of "is IPv6 there?", 2.4 is fairly young.
 
+Totally off-topic, though, so I shut up now :-)
+
+> But I do know there has been some
+> code changes over the years which is strictly 2.6 kernel and newer; but i=
+ts
+> quite a long time ago so I don't recall exactly what and when.
+
+For OpenVPN 2.4, I think we kicked out some old method to set up Linux
+tunnels.  OTOH, that was 2.2.x stuff, if I remember correctly...
+(86e2fa5597fd1ad8e010)
+
+gert
 
 --=20
-kind regards,
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-David Sommerseth
-OpenVPN Inc
+Gert Doering - Munich, Germany                             gert@...1296...
 
-
-
---1ODMzyvzp1ASlDypEHUYkmA2Dsji1UWtN--
-
---F2urCrmFKBMeYTXaXYlFa8BGG1frcIsCc
+--UExESr5xZTMxdOWv
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJbBGscAAoJEIbPlEyWcf3yCqwQAMMmcvQ/gMGPKtICgltEUfck
-uyL9cji8eak+86oloVXiHoqumH0BhWoEx+KMwCk4z+pBAmVozQB+F+NOd8iDUaFZ
-jF8aggUosggX92EVgrJKcMEyX4VUoSozD7AU7ylp9JFH+RyWaxDJkYaw3pXMPDKJ
-HfKGIgraYuQ/17WnQLE/trbr4Vl8fiYi/VTjEXTlk6tXQswzRuQyzfCVmcdYhbBH
-cLM6wQktnS3foxjMgT72+QCr5GYsTcXOkriR5p7XCqG9P0rDFLQZWyrYeRcVYNG9
-OfXMtfkwJ0/RoWTNuNOB/CS4mP675W1uwZmCC8TklKROkwRSVpQZPiLb8K3uJS8P
-8cUYKO3U5an4qhKkTkDYchY6eNiZlkpfOBAzczdyoD+hjPHOPb2GM/LezW9DY9eg
-c8r/5MHY4SYUoRY2OaGfCcVfrKDPFUIRRfEu5yeRRM9GB+PQQXHKursaQDc8cZR4
-pxBH7CivYKIQ513yUsnkRH+VFUnZhGSAGQrroQwxBWTywlAxNqYMTnTy1r8ODLuT
-ANuCpCcQ1l3Uyku/iI9WU0FecjZo7RhW8eWqE2oQ8gMExSwQaLAF4PUSfGXMKBBh
-24SFsQ/geQhsP5v1K45+I46nNlF90YadbG0ESa//Bpbj7eUnyQxaqaWbdhQi1qHt
-MLFW+08/z1JTyl2QRgJt
-=Ji9h
+iQGcBAEBAgAGBQJbBIHFAAoJEB2Cnv7KVigS4N0MAJ0K8khDZnAb+t/l10rIs9Rw
+sFMiYznToUvF1gvct3yD8q4sFHks0veVrsNnZyUkohJFKaQLDslDGbEMJ9umed4R
+rJ+gMDfD5f6n2nL5+8nQ3D97qJ1Ofs/0s0D5v3/h3f7WC678fIfbTx/Svp4GR6qx
+qYZiUgCE567xMtxXuDff3HHBa+2W3hjTbQHWXb0ovnNWUlVB0rzU8+xVEoLOVv69
+1vbAbx3DNQtWF7Phfdoby4Zr655BtagXW2rQxMqnmq+r1w/4OUt+2bvdhudMK7p8
+Df0i/4rxyr2+No9f0odAxqCtQ05xxYIKF7qh2weHgqabkIb6BxvraVf80S5CEoCp
+ejVOK0dVQuDJpjtksEFJRUplPg3LWwkSQ5sxtn+d283v5gkBdv8Gw1r8Uk+URSBP
+Ygg2HBh8PwTs79xEMXNcymV3wrSXjoTIqqrxENhymcszWTGSoeKDYoqHv4g6R9KO
+mYfjw/aLWy3CoSXoHRMAkDeiokM5fkjawTJO5EGSWA==
+=HJw/
 -----END PGP SIGNATURE-----
 
---F2urCrmFKBMeYTXaXYlFa8BGG1frcIsCc--
+--UExESr5xZTMxdOWv--
 
