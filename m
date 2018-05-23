@@ -1,14 +1,13 @@
-References: <20180417165000.3872-1-Jason@...2390...>
- <10978590-889a-0ccc-4cb8-31c862ee565c@...1856...>
- <33fe1382-9dd6-82b4-1215-7f748e521a48@...1147...>
- <fd348cf4-8d17-24b1-cace-f238d319c550@...1227...>
-From: Jan Just Keijser <janjust@...1147...>
-Message-ID: <03f8402c-a603-3405-543a-e5eaa1ebc224@...1147...>
-Date: Wed, 23 May 2018 17:14:24 +0200
-MIME-Version: 1.0
-In-Reply-To: <fd348cf4-8d17-24b1-cace-f238d319c550@...1227...>
-Content-Language: nl-NL
-Subject: Re: [Openvpn-devel] [PATCH] Support fingerprint authentication
+Mime-Version: 1.0 (1.0)
+From: Marvin Adeff <volleynbike@...277...>
+In-Reply-To: <3b9e1a1a-7b61-6edc-1f81-2b42eb5c66c8@...1147...>
+Date: Wed, 23 May 2018 09:43:15 -0700
+Message-Id: <88509F0A-3CCC-4A33-98AA-4D852FB5368C@...277...>
+References: <CAAF3xa85gmN5GEjguVA6cpUPFZuSOKP39g1FKf1hYfmyoo9X5w@...278...>
+ <d42dfd0b-8309-2409-0a21-aa97c8a3b651@...2080...>
+ <20180522204702.GT79551@...1296...>
+ <3b9e1a1a-7b61-6edc-1f81-2b42eb5c66c8@...1147...>
+Subject: Re: [Openvpn-devel] Minimum Linux Version for OpenVPN 2.4.x
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,57 +16,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>, Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+To: Jan Just Keijser <janjust@...1147...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-Hi Arne,
+Thank you Jan, Gert et al for the replies.  Especially Jan for going to all=
+ that trouble!
 
-On 23/05/18 16:46, Arne Schwabe wrote:
->> I have some strong thoughts on this, mostly related to:  can someone
->> explain to me why this is safe?
->>
->> I've seen that OpenSSH 7.7 now implements something similar (xmss
->> hash-based signatures,
->> https://tools.ietf.org/html/draft-irtf-cfrg-xmss-hash-based-signatures-12,
->> disabled by default) but that works entirely differently from what is
->> proposed here; amongst other things, it uses *one time private keys* to
->> maximize security - do we want to add something like that to our TLS
->> stuff (my gut answer: no).
->>
->> How can a hash replace a public key, cryptographically speaking? if you
->> are not replacing public keys, then who generates, stores, maintains
->> these public keys?  What about accounting in such a setup? with
->> certificates, you normally hand out a certificate to a person, with the
->> name of the person/entity in it. If that person misbehaves, you revoke
->> the certificate and presto. Is it sufficient to remove the hash from the
->> config? if so, wouldn't it be better to have a directory with
->> hash-files, so that you can add and remove hashes without having to
->> update the server config and/or restart the server to pick up new hashes?
->>
-> When you sign a certificate you are actually singing the hash of the
-> certificate. So you essentially are saying: "This certificate with the
-> hash xxxyyy is trusted by my CA". Traditionally we used the MD5 of the
-> certificate, then SHA1 and now SHA256 which we signed. (See the weak md5
-> discussion).
->
-> The reason that the hash is signed instead of the public is that this
-> way you are also signing the other properties of the certificate (e.g.
-> CN, extensions, etc.). If you can the public key (or any other property
-> of the certificate) also the hash of the certificate changes.
->
-> If you just have a list of hashes that you trust you just cut out the
-> middle man (the CA) that establishes the trust relationship for you.
->
->
-I understand that part - it's how certificate pinning etc work. However, 
-for a "regular" TLS connection (or any assymmetric encryprion scheme) 
-you normally need a public key and a private key in order to establish a 
-connection. However, with certificate pinning all you do is *ADD* an 
-extra check, not replace a check. You will need and use both the public 
-and the private key to establish security. How is this done in the 
-proposed patch?
+Jan, to all your points =E2=80=94 yes I agree. Upgrading this device to a n=
+ewer kernel will be a major undertaking, I won=E2=80=99t bother you all wit=
+h the details here. I asked the question to get an idea of how recent we ca=
+n go in OpenVPN version in the interim while we plan our overall system upg=
+rade (it is currently at 2.3.4 with OpenSSL 1.01h and lzo 2.02).
 
-JJK
+Thanks again all!  I really appreciate your attention.=20
 
+Best,
+Marvin
+
+> On May 23, 2018, at 3:25 AM, Jan Just Keijser <janjust@...1147...> wrote:
+>=20
+> Hi,
+>=20
+>=20
+>> On 22/05/18 22:47, Gert Doering wrote:
+>>> On Tue, May 22, 2018 at 09:10:10PM +0200, David Sommerseth wrote:
+>>>> On 22/05/18 19:32, Marvin wrote:
+>>>> Can someone tell me the minimum Linux version that OpenVPN 2.4.x will =
+build
+>>>> and run on?  We have an older appliance the runs on an older 2.4.31 ke=
+rnel
+>>>> (cannot be upgraded -- but it's very hardened so really doesn't need t=
+o be for
+>>>> our use.)
+>>>=20
+>>> But I do know there has been some
+>>> code changes over the years which is strictly 2.6 kernel and newer; but=
+ its
+>>> quite a long time ago so I don't recall exactly what and when.
+>> For OpenVPN 2.4, I think we kicked out some old method to set up Linux
+>> tunnels.  OTOH, that was 2.2.x stuff, if I remember correctly...
+>> (86e2fa5597fd1ad8e010)
+>>=20
+>>=20
+> as usual, Gert is right ...
+> I've  dusted off and fired up a really ancient VM running CentOS 3.9, whi=
+ch is based on kernel 2.4.21. After falling off my chair in amazement and c=
+limbing back on, I then copied over openssl 1.0.2, lzo-2.03 and openvpn 2.4=
+.5; openssl builds, as does lzo. As Gert predicted:
+> OpenVPN 2.4.5 fails to build on tun.c , line 2092: 'TUNSETGROUP' undeclar=
+ed.
+>=20
+> I then copied over openvpn 2.3.18 and built that: it builds and runs just=
+ fine.
+> So in short: openvpn 2.3.X is the last version that can be run on a 2.4 k=
+ernel.
+>=20
+> Now stop and think about this:
+> - WHY?!?!?!?!!? would you want to do this?
+> - as others have said, the 2.4 kernel series is no longer updated , and 2=
+.4.31 is not even the last version (that's 2.4.37). I would not  consider a=
+ny device running a 2.4 kernel secure enough to run a secure VPN on it, esp=
+ecially over the internet.
+> - why do would you need openvpn 2.4.x in the first place for such a devic=
+e?  if it's AES-GCM that you are looking for then there's a good chance tha=
+t  it will be SLOWER on embedded hardware compared to AES-256-CBC+SHA256.
+>=20
+>=20
+> JM2CW,
+>=20
+> JJK
+>=20
+> -------------------------------------------------------------------------=
+-----
+> Check out the vibrant tech community on one of the world's most
+> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
