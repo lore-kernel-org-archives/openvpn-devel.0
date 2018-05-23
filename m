@@ -1,16 +1,13 @@
-Date: Wed, 23 May 2018 11:27:46 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180523092746.GU79551@...1296...>
-References: <CAFHpkQF9yo3qjs0kYbkSZqKa4xjsy7u5e0VqZ76H21S6puH5Mw@...278...>
- <03bff833-41dc-8c3d-442c-3f360888196e@...2080...>
- <CAFHpkQFK3wu6M1S_bWvVajqdZy29aYcgz=RJvtFXcZE71-+zdQ@...278...>
+References: <CAAF3xa85gmN5GEjguVA6cpUPFZuSOKP39g1FKf1hYfmyoo9X5w@...278...>
+ <d42dfd0b-8309-2409-0a21-aa97c8a3b651@...2080...>
+ <20180522204702.GT79551@...1296...>
+From: Jan Just Keijser <janjust@...1147...>
+Message-ID: <3b9e1a1a-7b61-6edc-1f81-2b42eb5c66c8@...1147...>
+Date: Wed, 23 May 2018 12:25:32 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="8WA4ILJSyYAmUzbY"
-Content-Disposition: inline
-In-Reply-To: <CAFHpkQFK3wu6M1S_bWvVajqdZy29aYcgz=RJvtFXcZE71-+zdQ@...278...>
-Subject: Re: [Openvpn-devel] linking interactive service and openvpn.exe
- into single binary ?
+In-Reply-To: <20180522204702.GT79551@...1296...>
+Content-Language: nl-NL
+Subject: Re: [Openvpn-devel] Minimum Linux Version for OpenVPN 2.4.x
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,55 +16,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ???????? ?????????????? <chipitsine@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---8WA4ILJSyYAmUzbY
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="windows-1252"; format="flowed"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Wed, May 23, 2018 at 02:10:42PM +0500, ???????? ?????????????? wrote:
-> however, what I talk about is a different case. "exe_path" exists, but it
-> points to wrong location.
 
-In that case, wipe the system and reinstall.
+On 22/05/18 22:47, Gert Doering wrote:
+> On Tue, May 22, 2018 at 09:10:10PM +0200, David Sommerseth wrote:
+>> On 22/05/18 19:32, Marvin wrote:
+>>> Can someone tell me the minimum Linux version that OpenVPN 2.4.x will b=
+uild
+>>> and run on?=A0 We have an older appliance the runs on an older 2.4.31 k=
+ernel
+>>> (cannot be upgraded -- but it's very hardened so really doesn't need to=
+ be for
+>>> our use.)
+>>
+>> But I do know there has been some
+>> code changes over the years which is strictly 2.6 kernel and newer; but =
+its
+>> quite a long time ago so I don't recall exactly what and when.
+> For OpenVPN 2.4, I think we kicked out some old method to set up Linux
+> tunnels.  OTOH, that was 2.2.x stuff, if I remember correctly...
+> (86e2fa5597fd1ad8e010)
+>
+>
+as usual, Gert is right ...
+I've=A0 dusted off and fired up a really ancient VM running CentOS 3.9,=20
+which is based on kernel 2.4.21. After falling off my chair in amazement=20
+and climbing back on, I then copied over openssl 1.0.2, lzo-2.03 and=20
+openvpn 2.4.5; openssl builds, as does lzo. As Gert predicted:
+OpenVPN 2.4.5 fails to build on tun.c , line 2092: 'TUNSETGROUP' undeclared.
 
-Seriously: if you mess up your system config, there is no way we're going
-to cover all possible cases inside OpenVPN.
+I then copied over openvpn 2.3.18 and built that: it builds and runs=20
+just fine.
+So in short: openvpn 2.3.X is the last version that can be run on a 2.4=20
+kernel.
 
-(Like, "OpenVPN Admin Group exists but points to a non-existant group",
-etc.)
+Now stop and think about this:
+- WHY?!?!?!?!!? would you want to do this?
+- as others have said, the 2.4 kernel series is no longer updated , and=20
+2.4.31 is not even the last version (that's 2.4.37). I would not=A0=20
+consider any device running a 2.4 kernel secure enough to run a secure=20
+VPN on it, especially over the internet.
+- why do would you need openvpn 2.4.x in the first place for such a=20
+device?=A0 if it's AES-GCM that you are looking for then there's a good=20
+chance that=A0 it will be SLOWER on embedded hardware compared to=20
+AES-256-CBC+SHA256.
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
 
-Gert Doering - Munich, Germany                             gert@...1296...
+JM2CW,
 
---8WA4ILJSyYAmUzbY
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJbBTQRAAoJEB2Cnv7KVigSvmIL/3rCMgAZDKcDi7vrLQf8/Fvy
-9CZmESy+5485VT6V73zFO9OSCaTQm1O6r9AoO6HKNkLXPayFwF5CPvlYguKQ/Icg
-6G6lUSxkRZpnDQkfTKCwIY3u06eunzAme7Frf2d/N3780f6EsGM9+QTWd3kbAMiB
-ptd38ywJADkgBZmWjC9DuHXg00E883S+QKS69n0t1UjD1ZTeIDqL4qrMyHBHAvIi
-lNTgAzzHS7T58X4BNkyHgeOOr1J5pAjCeMy5z9PmzC9AzzhXZ0z9r4ZnoYJTPrIl
-YvuSo7gRofrjdO+WNfU1AiEYRh4ubc5GD1XFFUag6IvsZAb6CBzKbN58B0OSLdwi
-KcqPF77MW25Boxn8LwnLZ5eKQs1mygnxTz4eNlAP99aL9oB8rsF2iVJaJCAapQyc
-qZdaGBl0zpybRgwHQUocbj5yLJVmk4R15EPTRZ3q+KaMcK9Thz/CMQbL27Sl56J5
-fB6jDbdfMI14bU28Ah+Kqz1bHWYSZqzUwbeEShRdtA==
-=7meu
------END PGP SIGNATURE-----
-
---8WA4ILJSyYAmUzbY--
+JJK
 
