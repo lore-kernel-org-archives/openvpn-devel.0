@@ -1,18 +1,14 @@
-References: <20180417165000.3872-1-Jason@...2390...>
- <10978590-889a-0ccc-4cb8-31c862ee565c@...1856...>
- <33fe1382-9dd6-82b4-1215-7f748e521a48@...1147...>
- <fd348cf4-8d17-24b1-cace-f238d319c550@...1227...>
- <03f8402c-a603-3405-543a-e5eaa1ebc224@...1147...>
- <1d803ca0-2f28-585c-eeca-4c64ac2d745f@...1227...>
- <d8fe4a16-fc48-f1f9-3d4d-b82a906bb322@...2080...>
- <99D61A626FDA8A4B90A270669121BE1086A96359@...2294...>
-From: Jan Just Keijser <janjust@...1147...>
-Message-ID: <82af2541-5e7a-7ba3-5fea-e11f6a2aa52e@...1147...>
-Date: Fri, 25 May 2018 15:51:22 +0200
+Date: Fri, 25 May 2018 16:07:17 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180525140717.GF79551@...1296...>
+References: <DM5PR21MB0185C678B00052EFCFF10283B08D0@...2394...>
 MIME-Version: 1.0
-In-Reply-To: <99D61A626FDA8A4B90A270669121BE1086A96359@...2294...>
-Content-Language: nl-NL
-Subject: Re: [Openvpn-devel] [PATCH] Support fingerprint authentication
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="YCGSkTKVt49j0xAo"
+Content-Disposition: inline
+In-Reply-To: <DM5PR21MB0185C678B00052EFCFF10283B08D0@...2394...>
+Subject: Re: [Openvpn-devel] [PATCH: tap-windows6] Fix missing
+ PRODUCT_PUBLISHER field in installer
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,53 +17,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Simon Rozman <simon@...2293...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Jon Kunkee <jkunkee@...2393...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--YCGSkTKVt49j0xAo
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On 25/05/18 03:41, Simon Rozman wrote:
->>> Private and public key are still used. The patch stil uses
->>> certificates and TLS, it only replaces the check certificate of the
->>> peer's certificate against the CA with a hash check (certificate
->>> pinning if you want).
->>>
->>> So basically instead of saying that you trust all certificates signed
->>> by a CA, you only trust only those certifcates of which have hashes. A
->>> certificate pinning of an unknown CA is exactly the same. Since you
->>> cannot verify that certificate you add a one off certificate in your
->>> list of trusted certificates.
->> Correct me if I'm wrong, but this approach allows for self-signed
-> certificates
->> too, right?
-> Exactly! Client and server can use whatever certificate they like or make a
-> self-signed one. All they need to do is to exchange their fingerprints over
-> some trustworthy channel.
->
-> Simple. Like SSH.
->
->
-for the record: this is not entirely the same as SSH. What happens when 
-establishing an SSH connection to a new server is that you send the 
-*public key* to the server, not a hash; similarly the server sends its 
-public key to the client. The client needs to accept this new key, 
-otherwise the connection is aborted. For public/priv authentication to 
-work, the server must know the public key of the client (listed in the 
-authorized_keys file) , otherwise the user is prompted for a password. 
-Thus, for SSH a 'trustworthy channel' consists of the user typing 'y' 
-when connecting to a new server and the server accepting a 
-username+password upon first connection from a client.
+On Fri, Apr 27, 2018 at 08:26:40PM +0000, Jon Kunkee via Openvpn-devel wrot=
+e:
+> While working on ARM64 tap-windows6, I came up with this quick fix for a =
+minor issue recently reported via IRC.
+>=20
+> This is also a Github PR:
+> https://github.com/OpenVPN/tap-windows6/pull/51
+>=20
+> (The ARM64 work is still underway; I'll start a separate thread about its=
+ current state in a few hours.)
 
-To implement a similar feature in OpenVPN would require a way to send 
-only the public key upon TLS initialisation, and these public keys would 
-then need to be stored/listed on the server somewhere. Probably 
-possible, but a different approach then to what is proposed above. I'd 
-be (slightly) in favour of sending public keys instead of hashes, BTW, 
-as it them more closely mimicks what SSH does.
+For the record, the github PR has been merged to tap-windows6 repo,
+so I can close the patch on patchwork.
 
-JM2CW,
+(No activity required, just for the benefit of the archives)
 
-JJK
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--YCGSkTKVt49j0xAo
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJbCBiVAAoJEB2Cnv7KVigS+7sMAJnSv7o/dODDjXWYiPtGnVVF
+R7H+cmYyJw5A1VuETDf/42oYNwu+KIz41vLjNq/zjk0atS9km9ADjONmtTXNIMBO
+vJgabtgwNWRvDq7/eJ/Sj+VgWYkTkXcfs22hDDftPXR7zwqrz7ijG2IrRUXrd3H3
+myr87x4J1W+qNZjhDnCjbB+AVLBI2YTohAWX0Y/38DiqfbQl2AcoqZE4M8th4DxG
+rGRG+J0dU2DrszL5MoTWMbvA0yIBO2cxnvDbgREHAJXm7RN+CgEo1Mlo++R+th8l
+kMdAnJlO8k+EL0j4ZtFDVOGfWRjQISd6zqKsUfhVdlpTOD73Ah8+shztOvN3C0il
+jQeG3Z7LFLdZisOX8PLtCVw++TI5Tk5cP5208AIba3jEQIM7Vdwwto/fgYxGFWHq
+tVMdvrvf05IRUXHCI1XRwh+9AQHziIDFVF/Rsmh9wzzb0p0TAxM2YTdDsTf6se+z
+WGOFBzQx7WT5dISqoz57bqJnoIoDJaYvz3YADYfN2w==
+=xWoQ
+-----END PGP SIGNATURE-----
+
+--YCGSkTKVt49j0xAo--
 
