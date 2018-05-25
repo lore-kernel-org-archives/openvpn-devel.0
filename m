@@ -1,6 +1,6 @@
 From: Simon Rozman <simon@...2293...>
-Date: Fri, 25 May 2018 20:56:55 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE1086A99E72@...2294...>
+Date: Fri, 25 May 2018 21:23:43 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE1086A99F1F@...2294...>
 References: <20180417165000.3872-1-Jason@...2390...>
  <10978590-889a-0ccc-4cb8-31c862ee565c@...1856...>
  <33fe1382-9dd6-82b4-1215-7f748e521a48@...1147...>
@@ -12,11 +12,13 @@ References: <20180417165000.3872-1-Jason@...2390...>
  <82af2541-5e7a-7ba3-5fea-e11f6a2aa52e@...1147...>
  <CAKuzo_j_W0Op+hN6p4muUhrdi42Vib44Vi_7zFtaG9SRMcb0-g@...278...>
  <eb1f2d00-6780-899d-7c1e-61a771350c31@...1147...>
-In-Reply-To: <eb1f2d00-6780-899d-7c1e-61a771350c31@...1147...>
+ <99D61A626FDA8A4B90A270669121BE1086A99E72@...2294...>
+ <51C480DB-1492-4C6C-8B28-C74B00F52729@...1286...>
+In-Reply-To: <51C480DB-1492-4C6C-8B28-C74B00F52729@...1286...>
 Content-Language: en-US
 Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
  micalg=2.16.840.1.101.3.4.2.1;
- boundary="----=_NextPart_000_0010_01D3F47B.ACFBBC50"
+ boundary="----=_NextPart_000_003B_01D3F47F.6BA2ED60"
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] [PATCH] Support fingerprint authentication
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -27,63 +29,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jan Just Keijser <janjust@...1147...>, Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Eric Crist <ecrist@...1286...>
+Cc: Jan Just Keijser <janjust@...1147...>, Selva Nair <selva.nair@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-------=_NextPart_000_0010_01D3F47B.ACFBBC50
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: 7bit
+------=_NextPart_000_003B_01D3F47F.6BA2ED60
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-> > JJK, I think you are misreading this proposal. No hash is being sent
-> > as a part of the handshake  -- its still client and server
-> > certificates that are exchanged and checked during handshake. The hash
-> > is exchanged by a separate channel (say snail mail:) in advance, and
-> > serves the purpose of establishing trust (ie., the prior knowledge of
-> > hash replaces the prior knowledge of a trusted CA). How the hash is
-> > exchanged is beyond the scope of openvpn or TLS handshake in this
-> > case.
+> What does this accomplish you can=E2=80=99t just basically do with =E2=80=
+=94client-cert-not-
+> required?
 
-Right to the point, Selva. This is the best description of this proposal.
+I am using --client-cert-not-required already. :)
 
-> no, I've heard a lot and talked a lot about this proposal before it ended up 
-> on
-> the list. I do know what the purpose is, it's just that I have serious 
-> doubts
-> about replacing
->    ( pub/priv key plus  'trust anchors' such as CA certificates ) by
->    ( we all trust each other because we know each other's SHA2 hashes )
-> There are downsides to a PKI with certificates but I think we're throwing 
-> out
-> too much of the good stuff by allowing "just a hash" as the basis for
-> trust.  And one of my main concerns is that people keep comparing it to
-> "that's just like how SSH does it" - *THAT* is simply not true.
+But that simplifies only the client half of the equation.
 
-JJK, I am sorry I brought SSH as an example. I didn't mean "exactly" like SSH. 
-Just, "kind of like" SSH.
+TLS server will always need a certificate. And client will always need to v=
+erify it to prevent MITM attacks. So, you still need CA.
 
-In this proposal, we leave the TLS handshake to handle public key exchange as 
-usual. No need to modify client<->server communication.
-The only difference is how server and client verify peer's certificate 
-validity. Normally, they check peer's certificate fields like "Not valid 
-before", "Not valid after", "Issued By" etc. In this proposal, they'd only 
-check peer certificate by its SHA thumbprint - and skip all other standard 
-certificate checks.
-
-This would allow you to have a CA-less OpenVPN setup:
-- Make self-signed certificate on server and each client (with like 100 years 
-validity),
-- Deploy server certificate hash in client.ovpn,
-- List acceptable client certificate hashes in server.ovpn (Or use an external 
-script to do the hash lookup)
+The idea is to have a choice to drop CA completely. Of course, like JJK sai=
+d: PKI is great and has its advantages. However, for small setups and some =
+use-cases I'd be willing to live without it and have some simpler mean to v=
+alidate mutual trust.
 
 Best regards,
 Simon
 
-
-------=_NextPart_000_0010_01D3F47B.ACFBBC50
+------=_NextPart_000_003B_01D3F47F.6BA2ED60
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -134,18 +108,18 @@ J1nlAZZNwcev00XWu5MF83BRMbfkThrdGCY22Qjd5He7MHEb0U+oBIvS+p9Vy4IcD0mIc2Y2i+X1
 7yNdSbkqEAstd11gZKt+TKKOImNfcGp0tVulDPGKtDGCAyEwggMdAgEBMEUwPTELMAkGA1UEBhMC
 c2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4w
 DQYJYIZIAWUDBAIBBQCgggGtMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkF
-MQ8XDTE4MDUyNTIwNTY1NFowLwYJKoZIhvcNAQkEMSIEIGPyDhIkmuOKdE4Kedczebpuo2HlfZTR
-TZCI6K5hRVzDMFQGCSsGAQQBgjcQBDFHMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRl
+MQ8XDTE4MDUyNTIxMjM0MlowLwYJKoZIhvcNAQkEMSIEIIPRs+IzNXEBoME64GaQCs0Bc3mzGzKq
+awWev2cK/8ogMFQGCSsGAQQBgjcQBDFHMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRl
 LWluc3RpdHV0aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4wVgYLKoZIhvcNAQkQAgsxR6BF
 MD0xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJzdGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsTCHNp
 Z2VuLWNhAgQ7Sg0uMIGTBgkqhkiG9w0BCQ8xgYUwgYIwCwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQB
 FjAKBggqhkiG9w0DBzALBglghkgBZQMEAQIwDgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFA
 MAsGCWCGSAFlAwQCATALBglghkgBZQMEAgMwCwYJYIZIAWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3
-DQEBAQUABIIBAGK29pFGvkFjURhbYjfanjyLz5XLUlSQExq3VgvJtcn2yI8/QikchGuiyZRHFNGO
-mshb2BOudkFAYpXXJdqzWtj7ktFSQcJBcKIOdYcoF94wgAt+uBOELR365UoIg0IADtnlWXm2o5/N
-dq/ZRuf9nwt+ozr/Jb2ZTI1fhkgEuVXTZswf4mmBXcjDDX+uF7Cc9/bLmBIYfxjPVWMCoh3xQnfs
-F/8aGoTcKqllD+/w5SBqunuCcmNXnU12Asr3BJlrq4Ml8L3jot+7jrXCM8gw5fdZtgdS2DVkL0DV
-DOsy7ZOwRqO08CJsZXYOBb9CzLMabvRqXR+HNp0C3wvmuATqVVEAAAAAAAA=
+DQEBAQUABIIBAC27F5JbtIuzmFzAbXtUqds8bPikJdKwqTtF1UtnGdpiXWrSwOfoGoGYH6/KeM1f
+ng+N9/HbFrgHa6LVW3aaYTK0fQg0wQl1MWAlxEW2rr9ne+4KOX0Mhdr9IQmM7BTHUrQ/trh67eWf
+m339E+cw3MS6KT69MaF+1o9qqhyw2uiEZLkyDCnSbwtN6gOkH+mf1OO6II47r/8VAXrzM+zXkEPY
+iEBCkhS+3sGx0EknnDr35nEhxjvVBwQhSh0XZ0DGKb1gP2hUi2uTg3pnBvZ7StZbvgvj/kS4TBtu
+H4PAkD/GzS9YxCt9ZvhvTgD9SedZPU8K4nOoGM2nYYqHBfNNN0MAAAAAAAA=
 
-------=_NextPart_000_0010_01D3F47B.ACFBBC50--
+------=_NextPart_000_003B_01D3F47F.6BA2ED60--
 
