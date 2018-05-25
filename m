@@ -1,5 +1,3 @@
-MIME-Version: 1.0
-In-Reply-To: <82af2541-5e7a-7ba3-5fea-e11f6a2aa52e@...1147...>
 References: <20180417165000.3872-1-Jason@...2390...>
  <10978590-889a-0ccc-4cb8-31c862ee565c@...1856...>
  <33fe1382-9dd6-82b4-1215-7f748e521a48@...1147...>
@@ -9,9 +7,13 @@ References: <20180417165000.3872-1-Jason@...2390...>
  <d8fe4a16-fc48-f1f9-3d4d-b82a906bb322@...2080...>
  <99D61A626FDA8A4B90A270669121BE1086A96359@...2294...>
  <82af2541-5e7a-7ba3-5fea-e11f6a2aa52e@...1147...>
-From: Selva Nair <selva.nair@...277...>
-Date: Fri, 25 May 2018 10:07:34 -0400
-Message-ID: <CAKuzo_j_W0Op+hN6p4muUhrdi42Vib44Vi_7zFtaG9SRMcb0-g@...278...>
+ <CAKuzo_j_W0Op+hN6p4muUhrdi42Vib44Vi_7zFtaG9SRMcb0-g@...278...>
+From: Jan Just Keijser <janjust@...1147...>
+Message-ID: <eb1f2d00-6780-899d-7c1e-61a771350c31@...1147...>
+Date: Fri, 25 May 2018 16:43:58 +0200
+MIME-Version: 1.0
+In-Reply-To: <CAKuzo_j_W0Op+hN6p4muUhrdi42Vib44Vi_7zFtaG9SRMcb0-g@...278...>
+Content-Language: nl-NL
 Subject: Re: [Openvpn-devel] [PATCH] Support fingerprint authentication
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -21,72 +23,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
-To: Jan Just Keijser <janjust@...1147...>
+To: Selva Nair <selva.nair@...277...>
 Cc: Simon Rozman <simon@...2293...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+Hi Selva,
 
-On Fri, May 25, 2018 at 9:51 AM, Jan Just Keijser <janjust@...1147...> wrote:
-> Hi,
->
-> On 25/05/18 03:41, Simon Rozman wrote:
->>>>
->>>> Private and public key are still used. The patch stil uses
->>>> certificates and TLS, it only replaces the check certificate of the
->>>> peer's certificate against the CA with a hash check (certificate
->>>> pinning if you want).
->>>>
->>>> So basically instead of saying that you trust all certificates signed
->>>> by a CA, you only trust only those certifcates of which have hashes. A
->>>> certificate pinning of an unknown CA is exactly the same. Since you
->>>> cannot verify that certificate you add a one off certificate in your
->>>> list of trusted certificates.
+On 25/05/18 16:07, Selva Nair wrote:
+> On Fri, May 25, 2018 at 9:51 AM, Jan Just Keijser <janjust@...1147...> wrote:
+>> On 25/05/18 03:41, Simon Rozman wrote:
+>>>>> Private and public key are still used. The patch stil uses
+>>>>> certificates and TLS, it only replaces the check certificate of the
+>>>>> peer's certificate against the CA with a hash check (certificate
+>>>>> pinning if you want).
+>>>>>
+>>>>> So basically instead of saying that you trust all certificates signed
+>>>>> by a CA, you only trust only those certifcates of which have hashes. A
+>>>>> certificate pinning of an unknown CA is exactly the same. Since you
+>>>>> cannot verify that certificate you add a one off certificate in your
+>>>>> list of trusted certificates.
+>>>> Correct me if I'm wrong, but this approach allows for self-signed
+>>> certificates
+>>>> too, right?
+>>> Exactly! Client and server can use whatever certificate they like or make
+>>> a
+>>> self-signed one. All they need to do is to exchange their fingerprints
+>>> over
+>>> some trustworthy channel.
 >>>
->>> Correct me if I'm wrong, but this approach allows for self-signed
->>
->> certificates
+>>> Simple. Like SSH.
 >>>
->>> too, right?
+>>>
+>> for the record: this is not entirely the same as SSH. What happens when
+>> establishing an SSH connection to a new server is that you send the *public
+>> key* to the server, not a hash; similarly the server sends its public key to
+>> the client. The client needs to accept this new key, otherwise the
+>> connection is aborted. For public/priv authentication to work, the server
+>> must know the public key of the client (listed in the authorized_keys file)
+>> , otherwise the user is prompted for a password. Thus, for SSH a
+>> 'trustworthy channel' consists of the user typing 'y' when connecting to a
+>> new server and the server accepting a username+password upon first
+>> connection from a client.
 >>
->> Exactly! Client and server can use whatever certificate they like or make
->> a
->> self-signed one. All they need to do is to exchange their fingerprints
->> over
->> some trustworthy channel.
->>
->> Simple. Like SSH.
->>
->>
-> for the record: this is not entirely the same as SSH. What happens when
-> establishing an SSH connection to a new server is that you send the *public
-> key* to the server, not a hash; similarly the server sends its public key to
-> the client. The client needs to accept this new key, otherwise the
-> connection is aborted. For public/priv authentication to work, the server
-> must know the public key of the client (listed in the authorized_keys file)
-> , otherwise the user is prompted for a password. Thus, for SSH a
-> 'trustworthy channel' consists of the user typing 'y' when connecting to a
-> new server and the server accepting a username+password upon first
-> connection from a client.
+>> To implement a similar feature in OpenVPN would require a way to send only
+>> the public key upon TLS initialisation, and these public keys would then
+>> need to be stored/listed on the server somewhere. Probably possible, but a
+>> different approach then to what is proposed above. I'd be (slightly) in
+>> favour of sending public keys instead of hashes, BTW, as it them more
+>> closely mimicks what SSH does.
+> Me too chiming in :)
 >
-> To implement a similar feature in OpenVPN would require a way to send only
-> the public key upon TLS initialisation, and these public keys would then
-> need to be stored/listed on the server somewhere. Probably possible, but a
-> different approach then to what is proposed above. I'd be (slightly) in
-> favour of sending public keys instead of hashes, BTW, as it them more
-> closely mimicks what SSH does.
+> JJK, I think you are misreading this proposal. No hash is being sent
+> as a part of the handshake  -- its still client and server
+> certificates that are exchanged and checked during handshake. The hash
+> is exchanged by a separate channel (say snail mail:) in advance, and
+> serves the purpose of establishing trust (ie., the prior knowledge of
+> hash replaces the prior knowledge of a trusted CA). How the hash is
+> exchanged is beyond the scope of openvpn or TLS handshake in this
+> case.
+>
+>
+no, I've heard a lot and talked a lot about this proposal before it 
+ended up on the list. I do know what the purpose is, it's just that I 
+have serious doubts about replacing
+   ( pub/priv key plus  'trust anchors' such as CA certificates )
+by
+   ( we all trust each other because we know each other's SHA2 hashes )
+There are downsides to a PKI with certificates but I think we're 
+throwing out too much of the good stuff by allowing "just a hash" as the 
+basis for trust.  And one of my main concerns is that people keep 
+comparing it to "that's just like how SSH does it" - *THAT* is simply 
+not true.
 
-Me too chiming in :)
+JM2CW,
 
-JJK, I think you are misreading this proposal. No hash is being sent
-as a part of the handshake  -- its still client and server
-certificates that are exchanged and checked during handshake. The hash
-is exchanged by a separate channel (say snail mail:) in advance, and
-serves the purpose of establishing trust (ie., the prior knowledge of
-hash replaces the prior knowledge of a trusted CA). How the hash is
-exchanged is beyond the scope of openvpn or TLS handshake in this
-case.
-
-Selva
+JJK
 
