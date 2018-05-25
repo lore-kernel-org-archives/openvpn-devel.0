@@ -1,12 +1,18 @@
-References: <d9c75727-f242-4c8a-3bfc-006e01629716@...277...>
- <9d9305bf-b66c-d6bd-0a56-1ee5192d3b13@...2080...>
-From: tincanteksup <tincanteksup@...277...>
-Message-ID: <a1eb52e5-b18d-daa6-ad60-078b5784c73d@...277...>
-Date: Fri, 25 May 2018 14:19:40 +0100
+References: <20180417165000.3872-1-Jason@...2390...>
+ <10978590-889a-0ccc-4cb8-31c862ee565c@...1856...>
+ <33fe1382-9dd6-82b4-1215-7f748e521a48@...1147...>
+ <fd348cf4-8d17-24b1-cace-f238d319c550@...1227...>
+ <03f8402c-a603-3405-543a-e5eaa1ebc224@...1147...>
+ <1d803ca0-2f28-585c-eeca-4c64ac2d745f@...1227...>
+ <d8fe4a16-fc48-f1f9-3d4d-b82a906bb322@...2080...>
+ <99D61A626FDA8A4B90A270669121BE1086A96359@...2294...>
+From: Jan Just Keijser <janjust@...1147...>
+Message-ID: <82af2541-5e7a-7ba3-5fea-e11f6a2aa52e@...1147...>
+Date: Fri, 25 May 2018 15:51:22 +0200
 MIME-Version: 1.0
-In-Reply-To: <9d9305bf-b66c-d6bd-0a56-1ee5192d3b13@...2080...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [openvpn-devel] Use --ec-curve
+In-Reply-To: <99D61A626FDA8A4B90A270669121BE1086A96359@...2294...>
+Content-Language: nl-NL
+Subject: Re: [Openvpn-devel] [PATCH] Support fingerprint authentication
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,83 +21,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Simon Rozman <simon@...2293...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi David,
+Hi,
 
-Oops .. yes I meant --ecdh-curve
-and yes, i searched the manual for --ec-curve
-so no surprise I did not find it ..
+On 25/05/18 03:41, Simon Rozman wrote:
+>>> Private and public key are still used. The patch stil uses
+>>> certificates and TLS, it only replaces the check certificate of the
+>>> peer's certificate against the CA with a hash check (certificate
+>>> pinning if you want).
+>>>
+>>> So basically instead of saying that you trust all certificates signed
+>>> by a CA, you only trust only those certifcates of which have hashes. A
+>>> certificate pinning of an unknown CA is exactly the same. Since you
+>>> cannot verify that certificate you add a one off certificate in your
+>>> list of trusted certificates.
+>> Correct me if I'm wrong, but this approach allows for self-signed
+> certificates
+>> too, right?
+> Exactly! Client and server can use whatever certificate they like or make a
+> self-signed one. All they need to do is to exchange their fingerprints over
+> some trustworthy channel.
+>
+> Simple. Like SSH.
+>
+>
+for the record: this is not entirely the same as SSH. What happens when 
+establishing an SSH connection to a new server is that you send the 
+*public key* to the server, not a hash; similarly the server sends its 
+public key to the client. The client needs to accept this new key, 
+otherwise the connection is aborted. For public/priv authentication to 
+work, the server must know the public key of the client (listed in the 
+authorized_keys file) , otherwise the user is prompted for a password. 
+Thus, for SSH a 'trustworthy channel' consists of the user typing 'y' 
+when connecting to a new server and the server accepting a 
+username+password upon first connection from a client.
 
-Anyway, there is a complete paste including cofigs here:
-https://paste.fedoraproject.org/paste/tIyiqTzjcPqZWWLjqEZtVw
+To implement a similar feature in OpenVPN would require a way to send 
+only the public key upon TLS initialisation, and these public keys would 
+then need to be stored/listed on the server somewhere. Probably 
+possible, but a different approach then to what is proposed above. I'd 
+be (slightly) in favour of sending public keys instead of hashes, BTW, 
+as it them more closely mimicks what SSH does.
 
-If you prefer I can record this on trac.
+JM2CW,
 
-Thanks
+JJK
 
-
-On 24/05/18 20:38, David Sommerseth wrote:
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA512
-> 
-> On 24/05/18 14:46, tincanteksup wrote:
->> As --ec-curve remains undocumented I presume that is because its
->> implementation is not yet completed ? So I decided to send this email for
->> confirmation or, if this problem is not known, to inform you of it.
-> openvpn (master) $ git grep ec-curve | wc -l
-> 0
-> openvpn (release/2.4) $ git grep ec-curve | wc -l
-> 0
-> 
-> It is correct that --ec-curve is not a valid option, thus not documented.
-> But you might be thinking of --ecdh-curve
-> 
-> openvpn (master) $ git grep ecdh-curve | wc -l
-> 3
-> openvpn (release/2.4) $ git grep ecdh-curve | wc -l
-> 3
-> 
-> And from the 2.4 man page:
-> 
->         --ecdh-curve name
->                Specify the curve to  use  for  elliptic
->                curve  Diffie  Hellman. Available curves
->                can be listed with  --show-curves.   The
->                specified  curve  will  only be used for
->                ECDH TLS-ciphers.
-> 
->                This option is not supported in mbed TLS
->                builds of OpenVPN.
-> 
-> 
-> Is this still unclear?
-> 
-> 
-> - -- 
-> kind regards,
-> 
-> David Sommerseth
-> OpenVPN Inc
-> 
-> -----BEGIN PGP SIGNATURE-----
-> Version: GnuPG v2.0.22 (GNU/Linux)
-> 
-> iQIcBAEBCgAGBQJbBxSwAAoJEIbPlEyWcf3yQTEP/2dUhFMqIGy3TBppxBYyQaLK
-> vbvBipgHggV2DBp67X5r0YOX4Iw8q+xDDSCTKLd3hyzTx8zjsZE3TNAP+cZF3lqC
-> n/qmIlqYI4KSuPNtaypRaqUlJ8UMCdJZvpG6S/GQHEUYoR830ZQxJfIM++TvHOjv
-> 1w/UnIMpqErEfUs9teaUx/oUscDoZgF2i7toCU/jXLDLIFQ/sS4v2pn62R5tmLs0
-> mS5L725HxLKWJBoyQA8awFnSJOU5fK0McReB+zpnW/7UjjsBuuLaVul+reRfLYQk
-> +2lLR9IhxpjF49kqOJPKeTmyQnE+6qBrLb8TgfMcqikRaH9sBtchdxkYyVqpCkNg
-> ri4SHwZ2OVzXceSsG0x0skt71EDlY8lit0wbpR6fbvXAoJ3aTCFGRN+zB6zlnkJ0
-> gJUaqewfaxaNLieEC+OQSCqtcWGXn05Wc+RRmsOJytcz8SQYl/Nk/EIFw14GmPBe
-> ensZXctHNGjqDN8nOeNz8RP63u0ub1HGH3Plb3L02CP7UW1bA1BSf3e5yUAHsAWm
-> +JlqA0BLuAWAnGeGwhR4pJa2KbXUX2WiRUECGxlLQMvGsRXySfMXYPLEzVhW2G4E
-> d4zr/+f8gVPXokwCNYSN4pc1rjgKStJVW8xtZjk4DWLQ3I60tAAcD6HOh+Bk92E8
-> eC7OW4nK6J1QWXTPiISc
-> =jJrO
-> -----END PGP SIGNATURE-----
-> 
 
