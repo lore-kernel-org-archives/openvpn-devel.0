@@ -1,7 +1,9 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Tue, 29 May 2018 12:55:07 +0300
-Message-Id: <1527587707-21417-1-git-send-email-lev@...515...>
-Subject: [Openvpn-devel] [PATCH] Improve "recursive routing" warning
+Date: Tue, 29 May 2018 14:47:27 +0300
+Message-Id: <1527594447-10710-1-git-send-email-lev@...515...>
+In-Reply-To: <1527587707-21417-1-git-send-email-lev@...515...>
+References: <1527587707-21417-1-git-send-email-lev@...515...>
+Subject: [Openvpn-devel] [PATCH v2] Improve "recursive routing" warning
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,6 +17,8 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Lev Stipakov <lev@...515...>
 
+V2: style fixes
+
 - print protocol, source/dest addresses and ports
 - mention "--allow-recursive-routing"
 - add possible usecase to manpage
@@ -22,10 +26,12 @@ Cc: Lev Stipakov <lev@...515...>
 Trac #843
 
 Signed-off-by: Lev Stipakov <lev@...515...>
+
+style fixes
 ---
  doc/openvpn.8         |  4 ++-
- src/openvpn/forward.c | 89 +++++++++++++++++++++++++++++++++++++++++++++++----
- 2 files changed, 86 insertions(+), 7 deletions(-)
+ src/openvpn/forward.c | 93 ++++++++++++++++++++++++++++++++++++++++++++++-----
+ 2 files changed, 88 insertions(+), 9 deletions(-)
 
 diff --git a/doc/openvpn.8 b/doc/openvpn.8
 index 4114f40..262d4ea 100644
@@ -43,7 +49,7 @@ index 4114f40..262d4ea 100644
  .SS Data Channel Encryption Options:
  These options are meaningful for both Static & TLS\-negotiated key modes
 diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 7d9a338..77a9084 100644
+index 7d9a338..b121849 100644
 --- a/src/openvpn/forward.c
 +++ b/src/openvpn/forward.c
 @@ -1068,7 +1068,7 @@ read_incoming_tun(struct context *c)
@@ -67,12 +73,21 @@ index 7d9a338..77a9084 100644
      if (c->c2.to_link_addr == NULL) /* no remote addr known */
      {
          return;
+@@ -1094,7 +1099,7 @@ drop_if_recursive_routing(struct context *c, struct buffer *buf)
+         const struct openvpn_iphdr *pip;
+ 
+         /* make sure we got whole IP header */
+-        if (BLEN(buf) < ((int) sizeof(struct openvpn_iphdr) + ip_hdr_offset))
++        if (BLEN(buf) < ((int)sizeof(struct openvpn_iphdr) + ip_hdr_offset))
+         {
+             return;
+         }
 @@ -1105,12 +1110,38 @@ drop_if_recursive_routing(struct context *c, struct buffer *buf)
              return;
          }
  
 -        pip = (struct openvpn_iphdr *) (BPTR(buf) + ip_hdr_offset);
-+        pip = (const struct openvpn_iphdr *) (BPTR(buf) + ip_hdr_offset);
++        pip = (const struct openvpn_iphdr *)(BPTR(buf) + ip_hdr_offset);
  
 -        /* drop packets with same dest addr as gateway */
 +        /* drop packets with the same dest addr as gateway */
@@ -89,25 +104,34 @@ index 7d9a338..77a9084 100644
 +            protocol = pip->protocol;
 +
 +            /* whole packet? */
-+            if (BLEN(buf) == (ip_hdr_offset + (int) (ntohs(pip->tot_len))))
++            if (BLEN(buf) == (ip_hdr_offset + (int)(ntohs(pip->tot_len))))
 +            {
-+              const uint8_t *payload = BPTR(buf) + ip_hdr_offset + sizeof(struct openvpn_iphdr);
++                const uint8_t *payload = BPTR(buf) + ip_hdr_offset + sizeof(struct openvpn_iphdr);
 +
-+              if (protocol == OPENVPN_IPPROTO_UDP)
-+              {
-+                const struct openvpn_udphdr *udp = (const struct openvpn_udphdr *) payload;
-+                sport = ntohs(udp->source);
-+                dport = ntohs(udp->dest);
-+              } else if (protocol == OPENVPN_IPPROTO_TCP)
-+              {
-+                const struct openvpn_tcphdr *tcp = (const struct openvpn_tcphdr *) payload;
-+                sport = ntohs(tcp->source);
-+                dport = ntohs(tcp->dest);
-+              }
++                if (protocol == OPENVPN_IPPROTO_UDP)
++                {
++                    const struct openvpn_udphdr *udp = (const struct openvpn_udphdr *)payload;
++                    sport = ntohs(udp->source);
++                    dport = ntohs(udp->dest);
++                } else if (protocol == OPENVPN_IPPROTO_TCP)
++                {
++                    const struct openvpn_tcphdr *tcp = (const struct openvpn_tcphdr *)payload;
++                    sport = ntohs(tcp->source);
++                    dport = ntohs(tcp->dest);
++                }
 +            }
          }
      }
      else if (proto_ver == 6)
+@@ -1118,7 +1149,7 @@ drop_if_recursive_routing(struct context *c, struct buffer *buf)
+         const struct openvpn_ipv6hdr *pip6;
+ 
+         /* make sure we got whole IPv6 header */
+-        if (BLEN(buf) < ((int) sizeof(struct openvpn_ipv6hdr) + ip_hdr_offset))
++        if (BLEN(buf) < ((int)sizeof(struct openvpn_ipv6hdr) + ip_hdr_offset))
+         {
+             return;
+         }
 @@ -1129,22 +1160,68 @@ drop_if_recursive_routing(struct context *c, struct buffer *buf)
              return;
          }
@@ -128,21 +152,21 @@ index 7d9a338..77a9084 100644
 +            protocol = pip6->nexthdr;
 +
 +            /* whole packet? */
-+            if (BLEN(buf) == ((int) sizeof(struct openvpn_ipv6hdr) + ip_hdr_offset + (int) ntohs(pip6->payload_len)))
++            if (BLEN(buf) == ((int)sizeof(struct openvpn_ipv6hdr) + ip_hdr_offset + (int)ntohs(pip6->payload_len)))
 +            {
-+              const uint8_t *payload = BPTR(buf) + ip_hdr_offset + sizeof(struct openvpn_ipv6hdr);
++                const uint8_t *payload = BPTR(buf) + ip_hdr_offset + sizeof(struct openvpn_ipv6hdr);
 +
-+              if (protocol == OPENVPN_IPPROTO_UDP)
-+              {
-+                const struct openvpn_udphdr *udp = (const struct openvpn_udphdr *) payload;
-+                sport = ntohs(udp->source);
-+                dport = ntohs(udp->dest);
-+              } else if (protocol == OPENVPN_IPPROTO_TCP)
-+              {
-+                const struct openvpn_tcphdr *tcp = (const struct openvpn_tcphdr *) payload;
-+                sport = ntohs(tcp->source);
-+                dport = ntohs(tcp->dest);
-+              }
++                if (protocol == OPENVPN_IPPROTO_UDP)
++                {
++                    const struct openvpn_udphdr *udp = (const struct openvpn_udphdr *)payload;
++                    sport = ntohs(udp->source);
++                    dport = ntohs(udp->dest);
++                } else if (protocol == OPENVPN_IPPROTO_TCP)
++                {
++                    const struct openvpn_tcphdr *tcp = (const struct openvpn_tcphdr *)payload;
++                    sport = ntohs(tcp->source);
++                    dport = ntohs(tcp->dest);
++                }
 +            }
          }
      }
@@ -158,22 +182,22 @@ index 7d9a338..77a9084 100644
 -        msg(D_LOW, "Recursive routing detected, drop tun packet to %s",
 -            print_link_socket_actual(c->c2.to_link_addr, &gc));
 +        if (protocol == OPENVPN_IPPROTO_UDP)
-+          buf_printf(&addrs_buf, "%s", "UDP");
++            buf_printf(&addrs_buf, "%s", "UDP");
 +        else if (protocol == OPENVPN_IPPROTO_TCP)
-+          buf_printf(&addrs_buf, "%s", "TCP");
++            buf_printf(&addrs_buf, "%s", "TCP");
 +        else
-+          buf_printf(&addrs_buf, "%d", protocol);
++            buf_printf(&addrs_buf, "%d", protocol);
 +
 +        if (proto_ver == 4)
 +        {
-+          buf_printf(&addrs_buf, " %s:%d -> %s:%d",
-+                     print_in_addr_t(saddr, 0, &gc), sport,
-+                     print_in_addr_t(daddr, 0, &gc), dport);
++            buf_printf(&addrs_buf, " %s:%d -> %s:%d",
++                       print_in_addr_t(saddr, 0, &gc), sport,
++                       print_in_addr_t(daddr, 0, &gc), dport);
 +        } else if (proto_ver == 6)
 +        {
-+           buf_printf(&addrs_buf, " %s:%d -> %s:%d",
-+                     print_in6_addr(saddr6, 0, &gc), sport,
-+                     print_in6_addr(daddr6, 0, &gc), dport);
++            buf_printf(&addrs_buf, " %s:%d -> %s:%d",
++                       print_in6_addr(saddr6, 0, &gc), sport,
++                       print_in6_addr(daddr6, 0, &gc), dport);
 +        }
 +
 +        msg(D_LOW, "Recursive routing detected, drop packet %s. Fix your routing or consider using --allow-recursive-routing option.", BSTR(&addrs_buf));
