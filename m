@@ -1,9 +1,14 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Tue, 29 May 2018 14:47:27 +0300
-Message-Id: <1527594447-10710-1-git-send-email-lev@...515...>
-In-Reply-To: <1527587707-21417-1-git-send-email-lev@...515...>
+Date: Tue, 29 May 2018 21:08:50 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180529190850.GK79551@...1296...>
 References: <1527587707-21417-1-git-send-email-lev@...515...>
-Subject: [Openvpn-devel] [PATCH v2] Improve "recursive routing" warning
+ <1527594447-10710-1-git-send-email-lev@...515...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="suroagWEfFHnktSq"
+Content-Disposition: inline
+In-Reply-To: <1527594447-10710-1-git-send-email-lev@...515...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Improve "recursive routing" warning
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,199 +17,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
 
-V2: style fixes
+--suroagWEfFHnktSq
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-- print protocol, source/dest addresses and ports
-- mention "--allow-recursive-routing"
-- add possible usecase to manpage
+Hi,
 
-Trac #843
+On Tue, May 29, 2018 at 02:47:27PM +0300, Lev Stipakov wrote:
+> V2: style fixes
+>=20
+> - print protocol, source/dest addresses and ports
+> - mention "--allow-recursive-routing"
+> - add possible usecase to manpage
+>=20
+> Trac #843
 
-Signed-off-by: Lev Stipakov <lev@...515...>
+I'm not sure I'm convinced.  This is quite a lot of extra code for
+an "add a few extra fields to a warning" enhancement - especially
+given that those that are already confused by the warning today=20
+will be more confused by "more numbers"...
 
-style fixes
----
- doc/openvpn.8         |  4 ++-
- src/openvpn/forward.c | 93 ++++++++++++++++++++++++++++++++++++++++++++++-----
- 2 files changed, 88 insertions(+), 9 deletions(-)
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 4114f40..262d4ea 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -4072,7 +4072,9 @@ notifications unless this option is enabled.
- .TP
- .B \-\-allow\-recursive\-routing
- When this option is set, OpenVPN will not drop incoming tun packets
--with same destination as host.
-+with same destination as host. Could be useful when packets sent by openvpn
-+itself are not subject to the routing tables that would move packets
-+into the tunnel.
- .\"*********************************************************
- .SS Data Channel Encryption Options:
- These options are meaningful for both Static & TLS\-negotiated key modes
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 7d9a338..b121849 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1068,7 +1068,7 @@ read_incoming_tun(struct context *c)
- /**
-  * Drops UDP packets which OS decided to route via tun.
-  *
-- * On Windows and OS X when netwotk adapter is disabled or
-+ * On Windows and OS X when network adapter is disabled or
-  * disconnected, platform starts to use tun as external interface.
-  * When packet is sent to tun, it comes to openvpn, encapsulated
-  * and sent to routing table, which sends it again to tun.
-@@ -1080,6 +1080,11 @@ drop_if_recursive_routing(struct context *c, struct buffer *buf)
-     struct openvpn_sockaddr tun_sa;
-     int ip_hdr_offset = 0;
- 
-+    uint32_t saddr, daddr;
-+    struct in6_addr saddr6, daddr6;
-+    uint16_t sport, dport;
-+    uint8_t protocol;
-+
-     if (c->c2.to_link_addr == NULL) /* no remote addr known */
-     {
-         return;
-@@ -1094,7 +1099,7 @@ drop_if_recursive_routing(struct context *c, struct buffer *buf)
-         const struct openvpn_iphdr *pip;
- 
-         /* make sure we got whole IP header */
--        if (BLEN(buf) < ((int) sizeof(struct openvpn_iphdr) + ip_hdr_offset))
-+        if (BLEN(buf) < ((int)sizeof(struct openvpn_iphdr) + ip_hdr_offset))
-         {
-             return;
-         }
-@@ -1105,12 +1110,38 @@ drop_if_recursive_routing(struct context *c, struct buffer *buf)
-             return;
-         }
- 
--        pip = (struct openvpn_iphdr *) (BPTR(buf) + ip_hdr_offset);
-+        pip = (const struct openvpn_iphdr *)(BPTR(buf) + ip_hdr_offset);
- 
--        /* drop packets with same dest addr as gateway */
-+        /* drop packets with the same dest addr as gateway */
-         if (tun_sa.addr.in4.sin_addr.s_addr == pip->daddr)
-         {
-             drop = true;
-+
-+            /* collect information for warning message */
-+            sport = 0;
-+            dport = 0;
-+
-+            saddr = ntohl(pip->saddr);
-+            daddr = ntohl(pip->daddr);
-+            protocol = pip->protocol;
-+
-+            /* whole packet? */
-+            if (BLEN(buf) == (ip_hdr_offset + (int)(ntohs(pip->tot_len))))
-+            {
-+                const uint8_t *payload = BPTR(buf) + ip_hdr_offset + sizeof(struct openvpn_iphdr);
-+
-+                if (protocol == OPENVPN_IPPROTO_UDP)
-+                {
-+                    const struct openvpn_udphdr *udp = (const struct openvpn_udphdr *)payload;
-+                    sport = ntohs(udp->source);
-+                    dport = ntohs(udp->dest);
-+                } else if (protocol == OPENVPN_IPPROTO_TCP)
-+                {
-+                    const struct openvpn_tcphdr *tcp = (const struct openvpn_tcphdr *)payload;
-+                    sport = ntohs(tcp->source);
-+                    dport = ntohs(tcp->dest);
-+                }
-+            }
-         }
-     }
-     else if (proto_ver == 6)
-@@ -1118,7 +1149,7 @@ drop_if_recursive_routing(struct context *c, struct buffer *buf)
-         const struct openvpn_ipv6hdr *pip6;
- 
-         /* make sure we got whole IPv6 header */
--        if (BLEN(buf) < ((int) sizeof(struct openvpn_ipv6hdr) + ip_hdr_offset))
-+        if (BLEN(buf) < ((int)sizeof(struct openvpn_ipv6hdr) + ip_hdr_offset))
-         {
-             return;
-         }
-@@ -1129,22 +1160,68 @@ drop_if_recursive_routing(struct context *c, struct buffer *buf)
-             return;
-         }
- 
--        /* drop packets with same dest addr as gateway */
-+        /* drop packets with the same dest addr as gateway */
-         pip6 = (struct openvpn_ipv6hdr *) (BPTR(buf) + ip_hdr_offset);
-         if (IN6_ARE_ADDR_EQUAL(&tun_sa.addr.in6.sin6_addr, &pip6->daddr))
-         {
-             drop = true;
-+
-+            /* collect information for warning message */
-+            sport = 0;
-+            dport = 0;
-+
-+            saddr6 = pip6->saddr;
-+            daddr6 = pip6->daddr;
-+            protocol = pip6->nexthdr;
-+
-+            /* whole packet? */
-+            if (BLEN(buf) == ((int)sizeof(struct openvpn_ipv6hdr) + ip_hdr_offset + (int)ntohs(pip6->payload_len)))
-+            {
-+                const uint8_t *payload = BPTR(buf) + ip_hdr_offset + sizeof(struct openvpn_ipv6hdr);
-+
-+                if (protocol == OPENVPN_IPPROTO_UDP)
-+                {
-+                    const struct openvpn_udphdr *udp = (const struct openvpn_udphdr *)payload;
-+                    sport = ntohs(udp->source);
-+                    dport = ntohs(udp->dest);
-+                } else if (protocol == OPENVPN_IPPROTO_TCP)
-+                {
-+                    const struct openvpn_tcphdr *tcp = (const struct openvpn_tcphdr *)payload;
-+                    sport = ntohs(tcp->source);
-+                    dport = ntohs(tcp->dest);
-+                }
-+            }
-         }
-     }
- 
-     if (drop)
-     {
-         struct gc_arena gc = gc_new();
-+        struct buffer addrs_buf = alloc_buf_gc(128, &gc);
- 
-+        /* drop packet */
-         c->c2.buf.len = 0;
- 
--        msg(D_LOW, "Recursive routing detected, drop tun packet to %s",
--            print_link_socket_actual(c->c2.to_link_addr, &gc));
-+        if (protocol == OPENVPN_IPPROTO_UDP)
-+            buf_printf(&addrs_buf, "%s", "UDP");
-+        else if (protocol == OPENVPN_IPPROTO_TCP)
-+            buf_printf(&addrs_buf, "%s", "TCP");
-+        else
-+            buf_printf(&addrs_buf, "%d", protocol);
-+
-+        if (proto_ver == 4)
-+        {
-+            buf_printf(&addrs_buf, " %s:%d -> %s:%d",
-+                       print_in_addr_t(saddr, 0, &gc), sport,
-+                       print_in_addr_t(daddr, 0, &gc), dport);
-+        } else if (proto_ver == 6)
-+        {
-+            buf_printf(&addrs_buf, " %s:%d -> %s:%d",
-+                       print_in6_addr(saddr6, 0, &gc), sport,
-+                       print_in6_addr(daddr6, 0, &gc), dport);
-+        }
-+
-+        msg(D_LOW, "Recursive routing detected, drop packet %s. Fix your routing or consider using --allow-recursive-routing option.", BSTR(&addrs_buf));
-         gc_free(&gc);
-     }
- }
--- 
-2.7.4
 
+> @@ -1094,7 +1099,7 @@ drop_if_recursive_routing(struct context *c, struct=
+ buffer *buf)
+>          const struct openvpn_iphdr *pip;
+>=20=20
+>          /* make sure we got whole IP header */
+> -        if (BLEN(buf) < ((int) sizeof(struct openvpn_iphdr) + ip_hdr_off=
+set))
+> +        if (BLEN(buf) < ((int)sizeof(struct openvpn_iphdr) + ip_hdr_offs=
+et))
+
+In addition, these changes look funny.  The existing code style was produced
+by the scripted big code cleanup for 2.4, so there should never be a
+reason to change the style in a patch for "master".
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--suroagWEfFHnktSq
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJbDaVCAAoJEB2Cnv7KVigSf7YMAI9TH72VYJkJ759mOLUVQXos
+3HHiDlpdVgKPDxAeZyYOUsmIjCf1DRWD5OAuRw9lrBRGU1s5DNuiu1t8LO9xYd9K
+ppQG+WqBG2mhgvApVv4ULkAMH9wcDNm7lw2HkYCbRT2XGvS5XQJ5ttRb7W5q3MA8
+CPR8Gjhh84Svp53vahulJsyhQfVlZOaf5BmDZ72+3hCt+UBM5axBOVrwzM6XUJBc
+l9RQ7GtNnzElRnr7RBAgijfJJWli5qUpSaCH+5O0f5KUP1B5Se+56hyAZE66hox2
+Q+VWS0Tt9l5HP4k6SWsTlNFc7QZWY5g849oLwCkOi3vZUWvfKOA7GcfWXYJP1OVx
+QEC/sYvmIdABYVXgeO9IFa5pPgUP4deKk3EgyjwBcgd1rMuod7+YkIDSR0Zw7GOG
+RxhUXHpCUfH9lXYlFy/OTpNBEpj2t4ly9Z4ODdQMt4wq4/+FwC0QVA2zYOaTtmd3
+JxEle2v2Uw1+9XGxQrAbkG608vVR6bGj/q5Geq2o8Q==
+=ae92
+-----END PGP SIGNATURE-----
+
+--suroagWEfFHnktSq--
 
