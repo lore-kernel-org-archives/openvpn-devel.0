@@ -1,23 +1,7 @@
-References: <20180417165000.3872-1-Jason@...2390...>
- <10978590-889a-0ccc-4cb8-31c862ee565c@...1856...>
- <33fe1382-9dd6-82b4-1215-7f748e521a48@...1147...>
- <fd348cf4-8d17-24b1-cace-f238d319c550@...1227...>
- <03f8402c-a603-3405-543a-e5eaa1ebc224@...1147...>
- <1d803ca0-2f28-585c-eeca-4c64ac2d745f@...1227...>
- <d8fe4a16-fc48-f1f9-3d4d-b82a906bb322@...2080...>
- <99D61A626FDA8A4B90A270669121BE1086A96359@...2294...>
- <82af2541-5e7a-7ba3-5fea-e11f6a2aa52e@...1147...>
- <CAKuzo_j_W0Op+hN6p4muUhrdi42Vib44Vi_7zFtaG9SRMcb0-g@...278...>
- <eb1f2d00-6780-899d-7c1e-61a771350c31@...1147...>
- <99D61A626FDA8A4B90A270669121BE1086A99E72@...2294...>
- <a549cef5-4775-5b65-e160-ba9fc8e653cf@...1147...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <638c48e0-5c8b-387c-156c-51d07905fad2@...1227...>
-Date: Mon, 28 May 2018 18:18:31 +0200
-MIME-Version: 1.0
-In-Reply-To: <a549cef5-4775-5b65-e160-ba9fc8e653cf@...1147...>
-Content-Language: de-DE
-Subject: Re: [Openvpn-devel] [PATCH] Support fingerprint authentication
+From: Lev Stipakov <lev@...515...>
+Date: Tue, 29 May 2018 12:32:38 +0300
+Message-Id: <1527586358-16970-1-git-send-email-lev@...515...>
+Subject: [Openvpn-devel] [PATCH] Improve "recursive routing" warning
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -26,84 +10,177 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Jan Just Keijser <janjust@...1147...>, Simon Rozman <simon@...2293...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
+- print protocol, source/dest addresses and ports
+- mention "--allow-recursive-routing"
+- add possible usecase to manpage
 
-> 
-> 2. instead of storing a certificate on each side, wouldn't it be nice to
-> be able to store the public key only of the certificate, or perhaps even
-> a hash of the public key of the certificate?
-> To me, storing either the certificate itself is not a problem (I recall
-> Jason Donenfeld wanting to get rid of X509 certs altogether - something
-> I strongly disagree with), but storing its public key should also be
-> good - this mimicka SSH pub/priv key, so we could even re-use parts of
-> the SSH code for this. One could even imagine getting the public key for
-> a particular user out of his/her ~/.ssh/authorized_keys file.
-> Then, to make things even shorter, it was proposed to add *hashes* of
-> public keys of certificates. To me, the added value of using a 256 bit
-> hash instead of a 1024/2048 bit pubkey is limited, and I would like some
-> assurance that this indeed foolproof. Other than that, I wouldn't NACK
-> this feature, as long as it remains optional.
+Trac #843
 
-There seem to be some confusion about what is secure here and what not.
-I will give a bite more detailed example here to explain the pubkey vs
-hash check.
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ doc/openvpn.8         |  4 ++-
+ src/openvpn/forward.c | 89 +++++++++++++++++++++++++++++++++++++++++++++++----
+ 2 files changed, 86 insertions(+), 7 deletions(-)
 
-Simplified a X509 looks like this:
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 4114f40..262d4ea 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -4072,7 +4072,9 @@ notifications unless this option is enabled.
+ .TP
+ .B \-\-allow\-recursive\-routing
+ When this option is set, OpenVPN will not drop incoming tun packets
+-with same destination as host.
++with same destination as host. Could be useful when packets sent by openvpn
++itself are not subject to the routing tables that would move packets
++into the tunnel.
+ .\"*********************************************************
+ .SS Data Channel Encryption Options:
+ These options are meaningful for both Static & TLS\-negotiated key modes
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 7d9a338..77a9084 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1068,7 +1068,7 @@ read_incoming_tun(struct context *c)
+ /**
+  * Drops UDP packets which OS decided to route via tun.
+  *
+- * On Windows and OS X when netwotk adapter is disabled or
++ * On Windows and OS X when network adapter is disabled or
+  * disconnected, platform starts to use tun as external interface.
+  * When packet is sent to tun, it comes to openvpn, encapsulated
+  * and sent to routing table, which sends it again to tun.
+@@ -1080,6 +1080,11 @@ drop_if_recursive_routing(struct context *c, struct buffer *buf)
+     struct openvpn_sockaddr tun_sa;
+     int ip_hdr_offset = 0;
+ 
++    uint32_t saddr, daddr;
++    struct in6_addr saddr6, daddr6;
++    uint16_t sport, dport;
++    uint8_t protocol;
++
+     if (c->c2.to_link_addr == NULL) /* no remote addr known */
+     {
+         return;
+@@ -1105,12 +1110,38 @@ drop_if_recursive_routing(struct context *c, struct buffer *buf)
+             return;
+         }
+ 
+-        pip = (struct openvpn_iphdr *) (BPTR(buf) + ip_hdr_offset);
++        pip = (const struct openvpn_iphdr *) (BPTR(buf) + ip_hdr_offset);
+ 
+-        /* drop packets with same dest addr as gateway */
++        /* drop packets with the same dest addr as gateway */
+         if (tun_sa.addr.in4.sin_addr.s_addr == pip->daddr)
+         {
+             drop = true;
++
++            /* collect information for warning message */
++            sport = 0;
++            dport = 0;
++
++            saddr = ntohl(pip->saddr);
++            daddr = ntohl(pip->daddr);
++            protocol = pip->protocol;
++
++            /* whole packet? */
++            if (BLEN(buf) == (ip_hdr_offset + (int) (ntohs(pip->tot_len))))
++            {
++              const uint8_t *payload = BPTR(buf) + ip_hdr_offset + sizeof(struct openvpn_iphdr);
++
++              if (protocol == OPENVPN_IPPROTO_UDP)
++              {
++                const struct openvpn_udphdr *udp = (const struct openvpn_udphdr *) payload;
++                sport = ntohs(udp->source);
++                dport = ntohs(udp->dest);
++              } else if (protocol == OPENVPN_IPPROTO_TCP)
++              {
++                const struct openvpn_tcphdr *tcp = (const struct openvpn_tcphdr *) payload;
++                sport = ntohs(tcp->source);
++                dport = ntohs(tcp->dest);
++              }
++            }
+         }
+     }
+     else if (proto_ver == 6)
+@@ -1129,22 +1160,68 @@ drop_if_recursive_routing(struct context *c, struct buffer *buf)
+             return;
+         }
+ 
+-        /* drop packets with same dest addr as gateway */
++        /* drop packets with the same dest addr as gateway */
+         pip6 = (struct openvpn_ipv6hdr *) (BPTR(buf) + ip_hdr_offset);
+         if (IN6_ARE_ADDR_EQUAL(&tun_sa.addr.in6.sin6_addr, &pip6->daddr))
+         {
+             drop = true;
++
++            /* collect information for warning message */
++            sport = 0;
++            dport = 0;
++
++            saddr6 = pip6->saddr;
++            daddr6 = pip6->daddr;
++            protocol = pip6->nexthdr;
++
++            /* whole packet? */
++            if (BLEN(buf) == ((int) sizeof(struct openvpn_ipv6hdr) + ip_hdr_offset + (int) ntohs(pip6->payload_len)))
++            {
++              const uint8_t *payload = BPTR(buf) + ip_hdr_offset + sizeof(struct openvpn_ipv6hdr);
++
++              if (protocol == OPENVPN_IPPROTO_UDP)
++              {
++                const struct openvpn_udphdr *udp = (const struct openvpn_udphdr *) payload;
++                sport = ntohs(udp->source);
++                dport = ntohs(udp->dest);
++              } else if (protocol == OPENVPN_IPPROTO_TCP)
++              {
++                const struct openvpn_tcphdr *tcp = (const struct openvpn_tcphdr *) payload;
++                sport = ntohs(tcp->source);
++                dport = ntohs(tcp->dest);
++              }
++            }
+         }
+     }
+ 
+     if (drop)
+     {
+         struct gc_arena gc = gc_new();
++        struct buffer addrs_buf = alloc_buf_gc(128, &gc);
+ 
++        /* drop packet */
+         c->c2.buf.len = 0;
+ 
+-        msg(D_LOW, "Recursive routing detected, drop tun packet to %s",
+-            print_link_socket_actual(c->c2.to_link_addr, &gc));
++        if (protocol == OPENVPN_IPPROTO_UDP)
++          buf_printf(&addrs_buf, "%s", "UDP");
++        else if (protocol == OPENVPN_IPPROTO_TCP)
++          buf_printf(&addrs_buf, "%s", "TCP");
++        else
++          buf_printf(&addrs_buf, "%d", protocol);
++
++        if (proto_ver == 4)
++        {
++          buf_printf(&addrs_buf, " %s:%d -> %s:%d",
++                     print_in_addr_t(saddr, 0, &gc), sport,
++                     print_in_addr_t(daddr, 0, &gc), dport);
++        } else if (proto_ver == 6)
++        {
++           buf_printf(&addrs_buf, " %s:%d -> %s:%d",
++                     print_in6_addr(saddr6, 0, &gc), sport,
++                     print_in6_addr(daddr6, 0, &gc), dport);
++        }
++
++        msg(D_LOW, "Recursive routing detected, drop packet %s. Fix your routing or consider using --allow-recursive-routing option.", BSTR(&addrs_buf));
+         gc_free(&gc);
+     }
+ }
+-- 
+2.7.4
 
-X509Cert {
-  CN=foo.example.net
-  PUBKEY=00:aa:bb:cc
-  usage="TLSServer"
-  other attributes
-}
-Signature {
-  SigningCAHash=00:bb:cc
-  SHA1Signature=binarysting
-}
-
-On a normal CA Check, the client will do a hash over the whole of the
-X509Cert (including CN and all other attributes). Then it will fetch the
-CA that signed the certificate, gets its public key and checks if the
-signature that is appended to the certifcate is valid and signs the hash
-it calculated before.
-
-The reason that we hash the whole certificate and sign the hash and also
-check the hash against the signature instead of the pubkey is that we
-want to have the other attributes to be validated as well. If we only
-signed the pubkey, a malicious party could just edit the CN of the
-certificate and the certificate would still be valid.
-
-What is proposed here is that instead of taking the signature of the
-certificate and checking if the signature sign that hash, we just look
-if we can find the hash in our list of trusted hash.
-
-I have not check the proposol in detail but if we implment something
-like this (especially with server side support), I would strongly
-suggest verify the hash/fingerprint of the certificate instead of using
-only the pubkey. Then there are no surprises for people that are not
-intimate with X509/SSL that client can fake the CN.
-
-
-> 
-> 3. how a person gets the public key or hash of the client or server side
-> certificate to the "other side" is pretty much out of scope: it simply
-> requires "a secure channel". I am fine with that.
-> 
-> Note that browser certificate pinning is something else entirely: that
-> is an *extra* check , on top of the cert chain check, to ensure that a
-> server certificate (for, e.g. google.com) was signed by one of the
-> "pinned" CA certificates. Browsers tend to trust a large number of CA
-> certs, so this extra check makes sense there. As long as OpenVPN is not
-> configured to trust 100+ CA's then this check does not make a lot fo
-> sense in OpenVPN.
-
-For self signed certificates checking the hash against the well known
-exception list (add this certificate as exception) also becomes the only
-check.
-
-Arne
 
