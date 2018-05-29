@@ -1,6 +1,6 @@
-From: Lev Stipakov <lev@...515...>
-Date: Tue, 29 May 2018 12:32:38 +0300
-Message-Id: <1527586358-16970-1-git-send-email-lev@...515...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Tue, 29 May 2018 12:55:07 +0300
+Message-Id: <1527587707-21417-1-git-send-email-lev@...515...>
 Subject: [Openvpn-devel] [PATCH] Improve "recursive routing" warning
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
