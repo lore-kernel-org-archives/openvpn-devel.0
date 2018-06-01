@@ -1,15 +1,9 @@
-References: <a059f803-84d4-c211-55f8-d6698c9d03c1@...515...>
- <22ff855c-13e0-1445-3c26-1b69a48db5ae@...277...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <72d219d0-929b-fbaa-ebc8-5f6256c9a371@...515...>
-Date: Wed, 30 May 2018 15:25:31 +0300
+Message-Id: <1527819161.492538.1392521184.3CB7A30B@...2307...>
+From: aclion@...2404...
 MIME-Version: 1.0
-In-Reply-To: <22ff855c-13e0-1445-3c26-1b69a48db5ae@...277...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="UEefKQGVNLndAgjf4sJCvuCfmSdWJ9PbS"
-Subject: Re: [Openvpn-devel] Summary of the community meeting (Wed,
- 30th May 2018)
+Date: Thu, 31 May 2018 19:12:41 -0700
+Subject: [Openvpn-devel] OpenVPN 2.5_git fails to build linked to OpenSSL
+ v1.1.0 Works great linked to OpenSSL v1.0.2 ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,330 +12,446 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli.seppanen@...277...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---UEefKQGVNLndAgjf4sJCvuCfmSdWJ9PbS
-Content-Type: multipart/mixed; boundary="SGRNGmeV9aXbEe0tG4mKcHWQA57tJZnii";
- protected-headers="v1"
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-To: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli.seppanen@...277...>,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <72d219d0-929b-fbaa-ebc8-5f6256c9a371@...515...>
-Subject: Re: Summary of the community meeting (Wed, 30th May 2018)
-References: <a059f803-84d4-c211-55f8-d6698c9d03c1@...515...>
- <22ff855c-13e0-1445-3c26-1b69a48db5ae@...277...>
-In-Reply-To: <22ff855c-13e0-1445-3c26-1b69a48db5ae@...277...>
-
---SGRNGmeV9aXbEe0tG4mKcHWQA57tJZnii
-Content-Type: multipart/mixed;
- boundary="------------1E378D7A91C94577E66A9375"
-Content-Language: en-US
-
-This is a multi-part message in MIME format.
---------------1E378D7A91C94577E66A9375
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-Forgot the full chatlog...
+I'm building OpenVPN on Linux
 
-Il 30/05/2018 15:23, Samuli Sepp=E4nen ha scritto:
-> Hi,
->=20
-> Here's the summary of the IRC meeting.
-> ---
->=20
-> COMMUNITY MEETING
->=20
-> Place: #openvpn-meeting on irc.freenode.net
-> Date: Wednesday 30th May 2018
-> Time: 11:30 CET (9:30 UTC)
->=20
-> Planned meeting topics for this meeting were here:
->=20
-> <https://community.openvpn.net/openvpn/wiki/Topics-2018-05-23>
->=20
-> The next meeting has not been scheduled yet.
->=20
-> Your local meeting time is easy to check from services such as
->=20
-> <http://www.timeanddate.com/worldclock>
->=20
-> SUMMARY
->=20
-> cron2, lev, mattock and syzzer participated in this meeting.
->=20
-> --
->=20
-> Talked about OpenVPN 2 code formatting guidelines, in particular whether
-> we should have whitespace after cast. Noted that we don't have a rule
-> for that in Uncrustify. As dazo and ordex both have strong feelings
-> about this and were not present it was decided to postpone this topic.
->=20
-> --
->=20
-> Discussed the upcoming tap-windows6 release. Mattock has created several
-> Windows Server instances in EC2 (2008r2, 2012r2, 2016) for the purposes
-> of testing tap-windows6. Windows 7 and (physical) Windows 10 instances
-> will be created later. A new tap-windows6 builder instance is already
-> functional and works with jkunkee's tap-windows6 patches. Mattock will
-> grant cron2 access to it through the community VPN.
->=20
-> Mattock will also look into creating a couple of additional Windows
-> instances where test-signed drivers are allowed. This is done to avoid
-> having to switch test-signing on and off. This helps testing pre-release
-> versions of tap-windows6.
->=20
-> Tap-windows6 (and later OpenVPN) smoketesting will be automated using
-> Powershell Remoting (via SSH or WinRM) and openvpn-windows-test.
-> Smoketesting will include tap-windows6 installation/loading into kernel
-> as well as Authenticode signatures tests. Lev volunteered to help in
-> this test automation work.
->=20
-> Agreed that release date on 20th June 2018 is still reasonable.
->=20
-> ---
->=20
-> Noted that NDIS 6.30 support which jkunkee's patchset brings to
-> tap-windows6 would allow us to create a proper tun driver for Windows.
->=20
-> --
->=20
-> Full chatlog attached.
->=20
+	cd /home/src/openvpn
+	git log | head
+		commit 1394192b210cb3c6624a7419bcf3ff966742e79b
+		Author: Gert Doering <gert@...1296...>
+		Date:   Sat Apr 14 09:26:17 2018 +0200
+
+		    Fix potential double-free() in Interactive Service (CVE-2018-9336)
+
+		    Malformed input data on the service pipe towards the OpenVPN interact=
+ive
+		    service (normally used by the OpenVPN GUI to request openvpn instances
+		    from the service) can result in a double free() in the error handling=
+ code.
+
+For SSL prereqs, I built & installed both
+
+	OpenSSL 1.0.2o  27 Mar 2018
+
+installed into
+
+	/opt/ssl10
+
+and
+
+	OpenSSL 1.1.0h  27 Mar 2018
+
+installed into
+
+	/opt/ssl11
 
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+If I build OpenVPN with OpenSSL version 1.0.0,
 
-irc freenode net: mattock
+	cd /home/src/openvpn
+	autoreconf -fi
+	export OPENSSL_CFLAGS=3D"-I/usr/local/include -I/opt/ssl10/include -I/usr/=
+include"
+	export OPENSSL_LIBS=3D"-L/opt/ssl10/lib64 -Wl,-rpath,/opt/ssl10/lib64 -lss=
+l -lcrypto"
+	./configure --with-crypto-library=3Dopenssl --enable-shared --disable-stat=
+ic --prefix=3D/opt/openvpn --libdir=3D/opt/openvpn/lib64
+	make
+	make install
 
---------------1E378D7A91C94577E66A9375
-Content-Type: text/plain; charset=UTF-8;
- name="openvpn_irc_meeting_chatlog_2018-05-30.txt"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: attachment;
- filename="openvpn_irc_meeting_chatlog_2018-05-30.txt"
+it builds & runs with no error, linked to the right version OpenSSL libs,
 
-(12:29:11) mattock: hi
-(12:29:46) cron2_: early bird :)
-(12:29:47) cron2_: ho!
-(12:30:20) syzzer: morning :)
-(12:30:37) lev__: hello
-(12:31:24) mattock: any topics besides tap-windows6? :P
-(12:31:45) lev__: whitespace after cast
-(12:32:01) cron2_: since syzzer is here, this makes sense :)
-(12:32:08) cron2_: if dazo shows up, CVE...
-(12:34:17) mattock: whitespace after cast first?
-(12:34:37) cron2_: ok
-(12:35:48) syzzer: sure
-(12:35:54) syzzer: I don't care :)
-(12:36:58) syzzer: we our company we seem to be converging to no-space-be=
-tween-cast-and-variable, so that would be slightly easier for me
-(12:37:08) lev__: so, shall we decide if we put whitespace after cast or =
-not, then add an option to uncrustify
-(12:37:28) syzzer: but otherwise, I leave this to the people with an opin=
-ion and will follow what you decide :)
-(12:38:10) syzzer: hm, no ordex around?
-(12:38:10) ***cron2_ tends to use either way depending on "what is casted=
- and does it help readability"... so if we decide something, I'll have to=
- adjust
-(12:38:41) syzzer: I recall he has an opinion about this
-(12:39:31) cron2_: he wrote about using uncrustify sp_after_cast option, =
-but it wasn't totally clear if this was "if we go there, here's the optio=
-n" or "we should do this"...
-(12:39:49) cron2_: mattock: do you have some sort of internal messenger t=
-o find dazo and ordex?
-(12:40:20) lev__: dazo told that he will be mostly offline during those d=
-ays
-(12:40:43) lev__: (just sent a message to ordex)
-(12:42:20) mattock: ordex said he can't make this meeting
-(12:42:25) cron2_: oh
-(12:43:35) lev__: so he has refered to this one https://raw.githubusercon=
-tent.com/uncrustify/uncrustify/master/documentation/htdocs/ben.cfg.txt=20
-(12:44:05) lev__: sp_after_cast =3D remove
-(12:44:29) cron2_: how intuitively named :)
-(12:44:48) cron2_: but if dazo and ordex are not here, we should postpone=
- this one... both have strong feelings
-(12:48:43) cron2_: (as a side note, NordVPN's mail provider really is an =
-abomination from hell wrt PGP...)
-(12:48:45) mattock: sounds good to me
-(12:49:06) lev__: ok lets postpone
-(12:49:07) ***cron2_ just received a plain mail telling me to "pick up a =
-secure mail from https://hushmail.com/.../"
-(12:51:44) mattock: tap-windows6 next?
-(12:53:31) cron2_: yep
-(12:53:57) mattock: ok, update from my end
-(12:54:16) mattock: I've setup a bunch of Windows Servers for testing/smo=
-ketesting tap-windows6
-(12:54:29) mattock: plus a new build instance that works with jkunkee's P=
-Rs
-(12:55:08) mattock: I will push the guys at the office to setup at least =
-one Windows 7 instances and one really strict Windows 10 instance
-(12:55:26) mattock: win10 will be a real PC (fresh install of rev.1607 + =
-secure boot on)
-(12:55:29) ***cron2_ is totally amazed :)
-(12:55:59) mattock: they're all in Puppet and in total control
-(12:56:15) mattock: I intend to look into Powershell remoting also, so th=
-at we can trigger smoketests on each of them automatically
-(12:56:25) mattock: basically to run openvpn-windows-test
-(12:56:46) cron2_: that would be a major milestone forward
-(12:56:48) mattock: yeah
-(12:56:58) lev__: mattock: let me know if you need any help with scriptin=
-g
-(12:57:21) mattock: lev__: if you feel like writing Powershell that'd be =
-great!
-(12:57:34) mattock: I'm pretty good with it nowadays, but more hands is a=
-lways good
-(12:58:02) mattock: I can probably also grant access to some of these ins=
-tances to select community developers
-(12:58:18) mattock: as needed
-(12:59:18) mattock: the nodes are also disposable, so if they break they =
-can be rebuilt easily
-(12:59:47) mattock: so my plan for going forward is to look into the "att=
-estation signing" thing to get an idea what it requires as far as testing=
- is concerned
-(12:59:58) mattock: then I will look more into the test automation part
-(13:00:18) mattock: we will also need changes to the Windows installer (a=
-ttestation signed drivers won't work on Windows 7/8 afaik)
-(13:00:39) mattock: all of this can be tested using the test instances
-(13:01:00) lev__: how do we build https://github.com/OpenVPN/tap-windows6=
- ? we could probably setup build job on our internal CI
-(13:01:01) vpnHelper: Title: GitHub - OpenVPN/tap-windows6: Windows TAP d=
-river (NDIS 6) (at github.com)
-(13:01:07) mattock: we may also need a couple of instances where test-sig=
-ned drivers are allowed (for tap-windows6 tests)
-(13:01:25) cron2_: lev__: well, this is what mattock is doing right now :=
-)
-(13:01:55) mattock: lev__: we could also use Appveyor on GitHub
-(13:02:00) mattock: for basic CI
-(13:02:32) mattock: it can also generate artefacts from the builds
-(13:02:47) mattock: I haven't used it myself, but chipitsine has added su=
-pport for it to openvpn-build at least
-(13:05:49) cron2_: so - is it realistic to aim for June20 for the next re=
-lease?
-(13:06:17) mattock: at the moment it looks like
-(13:06:47) cron2_: NordVPN wants to release next week, but I have no idea=
- whether they can get the signing right...
-(13:07:06) cron2_: VyprVPN has not talked to me again, and neither has Ci=
-sco
-(13:07:16) mattock: is NordVPN big?
-(13:07:29) mattock: if not, I'm pretty sure they don't have Win10 signing=
- in order
-(13:07:38) cron2_: no idea.  they have a nice and shiny web site...
-(13:08:01) lev__: mattock: how about our own Connect client? Isn't it als=
-o "customer" of tap driver ?=20
-(13:08:03) cron2_: they managed to sign the "last" tap6 driver themselves=
-, but that might have been "the old rules, and the old certificates"
-(13:08:10) cron2_: lev__: as far as I know, yes
-(13:08:33) mattock: lev__: we should definite reuse the new Windows test =
-framework for our products
-(13:08:39) cron2_: who is maintaining "Connect for windows" these days?
-(13:09:05) mattock: I may have to create separate tap-windows6 drivers fo=
-r Connet
-(13:09:08) mattock: Connect
-(13:09:20) lev__: cron2_: I produce builds at least
-(13:09:20) mattock: that's just for a minor name change
-(13:09:36) mattock: which makes it rather silly tbh, but maybe it is unav=
-oidable
-(13:09:45) lev__: and fix some bugs
-(13:09:46) cron2_: mattock: why?
-(13:10:08) mattock: so that Connect's tap-windows6 driver can co-exist wi=
-th community version
-(13:10:18) mattock: i.e. uninstall does not remove the community version
-(13:10:29) cron2_: that makes installer maintenance way easier indeed
-(13:11:20) lev__: mattock: can this be a build parameter ?
-(13:11:41) mattock: changing the name is not a problem, except that then =
-we need new signatures
-(13:13:34) syzzer: we should really look into using the VPN API on W10+
-(13:14:11) syzzer: although that will be more limited that the current ta=
-p-windows I guess
-(13:14:56) lev__: syzzer: we are working on it internally
-(13:15:09) lev__: and API is not exactly production quality
-(13:18:14) syzzer: that's too bad...
-(13:21:28) mattock: when the API matures a bit people may actually be abl=
-e to use it
-(13:21:31) cron2_: just as a side note (so that it has been said) - newer=
- NDIS versions (I think 6.30) also support non-ethernet drivers - so we c=
-ould have proper tun driver...
-(13:21:55) mattock: jkunkee's patchset adds NDIS 6.30 support (for arm64 =
-primarily)
-(13:22:08) cron2_: yes, but still "ethernet only"
-(13:22:14) mattock: yep
-(13:22:28) cron2_: (because the "real tun mode" thing is a much bigger ch=
-ange)
-(13:22:53) cron2_: but in that context I've tried to find out what the di=
-ffence is between NDIS versions, and found that you can have different me=
-dia types now, ethernet just being one of them
-(13:26:36) mattock: anyways, do we have anything more about tap-windows6?=
+	ldd /opt/openvpn/sbin/openvpn | egrep "ssl|crypto"
+	        libssl.so.1.0.0 =3D> /opt/ssl10/lib64/libssl.so.1.0.0 (0x00007fdc4=
+bf6a000)
+	        libcrypto.so.1.0.0 =3D> /opt/ssl10/lib64/libcrypto.so.1.0.0 (0x000=
+07fdc4baf1000)
 
-(13:26:44) mattock: June 20th seems reasonable at the moment
-(13:26:55) mattock: lots of test automation work ahead and bureaucratic p=
-ains with Microsoft
-(13:27:05) mattock: lev and I can tackle those
-(13:27:27) mattock: cron2: I'll try to get the tapbuilder instance into c=
-ommunity VPN tomorrow
-(13:28:31) cron2_: mattock: thanks :-)
-(13:28:32) mattock: cron2: any clue what operating systems we should have=
- "test-signing enable" instances for?
-(13:28:49) cron2_: I'll keep poking dazo about the CVE and trying to coor=
-dinate with other VPN providers...
-(13:29:21) cron2_: wrt "test-signing enable" - those are the ones that te=
-st the unsigned driver?
-(13:29:24) mattock: yes
-(13:29:30) mattock: for patch development purposes
-(13:29:57) mattock: the other test instances would be closer to end-user =
-experience and would allow testing signatures as well
-(13:30:05) cron2_: I think we must have W7, W10/latest, and maybe the cor=
-responding server instances
-(13:30:18) mattock: is this tied to NDIS version?
-(13:30:27) cron2_: if it works on W7 and W10, 8.0 and 8.1 "should" be fin=
-e
-(13:30:48) mattock: I could check which server instances have roughly the=
- same setup
-(13:30:56) mattock: setting up those in EC2 is the easiest approach for m=
-e
-(13:31:06) mattock: otherwise I need to coordinate with the guys at the o=
-ffice and that may take a bit of time
-(13:31:24) cron2_: yeah
-(13:31:41) mattock: anyways, we have a fairly solid plan moving forward
-(13:31:43) mattock: meeting concluded?
-(13:31:53) cron2_: time is over (read: kids are complaining that they are=
- hungry - holiday here, so kids @ home).  syzzer: short question - how's =
-your time availabilty for reviews?
-(13:32:02) cron2_: I have a few simple things that have crypto bits...
-(13:32:27) cron2_: this one especially: https://patchwork.openvpn.net/pat=
-ch/329/
-(13:32:28) vpnHelper: Title: [Openvpn-devel] Pass the hash without the Di=
-gestInfo header to NCryptSignHash() - Patchwork (at patchwork.openvpn.net=
-)
-(13:32:33) cron2_: mattock: yes
-(13:35:27) mattock: =C2=A0\o/
-(13:35:31) mattock: roughly on time :)
-(13:36:46) mattock: I will write the summary later, got stuck at lunch
+	/opt/openvpn/sbin/openvpn
+		OpenVPN 2.5_git [git:master/1394192b210cb3c6] x86_64-pc-linux-gnu [SSL (O=
+penSSL)] [LZO] [LZ4] [EPOLL] [AEAD] built on May 31 2018
+		library versions: OpenSSL 1.0.2o  27 Mar 2018, LZO 2.10
+		...
 
---------------1E378D7A91C94577E66A9375--
+When I switch to the OpenSSL version 1.1.1 libs, changing only the _FLAGS/_=
+LIBS spec,
 
---SGRNGmeV9aXbEe0tG4mKcHWQA57tJZnii--
+	-	export OPENSSL_CFLAGS=3D"-I/usr/local/include -I/opt/ssl11/include -I/us=
+r/include"
+	-	export OPENSSL_LIBS=3D"-L/opt/ssl11/lib64 -Wl,-rpath,/opt/ssl11/lib64 -l=
+ssl -lcrypto"
+	+	export OPENSSL_CFLAGS=3D"-I/usr/local/include -I/opt/ssl11/include -I/us=
+r/include"
+	+	export OPENSSL_LIBS=3D"-L/opt/ssl11/lib64 -Wl,-rpath,/opt/ssl11/lib64 -l=
+ssl -lcrypto"
 
---UEefKQGVNLndAgjf4sJCvuCfmSdWJ9PbS
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+if still configures OK, but `make` dies,
 
------BEGIN PGP SIGNATURE-----
+	...
+	/usr/bin/gcc-8 -DHAVE_CONFIG_H -I. -I../.. -I../../include  -I../../includ=
+e -I../../src/compat -O3 -Wall -fstack-protector-strong -funwind-tables -fa=
+synchronous-unwind-tables -fmessage-length=3D0 -grecord-gcc-switches -D_FOR=
+TIFY_SOURCE=3D2  -I/usr/local/include  -I/opt/ssl11/include -I/usr/include =
+   -DPLUGIN_LIBDIR=3D\"/opt/openvpn/lib64/openvpn/plugins\"  -Wall -Wno-unu=
+sed-parameter -Wno-unused-function -O3 -Wall -fstack-protector-strong -funw=
+ind-tables -fasynchronous-unwind-tables -fmessage-length=3D0 -grecord-gcc-s=
+witches -fPIC -DPIC -D_GNU_SOURCE -fno-strict-aliasing -Wall -std=3Dc99 -MT=
+ ssl_openssl.o -MD -MP -MF .deps/ssl_openssl.Tpo -c -o ssl_openssl.o ssl_op=
+enssl.c
+	socket.c: In function =E2=80=98print_link_socket_actual_ex=E2=80=99:
+	socket.c:2772:14: warning: unused variable =E2=80=98ifname=E2=80=99 [-Wunu=
+sed-variable]
+	         char ifname[IF_NAMESIZE] =3D "[undef]";
+	              ^~~~~~
+	ssl_openssl.c: In function =E2=80=98tls_init_lib=E2=80=99:
+	ssl_openssl.c:74:5: warning: implicit declaration of function =E2=80=98SSL=
+_library_init=E2=80=99; did you mean =E2=80=98SSL_in_init=E2=80=99? [-Wimpl=
+icit-function-declaration]
+	     SSL_library_init();
+	     ^~~~~~~~~~~~~~~~
+	     SSL_in_init
+	ssl_openssl.c:76:5: warning: implicit declaration of function =E2=80=98SSL=
+_load_error_strings=E2=80=99; did you mean =E2=80=98ERR_lib_error_string=E2=
+=80=99? [-Wimplicit-function-declaration]
+	     SSL_load_error_strings();
+	     ^~~~~~~~~~~~~~~~~~~~~~
+	     ERR_lib_error_string
+	mv -f .deps/route.Tpo .deps/route.Po
+	/usr/bin/gcc-8 -DHAVE_CONFIG_H -I. -I../.. -I../../include  -I../../includ=
+e -I../../src/compat -O3 -Wall -fstack-protector-strong -funwind-tables -fa=
+synchronous-unwind-tables -fmessage-length=3D0 -grecord-gcc-switches -D_FOR=
+TIFY_SOURCE=3D2  -I/usr/local/include  -I/opt/ssl11/include -I/usr/include =
+   -DPLUGIN_LIBDIR=3D\"/opt/openvpn/lib64/openvpn/plugins\"  -Wall -Wno-unu=
+sed-parameter -Wno-unused-function -O3 -Wall -fstack-protector-strong -funw=
+ind-tables -fasynchronous-unwind-tables -fmessage-length=3D0 -grecord-gcc-s=
+witches -fPIC -DPIC -D_GNU_SOURCE -fno-strict-aliasing -Wall -std=3Dc99 -MT=
+ ssl_mbedtls.o -MD -MP -MF .deps/ssl_mbedtls.Tpo -c -o ssl_mbedtls.o ssl_mb=
+edtls.c
+	ssl_openssl.c:78:5: warning: implicit declaration of function =E2=80=98Ope=
+nSSL_add_all_algorithms=E2=80=99; did you mean =E2=80=98OpenSSL_add_ssl_alg=
+orithms=E2=80=99? [-Wimplicit-function-declaration]
+	     OpenSSL_add_all_algorithms();
+	     ^~~~~~~~~~~~~~~~~~~~~~~~~~
+	     OpenSSL_add_ssl_algorithms
+	ssl_openssl.c: In function =E2=80=98tls_free_lib=E2=80=99:
+	ssl_openssl.c:87:5: warning: implicit declaration of function =E2=80=98EVP=
+_cleanup=E2=80=99; did you mean =E2=80=98EVP_PBE_cleanup=E2=80=99? [-Wimpli=
+cit-function-declaration]
+	     EVP_cleanup();
+	     ^~~~~~~~~~~
+	     EVP_PBE_cleanup
+	ssl_openssl.c:89:5: warning: implicit declaration of function =E2=80=98ERR=
+_free_strings=E2=80=99; did you mean =E2=80=98ERR_load_strings=E2=80=99? [-=
+Wimplicit-function-declaration]
+	     ERR_free_strings();
+	     ^~~~~~~~~~~~~~~~
+	     ERR_load_strings
+	ssl_openssl.c: In function =E2=80=98tls_ctx_check_cert_time=E2=80=99:
+	ssl_openssl.c:476:25: warning: implicit declaration of function =E2=80=98X=
+509_get_notBefore=E2=80=99; did you mean =E2=80=98X509_getm_notBefore=E2=80=
+=99? [-Wimplicit-function-declaration]
+	     ret =3D X509_cmp_time(X509_get_notBefore(cert), NULL);
+	                         ^~~~~~~~~~~~~~~~~~
+	                         X509_getm_notBefore
+	ssl_openssl.c:476:25: warning: passing argument 1 of =E2=80=98X509_cmp_tim=
+e=E2=80=99 makes pointer from integer without a cast [-Wint-conversion]
+	     ret =3D X509_cmp_time(X509_get_notBefore(cert), NULL);
+	                         ^~~~~~~~~~~~~~~~~~~~~~~~
+	In file included from /opt/ssl11/include/openssl/pem.h:17,
+	                 from /opt/ssl11/include/openssl/ssl.h:55,
+	                 from ssl_openssl.h:32,
+	                 from ssl_backend.h:36,
+	                 from ssl_openssl.c:44:
+	/opt/ssl11/include/openssl/x509.h:474:36: note: expected =E2=80=98const AS=
+N1_TIME *=E2=80=99 {aka =E2=80=98const struct asn1_string_st *=E2=80=99} bu=
+t argument is of type =E2=80=98int=E2=80=99
+	 int X509_cmp_time(const ASN1_TIME *s, time_t *t);
+	                   ~~~~~~~~~~~~~~~~~^
+	ssl_openssl.c:486:25: warning: implicit declaration of function =E2=80=98X=
+509_get_notAfter=E2=80=99; did you mean =E2=80=98X509_getm_notAfter=E2=80=
+=99? [-Wimplicit-function-declaration]
+	     ret =3D X509_cmp_time(X509_get_notAfter(cert), NULL);
+	                         ^~~~~~~~~~~~~~~~~
+	                         X509_getm_notAfter
+	ssl_openssl.c:486:25: warning: passing argument 1 of =E2=80=98X509_cmp_tim=
+e=E2=80=99 makes pointer from integer without a cast [-Wint-conversion]
+	     ret =3D X509_cmp_time(X509_get_notAfter(cert), NULL);
+	                         ^~~~~~~~~~~~~~~~~~~~~~~
+	In file included from /opt/ssl11/include/openssl/pem.h:17,
+	                 from /opt/ssl11/include/openssl/ssl.h:55,
+	                 from ssl_openssl.h:32,
+	                 from ssl_backend.h:36,
+	                 from ssl_openssl.c:44:
+	/opt/ssl11/include/openssl/x509.h:474:36: note: expected =E2=80=98const AS=
+N1_TIME *=E2=80=99 {aka =E2=80=98const struct asn1_string_st *=E2=80=99} bu=
+t argument is of type =E2=80=98int=E2=80=99
+	 int X509_cmp_time(const ASN1_TIME *s, time_t *t);
+	                   ~~~~~~~~~~~~~~~~~^
+	In file included from errlevel.h:27,
+	                 from ssl_openssl.c:39:
+	ssl_openssl.c: In function =E2=80=98tls_ctx_load_dh_params=E2=80=99:
+	ssl_openssl.c:542:13: warning: implicit declaration of function =E2=80=98D=
+H_size=E2=80=99; did you mean =E2=80=98dysize=E2=80=99? [-Wimplicit-functio=
+n-declaration]
+	         8 * DH_size(dh));
+	             ^~~~~~~
+	error.h:151:67: note: in definition of macro =E2=80=98msg=E2=80=99
+	 #define msg(flags, ...) do { if (msg_test(flags)) {x_msg((flags), __VA_AR=
+GS__);} EXIT_FATAL(flags); } while (false)
+	                                                                   ^~~~~~~=
+~~~~
+	ssl_openssl.c:544:5: warning: implicit declaration of function =E2=80=98DH=
+_free=E2=80=99; did you mean =E2=80=98gc_free=E2=80=99? [-Wimplicit-functio=
+n-declaration]
+	     DH_free(dh);
+	     ^~~~~~~
+	     gc_free
+	ssl_openssl.c: In function =E2=80=98tls_ctx_load_ecdh_params=E2=80=99:
+	ssl_openssl.c:570:9: warning: implicit declaration of function =E2=80=98SS=
+L_CTX_set_ecdh_auto=E2=80=99; did you mean =E2=80=98SSL_CTX_set_dh_auto=E2=
+=80=99? [-Wimplicit-function-declaration]
+	         SSL_CTX_set_ecdh_auto(ctx->ctx, 1);
+	         ^~~~~~~~~~~~~~~~~~~~~
+	         SSL_CTX_set_dh_auto
+	ssl_openssl.c: In function =E2=80=98openvpn_extkey_rsa_finish=E2=80=99:
+	ssl_openssl.c:1041:30: warning: implicit declaration of function =E2=80=98=
+RSA_get_method=E2=80=99; did you mean =E2=80=98SSL_get_ssl_method=E2=80=99?=
+ [-Wimplicit-function-declaration]
+	     const RSA_METHOD *meth =3D RSA_get_method(rsa);
+	                              ^~~~~~~~~~~~~~
+	                              SSL_get_ssl_method
+	ssl_openssl.c:1041:30: warning: initialization of =E2=80=98const RSA_METHO=
+D *=E2=80=99 {aka =E2=80=98const struct rsa_meth_st *=E2=80=99} from =E2=80=
+=98int=E2=80=99 makes pointer from integer without a cast [-Wint-conversion]
+	ssl_openssl.c:1042:5: warning: implicit declaration of function =E2=80=98R=
+SA_meth_free=E2=80=99; did you mean =E2=80=98BIO_meth_free=E2=80=99? [-Wimp=
+licit-function-declaration]
+	     RSA_meth_free((RSA_METHOD *)meth);
+	     ^~~~~~~~~~~~~
+	     BIO_meth_free
+	ssl_openssl.c: In function =E2=80=98rsa_priv_enc=E2=80=99:
+	ssl_openssl.c:1079:24: warning: implicit declaration of function =E2=80=98=
+RSA_size=E2=80=99; did you mean =E2=80=98HMAC_size=E2=80=99? [-Wimplicit-fu=
+nction-declaration]
+	     unsigned int len =3D RSA_size(rsa);
+	                        ^~~~~~~~
+	                        HMAC_size
+	ssl_openssl.c:1082:20: error: =E2=80=98RSA_PKCS1_PADDING=E2=80=99 undeclar=
+ed (first use in this function); did you mean =E2=80=98i2d_PKCS12_SAFEBAG=
+=E2=80=99?
+	     if (padding !=3D RSA_PKCS1_PADDING)
+	                    ^~~~~~~~~~~~~~~~~
+	                    i2d_PKCS12_SAFEBAG
+	ssl_openssl.c:1082:20: note: each undeclared identifier is reported only o=
+nce for each function it appears in
+	mv -f .deps/ssl_mbedtls.Tpo .deps/ssl_mbedtls.Po
+	/usr/bin/gcc-8 -DHAVE_CONFIG_H -I. -I../.. -I../../include  -I../../includ=
+e -I../../src/compat -O3 -Wall -fstack-protector-strong -funwind-tables -fa=
+synchronous-unwind-tables -fmessage-length=3D0 -grecord-gcc-switches -D_FOR=
+TIFY_SOURCE=3D2  -I/usr/local/include  -I/opt/ssl11/include -I/usr/include =
+   -DPLUGIN_LIBDIR=3D\"/opt/openvpn/lib64/openvpn/plugins\"  -Wall -Wno-unu=
+sed-parameter -Wno-unused-function -O3 -Wall -fstack-protector-strong -funw=
+ind-tables -fasynchronous-unwind-tables -fmessage-length=3D0 -grecord-gcc-s=
+witches -fPIC -DPIC -D_GNU_SOURCE -fno-strict-aliasing -Wall -std=3Dc99 -MT=
+ ssl_verify.o -MD -MP -MF .deps/ssl_verify.Tpo -c -o ssl_verify.o ssl_verif=
+y.c
+	In file included from ssl_openssl.c:55:
+	openssl_compat.h:661:46: error: =E2=80=98RSA_F_RSA_EAY_PRIVATE_ENCRYPT=E2=
+=80=99 undeclared (first use in this function); did you mean =E2=80=98RSA_F=
+_RSA_OSSL_PRIVATE_ENCRYPT=E2=80=99?
+	 #define RSA_F_RSA_OSSL_PRIVATE_ENCRYPT       RSA_F_RSA_EAY_PRIVATE_ENCRYPT
+	                                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	/opt/ssl11/include/openssl/err.h:29:59: note: in definition of macro =E2=
+=80=98ERR_PUT_error=E2=80=99
+	 #  define ERR_PUT_error(a,b,c,d,e)        ERR_put_error(a,b,c,d,e)
+	                                                           ^
+	ssl_openssl.c:1084:9: note: in expansion of macro =E2=80=98RSAerr=E2=80=99
+	         RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE=
+);
+	         ^~~~~~
+	ssl_openssl.c:1084:16: note: in expansion of macro =E2=80=98RSA_F_RSA_OSSL=
+_PRIVATE_ENCRYPT=E2=80=99
+	         RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE=
+);
+	                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	ssl_openssl.c:1084:48: error: =E2=80=98RSA_R_UNKNOWN_PADDING_TYPE=E2=80=99=
+ undeclared (first use in this function); did you mean =E2=80=98SSL_R_UNKNO=
+WN_ALERT_TYPE=E2=80=99?
+	         RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE=
+);
+	                                                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+	/opt/ssl11/include/openssl/err.h:29:61: note: in definition of macro =E2=
+=80=98ERR_PUT_error=E2=80=99
+	 #  define ERR_PUT_error(a,b,c,d,e)        ERR_put_error(a,b,c,d,e)
+	                                                             ^
+	ssl_openssl.c:1084:9: note: in expansion of macro =E2=80=98RSAerr=E2=80=99
+	         RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE=
+);
+	         ^~~~~~
+	ssl_openssl.c: In function =E2=80=98tls_ctx_use_external_rsa_key=E2=80=99:
+	ssl_openssl.c:1106:16: warning: implicit declaration of function =E2=80=98=
+RSA_meth_new=E2=80=99; did you mean =E2=80=98BIO_meth_new=E2=80=99? [-Wimpl=
+icit-function-declaration]
+	     rsa_meth =3D RSA_meth_new("OpenVPN external private key RSA Method",
+	                ^~~~~~~~~~~~
+	                BIO_meth_new
+	ssl_openssl.c:1107:29: error: =E2=80=98RSA_METHOD_FLAG_NO_CHECK=E2=80=99 u=
+ndeclared (first use in this function); did you mean =E2=80=98SSL_SECOP_SIG=
+ALG_CHECK=E2=80=99?
+	                             RSA_METHOD_FLAG_NO_CHECK);
+	                             ^~~~~~~~~~~~~~~~~~~~~~~~
+	                             SSL_SECOP_SIGALG_CHECK
+	ssl_openssl.c:1109:5: warning: implicit declaration of function =E2=80=98R=
+SA_meth_set_pub_enc=E2=80=99; did you mean =E2=80=98BIO_meth_set_puts=E2=80=
+=99? [-Wimplicit-function-declaration]
+	     RSA_meth_set_pub_enc(rsa_meth, rsa_pub_enc);
+	     ^~~~~~~~~~~~~~~~~~~~
+	     BIO_meth_set_puts
+	ssl_openssl.c:1110:5: warning: implicit declaration of function =E2=80=98R=
+SA_meth_set_pub_dec=E2=80=99; did you mean =E2=80=98BIO_meth_set_puts=E2=80=
+=99? [-Wimplicit-function-declaration]
+	     RSA_meth_set_pub_dec(rsa_meth, rsa_pub_dec);
+	     ^~~~~~~~~~~~~~~~~~~~
+	     BIO_meth_set_puts
+	ssl_openssl.c:1111:5: warning: implicit declaration of function =E2=80=98R=
+SA_meth_set_priv_enc=E2=80=99; did you mean =E2=80=98BIO_meth_set_write=E2=
+=80=99? [-Wimplicit-function-declaration]
+	     RSA_meth_set_priv_enc(rsa_meth, rsa_priv_enc);
+	     ^~~~~~~~~~~~~~~~~~~~~
+	     BIO_meth_set_write
+	ssl_openssl.c:1112:5: warning: implicit declaration of function =E2=80=98R=
+SA_meth_set_priv_dec=E2=80=99; did you mean =E2=80=98BIO_meth_set_write=E2=
+=80=99? [-Wimplicit-function-declaration]
+	     RSA_meth_set_priv_dec(rsa_meth, rsa_priv_dec);
+	     ^~~~~~~~~~~~~~~~~~~~~
+	     BIO_meth_set_write
+	ssl_openssl.c:1113:5: warning: implicit declaration of function =E2=80=98R=
+SA_meth_set_init=E2=80=99; did you mean =E2=80=98EVP_MD_meth_set_init=E2=80=
+=99? [-Wimplicit-function-declaration]
+	     RSA_meth_set_init(rsa_meth, NULL);
+	     ^~~~~~~~~~~~~~~~~
+	     EVP_MD_meth_set_init
+	ssl_openssl.c:1114:5: warning: implicit declaration of function =E2=80=98R=
+SA_meth_set_finish=E2=80=99; did you mean =E2=80=98BIO_meth_set_gets=E2=80=
+=99? [-Wimplicit-function-declaration]
+	     RSA_meth_set_finish(rsa_meth, openvpn_extkey_rsa_finish);
+	     ^~~~~~~~~~~~~~~~~~~
+	     BIO_meth_set_gets
+	ssl_openssl.c:1115:5: warning: implicit declaration of function =E2=80=98R=
+SA_meth_set0_app_data=E2=80=99; did you mean =E2=80=98SSL_CTX_set_app_data=
+=E2=80=99? [-Wimplicit-function-declaration]
+	     RSA_meth_set0_app_data(rsa_meth, NULL);
+	     ^~~~~~~~~~~~~~~~~~~~~~
+	     SSL_CTX_set_app_data
+	ssl_openssl.c:1118:11: warning: implicit declaration of function =E2=80=98=
+RSA_new=E2=80=99; did you mean =E2=80=98SSL_new=E2=80=99? [-Wimplicit-funct=
+ion-declaration]
+	     rsa =3D RSA_new();
+	           ^~~~~~~
+	           SSL_new
+	ssl_openssl.c:1118:9: warning: assignment to =E2=80=98RSA *=E2=80=99 {aka =
+=E2=80=98struct rsa_st *=E2=80=99} from =E2=80=98int=E2=80=99 makes pointer=
+ from integer without a cast [-Wint-conversion]
+	     rsa =3D RSA_new();
+	         ^
+	ssl_openssl.c:1128:5: warning: implicit declaration of function =E2=80=98R=
+SA_get0_key=E2=80=99; did you mean =E2=80=98SSL_get0_dane=E2=80=99? [-Wimpl=
+icit-function-declaration]
+	     RSA_get0_key(pub_rsa, &n, &e, NULL);
+	     ^~~~~~~~~~~~
+	     SSL_get0_dane
+	ssl_openssl.c:1129:5: warning: implicit declaration of function =E2=80=98R=
+SA_set0_key=E2=80=99; did you mean =E2=80=98SSL_set_bio=E2=80=99? [-Wimplic=
+it-function-declaration]
+	     RSA_set0_key(rsa, BN_dup(n), BN_dup(e), NULL);
+	     ^~~~~~~~~~~~
+	     SSL_set_bio
+	ssl_openssl.c:1129:23: warning: implicit declaration of function =E2=80=98=
+BN_dup=E2=80=99; did you mean =E2=80=98OBJ_dup=E2=80=99? [-Wimplicit-functi=
+on-declaration]
+	     RSA_set0_key(rsa, BN_dup(n), BN_dup(e), NULL);
+	                       ^~~~~~
+	                       OBJ_dup
+	ssl_openssl.c:1130:5: warning: implicit declaration of function =E2=80=98R=
+SA_set_flags=E2=80=99; did you mean =E2=80=98BIO_set_flags=E2=80=99? [-Wimp=
+licit-function-declaration]
+	     RSA_set_flags(rsa, RSA_flags(rsa) | RSA_FLAG_EXT_PKEY);
+	     ^~~~~~~~~~~~~
+	     BIO_set_flags
+	ssl_openssl.c:1130:24: warning: implicit declaration of function =E2=80=98=
+RSA_flags=E2=80=99; did you mean =E2=80=98ifr_flags=E2=80=99? [-Wimplicit-f=
+unction-declaration]
+	     RSA_set_flags(rsa, RSA_flags(rsa) | RSA_FLAG_EXT_PKEY);
+	                        ^~~~~~~~~
+	                        ifr_flags
+	ssl_openssl.c:1130:41: error: =E2=80=98RSA_FLAG_EXT_PKEY=E2=80=99 undeclar=
+ed (first use in this function); did you mean =E2=80=98SSL_F_SSL_SET_PKEY=
+=E2=80=99?
+	     RSA_set_flags(rsa, RSA_flags(rsa) | RSA_FLAG_EXT_PKEY);
+	                                         ^~~~~~~~~~~~~~~~~
+	                                         SSL_F_SSL_SET_PKEY
+	ssl_openssl.c:1131:10: warning: implicit declaration of function =E2=80=98=
+RSA_set_method=E2=80=99; did you mean =E2=80=98SSL_set_ssl_method=E2=80=99?=
+ [-Wimplicit-function-declaration]
+	     if (!RSA_set_method(rsa, rsa_meth))
+	          ^~~~~~~~~~~~~~
+	          SSL_set_ssl_method
+	ssl_openssl.c:1144:5: warning: implicit declaration of function =E2=80=98R=
+SA_free=E2=80=99; did you mean =E2=80=98SSL_free=E2=80=99? [-Wimplicit-func=
+tion-declaration]
+	     RSA_free(rsa); /* doesn't necessarily free, just decrements refcount =
+*/
+	     ^~~~~~~~
+	     SSL_free
+	ssl_openssl.c: In function =E2=80=98print_details=E2=80=99:
+	ssl_openssl.c:1889:34: warning: implicit declaration of function =E2=80=98=
+RSA_bits=E2=80=99 [-Wimplicit-function-declaration]
+	                                  RSA_bits(rsa));
+	                                  ^~~~~~~~
+	ssl_openssl.c:1895:34: warning: implicit declaration of function =E2=80=98=
+DSA_bits=E2=80=99 [-Wimplicit-function-declaration]
+	                                  DSA_bits(dsa));
+	                                  ^~~~~~~~
+	ssl_openssl.c: In function =E2=80=98get_ssl_library_version=E2=80=99:
+	ssl_openssl.c:2040:12: warning: implicit declaration of function =E2=80=98=
+SSLeay_version=E2=80=99; did you mean =E2=80=98SSL_version=E2=80=99? [-Wimp=
+licit-function-declaration]
+	     return SSLeay_version(SSLEAY_VERSION);
+	            ^~~~~~~~~~~~~~
+	            SSL_version
+	ssl_openssl.c:2040:27: error: =E2=80=98SSLEAY_VERSION=E2=80=99 undeclared =
+(first use in this function); did you mean =E2=80=98SSL2_VERSION=E2=80=99?
+	     return SSLeay_version(SSLEAY_VERSION);
+	                           ^~~~~~~~~~~~~~
+	                           SSL2_VERSION
+	ssl_openssl.c:2041:1: warning: control reaches end of non-void function [-=
+Wreturn-type]
+	 }
+	 ^
+	make[3]: *** [Makefile:717: ssl_openssl.o] Error 1
+	make[3]: *** Waiting for unfinished jobs....
+	mv -f .deps/ssl_verify.Tpo .deps/ssl_verify.Po
+	mv -f .deps/socket.Tpo .deps/socket.Po
+	mv -f .deps/ssl.Tpo .deps/ssl.Po
+	mv -f .deps/options.Tpo .deps/options.Po
+	make[3]: Leaving directory '/usr/local/src/openvpn/src/openvpn'
+	make[2]: *** [Makefile:429: all-recursive] Error 1
+	make[2]: Leaving directory '/usr/local/src/openvpn/src'
+	make[1]: *** [Makefile:614: all-recursive] Error 1
+	make[1]: Leaving directory '/usr/local/src/openvpn'
+	make: *** [Makefile:502: all] Error 2
 
-iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAlsOmDsACgkQKVhNn0CG
-RXiuOwgAvMCGe6tZyG4skydE4pCtfKcFAhhbDrpFCy4uTAvHDvzlCFcY4V0cP7Cn
-x/55KX/2VIjcm9d3oALGVNFaTm3Be7MpSdVAcd0GTse2aDlNzpjdq0rVHPhlNy4x
-RQfRIJIg+Bf6iAdn1jDE3IA5JsQQSM+CpABHIE0S1gO1IgnzQTOaLQ0NcbDK5U88
-ATbt9l5SgdTMQMNyM36O0OLgmSor56W057d+tS62VASW0nQgiAr6W8Kz+CoJ/97d
-P2KXKVIB3vg4/0tOKohbfYNiqKabXIqAyBzyKB1biTioncGPIlOAo54bjPpoC+El
-6kc8mpAYIFwIpyjxF6rSDcq3cSioaA==
-=OhIC
------END PGP SIGNATURE-----
+It looks like the OpenVPN build is still trying to use the OpenSSL 1.0.0 sy=
+mbols which are deprecated in 1.1.0.
 
---UEefKQGVNLndAgjf4sJCvuCfmSdWJ9PbS--
+I build all sorts of other apps with these OpenSSL 1.1.0 libs/includes, and=
+ everything works great, so I'm sure it's not a problem with the OpenSSL bu=
+ild.
+
+What do you need to do to build OpenVPN with OpenSSL 1.1.0?
+
+- AC
 
