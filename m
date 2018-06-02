@@ -1,9 +1,7 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Sat,  2 Jun 2018 11:42:06 +0800
-Message-Id: <20180602034206.9459-2-a@...2181...>
-In-Reply-To: <20180602034206.9459-1-a@...2181...>
-References: <20180602034206.9459-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH 2/2] make tls-crypt a per-connection-block
+Date: Sat,  2 Jun 2018 11:42:05 +0800
+Message-Id: <20180602034206.9459-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH 1/2] make tls-auth a per-connection-block
  option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -18,13 +16,11 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <a@...2181...>, Steffan Karger <steffan@...1856...>
 
-Similarly to tls-auth, different remotes may use different
-tls-crypt keys.
+Different VPN servers may use different tls-auth keys. For this
+reason it is convenient to make tls-auth a per-connection-block
+option so that the user is allowed to specify one key per remote.
 
-Allow the user to define a different key in each connection
-block.
-
-If no tls-crypt option is specified in a given connection block,
+If no tls-auth option is specified in a given connection block,
 the global one, if any, is used.
 
 Trac: #720
@@ -32,164 +28,221 @@ Cc: Steffan Karger <steffan@...1856...>
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
  doc/openvpn.8         |  1 +
- src/openvpn/init.c    |  7 ++++---
- src/openvpn/options.c | 48 ++++++++++++++++++++++++++++++++++---------
- src/openvpn/options.h |  4 ++++
- 4 files changed, 47 insertions(+), 13 deletions(-)
+ src/openvpn/init.c    | 10 +++---
+ src/openvpn/options.c | 82 ++++++++++++++++++++++++++++++++++---------
+ src/openvpn/options.h |  5 +++
+ 4 files changed, 77 insertions(+), 21 deletions(-)
 
 diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index e7bc3f4f..ce21518b 100644
+index 4114f408..e7bc3f4f 100644
 --- a/doc/openvpn.8
 +++ b/doc/openvpn.8
-@@ -373,6 +373,7 @@ block:
+@@ -372,6 +372,7 @@ block:
+ .B remote,
  .B rport,
  .B socks\-proxy,
- .B tls\-auth,
-+.B tls\-crypt,
++.B tls\-auth,
  .B tun\-mtu and
  .B tun\-mtu\-extra.
  
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 1c43c495..6d5dd9aa 100644
+index 36c1a4c4..1c43c495 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
-@@ -2571,9 +2571,10 @@ do_init_crypto_tls_c1(struct context *c)
-         }
+@@ -2546,7 +2546,7 @@ do_init_crypto_tls_c1(struct context *c)
+         prng_init(options->prng_hash, options->prng_nonce_secret_len);
  
-         /* TLS handshake encryption+authentication (--tls-crypt) */
--        if (options->tls_crypt_file)
-+        if (options->ce.tls_crypt_file)
+         /* TLS handshake authentication (--tls-auth) */
+-        if (options->tls_auth_file)
++        if (options->ce.tls_auth_file)
          {
--            tls_crypt_init_key(&c->c1.ks.tls_wrap_key, options->tls_crypt_file,
-+            tls_crypt_init_key(&c->c1.ks.tls_wrap_key,
-+                               options->ce.tls_crypt_file,
-                                options->tls_crypt_inline, options->tls_server);
+             /* Initialize key_type for tls-auth with auth only */
+             CLEAR(c->c1.ks.tls_auth_key_type);
+@@ -2563,8 +2563,10 @@ do_init_crypto_tls_c1(struct context *c)
+             }
+ 
+             crypto_read_openvpn_key(&c->c1.ks.tls_auth_key_type,
+-                                    &c->c1.ks.tls_wrap_key, options->tls_auth_file,
+-                                    options->tls_auth_file_inline, options->key_direction,
++                                    &c->c1.ks.tls_wrap_key,
++                                    options->ce.tls_auth_file,
++                                    options->ce.tls_auth_file_inline,
++                                    options->ce.key_direction,
+                                     "Control Channel Authentication", "tls-auth");
          }
  
-@@ -2796,7 +2797,7 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
-     }
+@@ -2783,7 +2785,7 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
+ #endif
  
-     /* TLS handshake encryption (--tls-crypt) */
--    if (options->tls_crypt_file)
-+    if (options->ce.tls_crypt_file)
+     /* TLS handshake authentication (--tls-auth) */
+-    if (options->tls_auth_file)
++    if (options->ce.tls_auth_file)
      {
-         to.tls_wrap.mode = TLS_WRAP_CRYPT;
+         to.tls_wrap.mode = TLS_WRAP_AUTH;
          to.tls_wrap.opt.key_ctx_bi = c->c1.ks.tls_wrap_key;
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index a9dbcb83..36324ce5 100644
+index 426057ab..a9dbcb83 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -1510,6 +1510,7 @@ show_connection_entry(const struct connection_entry *o)
-     SHOW_STR(tls_auth_file);
-     SHOW_PARM(key_direction, keydirection2ascii(o->key_direction, false, true),
-               "%s");
-+    SHOW_STR(tls_crypt_file);
+@@ -1506,6 +1506,10 @@ show_connection_entry(const struct connection_entry *o)
+ #ifdef ENABLE_OCC
+     SHOW_INT(explicit_exit_notification);
+ #endif
++
++    SHOW_STR(tls_auth_file);
++    SHOW_PARM(key_direction, keydirection2ascii(o->key_direction, false, true),
++              "%s");
  }
  
  
-@@ -1790,8 +1791,6 @@ show_settings(const struct options *o)
+@@ -1786,7 +1790,6 @@ show_settings(const struct options *o)
      SHOW_BOOL(push_peer_info);
      SHOW_BOOL(tls_exit);
  
--    SHOW_STR(tls_crypt_file);
--
+-    SHOW_STR(tls_auth_file);
+     SHOW_STR(tls_crypt_file);
+ 
  #ifdef ENABLE_PKCS11
-     {
-         int i;
-@@ -2726,7 +2725,7 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-                 notnull(options->priv_key_file, "private key file (--key) or PKCS#12 file (--pkcs12)");
-             }
+@@ -2869,6 +2872,15 @@ options_postprocess_mutate_ce(struct options *o, struct connection_entry *ce)
          }
--        if (options->tls_auth_file && options->tls_crypt_file)
-+        if (ce->tls_auth_file && ce->tls_crypt_file)
-         {
-             msg(M_USAGE, "--tls-auth and --tls-crypt are mutually exclusive");
-         }
-@@ -2875,12 +2874,27 @@ options_postprocess_mutate_ce(struct options *o, struct connection_entry *ce)
-     /*
-      * Set per-connection block tls-auth fields if no other method was defined
-      */
--    if (!ce->tls_auth_file)
-+    if (!ce->tls_auth_file && !ce->tls_crypt_file)
-     {
-         ce->tls_auth_file = o->tls_auth_file;
-         ce->tls_auth_file_inline = o->tls_auth_file_inline;
-         ce->key_direction = o->key_direction;
      }
-+
+ 
 +    /*
-+     * Set per-connection block tls-crypt fields if no other method was defined
++     * Set per-connection block tls-auth fields if no other method was defined
 +     */
-+    if (!ce->tls_crypt_file && !ce->tls_auth_file)
++    if (!ce->tls_auth_file)
 +    {
-+        ce->tls_crypt_file = o->tls_crypt_file;
-+        ce->tls_crypt_inline = o->tls_crypt_inline;
++        ce->tls_auth_file = o->tls_auth_file;
++        ce->tls_auth_file_inline = o->tls_auth_file_inline;
++        ce->key_direction = o->key_direction;
 +    }
-+
-+    /*
-+     * NOTE: after the two blocks above, only one among tls-crypt and tls-auth
-+     * will be set, because it is not allowed by the config parser to have both
-+     * globally assigned.
-+     */
  }
  
  #ifdef _WIN32
-@@ -3304,10 +3318,12 @@ options_postprocess_filechecks(struct options *options)
- 
-         errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
-                                   ce->tls_auth_file, R_OK, "--tls-auth");
-+
-+        errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
-+                                  ce->tls_crypt_file, R_OK, "--tls-crypt");
-+
+@@ -3285,12 +3297,20 @@ options_postprocess_filechecks(struct options *options)
+                                          options->crl_file, R_OK, "--crl-verify");
      }
  
 -    errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
--                              options->tls_crypt_file, R_OK, "--tls-crypt");
+-                              options->tls_auth_file, R_OK, "--tls-auth");
++    ASSERT(options->connection_list);
++    for (int i = 0; i < options->connection_list->len; ++i)
++    {
++        struct connection_entry *ce = options->connection_list->array[i];
++
++        errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
++                                  ce->tls_auth_file, R_OK, "--tls-auth");
++    }
++
+     errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
+                               options->tls_crypt_file, R_OK, "--tls-crypt");
      errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
                                options->shared_secret_file, R_OK, "--secret");
++
+     errs |= check_file_access(CHKACC_DIRPATH|CHKACC_FILEXSTWR,
+                               options->packet_id_file, R_OK|W_OK, "--replay-persist");
  
-@@ -8063,12 +8079,24 @@ add_option(struct options *options,
+@@ -3647,7 +3667,7 @@ options_string(const struct options *o,
+     {
+         if (TLS_CLIENT || TLS_SERVER)
+         {
+-            if (o->tls_auth_file)
++            if (o->ce.tls_auth_file)
+             {
+                 buf_printf(&out, ",tls-auth");
+             }
+@@ -7420,10 +7440,19 @@ add_option(struct options *options,
+     {
+         int key_direction;
+ 
++        VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);
++
+         key_direction = ascii2keydirection(msglevel, p[1]);
+         if (key_direction >= 0)
+         {
+-            options->key_direction = key_direction;
++            if (permission_mask & OPT_P_GENERAL)
++            {
++                options->key_direction = key_direction;
++            }
++            else if (permission_mask & OPT_P_CONNECTION)
++            {
++                options->ce.key_direction = key_direction;
++            }
+         }
+         else
+         {
+@@ -7992,26 +8021,45 @@ add_option(struct options *options,
      }
-     else if (streq(p[0], "tls-crypt") && p[1] && !p[3])
+     else if (streq(p[0], "tls-auth") && p[1] && !p[3])
      {
 -        VERIFY_PERMISSION(OPT_P_GENERAL);
 -        if (streq(p[1], INLINE_FILE_TAG) && p[2])
++        int key_direction = -1;
++
 +        VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);
++
 +        if (permission_mask & OPT_P_GENERAL)
-+        {
+         {
+-            options->tls_auth_file_inline = p[2];
 +            if (streq(p[1], INLINE_FILE_TAG) && p[2])
 +            {
-+                options->tls_crypt_inline = p[2];
++                options->tls_auth_file_inline = p[2];
 +            }
-+            options->tls_crypt_file = p[1];
-+        }
++            else if (p[2])
++            {
++                key_direction = ascii2keydirection(msglevel, p[2]);
++                if (key_direction < 0)
++                {
++                    goto err;
++                }
++                options->key_direction = key_direction;
++            }
++            options->tls_auth_file = p[1];
+         }
+-        else if (p[2])
 +        else if (permission_mask & OPT_P_CONNECTION)
          {
--            options->tls_crypt_inline = p[2];
+-            int key_direction;
+-
+-            key_direction = ascii2keydirection(msglevel, p[2]);
+-            if (key_direction >= 0)
++            options->ce.key_direction = KEY_DIRECTION_BIDIRECTIONAL;
 +            if (streq(p[1], INLINE_FILE_TAG) && p[2])
-+            {
-+                options->ce.tls_crypt_inline = p[2];
-+            }
-+            options->ce.tls_crypt_file = p[1];
-+
+             {
+-                options->key_direction = key_direction;
++                options->ce.tls_auth_file_inline = p[2];
+             }
+-            else
++            else if (p[2])
+             {
+-                goto err;
++                key_direction = ascii2keydirection(msglevel, p[2]);
++                if (key_direction < 0)
++                {
++                    goto err;
++                }
++                options->ce.key_direction = key_direction;
+             }
++            options->ce.tls_auth_file = p[1];
          }
--        options->tls_crypt_file = p[1];
+-        options->tls_auth_file = p[1];
      }
-     else if (streq(p[0], "key-method") && p[1] && !p[2])
+     else if (streq(p[0], "tls-crypt") && p[1] && !p[3])
      {
 diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 77c963d2..fcde90af 100644
+index f7d0145a..77c963d2 100644
 --- a/src/openvpn/options.h
 +++ b/src/openvpn/options.h
-@@ -135,6 +135,10 @@ struct connection_entry
-     const char *tls_auth_file;
-     const char *tls_auth_file_inline;
-     int key_direction;
+@@ -130,6 +130,11 @@ struct connection_entry
+ #define CE_MAN_QUERY_REMOTE_MASK   (0x07)
+ #define CE_MAN_QUERY_REMOTE_SHIFT  (2)
+     unsigned int flags;
 +
-+    /* Shared secret used for TLS control channel authenticated encryption */
-+    const char *tls_crypt_file;
-+    bool tls_crypt_inline;
++    /* Shared secret used for TLS control channel authentication */
++    const char *tls_auth_file;
++    const char *tls_auth_file_inline;
++    int key_direction;
  };
  
  struct remote_entry
