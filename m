@@ -1,13 +1,14 @@
-Date: Sun, 3 Jun 2018 12:48:36 +0200
+Date: Sun, 3 Jun 2018 12:54:57 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20180603104836.GN79551@...1296...>
+Message-ID: <20180603105457.GO79551@...1296...>
 References: <1528020718-12721-1-git-send-email-steffan@...1856...>
  <1528020718-12721-2-git-send-email-steffan@...1856...>
+ <20180603104836.GN79551@...1296...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="t+hlxQ2APDzOSz17"
+ protocol="application/pgp-signature"; boundary="dWDJ72qfEa57oDWE"
 Content-Disposition: inline
-In-Reply-To: <1528020718-12721-2-git-send-email-steffan@...1856...>
+In-Reply-To: <20180603104836.GN79551@...1296...>
 Subject: Re: [Openvpn-devel] [PATCH 2/3] Reject unadvertised compression
  algorithms
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,29 +22,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---t+hlxQ2APDzOSz17
+--dWDJ72qfEa57oDWE
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-Hi,
+Hi
 
-On Sun, Jun 03, 2018 at 12:11:57PM +0200, Steffan Karger wrote:
-> A server should not push us compression algorithms we didn't specify.  If
-> the server does so anyway, reject the compression algorithm.
+On Sun, Jun 03, 2018 at 12:48:36PM +0200, Gert Doering wrote:
+> On Sun, Jun 03, 2018 at 12:11:57PM +0200, Steffan Karger wrote:
+> > A server should not push us compression algorithms we didn't specify.  =
+If
+> > the server does so anyway, reject the compression algorithm.
+>=20
+> I can see why you do this, but if I understand this right, this will
+> break lots of currently-working OpenVPN setups - where we use the IV_
+> variables to parse out "what can the client do?" and send matching
+> "compress <foo>" PUSH_REPLYs.
+>=20
+> So, feature-NAK.
 
-I can see why you do this, but if I understand this right, this will
-break lots of currently-working OpenVPN setups - where we use the IV_
-variables to parse out "what can the client do?" and send matching
-"compress <foo>" PUSH_REPLYs.
-
-So, feature-NAK.
-
-Adding warnings (1/3) and a warning-override (3/3) is good measure, but
-interfering with server-to-client pushing of options needs more=20
-consideration.
+As clarified on IRC, I misread the text.  So I withdraw the feature-NAK
+and need to read this more closely and better think through the problem
+space.
 
 gert
+
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -54,22 +58,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---t+hlxQ2APDzOSz17
+--dWDJ72qfEa57oDWE
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJbE8eDAAoJEB2Cnv7KVigSnF0L/jHDZK3FoltNMa6mRUBl49Ud
-S39P62/3qVTTB3O/4AcDFLpS1BcRW2rqSmOy6NXK6UOLJfofuPRANYW17iKiyheE
-qcZbcy3V6FIKsIpns9PH9wAD3WRK+V5gNE2YABP1hUHKAr5ohmtlD7aXcJzaMCot
-hU8ZVFPsfvR8ExUntEqtZzUWqpGvCPfyoaSkUCrAnJks0M+WHmfVM9UTTgpF1WGf
-reBnMhtUctxuLXJGtOz3CVF1F7HoWGs066veDTOvTfcZqCwR3L5dBvYIjM34ZJCa
-ga+x5lBcYpEz3wJrT/NN+dvm4dL4Wyhl+IGBDrdAc/M5NqajGvh9eUevhGVT/BoP
-xCeDxSBHi5m4UBp5SVTL6WhG4JXwNR+C1JLKrnBOXk87XohnxianDP2JaxR+EI2z
-9N4x8Aio8XTHRvmacrhyHtXqoYIj7risRQiWZH8dwpqVs/obrSC9vStP25GubW4n
-4bnC6XxxZeQTPL4dxz+kygBJDnrbMe35dz/O6ycEcg==
-=L3vn
+iQGcBAEBAgAGBQJbE8kBAAoJEB2Cnv7KVigS4scL/jpxNPUrNcxaAkoNKX1LKXv+
+htCoFBcEVqdAI2KTPZT/qItD/pl4s7WxeABIDijwXPyEUOOHj4M/kZTY7gvaYwXH
+n14NcADEGhuUGNLy7n+i7CoSjq79O+rYv6k2fSHxr6WqI/YRJ61DSEOqz/BoHSRW
+9BV+yyP7kFBJIuwoIJ35EnnuTsBkwHdTcAwCc8/gIrxXJu/qGLvNdUtRGqLbUC+z
+mZreBTfCS1xgp6NlF/fTJMNJSCinzYfRnir5g/tchuXgnANjapiyNwdHTidA2o1z
+n2QQ3urgyJMX5xyVwK6D1x7KDXzznvLXl+JV2c5yalv5JDAv81mtquQnFWdHXnlf
+J5pMqEH4Bz4TLcCTYEfH0Ct5kvlRZmk5C0itiTsI/pvyVZUKGuamUAXNKZVU1q9E
+ss1Y8VWjjFn4zyqk0YesX42oXBT0JZwYShqCAxLOF0XgQjTHPrfPmDCAdAUiZ4Ob
+307I8jftem1ypHi8RSqap3TNfErwvhG/TiREp/in2g==
+=fBX8
 -----END PGP SIGNATURE-----
 
---t+hlxQ2APDzOSz17--
+--dWDJ72qfEa57oDWE--
 
