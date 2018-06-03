@@ -1,15 +1,8 @@
-References: <20180602034206.9459-1-a@...2181...>
- <1c15d88e-edd4-ad2d-0596-567715f41e43@...1856...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <9668e50d-7206-e0ed-b827-7f0d31756517@...2181...>
-Date: Sun, 3 Jun 2018 16:30:29 +0800
-MIME-Version: 1.0
-In-Reply-To: <1c15d88e-edd4-ad2d-0596-567715f41e43@...1856...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="9s8zvr24hpZikOAmPaP72XOLMVvtrHYDr"
-Subject: Re: [Openvpn-devel] [PATCH 1/2] make tls-auth a
- per-connection-block option
+From: Steffan Karger <steffan@...1856...>
+Date: Sun,  3 Jun 2018 12:11:56 +0200
+Message-Id: <1528020718-12721-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH 1/3] man: add security considerations to
+ --compress section
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,106 +11,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---9s8zvr24hpZikOAmPaP72XOLMVvtrHYDr
-Content-Type: multipart/mixed; boundary="JvcG4VXKeVn0antirsEkRnvLUdA1QvPLs";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <9668e50d-7206-e0ed-b827-7f0d31756517@...2181...>
-Subject: Re: [PATCH 1/2] make tls-auth a per-connection-block option
-References: <20180602034206.9459-1-a@...2181...>
- <1c15d88e-edd4-ad2d-0596-567715f41e43@...1856...>
-In-Reply-To: <1c15d88e-edd4-ad2d-0596-567715f41e43@...1856...>
-
---JvcG4VXKeVn0antirsEkRnvLUdA1QvPLs
-Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+As Ahamed Nafeez reported to the OpenVPN security team, we did not
+sufficiently inform our users about the risks of combining encryption
+and compression.  This patch adds a "Security Considerations" paragraph
+to the --compress section of the manpage to point the risks out to our
+users.
 
-On 03/06/18 16:27, Steffan Karger wrote:
-> Hi,
->=20
-> On 02-06-18 05:42, Antonio Quartulli wrote:
->> Different VPN servers may use different tls-auth keys. For this
->> reason it is convenient to make tls-auth a per-connection-block
->> option so that the user is allowed to specify one key per remote.
->=20
-> Want!  This also helps with tls-auth key rollover.  Feature-ACK.
->=20
->> If no tls-auth option is specified in a given connection block,
->> the global one, if any, is used.
->>
->> Trac: #720
->> Cc: Steffan Karger <steffan@...1856...>
->> Signed-off-by: Antonio Quartulli <a@...2181...>
->> ---
->>  doc/openvpn.8         |  1 +
->>  src/openvpn/init.c    | 10 +++---
->>  src/openvpn/options.c | 82 ++++++++++++++++++++++++++++++++++---------
->>  src/openvpn/options.h |  5 +++
->>  4 files changed, 77 insertions(+), 21 deletions(-)
->>
->> diff --git a/doc/openvpn.8 b/doc/openvpn.8
->> index 4114f408..e7bc3f4f 100644
->> --- a/doc/openvpn.8
->> +++ b/doc/openvpn.8
->> @@ -372,6 +372,7 @@ block:
->>  .B remote,
->>  .B rport,
->>  .B socks\-proxy,
->> +.B tls\-auth,
->>  .B tun\-mtu and
->>  .B tun\-mtu\-extra.
->=20
-> Shouldn't this also include key-direction?
->=20
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ doc/openvpn.8 | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-good catch!
-I added the manpage change at the end and I forgot about key-direction.
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 4114f40..0e5d467 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -2516,6 +2516,16 @@ If the
+ parameter is empty, compression will be turned off, but the packet
+ framing for compression will still be enabled, allowing a different
+ setting to be pushed later.
++
++.B Security Considerations
++
++Compression and encryption is a tricky combination.  If an attacker knows or is
++able to control (parts of) the plaintext of packets that contain secrets, the
++attacker might be able to extract the secret if compression is enabled.  See
++e.g. the CRIME and BREACH attacks on TLS which also leverage compression to
++break encryption.  If you are not entirely sure that the above does not apply
++to your traffic, you are advised to *not* enable compression.
++
+ .\"*********************************************************
+ .TP
+ .B \-\-comp\-lzo [mode]
+-- 
+2.7.4
 
-Will wait a bit more before sending v2.
-
-> (Didn't really review or test yet, but otherwise looks good at first
-> glance.)
->=20
-
-Thanks so far
-
-Cheers,
-
-
---=20
-Antonio Quartulli
-
-
---JvcG4VXKeVn0antirsEkRnvLUdA1QvPLs--
-
---9s8zvr24hpZikOAmPaP72XOLMVvtrHYDr
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlsTpykACgkQB6U8WA7y
-zXTCTw/+IcWqzEOzf/GQgsbkjZtElGZEVLPAZHKaoMP1djT/x7+YjLC8YCYwNyWf
-O1WZ7cJoLkpFSujaGk02UNJQbK2dfiqg7h5HQcE/fKQ5pBIp4CgdhX52xiAkMmsu
-rP1LmiZv6qZHpPhu4y/C7aDEIT6hF55r0GkaosUvFNUYiiS6WsASCpeZVqUgtauD
-cVxxSr87P3ZVDZFpEOI+K9Cz/xjrhWUg+EUuJvfj2TTmLFMxYWBRXvVOYDO9Rz3O
-LMN5oIHbXSTUpZKcPauh19XQbBzXeHW4uu6/4KDMgY5l1aZRScNpzHzNjiPYtxSI
-gkicDZmtPZm5yLrLwTQ9hoLn17Gvycbx2l7DLAV9LT4DReoDVbRol2EwbGK5fWj5
-K79EZJLkl6XwCzFKwioCCg4LIfPhAv9EzZawk7IvZAY95sEZ4qWIZmdTTe4qYP+Z
-a+luBOl/vQOjgxHULetCOyNrJVjYbx2D1vwdpnf5mC0mlFe9OcSlMp5ROQadSjEL
-ORXpoatQ5jt0Imj+/0P5g6rs5OFXv9ncYvXaomMYG2dsHfJPvyqeLBVrPizsKpc1
-S6L7J8Di+lFbXd5QNYxnVPzjRPqC+sx939jBrWYYM5zU1z/MrjFy3yXsSQQ5aly8
-CCIHi+CaWb9tzKJpHaDCKbleGBQjGgi4G/JfHs6giD/rSZFkbTg=
-=zdQc
------END PGP SIGNATURE-----
-
---9s8zvr24hpZikOAmPaP72XOLMVvtrHYDr--
 
