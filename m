@@ -1,11 +1,9 @@
-References: <20180417165000.3872-1-Jason@...2390...>
-From: =?UTF-8?Q?Fran=c3=a7ois_Kooman?= <fkooman@...2318...>
-Message-ID: <bda481bb-6f6a-e13c-1d99-608f47e94e65@...2318...>
-Date: Tue, 5 Jun 2018 22:59:42 +0200
 MIME-Version: 1.0
-In-Reply-To: <20180417165000.3872-1-Jason@...2390...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Support fingerprint authentication
+From: Rafael Herrera <rafael.herrera@...2405...>
+Date: Tue, 5 Jun 2018 17:54:05 -0300
+Message-ID: <CAAEV3TywmcYYidTfa6oWaex-24rjeqh7iJZ28p1rQONS3Ev0ag@...278...>
+Content-Type: multipart/alternative; boundary="00000000000035d5d7056deb40e1"
+Subject: [Openvpn-devel] OpenVPN Custom Client
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,36 +12,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: "Jason A. Donenfeld" <Jason@...2390...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On 04/17/2018 06:50 PM, Jason A. Donenfeld wrote:
->    * Allow specifying 'none' to the --ca parameter, to specify that
->      certificates should not be checked against a CA. Note that 'none'
->      is already used in other similar options as a special placeholder.
-> 
->    * When '--ca none' is in use, --verify-hash checks all depths instead
->      of just level 1.
-> 
-> With these very simple changes, fingerprint authentication is easily achieved
-> via the --tls-verify script on the server and via --verify-hash on the client.
+--00000000000035d5d7056deb40e1
+Content-Type: text/plain; charset="UTF-8"
 
-This is a great idea! I already played around with it, and it works as
-advertised :)
+Hi,
 
-I recently thought about how to integrate this properly. The thing that
-is still missing is using fingerprints as CNs. The --status command, and
-management interface (--management) use CNs to identify clients when
-certificates are used. This would then also need to be modified to use
-'fingerprints' as identifiers so you would see the fingerprints when you
-use --status and can use fingerprints when you do "kill" through the
-management interface.
+We are developing a custom client for OpenVPN 2.4.x and it would be nice to
+have some support from experienced community developers.
 
-An option similar to --username-as-common-name, e.g.
---fingerprint-as-common-name could be introduced to accomplish this in
-an easy way, although it is a bit "hacky".
+Is there anybody here available to help us with a consultancy regarding to
+network protocols and its required state machines?
 
-Cheers,
-François
+Thank you,
+Best Regards.
+-- 
+Rafael de Paula Herrera
+
+--00000000000035d5d7056deb40e1
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi,<div><br></div><div>We are developing a custom client f=
+or OpenVPN 2.4.x and it would be nice to have some support from experienced=
+ community developers.</div><div><br></div><div>Is there anybody here avail=
+able to help us with a consultancy regarding to network protocols and its r=
+equired state machines?</div><div><br></div><div>Thank you,<br>Best Regards=
+.</div><div>-- <br><div class=3D"gmail_signature" data-smartmail=3D"gmail_s=
+ignature"><div dir=3D"ltr">Rafael de Paula Herrera</div></div>
+</div></div>
+
+--00000000000035d5d7056deb40e1--
 
