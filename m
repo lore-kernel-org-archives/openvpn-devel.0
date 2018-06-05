@@ -1,15 +1,15 @@
-Date: Tue, 5 Jun 2018 16:36:03 +0200
+Date: Tue, 5 Jun 2018 16:51:39 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20180605143603.GL57262@...1296...>
-References: <20180605090421.9746-1-a@...2181...>
- <20180605090421.9746-2-a@...2181...>
+Message-ID: <20180605145139.GN57262@...1296...>
+References: <20180605090421.9746-5-a@...2181...>
+ <20180605093628.4985-1-a@...2181...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="yQbNiKLmgenwUfTN"
+ protocol="application/pgp-signature"; boundary="fmvA4kSBHQVZhkR6"
 Content-Disposition: inline
-In-Reply-To: <20180605090421.9746-2-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH 1/5] tun: ensure interface can be
- configured with IPv6 only
+In-Reply-To: <20180605093628.4985-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v2 4/5] pool: allow to configure an
+ IPv6-only ifconfig-pool
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,78 +19,24 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net, Antonio Quartulli <antonio@...515...>
+Cc: openvpn-devel@lists.sourceforge.net, Gert Doering <gert@...1296...>, Antonio Quartulli <antonio@...515...>
 
---yQbNiKLmgenwUfTN
+--fmvA4kSBHQVZhkR6
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-Hi,
+HI,
 
-Prelimiaries: I think this whole series should only go to 2.5, as it
-has the potential to be fairly intrusive and uncover hidden bugs - I've
-discussed this with Antonio already (and we're in agreement) but for
-the sake of the list.
-
-
-On Tue, Jun 05, 2018 at 05:04:17PM +0800, Antonio Quartulli wrote:
+On Tue, Jun 05, 2018 at 05:36:28PM +0800, Antonio Quartulli wrote:
 > From: Antonio Quartulli <antonio@...515...>
 >=20
-> This change ensures that an interface is properly brought
-> up even when only IPv6 settings are configured.
->=20
-> This can be useful on a client that wants to ignore the IPv4
-> settings pushed by the server and configure only IPv6.
-> To achieve the above, a client can use
-> `pull-filter ignore "ifconfig "` (thanks Gert for this hint).
->=20
-> Trac: #208
-> Cc: Gert Doering <gert@...1296...>
-> Signed-off-by: Antonio Quartulli <antonio@...515...>
+> With this change a server is allowed to allocate an
+> IPv6-only pool. This is required to make it capable
+> of managing an IPv6-only tunnel.
 
-ACK on the feature, but NAK on "we can do this more nicely" reasons :-)
-
-First, I'd leave off the bits about "this can be useful" of the commit
-message - because that's not the point of this patch, you can *ignore*=20
-the settings already today.    Maybe word this
-
-  "This patch enables the client to run IPv6-only on the tun/tap interface,
-   but will not make it ignore a pushed IPv4 config.  To achieve that, one=
-=20
-   can use 'pull-filter ignore "ifconfig "' on the client or 'push-filter' =
-on
-   the server".
-
-(if we want to go into this here at all)
-
-
-Then, splitting do_ifconfig() in a "we do all in here, except for IPv6,
-which is in do_ifconfig_ipv6()" is not looking right - if we do it, do
-it right, as in "split out do_ifconfig_ipv4() as well", make things fully
-symmetric wrt ipv4/ipv6, and have do_ifconfig() look something like this:
-
-do_ifconfig()
-{
-   msg (M_DEBUG, "do_ifconfig, ipv4=3D%d, ipv6=3D%d", u
-		tt->did_ifconfig_setup, tt->did_ifconfig_ipv6_setup );
-   if (tt->did_ifconfig_setup)
-      do_ifconfig_ipv4()
-   if (tt->did_ifconfig_ipv6_setup)
-      do_ifconfig_ipv6()
-
-   if (management)
-     management_set_state()
-}
-
-... and get rid of the "if (tt->did_ifconfig_setup)" extra nesting level
-in do_ifconfig() and do_ifconfig_ipv6().
-
-
-Of course we'll also need to check if typical consumers of the management=20
-interface explode if you're not giving an IPv4 address to them...
-
-Selva, Jonathan, how will our GUI and Tunnelblick handle that?
+Without having done much review here, just one initial caveat: did you=20
+test this with --ifconfig-pool-persist?  What happens?
 
 gert
 --=20
@@ -103,22 +49,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---yQbNiKLmgenwUfTN
+--fmvA4kSBHQVZhkR6
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJbFp/SAAoJEB2Cnv7KVigSgzQL/R1mQsxu4uA3worbs0XXaX2/
-op1si4SaDg3qvln9R+eL2v7mP8ilX2JA+Mr3ykAPsfU1NOXm1HNmaePBW7zNHskO
-MUuWHQkHbOwL/fjqxdIl7Rpb6/p22rnLDOKjqBLKjeA9LOVGF4FdpFgP7a5rfUHg
-TZswqznCLLLE+pLew9XuoDeCpz6HKowvjgT59Yui28fTPqUuXrDAQMP0a87A0CUj
-YQp8a/9xyQjAECmGTPCvYTQEPr8E/BnVHVxGh6rm8VBVfImyu/DpFM+r4ZreDlgT
-pCrTiPo83ximI8TSDawilk/RzXVEJ2YISdDf7lMmiiEcVrpJcZTKXvBRjOl5ahZH
-KtyS+i8wTA1l3hONqz8oSsazJnJf1lVNhl41danu0WB9bXz3IObljXAN6P0GAk1C
-ooempqOTddIc/Q2zmt34uWU1gUnq+Jm7oMlrFmL5VvZ1NcBZWC6Mt+UBJQliFmTz
-qTidjXE2BHYRKyProwbwmoyes+3Pl8AQJ6+dltQUwQ==
-=qj5P
+iQGcBAEBAgAGBQJbFqN7AAoJEB2Cnv7KVigSW7gL/2mBl9wGPQVzeIWNrV4X1TQL
+QPtNEM8COQt+hqdsFvBw9dbqHohMjKmL1MkuWaeLq4afXZpMvZbjFmL9/lH2nFUf
+FKEKXXsko7Mx3MvizQWX0rG3LEeiC/damfDQWdxSqMRqUoRILk8ft70od9Nr3Rsq
+NCuDdWi9yx1YTGsP9HX62gDrGS4yXDHLT3MgVRfb+I0xJWSgW4S6s3/SLqTl82qr
+Lzi+dh386W8U0Ekv1R0gEOPQbxJMteGdO50hoB7HBNf+sdfD8Kwb/jl/m4TK1yOG
+aZzq0J9tf63tXS/j8EbT+Nmq3XCMe6PzW/OLb241CvsU0f30YBrPAPt60hu+Wx90
+tX+/86PDGGQJeoYtWHEcT6oTvqmufdTplb2/+7idnjiwMopXc/cBhEGc6+pzOkpn
+KTO68Kuj+d/WmIfpBGKT1s4rShkMT+2iSXw1la1yoacnoqDjyovy2M28TS6DvZHZ
+FMuLhBd7TetNnf8155Wl1b4F5NDeWe9BMBdgg+04Tw==
+=wnMz
 -----END PGP SIGNATURE-----
 
---yQbNiKLmgenwUfTN--
+--fmvA4kSBHQVZhkR6--
 
