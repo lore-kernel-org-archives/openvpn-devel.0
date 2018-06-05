@@ -1,17 +1,18 @@
-Date: Tue, 5 Jun 2018 20:43:25 +0200
+Date: Tue, 5 Jun 2018 20:52:32 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20180605184325.GP57262@...1296...>
-References: <20180605090421.9746-5-a@...2181...>
- <20180605093628.4985-1-a@...2181...>
- <20180605145139.GN57262@...1296...>
- <3909b854-7b38-a8f8-945d-f30bc60a0a6f@...2181...>
+Message-ID: <20180605185232.GQ57262@...1296...>
+References: <20180605090421.9746-1-a@...2181...>
+ <20180605090421.9746-2-a@...2181...>
+ <20180605143603.GL57262@...1296...>
+ <CAKuzo_i5wMwqSKjH-ohK8ujSApthxNrHsbFw2k5U9q_YKb_YqA@...278...>
+ <9319a55d-c27e-aa07-749d-9c998271a5c4@...2181...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="pWJxWxNlJUNgDlXi"
+ protocol="application/pgp-signature"; boundary="1X+6QtwRodzgDPAC"
 Content-Disposition: inline
-In-Reply-To: <3909b854-7b38-a8f8-945d-f30bc60a0a6f@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v2 4/5] pool: allow to configure an
- IPv6-only ifconfig-pool
+In-Reply-To: <9319a55d-c27e-aa07-749d-9c998271a5c4@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH 1/5] tun: ensure interface can be
+ configured with IPv6 only
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,44 +22,76 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Antonio Quartulli <a@...2181...>
-Cc: Gert Doering <gert@...1296...>, Antonio Quartulli <antonio@...515...>, openvpn-devel@lists.sourceforge.net
+Cc: Selva Nair <selva.nair@...277...>, Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---pWJxWxNlJUNgDlXi
+--1X+6QtwRodzgDPAC
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Wed, Jun 06, 2018 at 12:11:40AM +0800, Antonio Quartulli wrote:
-> > Without having done much review here, just one initial caveat: did you=
-=20
-> > test this with --ifconfig-pool-persist?  What happens?
+On Wed, Jun 06, 2018 at 12:22:31AM +0800, Antonio Quartulli wrote:
+> Why is it !ipv6 by default in the first place?
 >=20
-> It should just be ignored.
-> At the moment pool-persist works only for IPv4 and there is no support
-> for IPv6. This has not been changed by this patchset.
-
-Well, it does save the (calculated) v6 address into the save file...
-
-So, what happens if you run a server with --ifconfig-pool-persist and
-no IPv4?  Will it crash, not write anything to the file, write garbage?
-
-> I added a check about it in ifconfig_pool_read():
+> I'd rather keep default behaviours as they are now, to avoid messing up
+> the user experience.
 >=20
-> 521     /* IPv6 logic not implemented yet, therefore bail out if no IPv4
-> pool was
-> 522      * configured
-> 523      */
-> 524     if (pool && !pool->ipv4.enabled)
-> 525     {
-> 526         return;
-> 527     }
+> However, I also understand that if there is no IPv4 and gateway-redirect
+> is specified, then the user wants a default route for IPv6.
+>=20
+> Maybe we should keep the current behaviour as it is (!ipv6 by default)
+> but print a warning when only ifconfig-ipv6 is provided?
 
-We should aim to make this work as well (but it could be patch 6 of the
-series :-)).
+I think for compatibility with existing configs, "redirect-gateway" with
+no extra arguments (or just the old ones, "def1" etc.) should be "ipv4",
+as it is today.
+
+If there is no IPv4 address configured, redirect-gateway (ipv4) should
+log a notice ("NOTICE: --redirect-gateway without the 'ipv6' flag will
+handle IPv4 only.  No IPv4 on tunnel, so not redirecting anything" or
+something like that).
+
+
+Eventually we might want to change it to do
+
+ --redirect-gateway "with no IPv* flags" =3D IPv4+IPv6
+ --redirect-gateway ipv4 (def1|local|...) =3D "only IPv4"
+ --redirect-gateway ipv6 =3D "only IPv6"
+
+
+What we have today ("unless there is a !ipv4, it's always ipv4") is=20
+historic due to "the ipv6 code was expected to change as little of the
+existing behaviour as possible".  We can be a bit more daring nowadays :)
+
+
+We might also merge Arne's block-ipv6 patch some day :-) - and add=20
+the corresponding block-ipv4 functionality.
+
+> > [ Selva ]
+> > May be there are more such nuances -- this patch will need some thoroug
+> > testing before being ready for review.
+
+Yes, definitely.  There will be interesting surprises.  I'm not sure we
+can catch everything before review/merging, though... but I'll try my
+best ;-)
+
+> >> Of course we'll also need to check if typical consumers of the managem=
+ent
+> >> interface explode if you're not giving an IPv4 address to them...
+> >>
+> >> Selva, Jonathan, how will our GUI and Tunnelblick handle that?
+> >=20
+> > Windows GUI uses configured IPs only for logging and display so I
+> > don't think it will complain, let alone explode. If any changes are
+> > needed, likely to be minimal. We have to just keep the format of
+> > reporting configured IPs unchanged even if some elements may be blank.
+
+When Antonio sends the v2, I'll do a windows build and see what happens.
 
 gert
+
+
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -69,22 +102,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---pWJxWxNlJUNgDlXi
+--1X+6QtwRodzgDPAC
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJbFtnNAAoJEB2Cnv7KVigSUl4L/3oNxPHDv4uBEuJaeY1EcM1i
-bER836bPB5l4ymD630WrAEa1TicpoC6j4whp1/SxOlzdaNy/Knv7M23QALeGQJuH
-K5GJZBgcdW7Dm5n0YY6hhgq4Kd1/EdbXF200Dt0SXtWpsdOO9ioRKzA7Mffg91lB
-63SYv5lL6r2BSwvlUdoa6zxXgObroOWBDdH5Iuo5qcLiWJU9snHt5AwFJpR8wjvt
-ALIslsrZ4bqVtmgRO8Icqm5AvnA5apKD/Tfp2A8CIIBOTy5PGQcWngP0GskxeS5L
-n8hHp+9mbkp7Ud5+IvpGn65kUBK3CdQrM2le92rv3+N6tjfTis5aWd7DPRDGjRNH
-c5DvY0RY62kax8eYKMOSzsr8f89dyn1gIMR40FTOSElziCTSuOLXp6RE3i/v3a9P
-DCwm2n/KfGC9dnTadKoEBv8nn0D4XKTW9vl09wSqRvK5Xmp7ixJqZ3T4scGI6joi
-CRXNgcqovAm6Ktp8yWO5hWn/igDf48wwLVX/6RNnMQ==
-=6WJ9
+iQGcBAEBAgAGBQJbFtvvAAoJEB2Cnv7KVigSdwIMAKpuOTmWiV725+ZHP+zJfyKx
+QqrGCl3R6irfsxf8ds45d9TiXMaYXK8qH6qLdwhpaJRc5l6q5J4LDRFS/qYGx6vf
+1N1FmmWtNhgGMrCX2W7MM1crfMwIuzA63fVFi598Z5724DBJB+HlNIgIe0f/5gau
+HIgFWzp2YwEjRbiKXVXdHY4vvsvNM15+eTIsVyJTxduLxl5+9ruWGSfCK4IPj4qG
+CBN5kJGSVoc1t1qG18j5776K4hbNXZWRl/IbdV85VQSxFiWIASu1Zi8uQeKtrVrK
+0tEGCKr43XgZ2m8MZUG6Q2yckartC2K4XfCR5e07XfEuY/YNIBXVVR1a6QFjUMXp
+9x4Z7LOcF2RxcavMeNEws1PYMobHO8BLSxlWUJVspGnLYJ6Gkflqo58dk1gRbbBu
+5w/2CaSWBDWhlMIcLpEeh2KLDBqhOSxz0sUqPQVdtWPKW/INc7yCdYUtoyxigcEM
+OI9dOU+TVdcwtX/GgNxeHQvDpdstMT5OFwG26734GA==
+=dGmn
 -----END PGP SIGNATURE-----
 
---pWJxWxNlJUNgDlXi--
+--1X+6QtwRodzgDPAC--
 
