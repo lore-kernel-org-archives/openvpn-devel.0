@@ -1,20 +1,17 @@
-Date: Tue, 5 Jun 2018 20:40:25 +0200
+Date: Tue, 5 Jun 2018 20:43:25 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20180605184024.GO57262@...1296...>
-References: <CAJY0qZKNO_aamQfi56BG_XK2vrOCyPAQf-My1N56qqV7TsUG7A@...278...>
- <eaae68e6-e30d-f63b-59c5-64515c8f8bcd@...1147...>
- <e4a2d28a-ff8d-4797-e0af-3bcf98828cb3@...1856...>
- <CAJY0qZKw+HgQ1vS-W13nw2=gj8d-uxeOqyZia4-gEbaGNTyFLQ@...278...>
- <03a13b39-7b85-0b67-cc94-7b219e6b209f@...1147...>
- <49b53be0-a301-8447-2a0e-0534435e5e87@...1147...>
- <CAJY0qZ+_kEVS_41oOHNX=Wp47LnNhL0HKRZvR75eg7JNW3tLkQ@...278...>
+Message-ID: <20180605184325.GP57262@...1296...>
+References: <20180605090421.9746-5-a@...2181...>
+ <20180605093628.4985-1-a@...2181...>
+ <20180605145139.GN57262@...1296...>
+ <3909b854-7b38-a8f8-945d-f30bc60a0a6f@...2181...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="5cSRzy0VGBWAML+b"
+ protocol="application/pgp-signature"; boundary="pWJxWxNlJUNgDlXi"
 Content-Disposition: inline
-In-Reply-To: <CAJY0qZ+_kEVS_41oOHNX=Wp47LnNhL0HKRZvR75eg7JNW3tLkQ@...278...>
-Subject: Re: [Openvpn-devel] Does the OpenVPN protocol itself handle
- windowing?
+In-Reply-To: <3909b854-7b38-a8f8-945d-f30bc60a0a6f@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v2 4/5] pool: allow to configure an
+ IPv6-only ifconfig-pool
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,31 +20,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Derek Zimmer <derek@...2095...>
-Cc: Jan Just Keijser <janjust@...1147...>, openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: Gert Doering <gert@...1296...>, Antonio Quartulli <antonio@...515...>, openvpn-devel@lists.sourceforge.net
 
---5cSRzy0VGBWAML+b
+--pWJxWxNlJUNgDlXi
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Tue, Jun 05, 2018 at 10:23:29AM -0500, Derek Zimmer wrote:
-> OpenVPN in UDP mode is still operating a TCP windowing layer=20
-> somewhere, right?=20
+On Wed, Jun 06, 2018 at 12:11:40AM +0800, Antonio Quartulli wrote:
+> > Without having done much review here, just one initial caveat: did you=
+=20
+> > test this with --ifconfig-pool-persist?  What happens?
+>=20
+> It should just be ignored.
+> At the moment pool-persist works only for IPv4 and there is no support
+> for IPv6. This has not been changed by this patchset.
 
-Not for data packets - they get sent off as they come in from the=20
-tun file descriptor and vice versa.  No pacing (unless configured),=20
-no windowing, no retransmits.
+Well, it does save the (calculated) v6 address into the save file...
 
-Of course the OS' TCP layer still applies, but that one *should* not
-scale (much) worse via tun than via direct IP.
+So, what happens if you run a server with --ifconfig-pool-persist and
+no IPv4?  Will it crash, not write anything to the file, write garbage?
 
-In any case it's good to see people (who are not me) interested in
-performance measurements, and performance improvements.  You can't
-improve what you do not understand, and you can't understand what
-you do not measure...  (yes, I studied physics as well :) ).
+> I added a check about it in ifconfig_pool_read():
+>=20
+> 521     /* IPv6 logic not implemented yet, therefore bail out if no IPv4
+> pool was
+> 522      * configured
+> 523      */
+> 524     if (pool && !pool->ipv4.enabled)
+> 525     {
+> 526         return;
+> 527     }
+
+We should aim to make this work as well (but it could be patch 6 of the
+series :-)).
 
 gert
 --=20
@@ -60,22 +69,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---5cSRzy0VGBWAML+b
+--pWJxWxNlJUNgDlXi
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJbFtkYAAoJEB2Cnv7KVigSyjUL/3H5sfWJNHO7lEHoRI4NH8Nn
-MBlMAwLMK/pfB5diuyEeRX+46AONQX20T1wblvOL6yNrdg1GCCn9jR74CUVlmpAA
-gxku7S15y3EqpQ1ylincvuM88FYNP7bCoypkVd3bdpeu1MyEB+Pi4XbU3Xj28U6e
-3ND3LoadQ/VHeNcE9fy3Xdb2udCU1lTs0iwH+661v3lf6MyhOkTEuOtS3HbKYVhh
-3Wfxs6w8uUHU9WQe/PbL1RA3mZ/WsIgNmcN7CkmYm+z2Jkb/cA6bGMIIM9KX5rD1
-vTSelKQcdIFoKK3pFPJ0FlIuf5UuwcKS2yfDhyeAHGo/Cuup72V9J/wVYmSRyAl5
-mkcw9euwOgc2KbsleCRR0VUvxbHKaqez5UIOdEEawNuB37/1mE8Cf/iR1gd3IeWN
-k4Fvz7MYzEDzuPRY/eygxXRl8vSTjskbyWtGDdArbjPEu/p7at5/07xfeCgZqG4W
-SxunmJ5grfA0OKZABEeKie/zcG8S/8dEUdamrywHkg==
-=lutP
+iQGcBAEBAgAGBQJbFtnNAAoJEB2Cnv7KVigSUl4L/3oNxPHDv4uBEuJaeY1EcM1i
+bER836bPB5l4ymD630WrAEa1TicpoC6j4whp1/SxOlzdaNy/Knv7M23QALeGQJuH
+K5GJZBgcdW7Dm5n0YY6hhgq4Kd1/EdbXF200Dt0SXtWpsdOO9ioRKzA7Mffg91lB
+63SYv5lL6r2BSwvlUdoa6zxXgObroOWBDdH5Iuo5qcLiWJU9snHt5AwFJpR8wjvt
+ALIslsrZ4bqVtmgRO8Icqm5AvnA5apKD/Tfp2A8CIIBOTy5PGQcWngP0GskxeS5L
+n8hHp+9mbkp7Ud5+IvpGn65kUBK3CdQrM2le92rv3+N6tjfTis5aWd7DPRDGjRNH
+c5DvY0RY62kax8eYKMOSzsr8f89dyn1gIMR40FTOSElziCTSuOLXp6RE3i/v3a9P
+DCwm2n/KfGC9dnTadKoEBv8nn0D4XKTW9vl09wSqRvK5Xmp7ixJqZ3T4scGI6joi
+CRXNgcqovAm6Ktp8yWO5hWn/igDf48wwLVX/6RNnMQ==
+=6WJ9
 -----END PGP SIGNATURE-----
 
---5cSRzy0VGBWAML+b--
+--pWJxWxNlJUNgDlXi--
 
