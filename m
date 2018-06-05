@@ -1,8 +1,10 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Tue,  5 Jun 2018 11:29:00 +0800
-Message-Id: <20180605032902.26440-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH v2 1/3] crypto: always reload tls-auth/crypt
- key contexts
+Date: Tue,  5 Jun 2018 11:29:02 +0800
+Message-Id: <20180605032902.26440-3-a@...2181...>
+In-Reply-To: <20180605032902.26440-1-a@...2181...>
+References: <20180605032902.26440-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH v2 3/3] make tls-crypt a
+ per-connection-block option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,14 +18,18 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <a@...2181...>, Steffan Karger <steffan@...1856...>
 
-In preparation to having tls-auth/crypt keys per connection
-block, it is important to ensure that such material is always
-reload upon SIGUSR1, no matter is persist-key was specified or
-not.
+Similarly to tls-auth, different remotes may use different
+tls-crypt keys.
 
-This is required because when moving from one remote to the
-other the key may change and thus the key context needs to
-be refreshed.
+Allow the user to define a different key in each connection
+block.
+
+If no tls-crypt option is specified in a given connection block,
+the global one, if any, is used.
+
+If persist-key is specified, tls-crypt keys are pre-loaded during
+startup (same as they were embeeded in the config file) so that
+later there is no need to access the key files.
 
 Trac: #720
 Cc: Steffan Karger <steffan@...1856...>
@@ -31,237 +37,182 @@ Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
 
 v2:
-- introduce this patch
+- convert tls-crypt keyfile to inline key if persist-key was specified
 
- src/openvpn/buffer.c | 29 +++++++++++++++
- src/openvpn/buffer.h | 13 +++++++
- src/openvpn/crypto.c | 20 ++--------
- src/openvpn/init.c   | 87 +++++++++++++++++++++++++++++---------------
- 4 files changed, 102 insertions(+), 47 deletions(-)
+ doc/openvpn.8         |  1 +
+ src/openvpn/init.c    |  8 +++----
+ src/openvpn/options.c | 56 +++++++++++++++++++++++++++++++++++--------
+ src/openvpn/options.h |  4 ++++
+ 4 files changed, 55 insertions(+), 14 deletions(-)
 
-diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
-index becfeb93..cbf969a8 100644
---- a/src/openvpn/buffer.c
-+++ b/src/openvpn/buffer.c
-@@ -1332,3 +1332,32 @@ buffer_list_file(const char *fn, int max_line_len)
-     }
-     return bl;
- }
-+
-+struct buffer
-+keyfile_to_buffer(const char *file, int max_size, struct gc_arena *gc)
-+{
-+    size_t size;
-+    struct buffer in = alloc_buf_gc(max_size, gc);
-+    int fd = platform_open(file, O_RDONLY, 0);
-+    if (fd == -1)
-+    {
-+        msg(M_ERR, "Cannot open key file '%s'", file);
-+    }
-+
-+    size = read(fd, in.data, in.capacity);
-+    if (size < 0)
-+    {
-+        msg(M_FATAL, "Read error on key file ('%s')", file);
-+    }
-+
-+    if (size == in.capacity)
-+    {
-+        msg(M_FATAL, "Key file ('%s') can be a maximum of %d bytes", file,
-+            (int)in.capacity);
-+    }
-+    close(fd);
-+
-+    in.len = size;
-+
-+    return in;
-+}
-diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
-index d848490a..ba9857eb 100644
---- a/src/openvpn/buffer.h
-+++ b/src/openvpn/buffer.h
-@@ -1112,4 +1112,17 @@ void buffer_list_aggregate_separator(struct buffer_list *bl,
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 8006ba29..ac7307af 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -374,6 +374,7 @@ block:
+ .B rport,
+ .B socks\-proxy,
+ .B tls\-auth,
++.B tls\-crypt,
+ .B tun\-mtu and
+ .B tun\-mtu\-extra.
  
- struct buffer_list *buffer_list_file(const char *fn, int max_line_len);
- 
-+/**
-+ * keyfile_to_buffer - copy the content of a file into a buffer
-+ *
-+ * @param file      path to the file to read
-+ * @param max_size  maximum size of the buffer to allocate
-+ * @param gc        the garbage collector to use when allocating the buffer. It
-+ *                  passed to alloc_buf_gc() and therefore can be NULL.
-+ *
-+ * @return the buffer storing the file content
-+ */
-+struct buffer keyfile_to_buffer(const char *file, int max_size,
-+                                struct gc_arena *gc);
-+
- #endif /* BUFFER_H */
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index b59c1f73..f201b533 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -1224,7 +1224,7 @@ read_key_file(struct key2 *key2, const char *file, const unsigned int flags)
- {
-     struct gc_arena gc = gc_new();
-     struct buffer in;
--    int fd, size;
-+    int size;
-     uint8_t hex_byte[3] = {0, 0, 0};
-     const char *error_filename = file;
- 
-@@ -1268,22 +1268,8 @@ read_key_file(struct key2 *key2, const char *file, const unsigned int flags)
-     }
-     else /* 'file' is a filename which refers to a file containing the ascii key */
-     {
--        in = alloc_buf_gc(2048, &gc);
--        fd = platform_open(file, O_RDONLY, 0);
--        if (fd == -1)
--        {
--            msg(M_ERR, "Cannot open key file '%s'", file);
--        }
--        size = read(fd, in.data, in.capacity);
--        if (size < 0)
--        {
--            msg(M_FATAL, "Read error on key file ('%s')", file);
--        }
--        if (size == in.capacity)
--        {
--            msg(M_FATAL, "Key file ('%s') can be a maximum of %d bytes", file, (int)in.capacity);
--        }
--        close(fd);
-+        in = keyfile_to_buffer(file, 2048, &gc);
-+        size = in.len;
-     }
- 
-     cp = (unsigned char *)in.data;
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 36c1a4c4..15fef08d 100644
+index 22a74e36..99b5b12a 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
-@@ -2406,7 +2406,6 @@ key_schedule_free(struct key_schedule *ks, bool free_ssl_ctx)
-     if (tls_ctx_initialised(&ks->ssl_ctx) && free_ssl_ctx)
+@@ -2529,11 +2529,11 @@ do_init_tls_wrap_key(struct context *c)
+     }
+ 
+     /* TLS handshake encryption+authentication (--tls-crypt) */
+-    if (options->tls_crypt_file)
++    if (options->ce.tls_crypt_file)
      {
-         tls_ctx_free(&ks->ssl_ctx);
--        free_key_ctx_bi(&ks->tls_wrap_key);
-     }
-     CLEAR(*ks);
- }
-@@ -2496,6 +2495,48 @@ do_init_crypto_static(struct context *c, const unsigned int flags)
-     check_replay_consistency(&c->c1.ks.key_type, options->replay);
- }
- 
-+/*
-+ * Initialize the tls-auth/crypt key context
-+ */
-+static void
-+do_init_tls_wrap_key(struct context *c)
-+{
-+    const struct options *options = &c->options;
-+
-+    /* TLS handshake authentication (--tls-auth) */
-+    if (options->tls_auth_file)
-+    {
-+        /* Initialize key_type for tls-auth with auth only */
-+        CLEAR(c->c1.ks.tls_auth_key_type);
-+        if (!streq(options->authname, "none"))
-+        {
-+            c->c1.ks.tls_auth_key_type.digest = md_kt_get(options->authname);
-+                c->c1.ks.tls_auth_key_type.hmac_length =
-+                    md_kt_size(c->c1.ks.tls_auth_key_type.digest);
-+        }
-+        else
-+        {
-+            msg(M_FATAL, "ERROR: tls-auth enabled, but no valid --auth "
-+                "algorithm specified ('%s')", options->authname);
-+        }
-+
-+        crypto_read_openvpn_key(&c->c1.ks.tls_auth_key_type,
-+                                &c->c1.ks.tls_wrap_key,
-+                                options->tls_auth_file,
-+                                options->tls_auth_file_inline,
-+                                options->key_direction,
-+                                "Control Channel Authentication", "tls-auth");
-+    }
-+
-+    /* TLS handshake encryption+authentication (--tls-crypt) */
-+    if (options->tls_crypt_file)
-+    {
-+        tls_crypt_init_key(&c->c1.ks.tls_wrap_key,
-+                           options->tls_crypt_file,
-+                           options->tls_crypt_inline, options->tls_server);
-+    }
-+}
-+
- /*
-  * Initialize the persistent component of OpenVPN's TLS mode,
-  * which is preserved across SIGUSR1 resets.
-@@ -2545,35 +2586,8 @@ do_init_crypto_tls_c1(struct context *c)
-         /* Initialize PRNG with config-specified digest */
-         prng_init(options->prng_hash, options->prng_nonce_secret_len);
- 
--        /* TLS handshake authentication (--tls-auth) */
--        if (options->tls_auth_file)
--        {
--            /* Initialize key_type for tls-auth with auth only */
--            CLEAR(c->c1.ks.tls_auth_key_type);
--            if (!streq(options->authname, "none"))
--            {
--                c->c1.ks.tls_auth_key_type.digest = md_kt_get(options->authname);
--                c->c1.ks.tls_auth_key_type.hmac_length =
--                    md_kt_size(c->c1.ks.tls_auth_key_type.digest);
--            }
--            else
--            {
--                msg(M_FATAL, "ERROR: tls-auth enabled, but no valid --auth "
--                    "algorithm specified ('%s')", options->authname);
--            }
--
--            crypto_read_openvpn_key(&c->c1.ks.tls_auth_key_type,
--                                    &c->c1.ks.tls_wrap_key, options->tls_auth_file,
--                                    options->tls_auth_file_inline, options->key_direction,
--                                    "Control Channel Authentication", "tls-auth");
--        }
--
--        /* TLS handshake encryption+authentication (--tls-crypt) */
--        if (options->tls_crypt_file)
--        {
--            tls_crypt_init_key(&c->c1.ks.tls_wrap_key, options->tls_crypt_file,
--                               options->tls_crypt_inline, options->tls_server);
--        }
-+        /* initialize tls-auth/crypt key */
-+        do_init_tls_wrap_key(c);
- 
-         c->c1.ciphername = options->ciphername;
-         c->c1.authname = options->authname;
-@@ -2595,6 +2609,12 @@ do_init_crypto_tls_c1(struct context *c)
-         c->options.ciphername = c->c1.ciphername;
-         c->options.authname = c->c1.authname;
-         c->options.keysize = c->c1.keysize;
-+
-+        /*
-+         * tls-auth/crypt key can be configured per connection block, therefore
-+         * we must reload it as it may have changed
-+         */
-+        do_init_tls_wrap_key(c);
+         tls_crypt_init_key(&c->c1.ks.tls_wrap_key,
+-                           options->tls_crypt_file,
+-                           options->tls_crypt_inline, options->tls_server);
++                           options->ce.tls_crypt_file,
++                           options->ce.tls_crypt_inline, options->tls_server);
      }
  }
  
-@@ -3398,6 +3418,13 @@ do_close_tls(struct context *c)
- static void
- do_close_free_key_schedule(struct context *c, bool free_ssl_ctx)
- {
+@@ -2814,7 +2814,7 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
+     }
+ 
+     /* TLS handshake encryption (--tls-crypt) */
+-    if (options->tls_crypt_file)
++    if (options->ce.tls_crypt_file)
+     {
+         to.tls_wrap.mode = TLS_WRAP_CRYPT;
+         to.tls_wrap.opt.key_ctx_bi = c->c1.ks.tls_wrap_key;
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 7357f189..09f094d1 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1510,6 +1510,7 @@ show_connection_entry(const struct connection_entry *o)
+     SHOW_STR(tls_auth_file);
+     SHOW_PARM(key_direction, keydirection2ascii(o->key_direction, false, true),
+               "%s");
++    SHOW_STR(tls_crypt_file);
+ }
+ 
+ 
+@@ -1790,8 +1791,6 @@ show_settings(const struct options *o)
+     SHOW_BOOL(push_peer_info);
+     SHOW_BOOL(tls_exit);
+ 
+-    SHOW_STR(tls_crypt_file);
+-
+ #ifdef ENABLE_PKCS11
+     {
+         int i;
+@@ -2726,7 +2725,7 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
+                 notnull(options->priv_key_file, "private key file (--key) or PKCS#12 file (--pkcs12)");
+             }
+         }
+-        if (options->tls_auth_file && options->tls_crypt_file)
++        if (ce->tls_auth_file && ce->tls_crypt_file)
+         {
+             msg(M_USAGE, "--tls-auth and --tls-crypt are mutually exclusive");
+         }
+@@ -2875,7 +2874,7 @@ options_postprocess_mutate_ce(struct options *o, struct connection_entry *ce)
+     /*
+      * Set per-connection block tls-auth fields if no other method was defined
+      */
+-    if (!ce->tls_auth_file)
++    if (!ce->tls_auth_file && !ce->tls_crypt_file)
+     {
+         ce->tls_auth_file = o->tls_auth_file;
+         ce->tls_auth_file_inline = o->tls_auth_file_inline;
+@@ -2889,6 +2888,29 @@ options_postprocess_mutate_ce(struct options *o, struct connection_entry *ce)
+         ce->tls_auth_file = INLINE_FILE_TAG;
+         ce->tls_auth_file_inline = (char *)in.data;
+     }
++
 +    /*
-+     * always free the tls_auth/crypt key. If persist_key is true, the key will
-+     * be reloaded from memory (pre-cached)
++     * Set per-connection block tls-crypt fields if no other method was defined
 +     */
-+    free_key_ctx_bi(&c->c1.ks.tls_wrap_key);
-+    CLEAR(c->c1.ks.tls_wrap_key);
++    if (!ce->tls_crypt_file && !ce->tls_auth_file)
++    {
++        ce->tls_crypt_file = o->tls_crypt_file;
++        ce->tls_crypt_inline = o->tls_crypt_inline;
++    }
 +
-     if (!(c->sig->signal_received == SIGUSR1 && c->options.persist_key))
++    /* pre-cache tls-auth key file if persist-key was specified */
++    if (ce->tls_crypt_file && !ce->tls_crypt_inline && o->persist_key)
++    {
++        struct buffer in = keyfile_to_buffer(ce->tls_crypt_file, 2048, &o->gc);
++        ce->tls_crypt_file = INLINE_FILE_TAG;
++        ce->tls_crypt_inline = (char *)in.data;
++    }
++
++    /*
++     * NOTE: after the two blocks above, only one among tls-crypt and tls-auth
++     * will be set, because it is not allowed by the config parser to have both
++     * globally assigned.
++     */
+ }
+ 
+ #ifdef _WIN32
+@@ -3312,10 +3334,12 @@ options_postprocess_filechecks(struct options *options)
+ 
+         errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
+                                   ce->tls_auth_file, R_OK, "--tls-auth");
++
++        errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
++                                  ce->tls_crypt_file, R_OK, "--tls-crypt");
++
+     }
+ 
+-    errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
+-                              options->tls_crypt_file, R_OK, "--tls-crypt");
+     errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
+                               options->shared_secret_file, R_OK, "--secret");
+ 
+@@ -8071,12 +8095,24 @@ add_option(struct options *options,
+     }
+     else if (streq(p[0], "tls-crypt") && p[1] && !p[3])
      {
-         key_schedule_free(&c->c1.ks, free_ssl_ctx);
+-        VERIFY_PERMISSION(OPT_P_GENERAL);
+-        if (streq(p[1], INLINE_FILE_TAG) && p[2])
++        VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);
++        if (permission_mask & OPT_P_GENERAL)
++        {
++            if (streq(p[1], INLINE_FILE_TAG) && p[2])
++            {
++                options->tls_crypt_inline = p[2];
++            }
++            options->tls_crypt_file = p[1];
++        }
++        else if (permission_mask & OPT_P_CONNECTION)
+         {
+-            options->tls_crypt_inline = p[2];
++            if (streq(p[1], INLINE_FILE_TAG) && p[2])
++            {
++                options->ce.tls_crypt_inline = p[2];
++            }
++            options->ce.tls_crypt_file = p[1];
++
+         }
+-        options->tls_crypt_file = p[1];
+     }
+     else if (streq(p[0], "key-method") && p[1] && !p[2])
+     {
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 77c963d2..2c0902a9 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -135,6 +135,10 @@ struct connection_entry
+     const char *tls_auth_file;
+     const char *tls_auth_file_inline;
+     int key_direction;
++
++    /* Shared secret used for TLS control channel authenticated encryption */
++    const char *tls_crypt_file;
++    const char *tls_crypt_inline;
+ };
+ 
+ struct remote_entry
 -- 
 2.17.1
 
