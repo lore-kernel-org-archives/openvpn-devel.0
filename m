@@ -1,15 +1,20 @@
+Date: Tue, 5 Jun 2018 20:40:25 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180605184024.GO57262@...1296...>
+References: <CAJY0qZKNO_aamQfi56BG_XK2vrOCyPAQf-My1N56qqV7TsUG7A@...278...>
+ <eaae68e6-e30d-f63b-59c5-64515c8f8bcd@...1147...>
+ <e4a2d28a-ff8d-4797-e0af-3bcf98828cb3@...1856...>
+ <CAJY0qZKw+HgQ1vS-W13nw2=gj8d-uxeOqyZia4-gEbaGNTyFLQ@...278...>
+ <03a13b39-7b85-0b67-cc94-7b219e6b209f@...1147...>
+ <49b53be0-a301-8447-2a0e-0534435e5e87@...1147...>
+ <CAJY0qZ+_kEVS_41oOHNX=Wp47LnNhL0HKRZvR75eg7JNW3tLkQ@...278...>
 MIME-Version: 1.0
-In-Reply-To: <9319a55d-c27e-aa07-749d-9c998271a5c4@...2181...>
-References: <20180605090421.9746-1-a@...2181...>
- <20180605090421.9746-2-a@...2181...>
- <20180605143603.GL57262@...1296...>
- <CAKuzo_i5wMwqSKjH-ohK8ujSApthxNrHsbFw2k5U9q_YKb_YqA@...278...>
- <9319a55d-c27e-aa07-749d-9c998271a5c4@...2181...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 5 Jun 2018 13:30:35 -0400
-Message-ID: <CAKuzo_gfgG=6LxX-s0aPReZeaXDwEBM0zfrtWxZR9JzNvkraOA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 1/5] tun: ensure interface can be
- configured with IPv6 only
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="5cSRzy0VGBWAML+b"
+Content-Disposition: inline
+In-Reply-To: <CAJY0qZ+_kEVS_41oOHNX=Wp47LnNhL0HKRZvR75eg7JNW3tLkQ@...278...>
+Subject: Re: [Openvpn-devel] Does the OpenVPN protocol itself handle
+ windowing?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,61 +23,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Derek Zimmer <derek@...2095...>
+Cc: Jan Just Keijser <janjust@...1147...>, openvpn-devel@lists.sourceforge.net
+
+--5cSRzy0VGBWAML+b
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On Tue, Jun 5, 2018 at 12:22 PM, Antonio Quartulli <a@...2181...> wrote:
-> Hi,
->
-> On 05/06/18 23:54, Selva Nair wrote:
-> [cut]
->>> ACK on the feature, but NAK on "we can do this more nicely" reasons :-)
->>>
->>> First, I'd leave off the bits about "this can be useful" of the commit
->>> message - because that's not the point of this patch, you can *ignore*
->>> the settings already today.    Maybe word this
->>>
->>>   "This patch enables the client to run IPv6-only on the tun/tap interface,
->>>    but will not make it ignore a pushed IPv4 config.  To achieve that, one
->>>    can use 'pull-filter ignore "ifconfig "' on the client or 'push-filter' on
->>>    the server".
->>>
->>> (if we want to go into this here at all)
->>
->>
->> I don't think this belongs here and such advice could include other
->> details like what
->> to do with routes, redirect gateway etc. Better add it to the howto.
->>
->
-> Agreed to both comments. I'll trim the commit and make it more objective.
->
->> A more serious thing:
->>
->> - On windows we require that ifconfig is required with --dev tun. This
->> has to change. Could be tricky as TAP_WIN_IOCTL_CONFIG_TUN requires a
->> v4 address.
->
-> Is 0.0.0.0 a valid address for this ioctl?
+On Tue, Jun 05, 2018 at 10:23:29AM -0500, Derek Zimmer wrote:
+> OpenVPN in UDP mode is still operating a TCP windowing layer=20
+> somewhere, right?=20
 
-I do not know the tapdriver code enough to answer that.. -- will take a look.
+Not for data packets - they get sent off as they come in from the=20
+tun file descriptor and vice versa.  No pacing (unless configured),=20
+no windowing, no retransmits.
 
-> Or does it need to be meaningful?
-> I think this could be tested by applying only this patch and ignoring
-> the pushed 'ifconfig ' directive (as explained in the commit).
+Of course the OS' TCP layer still applies, but that one *should* not
+scale (much) worse via tun than via direct IP.
 
-I haven't tested it, but pretty sure that'll just fail with "--dev tun
-also requires ifconfig" or some such message as can be seen from
-open_tun() code in tun.c -- it requires did_ifconfig_setup == true
-which won't get set in init_tun if there are no ifconfig parameters.
+In any case it's good to see people (who are not me) interested in
+performance measurements, and performance improvements.  You can't
+improve what you do not understand, and you can't understand what
+you do not measure...  (yes, I studied physics as well :) ).
 
-How to work around that depends on what the tap driver expects in the
-v4 address. Ideally, we should patch the driver to work without a V4
-address...
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-Selva
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--5cSRzy0VGBWAML+b
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJbFtkYAAoJEB2Cnv7KVigSyjUL/3H5sfWJNHO7lEHoRI4NH8Nn
+MBlMAwLMK/pfB5diuyEeRX+46AONQX20T1wblvOL6yNrdg1GCCn9jR74CUVlmpAA
+gxku7S15y3EqpQ1ylincvuM88FYNP7bCoypkVd3bdpeu1MyEB+Pi4XbU3Xj28U6e
+3ND3LoadQ/VHeNcE9fy3Xdb2udCU1lTs0iwH+661v3lf6MyhOkTEuOtS3HbKYVhh
+3Wfxs6w8uUHU9WQe/PbL1RA3mZ/WsIgNmcN7CkmYm+z2Jkb/cA6bGMIIM9KX5rD1
+vTSelKQcdIFoKK3pFPJ0FlIuf5UuwcKS2yfDhyeAHGo/Cuup72V9J/wVYmSRyAl5
+mkcw9euwOgc2KbsleCRR0VUvxbHKaqez5UIOdEEawNuB37/1mE8Cf/iR1gd3IeWN
+k4Fvz7MYzEDzuPRY/eygxXRl8vSTjskbyWtGDdArbjPEu/p7at5/07xfeCgZqG4W
+SxunmJ5grfA0OKZABEeKie/zcG8S/8dEUdamrywHkg==
+=lutP
+-----END PGP SIGNATURE-----
+
+--5cSRzy0VGBWAML+b--
 
