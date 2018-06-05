@@ -1,10 +1,10 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Tue,  5 Jun 2018 17:04:20 +0800
-Message-Id: <20180605090421.9746-5-a@...2181...>
-In-Reply-To: <20180605090421.9746-1-a@...2181...>
-References: <20180605090421.9746-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH 4/5] pool: allow to configure an IPv6-only
- ifconfig-pool
+Date: Tue,  5 Jun 2018 17:36:28 +0800
+Message-Id: <20180605093628.4985-1-a@...2181...>
+In-Reply-To: <20180605090421.9746-5-a@...2181...>
+References: <20180605090421.9746-5-a@...2181...>
+Subject: [Openvpn-devel] [PATCH v2 4/5] pool: allow to configure an
+ IPv6-only ifconfig-pool
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -28,13 +28,17 @@ Trac: #208
 Cc: Gert Doering <gert@...1296...>
 Signed-off-by: Antonio Quartulli <antonio@...515...>
 ---
+
+v2:
+- fix syntax error by adding missing ')'
+
  src/openvpn/multi.c |   7 ++-
  src/openvpn/pool.c  | 139 ++++++++++++++++++++++++++++++--------------
  src/openvpn/pool.h  |   8 ++-
  3 files changed, 107 insertions(+), 47 deletions(-)
 
 diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 3da8c110..39ab6d68 100644
+index 3da8c110..20f8611b 100644
 --- a/src/openvpn/multi.c
 +++ b/src/openvpn/multi.c
 @@ -397,7 +397,8 @@ multi_init(struct multi_context *m, struct context *t, bool tcp_mode, int thread
@@ -54,7 +58,7 @@ index 3da8c110..39ab6d68 100644
 -                 print_in_addr_t( remote, 0, &gc ),
 +                 (mi->context.options.ifconfig_pool_defined
 +                  ? print_in_addr_t(remote, 0, &gc)
-+                  : "(Not enabled)",
++                  : "(Not enabled)"),
                   (mi->context.options.ifconfig_ipv6_pool_defined
                    ? print_in6_addr( remote_ipv6, 0, &gc )
                    : "(Not enabled)") );
