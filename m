@@ -1,13 +1,23 @@
-Date: Wed, 6 Jun 2018 09:10:31 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180606071031.GX57262@...1296...>
-References: <CAAEV3TywmcYYidTfa6oWaex-24rjeqh7iJZ28p1rQONS3Ev0ag@...278...>
+References: <CAJY0qZKNO_aamQfi56BG_XK2vrOCyPAQf-My1N56qqV7TsUG7A@...278...>
+ <eaae68e6-e30d-f63b-59c5-64515c8f8bcd@...1147...>
+ <e4a2d28a-ff8d-4797-e0af-3bcf98828cb3@...1856...>
+ <CAJY0qZKw+HgQ1vS-W13nw2=gj8d-uxeOqyZia4-gEbaGNTyFLQ@...278...>
+ <03a13b39-7b85-0b67-cc94-7b219e6b209f@...1147...>
+ <49b53be0-a301-8447-2a0e-0534435e5e87@...1147...>
+ <CAJY0qZ+_kEVS_41oOHNX=Wp47LnNhL0HKRZvR75eg7JNW3tLkQ@...278...>
+ <20180605184024.GO57262@...1296...>
+ <CAJY0qZ+r_fHPW-+BAmj2=2qS=k7vQS+Bto0aHE7EDwcgtdaniA@...278...>
+ <20180606070035.GW57262@...1296...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <c4cad624-a7e9-6a9f-583f-9de9ade92cfc@...2181...>
+Date: Wed, 6 Jun 2018 15:18:03 +0800
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="jh06fhy6YTawvwPV"
-Content-Disposition: inline
-In-Reply-To: <CAAEV3TywmcYYidTfa6oWaex-24rjeqh7iJZ28p1rQONS3Ev0ag@...278...>
-Subject: Re: [Openvpn-devel] OpenVPN Custom Client
+In-Reply-To: <20180606070035.GW57262@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="FPTr7Y0B57lJAWc4hgjKujyPX8TkrpBGz"
+Subject: Re: [Openvpn-devel] Does the OpenVPN protocol itself handle
+ windowing?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,68 +26,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Rafael Herrera <rafael.herrera@...2405...>
+To: Gert Doering <gert@...1296...>, Derek Zimmer <derek@...2095...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---jh06fhy6YTawvwPV
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--FPTr7Y0B57lJAWc4hgjKujyPX8TkrpBGz
+Content-Type: multipart/mixed; boundary="4Afrnq7n9RGujnciEo0rG7T5HCWLya2L6";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: Gert Doering <gert@...1296...>, Derek Zimmer <derek@...2095...>
+Cc: openvpn-devel@lists.sourceforge.net
+Message-ID: <c4cad624-a7e9-6a9f-583f-9de9ade92cfc@...2181...>
+Subject: Re: [Openvpn-devel] Does the OpenVPN protocol itself handle
+ windowing?
+References: <CAJY0qZKNO_aamQfi56BG_XK2vrOCyPAQf-My1N56qqV7TsUG7A@...278...>
+ <eaae68e6-e30d-f63b-59c5-64515c8f8bcd@...1147...>
+ <e4a2d28a-ff8d-4797-e0af-3bcf98828cb3@...1856...>
+ <CAJY0qZKw+HgQ1vS-W13nw2=gj8d-uxeOqyZia4-gEbaGNTyFLQ@...278...>
+ <03a13b39-7b85-0b67-cc94-7b219e6b209f@...1147...>
+ <49b53be0-a301-8447-2a0e-0534435e5e87@...1147...>
+ <CAJY0qZ+_kEVS_41oOHNX=Wp47LnNhL0HKRZvR75eg7JNW3tLkQ@...278...>
+ <20180605184024.GO57262@...1296...>
+ <CAJY0qZ+r_fHPW-+BAmj2=2qS=k7vQS+Bto0aHE7EDwcgtdaniA@...278...>
+ <20180606070035.GW57262@...1296...>
+In-Reply-To: <20180606070035.GW57262@...1296...>
+
+--4Afrnq7n9RGujnciEo0rG7T5HCWLya2L6
+Content-Language: en-US
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
 Hi,
 
-On Tue, Jun 05, 2018 at 05:54:05PM -0300, Rafael Herrera wrote:
-> We are developing a custom client for OpenVPN 2.4.x and it would be nice =
-to
-> have some support from experienced community developers.
->=20
-> Is there anybody here available to help us with a consultancy regarding to
-> network protocols and its required state machines?
+On 06/06/18 15:00, Gert Doering wrote:
+> For Data mode ("tun -> openvpn -> network -> openvpn -> tun"), we do
+> error checking.  As in "if the packet does not pass authentication,
+> complain and drop it".  (We *might* do a sequence number check to drop
+> out of order packets
 
-David was working on an RFC to document the protocol - no idea if that
-has progressed to "readable first draft" status already, but it might
-be a good test for the document.
+I think we only do replay attack checks (ssl.c:crypto_check_replay())
+and dropped packets are logged with verb 6.
 
-Besides this, I wonder why you're not basing your work on the existing
-(2.x or 3.x) client, possibly with a new GUI wrapped on top - duplicating=20
-all the code and logic inside OpenVPN is a fairly big task, especially=20
-in the "this is not really very well defined, it just happens to be=20
-this way today" areas.
+However, JJ has shown that by adding latency with netem in a LAN he can
+emulate the throughput drop, therefore I hardly believe this is the
+result of re-ordering and consequent drops.
 
-Also, you'll have to end up following all developments that we do on
-the 2.x and 3.x clients - like, right now we're working on making the
-client work in an IPv6-only environment.  We test against 2.x and 3.x,
-but if we break "other implementations that we do not know about", it
-is not something we can avoid.
 
-gert
+Cheers,
+
 
 --=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Antonio Quartulli
 
-Gert Doering - Munich, Germany                             gert@...1296...
 
---jh06fhy6YTawvwPV
+--4Afrnq7n9RGujnciEo0rG7T5HCWLya2L6--
+
+--FPTr7Y0B57lJAWc4hgjKujyPX8TkrpBGz
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJbF4jmAAoJEB2Cnv7KVigStNgMAK1a2p9iT8XqgRE8GqDjGRvx
-N3dsCoOJFY2MTGniPkV18ksDUwSYJ+8MagKxHF87YwzJVjvReMgeu7hk2D39ec07
-Vsf2tw1UBGi7PJBh4PZPzU9mz+xe53Svl/YAogBN5kr3/DiOoy49ipM35g0gKtiL
-pWPPJYnssLjo0b9AIJk0OHXa4iH95i0CdEUyGtGNPMq7ATtKpdxNnUC4pApxVY9x
-o7bGRgJtc+zjz6w/G8r7F61PJcdwtVaVL+QrGGwhcjSr5vn3aNkOImnE+MK1mjk8
-NzW+/ShI04GYdY/80U2voN9daLyqwfTtzyD7vD/xUn96pFGyFmuREANOrYfl/Cnd
-0yIjNdaWTDAAMtINpbEYVWljdb0b8cBMeVOOZtsNjcTy2uCAoMjrUBnHfIqr8rNd
-YBqWW6XfOWEdEY4GOcED/O/cjcE8UnvMzMmV2Bt+vxvRB6ezX7CT6iMMXVLbvGtA
-8YDE9IU8oZHhRH47muxXEKdZDLdKB3HbFBXk+TUxCA==
-=/y9D
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlsXiqsACgkQB6U8WA7y
+zXS5hxAAvn/Yk3klfhu4v1pon5d6N+MI+5iy33BqVybsM2z/Utl0XJlsc/Cb/oeD
+7p8ByJh+bEKMczKp+QHGK9f+q2+1x/R3rZHkDJWpxEgKPdcfXBL4spktyzEZnHtb
+PVbvjP7t7nbkYP/hOgi0VNZcMD3i5LNJg+qza7Tg9lyCVbhQxY3b0NYTU+fG+AcX
+XXu+26vkYDfH6k5g6Y2sEI9/B9iCpY2FP9APx1+3siJiXCHVumBCZPQMMLUwdKrr
+84BW60oACsfOpEw+B+iSiqYJIDZOmjSrMhCGtlLc/qMT5E3olrn6nLa4+npbL66X
+Fi9CAH/365DPDCPyBDVS7k0UZFbDrdYYSG4l0Vwd3j/rWhmpytpWjHjQrZWIKoEE
+zyOSzKHnwHB/kETC8o8UAm1OcWCzVcswSFEGrcGBA/OJbu72ACH7cF7TJLCgzfqu
+P+xhkOxMdLx5eMIkdOz2jaLKli8f04yrKNZiJtVjLDuEeWKR2HIp3YKIo3E8uUIl
+PceBxw6ehVdw7lDcJeHjxxlyImh54xYLcaQiDvXIFbUtVLBXayWvlmmrjFc+XnsO
+TyTompTGAKoI/AuKDf6wg3JSvIJ7AzHT/VW7uTX8uq0fukdHO5IMDKhyiGliCUrJ
+zONYGbfZspn6prTJ5fgIIp9pipaW0hR/Hadvbz2la485rqDNwvs=
+=BGRf
 -----END PGP SIGNATURE-----
 
---jh06fhy6YTawvwPV--
+--FPTr7Y0B57lJAWc4hgjKujyPX8TkrpBGz--
 
