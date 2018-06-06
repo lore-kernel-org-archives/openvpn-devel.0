@@ -1,22 +1,13 @@
-Date: Wed, 6 Jun 2018 09:00:35 +0200
+Date: Wed, 6 Jun 2018 09:10:31 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20180606070035.GW57262@...1296...>
-References: <CAJY0qZKNO_aamQfi56BG_XK2vrOCyPAQf-My1N56qqV7TsUG7A@...278...>
- <eaae68e6-e30d-f63b-59c5-64515c8f8bcd@...1147...>
- <e4a2d28a-ff8d-4797-e0af-3bcf98828cb3@...1856...>
- <CAJY0qZKw+HgQ1vS-W13nw2=gj8d-uxeOqyZia4-gEbaGNTyFLQ@...278...>
- <03a13b39-7b85-0b67-cc94-7b219e6b209f@...1147...>
- <49b53be0-a301-8447-2a0e-0534435e5e87@...1147...>
- <CAJY0qZ+_kEVS_41oOHNX=Wp47LnNhL0HKRZvR75eg7JNW3tLkQ@...278...>
- <20180605184024.GO57262@...1296...>
- <CAJY0qZ+r_fHPW-+BAmj2=2qS=k7vQS+Bto0aHE7EDwcgtdaniA@...278...>
+Message-ID: <20180606071031.GX57262@...1296...>
+References: <CAAEV3TywmcYYidTfa6oWaex-24rjeqh7iJZ28p1rQONS3Ev0ag@...278...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="kVcb4xucqmsYUpQy"
+ protocol="application/pgp-signature"; boundary="jh06fhy6YTawvwPV"
 Content-Disposition: inline
-In-Reply-To: <CAJY0qZ+r_fHPW-+BAmj2=2qS=k7vQS+Bto0aHE7EDwcgtdaniA@...278...>
-Subject: Re: [Openvpn-devel] Does the OpenVPN protocol itself handle
- windowing?
+In-Reply-To: <CAAEV3TywmcYYidTfa6oWaex-24rjeqh7iJZ28p1rQONS3Ev0ag@...278...>
+Subject: Re: [Openvpn-devel] OpenVPN Custom Client
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -25,44 +16,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Derek Zimmer <derek@...2095...>
-Cc: Gert Doering <gert@...1296...>, Jan Just Keijser <janjust@...1147...>, openvpn-devel@lists.sourceforge.net
+To: Rafael Herrera <rafael.herrera@...2405...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---kVcb4xucqmsYUpQy
+--jh06fhy6YTawvwPV
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Tue, Jun 05, 2018 at 08:05:40PM -0500, Derek Zimmer wrote:
-> The openvpn protocol does error checking and recovery on the data channel,
-> right?=20
+On Tue, Jun 05, 2018 at 05:54:05PM -0300, Rafael Herrera wrote:
+> We are developing a custom client for OpenVPN 2.4.x and it would be nice =
+to
+> have some support from experienced community developers.
+>=20
+> Is there anybody here available to help us with a consultancy regarding to
+> network protocols and its required state machines?
 
-There's "control packets" and "data packets" in "the openvpn protocol".
+David was working on an RFC to document the protocol - no idea if that
+has progressed to "readable first draft" status already, but it might
+be a good test for the document.
 
-For Control, we do all of it - windowing, pacing, re-sending, ... - but=20
-this is just TLS, keying, authentication session setup, parameter negotiati=
-on
-(and our control channel is fairly slow due to a fairly simplistic approach=
-=20
-to all of this - good enough for the ~10-20kbyte initial handshake, but
-not for serious amounts of data).
+Besides this, I wonder why you're not basing your work on the existing
+(2.x or 3.x) client, possibly with a new GUI wrapped on top - duplicating=20
+all the code and logic inside OpenVPN is a fairly big task, especially=20
+in the "this is not really very well defined, it just happens to be=20
+this way today" areas.
 
-For Data mode ("tun -> openvpn -> network -> openvpn -> tun"), we do
-error checking.  As in "if the packet does not pass authentication,
-complain and drop it".  (We *might* do a sequence number check to drop
-out of order packets
-
-We do not do "recovery", as in "buffering, windowing, ACKing, re-sending=20
-broken or lost packets".
-
-> How is that handled? Or am I mistaken and it is all handled through
-> the regular TCP protocol that is operating inside of the VPN tunnel.
-
-This :-)
+Also, you'll have to end up following all developments that we do on
+the 2.x and 3.x clients - like, right now we're working on making the
+client work in an IPv6-only environment.  We test against 2.x and 3.x,
+but if we break "other implementations that we do not know about", it
+is not something we can avoid.
 
 gert
+
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -73,22 +62,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---kVcb4xucqmsYUpQy
+--jh06fhy6YTawvwPV
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJbF4aTAAoJEB2Cnv7KVigS8q4MAIDy9tTp6uIrYTNd1KAHO06w
-spC9HhwIM5TgcJ6c0AdPLIoB8zVbFcU2A5SXR5MJ2uMlgGSF3bgSVCJGX01dq6r8
-C+HvenZ0HLvtDCD0Con92F3YgfwYnpn3/OweshIUkYs19ueMAXofxZQ9eoLcAyiK
-4EvVFvy7tJy1VQbTy41uAJ3LOoPmQhPnMu+egvMuyS5jqK8aieMXdS83etvDozG4
-kA2pM7hLn8YslEj1xqQBSkgc+a2V+WNxxgPLhMJUg5rpUMrGMOYytYbw0S8gu2z7
-NBGhCK+RWv73xGFjIlenPCdR+9m7H+lpRW6RCbKaSufUJlVPSjVWiU1pFeLRHAqu
-Zr2Mpa/4+c46e2X4OSoulOdD95dUTVOY5/ESf4uk9E07pb4gCv4/3xMdBAdnPql1
-ReTlz/cz97rWnBWOWWZe7t+Yns/jN+fJKld/f0N7QMDO4gBiSI9i/Zqunr6nC+Vk
-5MlhlUVV2rKRCoBf5LWDti7i5OX8DxE6jVpPOIChlQ==
-=rIka
+iQGcBAEBAgAGBQJbF4jmAAoJEB2Cnv7KVigStNgMAK1a2p9iT8XqgRE8GqDjGRvx
+N3dsCoOJFY2MTGniPkV18ksDUwSYJ+8MagKxHF87YwzJVjvReMgeu7hk2D39ec07
+Vsf2tw1UBGi7PJBh4PZPzU9mz+xe53Svl/YAogBN5kr3/DiOoy49ipM35g0gKtiL
+pWPPJYnssLjo0b9AIJk0OHXa4iH95i0CdEUyGtGNPMq7ATtKpdxNnUC4pApxVY9x
+o7bGRgJtc+zjz6w/G8r7F61PJcdwtVaVL+QrGGwhcjSr5vn3aNkOImnE+MK1mjk8
+NzW+/ShI04GYdY/80U2voN9daLyqwfTtzyD7vD/xUn96pFGyFmuREANOrYfl/Cnd
+0yIjNdaWTDAAMtINpbEYVWljdb0b8cBMeVOOZtsNjcTy2uCAoMjrUBnHfIqr8rNd
+YBqWW6XfOWEdEY4GOcED/O/cjcE8UnvMzMmV2Bt+vxvRB6ezX7CT6iMMXVLbvGtA
+8YDE9IU8oZHhRH47muxXEKdZDLdKB3HbFBXk+TUxCA==
+=/y9D
 -----END PGP SIGNATURE-----
 
---kVcb4xucqmsYUpQy--
+--jh06fhy6YTawvwPV--
 
