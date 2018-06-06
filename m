@@ -1,17 +1,20 @@
-References: <20180605090421.9746-5-a@...2181...>
- <20180605093628.4985-1-a@...2181...> <20180605145139.GN57262@...1296...>
- <3909b854-7b38-a8f8-945d-f30bc60a0a6f@...2181...>
- <20180605184325.GP57262@...1296...>
+References: <20180605090421.9746-1-a@...2181...>
+ <20180605090421.9746-2-a@...2181...> <20180605143603.GL57262@...1296...>
+ <CAKuzo_i5wMwqSKjH-ohK8ujSApthxNrHsbFw2k5U9q_YKb_YqA@...278...>
+ <9319a55d-c27e-aa07-749d-9c998271a5c4@...2181...>
+ <CAKuzo_gfgG=6LxX-s0aPReZeaXDwEBM0zfrtWxZR9JzNvkraOA@...278...>
+ <20180605185352.GR57262@...1296...>
+ <CAKuzo_gaiCL1Y_zbHUBjaQwxtU2WYzg5Z4zv9tDUS-J4oeoLVg@...278...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <f80bf9fb-d3f7-470c-8fbe-285ec7890707@...2181...>
-Date: Wed, 6 Jun 2018 09:35:35 +0800
+Message-ID: <c107aa30-32d4-dfb6-96d9-9f7610399796@...2181...>
+Date: Wed, 6 Jun 2018 10:30:33 +0800
 MIME-Version: 1.0
-In-Reply-To: <20180605184325.GP57262@...1296...>
+In-Reply-To: <CAKuzo_gaiCL1Y_zbHUBjaQwxtU2WYzg5Z4zv9tDUS-J4oeoLVg@...278...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="e0XFhHbZ96kKNN2vMLuv8cTSVoiYot2W3"
-Subject: Re: [Openvpn-devel] [PATCH v2 4/5] pool: allow to configure an
- IPv6-only ifconfig-pool
+ boundary="m4gVKgT9KZS8VNxtocdd64FamMgRMeLg0"
+Subject: Re: [Openvpn-devel] [PATCH 1/5] tun: ensure interface can be
+ configured with IPv6 only
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,80 +23,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: Antonio Quartulli <antonio@...515...>, openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>, Gert Doering <gert@...1296...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---e0XFhHbZ96kKNN2vMLuv8cTSVoiYot2W3
-Content-Type: multipart/mixed; boundary="HN0i22Itl9Gi2iGnkomterOFJZ7M4I1pf";
+--m4gVKgT9KZS8VNxtocdd64FamMgRMeLg0
+Content-Type: multipart/mixed; boundary="L2PKOEiy3EgNZjl1NFGPW7WMEdxLO8CiA";
  protected-headers="v1"
 From: Antonio Quartulli <a@...2181...>
-To: Gert Doering <gert@...1296...>
-Cc: Antonio Quartulli <antonio@...515...>,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <f80bf9fb-d3f7-470c-8fbe-285ec7890707@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v2 4/5] pool: allow to configure an
- IPv6-only ifconfig-pool
-References: <20180605090421.9746-5-a@...2181...>
- <20180605093628.4985-1-a@...2181...> <20180605145139.GN57262@...1296...>
- <3909b854-7b38-a8f8-945d-f30bc60a0a6f@...2181...>
- <20180605184325.GP57262@...1296...>
-In-Reply-To: <20180605184325.GP57262@...1296...>
+To: Selva Nair <selva.nair@...277...>, Gert Doering <gert@...1296...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Message-ID: <c107aa30-32d4-dfb6-96d9-9f7610399796@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH 1/5] tun: ensure interface can be
+ configured with IPv6 only
+References: <20180605090421.9746-1-a@...2181...>
+ <20180605090421.9746-2-a@...2181...> <20180605143603.GL57262@...1296...>
+ <CAKuzo_i5wMwqSKjH-ohK8ujSApthxNrHsbFw2k5U9q_YKb_YqA@...278...>
+ <9319a55d-c27e-aa07-749d-9c998271a5c4@...2181...>
+ <CAKuzo_gfgG=6LxX-s0aPReZeaXDwEBM0zfrtWxZR9JzNvkraOA@...278...>
+ <20180605185352.GR57262@...1296...>
+ <CAKuzo_gaiCL1Y_zbHUBjaQwxtU2WYzg5Z4zv9tDUS-J4oeoLVg@...278...>
+In-Reply-To: <CAKuzo_gaiCL1Y_zbHUBjaQwxtU2WYzg5Z4zv9tDUS-J4oeoLVg@...278...>
 
---HN0i22Itl9Gi2iGnkomterOFJZ7M4I1pf
+--L2PKOEiy3EgNZjl1NFGPW7WMEdxLO8CiA
 Content-Language: en-US
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-On 06/06/18 02:43, Gert Doering wrote:
-> Hi,
+On 06/06/18 03:38, Selva Nair wrote:
+> Here is the diff of what I did for the Windows build run:
 >=20
-> On Wed, Jun 06, 2018 at 12:11:40AM +0800, Antonio Quartulli wrote:
->>> Without having done much review here, just one initial caveat: did you=
-=20
->>> test this with --ifconfig-pool-persist?  What happens?
->>
->> It should just be ignored.
->> At the moment pool-persist works only for IPv4 and there is no support
->> for IPv6. This has not been changed by this patchset.
+> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+> index 2e33880..75336a9 100644
+> --- a/src/openvpn/tun.c
+> +++ b/src/openvpn/tun.c
+> @@ -5824,9 +5824,9 @@ open_tun(const char *dev, const char *dev_type,
+> const char *dev_node, struct tun
 >=20
-> Well, it does save the (calculated) v6 address into the save file...
->=20
-> So, what happens if you run a server with --ifconfig-pool-persist and
-> no IPv4?  Will it crash, not write anything to the file, write garbage?
+>      if (tt->type =3D=3D DEV_TYPE_TUN)
+>      {
+> -        if (!tt->did_ifconfig_setup)
+> +        if (!tt->did_ifconfig_setup && !tt->did_ifconfig_ipv6_setup)
+>          {
+> -            msg(M_FATAL, "ERROR: --dev tun also requires --ifconfig");
+> +            msg(M_WARN|M_INFO, "WARNING: neither ifconfig nor
+> ifconfig-ipv6 specified");
 
-It won't start. --ifconfig-pool-persist *requires* --ifconfig-pool that
-is a v4 option and is not set (normally set by --server).
-
-However, even if we were to remove this option check, it should write
-the proper IPv6 into the file, but would not read them back as per the
-check below.
-
->=20
->> I added a check about it in ifconfig_pool_read():
->>
->> 521     /* IPv6 logic not implemented yet, therefore bail out if no IPv4
->> pool was
->> 522      * configured
->> 523      */
->> 524     if (pool && !pool->ipv4.enabled)
->> 525     {
->> 526         return;
->> 527     }
->=20
-> We should aim to make this work as well (but it could be patch 6 of the
-> series :-)).
->=20
-
-Definitely :) I just thought that "it is not there now, so it can't be a
-regression if we don't have it after this patchset". :)
-
-However, it is definitely something we can add as extra feature at the
-end of the patchset. I'll see if I can squeeze that into v2.
-
-Thanks for the comments!
+Why converting this from M_FATAL to M_WARN|M_INFO?
+Isn't just better to quit the client if we receive no IPv* settings?
 
 Cheers,
 
@@ -101,29 +80,29 @@ Cheers,
 Antonio Quartulli
 
 
---HN0i22Itl9Gi2iGnkomterOFJZ7M4I1pf--
+--L2PKOEiy3EgNZjl1NFGPW7WMEdxLO8CiA--
 
---e0XFhHbZ96kKNN2vMLuv8cTSVoiYot2W3
+--m4gVKgT9KZS8VNxtocdd64FamMgRMeLg0
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlsXOmcACgkQB6U8WA7y
-zXT0hg//Xc9kOR+HsH9VKueCAPMsOZ03m46ZRENWKl524Lwj6EJNMP0pjay4CFDO
-H8v4THNVlxuFotBgETdnjvPmbZ4VTVXjkSMpF0fSzx5m8c6f3MBq/3VsujiZSoKf
-EVHOKelLC7FKWi6ZmNsGV47cJGGItUl1EjTXda0Yn7O5vZsIU8+lTzrSApzJxQtU
-bZlTadoIwFWxbPohDMjK9GEdThg3up25O8aJDGzmHsqmVCaUowz5+g05WVwSHPBl
-WUdiDgvKKsXmXM8q2k52a4EBbj7T/fUPqE7uS9cIzKQXxQoOCmWbpzzie3E2mVO1
-Tktys9B1QZpSbEh5sI2CtVKuOp46AfqDCKimzIP/EQMB7WGZ+KrQ9koHvltUHI71
-4cCdE445x63uKG8MvlTG5+nrb2KHZJ8JxBshDsbf5h4NwjxTGKlNGzN8mnVeyjav
-FLPqyOyoBfmTzvETp+8V14axDxYQs8ATLehR/qqlfo1QBaKa9Fk/3bwO+20ARqpD
-A7jBFYYPhwDXs3TePiWGqigRRLF1318QD29XMdGpMt19T7es3Dk4LW7XMZaFOwEo
-TyoPrOh6jLHe3ci+6t7ktKIHPgE01W2xjyJ1aUJ6LJLgP12HQaNMVfkXfAQavKVU
-6ylSelrQL1cJ2EjD20rlY3JQ8Su0x+VisH6SJYLqUvPNS4xvJNs=
-=owSn
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlsXR0kACgkQB6U8WA7y
+zXSfpg/+L/yiE4swdEDYOqI4CuaXmBsdphY6f1E+K7MTveG8Dspn+HCgFCTFu0TW
+HmTVMQgaJfFzzKyu8NMIlcft+92VP/oJDBxYt10YbeHUYOS00z41TvMPQeXNW3oS
+To0j6xgL4j66ELjv9u5799CXX4fzNRwkFF0ibkheaOX2anVXLWNmiUIWF70xRtbR
+H/riObzIPUF6CS6rb6np+4gaONBl2/KuUFRt3hHtW4hnV+NYKJbhWj2TWliJd738
+2zbC39qXjNNJ6ArYH1PE213rnql8RJRX/x19LQYyd1ZDT5Vkcweo+RvatRf6ccpi
+6EZhUVGVv79ha16tS8pU6xnkV9871ub21JUHRBQ4rqFn/AOF2LBKQNCUc3yjM0nW
+T3xcR0HEMH02XFi99toPJqBWP54OkJh4hfvVzgmXIIpSGxc+1TXC1vo8apH+J3Pi
+xLjIY8ZYivYsMk3WOqEsd1iED4sq7hVqeTyqkjsjLW4XpfidDio7CXaWpAe8pkKJ
+RPwnGUUPSvDxxBsO/nbIguRa96KpOE20ESXx2bAaRKjWYDpXs27vg2Z7foSp4luu
+joYF1YbFeomQ27RzNvrn2gBZQsXkbaWXEDOw/bsl+KXFmena+3xOGR26aM7EqOSZ
+H+uTDIBF/PNxl9YkTnlsc7h5pPkdSLhEY9sNCXyTxeIcoEKcWkM=
+=bwpn
 -----END PGP SIGNATURE-----
 
---e0XFhHbZ96kKNN2vMLuv8cTSVoiYot2W3--
+--m4gVKgT9KZS8VNxtocdd64FamMgRMeLg0--
 
