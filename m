@@ -1,19 +1,22 @@
+Date: Wed, 6 Jun 2018 09:00:35 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180606070035.GW57262@...1296...>
+References: <CAJY0qZKNO_aamQfi56BG_XK2vrOCyPAQf-My1N56qqV7TsUG7A@...278...>
+ <eaae68e6-e30d-f63b-59c5-64515c8f8bcd@...1147...>
+ <e4a2d28a-ff8d-4797-e0af-3bcf98828cb3@...1856...>
+ <CAJY0qZKw+HgQ1vS-W13nw2=gj8d-uxeOqyZia4-gEbaGNTyFLQ@...278...>
+ <03a13b39-7b85-0b67-cc94-7b219e6b209f@...1147...>
+ <49b53be0-a301-8447-2a0e-0534435e5e87@...1147...>
+ <CAJY0qZ+_kEVS_41oOHNX=Wp47LnNhL0HKRZvR75eg7JNW3tLkQ@...278...>
+ <20180605184024.GO57262@...1296...>
+ <CAJY0qZ+r_fHPW-+BAmj2=2qS=k7vQS+Bto0aHE7EDwcgtdaniA@...278...>
 MIME-Version: 1.0
-In-Reply-To: <c107aa30-32d4-dfb6-96d9-9f7610399796@...2181...>
-References: <20180605090421.9746-1-a@...2181...>
- <20180605090421.9746-2-a@...2181...>
- <20180605143603.GL57262@...1296...>
- <CAKuzo_i5wMwqSKjH-ohK8ujSApthxNrHsbFw2k5U9q_YKb_YqA@...278...>
- <9319a55d-c27e-aa07-749d-9c998271a5c4@...2181...>
- <CAKuzo_gfgG=6LxX-s0aPReZeaXDwEBM0zfrtWxZR9JzNvkraOA@...278...>
- <20180605185352.GR57262@...1296...>
- <CAKuzo_gaiCL1Y_zbHUBjaQwxtU2WYzg5Z4zv9tDUS-J4oeoLVg@...278...>
- <c107aa30-32d4-dfb6-96d9-9f7610399796@...2181...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 6 Jun 2018 00:26:44 -0400
-Message-ID: <CAKuzo_jPBZS42OndiU_k04072JUFFGveRjmP-ZwzLjNb8Hw4Mg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 1/5] tun: ensure interface can be
- configured with IPv6 only
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="kVcb4xucqmsYUpQy"
+Content-Disposition: inline
+In-Reply-To: <CAJY0qZ+r_fHPW-+BAmj2=2qS=k7vQS+Bto0aHE7EDwcgtdaniA@...278...>
+Subject: Re: [Openvpn-devel] Does the OpenVPN protocol itself handle
+ windowing?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,51 +25,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Derek Zimmer <derek@...2095...>
+Cc: Gert Doering <gert@...1296...>, Jan Just Keijser <janjust@...1147...>, openvpn-devel@lists.sourceforge.net
 
-Hi
+--kVcb4xucqmsYUpQy
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On Tue, Jun 5, 2018 at 10:30 PM, Antonio Quartulli <a@...2181...> wrote:
-> Hi,
->
-> On 06/06/18 03:38, Selva Nair wrote:
->> Here is the diff of what I did for the Windows build run:
->>
->> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
->> index 2e33880..75336a9 100644
->> --- a/src/openvpn/tun.c
->> +++ b/src/openvpn/tun.c
->> @@ -5824,9 +5824,9 @@ open_tun(const char *dev, const char *dev_type,
->> const char *dev_node, struct tun
->>
->>      if (tt->type == DEV_TYPE_TUN)
->>      {
->> -        if (!tt->did_ifconfig_setup)
->> +        if (!tt->did_ifconfig_setup && !tt->did_ifconfig_ipv6_setup)
->>          {
->> -            msg(M_FATAL, "ERROR: --dev tun also requires --ifconfig");
->> +            msg(M_WARN|M_INFO, "WARNING: neither ifconfig nor
->> ifconfig-ipv6 specified");
->
-> Why converting this FAtTAL to M_WARN|M_INFO?
-> Isn't just better to quit the client if we receive no IPv* settings?
+Hi,
 
-That was just to show why Windows needs some special handling here,
-not a patch :)
+On Tue, Jun 05, 2018 at 08:05:40PM -0500, Derek Zimmer wrote:
+> The openvpn protocol does error checking and recovery on the data channel,
+> right?=20
 
-Well, the reason why this used to be FATAL is because Windows is
-special: tun mode requires --ifconfig. Whereas on other platforms its
-not FATAL to run without any ifconfig: say the user sets a static IP
-on the tun and somehow gets it to work.
+There's "control packets" and "data packets" in "the openvpn protocol".
 
-At the same time, v4 address will work only if also present as an
-ifconfig line (even if a manual method of assigning the IP is in use).
-So some FATAL check is still required to catch that. But making this
-combination check FATAL is not the same thing.  I'm not entirely sure
-of the best approach, but, anyway, its your patch :)
+For Control, we do all of it - windowing, pacing, re-sending, ... - but=20
+this is just TLS, keying, authentication session setup, parameter negotiati=
+on
+(and our control channel is fairly slow due to a fairly simplistic approach=
+=20
+to all of this - good enough for the ~10-20kbyte initial handshake, but
+not for serious amounts of data).
 
-Selva
+For Data mode ("tun -> openvpn -> network -> openvpn -> tun"), we do
+error checking.  As in "if the packet does not pass authentication,
+complain and drop it".  (We *might* do a sequence number check to drop
+out of order packets
+
+We do not do "recovery", as in "buffering, windowing, ACKing, re-sending=20
+broken or lost packets".
+
+> How is that handled? Or am I mistaken and it is all handled through
+> the regular TCP protocol that is operating inside of the VPN tunnel.
+
+This :-)
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--kVcb4xucqmsYUpQy
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJbF4aTAAoJEB2Cnv7KVigS8q4MAIDy9tTp6uIrYTNd1KAHO06w
+spC9HhwIM5TgcJ6c0AdPLIoB8zVbFcU2A5SXR5MJ2uMlgGSF3bgSVCJGX01dq6r8
+C+HvenZ0HLvtDCD0Con92F3YgfwYnpn3/OweshIUkYs19ueMAXofxZQ9eoLcAyiK
+4EvVFvy7tJy1VQbTy41uAJ3LOoPmQhPnMu+egvMuyS5jqK8aieMXdS83etvDozG4
+kA2pM7hLn8YslEj1xqQBSkgc+a2V+WNxxgPLhMJUg5rpUMrGMOYytYbw0S8gu2z7
+NBGhCK+RWv73xGFjIlenPCdR+9m7H+lpRW6RCbKaSufUJlVPSjVWiU1pFeLRHAqu
+Zr2Mpa/4+c46e2X4OSoulOdD95dUTVOY5/ESf4uk9E07pb4gCv4/3xMdBAdnPql1
+ReTlz/cz97rWnBWOWWZe7t+Yns/jN+fJKld/f0N7QMDO4gBiSI9i/Zqunr6nC+Vk
+5MlhlUVV2rKRCoBf5LWDti7i5OX8DxE6jVpPOIChlQ==
+=rIka
+-----END PGP SIGNATURE-----
+
+--kVcb4xucqmsYUpQy--
 
