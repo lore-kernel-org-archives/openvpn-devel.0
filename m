@@ -1,23 +1,22 @@
-References: <CAJY0qZKNO_aamQfi56BG_XK2vrOCyPAQf-My1N56qqV7TsUG7A@...278...>
- <eaae68e6-e30d-f63b-59c5-64515c8f8bcd@...1147...>
- <e4a2d28a-ff8d-4797-e0af-3bcf98828cb3@...1856...>
- <CAJY0qZKw+HgQ1vS-W13nw2=gj8d-uxeOqyZia4-gEbaGNTyFLQ@...278...>
- <03a13b39-7b85-0b67-cc94-7b219e6b209f@...1147...>
- <49b53be0-a301-8447-2a0e-0534435e5e87@...1147...>
- <CAJY0qZ+_kEVS_41oOHNX=Wp47LnNhL0HKRZvR75eg7JNW3tLkQ@...278...>
- <20180605184024.GO57262@...1296...>
- <CAJY0qZ+r_fHPW-+BAmj2=2qS=k7vQS+Bto0aHE7EDwcgtdaniA@...278...>
- <20180606070035.GW57262@...1296...>
+References: <20180605090421.9746-1-a@...2181...>
+ <20180605090421.9746-2-a@...2181...> <20180605143603.GL57262@...1296...>
+ <CAKuzo_i5wMwqSKjH-ohK8ujSApthxNrHsbFw2k5U9q_YKb_YqA@...278...>
+ <9319a55d-c27e-aa07-749d-9c998271a5c4@...2181...>
+ <CAKuzo_gfgG=6LxX-s0aPReZeaXDwEBM0zfrtWxZR9JzNvkraOA@...278...>
+ <20180605185352.GR57262@...1296...>
+ <CAKuzo_gaiCL1Y_zbHUBjaQwxtU2WYzg5Z4zv9tDUS-J4oeoLVg@...278...>
+ <20180605195935.GU57262@...1296...>
+ <CAKuzo_jP1F13rw2pdRx9zF0n-7+N29u3d4FE53tL9SrwxMwk9w@...278...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <c4cad624-a7e9-6a9f-583f-9de9ade92cfc@...2181...>
-Date: Wed, 6 Jun 2018 15:18:03 +0800
+Message-ID: <9a878b99-12ef-47b4-fc85-a16ecc196363@...2181...>
+Date: Wed, 6 Jun 2018 19:33:58 +0800
 MIME-Version: 1.0
-In-Reply-To: <20180606070035.GW57262@...1296...>
+In-Reply-To: <CAKuzo_jP1F13rw2pdRx9zF0n-7+N29u3d4FE53tL9SrwxMwk9w@...278...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="FPTr7Y0B57lJAWc4hgjKujyPX8TkrpBGz"
-Subject: Re: [Openvpn-devel] Does the OpenVPN protocol itself handle
- windowing?
+ boundary="SMwmAdAi6LQZ4FswacoQbhGdo5RPlHaIO"
+Subject: Re: [Openvpn-devel] [PATCH 1/5] tun: ensure interface can be
+ configured with IPv6 only
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -26,82 +25,95 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, Derek Zimmer <derek@...2095...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>, Gert Doering <gert@...1296...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---FPTr7Y0B57lJAWc4hgjKujyPX8TkrpBGz
-Content-Type: multipart/mixed; boundary="4Afrnq7n9RGujnciEo0rG7T5HCWLya2L6";
+--SMwmAdAi6LQZ4FswacoQbhGdo5RPlHaIO
+Content-Type: multipart/mixed; boundary="MNLCM4at89xtON4rkzrZ2TxqMRwGuoL3E";
  protected-headers="v1"
 From: Antonio Quartulli <a@...2181...>
-To: Gert Doering <gert@...1296...>, Derek Zimmer <derek@...2095...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <c4cad624-a7e9-6a9f-583f-9de9ade92cfc@...2181...>
-Subject: Re: [Openvpn-devel] Does the OpenVPN protocol itself handle
- windowing?
-References: <CAJY0qZKNO_aamQfi56BG_XK2vrOCyPAQf-My1N56qqV7TsUG7A@...278...>
- <eaae68e6-e30d-f63b-59c5-64515c8f8bcd@...1147...>
- <e4a2d28a-ff8d-4797-e0af-3bcf98828cb3@...1856...>
- <CAJY0qZKw+HgQ1vS-W13nw2=gj8d-uxeOqyZia4-gEbaGNTyFLQ@...278...>
- <03a13b39-7b85-0b67-cc94-7b219e6b209f@...1147...>
- <49b53be0-a301-8447-2a0e-0534435e5e87@...1147...>
- <CAJY0qZ+_kEVS_41oOHNX=Wp47LnNhL0HKRZvR75eg7JNW3tLkQ@...278...>
- <20180605184024.GO57262@...1296...>
- <CAJY0qZ+r_fHPW-+BAmj2=2qS=k7vQS+Bto0aHE7EDwcgtdaniA@...278...>
- <20180606070035.GW57262@...1296...>
-In-Reply-To: <20180606070035.GW57262@...1296...>
+To: Selva Nair <selva.nair@...277...>, Gert Doering <gert@...1296...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Message-ID: <9a878b99-12ef-47b4-fc85-a16ecc196363@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH 1/5] tun: ensure interface can be
+ configured with IPv6 only
+References: <20180605090421.9746-1-a@...2181...>
+ <20180605090421.9746-2-a@...2181...> <20180605143603.GL57262@...1296...>
+ <CAKuzo_i5wMwqSKjH-ohK8ujSApthxNrHsbFw2k5U9q_YKb_YqA@...278...>
+ <9319a55d-c27e-aa07-749d-9c998271a5c4@...2181...>
+ <CAKuzo_gfgG=6LxX-s0aPReZeaXDwEBM0zfrtWxZR9JzNvkraOA@...278...>
+ <20180605185352.GR57262@...1296...>
+ <CAKuzo_gaiCL1Y_zbHUBjaQwxtU2WYzg5Z4zv9tDUS-J4oeoLVg@...278...>
+ <20180605195935.GU57262@...1296...>
+ <CAKuzo_jP1F13rw2pdRx9zF0n-7+N29u3d4FE53tL9SrwxMwk9w@...278...>
+In-Reply-To: <CAKuzo_jP1F13rw2pdRx9zF0n-7+N29u3d4FE53tL9SrwxMwk9w@...278...>
 
---4Afrnq7n9RGujnciEo0rG7T5HCWLya2L6
+--MNLCM4at89xtON4rkzrZ2TxqMRwGuoL3E
 Content-Language: en-US
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-On 06/06/18 15:00, Gert Doering wrote:
-> For Data mode ("tun -> openvpn -> network -> openvpn -> tun"), we do
-> error checking.  As in "if the packet does not pass authentication,
-> complain and drop it".  (We *might* do a sequence number check to drop
-> out of order packets
+On 06/06/18 04:30, Selva Nair wrote:
+>>> However, even with !ipv4, redirect-gateway ipv6 appears to error out
+>>> -- it fails with
+>>>
+>>> "TEST ROUTES: 0/2 succeeded len=3D1 ret=3D0 a=3D0 u/d=3Dup
+>>> Route: Waiting for TUN/TAP interface to come up..."
+>>
+>> Interesting.  This is route.c, test_routes(), using test_route_helper()
+>> -> test_route(), which basically tries to find the adapter index where
+>> a given (route)->gateway is configured on.  Since it cannot find anythin=
+g,
+>> it assumes "tun interface is stuck in DHCP" and is unhappy.
+>>
+>> This shouldn't actually try to do anything in the first place - it
+>> looks at "struct route_list *rl", which should not be populated if
+>> we have no v4 address to point the routes to.  (Or maybe it should,
+>> but only for "non-tun/tap routes").
+>=20
+> Yeah, we cant ignore v4 routes completely. So the logic for checking the
+> tun is ready has to change?
+>=20
 
-I think we only do replay attack checks (ssl.c:crypto_check_replay())
-and dropped packets are logged with verb 6.
+I am not sure why you get those 2 routes. Do you have a more extensive
+log to show? It may help clearing up some doubts.
 
-However, JJ has shown that by adding latency with netem in a LAN he can
-emulate the throughput drop, therefore I hardly believe this is the
-result of re-ordering and consequent drops.
+On Linux the route_list is empty when there is no v4 and
+"gateway-redirect !ipv4" is set.
 
 
 Cheers,
-
 
 --=20
 Antonio Quartulli
 
 
---4Afrnq7n9RGujnciEo0rG7T5HCWLya2L6--
+--MNLCM4at89xtON4rkzrZ2TxqMRwGuoL3E--
 
---FPTr7Y0B57lJAWc4hgjKujyPX8TkrpBGz
+--SMwmAdAi6LQZ4FswacoQbhGdo5RPlHaIO
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlsXiqsACgkQB6U8WA7y
-zXS5hxAAvn/Yk3klfhu4v1pon5d6N+MI+5iy33BqVybsM2z/Utl0XJlsc/Cb/oeD
-7p8ByJh+bEKMczKp+QHGK9f+q2+1x/R3rZHkDJWpxEgKPdcfXBL4spktyzEZnHtb
-PVbvjP7t7nbkYP/hOgi0VNZcMD3i5LNJg+qza7Tg9lyCVbhQxY3b0NYTU+fG+AcX
-XXu+26vkYDfH6k5g6Y2sEI9/B9iCpY2FP9APx1+3siJiXCHVumBCZPQMMLUwdKrr
-84BW60oACsfOpEw+B+iSiqYJIDZOmjSrMhCGtlLc/qMT5E3olrn6nLa4+npbL66X
-Fi9CAH/365DPDCPyBDVS7k0UZFbDrdYYSG4l0Vwd3j/rWhmpytpWjHjQrZWIKoEE
-zyOSzKHnwHB/kETC8o8UAm1OcWCzVcswSFEGrcGBA/OJbu72ACH7cF7TJLCgzfqu
-P+xhkOxMdLx5eMIkdOz2jaLKli8f04yrKNZiJtVjLDuEeWKR2HIp3YKIo3E8uUIl
-PceBxw6ehVdw7lDcJeHjxxlyImh54xYLcaQiDvXIFbUtVLBXayWvlmmrjFc+XnsO
-TyTompTGAKoI/AuKDf6wg3JSvIJ7AzHT/VW7uTX8uq0fukdHO5IMDKhyiGliCUrJ
-zONYGbfZspn6prTJ5fgIIp9pipaW0hR/Hadvbz2la485rqDNwvs=
-=BGRf
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlsXxqYACgkQB6U8WA7y
+zXQ3PRAAiwhE656BFrQqEWCu/x2tHtJzsG0GsTOZO4FIcg6hk3UEAT0pVoVEtdr8
+TVe1WL3y6iRBcy6XNSH71vnaihP0LABOKqg7bNjlcfb5sWwPqYpv8BzI6p3J3OUm
+QqWTTV6cuX+HzoNssrfb7J0ts35N/76y+wRw70oxP+uI3DHd3OvD5FMV7cb3mgCF
+wzGxzFCQLyBPf0SB9P3ITab3RuAxCEjPBVUVkVEjanZFz0rXtSNAIGlwAlQjmQR1
+Fb3j1y2vdC654RLS99VbcbIgbEiNn6Kz/4zZeCLdS47OxQFnxZMdLJv4Tu0oSkHE
+AGMdQU8zI7VN3ZIBfN1KNhOfjq2Xw+2A9qxqCOQPilF5w85q/tpT0F3IvL0zQ6AG
+1xhWmpqCH9qGmBy0W7jZDMahwv4/qxeBtgAAcZNwCb9eODmkLEL5+ndEOblq6915
+liizoeq3KjoVgyPas89hYrgQ8YtLWy9l54rn1TAkHzkAovZi00vJgnaWvgQD5sf3
+N2+4j0AnYGkkCQp0HXv+l7fBx9LZZhVPn/XxcbtEoJmroAE5y5983dNZ2bVw5RaD
+U8oOLH9QyZWlVIhNUCAtMm7oBOwyzivIq47zkwy7tZrakkyd8JASfCxNzngTDPt4
+zkYT6ilqgfubotPm0s7o5Rd9+SXGNTlZH8hT3b77rOleZo5df2Y=
+=PjLd
 -----END PGP SIGNATURE-----
 
---FPTr7Y0B57lJAWc4hgjKujyPX8TkrpBGz--
+--SMwmAdAi6LQZ4FswacoQbhGdo5RPlHaIO--
 
