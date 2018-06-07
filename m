@@ -1,7 +1,11 @@
-Date: Thu, 7 Jun 2018 18:57:05 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180607165705.GP57262@...1296...>
-References: <CAKuzo_gfgG=6LxX-s0aPReZeaXDwEBM0zfrtWxZR9JzNvkraOA@...278...>
+MIME-Version: 1.0
+In-Reply-To: <30206ee5-f602-57f3-2ce4-4a7b768200f2@...2181...>
+References: <20180605090421.9746-1-a@...2181...>
+ <20180605090421.9746-2-a@...2181...>
+ <20180605143603.GL57262@...1296...>
+ <CAKuzo_i5wMwqSKjH-ohK8ujSApthxNrHsbFw2k5U9q_YKb_YqA@...278...>
+ <9319a55d-c27e-aa07-749d-9c998271a5c4@...2181...>
+ <CAKuzo_gfgG=6LxX-s0aPReZeaXDwEBM0zfrtWxZR9JzNvkraOA@...278...>
  <20180605185352.GR57262@...1296...>
  <CAKuzo_gaiCL1Y_zbHUBjaQwxtU2WYzg5Z4zv9tDUS-J4oeoLVg@...278...>
  <20180605195935.GU57262@...1296...>
@@ -11,11 +15,10 @@ References: <CAKuzo_gfgG=6LxX-s0aPReZeaXDwEBM0zfrtWxZR9JzNvkraOA@...278...>
  <CAKuzo_gp9jcVocxgf79TNQpgP-ScioC1pM_3oTq9+SHHAhEonw@...278...>
  <665fcdae-dad7-b6c8-14ee-512ff7992963@...2181...>
  <CAKuzo_jLhL=pLrkRoqWXHPRLzBGBiUCgq20Wzxd+DiidoAmOJA@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="59coWm5189RNS6mf"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_jLhL=pLrkRoqWXHPRLzBGBiUCgq20Wzxd+DiidoAmOJA@...278...>
+ <30206ee5-f602-57f3-2ce4-4a7b768200f2@...2181...>
+From: Selva Nair <selva.nair@...277...>
+Date: Thu, 7 Jun 2018 13:00:12 -0400
+Message-ID: <CAKuzo_jnTgWve5Mn=R0=bFmGWzr_F90qsAWzw2OrCTkxYiFReg@...278...>
 Subject: Re: [Openvpn-devel] [PATCH 1/5] tun: ensure interface can be
  configured with IPv6 only
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -26,57 +29,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: Antonio Quartulli <a@...2181...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---59coWm5189RNS6mf
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Thu, Jun 07, 2018 at 12:14:51PM -0400, Selva Nair wrote:
-> Note: All that said, I can't seem to connect to the server via ipv6
-> when there is no v4 address. tracert fails before the first hop.
-> v6 does work when ifconfig is not filtered out.
+Failed to respond to some other points in the last reply:
 
-This "should not happen".=20=20
+>>
+>> Did some quick tests and this seems to work quite well (but see the
+>> note at the bottom):
+>>
+>> - v4 routes via tun just fail with a warning which is good (our route
+>> errors not being FATAL pays off here)
+>> - v4 routes via net_gateway just works : no idea why we support this,
+>> but good to see this patch doesn't break it
+>> - redirect-gateway causes warnings as v4 routes fail:
+>>   If its not too hard could we check !tt->did_ifconfig_setup before
+>> attempting v4 redirect? Saying this because "--redirect-gateway with
+>> no options automatically implies ipv4" is just a hangover from the
+>> past that we are stuck with. For other routes it may be harder to
+>> detect whether its via the tun or not so just letting them error out
+>> is fine. And those warnings provide useful feedback to the user.
+>>
+>
+> Don't you think it's still meaningful to print the warning? somebody is
+> asking for a redirect that does not make sense because there is no v4
+> configured and the config should be adjusted. No?
 
-v6 should work no matter what we break in v4 land.
+When you put it that way, yes. But interpreting redirect-gateway with
+no arguments to mean redirect ipv4 is something we have to live with
+just because of backward compatibility. In that sense its different
+from an explicit ipv4 route in the config. Being a bit more helpful
+and interpret it as !ipv4 when no v4 address is present looks like a
+nice touch? So I would say, a warning saying redirect v4 is skipped is
+useful but letting those routes error out is not.
 
-But this is windows, and "should work" land...
+But unlike I may sound, I do not have a strong feeling about this --
+works either way for me.
 
-Thanks for testing & reporting back ;-)
+>
+>> A minor thing:
+>>
+>> - The warning
+>> "WARNING: OpenVPN was configured to add an IPv4 route. However, no
+>> IPv4 has been configured for this interface, therefore the route
+>> installation may fail or may not work as expected."
+>> is printed without the M_WARN flag  --- so syslog won't see it as a
+>> warning nor does the GUI. M_INFO|M_WARN will make it print at verb > 0
+>> with the warning tag. If that sounds like a strange combination,
+>> invent a warning level like D_GENERIC_WARNING = LOGLEV(1,0,M_WARN). We
+>> don't have one.
+>>
+>
+> you are the master of the log levels, therefore I'll just follow your
+> suggestion, unless somebody else objects.
 
-gert
+Personally I do not like M_WARN|M_INFO but that's the best I can think
+of to get the warning tag and print only if verb > 0.
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Thanks,
 
-Gert Doering - Munich, Germany                             gert@...1296...
-
---59coWm5189RNS6mf
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJbGWPhAAoJEB2Cnv7KVigSrMsL/i8S24KSrCT87yVh1jGPLthg
-+dLv4GnGWIlKmmKpoCsemn7T9E7KV1Fzg+4pQMfct7SXasZGXbgPG93guzSKxEKY
-pHKv1JDL5XlK220vHJOSgKTFjIHa7pdZUQnJnAaCwoL/zE+m9BP9fWdQly5JiCVN
-FesITwcEZyssFI56Ja2cd2Qn1X/77IH0m2T+YlLVe+YHTSL0wskCgPzc/w+O5hF4
-jzFUponZX//guCxKtYtI/iccZYMv2wrIZoXSeGBwHdUk+x2DbitmTkq66F5KvDlI
-7hjLlRLSWWc72GM5fVYziu0NABgBpYS05NN4cKbrET1YovjJLFYkuvFOuUYWC/VK
-Z6PqnL4i2FfxwQIXBgjnQ7e0mkbr8GScN0nV4v5wRVxMRMO9SiJjDTE+Z/d4WlzC
-E2vfcD31mW+n7yOke6fMcqTDQE1rjSOM/SUf5aYYh7qg4ULtQ6btP1/ZTblz/b2H
-uS+hIHnkgquKrda7PWP3ThSgdPVl0bazWEUxwGH7Dg==
-=fYnv
------END PGP SIGNATURE-----
-
---59coWm5189RNS6mf--
+Selva
 
