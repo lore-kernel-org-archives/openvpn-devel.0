@@ -1,12 +1,9 @@
+From: Orion Poplawski <orion@...2408...>
+Message-ID: <a57bd6b8-9e52-4893-c1c9-cdd4416600a6@...2408...>
+Date: Fri, 8 Jun 2018 16:49:13 -0600
 MIME-Version: 1.0
-References: <1528229170-6175-1-git-send-email-selva.nair@...277...>
- <20180608140137.GA57262@...1296...>
-In-Reply-To: <20180608140137.GA57262@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Fri, 8 Jun 2018 10:50:53 -0400
-Message-ID: <CAKuzo_gGX+b-qSPr0PSDA-zW5Bn_fCNQSb119W_kB0es1_FWOw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Replace M_DEBUG with D_LOW as the
- former is too verbose
+Content-Language: en-US
+Subject: [Openvpn-devel] FIPS mode support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,35 +12,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+I'm interested in getting FIPS mode supported by openvpn on Linux.  There's an
+issue:
 
-On Fri, Jun 8, 2018 at 10:01 AM Gert Doering <gert@...1296...> wrote:
->
-> Hi,
->
-> On Tue, Jun 05, 2018 at 04:06:10PM -0400, selva.nair@...277... wrote:
-> > From: Selva Nair <selva.nair@...277...>
-> >
-> > M_DEBUG only indicates the type of the message and will print even
-> > at verb 0.  Use D_LOW which is M_DEBUG combined with verb = 4 and
-> > a mute level.
->
-> This does not want to apply for me - the tun.c hunk says "apply at
-> line 1043", but the line in question is in line 893, and the
-> context is different.
->
-> I assume this was on top of Antonio's v6-only 1/5?
->
-> OTOH this is trivial enough... I think the patch makes sense, it will
-> inevitably create a conflict with Antonio's v2 1/8, so I'll just
-> mangle the patch by hand.
+https://community.openvpn.net/openvpn/ticket/725
 
-You are right, based on wrong branch. Sorry about that. And, thanks.
+and there was discussion:
 
-Selva
+https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13620.html
+
+but discussion appears to have died out.  I'm hoping to get this revived.
+What is needed at this point?
+
+Thanks,
+
+   Orion
+
+-- 
+Orion Poplawski
+Manager of NWRA Technical Systems          720-772-5637
+NWRA, Boulder/CoRA Office             FAX: 303-415-9702
+3380 Mitchell Lane                       orion@...2408...
+Boulder, CO 80301                 https://www.nwra.com/
 
