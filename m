@@ -1,10 +1,10 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Fri,  8 Jun 2018 13:20:11 +0800
-Message-Id: <20180608052017.6696-3-a@...2181...>
+Date: Fri,  8 Jun 2018 13:20:14 +0800
+Message-Id: <20180608052017.6696-6-a@...2181...>
 In-Reply-To: <20180608052017.6696-1-a@...2181...>
 References: <20180608052017.6696-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH v2 2/8] windows: properly configure TAP
- driver when no IPv4 is configured
+Subject: [Openvpn-devel] [PATCH v2 5/8] make server capable of starting with
+ an IPv6-only tunnel
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,73 +16,71 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <antonio@...515...>
+Cc: Antonio Quartulli <antonio@...515...>, Gert Doering <gert@...1296...>
 
 From: Antonio Quartulli <antonio@...515...>
 
+Due to the current logic it is not possible for a server
+to create an IPv6-only tunnel, because OpenVPN mandates
+the existance of an IPv4 configuration (even if fake).
+
+This change relaxes this constraint and allows servers to
+bring up tunnels without any IPv4 setting at all.
+
+For the user this means that a server can be configured
+with just the "--server-ipv6" directive and no "--server"
+at all.
+
+Trac: #208
+Cc: Gert Doering <gert@...1296...>
 Signed-off-by: Antonio Quartulli <antonio@...515...>
 ---
- src/openvpn/forward.c |  4 +++-
- src/openvpn/tun.c     | 24 +++++++++++++++++-------
- 2 files changed, 20 insertions(+), 8 deletions(-)
+ src/openvpn/helper.c | 8 ++++++--
+ src/openvpn/multi.c  | 3 ++-
+ 2 files changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 7d9a338d..51e43c28 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -292,7 +292,9 @@ check_add_routes_action(struct context *c, const bool errors)
- void
- check_add_routes_dowork(struct context *c)
- {
--    if (test_routes(c->c1.route_list, c->c1.tuntap))
-+    /* skip route check if no IPv4 was configured */
-+    if (!c->c1.tuntap->did_ifconfig_setup
-+        || test_routes(c->c1.route_list, c->c1.tuntap))
+diff --git a/src/openvpn/helper.c b/src/openvpn/helper.c
+index ff9df506..42ba5b2c 100644
+--- a/src/openvpn/helper.c
++++ b/src/openvpn/helper.c
+@@ -177,10 +177,11 @@ helper_client_server(struct options *o)
+      */
+     if (o->server_ipv6_defined)
      {
-         check_add_routes_action(c, false);
-     }
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 8509d489..d183aea7 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -5718,7 +5718,10 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
-             msg(M_FATAL, "ERROR: --dev tun also requires --ifconfig");
+-        if (!o->server_defined)
++        if (o->client)
+         {
+-            msg(M_USAGE, "--server-ipv6 must be used together with --server");
++            msg(M_USAGE, "--server and --client cannot be used together");
+         }
++
+         if (o->server_flags & SF_NOPOOL)
+         {
+             msg( M_USAGE, "--server-ipv6 is incompatible with 'nopool' option" );
+@@ -190,6 +191,9 @@ helper_client_server(struct options *o)
+             msg( M_USAGE, "--server-ipv6 already defines an ifconfig-ipv6-pool, so you can't also specify --ifconfig-pool explicitly");
          }
  
--        if (tt->topology == TOP_SUBNET)
-+        /* send 0/0/0 to the TAP driver even if we have no IPv4 configured to
-+         * ensure it is somehow initialized.
-+         */
-+        if (!tt->did_ifconfig_setup || tt->topology == TOP_SUBNET)
-         {
-             in_addr_t ep[3];
-             BOOL status;
-@@ -5731,12 +5734,19 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
-                                      ep, sizeof(ep),
-                                      ep, sizeof(ep), &len, NULL);
++        o->mode = MODE_SERVER;
++        o->tls_server = true;
++
+         /* local ifconfig is "base address + 1" and "+2" */
+         o->ifconfig_ipv6_local =
+             print_in6_addr( add_in6_addr( o->server_network_ipv6, 1), 0, &o->gc );
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 20f8611b..dbc8f370 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -388,7 +388,8 @@ multi_init(struct multi_context *m, struct context *t, bool tcp_mode, int thread
+      * differently based on whether a tun or tap style
+      * tunnel.
+      */
+-    if (t->options.ifconfig_pool_defined)
++    if (t->options.ifconfig_pool_defined
++        || t->options.ifconfig_ipv6_pool_defined)
+     {
+         int pool_type = IFCONFIG_POOL_INDIV;
  
--            msg(status ? M_INFO : M_FATAL, "Set TAP-Windows TUN subnet mode network/local/netmask = %s/%s/%s [%s]",
--                print_in_addr_t(ep[1], IA_NET_ORDER, &gc),
--                print_in_addr_t(ep[0], IA_NET_ORDER, &gc),
--                print_in_addr_t(ep[2], IA_NET_ORDER, &gc),
--                status ? "SUCCEEDED" : "FAILED");
--
-+            if (tt->did_ifconfig_setup)
-+            {
-+                msg(status ? M_INFO : M_FATAL, "Set TAP-Windows TUN subnet mode network/local/netmask = %s/%s/%s [%s]",
-+                    print_in_addr_t(ep[1], IA_NET_ORDER, &gc),
-+                    print_in_addr_t(ep[0], IA_NET_ORDER, &gc),
-+                    print_in_addr_t(ep[2], IA_NET_ORDER, &gc),
-+                    status ? "SUCCEEDED" : "FAILED");
-+            }
-+            else
-+            {
-+                msg(status ? M_INFO : M_FATAL, "Set TAP-Windows TUN with fake IPv4 [%s]",
-+                    status ? "SUCCEEDED" : "FAILED");
-+            }
-         }
-         else
-         {
 -- 
 2.17.1
 
