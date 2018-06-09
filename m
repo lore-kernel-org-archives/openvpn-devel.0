@@ -1,13 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_jaeLOAdXwGPkUCMuBM6VJdpFSw_G7U5F88tFsYouaa_w@...278...>
-References: <CAKuzo_gJjQR4-RC=FbmzNgVHRh2L57bbgJku1gchhzH1e6RFFA@...278...>
- <20180419112313.1013-1-simon@...2293...>
- <CAKuzo_jaeLOAdXwGPkUCMuBM6VJdpFSw_G7U5F88tFsYouaa_w@...278...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Sat, 9 Jun 2018 12:41:23 -0400
-Message-ID: <CAEsd45S6K8ovQB6w=8N+16S+FVnjsoh48BTB+njMs1aOCPQOcQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v5] Add Interactive Service developer
- documentation
+Date: Sat, 9 Jun 2018 20:37:36 +0200 (CEST)
+Message-Id: <201806091837.w59Ibaul018971@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20180419112313.1013-1-simon@...2293...>
+References: <20180419112313.1013-1-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add Interactive Service
+ developer documentation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,35 +13,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: Simon Rozman <simon@...2293...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Simon Rozman <simon@...2293...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Your patch has been applied to the master and release/2.4 branch.
 
-On Sat, Jun 9, 2018 at 12:23 PM, Selva Nair <selva.nair@...277...> wrote:
->
-> Hi,
->
-> On Thu, Apr 19, 2018 at 7:23 AM, Simon Rozman <simon@...2293...> wrote:
-> > The OpenVPN Interactive Service documentation from
-> > https://community.openvpn.net/openvpn/wiki/OpenVPNInteractiveService was
-> > upgraded with a description of the client-service communication flow,
-> > service registry configuration, and non-default instance installation.
+As suggested by Selva, I've added the new document to dist_noinst_DATA
+in doc/Makefile.am - this will pack it into the tarball, but will not
+"make install" it into $docdir (because *that* is really "what happens
+on unix" where you do not need this for "installed packages").
 
-<snip>
+commit 62b1cc161c53d900b6fe56f6924ef2ec1c1b8a00 (master)
+commit 9e1800da5782be2b23202997d40ea37a1dfcd4e9 (release/2.4)
+Author: Simon Rozman
+Date:   Thu Apr 19 13:23:13 2018 +0200
 
-> > Giving it a second thought, there is no point into packaging this file for non-Windows distributions, since the Interactive Service is Windows-specific.
->
-> We have a common source distribution for all platforms and it includes
-> Windows only bits like the interactive service sources. IMO, this does
-> belong there.
+     Add Interactive Service developer documentation
 
-+1: It should be included. It is of interest to non-Windows folks like
-me, too, even if we don't use it directly.
+     Acked-by: Selva Nair <selva.nair@...277...>
+     Message-Id: <20180419112313.1013-1-simon@...2293...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16794.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Best regards,
 
-Jon Bullard
+--
+kind regards,
+
+Gert Doering
+
 
