@@ -1,15 +1,12 @@
-References: <42bafab6-9e6f-56b5-2c44-b449ec503ce7@...515...>
- <20180611075242.GF57262@...1296...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <bb55cab5-2523-b899-0ead-6f34886c4d2b@...515...>
-Date: Mon, 11 Jun 2018 11:29:24 +0300
 MIME-Version: 1.0
-In-Reply-To: <20180611075242.GF57262@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="n8SikX9ZaNOeXys4CCrnuQlJXT78XsYqe"
-Subject: Re: [Openvpn-devel] Regarding tap-windows6 driver signatures and
- driver distribution
+In-Reply-To: <29a3b6b5-f596-0c63-9a37-377399e1e4d0@...515...>
+References: <CAKuzo_g1yJwUsVdUF+RJdO6DeHeVhYOhSgWLX-SoFfiUw3o2sQ@...278...>
+ <29a3b6b5-f596-0c63-9a37-377399e1e4d0@...515...>
+From: Selva Nair <selva.nair@...277...>
+Date: Mon, 11 Jun 2018 11:32:36 -0400
+Message-ID: <CAKuzo_iVMAAjPR-GLE0s+unhowhq6uxUPzD0f1S1mYZAsZkDng@...278...>
+Content-Type: multipart/alternative; boundary="000000000000c62cd4056e5f765e"
+Subject: Re: [Openvpn-devel] interactive service docs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,134 +15,97 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---n8SikX9ZaNOeXys4CCrnuQlJXT78XsYqe
-Content-Type: multipart/mixed; boundary="jES6qD0WXlEU6Dq52yUx7evjjxmAfMbSH";
- protected-headers="v1"
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net"
- <openvpn-devel@lists.sourceforge.net>
-Message-ID: <bb55cab5-2523-b899-0ead-6f34886c4d2b@...515...>
-Subject: Re: [Openvpn-devel] Regarding tap-windows6 driver signatures and
- driver distribution
-References: <42bafab6-9e6f-56b5-2c44-b449ec503ce7@...515...>
- <20180611075242.GF57262@...1296...>
-In-Reply-To: <20180611075242.GF57262@...1296...>
-
---jES6qD0WXlEU6Dq52yUx7evjjxmAfMbSH
-Content-Language: en-US
-Content-Type: text/plain; charset="windows-1252"
+--000000000000c62cd4056e5f765e
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Hi
 
-Il 11/06/2018 10:52, Gert Doering ha scritto:
+On Mon, Jun 11, 2018 at 2:49 AM, Samuli Sepp=C3=A4nen <samuli@...515...> wr=
+ote:
+
 > Hi,
->=20
-> On Mon, Jun 11, 2018 at 10:30:05AM +0300, Samuli Sepp=E4nen wrote:
->> Last Friday I managed to get tap-windows-9.22.1[1] attestation
->> signed[2]. This means that that particular driver (64-bit variant)
->> should work on any Windows 10. However, according to [2]
->=20
-> This is very good news :-)
->=20
-> Have you been able to make this into a tap6 installer that we could
-> throw at people that had issues getting the previous attempt to work
-> on win10?
+>
+> Trac has its own Wiki syntax which is somewhat similar to Mediawiki, but
+> not at all the same.
+>
+> However, Trac supports RST natively:
+>
+> {{{#!rst
+> RST-formatted contents go in here
+> }}}
+>
 
-Not yet. But I don't have any reason believe it won't work, because the
-only signature in there is directly from Microsoft. I also asked about
-the relation of "requested signatures" checklist in the dashboard and
-signatures. Regardless of which Windows 10 variants we check the boxes
-for the signature should be valid across all of them.
+> For details see
+>
+> https://trac.edgewall.org/wiki/WikiProcessors
+> https://trac.edgewall.org/wiki/WikiRestructuredText
+>
+> Based on quick test it seems to work:
+>
+> https://community.openvpn.net/openvpn/wiki/RstTest
+>
+> Note that "preview" window does not show the end results but raw RST.
+> This seems to be a feature/bug of Trac WikiProcessors in general.
+>
 
-So by checking the boxes is just a statement along the lines "we have
-tested the driver on Windows flavors <x>".
+Thanks for tip. I've now updated the original page by embedding the rst
+content as {{{#!rst  }}}.
 
-I just asked what we need to do to make the driver work on Windows
-Server 2016. I _hope_ that platform does not require us to pass the HLK
-tests. If it does, then we have no option but to go through the process
-_now_. HCK and WLK can wait a while, as the older operating systems will
-be fine with a cross-signed driver. But then we'd end up with two
-installers (HLK and cross-signed).
+https://community.openvpn.net/openvpn/wiki/OpenVPNInteractiveService
 
->=20
-> [..]
->> I actually lean towards 2), as that is the only way[3] to provide a
->> driver that works across all Windows versions that are under "mainstream
->> support". That would leave out Windows Server 2008 R2 which is under
->> "extended support" that ends in early 2020:
->>
->> https://support.microsoft.com/en-us/lifecycle/search?alpha=3Dwindows%20s=
-erver%202008
->>
->> So, if we want to keep on supporting Windows Server 2008 R2 while having
->> just one tap-windows6 driver we (=3DI) would have to go through three
->> different test suites / certifications:
->>
->> - HLK (Windows 10)
->> - HCK (Windows 7/8)
->> - WLK (Windows 2008 R2)
->=20
-> I have no idea how many people are doing Server 2008 R2 with OpenVPN,
-> but I'm afraid there will be "more than zero".
->=20
-> Wild idea: do we want to add a checkbox to the installer "submit=20
-> version information to OpenVPN Headquarters" (opt-in, of course) so
-> we can have a rough idea what people are actively using?
+Selva
 
-I would not be opposed to this. We'd have to include the matching code
-in openvpn.nsi as well, as it runs tap-windows6.nsi non-interactively.
+--000000000000c62cd4056e5f765e
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
->> Our projected deadline for the next tap-windows6 release is June 20th. I
->> will start working on HLK/HCK, but I don't know how many obstacles I
->> will encounter.
->>
->> However, as we can now attestation-sign drivers, even in the worst case
->> we could initially release two installers (option 1 above). Then, when
->> HLK/HCK/WLK are in order, we can switch back to using a single installer
->> again.
->=20
-> This sounds like a good backup plan to get fixed drivers *out* for all=20
-> supported platforms, and give us (=3Dyou :) ) time to wrestle with=20
-> HLK/HCK/WLK...
->=20
+<div dir=3D"ltr">Hi<br><div><div class=3D"gmail_extra"><br><div class=3D"gm=
+ail_quote">On Mon, Jun 11, 2018 at 2:49 AM, Samuli Sepp=C3=A4nen <span dir=
+=3D"ltr">&lt;<a href=3D"mailto:samuli@...515..." target=3D"_blank">samuli@...220...=
+..515...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=
+=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span></=
+span>Hi,<br>
+<br>
+Trac has its own Wiki syntax which is somewhat similar to Mediawiki, but<br>
+not at all the same.<br>
+<br>
+However, Trac supports RST natively:<br>
+<br>
+{{{#!rst<br>
+RST-formatted contents go in here<br>
+}}}<br></blockquote><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0=
+ .8ex;border-left:1px #ccc solid;padding-left:1ex">
+<br>
+For details see<br>
+<br>
+<a href=3D"https://trac.edgewall.org/wiki/WikiProcessors" rel=3D"noreferrer=
+" target=3D"_blank">https://trac.edgewall.org/wiki<wbr>/WikiProcessors</a><=
+br>
+<a href=3D"https://trac.edgewall.org/wiki/WikiRestructuredText" rel=3D"nore=
+ferrer" target=3D"_blank">https://trac.edgewall.org/wiki<wbr>/WikiRestructu=
+redText</a><br>
+<br>
+Based on quick test it seems to work:<br>
+<br>
+<a href=3D"https://community.openvpn.net/openvpn/wiki/RstTest" rel=3D"noref=
+errer" target=3D"_blank">https://community.openvpn.net/<wbr>openvpn/wiki/Rs=
+tTest</a><br>
+<br>
+Note that &quot;preview&quot; window does not show the end results but raw =
+RST.<br>
+This seems to be a feature/bug of Trac WikiProcessors in general.<br></bloc=
+kquote><div><br></div><div>Thanks for tip. I&#39;ve now updated the origina=
+l page by embedding the rst content as {{{#!rst=C2=A0 }}}.<br></div><div><s=
+pan class=3D"m_-5303159553756196272gmail-"><br><span class=3D"m_-5303159553=
+756196272gmail-"><a href=3D"https://community.openvpn.net/openvpn/wiki/Open=
+VPNInteractiveService" rel=3D"noreferrer" target=3D"_blank">https://communi=
+ty.openvpn.net/<wbr>openvpn/wiki/OpenVPNInteractiv<wbr>eService</a></span><=
+br><br></span></div><div><span class=3D"m_-5303159553756196272gmail-">Selva=
+<br></span></div></div></div></div></div>
 
-It looks like this will be a wrestle. MS docs seem relatively good, but
-many tiny but important details seem to be undocumented. Like "can I run
-HLK tests on Amazon EC2/Azure VMs?"
-
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
-
---jES6qD0WXlEU6Dq52yUx7evjjxmAfMbSH--
-
---n8SikX9ZaNOeXys4CCrnuQlJXT78XsYqe
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAlseMuQACgkQKVhNn0CG
-RXgZeAf/TZbrIxdZb45CZLeacWPaq9JmGtgeKDwZKJONGazK8EMv/wqA6NnIg5a5
-V6FRlMfn7oapcOkuMPA5Z/y3GT5cm3i1Oz+rPGiJ65UfoyK0RxDIEZqPigPs7LnA
-+RPtcioQtWBB+f4LNfhOJ+8/LtRsxZ8j9w1Ev5Qk4onh58LA4YP3OaI8FfVQSuDI
-ot/7W8y2vK6To9G4Gqp8Z9aieX5543XVEexuZy+utMAdUmsOgLkuuAqL/URADsNh
-o82waZNJtQtum2xiwxtEa6F17l01omOb1fq35uckLQo59ObZqRJnIpjU7uHLz2N5
-yWq5uDYYIj4c4Mxvsxm6YH9Yl/DC9A==
-=i6D1
------END PGP SIGNATURE-----
-
---n8SikX9ZaNOeXys4CCrnuQlJXT78XsYqe--
+--000000000000c62cd4056e5f765e--
 
