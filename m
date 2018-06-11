@@ -1,12 +1,13 @@
+References: <fa22d29b-adb4-7255-11e5-99e2f9c237c1@...1147...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <83dba54a-a316-ade6-805f-76777d953b05@...2080...>
+Date: Mon, 11 Jun 2018 18:28:35 +0200
 MIME-Version: 1.0
-In-Reply-To: <29a3b6b5-f596-0c63-9a37-377399e1e4d0@...515...>
-References: <CAKuzo_g1yJwUsVdUF+RJdO6DeHeVhYOhSgWLX-SoFfiUw3o2sQ@...278...>
- <29a3b6b5-f596-0c63-9a37-377399e1e4d0@...515...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 11 Jun 2018 11:32:36 -0400
-Message-ID: <CAKuzo_iVMAAjPR-GLE0s+unhowhq6uxUPzD0f1S1mYZAsZkDng@...278...>
-Content-Type: multipart/alternative; boundary="000000000000c62cd4056e5f765e"
-Subject: Re: [Openvpn-devel] interactive service docs
+In-Reply-To: <fa22d29b-adb4-7255-11e5-99e2f9c237c1@...1147...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="DCl6Q7jd0J039I8uu3QGKwsixKtE5iYh5"
+Subject: Re: [Openvpn-devel] Documenting the OpenVPN protocol
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,97 +16,101 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Jan Just Keijser <janjust@...1147...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---000000000000c62cd4056e5f765e
-Content-Type: text/plain; charset="UTF-8"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--DCl6Q7jd0J039I8uu3QGKwsixKtE5iYh5
+Content-Type: multipart/mixed; boundary="9zIYXgOU7XMNW1TaT6I7pNtQJ9hNEnsEd";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: Jan Just Keijser <janjust@...1147...>
+Cc: "openvpn-devel@lists.sourceforge.net"
+ <openvpn-devel@lists.sourceforge.net>
+Message-ID: <83dba54a-a316-ade6-805f-76777d953b05@...2080...>
+Subject: Re: Documenting the OpenVPN protocol
+References: <fa22d29b-adb4-7255-11e5-99e2f9c237c1@...1147...>
+In-Reply-To: <fa22d29b-adb4-7255-11e5-99e2f9c237c1@...1147...>
+
+--9zIYXgOU7XMNW1TaT6I7pNtQJ9hNEnsEd
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi
+On 11/06/18 16:20, Jan Just Keijser wrote:
+> Hi David,
+>=20
+> a while back, Steffan and I were in a (Dutch) meeting discussing document=
+ing
+> the OpenVPN wire protocol. Someone has made an effort to document it, and=
+ has
+> gotten pretty far, IMO.=C2=A0 Before he/we continue, however, we need to =
+make sure
+> that we can embed this documentation into OpenVPN itself, i.e. the protoc=
+ol
+> doc should not be trailing the source code. Now I've read & heard that you
+> were busy turning the OpenVPN protocol into an RFC. Are you still interes=
+ted
+> in doing that?=C2=A0 Is OpenVPN Inc still interested in doing that? If so=
+, then it
+> would save time and effort to combine the two approaches. Do you have tim=
+e for
+> that?
 
-On Mon, Jun 11, 2018 at 2:49 AM, Samuli Sepp=C3=A4nen <samuli@...515...> wr=
-ote:
+I have a draft in progress for an OpenVPN Wire protocol RFC.  It is far from
+complete, but most of the control and data channels are mostly covered.  The
+more tricky areas like user/password authentication as well as static/dynam=
+ic
+challenge and most of the crypto details are not yet covered.
 
-> Hi,
->
-> Trac has its own Wiki syntax which is somewhat similar to Mediawiki, but
-> not at all the same.
->
-> However, Trac supports RST natively:
->
-> {{{#!rst
-> RST-formatted contents go in here
-> }}}
->
+But what has been already written needs a thorough review as well.  My work
+method so far has been more like "brain dump approach".  Read code for a
+feature, get some basic understanding of it and dump it into a textual form,
+formatted and wording it for an RFC target.  It is far from perfect and
+polished, but it's a start.
 
-> For details see
->
-> https://trac.edgewall.org/wiki/WikiProcessors
-> https://trac.edgewall.org/wiki/WikiRestructuredText
->
-> Based on quick test it seems to work:
->
-> https://community.openvpn.net/openvpn/wiki/RstTest
->
-> Note that "preview" window does not show the end results but raw RST.
-> This seems to be a feature/bug of Trac WikiProcessors in general.
->
+We (community and OpenVPN Inc) are very much interested in getting at least
+the draft process moving forward.  Not sure how suitable this task is as a
+full blown open "development" process.  But I am definitely keen on getting=
+ a
+few more persons willing to be involved in moving this RFC forward.  So if =
+you
+are interested, please get in touch with me and we'll figure out the path
+forward.
 
-Thanks for tip. I've now updated the original page by embedding the rst
-content as {{{#!rst  }}}.
 
-https://community.openvpn.net/openvpn/wiki/OpenVPNInteractiveService
+--=20
+kind regards,
 
-Selva
+David Sommerseth
+OpenVPN Inc
 
---000000000000c62cd4056e5f765e
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">Hi<br><div><div class=3D"gmail_extra"><br><div class=3D"gm=
-ail_quote">On Mon, Jun 11, 2018 at 2:49 AM, Samuli Sepp=C3=A4nen <span dir=
-=3D"ltr">&lt;<a href=3D"mailto:samuli@...515..." target=3D"_blank">samuli@...220...=
-..515...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=
-=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span></=
-span>Hi,<br>
-<br>
-Trac has its own Wiki syntax which is somewhat similar to Mediawiki, but<br>
-not at all the same.<br>
-<br>
-However, Trac supports RST natively:<br>
-<br>
-{{{#!rst<br>
-RST-formatted contents go in here<br>
-}}}<br></blockquote><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0=
- .8ex;border-left:1px #ccc solid;padding-left:1ex">
-<br>
-For details see<br>
-<br>
-<a href=3D"https://trac.edgewall.org/wiki/WikiProcessors" rel=3D"noreferrer=
-" target=3D"_blank">https://trac.edgewall.org/wiki<wbr>/WikiProcessors</a><=
-br>
-<a href=3D"https://trac.edgewall.org/wiki/WikiRestructuredText" rel=3D"nore=
-ferrer" target=3D"_blank">https://trac.edgewall.org/wiki<wbr>/WikiRestructu=
-redText</a><br>
-<br>
-Based on quick test it seems to work:<br>
-<br>
-<a href=3D"https://community.openvpn.net/openvpn/wiki/RstTest" rel=3D"noref=
-errer" target=3D"_blank">https://community.openvpn.net/<wbr>openvpn/wiki/Rs=
-tTest</a><br>
-<br>
-Note that &quot;preview&quot; window does not show the end results but raw =
-RST.<br>
-This seems to be a feature/bug of Trac WikiProcessors in general.<br></bloc=
-kquote><div><br></div><div>Thanks for tip. I&#39;ve now updated the origina=
-l page by embedding the rst content as {{{#!rst=C2=A0 }}}.<br></div><div><s=
-pan class=3D"m_-5303159553756196272gmail-"><br><span class=3D"m_-5303159553=
-756196272gmail-"><a href=3D"https://community.openvpn.net/openvpn/wiki/Open=
-VPNInteractiveService" rel=3D"noreferrer" target=3D"_blank">https://communi=
-ty.openvpn.net/<wbr>openvpn/wiki/OpenVPNInteractiv<wbr>eService</a></span><=
-br><br></span></div><div><span class=3D"m_-5303159553756196272gmail-">Selva=
-<br></span></div></div></div></div></div>
 
---000000000000c62cd4056e5f765e--
+--9zIYXgOU7XMNW1TaT6I7pNtQJ9hNEnsEd--
+
+--DCl6Q7jd0J039I8uu3QGKwsixKtE5iYh5
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJbHqNCAAoJEIbPlEyWcf3yR78QAKG0TVEbO+ZVoC+DEoB0cNmh
+5/tePGjUcKoztk2z2g6ftVDfc4Uuu3TFYFlt7bu9iUrxieqqttqsdXzWA3ZbSgUD
+VBiSmL9Dl/dDzm+ZXt+Xqh+uQEjlZG4ojAVQP4/vaMjmSt1OcywWV3kVUNXM99R8
+7d/LHUFOKC39Jp/9NzJVR+hTDcm9F1g/OjKlUs9UEMymElkqFFLHGB66f94pF+sb
+hXIJp0P+8QB9jFtQ1K/4g5WZcU6ozAe69JHZgVPJkqelbt2UAwDB7uvbjyj2Ed66
+dRI/uu0W6SM51Sshw/omWRQzBa7W2oe0Iddt/6Os8Lp88quT9ufGVlwc4sgXOppM
+YhIbn7YYo5JPoEiSuAcQMBly4CYdLbVhhIVFpQ3rapLhV5FUmNJq1UGe4Wn/qHRW
+qUykushcslCqCgRfPeKqiItMlbFZ/cUVOO0b4S4GRfXZnhrK58v+lUUUFro4xKje
+lWCRBSXVaRCRzGuJrKLM5tTVlAJEcICGES+jKaYngwSvS57g3ItYOp4yBky0xQij
+OcDWpYFvSObEdEfPEeBhJM5b1VtvVl7QDSoRr6d14HEKL9iCWM0AiuJYJmIrQHgr
+bVsBA3PykCSsgZrJtQob7Nb5jVwclJEHMpibsjz3u4ulR91cnUqpAu+Z2l1hsx96
+o1LqYJ+YreMgRE01ZAPs
+=+2nh
+-----END PGP SIGNATURE-----
+
+--DCl6Q7jd0J039I8uu3QGKwsixKtE5iYh5--
 
