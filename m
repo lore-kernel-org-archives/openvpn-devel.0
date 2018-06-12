@@ -1,15 +1,13 @@
-Date: Tue, 12 Jun 2018 14:26:22 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180612122622.GF57262@...1296...>
-References: <20180608052017.6696-1-a@...2181...>
- <20180608052017.6696-3-a@...2181...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="WyNRHPUpyWKWHSil"
-Content-Disposition: inline
-In-Reply-To: <20180608052017.6696-3-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v2 2/8] windows: properly configure TAP
- driver when no IPv4 is configured
+In-Reply-To: <CAKuzo_iVMAAjPR-GLE0s+unhowhq6uxUPzD0f1S1mYZAsZkDng@...278...>
+References: <CAKuzo_g1yJwUsVdUF+RJdO6DeHeVhYOhSgWLX-SoFfiUw3o2sQ@...278...>
+ <29a3b6b5-f596-0c63-9a37-377399e1e4d0@...515...>
+ <CAKuzo_iVMAAjPR-GLE0s+unhowhq6uxUPzD0f1S1mYZAsZkDng@...278...>
+From: Selva Nair <selva.nair@...277...>
+Date: Tue, 12 Jun 2018 12:39:51 -0400
+Message-ID: <CAKuzo_jYRJPnZmKpdbMwC1L=96+f_rRT3TtKbSPF61pPen64fw@...278...>
+Content-Type: multipart/alternative; boundary="0000000000001bba63056e74858d"
+Subject: Re: [Openvpn-devel] interactive service docs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,80 +16,113 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net, Antonio Quartulli <antonio@...515...>
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---WyNRHPUpyWKWHSil
-Content-Type: text/plain; charset="us-ascii"
+--0000000000001bba63056e74858d
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
 Hi,
 
-On Fri, Jun 08, 2018 at 01:20:11PM +0800, Antonio Quartulli wrote:
-> From: Antonio Quartulli <antonio@...515...>
->=20
-> Signed-off-by: Antonio Quartulli <antonio@...515...>
+On Mon, Jun 11, 2018 at 11:32 AM, Selva Nair <selva.nair@...277...> wrote:
 
-This commit message is a bit... thin.
+> Hi
+>
+> On Mon, Jun 11, 2018 at 2:49 AM, Samuli Sepp=C3=A4nen <samuli@...515...>
+> wrote:
+>
+>> Hi,
+>>
+>> Trac has its own Wiki syntax which is somewhat similar to Mediawiki, but
+>> not at all the same.
+>>
+>> However, Trac supports RST natively:
+>>
+>> {{{#!rst
+>> RST-formatted contents go in here
+>> }}}
+>>
+>
+>> For details see
+>>
+>> https://trac.edgewall.org/wiki/WikiProcessors
+>> https://trac.edgewall.org/wiki/WikiRestructuredText
+>>
+>> Based on quick test it seems to work:
+>>
+>> https://community.openvpn.net/openvpn/wiki/RstTest
+>>
+>> Note that "preview" window does not show the end results but raw RST.
+>> This seems to be a feature/bug of Trac WikiProcessors in general.
+>>
+>
+> Thanks for tip. I've now updated the original page by embedding the rst
+> content as {{{#!rst  }}}.
+>
+> https://community.openvpn.net/openvpn/wiki/OpenVPNInteractiveService
+>
 
->  check_add_routes_dowork(struct context *c)
->  {
-> -    if (test_routes(c->c1.route_list, c->c1.tuntap))
-> +    /* skip route check if no IPv4 was configured */
-> +    if (!c->c1.tuntap->did_ifconfig_setup
-> +        || test_routes(c->c1.route_list, c->c1.tuntap))
->      {
->          check_add_routes_action(c, false);
->      }
 
-And I'm not sure if that comment is sufficient to explain this increasingly
-convoluted function...  (I'm so totally not understanding what is happening
-here, and how it's wrapped into the event looping)
+This edit is now missing. Was trac pages reloaded from backup or some such?
 
-Maybe a easier to understand place for the did_ifconfig_setup check would=20
-be inside test_routes()?
+Selva
 
-Like:
+--0000000000001bba63056e74858d
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
--  if (rl)
-+  /* we do this test only if we have IPv4 routes to install, and if
-+   * the tun/tap interface has seen ipv4 ifconfig - because if we=20
-+   * have no IPv4, the check will always fail, failing tun init
-+   */
-+  if (rl && tt->did_ifconfig_setup)
+<div dir=3D"ltr">Hi,<br><div><div class=3D"gmail_extra"><br><div class=3D"g=
+mail_quote">On Mon, Jun 11, 2018 at 11:32 AM, Selva Nair <span dir=3D"ltr">=
+&lt;<a href=3D"mailto:selva.nair@...277..." target=3D"_blank">selva.nair@...1186...=
+.277...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D=
+"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><div dir=3D=
+"ltr">Hi<br><div><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+<span class=3D"">On Mon, Jun 11, 2018 at 2:49 AM, Samuli Sepp=C3=A4nen <spa=
+n dir=3D"ltr">&lt;<a href=3D"mailto:samuli@...515..." target=3D"_blank">sam=
+uli@...515...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" st=
+yle=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span=
+></span>Hi,<br>
+<br>
+Trac has its own Wiki syntax which is somewhat similar to Mediawiki, but<br>
+not at all the same.<br>
+<br>
+However, Trac supports RST natively:<br>
+<br>
+{{{#!rst<br>
+RST-formatted contents go in here<br>
+}}}<br></blockquote><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0=
+ .8ex;border-left:1px #ccc solid;padding-left:1ex">
+<br>
+For details see<br>
+<br>
+<a href=3D"https://trac.edgewall.org/wiki/WikiProcessors" rel=3D"noreferrer=
+" target=3D"_blank">https://trac.edgewall.org/wiki<wbr>/WikiProcessors</a><=
+br>
+<a href=3D"https://trac.edgewall.org/wiki/WikiRestructuredText" rel=3D"nore=
+ferrer" target=3D"_blank">https://trac.edgewall.org/wiki<wbr>/WikiRestructu=
+redText</a><br>
+<br>
+Based on quick test it seems to work:<br>
+<br>
+<a href=3D"https://community.openvpn.net/openvpn/wiki/RstTest" rel=3D"noref=
+errer" target=3D"_blank">https://community.openvpn.net/<wbr>openvpn/wiki/Rs=
+tTest</a><br>
+<br>
+Note that &quot;preview&quot; window does not show the end results but raw =
+RST.<br>
+This seems to be a feature/bug of Trac WikiProcessors in general.<br></bloc=
+kquote><div><br></div></span><div>Thanks for tip. I&#39;ve now updated the =
+original page by embedding the rst content as {{{#!rst=C2=A0 }}}.<br></div>=
+<div><span class=3D"m_777114074899314520m_-5303159553756196272gmail-"><br><=
+span class=3D"m_777114074899314520m_-5303159553756196272gmail-"><a href=3D"=
+https://community.openvpn.net/openvpn/wiki/OpenVPNInteractiveService" rel=
+=3D"noreferrer" target=3D"_blank">https://community.openvpn.net/<wbr>openvp=
+n/wiki/OpenVPNInteractiv<wbr>eService</a></span><span class=3D"HOEnZb"><fon=
+t color=3D"#888888"><br></font></span></span></div></div></div></div></div>=
+</blockquote><div><br><br></div><div>This edit is now missing. Was trac pag=
+es reloaded from backup or some such?<br><br></div><div>Selva<br></div></di=
+v></div></div></div>
 
-
-But really, WTF...
-
-gert
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---WyNRHPUpyWKWHSil
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJbH7vtAAoJEB2Cnv7KVigS7tgL/R+impMWoINRYfVwXwrKsfNX
-jCKNhTrn02d2DvoKoJsrFK62RQor56+iObEz7WsHpMyCtSza03lNmVRU/a4YFeLg
-PqvTJfT82VuJGpFrOHcNWkNODCM9bzL1SgO64AFtMkDGIa3HE9mu5kEzlmgztKpt
-zDTfDJdXbQUCO8bbPH7KkoSlwewUENfnkKvSCBWmr8KirdcloCZSIWgX+GkIOotd
-Citnwc3RbjBWlyq2nZTB/lNMuN0m74SVy/K78L0MNN9rqBzfb0DYZBiCXFDLSEMr
-cBdO6ipt4UDI1RxW2Nv4WPhG0Gc2knDYR+RK/Vs5EhcOIDbhEE2KPaAXItcTuzfW
-mFXkbrA+taCwYZrnhGEfSr98nibbdh26v12szaoP9D7mK+K4ufXwrU4BsgT/NIYi
-B+WECXmBF7mHLUaKJ/eHRrMo6pofrLDNaGq8WXJZeTFGkTnE0uWlNpguvae2+10K
-kVlpBT0QAoxM1O+E8f+Zzc8uokUPAWIlF3H+Es107w==
-=+waa
------END PGP SIGNATURE-----
-
---WyNRHPUpyWKWHSil--
+--0000000000001bba63056e74858d--
 
