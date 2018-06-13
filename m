@@ -1,15 +1,10 @@
-References: <20180613081218.1834-1-a@...2181...>
- <20180613081218.1834-5-a@...2181...> <20180613112912.GQ57262@...1296...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <5b26aca2-24ee-7af8-5f47-02ff4080b404@...2181...>
-Date: Wed, 13 Jun 2018 19:42:41 +0800
-MIME-Version: 1.0
-In-Reply-To: <20180613112912.GQ57262@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="gt0CdR0J9cyg0o037Fh1R006nrnEDPEhV"
-Subject: Re: [Openvpn-devel] [PATCH 3/3] tun: get rid of tt->did_ifconfig
- member
+Date: Wed, 13 Jun 2018 20:28:22 +0800
+Message-Id: <20180613122824.4207-2-a@...2181...>
+In-Reply-To: <20180613122824.4207-1-a@...2181...>
+References: <20180613122824.4207-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH v2 1/3] tun: ensure gc and argv are properly
+ handled
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,76 +13,102 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <antonio@...515...>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---gt0CdR0J9cyg0o037Fh1R006nrnEDPEhV
-Content-Type: multipart/mixed; boundary="ROWu49yk5lOEzvPqwjdfytvridoBSMYNV";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <5b26aca2-24ee-7af8-5f47-02ff4080b404@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH 3/3] tun: get rid of tt->did_ifconfig
- member
-References: <20180613081218.1834-1-a@...2181...>
- <20180613081218.1834-5-a@...2181...> <20180613112912.GQ57262@...1296...>
-In-Reply-To: <20180613112912.GQ57262@...1296...>
+From: Antonio Quartulli <antonio@...515...>
 
---ROWu49yk5lOEzvPqwjdfytvridoBSMYNV
-Content-Language: en-US
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Everytime a argv object is initialized with argv_new(), it has
+to be released with argv_reset() once not needed anymore.
 
+Ensure this kind of objects are always properly released to avoid
+memory leaks.
 
+At the same time, remove those gc_arena objects that are initialized
+but never used/released.
 
-On 13/06/18 19:29, Gert Doering wrote:
-> Hi,
->=20
-> On Wed, Jun 13, 2018 at 04:12:18PM +0800, Antonio Quartulli wrote:
->> From: Antonio Quartulli <antonio@...515...>
->>
->> tt->did_ifconfig is currently only read by the Linux platform, but
->> it is currently iuselessly set also by every other system.
->                   ^
-> If you're respinning v2 of this set, there is a small typo here :-)
+Signed-off-by: Antonio Quartulli <antonio@...515...>
 
-Thanks for spotting this.
+---
 
->=20
-> Otherwise, ACK.  Thanks.
->=20
-
-will resend the entire patchset as v2.
-
-Cheers,
-
---=20
-Antonio Quartulli
+Changes from v1:
+- remove gc_arena at all when not used
 
 
---ROWu49yk5lOEzvPqwjdfytvridoBSMYNV--
+ src/openvpn/tun.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---gt0CdR0J9cyg0o037Fh1R006nrnEDPEhV
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 3eb0f78a..72506c4b 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -2600,7 +2600,6 @@ close_tun(struct tuntap *tt)
+     }
+     else if (tt)
+     {
+-        struct gc_arena gc = gc_new();
+         struct argv argv = argv_new();
+ 
+         /* setup command, close tun dev (clears tt->actual_name!), run command
+@@ -2615,6 +2614,7 @@ close_tun(struct tuntap *tt)
+         openvpn_execve_check(&argv, NULL, 0, "OpenBSD 'destroy tun interface' failed (non-critical)");
+ 
+         free(tt);
++        argv_reset(&argv);
+     }
+ }
+ 
+@@ -2685,7 +2685,6 @@ close_tun(struct tuntap *tt)
+     }
+     else if (tt)
+     {
+-        struct gc_arena gc = gc_new();
+         struct argv argv = argv_new();
+ 
+         /* setup command, close tun dev (clears tt->actual_name!), run command
+@@ -2700,6 +2699,7 @@ close_tun(struct tuntap *tt)
+         openvpn_execve_check(&argv, NULL, 0, "NetBSD 'destroy tun interface' failed (non-critical)");
+ 
+         free(tt);
++        argv_reset(&argv);
+     }
+ }
+ 
+@@ -2837,6 +2837,7 @@ close_tun(struct tuntap *tt)
+         openvpn_execve_check(&argv, NULL, 0, "FreeBSD 'destroy tun interface' failed (non-critical)");
+ 
+         free(tt);
++        argv_reset(&argv);
+     }
+ }
+ 
+@@ -3308,6 +3309,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+         env_set_add( es, "ODMDIR=/etc/objrepos" );
+         openvpn_execve_check(&argv, es, S_FATAL, "AIX 'create tun interface' failed");
+         env_set_destroy(es);
++        argv_reset(&argv);
+     }
+     else
+     {
+@@ -3333,7 +3335,6 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+ void
+ close_tun(struct tuntap *tt)
+ {
+-    struct gc_arena gc = gc_new();
+     struct argv argv = argv_new();
+     struct env_set *es = env_set_create(NULL);
+ 
+@@ -3362,6 +3363,7 @@ close_tun(struct tuntap *tt)
+ 
+     free(tt);
+     env_set_destroy(es);
++    argv_reset(&argv);
+ }
+ 
+ int
+-- 
+2.17.1
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlshAzIACgkQB6U8WA7y
-zXTyig//X+tJFDInlhCZY8vijR2zuHJFv/ytP2Idmq80m+Gg3aTnv4ItZWyi4+Gb
-NdoiJM6OD7ZdMckkaccUdOXqPtPvxNL3LUdMfRzati15TUBvZzQwnp+mIC5otX/z
-rNhY2Q2dXY6vtVz2IIhb/mgSi9Y/xA+gi20U7YJtUscSOiFVDb2K2OiUqNFUJ0UX
-eVIFtjnNFiCvg8sfU2Blix1SGEwKOGvBEgeMC066o/4maeNFMad2LKwhi7/i0T94
-QLBIxu0yj+qgRpQPck8wOdivxVsMf1gZ4w5I8bWxj0RrsR3vDjYZeG5Znl/utyaN
-GxlKq+dV/YRXFUrpLTpp/S4tWTFNqPqOiojLQz0mseIO1KRvJONYIZtdAAC1FT/X
-OjFAZI5imKUSpEO/32TL21HtuvFxbmntzHYhe+9j9305TNarK04mrcIw7ApP5Ss2
-m7CuldJT+mrydx0EHtXAgkAGEuPe3uvuluZ5qJewIlEss1R3aN/4XGrkbeMkcYAf
-HVFmKUDT/4wFFiPa1S5dTLv0EoN5tp6Jo9RVQZo2UJm+xCsb7R8kKpM769r3XyLL
-Gjg70H9CMiMK4N0f8Yva6Xlc89hMX5wlwBGcki+V/Xxo5zUqpBIclu/aA/JZQoF1
-Ud3MNzJ7BbdkQSFCtrIDJidXNyiRd4RpxinzMGsekpwlB2zNhE0=
-=plAQ
------END PGP SIGNATURE-----
-
---gt0CdR0J9cyg0o037Fh1R006nrnEDPEhV--
 
