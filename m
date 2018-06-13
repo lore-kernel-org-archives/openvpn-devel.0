@@ -1,10 +1,7 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Wed, 13 Jun 2018 20:28:22 +0800
-Message-Id: <20180613122824.4207-2-a@...2181...>
-In-Reply-To: <20180613122824.4207-1-a@...2181...>
-References: <20180613122824.4207-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH v2 1/3] tun: ensure gc and argv are properly
- handled
+Date: Wed, 13 Jun 2018 20:28:21 +0800
+Message-Id: <20180613122824.4207-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH v2 0/3] pre-ipv6-only clean up patchset
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,98 +13,42 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <antonio@...515...>
+Cc: Antonio Quartulli <a@...2181...>
 
-From: Antonio Quartulli <antonio@...515...>
+This patchset is the result of some of Gert's comment on the IPv6-only
+patchset.
 
-Everytime a argv object is initialized with argv_new(), it has
-to be released with argv_reset() once not needed anymore.
+For this reason, this patchset is expected to be applied *before*
+applying future versions (v3...) of the IPv6-only patchset.
 
-Ensure this kind of objects are always properly released to avoid
-memory leaks.
+This patchset is mostly about restyling the code a bit and getting rid
+of unused members. Hence, there is no new feature being introduced.
 
-At the same time, remove those gc_arena objects that are initialized
-but never used/released.
-
-Signed-off-by: Antonio Quartulli <antonio@...515...>
-
----
-
-Changes from v1:
-- remove gc_arena at all when not used
+Patch 1 is fixing potential memory leaks resulting from not releasing
+some argv local variables and removes unused gc_areas.
 
 
- src/openvpn/tun.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+This version 2 is basically addressing all the coments raised by Gert on
+the previous version.
+Detailed changes are rpeorted in each patch.
 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 3eb0f78a..72506c4b 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -2600,7 +2600,6 @@ close_tun(struct tuntap *tt)
-     }
-     else if (tt)
-     {
--        struct gc_arena gc = gc_new();
-         struct argv argv = argv_new();
- 
-         /* setup command, close tun dev (clears tt->actual_name!), run command
-@@ -2615,6 +2614,7 @@ close_tun(struct tuntap *tt)
-         openvpn_execve_check(&argv, NULL, 0, "OpenBSD 'destroy tun interface' failed (non-critical)");
- 
-         free(tt);
-+        argv_reset(&argv);
-     }
- }
- 
-@@ -2685,7 +2685,6 @@ close_tun(struct tuntap *tt)
-     }
-     else if (tt)
-     {
--        struct gc_arena gc = gc_new();
-         struct argv argv = argv_new();
- 
-         /* setup command, close tun dev (clears tt->actual_name!), run command
-@@ -2700,6 +2699,7 @@ close_tun(struct tuntap *tt)
-         openvpn_execve_check(&argv, NULL, 0, "NetBSD 'destroy tun interface' failed (non-critical)");
- 
-         free(tt);
-+        argv_reset(&argv);
-     }
- }
- 
-@@ -2837,6 +2837,7 @@ close_tun(struct tuntap *tt)
-         openvpn_execve_check(&argv, NULL, 0, "FreeBSD 'destroy tun interface' failed (non-critical)");
- 
-         free(tt);
-+        argv_reset(&argv);
-     }
- }
- 
-@@ -3308,6 +3309,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
-         env_set_add( es, "ODMDIR=/etc/objrepos" );
-         openvpn_execve_check(&argv, es, S_FATAL, "AIX 'create tun interface' failed");
-         env_set_destroy(es);
-+        argv_reset(&argv);
-     }
-     else
-     {
-@@ -3333,7 +3335,6 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
- void
- close_tun(struct tuntap *tt)
- {
--    struct gc_arena gc = gc_new();
-     struct argv argv = argv_new();
-     struct env_set *es = env_set_create(NULL);
- 
-@@ -3362,6 +3363,7 @@ close_tun(struct tuntap *tt)
- 
-     free(tt);
-     env_set_destroy(es);
-+    argv_reset(&argv);
- }
- 
- int
+
+Cheers,
+
+p.s. buildbot is currently unusable due to the ongoing maintenance on
+the OpenVPN servers and therefor eonly local tests have been performed.
+
+
+Antonio Quartulli (3):
+  tun: ensure gc and argv are properly handled
+  tun: always pass a valid tt pointer
+  tun: get rid of tt->did_ifconfig member
+
+ src/openvpn/init.c |   7 +-
+ src/openvpn/tun.c  | 513 ++++++++++++++++++++++-----------------------
+ src/openvpn/tun.h  |   1 -
+ 3 files changed, 254 insertions(+), 267 deletions(-)
+
 -- 
 2.17.1
 
