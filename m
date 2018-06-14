@@ -1,15 +1,12 @@
 From: Simon Rozman <simon@...2293...>
-Date: Thu, 14 Jun 2018 17:17:41 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE1089628E77@...2294...>
-References: <99D61A626FDA8A4B90A270669121BE10872BAB2E@...2294...>
- <99D61A626FDA8A4B90A270669121BE10895D42FF@...2294...>
-In-Reply-To: <99D61A626FDA8A4B90A270669121BE10895D42FF@...2294...>
+Date: Thu, 14 Jun 2018 17:34:32 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE1089628FC9@...2294...>
 Content-Language: en-US
 Content-Type: multipart/signed; micalg=2.16.840.1.101.3.4.2.1;
  protocol="application/x-pkcs7-signature";
- boundary="----=_NextPart_000_0033_01D40414.5CA63340"
+ boundary="----=_NextPart_000_003D_01D40416.B74EE6A0"
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] TAP-Windows MSI packages
+Subject: [Openvpn-devel] tap-windows6 and AppVeyor
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,32 +15,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel (openvpn-devel@lists.sourceforge.net)" <openvpn-devel@lists.sourceforge.net>
+To: "chipitsine@...277..." <chipitsine@...277...>, Jon Kunkee <jkunkee@...2393...>
+Cc: =?iso-8859-2?Q?Samuli_Sepp=E4nen_=28samuli=40openvpn=2Enet=29?= <samuli@...515...>, "openvpn-devel (openvpn-devel@lists.sourceforge.net)" <openvpn-devel@lists.sourceforge.net>
 
-------=_NextPart_000_0033_01D40414.5CA63340
+------=_NextPart_000_003D_01D40416.B74EE6A0
 Content-Type: text/plain;
-	charset="us-ascii"
+	charset="iso-8859-2"
 Content-Transfer-Encoding: 7bit
 
-Hi,
+Hi!
 
-> After testing the MSI updating (installing newer MSI package over the
-> previous one), I have found out that WiX driver installation custom action
-> uninstalls the previous driver in RemoveExistingProducts pass, which
-> effectively removes all existing TAP interfaces. Though it installs the
-new
-> driver later on, the damage has been done.
-> 
-> This means me going back to the drawing board inventing our own MSI
-> custom action to install the driver and hopefully update seamlessly.
+Given all the recent updates to tap-windows6 building process, the AppVeyor
+integration needs an update too.
 
-I have resolved this by rescheduling RemoveExistingProducts in the post
-install phase.
+Now the Microsoft EWDK is used to build the driver, I wasn't able to find
+any such build environment on AppVeyor.
+
+If the EWDK licence allows us, we could put EWDK online and have the
+AppVeyor download and unpack it before build. Although portable, the EWDK is
+5GB making this option far from ideal.
+
+Or, we could politely ask AppVeyor to introduce an EWDK building
+environment. :)
+
+Does anybody have any idea how to address this challenge?
 
 Best regards,
 Simon
 
-------=_NextPart_000_0033_01D40414.5CA63340
+
+------=_NextPart_000_003D_01D40416.B74EE6A0
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -122,19 +123,19 @@ RqsKPBhWoaFEVZ+Vn3wxap5h/oAhocifNzkWJTNWjxnoPM2eNz2uWFJsgsNhlwteUvnq7+bKTNte
 SKWKr6pI+GUsZhmCh5URpUnqUanp0Uie0MD9f3tiOLOp711sNb0xwi+VdDuDB37IddOIsfhPBood
 wpoFrTGCAyEwggMdAgEBMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0
 aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4wDQYJYIZIAWUDBAIBBQCgggGtMBgGCSqGSIb3
-DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE4MDYxNDE3MTc0MFowLwYJKoZIhvcN
-AQkEMSIEIEWPwwsjwrjhO+9skqFronDgVYW2oOlUuEXrfnXr8MeMMFQGCSsGAQQBgjcQBDFHMEUw
+DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE4MDYxNDE3MzQzMVowLwYJKoZIhvcN
+AQkEMSIEICT3P+RuSCq7bAPXYKjsLb1UWAHEiYf9kHcdkQN2zcpgMFQGCSsGAQQBgjcQBDFHMEUw
 PTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMIc2ln
 ZW4tY2ECBDtKDS4wVgYLKoZIhvcNAQkQAgsxR6BFMD0xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJz
 dGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsTCHNpZ2VuLWNhAgQ7Sg0uMIGTBgkqhkiG9w0BCQ8x
 gYUwgYIwCwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQBFjAKBggqhkiG9w0DBzALBglghkgBZQMEAQIw
 DgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAsGCWCGSAFlAwQCATALBglghkgBZQMEAgMw
-CwYJYIZIAWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBAL4O8xNDYSpZOY5dbVxsXtWL
-3lHZSAnf/loQq3sEhEtH7jLr/7/V9Gf0PEndza4+AVo+Ig+fEdd1dipbDF0++0nWuVo4a/cTtDle
-+m+l4+pgn10xVtH+angXrt7WHfV919/Ba5VHJRxwqnnzQt/vMrnTI9FiC71/jX11P4fb9O7Xl7Bf
-EkcqGVR9Fafdft1LS3MEYzLhQSpSam249F2ND5rekiK+YbPRGRMAarwYqP+zs9CmH9F4/LSL53Y4
-hROq7E9hq+76TxY9UUCIG4Q42ajVnl+hSnM9ysPWh2EsyRu0Z3josamV9H9tFVdnhjLpM2a6LsK8
-dKIWHnty3ImMPtsAAAAAAAA=
+CwYJYIZIAWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBAJGwlmMo4eUoqlI2dGYQY/u8
+U1LUpMYDCjbx5JBIHvyML60UMulkDP/7cHDOOOqSqL0mJWMU2Nq7tPArGIyX307wRqgAtzJ6pETy
+iNZumUiJuIxCH7VKj65fODVs2hcFcynWb9eI0TXixMz+LLLhgSoMjNkVsZ34tzneBctGEqfKNkbw
+ayldrIBveb/B5INtZ8JyLlJBgDzQ3IVN4bgs6U8X1kmrc8LjDSalC2VoYUZbVOj3yG6g8Epl640d
+rXNctkgN84sUbeCLz3ClPWuL295XJLQdP7ovbGJ+gW2geL5SDKWaafzBkR/Cmys/fdPmHdhZHLP6
+/XbcsNyFKXW0ZaQAAAAAAAA=
 
-------=_NextPart_000_0033_01D40414.5CA63340--
+------=_NextPart_000_003D_01D40416.B74EE6A0--
 
