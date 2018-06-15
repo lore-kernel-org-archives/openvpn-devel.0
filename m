@@ -1,15 +1,14 @@
-References: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
- <1512734870-17133-10-git-send-email-steffan.karger@...1435...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <b3302c9e-24b3-2380-05e1-94fa9c809b3d@...2181...>
-Date: Fri, 15 Jun 2018 15:51:54 +0800
+From: Jon Kunkee <jkunkee@...2393...>
+Date: Fri, 15 Jun 2018 17:57:31 +0000
+Message-ID: <DM5PR2101MB11129E907CFB64C2ABC562DFB07C0@...2412...>
+References: <99D61A626FDA8A4B90A270669121BE1089628FC9@...2294...>
+ <DM5PR2101MB11127F120677A779CB43A8D4B07D0@...2412...>
+ <431d0dae-f48c-a550-a2fc-5e9ec78206e7@...515...>
+ <CAFHpkQF8aUA+nbcj-LY5VugUP5Oq8iBsnKWW25CxsgEW05hnpw@...278...>
+In-Reply-To: <CAFHpkQF8aUA+nbcj-LY5VugUP5Oq8iBsnKWW25CxsgEW05hnpw@...278...>
+Content-Language: en-US
 MIME-Version: 1.0
-In-Reply-To: <1512734870-17133-10-git-send-email-steffan.karger@...1435...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="w2kPOIWqQa3SJp14lwuV2Xd609gJzh8fY"
-Subject: Re: [Openvpn-devel] [PATCH 09/10] Move execve/run_script helper
- functions to run_command.c
+Subject: Re: [Openvpn-devel] tap-windows6 and AppVeyor
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,87 +17,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan.karger@...1435...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---w2kPOIWqQa3SJp14lwuV2Xd609gJzh8fY
-Content-Type: multipart/mixed; boundary="ahczVzmfPXbGDoWrQQ29UwyNOdF0Q3pf6";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Steffan Karger <steffan.karger@...1435...>,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <b3302c9e-24b3-2380-05e1-94fa9c809b3d@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH 09/10] Move execve/run_script helper
- functions to run_command.c
-References: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
- <1512734870-17133-10-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <1512734870-17133-10-git-send-email-steffan.karger@...1435...>
-
---ahczVzmfPXbGDoWrQQ29UwyNOdF0Q3pf6
-Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: base64
+To: =?utf-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, =?utf-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
+Cc: Simon Rozman <simon@...2293...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi,
-
-On 08/12/17 20:07, Steffan Karger wrote:
-> From: Steffan Karger <steffan@...1856...>
->=20
-> To avoid having to include misc.c - which is a dependency mess - in the
-> tls-crypt unit tests, move the command execution helper functions to a new
-> run_command.c module.
->=20
-> While at it, abstract away the script_security global variable.
->=20
-> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-
-I can't apply this patch without having applied the tls-crypt-v2 patches
-first, however I strongly believe that this patch should come before
-those. Like the those about PEM_encode/decode and and platform_file_*.
-
-This would ensure that the tls-crypt unit-test, once introduced, will
-have all the required pieces to work right away (bisect will benefit
-from this too).
-
-I also see that here you are removing the script_security variable that
-you had declared in your first patch (in the crypt unit-test).
-
-How about re-arranging this patch (maybe by making it the first patch in
-the set) so that you don't need to do and undo the same code?
-
-Does it make sense?
-
-Cheers,
-
-
-
---=20
-Antonio Quartulli
-
-
---ahczVzmfPXbGDoWrQQ29UwyNOdF0Q3pf6--
-
---w2kPOIWqQa3SJp14lwuV2Xd609gJzh8fY
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlsjcBoACgkQB6U8WA7y
-zXTz2Q//dZmYBvJpK0QZKqa3dlU2kNEgOpUnXf9Cqs2tNsQQbGCXi0jqNVR4UikT
-W8k6xsJuPEVrqD0Zco/MoMpZo9ohTBys+pnqpazsZImBu6n6imW564mhGf5kBF+k
-Roj2HfsJ1690Kn09U5bh/COw9G7puDLKip7pR8R1VD+EK75FDSCGDCgVxg+MfJ3n
-ye5Q4ZuwV/04NKZzqjNw9mcoS2T2Z1Tdppgnecpbzi4CPBrLCnhOet6H7AuaHke1
-3gvJJtcnRlcX9Tiwlmbr4/+IPXOtGI0Ez679BIYOO77gvGHNpffdoFQor5UcEOau
-g68umwOC08bfY9C5nU2vwyhY3TovQaZ4u1acC1oYc305+2QXgjhMK1m5bVQuxwdU
-LDs9GZprBfHFoQXV3hXKzzCnzBs9P5n/6D5m6+poSLA41PzGRFMUmThsdOHae05j
-pnuqrvk+3VZZtAIXXht2QwIhJiz/GkbWBA4y8Tuo6Bj/c5BGcjIbwXKkFytwXqeb
-81wVTEc8gDt2jCpHeVxoYuHAroegS0TvWTC2U9qyFRQ2nxJN9gn/HVu3VDeJKbLC
-ddcLnEXlQMmM8HJp80WQ80CdosS5vX5wibLZ0oBqp692OBvzbBBuXtbL5Z4XYJaQ
-FmfbtMrmsh8SBkhJOMaNkHuXF7UrnbV2Lp89HqAdG6fTQpbWy0Y=
-=sXbt
------END PGP SIGNATURE-----
-
---w2kPOIWqQa3SJp14lwuV2Xd609gJzh8fY--
-
+SGksDQoNCkkgbGlrZSB0aGUgaWRlYSBvZiBhc2tpbmcgQXBwVmV5b3IgaWYgdGhleSBjb3VsZCBp
+bmNsdWRlIHRoZSBFV0RLIGluIG9uZSBvZiB0aGVpciBpbWFnZXMuIEl0IGlzIGEgc3RhbmRhbG9u
+ZSB0b29sLCBzbyBWaXN1YWwgU3R1ZGlvIGlzIG5vdCBuZWVkZWQuDQoNClNhZGx5IEkgZG9uJ3Qg
+c2VlIGEgQ2hvY29sYXRleSBwYWNrYWdlIGZvciB0aGUgRVdESy4gVGhhdCB3b3VsZCBoYXZlIGJl
+ZW4gY29udmVuaWVudC4NCg0KVGhlIEFwcFZleW9yIGRvY3NbMV0gc2F5IHRoYXQgdGhlIFZpc3Vh
+bCBTdHVkaW8gMjAxNyBpbWFnZSBpbiBBcHBWZXlvciBhbHJlYWR5IGhhcyB0aGUgV2luZG93cyBE
+cml2ZXIgS2l0IChXREspIGluc3RhbGxlZC4gQnVpbGR0YXAucHkgd291bGQgbmVlZCBhIGNvdXBs
+ZSBvZiBjaGFuZ2VzIHRvIGNvbnN1bWUgdGhlIFdESyBpbnN0ZWFkIG9mIHRoZSBFV0RLLCBidXQg
+aXQgaXMgYW4gb3B0aW9uLg0KDQpUaGFua3MsDQpKb24NCg0KWzFdIGh0dHBzOi8vd3d3LmFwcHZl
+eW9yLmNvbS9kb2NzL2J1aWxkLWVudmlyb25tZW50Lw0KDQpGcm9tOiDQmNC70YzRjyDQqNC40L/Q
+uNGG0LjQvSA8Y2hpcGl0c2luZUAuLi4yNzcuLi4+IA0KU2VudDogRnJpZGF5LCBKdW5lIDE1LCAy
+MDE4IDEyOjE0IEFNDQpUbzogU2FtdWxpIFNlcHDDpG5lbiA8c2FtdWxpQC4uLjUxNS4uLj4NCkNj
+OiBKb24gS3Vua2VlIDxqa3Vua2VlQC4uLjIzOTMuLi4+OyBTaW1vbiBSb3ptYW4gPHNpbW9uQC4u
+LjIyOTMuLi4+OyBvcGVudnBuLWRldmVsIDxvcGVudnBuLWRldmVsQGxpc3RzLnNvdXJjZWZvcmdl
+Lm5ldD4NClN1YmplY3Q6IFJlOiB0YXAtd2luZG93czYgYW5kIEFwcFZleW9yDQoNCmhpLA0KDQpJ
+IGhhdmUgc29tZSB2ZXJ5IGFtYXppbmcgZXhwaXJpZW5jZSB3aXRoIGFwcCB2ZXlvciB3aGVuIEkg
+d2FzIHBsYXlpbmcgd2l0aCBtaW5ndyBidWlsZHMuDQp0aGVyZSB3YXMgYW4gaXNzdWUgcmVsYXRl
+ZCB0byBtaW5ndyBhbmQgSSBzYXcgaXQgYmV0d2VlbiBidWlsZHMgKG1pbmd3IHVwZ3JhZGVkKSwg
+c28gSSBmaXJzdCBkZWNpZGVkICJjb3VsZCBpdCBiZSBhcHAgdmV5b3IgPyEiDQoNCnBlb3BsZSBm
+cm9tIGFwcCB2ZXlvciB3ZXJlIHZlcnkgaGVscGZ1bCBpbiB0cm91Ymxlc2hvb3RpbmcgdGhhdC4N
+Cg0KDQpzbywgSSBndWVzcyB3ZSBjYW4gdHJ5IHRvIG9wZW4gYW4gaXNzdWUgaW4gdGhlaXIgdHJh
+Y2tlciB0aGlzIHRpbWUgYXMgd2VsbC4NCg0KDQphcyBmb3IgbmV0d29yayBzaGFyZSAtIGR1ZSB0
+byAid2FubmEgY3J5IiBhbmQgc2ltaWxhciBtYWx3YXJlcywgbmV0d29yayBzaGFyZXMgYXJlIGJs
+b2NrZWQgb3ZlciBpbnRlcm5ldCB1c3VhbGx5Lg0KYW5vdGhlciBvcHRpb24gbWlnaHQgYmUgdG8g
+dHJ5IGJ1aWxkIHNlcnZpY2VzIGF0IGh0dHBzOi8vbmEwMS5zYWZlbGlua3MucHJvdGVjdGlvbi5v
+dXRsb29rLmNvbS8/dXJsPWh0dHBzJTNBJTJGJTJGdmlzdWFsc3R1ZGlvLmNvbSZkYXRhPTAyJTdD
+MDElN0Nqa3Vua2VlJTQwbWljcm9zb2Z0LmNvbSU3QzljYTA3MDFhYTNhOTQ4MDkwZjgyMDhkNWQy
+OGZhNWI3JTdDNzJmOTg4YmY4NmYxNDFhZjkxYWIyZDdjZDAxMWRiNDclN0MxJTdDMCU3QzYzNjY0
+NjQzNjc2NzM1NzIxMyZzZGF0YT12aXJocEx3YWElMkZiZGZmMkpwVnpkTllHUDV5TGNranBVSXA0
+SSUyQlFldUg0SSUzRCZyZXNlcnZlZD0wDQoNCtC/0YIsIDE1INC40Y7QvS4gMjAxOCDQsy4g0LIg
+MTE6MjgsIFNhbXVsaSBTZXBww6RuZW4gPG1haWx0bzpzYW11bGlALi4uNTE1Li4uPjoNClBlcmhh
+cHMgd2UgY291bGQgbWFrZSB0aGUgSVNPIGF2YWlsYWJsZSBhcyBhIG5ldHdvcmsgc2hhcmU/DQoN
+CklsIDE0LzA2LzIwMTggMjM6NDMsIEpvbiBLdW5rZWUgaGEgc2NyaXR0bzoNCj4gQXMgSSByZWFk
+IHRoZSBsaWNlbnNlIChJQU5BTCksIGNvbnN1bWVycyBvZiB0aGUgRVdESyBjYW4gY29weSwgJ2lu
+c3RhbGwnLCBhbmQgcnVuIA0KPiBpdCBwcmV0dHkgbXVjaCBhbnl3aGVyZSBpbiBzdXBwb3J0IG9m
+IGJ1aWxkaW5nIHNvZnR3YXJlIGZvciBXaW5kb3dzLCBqdXN0IG5vdCANCj4gYXMgYSBwdWJsaWMg
+ZG93bmxvYWQuDQo+IA0KPiBBIDVHQiBkb3dubG9hZCBpcyBwcm9oaWJpdGl2ZSwgYnV0IGRvIG5v
+dGUgdGhhdCAndW5wYWNraW5nJyBpcyBhcyBzaW1wbGUgYXMgDQo+IG1vdW50aW5nIHRoZSBJU08g
+ZmlsZS4NCj4gDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IFNpbW9uIFJv
+em1hbiA8bWFpbHRvOnNpbW9uQC4uLjIyOTMuLi4+IA0KPiBTZW50OiBUaHVyc2RheSwgSnVuZSAx
+NCwgMjAxOCAxMDozNSBBTQ0KPiBUbzogbWFpbHRvOmNoaXBpdHNpbmVALi4uMjc3Li4uOyBKb24g
+S3Vua2VlIDxtYWlsdG86amt1bmtlZUAuLi4yMzkzLi4uPg0KPiBDYzogU2FtdWxpIFNlcHDDpG5l
+biAobWFpbHRvOnNhbXVsaUAuLi41MTUuLi4pIDxtYWlsdG86c2FtdWxpQC4uLjUxNS4uLj47IG9w
+ZW52cG4tZGV2ZWwgKG1haWx0bzpvcGVudnBuLWRldmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldCkg
+PG1haWx0bzpvcGVudnBuLWRldmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldD4NCj4gU3ViamVjdDog
+dGFwLXdpbmRvd3M2IGFuZCBBcHBWZXlvcg0KPiANCj4gSGkhDQo+IA0KPiBHaXZlbiBhbGwgdGhl
+IHJlY2VudCB1cGRhdGVzIHRvIHRhcC13aW5kb3dzNiBidWlsZGluZyBwcm9jZXNzLCB0aGUgQXBw
+VmV5b3INCj4gaW50ZWdyYXRpb24gbmVlZHMgYW4gdXBkYXRlIHRvby4NCj4gDQo+IE5vdyB0aGUg
+TWljcm9zb2Z0IEVXREsgaXMgdXNlZCB0byBidWlsZCB0aGUgZHJpdmVyLCBJIHdhc24ndCBhYmxl
+IHRvIGZpbmQNCj4gYW55IHN1Y2ggYnVpbGQgZW52aXJvbm1lbnQgb24gQXBwVmV5b3IuDQo+IA0K
+PiBJZiB0aGUgRVdESyBsaWNlbmNlIGFsbG93cyB1cywgd2UgY291bGQgcHV0IEVXREsgb25saW5l
+IGFuZCBoYXZlIHRoZQ0KPiBBcHBWZXlvciBkb3dubG9hZCBhbmQgdW5wYWNrIGl0IGJlZm9yZSBi
+dWlsZC4gQWx0aG91Z2ggcG9ydGFibGUsIHRoZSBFV0RLIGlzDQo+IDVHQiBtYWtpbmcgdGhpcyBv
+cHRpb24gZmFyIGZyb20gaWRlYWwuDQo+IA0KPiBPciwgd2UgY291bGQgcG9saXRlbHkgYXNrIEFw
+cFZleW9yIHRvIGludHJvZHVjZSBhbiBFV0RLIGJ1aWxkaW5nDQo+IGVudmlyb25tZW50LiA6KQ0K
+PiANCj4gRG9lcyBhbnlib2R5IGhhdmUgYW55IGlkZWEgaG93IHRvIGFkZHJlc3MgdGhpcyBjaGFs
+bGVuZ2U/DQo+IA0KPiBCZXN0IHJlZ2FyZHMsDQo+IFNpbW9uDQo+IA0KDQoNCi0tIA0KU2FtdWxp
+IFNlcHDDpG5lbg0KQ29tbXVuaXR5IE1hbmFnZXINCk9wZW5WUE4gVGVjaG5vbG9naWVzLCBJbmMN
+Cg0KaXJjIGZyZWVub2RlIG5ldDogbWF0dG9jaw0K
