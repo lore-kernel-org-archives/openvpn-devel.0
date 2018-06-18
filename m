@@ -1,13 +1,17 @@
+References: <CAKuzo_g1yJwUsVdUF+RJdO6DeHeVhYOhSgWLX-SoFfiUw3o2sQ@...278...>
+ <29a3b6b5-f596-0c63-9a37-377399e1e4d0@...515...>
+ <CAKuzo_iVMAAjPR-GLE0s+unhowhq6uxUPzD0f1S1mYZAsZkDng@...278...>
+ <CAKuzo_jYRJPnZmKpdbMwC1L=96+f_rRT3TtKbSPF61pPen64fw@...278...>
+ <CAKuzo_ib6XmtzOVtd4FzHSJRunPRRYEQA3hH+svx=n-V18Qx-A@...278...>
+ <03afef7f-c193-c209-92cb-2422754dcb2b@...277...>
+ <CAKuzo_i76hZ6MHrC2qoTe1UttyB=8-Qz7t1ADHk=Cqi-EpbKQA@...278...>
+From: tincanteksup <tincanteksup@...277...>
+Message-ID: <230b009f-b9dd-6d32-83f3-6a298621a06f@...277...>
+Date: Mon, 18 Jun 2018 21:02:04 +0100
 MIME-Version: 1.0
-In-Reply-To: <20180618184046.GG57262@...1296...>
-References: <20180608052017.6696-3-a@...2181...>
- <20180613141213.5962-1-a@...2181...>
- <20180618184046.GG57262@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 18 Jun 2018 14:52:21 -0400
-Message-ID: <CAKuzo_hkWPzT9wKo+UB-wUM_wSEjBJtZMdjw0yt2uCyAkm8RKA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v3 2/8] windows: properly configure TAP
- driver when no IPv4 is configured
+In-Reply-To: <CAKuzo_i76hZ6MHrC2qoTe1UttyB=8-Qz7t1ADHk=Cqi-EpbKQA@...278...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] interactive service docs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,36 +20,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: Antonio Quartulli <a@...2181...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Selva Nair <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Mon, Jun 18, 2018 at 2:40 PM, Gert Doering <gert@...1296...> wrote:
->
+Hi,
+
+On 18/06/18 19:17, Selva Nair wrote:
 > Hi,
->
-> On Wed, Jun 13, 2018 at 10:12:13PM +0800, Antonio Quartulli wrote:
-> > From: Antonio Quartulli <antonio@...515...>
-> >
-> > This patch ensures that the TAP driver on a windows host is still
-> > configured, even though no IPv4 has been provided.
-> >
-> > In this case the TAP driver ioctl will be invoked with a fake
-> > 0.0.0.0/0.0.0.0 IPv4 which will simply start the interface and
-> > get it to a working state.
-> >
-> > Trac: #208
-> > Signed-off-by: Antonio Quartulli <antonio@...515...>
->
-> I think this is good enough, though I haven't tested it yet (compile
-> and run).  Will do that tomorrow, before I merge & push.
->
-> Before I go ahead with it - Selva, are you fine with this version?
+> 
+> On Mon, Jun 18, 2018 at 1:10 PM, tincanteksup <tincanteksup@...277...>
+> wrote:
+> 
+>> Hi Selva,
+>>
+>> just a note that:
+>>
+>>
+>> - ``--up`` scripts are run by openvpn.exe itself, which is running as user
+>>    *joe*, all privileges are nicely in place.
+>>
+>> - Scripts run by the GUI will run as user *joe*, so that automated tasks
+>> like
+>>    *mapping of drives* work as expected.
+>>
+>>
+>> As far as I know, mapping network drives from an --up script does NOT
+>> work because the VPN will not pass any data until all scripts complete.
+>>
+>> So is this really a suitable example ?
+>>
+> 
+> This is about up script run by the GUI (profile_name_up.bat) and works
+> nicely for mapping drives. We use it widely for our Windows users.
+> 
 
-I believe this is the same as the gitlab version I had tested and
-commented on. I only had some opinionated remarks (nothing critical),
-so this should be good to merge.
+Thanks for clarifying that it is NOT an --up script in this case ..
 
-Selva
+The document you are looking for can also be found here:
+https://community.openvpn.net/openvpn/wiki/OpenVPNInteractiveService-v2
+(Last edited 9 days ago)
+
+I will be happy to re-write that part of the link above so that it reads
+a little more clearly.
+
+Regards
+
+
 
