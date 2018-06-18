@@ -1,21 +1,17 @@
-Date: Mon, 18 Jun 2018 22:48:14 +0200
+Date: Mon, 18 Jun 2018 22:56:10 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20180618204814.GH57262@...1296...>
-References: <CAKuzo_g1yJwUsVdUF+RJdO6DeHeVhYOhSgWLX-SoFfiUw3o2sQ@...278...>
- <29a3b6b5-f596-0c63-9a37-377399e1e4d0@...515...>
- <CAKuzo_iVMAAjPR-GLE0s+unhowhq6uxUPzD0f1S1mYZAsZkDng@...278...>
- <CAKuzo_jYRJPnZmKpdbMwC1L=96+f_rRT3TtKbSPF61pPen64fw@...278...>
- <CAKuzo_ib6XmtzOVtd4FzHSJRunPRRYEQA3hH+svx=n-V18Qx-A@...278...>
- <03afef7f-c193-c209-92cb-2422754dcb2b@...277...>
- <CAKuzo_i76hZ6MHrC2qoTe1UttyB=8-Qz7t1ADHk=Cqi-EpbKQA@...278...>
- <230b009f-b9dd-6d32-83f3-6a298621a06f@...277...>
- <CAKuzo_iZG5t3fPJX6yfj7PJu0RhdRDX22nbVc8omi=ZE9E6BBQ@...278...>
+Message-ID: <20180618205610.GI57262@...1296...>
+References: <42bafab6-9e6f-56b5-2c44-b449ec503ce7@...515...>
+ <20180611075242.GF57262@...1296...>
+ <bb55cab5-2523-b899-0ead-6f34886c4d2b@...515...>
+ <DM5PR2101MB1112279487CBA7B6DE9A3ABDB0710@...2412...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="8O4mmsqCUhOCyWJp"
+ protocol="application/pgp-signature"; boundary="Wd8eLvd86OzG0Ju4"
 Content-Disposition: inline
-In-Reply-To: <CAKuzo_iZG5t3fPJX6yfj7PJu0RhdRDX22nbVc8omi=ZE9E6BBQ@...278...>
-Subject: Re: [Openvpn-devel] interactive service docs
+In-Reply-To: <DM5PR2101MB1112279487CBA7B6DE9A3ABDB0710@...2412...>
+Subject: Re: [Openvpn-devel] Regarding tap-windows6 driver signatures and
+ driver distribution
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,22 +20,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: tincanteksup <tincanteksup@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Jon Kunkee <jkunkee@...2393...>
+Cc: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>, Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---8O4mmsqCUhOCyWJp
+--Wd8eLvd86OzG0Ju4
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Mon, Jun 18, 2018 at 04:16:58PM -0400, Selva Nair wrote:
-> Hence this email chain hoping Samuli will be able to provide some
-> insight as to what is wrong.
+On Mon, Jun 18, 2018 at 08:27:31PM +0000, Jon Kunkee wrote:
+> >> Our projected deadline for the next tap-windows6 release is June=20
+> >> 20th.
+>=20
+> Is this still the target?=20
 
-Server crash, but I don't know full details either (yet).  Samuli
-promised a more official statement "later".
+No, we moved it to (tentatively) June 27th.  There was some sort of
+major outage of Samuli's Infrastructure which took too much time to
+fix.
+
+> How can I help with testing? My 'can I ping the appliance VM's VPN
+> address' test doesn't feel very thorough at all.
+>=20
+> Is there a chance the ARM64 changes (NDIS 6.30+build+installer) will
+> make it in? (Are we trying to get the MSI changes in for this release?)
+
+The goal is to have the 3 ARM64 related PRs plus the version number PR
+merged after a bit of smoketesting on other platforms - as in, Samuli=20
+repairs his build environment, builds a driver with all these (plus
+the security patch), gets it signed and distributed for testing on=20
+Win7, Win10, possibly Server 2016.  If that all works, we merge=20
+everything, bump the version number and do a "formal release".
+
+
+Samuli can shed some more light on whether this is still doable, or
+"more unexpected time wasting surprises" have happened...
 
 gert
 --=20
@@ -52,22 +68,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---8O4mmsqCUhOCyWJp
+--Wd8eLvd86OzG0Ju4
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJbKBqOAAoJEB2Cnv7KVigSuC4MAIciluLIfSxIve1AEa4y1Pz9
-ZHaJT2V063j4dFzKS5DGvliydTJfTr8mDalIIvdv8o8JEofdYRsFwTy85RyZqm3x
-MGKMRTKHZSmuznLyOCTBHG7Mrpm3yl255NbmPNSgVHKaGKDg0BF+ZGD6CYbfFUcU
-ABPA3C08QaLxLrDqXrdhdaeO75xQBDU2Vgt9vE5y/hOXLazZE6kumePZUG3lfkd6
-8fbE/qA8puidCxcllyK+2Yj5nKuTC9RzXHo9soPWyRrUgfvMS2lApRASIunCwYvE
-/QSJe9i5tadJYyuvFJr/ywdcGlJGNsNNKpWI0F3oYvOvpBYswOLnaybLXDubVVu3
-HYMK0gB4NtMRD1VLaIKP7b8VI63PZ7SC/c4c0LcOuf14s72ZoR/tlFEKHMe/71i2
-mfzdNSLs2ht3nxGl8go7LIeDvQrerf1i7Llof6rHTINtA0/kfRb5cWicP2qOTe8e
-1lwoXeHetR41PhOmW9p2T9XqOuz1/Rv/MoaLoRhWEg==
-=h+16
+iQGcBAEBAgAGBQJbKBxpAAoJEB2Cnv7KVigSOd4L+wRYRUXM6yxZab6CkT8l1eoz
+CYaXRBEE2EmQE1wZKeEborr6c8SVe+tUDCUaIaDKKaVtXxhokhOAceyWCXISW31I
+dbImlHe+zH2Y93ZWKTwZ3qcVrMsc4nG91xbH8clIQX0dh6qFrzLsqs1d+aXjgGiS
+z8ifLKQkQvviHkC4+1BqXU3RI05i4t22GjGKCjJ52W6Yjp3IKCYN96zi8SJWh86o
+8jfoLOQFXvkz4WY5Czltp4fNxHvvv3Fy0mOkMjla30ajGovu+PZK6SHSNzrHaGQ4
+anyKbmP/02/ZJfglE/QpwJQphVi+BUi6v9kBxc07aFCqxlR8dRP0jS7hrcqcSx7Z
+76z3Pgy/IFQyjv9P1c7re9fhxY30T9ETyzRZ0oDnSzPQBJzyauF2WfJ5NR1eG9Dd
+U3OeCuGpg9qpD3O0pP6wGefMuYhBPXy+MmmLJnEIawtHxhR3nTj7hY9tEicZf9By
+Q8piUvoe6LWzQ739JHv7EGuWBEh7Rx0ED9u1P1WoTg==
+=iIkE
 -----END PGP SIGNATURE-----
 
---8O4mmsqCUhOCyWJp--
+--Wd8eLvd86OzG0Ju4--
 
