@@ -1,17 +1,14 @@
+From: Jon Kunkee <jkunkee@...2393...>
+Date: Mon, 18 Jun 2018 20:27:31 +0000
+Message-ID: <DM5PR2101MB1112279487CBA7B6DE9A3ABDB0710@...2412...>
+References: <42bafab6-9e6f-56b5-2c44-b449ec503ce7@...515...>
+ <20180611075242.GF57262@...1296...>
+ <bb55cab5-2523-b899-0ead-6f34886c4d2b@...515...>
+In-Reply-To: <bb55cab5-2523-b899-0ead-6f34886c4d2b@...515...>
+Content-Language: en-US
 MIME-Version: 1.0
-In-Reply-To: <230b009f-b9dd-6d32-83f3-6a298621a06f@...277...>
-References: <CAKuzo_g1yJwUsVdUF+RJdO6DeHeVhYOhSgWLX-SoFfiUw3o2sQ@...278...>
- <29a3b6b5-f596-0c63-9a37-377399e1e4d0@...515...>
- <CAKuzo_iVMAAjPR-GLE0s+unhowhq6uxUPzD0f1S1mYZAsZkDng@...278...>
- <CAKuzo_jYRJPnZmKpdbMwC1L=96+f_rRT3TtKbSPF61pPen64fw@...278...>
- <CAKuzo_ib6XmtzOVtd4FzHSJRunPRRYEQA3hH+svx=n-V18Qx-A@...278...>
- <03afef7f-c193-c209-92cb-2422754dcb2b@...277...>
- <CAKuzo_i76hZ6MHrC2qoTe1UttyB=8-Qz7t1ADHk=Cqi-EpbKQA@...278...>
- <230b009f-b9dd-6d32-83f3-6a298621a06f@...277...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 18 Jun 2018 16:16:58 -0400
-Message-ID: <CAKuzo_iZG5t3fPJX6yfj7PJu0RhdRDX22nbVc8omi=ZE9E6BBQ@...278...>
-Subject: Re: [Openvpn-devel] interactive service docs
+Subject: Re: [Openvpn-devel] Regarding tap-windows6 driver signatures and
+ driver distribution
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,33 +17,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: tincanteksup <tincanteksup@...277...>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: =?iso-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>, Gert Doering <gert@...1296...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-> Thanks for clarifying that it is NOT an --up script in this case ..
->
+>> Our projected deadline for the next tap-windows6 release is June=20
+>> 20th.
 
-The comment about --up script was quoted from "Gert's email referred
-to there" and the advantage of running GUI up script was added later (
-a few months ago).
+Is this still the target?=20
 
-> The document you are looking for can also be found here:
-> https://community.openvpn.net/openvpn/wiki/OpenVPNInteractiveService-v2
-> (Last edited 9 days ago)
+How can I help with testing? My 'can I ping the appliance VM's VPN
+address' test doesn't feel very thorough at all.
 
-Yeah, I know, as I created that draft version in the process of
-testing embedded rst. And plan to remove it once the original works as
-expected.
-In fact I had copied it over the original but that edit disappeared
-last week (server crash?), and now on copying it back once again, the
-rst processor seems to misbehave.
+Is there a chance the ARM64 changes (NDIS 6.30+build+installer) will
+make it in? (Are we trying to get the MSI changes in for this release?)
 
-Hence this email chain hoping Samuli will be able to provide some
-insight as to what is wrong.
+> Like "can I run HLK tests on Amazon EC2/Azure VMs?"
 
-Selva
+I've run the HCK server in a local Hyper-V VM before, so I don't see why no=
+t.=20
+The trick is making sure the underlying Server OS is the right version or it
+won't install.
+
+I suppose it's not well-documented because most drivers require that matchi=
+ng=20
+hardware be present, and that doesn't make sense in a VM. There is no techn=
+ical=20
+reason the HCK/HLK clients should not work. (I briefly considered doing=20
+HCK/HLK validation as a side gig until I realized that the all-software cas=
+e is=20
+fairly rare. Am I wrong? I could see offering AWS/Azure automation of=20
+HCK/HLK setup being valuable as a simple OSS project, even if the tests run
+on local hardware connected via VPN.)
+
+My 2c,
+Jon
+
 
