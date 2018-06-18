@@ -1,16 +1,17 @@
-Date: Mon, 18 Jun 2018 22:59:16 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180618205916.GJ57262@...1296...>
+From: Jon Kunkee <jkunkee@...2393...>
+Date: Mon, 18 Jun 2018 21:56:07 +0000
+Message-ID: <DM5PR2101MB11120F3A5F61835EE906C481B0710@...2412...>
 References: <42bafab6-9e6f-56b5-2c44-b449ec503ce7@...515...>
  <20180611075242.GF57262@...1296...>
  <bb55cab5-2523-b899-0ead-6f34886c4d2b@...515...>
  <DM5PR2101MB1112279487CBA7B6DE9A3ABDB0710@...2412...>
  <20180618205610.GI57262@...1296...>
+ <20180618205916.GJ57262@...1296...>
+In-Reply-To: <20180618205916.GJ57262@...1296...>
+Content-Language: en-US
+Content-Type: multipart/signed; protocol="application/pgp-signature";
+ micalg=pgp-sha256     ; boundary="=-=geBuWE2axUjA7B=-="
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="eeg465crObqkzWj4"
-Content-Disposition: inline
-In-Reply-To: <20180618205610.GI57262@...1296...>
 Subject: Re: [Openvpn-devel] Regarding tap-windows6 driver signatures and
  driver distribution
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,64 +22,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jon Kunkee <jkunkee@...2393...>
-Cc: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>, Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>
+Cc: =?iso-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---eeg465crObqkzWj4
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+--=-=geBuWE2axUjA7B=-=
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-Hi,
+ Hi Gert,
 
-silly me
+>>> Our projected deadline for the next tap-windows6 release is June 
+>>> 20th. 
+>>
+>> Is this still the target? 
+>
+> No, we moved it to (tentatively) June 27th.  There was some sort of 
+> major outage of Samuli's Infrastructure which took too much time to 
+> fix. 
 
-On Mon, Jun 18, 2018 at 10:56:10PM +0200, Gert Doering wrote:
-> On Mon, Jun 18, 2018 at 08:27:31PM +0000, Jon Kunkee wrote:
-[..]
-> > Is there a chance the ARM64 changes (NDIS 6.30+build+installer) will
-> > make it in? (Are we trying to get the MSI changes in for this release?)
+Ouch for Samuli.
 
-Didn't have time to look at the MSI stuff yet, and haven't heard from
-others.
+My motivation is simple: The Microsoft partner that asked for this port
+wants to know ASAP when it's released so they can tell people about it.
+That said, as long as I get the final release date to them promptly
+they can deal with whatever ends up happening.
 
-Most likely this release will be "get things out with compromises" -=20
-that is, have one attestation signed driver for Win10+Server 2016
-and one driver for "Win7 + 8 + 8.1", and two .exe installers.  Win10
-is still waiting for bugfixed + signed tap drivers for the fix in
-commit 7d6a1335bfe7a...
+Thanks for the update!
 
-Then, focus on make nicer installers - .msi for the tap driver, .msi
-for openvpn proper, return to *one* driver that has proper signatures
-for everything.
+> The goal is to have the 3 ARM64 related PRs plus the version number PR 
+> merged after a bit of smoketesting on other platforms
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Wonderful.
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Samuli, let me know if you think I can help.
 
---eeg465crObqkzWj4
-Content-Type: application/pgp-signature; name="signature.asc"
+> Most likely this release will be "get things out with compromises" - 
+
+This makes sense, no worries. It's already a fairly complex release.
+
+> Then, focus on make nicer installers - .msi for the tap driver, .msi 
+> for openvpn proper, return to *one* driver that has proper signatures 
+> for everything. 
+
+I'll take a closer look at WIX support for ARM64. This timeline is easier to
+work with.
+
+Cheers,
+Jon
+
+--=-=geBuWE2axUjA7B=-=
+Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJbKB0jAAoJEB2Cnv7KVigSoywL/R/1N+hUcXmk+SNjhrJnFybj
-NCejxWexA9XE0vZyTRYHJi6tWH2+5oZaStaLVCtxHzmgwI1vz2RwgNdZlN1C1l9d
-nrWOKR/7U5qMBVxbjhaxuT+T6EWOXt06tE8sLDnCYPhNdaUL6EYQn/0u1TxmQVil
-Svvvn40Qg2XqkijWDCtFN+CHCxShjO0JCImV6v5UEVnZEJtB/k0HQFgC3yA7eYD4
-5wA4GZwl7thonrHnRVUKTkfUKbZpINYG/lbgKSKQX5OaImJOjUqmHE6adCLHjUrH
-WkbvsSfX6lNld87TH5n9e/coCjJYHC/eig0a6af08Nb1dcQSPdXk1CilOOx46Phw
-8WLv+s1BDIxjJS9dueNnt662JPm4jDYcBfIGjN0j/r27+oRgqEUAHUrsVmDxeXJE
-Xf5NAFbu2AAJr+Q3xCqg3BAsxzo4/+N1VUsOjlhhUDEbGn89TM6p5lrgZye9ZX27
-c6HbvY6hh+mq08OFXVPUBQBA2EDHVXLZQApYJqeDAA==
-=DP/p
+iQIzBAEBCAAdFiEEQ6s+QnGone4JL4whoCohEJkRnX4FAlsoKmwACgkQoCohEJkR
+nX6crw/9EBqwKo79RkI0bUE7NJD5W6hrjtP5tMALXFcMUmtn0j3RztqhF+he4XIR
+izkYyIMOzTsJbynWzmKQSoWtmmLyMlDr2J+VpyFOAkDYMponAlyd2OmIaWHHpxLq
+KQ9uzdywSSHYhmX2x2KOKmciW8l1w1U0O0nymmuIE/r1hmEk6UzZ1stc5hk54jAj
+t3/6XBGz/7A1OIIXtHvkRvWpLrO6lzyJQGoNVpBYN3SrIvjJtGk1MvLjyOF1/dT7
+VlIluOgbfJ4Gb9DTSEJCrQARDrNyZC9GYAKst2BiWZhHaLskate2RwjrzUcpDEHC
+JtEw1n9dSKbWILKkoE+WFQz7Q3/6e+2XaReIo54NjBBXO5cPV1xfjQkPVVTKQWWA
+XmlH/UBtNAGNJkh1Lvvp+QWGjEqU7/DNfTLaiIlAEKHxD28fHECvgjXtgt2DJhRD
+AP1cZ9gfQTpj3FX2BSynIaIO8CbfdYojC5YxtJaHTzQwJYXw9nz/1B86o2CbZeo7
+5XFKf0F5VGAtIrQP9qGanlKFiDMtPAkMJtjfPz9B3MAIA8TIKEDPzr2Q/Pj0vr7u
+H2UnH/GGMvfhaoTglmEDx1D8a6t08FYBh9cs3GqhRBISomoljcxRl5H1VTzrP4yE
+v9E4jlGDbF3VPWEPb/Fg8KILQ26PINBK5+er72up4+Am0JRdrvo=
+=R7A/
 -----END PGP SIGNATURE-----
 
---eeg465crObqkzWj4--
+
+--=-=geBuWE2axUjA7B=-=--
 
