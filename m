@@ -1,11 +1,15 @@
-MIME-Version: 1.0
-In-Reply-To: <20180620155301.GY57262@...1296...>
+Date: Wed, 20 Jun 2018 23:11:58 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180620211158.GZ57262@...1296...>
 References: <20180608052017.6696-1-a@...2181...>
  <20180613141213.5962-1-a@...2181...>
  <20180620155301.GY57262@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 20 Jun 2018 15:31:39 -0400
-Message-ID: <CAKuzo_hAOzTi0dt=yNd8rMdjoeba87mG3_RZTaeP7FL3KQ0SrA@...278...>
+ <CAKuzo_hAOzTi0dt=yNd8rMdjoeba87mG3_RZTaeP7FL3KQ0SrA@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="u08a77unfWDSo9q0"
+Content-Disposition: inline
+In-Reply-To: <CAKuzo_hAOzTi0dt=yNd8rMdjoeba87mG3_RZTaeP7FL3KQ0SrA@...278...>
 Subject: Re: [Openvpn-devel] [PATCH v3 2/8] windows: properly configure TAP
  driver when no IPv4 is configured
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,65 +20,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: Antonio Quartulli <a@...2181...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Selva Nair <selva.nair@...277...>
+Cc: Gert Doering <gert@...1296...>, Antonio Quartulli <a@...2181...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--u08a77unfWDSo9q0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On Wed, Jun 20, 2018 at 11:53 AM, Gert Doering <gert@...1296...> wrote:
-> Hi,
->
-> On Wed, Jun 13, 2018 at 10:12:13PM +0800, Antonio Quartulli wrote:
->> From: Antonio Quartulli <antonio@...515...>
->>
->> This patch ensures that the TAP driver on a windows host is still
->> configured, even though no IPv4 has been provided.
->>
->> In this case the TAP driver ioctl will be invoked with a fake
->> 0.0.0.0/0.0.0.0 IPv4 which will simply start the interface and
->> get it to a working state.
->>
->> Trac: #208
->> Signed-off-by: Antonio Quartulli <antonio@...515...>
->
-> Well...
->
->> @@ -2642,7 +2642,11 @@ test_routes(const struct route_list *rl, const struct tuntap *tt)
->>          ret = true;
->>          adapter_up = true;
->>
->> -        if (rl)
->> +        /* we do this test only if we have IPv4 routes to install, and if
->> +         * the tun/tap interface has seen IPv4 ifconfig - because if we
->> +         * have no IPv4, the check will always fail, failing tun init
->> +         */
->> +        if (rl && c->c1.tuntap->did_ifconfig_setup)
->
-> This code is a bit optimstic :-) - there is no "c" here...
+On Wed, Jun 20, 2018 at 03:31:39PM -0400, Selva Nair wrote:
+> > This code is a bit optimstic :-) - there is no "c" here...
+>=20
+> When did this change?  In a previous version this was done as
 
-When did this change?  In a previous version this was done as
+v2 to v3, because I complained that check_add_routes_dowork() is=20
+hard enough to read as it is, and suggested to put the check
+elsewhere.
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 7d9a338..51e43c2 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -292,7 +292,9 @@ check_add_routes_action(struct context *c, const
-bool errors)
- void
- check_add_routes_dowork(struct context *c)
- {
--    if (test_routes(c->c1.route_list, c->c1.tuntap))
-+    /* skip route check if no IPv4 was configured */
-+    if (!c->c1.tuntap->did_ifconfig_setup
-+        || test_routes(c->c1.route_list, c->c1.tuntap))
-     {
-         check_add_routes_action(c, false);
-     }
+All my fault :-)
 
-That said, moving this to route.c but corrected as in Gert's
-attachment looks better.
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-Selva
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--u08a77unfWDSo9q0
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJbKsMeAAoJEB2Cnv7KVigSKAYL/i859R5sve+y+CYAunpkQWxW
+IPiSOr//ayixIS905lNJWvmEYGC5VozPLYTFGEbLMdbA78EJABTQRv5LXmR28uiL
+eBw9g5w8Z2jjHhxYIe9zm08lWF/A1wRXqsgtk2cleG9prV5f3Vg4dJPS0A7rB3Sb
+ji7MscIeVozoqDs1K2tdEgjyeqf70z8J1we3twbXIZs26ncOTiLph39EK8SZzNmk
+Enu2dY+hYmGb4TJhJHPodOX6FzbUQifuJjtL1A8NMD2jfvklC/o1oVFtsJX24KMo
+7GalD3A8ooMeEPyCT0Qcl0BUk+6K31qUCp1tQliwxq3M6RBMrLb5F4ACyVpCGyAL
+iAc67qa3V7v01y/kkoLQSbOoAFvLM5EN1AJh4lH6ZgGI0/QBFlPFWC6Bq1W/dfWs
+zB1ZAHsOidBA3Wg5q6pSaGP+VwtF/KRwjNdljsauFFaBJn2TESqqDCD4Z5jK3em7
+trmDIJWQzGWeVpzj0sBFP5gyknHeozSjjNNIVZ7DBA==
+=uhrm
+-----END PGP SIGNATURE-----
+
+--u08a77unfWDSo9q0--
 
