@@ -1,17 +1,21 @@
-Date: Wed, 20 Jun 2018 23:11:58 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180620211158.GZ57262@...1296...>
-References: <20180608052017.6696-1-a@...2181...>
- <20180613141213.5962-1-a@...2181...>
- <20180620155301.GY57262@...1296...>
- <CAKuzo_hAOzTi0dt=yNd8rMdjoeba87mG3_RZTaeP7FL3KQ0SrA@...278...>
+From: Jon Kunkee <jkunkee@...2393...>
+Date: Thu, 21 Jun 2018 02:40:44 +0000
+Message-ID: <DM5PR2101MB1112A510BA8E7FCE6FA1166FB0760@...2412...>
+References: <42bafab6-9e6f-56b5-2c44-b449ec503ce7@...515...>
+ <20180611075242.GF57262@...1296...>
+ <bb55cab5-2523-b899-0ead-6f34886c4d2b@...515...>
+ <DM5PR2101MB1112279487CBA7B6DE9A3ABDB0710@...2412...>
+ <20180618205610.GI57262@...1296...>
+ <20180618205916.GJ57262@...1296...>
+ <DM5PR2101MB11120F3A5F61835EE906C481B0710@...2412...>
+ <f7cffd19-6db7-a622-3268-fbb198531387@...515...>
+In-Reply-To: <f7cffd19-6db7-a622-3268-fbb198531387@...515...>
+Content-Language: en-US
+Content-Type: multipart/signed; protocol="application/pgp-signature";
+ micalg=pgp-sha256     ; boundary="=-=R/APc2R3UCbVFI=-="
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="u08a77unfWDSo9q0"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_hAOzTi0dt=yNd8rMdjoeba87mG3_RZTaeP7FL3KQ0SrA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v3 2/8] windows: properly configure TAP
- driver when no IPv4 is configured
+Subject: Re: [Openvpn-devel] Regarding tap-windows6 driver signatures and
+ driver distribution
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,54 +24,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: Gert Doering <gert@...1296...>, Antonio Quartulli <a@...2181...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: =?iso-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>, Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---u08a77unfWDSo9q0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+--=-=R/APc2R3UCbVFI=-=
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-Hi,
+> Testing the signatures and the driver on ARM64 would be good. We don't 
+> have any ARM64 Windows hardware at our disposal. 
 
-On Wed, Jun 20, 2018 at 03:31:39PM -0400, Selva Nair wrote:
-> > This code is a bit optimstic :-) - there is no "c" here...
->=20
-> When did this change?  In a previous version this was done as
+Drop me a package and I'll take it for a spin. I have at least one device
+with Secure Boot set up on a released build (1803).
 
-v2 to v3, because I complained that check_add_routes_dowork() is=20
-hard enough to read as it is, and suggested to put the check
-elsewhere.
+> We don't have any tap-windows6 -specific tests at the moment, so I 
+> generally just run the OpenVPN test suite against a bunch of OpenVPN 2.x 
+> / Access Server / Private Tunnel servers: 
+> <https://github.com/OpenVPN/openvpn-windows-test.git> 
 
-All my fault :-)
+I can give that a shot. If I can't figure something out from the README,
+I'll ask questions here.
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+> Given that tap-windows6 driver has seen lots of modifications having 
+> more focused tests would be good. Any ideas what we should test and how? 
 
-Gert Doering - Munich, Germany                             gert@...1296...
+As for tap-windows6, I have to profess a merely general understanding of
+what it does: It allows the usermode daemon to read, intercept, and emit
+raw network traffic, while the firewalling, routing, and encryption are
+done by the OpenVPN daemon after the traffic leaves the driver.
 
---u08a77unfWDSo9q0
-Content-Type: application/pgp-signature; name="signature.asc"
+Given that, I can think of a few test cases (not ordered in any way):
+
+(All tests should run under Driver Verifier with basic sanity and NDIS
+checks enabled.)
+
+ * Heavy load on multiple TAPs
+ * Upgrade
+ * Empty, small, ~MTU, >MTU, and Jumbo packets
+ * API fuzzing
+ * Power transition testing
+
+...but all of these take varying levels of dev investment to automate.
+
+The easiest next step would be to expand the ping test to try varying
+packet sizes (-l). (Windows' ping doesn't have a 'flood' option...)
+
+My 2c,
+Jon
+
+--=-=R/APc2R3UCbVFI=-=
+Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJbKsMeAAoJEB2Cnv7KVigSKAYL/i859R5sve+y+CYAunpkQWxW
-IPiSOr//ayixIS905lNJWvmEYGC5VozPLYTFGEbLMdbA78EJABTQRv5LXmR28uiL
-eBw9g5w8Z2jjHhxYIe9zm08lWF/A1wRXqsgtk2cleG9prV5f3Vg4dJPS0A7rB3Sb
-ji7MscIeVozoqDs1K2tdEgjyeqf70z8J1we3twbXIZs26ncOTiLph39EK8SZzNmk
-Enu2dY+hYmGb4TJhJHPodOX6FzbUQifuJjtL1A8NMD2jfvklC/o1oVFtsJX24KMo
-7GalD3A8ooMeEPyCT0Qcl0BUk+6K31qUCp1tQliwxq3M6RBMrLb5F4ACyVpCGyAL
-iAc67qa3V7v01y/kkoLQSbOoAFvLM5EN1AJh4lH6ZgGI0/QBFlPFWC6Bq1W/dfWs
-zB1ZAHsOidBA3Wg5q6pSaGP+VwtF/KRwjNdljsauFFaBJn2TESqqDCD4Z5jK3em7
-trmDIJWQzGWeVpzj0sBFP5gyknHeozSjjNNIVZ7DBA==
-=uhrm
+iQIzBAEBCAAdFiEEQ6s+QnGone4JL4whoCohEJkRnX4FAlsrECEACgkQoCohEJkR
+nX41ww//cOS0PWMQJ0ruZH6eCYT38QrfeSUzlWnSbTFpr1QC4vsdC9HU8FgE8tKb
+WcrEtVRteGSN41del1yzY3iBBehNZX3XHuqUbga7DlEtPMlm38CrImnauql/b6n2
+OjVKREPp3rqVsGjR9p8YzzdrDeV/HbYUehyXuUr3IMRTcZciax0GdAEb/tLNR9SG
+144v2FhDwHQR7KUG/7qeE98KB8eH66te5w9+XjsTJACqeJR5gkpPLGbBgwialMi1
+Zi0YSeQnaG/PND4+aSrmKhX0gIUrMl2T3C7PtojalAMsa3mGi5k+tm8+t/420oie
+SY0cvmphTrmTHpTWwwshzm/3J1F9nqnYZmZeEbwdvBZr1hBbhNseAFmV1xJVmkNL
+HLLgHt01bcMBU/gSHDzfSOwXWoEpdxH2dupNcnIdUhLh3c5g3/0PhD3t6aTB5zXw
+rcMOhlR2YylIqqOdwVXL7+7jHp/AJ5l0WLo6gol4oacPHyaOfTRJeYpYSdQbIoIm
+wUTTTeNkST3ytL2zby+vIozMJ++ySkal/+ynF09c1es7Aqy6w0KWsUP2RLqtUaGz
+nHOrnP/Gnkf4odxvFWXiPXZbbtZTjCVKYAZQN3EULH+7+jYKuZ2bwn2/rZmI9vRh
+jwITVQRdiLNBsIlMyR4LR6YKU72eH6mKQS+eAmNBexHfda1xCl4=
+=bumd
 -----END PGP SIGNATURE-----
 
---u08a77unfWDSo9q0--
+
+--=-=R/APc2R3UCbVFI=-=--
 
