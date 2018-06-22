@@ -1,15 +1,15 @@
-Date: Fri, 22 Jun 2018 11:46:35 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180622094635.GI57262@...1296...>
 References: <20180608052017.6696-1-a@...2181...>
- <20180613141213.5962-1-a@...2181...>
- <20180620155301.GY57262@...1296...>
+ <20180613141213.5962-1-a@...2181...> <20180620155301.GY57262@...1296...>
  <c416ea67-e4ce-148b-eb19-6d18b35da559@...2181...>
+ <20180622094635.GI57262@...1296...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <d496bbf5-3c55-f2d9-2ab2-bc89ded80131@...2181...>
+Date: Fri, 22 Jun 2018 17:49:57 +0800
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="GMaUlEtIIvUQCAd3"
-Content-Disposition: inline
-In-Reply-To: <c416ea67-e4ce-148b-eb19-6d18b35da559@...2181...>
+In-Reply-To: <20180622094635.GI57262@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="mGJsnOz7HPA8qJ98traFKEMVEONGLsJX1"
 Subject: Re: [Openvpn-devel] [PATCH v3 2/8] windows: properly configure TAP
  driver when no IPv4 is configured
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,55 +20,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---GMaUlEtIIvUQCAd3
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--mGJsnOz7HPA8qJ98traFKEMVEONGLsJX1
+Content-Type: multipart/mixed; boundary="7TsWCyOW6KYhx3GZQz3io5A8PbJa5IzLQ";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
+Message-ID: <d496bbf5-3c55-f2d9-2ab2-bc89ded80131@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v3 2/8] windows: properly configure TAP
+ driver when no IPv4 is configured
+References: <20180608052017.6696-1-a@...2181...>
+ <20180613141213.5962-1-a@...2181...> <20180620155301.GY57262@...1296...>
+ <c416ea67-e4ce-148b-eb19-6d18b35da559@...2181...>
+ <20180622094635.GI57262@...1296...>
+In-Reply-To: <20180622094635.GI57262@...1296...>
+
+--7TsWCyOW6KYhx3GZQz3io5A8PbJa5IzLQ
+Content-Language: en-US
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
 Hi,
 
-On Fri, Jun 22, 2018 at 03:27:02PM +0800, Antonio Quartulli wrote:
-> Fri Jun 22 13:43:51 2018 us=3D116232 PUSH: Received control message: 'PUS=
-H_REPLY,redirect-gateway !ipv4 ipv6,tun-ipv6,ping 10,ping-restart 120,ifcon=
-fig-ipv6 2002::1001/112 2002::2,peer-id 0,cipher AES-256-GCM'
+On 22/06/18 17:46, Gert Doering wrote:
+> Hi,
+>=20
+> On Fri, Jun 22, 2018 at 03:27:02PM +0800, Antonio Quartulli wrote:
+>> Fri Jun 22 13:43:51 2018 us=3D116232 PUSH: Received control message: 'PU=
+SH_REPLY,redirect-gateway !ipv4 ipv6,tun-ipv6,ping 10,ping-restart 120,ifco=
+nfig-ipv6 2002::1001/112 2002::2,peer-id 0,cipher AES-256-GCM'
+>=20
+> As an afterthought - the error could be totally unrelated to the changes,
+> and the win32 API refusing 2002:: addresses because it knows that they
+> are not "free for grabs"...  (6to4, normally auto-configured unless
+> disabled, with 2002:<ipv4>:: being the prefix that a host on <ipv4> or
+> a network behind a router on <ipv4> can use - but that's old stuff and
+> should no longer be used in any case).
 
-As an afterthought - the error could be totally unrelated to the changes,
-and the win32 API refusing 2002:: addresses because it knows that they
-are not "free for grabs"...  (6to4, normally auto-configured unless
-disabled, with 2002:<ipv4>:: being the prefix that a host on <ipv4> or
-a network behind a router on <ipv4> can use - but that's old stuff and
-should no longer be used in any case).
+After changing the prefix to 2001:db8:cafe::/112 the error is gone.
 
-gert
+However, the assert at the end of the log in argv.c:299 is still there.
+This might be some argv_new()/reset() that has been misplaced (maybe?).
+
+Cheers,
+
+
 --=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Antonio Quartulli
 
-Gert Doering - Munich, Germany                             gert@...1296...
 
---GMaUlEtIIvUQCAd3
+--7TsWCyOW6KYhx3GZQz3io5A8PbJa5IzLQ--
+
+--mGJsnOz7HPA8qJ98traFKEMVEONGLsJX1
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJbLMV6AAoJEB2Cnv7KVigSb0YL/RKtdUA8kLTJmgnb6NLaopGx
-MPOxX0/OfiYFOXgxGmsCk6xHfnPKJtpCBrPZojhgciUGiLuo6yjZZ4bY5ibpW0Za
-UEHTALlP8gUir8jjmQeHtGL2JGxTut4WkCkl54QkFl95TUHqzI35e/vrF6pH0Vh+
-RnZQ78gA7P584B4vvzx7Onz24aDW3y8c3dWBmO76a+YnT6Wraj8QP6CONuXQR7wN
-5KN+VdxRFGkl9jHNX0dPkrnpvlzsTuXZxPVOsHGCagdU8giSDoypxsxgEHJVTRYI
-SHrRT1V7uLPivSasSmM4jT5OTcisestGcNL353f18liA3D+yIfEksnaP7sxpplo/
-qpteyFUuF+XhIw1pPOhMLwpCivX+dWww7FADxdyfJzxGk9CUBcwO8m3wD6DXJQ78
-OG1fFFwIrml5A9VUEhfHnvfOQcvYH18Pws1UhYIDQJNyGUMlh11urfT6MsEDnAHN
-LfHx8Tm5veGcgRfJ70i92rTdB2McYdDrIFN1jIr3rw==
-=eSHc
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlssxkUACgkQB6U8WA7y
+zXTJ2hAAjMNUKC1MNSrhcxwF0SCJPd382Nb3SU5DrpaE8ifAjqhakCmJM969fJVv
+KzqQs2+2TYGmMocWeKapm5fW2R/YJQu605z1ylO9GcHZrHYtTe/rC93dMOPOps69
+LqMTBpIfpj+dN3e6kUTC3epRc4/2HD+Xu3vgUn9QcuvJQRi0KY5y0NzXQwX6aj5z
+JhP9r83yq8p8KSnrJbjU/7qVZpnzPyOmqiX6co/xpaPsv6xcfFpb0qgZcVJvhN7Y
+r52wCmzeBi065x8Nmb9QdfhqAMsVslHacfoWOG4q/WLRW+30v7y6g8GgBvkFiT1S
+6S/u1DlTqd1ohzVzsDamb5FNJmy7egRnImHcA9C7RvuyjkYTrCVmZnmKMlT+BVlf
+HuvFxc8LrLqnkEaCrQOsxs90aGUyADGjsMccQU+ZwFu5nsZngU5+Fh3+g23SVMjT
+tGQOhHJXEIjaya/4f+yN5IWmnvr9MydFTp0j7sAIAW1OebxS1VBKDU2bVA3/5hpy
+MvjRBJ7ESBANF/QCDmM5Fju9hCNNo3ccez0uMOhLSPkreCxP1D+4G81vmxXMobDM
+jaa43gYfctOB5AWLQRxovNeNdNK7jLJaverQ0gkBo6Rd+jnzJx5c4Fs/HHsX+WYC
+dhhHnh2ME69brq86v/F/sSyc382/JP4+eSybWn7wm+wNmYlx/AM=
+=Safo
 -----END PGP SIGNATURE-----
 
---GMaUlEtIIvUQCAd3--
+--mGJsnOz7HPA8qJ98traFKEMVEONGLsJX1--
 
