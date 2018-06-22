@@ -1,16 +1,17 @@
-References: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
- <1512734870-17133-2-git-send-email-steffan.karger@...1435...>
- <d29d8651-7ed9-9b65-97b2-dcad579d70e2@...2181...>
- <c8bf0549-5775-7eea-e10b-a3572120be99@...1856...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <41de18e5-6326-2053-bc99-6c0035cfd7c0@...2181...>
-Date: Fri, 22 Jun 2018 15:49:28 +0800
+Date: Fri, 22 Jun 2018 11:39:17 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180622093917.GH57262@...1296...>
+References: <20180608052017.6696-1-a@...2181...>
+ <20180613141213.5962-1-a@...2181...>
+ <20180620155301.GY57262@...1296...>
+ <c416ea67-e4ce-148b-eb19-6d18b35da559@...2181...>
 MIME-Version: 1.0
-In-Reply-To: <c8bf0549-5775-7eea-e10b-a3572120be99@...1856...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="eRc4G9uwt9MTFLBbuEx53ZbwuWtYG8Fx9"
-Subject: Re: [Openvpn-devel] [PATCH 01/10] Add crypto_pem_{encode,decode}()
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="L+CNnuwY89phXYPb"
+Content-Disposition: inline
+In-Reply-To: <c416ea67-e4ce-148b-eb19-6d18b35da559@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v3 2/8] windows: properly configure TAP
+ driver when no IPv4 is configured
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,143 +20,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---eRc4G9uwt9MTFLBbuEx53ZbwuWtYG8Fx9
-Content-Type: multipart/mixed; boundary="mhxkGyZNpMnnrIPrQ9BKLDsyBax9YZIAP";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <41de18e5-6326-2053-bc99-6c0035cfd7c0@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH 01/10] Add crypto_pem_{encode,decode}()
-References: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
- <1512734870-17133-2-git-send-email-steffan.karger@...1435...>
- <d29d8651-7ed9-9b65-97b2-dcad579d70e2@...2181...>
- <c8bf0549-5775-7eea-e10b-a3572120be99@...1856...>
-In-Reply-To: <c8bf0549-5775-7eea-e10b-a3572120be99@...1856...>
-
---mhxkGyZNpMnnrIPrQ9BKLDsyBax9YZIAP
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
+--L+CNnuwY89phXYPb
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Hi,
+HI,
 
-On 22/06/18 14:14, Steffan Karger wrote:
-[cut]
->>> +/**
->>> + * Encode binary data as PEM
->>> + *
->>> + * @param name      The name to use in the PEM header/footer
->>> + * @param dst       Destination buffer for PEM-encoded data.  Must be =
-a valid
->>> + *                  pointer to an uninitialized buffer structure.  Iff=
- this
->>> + *                  function returns true, the buffer will contain mem=
-ory
->>> + *                  allocated through the supplied gc.
->>
->> minor: I see the current style is inconsistent wrt having a '.' at the
->> end of each doxygen line. Maybe we should decide what to do and stick to
->> that ;P But does not need to be changed in this patch of course.
+On Fri, Jun 22, 2018 at 03:27:02PM +0800, Antonio Quartulli wrote:
+> The failure is reported as:
 >=20
-> You sound just like my colleague who's pointing out the missing dots in
-> my doxygen :')  Any preference from your side?  I think ending each line
-> with a dot is best, because that looks best in the generated docs.
->=20
+> TUN: adding address failed using service: The parameter is incorrect.
+> [status=3D87 if_index=3D42]
 
-hehe I don't have a strong preference. Let's go for 'always ending with
-a dot' then.
+This is surprising.  I initially assumed that this is related to IPv4,
+but we do not even use the service for IPv4 today...
 
-[cut]
->>> +    if (!PEM_write_bio(bio, name, "", BPTR(src), BLEN(src)))
->>> +    {
->>> +        ret =3D false;
->>> +        goto cleanup;
->>> +    }
->>> +
->>> +    BUF_MEM *bptr;
->>> +    BIO_get_mem_ptr(bio, &bptr);
->>> +
->>> +    *dst =3D alloc_buf_gc(bptr->length, gc);
->>> +    ASSERT(buf_write(dst, bptr->data, bptr->length));
->>
->> why using an ASSERT() here and none in the mbedtls counterpart?
->>
->> If there is no special reason I (personally) think that these helper
->> functions should not use ASSERT() (unless something really bad is
->> happening).
->> Or do you think that a failure here indicates a general memory problem?
->=20
-> Because in the mbedtls part, mbed my change the "outlen" value.  While
-> here, we create a buffer of bptr->length bytes and then write
-> bptr->length bytes to it.  If that fails, our entire logic (or
-> executable integrity) is broken.  It's our code only, and it can not fail.
+This *might* trigger something that the iservice logs to the windows
+event log - so it might be worth having a look :-)
 
-Yeah, makes sense. Thanks for the explanation. My only worries about
-ASSERTs if when the code can be tricked to trigger them without a real
-general failure. But this can't be the case.
+gert
 
-[cut]
->> Another question: do we have any way to verify that pem_buf contains
->> well-formatted PEM data after pem_encode()?
->> I am asking because if both encode and decode become no-op (because of
->> some bug) we won't be able to realize that.
->>
->> However, I am not sure we have an easy way to check that..maybe you
->> could use some SSL function that would normally load PEM data?
->=20
-> That is a bit annoying to test indeed.  How about I just verify that
-> this is encoding is not a no-op by adding a check that pem_buf is larger
-> that src_buf?
->=20
-
-Yeah probably enough.
-
-> As for correct PEM en/decoding, I expect that the crypto lib has tested
-> that.
-
-I agree.
-
->=20
-[cut]
->>
->> Cheers,
->=20
-> Thanks!
-
-Thank you!
-
-
+PS: as a side note - with XP and Vista dropped, we might consider ripping
+out every win32-api besides IPAPI and iservice, for 2.5...
 
 --=20
-Antonio Quartulli
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
 
---mhxkGyZNpMnnrIPrQ9BKLDsyBax9YZIAP--
-
---eRc4G9uwt9MTFLBbuEx53ZbwuWtYG8Fx9
+--L+CNnuwY89phXYPb
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlssqggACgkQB6U8WA7y
-zXQbiw//U3NRQnL/YUs4/dVnRShqp8VDAjruw/g382R8LCtHc0ejy9KzJQ90+kkr
-REGanoQ83bEif5ja3dFb6mqC47LzafkL+7EI9lInH9W6ODqdcf3I8TVl16fHaLuJ
-lYSYYNP1L+blqAArYNzNRF3pGwX5+I6dXFan5jMOdTv/IZjIsbeoU7t54OSMy9gO
-5rUFRn+TiNTknP5Hb7d18k8RPcdueoQd5crBN5be5S1iOwl9MjjLm1mDGXSl7z4u
-PxqK1C6vdZguoKAZr0Sd5I6E51/Lr+UCf8V9C3LOeIZ6i74+X65/NbA49aR0oeHV
-o7IuvC+96aQHMNAlNHfFu0li+JGWdZt2KD7W8hq7RsREgheMAi15iHPwdp7Xvt/H
-kj0UKhpn9LwNna2BXy0rD26IblIqLlf+8iKWowoPUBhPol/O8qr6og0vanMxKrR4
-IP9TIXCMEMualrEjie722ycIzHXYyKhPOqfcC6Un57zMgqTLjmr63nnkJyl+LfmC
-YgW+0uU55LMwCPDHEUejXj6WyN3eIgPRVwcyG9Y0kwSjcVhdpOMOjzQmpSvGOlJk
-VTPCgld/Mrd7XbwNhn42RJa5QBsOkrRdNs/Bqzv66exQvgDG/XlxEu6191r6wnBs
-A5fA7jI4/ZbfvrgosyC9zkcMs4quSh4SUP27rwkxwZwDPVff0Zs=
-=uTPp
+iQGcBAEBAgAGBQJbLMPFAAoJEB2Cnv7KVigSaGgMAJ6YL92+HHP1FzGlmFD9cLsA
+G5bHiO+4NQn/usL/12SckoQzPPBnSGasn5zpjz/elmVyZBBxwXU+0dC4v3bRM99X
+znIW8411iUzN6l74BzvZNTjlyyuckAleKdQJFPaX+K/Cklk1vIo5+hJCi/ReA2gB
+TQ6YxUFJHiukVQR1PSuJSkK0xEXMtMWkqGyTJ2BWIbaNYMRXl6LpdlnixDVdRpMA
+6ZVR/oWJsFK+Y5ndNIqrdBldHDbm5on8wD7pNtWHXCKNoU9vjlB+pWBVK9ctSYTZ
+XjGZ6KqQBiYBg2/ArzjQwZ+4k5ZJLTLaLX4WQeeWA0Ckeef6WbMkLtKGXoWA+tXY
+ns2PlK4yG3yS9RnR5I89qGg6wvvSZE2AwRq0Cbv2+pav+LhG1kWICFmtsdOTJrsP
+hRMDzpsdWGy0INd2S3ACwaf7OVo17/iQZE1Hu2Flm2Y0MIm5WcFqrkywm0Z3sYeB
+bv3e9Ljf4M0x6Hzfge8Jj97xsT44iD3d96ltcXmp9A==
+=Ksws
 -----END PGP SIGNATURE-----
 
---eRc4G9uwt9MTFLBbuEx53ZbwuWtYG8Fx9--
+--L+CNnuwY89phXYPb--
 
