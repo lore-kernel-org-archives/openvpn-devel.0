@@ -1,21 +1,12 @@
-From: Jon Kunkee <jkunkee@...2393...>
-Date: Thu, 21 Jun 2018 02:40:44 +0000
-Message-ID: <DM5PR2101MB1112A510BA8E7FCE6FA1166FB0760@...2412...>
-References: <42bafab6-9e6f-56b5-2c44-b449ec503ce7@...515...>
- <20180611075242.GF57262@...1296...>
- <bb55cab5-2523-b899-0ead-6f34886c4d2b@...515...>
- <DM5PR2101MB1112279487CBA7B6DE9A3ABDB0710@...2412...>
- <20180618205610.GI57262@...1296...>
- <20180618205916.GJ57262@...1296...>
- <DM5PR2101MB11120F3A5F61835EE906C481B0710@...2412...>
- <f7cffd19-6db7-a622-3268-fbb198531387@...515...>
-In-Reply-To: <f7cffd19-6db7-a622-3268-fbb198531387@...515...>
-Content-Language: en-US
-Content-Type: multipart/signed; protocol="application/pgp-signature";
- micalg=pgp-sha256     ; boundary="=-=R/APc2R3UCbVFI=-="
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Regarding tap-windows6 driver signatures and
- driver distribution
+References: <20180620044650.18041-1-rosenp@...277...>
+ <20180620050012.GR57262@...1296...>
+In-Reply-To: <20180620050012.GR57262@...1296...>
+From: Rosen Penev <rosenp@...277...>
+Date: Thu, 21 Jun 2018 18:42:11 -0700
+Message-ID: <CAKxU2N99kz-gHTvBXVfp800PHESGmJ73gF-fKgq-nyC=bd3oLw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] OpenSSL: Fix compilation with
+ deprecated APIs disabled on 1.1
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,75 +15,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?iso-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>, Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: gert@...1296...
+Cc: openvpn-devel@lists.sourceforge.net
 
---=-=R/APc2R3UCbVFI=-=
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-
-> Testing the signatures and the driver on ARM64 would be good. We don't 
-> have any ARM64 Windows hardware at our disposal. 
-
-Drop me a package and I'll take it for a spin. I have at least one device
-with Secure Boot set up on a released build (1803).
-
-> We don't have any tap-windows6 -specific tests at the moment, so I 
-> generally just run the OpenVPN test suite against a bunch of OpenVPN 2.x 
-> / Access Server / Private Tunnel servers: 
-> <https://github.com/OpenVPN/openvpn-windows-test.git> 
-
-I can give that a shot. If I can't figure something out from the README,
-I'll ask questions here.
-
-> Given that tap-windows6 driver has seen lots of modifications having 
-> more focused tests would be good. Any ideas what we should test and how? 
-
-As for tap-windows6, I have to profess a merely general understanding of
-what it does: It allows the usermode daemon to read, intercept, and emit
-raw network traffic, while the firewalling, routing, and encryption are
-done by the OpenVPN daemon after the traffic leaves the driver.
-
-Given that, I can think of a few test cases (not ordered in any way):
-
-(All tests should run under Driver Verifier with basic sanity and NDIS
-checks enabled.)
-
- * Heavy load on multiple TAPs
- * Upgrade
- * Empty, small, ~MTU, >MTU, and Jumbo packets
- * API fuzzing
- * Power transition testing
-
-...but all of these take varying levels of dev investment to automate.
-
-The easiest next step would be to expand the ping test to try varying
-packet sizes (-l). (Windows' ping doesn't have a 'flood' option...)
-
-My 2c,
-Jon
-
---=-=R/APc2R3UCbVFI=-=
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEQ6s+QnGone4JL4whoCohEJkRnX4FAlsrECEACgkQoCohEJkR
-nX41ww//cOS0PWMQJ0ruZH6eCYT38QrfeSUzlWnSbTFpr1QC4vsdC9HU8FgE8tKb
-WcrEtVRteGSN41del1yzY3iBBehNZX3XHuqUbga7DlEtPMlm38CrImnauql/b6n2
-OjVKREPp3rqVsGjR9p8YzzdrDeV/HbYUehyXuUr3IMRTcZciax0GdAEb/tLNR9SG
-144v2FhDwHQR7KUG/7qeE98KB8eH66te5w9+XjsTJACqeJR5gkpPLGbBgwialMi1
-Zi0YSeQnaG/PND4+aSrmKhX0gIUrMl2T3C7PtojalAMsa3mGi5k+tm8+t/420oie
-SY0cvmphTrmTHpTWwwshzm/3J1F9nqnYZmZeEbwdvBZr1hBbhNseAFmV1xJVmkNL
-HLLgHt01bcMBU/gSHDzfSOwXWoEpdxH2dupNcnIdUhLh3c5g3/0PhD3t6aTB5zXw
-rcMOhlR2YylIqqOdwVXL7+7jHp/AJ5l0WLo6gol4oacPHyaOfTRJeYpYSdQbIoIm
-wUTTTeNkST3ytL2zby+vIozMJ++ySkal/+ynF09c1es7Aqy6w0KWsUP2RLqtUaGz
-nHOrnP/Gnkf4odxvFWXiPXZbbtZTjCVKYAZQN3EULH+7+jYKuZ2bwn2/rZmI9vRh
-jwITVQRdiLNBsIlMyR4LR6YKU72eH6mKQS+eAmNBexHfda1xCl4=
-=bumd
------END PGP SIGNATURE-----
-
-
---=-=R/APc2R3UCbVFI=-=--
+On Tue, Jun 19, 2018 at 10:00 PM Gert Doering <gert@...1296...> wrote:
+>
+> Hi,
+>
+> On Tue, Jun 19, 2018 at 09:46:50PM -0700, Rosen Penev wrote:
+> > Signed-off-by: Rosen Penev <rosenp@...277...>
+> > ---
+> >  src/openvpn/crypto_openssl.c     |  9 +++++++++
+> >  src/openvpn/ssl_openssl.c        | 32 +++++++++++++++++++++++++++++++-
+> >  src/openvpn/ssl_verify_openssl.c |  1 +
+> >  3 files changed, 41 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+> > index 4fb2f6d6..816d8002 100644
+> > --- a/src/openvpn/crypto_openssl.c
+> > +++ b/src/openvpn/crypto_openssl.c
+> > @@ -670,11 +670,16 @@ cipher_ctx_init(EVP_CIPHER_CTX *ctx, const uint8_t *key, int key_len,
+> >  {
+> >      ASSERT(NULL != kt && NULL != ctx);
+> >
+> > +#if OPENSSL_VERSION_NUMBER < 0x10100000L
+> >      EVP_CIPHER_CTX_init(ctx);
+> > +#else
+> > +    EVP_CIPHER_CTX_new();
+> > +#endif
+>
+> Thanks for the patch, but this is not the way we want our source to
+> look like.  As in: these extra #if will make maintaining the code
+> harder and more error-prone.
+>
+>
+> A patch along the lines of the existing openssl 1.1 / 1.0 compat layer
+> (the .c files call the 1.1 API and if that API is not available,
+> openssl_compat.h provides a substitute function) would be something
+> we might look more closely into.
+I ran this on a client. Turns out there are more problems than this. I
+will submit a partial fix in the meantime.
+>
+> gert
+>
+> --
+> "If was one thing all people took for granted, was conviction that if you
+>  feed honest figures into a computer, honest figures come out. Never doubted
+>  it myself till I met a computer with a sense of humor."
+>                              Robert A. Heinlein, The Moon is a Harsh Mistress
+>
+> Gert Doering - Munich, Germany                             gert@...1296...
 
