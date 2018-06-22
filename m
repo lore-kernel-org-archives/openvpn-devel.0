@@ -1,12 +1,7 @@
-MIME-Version: 1.0
-References: <20180620044650.18041-1-rosenp@...277...>
- <20180620050012.GR57262@...1296...>
-In-Reply-To: <20180620050012.GR57262@...1296...>
 From: Rosen Penev <rosenp@...277...>
-Date: Thu, 21 Jun 2018 18:42:11 -0700
-Message-ID: <CAKxU2N99kz-gHTvBXVfp800PHESGmJ73gF-fKgq-nyC=bd3oLw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] OpenSSL: Fix compilation with
- deprecated APIs disabled on 1.1
+Date: Thu, 21 Jun 2018 18:49:05 -0700
+Message-Id: <20180622014905.21558-1-rosenp@...277...>
+Subject: [Openvpn-devel] [PATCH] openvpn: Add missing OpenSSL includes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,56 +10,210 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: gert@...1296...
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Tue, Jun 19, 2018 at 10:00 PM Gert Doering <gert@...1296...> wrote:
->
-> Hi,
->
-> On Tue, Jun 19, 2018 at 09:46:50PM -0700, Rosen Penev wrote:
-> > Signed-off-by: Rosen Penev <rosenp@...277...>
-> > ---
-> >  src/openvpn/crypto_openssl.c     |  9 +++++++++
-> >  src/openvpn/ssl_openssl.c        | 32 +++++++++++++++++++++++++++++++-
-> >  src/openvpn/ssl_verify_openssl.c |  1 +
-> >  3 files changed, 41 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-> > index 4fb2f6d6..816d8002 100644
-> > --- a/src/openvpn/crypto_openssl.c
-> > +++ b/src/openvpn/crypto_openssl.c
-> > @@ -670,11 +670,16 @@ cipher_ctx_init(EVP_CIPHER_CTX *ctx, const uint8_t *key, int key_len,
-> >  {
-> >      ASSERT(NULL != kt && NULL != ctx);
-> >
-> > +#if OPENSSL_VERSION_NUMBER < 0x10100000L
-> >      EVP_CIPHER_CTX_init(ctx);
-> > +#else
-> > +    EVP_CIPHER_CTX_new();
-> > +#endif
->
-> Thanks for the patch, but this is not the way we want our source to
-> look like.  As in: these extra #if will make maintaining the code
-> harder and more error-prone.
->
->
-> A patch along the lines of the existing openssl 1.1 / 1.0 compat layer
-> (the .c files call the 1.1 API and if that API is not available,
-> openssl_compat.h provides a substitute function) would be something
-> we might look more closely into.
-I ran this on a client. Turns out there are more problems than this. I
-will submit a partial fix in the meantime.
->
-> gert
->
-> --
-> "If was one thing all people took for granted, was conviction that if you
->  feed honest figures into a computer, honest figures come out. Never doubted
->  it myself till I met a computer with a sense of humor."
->                              Robert A. Heinlein, The Moon is a Harsh Mistress
->
-> Gert Doering - Munich, Germany                             gert@...1296...
+These get included when deprecated APIs are enabled. This is true on at
+least version 1.0.2 and 1.1.0.
+
+Without deprecated APIs, OpenVPN fails to compile.
+
+Signed-off-by: Rosen Penev <rosenp@...277...>
+---
+ ...ilation-with-deprecated-APIs-disable.patch | 148 ++++++++++++++++++
+ src/openvpn/ssl_openssl.c                     |   9 ++
+ src/openvpn/ssl_verify_openssl.c              |   1 +
+ 3 files changed, 158 insertions(+)
+ create mode 100644 src/openvpn/0001-OpenSSL-Fix-compilation-with-deprecated-APIs-disable.patch
+
+diff --git a/src/openvpn/0001-OpenSSL-Fix-compilation-with-deprecated-APIs-disable.patch b/src/openvpn/0001-OpenSSL-Fix-compilation-with-deprecated-APIs-disable.patch
+new file mode 100644
+index 00000000..11adff21
+--- /dev/null
++++ b/src/openvpn/0001-OpenSSL-Fix-compilation-with-deprecated-APIs-disable.patch
+@@ -0,0 +1,148 @@
++From f581a10cbf5b40afbee2d9fc9454ce12e1611668 Mon Sep 17 00:00:00 2001
++From: Rosen Penev <rosenp@...277...>
++Date: Tue, 19 Jun 2018 21:44:57 -0700
++Subject: [PATCH] OpenSSL: Fix compilation with deprecated APIs disabled on 1.1
++
++Signed-off-by: Rosen Penev <rosenp@...277...>
++---
++ src/openvpn/crypto_openssl.c     |  9 +++++++++
++ src/openvpn/ssl_openssl.c        | 32 +++++++++++++++++++++++++++++++-
++ src/openvpn/ssl_verify_openssl.c |  1 +
++ 3 files changed, 41 insertions(+), 1 deletion(-)
++
++diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
++index 4fb2f6d6..816d8002 100644
++--- a/src/openvpn/crypto_openssl.c
+++++ b/src/openvpn/crypto_openssl.c
++@@ -670,11 +670,16 @@ cipher_ctx_init(EVP_CIPHER_CTX *ctx, const uint8_t *key, int key_len,
++ {
++     ASSERT(NULL != kt && NULL != ctx);
++ 
+++#if OPENSSL_VERSION_NUMBER < 0x10100000L
++     EVP_CIPHER_CTX_init(ctx);
+++#else
+++    EVP_CIPHER_CTX_new();
+++#endif
++     if (!EVP_CipherInit(ctx, kt, NULL, NULL, enc))
++     {
++         crypto_msg(M_FATAL, "EVP cipher init #1");
++     }
+++
++ #ifdef HAVE_EVP_CIPHER_CTX_SET_KEY_LENGTH
++     if (!EVP_CIPHER_CTX_set_key_length(ctx, key_len))
++     {
++@@ -693,7 +698,11 @@ cipher_ctx_init(EVP_CIPHER_CTX *ctx, const uint8_t *key, int key_len,
++ void
++ cipher_ctx_cleanup(EVP_CIPHER_CTX *ctx)
++ {
+++#if OPENSSL_VERSION_NUMBER < 0x10100000L
++     EVP_CIPHER_CTX_cleanup(ctx);
+++#else
+++    EVP_CIPHER_CTX_free(ctx);
+++#endif
++ }
++ 
++ int
++diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
++index 527a600a..92ed4926 100644
++--- a/src/openvpn/ssl_openssl.c
+++++ b/src/openvpn/ssl_openssl.c
++@@ -56,6 +56,15 @@
++ #include <openssl/pkcs12.h>
++ #include <openssl/x509.h>
++ #include <openssl/crypto.h>
+++#ifndef OPENSSL_NO_DH
+++#include <openssl/dh.h>
+++#endif
+++#ifndef OPENSSL_NO_DSA
+++#include <openssl/dsa.h>
+++#endif
+++#ifndef OPENSSL_NO_RSA
+++#include <openssl/rsa.h>
+++#endif
++ #ifndef OPENSSL_NO_EC
++ #include <openssl/ec.h>
++ #endif
++@@ -71,11 +80,19 @@ int mydata_index; /* GLOBAL */
++ void
++ tls_init_lib(void)
++ {
+++#if OPENSSL_VERSION_NUMBER < 0x10100000L
++     SSL_library_init();
+++    OpenSSL_add_all_algorithms();
++ #ifndef ENABLE_SMALL
++     SSL_load_error_strings();
++ #endif
++-    OpenSSL_add_all_algorithms();
+++#else
+++#ifndef ENABLE_SMALL
+++    OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS, NULL);
+++#else
+++    OPENSSL_init_ssl(OPENSSL_INIT_NO_LOAD_SSL_STRINGS, NULL);
+++#endif
+++#endif
++ 
++     mydata_index = SSL_get_ex_new_index(0, "struct session *", NULL, NULL, NULL);
++     ASSERT(mydata_index >= 0);
++@@ -84,10 +101,12 @@ tls_init_lib(void)
++ void
++ tls_free_lib(void)
++ {
+++#if OPENSSL_VERSION_NUMBER < 0x10100000L //this is no-op in future versions
++     EVP_cleanup();
++ #ifndef ENABLE_SMALL
++     ERR_free_strings();
++ #endif
+++#endif
++ }
++ 
++ void
++@@ -473,6 +492,11 @@ tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
++         goto cleanup; /* Nothing to check if there is no certificate */
++     }
++ 
+++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+++#define X509_get_notBefore    X509_get0_notBefore
+++#define X509_get_notAfter     X509_get0_notAfter
+++#endif
+++
++     ret = X509_cmp_time(X509_get_notBefore(cert), NULL);
++     if (ret == 0)
++     {
++@@ -567,7 +591,9 @@ tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name
++ #if OPENSSL_VERSION_NUMBER >= 0x10002000L
++         /* OpenSSL 1.0.2 and newer can automatically handle ECDH parameter
++          * loading */
+++#if OPENSSL_VERSION_NUMBER < 0x10100000L
++         SSL_CTX_set_ecdh_auto(ctx->ctx, 1);
+++#endif
++         return;
++ #else
++         /* For older OpenSSL we have to extract the curve from key on our own */
++@@ -2037,7 +2063,11 @@ get_highest_preference_tls_cipher(char *buf, int size)
++ const char *
++ get_ssl_library_version(void)
++ {
+++#if OPENSSL_VERSION_NUMBER < 0x10100000L
++     return SSLeay_version(SSLEAY_VERSION);
+++#else
+++    return OpenSSL_version(OPENSSL_VERSION);
+++#endif
++ }
++ 
++ #endif /* defined(ENABLE_CRYPTO_OPENSSL) */
++diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
++index 9b984751..82460ae7 100644
++--- a/src/openvpn/ssl_verify_openssl.c
+++++ b/src/openvpn/ssl_verify_openssl.c
++@@ -46,6 +46,7 @@
++ 
++ #include <openssl/x509v3.h>
++ #include <openssl/err.h>
+++#include <openssl/bn.h>
++ 
++ int
++ verify_callback(int preverify_ok, X509_STORE_CTX *ctx)
++-- 
++2.17.1
++
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 527a600a..d9aec9bd 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -56,6 +56,15 @@
+ #include <openssl/pkcs12.h>
+ #include <openssl/x509.h>
+ #include <openssl/crypto.h>
++#ifndef OPENSSL_NO_DH
++#include <openssl/dh.h>
++#endif
++#ifndef OPENSSL_NO_DSA
++#include <openssl/dsa.h>
++#endif
++#ifndef OPENSSL_NO_RSA
++#include <openssl/rsa.h>
++#endif
+ #ifndef OPENSSL_NO_EC
+ #include <openssl/ec.h>
+ #endif
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
+index 9b984751..82460ae7 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -46,6 +46,7 @@
+ 
+ #include <openssl/x509v3.h>
+ #include <openssl/err.h>
++#include <openssl/bn.h>
+ 
+ int
+ verify_callback(int preverify_ok, X509_STORE_CTX *ctx)
+-- 
+2.17.1
+
 
