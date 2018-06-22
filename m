@@ -1,10 +1,13 @@
-MIME-Version: 1.0
-In-Reply-To: <20180622102110.21888-1-a@...2181...>
 References: <20180622102110.21888-1-a@...2181...>
-From: Selva Nair <selva.nair@...277...>
-Date: Fri, 22 Jun 2018 10:45:21 -0400
-Message-ID: <CAKuzo_iAnVU=6bar7a6TLXOjWqMuNjLhiznD9oPBnpyGC4sfTg@...278...>
-Content-Type: multipart/alternative; boundary="00000000000008ac55056f3c16bd"
+ <CAKuzo_iAnVU=6bar7a6TLXOjWqMuNjLhiznD9oPBnpyGC4sfTg@...278...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <5858f87b-165f-f390-6769-938e5a43ce55@...2181...>
+Date: Fri, 22 Jun 2018 22:48:30 +0800
+MIME-Version: 1.0
+In-Reply-To: <CAKuzo_iAnVU=6bar7a6TLXOjWqMuNjLhiznD9oPBnpyGC4sfTg@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="pWhFmGHAGFaPoMtrRe87LWPs0El958fKB"
 Subject: Re: [Openvpn-devel] [PATCH] route: fix format string passed to
  argv_printf
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,108 +18,100 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
+To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---00000000000008ac55056f3c16bd
-Content-Type: text/plain; charset="UTF-8"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--pWhFmGHAGFaPoMtrRe87LWPs0El958fKB
+Content-Type: multipart/mixed; boundary="ql3nmsTI52OCoUOuPLVIHtj1EIylnnGf0";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Message-ID: <5858f87b-165f-f390-6769-938e5a43ce55@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH] route: fix format string passed to
+ argv_printf
+References: <20180622102110.21888-1-a@...2181...>
+ <CAKuzo_iAnVU=6bar7a6TLXOjWqMuNjLhiznD9oPBnpyGC4sfTg@...278...>
+In-Reply-To: <CAKuzo_iAnVU=6bar7a6TLXOjWqMuNjLhiznD9oPBnpyGC4sfTg@...278...>
+
+--ql3nmsTI52OCoUOuPLVIHtj1EIylnnGf0
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-On Fri, Jun 22, 2018 at 6:21 AM, Antonio Quartulli <a@...2181...> wrote:
-> %lu is not supported by our tiny argv_printf implementation and will
-> trigger an ASSERT() when parsing it. Even though this particular
-> ASSERT() is not critical as it happens during shutdown, we still have to
-> fix it.
->
-> Since in this case the code is trying to use a DWORD variable as
-> argument, and we know that DWORD is an unsigned long, which in turn is
-> 32bit long on MS Windows (32 and 64bit version)[1][2], simply use
-> the already supported %u instead of %lu.
->
-> [1]https://msdn.microsoft.com/en-us/library/aa383751(VS.85).aspx
-> [2]https://en.wikipedia.org/wiki/Integer_(computer_science)#Long_integer
->
-> Signed-off-by: Antonio Quartulli <a@...2181...>
-> ---
->  src/openvpn/route.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-> index a45a273a..209daeab 100644
-> --- a/src/openvpn/route.c
-> +++ b/src/openvpn/route.c
-> @@ -1616,7 +1616,7 @@ add_route(struct route_ipv4 *r, const struct tuntap
-*tt, unsigned int flags,
->          if (is_on_link(is_local_route, flags, rgi))
->          {
->              ai = rgi->adapter_index;
-> -            argv_printf_cat(&argv, "IF %lu", ai);
-> +            argv_printf_cat(&argv, "IF %u", ai);
->          }
->
->          argv_msg(D_ROUTE, &argv);
+On 22/06/18 22:45, Selva Nair wrote:
+[cut]
+>> --- a/src/openvpn/route.c
+>> +++ b/src/openvpn/route.c
+>> @@ -1616,7 +1616,7 @@ add_route(struct route_ipv4 *r, const struct tuntap
+> *tt, unsigned int flags,
+>>          if (is_on_link(is_local_route, flags, rgi))
+>>          {
+>>              ai =3D rgi->adapter_index;
+>> -            argv_printf_cat(&argv, "IF %lu", ai);
+>> +            argv_printf_cat(&argv, "IF %u", ai);
+>>          }
+>>
+>>          argv_msg(D_ROUTE, &argv);
+>=20
+> Thanks for cleaning up my mistake (commit
+> 06ad53e067d9a8be571a27f44005fa7e8038f69e introduced this). One
+> purpose of that commit was to get rid of -Wformat warnings as those
+> are not always benign. But this will re-introduce a warning as "ai" is
+> unsigned long even though its the same size as unsigned.
+>=20
+> Currently we do support building with -Werror=3Dformat (see
+> https://patchwork.openvpn.net/patch/234/#463), so I suggest either
+> cast to (unsigned)  which we know is safe here, or add "%lu" to
+> argv_printf_arglist().
+>=20
+> I would prefer the latter as its easy to overlook the fact that
+> argv_printf_cat() can't handle %lu which is commonly used
+> on Windows.
 
-Thanks for cleaning up my mistake (commit
-06ad53e067d9a8be571a27f44005fa7e8038f69e introduced this). One
-purpose of that commit was to get rid of -Wformat warnings as those
-are not always benign. But this will re-introduce a warning as "ai" is
-unsigned long even though its the same size as unsigned.
+I was just about to test a v2 of this patch with the explicit cast to
+"unsigned int". I was leaning towards the explicit cast because we
+already print DWORD variables in several spots and we always cast them
+to int or unsigned int.
 
-Currently we do support building with -Werror=format (see
-https://patchwork.openvpn.net/patch/234/#463), so I suggest either
-cast to (unsigned)  which we know is safe here, or add "%lu" to
-argv_printf_arglist().
+However, if we believe supporting %lu can be more useful, I can do that.
 
-I would prefer the latter as its easy to overlook the fact that
-argv_printf_cat() can't handle %lu which is commonly used
-on Windows.
+Last opinion? :)
 
-Selva
+Cheers,
 
---00000000000008ac55056f3c16bd
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">Hi,<br><br>On Fri, Jun 22, 2018 at 6:21 AM, Antonio Quartu=
-lli &lt;a@...2181...&gt; wrote:<br>&gt; %lu is not supported by our tiny ar=
-gv_printf implementation and will<br>&gt; trigger an ASSERT() when parsing =
-it. Even though this particular<br>&gt; ASSERT() is not critical as it happ=
-ens during shutdown, we still have to<br>&gt; fix it.<br>&gt;<br>&gt; Since=
- in this case the code is trying to use a DWORD variable as<br>&gt; argumen=
-t, and we know that DWORD is an unsigned long, which in turn is<br>&gt; 32b=
-it long on MS Windows (32 and 64bit version)[1][2], simply use<br>&gt; the =
-already supported %u instead of %lu.<br>&gt;<br>&gt; [1]<a href=3D"https://=
-msdn.microsoft.com/en-us/library/aa383751(VS.85).aspx" target=3D"_blank">ht=
-tps://msdn.microsoft.com/<wbr>en-us/library/aa383751(VS.85).<wbr>aspx</a><b=
-r>&gt; [2]<a href=3D"https://en.wikipedia.org/wiki/Integer_(computer_scienc=
-e)#Long_integer" target=3D"_blank">https://en.wikipedia.org/wi<wbr>ki/Integ=
-er_(computer_science)#<wbr>Long_integer</a><br>&gt;<br>&gt; Signed-off-by: =
-Antonio Quartulli &lt;a@...2181...&gt;<br>&gt; ---<br>&gt; =C2=A0src/openvp=
-n/route.c | 2 +-<br>&gt; =C2=A01 file changed, 1 insertion(+), 1 deletion(-=
-)<br>&gt;<br>&gt; diff --git a/src/openvpn/route.c b/src/openvpn/route.c<br=
->&gt; index a45a273a..209daeab 100644<br>&gt; --- a/src/openvpn/route.c<br>=
-&gt; +++ b/src/openvpn/route.c<br>&gt; @@ -1616,7 +1616,7 @@ add_route(stru=
-ct route_ipv4 *r, const struct tuntap *tt, unsigned int flags,<br>&gt; =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0if (is_on_link(is_local_route, flags, rgi))<=
-br>&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>&gt; =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0ai =3D rgi-&gt;adapter_index;<br>&gt; - =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0argv_printf_cat(&amp;argv, &quot;IF %lu&q=
-uot;, ai);<br>&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0argv_printf_c=
-at(&amp;argv, &quot;IF %u&quot;, ai);<br>&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0}<br>&gt;<br>&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0argv_msg(D_ROUTE,=
- &amp;argv);<br><br>Thanks for cleaning up my mistake (commit<br>06ad53e067=
-d9a8be571a27f44005fa<wbr>7e8038f69e introduced this). One<br>purpose of tha=
-t commit was to get rid of -Wformat warnings as those<br>are not always ben=
-ign. But this will re-introduce a warning as &quot;ai&quot; is<br>unsigned =
-long even though its the same size as unsigned.<br><br>Currently we do supp=
-ort building with -Werror=3Dformat (see<br><a href=3D"https://patchwork.ope=
-nvpn.net/patch/234/#463" target=3D"_blank">https://patchwork.openvpn.net/<w=
-br>patch/234/#463</a>), so I suggest either<br>cast to (unsigned) =C2=A0whi=
-ch we know is safe here, or add &quot;%lu&quot; to<br>argv_printf_arglist()=
-.<br><br>I would prefer the latter as its easy to overlook the fact that<br=
->argv_printf_cat() can&#39;t handle %lu which is commonly used<br>on Window=
-s.<br><br>Selva<br></div>
 
---00000000000008ac55056f3c16bd--
+--=20
+Antonio Quartulli
+
+
+--ql3nmsTI52OCoUOuPLVIHtj1EIylnnGf0--
+
+--pWhFmGHAGFaPoMtrRe87LWPs0El958fKB
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlstDD4ACgkQB6U8WA7y
+zXR+IRAAuu+DJM84i+xzEFCrXvYFNW0QRqAjzv5nAZqomvZSqlAyrSwmLOBH9vZp
+qqYRxyPyfgqopj6GkBIfpbOch/KcZh8jLv+WOeYCJy2CiNqn9tX1uHjZVu0M3RM5
+zEBzv2WdeA+sGAeyvaeVgw+E2uBJvWq+a5ReXbstWq4Oo5OKMCXENJHNbu6e9l3S
+MJLq0/yUZ0ExlOSyDHoYejn1yKuoLnmkVkMooYMlFYCIJuo8AaNpL8/kojH9KvXO
+e8y2bjogwGlBN9fpmX1jqNFqa2We6VrSpKqsjlQEOE7PEt+7l7h5xybcnRKIdqNF
+6jl3JwPa4rkIwX0VymoqLBChmnmn+meotilzWfloMQcLyfsC20hNpROAkSWmFC6R
+Pst0ytxNyMQh2hOhJjgcPHrPws+MLUobkcmc6/HxXv0xRRBIjf9zL1p9Vs2CMIoe
+TtcJEs4SuYJlRDXiIml5uqO6YtSVL6JjKP0057JJfE5F3nOvqFCN2UbitlO+MoPc
+0kfOA2uJbqe/JvQV8MyhZhsWiFgoooynxoLVw13egOW8Pe1B9Cp7zMtkzQsTh8wI
+aC1nwgDL7fXH3gdziA6vrJC7itAheszgaQGMSssMoAUiLkIgcQpHGD1QBFfHWtUJ
+0E+1gD+I/juvtk2UXCGORva527Di5dKJoUFo/0mXb9P3REmKBl0=
+=jcYb
+-----END PGP SIGNATURE-----
+
+--pWhFmGHAGFaPoMtrRe87LWPs0El958fKB--
 
