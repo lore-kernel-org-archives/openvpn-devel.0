@@ -1,10 +1,10 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Sun, 24 Jun 2018 04:08:44 +0800
-Message-Id: <20180623200844.32598-1-a@...2181...>
-In-Reply-To: <20180608052017.6696-5-a@...2181...>
-References: <20180608052017.6696-5-a@...2181...>
-Subject: [Openvpn-devel] [PATCH v3 4/8] pool: allow to configure an
- IPv6-only ifconfig-pool
+Date: Sun, 24 Jun 2018 04:11:12 +0800
+Message-Id: <20180623201112.29973-1-a@...2181...>
+In-Reply-To: <20180608052017.6696-6-a@...2181...>
+References: <20180608052017.6696-6-a@...2181...>
+Subject: [Openvpn-devel] [PATCH v3 5/8] allow usage of --server-ipv6 even
+ when no --server is specified
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,324 +20,58 @@ Cc: Antonio Quartulli <antonio@...515...>
 
 From: Antonio Quartulli <antonio@...515...>
 
-With this change a server is allowed to allocate an
-IPv6-only pool. This is required to make it capable
-of managing an IPv6-only tunnel.
+Until now OpenVPN has not allowed to specify --server-ipv6
+if no --server was also set. This constraint comes from the
+fact that most of the IPv6 logic (i.e. ifconfig-pool handling)
+relied on IPv4 components to be activated and configured as
+well.
+
+Now that the IPv6 code path has been made independent from
+IPv4, it is finally possible to to relax the constraint
+mentioned above and make it possible for the user to have a
+configurations with --server-ipv6 only.
 
 Trac: #208
 Signed-off-by: Antonio Quartulli <antonio@...515...>
 ---
 
 Changes from v2:
-- patchset rebased on top of current master
-- introduce missing condition in multi.c (it was previously added with
-patch 5/8)
+- patchset rebased on top of pre-ipv6-only patchset
+- change commit subject/message
+- move ifconfig-ipv6-pool check change into 4/8
 
 
- src/openvpn/multi.c |  10 +++-
- src/openvpn/pool.c  | 139 ++++++++++++++++++++++++++++++--------------
- src/openvpn/pool.h  |   8 ++-
- 3 files changed, 109 insertions(+), 48 deletions(-)
+ src/openvpn/helper.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 3da8c110..dbc8f370 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -388,7 +388,8 @@ multi_init(struct multi_context *m, struct context *t, bool tcp_mode, int thread
-      * differently based on whether a tun or tap style
-      * tunnel.
+diff --git a/src/openvpn/helper.c b/src/openvpn/helper.c
+index ff9df506..42ba5b2c 100644
+--- a/src/openvpn/helper.c
++++ b/src/openvpn/helper.c
+@@ -177,10 +177,11 @@ helper_client_server(struct options *o)
       */
--    if (t->options.ifconfig_pool_defined)
-+    if (t->options.ifconfig_pool_defined
-+        || t->options.ifconfig_ipv6_pool_defined)
+     if (o->server_ipv6_defined)
      {
-         int pool_type = IFCONFIG_POOL_INDIV;
- 
-@@ -397,7 +398,8 @@ multi_init(struct multi_context *m, struct context *t, bool tcp_mode, int thread
-             pool_type = IFCONFIG_POOL_30NET;
-         }
- 
--        m->ifconfig_pool = ifconfig_pool_init(pool_type,
-+        m->ifconfig_pool = ifconfig_pool_init(t->options.ifconfig_pool_defined,
-+                                              pool_type,
-                                               t->options.ifconfig_pool_start,
-                                               t->options.ifconfig_pool_end,
-                                               t->options.duplicate_cn,
-@@ -1497,7 +1499,9 @@ multi_select_virtual_addr(struct multi_context *m, struct multi_instance *mi)
-             const int tunnel_topology = TUNNEL_TOPOLOGY(mi->context.c1.tuntap);
- 
-             msg( M_INFO, "MULTI_sva: pool returned IPv4=%s, IPv6=%s",
--                 print_in_addr_t( remote, 0, &gc ),
-+                 (mi->context.options.ifconfig_pool_defined
-+                  ? print_in_addr_t(remote, 0, &gc)
-+                  : "(Not enabled)"),
-                  (mi->context.options.ifconfig_ipv6_pool_defined
-                   ? print_in6_addr( remote_ipv6, 0, &gc )
-                   : "(Not enabled)") );
-diff --git a/src/openvpn/pool.c b/src/openvpn/pool.c
-index 5d503a33..08addc6f 100644
---- a/src/openvpn/pool.c
-+++ b/src/openvpn/pool.c
-@@ -58,6 +58,22 @@ ifconfig_pool_entry_free(struct ifconfig_pool_entry *ipe, bool hard)
-     }
- }
- 
-+static const int
-+ifconfig_pool_size(const struct ifconfig_pool *pool)
-+{
-+    /* at least one pool is enabled, but base logic on IPv4 if both are, because
-+     * it is always smaller
-+     */
-+    if (pool->ipv4.enabled)
-+    {
-+        return pool->ipv4.size;
-+    }
-+    else
-+    {
-+        return pool->ipv6.size;
-+    }
-+}
-+
- static int
- ifconfig_pool_find(struct ifconfig_pool *pool, const char *common_name)
- {
-@@ -65,8 +81,11 @@ ifconfig_pool_find(struct ifconfig_pool *pool, const char *common_name)
-     time_t earliest_release = 0;
-     int previous_usage = -1;
-     int new_usage = -1;
-+    int pool_size;
-+
-+    pool_size = ifconfig_pool_size(pool);
- 
--    for (i = 0; i < pool->ipv4.size; ++i)
-+    for (i = 0; i < pool_size; ++i)
-     {
-         struct ifconfig_pool_entry *ipe = &pool->list[i];
-         if (!ipe->in_use)
-@@ -147,34 +166,40 @@ ifconfig_pool_verify_range(const int msglevel, const in_addr_t start, const in_a
- }
- 
- struct ifconfig_pool *
--ifconfig_pool_init(enum pool_type type, in_addr_t start, in_addr_t end,
--                   const bool duplicate_cn,
-+ifconfig_pool_init(const bool ipv4_pool, enum pool_type type, in_addr_t start,
-+                   in_addr_t end, const bool duplicate_cn,
-                    const bool ipv6_pool, const struct in6_addr ipv6_base,
-                    const int ipv6_netbits )
- {
-     struct gc_arena gc = gc_new();
-     struct ifconfig_pool *pool = NULL;
-+    int pool_size = -1;
- 
-     ASSERT(start <= end && end - start < IFCONFIG_POOL_MAX);
-     ALLOC_OBJ_CLEAR(pool, struct ifconfig_pool);
- 
--    pool->ipv4.type = type;
-     pool->duplicate_cn = duplicate_cn;
- 
--    switch (pool->ipv4.type)
-+    pool->ipv4.enabled = ipv4_pool;
-+
-+    if (pool->ipv4.enabled)
-     {
--        case IFCONFIG_POOL_30NET:
--            pool->ipv4.base = start & ~3;
--            pool->ipv4.size = (((end | 3) + 1) - pool->ipv4.base) >> 2;
--            break;
-+        pool->ipv4.type = type;
-+        switch (pool->ipv4.type)
-+        {
-+            case IFCONFIG_POOL_30NET:
-+                pool->ipv4.base = start & ~3;
-+                pool->ipv4.size = (((end | 3) + 1) - pool->ipv4.base) >> 2;
-+                break;
- 
--        case IFCONFIG_POOL_INDIV:
--            pool->ipv4.base = start;
--            pool->ipv4.size = end - start + 1;
--            break;
-+            case IFCONFIG_POOL_INDIV:
-+                pool->ipv4.base = start;
-+                pool->ipv4.size = end - start + 1;
-+                break;
- 
--        default:
--            ASSERT(0);
-+            default:
-+                ASSERT(0);
-+        }
-     }
- 
-     /* IPv6 pools are always "INDIV" type */
-@@ -189,19 +214,27 @@ ifconfig_pool_init(enum pool_type type, in_addr_t start, in_addr_t end,
-         msg( D_IFCONFIG_POOL, "IFCONFIG POOL IPv6: (IPv4) size=%d, size_ipv6=%d, netbits=%d, base_ipv6=%s",
-              pool->ipv4.size, pool->ipv6.size, ipv6_netbits,
-              print_in6_addr(pool->ipv6.base, 0, &gc));
-+    }
- 
--        /* the current code is very simple and assumes that the IPv6
--         * pool is at least as big as the IPv4 pool, and we don't need
--         * to do separate math etc. for IPv6
--         */
-+    /* the current code is very simple and assumes that the IPv6
-+     * pool is at least as big as the IPv4 pool, and we don't need
-+     * to do separate math etc. for IPv6
-+     */
-+    if (pool->ipv4.enabled && pool->ipv6.enabled)
-+    {
-         ASSERT(pool->ipv4.size < pool->ipv6.size);
-     }
- 
--    ALLOC_ARRAY_CLEAR(pool->list, struct ifconfig_pool_entry, pool->ipv4.size);
-+    pool_size = ifconfig_pool_size(pool);
-+
-+    ALLOC_ARRAY_CLEAR(pool->list, struct ifconfig_pool_entry, pool_size);
- 
--    msg(D_IFCONFIG_POOL, "IFCONFIG POOL: base=%s size=%d, ipv6=%d",
--        print_in_addr_t(pool->ipv4.base, 0, &gc),
--        pool->ipv4.size, pool->ipv6.enabled);
-+    if (pool->ipv4.enabled)
-+    {
-+        msg(D_IFCONFIG_POOL, "IFCONFIG POOL: base=%s size=%d, ipv6=%d",
-+            print_in_addr_t(pool->ipv4.base, 0, &gc), pool->ipv4.size,
-+            pool->ipv6.enabled);
-+    }
- 
-     gc_free(&gc);
-     return pool;
-@@ -212,8 +245,11 @@ ifconfig_pool_free(struct ifconfig_pool *pool)
- {
-     if (pool)
-     {
--        int i;
--        for (i = 0; i < pool->ipv4.size; ++i)
-+        int i, pool_size;
-+
-+        pool_size = ifconfig_pool_size(pool);
-+
-+        for (i = 0; i < pool_size; ++i)
+-        if (!o->server_defined)
++        if (o->client)
          {
-             ifconfig_pool_entry_free(&pool->list[i], true);
+-            msg(M_USAGE, "--server-ipv6 must be used together with --server");
++            msg(M_USAGE, "--server and --client cannot be used together");
          }
-@@ -239,26 +275,29 @@ ifconfig_pool_acquire(struct ifconfig_pool *pool, in_addr_t *local, in_addr_t *r
-             ipe->common_name = string_alloc(common_name, NULL);
-         }
- 
--        switch (pool->ipv4.type)
-+        if (pool->ipv4.enabled && local && remote)
++
+         if (o->server_flags & SF_NOPOOL)
          {
--            case IFCONFIG_POOL_30NET:
-+            switch (pool->ipv4.type)
-             {
--                in_addr_t b = pool->ipv4.base + (i << 2);
--                *local = b + 1;
--                *remote = b + 2;
--                break;
--            }
-+                case IFCONFIG_POOL_30NET:
-+                    {
-+                        in_addr_t b = pool->ipv4.base + (i << 2);
-+                        *local = b + 1;
-+                        *remote = b + 2;
-+                        break;
-+                    }
- 
--            case IFCONFIG_POOL_INDIV:
--            {
--                in_addr_t b = pool->ipv4.base + i;
--                *local = 0;
--                *remote = b;
--                break;
--            }
-+                case IFCONFIG_POOL_INDIV:
-+                    {
-+                        in_addr_t b = pool->ipv4.base + i;
-+                        *local = 0;
-+                        *remote = b;
-+                        break;
-+                    }
- 
--            default:
--                ASSERT(0);
-+                default:
-+                    ASSERT(0);
-+            }
+             msg( M_USAGE, "--server-ipv6 is incompatible with 'nopool' option" );
+@@ -190,6 +191,9 @@ helper_client_server(struct options *o)
+             msg( M_USAGE, "--server-ipv6 already defines an ifconfig-ipv6-pool, so you can't also specify --ifconfig-pool explicitly");
          }
  
-         /* IPv6 pools are always INDIV (--linear) */
-@@ -274,7 +313,9 @@ bool
- ifconfig_pool_release(struct ifconfig_pool *pool, ifconfig_pool_handle hand, const bool hard)
- {
-     bool ret = false;
--    if (pool && hand >= 0 && hand < pool->ipv4.size)
-+    int pool_size = ifconfig_pool_size(pool);
++        o->mode = MODE_SERVER;
++        o->tls_server = true;
 +
-+    if (pool && hand >= 0 && hand < pool_size)
-     {
-         ifconfig_pool_entry_free(&pool->list[hand], hard);
-         ret = true;
-@@ -286,6 +327,7 @@ ifconfig_pool_release(struct ifconfig_pool *pool, ifconfig_pool_handle hand, con
-  * private access functions
-  */
- 
-+/* currently handling IPv4 logic only */
- static ifconfig_pool_handle
- ifconfig_pool_ip_base_to_handle(const struct ifconfig_pool *pool, const in_addr_t addr)
- {
-@@ -380,9 +422,9 @@ ifconfig_pool_list(const struct ifconfig_pool *pool, struct status_output *out)
-     if (pool && out)
-     {
-         struct gc_arena gc = gc_new();
--        int i;
-+        int i, pool_size = ifconfig_pool_size(pool);
- 
--        for (i = 0; i < pool->ipv4.size; ++i)
-+        for (i = 0; i < pool_size; ++i)
-         {
-             const struct ifconfig_pool_entry *e = &pool->list[i];
-             if (e->common_name)
-@@ -475,6 +517,15 @@ ifconfig_pool_read(struct ifconfig_pool_persist *persist, struct ifconfig_pool *
-     const int buf_size = 128;
- 
-     update_time();
-+
-+    /* IPv6 logic not implemented yet, therefore bail out if no IPv4 pool was
-+     * configured
-+     */
-+    if (pool && !pool->ipv4.enabled)
-+    {
-+        return;
-+    }
-+
-     if (persist && persist->file && pool)
-     {
-         struct gc_arena gc = gc_new();
-diff --git a/src/openvpn/pool.h b/src/openvpn/pool.h
-index 73ea5599..6af04645 100644
---- a/src/openvpn/pool.h
-+++ b/src/openvpn/pool.h
-@@ -52,6 +52,7 @@ struct ifconfig_pool
- {
-     bool duplicate_cn;
-     struct {
-+        bool enabled;
-         enum pool_type type;
-         in_addr_t base;
-         int size;
-@@ -72,7 +73,12 @@ struct ifconfig_pool_persist
- 
- typedef int ifconfig_pool_handle;
- 
--struct ifconfig_pool *ifconfig_pool_init(enum pool_type type, in_addr_t start, in_addr_t end, const bool duplicate_cn, const bool ipv6_pool, const struct in6_addr ipv6_base, const int ipv6_netbits );
-+struct ifconfig_pool *ifconfig_pool_init(const bool ipv4_pool,
-+                                         enum pool_type type, in_addr_t start,
-+                                         in_addr_t end, const bool duplicate_cn,
-+                                         const bool ipv6_pool,
-+                                         const struct in6_addr ipv6_base,
-+                                         const int ipv6_netbits);
- 
- void ifconfig_pool_free(struct ifconfig_pool *pool);
- 
+         /* local ifconfig is "base address + 1" and "+2" */
+         o->ifconfig_ipv6_local =
+             print_in6_addr( add_in6_addr( o->server_network_ipv6, 1), 0, &o->gc );
 -- 
 2.17.1
 
