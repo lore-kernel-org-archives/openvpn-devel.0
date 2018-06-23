@@ -1,23 +1,10 @@
-Date: Sat, 23 Jun 2018 09:33:23 +0200
+Date: Sat, 23 Jun 2018 14:09:10 +0200 (CEST)
+Message-Id: <201806231209.w5NC9AhF028415@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20180623073323.GP57262@...1296...>
-References: <20180613141213.5962-1-a@...2181...>
- <20180620155301.GY57262@...1296...>
- <c416ea67-e4ce-148b-eb19-6d18b35da559@...2181...>
- <20180622094635.GI57262@...1296...>
- <d496bbf5-3c55-f2d9-2ab2-bc89ded80131@...2181...>
- <CAKuzo_jDrcGjQeMaVm3X6yzgKBZecbYHfAAxxCFAuycagTe22Q@...278...>
- <20180622182709.GO57262@...1296...>
- <8117ab50-c3d1-2210-6665-9ea86b7110ac@...2181...>
- <CAKuzo_je1ZsOoTeaUdFxnP1JDMM1Op5TP-p=xA85SLn0pPCSGQ@...278...>
- <5fe13344-8e3c-3283-3217-c64f4ef234c5@...2181...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="13LwGeCavelYIlim"
-Content-Disposition: inline
-In-Reply-To: <5fe13344-8e3c-3283-3217-c64f4ef234c5@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v3 2/8] windows: properly configure TAP
- driver when no IPv4 is configured
+In-Reply-To: <20180623021147.22792-1-a@...2181...>
+References: <20180623021147.22792-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: add support for %lu in
+ argv_printf and prevent ASSERT
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -26,58 +13,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: Antonio Quartulli <a@...2181...>
-Cc: Selva Nair <selva.nair@...277...>, Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel@lists.sourceforge.net
 
---13LwGeCavelYIlim
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Acked-by: Gert Doering <gert@...1296...>
 
-Hi,
+The code is trivially correct, and it does what it says on the lid :-)
+- and to verify, I've added a unit test to test_argv.c - attached below, 
+we might consider adding something like this, or something more elaborate
+for all supported argv*() arguments...
 
-On Sat, Jun 23, 2018 at 11:13:07AM +0800, Antonio Quartulli wrote:
-> > Very likely. It would be nice to find the on-link route that triggers t=
-hat code
-> > path to ensure it doesn't cause any other issues.
->=20
-> My server was on the same LAN (connecting via v4) as the client - should
-> that be considered on-link? maybe this is what triggers that code path.
+Your patch has been applied to the master and release/2.4 branch
+("someone will fix something else some day, relying on the existance
+of %lu, and then 2.4 will surprisingly explode").
 
-Oh, definitely.  I had the feeling it was related to "server over v4",
-but that would trigger "on-link" too.
+commit e38d3a004195f33c5c04fe7c04db5d66c53241bc (master)
+commit 61dcf1513d69ddf1261402744496436923ec14bb (release/2.4)
+Author: Antonio Quartulli
+Date:   Sat Jun 23 10:11:47 2018 +0800
 
-Actually it might trigger the on-link ASSERT for the "ipv4 and ipv6"
-case as well, as soon as "redirect-gateway ipv4" is involved.
+     add support for %lu in argv_printf and prevent ASSERT
 
-gert
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20180623021147.22792-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17115.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
 
-Gert Doering - Munich, Germany                             gert@...1296...
+----------
+diff --git a/tests/unit_tests/openvpn/test_argv.c b/tests/unit_tests/openvpn/test_argv.c
+index 4a3ba559..0e7a4513 100644
+--- a/tests/unit_tests/openvpn/test_argv.c
++++ b/tests/unit_tests/openvpn/test_argv.c
+@@ -116,8 +116,12 @@ argv_str__multiple_argv__correct_output(void **state)
+     argv_printf(&a, "%s%sc", PATH1, PATH2);
+     argv_printf_cat(&a, "%s", PARAM1);
+     argv_printf_cat(&a, "%s", PARAM2);
++    argv_printf_cat(&a, "%d", -1);
++    argv_printf_cat(&a, "%u", -1);
++    argv_printf_cat(&a, "%lu", (unsigned long) (1L<<33) );
+     output = argv_str(&a, &gc, PA_BRACKET);
+-    assert_string_equal(output, "[" PATH1 PATH2 "] [" PARAM1 "] [" PARAM2 "]");
++    assert_string_equal(output, "[" PATH1 PATH2 "] [" PARAM1 "] [" PARAM2 "]"
++				" [-1] [4294967295] [8589934592]");
+ 
+     argv_reset(&a);
+     gc_free(&gc);
 
---13LwGeCavelYIlim
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+--
+kind regards,
 
-iQGcBAEBAgAGBQJbLffCAAoJEB2Cnv7KVigSgfAL/iquxgOFpF22RVD7aP0gMt33
-iS2EWIa3NtpmRGIJH1VxD20OWwjWWznRxovnKzvVpU2wCaT4mYGvhHv2yMUjcBJN
-mIJducMemXIy9tt+W8czUOOcOBTUbmn/HDKGcHkYG5SXJMnrvEcZlagtvAuVuIKI
-XaLKC59tpUMvLsQPzexJcNReolFqzEA6f4HxGn964JHfeAc6jhU9S0e6MT0lSRtm
-iy6G5UcMbksDAGg8NlvtuVVtIEAMEkAHbVp4bto0SPlq+FUk/Ps9cUvb8BeHAiGA
-rOTdX77poDPXFemqov5RXyx8LlPOUB7H/NxsRTAF8RrLoIQKWIc9AkdWXdpg4fa4
-K4CJLXPgaqkoAf/vCUYabRsxGQiEzOFbeVXjSJ6qjExXlOwdDzkGRU7MtwEb+/AY
-STkcL/nSBGDy9LZhL+cAfCHSauMgNANmdXTK7T9Z52uKibcUCZ36QGGYWDAb45HB
-7VV4eXE9v+X8cgVzNg7bBTzlDUi1wM+tskJqL+clYg==
-=YT5c
------END PGP SIGNATURE-----
+Gert Doering
 
---13LwGeCavelYIlim--
 
