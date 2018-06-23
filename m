@@ -1,18 +1,10 @@
-Date: Sat, 23 Jun 2018 20:16:48 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180623181648.GU57262@...1296...>
-References: <201806231209.w5NC9AhF028415@...2054...>
- <20180623121503.4080-1-gert@...1296...>
- <20180623173104.GT57262@...1296...>
- <CAKuzo_iE0zU_6+19+V0QSSbU0sBpSYtJU48uLaS_ireoj81n8Q@...278...>
- <0afcdadf-9270-a709-35bc-66318e58f8f5@...2181...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="2r9at8cGmvB+qaMS"
-Content-Disposition: inline
-In-Reply-To: <0afcdadf-9270-a709-35bc-66318e58f8f5@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] Add %d,
- %u and %lu tests to test_argv unit tests.
+From: Antonio Quartulli <a@...2181...>
+Date: Sun, 24 Jun 2018 02:31:08 +0800
+Message-Id: <20180623183108.18684-1-a@...2181...>
+In-Reply-To: <20180613141213.5962-1-a@...2181...>
+References: <20180613141213.5962-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH v4 2/8] windows: properly configure TAP
+ driver when no IPv4 is configured
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,59 +13,99 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: Selva Nair <selva.nair@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <antonio@...515...>
 
---2r9at8cGmvB+qaMS
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: Antonio Quartulli <antonio@...515...>
 
-Hi,
+This patch ensures that the TAP driver on a windows host is still
+configured, even though no IPv4 has been provided.
 
-On Sun, Jun 24, 2018 at 02:12:29AM +0800, Antonio Quartulli wrote:
-> > That should be enough, but we could get fancy and use -1L and compare
-> > the result against sprintf(str, "%lu", -1L)
->=20
-> I just recommended something similar on IRC.
-> I think it would make sense to "validate" argv_printf* against sprintf.
-> Not just for %lu but also for the other formats. This way we know our
-> code is doing what sprintf would also do.
+In this case the TAP driver ioctl will be invoked with a fake
+0.0.0.0/0.0.0.0 IPv4 which will simply start the interface and
+get it to a working state.
 
-I'll go for the "just 1" thing so we have something.=20=20
+Trac: #208
+Signed-off-by: Antonio Quartulli <antonio@...515...>
+---
 
-If one of you feels bored, I'm happy to test something more fancy :-) -
-but I do not feel particularily like "coming up with fancy tests for
-argv.c" today.
+Changes from v2:
+- rebased on top ov v4 1/8
+- extended commit message
+- moved did_ifconfig_setup check into test_routes()
+- added longer comment into test_routes() to explain check condition
 
-gert
+Changes from v3:
+- fixed typ0 in condition in test_routes(): from 'c->c1.tuntap' to 'tt'
+- tested on Win10 against ipv6-only and ipv6+ipv4 server (on same LAN)
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
 
-Gert Doering - Munich, Germany                             gert@...1296...
+ src/openvpn/route.c |  6 +++++-
+ src/openvpn/tun.c   | 24 +++++++++++++++++-------
+ 2 files changed, 22 insertions(+), 8 deletions(-)
 
---2r9at8cGmvB+qaMS
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 8990a986..f6962848 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -2642,7 +2642,11 @@ test_routes(const struct route_list *rl, const struct tuntap *tt)
+         ret = true;
+         adapter_up = true;
+ 
+-        if (rl)
++        /* we do this test only if we have IPv4 routes to install, and if
++         * the tun/tap interface has seen IPv4 ifconfig - because if we
++         * have no IPv4, the check will always fail, failing tun init
++         */
++        if (rl && tt->did_ifconfig_setup)
+         {
+             struct route_ipv4 *r;
+             for (r = rl->routes, len = 0; r; r = r->next, ++len)
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 2e1c96e6..f9b9c716 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -5703,7 +5703,10 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+             msg(M_FATAL, "ERROR: --dev tun also requires --ifconfig");
+         }
+ 
+-        if (tt->topology == TOP_SUBNET)
++        /* send 0/0/0 to the TAP driver even if we have no IPv4 configured to
++         * ensure it is somehow initialized.
++         */
++        if (!tt->did_ifconfig_setup || tt->topology == TOP_SUBNET)
+         {
+             in_addr_t ep[3];
+             BOOL status;
+@@ -5716,12 +5719,19 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+                                      ep, sizeof(ep),
+                                      ep, sizeof(ep), &len, NULL);
+ 
+-            msg(status ? M_INFO : M_FATAL, "Set TAP-Windows TUN subnet mode network/local/netmask = %s/%s/%s [%s]",
+-                print_in_addr_t(ep[1], IA_NET_ORDER, &gc),
+-                print_in_addr_t(ep[0], IA_NET_ORDER, &gc),
+-                print_in_addr_t(ep[2], IA_NET_ORDER, &gc),
+-                status ? "SUCCEEDED" : "FAILED");
+-
++            if (tt->did_ifconfig_setup)
++            {
++                msg(status ? M_INFO : M_FATAL, "Set TAP-Windows TUN subnet mode network/local/netmask = %s/%s/%s [%s]",
++                    print_in_addr_t(ep[1], IA_NET_ORDER, &gc),
++                    print_in_addr_t(ep[0], IA_NET_ORDER, &gc),
++                    print_in_addr_t(ep[2], IA_NET_ORDER, &gc),
++                    status ? "SUCCEEDED" : "FAILED");
++            }
++            else
++            {
++                msg(status ? M_INFO : M_FATAL, "Set TAP-Windows TUN with fake IPv4 [%s]",
++                    status ? "SUCCEEDED" : "FAILED");
++            }
+         }
+         else
+         {
+-- 
+2.17.1
 
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJbLo6QAAoJEB2Cnv7KVigSZ2YMAKqNJbxI6TdOtiLDPI4rYvqm
-a9cEqbdtSsg75rRgDfEzaZNdNRPPo6pmK3eOY8MADiAxAkVA+0WDkpbd5cAQl+8/
-U3YXJdzyD1N1JI1N6WNKd6UZY7wXNem1w7Skfslj9myGijkfaT2MlcWiFPF/dy2N
-H/eSMALygEgzG/T5CR0rXEqpTg0zpInEPm//1igi6ks/FqDc1zolwIWjER7vzlKM
-NzMqB8iO46wPf4kNPuk27qTnttaCiQhXfFMKiez7Ok1N9rbeHJUm6LErTwKLfCND
-FWsiAHd52QW53YpwC1tZVDkj3XDIR6I5rWn9vThwWCKWKAWv7L/M2Vk4mxcjSCu/
-zQNGyg+wGiYfgYHqNE/A6YIpxZqDAVd2XBQWX9XgDD49oAhC8/MBHI+SGOioBAWz
-wXGnWA/lvZqD++SwWLdyjj6NvoxV3naVfY0PDUr5JYgH3jDMXAiz/tUdV7369z+Q
-i+Nbxevshexz46q1/G4PcCKYarOyX+C9dXW4Vz4coA==
-=j6uk
------END PGP SIGNATURE-----
-
---2r9at8cGmvB+qaMS--
 
