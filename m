@@ -1,22 +1,12 @@
-References: <20180608052017.6696-1-a@...2181...>
- <20180613141213.5962-1-a@...2181...> <20180620155301.GY57262@...1296...>
- <c416ea67-e4ce-148b-eb19-6d18b35da559@...2181...>
- <20180622094635.GI57262@...1296...>
- <d496bbf5-3c55-f2d9-2ab2-bc89ded80131@...2181...>
- <CAKuzo_jDrcGjQeMaVm3X6yzgKBZecbYHfAAxxCFAuycagTe22Q@...278...>
- <20180622182709.GO57262@...1296...>
- <8117ab50-c3d1-2210-6665-9ea86b7110ac@...2181...>
- <CAKuzo_je1ZsOoTeaUdFxnP1JDMM1Op5TP-p=xA85SLn0pPCSGQ@...278...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <5fe13344-8e3c-3283-3217-c64f4ef234c5@...2181...>
-Date: Sat, 23 Jun 2018 11:13:07 +0800
+References: <20180527190057.3488-1-chipitsine@...277...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <944d4c57-7862-ed0e-619c-71c8c4998a02@...1856...>
+Date: Sat, 23 Jun 2018 08:02:12 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_je1ZsOoTeaUdFxnP1JDMM1Op5TP-p=xA85SLn0pPCSGQ@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="C8IB94osrYfG8pASOqqAKwsWng52lNvcJ"
-Subject: Re: [Openvpn-devel] [PATCH v3 2/8] windows: properly configure TAP
- driver when no IPv4 is configured
+In-Reply-To: <20180527190057.3488-1-chipitsine@...277...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v2] travis-ci: cleanup, refactor,
+ upgrade ssl libraries
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -25,90 +15,91 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---C8IB94osrYfG8pASOqqAKwsWng52lNvcJ
-Content-Type: multipart/mixed; boundary="e50yaoCxQnihsMuGxM4ZxMYe0G9i8Kjli";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Selva Nair <selva.nair@...277...>
-Cc: Gert Doering <gert@...1296...>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Message-ID: <5fe13344-8e3c-3283-3217-c64f4ef234c5@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v3 2/8] windows: properly configure TAP
- driver when no IPv4 is configured
-References: <20180608052017.6696-1-a@...2181...>
- <20180613141213.5962-1-a@...2181...> <20180620155301.GY57262@...1296...>
- <c416ea67-e4ce-148b-eb19-6d18b35da559@...2181...>
- <20180622094635.GI57262@...1296...>
- <d496bbf5-3c55-f2d9-2ab2-bc89ded80131@...2181...>
- <CAKuzo_jDrcGjQeMaVm3X6yzgKBZecbYHfAAxxCFAuycagTe22Q@...278...>
- <20180622182709.GO57262@...1296...>
- <8117ab50-c3d1-2210-6665-9ea86b7110ac@...2181...>
- <CAKuzo_je1ZsOoTeaUdFxnP1JDMM1Op5TP-p=xA85SLn0pPCSGQ@...278...>
-In-Reply-To: <CAKuzo_je1ZsOoTeaUdFxnP1JDMM1Op5TP-p=xA85SLn0pPCSGQ@...278...>
-
---e50yaoCxQnihsMuGxM4ZxMYe0G9i8Kjli
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On 23/06/18 11:09, Selva Nair wrote:
->> My guts say that the issue might be related to "gateway-redirect",
->> because only 8/8 makes sure that no logic is activated for IPv4 and
->> without that patch there might be some IPv4 route being installed
->> nonetheless.
->=20
-> Very likely. It would be nice to find the on-link route that triggers tha=
-t code
-> path to ensure it doesn't cause any other issues.
+On 27-05-18 21:00, Ilya Shipitsin wrote:
+> Both "compiler" and "exclude" are redundant, so remove them.
+> Add openssl-1.0.1u to build matrix. Enable explicit apt update
+> (it was disabled by default in travis-ci).
+> 
+> Signed-off-by: Ilya Shipitsin <chipitsine@...277...>
+> 
+> --
+> v2: Add openssl-1.0.1u to build matrix (thanks to Steffan Karger),
+> Add explicit apt-get update (it was disabled by default in travis-ci)
+> ---
+> ---
+>  .travis.yml | 17 ++++++++---------
+>  1 file changed, 8 insertions(+), 9 deletions(-)
+> 
+> diff --git a/.travis.yml b/.travis.yml
+> index 51645924..216f0a04 100644
+> --- a/.travis.yml
+> +++ b/.travis.yml
+> @@ -5,9 +5,6 @@ os: linux
+>  
+>  language: c
+>  
+> -compiler:
+> -  - gcc
+> -
+>  env:
+>    global:
+>      - JOBS=3
+> @@ -15,10 +12,10 @@ env:
+>      - TAP_WINDOWS_VERSION=9.21.2
+>      - LZO_VERSION=2.10
+>      - PKCS11_HELPER_VERSION=1.22
+> -    - MBEDTLS_VERSION="2.5.1"
+> +    - MBEDTLS_VERSION="2.8.0"
+>      - MBEDTLS_CFLAGS="-I${PREFIX}/include"
+>      - MBEDTLS_LIBS="-L${PREFIX}/lib -lmbedtls -lmbedx509 -lmbedcrypto"
+> -    - OPENSSL_VERSION="1.0.2l"
+> +    - OPENSSL_VERSION="1.0.2o"
+>      - OPENSSL_CFLAGS="-I${PREFIX}/include"
+>      - OPENSSL_LIBS="-L${PREFIX}/lib -lssl -lcrypto"
+>      # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+> @@ -30,13 +27,16 @@ matrix:
+>      - env: SSLLIB="openssl" RUN_COVERITY="1"
+>        os: linux
+>        compiler: gcc
+> -    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.0f"
+> +    - env: SSLLIB="openssl" OPENSSL_VERSION="1.0.1u"
+> +      os: linux
+> +      compiler: gcc
+> +    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.0h"
+>        os: linux
+>        compiler: gcc
+>      - env: SSLLIB="openssl" CFLAGS="-fsanitize=address"
+>        os: linux
+>        compiler: clang
+> -    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.0f"
+> +    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.0h"
+>        os: linux
+>        compiler: clang
+>      - env: SSLLIB="mbedtls"
+> @@ -65,11 +65,10 @@ matrix:
+>      - env: SSLLIB="openssl" EXTRA_CONFIG="--enable-small"
+>        os: linux
+>        compiler: clang
+> -  exclude:
+> -    - compiler: gcc
+>  
+>  addons:
+>    apt:
+> +    update: true
+>      packages:
+>        - liblzo2-dev
+>        - libpam0g-dev
+> 
 
-My server was on the same LAN (connecting via v4) as the client - should
-that be considered on-link? maybe this is what triggers that code path.
+Thanks.  This looks good to me.
 
->=20
-> But not very critical as the assert is fixed and route errors are not FAT=
-AL.
->=20
+Acked-by: Steffan Karger <steffan@...1856...>
 
-If you like the argv patch v2, would you mind giving your blessing? :-)
-
-Thanks!
-Cheers,
-
->=20
-
---=20
-Antonio Quartulli
-
-
---e50yaoCxQnihsMuGxM4ZxMYe0G9i8Kjli--
-
---C8IB94osrYfG8pASOqqAKwsWng52lNvcJ
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlstusMACgkQB6U8WA7y
-zXTc8Q//TwKhWQwrjpn0aJCPBqJ/3lJZkCxWxRBu0ex7ODtOuJJk//XXKP+yavQe
-s5+xkqYh5MGLNZbWTtrW0ic6kcYc/JDyJjOS81Og6dpXIU7K8iCGN2PF5AIj5xe/
-nFA5/7pwlSSmdLbTc48FjA9m2MgXQBhhiGNMbVvprVCA46p3k+BKFjhpTDe2pu6G
-lo4Nwb65gDYEAVs+BEvJIDOPo5g2GQf4pigEweP03jl4nCnxeEyRBmXPfYJJwKzo
-SiSZFnOF1dFGqeZLramjDeYlsGl4wdDrsNpnklqJkoJqsb8hFKCQk37kbsZu2T2k
-4MgZOXxcTwdHTzBZ0VvyTMLrbnRMHi8OwReg+RlpWebffhiQl7lDF3HLFyYC7YTb
-JVBTI2hGCkFtTykEM+fgCDnK3fZRB++QcVhXvCMfi4N/dDA+eFLe9sTYw8OgEOdd
-WdQ10ExTqbqaGyDe4maNzWPuXcS7LIaTJaWXn/JGK45plxZKgogg2gCohBkCTEyt
-qmtL4GmV8blFcHlLvLdTLIzPqD+RA0eYgz/okACkpnDEuAdRtqevcpKBQLuntxpv
-0vlazwvt2sMkEmGey+2AaIyDeG8GBIiWokATmTHqpaLg3Ez8qZGxxknSnt/Kd7bc
-MtS7UmaK88wRMsJTS++9j90gQhVZG5uwfIyAkBxwSp0JtM8U3is=
-=tKv1
------END PGP SIGNATURE-----
-
---C8IB94osrYfG8pASOqqAKwsWng52lNvcJ--
+-Steffan
 
