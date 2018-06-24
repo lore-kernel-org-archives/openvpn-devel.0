@@ -1,12 +1,11 @@
-References: <20180527190057.3488-1-chipitsine@...277...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <77f85744-4ae0-e8e5-148e-e327130adcc3@...2181...>
-Date: Sun, 24 Jun 2018 11:28:23 +0800
 MIME-Version: 1.0
-In-Reply-To: <20180527190057.3488-1-chipitsine@...277...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="dIyZnTPdX5WInWj1OvhM6txsQQYLPc9IE"
+References: <20180527190057.3488-1-chipitsine@...277...>
+ <77f85744-4ae0-e8e5-148e-e327130adcc3@...2181...>
+In-Reply-To: <77f85744-4ae0-e8e5-148e-e327130adcc3@...2181...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Sun, 24 Jun 2018 09:03:00 +0500
+Message-ID: <CAFHpkQHVxZir86GQ0qCTiUqVDPqLX1jZp8uP8MH3TmdZfbD6+A@...278...>
+Content-Type: multipart/alternative; boundary="0000000000002e5f1e056f5ba5e2"
 Subject: Re: [Openvpn-devel] [PATCH v2] travis-ci: cleanup, refactor,
  upgrade ssl libraries
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,65 +16,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Ilya Shipitsin <chipitsine@...277...>, openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---dIyZnTPdX5WInWj1OvhM6txsQQYLPc9IE
-Content-Type: multipart/mixed; boundary="xdvAtK9fHIZFsmf1ZqvmoG5uZDuOa3UjH";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Ilya Shipitsin <chipitsine@...277...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <77f85744-4ae0-e8e5-148e-e327130adcc3@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v2] travis-ci: cleanup, refactor, upgrade
- ssl libraries
-References: <20180527190057.3488-1-chipitsine@...277...>
-In-Reply-To: <20180527190057.3488-1-chipitsine@...277...>
+--0000000000002e5f1e056f5ba5e2
+Content-Type: text/plain; charset="UTF-8"
 
---xdvAtK9fHIZFsmf1ZqvmoG5uZDuOa3UjH
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
+Someone who has admin rights, can purge the cache
+
+On Sun, Jun 24, 2018, 8:28 AM Antonio Quartulli <a@...2181...> wrote:
+
+> Hi,
+>
+> On 28/05/18 03:00, Ilya Shipitsin wrote:
+> > -    - MBEDTLS_VERSION="2.5.1"
+> > +    - MBEDTLS_VERSION="2.8.0"
+>
+> I know travis-ci currently is caching both the downloaded tarball and
+> the built library, therefore my question: what will happen to
+> mbedtls-2.5.1-*? Will that be wiped after some time? Or do we need to
+> wipe the cache manually?
+>
+> Cheers,
+>
+> --
+> Antonio Quartulli
+>
+>
+
+--0000000000002e5f1e056f5ba5e2
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+<div dir=3D"auto">Someone who has admin rights, can purge the cache</div><b=
+r><div class=3D"gmail_quote"><div dir=3D"ltr">On Sun, Jun 24, 2018, 8:28 AM=
+ Antonio Quartulli &lt;a@...2181...&gt; wrote:<br></div><blockquote class=
+=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padd=
+ing-left:1ex">Hi,<br>
+<br>
+On 28/05/18 03:00, Ilya Shipitsin wrote:<br>
+&gt; -=C2=A0 =C2=A0 - MBEDTLS_VERSION=3D&quot;2.5.1&quot;<br>
+&gt; +=C2=A0 =C2=A0 - MBEDTLS_VERSION=3D&quot;2.8.0&quot;<br>
+<br>
+I know travis-ci currently is caching both the downloaded tarball and<br>
+the built library, therefore my question: what will happen to<br>
+mbedtls-2.5.1-*? Will that be wiped after some time? Or do we need to<br>
+wipe the cache manually?<br>
+<br>
+Cheers,<br>
+<br>
+-- <br>
+Antonio Quartulli<br>
+<br>
+</blockquote></div>
 
-On 28/05/18 03:00, Ilya Shipitsin wrote:
-> -    - MBEDTLS_VERSION=3D"2.5.1"
-> +    - MBEDTLS_VERSION=3D"2.8.0"
-
-I know travis-ci currently is caching both the downloaded tarball and
-the built library, therefore my question: what will happen to
-mbedtls-2.5.1-*? Will that be wiped after some time? Or do we need to
-wipe the cache manually?
-
-Cheers,
-
---=20
-Antonio Quartulli
-
-
---xdvAtK9fHIZFsmf1ZqvmoG5uZDuOa3UjH--
-
---dIyZnTPdX5WInWj1OvhM6txsQQYLPc9IE
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlsvD9cACgkQB6U8WA7y
-zXSaSBAAgSuPK9sBLf5weIdgLOyLRW4CBH2TbmYMTAILJf9HCeC8r2RCsAVkv49w
-zi53RBFe0a9ZP7XUYrDyd2Kzj4AvTaS7nKBjfNw98i4aCZ4fqeTWwb5vWXgIV3VD
-FNXJjw1aFyNiRL3KN7Tu0redcCAwmWN69B4MJIyR0j04gGKEHmKAXvZrxsAjCXgW
-njzkRkDNpLwEmWbXD6hFU0b0t68zBXHqvN+W3DkZ5u4x06G2vjz/siry7EZzHuo/
-BIWyjgds5ofSIUZDsmTIdY5ScR7wEwVy+8RkNa40P5cr64PBdkw5uOScNsTBqeeg
-XUUmvyQNTNYKVZ0B1ficVs7S9rFeocM87fZixq7VZ/Lkl7Sul/ug7YR29EM4Eh2J
-4Cu3dozdFqd61ehg+VEAEcHwscFUTuo4gb6fWbRrD0weMLQDzEPDyv0PQfN4ESQ/
-k4Ijtb2YYom+VzK/UxTBBU2HkQcB3qEOhlKMCSoi9kP5NW1oHGJ7XXdgaQbY2ZzR
-3cMiycs+VO9jJntSNovXzrLv4R6UUp4xc4rO7/t+/Y/zelTsxv1AKgnoN38m0M59
-epBtgCEak7HLqj41tHbbZt8oc4bzKIESijfDTBehkniSyTl7dVgKWZYpGkwgZaLd
-vnYXQ/VoCjyHEl1zeakigdYokP6URbAt1XY0oxBr8ZZcBZ9vdn8=
-=rPKI
------END PGP SIGNATURE-----
-
---dIyZnTPdX5WInWj1OvhM6txsQQYLPc9IE--
+--0000000000002e5f1e056f5ba5e2--
 
