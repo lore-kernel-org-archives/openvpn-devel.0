@@ -1,10 +1,14 @@
+References: <20180527190057.3488-1-chipitsine@...277...>
 From: Antonio Quartulli <a@...2181...>
-Date: Sun, 24 Jun 2018 04:11:12 +0800
-Message-Id: <20180623201112.29973-1-a@...2181...>
-In-Reply-To: <20180608052017.6696-6-a@...2181...>
-References: <20180608052017.6696-6-a@...2181...>
-Subject: [Openvpn-devel] [PATCH v3 5/8] allow usage of --server-ipv6 even
- when no --server is specified
+Message-ID: <77f85744-4ae0-e8e5-148e-e327130adcc3@...2181...>
+Date: Sun, 24 Jun 2018 11:28:23 +0800
+MIME-Version: 1.0
+In-Reply-To: <20180527190057.3488-1-chipitsine@...277...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="dIyZnTPdX5WInWj1OvhM6txsQQYLPc9IE"
+Subject: Re: [Openvpn-devel] [PATCH v2] travis-ci: cleanup, refactor,
+ upgrade ssl libraries
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,66 +17,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Ilya Shipitsin <chipitsine@...277...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--dIyZnTPdX5WInWj1OvhM6txsQQYLPc9IE
+Content-Type: multipart/mixed; boundary="xdvAtK9fHIZFsmf1ZqvmoG5uZDuOa3UjH";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: Ilya Shipitsin <chipitsine@...277...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <77f85744-4ae0-e8e5-148e-e327130adcc3@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v2] travis-ci: cleanup, refactor, upgrade
+ ssl libraries
+References: <20180527190057.3488-1-chipitsine@...277...>
+In-Reply-To: <20180527190057.3488-1-chipitsine@...277...>
+
+--xdvAtK9fHIZFsmf1ZqvmoG5uZDuOa3UjH
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <antonio@...515...>
+Content-Transfer-Encoding: quoted-printable
 
-From: Antonio Quartulli <antonio@...515...>
+Hi,
 
-Until now OpenVPN has not allowed to specify --server-ipv6
-if no --server was also set. This constraint comes from the
-fact that most of the IPv6 logic (i.e. ifconfig-pool handling)
-relied on IPv4 components to be activated and configured as
-well.
+On 28/05/18 03:00, Ilya Shipitsin wrote:
+> -    - MBEDTLS_VERSION=3D"2.5.1"
+> +    - MBEDTLS_VERSION=3D"2.8.0"
 
-Now that the IPv6 code path has been made independent from
-IPv4, it is finally possible to to relax the constraint
-mentioned above and make it possible for the user to have a
-configurations with --server-ipv6 only.
+I know travis-ci currently is caching both the downloaded tarball and
+the built library, therefore my question: what will happen to
+mbedtls-2.5.1-*? Will that be wiped after some time? Or do we need to
+wipe the cache manually?
 
-Trac: #208
-Signed-off-by: Antonio Quartulli <antonio@...515...>
----
+Cheers,
 
-Changes from v2:
-- patchset rebased on top of pre-ipv6-only patchset
-- change commit subject/message
-- move ifconfig-ipv6-pool check change into 4/8
+--=20
+Antonio Quartulli
 
 
- src/openvpn/helper.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+--xdvAtK9fHIZFsmf1ZqvmoG5uZDuOa3UjH--
 
-diff --git a/src/openvpn/helper.c b/src/openvpn/helper.c
-index ff9df506..42ba5b2c 100644
---- a/src/openvpn/helper.c
-+++ b/src/openvpn/helper.c
-@@ -177,10 +177,11 @@ helper_client_server(struct options *o)
-      */
-     if (o->server_ipv6_defined)
-     {
--        if (!o->server_defined)
-+        if (o->client)
-         {
--            msg(M_USAGE, "--server-ipv6 must be used together with --server");
-+            msg(M_USAGE, "--server and --client cannot be used together");
-         }
-+
-         if (o->server_flags & SF_NOPOOL)
-         {
-             msg( M_USAGE, "--server-ipv6 is incompatible with 'nopool' option" );
-@@ -190,6 +191,9 @@ helper_client_server(struct options *o)
-             msg( M_USAGE, "--server-ipv6 already defines an ifconfig-ipv6-pool, so you can't also specify --ifconfig-pool explicitly");
-         }
- 
-+        o->mode = MODE_SERVER;
-+        o->tls_server = true;
-+
-         /* local ifconfig is "base address + 1" and "+2" */
-         o->ifconfig_ipv6_local =
-             print_in6_addr( add_in6_addr( o->server_network_ipv6, 1), 0, &o->gc );
--- 
-2.17.1
+--dIyZnTPdX5WInWj1OvhM6txsQQYLPc9IE
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlsvD9cACgkQB6U8WA7y
+zXSaSBAAgSuPK9sBLf5weIdgLOyLRW4CBH2TbmYMTAILJf9HCeC8r2RCsAVkv49w
+zi53RBFe0a9ZP7XUYrDyd2Kzj4AvTaS7nKBjfNw98i4aCZ4fqeTWwb5vWXgIV3VD
+FNXJjw1aFyNiRL3KN7Tu0redcCAwmWN69B4MJIyR0j04gGKEHmKAXvZrxsAjCXgW
+njzkRkDNpLwEmWbXD6hFU0b0t68zBXHqvN+W3DkZ5u4x06G2vjz/siry7EZzHuo/
+BIWyjgds5ofSIUZDsmTIdY5ScR7wEwVy+8RkNa40P5cr64PBdkw5uOScNsTBqeeg
+XUUmvyQNTNYKVZ0B1ficVs7S9rFeocM87fZixq7VZ/Lkl7Sul/ug7YR29EM4Eh2J
+4Cu3dozdFqd61ehg+VEAEcHwscFUTuo4gb6fWbRrD0weMLQDzEPDyv0PQfN4ESQ/
+k4Ijtb2YYom+VzK/UxTBBU2HkQcB3qEOhlKMCSoi9kP5NW1oHGJ7XXdgaQbY2ZzR
+3cMiycs+VO9jJntSNovXzrLv4R6UUp4xc4rO7/t+/Y/zelTsxv1AKgnoN38m0M59
+epBtgCEak7HLqj41tHbbZt8oc4bzKIESijfDTBehkniSyTl7dVgKWZYpGkwgZaLd
+vnYXQ/VoCjyHEl1zeakigdYokP6URbAt1XY0oxBr8ZZcBZ9vdn8=
+=rPKI
+-----END PGP SIGNATURE-----
+
+--dIyZnTPdX5WInWj1OvhM6txsQQYLPc9IE--
 
