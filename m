@@ -1,13 +1,15 @@
+From: Antonio Quartulli <a@...2181...>
+References: <20180608052017.6696-5-a@...2181...>
+ <20180623200844.32598-1-a@...2181...>
+Message-ID: <56af49a7-4568-5282-a926-e90fe4b78ae9@...2181...>
+Date: Sun, 24 Jun 2018 12:44:30 +0800
 MIME-Version: 1.0
-References: <20180527190057.3488-1-chipitsine@...277...>
- <77f85744-4ae0-e8e5-148e-e327130adcc3@...2181...>
-In-Reply-To: <77f85744-4ae0-e8e5-148e-e327130adcc3@...2181...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Sun, 24 Jun 2018 09:03:00 +0500
-Message-ID: <CAFHpkQHVxZir86GQ0qCTiUqVDPqLX1jZp8uP8MH3TmdZfbD6+A@...278...>
-Content-Type: multipart/alternative; boundary="0000000000002e5f1e056f5ba5e2"
-Subject: Re: [Openvpn-devel] [PATCH v2] travis-ci: cleanup, refactor,
- upgrade ssl libraries
+In-Reply-To: <20180623200844.32598-1-a@...2181...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="7zrCMcUdmmJK3TU1ZplrKAAu2XxkG879S"
+Subject: Re: [Openvpn-devel] [PATCH v3 4/8] pool: allow to configure an
+ IPv6-only ifconfig-pool
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,59 +18,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---0000000000002e5f1e056f5ba5e2
-Content-Type: text/plain; charset="UTF-8"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--7zrCMcUdmmJK3TU1ZplrKAAu2XxkG879S
+Content-Type: multipart/mixed; boundary="9Kw31VVV6HCyIHYgEc5IJlvUrF8y7VJ2b";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <56af49a7-4568-5282-a926-e90fe4b78ae9@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v3 4/8] pool: allow to configure an
+ IPv6-only ifconfig-pool
+References: <20180608052017.6696-5-a@...2181...>
+ <20180623200844.32598-1-a@...2181...>
+In-Reply-To: <20180623200844.32598-1-a@...2181...>
 
-Someone who has admin rights, can purge the cache
-
-On Sun, Jun 24, 2018, 8:28 AM Antonio Quartulli <a@...2181...> wrote:
-
-> Hi,
->
-> On 28/05/18 03:00, Ilya Shipitsin wrote:
-> > -    - MBEDTLS_VERSION="2.5.1"
-> > +    - MBEDTLS_VERSION="2.8.0"
->
-> I know travis-ci currently is caching both the downloaded tarball and
-> the built library, therefore my question: what will happen to
-> mbedtls-2.5.1-*? Will that be wiped after some time? Or do we need to
-> wipe the cache manually?
->
-> Cheers,
->
-> --
-> Antonio Quartulli
->
->
-
---0000000000002e5f1e056f5ba5e2
-Content-Type: text/html; charset="UTF-8"
+--9Kw31VVV6HCyIHYgEc5IJlvUrF8y7VJ2b
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"auto">Someone who has admin rights, can purge the cache</div><b=
-r><div class=3D"gmail_quote"><div dir=3D"ltr">On Sun, Jun 24, 2018, 8:28 AM=
- Antonio Quartulli &lt;a@...2181...&gt; wrote:<br></div><blockquote class=
-=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padd=
-ing-left:1ex">Hi,<br>
-<br>
-On 28/05/18 03:00, Ilya Shipitsin wrote:<br>
-&gt; -=C2=A0 =C2=A0 - MBEDTLS_VERSION=3D&quot;2.5.1&quot;<br>
-&gt; +=C2=A0 =C2=A0 - MBEDTLS_VERSION=3D&quot;2.8.0&quot;<br>
-<br>
-I know travis-ci currently is caching both the downloaded tarball and<br>
-the built library, therefore my question: what will happen to<br>
-mbedtls-2.5.1-*? Will that be wiped after some time? Or do we need to<br>
-wipe the cache manually?<br>
-<br>
-Cheers,<br>
-<br>
--- <br>
-Antonio Quartulli<br>
-<br>
-</blockquote></div>
+Hi,
 
---0000000000002e5f1e056f5ba5e2--
+On 24/06/18 04:08, Antonio Quartulli wrote:
+> From: Antonio Quartulli <antonio@...515...>
+>=20
+> With this change a server is allowed to allocate an
+> IPv6-only pool. This is required to make it capable
+> of managing an IPv6-only tunnel.
+
+After discussing with Gert, I'd say that maybe this last sentence can be
+removed because "an ipv6-only tunnel" is already possible on a server
+(just without a pool).
+
+>=20
+> Trac: #208
+> Signed-off-by: Antonio Quartulli <antonio@...515...>
+
+This single patch has been applied on top of master and thrown at
+buildbot. No failure has been recorded.
+
+Cheers,
+
+--=20
+Antonio Quartulli
+
+
+--9Kw31VVV6HCyIHYgEc5IJlvUrF8y7VJ2b--
+
+--7zrCMcUdmmJK3TU1ZplrKAAu2XxkG879S
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlsvIa4ACgkQB6U8WA7y
+zXS87w/9FMS0xyUiHOY3ScRQxdHuOvYY1mJq6WLxumFylPPtqpnFqZcHHpo/rTZH
+Eluxrykp3Pm+VXA2uEDJ61S9JkSVDDEOaiUNUohOFQGkKvSMXGehxUrtxOrdYkLi
+H+1iwm6vbpp3SLzLMoGjJgLwfhpgYPqIGN2ziPSZb2/SlkeIBlajd2aLW+9PG8Tl
+wzoikPb0+mYOzReYQbHhl1KHnblxUzjWLnZmmLqroVhVmJteWYUJnt0V0OiLzYa7
+y4nXrrTiayH+dDTJR8vqh50JWHQwDYO9AvHfSxvq3+eiCT0Tniv0qJgJBb8ESxcI
+F4IWv7VwNk8h3O2xNU+iBD+Nh38W2Rx5f1F0r46LzIkKzMX+HzA5WWzhQo1+rsK1
+8bu5hYAVRJ6PokgUuE7L4+/0UeJDPE1VMyIGCsn2Uj3bjbl1BL3W8XnfQnyjI9o5
+ImwJbjZseEdainBisgqvhIbMeRW5RYHqPW7bSEvjGitUImGHM5fOYPAjMya47Cmp
+3dynrsWBGeVpA228yHT/FVTrc81faFOUerz+TC354eV0ZjxaMJTf21JkynkNCjhJ
+m7SStrvs2eOAnI+n80js3jpwghcSLhyzl9xhAdgigepsppH90r1QF123inMlMFnB
+XO8AgO7DlglbJrKewEV0M5nXKHfW4JWZEapk6bi6FJNVJ6kN5G4=
+=h0lU
+-----END PGP SIGNATURE-----
+
+--7zrCMcUdmmJK3TU1ZplrKAAu2XxkG879S--
 
