@@ -1,15 +1,14 @@
+References: <20180622014905.21558-1-rosenp@...277...>
+ <20180622021501.23037-1-rosenp@...277...>
 From: Antonio Quartulli <a@...2181...>
-References: <20180608052017.6696-5-a@...2181...>
- <20180623200844.32598-1-a@...2181...>
-Message-ID: <56af49a7-4568-5282-a926-e90fe4b78ae9@...2181...>
-Date: Sun, 24 Jun 2018 12:44:30 +0800
+Message-ID: <20c6c5b6-b426-061b-6409-ffc5fbfb8f07@...2181...>
+Date: Sun, 24 Jun 2018 15:13:13 +0800
 MIME-Version: 1.0
-In-Reply-To: <20180623200844.32598-1-a@...2181...>
+In-Reply-To: <20180622021501.23037-1-rosenp@...277...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="7zrCMcUdmmJK3TU1ZplrKAAu2XxkG879S"
-Subject: Re: [Openvpn-devel] [PATCH v3 4/8] pool: allow to configure an
- IPv6-only ifconfig-pool
+ boundary="t6WdOunkfdDbLiArw0Rw6phFtSKOwAFwv"
+Subject: Re: [Openvpn-devel] [PATCHv2] openvpn: Add missing OpenSSL includes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,75 +17,109 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Rosen Penev <rosenp@...277...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---7zrCMcUdmmJK3TU1ZplrKAAu2XxkG879S
-Content-Type: multipart/mixed; boundary="9Kw31VVV6HCyIHYgEc5IJlvUrF8y7VJ2b";
+--t6WdOunkfdDbLiArw0Rw6phFtSKOwAFwv
+Content-Type: multipart/mixed; boundary="hTrw5bnRFlDwlcRiKWx7HIzQFysiZ8Ti8";
  protected-headers="v1"
 From: Antonio Quartulli <a@...2181...>
-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <56af49a7-4568-5282-a926-e90fe4b78ae9@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v3 4/8] pool: allow to configure an
- IPv6-only ifconfig-pool
-References: <20180608052017.6696-5-a@...2181...>
- <20180623200844.32598-1-a@...2181...>
-In-Reply-To: <20180623200844.32598-1-a@...2181...>
+To: Rosen Penev <rosenp@...277...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <20c6c5b6-b426-061b-6409-ffc5fbfb8f07@...2181...>
+Subject: Re: [Openvpn-devel] [PATCHv2] openvpn: Add missing OpenSSL includes
+References: <20180622014905.21558-1-rosenp@...277...>
+ <20180622021501.23037-1-rosenp@...277...>
+In-Reply-To: <20180622021501.23037-1-rosenp@...277...>
 
---9Kw31VVV6HCyIHYgEc5IJlvUrF8y7VJ2b
+--hTrw5bnRFlDwlcRiKWx7HIzQFysiZ8Ti8
 Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-On 24/06/18 04:08, Antonio Quartulli wrote:
-> From: Antonio Quartulli <antonio@...515...>
->=20
-> With this change a server is allowed to allocate an
-> IPv6-only pool. This is required to make it capable
-> of managing an IPv6-only tunnel.
-
-After discussing with Gert, I'd say that maybe this last sentence can be
-removed because "an ipv6-only tunnel" is already possible on a server
-(just without a pool).
-
->=20
-> Trac: #208
-> Signed-off-by: Antonio Quartulli <antonio@...515...>
-
-This single patch has been applied on top of master and thrown at
-buildbot. No failure has been recorded.
+for the next time, please put a space in the subject between "PATCH" and
+"v2", so that patchwork can happily distinguish the version from the
+subject-prefix.
+Actually git can do this for you if you specify the -vX argument (i.e.
+-v2) to the "git format-patch" command when creating the patch.
 
 Cheers,
+
+On 22/06/18 10:15, Rosen Penev wrote:
+> These get included when deprecated APIs are enabled. This is true on at
+> least version 1.0.2 and 1.1.0.
+>=20
+> Without deprecated APIs, OpenVPN fails to compile.
+>=20
+> Signed-off-by: Rosen Penev <rosenp@...277...>
+> ---
+>  src/openvpn/ssl_openssl.c        | 9 +++++++++
+>  src/openvpn/ssl_verify_openssl.c | 1 +
+>  2 files changed, 10 insertions(+)
+>=20
+> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+> index 527a600a..d9aec9bd 100644
+> --- a/src/openvpn/ssl_openssl.c
+> +++ b/src/openvpn/ssl_openssl.c
+> @@ -56,6 +56,15 @@
+>  #include <openssl/pkcs12.h>
+>  #include <openssl/x509.h>
+>  #include <openssl/crypto.h>
+> +#ifndef OPENSSL_NO_DH
+> +#include <openssl/dh.h>
+> +#endif
+> +#ifndef OPENSSL_NO_DSA
+> +#include <openssl/dsa.h>
+> +#endif
+> +#ifndef OPENSSL_NO_RSA
+> +#include <openssl/rsa.h>
+> +#endif
+>  #ifndef OPENSSL_NO_EC
+>  #include <openssl/ec.h>
+>  #endif
+> diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_op=
+enssl.c
+> index 9b984751..82460ae7 100644
+> --- a/src/openvpn/ssl_verify_openssl.c
+> +++ b/src/openvpn/ssl_verify_openssl.c
+> @@ -46,6 +46,7 @@
+>=20=20
+>  #include <openssl/x509v3.h>
+>  #include <openssl/err.h>
+> +#include <openssl/bn.h>
+>=20=20
+>  int
+>  verify_callback(int preverify_ok, X509_STORE_CTX *ctx)
+>=20
 
 --=20
 Antonio Quartulli
 
 
---9Kw31VVV6HCyIHYgEc5IJlvUrF8y7VJ2b--
+--hTrw5bnRFlDwlcRiKWx7HIzQFysiZ8Ti8--
 
---7zrCMcUdmmJK3TU1ZplrKAAu2XxkG879S
+--t6WdOunkfdDbLiArw0Rw6phFtSKOwAFwv
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlsvIa4ACgkQB6U8WA7y
-zXS87w/9FMS0xyUiHOY3ScRQxdHuOvYY1mJq6WLxumFylPPtqpnFqZcHHpo/rTZH
-Eluxrykp3Pm+VXA2uEDJ61S9JkSVDDEOaiUNUohOFQGkKvSMXGehxUrtxOrdYkLi
-H+1iwm6vbpp3SLzLMoGjJgLwfhpgYPqIGN2ziPSZb2/SlkeIBlajd2aLW+9PG8Tl
-wzoikPb0+mYOzReYQbHhl1KHnblxUzjWLnZmmLqroVhVmJteWYUJnt0V0OiLzYa7
-y4nXrrTiayH+dDTJR8vqh50JWHQwDYO9AvHfSxvq3+eiCT0Tniv0qJgJBb8ESxcI
-F4IWv7VwNk8h3O2xNU+iBD+Nh38W2Rx5f1F0r46LzIkKzMX+HzA5WWzhQo1+rsK1
-8bu5hYAVRJ6PokgUuE7L4+/0UeJDPE1VMyIGCsn2Uj3bjbl1BL3W8XnfQnyjI9o5
-ImwJbjZseEdainBisgqvhIbMeRW5RYHqPW7bSEvjGitUImGHM5fOYPAjMya47Cmp
-3dynrsWBGeVpA228yHT/FVTrc81faFOUerz+TC354eV0ZjxaMJTf21JkynkNCjhJ
-m7SStrvs2eOAnI+n80js3jpwghcSLhyzl9xhAdgigepsppH90r1QF123inMlMFnB
-XO8AgO7DlglbJrKewEV0M5nXKHfW4JWZEapk6bi6FJNVJ6kN5G4=
-=h0lU
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlsvRIkACgkQB6U8WA7y
+zXR99xAAwdUtuLSAfpSJhPx8lNKcfDArCwh0jx2YmtgEz5pQHQgkXNJrVOzJVpAd
+B1D3MonlmSZOxZgVKLBNXLREGBz7ubRzpdF2uQIHuUERelm9FPSyDX/HCaSRM8tH
+6ypaVTE41XT+IRoPWHROJii6ETRnvxcSg9aT7acIN+BNErVI9R8hcxvVtREEHkFF
+HDA8WUBm8NPUzP9uFCOry0yttwQoQ7PAtRhYyWzkZ98jDhG5rKVytLYClAZ0/FDQ
+v2iBAM2G7J85W5vPehiOjNmsJEj4JnvcHNVarq93Gk+ZRsvAgIQIBuF5JR7HEasd
+txJn8EVpYzLlecM6XlKowVF6weEyNRQLf4d5JSUI7IP0jaXI6Vonl6XNK054CKEw
+QE/laq/MovQUTDL4rIUW28qTT7kHXFJ37Dh9CAGej577Z7D2GRjHP7FzGDbPH+KR
+fREWgMUxf32D74yQVsO8toph8B2x6m1jujonFRO7g3VJ8Br2/gXLAu9q9EFPpfDE
+eM4dC7TWeeY/EupbuUPhi3YtnUjHZhvf3eJBIMJLfYfogO2a4rIiG7XUj3N4iVFJ
+tKaZxRoICaBypao4Gjp5fGs4MxWe0Y20C9ctq/TcMoqHbbNrFalqUKYO0WMp94mF
+CvABg2KJJrFAXwXLsxHmlcomf/ZATfLxisJPvToG9SAopT4acGU=
+=dQsg
 -----END PGP SIGNATURE-----
 
---7zrCMcUdmmJK3TU1ZplrKAAu2XxkG879S--
+--t6WdOunkfdDbLiArw0Rw6phFtSKOwAFwv--
 
