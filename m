@@ -1,6 +1,6 @@
-Date: Tue, 26 Jun 2018 21:15:11 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180626191511.GI57262@...1296...>
+From: Jon Kunkee <jkunkee@...2393...>
+Date: Tue, 26 Jun 2018 21:11:37 +0000
+Message-ID: <DM5PR2101MB1112FF96189404007097878FB0490@...2412...>
 References: <42bafab6-9e6f-56b5-2c44-b449ec503ce7@...515...>
  <20180611075242.GF57262@...1296...>
  <bb55cab5-2523-b899-0ead-6f34886c4d2b@...515...>
@@ -10,11 +10,12 @@ References: <42bafab6-9e6f-56b5-2c44-b449ec503ce7@...515...>
  <DM5PR2101MB11120F3A5F61835EE906C481B0710@...2412...>
  <f7cffd19-6db7-a622-3268-fbb198531387@...515...>
  <DM5PR2101MB1112A510BA8E7FCE6FA1166FB0760@...2412...>
+ <20180626191511.GI57262@...1296...>
+In-Reply-To: <20180626191511.GI57262@...1296...>
+Content-Language: en-US
+Content-Type: multipart/signed; protocol="application/pgp-signature";
+ micalg=pgp-sha256     ; boundary="=-=uaQw4XFOnrlVVX=-="
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="mjW8NYtUK+J8SUBS"
-Content-Disposition: inline
-In-Reply-To: <DM5PR2101MB1112A510BA8E7FCE6FA1166FB0760@...2412...>
 Subject: Re: [Openvpn-devel] Regarding tap-windows6 driver signatures and
  driver distribution
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -25,59 +26,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jon Kunkee <jkunkee@...2393...>
-Cc: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>, Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>
+Cc: =?iso-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---mjW8NYtUK+J8SUBS
-Content-Type: text/plain; charset="us-ascii"
+--=-=uaQw4XFOnrlVVX=-=
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
+=20
 Hi,
 
-as a quick note - sorry, we won't make "June 27" as release date for
-the new tap driver.  The Windows HLK tests for Server 2016 are somewhat
-"demanding" from what I hear from Samuli (you need to have a larger=20
-setup than "just the machine with the driver", it actually wants to
-talk through the driver to "things" - which need to be provisioned,=20
-etc.).
+> as a quick note - sorry, we won't make "June 27" as release date for=20
+> the new tap driver.
 
-We tentatively plan for "one more week" now, which would be July 4th.
+> We tentatively plan for "one more week" now, which would be July 4th.=20
 
-Jon, do you have experience with the HLK test suite and could help
-explain some of the test failures ("what does the system expect to
-find here?") - what's remaining does not seem to be "driver" related
-but "things the tests expect to see in the network behind that driver"...
+No worries. Thanks for the update!
 
-gert
+>                  The Windows HLK tests for Server 2016 are somewhat=20
+> "demanding" from what I hear from Samuli (you need to have a larger=20
+> setup than "just the machine with the driver", it actually wants to=20
+> talk through the driver to "things" - which need to be provisioned,=20
+> etc.).=20
 
+> Jon, do you have experience with the HLK test suite and could help=20
+> explain some of the test failures ("what does the system expect to=20
+> find here?") - what's remaining does not seem to be "driver" related=20
+> but "things the tests expect to see in the network behind that driver"...=
+=20
+> gert=20
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+I have experience running the PCI portion of the HLK from Windows 8, so
+that gives me the basic idea. Those tests required two machines: the
+one with the device and the driver and the one with the HLK server.
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Network device testing is more complex because the test needs to control
+both the OS' end of the traffic and the external traffic. I found this:
 
---mjW8NYtUK+J8SUBS
-Content-Type: application/pgp-signature; name="signature.asc"
+https://docs.microsoft.com/en-us/windows-hardware/test/hlk/testref/lan-test=
+ing-prerequisites
+(apologies if Exchange or Outlook mangles that link... ):
+
+It appears that you need three devices: the HLK server, the device with
+the 'hardware' and the driver for testing ('Test Machine' with a 'message
+device'), and the external traffic source/sink ('Support Machine'). All
+three probably need a backchannel link to the HLK server, while the Test
+Machine and Support Machine do best with a dedicated link through the
+device whose driver is being tested.
+
+There should be a predefined set of individual tests that are required
+by the signature service, probably NDISTest 6.5.
+
+I'd be happy to review failure logs to help figure out what's going wrong.
+
+Cheers,
+Jon
+
+--=-=uaQw4XFOnrlVVX=-=
+Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJbMpC+AAoJEB2Cnv7KVigS/ZAL/0PxbAs9LLYRILNjgU2rDJyI
-STYSTDD3ce88kBRoonQ6ThFHF9KYoGCb2V48M8sbhMPxv8p26/D/RgbDz/bmYHlX
-icW3VSWpEbPRRRgXyJioxCkEMBN7oYJEnDoIqjO2bFeWbNZXu3vIjO8nUzDdMYDC
-blVy7HrJ56lDlWyWATyajbv+b7N/ykjc5mOX91Lo5lFgiARfR+snS6e9RZWMpcK0
-7T3lEh5N2XOCCXFI7wiMXxDx+NRs2ai9a7vzqUyrmS60iuVTcfoYYmi89ARuYRmE
-0O1/pLkyZAyW+8dPJmnj2mygWlx05VYSY8aQHHDsm5xb4tF7YTbrKOvjoYBY2Ecl
-3EpU9Fl2U2a99F5EG1Tt9N3sdc/J+mIrvbEa8dVOBo2pI3QEXga7nP0ZGslA8V6p
-CAWni2fqcmn2lIJ+aZoBZgvU26On5ti/fuUC83PLms7YzNRR0+cjRvGxjJvznATQ
-1Ti9B6dQXmisbPA4P19fkY3vN9VRyK9uUuEctwlKIA==
-=moVO
+iQIzBAEBCAAdFiEEQ6s+QnGone4JL4whoCohEJkRnX4FAlsyq/8ACgkQoCohEJkR
+nX43BRAAne/aJ0zpm8qZeT10S6N1NjbYfkXXjTXuza/eUnhL2G+f1bAzGZkoUfwm
+rvHdjdZRTNZUuYK1vf2Wz5FccCKqnNks14o3whEE5zOqfXejlS6Z/hJEvj8BtgfB
+PunbbVRvW7BcWx44SU07GWmaofUAb80SD3ItDWohf0AvNnIRCSOYnvSfh92G84Xp
+REWK4rKZZ7KoIQz2SwYkI0jG3QDqJ/AtS5L8Ti2WaVYEMMPqzp+/d2C90Az5R57e
+FVSR9+xHBOb5/b8lQOj+QErvo1fLKI7qja/KzvGySyFFvD6BVA/TfwDBA8gqH5Ha
+h2bWVKExKa9C7JMg+WjVocnTwtfiKZmarEzjcuOhdtTRvBh2qWWnTdvB708lRbM7
+huwRCLL/38HqhjNjM5ykK3nUjxo+fD28Iar3V8H4URT2JZ6zw903ffTzrfJZmg97
+o4IAc3cugahhEw7c6F6/fyMA812OJuhhgzLg+CishKNCLepD/MRO2LVe5Xie8n9k
+9Qf5cANnLfhSrX2KEIFkDoOhvZRnh8He3Ed1kFVupm1JzCwX6zJSuTQT0hRlr4Vd
+N13fa96RE8RCon4Hpwi4LXoUJNtStCcRVLEVrIZFvx3vokMIAe0cHyAa/9I81Qcr
+yfWeM0iCXNBt8WdR3gv6UDGg1/SniRzqvjkD76zpjelmsBBuxSQ=
+=HE1C
 -----END PGP SIGNATURE-----
 
---mjW8NYtUK+J8SUBS--
+
+--=-=uaQw4XFOnrlVVX=-=--
 
