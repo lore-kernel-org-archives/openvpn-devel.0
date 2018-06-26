@@ -1,14 +1,22 @@
-References: <20180605081407.6944-1-a@...2181...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <dcb79cab-df59-0259-8768-bfff92f923fa@...2181...>
-Date: Sun, 24 Jun 2018 17:03:15 +0800
+Date: Tue, 26 Jun 2018 21:15:11 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180626191511.GI57262@...1296...>
+References: <42bafab6-9e6f-56b5-2c44-b449ec503ce7@...515...>
+ <20180611075242.GF57262@...1296...>
+ <bb55cab5-2523-b899-0ead-6f34886c4d2b@...515...>
+ <DM5PR2101MB1112279487CBA7B6DE9A3ABDB0710@...2412...>
+ <20180618205610.GI57262@...1296...>
+ <20180618205916.GJ57262@...1296...>
+ <DM5PR2101MB11120F3A5F61835EE906C481B0710@...2412...>
+ <f7cffd19-6db7-a622-3268-fbb198531387@...515...>
+ <DM5PR2101MB1112A510BA8E7FCE6FA1166FB0760@...2412...>
 MIME-Version: 1.0
-In-Reply-To: <20180605081407.6944-1-a@...2181...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="sBJL17YZ4ZrQdp52wS1sMK80mMnoLsPqO"
-Subject: Re: [Openvpn-devel] [PATCH v3 1/2] crypto: always reload
- tls-auth/crypt key contexts
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="mjW8NYtUK+J8SUBS"
+Content-Disposition: inline
+In-Reply-To: <DM5PR2101MB1112A510BA8E7FCE6FA1166FB0760@...2412...>
+Subject: Re: [Openvpn-devel] Regarding tap-windows6 driver signatures and
+ driver distribution
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,85 +25,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Jon Kunkee <jkunkee@...2393...>
+Cc: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>, Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---sBJL17YZ4ZrQdp52wS1sMK80mMnoLsPqO
-Content-Type: multipart/mixed; boundary="FaYJKUk7pKRDCultCPmzr4bk5LWpvzz6Y";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <dcb79cab-df59-0259-8768-bfff92f923fa@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v3 1/2] crypto: always reload
- tls-auth/crypt key contexts
-References: <20180605081407.6944-1-a@...2181...>
-In-Reply-To: <20180605081407.6944-1-a@...2181...>
-
---FaYJKUk7pKRDCultCPmzr4bk5LWpvzz6Y
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
+--mjW8NYtUK+J8SUBS
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On 05/06/18 16:14, Antonio Quartulli wrote:
-> In preparation to having tls-auth/crypt keys per connection
-> block, it is important to ensure that such material is always
-> reloaded upon SIGUSR1, no matter if `persist-key` was specified
-> or not.
->=20
-> This is required because when moving from one remote to the
-> other the key may change and thus the key context needs to
-> be refreshed.
->=20
-> To ensure that the `persist-key` logic will still work
-> as expected, the tls-auth/crypt key is pre-loaded so that
-> the keyfile is not required at runtime.
->=20
-> Trac: #720
-> Cc: Steffan Karger <steffan@...1856...>
-> Signed-off-by: Antonio Quartulli <a@...2181...>
-> ---
->=20
-> v2:
-> - introduce this patch
-> v3:
-> - add key per-loading logic to this patch to avoid temporary features
+as a quick note - sorry, we won't make "June 27" as release date for
+the new tap driver.  The Windows HLK tests for Server 2016 are somewhat
+"demanding" from what I hear from Samuli (you need to have a larger=20
+setup than "just the machine with the driver", it actually wants to
+talk through the driver to "things" - which need to be provisioned,=20
+etc.).
 
-            ^^^^^ this should be "re-loading", sorry.
+We tentatively plan for "one more week" now, which would be July 4th.
 
->   breakages
+Jon, do you have experience with the HLK test suite and could help
+explain some of the test failures ("what does the system expect to
+find here?") - what's remaining does not seem to be "driver" related
+but "things the tests expect to see in the network behind that driver"...
 
-Cheers,
+gert
 
 
 --=20
-Antonio Quartulli
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
 
---FaYJKUk7pKRDCultCPmzr4bk5LWpvzz6Y--
-
---sBJL17YZ4ZrQdp52wS1sMK80mMnoLsPqO
+--mjW8NYtUK+J8SUBS
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlsvXlQACgkQB6U8WA7y
-zXSY9Q//SJOnYsQ5T1wkf/IGCivWh5bcte2hyY2NRxa3g2y3AckjZ/l/1PBMKfhg
-2qyvTGBbzyN3OGUIHh0EGq8RyuEa81/B7g6RcEKCMMMkonSfmx6MtLNi0U4JD6iO
-QGDklFpur5odBVQmXiwovhSh2kAKnpenIFZhfGk1qXQhNtLA1dawoaMW1u6q8vZg
-gYoN1qVG1+DvpIDlXbF8HYwAU9deqEcMb4MZg1dE+dHtmbu182HNzujEIzWD4j7d
-DztDus7CuakTzdIluVRu8BjIAlZBS7VwrgOSyf4n2X3vC4loKYa1cjpS3VuiF6ly
-qB2x0NGOyWy1biT1sKust/acDZuiqtzFpZvAj3TR6gJBPD42zGVWmCKNGoqjrBdD
-AkL6gTjpkMlwFho0Fj4UBP//UqVDnA1do4VQcQ8X2XLtEGuvbMyR0srWVMkiUjgW
-szxEWp0MZwTcdl+3gvKk9tRbP8KSNUwLfhROFvTensAmHtaexrAIi0/Mbb4oU/Gk
-JDd0JhIi5zBnuiDEQc35KtLyd8xM3k8s9u5qR8pWXmeLIOPKMhgGfyYoA1/E582n
-PYSmo+2+DI+nox4m++/sfTbfPnqRJs7LA+uY+Prggn81Km1Awywy6SAJ9oth5n65
-BBK9gveb3SNT2Feee9DIkj1T9TtujwkxI+WFuGDyQCSX+jq90sg=
-=gf0j
+iQGcBAEBAgAGBQJbMpC+AAoJEB2Cnv7KVigS/ZAL/0PxbAs9LLYRILNjgU2rDJyI
+STYSTDD3ce88kBRoonQ6ThFHF9KYoGCb2V48M8sbhMPxv8p26/D/RgbDz/bmYHlX
+icW3VSWpEbPRRRgXyJioxCkEMBN7oYJEnDoIqjO2bFeWbNZXu3vIjO8nUzDdMYDC
+blVy7HrJ56lDlWyWATyajbv+b7N/ykjc5mOX91Lo5lFgiARfR+snS6e9RZWMpcK0
+7T3lEh5N2XOCCXFI7wiMXxDx+NRs2ai9a7vzqUyrmS60iuVTcfoYYmi89ARuYRmE
+0O1/pLkyZAyW+8dPJmnj2mygWlx05VYSY8aQHHDsm5xb4tF7YTbrKOvjoYBY2Ecl
+3EpU9Fl2U2a99F5EG1Tt9N3sdc/J+mIrvbEa8dVOBo2pI3QEXga7nP0ZGslA8V6p
+CAWni2fqcmn2lIJ+aZoBZgvU26On5ti/fuUC83PLms7YzNRR0+cjRvGxjJvznATQ
+1Ti9B6dQXmisbPA4P19fkY3vN9VRyK9uUuEctwlKIA==
+=moVO
 -----END PGP SIGNATURE-----
 
---sBJL17YZ4ZrQdp52wS1sMK80mMnoLsPqO--
+--mjW8NYtUK+J8SUBS--
 
