@@ -1,26 +1,11 @@
-From: Jon Kunkee <jkunkee@...2393...>
-Date: Wed, 27 Jun 2018 19:05:17 +0000
-Message-ID: <DM5PR2101MB1112C9A57ACD44437ECCFBC7B0480@...2412...>
-References: <42bafab6-9e6f-56b5-2c44-b449ec503ce7@...515...>
- <20180611075242.GF57262@...1296...>
- <bb55cab5-2523-b899-0ead-6f34886c4d2b@...515...>
- <DM5PR2101MB1112279487CBA7B6DE9A3ABDB0710@...2412...>
- <20180618205610.GI57262@...1296...>
- <20180618205916.GJ57262@...1296...>
- <DM5PR2101MB11120F3A5F61835EE906C481B0710@...2412...>
- <f7cffd19-6db7-a622-3268-fbb198531387@...515...>
- <DM5PR2101MB1112A510BA8E7FCE6FA1166FB0760@...2412...>
- <20180626191511.GI57262@...1296...>
- <DM5PR2101MB1112FF96189404007097878FB0490@...2412...>
- <a412d044-3a0a-a312-8bc8-0e6114f1e56f@...515...>
- <6a6ad2e7-7390-3ad1-29ad-4c68eaca6e5a@...515...>
-In-Reply-To: <6a6ad2e7-7390-3ad1-29ad-4c68eaca6e5a@...515...>
+From: "Morris, Russell" <rmorris@...1315...>
+Date: Thu, 28 Jun 2018 00:54:23 +0000
+Message-ID: <DM5PR08MB36429068FCBF60610B6E85CFB94F0@...2422...>
 Content-Language: en-US
-Content-Type: multipart/signed; protocol="application/pgp-signature";
- micalg=pgp-sha256     ; boundary="=-=nldMlY6YfRYgkz=-="
+Content-Type: multipart/alternative;
+ boundary="_000_DM5PR08MB36429068FCBF60610B6E85CFB94F0DM5PR08MB3642namp_"
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Regarding tap-windows6 driver signatures and
- driver distribution
+Subject: [Openvpn-devel] OpenVPN GUI, and routes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -29,59 +14,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?iso-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>, Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---=-=nldMlY6YfRYgkz=-=
+--_000_DM5PR08MB36429068FCBF60610B6E85CFB94F0DM5PR08MB3642namp_
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: base64
 
->> Our test environment currently has the following nodes:=20
->>=20
->> - One combined HLK Studio/controller=20
->> - Four identical HLK client nodes=20
->> - OpenVPN test server=20
->>=20
->> The HLK nodes are all Windows Server 2016 as that is our primary target.=
-=20
->> The OpenVPN test server provides the HLK clients with an IPv6 address=20
->> and IPv6 gateway - this is required for almost all "Run" tests. All of=20
->> the nodes are in Amazon EC2. With the above setup 54 tests pass and 9 fa=
-il.=20
+SGksDQoNClRoaXMgbWF5IGJlIGJ5IGRlc2lnbiDigJMgaWYgc28ganVzdCBzYXkgdGhhdCBhbmQg
+SeKAmWxsIGdvIGF3YXkg4oCmIPCfmIkuIEJ1dCB0aGF0IHNhaWQg4oCTIGl0IHNlZW1zIEkgaGF2
+ZSB0byBydW4gdGhlIE9wZW5WUE4gR1VJIChtYW51YWxseSkgYXMgYW4gYWRtaW5pc3RyYXRvciwg
+Zm9yIHJvdXRlcyB0byBiZSBzZXQgLyBhZGRlZCBhcyBkaXJlY3RlZCBieSB0aGUgc2VydmVyLiBJ
+cyB0aGlzIGV4cGVjdGVkPyBVbmZvcnR1bmF0ZWx5IGl0IHdvbuKAmXQgZXZlbiBhbGxvdyB0aGUg
+Y2xpZW50IHRvIGNvbm5lY3QgaWYgdGhpcyBzdGVwIGZhaWxzLg0KDQpUaGFua3MhDQoNCuKApiBS
+dXNzZWxsDQoNCg==
 
-This sounds great.
+--_000_DM5PR08MB36429068FCBF60610B6E85CFB94F0DM5PR08MB3642namp_
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: base64
 
->> The "Support machine" you mentioned is still missing. I will try to set=
-=20
->> it up today and check how many of the currently failing tests start pass=
-ing.=20
+PGh0bWwgeG1sbnM6dj0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp2bWwiIHhtbG5zOm89InVy
+bjpzY2hlbWFzLW1pY3Jvc29mdC1jb206b2ZmaWNlOm9mZmljZSIgeG1sbnM6dz0idXJuOnNjaGVt
+YXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6d29yZCIgeG1sbnM6bT0iaHR0cDovL3NjaGVtYXMubWlj
+cm9zb2Z0LmNvbS9vZmZpY2UvMjAwNC8xMi9vbW1sIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcv
+VFIvUkVDLWh0bWw0MCI+DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIg
+Y29udGVudD0idGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij4NCjxtZXRhIG5hbWU9IkdlbmVyYXRv
+ciIgY29udGVudD0iTWljcm9zb2Z0IFdvcmQgMTUgKGZpbHRlcmVkIG1lZGl1bSkiPg0KPHN0eWxl
+PjwhLS0NCi8qIEZvbnQgRGVmaW5pdGlvbnMgKi8NCkBmb250LWZhY2UNCgl7Zm9udC1mYW1pbHk6
+IkNhbWJyaWEgTWF0aCI7DQoJcGFub3NlLTE6MiA0IDUgMyA1IDQgNiAzIDIgNDt9DQpAZm9udC1m
+YWNlDQoJe2ZvbnQtZmFtaWx5OkNhbGlicmk7DQoJcGFub3NlLTE6MiAxNSA1IDIgMiAyIDQgMyAy
+IDQ7fQ0KLyogU3R5bGUgRGVmaW5pdGlvbnMgKi8NCnAuTXNvTm9ybWFsLCBsaS5Nc29Ob3JtYWws
+IGRpdi5Nc29Ob3JtYWwNCgl7bWFyZ2luOjBpbjsNCgltYXJnaW4tYm90dG9tOi4wMDAxcHQ7DQoJ
+Zm9udC1zaXplOjExLjBwdDsNCglmb250LWZhbWlseToiQ2FsaWJyaSIsc2Fucy1zZXJpZjt9DQph
+OmxpbmssIHNwYW4uTXNvSHlwZXJsaW5rDQoJe21zby1zdHlsZS1wcmlvcml0eTo5OTsNCgljb2xv
+cjojMDU2M0MxOw0KCXRleHQtZGVjb3JhdGlvbjp1bmRlcmxpbmU7fQ0KYTp2aXNpdGVkLCBzcGFu
+Lk1zb0h5cGVybGlua0ZvbGxvd2VkDQoJe21zby1zdHlsZS1wcmlvcml0eTo5OTsNCgljb2xvcjoj
+OTU0RjcyOw0KCXRleHQtZGVjb3JhdGlvbjp1bmRlcmxpbmU7fQ0Kc3Bhbi5FbWFpbFN0eWxlMTcN
+Cgl7bXNvLXN0eWxlLXR5cGU6cGVyc29uYWwtY29tcG9zZTsNCglmb250LWZhbWlseToiQ2FsaWJy
+aSIsc2Fucy1zZXJpZjsNCgljb2xvcjp3aW5kb3d0ZXh0O30NCi5Nc29DaHBEZWZhdWx0DQoJe21z
+by1zdHlsZS10eXBlOmV4cG9ydC1vbmx5Ow0KCWZvbnQtZmFtaWx5OiJDYWxpYnJpIixzYW5zLXNl
+cmlmO30NCkBwYWdlIFdvcmRTZWN0aW9uMQ0KCXtzaXplOjguNWluIDExLjBpbjsNCgltYXJnaW46
+MS4waW4gMS4waW4gMS4waW4gMS4waW47fQ0KZGl2LldvcmRTZWN0aW9uMQ0KCXtwYWdlOldvcmRT
+ZWN0aW9uMTt9DQotLT48L3N0eWxlPjwhLS1baWYgZ3RlIG1zbyA5XT48eG1sPg0KPG86c2hhcGVk
+ZWZhdWx0cyB2OmV4dD0iZWRpdCIgc3BpZG1heD0iMTAyNiIgLz4NCjwveG1sPjwhW2VuZGlmXS0t
+PjwhLS1baWYgZ3RlIG1zbyA5XT48eG1sPg0KPG86c2hhcGVsYXlvdXQgdjpleHQ9ImVkaXQiPg0K
+PG86aWRtYXAgdjpleHQ9ImVkaXQiIGRhdGE9IjEiIC8+DQo8L286c2hhcGVsYXlvdXQ+PC94bWw+
+PCFbZW5kaWZdLS0+DQo8L2hlYWQ+DQo8Ym9keSBsYW5nPSJFTi1VUyIgbGluaz0iIzA1NjNDMSIg
+dmxpbms9IiM5NTRGNzIiPg0KPGRpdiBjbGFzcz0iV29yZFNlY3Rpb24xIj4NCjxwIGNsYXNzPSJN
+c29Ob3JtYWwiPkhpLDxvOnA+PC9vOnA+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PGJyPg0K
+VGhpcyBtYXkgYmUgYnkgZGVzaWduIOKAkyBpZiBzbyBqdXN0IHNheSB0aGF0IGFuZCBJ4oCZbGwg
+Z28gYXdheSDigKYgPHNwYW4gc3R5bGU9ImZvbnQtZmFtaWx5OiZxdW90O1NlZ29lIFVJIEVtb2pp
+JnF1b3Q7LHNhbnMtc2VyaWYiPg0KJiMxMjg1MjE7PC9zcGFuPi4gQnV0IHRoYXQgc2FpZCDigJMg
+aXQgc2VlbXMgSSBoYXZlIHRvIHJ1biB0aGUgT3BlblZQTiBHVUkgKG1hbnVhbGx5KSBhcyBhbiBh
+ZG1pbmlzdHJhdG9yLCBmb3Igcm91dGVzIHRvIGJlIHNldCAvIGFkZGVkIGFzIGRpcmVjdGVkIGJ5
+IHRoZSBzZXJ2ZXIuIElzIHRoaXMgZXhwZWN0ZWQ/IFVuZm9ydHVuYXRlbHkgaXQgd29u4oCZdCBl
+dmVuIGFsbG93IHRoZSBjbGllbnQgdG8gY29ubmVjdCBpZiB0aGlzIHN0ZXAgZmFpbHMuPG86cD48
+L286cD48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48bzpwPiZuYnNwOzwvbzpwPjwvcD4NCjxw
+IGNsYXNzPSJNc29Ob3JtYWwiPlRoYW5rcyE8bzpwPjwvbzpwPjwvcD4NCjxwIGNsYXNzPSJNc29O
+b3JtYWwiPjxvOnA+Jm5ic3A7PC9vOnA+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+4oCmIFJ1
+c3NlbGw8bzpwPjwvbzpwPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxvOnA+Jm5ic3A7PC9v
+OnA+PC9wPg0KPC9kaXY+DQo8L2JvZHk+DQo8L2h0bWw+DQo=
 
-If the failures look network-topology-related, this should be the missing l=
-ink.
-The "support machine" should be a second host on the VPN that the HLK serve=
-r can
-talk to for generating traffic.
+--_000_DM5PR08MB36429068FCBF60610B6E85CFB94F0DM5PR08MB3642namp_--
 
-If I get access to the HLK machine I'll be inspecting the detailed errors
-reported by the failing tests.
-
-> I looked at "LAN Testing Prerequisites" in HLK documentation and it not=20
-> entirely clear what is needed:=20
->
-> https://docs.microsoft.com/en-us/windows-hardware/test/hlk/testref/lan-te=
-sting-prerequisites=20
->
-> The document hints thats we would need to have at least one real=20
-> physical HLK client with 4 or 8 cores. It is also mentioned that Windows=
-=20
-> Server Core is needed as well.=20
->
-> Anyways, some of these things may not be applicable to us. I guess the=20
-> best we can do is go through the test failures individually and see what=
-=20
-> is happening.=20
-
-Guesswork sucks. :( Maybe I can help a little...
-
-Windows Server 2016 has two installation modes: Core and Desktop Experience.
---=-=nldMlY6YfRYgkz=-=--
