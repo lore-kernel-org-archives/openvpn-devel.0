@@ -1,11 +1,11 @@
-From: "Morris, Russell" <rmorris@...1315...>
-Date: Thu, 28 Jun 2018 00:54:23 +0000
-Message-ID: <DM5PR08MB36429068FCBF60610B6E85CFB94F0@...2422...>
-Content-Language: en-US
-Content-Type: multipart/alternative;
- boundary="_000_DM5PR08MB36429068FCBF60610B6E85CFB94F0DM5PR08MB3642namp_"
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN GUI, and routes
+In-Reply-To: <DM5PR08MB36429068FCBF60610B6E85CFB94F0@...2422...>
+References: <DM5PR08MB36429068FCBF60610B6E85CFB94F0@...2422...>
+From: Selva Nair <selva.nair@...277...>
+Date: Thu, 28 Jun 2018 00:22:40 -0400
+Message-ID: <CAKuzo_i+FAq7ZLnCtY471K8KVG62HVSftOdt1X9-FquuyP56eA@...278...>
+Content-Type: multipart/alternative; boundary="0000000000002cf58e056fac16f4"
+Subject: Re: [Openvpn-devel] OpenVPN GUI, and routes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,65 +14,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "Morris, Russell" <rmorris@...1315...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---_000_DM5PR08MB36429068FCBF60610B6E85CFB94F0DM5PR08MB3642namp_
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+--0000000000002cf58e056fac16f4
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-SGksDQoNClRoaXMgbWF5IGJlIGJ5IGRlc2lnbiDigJMgaWYgc28ganVzdCBzYXkgdGhhdCBhbmQg
-SeKAmWxsIGdvIGF3YXkg4oCmIPCfmIkuIEJ1dCB0aGF0IHNhaWQg4oCTIGl0IHNlZW1zIEkgaGF2
-ZSB0byBydW4gdGhlIE9wZW5WUE4gR1VJIChtYW51YWxseSkgYXMgYW4gYWRtaW5pc3RyYXRvciwg
-Zm9yIHJvdXRlcyB0byBiZSBzZXQgLyBhZGRlZCBhcyBkaXJlY3RlZCBieSB0aGUgc2VydmVyLiBJ
-cyB0aGlzIGV4cGVjdGVkPyBVbmZvcnR1bmF0ZWx5IGl0IHdvbuKAmXQgZXZlbiBhbGxvdyB0aGUg
-Y2xpZW50IHRvIGNvbm5lY3QgaWYgdGhpcyBzdGVwIGZhaWxzLg0KDQpUaGFua3MhDQoNCuKApiBS
-dXNzZWxsDQoNCg==
+Hi Russel,
 
---_000_DM5PR08MB36429068FCBF60610B6E85CFB94F0DM5PR08MB3642namp_
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: base64
+Long time !
 
-PGh0bWwgeG1sbnM6dj0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp2bWwiIHhtbG5zOm89InVy
-bjpzY2hlbWFzLW1pY3Jvc29mdC1jb206b2ZmaWNlOm9mZmljZSIgeG1sbnM6dz0idXJuOnNjaGVt
-YXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6d29yZCIgeG1sbnM6bT0iaHR0cDovL3NjaGVtYXMubWlj
-cm9zb2Z0LmNvbS9vZmZpY2UvMjAwNC8xMi9vbW1sIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcv
-VFIvUkVDLWh0bWw0MCI+DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIg
-Y29udGVudD0idGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij4NCjxtZXRhIG5hbWU9IkdlbmVyYXRv
-ciIgY29udGVudD0iTWljcm9zb2Z0IFdvcmQgMTUgKGZpbHRlcmVkIG1lZGl1bSkiPg0KPHN0eWxl
-PjwhLS0NCi8qIEZvbnQgRGVmaW5pdGlvbnMgKi8NCkBmb250LWZhY2UNCgl7Zm9udC1mYW1pbHk6
-IkNhbWJyaWEgTWF0aCI7DQoJcGFub3NlLTE6MiA0IDUgMyA1IDQgNiAzIDIgNDt9DQpAZm9udC1m
-YWNlDQoJe2ZvbnQtZmFtaWx5OkNhbGlicmk7DQoJcGFub3NlLTE6MiAxNSA1IDIgMiAyIDQgMyAy
-IDQ7fQ0KLyogU3R5bGUgRGVmaW5pdGlvbnMgKi8NCnAuTXNvTm9ybWFsLCBsaS5Nc29Ob3JtYWws
-IGRpdi5Nc29Ob3JtYWwNCgl7bWFyZ2luOjBpbjsNCgltYXJnaW4tYm90dG9tOi4wMDAxcHQ7DQoJ
-Zm9udC1zaXplOjExLjBwdDsNCglmb250LWZhbWlseToiQ2FsaWJyaSIsc2Fucy1zZXJpZjt9DQph
-OmxpbmssIHNwYW4uTXNvSHlwZXJsaW5rDQoJe21zby1zdHlsZS1wcmlvcml0eTo5OTsNCgljb2xv
-cjojMDU2M0MxOw0KCXRleHQtZGVjb3JhdGlvbjp1bmRlcmxpbmU7fQ0KYTp2aXNpdGVkLCBzcGFu
-Lk1zb0h5cGVybGlua0ZvbGxvd2VkDQoJe21zby1zdHlsZS1wcmlvcml0eTo5OTsNCgljb2xvcjoj
-OTU0RjcyOw0KCXRleHQtZGVjb3JhdGlvbjp1bmRlcmxpbmU7fQ0Kc3Bhbi5FbWFpbFN0eWxlMTcN
-Cgl7bXNvLXN0eWxlLXR5cGU6cGVyc29uYWwtY29tcG9zZTsNCglmb250LWZhbWlseToiQ2FsaWJy
-aSIsc2Fucy1zZXJpZjsNCgljb2xvcjp3aW5kb3d0ZXh0O30NCi5Nc29DaHBEZWZhdWx0DQoJe21z
-by1zdHlsZS10eXBlOmV4cG9ydC1vbmx5Ow0KCWZvbnQtZmFtaWx5OiJDYWxpYnJpIixzYW5zLXNl
-cmlmO30NCkBwYWdlIFdvcmRTZWN0aW9uMQ0KCXtzaXplOjguNWluIDExLjBpbjsNCgltYXJnaW46
-MS4waW4gMS4waW4gMS4waW4gMS4waW47fQ0KZGl2LldvcmRTZWN0aW9uMQ0KCXtwYWdlOldvcmRT
-ZWN0aW9uMTt9DQotLT48L3N0eWxlPjwhLS1baWYgZ3RlIG1zbyA5XT48eG1sPg0KPG86c2hhcGVk
-ZWZhdWx0cyB2OmV4dD0iZWRpdCIgc3BpZG1heD0iMTAyNiIgLz4NCjwveG1sPjwhW2VuZGlmXS0t
-PjwhLS1baWYgZ3RlIG1zbyA5XT48eG1sPg0KPG86c2hhcGVsYXlvdXQgdjpleHQ9ImVkaXQiPg0K
-PG86aWRtYXAgdjpleHQ9ImVkaXQiIGRhdGE9IjEiIC8+DQo8L286c2hhcGVsYXlvdXQ+PC94bWw+
-PCFbZW5kaWZdLS0+DQo8L2hlYWQ+DQo8Ym9keSBsYW5nPSJFTi1VUyIgbGluaz0iIzA1NjNDMSIg
-dmxpbms9IiM5NTRGNzIiPg0KPGRpdiBjbGFzcz0iV29yZFNlY3Rpb24xIj4NCjxwIGNsYXNzPSJN
-c29Ob3JtYWwiPkhpLDxvOnA+PC9vOnA+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PGJyPg0K
-VGhpcyBtYXkgYmUgYnkgZGVzaWduIOKAkyBpZiBzbyBqdXN0IHNheSB0aGF0IGFuZCBJ4oCZbGwg
-Z28gYXdheSDigKYgPHNwYW4gc3R5bGU9ImZvbnQtZmFtaWx5OiZxdW90O1NlZ29lIFVJIEVtb2pp
-JnF1b3Q7LHNhbnMtc2VyaWYiPg0KJiMxMjg1MjE7PC9zcGFuPi4gQnV0IHRoYXQgc2FpZCDigJMg
-aXQgc2VlbXMgSSBoYXZlIHRvIHJ1biB0aGUgT3BlblZQTiBHVUkgKG1hbnVhbGx5KSBhcyBhbiBh
-ZG1pbmlzdHJhdG9yLCBmb3Igcm91dGVzIHRvIGJlIHNldCAvIGFkZGVkIGFzIGRpcmVjdGVkIGJ5
-IHRoZSBzZXJ2ZXIuIElzIHRoaXMgZXhwZWN0ZWQ/IFVuZm9ydHVuYXRlbHkgaXQgd29u4oCZdCBl
-dmVuIGFsbG93IHRoZSBjbGllbnQgdG8gY29ubmVjdCBpZiB0aGlzIHN0ZXAgZmFpbHMuPG86cD48
-L286cD48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48bzpwPiZuYnNwOzwvbzpwPjwvcD4NCjxw
-IGNsYXNzPSJNc29Ob3JtYWwiPlRoYW5rcyE8bzpwPjwvbzpwPjwvcD4NCjxwIGNsYXNzPSJNc29O
-b3JtYWwiPjxvOnA+Jm5ic3A7PC9vOnA+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+4oCmIFJ1
-c3NlbGw8bzpwPjwvbzpwPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxvOnA+Jm5ic3A7PC9v
-OnA+PC9wPg0KPC9kaXY+DQo8L2JvZHk+DQo8L2h0bWw+DQo=
+On Wed, Jun 27, 2018 at 8:54 PM, Morris, Russell <rmorris@...1315...>
+wrote:
 
---_000_DM5PR08MB36429068FCBF60610B6E85CFB94F0DM5PR08MB3642namp_--
+> Hi,
+>
+>
+> This may be by design =E2=80=93 if so just say that and I=E2=80=99ll go a=
+way =E2=80=A6 =F0=9F=98=89. But
+> that said =E2=80=93 it seems I have to run the OpenVPN GUI (manually) as =
+an
+> administrator, for routes to be set / added as directed by the server. Is
+> this expected? Unfortunately it won=E2=80=99t even allow the client to co=
+nnect if
+> this step fails.
+>
+
+The GUI in 2.4.x release is meant to be started without admin privileges
+and should just work including setting of routes.
+
+It relies on the interactive service so the service should be running ---
+ but that's the default. And, when the GUI is started as a limited user it
+will warn if the service is stopped. So not sure, why its not working for
+you. Client logs may hold some clues.
+
+Cheers,
+
+Selva
+
+--0000000000002cf58e056fac16f4
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi Russel,<div><br></div><div>Long time !<br><div class=3D=
+"gmail_extra"><br><div class=3D"gmail_quote">On Wed, Jun 27, 2018 at 8:54 P=
+M, Morris, Russell <span dir=3D"ltr">&lt;<a href=3D"mailto:rmorris@...2424...=
+.." target=3D"_blank">rmorris@...1315...</a>&gt;</span> wrote:<br><blockquo=
+te class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc so=
+lid;padding-left:1ex">
+
+
+
+
+
+<div lang=3D"EN-US" link=3D"#0563C1" vlink=3D"#954F72">
+<div class=3D"m_3083935626055542899WordSection1">
+<p class=3D"MsoNormal">Hi,<u></u><u></u></p>
+<p class=3D"MsoNormal"><br>
+This may be by design =E2=80=93 if so just say that and I=E2=80=99ll go awa=
+y =E2=80=A6 <span style=3D"font-family:&quot;Segoe UI Emoji&quot;,sans-seri=
+f">
+=F0=9F=98=89</span>. But that said =E2=80=93 it seems I have to run the Ope=
+nVPN GUI (manually) as an administrator, for routes to be set / added as di=
+rected by the server. Is this expected? Unfortunately it won=E2=80=99t even=
+ allow the client to connect if this step fails.</p></div></div></blockquot=
+e><div><br></div><div>The GUI in 2.4.x release is meant to be started witho=
+ut admin privileges and should just work including setting of routes.</div>=
+<div><br></div><div>It relies on the interactive service so the service sho=
+uld be running --- =C2=A0but that&#39;s the default. And, when the GUI is s=
+tarted as a limited user it will warn if the service is stopped. So not sur=
+e, why its not working for you. Client logs may hold some clues.</div><div>=
+<br></div><div>Cheers,</div><div><br></div><div>Selva</div></div></div></di=
+v></div>
+
+--0000000000002cf58e056fac16f4--
 
