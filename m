@@ -1,10 +1,12 @@
-MIME-Version: 1.0
-In-Reply-To: <DM5PR08MB36429068FCBF60610B6E85CFB94F0@...2422...>
+Date: Thu, 28 Jun 2018 08:57:03 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180628065703.GS57262@...1296...>
 References: <DM5PR08MB36429068FCBF60610B6E85CFB94F0@...2422...>
-From: Selva Nair <selva.nair@...277...>
-Date: Thu, 28 Jun 2018 00:22:40 -0400
-Message-ID: <CAKuzo_i+FAq7ZLnCtY471K8KVG62HVSftOdt1X9-FquuyP56eA@...278...>
-Content-Type: multipart/alternative; boundary="0000000000002cf58e056fac16f4"
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="WR10eapE+9rkqyFM"
+Content-Disposition: inline
+In-Reply-To: <DM5PR08MB36429068FCBF60610B6E85CFB94F0@...2422...>
 Subject: Re: [Openvpn-devel] OpenVPN GUI, and routes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -17,76 +19,57 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: "Morris, Russell" <rmorris@...1315...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---0000000000002cf58e056fac16f4
-Content-Type: text/plain; charset="UTF-8"
+--WR10eapE+9rkqyFM
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Hi Russel,
+HI,
 
-Long time !
+On Thu, Jun 28, 2018 at 12:54:23AM +0000, Morris, Russell wrote:
+> This may be by design ??? if so just say that and I???ll go away ??? ????=
+. But that said ??? it seems I have to run the OpenVPN GUI (manually) as an=
+ administrator, for routes to be set / added as directed by the server. Is =
+this expected? Unfortunately it won???t even allow the client to connect if=
+ this step fails.
 
-On Wed, Jun 27, 2018 at 8:54 PM, Morris, Russell <rmorris@...1315...>
-wrote:
+With 2.4.x, the GUI is supposed to run with normal user privs.  Route
+handling is done by the "OpenVPN Interactive Service", which needs to
+be running.
 
-> Hi,
->
->
-> This may be by design =E2=80=93 if so just say that and I=E2=80=99ll go a=
-way =E2=80=A6 =F0=9F=98=89. But
-> that said =E2=80=93 it seems I have to run the OpenVPN GUI (manually) as =
-an
-> administrator, for routes to be set / added as directed by the server. Is
-> this expected? Unfortunately it won=E2=80=99t even allow the client to co=
-nnect if
-> this step fails.
->
+If you install the normal installer provided by us, everything will be=20
+set up so it just works.
 
-The GUI in 2.4.x release is meant to be started without admin privileges
-and should just work including setting of routes.
+If not, provide platform details, logs, etc.
 
-It relies on the interactive service so the service should be running ---
- but that's the default. And, when the GUI is started as a limited user it
-will warn if the service is stopped. So not sure, why its not working for
-you. Client logs may hold some clues.
+gert
 
-Cheers,
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-Selva
+Gert Doering - Munich, Germany                             gert@...1296...
 
---0000000000002cf58e056fac16f4
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+--WR10eapE+9rkqyFM
+Content-Type: application/pgp-signature; name="signature.asc"
 
-<div dir=3D"ltr">Hi Russel,<div><br></div><div>Long time !<br><div class=3D=
-"gmail_extra"><br><div class=3D"gmail_quote">On Wed, Jun 27, 2018 at 8:54 P=
-M, Morris, Russell <span dir=3D"ltr">&lt;<a href=3D"mailto:rmorris@...2424...=
-.." target=3D"_blank">rmorris@...1315...</a>&gt;</span> wrote:<br><blockquo=
-te class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc so=
-lid;padding-left:1ex">
+-----BEGIN PGP SIGNATURE-----
 
+iQGcBAEBAgAGBQJbNIa+AAoJEB2Cnv7KVigSMo8MAI1euEu+6asVQ8XvOCVMwBAw
+LuY4T1kQg1n/RdQzTBCSVG+79Sst6+XHfn578vB0R3aT6nvpJHvQq1VehBG7sruR
+gAmGA/msh3bKo8nDkr4F6n20Nf9trREETF3dCFCnXy2Xy+VNzbTTZb7rjooxCykD
+qooMOlk5hxPITDW3pCEdSlL6SJQX570H76WRwRkPimgYrVkkGgfMaZRMS441vL4u
+zHwqM9YshVrf1kD1yu1ejbkX3En7MJOxhzUinJkeQt/x9NL/KbzYeC0RlXnnXmy2
+exe0BWMVD3IaBHcFdgppEpJa7jUUKJz6xr7rG/nkHvl6kZ5RJOe7/1u4/kkSb5vq
+rzeTFa8FPG/WKdIBk16ZW4mjXBWZs/Jkshy422MRaE+ucjgIud5KB0gPER4e7X/f
+Uh7wH1hMcu5HckoP0bt6rpAY14EekJhhZRSsLTI6cohf3++B6UOKaKRMjRNwtc5R
+aI+QI87xEgkrv5QsbRd++sVPLBXmV4RU5d1DJhBtCA==
+=Dabi
+-----END PGP SIGNATURE-----
 
-
-
-
-<div lang=3D"EN-US" link=3D"#0563C1" vlink=3D"#954F72">
-<div class=3D"m_3083935626055542899WordSection1">
-<p class=3D"MsoNormal">Hi,<u></u><u></u></p>
-<p class=3D"MsoNormal"><br>
-This may be by design =E2=80=93 if so just say that and I=E2=80=99ll go awa=
-y =E2=80=A6 <span style=3D"font-family:&quot;Segoe UI Emoji&quot;,sans-seri=
-f">
-=F0=9F=98=89</span>. But that said =E2=80=93 it seems I have to run the Ope=
-nVPN GUI (manually) as an administrator, for routes to be set / added as di=
-rected by the server. Is this expected? Unfortunately it won=E2=80=99t even=
- allow the client to connect if this step fails.</p></div></div></blockquot=
-e><div><br></div><div>The GUI in 2.4.x release is meant to be started witho=
-ut admin privileges and should just work including setting of routes.</div>=
-<div><br></div><div>It relies on the interactive service so the service sho=
-uld be running --- =C2=A0but that&#39;s the default. And, when the GUI is s=
-tarted as a limited user it will warn if the service is stopped. So not sur=
-e, why its not working for you. Client logs may hold some clues.</div><div>=
-<br></div><div>Cheers,</div><div><br></div><div>Selva</div></div></div></di=
-v></div>
-
---0000000000002cf58e056fac16f4--
+--WR10eapE+9rkqyFM--
 
