@@ -1,10 +1,15 @@
-Date: Fri, 29 Jun 2018 14:23:28 +0200 (CEST)
-Message-Id: <201806291223.w5TCNSE2009408@...2054...>
+Date: Fri, 29 Jun 2018 14:39:45 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20171126150401.28565-1-steffan@...1856...>
-References: <20171126150401.28565-1-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: openssl: don't use deprecated
- SSLEAY/SSLeay symbols
+Message-ID: <20180629123945.GT57262@...1296...>
+References: <20180622014905.21558-1-rosenp@...277...>
+ <20180622021501.23037-1-rosenp@...277...>
+ <809950e8-c3e7-55e6-4347-9093d5108fd8@...1856...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="kEK3Ung5UvFEvNvR"
+Content-Disposition: inline
+In-Reply-To: <809950e8-c3e7-55e6-4347-9093d5108fd8@...1856...>
+Subject: Re: [Openvpn-devel] [PATCHv2] openvpn: Add missing OpenSSL includes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,38 +18,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+--kEK3Ung5UvFEvNvR
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-"because it makes sense".  
+Hi,
 
-Tested on FreeBSD/1.0.1u, Linux/1.0.2o, FreeBSD/1.1.0h.
-("testing" = "it compiles, and openvpn --version prints the right 
-version", so it's not worse than before :-) - a test compilation with 
--DOPENSSL_API_COMPAT=0x10100000L still explodes because 2/2 is missing)
+On Fri, Jun 29, 2018 at 01:48:54PM +0200, Steffan Karger wrote:
+> Thanks for the patch.  I sent similar patches half a year ago, which are
+> awaiting review:
 
-Your patch has been applied to the master branch.
+Thanks for pointing that out.  I feel sufficiently poked.
 
-commit 17a476fd5c8cc49f1d103a50199e87ede76b1b67
-Author: Steffan Karger
-Date:   Sun Nov 26 16:04:00 2017 +0100
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-     openssl: don't use deprecated SSLEAY/SSLeay symbols
+Gert Doering - Munich, Germany                             gert@...1296...
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20171126150401.28565-1-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15934.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+--kEK3Ung5UvFEvNvR
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
---
-kind regards,
+iQGcBAEBAgAGBQJbNiiQAAoJEB2Cnv7KVigSNJ0L/RsTNSI3og8aufF6b190CYQ2
+QMV88WsGy3EYfN8UvfdeSECe1SF20UFnY93pEIaVn+VKKRCIoPRP/Bpv//SH+5Wx
+84ZzTaDy6GzUYfch5YvpDAgRJvJhuT/SV6AxyAglBTyJrj/+53uZeGr2UehXCu20
+tD+T4xWxf6YuQQynMCLmcXNWdaG2uf56SBgpAgD8lMZhtMLIA+BAZ6s4r9rLsV8v
+aBefPsbtWhmthuaeGZtISn0B3xOuOpki1i7snY4R23jps3aB7An/vzVQKcVcF0qI
+LhxXnSukM7Sr/S+ZlUKLeVN3sryCofpz6rhL07vOoHo05KvyXfLU8/bxP1oa0S7E
+AOrR7iZdDGBsDwpQN+ZjYGv5kXGTTVxNy84nZJEEIFZuEXFjjxrUGPKfIuUgCYj1
+uvGrGKltX0OOZBRhI9hTNRus1ICOXHy+DSKLTZPYaFJplRpVF9+5tv3kYCnSbFfL
+C+FEF9uPviNUVmapMUdA2MqD2+gUVCWtgQfa40rksQ==
+=I6fa
+-----END PGP SIGNATURE-----
 
-Gert Doering
-
+--kEK3Ung5UvFEvNvR--
 
