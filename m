@@ -1,10 +1,12 @@
 From: "Morris, Russell" <rmorris@...1315...>
-Date: Thu, 28 Jun 2018 16:50:41 +0000
-Message-ID: <DM5PR08MB36420E57A6907302D18A515FB94F0@...2422...>
+Date: Fri, 29 Jun 2018 01:56:25 +0000
+Message-ID: <DM5PR08MB3642C3F6067B680D5BE439A8B94E0@...2422...>
 References: <DM5PR08MB36429068FCBF60610B6E85CFB94F0@...2422...>
  <20180628065703.GS57262@...1296...>
  <046f2ff7-2340-abd0-7f3a-6a31455b2fc3@...515...>
-In-Reply-To: <046f2ff7-2340-abd0-7f3a-6a31455b2fc3@...515...>
+ <DM5PR08MB36420E57A6907302D18A515FB94F0@...2422...>
+ <20180628165617.GZ57262@...1296...>
+In-Reply-To: <20180628165617.GZ57262@...1296...>
 Content-Language: en-US
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] OpenVPN GUI, and routes
@@ -16,61 +18,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: =?utf-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>, Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: Gert Doering <gert@...1296...>
+Cc: =?iso-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-SGksDQoNClRoYW5rcyBmb3IgdGhlIHRob3VnaHRzIC0gYW5kIHRoZXkgZG8gYWxpZ24gd2l0aCBt
-eSB1bmRlcnN0YW5kaW5nIGFzIHdlbGwuIEJ1dCBpdCBpcyBmYWlsaW5nIHVuZm9ydHVuYXRlbHkg
-LSBvbmx5IGlmIHRoZSBHVUkgaXMgcnVuIGFzIG5vbi1hZG1pbi4gTG9nIGZvciB0aGlzIGNhc2Ug
-aXMgYmVsb3csIGZyb20gV2luZG93cyBvZiBjb3Vyc2UgKGFzIGl0IHNob3dzKS4gU3VnZ2VzdGlv
-bnM/DQoNClRodSBKdW4gMjggMTE6NDY6MzUgMjAxOCBUQVAtV0lOMzIgZGV2aWNlIFtPcGVuVlBO
-XSBvcGVuZWQ6IFxcLlxHbG9iYWxcezdEMDA4QThGLUJFQzMtNDE5Ni05Q0NFLUM4OTcwRkI1NTk2
-Mn0udGFwDQpUaHUgSnVuIDI4IDExOjQ2OjM2IDIwMTggTkVUU0g6IEM6XFdJTkRPV1Ncc3lzdGVt
-MzJcbmV0c2guZXhlIGludGVyZmFjZSBpcCBzZXQgYWRkcmVzcyBPcGVuVlBOIGRoY3ANClRodSBK
-dW4gMjggMTE6NDY6MzYgMjAxOCBFUlJPUjogbmV0c2ggY29tbWFuZCBmYWlsZWQ6IHJldHVybmVk
-IGVycm9yIGNvZGUgMQ0KVGh1IEp1biAyOCAxMTo0Njo0MSAyMDE4IE5FVFNIOiBDOlxXSU5ET1dT
-XHN5c3RlbTMyXG5ldHNoLmV4ZSBpbnRlcmZhY2UgaXAgc2V0IGFkZHJlc3MgT3BlblZQTiBkaGNw
-DQpUaHUgSnVuIDI4IDExOjQ2OjQxIDIwMTggRVJST1I6IG5ldHNoIGNvbW1hbmQgZmFpbGVkOiBy
-ZXR1cm5lZCBlcnJvciBjb2RlIDENClRodSBKdW4gMjggMTE6NDY6NDYgMjAxOCBORVRTSDogQzpc
-V0lORE9XU1xzeXN0ZW0zMlxuZXRzaC5leGUgaW50ZXJmYWNlIGlwIHNldCBhZGRyZXNzIE9wZW5W
-UE4gZGhjcA0KVGh1IEp1biAyOCAxMTo0Njo0NyAyMDE4IEVSUk9SOiBuZXRzaCBjb21tYW5kIGZh
-aWxlZDogcmV0dXJuZWQgZXJyb3IgY29kZSAxDQpUaHUgSnVuIDI4IDExOjQ2OjUyIDIwMTggTkVU
-U0g6IEM6XFdJTkRPV1Ncc3lzdGVtMzJcbmV0c2guZXhlIGludGVyZmFjZSBpcCBzZXQgYWRkcmVz
-cyBPcGVuVlBOIGRoY3ANClRodSBKdW4gMjggMTE6NDY6NTIgMjAxOCBFUlJPUjogbmV0c2ggY29t
-bWFuZCBmYWlsZWQ6IHJldHVybmVkIGVycm9yIGNvZGUgMQ0KVGh1IEp1biAyOCAxMTo0Njo1NiAy
-MDE4IE5FVFNIOiBjb21tYW5kIGZhaWxlZA0KVGh1IEp1biAyOCAxMTo0Njo1NiAyMDE4IEV4aXRp
-bmcgZHVlIHRvIGZhdGFsIGVycm9yDQoNCkFuZCBJIGRpZCBjb25maXJtLCBhcyB5b3Ugbm90ZSwN
-Cg0KUFMgQzpcPiBHZXQtU2VydmljZSBPcGVuVlBOU2VydmljZUludGVyYWN0aXZlDQoNClN0YXR1
-cyAgIE5hbWUgICAgICAgICAgICAgICBEaXNwbGF5TmFtZQ0KLS0tLS0tICAgLS0tLSAgICAgICAg
-ICAgICAgIC0tLS0tLS0tLS0tDQpSdW5uaW5nICBPcGVuVlBOU2VydmljZUkuLi4gT3BlblZQTiBJ
-bnRlcmFjdGl2ZSBTZXJ2aWNlDQoNClRoYW5rcyBhZ2FpbiwNCi4uLiBSdXNzZWxsDQoNCg0KUFMs
-IGdvb2QgdG8gaGVhciBmcm9tIHlvdSBhZ2FpbiBTZWx2YS4gQW5kIHllcywgaXQgaGFzIGJlZW4g
-YSB3aGlsZSAuLi4g8J+Yii4gSG9wZSBhbGwgaXMgd2VsbCENCg0KDQotLS0tLU9yaWdpbmFsIE1l
-c3NhZ2UtLS0tLQ0KRnJvbTogU2FtdWxpIFNlcHDDpG5lbiBbbWFpbHRvOnNhbXVsaUAuLi41MTUu
-Li5dIA0KU2VudDogVGh1cnNkYXksIEp1bmUgMjgsIDIwMTggMjo1MyBBTQ0KVG86IEdlcnQgRG9l
-cmluZyA8Z2VydEAuLi4xMjk2Li4uPjsgTW9ycmlzLCBSdXNzZWxsIDxybW9ycmlzQC4uLjEzMTUu
-Li4+DQpDYzogb3BlbnZwbi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQNClN1YmplY3Q6IFJl
-OiBbT3BlbnZwbi1kZXZlbF0gT3BlblZQTiBHVUksIGFuZCByb3V0ZXMNCg0KSWwgMjgvMDYvMjAx
-OCAwOTo1NywgR2VydCBEb2VyaW5nIGhhIHNjcml0dG86DQo+IEhJLA0KPiANCj4gT24gVGh1LCBK
-dW4gMjgsIDIwMTggYXQgMTI6NTQ6MjNBTSArMDAwMCwgTW9ycmlzLCBSdXNzZWxsIHdyb3RlOg0K
-Pj4gVGhpcyBtYXkgYmUgYnkgZGVzaWduID8/PyBpZiBzbyBqdXN0IHNheSB0aGF0IGFuZCBJPz8/
-bGwgZ28gYXdheSA/Pz8gPz8/Py4gQnV0IHRoYXQgc2FpZCA/Pz8gaXQgc2VlbXMgSSBoYXZlIHRv
-IHJ1biB0aGUgT3BlblZQTiBHVUkgKG1hbnVhbGx5KSBhcyBhbiBhZG1pbmlzdHJhdG9yLCBmb3Ig
-cm91dGVzIHRvIGJlIHNldCAvIGFkZGVkIGFzIGRpcmVjdGVkIGJ5IHRoZSBzZXJ2ZXIuIElzIHRo
-aXMgZXhwZWN0ZWQ/IFVuZm9ydHVuYXRlbHkgaXQgd29uPz8/dCBldmVuIGFsbG93IHRoZSBjbGll
-bnQgdG8gY29ubmVjdCBpZiB0aGlzIHN0ZXAgZmFpbHMuDQo+IA0KPiBXaXRoIDIuNC54LCB0aGUg
-R1VJIGlzIHN1cHBvc2VkIHRvIHJ1biB3aXRoIG5vcm1hbCB1c2VyIHByaXZzLiAgUm91dGUgDQo+
-IGhhbmRsaW5nIGlzIGRvbmUgYnkgdGhlICJPcGVuVlBOIEludGVyYWN0aXZlIFNlcnZpY2UiLCB3
-aGljaCBuZWVkcyB0byANCj4gYmUgcnVubmluZy4NCj4gDQo+IElmIHlvdSBpbnN0YWxsIHRoZSBu
-b3JtYWwgaW5zdGFsbGVyIHByb3ZpZGVkIGJ5IHVzLCBldmVyeXRoaW5nIHdpbGwgYmUgDQo+IHNl
-dCB1cCBzbyBpdCBqdXN0IHdvcmtzLg0KPiANCj4gSWYgbm90LCBwcm92aWRlIHBsYXRmb3JtIGRl
-dGFpbHMsIGxvZ3MsIGV0Yy4NCj4gDQoNClRoZSBXaW5kb3dzIHNlcnZpY2UgbmFtZSBpcyAiT3Bl
-blZQTlNlcnZpY2VJbnRlcmFjdGl2ZSIuIFlvdSBjYW4gY2hlY2sgaXRzIHN0YXR1cyBmcm9tIFBv
-d2Vyc2hlbGw6DQoNCiAgR2V0LVNlcnZpY2UgT3BlblZQTlNlcnZpY2VJbnRlcmFjdGl2ZQ0KDQpU
-byBzdGFydCBpdDoNCg0KICBTdGFydC1TZXJ2aWNlIE9wZW5WUE5TZXJ2aWNlSW50ZXJhY3RpdmUN
-Cg0KVGhhdCBzYWlkLCBpdCBfc2hvdWxkXyBiZSBydW5uaW5nIGFscmVhZHkgaWYgeW91IGluc3Rh
-bGxlZCBPcGVuVlBOIDIuNC54IHVzaW5nIG91ciBzdGFuZGFyZCBpbnN0YWxsZXJzLg0KDQoNCi0t
-DQpTYW11bGkgU2VwcMOkbmVuDQpDb21tdW5pdHkgTWFuYWdlcg0KT3BlblZQTiBUZWNobm9sb2dp
-ZXMsIEluYw0KDQppcmMgZnJlZW5vZGUgbmV0OiBtYXR0b2NrDQoNCg==
+Good find - thanks! Yep, that was it. And it had me very confused how that =
+happened (static settings), then a bit of sleuthing here - Tether changed i=
+t, as part of tethering my Android phone (tried it again, found it in the l=
+ogs).
+
+Much appreciated! And just a though, but - perhaps something to have the se=
+rvice be able to do in the future?
+
+Thanks again,
+... Russell
+
+
+
+-----Original Message-----
+From: Gert Doering <gert@...1296...>=20
+Sent: Thursday, June 28, 2018 11:56 AM
+To: Morris, Russell <rmorris@...1315...>
+Cc: Samuli Sepp=E4nen <samuli@...515...>; Gert Doering <gert@...1296...>; o=
+penvpn-devel@lists.sourceforge.net
+Subject: Re: [Openvpn-devel] OpenVPN GUI, and routes
+
+Hi,
+
+On Thu, Jun 28, 2018 at 04:50:41PM +0000, Morris, Russell wrote:
+> Thanks for the thoughts - and they do align with my understanding as well=
+. But it is failing unfortunately - only if the GUI is run as non-admin. Lo=
+g for this case is below, from Windows of course (as it shows). Suggestions?
+>=20
+> Thu Jun 28 11:46:35 2018 TAP-WIN32 device [OpenVPN] opened:=20
+> \\.\Global\{7D008A8F-BEC3-4196-9CCE-C8970FB55962}.tap
+> Thu Jun 28 11:46:36 2018 NETSH: C:\WINDOWS\system32\netsh.exe=20
+> interface ip set address OpenVPN dhcp
+
+This looks like the tap interface has been (manually) set to "static IP add=
+ress" - and it seems we can't change it back using the service yet.
+
+Please change the config of the TAP adapter to "DHCP" and re-try.
+
+gert
+--
+"If was one thing all people took for granted, was conviction that if you  =
+feed honest figures into a computer, honest figures come out. Never doubted=
+  it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
