@@ -1,16 +1,12 @@
-From: Jon Kunkee <jkunkee@...2393...>
-Date: Tue, 3 Jul 2018 17:25:01 +0000
-Message-ID: <DM5PR2101MB111268137D3D6A37478B64CFB0420@...2412...>
-References: <99D61A626FDA8A4B90A270669121BE1089628FC9@...2294...>
- <DM5PR2101MB11127F120677A779CB43A8D4B07D0@...2412...>
- <431d0dae-f48c-a550-a2fc-5e9ec78206e7@...515...>
- <CAFHpkQF8aUA+nbcj-LY5VugUP5Oq8iBsnKWW25CxsgEW05hnpw@...278...>
- <DM5PR2101MB11129E907CFB64C2ABC562DFB07C0@...2412...>
- <99D61A626FDA8A4B90A270669121BE108968C2C8@...2294...>
-In-Reply-To: <99D61A626FDA8A4B90A270669121BE108968C2C8@...2294...>
-Content-Language: en-US
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <cea658fa-201f-59d3-d66b-93e35f4f2ee2@...515...>
+Date: Tue, 3 Jul 2018 20:29:57 +0300
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] tap-windows6 and AppVeyor
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="fFBTC7nHGSe6GF77Yk8DM6a21UGrr1Fg5"
+Subject: [Openvpn-devel] Topics for the community meeting (Wed,
+ 13th June 2018)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,47 +15,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Simon Rozman <simon@...2293...>, =?utf-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, =?utf-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-SSBjaG9zZSB0aGUgRVdESyB0aGlua2luZyBpdCB3b3VsZCBhY3R1YWxseSBiZSBlYXNpZXIgZm9y
-IENJIGJlY2F1c2UgaXQgd2FzIHNvIHNpbWlsYXIgdG8gdGhlIFdpbjcgRERLLCBidXQgZnJvbSB3
-aGF0IHlvdSBhcmUgc2F5aW5nIEkgd2FzIHdyb25nIChhdCBsZWFzdCBmb3IgQXBwVmV5b3IpLiBB
-cmUgeW91IGludGVyZXN0ZWQgY29udmVydGluZyBidWlsZHRhcC5weSB0byB1c2UgVlMyMDE3K1dE
-SyBpbnN0ZWFkIG9mIHRoZSBFV0RLPyBJJ20gaGFwcHkgdG8gZG8gaXQsIGJ1dCBJIHdvbid0IGdl
-dCB0byBpdCB1bnRpbCBuZXh0IHdlZWsgYXQgdGhlIGVhcmxpZXN0Li4uDQoNCi0tLS0tT3JpZ2lu
-YWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBTaW1vbiBSb3ptYW4gPHNpbW9uQC4uLjIyOTMuLi4+IA0K
-U2VudDogVHVlc2RheSwgSnVseSAzLCAyMDE4IDY6NDUgQU0NClRvOiBKb24gS3Vua2VlIDxqa3Vu
-a2VlQC4uLjIzOTMuLi4+OyDQmNC70YzRjyDQqNC40L/QuNGG0LjQvSA8Y2hpcGl0c2luZUAuLi4y
-NzcuLi4+OyBTYW11bGkgU2VwcMOkbmVuIDxzYW11bGlALi4uNTE1Li4uPg0KQ2M6IG9wZW52cG4t
-ZGV2ZWwgPG9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2UubmV0Pg0KU3ViamVjdDogUkU6
-IHRhcC13aW5kb3dzNiBhbmQgQXBwVmV5b3INCg0KSGksDQoNCkkgd2FzIGRpc21pc3NlZCBieSB0
-aGUgQXBwVmV5b3IgYWJvdXQgYW4gaW1hZ2UgcHJlaW5zdGFsbGVkIHdpdGggRVdESyByZXF1ZXN0
-LiBUaGV5IGV4cGxhaW5lZCBJIGNhbiB1c2UgdGhlaXIgYnVpbGQgY2FjaGUgdG8gbWFpbnRhaW4g
-YSBsb2NhbCBFV0RLIGNvcHkuDQpVbmZvcnR1bmF0ZWx5LCB0aGUgYnVpbGQgY2FjaGUgaXMgYWNj
-b3VudC1zcGVjaWZpYywgbWVhbmluZyBldmVyeSB1c2VyIHRyeWluZyB0byBydW4gaXRzIG93biBm
-b3JrIChpbmNsdWRpbmcgT3BlblZQTiBmb3IgdXBzdHJlYW0pIHdpbGwgcmVxdWlyZSBBcHBWZXlv
-ciBQcmVtaXVtIHBsYW4uIEVXREsgd29uJ3QgZml0IGludG8gMUdCIGJ1aWxkIGNhY2hlIGxpbWl0
-IHdpdGggRnJlZS9CYXNpYyBwbGFuLg0KDQpTbywgd2Ugc3RpbGwgaGF2ZSBKb24ncyBhbHRlcm5h
-dGl2ZSBwcm9wb3NhbCB0byBzdXBwb3J0IEVXREsgKmFuZCogVlMyMDE1K1dESyBidWlsZGluZyBp
-biBidWlsZHRhcC5weS4NClRoZSBkb3duc2lkZSB0byB0aGlzIGFwcHJvYWNoIGlzLCB3ZSBhcmUg
-dXNpbmcgc2xpZ2h0bHkgZGlmZmVyZW50IGJ1aWxkIGVudmlyb25tZW50IGZvciBDSS4NCiANCkJl
-c3QgcmVnYXJkcywNClNpbW9uDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJv
-bTogSm9uIEt1bmtlZSA8amt1bmtlZUAuLi4yMzkzLi4uPg0KPiBTZW50OiBGcmlkYXksIEp1bmUg
-MTUsIDIwMTggNzo1OCBQTQ0KPiBUbzog0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0gPGNoaXBpdHNp
-bmVALi4uMjc3Li4uPjsgU2FtdWxpIFNlcHDDpG5lbg0KPiA8c2FtdWxpQC4uLjUxNS4uLj4NCj4g
-Q2M6IFNpbW9uIFJvem1hbiA8c2ltb25ALi4uMjI5My4uLj47IG9wZW52cG4tZGV2ZWwgPG9wZW52
-cG4tDQo+IGRldmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldD4NCj4gU3ViamVjdDogUkU6IHRhcC13
-aW5kb3dzNiBhbmQgQXBwVmV5b3INCj4gDQo+IEhpLA0KPiANCj4gSSBsaWtlIHRoZSBpZGVhIG9m
-IGFza2luZyBBcHBWZXlvciBpZiB0aGV5IGNvdWxkIGluY2x1ZGUgdGhlIEVXREsgaW4gb25lIG9m
-DQo+IHRoZWlyIGltYWdlcy4gSXQgaXMgYSBzdGFuZGFsb25lIHRvb2wsIHNvIFZpc3VhbCBTdHVk
-aW8gaXMgbm90IG5lZWRlZC4NCj4gDQo+IFNhZGx5IEkgZG9uJ3Qgc2VlIGEgQ2hvY29sYXRleSBw
-YWNrYWdlIGZvciB0aGUgRVdESy4gVGhhdCB3b3VsZCBoYXZlIGJlZW4NCj4gY29udmVuaWVudC4N
-Cj4gDQo+IFRoZSBBcHBWZXlvciBkb2NzWzFdIHNheSB0aGF0IHRoZSBWaXN1YWwgU3R1ZGlvIDIw
-MTcgaW1hZ2UgaW4gQXBwVmV5b3INCj4gYWxyZWFkeSBoYXMgdGhlIFdpbmRvd3MgRHJpdmVyIEtp
-dCAoV0RLKSBpbnN0YWxsZWQuIEJ1aWxkdGFwLnB5IHdvdWxkIG5lZWQNCj4gYSBjb3VwbGUgb2Yg
-Y2hhbmdlcyB0byBjb25zdW1lIHRoZSBXREsgaW5zdGVhZCBvZiB0aGUgRVdESywgYnV0IGl0IGlz
-IGFuDQo+IG9wdGlvbi4NCj4gDQo+IFRoYW5rcywNCj4gSm9uDQo+IA0KPiBbMV0gaHR0cHM6Ly93
-d3cuYXBwdmV5b3IuY29tL2RvY3MvYnVpbGQtZW52aXJvbm1lbnQvDQo=
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--fFBTC7nHGSe6GF77Yk8DM6a21UGrr1Fg5
+Content-Type: multipart/mixed; boundary="y4QbQ8UBjbEjH2a5cXRP4C3Cl8GBcVsAo";
+ protected-headers="v1"
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <cea658fa-201f-59d3-d66b-93e35f4f2ee2@...515...>
+Subject: Topics for the community meeting (Wed, 13th June 2018)
+
+--y4QbQ8UBjbEjH2a5cXRP4C3Cl8GBcVsAo
+Content-Language: en-US
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+We're going to have an IRC meeting starting at 11:30 CET
+(9:30 UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have
+to be logged in to Freenode to join the channel.
+
+Current topic list along with basic information is here:
+
+<https://community.openvpn.net/openvpn/wiki/Topics-2018-06-13>
+
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
+
+In case you can't attend the meeting, please feel free to make comments
+on the topics by responding to this email or to the summary email sent
+after the meeting. Whenever possible, we'll also respond to existing,
+related email threads.
+
+--
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+
+
+
+--y4QbQ8UBjbEjH2a5cXRP4C3Cl8GBcVsAo--
+
+--fFBTC7nHGSe6GF77Yk8DM6a21UGrr1Fg5
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAls7spUACgkQKVhNn0CG
+RXi8XQgAir2gIDv3Ww4zLwf2oqmwygVBXWKLYup/7dQ+U0lfRoN0RSXLxdo+0Hbq
+zGdDeB8XSS5hY1105nC4ndnOD6vk++oT66kxyQoXIKderviLUrOKL1Hgxti94654
+2Cj5hioOeZjJ9G6x8h7/0kSj51vv4LsbW9lcvw1ajrUiY+meDs5GK7k4evygQKxJ
+lozJQf7bZeziqOa2W4cIr63Sl0bPRdpFISN2xI7lvdCeFp/PqUVYs2QmoAK8zXrN
++Dicl3BsD5lkZn1OT8xf+Hh9vDtoIeetRl+2SEOVIG3OwvuLr7lIj7WmUDV6Or6u
+de9t8x6h6aBuFwBW+7SI2RTHaRc4OA==
+=maS8
+-----END PGP SIGNATURE-----
+
+--fFBTC7nHGSe6GF77Yk8DM6a21UGrr1Fg5--
+
