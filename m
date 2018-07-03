@@ -1,11 +1,14 @@
-MIME-Version: 1.0
+From: Jon Kunkee <jkunkee@...2393...>
+Date: Tue, 3 Jul 2018 17:55:59 +0000
+Message-ID: <DM5PR2101MB11126374B900460BE5FE16AEB0420@...2412...>
 References: <cea658fa-201f-59d3-d66b-93e35f4f2ee2@...515...>
  <DM5PR2101MB11120F4EE0B7761BA1273B08B0420@...2412...>
-In-Reply-To: <DM5PR2101MB11120F4EE0B7761BA1273B08B0420@...2412...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Tue, 3 Jul 2018 22:49:37 +0500
-Message-ID: <CAFHpkQFv5KVDzck1Z-Xtx7a9AZ7ZNvRVbA9yEUc5UR_++2sNRQ@...278...>
-Content-Type: multipart/alternative; boundary="000000000000eaef6a05701bf086"
+ <CAFHpkQFv5KVDzck1Z-Xtx7a9AZ7ZNvRVbA9yEUc5UR_++2sNRQ@...278...>
+In-Reply-To: <CAFHpkQFv5KVDzck1Z-Xtx7a9AZ7ZNvRVbA9yEUc5UR_++2sNRQ@...278...>
+Content-Language: en-US
+Content-Type: multipart/alternative;
+ boundary="_000_DM5PR2101MB11126374B900460BE5FE16AEB0420DM5PR2101MB1112_"
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] Topics for the community meeting (Wed,
  13th June 2018)
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,200 +19,264 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: jkunkee@...2393...
-Cc: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: =?utf-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Cc: =?utf-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---000000000000eaef6a05701bf086
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+--_000_DM5PR2101MB11126374B900460BE5FE16AEB0420DM5PR2101MB1112_
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 
-Hello, Jon.
+WWVzLCBJIGFtIGF3YXJlIG9mIHRoYXQuIE5vdGUgdGhhdCBpdOKAmXMgbm90IHRhcC13aW5kb3dz
+NiwgYnV0IG9wZW52cG4uDQoNCkkgdGFsa2VkIHRvIHRoZSBwcmltYXJ5IGNvbnRyaWJ1dG9yIHRv
+IHRoYXQgZm9yaywgS2V2aW4gS2FuZSwgYSBmZXcgZGF5cyBhZ28uIFdoZW4gSSBhc2tlZCBpZiBo
+aXMgdGVhbSBoYWQgZG9uZSBhbnl0aGluZyB3aXRoIHNpZ25pbmcgdGhlIGRyaXZlciBvciBkb2lu
+ZyB0aGUgSExLIHdvcmssIGhlIHNhaWQgaGlzIHRlYW0gdXNlcyB0YXAtd2luZG93czYgYXMtc2hp
+cHBlZCwgY29tcGxldGUgd2l0aCBzaWduYXR1cmVzLiBIaXMgd29yayBpcyBvbiB0aGUgdXNlcm1v
+ZGUgZGFlbW9u4oCZcyBjcnlwdG8gZW5naW5lLCBpZiBJIHVuZGVyc3Rvb2QgdGhlIGNvbW1pdCBt
+ZXNzYWdlcyByaWdodCwgc28gYW55IGNoYW5nZXMgaGUgbWFrZXMgYXJlbuKAmXQgcmVsYXRlZCB0
+byB0aGUgZHJpdmVyLg0KDQpGcm9tOiDQmNC70YzRjyDQqNC40L/QuNGG0LjQvSA8Y2hpcGl0c2lu
+ZUAuLi4yNzcuLi4+DQpTZW50OiBUdWVzZGF5LCBKdWx5IDMsIDIwMTggMTA6NTAgQU0NClRvOiBK
+b24gS3Vua2VlIDxqa3Vua2VlQC4uLjIzOTMuLi4+DQpDYzogU2FtdWxpIFNlcHDDpG5lbiA8c2Ft
+dWxpQC4uLjUxNS4uLj47IG9wZW52cG4tZGV2ZWwgPG9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNl
+Zm9yZ2UubmV0Pg0KU3ViamVjdDogUmU6IFtPcGVudnBuLWRldmVsXSBUb3BpY3MgZm9yIHRoZSBj
+b21tdW5pdHkgbWVldGluZyAoV2VkLCAxM3RoIEp1bmUgMjAxOCkNCg0KSGVsbG8sIEpvbi4NCg0K
+ZG8geW91IGtub3cgdGhpcyBhY3Rpdml0eSBodHRwczovL2dpdGh1Yi5jb20vTWljcm9zb2Z0L29w
+ZW52cG4vPGh0dHBzOi8vbmEwMS5zYWZlbGlua3MucHJvdGVjdGlvbi5vdXRsb29rLmNvbS8/dXJs
+PWh0dHBzJTNBJTJGJTJGZ2l0aHViLmNvbSUyRk1pY3Jvc29mdCUyRm9wZW52cG4lMkYmZGF0YT0w
+MiU3QzAxJTdDamt1bmtlZSU0MG1pY3Jvc29mdC5jb20lN0NkMzc5ZTBjNGU4Yzk0OWQzZDVmNDA4
+ZDVlMTBkNjFlNiU3QzcyZjk4OGJmODZmMTQxYWY5MWFiMmQ3Y2QwMTFkYjQ3JTdDMSU3QzAlN0M2
+MzY2NjIzNjk5OTg3MTEyMzImc2RhdGE9JTJGcllQaHhpQU9DVFlpa3BxM3VJVjFYM1ZVVFIlMkZu
+MmJ6NUclMkZ1OVRBMTF2SSUzRCZyZXNlcnZlZD0wPiA/DQp0aGVyZSBhcmUgaW50ZXJlc3Rpbmcg
+dGhpbmdzDQoNCtCy0YIsIDMg0LjRjtC7LiAyMDE4INCzLiDQsiAyMjo0MywgSm9uIEt1bmtlZSB2
+aWEgT3BlbnZwbi1kZXZlbCA8b3BlbnZwbi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQ8bWFp
+bHRvOm9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2UubmV0Pj46DQpIaSwNCg0KMi4gVGFw
+LXdpbmRvd3M2IHBhdGNoZXMsIGJ1aWxkaW5nIGFuZCB0ZXN0aW5nDQoNCkluIG9yZGVyIHRvIGdl
+dCB0aGUgdGFwLXdpbmRvd3M2IGRyaXZlciBzaWduZWQgcHJvcGVybHkgZm9yIFdpbmRvd3MgU2Vy
+dmVyIDIwMTYsIGl0IG5lZWRzIHRvIHBhc3MgdGhlIFdpbmRvd3MgSGFyZHdhcmUgQ2VydGlmaWNh
+dGlvbiBQcm9ncmFtIHN1YnNldCBvZiB0aGUgV2luZG93cyBIYXJkd2FyZSBMb2dvIEtpdCAoSExL
+KSB0ZXN0cy4gU2FtdWxpIGhhcyB0aGUgdGVzdHMgcnVubmluZyBpbiBFQzIsIGJ1dCB0aGVyZSBh
+cmUgc29tZSBmYWlsdXJlcy4NCg0KU29tZSBvZiB0aGUgZmFpbHVyZXMgYXJlIGJhc2ljYWxseSBw
+YXBlcndvcmssIGxpa2UgdGhlIFN0YXRpYyBWZXJpZmljYXRpb24gbG9ncyB0ZXN0LiBTb21lIHJl
+ZmxlY3QgbmVlZGVkIHR3ZWFrcyBpbiB0aGUgZW52aXJvbm1lbnQsIGxpa2UgdGhlIFJ1bm5pbmcg
+b24gU2VydmVyIENvcmUgdGVzdC4gT3RoZXJzIHJlZmxlY3QgcG9zc2libGUgY29kZSBidWdzLCBh
+bmQgc2luY2UgSSBoYXZlIHNpZ25pZmljYW50IGV4cGVyaWVuY2UgZG9pbmcgV2luZG93cyBrZXJu
+ZWwgZGVidWdnaW5nIEknbSBpbnZlc3RpZ2F0aW5nIHRob3NlLg0KDQpJIHNwZW50IHllc3RlcmRh
+eSBzZXR0aW5nIHVwIGEgbG9jYWwgSExLLWJhc2VkIHRlc3QgZW52aXJvbm1lbnQgd2l0aCBrZXJu
+ZWwgZGVidWdnaW5nLiBUb2RheSBJJ20gdHJ5aW5nIHRvIGdldCB0d28gT3BlblZQTiBjbGllbnRz
+IHRvIGJlIGFibGUgdG8gdGFsayB0byBlYWNoIG90aGVyIG92ZXIgYSBWUE4gc28gSSBjYW4gc3Rh
+cnQgcmVwcm9kdWNpbmcgYW5kIGludmVzdGlnYXRpbmcgdGhlIGZhaWx1cmVzLiAoSSB3aWxsIGJl
+IHNlbmRpbmcgYSBtYWlsIHRvIG9wZW52cG4tdXNlcnMgYXNraW5nIGZvciBoZWxwIHNpbmNlIGl0
+IHdvdWxkIGJlIHF1aXRlIG5vaXN5IHRvIGV4cGxhaW4gIG9uIElSQy4pDQoNCkNoZWVycywNCkpv
+biBLdW5rZWUNClNvZnR3YXJlIERldmVsb3Blcg0KTWljcm9zb2Z0DQoNCi0tLS0tT3JpZ2luYWwg
+TWVzc2FnZS0tLS0tDQpGcm9tOiBTYW11bGkgU2VwcMOkbmVuIDxzYW11bGlALi4uNTE1Li4uPG1h
+aWx0bzpzYW11bGlALi4uNTE1Li4uPj4NClNlbnQ6IFR1ZXNkYXksIEp1bHkgMywgMjAxOCAxMDoz
+MCBBTQ0KVG86IG9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2UubmV0PG1haWx0bzpvcGVu
+dnBuLWRldmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldD4NClN1YmplY3Q6IFtPcGVudnBuLWRldmVs
+XSBUb3BpY3MgZm9yIHRoZSBjb21tdW5pdHkgbWVldGluZyAoV2VkLCAxM3RoIEp1bmUgMjAxOCkN
+Cg0KSGksDQoNCldlJ3JlIGdvaW5nIHRvIGhhdmUgYW4gSVJDIG1lZXRpbmcgc3RhcnRpbmcgYXQg
+MTE6MzAgQ0VUDQooOTozMCBVVEMpIG9uICNvcGVudnBuLW1lZXRpbmcgPGF0PiBpcmMuZnJlZW5v
+ZGUubmV0PGh0dHBzOi8vbmEwMS5zYWZlbGlua3MucHJvdGVjdGlvbi5vdXRsb29rLmNvbS8/dXJs
+PWh0dHAlM0ElMkYlMkZpcmMuZnJlZW5vZGUubmV0JmRhdGE9MDIlN0MwMSU3Q2prdW5rZWUlNDBt
+aWNyb3NvZnQuY29tJTdDZDM3OWUwYzRlOGM5NDlkM2Q1ZjQwOGQ1ZTEwZDYxZTYlN0M3MmY5ODhi
+Zjg2ZjE0MWFmOTFhYjJkN2NkMDExZGI0NyU3QzElN0MwJTdDNjM2NjYyMzY5OTk4NzIxMjQyJnNk
+YXRhPUxubnR0UTE1WUlJWnc0UmxKYXlJYW9oaEkzMVNvMzJoYTBzN1dGcDFIbkElM0QmcmVzZXJ2
+ZWQ9MD4uIFlvdSBkbyBub3QgaGF2ZSB0byBiZSBsb2dnZWQgaW4gdG8gRnJlZW5vZGUgdG8gam9p
+biB0aGUgY2hhbm5lbC4NCg0KQ3VycmVudCB0b3BpYyBsaXN0IGFsb25nIHdpdGggYmFzaWMgaW5m
+b3JtYXRpb24gaXMgaGVyZToNCg0KPGh0dHBzOi8vbmEwMS5zYWZlbGlua3MucHJvdGVjdGlvbi5v
+dXRsb29rLmNvbS8/dXJsPWh0dHBzJTNBJTJGJTJGY29tbXVuaXR5Lm9wZW52cG4ubmV0JTJGb3Bl
+bnZwbiUyRndpa2klMkZUb3BpY3MtMjAxOC0wNi0xMyZhbXA7ZGF0YT0wMiU3QzAxJTdDamt1bmtl
+ZSU0MG1pY3Jvc29mdC5jb20lN0MyZmY1OTQ5OTQ0YTM0ODY0OTE5YjA4ZDVlMTBhYTBiMiU3Qzcy
+Zjk4OGJmODZmMTQxYWY5MWFiMmQ3Y2QwMTFkYjQ3JTdDMSU3QzAlN0M2MzY2NjIzNTgxMjUzMjM0
+NzEmYW1wO3NkYXRhPUUydG5Nazk1RFBMJTJCRnBVTk04dGQwbFFkMFBUTW1mWjhaQVhVc0dCRVMl
+MkZBJTNEJmFtcDtyZXNlcnZlZD0wPGh0dHBzOi8vbmEwMS5zYWZlbGlua3MucHJvdGVjdGlvbi5v
+dXRsb29rLmNvbS8/dXJsPWh0dHBzJTNBJTJGJTJGY29tbXVuaXR5Lm9wZW52cG4ubmV0JTJGb3Bl
+bnZwbiUyRndpa2klMkZUb3BpY3MtMjAxOC0wNi0xMyZkYXRhPTAyJTdDMDElN0Nqa3Vua2VlJTQw
+bWljcm9zb2Z0LmNvbSU3Q2QzNzllMGM0ZThjOTQ5ZDNkNWY0MDhkNWUxMGQ2MWU2JTdDNzJmOTg4
+YmY4NmYxNDFhZjkxYWIyZDdjZDAxMWRiNDclN0MxJTdDMCU3QzYzNjY2MjM2OTk5ODcyMTI0MiZz
+ZGF0YT1HcHVtWDI0b2FEY2hEeUJXYVQlMkZmWCUyQk5VWXJCZFZxTk8zeFd5M0M0NElHYyUzRCZy
+ZXNlcnZlZD0wPj4NCg0KSWYgeW91IGhhdmUgYW55IG90aGVyIHRoaW5ncyB5b3UnZCBsaWtlIHRv
+IGJyaW5nIHVwLCByZXNwb25kIHRvIHRoaXMgbWFpbCwgc2VuZCBtZSBtYWlsIHByaXZhdGVseSBv
+ciBhZGQgdGhlbSB0byB0aGUgbGlzdCB5b3Vyc2VsZi4NCg0KSW4gY2FzZSB5b3UgY2FuJ3QgYXR0
+ZW5kIHRoZSBtZWV0aW5nLCBwbGVhc2UgZmVlbCBmcmVlIHRvIG1ha2UgY29tbWVudHMgb24gdGhl
+IHRvcGljcyBieSByZXNwb25kaW5nIHRvIHRoaXMgZW1haWwgb3IgdG8gdGhlIHN1bW1hcnkgZW1h
+aWwgc2VudCBhZnRlciB0aGUgbWVldGluZy4gV2hlbmV2ZXIgcG9zc2libGUsIHdlJ2xsIGFsc28g
+cmVzcG9uZCB0byBleGlzdGluZywgcmVsYXRlZCBlbWFpbCB0aHJlYWRzLg0KDQotLQ0KU2FtdWxp
+IFNlcHDDpG5lbg0KQ29tbXVuaXR5IE1hbmFnZXINCk9wZW5WUE4gVGVjaG5vbG9naWVzLCBJbmMN
+Cg0KaXJjIGZyZWVub2RlIG5ldDogbWF0dG9jaw0KDQoNCg0KDQotLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0NCkNoZWNrIG91dCB0aGUgdmlicmFudCB0ZWNoIGNvbW11bml0eSBvbiBvbmUgb2YgdGhlIHdv
+cmxkJ3MgbW9zdA0KZW5nYWdpbmcgdGVjaCBzaXRlcywgU2xhc2hkb3Qub3JnISBodHRwOi8vc2Rt
+Lmxpbmsvc2xhc2hkb3Q8aHR0cHM6Ly9uYTAxLnNhZmVsaW5rcy5wcm90ZWN0aW9uLm91dGxvb2su
+Y29tLz91cmw9aHR0cCUzQSUyRiUyRnNkbS5saW5rJTJGc2xhc2hkb3QmZGF0YT0wMiU3QzAxJTdD
+amt1bmtlZSU0MG1pY3Jvc29mdC5jb20lN0NkMzc5ZTBjNGU4Yzk0OWQzZDVmNDA4ZDVlMTBkNjFl
+NiU3QzcyZjk4OGJmODZmMTQxYWY5MWFiMmQ3Y2QwMTFkYjQ3JTdDMSU3QzAlN0M2MzY2NjIzNjk5
+OTg3MzEyNTEmc2RhdGE9ZkdySGt3Sk1aOE1MMTcweTk0YXphTkoxdWRyMXEwMkpKZGp5UWtXeXQ1
+WSUzRCZyZXNlcnZlZD0wPg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18NCk9wZW52cG4tZGV2ZWwgbWFpbGluZyBsaXN0DQpPcGVudnBuLWRldmVsQGxpc3Rz
+LnNvdXJjZWZvcmdlLm5ldDxtYWlsdG86T3BlbnZwbi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3JnZS5u
+ZXQ+DQpodHRwczovL2xpc3RzLnNvdXJjZWZvcmdlLm5ldC9saXN0cy9saXN0aW5mby9vcGVudnBu
+LWRldmVsPGh0dHBzOi8vbmEwMS5zYWZlbGlua3MucHJvdGVjdGlvbi5vdXRsb29rLmNvbS8/dXJs
+PWh0dHBzJTNBJTJGJTJGbGlzdHMuc291cmNlZm9yZ2UubmV0JTJGbGlzdHMlMkZsaXN0aW5mbyUy
+Rm9wZW52cG4tZGV2ZWwmZGF0YT0wMiU3QzAxJTdDamt1bmtlZSU0MG1pY3Jvc29mdC5jb20lN0Nk
+Mzc5ZTBjNGU4Yzk0OWQzZDVmNDA4ZDVlMTBkNjFlNiU3QzcyZjk4OGJmODZmMTQxYWY5MWFiMmQ3
+Y2QwMTFkYjQ3JTdDMSU3QzAlN0M2MzY2NjIzNjk5OTg3MzEyNTEmc2RhdGE9ZXhtZEtDRGg2Z0x2
+T3JOeCUyRnVZb0ppM2trcllzVFByUHFVNndudFl1aEtRJTNEJnJlc2VydmVkPTA+DQo=
 
-do you know this activity https://github.com/Microsoft/openvpn/ ?
-there are interesting things
+--_000_DM5PR2101MB11126374B900460BE5FE16AEB0420DM5PR2101MB1112_
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: base64
 
-=D0=B2=D1=82, 3 =D0=B8=D1=8E=D0=BB. 2018 =D0=B3. =D0=B2 22:43, Jon Kunkee v=
-ia Openvpn-devel <
-openvpn-devel@lists.sourceforge.net>:
+PGh0bWwgeG1sbnM6dj0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp2bWwiIHhtbG5zOm89InVy
+bjpzY2hlbWFzLW1pY3Jvc29mdC1jb206b2ZmaWNlOm9mZmljZSIgeG1sbnM6dz0idXJuOnNjaGVt
+YXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6d29yZCIgeG1sbnM6bT0iaHR0cDovL3NjaGVtYXMubWlj
+cm9zb2Z0LmNvbS9vZmZpY2UvMjAwNC8xMi9vbW1sIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcv
+VFIvUkVDLWh0bWw0MCI+DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIg
+Y29udGVudD0idGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij4NCjxtZXRhIG5hbWU9IkdlbmVyYXRv
+ciIgY29udGVudD0iTWljcm9zb2Z0IFdvcmQgMTUgKGZpbHRlcmVkIG1lZGl1bSkiPg0KPHN0eWxl
+PjwhLS0NCi8qIEZvbnQgRGVmaW5pdGlvbnMgKi8NCkBmb250LWZhY2UNCgl7Zm9udC1mYW1pbHk6
+IkNhbWJyaWEgTWF0aCI7DQoJcGFub3NlLTE6MiA0IDUgMyA1IDQgNiAzIDIgNDt9DQpAZm9udC1m
+YWNlDQoJe2ZvbnQtZmFtaWx5OkNhbGlicmk7DQoJcGFub3NlLTE6MiAxNSA1IDIgMiAyIDQgMyAy
+IDQ7fQ0KLyogU3R5bGUgRGVmaW5pdGlvbnMgKi8NCnAuTXNvTm9ybWFsLCBsaS5Nc29Ob3JtYWws
+IGRpdi5Nc29Ob3JtYWwNCgl7bWFyZ2luOjBpbjsNCgltYXJnaW4tYm90dG9tOi4wMDAxcHQ7DQoJ
+Zm9udC1zaXplOjExLjBwdDsNCglmb250LWZhbWlseToiQ2FsaWJyaSIsc2Fucy1zZXJpZjt9DQph
+OmxpbmssIHNwYW4uTXNvSHlwZXJsaW5rDQoJe21zby1zdHlsZS1wcmlvcml0eTo5OTsNCgljb2xv
+cjpibHVlOw0KCXRleHQtZGVjb3JhdGlvbjp1bmRlcmxpbmU7fQ0KYTp2aXNpdGVkLCBzcGFuLk1z
+b0h5cGVybGlua0ZvbGxvd2VkDQoJe21zby1zdHlsZS1wcmlvcml0eTo5OTsNCgljb2xvcjpwdXJw
+bGU7DQoJdGV4dC1kZWNvcmF0aW9uOnVuZGVybGluZTt9DQpwLm1zb25vcm1hbDAsIGxpLm1zb25v
+cm1hbDAsIGRpdi5tc29ub3JtYWwwDQoJe21zby1zdHlsZS1uYW1lOm1zb25vcm1hbDsNCgltc28t
+bWFyZ2luLXRvcC1hbHQ6YXV0bzsNCgltYXJnaW4tcmlnaHQ6MGluOw0KCW1zby1tYXJnaW4tYm90
+dG9tLWFsdDphdXRvOw0KCW1hcmdpbi1sZWZ0OjBpbjsNCglmb250LXNpemU6MTEuMHB0Ow0KCWZv
+bnQtZmFtaWx5OiJDYWxpYnJpIixzYW5zLXNlcmlmO30NCnNwYW4uRW1haWxTdHlsZTE4DQoJe21z
+by1zdHlsZS10eXBlOnBlcnNvbmFsLXJlcGx5Ow0KCWZvbnQtZmFtaWx5OiJDYWxpYnJpIixzYW5z
+LXNlcmlmOw0KCWNvbG9yOndpbmRvd3RleHQ7fQ0KLk1zb0NocERlZmF1bHQNCgl7bXNvLXN0eWxl
+LXR5cGU6ZXhwb3J0LW9ubHk7DQoJZm9udC1mYW1pbHk6IkNhbGlicmkiLHNhbnMtc2VyaWY7fQ0K
+QHBhZ2UgV29yZFNlY3Rpb24xDQoJe3NpemU6OC41aW4gMTEuMGluOw0KCW1hcmdpbjoxLjBpbiAx
+LjBpbiAxLjBpbiAxLjBpbjt9DQpkaXYuV29yZFNlY3Rpb24xDQoJe3BhZ2U6V29yZFNlY3Rpb24x
+O30NCi0tPjwvc3R5bGU+PCEtLVtpZiBndGUgbXNvIDldPjx4bWw+DQo8bzpzaGFwZWRlZmF1bHRz
+IHY6ZXh0PSJlZGl0IiBzcGlkbWF4PSIxMDI2IiAvPg0KPC94bWw+PCFbZW5kaWZdLS0+PCEtLVtp
+ZiBndGUgbXNvIDldPjx4bWw+DQo8bzpzaGFwZWxheW91dCB2OmV4dD0iZWRpdCI+DQo8bzppZG1h
+cCB2OmV4dD0iZWRpdCIgZGF0YT0iMSIgLz4NCjwvbzpzaGFwZWxheW91dD48L3htbD48IVtlbmRp
+Zl0tLT4NCjwvaGVhZD4NCjxib2R5IGxhbmc9IkVOLVVTIiBsaW5rPSJibHVlIiB2bGluaz0icHVy
+cGxlIj4NCjxkaXYgY2xhc3M9IldvcmRTZWN0aW9uMSI+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj5Z
+ZXMsIEkgYW0gYXdhcmUgb2YgdGhhdC4gTm90ZSB0aGF0IGl04oCZcyBub3QgdGFwLXdpbmRvd3M2
+LCBidXQgb3BlbnZwbi48bzpwPjwvbzpwPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxvOnA+
+Jm5ic3A7PC9vOnA+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+SSB0YWxrZWQgdG8gdGhlIHBy
+aW1hcnkgY29udHJpYnV0b3IgdG8gdGhhdCBmb3JrLCBLZXZpbiBLYW5lLCBhIGZldyBkYXlzIGFn
+by4gV2hlbiBJIGFza2VkIGlmIGhpcyB0ZWFtIGhhZCBkb25lIGFueXRoaW5nIHdpdGggc2lnbmlu
+ZyB0aGUgZHJpdmVyIG9yIGRvaW5nIHRoZSBITEsgd29yaywgaGUgc2FpZCBoaXMgdGVhbSB1c2Vz
+IHRhcC13aW5kb3dzNiBhcy1zaGlwcGVkLCBjb21wbGV0ZSB3aXRoIHNpZ25hdHVyZXMuDQogSGlz
+IHdvcmsgaXMgb24gdGhlIHVzZXJtb2RlIGRhZW1vbuKAmXMgY3J5cHRvIGVuZ2luZSwgaWYgSSB1
+bmRlcnN0b29kIHRoZSBjb21taXQgbWVzc2FnZXMgcmlnaHQsIHNvIGFueSBjaGFuZ2VzIGhlIG1h
+a2VzIGFyZW7igJl0IHJlbGF0ZWQgdG8gdGhlIGRyaXZlci48bzpwPjwvbzpwPjwvcD4NCjxwIGNs
+YXNzPSJNc29Ob3JtYWwiPjxvOnA+Jm5ic3A7PC9vOnA+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1h
+bCI+PGI+RnJvbTo8L2I+INCY0LvRjNGPINCo0LjQv9C40YbQuNC9ICZsdDtjaGlwaXRzaW5lQC4u
+LjI3Ny4uLiZndDsgPGJyPg0KPGI+U2VudDo8L2I+IFR1ZXNkYXksIEp1bHkgMywgMjAxOCAxMDo1
+MCBBTTxicj4NCjxiPlRvOjwvYj4gSm9uIEt1bmtlZSAmbHQ7amt1bmtlZUAuLi4yMzkzLi4uJmd0
+Ozxicj4NCjxiPkNjOjwvYj4gU2FtdWxpIFNlcHDDpG5lbiAmbHQ7c2FtdWxpQC4uLjUxNS4uLiZn
+dDs7IG9wZW52cG4tZGV2ZWwgJmx0O29wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2UubmV0
+Jmd0Ozxicj4NCjxiPlN1YmplY3Q6PC9iPiBSZTogW09wZW52cG4tZGV2ZWxdIFRvcGljcyBmb3Ig
+dGhlIGNvbW11bml0eSBtZWV0aW5nIChXZWQsIDEzdGggSnVuZSAyMDE4KTxvOnA+PC9vOnA+PC9w
+Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PG86cD4mbmJzcDs8L286cD48L3A+DQo8ZGl2Pg0KPGRp
+dj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPkhlbGxvLCBKb24uPG86cD48L286cD48L3A+DQo8L2Rp
+dj4NCjxkaXY+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48bzpwPiZuYnNwOzwvbzpwPjwvcD4NCjwv
+ZGl2Pg0KPGRpdj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPmRvIHlvdSBrbm93IHRoaXMgYWN0aXZp
+dHkgPGEgaHJlZj0iaHR0cHM6Ly9uYTAxLnNhZmVsaW5rcy5wcm90ZWN0aW9uLm91dGxvb2suY29t
+Lz91cmw9aHR0cHMlM0ElMkYlMkZnaXRodWIuY29tJTJGTWljcm9zb2Z0JTJGb3BlbnZwbiUyRiZh
+bXA7ZGF0YT0wMiU3QzAxJTdDamt1bmtlZSU0MG1pY3Jvc29mdC5jb20lN0NkMzc5ZTBjNGU4Yzk0
+OWQzZDVmNDA4ZDVlMTBkNjFlNiU3QzcyZjk4OGJmODZmMTQxYWY5MWFiMmQ3Y2QwMTFkYjQ3JTdD
+MSU3QzAlN0M2MzY2NjIzNjk5OTg3MTEyMzImYW1wO3NkYXRhPSUyRnJZUGh4aUFPQ1RZaWtwcTN1
+SVYxWDNWVVRSJTJGbjJiejVHJTJGdTlUQTExdkklM0QmYW1wO3Jlc2VydmVkPTAiPg0KaHR0cHM6
+Ly9naXRodWIuY29tL01pY3Jvc29mdC9vcGVudnBuLzwvYT4gPzxvOnA+PC9vOnA+PC9wPg0KPC9k
+aXY+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+dGhlcmUgYXJlIGludGVyZXN0aW5nIHRo
+aW5nczxvOnA+PC9vOnA+PC9wPg0KPC9kaXY+DQo8L2Rpdj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwi
+PjxvOnA+Jm5ic3A7PC9vOnA+PC9wPg0KPGRpdj4NCjxkaXY+DQo8cCBjbGFzcz0iTXNvTm9ybWFs
+Ij7QstGCLCAzINC40Y7Quy4gMjAxOCDQsy4g0LIgMjI6NDMsIEpvbiBLdW5rZWUgdmlhIE9wZW52
+cG4tZGV2ZWwgJmx0OzxhIGhyZWY9Im1haWx0bzpvcGVudnBuLWRldmVsQGxpc3RzLnNvdXJjZWZv
+cmdlLm5ldCI+b3BlbnZwbi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQ8L2E+Jmd0Ozo8bzpw
+PjwvbzpwPjwvcD4NCjwvZGl2Pg0KPGJsb2NrcXVvdGUgc3R5bGU9ImJvcmRlcjpub25lO2JvcmRl
+ci1sZWZ0OnNvbGlkICNDQ0NDQ0MgMS4wcHQ7cGFkZGluZzowaW4gMGluIDBpbiA2LjBwdDttYXJn
+aW4tbGVmdDo0LjhwdDttYXJnaW4tcmlnaHQ6MGluIj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPkhp
+LDxicj4NCjxicj4NCjIuIFRhcC13aW5kb3dzNiBwYXRjaGVzLCBidWlsZGluZyBhbmQgdGVzdGlu
+Zzxicj4NCjxicj4NCkluIG9yZGVyIHRvIGdldCB0aGUgdGFwLXdpbmRvd3M2IGRyaXZlciBzaWdu
+ZWQgcHJvcGVybHkgZm9yIFdpbmRvd3MgU2VydmVyIDIwMTYsIGl0IG5lZWRzIHRvIHBhc3MgdGhl
+IFdpbmRvd3MgSGFyZHdhcmUgQ2VydGlmaWNhdGlvbiBQcm9ncmFtIHN1YnNldCBvZiB0aGUgV2lu
+ZG93cyBIYXJkd2FyZSBMb2dvIEtpdCAoSExLKSB0ZXN0cy4gU2FtdWxpIGhhcyB0aGUgdGVzdHMg
+cnVubmluZyBpbiBFQzIsIGJ1dCB0aGVyZSBhcmUgc29tZSBmYWlsdXJlcy48YnI+DQo8YnI+DQpT
+b21lIG9mIHRoZSBmYWlsdXJlcyBhcmUgYmFzaWNhbGx5IHBhcGVyd29yaywgbGlrZSB0aGUgU3Rh
+dGljIFZlcmlmaWNhdGlvbiBsb2dzIHRlc3QuIFNvbWUgcmVmbGVjdCBuZWVkZWQgdHdlYWtzIGlu
+IHRoZSBlbnZpcm9ubWVudCwgbGlrZSB0aGUgUnVubmluZyBvbiBTZXJ2ZXIgQ29yZSB0ZXN0LiBP
+dGhlcnMgcmVmbGVjdCBwb3NzaWJsZSBjb2RlIGJ1Z3MsIGFuZCBzaW5jZSBJIGhhdmUgc2lnbmlm
+aWNhbnQgZXhwZXJpZW5jZSBkb2luZyBXaW5kb3dzDQoga2VybmVsIGRlYnVnZ2luZyBJJ20gaW52
+ZXN0aWdhdGluZyB0aG9zZS48YnI+DQo8YnI+DQpJIHNwZW50IHllc3RlcmRheSBzZXR0aW5nIHVw
+IGEgbG9jYWwgSExLLWJhc2VkIHRlc3QgZW52aXJvbm1lbnQgd2l0aCBrZXJuZWwgZGVidWdnaW5n
+LiBUb2RheSBJJ20gdHJ5aW5nIHRvIGdldCB0d28gT3BlblZQTiBjbGllbnRzIHRvIGJlIGFibGUg
+dG8gdGFsayB0byBlYWNoIG90aGVyIG92ZXIgYSBWUE4gc28gSSBjYW4gc3RhcnQgcmVwcm9kdWNp
+bmcgYW5kIGludmVzdGlnYXRpbmcgdGhlIGZhaWx1cmVzLiAoSSB3aWxsIGJlIHNlbmRpbmcgYSBt
+YWlsDQogdG8gb3BlbnZwbi11c2VycyBhc2tpbmcgZm9yIGhlbHAgc2luY2UgaXQgd291bGQgYmUg
+cXVpdGUgbm9pc3kgdG8gZXhwbGFpbiZuYnNwOyBvbiBJUkMuKTxicj4NCjxicj4NCkNoZWVycyw8
+YnI+DQpKb24gS3Vua2VlPGJyPg0KU29mdHdhcmUgRGV2ZWxvcGVyPGJyPg0KTWljcm9zb2Z0PGJy
+Pg0KPGJyPg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS08YnI+DQpGcm9tOiBTYW11bGkgU2Vw
+cMOkbmVuICZsdDs8YSBocmVmPSJtYWlsdG86c2FtdWxpQC4uLjUxNS4uLiIgdGFyZ2V0PSJfYmxh
+bmsiPnNhbXVsaUAuLi41MTUuLi48L2E+Jmd0Ow0KPGJyPg0KU2VudDogVHVlc2RheSwgSnVseSAz
+LCAyMDE4IDEwOjMwIEFNPGJyPg0KVG86IDxhIGhyZWY9Im1haWx0bzpvcGVudnBuLWRldmVsQGxp
+c3RzLnNvdXJjZWZvcmdlLm5ldCIgdGFyZ2V0PSJfYmxhbmsiPm9wZW52cG4tZGV2ZWxAbGlzdHMu
+c291cmNlZm9yZ2UubmV0PC9hPjxicj4NClN1YmplY3Q6IFtPcGVudnBuLWRldmVsXSBUb3BpY3Mg
+Zm9yIHRoZSBjb21tdW5pdHkgbWVldGluZyAoV2VkLCAxM3RoIEp1bmUgMjAxOCk8YnI+DQo8YnI+
+DQpIaSw8YnI+DQo8YnI+DQpXZSdyZSBnb2luZyB0byBoYXZlIGFuIElSQyBtZWV0aW5nIHN0YXJ0
+aW5nIGF0IDExOjMwIENFVDxicj4NCig5OjMwIFVUQykgb24gI29wZW52cG4tbWVldGluZyAmbHQ7
+YXQmZ3Q7IDxhIGhyZWY9Imh0dHBzOi8vbmEwMS5zYWZlbGlua3MucHJvdGVjdGlvbi5vdXRsb29r
+LmNvbS8/dXJsPWh0dHAlM0ElMkYlMkZpcmMuZnJlZW5vZGUubmV0JmFtcDtkYXRhPTAyJTdDMDEl
+N0Nqa3Vua2VlJTQwbWljcm9zb2Z0LmNvbSU3Q2QzNzllMGM0ZThjOTQ5ZDNkNWY0MDhkNWUxMGQ2
+MWU2JTdDNzJmOTg4YmY4NmYxNDFhZjkxYWIyZDdjZDAxMWRiNDclN0MxJTdDMCU3QzYzNjY2MjM2
+OTk5ODcyMTI0MiZhbXA7c2RhdGE9TG5udHRRMTVZSUladzRSbEpheUlhb2hoSTMxU28zMmhhMHM3
+V0ZwMUhuQSUzRCZhbXA7cmVzZXJ2ZWQ9MCIgdGFyZ2V0PSJfYmxhbmsiPg0KaXJjLmZyZWVub2Rl
+Lm5ldDwvYT4uIFlvdSBkbyBub3QgaGF2ZSB0byBiZSBsb2dnZWQgaW4gdG8gRnJlZW5vZGUgdG8g
+am9pbiB0aGUgY2hhbm5lbC48YnI+DQo8YnI+DQpDdXJyZW50IHRvcGljIGxpc3QgYWxvbmcgd2l0
+aCBiYXNpYyBpbmZvcm1hdGlvbiBpcyBoZXJlOjxicj4NCjxicj4NCiZsdDs8YSBocmVmPSJodHRw
+czovL25hMDEuc2FmZWxpbmtzLnByb3RlY3Rpb24ub3V0bG9vay5jb20vP3VybD1odHRwcyUzQSUy
+RiUyRmNvbW11bml0eS5vcGVudnBuLm5ldCUyRm9wZW52cG4lMkZ3aWtpJTJGVG9waWNzLTIwMTgt
+MDYtMTMmYW1wO2RhdGE9MDIlN0MwMSU3Q2prdW5rZWUlNDBtaWNyb3NvZnQuY29tJTdDZDM3OWUw
+YzRlOGM5NDlkM2Q1ZjQwOGQ1ZTEwZDYxZTYlN0M3MmY5ODhiZjg2ZjE0MWFmOTFhYjJkN2NkMDEx
+ZGI0NyU3QzElN0MwJTdDNjM2NjYyMzY5OTk4NzIxMjQyJmFtcDtzZGF0YT1HcHVtWDI0b2FEY2hE
+eUJXYVQlMkZmWCUyQk5VWXJCZFZxTk8zeFd5M0M0NElHYyUzRCZhbXA7cmVzZXJ2ZWQ9MCIgdGFy
+Z2V0PSJfYmxhbmsiPmh0dHBzOi8vbmEwMS5zYWZlbGlua3MucHJvdGVjdGlvbi5vdXRsb29rLmNv
+bS8/dXJsPWh0dHBzJTNBJTJGJTJGY29tbXVuaXR5Lm9wZW52cG4ubmV0JTJGb3BlbnZwbiUyRndp
+a2klMkZUb3BpY3MtMjAxOC0wNi0xMyZhbXA7YW1wO2RhdGE9MDIlN0MwMSU3Q2prdW5rZWUlNDBt
+aWNyb3NvZnQuY29tJTdDMmZmNTk0OTk0NGEzNDg2NDkxOWIwOGQ1ZTEwYWEwYjIlN0M3MmY5ODhi
+Zjg2ZjE0MWFmOTFhYjJkN2NkMDExZGI0NyU3QzElN0MwJTdDNjM2NjYyMzU4MTI1MzIzNDcxJmFt
+cDthbXA7c2RhdGE9RTJ0bk1rOTVEUEwlMkJGcFVOTTh0ZDBsUWQwUFRNbWZaOFpBWFVzR0JFUyUy
+RkElM0QmYW1wO2FtcDtyZXNlcnZlZD0wPC9hPiZndDs8YnI+DQo8YnI+DQpJZiB5b3UgaGF2ZSBh
+bnkgb3RoZXIgdGhpbmdzIHlvdSdkIGxpa2UgdG8gYnJpbmcgdXAsIHJlc3BvbmQgdG8gdGhpcyBt
+YWlsLCBzZW5kIG1lIG1haWwgcHJpdmF0ZWx5IG9yIGFkZCB0aGVtIHRvIHRoZSBsaXN0IHlvdXJz
+ZWxmLjxicj4NCjxicj4NCkluIGNhc2UgeW91IGNhbid0IGF0dGVuZCB0aGUgbWVldGluZywgcGxl
+YXNlIGZlZWwgZnJlZSB0byBtYWtlIGNvbW1lbnRzIG9uIHRoZSB0b3BpY3MgYnkgcmVzcG9uZGlu
+ZyB0byB0aGlzIGVtYWlsIG9yIHRvIHRoZSBzdW1tYXJ5IGVtYWlsIHNlbnQgYWZ0ZXIgdGhlIG1l
+ZXRpbmcuIFdoZW5ldmVyIHBvc3NpYmxlLCB3ZSdsbCBhbHNvIHJlc3BvbmQgdG8gZXhpc3Rpbmcs
+IHJlbGF0ZWQgZW1haWwgdGhyZWFkcy48YnI+DQo8YnI+DQotLTxicj4NClNhbXVsaSBTZXBww6Ru
+ZW48YnI+DQpDb21tdW5pdHkgTWFuYWdlcjxicj4NCk9wZW5WUE4gVGVjaG5vbG9naWVzLCBJbmM8
+YnI+DQo8YnI+DQppcmMgZnJlZW5vZGUgbmV0OiBtYXR0b2NrPGJyPg0KPGJyPg0KPGJyPg0KPGJy
+Pg0KPGJyPg0KLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tPGJyPg0KQ2hlY2sgb3V0IHRoZSB2aWJyYW50
+IHRlY2ggY29tbXVuaXR5IG9uIG9uZSBvZiB0aGUgd29ybGQncyBtb3N0PGJyPg0KZW5nYWdpbmcg
+dGVjaCBzaXRlcywgU2xhc2hkb3Qub3JnISA8YSBocmVmPSJodHRwczovL25hMDEuc2FmZWxpbmtz
+LnByb3RlY3Rpb24ub3V0bG9vay5jb20vP3VybD1odHRwJTNBJTJGJTJGc2RtLmxpbmslMkZzbGFz
+aGRvdCZhbXA7ZGF0YT0wMiU3QzAxJTdDamt1bmtlZSU0MG1pY3Jvc29mdC5jb20lN0NkMzc5ZTBj
+NGU4Yzk0OWQzZDVmNDA4ZDVlMTBkNjFlNiU3QzcyZjk4OGJmODZmMTQxYWY5MWFiMmQ3Y2QwMTFk
+YjQ3JTdDMSU3QzAlN0M2MzY2NjIzNjk5OTg3MzEyNTEmYW1wO3NkYXRhPWZHckhrd0pNWjhNTDE3
+MHk5NGF6YU5KMXVkcjFxMDJKSmRqeVFrV3l0NVklM0QmYW1wO3Jlc2VydmVkPTAiIHRhcmdldD0i
+X2JsYW5rIj4NCmh0dHA6Ly9zZG0ubGluay9zbGFzaGRvdDwvYT48YnI+DQpfX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXzxicj4NCk9wZW52cG4tZGV2ZWwgbWFp
+bGluZyBsaXN0PGJyPg0KPGEgaHJlZj0ibWFpbHRvOk9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNl
+Zm9yZ2UubmV0IiB0YXJnZXQ9Il9ibGFuayI+T3BlbnZwbi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3Jn
+ZS5uZXQ8L2E+PGJyPg0KPGEgaHJlZj0iaHR0cHM6Ly9uYTAxLnNhZmVsaW5rcy5wcm90ZWN0aW9u
+Lm91dGxvb2suY29tLz91cmw9aHR0cHMlM0ElMkYlMkZsaXN0cy5zb3VyY2Vmb3JnZS5uZXQlMkZs
+aXN0cyUyRmxpc3RpbmZvJTJGb3BlbnZwbi1kZXZlbCZhbXA7ZGF0YT0wMiU3QzAxJTdDamt1bmtl
+ZSU0MG1pY3Jvc29mdC5jb20lN0NkMzc5ZTBjNGU4Yzk0OWQzZDVmNDA4ZDVlMTBkNjFlNiU3Qzcy
+Zjk4OGJmODZmMTQxYWY5MWFiMmQ3Y2QwMTFkYjQ3JTdDMSU3QzAlN0M2MzY2NjIzNjk5OTg3MzEy
+NTEmYW1wO3NkYXRhPWV4bWRLQ0RoNmdMdk9yTnglMkZ1WW9KaTNra3JZc1RQclBxVTZ3bnRZdWhL
+USUzRCZhbXA7cmVzZXJ2ZWQ9MCIgdGFyZ2V0PSJfYmxhbmsiPmh0dHBzOi8vbGlzdHMuc291cmNl
+Zm9yZ2UubmV0L2xpc3RzL2xpc3RpbmZvL29wZW52cG4tZGV2ZWw8L2E+PG86cD48L286cD48L3A+
+DQo8L2Jsb2NrcXVvdGU+DQo8L2Rpdj4NCjwvZGl2Pg0KPC9ib2R5Pg0KPC9odG1sPg0K
 
-> Hi,
->
-> 2. Tap-windows6 patches, building and testing
->
-> In order to get the tap-windows6 driver signed properly for Windows Server
-> 2016, it needs to pass the Windows Hardware Certification Program subset =
-of
-> the Windows Hardware Logo Kit (HLK) tests. Samuli has the tests running in
-> EC2, but there are some failures.
->
-> Some of the failures are basically paperwork, like the Static Verification
-> logs test. Some reflect needed tweaks in the environment, like the Running
-> on Server Core test. Others reflect possible code bugs, and since I have
-> significant experience doing Windows kernel debugging I'm investigating
-> those.
->
-> I spent yesterday setting up a local HLK-based test environment with
-> kernel debugging. Today I'm trying to get two OpenVPN clients to be able =
-to
-> talk to each other over a VPN so I can start reproducing and investigating
-> the failures. (I will be sending a mail to openvpn-users asking for help
-> since it would be quite noisy to explain  on IRC.)
->
-> Cheers,
-> Jon Kunkee
-> Software Developer
-> Microsoft
->
-> -----Original Message-----
-> From: Samuli Sepp=C3=A4nen <samuli@...515...>
-> Sent: Tuesday, July 3, 2018 10:30 AM
-> To: openvpn-devel@lists.sourceforge.net
-> Subject: [Openvpn-devel] Topics for the community meeting (Wed, 13th June
-> 2018)
->
-> Hi,
->
-> We're going to have an IRC meeting starting at 11:30 CET
-> (9:30 UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have to
-> be logged in to Freenode to join the channel.
->
-> Current topic list along with basic information is here:
->
-> <
-> https://na01.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fcommun=
-ity.openvpn.net%2Fopenvpn%2Fwiki%2FTopics-2018-06-13&amp;data=3D02%7C01%7Cj=
-kunkee%40microsoft.com%7C2ff5949944a34864919b08d5e10aa0b2%7C72f988bf86f141a=
-f91ab2d7cd011db47%7C1%7C0%7C636662358125323471&amp;sdata=3DE2tnMk95DPL%2BFp=
-UNM8td0lQd0PTMmfZ8ZAXUsGBES%2FA%3D&amp;reserved=3D0
-> >
->
-> If you have any other things you'd like to bring up, respond to this mail,
-> send me mail privately or add them to the list yourself.
->
-> In case you can't attend the meeting, please feel free to make comments on
-> the topics by responding to this email or to the summary email sent after
-> the meeting. Whenever possible, we'll also respond to existing, related
-> email threads.
->
-> --
-> Samuli Sepp=C3=A4nen
-> Community Manager
-> OpenVPN Technologies, Inc
->
-> irc freenode net: mattock
->
->
->
->
->
-> -------------------------------------------------------------------------=
------
-> Check out the vibrant tech community on one of the world's most
-> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
-
---000000000000eaef6a05701bf086
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div>Hello, Jon.</div><div><br></div><div>do you know this=
- activity <a href=3D"https://github.com/Microsoft/openvpn/">https://github.=
-com/Microsoft/openvpn/</a> ?</div><div>there are interesting things<br></di=
-v></div><br><div class=3D"gmail_quote"><div dir=3D"ltr">=D0=B2=D1=82, 3 =D0=
-=B8=D1=8E=D0=BB. 2018 =D0=B3. =D0=B2 22:43, Jon Kunkee via Openvpn-devel &l=
-t;<a href=3D"mailto:openvpn-devel@lists.sourceforge.net">openvpn-devel@...1514...=
-s.sourceforge.net</a>&gt;:<br></div><blockquote class=3D"gmail_quote" style=
-=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Hi,<br>
-<br>
-2. Tap-windows6 patches, building and testing<br>
-<br>
-In order to get the tap-windows6 driver signed properly for Windows Server =
-2016, it needs to pass the Windows Hardware Certification Program subset of=
- the Windows Hardware Logo Kit (HLK) tests. Samuli has the tests running in=
- EC2, but there are some failures.<br>
-<br>
-Some of the failures are basically paperwork, like the Static Verification =
-logs test. Some reflect needed tweaks in the environment, like the Running =
-on Server Core test. Others reflect possible code bugs, and since I have si=
-gnificant experience doing Windows kernel debugging I&#39;m investigating t=
-hose.<br>
-<br>
-I spent yesterday setting up a local HLK-based test environment with kernel=
- debugging. Today I&#39;m trying to get two OpenVPN clients to be able to t=
-alk to each other over a VPN so I can start reproducing and investigating t=
-he failures. (I will be sending a mail to openvpn-users asking for help sin=
-ce it would be quite noisy to explain=C2=A0 on IRC.)<br>
-<br>
-Cheers,<br>
-Jon Kunkee<br>
-Software Developer<br>
-Microsoft<br>
-<br>
------Original Message-----<br>
-From: Samuli Sepp=C3=A4nen &lt;<a href=3D"mailto:samuli@...515..." target=
-=3D"_blank">samuli@...515...</a>&gt; <br>
-Sent: Tuesday, July 3, 2018 10:30 AM<br>
-To: <a href=3D"mailto:openvpn-devel@lists.sourceforge.net" target=3D"_blank=
-">openvpn-devel@lists.sourceforge.net</a><br>
-Subject: [Openvpn-devel] Topics for the community meeting (Wed, 13th June 2=
-018)<br>
-<br>
-Hi,<br>
-<br>
-We&#39;re going to have an IRC meeting starting at 11:30 CET<br>
-(9:30 UTC) on #openvpn-meeting &lt;at&gt; <a href=3D"http://irc.freenode.ne=
-t" rel=3D"noreferrer" target=3D"_blank">irc.freenode.net</a>. You do not ha=
-ve to be logged in to Freenode to join the channel.<br>
-<br>
-Current topic list along with basic information is here:<br>
-<br>
-&lt;<a href=3D"https://na01.safelinks.protection.outlook.com/?url=3Dhttps%3=
-A%2F%2Fcommunity.openvpn.net%2Fopenvpn%2Fwiki%2FTopics-2018-06-13&amp;amp;d=
-ata=3D02%7C01%7Cjkunkee%40microsoft.com%7C2ff5949944a34864919b08d5e10aa0b2%=
-7C72f988bf86f141af91ab2d7cd011db47%7C1%7C0%7C636662358125323471&amp;amp;sda=
-ta=3DE2tnMk95DPL%2BFpUNM8td0lQd0PTMmfZ8ZAXUsGBES%2FA%3D&amp;amp;reserved=3D=
-0" rel=3D"noreferrer" target=3D"_blank">https://na01.safelinks.protection.o=
-utlook.com/?url=3Dhttps%3A%2F%2Fcommunity.openvpn.net%2Fopenvpn%2Fwiki%2FTo=
-pics-2018-06-13&amp;amp;data=3D02%7C01%7Cjkunkee%40microsoft.com%7C2ff59499=
-44a34864919b08d5e10aa0b2%7C72f988bf86f141af91ab2d7cd011db47%7C1%7C0%7C63666=
-2358125323471&amp;amp;sdata=3DE2tnMk95DPL%2BFpUNM8td0lQd0PTMmfZ8ZAXUsGBES%2=
-FA%3D&amp;amp;reserved=3D0</a>&gt;<br>
-<br>
-If you have any other things you&#39;d like to bring up, respond to this ma=
-il, send me mail privately or add them to the list yourself.<br>
-<br>
-In case you can&#39;t attend the meeting, please feel free to make comments=
- on the topics by responding to this email or to the summary email sent aft=
-er the meeting. Whenever possible, we&#39;ll also respond to existing, rela=
-ted email threads.<br>
-<br>
---<br>
-Samuli Sepp=C3=A4nen<br>
-Community Manager<br>
-OpenVPN Technologies, Inc<br>
-<br>
-irc freenode net: mattock<br>
-<br>
-<br>
-<br>
-<br>
----------------------------------------------------------------------------=
----<br>
-Check out the vibrant tech community on one of the world&#39;s most<br>
-engaging tech sites, Slashdot.org! <a href=3D"http://sdm.link/slashdot" rel=
-=3D"noreferrer" target=3D"_blank">http://sdm.link/slashdot</a><br>
-_______________________________________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
-envpn-devel@lists.sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
-=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
-nfo/openvpn-devel</a><br>
-</blockquote></div>
-
---000000000000eaef6a05701bf086--
+--_000_DM5PR2101MB11126374B900460BE5FE16AEB0420DM5PR2101MB1112_--
 
