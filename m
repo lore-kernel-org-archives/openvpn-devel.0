@@ -1,16 +1,16 @@
-References: <1530581086-7825-1-git-send-email-selva.nair@...277...>
- <CAEsd45SC3aXgJYX33gFyF53A3njcbokK8ho_G7-6VDVG84zNfA@...278...>
- <CAKuzo_i0rGsDOpEdoFe-SRSDVQY7raSZhjyOLh-pa34FWxtXjQ@...278...>
- <95d437e1-73db-99bb-0aed-11335956db47@...2080...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <1276c291-2a0d-7de4-a775-fc66184d3f0f@...2181...>
-Date: Tue, 3 Jul 2018 16:32:51 +0800
+References: <20180605081407.6944-1-a@...2181...>
+ <c9c95b63-e182-a02d-ae65-5d3cf2b6c75a@...2080...>
+ <6d8c2abb-37b3-5bed-3077-32eb27e4c61b@...2181...>
+Message-ID: <18dbf33f-23ad-e6c6-6309-9f5aef5c2e8f@...2181...>
+Date: Tue, 3 Jul 2018 17:01:19 +0800
 MIME-Version: 1.0
-In-Reply-To: <95d437e1-73db-99bb-0aed-11335956db47@...2080...>
+In-Reply-To: <6d8c2abb-37b3-5bed-3077-32eb27e4c61b@...2181...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="ZOm11arABrc14pxbOHVHjUeWnZeSMlB9g"
-Subject: Re: [Openvpn-devel] [PATCH] Make up/down script errors not FATAL
+ boundary="WxyIV9ASK6D2QHDFugM0ogYGt99shR8Mm"
+Subject: Re: [Openvpn-devel] [PATCH v3 1/2] crypto: always reload
+ tls-auth/crypt key contexts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,94 +19,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net, David Sommerseth <openvpn@...2080...>, Selva Nair <selva.nair@...277...>, "Jonathan K. Bullard" <jkbullard@...277...>
+To: openvpn-devel@lists.sourceforge.net, David Sommerseth <davids@...515...>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---ZOm11arABrc14pxbOHVHjUeWnZeSMlB9g
-Content-Type: multipart/mixed; boundary="tPtiRKo2IXkWrUeejJzKB5Nft3KUGals0";
+--WxyIV9ASK6D2QHDFugM0ogYGt99shR8Mm
+Content-Type: multipart/mixed; boundary="8xD72V0Uj0XMdOBCWBzdIBgpvXN3P51za";
  protected-headers="v1"
 From: Antonio Quartulli <a@...2181...>
-To: openvpn-devel@lists.sourceforge.net,
- David Sommerseth <openvpn@...2080...>,
- Selva Nair <selva.nair@...277...>, "Jonathan K. Bullard"
- <jkbullard@...277...>
-Message-ID: <1276c291-2a0d-7de4-a775-fc66184d3f0f@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] Make up/down script errors not FATAL
-References: <1530581086-7825-1-git-send-email-selva.nair@...277...>
- <CAEsd45SC3aXgJYX33gFyF53A3njcbokK8ho_G7-6VDVG84zNfA@...278...>
- <CAKuzo_i0rGsDOpEdoFe-SRSDVQY7raSZhjyOLh-pa34FWxtXjQ@...278...>
- <95d437e1-73db-99bb-0aed-11335956db47@...2080...>
-In-Reply-To: <95d437e1-73db-99bb-0aed-11335956db47@...2080...>
+To: openvpn-devel@lists.sourceforge.net, David Sommerseth <davids@...515...>
+Message-ID: <18dbf33f-23ad-e6c6-6309-9f5aef5c2e8f@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v3 1/2] crypto: always reload
+ tls-auth/crypt key contexts
+References: <20180605081407.6944-1-a@...2181...>
+ <c9c95b63-e182-a02d-ae65-5d3cf2b6c75a@...2080...>
+ <6d8c2abb-37b3-5bed-3077-32eb27e4c61b@...2181...>
+In-Reply-To: <6d8c2abb-37b3-5bed-3077-32eb27e4c61b@...2181...>
 
---tPtiRKo2IXkWrUeejJzKB5Nft3KUGals0
+--8xD72V0Uj0XMdOBCWBzdIBgpvXN3P51za
 Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-On 03/07/18 16:23, David Sommerseth wrote:
-> TL;DR: Reduce the possibility to run scripts to an absolute minimum (if at
-> all).  If having this possibility run them with as few privileges as poss=
-ible,
-> and scripts to run is preferred to be configured outside of the OpenVPN
-> configuration file.
+On 27/06/18 09:50, Antonio Quartulli wrote:
+> Hi,
 >=20
-> The latter argument of configuring scripts outside of the configuration f=
-ile
-> is simply trying to end up with a single configuration file which would be
-> functional on all devices.  A configuration file with Windows scripts won=
-'t
-> work on a non-Windows box and vice versa - some configuration files might=
- not
-> even work across Linux distributions even.  So let the OpenVPN configurat=
-ion
-> files be as generic as possible, focusing on getting a connection to a re=
-mote
-> server.  And configure the rest outside of the OpenVPN configuration prof=
-ile.
+> On 27/06/18 05:33, David Sommerseth wrote:
+>> On 05/06/18 10:14, Antonio Quartulli wrote:
+>>> In preparation to having tls-auth/crypt keys per connection
+>>> block, it is important to ensure that such material is always
+>>> reloaded upon SIGUSR1, no matter if `persist-key` was specified
+>>> or not.
+>>
+>> Has this been tested with --chroot and --user/--group?
 >=20
+> No, these tests are missing.
 
-I have previously proposed to use an udev-compatible mechanism to run
-scripts.
-In this scenario OpenVPN only needs to trigger "signals" and then
-whoever is listening (i.e. udev/hotplug) will take care of handling
-them. This could even be DBus driven.
+Tests performed.
 
-However, this can work on Linux. Anybody knows of a similar mechanism
-for Windows and macOS?
+There is no change in behaviour: --chroot and --user/--group behave
+exactly as now.
+This was expected as using persist-key will instruct openvpn to cache
+the key material and thus it can be reused to re-init the various SSL
+context every time.
 
 
 Cheers,
-
 
 --=20
 Antonio Quartulli
 
 
---tPtiRKo2IXkWrUeejJzKB5Nft3KUGals0--
+--8xD72V0Uj0XMdOBCWBzdIBgpvXN3P51za--
 
---ZOm11arABrc14pxbOHVHjUeWnZeSMlB9g
+--WxyIV9ASK6D2QHDFugM0ogYGt99shR8Mm
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAls7NLcACgkQB6U8WA7y
-zXRoHg//QQpw4rh6E0vkCbDGgC6IL1vnY1of9OjH3wGq/mM2x7hr+MjJGXugy7DN
-bytqfsHqtXE0fikk4t9OO7De6K/Dh6um/4WGalDxKV82qLAZ/OCZY19ik4+M767S
-2Tu8FTSp1llDUIAQHCbsYegEK/Obqbi5pYrRwdqOzg8OZTh8duKhea5G3xe2xPK+
-Eq1kcTW4iCMAGnvlLDk6Kppy5sUIqEtB9qtqdRGQVaE/yJ0Rnsw1EwF8Z1WN0L3w
-jnoj0+BxxRpTSIzq9BTcMBF+lgNhCw5BHAmhNlCiw11sUlDMP18eCjA4pyuvDQex
-Hz8CxK4iB5NSVOEnexqawsrDLKdfD4drQLCm2856F8DDnYwqSg1fNTXlm6KNLS5w
-PeaGj5Z3okIep+oHRZqUT1PQUB5pEuCkHmbiwN/yHzlrAls0Duzf0761aoz+Pnx5
-YGh2CWo+ozjYPXMEaeH7mZZ1AwV3rq4kcjS4105c2sD68P/hGZpKJozXPAWrVLNx
-ZlYbEoZgJwHYNw0W0XZZ0jAvy7Y4OjH12fUjy3uadPXebOO/mcxmepj8LuSBy9/o
-UDRPFaUgAy0pnpRXf6/nNYu5I4QfI7LFf39QDq3leHRVtr70563mvaCGWJcvdqKr
-GdqzL9I+LDr+Tj9RgyGqqsKCQwcWbn/4x+oUqzUsxXcj8T5/D9o=
-=sy5k
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAls7O18ACgkQB6U8WA7y
+zXRlDBAAhe0+7Ta66nVAcmAaw93v5l4oltmumSMTZ1jmRwqZ0zjWuOv29aJ5POVy
+xuNIBCkdNikeOm8h2xxx+UnoQ99sjAVlYZAPRYxuMbOv7Hqlzjv+jaBoeisAu8FJ
+FR2hblVKHMLAjyBgEaT7/KtZVy//UXdjANyq0vR1DlO2FIjgrtlbXJaYGYyMnNDK
+6NNdz2cRZ0SpTAEuPrgjbH1e2CDGspHLmI7Ik8JKzdeoVmgn5MEEtCFg+c4T1SUR
+n2sDWqAyEzQno4FWLVQPrRQa8g5Rp7/RUo/GogHgv4pzoZkhspGVVlAO6SQ19ORt
+KhhcYJfmaIBeYQFfKvT4bHpfbaUYumrGGwpTh8V3LxEI2v+9Xe9lwJpmJmSqo+0C
+kfATcqHZk2kpY2oCPxA/xjsYz3jpxogo2dR8CMMKEcvPhHGU26exempbzgDqk36r
+z9gc7v+IiF0TyN/OtmY0QV0RozVKplyeTpIdtlrU5U8MtTqjkeAqD/TWueKx/EpT
+bUIOR0wBcZ4FqJNMXaeqEN4Qw/lTRHs7n9N35NozTVDnq79YCmfRIpPViUMT4Pcm
+DfNUdYDTCJQbNLwjOnYz3K4h9PEcr6BXwdWu9Nx9bgzIuIITGEaGOrjWGa+tdqXu
+swC7DKcdIKG1AarBlIR7hH1gtTF9X5OfT759tYUxBx4XRQy2f5o=
+=+x8F
 -----END PGP SIGNATURE-----
 
---ZOm11arABrc14pxbOHVHjUeWnZeSMlB9g--
+--WxyIV9ASK6D2QHDFugM0ogYGt99shR8Mm--
 
