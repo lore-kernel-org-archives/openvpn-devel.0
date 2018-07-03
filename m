@@ -1,14 +1,9 @@
-Date: Tue, 3 Jul 2018 17:33:19 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180703153319.GO989@...1296...>
-References: <20180703144755.6794-1-arne@...1227...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="cy9Nn4fUvYST66Pl"
-Content-Disposition: inline
-In-Reply-To: <20180703144755.6794-1-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Implement parsing and sending INFO and
- INFO_PRE control messages
+From: selva.nair@...277...
+Date: Tue,  3 Jul 2018 11:58:29 -0400
+Message-Id: <1530633509-4959-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1530581086-7825-1-git-send-email-selva.nair@...277...>
+References: <1530581086-7825-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH v2] Make up/down script errors not FATAL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,54 +12,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---cy9Nn4fUvYST66Pl
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: Selva Nair <selva.nair@...277...>
 
-Hi,
+Treat the error as not FATAL only if its triggered due
+to script_security < SSEC_SCRIPTS.
 
-On Tue, Jul 03, 2018 at 04:47:55PM +0200, Arne Schwabe wrote:
-> OpenVPN 3 implements these messages to send information during the
-> authentication to the UI, implement these message also in OpenVPN 2.x
+This helps user interfaces enforce a safer script-security setting
+without causing a FATAL error.
 
-Feature-Questionmark :-)
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+v2 changes:
+- Have script errors continue to trigger a FATAL error.
+- Update the commit message to match this change.
 
-Is there any documentation about this?  What sort of messages are sent,
-by which product?  What do you do with it?
+ src/openvpn/init.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Can we maybe have some documentation in management-notes.txt?
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index b748357..074a2d3 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -168,13 +168,14 @@ run_up_down(const char *command,
+     if (command)
+     {
+         struct argv argv = argv_new();
++        int flags = (script_security >= SSEC_SCRIPTS)? S_FATAL : 0;
+         ASSERT(arg);
+         setenv_str(es, "script_type", script_type);
+         argv_parse_cmd(&argv, command);
+         argv_printf_cat(&argv, "%s %d %d %s %s %s", arg, tun_mtu, link_mtu,
+                         ifconfig_local, ifconfig_remote, context);
+         argv_msg(M_INFO, &argv);
+-        openvpn_run_script(&argv, es, S_FATAL, "--up/--down");
++        openvpn_run_script(&argv, es, flags, "--up/--down");
+         argv_reset(&argv);
+     }
+ 
+-- 
+2.1.4
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---cy9Nn4fUvYST66Pl
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJbO5c/AAoJEB2Cnv7KVigS/NgMAIGnnaK15f+DcFUl7Pd9LOXl
-M7mlX7PN4UASNoSH4PkrSSn+G9j135ua4erWwc5L0AmJnJvNaZlBZCG4OYYqtNS/
-tBEpeXXVrvoFW8fKEzCxC+XZKbI3TwEfQ/2NJFbVc6puRcrSoxL+cPImVRPNUAdM
-iovePI4EHhYNl6XjSa2kKhjrv0J70fsMfXmy/nMclFFyp8Zh/5YBZ9kw0iDj2hUS
-B+Zgd6OdmkevBA2JW2Gigo+nje1Gc8nhKBspB8qYeeFTHS/jAiTiEqrg1Fq6P4yO
-JtJiRJNZP+rM9Khyon1PIpGLJh58ekTet4eWS/RbvesdOyMhvCV6qLyu5/qL7Axa
-XHEVeoYpLmuQALECDuMU53RctVi2dDqA6zC3N9GDDM1viU7Hp2ZsNvFVN2rn5hH8
-boxrDoJ0ka/TQ+6eBuDBbIZAF0+wyRffMrVhFaHMjExe6SHdgWzaJchf41uynsMR
-OcWs52jjN5y2aMjFiXaFA7S5vQMQ5xuWEHREsD4cLg==
-=TFQ6
------END PGP SIGNATURE-----
-
---cy9Nn4fUvYST66Pl--
 
