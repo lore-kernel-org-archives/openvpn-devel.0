@@ -1,10 +1,10 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Wed,  4 Jul 2018 19:53:56 +0200
-Message-Id: <20180704175404.22371-1-steffan@...1856...>
-In-Reply-To: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
+Date: Wed,  4 Jul 2018 19:54:00 +0200
+Message-Id: <20180704175404.22371-5-steffan@...1856...>
+In-Reply-To: <20180704175404.22371-1-steffan@...1856...>
 References: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH v2 1/9] Move file-related functions from
- misc.c to platform.c
+ <20180704175404.22371-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH v2 5/9] tls-crypt-v2: generate client keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,666 +19,852 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Steffan Karger <steffan.karger@...1435...>
 
-To avoid having to include misc.c - which is a dependency mess - in the
-tls-crypt unit tests, move file-handing related functions to platform.c
-(which is where other file-related functions already reside).
-
-Note that platform_create_temp_file() needs random.  To avoid including
-misc.c in other tests that use platform.c, add a mock get_random().
-
-(Almost every test includes platform.c, because buffer.c depends on it.
-That smells like it needs cleanup too, but not in this patch set.)
+As a first step towards a full tls-crypt-v2 implementation, add
+functionality to generate tls-crypt-v2 client keys.
 
 Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
- src/openvpn/init.c                         |   2 +-
- src/openvpn/misc.c                         | 148 ---------------------
- src/openvpn/misc.h                         |  12 --
- src/openvpn/multi.c                        |  25 ++--
- src/openvpn/pf.c                           |   4 +-
- src/openvpn/platform.c                     | 148 +++++++++++++++++++++
- src/openvpn/platform.h                     |  18 +++
- src/openvpn/plugin.c                       |   6 +-
- src/openvpn/ssl_verify.c                   |  12 +-
- tests/unit_tests/openvpn/Makefile.am       |   4 +
- tests/unit_tests/openvpn/mock_get_random.c |  36 +++++
- 11 files changed, 233 insertions(+), 182 deletions(-)
- create mode 100644 tests/unit_tests/openvpn/mock_get_random.c
+ doc/openvpn.8           |  51 ++++++++
+ src/openvpn/buffer.c    |  63 +++++++++
+ src/openvpn/buffer.h    |   6 +
+ src/openvpn/init.c      |  35 ++++-
+ src/openvpn/integer.h   |  10 ++
+ src/openvpn/options.c   |  37 ++++++
+ src/openvpn/options.h   |   9 ++
+ src/openvpn/tls_crypt.c | 284 ++++++++++++++++++++++++++++++++++++++++
+ src/openvpn/tls_crypt.h |  81 ++++++++++--
+ tests/t_lpback.sh       |  40 +++++-
+ 10 files changed, 600 insertions(+), 16 deletions(-)
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index b748357d..f6c8f08e 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -807,7 +807,7 @@ init_static(void)
- #ifdef STATUS_PRINTF_TEST
-     {
-         struct gc_arena gc = gc_new();
--        const char *tmp_file = create_temp_file("/tmp", "foo", &gc);
-+        const char *tmp_file = platform_create_temp_file("/tmp", "foo", &gc);
-         struct status_output *so = status_open(tmp_file, 0, -1, NULL, STATUS_OUTPUT_WRITE);
-         status_printf(so, "%s", "foo");
-         status_printf(so, "%s", "bar");
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index fc68027f..85cdc95d 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -313,87 +313,6 @@ openvpn_popen(const struct argv *a,  const struct env_set *es)
-     return ret;
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 46ea58b6..abefa86a 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -5245,6 +5245,57 @@ degrading to the same security as using
+ That is, the control channel still benefits from the extra protection against
+ active man\-in\-the\-middle\-attacks and DoS attacks, but may no longer offer
+ extra privacy and post\-quantum security on top of what TLS itself offers.
++
++For large setups or setups where clients are not trusted, consider using
++.B \-\-tls\-crypt\-v2
++instead.  That uses per\-client unique keys, and thereby improves the bounds to
++\fR'rotate a client key at least once per 8000 years'.
++.\"*********************************************************
++.TP
++.B \-\-tls\-crypt\-v2 keyfile
++
++Use client\-specific tls\-crypt keys.
++
++For clients,
++.B keyfile
++is a client\-specific tls\-crypt key.  Such a key can be generated using the
++.B \-\-tls\-crypt\-v2\-genkey
++option.
++
++For servers,
++.B keyfile
++is used to unwrap client\-specific keys supplied by the client during connection
++setup.  This key must be the same as the key used to generate the
++client\-specific key (see
++.B \-\-tls\-crypt\-v2\-genkey\fR).
++
++On servers, this option can be used together with the
++.B \-\-tls\-auth
++or
++.B \-\-tls\-crypt
++option.  In that case, the server will detect whether the client is using
++client\-specific keys, and automatically select the right mode.
++.\"*********************************************************
++.TP
++.B \-\-tls\-crypt\-v2\-genkey client|server keyfile [metadata]
++
++If the first parameter equals "server", generate a \-\-tls\-crypt\-v2 server
++key and store the key in
++.B keyfile\fR.
++
++
++If the first parameter equals "client", generate a \-\-tls\-crypt\-v2 client
++key, and store the key in
++.B keyfile\fR.
++
++If supplied, include the supplied
++.B metadata
++in the wrapped client key.  This metadata must be supplied in base64\-encoded
++form.  The metadata must be at most 735 bytes long (980 bytes in base64).
++
++.B TODO
++Metadata handling is not yet implemented.  This text will be updated by the
++commit that introduces metadata handling.
+ .\"*********************************************************
+ .TP
+ .B \-\-askpass [file]
+diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
+index becfeb93..ca32618b 100644
+--- a/src/openvpn/buffer.c
++++ b/src/openvpn/buffer.c
+@@ -315,6 +315,69 @@ convert_to_one_line(struct buffer *buf)
+     }
  }
  
--
--/* return true if filename can be opened for read */
--bool
--test_file(const char *filename)
--{
--    bool ret = false;
--    if (filename)
--    {
--        FILE *fp = platform_fopen(filename, "r");
--        if (fp)
--        {
--            fclose(fp);
--            ret = true;
--        }
--        else
--        {
--            if (openvpn_errno() == EACCES)
--            {
--                msg( M_WARN | M_ERRNO, "Could not access file '%s'", filename);
--            }
--        }
--    }
--
--    dmsg(D_TEST_FILE, "TEST FILE '%s' [%d]",
--         filename ? filename : "UNDEF",
--         ret);
--
--    return ret;
--}
--
--/* create a temporary filename in directory */
--const char *
--create_temp_file(const char *directory, const char *prefix, struct gc_arena *gc)
--{
--    int fd;
--    const char *retfname = NULL;
--    unsigned int attempts = 0;
--    char fname[256] = { 0 };
--    const char *fname_fmt = PACKAGE "_%.*s_%08lx%08lx.tmp";
--    const int max_prefix_len = sizeof(fname) - (sizeof(PACKAGE) + 7 + (2 * 8));
--
--    while (attempts < 6)
--    {
--        ++attempts;
--
--        if (!openvpn_snprintf(fname, sizeof(fname), fname_fmt, max_prefix_len,
--                              prefix, (unsigned long) get_random(),
--                              (unsigned long) get_random()))
--        {
--            msg(M_WARN, "ERROR: temporary filename too long");
--            return NULL;
--        }
--
--        retfname = gen_path(directory, fname, gc);
--        if (!retfname)
--        {
--            msg(M_WARN, "Failed to create temporary filename and path");
--            return NULL;
--        }
--
--        /* Atomically create the file.  Errors out if the file already
--         * exists.  */
--        fd = platform_open(retfname, O_CREAT | O_EXCL | O_WRONLY, S_IRUSR | S_IWUSR);
--        if (fd != -1)
--        {
--            close(fd);
--            return retfname;
--        }
--        else if (fd == -1 && errno != EEXIST)
--        {
--            /* Something else went wrong, no need to retry.  */
--            msg(M_WARN | M_ERRNO, "Could not create temporary file '%s'",
--                retfname);
--            return NULL;
--        }
--    }
--
--    msg(M_WARN, "Failed to create temporary file after %i attempts", attempts);
--    return NULL;
--}
--
- /*
-  * Prepend a random string to hostname to prevent DNS caching.
-  * For example, foo.bar.gov would be modified to <random-chars>.foo.bar.gov.
-@@ -415,73 +334,6 @@ hostname_randomize(const char *hostname, struct gc_arena *gc)
- #undef n_rnd_bytes
- }
- 
--/*
-- * Put a directory and filename together.
-- */
--const char *
--gen_path(const char *directory, const char *filename, struct gc_arena *gc)
--{
--#ifdef _WIN32
--    const int CC_PATH_RESERVED = CC_LESS_THAN|CC_GREATER_THAN|CC_COLON
--                                 |CC_DOUBLE_QUOTE|CC_SLASH|CC_BACKSLASH|CC_PIPE|CC_QUESTION_MARK|CC_ASTERISK;
--#else
--    const int CC_PATH_RESERVED = CC_SLASH;
--#endif
--
--    if (!gc)
--    {
--        return NULL; /* Would leak memory otherwise */
--    }
--
--    const char *safe_filename = string_mod_const(filename, CC_PRINT, CC_PATH_RESERVED, '_', gc);
--
--    if (safe_filename
--        && strcmp(safe_filename, ".")
--        && strcmp(safe_filename, "..")
--#ifdef _WIN32
--        && win_safe_filename(safe_filename)
--#endif
--        )
--    {
--        const size_t outsize = strlen(safe_filename) + (directory ? strlen(directory) : 0) + 16;
--        struct buffer out = alloc_buf_gc(outsize, gc);
--        char dirsep[2];
--
--        dirsep[0] = OS_SPECIFIC_DIRSEP;
--        dirsep[1] = '\0';
--
--        if (directory)
--        {
--            buf_printf(&out, "%s%s", directory, dirsep);
--        }
--        buf_printf(&out, "%s", safe_filename);
--
--        return BSTR(&out);
--    }
--    else
--    {
--        return NULL;
--    }
--}
--
--bool
--absolute_pathname(const char *pathname)
--{
--    if (pathname)
--    {
--        const int c = pathname[0];
--#ifdef _WIN32
--        return c == '\\' || (isalpha(c) && pathname[1] == ':' && pathname[2] == '\\');
--#else
--        return c == '/';
--#endif
--    }
--    else
--    {
--        return false;
--    }
--}
--
- /*
-  * Get and store a username/password
-  */
-diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
-index 5680c274..c23d4cd1 100644
---- a/src/openvpn/misc.h
-+++ b/src/openvpn/misc.h
-@@ -79,18 +79,6 @@ const char **make_extended_arg_array(char **p, struct gc_arena *gc);
- /* an analogue to the random() function, but use OpenSSL functions if available */
- long int get_random(void);
- 
--/* return true if filename can be opened for read */
--bool test_file(const char *filename);
--
--/* create a temporary file in directory, returns the filename of the created file */
--const char *create_temp_file(const char *directory, const char *prefix, struct gc_arena *gc);
--
--/* put a directory and filename together */
--const char *gen_path(const char *directory, const char *filename, struct gc_arena *gc);
--
--/* return true if pathname is absolute */
--bool absolute_pathname(const char *pathname);
--
- /* prepend a random prefix to hostname */
- const char *hostname_randomize(const char *hostname, struct gc_arena *gc);
- 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 3da8c110..2944eef2 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -1642,7 +1642,7 @@ multi_client_connect_post(struct multi_context *m,
-                           unsigned int *option_types_found)
- {
-     /* Did script generate a dynamic config file? */
--    if (test_file(dc_file))
-+    if (platform_test_file(dc_file))
-     {
-         options_server_import(&mi->context.options,
-                               dc_file,
-@@ -1829,12 +1829,13 @@ multi_connection_established(struct multi_context *m, struct multi_instance *mi)
-         {
-             const char *ccd_file;
- 
--            ccd_file = gen_path(mi->context.options.client_config_dir,
--                                tls_common_name(mi->context.c2.tls_multi, false),
--                                &gc);
-+            ccd_file = platform_gen_path(mi->context.options.client_config_dir,
-+                                         tls_common_name(mi->context.c2.tls_multi,
-+                                                         false),
-+                                         &gc);
- 
-             /* try common-name file */
--            if (test_file(ccd_file))
-+            if (platform_test_file(ccd_file))
-             {
-                 options_server_import(&mi->context.options,
-                                       ccd_file,
-@@ -1845,11 +1846,11 @@ multi_connection_established(struct multi_context *m, struct multi_instance *mi)
-             }
-             else /* try default file */
-             {
--                ccd_file = gen_path(mi->context.options.client_config_dir,
--                                    CCD_DEFAULT,
--                                    &gc);
-+                ccd_file = platform_gen_path(mi->context.options.client_config_dir,
-+                                             CCD_DEFAULT,
-+                                             &gc);
- 
--                if (test_file(ccd_file))
-+                if (platform_test_file(ccd_file))
-                 {
-                     options_server_import(&mi->context.options,
-                                           ccd_file,
-@@ -1879,7 +1880,8 @@ multi_connection_established(struct multi_context *m, struct multi_instance *mi)
-         if (plugin_defined(mi->context.plugins, OPENVPN_PLUGIN_CLIENT_CONNECT))
-         {
-             struct argv argv = argv_new();
--            const char *dc_file = create_temp_file(mi->context.options.tmp_dir, "cc", &gc);
-+            const char *dc_file = platform_create_temp_file(mi->context.options.tmp_dir,
-+                                                            "cc", &gc);
- 
-             if (!dc_file)
-             {
-@@ -1941,7 +1943,8 @@ script_depr_failed:
- 
-             setenv_str(mi->context.c2.es, "script_type", "client-connect");
- 
--            dc_file = create_temp_file(mi->context.options.tmp_dir, "cc", &gc);
-+            dc_file = platform_create_temp_file(mi->context.options.tmp_dir,
-+                                                "cc", &gc);
-             if (!dc_file)
-             {
-                 cc_succeeded = false;
-diff --git a/src/openvpn/pf.c b/src/openvpn/pf.c
-index cb22a1cb..d4e405a8 100644
---- a/src/openvpn/pf.c
-+++ b/src/openvpn/pf.c
-@@ -621,8 +621,8 @@ pf_init_context(struct context *c)
- #ifdef PLUGIN_PF
-     if (plugin_defined(c->plugins, OPENVPN_PLUGIN_ENABLE_PF))
-     {
--        c->c2.pf.filename = create_temp_file(c->options.tmp_dir, "pf",
--                                             &c->c2.gc);
-+        c->c2.pf.filename = platform_create_temp_file(c->options.tmp_dir, "pf",
-+                                                      &c->c2.gc);
-         if (c->c2.pf.filename)
-         {
-             setenv_str(c->c2.es, "pf_file", c->c2.pf.filename);
-diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
-index fbffd0f0..5ecccf1c 100644
---- a/src/openvpn/platform.c
-+++ b/src/openvpn/platform.c
-@@ -31,6 +31,7 @@
- 
- #include "buffer.h"
- #include "error.h"
-+#include "misc.h"
- #include "win32.h"
- 
- #include "memdbg.h"
-@@ -335,3 +336,150 @@ platform_stat(const char *path, platform_stat_t *buf)
- #endif
- }
- 
-+/* create a temporary filename in directory */
-+const char *
-+platform_create_temp_file(const char *directory, const char *prefix, struct gc_arena *gc)
-+{
-+    int fd;
-+    const char *retfname = NULL;
-+    unsigned int attempts = 0;
-+    char fname[256] = { 0 };
-+    const char *fname_fmt = PACKAGE "_%.*s_%08lx%08lx.tmp";
-+    const int max_prefix_len = sizeof(fname) - (sizeof(PACKAGE) + 7 + (2 * 8));
-+
-+    while (attempts < 6)
-+    {
-+        ++attempts;
-+
-+        if (!openvpn_snprintf(fname, sizeof(fname), fname_fmt, max_prefix_len,
-+                              prefix, (unsigned long) get_random(),
-+                              (unsigned long) get_random()))
-+        {
-+            msg(M_WARN, "ERROR: temporary filename too long");
-+            return NULL;
-+        }
-+
-+        retfname = platform_gen_path(directory, fname, gc);
-+        if (!retfname)
-+        {
-+            msg(M_WARN, "Failed to create temporary filename and path");
-+            return NULL;
-+        }
-+
-+        /* Atomically create the file.  Errors out if the file already
-+         * exists.  */
-+        fd = platform_open(retfname, O_CREAT | O_EXCL | O_WRONLY, S_IRUSR | S_IWUSR);
-+        if (fd != -1)
-+        {
-+            close(fd);
-+            return retfname;
-+        }
-+        else if (fd == -1 && errno != EEXIST)
-+        {
-+            /* Something else went wrong, no need to retry.  */
-+            msg(M_WARN | M_ERRNO, "Could not create temporary file '%s'",
-+                retfname);
-+            return NULL;
-+        }
-+    }
-+
-+    msg(M_WARN, "Failed to create temporary file after %i attempts", attempts);
-+    return NULL;
-+}
-+
-+/*
-+ * Put a directory and filename together.
-+ */
-+const char *
-+platform_gen_path(const char *directory, const char *filename,
-+                  struct gc_arena *gc)
-+{
-+#ifdef _WIN32
-+    const int CC_PATH_RESERVED = CC_LESS_THAN|CC_GREATER_THAN|CC_COLON
-+                                 |CC_DOUBLE_QUOTE|CC_SLASH|CC_BACKSLASH|CC_PIPE|CC_QUESTION_MARK|CC_ASTERISK;
-+#else
-+    const int CC_PATH_RESERVED = CC_SLASH;
-+#endif
-+
-+    if (!gc)
-+    {
-+        return NULL; /* Would leak memory otherwise */
-+    }
-+
-+    const char *safe_filename = string_mod_const(filename, CC_PRINT, CC_PATH_RESERVED, '_', gc);
-+
-+    if (safe_filename
-+        && strcmp(safe_filename, ".")
-+        && strcmp(safe_filename, "..")
-+#ifdef _WIN32
-+        && win_safe_filename(safe_filename)
-+#endif
-+        )
-+    {
-+        const size_t outsize = strlen(safe_filename) + (directory ? strlen(directory) : 0) + 16;
-+        struct buffer out = alloc_buf_gc(outsize, gc);
-+        char dirsep[2];
-+
-+        dirsep[0] = OS_SPECIFIC_DIRSEP;
-+        dirsep[1] = '\0';
-+
-+        if (directory)
-+        {
-+            buf_printf(&out, "%s%s", directory, dirsep);
-+        }
-+        buf_printf(&out, "%s", safe_filename);
-+
-+        return BSTR(&out);
-+    }
-+    else
-+    {
-+        return NULL;
-+    }
-+}
-+
 +bool
-+platform_absolute_pathname(const char *pathname)
-+{
-+    if (pathname)
-+    {
-+        const int c = pathname[0];
-+#ifdef _WIN32
-+        return c == '\\' || (isalpha(c) && pathname[1] == ':' && pathname[2] == '\\');
-+#else
-+        return c == '/';
-+#endif
-+    }
-+    else
-+    {
-+        return false;
-+    }
-+}
-+
-+/* return true if filename can be opened for read */
-+bool
-+platform_test_file(const char *filename)
++buffer_write_file(const char *filename, const struct buffer *buf)
 +{
 +    bool ret = false;
-+    if (filename)
++    int fd = platform_open(filename, O_CREAT | O_TRUNC | O_WRONLY,
++                           S_IRUSR | S_IWUSR);
++    if (fd == -1)
 +    {
-+        FILE *fp = platform_fopen(filename, "r");
-+        if (fp)
++        msg(M_ERRNO, "Cannot open file '%s' for write", filename);
++        goto cleanup;
++    }
++
++    const int size = write(fd, BPTR(buf), BLEN(buf));
++    if (size != BLEN(buf))
++    {
++        msg(M_ERRNO, "Write error on file '%s'", filename);
++        goto cleanup;
++    }
++
++    ret = true;
++cleanup:
++    if (close(fd))
++    {
++        msg(M_ERRNO, "Close error on file %s", filename);
++        ret = false;
++    }
++    return ret;
++}
++
++struct buffer
++buffer_read_from_file(const char *filename, struct gc_arena *gc)
++{
++    struct buffer ret = { 0 };
++
++    platform_stat_t file_stat = {0};
++    if (platform_stat(filename, &file_stat) < 0)
++    {
++        return ret;
++    }
++
++    FILE *fp = platform_fopen(filename, "r");
++    if (!fp)
++    {
++        return ret;
++    }
++
++    const size_t size = file_stat.st_size;
++    ret = alloc_buf_gc(size + 1, gc); /* Space for trailing \0 */
++    ssize_t read_size = fread(BPTR(&ret), 1, size, fp);
++    if (read_size < 0)
++    {
++        free_buf(&ret);
++        goto cleanup;
++    }
++    ASSERT(buf_inc_len(&ret, read_size));
++    buf_null_terminate(&ret);
++
++cleanup:
++    fclose(fp);
++    return ret;
++}
++
++
+ /* NOTE: requires that string be null terminated */
+ void
+ buf_write_string_file(const struct buffer *buf, const char *filename, int fd)
+diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
+index d848490a..9ab60420 100644
+--- a/src/openvpn/buffer.h
++++ b/src/openvpn/buffer.h
+@@ -469,6 +469,12 @@ const char *skip_leading_whitespace(const char *str);
+ 
+ void string_null_terminate(char *str, int len, int capacity);
+ 
++/** Write buffer contents to file */
++bool buffer_write_file(const char *filename, const struct buffer *buf);
++
++/** Read file contents. Returns invalid buffer on error. */
++struct buffer buffer_read_from_file(const char *filename, struct gc_arena *gc);
++
+ /*
+  * Write string in buf to file descriptor fd.
+  * NOTE: requires that string be null terminated.
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index d28d1fd2..c1454f36 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1028,6 +1028,11 @@ print_openssl_info(const struct options *options)
+ bool
+ do_genkey(const struct options *options)
+ {
++    /* should we disable paging? */
++    if (options->mlock && (options->genkey || options->tls_crypt_v2_genkey_file))
++    {
++        platform_mlockall(true);
++    }
+     if (options->genkey)
+     {
+         int nbits_written;
+@@ -1035,11 +1040,6 @@ do_genkey(const struct options *options)
+         notnull(options->shared_secret_file,
+                 "shared secret output file (--secret)");
+ 
+-        if (options->mlock)     /* should we disable paging? */
+-        {
+-            platform_mlockall(true);
+-        }
+-
+         nbits_written = write_key_file(2, options->shared_secret_file);
+ 
+         msg(D_GENKEY | M_NOPREFIX,
+@@ -1047,6 +1047,31 @@ do_genkey(const struct options *options)
+             options->shared_secret_file);
+         return true;
+     }
++    if (options->tls_crypt_v2_genkey_type)
++    {
++        if(!strcmp(options->tls_crypt_v2_genkey_type, "server"))
 +        {
-+            fclose(fp);
-+            ret = true;
++            tls_crypt_v2_write_server_key_file(options->tls_crypt_v2_genkey_file);
++            return true;
++        }
++        else if (options->tls_crypt_v2_genkey_type
++                 && !strcmp(options->tls_crypt_v2_genkey_type, "client"))
++        {
++            if (!options->tls_crypt_v2_file)
++            {
++                msg(M_USAGE, "--tls-crypt-v2-gen-client-key requires a server key to be set via --tls-crypt-v2");
++            }
++
++            tls_crypt_v2_write_client_key_file(options->tls_crypt_v2_genkey_file,
++                    options->tls_crypt_v2_metadata, options->tls_crypt_v2_file,
++                    options->tls_crypt_v2_inline);
++            return true;
 +        }
 +        else
 +        {
-+            if (openvpn_errno() == EACCES)
-+            {
-+                msg( M_WARN | M_ERRNO, "Could not access file '%s'", filename);
-+            }
++            msg(M_USAGE, "--tls-crypt-v2-genkey type should be \"client\" or \"server\"");
 +        }
 +    }
+     return false;
+ }
+ 
+diff --git a/src/openvpn/integer.h b/src/openvpn/integer.h
+index a7e19d35..b1ae0eda 100644
+--- a/src/openvpn/integer.h
++++ b/src/openvpn/integer.h
+@@ -26,6 +26,16 @@
+ 
+ #include "error.h"
+ 
++#ifndef htonll
++#define htonll(x) ((1==htonl(1)) ? (x) : \
++                  ((uint64_t)htonl((x) & 0xFFFFFFFF) << 32) | htonl((x) >> 32))
++#endif
 +
-+    dmsg(D_TEST_FILE, "TEST FILE '%s' [%d]",
-+         filename ? filename : "UNDEF",
-+         ret);
++#ifndef ntohll
++#define ntohll(x) ((1==ntohl(1)) ? (x) : \
++                  ((uint64_t)ntohl((x) & 0xFFFFFFFF) << 32) | ntohl((x) >> 32))
++#endif
 +
+ /*
+  * min/max functions
+  */
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index b89f4ba2..c1d53a96 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -622,6 +622,13 @@ static const char usage_message[] =
+     "                  attacks on the TLS stack and DoS attacks.\n"
+     "                  key (required) provides the pre-shared key file.\n"
+     "                  see --secret option for more info.\n"
++    "--tls-crypt-v2 key : For clients: use key as a client-specific tls-crypt key.\n"
++    "                  For servers: use key to decrypt client-specific keys.  For\n"
++    "                  key generation (--tls-crypt-v2-genkey): use key to\n"
++    "                  encrypt generated client-specific key.  (See --tls-crypt.)\n"
++    "--tls-crypt-v2-genkey client|server keyfile [base64 metadata]: Generate a\n"
++    "                  fresh tls-crypt-v2 client or server key, and store to\n"
++    "                  keyfile.  If supplied, include metadata in wrapped key.\n"
+     "--askpass [file]: Get PEM password from controlling tty before we daemonize.\n"
+     "--auth-nocache  : Don't cache --askpass or --auth-user-pass passwords.\n"
+     "--crl-verify crl ['dir']: Check peer certificate against a CRL.\n"
+@@ -1789,6 +1796,10 @@ show_settings(const struct options *o)
+ 
+     SHOW_STR(tls_auth_file);
+     SHOW_STR(tls_crypt_file);
++    SHOW_STR(tls_crypt_v2_file);
++    SHOW_STR(tls_crypt_v2_genkey_type);
++    SHOW_STR(tls_crypt_v2_genkey_file);
++    SHOW_STR(tls_crypt_v2_metadata);
+ 
+ #ifdef ENABLE_PKCS11
+     {
+@@ -2762,6 +2773,7 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
+         MUST_BE_UNDEF(transition_window);
+         MUST_BE_UNDEF(tls_auth_file);
+         MUST_BE_UNDEF(tls_crypt_file);
++        MUST_BE_UNDEF(tls_crypt_v2_file);
+         MUST_BE_UNDEF(single_session);
+         MUST_BE_UNDEF(push_peer_info);
+         MUST_BE_UNDEF(tls_exit);
+@@ -3290,6 +3302,12 @@ options_postprocess_filechecks(struct options *options)
+                               options->tls_auth_file, R_OK, "--tls-auth");
+     errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
+                               options->tls_crypt_file, R_OK, "--tls-crypt");
++    errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
++                              options->tls_crypt_v2_file, R_OK,
++                              "--tls-crypt-v2");
++    errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
++                              options->tls_crypt_v2_genkey_file, R_OK,
++                              "--tls-crypt-v2-genkey");
+     errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
+                               options->shared_secret_file, R_OK, "--secret");
+     errs |= check_file_access(CHKACC_DIRPATH|CHKACC_FILEXSTWR,
+@@ -8023,6 +8041,25 @@ add_option(struct options *options,
+         }
+         options->tls_crypt_file = p[1];
+     }
++    else if (streq(p[0], "tls-crypt-v2") && p[1] && !p[3])
++    {
++        VERIFY_PERMISSION(OPT_P_GENERAL);
++        if (streq(p[1], INLINE_FILE_TAG) && p[2])
++        {
++            options->tls_crypt_v2_inline = p[2];
++        }
++        options->tls_crypt_v2_file = p[1];
++    }
++    else if (streq(p[0], "tls-crypt-v2-genkey") && p[2] && !p[4])
++    {
++        VERIFY_PERMISSION(OPT_P_GENERAL);
++        options->tls_crypt_v2_genkey_type = p[1];
++        options->tls_crypt_v2_genkey_file = p[2];
++        if (p[3])
++        {
++            options->tls_crypt_v2_metadata = p[3];
++        }
++    }
+     else if (streq(p[0], "key-method") && p[1] && !p[2])
+     {
+         int key_method;
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 3a6c33f8..d5407b5b 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -567,6 +567,15 @@ struct options
+     const char *tls_crypt_file;
+     const char *tls_crypt_inline;
+ 
++    /* Client-specific secret or server key used for TLS control channel
++     * authenticated encryption v2 */
++    const char *tls_crypt_v2_file;
++    const char *tls_crypt_v2_inline;
++
++    const char *tls_crypt_v2_genkey_type;
++    const char *tls_crypt_v2_genkey_file;
++    const char *tls_crypt_v2_metadata;
++
+     /* Allow only one session */
+     bool single_session;
+ 
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index 36ead84d..6f9e02ef 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -29,11 +29,21 @@
+ 
+ #include "syshead.h"
+ 
++#include "base64.h"
+ #include "crypto.h"
++#include "platform.h"
+ #include "session_id.h"
+ 
+ #include "tls_crypt.h"
+ 
++const char *tls_crypt_v2_cli_pem_name = "OpenVPN tls-crypt-v2 client key";
++const char *tls_crypt_v2_srv_pem_name = "OpenVPN tls-crypt-v2 server key";
++
++/** Metadata contains user-specified data */
++static const uint8_t TLS_CRYPT_METADATA_TYPE_USER           = 0x00;
++/** Metadata contains a 64-bit unix timestamp in network byte order */
++static const uint8_t TLS_CRYPT_METADATA_TYPE_TIMESTAMP      = 0x01;
++
+ static struct key_type
+ tls_crypt_kt(void)
+ {
+@@ -264,3 +274,277 @@ error_exit:
+     gc_free(&gc);
+     return false;
+ }
++
++static inline bool
++tls_crypt_v2_read_keyfile(struct buffer *key, const char *pem_name,
++                          const char *key_file, const char *key_inline)
++{
++    bool ret = false;
++    struct buffer key_pem = { 0 };
++    struct gc_arena gc = gc_new();
++
++    if (strcmp(key_file, INLINE_FILE_TAG))
++    {
++        key_pem = buffer_read_from_file(key_file, &gc);
++        if (!buf_valid(&key_pem))
++        {
++            msg(M_WARN, "ERROR: failed to read tls-crypt-v2 key file (%s)",
++                key_file);
++            goto cleanup;
++        }
++    }
++    else
++    {
++        buf_set_read(&key_pem, (const void *)key_inline, strlen(key_inline));
++    }
++
++    if (!crypto_pem_decode(pem_name, key, &key_pem))
++    {
++        msg(M_WARN, "ERROR: tls-crypt-v2 pem decode failed");
++        goto cleanup;
++    }
++
++    ret = true;
++cleanup:
++    if (strcmp(key_file, INLINE_FILE_TAG))
++    {
++        buf_clear(&key_pem);
++    }
++    gc_free(&gc);
 +    return ret;
 +}
-diff --git a/src/openvpn/platform.h b/src/openvpn/platform.h
-index 288937df..091fc9c4 100644
---- a/src/openvpn/platform.h
-+++ b/src/openvpn/platform.h
-@@ -49,6 +49,7 @@
- #endif
++
++static inline void
++tls_crypt_v2_load_client_key(struct key_ctx_bi *key, const struct key2 *key2,
++                             bool tls_server)
++{
++    const int key_direction = tls_server ?
++                              KEY_DIRECTION_NORMAL : KEY_DIRECTION_INVERSE;
++    struct key_type kt = tls_crypt_kt();
++    if (!kt.cipher || !kt.digest)
++    {
++        msg (M_FATAL, "ERROR: --tls-crypt not supported");
++    }
++    init_key_ctx_bi(key, key2, key_direction, &kt,
++                    "Control Channel Encryption");
++}
++
++void
++tls_crypt_v2_init_client_key(struct key_ctx_bi *key, struct buffer *wkc_buf,
++                             const char *key_file, const char *key_inline)
++{
++    struct buffer client_key = alloc_buf(TLS_CRYPT_V2_CLIENT_KEY_LEN
++                                         + TLS_CRYPT_V2_MAX_WKC_LEN);
++
++    if (!tls_crypt_v2_read_keyfile(&client_key, tls_crypt_v2_cli_pem_name,
++                                   key_file, key_inline))
++    {
++        msg(M_FATAL, "ERROR: invalid tls-crypt-v2 client key format");
++    }
++
++    struct key2 key2;
++    if (!buf_read(&client_key, &key2.keys, sizeof(key2.keys)))
++    {
++        msg (M_FATAL, "ERROR: not enough data in tls-crypt-v2 client key");
++    }
++
++    tls_crypt_v2_load_client_key(key, &key2, false);
++    secure_memzero(&key2, sizeof(key2));
++
++    *wkc_buf = client_key;
++}
++
++void
++tls_crypt_v2_init_server_key(struct key_ctx *key_ctx, bool encrypt,
++                             const char *key_file, const char *key_inline)
++{
++    struct key srv_key;
++    struct buffer srv_key_buf;
++
++    buf_set_write(&srv_key_buf, (void *) &srv_key, sizeof(srv_key));
++    if (!tls_crypt_v2_read_keyfile(&srv_key_buf, tls_crypt_v2_srv_pem_name,
++                                   key_file, key_inline))
++    {
++        msg(M_FATAL, "ERROR: invalid tls-crypt-v2 server key format");
++    }
++
++    struct key_type kt = tls_crypt_kt();
++    if (!kt.cipher || !kt.digest)
++    {
++        msg (M_FATAL, "ERROR: --tls-crypt not supported");
++    }
++    init_key_ctx(key_ctx, &srv_key, &kt, encrypt, "tls-crypt-v2 server key");
++    secure_memzero(&srv_key, sizeof(srv_key));
++}
++
++static bool
++tls_crypt_v2_wrap_client_key(struct buffer *wkc,
++                             const struct key2 *src_key,
++                             const struct buffer *src_metadata,
++                             struct key_ctx *server_key, struct gc_arena *gc)
++{
++    cipher_ctx_t *cipher_ctx = server_key->cipher;
++    struct buffer work = alloc_buf_gc(TLS_CRYPT_V2_MAX_WKC_LEN
++                                      + cipher_ctx_block_size(cipher_ctx), gc);
++
++    /* Calculate auth tag and synthetic IV */
++    uint8_t *tag = buf_write_alloc(&work, TLS_CRYPT_TAG_SIZE);
++    if (!tag)
++    {
++        msg (M_WARN, "ERROR: could not write tag");
++        return false;
++    }
++    hmac_ctx_t *hmac_ctx = server_key->hmac;
++    hmac_ctx_reset(hmac_ctx);
++    hmac_ctx_update(hmac_ctx, (void*)src_key->keys, sizeof(src_key->keys));
++    hmac_ctx_update(hmac_ctx, BPTR(src_metadata), BLEN(src_metadata));
++    hmac_ctx_final(hmac_ctx, tag);
++
++    dmsg(D_CRYPTO_DEBUG, "TLS-CRYPT WRAP TAG: %s",
++         format_hex(tag, TLS_CRYPT_TAG_SIZE, 0, gc));
++
++    /* Use the 128 most significant bits of the tag as IV */
++    ASSERT(cipher_ctx_reset(cipher_ctx, tag));
++
++    /* Overflow check (OpenSSL requires an extra block in the dst buffer) */
++    if (buf_forward_capacity(&work) < (sizeof(src_key->keys)
++                                       + BLEN(src_metadata)
++                                       + cipher_ctx_block_size(cipher_ctx)))
++    {
++        msg (M_WARN, "ERROR: could not crypt: insufficient space in dst");
++        return false;
++    }
++
++    /* Encrypt */
++    int outlen = 0;
++    ASSERT(cipher_ctx_update(cipher_ctx, BEND(&work), &outlen,
++                             (void*)src_key->keys, sizeof(src_key->keys)));
++    ASSERT(buf_inc_len(&work, outlen));
++    ASSERT(cipher_ctx_update(cipher_ctx, BEND(&work), &outlen,
++                             BPTR(src_metadata), BLEN(src_metadata)));
++    ASSERT(buf_inc_len(&work, outlen));
++    ASSERT(cipher_ctx_final(cipher_ctx, BEND(&work), &outlen));
++    ASSERT(buf_inc_len(&work, outlen));
++
++    return buf_copy(wkc, &work);
++}
++
++void
++tls_crypt_v2_write_server_key_file(const char *filename)
++{
++    struct gc_arena gc = gc_new();
++    struct key server_key = { 0 };
++    struct buffer server_key_buf = clear_buf();
++    struct buffer server_key_pem = clear_buf();
++
++    if (!rand_bytes((void *)&server_key, sizeof(server_key)))
++    {
++        msg(M_NONFATAL, "ERROR: could not generate random key");
++        goto cleanup;
++    }
++    buf_set_read(&server_key_buf, (void *) &server_key, sizeof(server_key));
++    if (!crypto_pem_encode(tls_crypt_v2_srv_pem_name, &server_key_pem,
++                           &server_key_buf, &gc))
++    {
++        msg(M_WARN, "ERROR: could not PEM-encode client key");
++        goto cleanup;
++    }
++
++    if (!buffer_write_file(filename, &server_key_pem))
++    {
++        msg(M_ERR, "ERROR: could not write server key file");
++        goto cleanup;
++    }
++
++cleanup:
++    secure_memzero(&server_key, sizeof(server_key));
++    buf_clear(&server_key_pem);
++    gc_free(&gc);
++    return;
++}
++
++void
++tls_crypt_v2_write_client_key_file(const char *filename, const char *b64_metadata,
++                                   const char *server_key_file,
++                                   const char *server_key_inline)
++{
++    struct gc_arena gc = gc_new();
++    struct key_ctx server_key = { 0 };
++    struct buffer client_key_pem = { 0 };
++    struct buffer dst = alloc_buf_gc(TLS_CRYPT_V2_CLIENT_KEY_LEN
++                                     + TLS_CRYPT_V2_MAX_WKC_LEN, &gc);
++
++    struct key2 client_key = { 2 };
++    if (!rand_bytes((void*)client_key.keys, sizeof(client_key.keys)))
++    {
++        msg(M_FATAL, "ERROR: could not generate random key");
++        goto cleanup;
++    }
++    ASSERT(buf_write(&dst, client_key.keys, sizeof(client_key.keys)));
++
++    struct buffer metadata = alloc_buf_gc(TLS_CRYPT_V2_MAX_METADATA_LEN, &gc);
++    if (b64_metadata)
++    {
++        if (TLS_CRYPT_V2_MAX_B64_METADATA_LEN < strlen(b64_metadata))
++        {
++            msg(M_FATAL,
++                "ERROR: metadata too long (%d bytes, max %u bytes)",
++                (int) strlen(b64_metadata), TLS_CRYPT_V2_MAX_B64_METADATA_LEN);
++        }
++        ASSERT(buf_write(&metadata, &TLS_CRYPT_METADATA_TYPE_USER, 1));
++        int decoded_len = openvpn_base64_decode(b64_metadata, BPTR(&metadata),
++                                                BCAP(&metadata));
++        if (decoded_len < 0)
++        {
++            msg(M_FATAL, "ERROR: failed to base64 decode provided metadata");
++            goto cleanup;
++        }
++        ASSERT(buf_inc_len(&metadata, decoded_len));
++    }
++    else
++    {
++        int64_t timestamp = htonll(now);
++        ASSERT(buf_write(&metadata, &TLS_CRYPT_METADATA_TYPE_TIMESTAMP, 1));
++        ASSERT(buf_write(&metadata, &timestamp, sizeof(timestamp)));
++    }
++
++    tls_crypt_v2_init_server_key(&server_key, true, server_key_file,
++                                 server_key_inline);
++    if (!tls_crypt_v2_wrap_client_key(&dst, &client_key, &metadata, &server_key,
++                                      &gc))
++    {
++        msg (M_FATAL, "ERROR: could not wrap generated client key");
++        goto cleanup;
++    }
++
++    /* PEM-encode Kc || WKc */
++    if (!crypto_pem_encode(tls_crypt_v2_cli_pem_name, &client_key_pem, &dst,
++                           &gc))
++    {
++        msg(M_FATAL, "ERROR: could not PEM-encode client key");
++        goto cleanup;
++    }
++
++    if (!buffer_write_file(filename, &client_key_pem))
++    {
++        msg(M_FATAL, "ERROR: could not write client key file");
++        goto cleanup;
++    }
++
++    /* Sanity check: load client key (as "client") */
++    struct key_ctx_bi test_client_key;
++    struct buffer test_wrapped_client_key;
++    msg (D_GENKEY, "Testing client-side key loading...");
++    tls_crypt_v2_init_client_key(&test_client_key, &test_wrapped_client_key,
++                                 filename, NULL);
++    free_key_ctx_bi(&test_client_key);
++    free_buf(&test_wrapped_client_key);
++
++cleanup:
++    secure_memzero(&client_key, sizeof(client_key));
++    free_key_ctx(&server_key);
++    buf_clear(&client_key_pem);
++    buf_clear(&dst);
++
++    gc_free(&gc);
++}
+diff --git a/src/openvpn/tls_crypt.h b/src/openvpn/tls_crypt.h
+index 067758ca..746f3be8 100644
+--- a/src/openvpn/tls_crypt.h
++++ b/src/openvpn/tls_crypt.h
+@@ -22,15 +22,13 @@
+  */
  
- #include "basic.h"
-+#include "buffer.h"
+ /**
+- * @defgroup tls_crypt Control channel encryption (--tls-crypt)
++ * @defgroup tls_crypt Control channel encryption (--tls-crypt, --tls-crypt-v2)
+  * @ingroup control_tls
+  * @{
+  *
+- * @par
+  * Control channel encryption uses a pre-shared static key (like the --tls-auth
+  * key) to encrypt control channel packets.
+  *
+- * @par
+  * Encrypting control channel packets has three main advantages:
+  *  - It provides more privacy by hiding the certificate used for the TLS
+  *    connection.
+@@ -38,11 +36,20 @@
+  *  - It provides "poor-man's" post-quantum security, against attackers who
+  *    will never know the pre-shared key (i.e. no forward secrecy).
+  *
+- * @par Specification
++ * --tls-crypt uses a tls-auth-style group key, where all servers and clients
++ * share the same group key.  --tls-crypt-v2 adds support for client-specific
++ * keys, where all servers share the same client-key encryption key, and each
++ * clients receives a unique client key, both in plaintext and in encrypted
++ * form.  When connecting to a server, the client sends the encrypted key to
++ * the server in the first packet (P_CONTROL_HARD_RESET_CLIENT_V3).  The server
++ * then decrypts that key, and both parties can use the same client-specific
++ * key for tls-crypt packets.  See doc/tls-crypt-v2.txt for more details.
++ *
++ * @par On-the-wire tls-crypt packet specification
++ * @parblock
+  * Control channel encryption is based on the SIV construction [0], to achieve
+  * nonce misuse-resistant authenticated encryption:
+  *
+- * @par
+  * \code{.unparsed}
+  * msg      = control channel plaintext
+  * header   = opcode (1 byte) || session_id (8 bytes) || packet_id (8 bytes)
+@@ -57,18 +64,17 @@
+  * output   = Header || Tag || Ciph
+  * \endcode
+  *
+- * @par
+  * This boils down to the following on-the-wire packet format:
+  *
+- * @par
+  * \code{.unparsed}
+  * - opcode - || - session_id - || - packet_id - || auth_tag || * payload *
+  * \endcode
+  *
+- * @par
+  * Where
+  * <tt>- XXX -</tt> means authenticated, and
+  * <tt>* XXX *</tt> means authenticated and encrypted.
++ *
++ * @endparblock
+  */
  
- /* Get/Set UID of process */
+ #ifndef TLSCRYPT_H
+@@ -86,6 +92,15 @@
+ #define TLS_CRYPT_OFF_TAG (TLS_CRYPT_OFF_PID + TLS_CRYPT_PID_SIZE)
+ #define TLS_CRYPT_OFF_CT (TLS_CRYPT_OFF_TAG + TLS_CRYPT_TAG_SIZE)
  
-@@ -143,4 +144,21 @@ typedef struct stat platform_stat_t;
- #endif
- int platform_stat(const char *path, platform_stat_t *buf);
++#define TLS_CRYPT_V2_MAX_WKC_LEN (1024)
++#define TLS_CRYPT_V2_CLIENT_KEY_LEN (2048/8)
++#define TLS_CRYPT_V2_SERVER_KEY_LEN (sizeof(struct key))
++#define TLS_CRYPT_V2_TAG_SIZE (TLS_CRYPT_TAG_SIZE)
++#define TLS_CRYPT_V2_MAX_METADATA_LEN (TLS_CRYPT_V2_MAX_WKC_LEN \
++         - (TLS_CRYPT_V2_CLIENT_KEY_LEN + TLS_CRYPT_V2_TAG_SIZE))
++#define TLS_CRYPT_V2_MAX_B64_METADATA_LEN \
++         ((((TLS_CRYPT_V2_MAX_METADATA_LEN - 1) * 8) + 5) / 6)
++
+ /**
+  * Initialize a key_ctx_bi structure for use with --tls-crypt.
+  *
+@@ -138,6 +153,56 @@ bool tls_crypt_wrap(const struct buffer *src, struct buffer *dst,
+ bool tls_crypt_unwrap(const struct buffer *src, struct buffer *dst,
+                       struct crypto_options *opt);
  
 +/**
-+ * Create a temporary file in directory, returns the filename of the created
-+ * file.
++ * Initialize a tls-crypt-v2 server key (used to encrypt/decrypt client keys).
++ *
++ * @param key           Key structure to be initialized.  Must be non-NULL.
++ * @parem encrypt       If true, initialize the key structure for encryption,
++ *                      otherwise for decryption.
++ * @param key_file      File path of the key file to load, or INLINE tag.
++ * @param key_inline    Inline key file contents (or NULL if not inline).
 + */
-+const char *platform_create_temp_file(const char *directory, const char *prefix,
-+                                      struct gc_arena *gc);
++void tls_crypt_v2_init_server_key(struct key_ctx *key_ctx, bool encrypt,
++                                  const char *key_file, const char *key_inline);
 +
-+/** Put a directory and filename together. */
-+const char *platform_gen_path(const char *directory, const char *filename,
-+                              struct gc_arena *gc);
-+
-+/** Return true if pathname is absolute. */
-+bool platform_absolute_pathname(const char *pathname);
-+
-+/** Return true if filename can be opened for read. */
-+bool platform_test_file(const char *filename);
-+
- #endif /* ifndef PLATFORM_H */
-diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
-index 0f091ef5..3e7d2b2a 100644
---- a/src/openvpn/plugin.c
-+++ b/src/openvpn/plugin.c
-@@ -249,7 +249,7 @@ plugin_init_item(struct plugin *p, const struct plugin_option *o)
-      * was parsed.
-      *
-      */
--    if (!absolute_pathname(p->so_pathname)
-+    if (!platform_absolute_pathname(p->so_pathname)
-         && p->so_pathname[0] != '.')
-     {
-         char full[PATH_MAX];
-@@ -259,7 +259,7 @@ plugin_init_item(struct plugin *p, const struct plugin_option *o)
-     }
-     else
-     {
--        rel = !absolute_pathname(p->so_pathname);
-+        rel = !platform_absolute_pathname(p->so_pathname);
-         p->handle = dlopen(p->so_pathname, RTLD_NOW);
-     }
-     if (!p->handle)
-@@ -271,7 +271,7 @@ plugin_init_item(struct plugin *p, const struct plugin_option *o)
- 
- #else  /* ifndef _WIN32 */
- 
--    rel = !absolute_pathname(p->so_pathname);
-+    rel = !platform_absolute_pathname(p->so_pathname);
-     p->module = LoadLibraryW(wide_string(p->so_pathname, &gc));
-     if (!p->module)
-     {
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index 25395b27..a3699252 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -547,7 +547,7 @@ verify_cert_export_cert(openvpn_x509_cert_t *peercert, const char *tmp_dir, stru
- 
-     /* create tmp file to store peer cert */
-     if (!tmp_dir
--        || !(peercert_filename = create_temp_file(tmp_dir, "pcf", gc)))
-+        || !(peercert_filename = platform_create_temp_file(tmp_dir, "pcf", gc)))
-     {
-         msg(M_NONFATAL, "Failed to create peer cert file");
-         return NULL;
-@@ -890,7 +890,7 @@ key_state_gen_auth_control_file(struct key_state *ks, const struct tls_options *
-     struct gc_arena gc = gc_new();
- 
-     key_state_rm_auth_control_file(ks);
--    const char *acf = create_temp_file(opt->tmp_dir, "acf", &gc);
-+    const char *acf = platform_create_temp_file(opt->tmp_dir, "acf", &gc);
-     if (acf)
-     {
-         ks->auth_control_file = string_alloc(acf, NULL);
-@@ -1103,7 +1103,8 @@ verify_user_pass_script(struct tls_session *session, const struct user_pass *up)
-         {
-             struct status_output *so;
- 
--            tmp_file = create_temp_file(session->opt->tmp_dir, "up", &gc);
-+            tmp_file = platform_create_temp_file(session->opt->tmp_dir, "up",
-+                                                 &gc);
-             if (tmp_file)
-             {
-                 so = status_open(tmp_file, 0, -1, NULL, STATUS_OUTPUT_WRITE);
-@@ -1513,8 +1514,9 @@ verify_final_auth_checks(struct tls_multi *multi, struct tls_session *session)
-         struct gc_arena gc = gc_new();
- 
-         const char *cn = session->common_name;
--        const char *path = gen_path(session->opt->client_config_dir_exclusive, cn, &gc);
--        if (!cn || !strcmp(cn, CCD_DEFAULT) || !test_file(path))
-+        const char *path = platform_gen_path(session->opt->client_config_dir_exclusive,
-+                                             cn, &gc);
-+        if (!cn || !strcmp(cn, CCD_DEFAULT) || !platform_test_file(path))
-         {
-             ks->authenticated = false;
-             wipe_auth_token(multi);
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index 23d758b7..db4d46e1 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -19,6 +19,7 @@ argv_testdriver_CFLAGS  = @TEST_CFLAGS@ -I$(openvpn_srcdir) -I$(compat_srcdir) \
- argv_testdriver_LDFLAGS = @TEST_LDFLAGS@ -L$(openvpn_srcdir) -Wl,--wrap=parse_line \
- 	$(OPTIONAL_CRYPTO_LIBS)
- argv_testdriver_SOURCES = test_argv.c mock_msg.c \
-+	mock_get_random.c \
- 	$(openvpn_srcdir)/platform.c \
- 	$(openvpn_srcdir)/buffer.c \
- 	$(openvpn_srcdir)/argv.c
-@@ -26,6 +27,7 @@ argv_testdriver_SOURCES = test_argv.c mock_msg.c \
- buffer_testdriver_CFLAGS  = @TEST_CFLAGS@ -I$(openvpn_srcdir) -I$(compat_srcdir)
- buffer_testdriver_LDFLAGS = @TEST_LDFLAGS@ -L$(openvpn_srcdir) -Wl,--wrap=parse_line
- buffer_testdriver_SOURCES = test_buffer.c mock_msg.c \
-+	mock_get_random.c \
- 	$(openvpn_srcdir)/buffer.c \
- 	$(openvpn_srcdir)/platform.c
- 
-@@ -35,6 +37,7 @@ packet_id_testdriver_CFLAGS  = @TEST_CFLAGS@ \
- packet_id_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
- 	$(OPTIONAL_CRYPTO_LIBS)
- packet_id_testdriver_SOURCES = test_packet_id.c mock_msg.c \
-+	mock_get_random.c \
- 	$(openvpn_srcdir)/buffer.c \
- 	$(openvpn_srcdir)/otime.c \
- 	$(openvpn_srcdir)/packet_id.c \
-@@ -46,6 +49,7 @@ tls_crypt_testdriver_CFLAGS  = @TEST_CFLAGS@ \
- tls_crypt_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
- 	$(OPTIONAL_CRYPTO_LIBS)
- tls_crypt_testdriver_SOURCES = test_tls_crypt.c mock_msg.c \
-+	$(openvpn_srcdir)/base64.c \
- 	$(openvpn_srcdir)/buffer.c \
- 	$(openvpn_srcdir)/crypto.c \
- 	$(openvpn_srcdir)/crypto_mbedtls.c \
-diff --git a/tests/unit_tests/openvpn/mock_get_random.c b/tests/unit_tests/openvpn/mock_get_random.c
-new file mode 100644
-index 00000000..da92a9bb
---- /dev/null
-+++ b/tests/unit_tests/openvpn/mock_get_random.c
-@@ -0,0 +1,36 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
++/**
++ * Initialize a tls-crypt-v2 client key.
 + *
-+ *  Copyright (C) 2017 Fox Crypto B.V. <openvpn@...1435...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ * @param key               Key structure to be initialized with the client
++ *                          key.
++ * @param wrapped_key_buf   Returns buffer containing the wrapped key that will
++ *                          be sent to the server when connecting.  Caller must
++ *                          free this buffer when no longer neede.
++ * @param key_file          File path of the key file to load, or INLINE tag.
++ * @param key_inline        Inline key file contents (or NULL if not inline).
 + */
++void tls_crypt_v2_init_client_key(struct key_ctx_bi *key,
++                                  struct buffer *wrapped_key_buf,
++                                  const char *key_file,
++                                  const char *key_inline);
 +
-+#include <stdarg.h>
-+#include <stddef.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <setjmp.h>
-+#include <cmocka.h>
++/**
++ * Generate a tls-crypt-v2 server key, and write to file.
++ *
++ * @param filename          Filename of the server key file to create.
++ */
++void tls_crypt_v2_write_server_key_file(const char *filename);
 +
-+unsigned long
-+get_random(void)
-+{
-+    /* rand() is not very random, but it's C99 and this is just for testing */
-+    return rand();
-+}
++/**
++ * Generate a tls-crypt-v2 client key, and write to file.
++ *
++ * @param filename          Filename of the client key file to create.
++ * @param b64_metadata      Base64 metadata to be included in the client key.
++ * @param server_key_file   File path of the server key to use for wrapping the
++ *                          client key, or INLINE tag.
++ * @param server_key_inline Inline server key file contents (or NULL if not
++ *                          inline).
++ */
++void tls_crypt_v2_write_client_key_file(const char *filename,
++                                        const char *b64_metadata,
++                                        const char *key_file,
++                                        const char *key_inline);
++
+ /** @} */
+ 
+ #endif /* TLSCRYPT_H */
+diff --git a/tests/t_lpback.sh b/tests/t_lpback.sh
+index 2052c626..107e7c1e 100755
+--- a/tests/t_lpback.sh
++++ b/tests/t_lpback.sh
+@@ -21,8 +21,8 @@
+ 
+ set -eu
+ top_builddir="${top_builddir:-..}"
+-trap "rm -f key.$$ log.$$ ; trap 0 ; exit 77" 1 2 15
+-trap "rm -f key.$$ log.$$ ; exit 1" 0 3
++trap "rm -f key.$$ tc-server-key.$$ tc-client-key.$$ log.$$ ; trap 0 ; exit 77" 1 2 15
++trap "rm -f key.$$ tc-server-key.$$ tc-client-key.$$ log.$$ ; exit 1" 0 3
+ 
+ # Get list of supported ciphers from openvpn --show-ciphers output
+ CIPHERS=$(${top_builddir}/src/openvpn/openvpn --show-ciphers | \
+@@ -55,6 +55,40 @@ do
+     fi
+ done
+ 
+-rm key.$$ log.$$
++echo -n "Testing tls-crypt-v2 server key generation..."
++"${top_builddir}/src/openvpn/openvpn" \
++    --tls-crypt-v2-genkey server tc-server-key.$$ >log.$$ 2>&1
++if [ $? != 0 ] ; then
++    echo "FAILED"
++    cat log.$$
++    e=1
++else
++    echo "OK"
++fi
++
++echo -n "Testing tls-crypt-v2 key generation (no metadata)..."
++"${top_builddir}/src/openvpn/openvpn" --tls-crypt-v2 tc-server-key.$$ \
++    --tls-crypt-v2-genkey client tc-client-key.$$ >log.$$ 2>&1
++if [ $? != 0 ] ; then
++    echo "FAILED"
++    cat log.$$
++    e=1
++else
++    echo "OK"
++fi
++
++echo -n "Testing tls-crypt-v2 key generation (max length metadata)..."
++"${top_builddir}/src/openvpn/openvpn" --tls-crypt-v2 tc-server-key.$$ \
++    --tls-crypt-v2-genkey client tc-client-key.$$ \
++    $(head -c735 /dev/zero | base64 -w0) >log.$$ 2>&1
++if [ $? != 0 ] ; then
++    echo "FAILED"
++    cat log.$$
++    e=1
++else
++    echo "OK"
++fi
++
++rm key.$$ tc-server-key.$$ tc-client-key.$$ log.$$
+ trap 0
+ exit $e
 -- 
 2.17.1
 
