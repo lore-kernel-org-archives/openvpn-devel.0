@@ -1,13 +1,15 @@
-From: Kevin Kane <kkane@...2393...>
-Date: Wed, 4 Jul 2018 00:39:01 +0000
-Message-ID: <MW2PR2101MB0921EB014B7B72E679386A98AB410@...2433...>
-References: <DM5PR2101MB1112D9B5D70AC19014BC5BEDB0420@...2412...>
- <MW2PR2101MB09219BB9BA77ADD409D3DFECAB410@...2433...>
-In-Reply-To: <MW2PR2101MB09219BB9BA77ADD409D3DFECAB410@...2433...>
-Content-Language: en-US
+References: <20180703144755.6794-1-arne@...1227...>
+ <20180703153319.GO989@...1296...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <1642332a-2977-6da9-aa77-1cc897464f10@...2181...>
+Date: Wed, 4 Jul 2018 11:46:42 +0800
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Upstreaming pqcrypto changes from
- microsoft/openvpn
+In-Reply-To: <20180703153319.GO989@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="YQqHLbUVkyJVyLtfaXnf4NRiWzB3fCGhl"
+Subject: Re: [Openvpn-devel] [PATCH] Implement parsing and sending INFO and
+ INFO_PRE control messages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,85 +18,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Jon Kunkee <jkunkee@...2393...>, =?utf-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>, =?utf-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>, Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-W1Jlc2VuZGluZyB0byBvcGVudnBuLWRldmVsIG5vdyB0aGF0IEknbSBzdWJzY3JpYmVkIHRvIGl0
-Ll0NCg0KSGVsbG8gYWxsLA0KDQpUaGFua3MgdG8gSm9uIGZvciBtYWtpbmcgdGhlIGludHJvZHVj
-dGlvbi4gTXkgdGVhbSB3b3JrcyBvbiBwb3N0LXF1YW50dW0gKFBRKSBjcnlwdG9ncmFwaHksIHdo
-aWNoIGlzIGFsZ29yaXRobXMgdXNlZCBieSByZWd1bGFyIGNvbXB1dGVycyBidXQgd2hpY2ggYXJl
-IHJlc2lzdGFudCB0byBhdHRhY2sgYnkgYSBzdWZmaWNpZW50bHkgcG93ZXJmdWwgcXVhbnR1bSBj
-b21wdXRlci4gVGhpcyBPcGVuVlBOIGZvcmsgaXMgYW4gZXhhbXBsZSBhcHBsaWNhdGlvbiB3ZSBy
-ZWxlYXNlZCBzbyB0aGUgcHVibGljIGNvdWxkIGV4cGVyaW1lbnQgd2l0aCBpdC4gDQoNClRoZSBm
-b2xsb3dpbmcgc2l0ZXMgaGF2ZSBpbmZvcm1hdGlvbiBvbiB3aGF0IHdlJ3JlIGRvaW5nOg0KDQpP
-dXIgb3BlbnZwbiwgb3BlbnZwbi1idWlsZCwgYW5kIG9wZW52cG4tZ3VpIGZvcmtzIGFyZSBzdWJw
-cm9qZWN0cyBvZiB0aGUgZm9sbG93aW5nIHJlcG86IGh0dHBzOi8vZ2l0aHViLmNvbS9NaWNyb3Nv
-ZnQvUFFDcnlwdG8tVlBODQoNCkkganVzdCByZWFsaXplZCB0aGVyZSBhcmUgbm8gYmFjay1wb2lu
-dGVycyBmcm9tIHRoZSBzdWJwcm9qZWN0cyBiYWNrIHRvIHRoZSBtYWluIHJlcG8uIEkndmUganVz
-dCBjb3JyZWN0ZWQgdGhhdC4NCg0KT24gdGhpcyBzaXRlIGFyZSBzY3JpcHRzIGFuZCBpbnN0cnVj
-dGlvbnMgZm9yIGRvaW5nIG91ciBjdXN0b20gYnVpbGQgb2YgT3BlblZQTiBmb3IgV2luZG93cyBh
-bmQgTGludXgsIHRvIHVzZSB0aGUgUFEgY3J5cHRvLWVuYWJsZWQgZm9yayBvZiBPcGVuU1NMIHdl
-IHVzZSwgYW5kIGhvdyB0byBwcm9wZXJseSBjb25maWd1cmUgaXQgZm9yIFBRIGNyeXB0by4gV2Ug
-YWxzbyBwcm92aWRlIGluc3RydWN0aW9ucyBmb3IgYnVpbGRpbmcgYW4gaW1hZ2UgZm9yIGEgUmFz
-cGJlcnJ5IFBpIHRvIGJlIHVzZWQgYXMgYSB3aWZpIGFjY2VzcyBwb2ludCB0aGF0IHR1bm5lbHMg
-YWxsIHRyYWZmaWMgdG8gYSByZW1vdGUgc2VydmVyIHByb3RlY3RlZCBieSBQUSBrZXkgZXhjaGFu
-Z2UuIFdlIGFsc28gaGF2ZSByZWxlYXNlZCBwcmUtYnVpbHQgTGludXggeDY0IGFuZCBXaW5kb3dz
-IGJpbmFyaWVzLiBPdXIgY3VycmVudCBidWlsZCBwcm9jZXNzIHdvcmtzIGJ1dCB0aGVyZSBpcyBw
-bGVudHkgb2Ygcm9vbSBmb3IgaW1wcm92ZW1lbnQuDQoNCkEgbW9yZSBpbi1kZXB0aCBkZXNjcmlw
-dGlvbiBvZiB0aGUgUFEgVlBOIGlzIGhlcmU6IGh0dHBzOi8vd3d3Lm1pY3Jvc29mdC5jb20vZW4t
-dXMvcmVzZWFyY2gvcHJvamVjdC9wb3N0LXF1YW50dW0tY3J5cHRvLXZwbi8NCg0KQW5kIG91ciBp
-bnRyb2R1Y3Rpb24gdG8gcG9zdC1xdWFudHVtIGNyeXB0b2dyYXBoeSBvdmVyYWxsIGlzIGhlcmU6
-IGh0dHBzOi8vd3d3Lm1pY3Jvc29mdC5jb20vZW4tdXMvcmVzZWFyY2gvcHJvamVjdC9wb3N0LXF1
-YW50dW0tY3J5cHRvZ3JhcGh5Lw0KDQpBcyBKb24gc2FpZCwgdGhlc2UgYWxnb3JpdGhtcyBhcmUg
-ZXhwZXJpbWVudGFsIGFuZCBzbyBpdCB3b3VsZCBiZSBpbmFwcHJvcHJpYXRlIHRvIGludHJvZHVj
-ZSB0aGVtIGludG8gcHJvZHVjdGlvbiBjb2RlIHVudGlsIHRoZSBzdGFuZGFyZGl6YXRpb24gYW5k
-IHRob3JvdWdoIGFuYWx5c2lzIGJ5IHRoZSBjcnlwdG9ncmFwaGljIGNvbW11bml0eSBhcmUgY29t
-cGxldGVkLiBXaGVuIHRoYXQgaGFwcGVucywgd2Ugd2FudCB0byBiZSByZWFkeSB0byBxdWlja2x5
-IGludGVncmF0ZSB0aGVzZSBhbGdvcml0aG1zIGludG8gZXhpc3Rpbmcgc29mdHdhcmUuIE15IGNv
-bGxlYWd1ZXMgYXJlIGFscmVhZHkgY29udHJpYnV0aW5nIHRvIGEgUFEgY3J5cHRvLWVuYWJsZWQg
-Zm9yayBvZiBPcGVuU1NMIChodHRwczovL2dpdGh1Yi5jb20vb3Blbi1xdWFudHVtLXNhZmUvb3Bl
-bnNzbCksIGFuZCBzaW1pbGFybHkgd2UgYmVsaWV2ZSB0aGVyZSBpcyB2YWx1ZSBpbiBtYWludGFp
-bmluZyBhIFBRLWVuYWJsZWQgZm9yayBvZiBPcGVuVlBOLCBzbyB0aGF0IGJvdGggYXJlIHJlYWR5
-IHdoZW4gdGhlcmUgaXMgY29uc2Vuc3VzIG9uIGEgc3RhbmRhcmQuDQoNCkkgd2lsbCBiZSB1cGRh
-dGluZyB0aGUgZm9yayB0byB0cmFjayB0aGUgZm9yd2FyZCBwcm9ncmVzcyBvZiBib3RoIHRoZSBQ
-US1lbmFibGVkIE9wZW5TU0wgZm9yayBhbmQgT3BlblZQTiBhcyB0aW1lIGFsbG93cywgYnV0IEkg
-d2VsY29tZSB0aGUgcGFydGljaXBhdGlvbiBvZiBhbnlvbmUgd2hvJ3MgaW50ZXJlc3RlZCBpbiBo
-ZWxwaW5nIHdpdGggdGhlIHVwZGF0ZXMgb3IgbWFraW5nIG90aGVyIGltcHJvdmVtZW50cywgYXMg
-d2VsbCBhcyBhbnkgc3VnZ2VzdGlvbnMgeW91IG1heSBoYXZlIG9uIGZ1dHVyZSBkaXJlY3Rpb25z
-IGZvciB0aGlzIHdvcmsuDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBKb24g
-S3Vua2VlIA0KU2VudDogVHVlc2RheSwgSnVseSAzLCAyMDE4IDQ6MjAgUE0NClRvOiBTYW11bGkg
-U2VwcMOkbmVuIDxzYW11bGlALi4uNTE1Li4uPjsg0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0gPGNo
-aXBpdHNpbmVALi4uMjc3Li4uPjsgS2V2aW4gS2FuZSA8a2thbmVALi4uMjM5My4uLj4NCkNjOiBv
-cGVudnBuLWRldmVsIDxvcGVudnBuLWRldmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldD4NClN1Ympl
-Y3Q6IFVwc3RyZWFtaW5nIHBxY3J5cHRvIGNoYW5nZXMgZnJvbSBtaWNyb3NvZnQvb3BlbnZwbg0K
-DQpIaSwNCg0KKFJldGl0bGluZyB0aHJlYWQgZnJvbSBSRTogW09wZW52cG4tZGV2ZWxdIFRvcGlj
-cyBmb3IgdGhlIGNvbW11bml0eSBtZWV0aW5nIChXZWQsIDEzdGggSnVuZSAyMDE4KSkNCg0KPiBk
-byB5b3Uga25vdyB0aGlzIGFjdGl2aXR5IGh0dHBzOi8vZ2l0aHViLmNvbS9NaWNyb3NvZnQvb3Bl
-bnZwbi8gPw0KPiB0aGVyZSBhcmUgaW50ZXJlc3RpbmcgdGhpbmdzDQoNClRoZXJlIGFyZSAqdmVy
-eSogaW50ZXJlc3RpbmcgdGhpbmdzIHRoZXJlIQ0KDQo+IERvIHlvdSBrbm93IGlmIEtldmluIChv
-ciBoaXMgbWFuYWdlci90ZWFtKSBwbGFucyB0byBwdXNoIGhpcyB3b3JrIHVwc3RyZWFtIChpLmUu
-IHRvIHVzKSBhdCBzb21lIHBvaW50Pw0KDQpTYW11bGkgYW5kINCY0LvRjNGPLCBJJ2QgbGlrZSB0
-byBpbnRyb2R1Y2UgeW91IHRvIEtldmluIEthbmUuIEhlIGlzIHRoZSBjdXJyZW50IG1haW50YWlu
-ZXIgb2YgdGhlIE1pY3Jvc29mdFxvcGVudnBuIHBxY3J5cHRvIGJyYW5jaCBvbiBHaXRodWIuDQoN
-CkhlIGlzIHdvcmtpbmcgb24gZGV2ZWxvcGluZyBlbmNyeXB0aW9uIHN0YW5kYXJkcyB0aGF0IGFy
-ZSByZXNpc3RhbnQgdG8gcXVhbnR1bS1tZWNoYW5pY3MtYmFzZWQgYXR0YWNrcy4gVGhpcyBpbmNs
-dWRlcyB0YWtpbmcgZXhpc3RpbmcgcHJvZHVjdHMgYW5kIGFkZGluZyBleHBlcmltZW50YWwgaW1w
-bGVtZW50YXRpb25zIG9mIHRoZSBleHBlcmltZW50YWwgc3RhbmRhcmRzIHRvIHRoZW3igJRpbmNs
-dWRpbmcgT3BlblZQTiBhbmQgT3BlblNTTC4gT3ZlciB0aW1lIHRoZXNlIG5ldyB0ZWNobmlxdWVz
-IHdpbGwgYmUgc3R1ZGllZCwgcmVmaW5lZCwgdGVzdGVkLCBhbmQgb3RoZXJ3aXNlIGhhbW1lcmVk
-IG9uIGluIHRoZSBmdXJuYWNlIG9mIG9wZW4tc291cmNlIGNyeXB0b2dyYXBoeSB1bnRpbCB0aGV5
-IGdhaW4gc29tZSBtZWFzdXJlIG9mIHRydXN0Lg0KDQpCb3RoIHRoZSBleHBlcmltZW50YWwgYW5k
-IHVudGVzdGVkIG5hdHVyZSBvZiBoaXMgd29yayBtZWFuIHRoYXQgbm8sIGhpcyBjb2RlIGlzbuKA
-mXQgcmVhZHkgdG8gYmUgbWVyZ2VkIGludG8gT3BlblZQTi9tYXN0ZXLigKZ5ZXQhDQoNCkluIHRo
-ZSBtZWFudGltZSwgaGUgd291bGQgbG92ZSB0byB3b3JrIHdpdGggc29tZW9uZSBmcm9tIHRoZSBP
-cGVuVlBOIGNvbW11bml0eeKAlG9yIGV2ZW4gdGhlIG9yZ2FuaXphdGlvbiBpdHNlbGbigJR0byBt
-YWtlIHRoZSBjb25uZWN0aW9uIG9mZmljaWFsIGFuZCB0byByZWZpbmUgaGlzIGFkZGl0aW9ucy4g
-U29tZSBvZiB0aGUgbmVlZGVkIHJlZmluZW1lbnQgcmVxdWlyZXMgZmFtaWxpYXJpdHkgd2l0aCB0
-aGUgb3ZlcmFsbCBidWlsZCBzeXN0ZW0sIHdoaWxlIGEgZm9yd2FyZC1sb29raW5nIGNyeXB0b2dy
-YXBoZXIgb3IgcHJvdG9jb2wgZ3VydSBtaWdodCB0YWtlIGludGVyZXN0IGluIHdoYXQncyBkZXZl
-bG9waW5nIHVuZGVyIHRoZSBob29kLg0KDQpJIGRvbid0IGtub3cgbXVjaCBhYm91dCB0aGUgY3Vy
-cmVudCBzdGF0dXMgb2YgdGhlIHByb2plY3QsIGJ1dCBLZXZpbiBpcyBoYXBweSB0byBhbnN3ZXIg
-cXVlc3Rpb25zIGFuZCB3b3VsZCBsb3ZlIHRvIGhlYXIgZnJvbSB5b3UuDQoNClRoYW5rcywNCkpv
-bg0KDQo=
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--YQqHLbUVkyJVyLtfaXnf4NRiWzB3fCGhl
+Content-Type: multipart/mixed; boundary="lyEYRCRUgIsDSCxG5kwsxwb69W5ppCnvW";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: Gert Doering <gert@...1296...>, Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
+Message-ID: <1642332a-2977-6da9-aa77-1cc897464f10@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH] Implement parsing and sending INFO and
+ INFO_PRE control messages
+References: <20180703144755.6794-1-arne@...1227...>
+ <20180703153319.GO989@...1296...>
+In-Reply-To: <20180703153319.GO989@...1296...>
+
+--lyEYRCRUgIsDSCxG5kwsxwb69W5ppCnvW
+Content-Language: en-US
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+On 03/07/18 23:33, Gert Doering wrote:
+> Hi,
+>=20
+> On Tue, Jul 03, 2018 at 04:47:55PM +0200, Arne Schwabe wrote:
+>> OpenVPN 3 implements these messages to send information during the
+>> authentication to the UI, implement these message also in OpenVPN 2.x
+>=20
+> Feature-Questionmark :-)
+>=20
+> Is there any documentation about this?  What sort of messages are sent,
+> by which product?  What do you do with it?
+>=20
+> Can we maybe have some documentation in management-notes.txt?
+
+And even at a higher level: what is the actual use case for this?
+Porting more features "just because they are supported in openvpn3" does
+not really sound like a reason to maintain more code on the community
+side, imho.
+
+Cheers,
+
+
+
+--=20
+Antonio Quartulli
+
+
+--lyEYRCRUgIsDSCxG5kwsxwb69W5ppCnvW--
+
+--YQqHLbUVkyJVyLtfaXnf4NRiWzB3fCGhl
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAls8QyMACgkQB6U8WA7y
+zXQK7xAAhj8cup5ydMGCCy4PVmur1ARji+ApZ+hbVHOkcp9fHnwFBxmGLA9yAKMO
+HWyTZZC16L2haiRaWiUCTzDEynHIvXsP0O8ZX35JLEaByHFXQinFnIwpF/wkszDC
+7p+ie+vtymejZu8tUmDSYZ1Dg1UcqQ7Mfhz2FSREv6yvHio2KYQzWXAGDpGGM6+Z
+MJRPwhZiKFdIbTA6CVWfe/1as+sob3sOf075fr7yKII+cGeyNP7iNn5X9Gw5n4sO
+wWrXBmx5PDvL6FvigR01m0ic708/rZ9qiGIRxuK6RuLf2a1ysLO1GxMlAIKz+6dr
+w8bESXWfguGXjYhn1OdwyHFX9CinE3PCiGowlxDflgCKLM5ndzeh0oZn/+04Yg24
+2raOcmqQHxK9qcDhnd4plUFxERHCMEqyEhWt15NW1pL6/ROwKc9bLp0t39Q+nHnZ
+OFcZjIJQWX93zgaotYeEbUhPuXQr+LZkvJSljMsjvPnWbjEKMJ4OXH9Fv92qxQv/
+Z93XV8OkdCeZ+IwOGLLyfDPkQDc6UDEKj8fZv6E/0gVf3JVkeFo8PTFc3wjGpLQi
+4RiKzWVG0JtrSZV6DU6PvKO4dSz4vORJbLJlvbzSEmC0Lw5ccopmpBS8OXEoxFCb
+NAzTFmc5HhnUupPcnq4UbUrqBaXUHNx3WSdJeVexthui4EsJhgg=
+=vZqn
+-----END PGP SIGNATURE-----
+
+--YQqHLbUVkyJVyLtfaXnf4NRiWzB3fCGhl--
+
