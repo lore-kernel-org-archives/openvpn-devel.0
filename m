@@ -1,11 +1,11 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Wed,  4 Jul 2018 19:54:03 +0200
-Message-Id: <20180704175404.22371-8-steffan@...1856...>
+Date: Wed,  4 Jul 2018 19:54:04 +0200
+Message-Id: <20180704175404.22371-9-steffan@...1856...>
 In-Reply-To: <20180704175404.22371-1-steffan@...1856...>
 References: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
  <20180704175404.22371-1-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH v2 8/9] tls-crypt-v2: implement tls-crypt-v2
- handshake
+Subject: [Openvpn-devel] [PATCH v2 9/9] tls-crypt-v2: add script hook to
+ verify metadata
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,397 +17,401 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Steffan Karger <steffan.karger@...1435...>, Antonio Quartulli <antonio@...515...>
 
 From: Steffan Karger <steffan.karger@...1435...>
 
-This makes clients send-and-use, and servers receive-unwrap-and-use
-tls-crypt-v2 client keys, which completes the on-the-wire work.
+To allow rejecting incoming connections very early in the handshake,
+add a --tls-crypt-v2-verify option that allows administators to
+run an external command to verify the metadata from the client key.
+See doc/tls-crypt-v2.txt for more details.
 
+Because of the extra dependencies, this requires adding a mock
+parse_line() to the tls-crypt unit tests.
+
+Signed-off-by: Antonio Quartulli <antonio@...515...>
 Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
- src/openvpn/init.c                   | 39 +++++++++++++-
- src/openvpn/openvpn.h                |  2 +
- src/openvpn/options.c                |  5 ++
- src/openvpn/ssl.c                    | 79 ++++++++++++++++++++++------
- src/openvpn/ssl_common.h             |  6 +++
- src/openvpn/tls_crypt.c              | 50 ++++++++++++++++++
- src/openvpn/tls_crypt.h              | 14 +++++
- tests/unit_tests/openvpn/Makefile.am |  2 +-
- 8 files changed, 179 insertions(+), 18 deletions(-)
+ Changes.rst                               | 12 ++++
+ doc/openvpn.8                             | 35 +++++++++++-
+ src/openvpn/init.c                        |  1 +
+ src/openvpn/options.c                     |  7 +++
+ src/openvpn/options.h                     |  2 +
+ src/openvpn/ssl.c                         | 16 ++++--
+ src/openvpn/ssl_common.h                  |  1 +
+ src/openvpn/tls_crypt.c                   | 69 ++++++++++++++++++++++-
+ src/openvpn/tls_crypt.h                   |  3 +-
+ tests/unit_tests/openvpn/Makefile.am      | 12 +++-
+ tests/unit_tests/openvpn/test_tls_crypt.c | 16 ++++++
+ 11 files changed, 160 insertions(+), 14 deletions(-)
 
+diff --git a/Changes.rst b/Changes.rst
+index a6090cf5..e77b3d79 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -1,3 +1,15 @@
++Overview of changes in 2.5
++==========================
++
++New features
++------------
++Client-specific tls-crypt keys (``--tls-crypt-v2``)
++    ``tls-crypt-v2`` adds the ability to supply each client with a unique
++    tls-crypt key.  This allows large organisations and VPN providers to profit
++    from the same DoS and TLS stack protection that small deployments can
++    already achieve using ``tls-auth`` or ``tls-crypt``.
++
++
+ Overview of changes in 2.4
+ ==========================
+ 
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index abefa86a..497f6ca3 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -5293,9 +5293,38 @@ If supplied, include the supplied
+ in the wrapped client key.  This metadata must be supplied in base64\-encoded
+ form.  The metadata must be at most 735 bytes long (980 bytes in base64).
+ 
+-.B TODO
+-Metadata handling is not yet implemented.  This text will be updated by the
+-commit that introduces metadata handling.
++If no metadata is supplied, OpenVPN will use a 64-bit unix timestamp
++representing the current time in UTC, encoded in network order, as metadata for
++the generated key.
++
++Servers can use
++.B \-\-tls\-crypt\-v2\-verify
++to specify a metadata verification command.
++.\"*********************************************************
++.TP
++.B \-\-tls\-crypt\-v2\-verify cmd
++
++Run command
++.B cmd
++to verify the metadata of the client-specific tls-crypt-v2 key of a connecting
++client.  This allows server administrators to reject client connections, before
++exposing the TLS stack (including the notoriously dangerous X.509 and ASN.1
++stacks) to the connecting client.
++
++OpenVPN supplies the following env vars to the command:
++.RS
++.IP \[bu] 2
++script_type is set to "tls-crypt-v2-verify"
++.IP \[bu]
++metadata_type is set to "0" is the metadata was user supplied, or "1" if it's a
++64-bit unix timestamp representing the key creation time.
++.IP \[bu]
++metadata_file contains the filename of a temporary file that contains the client
++metadata.
++.RE
++
++.IP
++The command can reject the connection by exitingwith a non-zero exit code.
+ .\"*********************************************************
+ .TP
+ .B \-\-askpass [file]
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index c1454f36..0874edff 100644
+index 0874edff..9da1f218 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
-@@ -2436,6 +2436,9 @@ key_schedule_free(struct key_schedule *ks, bool free_ssl_ctx)
-     {
-         tls_ctx_free(&ks->ssl_ctx);
-         free_key_ctx_bi(&ks->tls_wrap_key);
-+        free_key_ctx(&ks->tls_crypt_v2_server_key);
-+        buf_clear(&ks->tls_crypt_v2_wkc);
-+        free_buf(&ks->tls_crypt_v2_wkc);
-     }
-     CLEAR(*ks);
- }
-@@ -2604,6 +2607,24 @@ do_init_crypto_tls_c1(struct context *c)
-                                options->tls_crypt_inline, options->tls_server);
+@@ -2865,6 +2865,7 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
+         if (options->tls_server)
+         {
+             to.tls_wrap.tls_crypt_v2_server_key = c->c1.ks.tls_crypt_v2_server_key;
++            to.tls_crypt_v2_verify_script = c->options.tls_crypt_v2_verify_script;
          }
- 
-+        /* tls-crypt with client-specific keys (--tls-crypt-v2) */
-+        if (options->tls_crypt_v2_file)
-+        {
-+            if (options->tls_server)
-+            {
-+                tls_crypt_v2_init_server_key(&c->c1.ks.tls_crypt_v2_server_key,
-+                                             true, options->tls_crypt_v2_file,
-+                                             options->tls_crypt_v2_inline);
-+            }
-+            else
-+            {
-+                tls_crypt_v2_init_client_key(&c->c1.ks.tls_wrap_key,
-+                                             &c->c1.ks.tls_crypt_v2_wkc,
-+                                             options->tls_crypt_v2_file,
-+                                             options->tls_crypt_v2_inline);
-+            }
-+        }
-+
-         c->c1.ciphername = options->ciphername;
-         c->c1.authname = options->authname;
-         c->c1.keysize = options->keysize;
-@@ -2823,13 +2844,28 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
      }
  
-     /* TLS handshake encryption (--tls-crypt) */
--    if (options->tls_crypt_file)
-+    if (options->tls_crypt_file
-+        || (options->tls_crypt_v2_file && options->tls_client))
-     {
-         to.tls_wrap.mode = TLS_WRAP_CRYPT;
-         to.tls_wrap.opt.key_ctx_bi = c->c1.ks.tls_wrap_key;
-         to.tls_wrap.opt.pid_persist = &c->c1.pid_persist;
-         to.tls_wrap.opt.flags |= CO_PACKET_ID_LONG_FORM;
-         tls_crypt_adjust_frame_parameters(&to.frame);
-+
-+        if (options->tls_crypt_v2_file)
-+        {
-+            to.tls_wrap.tls_crypt_v2_wkc = &c->c1.ks.tls_crypt_v2_wkc;
-+        }
-+    }
-+
-+    if (options->tls_crypt_v2_file)
-+    {
-+        to.tls_crypt_v2 = true;
-+        if (options->tls_server)
-+        {
-+            to.tls_wrap.tls_crypt_v2_server_key = c->c1.ks.tls_crypt_v2_server_key;
-+        }
-     }
- 
-     /* If we are running over TCP, allow for
-@@ -4359,6 +4395,7 @@ inherit_context_child(struct context *dest,
-     dest->c1.ks.ssl_ctx = src->c1.ks.ssl_ctx;
-     dest->c1.ks.tls_wrap_key = src->c1.ks.tls_wrap_key;
-     dest->c1.ks.tls_auth_key_type = src->c1.ks.tls_auth_key_type;
-+    dest->c1.ks.tls_crypt_v2_server_key = src->c1.ks.tls_crypt_v2_server_key;
-     /* inherit pre-NCP ciphers */
-     dest->c1.ciphername = src->c1.ciphername;
-     dest->c1.authname = src->c1.authname;
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index c5c767c0..96cff870 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -66,6 +66,8 @@ struct key_schedule
-     /* optional TLS control channel wrapping */
-     struct key_type tls_auth_key_type;
-     struct key_ctx_bi tls_wrap_key;
-+    struct key_ctx tls_crypt_v2_server_key;
-+    struct buffer tls_crypt_v2_wkc;             /**< Wrapped client key */
- };
- 
- /*
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index c1d53a96..60be7d15 100644
+index 60be7d15..19ac470f 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -2739,6 +2739,11 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-         {
-             msg(M_USAGE, "--tls-auth and --tls-crypt are mutually exclusive");
+@@ -629,6 +629,8 @@ static const char usage_message[] =
+     "--tls-crypt-v2-genkey client|server keyfile [base64 metadata]: Generate a\n"
+     "                  fresh tls-crypt-v2 client or server key, and store to\n"
+     "                  keyfile.  If supplied, include metadata in wrapped key.\n"
++    "--tls-crypt-v2-verify cmd : Run command cmd to verify the metadata of the\n"
++    "                  client-supplied tls-crypt-v2 client key\n"
+     "--askpass [file]: Get PEM password from controlling tty before we daemonize.\n"
+     "--auth-nocache  : Don't cache --askpass or --auth-user-pass passwords.\n"
+     "--crl-verify crl ['dir']: Check peer certificate against a CRL.\n"
+@@ -8065,6 +8067,11 @@ add_option(struct options *options,
+             options->tls_crypt_v2_metadata = p[3];
          }
-+        if (options->client && options->tls_crypt_v2_file
-+            && (options->tls_auth_file || options->tls_crypt_file))
-+        {
-+            msg(M_USAGE, "--tls-crypt-v2, --tls-auth and --tls-crypt are mutually exclusive in client mode");
-+        }
      }
-     else
++    else if (streq(p[0], "tls-crypt-v2-verify") && p[1] && !p[2])
++    {
++        VERIFY_PERMISSION(OPT_P_GENERAL);
++        options->tls_crypt_v2_verify_script = p[1];
++    }
+     else if (streq(p[0], "key-method") && p[1] && !p[2])
      {
+         int key_method;
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index d5407b5b..2f93e44f 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -576,6 +576,8 @@ struct options
+     const char *tls_crypt_v2_genkey_file;
+     const char *tls_crypt_v2_metadata;
+ 
++    const char *tls_crypt_v2_verify_script;
++
+     /* Allow only one session */
+     bool single_session;
+ 
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index bfe37fcd..9fc1efa3 100644
+index 9fc1efa3..d3951f68 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -1055,6 +1055,23 @@ tls_session_user_pass_enabled(struct tls_session *session)
- /** @addtogroup control_processor
-  *  @{ */
- 
-+/** Free the elements of a tls_wrap_ctx structure */
-+static void tls_wrap_free(struct tls_wrap_ctx *tls_wrap)
-+{
-+    if (packet_id_initialized(&tls_wrap->opt.packet_id))
-+    {
-+        packet_id_free(&tls_wrap->opt.packet_id);
-+    }
-+
-+    if (tls_wrap->cleanup_key_ctx)
-+    {
-+        free_key_ctx_bi(&tls_wrap->opt.key_ctx_bi);
-+    }
-+
-+    free_buf(&tls_wrap->tls_crypt_v2_metadata);
-+    free_buf(&tls_wrap->work);
-+}
-+
- /** @name Functions for initialization and cleanup of tls_session structures
-  *  @{ */
- 
-@@ -1147,16 +1164,9 @@ tls_session_init(struct tls_multi *multi, struct tls_session *session)
- static void
- tls_session_free(struct tls_session *session, bool clear)
+@@ -1541,14 +1541,15 @@ write_control_auth(struct tls_session *session,
+ static bool
+ read_control_auth(struct buffer *buf,
+                   struct tls_wrap_ctx *ctx,
+-                  const struct link_socket_actual *from)
++                  const struct link_socket_actual *from,
++                  const struct tls_options *opt)
  {
--    int i;
--
--    if (packet_id_initialized(&session->tls_wrap.opt.packet_id))
--    {
--        packet_id_free(&session->tls_wrap.opt.packet_id);
--    }
-+    tls_wrap_free(&session->tls_wrap);
- 
--    free_buf(&session->tls_wrap.work);
--
--    for (i = 0; i < KS_SIZE; ++i)
-+    for (size_t i = 0; i < KS_SIZE; ++i)
-     {
-         key_state_free(&session->key[i], false);
-     }
-@@ -1482,6 +1492,8 @@ write_control_auth(struct tls_session *session,
-     ASSERT(reliable_ack_write
-                (ks->rec_ack, buf, &ks->session_id_remote, max_ack, prepend_ack));
- 
-+    msg(D_TLS_DEBUG, "%s(): %s", __func__, packet_opcode_name(opcode));
-+
-     if (session->tls_wrap.mode == TLS_WRAP_AUTH
-         || session->tls_wrap.mode == TLS_WRAP_NONE)
-     {
-@@ -1499,17 +1511,26 @@ write_control_auth(struct tls_session *session,
-         ASSERT(buf_init(&session->tls_wrap.work, buf->offset));
-         ASSERT(buf_write(&session->tls_wrap.work, &header, sizeof(header)));
-         ASSERT(session_id_write(&session->session_id, &session->tls_wrap.work));
--        if (tls_crypt_wrap(buf, &session->tls_wrap.work, &session->tls_wrap.opt))
--        {
--            /* Don't change the original data in buf, it's used by the reliability
--             * layer to resend on failure. */
--            *buf = session->tls_wrap.work;
--        }
--        else
-+        if (!tls_crypt_wrap(buf, &session->tls_wrap.work, &session->tls_wrap.opt))
-         {
-             buf->len = 0;
-             return;
-         }
-+
-+        if (opcode == P_CONTROL_HARD_RESET_CLIENT_V3)
-+        {
-+            if (!buf_copy(&session->tls_wrap.work,
-+                          session->tls_wrap.tls_crypt_v2_wkc))
-+            {
-+                msg(D_TLS_ERRORS, "Could not append tls-crypt-v2 client key");
-+                buf->len = 0;
-+                return;
-+            }
-+        }
-+
-+        /* Don't change the original data in buf, it's used by the reliability
-+         * layer to resend on failure. */
-+        *buf = session->tls_wrap.work;
-     }
-     *to_link_addr = &ks->remote_addr;
- }
-@@ -1525,6 +1546,16 @@ read_control_auth(struct buffer *buf,
      struct gc_arena gc = gc_new();
      bool ret = false;
  
-+    const uint8_t opcode = *(BPTR(buf)) >> P_OPCODE_SHIFT;
-+    if (opcode == P_CONTROL_HARD_RESET_CLIENT_V3
-+        && !tls_crypt_v2_extract_client_key(buf, ctx))
-+    {
-+        msg (D_TLS_ERRORS,
-+             "TLS Error: can not extract tls-crypt-v2 client key from %s",
-+             print_link_socket_actual(from, &gc));
-+        goto cleanup;
-+    }
-+
-     if (ctx->mode == TLS_WRAP_AUTH)
+     const uint8_t opcode = *(BPTR(buf)) >> P_OPCODE_SHIFT;
+     if (opcode == P_CONTROL_HARD_RESET_CLIENT_V3
+-        && !tls_crypt_v2_extract_client_key(buf, ctx))
++        && !tls_crypt_v2_extract_client_key(buf, ctx, opt))
      {
-         struct buffer null = clear_buf();
-@@ -1564,6 +1595,18 @@ read_control_auth(struct buffer *buf,
-         ASSERT(buf_copy(buf, &tmp));
-         buf_clear(&tmp);
-     }
-+    else if (ctx->tls_crypt_v2_server_key.cipher)
-+    {
-+        /* If tls-crypt-v2 is enabled, require *some* wrapping */
-+        msg(D_TLS_ERRORS, "TLS Error: could not determine wrapping from %s",
-+            print_link_socket_actual(from, &gc));
-+        /* TODO Do we want to support using tls-crypt-v2 and no control channel
-+         * wrapping at all simultaneously?  That would allow server admins to
-+         * upgrade clients one-by-one without running a second instance, but we
-+         * should not enable it by default because it breaks DoS-protection.
-+         * So, add something like --tls-crypt-v2-allow-insecure-fallback ? */
-+        goto cleanup;
-+    }
+         msg (D_TLS_ERRORS,
+              "TLS Error: can not extract tls-crypt-v2 client key from %s",
+@@ -3629,7 +3630,8 @@ tls_pre_decrypt(struct tls_multi *multi,
+                     goto error;
+                 }
  
-     if (ctx->mode == TLS_WRAP_NONE || ctx->mode == TLS_WRAP_AUTH)
-     {
-@@ -3864,6 +3907,10 @@ tls_pre_decrypt_lite(const struct tls_auth_standalone *tas,
+-                if (!read_control_auth(buf, &session->tls_wrap, from))
++                if (!read_control_auth(buf, &session->tls_wrap, from,
++                                       session->opt))
+                 {
+                     goto error;
+                 }
+@@ -3682,7 +3684,8 @@ tls_pre_decrypt(struct tls_multi *multi,
+                 if (op == P_CONTROL_SOFT_RESET_V1
+                     && DECRYPT_KEY_ENABLED(multi, ks))
+                 {
+-                    if (!read_control_auth(buf, &session->tls_wrap, from))
++                    if (!read_control_auth(buf, &session->tls_wrap, from,
++                                           session->opt))
+                     {
+                         goto error;
+                     }
+@@ -3703,7 +3706,8 @@ tls_pre_decrypt(struct tls_multi *multi,
+                         do_burst = true;
+                     }
+ 
+-                    if (!read_control_auth(buf, &session->tls_wrap, from))
++                    if (!read_control_auth(buf, &session->tls_wrap, from,
++                                           session->opt))
+                     {
+                         goto error;
+                     }
+@@ -3905,7 +3909,7 @@ tls_pre_decrypt_lite(const struct tls_auth_standalone *tas,
+             bool status;
+ 
              /* HMAC test, if --tls-auth was specified */
-             status = read_control_auth(&newbuf, &tls_wrap_tmp, from);
+-            status = read_control_auth(&newbuf, &tls_wrap_tmp, from);
++            status = read_control_auth(&newbuf, &tls_wrap_tmp, from, NULL);
              free_buf(&newbuf);
-+            if (tls_wrap_tmp.cleanup_key_ctx)
-+            {
-+                free_key_ctx_bi(&tls_wrap_tmp.opt.key_ctx_bi);
-+            }
-             if (!status)
+             if (tls_wrap_tmp.cleanup_key_ctx)
              {
-                 goto error;
 diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index e3c852af..d744881c 100644
+index d744881c..923cd959 100644
 --- a/src/openvpn/ssl_common.h
 +++ b/src/openvpn/ssl_common.h
-@@ -213,6 +213,12 @@ struct tls_wrap_ctx
-     } mode;                     /**< Control channel wrapping mode */
-     struct crypto_options opt;  /**< Crypto state */
-     struct buffer work;         /**< Work buffer (only for --tls-crypt) */
-+    struct key_ctx tls_crypt_v2_server_key;  /**< Decrypts client keys */
-+    const struct buffer *tls_crypt_v2_wkc;   /**< Wrapped client key,
-+                                                  sent to server */
-+    struct buffer tls_crypt_v2_metadata;     /**< Received from client */
-+    bool cleanup_key_ctx;                    /**< opt.key_ctx_bi is owned by
-+                                                  this context */
- };
+@@ -293,6 +293,7 @@ struct tls_options
+     bool ncp_enabled;
  
- /*
+     bool tls_crypt_v2;
++    const char *tls_crypt_v2_verify_script;
+ 
+     /** TLS handshake wrapping state */
+     struct tls_wrap_ctx tls_wrap;
 diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index cb0d5faf..0180a753 100644
+index 0180a753..3cdf2d01 100644
 --- a/src/openvpn/tls_crypt.c
 +++ b/src/openvpn/tls_crypt.c
-@@ -33,6 +33,7 @@
+@@ -29,9 +29,11 @@
+ 
+ #include "syshead.h"
+ 
++#include "argv.h"
+ #include "base64.h"
  #include "crypto.h"
  #include "platform.h"
++#include "run_command.h"
  #include "session_id.h"
-+#include "ssl.h"
+ #include "ssl.h"
  
- #include "tls_crypt.h"
- 
-@@ -519,6 +520,55 @@ error_exit:
+@@ -520,9 +522,69 @@ error_exit:
      return ret;
  }
  
-+bool
-+tls_crypt_v2_extract_client_key(struct buffer *buf,
-+                                struct tls_wrap_ctx *ctx)
++static bool
++tls_crypt_v2_verify_metadata(const struct tls_wrap_ctx *ctx,
++                             const struct tls_options *opt)
 +{
-+    static const int hard_reset_length =
-+            TLS_CRYPT_OFF_CT + sizeof(uint8_t) + sizeof(packet_id_type);
-+
-+    if (!ctx->tls_crypt_v2_server_key.cipher)
++    bool ret = false;
++    struct gc_arena gc = gc_new();
++    const char *tmp_file = NULL;
++    struct buffer metadata = ctx->tls_crypt_v2_metadata;
++    int metadata_type = buf_read_u8(&metadata);
++    if (metadata_type < 0)
 +    {
-+        msg (D_TLS_ERRORS,
-+             "Client want tls-crypt-v2, but no server key present.");
-+        return false;
++        msg(M_WARN, "ERROR: no metadata type");
++        goto cleanup;
 +    }
 +
-+    msg (D_HANDSHAKE, "Control Channel: using tls-crypt-v2 key");
-+
-+    struct buffer wrapped_client_key = *buf;
-+    if (!buf_advance(&wrapped_client_key, hard_reset_length))
++    tmp_file = platform_create_temp_file(opt->tmp_dir, "tls_crypt_v2_metadata_",
++                                         &gc);
++    if (!tmp_file || !buffer_write_file(tmp_file, &metadata))
 +    {
-+        msg (D_TLS_ERRORS, "Can not locate tls-crypt-v2 client key");
-+        return false;
++        msg(M_WARN, "ERROR: could not write metadata to file");
++        goto cleanup;
 +    }
 +
-+    struct key2 client_key = { 0 };
-+    ctx->tls_crypt_v2_metadata = alloc_buf(TLS_CRYPT_V2_MAX_METADATA_LEN);
-+    if (!tls_crypt_v2_unwrap_client_key(&client_key,
-+                                        &ctx->tls_crypt_v2_metadata,
-+                                        wrapped_client_key,
-+                                        &ctx->tls_crypt_v2_server_key))
++    char metadata_type_str[4] = { 0 }; /* Max value: 255 */
++    openvpn_snprintf(metadata_type_str, sizeof(metadata_type_str),
++                     "%i", metadata_type);
++    struct env_set *es = env_set_create(NULL);
++    setenv_str(es, "script_type", "tls-crypt-v2-verify");
++    setenv_str(es, "metadata_type", metadata_type_str);
++    setenv_str(es, "metadata_file", tmp_file);
++
++    struct argv argv = argv_new();
++    argv_parse_cmd(&argv, opt->tls_crypt_v2_verify_script);
++    argv_msg_prefix(D_TLS_DEBUG, &argv, "Executing tls-crypt-v2-verify");
++
++    ret = openvpn_run_script(&argv, es, 0, "--tls-crypt-v2-verify");
++
++    argv_reset(&argv);
++    env_set_destroy(es);
++
++    if (!platform_unlink(tmp_file))
 +    {
-+        msg (D_TLS_ERRORS, "Can not unwrap tls-crypt-v2 client key");
-+        secure_memzero(&client_key, sizeof(client_key));
-+        return false;
++        msg(M_WARN, "WARNING: failed to remove temp file '%s", tmp_file);
 +    }
 +
-+    /* Load the decrypted key */
-+    ctx->mode = TLS_WRAP_CRYPT;
-+    ctx->cleanup_key_ctx = true;
-+    ctx->opt.flags |= CO_PACKET_ID_LONG_FORM;
-+    memset(&ctx->opt.key_ctx_bi, 0, sizeof(ctx->opt.key_ctx_bi));
-+    tls_crypt_v2_load_client_key(&ctx->opt.key_ctx_bi, &client_key, true);
-+    secure_memzero(&client_key, sizeof(client_key));
++    if (ret)
++    {
++        msg(D_HANDSHAKE, "TLS CRYPT V2 VERIFY SCRIPT OK");
++    }
++    else
++    {
++        msg(D_HANDSHAKE, "TLS CRYPT V2 VERIFY SCRIPT ERROR");
++    }
 +
-+    /* Remove client key from buffer so tls-crypt code can unwrap message */
-+    ASSERT(buf_inc_len(buf, -(BLEN(&wrapped_client_key))));
-+
-+    return true;
++cleanup:
++    gc_free(&gc);
++    return ret;
 +}
 +
- void
- tls_crypt_v2_write_server_key_file(const char *filename)
+ bool
+ tls_crypt_v2_extract_client_key(struct buffer *buf,
+-                                struct tls_wrap_ctx *ctx)
++                                struct tls_wrap_ctx *ctx,
++                                const struct tls_options *opt)
  {
+     static const int hard_reset_length =
+             TLS_CRYPT_OFF_CT + sizeof(uint8_t) + sizeof(packet_id_type);
+@@ -566,6 +628,11 @@ tls_crypt_v2_extract_client_key(struct buffer *buf,
+     /* Remove client key from buffer so tls-crypt code can unwrap message */
+     ASSERT(buf_inc_len(buf, -(BLEN(&wrapped_client_key))));
+ 
++    if (opt && opt->tls_crypt_v2_verify_script)
++    {
++        return tls_crypt_v2_verify_metadata(ctx, opt);
++    }
++
+     return true;
+ }
+ 
 diff --git a/src/openvpn/tls_crypt.h b/src/openvpn/tls_crypt.h
-index 746f3be8..6521144e 100644
+index 6521144e..5d9d29d6 100644
 --- a/src/openvpn/tls_crypt.h
 +++ b/src/openvpn/tls_crypt.h
-@@ -83,6 +83,7 @@
- #include "buffer.h"
- #include "crypto.h"
- #include "session_id.h"
-+#include "ssl_common.h"
+@@ -193,7 +193,8 @@ void tls_crypt_v2_init_client_key(struct key_ctx_bi *key,
+  * @returns true if a key was successfully extracted.
+  */
+ bool tls_crypt_v2_extract_client_key(struct buffer *buf,
+-                                     struct tls_wrap_ctx *ctx);
++                                     struct tls_wrap_ctx *ctx,
++                                     const struct tls_options *opt);
  
- #define TLS_CRYPT_TAG_SIZE (256/8)
- #define TLS_CRYPT_PID_SIZE (sizeof(packet_id_type) + sizeof(net_time_t))
-@@ -181,6 +182,19 @@ void tls_crypt_v2_init_client_key(struct key_ctx_bi *key,
-                                   const char *key_file,
-                                   const char *key_inline);
- 
-+/**
-+ * Extract a tls-crypt-v2 client key from a P_CONTROL_HARD_RESET_CLIENT_V3
-+ * message, and load the key into the supplied tls wrap context.
-+ *
-+ * @param buf   Buffer containing a received P_CONTROL_HARD_RESET_CLIENT_V3
-+ *              message.
-+ * @param ctx   tls-wrap context to be initialized with the client key.
-+ *
-+ * @returns true if a key was successfully extracted.
-+ */
-+bool tls_crypt_v2_extract_client_key(struct buffer *buf,
-+                                     struct tls_wrap_ctx *ctx);
-+
  /**
   * Generate a tls-crypt-v2 server key, and write to file.
-  *
 diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index 1ff62615..b51973fa 100644
+index b51973fa..80eca766 100644
 --- a/tests/unit_tests/openvpn/Makefile.am
 +++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -59,7 +59,7 @@ packet_id_testdriver_SOURCES = test_packet_id.c mock_msg.c \
+@@ -6,7 +6,10 @@ if HAVE_LD_WRAP_SUPPORT
+ check_PROGRAMS += argv_testdriver buffer_testdriver
+ endif
  
+-check_PROGRAMS += crypto_testdriver packet_id_testdriver tls_crypt_testdriver
++check_PROGRAMS += crypto_testdriver packet_id_testdriver
++if HAVE_LD_WRAP_SUPPORT
++check_PROGRAMS += tls_crypt_testdriver
++endif
+ 
+ TESTS = $(check_PROGRAMS)
+ 
+@@ -60,14 +63,17 @@ packet_id_testdriver_SOURCES = test_packet_id.c mock_msg.c \
  tls_crypt_testdriver_CFLAGS  = @TEST_CFLAGS@ \
  	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir) \
--	$(OPTIONAL_CRYPTO_CFLAGS)
-+	$(OPTIONAL_CRYPTO_CFLAGS) $(OPTIONAL_PKCS11_HELPER_CFLAGS)
- tls_crypt_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
+ 	$(OPTIONAL_CRYPTO_CFLAGS) $(OPTIONAL_PKCS11_HELPER_CFLAGS)
+-tls_crypt_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
++tls_crypt_testdriver_LDFLAGS = @TEST_LDFLAGS@ -Wl,--wrap=parse_line \
  	$(OPTIONAL_CRYPTO_LIBS)
  tls_crypt_testdriver_SOURCES = test_tls_crypt.c mock_msg.c \
++	$(openvpn_srcdir)/argv.c \
+ 	$(openvpn_srcdir)/base64.c \
+ 	$(openvpn_srcdir)/buffer.c \
+ 	$(openvpn_srcdir)/crypto.c \
+ 	$(openvpn_srcdir)/crypto_mbedtls.c \
+ 	$(openvpn_srcdir)/crypto_openssl.c \
++	$(openvpn_srcdir)/env_set.c \
+ 	$(openvpn_srcdir)/otime.c \
+ 	$(openvpn_srcdir)/packet_id.c \
+-	$(openvpn_srcdir)/platform.c
++	$(openvpn_srcdir)/platform.c \
++	$(openvpn_srcdir)/run_command.c
+diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c
+index f53255cd..b7a5359f 100644
+--- a/tests/unit_tests/openvpn/test_tls_crypt.c
++++ b/tests/unit_tests/openvpn/test_tls_crypt.c
+@@ -43,8 +43,24 @@
+ 
+ #define TESTBUF_SIZE            128
+ 
++/* Defines for use in the tests and the mock parse_line() */
++#define PATH1       "/s p a c e"
++#define PATH2       "/foo bar/baz"
++#define PARAM1      "param1"
++#define PARAM2      "param two"
++
+ const char plaintext_short[1];
+ 
++int
++__wrap_parse_line(const char *line, char **p, const int n, const char *file,
++                  const int line_num, int msglevel, struct gc_arena *gc)
++{
++    p[0] = PATH1 PATH2;
++    p[1] = PARAM1;
++    p[2] = PARAM2;
++    return 3;
++}
++
+ struct test_tls_crypt_context {
+     struct crypto_options co;
+     struct key_type kt;
 -- 
 2.17.1
 
