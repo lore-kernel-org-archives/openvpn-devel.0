@@ -1,16 +1,13 @@
-From: Kevin Kane <kkane@...2393...>
-Date: Fri, 6 Jul 2018 16:51:21 +0000
-Message-ID: <MW2PR2101MB09214276226CD512676EAB74AB470@...2433...>
-References: <DM5PR2101MB1112D9B5D70AC19014BC5BEDB0420@...2412...>
- <MW2PR2101MB09219BB9BA77ADD409D3DFECAB410@...2433...>
- <CAFHpkQHPWDfPDqiJ0_7FrMLc18q9EoC8j1NBAkYx9snXo+V0Uw@...278...>
- <MW2PR2101MB0921EB1EE9D7A34FD9126BC0AB470@...2433...>
- <CAKuzo_hzASoEx-VZHe4tV5bPHOCjNfumoKmHL+kOCSHvg_0zdw@...278...>
-In-Reply-To: <CAKuzo_hzASoEx-VZHe4tV5bPHOCjNfumoKmHL+kOCSHvg_0zdw@...278...>
-Content-Language: en-US
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Upstreaming pqcrypto changes from
- microsoft/openvpn
+In-Reply-To: <OpenVPN/openvpn-gui/issues/9/403117394@...1714...>
+References: <OpenVPN/openvpn-gui/issues/9@...1714...>
+ <OpenVPN/openvpn-gui/issues/9/403117394@...1714...>
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 6 Jul 2018 15:24:11 -0400
+Message-ID: <CAKuzo_jDCHm=VLc2wuKYJaf48Duy_4dHnbvHx4StVV6PjDausw@...278...>
+Content-Type: multipart/alternative; boundary="00000000000005a4820570599d05"
+Subject: Re: [Openvpn-devel] [OpenVPN/openvpn-gui] UI showing green
+ connected status despite not beeing able to create a route (#9)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,81 +16,104 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Selva Nair <selva.nair@...277...>
-Cc: =?utf-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: OpenVPN/openvpn-gui <reply+003cc04f98905c5e675d15f3068c3450eb0294652810b25392cf0000000117577b8f92a169ce076aec9b@...1858...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-VGhpcyB3YXMgbWVhbnQgdG8gYmUgYSBxdWljayBhbmQgc2ltcGxlIGludGVncmF0aW9uLiBUaGUg
-cHJvYmxlbSB3aXRoIERpc2Nvbm5lY3QgaXMgdGhlIHByb2JsZW0gSSBtZW50aW9uZWQgYmVsb3c6
-IHNpbmNlIE9wZW5WUE4gdXNlcyBhIG5vbnN0YW5kYXJkIGRyaXZlciBmb3IgdGhlIG5ldHdvcmsg
-Y29tbXVuaWNhdGlvbnMsIHRoZSBVSSB3aWxsIG5ldmVyIHByZXNlbnQgYSBEaXNjb25uZWN0IGJ1
-dHRvbiwgYW5kIHNvIHRoZXJlJ3Mgbm8gd2F5IHRvIGFjdHVhbGx5IGNhbGwgdGhlIERpc2Nvbm5l
-Y3QgZnVuY3Rpb24gaW4gYSBjdXN0b20gZGlhbGVyIERMTC4NCg0KSWYgYW55dGhpbmcsIHlvdSBt
-YXkgZmluZCB0aGUgcGx1bWJpbmcgZm9yIGhvb2tpbmcgaW50byB0aGUgVUkgYXMgdGhlIHJlYWwg
-dmFsdWUgb2YgdGhpcyBjb2RlLCBhbmQgdGhlbiBpbXBsZW1lbnQgc29tZXRoaW5nIHJlYWwgYW5k
-IHVzYWJsZSBvbiB0b3Agb2YgaXQuIEkgbmV2ZXIgY29uc2lkZXJlZCB0aGVzZSB1c2UgY2FzZXMg
-YmVmb3JlIHRoaXMgZGlzY3Vzc2lvbi4NCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZy
-b206IFNlbHZhIE5haXIgPHNlbHZhLm5haXJALi4uMjc3Li4uPiANClNlbnQ6IEZyaWRheSwgSnVs
-eSA2LCAyMDE4IDk6MzcgQU0NClRvOiBLZXZpbiBLYW5lIDxra2FuZUAuLi4yMzkzLi4uPg0KQ2M6
-INCY0LvRjNGPINCo0LjQv9C40YbQuNC9IDxjaGlwaXRzaW5lQC4uLjI3Ny4uLj47IEdlcnQgRG9l
-cmluZyA8Z2VydEAuLi4xMjk2Li4uPjsgb3BlbnZwbi1kZXZlbCA8b3BlbnZwbi1kZXZlbEBsaXN0
-cy5zb3VyY2Vmb3JnZS5uZXQ+DQpTdWJqZWN0OiBSZTogW09wZW52cG4tZGV2ZWxdIFVwc3RyZWFt
-aW5nIHBxY3J5cHRvIGNoYW5nZXMgZnJvbSBtaWNyb3NvZnQvb3BlbnZwbg0KDQpIaSwNCg0KVGhh
-bmtzIGZvciB0aGUgZm9sbG93IHVwLg0KDQpPbiBGcmksIEp1bCA2LCAyMDE4IGF0IDEyOjAzIFBN
-LCBLZXZpbiBLYW5lIHZpYSBPcGVudnBuLWRldmVsIDxvcGVudnBuLWRldmVsQGxpc3RzLnNvdXJj
-ZWZvcmdlLm5ldD4gd3JvdGU6DQo+IFtDb21iaW5pbmcgdGhyZWFkcy5dDQo+DQo+DQo+DQo+IFRo
-ZSB3b3JrIG9uIHRoZSBPcGVuU1NMIGZvcmssIGFuZCBmaWd1cmluZyBvdXQganVzdCB3aGF0IHRo
-ZSByaWdodCANCj4gaW50ZXJmYWNlIGlzIHRvIGJyaW5nIFBRIGNyeXB0byB0byBjdXJyZW50IGNy
-eXB0byBsaWJyYXJpZXMsIGlzIGdvaW5nIHRvIGJlIG9uLWdvaW5nLg0KPiBQUSBjcnlwdG8gYWxn
-b3JpdGhtcyBkb27igJl0IGZpdCBzbyB3ZWxsIGluIHRoZSBjb21tb24gY29udmVudGlvbnMgd2Xi
-gJl2ZSANCj4gYmVjb21lIGFjY3VzdG9tZWQgdG8gZm9yIGN1cnJlbnQgYWxnb3JpdGhtcy4NCj4N
-Cj4NCj4NCj4gQXMgZm9yIHRoZSBkaWFsZXIsIEkgbmVlZCB0byBsb29rIGludG8gZ2V0dGluZyBh
-cHByb3ZhbCB0byB1cHN0cmVhbSANCj4gaXQsIGJ1dCBJIGV4cGVjdCBJIGNhbiBzaGFyZSBpdC4g
-VGhlIGdvYWwgb2YgdGhhdCB3b3JrIHdhcyB0byBoYXZlIA0KPiBzb21lIHJlYWwgYmFzaWMgaW50
-ZWdyYXRpb24gd2l0aCB0aGUgbmV0d29yayBjb25uZWN0aW9ucyBmbHlvdXQgdGhhdCANCj4gYXBw
-ZWFycyB3aGVuIHlvdSBjbGljayBpdHMgaWNvbiBpbiB0aGUgbm90aWZpY2F0aW9uIGFyZWEuIFdo
-YXQgSeKAmXZlIA0KPiBkb25lIGlzIG1vZGVzdCwgdGhvdWdoLCBzbyBsZXQgbWUgbWFrZSBjbGVh
-ciB3aGF0IEnigJl2ZSBhY3R1YWxseSBkb25lLiANCj4gSSBjaGFuZ2VkIE9wZW5WUE4tR1VJIHdo
-ZW4gaXQgc3RhcnRzIHVwIHRvIGNyZWF0ZSBzdWNoIGFuIGVudHJ5IGZvciANCj4gZWFjaCBjb25m
-aWd1cmF0aW9uIGZpbGUgaXQgZmluZHMsIGFuZCBpZiB0aGUgdXNlciBjbGlja3Mg4oCcQ29ubmVj
-dOKAnSBvbiANCj4gb25lIG9mIHRob3NlIGVudHJpZXMsIGl04oCZcyBleGFjdGx5IHRoZSBzYW1l
-IGFzIGlmIHRoZSB1c2VyIGJyb3VnaHQgdXAgDQo+IHRoZSByaWdodC1jbGljayBtZW51IGZvciBP
-cGVuVlBOLUdVSeKAmXMgaWNvbiwgc2VsZWN0ZWQgdGhhdCANCj4gY29uZmlndXJhdGlvbiBmaWxl
-LCBhbmQgY2xpY2tlZCBDb25uZWN0LiBUaGUgcGx1Zy1pbiBzZW5kcyB0aGUgZXhhY3QgDQo+IHNh
-bWUgV2luZG93cyBtZXNzYWdlIHRvIE9wZW5WUE4tR1VJLCB3aGljaCBjYXVzZXMgaXQgdG8gYnJp
-bmcgdXAgaXRzIA0KPiBzdGF0dXMgd2luZG93IGFuZCBpbnN0cnVjdCB0aGUgc3lzdGVtIHNlcnZp
-Y2UgdG8gZXN0YWJsaXNoIHRoZSBjb25uZWN0aW9uLiBUaGF04oCZcyBpdC4NCj4NCj4NCj4NCj4g
-U28gdGhlcmUgYXJlIHNvbWUgY2F2ZWF0cy4gMSkgT3BlblZQTi1HVUkgaGFzIHRvIGJlIHJ1bm5p
-bmc7IHRoZSANCj4gcGx1Zy1pbiB3aWxsIGNvbXBsYWluIGlmIGl04oCZcyBub3QuIEluIGZhY3Qg
-T3BlblZQTi1HVUkgY2xlYXJzIG91dCB0aGUgDQo+IGxpc3Qgd2hlbiBpdCBleGl0cyBjbGVhbmx5
-LiAyKSBJZiBPcGVuVlBOLUdVSSBjcmFzaGVzLCB0aGUgZW50cmllcyANCj4gd2lsbCBiZSBsZWZ0
-IGluIHRoZSBsaXN0IGJ1dCB3b27igJl0IGJlIHVzYWJsZSBmb3IgYW55dGhpbmcuIEkgcHJlZml4
-IA0KPiBlYWNoIGVudHJ5IHdpdGggdGhlIHN0cmluZyDigJxPcGVuVlBOIOKAnCwgdGhvdWdoLCBh
-bmQgdGhlIG5leHQgdGltZSBpdCANCj4gcnVucyBpdCB3aWxsIGNsZWFuIHVwIHRoZXNlIGVudHJp
-ZXMuIDMpIEJlY2F1c2UgT3BlblZQTiB1c2VzIA0KPiB0YXAtd2luZG93cyBpbnN0ZWFkIG9mIHRo
-ZSBub3JtYWwgV2luZG93cyBORElTIGRldmljZXMgZm9yIHRoZSANCj4gbmV0d29ya2luZywgdGhl
-IGZseW91dCBjYW7igJl0IGRldGVjdCB3aGV0aGVyIG9yIG5vdCB0aGUgY29ubmVjdGlvbiBpcyBh
-Y3RpdmUgb3Igbm90LCBhbmQgc28gaXQgd2lsbCBhbHdheXMgcHJlc2VudCBhIOKAnENvbm5lY3Ti
-gJ0NCj4gYnV0dG9uLiBPcGVuVlBOLUdVSSBpZ25vcmVzIHRoaXMgd2hlbiB0aGUgY29ubmVjdGlv
-biBpcyBhbHJlYWR5IGFsaXZlLCANCj4gc28gbm90aGluZyBiYWQgaGFwcGVucywgYnV0IGl0IGNh
-biBiZSBhIGNvbmZ1c2luZyBleHBlcmllbmNlLiBJIGRpZG7igJl0IA0KPiBpbnZlc3RpZ2F0ZSB3
-aGF0IGl0IG1pZ2h0IHRha2UgdG8gZ2V0IHRhcC13aW5kb3dzIHRvIHN1cmZhY2UgaXRzIA0KPiBj
-b25uZWN0ZWQvZGlzY29ubmVjdGVkIHN0YXRlIHRvIHRoZSBmbHlvdXQgaW4gdGhlIGNvcnJlY3Qg
-d2F5LCBub3IgZGlkIA0KPiBJIGludmVzdGlnYXRlIGlmIHRoaXMgY291bGQgYmUgdXNlZCB0byBh
-dXRvbWF0aWNhbGx5IGJyaW5nIHVwIA0KPiBjb25uZWN0aW9ucyBvbiBkZW1hbmQgb3IgYmVmb3Jl
-IGxvZ2luLg0KDQpJIGhhZCBsb29rZWQgYXQgdGhlIGRpYWxlci5jIGNvZGUgYW5kIGNhbWUgdG8g
-dGhlIHNhbWUgY29uY2x1c2lvbiAtLSB0aGF0IGl0IG5lZWRzIGEgbG90IG1vcmUgd29yayB0byBi
-ZSB1c2FibGUuDQoNClRoZSBkbGwgaXMgYmFyZWJvbmVzOiAgaW1wbGVtZW50cyBvbmx5IGNvbm5l
-Y3QgKG5vdCBldmVuIGRpc2Nvbm5lY3QpLCBjb21tdW5pY2F0aW9uIHdpdGggdGhlIEdVSSB1c2Vz
-IFBvc3RNZXNzYWdlIHdpdGggbWVudS1pZHMgKGZsYWtleSBhbmQgb25lIHdheSksIHRoZSBHVUkg
-aXMgbm90IGJyb3VnaHQgdG8gdGhlIGZvcmVncm91bmQgb24gY29ubmVjdCwgc28gcGFzc3dvcmQg
-cHJvbXB0cyBhbmQgb3RoZXIgcG9wdXBzIHNob3cgbWluaW1pemVkIGV0Yy4gZXRjLg0KDQpJdCBh
-bHNvIHBvbGx1dGVzIHRoZSBjb250cm9sIHBhbmVsIC0+IE5ldHdvcmsgY29ubmVjdGlvbnMgd2l0
-aCBhbiBlbnRyeSBmb3IgZWFjaCBjb25maWcuDQoNCkFzIGZvciBjb25uZWN0IGJlZm9yZSBsb2dp
-biwgcnVubmluZyB0aGUgZW50aXJlIEdVSSBhbmQgb3BlbnZwbiBjb2RlIGFzIHN5c3RlbSBpcyBh
-IG5vLW5vLiBJbnN0ZWFkIHRoZSBkbGwgY2FuIGJlIGV4dGVuZGVkIHdpdGggbWluaW1hbCBjb2Rl
-IGZvciBzdGFydGluZyBvcGVudnBuIChzcGF3bmluZyBpdCB3aXRoIG1pbmltYWwgcHJpdmlsZWdl
-cykuIEJ1dCBpbiB0aGF0IGNhc2Ugd29udCBpdCBiZSBiZXR0ZXIgdG8gaW1wbGVtZW50IHRoZSBQ
-cmUtTG9nb25fYWNjZXNzLVByb3ZpZGVyIChQTEFQKSBpbnRlcmZhY2Ugd2hpY2ggYXBwZWFycyB0
-byBiZSBtZWFudCBmb3Igc3VjaCBwdXJwb3Nlcz8NCg0KU2VsdmENCg==
+--00000000000005a4820570599d05
+Content-Type: text/plain; charset="UTF-8"
+
+Hi,
+
+Copying the devel list as a reminder that "we" have been asking for this
+change for a long time :)
+
+On Fri, Jul 6, 2018 at 2:48 PM, Gert Doering <notifications@...1714...>
+wrote:
+
+> Hi,
+>
+> On Fri, Jul 06, 2018 at 08:25:02AM -0700, Selva Nair wrote:
+> > Can we do something about this in openvpn core, so that the GUI can be
+> report route errors?
+
+Currently when we get CONNECTED,SUCCESS we turn the icon green. If we get
+
+CONENCTED,ERROR we keep it amber and the state as "connecting.." even if
+
+the initialization sequence completes.
+> >
+> > So route errors can still be treated as non-fatal but we want to get
+> CONNECTED,ERROR in such cases.
+>
+> I still wonder why IPv4 route addition failures are considered
+> non-fatal...
+>
+
+As failure in test_routes is considered an error (waiting for TAP to come
+up..,
+though not fatal) and leads to CONNECTED,ERROR, I guess that
+CONNECTED,SUCCESS would imply the TUN/TAP is up and has got its
+on-link route to the vpn subnet.
+
+
+>
+> But this aside ("it has always been that way", before I got involved),
+> I can have look into how this signalling is done.
+
+
+To make all route errors propagate to initilaization_sequence_completed()
+one needs to return errors back up from a deep call chain:
+
+check_add_routes_dowork -> check_add_routes_action -> do_route->
+add_routes->etc.. Each of those calls returns void right now..
+
+Selva
+
+--00000000000005a4820570599d05
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi,<br><br>Copying the devel list as a reminder that &quot=
+;we&quot; have been asking for this change for a long time :)<br><div class=
+=3D"gmail_extra"><br><div class=3D"gmail_quote">On Fri, Jul 6, 2018 at 2:48=
+ PM, Gert Doering <span dir=3D"ltr">&lt;<a href=3D"mailto:notifications@...493...=
+1714..." target=3D"_blank">notifications@...1714...</a>&gt;</span> wrote:<b=
+r><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;borde=
+r-left:1px solid rgb(204,204,204);padding-left:1ex">Hi,<br>
+<br>
+On Fri, Jul 06, 2018 at 08:25:02AM -0700, Selva Nair wrote:<br>
+&gt; Can we do something about this in openvpn core, so that the GUI can be=
+ report route errors?=C2=A0</blockquote><blockquote class=3D"gmail_quote" s=
+tyle=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);pad=
+ding-left:1ex">Currently when we get CONNECTED,SUCCESS we turn the icon gre=
+en. If we get=C2=A0</blockquote><blockquote class=3D"gmail_quote" style=3D"=
+margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-lef=
+t:1ex">CONENCTED,ERROR we keep it amber and the state as &quot;connecting..=
+&quot; even if=C2=A0</blockquote><blockquote class=3D"gmail_quote" style=3D=
+"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-le=
+ft:1ex">the initialization sequence completes.<br>
+&gt; <br>
+&gt; So route errors can still be treated as non-fatal but we want to get C=
+ONNECTED,ERROR in such cases.<br>
+<br>
+I still wonder why IPv4 route addition failures are considered <br>
+non-fatal...<br></blockquote><div><br></div><div>As failure in test_routes =
+is considered an error (waiting for TAP to come up.., <br>though not fatal)=
+ and leads to CONNECTED,ERROR, I guess that<br>CONNECTED,SUCCESS would impl=
+y the TUN/TAP is up and has got its<br>on-link route to the vpn subnet.<br>=
+</div><div>=C2=A0<br></div><blockquote class=3D"gmail_quote" style=3D"margi=
+n:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex=
+">
+<br>
+But this aside (&quot;it has always been that way&quot;, before I got invol=
+ved),<br>
+I can have look into how this signalling is done.</blockquote><div><br></di=
+v><div>To make all route errors propagate to initilaization_sequence_comple=
+<wbr>ted()<br></div><div>one needs to return errors back up from a deep cal=
+l chain:<br></div><div><br>check_add_routes_dowork -&gt; check_add_routes_a=
+ction -&gt; do_route-&gt;<br></div><div>add_routes-&gt;etc.. Each of those =
+calls returns void right now..<br><br></div><div>Selva<br></div></div></div=
+></div>
+
+--00000000000005a4820570599d05--
+
