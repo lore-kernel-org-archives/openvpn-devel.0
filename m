@@ -1,12 +1,14 @@
-MIME-Version: 1.0
-In-Reply-To: <MW2PR2101MB0921EB1EE9D7A34FD9126BC0AB470@...2433...>
+From: Kevin Kane <kkane@...2393...>
+Date: Fri, 6 Jul 2018 16:51:21 +0000
+Message-ID: <MW2PR2101MB09214276226CD512676EAB74AB470@...2433...>
 References: <DM5PR2101MB1112D9B5D70AC19014BC5BEDB0420@...2412...>
  <MW2PR2101MB09219BB9BA77ADD409D3DFECAB410@...2433...>
  <CAFHpkQHPWDfPDqiJ0_7FrMLc18q9EoC8j1NBAkYx9snXo+V0Uw@...278...>
  <MW2PR2101MB0921EB1EE9D7A34FD9126BC0AB470@...2433...>
-From: Selva Nair <selva.nair@...277...>
-Date: Fri, 6 Jul 2018 12:37:16 -0400
-Message-ID: <CAKuzo_hzASoEx-VZHe4tV5bPHOCjNfumoKmHL+kOCSHvg_0zdw@...278...>
+ <CAKuzo_hzASoEx-VZHe4tV5bPHOCjNfumoKmHL+kOCSHvg_0zdw@...278...>
+In-Reply-To: <CAKuzo_hzASoEx-VZHe4tV5bPHOCjNfumoKmHL+kOCSHvg_0zdw@...278...>
+Content-Language: en-US
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] Upstreaming pqcrypto changes from
  microsoft/openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,96 +19,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Kevin Kane <kkane@...2393...>
-Cc: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Selva Nair <selva.nair@...277...>
+Cc: =?utf-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi,
-
-Thanks for the follow up.
-
-On Fri, Jul 6, 2018 at 12:03 PM, Kevin Kane via Openvpn-devel
-<openvpn-devel@lists.sourceforge.net> wrote:
-> [Combining threads.]
->
->
->
-> The work on the OpenSSL fork, and figuring out just what the right interf=
-ace
-> is to bring PQ crypto to current crypto libraries, is going to be on-goin=
-g.
-> PQ crypto algorithms don=E2=80=99t fit so well in the common conventions =
-we=E2=80=99ve
-> become accustomed to for current algorithms.
->
->
->
-> As for the dialer, I need to look into getting approval to upstream it, b=
-ut
-> I expect I can share it. The goal of that work was to have some real basic
-> integration with the network connections flyout that appears when you cli=
-ck
-> its icon in the notification area. What I=E2=80=99ve done is modest, thou=
-gh, so let
-> me make clear what I=E2=80=99ve actually done. I changed OpenVPN-GUI when=
- it starts
-> up to create such an entry for each configuration file it finds, and if t=
-he
-> user clicks =E2=80=9CConnect=E2=80=9D on one of those entries, it=E2=80=
-=99s exactly the same as if
-> the user brought up the right-click menu for OpenVPN-GUI=E2=80=99s icon, =
-selected
-> that configuration file, and clicked Connect. The plug-in sends the exact
-> same Windows message to OpenVPN-GUI, which causes it to bring up its stat=
-us
-> window and instruct the system service to establish the connection. That=
-=E2=80=99s
-> it.
->
->
->
-> So there are some caveats. 1) OpenVPN-GUI has to be running; the plug-in
-> will complain if it=E2=80=99s not. In fact OpenVPN-GUI clears out the lis=
-t when it
-> exits cleanly. 2) If OpenVPN-GUI crashes, the entries will be left in the
-> list but won=E2=80=99t be usable for anything. I prefix each entry with t=
-he string
-> =E2=80=9COpenVPN =E2=80=9C, though, and the next time it runs it will cle=
-an up these
-> entries. 3) Because OpenVPN uses tap-windows instead of the normal Windows
-> NDIS devices for the networking, the flyout can=E2=80=99t detect whether =
-or not the
-> connection is active or not, and so it will always present a =E2=80=9CCon=
-nect=E2=80=9D
-> button. OpenVPN-GUI ignores this when the connection is already alive, so
-> nothing bad happens, but it can be a confusing experience. I didn=E2=80=
-=99t
-> investigate what it might take to get tap-windows to surface its
-> connected/disconnected state to the flyout in the correct way, nor did I
-> investigate if this could be used to automatically bring up connections on
-> demand or before login.
-
-I had looked at the dialer.c code and came to the same conclusion --
-that it needs a lot more work to be usable.
-
-The dll is barebones:  implements only connect
-(not even disconnect), communication with the GUI uses
-PostMessage with menu-ids (flakey and one way), the GUI is not
-brought to the foreground on connect, so password prompts and
-other popups show minimized etc. etc.
-
-It also pollutes the control panel -> Network connections with an entry for
-each config.
-
-As for connect before login, running the entire GUI and openvpn code as sys=
-tem
-is a no-no. Instead the dll can be extended with minimal code for
-starting openvpn (spawning it with minimal privileges). But in that
-case wont it be
-better to implement the Pre-Logon_access-Provider (PLAP) interface
-which appears to be
-meant for such purposes?
-
-Selva
-
+VGhpcyB3YXMgbWVhbnQgdG8gYmUgYSBxdWljayBhbmQgc2ltcGxlIGludGVncmF0aW9uLiBUaGUg
+cHJvYmxlbSB3aXRoIERpc2Nvbm5lY3QgaXMgdGhlIHByb2JsZW0gSSBtZW50aW9uZWQgYmVsb3c6
+IHNpbmNlIE9wZW5WUE4gdXNlcyBhIG5vbnN0YW5kYXJkIGRyaXZlciBmb3IgdGhlIG5ldHdvcmsg
+Y29tbXVuaWNhdGlvbnMsIHRoZSBVSSB3aWxsIG5ldmVyIHByZXNlbnQgYSBEaXNjb25uZWN0IGJ1
+dHRvbiwgYW5kIHNvIHRoZXJlJ3Mgbm8gd2F5IHRvIGFjdHVhbGx5IGNhbGwgdGhlIERpc2Nvbm5l
+Y3QgZnVuY3Rpb24gaW4gYSBjdXN0b20gZGlhbGVyIERMTC4NCg0KSWYgYW55dGhpbmcsIHlvdSBt
+YXkgZmluZCB0aGUgcGx1bWJpbmcgZm9yIGhvb2tpbmcgaW50byB0aGUgVUkgYXMgdGhlIHJlYWwg
+dmFsdWUgb2YgdGhpcyBjb2RlLCBhbmQgdGhlbiBpbXBsZW1lbnQgc29tZXRoaW5nIHJlYWwgYW5k
+IHVzYWJsZSBvbiB0b3Agb2YgaXQuIEkgbmV2ZXIgY29uc2lkZXJlZCB0aGVzZSB1c2UgY2FzZXMg
+YmVmb3JlIHRoaXMgZGlzY3Vzc2lvbi4NCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZy
+b206IFNlbHZhIE5haXIgPHNlbHZhLm5haXJALi4uMjc3Li4uPiANClNlbnQ6IEZyaWRheSwgSnVs
+eSA2LCAyMDE4IDk6MzcgQU0NClRvOiBLZXZpbiBLYW5lIDxra2FuZUAuLi4yMzkzLi4uPg0KQ2M6
+INCY0LvRjNGPINCo0LjQv9C40YbQuNC9IDxjaGlwaXRzaW5lQC4uLjI3Ny4uLj47IEdlcnQgRG9l
+cmluZyA8Z2VydEAuLi4xMjk2Li4uPjsgb3BlbnZwbi1kZXZlbCA8b3BlbnZwbi1kZXZlbEBsaXN0
+cy5zb3VyY2Vmb3JnZS5uZXQ+DQpTdWJqZWN0OiBSZTogW09wZW52cG4tZGV2ZWxdIFVwc3RyZWFt
+aW5nIHBxY3J5cHRvIGNoYW5nZXMgZnJvbSBtaWNyb3NvZnQvb3BlbnZwbg0KDQpIaSwNCg0KVGhh
+bmtzIGZvciB0aGUgZm9sbG93IHVwLg0KDQpPbiBGcmksIEp1bCA2LCAyMDE4IGF0IDEyOjAzIFBN
+LCBLZXZpbiBLYW5lIHZpYSBPcGVudnBuLWRldmVsIDxvcGVudnBuLWRldmVsQGxpc3RzLnNvdXJj
+ZWZvcmdlLm5ldD4gd3JvdGU6DQo+IFtDb21iaW5pbmcgdGhyZWFkcy5dDQo+DQo+DQo+DQo+IFRo
+ZSB3b3JrIG9uIHRoZSBPcGVuU1NMIGZvcmssIGFuZCBmaWd1cmluZyBvdXQganVzdCB3aGF0IHRo
+ZSByaWdodCANCj4gaW50ZXJmYWNlIGlzIHRvIGJyaW5nIFBRIGNyeXB0byB0byBjdXJyZW50IGNy
+eXB0byBsaWJyYXJpZXMsIGlzIGdvaW5nIHRvIGJlIG9uLWdvaW5nLg0KPiBQUSBjcnlwdG8gYWxn
+b3JpdGhtcyBkb27igJl0IGZpdCBzbyB3ZWxsIGluIHRoZSBjb21tb24gY29udmVudGlvbnMgd2Xi
+gJl2ZSANCj4gYmVjb21lIGFjY3VzdG9tZWQgdG8gZm9yIGN1cnJlbnQgYWxnb3JpdGhtcy4NCj4N
+Cj4NCj4NCj4gQXMgZm9yIHRoZSBkaWFsZXIsIEkgbmVlZCB0byBsb29rIGludG8gZ2V0dGluZyBh
+cHByb3ZhbCB0byB1cHN0cmVhbSANCj4gaXQsIGJ1dCBJIGV4cGVjdCBJIGNhbiBzaGFyZSBpdC4g
+VGhlIGdvYWwgb2YgdGhhdCB3b3JrIHdhcyB0byBoYXZlIA0KPiBzb21lIHJlYWwgYmFzaWMgaW50
+ZWdyYXRpb24gd2l0aCB0aGUgbmV0d29yayBjb25uZWN0aW9ucyBmbHlvdXQgdGhhdCANCj4gYXBw
+ZWFycyB3aGVuIHlvdSBjbGljayBpdHMgaWNvbiBpbiB0aGUgbm90aWZpY2F0aW9uIGFyZWEuIFdo
+YXQgSeKAmXZlIA0KPiBkb25lIGlzIG1vZGVzdCwgdGhvdWdoLCBzbyBsZXQgbWUgbWFrZSBjbGVh
+ciB3aGF0IEnigJl2ZSBhY3R1YWxseSBkb25lLiANCj4gSSBjaGFuZ2VkIE9wZW5WUE4tR1VJIHdo
+ZW4gaXQgc3RhcnRzIHVwIHRvIGNyZWF0ZSBzdWNoIGFuIGVudHJ5IGZvciANCj4gZWFjaCBjb25m
+aWd1cmF0aW9uIGZpbGUgaXQgZmluZHMsIGFuZCBpZiB0aGUgdXNlciBjbGlja3Mg4oCcQ29ubmVj
+dOKAnSBvbiANCj4gb25lIG9mIHRob3NlIGVudHJpZXMsIGl04oCZcyBleGFjdGx5IHRoZSBzYW1l
+IGFzIGlmIHRoZSB1c2VyIGJyb3VnaHQgdXAgDQo+IHRoZSByaWdodC1jbGljayBtZW51IGZvciBP
+cGVuVlBOLUdVSeKAmXMgaWNvbiwgc2VsZWN0ZWQgdGhhdCANCj4gY29uZmlndXJhdGlvbiBmaWxl
+LCBhbmQgY2xpY2tlZCBDb25uZWN0LiBUaGUgcGx1Zy1pbiBzZW5kcyB0aGUgZXhhY3QgDQo+IHNh
+bWUgV2luZG93cyBtZXNzYWdlIHRvIE9wZW5WUE4tR1VJLCB3aGljaCBjYXVzZXMgaXQgdG8gYnJp
+bmcgdXAgaXRzIA0KPiBzdGF0dXMgd2luZG93IGFuZCBpbnN0cnVjdCB0aGUgc3lzdGVtIHNlcnZp
+Y2UgdG8gZXN0YWJsaXNoIHRoZSBjb25uZWN0aW9uLiBUaGF04oCZcyBpdC4NCj4NCj4NCj4NCj4g
+U28gdGhlcmUgYXJlIHNvbWUgY2F2ZWF0cy4gMSkgT3BlblZQTi1HVUkgaGFzIHRvIGJlIHJ1bm5p
+bmc7IHRoZSANCj4gcGx1Zy1pbiB3aWxsIGNvbXBsYWluIGlmIGl04oCZcyBub3QuIEluIGZhY3Qg
+T3BlblZQTi1HVUkgY2xlYXJzIG91dCB0aGUgDQo+IGxpc3Qgd2hlbiBpdCBleGl0cyBjbGVhbmx5
+LiAyKSBJZiBPcGVuVlBOLUdVSSBjcmFzaGVzLCB0aGUgZW50cmllcyANCj4gd2lsbCBiZSBsZWZ0
+IGluIHRoZSBsaXN0IGJ1dCB3b27igJl0IGJlIHVzYWJsZSBmb3IgYW55dGhpbmcuIEkgcHJlZml4
+IA0KPiBlYWNoIGVudHJ5IHdpdGggdGhlIHN0cmluZyDigJxPcGVuVlBOIOKAnCwgdGhvdWdoLCBh
+bmQgdGhlIG5leHQgdGltZSBpdCANCj4gcnVucyBpdCB3aWxsIGNsZWFuIHVwIHRoZXNlIGVudHJp
+ZXMuIDMpIEJlY2F1c2UgT3BlblZQTiB1c2VzIA0KPiB0YXAtd2luZG93cyBpbnN0ZWFkIG9mIHRo
+ZSBub3JtYWwgV2luZG93cyBORElTIGRldmljZXMgZm9yIHRoZSANCj4gbmV0d29ya2luZywgdGhl
+IGZseW91dCBjYW7igJl0IGRldGVjdCB3aGV0aGVyIG9yIG5vdCB0aGUgY29ubmVjdGlvbiBpcyBh
+Y3RpdmUgb3Igbm90LCBhbmQgc28gaXQgd2lsbCBhbHdheXMgcHJlc2VudCBhIOKAnENvbm5lY3Ti
+gJ0NCj4gYnV0dG9uLiBPcGVuVlBOLUdVSSBpZ25vcmVzIHRoaXMgd2hlbiB0aGUgY29ubmVjdGlv
+biBpcyBhbHJlYWR5IGFsaXZlLCANCj4gc28gbm90aGluZyBiYWQgaGFwcGVucywgYnV0IGl0IGNh
+biBiZSBhIGNvbmZ1c2luZyBleHBlcmllbmNlLiBJIGRpZG7igJl0IA0KPiBpbnZlc3RpZ2F0ZSB3
+aGF0IGl0IG1pZ2h0IHRha2UgdG8gZ2V0IHRhcC13aW5kb3dzIHRvIHN1cmZhY2UgaXRzIA0KPiBj
+b25uZWN0ZWQvZGlzY29ubmVjdGVkIHN0YXRlIHRvIHRoZSBmbHlvdXQgaW4gdGhlIGNvcnJlY3Qg
+d2F5LCBub3IgZGlkIA0KPiBJIGludmVzdGlnYXRlIGlmIHRoaXMgY291bGQgYmUgdXNlZCB0byBh
+dXRvbWF0aWNhbGx5IGJyaW5nIHVwIA0KPiBjb25uZWN0aW9ucyBvbiBkZW1hbmQgb3IgYmVmb3Jl
+IGxvZ2luLg0KDQpJIGhhZCBsb29rZWQgYXQgdGhlIGRpYWxlci5jIGNvZGUgYW5kIGNhbWUgdG8g
+dGhlIHNhbWUgY29uY2x1c2lvbiAtLSB0aGF0IGl0IG5lZWRzIGEgbG90IG1vcmUgd29yayB0byBi
+ZSB1c2FibGUuDQoNClRoZSBkbGwgaXMgYmFyZWJvbmVzOiAgaW1wbGVtZW50cyBvbmx5IGNvbm5l
+Y3QgKG5vdCBldmVuIGRpc2Nvbm5lY3QpLCBjb21tdW5pY2F0aW9uIHdpdGggdGhlIEdVSSB1c2Vz
+IFBvc3RNZXNzYWdlIHdpdGggbWVudS1pZHMgKGZsYWtleSBhbmQgb25lIHdheSksIHRoZSBHVUkg
+aXMgbm90IGJyb3VnaHQgdG8gdGhlIGZvcmVncm91bmQgb24gY29ubmVjdCwgc28gcGFzc3dvcmQg
+cHJvbXB0cyBhbmQgb3RoZXIgcG9wdXBzIHNob3cgbWluaW1pemVkIGV0Yy4gZXRjLg0KDQpJdCBh
+bHNvIHBvbGx1dGVzIHRoZSBjb250cm9sIHBhbmVsIC0+IE5ldHdvcmsgY29ubmVjdGlvbnMgd2l0
+aCBhbiBlbnRyeSBmb3IgZWFjaCBjb25maWcuDQoNCkFzIGZvciBjb25uZWN0IGJlZm9yZSBsb2dp
+biwgcnVubmluZyB0aGUgZW50aXJlIEdVSSBhbmQgb3BlbnZwbiBjb2RlIGFzIHN5c3RlbSBpcyBh
+IG5vLW5vLiBJbnN0ZWFkIHRoZSBkbGwgY2FuIGJlIGV4dGVuZGVkIHdpdGggbWluaW1hbCBjb2Rl
+IGZvciBzdGFydGluZyBvcGVudnBuIChzcGF3bmluZyBpdCB3aXRoIG1pbmltYWwgcHJpdmlsZWdl
+cykuIEJ1dCBpbiB0aGF0IGNhc2Ugd29udCBpdCBiZSBiZXR0ZXIgdG8gaW1wbGVtZW50IHRoZSBQ
+cmUtTG9nb25fYWNjZXNzLVByb3ZpZGVyIChQTEFQKSBpbnRlcmZhY2Ugd2hpY2ggYXBwZWFycyB0
+byBiZSBtZWFudCBmb3Igc3VjaCBwdXJwb3Nlcz8NCg0KU2VsdmENCg==
