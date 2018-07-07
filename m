@@ -1,13 +1,13 @@
-References: <20180707090421.25953-1-a@...2181...>
- <20180707171356.26209-1-a@...2181...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <fe742763-c455-600e-5d0a-bb55c4062b72@...1856...>
-Date: Sat, 7 Jul 2018 20:29:53 +0200
-MIME-Version: 1.0
-In-Reply-To: <20180707171356.26209-1-a@...2181...>
+From: Kristian McColm <kristianmccolm@...160...>
+Date: Sat, 7 Jul 2018 18:55:44 +0000
+Message-ID: <BN6PR04MB09324E370F6540239CDD610FDD460@...2439...>
+References: <BN6PR04MB088248FC428ABCF529D3CFD5DD460@...2438...>
+ <06da91cb-ef1e-69db-e131-5d27fcfeee5f@...1227...>
+In-Reply-To: <06da91cb-ef1e-69db-e131-5d27fcfeee5f@...1227...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v5 1/2] crypto: always reload
- tls-auth/crypt key contexts
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] OpenVPN Connect App on IOS // Support for
+ IPv6-only networks with DNS64/NAT64
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,453 +16,86 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
-
-Thanks!  Great to see the unit tests payed off.  Two minor remarks still:
-
-On 07-07-18 19:13, Antonio Quartulli wrote:
-> In preparation to having tls-auth/crypt keys per connection
-> block, it is important to ensure that such material is always
-> reloaded upon SIGUSR1, no matter if `persist-key` was specified
-> or not.
-> 
-> This is required because when moving from one remote to the
-> other the key may change and thus the key context needs to
-> be refreshed.
-> 
-> To ensure that the `persist-key` logic will still work
-> as expected, the tls-auth/crypt key is pre-loaded so that
-> the keyfile is not required at runtime.
-> 
-> Trac: #720
-> Cc: Steffan Karger <steffan@...1856...>
-> Signed-off-by: Antonio Quartulli <a@...2181...>
-> ---
-> v2:
-> - introduce this patch
-> v3:
-> - add key per-loading logic to this patch to avoid temporary features
->   breakages
-> v4:
-> - rebase on top of master
-> - use buffer_read_from_file() implementation from "tls-crypt-v2: generate
->   client keys". Minor change: in case of error, free buffer and remove
->   it from gc (with free_buf_gc()), if provided.
-> - don't go FATAL inside buffer_read_from_file() in case of error, but
->   let external logic decide
-> v5:
-> - fix various bits of pointer logic in free_buf_gc()
-> - implement unit test for free_buf_gc()
-> - use CLEAR() instead of free_buf() at the end of free_buf_gc() (problem
->   found thanks to the unit-test)
-> 
-> 
->  src/openvpn/buffer.c                   | 61 ++++++++++++++++++
->  src/openvpn/buffer.h                   | 12 ++++
->  src/openvpn/crypto.c                   | 21 ++-----
->  src/openvpn/init.c                     | 87 +++++++++++++++++---------
->  src/openvpn/options.c                  | 26 ++++++++
->  tests/unit_tests/openvpn/Makefile.am   |  1 -
->  tests/unit_tests/openvpn/test_buffer.c | 45 +++++++++++++
->  7 files changed, 206 insertions(+), 47 deletions(-)
-> 
-> diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
-> index becfeb93..0972139f 100644
-> --- a/src/openvpn/buffer.c
-> +++ b/src/openvpn/buffer.c
-> @@ -189,6 +189,34 @@ free_buf(struct buffer *buf)
->      CLEAR(*buf);
->  }
->  
-> +static void
-> +free_buf_gc(struct buffer *buf, struct gc_arena *gc)
-> +{
-> +    if (gc)
-> +    {
-> +        struct gc_entry **e = &gc->list;
-> +
-> +        while (*e)
-> +        {
-> +            /* check if this object is the one we want to delete */
-> +            if ((uint8_t *)(*e + 1) == buf->data)
-> +            {
-> +                struct gc_entry *to_delete = *e;
-> +
-> +                /* remove element from linked list and free it */
-> +                *e = (*e)->next;
-> +                free(to_delete);
-> +
-> +                break;
-> +            }
-> +
-> +            e = &(*e)->next;
-> +        }
-> +    }
-> +
-> +    CLEAR(*buf);
-> +}
-> +
->  /*
->   * Return a buffer for write that is a subset of another buffer
->   */
-> @@ -1332,3 +1360,36 @@ buffer_list_file(const char *fn, int max_line_len)
->      }
->      return bl;
->  }
-> +
-> +struct buffer
-> +buffer_read_from_file(const char *filename, struct gc_arena *gc)
-> +{
-> +    struct buffer ret = { 0 };
-> +
-> +    platform_stat_t file_stat = {0};
-> +    if (platform_stat(filename, &file_stat) < 0)
-> +    {
-> +        return ret;
-> +    }
-> +
-> +    FILE *fp = platform_fopen(filename, "r");
-> +    if (!fp)
-> +    {
-> +        return ret;
-> +    }
-> +
-> +    const size_t size = file_stat.st_size;
-> +    ret = alloc_buf_gc(size + 1, gc); /* space for trailing \0 */
-> +    ssize_t read_size = fread(BPTR(&ret), 1, size, fp);
-> +    if (read_size < 0)
-> +    {
-> +        free_buf_gc(&ret, gc);
-> +        goto cleanup;
-> +    }
-> +    ASSERT(buf_inc_len(&ret, read_size));
-> +    buf_null_terminate(&ret);
-> +
-> +cleanup:
-> +    fclose(fp);
-> +    return ret;
-> +}
-> diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
-> index d848490a..a11c8bd9 100644
-> --- a/src/openvpn/buffer.h
-> +++ b/src/openvpn/buffer.h
-> @@ -1112,4 +1112,16 @@ void buffer_list_aggregate_separator(struct buffer_list *bl,
->  
->  struct buffer_list *buffer_list_file(const char *fn, int max_line_len);
->  
-> +/**
-> + * buffer_read_from_file - copy the content of a file into a buffer
-> + *
-> + * @param file      path to the file to read
-> + * @param gc        the garbage collector to use when allocating the buffer. It
-> + *                  passed to alloc_buf_gc() and therefore can be NULL.
-
-Looks like you forgot to fix the typo.
-
-> + *
-> + * @return the buffer storing the file content or an invalid buffer in case of
-> + * error
-> + */
-> +struct buffer buffer_read_from_file(const char *filename, struct gc_arena *gc);
-> +
->  #endif /* BUFFER_H */
-> diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-> index b59c1f73..5381ef2a 100644
-> --- a/src/openvpn/crypto.c
-> +++ b/src/openvpn/crypto.c
-> @@ -1224,7 +1224,7 @@ read_key_file(struct key2 *key2, const char *file, const unsigned int flags)
->  {
->      struct gc_arena gc = gc_new();
->      struct buffer in;
-> -    int fd, size;
-> +    int size;
->      uint8_t hex_byte[3] = {0, 0, 0};
->      const char *error_filename = file;
->  
-> @@ -1268,22 +1268,11 @@ read_key_file(struct key2 *key2, const char *file, const unsigned int flags)
->      }
->      else /* 'file' is a filename which refers to a file containing the ascii key */
->      {
-> -        in = alloc_buf_gc(2048, &gc);
-> -        fd = platform_open(file, O_RDONLY, 0);
-> -        if (fd == -1)
-> -        {
-> -            msg(M_ERR, "Cannot open key file '%s'", file);
-> -        }
-> -        size = read(fd, in.data, in.capacity);
-> -        if (size < 0)
-> -        {
-> +        in = buffer_read_from_file(file, &gc);
-> +        if (!buf_valid(&in))
->              msg(M_FATAL, "Read error on key file ('%s')", file);
-> -        }
-> -        if (size == in.capacity)
-> -        {
-> -            msg(M_FATAL, "Key file ('%s') can be a maximum of %d bytes", file, (int)in.capacity);
-> -        }
-> -        close(fd);
-> +
-> +        size = in.len;
->      }
->  
->      cp = (unsigned char *)in.data;
-> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index b748357d..1b46b364 100644
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -2409,7 +2409,6 @@ key_schedule_free(struct key_schedule *ks, bool free_ssl_ctx)
->      if (tls_ctx_initialised(&ks->ssl_ctx) && free_ssl_ctx)
->      {
->          tls_ctx_free(&ks->ssl_ctx);
-> -        free_key_ctx_bi(&ks->tls_wrap_key);
->      }
->      CLEAR(*ks);
->  }
-> @@ -2499,6 +2498,48 @@ do_init_crypto_static(struct context *c, const unsigned int flags)
->      check_replay_consistency(&c->c1.ks.key_type, options->replay);
->  }
->  
-> +/*
-> + * Initialize the tls-auth/crypt key context
-> + */
-> +static void
-> +do_init_tls_wrap_key(struct context *c)
-> +{
-> +    const struct options *options = &c->options;
-> +
-> +    /* TLS handshake authentication (--tls-auth) */
-> +    if (options->tls_auth_file)
-> +    {
-> +        /* Initialize key_type for tls-auth with auth only */
-> +        CLEAR(c->c1.ks.tls_auth_key_type);
-> +        if (!streq(options->authname, "none"))
-> +        {
-> +            c->c1.ks.tls_auth_key_type.digest = md_kt_get(options->authname);
-> +                c->c1.ks.tls_auth_key_type.hmac_length =
-> +                    md_kt_size(c->c1.ks.tls_auth_key_type.digest);
-> +        }
-> +        else
-> +        {
-> +            msg(M_FATAL, "ERROR: tls-auth enabled, but no valid --auth "
-> +                "algorithm specified ('%s')", options->authname);
-> +        }
-> +
-> +        crypto_read_openvpn_key(&c->c1.ks.tls_auth_key_type,
-> +                                &c->c1.ks.tls_wrap_key,
-> +                                options->tls_auth_file,
-> +                                options->tls_auth_file_inline,
-> +                                options->key_direction,
-> +                                "Control Channel Authentication", "tls-auth");
-> +    }
-> +
-> +    /* TLS handshake encryption+authentication (--tls-crypt) */
-> +    if (options->tls_crypt_file)
-> +    {
-> +        tls_crypt_init_key(&c->c1.ks.tls_wrap_key,
-> +                           options->tls_crypt_file,
-> +                           options->tls_crypt_inline, options->tls_server);
-> +    }
-> +}
-> +
->  /*
->   * Initialize the persistent component of OpenVPN's TLS mode,
->   * which is preserved across SIGUSR1 resets.
-> @@ -2548,35 +2589,8 @@ do_init_crypto_tls_c1(struct context *c)
->          /* Initialize PRNG with config-specified digest */
->          prng_init(options->prng_hash, options->prng_nonce_secret_len);
->  
-> -        /* TLS handshake authentication (--tls-auth) */
-> -        if (options->tls_auth_file)
-> -        {
-> -            /* Initialize key_type for tls-auth with auth only */
-> -            CLEAR(c->c1.ks.tls_auth_key_type);
-> -            if (!streq(options->authname, "none"))
-> -            {
-> -                c->c1.ks.tls_auth_key_type.digest = md_kt_get(options->authname);
-> -                c->c1.ks.tls_auth_key_type.hmac_length =
-> -                    md_kt_size(c->c1.ks.tls_auth_key_type.digest);
-> -            }
-> -            else
-> -            {
-> -                msg(M_FATAL, "ERROR: tls-auth enabled, but no valid --auth "
-> -                    "algorithm specified ('%s')", options->authname);
-> -            }
-> -
-> -            crypto_read_openvpn_key(&c->c1.ks.tls_auth_key_type,
-> -                                    &c->c1.ks.tls_wrap_key, options->tls_auth_file,
-> -                                    options->tls_auth_file_inline, options->key_direction,
-> -                                    "Control Channel Authentication", "tls-auth");
-> -        }
-> -
-> -        /* TLS handshake encryption+authentication (--tls-crypt) */
-> -        if (options->tls_crypt_file)
-> -        {
-> -            tls_crypt_init_key(&c->c1.ks.tls_wrap_key, options->tls_crypt_file,
-> -                               options->tls_crypt_inline, options->tls_server);
-> -        }
-> +        /* initialize tls-auth/crypt key */
-> +        do_init_tls_wrap_key(c);
->  
->          c->c1.ciphername = options->ciphername;
->          c->c1.authname = options->authname;
-> @@ -2598,6 +2612,12 @@ do_init_crypto_tls_c1(struct context *c)
->          c->options.ciphername = c->c1.ciphername;
->          c->options.authname = c->c1.authname;
->          c->options.keysize = c->c1.keysize;
-> +
-> +        /*
-> +         * tls-auth/crypt key can be configured per connection block, therefore
-> +         * we must reload it as it may have changed
-> +         */
-> +        do_init_tls_wrap_key(c);
->      }
->  }
->  
-> @@ -3401,6 +3421,13 @@ do_close_tls(struct context *c)
->  static void
->  do_close_free_key_schedule(struct context *c, bool free_ssl_ctx)
->  {
-> +    /*
-> +     * always free the tls_auth/crypt key. If persist_key is true, the key will
-> +     * be reloaded from memory (pre-cached)
-> +     */
-> +    free_key_ctx_bi(&c->c1.ks.tls_wrap_key);
-> +    CLEAR(c->c1.ks.tls_wrap_key);
-> +
->      if (!(c->sig->signal_received == SIGUSR1 && c->options.persist_key))
->      {
->          key_schedule_free(&c->c1.ks, free_ssl_ctx);
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index 426057ab..b2ca2738 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -3019,6 +3019,32 @@ options_postprocess_mutate(struct options *o)
->          options_postprocess_mutate_ce(o, o->connection_list->array[i]);
->      }
->  
-> +    /* pre-cache tls-auth/crypt key file if persist-key was specified */
-> +    if (o->persist_key)
-> +    {
-> +        if (o->tls_auth_file && !o->tls_auth_file_inline)
-> +        {
-> +            struct buffer in = buffer_read_from_file(o->tls_auth_file, &o->gc);
-> +            if (!buf_valid(&in))
-> +                msg(M_FATAL, "Cannot pre-load tls-auth keyfile (%s)",
-> +                    o->tls_auth_file);
-> +
-> +            o->tls_auth_file = INLINE_FILE_TAG;
-> +            o->tls_auth_file_inline = (char *)in.data;
-> +        }
-> +
-> +        if (o->tls_crypt_file && !o->tls_crypt_inline)
-> +        {
-> +            struct buffer in = buffer_read_from_file(o->tls_crypt_file, &o->gc);
-> +            if (!buf_valid(&in))
-> +                msg(M_FATAL, "Cannot pre-load tls-crypt keyfile (%s)",
-> +                    o->tls_auth_file);
-> +
-> +            o->tls_crypt_file = INLINE_FILE_TAG;
-> +            o->tls_crypt_inline = (char *)in.data;
-> +        }
-> +    }
-> +
->      if (o->tls_server)
->      {
->          /* Check that DH file is specified, or explicitly disabled */
-> diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-> index 23d758b7..4395afc1 100644
-> --- a/tests/unit_tests/openvpn/Makefile.am
-> +++ b/tests/unit_tests/openvpn/Makefile.am
-> @@ -26,7 +26,6 @@ argv_testdriver_SOURCES = test_argv.c mock_msg.c \
->  buffer_testdriver_CFLAGS  = @TEST_CFLAGS@ -I$(openvpn_srcdir) -I$(compat_srcdir)
->  buffer_testdriver_LDFLAGS = @TEST_LDFLAGS@ -L$(openvpn_srcdir) -Wl,--wrap=parse_line
->  buffer_testdriver_SOURCES = test_buffer.c mock_msg.c \
-> -	$(openvpn_srcdir)/buffer.c \
->  	$(openvpn_srcdir)/platform.c
->  
->  packet_id_testdriver_CFLAGS  = @TEST_CFLAGS@ \
-> diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/openvpn/test_buffer.c
-> index d083b78f..fd64ee59 100644
-> --- a/tests/unit_tests/openvpn/test_buffer.c
-> +++ b/tests/unit_tests/openvpn/test_buffer.c
-> @@ -33,6 +33,7 @@
->  #include <cmocka.h>
->  
->  #include "buffer.h"
-> +#include "buffer.c"
->  
->  static void
->  test_buffer_strprefix(void **state)
-> @@ -197,6 +198,48 @@ test_buffer_list_aggregate_separator_emptybuffers(void **state)
->      assert_int_equal(BLEN(buf), 0);
->  }
->  
-> +static void
-> +test_buffer_free_gc_one(void **state)
-> +{
-> +    struct gc_arena gc = gc_new();
-> +    struct buffer buf = alloc_buf_gc(1024, &gc);
-> +
-> +    assert_ptr_equal(gc.list + 1, buf.data);
-> +    free_buf_gc(&buf, &gc);
-> +    assert_null(gc.list);
-> +
-> +    gc_free(&gc);
-> +}
-> +
-> +static void
-> +test_buffer_free_gc_two(void **state)
-> +{
-> +    struct gc_arena gc = gc_new();
-> +    struct buffer buf1 = alloc_buf_gc(1024, &gc);
-> +    struct buffer buf2 = alloc_buf_gc(1024, &gc);
-> +    struct buffer buf3 = alloc_buf_gc(1024, &gc);
-> +
-> +    struct gc_entry *e;
-> +
-> +    e = gc.list;
-> +
-> +    assert_ptr_equal(e + 1, buf3.data);
-> +    assert_ptr_equal(e->next + 1, buf2.data);
-> +    assert_ptr_equal(e->next->next + 1, buf1.data);
-> +
-> +    free_buf_gc(&buf2, &gc);
-> +
-> +    assert_non_null(gc.list);
-> +
-> +    while (e)
-> +    {
-> +        assert_ptr_not_equal(e + 1, buf2.data);
-> +        e = e->next;
-> +    }
-> +
-> +    gc_free(&gc);
-> +}
-> +
->  int
->  main(void)
->  {
-> @@ -226,6 +269,8 @@ main(void)
->          cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_emptybuffers,
->                                          test_buffer_list_setup,
->                                          test_buffer_list_teardown),
-> +        cmocka_unit_test_setup_teardown(test_buffer_free_gc_one, NULL, NULL),
-> +        cmocka_unit_test_setup_teardown(test_buffer_free_gc_two, NULL, NULL),
-
-You could just call cmocka_unit_test() instead, without the NULL arguments.
-
->      };
->  
->      return cmocka_run_group_tests_name("buffer", tests, NULL, NULL);
-> 
-
-Both are very minor, so either with or without these fixed:
-
-Acked-by: Steffan Karger <steffan@...1856...>
-
--Steffan
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBBcm5lIFNjaHdhYmUgPGFybmVA
+Li4uMTIyNy4uLj4NCj4gU2VudDogSnVseSA3LCAyMDE4IDA5OjM0DQo+IFRvOiBLcmlzdGlhbiBN
+Y0NvbG0gPGtyaXN0aWFubWNjb2xtQC4uLjE2MC4uLj47IG9wZW52cG4tDQo+IGRldmVsQGxpc3Rz
+LnNvdXJjZWZvcmdlLm5ldA0KPiBTdWJqZWN0OiBSZTogW09wZW52cG4tZGV2ZWxdIE9wZW5WUE4g
+Q29ubmVjdCBBcHAgb24gSU9TIC8vIFN1cHBvcnQgZm9yDQo+IElQdjYtb25seSBuZXR3b3JrcyB3
+aXRoIEROUzY0L05BVDY0DQo+IA0KPiBBbSAwNy4wNy4xOCB1bSAwMzoyNyBzY2hyaWViIEtyaXN0
+aWFuIE1jQ29sbToNCj4gPiBIZWxsbyBMaXN0LA0KPiA+DQo+ID4gQXMgeW91IG1heSBiZSBhd2Fy
+ZSwgdGhlIEludGVybmV0IGlzIHJ1bm5pbmcvaGFzIHJ1biBvdXQgb2YgSVB2NCBhZGRyZXNzDQo+
+IHNwYWNlLiBUbyB0aGF0IGVuZCwgSSBhbSBhIHBhcnQgb2YgYSB0ZWFtIGF0IGEgbmF0aW9uYWwg
+bW9iaWxlIG5ldHdvcmsNCj4gb3BlcmF0b3Igd2hvIGFyZSB3b3JraW5nIG9uIGRlcGxveWluZyBJ
+UHY2LW9ubHkgbW9kZSB0byBvdXIgQW5kcm9pZCBhbmQNCj4gaVBob25lIGhhbmRzZXRzLCBhbmQg
+ZGVwcmVjYXRpbmcgdGhlIHVzZSBvZiBJUHY0IG9uIG91ciBuZXRvd3JrLiBTaW5jZSB3ZQ0KPiBo
+YXZlIGJlZ3VuIG1pZ3JhdGlvbnMgdG8gSVB2Ni1vbmx5IG1vZGUsIHdlIGhhdmUgcmVjZWl2ZWQg
+YSBmZXcNCj4gY29tcGxhaW50cyBmcm9tIHVzZXJzIG9mIHRoZSBPcGVuVlBOIENvbm5lY3QgYXBw
+IG9uIElPUyBzdGF0aW5nIHRoYXQgdGhlaXINCj4gVlBOIHR1bm5lbHMgYXJlIGVzdGFibGlzaGlu
+ZyBidXQgdGhleSBhcmUgdW5hYmxlIHRvIHBhc3MgYW5kIGRhdGEgaW5zaWRlIHRoZQ0KPiB0dW5u
+ZWwuDQo+ID4NCj4gPiBXZSBoYXZlIGJlZW4gYWJsZSB0byByZXByb2R1Y2UgdGhlIGlzc3VlwqB1
+c2luZyBhbiBPcGVuVlBOIHNlcnZlciAyLjQuNg0KPiBvbiBGZWRvcmEgTGludXggMjYgYW5kIGFu
+IGlQaG9uZSBydW5uaW5nIElPUyAxMS4zLjEgYW5kIHZlcnNpb24gMS4yLjAgYnVpbGQNCj4gMCAo
+aU9TIDY0LWJpdCkuIFRoZSBWUE4gc2VydmVyIGlzIElQdjQgb25seSBhbmQgdXNpbmcgVURQIHRy
+YW5zcG9ydC4gVGhlIElPUw0KPiBkZXZpY2UgaXMgb24gYW4gSVB2Ni1vbmx5IG5ldHdvcmsgdGhh
+dCBwcm92aWRlcyBETlM2NC9OQVQ2NCBmb3IgNnRvNA0KPiB0cmFuc2xhdGlvbi4gVGhlIEFuZHJv
+aWQgZGV2aWNlIGlzIHJ1bm5pbmcgQW5kcm9pZCA2LjAuMSBhbmQgT3BlblZQTg0KPiBDb25uZWN0
+IHZlcnNpb24gMy4wLjUgKDE4MTYpLiBVc2luZyB0aGUgc2FtZSBjbGllbnQgcHJvZmlsZSAoLm92
+cG4gZmlsZSkgb24NCj4gYm90aCB0aGUgQW5kcm9pZCBhbmQgYW5kIElPUyBjbGllbnRzLCBhbmQg
+dGhlIHNhbWUgY2VsbCBuZXR3b3JrIHNldHRpbmdzIGFuZA0KPiBWUE4gc2VydmVyLCB3ZSBvYnNl
+cnZlIHRoYXQgdGhlIFZQTiB0dW5uZWwgaXMgZXN0YWJsaXNoZWQgT0sgb24gYm90aA0KPiBkZXZp
+Y2VzLCBidXQgb25seSB0aGUgQW5kcm9pZCBpcyBhYmxlIHRvIHBhc3MgZGF0YSB0cmFmZmljIGlu
+c2lkZSB0aGUgVlBODQo+IHR1bm5lbC4NCj4gPg0KPiA+IElzIGFueW9uZSBhd2FyZSBvZiB3aGV0
+aGVyIHRoZSBkZXZlbG9wZXJzIG9mIHRoaXMgYXBwbGljYXRpb24gaGF2ZSBhbnkNCj4gZXhwZXJp
+ZW5jZSB0ZXN0aW5nIHRoZSBJT1MgdmVyc2lvbiBvZiB0aGUgYXBwIG9uIElPUyBkZXZpY2VzIG9u
+IElQdjYtb25seQ0KPiBuZXR3b3JrcywgYW5kIG1vcmVvdmVyIGFyZSB0aGUgZGV2ZWxvcGVycyBh
+d2FyZSBvZiBhbmQgZW5zdXJpbmcgdGhlIGFwcA0KPiBpcyBjb21wbGlhbnQgd2l0aCBBcHBsZSBz
+dGFuZGFyZHMgZm9yIElQdjYtb25seSBuZXR3b3JrcyBhcyBkb2N1bWVudGVkDQo+IGhlcmU6IGh0
+dHBzOi8vZGV2ZWxvcGVyLmFwcGxlLmNvbS9zdXBwb3J0L2lwdjY/DQo+ID4NCj4gPiBBcyBwZXIg
+b3VyIHVuZGVyc3RhbmRpbmcsIEFwcGxlIGFyZSBhY3RpdmVseSBwdXJzdWluZyBhcHBzIHdoaWNo
+IGFyZSBub3QNCj4gY29tcGxpYW50IHdpdGggdGhlc2Ugc3RhbmRhcmRzLCBzaW5jZSBJT1MgZG9l
+cyBub3QgcHJvdmlkZSA0NjRYTEFUIGF0IHRoZQ0KPiBjdXJyZW50IHRpbWUgYW5kIGNvbXBsaWFu
+Y2Ugd2l0aCBBcHBsZSdzIHN0YW5kYXJkIGlzIHRoZSBvbmx5IHdheSB0byBlbnN1cmUNCj4gY29t
+cGF0aWJpbGl0eSB3aXRoIElQdjYtb25seSBuZXR3b3JrcyBzdWNoIGFzIG91cnMuDQo+ID4NCj4g
+PiBJZiBhbnlvbmUgd2hvIGhhcyBhbnkgZmVlZGJhY2sgb3Igd291bGQgbGlrZSBtZSB0byB0ZXN0
+IGFueXRoaW5nIG9yDQo+IHByb3ZpZGUgYW55IGZ1cnRoZXIgYXNzaXN0YW5jZSBJIHdvdWxkIGJl
+IGdsYWQgdG8gYXNzaXN0Lg0KPiANCj4gRnJvbSBteSBleHBlcmllbmNlIHdpdGggQW5kcm9pZCBh
+bmQgTkFUNjQ6DQo+IA0KPiAtIFQtbW9iaWxlIFVTIGhhZCAob3Igc3RpbGwgaGFzPykgYW4gaXNz
+dWUgd2l0aCBNVFUgb24gVURQIGNvbm5lY3Rpb25zIG9uDQo+IE5BVDY0LiBCZWhhdmlvdXIgbG9v
+a3Mgc2ltaWxhciB0byB3aGF0IHlvdSBhcmUgZXhwZXJpZW5jaW5nLiBUcnkgaWYgdXNpbmcgVENQ
+DQo+IG9yIFVEUCBtYWtlcyBhIGRpZmZlcmVuY2UuDQo+DQo+IA0KPiAtIFRvbyBvZnRlbiBwcm9m
+aWxlcyBoYXZlIGxpdGVyYWwgSVB2NCBhZGRyZXNzZXMgaW4gdGhlbSBpbnN0ZWFkIG9mIElQdjYu
+DQo+IEdvb2dsZSBwYXRjaGVkIGl0cyBYTEFUNDY0IHRvIGV2ZW4gYWxsb3cgVlBOIHR1bm5lbCB0
+byB3b3JrIG92ZXINCj4gWExBVDQ2NCAodXJnaCkNCj4gDQo+IC0gRm9yIHNwbGl0IHR1bm5lbCBj
+b25maWd1cmF0aW9uLCBzZXR0aW5nIGEgSVB2NCBETlMgdGhhdCBpcyB1bnJlYWNoYWJsZSBtaWdo
+dA0KPiBhbHNvIGNhdXNlIHRyb3VibGVzLg0KPiANCj4gLSBSZWNvbmVjdGluZyBpbnZvbHZpbmcg
+TkFUNjQvRE5TNjQgbmV0d29ya3Mgb2Z0ZW4gYnJlYWtzIGJlY2F1c2UgdGhlDQo+IHdob2xlICJ3
+aGF0IEROUyBkb2VzIHRoZSBWUE4gYXBwIHVzZSIgaXMgYSB0b3RhbCBtZXNzIGFuZCBvZnRlbiBl
+bmQgdXANCj4gd2l0aCB0aGUgd3JvbmcgYWRkcmVzcyAodW5tYXBwZWQsIHN0aWxsIG1hcHBlZCB3
+aGVuIHN3aXRjaGluZyB0byBXaUZpKS4NCj4gDQo+IEFybmUNCg0KTXkgcHJvZmlsZSBpcyB1c2lu
+ZyBGUUROIGZvciB0aGUgcmVtb3RlIFZQTiBob3N0LCBidXQgdGhlIGlzc3VlIGNvbWVzIHdoZW4g
+YXBwcyBvbiB0aGUgSU9TIGRldmljZSB0cnkgdG8gY29tbXVuaWNhdGUgd2l0aCBhIHNlcnZlciBv
+biB0aGUgb3RoZXIgc2lkZSBvZiB0aGUgdHVubmVsIHVzaW5nIElQdjQgbGl0ZXJhbHMuIFRoZSBJ
+T1MgZGV2aWNlIGlzIHN0aWxsIHN5bnRoZXNpemluZyB0aGUgSVB2NCBsaXRlcmFsIHdpdGggYSBO
+QVQ2NCBwcmVmaXggYW5kIHRoaXMgaXMgbm90IHJvdXRhYmxlIHZpYSB0aGUgVlBOIHNvIGl0IGZh
+aWxzIHRvIHdvcmsuIEkgd2FzIGFibGUgdG8gcmVzb2x2ZSB0aGlzIGJ5IHNldHRpbmcgYW4gSVB2
+NCBkZWZhdWx0IHJvdXRlIHVzaW5nIHRoZSBwdXNoIGNvbW1hbmQgaW4gdGhlIHNlcnZlciBwcm9m
+aWxlLiBJdCBzZWVtcyB0aGF0IElPUyB3aWxsIGNvbnRpbnVlIHRvIHN5bnRoZXNpemUgdGhlIElQ
+djQgbGl0ZXJhbCB3aGVuIHRoZXJlIGlzIG5vdCBhIGRlZmF1bHQgcm91dGUgYXZhaWxhYmxlIG9u
+IGFuIElQdjQgYWRkcmVzc2VkIGludGVyZmFjZS4NCg0KTm93IEkgYW0gcnVubmluZyBpbnRvIHRo
+ZSBNVFUgcHJvYmxlbSB5b3UgbWVudGlvbmVkIGFib3ZlLiBJJ20gbm90IG9uIHRoZSBUTW9iaWxl
+IG5ldHdvcmssIGJ1dCBpdOKAmXMgYSB2ZXJ5IHNpbWlsYXIgY29uZmlndXJhdGlvbi4gSSBiZWxp
+ZXZlIHRoZSBpc3N1ZSBpcyB0aGF0IHRoZSBJUCBoZWFkZXIgaXMgNDAgYnl0ZXMgaW4gSVB2NiBh
+bmQgdGhlcmVmb3JlIHRoZSBwYXlsb2FkIG5lZWRzIHRvIGJlIHJlZHVjZWQgdG8gYWxsb3cgdGhl
+IHBhY2tldHMgdG8gdHJhdmVyc2UgdGhlIE5BVDY0LiBNeSBWUE4gc2VydmVyIGlzIHJlY2Vpdmlu
+ZyBJQ01QIFVucmVhY2hhYmxlcyBmcm9tIElQdjQgc2lkZSBvZiB0aGUgTkFUNjQgYW5kIG15IGZp
+cmV3YWxsIG9uIHRoZSBWUE4gc2VydmVyIHBlcm1pdHMgdGhlbSwgYnV0IGl0IHNlZW1zIGFzIHRo
+b3VnaCB0aGUgVlBOIHNlcnZlciBzaWRlIGRvZXNu4oCZdCBoYW5kbGUgdGhlbSBwcm9wZXJseSBm
+b3Igd2hhdGV2ZXIgcmVhc29uLCBhcyBpdCBjb250aW51ZXMgdG8gc2VuZCBwYWNrZXRzIHRvIHRo
+ZSBWUE4gY2xpZW50IHRoYXQgYXJlIHRvbyBiaWcgdG8gZml0IHRocm91Z2ggdGhlIE5BVDY0Lg0K
+DQpJIHRyaWVkIHNldHRpbmcgIm10dS1kaXNjIHllcyIgaW4gdGhlIFZQTiBzZXJ2ZXIgYnV0IGl0
+IGRpZG7igJl0IGFwcGVhciB0byBoYXZlIGFueSBhZmZlY3QuIERvIHlvdSBoYXZlIGFueSBhZHZp
+Y2Ugb24gaG93IHRvIGhhbmRsZSB0aGlzIHNjZW5hcmlvPw0K
