@@ -1,13 +1,10 @@
+From: Kristian McColm <kristianmccolm@...160...>
+Date: Sat, 7 Jul 2018 01:27:23 +0000
+Message-ID: <BN6PR04MB088248FC428ABCF529D3CFD5DD460@...2438...>
+Content-Language: en-US
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_jDCHm=VLc2wuKYJaf48Duy_4dHnbvHx4StVV6PjDausw@...278...>
-References: <OpenVPN/openvpn-gui/issues/9@...1714...>
- <OpenVPN/openvpn-gui/issues/9/403117394@...1714...>
- <CAKuzo_jDCHm=VLc2wuKYJaf48Duy_4dHnbvHx4StVV6PjDausw@...278...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Fri, 6 Jul 2018 15:38:07 -0400
-Message-ID: <CAEsd45Q87G=UTjt-PE29a41MFQU90_NJxmmux9=ZS=S7j=9E9A@...278...>
-Subject: Re: [Openvpn-devel] [OpenVPN/openvpn-gui] UI showing green
- connected status despite not beeing able to create a route (#9)
+Subject: [Openvpn-devel] OpenVPN Connect App on IOS // Support for IPv6-only
+ networks with DNS64/NAT64
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,43 +13,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: OpenVPN/openvpn-gui <reply+003cc04f98905c5e675d15f3068c3450eb0294652810b25392cf0000000117577b8f92a169ce076aec9b@...1858...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+Hello List,
 
-On Fri, Jul 6, 2018 at 3:24 PM, Selva Nair <selva.nair@...277...> wrote:
->
-> Hi,
->
-> Copying the devel list as a reminder that "we" have been asking for this change for a long time :)
->
-> On Fri, Jul 6, 2018 at 2:48 PM, Gert Doering <notifications@...1714...> wrote:
->>
->> Hi,
->>
->> On Fri, Jul 06, 2018 at 08:25:02AM -0700, Selva Nair wrote:
->> > Can we do something about this in openvpn core, so that the GUI can be report route errors?
->>
->> Currently when we get CONNECTED,SUCCESS we turn the icon green. If we get
->>
->> CONENCTED,ERROR we keep it amber and the state as "connecting.." even if
->>
->> the initialization sequence completes.
->> >
->> > So route errors can still be treated as non-fatal but we want to get CONNECTED,ERROR in such cases.
+As you may be aware, the Internet is running/has run out of IPv4 address sp=
+ace. To that end, I am a part of a team at a national mobile network operat=
+or who are working on deploying IPv6-only mode to our Android and iPhone ha=
+ndsets, and deprecating the use of IPv4 on our netowrk. Since we have begun=
+ migrations to IPv6-only mode, we have received a few complaints from users=
+ of the OpenVPN Connect app on IOS stating that their VPN tunnels are estab=
+lishing but they are unable to pass and data inside the tunnel.
 
-+1 to routing errors causing CONNECTED,ERROR (I didn't even know that
-was possible). This confuses many Tunnelblick users.
+We have been able to reproduce the issue=A0using an OpenVPN server 2.4.6 on=
+ Fedora Linux 26 and an iPhone running IOS 11.3.1 and version 1.2.0 build 0=
+ (iOS 64-bit). The VPN server is IPv4 only and using UDP transport. The IOS=
+ device is on an IPv6-only network that provides DNS64/NAT64 for 6to4 trans=
+lation. The Android device is running Android 6.0.1 and OpenVPN Connect ver=
+sion 3.0.5 (1816). Using the same client profile (.ovpn file) on both the A=
+ndroid and and IOS clients, and the same cell network settings and VPN serv=
+er, we observe that the VPN tunnel is established OK on both devices, but o=
+nly the Android is able to pass data traffic inside the VPN tunnel.
 
-I'd be happy for routing errors to cause a FATAL error as long as the
-errors weren't caused by "route already exists" or something like
-that. But I assume that's too much trouble.
+Is anyone aware of whether the developers of this application have any expe=
+rience testing the IOS version of the app on IOS devices on IPv6-only netwo=
+rks, and moreover are the developers aware of and ensuring the app is compl=
+iant with Apple standards for IPv6-only networks as documented here: https:=
+//developer.apple.com/support/ipv6?
 
+As per our understanding, Apple are actively pursuing apps which are not co=
+mpliant with these standards, since IOS does not provide 464XLAT at the cur=
+rent time and compliance with Apple's standard is the only way to ensure co=
+mpatibility with IPv6-only networks such as ours.
 
-Best regards,
+If anyone who has any feedback or would like me to test anything or provide=
+ any further assistance I would be glad to assist.
 
-Jon
+Regards
+KM
+
 
