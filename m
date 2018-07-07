@@ -1,12 +1,15 @@
-References: <BN6PR04MB088248FC428ABCF529D3CFD5DD460@...2438...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <06da91cb-ef1e-69db-e131-5d27fcfeee5f@...1227...>
-Date: Sat, 7 Jul 2018 15:33:54 +0200
+References: <20180707090421.25953-1-a@...2181...>
+ <63f62036-3e45-0dce-da47-bc32cbd6db0f@...1856...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <260cdffe-2146-3760-1730-d0cc49086ba6@...2181...>
+Date: Sun, 8 Jul 2018 00:25:28 +0800
 MIME-Version: 1.0
-In-Reply-To: <BN6PR04MB088248FC428ABCF529D3CFD5DD460@...2438...>
-Content-Language: de-DE
-Subject: Re: [Openvpn-devel] OpenVPN Connect App on IOS // Support for
- IPv6-only networks with DNS64/NAT64
+In-Reply-To: <63f62036-3e45-0dce-da47-bc32cbd6db0f@...1856...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="yNvbDYHtwJNUJowHRSsxiiRjLmjyW6TlW"
+Subject: Re: [Openvpn-devel] [PATCH v4 1/2] crypto: always reload
+ tls-auth/crypt key contexts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,40 +18,106 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--yNvbDYHtwJNUJowHRSsxiiRjLmjyW6TlW
+Content-Type: multipart/mixed; boundary="53XVR3s1fK7dh24rjDNPXD7w2ajxgTIMW";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <260cdffe-2146-3760-1730-d0cc49086ba6@...2181...>
+Subject: Re: [PATCH v4 1/2] crypto: always reload tls-auth/crypt key contexts
+References: <20180707090421.25953-1-a@...2181...>
+ <63f62036-3e45-0dce-da47-bc32cbd6db0f@...1856...>
+In-Reply-To: <63f62036-3e45-0dce-da47-bc32cbd6db0f@...1856...>
+
+--53XVR3s1fK7dh24rjDNPXD7w2ajxgTIMW
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Kristian McColm <kristianmccolm@...160...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Transfer-Encoding: quoted-printable
 
-Am 07.07.18 um 03:27 schrieb Kristian McColm:
-> Hello List,
-> 
-> As you may be aware, the Internet is running/has run out of IPv4 address space. To that end, I am a part of a team at a national mobile network operator who are working on deploying IPv6-only mode to our Android and iPhone handsets, and deprecating the use of IPv4 on our netowrk. Since we have begun migrations to IPv6-only mode, we have received a few complaints from users of the OpenVPN Connect app on IOS stating that their VPN tunnels are establishing but they are unable to pass and data inside the tunnel.
-> 
-> We have been able to reproduce the issue using an OpenVPN server 2.4.6 on Fedora Linux 26 and an iPhone running IOS 11.3.1 and version 1.2.0 build 0 (iOS 64-bit). The VPN server is IPv4 only and using UDP transport. The IOS device is on an IPv6-only network that provides DNS64/NAT64 for 6to4 translation. The Android device is running Android 6.0.1 and OpenVPN Connect version 3.0.5 (1816). Using the same client profile (.ovpn file) on both the Android and and IOS clients, and the same cell network settings and VPN server, we observe that the VPN tunnel is established OK on both devices, but only the Android is able to pass data traffic inside the VPN tunnel.
-> 
-> Is anyone aware of whether the developers of this application have any experience testing the IOS version of the app on IOS devices on IPv6-only networks, and moreover are the developers aware of and ensuring the app is compliant with Apple standards for IPv6-only networks as documented here: https://developer.apple.com/support/ipv6?
-> 
-> As per our understanding, Apple are actively pursuing apps which are not compliant with these standards, since IOS does not provide 464XLAT at the current time and compliance with Apple's standard is the only way to ensure compatibility with IPv6-only networks such as ours.
-> 
-> If anyone who has any feedback or would like me to test anything or provide any further assistance I would be glad to assist.
+Hi,
 
-From my experience with Android and NAT64:
+On 07/07/18 20:45, Steffan Karger wrote:
+> Hi,
 
-- T-mobile US had (or still has?) an issue with MTU on UDP connections
-on NAT64. Behaviour looks similar to what you are experiencing. Try if
-using TCP or UDP makes a difference.
+[cut]
+
+>> +static void
+>> +free_buf_gc(struct buffer *buf, struct gc_arena *gc)
+>> +{
+>> +    if (gc)
+>> +    {
+>> +        struct gc_entry **e =3D &gc->list;
+>> +
+>> +        while (*e)
+>> +        {
+>> +            /* check if this object is the one we want to delete */
+>> +            if ((uint8_t *)((*e) + sizeof(*e)) =3D=3D buf->data)
+>=20
+> I think this should be sizeof(**e).
+>=20
+
+Right! Thanks for catching this!
+
+[cut]
+
+>> +/**
+>> + * buffer_read_from_file - copy the content of a file into a buffer
+>> + *
+>> + * @param file      path to the file to read
+>> + * @param gc        the garbage collector to use when allocating the bu=
+ffer. It
+>> + *                  passed to alloc_buf_gc() and therefore can be NULL.
+>=20
+> It *is* passed ?
+>=20
+
+of course :-) thanks!
+
+[cut]
+
+>=20
+> Otherwise, this looks good.
+>=20
+
+Cool, thanks!
+
+I will send v4 with these small fixes and a unit test for the
+buf_free_gc() function.
 
 
-- Too often profiles have literal IPv4 addresses in them instead of
-IPv6. Google patched its XLAT464 to even allow VPN tunnel to work over
-XLAT464 (urgh)
+Cheers,
 
-- For split tunnel configuration, setting a IPv4 DNS that is unreachable
-might also cause troubles.
 
-- Reconecting involving NAT64/DNS64 networks often breaks because the
-whole "what DNS does the VPN app use" is a total mess and often end up
-with the wrong address (unmapped, still mapped when switching to WiFi).
+--=20
+Antonio Quartulli
 
-Arne
+
+--53XVR3s1fK7dh24rjDNPXD7w2ajxgTIMW--
+
+--yNvbDYHtwJNUJowHRSsxiiRjLmjyW6TlW
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAltA6XgACgkQB6U8WA7y
+zXRMkw//X3032lVXUBqxZ4dVJuB0v6Lq3eHujDLlGOus+ZFfO4MCEyMkzd8Lfb8K
+fraf62bcpb13I8qCSI1w6wZPrFMgkAbeL69OKnL8dUfzWCOGL9Y1ccg6U0Lqn3L5
+NdolnUQwt0nR9UuvrrZ9AlejHu+v+Y+O+qed1B4rivJAfwdNaUAYv1/l54E5SHVP
+ie1QcEXXwqz2nQ8d8MfG4KHL7PUiIogtPn8qXQYjtY44k7iah4o6nMGH/blq2zPi
+foxmxy8T7FdF3rdRtIi/783UatZOHnE6TPPHOfghxbUefhLjbEu8fy1Omd65FMTc
+rW5zDmhuSOydvElfojxDK/qd92JWNQCMqff31WKw2be0F9VvPjMHxfm+ofJgqmT7
+uT+P462O65+ubbVKFH/ovuBRFwm4K4A3FSQMLvnItpM3BjaOuS42nqHWf9Qe9voB
+1Px/BannUNAGfxAjbzCr3LFA2F66DlvRv/Gp+ke4fuOvnj+kEK6Jz+zipAFGg70c
+mR1RH5d3U4q1bNtXSIWqSiwbF7UGXGbRI70u+hZr+fiY35/PaLI424pN2jbMffSk
+b0v2lIXP7LbSYHZj4JLjfEN286Q2zAdHTxGE+EkKabjjzk/cXwaqxJeCu8SbHB7Y
+XJTd8eE9cb+nMsFjbR2spCfpjdb28KnnlW2GelWe2LVbD8Hj6Xc=
+=795h
+-----END PGP SIGNATURE-----
+
+--yNvbDYHtwJNUJowHRSsxiiRjLmjyW6TlW--
 
