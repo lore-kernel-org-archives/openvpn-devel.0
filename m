@@ -1,11 +1,14 @@
-From: Kristian McColm <kristianmccolm@...160...>
-Date: Sat, 7 Jul 2018 18:55:44 +0000
-Message-ID: <BN6PR04MB09324E370F6540239CDD610FDD460@...2439...>
+Date: Sat, 7 Jul 2018 21:25:28 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180707192528.GQ989@...1296...>
 References: <BN6PR04MB088248FC428ABCF529D3CFD5DD460@...2438...>
  <06da91cb-ef1e-69db-e131-5d27fcfeee5f@...1227...>
-In-Reply-To: <06da91cb-ef1e-69db-e131-5d27fcfeee5f@...1227...>
-Content-Language: en-US
+ <BN6PR04MB09324E370F6540239CDD610FDD460@...2439...>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="aSRrXo8NJAoPLte9"
+Content-Disposition: inline
+In-Reply-To: <BN6PR04MB09324E370F6540239CDD610FDD460@...2439...>
 Subject: Re: [Openvpn-devel] OpenVPN Connect App on IOS // Support for
  IPv6-only networks with DNS64/NAT64
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,86 +19,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Kristian McColm <kristianmccolm@...160...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBBcm5lIFNjaHdhYmUgPGFybmVA
-Li4uMTIyNy4uLj4NCj4gU2VudDogSnVseSA3LCAyMDE4IDA5OjM0DQo+IFRvOiBLcmlzdGlhbiBN
-Y0NvbG0gPGtyaXN0aWFubWNjb2xtQC4uLjE2MC4uLj47IG9wZW52cG4tDQo+IGRldmVsQGxpc3Rz
-LnNvdXJjZWZvcmdlLm5ldA0KPiBTdWJqZWN0OiBSZTogW09wZW52cG4tZGV2ZWxdIE9wZW5WUE4g
-Q29ubmVjdCBBcHAgb24gSU9TIC8vIFN1cHBvcnQgZm9yDQo+IElQdjYtb25seSBuZXR3b3JrcyB3
-aXRoIEROUzY0L05BVDY0DQo+IA0KPiBBbSAwNy4wNy4xOCB1bSAwMzoyNyBzY2hyaWViIEtyaXN0
-aWFuIE1jQ29sbToNCj4gPiBIZWxsbyBMaXN0LA0KPiA+DQo+ID4gQXMgeW91IG1heSBiZSBhd2Fy
-ZSwgdGhlIEludGVybmV0IGlzIHJ1bm5pbmcvaGFzIHJ1biBvdXQgb2YgSVB2NCBhZGRyZXNzDQo+
-IHNwYWNlLiBUbyB0aGF0IGVuZCwgSSBhbSBhIHBhcnQgb2YgYSB0ZWFtIGF0IGEgbmF0aW9uYWwg
-bW9iaWxlIG5ldHdvcmsNCj4gb3BlcmF0b3Igd2hvIGFyZSB3b3JraW5nIG9uIGRlcGxveWluZyBJ
-UHY2LW9ubHkgbW9kZSB0byBvdXIgQW5kcm9pZCBhbmQNCj4gaVBob25lIGhhbmRzZXRzLCBhbmQg
-ZGVwcmVjYXRpbmcgdGhlIHVzZSBvZiBJUHY0IG9uIG91ciBuZXRvd3JrLiBTaW5jZSB3ZQ0KPiBo
-YXZlIGJlZ3VuIG1pZ3JhdGlvbnMgdG8gSVB2Ni1vbmx5IG1vZGUsIHdlIGhhdmUgcmVjZWl2ZWQg
-YSBmZXcNCj4gY29tcGxhaW50cyBmcm9tIHVzZXJzIG9mIHRoZSBPcGVuVlBOIENvbm5lY3QgYXBw
-IG9uIElPUyBzdGF0aW5nIHRoYXQgdGhlaXINCj4gVlBOIHR1bm5lbHMgYXJlIGVzdGFibGlzaGlu
-ZyBidXQgdGhleSBhcmUgdW5hYmxlIHRvIHBhc3MgYW5kIGRhdGEgaW5zaWRlIHRoZQ0KPiB0dW5u
-ZWwuDQo+ID4NCj4gPiBXZSBoYXZlIGJlZW4gYWJsZSB0byByZXByb2R1Y2UgdGhlIGlzc3VlwqB1
-c2luZyBhbiBPcGVuVlBOIHNlcnZlciAyLjQuNg0KPiBvbiBGZWRvcmEgTGludXggMjYgYW5kIGFu
-IGlQaG9uZSBydW5uaW5nIElPUyAxMS4zLjEgYW5kIHZlcnNpb24gMS4yLjAgYnVpbGQNCj4gMCAo
-aU9TIDY0LWJpdCkuIFRoZSBWUE4gc2VydmVyIGlzIElQdjQgb25seSBhbmQgdXNpbmcgVURQIHRy
-YW5zcG9ydC4gVGhlIElPUw0KPiBkZXZpY2UgaXMgb24gYW4gSVB2Ni1vbmx5IG5ldHdvcmsgdGhh
-dCBwcm92aWRlcyBETlM2NC9OQVQ2NCBmb3IgNnRvNA0KPiB0cmFuc2xhdGlvbi4gVGhlIEFuZHJv
-aWQgZGV2aWNlIGlzIHJ1bm5pbmcgQW5kcm9pZCA2LjAuMSBhbmQgT3BlblZQTg0KPiBDb25uZWN0
-IHZlcnNpb24gMy4wLjUgKDE4MTYpLiBVc2luZyB0aGUgc2FtZSBjbGllbnQgcHJvZmlsZSAoLm92
-cG4gZmlsZSkgb24NCj4gYm90aCB0aGUgQW5kcm9pZCBhbmQgYW5kIElPUyBjbGllbnRzLCBhbmQg
-dGhlIHNhbWUgY2VsbCBuZXR3b3JrIHNldHRpbmdzIGFuZA0KPiBWUE4gc2VydmVyLCB3ZSBvYnNl
-cnZlIHRoYXQgdGhlIFZQTiB0dW5uZWwgaXMgZXN0YWJsaXNoZWQgT0sgb24gYm90aA0KPiBkZXZp
-Y2VzLCBidXQgb25seSB0aGUgQW5kcm9pZCBpcyBhYmxlIHRvIHBhc3MgZGF0YSB0cmFmZmljIGlu
-c2lkZSB0aGUgVlBODQo+IHR1bm5lbC4NCj4gPg0KPiA+IElzIGFueW9uZSBhd2FyZSBvZiB3aGV0
-aGVyIHRoZSBkZXZlbG9wZXJzIG9mIHRoaXMgYXBwbGljYXRpb24gaGF2ZSBhbnkNCj4gZXhwZXJp
-ZW5jZSB0ZXN0aW5nIHRoZSBJT1MgdmVyc2lvbiBvZiB0aGUgYXBwIG9uIElPUyBkZXZpY2VzIG9u
-IElQdjYtb25seQ0KPiBuZXR3b3JrcywgYW5kIG1vcmVvdmVyIGFyZSB0aGUgZGV2ZWxvcGVycyBh
-d2FyZSBvZiBhbmQgZW5zdXJpbmcgdGhlIGFwcA0KPiBpcyBjb21wbGlhbnQgd2l0aCBBcHBsZSBz
-dGFuZGFyZHMgZm9yIElQdjYtb25seSBuZXR3b3JrcyBhcyBkb2N1bWVudGVkDQo+IGhlcmU6IGh0
-dHBzOi8vZGV2ZWxvcGVyLmFwcGxlLmNvbS9zdXBwb3J0L2lwdjY/DQo+ID4NCj4gPiBBcyBwZXIg
-b3VyIHVuZGVyc3RhbmRpbmcsIEFwcGxlIGFyZSBhY3RpdmVseSBwdXJzdWluZyBhcHBzIHdoaWNo
-IGFyZSBub3QNCj4gY29tcGxpYW50IHdpdGggdGhlc2Ugc3RhbmRhcmRzLCBzaW5jZSBJT1MgZG9l
-cyBub3QgcHJvdmlkZSA0NjRYTEFUIGF0IHRoZQ0KPiBjdXJyZW50IHRpbWUgYW5kIGNvbXBsaWFu
-Y2Ugd2l0aCBBcHBsZSdzIHN0YW5kYXJkIGlzIHRoZSBvbmx5IHdheSB0byBlbnN1cmUNCj4gY29t
-cGF0aWJpbGl0eSB3aXRoIElQdjYtb25seSBuZXR3b3JrcyBzdWNoIGFzIG91cnMuDQo+ID4NCj4g
-PiBJZiBhbnlvbmUgd2hvIGhhcyBhbnkgZmVlZGJhY2sgb3Igd291bGQgbGlrZSBtZSB0byB0ZXN0
-IGFueXRoaW5nIG9yDQo+IHByb3ZpZGUgYW55IGZ1cnRoZXIgYXNzaXN0YW5jZSBJIHdvdWxkIGJl
-IGdsYWQgdG8gYXNzaXN0Lg0KPiANCj4gRnJvbSBteSBleHBlcmllbmNlIHdpdGggQW5kcm9pZCBh
-bmQgTkFUNjQ6DQo+IA0KPiAtIFQtbW9iaWxlIFVTIGhhZCAob3Igc3RpbGwgaGFzPykgYW4gaXNz
-dWUgd2l0aCBNVFUgb24gVURQIGNvbm5lY3Rpb25zIG9uDQo+IE5BVDY0LiBCZWhhdmlvdXIgbG9v
-a3Mgc2ltaWxhciB0byB3aGF0IHlvdSBhcmUgZXhwZXJpZW5jaW5nLiBUcnkgaWYgdXNpbmcgVENQ
-DQo+IG9yIFVEUCBtYWtlcyBhIGRpZmZlcmVuY2UuDQo+DQo+IA0KPiAtIFRvbyBvZnRlbiBwcm9m
-aWxlcyBoYXZlIGxpdGVyYWwgSVB2NCBhZGRyZXNzZXMgaW4gdGhlbSBpbnN0ZWFkIG9mIElQdjYu
-DQo+IEdvb2dsZSBwYXRjaGVkIGl0cyBYTEFUNDY0IHRvIGV2ZW4gYWxsb3cgVlBOIHR1bm5lbCB0
-byB3b3JrIG92ZXINCj4gWExBVDQ2NCAodXJnaCkNCj4gDQo+IC0gRm9yIHNwbGl0IHR1bm5lbCBj
-b25maWd1cmF0aW9uLCBzZXR0aW5nIGEgSVB2NCBETlMgdGhhdCBpcyB1bnJlYWNoYWJsZSBtaWdo
-dA0KPiBhbHNvIGNhdXNlIHRyb3VibGVzLg0KPiANCj4gLSBSZWNvbmVjdGluZyBpbnZvbHZpbmcg
-TkFUNjQvRE5TNjQgbmV0d29ya3Mgb2Z0ZW4gYnJlYWtzIGJlY2F1c2UgdGhlDQo+IHdob2xlICJ3
-aGF0IEROUyBkb2VzIHRoZSBWUE4gYXBwIHVzZSIgaXMgYSB0b3RhbCBtZXNzIGFuZCBvZnRlbiBl
-bmQgdXANCj4gd2l0aCB0aGUgd3JvbmcgYWRkcmVzcyAodW5tYXBwZWQsIHN0aWxsIG1hcHBlZCB3
-aGVuIHN3aXRjaGluZyB0byBXaUZpKS4NCj4gDQo+IEFybmUNCg0KTXkgcHJvZmlsZSBpcyB1c2lu
-ZyBGUUROIGZvciB0aGUgcmVtb3RlIFZQTiBob3N0LCBidXQgdGhlIGlzc3VlIGNvbWVzIHdoZW4g
-YXBwcyBvbiB0aGUgSU9TIGRldmljZSB0cnkgdG8gY29tbXVuaWNhdGUgd2l0aCBhIHNlcnZlciBv
-biB0aGUgb3RoZXIgc2lkZSBvZiB0aGUgdHVubmVsIHVzaW5nIElQdjQgbGl0ZXJhbHMuIFRoZSBJ
-T1MgZGV2aWNlIGlzIHN0aWxsIHN5bnRoZXNpemluZyB0aGUgSVB2NCBsaXRlcmFsIHdpdGggYSBO
-QVQ2NCBwcmVmaXggYW5kIHRoaXMgaXMgbm90IHJvdXRhYmxlIHZpYSB0aGUgVlBOIHNvIGl0IGZh
-aWxzIHRvIHdvcmsuIEkgd2FzIGFibGUgdG8gcmVzb2x2ZSB0aGlzIGJ5IHNldHRpbmcgYW4gSVB2
-NCBkZWZhdWx0IHJvdXRlIHVzaW5nIHRoZSBwdXNoIGNvbW1hbmQgaW4gdGhlIHNlcnZlciBwcm9m
-aWxlLiBJdCBzZWVtcyB0aGF0IElPUyB3aWxsIGNvbnRpbnVlIHRvIHN5bnRoZXNpemUgdGhlIElQ
-djQgbGl0ZXJhbCB3aGVuIHRoZXJlIGlzIG5vdCBhIGRlZmF1bHQgcm91dGUgYXZhaWxhYmxlIG9u
-IGFuIElQdjQgYWRkcmVzc2VkIGludGVyZmFjZS4NCg0KTm93IEkgYW0gcnVubmluZyBpbnRvIHRo
-ZSBNVFUgcHJvYmxlbSB5b3UgbWVudGlvbmVkIGFib3ZlLiBJJ20gbm90IG9uIHRoZSBUTW9iaWxl
-IG5ldHdvcmssIGJ1dCBpdOKAmXMgYSB2ZXJ5IHNpbWlsYXIgY29uZmlndXJhdGlvbi4gSSBiZWxp
-ZXZlIHRoZSBpc3N1ZSBpcyB0aGF0IHRoZSBJUCBoZWFkZXIgaXMgNDAgYnl0ZXMgaW4gSVB2NiBh
-bmQgdGhlcmVmb3JlIHRoZSBwYXlsb2FkIG5lZWRzIHRvIGJlIHJlZHVjZWQgdG8gYWxsb3cgdGhl
-IHBhY2tldHMgdG8gdHJhdmVyc2UgdGhlIE5BVDY0LiBNeSBWUE4gc2VydmVyIGlzIHJlY2Vpdmlu
-ZyBJQ01QIFVucmVhY2hhYmxlcyBmcm9tIElQdjQgc2lkZSBvZiB0aGUgTkFUNjQgYW5kIG15IGZp
-cmV3YWxsIG9uIHRoZSBWUE4gc2VydmVyIHBlcm1pdHMgdGhlbSwgYnV0IGl0IHNlZW1zIGFzIHRo
-b3VnaCB0aGUgVlBOIHNlcnZlciBzaWRlIGRvZXNu4oCZdCBoYW5kbGUgdGhlbSBwcm9wZXJseSBm
-b3Igd2hhdGV2ZXIgcmVhc29uLCBhcyBpdCBjb250aW51ZXMgdG8gc2VuZCBwYWNrZXRzIHRvIHRo
-ZSBWUE4gY2xpZW50IHRoYXQgYXJlIHRvbyBiaWcgdG8gZml0IHRocm91Z2ggdGhlIE5BVDY0Lg0K
-DQpJIHRyaWVkIHNldHRpbmcgIm10dS1kaXNjIHllcyIgaW4gdGhlIFZQTiBzZXJ2ZXIgYnV0IGl0
-IGRpZG7igJl0IGFwcGVhciB0byBoYXZlIGFueSBhZmZlY3QuIERvIHlvdSBoYXZlIGFueSBhZHZp
-Y2Ugb24gaG93IHRvIGhhbmRsZSB0aGlzIHNjZW5hcmlvPw0K
+--aSRrXo8NJAoPLte9
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+Hi,
+
+On Sat, Jul 07, 2018 at 06:55:44PM +0000, Kristian McColm wrote:
+> I tried setting "mtu-disc yes" in the VPN server but it didn???t appear t=
+o have any affect. Do you have any advice on how to handle this scenario?
+
+mssfix 1300
+
+(won't do anything for large UDP packets inside the tunnel, but will=20
+fix TCP.  If you really need large UDP, try --fragment 1400 - but this
+needs to be turned on on both sides, OpenVPN server and client, and will
+cause some overhead)
+
+The "I have no IPv4 default route so my local 464 component messes up
+IPv4 connections through the tunnel" is annoying, but not truly surprising.
+
+(And the real culprit here is "Apps using IPv4 literals" - those are=20
+the ones to blaim that apple had to add that local "DNS64-like" component
+for IPv4 literals - which is now breaking the same apps in a VPN context)
+
+But if "push default route" works as a workaround, this can be documented
+and things will be fine...
+
+gert
+
+
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--aSRrXo8NJAoPLte9
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJbQROoAAoJEB2Cnv7KVigSrmML/2ulSPyoRDr71jcYarnEhfK6
+e6XjUej3raxUzeZoq0F7PIuHTo7kc/lWen1P4l7VvbufLKR+0ejg9XfN8egtsdki
+FBoEDnf2gc2cTqN0RprKRdoXQ7UNebwfNbPbajDbRM3+wxmhUbFhG9mVtoGDb+et
+qbDwdSMGrNFKIq9tD5JMvmBwLz3eDDTMB/hWJJPCK8z0tqJiZoyO5A+i5lfEuYCF
+tfjOIBQ6u9GYPX+Xg75D+lEjCu7X6cUQPxnkG8dyNqvih2FCUeeGhCdad7z1GHy5
+M/8vfHmGjucTcGp0DTbL0xM/8Y5L5EtH246pFIHtZsQWhBZJzLpsEM/I6gdjYequ
+53TyIKhSQYN1OWxga2v4Ql06e3lteJyW1s+HTUVreYGkJdQKTl4TVQaScoR2ta16
+UOMULX3k6+9bXSoR1fIXW9NB9gJfQwQCKMAyKudHpyRlqz39SHfHj1mLVBaYoeDD
+4ARyaNet/ejbjiQh4u6b5qHOEcvIU0Kk0n4n4eHdbA==
+=gORP
+-----END PGP SIGNATURE-----
+
+--aSRrXo8NJAoPLte9--
+
