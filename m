@@ -1,13 +1,13 @@
-Date: Wed, 11 Jul 2018 19:49:58 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180711174957.GA989@...1296...>
 References: <20180711165918.12762-1-a@...2181...>
- <20180711170042.15154-1-a@...2181...>
+ <20180711170042.15154-1-a@...2181...> <20180711174957.GA989@...1296...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <12dcd8dd-58f6-3fde-6e6f-bee91fc3f580@...2181...>
+Date: Thu, 12 Jul 2018 01:56:14 +0800
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="kuvcnBQxwPB5D5+v"
-Content-Disposition: inline
-In-Reply-To: <20180711170042.15154-1-a@...2181...>
+In-Reply-To: <20180711174957.GA989@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="Ggjb5JmnnrJc6qj3lRQzSpUQXI9JMQ2po"
 Subject: Re: [Openvpn-devel] [PATCH v2] socket: make stream_buf_* functions
  static
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,60 +18,98 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---kuvcnBQxwPB5D5+v
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--Ggjb5JmnnrJc6qj3lRQzSpUQXI9JMQ2po
+Content-Type: multipart/mixed; boundary="mQq3gT0YNhTw0usLgKXAaQX8X0BbGKhRk";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
+Message-ID: <12dcd8dd-58f6-3fde-6e6f-bee91fc3f580@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v2] socket: make stream_buf_* functions
+ static
+References: <20180711165918.12762-1-a@...2181...>
+ <20180711170042.15154-1-a@...2181...> <20180711174957.GA989@...1296...>
+In-Reply-To: <20180711174957.GA989@...1296...>
+
+--mQq3gT0YNhTw0usLgKXAaQX8X0BbGKhRk
+Content-Language: en-US
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
 Hi,
 
-On Thu, Jul 12, 2018 at 01:00:42AM +0800, Antonio Quartulli wrote:
-> stream_buf_init(), stream_buf_close() and stream_buf_added()
-> are only used within socket.c, therefore there is noneed to
-> have them declared in socket.h.
+On 12/07/18 01:49, Gert Doering wrote:
+> Hi,
 >=20
-> Make them static and remove useless declarations.
-> This change required some re-ordering of the functions to
-> ensure they were defined before being used, however, no
-> this is just a copy/paste and no function change has been
-> introduced.
+> On Thu, Jul 12, 2018 at 01:00:42AM +0800, Antonio Quartulli wrote:
+>> stream_buf_init(), stream_buf_close() and stream_buf_added()
+>> are only used within socket.c, therefore there is noneed to
+>> have them declared in socket.h.
+>>
+>> Make them static and remove useless declarations.
+>> This change required some re-ordering of the functions to
+>> ensure they were defined before being used, however, no
+>> this is just a copy/paste and no function change has been
+>> introduced.
+>=20
+> I'm not so happy about the large code move-around here, for small
+> benefit (code move-around breaks "git blame" to see which commit
+> introduced something, and why).
+>=20
+> Why not just add prototypes at the top?
 
-I'm not so happy about the large code move-around here, for small
-benefit (code move-around breaks "git blame" to see which commit
-introduced something, and why).
+Because I wanted the result to be clean code :)
+Imho, prototypes should be used only if really needed (i.e. when
+re-ordering is not an option).
 
-Why not just add prototypes at the top?
+The information about what/why was introduced can still be extracted
+with a "git log -S$something_here".
 
-gert
+I wouldn't make such a big deal of "breaking git blame" if the changes
+slowly move towards cleaner code.
+
+Actually some functions did not strictly needed to be moved, but I
+wanted all the stream_buf helpers to be in the same place and not
+scattered along socket.c. This can be changed if you think it's too
+invasive.
+
+my 2 cents.
+
+
+Cheers,
+
+
 --=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Antonio Quartulli
 
-Gert Doering - Munich, Germany                             gert@...1296...
 
---kuvcnBQxwPB5D5+v
+--mQq3gT0YNhTw0usLgKXAaQX8X0BbGKhRk--
+
+--Ggjb5JmnnrJc6qj3lRQzSpUQXI9JMQ2po
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJbRkNFAAoJEB2Cnv7KVigSSNUMAJinSiqw4+WIhkoyoji45cnm
-ULNQos0t3E4FwfsXR9/Np9jOwbhuDF9MdxYZDNIh5VSsTt8HfPHEWJPpXFvK5mSM
-aqGyt0Z6TMCrfeNPzVt2r74cknrE4Q502zhxKqOeXSYy5WVZrMPbDgWokQ+2kBsm
-YITFgjxFgfjV6Mc2P3kq1XujkpOMUVKhEN5BHb+bbchy5NgZ8zLNpnlwtn3jrHvL
-QUnSZJhpjvpt7u6fyfoBw5EOKaEtfoPTQsY9PEkqxaK92DChlzpiHY9IeWogTylq
-rfZT7h/olEcBIdvdUh8Bdjrw4aOM85jg/+kBbm8iKZjEEXTysSdujAM9fC1m0W2/
-he+IH+Y06lpRAeln67M3g42y0nk5zfB5pYV4TTMSrh7nWw2N8P/naxEt1vRXBVP/
-0jsDl86fwMvOnTA0c+bY9UHThlQbiEtECCyxGg7xrfootN+v/GQx1eqvVa3QqRGS
-KzIRIBzK2xQXyui9R+XGX7vO50LNvcT3+gTHBezqXw==
-=XIuN
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAltGRL4ACgkQB6U8WA7y
+zXSckBAAvL6aHQpqltcHVmAqekvVMuSdsKdzUl6Apid7FoPEqqFz94WV7vvrAIsO
+OKNsMVSTv9dfcyXRBMYvBLFYWpJCGT4frumhqL/K9FSAVTnA0pqYwKaXPG/fiXp0
+Lls8c9Y2bn/2lNLTE3xp/5jEHdFfRC1cMlCnN1M/16m1HAs8mlj9ANgWbdN6vKi5
+XVnVxKhg1DoYclDoLqNadyfIlzPpckpFLV3RmxTMfK5gU0T5Esz8EJ8yBMaOL/f8
+YJhICjmz1sBe1d9ZdnEo1i0x26M/UzzZg6jU7Bc/m2g1rg7+R1LL8OdCnm5/Gyrb
+1k9pFFyFzEc1zuXoQDNTb4ieGra5N/OPhDQejGNTyadxxa/CdVpURYkRh5WIEUeG
+nSPcfsLJYLiji9NF2T9TTn71fWbXvtKK/eDEfnJ1smBD+8iG/uAYNV7n9kktwfeD
+GOgfkyaMdckf0YRaxnE8+kNwdi9dldGaHigrgRpZ38uAqUXw6VdxJPWxCn3yejTk
+CtAJo5wlmJFUn6yzRkY0KfCWRosmiBIUyn0h31VFnAA7eMI8gdjmCVaWMVBC3b9p
+SswDXTygsvpOBIBoWiY1snw3clbuNwvgw+popvOiufb72cppkWbOoAKjZW0DjcNB
+VaIgoKKmvSVOSzpHP4Zk0gj49URv2lrwxWI3XQFp60w2VhOAYaU=
+=6iLQ
 -----END PGP SIGNATURE-----
 
---kuvcnBQxwPB5D5+v--
+--Ggjb5JmnnrJc6qj3lRQzSpUQXI9JMQ2po--
 
