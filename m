@@ -1,7 +1,10 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Thu, 12 Jul 2018 00:59:18 +0800
-Message-Id: <20180711165918.12762-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH] socket: make socket_* functions static
+Date: Thu, 12 Jul 2018 01:00:42 +0800
+Message-Id: <20180711170042.15154-1-a@...2181...>
+In-Reply-To: <20180711165918.12762-1-a@...2181...>
+References: <20180711165918.12762-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH v2] socket: make stream_buf_* functions
+ static
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -27,6 +30,9 @@ introduced.
 
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
+v2:
+- fix commit subject
+
  src/openvpn/socket.c | 362 +++++++++++++++++++++----------------------
  src/openvpn/socket.h |  15 --
  2 files changed, 181 insertions(+), 196 deletions(-)
