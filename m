@@ -1,16 +1,9 @@
-Date: Wed, 11 Jul 2018 20:38:38 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180711183838.GB989@...1296...>
-References: <20180711165918.12762-1-a@...2181...>
- <20180711170042.15154-1-a@...2181...>
- <20180711174957.GA989@...1296...>
- <12dcd8dd-58f6-3fde-6e6f-bee91fc3f580@...2181...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="NJBzyuYYykgY2yjn"
-Content-Disposition: inline
-In-Reply-To: <12dcd8dd-58f6-3fde-6e6f-bee91fc3f580@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v2] socket: make stream_buf_* functions
+From: Antonio Quartulli <a@...2181...>
+Date: Thu, 12 Jul 2018 09:29:55 +0800
+Message-Id: <20180712012955.24050-1-a@...2181...>
+In-Reply-To: <20180711170042.15154-1-a@...2181...>
+References: <20180711170042.15154-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH v3] socket: make stream_buf_* functions
  static
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -20,75 +13,112 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
---NJBzyuYYykgY2yjn
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+stream_buf_init(), stream_buf_close() and stream_buf_added()
+are only used within socket.c, therefore there is noneed to
+have them declared in socket.h.
 
-Hi,
+Make them static and remove useless declarations.
+This change reuired adding function prototypes in socket.c to
+avoid useless code re-ordering.
 
-On Thu, Jul 12, 2018 at 01:56:14AM +0800, Antonio Quartulli wrote:
-> > Why not just add prototypes at the top?
->=20
-> Because I wanted the result to be clean code :)
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+v2:
+- fix commit subject
+v3:
+- move functions back to their original locations and add prototypes
+  before the first usage of the three functions
+---
+ src/openvpn/socket.c | 22 +++++++++++++++++++---
+ src/openvpn/socket.h | 15 ---------------
+ 2 files changed, 19 insertions(+), 18 deletions(-)
 
-Prototypes are clean code :-)
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 211e7441..29de56fd 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -1491,6 +1491,22 @@ done:
+     gc_free(&gc);
+ }
+ 
++/*
++ * Stream buffer handling prototypes -- stream_buf is a helper class
++ * to assist in the packetization of stream transport protocols
++ * such as TCP.
++ */
++
++static void
++stream_buf_init(struct stream_buf *sb, struct buffer *buf,
++                const unsigned int sockflags, const int proto);
++
++static void
++stream_buf_close(struct stream_buf *sb);
++
++static bool
++stream_buf_added(struct stream_buf *sb, int length_added);
++
+ /* For stream protocols, allocate a buffer to build up packet.
+  * Called after frame has been finalized. */
+ 
+@@ -2500,7 +2516,7 @@ stream_buf_reset(struct stream_buf *sb)
+     sb->len = -1;
+ }
+ 
+-void
++static void
+ stream_buf_init(struct stream_buf *sb,
+                 struct buffer *buf,
+                 const unsigned int sockflags,
+@@ -2574,7 +2590,7 @@ stream_buf_read_setup_dowork(struct link_socket *sock)
+     return !sock->stream_buf.residual_fully_formed;
+ }
+ 
+-bool
++static bool
+ stream_buf_added(struct stream_buf *sb,
+                  int length_added)
+ {
+@@ -2641,7 +2657,7 @@ stream_buf_added(struct stream_buf *sb,
+     }
+ }
+ 
+-void
++static void
+ stream_buf_close(struct stream_buf *sb)
+ {
+     free_buf(&sb->residual);
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index 479d1150..7329a518 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -994,21 +994,6 @@ link_socket_set_outgoing_addr(const struct buffer *buf,
+     }
+ }
+ 
+-/*
+- * Stream buffer handling -- stream_buf is a helper class
+- * to assist in the packetization of stream transport protocols
+- * such as TCP.
+- */
+-
+-void stream_buf_init(struct stream_buf *sb,
+-                     struct buffer *buf,
+-                     const unsigned int sockflags,
+-                     const int proto);
+-
+-void stream_buf_close(struct stream_buf *sb);
+-
+-bool stream_buf_added(struct stream_buf *sb, int length_added);
+-
+ static inline bool
+ stream_buf_read_setup(struct link_socket *sock)
+ {
+-- 
+2.18.0
 
-> Imho, prototypes should be used only if really needed (i.e. when
-> re-ordering is not an option).
->=20
-> The information about what/why was introduced can still be extracted
-> with a "git log -S$something_here".
-
-Won't help if I want to see how a particular line came to be - and this
-is something relevant if you try to understand why "openvpn used to do
-things differently" in earlier versions.
-
-> I wouldn't make such a big deal of "breaking git blame" if the changes
-> slowly move towards cleaner code.
-
-I'm not objecting if it moves "towards cleaner code" (like the 2.4
-reformatting, or moving code blobs to smaller units) - but "just move
-it around in the same source file" is not achieving much cleaning,=20
-so I consider the negative aspects to be stronger in that case.
-
-> Actually some functions did not strictly needed to be moved, but I
-> wanted all the stream_buf helpers to be in the same place and not
-> scattered along socket.c. This can be changed if you think it's too
-> invasive.
-
-I do.
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---NJBzyuYYykgY2yjn
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJbRk6uAAoJEB2Cnv7KVigSP9UMAJByEXh9tWy0VC4xHFDskI62
-NYL8X3nkg2TaG770dQGpogwFeKBItiEwHR1xarur7X/ssSizECqpRxQI1AMBC0rC
-zRryRwJveR3zbXdcASNmBqYD5CGSRgj9nWypbe/6IufcUSy5Oxt3ijy1AI2HGNMY
-TgBw3eNDs9vgj2X+Hrb9LXxI8vtmUGnL+yflzj4yJ9fhnYqofE4vi9sew0IRsg85
-NtDKY46JkWhz78vkaBetmHfXn+RDRyK7HI70cxGdkFYWbbDhchvo+zERBHnXbFBC
-bzJm3lRzidDNhsT+MCIag6wOKmMaEv1UXsc4r+jWslkfIkU840LYatnE8ToQIur8
-pBkkWplzDZLzcEGkVLqz07sOh/C2kqsUirs4fffv+Bk5ll+/ORD+scOJDEur7GNA
-9B56Po4gi3cQsN8UrOe07IogqCkRIA/dnFIZszhD98/dTOIO5QSxAaHy/pnz0aAd
-P83lQNXodXOTkaDs2HtsryqlwJ9g4I3+QMPA95509A==
-=B+XU
------END PGP SIGNATURE-----
-
---NJBzyuYYykgY2yjn--
 
