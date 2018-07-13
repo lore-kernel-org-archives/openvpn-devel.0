@@ -1,10 +1,8 @@
-Date: Thu, 12 Jul 2018 22:52:48 +0200 (CEST)
-Message-Id: <201807122052.w6CKqmEO021695@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20180704175404.22371-2-steffan@...1856...>
-References: <20180704175404.22371-2-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Move execve/run_script helper
- functions to run_command.c
+Date: Fri, 13 Jul 2018 10:19:51 +0200
+Message-Id: <20180713081951.31174-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Print lzo_init() return code in case of
+ errors
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +13,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+This can help pinpointing what exactly went wrong in case of
+init failures (library version mismatch, memory issues, ...)
 
-(I've done my own review, but Antonio beat me with the ACK :-) - but I 
-can confirm that this is "just moved code" plus script_security now
-hidden behind getter/setter functions, and it passes my tests)
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/lzo.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-commit bf97c00f7dba441b504881f38e40afcbb610a39f
-Author: Steffan Karger
-Date:   Wed Jul 4 19:53:57 2018 +0200
-
-     Move execve/run_script helper functions to run_command.c
-
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20180704175404.22371-2-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17212.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/lzo.c b/src/openvpn/lzo.c
+index 8d9efea..e3be6ad 100644
+--- a/src/openvpn/lzo.c
++++ b/src/openvpn/lzo.c
+@@ -103,9 +103,11 @@ lzo_compress_init(struct compress_context *compctx)
+     msg(D_INIT_MEDIUM, "LZO compression initializing");
+     ASSERT(!(compctx->flags & COMP_F_SWAP));
+     compctx->wu.lzo.wmem_size = LZO_WORKSPACE;
+-    if (lzo_init() != LZO_E_OK)
++
++    int lzo_status = lzo_init();
++    if (lzo_status != LZO_E_OK)
+     {
+-        msg(M_FATAL, "Cannot initialize LZO compression library");
++        msg(M_FATAL, "Cannot initialize LZO compression library (lzo_init() returns %d)", lzo_status);
+     }
+     compctx->wu.lzo.wmem = (lzo_voidp) lzo_malloc(compctx->wu.lzo.wmem_size);
+     check_malloc_return(compctx->wu.lzo.wmem);
+-- 
+1.7.9.4
 
 
