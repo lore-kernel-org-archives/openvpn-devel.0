@@ -1,10 +1,9 @@
-Date: Fri, 13 Jul 2018 12:19:09 +0200 (CEST)
-Message-Id: <201807131019.w6DAJ9Un047014@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20180712012955.24050-1-a@...2181...>
-References: <20180712012955.24050-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: socket: make stream_buf_*
- functions static
+From: selva.nair@...277...
+Date: Fri, 13 Jul 2018 10:16:35 -0400
+Message-Id: <1531491395-29049-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1530633509-4959-1-git-send-email-selva.nair@...277...>
+References: <1530633509-4959-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH v3] Make up/down script errors not FATAL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,32 +14,50 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+From: Selva Nair <selva.nair@...277...>
 
-"Having local code self-contained is good" - visually tested, and 
-t_client test runs.  Thanks for bearing with me :)
+The error is treated as a warning only if its triggered due
+to script_security < SSEC_SCRIPTS.
 
-Your patch has been applied to the master branch.
+This helps user interfaces enforce a safer script-security setting
+without causing a FATAL error.
 
-commit 62c0455e0fd48b4640251dc879c25d4f66ae3ed2
-Author: Antonio Quartulli
-Date:   Thu Jul 12 09:29:55 2018 +0800
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+v3 changes:
+- script_security --> script_security() following
+  commit bf97c00f7dba441b504881f38e40afcbb610a39f
 
-     socket: make stream_buf_* functions static
+v2 changes:
+- Have script errors continue to trigger a FATAL error.
+- Update the commit message to match this change.
 
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20180712012955.24050-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17246.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+ src/openvpn/init.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index d28d1fd..4969565 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -169,13 +169,14 @@ run_up_down(const char *command,
+     if (command)
+     {
+         struct argv argv = argv_new();
++        int flags = (script_security() >= SSEC_SCRIPTS)? S_FATAL : 0;
+         ASSERT(arg);
+         setenv_str(es, "script_type", script_type);
+         argv_parse_cmd(&argv, command);
+         argv_printf_cat(&argv, "%s %d %d %s %s %s", arg, tun_mtu, link_mtu,
+                         ifconfig_local, ifconfig_remote, context);
+         argv_msg(M_INFO, &argv);
+-        openvpn_run_script(&argv, es, S_FATAL, "--up/--down");
++        openvpn_run_script(&argv, es, flags, "--up/--down");
+         argv_reset(&argv);
+     }
+ 
+-- 
+2.1.4
 
 
