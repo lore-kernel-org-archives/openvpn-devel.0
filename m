@@ -1,15 +1,11 @@
-From: Simon Rozman <simon@...2293...>
-Date: Wed, 18 Jul 2018 10:47:48 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE1089758A91@...2294...>
-References: <99D61A626FDA8A4B90A270669121BE10896FAF04@...2294...>
- <c5fdad43-51e4-44d4-d038-e59192a8ef5c@...515...>
-In-Reply-To: <c5fdad43-51e4-44d4-d038-e59192a8ef5c@...515...>
-Content-Language: en-US
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
- micalg=2.16.840.1.101.3.4.2.1;
- boundary="----=_NextPart_000_000A_01D41E95.877BE0B0"
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Wed, 18 Jul 2018 16:27:51 +0200
+Message-ID: <1531924073-29243-2-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1531924073-29243-1-git-send-email-steffan.karger@...1435...>
+References: <1531924073-29243-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] TAP driver on Windows 2016 Server
+Subject: [Openvpn-devel] [PATCH 1/3] Minor reliability layer documentation
+ fixes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,91 +14,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?iso-8859-2?Q?Samuli_Sepp=E4nen?= <samuli@...515...>, "openvpn-devel
- (openvpn-devel@lists.sourceforge.net)" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Gert van Dijk <gert.vandijk@...1435...>, Steffan Karger <steffan.karger@...1435...>
 
-------=_NextPart_000_000A_01D41E95.877BE0B0
-Content-Type: text/plain;
-	charset="iso-8859-2"
-Content-Transfer-Encoding: 7bit
+From: Gert van Dijk <gert.vandijk@...1435...>
 
-Hi,
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+---
+ doc/doxygen/doc_protocol_overview.h | 2 +-
+ src/openvpn/ssl.c                   | 4 ++--
+ src/openvpn/ssl.h                   | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
-> So we need either auto-detection (=best) or separate installers. I will do
-the
-> latter for starters so that my vacation is not ruined. But soon after we
-should
-> switch to the MSI-based installer with OS- auto-detection.
+diff --git a/doc/doxygen/doc_protocol_overview.h b/doc/doxygen/doc_protocol_overview.h
+index db24d3b..3f48b18 100644
+--- a/doc/doxygen/doc_protocol_overview.h
++++ b/doc/doxygen/doc_protocol_overview.h
+@@ -134,7 +134,7 @@
+  * without wasting resources on attempting a TLS handshake which will
+  * ultimately fail.
+  *
+- * @subsection network_protocol_control_key_methods Control channel key methods and
++ * @subsection network_protocol_control_key_methods Control channel key methods
+  *
+  * Once the TLS session has been initialized and authenticated, the TLS
+  * channel is used to exchange random %key material for bidirectional
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 669f941..dcb5445 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -3660,8 +3660,8 @@ tls_pre_decrypt(struct tls_multi *multi,
+             }
+ 
+             /*
+-             * We have an authenticated packet (if --tls-auth was set).
+-             * Now pass to our reliability level which deals with
++             * We have an authenticated control channel packet (if --tls-auth was set).
++             * Now pass to our reliability layer which deals with
+              * packet acknowledgements, retransmits, sequencing, etc.
+              */
+             {
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index a2501c9..72227d9 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -76,7 +76,7 @@
+ /*
+  * Define number of buffers for send and receive in the reliability layer.
+  */
+-#define TLS_RELIABLE_N_SEND_BUFFERS  4 /* also window size for reliablity layer */
++#define TLS_RELIABLE_N_SEND_BUFFERS  4 /* also window size for reliability layer */
+ #define TLS_RELIABLE_N_REC_BUFFERS   8
+ 
+ /*
+-- 
+2.7.4
 
-Excellent. Awaiting binaries, so I can prepare the packages to test. (No
-hurry, I have plenty of other work in my queue.)
-
-Best regards,
-Simon
-
-------=_NextPart_000_000A_01D41E95.877BE0B0
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-
-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
-
-------=_NextPart_000_000A_01D41E95.877BE0B0--
 
