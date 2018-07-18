@@ -1,10 +1,10 @@
-Date: Wed, 18 Jul 2018 19:49:25 +0200 (CEST)
-Message-Id: <201807181749.w6IHnPH5000733@...2054...>
+Date: Wed, 18 Jul 2018 19:51:19 +0200 (CEST)
+Message-Id: <201807181751.w6IHpJ8d001044@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1531924073-29243-3-git-send-email-steffan.karger@...1435...>
-References: <1531924073-29243-3-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Make second parameter to
- reliable_send_purge() const
+In-Reply-To: <1531924073-29243-4-git-send-email-steffan.karger@...1435...>
+References: <1531924073-29243-4-git-send-email-steffan.karger@...1435...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove unneeded newline in
+ debug message in reliable.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,22 +20,21 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Code doesn't modify *ack, so we can as well tell the compiler about it :)
+"obvious fix", but if you're used to debugging with printf(), these
+newlines slip in... :-) - thanks for fixing.
 
-Your patch has been applied to the master branch (this is not a bugfix
-and not a long-term stability thing or documentation update, so it does 
-not need to go to 2.4)
+Your patch has been applied to the master branch.
 
-commit 0f83b5e33ed63fee9f8de384e46cf93b4687c508 (master)
+commit 3e5561d34099f28a759865efff0523005116b6a1
 Author: Gert van Dijk
-Date:   Wed Jul 18 16:27:52 2018 +0200
+Date:   Wed Jul 18 16:27:53 2018 +0200
 
-     Make second parameter to reliable_send_purge() const
+     Remove unneeded newline in debug message in reliable.c
 
      Signed-off-by: Steffan Karger <steffan.karger@...1435...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1531924073-29243-3-git-send-email-steffan.karger@...1435...>
-     URL: https://www.mail-archive.com/search?l=mid&q=1531924073-29243-3-git-send-email-steffan.karger@...1435...
+     Message-Id: <1531924073-29243-4-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17262.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
