@@ -1,10 +1,13 @@
+References: <B09CA954-FCB8-4362-912F-F43DDD7DC59C@...438...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <c3d60209-2756-6327-102f-2adaae81dc8d@...2181...>
+Date: Thu, 19 Jul 2018 10:57:58 +0800
 MIME-Version: 1.0
-In-Reply-To: <CAEsd45Rd+5_NTeQ_E1C9wps89GWU6OfxQ5CdEFiN_HCO0=xaAQ@...278...>
-References: <CAEsd45Rd+5_NTeQ_E1C9wps89GWU6OfxQ5CdEFiN_HCO0=xaAQ@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 18 Jul 2018 22:48:41 -0400
-Message-ID: <CAKuzo_in_bBm1Y1rwU3rhFfuUP8o7j9iQH9vyjk9myT42tpBSg@...278...>
-Subject: Re: [Openvpn-devel] Dynamic challenge/response questions
+In-Reply-To: <B09CA954-FCB8-4362-912F-F43DDD7DC59C@...438...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="UU4ZvOpbn6CYf7IVcd7k1jxtUeVjQsTR5"
+Subject: Re: [Openvpn-devel] Fix for NetBSD with subnet topology
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,123 +16,106 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: "Jonathan K. Bullard" <jkbullard@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Adam <adam@...438...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--UU4ZvOpbn6CYf7IVcd7k1jxtUeVjQsTR5
+Content-Type: multipart/mixed; boundary="sHTrby8kPvCW0yF2aKbpMFUarh5XADCBo";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: Adam <adam@...438...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <c3d60209-2756-6327-102f-2adaae81dc8d@...2181...>
+Subject: Re: [Openvpn-devel] Fix for NetBSD with subnet topology
+References: <B09CA954-FCB8-4362-912F-F43DDD7DC59C@...438...>
+In-Reply-To: <B09CA954-FCB8-4362-912F-F43DDD7DC59C@...438...>
 
-On Wed, Jul 18, 2018 at 7:46 PM, Jonathan K. Bullard
-<jkbullard@...277...> wrote:
-> I'm trying to implement dynamic challenge/response in Tunnelblick and
-> have some questions. I've been using the management-interface
-> documentation [1] as my guide.
->
-> 1. Is what the management interface sends something like (all on one line):
->
->>PASSWORD:Verification Failed: 'Auth' ['CRV1:R,E:Om01u7Fh4LrGBS7uh0SWmzwabUiGiW6l:Y3Ix:Please enter token PIN:']
->
-> and not just the challenge all by itself?
+--sHTrby8kPvCW0yF2aKbpMFUarh5XADCBo
+Content-Language: en-US
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-There are two messages involved:
+Hello Adam,
 
-1. First comes the fake auth failure message which contains the
-challenge string. The format of this is as you have quoted above. The
-single quoted string between the square brackets is what is actually
-sent by the server. This should be parsed as
+thanks for your change.
 
-CRV1:flags:state_id:base64_username:challenge
-(note that there is no colon at the end)
+could you please submit the patch in proper git format so that it can be
+easily applied?
 
-So in the above example
-flags = R,E
-state_id = Om01u7Fh4LrGBS7uh0SWmzwabUiGiW6I
-base64_username = Y3Ixh
-challenge = Please enter token PIN:
+You can create a patch like that by using the "git format-patch" command
+after you have commited your changes (you need to clone the git
+repository for that).
 
-In this case the last colon is a part of the challenge as its not a
-part of the protocol.
+After creating the patch file, you can send it with either "git
+send-email" (preferred) or by attaching it to your email.
 
-As the daemon thinks auth failed, this will trigger a restart. On
-restart the client openvpn daemon will prompt for username password as
-usual. So
+Please, don't forget the "Signed-off-by:" line at the end of your commit
+message.
 
-2. The usual auth prompt comes as
+On top of all this, is there a way to explain in a few words why this is
+now required (should go in the commit message)? Or "it just works this way"?
 
->PASSWORD:Need 'Auth' username
->PASSWORD:Need 'Auth' password
 
-The GUI should remember that this prompt follows the
-verification-failure message that contained a CRV1 challenge and be
-ready to respond accordingly. And should be responded to in the same
-format as usual user-auth response but this time with the decoded
-username as username and the specially formatted challenge response
-(see below) as the password.
+Thanks a lot.
 
-> 2. Is the final ":" in the above part of the prompt to be shown to the
-> user, or is it a delimiter showing the end of the prompt?
+Regards,
 
-Yes
+On 18/07/18 22:33, Adam wrote:
+> Greetings,
+>=20
+> It turns out, NetBSD needs similar handling of subnet topology for tun in=
+terfaces as OpenBSD does.
+>=20
+> Here is a patch to fix the issue (against OpenVPN 2.4.6):
+>=20
+>=20
+>=20
+>=20
+>=20
+> Kind regards,
+> Adam
+>=20
+>=20
+>=20
+> -------------------------------------------------------------------------=
+-----
+> Check out the vibrant tech community on one of the world's most
+> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
+>=20
+>=20
+>=20
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>=20
 
->
->
-> 3. Is the response back to the management interface really like this:
->
-> Username: cr1 ("Y3Ix" base64 decoded)
-> Password: CRV1::Om01u7Fh4LrGBS7uh0SWmzwabUiGiW6l::8675309
+--=20
+Antonio Quartulli
 
-No, the management-notes.txt is a bit less explicit here. Its only
-indicating what username and password should be returned, not the
-format of the reply. The response is in reply to the usual "Auth" username
-and password prompts so should be formatted as
 
-username "Auth" cr1
-password "Auth" CRV1::Om01u7Fh4LrGBS7uh0SWmzwabUiGiW6l::8675309
+--sHTrby8kPvCW0yF2aKbpMFUarh5XADCBo--
 
-where 8675309 is the response to the challenge provided by the user.
+--UU4ZvOpbn6CYf7IVcd7k1jxtUeVjQsTR5
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
->
-> I ask because the syntax for the username/password for a
-> NON-challenge/response response back to the management interface is
->
-> username "Auth" THE_USERNAME
-> password "Auth" THE_PASSWORD
->
-> which has "username" and "password" in lower-case and without the ":"s.
+-----BEGIN PGP SIGNATURE-----
 
-That description in management-notes.txt means that the text following
-Username: should be passed back as username and the text following
-Password: as password. It should be returned in the above format is
-assumed to be understood  --- but, yes, that text could be made more explicit.
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAltP/jYACgkQB6U8WA7y
+zXSlhQ/+PZEy3VMuIhBn0Mi8UFvz+t1yOcz3jlgFFY3xat0rAIz61GMmhjpzMEh8
+y79F9tyMPOIrwwhXs+GDlOHW6K8XCjaVKh3amV9ALcIWw8LkH1sp0ZgQX8gvusgQ
+75rwHnCXmCmwPPZ2NyH/z+CE3ji5MmfzKvUeRSi7hSFMtPzMM13VTqino2BI4IN4
+rl3UG5o8j/YffnsI3ka+Fb7oVSL0B+qa8EIxmLs++LfzlkdEmwZaZ/CxoTHnMc10
+VkTE2hEQnZOJ1Y557VTeF+cjQwmjiyGkHG5GOYxD16Hb9QFG9G9b96h4HcXUCX3o
+hs86tPpyECUtsB9EeRxhgBQAJ9/vYGU2pwUEFZPxrPKCebqlMWpRTthsXFCWX3QY
+iNOL69KeeIZYj3KceRLAN5wkBGpALWYgxnJ5LNxpiYkXBfXm0Y3j9Q2/Bd3suafu
+i0XH8Es5jHGgohEUb2wfNi2a+sdSmkhrGwa9c/0pq461hQLExfefi3tx4uD/JGyt
+4VNIQD6/haz3Z9MYBrh5EO30q0avgMmu+SuJ6rEUxBrmE8dJGNHQ4iN7D+To4ioF
+al9x81yTjZk+V+hfueHvpEQ9V8y5mVrd9pYX7zwGYVjNPLIIwpp/xGr78McQPm9Z
+u12eX7laVTa7Lru+AuCzosIRDsMWecjumOf+defz4GJLHE7w8pk=
+=qUHY
+-----END PGP SIGNATURE-----
 
->
->
-> 4. Can the Username and Password fields sent to the OpenVPN management
-> interface be quoted (and must double-quotes within the fields be
-> escaped), as with the NON-challenge/response response?
-
-Internally, the username and password are parsed by openvpn the same
-way whether its a simple user/password or user/password/challenge or
-user/dynamic-challenge-response. That's why in all cases the format is
-"username type THE_USERNAME" and "password type THE_PASSWORD". So,
-quoting rules are the same in all three cases. The only difference is
-THE_PASSWORD is a specially formatted string in case of static and
-dynamic challenge responses.
-
-The verification scripts on server side will pick the password apart to isolate
-the challenge response but openvpn treats it as an opaque string. As with
-everything received from the management, It does, however, pass through the
-config parser which does quote processing and unescaping.
-
-OpenVPN-GUI for windows uses this template for the format string to
-construct the CRV1 "password" reply:
-
-template = "password \"Auth\" \"CRV1::%s::%s\""
-
-and pass the result though an escape processor before writing to the
-management socket. Alternatively you can use single quotes to enclose
-the 'THE_PASSWORD'.
-
-Selva
+--UU4ZvOpbn6CYf7IVcd7k1jxtUeVjQsTR5--
 
