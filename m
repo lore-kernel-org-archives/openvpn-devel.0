@@ -1,19 +1,15 @@
-Date: Thu, 19 Jul 2018 21:14:55 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180719191455.GB55859@...1296...>
-References: <CAEsd45Rd+5_NTeQ_E1C9wps89GWU6OfxQ5CdEFiN_HCO0=xaAQ@...278...>
- <CAKuzo_in_bBm1Y1rwU3rhFfuUP8o7j9iQH9vyjk9myT42tpBSg@...278...>
- <CAEsd45Tqb4nCQYe9_CKwr6YKdW4BoF3B-V=iQU=KXPnYDu8GJQ@...278...>
- <CAKuzo_hhoa_3xs0NSt7A7o-9WErqZEp+uvGv2XQi0FmJ10H9jw@...278...>
- <CAEsd45STfqNvTKFTcpJ8nsy0nfndfQHJ7dTD8iSRJFGQ5aE3Hg@...278...>
- <20180719175253.GZ55859@...1296...>
- <CAKuzo_gYBnZrwQtvC5jx_JsnL13eimr9wRxSVYezsVONKiB9wA@...278...>
+References: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
+ <20180704175404.22371-1-steffan@...1856...>
+ <20180704175404.22371-3-steffan@...1856...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <8eebd206-6742-712d-2097-ee196bbb025c@...2181...>
+Date: Fri, 20 Jul 2018 19:20:35 +0800
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="XMM+kVNHGkMezEqK"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_gYBnZrwQtvC5jx_JsnL13eimr9wRxSVYezsVONKiB9wA@...278...>
-Subject: Re: [Openvpn-devel] Dynamic challenge/response questions
+In-Reply-To: <20180704175404.22371-3-steffan@...1856...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="N45HUj1FEhRdcrcXOjSd5Tdsx0yMJ1FKr"
+Subject: Re: [Openvpn-devel] [PATCH v2 3/9] Add crypto_pem_{encode, decode}()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,67 +18,143 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
---XMM+kVNHGkMezEqK
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--N45HUj1FEhRdcrcXOjSd5Tdsx0yMJ1FKr
+Content-Type: multipart/mixed; boundary="cUBo8cjYqZb4utZl1sLPsKBtXXyYOuX1z";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <8eebd206-6742-712d-2097-ee196bbb025c@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v2 3/9] Add crypto_pem_{encode,decode}()
+References: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
+ <20180704175404.22371-1-steffan@...1856...>
+ <20180704175404.22371-3-steffan@...1856...>
+In-Reply-To: <20180704175404.22371-3-steffan@...1856...>
+
+--cUBo8cjYqZb4utZl1sLPsKBtXXyYOuX1z
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
 Hi,
 
-On Thu, Jul 19, 2018 at 02:38:55PM -0400, Selva Nair wrote:
-> On Thu, Jul 19, 2018 at 1:52 PM, Gert Doering <gert@...1296...> wrote:
-> > On Thu, Jul 19, 2018 at 11:43:17AM -0400, Jonathan K. Bullard wrote:
-> >> Thank you, Selva! (Now all I need to do is get it working!)
-> >
-> > Looking very much forward to see this happen :-)
-> >
-> > ($payingCustomer )
->=20
-> Send some ??????/$$ from $payingCustomer this way :)
+On 05/07/18 01:53, Steffan Karger wrote:
+[CUT]
 
-I might elicit some funding for Beer at the Hackathon... *tempt*
+> +bool
+> +crypto_pem_decode(const char *name, struct buffer *dst,
+> +                  const struct buffer *src)
+> +{
+> +    bool ret =3D false;
+> +    BIO *bio;
+> +
+> +    if (!(bio =3D BIO_new_mem_buf((char *)BPTR(src), BLEN(src))))
 
-(They do already sponsor our fun - all my buildslaves run on their vmware=20
-farm and eat their bandwith... :-) - just no direct flow of money)
+minor style niptick: I think it's common habit to have the assignment on
+one line and the if-condition on the next one, especially when it's
+about functions allocating some kind of object. Check your own
+crypto_pem_encode() in this patch :-)
 
-> Jon: I have a server for testing static and dynamic challenge. If
-> interested I can send you a config. Or use access server with a free
-> test license. Mine will just challenge with 1 + 1 =3D ? kind of
-> questions, nothing fancy.
+For the sake of consistency, I think this should be split in two lines:
 
-Interest!  (Though I might actually have the config already, just
-never came around to work on it)
+BIO *bio =3D BIO_new_mem_buf((char *)BPTR(src), BLEN(src));
+if (!bio)
 
-gert
+> +    {
+> +        crypto_msg(M_FATAL, "Cannot open memory BIO for PEM decode");
+> +    }
+> +
+> +    char *name_read =3D NULL;
+> +    char *header_read =3D NULL;
+> +    uint8_t *data_read =3D NULL;
+> +    long data_read_len =3D 0;
+> +    if (!PEM_read_bio(bio, &name_read, &header_read, &data_read,
+> +                      &data_read_len))
+> +    {
+> +        dmsg(D_CRYPT_ERRORS, "%s: PEM decode failed", __func__);
+> +        goto cleanup;
+> +    }
+> +
+> +    if (strcmp(name, name_read))
+> +    {
+> +        dmsg(D_CRYPT_ERRORS,
+> +             "%s: unexpected PEM name (got '%s', expected '%s')",
+> +             __func__, name_read, name);
+> +        goto cleanup;
+> +    }
+> +
+> +    uint8_t *dst_data =3D buf_write_alloc(dst, data_read_len);
+> +    if (!dst_data)
+> +    {
+> +        dmsg(D_CRYPT_ERRORS, "%s: dst too small (%i, needs %li)", __func=
+__,
+> +             BCAP(dst), data_read_len);
+> +        goto cleanup;
+
+Am I wrong or we are leaking dst_data in case of failure? or are we
+assuming that this memory is now owned by dst and therefore its owner
+(the caller) will take care of this?
+
+> +    }
+> +    memcpy(dst_data, data_read, data_read_len);
+> +
+> +    ret =3D true;
+> +cleanup:> +    OPENSSL_free(name_read);
+> +    OPENSSL_free(header_read);
+> +    OPENSSL_free(data_read);
+> +    if (!BIO_free(bio))
+> +    {
+> +        ret =3D false;;
+> +    }
+> +
+> +    return ret;
+> +}
+> +
+
+[CUT]
+
+Other than those small remarks the patch looks good.
+Therefore:
+
+Acked-by: Antonio Quartulli <antonio@...515...>
+
+This code does not do anything yet, as these functions are not used at
+the moment (will be in one of the next patches), but they are tested
+thanks to the new unit_test and everything seems to be working as expected.
+
+
+Cheers,
+
+
 --=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Antonio Quartulli
 
-Gert Doering - Munich, Germany                             gert@...1296...
 
---XMM+kVNHGkMezEqK
+--cUBo8cjYqZb4utZl1sLPsKBtXXyYOuX1z--
+
+--N45HUj1FEhRdcrcXOjSd5Tdsx0yMJ1FKr
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJbUOMuAAoJEB2Cnv7KVigSAfML/j/5eSyAlKH7e3iWhZBO4Fsu
-P4xy7pBqwJeev8XWb0G+JNrxBt6xGPb+t60ygPgPJyLsD4w091Khx+0Td6MIXx8R
-wBtaE31WdpsLpJ3pfmCk7V8zEnqIC5P81H57+AqNoNEy+6Z8n3y7Q/z6LBBZ6pYU
-Ipvog4z12K7b3XWS+Cca2HXFyZfo0sDKo5kiYNsQUvclzPtJqMrzIVMWLxYR2nna
-TNGOx7WiGBNy7ZS9qNNKgy3spJ1+HQsTzLtzbHxNxEjfxn3MU+3WBSPtiapi19RK
-Lvw32WnI9W2LQS43Nm8kNO03lz23BZjLuetph3fbtSA0qdA9rYBHvoEE4D0y/Wjb
-n/wNAn9Vm+HNkcFoWtLo43ilkXyoUg427A8oinOseObtKJx1xy1lxEyKaatGfHU0
-Jd+Rdc1usW64ly6c4F0+U7+ZF/3f76hCcIMguEr9wOoop4p9RJU8nqG+sIkiPPSF
-ZOixt0Dodb3jOQ5g3oCL5EgESuD2KHvd7SmbF9JekA==
-=yy5f
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAltRxYMACgkQB6U8WA7y
+zXR6tA//Z9rr/ZZkJjtHVxTUBmbqwuRMXuuyXkTOk7CCyMvgpCFTmojhpxiCtsjQ
+deIKQVtvAWPDFXBusd5N7A/ABzEAZuOdJviJe/KH0DeS+fEaUzhAfaogN4iyLC9T
+yaQIX+pXoQBO9XN/9YqEU1irI9uH53lbO5zFTeNJgBWyVpQjLPbEtPVZazA02stK
+3pWBzwiwbCOO3ceLx3Dt7wrFhPT1Jtr/OEUKkJyFaj2yXNO7PCUn3024cXT+EMtB
+1GPyW0FlGDpKhu9QYf/AiZ0jpI3NlPPf+09rrl2cNJnFn45QfIp3qopISPQKjbVu
+T5cUccUv43DJkB4ZZrgmytvrPNBQu7ZYmBkZaYFUNTyqkQXI5OzkFWXwTkY0VqQS
+UMt1isEemZpeRJEwvHDWeUzDyzug8tYcTOeOhv2FOPnj0HEustwsgKAqoPi0NhL0
+7UXOeqkHFaXL3ZeCgYtL+4rt9HIqAU4zhDFz7Y+a7jdxhNZMPS0BFk3aD7/YFCRo
+QkR3FkMVV3wwJHmTdoSBmjxmbXS4uliTzInMKNRWuwTkoI83MeH5ewxbUWRodZrp
+6q1m02Xat3BTKQ5IFH+dwhofDkD3Ji4xHmNlHkgEbm10yJi/HX1n6kyw7TqIecxZ
+pmlt/+I/MoPOK6UCGuiL/7hqP9FlmMZCgbv52t2fzLe0lw3Ulz0=
+=1E59
 -----END PGP SIGNATURE-----
 
---XMM+kVNHGkMezEqK--
+--N45HUj1FEhRdcrcXOjSd5Tdsx0yMJ1FKr--
 
