@@ -1,13 +1,12 @@
-Date: Mon, 23 Jul 2018 19:39:23 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180723173923.GJ55859@...1296...>
-References: <B09CA954-FCB8-4362-912F-F43DDD7DC59C@...438...>
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+Message-ID: <1f82b0d9-890c-b56f-4186-c1cb32c55284@...2080...>
+Date: Tue, 24 Jul 2018 00:00:31 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="ceI9FlwgjS98XxYT"
-Content-Disposition: inline
-In-Reply-To: <B09CA954-FCB8-4362-912F-F43DDD7DC59C@...438...>
-Subject: Re: [Openvpn-devel] Fix for NetBSD with subnet topology
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="UBejFOfrSOH5Z2goK5f8BtUfL6ieiERjD"
+Subject: [Openvpn-devel] Need help with OpenVPN 3 Linux distro packaging
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,67 +15,85 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Adam <adam@...1031...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---ceI9FlwgjS98XxYT
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--UBejFOfrSOH5Z2goK5f8BtUfL6ieiERjD
+Content-Type: multipart/mixed; boundary="JrlAX6Z479vKVwFv5aMr2wodq8S2sPtlh";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net"
+ <openvpn-devel@lists.sourceforge.net>
+Message-ID: <1f82b0d9-890c-b56f-4186-c1cb32c55284@...2080...>
+Subject: Need help with OpenVPN 3 Linux distro packaging
+
+--JrlAX6Z479vKVwFv5aMr2wodq8S2sPtlh
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+
 
 Hi,
 
-On Wed, Jul 18, 2018 at 04:33:13PM +0200, Adam wrote:
-> It turns out, NetBSD needs similar handling of subnet topology for tun in=
-terfaces as OpenBSD does.
->=20
-> Here is a patch to fix the issue (against OpenVPN 2.4.6):
+The brand new OpenVPN 3 Linux client on Linux is moving forward and getting
+into a reasonable good shape.  Early adopters on RHEL/CentOS/Scientific Lin=
+ux
+can already test this via an openvpn3 Fedora Copr repository [1].
 
-So, the patch looks good, and it works nicely on my buildslave.
+But that's not enough.  We want to have this in Debian and Ubuntu as well.
+And even more distros.  I quite recently registered this "Request For
+Packaging" in the Debian bug tracker [2].  Feel free to join the discussion!
 
-There's two catches here - one is that with this patch format, I do not
-get proper git attribution in place, so we really really prefer patches
-that come out of "git commit -s ..." -> "git send-email".
+If you would like to help out with this brand new Linux client, please let =
+me
+know and I'll help out with as much input and information as needed.
 
-The other catch is that this patch is for 2.4 only, and does not apply=20
-to git master anymore (since Antonio has wrecked tun.c all over :-) ).
+For more details about the OpenVPN 3 Linux client project, please have a lo=
+ok
+at the GitHub [3] or GitLab [4] project pages.
 
-So what I'd really love to see is two patches, one for 2.4 and one for
-git master, both coming out of "git commit -s" -> "git send-email" - because
-that would speed up the flow tremendously (I can ACK and commit the patches
-right away, but if I adapt your patch to "git master", someone else needs
-to do the review and the credits who did the fixing are all wrong)
 
-thanks :)
+[1] <https://copr.fedorainfracloud.org/coprs/dsommers/openvpn3/>
+[2] <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D904044>
+[3] <https://github.com/OpenVPN/openvpn3-linux>
+[4] <https://gitlab.com/openvpn/openvpn3-linux>
 
-gert
 
 --=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+kind regards,
 
-Gert Doering - Munich, Germany                             gert@...1296...
+David Sommerseth
+OpenVPN Inc
 
---ceI9FlwgjS98XxYT
+
+
+
+
+--JrlAX6Z479vKVwFv5aMr2wodq8S2sPtlh--
+
+--UBejFOfrSOH5Z2goK5f8BtUfL6ieiERjD
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQGcBAEBAgAGBQJbVhLKAAoJEB2Cnv7KVigSZPAL/2rThJcDdXpKjlR0KFjRLR0r
-dVoHxX7vOppgPGQDAG4BHBWWpIoGHAz6SozzGbCJyNDUQzYeM0WRa7CfQywC2Fhi
-LJo7LVOCWpX/QkRgPpI9+2xfhhajDAoA2dV3NUQFuynWslASsHT7LF1dHcK0vE5c
-i1xNAT3ozUiIFFQbAXdrg1dD/ZnbqI4wV3ZpkXMXzVRqWJ7C0iJBg1oJ9QuuLhjr
-4kAk7pdWYj0/wQVFVp23XvJe/CAF73GmbniIjKfG9x0/kWpnKzC1kWFniRQ7BrK6
-oW7e9I3iKa3a9XlhwoCtDYtG8Kv0UgyJe5Ls4RHZL+/fTK18OLyRSt5/z+3jbQns
-M3GGz+oc4ZBKFPKM1UXu7q8AE9eUbG3AbhpWampHhrFnxKBrl1DX4tAR5sdSuf5Z
-H8yx3Oka8KbueQ5ZG5LicLSDdYSpHbfH6hm+zPhrHQ9cfdYLjjUkuYrs1sY8lQ9V
-HVgMXr7ZI3+pd5z7z3M5AAc/8uLXAtTlfJGblUiSvQ==
-=A60Y
+iQIcBAEBCgAGBQJbVk//AAoJEIbPlEyWcf3yolUP/02kzckijdpBONs+2T/IwHHV
+df+5kr5qgZAbRt21G9Z1ujtdqs3m1S8N4ktkKISVeh/MlDiyTneiUb8LlGi6zwEF
+87J/SL6MpWs+Vkx86CI2S9LdmitmKdac8zwpRotrONsFxcMrhLK6TYmqC/SWCZ57
+XyAp982sh7GvbXZt01ysy/WFhYwyKqTccuD3MR126Dp4p1Et54tzLw0a3oh0iu4F
+yRkXuynWHLOXpgYFZPLrFPIeI7Pg/ImoSq9HZkVMELURieBw1rldbqU8sdhOePkw
+uvyWeWUKNgM1qBeysYcK8urNCnPiNFF57a9qfxH60ZIeI3lsEclwy9QxQtcC9lBo
+OksFgugknNcLcBYpVIzEXmZdNr8pEfroxKA/xYvTIHaftmsYxCVb5XvnZZ8PmiEq
+dFbGxKMTWf/uO3LjCSc8JScZQK/wyt+1Tt5kUGXOtLtsTW8mN4tR72RAhkr3UKnE
+evN8LdPh8DeVvn8wpHtHm6JTIbxfx5Lo8/42UJ9femtqDZUWvfGHrZimVJcsg/2+
+jgWcKFrUHTWbTButt9e154f66cESc62gw7SM15sQ3mIGWBEaJbA5C0ljyaXxGcWn
+OGDwuCyVT5sNp3/KBjCbzsyUFK0M/bCEil9ZsxU13jy2d3bvRmvX2ySg3Di2WvvS
+RPhXUhNrvI/CzkRLOuH7
+=bHiL
 -----END PGP SIGNATURE-----
 
---ceI9FlwgjS98XxYT--
+--UBejFOfrSOH5Z2goK5f8BtUfL6ieiERjD--
 
