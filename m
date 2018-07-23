@@ -1,11 +1,11 @@
 From: James Bekkema <james@...1918...>
 Content-Type: multipart/mixed;
- boundary="Apple-Mail=_99B9C4DF-9EBC-49ED-AECC-42B89BDDBEFC"
+ boundary="Apple-Mail=_0981E51E-3A94-4025-BDFD-363196B5FA81"
 Mime-Version: 1.0 (Mac OS X Mail 11.5 \(3445.9.1\))
-Date: Mon, 23 Jul 2018 13:45:41 +1000
-Message-Id: <777939F9-A753-4A66-B40E-1346AFD588DE@...1918...>
-Subject: [Openvpn-devel] [PATCH] Adds support for setting the default IPv6
- gateway for routes using the route-ipv6-gateway option
+Date: Mon, 23 Jul 2018 13:45:12 +1000
+Message-Id: <A7C436F7-3B7C-44B4-B783-71B098AE2ABB@...1918...>
+Subject: [Openvpn-devel] [PATCH] Restore functionality of route-gateway's
+ dhcp parameter
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,24 +16,25 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
---Apple-Mail=_99B9C4DF-9EBC-49ED-AECC-42B89BDDBEFC
+--Apple-Mail=_0981E51E-3A94-4025-BDFD-363196B5FA81
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-This patch adds support for setting the default IPv6 gateway for routes usi=
-ng the "route-ipv6-gateway=E2=80=9D option.
+This patch restores functionality of route-gateway's dhcp parameter, and ex=
+pands it to support routes using vpn_gateway.
 
-Currently if users try to use the "redirect-gateway ipv6=E2=80=9D option, o=
-r a IPv6 route without a gateway, without using "ifconfig-ipv6" they=E2=80=
-=99ll receive the message "OpenVPN ROUTE6: OpenVPN needs a gateway paramete=
-r for a --route-ipv6 option and no default was specified by either --route-=
-ipv6-gateway or --ifconfig-ipv6 options=E2=80=9D.
+OpenVPN supports using a =E2=80=9Cdhcp=E2=80=9D parameter for the "route-ga=
+teway=E2=80=9D option, which involves intercepting the DHCP reply packet an=
+d extracting the gateway to use. However, the current implementation expect=
+s to have this information at the time of the initialisation of the route l=
+ist, which will not happen, and so routes relying on this option are never =
+added.
 
-However, the "route-ipv6-gateway=E2=80=9D option doesn=E2=80=99t actually e=
-xist, and it is required for bridged/TAP setups relying on IPv6 auto-config=
-uration for IP assignment. This patch adds the "route-ipv6-gateway=E2=80=9D=
- option. The gateway specified must be an IPv6 address, FQDNs are not suppo=
-rted (to match the behaviour of the other IPv6 related options).
+Rather than moving initialisation of the route list until after the route-d=
+elay (which can have a negative effect on the resolution of routes using FQ=
+DNs), this patch flags routes that require a DHCP gateway, and updates and =
+defines them when a DHCP reply is received. If no reply is received in time=
+, the routes are left undefined.
 
 Currently in production use in Viscosity for macOS and Windows, no reported=
  issues.
@@ -50,94 +51,107 @@ https://www.sparklabs.com
 https://twitter.com/sparklabs
 support@...1918...
 
---Apple-Mail=_99B9C4DF-9EBC-49ED-AECC-42B89BDDBEFC
+--Apple-Mail=_0981E51E-3A94-4025-BDFD-363196B5FA81
 Content-Disposition: attachment;
-	filename=route-ipv6-gateway.diff
+	filename=route-gateway-dhcp.diff
 Content-Type: application/octet-stream;
 	x-unix-mode=0644;
-	name="route-ipv6-gateway.diff"
+	name="route-gateway-dhcp.diff"
 Content-Transfer-Encoding: quoted-printable
 
-=46rom=204925dea99cabdedb518be59fc14d83484b830cbe=20Mon=20Sep=2017=20=
+=46rom=20363ad7103507bcc092fde61c3b60bd3cfbf60aaa=20Mon=20Sep=2017=20=
 00:00:00=202001=0AFrom:=20James=20Bekkema=20<james@...1918...>=0A=
-Date:=20Mon,=2023=20Jul=202018=2013:28:31=20+1000=0ASubject:=20[PATCH]=20=
-Adds=20support=20for=20setting=20the=20default=20IPv6=20gateway=20for=20=
-routes=0A=20using=20the=20route-ipv6-gateway=20option.=0A=0A---=0A=20=
-doc/openvpn.8=20=20=20=20=20=20=20=20=20|=20=208=20++++++++=0A=20=
-src/openvpn/init.c=20=20=20=20|=20=204=20+---=0A=20src/openvpn/options.c=20=
-|=2016=20+++++++++++++++-=0A=20src/openvpn/options.h=20|=20=201=20+=0A=20=
-4=20files=20changed,=2025=20insertions(+),=204=20deletions(-)=0A=0Adiff=20=
---git=20a/doc/openvpn.8=20b/doc/openvpn.8=0Aindex=2046ea58b6..7441b443=20=
-100644=0A---=20a/doc/openvpn.8=0A+++=20b/doc/openvpn.8=0A@@=20-6149,8=20=
-+6149,16=20@@=20into=20OpenVPN's=20``tun''.=20=20The=20gateway=20=
-parameter=20is=20only=20used=20for=0A=20IPv6=20routes=20across=20``tap''=20=
-devices,=20and=20if=20missing,=20the=20``ipv6remote''=0A=20field=20from=0A=
-=20.B=20\-\-ifconfig\-ipv6=0A+or=0A+.B=20\-\-route\-ipv6\-gateway=0A=20=
-is=20used.=0A=20.TP=0A+.B=20\-\-route\-ipv6\-gateway=20gw=0A+Specify=20a=20=
-default=20gateway=0A+.B=20gw=0A+for=20use=20with=0A+.B=20=
-\-\-route\-ipv6.=0A+.TP=0A=20.B=20\-\-server\-ipv6=20ipv6addr/bits=0A=20=
-convenience\-function=20to=20enable=20a=20number=20of=20IPv6=20related=20=
-options=20at=0A=20once,=20namely=0Adiff=20--git=20a/src/openvpn/init.c=20=
-b/src/openvpn/init.c=0Aindex=20057dbb4b..d2903b87=20100644=0A---=20=
-a/src/openvpn/init.c=0A+++=20b/src/openvpn/init.c=0A@@=20-1416,12=20=
-+1416,10=20@@=20do_init_route_ipv6_list(const=20struct=20options=20=
-*options,=0A=20=20=20=20=20int=20metric=20=3D=20-1;=20=20=20=20=20=20=20=20=
-=20=20=20=20/*=20no=20metric=20set=20*/=0A=20=0A=20=20=20=20=20gw=20=3D=20=
-options->ifconfig_ipv6_remote;=20=20=20=20=20=20=20=20=20/*=20default=20=
-GW=20=3D=20remote=20end=20*/=0A-#if=200=20=20=20=20=20=20=20=20=20=20=20=20=
-=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20/*=20=
-not=20yet=20done=20for=20IPv6=20-=20TODO!*/=0A-=20=20=20=20if=20=
-(options->route_ipv6_default_gateway)=20=20=20=20=20=20=20=20=20=20=20=20=
-/*=20override?=20*/=0A+=20=20=20=20if=20=
-(options->route_ipv6_default_gateway)=0A=20=20=20=20=20{=0A=20=20=20=20=20=
-=20=20=20=20gw=20=3D=20options->route_ipv6_default_gateway;=0A=20=20=20=20=
-=20}=0A-#endif=0A=20=0A=20=20=20=20=20if=20=
-(options->route_default_metric)=0A=20=20=20=20=20{=0Adiff=20--git=20=
-a/src/openvpn/options.c=20b/src/openvpn/options.c=0Aindex=20=
-b89f4ba2..0d11e968=20100644=0A---=20a/src/openvpn/options.c=0A+++=20=
-b/src/openvpn/options.c=0A@@=20-200,8=20+200,10=20@@=20static=20const=20=
-char=20usage_message[]=20=3D=0A=20=20=20=20=20"--route-ipv6=20=
-network/bits=20[gateway]=20[metric]=20:\n"=0A=20=20=20=20=20"=20=20=20=20=
-=20=20=20=20=20=20=20=20=20=20=20=20=20=20Add=20IPv6=20route=20to=20=
-routing=20table=20after=20connection\n"=0A=20=20=20=20=20"=20=20=20=20=20=
-=20=20=20=20=20=20=20=20=20=20=20=20=20is=20established.=20=20Multiple=20=
-routes=20can=20be=20specified.\n"=0A-=20=20=20=20"=20=20=20=20=20=20=20=20=
-=20=20=20=20=20=20=20=20=20=20gateway=20default:=20taken=20from=20=
-'remote'=20in=20--ifconfig-ipv6\n"=0A+=20=20=20=20"=20=20=20=20=20=20=20=20=
-=20=20=20=20=20=20=20=20=20=20gateway=20default:=20taken=20from=20=
---route-ipv6-gateway=20or=20'remote'\n"=0A+=20=20=20=20"=20=20=20=20=20=20=
-=20=20=20=20=20=20=20=20=20=20=20=20in=20--ifconfig-ipv6\n"=0A=20=20=20=20=
-=20"--route-gateway=20gw|'dhcp'=20:=20Specify=20a=20default=20gateway=20=
-for=20use=20with=20--route.\n"=0A+=20=20=20=20"--route-ipv6-gateway=20gw=20=
-:=20Specify=20a=20default=20gateway=20for=20use=20with=20=
---route-ipv6.\n"=0A=20=20=20=20=20"--route-metric=20m=20:=20Specify=20a=20=
-default=20metric=20for=20use=20with=20--route.\n"=0A=20=20=20=20=20=
-"--route-delay=20n=20[w]=20:=20Delay=20n=20seconds=20after=20connection=20=
-initiation=20before\n"=0A=20=20=20=20=20"=20=20=20=20=20=20=20=20=20=20=20=
-=20=20=20=20=20=20=20adding=20routes=20(may=20be=200).=20=20If=20not=20=
-specified,=20routes=20will\n"=0A@@=20-6197,6=20+6199,18=20@@=20=
-add_option(struct=20options=20*options,=0A=20=20=20=20=20=20=20=20=20=20=20=
-=20=20}=0A=20=20=20=20=20=20=20=20=20}=0A=20=20=20=20=20}=0A+=20=20=20=20=
-else=20if=20(streq(p[0],=20"route-ipv6-gateway")=20&&=20p[1]=20&&=20=
-!p[2])=0A+=20=20=20=20{=0A+=20=20=20=20=20=20=20=20if=20=
-(ipv6_addr_safe(p[1]))=0A+=20=20=20=20=20=20=20=20{=0A+=20=20=20=20=20=20=
-=20=20=20=20=20=20options->route_ipv6_default_gateway=20=3D=20p[1];=0A+=20=
-=20=20=20=20=20=20=20}=0A+=20=20=20=20=20=20=20=20else=0A+=20=20=20=20=20=
-=20=20=20{=0A+=20=20=20=20=20=20=20=20=20=20=20=20msg(msglevel,=20=
-"route-ipv6-gateway=20parm=20'%s'=20must=20be=20a=20valid=20address",=20=
-p[1]);=0A+=20=20=20=20=20=20=20=20=20=20=20=20goto=20err;=0A+=20=20=20=20=
-=20=20=20=20}=0A+=20=20=20=20}=0A=20=20=20=20=20else=20if=20(streq(p[0],=20=
-"route-metric")=20&&=20p[1]=20&&=20!p[2])=0A=20=20=20=20=20{=0A=20=20=20=20=
-=20=20=20=20=20VERIFY_PERMISSION(OPT_P_ROUTE);=0Adiff=20--git=20=
-a/src/openvpn/options.h=20b/src/openvpn/options.h=0Aindex=20=
-3a6c33f8..66d45081=20100644=0A---=20a/src/openvpn/options.h=0A+++=20=
-b/src/openvpn/options.h=0A@@=20-329,6=20+329,7=20@@=20struct=20options=0A=
-=20=20=20=20=20const=20char=20*route_script;=0A=20=20=20=20=20const=20=
-char=20*route_predown_script;=0A=20=20=20=20=20const=20char=20=
-*route_default_gateway;=0A+=20=20=20=20const=20char=20=
-*route_ipv6_default_gateway;=0A=20=20=20=20=20int=20=
-route_default_metric;=0A=20=20=20=20=20bool=20route_noexec;=0A=20=20=20=20=
-=20int=20route_delay;=0A--=20=0A2.17.1=0A=0A=
+Date:=20Mon,=2023=20Jul=202018=2013:21:53=20+1000=0ASubject:=20[PATCH]=20=
+Restore=20functionality=20of=20route-gateway's=20dhcp=20parameter,=20and=0A=
+=20expand=20to=20support=20routes=20using=20vpn_gateway.=0A=0A---=0A=20=
+src/openvpn/init.c=20=20|=20=201=20+=0A=20src/openvpn/route.c=20|=2032=20=
+++++++++++++++++++++++++++++++--=0A=20src/openvpn/route.h=20|=20=203=20=
++++=0A=203=20files=20changed,=2034=20insertions(+),=202=20deletions(-)=0A=
+=0Adiff=20--git=20a/src/openvpn/init.c=20b/src/openvpn/init.c=0Aindex=20=
+d28d1fd2..057dbb4b=20100644=0A---=20a/src/openvpn/init.c=0A+++=20=
+b/src/openvpn/init.c=0A@@=20-1396,6=20+1396,7=20@@=20=
+do_init_route_list(const=20struct=20options=20*options,=0A=20=20=20=20=20=
+if=20(init_route_list(route_list,=0A=20=20=20=20=20=20=20=20=20=20=20=20=20=
+=20=20=20=20=20=20=20=20=20=20=20=20options->routes,=0A=20=20=20=20=20=20=
+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20gw,=0A+=20=20=20=
+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
+options->route_gateway_via_dhcp,=0A=20=20=20=20=20=20=20=20=20=20=20=20=20=
+=20=20=20=20=20=20=20=20=20=20=20=20metric,=0A=20=20=20=20=20=20=20=20=20=
+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
+link_socket_current_remote(link_socket_info),=0A=20=20=20=20=20=20=20=20=20=
+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20es))=0Adiff=20--git=20=
+a/src/openvpn/route.c=20b/src/openvpn/route.c=0Aindex=20=
+ff392308..ad8ea135=20100644=0A---=20a/src/openvpn/route.c=0A+++=20=
+b/src/openvpn/route.c=0A@@=20-295,6=20+295,12=20@@=20=
+is_special_addr(const=20char=20*addr_str)=0A=20=20=20=20=20}=0A=20}=0A=20=
+=0A+static=20bool=0A+should_use_dhcp_gateway(const=20char=20*gateway,=20=
+const=20struct=20route_list=20*rl)=0A+{=0A+=20=20=20=20return=20=
+(rl->spec.flags=20&=20RTSA_DHCP_ENDPOINT=20&&=20=
+(!is_route_parm_defined(gateway)=20||=20!strcmp(gateway,=20=
+"vpn_gateway")));=0A+}=0A+=0A=20static=20bool=0A=20init_route(struct=20=
+route_ipv4=20*r,=0A=20=20=20=20=20=20=20=20=20=20=20=20struct=20addrinfo=20=
+**network_list,=0A@@=20-362,7=20+368,11=20@@=20init_route(struct=20=
+route_ipv4=20*r,=0A=20=0A=20=20=20=20=20/*=20gateway=20*/=0A=20=0A-=20=20=
+=20=20if=20(is_route_parm_defined(ro->gateway))=0A+=20=20=20=20if=20=
+(should_use_dhcp_gateway(ro->gateway,=20rl))=0A+=20=20=20=20{=0A+=20=20=20=
+=20=20=20=20=20r->flags=20|=3D=20RT_DHCP_GATEWAY;=0A+=20=20=20=20}=0A+=20=
+=20=20=20else=20if=20(is_route_parm_defined(ro->gateway))=0A=20=20=20=20=20=
+{=0A=20=20=20=20=20=20=20=20=20if=20(!get_special_addr(rl,=20=
+ro->gateway,=20&r->gateway,=20&status))=0A=20=20=20=20=20=20=20=20=20{=0A=
+@@=20-414,7=20+424,10=20@@=20init_route(struct=20route_ipv4=20*r,=0A=20=20=
+=20=20=20=20=20=20=20r->flags=20|=3D=20RT_METRIC_DEFINED;=0A=20=20=20=20=20=
+}=0A=20=0A-=20=20=20=20r->flags=20|=3D=20RT_DEFINED;=0A+=20=20=20=20if=20=
+((r->flags=20&=20RT_DHCP_GATEWAY)=20=3D=3D=200)=0A+=20=20=20=20{=0A+=20=20=
+=20=20=20=20=20=20r->flags=20|=3D=20RT_DEFINED;=0A+=20=20=20=20}=0A=20=0A=
+=20=20=20=20=20return=20true;=0A=20=0A@@=20-541,6=20+554,16=20@@=20=
+route_list_add_vpn_gateway(struct=20route_list=20*rl,=0A=20=20=20=20=20=
+rl->spec.remote_endpoint=20=3D=20addr;=0A=20=20=20=20=20rl->spec.flags=20=
+|=3D=20RTSA_REMOTE_ENDPOINT;=0A=20=20=20=20=20setenv_route_addr(es,=20=
+"vpn_gateway",=20rl->spec.remote_endpoint,=20-1);=0A+=0A+=20=20=20=20=
+struct=20route_ipv4=20*r;=0A+=20=20=20=20for=20(r=20=3D=20rl->routes;=20=
+r;=20r=20=3D=20r->next)=0A+=20=20=20=20{=0A+=20=20=20=20=20=20=20=20if=20=
+(r->flags=20&=20RT_DHCP_GATEWAY)=0A+=20=20=20=20=20=20=20=20{=0A+=20=20=20=
+=20=20=20=20=20=20=20=20=20r->gateway=20=3D=20addr;=0A+=20=20=20=20=20=20=
+=20=20=20=20=20=20r->flags=20|=3D=20RT_DEFINED;=0A+=20=20=20=20=20=20=20=20=
+}=0A+=20=20=20=20}=0A=20}=0A=20=0A=20static=20void=0A@@=20-611,6=20=
++634,7=20@@=20bool=0A=20init_route_list(struct=20route_list=20*rl,=0A=20=20=
+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20const=20struct=20=
+route_option_list=20*opt,=0A=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
+=20=20const=20char=20*remote_endpoint,=0A+=20=20=20=20=20=20=20=20=20=20=20=
+=20=20=20=20=20bool=20remote_endpoint_dhcp,=0A=20=20=20=20=20=20=20=20=20=
+=20=20=20=20=20=20=20=20int=20default_metric,=0A=20=20=20=20=20=20=20=20=20=
+=20=20=20=20=20=20=20=20in_addr_t=20remote_host,=0A=20=20=20=20=20=20=20=20=
+=20=20=20=20=20=20=20=20=20struct=20env_set=20*es)=0A@@=20-676,6=20=
++700,10=20@@=20init_route_list(struct=20route_list=20*rl,=0A=20=20=20=20=20=
+=20=20=20=20=20=20=20=20ret=20=3D=20false;=0A=20=20=20=20=20=20=20=20=20=
+}=0A=20=20=20=20=20}=0A+=20=20=20=20else=20if=20(remote_endpoint_dhcp)=0A=
++=20=20=20=20{=0A+=20=20=20=20=20=20=20=20rl->spec.flags=20|=3D=20=
+RTSA_DHCP_ENDPOINT;=0A+=20=20=20=20}=0A=20=0A=20=20=20=20=20if=20=
+(rl->flags=20&=20RG_ENABLE)=0A=20=20=20=20=20{=0Adiff=20--git=20=
+a/src/openvpn/route.h=20b/src/openvpn/route.h=0Aindex=20=
+69420228..948c892e=20100644=0A---=20a/src/openvpn/route.h=0A+++=20=
+b/src/openvpn/route.h=0A@@=20-62,6=20+62,7=20@@=20struct=20=
+route_special_addr=0A=20#define=20RTSA_REMOTE_ENDPOINT=20=20(1<<0)=0A=20=
+#define=20RTSA_REMOTE_HOST=20=20=20=20=20=20(1<<1)=0A=20#define=20=
+RTSA_DEFAULT_METRIC=20=20=20(1<<2)=0A+#define=20RTSA_DHCP_ENDPOINT=20=20=20=
+=20(1<<3)=0A=20=20=20=20=20unsigned=20int=20flags;=0A=20=0A=20=20=20=20=20=
+in_addr_t=20remote_endpoint;=0A@@=20-112,6=20+113,7=20@@=20struct=20=
+route_ipv4=20{=0A=20#define=20RT_DEFINED=20=20=20=20=20=20=20=20(1<<0)=0A=
+=20#define=20RT_ADDED=20=20=20=20=20=20=20=20=20=20(1<<1)=0A=20#define=20=
+RT_METRIC_DEFINED=20(1<<2)=0A+#define=20RT_DHCP_GATEWAY=20=20=20(1<<3)=0A=
+=20=20=20=20=20struct=20route_ipv4=20*next;=0A=20=20=20=20=20unsigned=20=
+int=20flags;=0A=20=20=20=20=20const=20struct=20route_option=20*option;=0A=
+@@=20-280,6=20+282,7=20@@=20void=20add_route_ipv6_to_option_list(struct=20=
+route_ipv6_option_list=20*l,=0A=20bool=20init_route_list(struct=20=
+route_list=20*rl,=0A=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
+=20=20=20=20const=20struct=20route_option_list=20*opt,=0A=20=20=20=20=20=20=
+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20const=20char=20=
+*remote_endpoint,=0A+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
+=20=20=20bool=20remote_endpoint_dhcp,=0A=20=20=20=20=20=20=20=20=20=20=20=
+=20=20=20=20=20=20=20=20=20=20=20int=20default_metric,=0A=20=20=20=20=20=20=
+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20in_addr_t=20remote_host,=0A=
+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20struct=20=
+env_set=20*es);=0A--=20=0A2.17.1=0A=0A=
 
---Apple-Mail=_99B9C4DF-9EBC-49ED-AECC-42B89BDDBEFC--
+--Apple-Mail=_0981E51E-3A94-4025-BDFD-363196B5FA81--
 
