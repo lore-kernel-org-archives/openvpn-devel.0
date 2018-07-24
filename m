@@ -1,19 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <CAEsd45T9Zii=RWy9kMu=dYhksjEfruQhQ3uzVie_GMCnmPcmsg@...278...>
-References: <CAEsd45Rd+5_NTeQ_E1C9wps89GWU6OfxQ5CdEFiN_HCO0=xaAQ@...278...>
- <CAKuzo_in_bBm1Y1rwU3rhFfuUP8o7j9iQH9vyjk9myT42tpBSg@...278...>
- <CAEsd45Tqb4nCQYe9_CKwr6YKdW4BoF3B-V=iQU=KXPnYDu8GJQ@...278...>
- <CAKuzo_hhoa_3xs0NSt7A7o-9WErqZEp+uvGv2XQi0FmJ10H9jw@...278...>
- <CAEsd45STfqNvTKFTcpJ8nsy0nfndfQHJ7dTD8iSRJFGQ5aE3Hg@...278...>
- <20180719175253.GZ55859@...1296...>
- <CAKuzo_gYBnZrwQtvC5jx_JsnL13eimr9wRxSVYezsVONKiB9wA@...278...>
- <20180719191455.GB55859@...1296...>
- <CAKuzo_hQGh6j5BJCv4whVOkJOgikUSuw5wAtmcQBWtsJ0QsUNg@...278...>
- <CAEsd45T9Zii=RWy9kMu=dYhksjEfruQhQ3uzVie_GMCnmPcmsg@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 24 Jul 2018 00:02:40 -0400
-Message-ID: <CAKuzo_gCLjTMyK7jnrods51SeRDgExWG4nwQOKSjNgPwjFcndw@...278...>
-Subject: Re: [Openvpn-devel] Dynamic challenge/response questions
+In-Reply-To: <1f82b0d9-890c-b56f-4186-c1cb32c55284@...2080...>
+References: <1f82b0d9-890c-b56f-4186-c1cb32c55284@...2080...>
+From: saeid saeid <saeid.saeid081@...277...>
+Date: Tue, 24 Jul 2018 09:18:03 +0430
+Message-ID: <CACsAEDfTcsHZgvM2x6A4Tfqwxs3hHyPhSDjWFBmMDDMvFkoejA@...278...>
+Content-Type: multipart/alternative; boundary="000000000000a7398d0571b777ba"
+Subject: Re: [Openvpn-devel] Need help with OpenVPN 3 Linux distro packaging
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,53 +14,138 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: openvpn-devel@lists.sourceforge.net
+
+--000000000000a7398d0571b777ba
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: "Jonathan K. Bullard" <jkbullard@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+ Hi, I have a little information about Linux
 
-On Mon, Jul 23, 2018 at 10:58 PM, Jonathan K. Bullard
-<jkbullard@...277...> wrote:
-> I was testing Tunnelblick with Selva's C/R server and config (thanks
-> again for that) and there was a problem. Maybe I'm (still)
-> misunderstanding something, but a SIGUSR1 restart asks for the normal
-> username/password instead of a static C/R.
->
-> That is, the first thing after the restart is ">PASSWORD:Need 'Auth'
-> username/password" instead of ">PASSWORD:Need 'Auth' username/password
-> SC:1,Type something (e.g., hello): ".
-
-I think that's a side effect of my test config using both static challenge and
-dynamic challenge together. Not a realistic use case, I suppose. I did
-that to keep
-the server side verify simple for a quick validation of patches that
-touch user-auth.
-
-But it was probably not a good approach for properly testing what happens on
-signals or during TLS renegotiation.
-
-If you wish I can amend my server side verify script so that you can test
-static and dynamic challenge each separately.
+On Tue, Jul 24, 2018 at 2:30 AM, David Sommerseth <
+openvpn@...2080...> wrote:
 
 >
-> Should Tunnelblick save the static challenge info (like it saves the
-> dynamic challenge info) and use it again whenever it sees a
-> ">PASSWORD:Need 'Auth' username/password"? (Except when there is also
-> a pending dynamic challenge, in which case it would use that instead.)
-
-Normally SIGUSR1 restart should re-prompt with the static challenge if in use.
-
+> Hi,
 >
-> Also, there's an oddity (that doesn't cause a problem) in that the
-> first thing Tunnelblick sees over the management interface for the
-> original connection is "ENTER PASSWORD:SUCCESS: password is correct"
-> -- that comes even before ">INFO:OpenVPN Management Interface Version
-> 1 -- type 'help' for more info", and long before any username or
-> password has been entered.
+> The brand new OpenVPN 3 Linux client on Linux is moving forward and getting
+> into a reasonable good shape.  Early adopters on RHEL/CentOS/Scientific
+> Linux
+> can already test this via an openvpn3 Fedora Copr repository [1].
+>
+> But that's not enough.  We want to have this in Debian and Ubuntu as well.
+> And even more distros.  I quite recently registered this "Request For
+> Packaging" in the Debian bug tracker [2].  Feel free to join the
+> discussion!
+>
+> If you would like to help out with this brand new Linux client, please let
+> me
+> know and I'll help out with as much input and information as needed.
+>
+> For more details about the OpenVPN 3 Linux client project, please have a
+> look
+> at the GitHub [3] or GitLab [4] project pages.
+>
+>
+> [1] <https://copr.fedorainfracloud.org/coprs/dsommers/openvpn3/>
+> [2] <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=904044>
+> [3] <https://github.com/OpenVPN/openvpn3-linux>
+> [4] <https://gitlab.com/openvpn/openvpn3-linux>
+>
+>
+> --
+> kind regards,
+>
+> David Sommerseth
+> OpenVPN Inc
+>
+>
+>
+>
+>
+> ------------------------------------------------------------
+> ------------------
+> Check out the vibrant tech community on one of the world's most
+> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
+>
 
-The ENTER PASSWORD: is for the management-password, isn't it?
+--000000000000a7398d0571b777ba
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Selva
+<div dir=3D"ltr">
+<span id=3D"gmail-result_box" class=3D"gmail-short_text" lang=3D"en"><span =
+class=3D"gmail-">Hi, I have a little information about Linux</span></span>
+
+<br></div><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">On Tue,=
+ Jul 24, 2018 at 2:30 AM, David Sommerseth <span dir=3D"ltr">&lt;<a href=3D=
+"mailto:openvpn@...2080..." target=3D"_blank">openvpn@...2080...</a>&gt;</s=
+pan> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex=
+;border-left:1px #ccc solid;padding-left:1ex"><br>
+Hi,<br>
+<br>
+The brand new OpenVPN 3 Linux client on Linux is moving forward and getting=
+<br>
+into a reasonable good shape.=C2=A0 Early adopters on RHEL/CentOS/Scientifi=
+c Linux<br>
+can already test this via an openvpn3 Fedora Copr repository [1].<br>
+<br>
+But that&#39;s not enough.=C2=A0 We want to have this in Debian and Ubuntu =
+as well.<br>
+And even more distros.=C2=A0 I quite recently registered this &quot;Request=
+ For<br>
+Packaging&quot; in the Debian bug tracker [2].=C2=A0 Feel free to join the =
+discussion!<br>
+<br>
+If you would like to help out with this brand new Linux client, please let =
+me<br>
+know and I&#39;ll help out with as much input and information as needed.<br>
+<br>
+For more details about the OpenVPN 3 Linux client project, please have a lo=
+ok<br>
+at the GitHub [3] or GitLab [4] project pages.<br>
+<br>
+<br>
+[1] &lt;<a href=3D"https://copr.fedorainfracloud.org/coprs/dsommers/openvpn=
+3/" rel=3D"noreferrer" target=3D"_blank">https://copr.<wbr>fedorainfracloud=
+.org/coprs/<wbr>dsommers/openvpn3/</a>&gt;<br>
+[2] &lt;<a href=3D"https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D9040=
+44" rel=3D"noreferrer" target=3D"_blank">https://bugs.debian.org/cgi-<wbr>b=
+in/bugreport.cgi?bug=3D904044</a>&gt;<br>
+[3] &lt;<a href=3D"https://github.com/OpenVPN/openvpn3-linux" rel=3D"norefe=
+rrer" target=3D"_blank">https://github.com/OpenVPN/<wbr>openvpn3-linux</a>&=
+gt;<br>
+[4] &lt;<a href=3D"https://gitlab.com/openvpn/openvpn3-linux" rel=3D"norefe=
+rrer" target=3D"_blank">https://gitlab.com/openvpn/<wbr>openvpn3-linux</a>&=
+gt;<br>
+<span class=3D"HOEnZb"><font color=3D"#888888"><br>
+<br>
+-- <br>
+kind regards,<br>
+<br>
+David Sommerseth<br>
+OpenVPN Inc<br>
+<br>
+<br>
+<br>
+<br>
+</font></span><br>------------------------------<wbr>----------------------=
+--------<wbr>------------------<br>
+Check out the vibrant tech community on one of the world&#39;s most<br>
+engaging tech sites, Slashdot.org! <a href=3D"http://sdm.link/slashdot" rel=
+=3D"noreferrer" target=3D"_blank">http://sdm.link/slashdot</a><br>_________=
+_____________________<wbr>_________________<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...2155...=
+9...<wbr>sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
+=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/<wbr>lists/=
+listinfo/openvpn-devel</a><br>
+<br></blockquote></div><br></div>
+
+--000000000000a7398d0571b777ba--
 
