@@ -1,11 +1,21 @@
+Date: Tue, 24 Jul 2018 10:31:24 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180724083124.GM55859@...1296...>
+References: <CAEsd45Rd+5_NTeQ_E1C9wps89GWU6OfxQ5CdEFiN_HCO0=xaAQ@...278...>
+ <CAKuzo_in_bBm1Y1rwU3rhFfuUP8o7j9iQH9vyjk9myT42tpBSg@...278...>
+ <CAEsd45Tqb4nCQYe9_CKwr6YKdW4BoF3B-V=iQU=KXPnYDu8GJQ@...278...>
+ <CAKuzo_hhoa_3xs0NSt7A7o-9WErqZEp+uvGv2XQi0FmJ10H9jw@...278...>
+ <CAEsd45STfqNvTKFTcpJ8nsy0nfndfQHJ7dTD8iSRJFGQ5aE3Hg@...278...>
+ <20180719175253.GZ55859@...1296...>
+ <CAKuzo_gYBnZrwQtvC5jx_JsnL13eimr9wRxSVYezsVONKiB9wA@...278...>
+ <CAEsd45S3JOcqPDfBm_xViaR+RZwOzXSNnU+eu26weBkiGBqgcg@...278...>
+ <CAKuzo_iM_zUP+8=_1N+3axV+nU1B3B5r190G1U80w7uECdoBsQ@...278...>
 MIME-Version: 1.0
-In-Reply-To: <1f82b0d9-890c-b56f-4186-c1cb32c55284@...2080...>
-References: <1f82b0d9-890c-b56f-4186-c1cb32c55284@...2080...>
-From: saeid saeid <saeid.saeid081@...277...>
-Date: Tue, 24 Jul 2018 09:18:03 +0430
-Message-ID: <CACsAEDfTcsHZgvM2x6A4Tfqwxs3hHyPhSDjWFBmMDDMvFkoejA@...278...>
-Content-Type: multipart/alternative; boundary="000000000000a7398d0571b777ba"
-Subject: Re: [Openvpn-devel] Need help with OpenVPN 3 Linux distro packaging
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="nNefFv5r6Ea+vcVx"
+Content-Disposition: inline
+In-Reply-To: <CAKuzo_iM_zUP+8=_1N+3axV+nU1B3B5r190G1U80w7uECdoBsQ@...278...>
+Subject: Re: [Openvpn-devel] Dynamic challenge/response questions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,138 +24,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: "Jonathan K. Bullard" <jkbullard@...277...>, Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---000000000000a7398d0571b777ba
-Content-Type: text/plain; charset="UTF-8"
-
- Hi, I have a little information about Linux
-
-On Tue, Jul 24, 2018 at 2:30 AM, David Sommerseth <
-openvpn@...2080...> wrote:
-
->
-> Hi,
->
-> The brand new OpenVPN 3 Linux client on Linux is moving forward and getting
-> into a reasonable good shape.  Early adopters on RHEL/CentOS/Scientific
-> Linux
-> can already test this via an openvpn3 Fedora Copr repository [1].
->
-> But that's not enough.  We want to have this in Debian and Ubuntu as well.
-> And even more distros.  I quite recently registered this "Request For
-> Packaging" in the Debian bug tracker [2].  Feel free to join the
-> discussion!
->
-> If you would like to help out with this brand new Linux client, please let
-> me
-> know and I'll help out with as much input and information as needed.
->
-> For more details about the OpenVPN 3 Linux client project, please have a
-> look
-> at the GitHub [3] or GitLab [4] project pages.
->
->
-> [1] <https://copr.fedorainfracloud.org/coprs/dsommers/openvpn3/>
-> [2] <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=904044>
-> [3] <https://github.com/OpenVPN/openvpn3-linux>
-> [4] <https://gitlab.com/openvpn/openvpn3-linux>
->
->
-> --
-> kind regards,
->
-> David Sommerseth
-> OpenVPN Inc
->
->
->
->
->
-> ------------------------------------------------------------
-> ------------------
-> Check out the vibrant tech community on one of the world's most
-> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
->
-
---000000000000a7398d0571b777ba
-Content-Type: text/html; charset="UTF-8"
+--nNefFv5r6Ea+vcVx
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-<div dir=3D"ltr">
-<span id=3D"gmail-result_box" class=3D"gmail-short_text" lang=3D"en"><span =
-class=3D"gmail-">Hi, I have a little information about Linux</span></span>
+Hi,
 
-<br></div><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">On Tue,=
- Jul 24, 2018 at 2:30 AM, David Sommerseth <span dir=3D"ltr">&lt;<a href=3D=
-"mailto:openvpn@...2080..." target=3D"_blank">openvpn@...2080...</a>&gt;</s=
-pan> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex=
-;border-left:1px #ccc solid;padding-left:1ex"><br>
-Hi,<br>
-<br>
-The brand new OpenVPN 3 Linux client on Linux is moving forward and getting=
-<br>
-into a reasonable good shape.=C2=A0 Early adopters on RHEL/CentOS/Scientifi=
-c Linux<br>
-can already test this via an openvpn3 Fedora Copr repository [1].<br>
-<br>
-But that&#39;s not enough.=C2=A0 We want to have this in Debian and Ubuntu =
-as well.<br>
-And even more distros.=C2=A0 I quite recently registered this &quot;Request=
- For<br>
-Packaging&quot; in the Debian bug tracker [2].=C2=A0 Feel free to join the =
-discussion!<br>
-<br>
-If you would like to help out with this brand new Linux client, please let =
-me<br>
-know and I&#39;ll help out with as much input and information as needed.<br>
-<br>
-For more details about the OpenVPN 3 Linux client project, please have a lo=
-ok<br>
-at the GitHub [3] or GitLab [4] project pages.<br>
-<br>
-<br>
-[1] &lt;<a href=3D"https://copr.fedorainfracloud.org/coprs/dsommers/openvpn=
-3/" rel=3D"noreferrer" target=3D"_blank">https://copr.<wbr>fedorainfracloud=
-.org/coprs/<wbr>dsommers/openvpn3/</a>&gt;<br>
-[2] &lt;<a href=3D"https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D9040=
-44" rel=3D"noreferrer" target=3D"_blank">https://bugs.debian.org/cgi-<wbr>b=
-in/bugreport.cgi?bug=3D904044</a>&gt;<br>
-[3] &lt;<a href=3D"https://github.com/OpenVPN/openvpn3-linux" rel=3D"norefe=
-rrer" target=3D"_blank">https://github.com/OpenVPN/<wbr>openvpn3-linux</a>&=
-gt;<br>
-[4] &lt;<a href=3D"https://gitlab.com/openvpn/openvpn3-linux" rel=3D"norefe=
-rrer" target=3D"_blank">https://gitlab.com/openvpn/<wbr>openvpn3-linux</a>&=
-gt;<br>
-<span class=3D"HOEnZb"><font color=3D"#888888"><br>
-<br>
--- <br>
-kind regards,<br>
-<br>
-David Sommerseth<br>
-OpenVPN Inc<br>
-<br>
-<br>
-<br>
-<br>
-</font></span><br>------------------------------<wbr>----------------------=
---------<wbr>------------------<br>
-Check out the vibrant tech community on one of the world&#39;s most<br>
-engaging tech sites, Slashdot.org! <a href=3D"http://sdm.link/slashdot" rel=
-=3D"noreferrer" target=3D"_blank">http://sdm.link/slashdot</a><br>_________=
-_____________________<wbr>_________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...2155...=
-9...<wbr>sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
-=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/<wbr>lists/=
-listinfo/openvpn-devel</a><br>
-<br></blockquote></div><br></div>
+On Mon, Jul 23, 2018 at 10:31:03PM -0400, Selva Nair wrote:
+> On Sat, Jul 21, 2018 at 1:21 PM, Jonathan K. Bullard
+> <jkbullard@...277...> wrote:
+>=20
+> > Some, perhaps including Selva's $payingCustomer, may not want to use
+> > Tunnelblick betas or use OpenVPN 2.5 until it is released.
+>=20
+> I missed this last time... Its Gert who has $$payingCustomer(s) :)
 
---000000000000a7398d0571b777ba--
+Indeed.  Unfortunately, most of the time they keep me from working
+on OpenVPN and demand that I fix their network or IPSEC VPNs or other
+such nastinesses... :-) - but at least sometimes I can elicit either
+paid time or other goods (like server CPU+bandwidth) for OpenVPN.
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--nNefFv5r6Ea+vcVx
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJbVuPbAAoJEB2Cnv7KVigSkyYL/ROGG5pcR9eV0YIbQLbXr+6X
+ZhKAb7Mx590WVqCHi6WEjXdmbsiFugWEIlana7XJwAzdRzdaag5p50S3GwoLMrmY
+jTlpyQWIS1l9yvAL8ClnuFqXs3UmD7ci+VbLoA/OAyI/DBoNYGO9pifWnW5LPpP6
+CQ6rrB8BILf6KwqVVfgfs15AaDPQwGieBNuOLhf62QGHa1hdD7nGTufN9RLiyG12
+m0wKxPhqjceIF5VNa/bdpjBGW9JNr0yxOoRycbLY7UP3TzqpUMLej50gb1tNZLaU
+TXJq/KWc43xzWQ4wQm1s8FaJRqKtgZD1Dr0aQQyJmHxPycT+zFS6KR4p4VnMuUf1
+N7AJzckqnF0ux0qRMYWkypXHeJO9uTYESjoRI3frndjnMiMOxUsgNVCe6VRpyTSd
+6A1aPyfncsPMpL5pfptSxJgq4saViKX45aJa1zBt/Z19BlWq7jrceNNTZ81kI2fU
+5H64QIJgLEdT0nkMh0i0NL2mXXnCHF7Sbuc6Pc2tYQ==
+=m/vy
+-----END PGP SIGNATURE-----
+
+--nNefFv5r6Ea+vcVx--
 
