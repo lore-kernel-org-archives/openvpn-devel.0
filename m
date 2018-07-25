@@ -1,10 +1,13 @@
+From: Kevin Kane <kkane@...2393...>
+Date: Wed, 25 Jul 2018 17:35:54 +0000
+Message-ID: <BL0PR2101MB1058CA9F4A8A75C727AA70F0AB540@...2440...>
+References: <BL0PR2101MB1058B863878E4C9740E1B125AB540@...2440...>
+ <CAKuzo_gNncm8R3LsAp7szVwpAFm5C7GjAuzX9JeyGkieq3cduQ@...278...>
+In-Reply-To: <CAKuzo_gNncm8R3LsAp7szVwpAFm5C7GjAuzX9JeyGkieq3cduQ@...278...>
+Content-Language: en-US
 MIME-Version: 1.0
-In-Reply-To: <BL0PR2101MB1058B54974E36CD4C13895D8AB540@...2440...>
-References: <BL0PR2101MB1058B54974E36CD4C13895D8AB540@...2440...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 25 Jul 2018 13:34:44 -0400
-Message-ID: <CAKuzo_jyciOdtTjz1Y2b_qsedPqoN2GM5yaGkNCJ9eGGO6GaPQ@...278...>
-Subject: Re: [Openvpn-devel] Incoming: patches for the dialer feature
+Subject: Re: [Openvpn-devel] [PATCH] [openvpn-gui] Update system tray to
+ populate Windows VPN flyout
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,39 +16,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi,
-
-On Wed, Jul 25, 2018 at 1:01 PM, Kevin Kane via Openvpn-devel
-<openvpn-devel@lists.sourceforge.net> wrote:
-> Ok, I=E2=80=99ve gotten clearance to contribute the dialer feature from M=
-icrosoft=E2=80=99s
-> OpenVPN fork back upstream. As previously discussed, this feature isn=E2=
-=80=99t
-> production-ready because the integration I did was quick and dirty =E2=80=
-=93 it
-> mainly just sends commands to a running OpenVPN-GUI process in the same w=
-ay
-> as the context menu already does, with some fragile logic to locate the
-> running OpenVPN process.
->
->
->
-> That being said, the spelunking I did to hook up the plumbing with the
-> Windows shell may prove useful in the future for something more fleshed o=
-ut,
-> and so I=E2=80=99m offering this up in case you=E2=80=99d all like to do =
-something more
-> involved with it.
-
-Yeah, this is a good starting point for hooking to the GUI, hopefully
-someone will do the "fleshing out" to make it more useful.
-
-Do we have an experimental branch where we could add this so that we do
-not lose track of it?
-
-Selva
-
+SSBhZ3JlZS4gVGhpcyB3YXMgdGhlIGNvbnNlbnN1cyB3aGVuIHdlIGRpc2N1c3NlZCB0aGlzIGZl
+YXR1cmUgYmVmb3JlLCBidXQgdGhlcmUgd2FzIHNvbWUgaW50ZXJlc3QgaW4gcG9zc2libHkgdGFr
+aW5nIHRoaXMgd29yayBpbiBhbiBleHBlcmltZW50YWwgYnJhbmNoIGFuZCBsYXRlciBidWlsZGlu
+ZyBzb21ldGhpbmcgbW9yZSBwcm9kdWN0aW9uLXJlYWR5IG9uIHRvcCBvZiB0aGUgcGx1bWJpbmcg
+d29yay4gSXQgaXMgd2l0aCB0aGF0IGV4cGVjdGF0aW9uIEknbSBvZmZlcmluZyBpdCB1cHN0cmVh
+bS4NCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IFNlbHZhIE5haXIgPHNlbHZh
+Lm5haXJALi4uMjc3Li4uPiANClNlbnQ6IFdlZG5lc2RheSwgSnVseSAyNSwgMjAxOCAxMDoyOCBB
+TQ0KVG86IEtldmluIEthbmUgPGtrYW5lQC4uLjIzOTMuLi4+DQpDYzogb3BlbnZwbi1kZXZlbCA8
+b3BlbnZwbi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQ+DQpTdWJqZWN0OiBSZTogW09wZW52
+cG4tZGV2ZWxdIFtQQVRDSF0gW29wZW52cG4tZ3VpXSBVcGRhdGUgc3lzdGVtIHRyYXkgdG8gcG9w
+dWxhdGUgV2luZG93cyBWUE4gZmx5b3V0DQoNCkhpLA0KDQpPbiBXZWQsIEp1bCAyNSwgMjAxOCBh
+dCAxOjAxIFBNLCBLZXZpbiBLYW5lIHZpYSBPcGVudnBuLWRldmVsIDxvcGVudnBuLWRldmVsQGxp
+c3RzLnNvdXJjZWZvcmdlLm5ldD4gd3JvdGU6DQo+IEZyb20gZWQ5NmUyZDkxYTBlYjllY2RhYWI4
+ZDcxMDRmMzk3ZjdkNzdlNWNlZCBNb24gU2VwIDE3IDAwOjAwOjAwIDIwMDENCj4NCj4gRnJvbTog
+S2V2aW4gS2FuZSA8a2thbmVALi4uMjM5My4uLj4NCj4NCj4gRGF0ZTogRnJpLCAxMyBKdWwgMjAx
+OCAwOTo1MDowMCAtMDcwMA0KPg0KPiBTdWJqZWN0OiBVcGRhdGUgc3lzdGVtIHRyYXkgdG8gcG9w
+dWxhdGUgV2luZG93cyBWUE4gZmx5b3V0DQo+DQo+DQo+DQo+IEFkZCBhIERMTCB0byBiZSB3aXJl
+ZCBpbiBhcyBhIGN1c3RvbSBkaWFsZXIsIHdoaWNoIGludHJvZHVjZXMgbmV3IA0KPiBidWlsZCBk
+ZXBlbmRlbmNpZXMNCj4NCj4gQWRkIGNvcHlyaWdodCBub3RpY2VzIGFzIHJlcXVpcmVkIHdoZXJl
+IE1pY3Jvc29mdCBoYXMgY29udHJpYnV0ZWQgY29kZQ0KPg0KPg0KPg0KPiBTaWduZWQtb2ZmLWJ5
+OiBLZXZpbiBLYW5lIDxra2FuZUAuLi4yMzkzLi4uPg0KPg0KDQpBcyBkaXNjdXNzZWQgaW4gYSBw
+cmV2aW91cyB0aHJlYWQsIEknbSBub3Qgc3VyZSB3ZSBzaG91bGQgaGF2ZSB0aGlzIGluIGl0cyBj
+dXJyZW50IGZvcm06DQoNCihpKSBJdCBhZGRzIGFuZCBlbnRyeSBwZXIgY29uZmlnIHRvIG5ldHdv
+cmsgY29ubmVjdGlvbnMgd2hpY2ggd2lsbCBiZSBhIG51aXNhbmNlIGZvciB1c2VycyB3aG8gaGF2
+ZSBmYXIgdG9vIG1hbnkgY29uZmlncyAodGhlcmUgYXJlIHNvbWUgdXNlcnMgd2l0aCAxMDAncyBv
+ZiBjb25maWcgZmlsZXMpIC0tIHNvIHdlIGF0IGxlYXN0IG5lZWQgYW4gb3B0aW9uIHRvIGVuYWJs
+ZS9kaXNhYmxlIHRoaXMuDQoNCihpaSkgVGhpcyBvbmx5IHN1cHBvcnRzIGNvbm5lY3QsIG5vdCBk
+aXNjb25uZWN0IGFuZCB0aGUgZW50cnkgZG9lcyBub3Qgc2hvdyB3aGV0aGVyIGl0cyBjb25uZWN0
+ZWQgb3Igbm90IC0tIHNvIHRoaXMgaXMgYSBmZWF0dXJlIG9mIHZlcnkgZHViaW91cyB1dGlsaXR5
+Lg0KDQooaWlpKSBDb21tdW5pY2F0aW5nIHdpdGggdGhlIEdVSSB1c2luZyBDT1BZREFUQSBtZXNz
+YWdlICh3ZSBzdXBwb3J0IGNvbm5lY3QsIGRpc2Nvbm5lY3QsIHN0YXR1cyBldGMuKSBzaG91bGQg
+YmUgcHJlZmVycmVkIG92ZXIgaGFyZC1jb2RpbmcgSURNX0NPTk5FQ1RNRU5VLg0KDQpTZWx2YQ0K
