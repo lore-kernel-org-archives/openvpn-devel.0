@@ -1,10 +1,12 @@
-From: selva.nair@...277...
-Date: Tue, 24 Jul 2018 22:34:53 -0400
-Message-Id: <1532486093-24793-1-git-send-email-selva.nair@...277...>
-In-Reply-To: <1516833453-18991-1-git-send-email-selva.nair@...277...>
-References: <1516833453-18991-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH v3] Parse static challenge response in
- auth-pam plugin
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Wed, 25 Jul 2018 18:08:51 +0200
+Message-ID: <1532534933-3858-5-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1532534933-3858-1-git-send-email-steffan.karger@...1435...>
+References: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
+ <1532534933-3858-1-git-send-email-steffan.karger@...1435...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v3 5/7] tls-crypt-v2: add
+ P_CONTROL_HARD_RESET_CLIENT_V3 opcode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,217 +19,127 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+Not used yet, but prepare for sending and receiving tls-crypt-v2 handshake
+messages.
 
-If static challenge is in use, the password passed to the plugin by openvpn
-is of the form "SCRV1:base64-pass:base64-response". Parse this string to
-separate it into password and response and use them to respond to queries
-in the pam conversation function.
-
-On the plugin parameters line the substitution keyword for the static
-challenge response is "OTP". For example, for pam config named "test" that
-prompts for "user", "password" and "pin", use
-
-plugin openvpn-auth-pam.so "test user USERNAME password PASSWORD pin OTP"
-
-Signed-off-by: Selva Nair <selva.nair@...277...>
-
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
-v2: Depends on the base64 export patch
-v3: match password string with "SCRV1:" instead of "SCRV1"
-(pointed out by Joe Bell <joeaintexas@...277...>)
+v3: rebase on curent master / v3 patch set
 
- src/plugins/auth-pam/README.auth-pam | 15 +++++---
- src/plugins/auth-pam/auth-pam.c      | 75 +++++++++++++++++++++++++++++++++++-
- 2 files changed, 84 insertions(+), 6 deletions(-)
+ src/openvpn/ps.c         |  3 ++-
+ src/openvpn/ssl.c        | 23 ++++++++++++++++++-----
+ src/openvpn/ssl.h        |  5 ++++-
+ src/openvpn/ssl_common.h |  2 ++
+ 4 files changed, 26 insertions(+), 7 deletions(-)
 
-diff --git a/src/plugins/auth-pam/README.auth-pam b/src/plugins/auth-pam/README.auth-pam
-index e123690..9081565 100644
---- a/src/plugins/auth-pam/README.auth-pam
-+++ b/src/plugins/auth-pam/README.auth-pam
-@@ -36,19 +36,20 @@ pairs to answer PAM module queries.
+diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
+index 25ab374..adec072 100644
+--- a/src/openvpn/ps.c
++++ b/src/openvpn/ps.c
+@@ -985,7 +985,8 @@ is_openvpn_protocol(const struct buffer *buf)
+     {
+         return p[0] == 0
+                && p[1] >= 14
+-               && p[2] == (P_CONTROL_HARD_RESET_CLIENT_V2<<P_OPCODE_SHIFT);
++               && (p[2] == (P_CONTROL_HARD_RESET_CLIENT_V2<<P_OPCODE_SHIFT)
++                   || p[2] == (P_CONTROL_HARD_RESET_CLIENT_V3<<P_OPCODE_SHIFT));
+     }
+     else if (len >= 2)
+     {
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index dcb5445..757754f 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -792,6 +792,9 @@ packet_opcode_name(int op)
+         case P_CONTROL_HARD_RESET_SERVER_V2:
+             return "P_CONTROL_HARD_RESET_SERVER_V2";
  
- For example:
- 
--  plugin openvpn-auth-pam.so "login login USERNAME password PASSWORD"
-+  plugin openvpn-auth-pam.so "login login USERNAME password PASSWORD pin OTP"
- 
- tells auth-pam to (a) use the "login" PAM module, (b) answer a
--"login" query with the username given by the OpenVPN client, and
--(c) answer a "password" query with the password given by the
--OpenVPN client.  This provides flexibility in dealing with the different
-+"login" query with the username given by the OpenVPN client,
-+(c) answer a "password" query with the password, and (d) answer a
-+"pin" query with the OTP given by the OpenVPN client.
-+This provides flexibility in dealing with different
- types of query strings which different PAM modules might generate.
- For example, suppose you were using a PAM module called
- "test" which queried for "name" rather than "login":
- 
-   plugin openvpn-auth-pam.so "test name USERNAME password PASSWORD"
- 
--While "USERNAME" "COMMONNAME" and "PASSWORD" are special strings which substitute
-+While "USERNAME" "COMMONNAME" "PASSWORD" and "OTP" are special strings which substitute
- to client-supplied values, it is also possible to name literal values
- to use as PAM module query responses.  For example, suppose that the
- login module queried for a third parameter, "domain" which
-@@ -61,6 +62,10 @@ the operation of this plugin:
- 
-   client-cert-not-required
-   username-as-common-name
-+  static-challenge
++        case P_CONTROL_HARD_RESET_CLIENT_V3:
++            return "P_CONTROL_HARD_RESET_CLIENT_V3";
 +
-+Use of --static challenege is required to pass a pin (represented by "OTP" in
-+parameter substituion) or a second password.
+         case P_CONTROL_SOFT_RESET_V1:
+             return "P_CONTROL_SOFT_RESET_V1";
  
- Run OpenVPN with --verb 7 or higher to get debugging output from
- this plugin, including the list of queries presented by the
-diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
-index 26b0eeb..e22ce5f 100644
---- a/src/plugins/auth-pam/auth-pam.c
-+++ b/src/plugins/auth-pam/auth-pam.c
-@@ -6,6 +6,7 @@
-  *             packet compression.
-  *
-  *  Copyright (C) 2002-2018 OpenVPN Inc <sales@...515...>
-+ *  Copyright (C) 2016-2018 Selva Nair <selva.nair@...277...>
-  *
-  *  This program is free software; you can redistribute it and/or modify
-  *  it under the terms of the GNU General Public License version 2
-@@ -64,6 +65,7 @@
+@@ -864,7 +867,8 @@ is_hard_reset(int op, int key_method)
  
- /* Pointers to functions exported from openvpn */
- static plugin_secure_memzero_t plugin_secure_memzero = NULL;
-+static plugin_base64_decode_t plugin_base64_decode = NULL;
+     if (!key_method || key_method >= 2)
+     {
+-        if (op == P_CONTROL_HARD_RESET_CLIENT_V2 || op == P_CONTROL_HARD_RESET_SERVER_V2)
++        if (op == P_CONTROL_HARD_RESET_CLIENT_V2 || op == P_CONTROL_HARD_RESET_SERVER_V2
++            || op == P_CONTROL_HARD_RESET_CLIENT_V3)
+         {
+             return true;
+         }
+@@ -1095,8 +1099,15 @@ tls_session_init(struct tls_multi *multi, struct tls_session *session)
+     }
+     else /* session->opt->key_method >= 2 */
+     {
+-        session->initial_opcode = session->opt->server ?
+-                                  P_CONTROL_HARD_RESET_SERVER_V2 : P_CONTROL_HARD_RESET_CLIENT_V2;
++        if (session->opt->server)
++        {
++            session->initial_opcode = P_CONTROL_HARD_RESET_SERVER_V2;
++        }
++        else
++        {
++            session->initial_opcode = session->opt->tls_crypt_v2 ?
++                    P_CONTROL_HARD_RESET_CLIENT_V3 : P_CONTROL_HARD_RESET_CLIENT_V2;
++        }
+     }
+ 
+     /* Initialize control channel authentication parameters */
+@@ -3427,7 +3438,8 @@ tls_pre_decrypt(struct tls_multi *multi,
+             {
+                 /* verify client -> server or server -> client connection */
+                 if (((op == P_CONTROL_HARD_RESET_CLIENT_V1
+-                      || op == P_CONTROL_HARD_RESET_CLIENT_V2) && !multi->opt.server)
++                      || op == P_CONTROL_HARD_RESET_CLIENT_V2
++                      || op == P_CONTROL_HARD_RESET_CLIENT_V3) && !multi->opt.server)
+                     || ((op == P_CONTROL_HARD_RESET_SERVER_V1
+                          || op == P_CONTROL_HARD_RESET_SERVER_V2) && multi->opt.server))
+                 {
+@@ -3812,7 +3824,8 @@ tls_pre_decrypt_lite(const struct tls_auth_standalone *tas,
+         /* this packet is from an as-yet untrusted source, so
+          * scrutinize carefully */
+ 
+-        if (op != P_CONTROL_HARD_RESET_CLIENT_V2)
++        if (op != P_CONTROL_HARD_RESET_CLIENT_V2
++            && op != P_CONTROL_HARD_RESET_CLIENT_V3)
+         {
+             /*
+              * This can occur due to bogus data or DoS packets.
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index 72227d9..852debd 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -63,9 +63,12 @@
+ #define P_CONTROL_HARD_RESET_CLIENT_V2 7     /* initial key from client, forget previous state */
+ #define P_CONTROL_HARD_RESET_SERVER_V2 8     /* initial key from server, forget previous state */
+ 
++/* indicates key_method >= 2 and client-specific tls-crypt key */
++#define P_CONTROL_HARD_RESET_CLIENT_V3 10    /* initial key from client, forget previous state */
++
+ /* define the range of legal opcodes */
+ #define P_FIRST_OPCODE                 1
+-#define P_LAST_OPCODE                  9
++#define P_LAST_OPCODE                  10
  
  /*
-  * Plugin state, used by foreground
-@@ -87,6 +89,7 @@ struct auth_pam_context
-  *  "USERNAME" -- substitute client-supplied username
-  *  "PASSWORD" -- substitute client-specified password
-  *  "COMMONNAME" -- substitute client certificate common name
-+ *  "OTP" -- substitute static challenge response if available
-  */
+  * Set the max number of acknowledgments that can "hitch a ride" on an outgoing
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 08ef6ff..e3c852a 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -286,6 +286,8 @@ struct tls_options
+     const char *config_authname;
+     bool ncp_enabled;
  
- #define N_NAME_VALUE 16
-@@ -111,6 +114,7 @@ struct user_pass {
-     char username[128];
-     char password[128];
-     char common_name[128];
-+    char response[128];
++    bool tls_crypt_v2;
++
+     /** TLS handshake wrapping state */
+     struct tls_wrap_ctx tls_wrap;
  
-     const struct name_value_list *name_value_list;
- };
-@@ -276,6 +280,66 @@ name_value_match(const char *query, const char *match)
-     return strncasecmp(match, query, strlen(match)) == 0;
- }
- 
-+/*
-+ * Split and decode up->password in the form SCRV1:base64_pass:base64_response
-+ * into pass and response and save in up->password and up->response.
-+ * If the password is not in the expected format, input is not changed.
-+ */
-+static void
-+split_scrv1_password(struct user_pass *up)
-+{
-+    const int skip = strlen("SCRV1:");
-+    if (strncmp(up->password, "SCRV1:", skip) != 0)
-+    {
-+        return;
-+    }
-+
-+    char *tmp = strdup(up->password);
-+    if (!tmp)
-+    {
-+        fprintf(stderr, "AUTH-PAM: out of memory parsing static challenge password\n");
-+        goto out;
-+    }
-+
-+    char *pass = tmp + skip;
-+    char *resp = strchr(pass, ':');
-+    if (!resp) /* string not in SCRV1:xx:yy format */
-+    {
-+        goto out;
-+    }
-+    *resp++ = '\0';
-+
-+    int n = plugin_base64_decode(pass, up->password, sizeof(up->password)-1);
-+    if (n > 0)
-+    {
-+        up->password[n] = '\0';
-+        n = plugin_base64_decode(resp, up->response, sizeof(up->response)-1);
-+        if (n > 0)
-+        {
-+            up->response[n] = '\0';
-+            if (DEBUG(up->verb))
-+            {
-+                fprintf(stderr, "AUTH-PAM: BACKGROUND: parsed static challenge password\n");
-+            }
-+            goto out;
-+        }
-+    }
-+
-+    /* decode error: reinstate original value of up->password and return */
-+    plugin_secure_memzero(up->password, sizeof(up->password));
-+    plugin_secure_memzero(up->response, sizeof(up->response));
-+    strcpy(up->password, tmp); /* tmp is guaranteed to fit in up->password */
-+
-+    fprintf(stderr, "AUTH-PAM: base64 decode error while parsing static challenge password\n");
-+
-+out:
-+    if (tmp)
-+    {
-+        plugin_secure_memzero(tmp, strlen(tmp));
-+        free(tmp);
-+    }
-+}
-+
- OPENVPN_EXPORT int
- openvpn_plugin_open_v3(const int v3structver,
-                        struct openvpn_plugin_args_open_in const *args,
-@@ -316,6 +380,7 @@ openvpn_plugin_open_v3(const int v3structver,
- 
-     /* Save global pointers to functions exported from openvpn */
-     plugin_secure_memzero = args->callbacks->plugin_secure_memzero;
-+    plugin_base64_decode = args->callbacks->plugin_base64_decode;
- 
-     /*
-      * Make sure we have two string arguments: the first is the .so name,
-@@ -599,6 +664,10 @@ my_conv(int n, const struct pam_message **msg_array,
-                     {
-                         aresp[i].resp = searchandreplace(match_value, "COMMONNAME", up->common_name);
-                     }
-+                    else if (strstr(match_value, "OTP"))
-+                    {
-+                        aresp[i].resp = searchandreplace(match_value, "OTP", up->response);
-+                    }
-                     else
-                     {
-                         aresp[i].resp = strdup(match_value);
-@@ -787,6 +856,9 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
- #endif
-                 }
- 
-+                /* If password is of the form SCRV1:base64:base64 split it up */
-+                split_scrv1_password(&up);
-+
-                 if (pam_auth(service, &up)) /* Succeeded */
-                 {
-                     if (send_control(fd, RESPONSE_VERIFY_SUCCEEDED) == -1)
-@@ -818,10 +890,11 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
-                         command);
-                 goto done;
-         }
-+        plugin_secure_memzero(up.response, sizeof(up.response));
-     }
- done:
--
-     plugin_secure_memzero(up.password, sizeof(up.password));
-+    plugin_secure_memzero(up.response, sizeof(up.response));
- #ifdef USE_PAM_DLOPEN
-     dlclose_pam();
- #endif
 -- 
-2.1.4
+2.7.4
 
 
