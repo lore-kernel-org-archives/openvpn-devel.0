@@ -1,11 +1,10 @@
 MIME-Version: 1.0
-In-Reply-To: <BL0PR2101MB1058B863878E4C9740E1B125AB540@...2440...>
-References: <BL0PR2101MB1058B863878E4C9740E1B125AB540@...2440...>
+In-Reply-To: <BL0PR2101MB1058B54974E36CD4C13895D8AB540@...2440...>
+References: <BL0PR2101MB1058B54974E36CD4C13895D8AB540@...2440...>
 From: Selva Nair <selva.nair@...277...>
-Date: Wed, 25 Jul 2018 13:27:36 -0400
-Message-ID: <CAKuzo_gNncm8R3LsAp7szVwpAFm5C7GjAuzX9JeyGkieq3cduQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] [openvpn-gui] Update system tray to
- populate Windows VPN flyout
+Date: Wed, 25 Jul 2018 13:34:44 -0400
+Message-ID: <CAKuzo_jyciOdtTjz1Y2b_qsedPqoN2GM5yaGkNCJ9eGGO6GaPQ@...278...>
+Subject: Re: [Openvpn-devel] Incoming: patches for the dialer feature
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,49 +14,38 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Kevin Kane <kkane@...2393...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
 On Wed, Jul 25, 2018 at 1:01 PM, Kevin Kane via Openvpn-devel
 <openvpn-devel@lists.sourceforge.net> wrote:
-> From ed96e2d91a0eb9ecdaab8d7104f397f7d77e5ced Mon Sep 17 00:00:00 2001
->
-> From: Kevin Kane <kkane@...2393...>
->
-> Date: Fri, 13 Jul 2018 09:50:00 -0700
->
-> Subject: Update system tray to populate Windows VPN flyout
->
->
->
-> Add a DLL to be wired in as a custom dialer, which introduces new build
-> dependencies
->
-> Add copyright notices as required where Microsoft has contributed code
+> Ok, I=E2=80=99ve gotten clearance to contribute the dialer feature from M=
+icrosoft=E2=80=99s
+> OpenVPN fork back upstream. As previously discussed, this feature isn=E2=
+=80=99t
+> production-ready because the integration I did was quick and dirty =E2=80=
+=93 it
+> mainly just sends commands to a running OpenVPN-GUI process in the same w=
+ay
+> as the context menu already does, with some fragile logic to locate the
+> running OpenVPN process.
 >
 >
 >
-> Signed-off-by: Kevin Kane <kkane@...2393...>
->
+> That being said, the spelunking I did to hook up the plumbing with the
+> Windows shell may prove useful in the future for something more fleshed o=
+ut,
+> and so I=E2=80=99m offering this up in case you=E2=80=99d all like to do =
+something more
+> involved with it.
 
-As discussed in a previous thread, I'm not sure we should have this in
-its current form:
+Yeah, this is a good starting point for hooking to the GUI, hopefully
+someone will do the "fleshing out" to make it more useful.
 
-(i) It adds and entry per config to network connections which will be
-a nuisance for users who have far too many configs (there are some
-users with 100's of config files) -- so we at least need an option to
-enable/disable this.
-
-(ii) This only supports connect, not disconnect and the entry does not
-show whether its connected or not -- so this is a feature of very
-dubious utility.
-
-(iii) Communicating with the GUI using COPYDATA message (we support
-connect, disconnect, status etc.) should be preferred over hard-coding
-IDM_CONNECTMENU.
+Do we have an experimental branch where we could add this so that we do
+not lose track of it?
 
 Selva
 
