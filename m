@@ -1,17 +1,16 @@
+Date: Tue, 31 Jul 2018 22:19:37 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180731201937.GL55859@...1296...>
+References: <1494859203-21904-1-git-send-email-selva.nair@...277...>
+ <1511228605-23207-1-git-send-email-selva.nair@...277...>
+ <50c2b9c5-4558-1999-83e7-456c1f9bbb5c@...2181...>
 MIME-Version: 1.0
-In-Reply-To: <c31e5025-4a26-fdca-3227-0141267ff2a2@...2080...>
-References: <1516833453-18991-1-git-send-email-selva.nair@...277...>
- <1532486093-24793-1-git-send-email-selva.nair@...277...>
- <20180729193400.GX55859@...1296...>
- <CAKuzo_hSzz=bqMCuYBMoUOTn1uruXN-KcGA9nCbu89Xm9UBe-Q@...278...>
- <53a5faf4-3b97-6b11-f68f-87c64b276334@...2181...>
- <CAKuzo_i1XLeB9AZE=H4kc9x8iOThhz1R8GpDQRv-ktRWHoHeDg@...278...>
- <c31e5025-4a26-fdca-3227-0141267ff2a2@...2080...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 31 Jul 2018 10:07:51 -0400
-Message-ID: <CAKuzo_hUVE90w9K2EciSKWBjbcQ99fEa9QG2ghjnfd63Nob5oQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v3] Parse static challenge response in
- auth-pam plugin
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="jvmCgFKx2lledmPK"
+Content-Disposition: inline
+In-Reply-To: <50c2b9c5-4558-1999-83e7-456c1f9bbb5c@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH] Correct the declaration of handle in
+ 'struct openvpn_plugin_args_open_return'
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,75 +19,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Cc: Antonio Quartulli <a@...2181...>, Gert Doering <gert@...1296...>
+To: Antonio Quartulli <a@...2181...>
+Cc: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
 
-HI
+--jvmCgFKx2lledmPK
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On Tue, Jul 31, 2018 at 3:07 AM, David Sommerseth
-<openvpn@...2080...> wrote:
-> On 30/07/18 16:58, Selva Nair wrote:
->> Hi,
->>
->> On Mon, Jul 30, 2018 at 10:31 AM, Antonio Quartulli <a@...2181...> wrote:
->>> Hi,
->>>
->>> On 30/07/18 04:16, Selva Nair wrote:
->>>> Yes that's the base64 patch. What is stopping it is not the
->>>> disagreement on that patch but an "error" [*] in the plugin header
->>>> that I had discovered.  David wants to fix that before this one, but
->>>> it seems he is too busy with other things.
->>>>
+Hi,
 
-snip
+On Wed, Aug 01, 2018 at 01:21:35AM +0800, Antonio Quartulli wrote:
+> On 21/11/17 09:43, selva.nair@...277... wrote:
+> > From: Selva Nair <selva.nair@...277...>
+> >=20
+> > - This is an opaque pointer so the change should not affect
+> >   existing plugins. But it makes the code consistent and clears up
+> >   the documentation as the handle pointer is treated as of type
+> >   "openvpn_plugin_handle_t" in the rest of the code.
+> >=20
+> > Signed-off-by: Selva Nair <selva.nair@...277...>
+>=20
+> Will make some noise during application (git pw patch apply 87), such as:
+> "Falling back to patching base and 3-way merge..."
+>=20
+> But it won't generate any conflict.
+>=20
+> Acked-by: Antonio Quartulli <a@...2181...>
 
->>> I remember discussing this patch with David as well and the general
->>> feeling was that the patch was correct.
->>>
->>> Maybe David wanted to spend some more time on this patch, but it slipped
->>> off the plate.
->>>
->>> As Selva said, if users of that function were following the header they
->>> would see a lot of explosions, while this is not the case.
->>> Therefore it should be happily applied with no risk.
->>
->> Antonio, thanks for recalling your discussion and for the reassurance.
->>
+Oh, we had the patch on the list already.  Thanks for finding it & ACK.
 
-snip
+I'll apply tomorrow or thursday, on the road right now.
 
->
-> Hi all, and sorry for letting this one (with many others) fall through the
-> cracks.  And quickly responding from a holiday now (planning to be mostly
-> disconnected until mid-August; first real holiday in 2 years now).  I remember
-> patch was fine but never got around to fix the header file.
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-Agreed :)
+Gert Doering - Munich, Germany                             gert@...1296...
 
-The header patch is short and benign, and it seems more than a couple
-of pairs of
-eyes have viewed and "approved" it. So can we get an ACK?
+--jvmCgFKx2lledmPK
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Here is a link to the patch.
-https://patchwork.openvpn.net/patch/87/
+-----BEGIN PGP SIGNATURE-----
 
-Once this is accepted, the rest should be straightforward.
+iQGcBAEBAgAGBQJbYMRZAAoJEB2Cnv7KVigSwU8L/0olTc7QsLpkBtrejdkINW4u
+2A6/QGfMyviBZprhjL3dny3FMJhnScVTsSi2jFBGk42qVckG9I8jKBR2Va12bmKR
+PaLpvjvPGJHqFu+LOmWA+S74R7hktvMClCT9YmMCounK0zjfbud2G2iYCEolwuYi
+XiLnCA4Iq4JPOpmn+/Aogzc1izMThGXzAgc1lJYu6yEStGmljfB9S1SLaqFYB1SF
+E6osEcRDTqonWPYK9PG/ACXRUxvYlcCGK7phtR2KhTrArd0Eu/m+2gyZB1eYMVG3
+4x3O4uRk3LUwV8tge+oHOiAUOR/e4Z+IdP7rbMtPJRdei3vWNRAI1XcRWYQjCcI3
+qnpr9qkB137nUIXLsU2D7uTfp+McPkH29cZdgupmFuCzz3SDCCAurcD9L1o1Pwim
+c/ZTupfpfJAjp9IImbuNSjcxYiHofrzLvY0YNiRuzWtd60iMISlUlJmE1H9tHm9g
+poid5Ehn5wGlwvnXDLhsMPUFKQs4cUGNwZ8z+tSOhw==
+=uwaS
+-----END PGP SIGNATURE-----
 
-> Next cool thing to get added would be dynamic challenge, but that will require
-> quite some extensions in the plug-in API as well.
-
-What is stopping this is really the same old problem with sending an AUTH_FAILED
-reason back to the client -- once that is solved easy to support this
-with minimal
-changes to the plugin code.
-
-I have some ideas on how to solve the former without too much
-refactoring, but let's
-get the static challenge support in first.
-
-Thanks,
-
-Selva
+--jvmCgFKx2lledmPK--
 
