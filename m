@@ -1,11 +1,13 @@
-From: Steffan Karger <steffan.karger@...1435...>
-Date: Thu, 2 Aug 2018 17:47:52 +0200
-Message-ID: <1533224872-13304-1-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <e5bcbb69-2b69-4f57-c541-35dd403f6199@...1435...>
-References: <e5bcbb69-2b69-4f57-c541-35dd403f6199@...1435...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4 2/7] tls-crypt-v2: add specification to
- doc/
+From: Adam <adam@...1031...>
+Message-Id: <E6871949-4FF9-4C5A-975D-12CB177BF29B@...1031...>
+Content-Type: multipart/mixed;
+ boundary="Apple-Mail=_1505A2D9-8DA5-48A8-AE78-16A827C551CD"
+Mime-Version: 1.0 (Mac OS X Mail 12.0 \(3445.100.17\))
+Date: Thu, 2 Aug 2018 16:26:30 +0200
+In-Reply-To: <20180723173923.GJ55859@...1296...>
+References: <B09CA954-FCB8-4362-912F-F43DDD7DC59C@...438...>
+ <20180723173923.GJ55859@...1296...>
+Subject: Re: [Openvpn-devel] Fix for NetBSD with subnet topology
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,212 +16,115 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is a preliminary description of tls-crypt-v2.  It should give a good
-impression about the reasoning and design behind tls-crypt-v2, but might
-need some polishing and updating.
+--Apple-Mail=_1505A2D9-8DA5-48A8-AE78-16A827C551CD
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
----
-v3: Include length in WKc
-v4: Clarify metadata handling
+> On Wed, Jul 18, 2018 at 04:33:13PM +0200, Adam wrote:
+>> It turns out, NetBSD needs similar handling of subnet topology for tun i=
+nterfaces as OpenBSD does.
+>>=20
+>> Here is a patch to fix the issue (against OpenVPN 2.4.6):
+>=20
+> So, the patch looks good, and it works nicely on my buildslave.
+>=20
+> There's two catches here - one is that with this patch format, I do not
+> get proper git attribution in place, so we really really prefer patches
+> that come out of "git commit -s ..." -> "git send-email".
+>=20
+> The other catch is that this patch is for 2.4 only, and does not apply=20
+> to git master anymore (since Antonio has wrecked tun.c all over :-) ).
+>=20
+> So what I'd really love to see is two patches, one for 2.4 and one for
+> git master, both coming out of "git commit -s" -> "git send-email" - beca=
+use
+> that would speed up the flow tremendously (I can ACK and commit the patch=
+es
+> right away, but if I adapt your patch to "git master", someone else needs
+> to do the review and the credits who did the fixing are all wrong)
+>=20
+> thanks :)
+>=20
+> gert
 
- doc/tls-crypt-v2.txt | 182 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 182 insertions(+)
- create mode 100644 doc/tls-crypt-v2.txt
 
-diff --git a/doc/tls-crypt-v2.txt b/doc/tls-crypt-v2.txt
-new file mode 100644
-index 0000000..7b75710
---- /dev/null
-+++ b/doc/tls-crypt-v2.txt
-@@ -0,0 +1,182 @@
-+Client-specific tls-crypt keys (--tls-crypt-v2)
-+===============================================
-+
-+This document describes the ``--tls-crypt-v2`` option, which enables OpenVPN
-+to use client-specific ``--tls-crypt`` keys.
-+
-+Rationale
-+---------
-+
-+``--tls-auth`` and ``tls-crypt`` use a pre-shared group key, which is shared
-+among all clients and servers in an OpenVPN deployment.  If any client or
-+server is compromised, the attacker will have access to this shared key, and it
-+will no longer provide any security.  To reduce the risk of loosing pre-shared
-+keys, ``tls-crypt-v2`` adds the ability to supply each client with a unique
-+tls-crypt key.  This allows large organisations and VPN providers to profit
-+from the same DoS and TLS stack protection that small deployments can already
-+achieve using ``tls-auth`` or ``tls-crypt``.
-+
-+Also, for ``tls-crypt``, even if all these peers succeed in keeping the key
-+secret, the key lifetime is limited to roughly 8000 years, divided by the
-+number of clients (see the ``--tls-crypt`` section of the man page).  Using
-+client-specific keys, we lift this lifetime requirement to roughly 8000 years
-+for each client key (which "Should Be Enough For Everybody (tm)").
-+
-+
-+Introduction
-+------------
-+
-+``tls-crypt-v2`` uses an encrypted cookie mechanism to introduce
-+client-specific tls-crypt keys without introducing a lot of server-side state.
-+The client-specific key is encrypted using a server key.  The server key is the
-+same for all servers in a group.  When a client connects, it first sends the
-+encrypted key to the server, such that the server can decrypt the key and all
-+messages can thereafter be encrypted using the client-specific key.
-+
-+A wrapped (encrypted and authenticated) client-specific key can also contain
-+metadata.  The metadata is wrapped together with the key, and can be used to
-+allow servers to identify clients and/or key validity.  This allows the server
-+to abort the connection immediately after receiving the first packet, rather
-+than performing an entire TLS handshake.  Aborting the connection this early
-+greatly improves the DoS resilience and reduces attack service against
-+malicious clients that have the ``tls-crypt`` or ``tls-auth`` key.  This is
-+particularly relevant for large deployments (think lost key or disgruntled
-+employee) and VPN providers (clients are not trusted).
-+
-+To allow for a smooth transition, ``tls-crypt-v2`` is designed such that a
-+server can enable both ``tls-crypt-v2`` and either ``tls-crypt`` or
-+``tls-auth``.  This is achieved by introducing a P_CONTROL_HARD_RESET_CLIENT_V3
-+opcode, that indicates that the client wants to use ``tls-crypt-v2`` for the
-+current connection.
-+
-+For an exact specification and more details, read the Implementation section.
-+
-+
-+Implementation
-+--------------
-+
-+When setting up a tls-crypt-v2 group (similar to generating a tls-crypt or
-+tls-auth key previously):
-+
-+1. Generate a tls-crypt-v2 server key using OpenVPN's ``--genkey``.  This key
-+   contains 4 512-bit keys, of which we use:
-+
-+   * the first 256 bits of key 1 as AES-256-CTR encryption key ``Ke``
-+   * the first 256 bits of key 2 as HMAC-SHA-256 authentication key ``Ka``
-+
-+2. Add the tls-crypt-v2 server key to all server configs
-+   (``tls-crypt-v2 /path/to/server.key``)
-+
-+
-+When provisioning a client, create a client-specific tls-crypt key:
-+
-+1. Generate 2048 bits client-specific key ``Kc``
-+
-+2. Optionally generate metadata
-+
-+   The first byte of the metadata determines the type.  The initial
-+   implementation supports the following types:
-+
-+   0x00 (USER):         User-defined free-form data.
-+   0x01 (TIMESTAMP):    64-bit network order unix timestamp of key generation.
-+
-+   The timestamp can be used to reject too-old tls-crypt-v2 client keys.
-+
-+   User metadata could for example contain the users certificate serial, such
-+   that the incoming connection can be verified against a CRL.
-+
-+   If no metadata is supplied during key generation, openvpn defaults to the
-+   TIMESTAMP metadata type.
-+
-+3. Create a wrapped client key ``WKc``, using the same nonce-misuse-resistant
-+   SIV conruction we use for tls-crypt:
-+
-+   ``len = len(Kc || metadata)`` (16 bit, network byte order)
-+
-+   ``T = HMAC-SHA256(Ka, len || Kc || metadata)``
-+
-+   ``IV = 128 most significant bits of T``
-+
-+   ``WKc = T || AES-256-CTR(Ke, IV, Kc || metadata) || len``
-+
-+4. Create a tls-crypt-v2 client key: PEM-encode ``Kc || WKc`` and store in a
-+   file, using the header ``-----BEGIN OpenVPN tls-crypt-v2 client key-----``
-+   and the footer ``-----END OpenVPN tls-crypt-v2 client key-----``.  (The PEM
-+   format is simple, and following PEM allows us to use the crypto lib function
-+   for en/decoding.)
-+
-+5. Add the tls-crypt-v2 client key to the client config
-+   (``tls-crypt-v2 /path/to/client-specific.key``)
-+
-+
-+When setting up the openvpn connection:
-+
-+1. The client reads the tls-crypt-v2 key from its config, and:
-+
-+   1. loads ``Kc`` as its tls-crypt key,
-+   2. stores ``WKc`` in memory for sending to the server.
-+
-+2. To start the connection, the client creates a P_CONTROL_HARD_RESET_CLIENT_V3
-+   message, wraps it with tls-crypt using ``Kc`` as the key, and appends
-+   ``WKc``.  (``WKc`` must not be encrypted, to prevent a chicken-and-egg
-+   problem.)
-+
-+3. The server receives the P_CONTROL_HARD_RESET_CLIENT_V3 message, and
-+
-+   1. reads the WKc length field from the end of the message, and extracts WKc
-+      from the message
-+   2. unwraps ``WKc``
-+   3. uses unwrapped ``Kc`` to verify the remaining
-+      P_CONTROL_HARD_RESET_CLIENT_V3 message's (encryption and) authentication.
-+
-+   The message is dropped and no error response is sent when either 3.1, 3.2 or
-+   3.3 fails (DoS protection).
-+
-+4. Server optionally checks metadata using a --tls-crypt-v2-verify script
-+
-+   This allows early abort of connection, *before* we expose any of the
-+   notoriously dangerous TLS, X.509 and ASN.1 parsers and thereby reduces the
-+   attack surface of the server.
-+
-+   The metadata is checked *after* the OpenVPN three-way handshake has
-+   completed, to prevent DoS attacks.  (That is, once the client has proved to
-+   the server that it possesses Kc, by authenticating a packet that contains the
-+   session ID picked by the server.)
-+
-+   A server should not send back any error messages if metadata verification
-+   fails, to reduce attack surface and maximize DoS resilience.
-+
-+6. Client and server use ``Kc`` for (un)wrapping any following control channel
-+   messages.
-+
-+
-+Considerations
-+--------------
-+
-+To allow for a smooth transition, the server implementation allows
-+``tls-crypt`` or ``tls-auth`` to be used simultaneously with ``tls-crypt-v2``.
-+This specification does not allow simultaneously using ``tls-crypt-v2`` and
-+connections without any control channel wrapping, because that would break DoS
-+resilience.
-+
-+WKc includes a length field, so we leave the option for future extension of the
-+P_CONTROL_HEAD_RESET_CLIENT_V3 message open.  (E.g. add payload to the reset to
-+indicate low-level protocol features.)
-+
-+``tls-crypt-v2`` uses fixed crypto algorithms, because:
-+
-+ * The crypto is used before we can do any negotiation, so the algorithms have
-+   to be predefined.
-+ * The crypto primitives are chosen conservatively, making problems with these
-+   primitives unlikely.
-+ * Making anything configurable adds complexity, both in implementation and
-+   usage.  We should not add anymore complexity than is absolutely necessary.
-+
-+Potential ``tls-crypt-v2`` risks:
-+
-+ * Slightly more work on first connection (``WKc`` unwrap + hard reset unwrap)
-+   than with ``tls-crypt`` (hard reset unwrap) or ``tls-auth`` (hard reset auth).
-+ * Flexible metadata allow mistakes
-+   (So we should make it easy to do it right.  Provide tooling to create client
-+   keys based on cert serial + CA fingerprint, provide script that uses CRL (if
-+   available) to drop revoked keys.)
--- 
-2.7.4
+Here it is, against the current master branch.
 
+
+--Apple-Mail=_1505A2D9-8DA5-48A8-AE78-16A827C551CD
+Content-Disposition: attachment;
+	filename=0001-Fix-subnet-topology-on-NetBSD.patch
+Content-Type: application/octet-stream;
+	x-unix-mode=0644;
+	name="0001-Fix-subnet-topology-on-NetBSD.patch"
+Content-Transfer-Encoding: quoted-printable
+
+=46rom=201ac7931b5afa6b3c521d23f1847476ab6384eb10=20Mon=20Sep=2017=20=
+00:00:00=202001=0AFrom:=20=3D?UTF-8?q?Adam=3D20Ciarcin=3DCC=3D81ski?=3D=20=
+<adam@...1031...>=0ADate:=20Thu,=202=20Aug=202018=2016:17:56=20+0200=0A=
+Subject:=20[PATCH]=20Fix=20subnet=20topology=20on=20NetBSD.=0A=
+MIME-Version:=201.0=0AContent-Type:=20text/plain;=20charset=3DUTF-8=0A=
+Content-Transfer-Encoding:=208bit=0A=0ASigned-off-by:=20Adam=20=
+Ciarcin=CC=81ski=20<adam@...1031...>=0A---=0A=20src/openvpn/tun.c=20|=20=
+19=20++++++++++++++++---=0A=201=20file=20changed,=2016=20insertions(+),=20=
+3=20deletions(-)=0A=0Adiff=20--git=20a/src/openvpn/tun.c=20=
+b/src/openvpn/tun.c=0Aindex=201c7e51d9..7fe4a062=20100644=0A---=20=
+a/src/openvpn/tun.c=0A+++=20b/src/openvpn/tun.c=0A@@=20-845,7=20+845,7=20=
+@@=20delete_route_connected_v6_net(struct=20tuntap=20*tt,=0A=20#endif=20=
+/*=20if=20defined(_WIN32)=20||=20defined(TARGET_DARWIN)=20||=20=
+defined(TARGET_NETBSD)=20||=20defined(TARGET_OPENBSD)=20*/=0A=20=0A=20=
+#if=20defined(TARGET_FREEBSD)=20||=20defined(TARGET_DRAGONFLY)=20=20\=0A=
+-=20=20=20=20||=20defined(TARGET_OPENBSD)=0A+=20=20=20=20||=20=
+defined(TARGET_NETBSD)=20||=20defined(TARGET_OPENBSD)=0A=20/*=20we=20=
+can't=20use=20true=20subnet=20mode=20on=20tun=20on=20all=20platforms,=20=
+as=20that=0A=20=20*=20conflicts=20with=20IPv6=20(wants=20to=20use=20ND=20=
+then,=20which=20we=20don't=20do),=0A=20=20*=20but=20the=20OSes=20want=20=
+"a=20remote=20address=20that=20is=20different=20from=20ours"=0A@@=20=
+-1233,6=20+1233,7=20@@=20do_ifconfig_ipv4(struct=20tuntap=20*tt,=20const=20=
+char=20*ifname,=20int=20tun_mtu,=0A=20=20=20=20=20}=0A=20=0A=20#elif=20=
+defined(TARGET_NETBSD)=0A+=20=20=20=20in_addr_t=20remote_end;=20=20=20=20=
+=20=20=20=20=20=20=20/*=20for=20"virtual"=20subnet=20topology=20*/=0A=20=0A=
+=20=20=20=20=20if=20(tun)=0A=20=20=20=20=20{=0A@@=20-1243,8=20+1244,8=20=
+@@=20do_ifconfig_ipv4(struct=20tuntap=20*tt,=20const=20char=20*ifname,=20=
+int=20tun_mtu,=0A=20=20=20=20=20else=20if=20(tt->topology=20=3D=3D=20=
+TOP_SUBNET)=0A=20=20=20=20=20{=0A=20=20=20=20=20=20=20=20=20=
+argv_printf(&argv,=20"%s=20%s=20%s=20%s=20mtu=20%d=20netmask=20%s=20up",=20=
+IFCONFIG_PATH,=0A-=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
+=20ifname,=20ifconfig_local,=20ifconfig_local,=20tun_mtu,=0A-=20=20=20=20=
+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
+ifconfig_remote_netmask);=0A+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
+=20=20=20=20=20ifname,=20ifconfig_local,=20print_in_addr_t(remote_end,=20=
+0,=20&gc),=0A+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
+tun_mtu,=20ifconfig_remote_netmask);=0A=20=20=20=20=20}=0A=20=20=20=20=20=
+else=0A=20=20=20=20=20{=0A@@=20-1260,6=20+1261,18=20@@=20=
+do_ifconfig_ipv4(struct=20tuntap=20*tt,=20const=20char=20*ifname,=20int=20=
+tun_mtu,=0A=20=20=20=20=20argv_msg(M_INFO,=20&argv);=0A=20=20=20=20=20=
+openvpn_execve_check(&argv,=20es,=20S_FATAL,=20"NetBSD=20ifconfig=20=
+failed");=0A=20=0A+=20=20=20=20/*=20Add=20a=20network=20route=20for=20=
+the=20local=20tun=20interface=20*/=0A+=20=20=20=20if=20(!tun=20&&=20=
+tt->topology=20=3D=3D=20TOP_SUBNET)=0A+=20=20=20=20{=0A+=20=20=20=20=20=20=
+=20=20struct=20route_ipv4=20r;=0A+=20=20=20=20=20=20=20=20CLEAR(r);=0A+=20=
+=20=20=20=20=20=20=20r.flags=20=3D=20RT_DEFINED;=0A+=20=20=20=20=20=20=20=
+=20r.network=20=3D=20tt->local=20&=20tt->remote_netmask;=0A+=20=20=20=20=20=
+=20=20=20r.netmask=20=3D=20tt->remote_netmask;=0A+=20=20=20=20=20=20=20=20=
+r.gateway=20=3D=20remote_end;=0A+=20=20=20=20=20=20=20=20add_route(&r,=20=
+tt,=200,=20NULL,=20es);=0A+=20=20=20=20}=0A+=0A=20#elif=20=
+defined(TARGET_DARWIN)=0A=20=20=20=20=20/*=0A=20=20=20=20=20=20*=20=
+Darwin=20(i.e.=20Mac=20OS=20X)=20seems=20to=20exhibit=20similar=20=
+behaviour=20to=20OpenBSD...=0A--=20=0A2.18.0=0A=0A=
+
+--Apple-Mail=_1505A2D9-8DA5-48A8-AE78-16A827C551CD
+Content-Type: text/plain;
+	charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+
+
+
+Kind regards,
+Adam
+--Apple-Mail=_1505A2D9-8DA5-48A8-AE78-16A827C551CD--
 
