@@ -1,13 +1,14 @@
-From: Adam <adam@...1031...>
-Message-Id: <E6871949-4FF9-4C5A-975D-12CB177BF29B@...1031...>
-Content-Type: multipart/mixed;
- boundary="Apple-Mail=_1505A2D9-8DA5-48A8-AE78-16A827C551CD"
-Mime-Version: 1.0 (Mac OS X Mail 12.0 \(3445.100.17\))
-Date: Thu, 2 Aug 2018 16:26:30 +0200
-In-Reply-To: <20180723173923.GJ55859@...1296...>
-References: <B09CA954-FCB8-4362-912F-F43DDD7DC59C@...438...>
- <20180723173923.GJ55859@...1296...>
-Subject: Re: [Openvpn-devel] Fix for NetBSD with subnet topology
+References: <e5bcbb69-2b69-4f57-c541-35dd403f6199@...1435...>
+ <1533224779-13216-1-git-send-email-steffan.karger@...1435...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <4ff9b515-b65c-ddb4-30e5-03660cd9f245@...2181...>
+Date: Fri, 3 Aug 2018 17:49:53 +0800
+MIME-Version: 1.0
+In-Reply-To: <1533224779-13216-1-git-send-email-steffan.karger@...1435...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="eaS30C6RD2kgqQZWhzQr24HOPBRdv3w0Y"
+Subject: Re: [Openvpn-devel] [PATCH v4 1/7] Introduce buffer_write_file()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,115 +17,126 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan.karger@...1435...>, openvpn-devel@lists.sourceforge.net
 
---Apple-Mail=_1505A2D9-8DA5-48A8-AE78-16A827C551CD
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--eaS30C6RD2kgqQZWhzQr24HOPBRdv3w0Y
+Content-Type: multipart/mixed; boundary="vLQdO5uFfORRYBElp8gI4W7xWiIeR0ADE";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: Steffan Karger <steffan.karger@...1435...>,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <4ff9b515-b65c-ddb4-30e5-03660cd9f245@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v4 1/7] Introduce buffer_write_file()
+References: <e5bcbb69-2b69-4f57-c541-35dd403f6199@...1435...>
+ <1533224779-13216-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1533224779-13216-1-git-send-email-steffan.karger@...1435...>
+
+--vLQdO5uFfORRYBElp8gI4W7xWiIeR0ADE
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-> On Wed, Jul 18, 2018 at 04:33:13PM +0200, Adam wrote:
->> It turns out, NetBSD needs similar handling of subnet topology for tun i=
-nterfaces as OpenBSD does.
->>=20
->> Here is a patch to fix the issue (against OpenVPN 2.4.6):
+Hi,
+
+On 02/08/18 23:46, Steffan Karger wrote:
+> Rewrite buf_write_string_file to buffer_write_file, which is simpler to
+> use and can deal with not-null-terminated strings.  Mostly implemented so
+> this can be easily reused for tls-crypt-v2 (client) key files.
 >=20
-> So, the patch looks good, and it works nicely on my buildslave.
+> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+> ---
+> v3: split change out of "generate client key", reuse in write_key_file()
+> v4: improve doxygen and error handling
 >=20
-> There's two catches here - one is that with this patch format, I do not
-> get proper git attribution in place, so we really really prefer patches
-> that come out of "git commit -s ..." -> "git send-email".
+>  src/openvpn/buffer.c | 31 ++++++++++++++++++++++++-------
+>  src/openvpn/buffer.h | 12 ++++++++----
+>  src/openvpn/crypto.c | 33 ++++++---------------------------
+>  src/openvpn/crypto.h |  5 +++++
+>  src/openvpn/init.c   |  4 ++++
+>  5 files changed, 47 insertions(+), 38 deletions(-)
 >=20
-> The other catch is that this patch is for 2.4 only, and does not apply=20
-> to git master anymore (since Antonio has wrecked tun.c all over :-) ).
->=20
-> So what I'd really love to see is two patches, one for 2.4 and one for
-> git master, both coming out of "git commit -s" -> "git send-email" - beca=
-use
-> that would speed up the flow tremendously (I can ACK and commit the patch=
-es
-> right away, but if I adapt your patch to "git master", someone else needs
-> to do the review and the credits who did the fixing are all wrong)
->=20
-> thanks :)
->=20
-> gert
+> diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
+> index 0972139..7f540d7 100644
+> --- a/src/openvpn/buffer.c
+> +++ b/src/openvpn/buffer.c
+> @@ -343,16 +343,33 @@ convert_to_one_line(struct buffer *buf)
+>      }
+>  }
+>=20=20
+> -/* NOTE: requires that string be null terminated */
+> -void
+> -buf_write_string_file(const struct buffer *buf, const char *filename, in=
+t fd)
+> +bool
+> +buffer_write_file(const char *filename, const struct buffer *buf)
+>  {
+> -    const int len =3D strlen((char *) BPTR(buf));
+> -    const int size =3D write(fd, BPTR(buf), len);
+> -    if (size !=3D len)
+> +    bool ret =3D false;
+> +    int fd =3D platform_open(filename, O_CREAT | O_TRUNC | O_WRONLY,
+> +                           S_IRUSR | S_IWUSR);
+> +    if (fd =3D=3D -1)
+> +    {
+> +        msg(M_ERRNO, "Cannot open file '%s' for write", filename);
+> +        goto cleanup;
+
+While running some tests I realized that a failure in open() will cause
+a double error because close() is performed with fd =3D -1. The result is:
+
+$ ./src/openvpn/openvpn --genkey --secret /root/test.key
+Fri Aug  3 17:35:46 2018 Cannot open file '/root/test.key' for write:
+Permission denied (errno=3D13)
+Fri Aug  3 17:35:46 2018 Close error on file /root/test.key: Bad file
+descriptor (errno=3D9)
+Fri Aug  3 17:35:46 2018 Failed to write key file
+Fri Aug  3 17:35:46 2018 Exiting due to fatal error
+
+As you can see we have two distinct errors, with the second being caused
+by the first one.
+
+I think this is one of those cases where in case of failure you just
+return false rather than jumping to cleanup, because nothing has been
+initialized yet.
+
+The double error is harmless, but not very clean, especially because, no
+matter why open() failed, errno will always be changed to EBADF.
+
+(I think this also means that you can get rid of the label at all and
+slightly restyle the code)
 
 
-Here it is, against the current master branch.
+Cheers,
 
 
---Apple-Mail=_1505A2D9-8DA5-48A8-AE78-16A827C551CD
-Content-Disposition: attachment;
-	filename=0001-Fix-subnet-topology-on-NetBSD.patch
-Content-Type: application/octet-stream;
-	x-unix-mode=0644;
-	name="0001-Fix-subnet-topology-on-NetBSD.patch"
-Content-Transfer-Encoding: quoted-printable
-
-=46rom=201ac7931b5afa6b3c521d23f1847476ab6384eb10=20Mon=20Sep=2017=20=
-00:00:00=202001=0AFrom:=20=3D?UTF-8?q?Adam=3D20Ciarcin=3DCC=3D81ski?=3D=20=
-<adam@...1031...>=0ADate:=20Thu,=202=20Aug=202018=2016:17:56=20+0200=0A=
-Subject:=20[PATCH]=20Fix=20subnet=20topology=20on=20NetBSD.=0A=
-MIME-Version:=201.0=0AContent-Type:=20text/plain;=20charset=3DUTF-8=0A=
-Content-Transfer-Encoding:=208bit=0A=0ASigned-off-by:=20Adam=20=
-Ciarcin=CC=81ski=20<adam@...1031...>=0A---=0A=20src/openvpn/tun.c=20|=20=
-19=20++++++++++++++++---=0A=201=20file=20changed,=2016=20insertions(+),=20=
-3=20deletions(-)=0A=0Adiff=20--git=20a/src/openvpn/tun.c=20=
-b/src/openvpn/tun.c=0Aindex=201c7e51d9..7fe4a062=20100644=0A---=20=
-a/src/openvpn/tun.c=0A+++=20b/src/openvpn/tun.c=0A@@=20-845,7=20+845,7=20=
-@@=20delete_route_connected_v6_net(struct=20tuntap=20*tt,=0A=20#endif=20=
-/*=20if=20defined(_WIN32)=20||=20defined(TARGET_DARWIN)=20||=20=
-defined(TARGET_NETBSD)=20||=20defined(TARGET_OPENBSD)=20*/=0A=20=0A=20=
-#if=20defined(TARGET_FREEBSD)=20||=20defined(TARGET_DRAGONFLY)=20=20\=0A=
--=20=20=20=20||=20defined(TARGET_OPENBSD)=0A+=20=20=20=20||=20=
-defined(TARGET_NETBSD)=20||=20defined(TARGET_OPENBSD)=0A=20/*=20we=20=
-can't=20use=20true=20subnet=20mode=20on=20tun=20on=20all=20platforms,=20=
-as=20that=0A=20=20*=20conflicts=20with=20IPv6=20(wants=20to=20use=20ND=20=
-then,=20which=20we=20don't=20do),=0A=20=20*=20but=20the=20OSes=20want=20=
-"a=20remote=20address=20that=20is=20different=20from=20ours"=0A@@=20=
--1233,6=20+1233,7=20@@=20do_ifconfig_ipv4(struct=20tuntap=20*tt,=20const=20=
-char=20*ifname,=20int=20tun_mtu,=0A=20=20=20=20=20}=0A=20=0A=20#elif=20=
-defined(TARGET_NETBSD)=0A+=20=20=20=20in_addr_t=20remote_end;=20=20=20=20=
-=20=20=20=20=20=20=20/*=20for=20"virtual"=20subnet=20topology=20*/=0A=20=0A=
-=20=20=20=20=20if=20(tun)=0A=20=20=20=20=20{=0A@@=20-1243,8=20+1244,8=20=
-@@=20do_ifconfig_ipv4(struct=20tuntap=20*tt,=20const=20char=20*ifname,=20=
-int=20tun_mtu,=0A=20=20=20=20=20else=20if=20(tt->topology=20=3D=3D=20=
-TOP_SUBNET)=0A=20=20=20=20=20{=0A=20=20=20=20=20=20=20=20=20=
-argv_printf(&argv,=20"%s=20%s=20%s=20%s=20mtu=20%d=20netmask=20%s=20up",=20=
-IFCONFIG_PATH,=0A-=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
-=20ifname,=20ifconfig_local,=20ifconfig_local,=20tun_mtu,=0A-=20=20=20=20=
-=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
-ifconfig_remote_netmask);=0A+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
-=20=20=20=20=20ifname,=20ifconfig_local,=20print_in_addr_t(remote_end,=20=
-0,=20&gc),=0A+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
-tun_mtu,=20ifconfig_remote_netmask);=0A=20=20=20=20=20}=0A=20=20=20=20=20=
-else=0A=20=20=20=20=20{=0A@@=20-1260,6=20+1261,18=20@@=20=
-do_ifconfig_ipv4(struct=20tuntap=20*tt,=20const=20char=20*ifname,=20int=20=
-tun_mtu,=0A=20=20=20=20=20argv_msg(M_INFO,=20&argv);=0A=20=20=20=20=20=
-openvpn_execve_check(&argv,=20es,=20S_FATAL,=20"NetBSD=20ifconfig=20=
-failed");=0A=20=0A+=20=20=20=20/*=20Add=20a=20network=20route=20for=20=
-the=20local=20tun=20interface=20*/=0A+=20=20=20=20if=20(!tun=20&&=20=
-tt->topology=20=3D=3D=20TOP_SUBNET)=0A+=20=20=20=20{=0A+=20=20=20=20=20=20=
-=20=20struct=20route_ipv4=20r;=0A+=20=20=20=20=20=20=20=20CLEAR(r);=0A+=20=
-=20=20=20=20=20=20=20r.flags=20=3D=20RT_DEFINED;=0A+=20=20=20=20=20=20=20=
-=20r.network=20=3D=20tt->local=20&=20tt->remote_netmask;=0A+=20=20=20=20=20=
-=20=20=20r.netmask=20=3D=20tt->remote_netmask;=0A+=20=20=20=20=20=20=20=20=
-r.gateway=20=3D=20remote_end;=0A+=20=20=20=20=20=20=20=20add_route(&r,=20=
-tt,=200,=20NULL,=20es);=0A+=20=20=20=20}=0A+=0A=20#elif=20=
-defined(TARGET_DARWIN)=0A=20=20=20=20=20/*=0A=20=20=20=20=20=20*=20=
-Darwin=20(i.e.=20Mac=20OS=20X)=20seems=20to=20exhibit=20similar=20=
-behaviour=20to=20OpenBSD...=0A--=20=0A2.18.0=0A=0A=
-
---Apple-Mail=_1505A2D9-8DA5-48A8-AE78-16A827C551CD
-Content-Type: text/plain;
-	charset=us-ascii
-Content-Transfer-Encoding: 7bit
+--=20
+Antonio Quartulli
 
 
+--vLQdO5uFfORRYBElp8gI4W7xWiIeR0ADE--
 
+--eaS30C6RD2kgqQZWhzQr24HOPBRdv3w0Y
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-Kind regards,
-Adam
---Apple-Mail=_1505A2D9-8DA5-48A8-AE78-16A827C551CD--
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAltkJUEACgkQB6U8WA7y
+zXTafRAAuwZ+Z8DKAm+h8E5Ep2XncyZecLUPbiAp3XgH91CeU8wfbV20NJn2gXij
+LmMI/DnFVQcPu5V8nXElmK6yq8lnIXDFB064xCLcxGPReT8+MPm7b1ypY2QN7KMD
+DXRNxTfSUfKQh3+7v7IEiuL2xLQV71kYGJX/jQKaVsNDuLinxr7WxBYTE9fW8LWs
+vnhzh0cixMXAUYJnM1K4X1VrlTeEvXGewB6yUrnt7/d4bhbgUPYp0oXiIaktqbDa
+HO+mlMoiCXGq/RKluIw8nxuO8lJUpYJ6Alfn8q8SmaOXn9zyHY2hf0iARuUtW38Z
+t7zLxrunNZ+vSbnRbAN0PyY+JVgZ0zK0RsHzaQZCbJiye7Ob84TSldeR4IPGOZmL
+AqKtaDLcxJRDwq92GsortqR7nvsV8LDdAXhXNDyVWoIuFmRXRlqDRy9qDG6gZJ6x
++ahuyAokFnaFA1ldEYXomtWq34FajEmWfd4yQwKqez96LRTaUcmwJUBQQc3O5Uf3
+1JuOvllnKqRXeESt0HSgb7JhAlv7eAbs7n2ofih/1D9BQ+yHPK/o2pDkcbtP5yLF
+ym+hEgLn9sAZFUbjScZp7zK8PoHm+irlZ6HfZcb6njsWnyUyoZzrVPR1FYLyni9d
+5nDwLEENdyZb1R726IKBrJFSPyNDw/DX4jI3vWybSj6WqIptpq8=
+=r+tm
+-----END PGP SIGNATURE-----
+
+--eaS30C6RD2kgqQZWhzQr24HOPBRdv3w0Y--
 
