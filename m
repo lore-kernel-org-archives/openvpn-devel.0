@@ -1,15 +1,10 @@
-Date: Sun, 5 Aug 2018 20:45:15 +0200
+Date: Sun, 5 Aug 2018 20:59:13 +0200 (CEST)
+Message-Id: <201808051859.w75IxDv6075230@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20180805184515.GB55859@...1296...>
-References: <B09CA954-FCB8-4362-912F-F43DDD7DC59C@...438...>
- <20180723173923.GJ55859@...1296...>
- <E6871949-4FF9-4C5A-975D-12CB177BF29B@...1031...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="PCQTdKZ3LJr0gNcz"
-Content-Disposition: inline
-In-Reply-To: <E6871949-4FF9-4C5A-975D-12CB177BF29B@...1031...>
-Subject: Re: [Openvpn-devel] Fix for NetBSD with subnet topology
+In-Reply-To: <1511228605-23207-1-git-send-email-selva.nair@...277...>
+References: <1511228605-23207-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Correct the declaration of
+ handle in 'struct openvpn_plugin_args_open_return'
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,72 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Adam <adam@...1031...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---PCQTdKZ3LJr0gNcz
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Your patch has been applied to the master and release/2.4 branch (bugfix).
 
-Hi,
+The "git complains" part was due to patch context still talking about 
+ENABLE_CRYPTO, which doesn't exist anymore in master - easily workarounded.
 
-On Thu, Aug 02, 2018 at 04:26:30PM +0200, Adam wrote:
-> Here it is, against the current master branch.
+commit a2f43c2d6f086e7aa8b6160793f0c462ee9d6aa7 (master)
+commit 359e66bcb17c856a74cada9136ae1b8f411a2493 (release/2.4)
+Author: Selva Nair
+Date:   Mon Nov 20 20:43:25 2017 -0500
 
-Thanks for re-sending.  Unfortunately, it's not complete - it adds
-"remote_end", but never initializes it in the TARGET_FREEBSD branch.
+     Correct the declaration of handle in 'struct openvpn_plugin_args_open_return'
 
-So it sort of works because it happens to puts 0.0.0.0 (or even random=20
-stack data) into "remote_end" which is then used as gateway address...=20=20
-
-Sun Aug  5 21:01:38 2018 /sbin/ifconfig tun1 10.194.3.14 0.0.0.0 mtu 1500 n=
-etmask 255.255.255.0 up
-Sun Aug  5 21:01:38 2018 /sbin/route add -net 10.194.3.0 0.0.0.0 -netmask 2=
-55.255.255.0
-add net 10.194.3.0: gateway 0.0.0.0
-
-(Actually, it looks like it could work, but pinging 10.194.3.1 is=20
-subsequently failing)
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <1511228605-23207-1-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15908.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-All other platforms have a
+--
+kind regards,
 
-  remote_end =3D create_arbitrary_remote( tt );
+Gert Doering
 
-in there, to make it look less... accidential.  I assume this just got
-lost on rebasing (blame it on Antonio :-) ).
-
-Could you send us a v2?  thanks :)
-
-gert
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---PCQTdKZ3LJr0gNcz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJbZ0W7AAoJEB2Cnv7KVigSob4MAJ/z6Ju3yzdLKkqfvCqdodar
-fS4mbHgCwN1kDzkeTFUJGv7OFKWudjBeTlTdgE42FG7OjUPUgg9qVrQYlkhicsUl
-6xDBTOdt64YobavseglkNgJf/bKRcNsTfn7wUwrY4DB1EJSddzOA7Q9z7mv3frva
-0FlL6Hlrg5zWjRogY3Wbuzen4wafd2jmMImZYrfygoM6sr3osKjU2VlT4Pqz4KsU
-6tfoUFmJbgJHkcfRiQnLiBg1CalvFreKFdETw6S9ap5lgS2mXB1Uqo4igX5YD/hy
-ggDcZ1MbNNqDiXnKjALRdyeU/YHFDlv1fE7gqepbuedgOZ9ZisfNp/yWkp6uAu2q
-DsisQQuEoXE8a9OxpHDSSyJ7txmfb+3LGNLuB37BgagONbrS/0WHs+JAkxlZMqiJ
-GEMaoU+7kMbRNxpzDxLa3GigMKZlrHtH/OGCn5nxa1Txd0LKngLFg0pmccQLBwto
-iql4Nes9jTJ8A6VtOOB9DKaF4q31fN8UuYdeClDvaQ==
-=6NGI
------END PGP SIGNATURE-----
-
---PCQTdKZ3LJr0gNcz--
 
