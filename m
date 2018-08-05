@@ -1,10 +1,10 @@
-Date: Sun, 5 Aug 2018 22:07:11 +0200 (CEST)
-Message-Id: <201808052007.w75K7BDK076922@...2054...>
+Date: Sun, 5 Aug 2018 22:29:45 +0200 (CEST)
+Message-Id: <201808052029.w75KTjDT091433@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <429EB687-EB2D-4C67-B3EA-0A3BECA640B1@...1918...>
-References: <429EB687-EB2D-4C67-B3EA-0A3BECA640B1@...1918...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Resolves small IV_GUI_VER typo
- in the documentation.
+In-Reply-To: <20170505214624.11675-1-davids@...515...>
+References: <20170505214624.11675-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: plugin: Export base64 encode
+ and decode functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +15,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: James Bekkema <james@...1918...>
+To: David Sommerseth <davids@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.4 branch.
+Your patch has been applied to the master and release/2.4 branch, with
+the comment fixes (BAS64 -> BASE64, and encode->decode on the 2nd comment).
 
-For future patches, please send them inline, not as an attachment, if 
-possible ("git send-email" is the best way) - the attachment will stop 
-patchwork from "seeing" them, and it creates an extra step for me when 
-applying.
+release/2.4, because the "secure_memzero" also is in 2.4 (went into 2.4.3),
+and everything else creates needless pain for plugin authors.  The code
+change on the openvpn side is very small, and it's fully in the "long
+term compatibility" category.
 
-commit ae950fac832e688a7572d7614e5ad028bdcb1f75 (master)
-commit 4c38e382fd6e91a587e7a59eff9cfa3d472c887b (release/2.4)
-Author: James Bekkema
-Date:   Mon Jul 23 11:56:58 2018 +1000
+commit 6690769f78bbfb889fef2a54088d979896c87d51 (master)
+commit 6c26116759ddf1e9327a9239e14f8c94c98ec638 (release/2.4)
+Author: David Sommerseth
+Date:   Fri May 5 23:46:23 2017 +0200
 
-     Resolves small IV_GUI_VER typo in the documentation.
+     plugin: Export base64 encode and decode functions
 
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <429EB687-EB2D-4C67-B3EA-0A3BECA640B1@...1918...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17288.html
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Acked-by: Selva Nair <selva.nair@...277...>
+     Message-Id: <20170505214624.11675-1-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14558.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
