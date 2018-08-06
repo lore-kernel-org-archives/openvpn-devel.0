@@ -1,15 +1,10 @@
-References: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
- <1532534933-3858-1-git-send-email-steffan.karger@...1435...>
- <1532534933-3858-3-git-send-email-steffan.karger@...1435...>
- <45552257-86e8-b7e9-0168-f53444e36aa2@...277...>
 From: Steffan Karger <steffan.karger@...1435...>
-Message-ID: <3fc1ebc8-f0b5-de40-7f05-6061521f9d3c@...1435...>
-Date: Mon, 6 Aug 2018 09:56:48 +0200
+Date: Mon, 6 Aug 2018 10:02:33 +0200
+Message-ID: <1533542553-7383-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <4ff9b515-b65c-ddb4-30e5-03660cd9f245@...2181...>
+References: <4ff9b515-b65c-ddb4-30e5-03660cd9f245@...2181...>
 MIME-Version: 1.0
-In-Reply-To: <45552257-86e8-b7e9-0168-f53444e36aa2@...277...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v3 3/7] tls-crypt-v2: generate client
- keys
+Subject: [Openvpn-devel] [PATCH v5 1/7] Introduce buffer_write_file()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,36 +17,198 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Rewrite buf_write_string_file to buffer_write_file, which is simpler to
+use and can deal with not-null-terminated strings.  Mostly implemented so
+this can be easily reused for tls-crypt-v2 (client) key files.
 
-On 03-08-18 17:23, tincanteksup wrote:
-> On 25/07/18 17:08, Steffan Karger wrote:
->> @@ -2764,6 +2781,7 @@ options_postprocess_verify_ce(const struct
-> options *options, const struct connec
-> 
-> 
-> connec --> connect ? (This is code so I just highlight for your
-> consideration, I don't know)
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+---
+v3: split change out of "generate client key", reuse in write_key_file()
+v4: improve doxygen and error handling (thanks to ordex)
+v5: do not print close error if open fails (thanks to ordex)
 
-This is just the patch file truncating a line.  The code says "const
-struct connection_entry *ce".
+ src/openvpn/buffer.c | 31 ++++++++++++++++++++++++-------
+ src/openvpn/buffer.h | 12 ++++++++----
+ src/openvpn/crypto.c | 33 ++++++---------------------------
+ src/openvpn/crypto.h |  5 +++++
+ src/openvpn/init.c   |  4 ++++
+ 5 files changed, 47 insertions(+), 38 deletions(-)
 
->> +/**
->> + * Initialize a tls-crypt-v2 client key.
->> + *
->> + * @param key               Key structure to be initialized with the
-> client
->> + *                          key.
->> + * @param wrapped_key_buf   Returns buffer containing the wrapped key
-> that will
->> + *                          be sent to the server when connecting.
-> Caller must
->> + *                          free this buffer when no longer neede.
-> 
-> neede --> needed
+diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
+index 0972139..7630ff7 100644
+--- a/src/openvpn/buffer.c
++++ b/src/openvpn/buffer.c
+@@ -343,16 +343,33 @@ convert_to_one_line(struct buffer *buf)
+     }
+ }
+ 
+-/* NOTE: requires that string be null terminated */
+-void
+-buf_write_string_file(const struct buffer *buf, const char *filename, int fd)
++bool
++buffer_write_file(const char *filename, const struct buffer *buf)
+ {
+-    const int len = strlen((char *) BPTR(buf));
+-    const int size = write(fd, BPTR(buf), len);
+-    if (size != len)
++    bool ret = false;
++    int fd = platform_open(filename, O_CREAT | O_TRUNC | O_WRONLY,
++                           S_IRUSR | S_IWUSR);
++    if (fd == -1)
++    {
++        msg(M_ERRNO, "Cannot open file '%s' for write", filename);
++        return false;
++    }
++
++    const int size = write(fd, BPTR(buf), BLEN(buf));
++    if (size != BLEN(buf))
+     {
+-        msg(M_ERR, "Write error on file '%s'", filename);
++        msg(M_ERRNO, "Write error on file '%s'", filename);
++        goto cleanup;
++    }
++
++    ret = true;
++cleanup:
++    if (close(fd) < 0)
++    {
++        msg(M_ERRNO, "Close error on file %s", filename);
++        ret = false;
+     }
++    return ret;
+ }
+ 
+ /*
+diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
+index 6b6025e..704129a 100644
+--- a/src/openvpn/buffer.h
++++ b/src/openvpn/buffer.h
+@@ -469,11 +469,15 @@ const char *skip_leading_whitespace(const char *str);
+ 
+ void string_null_terminate(char *str, int len, int capacity);
+ 
+-/*
+- * Write string in buf to file descriptor fd.
+- * NOTE: requires that string be null terminated.
++/**
++ * Write buffer contents to file.
++ *
++ * @param filename  The filename to write the buffer to.
++ * @param buf       Thu buffer to write to the file.
++ *
++ * @return true on success, false otherwise.
+  */
+-void buf_write_string_file(const struct buffer *buf, const char *filename, int fd);
++bool buffer_write_file(const char *filename, const struct buffer *buf);
+ 
+ /*
+  * write a string to the end of a buffer that was
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 5381ef2..c8d95f3 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -1418,36 +1418,24 @@ read_key_file(struct key2 *key2, const char *file, const unsigned int flags)
+     gc_free(&gc);
+ }
+ 
+-/*
+- * Write key to file, return number of random bits
+- * written.
+- */
+ int
+ write_key_file(const int nkeys, const char *filename)
+ {
+     struct gc_arena gc = gc_new();
+ 
+-    int fd, i;
+-    int nbits = 0;
++    int nbits = nkeys * sizeof(struct key) * 8;
+ 
+     /* must be large enough to hold full key file */
+     struct buffer out = alloc_buf_gc(2048, &gc);
+-    struct buffer nbits_head_text = alloc_buf_gc(128, &gc);
+ 
+     /* how to format the ascii file representation of key */
+     const int bytes_per_line = 16;
+ 
+-    /* open key file */
+-    fd = platform_open(filename, O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR);
+-
+-    if (fd == -1)
+-    {
+-        msg(M_ERR, "Cannot open shared secret file '%s' for write", filename);
+-    }
+-
++    /* write header */
++    buf_printf(&out, "#\n# %d bit OpenVPN static key\n#\n", nbits);
+     buf_printf(&out, "%s\n", static_key_head);
+ 
+-    for (i = 0; i < nkeys; ++i)
++    for (int i = 0; i < nkeys; ++i)
+     {
+         struct key key;
+         char *fmt;
+@@ -1463,9 +1451,6 @@ write_key_file(const int nkeys, const char *filename)
+                             "\n",
+                             &gc);
+ 
+-        /* increment random bits counter */
+-        nbits += sizeof(key) * 8;
+-
+         /* write to holding buffer */
+         buf_printf(&out, "%s\n", fmt);
+ 
+@@ -1476,16 +1461,10 @@ write_key_file(const int nkeys, const char *filename)
+ 
+     buf_printf(&out, "%s\n", static_key_foot);
+ 
+-    /* write number of bits */
+-    buf_printf(&nbits_head_text, "#\n# %d bit OpenVPN static key\n#\n", nbits);
+-    buf_write_string_file(&nbits_head_text, filename, fd);
+-
+     /* write key file, now formatted in out, to file */
+-    buf_write_string_file(&out, filename, fd);
+-
+-    if (close(fd))
++    if(!buffer_write_file(filename, &out))
+     {
+-        msg(M_ERR, "Close error on shared secret file %s", filename);
++        nbits = -1;
+     }
+ 
+     /* zero memory which held file content (memory will be freed by GC) */
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index 9417fa1..0dc597f 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -271,6 +271,11 @@ struct crypto_options
+ #define RKF_INLINE       (1<<1)
+ void read_key_file(struct key2 *key2, const char *file, const unsigned int flags);
+ 
++/**
++ * Write nkeys 1024-bits keys to file.
++ *
++ * @returns number of random bits written, or -1 on failure.
++ */
+ int write_key_file(const int nkeys, const char *filename);
+ 
+ int read_passphrase_hash(const char *passphrase_file,
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index f432106..2933d55 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1041,6 +1041,10 @@ do_genkey(const struct options *options)
+         }
+ 
+         nbits_written = write_key_file(2, options->shared_secret_file);
++        if (nbits_written < 0)
++        {
++            msg(M_FATAL, "Failed to write key file");
++        }
+ 
+         msg(D_GENKEY | M_NOPREFIX,
+             "Randomly generated %d bit key written to %s", nbits_written,
+-- 
+2.7.4
 
-Yes, will fix in v4!
-
-Thanks,
--Steffan
 
