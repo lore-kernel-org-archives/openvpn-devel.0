@@ -1,9 +1,9 @@
-Date: Wed, 8 Aug 2018 09:54:22 +0200 (CEST)
-Message-Id: <201808080754.w787sMPq020348@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1533542553-7383-1-git-send-email-steffan.karger@...1435...>
-References: <1533542553-7383-1-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Introduce buffer_write_file()
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Wed, 8 Aug 2018 11:58:47 +0200
+Message-ID: <1533722327-5228-1-git-send-email-steffan.karger@...1435...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Don't print OCC warnings about 'key-method',
+ 'keydir' and 'tls-auth'
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,34 +14,46 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan.karger@...1435...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+Like 'proto', a mismatch in key-method, keydir or tls-auth would fail
+before we ever get to the point where we can print this warning.
 
-(I have not run extra tests - no buildbot explosions are to be expected,
-and if Antonio says "key generation has been tested" that is about all
-the function does today.  The code looks good, visually :) )
+This prepares for removing these from the occ string later on, but also
+prepares for tls-crypt-v2, which allows a server to support tls-auth and
+tls-crypt-v2 connections in parallel.  Such a server will send 'keydir'
+and 'tls-auth' in the occ string.  This change removes the spurious
+warnings about that in the client log.
 
-The "Thu" comment has been changed to "The".  No code changes.
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+---
+ src/openvpn/options.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-commit a8fa167941c548f1cbc82e4bbe5316518df015d4
-Author: Steffan Karger
-Date:   Mon Aug 6 10:02:33 2018 +0200
-
-     Introduce buffer_write_file()
-
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Tested-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <1533542553-7383-1-git-send-email-steffan.karger@...1435...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17371.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 61fa983..60f4b6f 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3790,11 +3790,14 @@ options_warning_safe_scan2(const int msglevel,
+                            const char *b1_name,
+                            const char *b2_name)
+ {
+-    /* we will stop sending 'proto xxx' in OCC in a future version
+-     * (because it's not useful), and to reduce questions when
+-     * interoperating, we start not-printing a warning about it today
++    /* We will stop sending 'key-method', 'keydir', 'proto' and 'tls-auth' in
++     * OCC in a future version (because it's not useful).  To reduce questions
++     * when interoperating, we no longer printing a warning about it.
+      */
+-    if (strncmp(p1, "proto ", 6) == 0)
++    if (strcmp(p1, "key-method ") == 0
++        || strcmp(p1, "keydir ") == 0
++        || strcmp(p1, "proto ") == 0
++        || strcmp(p1, "tls-auth ") == 0)
+     {
+         return;
+     }
+-- 
+2.7.4
 
 
