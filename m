@@ -1,10 +1,10 @@
-Date: Wed, 8 Aug 2018 09:27:41 +0200 (CEST)
-Message-Id: <201808080727.w787Rfh5019999@...2054...>
+Date: Wed, 8 Aug 2018 09:41:59 +0200 (CEST)
+Message-Id: <201808080741.w787fxTh020188@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1533696271-21799-1-git-send-email-selva.nair@...277...>
-References: <1533696271-21799-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Bump version of openvpn plugin
- argument structs to 5
+In-Reply-To: <1533696271-21799-2-git-send-email-selva.nair@...277...>
+References: <1533696271-21799-2-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Accept empty password and/or
+ response in auth-pam plugin
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,31 +20,24 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-"Because it makes sense" :-) - and of course I've tested that it
-works - built a new plugin, ran with the previously-used openvpn
-binary, and it nicely fails
+Looks good and passes my use case ("PIN set, OTP empty").  So it was
+not a bug in the openvpn client at all, I just misread the logs.
 
-AUTH-PAM: This plugin is incompatible with the running version of OpenVPN
-Wed Aug  8 09:25:43 2018 us=345993 PLUGIN_INIT: plugin initialization function failed: /usr/local/lib/openvpn/plugins/openvpn-plugin-auth-pam.so
-Wed Aug  8 09:25:43 2018 us=346142 Exiting due to fatal error
+Since I join PIN+OTP into one string passed to PAM anyway, I also tested
+"PIN empty, OTP set" and that works just as well.  Thanks.
 
+Your patch has been applied to the master branch.
 
-Your patch has been applied to the master and release/2.4 branch
-(the plugin in 2.4 could do with v3structver = 4, but if we ever
-backport the challenge patch it will bite us, so just declare "we 
-want 5!" here).
-
-commit da0a42ca98623487726162b8710690cd3d003a63 (master)
-commit d8496285948b814d78ee4be6ded08ce02046f8ee (release/2.4)
+commit 7a8109023f4c345fe12f23421c5fa7e88e1ea85b
 Author: Selva Nair
-Date:   Tue Aug 7 22:44:30 2018 -0400
+Date:   Tue Aug 7 22:44:31 2018 -0400
 
-     Bump version of openvpn plugin argument structs to 5
+     Accept empty password and/or response in auth-pam plugin
 
      Signed-off-by: Selva Nair <selva.nair@...277...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1533696271-21799-1-git-send-email-selva.nair@...277...>
-     URL: https://www.mail-archive.com/search?l=mid&q=1533696271-21799-1-git-send-email-selva.nair@...277...
+     Message-Id: <1533696271-21799-2-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17382.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
