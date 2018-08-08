@@ -1,10 +1,9 @@
-Date: Wed, 8 Aug 2018 09:41:59 +0200 (CEST)
-Message-Id: <201808080741.w787fxTh020188@...2054...>
+Date: Wed, 8 Aug 2018 09:54:22 +0200 (CEST)
+Message-Id: <201808080754.w787sMPq020348@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1533696271-21799-2-git-send-email-selva.nair@...277...>
-References: <1533696271-21799-2-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Accept empty password and/or
- response in auth-pam plugin
+In-Reply-To: <1533542553-7383-1-git-send-email-steffan.karger@...1435...>
+References: <1533542553-7383-1-git-send-email-steffan.karger@...1435...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Introduce buffer_write_file()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,29 +14,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
+To: Steffan Karger <steffan.karger@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
-
-Acked-by: Gert Doering <gert@...1296...>
-
-Looks good and passes my use case ("PIN set, OTP empty").  So it was
-not a bug in the openvpn client at all, I just misread the logs.
-
-Since I join PIN+OTP into one string passed to PAM anyway, I also tested
-"PIN empty, OTP set" and that works just as well.  Thanks.
 
 Your patch has been applied to the master branch.
 
-commit 7a8109023f4c345fe12f23421c5fa7e88e1ea85b
-Author: Selva Nair
-Date:   Tue Aug 7 22:44:31 2018 -0400
+(I have not run extra tests - no buildbot explosions are to be expected,
+and if Antonio says "key generation has been tested" that is about all
+the function does today.  The code looks good, visually :) )
 
-     Accept empty password and/or response in auth-pam plugin
+The "Thu" comment has been changed to "The".  No code changes.
 
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1533696271-21799-2-git-send-email-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17382.html
+commit a8fa167941c548f1cbc82e4bbe5316518df015d4
+Author: Steffan Karger
+Date:   Mon Aug 6 10:02:33 2018 +0200
+
+     Introduce buffer_write_file()
+
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Tested-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <1533542553-7383-1-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17371.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
