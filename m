@@ -1,14 +1,10 @@
-References: <4ff9b515-b65c-ddb4-30e5-03660cd9f245@...2181...>
- <1533542553-7383-1-git-send-email-steffan.karger@...1435...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <24a63b72-cdb2-0a9b-34f4-2d7a775520c7@...2181...>
-Date: Wed, 8 Aug 2018 13:24:04 +0800
-MIME-Version: 1.0
-In-Reply-To: <1533542553-7383-1-git-send-email-steffan.karger@...1435...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="9jJnB7UAmTy0iAN4Egr92IVNBwgTZGsSu"
-Subject: Re: [Openvpn-devel] [PATCH v5 1/7] Introduce buffer_write_file()
+Date: Wed, 8 Aug 2018 09:27:41 +0200 (CEST)
+Message-Id: <201808080727.w787Rfh5019999@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1533696271-21799-1-git-send-email-selva.nair@...277...>
+References: <1533696271-21799-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Bump version of openvpn plugin
+ argument structs to 5
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,73 +13,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan.karger@...1435...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---9jJnB7UAmTy0iAN4Egr92IVNBwgTZGsSu
-Content-Type: multipart/mixed; boundary="U03LP8tZxfOwOXtP8Ifu0QvnpZn3OBFaD";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Steffan Karger <steffan.karger@...1435...>,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <24a63b72-cdb2-0a9b-34f4-2d7a775520c7@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v5 1/7] Introduce buffer_write_file()
-References: <4ff9b515-b65c-ddb4-30e5-03660cd9f245@...2181...>
- <1533542553-7383-1-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <1533542553-7383-1-git-send-email-steffan.karger@...1435...>
-
---U03LP8tZxfOwOXtP8Ifu0QvnpZn3OBFaD
-Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Acked-by: Gert Doering <gert@...1296...>
 
-On 06/08/18 16:02, Steffan Karger wrote:
-> Rewrite buf_write_string_file to buffer_write_file, which is simpler to
-> use and can deal with not-null-terminated strings.  Mostly implemented so
-> this can be easily reused for tls-crypt-v2 (client) key files.
->=20
-> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+"Because it makes sense" :-) - and of course I've tested that it
+works - built a new plugin, ran with the previously-used openvpn
+binary, and it nicely fails
 
-All looks good now! Thanks!
-
-Acked-by: Antonio Quartulli <antonio@...515...>
-Tested-by: Antonio Quartulli <antonio@...515...>
-
-Key generation (success and failure) and basic connection work as expected.
-'make check' performed on various platforms, but no buildbot test has
-been executed.
-
-Cheers,
-
---=20
-Antonio Quartulli
+AUTH-PAM: This plugin is incompatible with the running version of OpenVPN
+Wed Aug  8 09:25:43 2018 us=345993 PLUGIN_INIT: plugin initialization function failed: /usr/local/lib/openvpn/plugins/openvpn-plugin-auth-pam.so
+Wed Aug  8 09:25:43 2018 us=346142 Exiting due to fatal error
 
 
---U03LP8tZxfOwOXtP8Ifu0QvnpZn3OBFaD--
+Your patch has been applied to the master and release/2.4 branch
+(the plugin in 2.4 could do with v3structver = 4, but if we ever
+backport the challenge patch it will bite us, so just declare "we 
+want 5!" here).
 
---9jJnB7UAmTy0iAN4Egr92IVNBwgTZGsSu
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+commit da0a42ca98623487726162b8710690cd3d003a63 (master)
+commit d8496285948b814d78ee4be6ded08ce02046f8ee (release/2.4)
+Author: Selva Nair
+Date:   Tue Aug 7 22:44:30 2018 -0400
 
------BEGIN PGP SIGNATURE-----
+     Bump version of openvpn plugin argument structs to 5
 
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAltqfnQACgkQB6U8WA7y
-zXSDBw//V+AgfxxGoq6ptof36dJiGepyLNhxd7W2FCjD1o97JxtFoV3rAuvRwLAf
-RYjihDOf+Q4wJm6ihVljMKOJCxdY94xTKWs1+bKRPDDAfJDUvpvhJx2CUC976XLo
-8RHA+vAtaBvNeeDyVNRCiGgXzW/tUru6eS+eJFoHdkmVgdLVDROHw2pOfGOlR909
-epBbBLKyC6XBcz0USudRqm13/YmQQ/2JpHR32keQf1Ku9Ud+qLWDNaAH2ubJACEZ
-gjtKCcqMdxIikyCpIGew9zQC5UnHIDhMLJgH+b/Zfoo/Qo7di0xxNl+4EQDQyDJV
-6X7FbbpIyo2Dg1iS2V6543D90VCGmDqsttwoyTC6pEQlKnNXF6E/XuHe4/WpRVs8
-2mE/93P9GENW6HifQZNuJ4mRXv3AjwM8ks7RRBCiPlgZww4peBtKvTI5SRhi6iiE
-IpEfQPDw0k6GSIA2kfr2KGzagGfLNeY+6WrQpAIZbTu9PQ31mzOubDkqrMR/O9b6
-/5JrOpohTfGF0Ik2s33AV0pFpCbQrIJfSU9dfWvL/rvYYxq0+hSy/gXiXLLCLVp7
-wePX9CJe7y6osQtVCv4/MH+Td32ZhW08m0d34jVNhbizWwmjsNJZaqu9bZ4FoW9Q
-wG7OWS9a3LBOk3T6L4fNwSCVf44b7M3uOgFLV/WoSx01Mt/gTVU=
-=cm5D
------END PGP SIGNATURE-----
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1533696271-21799-1-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/search?l=mid&q=1533696271-21799-1-git-send-email-selva.nair@...277...
+     Signed-off-by: Gert Doering <gert@...1296...>
 
---9jJnB7UAmTy0iAN4Egr92IVNBwgTZGsSu--
+
+--
+kind regards,
+
+Gert Doering
+
 
