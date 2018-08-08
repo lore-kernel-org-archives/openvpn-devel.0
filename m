@@ -1,10 +1,8 @@
 From: selva.nair@...277...
-Date: Tue,  7 Aug 2018 22:44:31 -0400
-Message-Id: <1533696271-21799-2-git-send-email-selva.nair@...277...>
-In-Reply-To: <1533696271-21799-1-git-send-email-selva.nair@...277...>
-References: <1533696271-21799-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH 2/2] Accept empty password and/or response
- in auth-pam plugin
+Date: Tue,  7 Aug 2018 22:44:30 -0400
+Message-Id: <1533696271-21799-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH 1/2] Bump version of openvpn plugin argument
+ structs to 5
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,36 +17,51 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-In the auth-pam plugin correctly parse the static challenge string
-even when password or challenge response is empty.
+This was missed in commit 6690769f78bbfb889fef2a54088d979896c87d51
+that exported base64_encode and base64_decode() functions.
 
-Whether an empty user input is an error is determined by the PAM
-conversation function depending on whether the PAM module queries
-for it or not.
+Also check the version is >= 5 in auth-pam plugin to ensure
+that the base64_decode function pointer can be referenced.
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
+ include/openvpn-plugin.h.in     | 5 +++--
  src/plugins/auth-pam/auth-pam.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
+diff --git a/include/openvpn-plugin.h.in b/include/openvpn-plugin.h.in
+index 5b64cbb..103844f 100644
+--- a/include/openvpn-plugin.h.in
++++ b/include/openvpn-plugin.h.in
+@@ -219,10 +219,11 @@ struct openvpn_plugin_string_list
+  *           OpenVPN to plug-ins.
+  *
+  *    4      Exported secure_memzero() as plugin_secure_memzero()
+- *           Exported openvpn_base64_encode() as plugin_base64_encode()
++ *
++ *    5      Exported openvpn_base64_encode() as plugin_base64_encode()
+  *           Exported openvpn_base64_decode() as plugin_base64_decode()
+  */
+-#define OPENVPN_PLUGINv3_STRUCTVER 4
++#define OPENVPN_PLUGINv3_STRUCTVER 5
+ 
+ /**
+  * Definitions needed for the plug-in callback functions.
 diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
-index 1324307..88b5320 100644
+index 3d564a9..1324307 100644
 --- a/src/plugins/auth-pam/auth-pam.c
 +++ b/src/plugins/auth-pam/auth-pam.c
-@@ -310,11 +310,11 @@ split_scrv1_password(struct user_pass *up)
-     *resp++ = '\0';
+@@ -356,8 +356,8 @@ openvpn_plugin_open_v3(const int v3structver,
+     const char **argv = args->argv;
+     const char **envp = args->envp;
  
-     int n = plugin_base64_decode(pass, up->password, sizeof(up->password)-1);
--    if (n > 0)
-+    if (n >= 0)
+-    /* Check API compatibility -- struct version 4 or higher needed */
+-    if (v3structver < 4)
++    /* Check API compatibility -- struct version 5 or higher needed */
++    if (v3structver < 5)
      {
-         up->password[n] = '\0';
-         n = plugin_base64_decode(resp, up->response, sizeof(up->response)-1);
--        if (n > 0)
-+        if (n >= 0)
-         {
-             up->response[n] = '\0';
-             if (DEBUG(up->verb))
+         fprintf(stderr, "AUTH-PAM: This plugin is incompatible with the running version of OpenVPN\n");
+         return OPENVPN_PLUGIN_FUNC_ERROR;
 -- 
 2.6.2
 
