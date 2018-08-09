@@ -1,9 +1,10 @@
-Date: Thu, 9 Aug 2018 14:15:20 +0200 (CEST)
-Message-Id: <201808091215.w79CFKIE029241@...2054...>
+Date: Thu, 9 Aug 2018 14:38:40 +0200 (CEST)
+Message-Id: <201808091238.w79CceMA029488@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <B09CA954-FCB8-4362-912F-F43DDD7DC59C@...438...>
-References: <B09CA954-FCB8-4362-912F-F43DDD7DC59C@...438...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix subnet topology on NetBSD.
+In-Reply-To: <nEV9l80I3peitTd26qmQFpeoaQbEO-IR74B1gOvCLv-IfvQKjNfL9UnZq1aWr20480nGcbkSnhA-mSGEI5kG7JBMsGpNbNf2FExV3CSzRf4=@protonmail.com>
+References: <nEV9l80I3peitTd26qmQFpeoaQbEO-IR74B1gOvCLv-IfvQKjNfL9UnZq1aWr20480nGcbkSnhA-mSGEI5kG7JBMsGpNbNf2FExV3CSzRf4=@protonmail.com>
+Subject: [Openvpn-devel] [PATCH applied] Re: Clarify and expand management
+ interface documentation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,20 +15,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Adam Ciarcin?ski <adam@...1031...>
+To: "Jonathan K. Bullard" <jkbullard@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the release/2.4 branch.
+Your patch has been applied to the master and release/2.4 branch, with
+the extra "managment" spelling fix.
 
-commit de4c7767b6b30ebd8f05cffb0fabe7e68bdc5e38
-Author: Adam Ciarcin?ski
-Date:   Thu Aug 2 16:17:56 2018 +0200
+(As a side note: your protonmail account works with git send-email,
+but the list mangles the From: header due to DMARC p=reject, and thus,
+git records "Jonathan K. Bullard <openvpn-devel@lists.sourceforge.net>"
+as patch author... which sucks, of course.  Manually fixed)
 
-     Fix subnet topology on NetBSD.
+commit a6fd48ba36ede465b0905a95568c3ec0d425ca71 (master)
+commit 9b71d1d24fd2fe6a2399686a6bc4104ef3835f23 (release/2.4)
+Author: Jonathan K. Bullard
+Date:   Wed Aug 8 11:35:37 2018 +0000
 
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <B09CA954-FCB8-4362-912F-F43DDD7DC59C@...438...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17268.html
+     Clarify and expand management interface documentation
+
+     Signed-off-by: Jonathan K. Bullard <jkbullard@...277...>
+     Acked-by: Selva Nair <selva.nair@...277...>
+     Message-Id: <nEV9l80I3peitTd26qmQFpeoaQbEO-IR74B1gOvCLv-IfvQKjNfL9UnZq1aWr20480nGcbkSnhA-mSGEI5kG7JBMsGpNbNf2FExV3CSzRf4=@protonmail.com>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17390.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
