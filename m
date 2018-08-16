@@ -1,15 +1,16 @@
+Reply-To: openvpn-devel@lists.sourceforge.net
 References: <20180815061240.5027-1-a@...2181...>
  <28816122-839b-fc8d-4953-1b4b7e2883f3@...68...>
  <ca006e8a-2bdb-7fd6-70a0-9e15bb2cf330@...2181...>
  <20180816113743.GV74536@...1296...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <6b8bf9f1-9580-e3e1-46de-3958ad7cc8df@...2181...>
-Date: Thu, 16 Aug 2018 20:05:42 +0800
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <1ae7f2ea-acf6-39ed-db8a-bc4c7d8c943b@...2080...>
+Date: Thu, 16 Aug 2018 22:28:05 +0200
 MIME-Version: 1.0
 In-Reply-To: <20180816113743.GV74536@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
+Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="9DJLgbDVJAZ06hFnxgA6p0iPEqjH2A8Qe"
+ boundary="szMCVcTDy6C6rnilPyGnlpQeZEJlGtL9U"
 Subject: Re: [Openvpn-devel] [PATCH v2] ssl_verify: define label only when
  required
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,18 +21,18 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: Matthias Andree <matthias.andree@...68...>, openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---9DJLgbDVJAZ06hFnxgA6p0iPEqjH2A8Qe
-Content-Type: multipart/mixed; boundary="77GPryBDpfRVvCUhWjbmeIuJRelu1OZgh";
+--szMCVcTDy6C6rnilPyGnlpQeZEJlGtL9U
+Content-Type: multipart/mixed; boundary="hnoH3h3XyhhkZSPm7Urh3bE5o2Qi9msjh";
  protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Gert Doering <gert@...1296...>
-Cc: Matthias Andree <matthias.andree@...68...>,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <6b8bf9f1-9580-e3e1-46de-3958ad7cc8df@...2181...>
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
+Message-ID: <1ae7f2ea-acf6-39ed-db8a-bc4c7d8c943b@...2080...>
 Subject: Re: [Openvpn-devel] [PATCH v2] ssl_verify: define label only when
  required
 References: <20180815061240.5027-1-a@...2181...>
@@ -40,24 +41,20 @@ References: <20180815061240.5027-1-a@...2181...>
  <20180816113743.GV74536@...1296...>
 In-Reply-To: <20180816113743.GV74536@...1296...>
 
---77GPryBDpfRVvCUhWjbmeIuJRelu1OZgh
-Content-Language: en-US
+--hnoH3h3XyhhkZSPm7Urh3bE5o2Qi9msjh
+Content-Language: en-GB
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+On 16/08/18 13:37, Gert Doering wrote:
+[...snip...]
 
-On 16/08/18 19:37, Gert Doering wrote:
->> Imho we should just get this patch through and then try to get rid of
->> the whole #ifdef PLUGIN_DEF_AUTH logic at once.
->=20
-> If the idea is to get rid of PLUGIN_DEF_AUTH, then let's do so, not
-> add extra #ifdef  :-)
+I do see the arguments on both sides here.  And in particular where these
+warnings halts the compilation (which I think I read some where that newer =
+GCC
+compilers would do by default).  But ... Gert asks a few reasonable questio=
+ns
 
-Good! Let's focus on that then :)
-
->=20
->=20
 > Anyway.  Trying to understand the logic here - PLUGIN_DEF_AUTH is always
 > defined if ENABLE_DEF_AUTH is set, which seems to be the default setting.
 >=20
@@ -65,55 +62,81 @@ Good! Let's focus on that then :)
 >=20=20
 >  - is there actually some benefit in --disable-def-auth?  code size,=20
 >    performance, platform compatibility?
->=20
+>
 >  - why do we have it in the first place?
->=20
 
-to me this feels like the classic pattern of "let's introduce this new
-feature, but let's add a compile time option in case people have
-troubles with it or don't want it for some reason".
-I have seen this often also in newer code (like ovpn3).
+I tend to say no.  ENABLE_DEF_AUTH is about deferred authentication.  This =
+has
+been enabled by default for so long, that I hardly think it would be an iss=
+ue
+killing the possibility to turn off this feature.  All it essentially does =
+is
+to allow plug-ins to return OPENVPN_PLUGIN_FUNC_DEFERRED instead of
+OPENVPN_PLUGIN_FUNC_ERROR or OPENVPN_PLUGIN_FUNC_SUCCESS.
+
+This feature will also improve the authentication performance by not locking
+up other connected clients if the authentication backend is slow *and*
+implements support for deferred authentication.  So there is a performance
+gain for authentication plugins making use of this feature.  Otherwise, I do
+not expect much performance difference.
 
 >  - can we get rid of it?
->=20
 
-Does any distro package openvpn with --disable-def-auth selected? If
-not, I guess we can get rid of it.
+I am definitely leaning towards "Yes!".  This does grow the resulting binary
+by some bytes (I don't know how much; haven't checked), as it adds code whi=
+ch
+prepares a file the plug-in will use to write the final verdict of the
+authentication; plus the code paths related to polling this file the core
+OpenVPN process.  If the  If the code grows enough to validate the need for
+this macro, I am not so sure of.
 
-But maybe David knows something we don't :-)
+The only users I would expect might do builds with --disable-def-auth are t=
+he
+builds for embedded devices.  But I don't know how much of a concern this is
+any more; this feature shouldn't double or half the size of the resulting c=
+ode.
 
 
-Cheers,
-
+There is also a related ./configure option: --enable-async-push.  This adds
+inotify support, which reworks the polling model to be a notification based
+push model instead (iirc).  But this I think makes sense to have as it is
+today for the time being.  We might want to consider flipping it to be enab=
+led
+by default, though.
 
 
 --=20
-Antonio Quartulli
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
 
 
---77GPryBDpfRVvCUhWjbmeIuJRelu1OZgh--
 
---9DJLgbDVJAZ06hFnxgA6p0iPEqjH2A8Qe
+--hnoH3h3XyhhkZSPm7Urh3bE5o2Qi9msjh--
+
+--szMCVcTDy6C6rnilPyGnlpQeZEJlGtL9U
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlt1aJYACgkQB6U8WA7y
-zXTxdQ//f8Dn5TvnKIOGAoO4+Vv7Zl9N5Z+PQXSebv68vtvYBWuvLCP514PEib3y
-6olRahpjqKPXkgRZP2Uf68wDP0mrzSVWY02uNvNdz2Ktlp/phhscdQBcjP4dx+Tt
-R1wYyCdCZJarMHFX9pRNle0o9OYm//Cvd3mFFFKrrEU0n/OLRrxhQraSotMj5WHr
-vSGSR++Ce2HcXyr1k1Z58nucUsaDcdh4opzq3QDcwQKcBx1xW4vjjDLUhElteQDd
-2mjHOyM7djHz7Izh0pcQ/4Hrgm05NQ1VyllovEOuySj6PYHUQJrEL/qzAdWszYTO
-L/NnfA3V4R3cIEBFRIcNeTuR2oIWBo+kdc+3ixQL0+BGUNFbl/pp9tnCsoIWfz4F
-Np+QHp/alG8E9lkrmEFmtAi0BbJ+nKN3Jz+TQa67ZQ1GQsqLSt18YTCh1Vxyajed
-Q5Yuo5jPQ5cwiXQUUgMotytOTZI5VOeMjdftR6HJyIchpYw9vRL6kaxjvBC69riA
-6FgKxBZoefc9+O3w3Nyo8VInvxkXPBQrB1rztQR9Uc5mMlneU5O72SZEIGr8hx3Q
-/2fKrubR1zK2TrSyuU03EKQUhPOfFNSi0EkdlJYUTR1pNbQUw4PhJzL86wTVYF1Q
-QhlUJhOXORz5PpJPQ9iaHB6OyXTUAFErQ/fVQ1aU0xl9g2dN4k4=
-=plyq
+iQIcBAEBCgAGBQJbdd5bAAoJEIbPlEyWcf3ySsEQAIbQWe2adz4k6Vqgele7zKSR
+3x64f7rEcVhF3sSdKqbVzXrXP0Zz/8v8vyn8IayTGxXzsNukKwtZMpZy/AMOUyO6
+okKFI397uFYaRozjcjiepDfZ8baYsndy4fcE6eyJitVFlKmc4sVoiu0EQ1ad5+9/
+qBohnQg8oqNfQdCMWF4h/ofvcr555QCdLrscBLwwoPz25Tm6qre2uN3tWLcGE6gt
+eQd2Qhr8B4B9I2AdfuXgULz5LiFwkGKMBYFANcXkkDSkCQvvvzG75PoZPe49WGhE
+9pAs/GV3cKprt2VSCyfpVAOLyXIcTRjbKUSJ6xX4Gucr3MVN3Ho1etvQM4FUZu/U
+GrcAbnYOpya2vn8MnnUvOkFcRR7OOBeWpIib3/8MQFu+n78QK42HzSoDH3C8XzvD
+iEKJMaWsYOWB7NK1yv2tcZv+r7Rs85cN2TDbM9mpbQBlaGeYymXlw4xiN0EB3Y6Q
+mzbIYw/ej3UHGT6Xiqc1mhFCgtgKt36q+vvkvAhKVN04nL0lI2OULhr5d8KdTNMp
+wWj/mPHLnQ2abMO5pP5klkb5jRskfveOO0CKQGYuWPRb9h7Fv3hGNobcCt9TS9S9
+CvnFmhxkZDpuXL0D7LxF1Kboh62dLsuqyC9evmP+r6RsWqYolDDoy3WU1RtlI2FM
+IwSVaki+58GL6hjqZZCC
+=o1Bb
 -----END PGP SIGNATURE-----
 
---9DJLgbDVJAZ06hFnxgA6p0iPEqjH2A8Qe--
+--szMCVcTDy6C6rnilPyGnlpQeZEJlGtL9U--
 
