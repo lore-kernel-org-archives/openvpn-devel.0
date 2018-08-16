@@ -1,16 +1,16 @@
-Reply-To: openvpn-devel@lists.sourceforge.net
+Date: Thu, 16 Aug 2018 23:33:46 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180816213346.GW74536@...1296...>
 References: <20180815061240.5027-1-a@...2181...>
  <28816122-839b-fc8d-4953-1b4b7e2883f3@...68...>
  <ca006e8a-2bdb-7fd6-70a0-9e15bb2cf330@...2181...>
  <20180816113743.GV74536@...1296...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <1ae7f2ea-acf6-39ed-db8a-bc4c7d8c943b@...2080...>
-Date: Thu, 16 Aug 2018 22:28:05 +0200
+ <1ae7f2ea-acf6-39ed-db8a-bc4c7d8c943b@...2080...>
 MIME-Version: 1.0
-In-Reply-To: <20180816113743.GV74536@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="szMCVcTDy6C6rnilPyGnlpQeZEJlGtL9U"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="/d7X7C0hV/blnKmH"
+Content-Disposition: inline
+In-Reply-To: <1ae7f2ea-acf6-39ed-db8a-bc4c7d8c943b@...2080...>
 Subject: Re: [Openvpn-devel] [PATCH v2] ssl_verify: define label only when
  required
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,122 +21,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Gert Doering <gert@...1296...>, Antonio Quartulli <a@...2181...>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---szMCVcTDy6C6rnilPyGnlpQeZEJlGtL9U
-Content-Type: multipart/mixed; boundary="hnoH3h3XyhhkZSPm7Urh3bE5o2Qi9msjh";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Gert Doering <gert@...1296...>, Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <1ae7f2ea-acf6-39ed-db8a-bc4c7d8c943b@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH v2] ssl_verify: define label only when
- required
-References: <20180815061240.5027-1-a@...2181...>
- <28816122-839b-fc8d-4953-1b4b7e2883f3@...68...>
- <ca006e8a-2bdb-7fd6-70a0-9e15bb2cf330@...2181...>
- <20180816113743.GV74536@...1296...>
-In-Reply-To: <20180816113743.GV74536@...1296...>
-
---hnoH3h3XyhhkZSPm7Urh3bE5o2Qi9msjh
-Content-Language: en-GB
-Content-Type: text/plain; charset="windows-1252"
+--/d7X7C0hV/blnKmH
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 16/08/18 13:37, Gert Doering wrote:
-[...snip...]
+Hi,
 
-I do see the arguments on both sides here.  And in particular where these
-warnings halts the compilation (which I think I read some where that newer =
-GCC
-compilers would do by default).  But ... Gert asks a few reasonable questio=
-ns
+thanks for your thoughts so far, so it seems we just want to get rid
+of these conditionals for 2.5 :-)
 
-> Anyway.  Trying to understand the logic here - PLUGIN_DEF_AUTH is always
-> defined if ENABLE_DEF_AUTH is set, which seems to be the default setting.
->=20
-> So, questions
->=20=20
->  - is there actually some benefit in --disable-def-auth?  code size,=20
->    performance, platform compatibility?
->
->  - why do we have it in the first place?
+One thing, though:
 
-I tend to say no.  ENABLE_DEF_AUTH is about deferred authentication.  This =
-has
-been enabled by default for so long, that I hardly think it would be an iss=
-ue
-killing the possibility to turn off this feature.  All it essentially does =
-is
-to allow plug-ins to return OPENVPN_PLUGIN_FUNC_DEFERRED instead of
-OPENVPN_PLUGIN_FUNC_ERROR or OPENVPN_PLUGIN_FUNC_SUCCESS.
+On Thu, Aug 16, 2018 at 10:28:05PM +0200, David Sommerseth wrote:
+> There is also a related ./configure option: --enable-async-push.  This ad=
+ds
+> inotify support, which reworks the polling model to be a notification bas=
+ed
+> push model instead (iirc).  But this I think makes sense to have as it is
+> today for the time being.  We might want to consider flipping it to be en=
+abled
+> by default, though.
 
-This feature will also improve the authentication performance by not locking
-up other connected clients if the authentication backend is slow *and*
-implements support for deferred authentication.  So there is a performance
-gain for authentication plugins making use of this feature.  Otherwise, I do
-not expect much performance difference.
+This carries along some platform dependencies, as "inotify" is not
+unversally available (I was about to write "Linux only", but I bet=20
+one of the BSDs has it, too, by now :-) - but definitely not all=20
+supported platforms).
 
->  - can we get rid of it?
+Google points to "fswatch", which is
 
-I am definitely leaning towards "Yes!".  This does grow the resulting binary
-by some bytes (I don't know how much; haven't checked), as it adds code whi=
-ch
-prepares a file the plug-in will use to write the final verdict of the
-authentication; plus the code paths related to polling this file the core
-OpenVPN process.  If the  If the code grows enough to validate the need for
-this macro, I am not so sure of.
+ "A cross-platform file change monitor with multiple backends: Apple OS X=20
+  File System Events, *BSD kqueue, Solaris/Illumos File Events Notification=
+,=20
+  Linux inotify, ..."
 
-The only users I would expect might do builds with --disable-def-auth are t=
-he
-builds for embedded devices.  But I don't know how much of a concern this is
-any more; this feature shouldn't double or half the size of the resulting c=
-ode.
+so yeah - this has to stay an #ifdef for a while (and more esoteric
+platforms like *cough* Windows or AIX might not have anything reasonably
+compatible at all)
 
-
-There is also a related ./configure option: --enable-async-push.  This adds
-inotify support, which reworks the polling model to be a notification based
-push model instead (iirc).  But this I think makes sense to have as it is
-today for the time being.  We might want to consider flipping it to be enab=
-led
-by default, though.
-
-
+gert
 --=20
-kind regards,
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-David Sommerseth
-OpenVPN Inc
+Gert Doering - Munich, Germany                             gert@...1296...
 
-
-
---hnoH3h3XyhhkZSPm7Urh3bE5o2Qi9msjh--
-
---szMCVcTDy6C6rnilPyGnlpQeZEJlGtL9U
+--/d7X7C0hV/blnKmH
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJbdd5bAAoJEIbPlEyWcf3ySsEQAIbQWe2adz4k6Vqgele7zKSR
-3x64f7rEcVhF3sSdKqbVzXrXP0Zz/8v8vyn8IayTGxXzsNukKwtZMpZy/AMOUyO6
-okKFI397uFYaRozjcjiepDfZ8baYsndy4fcE6eyJitVFlKmc4sVoiu0EQ1ad5+9/
-qBohnQg8oqNfQdCMWF4h/ofvcr555QCdLrscBLwwoPz25Tm6qre2uN3tWLcGE6gt
-eQd2Qhr8B4B9I2AdfuXgULz5LiFwkGKMBYFANcXkkDSkCQvvvzG75PoZPe49WGhE
-9pAs/GV3cKprt2VSCyfpVAOLyXIcTRjbKUSJ6xX4Gucr3MVN3Ho1etvQM4FUZu/U
-GrcAbnYOpya2vn8MnnUvOkFcRR7OOBeWpIib3/8MQFu+n78QK42HzSoDH3C8XzvD
-iEKJMaWsYOWB7NK1yv2tcZv+r7Rs85cN2TDbM9mpbQBlaGeYymXlw4xiN0EB3Y6Q
-mzbIYw/ej3UHGT6Xiqc1mhFCgtgKt36q+vvkvAhKVN04nL0lI2OULhr5d8KdTNMp
-wWj/mPHLnQ2abMO5pP5klkb5jRskfveOO0CKQGYuWPRb9h7Fv3hGNobcCt9TS9S9
-CvnFmhxkZDpuXL0D7LxF1Kboh62dLsuqyC9evmP+r6RsWqYolDDoy3WU1RtlI2FM
-IwSVaki+58GL6hjqZZCC
-=o1Bb
+iQGcBAEBAgAGBQJbde26AAoJEB2Cnv7KVigSoJML/1qWTL0keDvN9TNjdDANmz+c
+OOJLIXPPCvWa7vB/fzx/3exa2wp30GQJWDtFnejKA1//w4L1lxxdL78vwGDhdn4h
+wNM1/wXA/0oSJpKzNhjK7MwVREZi96Wov/KKEsOeyEQvMAFNfX15aBqj77naoLdG
+6xj6H1poXB79KZrhYKSNvLDr0aRH584GSr28LP4PcTA7qiRL1LYq9YEp5u1UzprE
+W06ISr67psZ7YdngL/ROAYEElGbZcQ4pvSvr7Vn2fR/7Akx0f5D8MLptZTCesV0B
+J8I445XQbkp3xIOdHjL1lUh4Hm9TMzad9bQqFvci+XB7d0FR4j9tL79lwz5AYyYS
+9tFOjb+jZ1Topo1xZXo9a8QoaB/UOxH+GVaim+70ZfypliEPciLDvRb1irAuHyG3
+GAK2Rub371xEHCUrFbX7wZWLvgA6wjCwPmevS+fSy8ca/JdlGJwB796l28TL4NVU
+8jFYp3rFzw71Xf8P4dfgkpGboV746w4Y46XjqzSOoA==
+=wGs9
 -----END PGP SIGNATURE-----
 
---szMCVcTDy6C6rnilPyGnlpQeZEJlGtL9U--
+--/d7X7C0hV/blnKmH--
 
