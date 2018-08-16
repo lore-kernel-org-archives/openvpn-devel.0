@@ -1,13 +1,14 @@
+Date: Thu, 16 Aug 2018 13:37:43 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180816113743.GV74536@...1296...>
 References: <20180815061240.5027-1-a@...2181...>
  <28816122-839b-fc8d-4953-1b4b7e2883f3@...68...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <ca006e8a-2bdb-7fd6-70a0-9e15bb2cf330@...2181...>
-Date: Thu, 16 Aug 2018 19:17:09 +0800
+ <ca006e8a-2bdb-7fd6-70a0-9e15bb2cf330@...2181...>
 MIME-Version: 1.0
-In-Reply-To: <28816122-839b-fc8d-4953-1b4b7e2883f3@...68...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="Q5Ntems1mNUOFpyXsAya5dkUeRQRhNHMh"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="XLsjFikA86nwwlhe"
+Content-Disposition: inline
+In-Reply-To: <ca006e8a-2bdb-7fd6-70a0-9e15bb2cf330@...2181...>
 Subject: Re: [Openvpn-devel] [PATCH v2] ssl_verify: define label only when
  required
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,125 +19,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Matthias Andree <matthias.andree@...68...>, openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: Matthias Andree <matthias.andree@...68...>, openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---Q5Ntems1mNUOFpyXsAya5dkUeRQRhNHMh
-Content-Type: multipart/mixed; boundary="Q1YGbVOGVRiUnZpV3LgAIUZKTKFnBvo9W";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Matthias Andree <matthias.andree@...68...>,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <ca006e8a-2bdb-7fd6-70a0-9e15bb2cf330@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v2] ssl_verify: define label only when
- required
-References: <20180815061240.5027-1-a@...2181...>
- <28816122-839b-fc8d-4953-1b4b7e2883f3@...68...>
-In-Reply-To: <28816122-839b-fc8d-4953-1b4b7e2883f3@...68...>
-
---Q1YGbVOGVRiUnZpV3LgAIUZKTKFnBvo9W
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
+--XLsjFikA86nwwlhe
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On 16/08/18 19:08, Matthias Andree wrote:
-> Am 15.08.2018 um 08:12 schrieb Antonio Quartulli:
->> The "cleanup" label in ssl_verify.c:verify_user_pass_plugin() is used
->> only when PLUGIN_DEF_AUTH is defined, therefore make the label
->> definition dependent on the same define.
->>
->> Fixes the following warning when PLUGIN_DEF_AUTH is not defined:
->>
->> ssl_verify.c: In function 'verify_user_pass_plugin':
->> ssl_verify.c:1223:1: warning: label 'cleanup' defined but not used [-Wun=
-used-label]
->>  cleanup:
->>  ^~~~~~~
->>
->> Signed-off-by: Antonio Quartulli <a@...2181...>
->> ---
->>  src/openvpn/ssl_verify.c | 2 ++
->>  1 file changed, 2 insertions(+)
->>
->> diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
->> index 61872251..5b46ea72 100644
->> --- a/src/openvpn/ssl_verify.c
->> +++ b/src/openvpn/ssl_verify.c
->> @@ -1220,7 +1220,9 @@ verify_user_pass_plugin(struct tls_session *sessio=
-n, const struct user_pass *up,
->>          msg(D_TLS_ERRORS, "TLS Auth Error (verify_user_pass_plugin): pe=
-er provided a blank username");
->>      }
->>=20=20
->> +#ifdef PLUGIN_DEF_AUTH
->>  cleanup:
->> +#endif
->>      return retval;
->>  }
->>=20=20
->=20
-> NAK.
->=20
-> This is useless #ifdef noise in the code and makes it harder to read,
-> for compile-time cosmetics.
->=20
-> If you don't want the warnings, feed a proper -Wno-unused-label to your
-> compiler and move on.
+On Thu, Aug 16, 2018 at 07:17:09PM +0800, Antonio Quartulli wrote:
+> I totally agree with you that more ifdefs are just ugly and make the
+> code worse. However this "new" ifdef is just part of some logic that is
+> already there (a few lines above).
 
-Thanks for taking the time to look at this!
+It is a new #ifdef, two more lines of code, breaking the flow of
+reading.  So I tend to agree with Mathias that this might not be the
+best approach here.
 
-Actually we are in the process of getting rid of the various ifdef
-around the code or at least we are trying to bring that to a more
-reasonable state (it takes time....and right now we are more focussed on
-the networking and platform side of things).
+> This said, in the past months we have tried moving towards a
+> 0-warnings-tolerance, so that we could catch as many bugs as possible
+> hidden by "just annoying warnings".
+> For this reason using "-Wno-unused-label" is not an option (especially
+> in CI/automated build tests where this was spotted).
 
-I totally agree with you that more ifdefs are just ugly and make the
-code worse. However this "new" ifdef is just part of some logic that is
-already there (a few lines above).
+I see "unused label" as a minor nuisance (unlike other warnings there
+is nothing like "it could be an integer overflow" or "watch out for
+the signs of your variables" here), so -Wno-unused-label would work
+for me...
 
-This said, in the past months we have tried moving towards a
-0-warnings-tolerance, so that we could catch as many bugs as possible
-hidden by "just annoying warnings".
-For this reason using "-Wno-unused-label" is not an option (especially
-in CI/automated build tests where this was spotted).
+Warnings are generally good, but adding extra lines just to silence
+the compiler in a specific combination of flags for a warning that is
+otherwise harmless is not always a good way forward.
 
-Imho we should just get this patch through and then try to get rid of
-the whole #ifdef PLUGIN_DEF_AUTH logic at once.
+> Imho we should just get this patch through and then try to get rid of
+> the whole #ifdef PLUGIN_DEF_AUTH logic at once.
+
+If the idea is to get rid of PLUGIN_DEF_AUTH, then let's do so, not
+add extra #ifdef  :-)
 
 
-Cheers,
+Anyway.  Trying to understand the logic here - PLUGIN_DEF_AUTH is always
+defined if ENABLE_DEF_AUTH is set, which seems to be the default setting.
 
+So, questions
+=20
+ - is there actually some benefit in --disable-def-auth?  code size,=20
+   performance, platform compatibility?
 
+ - why do we have it in the first place?
+
+ - can we get rid of it?
+
+gert
 
 --=20
-Antonio Quartulli
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
 
---Q1YGbVOGVRiUnZpV3LgAIUZKTKFnBvo9W--
-
---Q5Ntems1mNUOFpyXsAya5dkUeRQRhNHMh
+--XLsjFikA86nwwlhe
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlt1XTUACgkQB6U8WA7y
-zXQqMg//ScZKToUjnxStyKXtOMHsQZEr3MemwvbutNiNwFsNv8MtlpVCX193/+aD
-K20JIK5k4+CCm202iM0QnGWDVXtn9i7VDff/7Kwb0nU6uAEri3xfTHqLjdtU7QtH
-uKtg2trVWjSJuEWCE2my9p345WK1kUPlbX3ZLVeHucZWNH3F/2iiJB2Gmw4jPqgv
-YB/LriPEaksZSVeEUnCvZ8nNKe1YGR3r/ysUZsP1q+kc3JZlu8n/BNFUcJNfqlJ3
-tbik26SzzVyDweMnAHvF6kSH6rNE7uP6ig32ViRH9XDNFz/8WeSVyBfrxSqN8r8w
-oFsblpxhczAjYCygiFu7unwnBfXo7AMlLpaVKAIsxUMWlueqnFEtnIEINj/SgTdn
-rfFRU3P8pCbWdJLnkW1TR5qmi74qiFnkIVT9drtE4bNxE9Bnz1+SDbYKzq/LAP11
-rfPp9JiRr7A29JZ12mZ2XzUODCkLH/xvRApag+OJNfrYsIB3BKh7LLZFaR3tLew2
-VMajUULe6OzMGklBqf8xKro2+o+7ER8MPyIYEvTzNHSwjPIkQIh6OD+u2Kn61qjZ
-CqP4/00qOJA2ofljflLtS4h/WE9gLiot9yqk7nxnqBo0jp4PSHj4i1TLLWJtqpPO
-ebExwsGWNAhY3Smmi+NALQeuK34euDpWlxjUfuOMtroQ3V7b7G0=
-=xBwa
+iQGcBAEBAgAGBQJbdWIGAAoJEB2Cnv7KVigS6f4L/00khyzqNcWieNMHKd8frJCZ
+wbBVhMRAiJWBBF58InMGLMdPshllkZFZc2SSIv73N3yIf36nlgphrS8oX1i8Q6h8
+vfNBdcOzLnkddkBLc9X+dT1LjmfyY9SN/+6u0gYfHK1+auqDvJ0J9UU2XcQxyrlI
+0pxCvAh8FZB+uobwOSk9zDXNFueY9YMP966094V6CqfXQ7AzlUamz2Usj++u/Wc0
+LeyowOF22oRVzEs1xXKQcT948P+cVYb2PZOPNKhnTFiUEi58LNFIpR3bNf7voWhr
+2LteYw4X6wbmEu4CxrL+gBX8lvFekd3jzpIyoK76LhEnQHTsGZbhHtf5LeTxNgZ+
+MEOAhMZPAOnt2inCHDkjSpYt+8ifaWel9btTAxvKPoY731QxS8ols2cMZv5fLscG
+lHwvsN1dhj8Kgcsv/QU6c75Z+Ab+oDSe80C3ZU4Baih0ceDO6GLYqIl5hzuRzlG7
+fAoiUrOXtPdgFb/kP43R9CCqE09DgkkDcJi1saRDxg==
+=61hQ
 -----END PGP SIGNATURE-----
 
---Q5Ntems1mNUOFpyXsAya5dkUeRQRhNHMh--
+--XLsjFikA86nwwlhe--
 
