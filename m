@@ -1,18 +1,8 @@
-Date: Thu, 16 Aug 2018 23:33:46 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20180816213346.GW74536@...1296...>
-References: <20180815061240.5027-1-a@...2181...>
- <28816122-839b-fc8d-4953-1b4b7e2883f3@...68...>
- <ca006e8a-2bdb-7fd6-70a0-9e15bb2cf330@...2181...>
- <20180816113743.GV74536@...1296...>
- <1ae7f2ea-acf6-39ed-db8a-bc4c7d8c943b@...2080...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="/d7X7C0hV/blnKmH"
-Content-Disposition: inline
-In-Reply-To: <1ae7f2ea-acf6-39ed-db8a-bc4c7d8c943b@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH v2] ssl_verify: define label only when
- required
+Date: Sun, 19 Aug 2018 22:07:03 +0200
+Message-Id: <20180819200703.20362-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Fix combination of --dev tap and --topology
+ subnet across multiple platforms.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,74 +11,122 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Gert Doering <gert@...1296...>, Antonio Quartulli <a@...2181...>
 
---/d7X7C0hV/blnKmH
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+--topology should have no effect in tap mode (tap is always "subnet"),
+but due to the way options are checked, setting "topology subnet" caught
+an improper branch on all non-linux and non-win32 platforms.
 
-Hi,
+Easily tested by adding "--topology subnet" to a "--dev tap" t_client
+test.
 
-thanks for your thoughts so far, so it seems we just want to get rid
-of these conditionals for 2.5 :-)
+Tested, verified, and fixed on FreeBSD 10.4, NetBSD 7.0.1, OpenBSD 6.0,
+and OpenSolaris 10.  Compile-tested on MacOS X.
 
-One thing, though:
+Trac: #1085
 
-On Thu, Aug 16, 2018 at 10:28:05PM +0200, David Sommerseth wrote:
-> There is also a related ./configure option: --enable-async-push.  This ad=
-ds
-> inotify support, which reworks the polling model to be a notification bas=
-ed
-> push model instead (iirc).  But this I think makes sense to have as it is
-> today for the time being.  We might want to consider flipping it to be en=
-abled
-> by default, though.
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/tun.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-This carries along some platform dependencies, as "inotify" is not
-unversally available (I was about to write "Linux only", but I bet=20
-one of the BSDs has it, too, by now :-) - but definitely not all=20
-supported platforms).
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index db7c25ff..8fa07afa 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -1091,7 +1091,7 @@ do_ifconfig(struct tuntap *tt,
+                         actual
+                         );
+         }
+-        else if (tt->topology == TOP_SUBNET)
++        else if (tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET)
+         {
+             argv_printf(&argv,
+                         "%s %s %s %s netmask %s mtu %d up",
+@@ -1173,7 +1173,7 @@ do_ifconfig(struct tuntap *tt,
+             }
+         }
+ 
+-        if (!tun && tt->topology == TOP_SUBNET)
++        if (!tun && tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET)
+         {
+             /* Add a network route for the local tun interface */
+             struct route_ipv4 r;
+@@ -1210,7 +1210,7 @@ do_ifconfig(struct tuntap *tt,
+                         tun_mtu
+                         );
+         }
+-        else if (tt->topology == TOP_SUBNET)
++        else if (tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET)
+         {
+             remote_end = create_arbitrary_remote( tt );
+             argv_printf(&argv,
+@@ -1239,7 +1239,7 @@ do_ifconfig(struct tuntap *tt,
+         openvpn_execve_check(&argv, es, S_FATAL, "OpenBSD ifconfig failed");
+ 
+         /* Add a network route for the local tun interface */
+-        if (!tun && tt->topology == TOP_SUBNET)
++        if (!tun && tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET)
+         {
+             struct route_ipv4 r;
+             CLEAR(r);
+@@ -1282,7 +1282,7 @@ do_ifconfig(struct tuntap *tt,
+                         tun_mtu
+                         );
+         }
+-        else if (tt->topology == TOP_SUBNET)
++        else if (tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET)
+         {
+             remote_end = create_arbitrary_remote( tt );
+             argv_printf(&argv,
+@@ -1316,7 +1316,7 @@ do_ifconfig(struct tuntap *tt,
+         openvpn_execve_check(&argv, es, S_FATAL, "NetBSD ifconfig failed");
+ 
+         /* Add a network route for the local tun interface */
+-        if (!tun && tt->topology == TOP_SUBNET)
++        if (!tun && tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET)
+         {
+             struct route_ipv4 r;
+             CLEAR(r);
+@@ -1372,7 +1372,7 @@ do_ifconfig(struct tuntap *tt,
+         }
+         else
+         {
+-            if (tt->topology == TOP_SUBNET)
++            if (tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET)
+             {
+                 argv_printf(&argv,
+                             "%s %s %s %s netmask %s mtu %d up",
+@@ -1402,7 +1402,7 @@ do_ifconfig(struct tuntap *tt,
+         tt->did_ifconfig = true;
+ 
+         /* Add a network route for the local tun interface */
+-        if (!tun && tt->topology == TOP_SUBNET)
++        if (!tun && tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET)
+         {
+             struct route_ipv4 r;
+             CLEAR(r);
+@@ -1445,7 +1445,7 @@ do_ifconfig(struct tuntap *tt,
+                         tun_mtu
+                         );
+         }
+-        else if (tt->topology == TOP_SUBNET)
++        else if (tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET)
+         {
+             remote_end = create_arbitrary_remote( tt );
+             argv_printf(&argv,
+@@ -1475,7 +1475,7 @@ do_ifconfig(struct tuntap *tt,
+         tt->did_ifconfig = true;
+ 
+         /* Add a network route for the local tun interface */
+-        if (!tun && tt->topology == TOP_SUBNET)
++        if (!tun && tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET)
+         {
+             struct route_ipv4 r;
+             CLEAR(r);
+-- 
+2.18.0
 
-Google points to "fswatch", which is
-
- "A cross-platform file change monitor with multiple backends: Apple OS X=20
-  File System Events, *BSD kqueue, Solaris/Illumos File Events Notification=
-,=20
-  Linux inotify, ..."
-
-so yeah - this has to stay an #ifdef for a while (and more esoteric
-platforms like *cough* Windows or AIX might not have anything reasonably
-compatible at all)
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---/d7X7C0hV/blnKmH
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJbde26AAoJEB2Cnv7KVigSoJML/1qWTL0keDvN9TNjdDANmz+c
-OOJLIXPPCvWa7vB/fzx/3exa2wp30GQJWDtFnejKA1//w4L1lxxdL78vwGDhdn4h
-wNM1/wXA/0oSJpKzNhjK7MwVREZi96Wov/KKEsOeyEQvMAFNfX15aBqj77naoLdG
-6xj6H1poXB79KZrhYKSNvLDr0aRH584GSr28LP4PcTA7qiRL1LYq9YEp5u1UzprE
-W06ISr67psZ7YdngL/ROAYEElGbZcQ4pvSvr7Vn2fR/7Akx0f5D8MLptZTCesV0B
-J8I445XQbkp3xIOdHjL1lUh4Hm9TMzad9bQqFvci+XB7d0FR4j9tL79lwz5AYyYS
-9tFOjb+jZ1Topo1xZXo9a8QoaB/UOxH+GVaim+70ZfypliEPciLDvRb1irAuHyG3
-GAK2Rub371xEHCUrFbX7wZWLvgA6wjCwPmevS+fSy8ca/JdlGJwB796l28TL4NVU
-8jFYp3rFzw71Xf8P4dfgkpGboV746w4Y46XjqzSOoA==
-=wGs9
------END PGP SIGNATURE-----
-
---/d7X7C0hV/blnKmH--
 
