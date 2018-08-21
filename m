@@ -1,14 +1,7 @@
-Date: Sun, 19 Aug 2018 22:16:24 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20180819201624.GA997@...1296...>
-References: <20180819200703.20362-1-gert@...1296...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="/9DWx/yDrRhgMJTb"
-Content-Disposition: inline
-In-Reply-To: <20180819200703.20362-1-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix combination of --dev tap and
- --topology subnet across multiple platforms.
+From: Steffan Karger <steffan@...1856...>
+Date: Wed, 22 Aug 2018 00:08:42 +0200
+Message-Id: <20180821220842.4193-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] cmocka: use relative paths
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,72 +10,72 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
---/9DWx/yDrRhgMJTb
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Simplifies the build scripts, and fixes my CI, where paths on the test
+slave can be different from paths on the build slave.
 
-Hi,
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ configure.ac       | 11 ++---------
+ vendor/Makefile.am | 15 +++++++--------
+ 2 files changed, 9 insertions(+), 17 deletions(-)
 
-On Sun, Aug 19, 2018 at 10:07:03PM +0200, Gert Doering wrote:
-> --topology should have no effect in tap mode (tap is always "subnet"),
-> but due to the way options are checked, setting "topology subnet" caught
-> an improper branch on all non-linux and non-win32 platforms.
->=20
-> Easily tested by adding "--topology subnet" to a "--dev tap" t_client
-> test.
->=20
-> Tested, verified, and fixed on FreeBSD 10.4, NetBSD 7.0.1, OpenBSD 6.0,
-> and OpenSolaris 10.  Compile-tested on MacOS X.
->=20
-> Trac: #1085
+diff --git a/configure.ac b/configure.ac
+index 9c31435b..76d9f182 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1381,15 +1381,8 @@ AC_SUBST([sampledir])
+ AC_SUBST([systemdunitdir])
+ AC_SUBST([tmpfilesdir])
+ 
+-VENDOR_SRC_ROOT="\$(abs_top_srcdir)/vendor/"
+-VENDOR_DIST_ROOT="\$(abs_top_builddir)/vendor/dist"
+-VENDOR_BUILD_ROOT="\$(abs_top_builddir)/vendor/.build"
+-AC_SUBST([VENDOR_SRC_ROOT])
+-AC_SUBST([VENDOR_BUILD_ROOT])
+-AC_SUBST([VENDOR_DIST_ROOT])
+-
+-TEST_LDFLAGS="-lcmocka -L\$(abs_top_builddir)/vendor/dist/lib -Wl,-rpath,\$(abs_top_builddir)/vendor/dist/lib"
+-TEST_CFLAGS="-I\$(top_srcdir)/include -I\$(abs_top_builddir)/vendor/dist/include"
++TEST_LDFLAGS="-lcmocka -L\$(top_builddir)/vendor/dist/lib -Wl,-rpath,\$(top_builddir)/vendor/dist/lib"
++TEST_CFLAGS="-I\$(top_srcdir)/include -I\$(top_builddir)/vendor/dist/include"
+ 
+ AC_SUBST([TEST_LDFLAGS])
+ AC_SUBST([TEST_CFLAGS])
+diff --git a/vendor/Makefile.am b/vendor/Makefile.am
+index 674784ab..b68d0311 100644
+--- a/vendor/Makefile.am
++++ b/vendor/Makefile.am
+@@ -1,18 +1,17 @@
+-# needs an absolute path bc. of the cmake invocation
+-cmockasrc     = "@VENDOR_SRC_ROOT@/cmocka"
+-cmockabuild   = "@VENDOR_BUILD_ROOT@/cmocka"
+-cmockainstall = "@VENDOR_DIST_ROOT@"
++cmockasrc   = $(srcdir)/cmocka
++cmockabuild = $(builddir)/cmocka
++cmockadist  = $(builddir)/dist
+ 
+ MAINTAINERCLEANFILES = \
+ 	$(srcdir)/Makefile.in \
+ 	"$(cmockabuild)" \
+-	"$(cmockainstall)" \
+-	"@VENDOR_BUILD_ROOT@"
++	"$(cmockadist)"
+ 
+ libcmocka:
+ if CMOCKA_INITIALIZED
+-	mkdir -p $(cmockabuild) $(cmockainstall)
+-	(cd $(cmockabuild) && cmake -DCMAKE_INSTALL_PREFIX=$(cmockainstall) $(cmockasrc) && make && make install)
++	mkdir -p $(cmockabuild) $(cmockadist)
++	## Compensate for the cd in the paths
++	(cd cmocka && cmake -DCMAKE_INSTALL_PREFIX=../$(cmockadist) ../$(cmockasrc) && make && make install)
+ endif
+ 
+ check: libcmocka
+-- 
+2.17.1
 
-Oh, because the comments omits that notice (it is in the ticket) - this
-is 2.4 only.  Master looks sufficiently different that this won't apply,
-and Antonio and I have already conspired and decided that this needs to
-be fixed for good in master - like:
-
- - introduce a new enum "interface_style" or so, which can be
-    "TUN_MODE_P2P", "TUN_MODE_SUBNET" and "TAP_MODE" (or so)
-
- - drop "tun", which tries to do the above in boolean form and fails
-
- - in all platform code, have a switch/case statement instead of a
-   chained or nested if/else, making more explicit what the variants
-   are - or, if multiple if/else, at least have unambiguous conditions
-
-(Before you ask: "net30" is not handled as subnet internally - except
-on windows - but as point-to-point tun)
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---/9DWx/yDrRhgMJTb
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJbedAYAAoJEB2Cnv7KVigSvMAMALBUjnfo673NG2bXCxK4V0/g
-LSptOeGE4/IyF0MH87sbIgoDWxtKBjb3YRgCLZa/chUGF6hT1H+GJu4ZTAFEGZnC
-O9nnRvkaiSuEOGrjutvwG5TImSMAQJS5piVu3js2L9t9TQq1A7Gb9Wi4jdA39V70
-n990MUumYckAsZP1tjeDLGBZg67GoOkeHgKBrub2AyG2qXj7VvG6hrxy+vSbEpy6
-RSZ/EKdSsRRJ6VVrbF5ScK2HremYFv+sexAXyhv14u1jA8qbawXKM7HGJqyo5PGq
-KoRja9uExHy9NPKzpcPgYc/HI+O6CJu7s7M7holP5UFhdy1TwICo1HEbz0orFkO8
-XZ6wLFK8PeuuPlto0VPbTWbhaZLDHv4rfThKBMbqlnqlOH94OKyXdU9cqBzAXWeP
-NPj13alqfEa4gj5Eo8817DNXvgEd8y3ITBeETmVwviGRLTkb0ZZ7YQf7M2JhIiU0
-70+Wc72aH1g8Btk00bhJVY0Q/y4unpYJazVnzxEiGA==
-=tVUh
------END PGP SIGNATURE-----
-
---/9DWx/yDrRhgMJTb--
 
