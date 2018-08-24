@@ -1,7 +1,10 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Wed, 22 Aug 2018 00:08:42 +0200
-Message-Id: <20180821220842.4193-1-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] cmocka: use relative paths
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <149619ba-265f-1a7a-6403-f99c6f4b7eac@...1227...>
+Date: Fri, 24 Aug 2018 13:11:44 +0200
+MIME-Version: 1.0
+Content-Language: en-GB
+Subject: [Openvpn-devel] Discussion: Moving forward with compression and
+ voracle
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,72 +13,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Simplifies the build scripts, and fixes my CI, where paths on the test
-slave can be different from paths on the build slave.
+Hey,
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- configure.ac       | 11 ++---------
- vendor/Makefile.am | 15 +++++++--------
- 2 files changed, 9 insertions(+), 17 deletions(-)
+with this mail I would like to discuss the way forward for compression.
 
-diff --git a/configure.ac b/configure.ac
-index 9c31435b..76d9f182 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1381,15 +1381,8 @@ AC_SUBST([sampledir])
- AC_SUBST([systemdunitdir])
- AC_SUBST([tmpfilesdir])
- 
--VENDOR_SRC_ROOT="\$(abs_top_srcdir)/vendor/"
--VENDOR_DIST_ROOT="\$(abs_top_builddir)/vendor/dist"
--VENDOR_BUILD_ROOT="\$(abs_top_builddir)/vendor/.build"
--AC_SUBST([VENDOR_SRC_ROOT])
--AC_SUBST([VENDOR_BUILD_ROOT])
--AC_SUBST([VENDOR_DIST_ROOT])
--
--TEST_LDFLAGS="-lcmocka -L\$(abs_top_builddir)/vendor/dist/lib -Wl,-rpath,\$(abs_top_builddir)/vendor/dist/lib"
--TEST_CFLAGS="-I\$(top_srcdir)/include -I\$(abs_top_builddir)/vendor/dist/include"
-+TEST_LDFLAGS="-lcmocka -L\$(top_builddir)/vendor/dist/lib -Wl,-rpath,\$(top_builddir)/vendor/dist/lib"
-+TEST_CFLAGS="-I\$(top_srcdir)/include -I\$(top_builddir)/vendor/dist/include"
- 
- AC_SUBST([TEST_LDFLAGS])
- AC_SUBST([TEST_CFLAGS])
-diff --git a/vendor/Makefile.am b/vendor/Makefile.am
-index 674784ab..b68d0311 100644
---- a/vendor/Makefile.am
-+++ b/vendor/Makefile.am
-@@ -1,18 +1,17 @@
--# needs an absolute path bc. of the cmake invocation
--cmockasrc     = "@VENDOR_SRC_ROOT@/cmocka"
--cmockabuild   = "@VENDOR_BUILD_ROOT@/cmocka"
--cmockainstall = "@VENDOR_DIST_ROOT@"
-+cmockasrc   = $(srcdir)/cmocka
-+cmockabuild = $(builddir)/cmocka
-+cmockadist  = $(builddir)/dist
- 
- MAINTAINERCLEANFILES = \
- 	$(srcdir)/Makefile.in \
- 	"$(cmockabuild)" \
--	"$(cmockainstall)" \
--	"@VENDOR_BUILD_ROOT@"
-+	"$(cmockadist)"
- 
- libcmocka:
- if CMOCKA_INITIALIZED
--	mkdir -p $(cmockabuild) $(cmockainstall)
--	(cd $(cmockabuild) && cmake -DCMAKE_INSTALL_PREFIX=$(cmockainstall) $(cmockasrc) && make && make install)
-+	mkdir -p $(cmockabuild) $(cmockadist)
-+	## Compensate for the cd in the paths
-+	(cd cmocka && cmake -DCMAKE_INSTALL_PREFIX=../$(cmockadist) ../$(cmockasrc) && make && make install)
- endif
- 
- check: libcmocka
--- 
-2.17.1
+When compression was added to OpenVPN, a lot of Internet traffic was
+still unencrypted and encryption+compression was thought to be good
+thing. With recent attack like CRIME, BEAST and VORACLE, the general
+consensus in the crypto community is that compression should be avoided.
+On top of that, a lot of the traffic that the VPN carry today is either
+already compressed or encrypted and cannot be compressed any more. So
+benefits are diminishing.
 
+Our default configuration has not compression enabled. So our default
+configuration is safe from Voracle. Nevertheless, a lot of configuration
+examples are using compression and compression is wildly used because a
+lot of people think it is a good idea.
+
+Our current state is sane but I still we should try to change our
+implementation to have a minimal attack and encourage safe configuration.
+
+Outright removing compression is not an option as it would break
+connection to existing client/servers that have compression enabled.
+
+OpenVPN compression has always been opportunistic compression. I.e. we
+only send compressed payload if compression actually has a benefit. So
+even with compression enabled, most of the packets that are send might
+actually be not compressed for incompressible content.
+
+While we cannot (ignoring pushing option for the moment) change the
+behaviour of the other side, we can change our own behaviour to always
+send uncompressed packets but still accept compressed packets. Basically
+asymmetrically compression. This allows to mitigate VORACLE in one
+direction. If both sides are using this behaviour VORACLE is mitigated.
+
+So my proposal for OpenVPN is:
+
+- Introduce compress-direction asym|full This will control if we
+actively try to compress or just allow receiving of compressed packets
+- change the default mode to be asymmetrical.
+- If compress-direction is missing from the config but comp-lzo/compress
+are present inform the user "WARN: Compression mode set to assymetrical
+to avoid VORACLE like attacks. See the man page on compress-direction
+for more details".
+
+Open Points:
+
+- Gert strongly thinks that some people might want to continue having
+full compression despite the risks. I think it is reasonable to expect
+them to add 'compress-direction full' and push "compress-direction full"
+ to the server configuration, so touching clients is not needed.
+
+- Wording is pretty important here to not scare users too much. So the
+message of the warning and compress-direction are not final and might
+require some more thoughts.
+
+I would like to have some feedback what the rest of you thinks
+
+Arne
 
