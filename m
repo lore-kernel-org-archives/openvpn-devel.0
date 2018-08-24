@@ -1,11 +1,13 @@
-Reply-To: openvpn-devel@lists.sourceforge.net
+Date: Fri, 24 Aug 2018 21:16:54 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20180824191654.GK997@...1296...>
 References: <149619ba-265f-1a7a-6403-f99c6f4b7eac@...1227...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <f89c1cbd-4899-432a-5288-1055b5045318@...2080...>
-Date: Fri, 24 Aug 2018 16:31:44 +0200
+ <f89c1cbd-4899-432a-5288-1055b5045318@...2080...>
 MIME-Version: 1.0
-In-Reply-To: <149619ba-265f-1a7a-6403-f99c6f4b7eac@...1227...>
-Content-Language: en-GB
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="hTKW8p8tUZ/8vLMe"
+Content-Disposition: inline
+In-Reply-To: <f89c1cbd-4899-432a-5288-1055b5045318@...2080...>
 Subject: Re: [Openvpn-devel] Discussion: Moving forward with compression and
  voracle
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,111 +18,161 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-On 24/08/18 13:11, Arne Schwabe wrote:
-> Hey,
-[...snip...]
-> - Introduce compress-direction asym|full This will control if we
-> actively try to compress or just allow receiving of compressed packets
+--hTKW8p8tUZ/8vLMe
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-I'm not sold on this one at all.
+Hi,
 
-> - change the default mode to be asymmetrical.
+On Fri, Aug 24, 2018 at 04:31:44PM +0200, David Sommerseth wrote:
+> > Open Points:
+> >=20
+> > - Gert strongly thinks that some people might want to continue having
+> > full compression despite the risks. I think it is reasonable to expect
+> > them to add 'compress-direction full' and push "compress-direction full"
+> >  to the server configuration, so touching clients is not needed.
+>=20
+> I do disagree with Gert on this topic.  I think it is stupid to openly al=
+low
+> people to shoot themselves in the foot, even if we tell them in clear tex=
+t it
+> is stupid and kittens will die.  I can understand there are some use cases
+> where these risks doesn't matter, but in this case this is not a strong e=
+nough
+> argument to improve the overall situation for a clearly defined threat.
 
-Agreed.  Local side sends uncompressed data always, but can receive compressed
-data if the remote side does send it compressed.  This is the best way to
-achieve backwards compatibility during a migration phase.  At some point in
-the future, we should also remove compression support completely (we can keep
-the framing support, but never do compression)
+You do not need to agree with me on this, you just need to accept this
+as a fact of life.  I will resist any change that removes useful=20
+functionality from the "swiss tool kit of VPN" side of OpenVPN just=20
+because users could "get it wrong".
 
-> - If compress-direction is missing from the config but comp-lzo/compress
-> are present inform the user "WARN: Compression mode set to assymetrical
-> to avoid VORACLE like attacks. See the man page on compress-direction
-> for more details".
+I'm fine with compromising on making this an explicit "expert mode" knob.
 
-If compression is enabled with --comp-lzo {yes,adaptive} or --compress
-{lzo,lz4} (or rather non-empty string), such a warning is definitely appropriate.
+> There are tons of blog posts on the interwebs which will get this wrong, =
+no
+> matter how much we warn about it, and users will go "oh, this blog told m=
+e to
+> do so".=20=20
 
-> Open Points:
-> 
-> - Gert strongly thinks that some people might want to continue having
-> full compression despite the risks. I think it is reasonable to expect
-> them to add 'compress-direction full' and push "compress-direction full"
->  to the server configuration, so touching clients is not needed.
-
-I do disagree with Gert on this topic.  I think it is stupid to openly allow
-people to shoot themselves in the foot, even if we tell them in clear text it
-is stupid and kittens will die.  I can understand there are some use cases
-where these risks doesn't matter, but in this case this is not a strong enough
-argument to improve the overall situation for a clearly defined threat.
-
-There are tons of blog posts on the interwebs which will get this wrong, no
-matter how much we warn about it, and users will go "oh, this blog told me to
-do so".  Just look at the "bypass-dhcp" flag to --redirect-gateway is widely
-found on many blog posts - including those you would thought had better
-capacity to understand that DHCP flags in a routed tun setup does not make any
-sense at all.  Yes, I am looking and pointing sharply at you Digital Ocean.
-Yes, they even tell people to build a CA on a publicly available server
-without even having the CA private key password protected (!).  And people
-blindly tag along thinking they have a safe and cool setup.  Because it works!
-
-Ignoring the fact that simply too many bloggers are generally too stupid to
-understand what they write about and that Google etc are too good at finding
-these blogs just tells me that NOT killing compression support will simply not
-resolve the VORACLE issue in the long run.  Yes, we can say "But we warned you
-about it".  But that's simply not good enough for me, it doesn't secure
-OpenVPN in reality - WE put the gun at their feet.  It's not a question "if"
-but "when" blog posts will appear saying "setting this option boosted my
-speedtest from 10Mbit/s to 300Mbit/s despite my DSL link being 15Mbit/s.
-OpenVPN is soooo coool!".  Because security is boring and annoying - and what
-is even more boring is to try to understand why such results are completely
-bogus. (I encourage anyone not believing me to hang out for a longer time on
-the #openvpn irc channel).
-
-OpenVPN simply has too many users and use cases that we can consider the
-usefulness of compression which  a smaller minority group of users really can
-use safely.  There are too many who will do this wrong.
-
-This swiss-army knife idea about OpenVPN is dangerous, because of the amount
-of possible insecure configurations.  And we have already killed off and will
-remove several options which are equally bad.  We no longer have --no-iv and
---key-method.  We will remove several insecure ciphers (and BF is definitely
-quite fast on smaller hardware without any hardware acceleration support,
-compared to AES-128-CBC - the same "swiss-knife" argument can be applied here
-too to keep BF) ... and there will be more options too facing the same
-destiny.  Just as a parallel, SSL libraries has kicked out MD5 support for
-certificate signing, which surely could be used safely in closed laboratory
-networks where this kind of security issues does not apply.  You can find
-millions of reasons why to keep a specific feature you care for, if you just
-dig long enough.  But it does not necessarily give any valid reasons why to
-keep it.
-
-Therefore, my conclusion is:  We cannot keep a feature in OpenVPN which
-benefits the few but puts the larger user base at risk due to bad configurations.
-
-Compression and encryption does not belong together.  Period.
-
-There is only one small tiny compromise I can be willing to consider:
-
-    ./configure --enable-insecure-and-risky-voracle-attack-vector \
-                --enable-yes-I-really-know-what-I-am-doing
-
-where both is really needed and will put annoying messages in the log file -
-preferably on each initiated connection.  But if I see any distribution at all
-enabling this by default ... then this opening goes away.
-
-Default behaviour should be: Never send compressed packets but accept
-compressed packets from the remote - until we can finally just whack sending
-compressed packets too in a further future release.
+We're not going to save the world, and I refuse crippling my tools because
+someone else is refusing to read the manual about "do not turn on expert
+mode if you do not know what this is for".
 
 
--- 
-kind regards,
+Again: OpenVPN is much more versatile than "VPN for dummies, with=20
+no switches provided, because someone could get them wrong".  This is=20
+why I am interested in this project - the flexibility of OpenVPN to=20
+handle setups where more "basic" VPN projects hit their limits.
 
-David Sommerseth
-OpenVPN Inc
+[..]
+> Just look at the "bypass-dhcp" flag to --redirect-gateway is widely
+> found on many blog posts - including those you would thought had better
+> capacity to understand that DHCP flags in a routed tun setup does not mak=
+e any
+> sense at all.  Yes, I am looking and pointing sharply at you Digital Ocea=
+n.
+> Yes, they even tell people to build a CA on a publicly available server
+> without even having the CA private key password protected (!).  And people
+> blindly tag along thinking they have a safe and cool setup.  Because it w=
+orks!
 
+So we should remove X509 mode because people find bad instructions on
+how to run their CA on the web?
+
+See where your arguments lead?
+
+[..]
+> OpenVPN simply has too many users and use cases that we can consider the
+> usefulness of compression which  a smaller minority group of users really=
+ can
+> use safely.  There are too many who will do this wrong.
+
+I do not care.  Really.  If people enable an expert mode switch without
+reading a warning label, they get what they asked for *and this is the
+way it needs to be*.
+
+We're not removing root accounts and sudo from unix, just because people
+can be told to do "curl $somesite | sudo bash", no?
+
+
+> This swiss-army knife idea about OpenVPN is dangerous, because of the amo=
+unt
+> of possible insecure configurations.  And we have already killed off and =
+will
+> remove several options which are equally bad.  We no longer have --no-iv =
+and
+> --key-method.  We will remove several insecure ciphers (and BF is definit=
+ely
+> quite fast on smaller hardware without any hardware acceleration support,
+> compared to AES-128-CBC - the same "swiss-knife" argument can be applied =
+here
+> too to keep BF) ... and there will be more options too facing the same
+> destiny.  Just as a parallel, SSL libraries has kicked out MD5 support for
+> certificate signing, which surely could be used safely in closed laborato=
+ry
+> networks where this kind of security issues does not apply.  You can find
+> millions of reasons why to keep a specific feature you care for, if you j=
+ust
+> dig long enough.  But it does not necessarily give any valid reasons why =
+to
+> keep it.
+
+Changing ciphers and hash algorithms does not really take functionality awa=
+y.
+
+
+> Therefore, my conclusion is:  We cannot keep a feature in OpenVPN which
+> benefits the few but puts the larger user base at risk due to bad configu=
+rations.
+>=20
+> Compression and encryption does not belong together.  Period.
+>=20
+> There is only one small tiny compromise I can be willing to consider:
+>=20
+>     ./configure --enable-insecure-and-risky-voracle-attack-vector \
+>                 --enable-yes-I-really-know-what-I-am-doing
+
+
+No, because this is silly.   By your own argument, people are not expected
+to compile openvpn nowadays ("this is what distribution maintainers will
+do for you"), and we're *removing* #ifdefs, not adding new ones.
+
+
+I'm not here to protect users that are unwilling to read documentation.
+
+I'm here to build and maintain a versatile VPN solution that can do=20
+everything that more dumbed down software can not do.
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--hTKW8p8tUZ/8vLMe
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJbgFmlAAoJEB2Cnv7KVigS4jUL/0bvrhdXATzJiQE26FEGi6go
+YvbyzgHqeq/JzMlX5DFdcVrcz0OWI2UK3tL/ECBglLSfrYPSHnWUpjV+YMyCQl0z
+uH1os4hsu04RovX0Q3+WOAiqHSebuxfg6IEVelyal3aFq04PJByYZsYzMm66S5OO
+O+qQnRRapNSIyLPhpvwHmCkjdazq/6xrWpo/BJLV6nLSltoAqMo764P8jVWIzTwU
+uJdF6/vt239KEKJinGzCLFPAkd6P+xaMKDR1vNLiq05z39Sn5TidPeHA6PO+exCX
+ZuwAU0HNFIiuHNjc8CIHZeka7ytjdTZGRdZVBV4rbSojXqbnpcAt6KiH4qUkTbV8
+mNYvtf+6u96eT0A1/orXr6fABGNnWgm/g5m0O28aCHPz7SvXDCrH8Y7L/l2kXXxP
+i4DmCPaPnNiQJ5YvXJlStq7w0gihhn09qDxA28p5Z2mdZPq4YnWCMpZEiUuKRjP8
+5+wdDGUGCNZjcGoD0NSnqKdD1/EZro82AgVH7/kq9Q==
+=t7Kw
+-----END PGP SIGNATURE-----
+
+--hTKW8p8tUZ/8vLMe--
 
