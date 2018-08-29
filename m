@@ -1,9 +1,8 @@
 From: Steffan Karger <steffan.karger@...1435...>
-Date: Wed, 29 Aug 2018 14:04:46 +0200
-Message-ID: <1535544286-29638-1-git-send-email-steffan.karger@...1435...>
+Date: Wed, 29 Aug 2018 15:49:43 +0200
+Message-ID: <1535550583-21825-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] mbedtls: print warning if random
- personalisation fails
+Subject: [Openvpn-devel] [PATCH] Fix memory leak after sighup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,28 +15,36 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-... instead of when it doesn't fail.  Looks like 'someone' mixed up the
-mbedtls return style (0 means success) with the openvpn internal return
-style (true means success).
+The c.es env_set is (re)allocated for each "sighup loop iteration", while
+it was free'd only once at process shutdown.  Move the env_set_destroy()
+call to match the same level as the env_set_create() call to fix that.
 
 Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
- src/openvpn/ssl_mbedtls.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ src/openvpn/openvpn.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index 8e31980..ef83e65 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -853,7 +853,7 @@ tls_ctx_personalise_random(struct tls_root_ctx *ctx)
-         const md_kt_t *sha256_kt = md_kt_get("SHA256");
-         mbedtls_x509_crt *cert = ctx->crt_chain;
+diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
+index b9e914a..3819889 100644
+--- a/src/openvpn/openvpn.c
++++ b/src/openvpn/openvpn.c
+@@ -329,6 +329,7 @@ openvpn_main(int argc, char *argv[])
+             }
+             while (c.sig->signal_received == SIGUSR1);
  
--        if (0 != md_full(sha256_kt, cert->tbs.p, cert->tbs.len, sha256_hash))
-+        if (!md_full(sha256_kt, cert->tbs.p, cert->tbs.len, sha256_hash))
-         {
-             msg(M_WARN, "WARNING: failed to personalise random");
++            env_set_destroy(c.es);
+             uninit_options(&c.options);
+             gc_reset(&c.gc);
          }
+@@ -337,8 +338,6 @@ openvpn_main(int argc, char *argv[])
+ 
+     context_gc_free(&c);
+ 
+-    env_set_destroy(c.es);
+-
+ #ifdef ENABLE_MANAGEMENT
+     /* close management interface */
+     close_management();
 -- 
 2.7.4
 
