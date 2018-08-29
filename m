@@ -1,8 +1,8 @@
-From: Steffan Karger <steffan.karger@...1435...>
-Date: Wed, 29 Aug 2018 15:49:43 +0200
-Message-ID: <1535550583-21825-1-git-send-email-steffan.karger@...1435...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix memory leak after sighup
+From: Christian Ehrhardt <christian.ehrhardt@...1808...>
+Date: Wed, 29 Aug 2018 16:27:13 +0200
+Message-Id: <20180829142715.417-1-christian.ehrhardt@...1808...>
+Subject: [Openvpn-devel] [PATCH 0/2] extend systemd service files for common
+ use cases
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,37 +15,32 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The c.es env_set is (re)allocated for each "sighup loop iteration", while
-it was free'd only once at process shutdown.  Move the env_set_destroy()
-call to match the same level as the env_set_create() call to fix that.
+Hi,
+tracking down an Ubuntu bug I found what seemed to be a circular
+dependency around https://community.openvpn.net/openvpn/ticket/918
 
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
----
- src/openvpn/openvpn.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Realizing that your process requires the patches sent to the list I
+thought it might help to prep those.
 
-diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
-index b9e914a..3819889 100644
---- a/src/openvpn/openvpn.c
-+++ b/src/openvpn/openvpn.c
-@@ -329,6 +329,7 @@ openvpn_main(int argc, char *argv[])
-             }
-             while (c.sig->signal_received == SIGUSR1);
- 
-+            env_set_destroy(c.es);
-             uninit_options(&c.options);
-             gc_reset(&c.gc);
-         }
-@@ -337,8 +338,6 @@ openvpn_main(int argc, char *argv[])
- 
-     context_gc_free(&c);
- 
--    env_set_destroy(c.es);
--
- #ifdef ENABLE_MANAGEMENT
-     /* close management interface */
-     close_management();
+I'd highly sak to consider the first change, the second I can understand
+the need but had no real use case myself so far.
+To be able to discuss and also accept/nack them individually I split the
+changes.
+
+Eventually I'd also want to sync the systemd service content in
+https://github.com/OpenVPN/sbuild_wrapper to what is upstream. Therefore
+I was wondering how devel for that repo is done. After the discussion here
+resolves will a PR on github do it, or should this get a openvpn-devel ML
+post as well ?
+
+Christian Ehrhardt (2):
+  systemd: extend CapabilityBoundingSet for auth_pam
+  systemd: extend CapabilityBoundingSet for learn-address
+
+ distro/systemd/openvpn-server@...2221... | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
 -- 
-2.7.4
+2.17.1
 
 
