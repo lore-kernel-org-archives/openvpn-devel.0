@@ -1,10 +1,10 @@
 From: Christian Ehrhardt <christian.ehrhardt@...1808...>
-Date: Wed, 29 Aug 2018 16:27:14 +0200
-Message-Id: <20180829142715.417-2-christian.ehrhardt@...1808...>
+Date: Wed, 29 Aug 2018 16:27:15 +0200
+Message-Id: <20180829142715.417-3-christian.ehrhardt@...1808...>
 In-Reply-To: <20180829142715.417-1-christian.ehrhardt@...1808...>
 References: <20180829142715.417-1-christian.ehrhardt@...1808...>
-Subject: [Openvpn-devel] [PATCH 1/2] systemd: extend CapabilityBoundingSet
- for auth_pam
+Subject: [Openvpn-devel] [PATCH 2/2] systemd: extend CapabilityBoundingSet
+ for learn-address
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,19 +17,10 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Auth_pam will require audit writes or the connection will be rejected
-as the plugin fails to initialize like:
-  openvpn[1111]: sudo: unable to send audit message
-  openvpn[1111]: sudo: pam_open_session: System error
-  openvpn[1111]: sudo: policy plugin failed session initialization
+It seems a not too uncommon case that learn-address needs to recycle
+dnsmasq - to do so it would need CAP_KILL.
 
-See links from https://community.openvpn.net/openvpn/ticket/918 for
-more.
-
-auth_pam is a common use case and capabilties for it should be allowed
-by the .service file.
-
-Fixes: #918
+This was suggested on https://community.openvpn.net/openvpn/ticket/918
 
 Signed-off-by: Christian Ehrhardt <christian.ehrhardt@...1808...>
 ---
@@ -37,15 +28,15 @@ Signed-off-by: Christian Ehrhardt <christian.ehrhardt@...1808...>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/distro/systemd/openvpn-server@...2221... b/distro/systemd/openvpn-server@...2221...
-index a8366a04..d1cc72cb 100644
+index d1cc72cb..edace213 100644
 --- a/distro/systemd/openvpn-server@...2221...
 +++ b/distro/systemd/openvpn-server@...2221...
 @@ -11,7 +11,7 @@ Type=notify
  PrivateTmp=true
  WorkingDirectory=/etc/openvpn/server
  ExecStart=@sbindir@/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
--CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
-+CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE CAP_AUDIT_WRITE
+-CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE CAP_AUDIT_WRITE
++CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE CAP_AUDIT_WRITE CAP_KILL
  LimitNPROC=10
  DeviceAllow=/dev/null rw
  DeviceAllow=/dev/net/tun rw
