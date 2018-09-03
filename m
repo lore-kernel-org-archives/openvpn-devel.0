@@ -1,9 +1,10 @@
-Date: Mon, 3 Sep 2018 10:39:56 +0200 (CEST)
-Message-Id: <201809030839.w838duC5083300@...2054...>
+Date: Mon, 3 Sep 2018 10:45:15 +0200 (CEST)
+Message-Id: <201809030845.w838jFjx083475@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1535550583-21825-1-git-send-email-steffan.karger@...1435...>
-References: <1535550583-21825-1-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix memory leak after sighup
+In-Reply-To: <20180829142715.417-2-christian.ehrhardt@...1808...>
+References: <20180829142715.417-2-christian.ehrhardt@...1808...>
+Subject: [Openvpn-devel] [PATCH applied] Re: systemd: extend
+ CapabilityBoundingSet for auth_pam
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,22 +15,22 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan.karger@...1435...>
+To: Christian Ehrhardt <christian.ehrhardt@...1808...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.4 branch (bugfix).
+Your patch has been applied to the master and release/2.4 branch.
 
-commit 7170bef507bfe74ceb4a12f8f10df4d2d6ad39c9 (master)
-commit 8fcfe1d449a64e1ce61e361dc593ff52293b41f2 (release/2.4)
-Author: Steffan Karger
-Date:   Wed Aug 29 15:49:43 2018 +0200
+commit a564781cfd9912d0f755394d1fa610706d93e707 (master)
+commit 7cc372c7f6b4dcc20533433a20dfd5a95f117146 (release/2.4)
+Author: Christian Ehrhardt
+Date:   Wed Aug 29 16:27:14 2018 +0200
 
-     Fix memory leak after sighup
+     systemd: extend CapabilityBoundingSet for auth_pam
 
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1535550583-21825-1-git-send-email-steffan.karger@...1435...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17429.html
+     Signed-off-by: Christian Ehrhardt <christian.ehrhardt@...1808...>
+     Acked-by: David Sommerseth <davids@...515...>
+     Message-Id: <20180829142715.417-2-christian.ehrhardt@...1808...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17432.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
