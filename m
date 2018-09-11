@@ -1,10 +1,11 @@
-Message-ID: <5b979ae1.1c69fb81.c06ea.5bdd@...2014...>
-Date: Tue, 11 Sep 2018 18:37:18 +0800
-From: ramadhanyovie99 <ramadhanyovie99@...277...>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
- boundary="--_com.samsung.android.email_26288686578490"
-Subject: [Openvpn-devel] (no subject)
+References: <5b979ae1.1c69fb81.c06ea.5bdd@...2014...>
+In-Reply-To: <5b979ae1.1c69fb81.c06ea.5bdd@...2014...>
+From: Yovie Ramadhan <ramadhanyovie99@...277...>
+Date: Tue, 11 Sep 2018 20:57:25 +0800
+Message-ID: <CAAS2iONWBdx5ucwx_zHMXzjc2PwMiC+DvdjvwBegs2Pb5KE+OQ@...278...>
+Content-Type: multipart/alternative; boundary="000000000000aed767057598041a"
+Subject: Re: [Openvpn-devel] (no subject)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,23 +16,43 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Openvpn-devel@lists.sourceforge.net
 
-----_com.samsung.android.email_26288686578490
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+--000000000000aed767057598041a
+Content-Type: text/plain; charset="UTF-8"
 
-CgoKCkRpa2lyaW0gZGFyaSBwb25zZWwgY2VyZGFzIFNhbXN1bmcgR2FsYXh5IHNheWEu
+Pada tanggal Sel, 11 Sep 2018 18:38, ramadhanyovie99 <
+ramadhanyovie99@...277...> menulis:
 
-----_com.samsung.android.email_26288686578490
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: base64
+>
+>
+>
+>
+> Dikirim dari ponsel cerdas Samsung Galaxy saya.
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
 
-PGh0bWw+PGhlYWQ+PG1ldGEgaHR0cC1lcXVpdj0iQ29udGVudC1UeXBlIiBjb250ZW50PSJ0ZXh0
-L2h0bWw7IGNoYXJzZXQ9VVRGLTgiPjwvaGVhZD48Ym9keT48ZGl2Pjxicj48L2Rpdj48ZGl2Pjxi
-cj48L2Rpdj48ZGl2Pjxicj48L2Rpdj48ZGl2Pjxicj48L2Rpdj48ZGl2IGlkPSJjb21wb3Nlcl9z
-aWduYXR1cmUiPjxkaXYgc3R5bGU9ImZvbnQtc2l6ZTo4NSU7Y29sb3I6IzU3NTc1NyIgZGlyPSJh
-dXRvIj5EaWtpcmltIGRhcmkgcG9uc2VsIGNlcmRhcyBTYW1zdW5nIEdhbGF4eSBzYXlhLjwvZGl2
-PjwvZGl2PjwvYm9keT48L2h0bWw+
+--000000000000aed767057598041a
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-----_com.samsung.android.email_26288686578490--
+<div dir=3D"auto"></div><br><div class=3D"gmail_quote"><div dir=3D"ltr">Pad=
+a tanggal Sel, 11 Sep 2018 18:38, ramadhanyovie99 &lt;<a href=3D"mailto:ram=
+adhanyovie99@...277...">ramadhanyovie99@...277...</a>&gt; menulis:<br></div=
+><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1=
+px #ccc solid;padding-left:1ex"><div><div><br></div><div><br></div><div><br=
+></div><div><br></div><div id=3D"m_7993429911240546320composer_signature"><=
+div style=3D"font-size:85%;color:#575757" dir=3D"auto">Dikirim dari ponsel =
+cerdas Samsung Galaxy saya.</div></div></div>______________________________=
+_________________<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank" re=
+l=3D"noreferrer">Openvpn-devel@lists.sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
+=3D"noreferrer noreferrer" target=3D"_blank">https://lists.sourceforge.net/=
+lists/listinfo/openvpn-devel</a><br>
+</blockquote></div>
 
+--000000000000aed767057598041a--
 
