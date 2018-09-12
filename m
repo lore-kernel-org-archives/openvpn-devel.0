@@ -1,10 +1,8 @@
-Message-ID: <5b98356e.1c69fb81.5e17d.80ba@...2014...>
-Date: Wed, 12 Sep 2018 05:36:42 +0800
-From: ramadhanyovie99 <ramadhanyovie99@...277...>
-MIME-Version: 1.0
-Content-Type: multipart/alternative;
- boundary="--_com.samsung.android.email_368988165646170"
-Subject: [Openvpn-devel] Codapay
+From: Arne Schwabe <arne@...1227...>
+Date: Wed, 12 Sep 2018 13:07:01 +0200
+Message-Id: <20180912110701.31609-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Properly free tuntap struct on android when
+ emulating persist-tun
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,29 +11,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "Openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
-
-----_com.samsung.android.email_368988165646170
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-aHR0cHM6Ly9haXJ0aW1lLmNvZGFwYXltZW50cy5jb20vYWlydGltZS9lcGMtbXNpc2RuP1R4bklk
-PTUzNjcwMTc1MzcwNTY2NjU4NTkmYnJvd3Nlcl90eXBlPW1vYmlsZS13ZWIKCgoKRGlraXJpbSBk
-YXJpIHBvbnNlbCBjZXJkYXMgU2Ftc3VuZyBHYWxheHkgc2F5YS4=
+Trac-Ticket: #851
+---
+ src/openvpn/init.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-----_com.samsung.android.email_368988165646170
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: base64
-
-PGh0bWw+PGhlYWQ+PG1ldGEgaHR0cC1lcXVpdj0iQ29udGVudC1UeXBlIiBjb250ZW50PSJ0ZXh0
-L2h0bWw7IGNoYXJzZXQ9VVRGLTgiPjwvaGVhZD48Ym9keT5odHRwczovL2FpcnRpbWUuY29kYXBh
-eW1lbnRzLmNvbS9haXJ0aW1lL2VwYy1tc2lzZG4/VHhuSWQ9NTM2NzAxNzUzNzA1NjY2NTg1OSZh
-bXA7YnJvd3Nlcl90eXBlPW1vYmlsZS13ZWI8ZGl2Pjxicj48L2Rpdj48ZGl2Pjxicj48L2Rpdj48
-ZGl2Pjxicj48L2Rpdj48ZGl2Pjxicj48L2Rpdj48ZGl2IGlkPSJjb21wb3Nlcl9zaWduYXR1cmUi
-PjxkaXYgc3R5bGU9ImZvbnQtc2l6ZTo4NSU7Y29sb3I6IzU3NTc1NyIgZGlyPSJhdXRvIj5EaWtp
-cmltIGRhcmkgcG9uc2VsIGNlcmRhcyBTYW1zdW5nIEdhbGF4eSBzYXlhLjwvZGl2PjwvZGl2Pjwv
-Ym9keT48L2h0bWw+
-
-----_com.samsung.android.email_368988165646170--
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 2933d555..b1f4320a 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1680,6 +1680,9 @@ do_open_tun(struct context *c)
+     if (c->c1.tuntap)
+     {
+         oldtunfd = c->c1.tuntap->fd;
++        free(c->c1.tuntap);
++        c->c1.tuntap = NULL;
++        c->c1.tuntap_owned = false;
+     }
+ #endif
+ 
+-- 
+2.18.0
 
 
