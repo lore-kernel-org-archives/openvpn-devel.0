@@ -1,12 +1,11 @@
-From: Steffan Karger <steffan.karger@...1435...>
-Date: Fri, 14 Sep 2018 11:14:19 +0200
-Message-ID: <1536916459-25900-3-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <1536916459-25900-1-git-send-email-steffan.karger@...1435...>
-References: <1505166722-5409-1-git-send-email-steffan.karger@...1435...>
- <1536916459-25900-1-git-send-email-steffan.karger@...1435...>
+From: "Morris, Russell" <rmorris@...1315...>
+Date: Fri, 14 Sep 2018 21:10:12 +0000
+Message-ID: <DM5PR08MB3642F01D339F64AF7E9029EFB9190@...2422...>
+Content-Language: en-US
+Content-Type: multipart/alternative;
+ boundary="_000_DM5PR08MB3642F01D339F64AF7E9029EFB9190DM5PR08MB3642namp_"
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 3/3] mbedtls: remove dependency on
- mbedtls pkcs11 module
+Subject: [Openvpn-devel] Traffic through Cloudflare
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,272 +14,110 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Instead of using mbedtls's pkcs11 module, reuse the code we already have
-for management-external-key to also do pkcs11 signatures.  As far as mbed
-is concerned, we simply provide an external signature.
+--_000_DM5PR08MB3642F01D339F64AF7E9029EFB9190DM5PR08MB3642namp_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-This has the following advantages:
- * We no longer need mbed TLS to be compiled with the pkcs11 modules
-   enabled (which is not enabled by default).  This makes it easier to use
-   a system/distribution-provided mbed shared library.
- * We no longer have a dependency on pkcs11-helper through mbed TLS.  So if
-   we want to migrate to some other pkcs11 lib (see e.g. trac #491, #538
-   and #549 for reason why), this will be easier.
+Hi,
 
-While touching this code, switch from M_FATAL to M_WARN and proper error
-handling.  This improves the error reporting, and helps prevent potential
-future DoS attacks if someone starts using these functions on peer input.
+Perhaps a dumb question, but I recently set up my (HTTPS) server through Cl=
+oudflare, enabling their proxy service. Now when I try to connect to OpenVP=
+N, I get the following?
 
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
----
-v2: rebase onto current master
+WARNING: Bad encapsulated packet length from peer (18516), which must be > =
+0 and <=3D 1626 - please ensure that --tun-mtu or --link-mtu is equal on bo=
+th peers - this condition could also indicate a possible active attack on t=
+he TCP link - [Attempting restart...]
 
- configure.ac                 | 29 ---------------
- src/openvpn/pkcs11_mbedtls.c | 87 +++++++++++++++++++++++++++++---------------
- src/openvpn/ssl_mbedtls.c    |  7 +---
- src/openvpn/ssl_mbedtls.h    |  6 +--
- 4 files changed, 62 insertions(+), 67 deletions(-)
+Have other seen this? Is it expected?
 
-diff --git a/configure.ac b/configure.ac
-index 9c31435..3d8e15b 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -994,35 +994,6 @@ elif test "${with_crypto_library}" = "mbedtls"; then
- 		[AC_MSG_ERROR([mbed TLS 2.y.z required])]
- 	)
- 
--	mbedtls_with_pkcs11="no"
--	AC_COMPILE_IFELSE(
--		[AC_LANG_PROGRAM(
--			[[
--#include <mbedtls/config.h>
--			]],
--			[[
--#ifndef MBEDTLS_PKCS11_C
--#error pkcs11 wrapper missing
--#endif
--			]]
--		)],
--		mbedtls_with_pkcs11="yes")
--
--	AC_MSG_CHECKING([mbedtls pkcs11 support])
--	if test "${enable_pkcs11}" = "yes"; then
--		if test "${mbedtls_with_pkcs11}" = "yes"; then
--			AC_MSG_RESULT([ok])
--		else
--			AC_MSG_ERROR([mbedtls has no pkcs11 wrapper compiled in])
--		fi
--	else
--		if test "${mbedtls_with_pkcs11}" != "yes"; then
--			AC_MSG_RESULT([ok])
--		else
--			AC_MSG_ERROR([mbed TLS compiled with PKCS11, while OpenVPN is not])
--		fi
--	fi
--
- 	have_crypto_aead_modes="yes"
- 	AC_CHECK_FUNCS(
- 		[ \
-diff --git a/src/openvpn/pkcs11_mbedtls.c b/src/openvpn/pkcs11_mbedtls.c
-index 7620624..bd704e0 100644
---- a/src/openvpn/pkcs11_mbedtls.c
-+++ b/src/openvpn/pkcs11_mbedtls.c
-@@ -39,60 +39,89 @@
- #include "errlevel.h"
- #include "pkcs11_backend.h"
- #include "ssl_verify_backend.h"
--#include <mbedtls/pkcs11.h>
- #include <mbedtls/x509.h>
- 
--int
--pkcs11_init_tls_session(pkcs11h_certificate_t certificate,
--                        struct tls_root_ctx *const ssl_ctx)
-+static bool
-+pkcs11_get_x509_cert(pkcs11h_certificate_t pkcs11_cert, mbedtls_x509_crt *cert)
- {
--    int ret = 1;
-+    unsigned char *cert_blob = NULL;
-+    size_t cert_blob_size = 0;
-+    bool ret = false;
- 
--    ASSERT(NULL != ssl_ctx);
--
--    ALLOC_OBJ_CLEAR(ssl_ctx->crt_chain, mbedtls_x509_crt);
--    if (mbedtls_pkcs11_x509_cert_bind(ssl_ctx->crt_chain, certificate))
-+    if (pkcs11h_certificate_getCertificateBlob(pkcs11_cert, NULL,
-+                                               &cert_blob_size) != CKR_OK)
-     {
--        msg(M_FATAL, "PKCS#11: Cannot retrieve mbed TLS certificate object");
-+        msg(M_WARN, "PKCS#11: Cannot retrieve certificate object size");
-         goto cleanup;
-     }
- 
--    ALLOC_OBJ_CLEAR(ssl_ctx->priv_key_pkcs11, mbedtls_pkcs11_context);
--    if (mbedtls_pkcs11_priv_key_bind(ssl_ctx->priv_key_pkcs11, certificate))
-+    check_malloc_return((cert_blob = calloc(1, cert_blob_size)));
-+    if (pkcs11h_certificate_getCertificateBlob(pkcs11_cert, cert_blob,
-+                                               &cert_blob_size) != CKR_OK)
-     {
--        msg(M_FATAL, "PKCS#11: Cannot initialize mbed TLS private key object");
-+        msg(M_WARN, "PKCS#11: Cannot retrieve certificate object");
-         goto cleanup;
-     }
- 
--    ALLOC_OBJ_CLEAR(ssl_ctx->priv_key, mbedtls_pk_context);
--    if (!mbed_ok(mbedtls_pk_setup_rsa_alt(ssl_ctx->priv_key,
--                                          ssl_ctx->priv_key_pkcs11, mbedtls_ssl_pkcs11_decrypt,
--                                          mbedtls_ssl_pkcs11_sign, mbedtls_ssl_pkcs11_key_len)))
-+    if (!mbed_ok(mbedtls_x509_crt_parse(cert, cert_blob, cert_blob_size)))
-     {
-+        msg(M_WARN, "PKCS#11: Could not parse certificate");
-         goto cleanup;
-     }
- 
--    ret = 0;
--
-+    ret = true;
- cleanup:
-+    free(cert_blob);
-     return ret;
- }
- 
-+static bool
-+pkcs11_sign(void *pkcs11_cert, const void *src, size_t src_len,
-+            void *dst, size_t dst_len)
-+{
-+    return CKR_OK == pkcs11h_certificate_signAny(pkcs11_cert, CKM_RSA_PKCS,
-+                                                 src, src_len, dst, &dst_len);
-+}
-+
-+int
-+pkcs11_init_tls_session(pkcs11h_certificate_t certificate,
-+                        struct tls_root_ctx *const ssl_ctx)
-+{
-+    ASSERT(NULL != ssl_ctx);
-+
-+    ssl_ctx->pkcs11_cert = certificate;
-+
-+    ALLOC_OBJ_CLEAR(ssl_ctx->crt_chain, mbedtls_x509_crt);
-+    if (!pkcs11_get_x509_cert(certificate, ssl_ctx->crt_chain))
-+    {
-+        msg(M_WARN, "PKCS#11: Cannot initialize certificate");
-+        return 1;
-+    }
-+
-+    if (tls_ctx_use_external_signing_func(ssl_ctx, pkcs11_sign, certificate))
-+    {
-+        msg(M_WARN, "PKCS#11: Cannot register signing function");
-+        return 1;
-+    }
-+
-+    return 0;
-+}
-+
- char *
- pkcs11_certificate_dn(pkcs11h_certificate_t cert, struct gc_arena *gc)
- {
-     char *ret = NULL;
--    mbedtls_x509_crt mbed_crt = {0};
-+    mbedtls_x509_crt mbed_crt = { 0 };
- 
--    if (mbedtls_pkcs11_x509_cert_bind(&mbed_crt, cert))
-+    if (!pkcs11_get_x509_cert(cert, &mbed_crt))
-     {
--        msg(M_FATAL, "PKCS#11: Cannot retrieve mbed TLS certificate object");
-+        msg(M_WARN, "PKCS#11: Cannot retrieve mbed TLS certificate object");
-         goto cleanup;
-     }
- 
-     if (!(ret = x509_get_subject(&mbed_crt, gc)))
-     {
--        msg(M_FATAL, "PKCS#11: mbed TLS cannot parse subject");
-+        msg(M_WARN, "PKCS#11: mbed TLS cannot parse subject");
-         goto cleanup;
-     }
- 
-@@ -107,23 +136,21 @@ pkcs11_certificate_serial(pkcs11h_certificate_t cert, char *serial,
-                           size_t serial_len)
- {
-     int ret = 1;
-+    mbedtls_x509_crt mbed_crt = { 0 };
- 
--    mbedtls_x509_crt mbed_crt = {0};
--
--    if (mbedtls_pkcs11_x509_cert_bind(&mbed_crt, cert))
-+    if (!pkcs11_get_x509_cert(cert, &mbed_crt))
-     {
--        msg(M_FATAL, "PKCS#11: Cannot retrieve mbed TLS certificate object");
-+        msg(M_WARN, "PKCS#11: Cannot retrieve mbed TLS certificate object");
-         goto cleanup;
-     }
- 
--    if (-1 == mbedtls_x509_serial_gets(serial, serial_len, &mbed_crt.serial))
-+    if (mbedtls_x509_serial_gets(serial, serial_len, &mbed_crt.serial) < 0)
-     {
--        msg(M_FATAL, "PKCS#11: mbed TLS cannot parse serial");
-+        msg(M_WARN, "PKCS#11: mbed TLS cannot parse serial");
-         goto cleanup;
-     }
- 
-     ret = 0;
--
- cleanup:
-     mbedtls_x509_crt_free(&mbed_crt);
- 
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index 4c39cf3..e4850cb 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -43,6 +43,7 @@
- #include "buffer.h"
- #include "misc.h"
- #include "manage.h"
-+#include "pkcs11_backend.h"
- #include "ssl_common.h"
- 
- #include <mbedtls/havege.h>
-@@ -167,11 +168,7 @@ tls_ctx_free(struct tls_root_ctx *ctx)
-         }
- 
- #if defined(ENABLE_PKCS11)
--        if (ctx->priv_key_pkcs11 != NULL)
--        {
--            mbedtls_pkcs11_priv_key_free(ctx->priv_key_pkcs11);
--            free(ctx->priv_key_pkcs11);
--        }
-+        pkcs11h_certificate_freeCertificate(ctx->pkcs11_cert);
- #endif
- 
-         if (ctx->allowed_ciphers)
-diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h
-index 73b4c1a..998d6f2 100644
---- a/src/openvpn/ssl_mbedtls.h
-+++ b/src/openvpn/ssl_mbedtls.h
-@@ -35,7 +35,7 @@
- #include <mbedtls/x509_crt.h>
- 
- #if defined(ENABLE_PKCS11)
--#include <mbedtls/pkcs11.h>
-+#include <pkcs11-helper-1.0/pkcs11h-certificate.h>
- #endif
- 
- typedef struct _buffer_entry buffer_entry;
-@@ -99,8 +99,8 @@ struct tls_root_ctx {
-     mbedtls_x509_crl *crl;              /**< Certificate Revocation List */
-     time_t crl_last_mtime;              /**< CRL last modification time */
-     off_t crl_last_size;                /**< size of last loaded CRL */
--#if defined(ENABLE_PKCS11)
--    mbedtls_pkcs11_context *priv_key_pkcs11;    /**< PKCS11 private key */
-+#ifdef ENABLE_PKCS11
-+    pkcs11h_certificate_t pkcs11_cert;  /**< PKCS11 certificate */
- #endif
-     struct external_context external_key; /**< External key context */
-     int *allowed_ciphers;       /**< List of allowed ciphers for this connection */
--- 
-2.7.4
+Thanks in advance!
 
+... Russell
+
+
+--_000_DM5PR08MB3642F01D339F64AF7E9029EFB9190DM5PR08MB3642namp_
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii">
+<meta name=3D"Generator" content=3D"Microsoft Word 15 (filtered medium)">
+<style><!--
+/* Font Definitions */
+@font-face
+	{font-family:Helvetica;
+	panose-1:2 11 6 4 2 2 2 2 2 4;}
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri",sans-serif;}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:#0563C1;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:#954F72;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri",sans-serif;
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-family:"Calibri",sans-serif;}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]-->
+</head>
+<body lang=3D"EN-US" link=3D"#0563C1" vlink=3D"#954F72">
+<div class=3D"WordSection1">
+<p class=3D"MsoNormal">Hi,<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal">Perhaps a dumb question, but I recently set up my (H=
+TTPS) server through Cloudflare, enabling their proxy service. Now when I t=
+ry to connect to OpenVPN, I get the following?<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:10.5pt;font-family:&quot;He=
+lvetica&quot;,sans-serif;color:#404242;background:#F9F9F9">WARNING: Bad enc=
+apsulated packet length from peer (18516), which must be &gt; 0 and &lt;=3D=
+ 1626 &#8211; please ensure that --tun-mtu or --link-mtu is
+ equal on both peers &#8211; this condition could also indicate a possible =
+active attack on the TCP link &#8211; [Attempting restart&#8230;]<o:p></o:p=
+></span></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal">Have other seen this? Is it expected?<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal">Thanks in advance!<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal">&#8230; Russell<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+</div>
+</body>
+</html>
+
+--_000_DM5PR08MB3642F01D339F64AF7E9029EFB9190DM5PR08MB3642namp_--
 
