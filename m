@@ -1,12 +1,11 @@
-References: <20180912110713.31670-1-arne@...1227...>
-From: tincanteksup <tincanteksup@...277...>
-Message-ID: <faa486c3-1b65-972c-27ec-7fd684e2eea2@...277...>
-Date: Wed, 12 Sep 2018 13:59:08 +0100
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Fri, 14 Sep 2018 11:14:17 +0200
+Message-ID: <1536916459-25900-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1505166722-5409-1-git-send-email-steffan.karger@...1435...>
+References: <1505166722-5409-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-In-Reply-To: <20180912110713.31670-1-arne@...1227...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH] Make compression asymmetric by default
- and add warnings
+Subject: [Openvpn-devel] [PATCH v2 1/3] Do not load certificate from
+ tls_ctx_use_external_private_key()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,307 +14,293 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Trying to help ;)
+The cert and key loading logic surrounding management-external-key and
+management-external cert was somewhat intertwined.  Untangle these to
+prepare for making the external key code more reusable.
 
-10 corrections to openvpn.8
+The best part is that this even reduces the number of lines of code.
 
-5 possible corrections to options.c
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+---
+v2: rebase onto current master
 
+ src/openvpn/ssl.c         | 48 ++++++++++++++++-------------------
+ src/openvpn/ssl_backend.h | 15 +++--------
+ src/openvpn/ssl_mbedtls.c |  6 ++---
+ src/openvpn/ssl_openssl.c | 64 +++++++++++++++++++++++------------------------
+ 4 files changed, 59 insertions(+), 74 deletions(-)
 
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index dcb5445..4257c33 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -657,41 +657,37 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx)
+     }
+ #endif
+ #ifdef MANAGMENT_EXTERNAL_KEY
+-    else if ((options->management_flags & MF_EXTERNAL_KEY)
+-             && (options->cert_file || options->management_flags & MF_EXTERNAL_CERT))
++    else if (options->management_flags & MF_EXTERNAL_CERT)
+     {
+-        if (options->cert_file)
+-        {
+-            tls_ctx_use_external_private_key(new_ctx, options->cert_file,
+-                                             options->cert_file_inline);
+-        }
+-        else
+-        {
+-            char *external_certificate = management_query_cert(management,
+-                                                               options->management_certificate);
+-            tls_ctx_use_external_private_key(new_ctx, INLINE_FILE_TAG,
+-                                             external_certificate);
+-            free(external_certificate);
+-        }
++        char *cert = management_query_cert(management,
++                                           options->management_certificate);
++        tls_ctx_load_cert_file(new_ctx, INLINE_FILE_TAG, cert);
++        free(cert);
+     }
+ #endif
+-    else
++    else if (options->cert_file)
++    {
++        tls_ctx_load_cert_file(new_ctx, options->cert_file, options->cert_file_inline);
++    }
++
++    if (options->priv_key_file)
+     {
+-        /* Load Certificate */
+-        if (options->cert_file)
++        if (0 != tls_ctx_load_priv_file(new_ctx, options->priv_key_file,
++                                        options->priv_key_file_inline))
+         {
+-            tls_ctx_load_cert_file(new_ctx, options->cert_file, options->cert_file_inline);
++            goto err;
+         }
+-
+-        /* Load Private Key */
+-        if (options->priv_key_file)
++    }
++#ifdef MANAGMENT_EXTERNAL_KEY
++    else if (options->management_flags & MF_EXTERNAL_KEY)
++    {
++        if (tls_ctx_use_management_external_key(new_ctx))
+         {
+-            if (0 != tls_ctx_load_priv_file(new_ctx, options->priv_key_file, options->priv_key_file_inline))
+-            {
+-                goto err;
+-            }
++            msg (M_WARN, "Cannot initialize mamagement-external-key");
++            goto err;
+         }
+     }
++#endif
+ 
+     if (options->ca_file || options->ca_path)
+     {
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index 202fe3f..5023c02 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -270,8 +270,7 @@ void tls_ctx_load_cert_file(struct tls_root_ctx *ctx, const char *cert_file,
+  *                              successful.
+  */
+ int tls_ctx_load_priv_file(struct tls_root_ctx *ctx, const char *priv_key_file,
+-                           const char *priv_key_file_inline
+-                           );
++                           const char *priv_key_file_inline);
+ 
+ #ifdef MANAGMENT_EXTERNAL_KEY
+ 
+@@ -280,18 +279,12 @@ int tls_ctx_load_priv_file(struct tls_root_ctx *ctx, const char *priv_key_file,
+  * private key matching the given certificate.
+  *
+  * @param ctx                   TLS context to use
+- * @param cert_file             The file name to load the certificate from, or
+- *                              "[[INLINE]]" in the case of inline files.
+- * @param cert_file_inline      A string containing the certificate
+  *
+- * @return                      1 if an error occurred, 0 if parsing was
+- *                              successful.
++ * @return                      1 if an error occurred, 0 if successful.
+  */
+-int tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
+-                                     const char *cert_file, const char *cert_file_inline);
+-
+-#endif
++int tls_ctx_use_management_external_key(struct tls_root_ctx *ctx);
+ 
++#endif /* MANAGMENT_EXTERNAL_KEY */
+ 
+ /**
+  * Load certificate authority certificates from the given file or path.
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index ef83e65..3c6d872 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -621,15 +621,13 @@ external_key_len(void *vctx)
+ }
+ 
+ int
+-tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
+-                                 const char *cert_file, const char *cert_file_inline)
++tls_ctx_use_management_external_key(struct tls_root_ctx *ctx)
+ {
+     ASSERT(NULL != ctx);
+ 
+-    tls_ctx_load_cert_file(ctx, cert_file, cert_file_inline);
+-
+     if (ctx->crt_chain == NULL)
+     {
++        msg (M_WARN, "ERROR: external key requires a certificate.");
+         return 1;
+     }
+ 
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 012668a..bf00a38 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -795,11 +795,9 @@ tls_ctx_add_extra_certs(struct tls_root_ctx *ctx, BIO *bio)
+     }
+ }
+ 
+-/* Like tls_ctx_load_cert, but returns a copy of the certificate in **X509 */
+-static void
+-tls_ctx_load_cert_file_and_copy(struct tls_root_ctx *ctx,
+-                                const char *cert_file, const char *cert_file_inline, X509 **x509
+-                                )
++void
++tls_ctx_load_cert_file(struct tls_root_ctx *ctx, const char *cert_file,
++                       const char *cert_file_inline)
+ {
+     BIO *in = NULL;
+     X509 *x = NULL;
+@@ -807,10 +805,6 @@ tls_ctx_load_cert_file_and_copy(struct tls_root_ctx *ctx,
+     bool inline_file = false;
+ 
+     ASSERT(NULL != ctx);
+-    if (NULL != x509)
+-    {
+-        ASSERT(NULL == *x509);
+-    }
+ 
+     inline_file = (strcmp(cert_file, INLINE_FILE_TAG) == 0);
+ 
+@@ -861,23 +855,12 @@ end:
+     {
+         BIO_free(in);
+     }
+-    if (x509)
+-    {
+-        *x509 = x;
+-    }
+     else if (x)
+     {
+         X509_free(x);
+     }
+ }
+ 
+-void
+-tls_ctx_load_cert_file(struct tls_root_ctx *ctx, const char *cert_file,
+-                       const char *cert_file_inline)
+-{
+-    tls_ctx_load_cert_file_and_copy(ctx, cert_file, cert_file_inline, NULL);
+-}
+-
+ int
+ tls_ctx_load_priv_file(struct tls_root_ctx *ctx, const char *priv_key_file,
+                        const char *priv_key_file_inline
+@@ -1039,7 +1022,7 @@ rsa_priv_dec(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
+ static int
+ openvpn_extkey_rsa_finish(RSA *rsa)
+ {
+-    /* meth was allocated in tls_ctx_use_external_private_key() ; since
++    /* meth was allocated in tls_ctx_use_management_external_key() ; since
+      * this function is called when the parent RSA object is destroyed,
+      * it is no longer used after this point so kill it. */
+     const RSA_METHOD *meth = RSA_get_method(rsa);
+@@ -1288,14 +1271,20 @@ err:
+ #endif /* OPENSSL_VERSION_NUMBER > 1.1.0 dev */
+ 
+ int
+-tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
+-                                 const char *cert_file, const char *cert_file_inline)
++tls_ctx_use_management_external_key(struct tls_root_ctx *ctx)
+ {
+-    X509 *cert = NULL;
++    int ret = 1;
+ 
+     ASSERT(NULL != ctx);
+ 
+-    tls_ctx_load_cert_file_and_copy(ctx, cert_file, cert_file_inline, &cert);
++#if OPENSSL_VERSION_NUMBER >= 0x10002000L && !defined(LIBRESSL_VERSION_NUMBER)
++    /* OpenSSL 1.0.2 and up */
++    X509 *cert = SSL_CTX_get0_certificate(ctx->ctx);
++#else
++    /* OpenSSL 1.0.1 and earlier need an SSL object to get at the certificate */
++    SSL *ssl = SSL_new(ctx->ctx);
++    X509 *cert = SSL_get_certificate(ssl);
++#endif
+ 
+     ASSERT(NULL != cert);
+ 
+@@ -1308,7 +1297,7 @@ tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
+     {
+         if (!tls_ctx_use_external_rsa_key(ctx, pkey))
+         {
+-            goto err;
++            goto cleanup;
+         }
+     }
+ #if OPENSSL_VERSION_NUMBER > 0x10100000L && !defined(OPENSSL_NO_EC) && !defined(LIBRESSL_VERSION_NUMBER)
+@@ -1316,26 +1305,35 @@ tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
+     {
+         if (!tls_ctx_use_external_ec_key(ctx, pkey))
+         {
+-            goto err;
++            goto cleanup;
+         }
+     }
+     else
+     {
+         crypto_msg(M_WARN, "management-external-key requires an RSA or EC certificate");
+-        goto err;
++        goto cleanup;
+     }
+ #else
+     else
+     {
+         crypto_msg(M_WARN, "management-external-key requires an RSA certificate");
+-        goto err;
++        goto cleanup;
+     }
+ #endif /* OPENSSL_VERSION_NUMBER > 1.1.0 dev */
+-    return 0;
+ 
+-err:
+-    crypto_msg(M_FATAL, "Cannot enable SSL external private key capability");
+-    return 1;
++    ret = 0;
++cleanup:
++#if OPENSSL_VERSION_NUMBER < 0x10002000L || defined(LIBRESSL_VERSION_NUMBER)
++    if (ssl)
++    {
++        SSL_free(ssl);
++    }
++#endif
++    if (ret)
++    {
++            crypto_msg(M_FATAL, "Cannot enable SSL external private key capability");
++    }
++    return ret;
+ }
+ 
+ #endif /* ifdef MANAGMENT_EXTERNAL_KEY */
+-- 
+2.7.4
 
-On 12/09/18 12:07, Arne Schwabe wrote:
-> This commit introduces the allow-compression option that allow
-> changing the new default to the previous default or to a stricter
-> version.
-> 
-> Warning are not generated in the post option check
-> (options_postprocess_mutate) since these warnings should also be shown
-> on pushed options.
-> ---
->   doc/openvpn.8          | 44 +++++++++++++++++----
->   src/openvpn/comp-lz4.c |  3 +-
->   src/openvpn/comp.h     | 16 ++++++--
->   src/openvpn/lzo.c      |  2 +-
->   src/openvpn/options.c  | 86 ++++++++++++++++++++++++++++++++++++------
->   5 files changed, 127 insertions(+), 24 deletions(-)
-> 
-> diff --git a/doc/openvpn.8 b/doc/openvpn.8
-> index de1a1928..21f42591 100644
-> --- a/doc/openvpn.8
-> +++ b/doc/openvpn.8
-> @@ -2508,26 +2508,54 @@ Enable a compression algorithm.
->   
->   The
->   .B algorithm
-> -parameter may be "lzo", "lz4", or empty.  LZO and LZ4
-> -are different compression algorithms, with LZ4 generally
-> +parameter may be "lzo", "lz4", "lz4-v2", "stub", "stub-v2" or empty.
-
-"lz4\-v2" "stub\-v2"
-
-> +LZO and LZ4 are different compression algorithms, with LZ4 generally
->   offering the best performance with least CPU usage.
->   For backwards compatibility with OpenVPN versions before v2.4, use "lzo"
->   (which is identical to the older option "\-\-comp\-lzo yes").
->   
-> +The "lz4-v2" and "stub-v2" variants implement a better framing that does not add
-> +overhead when packets cannot compressed. All other variants always add one extra
-> +compared to no compression framing.
-
-"lz4\-v2" "stub\-v2"
-
-when packets cannot "be" compressed
-
-"add one extra" .. what ? byte
-
-> +
->   If the
->   .B algorithm
-> -parameter is empty, compression will be turned off, but the packet
-> -framing for compression will still be enabled, allowing a different
-> -setting to be pushed later.
-> +parameter is "stub", "stubv2", or empty, compression will be turned off, but
-> +the packet framing for compression will still be enabled, allowing a different
-> +setting to be pushed later. Additionally, "stub" and "stub-v2" will disable
-> +announcing lzo and lz4 compression support for via "IV_" variables to the server.
-
-"stub\-v2"
-
-"support for via" -> "support via" (the for is not required)
-
-> +
->   
->   .B Security Considerations
->   
->   Compression and encryption is a tricky combination.  If an attacker knows or is
->   able to control (parts of) the plaintext of packets that contain secrets, the
->   attacker might be able to extract the secret if compression is enabled.  See
-> -e.g. the CRIME and BREACH attacks on TLS which also leverage compression to
-> -break encryption.  If you are not entirely sure that the above does not apply
-> -to your traffic, you are advised to *not* enable compression.
-> +e.g. the CRIME and BREACH attacks on TLS and VORACLE on VPNs which also leverage
-> +compression to break encryption.  If you are not entirely sure that the above does
-> +not apply to your traffic, you are advised to *not* enable compression.
-> +
-> +.\"*********************************************************
-> +.TP
-> +.B \-\-allow-compression [mode]
-> +As described in
-> +\.B \-\-compress
-> +option, compression is potentially dangerous option. This option allows
-> +control the behaviour of OpenVPN when compression is used and allowed.
-
-"controlling"
-
-> +.B mode
-> +may be "yes", "no", or "asym" (default).
-> +
-> +With allow-compression set to "no", OpenVPN will refuse any non stub
-
-\-\-allow\-compression
-
-> +compression. With "yes" OpenVPN will send and receive compressed packets.
-> +With "asym", the default, OpenVPN will only decompress (downlink) packets but
-> +not compress (uplink) packets. This also allows migrating to disable compression
-> +when changing both server and client configurations to remove compression at the
-> +same time options is not feasible.
-
-"options is not feasible." -> "is not a feasible option."
-
-> +
-> +The default of asym has been chosen to maximise compatibility with existing
-> +configuration while at the same time phasing phasing out compression in existing
-
-phasing phasing (duplicated)
-
-
-> +deployment by disabling compression on the uplink, effectively completely disabling
-> +compression if both client and server are upgraded.
->   
->   .\"*********************************************************
->   .TP
-
-
-<large snip all looked ok>
-
-
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index 61fa9833..8b5c96c8 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -349,6 +349,7 @@ static const char usage_message[] =
->   #endif
->   #if defined(USE_COMP)
->       "--compress alg  : Use compression algorithm alg\n"
-> +    "--allow-compression: Specify wether compression should be allowed\n"
->   #if defined(ENABLE_LZO)
->       "--comp-lzo      : Use LZO compression -- may add up to 1 byte per\n"
->       "                  packet for uncompressible data.\n"
-
-
-*uncompressible should really be *incompressible
-
-
-
-> @@ -4952,6 +4953,18 @@ set_user_script(struct options *options,
->   #endif
->   }
->   
-> +static void show_compression_warning(struct compress_options *info)
-> +{
-> +    if (comp_non_stub_enabled(info))
-> +    {
-> +        /* Check if already displayed the strong warning and enabled full compression */
-> +        if (!(info->flags & COMP_F_NO_ASYM))
-> +        {
-> +            msg(M_WARN, "WARNING: compression allows attacks that break encryption. "
-> +                        "Enabling decompression of received packet only. Sent packets are not compressed.");
-> +        }
-> +    }
-> +}
->   
->   static void
->   add_option(struct options *options,
-> @@ -7368,29 +7381,72 @@ add_option(struct options *options,
->       }
->   #endif
->   #if defined(USE_COMP)
-> +    else if (streq(p[0], "allow-compression") && p[1] && !p[2])
-> +    {
-> +        VERIFY_PERMISSION(OPT_P_COMP);
-> +
-> +        if (streq(p[1], "no"))
-> +        {
-> +            options->comp.flags = COMP_F_ALLOW_STUB_ONLY;
-> +            if (comp_non_stub_enabled(&options->comp)) {
-> +                msg(msglevel, "allow-compression no conflicts with enabling compression");
-
-
-Mixing your message formats:
-
---allow-compression
-
-
-> +                /* we could manipulate the algorithm to a stub/no variant but the only scenario
-> +                 * that the previous message does not abort the program is when pushed from a server
-> +                 * and the server probably has a very confused configuration, so keep whatever we have */
-> +            }
-> +        }
-> +        else if (options->comp.flags & COMP_F_ALLOW_STUB_ONLY)
-> +        {
-> +            msg(msglevel, "Cannot set allow-compression to '%s' after set to 'no'", p[1]);
-> +            goto err;
-> +        }
-> +        else if (streq(p[1], "asym"))
-> +        {
-> +            options->comp.flags &= ~COMP_F_NO_ASYM;
-> +        }
-> +        else if (streq(p[1], "yes"))
-> +        {
-> +            msg(M_WARN, "WARNING: Allowing compression allows attacks that break encryption. "
-> +                "Using allow-compression yes is strongly discouraged for common usage. "
-> +                "See --compress in the manual page for more information");
-
-
-Mixing your message formats:
-
---allow-compression
-
-For example, you have used "See --compress"
-this is why I highlight where you have omitted "--"
-
-
-> +            options->comp.flags |= COMP_F_NO_ASYM;
-> +        }
-> +        else
-> +        {
-> +          msg(msglevel, "bad allow-compression option: %s -- must be 'yes', 'no', or 'asym'", p[1]);
-> +          goto err;
-> +        }
-> +    }
->       else if (streq(p[0], "comp-lzo") && !p[2])
->       {
->           VERIFY_PERMISSION(OPT_P_COMP);
->   
-> +        /* All lzo variants do not use swap */
-> +        options->comp.flags &= ~COMP_F_SWAP;
->   #if defined(ENABLE_LZO)
->           if (p[1] && streq(p[1], "no"))
->   #endif
->           {
->               options->comp.alg = COMP_ALG_STUB;
-> -            options->comp.flags = 0;
-> +            options->comp.flags &= ~COMP_F_ADAPTIVE;
->           }
->   #if defined(ENABLE_LZO)
-> +        else if (options->comp.flags & COMP_F_ALLOW_STUB_ONLY)
-> +        {
-> +            msg(msglevel, "Cannot set comp-lzo to '%s', allow-compression is set to  'no'", p[1]);
-
-
-"--" again or not ?
-
-
-
-> +            goto err;
-> +        }
->           else if (p[1])
->           {
->               if (streq(p[1], "yes"))
->               {
->                   options->comp.alg = COMP_ALG_LZO;
-> -                options->comp.flags = 0;
-> +                options->comp.flags &= ~COMP_F_ADAPTIVE;
->               }
->               else if (streq(p[1], "adaptive"))
->               {
->                   options->comp.alg = COMP_ALG_LZO;
-> -                options->comp.flags = COMP_F_ADAPTIVE;
-> +                options->comp.flags |= COMP_F_ADAPTIVE;
->               }
->               else
->               {
-> @@ -7401,12 +7457,15 @@ add_option(struct options *options,
->           else
->           {
->               options->comp.alg = COMP_ALG_LZO;
-> -            options->comp.flags = COMP_F_ADAPTIVE;
-> +            options->comp.flags |= COMP_F_ADAPTIVE;
->           }
-> +        show_compression_warning(&options->comp);
->   #endif /* if defined(ENABLE_LZO) */
->       }
->       else if (streq(p[0], "comp-noadapt") && !p[1])
->       {
-> +        /* We do not need to check here if we allow compression since
-> +         * it only modifies a flag if compression is enabled */
->           VERIFY_PERMISSION(OPT_P_COMP);
->           options->comp.flags &= ~COMP_F_ADAPTIVE;
->       }
-> @@ -7418,30 +7477,34 @@ add_option(struct options *options,
->               if (streq(p[1], "stub"))
->               {
->                   options->comp.alg = COMP_ALG_STUB;
-> -                options->comp.flags = (COMP_F_SWAP|COMP_F_ADVERTISE_STUBS_ONLY);
-> +                options->comp.flags |= (COMP_F_SWAP|COMP_F_ADVERTISE_STUBS_ONLY);
->               }
->               else if (streq(p[1], "stub-v2"))
->               {
->                   options->comp.alg = COMP_ALGV2_UNCOMPRESSED;
-> -                options->comp.flags = COMP_F_ADVERTISE_STUBS_ONLY;
-> +                options->comp.flags |= COMP_F_ADVERTISE_STUBS_ONLY;
-> +            }
-> +            else if (options->comp.flags & COMP_F_ALLOW_STUB_ONLY)
-> +            {
-> +              msg(msglevel, "Cannot set compress to '%s', allow-compression is set to  'no'", p[1]);
-
-
-"--" again or not ?
-
-
-EOF
 
