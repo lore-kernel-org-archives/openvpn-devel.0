@@ -1,13 +1,14 @@
 References: <1505166722-5409-1-git-send-email-steffan.karger@...1435...>
  <1536916459-25900-1-git-send-email-steffan.karger@...1435...>
+ <1536916459-25900-3-git-send-email-steffan.karger@...1435...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <074fd9e4-1600-b3cf-ed4c-49bcc15e5a88@...1227...>
-Date: Mon, 17 Sep 2018 17:52:49 +0200
+Message-ID: <b82a18b0-4d79-4896-d732-6ccb59028344@...1227...>
+Date: Tue, 18 Sep 2018 10:47:07 +0200
 MIME-Version: 1.0
-In-Reply-To: <1536916459-25900-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1536916459-25900-3-git-send-email-steffan.karger@...1435...>
 Content-Language: de-DE
-Subject: Re: [Openvpn-devel] [PATCH v2 1/3] Do not load certificate from
- tls_ctx_use_external_private_key()
+Subject: Re: [Openvpn-devel] [PATCH v2 3/3] mbedtls: remove dependency on
+ mbedtls pkcs11 module
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,21 +18,30 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan.karger@...1435...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Transfer-Encoding: 7bit
+To: Steffan Karger <steffan.karger@...1435...>, openvpn-devel@lists.sourceforge.net
 
 Am 14.09.18 um 11:14 schrieb Steffan Karger:
-> The cert and key loading logic surrounding management-external-key and
-> management-external cert was somewhat intertwined.  Untangle these to
-> prepare for making the external key code more reusable.
+> Instead of using mbedtls's pkcs11 module, reuse the code we already have
+> for management-external-key to also do pkcs11 signatures.  As far as mbed
+> is concerned, we simply provide an external signature.
 > 
-> The best part is that this even reduces the number of lines of code.
+> This has the following advantages:
+>  * We no longer need mbed TLS to be compiled with the pkcs11 modules
+>    enabled (which is not enabled by default).  This makes it easier to use
+>    a system/distribution-provided mbed shared library.
+>  * We no longer have a dependency on pkcs11-helper through mbed TLS.  So if
+>    we want to migrate to some other pkcs11 lib (see e.g. trac #491, #538
+>    and #549 for reason why), this will be easier.
+> 
+> While touching this code, switch from M_FATAL to M_WARN and proper error
+> handling.  This improves the error reporting, and helps prevent potential
+> future DoS attacks if someone starts using these functions on peer input.
 > 
 
-ACK. The previous code is more an artefact of MF_EXTERNAL_KEY and when
-it was introduced that the simplicification wasn't made back then.
+Ack. The code makes sense. I could not really test it since I don't have
+a PCKS#11 environement to test it but it looks good enough and I assume
+Steffan has already tested it.
 
 Acked-By: Arne Schwabe <arne@...1227...>
-
 
