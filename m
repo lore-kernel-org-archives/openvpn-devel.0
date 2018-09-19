@@ -1,9 +1,7 @@
-From: Steffan Karger <steffan.karger@...1435...>
-Date: Wed, 19 Sep 2018 18:20:09 +0200
-Message-ID: <1537374009-11133-1-git-send-email-steffan.karger@...1435...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Remove unused void_ptr_hash_function and
- void_ptr_compare_function
+From: Lev Stipakov <lstipakov@...277...>
+Date: Wed, 19 Sep 2018 19:37:42 +0300
+Message-Id: <1537375062-1385-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] Refactor NCP-negotiable options handling
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,51 +14,100 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Both functions are never used, so let's get rid of them.
+From: Lev Stipakov <lev@...515...>
 
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+This patch decouples setting/unsetting NCP options
+from the state of TLS context. At startup (and then
+per sighup) we load config (pre-NCP) values to c1,
+which persists over sigusr1. When tearing tunnel down
+we restore (possibly modified) c->options back to
+c1 (original) values.
+
+Fixes #1105
+
+Signed-off-by: Lev Stipakov <lev@...515...>
 ---
- src/openvpn/list.c | 12 ------------
- src/openvpn/list.h |  4 ----
- 2 files changed, 16 deletions(-)
+ src/openvpn/init.c | 40 +++++++++++++++++++++++++++++++---------
+ 1 file changed, 31 insertions(+), 9 deletions(-)
 
-diff --git a/src/openvpn/list.c b/src/openvpn/list.c
-index 09e393a..6023ea6 100644
---- a/src/openvpn/list.c
-+++ b/src/openvpn/list.c
-@@ -222,18 +222,6 @@ hash_remove_marked(struct hash *hash, struct hash_bucket *bucket)
-     }
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index f432106..9353527 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -612,6 +612,33 @@ uninit_proxy(struct context *c)
+     uninit_proxy_dowork(c);
  }
  
--uint32_t
--void_ptr_hash_function(const void *key, uint32_t iv)
--{
--    return hash_func((const void *)&key, sizeof(key), iv);
--}
--
--bool
--void_ptr_compare_function(const void *key1, const void *key2)
--{
--    return key1 == key2;
--}
--
++/*
++ * Assign NCP-negotiable options to context->c1
++ * from context->options (initially config values).
++ * They persist over sigusr1 restart.
++ */
++static void
++do_set_ncp_options(struct context *c)
++{
++    c->c1.ciphername = c->options.ciphername;
++    c->c1.authname = c->options.authname;
++    c->c1.keysize = c->options.keysize;
++}
++
++/*
++ * Restore NCP-negotiable options from c->c1 to
++ * c->options. The latter ones can be altered by
++ * pushed options and therefore need to be restored
++ * to original values on sigusr1 restart.
++ */
++static void
++do_unset_ncp_options(struct context *c)
++{
++    c->options.ciphername = c->c1.ciphername;
++    c->options.authname = c->c1.authname;
++    c->options.keysize = c->c1.keysize;
++}
++
  void
- hash_iterator_init_range(struct hash *hash,
-                          struct hash_iterator *hi,
-diff --git a/src/openvpn/list.h b/src/openvpn/list.h
-index b67301c..6177157 100644
---- a/src/openvpn/list.h
-+++ b/src/openvpn/list.h
-@@ -116,10 +116,6 @@ void hash_iterator_free(struct hash_iterator *hi);
+ context_init_1(struct context *c)
+ {
+@@ -621,6 +648,8 @@ context_init_1(struct context *c)
  
- uint32_t hash_func(const uint8_t *k, uint32_t length, uint32_t initval);
+     init_connection_list(c);
  
--uint32_t void_ptr_hash_function(const void *key, uint32_t iv);
++    do_set_ncp_options(c);
++
+ #if defined(ENABLE_PKCS11)
+     if (c->first_time)
+     {
+@@ -2593,10 +2622,6 @@ do_init_crypto_tls_c1(struct context *c)
+         /* initialize tls-auth/crypt key */
+         do_init_tls_wrap_key(c);
+ 
+-        c->c1.ciphername = options->ciphername;
+-        c->c1.authname = options->authname;
+-        c->c1.keysize = options->keysize;
 -
--bool void_ptr_compare_function(const void *key1, const void *key2);
+ #if 0 /* was: #if ENABLE_INLINE_FILES --  Note that enabling this code will break restarts */
+         if (options->priv_key_file_inline)
+         {
+@@ -2609,11 +2634,6 @@ do_init_crypto_tls_c1(struct context *c)
+     {
+         msg(D_INIT_MEDIUM, "Re-using SSL/TLS context");
+ 
+-        /* Restore pre-NCP cipher options */
+-        c->options.ciphername = c->c1.ciphername;
+-        c->options.authname = c->c1.authname;
+-        c->options.keysize = c->c1.keysize;
 -
- #ifdef LIST_TEST
- void list_test(void);
+         /*
+          * tls-auth/crypt key can be configured per connection block, therefore
+          * we must reload it as it may have changed
+@@ -4293,6 +4313,8 @@ close_instance(struct context *c)
+         /* free key schedules */
+         do_close_free_key_schedule(c, (c->mode == CM_P2P || c->mode == CM_TOP));
+ 
++        do_unset_ncp_options(c);
++
+         /* close TCP/UDP connection */
+         do_close_link_socket(c);
  
 -- 
 2.7.4
