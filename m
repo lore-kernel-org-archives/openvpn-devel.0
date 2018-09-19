@@ -1,10 +1,14 @@
-Date: Wed, 19 Sep 2018 22:42:03 +0200 (CEST)
-Message-Id: <201809192042.w8JKg3rK060770@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1537374009-11133-1-git-send-email-steffan.karger@...1435...>
-References: <1537374009-11133-1-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove unused
- void_ptr_hash_function and void_ptr_compare_function
+Reply-To: openvpn-devel@lists.sourceforge.net
+References: <1537375062-1385-1-git-send-email-lstipakov@...277...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <a49685c4-4eb5-455b-bbbe-86cbea5c1b75@...2080...>
+Date: Wed, 19 Sep 2018 23:07:23 +0200
+MIME-Version: 1.0
+In-Reply-To: <1537375062-1385-1-git-send-email-lstipakov@...277...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="qOceDhbwn9I6p2KjHZEmppPs2P9JS6ckx"
+Subject: Re: [Openvpn-devel] [PATCH] Refactor NCP-negotiable options handling
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,37 +17,83 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--qOceDhbwn9I6p2KjHZEmppPs2P9JS6ckx
+Content-Type: multipart/mixed; boundary="7BQ7proOUuwhwODZDtug8PFkt9VGIhYGm";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <a49685c4-4eb5-455b-bbbe-86cbea5c1b75@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] Refactor NCP-negotiable options handling
+References: <1537375062-1385-1-git-send-email-lstipakov@...277...>
+In-Reply-To: <1537375062-1385-1-git-send-email-lstipakov@...277...>
+
+--7BQ7proOUuwhwODZDtug8PFkt9VGIhYGm
+Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan.karger@...1435...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-Acked-by: Gert Doering <gert@...1296...>
+On 19/09/18 18:37, Lev Stipakov wrote:
+> From: Lev Stipakov <lev@...515...>
+>=20
+> This patch decouples setting/unsetting NCP options
+> from the state of TLS context. At startup (and then
+> per sighup) we load config (pre-NCP) values to c1,
+> which persists over sigusr1. When tearing tunnel down
+> we restore (possibly modified) c->options back to
+> c1 (original) values.
 
-Because it's dead code.  Looking again, it actually seems correct
-after all :-) (void_ptr_hash_function() is passed in a pointer *value*,
-which is then stored locally, and the address of this local store is
-handed to hash_func() - so it compares "memory addresses".  Misread the
-code before.  It's James code so it must be correct.  But unused still!
+Just an annoying nitpick on the commit message.
 
-Your patch has been applied to the master branch.
+It's a good executive summary of what this change does.  But it lacks the
+argument of "why" this change is needed, which is at least as important to =
+the
+"executive summary" of the "how".
 
-commit 01f7bb52ce510f0fc915c9aa6a14f79b2779a7f8
-Author: Steffan Karger
-Date:   Wed Sep 19 18:20:09 2018 +0200
+The "Fixes" reference is good to have, but it's a too vague link when
+considering this commit might be scrutinized 10 years into the future - and
+Trac might not be available.  And Trac references should normally be "Trac:=
+ #xxxx"
 
-     Remove unused void_ptr_hash_function and void_ptr_compare_function
-
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1537374009-11133-1-git-send-email-steffan.karger@...1435...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17473.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Sorry for pestering about this, but good commit messages can really be time
+savers in the future.
 
 
---
+--=20
 kind regards,
 
-Gert Doering
+David Sommerseth
+OpenVPN Inc
 
+
+
+--7BQ7proOUuwhwODZDtug8PFkt9VGIhYGm--
+
+--qOceDhbwn9I6p2KjHZEmppPs2P9JS6ckx
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJborqMAAoJEIbPlEyWcf3yfXUP/127tJ+BSApIseGf+zasH2mD
+P+LZPxJ5Ks2Bv9DVP7Hfu7outp8uJTd+GZG33T69z4S4G4mjALkwevQDfWw8CMXp
+qQ3yOowU2Aj2RyQZLodTu88u/v3IA8Tfp7TxH0DuFXG48AML/tCx8ZDa+vRVnQmX
+f90d7aR6VumT50OYsCiQfujiBhzm1w6mFqd1FGkjYrLW+oMXk58Lm5R1BBMtfU6y
+ePzUZvFHvFsKeQKNE/lBehKswMQN32IyehOi/6BbDBg0vufV81N5JT6oQTrtX/5a
+c0H3l3xu9qqobFOWjtpZ2GyuZUz5FLjS8BjrbtON8eANJUmgvYdUpr4+bNWRWTSt
+geZhEJTKLTVCLgU3Hcm0VhScwhjbRAVulqbQWYKJ5/lnPoACXRKXsJ5SApS5j9iC
+2YgCVQi2aX9PEY1VK7v7VRL/Qndfxn/yd1zZhj4rN/yiBsyt2b23Q6V3n1wdKZEO
+4IEsVp9DBIN8lnXCHRy+g1VTg2XgHUrbGK2fHyPHMkq3YuNjz/kQxmtHvZWHxdnh
+euL6YVkEFOS/dETUeqmZAtNNhVaBSHgiN2lts2XYJt6N9EWS7KOALO6HKoSzbRfu
+KtBjeNQUQlAxdV/VmCPzG36rjxuuBtOtLP+BZsKuqomSlfKomO8O+oqd2ZuLC0DY
+/pI79SrLfyiJMe7IFDxB
+=GSuG
+-----END PGP SIGNATURE-----
+
+--qOceDhbwn9I6p2KjHZEmppPs2P9JS6ckx--
 
