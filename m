@@ -1,13 +1,9 @@
-References: <20180926192706.29460-1-steffan@...1856...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <e466521c-dc45-a780-0264-4e827236d250@...1227...>
-Date: Thu, 27 Sep 2018 18:39:23 +0200
-MIME-Version: 1.0
+Date: Thu, 27 Sep 2018 19:51:07 +0200 (CEST)
+Message-Id: <201809271751.w8RHp7St058937@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20180926192706.29460-1-steffan@...1856...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature";
- boundary="bKo4ZM2in2cRf8Tru9tecgzi3VWg2vROH"
-Subject: Re: [Openvpn-devel] [PATCH] Fix memory leak in
+References: <20180926192706.29460-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix memory leak in
  SSL_CTX_use_certificate
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -17,50 +13,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---bKo4ZM2in2cRf8Tru9tecgzi3VWg2vROH
-Content-Type: multipart/mixed; boundary="XNWDSvu7xsF2Vl2jGmwDUsdBMgYImKTUY";
- protected-headers="v1"
-From: Arne Schwabe <arne@...1227...>
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <e466521c-dc45-a780-0264-4e827236d250@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix memory leak in
- SSL_CTX_use_certificate
-References: <20180926192706.29460-1-steffan@...1856...>
-In-Reply-To: <20180926192706.29460-1-steffan@...1856...>
-
---XNWDSvu7xsF2Vl2jGmwDUsdBMgYImKTUY
-Content-Language: de-DE
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 26.09.18 um 21:27 schrieb Steffan Karger:
-> Commit 98bfeeb4 introduced a memory leak in SSL_CTX_use_certificate by
-> removing the "if(x509) { ... }" bit while not changing the
-> "else if(x) {}" right after to an "if(x) {}".
+Your patch has been applied to the master branch.
 
-Hmpf, I should have spotted that.
+commit 5544f47b0eb31e516aa8afbb68579e35e69cf7e7
+Author: Steffan Karger
+Date:   Wed Sep 26 21:27:06 2018 +0200
 
-Acked-By: Arne Schwabe <arne@...1227...>
+     Fix memory leak in SSL_CTX_use_certificate
 
-Arne
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20180926192706.29460-1-steffan@...1856...>
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
---XNWDSvu7xsF2Vl2jGmwDUsdBMgYImKTUY--
+--
+kind regards,
 
---bKo4ZM2in2cRf8Tru9tecgzi3VWg2vROH
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Gert Doering
 
------BEGIN PGP SIGNATURE-----
-
-iF0EARECAB0WIQReA6r9qqhQzJnD/WZ7z5ww1LjNFwUCW60HvAAKCRB7z5ww1LjN
-FzCoAJ9QKQyc3Og5eIhRrH4STNUev84WCwCdHAyzAtskggVi7ZJO8VJmfiy23PQ=
-=J/ee
------END PGP SIGNATURE-----
-
---bKo4ZM2in2cRf8Tru9tecgzi3VWg2vROH--
 
