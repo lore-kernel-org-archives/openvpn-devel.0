@@ -1,6 +1,6 @@
 From: Simon Rozman <simon@...2293...>
-Date: Sun, 30 Sep 2018 05:32:55 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE10991F4C23@...2294...>
+Date: Sun, 30 Sep 2018 08:46:12 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE10991F54B2@...2294...>
 References: <1538141209-32330-1-git-send-email-lstipakov@...277...>
  <99D61A626FDA8A4B90A270669121BE10991F46BA@...2294...>
  <CAGyAFMXddqfZAHu-_aaue49zu_TCaFz4yMBpo6kV9XbZBPqgoQ@...278...>
@@ -8,7 +8,7 @@ In-Reply-To: <CAGyAFMXddqfZAHu-_aaue49zu_TCaFz4yMBpo6kV9XbZBPqgoQ@...278...>
 Content-Language: en-US
 Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
  micalg=2.16.840.1.101.3.4.2.1;
- boundary="----=_NextPart_000_0015_01D4588F.CCC64320"
+ boundary="----=_NextPart_000_0006_01D458AA.CDCD5EA0"
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] [PATCH] win: support for Visual Studio 2017
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,40 +22,107 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Lev Stipakov <lstipakov@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-------=_NextPart_000_0015_01D4588F.CCC64320
+------=_NextPart_000_0006_01D458AA.CDCD5EA0
 Content-Type: multipart/alternative;
-	boundary="----=_NextPart_001_0016_01D4588F.CCC64320"
+	boundary="----=_NextPart_001_0007_01D458AA.CDCD5EA0"
 
-------=_NextPart_001_0016_01D4588F.CCC64320
+------=_NextPart_001_0007_01D458AA.CDCD5EA0
 Content-Type: text/plain;
 	charset="utf-8"
 Content-Transfer-Encoding: 7bit
 
+Acked-by: Simon Rozman <simon@...2293...>
+
+
+
+From: Lev Stipakov <lstipakov@...277...>
+Sent: Sunday, September 30, 2018 7:19 AM
+To: Simon Rozman <simon@...2293...>
+Cc: openvpn-devel@lists.sourceforge.net
+Subject: Re: [Openvpn-devel] [PATCH] win: support for Visual Studio 2017
+
+
+
 Hi,
 
 
+I was very delighted to see this contribution. However, after hours of
+struggling to compile and prepare pre-requisites, I gave up my attempts to
+test this patch. The openvpn-build/msvc/build.bat was indeed helpful, though a
+bit outdated to be directly usable.
 
-Now, that's more like it. Thanks for the directions. Will try it again and 
-report.
+
+
+Sorry, I probably have to state it more clear in email - I have prepared patch 
+to openvpn-build as well,
+
+see https://github.com/OpenVPN/openvpn-build/pull/137 The new version should 
+be usable out of the box.
 
 
 
-Yes, TAP driver can be build for ARM64. See:
+I don't think you need autoconf or anything besides VS2017 and ActiveState 
+Perl. Certainly you
 
-https://github.com/OpenVPN/tap-windows6/pull/57
+are not supposed to copy or edit files manually. Here is build log from 
+AppVeyor:
 
-https://github.com/OpenVPN/tap-windows6/pull/56
 
-https://github.com/OpenVPN/tap-windows6/pull/55
+
+https://ci.appveyor.com/project/lstipakov/openvpn-build/build/openvpn-build-19/job/kl2ky4ncbhiqw8gg?fullLog=true
+
+
+
+Now, I have begun to question the rationale of this patch... If it is too hard
+to setup building environment for me (Visual Studio is my daily working
+environment from 1998),
+
+
+
+We should sort it out. To build with VS you are only supposed to
+
+
+
+1) clone openvpn-build
+
+2) run msvc/build.bat
+
+3) (optionally) open msvc/build.tmp/openvpn-master/openvpn.sln with Visual 
+Studio IDE and enjoy coding
+
+
+
+Would have been nice to add Windows 10 ARM64 support, but remembered somebody
+needs to compile pre-requisites for ARM64 nightmare...
+
+
+
+Can TAP driver be compiled for ARM64?
+
+
+
+BTW, I have a patch in my forked repo re-establishing Visual Studio 2017
+support for compiling openvpnserv.exe. I needed it to debug while developing
+support for multi-instances
+
+
+
+With this and openvpn-build patch I was able to debug (run and attach to 
+process) both openvpn and openvpnserv.exe
 
 
 
 Best regards,
-
 Simon
 
 
-------=_NextPart_001_0016_01D4588F.CCC64320
+
+-- 
+
+-Lev
+
+
+------=_NextPart_001_0007_01D458AA.CDCD5EA0
 Content-Type: text/html; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -72,6 +139,9 @@ xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
 @font-face
 	{font-family:Calibri;
 	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:Consolas;
+	panose-1:2 11 6 9 2 2 4 3 2 4;}
 /* Style Definitions */
 p.MsoNormal, li.MsoNormal, div.MsoNormal
 	{margin:0cm;
@@ -86,12 +156,9 @@ a:visited, span.MsoHyperlinkFollowed
 	{mso-style-priority:99;
 	color:purple;
 	text-decoration:underline;}
-p.Code, li.Code, div.Code
-	{mso-style-name:Code;
-	margin:0cm;
-	margin-bottom:.0001pt;
-	font-size:11.0pt;
-	font-family:"Courier New";}
+code
+	{mso-style-priority:99;
+	font-family:Consolas;}
 p.msonormal0, li.msonormal0, div.msonormal0
 	{mso-style-name:msonormal;
 	mso-margin-top-alt:auto;
@@ -101,12 +168,15 @@ p.msonormal0, li.msonormal0, div.msonormal0
 	font-size:11.0pt;
 	font-family:"Calibri",sans-serif;}
 span.EmailStyle19
-	{mso-style-type:personal-reply;
+	{mso-style-type:personal;
+	font-family:"Calibri",sans-serif;
+	color:windowtext;}
+span.EmailStyle20
+	{mso-style-type:personal-compose;
 	font-family:"Calibri",sans-serif;
 	color:windowtext;}
 .MsoChpDefault
 	{mso-style-type:export-only;
-	font-family:"Calibri",sans-serif;
 	mso-fareast-language:EN-US;}
 @page WordSection1
 	{size:612.0pt 792.0pt;
@@ -119,123 +189,139 @@ div.WordSection1
 <o:shapelayout v:ext=3D"edit">
 <o:idmap v:ext=3D"edit" data=3D"1" />
 </o:shapelayout></xml><![endif]--></head><body lang=3DSL link=3Dblue vlink=
-=3Dpurple><div class=3DWordSection1><p class=3DMsoNormal><span lang=3DEN-GB=
- style=3D'mso-fareast-language:EN-US'>Hi,<o:p></o:p></span></p><p class=3DM=
-soNormal><span lang=3DEN-GB style=3D'mso-fareast-language:EN-US'><o:p>&nbsp=
-;</o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D'mso-fare=
-ast-language:EN-US'>Now, that's more like it. Thanks for the directions. Wi=
-ll try it again and report.<o:p></o:p></span></p><p class=3DMsoNormal><span=
- lang=3DEN-GB style=3D'mso-fareast-language:EN-US'><o:p>&nbsp;</o:p></span>=
-</p><p class=3DMsoNormal><span lang=3DEN-GB style=3D'mso-fareast-language:E=
-N-US'>Yes, TAP driver can be build for ARM64. See:<o:p></o:p></span></p><p =
-class=3DMsoNormal><span lang=3DEN-GB style=3D'mso-fareast-language:EN-US'><=
-a href=3D"https://github.com/OpenVPN/tap-windows6/pull/57">https://github.c=
-om/OpenVPN/tap-windows6/pull/57</a><o:p></o:p></span></p><p class=3DMsoNorm=
-al><span lang=3DEN-GB style=3D'mso-fareast-language:EN-US'><a href=3D"https=
-://github.com/OpenVPN/tap-windows6/pull/56">https://github.com/OpenVPN/tap-=
-windows6/pull/56</a><o:p></o:p></span></p><p class=3DMsoNormal><span lang=
-=3DEN-GB style=3D'mso-fareast-language:EN-US'><a href=3D"https://github.com=
-/OpenVPN/tap-windows6/pull/55">https://github.com/OpenVPN/tap-windows6/pull=
-/55</a><o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB style=
-=3D'mso-fareast-language:EN-US'><o:p>&nbsp;</o:p></span></p><p class=3DMsoN=
-ormal><span lang=3DEN-GB style=3D'mso-fareast-language:EN-US'>Best regards,=
-<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D'mso-=
-fareast-language:EN-US'>Simon<o:p></o:p></span></p></div></body></html>=
+=3Dpurple><div class=3DWordSection1><p class=3DMsoNormal><span style=3D'mso=
+-fareast-language:EN-US'>Acked-by: Simon Rozman &lt;simon@...2293...&gt;<o:=
+p></o:p></span></p><p class=3DMsoNormal><span style=3D'mso-fareast-language=
+:EN-US'><o:p>&nbsp;</o:p></span></p><div style=3D'border:none;border-left:s=
+olid blue 1.5pt;padding:0cm 0cm 0cm 4.0pt'><div><div style=3D'border:none;b=
+order-top:solid #E1E1E1 1.0pt;padding:3.0pt 0cm 0cm 0cm'><p class=3DMsoNorm=
+al><b><span lang=3DEN-US>From:</span></b><span lang=3DEN-US> Lev Stipakov &=
+lt;lstipakov@...277...&gt; <br><b>Sent:</b> Sunday, September 30, 2018 7:19=
+ AM<br><b>To:</b> Simon Rozman &lt;simon@...2293...&gt;<br><b>Cc:</b> openv=
+pn-devel@lists.sourceforge.net<br><b>Subject:</b> Re: [Openvpn-devel] [PATC=
+H] win: support for Visual Studio 2017<o:p></o:p></span></p></div></div><p =
+class=3DMsoNormal><o:p>&nbsp;</o:p></p><div><div><div><div><p class=3DMsoNo=
+rmal>Hi,<o:p></o:p></p><div><blockquote style=3D'border:none;border-left:so=
+lid #CCCCCC 1.0pt;padding:0cm 0cm 0cm 6.0pt;margin-left:4.8pt;margin-right:=
+0cm'><p class=3DMsoNormal><br>I was very delighted to see this contribution=
+. However, after hours of <br>struggling to compile and prepare pre-requisi=
+tes, I gave up my attempts to <br>test this patch. The openvpn-build/msvc/b=
+uild.bat was indeed helpful, though a <br>bit outdated to be directly usabl=
+e.&nbsp;<o:p></o:p></p></blockquote><div><p class=3DMsoNormal><o:p>&nbsp;</=
+o:p></p></div><div><p class=3DMsoNormal>Sorry, I probably have to state it =
+more clear in email - I have prepared patch to openvpn-build as well,<o:p><=
+/o:p></p></div><div><p class=3DMsoNormal>see&nbsp;<a href=3D"https://github=
+.com/OpenVPN/openvpn-build/pull/137">https://github.com/OpenVPN/openvpn-bui=
+ld/pull/137</a> The new version should be usable out of the box.<o:p></o:p>=
+</p></div><div><p class=3DMsoNormal><o:p>&nbsp;</o:p></p></div><div><p clas=
+s=3DMsoNormal>I don't think you need autoconf or anything besides VS2017 an=
+d ActiveState Perl. Certainly you&nbsp;<o:p></o:p></p></div><div><p class=
+=3DMsoNormal>are not supposed to copy or edit files manually. Here is build=
+ log from AppVeyor:<o:p></o:p></p></div><div><p class=3DMsoNormal><o:p>&nbs=
+p;</o:p></p></div><div><p class=3DMsoNormal><a href=3D"https://ci.appveyor.=
+com/project/lstipakov/openvpn-build/build/openvpn-build-19/job/kl2ky4ncbhiq=
+w8gg?fullLog=3Dtrue">https://ci.appveyor.com/project/lstipakov/openvpn-buil=
+d/build/openvpn-build-19/job/kl2ky4ncbhiqw8gg?fullLog=3Dtrue</a><o:p></o:p>=
+</p></div><div><p class=3DMsoNormal>&nbsp;<o:p></o:p></p></div><blockquote =
+style=3D'border:none;border-left:solid #CCCCCC 1.0pt;padding:0cm 0cm 0cm 6.=
+0pt;margin-left:4.8pt;margin-right:0cm'><p class=3DMsoNormal>Now, I have be=
+gun to question the rationale of this patch... If it is too hard <br>to set=
+up building environment for me (Visual Studio is my daily working <br>envir=
+onment from 1998), <o:p></o:p></p></blockquote><div><p class=3DMsoNormal><o=
+:p>&nbsp;</o:p></p></div><div><p class=3DMsoNormal>We should sort it out. T=
+o build with VS you are only supposed to&nbsp;&nbsp;<o:p></o:p></p></div><d=
+iv><p class=3DMsoNormal><o:p>&nbsp;</o:p></p></div><div><p class=3DMsoNorma=
+l>1) clone openvpn-build<o:p></o:p></p></div><div><p class=3DMsoNormal>2) r=
+un msvc/build.bat<o:p></o:p></p></div><div><p class=3DMsoNormal>3) (optiona=
+lly) open msvc/build.tmp/openvpn-master/openvpn.sln with Visual Studio IDE =
+and enjoy coding<o:p></o:p></p></div><div><p class=3DMsoNormal><o:p>&nbsp;<=
+/o:p></p></div><blockquote style=3D'border:none;border-left:solid #CCCCCC 1=
+.0pt;padding:0cm 0cm 0cm 6.0pt;margin-left:4.8pt;margin-right:0cm'><p class=
+=3DMsoNormal>Would have been nice to add Windows 10 ARM64 support, but reme=
+mbered somebody <br>needs to compile pre-requisites for ARM64 nightmare...<=
+o:p></o:p></p></blockquote><div><p class=3DMsoNormal><o:p>&nbsp;</o:p></p><=
+/div><div><p class=3DMsoNormal>Can TAP driver be compiled for ARM64?<o:p></=
+o:p></p></div><div><p class=3DMsoNormal>&nbsp;<o:p></o:p></p></div><blockqu=
+ote style=3D'border:none;border-left:solid #CCCCCC 1.0pt;padding:0cm 0cm 0c=
+m 6.0pt;margin-left:4.8pt;margin-right:0cm'><p class=3DMsoNormal>BTW, I hav=
+e a patch in my forked repo re-establishing Visual Studio 2017 <br>support =
+for compiling openvpnserv.exe. I needed it to debug while developing <br>su=
+pport for multi-instances<o:p></o:p></p></blockquote><div><p class=3DMsoNor=
+mal><o:p>&nbsp;</o:p></p></div><div><p class=3DMsoNormal>With this and open=
+vpn-build patch I was able to debug (run and attach to process) both openvp=
+n and openvpnserv.exe<o:p></o:p></p></div><div><p class=3DMsoNormal>&nbsp;<=
+o:p></o:p></p></div><blockquote style=3D'border:none;border-left:solid #CCC=
+CCC 1.0pt;padding:0cm 0cm 0cm 6.0pt;margin-left:4.8pt;margin-right:0cm'><p =
+class=3DMsoNormal>Best regards,<br>Simon<o:p></o:p></p></blockquote></div><=
+div><p class=3DMsoNormal><o:p>&nbsp;</o:p></p></div><p class=3DMsoNormal>--=
+ <o:p></o:p></p><div><p class=3DMsoNormal>-Lev<o:p></o:p></p></div></div></=
+div></div></div></div></div></body></html>=
 
-------=_NextPart_001_0016_01D4588F.CCC64320--
+------=_NextPart_001_0007_01D458AA.CDCD5EA0--
 
-------=_NextPart_000_0015_01D4588F.CCC64320
+------=_NextPart_000_0006_01D458AA.CDCD5EA0
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
 
-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
-AwMwJzAlBggrBgEFBQcCARYZaHR0cDovL3d3dy5jYS5nb3Yuc2kvY3BzLzAIBgYEAIswAQIwGAYI
-KwYBBQUHAQMEDDAKMAgGBgQAjkYBATAaBgNVHREEEzARgQ9zaW1vbkByb3ptYW4uc2kwge4GA1Ud
-HwSB5jCB4zBWoFSgUqRQME4xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJzdGF0ZS1pbnN0aXR1dGlv
-bnMxETAPBgNVBAsTCHNpZ2VuLWNhMQ8wDQYDVQQDEwZDUkw0NTUwgYiggYWggYKGV2xkYXA6Ly94
-NTAwLmdvdi5zaS9vdT1zaWdlbi1jYSxvPXN0YXRlLWluc3RpdHV0aW9ucyxjPXNpP2NlcnRpZmlj
-YXRlUmV2b2NhdGlvbkxpc3Q/YmFzZYYnaHR0cDovL3d3dy5zaWdlbi1jYS5zaS9jcmwvc2lnZW4t
-Y2EuY3JsMCsGA1UdEAQkMCKADzIwMTYwMjE5MTc1NDQxWoEPMjAyMTAyMTkyMTM4MTVaMB8GA1Ud
-IwQYMBaAFHF7igYfMQVVq2ASd0cgHgOIGOyJMB0GA1UdDgQWBBS7/7AHyQYI0e8GOPmwTc1ZTNw5
-lzAJBgNVHRMEAjAAMBkGCSqGSIb2fQdBAAQMMAobBFY4LjEDAgOoMA0GCSqGSIb3DQEBBQUAA4IB
-AQBBUL4KG1Z1oBIIdKIZs9yJxnJg/LfEPVvzNH8+CCqegq0D6k48Doo72oVEiskjqggdbUGj30uA
-H8PjCD5kLGVoDwh5a2atQ3qQzaYA/lj2Js2f4fdXNn60vRp7XzbGsQdwYYecIrKzO5x6XVAIRb+T
-HZNjXL3VX6vOozwBQv/+dx1P9H/rMUn7d8ci7v4PeqShbWbWwi6ez19cZvSKSkz/lWf4tj8QbA0n
-WeUBlk3Bx6/TRda7kwXzcFExt+ROGt0YJjbZCN3kd7swcRvRT6gEi9L6n1XLghwPSYhzZjaL5fXv
-I11JuSoQCy13XWBkq35Moo4iY19wanS1W6UM8Yq0MIIF5TCCBE2gAwIBAgINAKZovVEAAAAAVx3Q
-6DANBgkqhkiG9w0BAQsFADBcMQswCQYDVQQGEwJTSTEcMBoGA1UEChMTUmVwdWJsaWthIFNsb3Zl
-bmlqYTEXMBUGA1UEYRMOVkFUU0ktMTc2NTk5NTcxFjAUBgNVBAMTDVNJLVRSVVNUIFJvb3QwHhcN
-MTYwNTI0MTE1ODI3WhcNMjEwNjI3MjIwMDAwWjA9MQswCQYDVQQGEwJzaTEbMBkGA1UEChMSc3Rh
-dGUtaW5zdGl0dXRpb25zMREwDwYDVQQLEwhzaWdlbi1jYTCCASIwDQYJKoZIhvcNAQEBBQADggEP
-ADCCAQoCggEBALDlZbLArGSW8ogbs+2e5ALGTyuIzi6KUYB1rxBb8ss4ZpuiDm00R5alkhGv9jVH
-onciDM4WiGKq00luGLwuRNi+xp7CGhmsQY78MAcC8sZq1FsjAO9BNNikc2PfIpIzhAGljfODXPq4
-1Ho13+z4bQ/gTO2tnDp9htalCJS+fXoRH/6FP1RaiGOHnKWxp07Nt0Rzr8+KSWsf483XSU1aKxfm
-XHazu3K5byfSm4kViN8QX3YhAWrHFTEK0ZxY+CgWBW3ZTtmh1wcgy0smiU2Ssqe6lujjWI8inAGW
-WsT3MU0LSbXheGHiVBgGu55UNH4MPuvutYAf3RaEHWg4Zmdz+JECAwEAAaOCAkMwggI/MBIGA1Ud
-EwEB/wQIMAYBAf8CAQAwDgYDVR0PAQH/BAQDAgEGMDoGA1UdIAQzMDEwLwYEVR0gADAnMCUGCCsG
-AQUFBwIBFhlodHRwOi8vd3d3LmNhLmdvdi5zaS9jcHMvMGkGCCsGAQUFBwEBBF0wWzA2BggrBgEF
-BQcwAoYqaHR0cDovL3d3dy5jYS5nb3Yuc2kvY3J0L3NpLXRydXN0LXJvb3QuY3J0MCEGCCsGAQUF
-BzABhhVodHRwOi8vb2NzcC5jYS5nb3Yuc2kwHQYDVR0OBBYEFHF7igYfMQVVq2ASd0cgHgOIGOyJ
-MIIBPAYDVR0fBIIBMzCCAS8wgbeggbSggbGGKmh0dHA6Ly93d3cuY2EuZ292LnNpL2NybC9zaS10
-cnVzdC1yb290LmNybIaBgmxkYXA6Ly94NTAwLmdvdi5zaS9jbj1TSS1UUlVTVCUyMFJvb3Qsb3Jn
-YW5pemF0aW9uSWRlbnRpZmllcj1WQVRTSS0xNzY1OTk1NyxvPVJlcHVibGlrYSUyMFNsb3Zlbmlq
-YSxjPVNJP2NlcnRpZmljYXRlUmV2b2NhdGlvbkxpc3Qwc6BxoG+kbTBrMQswCQYDVQQGEwJTSTEc
-MBoGA1UEChMTUmVwdWJsaWthIFNsb3ZlbmlqYTEXMBUGA1UEYRMOVkFUU0ktMTc2NTk5NTcxFjAU
-BgNVBAMTDVNJLVRSVVNUIFJvb3QxDTALBgNVBAMTBENSTDEwEwYDVR0jBAwwCoAITKPDaF4IAmMw
-DQYJKoZIhvcNAQELBQADggGBAHuvNSPhY4qcirWJkTwkqaOPqOSV06J/ZepFQfUEJ87TlrGjp4XR
-5FLktTAEY/7R4Sgeb2K8OWEl/Koc1BbH6+uyZYvfa+WnnJEWeWOmyPy/vooO7eZyOVvaORxurWOL
-CCVDW2wBkbtUoKZaUyzgP+ZPPGRV8GFlbZLCzGmArMGXJXe8t/XNiJDLehGqSWT49NYjyYQdIgI+
-qi9W+A6BSUQ9jsMdYJqKhXQcosfH51sc6gZVxTKMr3PsItsa8XFiNazECAAFr0ms7HB6zb8QvHRF
-eBGk/CLrW4VkZEBN/JtuyhvgktQ2BvuGtauEvHZQAYpMSh35D7pwtavRMpmhaAsQb4yPqhIMcztw
-RqsKPBhWoaFEVZ+Vn3wxap5h/oAhocifNzkWJTNWjxnoPM2eNz2uWFJsgsNhlwteUvnq7+bKTNte
-SKWKr6pI+GUsZhmCh5URpUnqUanp0Uie0MD9f3tiOLOp711sNb0xwi+VdDuDB37IddOIsfhPBood
-wpoFrTGCAyEwggMdAgEBMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0
-aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4wDQYJYIZIAWUDBAIBBQCgggGtMBgGCSqGSIb3
-DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE4MDkzMDA1MzI1M1owLwYJKoZIhvcN
-AQkEMSIEICaHiL/MYevNZvabfLWkwFKkcXkLqBxIIql4TBPqXcDKMFQGCSsGAQQBgjcQBDFHMEUw
-PTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMIc2ln
-ZW4tY2ECBDtKDS4wVgYLKoZIhvcNAQkQAgsxR6BFMD0xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJz
-dGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsTCHNpZ2VuLWNhAgQ7Sg0uMIGTBgkqhkiG9w0BCQ8x
-gYUwgYIwCwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQBFjAKBggqhkiG9w0DBzALBglghkgBZQMEAQIw
-DgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAsGCWCGSAFlAwQCATALBglghkgBZQMEAgMw
-CwYJYIZIAWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBACeHqW+r+h0JZtuzQXmpYzBN
-rL/rCCSj6V7In0s+etVIzYVLuZI3sHFVgIQAZtS66KuPSiTGviq5Jz/Dam73HIUoLTuGIuwgOQOS
-cLnjO+nh+aYEnv9ffzokQ6jvi4eW/VLFAkoEIzTEWjd02UUnq4Hyku0f5xSlaoe2sV6AP37bIS2M
-hQe3/+AJIJpH0CpMIzjKygm55R4fkI0IjV1ZFQ75AzVaVP9ybUW8Sn8sxOCNMpa6hphrwq/ACakZ
-YXFt//aDmZqVE7nbDwbrpmBQEtE4jG5HeFR+bdhIOUHk0Mlsl2kty/PUcxC9dTDHIkuyXllsrntz
-3Yy81sMSezi3cnUAAAAAAAA=
+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
 
-------=_NextPart_000_0015_01D4588F.CCC64320--
+------=_NextPart_000_0006_01D458AA.CDCD5EA0--
 
