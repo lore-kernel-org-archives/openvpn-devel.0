@@ -1,15 +1,12 @@
-Reply-To: openvpn-devel@lists.sourceforge.net
-References: <CAFHpkQGaXSniWKFFeiyWW=-_rN1iHBXUerfBfdGxD5UM0r+B6A@...278...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <8b859470-e110-9b7e-606d-46c22be026b8@...2080...>
-Date: Mon, 1 Oct 2018 12:47:39 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAFHpkQGaXSniWKFFeiyWW=-_rN1iHBXUerfBfdGxD5UM0r+B6A@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="D695Dq0Djh6EkY4qDM0bk4W0x8EjN869m"
-Subject: Re: [Openvpn-devel] switching openvpn-gui to github releases
- (instead if http://build.openvpn.net/...)
+References: <1538229228-10620-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1538229228-10620-1-git-send-email-selva.nair@...277...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Mon, 1 Oct 2018 14:10:56 +0300
+Message-ID: <CAGyAFMX_aMRUgLN3b96N3bTEvyKxVX0En_1O3mKLvbVMMJkVnQ@...278...>
+Content-Type: multipart/alternative; boundary="000000000000a38fcc057728dc84"
+Subject: Re: [Openvpn-devel] [PATCH] Enable dhcp on tap adapter using
+ interactive service
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,96 +15,95 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: selva.nair@...277...
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---D695Dq0Djh6EkY4qDM0bk4W0x8EjN869m
-Content-Type: multipart/mixed; boundary="xHzQAGSCi2fAE3IRzqZM4Gey2IwqY0I9Z";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Message-ID: <8b859470-e110-9b7e-606d-46c22be026b8@...2080...>
-Subject: Re: [Openvpn-devel] switching openvpn-gui to github releases (instead
- if http://build.openvpn.net/...)
-References: <CAFHpkQGaXSniWKFFeiyWW=-_rN1iHBXUerfBfdGxD5UM0r+B6A@...278...>
-In-Reply-To: <CAFHpkQGaXSniWKFFeiyWW=-_rN1iHBXUerfBfdGxD5UM0r+B6A@...278...>
+--000000000000a38fcc057728dc84
+Content-Type: text/plain; charset="UTF-8"
 
---xHzQAGSCi2fAE3IRzqZM4Gey2IwqY0I9Z
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
+Hi,
+
+Thanks, I tested on Windows 10 with Visual Studio build and works as
+expected.
+
+A few nitpicks:
+
++    if (!WriteFile(pipe, &dhcp, sizeof(dhcp), &len, NULL)
+> +        || !ReadFile(pipe, &ack, sizeof(ack), &len, NULL))
+> +    {
+> +        msg(M_WARN, "TUN: could not talk to service: %s [%lu]",
+> +            strerror_win32(GetLastError(), &gc), GetLastError());
+> +        goto out;
+> +    }
+>
+
+A very similar code (communicate with service) is used in
+do_address_service and do_dns6_service, so
+how about factoring that code into separate method?
+
+
+
+> +    /* Path of netsh */
+> +    int n = GetSystemDirectory(argv0, MAX_PATH);
+> +    if (n > 0 && n < MAX_PATH) /* got system directory */
+> +    {
+> +        wcsncat(argv0, L"\\netsh.exe", MAX_PATH - n - 1);
+> +    }
+> +    else
+> +    {
+> +        wcsncpy(argv0, L"C:\\Windows\\system32\\netsh.exe", MAX_PATH);
+> +    }
+>
+
+Same as above (code in netsh_dns_cmd).
+
+
+
+> +    /* max cmdline length in wchars -- include room for if index */
+> +    size_t ncmdline = wcslen(fmt) + 10 + 1;
+>
+
+Maybe comment that 10 is a max string length of int type and 1 is a nul
+terminator (do we need it here?).
+
+-Lev
+
+--000000000000a38fcc057728dc84
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 01/10/18 11:49, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=
-=D0=B8=D0=BD wrote:
-> Hello,
->=20
-> I was absent for few days :) Glad to see you again.
-> I want to discuss whether we can choose github releases as primary source=
- here:
->=20
-> https://github.com/OpenVPN/openvpn-build/blob/master/generic/build.vars#L=
-15
+<div dir=3D"ltr">Hi,<div><br></div><div>Thanks, I tested on Windows 10 with=
+ Visual Studio build and works as expected.</div><div><br></div><div>A few =
+nitpicks:</div><div><br></div><div><div class=3D"gmail_quote"><blockquote c=
+lass=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px soli=
+d rgb(204,204,204);padding-left:1ex">+=C2=A0 =C2=A0 if (!WriteFile(pipe, &a=
+mp;dhcp, sizeof(dhcp), &amp;len, NULL)<br>+=C2=A0 =C2=A0 =C2=A0 =C2=A0 || !=
+ReadFile(pipe, &amp;ack, sizeof(ack), &amp;len, NULL))<br>+=C2=A0 =C2=A0 {<=
+br>+=C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(M_WARN, &quot;TUN: could not talk to se=
+rvice: %s [%lu]&quot;,<br>+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 strerr=
+or_win32(GetLastError(), &amp;gc), GetLastError());<br>+=C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 goto out;<br>+=C2=A0 =C2=A0 }<br></blockquote><div><br></div><di=
+v>A very similar code (communicate with service) is used in do_address_serv=
+ice and do_dns6_service, so=C2=A0</div><div>how about factoring that code i=
+nto separate method?</div><div><br></div><div>=C2=A0</div><blockquote class=
+=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rg=
+b(204,204,204);padding-left:1ex">+=C2=A0 =C2=A0 /* Path of netsh */<br>+=C2=
+=A0 =C2=A0 int n =3D GetSystemDirectory(argv0, MAX_PATH);<br>+=C2=A0 =C2=A0=
+ if (n &gt; 0 &amp;&amp; n &lt; MAX_PATH) /* got system directory */<br>+=
+=C2=A0 =C2=A0 {<br>+=C2=A0 =C2=A0 =C2=A0 =C2=A0 wcsncat(argv0, L&quot;\\net=
+sh.exe&quot;, MAX_PATH - n - 1);<br>+=C2=A0 =C2=A0 }<br>+=C2=A0 =C2=A0 else=
+<br>+=C2=A0 =C2=A0 {<br>+=C2=A0 =C2=A0 =C2=A0 =C2=A0 wcsncpy(argv0, L&quot;=
+C:\\Windows\\system32\\netsh.exe&quot;, MAX_PATH);<br>+=C2=A0 =C2=A0 }<br><=
+/blockquote><div><br></div><div>Same as above (code in netsh_dns_cmd).</div=
+><div><br></div><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D=
+"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-le=
+ft:1ex">+=C2=A0 =C2=A0 /* max cmdline length in wchars -- include room for =
+if index */<br>+=C2=A0 =C2=A0 size_t ncmdline =3D wcslen(fmt) + 10 + 1;<br>=
+</blockquote><div><br></div><div>Maybe comment that 10 is a max string leng=
+th of int type and 1 is a nul terminator (do we need it here?).</div></div>=
+</div><div class=3D"gmail_quote"><div dir=3D"ltr"><br></div></div><div dir=
+=3D"ltr" class=3D"gmail_signature" data-smartmail=3D"gmail_signature">-Lev<=
+/div></div>
 
-No.  We do not want to change the trust centre of downloads to GitHub from =
-our
-own infrastructure.  And we don't know what GitHub might do to our uploads =
-in
-the future even (we don't even host downloads on sf.net any more).  GitHub
-tried a while ago to hide quite well the "upload file" feature, as they wan=
-ted
-users to use auto-generated tarballs straight from the git tree; which does
-not work well with autotools based projects (it complicates the receiving e=
-nd).
-
-We see no compelling reason why or how this would improve anything at all.
-Plus the current approach works quite well with the release processes alrea=
-dy
-in use.  Remember that these release processes also includes a bit more than
-just "create and upload a tarball".  Plus the fact that it may be conceived=
- as
-a more trustworthy source to have these downloads hosted on a openvpn.net
-domain.  And having the same file served both via GitHub and an openvpn.net
-domain is just duplication and a seed of confusion; especially if these fil=
-es
-then begins to differ for various reasons.
-
-So, no, we will not change this.
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
-
-
-
---xHzQAGSCi2fAE3IRzqZM4Gey2IwqY0I9Z--
-
---D695Dq0Djh6EkY4qDM0bk4W0x8EjN869m
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJbsftMAAoJEIbPlEyWcf3ybWsP/R6BbVED9njwGllEQQWa/rhn
-sXAGBWSAI21zBZkG6uZ3oUVg/42I1w7B/oSGhLxvz5Cx4+Nk6mU9TM16+tJ4+0fO
-wp1l/1dU2EAAqN5XW3hqR8Tz/dP6unlIJeD3gi3b+1MWHkHTo/jNQ0xmOvqI2L4B
-qK2t9mMr3lAcadIeKKz56PWb5x0OfNx8cFlqAt62e6yU3SXLn5azRTbm3jywxT7r
-VHWOscxpokRaCqMQbhddtXKsAh82L5EXNRjwPhz049zhXDIuWCKaW93CbwBoJw6v
-eKtnu9yPFvhxv8WrxOrA8yP9Zp1VPPkUd+M3hkXVLsDACwVJ2JkX7/j8iAgkPlmF
-//dAkI21qsPvOxb5yp0VFCgmLfcVvno15YC3MgSsZyUy+U+EYqM/4mHoEP+SFMMB
-26aK9a41bo2EHF5FI6Q4B01M8GXv13lQM6ylHjG1PBl+VpfG/WLHYVNbGAnFkpaa
-sanjyzH2BJjc4SO4YgoIoUWbWMXE5h2c3exeVTjESvfOVvAHp99ZTgp31xSHaJu2
-MA8aChMAlVVChVRW33JiKawi6tjyptGAWMoZUo5QpxrHDvkjyf7/QK3dMeWlaNqT
-gtjrkceiC5eyet3aLDIBaF85NUjduqxCs4WL7p5TNaPR4GkiLhmXAR9hIVCrvpNl
-+Hkrc+/jhZnNVIJFg1e3
-=QCeR
------END PGP SIGNATURE-----
-
---D695Dq0Djh6EkY4qDM0bk4W0x8EjN869m--
+--000000000000a38fcc057728dc84--
 
