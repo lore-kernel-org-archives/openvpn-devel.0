@@ -1,10 +1,10 @@
 From: selva.nair@...277...
-Date: Tue,  2 Oct 2018 16:01:13 -0400
-Message-Id: <1538510474-27602-2-git-send-email-selva.nair@...277...>
+Date: Tue,  2 Oct 2018 16:01:14 -0400
+Message-Id: <1538510474-27602-3-git-send-email-selva.nair@...277...>
 In-Reply-To: <1538510474-27602-1-git-send-email-selva.nair@...277...>
 References: <1538229228-10620-1-git-send-email-selva.nair@...277...>
  <1538510474-27602-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH 2/3 v2] Enable dhcp on tap adapter using
+Subject: [Openvpn-devel] [PATCH 3/3] Refactor sending commands to
  interactive service
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -20,197 +20,218 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-Currently, if dhcp on the TAP interface is disabled, OpenVPN
-on Windows tries to enable it using netsh but that succeeds only when
-run with admin privileges.
+Move writing the message buffer to the interactive service pipe and
+reading acknowledgement to a function.
 
-When interactive service is available, delegate this task to the
-service.
-
-Trac #1111
-Tested on Windows 7
+A minor bug in open_tun where the ack data could be read even after
+a communication error is fixed.
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
-v2 changes: As suggested by Lev
-- In comment, clarify the 10 chars room is for printing 32 bit int
-- Use get_win_sys_path() added in the accompanying patch (1 of 3)
- 
-Refactoring of writing to the message channel is in the
-following patch.
+ src/openvpn/route.c |  6 +-----
+ src/openvpn/tun.c   | 34 +++++++++-------------------------
+ src/openvpn/win32.c | 27 ++++++++++++++++++++++-----
+ src/openvpn/win32.h |  9 +++++++++
+ 4 files changed, 41 insertions(+), 35 deletions(-)
 
- include/openvpn-msg.h         |  8 ++++++-
- src/openvpn/tun.c             | 53 ++++++++++++++++++++++++++++++++++++++++++-
- src/openvpnserv/interactive.c | 47 ++++++++++++++++++++++++++++++++++++++
- 3 files changed, 106 insertions(+), 2 deletions(-)
-
-diff --git a/include/openvpn-msg.h b/include/openvpn-msg.h
-index 82ecfe8..66177a2 100644
---- a/include/openvpn-msg.h
-+++ b/include/openvpn-msg.h
-@@ -37,7 +37,8 @@ typedef enum {
-     msg_flush_neighbors,
-     msg_add_block_dns,
-     msg_del_block_dns,
--    msg_register_dns
-+    msg_register_dns,
-+    msg_enable_dhcp,
- } message_type_t;
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index ff39230..8a3e8b4 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -2991,16 +2991,12 @@ del_route_ipapi(const struct route_ipv4 *r, const struct tuntap *tt)
+ static bool
+ do_route_service(const bool add, const route_message_t *rt, const size_t size, HANDLE pipe)
+ {
+-    DWORD len;
+     bool ret = false;
+     ack_message_t ack;
+     struct gc_arena gc = gc_new();
  
- typedef struct {
-@@ -111,4 +112,9 @@ typedef struct {
-     interface_t iface;
- } block_dns_message_t;
+-    if (!WriteFile(pipe, rt, size, &len, NULL)
+-        || !ReadFile(pipe, &ack, sizeof(ack), &len, NULL))
++    if (!send_msg_iservice(pipe, rt, size, &ack, "ROUTE"))
+     {
+-        msg(M_WARN, "ROUTE: could not talk to service: %s [%lu]",
+-            strerror_win32(GetLastError(), &gc), GetLastError());
+         goto out;
+     }
  
-+typedef struct {
-+    message_header_t header;
-+    interface_t iface;
-+} enable_dhcp_message_t;
-+
- #endif /* ifndef OPENVPN_MSG_H_ */
 diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 50f158c..a2d5315 100644
+index a2d5315..948fd17 100644
 --- a/src/openvpn/tun.c
 +++ b/src/openvpn/tun.c
-@@ -5203,6 +5203,49 @@ netsh_enable_dhcp(const struct tuntap_options *to,
-     argv_reset(&argv);
+@@ -82,7 +82,6 @@ static DWORD get_adapter_index_flexible(const char *name);
+ static bool
+ do_address_service(const bool add, const short family, const struct tuntap *tt)
+ {
+-    DWORD len;
+     bool ret = false;
+     ack_message_t ack;
+     struct gc_arena gc = gc_new();
+@@ -115,11 +114,8 @@ do_address_service(const bool add, const short family, const struct tuntap *tt)
+         addr.prefix_len = tt->netbits_ipv6;
+     }
+ 
+-    if (!WriteFile(pipe, &addr, sizeof(addr), &len, NULL)
+-        || !ReadFile(pipe, &ack, sizeof(ack), &len, NULL))
++    if (!send_msg_iservice(pipe, &addr, sizeof(addr), &ack, "TUN"))
+     {
+-        msg(M_WARN, "TUN: could not talk to service: %s [%lu]",
+-            strerror_win32(GetLastError(), &gc), GetLastError());
+         goto out;
+     }
+ 
+@@ -141,7 +137,6 @@ out:
+ static bool
+ do_dns6_service(bool add, const struct tuntap *tt)
+ {
+-    DWORD len;
+     bool ret = false;
+     ack_message_t ack;
+     struct gc_arena gc = gc_new();
+@@ -185,11 +180,8 @@ do_dns6_service(bool add, const struct tuntap *tt)
+     msg(D_LOW, "%s IPv6 dns servers on '%s' (if_index = %d) using service",
+         (add ? "Setting" : "Deleting"), dns.iface.name, dns.iface.index);
+ 
+-    if (!WriteFile(pipe, &dns, sizeof(dns), &len, NULL)
+-        || !ReadFile(pipe, &ack, sizeof(ack), &len, NULL))
++    if (!send_msg_iservice(pipe, &dns, sizeof(dns), &ack, "TUN"))
+     {
+-        msg(M_WARN, "TUN: could not talk to service: %s [%lu]",
+-            strerror_win32(GetLastError(), &gc), GetLastError());
+         goto out;
+     }
+ 
+@@ -5222,11 +5214,8 @@ service_enable_dhcp(const struct tuntap *tt)
+         .iface = { .index = tt->adapter_index, .name = "" }
+     };
+ 
+-    if (!WriteFile(pipe, &dhcp, sizeof(dhcp), &len, NULL)
+-        || !ReadFile(pipe, &ack, sizeof(ack), &len, NULL))
++    if (!send_msg_iservice(pipe, &dhcp, sizeof(dhcp), &ack, "Enable_dhcp"))
+     {
+-        msg(M_WARN, "Enable_dhcp: could not talk to service: %s [%lu]",
+-            strerror_win32(GetLastError(), &gc), GetLastError());
+         goto out;
+     }
+ 
+@@ -5461,18 +5450,16 @@ fork_dhcp_action(struct tuntap *tt)
+ static void
+ register_dns_service(const struct tuntap *tt)
+ {
+-    DWORD len;
+     HANDLE msg_channel = tt->options.msg_channel;
+     ack_message_t ack;
+     struct gc_arena gc = gc_new();
+ 
+     message_header_t rdns = { msg_register_dns, sizeof(message_header_t), 0 };
+ 
+-    if (!WriteFile(msg_channel, &rdns, sizeof(rdns), &len, NULL)
+-        || !ReadFile(msg_channel, &ack, sizeof(ack), &len, NULL))
++    if (!send_msg_iservice(msg_channel, &rdns, sizeof(rdns), &ack, "Register_dns"))
+     {
+-        msg(M_WARN, "Register_dns: could not talk to service: %s [status=0x%lx]",
+-            strerror_win32(GetLastError(), &gc), GetLastError());
++        gc_free(&gc);
++        return;
+     }
+ 
+     else if (ack.error_number != NO_ERROR)
+@@ -5936,14 +5923,11 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+                     .iface = { .index = index, .name = "" }
+                 };
+ 
+-                if (!WriteFile(tt->options.msg_channel, &msg, sizeof(msg), &len, NULL)
+-                    || !ReadFile(tt->options.msg_channel, &ack, sizeof(ack), &len, NULL))
++                if (send_msg_iservice(tt->options.msg_channel, &msg, sizeof(msg),
++                    &ack, "TUN"))
+                 {
+-                    msg(M_WARN, "TUN: could not talk to service: %s [%lu]",
+-                        strerror_win32(GetLastError(), &gc), GetLastError());
++                    status = ack.error_number;
+                 }
+-
+-                status = ack.error_number;
+             }
+             else
+             {
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index 3905524..e43296e 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -1264,7 +1264,6 @@ win_get_tempdir(void)
+ static bool
+ win_block_dns_service(bool add, int index, const HANDLE pipe)
+ {
+-    DWORD len;
+     bool ret = false;
+     ack_message_t ack;
+     struct gc_arena gc = gc_new();
+@@ -1278,11 +1277,8 @@ win_block_dns_service(bool add, int index, const HANDLE pipe)
+         .iface = { .index = index, .name = "" }
+     };
+ 
+-    if (!WriteFile(pipe, &data, sizeof(data), &len, NULL)
+-        || !ReadFile(pipe, &ack, sizeof(ack), &len, NULL))
++    if (!send_msg_iservice(pipe, &data, sizeof(data), &ack, "Block_DNS"))
+     {
+-        msg(M_WARN, "Block_DNS: could not talk to service: %s [%lu]",
+-            strerror_win32(GetLastError(), &gc), GetLastError());
+         goto out;
+     }
+ 
+@@ -1473,4 +1469,25 @@ win32_version_string(struct gc_arena *gc, bool add_name)
+     return (const char *)out.data;
  }
  
-+/* Enable dhcp on tap adapter using iservice */
-+static bool
-+service_enable_dhcp(const struct tuntap *tt)
++bool
++send_msg_iservice(HANDLE pipe, const void *data, size_t size,
++                  ack_message_t *ack, const char *context)
 +{
-+    DWORD len;
-+    bool ret = false;
-+    ack_message_t ack;
 +    struct gc_arena gc = gc_new();
-+    HANDLE pipe = tt->options.msg_channel;
++    DWORD len;
++    bool ret = true;
 +
-+    enable_dhcp_message_t dhcp = {
-+        .header = {
-+            msg_enable_dhcp,
-+            sizeof(enable_dhcp_message_t),
-+            0
-+        },
-+        .iface = { .index = tt->adapter_index, .name = "" }
-+    };
-+
-+    if (!WriteFile(pipe, &dhcp, sizeof(dhcp), &len, NULL)
-+        || !ReadFile(pipe, &ack, sizeof(ack), &len, NULL))
++    if (!WriteFile(pipe, data, size, &len, NULL)
++        || !ReadFile(pipe, ack, sizeof(*ack), &len, NULL))
 +    {
-+        msg(M_WARN, "Enable_dhcp: could not talk to service: %s [%lu]",
++        msg(M_WARN, "%s: could not talk to service: %s [%lu]",
++            context? context : "Unknown",
 +            strerror_win32(GetLastError(), &gc), GetLastError());
-+        goto out;
++        ret = false;
 +    }
 +
-+    if (ack.error_number != NO_ERROR)
-+    {
-+        msg(M_NONFATAL, "TUN: enabling dhcp using service failed: %s [status=%u if_index=%d]",
-+            strerror_win32(ack.error_number, &gc), ack.error_number, dhcp.iface.index);
-+    }
-+    else
-+    {
-+        msg(M_INFO, "DHCP enabled on interface %d using service", dhcp.iface.index);
-+        ret = true;
-+    }
-+
-+out:
 +    gc_free(&gc);
 +    return ret;
 +}
 +
- /*
-  * Return a TAP name for netsh commands.
+ #endif /* ifdef _WIN32 */
+diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
+index 4b99a5e..b5cbe25 100644
+--- a/src/openvpn/win32.h
++++ b/src/openvpn/win32.h
+@@ -26,6 +26,7 @@
+ #define OPENVPN_WIN32_H
+ 
+ #include "mtu.h"
++#include "openvpn-msg.h"
+ 
+ /* location of executables */
+ #define SYS_PATH_ENV_VAR_NAME "SystemRoot"  /* environmental variable name that normally contains the system path */
+@@ -307,5 +308,13 @@ int win32_version_info(void);
   */
-@@ -5683,7 +5726,15 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
-              */
-             if (dhcp_status(tt->adapter_index) == DHCP_STATUS_DISABLED)
-             {
--                netsh_enable_dhcp(&tt->options, tt->actual_name);
-+                /* try using the service if available, else directly execute netsh */
-+                if (tt->options.msg_channel)
-+                {
-+                    service_enable_dhcp(tt);
-+                }
-+                else
-+                {
-+                    netsh_enable_dhcp(&tt->options, tt->actual_name);
-+                }
-             }
-             dhcp_masq = true;
-             dhcp_masq_post = true;
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index 0489684..c0fdc19 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -1165,6 +1165,45 @@ out:
-     return err;
- }
+ const char *win32_version_string(struct gc_arena *gc, bool add_name);
  
-+static DWORD
-+HandleEnableDHCPMessage(const enable_dhcp_message_t *dhcp)
-+{
-+    DWORD err = 0;
-+    DWORD timeout = 5000; /* in milli seconds */
-+    wchar_t argv0[MAX_PATH];
++/*
++ * Send the |size| bytes in buffer |data| to the interactive service |pipe|
++ * and read the result in |ack|. Returns false on communication error.
++ * The string in |context| is used to prefix error messages.
++ */
++bool send_msg_iservice(HANDLE pipe, const void *data, size_t size,
++                       ack_message_t *ack, const char *context);
 +
-+    /* Path of netsh */
-+    swprintf(argv0, _countof(argv0), L"%s\\%s", get_win_sys_path(), L"netsh.exe");
-+    argv0[_countof(argv0) - 1] = L'\0';
-+
-+    /* cmd template:
-+     * netsh interface ipv4 set address name=$if_index source=dhcp
-+     */
-+    const wchar_t *fmt = L"netsh interface ipv4 set address name=\"%d\" source=dhcp";
-+
-+    /* max cmdline length in wchars -- include room for if index:
-+     * 10 chars for 32 bit int in decimal and +1 for NUL
-+     */
-+    size_t ncmdline = wcslen(fmt) + 10 + 1;
-+    wchar_t *cmdline = malloc(ncmdline*sizeof(wchar_t));
-+    if (!cmdline)
-+    {
-+        err = ERROR_OUTOFMEMORY;
-+        return err;
-+    }
-+
-+    openvpn_sntprintf(cmdline, ncmdline, fmt, dhcp->iface.index);
-+
-+    err = ExecCommand(argv0, cmdline, timeout);
-+
-+    /* Note: This could fail if dhcp is already enabled, so the caller
-+     * may not want to treat errors as FATAL.
-+     */
-+
-+    free(cmdline);
-+    return err;
-+}
-+
- static VOID
- HandleMessage(HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events, undo_lists_t *lists)
- {
-@@ -1176,6 +1215,7 @@ HandleMessage(HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events, undo_lists
-         flush_neighbors_message_t flush_neighbors;
-         block_dns_message_t block_dns;
-         dns_cfg_message_t dns;
-+        enable_dhcp_message_t dhcp;
-     } msg;
-     ack_message_t ack = {
-         .header = {
-@@ -1236,6 +1276,13 @@ HandleMessage(HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events, undo_lists
-             ack.error_number = HandleDNSConfigMessage(&msg.dns, lists);
-             break;
- 
-+        case msg_enable_dhcp:
-+            if (msg.header.size == sizeof(msg.dhcp))
-+            {
-+                ack.error_number = HandleEnableDHCPMessage(&msg.dhcp);
-+            }
-+            break;
-+
-         default:
-             ack.error_number = ERROR_MESSAGE_TYPE;
-             MsgToEventLog(MSG_FLAGS_ERROR, TEXT("Unknown message type %d"), msg.header.type);
+ #endif /* ifndef OPENVPN_WIN32_H */
+ #endif /* ifdef _WIN32 */
 -- 
 2.1.4
 
