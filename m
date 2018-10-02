@@ -1,13 +1,10 @@
-MIME-Version: 1.0
+From: selva.nair@...277...
+Date: Tue,  2 Oct 2018 16:01:12 -0400
+Message-Id: <1538510474-27602-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1538229228-10620-1-git-send-email-selva.nair@...277...>
 References: <1538229228-10620-1-git-send-email-selva.nair@...277...>
- <CAGyAFMX_aMRUgLN3b96N3bTEvyKxVX0En_1O3mKLvbVMMJkVnQ@...278...>
-In-Reply-To: <CAGyAFMX_aMRUgLN3b96N3bTEvyKxVX0En_1O3mKLvbVMMJkVnQ@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 1 Oct 2018 11:35:46 -0400
-Message-ID: <CAKuzo_hFxC5kPFtjV9MYYd1M9DjE0HktUFRGNPNxiwiT49PSDg@...278...>
-Content-Type: multipart/alternative; boundary="0000000000003ca2ff05772c903e"
-Subject: Re: [Openvpn-devel] [PATCH] Enable dhcp on tap adapter using
- interactive service
+Subject: [Openvpn-devel] [PATCH 1/3] Move get system directory to a separate
+ function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,134 +13,115 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---0000000000003ca2ff05772c903e
-Content-Type: text/plain; charset="UTF-8"
+From: Selva Nair <selva.nair@...277...>
 
-Hi,
+Only refactoring to reduce code-duplication, no functional changes.
 
-Thanks for the review and comments. A quick reply below, will send a v2
-later.
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpnserv/common.c      | 16 +++++++++++++++-
+ src/openvpnserv/interactive.c | 23 ++++++-----------------
+ src/openvpnserv/service.h     |  3 +++
+ 3 files changed, 24 insertions(+), 18 deletions(-)
 
-On Mon, Oct 1, 2018 at 7:11 AM Lev Stipakov <lstipakov@...277...> wrote:
+diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
+index dc47666..73c418f 100644
+--- a/src/openvpnserv/common.c
++++ b/src/openvpnserv/common.c
+@@ -25,7 +25,7 @@
+ #include "validate.h"
+ 
+ LPCTSTR service_instance = TEXT("");
+-
++static wchar_t win_sys_path[MAX_PATH];
+ 
+ /*
+  * These are necessary due to certain buggy implementations of (v)snprintf,
+@@ -285,3 +285,17 @@ utf8to16(const char *utf8)
+     MultiByteToWideChar(CP_UTF8, 0, utf8, -1, utf16, n);
+     return utf16;
+ }
++
++const wchar_t *
++get_win_sys_path(void)
++{
++    const wchar_t *default_sys_path = L"C:\\Windows\\system32";
++
++    if (!GetSystemDirectoryW(win_sys_path, _countof(win_sys_path)))
++    {
++        wcsncpy(win_sys_path, default_sys_path, _countof(win_sys_path));
++        win_sys_path[_countof(win_sys_path) - 1] = L'\0';
++    }
++
++    return win_sys_path;
++}
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 861f5e7..0489684 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -934,11 +934,10 @@ RegisterDNS(LPVOID unused)
+ {
+     DWORD err;
+     DWORD i;
+-    WCHAR sys_path[MAX_PATH];
+     DWORD timeout = RDNS_TIMEOUT * 1000; /* in milliseconds */
+ 
+-    /* default path of ipconfig command */
+-    WCHAR ipcfg[MAX_PATH] = L"C:\\Windows\\system32\\ipconfig.exe";
++    /* path of ipconfig command */
++    WCHAR ipcfg[MAX_PATH];
+ 
+     struct
+     {
+@@ -953,11 +952,8 @@ RegisterDNS(LPVOID unused)
+ 
+     HANDLE wait_handles[2] = {rdns_semaphore, exit_event};
+ 
+-    if (GetSystemDirectory(sys_path, MAX_PATH))
+-    {
+-        swprintf(ipcfg, MAX_PATH, L"%s\\%s", sys_path, L"ipconfig.exe");
+-        ipcfg[MAX_PATH-1] = L'\0';
+-    }
++    swprintf(ipcfg, _countof(ipcfg), L"%s\\%s", get_win_sys_path(), L"ipconfig.exe");
++    ipcfg[_countof(ipcfg) - 1] = L'\0';
+ 
+     if (WaitForMultipleObjects(2, wait_handles, FALSE, timeout) == WAIT_OBJECT_0)
+     {
+@@ -1035,15 +1031,8 @@ netsh_dns_cmd(const wchar_t *action, const wchar_t *proto, const wchar_t *if_nam
+     }
+ 
+     /* Path of netsh */
+-    int n = GetSystemDirectory(argv0, MAX_PATH);
+-    if (n > 0 && n < MAX_PATH) /* got system directory */
+-    {
+-        wcsncat(argv0, L"\\netsh.exe", MAX_PATH - n - 1);
+-    }
+-    else
+-    {
+-        wcsncpy(argv0, L"C:\\Windows\\system32\\netsh.exe", MAX_PATH);
+-    }
++    swprintf(argv0, _countof(argv0), L"%s\\%s", get_win_sys_path(), L"netsh.exe");
++    argv0[_countof(argv0) - 1] = L'\0';
+ 
+     /* cmd template:
+      * netsh interface $proto $action dns $if_name $addr [validate=no]
+diff --git a/src/openvpnserv/service.h b/src/openvpnserv/service.h
+index af8f37f..23b105f 100644
+--- a/src/openvpnserv/service.h
++++ b/src/openvpnserv/service.h
+@@ -96,4 +96,7 @@ DWORD MsgToEventLog(DWORD flags, LPCTSTR lpszMsg, ...);
+ /* Convert a utf8 string to utf16. Caller should free the result */
+ wchar_t *utf8to16(const char *utf8);
+ 
++/* return windows system directory as a pointer to a static string */
++const wchar_t *get_win_sys_path(void);
++
+ #endif /* ifndef _SERVICE_H */
+-- 
+2.1.4
 
-> Hi,
->
-> Thanks, I tested on Windows 10 with Visual Studio build and works as
-> expected.
->
-> A few nitpicks:
->
-> +    if (!WriteFile(pipe, &dhcp, sizeof(dhcp), &len, NULL)
->> +        || !ReadFile(pipe, &ack, sizeof(ack), &len, NULL))
->> +    {
->> +        msg(M_WARN, "TUN: could not talk to service: %s [%lu]",
->> +            strerror_win32(GetLastError(), &gc), GetLastError());
->> +        goto out;
->> +    }
->>
->
-> A very similar code (communicate with service) is used in
-> do_address_service and do_dns6_service, so
-> how about factoring that code into separate method?
->
-
-Sounds like a good idea. As this affects a number of unrelated contexts,
-will follow up with a refactoring patch.
-
-
->
->
->> +    /* Path of netsh */
->> +    int n = GetSystemDirectory(argv0, MAX_PATH);
->> +    if (n > 0 && n < MAX_PATH) /* got system directory */
->> +    {
->> +        wcsncat(argv0, L"\\netsh.exe", MAX_PATH - n - 1);
->> +    }
->> +    else
->> +    {
->> +        wcsncpy(argv0, L"C:\\Windows\\system32\\netsh.exe", MAX_PATH);
->> +    }
->>
->
->
-Same as above (code in netsh_dns_cmd).
->
-
-Will do in v2.
-
-
->
->
->
->> +    /* max cmdline length in wchars -- include room for if index */
->> +    size_t ncmdline = wcslen(fmt) + 10 + 1;
->>
->
-> Maybe comment that 10 is a max string length of int type and 1 is a nul
-> terminator (do we need it here?).
->
-
-Extra room for NUL is strictly not necessary as there is space in the
-format specifier "%d" etc. Still, I think its better to have an explicit +1.
-
-Selva
-
---0000000000003ca2ff05772c903e
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div>Hi,<br><br></div>Thanks for the review and comments. =
-A quick reply below, will send a v2 later.<br><br><div class=3D"gmail_quote=
-"><div dir=3D"ltr">On Mon, Oct 1, 2018 at 7:11 AM Lev Stipakov &lt;<a href=
-=3D"mailto:lstipakov@...277...">lstipakov@...277...</a>&gt; wrote:<br></div=
-><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1=
-px #ccc solid;padding-left:1ex"><div dir=3D"ltr">Hi,<div><br></div><div>Tha=
-nks, I tested on Windows 10 with Visual Studio build and works as expected.=
-</div><div><br></div><div>A few nitpicks:</div><div><br></div><div><div cla=
-ss=3D"gmail_quote"><blockquote class=3D"gmail_quote" style=3D"margin:0px 0p=
-x 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">+=C2=
-=A0 =C2=A0 if (!WriteFile(pipe, &amp;dhcp, sizeof(dhcp), &amp;len, NULL)<br=
->+=C2=A0 =C2=A0 =C2=A0 =C2=A0 || !ReadFile(pipe, &amp;ack, sizeof(ack), &am=
-p;len, NULL))<br>+=C2=A0 =C2=A0 {<br>+=C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(M_WAR=
-N, &quot;TUN: could not talk to service: %s [%lu]&quot;,<br>+=C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 strerror_win32(GetLastError(), &amp;gc), GetLas=
-tError());<br>+=C2=A0 =C2=A0 =C2=A0 =C2=A0 goto out;<br>+=C2=A0 =C2=A0 }<br=
-></blockquote><div><br></div><div>A very similar code (communicate with ser=
-vice) is used in do_address_service and do_dns6_service, so=C2=A0</div><div=
->how about factoring that code into separate method?</div></div></div></div=
-></blockquote><div><br></div><div>Sounds like a good idea. As this affects =
-a number of unrelated contexts, will follow up with a refactoring patch.<br=
-><br></div><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bor=
-der-left:1px #ccc solid;padding-left:1ex"><div dir=3D"ltr"><div><div class=
-=3D"gmail_quote"><div><br></div><div>=C2=A0</div><blockquote class=3D"gmail=
-_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204=
-,204);padding-left:1ex">+=C2=A0 =C2=A0 /* Path of netsh */<br>+=C2=A0 =C2=
-=A0 int n =3D GetSystemDirectory(argv0, MAX_PATH);<br>+=C2=A0 =C2=A0 if (n =
-&gt; 0 &amp;&amp; n &lt; MAX_PATH) /* got system directory */<br>+=C2=A0 =
-=C2=A0 {<br>+=C2=A0 =C2=A0 =C2=A0 =C2=A0 wcsncat(argv0, L&quot;\\netsh.exe&=
-quot;, MAX_PATH - n - 1);<br>+=C2=A0 =C2=A0 }<br>+=C2=A0 =C2=A0 else<br>+=
-=C2=A0 =C2=A0 {<br>+=C2=A0 =C2=A0 =C2=A0 =C2=A0 wcsncpy(argv0, L&quot;C:\\W=
-indows\\system32\\netsh.exe&quot;, MAX_PATH);<br>+=C2=A0 =C2=A0 }<br></bloc=
-kquote><div>=C2=A0<br></div></div></div></div></blockquote><blockquote clas=
-s=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;pad=
-ding-left:1ex"><div dir=3D"ltr"><div><div class=3D"gmail_quote"><div></div>=
-<div>Same as above (code in netsh_dns_cmd).</div></div></div></div></blockq=
-uote><div><br></div><div>Will do in v2.<br>=C2=A0<br></div><blockquote clas=
-s=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;pad=
-ding-left:1ex"><div dir=3D"ltr"><div><div class=3D"gmail_quote"><div><br></=
-div><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0px =
-0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">+=C2=
-=A0 =C2=A0 /* max cmdline length in wchars -- include room for if index */<=
-br>+=C2=A0 =C2=A0 size_t ncmdline =3D wcslen(fmt) + 10 + 1;<br></blockquote=
-><div><br></div><div>Maybe comment that 10 is a max string length of int ty=
-pe and 1 is a nul terminator (do we need it here?).</div></div></div></div>=
-</blockquote><div><br></div><div>Extra room for NUL is strictly not necessa=
-ry as there is space in the format specifier &quot;%d&quot; etc. Still, I t=
-hink its better to have an explicit +1.<br><br></div><div>Selva<br></div></=
-div></div>
-
---0000000000003ca2ff05772c903e--
 
