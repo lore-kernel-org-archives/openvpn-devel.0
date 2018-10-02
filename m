@@ -1,10 +1,11 @@
 From: selva.nair@...277...
-Date: Tue,  2 Oct 2018 16:01:12 -0400
-Message-Id: <1538510474-27602-1-git-send-email-selva.nair@...277...>
-In-Reply-To: <1538229228-10620-1-git-send-email-selva.nair@...277...>
+Date: Tue,  2 Oct 2018 16:01:13 -0400
+Message-Id: <1538510474-27602-2-git-send-email-selva.nair@...277...>
+In-Reply-To: <1538510474-27602-1-git-send-email-selva.nair@...277...>
 References: <1538229228-10620-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH 1/3] Move get system directory to a separate
- function
+ <1538510474-27602-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH 2/3 v2] Enable dhcp on tap adapter using
+ interactive service
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,108 +20,197 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-Only refactoring to reduce code-duplication, no functional changes.
+Currently, if dhcp on the TAP interface is disabled, OpenVPN
+on Windows tries to enable it using netsh but that succeeds only when
+run with admin privileges.
+
+When interactive service is available, delegate this task to the
+service.
+
+Trac #1111
+Tested on Windows 7
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- src/openvpnserv/common.c      | 16 +++++++++++++++-
- src/openvpnserv/interactive.c | 23 ++++++-----------------
- src/openvpnserv/service.h     |  3 +++
- 3 files changed, 24 insertions(+), 18 deletions(-)
+v2 changes: As suggested by Lev
+- In comment, clarify the 10 chars room is for printing 32 bit int
+- Use get_win_sys_path() added in the accompanying patch (1 of 3)
+ 
+Refactoring of writing to the message channel is in the
+following patch.
 
-diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
-index dc47666..73c418f 100644
---- a/src/openvpnserv/common.c
-+++ b/src/openvpnserv/common.c
-@@ -25,7 +25,7 @@
- #include "validate.h"
+ include/openvpn-msg.h         |  8 ++++++-
+ src/openvpn/tun.c             | 53 ++++++++++++++++++++++++++++++++++++++++++-
+ src/openvpnserv/interactive.c | 47 ++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 106 insertions(+), 2 deletions(-)
+
+diff --git a/include/openvpn-msg.h b/include/openvpn-msg.h
+index 82ecfe8..66177a2 100644
+--- a/include/openvpn-msg.h
++++ b/include/openvpn-msg.h
+@@ -37,7 +37,8 @@ typedef enum {
+     msg_flush_neighbors,
+     msg_add_block_dns,
+     msg_del_block_dns,
+-    msg_register_dns
++    msg_register_dns,
++    msg_enable_dhcp,
+ } message_type_t;
  
- LPCTSTR service_instance = TEXT("");
--
-+static wchar_t win_sys_path[MAX_PATH];
+ typedef struct {
+@@ -111,4 +112,9 @@ typedef struct {
+     interface_t iface;
+ } block_dns_message_t;
  
- /*
-  * These are necessary due to certain buggy implementations of (v)snprintf,
-@@ -285,3 +285,17 @@ utf8to16(const char *utf8)
-     MultiByteToWideChar(CP_UTF8, 0, utf8, -1, utf16, n);
-     return utf16;
++typedef struct {
++    message_header_t header;
++    interface_t iface;
++} enable_dhcp_message_t;
++
+ #endif /* ifndef OPENVPN_MSG_H_ */
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 50f158c..a2d5315 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -5203,6 +5203,49 @@ netsh_enable_dhcp(const struct tuntap_options *to,
+     argv_reset(&argv);
  }
-+
-+const wchar_t *
-+get_win_sys_path(void)
+ 
++/* Enable dhcp on tap adapter using iservice */
++static bool
++service_enable_dhcp(const struct tuntap *tt)
 +{
-+    const wchar_t *default_sys_path = L"C:\\Windows\\system32";
++    DWORD len;
++    bool ret = false;
++    ack_message_t ack;
++    struct gc_arena gc = gc_new();
++    HANDLE pipe = tt->options.msg_channel;
 +
-+    if (!GetSystemDirectoryW(win_sys_path, _countof(win_sys_path)))
++    enable_dhcp_message_t dhcp = {
++        .header = {
++            msg_enable_dhcp,
++            sizeof(enable_dhcp_message_t),
++            0
++        },
++        .iface = { .index = tt->adapter_index, .name = "" }
++    };
++
++    if (!WriteFile(pipe, &dhcp, sizeof(dhcp), &len, NULL)
++        || !ReadFile(pipe, &ack, sizeof(ack), &len, NULL))
 +    {
-+        wcsncpy(win_sys_path, default_sys_path, _countof(win_sys_path));
-+        win_sys_path[_countof(win_sys_path) - 1] = L'\0';
++        msg(M_WARN, "Enable_dhcp: could not talk to service: %s [%lu]",
++            strerror_win32(GetLastError(), &gc), GetLastError());
++        goto out;
 +    }
 +
-+    return win_sys_path;
++    if (ack.error_number != NO_ERROR)
++    {
++        msg(M_NONFATAL, "TUN: enabling dhcp using service failed: %s [status=%u if_index=%d]",
++            strerror_win32(ack.error_number, &gc), ack.error_number, dhcp.iface.index);
++    }
++    else
++    {
++        msg(M_INFO, "DHCP enabled on interface %d using service", dhcp.iface.index);
++        ret = true;
++    }
++
++out:
++    gc_free(&gc);
++    return ret;
 +}
++
+ /*
+  * Return a TAP name for netsh commands.
+  */
+@@ -5683,7 +5726,15 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+              */
+             if (dhcp_status(tt->adapter_index) == DHCP_STATUS_DISABLED)
+             {
+-                netsh_enable_dhcp(&tt->options, tt->actual_name);
++                /* try using the service if available, else directly execute netsh */
++                if (tt->options.msg_channel)
++                {
++                    service_enable_dhcp(tt);
++                }
++                else
++                {
++                    netsh_enable_dhcp(&tt->options, tt->actual_name);
++                }
+             }
+             dhcp_masq = true;
+             dhcp_masq_post = true;
 diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index 861f5e7..0489684 100644
+index 0489684..c0fdc19 100644
 --- a/src/openvpnserv/interactive.c
 +++ b/src/openvpnserv/interactive.c
-@@ -934,11 +934,10 @@ RegisterDNS(LPVOID unused)
- {
-     DWORD err;
-     DWORD i;
--    WCHAR sys_path[MAX_PATH];
-     DWORD timeout = RDNS_TIMEOUT * 1000; /* in milliseconds */
+@@ -1165,6 +1165,45 @@ out:
+     return err;
+ }
  
--    /* default path of ipconfig command */
--    WCHAR ipcfg[MAX_PATH] = L"C:\\Windows\\system32\\ipconfig.exe";
-+    /* path of ipconfig command */
-+    WCHAR ipcfg[MAX_PATH];
- 
-     struct
-     {
-@@ -953,11 +952,8 @@ RegisterDNS(LPVOID unused)
- 
-     HANDLE wait_handles[2] = {rdns_semaphore, exit_event};
- 
--    if (GetSystemDirectory(sys_path, MAX_PATH))
--    {
--        swprintf(ipcfg, MAX_PATH, L"%s\\%s", sys_path, L"ipconfig.exe");
--        ipcfg[MAX_PATH-1] = L'\0';
--    }
-+    swprintf(ipcfg, _countof(ipcfg), L"%s\\%s", get_win_sys_path(), L"ipconfig.exe");
-+    ipcfg[_countof(ipcfg) - 1] = L'\0';
- 
-     if (WaitForMultipleObjects(2, wait_handles, FALSE, timeout) == WAIT_OBJECT_0)
-     {
-@@ -1035,15 +1031,8 @@ netsh_dns_cmd(const wchar_t *action, const wchar_t *proto, const wchar_t *if_nam
-     }
- 
-     /* Path of netsh */
--    int n = GetSystemDirectory(argv0, MAX_PATH);
--    if (n > 0 && n < MAX_PATH) /* got system directory */
--    {
--        wcsncat(argv0, L"\\netsh.exe", MAX_PATH - n - 1);
--    }
--    else
--    {
--        wcsncpy(argv0, L"C:\\Windows\\system32\\netsh.exe", MAX_PATH);
--    }
++static DWORD
++HandleEnableDHCPMessage(const enable_dhcp_message_t *dhcp)
++{
++    DWORD err = 0;
++    DWORD timeout = 5000; /* in milli seconds */
++    wchar_t argv0[MAX_PATH];
++
++    /* Path of netsh */
 +    swprintf(argv0, _countof(argv0), L"%s\\%s", get_win_sys_path(), L"netsh.exe");
 +    argv0[_countof(argv0) - 1] = L'\0';
- 
-     /* cmd template:
-      * netsh interface $proto $action dns $if_name $addr [validate=no]
-diff --git a/src/openvpnserv/service.h b/src/openvpnserv/service.h
-index af8f37f..23b105f 100644
---- a/src/openvpnserv/service.h
-+++ b/src/openvpnserv/service.h
-@@ -96,4 +96,7 @@ DWORD MsgToEventLog(DWORD flags, LPCTSTR lpszMsg, ...);
- /* Convert a utf8 string to utf16. Caller should free the result */
- wchar_t *utf8to16(const char *utf8);
- 
-+/* return windows system directory as a pointer to a static string */
-+const wchar_t *get_win_sys_path(void);
 +
- #endif /* ifndef _SERVICE_H */
++    /* cmd template:
++     * netsh interface ipv4 set address name=$if_index source=dhcp
++     */
++    const wchar_t *fmt = L"netsh interface ipv4 set address name=\"%d\" source=dhcp";
++
++    /* max cmdline length in wchars -- include room for if index:
++     * 10 chars for 32 bit int in decimal and +1 for NUL
++     */
++    size_t ncmdline = wcslen(fmt) + 10 + 1;
++    wchar_t *cmdline = malloc(ncmdline*sizeof(wchar_t));
++    if (!cmdline)
++    {
++        err = ERROR_OUTOFMEMORY;
++        return err;
++    }
++
++    openvpn_sntprintf(cmdline, ncmdline, fmt, dhcp->iface.index);
++
++    err = ExecCommand(argv0, cmdline, timeout);
++
++    /* Note: This could fail if dhcp is already enabled, so the caller
++     * may not want to treat errors as FATAL.
++     */
++
++    free(cmdline);
++    return err;
++}
++
+ static VOID
+ HandleMessage(HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events, undo_lists_t *lists)
+ {
+@@ -1176,6 +1215,7 @@ HandleMessage(HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events, undo_lists
+         flush_neighbors_message_t flush_neighbors;
+         block_dns_message_t block_dns;
+         dns_cfg_message_t dns;
++        enable_dhcp_message_t dhcp;
+     } msg;
+     ack_message_t ack = {
+         .header = {
+@@ -1236,6 +1276,13 @@ HandleMessage(HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events, undo_lists
+             ack.error_number = HandleDNSConfigMessage(&msg.dns, lists);
+             break;
+ 
++        case msg_enable_dhcp:
++            if (msg.header.size == sizeof(msg.dhcp))
++            {
++                ack.error_number = HandleEnableDHCPMessage(&msg.dhcp);
++            }
++            break;
++
+         default:
+             ack.error_number = ERROR_MESSAGE_TYPE;
+             MsgToEventLog(MSG_FLAGS_ERROR, TEXT("Unknown message type %d"), msg.header.type);
 -- 
 2.1.4
 
