@@ -1,13 +1,9 @@
-MIME-Version: 1.0
-References: <1538576212-2363-1-git-send-email-lstipakov@...277...>
- <CAKuzo_ijYi_qnpRJmNOUQpg9VEsPeqSwZS5d8VYuMNcMDNgw-w@...278...>
- <CAGyAFMVaLFpBNAdFuvBSMZmw8aFpSMm3dawQRC1Sb+AVTwrY+A@...278...>
-In-Reply-To: <CAGyAFMVaLFpBNAdFuvBSMZmw8aFpSMm3dawQRC1Sb+AVTwrY+A@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 3 Oct 2018 13:10:31 -0400
-Message-ID: <CAKuzo_iMLOt6Y_iNffbsKQKJQh=Xq2y8feE+BkCUbb=Eu7xa6Q@...278...>
-Content-Type: multipart/alternative; boundary="000000000000b946970577561e85"
-Subject: Re: [Openvpn-devel] [PATCH] openvpnserv: clarify return values type
+From: Lev Stipakov <lstipakov@...277...>
+Date: Wed,  3 Oct 2018 20:21:21 +0300
+Message-Id: <1538587281-3209-1-git-send-email-lstipakov@...277...>
+In-Reply-To: <CAGyAFMWb0+kpevvu2-UqOvU32HbPK5A=y10WHhThYde74nbKAA@...278...>
+References: <CAGyAFMWb0+kpevvu2-UqOvU32HbPK5A=y10WHhThYde74nbKAA@...278...>
+Subject: [Openvpn-devel] [PATCH v2] openvpnserv: clarify return values type
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,54 +12,110 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---000000000000b946970577561e85
-Content-Type: text/plain; charset="UTF-8"
+From: Lev Stipakov <lev@...515...>
 
-Hi,
+Functions openvpn_vsntprintf and openvpn_sntprintf return
+values of type int, but in reality it is always 0 or 1 (and -1 for
+snrptinf), which can be represented as boolean.
 
-On Wed, Oct 3, 2018 at 12:56 PM Lev Stipakov <lstipakov@...277...> wrote:
+To make code clearer, change return type to BOOL. Also
+use stdbool.h header instead of bool definition macros in automatic.c.
 
-> Hi,
->
-> Wishlist: openvpn_swprintf() with nul termination guarantee. I try to avoid
->> the TCHAR variety be explicit about wide and narrow characters.
->>
->
-> Makes sense, at the moment we have 8 swprintf calls all followed by
-> something like
->
->  > tmp[_countof(tmp)-1] = L'\0';
->
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+v2: replace bool with BOOL as discussed
 
-That must be me --- nul termination paranoia :) Cant blame, given none of
-these x[n]printf variants
-guarantee nul termination in spite of taking the buffer length as an input..
+ src/openvpnserv/automatic.c |  6 +-----
+ src/openvpnserv/common.c    | 13 +++++++------
+ src/openvpnserv/service.h   |  4 ++--
+ 3 files changed, 10 insertions(+), 13 deletions(-)
 
-Selva
+diff --git a/src/openvpnserv/automatic.c b/src/openvpnserv/automatic.c
+index 1f98283..73d3003 100644
+--- a/src/openvpnserv/automatic.c
++++ b/src/openvpnserv/automatic.c
+@@ -36,13 +36,9 @@
+ 
+ #include <stdio.h>
+ #include <stdarg.h>
++#include <stdbool.h>
+ #include <process.h>
+ 
+-/* bool definitions */
+-#define bool int
+-#define true 1
+-#define false 0
+-
+ static SERVICE_STATUS_HANDLE service;
+ static SERVICE_STATUS status = { .dwServiceType = SERVICE_WIN32_SHARE_PROCESS };
+ 
+diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
+index dc47666..6b3a859 100644
+--- a/src/openvpnserv/common.c
++++ b/src/openvpnserv/common.c
+@@ -31,7 +31,7 @@ LPCTSTR service_instance = TEXT("");
+  * These are necessary due to certain buggy implementations of (v)snprintf,
+  * that don't guarantee null termination for size > 0.
+  */
+-int
++BOOL
+ openvpn_vsntprintf(LPTSTR str, size_t size, LPCTSTR format, va_list arglist)
+ {
+     int len = -1;
+@@ -42,18 +42,19 @@ openvpn_vsntprintf(LPTSTR str, size_t size, LPCTSTR format, va_list arglist)
+     }
+     return (len >= 0 && len < size);
+ }
+-int
++
++BOOL
+ openvpn_sntprintf(LPTSTR str, size_t size, LPCTSTR format, ...)
+ {
+     va_list arglist;
+-    int len = -1;
++    BOOL res = FALSE;
+     if (size > 0)
+     {
+         va_start(arglist, format);
+-        len = openvpn_vsntprintf(str, size, format, arglist);
++        res = openvpn_vsntprintf(str, size, format, arglist);
+         va_end(arglist);
+     }
+-    return len;
++    return res;
+ }
+ 
+ static DWORD
+@@ -65,7 +66,7 @@ GetRegString(HKEY key, LPCTSTR value, LPTSTR data, DWORD size, LPCTSTR default_v
+     if (status == ERROR_FILE_NOT_FOUND && default_value)
+     {
+         size_t len = size/sizeof(data[0]);
+-        if (openvpn_sntprintf(data, len, default_value) > 0)
++        if (openvpn_sntprintf(data, len, default_value))
+         {
+             status = ERROR_SUCCESS;
+         }
+diff --git a/src/openvpnserv/service.h b/src/openvpnserv/service.h
+index 4d03b88..b90033a 100644
+--- a/src/openvpnserv/service.h
++++ b/src/openvpnserv/service.h
+@@ -82,9 +82,9 @@ VOID WINAPI ServiceStartAutomatic(DWORD argc, LPTSTR *argv);
+ VOID WINAPI ServiceStartInteractiveOwn(DWORD argc, LPTSTR *argv);
+ VOID WINAPI ServiceStartInteractive(DWORD argc, LPTSTR *argv);
+ 
+-int openvpn_vsntprintf(LPTSTR str, size_t size, LPCTSTR format, va_list arglist);
++BOOL openvpn_vsntprintf(LPTSTR str, size_t size, LPCTSTR format, va_list arglist);
+ 
+-int openvpn_sntprintf(LPTSTR str, size_t size, LPCTSTR format, ...);
++BOOL openvpn_sntprintf(LPTSTR str, size_t size, LPCTSTR format, ...);
+ 
+ DWORD GetOpenvpnSettings(settings_t *s);
+ 
+-- 
+2.7.4
 
---000000000000b946970577561e85
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Hi,<br><div><br><div class=3D"gmail_quote"><div dir=3D"ltr=
-">On Wed, Oct 3, 2018 at 12:56 PM Lev Stipakov &lt;<a href=3D"mailto:lstipa=
-kov@...277...">lstipakov@...277...</a>&gt; wrote:<br></div><blockquote clas=
-s=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;pad=
-ding-left:1ex"><div dir=3D"ltr"><div dir=3D"ltr">Hi,<div><br><div class=3D"=
-gmail_quote"><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px =
-0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><div dir=3D"=
-ltr"><div class=3D"gmail_quote"><div>Wishlist: openvpn_swprintf() with nul =
-termination guarantee. I try to avoid<br>the TCHAR variety be explicit abou=
-t wide and narrow characters.</div></div></div></blockquote><div><br></div>=
-<div>Makes sense, at the moment we have 8 swprintf calls all followed by so=
-mething like</div><div><br></div><div>=C2=A0&gt; tmp[_countof(tmp)-1] =3D L=
-&#39;\0&#39;;<br></div></div></div></div></div></blockquote><div><br></div>=
-<div>That must be me --- nul termination paranoia :) Cant blame, given none=
- of these x[n]printf variants<br>guarantee nul termination in spite of taki=
-ng the buffer length as an input..<br></div><div><br></div><div>Selva</div>=
-</div></div></div>
-
---000000000000b946970577561e85--
 
