@@ -1,11 +1,10 @@
 MIME-Version: 1.0
-References: <1538576212-2363-1-git-send-email-lstipakov@...277...>
-In-Reply-To: <1538576212-2363-1-git-send-email-lstipakov@...277...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 3 Oct 2018 11:08:03 -0400
-Message-ID: <CAKuzo_ijYi_qnpRJmNOUQpg9VEsPeqSwZS5d8VYuMNcMDNgw-w@...278...>
-Content-Type: multipart/alternative; boundary="000000000000d39edc05775468f7"
-Subject: Re: [Openvpn-devel] [PATCH] openvpnserv: clarify return values type
+From: Rostyslav Maryliak <rostyslav.maryliak@...2454...>
+Date: Wed, 3 Oct 2018 18:15:13 +0300
+Message-ID: <CADkMwqTKd1tjTboxmvgrvk9kVtHDtubvQmEQ0m=nt4GB-RtoqA@...278...>
+Content-Type: multipart/alternative; boundary="0000000000007ae7f6057754833f"
+Subject: [Openvpn-devel] Slow outbound network speed for Windows Server 2016
+ only via the OpenVPN tunnel
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,294 +13,193 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---000000000000d39edc05775468f7
+--0000000000007ae7f6057754833f
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Dear OpenVPN developers,
 
-On Wed, Oct 3, 2018 at 10:20 AM Lev Stipakov <lstipakov@...277...> wrote:
+I've faced a very strange issue with slow outbound network speed from
+Windows Server 2016 Standard server via the OpenVPN tunnel.
+OpenVPN server is Windows Server 2012 R2, client is Windows Server 2016.
+The inbound network speed for Windows Server 2016 is great.
+But the outbound network speed is nearly 30-40 kbps. I've got the same
+results using several tests: iperf testings, file download via SMB,
+Web-based downloading (using HTTP) etc.
 
-> From: Lev Stipakov <lev@...515...>
->
-> Functions openvpn_vsntprintf and openvpn_sntprintf return
-> values of type int, but in reality it is always 0 or 1, which is
-> essentially bool.
->
+The tunnels is getting up and it works greatly, but only in one direction -
+from Windows Server 2012 R2 to Windows Server 2016.
+I've been using such server-client configurations setup for several years
+with Windows Server 2012 R2 servers and I've never faced such issue before.
+At first I thought that our ISP has some network limitations, but it turned
+out that the same tests shows great network speed results using the public
+IP addresses in both directions.
+The issue only occurs inside the VPN tunnel. I've spent 3 days tryng to
+figure it out, but failed. I've installed all latest Windows updates,
+reinstalled OpenVPN, tried to switch from UDP to TCP,
+played with performance settings in configs (link-mtu, sndbuf, rcvbuf etc)
+but still no luck. I've tested the same setup between two Windows Server
+2012 R2 servers and it works greatly in both directions.
+Then I've tested it with another Windows Server 2016 Standard server
+(different server and different ISP) and it showed the same awful results
+in outbound direction.
+When I've set the same OpenVPN tunnel between two Windows Server 2016
+Standard servers I've got the same poor network speed in both directions.
 
-openvpn_sntprintf could return -1 if size = 0, but this looks like the
-right approach and matches openvpn_snprintf in the core.
-The code looks good too.
+I believe that the issue is somehow related only to the Windows Server 2016
+version and I am more than confident that it depends on server's TCP stack
+settings.
+I've noticed that Windows Server 2016 has a congestion control provider
+setting set to "default", while previous versions of Windows has this
+setting set to "none".
 
-Just a thought about bool below:
+I've created a topic on OpenVPN Support Forum and it was suggested to post
+my issue to you and reference the thread.
+
+You can reference to the
+https://forums.openvpn.net/viewtopic.php?f=3D6&t=3D27173 for config files a=
+nd
+additional information.
+
+Have you faced a similar issue before? Can you provide any hint how can I
+resolve the issue? What did I missed?
+I would be very grateful for any help. Thank you in advance.
 
 
->
-> To make code more clear, change return type to bool. Also
-> use stdbool.h header instead of bool definition macros.
->
+--=20
 
-We do use BOOL all over the service code (unavoidable with
-Windows API), and bool is used in only one or two places. So would it
-be better to just change this to BOOL/TRUE/FALSE and not include
-stdbool.h?
+Best regards,
 
-Wishlist: openvpn_swprintf() with nul termination guarantee. I try to avoid
-the TCHAR variety be explicit about wide and narrow characters.
+*Rostyslav Maryliak*
+
+System Administrator
 
 
-> Signed-off-by: Lev Stipakov <lev@...515...>
-> ---
->  src/openvpnserv/automatic.c |  5 -----
->  src/openvpnserv/common.c    | 13 +++++++------
->  src/openvpnserv/service.h   |  5 +++--
->  3 files changed, 10 insertions(+), 13 deletions(-)
->
-> diff --git a/src/openvpnserv/automatic.c b/src/openvpnserv/automatic.c
-> index 1f98283..c2982c1 100644
-> --- a/src/openvpnserv/automatic.c
-> +++ b/src/openvpnserv/automatic.c
-> @@ -38,11 +38,6 @@
->  #include <stdarg.h>
->  #include <process.h>
->
-> -/* bool definitions */
-> -#define bool int
-> -#define true 1
-> -#define false 0
-> -
->  static SERVICE_STATUS_HANDLE service;
->  static SERVICE_STATUS status = { .dwServiceType =
-> SERVICE_WIN32_SHARE_PROCESS };
->
-> diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
-> index dc47666..69dd44b 100644
-> --- a/src/openvpnserv/common.c
-> +++ b/src/openvpnserv/common.c
-> @@ -31,7 +31,7 @@ LPCTSTR service_instance = TEXT("");
->   * These are necessary due to certain buggy implementations of
-> (v)snprintf,
->   * that don't guarantee null termination for size > 0.
->   */
-> -int
-> +bool
->  openvpn_vsntprintf(LPTSTR str, size_t size, LPCTSTR format, va_list
-> arglist)
->  {
->      int len = -1;
-> @@ -42,18 +42,19 @@ openvpn_vsntprintf(LPTSTR str, size_t size, LPCTSTR
-> format, va_list arglist)
->      }
->      return (len >= 0 && len < size);
->  }
-> -int
-> +
-> +bool
->  openvpn_sntprintf(LPTSTR str, size_t size, LPCTSTR format, ...)
->  {
->      va_list arglist;
-> -    int len = -1;
-> +    bool res = false;
->      if (size > 0)
->      {
->          va_start(arglist, format);
-> -        len = openvpn_vsntprintf(str, size, format, arglist);
-> +        res = openvpn_vsntprintf(str, size, format, arglist);
->          va_end(arglist);
->      }
-> -    return len;
-> +    return res;
->  }
->
->  static DWORD
-> @@ -65,7 +66,7 @@ GetRegString(HKEY key, LPCTSTR value, LPTSTR data, DWORD
-> size, LPCTSTR default_v
->      if (status == ERROR_FILE_NOT_FOUND && default_value)
->      {
->          size_t len = size/sizeof(data[0]);
-> -        if (openvpn_sntprintf(data, len, default_value) > 0)
-> +        if (openvpn_sntprintf(data, len, default_value))
->          {
->              status = ERROR_SUCCESS;
->          }
-> diff --git a/src/openvpnserv/service.h b/src/openvpnserv/service.h
-> index 4d03b88..eaa479a 100644
-> --- a/src/openvpnserv/service.h
-> +++ b/src/openvpnserv/service.h
-> @@ -32,6 +32,7 @@
->
->  #include <winsock2.h>
->  #include <windows.h>
-> +#include <stdbool.h>
->  #include <stdlib.h>
->  #include <tchar.h>
->
-> @@ -82,9 +83,9 @@ VOID WINAPI ServiceStartAutomatic(DWORD argc, LPTSTR
-> *argv);
->  VOID WINAPI ServiceStartInteractiveOwn(DWORD argc, LPTSTR *argv);
->  VOID WINAPI ServiceStartInteractive(DWORD argc, LPTSTR *argv);
->
-> -int openvpn_vsntprintf(LPTSTR str, size_t size, LPCTSTR format, va_list
-> arglist);
-> +bool openvpn_vsntprintf(LPTSTR str, size_t size, LPCTSTR format, va_list
-> arglist);
->
-> -int openvpn_sntprintf(LPTSTR str, size_t size, LPCTSTR format, ...);
-> +bool openvpn_sntprintf(LPTSTR str, size_t size, LPCTSTR format, ...);
->
->  DWORD GetOpenvpnSettings(settings_t *s);
->
-> --
-> 2.7.4
->
 
-Thanks,
+*iDeals=E2=84=A2 Solutions Group*| + 38(073)437-72-51 <%2B%2038%28093%29575=
+-35-16> |
+Skype: rostyslav.maryliak.ideals| *rostyslav.maryliak@...2454...
+<dmitry.zaporozhchenko@...2454...>* | www.idealsvdr.com
+<http://www.idealscorp.com/>
 
-Selva
+--=20
+CONFIDENTIALITY NOTE:
+The information transmitted, including attachments,
 
---000000000000d39edc05775468f7
+is intended only for the person(s) or entity to which it is addressed and
+
+may contain confidential and/or privileged material. Any review,
+
+retransmission, dissemination or other use of, or taking of any action in
+
+reliance upon this information by persons or entities other than the
+
+intended recipient is prohibited. If you received this in error, please
+
+contact the sender and destroy any copies of this information.
+
+--0000000000007ae7f6057754833f
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">Hi,<br><br><div class=3D"gmail_quote"><div dir=3D"ltr">On =
-Wed, Oct 3, 2018 at 10:20 AM Lev Stipakov &lt;<a href=3D"mailto:lstipakov@...220...=
-..277...">lstipakov@...277...</a>&gt; wrote:<br></div><blockquote class=3D"=
-gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-=
-left:1ex">From: Lev Stipakov &lt;<a href=3D"mailto:lev@...515..." target=3D=
-"_blank">lev@...515...</a>&gt;<br>
-<br>
-Functions openvpn_vsntprintf and openvpn_sntprintf return<br>
-values of type int, but in reality it is always 0 or 1, which is<br>
-essentially bool.<br></blockquote><div><br></div><div>openvpn_sntprintf cou=
-ld return -1 if size =3D 0, but this looks like the<br>right approach and m=
-atches openvpn_snprintf in the core.<br>The code looks good too. </div><div=
-><br></div><div>Just a thought about bool below:<br></div><div>=C2=A0<br></=
-div><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-lef=
-t:1px #ccc solid;padding-left:1ex">
-<br>
-To make code more clear, change return type to bool. Also<br>
-use stdbool.h header instead of bool definition macros.<br></blockquote><di=
-v><br></div><div>We do use BOOL all over the service code (unavoidable with=
-<br>Windows API), and bool is used in only one or two places. So would it<b=
-r>be better to just change this to BOOL/TRUE/FALSE and not include<br>stdbo=
-ol.h?<br><br></div><div>Wishlist: openvpn_swprintf() with nul termination g=
-uarantee. I try to avoid<br>the TCHAR variety be explicit about wide and na=
-rrow characters.<br></div><div><br></div><blockquote class=3D"gmail_quote" =
-style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
-<br>
-Signed-off-by: Lev Stipakov &lt;<a href=3D"mailto:lev@...515..." target=3D"=
-_blank">lev@...515...</a>&gt;<br>
----<br>
-=C2=A0src/openvpnserv/automatic.c |=C2=A0 5 -----<br>
-=C2=A0src/openvpnserv/common.c=C2=A0 =C2=A0 | 13 +++++++------<br>
-=C2=A0src/openvpnserv/service.h=C2=A0 =C2=A0|=C2=A0 5 +++--<br>
-=C2=A03 files changed, 10 insertions(+), 13 deletions(-)<br>
-<br>
-diff --git a/src/openvpnserv/automatic.c b/src/openvpnserv/automatic.c<br>
-index 1f98283..c2982c1 100644<br>
---- a/src/openvpnserv/automatic.c<br>
-+++ b/src/openvpnserv/automatic.c<br>
-@@ -38,11 +38,6 @@<br>
-=C2=A0#include &lt;stdarg.h&gt;<br>
-=C2=A0#include &lt;process.h&gt;<br>
-<br>
--/* bool definitions */<br>
--#define bool int<br>
--#define true 1<br>
--#define false 0<br>
--<br>
-=C2=A0static SERVICE_STATUS_HANDLE service;<br>
-=C2=A0static SERVICE_STATUS status =3D { .dwServiceType =3D SERVICE_WIN32_S=
-HARE_PROCESS };<br>
-<br>
-diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c<br>
-index dc47666..69dd44b 100644<br>
---- a/src/openvpnserv/common.c<br>
-+++ b/src/openvpnserv/common.c<br>
-@@ -31,7 +31,7 @@ LPCTSTR service_instance =3D TEXT(&quot;&quot;);<br>
-=C2=A0 * These are necessary due to certain buggy implementations of (v)snp=
-rintf,<br>
-=C2=A0 * that don&#39;t guarantee null termination for size &gt; 0.<br>
-=C2=A0 */<br>
--int<br>
-+bool<br>
-=C2=A0openvpn_vsntprintf(LPTSTR str, size_t size, LPCTSTR format, va_list a=
-rglist)<br>
-=C2=A0{<br>
-=C2=A0 =C2=A0 =C2=A0int len =3D -1;<br>
-@@ -42,18 +42,19 @@ openvpn_vsntprintf(LPTSTR str, size_t size, LPCTSTR for=
-mat, va_list arglist)<br>
-=C2=A0 =C2=A0 =C2=A0}<br>
-=C2=A0 =C2=A0 =C2=A0return (len &gt;=3D 0 &amp;&amp; len &lt; size);<br>
-=C2=A0}<br>
--int<br>
-+<br>
-+bool<br>
-=C2=A0openvpn_sntprintf(LPTSTR str, size_t size, LPCTSTR format, ...)<br>
-=C2=A0{<br>
-=C2=A0 =C2=A0 =C2=A0va_list arglist;<br>
--=C2=A0 =C2=A0 int len =3D -1;<br>
-+=C2=A0 =C2=A0 bool res =3D false;<br>
-=C2=A0 =C2=A0 =C2=A0if (size &gt; 0)<br>
-=C2=A0 =C2=A0 =C2=A0{<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0va_start(arglist, format);<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 len =3D openvpn_vsntprintf(str, size, format, =
-arglist);<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 res =3D openvpn_vsntprintf(str, size, format, =
-arglist);<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0va_end(arglist);<br>
-=C2=A0 =C2=A0 =C2=A0}<br>
--=C2=A0 =C2=A0 return len;<br>
-+=C2=A0 =C2=A0 return res;<br>
-=C2=A0}<br>
-<br>
-=C2=A0static DWORD<br>
-@@ -65,7 +66,7 @@ GetRegString(HKEY key, LPCTSTR value, LPTSTR data, DWORD =
-size, LPCTSTR default_v<br>
-=C2=A0 =C2=A0 =C2=A0if (status =3D=3D ERROR_FILE_NOT_FOUND &amp;&amp; defau=
-lt_value)<br>
-=C2=A0 =C2=A0 =C2=A0{<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0size_t len =3D size/sizeof(data[0]);<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (openvpn_sntprintf(data, len, default_value=
-) &gt; 0)<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (openvpn_sntprintf(data, len, default_value=
-))<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0status =3D ERROR_SUCCESS;<b=
-r>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
-diff --git a/src/openvpnserv/service.h b/src/openvpnserv/service.h<br>
-index 4d03b88..eaa479a 100644<br>
---- a/src/openvpnserv/service.h<br>
-+++ b/src/openvpnserv/service.h<br>
-@@ -32,6 +32,7 @@<br>
-<br>
-=C2=A0#include &lt;winsock2.h&gt;<br>
-=C2=A0#include &lt;windows.h&gt;<br>
-+#include &lt;stdbool.h&gt;<br>
-=C2=A0#include &lt;stdlib.h&gt;<br>
-=C2=A0#include &lt;tchar.h&gt;<br>
-<br>
-@@ -82,9 +83,9 @@ VOID WINAPI ServiceStartAutomatic(DWORD argc, LPTSTR *arg=
-v);<br>
-=C2=A0VOID WINAPI ServiceStartInteractiveOwn(DWORD argc, LPTSTR *argv);<br>
-=C2=A0VOID WINAPI ServiceStartInteractive(DWORD argc, LPTSTR *argv);<br>
-<br>
--int openvpn_vsntprintf(LPTSTR str, size_t size, LPCTSTR format, va_list ar=
-glist);<br>
-+bool openvpn_vsntprintf(LPTSTR str, size_t size, LPCTSTR format, va_list a=
-rglist);<br>
-<br>
--int openvpn_sntprintf(LPTSTR str, size_t size, LPCTSTR format, ...);<br>
-+bool openvpn_sntprintf(LPTSTR str, size_t size, LPCTSTR format, ...);<br>
-<br>
-=C2=A0DWORD GetOpenvpnSettings(settings_t *s);<br>
-<br>
--- <br>
-2.7.4<br></blockquote><div><br></div><div>Thanks,<br><br></div><div>Selva <=
-br></div></div></div>
+<div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr"><div di=
+r=3D"ltr"><div dir=3D"ltr"><div class=3D"gmail_default"><font face=3D"arial=
+, helvetica, sans-serif">Dear OpenVPN developers,</font></div><div class=3D=
+"gmail_default"><font face=3D"arial, helvetica, sans-serif"><br></font></di=
+v><div class=3D"gmail_default"><font face=3D"arial, helvetica, sans-serif">=
+<div class=3D"gmail_default">I&#39;ve faced a very strange issue with slow =
+outbound network speed from Windows Server 2016 Standard server via the Ope=
+nVPN tunnel.</div><div class=3D"gmail_default">OpenVPN server is Windows Se=
+rver 2012 R2, client is Windows Server 2016. The inbound network speed for =
+Windows Server 2016 is great.</div><div class=3D"gmail_default">But the out=
+bound network speed is nearly 30-40 kbps. I&#39;ve got the same results usi=
+ng several tests: iperf testings, file download via SMB, Web-based download=
+ing (using HTTP) etc.</div></font></div><div class=3D"gmail_default"><font =
+face=3D"arial, helvetica, sans-serif"><br></font></div><div class=3D"gmail_=
+default"><font face=3D"arial, helvetica, sans-serif"><div class=3D"gmail_de=
+fault">The tunnels is getting up and it works greatly, but only in one dire=
+ction - from Windows Server 2012 R2 to Windows Server 2016.</div><div class=
+=3D"gmail_default">I&#39;ve been using such server-client configurations se=
+tup for several years with Windows Server 2012 R2 servers and I&#39;ve neve=
+r faced such issue before.</div><div class=3D"gmail_default">At first I tho=
+ught that our ISP has some network limitations, but it turned out that the =
+same tests shows great network speed results using the public IP addresses =
+in both directions.</div><div class=3D"gmail_default">The issue only occurs=
+ inside the VPN tunnel. I&#39;ve spent 3 days tryng to figure it out, but f=
+ailed. I&#39;ve installed all latest Windows updates, reinstalled OpenVPN, =
+tried to switch from UDP to TCP,</div><div class=3D"gmail_default">played w=
+ith performance settings in configs (link-mtu, sndbuf, rcvbuf etc) but stil=
+l no luck. I&#39;ve tested the same setup between two Windows Server 2012 R=
+2 servers and it works greatly in both directions.</div><div class=3D"gmail=
+_default">Then I&#39;ve tested it with another Windows Server 2016 Standard=
+ server (different server and different ISP) and it showed the same awful r=
+esults in outbound direction.</div><div class=3D"gmail_default">When I&#39;=
+ve set the same OpenVPN tunnel between two Windows Server 2016 Standard ser=
+vers I&#39;ve got the same poor network speed in both directions.</div></fo=
+nt></div><div class=3D"gmail_default"><font face=3D"arial, helvetica, sans-=
+serif"><br></font></div><div class=3D"gmail_default"><font face=3D"arial, h=
+elvetica, sans-serif"><div class=3D"gmail_default">I believe that the issue=
+ is somehow related only to the Windows Server 2016 version and I am more t=
+han confident that it depends on server&#39;s TCP stack settings.</div><div=
+ class=3D"gmail_default">I&#39;ve noticed that Windows Server 2016 has a co=
+ngestion control provider setting set to &quot;default&quot;, while previou=
+s versions of Windows has this setting set to &quot;none&quot;.</div></font=
+></div><div class=3D"gmail_default"><font face=3D"arial, helvetica, sans-se=
+rif"><br></font></div><div class=3D"gmail_default"><font face=3D"arial, hel=
+vetica, sans-serif">I&#39;ve created a topic on OpenVPN Support Forum and i=
+t was suggested to post my issue to you and reference the thread.</font></d=
+iv><div class=3D"gmail_default"><font face=3D"arial, helvetica, sans-serif"=
+><br></font></div><div class=3D"gmail_default"><font face=3D"arial, helveti=
+ca, sans-serif">You can reference to the <a href=3D"https://forums.openvpn.=
+net/viewtopic.php?f=3D6&amp;t=3D27173">https://forums.openvpn.net/viewtopic=
+.php?f=3D6&amp;t=3D27173</a>=C2=A0for config files and additional informati=
+on.</font><br clear=3D"all"></div><div><br></div><div><div class=3D"gmail_d=
+efault" style=3D"font-family:arial,helvetica,sans-serif">Have you faced a s=
+imilar issue before? Can you provide any hint how can I resolve the issue? =
+What did I missed?</div><div class=3D"gmail_default" style=3D"font-family:a=
+rial,helvetica,sans-serif">I would be very grateful for any help. Thank you=
+ in advance.</div><br></div><div><br></div>-- <br><div dir=3D"ltr" class=3D=
+"gmail_signature"><div dir=3D"ltr"><div><div dir=3D"ltr"><div><div dir=3D"l=
+tr"><div><div dir=3D"ltr"><p style=3D"margin:0in 0in 0.0001pt;font-size:11p=
+t;font-family:Calibri,sans-serif"><span style=3D"font-size:12pt;color:rgb(8=
+9,89,89)">Best regards,</span></p><p style=3D"margin:0in 0in 0.0001pt;font-=
+family:Calibri,sans-serif"><font color=3D"#595959"><span style=3D"font-size=
+:16px"><b>Rostyslav Maryliak</b></span></font></p><p style=3D"margin:0in 0i=
+n 0.0001pt;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"fo=
+nt-size:12pt;color:rgb(89,89,89)">System Administrator</span></p><p style=
+=3D"margin:0in 0in 0.0001pt;font-size:11pt;font-family:Calibri,sans-serif">=
+<span style=3D"font-size:12pt;color:rgb(89,89,89)">=C2=A0</span></p><p styl=
+e=3D"margin:0in 0in 0.0001pt;font-size:11pt;font-family:Calibri,sans-serif"=
+><b><span style=3D"font-size:12pt;color:rgb(35,176,24)">iDeals=E2=84=A2 Sol=
+utions Group</span></b><span style=3D"font-size:12pt;color:rgb(89,89,89)">|=
+=C2=A0<a href=3D"tel:%2B%2038%28093%29575-35-16" value=3D"+380935753516" st=
+yle=3D"color:rgb(17,85,204)" target=3D"_blank">+ 38(073)437-72-51</a>=C2=A0=
+| Skype: rostyslav.maryliak.ideals|</span><span style=3D"color:rgb(31,73,12=
+5)">=C2=A0</span><u><span style=3D"font-size:12pt;color:rgb(35,176,24)"><a =
+href=3D"mailto:dmitry.zaporozhchenko@...2454..." style=3D"color:rgb(17,85,2=
+04)" target=3D"_blank"><span style=3D"color:rgb(5,99,193)">rostyslav.maryli=
+ak@...2454...</span></a></span></u><u><span style=3D"color:rgb(35,176,24)">=
+=C2=A0</span></u><span style=3D"font-size:12pt;color:rgb(89,89,89)">|</span=
+><span style=3D"font-size:12pt;color:rgb(35,176,24)">=C2=A0</span><span lan=
+g=3D"RU" style=3D"font-size:12pt;color:rgb(35,176,24)"><a href=3D"http://ww=
+w.idealscorp.com/" style=3D"color:rgb(17,85,204)" target=3D"_blank"><span l=
+ang=3D"EN-US" style=3D"color:rgb(35,176,24)">www.idealsvdr.com</span></a></=
+span></p></div></div></div></div></div></div></div></div></div></div></div>=
+</div></div></div>
 
---000000000000d39edc05775468f7--
+<br>
+<span style=3D"font-family:&quot;Times New Roman&quot;,&quot;serif&quot;;fo=
+nt-size:12pt"><font face=3D"Trebuchet" size=3D"2">CONFIDENTIALITY NOTE:
+The information transmitted, including attachments,
+is intended only for the person(s) or entity to which it is addressed and
+may contain confidential and/or privileged material. Any review,
+retransmission, dissemination or other use of, or taking of any action in
+reliance upon this information by persons or entities other than the
+intended recipient is prohibited. If you received this in error, please
+contact the sender and destroy any copies of this information.</font></span=
+>=
+
+--0000000000007ae7f6057754833f--
 
