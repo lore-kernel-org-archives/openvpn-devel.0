@@ -1,7 +1,13 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Fri,  5 Oct 2018 15:58:49 +0200
-Message-Id: <20181005135849.28718-1-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH (2.4)] Fix --disable-crypto build
+MIME-Version: 1.0
+References: <1524752664-27946-1-git-send-email-selva.nair@...277...>
+ <201810051051.w95ApC2t040828@...2054...>
+In-Reply-To: <201810051051.w95ApC2t040828@...2054...>
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 5 Oct 2018 10:08:50 -0400
+Message-ID: <CAKuzo_htbw3sp=T4MVtoTZyCh3u8jwP8a754PSaXy1ya=X68QA@...278...>
+Content-Type: multipart/alternative; boundary="000000000000a46cf005777bd0c0"
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Pass the hash without the
+ DigestInfo header to NCryptSignHash()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,48 +16,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Commit d2ff5164 was fine for the master branch, but broke the 2.4 build if
-the --disable-crypto configure options was used (which is removed in the
-master branch).
+--000000000000a46cf005777bd0c0
+Content-Type: text/plain; charset="UTF-8"
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- src/openvpn/init.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Hi,
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 0950f07e..2d201c44 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -621,9 +621,11 @@ uninit_proxy(struct context *c)
- static void
- do_set_ncp_options(struct context *c)
- {
-+#ifdef ENABLE_CRYPTO
-     c->c1.ciphername = c->options.ciphername;
-     c->c1.authname = c->options.authname;
-     c->c1.keysize = c->options.keysize;
-+#endif ENABLE_CRYPTO
- }
- 
- /*
-@@ -635,9 +637,11 @@ do_set_ncp_options(struct context *c)
- static void
- do_unset_ncp_options(struct context *c)
- {
-+#ifdef ENABLE_CRYPTO
-     c->options.ciphername = c->c1.ciphername;
-     c->options.authname = c->c1.authname;
-     c->options.keysize = c->c1.keysize;
-+#endif ENABLE_CRYPTO
- }
- 
- void
--- 
-2.17.1
 
+> As a side note (rambling about comments today), this hunk makes the
+> comment above it slightly misleading:
+>
+>      /* The hash OID is already in 'from'.  So set the hash algorithm
+>       * in the padding info struct to NULL.
+>       */
+> -    BCRYPT_PKCS1_PADDING_INFO padinfo = {NULL};
+> +    BCRYPT_PKCS1_PADDING_INFO padinfo = {hash_algo};
+>
+> .. since we do not set it to NULL anymore...
+>
+
+A perfect case of how fast comments and code diverge -- I added that
+comment only
+the other day.. My bad. Will try to remember to fix next time this is
+touched.
+
+Knuth's literate programming never caught on, did it..
+
+Thanks for the ack and merge..
+
+For 2.4, have to look through and figure out --- it has been a while..
+
+Selva
+
+--000000000000a46cf005777bd0c0
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi,<br><div><br><div class=3D"gmail_quote"><blockquote cla=
+ss=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;pa=
+dding-left:1ex">
+<br>
+As a side note (rambling about comments today), this hunk makes the<br>
+comment above it slightly misleading:<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0/* The hash OID is already in &#39;from&#39;.=C2=A0 So =
+set the hash algorithm<br>
+=C2=A0 =C2=A0 =C2=A0 * in the padding info struct to NULL.<br>
+=C2=A0 =C2=A0 =C2=A0 */<br>
+-=C2=A0 =C2=A0 BCRYPT_PKCS1_PADDING_INFO padinfo =3D {NULL};<br>
++=C2=A0 =C2=A0 BCRYPT_PKCS1_PADDING_INFO padinfo =3D {hash_algo};<br>
+<br>
+.. since we do not set it to NULL anymore...<br></blockquote><div><br></div=
+><div>A perfect case of how fast comments and code diverge -- I added that =
+comment only<br>the other day.. My bad. Will try to remember to fix next ti=
+me this is touched.<br><br>Knuth&#39;s literate programming never caught on=
+, did it..<br><br></div><div>Thanks for the ack and merge..<br><br></div><d=
+iv>For 2.4, have to look through and figure out --- it has been a while..<b=
+r><br></div><div>Selva</div></div></div></div>
+
+--000000000000a46cf005777bd0c0--
 
