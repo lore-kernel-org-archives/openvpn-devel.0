@@ -1,10 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Fri,  5 Oct 2018 15:16:32 +0200
-Message-Id: <20181005131632.32515-1-arne@...1227...>
-In-Reply-To: <20181005130500.32130-1-arne@...1227...>
-References: <20181005130500.32130-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Skip error about ioctl(SIOCGIFCONF) failed
- on Android
+Date: Fri, 5 Oct 2018 15:24:55 +0200 (CEST)
+Message-Id: <201810051324.w95DOtmi042348@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1538510474-27602-2-git-send-email-selva.nair@...277...>
+References: <1538510474-27602-2-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Enable dhcp on tap adapter
+ using interactive service
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +15,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Patch: V2 Do not use C99 style comments
----
- src/openvpn/route.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+Acked-by: Gert Doering <gert@...1296...>
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index cadd34e1..cb337c42 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -3258,6 +3258,12 @@ get_default_gateway(struct route_gateway_info *rgi)
-     rgi->gateway.addr = 127 << 24 | 'd' << 16 | 'g' << 8 | 'w';
-     rgi->flags |= RGI_ADDR_DEFINED;
-     strcpy(best_name, "android-gw");
-+
-+    /*
-+     * Skip scanning/fetching interface from loopback inteface
-+     * It always fails and ioctl(SIOCGIFCONF) failed" confuses users
-+     */
-+    goto done;
- #endif /* ifndef TARGET_ANDROID */
- 
-     /* scan adapter list */
--- 
-2.19.0
+Another ACK from me.  Code looks good.  Thanks.
+
+Your patch has been applied to the master and release/2.4 branch (bugfix,
+so openvpn 2.4.x on windows can fully run unprivileged).
+
+Test compiled on ubuntu 16.04 / mingw, not actually run.
+
+commit b4fc8bbd6b1d0211dd6982c4accedfbe4ae7e3ed (master)
+commit 78d4f0ad106720d8988e144f6d30ec11d84dee2f (master)
+Author: Selva Nair
+Date:   Tue Oct 2 16:01:13 2018 -0400
+
+     Enable dhcp on tap adapter using interactive service
+
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1538510474-27602-2-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17517.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
