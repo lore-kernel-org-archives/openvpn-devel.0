@@ -1,10 +1,7 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Fri,  5 Oct 2018 14:23:30 +0200
-Message-Id: <20181005122330.31431-1-arne@...1227...>
-In-Reply-To: <20181005114918.30626-1-arne@...1227...>
-References: <20181005114918.30626-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v3] Add OpenSSL compat definition for
- RSA_meth_set_sign
+From: Steffan Karger <steffan@...1856...>
+Date: Fri,  5 Oct 2018 14:39:38 +0200
+Message-Id: <20181005123938.25649-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] travis: add OpenSSL 1.1 Windows build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,58 +14,30 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Commit 6b495dc4c5cfc118091ddc9c19330b3c9e3e3dff introduced
-RSA_meth_set_sign, which is OpenSSL 1.1.0 and newer. Add a compatibility
-definition.
----
- configure.ac                 |  1 +
- src/openvpn/openssl_compat.h | 20 ++++++++++++++++++++
- 2 files changed, 21 insertions(+)
+So we catch both compilation errors against OpenSSL 1.0 and 1.1 on Windows.
 
-diff --git a/configure.ac b/configure.ac
-index 3d8e15bd..399cdf4e 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -943,6 +943,7 @@ if test "${with_crypto_library}" = "openssl"; then
- 			RSA_meth_set_priv_enc \
- 			RSA_meth_set_priv_dec \
- 			RSA_meth_set_init \
-+			RSA_meth_set_sign \
- 			RSA_meth_set_finish \
- 			RSA_meth_set0_app_data \
- 			RSA_meth_get0_app_data \
-diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index f5328c4c..9560b29f 100644
---- a/src/openvpn/openssl_compat.h
-+++ b/src/openvpn/openssl_compat.h
-@@ -585,6 +585,26 @@ RSA_meth_set_init(RSA_METHOD *meth, int (*init) (RSA *rsa))
- }
- #endif
- 
-+#if !defined (HAVE_RSA_METH_SET_SIGN)
-+/**
-+ * Set the sign function of an RSA_METHOD object
-+ *
-+ * @param meth               The RSA_METHOD object
-+ * @param sign               The sign function
-+ * @return                   1 on success, 0 on error
-+ */
-+static inline
-+int RSA_meth_set_sign(RSA_METHOD *meth,
-+                      int (*sign) (int type, const unsigned char *m,
-+                                   unsigned int m_length,
-+                                   unsigned char *sigret, unsigned int *siglen,
-+                                   const RSA *rsa))
-+{
-+    meth->rsa_sign = sign;
-+    return 1;
-+}
-+#endif
-+
- #if !defined(HAVE_RSA_METH_SET_FINISH)
- /**
-  * Set the finish function of an RSA_METHOD object
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ .travis.yml | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/.travis.yml b/.travis.yml
+index 216f0a04..ede2aaa6 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -53,7 +53,10 @@ matrix:
+       os: osx
+       osx_image: xcode7.3
+       compiler: clang
+-    - env: SSLLIB="openssl" CHOST=x86_64-w64-mingw32
++    - env: SSLLIB="openssl" CHOST=x86_64-w64-mingw32 OPENSSL_VERSION="1.0.1u"
++      os: linux
++      compiler: ": Win64 build only"
++    - env: SSLLIB="openssl" CHOST=x86_64-w64-mingw32 OPENSSL_VERSION="1.1.0h"
+       os: linux
+       compiler: ": Win64 build only"
+     - env: SSLLIB="openssl" CHOST=i686-w64-mingw32
 -- 
-2.19.0
+2.17.1
 
 
