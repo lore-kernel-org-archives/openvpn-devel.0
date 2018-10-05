@@ -1,8 +1,8 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri,  5 Oct 2018 15:04:42 +0200
-Message-Id: <20181005130442.32075-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Always use a 0.0.0.0/0 default on Android
- instead of def1 and do not try to delete routes
+Date: Fri,  5 Oct 2018 15:05:00 +0200
+Message-Id: <20181005130500.32130-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Skip error about ioctl(SIOCGIFCONF) failed
+ on Android
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,38 +16,24 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
 ---
- src/openvpn/route.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ src/openvpn/route.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index ff392308..cadd34e1 100644
+index cadd34e1..a1d4ade1 100644
 --- a/src/openvpn/route.c
 +++ b/src/openvpn/route.c
-@@ -1050,6 +1050,16 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt, un
- 
-             if (rl->flags & RG_REROUTE_GW)
-             {
-+#ifdef TARGET_ANDROID
-+                add_route3 (0,
-+                            0,
-+                            rl->spec.remote_endpoint,
-+                            tt,
-+                            flags,
-+                            &rl->rgi,
-+                            es);
+@@ -3258,6 +3258,10 @@ get_default_gateway(struct route_gateway_info *rgi)
+     rgi->gateway.addr = 127 << 24 | 'd' << 16 | 'g' << 8 | 'w';
+     rgi->flags |= RGI_ADDR_DEFINED;
+     strcpy(best_name, "android-gw");
 +
-+#else
-                 if (rl->flags & RG_DEF1)
-                 {
-                     /* add new default route (1st component) */
-@@ -1089,6 +1099,7 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt, un
-                                &rl->rgi,
-                                es);
-                 }
-+#endif
-             }
++    // Skip scanning/fetching interface from loopback inteface
++    // It always fails and ioctl(SIOCGIFCONF) failed" confuses users
++    goto done;
+ #endif /* ifndef TARGET_ANDROID */
  
-             /* set a flag so we can undo later */
+     /* scan adapter list */
 -- 
 2.19.0
 
