@@ -1,10 +1,8 @@
-Date: Fri, 5 Oct 2018 12:51:12 +0200 (CEST)
-Message-Id: <201810051051.w95ApC2t040828@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1524752664-27946-1-git-send-email-selva.nair@...277...>
-References: <1524752664-27946-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Pass the hash without the
- DigestInfo header to NCryptSignHash()
+From: Arne Schwabe <arne@...1227...>
+Date: Fri,  5 Oct 2018 13:49:18 +0200
+Message-Id: <20181005114918.30626-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Add OpenSSL compat definition for
+ RSA_meth_set_sign
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,46 +13,76 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.  Steffan says "it is
-a bugfix so it should go to 2.4", but the underlying infrastructure 
-does not seem to be there yet (git cherry-pick tries to bring in lots
-of extra stuff).  So we can do that, but I need to be told which master
-commits I need to bring to 2.4 first.
+Commit 6b495dc4c5cfc118091ddc9c19330b3c9e3e3dff introduced
+RSA_meth_set_sign, which is OpenSSL 1.1.0 and newer. Add a compatibility
+definition.
+---
+ configure.ac                 |  1 +
+ src/openvpn/openssl_compat.h | 20 ++++++++++++++++++++
+ src/openvpn/ssl_openssl.c    |  4 ++++
+ 3 files changed, 25 insertions(+)
 
-
-I have not even stared-at-code very much here, trusting the testers and
-Steffan's code-staring abilities.
-
-As a side note (rambling about comments today), this hunk makes the
-comment above it slightly misleading:
-
-     /* The hash OID is already in 'from'.  So set the hash algorithm
-      * in the padding info struct to NULL.
-      */
--    BCRYPT_PKCS1_PADDING_INFO padinfo = {NULL};
-+    BCRYPT_PKCS1_PADDING_INFO padinfo = {hash_algo};
-
-.. since we do not set it to NULL anymore...
-
-
-commit 6b495dc4c5cfc118091ddc9c19330b3c9e3e3dff (master)
-Author: Selva Nair 
-Date:   Thu Apr 26 10:24:24 2018 -0400
-
-     Pass the hash without the DigestInfo header to NCryptSignHash()
-
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1524752664-27946-1-git-send-email-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16840.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/configure.ac b/configure.ac
+index 3d8e15bd..399cdf4e 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -943,6 +943,7 @@ if test "${with_crypto_library}" = "openssl"; then
+ 			RSA_meth_set_priv_enc \
+ 			RSA_meth_set_priv_dec \
+ 			RSA_meth_set_init \
++			RSA_meth_set_sign \
+ 			RSA_meth_set_finish \
+ 			RSA_meth_set0_app_data \
+ 			RSA_meth_get0_app_data \
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index f5328c4c..3877734f 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -585,6 +585,26 @@ RSA_meth_set_init(RSA_METHOD *meth, int (*init) (RSA *rsa))
+ }
+ #endif
+ 
++#if !(defined HAVE_RSA_MATH_SET_SIGN)
++/**
++ * Set the init function of an RSA_METHOD object
++ *
++ * @param meth               The RSA_METHOD object
++ * @param init               the init function
++ * @return                   1 on success, 0 on error
++ */
++static inline
++int RSA_meth_set_sign(RSA_METHOD *meth,
++                      int (*sign) (int type, const unsigned char *m,
++                                   unsigned int m_length,
++                                   unsigned char *sigret, unsigned int *siglen,
++                                   const RSA *rsa))
++{
++  meth->rsa_sign = sign;
++  return 1;
++}
++#endif
++
+ #if !defined(HAVE_RSA_METH_SET_FINISH)
+ /**
+  * Set the finish function of an RSA_METHOD object
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index cfc628b6..0861db4f 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -2000,6 +2000,10 @@ show_available_tls_ciphers_list(const char *cipher_list,
+     tls_ctx_set_cert_profile(&tls_ctx, tls_cert_profile);
+     tls_ctx_restrict_ciphers(&tls_ctx, cipher_list);
+ 
++    /* Even though setting the version does not seem to work,
++     * we do this because it might get fixed in future SSL
++     * versions
++     */
+ #if (OPENSSL_VERSION_NUMBER >= 0x1010100fL)
+     if (tls13)
+     {
+-- 
+2.19.0
 
 
