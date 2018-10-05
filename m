@@ -1,6 +1,6 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri,  5 Oct 2018 14:20:32 +0200
-Message-Id: <20181005122032.31208-1-arne@...1227...>
+Date: Fri,  5 Oct 2018 14:23:30 +0200
+Message-Id: <20181005122330.31431-1-arne@...1227...>
 In-Reply-To: <20181005114918.30626-1-arne@...1227...>
 References: <20181005114918.30626-1-arne@...1227...>
 Subject: [Openvpn-devel] [PATCH v3] Add OpenSSL compat definition for
@@ -38,16 +38,16 @@ index 3d8e15bd..399cdf4e 100644
  			RSA_meth_set0_app_data \
  			RSA_meth_get0_app_data \
 diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index f5328c4c..d2c8d4a6 100644
+index f5328c4c..9560b29f 100644
 --- a/src/openvpn/openssl_compat.h
 +++ b/src/openvpn/openssl_compat.h
 @@ -585,6 +585,26 @@ RSA_meth_set_init(RSA_METHOD *meth, int (*init) (RSA *rsa))
  }
  #endif
  
-+#if !(defined HAVE_RSA_MATH_SET_SIGN)
++#if !defined (HAVE_RSA_METH_SET_SIGN)
 +/**
-+ * Set the init function of an RSA_METHOD object
++ * Set the sign function of an RSA_METHOD object
 + *
 + * @param meth               The RSA_METHOD object
 + * @param sign               The sign function
