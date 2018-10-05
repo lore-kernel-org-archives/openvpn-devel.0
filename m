@@ -1,7 +1,11 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Fri,  5 Oct 2018 17:00:32 +0200
-Message-Id: <20181005150032.16541-1-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] Simplify --genkey option syntax
+MIME-Version: 1.0
+References: <20181005135849.28718-1-steffan@...1856...>
+In-Reply-To: <20181005135849.28718-1-steffan@...1856...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Fri, 5 Oct 2018 20:23:28 +0500
+Message-ID: <CAFHpkQH_D9EOWCKk8oF8ijqw9=rHuVhSVYJssMe841fNQnrmhg@...278...>
+Content-Type: multipart/alternative; boundary="0000000000002cc70505777cdbfd"
+Subject: Re: [Openvpn-devel] [PATCH (2.4)] Fix --disable-crypto build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,97 +14,126 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Instead of requiring users to do "--genkey --secret new.key", allow
-them to just do "--genkey new.key".  This has hit me often enough that I
-decided to write a patch for it.  Also, the upcoming tls-crypt-v2-genkey
-uses a similar syntax and Antonio suggested we should make them consistent.
+--0000000000002cc70505777cdbfd
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The documentation is updated to no longer mention the old syntax, but it is
-still supported so people who are used to the old syntax can still use it.
+shall we add "--disable-crypto" to travis-ci matrix in 2.4 branch ?
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- doc/openvpn.8         | 26 ++++++++++++++------------
- src/openvpn/options.c | 12 +++++++-----
- 2 files changed, 21 insertions(+), 17 deletions(-)
+=D0=BF=D1=82, 5 =D0=BE=D0=BA=D1=82. 2018 =D0=B3. =D0=B2 19:00, Steffan Karg=
+er <steffan@...1856...>:
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index de1a1928..084c5415 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -5674,20 +5674,22 @@ option.
- Used only for non\-TLS static key encryption mode.
- .\"*********************************************************
- .TP
--.B \-\-genkey
-+.B \-\-genkey file
- (Standalone)
--Generate a random key to be used as a shared secret,
--for use with the
-+Generate a random key to be used as a shared secret, for use with the
- .B \-\-secret
--option.  This file must be shared with the
--peer over a pre\-existing secure channel such as
--.BR scp (1)
--.
--.\"*********************************************************
--.TP
--.B \-\-secret file
--Write key to
--.B file.
-+,
-+.B \-\-tls-auth
-+or
-+.B \-\-tls-crypt
-+options.  Stores the key in
-+.B file\fR.
-+
-+If using this for
-+.B \-\-secret
-+, this file must be shared with the peer over a pre\-existing secure channel
-+such as
-+.BR scp (1)\fR.
- .\"*********************************************************
- .SS TUN/TAP persistent tunnel config mode:
- Available with Linux 2.4.7+.  These options comprise a standalone mode
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 61fa9833..2199af53 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -739,10 +739,8 @@ static const char usage_message[] =
-     "                                 to access TAP adapter.\n"
- #endif /* ifdef _WIN32 */
-     "\n"
--    "Generate a random key (only for non-TLS static key encryption mode):\n"
--    "--genkey        : Generate a random key to be used as a shared secret,\n"
--    "                  for use with the --secret option.\n"
--    "--secret file   : Write key to file.\n"
-+    "Generate a new key (for use with --secret, --tls-auth or --tls-crypt):\n"
-+    "--genkey file   : Generate a new random key and write to file.\n"
- #ifdef ENABLE_FEATURE_TUN_PERSIST
-     "\n"
-     "Tun/tap config mode (available with linux 2.4+):\n"
-@@ -7518,10 +7516,14 @@ add_option(struct options *options,
-         }
-         options->shared_secret_file = p[1];
-     }
--    else if (streq(p[0], "genkey") && !p[1])
-+    else if (streq(p[0], "genkey") && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-         options->genkey = true;
-+        if (p[1])
-+        {
-+            options->shared_secret_file = p[1];
-+        }
-     }
-     else if (streq(p[0], "auth") && p[1] && !p[2])
-     {
--- 
-2.17.1
+> Commit d2ff5164 was fine for the master branch, but broke the 2.4 build if
+> the --disable-crypto configure options was used (which is removed in the
+> master branch).
+>
+> Signed-off-by: Steffan Karger <steffan@...1856...>
+> ---
+>  src/openvpn/init.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+> index 0950f07e..2d201c44 100644
+> --- a/src/openvpn/init.c
+> +++ b/src/openvpn/init.c
+> @@ -621,9 +621,11 @@ uninit_proxy(struct context *c)
+>  static void
+>  do_set_ncp_options(struct context *c)
+>  {
+> +#ifdef ENABLE_CRYPTO
+>      c->c1.ciphername =3D c->options.ciphername;
+>      c->c1.authname =3D c->options.authname;
+>      c->c1.keysize =3D c->options.keysize;
+> +#endif ENABLE_CRYPTO
+>  }
+>
+>  /*
+> @@ -635,9 +637,11 @@ do_set_ncp_options(struct context *c)
+>  static void
+>  do_unset_ncp_options(struct context *c)
+>  {
+> +#ifdef ENABLE_CRYPTO
+>      c->options.ciphername =3D c->c1.ciphername;
+>      c->options.authname =3D c->c1.authname;
+>      c->options.keysize =3D c->c1.keysize;
+> +#endif ENABLE_CRYPTO
+>  }
+>
+>  void
+> --
+> 2.17.1
+>
+>
+>
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
 
+--0000000000002cc70505777cdbfd
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">shall we add &quot;--disable-crypto&quot; to travis-ci mat=
+rix in 2.4 branch ?<br></div><br><div class=3D"gmail_quote"><div dir=3D"ltr=
+">=D0=BF=D1=82, 5 =D0=BE=D0=BA=D1=82. 2018 =D0=B3. =D0=B2 19:00, Steffan Ka=
+rger &lt;<a href=3D"mailto:steffan@...1856...">steffan@...1856...</a>&gt;:<=
+br></div><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;borde=
+r-left:1px #ccc solid;padding-left:1ex">Commit d2ff5164 was fine for the ma=
+ster branch, but broke the 2.4 build if<br>
+the --disable-crypto configure options was used (which is removed in the<br>
+master branch).<br>
+<br>
+Signed-off-by: Steffan Karger &lt;<a href=3D"mailto:steffan@...1856..." tar=
+get=3D"_blank">steffan@...1856...</a>&gt;<br>
+---<br>
+=C2=A0src/openvpn/init.c | 4 ++++<br>
+=C2=A01 file changed, 4 insertions(+)<br>
+<br>
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c<br>
+index 0950f07e..2d201c44 100644<br>
+--- a/src/openvpn/init.c<br>
++++ b/src/openvpn/init.c<br>
+@@ -621,9 +621,11 @@ uninit_proxy(struct context *c)<br>
+=C2=A0static void<br>
+=C2=A0do_set_ncp_options(struct context *c)<br>
+=C2=A0{<br>
++#ifdef ENABLE_CRYPTO<br>
+=C2=A0 =C2=A0 =C2=A0c-&gt;c1.ciphername =3D c-&gt;options.ciphername;<br>
+=C2=A0 =C2=A0 =C2=A0c-&gt;c1.authname =3D c-&gt;options.authname;<br>
+=C2=A0 =C2=A0 =C2=A0c-&gt;c1.keysize =3D c-&gt;options.keysize;<br>
++#endif ENABLE_CRYPTO<br>
+=C2=A0}<br>
+<br>
+=C2=A0/*<br>
+@@ -635,9 +637,11 @@ do_set_ncp_options(struct context *c)<br>
+=C2=A0static void<br>
+=C2=A0do_unset_ncp_options(struct context *c)<br>
+=C2=A0{<br>
++#ifdef ENABLE_CRYPTO<br>
+=C2=A0 =C2=A0 =C2=A0c-&gt;options.ciphername =3D c-&gt;c1.ciphername;<br>
+=C2=A0 =C2=A0 =C2=A0c-&gt;options.authname =3D c-&gt;c1.authname;<br>
+=C2=A0 =C2=A0 =C2=A0c-&gt;options.keysize =3D c-&gt;c1.keysize;<br>
++#endif ENABLE_CRYPTO<br>
+=C2=A0}<br>
+<br>
+=C2=A0void<br>
+-- <br>
+2.17.1<br>
+<br>
+<br>
+<br>
+_______________________________________________<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
+envpn-devel@lists.sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
+=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
+nfo/openvpn-devel</a><br>
+</blockquote></div>
+
+--0000000000002cc70505777cdbfd--
 
