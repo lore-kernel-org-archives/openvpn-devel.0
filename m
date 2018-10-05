@@ -1,13 +1,14 @@
+Date: Fri, 5 Oct 2018 21:59:30 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20181005195929.GO962@...1296...>
+References: <20181005135849.28718-1-steffan@...1856...>
+ <CAFHpkQH_D9EOWCKk8oF8ijqw9=rHuVhSVYJssMe841fNQnrmhg@...278...>
 MIME-Version: 1.0
-References: <1530633509-4959-1-git-send-email-selva.nair@...277...>
- <1531491395-29049-1-git-send-email-selva.nair@...277...>
- <4e0e285a-482a-700a-e359-fc8cf8c1613c@...1856...>
-In-Reply-To: <4e0e285a-482a-700a-e359-fc8cf8c1613c@...1856...>
-From: Selva Nair <selva.nair@...277...>
-Date: Fri, 5 Oct 2018 11:30:29 -0400
-Message-ID: <CAKuzo_iXRkuzeVG0ec2mDA8a-arQe-J9seo1R+ZdRA7ktWbt=w@...278...>
-Content-Type: multipart/alternative; boundary="000000000000a3551005777cf49d"
-Subject: Re: [Openvpn-devel] [PATCH v3] Make up/down script errors not FATAL
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="PfY+OYVI0N/4DRLF"
+Content-Disposition: inline
+In-Reply-To: <CAFHpkQH_D9EOWCKk8oF8ijqw9=rHuVhSVYJssMe841fNQnrmhg@...278...>
+Subject: Re: [Openvpn-devel] [PATCH (2.4)] Fix --disable-crypto build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,89 +17,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
+To: ???????? ?????????????? <chipitsine@...277...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---000000000000a3551005777cf49d
-Content-Type: text/plain; charset="UTF-8"
+--PfY+OYVI0N/4DRLF
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On Fri, Oct 5, 2018 at 5:44 AM Steffan Karger <steffan@...1856...> wrote:
+On Fri, Oct 05, 2018 at 08:23:28PM +0500, ???????? ?????????????? wrote:
+> shall we add "--disable-crypto" to travis-ci matrix in 2.4 branch ?
 
-> Hi,
->
-> On 13-07-18 16:16, selva.nair@...277... wrote:
-> > From: Selva Nair <selva.nair@...277...>
-> >
-> > The error is treated as a warning only if its triggered due
-> > to script_security < SSEC_SCRIPTS.
-> >
-> > This helps user interfaces enforce a safer script-security setting
-> > without causing a FATAL error.
->
-> But does it make sense at all to accept configs that have a --up script
-> without a sufficiently-high script-security set?
->
+I'm afraid this will bite us a few more times, so "yes, please"
 
-This came out of a proposed patch for the GUI to protect lay users from
-malicious
-scripts embedded in config files.
+gert
 
-Recall the ado about exploiting scripts using unsuspecting "inline"
-commands.
-To defeat such exploits we want to enforce a safer script security setting
-from
-the GUI but do not want to cause a FATAL error as that would be counter
-productive.
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-Please see GUI PR #271 https://github.com/OpenVPN/openvpn-gui/pull/271 and
-my comment dated Jul 3 under it.
+Gert Doering - Munich, Germany                             gert@...1296...
 
-The discussion that led to this is here:
-https://github.com/OpenVPN/openvpn-gui/issues/270
+--PfY+OYVI0N/4DRLF
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Thanks,
+-----BEGIN PGP SIGNATURE-----
 
-Selva
+iQGcBAEBAgAGBQJbt8KhAAoJEB2Cnv7KVigSEi8MAICoC3r/XdHpKNDn2c1V6gGR
+RKahYI+QQ+P4/GlLmvZPhk68Q6zS8mgwpG3KulotEZgDs4uJKWH3k1B+NA3Upa2u
+MgZ+3GxcVQBBmoazcYFB2vnhaVuwAnrM2UkwvrAW5GpwPdYv9VNz/WqetsTJD0Hj
+pBCPX5fP8Fn5NERt6xJCz4lEVspondduJL3xm/IZ+9AO3HSvGZOABN9U7m5NAsAM
+MuQV9iCgwN7MytiVI5EMbR3QUOMNatLjj2UrI/zpYfBlDliPurxPGdUtZlhUpNOP
+oFERSU3bVyb0g1H/N7N3mZNW2sEjp05wD02kB84+XhzaG1S0hPZzWtDdzKpSHt0Z
+iCnkO5SRw+dEtxaP+1PIrWPuhhfMgBEiu60+XzcXQZj4++SyHJax5q0unm75Hmni
+ROgb0QtJAmTt9clu2AFldN64+KmejQY3W/5x0T2vXS9HEBQmlHlgfRR2Ubxg7Xzt
+i874alo6htxHYMFXDi/aUmE61s4Llkz2IUlnpwYakQ==
+=6fXK
+-----END PGP SIGNATURE-----
 
---000000000000a3551005777cf49d
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr">Hi,<br><div><br><div cla=
-ss=3D"gmail_quote"><div dir=3D"ltr">On Fri, Oct 5, 2018 at 5:44 AM Steffan =
-Karger &lt;<a href=3D"mailto:steffan@...1856..." target=3D"_blank">steffan@=
-...1856...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=
-=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding=
--left:1ex">Hi,<br>
-<br>
-On 13-07-18 16:16, <a href=3D"mailto:selva.nair@...277..." target=3D"_blank=
-">selva.nair@...277...</a> wrote:<br>
-&gt; From: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277..." target=3D=
-"_blank">selva.nair@...277...</a>&gt;<br>
-&gt; <br>
-&gt; The error is treated as a warning only if its triggered due<br>
-&gt; to script_security &lt; SSEC_SCRIPTS.<br>
-&gt; <br>
-&gt; This helps user interfaces enforce a safer script-security setting<br>
-&gt; without causing a FATAL error.<br>
-<br>
-But does it make sense at all to accept configs that have a --up script<br>
-without a sufficiently-high script-security set?<br></blockquote><div><br>T=
-his came out of a proposed patch for the GUI to protect lay users from mali=
-cious<br></div><div>scripts embedded in config files.<br></div><div><br>Rec=
-all the ado about exploiting scripts using unsuspecting &quot;inline&quot; =
-commands.<br>To defeat such exploits we want to enforce a safer script secu=
-rity setting from<br>the GUI but do not want to cause a FATAL error as that=
- would be counter productive.<br><br></div><div>Please see GUI PR #271 <a h=
-ref=3D"https://github.com/OpenVPN/openvpn-gui/pull/271" target=3D"_blank">h=
-ttps://github.com/OpenVPN/openvpn-gui/pull/271</a> and <br>my comment dated=
- Jul 3 under it.<br></div><div><br></div><div>The discussion that led to th=
-is is here:<br><a href=3D"https://github.com/OpenVPN/openvpn-gui/issues/270=
-">https://github.com/OpenVPN/openvpn-gui/issues/270</a><br><br></div><div>T=
-hanks,<br></div><br></div><div class=3D"gmail_quote">Selva<br></div></div><=
-/div></div></div>
-
---000000000000a3551005777cf49d--
+--PfY+OYVI0N/4DRLF--
 
