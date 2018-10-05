@@ -1,11 +1,13 @@
 MIME-Version: 1.0
-References: <20181005135849.28718-1-steffan@...1856...>
-In-Reply-To: <20181005135849.28718-1-steffan@...1856...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Fri, 5 Oct 2018 20:23:28 +0500
-Message-ID: <CAFHpkQH_D9EOWCKk8oF8ijqw9=rHuVhSVYJssMe841fNQnrmhg@...278...>
-Content-Type: multipart/alternative; boundary="0000000000002cc70505777cdbfd"
-Subject: Re: [Openvpn-devel] [PATCH (2.4)] Fix --disable-crypto build
+References: <1530633509-4959-1-git-send-email-selva.nair@...277...>
+ <1531491395-29049-1-git-send-email-selva.nair@...277...>
+ <4e0e285a-482a-700a-e359-fc8cf8c1613c@...1856...>
+In-Reply-To: <4e0e285a-482a-700a-e359-fc8cf8c1613c@...1856...>
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 5 Oct 2018 11:30:29 -0400
+Message-ID: <CAKuzo_iXRkuzeVG0ec2mDA8a-arQe-J9seo1R+ZdRA7ktWbt=w@...278...>
+Content-Type: multipart/alternative; boundary="000000000000a3551005777cf49d"
+Subject: Re: [Openvpn-devel] [PATCH v3] Make up/down script errors not FATAL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,126 +16,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---0000000000002cc70505777cdbfd
+--000000000000a3551005777cf49d
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-shall we add "--disable-crypto" to travis-ci matrix in 2.4 branch ?
+Hi,
 
-=D0=BF=D1=82, 5 =D0=BE=D0=BA=D1=82. 2018 =D0=B3. =D0=B2 19:00, Steffan Karg=
-er <steffan@...1856...>:
+On Fri, Oct 5, 2018 at 5:44 AM Steffan Karger <steffan@...1856...> wrote:
 
-> Commit d2ff5164 was fine for the master branch, but broke the 2.4 build if
-> the --disable-crypto configure options was used (which is removed in the
-> master branch).
+> Hi,
 >
-> Signed-off-by: Steffan Karger <steffan@...1856...>
-> ---
->  src/openvpn/init.c | 4 ++++
->  1 file changed, 4 insertions(+)
+> On 13-07-18 16:16, selva.nair@...277... wrote:
+> > From: Selva Nair <selva.nair@...277...>
+> >
+> > The error is treated as a warning only if its triggered due
+> > to script_security < SSEC_SCRIPTS.
+> >
+> > This helps user interfaces enforce a safer script-security setting
+> > without causing a FATAL error.
 >
-> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index 0950f07e..2d201c44 100644
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -621,9 +621,11 @@ uninit_proxy(struct context *c)
->  static void
->  do_set_ncp_options(struct context *c)
->  {
-> +#ifdef ENABLE_CRYPTO
->      c->c1.ciphername =3D c->options.ciphername;
->      c->c1.authname =3D c->options.authname;
->      c->c1.keysize =3D c->options.keysize;
-> +#endif ENABLE_CRYPTO
->  }
->
->  /*
-> @@ -635,9 +637,11 @@ do_set_ncp_options(struct context *c)
->  static void
->  do_unset_ncp_options(struct context *c)
->  {
-> +#ifdef ENABLE_CRYPTO
->      c->options.ciphername =3D c->c1.ciphername;
->      c->options.authname =3D c->c1.authname;
->      c->options.keysize =3D c->c1.keysize;
-> +#endif ENABLE_CRYPTO
->  }
->
->  void
-> --
-> 2.17.1
->
->
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+> But does it make sense at all to accept configs that have a --up script
+> without a sufficiently-high script-security set?
 >
 
---0000000000002cc70505777cdbfd
+This came out of a proposed patch for the GUI to protect lay users from
+malicious
+scripts embedded in config files.
+
+Recall the ado about exploiting scripts using unsuspecting "inline"
+commands.
+To defeat such exploits we want to enforce a safer script security setting
+from
+the GUI but do not want to cause a FATAL error as that would be counter
+productive.
+
+Please see GUI PR #271 https://github.com/OpenVPN/openvpn-gui/pull/271 and
+my comment dated Jul 3 under it.
+
+The discussion that led to this is here:
+https://github.com/OpenVPN/openvpn-gui/issues/270
+
+Thanks,
+
+Selva
+
+--000000000000a3551005777cf49d
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">shall we add &quot;--disable-crypto&quot; to travis-ci mat=
-rix in 2.4 branch ?<br></div><br><div class=3D"gmail_quote"><div dir=3D"ltr=
-">=D0=BF=D1=82, 5 =D0=BE=D0=BA=D1=82. 2018 =D0=B3. =D0=B2 19:00, Steffan Ka=
-rger &lt;<a href=3D"mailto:steffan@...1856...">steffan@...1856...</a>&gt;:<=
-br></div><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;borde=
-r-left:1px #ccc solid;padding-left:1ex">Commit d2ff5164 was fine for the ma=
-ster branch, but broke the 2.4 build if<br>
-the --disable-crypto configure options was used (which is removed in the<br>
-master branch).<br>
+<div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr">Hi,<br><div><br><div cla=
+ss=3D"gmail_quote"><div dir=3D"ltr">On Fri, Oct 5, 2018 at 5:44 AM Steffan =
+Karger &lt;<a href=3D"mailto:steffan@...1856..." target=3D"_blank">steffan@=
+...1856...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=
+=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding=
+-left:1ex">Hi,<br>
 <br>
-Signed-off-by: Steffan Karger &lt;<a href=3D"mailto:steffan@...1856..." tar=
-get=3D"_blank">steffan@...1856...</a>&gt;<br>
----<br>
-=C2=A0src/openvpn/init.c | 4 ++++<br>
-=C2=A01 file changed, 4 insertions(+)<br>
+On 13-07-18 16:16, <a href=3D"mailto:selva.nair@...277..." target=3D"_blank=
+">selva.nair@...277...</a> wrote:<br>
+&gt; From: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277..." target=3D=
+"_blank">selva.nair@...277...</a>&gt;<br>
+&gt; <br>
+&gt; The error is treated as a warning only if its triggered due<br>
+&gt; to script_security &lt; SSEC_SCRIPTS.<br>
+&gt; <br>
+&gt; This helps user interfaces enforce a safer script-security setting<br>
+&gt; without causing a FATAL error.<br>
 <br>
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c<br>
-index 0950f07e..2d201c44 100644<br>
---- a/src/openvpn/init.c<br>
-+++ b/src/openvpn/init.c<br>
-@@ -621,9 +621,11 @@ uninit_proxy(struct context *c)<br>
-=C2=A0static void<br>
-=C2=A0do_set_ncp_options(struct context *c)<br>
-=C2=A0{<br>
-+#ifdef ENABLE_CRYPTO<br>
-=C2=A0 =C2=A0 =C2=A0c-&gt;c1.ciphername =3D c-&gt;options.ciphername;<br>
-=C2=A0 =C2=A0 =C2=A0c-&gt;c1.authname =3D c-&gt;options.authname;<br>
-=C2=A0 =C2=A0 =C2=A0c-&gt;c1.keysize =3D c-&gt;options.keysize;<br>
-+#endif ENABLE_CRYPTO<br>
-=C2=A0}<br>
-<br>
-=C2=A0/*<br>
-@@ -635,9 +637,11 @@ do_set_ncp_options(struct context *c)<br>
-=C2=A0static void<br>
-=C2=A0do_unset_ncp_options(struct context *c)<br>
-=C2=A0{<br>
-+#ifdef ENABLE_CRYPTO<br>
-=C2=A0 =C2=A0 =C2=A0c-&gt;options.ciphername =3D c-&gt;c1.ciphername;<br>
-=C2=A0 =C2=A0 =C2=A0c-&gt;options.authname =3D c-&gt;c1.authname;<br>
-=C2=A0 =C2=A0 =C2=A0c-&gt;options.keysize =3D c-&gt;c1.keysize;<br>
-+#endif ENABLE_CRYPTO<br>
-=C2=A0}<br>
-<br>
-=C2=A0void<br>
--- <br>
-2.17.1<br>
-<br>
-<br>
-<br>
-_______________________________________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
-envpn-devel@lists.sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
-=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
-nfo/openvpn-devel</a><br>
-</blockquote></div>
+But does it make sense at all to accept configs that have a --up script<br>
+without a sufficiently-high script-security set?<br></blockquote><div><br>T=
+his came out of a proposed patch for the GUI to protect lay users from mali=
+cious<br></div><div>scripts embedded in config files.<br></div><div><br>Rec=
+all the ado about exploiting scripts using unsuspecting &quot;inline&quot; =
+commands.<br>To defeat such exploits we want to enforce a safer script secu=
+rity setting from<br>the GUI but do not want to cause a FATAL error as that=
+ would be counter productive.<br><br></div><div>Please see GUI PR #271 <a h=
+ref=3D"https://github.com/OpenVPN/openvpn-gui/pull/271" target=3D"_blank">h=
+ttps://github.com/OpenVPN/openvpn-gui/pull/271</a> and <br>my comment dated=
+ Jul 3 under it.<br></div><div><br></div><div>The discussion that led to th=
+is is here:<br><a href=3D"https://github.com/OpenVPN/openvpn-gui/issues/270=
+">https://github.com/OpenVPN/openvpn-gui/issues/270</a><br><br></div><div>T=
+hanks,<br></div><br></div><div class=3D"gmail_quote">Selva<br></div></div><=
+/div></div></div>
 
---0000000000002cc70505777cdbfd--
+--000000000000a3551005777cf49d--
 
