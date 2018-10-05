@@ -1,10 +1,10 @@
-Date: Fri, 5 Oct 2018 14:44:59 +0200 (CEST)
-Message-Id: <201810051244.w95CixLW041844@...2054...>
+Date: Fri, 5 Oct 2018 14:46:36 +0200 (CEST)
+Message-Id: <201810051246.w95CkatL041866@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20181005122330.31431-1-arne@...1227...>
-References: <20181005122330.31431-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add OpenSSL compat definition
- for RSA_meth_set_sign
+In-Reply-To: <1538510474-27602-1-git-send-email-selva.nair@...277...>
+References: <1538510474-27602-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Move get system directory to a
+ separate function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +15,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Another ACK from me, looks good.
 
-Thanks :-)
+Your patch has been applied to the master and release/2.4 branch.
 
-Your patch has been applied to the master and release/2.4 branch (keep
-our compat wrapper aligned).
+(This is refactoring so normally shouldn't go to 2.4, but since the 
+"set interface to DHCP" patch really is really fixing an omission in 
+the initial 2.4 interactive service implementation, I see this as a 
+necessary prerequisite to a bugfix)
 
-commit 720c880a8ca73e0f9e9b03e3c9d6031c026bccac (master)
-commit c75e937657bf0ae9e9551163f77305d7658c71b3 (release/2.4)
-Author: Arne Schwabe
-Date:   Fri Oct 5 14:23:30 2018 +0200
+Test compiled on ubuntu1604/mingw, did not actually run.
 
-     Add OpenSSL compat definition for RSA_meth_set_sign
+commit 4eb465537ce06e07ee63c2fc93c7b192dd4e29de (master)
+commit f0516a803fdcf588be67159a240d6ec840ad0090 (release/2.4)
+Author: Selva Nair
+Date:   Tue Oct 2 16:01:12 2018 -0400
 
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20181005122330.31431-1-arne@...1227...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20181005122330.31431-1-arne@...1227...
+     Move get system directory to a separate function
+
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Alon Bar-Lev <alon.barlev@...277...>
+     Message-Id: <1538510474-27602-1-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17518.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
