@@ -1,6 +1,8 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri,  5 Oct 2018 15:05:00 +0200
-Message-Id: <20181005130500.32130-1-arne@...1227...>
+Date: Fri,  5 Oct 2018 15:16:32 +0200
+Message-Id: <20181005131632.32515-1-arne@...1227...>
+In-Reply-To: <20181005130500.32130-1-arne@...1227...>
+References: <20181005130500.32130-1-arne@...1227...>
 Subject: [Openvpn-devel] [PATCH] Skip error about ioctl(SIOCGIFCONF) failed
  on Android
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,21 +17,24 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+Patch: V2 Do not use C99 style comments
 ---
- src/openvpn/route.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ src/openvpn/route.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
 diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index cadd34e1..a1d4ade1 100644
+index cadd34e1..cb337c42 100644
 --- a/src/openvpn/route.c
 +++ b/src/openvpn/route.c
-@@ -3258,6 +3258,10 @@ get_default_gateway(struct route_gateway_info *rgi)
+@@ -3258,6 +3258,12 @@ get_default_gateway(struct route_gateway_info *rgi)
      rgi->gateway.addr = 127 << 24 | 'd' << 16 | 'g' << 8 | 'w';
      rgi->flags |= RGI_ADDR_DEFINED;
      strcpy(best_name, "android-gw");
 +
-+    // Skip scanning/fetching interface from loopback inteface
-+    // It always fails and ioctl(SIOCGIFCONF) failed" confuses users
++    /*
++     * Skip scanning/fetching interface from loopback inteface
++     * It always fails and ioctl(SIOCGIFCONF) failed" confuses users
++     */
 +    goto done;
  #endif /* ifndef TARGET_ANDROID */
  
