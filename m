@@ -1,9 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri,  5 Oct 2018 14:15:43 +0200
-Message-Id: <20181005121543.31029-1-arne@...1227...>
+Date: Fri,  5 Oct 2018 14:20:32 +0200
+Message-Id: <20181005122032.31208-1-arne@...1227...>
 In-Reply-To: <20181005114918.30626-1-arne@...1227...>
 References: <20181005114918.30626-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v2] Add OpenSSL compat definition for
+Subject: [Openvpn-devel] [PATCH v3] Add OpenSSL compat definition for
  RSA_meth_set_sign
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
