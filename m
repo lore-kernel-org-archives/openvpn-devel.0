@@ -1,10 +1,10 @@
-Date: Sat, 6 Oct 2018 14:48:44 +0200 (CEST)
-Message-Id: <201810061248.w96CmiVK054740@...2054...>
+Date: Sat, 6 Oct 2018 14:56:28 +0200 (CEST)
+Message-Id: <201810061256.w96CuSjs054872@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20181006080617.18136-1-arne@...1227...>
-References: <20181006080617.18136-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Factor out
- convert_tls_list_to_openssl method
+In-Reply-To: <20180819200703.20362-1-gert@...1296...>
+References: <20180819200703.20362-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix combination of --dev tap
+ and --topology subnet across multiple platforms.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,23 +15,26 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+Thanks for the review.
 
-Whitespace and signed-off-by line have been adjusted as instructed.
+Patch has been applied to the release/2.4 branch.
 
-commit 3b9d4d2a9aa89f9c21870a97bcdb42bb007e3ac0
-Author: Arne Schwabe
-Date:   Sat Oct 6 10:06:15 2018 +0200
+For reference: this is still broken in master, but warrants a proper
+cleanup/refactor approach there.
 
-     Factor out convert_tls_list_to_openssl method
+commit 6c13e24e5709f404231632f14758ea8f6bd9ec83
+Author: Gert Doering
+Date:   Sun Aug 19 22:07:03 2018 +0200
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <20181006080617.18136-1-arne@...1227...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20181006080617.18136-1-arne@...1227...
+     Fix combination of --dev tap and --topology subnet across multiple platforms.
+
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20180819200703.20362-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17414.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
