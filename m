@@ -1,10 +1,14 @@
-Date: Sat, 6 Oct 2018 12:16:57 +0200 (CEST)
-Message-Id: <201810061016.w96AGvUt053099@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1538818219-18141-1-git-send-email-lstipakov@...277...>
-References: <1538818219-18141-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: init.c: refine functions names
- and description
+References: <CAKuzo_hYvB2JjxZ3S8W4dB1+AOJqQW3VZJ2FgRXQJrDArkcFAQ@...278...>
+ <20180402114436.13662-1-steffan@...1856...>
+ <CAKuzo_gOrByNN1AQ89hwR8ugc5coR58YnqdwqamKWEkGPdEQtg@...278...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <67564450-1ed5-ae9f-cc18-2ce65bfac6e8@...1856...>
+Date: Sat, 6 Oct 2018 14:29:06 +0200
+MIME-Version: 1.0
+In-Reply-To: <CAKuzo_gOrByNN1AQ89hwR8ugc5coR58YnqdwqamKWEkGPdEQtg@...278...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v3] Improve management-external-key/cert
+ error handling
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +17,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Acked-by: Gert Doering <gert@...1296...>
+Hi,
 
-No (real) code changes, just comment and function *names*.
+On 03-04-18 04:53, Selva Nair wrote:
+> But I can't believe I missed this in the last round. This else clause
+> will now get executed not only if options->cert_file is false, but
+> also if its true and the call to tls_ctx_use_external_private_key()
+> succeeds! That would be wrong and is not what we want.
 
-Your patch has been applied to the master and release/2.4 branch.
+Thanks for catching this before it went into master!
 
-commit 39326238dca7c28368928f728c5a3c80031255e5 (master)
-commit 6f8fb6fe796015051f30d1327d89e1a63cf592e8 (release/2.4)
-Author: Lev Stipakov
-Date:   Sat Oct 6 12:30:19 2018 +0300
+For archiving purposes: this patch is no longer needed because it has
+been superseded by the refactoring in "Do not load certificate from
+tls_ctx_use_external_private_key()" (Message-Id:
+<1536916459-25900-1-git-send-email-steffan.karger@...1435...>).
 
-     init.c: refine functions names and description
+I'll register it like so in patchwork too.
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1538818219-18141-1-git-send-email-lstipakov@...277...>
-     URL: https://www.mail-archive.com/search?l=mid&q=1538818219-18141-1-git-send-email-lstipakov@...277...
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+-Steffan
 
