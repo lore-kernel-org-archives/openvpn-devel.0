@@ -1,10 +1,15 @@
-Date: Sat, 6 Oct 2018 07:44:59 +0200 (CEST)
-Message-Id: <201810060544.w965ixI7049889@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1538784495-24988-1-git-send-email-selva.nair@...277...>
-References: <1538784495-24988-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Pass the hash without the
- DigestInfo header to NCryptSignHash()
+References: <20181005135849.28718-1-steffan@...1856...>
+ <CAFHpkQH_D9EOWCKk8oF8ijqw9=rHuVhSVYJssMe841fNQnrmhg@...278...>
+ <20181005195929.GO962@...1296...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <c8521752-6807-f2ef-7138-b5f066701b90@...1856...>
+Date: Sat, 6 Oct 2018 09:54:22 +0200
+MIME-Version: 1.0
+In-Reply-To: <20181005195929.GO962@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="QnXtO6bWGd6x6bcSqm9n21yJkBkqYrc96"
+Subject: Re: [Openvpn-devel] [PATCH (2.4)] Fix --disable-crypto build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,43 +18,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--QnXtO6bWGd6x6bcSqm9n21yJkBkqYrc96
+Content-Type: multipart/mixed; boundary="CdgfH6MBHkTkpDPcBLUBR202vSct2SdYQ";
+ protected-headers="v1"
+From: Steffan Karger <steffan@...1856...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <c8521752-6807-f2ef-7138-b5f066701b90@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH (2.4)] Fix --disable-crypto build
+References: <20181005135849.28718-1-steffan@...1856...>
+ <CAFHpkQH_D9EOWCKk8oF8ijqw9=rHuVhSVYJssMe841fNQnrmhg@...278...>
+ <20181005195929.GO962@...1296...>
+In-Reply-To: <20181005195929.GO962@...1296...>
 
-Thanks, Selva, for checking what was missing (nothing but context) :-) - I
-wasn't feeling familiar enough with the code to check myself yesterday, 
-and the large conflict "git cherrypick" created misled me.
+--CdgfH6MBHkTkpDPcBLUBR202vSct2SdYQ
+Content-Language: en-US
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-I have verified that the patch itself contains the code same changes, just
-line numbers and context are different ("diff -u master.patch 24.patch"),
-so I cherrypick Steffan's ACK to the master patch and add my own.
+Hi,
 
-Test built on ubuntu1604 with openssl 1.0.1* (so verifying yesterday's 
-openssl 1.1-compat patch in 2.4 as well).
+On 05-10-18 21:59, Gert Doering wrote:
+> On Fri, Oct 05, 2018 at 08:23:28PM +0500, ???????? ?????????????? wrote:
+>> shall we add "--disable-crypto" to travis-ci matrix in 2.4 branch ?
+>=20
+> I'm afraid this will bite us a few more times, so "yes, please"
 
-Your patch has been applied to the release/2.4 branch.
+We already have this - that's how I noticed it was broken :)
 
-commit 163fa9c1e79bddc07c7dd47e8c313016b482314f (release/2.4)
-Author: Selva Nair
-Date:   Fri Oct 5 20:08:15 2018 -0400
-
-     Pass the hash without the DigestInfo header to NCryptSignHash()
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1538784495-24988-1-git-send-email-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17579.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+-Steffan
 
 
---
-kind regards,
+--CdgfH6MBHkTkpDPcBLUBR202vSct2SdYQ--
 
-Gert Doering
+--QnXtO6bWGd6x6bcSqm9n21yJkBkqYrc96
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEED9EpzGW9WeE8Ifd8mALKPQB+0ogFAlu4akEACgkQmALKPQB+
+0oj39wf/Q0FS7TQFJQIsyVDtkoIOWpv82iWyA6lkBGf1nSj2v+c419FnyV8DdNVG
+S8/W1YMxkUMTNT+sv9rjVw766UtKyi3EGgbW93PfEyczzZaeuoi1rC45LzJmMqi7
+XX6NTe8r3J/xA6wEpfobJ/C2knvsM40bV04WOjO+V0zm1b7dyQm5Ps4FTvZ8ykSr
+qPHZzYQ0NawYAyroVbWXNS0ag+aB6lkXyePpXNqiRELdMua++hzDyFGTHH996VYk
+CTwoqwSFxjIecTSDk2vEcxIN+cp4AUjzpMY8XuAJpl0Jg16x1hnWhwbLorjzF9Vu
+gkSYdA2Cusw6sJ9ggKk4I3wZ4JYRkQ==
+=0dv+
+-----END PGP SIGNATURE-----
+
+--QnXtO6bWGd6x6bcSqm9n21yJkBkqYrc96--
 
