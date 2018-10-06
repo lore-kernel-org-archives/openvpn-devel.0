@@ -1,10 +1,8 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Sat,  6 Oct 2018 10:06:17 +0200
-Message-Id: <20181006080617.18136-3-arne@...1227...>
-In-Reply-To: <20181006080617.18136-1-arne@...1227...>
-References: <20181006080617.18136-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 3/3] Add better support for showing TLS 1.3
- ciphersuites in --show-tls
+Date: Sat,  6 Oct 2018 10:06:15 +0200
+Message-Id: <20181006080617.18136-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH 1/3] Factor out convert_tls_list_to_openssl
+ method
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,184 +15,108 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-show-tls shows mixed TLS 1.3 and TLS 1.2 ciphers. The ciphersuites
-are only valid in tls-cipher or tls-ciphersuites. So this confusing and
-not really helpful.
-
-This patch modifies show-tls to show separate lists for TLS 1.2 and
-TLS 1.3.
+This makes the tls_ctx_restrict_ciphers function more readable and
+clean ups the code a bit more.
 ---
- src/openvpn/init.c        |  1 +
- src/openvpn/ssl_backend.h |  1 +
- src/openvpn/ssl_mbedtls.c |  2 +
- src/openvpn/ssl_openssl.c | 79 ++++++++++++++++++++++++++++++---------
- 4 files changed, 65 insertions(+), 18 deletions(-)
+ src/openvpn/ssl_openssl.c | 57 +++++++++++++++++++++------------------
+ 1 file changed, 31 insertions(+), 26 deletions(-)
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index b2ab2a60..ff863cf8 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1040,6 +1040,7 @@ print_openssl_info(const struct options *options)
-         if (options->show_tls_ciphers)
-         {
-             show_available_tls_ciphers(options->cipher_list,
-+                                       options->cipher_list_tls13,
-                                        options->tls_cert_profile);
-         }
-         if (options->show_curves)
-diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
-index 0995bb4c..42934230 100644
---- a/src/openvpn/ssl_backend.h
-+++ b/src/openvpn/ssl_backend.h
-@@ -525,6 +525,7 @@ void print_details(struct key_state_ssl *ks_ssl, const char *prefix);
-  */
- void
- show_available_tls_ciphers(const char *cipher_list,
-+                           const char *cipher_list_tls13,
-                            const char *tls_cert_profile);
- 
- /*
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index f23cd30a..2c6e54b3 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -1341,8 +1341,10 @@ print_details(struct key_state_ssl *ks_ssl, const char *prefix)
- 
- void
- show_available_tls_ciphers(const char *cipher_list,
-+                           const char *cipher_list_tls13,
-                            const char *tls_cert_profile)
- {
-+    (void) cipher_list_tls13; // Avoid unused warning
-     struct tls_root_ctx tls_ctx;
-     const int *ciphers = mbedtls_ssl_list_ciphersuites();
- 
 diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index e3f02d05..044070fe 100644
+index 3aac216c..1008396d 100644
 --- a/src/openvpn/ssl_openssl.c
 +++ b/src/openvpn/ssl_openssl.c
-@@ -60,6 +60,7 @@
- #include <openssl/pkcs12.h>
- #include <openssl/rsa.h>
- #include <openssl/x509.h>
-+#include <openssl/ssl.h>
- #ifndef OPENSSL_NO_EC
- #include <openssl/ec.h>
- #endif
-@@ -1978,15 +1979,12 @@ print_details(struct key_state_ssl *ks_ssl, const char *prefix)
-     msg(D_HANDSHAKE, "%s%s", s1, s2);
+@@ -323,28 +323,8 @@ tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags)
  }
  
--void
--show_available_tls_ciphers(const char *cipher_list,
--                           const char *tls_cert_profile)
-+static void
-+show_available_tls_ciphers_list(const char *cipher_list,
-+                           const char *tls_cert_profile,
-+                           const bool tls13)
+ void
+-tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
++convert_tls_list_to_openssl(char* openssl_ciphers, size_t len,const char *ciphers)
  {
-     struct tls_root_ctx tls_ctx;
--    SSL *ssl;
--    const char *cipher_name;
--    const tls_cipher_name_pair *pair;
--    int priority = 0;
+-    if (ciphers == NULL)
+-    {
+-        /* Use sane default TLS cipher list */
+-        if (!SSL_CTX_set_cipher_list(ctx->ctx,
+-                                     /* Use openssl's default list as a basis */
+-                                     "DEFAULT"
+-                                     /* Disable export ciphers and openssl's 'low' and 'medium' ciphers */
+-                                     ":!EXP:!LOW:!MEDIUM"
+-                                     /* Disable static (EC)DH keys (no forward secrecy) */
+-                                     ":!kDH:!kECDH"
+-                                     /* Disable DSA private keys */
+-                                     ":!DSS"
+-                                     /* Disable unsupported TLS modes */
+-                                     ":!PSK:!SRP:!kRSA"))
+-        {
+-            crypto_msg(M_FATAL, "Failed to set default TLS cipher list.");
+-        }
+-        return;
+-    }
+-
+     /* Parse supplied cipher list and pass on to OpenSSL */
+     size_t begin_of_cipher, end_of_cipher;
  
-     tls_ctx.ctx = SSL_CTX_new(SSLv23_method());
-     if (!tls_ctx.ctx)
-@@ -1994,22 +1992,44 @@ show_available_tls_ciphers(const char *cipher_list,
-         crypto_msg(M_FATAL, "Cannot create SSL_CTX object");
-     }
+@@ -353,12 +333,9 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
  
--    ssl = SSL_new(tls_ctx.ctx);
--    if (!ssl)
-+#if (OPENSSL_VERSION_NUMBER >= 0x1010100fL)
-+    if (tls13)
-     {
--        crypto_msg(M_FATAL, "Cannot create SSL object");
-+        SSL_CTX_set_min_proto_version(tls_ctx.ctx, TLS1_3_VERSION);
-+    }
-+    else
-+#endif
-+    {
-+        SSL_CTX_set_max_proto_version(tls_ctx.ctx, TLS1_2_VERSION);
-     }
+     const tls_cipher_name_pair *cipher_pair;
  
-     tls_ctx_set_cert_profile(&tls_ctx, tls_cert_profile);
-     tls_ctx_restrict_ciphers(&tls_ctx, cipher_list);
+-    char openssl_ciphers[4096];
+     size_t openssl_ciphers_len = 0;
+     openssl_ciphers[0] = '\0';
  
--    printf("Available TLS Ciphers,\n");
--    printf("listed in order of preference:\n\n");
--    while ((cipher_name = SSL_get_cipher_list(ssl, priority++)))
-+    SSL *ssl = SSL_new(tls_ctx.ctx);
-+    if (!ssl)
-     {
--        pair = tls_get_cipher_name_pair(cipher_name, strlen(cipher_name));
-+        crypto_msg(M_FATAL, "Cannot create SSL object");
-+    }
-+
-+#if (OPENSSL_VERSION_NUMBER < 0x1010000fL)
-+    STACK_OF(SSL_CIPHER)* sk = SSL_get_ciphers(ssl);
-+#else
-+    STACK_OF(SSL_CIPHER)* sk = SSL_get1_supported_ciphers(ssl);
-+#endif
-+    for (int i=0;i < sk_SSL_CIPHER_num(sk);i++)
-+    {
-+        const SSL_CIPHER* c = sk_SSL_CIPHER_value(sk, i);
-+
-+        const char* cipher_name = SSL_CIPHER_get_name(c);
-+
-+        const tls_cipher_name_pair *pair = tls_get_cipher_name_pair(cipher_name, strlen(cipher_name));
+-    ASSERT(NULL != ctx);
+-
+     /* Translate IANA cipher suite names to OpenSSL names */
+     begin_of_cipher = end_of_cipher = 0;
+     for (; begin_of_cipher < strlen(ciphers); begin_of_cipher = end_of_cipher)
+@@ -395,11 +372,11 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
  
--        if (NULL == pair)
-+        if (tls13)
-+        {
-+              printf("%s\n", cipher_name);
-+        }
-+        else if (NULL == pair)
+         /* Make sure new cipher name fits in cipher string */
+         if ((SIZE_MAX - openssl_ciphers_len) < current_cipher_len
+-            || ((sizeof(openssl_ciphers)-1) < openssl_ciphers_len + current_cipher_len))
++            || (len - 1) < (openssl_ciphers_len + current_cipher_len))
          {
-             /* No translation found, print warning */
-             printf("%s (No IANA name known to OpenVPN, use OpenSSL name.)\n", cipher_name);
-@@ -2018,14 +2038,37 @@ show_available_tls_ciphers(const char *cipher_list,
-         {
-             printf("%s\n", pair->iana_name);
+             msg(M_FATAL,
+                 "Failed to set restricted TLS cipher list, too long (>%d).",
+-                (int)sizeof(openssl_ciphers)-1);
++                  (int)(len - 1));
          }
--
-     }
--    printf("\n" SHOW_TLS_CIPHER_LIST_WARNING);
--
-+#if (OPENSSL_VERSION_NUMBER >= 0x1010000fL)
-+    sk_SSL_CIPHER_free(sk);
-+#endif
-     SSL_free(ssl);
-     SSL_CTX_free(tls_ctx.ctx);
- }
  
-+
-+
-+void
-+show_available_tls_ciphers(const char *cipher_list,
-+                           const char *cipher_list_tls13,
-+                           const char *tls_cert_profile)
-+{
-+    printf("Available TLS Ciphers,\n");
-+    printf("listed in order of preference:\n");
-+
-+#if (OPENSSL_VERSION_NUMBER >= 0x1010100fL)
-+    printf("\nFor TLS 1.3 and newer (--tls-ciphersuite):\n\n");
-+    show_available_tls_ciphers_list(cipher_list_tls13, tls_cert_profile, true);
-+#else
-+    (void) cipher_list_tls13;  /* Avoid unused warning */
-+#endif
-+
-+    printf("\nFor TLS 1.2 and older (--tls-cipher):\n\n");
-+    show_available_tls_ciphers_list(cipher_list, tls_cert_profile, false);
-+
-+    printf("\n" SHOW_TLS_CIPHER_LIST_WARNING);
+         /* Concatenate cipher name to OpenSSL cipher string */
+@@ -415,6 +392,34 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+     {
+         openssl_ciphers[openssl_ciphers_len-1] = '\0';
+     }
 +}
++void
++tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
++{
++    if (ciphers == NULL)
++    {
++        /* Use sane default TLS cipher list */
++        if (!SSL_CTX_set_cipher_list(ctx->ctx,
++                                     /* Use openssl's default list as a basis */
++                                     "DEFAULT"
++                                     /* Disable export ciphers and openssl's 'low' and 'medium' ciphers */
++                                     ":!EXP:!LOW:!MEDIUM"
++                                     /* Disable static (EC)DH keys (no forward secrecy) */
++                                     ":!kDH:!kECDH"
++                                     /* Disable DSA private keys */
++                                     ":!DSS"
++                                     /* Disable unsupported TLS modes */
++                                     ":!PSK:!SRP:!kRSA"))
++        {
++            crypto_msg(M_FATAL, "Failed to set default TLS cipher list.");
++        }
++        return;
++    }
 +
- /*
-  * Show the Elliptic curves that are available for us to use
-  * in the OpenSSL library.
++    char openssl_ciphers[4096];
++    convert_tls_list_to_openssl(openssl_ciphers, sizeof(openssl_ciphers), ciphers);
++
++    ASSERT(NULL != ctx);
+ 
+     /* Set OpenSSL cipher list */
+     if (!SSL_CTX_set_cipher_list(ctx->ctx, openssl_ciphers))
 -- 
 2.19.0
 
