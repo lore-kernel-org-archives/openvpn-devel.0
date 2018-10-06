@@ -1,12 +1,9 @@
-MIME-Version: 1.0
+From: selva.nair@...277...
+Date: Fri,  5 Oct 2018 20:08:15 -0400
+Message-Id: <1538784495-24988-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1524752664-27946-1-git-send-email-selva.nair@...277...>
 References: <1524752664-27946-1-git-send-email-selva.nair@...277...>
- <201810051051.w95ApC2t040828@...2054...>
-In-Reply-To: <201810051051.w95ApC2t040828@...2054...>
-From: Selva Nair <selva.nair@...277...>
-Date: Fri, 5 Oct 2018 20:05:55 -0400
-Message-ID: <CAKuzo_j=WSnExJDOK=mnNqmC+DF=9DmKo_uNicjcCkfD+wMG5A@...278...>
-Content-Type: multipart/alternative; boundary="000000000000e1e5910577842728"
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Pass the hash without the
+Subject: [Openvpn-devel] [PATCH release-2.4] Pass the hash without the
  DigestInfo header to NCryptSignHash()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -16,56 +13,175 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---000000000000e1e5910577842728
-Content-Type: text/plain; charset="UTF-8"
+From: Selva Nair <selva.nair@...277...>
 
-Hi
+In case of TLS 1.2 signatures, the callback rsa_priv_enc() gets
+the hash with the DigestInfo prepended. Signing this using
+NCryptSignHash() with hash algorithm id set to NULL works in most cases.
+But when using some hardware tokens, the data gets interpreted as the pre
+TLS 1.2 MD5+SHA1 hash and is silently truncated to 36 bytes.
+Avoid this by passing the raw hash to NCryptSignHash() and let it
+add the DigestInfo.
 
-On Fri, Oct 5, 2018 at 6:51 AM Gert Doering <gert@...1296...> wrote:
+To get the raw hash we set the RSA_sign() method in the rsa_method
+structure. This callback bypasses rsa_priv_enc() and gets called with
+the hash type and the hash.
 
-> Your patch has been applied to the master branch.  Steffan says "it is
-> a bugfix so it should go to 2.4", but the underlying infrastructure
-> does not seem to be there yet (git cherry-pick tries to bring in lots
-> of extra stuff).  So we can do that, but I need to be told which master
-> commits I need to bring to 2.4 first.
->
+Fixes Trac #1050
 
-cherry-picking this needs some manual conflict resolution but no pulling in
-anything extra from master (one function got refactored and renamed in
-master
-and hence the conflict).
+Cherry-picked from master 6b495dc4c5cfc118091ddc9c19330b3c9e3e3dff
+and conflicts resolved manually
 
-A patch for 2.4 follows -- same as for master except for the context of one
-hunk.
+Changes:
 
-Thanks,
+- Move setting RSA_sign method from ssl_ctx_set_rsakey() to its
+  right place in SSL_CTX_use_CryptoAPI_certificate(). The former
+  function is only in master and appeared when the code was
+  refactored for EC cert support.
 
-Selva
+- Remove the stale comment about NULL hash algorithm pointed out by Gert.
 
---000000000000e1e5910577842728
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Except for the context change of one hunk, the patch is the same as
+for master and nothing extra is pulled-in.
 
-<div dir=3D"ltr"><div dir=3D"ltr">Hi<br><div><br><div class=3D"gmail_quote"=
-><div dir=3D"ltr">On Fri, Oct 5, 2018 at 6:51 AM Gert Doering &lt;<a href=
-=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt; wrote=
-:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.=
-8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">Your patch has=
- been applied to the master branch.=C2=A0 Steffan says &quot;it is<br>
-a bugfix so it should go to 2.4&quot;, but the underlying infrastructure <b=
-r>
-does not seem to be there yet (git cherry-pick tries to bring in lots<br>
-of extra stuff).=C2=A0 So we can do that, but I need to be told which maste=
-r<br>
-commits I need to bring to 2.4 first.<br></blockquote><div><br></div><div>c=
-herry-picking this needs some manual conflict resolution but no pulling in<=
-br></div><div>anything extra from master (one function got refactored and r=
-enamed in master</div><div>and hence the conflict).</div><div><br></div><di=
-v>A patch for 2.4 follows -- same as for master except for the context of o=
-ne hunk.<br><br></div><div>Thanks,<br><br></div><div>Selva<br></div></div><=
-/div></div></div>
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/cryptoapi.c | 87 ++++++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 79 insertions(+), 8 deletions(-)
 
---000000000000e1e5910577842728--
+diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
+index 89d253c..720fce0 100644
+--- a/src/openvpn/cryptoapi.c
++++ b/src/openvpn/cryptoapi.c
+@@ -217,22 +217,21 @@ rsa_pub_dec(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, in
+  * Sign the hash in 'from' using NCryptSignHash(). This requires an NCRYPT
+  * key handle in cd->crypt_prov. On return the signature is in 'to'. Returns
+  * the length of the signature or 0 on error.
++ * If the hash_algo is not NULL, PKCS #1 DigestInfo header gets added
++ * to 'from', else it is signed as is.
+  * For now we support only RSA and the padding is assumed to be PKCS1 v1.5
+  */
+ static int
+-priv_enc_CNG(const CAPI_DATA *cd, const unsigned char *from, int flen,
+-              unsigned char *to, int tlen, int padding)
++priv_enc_CNG(const CAPI_DATA *cd, const wchar_t *hash_algo, const unsigned char *from,
++             int flen, unsigned char *to, int tlen, int padding)
+ {
+     NCRYPT_KEY_HANDLE hkey = cd->crypt_prov;
+-    DWORD len;
++    DWORD len = 0;
+     ASSERT(cd->key_spec == CERT_NCRYPT_KEY_SPEC);
+ 
+     msg(D_LOW, "Signing hash using CNG: data size = %d", flen);
+ 
+-    /* The hash OID is already in 'from'.  So set the hash algorithm
+-     * in the padding info struct to NULL.
+-     */
+-    BCRYPT_PKCS1_PADDING_INFO padinfo = {NULL};
++    BCRYPT_PKCS1_PADDING_INFO padinfo = {hash_algo};
+     DWORD status;
+ 
+     status = NCryptSignHash(hkey, padding? &padinfo : NULL, (BYTE*) from, flen,
+@@ -270,7 +269,7 @@ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
+     }
+     if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
+     {
+-        return priv_enc_CNG(cd, from, flen, to, RSA_size(rsa), padding);
++        return priv_enc_CNG(cd, NULL, from, flen, to, RSA_size(rsa), padding);
+     }
+ 
+     /* Unfortunately, there is no "CryptSign()" function in CryptoAPI, that would
+@@ -334,6 +333,69 @@ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
+     return len;
+ }
+ 
++/*
++ * Sign the hash in |m| and return the signature in |sig|.
++ * Returns 1 on success, 0 on error.
++ * NCryptSignHash() is used to sign and it is instructed to add the
++ * the PKCS #1 DigestInfo header to |m| unless the hash algorithm is
++ * the MD5/SHA1 combination used in TLS 1.1 and earlier versions.
++ */
++static int
++rsa_sign_CNG(int type, const unsigned char *m, unsigned int m_len,
++              unsigned char *sig, unsigned int *siglen, const RSA *rsa)
++{
++    CAPI_DATA *cd = (CAPI_DATA *) RSA_meth_get0_app_data(RSA_get_method(rsa));
++    const wchar_t *alg = NULL;
++    int padding = RSA_PKCS1_PADDING;
++
++    *siglen = 0;
++    if (cd == NULL)
++    {
++        RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, ERR_R_PASSED_NULL_PARAMETER);
++        return 0;
++    }
++
++    switch (type)
++    {
++        case NID_md5:
++            alg = BCRYPT_MD5_ALGORITHM;
++            break;
++
++        case NID_sha1:
++            alg = BCRYPT_SHA1_ALGORITHM;
++            break;
++
++        case NID_sha256:
++            alg = BCRYPT_SHA256_ALGORITHM;
++            break;
++
++        case NID_sha384:
++            alg = BCRYPT_SHA384_ALGORITHM;
++            break;
++
++        case NID_sha512:
++            alg = BCRYPT_SHA512_ALGORITHM;
++            break;
++
++        case NID_md5_sha1:
++            if (m_len != SSL_SIG_LENGTH)
++            {
++                RSAerr(RSA_F_RSA_SIGN, RSA_R_INVALID_MESSAGE_LENGTH);
++                return 0;
++            }
++            /* No DigestInfo header is required -- set alg-name to NULL */
++            alg = NULL;
++            break;
++        default:
++            msg(M_WARN, "cryptoapicert: Unknown hash type NID=0x%x", type);
++            RSAerr(RSA_F_RSA_SIGN, RSA_R_UNKNOWN_ALGORITHM_TYPE);
++            return 0;
++    }
++
++    *siglen = priv_enc_CNG(cd, alg, m, (int)m_len, sig, RSA_size(rsa), padding);
++    return (siglen == 0) ? 0 : 1;
++}
++
+ /* decrypt */
+ static int
+ rsa_priv_dec(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding)
+@@ -555,6 +617,15 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
+     RSA_meth_set_finish(my_rsa_method, finish);
+     RSA_meth_set0_app_data(my_rsa_method, cd);
+ 
++    /* For CNG, set the RSA_sign method which gets priority over priv_enc().
++     * This method is called with the raw hash without the digestinfo
++     * header and works better when using NCryptSignHash() with some tokens.
++     */
++    if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
++    {
++        RSA_meth_set_sign(my_rsa_method, rsa_sign_CNG);
++    }
++
+     rsa = RSA_new();
+     if (rsa == NULL)
+     {
+-- 
+2.1.4
+
 
