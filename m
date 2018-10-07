@@ -1,13 +1,9 @@
-References: <20181005150032.16541-1-steffan@...1856...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <40100692-a1b7-61b0-df39-52965ced60f6@...2181...>
-Date: Sun, 7 Oct 2018 20:23:19 +0800
-MIME-Version: 1.0
+Date: Sun, 7 Oct 2018 14:34:40 +0200 (CEST)
+Message-Id: <201810071234.w97CYeo9089277@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20181005150032.16541-1-steffan@...1856...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="ifTbLDdY0hq93NQaFYb1wgmBdDTfsD3Z3"
-Subject: Re: [Openvpn-devel] [PATCH] Simplify --genkey option syntax
+References: <20181005150032.16541-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Simplify --genkey option syntax
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,79 +12,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---ifTbLDdY0hq93NQaFYb1wgmBdDTfsD3Z3
-Content-Type: multipart/mixed; boundary="KgW9arFJX8Uabfgd7qPkLoaf2bmlrJKbP";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <40100692-a1b7-61b0-df39-52965ced60f6@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] Simplify --genkey option syntax
-References: <20181005150032.16541-1-steffan@...1856...>
-In-Reply-To: <20181005150032.16541-1-steffan@...1856...>
-
---KgW9arFJX8Uabfgd7qPkLoaf2bmlrJKbP
-Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Looks reasonable :-) - I've not tested it, just stared at code and
+ran a test-compile.
 
-On 05/10/18 23:00, Steffan Karger wrote:
-> Instead of requiring users to do "--genkey --secret new.key", allow
-> them to just do "--genkey new.key".  This has hit me often enough that I
-> decided to write a patch for it.  Also, the upcoming tls-crypt-v2-genkey
-> uses a similar syntax and Antonio suggested we should make them consisten=
-t.
->=20
-> The documentation is updated to no longer mention the old syntax, but it =
-is
-> still supported so people who are used to the old syntax can still use it.
->=20
-> Signed-off-by: Steffan Karger <steffan@...1856...>
+Your patch has been applied to the master branch.
 
+commit d818bfedfc7a433a3a5dbd6ce8e9b957802a21b2
+Author: Steffan Karger
+Date:   Fri Oct 5 17:00:32 2018 +0200
 
-I totally agree that having the "--genkey file.key" syntax makes the
-command much more intuitive (I also hit this every time).
+     Simplify --genkey option syntax
 
-The patch looks good and it does what it says.
-People used to the old format will still be happy as it is still
-supported. (Maybe at some point we can get rid of it)
-
-Acked-by: Antonio Quartulli <antonio@...515...>
-Tested-by: Antonio Quartulli <antonio@...515...>
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20181005150032.16541-1-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17574.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
+--
+kind regards,
 
---=20
-Antonio Quartulli
+Gert Doering
 
-
---KgW9arFJX8Uabfgd7qPkLoaf2bmlrJKbP--
-
---ifTbLDdY0hq93NQaFYb1wgmBdDTfsD3Z3
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlu5+rcACgkQ9FVsWUWD
-Dm2YvBAAsszNZQWfjlEJq95XVNqYoepVc2SOYvRJf0kreVs0nOm2zNR9dm2E1Oey
-+RfP3/nW2/32BqYRN6krYcm3//k13YXPgt9dZYAr76HkVjpxa5Ojd+p91RKIEBJ2
-ZiGnqkAZypQdclmEDqMCPdU7WrEGZKpq4hZMkMuthO5tTGF2ioH0lkV/KFcKeBz3
-7eFl4f3TnoisicyP2lkc4PpbjH7WaNenEVhNJ29V02VXPhBb9okHHj3jOTPv9Ir8
-KZnRhYB/r+cGmMaShOoTCtwH+G2ad9pwS5E+ZjnudCV0MyTLxjs6DpZA7PGNYsQA
-sgRI24f7MU+OVwLiPEyMj2j5kzfOudO/Pe7e1xZEErpPcAjkRvhaUyBy4GLlQIKF
-KEdonH0oNgUg6fuRbn6OWPXfLY+B/Zvo6X1AfdtoqdfWSXsAwviExXTURVosqP/l
-crFOKocXVa9evzdXm3iNbKW+Cap9H8qS9yfyoe9As4O9zAzQUhrn0lEs/9g5mTip
-3v4ROEZv94Unlbd8+EYWUzrWzLQlHauZwbAMwNaSzAtpq4p4OgQ3rsBiB1QWdD6B
-abRBLdRn63V4OL8nedfwFMj8PcOndL5z+wv8iMgrBCPeAlzhDcpeHPLRo6V0QP6v
-rT3E0y3lGiGKBJEeBkiFcXz6ur5A0qGonkDiA8+9YWG4UaSNlJY=
-=xqIp
------END PGP SIGNATURE-----
-
---ifTbLDdY0hq93NQaFYb1wgmBdDTfsD3Z3--
 
