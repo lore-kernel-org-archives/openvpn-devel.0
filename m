@@ -1,10 +1,10 @@
-Date: Sun, 7 Oct 2018 14:11:04 +0200 (CEST)
-Message-Id: <201810071211.w97CB4xe088968@...2054...>
+Date: Sun, 7 Oct 2018 14:23:31 +0200 (CEST)
+Message-Id: <201810071223.w97CNVrO089129@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20181007100032.17060-1-steffan@...1856...>
-References: <20181007100032.17060-1-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix use-after-free in
- tls_ctx_use_management_external_key
+In-Reply-To: <1538587281-3209-1-git-send-email-lstipakov@...277...>
+References: <1538587281-3209-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: openvpnserv: clarify return
+ values type
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,21 +15,24 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
+To: Lev Stipakov <lev@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master branch.
 
-commit 68e0b9db253ff0437047d6a5377eeec6002873f8
-Author: Steffan Karger
-Date:   Sun Oct 7 12:00:32 2018 +0200
+(Test built on ubuntu1604, and a quick stare-at-code, but if Selva
+says it's good, that is good enough :-) )
 
-     Fix use-after-free in tls_ctx_use_management_external_key
+commit ab9193c32b19e42a1847bd4f6cf967ea0e3293c8
+Author: Lev Stipakov
+Date:   Wed Oct 3 20:21:21 2018 +0300
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20181007100032.17060-1-steffan@...1856...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20181007100032.17060-1-steffan@...1856...
+     openvpnserv: clarify return values type
+
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Selva Nair <selva.nair@...277...>
+     Message-Id: <1538587281-3209-1-git-send-email-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17532.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
