@@ -1,10 +1,8 @@
-Date: Sun, 7 Oct 2018 10:54:22 +0200 (CEST)
-Message-Id: <201810070854.w978sMQ4087392@...2054...>
+Date: Sun, 7 Oct 2018 10:50:46 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20180413124756.5756-1-simon@...2293...>
-References: <20180413124756.5756-1-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Signed/unsigned warnings of
- MSVC resolved
+Message-ID: <20181007085046.GS11393@...2460...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] windows build warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,37 +11,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: Simon Rozman <simon@...2293...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Hi,
 
-I went back and read the discussion we had on v1 of this patch, so we
-already agreed on this changes (or we let Simon convince us :)) - we just 
-asked for a v2 because parts of v1 ("return -err") got fixed in parallel 
-already. 
+our windows build seems to have grown a few new warnings with some
+of the recent refactoring...?
 
-Test compiled on ubuntu1604/mingw.
+tun.c: In function 'ipconfig_register_dns':
+tun.c:4870:10: warning: variable 'status' set but not used [-Wunused-but-set-variable]
+     bool status;
+          ^
+tun.c: In function 'service_enable_dhcp':
+tun.c:5202:11: warning: unused variable 'len' [-Wunused-variable]
+     DWORD len;
+           ^
 
-Your patch has been applied to the master branch.
+win32.c: In function 'win32_pause':
+win32.c:688:13: warning: variable 'status' set but not used [-Wunused-but-set-va
+riable]
+         int status;
+             ^
 
-commit f755c992915b25acd114ef98e61dd9eae7ff57fe
-Author: Simon Rozman
-Date:   Fri Apr 13 14:47:56 2018 +0200
+can I interest someone to run a windows build, and go for the low-hanging
+fruit?
 
-     Signed/unsigned warnings of MSVC resolved
-
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20180413124756.5756-1-simon@...2293...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16756.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
+("unused variable" in #ifdef _WIN32 code is likely fairly straightforward,
+signed/unsigned pointer stuff might not be worth jumping through hoops
+because fixing MinGW might make the warning reoccur on the MSVC side...)
 
 Gert Doering
+-- 
+have you enabled IPv6 on something today...?
 
+SpaceNet AG                      Vorstand: Sebastian v. Bomhard, Michael Emmer
+Joseph-Dollinger-Bogen 14        Aufsichtsratsvors.: A. Grundner-Culemann
+D-80807 Muenchen                 HRB: 136055 (AG Muenchen)
+Tel: +49 (0)89/32356-444         USt-IdNr.: DE813185279
 
