@@ -1,14 +1,15 @@
-Date: Sun, 7 Oct 2018 09:10:59 +0200
+Date: Sun, 7 Oct 2018 09:18:34 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20181007071059.GX962@...1296...>
-References: <20171110163946.7656-1-fkooman@...2318...>
+Message-ID: <20181007071834.GY962@...1296...>
+References: <1477672963-5724-6-git-send-email-heiko.hund@...1489...>
+ <20171112082435.15447-1-heiko.hund@...1489...>
+ <1700099c-a320-ca5d-384d-cdc35f3e4153@...2080...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="EJCnrJiDxBM3d8Vu"
+ protocol="application/pgp-signature"; boundary="rXXdS9IWuK35PRlJ"
 Content-Disposition: inline
-In-Reply-To: <20171110163946.7656-1-fkooman@...2318...>
-Subject: Re: [Openvpn-devel] [PATCH] Implement "status 4" (JSON) for
- management interface
+In-Reply-To: <1700099c-a320-ca5d-384d-cdc35f3e4153@...2080...>
+Subject: Re: [Openvpn-devel] [PATCHv2 5/7] re-implement argv_printf_*()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,43 +18,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?iso-8859-1?Q?Fran=E7ois?= Kooman <fkooman@...2318...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
---EJCnrJiDxBM3d8Vu
-Content-Type: text/plain; charset="iso-8859-1"
+--rXXdS9IWuK35PRlJ
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Nov 10, 2017 at 05:39:46PM +0100, Fran=E7ois Kooman wrote:
-> Parsing CSV can be cumbersome in depending software, so instead
-> offer JSON as well using "status 4".
+I'm going through open patches in patchwork, and noticed the argv stuff
+- I remembered that David had reviewed it, but going through the mails
+now I can see that we have no ACK yet, because there are changes needed.
+
+On Mon, Nov 13, 2017 at 12:49:27PM +0100, David Sommerseth wrote:
+> Thanks a lot for putting a renewed effort into this.  I've reviewed
+> this and compile tested with GCC 4.8.5, 6.3.1 and 7.2.1 - as there
+> are some warnings appearing; I'll come back to them in a bit.
+[..]
+> > +argv_printf_arglist(struct argv *a, const char *format, va_list arglis=
+t)
+> > +{
+> > +    struct gc_arena gc =3D gc_new();
+> > +    const char *delim =3D 035;
 >=20
-> The "status 4" command uses the same keys/values as "status 2"
-> and "status 3", just formatted as JSON.
+> argv.c:217:25: warning: initialization makes pointer from integer without=
+ a cast [-Wint-conversion]
+>      const char *delim =3D 035;
+>=20
+> argv.c:227:34: warning: passing argument 2 of ???argv_prep_format??? make=
+s integer from pointer without a cast [-Wint-conversion]
+>      f =3D argv_prep_format(format, delim, &argc, &gc);
+>                                   ^~~~~
 
-So... we had a nice and long discussion about this last year, which I
-think can be wrapped like this
+This really is a bug.  It's declared to be a pointer, but it is used to
+just transport "an integer value" (035).  It is valid C, but the compiler
+is correct in questioning our motives...
 
- - JSON is nice because good parser support exist on the receiving end
-   today
+> Shouldn't *delim be just delim?  I'd propose using:
+>=20
+>    const char delim =3D 0x1D;  /* ASCII group separator character */
+>=20
+> This also kills all the warnings above.
 
- - human readability is a plus for manually verifying output
+Yes.
 
- - if we do JSON, we should do it for management *and* status file
+Heiko, can you do a v3 round of the remaining argv patches, taking David's
+comments into account?  Then we can get it into master and finish this
+work...
 
- - most voices argued for "do not require an external library"
-   (for *creation*).  Not sure if we managed to convince David in=20
-   the end, though :-)
-
-... but then it just died off, and the patch is sitting in patchwork
-(where I moved it to "changes requested" just now).
-
-Is there interest in moving forward, or shall we just let it go?
+thanks!
 
 gert
+
+
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -64,22 +82,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---EJCnrJiDxBM3d8Vu
+--rXXdS9IWuK35PRlJ
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJbubGCAAoJEB2Cnv7KVigSFM4MAJAytkRVUWgobo4s6l11PXYJ
-vs7xr7nmNRuTwLH+oNpJ8E4qnHoevOR2C5MPHiXn7lQSIR6m8/8Y9LNo+iqaikhi
-FHIZ2H0h0++D6KDdNAvJR8pkERT0npBmLxXfvh5nyPkGTDXOWesUHehEwc4nCM8R
-8OB1A1dnPi2mfw4upAkLXLcw8UOtu9J6E6/ZU4LY6fs7m4xiulX0Cg3jRv9pC8ae
-rtS2Mb+s/ZRpX8/X+8LCqTQsj6Rqka/Gx2HmASWuXT6aZ9ons+/0/qDWPQc3bJqe
-Ox+9JDUdUR7E1Yv5g12uzAt4oFKfBhUcrVUWJXBZKygEAdqHWg2cRDh6v3xuMM2Z
-Um1C47wWAEaYZy/x/3bmYtKLCy/pRh2m6HihGXI9SeudIU6hlU7G9HRJSVdV9AGQ
-GsMwgUR2J4iEgPyu526sdU9YGSWFl9t3XLEBP7kXUrc2MZJNufPYDQ/e2Q76Gjlf
-0TfHvrtmSeR3epD8fcbQcq7BoCu3xWlyitFCWDug4A==
-=esdg
+iQGcBAEBAgAGBQJbubNKAAoJEB2Cnv7KVigSca4L/0HUjp66v05cf/57MFcK6Zqn
+tuI2C6NnQYQWjjfYVigxmuj+fnrlUkixi7ky+OUz1MSjdf6Rlc9COrPHzsjfCtfu
+zWOjdSU6A1bKxCgIoc75uHy87EYTkh5Nvl5CDFvH22ilSOx5tXLQaLWPr5aY4w6K
+Ls41yyGB4D7V7R1BHIhE4XTg7I3F87fBfahVn80LaLoQyGEoHwRzjj7xtoYDOd6v
+Ar6CRgURFW5KUKFf1/4dxwT7igzYor/2HVLqR6aV7MLhapLHYmYz1nS7PkvMvIxj
+A4O7EpFF1Ap7EC8wl0OKepuJLEmDu2i4x6V3vBBMz4Vf006bpyA9BpGi4UTg9B52
+6lCbbUtzDpVh6WHABjYfXpM3kEqhV3gQFua0LY8Mmfk10AfN91y1RsZQsN8rud4B
+Ey1IBuhcvnYQzZojMJRjcy9Kmk9Q0ktBubCX6fNlDym5xF+N1QtGXdQ3RGTqvgfc
+gFhrlVXVGZjfvdB75yR8T+cYAixQ7JM3HQHFFAqj+A==
+=soYz
 -----END PGP SIGNATURE-----
 
---EJCnrJiDxBM3d8Vu--
+--rXXdS9IWuK35PRlJ--
 
