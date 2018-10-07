@@ -1,17 +1,10 @@
-References: <20181007073413.9778-1-steffan@...1856...>
- <de02e114-2f3e-3176-1230-11787eaa4eae@...2181...>
- <7b2c0430-4d5a-1e7e-334c-9292193b2a2d@...2181...>
- <ce2afd5b-cd48-8623-eaf0-0a03ee146436@...1856...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <817685bc-8454-bd24-3822-ee9223b1e901@...2181...>
-Date: Mon, 8 Oct 2018 04:18:47 +0800
-MIME-Version: 1.0
-In-Reply-To: <ce2afd5b-cd48-8623-eaf0-0a03ee146436@...1856...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="syox7cnnO7tInVkQZ8p4tREhDJ2Rb92N0"
-Subject: Re: [Openvpn-devel] [PATCH] Add support for CHACHA20-POLY1305 in
- the data channel
+From: Arne Schwabe <arne@...1227...>
+Date: Sun,  7 Oct 2018 22:59:00 +0200
+Message-Id: <20181007205900.32155-1-arne@...1227...>
+In-Reply-To: <6acfb626-6f2f-94f6-81d9-96a70df27a0e@...1856...>
+References: <6acfb626-6f2f-94f6-81d9-96a70df27a0e@...1856...>
+Subject: [Openvpn-devel] [PATCH v3] Add support for tls-ciphersuites for TLS
+ 1.3
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,116 +13,280 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---syox7cnnO7tInVkQZ8p4tREhDJ2Rb92N0
-Content-Type: multipart/mixed; boundary="yEQVkAINUwABsf55omYhjZcKmvs4KTxa6";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <817685bc-8454-bd24-3822-ee9223b1e901@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] Add support for CHACHA20-POLY1305 in the
- data channel
-References: <20181007073413.9778-1-steffan@...1856...>
- <de02e114-2f3e-3176-1230-11787eaa4eae@...2181...>
- <7b2c0430-4d5a-1e7e-334c-9292193b2a2d@...2181...>
- <ce2afd5b-cd48-8623-eaf0-0a03ee146436@...1856...>
-In-Reply-To: <ce2afd5b-cd48-8623-eaf0-0a03ee146436@...1856...>
-
---yEQVkAINUwABsf55omYhjZcKmvs4KTxa6
-Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+OpenSSL 1.1.1 introduces a separate list for TLS 1.3 ciphers. As these
+interfaces are meant to be user facing or not exposed at all and we
+expose the tls-cipher interface, we should also expose tls-cipherlist.
 
-On 08/10/18 02:13, Steffan Karger wrote:
-> On 07-10-18 15:36, Antonio Quartulli wrote:
->> On 07/10/18 21:28, Antonio Quartulli wrote:
->>>> +#if defined(MBEDTLS_CHACHAPOLY_C) && (MBEDTLS_VERSION_NUMBER >=3D 0x0=
-20C0000)
->>>
->>> Why do we need the dual condition? Isn't MBEDTLS_CHACHAPOLY_C enough to
->>> know mbedTLS has what we need? Or you feel like we have to demand a
->>> specific mbedTLS version when using ChaCha20?
->>
->> Just to reinforce my argument: ChaCha20-Poly1305 was introduced with
->> ce66d5e8e (in mbedTLS upstream) and a quick search shows:
->>
->> mbedtls $ git tag --contains ce66d5e8e
->> mbedtls-2.12.0
->> mbedtls-2.13.0
->> mbedtls-2.13.1
->>
->> Given that 2.12 is 0x020C0000, I am fairly sure there is no reason to
->> have both conditions in the if guard.
->> But I might still be missing something.
->>
->> (p.s. I am arguing simply because I want to avoid more version-based
->> ifdef that may become new nightmares)
->=20
-> Which is a good cause, but that unfortunately won't work here. That is
-> because the actual implementation was introduced in dca3a5d8,=20
-[CUT]
+Combining both settings into tls-cipher would add a lot of glue logic
+that needs to be maintained and is error prone. On top of that, users
+should not set either settings unless absolutely required.
 
-mbedtls $ git tag --contains dca3a5d8
-mbedtls-2.12.0
-mbedtls-2.13.0
-mbedtls-2.13.1
+OpenSSL's own s_client/s_server also expose both settings and I believe
+most other software will too:
 
-To be safe I checked out 2.9.0 and grepped the define:
+ -cipher val         Specify TLSv1.2 and below cipher list to be used
+ -ciphersuites val   Specify TLSv1.3 ciphersuites to be used
 
-mbedtls $ git checkout mbedtls-2.9.0
-Note: checking out 'mbedtls-2.9.0'.
+For mbed TLS only the future can tell if we will see a combined or also
+two separate lists.
+---
+ doc/openvpn.8             | 20 +++++++++++---
+ src/openvpn/options.c     |  7 +++++
+ src/openvpn/options.h     |  1 +
+ src/openvpn/ssl.c         |  3 ++-
+ src/openvpn/ssl_backend.h | 13 ++++++++-
+ src/openvpn/ssl_mbedtls.c | 13 +++++++++
+ src/openvpn/ssl_openssl.c | 56 +++++++++++++++++++++++++++++++++++++++
+ 7 files changed, 108 insertions(+), 5 deletions(-)
 
-You are in 'detached HEAD' state. You can look around, make experimental
-changes and commit them, and you can discard any commits you make in this
-state without impacting any branches by performing another checkout.
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index feec0b6e..226d9a98 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -5001,11 +5001,13 @@ determines the derivation of the tunnel session keys.
+ .\"*********************************************************
+ .TP
+ .B \-\-tls\-cipher l
++.TQ
++.B \-\-tls\-ciphersuites l
+ A list
+ .B l
+ of allowable TLS ciphers delimited by a colon (":").
+ 
+-This setting can be used to ensure that certain cipher suites are used (or
++These setting can be used to ensure that certain cipher suites are used (or
+ not used) for the TLS connection.  OpenVPN uses TLS to secure the control
+ channel, over which the keys that are used to protect the actual VPN traffic
+ are exchanged.
+@@ -5014,20 +5016,32 @@ The supplied list of ciphers is (after potential OpenSSL/IANA name translation)
+ simply supplied to the crypto library.  Please see the OpenSSL and/or mbed TLS
+ documentation for details on the cipher list interpretation.
+ 
++For OpenSSL, the
++.B \-\-tls-cipher
++is used for TLS 1.2 and below. For TLS 1.3 and up, the
++.B \-\-tls\-ciphersuites
++setting is used. mbed TLS has no TLS 1.3 support yet and only the
++.B \-\-tls-cipher
++setting is used.
++
+ Use
+ .B \-\-show\-tls
+ to see a list of TLS ciphers supported by your crypto library.
+ 
+ Warning!
+ .B \-\-tls\-cipher
+-is an expert feature, which \- if used correcly \- can improve the security of
+-your VPN connection.  But it is also easy to unwittingly use it to carefully
++and
++.B \-\-tls\-ciphersuites
++are expert features, which \- if used correcly \- can improve the security of
++your VPN connection.  But it is also easy to unwittingly use them to carefully
+ align a gun with your foot, or just break your connection.  Use with care!
+ 
+ The default for \-\-tls\-cipher is to use mbed TLS's default cipher list
+ when using mbed TLS or
+ "DEFAULT:!EXP:!LOW:!MEDIUM:!kDH:!kECDH:!DSS:!PSK:!SRP:!kRSA" when using
+ OpenSSL.
++
++The default for \-\-tls\-ciphersuites is to use the crypto library's default.
+ .\"*********************************************************
+ .TP
+ .B \-\-tls\-cert\-profile profile
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 95ebe3b3..891468bd 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1763,6 +1763,7 @@ show_settings(const struct options *o)
+     SHOW_STR(cryptoapi_cert);
+ #endif
+     SHOW_STR(cipher_list);
++    SHOW_STR(cipher_list_tls13);
+     SHOW_STR(tls_cert_profile);
+     SHOW_STR(tls_verify);
+     SHOW_STR(tls_export_cert);
+@@ -2757,6 +2758,7 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
+         MUST_BE_UNDEF(pkcs12_file);
+ #endif
+         MUST_BE_UNDEF(cipher_list);
++        MUST_BE_UNDEF(cipher_list_tls13);
+         MUST_BE_UNDEF(tls_cert_profile);
+         MUST_BE_UNDEF(tls_verify);
+         MUST_BE_UNDEF(tls_export_cert);
+@@ -7954,6 +7956,11 @@ add_option(struct options *options,
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+         options->tls_cert_profile = p[1];
+     }
++    else if (streq(p[0], "tls-ciphersuites") && p[1] && !p[2])
++    {
++        VERIFY_PERMISSION(OPT_P_GENERAL);
++        options->cipher_list_tls13 = p[1];
++    }
+     else if (streq(p[0], "crl-verify") && p[1] && ((p[2] && streq(p[2], "dir"))
+                                                    || (p[2] && streq(p[1], INLINE_FILE_TAG) ) || !p[2]) && !p[3])
+     {
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 4c3bc4fb..3e7ef4f8 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -508,6 +508,7 @@ struct options
+     const char *priv_key_file;
+     const char *pkcs12_file;
+     const char *cipher_list;
++    const char *cipher_list_tls13;
+     const char *tls_cert_profile;
+     const char *ecdh_curve;
+     const char *tls_verify;
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index e5e4aac2..616c2696 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -626,9 +626,10 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx)
+     tls_ctx_set_cert_profile(new_ctx, options->tls_cert_profile);
+ 
+     /* Allowable ciphers */
+-    /* Since @SECLEVEL also influces loading of certificates, set the
++    /* Since @SECLEVEL also influences loading of certificates, set the
+      * cipher restrictions before loading certificates */
+     tls_ctx_restrict_ciphers(new_ctx, options->cipher_list);
++    tls_ctx_restrict_ciphers_tls13(new_ctx, options->cipher_list_tls13);
+ 
+     if (!tls_ctx_set_options(new_ctx, options->ssl_flags))
+     {
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index 5023c02a..0995bb4c 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -169,7 +169,8 @@ bool tls_ctx_initialised(struct tls_root_ctx *ctx);
+ bool tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags);
+ 
+ /**
+- * Restrict the list of ciphers that can be used within the TLS context.
++ * Restrict the list of ciphers that can be used within the TLS context for TLS 1.2
++ * and below
+  *
+  * @param ctx           TLS context to restrict, must be valid.
+  * @param ciphers       String containing : delimited cipher names, or NULL to use
+@@ -177,6 +178,16 @@ bool tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags);
+  */
+ void tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers);
+ 
++/**
++ * Restrict the list of ciphers that can be used within the TLS context for TLS 1.3
++ * and higher
++ *
++ * @param ctx           TLS context to restrict, must be valid.
++ * @param ciphers       String containing : delimited cipher names, or NULL to use
++ *                                      sane defaults.
++ */
++void tls_ctx_restrict_ciphers_tls13(struct tls_root_ctx *ctx, const char *ciphers);
++
+ /**
+  * Set the TLS certificate profile.  The profile defines which crypto
+  * algorithms may be used in the supplied certificate.
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index e4850cb6..f23cd30a 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -222,6 +222,19 @@ tls_translate_cipher_name(const char *cipher_name)
+     return pair->iana_name;
+ }
+ 
++void
++tls_ctx_restrict_ciphers_tls13(struct tls_root_ctx *ctx, const char *ciphers)
++{
++    if (ciphers == NULL)
++    {
++        /* Nothing to do, return without warning message */
++        return;
++    }
++
++    msg(M_WARN, "mbed TLS does not support setting tls-ciphersuites. "
++                "Ignoring TLS 1.3 cipher list: %s", ciphers);
++}
++
+ void
+ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+ {
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index ac68f147..0854e106 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -393,6 +393,7 @@ convert_tls_list_to_openssl(char* openssl_ciphers, size_t len,const char *cipher
+         openssl_ciphers[openssl_ciphers_len-1] = '\0';
+     }
+ }
++
+ void
+ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+ {
+@@ -428,6 +429,61 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+     }
+ }
+ 
++void
++convert_tls13_list_to_openssl(char* openssl_ciphers, size_t len, const char *ciphers)
++{
++    /*
++     * OpenSSL (and official IANA) cipher names have _ in them. We
++     * historically used names with - in them. Silently convert names
++     * with - to names with _ to support both
++     */
++    if (strlen(ciphers) >= (len - 1))
++    {
++        msg(M_FATAL,
++            "Failed to set restricted TLS 1.3 cipher list, too long (>%d).",
++            (int) (len - 1));
++    }
++
++    strncpy(openssl_ciphers, ciphers, len);
++
++    for (size_t i = 0; i < strlen(openssl_ciphers); i++)
++    {
++        if (openssl_ciphers[i] == '-')
++        {
++            openssl_ciphers[i] = '_';
++        }
++    }
++}
++
++void
++tls_ctx_restrict_ciphers_tls13(struct tls_root_ctx *ctx, const char *ciphers)
++{
++    if (ciphers == NULL)
++    {
++        /* default cipher list of OpenSSL 1.1.1 is sane, do not set own
++         * default as we do with tls-cipher */
++        return;
++    }
++
++#if (OPENSSL_VERSION_NUMBER < 0x1010100fL)
++        crypto_msg(M_WARN, "Not compiled with OpenSSL 1.1.1 or higher. "
++                       "Ignoring TLS 1.3 only tls-ciphersuites '%s' setting.",
++                        ciphers);
++#else
++    ASSERT(NULL != ctx);
++
++    char openssl_ciphers[4096];
++    convert_tls13_list_to_openssl(openssl_ciphers, sizeof(openssl_ciphers),
++                                  ciphers);
++
++    if (!SSL_CTX_set_ciphersuites(ctx->ctx, openssl_ciphers))
++    {
++        crypto_msg(M_FATAL, "Failed to set restricted TLS 1.3 cipher list: %s",
++                   openssl_ciphers);
++    }
++#endif
++}
++
+ void
+ tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
+ {
+-- 
+2.19.0
 
-If you want to create a new branch to retain commits you create, you may
-do so (now or later) by using -b with the checkout command again. Example:
-
-  git checkout -b <new-branch-name>
-
-HEAD is now at 070e35647 Merge remote-tracking branch
-'upstream-restricted/pr/481' into development-restricted
-mbedtls $ grep -rn CHACHAPOLY_C
-mbedtls $
-
-am I missing something?
-2.12.0 is the first release where my grep command prints something.
-
-Cheers,
-
-
---=20
-Antonio Quartulli
-
-
---yEQVkAINUwABsf55omYhjZcKmvs4KTxa6--
-
---syox7cnnO7tInVkQZ8p4tREhDJ2Rb92N0
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlu6aicACgkQ9FVsWUWD
-Dm38qw/+JA1Y716VfTlkzkDbYDzo2DCJPCG7SM3CEeza82jx435kS0VAVp5qj01j
-QGa5VtivzBjqzn+IGV8QCzkXceY2CKtxophCDpc7eOP+53UaNTMb9XeskzYmeBBP
-qLaLk92aakwpkGlu0KJIMyxOhTOIdZs7G5r++4UKkezPqj8OBVUC0kaST8EWPepM
-r/4EbQ+ZDNmX2jWmXIhF6+b2qbY/zomhH9Iz6IgAlmQZgWFa4jZ40QnzYKzZMElu
-XYA+hm1aKNOzyH/L6dO/Guke1+KWhNfVUcNMUZ41JhKcYX7Dv0Ctdp9v4wEKfpZa
-oiMYi053SO8akkikqjF7BKM9IbLGdwv4MqlUfTCk0XDeThTxSUZKzJcYKvDA0duZ
-SNME6wz34vFGV27hfZFjPwt1kQnaB9NPBPkvs7VqwdF1lfzYbAWcrpliIX3HafcE
-ZPVOMERtVc8BkpqtM4DacHsDKBvH6YKr72by0gu/5A/gFmWaCPgxrqAJMH7y1xbL
-Ky6WangIQqT+kqEUvVHUQuQvYhGtzmHiWPGJMFV1RMZfrKkuDFktGfkGlknk8ulK
-RiaR+PK2IIaFnzdHdQGH98AEvZQRb3vWvlx7iSTVdTROXYzvIV7GTAe0oYsAim2C
-pNcYKbRDfayL0W8dvFP0sBA9mcQLx7XFSmgCvYwV1Mi1zatZAdw=
-=i09/
------END PGP SIGNATURE-----
-
---syox7cnnO7tInVkQZ8p4tREhDJ2Rb92N0--
 
