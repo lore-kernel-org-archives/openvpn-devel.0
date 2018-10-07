@@ -1,10 +1,10 @@
-Date: Sun, 7 Oct 2018 10:00:46 +0200 (CEST)
-Message-Id: <201810070800.w9780kNF086885@...2054...>
+Date: Sun, 7 Oct 2018 10:54:22 +0200 (CEST)
+Message-Id: <201810070854.w978sMQ4087392@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20180413155517.895-1-simon@...2293...>
-References: <20180413155517.895-1-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Change quoted to angled form
- when #including external .h files
+In-Reply-To: <20180413124756.5756-1-simon@...2293...>
+References: <20180413124756.5756-1-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Signed/unsigned warnings of
+ MSVC resolved
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,20 +20,24 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-"because that's what C recommends" - local header files get "myext.h"
-while system files get <sysext.h>
+I went back and read the discussion we had on v1 of this patch, so we
+already agreed on this changes (or we let Simon convince us :)) - we just 
+asked for a v2 because parts of v1 ("return -err") got fixed in parallel 
+already. 
+
+Test compiled on ubuntu1604/mingw.
 
 Your patch has been applied to the master branch.
 
-commit 3b7c7858dddc0ddd492acb9d1316e2dd42a807bf
+commit f755c992915b25acd114ef98e61dd9eae7ff57fe
 Author: Simon Rozman
-Date:   Fri Apr 13 17:55:17 2018 +0200
+Date:   Fri Apr 13 14:47:56 2018 +0200
 
-     Change quoted to angled form when #including external .h files
+     Signed/unsigned warnings of MSVC resolved
 
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20180413155517.895-1-simon@...2293...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16760.html
+     Message-Id: <20180413124756.5756-1-simon@...2293...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16756.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
