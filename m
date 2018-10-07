@@ -1,10 +1,14 @@
+References: <20181007073413.9778-1-steffan@...1856...>
+ <de02e114-2f3e-3176-1230-11787eaa4eae@...2181...>
+ <7b2c0430-4d5a-1e7e-334c-9292193b2a2d@...2181...>
 From: Steffan Karger <steffan@...1856...>
-Date: Sun,  7 Oct 2018 19:52:15 +0200
-Message-Id: <20181007175215.25009-1-steffan@...1856...>
-In-Reply-To: <20181007130123.GD962@...1296...>
-References: <20181007130123.GD962@...1296...>
-Subject: [Openvpn-devel] [PATCH v2] Don't print OCC warnings about
- 'key-method', 'keydir' and 'tls-auth'
+Message-ID: <ce2afd5b-cd48-8623-eaf0-0a03ee146436@...1856...>
+Date: Sun, 7 Oct 2018 20:13:09 +0200
+MIME-Version: 1.0
+In-Reply-To: <7b2c0430-4d5a-1e7e-334c-9292193b2a2d@...2181...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] Add support for CHACHA20-POLY1305 in
+ the data channel
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,53 +17,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 
-From: Steffan Karger <steffan.karger@...1435...>
+Hi,
 
-Like 'proto', a mismatch in key-method, keydir or tls-auth would fail
-before we ever get to the point where we can print this warning.
+Thank for review.  I'l be getting back on your other comments later, for
+now just:
 
-This prepares for removing these from the occ string later on, but also
-prepares for tls-crypt-v2, which allows a server to support tls-auth and
-tls-crypt-v2 connections in parallel. Such a server will send 'keydir'
-and 'tls-auth' in the occ string. This change removes the spurious
-warnings about that in the client log.
+On 07-10-18 15:36, Antonio Quartulli wrote:
+> On 07/10/18 21:28, Antonio Quartulli wrote:
+>>> +#if defined(MBEDTLS_CHACHAPOLY_C) && (MBEDTLS_VERSION_NUMBER >= 0x020C0000)
+>>
+>> Why do we need the dual condition? Isn't MBEDTLS_CHACHAPOLY_C enough to
+>> know mbedTLS has what we need? Or you feel like we have to demand a
+>> specific mbedTLS version when using ChaCha20?
+> 
+> Just to reinforce my argument: ChaCha20-Poly1305 was introduced with
+> ce66d5e8e (in mbedTLS upstream) and a quick search shows:
+> 
+> mbedtls $ git tag --contains ce66d5e8e
+> mbedtls-2.12.0
+> mbedtls-2.13.0
+> mbedtls-2.13.1
+> 
+> Given that 2.12 is 0x020C0000, I am fairly sure there is no reason to
+> have both conditions in the if guard.
+> But I might still be missing something.
+> 
+> (p.s. I am arguing simply because I want to avoid more version-based
+> ifdef that may become new nightmares)
 
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
----
-v2: use strprefix instead of strcmp, and add tun-ipv6.
+Which is a good cause, but that unfortunately won't work here. That is
+because the actual implementation was introduced in dca3a5d8, which is
+already in 2.9.0. So we do need the version. Unless you've got another
+trick up your sleeve to avoid it, what I would love to hear.
 
- src/openvpn/options.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
-
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 2199af53..45c5ea64 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3788,11 +3788,15 @@ options_warning_safe_scan2(const int msglevel,
-                            const char *b1_name,
-                            const char *b2_name)
- {
--    /* we will stop sending 'proto xxx' in OCC in a future version
--     * (because it's not useful), and to reduce questions when
--     * interoperating, we start not-printing a warning about it today
-+    /* We will stop sending 'key-method', 'keydir', 'proto' and 'tls-auth' in
-+     * OCC in a future version (because it's not useful). To reduce questions
-+     * when interoperating, we no longer printing a warning about it.
-      */
--    if (strncmp(p1, "proto ", 6) == 0)
-+    if (strprefix(p1, "key-method ")
-+        || strprefix(p1, "keydir ")
-+        || strprefix(p1, "proto ")
-+        || strprefix(p1, "tls-auth ")
-+        || strprefix(p1, "tun-ipv6 "))
-     {
-         return;
-     }
--- 
-2.17.1
-
+-Steffan
 
