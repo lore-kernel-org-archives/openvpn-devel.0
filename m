@@ -1,14 +1,15 @@
-References: <20181007073413.9778-1-steffan@...1856...>
- <de02e114-2f3e-3176-1230-11787eaa4eae@...2181...>
- <7b2c0430-4d5a-1e7e-334c-9292193b2a2d@...2181...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <ce2afd5b-cd48-8623-eaf0-0a03ee146436@...1856...>
-Date: Sun, 7 Oct 2018 20:13:09 +0200
+References: <20171110163946.7656-1-fkooman@...2318...>
+ <20181007071059.GX962@...1296...>
+From: =?UTF-8?Q?Fran=c3=a7ois_Kooman?= <fkooman@...2318...>
+Message-ID: <c21e083b-351f-f590-efed-99724f6baf2d@...2318...>
+Date: Sun, 7 Oct 2018 21:57:49 +0200
 MIME-Version: 1.0
-In-Reply-To: <7b2c0430-4d5a-1e7e-334c-9292193b2a2d@...2181...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Add support for CHACHA20-POLY1305 in
- the data channel
+In-Reply-To: <20181007071059.GX962@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="dwuldGPRZKPnzdFrlylGWWtP7D7O1LV4L"
+Subject: Re: [Openvpn-devel] [PATCH] Implement "status 4" (JSON) for
+ management interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,42 +18,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--dwuldGPRZKPnzdFrlylGWWtP7D7O1LV4L
+Content-Type: multipart/mixed; boundary="x5InKQPkuaSBwxFDEprfz7FXBSJqyydgH";
+ protected-headers="v1"
+From: =?UTF-8?Q?Fran=c3=a7ois_Kooman?= <fkooman@...2318...>
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
+Message-ID: <c21e083b-351f-f590-efed-99724f6baf2d@...2318...>
+Subject: Re: [Openvpn-devel] [PATCH] Implement "status 4" (JSON) for
+ management interface
+References: <20171110163946.7656-1-fkooman@...2318...>
+ <20181007071059.GX962@...1296...>
+In-Reply-To: <20181007071059.GX962@...1296...>
 
-Thank for review.  I'l be getting back on your other comments later, for
-now just:
+--x5InKQPkuaSBwxFDEprfz7FXBSJqyydgH
+Content-Language: en-US
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-On 07-10-18 15:36, Antonio Quartulli wrote:
-> On 07/10/18 21:28, Antonio Quartulli wrote:
->>> +#if defined(MBEDTLS_CHACHAPOLY_C) && (MBEDTLS_VERSION_NUMBER >= 0x020C0000)
->>
->> Why do we need the dual condition? Isn't MBEDTLS_CHACHAPOLY_C enough to
->> know mbedTLS has what we need? Or you feel like we have to demand a
->> specific mbedTLS version when using ChaCha20?
-> 
-> Just to reinforce my argument: ChaCha20-Poly1305 was introduced with
-> ce66d5e8e (in mbedTLS upstream) and a quick search shows:
-> 
-> mbedtls $ git tag --contains ce66d5e8e
-> mbedtls-2.12.0
-> mbedtls-2.13.0
-> mbedtls-2.13.1
-> 
-> Given that 2.12 is 0x020C0000, I am fairly sure there is no reason to
-> have both conditions in the if guard.
-> But I might still be missing something.
-> 
-> (p.s. I am arguing simply because I want to avoid more version-based
-> ifdef that may become new nightmares)
+On 10/7/18 9:10 AM, Gert Doering wrote:
+> Hi,
 
-Which is a good cause, but that unfortunately won't work here. That is
-because the actual implementation was introduced in dca3a5d8, which is
-already in 2.9.0. So we do need the version. Unless you've got another
-trick up your sleeve to avoid it, what I would love to hear.
+Hi Gert,
 
--Steffan
+>  - most voices argued for "do not require an external library"
+>    (for *creation*).  Not sure if we managed to convince David in=20
+>    the end, though :-)
+
+In the meantime I had some "great" experience with manually generating
+JSON in another project. That was a terrible mistake ;-) So I would not
+recommend following this path any longer. Maybe not even JSON, but
+something typed and/or even binary.
+
+> ... but then it just died off, and the patch is sitting in patchwork
+> (where I moved it to "changes requested" just now).
+>=20
+> Is there interest in moving forward, or shall we just let it go?
+
+I'm not really interested in it anymore, and I brought it up ;-) So if
+no one else is interested, maybe better let it go...
+
+Cheers,
+Fran=E7ois
+
+
+--x5InKQPkuaSBwxFDEprfz7FXBSJqyydgH--
+
+--dwuldGPRZKPnzdFrlylGWWtP7D7O1LV4L
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEYje68UGKkH2qmOqnnF7dZFpXHrIFAlu6ZUAACgkQnF7dZFpX
+HrKpcBAAkR/BWGuekgZrWcWHBlTXwocD0+DyoXu0UinP0Bh48pGSCniI6+eTMxMx
+Y4CuRCG4CvdJvqczIcues8iuuMOVyKonds6ijkMbSXsqFkSOyUrW4cQEjVEEvdLT
+F8eQuGXO4a2vCeN/YgXqgiCcrUHA8VV3tWvceyX7/V/qOKw3/H2b2AYmYKxQa0kQ
+LdCwqLPAHSBeNbZmY59v5lPlZydhMvS8U4gRzS/tSNRWmf4Py8j6H/iv2f/bvW2A
+LDstsnc5DVcQ6hSiLWzQ5StiVN4zIdRyDjiPxWasiiQaLMyS/O7NkTnLlOfyqhnJ
+SBPjmSvC7tIMget88qzD7ABhp6qTuRfUv7GtWls86shHHF8JptfXjh99WeazwmPx
++apFktzWDMKl16HPJ/grFlZ3XOTmfmcPb8I29pIGcQDoiT2gjzcu0vq7jfRPDcee
+EGNWiIP+wqJi3GtGR9TbeH7KaiAeYXN6Qzi6fHf/CB354NMFXNVTOv7aX/ZH5BaI
+MOPaXk6Mnbsx+jvp//NXtgdTvdi7rAYXbgsGUYDEGILqmA+Yn/DPQS21z6OSqz89
+S2B++hY7GboNv7s+9Qqrxdi/gGv0wRuRuftxCq7M9InTGsmzXbiIdCc9Rl5Rcz79
+LVucwNT64TH64IJPwXa//rBEBxfWFIVYakYzK8O1+kYeEfDUai4=
+=b/25
+-----END PGP SIGNATURE-----
+
+--dwuldGPRZKPnzdFrlylGWWtP7D7O1LV4L--
 
