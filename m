@@ -1,10 +1,8 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Sun,  7 Oct 2018 23:55:39 +0200
-Message-Id: <20181007215539.32761-1-arne@...1227...>
-In-Reply-To: <caec8caf-d1f5-b792-657c-7ab192a6ab4c@...1856...>
-References: <caec8caf-d1f5-b792-657c-7ab192a6ab4c@...1856...>
-Subject: [Openvpn-devel] [PATCH v4] Add support for tls-ciphersuites for TLS
- 1.3
+Date: Sun,  7 Oct 2018 23:58:37 +0200
+Message-Id: <20181007215837.489-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Add support for OpenSSL TLS 1.3 when using
+ management-external-key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,275 +15,209 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-OpenSSL 1.1.1 introduces a separate list for TLS 1.3 ciphers. As these
-interfaces are meant to be user facing or not exposed at all and we
-expose the tls-cipher interface, we should also expose tls-cipherlist.
+For TLS 1.0 to 1.2 OpenSSL calls us and requires a PKCS1 padded
+response, for TLS 1.3 it requires to an unpadded response. Since we
+can PCKS1 pad an unpadded response, we prefer to always query for
+an unpadded response from the management interface and add the PCKS1
+padding ourselves when needed.
 
-Combining both settings into tls-cipher would add a lot of glue logic
-that needs to be maintained and is error prone. On top of that, users
-should not set either settings unless absolutely required.
+This patch adds an 'unpadded' parameter to the management-external-key
+option to signal that it is uses the new unpadded API. Since we cannot
+support TLS 1.3 without unpadded queries we disable TLS 1.3 otherwise.
+We also do the same for cryptoapi since it uses the same API.
 
-OpenSSL's own s_client/s_server also expose both settings and I believe
-most other software will too:
-
- -cipher val         Specify TLSv1.2 and below cipher list to be used
- -ciphersuites val   Specify TLSv1.3 ciphersuites to be used
-
-For mbed TLS only the future can tell if we will see a combined or also
-two separate lists.
+Using the management api client version instead might seem like the
+more logical way but since we only now that version very late,
+it would extra logic and complexity to deal with this asynchronous
+behaviour .
 ---
- doc/openvpn.8             | 20 +++++++++++---
- src/openvpn/options.c     |  7 +++++
- src/openvpn/options.h     |  1 +
- src/openvpn/ssl.c         |  3 ++-
- src/openvpn/ssl_backend.h | 13 ++++++++-
- src/openvpn/ssl_mbedtls.c | 13 +++++++++
- src/openvpn/ssl_openssl.c | 56 +++++++++++++++++++++++++++++++++++++++
- 7 files changed, 108 insertions(+), 5 deletions(-)
+ doc/management-notes.txt  |  7 ++++-
+ src/openvpn/manage.h      |  9 ++++---
+ src/openvpn/options.c     | 54 ++++++++++++++++++++++++++++++++++++++-
+ src/openvpn/ssl_openssl.c | 26 ++++++++++++++-----
+ 4 files changed, 83 insertions(+), 13 deletions(-)
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index feec0b6e..226d9a98 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -5001,11 +5001,13 @@ determines the derivation of the tunnel session keys.
- .\"*********************************************************
- .TP
- .B \-\-tls\-cipher l
-+.TQ
-+.B \-\-tls\-ciphersuites l
- A list
- .B l
- of allowable TLS ciphers delimited by a colon (":").
+diff --git a/doc/management-notes.txt b/doc/management-notes.txt
+index 17645c1d..7e61ff50 100644
+--- a/doc/management-notes.txt
++++ b/doc/management-notes.txt
+@@ -832,7 +832,12 @@ END
  
--This setting can be used to ensure that certain cipher suites are used (or
-+These setting can be used to ensure that certain cipher suites are used (or
- not used) for the TLS connection.  OpenVPN uses TLS to secure the control
- channel, over which the keys that are used to protect the actual VPN traffic
- are exchanged.
-@@ -5014,20 +5016,32 @@ The supplied list of ciphers is (after potential OpenSSL/IANA name translation)
- simply supplied to the crypto library.  Please see the OpenSSL and/or mbed TLS
- documentation for details on the cipher list interpretation.
+ Base 64 encoded output of RSA_private_encrypt for RSA or ECDSA_sign()
+ for EC using OpenSSL or mbedtls_pk_sign() using mbed TLS will provide a
+-correct signature.
++correct signature. With the 'nopadding' argument to the
++external-management-interface the interface expects unpadded signatures
++(RSA_NO_PADDING in OpenSSL). When the 'nopadding' keyword is missing the
++interfaces expects PKCS1 padded signatures for RSA keys (RSA_PKCS1_PADDING).
++EC signatures are always unpadded. To support TLS 1.3 using unpadded
++signatures is required.
  
-+For OpenSSL, the
-+.B \-\-tls-cipher
-+is used for TLS 1.2 and below. For TLS 1.3 and up, the
-+.B \-\-tls\-ciphersuites
-+setting is used. mbed TLS has no TLS 1.3 support yet and only the
-+.B \-\-tls-cipher
-+setting is used.
-+
- Use
- .B \-\-show\-tls
- to see a list of TLS ciphers supported by your crypto library.
+ This capability is intended to allow the use of arbitrary cryptographic
+ service providers with OpenVPN via the management interface.
+diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
+index ff143fc1..03d46456 100644
+--- a/src/openvpn/manage.h
++++ b/src/openvpn/manage.h
+@@ -348,11 +348,12 @@ struct management *management_init(void);
+ #define MF_UNIX_SOCK       (1<<8)
+ #ifdef MANAGMENT_EXTERNAL_KEY
+ #define MF_EXTERNAL_KEY    (1<<9)
++#define MF_EXTERNAL_KEY_NOPADDING   (1<<10)
+ #endif
+-#define MF_UP_DOWN          (1<<10)
+-#define MF_QUERY_REMOTE     (1<<11)
+-#define MF_QUERY_PROXY      (1<<12)
+-#define MF_EXTERNAL_CERT    (1<<13)
++#define MF_UP_DOWN          (1<<11)
++#define MF_QUERY_REMOTE     (1<<12)
++#define MF_QUERY_PROXY      (1<<13)
++#define MF_EXTERNAL_CERT    (1<<14)
  
- Warning!
- .B \-\-tls\-cipher
--is an expert feature, which \- if used correcly \- can improve the security of
--your VPN connection.  But it is also easy to unwittingly use it to carefully
-+and
-+.B \-\-tls\-ciphersuites
-+are expert features, which \- if used correcly \- can improve the security of
-+your VPN connection.  But it is also easy to unwittingly use them to carefully
- align a gun with your foot, or just break your connection.  Use with care!
- 
- The default for \-\-tls\-cipher is to use mbed TLS's default cipher list
- when using mbed TLS or
- "DEFAULT:!EXP:!LOW:!MEDIUM:!kDH:!kECDH:!DSS:!PSK:!SRP:!kRSA" when using
- OpenSSL.
-+
-+The default for \-\-tls\-ciphersuites is to use the crypto library's default.
- .\"*********************************************************
- .TP
- .B \-\-tls\-cert\-profile profile
+ bool management_open(struct management *man,
+                      const char *addr,
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 95ebe3b3..891468bd 100644
+index 891468bd..52ec6582 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -1763,6 +1763,7 @@ show_settings(const struct options *o)
-     SHOW_STR(cryptoapi_cert);
- #endif
-     SHOW_STR(cipher_list);
-+    SHOW_STR(cipher_list_tls13);
-     SHOW_STR(tls_cert_profile);
-     SHOW_STR(tls_verify);
-     SHOW_STR(tls_export_cert);
-@@ -2757,6 +2758,7 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-         MUST_BE_UNDEF(pkcs12_file);
- #endif
-         MUST_BE_UNDEF(cipher_list);
-+        MUST_BE_UNDEF(cipher_list_tls13);
-         MUST_BE_UNDEF(tls_cert_profile);
-         MUST_BE_UNDEF(tls_verify);
-         MUST_BE_UNDEF(tls_export_cert);
-@@ -7954,6 +7956,11 @@ add_option(struct options *options,
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-         options->tls_cert_profile = p[1];
+@@ -3024,6 +3024,34 @@ options_postprocess_verify(const struct options *o)
+         options_postprocess_verify_ce(o, &o->ce);
      }
-+    else if (streq(p[0], "tls-ciphersuites") && p[1] && !p[2])
-+    {
-+        VERIFY_PERMISSION(OPT_P_GENERAL);
-+        options->cipher_list_tls13 = p[1];
-+    }
-     else if (streq(p[0], "crl-verify") && p[1] && ((p[2] && streq(p[2], "dir"))
-                                                    || (p[2] && streq(p[1], INLINE_FILE_TAG) ) || !p[2]) && !p[3])
-     {
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 4c3bc4fb..3e7ef4f8 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -508,6 +508,7 @@ struct options
-     const char *priv_key_file;
-     const char *pkcs12_file;
-     const char *cipher_list;
-+    const char *cipher_list_tls13;
-     const char *tls_cert_profile;
-     const char *ecdh_curve;
-     const char *tls_verify;
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index fd12af05..adb0f3c8 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -626,9 +626,10 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx)
-     tls_ctx_set_cert_profile(new_ctx, options->tls_cert_profile);
- 
-     /* Allowable ciphers */
--    /* Since @SECLEVEL also influces loading of certificates, set the
-+    /* Since @SECLEVEL also influences loading of certificates, set the
-      * cipher restrictions before loading certificates */
-     tls_ctx_restrict_ciphers(new_ctx, options->cipher_list);
-+    tls_ctx_restrict_ciphers_tls13(new_ctx, options->cipher_list_tls13);
- 
-     if (!tls_ctx_set_options(new_ctx, options->ssl_flags))
-     {
-diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
-index 5023c02a..0995bb4c 100644
---- a/src/openvpn/ssl_backend.h
-+++ b/src/openvpn/ssl_backend.h
-@@ -169,7 +169,8 @@ bool tls_ctx_initialised(struct tls_root_ctx *ctx);
- bool tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags);
- 
- /**
-- * Restrict the list of ciphers that can be used within the TLS context.
-+ * Restrict the list of ciphers that can be used within the TLS context for TLS 1.2
-+ * and below
-  *
-  * @param ctx           TLS context to restrict, must be valid.
-  * @param ciphers       String containing : delimited cipher names, or NULL to use
-@@ -177,6 +178,16 @@ bool tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags);
-  */
- void tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers);
- 
-+/**
-+ * Restrict the list of ciphers that can be used within the TLS context for TLS 1.3
-+ * and higher
-+ *
-+ * @param ctx           TLS context to restrict, must be valid.
-+ * @param ciphers       String containing : delimited cipher names, or NULL to use
-+ *                                      sane defaults.
-+ */
-+void tls_ctx_restrict_ciphers_tls13(struct tls_root_ctx *ctx, const char *ciphers);
-+
- /**
-  * Set the TLS certificate profile.  The profile defines which crypto
-  * algorithms may be used in the supplied certificate.
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index e4850cb6..f23cd30a 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -222,6 +222,19 @@ tls_translate_cipher_name(const char *cipher_name)
-     return pair->iana_name;
  }
- 
-+void
-+tls_ctx_restrict_ciphers_tls13(struct tls_root_ctx *ctx, const char *ciphers)
++#if defined(ENABLE_CRYPTOAPI) || (defined(ENABLE_CRYPTO_OPENSSL) && defined(MANAGMENT_EXTERNAL_KEY))
++static void
++disable_tls13_if_avilable(struct options *o, const char* msg)
 +{
-+    if (ciphers == NULL)
-+    {
-+        /* Nothing to do, return without warning message */
-+        return;
-+    }
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++    const int tls_version_max =
++        (o->ssl_flags >> SSLF_TLS_VERSION_MAX_SHIFT) &
++            SSLF_TLS_VERSION_MAX_MASK;
 +
-+    msg(M_WARN, "mbed TLS does not support setting tls-ciphersuites. "
-+                "Ignoring TLS 1.3 cipher list: %s", ciphers);
-+}
-+
- void
- tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
- {
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 1a66d178..f08d7cae 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -391,6 +391,7 @@ convert_tls_list_to_openssl(char* openssl_ciphers, size_t len,const char *cipher
-         openssl_ciphers[openssl_ciphers_len-1] = '\0';
-     }
- }
-+
- void
- tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
- {
-@@ -426,6 +427,61 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
-     }
- }
- 
-+void
-+convert_tls13_list_to_openssl(char* openssl_ciphers, size_t len, const char *ciphers)
-+{
 +    /*
-+     * OpenSSL (and official IANA) cipher names have _ in them. We
-+     * historically used names with - in them. Silently convert names
-+     * with - to names with _ to support both
++     * The library we are *linked* against is OpenSSL 1.1.1 and therefore support TLS 1.3
++     * this need to be a runtime version check since we can be compiled against 1.1.0 and
++     * then the library can be upgraded to 1.1.1
 +     */
-+    if (strlen(ciphers) >= (len - 1))
++    if (OpenSSL_version_num() > 0x1010100fL &&
++        (tls_version_max == TLS_VER_UNSPEC || tls_version_max > TLS_VER_1_2))
 +    {
-+        msg(M_FATAL,
-+            "Failed to set restricted TLS 1.3 cipher list, too long (>%d).",
-+            (int) (len - 1));
++        msg(M_WARN, "%s Setting maximum TLS version to 1.2 ", msg);
++        o->ssl_flags &= ~(SSLF_TLS_VERSION_MAX_MASK <<
++                                                    SSLF_TLS_VERSION_MAX_SHIFT);
++        o->ssl_flags |= (TLS_VER_1_1 << SSLF_TLS_VERSION_MAX_SHIFT);
++
 +    }
-+
-+    strncpy(openssl_ciphers, ciphers, len);
-+
-+    for (size_t i = 0; i < strlen(openssl_ciphers); i++)
-+    {
-+        if (openssl_ciphers[i] == '-')
-+        {
-+            openssl_ciphers[i] = '_';
-+        }
-+    }
-+}
-+
-+void
-+tls_ctx_restrict_ciphers_tls13(struct tls_root_ctx *ctx, const char *ciphers)
-+{
-+    if (ciphers == NULL)
-+    {
-+        /* default cipher list of OpenSSL 1.1.1 is sane, do not set own
-+         * default as we do with tls-cipher */
-+        return;
-+    }
-+
-+#if (OPENSSL_VERSION_NUMBER < 0x1010100fL)
-+        crypto_msg(M_WARN, "Not compiled with OpenSSL 1.1.1 or higher. "
-+                       "Ignoring TLS 1.3 only tls-ciphersuites '%s' setting.",
-+                        ciphers);
 +#else
-+    ASSERT(NULL != ctx);
-+
-+    char openssl_ciphers[4096];
-+    convert_tls13_list_to_openssl(openssl_ciphers, sizeof(openssl_ciphers),
-+                                  ciphers);
-+
-+    if (!SSL_CTX_set_ciphersuites(ctx->ctx, openssl_ciphers))
-+    {
-+        crypto_msg(M_FATAL, "Failed to set restricted TLS 1.3 cipher list: %s",
-+                   openssl_ciphers);
-+    }
++    return;
 +#endif
 +}
++#endif
+ 
+ static void
+ options_postprocess_mutate(struct options *o)
+@@ -3105,6 +3133,26 @@ options_postprocess_mutate(struct options *o)
+     }
+ #endif
+ 
++#if defined(ENABLE_CRYPTO_MBEDTLS) && defined(MANAGMENT_EXTERNAL_KEY)
++    if (o->management_flags & MF_EXTERNAL_KEY_NOPADDING)
++    {
++        msg(M_FATAL, "mbed TLS does not support the 'nopadding' argument for the --management-external-key option");
++    }
++#endif
 +
- void
- tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
++#if defined(ENABLE_CRYPTOAPI)
++    if (o->cryptoapi_cert)
++    {
++        disable_tls13_if_avilable(o, "Warning: cryptapicert used.");
++    }
++#endif
++#if defined(ENABLE_CRYPTO_OPENSSL)
++    if ((o->management_flags & MF_EXTERNAL_KEY) && !(o->management_flags & MF_EXTERNAL_KEY_NOPADDING))
++    {
++        disable_tls13_if_avilable(o, "Warning: Using management-external-key "
++                                     "without nopadding option.");
++    }
++#endif
+ #if P2MP
+     /*
+      * Save certain parms before modifying options via --pull
+@@ -5178,9 +5226,13 @@ add_option(struct options *options,
+         options->management_write_peer_info_file = p[1];
+     }
+ #ifdef MANAGMENT_EXTERNAL_KEY
+-    else if (streq(p[0], "management-external-key") && !p[1])
++    else if (streq(p[0], "management-external-key") && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
++        if (p[1] && streq(p[1], "nopadding"))
++        {
++            options->management_flags |= MF_EXTERNAL_KEY_NOPADDING;
++        }
+         options->management_flags |= MF_EXTERNAL_KEY;
+     }
+     else if (streq(p[0], "management-external-cert") && p[1] && !p[2])
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 813ef616..81c5fd4c 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -1099,15 +1099,27 @@ openvpn_extkey_rsa_finish(RSA *rsa)
+  */
+ static int
+ get_sig_from_man(const unsigned char *dgst, unsigned int dgstlen,
+-                 unsigned char *sig, unsigned int siglen)
++                 unsigned char *sig, unsigned int siglen, bool pkcs1pad)
  {
+     char *in_b64 = NULL;
+     char *out_b64 = NULL;
+     int len = -1;
++    int bencret = -1;
+ 
+-    /* convert 'dgst' to base64 */
+-    if (management
+-        && openvpn_base64_encode(dgst, dgstlen, &in_b64) > 0)
++    if ((management->settings.flags & MF_EXTERNAL_KEY_NOPADDING) > 2 && pkcs1pad)
++    {
++        /*
++         * Add PKCS1 signature and replace input with it
++         * Use our output buffer also als temporary buffer
++         */
++        RSA_padding_add_PKCS1_type_1(sig, siglen, dgst, dgstlen);
++        bencret = openvpn_base64_encode(sig, siglen, &in_b64);
++    }
++    else
++    {
++        bencret = openvpn_base64_encode(dgst, dgstlen, &in_b64);
++    }
++    if (management && bencret > 0)
+     {
+         out_b64 = management_query_pk_sig(management, in_b64);
+     }
+@@ -1128,13 +1140,13 @@ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
+     unsigned int len = RSA_size(rsa);
+     int ret = -1;
+ 
+-    if (padding != RSA_PKCS1_PADDING)
++    if (padding != RSA_PKCS1_PADDING && padding != RSA_NO_PADDING)
+     {
+         RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE);
+         return -1;
+     }
+ 
+-    ret = get_sig_from_man(from, flen, to, len);
++    ret = get_sig_from_man(from, flen, to, len, padding == RSA_PKCS1_PADDING);
+ 
+     return (ret == len)? ret : -1;
+ }
+@@ -1228,7 +1240,7 @@ ecdsa_sign(int type, const unsigned char *dgst, int dgstlen, unsigned char *sig,
+            unsigned int *siglen, const BIGNUM *kinv, const BIGNUM *r, EC_KEY *ec)
+ {
+     int capacity = ECDSA_size(ec);
+-    int len = get_sig_from_man(dgst, dgstlen, sig, capacity);
++    int len = get_sig_from_man(dgst, dgstlen, sig, capacity, false);
+ 
+     if (len > 0)
+     {
 -- 
 2.19.0
 
