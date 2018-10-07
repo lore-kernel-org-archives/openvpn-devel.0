@@ -1,10 +1,14 @@
-Date: Sat, 6 Oct 2018 22:49:53 +0200 (CEST)
-Message-Id: <201810062049.w96KnrnC059503@...2054...>
+Date: Sun, 7 Oct 2018 09:10:59 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20171111161836.23356-3-a@...2181...>
-References: <20171111161836.23356-3-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: ensure function declarations
- are compiled with their definitions
+Message-ID: <20181007071059.GX962@...1296...>
+References: <20171110163946.7656-1-fkooman@...2318...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="EJCnrJiDxBM3d8Vu"
+Content-Disposition: inline
+In-Reply-To: <20171110163946.7656-1-fkooman@...2318...>
+Subject: Re: [Openvpn-devel] [PATCH] Implement "status 4" (JSON) for
+ management interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,37 +17,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <antonio@...515...>
+To: =?iso-8859-1?Q?Fran=E7ois?= Kooman <fkooman@...2318...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+--EJCnrJiDxBM3d8Vu
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-There was a bit of hassle again due to ENABLE_CRYPTO (so the comment about
-the typo in the comment ended up being moot anyway, because that was 
-#ifndef ENABLE_CRYPTO) and also because someone took out so much stuff
-from misc.h that git could find the proper spot on its own anymore :-)
+Hi,
 
-Verified that the end result still is what we think it is with
---color-moved=zebra - and by test building, of course.
+On Fri, Nov 10, 2017 at 05:39:46PM +0100, Fran=E7ois Kooman wrote:
+> Parsing CSV can be cumbersome in depending software, so instead
+> offer JSON as well using "status 4".
+>=20
+> The "status 4" command uses the same keys/values as "status 2"
+> and "status 3", just formatted as JSON.
 
-commit 632af53a515aa1570028f9f82e4b11ab7171f3a3
-Author: Antonio Quartulli
-Date:   Sun Nov 12 00:18:36 2017 +0800
+So... we had a nice and long discussion about this last year, which I
+think can be wrapped like this
 
-     ensure function declarations are compiled with their definitions
+ - JSON is nice because good parser support exist on the receiving end
+   today
 
-     Signed-off-by: Antonio Quartulli <antonio@...515...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <20171111161836.23356-3-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15820.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+ - human readability is a plus for manually verifying output
 
+ - if we do JSON, we should do it for management *and* status file
 
---
-kind regards,
+ - most voices argued for "do not require an external library"
+   (for *creation*).  Not sure if we managed to convince David in=20
+   the end, though :-)
 
-Gert Doering
+... but then it just died off, and the patch is sitting in patchwork
+(where I moved it to "changes requested" just now).
 
+Is there interest in moving forward, or shall we just let it go?
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--EJCnrJiDxBM3d8Vu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJbubGCAAoJEB2Cnv7KVigSFM4MAJAytkRVUWgobo4s6l11PXYJ
+vs7xr7nmNRuTwLH+oNpJ8E4qnHoevOR2C5MPHiXn7lQSIR6m8/8Y9LNo+iqaikhi
+FHIZ2H0h0++D6KDdNAvJR8pkERT0npBmLxXfvh5nyPkGTDXOWesUHehEwc4nCM8R
+8OB1A1dnPi2mfw4upAkLXLcw8UOtu9J6E6/ZU4LY6fs7m4xiulX0Cg3jRv9pC8ae
+rtS2Mb+s/ZRpX8/X+8LCqTQsj6Rqka/Gx2HmASWuXT6aZ9ons+/0/qDWPQc3bJqe
+Ox+9JDUdUR7E1Yv5g12uzAt4oFKfBhUcrVUWJXBZKygEAdqHWg2cRDh6v3xuMM2Z
+Um1C47wWAEaYZy/x/3bmYtKLCy/pRh2m6HihGXI9SeudIU6hlU7G9HRJSVdV9AGQ
+GsMwgUR2J4iEgPyu526sdU9YGSWFl9t3XLEBP7kXUrc2MZJNufPYDQ/e2Q76Gjlf
+0TfHvrtmSeR3epD8fcbQcq7BoCu3xWlyitFCWDug4A==
+=esdg
+-----END PGP SIGNATURE-----
+
+--EJCnrJiDxBM3d8Vu--
 
