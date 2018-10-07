@@ -1,8 +1,8 @@
-Date: Sun, 7 Oct 2018 10:50:46 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20181007085046.GS11393@...2460...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] windows build warnings
+From: Steffan Karger <steffan@...1856...>
+Date: Sun,  7 Oct 2018 12:00:32 +0200
+Message-Id: <20181007100032.17060-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Fix use-after-free in
+ tls_ctx_use_management_external_key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,44 +11,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Commit 98bfeeb4 changed our openssl backend implementation of
+tls_ctx_use_management_external_key() to no longer use
+tls_ctx_load_cert_file_and_copy(), but still free'd 'cert'. Which it no
+longer should do. Credits go to Arne for spotting the issue (even though
+it was missed during the review).
 
-our windows build seems to have grown a few new warnings with some
-of the recent refactoring...?
+The offending commit is only recently applied to the master branch, so was
+never part of a OpenVPN release. For that reason I did not do full impact
+analysis.
 
-tun.c: In function 'ipconfig_register_dns':
-tun.c:4870:10: warning: variable 'status' set but not used [-Wunused-but-set-variable]
-     bool status;
-          ^
-tun.c: In function 'service_enable_dhcp':
-tun.c:5202:11: warning: unused variable 'len' [-Wunused-variable]
-     DWORD len;
-           ^
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/ssl_openssl.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-win32.c: In function 'win32_pause':
-win32.c:688:13: warning: variable 'status' set but not used [-Wunused-but-set-va
-riable]
-         int status;
-             ^
-
-can I interest someone to run a windows build, and go for the low-hanging
-fruit?
-
-("unused variable" in #ifdef _WIN32 code is likely fairly straightforward,
-signed/unsigned pointer stuff might not be worth jumping through hoops
-because fixing MinGW might make the warning reoccur on the MSVC side...)
-
-Gert Doering
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index fe4db604..7532773e 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -1291,7 +1291,6 @@ tls_ctx_use_management_external_key(struct tls_root_ctx *ctx)
+     /* get the public key */
+     EVP_PKEY *pkey = X509_get0_pubkey(cert);
+     ASSERT(pkey); /* NULL before SSL_CTX_use_certificate() is called */
+-    X509_free(cert);
+ 
+     if (EVP_PKEY_id(pkey) == EVP_PKEY_RSA)
+     {
 -- 
-have you enabled IPv6 on something today...?
+2.17.1
 
-SpaceNet AG                      Vorstand: Sebastian v. Bomhard, Michael Emmer
-Joseph-Dollinger-Bogen 14        Aufsichtsratsvors.: A. Grundner-Culemann
-D-80807 Muenchen                 HRB: 136055 (AG Muenchen)
-Tel: +49 (0)89/32356-444         USt-IdNr.: DE813185279
 
