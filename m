@@ -1,11 +1,9 @@
-References: <20181007100032.17060-1-steffan@...1856...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <35451538-a625-5caf-d903-bc7a80397d2b@...1227...>
-Date: Sun, 7 Oct 2018 14:46:08 +0300
-MIME-Version: 1.0
+Date: Sun, 7 Oct 2018 14:11:04 +0200 (CEST)
+Message-Id: <201810071211.w97CB4xe088968@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20181007100032.17060-1-steffan@...1856...>
-Content-Language: de-DE
-Subject: Re: [Openvpn-devel] [PATCH] Fix use-after-free in
+References: <20181007100032.17060-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix use-after-free in
  tls_ctx_use_management_external_key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -15,27 +13,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 07.10.18 um 13:00 schrieb Steffan Karger:
-> Commit 98bfeeb4 changed our openssl backend implementation of
-> tls_ctx_use_management_external_key() to no longer use
-> tls_ctx_load_cert_file_and_copy(), but still free'd 'cert'. Which it no
-> longer should do. Credits go to Arne for spotting the issue (even though
-> it was missed during the review).
-> 
-> The offending commit is only recently applied to the master branch, so was
-> never part of a OpenVPN release. For that reason I did not do full impact
-> analysis.
-> 
+Your patch has been applied to the master branch.
 
+commit 68e0b9db253ff0437047d6a5377eeec6002873f8
+Author: Steffan Karger
+Date:   Sun Oct 7 12:00:32 2018 +0200
 
-ACK. I already tested this on my on side.
+     Fix use-after-free in tls_ctx_use_management_external_key
 
-Acked-By: Arne Schwabe
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20181007100032.17060-1-steffan@...1856...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20181007100032.17060-1-steffan@...1856...
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-Arne
+--
+kind regards,
+
+Gert Doering
+
 
