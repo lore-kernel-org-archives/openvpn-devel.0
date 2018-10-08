@@ -1,10 +1,7 @@
-Date: Mon, 8 Oct 2018 17:06:11 +0200 (CEST)
-Message-Id: <201810081506.w98F6BFb017762@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20181007223544.GA2246@...2461...>
-References: <20181007223544.GA2246@...2461...>
-Subject: [Openvpn-devel] [PATCH applied] Re: man: correct a
- --redirection-gateway option flag
+From: Lev Stipakov <lstipakov@...277...>
+Date: Mon,  8 Oct 2018 19:09:10 +0300
+Message-Id: <1539014950-21921-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] options.c: fix broken unary minus usage
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +12,52 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Samy Mahmoudi <samy.mahmoudi@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+From: Lev Stipakov <lev@...515...>
 
-Indeed, the current wording is bad.  Your change makes it much better.
+In Visual Studio when unary minus is applied to unsigned,
+result is still unsigned. This means that when we use result
+as function formal parameter, we pass incorrect value.
 
-Your patch has been applied to the master and release/2.4 branch (bugfix).
+Fix by adding explicit cast to signed type.
 
-commit f6bac113bcde4e342caf16d88e0a3a8e71085c90 (master)
-commit d6637316d25bddea65767151a57203cd6dc6f619 (release/2.4)
-Author: Samy Mahmoudi
-Date:   Mon Oct 8 00:35:47 2018 +0200
+Since GCC doesn't complain (and users too :), it probably
+casts to signed automatically.
 
-     man: correct a --redirection-gateway option flag
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/openvpn/options.c | 2 +-
+ src/openvpn/ssl.c     | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20181007223544.GA2246@...2461...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17630.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index e42029c..1927a32 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3509,7 +3509,7 @@ calc_options_string_link_mtu(const struct options *o, const struct frame *frame)
+         struct key_type fake_kt;
+         init_key_type(&fake_kt, o->ciphername, o->authname, o->keysize, true,
+                       false);
+-        frame_add_to_extra_frame(&fake_frame, -(crypto_max_overhead()));
++        frame_add_to_extra_frame(&fake_frame, -(int)(crypto_max_overhead()));
+         crypto_adjust_frame_parameters(&fake_frame, &fake_kt, o->replay,
+                                        cipher_kt_mode_ofb_cfb(fake_kt.cipher));
+         frame_finalize(&fake_frame, o->ce.link_mtu_defined, o->ce.link_mtu,
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 315303b..18b1fbd 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1987,7 +1987,7 @@ tls_session_update_crypto_params(struct tls_session *session,
+     }
+ 
+     /* Update frame parameters: undo worst-case overhead, add actual overhead */
+-    frame_add_to_extra_frame(frame, -(crypto_max_overhead()));
++    frame_add_to_extra_frame(frame, -(int)(crypto_max_overhead()));
+     crypto_adjust_frame_parameters(frame, &session->opt->key_type,
+                                    options->replay, packet_id_long_form);
+     frame_finalize(frame, options->ce.link_mtu_defined, options->ce.link_mtu,
+-- 
+2.7.4
 
 
