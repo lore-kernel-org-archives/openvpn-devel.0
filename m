@@ -1,10 +1,10 @@
-Date: Mon, 8 Oct 2018 16:49:41 +0200 (CEST)
-Message-Id: <201810081449.w98Enfl9016711@...2054...>
+Date: Mon, 8 Oct 2018 16:59:20 +0200 (CEST)
+Message-Id: <201810081459.w98ExKjS017620@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20181007223035.21179-1-steffan@...1856...>
-References: <20181007223035.21179-1-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add support for
- CHACHA20-POLY1305 in the data channel
+In-Reply-To: <20181008094600.10164-1-simon@...2293...>
+References: <20181008094600.10164-1-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: msvc: Unify Unicode/MultiByte
+ string setting across all cfg|plat
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,32 +15,23 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
+To: Simon Rozman <simon@...2293...>
 Cc: openvpn-devel@lists.sourceforge.net
+
+As for the other XML project patch, I trust you, Lev and Selva to know 
+what you are doing :-)
 
 Your patch has been applied to the master branch.
 
-I have done a cursory stare-at code and it matches the grumblings given
-on the way to dinner ("check not only for GCM but accept all save ciphers
-using this API", IIRC).  My current test rig is too old to do a full
-client-server test easily, but at least the mbedTLS and the OpenSSL
-1.1.0 build both claim support...
+commit 279aa11978f07494a3b665a619fa74c9d4b1485b
+Author: Simon Rozman
+Date:   Mon Oct 8 11:45:59 2018 +0200
 
-CHACHA20-POLY1305  (256 bit key, 8 bit block, TLS client/server mode only)
-CHACHA20-POLY1305  (256 bit key, 8 bit block, TLS client/server mode only)
+     msvc: Unify Unicode/MultiByte string setting across all cfg|plat
 
-.. and pass t_client tests both for OpenSSL and mbedTLS...
-
-commit 6d0d0af9883b9ae266c0468f2739557a53e94b68
-Author: Steffan Karger
-Date:   Mon Oct 8 00:30:34 2018 +0200
-
-     Add support for CHACHA20-POLY1305 in the data channel
-
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20181007223035.21179-1-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17629.html
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <20181008094600.10164-1-simon@...2293...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17633.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
