@@ -1,10 +1,7 @@
-Date: Mon, 8 Oct 2018 16:15:19 +0200 (CEST)
-Message-Id: <201810081415.w98EFJZ4008869@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20181008100323.11308-1-simon@...2293...>
-References: <20181008100323.11308-1-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Reference msvc-generate from
- compat to assure correct build order
+From: Lev Stipakov <lstipakov@...277...>
+Date: Mon,  8 Oct 2018 17:19:26 +0300
+Message-Id: <1539008366-19656-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] crypto.h: remove unused function declaration
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +12,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Simon Rozman <simon@...2293...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-"The XML looks reasonable and it does not affect anything else" :-)
+From: Lev Stipakov <lev@...515...>
 
-Your patch has been applied to the master branch.
+This removes declaration of function which has no definition and usage.
 
-commit 354dd0e04228b813a1753da0f38836198c09f68b
-Author: Simon Rozman
-Date:   Mon Oct 8 12:03:23 2018 +0200
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/openvpn/crypto.h | 5 -----
+ 1 file changed, 5 deletions(-)
 
-     Reference msvc-generate from compat to assure correct build order
-
-     Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20181008100323.11308-1-simon@...2293...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17635.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index f4b3dca..263725d 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -278,11 +278,6 @@ void read_key_file(struct key2 *key2, const char *file, const unsigned int flags
+  */
+ int write_key_file(const int nkeys, const char *filename);
+ 
+-int read_passphrase_hash(const char *passphrase_file,
+-                         const md_kt_t *digest,
+-                         uint8_t *output,
+-                         int len);
+-
+ void generate_key_random(struct key *key, const struct key_type *kt);
+ 
+ void check_replay_consistency(const struct key_type *kt, bool packet_id);
+-- 
+2.7.4
 
 
