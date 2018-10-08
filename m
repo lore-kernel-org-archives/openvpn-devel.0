@@ -1,14 +1,13 @@
-Date: Mon, 8 Oct 2018 19:52:42 +0200
+Date: Mon, 8 Oct 2018 19:56:30 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20181008175242.GS962@...1296...>
-References: <1539016554-23503-1-git-send-email-lstipakov@...277...>
+Message-ID: <20181008175630.GT962@...1296...>
+References: <20181008175044.8289-1-arne@...1227...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="/z4P6UMu7uOEsbeQ"
+ protocol="application/pgp-signature"; boundary="2UusUvefyJ2PB+/T"
 Content-Disposition: inline
-In-Reply-To: <1539016554-23503-1-git-send-email-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] interactive.c: fix usage of potentially
- uninitialized variable
+In-Reply-To: <20181008175044.8289-1-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix building with --disable-management
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,37 +16,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---/z4P6UMu7uOEsbeQ
+--2UusUvefyJ2PB+/T
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Mon, Oct 08, 2018 at 07:35:54PM +0300, Lev Stipakov wrote:
-> @@ -1350,7 +1354,7 @@ RunOpenvpn(LPVOID p)
+On Mon, Oct 08, 2018 at 07:50:44PM +0200, Arne Schwabe wrote:
+>  src/openvpn/push.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+> index 9075d63b..af6d44f7 100644
+> --- a/src/openvpn/push.c
+> +++ b/src/openvpn/push.c
+> @@ -177,7 +177,6 @@ server_pushed_signal(struct context *c, const struct =
+buffer *buffer, const bool
+>=20=20
+>  void server_pushed_info(struct context *c, const struct buffer *buffer, =
+const int adv)
 >  {
->      HANDLE pipe =3D p;
->      HANDLE ovpn_pipe, svc_pipe;
-> -    PTOKEN_USER svc_user, ovpn_user;
-> +    PTOKEN_USER svc_user =3D NULL, ovpn_user =3D NULL;
->      HANDLE svc_token =3D NULL, imp_token =3D NULL, pri_token =3D NULL;
->      HANDLE stdin_read =3D NULL, stdin_write =3D NULL;
->      HANDLE stdout_write =3D NULL;
+> -  struct gc_arena gc;
+>    const char *m =3D "";
+>    struct buffer buf =3D *buffer;
 
-Oh, another nag for v2 :-) - if you initialize these to NULL here
-at the top, the lines
+Not sure which branch this is coming from...
 
-    svc_user =3D NULL;
-...
-    ovpn_user =3D NULL;
+$ git branch -v
+* master      674b1664 build: Fix build warnings related to get_random()
+$ git grep server_pushed_info
+$ git checkout -=20=20
+Switched to branch 'release/2.4'
+Your branch is up to date with 'stable/release/2.4'.
+$ git grep server_pushed_info
+$=20
 
-further down could go...
+... but it does not seem to be anything official...?
+
+*scratch head*
 
 gert
+
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -58,22 +71,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---/z4P6UMu7uOEsbeQ
+--2UusUvefyJ2PB+/T
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJbu5lqAAoJEB2Cnv7KVigSPRcL/1cS2JwWmD6HvuAlfZj5nCHn
-ZwH+jWFUfl0x9N4/Z42/0nUhS9GkL/hQ6GB6kXJ4KKtCOqKcY4iMx1lWnz/5qwOJ
-iQhqOZYzpKe1CVxEhsdQ5SlLn4ndhlYEuhZIuE6XnbReVnVtVIaaHJrjoEgx1srl
-UuET+Nka0MtxBPIpCIAQnzZJ1D1KxAsXa4l1WO/pRAs44G6V2XpAyE+tohl3te2i
-K5BBHCDNLT25keo5MbNLvDRLVDQ4Pn0xv99s/ZdReCcWPjmVliBkyJ19tjuqnkPY
-vSiyEd+fL6GYLA8q3PHQ+JQHULw5w1nnNqTm114fuvRmg+zgrnTUy5j8tCbI3vvX
-+93THDJYy15P8/n9VmzHgq/4nG7ehKe2EWA0hDWnLAjYn09cQPxA2pw9UAO25KRz
-NSNnQBWoK6tmyQ3tiyx4AKKlCRilUD6IWumjAuNKoqqVkNom+bhG3hrx201BSjmU
-E94knI/tKI6RpxoW6LkO5RAcW4WoRzRPPBEcqcq5iQ==
-=AgSq
+iQGcBAEBAgAGBQJbu5pNAAoJEB2Cnv7KVigSVZwL/2SCImEmzpQEmkFhQHcsT8cx
+fVYOGrIr0zm/B4yabowugz2EJVMOqlYFSU/rdWaI09otKtLRCA+fT2vBo6S1KVNj
+yi7mGf+olGj46YSEaeX76GbzEMS7Q7lVVGxEcKNIZFApRnt16a3Aw/hIBToa9Dm9
+JLQVN9jm5EVCj1/fl76FRrGid3yw3wtUcjm/fm7V9tShOLtQvhKMgg04yuptpBUq
+qfD4Yk+aiRKDfNBzfmegFxzUfDKCndM8scXD9hacydLwnLlBCTLUr+iVMBBay95m
+LDlAgmSrxhLeAwDdraYbgI3FweLQyv76Y6brFQRO4dJw8u30q20d3TQMabXdfivp
+Y4ANzueQs0tNg1xcKGVNPP46YunzoS/fqfBmOpCA7+gW2jouhc8ur4jDwLavoBfm
+iMh+GnLUfiIdJWkJkl1iK2toMIu75rktI0uekvIfLk0xDiy7X+tYWhMZdD3lzk7l
+pMKYFNdxLqDUMaihGFNQefQC9zAhkWkYYMtowhePcQ==
+=eevh
 -----END PGP SIGNATURE-----
 
---/z4P6UMu7uOEsbeQ--
+--2UusUvefyJ2PB+/T--
 
