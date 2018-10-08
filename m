@@ -1,8 +1,9 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Mon,  8 Oct 2018 19:35:54 +0300
-Message-Id: <1539016554-23503-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH] interactive.c: fix usage of potentially
- uninitialized variable
+From: David Sommerseth <davids@...515...>
+Date: Mon,  8 Oct 2018 19:56:48 +0300
+Message-Id: <20181008165648.27504-1-davids@...515...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] build: Fix build warnings related to
+ get_random()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,63 +16,30 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Lev Stipakov <lev@...515...>
+This fixes this compile warning:
 
-In function netsh_dns_cmd() it is possible to jump on a label and
-call free() on uninitialized pointer. Move pointer initialization above
-jump and add NULL check before free() call.
+    platform.c: In function ‘platform_create_temp_file’:
+    platform.c:355:31: warning: implicit declaration of function ‘get_random’ [-Wimplicit-function-declaration]
+                                   prefix, (unsigned long) get_random(),
 
-To fix a few warnings which are treated as errors with SDL enabled,
-initialize few pointers with a NULL.
-
-Signed-off-by: Lev Stipakov <lev@...515...>
+Signed-off-by: David Sommerseth <davids@...515...>
 ---
- src/openvpnserv/interactive.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ src/openvpn/platform.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index 8f92c24..369980b 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -1015,6 +1015,7 @@ netsh_dns_cmd(const wchar_t *action, const wchar_t *proto, const wchar_t *if_nam
-     DWORD err = 0;
-     int timeout = 30000; /* in msec */
-     wchar_t argv0[MAX_PATH];
-+    wchar_t *cmdline = NULL;
+diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
+index 5ecccf1c..53d07f9c 100644
+--- a/src/openvpn/platform.c
++++ b/src/openvpn/platform.c
+@@ -30,6 +30,7 @@
+ #include "syshead.h"
  
-     if (!addr)
-     {
-@@ -1039,7 +1040,7 @@ netsh_dns_cmd(const wchar_t *action, const wchar_t *proto, const wchar_t *if_nam
- 
-     /* max cmdline length in wchars -- include room for worst case and some */
-     size_t ncmdline = wcslen(fmt) + wcslen(if_name) + wcslen(addr) + 32 + 1;
--    wchar_t *cmdline = malloc(ncmdline*sizeof(wchar_t));
-+    cmdline = malloc(ncmdline*sizeof(wchar_t));
-     if (!cmdline)
-     {
-         err = ERROR_OUTOFMEMORY;
-@@ -1055,7 +1056,10 @@ netsh_dns_cmd(const wchar_t *action, const wchar_t *proto, const wchar_t *if_nam
-     err = ExecCommand(argv0, cmdline, timeout);
- 
- out:
--    free(cmdline);
-+    if (cmdline)
-+    {
-+        free(cmdline);
-+    }
-     return err;
- }
- 
-@@ -1350,7 +1354,7 @@ RunOpenvpn(LPVOID p)
- {
-     HANDLE pipe = p;
-     HANDLE ovpn_pipe, svc_pipe;
--    PTOKEN_USER svc_user, ovpn_user;
-+    PTOKEN_USER svc_user = NULL, ovpn_user = NULL;
-     HANDLE svc_token = NULL, imp_token = NULL, pri_token = NULL;
-     HANDLE stdin_read = NULL, stdin_write = NULL;
-     HANDLE stdout_write = NULL;
+ #include "buffer.h"
++#include "crypto.h"
+ #include "error.h"
+ #include "misc.h"
+ #include "win32.h"
 -- 
-2.7.4
+2.17.1
 
 
