@@ -1,15 +1,16 @@
 References: <de02e114-2f3e-3176-1230-11787eaa4eae@...2181...>
  <20181007223035.21179-1-steffan@...1856...>
+ <20181007223035.21179-2-steffan@...1856...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <b6ad45cd-83d2-14c1-cf30-fa6a67e488e0@...2181...>
-Date: Mon, 8 Oct 2018 17:11:59 +0800
+Message-ID: <9b927c56-b850-b019-2385-2e9e199389b0@...2181...>
+Date: Mon, 8 Oct 2018 17:18:32 +0800
 MIME-Version: 1.0
-In-Reply-To: <20181007223035.21179-1-steffan@...1856...>
+In-Reply-To: <20181007223035.21179-2-steffan@...1856...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="sxEcbGvvJWkwqayTJgGZM0hyLNwlgun0R"
-Subject: Re: [Openvpn-devel] [PATCH v2 1/2] Add support for
- CHACHA20-POLY1305 in the data channel
+ boundary="pftnZ9UkdgcFELsydavcUZMicZF8X2RNZ"
+Subject: Re: [Openvpn-devel] [PATCH v2 2/2] List ChaCha20-Poly1305 as stream
+ cipher
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,85 +22,117 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---sxEcbGvvJWkwqayTJgGZM0hyLNwlgun0R
-Content-Type: multipart/mixed; boundary="yIbKCOyE8AaYdbSZdY8pEsOMVRgvc8njO";
+--pftnZ9UkdgcFELsydavcUZMicZF8X2RNZ
+Content-Type: multipart/mixed; boundary="JuTuhLlpWaV2QIjcAiXPT3NDMIKXMy1Oy";
  protected-headers="v1"
 From: Antonio Quartulli <a@...2181...>
 To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <b6ad45cd-83d2-14c1-cf30-fa6a67e488e0@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v2 1/2] Add support for CHACHA20-POLY1305
- in the data channel
+Message-ID: <9b927c56-b850-b019-2385-2e9e199389b0@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v2 2/2] List ChaCha20-Poly1305 as stream
+ cipher
 References: <de02e114-2f3e-3176-1230-11787eaa4eae@...2181...>
  <20181007223035.21179-1-steffan@...1856...>
-In-Reply-To: <20181007223035.21179-1-steffan@...1856...>
+ <20181007223035.21179-2-steffan@...1856...>
+In-Reply-To: <20181007223035.21179-2-steffan@...1856...>
 
---yIbKCOyE8AaYdbSZdY8pEsOMVRgvc8njO
+--JuTuhLlpWaV2QIjcAiXPT3NDMIKXMy1Oy
 Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-thanks for fixing the ifdef condition!
-Tested again and it works as expected between two clients when disabling
-NCP and setting CHACHA20-POLY1305 as cipher:
-
-Mon Oct  8 17:11:36 2018 us=3D670345 127.0.0.1 Outgoing Data Channel:
-Cipher 'CHACHA20-POLY1305' initialized with 256 bit key
-Mon Oct  8 17:11:36 2018 us=3D670351 127.0.0.1 Incoming Data Channel:
-Cipher 'CHACHA20-POLY1305' initialized with 256 bit key
-
+see below:
 
 On 08/10/18 06:30, Steffan Karger wrote:
-> We explicitly only supported GCM as a valid AEAD mode, change that to also
-> allow ChaCha20-Poly1305 as an AEAD cipher.  That works nicely with our new
-> (GCM) data channel format, because is has the same 96-bit IV.
->=20
-> Note that we need some tricks to not treat the cipher as insecure, because
-> we used to only look at the block size of a cipher to determine if find a
-> cipher insecure.  But ChaCha20-Poly1305 is a stream cipher, which essenti=
-ally
-> has a 'block size' of 1 byte and is reported as such.  So, special-case t=
-his
-> cipher to be in the list of secure ciphers.
->=20
-> Signed-off-by: Steffan Karger <steffan@...1856...>
-> ---
-> v2: code style fixes, remove unneeded version check
+[CUT]
+> diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
+> index 0c39eccc..54ac1893 100644
+> --- a/src/openvpn/crypto_mbedtls.c
+> +++ b/src/openvpn/crypto_mbedtls.c
+> @@ -140,26 +140,6 @@ const cipher_name_pair cipher_name_translation_table=
+[] =3D {
+>  const size_t cipher_name_translation_table_count =3D
+>      sizeof(cipher_name_translation_table) / sizeof(*cipher_name_translat=
+ion_table);
+>=20=20
+> -static void
+> -print_cipher(const cipher_kt_t *info)
+> -{
+> -    if (info && (cipher_kt_mode_cbc(info)
+> -#ifdef HAVE_AEAD_CIPHER_MODES
+> -                 || cipher_kt_mode_aead(info)
+> -#endif
+> -                 ))
+> -    {
+> -        const char *ssl_only =3D cipher_kt_mode_cbc(info) ?
+> -                               "" : ", TLS client/server mode only";
+> -        const char *var_key_size =3D info->flags & MBEDTLS_CIPHER_VARIAB=
+LE_KEY_LEN ?
+> -                                   " by default" : "";
+> -
+> -        printf("%s  (%d bit key%s, %d bit block%s)\n",
+> -               cipher_kt_name(info), cipher_kt_key_size(info) * 8, var_k=
+ey_size,
+> -               cipher_kt_block_size(info) * 8, ssl_only);
+> -    }
+> -}
+> -
+>  void
+>  show_available_ciphers(void)
+>  {
+> @@ -175,7 +155,8 @@ show_available_ciphers(void)
+>      while (*ciphers !=3D 0)
+>      {
+>          const cipher_kt_t *info =3D mbedtls_cipher_info_from_type(*ciphe=
+rs);
+> -        if (info && !cipher_kt_insecure(info))
+> +        if (info && !cipher_kt_insecure(info)
+> +            && (cipher_kt_mode_aead(info) || cipher_kt_mode_cbc(info)))
+>          {
+>              print_cipher(info);
 
-Acked-by: Antonio Quartulli <antonio@...515...>
+apparently crypto.h is not included:
+
+crypto_mbedtls.c: In function =E2=80=98show_available_ciphers=E2=80=99:
+crypto_mbedtls.c:161:13: warning: implicit declaration of function
+=E2=80=98print_cipher=E2=80=99; did you mean =E2=80=98print_argv=E2=80=99? =
+[-Wimplicit-function-declaration]
+             print_cipher(info);
+             ^~~~~~~~~~~~
+
+When compiling with OpenSSL I couldn't see any warning.
 
 
 Cheers,
-
 
 --=20
 Antonio Quartulli
 
 
---yIbKCOyE8AaYdbSZdY8pEsOMVRgvc8njO--
+--JuTuhLlpWaV2QIjcAiXPT3NDMIKXMy1Oy--
 
---sxEcbGvvJWkwqayTJgGZM0hyLNwlgun0R
+--pftnZ9UkdgcFELsydavcUZMicZF8X2RNZ
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlu7H18ACgkQ9FVsWUWD
-Dm3NkhAAg8AnTMc37LKmQSIdXx/W/7DOkb8Kfond5K+xCirSzQasR6YnD3TmCbQP
-5mkPx7QaL1uIABHOIwPKcAzlMDyOj82sveVwEjprxJAOQko2qukREKgF2xSQaV7Z
-VsmdjhEGG586Z8IgNQR4tiMCihxfk9/+YQRdSRNdxKmDA27s2djSMQUYf6pMurti
-Twn9eUP+0DauqPvxbCD5qy7wUZxJLkmgCMTsg/mLh6xb2D9FKuUR4G0cl1Kv4LWI
-770JQ+EQ4I7/7gDgzXpLs05GE6OGCgZFFEZyZJaGWsFMoauxCrjkutMmD0YnrfII
-i2+PyQse3VtVgeY1YvaNPR2BfYMZaqfqcsRR52mNf3A1PO/EkZ+v6dBToxSssE9J
-Yhs2QS9hAau26q4NPSbjhrQ0l3amelN6AwyCNyis+riypdqVkWHKWQCS5z0dqcb9
-1n/F5J/y0DYPmhmJNqhlbGx18DqcUuWVCVuzgp3YGBWgNSblE+VbnlY+oY6ERgLm
-CcA1QAQJVs5+mQCYz+QqNTsmQnuDOMBwgN+XVdqj5h2EloiY9I222Sf2Zvn1Sl8X
-zuG6gXz4VXx0/mj3KjklKKSwblOhwcXvtGit04H0cTx2Jldy/FdngrJzCF5YJsEX
-0spJLJsteGqgmqscbfaR3iyuOgUh5zOBrZnbPExO0dMFvrCfpE8=
-=6eDA
+iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlu7IOgACgkQ9FVsWUWD
+Dm21xw/8Cc+Yshr6xYPg0hXfDjJbjZBiEZU4+vcMKAWROp9VmoDO+0rE005e/oBc
+hzbpMzdObFlAp+AnY+Ur2jYbHy4u9uDcbAqSnqq6elMzQfIQXgLz2M3cn+iiVnoa
+DCjwSl2IZXgvp/rvR6Wi+5OidKAsARQluuAd1jR7QDpAbiLX43HoHdf9PpFMZzfy
+/Sd6vfi/v6N/835qJtODnvJybcpl8uKh5Ckq1k8yVpdgr1/OECQSHjNpjcEZUx+/
+CU/sAKq2t3rJT+OG7vqgoQ4Q2nker3WVRLruvDB3zMCTtsXlaaeHYlChN/3q/29U
+GdmfR2/6/OWoj/2UO9E+PaFIqJCL8/k+P9wRWuxSjM03aljovEbwyClm4xtzW/do
+HlCQZm2KfDrhgvMRpwNSe5hFLeIkSXpOee0tBzn+B2wPDdf315lL/kS8H/cZzC12
+Xr31Xmt2sm0FGspZP22tcVViIfX3+zBy48dgpa62w0vBMdjK/tIX+GlUzfUDhdwn
+1PID1Jn2SWQvHa/zdc4ikanjHGTxp0MdHZ2FpzhH9rAMNltCOHyKbf1ZkiELSDAH
+JVgjDvbnxt+9hDGshMT/z6J+SxBw7AoJZ3qLYs+xTkpKqSHMCtcj8XPGTlsvJNQe
+TDnWvvCJgPNI8dL98Qpn34WPp2gZCErb5+zw0eO0L1JiM4zf/Ok=
+=Ykb/
 -----END PGP SIGNATURE-----
 
---sxEcbGvvJWkwqayTJgGZM0hyLNwlgun0R--
+--pftnZ9UkdgcFELsydavcUZMicZF8X2RNZ--
 
