@@ -1,9 +1,10 @@
-From: David Sommerseth <davids@...515...>
-Date: Mon,  8 Oct 2018 19:56:48 +0300
-Message-Id: <20181008165648.27504-1-davids@...515...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] build: Fix build warnings related to
- get_random()
+Date: Mon, 8 Oct 2018 19:21:40 +0200 (CEST)
+Message-Id: <201810081721.w98HLeHK018554@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20181008165648.27504-1-davids@...515...>
+References: <20181008165648.27504-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: build: Fix build warnings
+ related to get_random()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,32 +15,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <davids@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This fixes this compile warning:
+Acked-by: Gert Doering <gert@...1296...>
 
-    platform.c: In function ‘platform_create_temp_file’:
-    platform.c:355:31: warning: implicit declaration of function ‘get_random’ [-Wimplicit-function-declaration]
-                                   prefix, (unsigned long) get_random(),
+Your patch has been applied to the master branch.
 
-Signed-off-by: David Sommerseth <davids@...515...>
----
- src/openvpn/platform.c | 1 +
- 1 file changed, 1 insertion(+)
+commit 674b16640a19569c35045f18021e25df5e85dc1d
+Author: David Sommerseth
+Date:   Mon Oct 8 19:56:48 2018 +0300
 
-diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
-index 5ecccf1c..53d07f9c 100644
---- a/src/openvpn/platform.c
-+++ b/src/openvpn/platform.c
-@@ -30,6 +30,7 @@
- #include "syshead.h"
- 
- #include "buffer.h"
-+#include "crypto.h"
- #include "error.h"
- #include "misc.h"
- #include "win32.h"
--- 
-2.17.1
+     build: Fix build warnings related to get_random()
+
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20181008165648.27504-1-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17652.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
