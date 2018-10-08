@@ -1,10 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon,  8 Oct 2018 20:16:17 +0200
-Message-Id: <20181008181618.8976-3-arne@...1227...>
+Date: Mon,  8 Oct 2018 20:16:16 +0200
+Message-Id: <20181008181618.8976-2-arne@...1227...>
 In-Reply-To: <20181008181618.8976-1-arne@...1227...>
 References: <20181008181618.8976-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 3/4] Add support for OpenSSL TLS 1.3 when
- using management-external-key
+Subject: [Openvpn-devel] [PATCH 2/4] Remove AUTO_USERID feature
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,216 +16,144 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-For TLS 1.0 to 1.2 OpenSSL calls us and requires a PKCS1 padded
-response, for TLS 1.3 it requires to an unpadded response. Since we
-can PCKS1 pad an unpadded response, we prefer to always query for
-an unpadded response from the management interface and add the PCKS1
-padding ourselves when needed.
+There is no user facing way to enable this feature and way that feature
+works (username build from MAC of primary net device) is questionable.
 
-This patch adds an 'unpadded' parameter to the management-external-key
-option to signal that it is uses the new unpadded API. Since we cannot
-support TLS 1.3 without unpadded queries we disable TLS 1.3 otherwise.
-We also do the same for cryptoapi since it uses the same API.
-
-Using the management api client version instead might seem like the
-more logical way but since we only now that version very late,
-it would extra logic and complexity to deal with this asynchronous
-behaviour .
+It also does not compile anymore.
 ---
- doc/management-notes.txt  |  7 ++++-
- src/openvpn/manage.h      |  9 ++++---
- src/openvpn/options.c     | 57 +++++++++++++++++++++++++++++++++++++--
- src/openvpn/ssl_openssl.c | 26 +++++++++++++-----
- 4 files changed, 85 insertions(+), 14 deletions(-)
+ src/openvpn/errlevel.h |  1 -
+ src/openvpn/misc.c     | 45 ------------------------------------------
+ src/openvpn/misc.h     |  5 -----
+ src/openvpn/ssl.c      |  4 ----
+ src/openvpn/syshead.h  |  9 ---------
+ 5 files changed, 64 deletions(-)
 
-diff --git a/doc/management-notes.txt b/doc/management-notes.txt
-index 17645c1d..7e61ff50 100644
---- a/doc/management-notes.txt
-+++ b/doc/management-notes.txt
-@@ -832,7 +832,12 @@ END
+diff --git a/src/openvpn/errlevel.h b/src/openvpn/errlevel.h
+index 5ca4fa8f..c30284fc 100644
+--- a/src/openvpn/errlevel.h
++++ b/src/openvpn/errlevel.h
+@@ -139,7 +139,6 @@
+ #define D_PACKET_TRUNC_DEBUG LOGLEV(7, 70, M_DEBUG)  /* PACKET_TRUNCATION_CHECK verbose */
+ #define D_PING               LOGLEV(7, 70, M_DEBUG)  /* PING send/receive messages */
+ #define D_PS_PROXY_DEBUG     LOGLEV(7, 70, M_DEBUG)  /* port share proxy debug */
+-#define D_AUTO_USERID        LOGLEV(7, 70, M_DEBUG)  /* AUTO_USERID debugging */
+ #define D_TLS_KEYSELECT      LOGLEV(7, 70, M_DEBUG)  /* show information on key selection for data channel */
+ #define D_ARGV_PARSE_CMD     LOGLEV(7, 70, M_DEBUG)  /* show parse_line() errors in argv_parse_cmd */
+ #define D_CRYPTO_DEBUG       LOGLEV(7, 70, M_DEBUG)  /* show detailed info from crypto.c routines */
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index 51d539d2..75f4ff47 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -455,51 +455,6 @@ get_auth_challenge(const char *auth_challenge, struct gc_arena *gc)
  
- Base 64 encoded output of RSA_private_encrypt for RSA or ECDSA_sign()
- for EC using OpenSSL or mbedtls_pk_sign() using mbed TLS will provide a
--correct signature.
-+correct signature. With the 'nopadding' argument to the
-+external-management-interface the interface expects unpadded signatures
-+(RSA_NO_PADDING in OpenSSL). When the 'nopadding' keyword is missing the
-+interfaces expects PKCS1 padded signatures for RSA keys (RSA_PKCS1_PADDING).
-+EC signatures are always unpadded. To support TLS 1.3 using unpadded
-+signatures is required.
+ #endif /* ifdef ENABLE_MANAGEMENT */
  
- This capability is intended to allow the use of arbitrary cryptographic
- service providers with OpenVPN via the management interface.
-diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index d24abe09..4fe66abf 100644
---- a/src/openvpn/manage.h
-+++ b/src/openvpn/manage.h
-@@ -343,10 +343,11 @@ struct management *management_init(void);
- #endif
- #define MF_UNIX_SOCK       (1<<8)
- #define MF_EXTERNAL_KEY    (1<<9)
--#define MF_UP_DOWN          (1<<10)
--#define MF_QUERY_REMOTE     (1<<11)
--#define MF_QUERY_PROXY      (1<<12)
--#define MF_EXTERNAL_CERT    (1<<13)
-+#define MF_EXTERNAL_KEY_NOPADDING   (1<<10)
-+#define MF_UP_DOWN          (1<<11)
-+#define MF_QUERY_REMOTE     (1<<12)
-+#define MF_QUERY_PROXY      (1<<13)
-+#define MF_EXTERNAL_CERT    (1<<14)
- 
- bool management_open(struct management *man,
-                      const char *addr,
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 111534a5..61762791 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3025,6 +3025,35 @@ options_postprocess_verify(const struct options *o)
-     }
- }
- 
-+#if defined(ENABLE_CRYPTOAPI) || (defined(ENABLE_CRYPTO_OPENSSL) && defined(ENABLE_MANAGEMENT))
-+static void
-+disable_tls13_if_avilable(struct options *o, const char* msg)
-+{
-+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
-+    const int tls_version_max =
-+        (o->ssl_flags >> SSLF_TLS_VERSION_MAX_SHIFT) &
-+            SSLF_TLS_VERSION_MAX_MASK;
-+
-+    /*
-+     * The library we are *linked* against is OpenSSL 1.1.1 and therefore support TLS 1.3
-+     * this need to be a runtime version check since we can be compiled against 1.1.0 and
-+     * then the library can be upgraded to 1.1.1
-+     */
-+    if (OpenSSL_version_num() >= 0x1010100fL &&
-+        (tls_version_max == TLS_VER_UNSPEC || tls_version_max > TLS_VER_1_2))
-+    {
-+        msg(M_WARN, "%s Setting maximum TLS version to 1.2 ", msg);
-+        o->ssl_flags &= ~(SSLF_TLS_VERSION_MAX_MASK <<
-+                                                    SSLF_TLS_VERSION_MAX_SHIFT);
-+        o->ssl_flags |= (TLS_VER_1_1 << SSLF_TLS_VERSION_MAX_SHIFT);
-+
-+    }
-+#else
-+    return;
-+#endif
-+}
-+#endif
-+
- static void
- options_postprocess_mutate(struct options *o)
- {
-@@ -3105,6 +3134,26 @@ options_postprocess_mutate(struct options *o)
-     }
- #endif
- 
-+#if defined(ENABLE_CRYPTO_MBEDTLS) && defined(MANAGMENT_EXTERNAL_KEY)
-+    if (o->management_flags & MF_EXTERNAL_KEY_NOPADDING)
-+    {
-+        msg(M_FATAL, "mbed TLS does not support the 'nopadding' argument for the --management-external-key option");
-+    }
-+#endif
-+
-+#if defined(ENABLE_CRYPTOAPI)
-+    if (o->cryptoapi_cert)
-+    {
-+        disable_tls13_if_avilable(o, "Warning: cryptapicert used.");
-+    }
-+#endif
-+#if defined(ENABLE_CRYPTO_OPENSSL) && defined(ENABLE_MANAGEMENT)
-+    if ((o->management_flags & MF_EXTERNAL_KEY) && !(o->management_flags & MF_EXTERNAL_KEY_NOPADDING))
-+    {
-+        disable_tls13_if_avilable(o, "Warning: Using management-external-key "
-+                                     "without nopadding option.");
-+    }
-+#endif
- #if P2MP
-     /*
-      * Save certain parms before modifying options via --pull
-@@ -5178,9 +5227,13 @@ add_option(struct options *options,
-         options->management_write_peer_info_file = p[1];
-     }
- #ifdef ENABLE_MANAGEMENT
--    else if (streq(p[0], "management-external-key") && !p[1])
-+    else if (streq(p[0], "management-external-key") && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-+        if (p[1] && streq(p[1], "nopadding"))
-+        {
-+            options->management_flags |= MF_EXTERNAL_KEY_NOPADDING;
-+        }
-         options->management_flags |= MF_EXTERNAL_KEY;
-     }
-     else if (streq(p[0], "management-external-cert") && p[1] && !p[2])
-@@ -8440,4 +8493,4 @@ add_option(struct options *options,
-     }
- err:
-     gc_free(&gc);
+-#if AUTO_USERID
+-
+-void
+-get_user_pass_auto_userid(struct user_pass *up, const char *tag)
+-{
+-    struct gc_arena gc = gc_new();
+-    struct buffer buf;
+-    uint8_t macaddr[6];
+-    static uint8_t digest [MD5_DIGEST_LENGTH];
+-    static const uint8_t hashprefix[] = "AUTO_USERID_DIGEST";
+-
+-    const md_kt_t *md5_kt = md_kt_get("MD5");
+-    md_ctx_t *ctx;
+-
+-    CLEAR(*up);
+-    buf_set_write(&buf, (uint8_t *)up->username, USER_PASS_LEN);
+-    buf_printf(&buf, "%s", TARGET_PREFIX);
+-    if (get_default_gateway_mac_addr(macaddr))
+-    {
+-        dmsg(D_AUTO_USERID, "GUPAU: macaddr=%s", format_hex_ex(macaddr, sizeof(macaddr), 0, 1, ":", &gc));
+-        ctx = md_ctx_new();
+-        md_ctx_init(ctx, md5_kt);
+-        md_ctx_update(ctx, hashprefix, sizeof(hashprefix) - 1);
+-        md_ctx_update(ctx, macaddr, sizeof(macaddr));
+-        md_ctx_final(ctx, digest);
+-        md_ctx_cleanup(ctx);
+-        md_ctx_free(ctx);
+-        buf_printf(&buf, "%s", format_hex_ex(digest, sizeof(digest), 0, 256, " ", &gc));
+-    }
+-    else
+-    {
+-        buf_printf(&buf, "UNKNOWN");
+-    }
+-    if (tag && strcmp(tag, "stdin"))
+-    {
+-        buf_printf(&buf, "-%s", tag);
+-    }
+-    up->defined = true;
+-    gc_free(&gc);
+-
+-    dmsg(D_AUTO_USERID, "GUPAU: AUTO_USERID: '%s'", up->username);
 -}
-\ No newline at end of file
-+}
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 3f1f4658..30320453 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -1100,15 +1100,27 @@ openvpn_extkey_rsa_finish(RSA *rsa)
+-
+-#endif /* if AUTO_USERID */
+-
+ void
+ purge_user_pass(struct user_pass *up, const bool force)
+ {
+diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
+index 7092685f..fad53de8 100644
+--- a/src/openvpn/misc.h
++++ b/src/openvpn/misc.h
+@@ -158,11 +158,6 @@ void configure_path(void);
+ 
+ const char *sanitize_control_message(const char *str, struct gc_arena *gc);
+ 
+-#if AUTO_USERID
+-void get_user_pass_auto_userid(struct user_pass *up, const char *tag);
+-
+-#endif
+-
+ /*
+  * /sbin/ip path, may be overridden
   */
- static int
- get_sig_from_man(const unsigned char *dgst, unsigned int dgstlen,
--                 unsigned char *sig, unsigned int siglen)
-+                 unsigned char *sig, unsigned int siglen, bool pkcs1pad)
- {
-     char *in_b64 = NULL;
-     char *out_b64 = NULL;
-     int len = -1;
-+    int bencret = -1;
- 
--    /* convert 'dgst' to base64 */
--    if (management
--        && openvpn_base64_encode(dgst, dgstlen, &in_b64) > 0)
-+    if ((management->settings.flags & MF_EXTERNAL_KEY_NOPADDING) > 2 && pkcs1pad)
-+    {
-+        /*
-+         * Add PKCS1 signature and replace input with it
-+         * Use our output buffer also als temporary buffer
-+         */
-+        RSA_padding_add_PKCS1_type_1(sig, siglen, dgst, dgstlen);
-+        bencret = openvpn_base64_encode(sig, siglen, &in_b64);
-+    }
-+    else
-+    {
-+        bencret = openvpn_base64_encode(dgst, dgstlen, &in_b64);
-+    }
-+    if (management && bencret > 0)
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 0a947c6e..5a136d69 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -410,9 +410,6 @@ auth_user_pass_setup(const char *auth_file, const struct static_challenge_info *
+     auth_user_pass_enabled = true;
+     if (!auth_user_pass.defined && !auth_token.defined)
      {
-         out_b64 = management_query_pk_sig(management, in_b64);
+-#if AUTO_USERID
+-        get_user_pass_auto_userid(&auth_user_pass, auth_file);
+-#else
+ #ifdef ENABLE_MANAGEMENT
+         if (auth_challenge) /* dynamic challenge/response */
+         {
+@@ -438,7 +435,6 @@ auth_user_pass_setup(const char *auth_file, const struct static_challenge_info *
+         else
+ #endif /* ifdef ENABLE_MANAGEMENT */
+         get_user_pass(&auth_user_pass, auth_file, UP_TYPE_AUTH, GET_USER_PASS_MANAGEMENT);
+-#endif /* if AUTO_USERID */
      }
-@@ -1129,13 +1141,13 @@ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
-     unsigned int len = RSA_size(rsa);
-     int ret = -1;
- 
--    if (padding != RSA_PKCS1_PADDING)
-+    if (padding != RSA_PKCS1_PADDING && padding != RSA_NO_PADDING)
-     {
-         RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE);
-         return -1;
-     }
- 
--    ret = get_sig_from_man(from, flen, to, len);
-+    ret = get_sig_from_man(from, flen, to, len, padding == RSA_PKCS1_PADDING);
- 
-     return (ret == len)? ret : -1;
  }
-@@ -1229,7 +1241,7 @@ ecdsa_sign(int type, const unsigned char *dgst, int dgstlen, unsigned char *sig,
-            unsigned int *siglen, const BIGNUM *kinv, const BIGNUM *r, EC_KEY *ec)
- {
-     int capacity = ECDSA_size(ec);
--    int len = get_sig_from_man(dgst, dgstlen, sig, capacity);
-+    int len = get_sig_from_man(dgst, dgstlen, sig, capacity, false);
  
-     if (len > 0)
-     {
+diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
+index 807f7b9b..d2a50341 100644
+--- a/src/openvpn/syshead.h
++++ b/src/openvpn/syshead.h
+@@ -643,15 +643,6 @@ socket_defined(const socket_descriptor_t sd)
+ #define CONNECT_NONBLOCK
+ #endif
+ 
+-/*
+- * Do we have the capability to support the AUTO_USERID feature?
+- */
+-#if defined(ENABLE_AUTO_USERID)
+-#define AUTO_USERID 1
+-#else
+-#define AUTO_USERID 0
+-#endif
+-
+ /*
+  * Compression support
+  */
 -- 
 2.19.0
 
