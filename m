@@ -1,11 +1,10 @@
-References: <1539014950-21921-1-git-send-email-lstipakov@...277...>
 From: Steffan Karger <steffan@...1856...>
-Message-ID: <a3899483-efab-51c7-e1de-cb497896f193@...1856...>
-Date: Tue, 9 Oct 2018 22:38:51 +0200
-MIME-Version: 1.0
-In-Reply-To: <1539014950-21921-1-git-send-email-lstipakov@...277...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] options.c: fix broken unary minus usage
+Date: Tue,  9 Oct 2018 22:43:15 +0200
+Message-Id: <20181009204315.8262-1-steffan@...1856...>
+In-Reply-To: <9b927c56-b850-b019-2385-2e9e199389b0@...2181...>
+References: <9b927c56-b850-b019-2385-2e9e199389b0@...2181...>
+Subject: [Openvpn-devel] [PATCH v3 2/2] List ChaCha20-Poly1305 as stream
+ cipher
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,74 +13,183 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+As Antonio pointed out, "8-bit block cipher" is a bit funny. So teach
+print_cipher() to print such cipher as "stream cipher".
 
-On 08-10-18 18:09, Lev Stipakov wrote:
-> From: Lev Stipakov <lev@...515...>
-> 
-> In Visual Studio when unary minus is applied to unsigned,
-> result is still unsigned. This means that when we use result
-> as function formal parameter, we pass incorrect value.
-> 
-> Fix by adding explicit cast to signed type.
-> 
-> Since GCC doesn't complain (and users too :), it probably
-> casts to signed automatically.
-> 
-> Signed-off-by: Lev Stipakov <lev@...515...>
-> ---
->  src/openvpn/options.c | 2 +-
->  src/openvpn/ssl.c     | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index e42029c..1927a32 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -3509,7 +3509,7 @@ calc_options_string_link_mtu(const struct options *o, const struct frame *frame)
->          struct key_type fake_kt;
->          init_key_type(&fake_kt, o->ciphername, o->authname, o->keysize, true,
->                        false);
-> -        frame_add_to_extra_frame(&fake_frame, -(crypto_max_overhead()));
-> +        frame_add_to_extra_frame(&fake_frame, -(int)(crypto_max_overhead()));
->          crypto_adjust_frame_parameters(&fake_frame, &fake_kt, o->replay,
->                                         cipher_kt_mode_ofb_cfb(fake_kt.cipher));
->          frame_finalize(&fake_frame, o->ce.link_mtu_defined, o->ce.link_mtu,
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 315303b..18b1fbd 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -1987,7 +1987,7 @@ tls_session_update_crypto_params(struct tls_session *session,
->      }
->  
->      /* Update frame parameters: undo worst-case overhead, add actual overhead */
-> -    frame_add_to_extra_frame(frame, -(crypto_max_overhead()));
-> +    frame_add_to_extra_frame(frame, -(int)(crypto_max_overhead()));
->      crypto_adjust_frame_parameters(frame, &session->opt->key_type,
->                                     options->replay, packet_id_long_form);
->      frame_finalize(frame, options->ce.link_mtu_defined, options->ce.link_mtu,
-> 
+Because I didn't want to write the same code twice, I decided to merge the
+two print_cipher() implementations into one shared function. That should
+make it easier to keep both backends consistent.
 
-Good catch. I had to look it up, but I think this is actually undefined
-behaviour. 6.5 point 5 of C99 says:
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/crypto.c         | 27 +++++++++++++++++++++++++++
+ src/openvpn/crypto.h         |  3 +++
+ src/openvpn/crypto_mbedtls.c | 24 +++---------------------
+ src/openvpn/crypto_mbedtls.h |  4 ++++
+ src/openvpn/crypto_openssl.c | 15 ---------------
+ src/openvpn/crypto_openssl.h |  4 ++++
+ 6 files changed, 41 insertions(+), 36 deletions(-)
 
-"If an exceptional condition occurs during the evaluation of an
-expression (that is, if the result is not mathematically defined or not
-in the range of representable values for its type), the behavior is
-undefined."
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 6d34acd7..e81399b7 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -1769,6 +1769,33 @@ get_random(void)
+     return l;
+ }
+ 
++void
++print_cipher(const cipher_kt_t *cipher)
++{
++    const char *var_key_size = cipher_kt_var_key_size(cipher) ?
++        " by default" : "";
++
++    printf("%s  (%d bit key%s, ",
++           translate_cipher_name_to_openvpn(cipher_kt_name(cipher)),
++           cipher_kt_key_size(cipher) * 8, var_key_size);
++
++    if (cipher_kt_block_size(cipher) == 1)
++    {
++        printf("stream cipher");
++    }
++    else
++    {
++        printf("%d bit block", cipher_kt_block_size(cipher) * 8);
++    }
++
++    if (!cipher_kt_mode_cbc(cipher))
++    {
++        printf(", TLS client/server mode only");
++    }
++
++    printf(")\n");
++}
++
+ static const cipher_name_pair *
+ get_cipher_name_pair(const char *cipher_name)
+ {
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index f4b3dca3..cf87cb49 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -465,6 +465,9 @@ void prng_uninit(void);
+ /* an analogue to the random() function, but use prng_bytes */
+ long int get_random(void);
+ 
++/** Print a cipher list entry */
++void print_cipher(const cipher_kt_t *cipher);
++
+ void test_crypto(struct crypto_options *co, struct frame *f);
+ 
+ 
+diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
+index 0c39eccc..46c3c606 100644
+--- a/src/openvpn/crypto_mbedtls.c
++++ b/src/openvpn/crypto_mbedtls.c
+@@ -39,6 +39,7 @@
+ #include "errlevel.h"
+ #include "basic.h"
+ #include "buffer.h"
++#include "crypto.h"
+ #include "integer.h"
+ #include "crypto_backend.h"
+ #include "otime.h"
+@@ -140,26 +141,6 @@ const cipher_name_pair cipher_name_translation_table[] = {
+ const size_t cipher_name_translation_table_count =
+     sizeof(cipher_name_translation_table) / sizeof(*cipher_name_translation_table);
+ 
+-static void
+-print_cipher(const cipher_kt_t *info)
+-{
+-    if (info && (cipher_kt_mode_cbc(info)
+-#ifdef HAVE_AEAD_CIPHER_MODES
+-                 || cipher_kt_mode_aead(info)
+-#endif
+-                 ))
+-    {
+-        const char *ssl_only = cipher_kt_mode_cbc(info) ?
+-                               "" : ", TLS client/server mode only";
+-        const char *var_key_size = info->flags & MBEDTLS_CIPHER_VARIABLE_KEY_LEN ?
+-                                   " by default" : "";
+-
+-        printf("%s  (%d bit key%s, %d bit block%s)\n",
+-               cipher_kt_name(info), cipher_kt_key_size(info) * 8, var_key_size,
+-               cipher_kt_block_size(info) * 8, ssl_only);
+-    }
+-}
+-
+ void
+ show_available_ciphers(void)
+ {
+@@ -175,7 +156,8 @@ show_available_ciphers(void)
+     while (*ciphers != 0)
+     {
+         const cipher_kt_t *info = mbedtls_cipher_info_from_type(*ciphers);
+-        if (info && !cipher_kt_insecure(info))
++        if (info && !cipher_kt_insecure(info)
++            && (cipher_kt_mode_aead(info) || cipher_kt_mode_cbc(info)))
+         {
+             print_cipher(info);
+         }
+diff --git a/src/openvpn/crypto_mbedtls.h b/src/openvpn/crypto_mbedtls.h
+index 452b06ed..81b542bc 100644
+--- a/src/openvpn/crypto_mbedtls.h
++++ b/src/openvpn/crypto_mbedtls.h
+@@ -146,5 +146,9 @@ mbed_log_func_line_lite(unsigned int flags, int errval,
+ #define mbed_ok(errval) \
+     mbed_log_func_line_lite(D_CRYPT_ERRORS, errval, __func__, __LINE__)
+ 
++static inline bool cipher_kt_var_key_size(const cipher_kt_t *cipher)
++{
++    return cipher->flags & MBEDTLS_CIPHER_VARIABLE_KEY_LEN;
++}
+ 
+ #endif /* CRYPTO_MBEDTLS_H_ */
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 1c0fae86..7989127b 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -265,21 +265,6 @@ cipher_name_cmp(const void *a, const void *b)
+     return strcmp(cipher_name_a, cipher_name_b);
+ }
+ 
+-static void
+-print_cipher(const EVP_CIPHER *cipher)
+-{
+-    const char *var_key_size =
+-        (EVP_CIPHER_flags(cipher) & EVP_CIPH_VARIABLE_LENGTH) ?
+-        " by default" : "";
+-    const char *ssl_only = cipher_kt_mode_cbc(cipher) ?
+-                           "" : ", TLS client/server mode only";
+-
+-    printf("%s  (%d bit key%s, %d bit block%s)\n",
+-           translate_cipher_name_to_openvpn(EVP_CIPHER_name(cipher)),
+-           EVP_CIPHER_key_length(cipher) * 8, var_key_size,
+-           cipher_kt_block_size(cipher) * 8, ssl_only);
+-}
+-
+ void
+ show_available_ciphers(void)
+ {
+diff --git a/src/openvpn/crypto_openssl.h b/src/openvpn/crypto_openssl.h
+index 0a413705..1ea3e858 100644
+--- a/src/openvpn/crypto_openssl.h
++++ b/src/openvpn/crypto_openssl.h
+@@ -101,5 +101,9 @@ void crypto_print_openssl_errors(const unsigned int flags);
+         msg((flags), __VA_ARGS__); \
+     } while (false)
+ 
++static inline bool cipher_kt_var_key_size(const cipher_kt_t *cipher)
++{
++    return EVP_CIPHER_flags(cipher) & EVP_CIPH_VARIABLE_LENGTH;
++}
+ 
+ #endif /* CRYPTO_OPENSSL_H_ */
+-- 
+2.17.1
 
-Remarkably, even with -Wall -Wextra -pedantic, GCC 7.3 does not throw
-any warnings. But some tests show that GCC does what one might expect
-when reading this code: cast to a signed value.
-
-I'm just not sure whether we should add casts, or stop using the 'hack'
-of supplying a negative value to frame_add_to_extra_frame. Maybe we
-should add a frame_remove_from_extra_frame function instead. What do you
-think?
-
--Steffan
 
