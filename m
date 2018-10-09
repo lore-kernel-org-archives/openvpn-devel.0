@@ -1,10 +1,13 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Mon,  8 Oct 2018 23:49:23 +0200
-Message-Id: <20181008214923.11058-3-arne@...1227...>
-In-Reply-To: <20181008214923.11058-1-arne@...1227...>
+MIME-Version: 1.0
 References: <20181008214923.11058-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v2 3/3] Implement the nopadding option to
- management-external-key for mbed TLS
+ <20181008214923.11058-2-arne@...1227...>
+In-Reply-To: <20181008214923.11058-2-arne@...1227...>
+From: Selva Nair <selva.nair@...277...>
+Date: Tue, 9 Oct 2018 01:01:52 -0400
+Message-ID: <CAKuzo_iLEXJvFMdd--GFju_Zmv0hCX3-BZYRP5hXtPBDLsFm=w@...278...>
+Content-Type: multipart/alternative; boundary="000000000000cbd5300577c4a37e"
+Subject: Re: [Openvpn-devel] [PATCH v2 2/3] Add support for OpenSSL TLS 1.3
+ when using management-external-key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,146 +16,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Although mbed TLS does not have a TLS 1.3 API yet and we do not really
-know how mbed TLS will handle querying for TLS 1.3 signatures, being
-able to use the same API with OpenSSL and mbed TLS is a nice feature.
+--000000000000cbd5300577c4a37e
+Content-Type: text/plain; charset="UTF-8"
 
-Since mbed TLS does not expose a way to do pkcs1 padding, copy the
-trimmed down version of the pkcs1 copy to the OpenVPN source code.
+Hi,
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/options.c     | 11 ++----
- src/openvpn/ssl_mbedtls.c | 72 ++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 73 insertions(+), 10 deletions(-)
+On Mon, Oct 8, 2018 at 5:50 PM Arne Schwabe <arne@...1227...> wrote:
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 61762791..fb7d8333 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3025,11 +3025,11 @@ options_postprocess_verify(const struct options *o)
-     }
- }
- 
--#if defined(ENABLE_CRYPTOAPI) || (defined(ENABLE_CRYPTO_OPENSSL) && defined(ENABLE_MANAGEMENT))
-+#if defined(ENABLE_CRYPTOAPI) || defined(ENABLE_MANAGEMENT)
- static void
- disable_tls13_if_avilable(struct options *o, const char* msg)
- {
--#if OPENSSL_VERSION_NUMBER >= 0x10100000L
-+#if OPENSSL_VERSION_NUMBER >= 0x10100000L && !defined(ENABLE_CRYPTO_MBEDTLS)
-     const int tls_version_max =
-         (o->ssl_flags >> SSLF_TLS_VERSION_MAX_SHIFT) &
-             SSLF_TLS_VERSION_MAX_MASK;
-@@ -3134,13 +3134,6 @@ options_postprocess_mutate(struct options *o)
-     }
- #endif
- 
--#if defined(ENABLE_CRYPTO_MBEDTLS) && defined(MANAGMENT_EXTERNAL_KEY)
--    if (o->management_flags & MF_EXTERNAL_KEY_NOPADDING)
--    {
--        msg(M_FATAL, "mbed TLS does not support the 'nopadding' argument for the --management-external-key option");
--    }
--#endif
--
- #if defined(ENABLE_CRYPTOAPI)
-     if (o->cryptoapi_cert)
-     {
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index 6b4ddaf4..3e97a329 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -619,6 +619,59 @@ tls_ctx_use_external_signing_func(struct tls_root_ctx *ctx,
- }
- 
- #ifdef ENABLE_MANAGEMENT
-+/*
-+ * Construct a PKCS v1.5 encoding of a hashed message.
-+ *
-+ * Taken and trimmed down version (only MBEDTLS_MD_NONE) of
-+ * rsa_rsassa_pkcs1_v15_encode from mbedTLS 2.13.1 (53546ea0)
-+ *
-+ * This is used both for signature generation and verification.
-+ *
-+ * Parameters:
-+ * - hashlen: Length of hash in case hashlen is MBEDTLS_MD_NONE.
-+ * - hash:    Buffer containing the hashed message or the raw data.
-+ * - dst_len: Length of the encoded message.
-+ * - dst:     Buffer to hold the encoded message.
-+ *
-+ * Assumptions:
-+ * - hash has size hashlen
-+  * - dst points to a buffer of size at least dst_len.
-+ *
-+ */
-+static int rsa_pkcs1_v15_pad(size_t hashlen, const unsigned char *hash,
-+                             size_t dst_len, unsigned char *dst)
-+{
-+    size_t nb_pad    = dst_len;
-+    unsigned char *p = dst;
-+
-+    if (nb_pad < hashlen)
-+        return MBEDTLS_ERR_RSA_BAD_INPUT_DATA;
-+
-+    nb_pad -= hashlen;
-+
-+
-+    /* Need space for signature header and padding delimiter (3 bytes),
-+     * and 8 bytes for the minimal padding */
-+    if (nb_pad < 3 + 8)
-+    {
-+        return (MBEDTLS_ERR_RSA_BAD_INPUT_DATA);
-+    }
-+    nb_pad -= 3;
-+
-+    /* Now nb_pad is the amount of memory to be filled
-+     * with padding, and at least 8 bytes long. */
-+
-+    /* Write signature header and padding */
-+    *p++ = 0;
-+    *p++ = MBEDTLS_RSA_SIGN;
-+    memset(p, 0xFF, nb_pad);
-+    p += nb_pad;
-+    *p++ = 0;
-+
-+    /* we are signing raw data? */
-+    memcpy(p, hash, hashlen);
-+    return 0;
-+}
- 
- /** Query the management interface for a signature, see external_sign_func. */
- static bool
-@@ -629,7 +682,24 @@ management_sign_func(void *sign_ctx, const void *src, size_t src_len,
-     char *src_b64 = NULL;
-     char *dst_b64 = NULL;
- 
--    if (!management || (openvpn_base64_encode(src, src_len, &src_b64) <= 0))
-+
-+    if (!management)
-+    {
-+        goto cleanup;
-+    }
-+    if (management->settings.flags & MF_EXTERNAL_KEY_NOPADDING)
-+    {
-+        /*
-+         * Add PKCS1 signature and replace input with it
-+         * Use our output buffer also als temporary buffer
-+         */
-+        if ((!mbed_ok(rsa_pkcs1_v15_pad(src_len, src, dst_len, dst)))
-+            || (openvpn_base64_encode(dst, dst_len, &src_b64) <= 0 ))
-+        {
-+            goto cleanup;
-+        }
-+    }
-+    else if (openvpn_base64_encode(src, src_len, &src_b64) <= 0)
-     {
-         goto cleanup;
-     }
--- 
-2.19.0
+> For TLS 1.0 to 1.2 OpenSSL calls us and requires a PKCS1 padded
+> response, for TLS 1.3 it requires to an unpadded response. Since we
+> can PCKS1 pad an unpadded response, we prefer to always query for
+> an unpadded response from the management interface and add the PCKS1
+> padding ourselves when needed.
+>
+> This patch adds an 'unpadded' parameter to the management-external-key
+> option to signal that it is uses the new unpadded API. Since we cannot
+> support TLS 1.3 without unpadded queries we disable TLS 1.3 otherwise.
+> We also do the same for cryptoapi since it uses the same API.
+>
+> Using the management api client version instead might seem like the
+> more logical way but since we only now that version very late,
+> it would extra logic and complexity to deal with this asynchronous
+> behaviour .
+>
 
+I am a bit confused about these patches.
+
+Is it that old 3/4 and 4/4 of became v2 2/3 and v2 3/3 ? If so, is 1/3
+mistakenly added to this series (it about removing some superfluous
+MANAGEMENT_xxx defines..)  or does 2/3 and 3/3 depend on it?
+
+It may help if you mark the superseded patches as such on patchwork so that
+the newest versions stand out.
+
+Thanks,
+
+Selva
+
+--000000000000cbd5300577c4a37e
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div dir=3D"ltr">Hi,<br><br><div class=3D"gmail_quote"><di=
+v dir=3D"ltr">On Mon, Oct 8, 2018 at 5:50 PM Arne <span class=3D"" id=3D":6=
+91.1" tabindex=3D"-1">Schwabe</span> &lt;<span class=3D"" id=3D":691.2" tab=
+index=3D"-1">arne</span>@<a href=3D"http://rfc2549.org">rfc2549.org</a>&gt;=
+ wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px =
+0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">For TLS =
+1.0 to 1.2 OpenSSL calls us and requires a PKCS1 padded<br>
+response, for TLS 1.3 it requires to an unpadded response. Since we<br>
+can PCKS1 pad an unpadded response, we prefer to always query for<br>
+an unpadded response from the management interface and add the PCKS1<br>
+padding ourselves when needed.<br>
+<br>
+This patch adds an &#39;unpadded&#39; parameter to the management-external-=
+key<br>
+option to signal that it is uses the new unpadded API. Since we cannot<br>
+support TLS 1.3 without unpadded queries we disable TLS 1.3 otherwise.<br>
+We also do the same for cryptoapi since it uses the same API.<br>
+<br>
+Using the management api client version instead might seem like the<br>
+more logical way but since we only now that version very late,<br>
+it would extra logic and complexity to deal with this asynchronous<br>
+behaviour .<br></blockquote><div><br></div><div>I am a bit confused about t=
+hese patches.</div><div><br></div><div>Is it that old 3/4 and 4/4 of became=
+ v2 2/3 and v2 3/3 ? If so, is 1/3 mistakenly added to this series (it abou=
+t removing some superfluous MANAGEMENT_xxx defines..) =C2=A0or does 2/3 and=
+ 3/3 depend on it?</div><div><br></div><div><div>It may help if you mark th=
+e superseded patches as such on patchwork so that the newest versions stand=
+ out.</div></div><div><br></div><div>Thanks,</div><div><br></div><div><span=
+ class=3D"" id=3D":691.4" tabindex=3D"-1">Selva</span></div></div></div></d=
+iv>
+
+--000000000000cbd5300577c4a37e--
 
