@@ -1,13 +1,13 @@
+References: <90e7393a-9105-7437-42db-7cc5c055589b@...1856...>
+ <20181010153624.27957-1-arne@...1227...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <8a52f919-64a7-a6b6-7a07-4e9829f89492@...1856...>
+Date: Wed, 10 Oct 2018 21:14:57 +0200
 MIME-Version: 1.0
-References: <1520185442-22901-1-git-send-email-selva.nair@...277...>
- <20181007073824.GA962@...1296...>
-In-Reply-To: <20181007073824.GA962@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 10 Oct 2018 15:08:12 -0400
-Message-ID: <CAKuzo_htJTZuXewxpgTM4jx6s+HRQVRhPRrTmObLx0huRDfYuA@...278...>
-Content-Type: multipart/alternative; boundary="0000000000007bdb780577e494ad"
-Subject: Re: [Openvpn-devel] [PATCH] Do not assume that
- SSL_CTX_get/set_min/max_proto_version are macros
+In-Reply-To: <20181010153624.27957-1-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v4 3/3] Add better support for showing
+ TLS 1.3 ciphersuites in --show-tls
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,97 +16,311 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---0000000000007bdb780577e494ad
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Sun, Oct 7, 2018 at 3:38 AM Gert Doering <gert@...1296...> wrote:
+On 10-10-18 17:36, Arne Schwabe wrote:
+> show-tls shows mixed TLS 1.3 and TLS 1.2 ciphers. The ciphersuites
+> are only valid in tls-cipher or tls-ciphersuites. So this confusing and
+> not really helpful.
+> 
+> This patch modifies show-tls to show separate lists for TLS 1.2 and
+> TLS 1.3.
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> ---
+> PATCH V2: refactor common code between mbed and OpenSSL into ssl.c,
+>           fix minor style issues.
+> 
+> PATCH V3: remove static argument from show_available_tls_ciphers_list
+>           in ssl_openssl.c
+> 
+> PATCH V4: Style fixes
+> 
+>  src/openvpn/init.c        |  1 +
+>  src/openvpn/ssl.c         | 24 ++++++++++++++++
+>  src/openvpn/ssl.h         | 14 ++++++++++
+>  src/openvpn/ssl_backend.h | 12 +++++---
+>  src/openvpn/ssl_common.h  |  6 ----
+>  src/openvpn/ssl_mbedtls.c | 17 ++++++-----
+>  src/openvpn/ssl_openssl.c | 59 +++++++++++++++++++++++++++------------
+>  7 files changed, 96 insertions(+), 37 deletions(-)
+> 
+> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+> index 1b9f19d0..e5e6e85f 100644
+> --- a/src/openvpn/init.c
+> +++ b/src/openvpn/init.c
+> @@ -1034,6 +1034,7 @@ print_openssl_info(const struct options *options)
+>          if (options->show_tls_ciphers)
+>          {
+>              show_available_tls_ciphers(options->cipher_list,
+> +                                       options->cipher_list_tls13,
+>                                         options->tls_cert_profile);
+>          }
+>          if (options->show_curves)
+> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+> index 4f0af286..0b8ccdd3 100644
+> --- a/src/openvpn/ssl.c
+> +++ b/src/openvpn/ssl.c
+> @@ -4127,6 +4127,30 @@ tls_check_ncp_cipher_list(const char *list)
+>      return 0 < strlen(list) && !unsupported_cipher_found;
+>  }
+>  
+> +void
+> +show_available_tls_ciphers(const char *cipher_list,
+> +                           const char *cipher_list_tls13,
+> +                           const char *tls_cert_profile)
+> +{
+> +    printf("Available TLS Ciphers, listed in order of preference:\n");
+> +
+> +#if (ENABLE_CRYPTO_OPENSSL && OPENSSL_VERSION_NUMBER >= 0x1010100fL)
+> +    printf("\nFor TLS 1.3 and newer (--tls-ciphersuite):\n\n");
+> +    show_available_tls_ciphers_list(cipher_list_tls13, tls_cert_profile, true);
+> +#else
+> +    (void) cipher_list_tls13;  /* Avoid unused warning */
+> +#endif
+> +
+> +    printf("\nFor TLS 1.2 and older (--tls-cipher):\n\n");
+> +    show_available_tls_ciphers_list(cipher_list, tls_cert_profile, false);
+> +
+> +    printf("\n"
+> +    "Be aware that that whether a cipher suite in this list can actually work\n"
+> +    "depends on the specific setup of both peers. See the man page entries of\n"
+> +    "--tls-cipher and --show-tls for more details.\n\n"
+> +    );
+> +}
+> +
+>  /*
+>   * Dump a human-readable rendition of an openvpn packet
+>   * into a garbage collectable string which is returned.
+> diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+> index 781adb94..0bbe1da7 100644
+> --- a/src/openvpn/ssl.h
+> +++ b/src/openvpn/ssl.h
+> @@ -601,4 +601,18 @@ bool is_hard_reset(int op, int key_method);
+>  
+>  void delayed_auth_pass_purge(void);
+>  
+> +
+> +/*
+> + * Show the TLS ciphers that are available for us to use in the SSL
+> + * library with headers hinting their usage and warnings about usage.
+> + *
+> + * @param cipher_list       list of allowed TLS cipher, or NULL.
+> + * @param cipher_list_tls13 list of allowed TLS 1.3+ cipher, or NULL
+> + * @param tls_cert_profile  TLS certificate crypto profile name.
+> + */
+> +void
+> +show_available_tls_ciphers(const char *cipher_list,
+> +                           const char *cipher_list_tls13,
+> +                           const char *tls_cert_profile);
+> +
+>  #endif /* ifndef OPENVPN_SSL_H */
+> diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+> index 2ae3bcd7..1c244ece 100644
+> --- a/src/openvpn/ssl_backend.h
+> +++ b/src/openvpn/ssl_backend.h
+> @@ -517,15 +517,19 @@ int key_state_read_plaintext(struct key_state_ssl *ks_ssl, struct buffer *buf,
+>  void print_details(struct key_state_ssl *ks_ssl, const char *prefix);
+>  
+>  /*
+> - * Show the TLS ciphers that are available for us to use in the OpenSSL
+> - * library.
+> + * Show the TLS ciphers that are available for us to use in the
+> + * library depending on the TLS version. This function prints
+> + * a list of ciphers without headers/footers.
+>   *
+>   * @param cipher_list       list of allowed TLS cipher, or NULL.
+>   * @param tls_cert_profile  TLS certificate crypto profile name.
+> + * @param tls13             Select if <=TLS1.2 or TLS1.3+ ciphers
+> + *                          should be shown
+>   */
+>  void
+> -show_available_tls_ciphers(const char *cipher_list,
+> -                           const char *tls_cert_profile);
+> +show_available_tls_ciphers_list(const char *cipher_list,
+> +                                const char *tls_cert_profile,
+> +                                bool tls13);
+>  
+>  /*
+>   * Show the available elliptic curves in the crypto library
+> diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+> index 919ec57c..e5c28508 100644
+> --- a/src/openvpn/ssl_common.h
+> +++ b/src/openvpn/ssl_common.h
+> @@ -554,10 +554,4 @@ struct tls_multi
+>       *   sessions with the remote peer. */
+>  };
+>  
+> -
+> -#define SHOW_TLS_CIPHER_LIST_WARNING \
+> -    "Be aware that that whether a cipher suite in this list can actually work\n" \
+> -    "depends on the specific setup of both peers. See the man page entries of\n" \
+> -    "--tls-cipher and --show-tls for more details.\n\n"
+> -
+>  #endif /* SSL_COMMON_H_ */
+> diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+> index cb71d55a..3a0b5641 100644
+> --- a/src/openvpn/ssl_mbedtls.c
+> +++ b/src/openvpn/ssl_mbedtls.c
+> @@ -1340,9 +1340,15 @@ print_details(struct key_state_ssl *ks_ssl, const char *prefix)
+>  }
+>  
+>  void
+> -show_available_tls_ciphers(const char *cipher_list,
+> -                           const char *tls_cert_profile)
+> +show_available_tls_ciphers_list(const char *cipher_list,
+> +                                const char *tls_cert_profile,
+> +                                bool tls13)
+>  {
+> +    if (tls13)
+> +    {
+> +        /* mbed TLS has no TLS 1.3 support currently */
+> +        return;
+> +    }
+>      struct tls_root_ctx tls_ctx;
+>      const int *ciphers = mbedtls_ssl_list_ciphersuites();
+>  
+> @@ -1355,18 +1361,11 @@ show_available_tls_ciphers(const char *cipher_list,
+>          ciphers = tls_ctx.allowed_ciphers;
+>      }
+>  
+> -#ifndef ENABLE_SMALL
+> -    printf("Available TLS Ciphers,\n");
+> -    printf("listed in order of preference:\n\n");
+> -#endif
+> -
+>      while (*ciphers != 0)
+>      {
+>          printf("%s\n", mbedtls_ssl_get_ciphersuite_name(*ciphers));
+>          ciphers++;
+>      }
+> -    printf("\n" SHOW_TLS_CIPHER_LIST_WARNING);
+> -
+>      tls_ctx_free(&tls_ctx);
+>  }
+>  
+> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+> index ba0d1328..99a8719f 100644
+> --- a/src/openvpn/ssl_openssl.c
+> +++ b/src/openvpn/ssl_openssl.c
+> @@ -60,6 +60,7 @@
+>  #include <openssl/pkcs12.h>
+>  #include <openssl/rsa.h>
+>  #include <openssl/x509.h>
+> +#include <openssl/ssl.h>
+>  #ifndef OPENSSL_NO_EC
+>  #include <openssl/ec.h>
+>  #endif
+> @@ -428,7 +429,8 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+>  }
+>  
+>  void
+> -convert_tls13_list_to_openssl(char* openssl_ciphers, size_t len, const char *ciphers)
+> +convert_tls13_list_to_openssl(char *openssl_ciphers, size_t len,
+> +                              const char *ciphers)
+>  {
+>      /*
+>       * OpenSSL (and official IANA) cipher names have _ in them. We
+> @@ -1984,14 +1986,11 @@ print_details(struct key_state_ssl *ks_ssl, const char *prefix)
+>  }
+>  
+>  void
+> -show_available_tls_ciphers(const char *cipher_list,
+> -                           const char *tls_cert_profile)
+> +show_available_tls_ciphers_list(const char *cipher_list,
+> +                                const char *tls_cert_profile,
+> +                                const bool tls13)
+>  {
+>      struct tls_root_ctx tls_ctx;
+> -    SSL *ssl;
+> -    const char *cipher_name;
+> -    const tls_cipher_name_pair *pair;
+> -    int priority = 0;
+>  
+>      tls_ctx.ctx = SSL_CTX_new(SSLv23_method());
+>      if (!tls_ctx.ctx)
+> @@ -1999,22 +1998,45 @@ show_available_tls_ciphers(const char *cipher_list,
+>          crypto_msg(M_FATAL, "Cannot create SSL_CTX object");
+>      }
+>  
+> -    ssl = SSL_new(tls_ctx.ctx);
+> -    if (!ssl)
+> +#if (OPENSSL_VERSION_NUMBER >= 0x1010100fL)
+> +    if (tls13)
+>      {
+> -        crypto_msg(M_FATAL, "Cannot create SSL object");
+> +        SSL_CTX_set_min_proto_version(tls_ctx.ctx, TLS1_3_VERSION);
+> +    }
+> +    else
+> +#endif
+> +    {
+> +        SSL_CTX_set_max_proto_version(tls_ctx.ctx, TLS1_2_VERSION);
+>      }
+>  
+>      tls_ctx_set_cert_profile(&tls_ctx, tls_cert_profile);
+>      tls_ctx_restrict_ciphers(&tls_ctx, cipher_list);
+>  
+> -    printf("Available TLS Ciphers,\n");
+> -    printf("listed in order of preference:\n\n");
+> -    while ((cipher_name = SSL_get_cipher_list(ssl, priority++)))
+> +    SSL *ssl = SSL_new(tls_ctx.ctx);
+> +    if (!ssl)
+>      {
+> -        pair = tls_get_cipher_name_pair(cipher_name, strlen(cipher_name));
+> +        crypto_msg(M_FATAL, "Cannot create SSL object");
+> +    }
+>  
+> -        if (NULL == pair)
+> +#if (OPENSSL_VERSION_NUMBER < 0x1010000fL)
+> +    STACK_OF(SSL_CIPHER) *sk = SSL_get_ciphers(ssl);
+> +#else
+> +    STACK_OF(SSL_CIPHER) *sk = SSL_get1_supported_ciphers(ssl);
+> +#endif
+> +    for (int i=0;i < sk_SSL_CIPHER_num(sk);i++)
+> +    {
+> +        const SSL_CIPHER *c = sk_SSL_CIPHER_value(sk, i);
+> +
+> +        const char *cipher_name = SSL_CIPHER_get_name(c);
+> +
+> +        const tls_cipher_name_pair *pair =
+> +            tls_get_cipher_name_pair(cipher_name, strlen(cipher_name));
+> +
+> +        if (tls13)
+> +        {
+> +              printf("%s\n", cipher_name);
+> +        }
+> +        else if (NULL == pair)
+>          {
+>              /* No translation found, print warning */
+>              printf("%s (No IANA name known to OpenVPN, use OpenSSL name.)\n", cipher_name);
+> @@ -2023,14 +2045,15 @@ show_available_tls_ciphers(const char *cipher_list,
+>          {
+>              printf("%s\n", pair->iana_name);
+>          }
+> -
+>      }
+> -    printf("\n" SHOW_TLS_CIPHER_LIST_WARNING);
+> -
+> +#if (OPENSSL_VERSION_NUMBER >= 0x1010000fL)
+> +    sk_SSL_CIPHER_free(sk);
+> +#endif
+>      SSL_free(ssl);
+>      SSL_CTX_free(tls_ctx.ctx);
+>  }
+>  
+> +
+>  /*
+>   * Show the Elliptic curves that are available for us to use
+>   * in the OpenSSL library.
+> 
 
-> Hi,
->
-> On Sun, Mar 04, 2018 at 12:44:02PM -0500, selva.nair@...277... wrote:
-> > From: Selva Nair <selva.nair@...277...>
-> >
-> > Openssl docs do not explicitly state these to be macros although they
-> > are currently defined as such. Use AC_CHECK_DECLS to test for these so
-> that
-> > both function and macro forms could be detected.
-> >
-> > Signed-off-by: Selva Nair <selva.nair@...277...>
-> > ---
-> > Though not meant as a fixup for libressl, as a side effect
-> > this also makes 2.4.5 build with newer libressl versions.
-> > (built on freebsd 11 using libressl 2.6.4 while testing patch 238)
-> > Notes: (i) libressl defines only the set functions and neither
-> > are macros. So get functions will get used from the compat layer.
->
-> So, going through open patches in patchwork I came to this one.
->
-> Reading through the thread, I'm not sure what the final outcome on
-> the patch and the problem was?  LibreSSL seems to be fixed (thanks,
-> Jeremie :-) ) and if we build with OpenSSL 1.1.0g+, all is good?
->
-> Phrased differently: does anything need to be done with this patch or
-> should I click on "superceded" in patchwork now?
->
+Looks all good now, thanks!
 
-Agreed, if LibreSSL has got those macros defined now, we should just drop
-this patch.
+Acked-by: Steffan Karger <steffan@...1856...>
 
-I'm marking these as superseded.
-
-Selva
-
---0000000000007bdb780577e494ad
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Hi,<br><div><br><div class=3D"gmail_quote"><div dir=3D"ltr=
-">On Sun, Oct 7, 2018 at 3:38 AM Gert <span class=3D"" style=3D"" id=3D":36=
-3.1" tabindex=3D"-1">Doering</span> &lt;<span class=3D"" style=3D"" id=3D":=
-363.2" tabindex=3D"-1">gert</span>@<span class=3D"" style=3D"" id=3D":363.3=
-" tabindex=3D"-1">greenie</span>.<span class=3D"" style=3D"" id=3D":363.4" =
-tabindex=3D"-1">muc</span>.<span class=3D"" style=3D"" id=3D":363.5" tabind=
-ex=3D"-1">de</span>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" s=
-tyle=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Hi,<=
-br>
-<br>
-On Sun, Mar 04, 2018 at 12:44:02PM -0500, <a href=3D"mailto:selva.nair@...1665...=
-77..." target=3D"_blank">selva.nair@...277...</a> wrote:<br>
-&gt; From: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277..." target=3D=
-"_blank">selva.nair@...277...</a>&gt;<br>
-&gt; <br>
-&gt; Openssl docs do not explicitly state these to be macros although they<=
-br>
-&gt; are currently defined as such. Use AC_CHECK_DECLS to test for these so=
- that<br>
-&gt; both function and macro forms could be detected.<br>
-&gt; <br>
-&gt; Signed-off-by: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277..." =
-target=3D"_blank">selva.nair@...277...</a>&gt;<br>
-&gt; ---<br>
-&gt; Though not meant as a fixup for libressl, as a side effect<br>
-&gt; this also makes 2.4.5 build with newer libressl versions.<br>
-&gt; (built on freebsd 11 using libressl 2.6.4 while testing patch 238)<br>
-&gt; Notes: (i) libressl defines only the set functions and neither<br>
-&gt; are macros. So get functions will get used from the compat layer.<br>
-<br>
-So, going through open patches in patchwork I came to this one.<br>
-<br>
-Reading through the thread, I&#39;m not sure what the final outcome on<br>
-the patch and the problem was?=C2=A0 LibreSSL seems to be fixed (thanks,<br>
-Jeremie :-) ) and if we build with OpenSSL 1.1.0g+, all is good?<br>
-<br>
-Phrased differently: does anything need to be done with this patch or<br>
-should I click on &quot;superceded&quot; in patchwork now?<br></blockquote>=
-<div><br></div><div>Agreed, if <span class=3D"" style=3D"" id=3D":363.6" ta=
-bindex=3D"-1">LibreSSL</span> has got those macros defined now, we should j=
-ust drop<br>this patch.<br></div><div>=C2=A0<br></div><div>I&#39;m marking =
-these as superseded.<br><br></div><div><span class=3D"" style=3D"" id=3D":3=
-63.7" tabindex=3D"-1">Selva</span><br></div></div></div></div>
-
---0000000000007bdb780577e494ad--
+-Steffan
 
