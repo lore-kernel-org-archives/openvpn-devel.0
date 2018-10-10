@@ -1,8 +1,8 @@
 From: Steffan Karger <steffan.karger@...1435...>
-Date: Wed, 10 Oct 2018 08:44:43 +0200
-Message-ID: <1539153883-15789-1-git-send-email-steffan.karger@...1435...>
+Date: Wed, 10 Oct 2018 08:51:46 +0200
+Message-ID: <1539154306-27462-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix mbedtls unit tests
+Subject: [Openvpn-devel] [PATCH] Remove example unit tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,96 +15,148 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Commit 674b166 ("Fix build warnings related to get_random()") broke the
-unit tests for mbedtls, because <mbedtls/cipher.h> was now included via
-platform.c -> crypto.h -> crypto_backend.h, but the crypto cflags were
-not included for that unit tests.
-
-Since we got rid of --disable-crypto, we can now fix this by simply always
-including the CRYPTO_CFLAGS in the TEST_CFLAGS (and the CRYPTO_LIBS in the
-TEST_LDFLAGS). This should not only fix this occurrence, but also prevent
-similar problems in the future.
+We have plenty real unit test that can be used as examples, so the
+example tests are no longer needed. Let's get rid of them.
 
 Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-
-# Conflicts:
-#	tests/unit_tests/openvpn/Makefile.am
 ---
- configure.ac                         |  4 ++--
- tests/unit_tests/openvpn/Makefile.am | 24 ++++++++----------------
- 2 files changed, 10 insertions(+), 18 deletions(-)
+ tests/unit_tests/Makefile.am              |  2 +-
+ tests/unit_tests/example_test/Makefile.am | 13 --------
+ tests/unit_tests/example_test/README.md   |  3 --
+ tests/unit_tests/example_test/test.c      | 52 -------------------------------
+ tests/unit_tests/example_test/test2.c     | 23 --------------
+ 5 files changed, 1 insertion(+), 92 deletions(-)
+ delete mode 100644 tests/unit_tests/example_test/Makefile.am
+ delete mode 100644 tests/unit_tests/example_test/README.md
+ delete mode 100644 tests/unit_tests/example_test/test.c
+ delete mode 100644 tests/unit_tests/example_test/test2.c
 
-diff --git a/configure.ac b/configure.ac
-index 399cdf4..1e6891b 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1360,8 +1360,8 @@ AC_SUBST([VENDOR_SRC_ROOT])
- AC_SUBST([VENDOR_BUILD_ROOT])
- AC_SUBST([VENDOR_DIST_ROOT])
+diff --git a/tests/unit_tests/Makefile.am b/tests/unit_tests/Makefile.am
+index 31d37b8..cb3d63a 100644
+--- a/tests/unit_tests/Makefile.am
++++ b/tests/unit_tests/Makefile.am
+@@ -1,5 +1,5 @@
+ AUTOMAKE_OPTIONS = foreign
  
--TEST_LDFLAGS="-lcmocka -L\$(abs_top_builddir)/vendor/dist/lib -Wl,-rpath,\$(abs_top_builddir)/vendor/dist/lib"
--TEST_CFLAGS="-I\$(top_srcdir)/include -I\$(abs_top_builddir)/vendor/dist/include"
-+TEST_LDFLAGS="${OPTIONAL_CRYPTO_LIBS} ${OPTIONAL_PKCS11_LIBS} -lcmocka -L\$(abs_top_builddir)/vendor/dist/lib -Wl,-rpath,\$(abs_top_builddir)/vendor/dist/lib"
-+TEST_CFLAGS="${OPTIONAL_CRYPTO_CFLAGS} ${OPTIONAL_PKCS11_CFLAGS} -I\$(top_srcdir)/include -I\$(abs_top_builddir)/vendor/dist/include"
- 
- AC_SUBST([TEST_LDFLAGS])
- AC_SUBST([TEST_CFLAGS])
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index 0f7f86b..22a458a 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -14,10 +14,8 @@ openvpn_includedir = $(top_srcdir)/include
- openvpn_srcdir = $(top_srcdir)/src/openvpn
- compat_srcdir = $(top_srcdir)/src/compat
- 
--argv_testdriver_CFLAGS  = @TEST_CFLAGS@ -I$(openvpn_srcdir) -I$(compat_srcdir) \
--	$(OPTIONAL_CRYPTO_CFLAGS)
--argv_testdriver_LDFLAGS = @TEST_LDFLAGS@ -L$(openvpn_srcdir) -Wl,--wrap=parse_line \
--	$(OPTIONAL_CRYPTO_LIBS)
-+argv_testdriver_CFLAGS  = @TEST_CFLAGS@ -I$(openvpn_srcdir) -I$(compat_srcdir)
-+argv_testdriver_LDFLAGS = @TEST_LDFLAGS@ -L$(openvpn_srcdir) -Wl,--wrap=parse_line
- argv_testdriver_SOURCES = test_argv.c mock_msg.c \
- 	mock_get_random.c \
- 	$(openvpn_srcdir)/platform.c \
-@@ -31,10 +29,8 @@ buffer_testdriver_SOURCES = test_buffer.c mock_msg.c \
- 	$(openvpn_srcdir)/platform.c
- 
- crypto_testdriver_CFLAGS  = @TEST_CFLAGS@ \
--	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir) \
--	$(OPTIONAL_CRYPTO_CFLAGS)
--crypto_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
--	$(OPTIONAL_CRYPTO_LIBS)
-+	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir)
-+crypto_testdriver_LDFLAGS = @TEST_LDFLAGS@
- crypto_testdriver_SOURCES = test_crypto.c mock_msg.c \
- 	$(openvpn_srcdir)/buffer.c \
- 	$(openvpn_srcdir)/crypto.c \
-@@ -45,10 +41,8 @@ crypto_testdriver_SOURCES = test_crypto.c mock_msg.c \
- 	$(openvpn_srcdir)/platform.c
- 
- packet_id_testdriver_CFLAGS  = @TEST_CFLAGS@ \
--	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir) \
--	$(OPTIONAL_CRYPTO_CFLAGS)
--packet_id_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
--	$(OPTIONAL_CRYPTO_LIBS)
-+	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir)
-+packet_id_testdriver_LDFLAGS = @TEST_LDFLAGS@
- packet_id_testdriver_SOURCES = test_packet_id.c mock_msg.c \
- 	mock_get_random.c \
- 	$(openvpn_srcdir)/buffer.c \
-@@ -57,10 +51,8 @@ packet_id_testdriver_SOURCES = test_packet_id.c mock_msg.c \
- 	$(openvpn_srcdir)/platform.c
- 
- tls_crypt_testdriver_CFLAGS  = @TEST_CFLAGS@ \
--	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir) \
--	$(OPTIONAL_CRYPTO_CFLAGS)
--tls_crypt_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
--	$(OPTIONAL_CRYPTO_LIBS)
-+	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir)
-+tls_crypt_testdriver_LDFLAGS = @TEST_LDFLAGS@
- tls_crypt_testdriver_SOURCES = test_tls_crypt.c mock_msg.c \
- 	$(openvpn_srcdir)/base64.c \
- 	$(openvpn_srcdir)/buffer.c \
+ if CMOCKA_INITIALIZED
+-SUBDIRS = example_test openvpn plugins
++SUBDIRS = openvpn plugins
+ endif
+diff --git a/tests/unit_tests/example_test/Makefile.am b/tests/unit_tests/example_test/Makefile.am
+deleted file mode 100644
+index 04a5ad3..0000000
+--- a/tests/unit_tests/example_test/Makefile.am
++++ /dev/null
+@@ -1,13 +0,0 @@
+-AUTOMAKE_OPTIONS = foreign
+-
+-check_PROGRAMS = example_testdriver example2_testdriver
+-
+-TESTS = $(check_PROGRAMS)
+-
+-example_testdriver_CFLAGS  = @TEST_CFLAGS@
+-example_testdriver_LDFLAGS = @TEST_LDFLAGS@
+-example_testdriver_SOURCES = test.c
+-
+-example2_testdriver_CFLAGS  = @TEST_CFLAGS@
+-example2_testdriver_LDFLAGS = @TEST_LDFLAGS@
+-example2_testdriver_SOURCES = test2.c
+diff --git a/tests/unit_tests/example_test/README.md b/tests/unit_tests/example_test/README.md
+deleted file mode 100644
+index cb75d68..0000000
+--- a/tests/unit_tests/example_test/README.md
++++ /dev/null
+@@ -1,3 +0,0 @@
+-This test only checks that test compilation works. This example contains two test executables.
+-
+-These tests can be used as template for 'real' tests.
+diff --git a/tests/unit_tests/example_test/test.c b/tests/unit_tests/example_test/test.c
+deleted file mode 100644
+index d48e5f5..0000000
+--- a/tests/unit_tests/example_test/test.c
++++ /dev/null
+@@ -1,52 +0,0 @@
+-#include <stdio.h>
+-#include <unistd.h>
+-#include <stdlib.h>
+-#include <stdarg.h>
+-#include <string.h>
+-#include <setjmp.h>
+-#include <cmocka.h>
+-
+-static int
+-setup(void **state) {
+-    int *answer  = malloc(sizeof(int));
+-
+-    *answer = 42;
+-    *state = answer;
+-
+-    return 0;
+-}
+-
+-static int
+-teardown(void **state) {
+-    free(*state);
+-
+-    return 0;
+-}
+-
+-static void
+-null_test_success(void **state) {
+-    (void) state;
+-}
+-
+-static void
+-int_test_success(void **state) {
+-    int *answer = *state;
+-    assert_int_equal(*answer, 42);
+-}
+-
+-static void
+-failing_test(void **state) {
+-    /* This tests fails to test that make check fails */
+-    assert_int_equal(0, 42);
+-}
+-
+-int
+-main(void) {
+-    const struct CMUnitTest tests[] = {
+-        cmocka_unit_test(null_test_success),
+-        cmocka_unit_test_setup_teardown(int_test_success, setup, teardown),
+-/*        cmocka_unit_test(failing_test), */
+-    };
+-
+-    return cmocka_run_group_tests_name("success_test", tests, NULL, NULL);
+-}
+diff --git a/tests/unit_tests/example_test/test2.c b/tests/unit_tests/example_test/test2.c
+deleted file mode 100644
+index b5d4fa6..0000000
+--- a/tests/unit_tests/example_test/test2.c
++++ /dev/null
+@@ -1,23 +0,0 @@
+-#include <stdio.h>
+-#include <unistd.h>
+-#include <stdlib.h>
+-#include <stdarg.h>
+-#include <string.h>
+-#include <setjmp.h>
+-#include <cmocka.h>
+-
+-
+-static void
+-test_true(void **state) {
+-    (void) state;
+-}
+-
+-
+-int
+-main(void) {
+-    const struct CMUnitTest tests[] = {
+-        cmocka_unit_test(test_true),
+-    };
+-
+-    return cmocka_run_group_tests_name("success_test2", tests, NULL, NULL);
+-}
 -- 
 2.7.4
 
