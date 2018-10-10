@@ -1,13 +1,8 @@
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Wed, 10 Oct 2018 08:44:43 +0200
+Message-ID: <1539153883-15789-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-References: <1539014950-21921-1-git-send-email-lstipakov@...277...>
- <a3899483-efab-51c7-e1de-cb497896f193@...1856...>
- <CAKuzo_hj-Sw5J5HeT1-eOqzjSwK3yvsNxA+cYKJGkPAuT2LHSA@...278...>
-In-Reply-To: <CAKuzo_hj-Sw5J5HeT1-eOqzjSwK3yvsNxA+cYKJGkPAuT2LHSA@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 9 Oct 2018 17:29:31 -0400
-Message-ID: <CAKuzo_jsZhmfEWJd=VhWuJG6cQNwb_y8i6w-2oV+=otTkjD8XQ@...278...>
-Content-Type: multipart/alternative; boundary="0000000000001495e40577d27093"
-Subject: Re: [Openvpn-devel] [PATCH] options.c: fix broken unary minus usage
+Subject: [Openvpn-devel] [PATCH] Fix mbedtls unit tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,77 +11,101 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---0000000000001495e40577d27093
-Content-Type: text/plain; charset="UTF-8"
+Commit 674b166 ("Fix build warnings related to get_random()") broke the
+unit tests for mbedtls, because <mbedtls/cipher.h> was now included via
+platform.c -> crypto.h -> crypto_backend.h, but the crypto cflags were
+not included for that unit tests.
 
-Hi
+Since we got rid of --disable-crypto, we can now fix this by simply always
+including the CRYPTO_CFLAGS in the TEST_CFLAGS (and the CRYPTO_LIBS in the
+TEST_LDFLAGS). This should not only fix this occurrence, but also prevent
+similar problems in the future.
 
-On Tue, Oct 9, 2018 at 5:14 PM Selva Nair <selva.nair@...277...> wrote:
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 
->
->
-> In fact the issue here is not the unary minus, but the unsigned to signed
-> conversion. So when there is no scope for overflow all is good. If there is
-> overflow, unsigned->signed conversion is ill-defined -- cast doesn't fix
-> it. In fact the cast is meaningless here (see more on that below):
->
-> Although C99 std does not seem to be explicit about unary minus of
-> unsigned, the practice in C even before that was to subtract the number
-> from the largest possible value and add 1: as in K&R A7.4.5 (p. 204 in my
-> copy):
->
-> "If the operand is unsigned, the result is computed by subtracting the
-> value from the largest value of the promoted type"
->
-> So unary minus of unsigned itself is well-defined. Actually even the unary
-> minus of unsigned is computed using the above rule for signed:
->
-> "If the operand is signed, the result is computed by promoted operand to
-> its unsigned type, applying -, and converting back to the signed type".!!
->
->
+# Conflicts:
+#	tests/unit_tests/openvpn/Makefile.am
+---
+ configure.ac                         |  4 ++--
+ tests/unit_tests/openvpn/Makefile.am | 24 ++++++++----------------
+ 2 files changed, 10 insertions(+), 18 deletions(-)
 
-> So what the cast achieves is a an additional iteration of conversions
-> which gains nothing.
->
+diff --git a/configure.ac b/configure.ac
+index 399cdf4..1e6891b 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1360,8 +1360,8 @@ AC_SUBST([VENDOR_SRC_ROOT])
+ AC_SUBST([VENDOR_BUILD_ROOT])
+ AC_SUBST([VENDOR_DIST_ROOT])
+ 
+-TEST_LDFLAGS="-lcmocka -L\$(abs_top_builddir)/vendor/dist/lib -Wl,-rpath,\$(abs_top_builddir)/vendor/dist/lib"
+-TEST_CFLAGS="-I\$(top_srcdir)/include -I\$(abs_top_builddir)/vendor/dist/include"
++TEST_LDFLAGS="${OPTIONAL_CRYPTO_LIBS} ${OPTIONAL_PKCS11_LIBS} -lcmocka -L\$(abs_top_builddir)/vendor/dist/lib -Wl,-rpath,\$(abs_top_builddir)/vendor/dist/lib"
++TEST_CFLAGS="${OPTIONAL_CRYPTO_CFLAGS} ${OPTIONAL_PKCS11_CFLAGS} -I\$(top_srcdir)/include -I\$(abs_top_builddir)/vendor/dist/include"
+ 
+ AC_SUBST([TEST_LDFLAGS])
+ AC_SUBST([TEST_CFLAGS])
+diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
+index 0f7f86b..22a458a 100644
+--- a/tests/unit_tests/openvpn/Makefile.am
++++ b/tests/unit_tests/openvpn/Makefile.am
+@@ -14,10 +14,8 @@ openvpn_includedir = $(top_srcdir)/include
+ openvpn_srcdir = $(top_srcdir)/src/openvpn
+ compat_srcdir = $(top_srcdir)/src/compat
+ 
+-argv_testdriver_CFLAGS  = @TEST_CFLAGS@ -I$(openvpn_srcdir) -I$(compat_srcdir) \
+-	$(OPTIONAL_CRYPTO_CFLAGS)
+-argv_testdriver_LDFLAGS = @TEST_LDFLAGS@ -L$(openvpn_srcdir) -Wl,--wrap=parse_line \
+-	$(OPTIONAL_CRYPTO_LIBS)
++argv_testdriver_CFLAGS  = @TEST_CFLAGS@ -I$(openvpn_srcdir) -I$(compat_srcdir)
++argv_testdriver_LDFLAGS = @TEST_LDFLAGS@ -L$(openvpn_srcdir) -Wl,--wrap=parse_line
+ argv_testdriver_SOURCES = test_argv.c mock_msg.c \
+ 	mock_get_random.c \
+ 	$(openvpn_srcdir)/platform.c \
+@@ -31,10 +29,8 @@ buffer_testdriver_SOURCES = test_buffer.c mock_msg.c \
+ 	$(openvpn_srcdir)/platform.c
+ 
+ crypto_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+-	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir) \
+-	$(OPTIONAL_CRYPTO_CFLAGS)
+-crypto_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
+-	$(OPTIONAL_CRYPTO_LIBS)
++	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir)
++crypto_testdriver_LDFLAGS = @TEST_LDFLAGS@
+ crypto_testdriver_SOURCES = test_crypto.c mock_msg.c \
+ 	$(openvpn_srcdir)/buffer.c \
+ 	$(openvpn_srcdir)/crypto.c \
+@@ -45,10 +41,8 @@ crypto_testdriver_SOURCES = test_crypto.c mock_msg.c \
+ 	$(openvpn_srcdir)/platform.c
+ 
+ packet_id_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+-	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir) \
+-	$(OPTIONAL_CRYPTO_CFLAGS)
+-packet_id_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
+-	$(OPTIONAL_CRYPTO_LIBS)
++	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir)
++packet_id_testdriver_LDFLAGS = @TEST_LDFLAGS@
+ packet_id_testdriver_SOURCES = test_packet_id.c mock_msg.c \
+ 	mock_get_random.c \
+ 	$(openvpn_srcdir)/buffer.c \
+@@ -57,10 +51,8 @@ packet_id_testdriver_SOURCES = test_packet_id.c mock_msg.c \
+ 	$(openvpn_srcdir)/platform.c
+ 
+ tls_crypt_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+-	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir) \
+-	$(OPTIONAL_CRYPTO_CFLAGS)
+-tls_crypt_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
+-	$(OPTIONAL_CRYPTO_LIBS)
++	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir)
++tls_crypt_testdriver_LDFLAGS = @TEST_LDFLAGS@
+ tls_crypt_testdriver_SOURCES = test_tls_crypt.c mock_msg.c \
+ 	$(openvpn_srcdir)/base64.c \
+ 	$(openvpn_srcdir)/buffer.c \
+-- 
+2.7.4
 
-Ignore most of it -- I'm having really bad day and writing mostly nonsense.
-
-Selva
-
---0000000000001495e40577d27093
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Hi<br><div><br><div class=3D"gmail_quote"><div dir=3D"ltr"=
->On Tue, Oct 9, 2018 at 5:14 PM Selva Nair &lt;<a href=3D"mailto:selva.nair=
-@...277...">selva.nair@...277...</a>&gt; wrote:<br></div><blockquote class=
-=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padd=
-ing-left:1ex"><div dir=3D"ltr"><br><div><div class=3D"gmail_quote"><div><br=
-></div><div>In fact the issue here is not the unary minus, but the unsigned=
- to signed conversion. So when there is no scope for overflow all is good. =
-If there is overflow, unsigned-&gt;signed conversion is ill-defined -- cast=
- doesn&#39;t fix it. In fact the cast is meaningless here (see more on that=
- below):<br><br>Although C99 std does not seem to be explicit about unary m=
-inus of unsigned, the practice in C even before that was to subtract the nu=
-mber from the largest possible value and add 1: as in K&amp;R A7.4.5 (p. 20=
-4 in my copy):<br><br></div><div>&quot;If the operand is unsigned, the resu=
-lt is computed by subtracting the value from the largest value of the promo=
-ted type&quot;<br><br></div><div>So unary minus of unsigned itself is well-=
-defined. Actually even the unary minus of unsigned is computed using the ab=
-ove rule for signed:<br><br>&quot;If the operand is signed, the result is c=
-omputed by promoted operand to its unsigned type, applying -, and convertin=
-g back to the signed type&quot;.!!<br>=C2=A0</div></div></div></div></block=
-quote><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-l=
-eft:1px #ccc solid;padding-left:1ex"><div dir=3D"ltr"><div><div class=3D"gm=
-ail_quote"><div><br></div><div>So what the cast achieves is a an additional=
- iteration of conversions which gains nothing.<br></div></div></div></div><=
-/blockquote><div><br></div><div>Ignore most of it -- I&#39;m having really =
-bad day and writing mostly nonsense.<br><br></div><div>Selva <br></div></di=
-v></div></div>
-
---0000000000001495e40577d27093--
 
