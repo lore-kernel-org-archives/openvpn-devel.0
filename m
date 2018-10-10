@@ -1,12 +1,16 @@
+Date: Wed, 10 Oct 2018 09:14:51 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20181010071451.GP962@...1296...>
+References: <CABMULt+srvCfNqio3FTmh0MLahFDh0mjWCpPyxoJQnWw0Ee+6w@...278...>
+ <20181009152342.GG962@...1296...>
+ <CABMULtKW13+tS-o9bfaFw6ecO=CVMq9Q12oznH5iBQ6d=k8dRQ@...278...>
+ <20181009184349.GJ962@...1296...>
 MIME-Version: 1.0
-References: <1539014950-21921-1-git-send-email-lstipakov@...277...>
- <a3899483-efab-51c7-e1de-cb497896f193@...1856...>
-In-Reply-To: <a3899483-efab-51c7-e1de-cb497896f193@...1856...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Wed, 10 Oct 2018 10:13:56 +0300
-Message-ID: <CAGyAFMULV02g3gyCbvQ1+L+cMdE4UZMmzVfey-T1g4Y0NcmKeg@...278...>
-Content-Type: multipart/alternative; boundary="000000000000aae8d90577da994d"
-Subject: Re: [Openvpn-devel] [PATCH] options.c: fix broken unary minus usage
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="yOJWIPlLSoQhvV9Y"
+Content-Disposition: inline
+In-Reply-To: <20181009184349.GJ962@...1296...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN cipher issue?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,69 +19,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Alex K <rightkicktech@...277...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net, "openvpn users list (openvpn-users@lists.sourceforge.net)" <openvpn-users@lists.sourceforge.net>
 
---000000000000aae8d90577da994d
-Content-Type: text/plain; charset="UTF-8"
+--yOJWIPlLSoQhvV9Y
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-This was catched by Visual Studio. Moreover, with SDL enabled
-(
-https://docs.microsoft.com/fi-fi/cpp/build/reference/sdl-enable-additional-security-checks?view=vs-2017
-)
-this warning is treated as an error.
+to copy the reply from Steffan over to openvpn-users...
 
-It is probably a good idea to trigger Visual Studio build on every commit
-to master
-(and enable SDL), have to think what would be the best way to do it.
-Currently
-we build with VS when making PRs to openvpn-build, which we don't do that
-often.
+On Tue, Oct 09, 2018 at 08:43:49PM +0200, Gert Doering wrote:
+> (copying in openvpn-devel, as this is something Steffan will want to
+> see...)
+[..]
+> Possibly this is when the first packet is sent by the client or when
+> the first packet comes in for decryption - "man EVP_CipherUpdate" says
+> that this is for encryption or decryption.
 
-I'm just not sure whether we should add casts, or stop using the 'hack'
-> of supplying a negative value to frame_add_to_extra_frame. Maybe we
-> should add a frame_remove_from_extra_frame function instead. What do you
-> think?
->
+Steffan Karger:
+> This very much sounds like an old OpenSSL bug for which we added a
+> workaround in this commit:
+> https://github.com/OpenVPN/openvpn/commit/13de0103e
+>=20
+> This typically occurred with the OpenSSL version shipped with Ubuntu
+> 12.04, which had a buggy AEAD interface.
+>=20
+> Either upgrading your OpenSSL or your OpenVPN to a recent version should
+> be sufficient to make it work.
 
-Agreed, semantically it is more clear when _add_ method adds and
-_remove_ method removes.
+-> so, upgrade to OpenVPN 2.4.6, or see if there is an Ubuntu upgrade
+to OpenSSL.  Or upgrade to Ubuntu 14.04 or 16.04...
 
-I'll add _remove_ method and change type of "increment" parameter
-to unsigned in both methods so that next time when we'll try to use _add_
-with negative value, we'll get a warning.
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
--- 
--Lev
+Gert Doering - Munich, Germany                             gert@...1296...
 
---000000000000aae8d90577da994d
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+--yOJWIPlLSoQhvV9Y
+Content-Type: application/pgp-signature; name="signature.asc"
 
-<div dir=3D"ltr"><div dir=3D"ltr">Hi,<div><br></div><div>This was catched b=
-y Visual Studio. Moreover, with SDL enabled</div><div>(<a href=3D"https://d=
-ocs.microsoft.com/fi-fi/cpp/build/reference/sdl-enable-additional-security-=
-checks?view=3Dvs-2017">https://docs.microsoft.com/fi-fi/cpp/build/reference=
-/sdl-enable-additional-security-checks?view=3Dvs-2017</a>)</div><div>this w=
-arning is treated as an error.</div><div><br></div><div>It is probably a go=
-od idea to trigger Visual Studio build on every commit to master</div><div>=
-(and enable SDL), have to think what would be the best way to do it. Curren=
-tly</div><div>we build with VS when making PRs to openvpn-build, which we d=
-on&#39;t do that often.</div><div><br><div class=3D"gmail_quote"><blockquot=
-e class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px s=
-olid rgb(204,204,204);padding-left:1ex">I&#39;m just not sure whether we sh=
-ould add casts, or stop using the &#39;hack&#39;<br>
-of supplying a negative value to frame_add_to_extra_frame. Maybe we<br>
-should add a frame_remove_from_extra_frame function instead. What do you<br>
-think?<br></blockquote><div><br></div><div>Agreed, semantically it is more =
-clear when _add_ method adds and</div><div>_remove_ method removes.</div><d=
-iv><br></div><div>I&#39;ll add _remove_ method and change type of &quot;inc=
-rement&quot; parameter</div><div>to unsigned in both methods so that next t=
-ime when we&#39;ll try to use _add_</div><div>with negative value, we&#39;l=
-l get a warning.=C2=A0</div><div>=C2=A0</div></div>-- <br><div dir=3D"ltr" =
-class=3D"gmail_signature">-Lev</div></div></div></div>
+-----BEGIN PGP SIGNATURE-----
 
---000000000000aae8d90577da994d--
+iQGcBAEBAgAGBQJbvabqAAoJEB2Cnv7KVigS6rsL/Ax9psJdNXIH4wGUToeAfk1z
+nb4MS6ec6lkIsG66yFrsTIxUXSFS+jNBRc0BWywgqncNz4K3+URHxfP4Fm4jE4Vw
+5yYie8UfQq620p87O84Ac+SD1T8RUIsE6ihru3lstx/46iumb4JSOXZD/3vkaT6k
+yXtkUjV6lUH70Ekw3+VJgaBBmuz3xEtzGznIlZwXae76ROgMAE8gVFL8vN5Xixni
+G4GS0x1/6uQh7iVrQ8COYYEGAiKghuqM4D5xN7v+znYgQW6lE9/vWVSRutmAy+QK
+c56hv6GvXNi0ExvdMv2+QKb5SOX8gifT3w570vMZSL1kf41dWiwbrdSaVh770fTK
+fsJXh6XlWCwQDKvbYG4hLtOsVFunhHkieN2lbH3O4e8K/EsZLWq/khvL2sdYQi0n
+pClKP2MEUYnVyUlA4kXm2L34xJuYcqD2qstP+sthEwGYmLcCU/dJf90MLlR73T1X
+9cp4Bj3fPfZR4mov3nOY3fy4hpxSjLVbmdL+ai8IKQ==
+=bI1G
+-----END PGP SIGNATURE-----
+
+--yOJWIPlLSoQhvV9Y--
 
