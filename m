@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Wed, 10 Oct 2018 16:25:27 +0200
-Message-Id: <20181010142527.27025-1-arne@...1227...>
-In-Reply-To: <20181008214923.11058-1-arne@...1227...>
-References: <20181008214923.11058-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v3 3/3] Remove MANAGMENT_EXTERNAL_KEY,
- MANAGMENT_IN_EXTRA, ENABLE_CLIENT_CR
+Date: Wed, 10 Oct 2018 16:30:51 +0200
+Message-Id: <20181010143051.27163-1-arne@...1227...>
+In-Reply-To: <1520262951-1807-1-git-send-email-arne@...1227...>
+References: <1520262951-1807-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v5] Revert to original password
+ authentication after failed auth-token
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,743 +17,251 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-These defines are always defined when management is enabled.
+Auth-tokens can expire. For by reconnecting when the server uses
+auth-gen-toke.
 
-We still have --disable-management as configure option, so we need
-to replace these with ENABLE_MANAGEMENT in some cases.
+Behaviour of OpenVPN client is to never fallback to the previous
+authentication method and continue using the auth-token. Depending on
+auth-retry it either quit or tried endlessly with an expired
+token. Since auth-gen-token tokens expire on reconnect, a client will
+not survive a reconnect.
 
-PATCH v3: Rebase directly on master
+This patches changes the behaviour on failed auth when using an
+auth-token as a soft error (USR1) and clean the auth-token falling
+back to the original auth method.
+
+Patch V2: properly formatted commit message, fix openvpn3 detection
+
+Patch V3: remove all server changes, include only minimal non
+intrusive client changes that only improve error recovery but don't
+change overall behaviour.
+
+Patch V4: forget add push.c to git index, now also included
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/init.c        |  4 ++--
- src/openvpn/manage.c      | 38 +++-----------------------------------
- src/openvpn/manage.h      | 10 ----------
- src/openvpn/misc.c        | 14 ++++++--------
- src/openvpn/misc.h        |  6 +++---
- src/openvpn/options.c     | 24 ++++++++++++------------
- src/openvpn/options.h     |  2 +-
- src/openvpn/push.c        |  2 +-
- src/openvpn/ssl.c         | 16 ++++++++--------
- src/openvpn/ssl.h         |  3 ++-
- src/openvpn/ssl_backend.h |  4 ++--
- src/openvpn/ssl_common.h  |  2 +-
- src/openvpn/ssl_mbedtls.c |  4 ++--
- src/openvpn/ssl_openssl.c |  4 ++--
- src/openvpn/syshead.h     | 22 ----------------------
- 15 files changed, 45 insertions(+), 110 deletions(-)
+ doc/openvpn.8      |  6 ++++++
+ src/openvpn/misc.c | 16 ++++++++++------
+ src/openvpn/misc.h |  4 ++--
+ src/openvpn/push.c | 17 +++++++++++++++--
+ src/openvpn/ssl.c  | 39 +++++++++++++++++++++++++--------------
+ src/openvpn/ssl.h  |  2 ++
+ 6 files changed, 60 insertions(+), 24 deletions(-)
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 52c64da4..1b9f19d0 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -540,7 +540,7 @@ init_query_passwords(const struct context *c)
-     /* Auth user/pass input */
-     if (c->options.auth_user_pass_file)
-     {
--#ifdef ENABLE_CLIENT_CR
-+#ifdef ENABLE_MANAGEMENT
-         auth_user_pass_setup(c->options.auth_user_pass_file, &c->options.sc_info);
- #else
-         auth_user_pass_setup(c->options.auth_user_pass_file, NULL);
-@@ -2800,7 +2800,7 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
-     to.x509_track = options->x509_track;
- 
- #if P2MP
--#ifdef ENABLE_CLIENT_CR
-+#ifdef ENABLE_MANAGEMENT
-     to.sci = &options->sc_info;
- #endif
- #endif
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index ed981ab9..8b633f20 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -110,14 +110,12 @@ man_help(void)
-     msg(M_CLIENT, "client-pf CID          : Define packet filter for client CID (MULTILINE)");
- #endif
- #endif
--#ifdef MANAGMENT_EXTERNAL_KEY
-     msg(M_CLIENT, "rsa-sig                : Enter a signature in response to >RSA_SIGN challenge");
-     msg(M_CLIENT, "                         Enter signature base64 on subsequent lines followed by END");
-     msg(M_CLIENT, "pk-sig                 : Enter a signature in response to >PK_SIGN challenge");
-     msg(M_CLIENT, "                         Enter signature base64 on subsequent lines followed by END");
-     msg(M_CLIENT, "certificate            : Enter a client certificate in response to >NEED-CERT challenge");
-     msg(M_CLIENT, "                         Enter certificate base64 on subsequent lines followed by END");
--#endif
-     msg(M_CLIENT, "signal s               : Send signal s to daemon,");
-     msg(M_CLIENT, "                         s = SIGHUP|SIGTERM|SIGUSR1|SIGUSR2.");
-     msg(M_CLIENT, "state [on|off] [N|all] : Like log, but show state history.");
-@@ -847,8 +845,6 @@ man_hold(struct management *man, const char *cmd)
-     }
- }
- 
--#ifdef MANAGEMENT_IN_EXTRA
--
- #define IER_RESET      0
- #define IER_NEW        1
- 
-@@ -936,7 +932,6 @@ in_extra_dispatch(struct management *man)
-             break;
- 
- #endif /* ifdef MANAGEMENT_PF */
--#ifdef MANAGMENT_EXTERNAL_KEY
-         case IEC_PK_SIGN:
-             man->connection.ext_key_state = EKS_READY;
-             buffer_list_free(man->connection.ext_key_input);
-@@ -950,13 +945,10 @@ in_extra_dispatch(struct management *man)
-             man->connection.ext_cert_input = man->connection.in_extra;
-             man->connection.in_extra = NULL;
-             return;
--#endif
-     }
-     in_extra_reset(&man->connection, IER_RESET);
- }
- 
--#endif /* MANAGEMENT_IN_EXTRA */
--
- #ifdef MANAGEMENT_DEF_AUTH
- 
- static bool
-@@ -1102,8 +1094,6 @@ man_client_pf(struct management *man, const char *cid_str)
- #endif /* MANAGEMENT_PF */
- #endif /* MANAGEMENT_DEF_AUTH */
- 
--#ifdef MANAGMENT_EXTERNAL_KEY
--
- static void
- man_pk_sig(struct management *man, const char *cmd_name)
- {
-@@ -1136,8 +1126,6 @@ man_certificate(struct management *man)
-     }
- }
- 
--#endif /* ifdef MANAGMENT_EXTERNAL_KEY */
--
- static void
- man_load_stats(struct management *man)
- {
-@@ -1526,7 +1514,6 @@ man_dispatch_command(struct management *man, struct status_output *so, const cha
-     }
- #endif
- #endif /* ifdef MANAGEMENT_DEF_AUTH */
--#ifdef MANAGMENT_EXTERNAL_KEY
-     else if (streq(p[0], "rsa-sig"))
-     {
-         man_pk_sig(man, "rsa-sig");
-@@ -1539,7 +1526,6 @@ man_dispatch_command(struct management *man, struct status_output *so, const cha
-     {
-         man_certificate(man);
-     }
--#endif
- #ifdef ENABLE_PKCS11
-     else if (streq(p[0], "pkcs11-id-count"))
-     {
-@@ -1928,9 +1914,7 @@ man_reset_client_socket(struct management *man, const bool exiting)
-         man->connection.state = MS_INITIAL;
-         command_line_reset(man->connection.in);
-         buffer_list_reset(man->connection.out);
--#ifdef MANAGEMENT_IN_EXTRA
-         in_extra_reset(&man->connection, IER_RESET);
--#endif
-         msg(D_MANAGEMENT, "MANAGEMENT: Client disconnected");
-     }
-     if (!exiting)
-@@ -1972,9 +1956,7 @@ man_process_command(struct management *man, const char *line)
- 
-     CLEAR(parms);
-     so = status_open(NULL, 0, -1, &man->persist.vout, 0);
--#ifdef MANAGEMENT_IN_EXTRA
-     in_extra_reset(&man->connection, IER_RESET);
--#endif
- 
-     if (man_password_needed(man))
-     {
-@@ -2212,7 +2194,6 @@ man_read(struct management *man)
-             const char *line;
-             while ((line = command_line_get(man->connection.in)))
-             {
--#ifdef MANAGEMENT_IN_EXTRA
-                 if (man->connection.in_extra)
-                 {
-                     if (!strcmp(line, "END"))
-@@ -2225,8 +2206,9 @@ man_read(struct management *man)
-                     }
-                 }
-                 else
--#endif
--                man_process_command(man, (char *) line);
-+                {
-+                    man_process_command(man, (char *) line);
-+                }
-                 if (man->connection.halt)
-                 {
-                     break;
-@@ -2572,12 +2554,8 @@ man_connection_close(struct management *man)
-     {
-         buffer_list_free(mc->out);
-     }
--#ifdef MANAGEMENT_IN_EXTRA
-     in_extra_reset(&man->connection, IER_RESET);
--#endif
--#ifdef MANAGMENT_EXTERNAL_KEY
-     buffer_list_free(mc->ext_key_input);
--#endif
-     man_connection_clear(mc);
- }
- 
-@@ -3412,9 +3390,7 @@ management_query_user_pass(struct management *man,
-         const char *alert_type = NULL;
-         const char *prefix = NULL;
-         unsigned int up_query_mode = 0;
--#ifdef ENABLE_CLIENT_CR
-         const char *sc = NULL;
--#endif
-         ret = true;
-         man->persist.standalone_disabled = false; /* This is so M_CLIENT messages will be correctly passed through msg() */
-         man->persist.special_state_msg = NULL;
-@@ -3444,12 +3420,10 @@ management_query_user_pass(struct management *man,
-             up_query_mode = UP_QUERY_USER_PASS;
-             prefix = "PASSWORD";
-             alert_type = "username/password";
--#ifdef ENABLE_CLIENT_CR
-             if (static_challenge)
-             {
-                 sc = static_challenge;
-             }
--#endif
-         }
-         buf_printf(&alert_msg, ">%s:Need '%s' %s",
-                    prefix,
-@@ -3461,14 +3435,12 @@ management_query_user_pass(struct management *man,
-             buf_printf(&alert_msg, " MSG:%s", up->username);
-         }
- 
--#ifdef ENABLE_CLIENT_CR
-         if (sc)
-         {
-             buf_printf(&alert_msg, " SC:%d,%s",
-                        BOOL_CAST(flags & GET_USER_PASS_STATIC_CHALLENGE_ECHO),
-                        sc);
-         }
--#endif
- 
-         man_wait_for_client_connection(man, &signal_received, 0, MWCC_PASSWORD_WAIT);
-         if (signal_received)
-@@ -3531,8 +3503,6 @@ management_query_user_pass(struct management *man,
-     return ret;
- }
- 
--#ifdef MANAGMENT_EXTERNAL_KEY
--
- static int
- management_query_multiline(struct management *man,
-                            const char *b64_data, const char *prompt, const char *cmd, int *state, struct buffer_list **input)
-@@ -3699,8 +3669,6 @@ management_query_cert(struct management *man, const char *cert_name)
-     return result;
- }
- 
--#endif /* ifdef MANAGMENT_EXTERNAL_KEY */
--
- /*
-  * Return true if management_hold() would block
-  */
-diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index ff143fc1..d24abe09 100644
---- a/src/openvpn/manage.h
-+++ b/src/openvpn/manage.h
-@@ -275,7 +275,6 @@ struct man_connection {
-     struct command_line *in;
-     struct buffer_list *out;
- 
--#ifdef MANAGEMENT_IN_EXTRA
- #define IEC_UNDEF       0
- #define IEC_CLIENT_AUTH 1
- #define IEC_CLIENT_PF   2
-@@ -288,7 +287,6 @@ struct man_connection {
-     unsigned long in_extra_cid;
-     unsigned int in_extra_kid;
- #endif
--#ifdef MANAGMENT_EXTERNAL_KEY
- #define EKS_UNDEF   0
- #define EKS_SOLICIT 1
- #define EKS_INPUT   2
-@@ -297,8 +295,6 @@ struct man_connection {
-     struct buffer_list *ext_key_input;
-     int ext_cert_state;
-     struct buffer_list *ext_cert_input;
--#endif
--#endif /* ifdef MANAGEMENT_IN_EXTRA */
-     struct event_set *es;
-     int env_filter_level;
- 
-@@ -346,9 +342,7 @@ struct management *management_init(void);
- #define MF_CLIENT_PF         (1<<7)
- #endif
- #define MF_UNIX_SOCK       (1<<8)
--#ifdef MANAGMENT_EXTERNAL_KEY
- #define MF_EXTERNAL_KEY    (1<<9)
--#endif
- #define MF_UP_DOWN          (1<<10)
- #define MF_QUERY_REMOTE     (1<<11)
- #define MF_QUERY_PROXY      (1<<12)
-@@ -436,14 +430,10 @@ void management_learn_addr(struct management *management,
- 
- #endif
- 
--#ifdef MANAGMENT_EXTERNAL_KEY
--
- char *management_query_pk_sig(struct management *man, const char *b64_data);
- 
- char *management_query_cert(struct management *man, const char *cert_name);
- 
--#endif
--
- static inline bool
- management_connected(const struct management *man)
- {
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index e94ab760..39fc4fdf 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -5347,6 +5347,12 @@ into the file/buffer for dynamic configuration data.  This
+ will then make the OpenVPN server to push this value to the
+ client, which replaces the local password with the
+ UNIQUE_TOKEN_VALUE.
++
++Newer clients (2.4.7+) will fall back to the original password method
++after a failed auth. Older clients will keep using the token value
++and react acording to
++.B \-\-auth-retry
++.
+ .\"*********************************************************
+ .TP
+ .B \-\-tls\-verify cmd
 diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index 2759d98d..d75b7685 100644
+index d75b7685..75f4ff47 100644
 --- a/src/openvpn/misc.c
 +++ b/src/openvpn/misc.c
-@@ -157,12 +157,10 @@ get_user_pass_cr(struct user_pass *up,
-                 management_auth_failure(management, prefix, "previous auth credentials failed");
-             }
- 
--#ifdef ENABLE_CLIENT_CR
-             if (auth_challenge && (flags & GET_USER_PASS_STATIC_CHALLENGE))
-             {
-                 sc = auth_challenge;
-             }
--#endif
-             if (!management_query_user_pass(management, up, prefix, flags, sc))
-             {
-                 if ((flags & GET_USER_PASS_NOFATAL) != 0)
-@@ -272,7 +270,7 @@ get_user_pass_cr(struct user_pass *up,
-          */
-         if (username_from_stdin || password_from_stdin || response_from_stdin)
-         {
--#ifdef ENABLE_CLIENT_CR
-+#ifdef ENABLE_MANAGEMENT
-             if (auth_challenge && (flags & GET_USER_PASS_DYNAMIC_CHALLENGE) && response_from_stdin)
-             {
-                 struct auth_challenge_info *ac = get_auth_challenge(auth_challenge, &gc);
-@@ -299,7 +297,7 @@ get_user_pass_cr(struct user_pass *up,
-                 }
-             }
-             else
--#endif /* ifdef ENABLE_CLIENT_CR */
-+#endif /* ifdef ENABLE_MANAGEMENT */
-             {
-                 struct buffer user_prompt = alloc_buf_gc(128, &gc);
-                 struct buffer pass_prompt = alloc_buf_gc(128, &gc);
-@@ -333,7 +331,7 @@ get_user_pass_cr(struct user_pass *up,
-                     }
-                 }
- 
--#ifdef ENABLE_CLIENT_CR
-+#ifdef ENABLE_MANAGEMENT
-                 if (auth_challenge && (flags & GET_USER_PASS_STATIC_CHALLENGE) && response_from_stdin)
-                 {
-                     char *response = (char *) gc_malloc(USER_PASS_LEN, false, &gc);
-@@ -361,7 +359,7 @@ get_user_pass_cr(struct user_pass *up,
-                     string_clear(resp64);
-                     free(resp64);
-                 }
--#endif /* ifdef ENABLE_CLIENT_CR */
-+#endif /* ifdef ENABLE_MANAGEMENT */
-             }
-         }
- 
-@@ -380,7 +378,7 @@ get_user_pass_cr(struct user_pass *up,
-     return true;
+@@ -469,7 +469,7 @@ purge_user_pass(struct user_pass *up, const bool force)
+      * don't show warning if the pass has been replaced by a token: this is an
+      * artificial "auth-nocache"
+      */
+-    else if (!warn_shown && (!up->tokenized))
++    else if (!warn_shown)
+     {
+         msg(M_WARN, "WARNING: this configuration may cache passwords in memory -- use the auth-nocache option to prevent this");
+         warn_shown = true;
+@@ -477,14 +477,18 @@ purge_user_pass(struct user_pass *up, const bool force)
  }
- 
--#ifdef ENABLE_CLIENT_CR
-+#ifdef ENABLE_MANAGEMENT
- 
- /*
-  * See management/management-notes.txt for more info on the
-@@ -455,7 +453,7 @@ get_auth_challenge(const char *auth_challenge, struct gc_arena *gc)
-     }
- }
- 
--#endif /* ifdef ENABLE_CLIENT_CR */
-+#endif /* ifdef ENABLE_MANAGEMENT */
  
  void
- purge_user_pass(struct user_pass *up, const bool force)
+-set_auth_token(struct user_pass *up, const char *token)
++set_auth_token(struct user_pass *up, struct user_pass *tk, const char *token)
+ {
+-    if (token && strlen(token) && up && up->defined && !up->nocache)
++
++    if (token && strlen(token) && up && up->defined)
+     {
+-        CLEAR(up->password);
+-        strncpynt(up->password, token, USER_PASS_LEN);
+-        up->tokenized = true;
++        strncpynt(tk->password, token, USER_PASS_LEN);
++        strncpynt(tk->username, up->username, USER_PASS_LEN);
++        tk->defined = true;
+     }
++
++    /* Cleans user/pass for nocache */
++    purge_user_pass(up, false);
+ }
+ 
+ /*
 diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
-index b4d9d035..a54185f0 100644
+index a54185f0..00de2b23 100644
 --- a/src/openvpn/misc.h
 +++ b/src/openvpn/misc.h
-@@ -76,7 +76,7 @@ struct user_pass
-     char password[USER_PASS_LEN];
- };
+@@ -63,7 +63,6 @@ struct user_pass
+ {
+     bool defined;
+     bool nocache;
+-    bool tokenized; /* true if password has been substituted by a token */
+     bool wait_for_push; /* true if this object is waiting for a push-reply */
  
--#ifdef ENABLE_CLIENT_CR
-+#ifdef ENABLE_MANAGEMENT
- /*
-  * Challenge response info on client as pushed by server.
-  */
-@@ -102,10 +102,10 @@ struct static_challenge_info {
-     const char *challenge_text;
- };
+ /* max length of username/password */
+@@ -145,7 +144,8 @@ void fail_user_pass(const char *prefix,
  
--#else  /* ifdef ENABLE_CLIENT_CR */
-+#else  /* ifdef ENABLE_MANAGEMENT */
- struct auth_challenge_info {};
- struct static_challenge_info {};
--#endif /* ifdef ENABLE_CLIENT_CR */
-+#endif /* ifdef ENABLE_MANAGEMENT */
+ void purge_user_pass(struct user_pass *up, const bool force);
+ 
+-void set_auth_token(struct user_pass *up, const char *token);
++void set_auth_token(struct user_pass *up, struct user_pass *tk,
++                    const char *token);
  
  /*
-  * Flags for get_user_pass and management_query_user_pass
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index e42029c5..f0762f2e 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -1735,7 +1735,7 @@ show_settings(const struct options *o)
-     SHOW_STR(ca_file);
-     SHOW_STR(ca_path);
-     SHOW_STR(dh_file);
--#ifdef MANAGMENT_EXTERNAL_KEY
-+#ifdef ENABLE_MANAGEMENT
-     if ((o->management_flags & MF_EXTERNAL_CERT))
-     {
-         SHOW_PARM("cert_file","EXTERNAL_CERT","%s");
-@@ -1745,7 +1745,7 @@ show_settings(const struct options *o)
-     SHOW_STR(cert_file);
-     SHOW_STR(extra_certs_file);
- 
--#ifdef MANAGMENT_EXTERNAL_KEY
-+#ifdef ENABLE_MANAGEMENT
-     if ((o->management_flags & MF_EXTERNAL_KEY))
-     {
-         SHOW_PARM("priv_key_file","EXTERNAL_PRIVATE_KEY","%s");
-@@ -2567,7 +2567,7 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-             {
-                 msg(M_USAGE, "Parameter --key cannot be used when --pkcs11-provider is also specified.");
-             }
--#ifdef MANAGMENT_EXTERNAL_KEY
-+#ifdef ENABLE_MANAGEMENT
-             if (options->management_flags & MF_EXTERNAL_KEY)
-             {
-                 msg(M_USAGE, "Parameter --management-external-key cannot be used when --pkcs11-provider is also specified.");
-@@ -2590,7 +2590,7 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-         }
-         else
- #endif /* ifdef ENABLE_PKCS11 */
--#ifdef MANAGMENT_EXTERNAL_KEY
-+#ifdef ENABLE_MANAGEMENT
-         if ((options->management_flags & MF_EXTERNAL_KEY) && options->priv_key_file)
-         {
-             msg(M_USAGE, "--key and --management-external-key are mutually exclusive");
-@@ -2627,7 +2627,7 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-             {
-                 msg(M_USAGE, "Parameter --pkcs12 cannot be used when --cryptoapicert is also specified.");
-             }
--#ifdef MANAGMENT_EXTERNAL_KEY
-+#ifdef ENABLE_MANAGEMENT
-             if (options->management_flags & MF_EXTERNAL_KEY)
-             {
-                 msg(M_USAGE, "Parameter --management-external-key cannot be used when --cryptoapicert is also specified.");
-@@ -2657,7 +2657,7 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-             {
-                 msg(M_USAGE, "Parameter --key cannot be used when --pkcs12 is also specified.");
-             }
--#ifdef MANAGMENT_EXTERNAL_KEY
-+#ifdef ENABLE_MANAGEMENT
-             if (options->management_flags & MF_EXTERNAL_KEY)
-             {
-                 msg(M_USAGE, "Parameter --management-external-key cannot be used when --pkcs12 is also specified.");
-@@ -2690,7 +2690,7 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-             {
- 
-                 const int sum =
--#ifdef MANAGMENT_EXTERNAL_KEY
-+#ifdef ENABLE_MANAGEMENT
-                     ((options->cert_file != NULL) || (options->management_flags & MF_EXTERNAL_CERT))
-                     +((options->priv_key_file != NULL) || (options->management_flags & MF_EXTERNAL_KEY));
- #else
-@@ -2714,11 +2714,11 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-             }
-             else
-             {
--#ifdef MANAGMENT_EXTERNAL_KEY
-+#ifdef ENABLE_MANAGEMENT
-                 if (!(options->management_flags & MF_EXTERNAL_CERT))
- #endif
-                 notnull(options->cert_file, "certificate file (--cert) or PKCS#12 file (--pkcs12)");
--#ifdef MANAGMENT_EXTERNAL_KEY
-+#ifdef ENABLE_MANAGEMENT
-                 if (!(options->management_flags & MF_EXTERNAL_KEY))
- #endif
-                 notnull(options->priv_key_file, "private key file (--key) or PKCS#12 file (--pkcs12)");
-@@ -3308,7 +3308,7 @@ options_postprocess_filechecks(struct options *options)
-     errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE, options->cert_file, R_OK, "--cert");
-     errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE, options->extra_certs_file, R_OK,
-                               "--extra-certs");
--#ifdef MANAGMENT_EXTERNAL_KEY
-+#ifdef ENABLE_MANAGEMENT
-     if (!(options->management_flags & MF_EXTERNAL_KEY))
- #endif
-     {
-@@ -5155,7 +5155,7 @@ add_option(struct options *options,
-         options->management_flags |= MF_CONNECT_AS_CLIENT;
-         options->management_write_peer_info_file = p[1];
-     }
--#ifdef MANAGMENT_EXTERNAL_KEY
-+#ifdef ENABLE_MANAGEMENT
-     else if (streq(p[0], "management-external-key") && !p[1])
-     {
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-@@ -7023,7 +7023,7 @@ add_option(struct options *options,
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-         auth_retry_set(msglevel, p[1]);
-     }
--#ifdef ENABLE_CLIENT_CR
-+#ifdef ENABLE_MANAGEMENT
-     else if (streq(p[0], "static-challenge") && p[1] && p[2] && !p[3])
-     {
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index acbd1087..33aa71f7 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -469,7 +469,7 @@ struct options
- 
-     int scheduled_exit_interval;
- 
--#ifdef ENABLE_CLIENT_CR
-+#ifdef ENABLE_MANAGEMENT
-     struct static_challenge_info sc_info;
- #endif
- #endif /* if P2MP */
+  * Process string received by untrusted peer before
 diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index a7ec4dd6..72f09962 100644
+index 72f09962..4798e26d 100644
 --- a/src/openvpn/push.c
 +++ b/src/openvpn/push.c
-@@ -88,7 +88,7 @@ receive_auth_failed(struct context *c, const struct buffer *buffer)
-          * Save the dynamic-challenge text even when management is defined
-          */
+@@ -55,8 +55,20 @@ receive_auth_failed(struct context *c, const struct buffer *buffer)
+ 
+     if (c->options.pull)
+     {
+-        switch (auth_retry_get())
++        /* Before checking how to react on AUTH_FAILED, first check if the 
++         * failed auth might be the result of an expired auth-token.
++         * Note that a server restart will trigger a generic AUTH_FAILED 
++         * instead an AUTH_FAILED,SESSION so handle all AUTH_FAILED message 
++         * identical for this scenario */
++        if (ssl_clean_auth_token())
          {
--#ifdef ENABLE_CLIENT_CR
-+#ifdef ENABLE_MANAGEMENT
-             struct buffer buf = *buffer;
-             if (buf_string_match_head_str(&buf, "AUTH_FAILED,CRV1:") && BLEN(&buf))
-             {
++            c->sig->signal_received = SIGUSR1; /* SOFT-SIGUSR1 -- Auth failure error */
++            c->sig->signal_text = "auth-failure (auth-token)";
++        }
++        else
++        {
++            switch (auth_retry_get())
++            {
+             case AR_NONE:
+                 c->sig->signal_received = SIGTERM; /* SOFT-SIGTERM -- Auth failure error */
+                 break;
+@@ -70,8 +82,9 @@ receive_auth_failed(struct context *c, const struct buffer *buffer)
+ 
+             default:
+                 ASSERT(0);
++            }
++            c->sig->signal_text = "auth-failure";
+         }
+-        c->sig->signal_text = "auth-failure";
+ #ifdef ENABLE_MANAGEMENT
+         if (management)
+         {
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 455adfb7..58261e66 100644
+index 58261e66..b52c2ab5 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -399,7 +399,7 @@ pem_password_callback(char *buf, int size, int rwflag, void *u)
+@@ -398,6 +398,7 @@ pem_password_callback(char *buf, int size, int rwflag, void *u)
+ 
  static bool auth_user_pass_enabled;     /* GLOBAL */
  static struct user_pass auth_user_pass; /* GLOBAL */
++static struct user_pass auth_token;     /* GLOBAL */
  
--#ifdef ENABLE_CLIENT_CR
-+#ifdef ENABLE_MANAGEMENT
+ #ifdef ENABLE_MANAGEMENT
  static char *auth_challenge; /* GLOBAL */
- #endif
- 
-@@ -409,7 +409,7 @@ auth_user_pass_setup(const char *auth_file, const struct static_challenge_info *
+@@ -407,7 +408,7 @@ void
+ auth_user_pass_setup(const char *auth_file, const struct static_challenge_info *sci)
+ {
      auth_user_pass_enabled = true;
-     if (!auth_user_pass.defined)
+-    if (!auth_user_pass.defined)
++    if (!auth_user_pass.defined && !auth_token.defined)
      {
--#ifdef ENABLE_CLIENT_CR
-+#ifdef ENABLE_MANAGEMENT
+ #ifdef ENABLE_MANAGEMENT
          if (auth_challenge) /* dynamic challenge/response */
-         {
-             get_user_pass_cr(&auth_user_pass,
-@@ -432,7 +432,7 @@ auth_user_pass_setup(const char *auth_file, const struct static_challenge_info *
-                              sci->challenge_text);
-         }
-         else
--#endif /* ifdef ENABLE_CLIENT_CR */
-+#endif /* ifdef ENABLE_MANAGEMENT */
-         get_user_pass(&auth_user_pass, auth_file, UP_TYPE_AUTH, GET_USER_PASS_MANAGEMENT);
-     }
- }
-@@ -480,12 +480,12 @@ ssl_purge_auth(const bool auth_user_pass_only)
-         purge_user_pass(&passbuf, true);
-     }
-     purge_user_pass(&auth_user_pass, true);
--#ifdef ENABLE_CLIENT_CR
-+#ifdef ENABLE_MANAGEMENT
-     ssl_purge_auth_challenge();
- #endif
+@@ -445,7 +446,7 @@ ssl_set_auth_nocache(void)
+ {
+     passbuf.nocache = true;
+     auth_user_pass.nocache = true;
+-    /* wait for push-reply, because auth-token may invert nocache */
++    /* wait for push-reply, because auth-token may still need the username */
+     auth_user_pass.wait_for_push = true;
  }
  
--#ifdef ENABLE_CLIENT_CR
-+#ifdef ENABLE_MANAGEMENT
- 
+@@ -455,15 +456,18 @@ ssl_set_auth_nocache(void)
  void
- ssl_purge_auth_challenge(void)
-@@ -652,7 +652,7 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx)
-         tls_ctx_load_cryptoapi(new_ctx, options->cryptoapi_cert);
-     }
- #endif
--#ifdef MANAGMENT_EXTERNAL_KEY
-+#ifdef ENABLE_MANAGEMENT
-     else if (options->management_flags & MF_EXTERNAL_CERT)
-     {
-         char *cert = management_query_cert(management,
-@@ -674,7 +674,7 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx)
-             goto err;
-         }
-     }
--#ifdef MANAGMENT_EXTERNAL_KEY
-+#ifdef ENABLE_MANAGEMENT
-     else if (options->management_flags & MF_EXTERNAL_KEY)
-     {
-         if (tls_ctx_use_management_external_key(new_ctx))
-@@ -2364,7 +2364,7 @@ key_method_2_write(struct buffer *buf, struct tls_session *session)
-     /* write username/password if specified */
-     if (auth_user_pass_enabled)
-     {
--#ifdef ENABLE_CLIENT_CR
-+#ifdef ENABLE_MANAGEMENT
-         auth_user_pass_setup(session->opt->auth_user_pass_file, session->opt->sci);
+ ssl_set_auth_token(const char *token)
+ {
+-    if (auth_user_pass.nocache)
+-    {
+-        msg(M_INFO,
+-            "auth-token received, disabling auth-nocache for the "
+-            "authentication token");
+-        auth_user_pass.nocache = false;
+-    }
++    set_auth_token(&auth_user_pass, &auth_token, token);
++}
+ 
+-    set_auth_token(&auth_user_pass, token);
++/*
++ * Cleans an auth token and checks if it was active
++ */
++bool
++ssl_clean_auth_token (void)
++{
++    bool wasdefined = auth_token.defined;
++    purge_user_pass(&auth_token, true);
++    return wasdefined;
+ }
+ 
+ /*
+@@ -2369,19 +2373,26 @@ key_method_2_write(struct buffer *buf, struct tls_session *session)
  #else
          auth_user_pass_setup(session->opt->auth_user_pass_file, NULL);
+ #endif
+-        if (!write_string(buf, auth_user_pass.username, -1))
++        struct user_pass *up = &auth_user_pass;
++
++        /*
++         * If we have a valid auth-token, send that instead of real
++         * username/password
++         */
++        if (auth_token.defined)
++            up = &auth_token;
++
++        if (!write_string(buf, up->username, -1))
+         {
+             goto error;
+         }
+-        if (!write_string(buf, auth_user_pass.password, -1))
++        else if (!write_string(buf, up->password, -1))
+         {
+             goto error;
+         }
+         /* if auth-nocache was specified, the auth_user_pass object reaches
+          * a "complete" state only after having received the push-reply
+          * message.
+-         * This is the case because auth-token statement in a push-reply would
+-         * invert its nocache.
+          *
+          * For this reason, skip the purge operation here if no push-reply
+          * message has been received yet.
 diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index 72227d97..a1bd9bf0 100644
+index a1bd9bf0..781adb94 100644
 --- a/src/openvpn/ssl.h
 +++ b/src/openvpn/ssl.h
-@@ -428,7 +428,8 @@ void ssl_purge_auth(const bool auth_user_pass_only);
+@@ -437,6 +437,8 @@ void ssl_set_auth_token(const char *token);
+  */
+ void ssl_purge_auth_challenge(void);
  
- void ssl_set_auth_token(const char *token);
- 
--#ifdef ENABLE_CLIENT_CR
++bool ssl_clean_auth_token(void);
 +
-+#ifdef  ENABLE_MANAGEMENT
- /*
-  * ssl_get_auth_challenge will parse the server-pushed auth-failed
-  * reason string and return a dynamically allocated
-diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
-index 5023c02a..856e809f 100644
---- a/src/openvpn/ssl_backend.h
-+++ b/src/openvpn/ssl_backend.h
-@@ -272,7 +272,7 @@ void tls_ctx_load_cert_file(struct tls_root_ctx *ctx, const char *cert_file,
- int tls_ctx_load_priv_file(struct tls_root_ctx *ctx, const char *priv_key_file,
-                            const char *priv_key_file_inline);
+ void ssl_put_auth_challenge(const char *cr_str);
  
--#ifdef MANAGMENT_EXTERNAL_KEY
-+#ifdef ENABLE_MANAGEMENT
- 
- /**
-  * Tell the management interface to load the given certificate and the external
-@@ -284,7 +284,7 @@ int tls_ctx_load_priv_file(struct tls_root_ctx *ctx, const char *priv_key_file,
-  */
- int tls_ctx_use_management_external_key(struct tls_root_ctx *ctx);
- 
--#endif /* MANAGMENT_EXTERNAL_KEY */
-+#endif /* ENABLE_MANAGEMENT */
- 
- /**
-  * Load certificate authority certificates from the given file or path.
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 08ef6ffa..919ec57c 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -332,7 +332,7 @@ struct tls_options
- 
-     const struct x509_track *x509_track;
- 
--#ifdef ENABLE_CLIENT_CR
-+#ifdef ENABLE_MANAGEMENT
-     const struct static_challenge_info *sci;
  #endif
- 
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index e4850cb6..00e5d819 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -605,7 +605,7 @@ tls_ctx_use_external_signing_func(struct tls_root_ctx *ctx,
-     return 0;
- }
- 
--#ifdef MANAGMENT_EXTERNAL_KEY
-+#ifdef ENABLE_MANAGEMENT
- 
- /** Query the management interface for a signature, see external_sign_func. */
- static bool
-@@ -645,7 +645,7 @@ tls_ctx_use_management_external_key(struct tls_root_ctx *ctx)
-     return tls_ctx_use_external_signing_func(ctx, management_sign_func, NULL);
- }
- 
--#endif /* ifdef MANAGMENT_EXTERNAL_KEY */
-+#endif /* ifdef ENABLE_MANAGEMENT */
- 
- void
- tls_ctx_load_ca(struct tls_root_ctx *ctx, const char *ca_file,
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 1a66d178..0858d5eb 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -997,7 +997,7 @@ end:
- }
- 
- 
--#ifdef MANAGMENT_EXTERNAL_KEY
-+#ifdef ENABLE_MANAGEMENT
- 
- /* encrypt */
- static int
-@@ -1340,7 +1340,7 @@ cleanup:
-     return ret;
- }
- 
--#endif /* ifdef MANAGMENT_EXTERNAL_KEY */
-+#endif /* ifdef ENABLE_MANAGEMENT */
- 
- static int
- sk_x509_name_cmp(const X509_NAME *const *a, const X509_NAME *const *b)
-diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index 487b32a6..d2a50341 100644
---- a/src/openvpn/syshead.h
-+++ b/src/openvpn/syshead.h
-@@ -548,26 +548,11 @@ socket_defined(const socket_descriptor_t sd)
- #undef ENABLE_DEF_AUTH
- #endif
- 
--/*
-- * Enable external private key
-- */
--#if defined(ENABLE_MANAGEMENT)
--#define MANAGMENT_EXTERNAL_KEY
--#endif
--
- /* Enable mbed TLS RNG prediction resistance support */
- #ifdef ENABLE_CRYPTO_MBEDTLS
- #define ENABLE_PREDICTION_RESISTANCE
- #endif /* ENABLE_CRYPTO_MBEDTLS */
- 
--/*
-- * MANAGEMENT_IN_EXTRA allows the management interface to
-- * read multi-line inputs from clients.
-- */
--#if defined(MANAGEMENT_DEF_AUTH) || defined(MANAGMENT_EXTERNAL_KEY)
--#define MANAGEMENT_IN_EXTRA
--#endif
--
- /*
-  * Enable packet filter?
-  */
-@@ -658,13 +643,6 @@ socket_defined(const socket_descriptor_t sd)
- #define CONNECT_NONBLOCK
- #endif
- 
--/*
-- * Do we support challenge/response authentication as client?
-- */
--#if defined(ENABLE_MANAGEMENT)
--#define ENABLE_CLIENT_CR
--#endif
--
- /*
-  * Compression support
-  */
 -- 
 2.19.0
 
