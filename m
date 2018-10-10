@@ -1,13 +1,15 @@
-References: <20180925124819.4005-1-arne@...1227...>
- <20180926120159.19874-1-arne@...1227...>
-From: Steffan Karger <steffan.karger@...1435...>
-Message-ID: <104c4eac-b716-0b91-faa7-cac3a77799e9@...1435...>
-Date: Wed, 10 Oct 2018 10:17:26 +0200
+References: <1498913642-32459-5-git-send-email-steffan.karger@...1435...>
+ <1514541271-19597-1-git-send-email-steffan.karger@...1435...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <324069b9-a7f9-8ef4-5ad1-eb5d98cb6742@...2181...>
+Date: Wed, 10 Oct 2018 16:27:19 +0800
 MIME-Version: 1.0
-In-Reply-To: <20180926120159.19874-1-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v2] Add message explaining early TLS
- client hello failure
+In-Reply-To: <1514541271-19597-1-git-send-email-steffan.karger@...1435...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="Vidtc6kuboOjbTUVTLhoCGqwEuquj28gf"
+Subject: Re: [Openvpn-devel] [PATCH 5/5 v2]
+ buffer_list_aggregate_separator(): simplify code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,69 +18,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Steffan Karger <steffan.karger@...1435...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--Vidtc6kuboOjbTUVTLhoCGqwEuquj28gf
+Content-Type: multipart/mixed; boundary="vnzu6XADcW1yzUzzhzfC402ibJouBq02D";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: Steffan Karger <steffan.karger@...1435...>,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <324069b9-a7f9-8ef4-5ad1-eb5d98cb6742@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH 5/5 v2] buffer_list_aggregate_separator():
+ simplify code
+References: <1498913642-32459-5-git-send-email-steffan.karger@...1435...>
+ <1514541271-19597-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1514541271-19597-1-git-send-email-steffan.karger@...1435...>
+
+--vnzu6XADcW1yzUzzhzfC402ibJouBq02D
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-On 26-09-18 14:01, Arne Schwabe wrote:
-> In my tests an OpenSSL 1.1.1 server does not accept TLS 1.0 only clients
-> anymore. Unfortunately, Debian 8 still has OpenVPN 2.3.4, which is
-> TLS 1.0 only without setting tls-version-min.
-> 
-> We currently log only
-> OpenSSL: error:14209102:SSL routines:tls_early_post_process_client_hello:unsupported protocol
-> which indicates the right technical error but is not very helpful to a
-> person without deep knowledge in SSL/TLS and OpenVPN's TLS version
-> history.
-> 
-> This commit adds a hopefully helpful message and also tells users how
-> to fix the old Debian 8 clients. The error message will be displayed on
-> the server side only.
-> 
-> Note that connecting with an OpenSSL 1.1.1 client to a TLS 1.0 only
-> server works fine.
-> 
-> This behaviour is also not specific to OpenVPN. Using an openssl s_client
-> with the -tls1 option against an openssl s_server exhibits the same
-> behaviour.
-> 
-> Patch V2: fixed message grammar, use tls-version-min 1.0 and clarify
-> 2.3.6 and older to be actually between 2.3.2 and 2.3.6
+On 29/12/17 17:54, Steffan Karger wrote:
+> Clean up the function by slightly simplifying the logic.
+>=20
+> Mostly witespace changes, so best reviewed using 'git diff -w'.
+          ^ missing 'h' here
+
+>=20
+> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 > ---
->  src/openvpn/crypto_openssl.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
-> 
-> diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-> index 9ec2048d..43d75b89 100644
-> --- a/src/openvpn/crypto_openssl.c
-> +++ b/src/openvpn/crypto_openssl.c
-> @@ -199,7 +199,16 @@ crypto_print_openssl_errors(const unsigned int flags)
->                  "in common with the client. Your --tls-cipher setting might be "
->                  "too restrictive.");
->          }
-> -
-> +        else if (ERR_GET_REASON(err) == SSL_R_UNSUPPORTED_PROTOCOL)
-> +        {
-> +            msg(D_CRYPT_ERRORS, "TLS error: Unsupported protocol. This typically "
-> +                 "indicates that client and server have no common TLS version enabled. "
-> +                 "This can be caused by mismatched tls-version-min and tls-version-max "
-> +                 "options on client and server. "
-> +                 "If your OpenVPN client is between v2.3.6 and v2.3.2 try adding "
-> +                 "tls-version-min 1.0 to the client configuration to use TLS 1.0+ "
-> +                 "instead of TLS 1.0 only");
-> +        }
->          msg(flags, "OpenSSL: %s", ERR_error_string(err, NULL));
->      }
->  }
-> 
+> v2: rebase on new version of preceding patches
+>=20
 
-Helpful message, patch looks good and passes the test suite. I didn't
-manually test connecting with a tls 1.0-only client, but trust that you
-have.
+Other than the typ0 above, the patch does what it says and does not
+introduce any functional change.
 
-Acked-by: Steffan Karger <steffan.karger@...1435...>
+Even though it was "easier" to review with "git show -w", I still had to
+dig into the original function to make sure I understood the original
+logic and I was later able to guarantee it was not changed by the patch.
 
--Steffan
+For this reason I wrote some doc for the buffer_list_* functions which I
+will send as a new patch soon.
+
+Acked-by: Antonio Quartulli <a@...2181...>
+
+
+--=20
+Antonio Quartulli
+
+
+--vnzu6XADcW1yzUzzhzfC402ibJouBq02D--
+
+--Vidtc6kuboOjbTUVTLhoCGqwEuquj28gf
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlu9t+cACgkQ9FVsWUWD
+Dm19whAApKgQgOHZL+Dq4zO3AInqX5r/HMD9Mc8m66+CBkHuWyGNrANwAoatPoep
+8ugsrPVm7tsIVmXCl8/TFXYpM5EpEnI1hwoPSgZSA4G73tq4QYiwKD9VVADuw25/
+t5/T5L+KggqkmjYMdMhv3xN7TPZJa7UxIxYj5u/saQgUXTGLS6c4HI9OiKd8ECrP
+m3k0UGjP+rW+30uC5ThnhU5f8LrGVwJV8i9xc3u/u3Nxk7TgzXwteEXV32xL0TJO
+zoiZBWIE35MNP7976pUh7RIB73wHqmKozyT8fLqaQr7GmVI4/+x3Q0sNkzOYJ0Dc
+tP+Y8PiJEm0ioN7jMkAHbGJMMEUaSHpW/BwOcbDTW5ihKV8VoMALgANkxNboCEHD
+UbTokbeMUYXZwNFfVq5BPnObWoZrNtBK4xEfDuf1pScZfzn+w5/n/bNK7S5UdvRP
+gtgL2WObuvqepLk0KL36LT2PJzhF+9A+7HtTI5ySbG8VHJE9iXfkcLHtElfNTP0r
+1Utax1o1T82a4evWDIsNDJISrWNtXjnvHNGB2JHnnxFFKF9ZXFGEVY3NzlLhAO9b
+UCNnB2YfzbMEXUF8Si8ES1wBdRTqe5rUqqvckf5IOGAH/7hj/joAu1k8HE8A5Iqz
+ozhKuLkPyK3E0WbItdrCWGOu51Fd9uCXC/Vy/B2A10nEMfUlD5g=
+=MybG
+-----END PGP SIGNATURE-----
+
+--Vidtc6kuboOjbTUVTLhoCGqwEuquj28gf--
 
