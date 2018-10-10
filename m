@@ -1,15 +1,12 @@
-References: <CAGyAFMULV02g3gyCbvQ1+L+cMdE4UZMmzVfey-T1g4Y0NcmKeg@...278...>
- <1539174377-2678-1-git-send-email-lstipakov@...277...>
+References: <777939F9-A753-4A66-B40E-1346AFD588DE@...1918...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <3ccd33cb-5d3f-f736-aa53-849dd358d568@...1227...>
-Date: Wed, 10 Oct 2018 14:41:22 +0200
+Message-ID: <c296d03a-fdac-a8a2-2050-57748cb95cb1@...1227...>
+Date: Wed, 10 Oct 2018 14:59:36 +0200
 MIME-Version: 1.0
-In-Reply-To: <1539174377-2678-1-git-send-email-lstipakov@...277...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="J8qeLE8S0OfOyHK8yYK88UUWw6BmoN6nL"
-Subject: Re: [Openvpn-devel] [PATCH v2] options.c: fix broken unary minus
- usage
+In-Reply-To: <777939F9-A753-4A66-B40E-1346AFD588DE@...1918...>
+Content-Language: de-DE
+Subject: Re: [Openvpn-devel] [PATCH] Adds support for setting the default
+ IPv6 gateway for routes using the route-ipv6-gateway option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,66 +15,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---J8qeLE8S0OfOyHK8yYK88UUWw6BmoN6nL
-Content-Type: multipart/mixed; boundary="0o7fgZlYc3D7rVkohI6RXJtQ6y7F7S3D1";
- protected-headers="v1"
-From: Arne Schwabe <arne@...1227...>
-To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <3ccd33cb-5d3f-f736-aa53-849dd358d568@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v2] options.c: fix broken unary minus
- usage
-References: <CAGyAFMULV02g3gyCbvQ1+L+cMdE4UZMmzVfey-T1g4Y0NcmKeg@...278...>
- <1539174377-2678-1-git-send-email-lstipakov@...277...>
-In-Reply-To: <1539174377-2678-1-git-send-email-lstipakov@...277...>
-
---0o7fgZlYc3D7rVkohI6RXJtQ6y7F7S3D1
-Content-Language: de-DE
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: James Bekkema <james@...1918...>, openvpn-devel@lists.sourceforge.net
 
-Am 10.10.18 um 14:26 schrieb Lev Stipakov:
-> From: Lev Stipakov <lev@...515...>
->=20
-> In Visual Studio when unary minus is applied to unsigned,
-> result is still unsigned. This means that when we use result
-> as function formal parameter, we pass incorrect value.
->=20
-> Fix by introducing frame_remove_from_extra_frame function,
-> which makes code semantically more clear and eliminates
-> the need in negative value and cast.
+Am 23.07.18 um 05:45 schrieb James Bekkema:
+> This patch adds support for setting the default IPv6 gateway for routes using the "route-ipv6-gateway” option.
+> 
+> Currently if users try to use the "redirect-gateway ipv6” option, or a IPv6 route without a gateway, without using "ifconfig-ipv6" they’ll receive the message "OpenVPN ROUTE6: OpenVPN needs a gateway parameter for a --route-ipv6 option and no default was specified by either --route-ipv6-gateway or --ifconfig-ipv6 options”.
+> 
+> However, the "route-ipv6-gateway” option doesn’t actually exist, and it is required for bridged/TAP setups relying on IPv6 auto-configuration for IP assignment. This patch adds the "route-ipv6-gateway” option. The gateway specified must be an IPv6 address, FQDNs are not supported (to match the behaviour of the other IPv6 related options).
+> 
+> Currently in production use in Viscosity for macOS and Windows, no reported issues.
+> 
+> Signed-off-by: James Bekkema <james@...1918...>
+> 
 
-
-ACK. Looks much cleaner.
+Looks good and looks like Gert wanted to implment to it and never got to
+it. But I will let Gert have the last word on it.
 
 Acked-By: Arne Schwabe <arne@...1227...>
 
 
---0o7fgZlYc3D7rVkohI6RXJtQ6y7F7S3D1--
-
---J8qeLE8S0OfOyHK8yYK88UUWw6BmoN6nL
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAlu983oACgkQFRhsZwKx
-RFSYNhAAkxYcEQEWQFB2kBonth688x+g0O/IyQe6MzJ+fYVGacdAvp7s3yJKhsCc
-E+X2VIblx8OYr1RNHgNlnp+NbCbnBGS2hPMJfZSeouPqR5GbCf68COC9yjWLcRMx
-GdhakQfbtnQaPSjQrpBxyPB+tUqWPFnTsmDT23BpIdWyux+keKSbZt2vK/ulvPE1
-cV3q+e33pEauz04kWBVBJ32XiYVMmK1shT/FkFBzt2d7QbhFmAAZzlcOVXDjl/mY
-cXMR+Gnngkzjpo+OwaWDlKYgShGDm1V7jLJOqalhCbDIrMetCLH2qHWH+ggemnus
-ijZQ8LVNFdvkk7sx476p8M14S0UnWyMtoOaR44lNvYLj4nJoHvm2cjoeE7sW475v
-Th6xLcQAd9/eE2K4V5Ry0z4Ae6gM4EoIltVrcxo8JFG5RoCI6N1KQ76IEVSQdHrS
-3M9ZYB+XHGgbPkm+Bw4k2MFSvD2E4O6g82KFVbRkaKsBde8bOx0qYqY/cgVJouaH
-kvIRAh+FDNc8nzOtW0PdA7plQkIgCmHvVOTesmnF2vzylN9n04cW35R1Kzd4NIwG
-AFnS2LmgrVwmmNfpDt+wrlugaMEpkWHAjccO/bS00v9p4nxfEwySe5x4Nu2rzizy
-eDX8FDv0H4bd7qNxmVstF7q9g1qM40JzNnQf7yiFENTNj95r2aM=
-=84HW
------END PGP SIGNATURE-----
-
---J8qeLE8S0OfOyHK8yYK88UUWw6BmoN6nL--
+Arne
 
