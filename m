@@ -1,10 +1,10 @@
-Date: Wed, 10 Oct 2018 21:38:56 +0200 (CEST)
-Message-Id: <201810101938.w9AJcuGb079810@...2054...>
+Date: Wed, 10 Oct 2018 22:56:37 +0200 (CEST)
+Message-Id: <201810102056.w9AKubro087998@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20181007215539.32761-1-arne@...1227...>
-References: <20181007215539.32761-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add support for
- tls-ciphersuites for TLS 1.3
+In-Reply-To: <20181009204315.8262-1-steffan@...1856...>
+References: <20181009204315.8262-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: List ChaCha20-Poly1305 as
+ stream cipher
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,32 +15,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch and release/2.4 branch
-(long-term compatibility, as agreed last weekend - and it's nicely 
-isolated, so if you are not using the new option, nothing changes).
+Your patch has been applied to the master branch.
 
-WRT Steffan's formatting nits on v3 - these are unchanged here in v4,
-but the *next* TLS 1.3 patch will also pick *these* nits, so I decided
-to pass through both patches "as is", instead of changing this one and
-then the next one too just to move a whitespace change to a different
-commit...  so yes, code formatting ghosts, come haunt me.
+"Does what it says on the lid"... before:
 
-Test built on FreeBSD with OpenSSL 1.0.2 and on Linux with OpenSSL 1.1.1
-and mbedTLS.  Some cursory tests but no full TLS 1.3 ciphersuites tests.
+CHACHA20-POLY1305  (256 bit key, 8 bit block, TLS client/server mode only)
 
-commit ea4ee31333a0cddb5c8dd4185f9426df13c76947 (master)
-commit 9de7fe0a7bf1111ebea9ca9e28b2def9ae3e53ff (release/2.4)
-Author: Arne Schwabe
-Date:   Sun Oct 7 23:55:39 2018 +0200
+.. after:
 
-     Add support for tls-ciphersuites for TLS 1.3
+CHACHA20-POLY1305  (256 bit key, stream cipher, TLS client/server mode only)
 
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <20181007215539.32761-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17626.html
+
+commit 447997dd83400bffc05db65a91f659dc87b4a367
+Author: Steffan Karger
+Date:   Tue Oct 9 22:43:15 2018 +0200
+
+     List ChaCha20-Poly1305 as stream cipher
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20181009204315.8262-1-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17682.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
