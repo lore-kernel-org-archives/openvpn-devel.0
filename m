@@ -1,16 +1,12 @@
-Date: Wed, 10 Oct 2018 09:14:51 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20181010071451.GP962@...1296...>
-References: <CABMULt+srvCfNqio3FTmh0MLahFDh0mjWCpPyxoJQnWw0Ee+6w@...278...>
- <20181009152342.GG962@...1296...>
- <CABMULtKW13+tS-o9bfaFw6ecO=CVMq9Q12oznH5iBQ6d=k8dRQ@...278...>
- <20181009184349.GJ962@...1296...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <c7533780-f74e-d6fa-9218-1a681255333c@...515...>
+Date: Wed, 10 Oct 2018 10:27:13 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="yOJWIPlLSoQhvV9Y"
-Content-Disposition: inline
-In-Reply-To: <20181009184349.GJ962@...1296...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN cipher issue?
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="OxbU7kk2BzgoQdBtmzGqR2jLKsuC0EVol"
+Subject: [Openvpn-devel] Topics for the community meeting (Wed,
+ 10th Oct 2018)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,67 +15,72 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Alex K <rightkicktech@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net, "openvpn users list (openvpn-users@lists.sourceforge.net)" <openvpn-users@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---yOJWIPlLSoQhvV9Y
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--OxbU7kk2BzgoQdBtmzGqR2jLKsuC0EVol
+Content-Type: multipart/mixed; boundary="FP3VhMNAMjEsLKXDwjTjNfyn5pJb2uR3D";
+ protected-headers="v1"
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <c7533780-f74e-d6fa-9218-1a681255333c@...515...>
+Subject: Topics for the community meeting (Wed, 10th Oct 2018)
+
+--FP3VhMNAMjEsLKXDwjTjNfyn5pJb2uR3D
+Content-Language: en-US
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
 Hi,
 
-to copy the reply from Steffan over to openvpn-users...
+We're going to have an IRC meeting starting at 11:30 CEST
+(9:30 UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have
+to be logged in to Freenode to join the channel.
 
-On Tue, Oct 09, 2018 at 08:43:49PM +0200, Gert Doering wrote:
-> (copying in openvpn-devel, as this is something Steffan will want to
-> see...)
-[..]
-> Possibly this is when the first packet is sent by the client or when
-> the first packet comes in for decryption - "man EVP_CipherUpdate" says
-> that this is for encryption or decryption.
+Current topic list along with basic information is here:
 
-Steffan Karger:
-> This very much sounds like an old OpenSSL bug for which we added a
-> workaround in this commit:
-> https://github.com/OpenVPN/openvpn/commit/13de0103e
->=20
-> This typically occurred with the OpenSSL version shipped with Ubuntu
-> 12.04, which had a buggy AEAD interface.
->=20
-> Either upgrading your OpenSSL or your OpenVPN to a recent version should
-> be sufficient to make it work.
+<https://community.openvpn.net/openvpn/wiki/Topics-2018-10-10>
 
--> so, upgrade to OpenVPN 2.4.6, or see if there is an Ubuntu upgrade
-to OpenSSL.  Or upgrade to Ubuntu 14.04 or 16.04...
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+In case you can't attend the meeting, please feel free to make comments
+on the topics by responding to this email or to the summary email sent
+after the meeting. Whenever possible, we'll also respond to existing,
+related email threads.
 
-Gert Doering - Munich, Germany                             gert@...1296...
+--
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
---yOJWIPlLSoQhvV9Y
+irc freenode net: mattock
+
+
+
+
+
+
+
+
+--FP3VhMNAMjEsLKXDwjTjNfyn5pJb2uR3D--
+
+--OxbU7kk2BzgoQdBtmzGqR2jLKsuC0EVol
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJbvabqAAoJEB2Cnv7KVigS6rsL/Ax9psJdNXIH4wGUToeAfk1z
-nb4MS6ec6lkIsG66yFrsTIxUXSFS+jNBRc0BWywgqncNz4K3+URHxfP4Fm4jE4Vw
-5yYie8UfQq620p87O84Ac+SD1T8RUIsE6ihru3lstx/46iumb4JSOXZD/3vkaT6k
-yXtkUjV6lUH70Ekw3+VJgaBBmuz3xEtzGznIlZwXae76ROgMAE8gVFL8vN5Xixni
-G4GS0x1/6uQh7iVrQ8COYYEGAiKghuqM4D5xN7v+znYgQW6lE9/vWVSRutmAy+QK
-c56hv6GvXNi0ExvdMv2+QKb5SOX8gifT3w570vMZSL1kf41dWiwbrdSaVh770fTK
-fsJXh6XlWCwQDKvbYG4hLtOsVFunhHkieN2lbH3O4e8K/EsZLWq/khvL2sdYQi0n
-pClKP2MEUYnVyUlA4kXm2L34xJuYcqD2qstP+sthEwGYmLcCU/dJf90MLlR73T1X
-9cp4Bj3fPfZR4mov3nOY3fy4hpxSjLVbmdL+ai8IKQ==
-=bI1G
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAlu9qdEACgkQKVhNn0CG
+RXgJcAf+K9hoYRjD8UFoZ2cnJSvM+6BSf4gY/P+xKWDNoneahd/Z24L36ZpcaS7O
+aBwMhgl6MZB4KVNI6H8bgcbVcd2gRA0lMKB9dQ0xnbivOrnzFgaho6N7rWno3/RW
+BT5KVGbPWy/HrBcqrigZLzBh12EaK9NdsFL1US1dNdJpVeM1OpCJUROXNpVQrtcs
+pC2ojQCFgU/GjkB7cwFUsRPgRiNchQlktz5k5kII3PptHihE6PYBNRCuDtUZE8Nt
+ZfTwA8u80aoLBNaAJuE1AD6RRwspRJtYygoIkAXApSoVyKLr9bi8K8ur3GV2d5XQ
+vcOerOU3YICVOjUv9ECR0Ctag60WPw==
+=GyZ9
 -----END PGP SIGNATURE-----
 
---yOJWIPlLSoQhvV9Y--
+--OxbU7kk2BzgoQdBtmzGqR2jLKsuC0EVol--
 
