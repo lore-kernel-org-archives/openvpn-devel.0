@@ -1,15 +1,13 @@
-Date: Wed, 10 Oct 2018 20:50:23 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20181010185023.GD962@...1296...>
-References: <CAGyAFMULV02g3gyCbvQ1+L+cMdE4UZMmzVfey-T1g4Y0NcmKeg@...278...>
- <1539174377-2678-1-git-send-email-lstipakov@...277...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="qgNrgGfFsws9WDdn"
-Content-Disposition: inline
-In-Reply-To: <1539174377-2678-1-git-send-email-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH v2] options.c: fix broken unary minus
- usage
+References: <1520185442-22901-1-git-send-email-selva.nair@...277...>
+ <20181007073824.GA962@...1296...>
+In-Reply-To: <20181007073824.GA962@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 10 Oct 2018 15:08:12 -0400
+Message-ID: <CAKuzo_htJTZuXewxpgTM4jx6s+HRQVRhPRrTmObLx0huRDfYuA@...278...>
+Content-Type: multipart/alternative; boundary="0000000000007bdb780577e494ad"
+Subject: Re: [Openvpn-devel] [PATCH] Do not assume that
+ SSL_CTX_get/set_min/max_proto_version are macros
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,80 +16,97 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---qgNrgGfFsws9WDdn
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+--0000000000007bdb780577e494ad
+Content-Type: text/plain; charset="UTF-8"
 
 Hi,
 
-On Wed, Oct 10, 2018 at 03:26:17PM +0300, Lev Stipakov wrote:
->      crypto_overhead +=3D kt->hmac_length;
->=20=20
-> -    frame_add_to_extra_frame(frame, crypto_overhead);
-> +    frame_add_to_extra_frame(frame, (unsigned int) crypto_overhead);
+On Sun, Oct 7, 2018 at 3:38 AM Gert Doering <gert@...1296...> wrote:
 
-Even if Arne already ACKed it, I have reservations about this.
+> Hi,
+>
+> On Sun, Mar 04, 2018 at 12:44:02PM -0500, selva.nair@...277... wrote:
+> > From: Selva Nair <selva.nair@...277...>
+> >
+> > Openssl docs do not explicitly state these to be macros although they
+> > are currently defined as such. Use AC_CHECK_DECLS to test for these so
+> that
+> > both function and macro forms could be detected.
+> >
+> > Signed-off-by: Selva Nair <selva.nair@...277...>
+> > ---
+> > Though not meant as a fixup for libressl, as a side effect
+> > this also makes 2.4.5 build with newer libressl versions.
+> > (built on freebsd 11 using libressl 2.6.4 while testing patch 238)
+> > Notes: (i) libressl defines only the set functions and neither
+> > are macros. So get functions will get used from the compat layer.
+>
+> So, going through open patches in patchwork I came to this one.
+>
+> Reading through the thread, I'm not sure what the final outcome on
+> the patch and the problem was?  LibreSSL seems to be fixed (thanks,
+> Jeremie :-) ) and if we build with OpenSSL 1.1.0g+, all is good?
+>
+> Phrased differently: does anything need to be done with this patch or
+> should I click on "superceded" in patchwork now?
+>
 
-Since crypto_overhead and crypto_max_overhead() are both size_t, and=20
-frame_add_to_extra_frame() is declared to take an "unsigned int" now,=20
-this cast should not be necessary.
+Agreed, if LibreSSL has got those macros defined now, we should just drop
+this patch.
 
-Unnecessary casts hide bugs and hurt my eyes...
+I'm marking these as superseded.
 
->  static inline void
-> +frame_remove_from_extra_frame(struct frame *frame, const unsigned int in=
-crement)
-> +{
-> +    frame->extra_frame -=3D increment;
-> +}
+Selva
 
-Maybe call the negative increment a "decrement" instead?
+--0000000000007bdb780577e494ad
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-> @@ -3509,7 +3509,7 @@ calc_options_string_link_mtu(const struct options *=
-o, const struct frame *frame)
->          struct key_type fake_kt;
->          init_key_type(&fake_kt, o->ciphername, o->authname, o->keysize, =
-true,
->                        false);
-> -        frame_add_to_extra_frame(&fake_frame, -(crypto_max_overhead()));
-> +        frame_remove_from_extra_frame(&fake_frame, (unsigned int) crypto=
-_max_overhead());
+<div dir=3D"ltr">Hi,<br><div><br><div class=3D"gmail_quote"><div dir=3D"ltr=
+">On Sun, Oct 7, 2018 at 3:38 AM Gert <span class=3D"" style=3D"" id=3D":36=
+3.1" tabindex=3D"-1">Doering</span> &lt;<span class=3D"" style=3D"" id=3D":=
+363.2" tabindex=3D"-1">gert</span>@<span class=3D"" style=3D"" id=3D":363.3=
+" tabindex=3D"-1">greenie</span>.<span class=3D"" style=3D"" id=3D":363.4" =
+tabindex=3D"-1">muc</span>.<span class=3D"" style=3D"" id=3D":363.5" tabind=
+ex=3D"-1">de</span>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" s=
+tyle=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Hi,<=
+br>
+<br>
+On Sun, Mar 04, 2018 at 12:44:02PM -0500, <a href=3D"mailto:selva.nair@...1665...=
+77..." target=3D"_blank">selva.nair@...277...</a> wrote:<br>
+&gt; From: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277..." target=3D=
+"_blank">selva.nair@...277...</a>&gt;<br>
+&gt; <br>
+&gt; Openssl docs do not explicitly state these to be macros although they<=
+br>
+&gt; are currently defined as such. Use AC_CHECK_DECLS to test for these so=
+ that<br>
+&gt; both function and macro forms could be detected.<br>
+&gt; <br>
+&gt; Signed-off-by: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277..." =
+target=3D"_blank">selva.nair@...277...</a>&gt;<br>
+&gt; ---<br>
+&gt; Though not meant as a fixup for libressl, as a side effect<br>
+&gt; this also makes 2.4.5 build with newer libressl versions.<br>
+&gt; (built on freebsd 11 using libressl 2.6.4 while testing patch 238)<br>
+&gt; Notes: (i) libressl defines only the set functions and neither<br>
+&gt; are macros. So get functions will get used from the compat layer.<br>
+<br>
+So, going through open patches in patchwork I came to this one.<br>
+<br>
+Reading through the thread, I&#39;m not sure what the final outcome on<br>
+the patch and the problem was?=C2=A0 LibreSSL seems to be fixed (thanks,<br>
+Jeremie :-) ) and if we build with OpenSSL 1.1.0g+, all is good?<br>
+<br>
+Phrased differently: does anything need to be done with this patch or<br>
+should I click on &quot;superceded&quot; in patchwork now?<br></blockquote>=
+<div><br></div><div>Agreed, if <span class=3D"" style=3D"" id=3D":363.6" ta=
+bindex=3D"-1">LibreSSL</span> has got those macros defined now, we should j=
+ust drop<br>this patch.<br></div><div>=C2=A0<br></div><div>I&#39;m marking =
+these as superseded.<br><br></div><div><span class=3D"" style=3D"" id=3D":3=
+63.7" tabindex=3D"-1">Selva</span><br></div></div></div></div>
 
-Same here wrt (unsigned int) cast.
-
-Otherwise indeed much clearer.
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---qgNrgGfFsws9WDdn
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJbvknuAAoJEB2Cnv7KVigScIYMAKexZbTIsE1fuQTdJNHJoHC0
-j4W7FZ3+oNT0K92YxKB2C9HrxYCWk0G6iwIQWImN21za/WKg6JmAqO1uwl0w68VZ
-VeQMIM5cJWjJyciktj06j25KNe637TTvijW7hf9/7TrkjL4fnj9EVlUdh1t9mlPV
-1JUCptNsIV5iyXaK54sg/3ALYyH+ThI6/0ydUupBrdIeuwbIE6TsyMoRnozvMZ6W
-xLu/mS+KFaeVrxQztEr5zRyUm+ogz/emj8YAu9G85XcCb4nrvRWJ3TDuF6HRgcjw
-Wzffx5Orm6II6ByIF79qxC0rU5o8I/5C9PvarP92c0kd3V7XNL0LRCd8R3r02hdZ
-RhoNsduaMZg2U0yS/EYD2JS5vN3wXD+CCOIrSqnYQvHkGZwyLW4KMYtHi0EGCYtW
-jHPvmbviZYsOeYaTUW4goCZYl5pPtcURG1s8xqT9gX2MRKGh2+kT6fPH67z9VJfw
-dqfEczIMKH917w6dAEWpqOI8Xn+E/pDTmHa879mMgw==
-=2ezK
------END PGP SIGNATURE-----
-
---qgNrgGfFsws9WDdn--
+--0000000000007bdb780577e494ad--
 
