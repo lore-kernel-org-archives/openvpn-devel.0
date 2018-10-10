@@ -1,10 +1,10 @@
-Date: Wed, 10 Oct 2018 20:19:18 +0200 (CEST)
-Message-Id: <201810101819.w9AIJILS054293@...2054...>
+Date: Wed, 10 Oct 2018 20:39:35 +0200 (CEST)
+Message-Id: <201810101839.w9AIdZKP063080@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1539022378-24485-1-git-send-email-lstipakov@...277...>
-References: <1539022378-24485-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: interactive.c: fix usage of
- potentially uninitialized variable
+In-Reply-To: <20181010142527.27025-1-arne@...1227...>
+References: <20181010142527.27025-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove MANAGMENT_EXTERNAL_KEY,
+ MANAGMENT_IN_EXTRA, ENABLE_CLIENT_CR
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +15,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.4 branch (bugfix).
+Your patch has been applied to the master branch.
 
-Thanks, Selva, for the extra pair of eyes.  I was fine with the v2, but
-had hoped to see an extra review from you in case I overlooked something
-("you know this code best").
+Cursory review, looks all reasonable, and passes my local t_client tests
+plus a windows build ("just to be safe").
 
-Test built on ubuntu 16.04.
+Spurious extra whitespace fixed on the go.
 
-commit d1f0e2cf83c378b4064f316a2127c7a3d7c6ca21 (master)
-commit 773c086367c8dd94d71a10bd2b32f09b4a0840ae (release/2.4)
-Author: Lev Stipakov
-Date:   Mon Oct 8 21:12:58 2018 +0300
+There is one thing that Selva commented on on the first round of this
+patch in December 2015 which you might want to look at - while 
+ENABLE_CLIENT_CR depended on ENABLE_MANAGEMENT, there's a code path in
+misc.c which is useful also on "non management enabled" clients, in
+get_user_pass_cr() - "Get username/password from standard input?"
+now depends on #ifdef ENABLE_MANAGEMENT, which is what we *had*, but
+might not be what we *want*...  as far as I can see, these two blocks
+should not be dependent on management functions (didn't test, though).
 
-     interactive.c: fix usage of potentially uninitialized variable
+commit 66b9409bb25402c1bfcd66359332792cf57d0825 (master)
+Author: Arne Schwabe
+Date:   Wed Oct 10 16:25:27 2018 +0200
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Selva Nair <selva.nair@...277...>
-     Message-Id: <1539022378-24485-1-git-send-email-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17663.html
+     Remove MANAGMENT_EXTERNAL_KEY, MANAGMENT_IN_EXTRA, ENABLE_CLIENT_CR
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <20181010142527.27025-1-arne@...1227...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20181010142527.27025-1-arne@...1227...
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
