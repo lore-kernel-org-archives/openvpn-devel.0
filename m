@@ -1,13 +1,13 @@
-References: <caec8caf-d1f5-b792-657c-7ab192a6ab4c@...1856...>
- <20181007215539.32761-1-arne@...1227...>
+References: <20181006080617.18136-1-arne@...1227...>
+ <20181006080617.18136-3-arne@...1227...>
 From: Steffan Karger <steffan@...1856...>
-Message-ID: <52d28e27-36ce-cbe7-05fa-a628ca1f8c8f@...1856...>
-Date: Wed, 10 Oct 2018 10:59:21 +0200
+Message-ID: <afc594d9-52af-86ab-b3b2-49810752e7e5@...1856...>
+Date: Wed, 10 Oct 2018 11:11:34 +0200
 MIME-Version: 1.0
-In-Reply-To: <20181007215539.32761-1-arne@...1227...>
+In-Reply-To: <20181006080617.18136-3-arne@...1227...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v4] Add support for tls-ciphersuites for
- TLS 1.3
+Subject: Re: [Openvpn-devel] [PATCH 3/3] Add better support for showing TLS
+ 1.3 ciphersuites in --show-tls
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,291 +22,201 @@ To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-This seems to be the exact same patch as v3.
+On 06-10-18 10:06, Arne Schwabe wrote:
+> show-tls shows mixed TLS 1.3 and TLS 1.2 ciphers. The ciphersuites
+> are only valid in tls-cipher or tls-ciphersuites. So this confusing and
+> not really helpful.
+> 
+> This patch modifies show-tls to show separate lists for TLS 1.2 and
+> TLS 1.3.
 
-For future reference: this is v4 of 2/2 of the patch set.
+Feature-ACK.
 
-On 07-10-18 23:55, Arne Schwabe wrote:
-> OpenSSL 1.1.1 introduces a separate list for TLS 1.3 ciphers. As these
-> interfaces are meant to be user facing or not exposed at all and we
-> expose the tls-cipher interface, we should also expose tls-cipherlist.
-> 
-> Combining both settings into tls-cipher would add a lot of glue logic
-> that needs to be maintained and is error prone. On top of that, users
-> should not set either settings unless absolutely required.
-> 
-> OpenSSL's own s_client/s_server also expose both settings and I believe
-> most other software will too:
-> 
->  -cipher val         Specify TLSv1.2 and below cipher list to be used
->  -ciphersuites val   Specify TLSv1.3 ciphersuites to be used
-> 
-> For mbed TLS only the future can tell if we will see a combined or also
-> two separate lists.
 > ---
->  doc/openvpn.8             | 20 +++++++++++---
->  src/openvpn/options.c     |  7 +++++
->  src/openvpn/options.h     |  1 +
->  src/openvpn/ssl.c         |  3 ++-
->  src/openvpn/ssl_backend.h | 13 ++++++++-
->  src/openvpn/ssl_mbedtls.c | 13 +++++++++
->  src/openvpn/ssl_openssl.c | 56 +++++++++++++++++++++++++++++++++++++++
->  7 files changed, 108 insertions(+), 5 deletions(-)
+>  src/openvpn/init.c        |  1 +
+>  src/openvpn/ssl_backend.h |  1 +
+>  src/openvpn/ssl_mbedtls.c |  2 +
+>  src/openvpn/ssl_openssl.c | 79 ++++++++++++++++++++++++++++++---------
+>  4 files changed, 65 insertions(+), 18 deletions(-)
 > 
-> diff --git a/doc/openvpn.8 b/doc/openvpn.8
-> index feec0b6e..226d9a98 100644
-> --- a/doc/openvpn.8
-> +++ b/doc/openvpn.8
-> @@ -5001,11 +5001,13 @@ determines the derivation of the tunnel session keys.
->  .\"*********************************************************
->  .TP
->  .B \-\-tls\-cipher l
-> +.TQ
-> +.B \-\-tls\-ciphersuites l
->  A list
->  .B l
->  of allowable TLS ciphers delimited by a colon (":").
->  
-> -This setting can be used to ensure that certain cipher suites are used (or
-> +These setting can be used to ensure that certain cipher suites are used (or
->  not used) for the TLS connection.  OpenVPN uses TLS to secure the control
->  channel, over which the keys that are used to protect the actual VPN traffic
->  are exchanged.
-> @@ -5014,20 +5016,32 @@ The supplied list of ciphers is (after potential OpenSSL/IANA name translation)
->  simply supplied to the crypto library.  Please see the OpenSSL and/or mbed TLS
->  documentation for details on the cipher list interpretation.
->  
-> +For OpenSSL, the
-> +.B \-\-tls-cipher
-> +is used for TLS 1.2 and below. For TLS 1.3 and up, the
-> +.B \-\-tls\-ciphersuites
-> +setting is used. mbed TLS has no TLS 1.3 support yet and only the
-> +.B \-\-tls-cipher
-> +setting is used.
-> +
->  Use
->  .B \-\-show\-tls
->  to see a list of TLS ciphers supported by your crypto library.
->  
->  Warning!
->  .B \-\-tls\-cipher
-> -is an expert feature, which \- if used correcly \- can improve the security of
-> -your VPN connection.  But it is also easy to unwittingly use it to carefully
-> +and
-> +.B \-\-tls\-ciphersuites
-> +are expert features, which \- if used correcly \- can improve the security of
-> +your VPN connection.  But it is also easy to unwittingly use them to carefully
->  align a gun with your foot, or just break your connection.  Use with care!
->  
->  The default for \-\-tls\-cipher is to use mbed TLS's default cipher list
->  when using mbed TLS or
->  "DEFAULT:!EXP:!LOW:!MEDIUM:!kDH:!kECDH:!DSS:!PSK:!SRP:!kRSA" when using
->  OpenSSL.
-> +
-> +The default for \-\-tls\-ciphersuites is to use the crypto library's default.
->  .\"*********************************************************
->  .TP
->  .B \-\-tls\-cert\-profile profile
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index 95ebe3b3..891468bd 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -1763,6 +1763,7 @@ show_settings(const struct options *o)
->      SHOW_STR(cryptoapi_cert);
->  #endif
->      SHOW_STR(cipher_list);
-> +    SHOW_STR(cipher_list_tls13);
->      SHOW_STR(tls_cert_profile);
->      SHOW_STR(tls_verify);
->      SHOW_STR(tls_export_cert);
-> @@ -2757,6 +2758,7 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
->          MUST_BE_UNDEF(pkcs12_file);
->  #endif
->          MUST_BE_UNDEF(cipher_list);
-> +        MUST_BE_UNDEF(cipher_list_tls13);
->          MUST_BE_UNDEF(tls_cert_profile);
->          MUST_BE_UNDEF(tls_verify);
->          MUST_BE_UNDEF(tls_export_cert);
-> @@ -7954,6 +7956,11 @@ add_option(struct options *options,
->          VERIFY_PERMISSION(OPT_P_GENERAL);
->          options->tls_cert_profile = p[1];
->      }
-> +    else if (streq(p[0], "tls-ciphersuites") && p[1] && !p[2])
-> +    {
-> +        VERIFY_PERMISSION(OPT_P_GENERAL);
-> +        options->cipher_list_tls13 = p[1];
-> +    }
->      else if (streq(p[0], "crl-verify") && p[1] && ((p[2] && streq(p[2], "dir"))
->                                                     || (p[2] && streq(p[1], INLINE_FILE_TAG) ) || !p[2]) && !p[3])
->      {
-> diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-> index 4c3bc4fb..3e7ef4f8 100644
-> --- a/src/openvpn/options.h
-> +++ b/src/openvpn/options.h
-> @@ -508,6 +508,7 @@ struct options
->      const char *priv_key_file;
->      const char *pkcs12_file;
->      const char *cipher_list;
-> +    const char *cipher_list_tls13;
->      const char *tls_cert_profile;
->      const char *ecdh_curve;
->      const char *tls_verify;
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index fd12af05..adb0f3c8 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -626,9 +626,10 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx)
->      tls_ctx_set_cert_profile(new_ctx, options->tls_cert_profile);
->  
->      /* Allowable ciphers */
-> -    /* Since @SECLEVEL also influces loading of certificates, set the
-> +    /* Since @SECLEVEL also influences loading of certificates, set the
->       * cipher restrictions before loading certificates */
->      tls_ctx_restrict_ciphers(new_ctx, options->cipher_list);
-> +    tls_ctx_restrict_ciphers_tls13(new_ctx, options->cipher_list_tls13);
->  
->      if (!tls_ctx_set_options(new_ctx, options->ssl_flags))
->      {
+> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+> index b2ab2a60..ff863cf8 100644
+> --- a/src/openvpn/init.c
+> +++ b/src/openvpn/init.c
+> @@ -1040,6 +1040,7 @@ print_openssl_info(const struct options *options)
+>          if (options->show_tls_ciphers)
+>          {
+>              show_available_tls_ciphers(options->cipher_list,
+> +                                       options->cipher_list_tls13,
+>                                         options->tls_cert_profile);
+>          }
+>          if (options->show_curves)
 > diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
-> index 5023c02a..0995bb4c 100644
+> index 0995bb4c..42934230 100644
 > --- a/src/openvpn/ssl_backend.h
 > +++ b/src/openvpn/ssl_backend.h
-> @@ -169,7 +169,8 @@ bool tls_ctx_initialised(struct tls_root_ctx *ctx);
->  bool tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags);
->  
->  /**
-> - * Restrict the list of ciphers that can be used within the TLS context.
-> + * Restrict the list of ciphers that can be used within the TLS context for TLS 1.2
-> + * and below
->   *
->   * @param ctx           TLS context to restrict, must be valid.
->   * @param ciphers       String containing : delimited cipher names, or NULL to use
-> @@ -177,6 +178,16 @@ bool tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags);
+> @@ -525,6 +525,7 @@ void print_details(struct key_state_ssl *ks_ssl, const char *prefix);
 >   */
->  void tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers);
+>  void
+>  show_available_tls_ciphers(const char *cipher_list,
+> +                           const char *cipher_list_tls13,
+>                             const char *tls_cert_profile);
+
+Please update to doxygen to include the extra parameter too.
+
 >  
-> +/**
-> + * Restrict the list of ciphers that can be used within the TLS context for TLS 1.3
-> + * and higher
-> + *
-> + * @param ctx           TLS context to restrict, must be valid.
-> + * @param ciphers       String containing : delimited cipher names, or NULL to use
-> + *                                      sane defaults.
-> + */
-> +void tls_ctx_restrict_ciphers_tls13(struct tls_root_ctx *ctx, const char *ciphers);
-> +
->  /**
->   * Set the TLS certificate profile.  The profile defines which crypto
->   * algorithms may be used in the supplied certificate.
+>  /*
 > diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-> index e4850cb6..f23cd30a 100644
+> index f23cd30a..2c6e54b3 100644
 > --- a/src/openvpn/ssl_mbedtls.c
 > +++ b/src/openvpn/ssl_mbedtls.c
-> @@ -222,6 +222,19 @@ tls_translate_cipher_name(const char *cipher_name)
->      return pair->iana_name;
->  }
+> @@ -1341,8 +1341,10 @@ print_details(struct key_state_ssl *ks_ssl, const char *prefix)
 >  
-> +void
-> +tls_ctx_restrict_ciphers_tls13(struct tls_root_ctx *ctx, const char *ciphers)
-> +{
-> +    if (ciphers == NULL)
-> +    {
-> +        /* Nothing to do, return without warning message */
-> +        return;
-> +    }
-> +
-> +    msg(M_WARN, "mbed TLS does not support setting tls-ciphersuites. "
-> +                "Ignoring TLS 1.3 cipher list: %s", ciphers);
-> +}
-> +
 >  void
->  tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+>  show_available_tls_ciphers(const char *cipher_list,
+> +                           const char *cipher_list_tls13,
+>                             const char *tls_cert_profile)
 >  {
+> +    (void) cipher_list_tls13; // Avoid unused warning
+>      struct tls_root_ctx tls_ctx;
+>      const int *ciphers = mbedtls_ssl_list_ciphersuites();
+>  
 > diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-> index 1a66d178..f08d7cae 100644
+> index e3f02d05..044070fe 100644
 > --- a/src/openvpn/ssl_openssl.c
 > +++ b/src/openvpn/ssl_openssl.c
-> @@ -391,6 +391,7 @@ convert_tls_list_to_openssl(char* openssl_ciphers, size_t len,const char *cipher
->          openssl_ciphers[openssl_ciphers_len-1] = '\0';
->      }
->  }
-> +
->  void
->  tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
->  {
-> @@ -426,6 +427,61 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
->      }
+> @@ -60,6 +60,7 @@
+>  #include <openssl/pkcs12.h>
+>  #include <openssl/rsa.h>
+>  #include <openssl/x509.h>
+> +#include <openssl/ssl.h>
+>  #ifndef OPENSSL_NO_EC
+>  #include <openssl/ec.h>
+>  #endif
+> @@ -1978,15 +1979,12 @@ print_details(struct key_state_ssl *ks_ssl, const char *prefix)
+>      msg(D_HANDSHAKE, "%s%s", s1, s2);
 >  }
 >  
-> +void
-> +convert_tls13_list_to_openssl(char* openssl_ciphers, size_t len, const char *ciphers)
+> -void
+> -show_available_tls_ciphers(const char *cipher_list,
+> -                           const char *tls_cert_profile)
+> +static void
+> +show_available_tls_ciphers_list(const char *cipher_list,
+> +                           const char *tls_cert_profile,
+> +                           const bool tls13)
 
-To be explicit, this still need two changes:
+Argument alignment is now off due to function rename.
 
-s/char* openssl_cipher/char *openssl_ciphers/ and wrap line please.
-
-> +{
-> +    /*
-> +     * OpenSSL (and official IANA) cipher names have _ in them. We
-> +     * historically used names with - in them. Silently convert names
-> +     * with - to names with _ to support both
-> +     */
-> +    if (strlen(ciphers) >= (len - 1))
-> +    {
-> +        msg(M_FATAL,
-> +            "Failed to set restricted TLS 1.3 cipher list, too long (>%d).",
-> +            (int) (len - 1));
-> +    }
-> +
-> +    strncpy(openssl_ciphers, ciphers, len);
-> +
-> +    for (size_t i = 0; i < strlen(openssl_ciphers); i++)
-> +    {
-> +        if (openssl_ciphers[i] == '-')
-> +        {
-> +            openssl_ciphers[i] = '_';
-> +        }
-> +    }
-> +}
-> +
-> +void
-> +tls_ctx_restrict_ciphers_tls13(struct tls_root_ctx *ctx, const char *ciphers)
-> +{
-> +    if (ciphers == NULL)
-> +    {
-> +        /* default cipher list of OpenSSL 1.1.1 is sane, do not set own
-> +         * default as we do with tls-cipher */
-> +        return;
-> +    }
-> +
-> +#if (OPENSSL_VERSION_NUMBER < 0x1010100fL)
-> +        crypto_msg(M_WARN, "Not compiled with OpenSSL 1.1.1 or higher. "
-> +                       "Ignoring TLS 1.3 only tls-ciphersuites '%s' setting.",
-> +                        ciphers);
-> +#else
-> +    ASSERT(NULL != ctx);
-> +
-> +    char openssl_ciphers[4096];
-> +    convert_tls13_list_to_openssl(openssl_ciphers, sizeof(openssl_ciphers),
-> +                                  ciphers);
-> +
-> +    if (!SSL_CTX_set_ciphersuites(ctx->ctx, openssl_ciphers))
-> +    {
-> +        crypto_msg(M_FATAL, "Failed to set restricted TLS 1.3 cipher list: %s",
-> +                   openssl_ciphers);
-> +    }
-> +#endif
-> +}
-> +
->  void
->  tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
 >  {
+>      struct tls_root_ctx tls_ctx;
+> -    SSL *ssl;
+> -    const char *cipher_name;
+> -    const tls_cipher_name_pair *pair;
+> -    int priority = 0;
+>  
+>      tls_ctx.ctx = SSL_CTX_new(SSLv23_method());
+>      if (!tls_ctx.ctx)
+> @@ -1994,22 +1992,44 @@ show_available_tls_ciphers(const char *cipher_list,
+>          crypto_msg(M_FATAL, "Cannot create SSL_CTX object");
+>      }
+>  
+> -    ssl = SSL_new(tls_ctx.ctx);
+> -    if (!ssl)
+> +#if (OPENSSL_VERSION_NUMBER >= 0x1010100fL)
+> +    if (tls13)
+>      {
+> -        crypto_msg(M_FATAL, "Cannot create SSL object");
+> +        SSL_CTX_set_min_proto_version(tls_ctx.ctx, TLS1_3_VERSION);
+> +    }
+> +    else
+> +#endif
+> +    {
+> +        SSL_CTX_set_max_proto_version(tls_ctx.ctx, TLS1_2_VERSION);
+>      }
+>  
+>      tls_ctx_set_cert_profile(&tls_ctx, tls_cert_profile);
+>      tls_ctx_restrict_ciphers(&tls_ctx, cipher_list);
+>  
+> -    printf("Available TLS Ciphers,\n");
+> -    printf("listed in order of preference:\n\n");
+> -    while ((cipher_name = SSL_get_cipher_list(ssl, priority++)))
+> +    SSL *ssl = SSL_new(tls_ctx.ctx);
+> +    if (!ssl)
+>      {
+> -        pair = tls_get_cipher_name_pair(cipher_name, strlen(cipher_name));
+> +        crypto_msg(M_FATAL, "Cannot create SSL object");
+> +    }
+> +
+> +#if (OPENSSL_VERSION_NUMBER < 0x1010000fL)
+> +    STACK_OF(SSL_CIPHER)* sk = SSL_get_ciphers(ssl);
+> +#else
+> +    STACK_OF(SSL_CIPHER)* sk = SSL_get1_supported_ciphers(ssl);
+> +#endif
+> +    for (int i=0;i < sk_SSL_CIPHER_num(sk);i++)
+> +    {
+> +        const SSL_CIPHER* c = sk_SSL_CIPHER_value(sk, i);
+> +
+> +        const char* cipher_name = SSL_CIPHER_get_name(c);
+> +
+> +        const tls_cipher_name_pair *pair = tls_get_cipher_name_pair(cipher_name, strlen(cipher_name));
+>  
+> -        if (NULL == pair)
+> +        if (tls13)
+> +        {
+> +              printf("%s\n", cipher_name);
+> +        }
+> +        else if (NULL == pair)
+>          {
+>              /* No translation found, print warning */
+>              printf("%s (No IANA name known to OpenVPN, use OpenSSL name.)\n", cipher_name);
+> @@ -2018,14 +2038,37 @@ show_available_tls_ciphers(const char *cipher_list,
+>          {
+>              printf("%s\n", pair->iana_name);
+>          }
+> -
+>      }
+> -    printf("\n" SHOW_TLS_CIPHER_LIST_WARNING);
+> -
+> +#if (OPENSSL_VERSION_NUMBER >= 0x1010000fL)
+> +    sk_SSL_CIPHER_free(sk);
+> +#endif
+>      SSL_free(ssl);
+>      SSL_CTX_free(tls_ctx.ctx);
+>  }
+>  
+> +
+> +
+> +void
+> +show_available_tls_ciphers(const char *cipher_list,
+> +                           const char *cipher_list_tls13,
+> +                           const char *tls_cert_profile)
+> +{
+> +    printf("Available TLS Ciphers,\n");
+> +    printf("listed in order of preference:\n");
+
+Since you are changing the output format anyway, can you merge these
+into a single printf and remove the unneeded extra newline halfway
+through the sentence?
+
+> +#if (OPENSSL_VERSION_NUMBER >= 0x1010100fL)
+> +    printf("\nFor TLS 1.3 and newer (--tls-ciphersuite):\n\n");
+> +    show_available_tls_ciphers_list(cipher_list_tls13, tls_cert_profile, true);
+> +#else
+> +    (void) cipher_list_tls13;  /* Avoid unused warning */
+> +#endif
+> +
+> +    printf("\nFor TLS 1.2 and older (--tls-cipher):\n\n");
+> +    show_available_tls_ciphers_list(cipher_list, tls_cert_profile, false);
+> +
+> +    printf("\n" SHOW_TLS_CIPHER_LIST_WARNING);
+> +}
+> +
+>  /*
+>   * Show the Elliptic curves that are available for us to use
+>   * in the OpenSSL library.
 > 
 
-I'll let you and Gert again decide who will tackle these final minor
-nits ;-)
-
-Acked-by: Steffan Karger <steffan@...1856...>
+Otherwise the patch looks good.
 
 -Steffan
 
