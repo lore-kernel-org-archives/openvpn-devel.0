@@ -1,14 +1,10 @@
-References: <20181011184200.22175-1-a@...2181...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <aeffe81c-4261-bb68-fdfe-628fa5f6d232@...2181...>
-Date: Fri, 12 Oct 2018 02:44:33 +0800
-MIME-Version: 1.0
-In-Reply-To: <20181011184200.22175-1-a@...2181...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="fK8Gai9WoalMS2pKV6Q3BJ4KRmNfrEXib"
-Subject: Re: [Openvpn-devel] [PATCH v2 0/7] introduce networking API and add
- netlink support for Linux
+Date: Thu, 11 Oct 2018 20:52:02 +0200 (CEST)
+Message-Id: <201810111852.w9BIq2fv021980@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20181010153624.27957-1-arne@...1227...>
+References: <20181010153624.27957-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add better support for showing
+ TLS 1.3 ciphersuites in --show-tls
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,73 +13,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Cc: Antonio Quartulli <a@...2181...>
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---fK8Gai9WoalMS2pKV6Q3BJ4KRmNfrEXib
-Content-Type: multipart/mixed; boundary="VMRuuniC1nBICyQyel1wxm06CaxKAiO6g";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: "openvpn-devel@lists.sourceforge.net"
- <openvpn-devel@lists.sourceforge.net>
-Cc: Antonio Quartulli <a@...2181...>
-Message-ID: <aeffe81c-4261-bb68-fdfe-628fa5f6d232@...2181...>
-Subject: Re: [PATCH v2 0/7] introduce networking API and add netlink support
- for Linux
-References: <20181011184200.22175-1-a@...2181...>
-In-Reply-To: <20181011184200.22175-1-a@...2181...>
-
---VMRuuniC1nBICyQyel1wxm06CaxKAiO6g
-Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Your patch has been applied to the master and release/2.4 branch
+(long term compatibility).
 
-On 12/10/18 02:41, Antonio Quartulli wrote:
-> From a high level description of this patchset, please refer to
-> "[PATCH 0/4] add netlink support for Linux" sent to the mailing list on
-> Apr, 20th 2018.
->=20
-> Changes from v1:
-> - introduced opaque context object containing implementation specific
->   state;
-> - fixed env passed to ip command (thanks to opaque context);
-> - rebased on to pof latest master (00d78cd5)
+I had to fix one minor bit - it prints 
 
-The last rebase was on top of ed31cf2a
+  For TLS 1.3 and newer (--tls-ciphersuite):
 
-Regards,
+but that option is called "--tls-ciphersuites"...
+
+I am not really able to make sense of it, though.  If I try to specify
+a TLS 1.3 ciphersuite, to see if it has any effect, all I get is errors
+in the log ("no valid translation"), and no effect...  so maybe something
+with the --tls-ciphersuites patch is wrong, and this one is only 
+exposing it?
+
+Arne, Steffan, could you have a look?  This is "master" with OpenSSL 1.1.1:
+
+   $ src/openvpn/openvpn --verb 4 --tls-ciphersuites TLS_AES_256_GCM_SHA384 --show-tls --tls-cipher TLS-DHE-RSA-WITH-AES-256-CBC-SHA256
+   Available TLS Ciphers, listed in order of preference:
+
+   For TLS 1.3 and newer (--tls-ciphersuite):
+
+   Thu Oct 11 20:32:44 2018 us=310005 No valid translation found for TLS cipher 'TLS_AES_256_GCM_SHA384'
+   TLS_AES_256_GCM_SHA384
+   TLS_CHACHA20_POLY1305_SHA256
+   TLS_AES_128_GCM_SHA256
+
+   For TLS 1.2 and older (--tls-cipher):
+
+   TLS-DHE-RSA-WITH-AES-256-CBC-SHA256
 
 
---=20
-Antonio Quartulli
+.. so "--tls-cipher" is definitely sticking, while "--tls-ciphersuites"
+leads to a confusing warning (if --verb is high enough), listing the very 
+same cipher(suite) in the next line...?
 
 
---VMRuuniC1nBICyQyel1wxm06CaxKAiO6g--
+commit 7aeabadd69fca0071152c42d58fee0b565f01eb3 (master)
+commit e8467c8648f699b221004a9f15d48b8e558049f0 (release/2.4)
+Author: Arne Schwabe
+Date:   Wed Oct 10 17:36:24 2018 +0200
 
---fK8Gai9WoalMS2pKV6Q3BJ4KRmNfrEXib
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+     Add better support for showing TLS 1.3 ciphersuites in --show-tls
 
------BEGIN PGP SIGNATURE-----
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <20181010153624.27957-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17723.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlu/mhEACgkQ9FVsWUWD
-Dm0HwhAAhZM2xmMVYJDLHGeiGmwe4jzp4FOo4ietLwA2uB/DRFqRXVdnb1V2BdZS
-pnPHkXDcHBK9gPEF71UgVL1bIdSxYZl2DG1rs05TCpclMwaeeMtj3SZxed8SOdJJ
-9dWslMNSW/yfW8ovw9uMiaS+BxQmU2eAxMaLUiQvfsh43Yhi8jxRNv9qWm4YLFhw
-Fk+Tm6+CSJ9z7q/rK/SP3c2oIt7u9x9+VdYCg5+Qe8Fw7wn/nFTT7L5Zru3UxDBL
-MsIJRJd/+K8U/bWGCwf/+iKoRQZ7cSgmpaog1F5XsWd/CGdjHW3mQ+5kuyK4Dbdu
-n3S2D99IIu7H+DdxAiGPMaLr98/dinnT5CPZDVy7g6nM22T3tXC3LoFJ2fquwaE0
-qjmhieUSCg9v8LLL2/KsuaFWp8dF4uBHYmaga86qsEPy2HsWl0g2wFKquZAXLrTw
-hr8BAPVGionIAv4LLMS0ozbyjz32KWtv/ljGX7lbd25iN+fcjrd2tAQ8gTejuUzl
-SJaUL1mWGz5lzr6F/ocNOVZ0H9+7J50s+3Zbz3CW3FbsRtUYzyD/GL8PPTZK4914
-LqX1heAFsvjrYJSEeyHyzCRUWcj3nwehD/BJKRGJULqqpv/FIYNBcSqNiymkqFDr
-83VfYAWUNiXDy9xnGPDsF1rV+o3t6AdkNvdU0RPhyCP5V2Y0dUc=
-=gYM1
------END PGP SIGNATURE-----
 
---fK8Gai9WoalMS2pKV6Q3BJ4KRmNfrEXib--
+--
+kind regards,
+
+Gert Doering
+
 
