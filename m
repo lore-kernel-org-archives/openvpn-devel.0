@@ -1,10 +1,8 @@
-Date: Thu, 11 Oct 2018 20:52:02 +0200 (CEST)
-Message-Id: <201810111852.w9BIq2fv021980@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20181010153624.27957-1-arne@...1227...>
-References: <20181010153624.27957-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add better support for showing
- TLS 1.3 ciphersuites in --show-tls
+From: Arne Schwabe <arne@...1227...>
+Date: Fri, 12 Oct 2018 00:06:39 +0200
+Message-Id: <20181011220639.7316-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Use right function to set TLS1.3
+ restrictions in show-tls
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,63 +13,51 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.4 branch
-(long term compatibility).
+The last version of the patch used the TLS1.2 version
+tls_ctx_restrict_ciphers to set the restrictions for both
+TLS 1.3 and TLS1.2 instead of using tls_ctx_restrict_ciphers_tls13
+for TLS1.3.
 
-I had to fix one minor bit - it prints 
+Also fix minor style problem while I am touching the function
+---
+ src/openvpn/ssl_openssl.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-  For TLS 1.3 and newer (--tls-ciphersuite):
-
-but that option is called "--tls-ciphersuites"...
-
-I am not really able to make sense of it, though.  If I try to specify
-a TLS 1.3 ciphersuite, to see if it has any effect, all I get is errors
-in the log ("no valid translation"), and no effect...  so maybe something
-with the --tls-ciphersuites patch is wrong, and this one is only 
-exposing it?
-
-Arne, Steffan, could you have a look?  This is "master" with OpenSSL 1.1.1:
-
-   $ src/openvpn/openvpn --verb 4 --tls-ciphersuites TLS_AES_256_GCM_SHA384 --show-tls --tls-cipher TLS-DHE-RSA-WITH-AES-256-CBC-SHA256
-   Available TLS Ciphers, listed in order of preference:
-
-   For TLS 1.3 and newer (--tls-ciphersuite):
-
-   Thu Oct 11 20:32:44 2018 us=310005 No valid translation found for TLS cipher 'TLS_AES_256_GCM_SHA384'
-   TLS_AES_256_GCM_SHA384
-   TLS_CHACHA20_POLY1305_SHA256
-   TLS_AES_128_GCM_SHA256
-
-   For TLS 1.2 and older (--tls-cipher):
-
-   TLS-DHE-RSA-WITH-AES-256-CBC-SHA256
-
-
-.. so "--tls-cipher" is definitely sticking, while "--tls-ciphersuites"
-leads to a confusing warning (if --verb is high enough), listing the very 
-same cipher(suite) in the next line...?
-
-
-commit 7aeabadd69fca0071152c42d58fee0b565f01eb3 (master)
-commit e8467c8648f699b221004a9f15d48b8e558049f0 (release/2.4)
-Author: Arne Schwabe
-Date:   Wed Oct 10 17:36:24 2018 +0200
-
-     Add better support for showing TLS 1.3 ciphersuites in --show-tls
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <20181010153624.27957-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17723.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 6717ded0..da573cfa 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -2002,15 +2002,16 @@ show_available_tls_ciphers_list(const char *cipher_list,
+     if (tls13)
+     {
+         SSL_CTX_set_min_proto_version(tls_ctx.ctx, TLS1_3_VERSION);
++        tls_ctx_restrict_ciphers_tls13(&tls_ctx, cipher_list);
+     }
+     else
+ #endif
+     {
+         SSL_CTX_set_max_proto_version(tls_ctx.ctx, TLS1_2_VERSION);
++        tls_ctx_restrict_ciphers(&tls_ctx, cipher_list);
+     }
+ 
+     tls_ctx_set_cert_profile(&tls_ctx, tls_cert_profile);
+-    tls_ctx_restrict_ciphers(&tls_ctx, cipher_list);
+ 
+     SSL *ssl = SSL_new(tls_ctx.ctx);
+     if (!ssl)
+@@ -2039,7 +2040,8 @@ show_available_tls_ciphers_list(const char *cipher_list,
+         else if (NULL == pair)
+         {
+             /* No translation found, print warning */
+-            printf("%s (No IANA name known to OpenVPN, use OpenSSL name.)\n", cipher_name);
++            printf("%s (No IANA name known to OpenVPN, use OpenSSL name.)\n",
++                   cipher_name);
+         }
+         else
+         {
+-- 
+2.19.0
 
 
