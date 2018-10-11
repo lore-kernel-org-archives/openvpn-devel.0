@@ -1,10 +1,9 @@
-Date: Wed, 10 Oct 2018 22:56:37 +0200 (CEST)
-Message-Id: <201810102056.w9AKubro087998@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20181009204315.8262-1-steffan@...1856...>
-References: <20181009204315.8262-1-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: List ChaCha20-Poly1305 as
- stream cipher
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Thu, 11 Oct 2018 09:20:00 +0200
+Message-ID: <1539242400-27614-1-git-send-email-steffan.karger@...1435...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] mbedtls: don't print unsupported ciphers in
+ insecure cipher list
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,36 +14,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+Commit 447997dd refactored the --show-ciphers code, but introduced a bug
+in mbedtls builds where non-AEAD/CBC cipher were printed too.  Those are
+however unsupported (as openvpn will tell you when you try to use them).
 
-"Does what it says on the lid"... before:
+This fixes that bug.
 
-CHACHA20-POLY1305  (256 bit key, 8 bit block, TLS client/server mode only)
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+---
+ src/openvpn/crypto_mbedtls.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-.. after:
-
-CHACHA20-POLY1305  (256 bit key, stream cipher, TLS client/server mode only)
-
-
-commit 447997dd83400bffc05db65a91f659dc87b4a367
-Author: Steffan Karger
-Date:   Tue Oct 9 22:43:15 2018 +0200
-
-     List ChaCha20-Poly1305 as stream cipher
-
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20181009204315.8262-1-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17682.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
+index 46c3c60..77e84c3 100644
+--- a/src/openvpn/crypto_mbedtls.c
++++ b/src/openvpn/crypto_mbedtls.c
+@@ -170,7 +170,8 @@ show_available_ciphers(void)
+     while (*ciphers != 0)
+     {
+         const cipher_kt_t *info = mbedtls_cipher_info_from_type(*ciphers);
+-        if (info && cipher_kt_insecure(info))
++        if (info && cipher_kt_insecure(info)
++            && (cipher_kt_mode_aead(info) || cipher_kt_mode_cbc(info)))
+         {
+             print_cipher(info);
+         }
+-- 
+2.7.4
 
 
