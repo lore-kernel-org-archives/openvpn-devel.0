@@ -1,10 +1,9 @@
-Date: Thu, 11 Oct 2018 20:08:12 +0200 (CEST)
-Message-Id: <201810111808.w9BI8CKa006220@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1539258702-15427-1-git-send-email-lstipakov@...277...>
-References: <1539258702-15427-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: options.c: fix broken unary
- minus usage
+From: Antonio Quartulli <a@...2181...>
+Date: Fri, 12 Oct 2018 02:41:53 +0800
+Message-Id: <20181011184200.22175-1-a@...2181...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v2 0/7] introduce networking API and add
+ netlink support for Linux
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,34 +14,69 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-Acked-by: Gert Doering <gert@...1296...>
+From a high level description of this patchset, please refer to
+"[PATCH 0/4] add netlink support for Linux" sent to the mailing list on
+Apr, 20th 2018.
 
-Thanks for bearing with me :-) - code looks correct, passes all t_client
-tests (which should trigger the increment/decrement code paths).  Bonus
-points for *removing* a cast ;-))
-
-Your patch has been applied to the master and release/2.4 branch (bugfix).
-
-commit ed31cf2ab718d879615dea81e6a17d26537ab43a (master)
-commit 62eb234c810533c7ea13d8a9faa28eebe07f2e82 (release/2.4)
-Author: Lev Stipakov
-Date:   Thu Oct 11 14:51:42 2018 +0300
-
-     options.c: fix broken unary minus usage
-
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1539258702-15427-1-git-send-email-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17739.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Changes from v1:
+- introduced opaque context object containing implementation specific
+  state;
+- fixed env passed to ip command (thanks to opaque context);
+- rebased on to pof latest master (00d78cd5)
 
 
---
-kind regards,
+Regards,
 
-Gert Doering
+
+Antonio Quartulli (7):
+  implement platform generic networking API
+  implement networking API for iproute2
+  introduce sitnl: Simplified Interface To NetLink
+  tun.c: use new networking API to handle tun interface on Linux
+  route.c: use new networking API to handle routing table on Linux
+  route.c: use sitnl to implement get_default_gateway_ipv6()
+  unit tests: implement test for sitnl
+
+ configure.ac                               |   15 +-
+ src/openvpn/Makefile.am                    |    3 +
+ src/openvpn/errlevel.h                     |    1 +
+ src/openvpn/forward.c                      |    2 +-
+ src/openvpn/init.c                         |   55 +-
+ src/openvpn/init.h                         |    5 +-
+ src/openvpn/networking.h                   |  272 +++++
+ src/openvpn/networking_ip.c                |  385 ++++++
+ src/openvpn/networking_ip.h                |   36 +
+ src/openvpn/networking_sitnl.c             | 1227 ++++++++++++++++++++
+ src/openvpn/networking_sitnl.h             |   28 +
+ src/openvpn/openvpn.c                      |    4 +-
+ src/openvpn/openvpn.h                      |    2 +
+ src/openvpn/options.c                      |   10 +-
+ src/openvpn/options.h                      |    1 +
+ src/openvpn/route.c                        |  497 +++-----
+ src/openvpn/route.h                        |   26 +-
+ src/openvpn/sitnl.h                        |  217 ++++
+ src/openvpn/ssl.c                          |    2 +-
+ src/openvpn/ssl_common.h                   |    1 +
+ src/openvpn/tun.c                          |  233 ++--
+ src/openvpn/tun.h                          |   14 +-
+ tests/Makefile.am                          |    3 +-
+ tests/t_net.sh                             |  180 +++
+ tests/unit_tests/openvpn/Makefile.am       |   28 +-
+ tests/unit_tests/openvpn/test_networking.c |  229 ++++
+ 26 files changed, 2974 insertions(+), 502 deletions(-)
+ create mode 100644 src/openvpn/networking.h
+ create mode 100644 src/openvpn/networking_ip.c
+ create mode 100644 src/openvpn/networking_ip.h
+ create mode 100644 src/openvpn/networking_sitnl.c
+ create mode 100644 src/openvpn/networking_sitnl.h
+ create mode 100644 src/openvpn/sitnl.h
+ create mode 100755 tests/t_net.sh
+ create mode 100644 tests/unit_tests/openvpn/test_networking.c
+
+-- 
+2.19.1
 
 
