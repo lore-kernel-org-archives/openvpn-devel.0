@@ -1,12 +1,15 @@
-MIME-Version: 1.0
+Date: Thu, 11 Oct 2018 13:23:17 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20181011112317.GF962@...1296...>
 References: <CAGyAFMULV02g3gyCbvQ1+L+cMdE4UZMmzVfey-T1g4Y0NcmKeg@...278...>
  <1539174377-2678-1-git-send-email-lstipakov@...277...>
  <20181010185023.GD962@...1296...>
-In-Reply-To: <20181010185023.GD962@...1296...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Thu, 11 Oct 2018 13:40:16 +0300
-Message-ID: <CAGyAFMVqTChKmpfTY0XhdJB+q030LkxDCsitEwVrwV2Ui8bJdQ@...278...>
-Content-Type: multipart/alternative; boundary="0000000000003275960577f1993f"
+ <CAGyAFMVqTChKmpfTY0XhdJB+q030LkxDCsitEwVrwV2Ui8bJdQ@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="8V/AXrYGldrj4WKF"
+Content-Disposition: inline
+In-Reply-To: <CAGyAFMVqTChKmpfTY0XhdJB+q030LkxDCsitEwVrwV2Ui8bJdQ@...278...>
 Subject: Re: [Openvpn-devel] [PATCH v2] options.c: fix broken unary minus
  usage
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,89 +20,86 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lstipakov@...277...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
---0000000000003275960577f1993f
-Content-Type: text/plain; charset="UTF-8"
+--8V/AXrYGldrj4WKF
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
+On Thu, Oct 11, 2018 at 01:40:16PM +0300, Lev Stipakov wrote:
+> > Since crypto_overhead and crypto_max_overhead() are both size_t, and
+> > frame_add_to_extra_frame() is declared to take an "unsigned int" now,
+> > this cast should not be necessary.
+>=20
+>=20
+> Visual Studio disagrees. Without explicit cast I got
+>=20
+> > warning C4267: 'function': conversion from 'size_t' to 'const unsigned
+> int', possible loss of data
+>=20
+> https://docs.microsoft.com/fi-fi/cpp/error-messages/compiler-warnings/com=
+piler-warning-level-3-c4267?view=3Dvs-2017
+>=20
+>=20
+> 'var' : conversion from 'size_t' to 'type', possible loss of data
+> The compiler detected a conversion from size_t to a smaller type.
 
-> Since crypto_overhead and crypto_max_overhead() are both size_t, and
-> frame_add_to_extra_frame() is declared to take an "unsigned int" now,
-> this cast should not be necessary.
+So, maybe "crypto_overhead" and "crypto_max_overhead()" should be
+changed to be just "int" here...?
+
+For something which has a numeric value between "10-ish" and "100" (maybe),
+using a 64bit integer initially and then adding casts because we want
+to work with 32bit integers later on and not be warned about it sounds
+like the wrong way to tackle this...
+
+I know that Steffan likes using size_t for "things that have a size"
+but I find it a bit questionable here :-)
 
 
-Visual Studio disagrees. Without explicit cast I got
+> > Unnecessary casts hide bugs and hurt my eyes...
+>=20
+> OTOH this is level 3 warning, which we have over 500. Since we'll probably
+> change level warning to 2 and
+> GCC doesn't complain, I'll remove it.
 
-> warning C4267: 'function': conversion from 'size_t' to 'const unsigned
-int', possible loss of data
+I'm all for fixing compiler warnings, but I hate silencing warnings with
+casts that serve no purpose but "silence warning".  If we can fix it
+for real, so the compiler has nothing to warn about, this is way better.
 
-https://docs.microsoft.com/fi-fi/cpp/error-messages/compiler-warnings/compiler-warning-level-3-c4267?view=vs-2017
+(It might not always be possible, like const/no-const mismatch on some
+API functions, or struct sockaddr* madness on the socket API)
 
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-'var' : conversion from 'size_t' to 'type', possible loss of data
-The compiler detected a conversion from size_t to a smaller type.
+Gert Doering - Munich, Germany                             gert@...1296...
 
+--8V/AXrYGldrj4WKF
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> Unnecessary casts hide bugs and hurt my eyes...
->
+-----BEGIN PGP SIGNATURE-----
 
-OTOH this is level 3 warning, which we have over 500. Since we'll probably
-change level warning to 2 and
-GCC doesn't complain, I'll remove it.
+iQGcBAEBAgAGBQJbvzKlAAoJEB2Cnv7KVigSpisL/1yc/7K8oOnE9qwkr2Qw2kVL
+P/IKtLM1ci+7nG4/SPyuOGbT9Ht00LSWnsnAnsrRnwI8egKz/GwlVaDkquHsb1C0
+BYDcKP36cvCJcVFaXAH8ZCp1831+oEV8LKs0OxN+NLDcVDbkbBMxTDw53UEw0SZQ
+X0RZRymIUeWz1ImunYzbDokqcnu01n23nQvV1Dg0b2a5CV8xndQbjB2MX7b9p3zT
+PiUFG12whq7o3TXa5EetdApzfGANX9muGdI+V27eErvS5fhDZ1pw1dgGf+ctWrVe
+CJOd0IBfll2q3+D3GzkC7jzB7NRzmivv9DtKEgckXI5KrriZDchy/HhZvdF4tSe7
+eAbGwKON0yRwdvi3+XUPSrdN/fRrFPpW/hEvYN0O0G+94kZIlQBg4y0q6Q+V2cY+
+FX76qClRHRUPagKgxuwgRuMQPUbGdpRj9AcusiW/cp7JOeQLcZVjQMerv5RoWXjt
+6qEtgorV9jJn/jASFhZ0rgi+l3BuWPxAq6QzwU1N7g==
+=xley
+-----END PGP SIGNATURE-----
 
-Maybe call the negative increment a "decrement" instead?
->
-
-Yes.
-
-Otherwise indeed much clearer.
->
-
-V3 is on its way.
-
--- 
--Lev
-
---0000000000003275960577f1993f
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr">Hi,<br><div class=3D"gma=
-il_quote"><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margi=
-n:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex=
-">
-Since crypto_overhead and crypto_max_overhead() are both size_t, and <br>
-frame_add_to_extra_frame() is declared to take an &quot;unsigned int&quot; =
-now, <br>
-this cast should not be necessary.</blockquote><div><br></div><div>Visual S=
-tudio disagrees. Without explicit cast I got</div><div><br></div><div>&gt; =
-warning C4267: &#39;function&#39;: conversion from &#39;size_t&#39; to &#39=
-;const unsigned int&#39;, possible loss of data</div><div><br></div><div><a=
- href=3D"https://docs.microsoft.com/fi-fi/cpp/error-messages/compiler-warni=
-ngs/compiler-warning-level-3-c4267?view=3Dvs-2017">https://docs.microsoft.c=
-om/fi-fi/cpp/error-messages/compiler-warnings/compiler-warning-level-3-c426=
-7?view=3Dvs-2017</a>=C2=A0=C2=A0<br></div><div class=3D"gmail_quote"><br></=
-div>&#39;var&#39; : conversion from &#39;size_t&#39; to &#39;type&#39;, pos=
-sible loss of data<br>The compiler detected a conversion from size_t to a s=
-maller type.<div>=C2=A0<br></div><blockquote class=3D"gmail_quote" style=3D=
-"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-le=
-ft:1ex">
-Unnecessary casts hide bugs and hurt my eyes...<br></blockquote><div><br></=
-div><div>OTOH this is level 3 warning, which we have over 500. Since we&#39=
-;ll probably change level warning to 2 and=C2=A0</div><div>GCC doesn&#39;t =
-complain, I&#39;ll remove it.</div><div><br></div><blockquote class=3D"gmai=
-l_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,20=
-4,204);padding-left:1ex">
-Maybe call the negative increment a &quot;decrement&quot; instead?<br></blo=
-ckquote><div><br></div><div>Yes.=C2=A0</div><div><br></div><blockquote clas=
-s=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid r=
-gb(204,204,204);padding-left:1ex">
-Otherwise indeed much clearer.<br></blockquote><div><br></div><div>V3 is on=
- its way.</div><div><br></div></div>-- <br><div dir=3D"ltr" class=3D"gmail_=
-signature">-Lev</div></div></div></div>
-
---0000000000003275960577f1993f--
+--8V/AXrYGldrj4WKF--
 
