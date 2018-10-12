@@ -1,10 +1,9 @@
-Date: Fri, 12 Oct 2018 17:30:24 +0200 (CEST)
-Message-Id: <201810121530.w9CFUOLh040138@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20181011220639.7316-1-arne@...1227...>
-References: <20181011220639.7316-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Use right function to set
- TLS1.3 restrictions in show-tls
+MIME-Version: 1.0
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 12 Oct 2018 12:24:29 -0400
+Message-ID: <CAKuzo_iSUX0h25O36dfZCuhRM_OCNvJttgQiM2WBGwLQnhO=xA@...278...>
+Content-Type: multipart/alternative; boundary="000000000000bfc67d05780a8609"
+Subject: [Openvpn-devel] rsa signature with PSS padding
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,48 +12,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Acked-by: Gert Doering <gert@...1296...>
+--000000000000bfc67d05780a8609
+Content-Type: text/plain; charset="UTF-8"
 
-It now displays the expected result set (and the code change makes sense):
+Hi,
 
-   $ src/openvpn/openvpn --verb 4 --tls-ciphersuites TLS_AES_256_GCM_SHA384 --show-tls --tls-cipher TLS-DHE-RSA-WITH-AES-256-CBC-SHA256
-   Available TLS Ciphers, listed in order of preference:
+My testing shows that OpenSSL 1.1.1 likes to use PSS even for TLS 1.2, so,
+even in the short-term, this can't be worked around by just disabling TLS
+1.3.
 
-   For TLS 1.3 and newer (--tls-ciphersuites):
+Now, for cryptoapicert, it would have been easy to support PSS using
+Windows CNG API provided OpenSSL passes the hash and ask to sign with PSS
+padding. But it doesn't. Instead, it adds the padding and ask us to sign
+that padded data as is (i.e. padding none). In fact rsa_sign() callback is
+not even called when padding is PSS -- it just jumps to rsa_priv_enc
+callback. As far as I can see signing pre-padded hash is not supported by
+CNG (does it?).
 
-   TLS_AES_256_GCM_SHA384
+Any suggestions on what do we do?
 
-   For TLS 1.2 and older (--tls-cipher):
+Thanks,
 
-   TLS-DHE-RSA-WITH-AES-256-CBC-SHA256
+Selva
 
+--000000000000bfc67d05780a8609
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+<div dir=3D"ltr"><div>Hi,<br><br></div><div>My testing shows that OpenSSL 1=
+.1.1 likes to use PSS even for TLS 1.2, so, even in the short-term, this ca=
+n&#39;t be worked around by just disabling TLS 1.3.<br><br></div><div>Now, =
+for cryptoapicert, it would have been easy to support PSS using Windows CNG=
+ API provided OpenSSL passes the hash and ask to sign with PSS padding. But=
+ it doesn&#39;t. Instead, it adds the padding and ask us to sign that padde=
+d data as is (i.e. padding none). In fact rsa_sign() callback is not even c=
+alled when padding is PSS -- it just jumps to rsa_priv_enc callback. As far=
+ as I can see signing pre-padded hash is not supported by CNG (does it?).<b=
+r></div><div><br>Any suggestions on what do we do?</div><div><br>Thanks,<br=
+><br>Selva<br></div></div>
 
-Tested with OpenSSL 1.0.2, 1.1.1 and mbedTLS.
-
-Your patch has been applied to the master and release/2.4 branch.
-
-commit 680117529ededd94b1d56867f8d834aa5daa2b95 (master)
-commit 33253cf1d0c1175e7391a4eec3b64f1ec0b303dd (release/2.4)
-Author: Arne Schwabe
-Date:   Fri Oct 12 00:06:39 2018 +0200
-
-     Use right function to set TLS1.3 restrictions in show-tls
-
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20181011220639.7316-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17755.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+--000000000000bfc67d05780a8609--
 
