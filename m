@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Tue, 16 Oct 2018 22:35:54 +0200
-Message-Id: <20181016203554.9940-1-davids@...515...>
-In-Reply-To: <1514541271-19597-1-git-send-email-steffan.karger@...1435...>
-References: <1514541271-19597-1-git-send-email-steffan.karger@...1435...>
-Subject: Re: [Openvpn-devel] [PATCH applied]
- buffer_list_aggregate_separator(): simplify code
+Date: Tue, 16 Oct 2018 22:36:54 +0200
+Message-Id: <20181016203654.10151-1-davids@...515...>
+In-Reply-To: <20171203041426.25316-1-a@...2181...>
+References: <20171203041426.25316-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH applied] ifconfig-ipv6(-push): allow
+ using hostnames
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +15,26 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: steffan.karger@...1435...
+To: a@...2181...
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA512
 
-Commit message type fixed during commit.
-
 Your patch has been applied to the following branches
 
-commit e883c66b9da390f56ef4a596c9eb6b237a185a50  (master)
-commit be47e4292459aabdf89e53d9f5747b113fc2cd5d  (release/2.4)
-Author: Steffan Karger
-Date:   Fri Dec 29 10:54:31 2017 +0100
+commit 2b15c11716e0d04a090585450e8f8f65405d0192  (master)
+commit 1e3672c95e648286e9242c0faf70a79f11e192cb  (release/2.4)
+Author: Antonio Quartulli
+Date:   Sun Dec 3 12:14:26 2017 +0800
 
-     buffer_list_aggregate_separator(): simplify code
+     ifconfig-ipv6(-push): allow using hostnames
 
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <1514541271-19597-1-git-send-email-steffan.karger@...1435...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16105.html
+     Trac: #808
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Selva Nair <selva.nair@...277...>
+     Message-Id: <20171203041426.25316-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15969.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -47,18 +46,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJbxkuoAAoJEIbPlEyWcf3ypgoQAIpeS0Ick75HV61SgxyM5PCb
-v3EbcoHCV+ihWKVRg+Q4RhkPz7VTzoMVfPJEj0seZ4RFOJni8XLZLSb62MbWhTqv
-qFVvYiGHXxBeAYYlcN9qR3QX1efs4kpWMip9AFDmvVzBIiInr1i6nDA5C5obwmnH
-2Z8M3lPZLZweAtcL9dHxsSYY+6k/+k5ITmTyrGbPqfK8wniI9ESLdTq5Ga/LD7yx
-dOFBL0pw83d6umCVFX2LWtq9Hmdhj/sc1IYtpRFIiDdzYZX2KVqrCDsnOSlaJsnP
-6a6oQqy47MUJmmX9XrG7R/q/IzGuj5TA6c6I2IpZU/4ojEiYXhKs8YD7D4sLAA1w
-OElKQHPwCt/YnRXl+cnqs2QJjMaVTXS/X4wg5BPbehJrZvovwK6VsbvExPpJQ/fu
-qRbCzJqGZ4S3rJjBL3GjVYs50mmgtSJa5tLHzUuDdSYI7FMdkZ9FwH3Spmive39g
-2lQ/LQrPqTtg/yOl1wGigKEYKyiIPzY3TorIpokgmZWXI+4t1rRH/0fw4ZfSrM21
-hFCKNdFY8blrbUOyryWnWhR30KV/PsFwmc6W7Ht1EfvNWonSzBp9PxPg3ijBz6YQ
-c6UfkVBteLiVTB5k0jRxgNY7yoJ6B4VodIc9CC7+VBxR4oy/pp14PaX27Oy3/jZM
-u2XA4B8wbVcuyj8Ytre3
-=S2oM
+iQIcBAEBCgAGBQJbxkvkAAoJEIbPlEyWcf3yQyQP/0ma0zLPpOiURA7rOYR5oMqz
+eYAAxghzyxQh+8q8nZl6UDddVjZ5g1yYydeNGV2ZenRZFMXvVFT8DfEakj028piU
+48OtrZp//e/oGYCbvFcET5LUYmZ4gs/3fr9m9KS6/TcScTFtVNCEVq5XHiz1A7bL
+5TMuyarpvtdQwV7K2gJEiSRSmKjmECByj6ooC69YFNIeXDKarmmGUB/SEyI+kSNv
+WX13zNTXtdOCVPFerhIBUvotjuJiezsAF21g6aSRMFn2lWztsWLXbr58+ApEvEYP
+3PygI/JqmKT43kALB2cRLBhKv8Zh3wgaeDqcI9gY4jw3EMsMx7eZaPdpgpazcvGk
+DmbvTnWn4p7b9g2tz7WQ1Fs3Oy1JGm5zJjfLk0aLbObWwHN+szRZ2qSjF1VNzFah
+XMCTAhVgaWL3L7QMUePh9NV99Uuk39zy+E0h4NfrppnoeCrQmENs2brdbWDvJRCx
+eI9+K3BoGskywTnbXzffe3NmUMldjOyNjqW44nu1+W3RNkGEryGAW5Cec6WCaWY6
+Lm6OhTf6RFWFEzCaMdpaoSWm/30Fo5JMhEXOtQO3gVOoV2mgWzFZa7woZZPjF/3m
+XUPQTqWvyOllK52/vi230gr1PkKivYcfm0psEoG3bswxNW/dvo1cSib2lVWw876R
+3NKi4k65oWImNvm4BNsn
+=yj/a
 -----END PGP SIGNATURE-----
 
