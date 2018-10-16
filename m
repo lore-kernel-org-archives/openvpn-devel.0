@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Tue, 16 Oct 2018 22:35:02 +0200
-Message-Id: <20181016203502.9709-1-davids@...515...>
-In-Reply-To: <20181010083731.31132-1-a@...2181...>
-References: <20181010083731.31132-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH applied] buffer_list: add functions
- documentation
+Date: Tue, 16 Oct 2018 22:35:54 +0200
+Message-Id: <20181016203554.9940-1-davids@...515...>
+In-Reply-To: <1514541271-19597-1-git-send-email-steffan.karger@...1435...>
+References: <1514541271-19597-1-git-send-email-steffan.karger@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH applied]
+ buffer_list_aggregate_separator(): simplify code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: a@...2181...
+To: steffan.karger@...1435...
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA512
 
-Typo spotted by Steffan got fixed during commit.
+Commit message type fixed during commit.
 
 Your patch has been applied to the following branches
 
-commit e72b2f2ce062c76c6ab658b7ae961f8b81cba307  (master)
-commit 61ef9057cda9e1a52786a16e01cd9368fec8a74e  (release/2.4)
-Author: Antonio Quartulli
-Date:   Wed Oct 10 16:37:31 2018 +0800
+commit e883c66b9da390f56ef4a596c9eb6b237a185a50  (master)
+commit be47e4292459aabdf89e53d9f5747b113fc2cd5d  (release/2.4)
+Author: Steffan Karger
+Date:   Fri Dec 29 10:54:31 2017 +0100
 
-     buffer_list: add functions documentation
+     buffer_list_aggregate_separator(): simplify code
 
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Steffan Karger <steffan@...1856...>
-     Message-Id: <20181010083731.31132-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17701.html
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: Antonio Quartulli <a@...2181...>
+     Message-Id: <1514541271-19597-1-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16105.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -47,18 +47,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJbxktfAAoJEIbPlEyWcf3yfxAQAJz1fbqVuJ7paqYuj8Fk6smD
-HBQ8AcmF08AOt6yN9uWRtYH+558mBYmnv7DxNigJb2InMbmF7stJoLMmJiEAnqKe
-WeWpBpK8XAXl10cdm8hMOISkE8fx31fFwW66ZperMYr0dJVvTiPceSWChFoDrWLQ
-VgYYVp5UJBQoMR4GwA22MMFLvfwyMyJO+BSKSQ5kyan+dVFD40xPmTWYCi8CgfYI
-Ug2vdLfUveHrzvSptDqI8BuJEVcPRjuY9JafoOrGNxBrjxgnnoRkiYRXniRf2Qgl
-97pBjCnO1/szbo4rBoMLoqLa/USqCPH6lwXGYLtdVUasw9VL0uAXJPt44h3HiQgG
-quVI8X+EpG599RoXjZ+Dw1EBhuGB4WWoSYtCZjH3A/x2uQ5sVoaG5HRP3ixLA+AS
-aCu/Lxk1f4jPtqbSmJBdnKbywrqPvvlCYElhYGhD4t7CTzs623+UVwNRNMevgUvq
-7JYoPckVxDmPSs6mE3i957rs6qxtpRJXC9gsYsbnnSySNuxsNP/sWMgzu+9fEtNh
-qi6eA3DkDvNjf/Js/Nm+T9jTr+/y9Sfg01NtqzeW4KNyJBkxN0/UjpixO8ROTHJa
-xD6XYZWOd2KJeQOsCF63ooAseE2lP+rGDdsbO08h6BKaJmjU0t2QYtX22e+b9TFV
-aFA7lPtfShxqE4Q/oCOK
-=BC92
+iQIcBAEBCgAGBQJbxkuoAAoJEIbPlEyWcf3ypgoQAIpeS0Ick75HV61SgxyM5PCb
+v3EbcoHCV+ihWKVRg+Q4RhkPz7VTzoMVfPJEj0seZ4RFOJni8XLZLSb62MbWhTqv
+qFVvYiGHXxBeAYYlcN9qR3QX1efs4kpWMip9AFDmvVzBIiInr1i6nDA5C5obwmnH
+2Z8M3lPZLZweAtcL9dHxsSYY+6k/+k5ITmTyrGbPqfK8wniI9ESLdTq5Ga/LD7yx
+dOFBL0pw83d6umCVFX2LWtq9Hmdhj/sc1IYtpRFIiDdzYZX2KVqrCDsnOSlaJsnP
+6a6oQqy47MUJmmX9XrG7R/q/IzGuj5TA6c6I2IpZU/4ojEiYXhKs8YD7D4sLAA1w
+OElKQHPwCt/YnRXl+cnqs2QJjMaVTXS/X4wg5BPbehJrZvovwK6VsbvExPpJQ/fu
+qRbCzJqGZ4S3rJjBL3GjVYs50mmgtSJa5tLHzUuDdSYI7FMdkZ9FwH3Spmive39g
+2lQ/LQrPqTtg/yOl1wGigKEYKyiIPzY3TorIpokgmZWXI+4t1rRH/0fw4ZfSrM21
+hFCKNdFY8blrbUOyryWnWhR30KV/PsFwmc6W7Ht1EfvNWonSzBp9PxPg3ijBz6YQ
+c6UfkVBteLiVTB5k0jRxgNY7yoJ6B4VodIc9CC7+VBxR4oy/pp14PaX27Oy3/jZM
+u2XA4B8wbVcuyj8Ytre3
+=S2oM
 -----END PGP SIGNATURE-----
 
