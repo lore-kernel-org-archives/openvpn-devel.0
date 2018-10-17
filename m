@@ -1,15 +1,13 @@
 MIME-Version: 1.0
-References: <1515482173-29447-1-git-send-email-eyal.birger@...277...>
- <CAKuzo_hN5A=LB7sp7m3REEpMsePSm-8dpXQUNtbQJz6y8w7zOw@...278...>
- <CAKuzo_iyBEgd0hUyFgQGm3cU+g9O7oCxs+=x_iDcHaxY5n-5Sg@...278...>
- <20181017120745.GB962@...1296...>
-In-Reply-To: <20181017120745.GB962@...1296...>
+References: <20181007215837.489-1-arne@...1227...>
+ <CAKuzo_gpYNnLaBdaKwiUGsRbRJL0BnNceBUq37NPBughb8qKFw@...278...>
+ <028e0036-d9bc-94ac-603d-64d9be6b2bc2@...1227...>
+In-Reply-To: <028e0036-d9bc-94ac-603d-64d9be6b2bc2@...1227...>
 From: Selva Nair <selva.nair@...277...>
-Date: Wed, 17 Oct 2018 10:08:35 -0400
-Message-ID: <CAKuzo_gNwMbQqm8YTMXHgJX3n1+FSwGjts8gVS_+azS1mfUSzQ@...278...>
-Content-Type: multipart/alternative; boundary="000000000000fafbac05786d3593"
-Subject: Re: [Openvpn-devel] [PATCH] Windows: Set interface IPv6 prefix
- length when configuring address
+Date: Wed, 17 Oct 2018 12:08:25 -0400
+Message-ID: <CAKuzo_i3MPZGE6a6Nb2K1mELCS5=qSmXCANftt2Rw2cH4uY0gQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Add support for OpenSSL TLS 1.3 when
+ using management-external-key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,106 +16,210 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---000000000000fafbac05786d3593
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Wed, Oct 17, 2018 at 8:07 AM Gert Doering <gert@...1296...> wrote:
-
-> Hi,
+On Wed, Oct 17, 2018 at 6:00 AM Arne Schwabe <arne@...1227...> wrote:
 >
-> On Tue, Oct 16, 2018 at 05:48:29PM -0400, Selva Nair wrote:
-> > Going through patchworks noticed this.
+> Am 17.10.18 um 05:15 schrieb Selva Nair:
+> > Hi,
 > >
-> > Thankfully this never got committed so here goes a retraction.
+> > Not a review, but some thoughts:
 > >
-> > On Sun, Jan 21, 2018 at 1:45 PM Selva Nair <selva.nair@...277...> wrote:
+> > On Sun, Oct 7, 2018 at 5:59 PM Arne Schwabe <arne@...1227...> wrote:
+> >>
+> >> For TLS 1.0 to 1.2 OpenSSL calls us and requires a PKCS1 padded
+> >> response, for TLS 1.3 it requires to an unpadded response. Since we
+> >> can PCKS1 pad an unpadded response, we prefer to always query for
+> >> an unpadded response from the management interface and add the PCKS1
+> >> padding ourselves when needed.
 > >
-> > > Hi,
-> > >
-> > > I'm on a reviewing spree (doing my penance), so here goes..
-> > >
-> > > Thanks for the patch
-> > >
-> > > On Tue, Jan 9, 2018 at 2:16 AM, Eyal Birger <eyal.birger@...277...>
-> wrote:
-> > > > Address prefix length defaults to /64 on Windows. This change allows
-> > > using
-> > > > Windows clients in setups that use a different prefix length.
+> >
+> > First, one clarification:
+> >
+> > The reason for unpadded response is that when PSS padding is in use,
+> > OpenSSL adds the padding and, thus, asks for raw RSA encryption
+> > (unpadded). This is because RSA_sign or rsa_priv_enc callbacks
+> > do not support a way of indicating PSS padding. In fact, OpenSSL
+> > 1.1.1 client talking to 1.1.1 server prefers PSS padding even for
+> > TLS 1.2, so this is not a TLS 1.3-only problem.
 >
-> I had this on "I need to do more testing with this", which is why it
-> never proceeded - there might be unintended side effects, so I wanted
-> to do more detailed testing with "netsh" and with "iservice" backends,
-> and different prefix lengths etc.
+> Ah did not get that extra problem.
 >
-> Also, I had the suspicion that if we actually set a prefix length, it
-> will lead to local ND traffic which the tap driver won't answer (it
-> will only answer fe80::8) thus causing a "black hole route" for the
-> tap subnet...
+> >> This patch adds an 'unpadded' parameter to the management-external-key
+> >> option to signal that it is uses the new unpadded API. Since we cannot
+> >
+> > I do not particularly like this new option:
+> > "management-external-key-unpadded". Apart from the confusing name,
+> > this doesn't really address the basic limitation of the current
+> > pkey-sig (old rsa-sig) directive. We should have extended it when the
+> > new name was introduced. pkey-sig should pass not just the data (or
+> > hash) to sign but additional info like digest type in use, padding
+> > mode etc. Or have a way for the management client to query additional
+> > parameters that may be necessary for signing.
 >
+> Yes. But we still need a way to signal the capabilities of the
+> management client to OpenVPN, otherwise we will query for a signature
+> that we might not support. How about adding the supported signatures as
+> parameters?
+>
+> E.g. management-external-key pkcs1 raw pss
 
-Aha, that explains why it lingered in that state for long :)
 
-However, we do currently set the prefix-length while using the
-service (that->netbits_ipv6 is passed as prefix_len to the ip helper API),
-don't we?
+This sounds good. None specified would imply rsa-pkcs1 and ecdsa to
+match the status-quo.
+
+So if pss is not included but raw is and we need PSS, we pad and pass
+it as something like
+
+>pk-sig <data> RSA-RAW
+
+In fact its easy to detect raw requests as the data will be exactly
+the size of the key so there is no room for padding. However, in the
+current code that would be an error as the external signer is supposed
+to do PKCS1 padding.
+
+If pss and raw are supported we have an option to pass the hash with
+the argument as hash_type-RSA-PSS or RSA-RAW.
+
+Sounds good to me.
+
+Should we make the arguments name value pairs thinking of possible
+future extensions. Like
+
+pk-sig <data> signature_algorithm=SHA256-RSA-PSS saltlen=32
+
+Either way, the additional option to pk-sig will help us as we can use
+it to indicate whether the digest-info header is added for pkcs1
+(using hash type = None) as is done presently or not etc.
+
+>
+>
+> > Using padded data and requiring the external "engine" to do a raw
+> > signature may look like a way out of this but not really: not all external
+> > libraries may support such a usage. AFAICS, Windows CNG does not. Also
+> > some hardware devices may insist on doing the padding inside --
+> > especially non-deterministic padding like PSS.
+>
+>
+> I have kind of the opposite problem. At least older Android version do
+> not expose signing with PSS. So I have to sign with a raw signature
+> anyway. And I would like to avoid implementing PSS in OpenVPN.
+
+
+Ideally, when an engine is in use (external signer in our case)
+OpenSSL should not do the padding and let the engine do that. Due to
+limitations of the RSA_sign() call back this is not the case now when
+padding is not PKCS1. Hopefully that situation will change in future
+versions of OpenSSL. (see issue 7341 in openssl-github) or using the
+EVP_PKEY interface to get hold of the hash and signature algorithm
+details may become the preferred approach.
+
+But I understand -- legacy "engines" have to cope too and implementing
+PSS padding within the UI is not a good option. So we need the ability
+to ask for raw signature.
+
+>
+> >
+> > So what about naming this "management-external-key-version2" and then
+> > extend pk-sig as below?
+> >
+> > pk-sig <base64-data-to-sign> [signing-algorithm]
+>
+> Sure, not a problem with me.
+>
+> > where the <signing algorithm> could be, say, SHA256_RSA_PKCS1 or
+> > NONE_RSA_PKCS1 or SHA384_RSA_PSS etc. If missing, and the key
+> > is RSA, the client can assume it is NONE_RSA_PKCS1 and expect the hash
+> > with digest-info header already added and sign as such. Or, if the key
+> > is EC, do the ECDSA signing operation as is being done now.
+> >
+> > The "unpadded" case could be indicated by NONE_RSA_RAW. These
+> > mnemonics are just examples -- we could use PKCS11 identifiers or something
+> > else.
+> >
+> > To get unpadded data we have to override sign() in EVP_PKEY_METHOD but
+> > that would also provide max flexibility.
+> >
+> > Now, I think its safe to just update and document this and require that
+> > management-interface clients that use the external key feature must
+> > update if using client compiled with OpenSSL 1.1.1. Android(?) and iOS (?)
+> > clients may be the only one's affected, but those are shipped as one complete
+> > package. I'm not aware of any standalone management-client UI that uses
+> > the external-key feature.
+>
+> Might be just my client.
+
+
+Yeah. So we need not really worry about backwards compatibility as you
+client is shipped as one package including openssl and the UI.
+
+>
+> >> support TLS 1.3 without unpadded queries we disable TLS 1.3 otherwise.
+> >
+> > If we must do this, disabling TLS 1.3 will not enough. One way is to
+> > also explicitly set the padding mode to RSA_PKCS1_PADDING (for TLS1.2)
+> >
+> > EVP_PKEY_CTX_set_rsa_padding(ctx, pad) can do this.
+>
+>
+> Okay, I will add this to the patch to force pkcs1 padding. Thanks for
+> looking it up/pointing it out.
+
+
+Sorry, I wrote that without testing. It wont work: by the time we can
+get hold of EVP_PKEY context the signature algorithm is already
+negotiated with the peer. We need to use something like:
+
+SSL_CTX_set1_sigalgs_list(ctx, "ECDSA+SHA256:RSA+SHA256");
+
+That is, exclude RSA-PSS+hash type entries included by default by
+OpenSSL 1.1.1. I tested this with cryptoapicert and works.
+
+>
+> >
+> >>
+> >> We also do the same for cryptoapi since it uses the same API.
+> >
+> > Let's just fix cryptoapi --- I'm working on it. Anyway it does
+> > not use the same API as external key and prepadded data (= nopadding)
+> > will not work with Windows. This'll have to be fixed before we release binaries
+> > linked with OpenSSL 1.1.1.
+>
+> When I wrote that patch I did not know you would dive so fast into it :)
+>
+> >
+> >>
+> >> Using the management api client version instead might seem like the
+> >> more logical way but since we only now that version very late,
+> >> it would extra logic and complexity to deal with this asynchronous
+> >> behaviour .
+> >
+> > IMO, we should explore this further and try to avoid
+> > --management-external-key-foo.
+>
+> The biggest problem is that connect to the management interface is not
+> strictly enforced. If you don't have management-hold, the client might
+> start connecting before the management interface version is known and
+> start with TLS 1.3 while the management client is not yet connected and
+> might not support PSS signatures.
+>
+> This management-external-key is a special feature I would like to opt
+> for simplicity here. I would rather just drop support for older
+> management clients that do not support the new padding but in the last
+> discussion of pk-sig vs rsa-sig we decided to keep support for older
+> clients.
+
+
+I recall that. But, in reality, I think there are no such clients, so
+we could easily extend pk-sig without breaking any. But that's just my
+opinion.
+
+Thanks,
 
 Selva
-
---000000000000fafbac05786d3593
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div dir=3D"ltr">Hi,<br><div><br><div class=3D"gmail_quote=
-"><div dir=3D"ltr">On Wed, Oct 17, 2018 at 8:07 AM Gert Doering &lt;<a href=
-=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt; wrote=
-:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.=
-8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">Hi,<br>
-<br>
-On Tue, Oct 16, 2018 at 05:48:29PM -0400, Selva Nair wrote:<br>
-&gt; Going through patchworks noticed this.<br>
-&gt; <br>
-&gt; Thankfully this never got committed so here goes a retraction.<br>
-&gt; <br>
-&gt; On Sun, Jan 21, 2018 at 1:45 PM Selva Nair &lt;<a href=3D"mailto:selva=
-.nair@...277..." target=3D"_blank">selva.nair@...277...</a>&gt; wrote:<br>
-&gt; <br>
-&gt; &gt; Hi,<br>
-&gt; &gt;<br>
-&gt; &gt; I&#39;m on a reviewing spree (doing my penance), so here goes..<b=
-r>
-&gt; &gt;<br>
-&gt; &gt; Thanks for the patch<br>
-&gt; &gt;<br>
-&gt; &gt; On Tue, Jan 9, 2018 at 2:16 AM, Eyal Birger &lt;<a href=3D"mailto=
-:eyal.birger@...277..." target=3D"_blank">eyal.birger@...277...</a>&gt; wro=
-te:<br>
-&gt; &gt; &gt; Address prefix length defaults to /64 on Windows. This chang=
-e allows<br>
-&gt; &gt; using<br>
-&gt; &gt; &gt; Windows clients in setups that use a different prefix length=
-.<br>
-<br>
-I had this on &quot;I need to do more testing with this&quot;, which is why=
- it<br>
-never proceeded - there might be unintended side effects, so I wanted<br>
-to do more detailed testing with &quot;netsh&quot; and with &quot;iservice&=
-quot; backends,<br>
-and different prefix lengths etc.<br>
-<br>
-Also, I had the suspicion that if we actually set a prefix length, it<br>
-will lead to local ND traffic which the tap driver won&#39;t answer (it<br>
-will only answer fe80::8) thus causing a &quot;black hole route&quot; for t=
-he<br>
-tap subnet...<br></blockquote><div><br></div><div>Aha, that explains why it=
- lingered in that state for long :)<br><br></div><div>However, we do curren=
-tly set the prefix-length while using the<br></div><div>service (that-&gt;n=
-etbits_ipv6 is passed as prefix_len to the ip helper API),<br>don&#39;t we?=
- <br><br></div><div>Selva<br></div></div></div></div></div>
-
---000000000000fafbac05786d3593--
 
