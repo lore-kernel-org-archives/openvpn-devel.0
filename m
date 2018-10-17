@@ -1,15 +1,17 @@
-References: <20181007215837.489-1-arne@...1227...>
- <CAKuzo_gpYNnLaBdaKwiUGsRbRJL0BnNceBUq37NPBughb8qKFw@...278...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <028e0036-d9bc-94ac-603d-64d9be6b2bc2@...1227...>
-Date: Wed, 17 Oct 2018 11:59:08 +0200
+Reply-To: openvpn-devel@lists.sourceforge.net
+References: <1515482173-29447-1-git-send-email-eyal.birger@...277...>
+ <CAKuzo_hN5A=LB7sp7m3REEpMsePSm-8dpXQUNtbQJz6y8w7zOw@...278...>
+ <CAKuzo_iyBEgd0hUyFgQGm3cU+g9O7oCxs+=x_iDcHaxY5n-5Sg@...278...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <748ea9af-4bb8-2f8d-51af-945f70679762@...2080...>
+Date: Wed, 17 Oct 2018 12:42:55 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_gpYNnLaBdaKwiUGsRbRJL0BnNceBUq37NPBughb8qKFw@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
+In-Reply-To: <CAKuzo_iyBEgd0hUyFgQGm3cU+g9O7oCxs+=x_iDcHaxY5n-5Sg@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="rBKI0uKOOgp0wYnvy6mjoI1yiMdNWdaU1"
-Subject: Re: [Openvpn-devel] [PATCH] Add support for OpenSSL TLS 1.3 when
- using management-external-key
+ boundary="ILISg5MYLF0mnWYswCs3NqMkaSUDr6p9C"
+Subject: Re: [Openvpn-devel] [PATCH] Windows: Set interface IPv6 prefix
+ length when configuring address
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,188 +20,190 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Selva Nair <selva.nair@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---rBKI0uKOOgp0wYnvy6mjoI1yiMdNWdaU1
-Content-Type: multipart/mixed; boundary="plZGxdB6mSnc9LpwLzDdn2LsU4AKkeUfA";
+--ILISg5MYLF0mnWYswCs3NqMkaSUDr6p9C
+Content-Type: multipart/mixed; boundary="PQ9YxjdR89qV9l9256ZMJ3Cicajl7LDTz";
  protected-headers="v1"
-From: Arne Schwabe <arne@...1227...>
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net"
- <openvpn-devel@lists.sourceforge.net>
-Message-ID: <028e0036-d9bc-94ac-603d-64d9be6b2bc2@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Add support for OpenSSL TLS 1.3 when
- using management-external-key
-References: <20181007215837.489-1-arne@...1227...>
- <CAKuzo_gpYNnLaBdaKwiUGsRbRJL0BnNceBUq37NPBughb8qKFw@...278...>
-In-Reply-To: <CAKuzo_gpYNnLaBdaKwiUGsRbRJL0BnNceBUq37NPBughb8qKFw@...278...>
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Message-ID: <748ea9af-4bb8-2f8d-51af-945f70679762@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] Windows: Set interface IPv6 prefix length
+ when configuring address
+References: <1515482173-29447-1-git-send-email-eyal.birger@...277...>
+ <CAKuzo_hN5A=LB7sp7m3REEpMsePSm-8dpXQUNtbQJz6y8w7zOw@...278...>
+ <CAKuzo_iyBEgd0hUyFgQGm3cU+g9O7oCxs+=x_iDcHaxY5n-5Sg@...278...>
+In-Reply-To: <CAKuzo_iyBEgd0hUyFgQGm3cU+g9O7oCxs+=x_iDcHaxY5n-5Sg@...278...>
 
---plZGxdB6mSnc9LpwLzDdn2LsU4AKkeUfA
-Content-Language: de-DE
+--PQ9YxjdR89qV9l9256ZMJ3Cicajl7LDTz
+Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-Am 17.10.18 um 05:15 schrieb Selva Nair:
+On 16/10/18 23:48, Selva Nair wrote:
 > Hi,
 >=20
-> Not a review, but some thoughts:
+> Going through patchworks noticed this.
 >=20
-> On Sun, Oct 7, 2018 at 5:59 PM Arne Schwabe <arne@...1227...> wrote:
->>
->> For TLS 1.0 to 1.2 OpenSSL calls us and requires a PKCS1 padded
->> response, for TLS 1.3 it requires to an unpadded response. Since we
->> can PCKS1 pad an unpadded response, we prefer to always query for
->> an unpadded response from the management interface and add the PCKS1
->> padding ourselves when needed.
+> Thankfully this never got committed so here goes a retraction.
 >=20
+> On Sun, Jan 21, 2018 at 1:45 PM Selva Nair <selva.nair@...277...
+> <mailto:selva.nair@...277...>> wrote:
 >=20
-> First, one clarification:
+>     Hi,
 >=20
-> The reason for unpadded response is that when PSS padding is in use,
-> OpenSSL adds the padding and, thus, asks for raw RSA encryption
-> (unpadded). This is because RSA_sign or rsa_priv_enc callbacks
-> do not support a way of indicating PSS padding. In fact, OpenSSL
-> 1.1.1 client talking to 1.1.1 server prefers PSS padding even for
-> TLS 1.2, so this is not a TLS 1.3-only problem.
-
-Ah did not get that extra problem.
-
->> This patch adds an 'unpadded' parameter to the management-external-key
->> option to signal that it is uses the new unpadded API. Since we cannot
+>     I'm on a reviewing spree (doing my penance), so here goes..
 >=20
-> I do not particularly like this new option:
-> "management-external-key-unpadded". Apart from the confusing name,
-> this doesn't really address the basic limitation of the current
-> pkey-sig (old rsa-sig) directive. We should have extended it when the
-> new name was introduced. pkey-sig should pass not just the data (or
-> hash) to sign but additional info like digest type in use, padding
-> mode etc. Or have a way for the management client to query additional
-> parameters that may be necessary for signing.
-
-Yes. But we still need a way to signal the capabilities of the
-management client to OpenVPN, otherwise we will query for a signature
-that we might not support. How about adding the supported signatures as
-parameters?
-
-E.g. management-external-key pkcs1 raw pss
-
-> Using padded data and requiring the external "engine" to do a raw
-> signature may look like a way out of this but not really: not all external
-> libraries may support such a usage. AFAICS, Windows CNG does not. Also
-> some hardware devices may insist on doing the padding inside --
-> especially non-deterministic padding like PSS.
-
-
-I have kind of the opposite problem. At least older Android version do
-not expose signing with PSS. So I have to sign with a raw signature
-anyway. And I would like to avoid implementing PSS in OpenVPN.
-
+>     Thanks for the patch
 >=20
-> So what about naming this "management-external-key-version2" and then
-> extend pk-sig as below?
+>     On Tue, Jan 9, 2018 at 2:16 AM, Eyal Birger <eyal.birger@...277...
+>     <mailto:eyal.birger@...277...>> wrote:
+>     > Address prefix length defaults to /64 on Windows. This change allow=
+s using
+>     > Windows clients in setups that use a different prefix length.
+>     >
+>     > Note: the ability to set the prefix length is documented in the net=
+sh
+>     > 'add address' command, but works on the 'set address' command as we=
+ll.
 >=20
-> pk-sig <base64-data-to-sign> [signing-algorithm]
-
-Sure, not a problem with me.
-
-> where the <signing algorithm> could be, say, SHA256_RSA_PKCS1 or
-> NONE_RSA_PKCS1 or SHA384_RSA_PSS etc. If missing, and the key
-> is RSA, the client can assume it is NONE_RSA_PKCS1 and expect the hash
-> with digest-info header already added and sign as such. Or, if the key
-> is EC, do the ECDSA signing operation as is being done now.
->=20
-> The "unpadded" case could be indicated by NONE_RSA_RAW. These
-> mnemonics are just examples -- we could use PKCS11 identifiers or somethi=
+>     Aside:
+>     If interactive service is in use, the ip helper API is used and setti=
 ng
-> else.
+>     prefix already works.=C2=A0 Ideally I would like to see openvpn on Wi=
+ndows
+>     used only with the interactive service, but we are not there yet --
+>     instances started by the automatic service does not use it and there
+>     are some users still running the GUI as admin for some inexplicable
+>     reasons.
 >=20
-> To get unpadded data we have to override sign() in EVP_PKEY_METHOD but
-> that would also provide max flexibility.
+>     So we need to continue supporting these code paths.
 >=20
-> Now, I think its safe to just update and document this and require that
-> management-interface clients that use the external key feature must
-> update if using client compiled with OpenSSL 1.1.1. Android(?) and iOS (?)
-> clients may be the only one's affected, but those are shipped as one comp=
-lete
-> package. I'm not aware of any standalone management-client UI that uses
-> the external-key feature.
-
-Might be just my client.
-
->> support TLS 1.3 without unpadded queries we disable TLS 1.3 otherwise.
+>     >
+>     > Signed-off-by: Eyal Birger <eyal.birger@...277...
+>     <mailto:eyal.birger@...277...>>
+>     > ---
+>     >=C2=A0 src/openvpn/tun.c | 7 ++++---
+>     >=C2=A0 1 file changed, 4 insertions(+), 3 deletions(-)
+>     >
+>     > diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+>     > index 25831ce..b2b4795 100644
+>     > --- a/src/openvpn/tun.c
+>     > +++ b/src/openvpn/tun.c
+>     > @@ -1561,15 +1561,16 @@ do_ifconfig(struct tuntap *tt,
+>     >=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }
+>     >=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 else
+>     >=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 {
+>     > -=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 /* example=
+: netsh interface ipv6 set address
+>     interface=3D42 2001:608:8003::d store=3Dactive */
+>     > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 /* example=
+: netsh interface ipv6 set address
+>     interface=3D42 2001:608:8003::d/64 store=3Dactive */
+>     >=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 char =
+iface[64];
+>     >=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 openv=
+pn_snprintf(iface, sizeof(iface), "interface=3D%lu",
+>     tt->adapter_index );
+>     >=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 argv_=
+printf(&argv,
+>     > -=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 "%s%sc interface ipv6 set address %s %s
+>     store=3Dactive",
+>     > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 "%s%sc interface ipv6 set address %s %s/%d
+>     store=3Dactive",
+>     >=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 get_win_sys_path(),
+>     >=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 NETSH_PATH_SUFFIX,
+>     >=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 iface,
+>     > -=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ifconfig_ipv6_local );
+>     > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ifconfig_ipv6_local,
+>     > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 tt->netbits_ipv6);
+>     >=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 netsh=
+_command(&argv, 4, M_FATAL);
+>     >=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 /* se=
+t ipv6 dns servers if any are specified */
+>     >=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 netsh=
+_set_dns6_servers(tt->options.dns6,
+>     tt->options.dns6_len, actual);
 >=20
-> If we must do this, disabling TLS 1.3 will not enough. One way is to
-> also explicitly set the padding mode to RSA_PKCS1_PADDING (for TLS1.2)
+>     Works as expected and the code is good.
 >=20
-> EVP_PKEY_CTX_set_rsa_padding(ctx, pad) can do this.
-
-
-Okay, I will add this to the patch to force pkcs1 padding. Thanks for
-looking it up/pointing it out.
-
+>     Currently, on setting the address, a default route gets set with
+>     prefix /64 with gateway as OnLink (does not happen when iphelper api
+>     is used). Although our explicit route to fe80::8 may override it, it
+>     looks better to set the correct prefix in the address. So:
 >=20
->>
->> We also do the same for cryptoapi since it uses the same API.
+>     Acked-by: Selva Nair <selva.nair@...277... <mailto:selva.nair@...1354...=
+..>>
 >=20
-> Let's just fix cryptoapi --- I'm working on it. Anyway it does
-> not use the same API as external key and prepadded data (=3D nopadding)
-> will not work with Windows. This'll have to be fixed before we release bi=
-naries
-> linked with OpenSSL 1.1.1.
-
-When I wrote that patch I did not know you would dive so fast into it :)
-
 >=20
->>
->> Using the management api client version instead might seem like the
->> more logical way but since we only now that version very late,
->> it would extra logic and complexity to deal with this asynchronous
->> behaviour .
+> Though this works in my tests I want to retract this ACK.
 >=20
-> IMO, we should explore this further and try to avoid
-> --management-external-key-foo.
+> Apart from possible issues due to the appearance of the onlink route in s=
+ome
+> cases, I think the correct approach going forward is to stop using netsh =
+and
+> use the IP helper API for such tasks. And do it in the same way as done u=
+sing
+> the service.
+>=20
+> Un-Acked-by: Selva Nair <selva.nair@...277... <mailto:selva.nair@...1663...=
+.>> :)
 
-The biggest problem is that connect to the management interface is not
-strictly enforced. If you don't have management-hold, the client might
-start connecting before the management interface version is known and
-start with TLS 1.3 while the management client is not yet connected and
-might not support PSS signatures.
+That was close .... I looked at this yesterday, but since the contributor w=
+as
+a new person and changing details in code paths I'm not that deep into, I
+wanted to have a much closer look before applying it - luckily I didn't have
+enough brainpower yesterday to dive into this one.  And since you had ACKed
+it, I considered it generally being safe enough for further processing.
 
-This management-external-key is a special feature I would like to opt
-for simplicity here. I would rather just drop support for older
-management clients that do not support the new padding but in the last
-discussion of pk-sig vs rsa-sig we decided to keep support for older
-clients.
+So thanks for having a closer look again and notify us instantly :)
 
-Arne
+I'll ensure this patch is tagged as rejected in patchwork.
 
 
+--=20
+kind regards,
 
---plZGxdB6mSnc9LpwLzDdn2LsU4AKkeUfA--
+David Sommerseth
+OpenVPN Inc
 
---rBKI0uKOOgp0wYnvy6mjoI1yiMdNWdaU1
+
+
+--PQ9YxjdR89qV9l9256ZMJ3Cicajl7LDTz--
+
+--ILISg5MYLF0mnWYswCs3NqMkaSUDr6p9C
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAlvHCCYACgkQFRhsZwKx
-RFSYLQ//XXWyHuuEj4kwCvq1VgUYCzVclBisza/7o6BeiBV+qN+9HKhZSa1TUr4Q
-XjqtIS1vhGVq4k+/LVbzMD+J9ToiLyI0pZOCxhRpbLejkbVdn3cGZGg9myp66oSm
-416GtUnhq2MyPdk41mScT0VFm7KWBZyqO4TqcD5vuRxJShvq0ezdxGFC8BgFLYiz
-JxAqc//W9mQpQcKWeM4B87x4Q34YxIEhIPk6Qf2lzdXmuD6yuGDg3fTL84F3SaWa
-j6I9Fy+4EPxhQXw+nP1tW2QVfwld5c42jGYSg6eA4QNRn5zkng46a2NM6YwSlEa2
-z/z7t5pCnConxlrLtywQdXvOH8A/W2bIKjOgbkSGypnSNpKAylPfh6sUDFruuWZK
-hWdl2ienUU8TxqAhrPMljlSNINhtqspR5EAiEBlWlAOZZOCe3JL6ZheSDxxNc3PK
-lvEVS6efQuVetXtu2RRc7YW2lJM1jyZ3sKbfFuRhttofRBMsfdFsMNafIxKN309w
-CC5itzFJyiyyOPGQalEMcJNtIkfHehPJp5M4CZpp/vSyPvCmrklLlX5fKQx+Ec2I
-P2utlqM1fAwvlOewaEbFbc3vK1A26Ta/xXzjZ+Lh1Qw50x7AGzlo1XBuPVtJZ4GB
-SHTuwYwXBLUGybBkbSYknJJi7wie74J4CX2+dDX/v+YEqODy3nU=
-=0qCN
+iQIcBAEBCgAGBQJbxxI1AAoJEIbPlEyWcf3yNSYQAKjoW95TIryHaFATunHwUz8M
+H9ts4JMRRdCTC5So7FTSEWIqPW/zwkfQD+iyIxmf2D9W//Yj+/wdzuPm2UQDW0I9
+NVxGkGBZf2hH/IUyEfJuSZ2QKKDL3+GLXMY0QJ127gJ3HLxb5uQIxwZWmbQo5u3w
+9CHcGmxjZIdLuvANLGzoTjVwdBNz+29itzaHyOd6r0Jdqux7Bu8GLEceLjhXle40
+5XRDErnOCX+GLvdF+eeP6mdf6bOHqa9GsgXTsA+HLQVFnZXYhix+IFeQHWn2/JrJ
+cdYX4Nv8y0WmdGAOYXsgGHEghFmUwlK3B7gGsDCxuxnR/LZNshaALyLHXqWslNr0
+Pl26t8E9k/0ZXbWkh0VY3dDubHyXmR09vXusA4lfNlwTJy42q5KQOHSXkyDKh970
+Mwp8JqGOAEH6f4tvVwg5C3ZcImGhHTOS6UglBRwxxxKCMX04yr85oekZS0pQXVy/
+plGsJwa5YiStxSczFJhHh0D9mjl+q622E2uAcoxHO5fUIfhSe8bCW/AapHhaFmHf
+uE1SSct7zXv5JVyOHBBNSgjTYnRI4pBxKqxaKYw1VPjbtVMywzi7FUvsePHu7XlS
+kVratluKa+47g51orpZ0Jzlt5TwgDwxdv16l2pD8pIymwpcFQh1kAP/NStI+pNQN
+yNOqXsmXgplHJXNhG4JM
+=uErs
 -----END PGP SIGNATURE-----
 
---rBKI0uKOOgp0wYnvy6mjoI1yiMdNWdaU1--
+--ILISg5MYLF0mnWYswCs3NqMkaSUDr6p9C--
 
