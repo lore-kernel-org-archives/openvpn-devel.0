@@ -1,14 +1,13 @@
-Date: Wed, 17 Oct 2018 14:07:45 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20181017120745.GB962@...1296...>
+MIME-Version: 1.0
 References: <1515482173-29447-1-git-send-email-eyal.birger@...277...>
  <CAKuzo_hN5A=LB7sp7m3REEpMsePSm-8dpXQUNtbQJz6y8w7zOw@...278...>
  <CAKuzo_iyBEgd0hUyFgQGm3cU+g9O7oCxs+=x_iDcHaxY5n-5Sg@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="CYvw4a70jcGnzNfi"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_iyBEgd0hUyFgQGm3cU+g9O7oCxs+=x_iDcHaxY5n-5Sg@...278...>
+ <20181017120745.GB962@...1296...>
+In-Reply-To: <20181017120745.GB962@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 17 Oct 2018 10:08:35 -0400
+Message-ID: <CAKuzo_gNwMbQqm8YTMXHgJX3n1+FSwGjts8gVS_+azS1mfUSzQ@...278...>
+Content-Type: multipart/alternative; boundary="000000000000fafbac05786d3593"
 Subject: Re: [Openvpn-devel] [PATCH] Windows: Set interface IPv6 prefix
  length when configuring address
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,88 +18,106 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---CYvw4a70jcGnzNfi
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+--000000000000fafbac05786d3593
+Content-Type: text/plain; charset="UTF-8"
 
 Hi,
 
-On Tue, Oct 16, 2018 at 05:48:29PM -0400, Selva Nair wrote:
-> Going through patchworks noticed this.
->=20
-> Thankfully this never got committed so here goes a retraction.
->=20
-> On Sun, Jan 21, 2018 at 1:45 PM Selva Nair <selva.nair@...277...> wrote:
->=20
-> > Hi,
+On Wed, Oct 17, 2018 at 8:07 AM Gert Doering <gert@...1296...> wrote:
+
+> Hi,
+>
+> On Tue, Oct 16, 2018 at 05:48:29PM -0400, Selva Nair wrote:
+> > Going through patchworks noticed this.
 > >
-> > I'm on a reviewing spree (doing my penance), so here goes..
+> > Thankfully this never got committed so here goes a retraction.
 > >
-> > Thanks for the patch
+> > On Sun, Jan 21, 2018 at 1:45 PM Selva Nair <selva.nair@...277...> wrote:
 > >
-> > On Tue, Jan 9, 2018 at 2:16 AM, Eyal Birger <eyal.birger@...277...> wro=
-te:
-> > > Address prefix length defaults to /64 on Windows. This change allows
-> > using
-> > > Windows clients in setups that use a different prefix length.
+> > > Hi,
+> > >
+> > > I'm on a reviewing spree (doing my penance), so here goes..
+> > >
+> > > Thanks for the patch
+> > >
+> > > On Tue, Jan 9, 2018 at 2:16 AM, Eyal Birger <eyal.birger@...277...>
+> wrote:
+> > > > Address prefix length defaults to /64 on Windows. This change allows
+> > > using
+> > > > Windows clients in setups that use a different prefix length.
+>
+> I had this on "I need to do more testing with this", which is why it
+> never proceeded - there might be unintended side effects, so I wanted
+> to do more detailed testing with "netsh" and with "iservice" backends,
+> and different prefix lengths etc.
+>
+> Also, I had the suspicion that if we actually set a prefix length, it
+> will lead to local ND traffic which the tap driver won't answer (it
+> will only answer fe80::8) thus causing a "black hole route" for the
+> tap subnet...
+>
 
-I had this on "I need to do more testing with this", which is why it
-never proceeded - there might be unintended side effects, so I wanted
-to do more detailed testing with "netsh" and with "iservice" backends,
-and different prefix lengths etc.
+Aha, that explains why it lingered in that state for long :)
 
-Also, I had the suspicion that if we actually set a prefix length, it
-will lead to local ND traffic which the tap driver won't answer (it
-will only answer fe80::8) thus causing a "black hole route" for the
-tap subnet...
+However, we do currently set the prefix-length while using the
+service (that->netbits_ipv6 is passed as prefix_len to the ip helper API),
+don't we?
 
+Selva
 
-[..]
-> Though this works in my tests I want to retract this ACK.
->=20
-> Apart from possible issues due to the appearance of the onlink route in
-> some cases, I think the correct approach going forward is to stop using
-> netsh and use the IP helper API for such tasks. And do it in the same way
-> as done using the service.
->=20
-> Un-Acked-by: Selva Nair <selva.nair@...277...> :)
+--000000000000fafbac05786d3593
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Thanks :-)
+<div dir=3D"ltr"><div dir=3D"ltr">Hi,<br><div><br><div class=3D"gmail_quote=
+"><div dir=3D"ltr">On Wed, Oct 17, 2018 at 8:07 AM Gert Doering &lt;<a href=
+=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt; wrote=
+:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.=
+8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">Hi,<br>
+<br>
+On Tue, Oct 16, 2018 at 05:48:29PM -0400, Selva Nair wrote:<br>
+&gt; Going through patchworks noticed this.<br>
+&gt; <br>
+&gt; Thankfully this never got committed so here goes a retraction.<br>
+&gt; <br>
+&gt; On Sun, Jan 21, 2018 at 1:45 PM Selva Nair &lt;<a href=3D"mailto:selva=
+.nair@...277..." target=3D"_blank">selva.nair@...277...</a>&gt; wrote:<br>
+&gt; <br>
+&gt; &gt; Hi,<br>
+&gt; &gt;<br>
+&gt; &gt; I&#39;m on a reviewing spree (doing my penance), so here goes..<b=
+r>
+&gt; &gt;<br>
+&gt; &gt; Thanks for the patch<br>
+&gt; &gt;<br>
+&gt; &gt; On Tue, Jan 9, 2018 at 2:16 AM, Eyal Birger &lt;<a href=3D"mailto=
+:eyal.birger@...277..." target=3D"_blank">eyal.birger@...277...</a>&gt; wro=
+te:<br>
+&gt; &gt; &gt; Address prefix length defaults to /64 on Windows. This chang=
+e allows<br>
+&gt; &gt; using<br>
+&gt; &gt; &gt; Windows clients in setups that use a different prefix length=
+.<br>
+<br>
+I had this on &quot;I need to do more testing with this&quot;, which is why=
+ it<br>
+never proceeded - there might be unintended side effects, so I wanted<br>
+to do more detailed testing with &quot;netsh&quot; and with &quot;iservice&=
+quot; backends,<br>
+and different prefix lengths etc.<br>
+<br>
+Also, I had the suspicion that if we actually set a prefix length, it<br>
+will lead to local ND traffic which the tap driver won&#39;t answer (it<br>
+will only answer fe80::8) thus causing a &quot;black hole route&quot; for t=
+he<br>
+tap subnet...<br></blockquote><div><br></div><div>Aha, that explains why it=
+ lingered in that state for long :)<br><br></div><div>However, we do curren=
+tly set the prefix-length while using the<br></div><div>service (that-&gt;n=
+etbits_ipv6 is passed as prefix_len to the ip helper API),<br>don&#39;t we?=
+ <br><br></div><div>Selva<br></div></div></div></div></div>
 
-We'll definitely need to look into this more closely.
-
-gert
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---CYvw4a70jcGnzNfi
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJbxyYRAAoJEB2Cnv7KVigSYGcL/RNEtchkExIqm3DnhX+HzHVZ
-f1gfVvyctsrYHtcROancTX00JePh/OWSBQ4Sh4DLM+sjFr/UK3LVMk9KA6Y8KZGw
-PY6VDB4S9IeAxokpdmFlO41+hZYH3+eJ2PJJSpnlCJCmYKpj/mKOTlm8/X2sDTk5
-FIwBsfCsukjnYkreBwHt8QYkRkmT+y8LxL+dF1rG3qQHCVzDMsDkhn1y5xXZvEDv
-czL8f/v4mKF//71fFUE1Rp/vwf9PJcwNv5m4wcEIeskJ01QUj+blXO1L8L1n4GBF
-uLCljcIauR6qCMO0g0YDGHtoGsLzS5HLx3XFB8JwBuyIvRgsi5omLBIceNl2CCX5
-g+QNpWgXOfkleggQZ4smjnh+cTKbe8ckybNiZ+xeEeGvm1fFOHib4otYbB9hbdM+
-YbRmVXEiuCsZez3C0+ADT3mW/1uN5Bzg3zsAWSuOCR/ScTeUAqWBnYNVuDrslDss
-3ZJqXrl1Zi0PdoT45kjpyZMkoZq5UNSHU41GItAatg==
-=nS5Q
------END PGP SIGNATURE-----
-
---CYvw4a70jcGnzNfi--
+--000000000000fafbac05786d3593--
 
