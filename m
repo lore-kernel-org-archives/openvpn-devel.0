@@ -1,9 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Fri, 19 Oct 2018 17:56:35 +0200
-Message-Id: <20181019155638.9498-2-davids@...515...>
+Date: Fri, 19 Oct 2018 17:56:38 +0200
+Message-Id: <20181019155638.9498-5-davids@...515...>
 In-Reply-To: <20181019155638.9498-1-davids@...515...>
 References: <20181019155638.9498-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH 1/4] re-implement argv_printf_*()
+Subject: [Openvpn-devel] [PATCH 4/4] Documented all the argv related code
+ with minor refactoring
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,609 +17,449 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Heiko Hund <heiko.hund@...1489...>
+Added doxygen comments for all the functions in argv.c.
 
-The previous implementation had the problem that it was not fully
-compatible with printf() and could only detect % format directives
-following a space character (0x20).
+There are some slight refactoring, renaming a few variables to make
+their use case more obvious and ensure lines do not break our 80-chars
+per line coding style limit.
 
-It modifies the format string and inserts marks to separate groups
-before passing it to the regular printf in libc. The marks are
-later used to separate the output string into individual command
-line arguments.
-
-The choice of 0x1D as the argument delimiter is based on the
-assumption that no "regular" string passed to argv_printf_*() will
-ever have to contain that byte (and the fact that it actually is
-the ASCII "group separator" control character, which fits its
-purpose).
-
-This commit has been updated by David Sommerseth based on his feedback
-on the mailing list discussions earlier on.
-
-Signed-off-by: Heiko Hund <heiko.hund@...1489...>
 Signed-off-by: David Sommerseth <davids@...515...>
 ---
- src/openvpn/argv.c                   | 266 ++++++++++++---------------
- src/openvpn/argv.h                   |   4 +-
- src/openvpn/route.c                  |   8 +-
- src/openvpn/tun.c                    |  24 +--
- tests/unit_tests/openvpn/test_argv.c |  58 +++++-
- 5 files changed, 192 insertions(+), 168 deletions(-)
+ src/openvpn/argv.c | 246 ++++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 209 insertions(+), 37 deletions(-)
 
 diff --git a/src/openvpn/argv.c b/src/openvpn/argv.c
-index 9100a196..9606f382 100644
+index 39c6fa9e..d3b47d97 100644
 --- a/src/openvpn/argv.c
 +++ b/src/openvpn/argv.c
-@@ -131,64 +131,6 @@ argv_insert_head(const struct argv *a, const char *head)
+@@ -40,6 +40,13 @@
+ #include "env_set.h"
+ #include "options.h"
+ 
++/**
++ *  Resizes the list of arguments struct argv can carry.  This resize
++ *  operation will only increase the size, never decrease the size.
++ *
++ *  @param *a      Valid pointer to a struct argv to resize
++ *  @param newcap  size_t with the new size of the argument list.
++ */
+ static void
+ argv_extend(struct argv *a, const size_t newcap)
+ {
+@@ -57,6 +64,12 @@ argv_extend(struct argv *a, const size_t newcap)
+     }
+ }
+ 
++/**
++ *  Initialise an already allocated struct argv.
++ *  It is expected that the input argument is a valid pointer.
++ *
++ *  @param *a  Pointer to a struct argv to initialise
++ */
+ static void
+ argv_init(struct argv *a)
+ {
+@@ -67,6 +80,12 @@ argv_init(struct argv *a)
+     argv_extend(a, 8);
+ }
+ 
++/**
++ *  Allocates a new struct argv and ensures it is initialised.
++ *  Note that it does not return a pointer, but a struct argv directly.
++ *
++ *  @returns Returns an initialised and empty struct argv.
++ */
+ struct argv
+ argv_new(void)
+ {
+@@ -75,12 +94,24 @@ argv_new(void)
+     return ret;
+ }
+ 
++/**
++ *  Frees all memory allocations allocated by the struct argv
++ *  related functions.
++ *
++ *  @param *a  Valid pointer to a struct argv to release memory from
++ */
+ void
+ argv_free(struct argv *a)
+ {
+     gc_free(&a->gc);
+ }
+ 
++/**
++ *  Resets the struct argv to an initial state.  No memory buffers
++ *  will be released by this call.
++ *
++ *  @param *a      Valid pointer to a struct argv to resize
++ */
+ static void
+ argv_reset(struct argv *a)
+ {
+@@ -95,6 +126,19 @@ argv_reset(struct argv *a)
+     }
+ }
+ 
++/**
++ *  Extends an existing struct argv to carry minimum 'add' number
++ *  of new arguments.  This builds on argv_extend(), which ensures the
++ *  new size will only be higher than the current capacity.
++ *
++ *  The new size is also calculated based on the result of adjust_power_of_2().
++ *  This approach ensures that the list does grow bulks and only when the
++ *  current limit is reached.
++ *
++ *  @param *a   Valid pointer to the struct argv to extend
++ *  @param add  size_t with the number of elements to add.
++ *
++ */
+ static void
+ argv_grow(struct argv *a, const size_t add)
+ {
+@@ -103,15 +147,39 @@ argv_grow(struct argv *a, const size_t add)
+     argv_extend(a, adjust_power_of_2(newargc));
+ }
+ 
++/**
++ *  Appends a string to to the list of arguments stored in a struct argv
++ *  This will ensure the list size in struct argv has the needed capacity to
++ *  store the value.
++ *
++ *  @param *a    struct argv where to append the new string value
++ *  @param *str  Pointer to string to append.  The provided string *MUST* have
++ *               been malloc()ed or NULL.
++ */
+ static void
+-argv_append(struct argv *a, char *str)  /* str must have been gc_malloced or be NULL */
++argv_append(struct argv *a, char *str)
+ {
+     argv_grow(a, 1);
+     a->argv[a->argc++] = str;
+ }
+ 
++/**
++ *  Clones a struct argv with all the contents to a new allocated struct argv.
++ *  If 'headroom' is larger than 0, it will create a head-room in front of the
++ *  values being copied from the source input.
++ *
++ *
++ *  @param *source   Valid pointer to the source struct argv to clone.  It may
++ *                   be NULL.
++ *  @param headroom  Number of slots to leave empty in front of the slots
++ *                   copied from the source.
++ *
++ *  @returns Returns a new struct argv containing a copy of the source
++ *           struct argv, with the given headroom in front of the copy.
++ *
++ */
+ static struct argv
+-argv_clone(const struct argv *a, const size_t headroom)
++argv_clone(const struct argv *source, const size_t headroom)
+ {
+     struct argv r;
+     size_t i;
+@@ -121,16 +189,24 @@ argv_clone(const struct argv *a, const size_t headroom)
+     {
+         argv_append(&r, NULL);
+     }
+-    if (a)
++    if (source)
+     {
+-        for (i = 0; i < a->argc; ++i)
++        for (i = 0; i < source->argc; ++i)
+         {
+-            argv_append(&r, string_alloc(a->argv[i], &r.gc));
++            argv_append(&r, string_alloc(source->argv[i], &r.gc));
+         }
+     }
      return r;
  }
  
--static char *
--argv_term(const char **f)
--{
--    const char *p = *f;
--    const char *term = NULL;
--    size_t termlen = 0;
--
--    if (*p == '\0')
--    {
--        return NULL;
--    }
--
--    while (true)
--    {
--        const int c = *p;
--        if (c == '\0')
--        {
--            break;
--        }
--        if (term)
--        {
--            if (!isspace(c))
--            {
--                ++termlen;
--            }
--            else
--            {
--                break;
--            }
--        }
--        else
--        {
--            if (!isspace(c))
--            {
--                term = p;
--                termlen = 1;
--            }
--        }
--        ++p;
--    }
--    *f = p;
--
--    if (term)
--    {
--        char *ret;
--        ASSERT(termlen > 0);
--        ret = malloc(termlen + 1);
--        check_malloc_return(ret);
--        memcpy(ret, term, termlen);
--        ret[termlen] = '\0';
--        return ret;
--    }
--    else
--    {
--        return NULL;
--    }
--}
--
++/**
++ *  Inserts an argument string in front of all other argument slots.
++ *
++ *  @param  *a     Valid pointer to the struct argv to insert the argument into
++ *  @param  *head  Pointer to the char * string with the argument to insert
++ *
++ *  @returns Returns a new struct argv with the inserted argument in front
++ */
+ struct argv
+ argv_insert_head(const struct argv *a, const char *head)
+ {
+@@ -140,12 +216,32 @@ argv_insert_head(const struct argv *a, const char *head)
+     return r;
+ }
+ 
++/**
++ *  Generate a single string with all the arguments in a struct argv
++ *  concatenated.
++ *
++ *  @param *a    Valid pointer to the struct argv with the arguments to list
++ *  @param *gc   Pointer to a struct gc_arena managed buffer
++ *  @param flags Flags passed to the print_argv() function.
++ *
++ *  @returns Returns a string generated by print_argv() with all the arguments
++ *           concatenated.  If the argument count is 0, it will return an empty
++ *           string.  The return string is allocated in the gc_arena managed
++ *           buffer.  If the gc_arena pointer is NULL, the returned string
++ *           must be free()d explicitly to avoid memory leaks.
++ */
  const char *
  argv_str(const struct argv *a, struct gc_arena *gc, const unsigned int flags)
  {
-@@ -218,119 +160,151 @@ argv_msg_prefix(const int msglev, const struct argv *a, const char *prefix)
+     return print_argv((const char **)a->argv, gc, flags);
+ }
+ 
++/**
++ *  Write the arguments stored in a struct argv via the msg() command.
++ *
++ *  @param msglev  Integer with the message level used by msg().
++ *  @param *a      Valid pointer to the struct argv with the arguments to write.
++ */
+ void
+ argv_msg(const int msglev, const struct argv *a)
+ {
+@@ -154,6 +250,15 @@ argv_msg(const int msglev, const struct argv *a)
      gc_free(&gc);
  }
  
--static void
-+
-+/*
-+ * argv_prep_format - prepare argv format string for further processing
++/**
++ *  Similar to argv_msg() but prefixes the messages being written with a
++ *  given string.
 + *
-+ * Individual argument must be separated by space. Ignores leading and trailing spaces.
-+ * Consecutive spaces count as one. Returns prepared format string, with space replaced
-+ * by delim and adds the number of arguments to the count parameter.
-+ */
-+static char *
-+argv_prep_format(const char *format, const char delim, size_t *count, struct gc_arena *gc)
-+{
-+    int i, j;
-+    char *f;
-+    bool in_token = false;
-+
-+    if (format == NULL)
-+    {
-+        return NULL;
-+    }
-+
-+    f = gc_malloc(strlen(format) + 1, true, gc);
-+    for (i = 0, j = 0; i < strlen(format); i++)
-+    {
-+        if (format[i] == ' ')
-+        {
-+            in_token = false;
-+            continue;
-+        }
-+
-+        if (!in_token)
-+        {
-+            ++*count;
-+
-+            /*
-+             * We don't add any delimiter to the resulting
-+             * format string before something has been added there.
-+             * The resulting format string will never start with a delimiter.
-+             */
-+            if (j > 0)
-+            {
-+                f[j++] = delim;
-+            }
-+        }
-+
-+        f[j++] = format[i];
-+        in_token = true;
-+    }
-+
-+    return f;
-+}
-+
-+/*
-+ * argv_printf_arglist - create a struct argv from a format string
++ *  @param msglev   Integer with the message level used by msg().
++ *  @param *a       Valid pointer to the struct argv with the arguments to write
++ *  @param *prefix  Valid char * pointer to the prefix string
 + *
-+ * Instead of parsing the format string ourselves place delimiters via argv_prep_format()
-+ * before we let libc's printf() do the parsing. Then split the resulting string at the
-+ * injected delimiters.
 + */
-+static bool
- argv_printf_arglist(struct argv *a, const char *format, va_list arglist)
- {
--    char *term;
--    const char *f = format;
-+    struct gc_arena gc = gc_new();
-+    const char delim = 0x1D;  /* ASCII Group Separator (GS) */
-+    char *f, *buf, *end;
-+    size_t argc, size;
-+    bool res = false;
-+    va_list tmplist;
-+    int len;
- 
-     argv_extend(a, 1); /* ensure trailing NULL */
- 
--    while ((term = argv_term(&f)) != NULL)
-+    argc = a->argc;
-+    f = argv_prep_format(format, delim, &argc, &gc);
-+    if (f == NULL)
-     {
--        if (term[0] == '%')
--        {
--            if (!strcmp(term, "%s"))
--            {
--                char *s = va_arg(arglist, char *);
--                if (!s)
--                {
--                    s = "";
--                }
--                argv_append(a, string_alloc(s, NULL));
--            }
--            else if (!strcmp(term, "%d"))
--            {
--                char numstr[64];
--                openvpn_snprintf(numstr, sizeof(numstr), "%d", va_arg(arglist, int));
--                argv_append(a, string_alloc(numstr, NULL));
--            }
--            else if (!strcmp(term, "%u"))
--            {
--                char numstr[64];
--                openvpn_snprintf(numstr, sizeof(numstr), "%u", va_arg(arglist, unsigned int));
--                argv_append(a, string_alloc(numstr, NULL));
--            }
--            else if (!strcmp(term, "%lu"))
--            {
--                char numstr[64];
--                openvpn_snprintf(numstr, sizeof(numstr), "%lu",
--                                 va_arg(arglist, unsigned long));
--                argv_append(a, string_alloc(numstr, NULL));
--            }
--            else if (!strcmp(term, "%s/%d"))
--            {
--                char numstr[64];
--                char *s = va_arg(arglist, char *);
--
--                if (!s)
--                {
--                    s = "";
--                }
-+        goto out;
-+    }
- 
--                openvpn_snprintf(numstr, sizeof(numstr), "%d", va_arg(arglist, int));
-+    /* determine minimum buffer size */
-+    va_copy(tmplist, arglist);
-+    len = vsnprintf(NULL, 0, f, tmplist);
-+    va_end(tmplist);
-+    if (len < 0)
-+    {
-+        goto out;
-+    }
- 
--                {
--                    const size_t len = strlen(s) + strlen(numstr) + 2;
--                    char *combined = (char *) malloc(len);
--                    check_malloc_return(combined);
-+    size = adjust_power_of_2(len + 1);
-+    buf = gc_malloc(size, false, &gc);
-+    len = vsnprintf(buf, size, f, arglist);
-+    if (len < 0 || len >= size)
-+    {
-+        goto out;
-+    }
- 
--                    strcpy(combined, s);
--                    strcat(combined, "/");
--                    strcat(combined, numstr);
--                    argv_append(a, combined);
--                }
--            }
--            else if (!strcmp(term, "%s%sc"))
--            {
--                char *s1 = va_arg(arglist, char *);
--                char *s2 = va_arg(arglist, char *);
--                char *combined;
-+    /* split the string at the delimiters */
-+    end = strchr(buf, delim);
-+    while (end)
-+    {
-+        *end = '\0';
-+        argv_append(a, string_alloc(buf, NULL));
-+        buf = end + 1;
-+        end = strchr(buf, delim);
-+    }
-+    argv_append(a, string_alloc(buf, NULL));
- 
--                if (!s1)
--                {
--                    s1 = "";
--                }
--                if (!s2)
--                {
--                    s2 = "";
--                }
--                combined = (char *) malloc(strlen(s1) + strlen(s2) + 1);
--                check_malloc_return(combined);
--                strcpy(combined, s1);
--                strcat(combined, s2);
--                argv_append(a, combined);
--            }
--            else
--            {
--                ASSERT(0);
--            }
--            free(term);
--        }
--        else
--        {
--            argv_append(a, term);
--        }
-+    if (a->argc != argc)
-+    {
-+        /* Someone snuck in a GS (0x1D), fail gracefully */
-+        argv_reset(a);
-+        argv_extend(a, 1); /* ensure trailing NULL */
-+        goto out;
-     }
-+
-+    res = true;
-+
-+out:
-+    gc_free(&gc);
-+    return res;
- }
- 
--void
-+
-+
-+bool
- argv_printf(struct argv *a, const char *format, ...)
- {
-+    bool res;
-     va_list arglist;
--    argv_reset(a);
-+
-     va_start(arglist, format);
--    argv_printf_arglist(a, format, arglist);
-+    argv_reset(a);
-+    res = argv_printf_arglist(a, format, arglist);
-     va_end(arglist);
-+    return res;
- }
- 
--void
-+bool
- argv_printf_cat(struct argv *a, const char *format, ...)
- {
-+    bool res;
-     va_list arglist;
-     va_start(arglist, format);
--    argv_printf_arglist(a, format, arglist);
-+    res = argv_printf_arglist(a, format, arglist);
-     va_end(arglist);
-+    return res;
- }
- 
  void
-diff --git a/src/openvpn/argv.h b/src/openvpn/argv.h
-index 9d9f3873..b9105a43 100644
---- a/src/openvpn/argv.h
-+++ b/src/openvpn/argv.h
-@@ -52,7 +52,7 @@ void argv_msg_prefix(const int msglev, const struct argv *a, const char *prefix)
- 
- void argv_parse_cmd(struct argv *a, const char *s);
- 
--void argv_printf(struct argv *a, const char *format, ...)
-+bool argv_printf(struct argv *a, const char *format, ...)
- #ifdef __GNUC__
- #if __USE_MINGW_ANSI_STDIO
- __attribute__ ((format(gnu_printf, 2, 3)))
-@@ -62,7 +62,7 @@ __attribute__ ((format(__printf__, 2, 3)))
- #endif
- ;
- 
--void argv_printf_cat(struct argv *a, const char *format, ...)
-+bool argv_printf_cat(struct argv *a, const char *format, ...)
- #ifdef __GNUC__
- #if __USE_MINGW_ANSI_STDIO
- __attribute__ ((format(gnu_printf, 2, 3)))
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index d97e8dba..9649d197 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -1614,7 +1614,7 @@ add_route(struct route_ipv4 *r,
- #elif defined (_WIN32)
-     {
-         DWORD ai = TUN_ADAPTER_INDEX_INVALID;
--        argv_printf(&argv, "%s%sc ADD %s MASK %s %s",
-+        argv_printf(&argv, "%s%s ADD %s MASK %s %s",
-                     get_win_sys_path(),
-                     WIN_ROUTE_PATH_SUFFIX,
-                     network,
-@@ -1979,7 +1979,7 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt, unsigned int flag
-         device = buf_bptr(&out);
- 
-         /* netsh interface ipv6 add route 2001:db8::/32 MyTunDevice */
--        argv_printf(&argv, "%s%sc interface ipv6 add route %s/%d %s",
-+        argv_printf(&argv, "%s%s interface ipv6 add route %s/%d %s",
-                     get_win_sys_path(),
-                     NETSH_PATH_SUFFIX,
-                     network,
-@@ -2186,7 +2186,7 @@ delete_route(struct route_ipv4 *r,
- 
- #elif defined (_WIN32)
- 
--    argv_printf(&argv, "%s%sc DELETE %s MASK %s %s",
-+    argv_printf(&argv, "%s%s DELETE %s MASK %s %s",
-                 get_win_sys_path(),
-                 WIN_ROUTE_PATH_SUFFIX,
-                 network,
-@@ -2426,7 +2426,7 @@ delete_route_ipv6(const struct route_ipv6 *r6, const struct tuntap *tt, unsigned
-         device = buf_bptr(&out);
- 
-         /* netsh interface ipv6 delete route 2001:db8::/32 MyTunDevice */
--        argv_printf(&argv, "%s%sc interface ipv6 delete route %s/%d %s",
-+        argv_printf(&argv, "%s%s interface ipv6 delete route %s/%d %s",
-                     get_win_sys_path(),
-                     NETSH_PATH_SUFFIX,
-                     network,
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 948fd17d..f80aedf8 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -994,7 +994,7 @@ do_ifconfig_ipv6(struct tuntap *tt, const char *ifname, int tun_mtu,
- 
-         openvpn_snprintf(iface, sizeof(iface), "interface=%lu",
-                          tt->adapter_index);
--        argv_printf(&argv, "%s%sc interface ipv6 set address %s %s store=active",
-+        argv_printf(&argv, "%s%s interface ipv6 set address %s %s store=active",
-                     get_win_sys_path(), NETSH_PATH_SUFFIX, iface,
-                     ifconfig_ipv6_local);
-         netsh_command(&argv, 4, M_FATAL);
-@@ -4873,14 +4873,14 @@ ipconfig_register_dns(const struct env_set *es)
-     msg(D_TUNTAP_INFO, "Start ipconfig commands for register-dns...");
-     netcmd_semaphore_lock();
- 
--    argv_printf(&argv, "%s%sc /flushdns",
-+    argv_printf(&argv, "%s%s /flushdns",
-                 get_win_sys_path(),
-                 WIN_IPCONFIG_PATH_SUFFIX);
-     argv_msg(D_TUNTAP_INFO, &argv);
-     status = openvpn_execve_check(&argv, es, 0, err);
-     argv_reset(&argv);
- 
--    argv_printf(&argv, "%s%sc /registerdns",
-+    argv_printf(&argv, "%s%s /registerdns",
-                 get_win_sys_path(),
-                 WIN_IPCONFIG_PATH_SUFFIX);
-     argv_msg(D_TUNTAP_INFO, &argv);
-@@ -4994,8 +4994,8 @@ netsh_set_dns6_servers(const struct in6_addr *addr_list,
-     for (int i = 0; i < addr_len; ++i)
-     {
-         const char *fmt = (i == 0) ?
--                          "%s%sc interface ipv6 set dns %s static %s"
--                          : "%s%sc interface ipv6 add dns %s %s";
-+                          "%s%s interface ipv6 set dns %s static %s"
-+                          : "%s%s interface ipv6 add dns %s %s";
-         argv_printf(&argv, fmt, get_win_sys_path(),
-                     NETSH_PATH_SUFFIX, flex_name,
-                     print_in6_addr(addr_list[i], 0, &gc));
-@@ -5042,7 +5042,7 @@ netsh_ifconfig_options(const char *type,
-     /* delete existing DNS/WINS settings from TAP interface */
-     if (delete_first)
-     {
--        argv_printf(&argv, "%s%sc interface ip delete %s %s all",
-+        argv_printf(&argv, "%s%s interface ip delete %s %s all",
-                     get_win_sys_path(),
-                     NETSH_PATH_SUFFIX,
-                     type,
-@@ -5059,8 +5059,8 @@ netsh_ifconfig_options(const char *type,
-             if (delete_first || !test_first || !ip_addr_member_of(addr_list[i], current))
-             {
-                 const char *fmt = count ?
--                                  "%s%sc interface ip add %s %s %s"
--                                  : "%s%sc interface ip set %s %s static %s";
-+                                  "%s%s interface ip add %s %s %s"
-+                                  : "%s%s interface ip set %s %s static %s";
- 
-                 argv_printf(&argv, fmt,
-                             get_win_sys_path(),
-@@ -5136,7 +5136,7 @@ netsh_ifconfig(const struct tuntap_options *to,
-         else
-         {
-             /* example: netsh interface ip set address my-tap static 10.3.0.1 255.255.255.0 */
--            argv_printf(&argv, "%s%sc interface ip set address %s static %s %s",
-+            argv_printf(&argv, "%s%s interface ip set address %s static %s %s",
-                         get_win_sys_path(),
-                         NETSH_PATH_SUFFIX,
-                         flex_name,
-@@ -5185,7 +5185,7 @@ netsh_enable_dhcp(const struct tuntap_options *to,
- 
-     /* example: netsh interface ip set address my-tap dhcp */
-     argv_printf(&argv,
--                "%s%sc interface ip set address %s dhcp",
-+                "%s%s interface ip set address %s dhcp",
-                 get_win_sys_path(),
-                 NETSH_PATH_SUFFIX,
-                 actual_name);
-@@ -6100,7 +6100,7 @@ close_tun(struct tuntap *tt)
-             /* netsh interface ipv6 delete address \"%s\" %s */
-             ifconfig_ipv6_local = print_in6_addr(tt->local_ipv6, 0,  &gc);
-             argv_printf(&argv,
--                        "%s%sc interface ipv6 delete address %s %s store=active",
-+                        "%s%s interface ipv6 delete address %s %s store=active",
-                         get_win_sys_path(),
-                         NETSH_PATH_SUFFIX,
-                         tt->actual_name,
-@@ -6112,7 +6112,7 @@ close_tun(struct tuntap *tt)
-             if (tt->options.dns6_len > 0)
-             {
-                 argv_printf(&argv,
--                            "%s%sc interface ipv6 delete dns %s all",
-+                            "%s%s interface ipv6 delete dns %s all",
-                             get_win_sys_path(),
-                             NETSH_PATH_SUFFIX,
-                             tt->actual_name);
-diff --git a/tests/unit_tests/openvpn/test_argv.c b/tests/unit_tests/openvpn/test_argv.c
-index 0fdd3f0a..9b67fade 100644
---- a/tests/unit_tests/openvpn/test_argv.c
-+++ b/tests/unit_tests/openvpn/test_argv.c
-@@ -9,6 +9,7 @@
- #include <setjmp.h>
- #include <cmocka.h>
- #include <assert.h>
-+#include <stdbool.h>
- 
- #include "argv.h"
- #include "buffer.h"
-@@ -53,23 +54,69 @@ argv_printf_cat__multiple_spaces_in_format__parsed_as_one(void **state)
-     argv_reset(&a);
+ argv_msg_prefix(const int msglev, const struct argv *a, const char *prefix)
+ {
+@@ -162,16 +267,29 @@ argv_msg_prefix(const int msglev, const struct argv *a, const char *prefix)
+     gc_free(&gc);
  }
  
-+static void
-+argv_printf__embedded_format_directive__replaced_in_output(void **state)
-+{
-+    struct argv a = argv_new();
-+
-+    argv_printf(&a, "<p1:%s>", PATH1);
-+    assert_int_equal(a.argc, 1);
-+    assert_string_equal(a.argv[0], "<p1:" PATH1 ">");
-+
-+    argv_reset(&a);
-+}
-+
-+static void
-+argv_printf__group_sep_in_arg__fail_no_ouput(void **state)
-+{
-+    struct argv a = argv_new();
-+
-+    assert_false(argv_printf(&a, "tool --do %s", "this\035--harmful"));
-+    assert_int_equal(a.argc, 0);
-+
-+    argv_reset(&a);
-+}
-+
- static void
- argv_printf__combined_path_with_spaces__argc_correct(void **state)
+-
+-/*
+- * argv_prep_format - prepare argv format string for further processing
++/**
++ *  Prepares argv format string for further processing
+  *
+- * Individual argument must be separated by space. Ignores leading and trailing spaces.
+- * Consecutive spaces count as one. Returns prepared format string, with space replaced
+- * by delim and adds the number of arguments to the count parameter.
++ *  Individual argument must be separated by space. Ignores leading and
++ *  trailing spaces.  Consecutive spaces count as one. Returns prepared
++ *  format string, with space replaced by delim and adds the number of
++ *  arguments to the count parameter.
++ *
++ *  @param *format  Pointer to a the format string to process
++ *  @param delim    Char with the delimiter to use
++ *  @param *count   size_t pointer used to return the number of
++ *                  tokens (argument slots) found in the format string.
++ *  @param *gc      Pointer to a gc_arena managed buffer.
++ *
++ *  @returns Returns a parsed format string (char *), together with the
++ *           number of tokens parts found (via *count).  The result string
++ *           is allocated within the gc_arena managed buffer.  If the
++ *           gc_arena pointer is NULL, the returned string must be explicitly
++ *           free()d to avoid memory leaks.
+  */
+ static char *
+-argv_prep_format(const char *format, const char delim, size_t *count, struct gc_arena *gc)
++argv_prep_format(const char *format, const char delim, size_t *count,
++                 struct gc_arena *gc)
  {
-     struct argv a = argv_new();
- 
--    argv_printf(&a, "%s%sc", PATH1, PATH2);
-+    argv_printf(&a, "%s%s", PATH1, PATH2);
-     assert_int_equal(a.argc, 1);
- 
--    argv_printf(&a, "%s%sc %d", PATH1, PATH2, 42);
-+    argv_printf(&a, "%s%s %d", PATH1, PATH2, 42);
-     assert_int_equal(a.argc, 2);
- 
--    argv_printf(&a, "foo %s%sc %s x y", PATH2, PATH1, "foo");
-+    argv_printf(&a, "foo %s%s %s x y", PATH2, PATH1, "foo");
-     assert_int_equal(a.argc, 5);
- 
-     argv_reset(&a);
+     int i, j;
+     char *f;
+@@ -213,15 +331,28 @@ argv_prep_format(const char *format, const char delim, size_t *count, struct gc_
+     return f;
  }
  
-+static void
-+argv_printf__empty_parameter__argc_correct(void **state)
-+{
-+    struct argv a = argv_new();
-+
-+    argv_printf(&a, "%s", "");
-+    assert_int_equal(a.argc, 1);
-+
-+    argv_printf(&a, "%s %s", PATH1, "");
-+    assert_int_equal(a.argc, 2);
-+
-+    argv_printf(&a, "%s %s %s", PATH1, "", PARAM1);
-+    assert_int_equal(a.argc, 3);
-+
-+    argv_printf(&a, "%s %s %s %s", PATH1, "", "", PARAM1);
-+    assert_int_equal(a.argc, 4);
-+
-+    argv_printf(&a, "%s %s", "", PARAM1);
-+    assert_int_equal(a.argc, 2);
-+
-+    argv_free(&a);
-+}
-+
- static void
- argv_parse_cmd__command_string__argc_correct(void **state)
+-/*
+- * argv_printf_arglist - create a struct argv from a format string
++/**
++ *  Create a struct argv based on a format string
+  *
+- * Instead of parsing the format string ourselves place delimiters via argv_prep_format()
+- * before we let libc's printf() do the parsing. Then split the resulting string at the
+- * injected delimiters.
++ *  Instead of parsing the format string ourselves place delimiters via
++ *  argv_prep_format() before we let libc's printf() do the parsing.
++ *  Then split the resulting string at the injected delimiters.
++ *
++ *  @param *argres  Valid pointer to a struct argv where the resulting parsed
++ *                  arguments, based on the format string.
++ *  @param *format  Char* string with a printf() compliant format string
++ *  @param arglist  A va_list with the arguments to be consumed by the format
++ *                  string
++ *
++ *  @returns Returns true if the parsing and processing was successfully.  If
++ *           the resulting number of arguments does not match the expected
++ *           number of arguments (based on the format string), it is
++ *           considered a failure, which returns false.  This can happen if
++ *           the ASCII Group Separator (GS - 0x1D) is put into the arguments
++ *           list or format string.
+  */
+ static bool
+-argv_printf_arglist(struct argv *a, const char *format, va_list arglist)
++argv_printf_arglist(struct argv *argres, const char *format, va_list arglist)
  {
-@@ -113,7 +160,7 @@ argv_str__multiple_argv__correct_output(void **state)
      struct gc_arena gc = gc_new();
-     const char *output;
+     const char delim = 0x1D;  /* ASCII Group Separator (GS) */
+@@ -231,14 +362,19 @@ argv_printf_arglist(struct argv *a, const char *format, va_list arglist)
+     va_list tmplist;
+     int len;
  
--    argv_printf(&a, "%s%sc", PATH1, PATH2);
-+    argv_printf(&a, "%s%s", PATH1, PATH2);
-     argv_printf_cat(&a, "%s", PARAM1);
-     argv_printf_cat(&a, "%s", PARAM2);
-     argv_printf_cat(&a, "%d", -1);
-@@ -172,7 +219,10 @@ main(void)
-     const struct CMUnitTest tests[] = {
-         cmocka_unit_test(argv_printf__multiple_spaces_in_format__parsed_as_one),
-         cmocka_unit_test(argv_printf_cat__multiple_spaces_in_format__parsed_as_one),
-+        cmocka_unit_test(argv_printf__embedded_format_directive__replaced_in_output),
-+        cmocka_unit_test(argv_printf__group_sep_in_arg__fail_no_ouput),
-         cmocka_unit_test(argv_printf__combined_path_with_spaces__argc_correct),
-+        cmocka_unit_test(argv_printf__empty_parameter__argc_correct),
-         cmocka_unit_test(argv_parse_cmd__command_string__argc_correct),
-         cmocka_unit_test(argv_parse_cmd__command_and_extra_options__argc_correct),
-         cmocka_unit_test(argv_printf_cat__used_twice__argc_correct),
+-    argc = a->argc;
++    argc = argres->argc;
+     f = argv_prep_format(format, delim, &argc, &gc);
+     if (f == NULL)
+     {
+         goto out;
+     }
+ 
+-    /* determine minimum buffer size */
++    /*
++     * Determine minimum buffer size.
++     *
++     * With C99, vsnprintf(NULL, 0, ...) will return the number of bytes
++     * it would have written, had the buffer been large enough.
++     */
+     va_copy(tmplist, arglist);
+     len = vsnprintf(NULL, 0, f, tmplist);
+     va_end(tmplist);
+@@ -248,7 +384,7 @@ argv_printf_arglist(struct argv *a, const char *format, va_list arglist)
+     }
+ 
+     size = adjust_power_of_2(len + 1);
+-    buf = gc_malloc(size, false, &a->gc);
++    buf = gc_malloc(size, false, &argres->gc);
+     len = vsnprintf(buf, size, f, arglist);
+     if (len < 0 || len >= size)
+     {
+@@ -260,16 +396,16 @@ argv_printf_arglist(struct argv *a, const char *format, va_list arglist)
+     while (end)
+     {
+         *end = '\0';
+-        argv_append(a, buf);
++        argv_append(argres, buf);
+         buf = end + 1;
+         end = strchr(buf, delim);
+     }
+-    argv_append(a, buf);
++    argv_append(argres, buf);
+ 
+-    if (a->argc != argc)
++    if (argres->argc != argc)
+     {
+         /* Someone snuck in a GS (0x1D), fail gracefully */
+-        argv_reset(a);
++        argv_reset(argres);
+         goto out;
+     }
+ 
+@@ -280,51 +416,87 @@ out:
+     return res;
+ }
+ 
+-
+-
++/**
++ *  printf() variant which populates a struct argv.  It processes the
++ *  format string with the provided arguments.  For each space separator found
++ *  in the format string, a new argument will be added to the resulting
++ *  struct argv.
++ *
++ *  This will always reset and ensure the result is based on a pristine
++ *  struct argv.
++ *
++ *  @param *argres  Valid pointer to a struct argv where the result will be put.
++ *  @param *format  printf() compliant (char *) format string.
++ *
++ *  @returns Returns true if the parsing was successful.  See
++ *           argv_printf_arglist() for more details.  The parsed result will
++ *           be put into argres.
++ */
+ bool
+-argv_printf(struct argv *a, const char *format, ...)
++argv_printf(struct argv *argres, const char *format, ...)
+ {
+     bool res;
+     va_list arglist;
+ 
+     va_start(arglist, format);
+-    argv_reset(a);
+-    res = argv_printf_arglist(a, format, arglist);
++    argv_reset(argres);
++    res = argv_printf_arglist(argres, format, arglist);
+     va_end(arglist);
+     return res;
+ }
+ 
++/**
++ *  printf() inspired argv concatenation.  Adds arguments to an existing
++ *  struct argv and populets the argument slots based on the printf() based
++ *  format string.
++ *
++ *  @param *argres  Valid pointer to a struct argv where the result will be put.
++ *  @param *format  printf() compliant (char *) format string.
++ *
++ *  @returns Returns true if the parsing was successful.  See
++ *           argv_printf_arglist() for more details.  The parsed result will
++ *           be put into argres.
++ */
+ bool
+-argv_printf_cat(struct argv *a, const char *format, ...)
++argv_printf_cat(struct argv *argres, const char *format, ...)
+ {
+     bool res;
+     va_list arglist;
+     va_start(arglist, format);
+-    res = argv_printf_arglist(a, format, arglist);
++    res = argv_printf_arglist(argres, format, arglist);
+     va_end(arglist);
+     return res;
+ }
+ 
++/**
++ *  Parses a command string, tokenizes it and puts each element into a separate
++ *  struct argv argument slot.
++ *
++ *  @params *argres  Valid pointer to a struct argv where the parsed result
++ *                   will be found.
++ *  @params *cmdstr  Char * based string to parse
++ *
++ */
+ void
+-argv_parse_cmd(struct argv *a, const char *s)
++argv_parse_cmd(struct argv *argres, const char *cmdstr)
+ {
+     int nparms;
+     char *parms[MAX_PARMS + 1];
+ 
+-    argv_reset(a);
++    argv_reset(argres);
+ 
+-    nparms = parse_line(s, parms, MAX_PARMS, "SCRIPT-ARGV", 0, D_ARGV_PARSE_CMD, &a->gc);
++    nparms = parse_line(cmdstr, parms, MAX_PARMS, "SCRIPT-ARGV", 0,
++                        D_ARGV_PARSE_CMD, &argres->gc);
+     if (nparms)
+     {
+         int i;
+         for (i = 0; i < nparms; ++i)
+         {
+-            argv_append(a, parms[i]);
++            argv_append(argres, parms[i]);
+         }
+     }
+     else
+     {
+-        argv_append(a, string_alloc(s, &a->gc));
++        argv_append(argres, string_alloc(cmdstr, &argres->gc));
+     }
+ }
 -- 
 2.17.1
 
