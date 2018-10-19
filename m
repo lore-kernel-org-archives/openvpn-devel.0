@@ -1,11 +1,7 @@
-MIME-Version: 1.0
-References: <1538652898-7028-1-git-send-email-lstipakov@...277...>
-In-Reply-To: <1538652898-7028-1-git-send-email-lstipakov@...277...>
-From: Selva Nair <selva.nair@...277...>
-Date: Thu, 18 Oct 2018 17:31:39 -0400
-Message-ID: <CAKuzo_i9p-8T1a8guoPmFj2OjvKO5mKC=8WUoFtxzpjayaANxw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Introduce openvpn_swprintf() with nul
- termination guarantee
+From: David Sommerseth <davids@...515...>
+Date: Fri, 19 Oct 2018 17:56:34 +0200
+Message-Id: <20181019155638.9498-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH 0/4] struct argv overhaul - round 2+x
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,235 +10,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Thu, Oct 4, 2018 at 7:39 AM Lev Stipakov <lstipakov@...277...> wrote:
->
-> From: Lev Stipakov <lev@...515...>
->
-> Every call to swprintf is followed by line which adds nul terminator. This patch
-> introduces openvpn_swprintf() which guarantees nul termination for size > 0.
->
-> Same approach as for snprintf / openvpn_snprintf.
+Since the hackathon a couple of weeks ago, I've picked up the work from
+Heiko Hund which does a big overhaul on the struct argv patches [0].
 
-Looks good and useful especially for the interactive service code.
-swprintf is rarely used in OpenVPN core (where strings are kept utf8
-as far as possible) but having the wrapper is good there too.
+This patchset is rebased on the latest master and with my review
+comments embedded into Heikos patch.  This was only relevant for the big
+'re-implement argv_printf_*()' patch.
 
-Some opinionated comments below
+In addition, I've added a separate documentation patch which adds doxygen
+comments to basically all functions in argv.c, trying to explain better
+what each of these functions does.  To make the comment flow better, I
+renamed a few variables and did minor refactoring changes on the coding
+style.
 
->
-> Signed-off-by: Lev Stipakov <lev@...515...>
-> ---
->  src/openvpn/buffer.c          | 17 +++++++++++++++++
->  src/openvpn/buffer.h          | 11 +++++++++++
->  src/openvpn/tun.c             |  3 +--
->  src/openvpnserv/common.c      | 15 +++++++++++++++
->  src/openvpnserv/interactive.c | 18 ++++++------------
->  src/openvpnserv/validate.c    |  3 +--
->  6 files changed, 51 insertions(+), 16 deletions(-)
->
-> diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
-> index 7630ff7..52747cd 100644
-> --- a/src/openvpn/buffer.c
-> +++ b/src/openvpn/buffer.c
-> @@ -37,6 +37,8 @@
->
->  #include "memdbg.h"
->
-> +#include <wchar.h>
-> +
->  size_t
->  array_mult_safe(const size_t m1, const size_t m2, const size_t extra)
->  {
-> @@ -308,6 +310,21 @@ openvpn_snprintf(char *str, size_t size, const char *format, ...)
->      return (len >= 0 && len < size);
->  }
->
-> +bool
-> +openvpn_swprintf(wchar_t *const str, const size_t size, const wchar_t *const format, ...)
 
-These const after *, and const on size serves little purpose and, IMO,
-makes the code
-hard to read. One has to mentally delete all but one to ensure that
-the important one
-(const whar_t *format) is in place. Same in common.c
+--
+kind regards,
 
-But it may be just me as I see such usages all over the code. And I
-recall feeling
-compelled to follow that style sometimes for consistency.. So, just saying :)
+David Sommerseth
+OpenVPN Inc
 
-> +{
-> +    va_list arglist;
-> +    int len = -1;
-> +    if (size > 0)
-> +    {
-> +        va_start(arglist, format);
-> +        len = vswprintf(str, size, format, arglist);
-> +        va_end(arglist);
-> +        str[size - 1] = L'\0';
-> +    }
-> +    return (len >= 0 && len < size);
-> +}
-> +
->  /*
->   * write a string to the end of a buffer that was
->   * truncated by buf_printf
-> diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
-> index cb9e9df..b1ee46d 100644
-> --- a/src/openvpn/buffer.h
-> +++ b/src/openvpn/buffer.h
-> @@ -448,6 +448,17 @@ __attribute__ ((format(__printf__, 3, 4)))
->  #endif
->  ;
->
-> +
-> +/*
-> + * Like swprintf but guarantees null termination for size > 0
-> + */
-> +bool
-> +openvpn_swprintf(wchar_t *const str, const size_t size, const wchar_t *const format, ...);
-> +/*
-> + * Unlike in openvpn_snprintf, we cannot use format attributes since
-> + * GCC doesn't support wprintf as archetype.
-> + */
-> +
->  /*
->   * remove/add trailing characters
->   */
-> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-> index 50f158c..c5ef37a 100644
-> --- a/src/openvpn/tun.c
-> +++ b/src/openvpn/tun.c
-> @@ -4480,8 +4480,7 @@ get_adapter_index_method_1(const char *guid)
->      DWORD index;
->      ULONG aindex;
->      wchar_t wbuf[256];
-> -    swprintf(wbuf, SIZE(wbuf), L"\\DEVICE\\TCPIP_%S", guid);
-> -    wbuf [SIZE(wbuf) - 1] = 0;
-> +    openvpn_swprintf(wbuf, SIZE(wbuf), L"\\DEVICE\\TCPIP_%S", guid);
->      if (GetAdapterIndex(wbuf, &aindex) != NO_ERROR)
->      {
->          index = TUN_ADAPTER_INDEX_INVALID;
-> diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
-> index dc47666..b47046f 100644
-> --- a/src/openvpnserv/common.c
-> +++ b/src/openvpnserv/common.c
-> @@ -56,6 +56,21 @@ openvpn_sntprintf(LPTSTR str, size_t size, LPCTSTR format, ...)
->      return len;
->  }
->
-> +BOOL
-> +openvpn_swprintf(wchar_t *const str, const size_t size, const wchar_t *const format, ...)
-> +{
-> +    va_list arglist;
-> +    int len = -1;
-> +    if (size > 0)
-> +    {
-> +        va_start(arglist, format);
-> +        len = vswprintf(str, size, format, arglist);
-> +        va_end(arglist);
-> +        str[size - 1] = L'\0';
-> +    }
-> +    return (len >= 0 && len < size);
-> +}
-> +
->  static DWORD
->  GetRegString(HKEY key, LPCTSTR value, LPTSTR data, DWORD size, LPCTSTR default_value)
->  {
-> diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-> index 9d459a6..bb2c411 100644
-> --- a/src/openvpnserv/interactive.c
-> +++ b/src/openvpnserv/interactive.c
-> @@ -276,8 +276,7 @@ ReturnProcessId(HANDLE pipe, DWORD pid, DWORD count, LPHANDLE events)
->       * Same format as error messages (3 line string) with error = 0 in
->       * 0x%08x format, PID on line 2 and a description "Process ID" on line 3
->       */
-> -    swprintf(buf, _countof(buf), L"0x%08x\n0x%08x\n%s", 0, pid, msg);
-> -    buf[_countof(buf) - 1] = '\0';
-> +    openvpn_swprintf(buf, _countof(buf), L"0x%08x\n0x%08x\n%s", 0, pid, msg);
->
->      WritePipeAsync(pipe, buf, (DWORD)(wcslen(buf) * 2), count, events);
->  }
-> @@ -402,9 +401,8 @@ ValidateOptions(HANDLE pipe, const WCHAR *workdir, const WCHAR *options)
->
->          if (!CheckOption(workdir, 2, argv_tmp, &settings))
->          {
-> -            swprintf(buf, _countof(buf), msg1, argv[0], workdir,
-> +            openvpn_swprintf(buf, _countof(buf), msg1, argv[0], workdir,
->                       settings.ovpn_admin_group);
-> -            buf[_countof(buf) - 1] = L'\0';
->              ReturnError(pipe, ERROR_STARTUP_DATA, buf, 1, &exit_event);
->          }
->          goto out;
-> @@ -421,16 +419,14 @@ ValidateOptions(HANDLE pipe, const WCHAR *workdir, const WCHAR *options)
->          {
->              if (wcscmp(L"--config", argv[i]) == 0 && argc-i > 1)
->              {
-> -                swprintf(buf, _countof(buf), msg1, argv[i+1], workdir,
-> +                openvpn_swprintf(buf, _countof(buf), msg1, argv[i+1], workdir,
->                           settings.ovpn_admin_group);
-> -                buf[_countof(buf) - 1] = L'\0';
->                  ReturnError(pipe, ERROR_STARTUP_DATA, buf, 1, &exit_event);
->              }
->              else
->              {
-> -                swprintf(buf, _countof(buf), msg2, argv[i],
-> +                openvpn_swprintf(buf, _countof(buf), msg2, argv[i],
->                           settings.ovpn_admin_group);
-> -                buf[_countof(buf) - 1] = L'\0';
->                  ReturnError(pipe, ERROR_STARTUP_DATA, buf, 1, &exit_event);
->              }
->              goto out;
-> @@ -954,8 +950,7 @@ RegisterDNS(LPVOID unused)
->
->      if (GetSystemDirectory(sys_path, MAX_PATH))
->      {
-> -        swprintf(ipcfg, MAX_PATH, L"%s\\%s", sys_path, L"ipconfig.exe");
-> -        ipcfg[MAX_PATH-1] = L'\0';
-> +        openvpn_swprintf(ipcfg, MAX_PATH, L"%s\\%s", sys_path, L"ipconfig.exe");
->      }
->
->      if (WaitForMultipleObjects(2, wait_handles, FALSE, timeout) == WAIT_OBJECT_0)
-> @@ -1594,9 +1589,8 @@ RunOpenvpn(LPVOID p)
->      else if (exit_code != 0)
->      {
->          WCHAR buf[256];
-> -        swprintf(buf, _countof(buf),
-> +        openvpn_swprintf(buf, _countof(buf),
->                   L"OpenVPN exited with error: exit code = %lu", exit_code);
-> -        buf[_countof(buf) - 1] =  L'\0';
->          ReturnError(pipe, ERROR_OPENVPN_STARTUP, buf, 1, &exit_event);
->      }
->      Undo(&undo_lists);
-> diff --git a/src/openvpnserv/validate.c b/src/openvpnserv/validate.c
-> index 91c6a2b..8d1855d 100644
-> --- a/src/openvpnserv/validate.c
-> +++ b/src/openvpnserv/validate.c
-> @@ -68,8 +68,7 @@ CheckConfigPath(const WCHAR *workdir, const WCHAR *fname, const settings_t *s)
->      /* convert fname to full path */
->      if (PathIsRelativeW(fname) )
->      {
-> -        swprintf(tmp, _countof(tmp), L"%s\\%s", workdir, fname);
-> -        tmp[_countof(tmp)-1] = L'\0';
-> +        openvpn_swprintf(tmp, _countof(tmp), L"%s\\%s", workdir, fname);
->          config_file = tmp;
->      }
->      else
 
-This wrapper was sorely missed in the service code.
+David Sommerseth (1):
+  Documented all the argv related code with minor refactoring
 
-Despite my moaning about the const overload, I want to ACK this.
-But the patch doesn't apply on top of master -- likely because of the
-commits that changed int to BOOL and refactored GetSystemDirectory
-in the service code.
+Heiko Hund (3):
+  re-implement argv_printf_*()
+  argv: do fewer memory re-allocations
+  Add gc_arena to struct argv to save allocations
 
-Could you please rebase and send again?
+ src/openvpn/argv.c                   | 525 +++++++++++++++++----------
+ src/openvpn/argv.h                   |   7 +-
+ src/openvpn/console_systemd.c        |   2 +-
+ src/openvpn/init.c                   |  15 +-
+ src/openvpn/lladdr.c                 |   2 +-
+ src/openvpn/multi.c                  |  10 +-
+ src/openvpn/options.c                |   2 +-
+ src/openvpn/plugin.c                 |   2 +-
+ src/openvpn/route.c                  |  16 +-
+ src/openvpn/socket.c                 |   4 +-
+ src/openvpn/ssl_verify.c             |   6 +-
+ src/openvpn/tun.c                    |  62 ++--
+ tests/unit_tests/openvpn/test_argv.c | 118 +++++-
+ 13 files changed, 496 insertions(+), 275 deletions(-)
 
-Thanks
+-- 
+2.17.1
+
 
