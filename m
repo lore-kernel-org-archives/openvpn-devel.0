@@ -1,11 +1,11 @@
 From: Steffan Karger <steffan.karger@...1435...>
-Date: Mon, 22 Oct 2018 13:45:10 +0200
-Message-ID: <1540208715-14044-1-git-send-email-steffan.karger@...1435...>
+Date: Mon, 22 Oct 2018 13:45:11 +0200
+Message-ID: <1540208715-14044-2-git-send-email-steffan.karger@...1435...>
 In-Reply-To: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
 References: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v7 2/7] tls-crypt-v2: add specification to
- doc/
+Subject: [Openvpn-devel] [PATCH v7 3/7] tls-crypt-v2: generate tls-crypt-v2
+ keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,217 +18,872 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is a preliminary description of tls-crypt-v2.  It should give a good
-impression about the reasoning and design behind tls-crypt-v2, but might
-need some polishing and updating.
+As a first step towards a full tls-crypt-v2 implementation, add
+functionality to generate tls-crypt-v2 client and server keys.
 
 Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
 v3: Include length in WKc
-v4: Clarify metadata handling
-v5: Typo fixes (thanks tincanteksup)
-v6: Change WKc length to ciphertext length (was plaintext), textual fixes
-v7: Textual fixes irt review
+v4: Fix option verification (use ce->tls_*, not options->ce.tls_*)
+v5: Rebase on patch set v5
+v6:
+  - Reword commit message
+  - Fix base64 length calculation
+  - Change WKc length to ciphertext length (instead of plaintext length)
+v7: fix cast style (no space between cast and variable)
 
- doc/tls-crypt-v2.txt | 189 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 189 insertions(+)
- create mode 100644 doc/tls-crypt-v2.txt
+ doc/openvpn.8           |  51 +++++++++
+ src/openvpn/base64.h    |   4 +
+ src/openvpn/init.c      |  33 +++++-
+ src/openvpn/integer.h   |  10 ++
+ src/openvpn/options.c   |  69 +++++++++++-
+ src/openvpn/options.h   |  14 +++
+ src/openvpn/tls_crypt.c | 290 ++++++++++++++++++++++++++++++++++++++++++++++++
+ src/openvpn/tls_crypt.h |  83 ++++++++++++--
+ tests/t_lpback.sh       |  40 ++++++-
+ 9 files changed, 574 insertions(+), 20 deletions(-)
 
-diff --git a/doc/tls-crypt-v2.txt b/doc/tls-crypt-v2.txt
-new file mode 100644
-index 0000000..582a2b8
---- /dev/null
-+++ b/doc/tls-crypt-v2.txt
-@@ -0,0 +1,189 @@
-+Client-specific tls-crypt keys (--tls-crypt-v2)
-+===============================================
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 5f8569b..56a71c9 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -5262,6 +5262,57 @@ degrading to the same security as using
+ That is, the control channel still benefits from the extra protection against
+ active man\-in\-the\-middle\-attacks and DoS attacks, but may no longer offer
+ extra privacy and post\-quantum security on top of what TLS itself offers.
 +
-+This document describes the ``--tls-crypt-v2`` option, which enables OpenVPN
-+to use client-specific ``--tls-crypt`` keys.
++For large setups or setups where clients are not trusted, consider using
++.B \-\-tls\-crypt\-v2
++instead.  That uses per\-client unique keys, and thereby improves the bounds to
++\fR'rotate a client key at least once per 8000 years'.
++.\"*********************************************************
++.TP
++.B \-\-tls\-crypt\-v2 keyfile
 +
-+Rationale
-+---------
++Use client\-specific tls\-crypt keys.
 +
-+``--tls-auth`` and ``tls-crypt`` use a pre-shared group key, which is shared
-+among all clients and servers in an OpenVPN deployment.  If any client or
-+server is compromised, the attacker will have access to this shared key, and it
-+will no longer provide any security.  To reduce the risk of losing pre-shared
-+keys, ``tls-crypt-v2`` adds the ability to supply each client with a unique
-+tls-crypt key.  This allows large organisations and VPN providers to profit
-+from the same DoS and TLS stack protection that small deployments can already
-+achieve using ``tls-auth`` or ``tls-crypt``.
++For clients,
++.B keyfile
++is a client\-specific tls\-crypt key.  Such a key can be generated using the
++.B \-\-tls\-crypt\-v2\-genkey
++option.
 +
-+Also, for ``tls-crypt``, even if all these peers succeed in keeping the key
-+secret, the key lifetime is limited to roughly 8000 years, divided by the
-+number of clients (see the ``--tls-crypt`` section of the man page).  Using
-+client-specific keys, we lift this lifetime requirement to roughly 8000 years
-+for each client key (which "Should Be Enough For Everybody (tm)").
++For servers,
++.B keyfile
++is used to unwrap client\-specific keys supplied by the client during connection
++setup.  This key must be the same as the key used to generate the
++client\-specific key (see
++.B \-\-tls\-crypt\-v2\-genkey\fR).
 +
++On servers, this option can be used together with the
++.B \-\-tls\-auth
++or
++.B \-\-tls\-crypt
++option.  In that case, the server will detect whether the client is using
++client\-specific keys, and automatically select the right mode.
++.\"*********************************************************
++.TP
++.B \-\-tls\-crypt\-v2\-genkey client|server keyfile [metadata]
 +
-+Introduction
-+------------
-+
-+``tls-crypt-v2`` uses an encrypted cookie mechanism to introduce
-+client-specific tls-crypt keys without introducing a lot of server-side state.
-+The client-specific key is encrypted using a server key.  The server key is the
-+same for all servers in a group.  When a client connects, it first sends the
-+encrypted key to the server, such that the server can decrypt the key and all
-+messages can thereafter be encrypted using the client-specific key.
-+
-+A wrapped (encrypted and authenticated) client-specific key can also contain
-+metadata.  The metadata is wrapped together with the key, and can be used to
-+allow servers to identify clients and/or key validity.  This allows the server
-+to abort the connection immediately after receiving the first packet, rather
-+than performing an entire TLS handshake.  Aborting the connection this early
-+greatly improves the DoS resilience and reduces attack service against
-+malicious clients that have the ``tls-crypt`` or ``tls-auth`` key.  This is
-+particularly relevant for large deployments (think lost key or disgruntled
-+employee) and VPN providers (clients are not trusted).
-+
-+To allow for a smooth transition, ``tls-crypt-v2`` is designed such that a
-+server can enable both ``tls-crypt-v2`` and either ``tls-crypt`` or
-+``tls-auth``.  This is achieved by introducing a P_CONTROL_HARD_RESET_CLIENT_V3
-+opcode, that indicates that the client wants to use ``tls-crypt-v2`` for the
-+current connection.
-+
-+For an exact specification and more details, read the Implementation section.
++If the first parameter equals "server", generate a \-\-tls\-crypt\-v2 server
++key and store the key in
++.B keyfile\fR.
 +
 +
-+Implementation
-+--------------
++If the first parameter equals "client", generate a \-\-tls\-crypt\-v2 client
++key, and store the key in
++.B keyfile\fR.
 +
-+When setting up a tls-crypt-v2 group (similar to generating a tls-crypt or
-+tls-auth key previously):
++If supplied, include the supplied
++.B metadata
++in the wrapped client key.  This metadata must be supplied in base64\-encoded
++form.  The metadata must be at most 735 bytes long (980 bytes in base64).
 +
-+1. Generate a tls-crypt-v2 server key using OpenVPN's ``--genkey``.  This key
-+   contains 2 512-bit keys, of which we use:
++.B TODO
++Metadata handling is not yet implemented.  This text will be updated by the
++commit that introduces metadata handling.
+ .\"*********************************************************
+ .TP
+ .B \-\-askpass [file]
+diff --git a/src/openvpn/base64.h b/src/openvpn/base64.h
+index 5679bc9..f49860f 100644
+--- a/src/openvpn/base64.h
++++ b/src/openvpn/base64.h
+@@ -34,6 +34,10 @@
+ #ifndef _BASE64_H_
+ #define _BASE64_H_
+ 
++/** Compute resulting base64 length.  6 bits per byte, padded to 4 bytes. */
++#define OPENVPN_BASE64_LENGTH(binary_length) \
++    ((((8 * binary_length) / 6) + 3) & ~3)
 +
-+   * the first 256 bits of key 1 as AES-256-CTR encryption key ``Ke``
-+   * the first 256 bits of key 2 as HMAC-SHA-256 authentication key ``Ka``
+ int openvpn_base64_encode(const void *data, int size, char **str);
+ 
+ int openvpn_base64_decode(const char *str, void *data, int size);
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index e5e6e85..73153dc 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1052,6 +1052,11 @@ print_openssl_info(const struct options *options)
+ bool
+ do_genkey(const struct options *options)
+ {
++    /* should we disable paging? */
++    if (options->mlock && (options->genkey || options->tls_crypt_v2_genkey_file))
++    {
++        platform_mlockall(true);
++    }
+     if (options->genkey)
+     {
+         int nbits_written;
+@@ -1059,11 +1064,6 @@ do_genkey(const struct options *options)
+         notnull(options->shared_secret_file,
+                 "shared secret output file (--secret)");
+ 
+-        if (options->mlock)     /* should we disable paging? */
+-        {
+-            platform_mlockall(true);
+-        }
+-
+         nbits_written = write_key_file(2, options->shared_secret_file);
+         if (nbits_written < 0)
+         {
+@@ -1075,6 +1075,29 @@ do_genkey(const struct options *options)
+             options->shared_secret_file);
+         return true;
+     }
++    if (options->tls_crypt_v2_genkey_type)
++    {
++        if(!strcmp(options->tls_crypt_v2_genkey_type, "server"))
++        {
++            tls_crypt_v2_write_server_key_file(options->tls_crypt_v2_genkey_file);
++            return true;
++        }
++        if (options->tls_crypt_v2_genkey_type
++                 && !strcmp(options->tls_crypt_v2_genkey_type, "client"))
++        {
++            if (!options->tls_crypt_v2_file)
++            {
++                msg(M_USAGE, "--tls-crypt-v2-gen-client-key requires a server key to be set via --tls-crypt-v2");
++            }
 +
-+   This fomat is similar to the format for regular ``tls-crypt``/``tls-auth``
-+   and data channel keys, which allows us to reuse code.
++            tls_crypt_v2_write_client_key_file(options->tls_crypt_v2_genkey_file,
++                    options->tls_crypt_v2_metadata, options->tls_crypt_v2_file,
++                    options->tls_crypt_v2_inline);
++            return true;
++        }
 +
-+2. Add the tls-crypt-v2 server key to all server configs
-+   (``tls-crypt-v2 /path/to/server.key``)
++        msg(M_USAGE, "--tls-crypt-v2-genkey type should be \"client\" or \"server\"");
++    }
+     return false;
+ }
+ 
+diff --git a/src/openvpn/integer.h b/src/openvpn/integer.h
+index a7e19d3..b1ae0ed 100644
+--- a/src/openvpn/integer.h
++++ b/src/openvpn/integer.h
+@@ -26,6 +26,16 @@
+ 
+ #include "error.h"
+ 
++#ifndef htonll
++#define htonll(x) ((1==htonl(1)) ? (x) : \
++                  ((uint64_t)htonl((x) & 0xFFFFFFFF) << 32) | htonl((x) >> 32))
++#endif
 +
++#ifndef ntohll
++#define ntohll(x) ((1==ntohl(1)) ? (x) : \
++                  ((uint64_t)ntohl((x) & 0xFFFFFFFF) << 32) | ntohl((x) >> 32))
++#endif
 +
-+When provisioning a client, create a client-specific tls-crypt key:
+ /*
+  * min/max functions
+  */
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 5c669e9..dfe5e6e 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -622,6 +622,13 @@ static const char usage_message[] =
+     "                  attacks on the TLS stack and DoS attacks.\n"
+     "                  key (required) provides the pre-shared key file.\n"
+     "                  see --secret option for more info.\n"
++    "--tls-crypt-v2 key : For clients: use key as a client-specific tls-crypt key.\n"
++    "                  For servers: use key to decrypt client-specific keys.  For\n"
++    "                  key generation (--tls-crypt-v2-genkey): use key to\n"
++    "                  encrypt generated client-specific key.  (See --tls-crypt.)\n"
++    "--tls-crypt-v2-genkey client|server keyfile [base64 metadata]: Generate a\n"
++    "                  fresh tls-crypt-v2 client or server key, and store to\n"
++    "                  keyfile.  If supplied, include metadata in wrapped key.\n"
+     "--askpass [file]: Get PEM password from controlling tty before we daemonize.\n"
+     "--auth-nocache  : Don't cache --askpass or --auth-user-pass passwords.\n"
+     "--crl-verify crl ['dir']: Check peer certificate against a CRL.\n"
+@@ -1449,6 +1456,7 @@ show_connection_entry(const struct connection_entry *o)
+     SHOW_PARM(key_direction, keydirection2ascii(o->key_direction, false, true),
+               "%s");
+     SHOW_STR(tls_crypt_file);
++    SHOW_STR(tls_crypt_v2_file);
+ }
+ 
+ 
+@@ -1730,6 +1738,10 @@ show_settings(const struct options *o)
+     SHOW_BOOL(push_peer_info);
+     SHOW_BOOL(tls_exit);
+ 
++    SHOW_STR(tls_crypt_v2_genkey_type);
++    SHOW_STR(tls_crypt_v2_genkey_file);
++    SHOW_STR(tls_crypt_v2_metadata);
 +
-+1. Generate 2048 bits client-specific key ``Kc``
+ #ifdef ENABLE_PKCS11
+     {
+         int i;
+@@ -2668,6 +2680,15 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
+         {
+             msg(M_USAGE, "--tls-auth and --tls-crypt are mutually exclusive");
+         }
++        if (options->tls_client && ce->tls_crypt_v2_file
++            && (ce->tls_auth_file || ce->tls_crypt_file))
++        {
++            msg(M_USAGE, "--tls-crypt-v2, --tls-auth and --tls-crypt are mutually exclusive in client mode");
++        }
++        if (options->genkey && options->tls_crypt_v2_genkey_type)
++        {
++            msg(M_USAGE, "--genkey and --tls-crypt-v2-genkey are mutually exclusive");
++        }
+     }
+     else
+     {
+@@ -2703,6 +2724,7 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
+         MUST_BE_UNDEF(transition_window);
+         MUST_BE_UNDEF(tls_auth_file);
+         MUST_BE_UNDEF(tls_crypt_file);
++        MUST_BE_UNDEF(tls_crypt_v2_file);
+         MUST_BE_UNDEF(single_session);
+         MUST_BE_UNDEF(push_peer_info);
+         MUST_BE_UNDEF(tls_exit);
+@@ -2812,12 +2834,12 @@ options_postprocess_mutate_ce(struct options *o, struct connection_entry *ce)
+     }
+ 
+     /*
+-     * Set per-connection block tls-auth/crypt fields if undefined.
++     * Set per-connection block tls-auth/crypt/crypto-v2 fields if undefined.
+      *
+-     * At the end only one of the two will be really set because the parser
+-     * logic prevents configurations where both are set.
++     * At the end only one of these will be really set because the parser
++     * logic prevents configurations where more are set.
+      */
+-    if (!ce->tls_auth_file && !ce->tls_crypt_file)
++    if (!ce->tls_auth_file && !ce->tls_crypt_file && !ce->tls_crypt_v2_file)
+     {
+         ce->tls_auth_file = o->tls_auth_file;
+         ce->tls_auth_file_inline = o->tls_auth_file_inline;
+@@ -2825,6 +2847,9 @@ options_postprocess_mutate_ce(struct options *o, struct connection_entry *ce)
+ 
+         ce->tls_crypt_file = o->tls_crypt_file;
+         ce->tls_crypt_inline = o->tls_crypt_inline;
 +
-+2. Optionally generate metadata
++        ce->tls_crypt_v2_file = o->tls_crypt_v2_file;
++        ce->tls_crypt_v2_inline = o->tls_crypt_v2_inline;
+     }
+ 
+     /* pre-cache tls-auth/crypt key file if persist-key was specified and keys
+@@ -3281,9 +3306,15 @@ options_postprocess_filechecks(struct options *options)
+         errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
+                                   ce->tls_crypt_file, R_OK, "--tls-crypt");
+ 
++        errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
++                                  ce->tls_crypt_v2_file, R_OK,
++                                  "--tls-crypt-v2");
+     }
+ 
+     errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
++                              options->tls_crypt_v2_genkey_file, R_OK,
++                              "--tls-crypt-v2-genkey");
++    errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
+                               options->shared_secret_file, R_OK, "--secret");
+ 
+     errs |= check_file_access(CHKACC_DIRPATH|CHKACC_FILEXSTWR,
+@@ -8070,6 +8101,36 @@ add_option(struct options *options,
+ 
+         }
+     }
++    else if (streq(p[0], "tls-crypt-v2") && p[1] && !p[3])
++    {
++        VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);
++        if (permission_mask & OPT_P_GENERAL)
++        {
++            if (streq(p[1], INLINE_FILE_TAG) && p[2])
++            {
++                options->tls_crypt_v2_inline = p[2];
++            }
++            options->tls_crypt_v2_file = p[1];
++        }
++        else if (permission_mask & OPT_P_CONNECTION)
++        {
++            if (streq(p[1], INLINE_FILE_TAG) && p[2])
++            {
++                options->ce.tls_crypt_v2_inline = p[2];
++            }
++            options->ce.tls_crypt_v2_file = p[1];
++        }
++    }
++    else if (streq(p[0], "tls-crypt-v2-genkey") && p[2] && !p[4])
++    {
++        VERIFY_PERMISSION(OPT_P_GENERAL);
++        options->tls_crypt_v2_genkey_type = p[1];
++        options->tls_crypt_v2_genkey_file = p[2];
++        if (p[3])
++        {
++            options->tls_crypt_v2_metadata = p[3];
++        }
++    }
+     else if (streq(p[0], "key-method") && p[1] && !p[2])
+     {
+         int key_method;
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 8f49a96..bc180ca 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -139,6 +139,11 @@ struct connection_entry
+     /* Shared secret used for TLS control channel authenticated encryption */
+     const char *tls_crypt_file;
+     const char *tls_crypt_inline;
 +
-+   The first byte of the metadata determines the type.  The initial
-+   implementation supports the following types:
++    /* Client-specific secret or server key used for TLS control channel
++     * authenticated encryption v2 */
++    const char *tls_crypt_v2_file;
++    const char *tls_crypt_v2_inline;
+ };
+ 
+ struct remote_entry
+@@ -577,6 +582,15 @@ struct options
+     const char *tls_crypt_file;
+     const char *tls_crypt_inline;
+ 
++    /* Client-specific secret or server key used for TLS control channel
++     * authenticated encryption v2 */
++    const char *tls_crypt_v2_file;
++    const char *tls_crypt_v2_inline;
 +
-+   0x00 (USER):         User-defined free-form data.
-+   0x01 (TIMESTAMP):    64-bit network order unix timestamp of key generation.
++    const char *tls_crypt_v2_genkey_type;
++    const char *tls_crypt_v2_genkey_file;
++    const char *tls_crypt_v2_metadata;
 +
-+   The timestamp can be used to reject too-old tls-crypt-v2 client keys.
+     /* Allow only one session */
+     bool single_session;
+ 
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index 36ead84..7657df6 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -29,11 +29,21 @@
+ 
+ #include "syshead.h"
+ 
++#include "base64.h"
+ #include "crypto.h"
++#include "platform.h"
+ #include "session_id.h"
+ 
+ #include "tls_crypt.h"
+ 
++const char *tls_crypt_v2_cli_pem_name = "OpenVPN tls-crypt-v2 client key";
++const char *tls_crypt_v2_srv_pem_name = "OpenVPN tls-crypt-v2 server key";
 +
-+   User metadata could for example contain the users certificate serial, such
-+   that the incoming connection can be verified against a CRL.
++/** Metadata contains user-specified data */
++static const uint8_t TLS_CRYPT_METADATA_TYPE_USER           = 0x00;
++/** Metadata contains a 64-bit unix timestamp in network byte order */
++static const uint8_t TLS_CRYPT_METADATA_TYPE_TIMESTAMP      = 0x01;
 +
-+   If no metadata is supplied during key generation, openvpn defaults to the
-+   TIMESTAMP metadata type.
+ static struct key_type
+ tls_crypt_kt(void)
+ {
+@@ -264,3 +274,283 @@ error_exit:
+     gc_free(&gc);
+     return false;
+ }
 +
-+3. Create a wrapped client key ``WKc``, using the same nonce-misuse-resistant
-+   SIV construction we use for tls-crypt:
++static inline bool
++tls_crypt_v2_read_keyfile(struct buffer *key, const char *pem_name,
++                          const char *key_file, const char *key_inline)
++{
++    bool ret = false;
++    struct buffer key_pem = { 0 };
++    struct gc_arena gc = gc_new();
 +
-+   ``len = len(WKc)`` (16 bit, network byte order)
++    if (strcmp(key_file, INLINE_FILE_TAG))
++    {
++        key_pem = buffer_read_from_file(key_file, &gc);
++        if (!buf_valid(&key_pem))
++        {
++            msg(M_WARN, "ERROR: failed to read tls-crypt-v2 key file (%s)",
++                key_file);
++            goto cleanup;
++        }
++    }
++    else
++    {
++        buf_set_read(&key_pem, (const void *)key_inline, strlen(key_inline));
++    }
 +
-+   ``T = HMAC-SHA256(Ka, len || Kc || metadata)``
++    if (!crypto_pem_decode(pem_name, key, &key_pem))
++    {
++        msg(M_WARN, "ERROR: tls-crypt-v2 pem decode failed");
++        goto cleanup;
++    }
 +
-+   ``IV = 128 most significant bits of T``
++    ret = true;
++cleanup:
++    if (strcmp(key_file, INLINE_FILE_TAG))
++    {
++        buf_clear(&key_pem);
++    }
++    gc_free(&gc);
++    return ret;
++}
 +
-+   ``WKc = T || AES-256-CTR(Ke, IV, Kc || metadata) || len``
++static inline void
++tls_crypt_v2_load_client_key(struct key_ctx_bi *key, const struct key2 *key2,
++                             bool tls_server)
++{
++    const int key_direction = tls_server ?
++                              KEY_DIRECTION_NORMAL : KEY_DIRECTION_INVERSE;
++    struct key_type kt = tls_crypt_kt();
++    if (!kt.cipher || !kt.digest)
++    {
++        msg(M_FATAL, "ERROR: --tls-crypt-v2 not supported");
++    }
++    init_key_ctx_bi(key, key2, key_direction, &kt,
++                    "Control Channel Encryption");
++}
 +
-+   Note that the length of ``WKc`` can be computed before composing ``WKc``,
-+   because the length of each component is known (and AES-256-CTR does not add
-+   any padding).
++void
++tls_crypt_v2_init_client_key(struct key_ctx_bi *key, struct buffer *wkc_buf,
++                             const char *key_file, const char *key_inline)
++{
++    struct buffer client_key = alloc_buf(TLS_CRYPT_V2_CLIENT_KEY_LEN
++                                         + TLS_CRYPT_V2_MAX_WKC_LEN);
 +
-+4. Create a tls-crypt-v2 client key: PEM-encode ``Kc || WKc`` and store in a
-+   file, using the header ``-----BEGIN OpenVPN tls-crypt-v2 client key-----``
-+   and the footer ``-----END OpenVPN tls-crypt-v2 client key-----``.  (The PEM
-+   format is simple, and following PEM allows us to use the crypto lib function
-+   for en/decoding.)
++    if (!tls_crypt_v2_read_keyfile(&client_key, tls_crypt_v2_cli_pem_name,
++                                   key_file, key_inline))
++    {
++        msg(M_FATAL, "ERROR: invalid tls-crypt-v2 client key format");
++    }
 +
-+5. Add the tls-crypt-v2 client key to the client config
-+   (``tls-crypt-v2 /path/to/client-specific.key``)
++    struct key2 key2;
++    if (!buf_read(&client_key, &key2.keys, sizeof(key2.keys)))
++    {
++        msg(M_FATAL, "ERROR: not enough data in tls-crypt-v2 client key");
++    }
 +
++    tls_crypt_v2_load_client_key(key, &key2, false);
++    secure_memzero(&key2, sizeof(key2));
 +
-+When setting up the openvpn connection:
++    *wkc_buf = client_key;
++}
 +
-+1. The client reads the tls-crypt-v2 key from its config, and:
++void
++tls_crypt_v2_init_server_key(struct key_ctx *key_ctx, bool encrypt,
++                             const char *key_file, const char *key_inline)
++{
++    struct key srv_key;
++    struct buffer srv_key_buf;
 +
-+   1. loads ``Kc`` as its tls-crypt key,
-+   2. stores ``WKc`` in memory for sending to the server.
++    buf_set_write(&srv_key_buf, (void *)&srv_key, sizeof(srv_key));
++    if (!tls_crypt_v2_read_keyfile(&srv_key_buf, tls_crypt_v2_srv_pem_name,
++                                   key_file, key_inline))
++    {
++        msg(M_FATAL, "ERROR: invalid tls-crypt-v2 server key format");
++    }
 +
-+2. To start the connection, the client creates a P_CONTROL_HARD_RESET_CLIENT_V3
-+   message, wraps it with tls-crypt using ``Kc`` as the key, and appends
-+   ``WKc``.  (``WKc`` must not be encrypted, to prevent a chicken-and-egg
-+   problem.)
++    struct key_type kt = tls_crypt_kt();
++    if (!kt.cipher || !kt.digest)
++    {
++        msg(M_FATAL, "ERROR: --tls-crypt-v2 not supported");
++    }
++    init_key_ctx(key_ctx, &srv_key, &kt, encrypt, "tls-crypt-v2 server key");
++    secure_memzero(&srv_key, sizeof(srv_key));
++}
 +
-+3. The server receives the P_CONTROL_HARD_RESET_CLIENT_V3 message, and
++static bool
++tls_crypt_v2_wrap_client_key(struct buffer *wkc,
++                             const struct key2 *src_key,
++                             const struct buffer *src_metadata,
++                             struct key_ctx *server_key, struct gc_arena *gc)
++{
++    cipher_ctx_t *cipher_ctx = server_key->cipher;
++    struct buffer work = alloc_buf_gc(TLS_CRYPT_V2_MAX_WKC_LEN
++                                      + cipher_ctx_block_size(cipher_ctx), gc);
 +
-+   1. reads the WKc length field from the end of the message, and extracts WKc
-+      from the message
-+   2. unwraps ``WKc``
-+   3. uses unwrapped ``Kc`` to verify the remaining
-+      P_CONTROL_HARD_RESET_CLIENT_V3 message's (encryption and) authentication.
++    /* Calculate auth tag and synthetic IV */
++    uint8_t *tag = buf_write_alloc(&work, TLS_CRYPT_TAG_SIZE);
++    if (!tag)
++    {
++        msg(M_WARN, "ERROR: could not write tag");
++        return false;
++    }
++    uint16_t net_len = htons(sizeof(src_key->keys) + BLEN(src_metadata)
++                             + TLS_CRYPT_V2_TAG_SIZE + sizeof(uint16_t));
++    hmac_ctx_t *hmac_ctx = server_key->hmac;
++    hmac_ctx_reset(hmac_ctx);
++    hmac_ctx_update(hmac_ctx, (void *)&net_len, sizeof(net_len));
++    hmac_ctx_update(hmac_ctx, (void *)src_key->keys, sizeof(src_key->keys));
++    hmac_ctx_update(hmac_ctx, BPTR(src_metadata), BLEN(src_metadata));
++    hmac_ctx_final(hmac_ctx, tag);
 +
-+   The message is dropped and no error response is sent when either 3.1, 3.2 or
-+   3.3 fails (DoS protection).
++    dmsg(D_CRYPTO_DEBUG, "TLS-CRYPT WRAP TAG: %s",
++         format_hex(tag, TLS_CRYPT_TAG_SIZE, 0, gc));
 +
-+4. Server optionally checks metadata using a --tls-crypt-v2-verify script
++    /* Use the 128 most significant bits of the tag as IV */
++    ASSERT(cipher_ctx_reset(cipher_ctx, tag));
 +
-+   This allows early abort of connection, *before* we expose any of the
-+   notoriously dangerous TLS, X.509 and ASN.1 parsers and thereby reduces the
-+   attack surface of the server.
++    /* Overflow check (OpenSSL requires an extra block in the dst buffer) */
++    if (buf_forward_capacity(&work) < (sizeof(src_key->keys)
++                                       + BLEN(src_metadata)
++                                       + sizeof(net_len)
++                                       + cipher_ctx_block_size(cipher_ctx)))
++    {
++        msg(M_WARN, "ERROR: could not crypt: insufficient space in dst");
++        return false;
++    }
 +
-+   The metadata is checked *after* the OpenVPN three-way handshake has
-+   completed, to prevent DoS attacks.  (That is, once the client has proved to
-+   the server that it possesses Kc, by authenticating a packet that contains the
-+   session ID picked by the server.)
++    /* Encrypt */
++    int outlen = 0;
++    ASSERT(cipher_ctx_update(cipher_ctx, BEND(&work), &outlen,
++                             (void *)src_key->keys, sizeof(src_key->keys)));
++    ASSERT(buf_inc_len(&work, outlen));
++    ASSERT(cipher_ctx_update(cipher_ctx, BEND(&work), &outlen,
++                             BPTR(src_metadata), BLEN(src_metadata)));
++    ASSERT(buf_inc_len(&work, outlen));
++    ASSERT(cipher_ctx_final(cipher_ctx, BEND(&work), &outlen));
++    ASSERT(buf_inc_len(&work, outlen));
++    ASSERT(buf_write(&work, &net_len, sizeof(net_len)));
 +
-+   A server should not send back any error messages if metadata verification
-+   fails, to reduce attack surface and maximize DoS resilience.
++    return buf_copy(wkc, &work);
++}
 +
-+6. Client and server use ``Kc`` for (un)wrapping any following control channel
-+   messages.
++void
++tls_crypt_v2_write_server_key_file(const char *filename)
++{
++    struct gc_arena gc = gc_new();
++    struct key server_key = { 0 };
++    struct buffer server_key_buf = clear_buf();
++    struct buffer server_key_pem = clear_buf();
 +
++    if (!rand_bytes((void *)&server_key, sizeof(server_key)))
++    {
++        msg(M_NONFATAL, "ERROR: could not generate random key");
++        goto cleanup;
++    }
++    buf_set_read(&server_key_buf, (void *)&server_key, sizeof(server_key));
++    if (!crypto_pem_encode(tls_crypt_v2_srv_pem_name, &server_key_pem,
++                           &server_key_buf, &gc))
++    {
++        msg(M_WARN, "ERROR: could not PEM-encode server key");
++        goto cleanup;
++    }
 +
-+Considerations
-+--------------
++    if (!buffer_write_file(filename, &server_key_pem))
++    {
++        msg(M_ERR, "ERROR: could not write server key file");
++        goto cleanup;
++    }
 +
-+To allow for a smooth transition, the server implementation allows
-+``tls-crypt`` or ``tls-auth`` to be used simultaneously with ``tls-crypt-v2``.
-+This specification does not allow simultaneously using ``tls-crypt-v2`` and
-+connections without any control channel wrapping, because that would break DoS
-+resilience.
++cleanup:
++    secure_memzero(&server_key, sizeof(server_key));
++    buf_clear(&server_key_pem);
++    gc_free(&gc);
++    return;
++}
 +
-+WKc includes a length field, so we leave the option for future extension of the
-+P_CONTROL_HEAD_RESET_CLIENT_V3 message open.  (E.g. add payload to the reset to
-+indicate low-level protocol features.)
++void
++tls_crypt_v2_write_client_key_file(const char *filename,
++                                   const char *b64_metadata,
++                                   const char *server_key_file,
++                                   const char *server_key_inline)
++{
++    struct gc_arena gc = gc_new();
++    struct key_ctx server_key = { 0 };
++    struct buffer client_key_pem = { 0 };
++    struct buffer dst = alloc_buf_gc(TLS_CRYPT_V2_CLIENT_KEY_LEN
++                                     + TLS_CRYPT_V2_MAX_WKC_LEN, &gc);
++    struct key2 client_key = { 2 };
 +
-+``tls-crypt-v2`` uses fixed crypto algorithms, because:
++    if (!rand_bytes((void *)client_key.keys, sizeof(client_key.keys)))
++    {
++        msg(M_FATAL, "ERROR: could not generate random key");
++        goto cleanup;
++    }
++    ASSERT(buf_write(&dst, client_key.keys, sizeof(client_key.keys)));
 +
-+ * The crypto is used before we can do any negotiation, so the algorithms have
-+   to be predefined.
-+ * The crypto primitives are chosen conservatively, making problems with these
-+   primitives unlikely.
-+ * Making anything configurable adds complexity, both in implementation and
-+   usage.  We should not add any more complexity than is absolutely necessary.
++    struct buffer metadata = alloc_buf_gc(TLS_CRYPT_V2_MAX_METADATA_LEN, &gc);
++    if (b64_metadata)
++    {
++        if (TLS_CRYPT_V2_MAX_B64_METADATA_LEN < strlen(b64_metadata))
++        {
++            msg(M_FATAL,
++                "ERROR: metadata too long (%d bytes, max %u bytes)",
++                (int)strlen(b64_metadata), TLS_CRYPT_V2_MAX_B64_METADATA_LEN);
++        }
++        ASSERT(buf_write(&metadata, &TLS_CRYPT_METADATA_TYPE_USER, 1));
++        int decoded_len = openvpn_base64_decode(b64_metadata, BPTR(&metadata),
++                                                BCAP(&metadata));
++        if (decoded_len < 0)
++        {
++            msg(M_FATAL, "ERROR: failed to base64 decode provided metadata");
++            goto cleanup;
++        }
++        ASSERT(buf_inc_len(&metadata, decoded_len));
++    }
++    else
++    {
++        int64_t timestamp = htonll(now);
++        ASSERT(buf_write(&metadata, &TLS_CRYPT_METADATA_TYPE_TIMESTAMP, 1));
++        ASSERT(buf_write(&metadata, &timestamp, sizeof(timestamp)));
++    }
 +
-+Potential ``tls-crypt-v2`` risks:
++    tls_crypt_v2_init_server_key(&server_key, true, server_key_file,
++                                 server_key_inline);
++    if (!tls_crypt_v2_wrap_client_key(&dst, &client_key, &metadata, &server_key,
++                                      &gc))
++    {
++        msg(M_FATAL, "ERROR: could not wrap generated client key");
++        goto cleanup;
++    }
 +
-+ * Slightly more work on first connection (``WKc`` unwrap + hard reset unwrap)
-+   than with ``tls-crypt`` (hard reset unwrap) or ``tls-auth`` (hard reset auth).
-+ * Flexible metadata allow mistakes
-+   (So we should make it easy to do it right.  Provide tooling to create client
-+   keys based on cert serial + CA fingerprint, provide script that uses CRL (if
-+   available) to drop revoked keys.)
++    /* PEM-encode Kc || WKc */
++    if (!crypto_pem_encode(tls_crypt_v2_cli_pem_name, &client_key_pem, &dst,
++                           &gc))
++    {
++        msg(M_FATAL, "ERROR: could not PEM-encode client key");
++        goto cleanup;
++    }
++
++    if (!buffer_write_file(filename, &client_key_pem))
++    {
++        msg(M_FATAL, "ERROR: could not write client key file");
++        goto cleanup;
++    }
++
++    /* Sanity check: load client key (as "client") */
++    struct key_ctx_bi test_client_key;
++    struct buffer test_wrapped_client_key;
++    msg(D_GENKEY, "Testing client-side key loading...");
++    tls_crypt_v2_init_client_key(&test_client_key, &test_wrapped_client_key,
++                                 filename, NULL);
++    free_key_ctx_bi(&test_client_key);
++    free_buf(&test_wrapped_client_key);
++
++cleanup:
++    secure_memzero(&client_key, sizeof(client_key));
++    free_key_ctx(&server_key);
++    buf_clear(&client_key_pem);
++    buf_clear(&dst);
++
++    gc_free(&gc);
++}
+diff --git a/src/openvpn/tls_crypt.h b/src/openvpn/tls_crypt.h
+index 067758c..f888c79 100644
+--- a/src/openvpn/tls_crypt.h
++++ b/src/openvpn/tls_crypt.h
+@@ -22,15 +22,13 @@
+  */
+ 
+ /**
+- * @defgroup tls_crypt Control channel encryption (--tls-crypt)
++ * @defgroup tls_crypt Control channel encryption (--tls-crypt, --tls-crypt-v2)
+  * @ingroup control_tls
+  * @{
+  *
+- * @par
+  * Control channel encryption uses a pre-shared static key (like the --tls-auth
+  * key) to encrypt control channel packets.
+  *
+- * @par
+  * Encrypting control channel packets has three main advantages:
+  *  - It provides more privacy by hiding the certificate used for the TLS
+  *    connection.
+@@ -38,11 +36,20 @@
+  *  - It provides "poor-man's" post-quantum security, against attackers who
+  *    will never know the pre-shared key (i.e. no forward secrecy).
+  *
+- * @par Specification
++ * --tls-crypt uses a tls-auth-style group key, where all servers and clients
++ * share the same group key. --tls-crypt-v2 adds support for client-specific
++ * keys, where all servers share the same client-key encryption key, and each
++ * clients receives a unique client key, both in plaintext and in encrypted
++ * form.  When connecting to a server, the client sends the encrypted key to
++ * the server in the first packet (P_CONTROL_HARD_RESET_CLIENT_V3). The server
++ * then decrypts that key, and both parties can use the same client-specific
++ * key for tls-crypt packets. See doc/tls-crypt-v2.txt for more details.
++ *
++ * @par On-the-wire tls-crypt packet specification
++ * @parblock
+  * Control channel encryption is based on the SIV construction [0], to achieve
+  * nonce misuse-resistant authenticated encryption:
+  *
+- * @par
+  * \code{.unparsed}
+  * msg      = control channel plaintext
+  * header   = opcode (1 byte) || session_id (8 bytes) || packet_id (8 bytes)
+@@ -57,23 +64,23 @@
+  * output   = Header || Tag || Ciph
+  * \endcode
+  *
+- * @par
+  * This boils down to the following on-the-wire packet format:
+  *
+- * @par
+  * \code{.unparsed}
+  * - opcode - || - session_id - || - packet_id - || auth_tag || * payload *
+  * \endcode
+  *
+- * @par
+  * Where
+  * <tt>- XXX -</tt> means authenticated, and
+  * <tt>* XXX *</tt> means authenticated and encrypted.
++ *
++ * @endparblock
+  */
+ 
+ #ifndef TLSCRYPT_H
+ #define TLSCRYPT_H
+ 
++#include "base64.h"
+ #include "buffer.h"
+ #include "crypto.h"
+ #include "session_id.h"
+@@ -86,6 +93,16 @@
+ #define TLS_CRYPT_OFF_TAG (TLS_CRYPT_OFF_PID + TLS_CRYPT_PID_SIZE)
+ #define TLS_CRYPT_OFF_CT (TLS_CRYPT_OFF_TAG + TLS_CRYPT_TAG_SIZE)
+ 
++#define TLS_CRYPT_V2_MAX_WKC_LEN (1024)
++#define TLS_CRYPT_V2_CLIENT_KEY_LEN (2048 / 8)
++#define TLS_CRYPT_V2_SERVER_KEY_LEN (sizeof(struct key))
++#define TLS_CRYPT_V2_TAG_SIZE (TLS_CRYPT_TAG_SIZE)
++#define TLS_CRYPT_V2_MAX_METADATA_LEN (unsigned)(TLS_CRYPT_V2_MAX_WKC_LEN \
++         - (TLS_CRYPT_V2_CLIENT_KEY_LEN + TLS_CRYPT_V2_TAG_SIZE \
++            + sizeof(uint16_t)))
++#define TLS_CRYPT_V2_MAX_B64_METADATA_LEN \
++        OPENVPN_BASE64_LENGTH(TLS_CRYPT_V2_MAX_METADATA_LEN - 1)
++
+ /**
+  * Initialize a key_ctx_bi structure for use with --tls-crypt.
+  *
+@@ -138,6 +155,56 @@ bool tls_crypt_wrap(const struct buffer *src, struct buffer *dst,
+ bool tls_crypt_unwrap(const struct buffer *src, struct buffer *dst,
+                       struct crypto_options *opt);
+ 
++/**
++ * Initialize a tls-crypt-v2 server key (used to encrypt/decrypt client keys).
++ *
++ * @param key           Key structure to be initialized.  Must be non-NULL.
++ * @parem encrypt       If true, initialize the key structure for encryption,
++ *                      otherwise for decryption.
++ * @param key_file      File path of the key file to load, or INLINE tag.
++ * @param key_inline    Inline key file contents (or NULL if not inline).
++ */
++void tls_crypt_v2_init_server_key(struct key_ctx *key_ctx, bool encrypt,
++                                  const char *key_file, const char *key_inline);
++
++/**
++ * Initialize a tls-crypt-v2 client key.
++ *
++ * @param key               Key structure to be initialized with the client
++ *                          key.
++ * @param wrapped_key_buf   Returns buffer containing the wrapped key that will
++ *                          be sent to the server when connecting.  Caller must
++ *                          free this buffer when no longer needed.
++ * @param key_file          File path of the key file to load, or INLINE tag.
++ * @param key_inline        Inline key file contents (or NULL if not inline).
++ */
++void tls_crypt_v2_init_client_key(struct key_ctx_bi *key,
++                                  struct buffer *wrapped_key_buf,
++                                  const char *key_file,
++                                  const char *key_inline);
++
++/**
++ * Generate a tls-crypt-v2 server key, and write to file.
++ *
++ * @param filename          Filename of the server key file to create.
++ */
++void tls_crypt_v2_write_server_key_file(const char *filename);
++
++/**
++ * Generate a tls-crypt-v2 client key, and write to file.
++ *
++ * @param filename          Filename of the client key file to create.
++ * @param b64_metadata      Base64 metadata to be included in the client key.
++ * @param server_key_file   File path of the server key to use for wrapping the
++ *                          client key, or INLINE tag.
++ * @param server_key_inline Inline server key file contents (or NULL if not
++ *                          inline).
++ */
++void tls_crypt_v2_write_client_key_file(const char *filename,
++                                        const char *b64_metadata,
++                                        const char *key_file,
++                                        const char *key_inline);
++
+ /** @} */
+ 
+ #endif /* TLSCRYPT_H */
+diff --git a/tests/t_lpback.sh b/tests/t_lpback.sh
+index 2052c62..fb43211 100755
+--- a/tests/t_lpback.sh
++++ b/tests/t_lpback.sh
+@@ -21,8 +21,8 @@
+ 
+ set -eu
+ top_builddir="${top_builddir:-..}"
+-trap "rm -f key.$$ log.$$ ; trap 0 ; exit 77" 1 2 15
+-trap "rm -f key.$$ log.$$ ; exit 1" 0 3
++trap "rm -f key.$$ tc-server-key.$$ tc-client-key.$$ log.$$ ; trap 0 ; exit 77" 1 2 15
++trap "rm -f key.$$ tc-server-key.$$ tc-client-key.$$ log.$$ ; exit 1" 0 3
+ 
+ # Get list of supported ciphers from openvpn --show-ciphers output
+ CIPHERS=$(${top_builddir}/src/openvpn/openvpn --show-ciphers | \
+@@ -55,6 +55,40 @@ do
+     fi
+ done
+ 
+-rm key.$$ log.$$
++echo -n "Testing tls-crypt-v2 server key generation..."
++"${top_builddir}/src/openvpn/openvpn" \
++    --tls-crypt-v2-genkey server tc-server-key.$$ >log.$$ 2>&1
++if [ $? != 0 ] ; then
++    echo "FAILED"
++    cat log.$$
++    e=1
++else
++    echo "OK"
++fi
++
++echo -n "Testing tls-crypt-v2 key generation (no metadata)..."
++"${top_builddir}/src/openvpn/openvpn" --tls-crypt-v2 tc-server-key.$$ \
++    --tls-crypt-v2-genkey client tc-client-key.$$ >log.$$ 2>&1
++if [ $? != 0 ] ; then
++    echo "FAILED"
++    cat log.$$
++    e=1
++else
++    echo "OK"
++fi
++
++echo -n "Testing tls-crypt-v2 key generation (max length metadata)..."
++"${top_builddir}/src/openvpn/openvpn" --tls-crypt-v2 tc-server-key.$$ \
++    --tls-crypt-v2-genkey client tc-client-key.$$ \
++    $(head -c732 /dev/zero | base64 -w0) >log.$$ 2>&1
++if [ $? != 0 ] ; then
++    echo "FAILED"
++    cat log.$$
++    e=1
++else
++    echo "OK"
++fi
++
++rm key.$$ tc-server-key.$$ tc-client-key.$$ log.$$
+ trap 0
+ exit $e
 -- 
 2.7.4
 
