@@ -1,10 +1,11 @@
 From: Steffan Karger <steffan.karger@...1435...>
-Date: Mon, 22 Oct 2018 13:45:12 +0200
-Message-ID: <1540208715-14044-3-git-send-email-steffan.karger@...1435...>
+Date: Mon, 22 Oct 2018 13:45:10 +0200
+Message-ID: <1540208715-14044-1-git-send-email-steffan.karger@...1435...>
 In-Reply-To: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
 References: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v7 4/7] tls-crypt-v2: add unwrap_client_key
+Subject: [Openvpn-devel] [PATCH v7 2/7] tls-crypt-v2: add specification to
+ doc/
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,529 +18,217 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Add helper functions to unwrap tls-crypt-v2 client keys.
+This is a preliminary description of tls-crypt-v2.  It should give a good
+impression about the reasoning and design behind tls-crypt-v2, but might
+need some polishing and updating.
 
 Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
 v3: Include length in WKc
-v4: Rebase on v4 patch set
-v5: Rebase on v5 patch set
-v6: Change WKc length to ciphertext length (was plaintext)
-v7: rebase on patch set v7
+v4: Clarify metadata handling
+v5: Typo fixes (thanks tincanteksup)
+v6: Change WKc length to ciphertext length (was plaintext), textual fixes
+v7: Textual fixes irt review
 
- src/openvpn/buffer.h                      |   7 +
- src/openvpn/tls_crypt.c                   | 121 ++++++++++++++
- tests/unit_tests/openvpn/test_tls_crypt.c | 254 +++++++++++++++++++++++++++---
- 3 files changed, 362 insertions(+), 20 deletions(-)
+ doc/tls-crypt-v2.txt | 189 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 189 insertions(+)
+ create mode 100644 doc/tls-crypt-v2.txt
 
-diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
-index aab249f..2412dcd 100644
---- a/src/openvpn/buffer.h
-+++ b/src/openvpn/buffer.h
-@@ -837,6 +837,13 @@ buf_read_u32(struct buffer *buf, bool *good)
-     }
- }
- 
-+/** Return true if buffer contents are equal */
-+static inline bool
-+buf_equal(const struct buffer *a, const struct buffer *b)
-+{
-+    return BLEN(a) == BLEN(b) && 0 == memcmp(BPTR(a), BPTR(b), BLEN(a));
-+}
+diff --git a/doc/tls-crypt-v2.txt b/doc/tls-crypt-v2.txt
+new file mode 100644
+index 0000000..582a2b8
+--- /dev/null
++++ b/doc/tls-crypt-v2.txt
+@@ -0,0 +1,189 @@
++Client-specific tls-crypt keys (--tls-crypt-v2)
++===============================================
 +
- /**
-  * Compare src buffer contents with match.
-  * *NOT* constant time. Do not use when comparing HMACs.
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index 7657df6..6e687b2 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -434,6 +434,115 @@ tls_crypt_v2_wrap_client_key(struct buffer *wkc,
-     return buf_copy(wkc, &work);
- }
- 
-+static bool
-+tls_crypt_v2_unwrap_client_key(struct key2 *client_key, struct buffer *metadata,
-+                               struct buffer wrapped_client_key,
-+                               struct key_ctx *server_key)
-+{
-+    const char *error_prefix = __func__;
-+    bool ret = false;
-+    struct gc_arena gc = gc_new();
-+    /* The crypto API requires one extra cipher block of buffer head room when
-+     * decrypting, which nicely matches the tag size of WKc.  So
-+     * TLS_CRYPT_V2_MAX_WKC_LEN is always large enough for the plaintext. */
-+    uint8_t plaintext_buf_data[TLS_CRYPT_V2_MAX_WKC_LEN] = { 0 };
-+    struct buffer plaintext = { 0 };
++This document describes the ``--tls-crypt-v2`` option, which enables OpenVPN
++to use client-specific ``--tls-crypt`` keys.
 +
-+    dmsg(D_TLS_DEBUG_MED, "%s: unwrapping client key (len=%d): %s", __func__,
-+         BLEN(&wrapped_client_key), format_hex(BPTR(&wrapped_client_key),
-+                                               BLEN(&wrapped_client_key),
-+                                               0, &gc));
++Rationale
++---------
 +
-+    if (TLS_CRYPT_V2_MAX_WKC_LEN < BLEN(&wrapped_client_key))
-+    {
-+        CRYPT_ERROR("wrapped client key too big");
-+    }
++``--tls-auth`` and ``tls-crypt`` use a pre-shared group key, which is shared
++among all clients and servers in an OpenVPN deployment.  If any client or
++server is compromised, the attacker will have access to this shared key, and it
++will no longer provide any security.  To reduce the risk of losing pre-shared
++keys, ``tls-crypt-v2`` adds the ability to supply each client with a unique
++tls-crypt key.  This allows large organisations and VPN providers to profit
++from the same DoS and TLS stack protection that small deployments can already
++achieve using ``tls-auth`` or ``tls-crypt``.
 +
-+    /* Decrypt client key and metadata */
-+    uint16_t net_len = 0;
-+    const uint8_t *tag = BPTR(&wrapped_client_key);
-+
-+    if (BLEN(&wrapped_client_key) < sizeof(net_len))
-+    {
-+        CRYPT_ERROR("failed to read length");
-+    }
-+    memcpy(&net_len, BEND(&wrapped_client_key) - sizeof(net_len),
-+           sizeof(net_len));
-+
-+    if (ntohs(net_len) != BLEN(&wrapped_client_key))
-+    {
-+        dmsg(D_TLS_DEBUG_LOW, "%s: net_len=%u, BLEN=%i", __func__,
-+             ntohs(net_len), BLEN(&wrapped_client_key));
-+        CRYPT_ERROR("invalid length");
-+    }
-+
-+    buf_inc_len(&wrapped_client_key, -(int)sizeof(net_len));
-+
-+    if (!buf_advance(&wrapped_client_key, TLS_CRYPT_TAG_SIZE))
-+    {
-+        CRYPT_ERROR("failed to read tag");
-+    }
-+
-+    if (!cipher_ctx_reset(server_key->cipher, tag))
-+    {
-+        CRYPT_ERROR("failed to initialize IV");
-+    }
-+    buf_set_write(&plaintext, plaintext_buf_data, sizeof(plaintext_buf_data));
-+    int outlen = 0;
-+    if (!cipher_ctx_update(server_key->cipher, BPTR(&plaintext), &outlen,
-+                           BPTR(&wrapped_client_key),
-+                           BLEN(&wrapped_client_key)))
-+    {
-+        CRYPT_ERROR("could not decrypt client key");
-+    }
-+    ASSERT(buf_inc_len(&plaintext, outlen));
-+
-+    if (!cipher_ctx_final(server_key->cipher, BEND(&plaintext), &outlen))
-+    {
-+        CRYPT_ERROR("cipher final failed");
-+    }
-+    ASSERT(buf_inc_len(&plaintext, outlen));
-+
-+    /* Check authentication */
-+    uint8_t tag_check[TLS_CRYPT_TAG_SIZE] = { 0 };
-+    hmac_ctx_reset(server_key->hmac);
-+    hmac_ctx_update(server_key->hmac, (void *)&net_len, sizeof(net_len));
-+    hmac_ctx_update(server_key->hmac, BPTR(&plaintext),
-+                    BLEN(&plaintext));
-+    hmac_ctx_final(server_key->hmac, tag_check);
-+
-+    if (memcmp_constant_time(tag, tag_check, sizeof(tag_check)))
-+    {
-+        dmsg(D_CRYPTO_DEBUG, "tag      : %s",
-+             format_hex(tag, sizeof(tag_check), 0, &gc));
-+        dmsg(D_CRYPTO_DEBUG, "tag_check: %s",
-+             format_hex(tag_check, sizeof(tag_check), 0, &gc));
-+        CRYPT_ERROR("client key authentication error");
-+    }
-+
-+    if (buf_len(&plaintext) < sizeof(client_key->keys))
-+    {
-+        CRYPT_ERROR("failed to read client key");
-+    }
-+    memcpy(&client_key->keys, BPTR(&plaintext), sizeof(client_key->keys));
-+    ASSERT(buf_advance(&plaintext, sizeof(client_key->keys)));
-+
-+    if(!buf_copy(metadata, &plaintext))
-+    {
-+        CRYPT_ERROR("metadata too large for supplied buffer");
-+    }
-+
-+    ret = true;
-+error_exit:
-+    if (!ret)
-+    {
-+        secure_memzero(client_key, sizeof(*client_key));
-+    }
-+    buf_clear(&plaintext);
-+    gc_free(&gc);
-+    return ret;
-+}
-+
- void
- tls_crypt_v2_write_server_key_file(const char *filename)
- {
-@@ -544,6 +653,18 @@ tls_crypt_v2_write_client_key_file(const char *filename,
-     tls_crypt_v2_init_client_key(&test_client_key, &test_wrapped_client_key,
-                                  filename, NULL);
-     free_key_ctx_bi(&test_client_key);
-+
-+    /* Sanity check: unwrap and load client key (as "server") */
-+    struct buffer test_metadata = alloc_buf_gc(TLS_CRYPT_V2_MAX_METADATA_LEN,
-+                                               &gc);
-+    struct key2 test_client_key2 = { 0 };
-+    free_key_ctx(&server_key);
-+    tls_crypt_v2_init_server_key(&server_key, false, server_key_file,
-+                                 server_key_inline);
-+    msg(D_GENKEY, "Testing server-side key loading...");
-+    ASSERT(tls_crypt_v2_unwrap_client_key(&test_client_key2, &test_metadata,
-+                                          test_wrapped_client_key, &server_key));
-+    secure_memzero(&test_client_key2, sizeof(test_client_key2));
-     free_buf(&test_wrapped_client_key);
- 
- cleanup:
-diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c
-index f3228ad..d499c4e 100644
---- a/tests/unit_tests/openvpn/test_tls_crypt.c
-+++ b/tests/unit_tests/openvpn/test_tls_crypt.c
-@@ -45,7 +45,7 @@
- 
- const char plaintext_short[1];
- 
--struct test_context {
-+struct test_tls_crypt_context {
-     struct crypto_options co;
-     struct key_type kt;
-     struct buffer source;
-@@ -54,8 +54,8 @@ struct test_context {
- };
- 
- static int
--setup(void **state) {
--    struct test_context *ctx = calloc(1, sizeof(*ctx));
-+test_tls_crypt_setup(void **state) {
-+    struct test_tls_crypt_context *ctx = calloc(1, sizeof(*ctx));
-     *state = ctx;
- 
-     struct key key = { 0 };
-@@ -84,8 +84,9 @@ setup(void **state) {
- }
- 
- static int
--teardown(void **state) {
--    struct test_context *ctx = (struct test_context *) *state;
-+test_tls_crypt_teardown(void **state) {
-+    struct test_tls_crypt_context *ctx =
-+            (struct test_tls_crypt_context *)*state;
- 
-     free_buf(&ctx->source);
-     free_buf(&ctx->ciphertext);
-@@ -98,7 +99,7 @@ teardown(void **state) {
-     return 0;
- }
- 
--static void skip_if_tls_crypt_not_supported(struct test_context *ctx)
-+static void skip_if_tls_crypt_not_supported(struct test_tls_crypt_context *ctx)
- {
-     if (!ctx->kt.cipher || !ctx->kt.digest)
-     {
-@@ -111,7 +112,7 @@ static void skip_if_tls_crypt_not_supported(struct test_context *ctx)
-  */
- static void
- tls_crypt_loopback(void **state) {
--    struct test_context *ctx = (struct test_context *) *state;
-+    struct test_tls_crypt_context *ctx = (struct test_tls_crypt_context *) *state;
- 
-     skip_if_tls_crypt_not_supported(ctx);
- 
-@@ -128,7 +129,7 @@ tls_crypt_loopback(void **state) {
-  */
- static void
- tls_crypt_loopback_zero_len(void **state) {
--    struct test_context *ctx = (struct test_context *) *state;
-+    struct test_tls_crypt_context *ctx = (struct test_tls_crypt_context *) *state;
- 
-     skip_if_tls_crypt_not_supported(ctx);
- 
-@@ -147,7 +148,7 @@ tls_crypt_loopback_zero_len(void **state) {
-  */
- static void
- tls_crypt_loopback_max_len(void **state) {
--    struct test_context *ctx = (struct test_context *) *state;
-+    struct test_tls_crypt_context *ctx = (struct test_tls_crypt_context *) *state;
- 
-     skip_if_tls_crypt_not_supported(ctx);
- 
-@@ -168,7 +169,7 @@ tls_crypt_loopback_max_len(void **state) {
-  */
- static void
- tls_crypt_fail_msg_too_long(void **state) {
--    struct test_context *ctx = (struct test_context *) *state;
-+    struct test_tls_crypt_context *ctx = (struct test_tls_crypt_context *) *state;
- 
-     skip_if_tls_crypt_not_supported(ctx);
- 
-@@ -184,7 +185,7 @@ tls_crypt_fail_msg_too_long(void **state) {
-  */
- static void
- tls_crypt_fail_invalid_key(void **state) {
--    struct test_context *ctx = (struct test_context *) *state;
-+    struct test_tls_crypt_context *ctx = (struct test_tls_crypt_context *) *state;
- 
-     skip_if_tls_crypt_not_supported(ctx);
- 
-@@ -203,7 +204,7 @@ tls_crypt_fail_invalid_key(void **state) {
-  */
- static void
- tls_crypt_fail_replay(void **state) {
--    struct test_context *ctx = (struct test_context *) *state;
-+    struct test_tls_crypt_context *ctx = (struct test_tls_crypt_context *) *state;
- 
-     skip_if_tls_crypt_not_supported(ctx);
- 
-@@ -222,7 +223,7 @@ tls_crypt_fail_replay(void **state) {
-  */
- static void
- tls_crypt_ignore_replay(void **state) {
--    struct test_context *ctx = (struct test_context *) *state;
-+    struct test_tls_crypt_context *ctx = (struct test_tls_crypt_context *) *state;
- 
-     skip_if_tls_crypt_not_supported(ctx);
- 
-@@ -236,22 +237,235 @@ tls_crypt_ignore_replay(void **state) {
-     assert_true(tls_crypt_unwrap(&ctx->ciphertext, &ctx->unwrapped, &ctx->co));
- }
- 
-+struct test_tls_crypt_v2_context {
-+    struct gc_arena gc;
-+    struct key2 server_key2;
-+    struct key_ctx_bi server_keys;
-+    struct key2 client_key2;
-+    struct key_ctx_bi client_key;
-+    struct buffer metadata;
-+    struct buffer unwrapped_metadata;
-+    struct buffer wkc;
-+};
-+
-+static int
-+test_tls_crypt_v2_setup(void **state) {
-+    struct test_tls_crypt_v2_context *ctx = calloc(1, sizeof(*ctx));
-+    *state = ctx;
-+
-+    ctx->gc = gc_new();
-+
-+    /* Sligthly longer buffers to be able to test too-long data */
-+    ctx->metadata = alloc_buf_gc(TLS_CRYPT_V2_MAX_METADATA_LEN+16, &ctx->gc);
-+    ctx->unwrapped_metadata = alloc_buf_gc(TLS_CRYPT_V2_MAX_METADATA_LEN+16,
-+                                           &ctx->gc);
-+    ctx->wkc = alloc_buf_gc(TLS_CRYPT_V2_MAX_WKC_LEN+16, &ctx->gc);
-+
-+    /* Generate server key */
-+    rand_bytes((void *)ctx->server_key2.keys, sizeof(ctx->server_key2.keys));
-+    ctx->server_key2.n = 2;
-+    struct key_type kt = tls_crypt_kt();
-+    init_key_ctx_bi(&ctx->server_keys, &ctx->server_key2,
-+                    KEY_DIRECTION_BIDIRECTIONAL, &kt,
-+                    "tls-crypt-v2 server key");
-+
-+    /* Generate client key */
-+    rand_bytes((void *)ctx->client_key2.keys, sizeof(ctx->client_key2.keys));
-+    ctx->client_key2.n = 2;
-+
-+    return 0;
-+}
-+
-+static int
-+test_tls_crypt_v2_teardown(void **state) {
-+    struct test_tls_crypt_v2_context *ctx =
-+            (struct test_tls_crypt_v2_context *) *state;
-+
-+    free_key_ctx_bi(&ctx->server_keys);
-+    free_key_ctx_bi(&ctx->client_key);
-+
-+    gc_free(&ctx->gc);
-+
-+    free(ctx);
-+
-+    return 0;
-+}
-+
-+/**
-+ * Check wrapping and unwrapping a tls-crypt-v2 client key without metadata.
-+ */
-+static void
-+tls_crypt_v2_wrap_unwrap_no_metadata(void **state) {
-+    struct test_tls_crypt_v2_context *ctx =
-+            (struct test_tls_crypt_v2_context *) *state;
-+
-+    struct buffer wrapped_client_key = alloc_buf_gc(TLS_CRYPT_V2_MAX_WKC_LEN,
-+                                                    &ctx->gc);
-+    assert_true(tls_crypt_v2_wrap_client_key(&wrapped_client_key,
-+                                             &ctx->client_key2,
-+                                             &ctx->metadata,
-+                                             &ctx->server_keys.encrypt,
-+                                             &ctx->gc));
-+
-+    struct buffer unwrap_metadata = alloc_buf_gc(TLS_CRYPT_V2_MAX_METADATA_LEN,
-+                                                 &ctx->gc);
-+    struct key2 unwrapped_client_key2 = { 0 };
-+    assert_true(tls_crypt_v2_unwrap_client_key(&unwrapped_client_key2,
-+                                               &unwrap_metadata,
-+                                               wrapped_client_key,
-+                                               &ctx->server_keys.decrypt));
-+
-+    assert_true(0 == memcmp(ctx->client_key2.keys, unwrapped_client_key2.keys,
-+                            sizeof(ctx->client_key2.keys)));
-+}
-+
-+/**
-+ * Check wrapping and unwrapping a tls-crypt-v2 client key with maximum length
-+ * metadata.
-+ */
-+static void
-+tls_crypt_v2_wrap_unwrap_max_metadata(void **state) {
-+    struct test_tls_crypt_v2_context *ctx =
-+            (struct test_tls_crypt_v2_context *) *state;
-+
-+    uint8_t* metadata =
-+            buf_write_alloc(&ctx->metadata, TLS_CRYPT_V2_MAX_METADATA_LEN);
-+    assert_true(rand_bytes(metadata, TLS_CRYPT_V2_MAX_METADATA_LEN));
-+    assert_true(tls_crypt_v2_wrap_client_key(&ctx->wkc, &ctx->client_key2,
-+                                             &ctx->metadata,
-+                                             &ctx->server_keys.encrypt,
-+                                             &ctx->gc));
-+
-+    struct buffer unwrap_metadata = alloc_buf_gc(TLS_CRYPT_V2_MAX_METADATA_LEN,
-+                                                 &ctx->gc);
-+    struct key2 unwrapped_client_key2 = { 0 };
-+    assert_true(tls_crypt_v2_unwrap_client_key(&unwrapped_client_key2,
-+                                               &unwrap_metadata, ctx->wkc,
-+                                               &ctx->server_keys.decrypt));
-+
-+    assert_true(0 == memcmp(ctx->client_key2.keys, unwrapped_client_key2.keys,
-+                            sizeof(ctx->client_key2.keys)));
-+    assert_true(buf_equal(&ctx->metadata, &unwrap_metadata));
-+}
-+
-+/**
-+ * Check that wrapping a tls-crypt-v2 client key with too long metadata fails
-+ * as expected.
-+ */
-+static void
-+tls_crypt_v2_wrap_too_long_metadata(void **state) {
-+    struct test_tls_crypt_v2_context *ctx =
-+            (struct test_tls_crypt_v2_context *) *state;
-+
-+    assert_true(buf_inc_len(&ctx->metadata, TLS_CRYPT_V2_MAX_METADATA_LEN+1));
-+    assert_false(tls_crypt_v2_wrap_client_key(&ctx->wkc, &ctx->client_key2,
-+                                              &ctx->metadata,
-+                                              &ctx->server_keys.encrypt,
-+                                              &ctx->gc));
-+}
-+
-+/**
-+ * Check that unwrapping a tls-crypt-v2 client key with the wrong server key
-+ * fails as expected.
-+ */
-+static void
-+tls_crypt_v2_wrap_unwrap_wrong_key(void **state) {
-+    struct test_tls_crypt_v2_context *ctx =
-+            (struct test_tls_crypt_v2_context *) *state;
-+
-+    assert_true(tls_crypt_v2_wrap_client_key(&ctx->wkc, &ctx->client_key2,
-+                                             &ctx->metadata,
-+                                             &ctx->server_keys.encrypt,
-+                                             &ctx->gc));
-+
-+    /* Change server key */
-+    struct key_type kt = tls_crypt_kt();
-+    free_key_ctx_bi(&ctx->server_keys);
-+    memset(&ctx->server_key2.keys, 0, sizeof(ctx->server_key2.keys));
-+    init_key_ctx_bi(&ctx->server_keys, &ctx->server_key2,
-+                    KEY_DIRECTION_BIDIRECTIONAL, &kt,
-+                    "wrong tls-crypt-v2 server key");
++Also, for ``tls-crypt``, even if all these peers succeed in keeping the key
++secret, the key lifetime is limited to roughly 8000 years, divided by the
++number of clients (see the ``--tls-crypt`` section of the man page).  Using
++client-specific keys, we lift this lifetime requirement to roughly 8000 years
++for each client key (which "Should Be Enough For Everybody (tm)").
 +
 +
-+    struct key2 unwrapped_client_key2 = { 0 };
-+    assert_false(tls_crypt_v2_unwrap_client_key(&unwrapped_client_key2,
-+                                                &ctx->unwrapped_metadata,
-+                                                ctx->wkc,
-+                                                &ctx->server_keys.decrypt));
++Introduction
++------------
 +
-+    const struct key2 zero = { 0 };
-+    assert_true(0 == memcmp(&unwrapped_client_key2, &zero, sizeof(zero)));
-+    assert_true(0 == BLEN(&ctx->unwrapped_metadata));
-+}
++``tls-crypt-v2`` uses an encrypted cookie mechanism to introduce
++client-specific tls-crypt keys without introducing a lot of server-side state.
++The client-specific key is encrypted using a server key.  The server key is the
++same for all servers in a group.  When a client connects, it first sends the
++encrypted key to the server, such that the server can decrypt the key and all
++messages can thereafter be encrypted using the client-specific key.
 +
-+/**
-+ * Check that unwrapping a tls-crypt-v2 client key to a too small metadata
-+ * buffer fails as expected.
-+ */
-+static void
-+tls_crypt_v2_wrap_unwrap_dst_too_small(void **state) {
-+    struct test_tls_crypt_v2_context *ctx =
-+            (struct test_tls_crypt_v2_context *) *state;
++A wrapped (encrypted and authenticated) client-specific key can also contain
++metadata.  The metadata is wrapped together with the key, and can be used to
++allow servers to identify clients and/or key validity.  This allows the server
++to abort the connection immediately after receiving the first packet, rather
++than performing an entire TLS handshake.  Aborting the connection this early
++greatly improves the DoS resilience and reduces attack service against
++malicious clients that have the ``tls-crypt`` or ``tls-auth`` key.  This is
++particularly relevant for large deployments (think lost key or disgruntled
++employee) and VPN providers (clients are not trusted).
 +
-+    uint8_t* metadata =
-+            buf_write_alloc(&ctx->metadata, TLS_CRYPT_V2_MAX_METADATA_LEN);
-+    assert_true(rand_bytes(metadata, TLS_CRYPT_V2_MAX_METADATA_LEN));
-+    assert_true(tls_crypt_v2_wrap_client_key(&ctx->wkc, &ctx->client_key2,
-+                                             &ctx->metadata,
-+                                             &ctx->server_keys.encrypt,
-+                                             &ctx->gc));
++To allow for a smooth transition, ``tls-crypt-v2`` is designed such that a
++server can enable both ``tls-crypt-v2`` and either ``tls-crypt`` or
++``tls-auth``.  This is achieved by introducing a P_CONTROL_HARD_RESET_CLIENT_V3
++opcode, that indicates that the client wants to use ``tls-crypt-v2`` for the
++current connection.
 +
-+    struct key2 unwrapped_client_key2 = { 0 };
-+    struct buffer unwrapped_metadata =
-+            alloc_buf_gc(TLS_CRYPT_V2_MAX_METADATA_LEN-1, &ctx->gc);
-+    assert_false(tls_crypt_v2_unwrap_client_key(&unwrapped_client_key2,
-+                                                &unwrapped_metadata, ctx->wkc,
-+                                                &ctx->server_keys.decrypt));
++For an exact specification and more details, read the Implementation section.
 +
-+    const struct key2 zero = { 0 };
-+    assert_true(0 == memcmp(&unwrapped_client_key2, &zero, sizeof(zero)));
-+    assert_true(0 == BLEN(&ctx->unwrapped_metadata));
-+}
 +
- int
- main(void) {
-     const struct CMUnitTest tests[] = {
--        cmocka_unit_test_setup_teardown(tls_crypt_loopback, setup, teardown),
-+        cmocka_unit_test_setup_teardown(tls_crypt_loopback,
-+                                        test_tls_crypt_setup,
-+                                        test_tls_crypt_teardown),
-         cmocka_unit_test_setup_teardown(tls_crypt_loopback_zero_len,
--                                        setup, teardown),
-+                                        test_tls_crypt_setup,
-+                                        test_tls_crypt_teardown),
-         cmocka_unit_test_setup_teardown(tls_crypt_loopback_max_len,
--                                        setup, teardown),
-+                                        test_tls_crypt_setup,
-+                                        test_tls_crypt_teardown),
-         cmocka_unit_test_setup_teardown(tls_crypt_fail_msg_too_long,
--                                        setup, teardown),
-+                                        test_tls_crypt_setup,
-+                                        test_tls_crypt_teardown),
-         cmocka_unit_test_setup_teardown(tls_crypt_fail_invalid_key,
--                                        setup, teardown),
-+                                        test_tls_crypt_setup,
-+                                        test_tls_crypt_teardown),
-         cmocka_unit_test_setup_teardown(tls_crypt_fail_replay,
--                                        setup, teardown),
-+                                        test_tls_crypt_setup,
-+                                        test_tls_crypt_teardown),
-         cmocka_unit_test_setup_teardown(tls_crypt_ignore_replay,
--                                        setup, teardown),
-+                                        test_tls_crypt_setup,
-+                                        test_tls_crypt_teardown),
-+        cmocka_unit_test_setup_teardown(tls_crypt_v2_wrap_unwrap_no_metadata,
-+                                        test_tls_crypt_v2_setup,
-+                                        test_tls_crypt_v2_teardown),
-+        cmocka_unit_test_setup_teardown(tls_crypt_v2_wrap_unwrap_max_metadata,
-+                                        test_tls_crypt_v2_setup,
-+                                        test_tls_crypt_v2_teardown),
-+        cmocka_unit_test_setup_teardown(tls_crypt_v2_wrap_too_long_metadata,
-+                                        test_tls_crypt_v2_setup,
-+                                        test_tls_crypt_v2_teardown),
-+        cmocka_unit_test_setup_teardown(tls_crypt_v2_wrap_unwrap_wrong_key,
-+                                        test_tls_crypt_v2_setup,
-+                                        test_tls_crypt_v2_teardown),
-+        cmocka_unit_test_setup_teardown(tls_crypt_v2_wrap_unwrap_dst_too_small,
-+                                        test_tls_crypt_v2_setup,
-+                                        test_tls_crypt_v2_teardown),
-     };
- 
- #if defined(ENABLE_CRYPTO_OPENSSL)
++Implementation
++--------------
++
++When setting up a tls-crypt-v2 group (similar to generating a tls-crypt or
++tls-auth key previously):
++
++1. Generate a tls-crypt-v2 server key using OpenVPN's ``--genkey``.  This key
++   contains 2 512-bit keys, of which we use:
++
++   * the first 256 bits of key 1 as AES-256-CTR encryption key ``Ke``
++   * the first 256 bits of key 2 as HMAC-SHA-256 authentication key ``Ka``
++
++   This fomat is similar to the format for regular ``tls-crypt``/``tls-auth``
++   and data channel keys, which allows us to reuse code.
++
++2. Add the tls-crypt-v2 server key to all server configs
++   (``tls-crypt-v2 /path/to/server.key``)
++
++
++When provisioning a client, create a client-specific tls-crypt key:
++
++1. Generate 2048 bits client-specific key ``Kc``
++
++2. Optionally generate metadata
++
++   The first byte of the metadata determines the type.  The initial
++   implementation supports the following types:
++
++   0x00 (USER):         User-defined free-form data.
++   0x01 (TIMESTAMP):    64-bit network order unix timestamp of key generation.
++
++   The timestamp can be used to reject too-old tls-crypt-v2 client keys.
++
++   User metadata could for example contain the users certificate serial, such
++   that the incoming connection can be verified against a CRL.
++
++   If no metadata is supplied during key generation, openvpn defaults to the
++   TIMESTAMP metadata type.
++
++3. Create a wrapped client key ``WKc``, using the same nonce-misuse-resistant
++   SIV construction we use for tls-crypt:
++
++   ``len = len(WKc)`` (16 bit, network byte order)
++
++   ``T = HMAC-SHA256(Ka, len || Kc || metadata)``
++
++   ``IV = 128 most significant bits of T``
++
++   ``WKc = T || AES-256-CTR(Ke, IV, Kc || metadata) || len``
++
++   Note that the length of ``WKc`` can be computed before composing ``WKc``,
++   because the length of each component is known (and AES-256-CTR does not add
++   any padding).
++
++4. Create a tls-crypt-v2 client key: PEM-encode ``Kc || WKc`` and store in a
++   file, using the header ``-----BEGIN OpenVPN tls-crypt-v2 client key-----``
++   and the footer ``-----END OpenVPN tls-crypt-v2 client key-----``.  (The PEM
++   format is simple, and following PEM allows us to use the crypto lib function
++   for en/decoding.)
++
++5. Add the tls-crypt-v2 client key to the client config
++   (``tls-crypt-v2 /path/to/client-specific.key``)
++
++
++When setting up the openvpn connection:
++
++1. The client reads the tls-crypt-v2 key from its config, and:
++
++   1. loads ``Kc`` as its tls-crypt key,
++   2. stores ``WKc`` in memory for sending to the server.
++
++2. To start the connection, the client creates a P_CONTROL_HARD_RESET_CLIENT_V3
++   message, wraps it with tls-crypt using ``Kc`` as the key, and appends
++   ``WKc``.  (``WKc`` must not be encrypted, to prevent a chicken-and-egg
++   problem.)
++
++3. The server receives the P_CONTROL_HARD_RESET_CLIENT_V3 message, and
++
++   1. reads the WKc length field from the end of the message, and extracts WKc
++      from the message
++   2. unwraps ``WKc``
++   3. uses unwrapped ``Kc`` to verify the remaining
++      P_CONTROL_HARD_RESET_CLIENT_V3 message's (encryption and) authentication.
++
++   The message is dropped and no error response is sent when either 3.1, 3.2 or
++   3.3 fails (DoS protection).
++
++4. Server optionally checks metadata using a --tls-crypt-v2-verify script
++
++   This allows early abort of connection, *before* we expose any of the
++   notoriously dangerous TLS, X.509 and ASN.1 parsers and thereby reduces the
++   attack surface of the server.
++
++   The metadata is checked *after* the OpenVPN three-way handshake has
++   completed, to prevent DoS attacks.  (That is, once the client has proved to
++   the server that it possesses Kc, by authenticating a packet that contains the
++   session ID picked by the server.)
++
++   A server should not send back any error messages if metadata verification
++   fails, to reduce attack surface and maximize DoS resilience.
++
++6. Client and server use ``Kc`` for (un)wrapping any following control channel
++   messages.
++
++
++Considerations
++--------------
++
++To allow for a smooth transition, the server implementation allows
++``tls-crypt`` or ``tls-auth`` to be used simultaneously with ``tls-crypt-v2``.
++This specification does not allow simultaneously using ``tls-crypt-v2`` and
++connections without any control channel wrapping, because that would break DoS
++resilience.
++
++WKc includes a length field, so we leave the option for future extension of the
++P_CONTROL_HEAD_RESET_CLIENT_V3 message open.  (E.g. add payload to the reset to
++indicate low-level protocol features.)
++
++``tls-crypt-v2`` uses fixed crypto algorithms, because:
++
++ * The crypto is used before we can do any negotiation, so the algorithms have
++   to be predefined.
++ * The crypto primitives are chosen conservatively, making problems with these
++   primitives unlikely.
++ * Making anything configurable adds complexity, both in implementation and
++   usage.  We should not add any more complexity than is absolutely necessary.
++
++Potential ``tls-crypt-v2`` risks:
++
++ * Slightly more work on first connection (``WKc`` unwrap + hard reset unwrap)
++   than with ``tls-crypt`` (hard reset unwrap) or ``tls-auth`` (hard reset auth).
++ * Flexible metadata allow mistakes
++   (So we should make it easy to do it right.  Provide tooling to create client
++   keys based on cert serial + CA fingerprint, provide script that uses CRL (if
++   available) to drop revoked keys.)
 -- 
 2.7.4
 
