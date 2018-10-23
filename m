@@ -1,10 +1,12 @@
-Date: Mon, 22 Oct 2018 20:37:14 +0200 (CEST)
-Message-Id: <201810221837.w9MIbEKK048744@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1540203571-17646-1-git-send-email-lstipakov@...277...>
-References: <1540203571-17646-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Introduce openvpn_swprintf()
- with nul termination guarantee
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <39fa6e80-16db-8fd5-727a-edb6f71e1d47@...515...>
+Date: Tue, 23 Oct 2018 14:07:47 +0300
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="cQPM68UxoY0wRxLoWkpRhzDwmG1nbXreL"
+Subject: [Openvpn-devel] Topics for the community meeting (Wed,
+ 24th Oct 2018)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,44 +15,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--cQPM68UxoY0wRxLoWkpRhzDwmG1nbXreL
+Content-Type: multipart/mixed; boundary="h2fLkwdTWBcUMlVCeqt4cFDiqYjPvSp2r";
+ protected-headers="v1"
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <39fa6e80-16db-8fd5-727a-edb6f71e1d47@...515...>
+Subject: Topics for the community meeting (Wed, 24th Oct 2018)
 
-I'm not sure I totally like the change to buffer.c/tun.c - for the
-single instance where this is called inside openvpn/tun.c, on WIN32, 
-we now carry around a new function in buffer.c which is compiled 
-everywhere... possibly breaking older systems that have C99 compliant
-C compilers but no full C99 library - like my oldest OpenBSD 
-buildslave (our mantra on that is "if it breaks for good reasons, 
-it will be retired, but we shouldn't carelessly break things").
+--h2fLkwdTWBcUMlVCeqt4cFDiqYjPvSp2r
+Content-Language: en-US
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-So if we really want to keep this, it should be #ifdef _WIN32 (until
-we find good uses for wide-sprintf() on other platforms).
+Hi,
 
+We're going to have an IRC meeting starting at 11:30 CEST
+(9:30 UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have
+to be logged in to Freenode to join the channel.
 
-For the service, which is windows-only code, this change is clearly 
-reasonable and beneficial.
+Current topic list along with basic information is here:
 
-commit 43a5a4f3b4e411419639c195fee8a76495fdc88e
-Author: Lev Stipakov
-Date:   Mon Oct 22 13:19:31 2018 +0300
+<https://community.openvpn.net/openvpn/wiki/Topics-2018-10-24>
 
-     Introduce openvpn_swprintf() with nul termination guarantee
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Selva Nair <selva.nair@...277...>
-     Message-Id: <1540203571-17646-1-git-send-email-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17786.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
+In case you can't attend the meeting, please feel free to make comments
+on the topics by responding to this email or to the summary email sent
+after the meeting. Whenever possible, we'll also respond to existing,
+related email threads.
 
 --
-kind regards,
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-Gert Doering
+irc freenode net: mattock
 
+
+
+
+
+
+
+
+
+
+--h2fLkwdTWBcUMlVCeqt4cFDiqYjPvSp2r--
+
+--cQPM68UxoY0wRxLoWkpRhzDwmG1nbXreL
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAlvPAQQACgkQKVhNn0CG
+RXjcAAgAkgvb34I53wcP0DU01cWATEty/U+WY8P3EPa6vnBhyFIryJcDP/yOkIl0
+4KX9fWbBbztsfcSVm4Pflwx5bNGedNRidT2hB1TMOVwzIpF+Jwm+uXnp7/wxbUJG
+AcHPCKqcEd2wBaFbu3gCo68jDYEFp19moeVd7VnYyaPP2zoMesAD/0TbPrC8+GAH
+NJTQoaYk773XkSdok7Q1m9IcYU94R6dyOKlvtE/z+Kdpd2Gxd1R2OsruR9pDcyDn
+kq72NAV80DyhscZ6i/6ij9bBLgNmlhRZ4e8kqwXOaV2ToH75UEzER8nWjPZA9zFK
+/N6j6ryMlxroyuOjTdoAgV/76isytQ==
+=Cmz8
+-----END PGP SIGNATURE-----
+
+--cQPM68UxoY0wRxLoWkpRhzDwmG1nbXreL--
 
