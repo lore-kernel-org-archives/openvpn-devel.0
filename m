@@ -1,15 +1,15 @@
-From: David Sommerseth <openvpn@...2080...>
-References: <20181019155638.9498-1-davids@...515...>
- <20181019155638.9498-3-davids@...515...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <3a89eb8d-78c6-14b2-2e88-4bc3114fe497@...2080...>
-Date: Wed, 24 Oct 2018 12:19:55 +0200
+References: <CAKuzo_ji71-1Td7XO38MUB3YhdPDYrHcy21XBiSj8L1YZsa2NA@...278...>
+ <1540306288-23847-1-git-send-email-lstipakov@...277...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <ec38d493-7b31-4f29-6877-bf0af7712e0c@...2181...>
+Date: Wed, 24 Oct 2018 18:22:09 +0800
 MIME-Version: 1.0
-In-Reply-To: <20181019155638.9498-3-davids@...515...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
+In-Reply-To: <1540306288-23847-1-git-send-email-lstipakov@...277...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="g1hTlksL6ldnMTAii8O0AWWXVcYK2uyuN"
-Subject: Re: [Openvpn-devel] [PATCH 2/4] argv: do fewer memory re-allocations
+ boundary="5nqNp0QgTIeNDhjzydLLBy7VVzughUOKE"
+Subject: Re: [Openvpn-devel] [PATCH] Wrap openvpn_swprintf into Windows
+ define
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,95 +21,75 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---g1hTlksL6ldnMTAii8O0AWWXVcYK2uyuN
-Content-Type: multipart/mixed; boundary="vZEfKsA5k4ZcW4ha1BUzHGLGiCFFSYdx8";
+--5nqNp0QgTIeNDhjzydLLBy7VVzughUOKE
+Content-Type: multipart/mixed; boundary="ydnUBeKAdZDLZYnY9jJ9zOuanIrOjq23x";
  protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
+From: Antonio Quartulli <a@...2181...>
 To: openvpn-devel@lists.sourceforge.net
-Message-ID: <3a89eb8d-78c6-14b2-2e88-4bc3114fe497@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH 2/4] argv: do fewer memory re-allocations
-References: <20181019155638.9498-1-davids@...515...>
- <20181019155638.9498-3-davids@...515...>
-In-Reply-To: <20181019155638.9498-3-davids@...515...>
+Cc: Lev Stipakov <lstipakov@...277...>
+Message-ID: <ec38d493-7b31-4f29-6877-bf0af7712e0c@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH] Wrap openvpn_swprintf into Windows define
+References: <CAKuzo_ji71-1Td7XO38MUB3YhdPDYrHcy21XBiSj8L1YZsa2NA@...278...>
+ <1540306288-23847-1-git-send-email-lstipakov@...277...>
+In-Reply-To: <1540306288-23847-1-git-send-email-lstipakov@...277...>
 
---vZEfKsA5k4ZcW4ha1BUzHGLGiCFFSYdx8
-Content-Language: en-GB
+--ydnUBeKAdZDLZYnY9jJ9zOuanIrOjq23x
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 19/10/18 17:56, David Sommerseth wrote:
-> From: Heiko Hund <heiko.hund@...1489...>
->=20
-> Prevent the re-allocations of memory when the internal argv grows
-> beyond 2 and 4 arguments by initially allocating argv to hold up to
-> 7 (+ trailing NULL) pointers.
->=20
-> While at it rename argv_reset to argv_free to actually express
-> what's going on. Redo the argv_reset functionality so that it can
-> be used to actually reset the argv without re-allocation.
->=20
-> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
-> ---
->  src/openvpn/argv.c                   | 81 ++++++++++++++--------------
->  src/openvpn/argv.h                   |  2 +-
->  src/openvpn/console_systemd.c        |  2 +-
->  src/openvpn/init.c                   | 15 ++----
->  src/openvpn/lladdr.c                 |  2 +-
->  src/openvpn/multi.c                  | 10 ++--
->  src/openvpn/options.c                |  2 +-
->  src/openvpn/plugin.c                 |  2 +-
->  src/openvpn/route.c                  |  8 +--
->  src/openvpn/socket.c                 |  4 +-
->  src/openvpn/ssl_verify.c             |  6 +--
->  src/openvpn/tun.c                    | 38 ++++++-------
->  tests/unit_tests/openvpn/test_argv.c | 41 +++++++++-----
->  13 files changed, 110 insertions(+), 103 deletions(-)
+Hi,
 
-This is a pure rebase of [0, 1].  In my initial review, I questioned the ne=
-ed
-to keep argv_str().  I decided to keep the argv_str() as it makes the usage=
- of
-struct argv based processing simpler; no need for the caller to know inner
-details of struct argv.
+On 23/10/18 22:51, Lev Stipakov wrote:
+> From: Lev Stipakov <lev@...515...>
+>=20
+> Commit 43a5a4f3b4e411419639c195fee8a76495fdc88e added
+> vswprintf() call which turned to me missing in OpenBSD 4.9.
+>=20
+> Since that call is inside openvpn_swprintf() function which
+> is only used by Windows, wrap that function info #ifdef _WIN32.
+>=20
+> Signed-off-by: Lev Stipakov <lev@...515...>
 
-[0] <https://patchwork.openvpn.net/patch/72/>
-[1] <http://mid.mail-archive.com/20171112082736.15578-1-heiko.hund@...2464...=
-..>
+This patch introduces another ifdef, but it is enclosing a whole
+function to prevent it from being compiled on non-windows platforms,
+therefore I consider it "acceptable" for the time being.
+
+This patch fixes building openvpn on OpenBSD <=3D 4.9 (maybe this info
+should be added to the commit message).
+
+Other than that:
+
+Acked-by: Antonio Quartulli <antonio@...515...>
 
 
 --=20
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
+Antonio Quartulli
 
 
+--ydnUBeKAdZDLZYnY9jJ9zOuanIrOjq23x--
 
---vZEfKsA5k4ZcW4ha1BUzHGLGiCFFSYdx8--
-
---g1hTlksL6ldnMTAii8O0AWWXVcYK2uyuN
+--5nqNp0QgTIeNDhjzydLLBy7VVzughUOKE
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJb0EdLAAoJEIbPlEyWcf3yd8oP/2MW6CHPo62Mllwr34+rIbTU
-g5NCoeneXyRlp5sF6rmiPHbzAPaciS4urXODd7FKymxHO4jJ5djaeJBxmAao1FWK
-L565bUysgCQWSU0zCIUGZXbEq0KnrPmRwoaUncfOimG9f4cJlv/FCRCAKZ/GZn2H
-WjsXYBMdwl03I4xKguasm/kpSjvwAvfXSq5HKavO3TPNsmhYv6cMOiCfIOWZtyYb
-q68cgCwZJnKI1INU70CrXQ2nsYkcUz5h/4HZ7thZ3wh9Tc0luWjCs5Zca7CbvWV/
-KpFm5ONkjdBzZH49aToi6kZlDlduqqwZllgSS86dWKVW9q2oxKN2D3Pq6lsmFlXf
-2kBrhKAZjSPF+fhkX4lVui2cFLcEXdCn1Wo4RyrPodOJrbgnyk0xD8hPPExzEvy7
-wMC1/taRjomO86+87wIoWYAkkFyzlPPvDuZhLw0smzO12FqwafoQ7/p7RbLL7ITz
-Keh5/3sHwfjnDE0rp34DOlUwT7Po2bRIpPNtetBDuiyA9cORAEoQoyUjkOUj73jb
-vzxvXnhSdAznMlnYyjDmG6gKkFf3Qn1Xj3hsLPxLEcMYh27UKKXsPOriLPP9ZWIe
-yiyvoQajcbubejqzEWoVZcd/91T937dm/bIrQrynmtoDPwW7S6pBfGd4GYJOTF6c
-bopKbZNlMh1dcnA8L2Q3
-=DAW1
+iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlvQR9EACgkQ9FVsWUWD
+Dm2Qsg/+NU1S1NHtiFeQXQSl3mdGp/1VIP8kwYDbxX4YKkkUOLFyEsGrD1zKT7xr
+6C8javoXzFo/nij1NOLhjndOQTh5YhByKnr9suoqus6OGgAA+CzcUZfY324yEvpN
+TbY5l9O1EzXoO8j0LCKcxt1sBJu17REeh6fDCKgAS3kidrLh35kvvM4EfcWll2dF
+feKkNZ+KFs8PxY5Qd9yRnQYnjPLa0kVGpoeR4w1CJ7S7KG5j9dF6ERn7AnPZDH8E
+svN4nHMz+GP0VNi0mDLM++Xujst/uNfVPAmM5LhUUaA1EqspvocE5vUygWCFqAq3
+OFKTWXOqhGNjMAQ2JVmR8NHJ3OyioX9vOBlaHQadf1kawTT690Tis1II+SLRIT3Z
+rlYdKtE9aH+cspj2ODH6yLi8dMN+QNs9nAUfqQ10zs7cB7NEKosemmjHVizPfjTH
+w92a0jIRydDgVPcyZ4McMpa1JHpEh36FbO4bdlpMEn7r7rygFanOJS3WaHIeiV+d
+a4CHnwCk9JNG5glNpK745trLIuHVNvfkn3mKo5VB55Ty5GWrflFmoVAYqQB+KQ8v
+TJEugM2bfKdiELD42KB2l9m0vhhT4xKDdhs7GKjvS5t98R+wTL9KRvsAYY/wTz8L
+VvtiPnF2Y6P/83kLCRtsY+ATxi6O1Qc9IYFWKSsjfEs+CuseM9o=
+=vy+r
 -----END PGP SIGNATURE-----
 
---g1hTlksL6ldnMTAii8O0AWWXVcYK2uyuN--
+--5nqNp0QgTIeNDhjzydLLBy7VVzughUOKE--
 
