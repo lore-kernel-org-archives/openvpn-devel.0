@@ -1,8 +1,11 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Wed, 24 Oct 2018 13:33:41 +0200
-Message-Id: <20181024113341.1242-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Document comp-lzo no and compress being
- incompatible
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <ee138c93-b92f-59cb-7b00-dc282bed9679@...515...>
+Date: Wed, 24 Oct 2018 14:54:10 +0300
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="U9ERRKiS90L5oENA2TW3WaifkofPxB35M"
+Subject: [Openvpn-devel] Improvement suggestions for the new website
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,36 +14,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Most of the new compress but not v2 version do use swap operation. For
-'compress lzo' the swap option is not used for backwards compatibility.
-For lz4 the swap option is also not a problem since there is no version
-without swap. Unfortunately, compress introduced a second stub format
-with swap, contrary to the one in 'comp-lzo no' that does not use swap.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--U9ERRKiS90L5oENA2TW3WaifkofPxB35M
+Content-Type: multipart/mixed; boundary="S2wj6ykyd9K9u610L4qOwJcvEpDK38iCt";
+ protected-headers="v1"
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+To: "openvpn-devel@lists.sourceforge.net"
+ <openvpn-devel@lists.sourceforge.net>
+Message-ID: <ee138c93-b92f-59cb-7b00-dc282bed9679@...515...>
+Subject: Improvement suggestions for the new website
 
-Document this weirdness to let not others fall into this trap.
----
- doc/openvpn.8 | 3 +++
- 1 file changed, 3 insertions(+)
+--S2wj6ykyd9K9u610L4qOwJcvEpDK38iCt
+Content-Language: en-US
+Content-Type: text/plain; charset="iso-8859-15"
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index ac923f51..f8aa94ae 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -2551,6 +2551,9 @@ offering the best performance with least CPU usage.
- For backwards compatibility with OpenVPN versions before v2.4, use "lzo"
- (which is identical to the older option "\-\-comp\-lzo yes").
- 
-+Note however that the `stub` (or empty) option is NOT compatible with the
-+older option "\-\-comp\-lzo no").
-+
- The "lz4\-v2" and "stub\-v2" variants implement a better framing that does not add
- overhead when packets cannot be compressed. All other variants always add one extra
- framing byte compared to no compression framing.
--- 
-2.19.0
+Hi all,
 
+After years of frustration the old, outdated and generally horrible
+openvpn.net website was overhauled completely. For us at the company
+this is a major relief. However, much of the website reconstruction
+happened behind closed doors, even if we did show the almost finished
+website to some core community members prior to its launch.
+
+So now is as good a time as any to provide feedback on the new site:
+
+https://community.openvpn.net/openvpn/wiki/WebsiteSuggestions
+
+If we need to discuss the pros and cons of the suggestions we can do it
+in this email thread or on IRC (#openvpn-devel).
+
+Note that our goal is to allow trusted community members to edit
+community articles on the new website. Afaik some of the pieces that
+make this possible are missing, but I'll keep bugging people until this
+is fixed.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+
+--S2wj6ykyd9K9u610L4qOwJcvEpDK38iCt--
+
+--U9ERRKiS90L5oENA2TW3WaifkofPxB35M
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAlvQXWIACgkQKVhNn0CG
+RXiriQf/U+CDIZzrn29M+dK5FlKIEWw6YRZ+9HlI8M6JBDGjC5hgSkRAjzH2uHxr
+uk4f7U2Lv3OgEXqQSulK1UONT7tllJuUqsJcV90W47Khl5Y+mJ27Xfe8To0uoDDF
+2XBARafDjluOKBEF8XtoHK0thKGNLD53CguRC1arpbEAsP0oNukwSgTT4YVnwBVy
+8vPq0dgQBx9IVAq/2SoSrj1JQ3ii1FrkwbVXsGaNbGd8vk6NKDl/fIfB+BvQum7e
+BbalRSt1o0DlxorARKGFwO+25ie4VMz+I7WsirR5llLFbr/hXDjXPOjb9JH5luNO
+yfT+o7Qjm8lBJPMkuFEcscGHZS4cbQ==
+=eqUv
+-----END PGP SIGNATURE-----
+
+--U9ERRKiS90L5oENA2TW3WaifkofPxB35M--
 
