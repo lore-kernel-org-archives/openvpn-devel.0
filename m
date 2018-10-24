@@ -1,11 +1,15 @@
 MIME-Version: 1.0
-References: <33ef1f35-333c-cb25-bdbe-194f03e6ba4f@...515...>
- <32d9790b-0dd3-e7db-5a29-120359d08400@...1147...>
-In-Reply-To: <32d9790b-0dd3-e7db-5a29-120359d08400@...1147...>
-From: Emmanuel Deloget <logout@...260...>
-Date: Wed, 24 Oct 2018 15:22:13 +0200
-Message-ID: <CAKh=nwHFGHZXtVTHzQRUoR+otaQRu7gLM3i098fpVFN7gPuYtg@...278...>
-Subject: Re: [Openvpn-devel] Adding Google Analytics code to Trac?
+References: <CAKuzo_ji71-1Td7XO38MUB3YhdPDYrHcy21XBiSj8L1YZsa2NA@...278...>
+ <1540306288-23847-1-git-send-email-lstipakov@...277...>
+ <ec38d493-7b31-4f29-6877-bf0af7712e0c@...2181...>
+ <CAKuzo_iyq0d-WbaXsVks7E9YL1=0_dN_JkBiyWKCs6fyUd9wOQ@...278...>
+ <6fb8c277-3819-e266-f125-7bf35d2b3f7a@...2080...>
+In-Reply-To: <6fb8c277-3819-e266-f125-7bf35d2b3f7a@...2080...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 24 Oct 2018 09:36:51 -0400
+Message-ID: <CAKuzo_j7m=ttFQLiDUPyCSc8Ocg7uMCpqdCi=O0RYQNx_460Eg@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Wrap openvpn_swprintf into Windows
+ define
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,53 +19,45 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: janjust@...1147...
-Cc: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hello,
+Hi,
 
-On Wed, Oct 24, 2018 at 3:02 PM Jan Just Keijser <janjust@...1147...> wrote:
+On Wed, Oct 24, 2018 at 9:00 AM David Sommerseth
+<openvpn@...2080...> wrote:
 >
-> Hi,
+> On 24/10/18 14:39, Selva Nair wrote:
+> > On Wed, Oct 24, 2018 at 6:23 AM Antonio Quartulli <a@...2181...> wrote:
+> >>
+> >> Hi,
+> >>
+> >
+> >
+> > Also there is a misplaced and mismatched comment added to
+> > buffer.c that says
+> >
+> > +        /* vswprintf is missing in OpenBSD 4.2 */
+> >          len = vswprintf(str, size, format, arglist);
+> >
+> > Makes little sense in that context and why 4.2..
+> > That one could be removed.
+> I'd say we should have such a reference in right below the #ifdef _WIN32 a few
+> lines higher up.  And it could be slightly more informative (and should
+> reference OpenBSD 4.9, which is the distro exploding without this patch.
+
+Yes, that's why I wrote "misplaced" and "mismatched" :)
+
+> I suggest the comment below the #ifdef _WIN32 to be something like:
 >
-> On 24/10/18 13:47, Samuli Sepp=C3=A4nen wrote:
-> > Hi,
-> >
-> > The OpenVPN Inc. webmaster would like to add Google Analytics to
-> > community.openvpn.net, i.e. our Trac wiki/bug tracker. I said we need to
-> > consult the community first because GA can be seen as a form of spying.
-> > Here's our webmaster's view on this subject:
-> >
-> > ---
-> >
-> > "The goal of this would be to understand what information first-time
-> > users are finding the most valuable on community.openvpn.net."
-> >
-> > "As this is a publicly accessible community without the requirement to
-> > join to read the articles, it would be advantageous for all to
-> > understand which pieces of content the public are finding the most
-> > useful, what encourages them to become a part of the community, and what
-> > potentially persuaded them to use start using a commercial product."
-> >
-> > "As openvpn.net links to community.openvpn.net and vice versa this will
-> > also help us to understand the complete journey of a user and help to
-> > improve the website experience, which can only be seen as a positive."
-> >
-> > ---
-> >
-> > In today's community meeting there was some concern about the spying
-> > aspect of Google Analytics, but nobody was strongly opposed. This was I
-> > believe, in part, because it is fairly easy to block Google Analytics if
-> > one so wishes.
-> >
+> /*
+>  * openvpn_swprintf() is currently only used by Windows code paths
+>  * and when enabled for all platforms it will currently break
+>  * OpenBSD 4.9 which lacks vswprintf(3) support in its libc.
+>  */
 
-Wouldn't it be easier to use a server-side script to do the same
-thing? There are many "analytics" scripts out there that don't rely on
-google or any other web service. If the webmaster is in PHP, he can
-use http://www.openwebanalytics.com/ or any other subsystem.
+Looks good except,  <=4.9, not just 4.9, or whatever version is appropriate.
+(As Antonio already pointed out.)
 
-Best regards,
-
--- Emmanuel Deloget
+Selva
 
