@@ -1,13 +1,14 @@
-References: <CADkMwqTKd1tjTboxmvgrvk9kVtHDtubvQmEQ0m=nt4GB-RtoqA@...278...>
- <82cf3c7a-f738-2821-f294-1cd954a0b491@...277...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <51044224-1010-87b3-3f6b-6deac5fbd88b@...515...>
-Date: Wed, 24 Oct 2018 15:19:44 +0300
+Reply-To: openvpn-devel@lists.sourceforge.net
+References: <33ef1f35-333c-cb25-bdbe-194f03e6ba4f@...515...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <0c8cc603-cf03-1e9c-6ef7-2a8735ae29b2@...2080...>
+Date: Wed, 24 Oct 2018 14:22:02 +0200
 MIME-Version: 1.0
-In-Reply-To: <82cf3c7a-f738-2821-f294-1cd954a0b491@...277...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] Slow outbound network speed for Windows Server
- 2016 only via the OpenVPN tunnel
+In-Reply-To: <33ef1f35-333c-cb25-bdbe-194f03e6ba4f@...515...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="iU7svMfhSGY27CjYkLQ5dfql8klYPVknf"
+Subject: Re: [Openvpn-devel] Adding Google Analytics code to Trac?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,110 +17,118 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--iU7svMfhSGY27CjYkLQ5dfql8klYPVknf
+Content-Type: multipart/mixed; boundary="NFEUXy0PI8LMjpPVtuuFbBNlwY4ozag8S";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>,
+ "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Message-ID: <0c8cc603-cf03-1e9c-6ef7-2a8735ae29b2@...2080...>
+Subject: Re: Adding Google Analytics code to Trac?
+References: <33ef1f35-333c-cb25-bdbe-194f03e6ba4f@...515...>
+In-Reply-To: <33ef1f35-333c-cb25-bdbe-194f03e6ba4f@...515...>
+
+--NFEUXy0PI8LMjpPVtuuFbBNlwY4ozag8S
+Content-Language: en-GB
 Content-Type: text/plain; charset="iso-8859-15"
 Content-Transfer-Encoding: quoted-printable
-To: tincanteksup <tincanteksup@...277...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
-
-If I recall correctly, NDIS 5 support was dropped in Windows 8 or early
-Windows 10. Tap-windows uses NDIS 5, so it almost certainly does not
-work on Windows Server 2016.
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
-
-
-Il 24/10/18 15:09, tincanteksup ha scritto:
+On 24/10/18 13:47, Samuli Sepp=E4nen wrote:
 > Hi,
 >=20
-> a completely different approach ..
+> The OpenVPN Inc. webmaster would like to add Google Analytics to
+> community.openvpn.net, i.e. our Trac wiki/bug tracker. I said we need to
+> consult the community first because GA can be seen as a form of spying.
+> Here's our webmaster's view on this subject:
 >=20
-> On the Forum somebody claimed that the old Tap Adaptor works better
-> than the new one on W2012r2.
+> ---
 >=20
-> https://forums.openvpn.net/viewtopic.php?f=3D6&t=3D27288#p81973
+> "The goal of this would be to understand what information first-time
+> users are finding the most valuable on community.openvpn.net."
 >=20
-> Could you test that ?
+> "As this is a publicly accessible community without the requirement to
+> join to read the articles, it would be advantageous for all to
+> understand which pieces of content the public are finding the most
+> useful, what encourages them to become a part of the community, and what
+> potentially persuaded them to use start using a commercial product."
 >=20
-> Thanks
-> tct
+> "As openvpn.net links to community.openvpn.net and vice versa this will
+> also help us to understand the complete journey of a user and help to
+> improve the website experience, which can only be seen as a positive."
 >=20
+> ---
 >=20
-> On 03/10/2018 16:15, Rostyslav Maryliak wrote:
->> Dear OpenVPN developers,
->>
->> I've faced a very strange issue with slow outbound network speed from
->> Windows Server 2016 Standard server via the OpenVPN tunnel.
->> OpenVPN server is Windows Server 2012 R2, client is Windows Server 2016.
->> The inbound network speed for Windows Server 2016 is great.
->> But the outbound network speed is nearly 30-40 kbps. I've got the same
->> results using several tests: iperf testings, file download via SMB,
->> Web-based downloading (using HTTP) etc.
->>
->> The tunnels is getting up and it works greatly, but only in one
->> direction -
->> from Windows Server 2012 R2 to Windows Server 2016.
->> I've been using such server-client configurations setup for several years
->> with Windows Server 2012 R2 servers and I've never faced such issue
->> before.
->> At first I thought that our ISP has some network limitations, but it
->> turned
->> out that the same tests shows great network speed results using the
->> public
->> IP addresses in both directions.
->> The issue only occurs inside the VPN tunnel. I've spent 3 days tryng to
->> figure it out, but failed. I've installed all latest Windows updates,
->> reinstalled OpenVPN, tried to switch from UDP to TCP,
->> played with performance settings in configs (link-mtu, sndbuf, rcvbuf
->> etc)
->> but still no luck. I've tested the same setup between two Windows Server
->> 2012 R2 servers and it works greatly in both directions.
->> Then I've tested it with another Windows Server 2016 Standard server
->> (different server and different ISP) and it showed the same awful results
->> in outbound direction.
->> When I've set the same OpenVPN tunnel between two Windows Server 2016
->> Standard servers I've got the same poor network speed in both directions.
->>
->> I believe that the issue is somehow related only to the Windows Server
->> 2016
->> version and I am more than confident that it depends on server's TCP
->> stack
->> settings.
->> I've noticed that Windows Server 2016 has a congestion control provider
->> setting set to "default", while previous versions of Windows has this
->> setting set to "none".
->>
->> I've created a topic on OpenVPN Support Forum and it was suggested to
->> post
->> my issue to you and reference the thread.
->>
->> You can reference to the
->> https://forums.openvpn.net/viewtopic.php?f=3D6&t=3D27173 for config file=
-s and
->> additional information.
->>
->> Have you faced a similar issue before? Can you provide any hint how can I
->> resolve the issue? What did I missed?
->> I would be very grateful for any help. Thank you in advance.
->>
->>
->>
->>
->> _______________________________________________
->> Openvpn-devel mailing list
->> Openvpn-devel@lists.sourceforge.net
->> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->>
+> In today's community meeting there was some concern about the spying
+> aspect of Google Analytics, but nobody was strongly opposed. This was I
+> believe, in part, because it is fairly easy to block Google Analytics if
+> one so wishes.
 >=20
->=20
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+> So, what do _you_ think?
+
+I personally am against any external third party blockers, and in particular
+in the correlation with sites and projects trying to protect users data, su=
+ch
+as VPNs.  This is an information leak to a third-party, and when that
+third-party is Google who earns money on harvesting data and user pattern I=
+ do
+get concerns.
+
+Trackers are on all my systems blocked by default in addition to using EFF's
+Privacy Badger, the DuckDuckGo add-on and ad-blockers subscribed to additio=
+nal
+lists blocking trackers.  I do not think I'm unique in any way, and would
+expect other visitors to openvpn.net to do the same - as many users want to
+use OpenVPN to protect their data.
+
+I fully understand and value the webmaster provides and the value of such
+tracking.  But I would rather have us look at some tracking which does not
+expose this information to an external third-party.  There are solutions li=
+ke
+Matomo (former PIWIK) [1] which gives a similar utility but does not leak a=
+ny
+information to third-parties.  There might be others too, but this is one I=
+'ve
+been playing with some other places earlier.
+
+[1] <https://matomo.org/>
+
+
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
+
+
+
+--NFEUXy0PI8LMjpPVtuuFbBNlwY4ozag8S--
+
+--iU7svMfhSGY27CjYkLQ5dfql8klYPVknf
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJb0GPqAAoJEIbPlEyWcf3y0WAQAKuCrdXhxV0QhNDvL2UzFKjc
+B33ajhcjKnJ0ogui7s/RlVPyYklipmwNbWG33Yl5XCR9EKlkr8mBX00lXi7TXuFU
+AOy6WxQpYQRM5aRzpRtE+NBaPQZ74+aPzmGXr9BHDsG7pw5zBU4wQMNPuoHEbj09
+rQwHLoUMGIydz+VMqdNbm137xcici6PquQkOfPAxpTdGHrXlPAo5Y3+izXNkrReR
+kyzH2Ml+BJZoDAgnUHGE0AWb/PCe6V8cFF9+mWWlfxybbXQIFV0ehsOaDefBVeCt
+nvPr+iVi2UoXcwARhbVi4APmY5HLXSXhWd+Ges9UOpXsCEW6QjYRCiFPshP25ZYa
+QnQcxGwlVMawSZETag5UA6uGA5XjiI+mbcU6owIVb8lfLDUcvIjytEwEXjw8jWgV
+mGpsO/E8rR4D1HAiexwXbM3AUFNJJyYXCPHzyQGcxbSralfmUxaN6WwwQ4Zoam5w
+Jj69gpeW02ZFfdjErxty9YxR2jivUiR8amAsPMg7I3qVAyv9C9/MDJjcgOANlH6f
+NXHlVofQkmKnJAJB980Rzc4rQJech9FEEA5evElaogaP3SN9Sf3xU3nBmtq/F1XH
+D0zWPMXUg6g8AWShot70WgGfm/0WjFfWoM9k+2BtWnh+cBYhJ6JNXhUfpXKBF5NZ
+/0oNxAV4H30DbB9erkzX
+=JSzE
+-----END PGP SIGNATURE-----
+
+--iU7svMfhSGY27CjYkLQ5dfql8klYPVknf--
 
