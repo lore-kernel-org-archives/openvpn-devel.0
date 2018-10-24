@@ -1,16 +1,12 @@
-From: David Sommerseth <openvpn@...2080...>
-References: <20181019155638.9498-1-davids@...515...>
- <20181019155638.9498-4-davids@...515...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <94153c52-e64c-50b0-6217-6ffa60735037@...2080...>
-Date: Wed, 24 Oct 2018 12:24:29 +0200
 MIME-Version: 1.0
-In-Reply-To: <20181019155638.9498-4-davids@...515...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="JcMDfn0y0yYaf8aGzW3Fa0NScn0iu3k5S"
-Subject: Re: [Openvpn-devel] [PATCH 3/4] Add gc_arena to struct argv to save
- allocations
+References: <1540375925-6111-1-git-send-email-steffan.karger@...1435...>
+ <CAEsd45TFqoJOvEX3p_HhOr5m24rN5p63sU-Y8MkrKCveaSEc0A@...278...>
+In-Reply-To: <CAEsd45TFqoJOvEX3p_HhOr5m24rN5p63sU-Y8MkrKCveaSEc0A@...278...>
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Wed, 24 Oct 2018 07:06:04 -0400
+Message-ID: <CAEsd45Qs1eRyKXJVKMk4M1T9jHFZSV77ho-HmzL9chxD0PY-sQ@...278...>
+Subject: [Openvpn-devel] Fwd: [PATCH] Remove deprecated --compat-x509-names
+ and --no-name-remapping
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,84 +15,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---JcMDfn0y0yYaf8aGzW3Fa0NScn0iu3k5S
-Content-Type: multipart/mixed; boundary="15rZ7PAVD9Y9NqHdomZAbTYYm1Nl9XcRL";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <94153c52-e64c-50b0-6217-6ffa60735037@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH 3/4] Add gc_arena to struct argv to save
- allocations
-References: <20181019155638.9498-1-davids@...515...>
- <20181019155638.9498-4-davids@...515...>
-In-Reply-To: <20181019155638.9498-4-davids@...515...>
+Sorry, sent to Steffan but not the list:
 
---15rZ7PAVD9Y9NqHdomZAbTYYm1Nl9XcRL
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-
-On 19/10/18 17:56, David Sommerseth wrote:
-> From: Heiko Hund <heiko.hund@...1489...>
->=20
-> With the private gc_arena we do not have to allocate the strings
-> found during parsing again, since we know the arena they are
-> allocated in is valid as long as the argv vector is.
->=20
-> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
-> ---
->  src/openvpn/argv.c                   | 44 ++++++++++++----------------
->  src/openvpn/argv.h                   |  1 +
->  tests/unit_tests/openvpn/test_argv.c | 23 +++++++++++++++
->  3 files changed, 43 insertions(+), 25 deletions(-)
-
-This is a simple rebase of [0, 1] on top of the previous two patches.  Noth=
-ing
-more exciting to say about this.  My last review didn't have any further
-remarks than "will test it"; which I've done :)
-
-[0] <https://patchwork.openvpn.net/patch/74/>
-[1]
-<https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15837.=
-html>
+---------- Forwarded message ---------
+From: Jonathan K. Bullard <jkbullard@...277...>
+Date: Wed, Oct 24, 2018 at 7:00 AM
+Subject: Re: [Openvpn-devel] [PATCH] Remove deprecated
+--compat-x509-names and --no-name-remapping
+To: Steffan Karger <steffan.karger@...1435...>
 
 
---=20
-kind regards,
+Hi,
 
-David Sommerseth
-OpenVPN Inc
+The actual option name is --compat-names, not --compat-x509-names, so
+the subject line of this email should be
+
+     "[Openvpn-devel] [PATCH] Remove deprecated --compat-names and
+--no-name-remapping"
+
+The existing source code (as of commit 2b15c11) uses compat-names
+everywhere except one place, which is in a message (shown in the
+patch, see below).
+
+In addition, https://community.openvpn.net/openvpn/wiki/DeprecatedOptions
+says --compat-names was deprecated in 2.3 and removed in 2.5. There is
+no mention of --compat-x509-names.
 
 
+On Wed, Oct 24, 2018 at 6:13 AM Steffan Karger
+<steffan.karger@...1435...> wrote:
+>
+> As promised, remove these options for OpenVPN 2.5.
+>
+> If a user still uses these, print an error that the user should update it's
+> configuration. Just printing a warning would cause much more confusing
+> errors, somewhere in middle of a failed connection attempt because the
+> (non-compat) names no longer match the expected names.
 
---15rZ7PAVD9Y9NqHdomZAbTYYm1Nl9XcRL--
+<snip>
 
---JcMDfn0y0yYaf8aGzW3Fa0NScn0iu3k5S
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -2422,10 +2422,6 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
+>          {
+>              msg(M_USAGE, "--stale-routes-check requires --mode server");
+>          }
+> -        if (compat_flag(COMPAT_FLAG_QUERY | COMPAT_NO_NAME_REMAPPING))
+> -        {
+> -            msg(M_USAGE, "--compat-x509-names no-remapping requires --mode server");
+> -        }
+>      }
+>  #endif /* P2MP_SERVER */
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+That's the sole reference to --compat-x509-names in the source code
+that I found (as of commit 2b15c11).
 
-iQIcBAEBCgAGBQJb0EheAAoJEIbPlEyWcf3ysTgP+wRuu3V2wiY2VxthY2g9we+C
-FO0jDMGx3DcG5ba+ss4to3cET3odihKQK84uJL0rZBSk3ddlzq7fY/HNdIy14Hpp
-JooPBj1v17mQTw0Y27X7tz0ohi4hA9DXrHeu+/d3RJRqciUxIS+WTKVusro+XFUG
-j4VvoFt0+dU161hLteSL0i5WG+voLvg+m9up0axkMi+NXlGm+n7ZlwW2sD9aUfG2
-h7fA1+/0oROOGvXzlO/tAdUv9ennYd3S1PV8INSv1ahSC975oRLtZ0nPzQnwAK4n
-6Y2SDUZSjeeVg0WpdD3pOBV1KfH0bdROHPk55HmfLYva81jOEcpPArnN0OVnzLiF
-HMNePyBOlRP4hL7mhBnXUrXbyYhzcRSjirEGacMyCsgt6dUEsd7evccOMej42fBb
-UbuimqSuB5W/UcCZyInVkarrmaiV6LzvNVcKU5z/dMItnmRYaLA7fm0D/E6GSvme
-GcxwwumAJ+nVrrDeByF/JlRQzz0Iv1qTaRakCceW2oqOk2GtKPry6f7SUR24vBpH
-29oktlGx+IKJAEXJRxnRgg878qI+0aZktWl8rXsa7WzCBidob+/Qh384PAFDDeFp
-dPjZ+dQZiS+L5EBKpEWL2JCr0jfPmfEgMOYEsoe735Cd5VSOzDDapCHdaNmuFjPL
-nwzeFhDUEGgW7mwd/JIv
-=NIhC
------END PGP SIGNATURE-----
+Best regards,
 
---JcMDfn0y0yYaf8aGzW3Fa0NScn0iu3k5S--
+Jon Bullard
 
