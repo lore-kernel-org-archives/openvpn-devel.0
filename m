@@ -1,15 +1,16 @@
-References: <CAKuzo_ji71-1Td7XO38MUB3YhdPDYrHcy21XBiSj8L1YZsa2NA@...278...>
- <1540306288-23847-1-git-send-email-lstipakov@...277...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <ec38d493-7b31-4f29-6877-bf0af7712e0c@...2181...>
-Date: Wed, 24 Oct 2018 18:22:09 +0800
+From: David Sommerseth <openvpn@...2080...>
+References: <20181019155638.9498-1-davids@...515...>
+ <20181019155638.9498-4-davids@...515...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+Message-ID: <94153c52-e64c-50b0-6217-6ffa60735037@...2080...>
+Date: Wed, 24 Oct 2018 12:24:29 +0200
 MIME-Version: 1.0
-In-Reply-To: <1540306288-23847-1-git-send-email-lstipakov@...277...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
+In-Reply-To: <20181019155638.9498-4-davids@...515...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="5nqNp0QgTIeNDhjzydLLBy7VVzughUOKE"
-Subject: Re: [Openvpn-devel] [PATCH] Wrap openvpn_swprintf into Windows
- define
+ boundary="JcMDfn0y0yYaf8aGzW3Fa0NScn0iu3k5S"
+Subject: Re: [Openvpn-devel] [PATCH 3/4] Add gc_arena to struct argv to save
+ allocations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,75 +22,81 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---5nqNp0QgTIeNDhjzydLLBy7VVzughUOKE
-Content-Type: multipart/mixed; boundary="ydnUBeKAdZDLZYnY9jJ9zOuanIrOjq23x";
+--JcMDfn0y0yYaf8aGzW3Fa0NScn0iu3k5S
+Content-Type: multipart/mixed; boundary="15rZ7PAVD9Y9NqHdomZAbTYYm1Nl9XcRL";
  protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
 To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lstipakov@...277...>
-Message-ID: <ec38d493-7b31-4f29-6877-bf0af7712e0c@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] Wrap openvpn_swprintf into Windows define
-References: <CAKuzo_ji71-1Td7XO38MUB3YhdPDYrHcy21XBiSj8L1YZsa2NA@...278...>
- <1540306288-23847-1-git-send-email-lstipakov@...277...>
-In-Reply-To: <1540306288-23847-1-git-send-email-lstipakov@...277...>
+Message-ID: <94153c52-e64c-50b0-6217-6ffa60735037@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH 3/4] Add gc_arena to struct argv to save
+ allocations
+References: <20181019155638.9498-1-davids@...515...>
+ <20181019155638.9498-4-davids@...515...>
+In-Reply-To: <20181019155638.9498-4-davids@...515...>
 
---ydnUBeKAdZDLZYnY9jJ9zOuanIrOjq23x
-Content-Language: en-US
+--15rZ7PAVD9Y9NqHdomZAbTYYm1Nl9XcRL
+Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
-
-On 23/10/18 22:51, Lev Stipakov wrote:
-> From: Lev Stipakov <lev@...515...>
+On 19/10/18 17:56, David Sommerseth wrote:
+> From: Heiko Hund <heiko.hund@...1489...>
 >=20
-> Commit 43a5a4f3b4e411419639c195fee8a76495fdc88e added
-> vswprintf() call which turned to me missing in OpenBSD 4.9.
+> With the private gc_arena we do not have to allocate the strings
+> found during parsing again, since we know the arena they are
+> allocated in is valid as long as the argv vector is.
 >=20
-> Since that call is inside openvpn_swprintf() function which
-> is only used by Windows, wrap that function info #ifdef _WIN32.
->=20
-> Signed-off-by: Lev Stipakov <lev@...515...>
+> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+> ---
+>  src/openvpn/argv.c                   | 44 ++++++++++++----------------
+>  src/openvpn/argv.h                   |  1 +
+>  tests/unit_tests/openvpn/test_argv.c | 23 +++++++++++++++
+>  3 files changed, 43 insertions(+), 25 deletions(-)
 
-This patch introduces another ifdef, but it is enclosing a whole
-function to prevent it from being compiled on non-windows platforms,
-therefore I consider it "acceptable" for the time being.
+This is a simple rebase of [0, 1] on top of the previous two patches.  Noth=
+ing
+more exciting to say about this.  My last review didn't have any further
+remarks than "will test it"; which I've done :)
 
-This patch fixes building openvpn on OpenBSD <=3D 4.9 (maybe this info
-should be added to the commit message).
-
-Other than that:
-
-Acked-by: Antonio Quartulli <antonio@...515...>
+[0] <https://patchwork.openvpn.net/patch/74/>
+[1]
+<https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15837.=
+html>
 
 
 --=20
-Antonio Quartulli
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
 
 
---ydnUBeKAdZDLZYnY9jJ9zOuanIrOjq23x--
 
---5nqNp0QgTIeNDhjzydLLBy7VVzughUOKE
+--15rZ7PAVD9Y9NqHdomZAbTYYm1Nl9XcRL--
+
+--JcMDfn0y0yYaf8aGzW3Fa0NScn0iu3k5S
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlvQR9EACgkQ9FVsWUWD
-Dm2Qsg/+NU1S1NHtiFeQXQSl3mdGp/1VIP8kwYDbxX4YKkkUOLFyEsGrD1zKT7xr
-6C8javoXzFo/nij1NOLhjndOQTh5YhByKnr9suoqus6OGgAA+CzcUZfY324yEvpN
-TbY5l9O1EzXoO8j0LCKcxt1sBJu17REeh6fDCKgAS3kidrLh35kvvM4EfcWll2dF
-feKkNZ+KFs8PxY5Qd9yRnQYnjPLa0kVGpoeR4w1CJ7S7KG5j9dF6ERn7AnPZDH8E
-svN4nHMz+GP0VNi0mDLM++Xujst/uNfVPAmM5LhUUaA1EqspvocE5vUygWCFqAq3
-OFKTWXOqhGNjMAQ2JVmR8NHJ3OyioX9vOBlaHQadf1kawTT690Tis1II+SLRIT3Z
-rlYdKtE9aH+cspj2ODH6yLi8dMN+QNs9nAUfqQ10zs7cB7NEKosemmjHVizPfjTH
-w92a0jIRydDgVPcyZ4McMpa1JHpEh36FbO4bdlpMEn7r7rygFanOJS3WaHIeiV+d
-a4CHnwCk9JNG5glNpK745trLIuHVNvfkn3mKo5VB55Ty5GWrflFmoVAYqQB+KQ8v
-TJEugM2bfKdiELD42KB2l9m0vhhT4xKDdhs7GKjvS5t98R+wTL9KRvsAYY/wTz8L
-VvtiPnF2Y6P/83kLCRtsY+ATxi6O1Qc9IYFWKSsjfEs+CuseM9o=
-=vy+r
+iQIcBAEBCgAGBQJb0EheAAoJEIbPlEyWcf3ysTgP+wRuu3V2wiY2VxthY2g9we+C
+FO0jDMGx3DcG5ba+ss4to3cET3odihKQK84uJL0rZBSk3ddlzq7fY/HNdIy14Hpp
+JooPBj1v17mQTw0Y27X7tz0ohi4hA9DXrHeu+/d3RJRqciUxIS+WTKVusro+XFUG
+j4VvoFt0+dU161hLteSL0i5WG+voLvg+m9up0axkMi+NXlGm+n7ZlwW2sD9aUfG2
+h7fA1+/0oROOGvXzlO/tAdUv9ennYd3S1PV8INSv1ahSC975oRLtZ0nPzQnwAK4n
+6Y2SDUZSjeeVg0WpdD3pOBV1KfH0bdROHPk55HmfLYva81jOEcpPArnN0OVnzLiF
+HMNePyBOlRP4hL7mhBnXUrXbyYhzcRSjirEGacMyCsgt6dUEsd7evccOMej42fBb
+UbuimqSuB5W/UcCZyInVkarrmaiV6LzvNVcKU5z/dMItnmRYaLA7fm0D/E6GSvme
+GcxwwumAJ+nVrrDeByF/JlRQzz0Iv1qTaRakCceW2oqOk2GtKPry6f7SUR24vBpH
+29oktlGx+IKJAEXJRxnRgg878qI+0aZktWl8rXsa7WzCBidob+/Qh384PAFDDeFp
+dPjZ+dQZiS+L5EBKpEWL2JCr0jfPmfEgMOYEsoe735Cd5VSOzDDapCHdaNmuFjPL
+nwzeFhDUEGgW7mwd/JIv
+=NIhC
 -----END PGP SIGNATURE-----
 
---5nqNp0QgTIeNDhjzydLLBy7VVzughUOKE--
+--JcMDfn0y0yYaf8aGzW3Fa0NScn0iu3k5S--
 
