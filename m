@@ -1,11 +1,12 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <33ef1f35-333c-cb25-bdbe-194f03e6ba4f@...515...>
-Date: Wed, 24 Oct 2018 14:47:58 +0300
+References: <CADkMwqTKd1tjTboxmvgrvk9kVtHDtubvQmEQ0m=nt4GB-RtoqA@...278...>
+From: tincanteksup <tincanteksup@...277...>
+Message-ID: <82cf3c7a-f738-2821-f294-1cd954a0b491@...277...>
+Date: Wed, 24 Oct 2018 13:09:03 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="V9GjvyBMOXeNrg1VVhE7hMEfAQTLUSLtD"
-Subject: [Openvpn-devel] Adding Google Analytics code to Trac?
+In-Reply-To: <CADkMwqTKd1tjTboxmvgrvk9kVtHDtubvQmEQ0m=nt4GB-RtoqA@...278...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] Slow outbound network speed for Windows Server
+ 2016 only via the OpenVPN tunnel
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,80 +15,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---V9GjvyBMOXeNrg1VVhE7hMEfAQTLUSLtD
-Content-Type: multipart/mixed; boundary="BZTqC9LEsQehSiqrlqx1ds6eTJtQNNNzE";
- protected-headers="v1"
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-To: "openvpn-devel@lists.sourceforge.net"
- <openvpn-devel@lists.sourceforge.net>
-Message-ID: <33ef1f35-333c-cb25-bdbe-194f03e6ba4f@...515...>
-Subject: Adding Google Analytics code to Trac?
-
---BZTqC9LEsQehSiqrlqx1ds6eTJtQNNNzE
-Content-Language: en-US
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-The OpenVPN Inc. webmaster would like to add Google Analytics to
-community.openvpn.net, i.e. our Trac wiki/bug tracker. I said we need to
-consult the community first because GA can be seen as a form of spying.
-Here's our webmaster's view on this subject:
+a completely different approach ..
 
----
+On the Forum somebody claimed that the old Tap Adaptor works better
+than the new one on W2012r2.
 
-"The goal of this would be to understand what information first-time
-users are finding the most valuable on community.openvpn.net."
+https://forums.openvpn.net/viewtopic.php?f=6&t=27288#p81973
 
-"As this is a publicly accessible community without the requirement to
-join to read the articles, it would be advantageous for all to
-understand which pieces of content the public are finding the most
-useful, what encourages them to become a part of the community, and what
-potentially persuaded them to use start using a commercial product."
+Could you test that ?
 
-"As openvpn.net links to community.openvpn.net and vice versa this will
-also help us to understand the complete journey of a user and help to
-improve the website experience, which can only be seen as a positive."
-
----
-
-In today's community meeting there was some concern about the spying
-aspect of Google Analytics, but nobody was strongly opposed. This was I
-believe, in part, because it is fairly easy to block Google Analytics if
-one so wishes.
-
-So, what do _you_ think?
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
+Thanks
+tct
 
 
---BZTqC9LEsQehSiqrlqx1ds6eTJtQNNNzE--
-
---V9GjvyBMOXeNrg1VVhE7hMEfAQTLUSLtD
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAlvQW+4ACgkQKVhNn0CG
-RXh+BQgAhbsIxxFvvVfNc28izsJ9xUAhiKnX7fG8tP3GVb4ooTDnt/A+KvbxhcqT
-eFM9xZxbu89c0XScYT6T8kvRFDKSiVdT26bpwadN0eBQrqtT0laKPCT6p9mPP1M2
-x+01adRjk/iJuh2rfUG556+xKoEt0QZOZZyAxf1Zp2RU5r+COluEP0c4xGKTHx0c
-uVfoO1i9tA8tl/x6dmrpgkeRklXeL3Jj2XhPYOqOxceUEVjUIzn/zKeW8FFLOVN4
-v07dddJ4lsN1cBkGGLcSJKF2g4ejJzjmcju4pdb//REe2rXRG5d3lGMh877ka9+m
-72K8qarZyevToTy6M6PGi8E/qx3aPA==
-=41jt
------END PGP SIGNATURE-----
-
---V9GjvyBMOXeNrg1VVhE7hMEfAQTLUSLtD--
+On 03/10/2018 16:15, Rostyslav Maryliak wrote:
+> Dear OpenVPN developers,
+> 
+> I've faced a very strange issue with slow outbound network speed from
+> Windows Server 2016 Standard server via the OpenVPN tunnel.
+> OpenVPN server is Windows Server 2012 R2, client is Windows Server 2016.
+> The inbound network speed for Windows Server 2016 is great.
+> But the outbound network speed is nearly 30-40 kbps. I've got the same
+> results using several tests: iperf testings, file download via SMB,
+> Web-based downloading (using HTTP) etc.
+> 
+> The tunnels is getting up and it works greatly, but only in one direction -
+> from Windows Server 2012 R2 to Windows Server 2016.
+> I've been using such server-client configurations setup for several years
+> with Windows Server 2012 R2 servers and I've never faced such issue before.
+> At first I thought that our ISP has some network limitations, but it turned
+> out that the same tests shows great network speed results using the public
+> IP addresses in both directions.
+> The issue only occurs inside the VPN tunnel. I've spent 3 days tryng to
+> figure it out, but failed. I've installed all latest Windows updates,
+> reinstalled OpenVPN, tried to switch from UDP to TCP,
+> played with performance settings in configs (link-mtu, sndbuf, rcvbuf etc)
+> but still no luck. I've tested the same setup between two Windows Server
+> 2012 R2 servers and it works greatly in both directions.
+> Then I've tested it with another Windows Server 2016 Standard server
+> (different server and different ISP) and it showed the same awful results
+> in outbound direction.
+> When I've set the same OpenVPN tunnel between two Windows Server 2016
+> Standard servers I've got the same poor network speed in both directions.
+> 
+> I believe that the issue is somehow related only to the Windows Server 2016
+> version and I am more than confident that it depends on server's TCP stack
+> settings.
+> I've noticed that Windows Server 2016 has a congestion control provider
+> setting set to "default", while previous versions of Windows has this
+> setting set to "none".
+> 
+> I've created a topic on OpenVPN Support Forum and it was suggested to post
+> my issue to you and reference the thread.
+> 
+> You can reference to the
+> https://forums.openvpn.net/viewtopic.php?f=6&t=27173 for config files and
+> additional information.
+> 
+> Have you faced a similar issue before? Can you provide any hint how can I
+> resolve the issue? What did I missed?
+> I would be very grateful for any help. Thank you in advance.
+> 
+> 
+> 
+> 
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+> 
 
