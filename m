@@ -1,15 +1,13 @@
-References: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
- <1540208715-14044-4-git-send-email-steffan.karger@...1435...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <24eaecb1-6a13-45d4-5579-56f02e9d2043@...2181...>
-Date: Thu, 25 Oct 2018 17:59:31 +0800
 MIME-Version: 1.0
-In-Reply-To: <1540208715-14044-4-git-send-email-steffan.karger@...1435...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="XNj5FJZs2CGcZkaMDKh0371D6fZJss6Dr"
-Subject: Re: [Openvpn-devel] [PATCH v7 5/7] tls-crypt-v2: add
- P_CONTROL_HARD_RESET_CLIENT_V3 opcode
+References: <20181007223544.GA2246@...2461...>
+ <201810081506.w98F6BFb017762@...2054...>
+In-Reply-To: <201810081506.w98F6BFb017762@...2054...>
+From: Samy Mahmoudi <samy.mahmoudi@...277...>
+Date: Thu, 25 Oct 2018 12:08:57 +0200
+Message-ID: <CAFigVTO0319zcC+pUNt7kaGsQS0rwLZm9sdg1YRUU00PJC+PXQ@...278...>
+Content-Type: multipart/alternative; boundary="000000000000329eb605790acb52"
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: man: correct a
+ --redirection-gateway option flag
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,65 +16,88 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan.karger@...1435...>, openvpn-devel@lists.sourceforge.net
+To: gert@...1296...
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---XNj5FJZs2CGcZkaMDKh0371D6fZJss6Dr
-Content-Type: multipart/mixed; boundary="JGcecyN3tDcz0xiuHbFtr3a8RX61F824L";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Steffan Karger <steffan.karger@...1435...>,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <24eaecb1-6a13-45d4-5579-56f02e9d2043@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v7 5/7] tls-crypt-v2: add
- P_CONTROL_HARD_RESET_CLIENT_V3 opcode
-References: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
- <1540208715-14044-4-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <1540208715-14044-4-git-send-email-steffan.karger@...1435...>
-
---JGcecyN3tDcz0xiuHbFtr3a8RX61F824L
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
+--000000000000329eb605790acb52
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Thank you for your commit.
 
-On 22/10/18 19:45, Steffan Karger wrote:
-> Not used yet, but prepare for sending and receiving tls-crypt-v2 handshake
-> messages.
->=20
-> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+Le lun. 8 oct. 2018 =C3=A0 17:06, Gert Doering <gert@...1296...> a =C3=A9cr=
+it :
 
-Acked-by: Antonio Quartulli <antonio@...515...>
+> Acked-by: Gert Doering <gert@...1296...>
+>
+> Indeed, the current wording is bad.  Your change makes it much better.
+>
+> Your patch has been applied to the master and release/2.4 branch (bugfix).
+>
+> commit f6bac113bcde4e342caf16d88e0a3a8e71085c90 (master)
+> commit d6637316d25bddea65767151a57203cd6dc6f619 (release/2.4)
+> Author: Samy Mahmoudi
+> Date:   Mon Oct 8 00:35:47 2018 +0200
+>
+>      man: correct a --redirection-gateway option flag
+>
+>      Acked-by: Gert Doering <gert@...1296...>
+>      Message-Id: <20181007223544.GA2246@...2461...>
+>      URL:
+> https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17630=
+.html
+>      Signed-off-by: Gert Doering <gert@...1296...>
+>
+>
+> --
+> kind regards,
+>
+> Gert Doering
+>
+>
 
+--000000000000329eb605790acb52
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
---=20
-Antonio Quartulli
+<div dir=3D"ltr">Thank you for your commit.</div><br><div class=3D"gmail_qu=
+ote"><div dir=3D"ltr">Le=C2=A0lun. 8 oct. 2018 =C3=A0=C2=A017:06, Gert Doer=
+ing &lt;<a href=3D"mailto:gert@...1296...">gert@...1296...</a>&gt; a =C3=A9=
+crit=C2=A0:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0 0 =
+0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Acked-by: Gert Doering =
+&lt;<a href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a=
+>&gt;<br>
+<br>
+Indeed, the current wording is bad.=C2=A0 Your change makes it much better.=
+<br>
+<br>
+Your patch has been applied to the master and release/2.4 branch (bugfix).<=
+br>
+<br>
+commit f6bac113bcde4e342caf16d88e0a3a8e71085c90 (master)<br>
+commit d6637316d25bddea65767151a57203cd6dc6f619 (release/2.4)<br>
+Author: Samy Mahmoudi<br>
+Date:=C2=A0 =C2=A0Mon Oct 8 00:35:47 2018 +0200<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0man: correct a --redirection-gateway option flag<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0Acked-by: Gert Doering &lt;<a href=3D"mailto:gert@...1711...=
+96..." target=3D"_blank">gert@...1296...</a>&gt;<br>
+=C2=A0 =C2=A0 =C2=A0Message-Id: &lt;20181007223544.GA2246@...2461...&gt;<br>
+=C2=A0 =C2=A0 =C2=A0URL: <a href=3D"https://www.mail-archive.com/openvpn-de=
+vel@lists.sourceforge.net/msg17630.html" rel=3D"noreferrer" target=3D"_blan=
+k">https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg1763=
+0.html</a><br>
+=C2=A0 =C2=A0 =C2=A0Signed-off-by: Gert Doering &lt;<a href=3D"mailto:gert@=
+...1296..." target=3D"_blank">gert@...1296...</a>&gt;<br>
+<br>
+<br>
+--<br>
+kind regards,<br>
+<br>
+Gert Doering<br>
+<br>
+</blockquote></div>
 
-
---JGcecyN3tDcz0xiuHbFtr3a8RX61F824L--
-
---XNj5FJZs2CGcZkaMDKh0371D6fZJss6Dr
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlvRlAMACgkQ9FVsWUWD
-Dm0DKQ/+OGaqmPebZz39ZUO+bK1V6uDytJd99T2PjaF0dqJbHL4sNFJl4iCTwOiC
-VKp9ZIP2/c0NyS54fRc8pkJGWHuKOTWAW+gFLA+F1+30UPR6AD4XtEMATQ3S2S+6
-AgkbulIz5yth3GOc50NyKCfqtNb+fGwXmCa4U9rpZ56SgskYL3xfok7aRwoSMcAW
-utnssLoMatasOlvQhJ/aMLZjwxDEMs8Wv1t10pu2pXpNKUzk3WokfEgJbiYNO7bR
-t6HSUTGlXR+3aTSWSa2fLCKnbdWu5SGtKNg32Jx6UNqLeiWlmCmDMXHWEcM6nK+d
-i4MxJ32J0CqKdXdXQ0+LoOiavpU8ndL13zMvo5pM2kzYTg+QBWUKOvyd1O3+1i9D
-bkTc1UnXoqp6bnqFaeIJTlOZmgH4gO/3IQ3wItrntNSTf8K+0ylKA7KlGmv43VvX
-qCOPkiimrsgw5qcdv5MXACFRRi0r7uTwk/Ye4A0YZW2nidXl8LaT41q2Ev3T9TJo
-D5t8hdHaA//cG/URgsROXyq+FRc4qdhf9IOkNZvNQq6+IMw/eopue9tzjhXJlLwN
-+UquUuRfejVqEQ9rZ9bPWnfHiDbSxUIGi+vES8utTzW7/8QBAYe9Kq8JR2AQH4/d
-UeU+/sOa8nyz3PFxDBdZkFolLnM4kNWF3HFVTqsocaIsT9aMU38=
-=W61n
------END PGP SIGNATURE-----
-
---XNj5FJZs2CGcZkaMDKh0371D6fZJss6Dr--
+--000000000000329eb605790acb52--
 
