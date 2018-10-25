@@ -1,14 +1,12 @@
-From: Eric Crist <ecrist@...1286...>
-Message-Id: <581609BB-D83D-4A34-AD75-B3E3A0195554@...1286...>
-Content-Type: multipart/signed;
- boundary="Apple-Mail=_CC443FE4-BB13-4286-A30B-284E66C36212";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-Mime-Version: 1.0 (Mac OS X Mail 11.5 \(3445.9.1\))
-Date: Thu, 25 Oct 2018 09:21:25 -0500
-In-Reply-To: <CAKh=nwHFGHZXtVTHzQRUoR+otaQRu7gLM3i098fpVFN7gPuYtg@...278...>
+MIME-Version: 1.0
 References: <33ef1f35-333c-cb25-bdbe-194f03e6ba4f@...515...>
- <32d9790b-0dd3-e7db-5a29-120359d08400@...1147...>
- <CAKh=nwHFGHZXtVTHzQRUoR+otaQRu7gLM3i098fpVFN7gPuYtg@...278...>
+ <51E77D3F-AE00-4503-8EE2-AD01249051B3@...2466...>
+ <3c761b11-9e12-8717-8db2-19fb895fa974@...515...>
+In-Reply-To: <3c761b11-9e12-8717-8db2-19fb895fa974@...515...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Thu, 25 Oct 2018 19:57:51 +0500
+Message-ID: <CAFHpkQECJz8MAD8bioss83Rtm2eejRXud0bKq6AwmS4crV9KEA@...278...>
+Content-Type: multipart/alternative; boundary="0000000000005f58ba05790ed49a"
 Subject: Re: [Openvpn-devel] Adding Google Analytics code to Trac?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -18,224 +16,181 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Emmanuel Deloget <logout@...260...>
-Cc: janjust@...1147..., openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: Eric Crist <eric@...2466...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Apple-Mail=_CC443FE4-BB13-4286-A30B-284E66C36212
-Content-Type: multipart/alternative;
-	boundary="Apple-Mail=_31E6522B-17E7-4701-9D43-93C7AE9AC539"
-
---Apple-Mail=_31E6522B-17E7-4701-9D43-93C7AE9AC539
-Content-Type: text/plain; charset="utf-8"
+--0000000000005f58ba05790ed49a
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
+As for piwik, we can import apache logs to it (not sure how is it related
+to GDPR)
 
-Eric F Crist
-Sr Integration Engineer
-Desk: 651-242-5305
-Mobile: 612-998-3588
+On Thu, Oct 25, 2018, 7:00 PM Samuli Sepp=C3=A4nen <samuli@...515...> wrote:
 
-> On Oct 24, 2018, at 08:22:13, Emmanuel Deloget <logout@...260...> wrote:
->=20
-> Hello,
->=20
->>> <snip>
->=20
-> Wouldn't it be easier to use a server-side script to do the same
-> thing? There are many "analytics" scripts out there that don't rely on
-> google or any other web service. If the webmaster is in PHP, he can
-> use http://www.openwebanalytics.com/ <http://www.openwebanalytics.com/> o=
-r any other subsystem.
->=20
-> Best regards,
->=20
-> -- Emmanuel Deloget
+> Il 25/10/18 15:05, Eric Crist ha scritto:
+> >> On Oct 24, 2018, at 06:47:58, Samuli Sepp=C3=A4nen <samuli@...515...>
+> wrote:
+> >>
+> >> Signed PGP part
+> >> Hi,
+> >>
+> >> The OpenVPN Inc. webmaster would like to add Google Analytics to
+> >> community.openvpn.net, i.e. our Trac wiki/bug tracker. I said we need
+> to
+> >> consult the community first because GA can be seen as a form of spying.
+> >> Here's our webmaster's view on this subject:
+> >>
+> >> ---
+> >>
+> >> "The goal of this would be to understand what information first-time
+> >> users are finding the most valuable on community.openvpn.net."
+> >>
+> >> "As this is a publicly accessible community without the requirement to
+> >> join to read the articles, it would be advantageous for all to
+> >> understand which pieces of content the public are finding the most
+> >> useful, what encourages them to become a part of the community, and wh=
+at
+> >> potentially persuaded them to use start using a commercial product."
+> >>
+> >> "As openvpn.net links to community.openvpn.net and vice versa this will
+> >> also help us to understand the complete journey of a user and help to
+> >> improve the website experience, which can only be seen as a positive."
+> >>
+> >> ---
+> >>
+> >> In today's community meeting there was some concern about the spying
+> >> aspect of Google Analytics, but nobody was strongly opposed. This was I
+> >> believe, in part, because it is fairly easy to block Google Analytics =
+if
+> >> one so wishes.
+> >>
+> >> So, what do _you_ think?
+> >
+> >
+> >
+> > We have had Google Analytics built in to the forum for years.  I think
+> since their inception.  Not a single person has made a complaint (I=E2=80=
+=99m sure
+> I=E2=80=99ll get some now).
+> >
+> > I=E2=80=99m not opposed to adding GA to the community site.
+> >
+>
+> Right now there is some internal resistance within the company to using
+> Google Analytics at all. I believe much of it is related to GDPR. So, at
+> the moment, it seems that GA won't happen on Trac and may in time be
+> removed from elsewhere as well. But all this is still in speculative
+> stage, so take it with a grain of salt.
+>
+> --
+> Samuli Sepp=C3=A4nen
+> Community Manager
+> OpenVPN Technologies, Inc
+>
+> irc freenode net: mattock
+>
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
 
-
-I=E2=80=99ll take a look at this.  I=E2=80=99m honestly not a huge fan of G=
-A, but it=E2=80=99s =E2=80=9Ceasy=E2=80=9D so that=E2=80=99s what I=E2=80=
-=99ve used for the forum.  I=E2=80=99ll work with Samuli and their web deve=
-loper, as well.
-
-
-Eric
-
---Apple-Mail=_31E6522B-17E7-4701-9D43-93C7AE9AC539
-Content-Type: text/html; charset="utf-8"
+--0000000000005f58ba05790ed49a
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html; charset=
-=3Dutf-8"></head><body style=3D"word-wrap: break-word; -webkit-nbsp-mode: s=
-pace; line-break: after-white-space;" class=3D""><br class=3D""><div class=
-=3D"">
-<div dir=3D"auto" style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0); =
-letter-spacing: normal; text-align: start; text-indent: 0px; text-transform=
-: none; white-space: normal; word-spacing: 0px; -webkit-text-stroke-width: =
-0px; text-decoration: none; word-wrap: break-word; -webkit-nbsp-mode: space=
-; line-break: after-white-space;" class=3D""><div dir=3D"auto" style=3D"car=
-et-color: rgb(0, 0, 0); color: rgb(0, 0, 0); letter-spacing: normal; text-a=
-lign: start; text-indent: 0px; text-transform: none; white-space: normal; w=
-ord-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration: none; wo=
-rd-wrap: break-word; -webkit-nbsp-mode: space; line-break: after-white-spac=
-e;" class=3D""><div style=3D"margin: 0in 0in 0.0001pt; font-size: 11pt; fon=
-t-family: Calibri, sans-serif;" class=3D""><b class=3D""><span style=3D"fon=
-t-size: 10pt; font-family: Verdana, sans-serif; color: rgb(31, 73, 125);" c=
-lass=3D"">Eric F Crist<o:p class=3D""></o:p></span></b></div><div style=3D"=
-margin: 0in 0in 0.0001pt; font-size: 11pt; font-family: Calibri, sans-serif=
-;" class=3D""><b class=3D""><span style=3D"font-size: 10pt; font-family: Ve=
-rdana, sans-serif; color: gray;" class=3D"">Sr Integration Engineer<o:p cla=
-ss=3D""></o:p></span></b></div><div style=3D"margin: 0in 0in 0.0001pt; font=
--size: 11pt; font-family: Calibri, sans-serif;" class=3D""><span style=3D"f=
-ont-size: 8pt; font-family: Verdana, sans-serif; color: rgb(127, 127, 127);=
-" class=3D"">Desk: 651-242-5305</span><span style=3D"font-size: 10pt; font-=
-family: Verdana, sans-serif; color: rgb(31, 73, 125);" class=3D""><o:p clas=
-s=3D""></o:p></span></div><div style=3D"margin: 0in 0in 0.0001pt; font-size=
-: 11pt; font-family: Calibri, sans-serif;" class=3D""><span style=3D"font-s=
-ize: 8pt; font-family: Verdana, sans-serif; color: rgb(127, 127, 127);" cla=
-ss=3D"">Mobile: 612-998-3588</span></div></div></div>
-</div>
-<br class=3D""><div><blockquote type=3D"cite" class=3D""><div class=3D"">On=
- Oct 24, 2018, at 08:22:13, Emmanuel Deloget &lt;<a href=3D"mailto:logout@...220...=
-..260..." class=3D"">logout@...260...</a>&gt; wrote:</div><br class=3D"Appl=
-e-interchange-newline"><div class=3D""><span style=3D"caret-color: rgb(0, 0=
-, 0); font-family: Helvetica; font-size: 12px; font-style: normal; font-var=
-iant-caps: normal; font-weight: normal; letter-spacing: normal; text-align:=
- start; text-indent: 0px; text-transform: none; white-space: normal; word-s=
-pacing: 0px; -webkit-text-stroke-width: 0px; text-decoration: none; float: =
-none; display: inline !important;" class=3D"">Hello,</span><br style=3D"car=
-et-color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-style=
-: normal; font-variant-caps: normal; font-weight: normal; letter-spacing: n=
-ormal; text-align: start; text-indent: 0px; text-transform: none; white-spa=
-ce: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decorat=
-ion: none;" class=3D""><br style=3D"caret-color: rgb(0, 0, 0); font-family:=
- Helvetica; font-size: 12px; font-style: normal; font-variant-caps: normal;=
- font-weight: normal; letter-spacing: normal; text-align: start; text-inden=
-t: 0px; text-transform: none; white-space: normal; word-spacing: 0px; -webk=
-it-text-stroke-width: 0px; text-decoration: none;" class=3D""><blockquote t=
-ype=3D"cite" style=3D"font-family: Helvetica; font-size: 12px; font-style: =
-normal; font-variant-caps: normal; font-weight: normal; letter-spacing: nor=
-mal; orphans: auto; text-align: start; text-indent: 0px; text-transform: no=
-ne; white-space: normal; widows: auto; word-spacing: 0px; -webkit-text-size=
--adjust: auto; -webkit-text-stroke-width: 0px; text-decoration: none;" clas=
-s=3D""><blockquote type=3D"cite" class=3D""><span style=3D"caret-color: rgb=
-(0, 0, 0);" class=3D"">&lt;snip&gt;</span></blockquote></blockquote><br sty=
-le=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; f=
-ont-style: normal; font-variant-caps: normal; font-weight: normal; letter-s=
-pacing: normal; text-align: start; text-indent: 0px; text-transform: none; =
-white-space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; tex=
-t-decoration: none;" class=3D""><span style=3D"caret-color: rgb(0, 0, 0); f=
-ont-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ca=
-ps: normal; font-weight: normal; letter-spacing: normal; text-align: start;=
- text-indent: 0px; text-transform: none; white-space: normal; word-spacing:=
- 0px; -webkit-text-stroke-width: 0px; text-decoration: none; float: none; d=
-isplay: inline !important;" class=3D"">Wouldn't it be easier to use a serve=
-r-side script to do the same</span><br style=3D"caret-color: rgb(0, 0, 0); =
-font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-c=
-aps: normal; font-weight: normal; letter-spacing: normal; text-align: start=
-; text-indent: 0px; text-transform: none; white-space: normal; word-spacing=
-: 0px; -webkit-text-stroke-width: 0px; text-decoration: none;" class=3D""><=
-span style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size:=
- 12px; font-style: normal; font-variant-caps: normal; font-weight: normal; =
-letter-spacing: normal; text-align: start; text-indent: 0px; text-transform=
-: none; white-space: normal; word-spacing: 0px; -webkit-text-stroke-width: =
-0px; text-decoration: none; float: none; display: inline !important;" class=
-=3D"">thing? There are many "analytics" scripts out there that don't rely o=
-n</span><br style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; fon=
-t-size: 12px; font-style: normal; font-variant-caps: normal; font-weight: n=
-ormal; letter-spacing: normal; text-align: start; text-indent: 0px; text-tr=
-ansform: none; white-space: normal; word-spacing: 0px; -webkit-text-stroke-=
-width: 0px; text-decoration: none;" class=3D""><span style=3D"caret-color: =
-rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-style: normal; =
-font-variant-caps: normal; font-weight: normal; letter-spacing: normal; tex=
-t-align: start; text-indent: 0px; text-transform: none; white-space: normal=
-; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration: none;=
- float: none; display: inline !important;" class=3D"">google or any other w=
-eb service. If the webmaster is in PHP, he can</span><br style=3D"caret-col=
-or: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-style: norm=
-al; font-variant-caps: normal; font-weight: normal; letter-spacing: normal;=
- text-align: start; text-indent: 0px; text-transform: none; white-space: no=
-rmal; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration: n=
-one;" class=3D""><span style=3D"caret-color: rgb(0, 0, 0); font-family: Hel=
-vetica; font-size: 12px; font-style: normal; font-variant-caps: normal; fon=
-t-weight: normal; letter-spacing: normal; text-align: start; text-indent: 0=
-px; text-transform: none; white-space: normal; word-spacing: 0px; -webkit-t=
-ext-stroke-width: 0px; text-decoration: none; float: none; display: inline =
-!important;" class=3D"">use<span class=3D"Apple-converted-space">&nbsp;</sp=
-an></span><a href=3D"http://www.openwebanalytics.com/" style=3D"font-family=
-: Helvetica; font-size: 12px; font-style: normal; font-variant-caps: normal=
-; font-weight: normal; letter-spacing: normal; orphans: auto; text-align: s=
-tart; text-indent: 0px; text-transform: none; white-space: normal; widows: =
-auto; word-spacing: 0px; -webkit-text-size-adjust: auto; -webkit-text-strok=
-e-width: 0px;" class=3D"">http://www.openwebanalytics.com/</a><span style=
-=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; fon=
-t-style: normal; font-variant-caps: normal; font-weight: normal; letter-spa=
-cing: normal; text-align: start; text-indent: 0px; text-transform: none; wh=
-ite-space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-=
-decoration: none; float: none; display: inline !important;" class=3D""><spa=
-n class=3D"Apple-converted-space">&nbsp;</span>or any other subsystem.</spa=
-n><br style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size=
-: 12px; font-style: normal; font-variant-caps: normal; font-weight: normal;=
- letter-spacing: normal; text-align: start; text-indent: 0px; text-transfor=
-m: none; white-space: normal; word-spacing: 0px; -webkit-text-stroke-width:=
- 0px; text-decoration: none;" class=3D""><br style=3D"caret-color: rgb(0, 0=
-, 0); font-family: Helvetica; font-size: 12px; font-style: normal; font-var=
-iant-caps: normal; font-weight: normal; letter-spacing: normal; text-align:=
- start; text-indent: 0px; text-transform: none; white-space: normal; word-s=
-pacing: 0px; -webkit-text-stroke-width: 0px; text-decoration: none;" class=
-=3D""><span style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; fon=
-t-size: 12px; font-style: normal; font-variant-caps: normal; font-weight: n=
-ormal; letter-spacing: normal; text-align: start; text-indent: 0px; text-tr=
-ansform: none; white-space: normal; word-spacing: 0px; -webkit-text-stroke-=
-width: 0px; text-decoration: none; float: none; display: inline !important;=
-" class=3D"">Best regards,</span><br style=3D"caret-color: rgb(0, 0, 0); fo=
-nt-family: Helvetica; font-size: 12px; font-style: normal; font-variant-cap=
-s: normal; font-weight: normal; letter-spacing: normal; text-align: start; =
-text-indent: 0px; text-transform: none; white-space: normal; word-spacing: =
-0px; -webkit-text-stroke-width: 0px; text-decoration: none;" class=3D""><br=
- style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12p=
-x; font-style: normal; font-variant-caps: normal; font-weight: normal; lett=
-er-spacing: normal; text-align: start; text-indent: 0px; text-transform: no=
-ne; white-space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px;=
- text-decoration: none;" class=3D""><span style=3D"caret-color: rgb(0, 0, 0=
-); font-family: Helvetica; font-size: 12px; font-style: normal; font-varian=
-t-caps: normal; font-weight: normal; letter-spacing: normal; text-align: st=
-art; text-indent: 0px; text-transform: none; white-space: normal; word-spac=
-ing: 0px; -webkit-text-stroke-width: 0px; text-decoration: none; float: non=
-e; display: inline !important;" class=3D"">-- Emmanuel Deloget</span><br st=
-yle=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; =
-font-style: normal; font-variant-caps: normal; font-weight: normal; letter-=
-spacing: normal; text-align: start; text-indent: 0px; text-transform: none;=
- white-space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; te=
-xt-decoration: none;" class=3D""></div></blockquote></div><br class=3D""><d=
-iv class=3D""><br class=3D""></div><div class=3D"">I=E2=80=99ll take a look=
- at this. &nbsp;I=E2=80=99m honestly not a huge fan of GA, but it=E2=80=99s=
- =E2=80=9Ceasy=E2=80=9D so that=E2=80=99s what I=E2=80=99ve used for the fo=
-rum. &nbsp;I=E2=80=99ll work with Samuli and their web developer, as well.<=
-/div><div class=3D""><br class=3D""></div><div class=3D""><br class=3D""></=
-div><div class=3D"">Eric</div></body></html>=
+<div dir=3D"auto">As for piwik, we can import apache logs to it (not sure h=
+ow is it related to GDPR)</div><br><div class=3D"gmail_quote"><div dir=3D"l=
+tr">On Thu, Oct 25, 2018, 7:00 PM Samuli Sepp=C3=A4nen &lt;<a href=3D"mailt=
+o:samuli@...515...">samuli@...515...</a>&gt; wrote:<br></div><blockquote cl=
+ass=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;p=
+adding-left:1ex">Il 25/10/18 15:05, Eric Crist ha scritto:<br>
+&gt;&gt; On Oct 24, 2018, at 06:47:58, Samuli Sepp=C3=A4nen &lt;<a href=3D"=
+mailto:samuli@...515..." target=3D"_blank" rel=3D"noreferrer">samuli@...2146...=
+...</a>&gt; wrote:<br>
+&gt;&gt;<br>
+&gt;&gt; Signed PGP part<br>
+&gt;&gt; Hi,<br>
+&gt;&gt;<br>
+&gt;&gt; The OpenVPN Inc. webmaster would like to add Google Analytics to<b=
+r>
+&gt;&gt; <a href=3D"http://community.openvpn.net" rel=3D"noreferrer norefer=
+rer" target=3D"_blank">community.openvpn.net</a>, i.e. our Trac wiki/bug tr=
+acker. I said we need to<br>
+&gt;&gt; consult the community first because GA can be seen as a form of sp=
+ying.<br>
+&gt;&gt; Here&#39;s our webmaster&#39;s view on this subject:<br>
+&gt;&gt;<br>
+&gt;&gt; ---<br>
+&gt;&gt;<br>
+&gt;&gt; &quot;The goal of this would be to understand what information fir=
+st-time<br>
+&gt;&gt; users are finding the most valuable on <a href=3D"http://community=
+.openvpn.net" rel=3D"noreferrer noreferrer" target=3D"_blank">community.ope=
+nvpn.net</a>.&quot;<br>
+&gt;&gt;<br>
+&gt;&gt; &quot;As this is a publicly accessible community without the requi=
+rement to<br>
+&gt;&gt; join to read the articles, it would be advantageous for all to<br>
+&gt;&gt; understand which pieces of content the public are finding the most=
+<br>
+&gt;&gt; useful, what encourages them to become a part of the community, an=
+d what<br>
+&gt;&gt; potentially persuaded them to use start using a commercial product=
+.&quot;<br>
+&gt;&gt;<br>
+&gt;&gt; &quot;As <a href=3D"http://openvpn.net" rel=3D"noreferrer noreferr=
+er" target=3D"_blank">openvpn.net</a> links to <a href=3D"http://community.=
+openvpn.net" rel=3D"noreferrer noreferrer" target=3D"_blank">community.open=
+vpn.net</a> and vice versa this will<br>
+&gt;&gt; also help us to understand the complete journey of a user and help=
+ to<br>
+&gt;&gt; improve the website experience, which can only be seen as a positi=
+ve.&quot;<br>
+&gt;&gt;<br>
+&gt;&gt; ---<br>
+&gt;&gt;<br>
+&gt;&gt; In today&#39;s community meeting there was some concern about the =
+spying<br>
+&gt;&gt; aspect of Google Analytics, but nobody was strongly opposed. This =
+was I<br>
+&gt;&gt; believe, in part, because it is fairly easy to block Google Analyt=
+ics if<br>
+&gt;&gt; one so wishes.<br>
+&gt;&gt;<br>
+&gt;&gt; So, what do _you_ think?<br>
+&gt; <br>
+&gt; <br>
+&gt; <br>
+&gt; We have had Google Analytics built in to the forum for years.=C2=A0 I =
+think since their inception.=C2=A0 Not a single person has made a complaint=
+ (I=E2=80=99m sure I=E2=80=99ll get some now).<br>
+&gt; <br>
+&gt; I=E2=80=99m not opposed to adding GA to the community site.<br>
+&gt; <br>
+<br>
+Right now there is some internal resistance within the company to using<br>
+Google Analytics at all. I believe much of it is related to GDPR. So, at<br>
+the moment, it seems that GA won&#39;t happen on Trac and may in time be<br>
+removed from elsewhere as well. But all this is still in speculative<br>
+stage, so take it with a grain of salt.<br>
+<br>
+-- <br>
+Samuli Sepp=C3=A4nen<br>
+Community Manager<br>
+OpenVPN Technologies, Inc<br>
+<br>
+irc freenode net: mattock<br>
+<br>
+_______________________________________________<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank" re=
+l=3D"noreferrer">Openvpn-devel@lists.sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
+=3D"noreferrer noreferrer" target=3D"_blank">https://lists.sourceforge.net/=
+lists/listinfo/openvpn-devel</a><br>
+</blockquote></div>
 
---Apple-Mail=_31E6522B-17E7-4701-9D43-93C7AE9AC539--
-
---Apple-Mail=_CC443FE4-BB13-4286-A30B-284E66C36212
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename=signature.asc
-Content-Type: application/pgp-signature;
-	name=signature.asc
-Content-Description: Message signed with OpenPGP
-
------BEGIN PGP SIGNATURE-----
-Comment: GPGTools - http://gpgtools.org
-
-iQEzBAEBCAAdFiEEyPyj5/eHByzeuR0vcpZCGTkNDQ4FAlvR0WUACgkQcpZCGTkN
-DQ4XDgf/ZWDOzMiCwFxy7MvZ/pyRnDV7fLmVL+Ii6rmz0D986XTInfUi05JQlfw6
-xD7pNa+jSQ7t1XI+xnXTIKPgNgDPYE79f5HHDzAv/RLIxbcm6Wyz1jpxK7NCEV2h
-t5NQ4gzqEB36xpXaL0vHZcVIvFblv/lQP4xWwSmwUz3IrZYtbbOXVSFMilWo/t+a
-A1J6IHxFeJnGD6iNi3fsqjgr3Q2920NcVHhm70QILnEHPURBAp1o0RM4BFLzIyif
-kIVEN6dV8Vg0GRfSMvlezHc5M+vZynHWTyrmKqiisGgH/NJQsPpECdsoWjOY8mTQ
-CyThyQiOnrQPLpqvhNPq0Hos93gymQ==
-=hQsC
------END PGP SIGNATURE-----
-
---Apple-Mail=_CC443FE4-BB13-4286-A30B-284E66C36212--
+--0000000000005f58ba05790ed49a--
 
