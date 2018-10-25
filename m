@@ -1,14 +1,14 @@
-References: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <4496cc38-d236-421a-4bdc-d167c722c08e@...2181...>
-Date: Thu, 25 Oct 2018 19:40:16 +0800
+References: <33ef1f35-333c-cb25-bdbe-194f03e6ba4f@...515...>
+ <51E77D3F-AE00-4503-8EE2-AD01249051B3@...2466...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <3c761b11-9e12-8717-8db2-19fb895fa974@...515...>
+Date: Thu, 25 Oct 2018 16:59:39 +0300
 MIME-Version: 1.0
-In-Reply-To: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <51E77D3F-AE00-4503-8EE2-AD01249051B3@...2466...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="mgUNUNmqOPiKJo93qi4cbSUBTJ1xIXWrw"
-Subject: Re: [Openvpn-devel] [PATCH 00/10] Client-specific tls-crypt keys
- (--tls-crypt-v2)
+ boundary="3qlP4FcuopIAUadauMEDOdZIpIoDLk5By"
+Subject: Re: [Openvpn-devel] Adding Google Analytics code to Trac?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,104 +17,105 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Eric Crist <eric@...2466...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---mgUNUNmqOPiKJo93qi4cbSUBTJ1xIXWrw
-Content-Type: multipart/mixed; boundary="0J67N2h4bx5N099IVNPkM0SyHDXUWZTmF";
+--3qlP4FcuopIAUadauMEDOdZIpIoDLk5By
+Content-Type: multipart/mixed; boundary="putvrwuKoR4ISALFOFrssKcryLwL5rjE2";
  protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: "openvpn-devel@lists.sourceforge.net"
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+To: Eric Crist <eric@...2466...>
+Cc: "openvpn-devel@lists.sourceforge.net"
  <openvpn-devel@lists.sourceforge.net>
-Cc: Steffan Karger <steffan.karger@...1435...>
-Message-ID: <4496cc38-d236-421a-4bdc-d167c722c08e@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH 00/10] Client-specific tls-crypt keys
- (--tls-crypt-v2)
-References: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <1512734870-17133-1-git-send-email-steffan.karger@...1435...>
+Message-ID: <3c761b11-9e12-8717-8db2-19fb895fa974@...515...>
+Subject: Re: [Openvpn-devel] Adding Google Analytics code to Trac?
+References: <33ef1f35-333c-cb25-bdbe-194f03e6ba4f@...515...>
+ <51E77D3F-AE00-4503-8EE2-AD01249051B3@...2466...>
+In-Reply-To: <51E77D3F-AE00-4503-8EE2-AD01249051B3@...2466...>
 
---0J67N2h4bx5N099IVNPkM0SyHDXUWZTmF
+--putvrwuKoR4ISALFOFrssKcryLwL5rjE2
 Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi all,
-
-I am happy to say that finally I couldn't find anything wrong in the
-last version of this patches.
-
-Other then reviewing and providing feedback to Steffan, I have also
-tested the code in various setups, including the usage of custom
-metadata and its verify script.
-
-On top of that, I used the documentation provided by Steffan to port
-this feature to the OpenVPN 3 codebase and I can say that my
-implementation happily co-operates with OpenVPN 2.
-
-This makes me think that Steffan's code follows the doc properly (or
-that both implementations have the same mistakes :-P but it is quite
-unlikely).
-
-I have ack'd the various patches one by one and I believe they are ready
-to be merged into master.
-
-The ball now goes to the repo maintainers.
-
-
-Regards,
-
-
-On 08/12/17 20:07, Steffan Karger wrote:
-> Hi,
->=20
-> The following patch set adds support for client-specific tls-crypt keys.
->=20
-> For a rationale, description and specification see patch 2/10, which
-> adds all that to doc/tls-crypt-v2.txt.
->=20
-> This set is also available as a branch in my github fork:
-> https://github.com/syzzer/openvpn/tree/tls-crypt-v2-preview4
->=20
-> -Steffan
+Il 25/10/18 15:05, Eric Crist ha scritto:
+>> On Oct 24, 2018, at 06:47:58, Samuli Sepp=C3=A4nen <samuli@...515...> wr=
+ote:
+>>
+>> Signed PGP part
+>> Hi,
+>>
+>> The OpenVPN Inc. webmaster would like to add Google Analytics to
+>> community.openvpn.net, i.e. our Trac wiki/bug tracker. I said we need to
+>> consult the community first because GA can be seen as a form of spying.
+>> Here's our webmaster's view on this subject:
+>>
+>> ---
+>>
+>> "The goal of this would be to understand what information first-time
+>> users are finding the most valuable on community.openvpn.net."
+>>
+>> "As this is a publicly accessible community without the requirement to
+>> join to read the articles, it would be advantageous for all to
+>> understand which pieces of content the public are finding the most
+>> useful, what encourages them to become a part of the community, and what
+>> potentially persuaded them to use start using a commercial product."
+>>
+>> "As openvpn.net links to community.openvpn.net and vice versa this will
+>> also help us to understand the complete journey of a user and help to
+>> improve the website experience, which can only be seen as a positive."
+>>
+>> ---
+>>
+>> In today's community meeting there was some concern about the spying
+>> aspect of Google Analytics, but nobody was strongly opposed. This was I
+>> believe, in part, because it is fairly easy to block Google Analytics if
+>> one so wishes.
+>>
+>> So, what do _you_ think?
 >=20
 >=20
-> -------------------------------------------------------------------------=
------
-> Check out the vibrant tech community on one of the world's most
-> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 >=20
+> We have had Google Analytics built in to the forum for years.  I think si=
+nce their inception.  Not a single person has made a complaint (I=E2=80=99m=
+ sure I=E2=80=99ll get some now).
+>=20
+> I=E2=80=99m not opposed to adding GA to the community site.
+>=20
+
+Right now there is some internal resistance within the company to using
+Google Analytics at all. I believe much of it is related to GDPR. So, at
+the moment, it seems that GA won't happen on Trac and may in time be
+removed from elsewhere as well. But all this is still in speculative
+stage, so take it with a grain of salt.
 
 --=20
-Antonio Quartulli
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
 
---0J67N2h4bx5N099IVNPkM0SyHDXUWZTmF--
+--putvrwuKoR4ISALFOFrssKcryLwL5rjE2--
 
---mgUNUNmqOPiKJo93qi4cbSUBTJ1xIXWrw
+--3qlP4FcuopIAUadauMEDOdZIpIoDLk5By
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlvRq6AACgkQ9FVsWUWD
-Dm2LYRAAjCAKNGAmaBhsikQiGRCWI9Ypa4m8wIvrEHmObiP9vu1O6JCFrLbcBpf2
-PWBS9ygi78G8DA+b+n2M9FJQmJC8UZwvI8lhFk7E+8K9oezYiXJotRulLw8Z0z2K
-1LHO9xU2PgkUoYh8+RCayvVXWG4ZMjnur06TiPKYysh5rzM1TrEKA9ZIlumLSwPg
-MJ+py3OzFsg0txkgK9QMZ4TPtgPmUBErle+eeh82FFDqQstvbTmycxfnNLVp64c8
-NxTBeh2rVe+TbBiiDa+UhdszS4TpeP8bs9Rw5uvw6/6YyPm1YKi7x0mrQPPHJOlM
-W+jjj5U8Y0EQK4yyiOEFsWZCkkbyoO7O1zlgwGjyuhQkvliLDFdcFif/FGRmtZTn
-mg5epBvsAit36uV0mQ9nrBAnhs3MNpzxx5phVmyYt3p/ss6ZHq4GNo0kYB9+UUIR
-L/tT6z/KHmFpvYvTGFkiw4NmAfsJr7j+V7/JIpNiHUH6BdxfrYwN3RPuYmyuCFh7
-MGx9Eu+1fVXpudwYTLGy10594/Kbz5GCMhiOCvmgYMivr2vxQN1DMAyh+a4Soal8
-UI54wFkJd1gdgHvydwXItnWCsnAuUrC24Y4iKU9+4IoGcPHWBpg1IaIFdUcjhyow
-Z32UpfLQQ/OQRdY20VYxy6aGEgv3ZuBmOMAjFORxX2h2iwsmKYY=
-=33zR
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAlvRzEsACgkQKVhNn0CG
+RXjOFggAwbcl/8elX2Sa+oqsDcYXrUlkWoIckoQ7KAjeOUqQTRexPolBi9LyD6R9
+GBCMe71kVj1dwnOb1Wf0ZSqee/Wmh6Ak8M2Y8cPtFyjd3egKNNp/kV/y6970PxxX
+XY94GT9jAFa9fcMkKuPusGbs5IiCV9B4b8k+qThNMLiD6YhOCb2xCHENf19mvCvL
+fAh00u3Puwqad+xbxRjHD3bRFz0pPndvPP0IKtzbEVGRH4bnI7ch0ClcIASYPT5q
+qpWjMGPlW3ni2Sr+fDY2N/Cb44gsRdNTQWuKFPIq8pjIG4QWCd/YDSa22FTqjTm3
+y4+7HvuKbKRDdYUvoSYTvXg2NkFv8g==
+=b9up
 -----END PGP SIGNATURE-----
 
---mgUNUNmqOPiKJo93qi4cbSUBTJ1xIXWrw--
+--3qlP4FcuopIAUadauMEDOdZIpIoDLk5By--
 
