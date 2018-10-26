@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Fri, 26 Oct 2018 19:23:59 +0200
-Message-Id: <20181026172403.8654-3-davids@...515...>
+Date: Fri, 26 Oct 2018 19:24:01 +0200
+Message-Id: <20181026172403.8654-5-davids@...515...>
 In-Reply-To: <20181026172403.8654-1-davids@...515...>
 References: <20181026172403.8654-1-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH applied] tls-crypt-v2: generate
- tls-crypt-v2 keys
+Subject: Re: [Openvpn-devel] [PATCH applied] tls-crypt-v2: add
+ P_CONTROL_HARD_RESET_CLIENT_V3 opcode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,16 +22,16 @@ Hash: SHA512
 
 Your patch has been applied to the master branch
 
-commit 9d59029a088b26b8dd50dc2523f87e2b38e4ab53
+commit 283290bf77dbc6c1c23deddd6145e74576bf79f1
 Author: Steffan Karger
-Date:   Mon Oct 22 13:45:11 2018 +0200
+Date:   Mon Oct 22 13:45:13 2018 +0200
 
-     tls-crypt-v2: generate tls-crypt-v2 keys
+     tls-crypt-v2: add P_CONTROL_HARD_RESET_CLIENT_V3 opcode
 
      Signed-off-by: Steffan Karger <steffan.karger@...1435...>
      Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <1540208715-14044-2-git-send-email-steffan.karger@...1435...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17792.html
+     Message-Id: <1540208715-14044-4-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17790.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -43,18 +43,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJb00flAAoJEIbPlEyWcf3y2wkQAIa+aba6+P2+vxmbCsZ2IaT9
-k6gFRByUefjLt9ZEF9bZiCM6nIFqnBEr6F6FW025UTDaLd1r+4CMKsv5duSrlefU
-hTsQY95J46uPuQkwPVDQ1zp1MsJGXCvRDaaOxe44rC+U1J2S1hPsV9+1dB7RKspj
-iNe65V8KVv8CV8LiWUWn7pZtr6mgAgz1kQHUdbN7kd+nNeLvFOPSVh0ILu031srv
-yIGr0o/RkRgC+1Ju0rcX8SvDkeCbr4moRrhF0TmIZkr5CT8SVCqXxprqgaoirfTn
-JR9pH6/sFV7fOFB7/zi+h4wZ4MO+NWTS8vM5NCtBdVqh8iL3NyOc3vM1Cun4QenN
-FpXW0YSCIafjswTQ9qRyeytnQYAwl5Vs8Co2+qjbz5so5XB6jcJU52KQtvAPSby4
-CKOuY46pGI3hddmnGYfndz0mbgVEiHhKf2dm3SjByHSY+cmorFyVS0GJHZ19JhA8
-UA61DNmfRlIqMD9yRxFDaUMvHLH3+mYgiQJfcVvbrfPC+ts+5F3r1gbFQyOX3G9u
-qXfcPyqXBOCWwrpjVTfnQ48BILayiZqQfO8aHz/AZCZV3ahK64G1IvwSzGBAdN34
-6tgVZSR1G+/248eEZSTez1g6r6MqSlQv6UVyaDCcNI04wc53x8eXzYuX91NrxjqT
-oeqtJgLfbvMg8QZ3QhgW
-=fUyW
+iQIcBAEBCgAGBQJb00i5AAoJEIbPlEyWcf3yFHQP/R72IBQr99DJXuRe+TmCXfgM
+BFdyvrMmd1C5dH7wu+QwO5pSk2EIjTyRjwrohL07jxB0kAYHMYqED2e6U+UNW802
+znL65gEvUnUEb8MS3QihNlCm2I1o3XRSuwDYzeIMNZzRkYhGp3k93M3BE0RY6TlZ
+yWBOo4ugeQppt6BHMrzVRq2KSVRYbP8L5phBAw9lOVeQtySc/1WssOEw06NSx0+k
+egGGarBLc40zYPwipXldN9HVZdlOp7ZGNXg4aj+I+OfcHLrvhAMtOuu9cc3k1ge8
+QIUBmHUowe4hhNdNJ6STTf3e2O3C2oBP6Gj64CGJpBqUqYNP2yJys6Whp5U7ayBx
+HX4BJzMP2r3jv6oaej/owwbHXO3Fc8PKXx374xzKI6F5vJruAGtQIt20Z+ynotjO
+cKZPdONyr8R85shGNGapRTqHVokzAHNknOUvpV6L23ljrbPqZpDGWie88zD9kThw
+GGi6czR8x6+gKM4lHMZuIZxsx4ZmKqV9fCjJJ6Hzep5o6whXkMsalN720oET71IL
+wGoixxcEpBHEqWqwMxGgw7x2Ai1NPy4s0LtE8+w4FM57W5pZY5LsOtWD+dNBsqSr
+prJXfB8EpyjBR4OoN6mVb4XpfkSu6RI57a2IrKtR5C5BTCTZXel17Oe+nJsL1CT4
+AQzwcKdLCWJskdWsMsYi
+=C2ym
 -----END PGP SIGNATURE-----
 
