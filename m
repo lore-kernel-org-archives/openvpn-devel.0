@@ -1,13 +1,8 @@
-References: <20181024113341.1242-1-arne@...1227...>
- <2c30a581-b699-150f-2dc8-309e15860f27@...2080...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <6512229c-0300-cd4b-5b79-ec6d2f1e2ac6@...1227...>
-Date: Fri, 26 Oct 2018 16:48:26 +0200
-MIME-Version: 1.0
-In-Reply-To: <2c30a581-b699-150f-2dc8-309e15860f27@...2080...>
-Content-Language: de-DE
-Subject: Re: [Openvpn-devel] [PATCH] Document comp-lzo no and compress being
- incompatible
+From: David Sommerseth <davids@...515...>
+Date: Fri, 26 Oct 2018 19:23:57 +0200
+Message-Id: <20181026172403.8654-1-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Add message explaining early
+ TLS client hello failure
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,28 +11,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net, Arne Schwabe <arne@...1227...>
 
-Am 26.10.18 um 13:31 schrieb David Sommerseth:
-> On 24/10/18 13:33, Arne Schwabe wrote:
->> Most of the new compress but not v2 version do use swap operation. For
->> 'compress lzo' the swap option is not used for backwards compatibility.
->> For lz4 the swap option is also not a problem since there is no version
->> without swap. Unfortunately, compress introduced a second stub format
->> with swap, contrary to the one in 'comp-lzo no' that does not use swap.
->>
->> Document this weirdness to let not others fall into this trap.
->> ---
->>  doc/openvpn.8 | 3 +++
->>  1 file changed, 3 insertions(+)
-> 
-> This patch does not apply to git master .... which commit is this based on?
-> 
-> 
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
 
-The allow-compression patch.
+Your patch has been applied to the following branches
 
-Arne
+commit d31946881a561217d926c5e7a965af12a0a2eaf6  (master)
+commit dd029af6f51b48bb23842697c1cb78e537472ebd  (release/2.4)
+Author: Arne Schwabe
+Date:   Wed Sep 26 14:01:59 2018 +0200
+
+     Add message explaining early TLS client hello failure
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <20180926120159.19874-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17491.html
+     Signed-off-by: David Sommerseth <davids@...515...>
+
+
+- --
+kind regards,
+
+David Sommerseth
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJb0wuIAAoJEIbPlEyWcf3yRJgP/31pdm+0T8+k5tiEDdgTml7c
+t5O1JWZbehPaC9j6ImkT9Elux6eit1nAivHPnQLTkdXwR/1n6yaaCkbggQHkphWg
+htqV5BZ5VWmuXWYXLoOnxmeCyEKQKdekV1MIY6bfCtq/QQ58bhVTBD5lufw/6GHt
+Ifa5L8B6QH6KoQKp52TSGeGiaw8P+UodlLJ8ddz6fDZccK8osLR9xFPRCUnRX+5H
+Zt6cR8h9fdxrDPIAd6xB0tXo8mgG5dSEpDIpardBfAE2hyi6R9yFz2LI+OrU8BUM
+aTWEXORWH4b1JUBXGQa/HQkNTgKOTg0zdDdNUQS+qId98GHnuQwPPQoxIAXkBoXA
+6kmtAAYPOBLnV81+ZLQu0XKgoQ/7bd1uvODjYwrVNyCNMRQeTF2HtPOBq3KFemKh
+ix7JEPJnABrcfofspIuTDz2Y4fzJzlVuG+B7FbzIktg23wPAhxyZ8k0iNpPTmnnf
+DcLFlBGzka8F2MG2MQ3RZsPHPLMIFD6y4YOWJFk7GySAu6uqUPFuZg+HAj9VfrxA
+73wlg70jhLcJSOnpZueAzT7ARY8JF7f8elmFim3dR7XqCeln/gcMMzKlzlasYtsH
+HVUAlnTG/zvN2oU4cJvYeJHMy4/ZNSaGSq4F7qnmKGxvQpXN2m08agV8l/Fw2rfS
+bOpsIQbWAK++PXKM+uQQ
+=awoO
+-----END PGP SIGNATURE-----
 
