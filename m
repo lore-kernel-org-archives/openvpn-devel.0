@@ -1,17 +1,13 @@
-References: <1d93843c-6fe8-1a60-28fc-c013a57877da@...2181...>
- <20181029172040.17034-1-arne@...1227...>
- <BN6PR04MB0932760BE8E092FA236F57C0DDF30@...2439...>
- <20181029220904.GR962@...1296...>
- <7e8d9603-4864-09be-44d8-334871afc426@...75...>
- <00d7269a-5f6d-b224-bfe2-ca9616a742c8@...1227...>
- <fbcab5c7-0b51-9516-7f1c-150f4fcbc9ad@...1227...>
-From: =?UTF-8?Q?Thomas_Sch=c3=a4fer?= <tschaefer@...75...>
-Message-ID: <308fe9a2-29c3-996b-45b9-9d67611f674f@...75...>
-Date: Tue, 30 Oct 2018 12:39:35 +0100
+References: <20181010192337.6984-1-simon@...2293...>
+ <20181016102627.18676-1-simon@...2293...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <44c19ba6-8e25-1ff8-7c21-aead7450d7ff@...515...>
+Date: Tue, 30 Oct 2018 14:24:07 +0200
 MIME-Version: 1.0
-In-Reply-To: <fbcab5c7-0b51-9516-7f1c-150f4fcbc9ad@...1227...>
+In-Reply-To: <20181016102627.18676-1-simon@...2293...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v5] Implement block-ipv6
+Subject: Re: [Openvpn-devel] [PATCH 1/5] Set output name to
+ libopenvpnmsica.dll in MSVC builds too
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,15 +16,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Simon Rozman <simon@...2293...>, openvpn-devel@lists.sourceforge.net
 
-Am 30.10.18 um 11:53 schrieb Arne Schwabe:
-> That should answer your questions, doesn't it?
+Hi,
 
-Thanks for clarification. It doesn't harm IPv6 transport.
-But it may (if intended ) block IPv6 payload.
+I build-tested with all of these patches using the openvpn-build VM in
+Vagrant[1]. After the build libopenvpnmsica.dll and tapctl.exe show up
+under tmp/installer/<arch>. So the build part is definitely working
+correctly.
 
-Thomas
+How would I test that both of the above are operating as intended?
+
+Also, could a (Windows-oriented) person do a code review?
+
+-- 
+Samuli Seppänen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+[1] https://github.com/OpenVPN/openvpn-vagrant
+
+
+Il 16/10/18 13:26, Simon Rozman ha scritto:
+> On MinGW builds, the Libtool produces libopenvpnmsica.dll. The MSVC
+> properties were updated to match this.
+> ---
+>  src/openvpnmsica/openvpnmsica.props        | 4 +++-
+>  src/openvpnmsica/openvpnmsica_resources.rc | 2 +-
+>  2 files changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/src/openvpnmsica/openvpnmsica.props b/src/openvpnmsica/openvpnmsica.props
+> index 0e31bc4f..fa408296 100644
+> --- a/src/openvpnmsica/openvpnmsica.props
+> +++ b/src/openvpnmsica/openvpnmsica.props
+> @@ -2,7 +2,9 @@
+>  <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+>    <ImportGroup Label="PropertySheets" />
+>    <PropertyGroup Label="UserMacros" />
+> -  <PropertyGroup />
+> +  <PropertyGroup>
+> +    <TargetName>lib$(ProjectName)</TargetName>
+> +  </PropertyGroup>
+>    <ItemDefinitionGroup>
+>      <ClCompile>
+>        <AdditionalIncludeDirectories>..\compat;$(TAP_WINDOWS_HOME)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+> diff --git a/src/openvpnmsica/openvpnmsica_resources.rc b/src/openvpnmsica/openvpnmsica_resources.rc
+> index ce60b4a1..9e8069f4 100644
+> --- a/src/openvpnmsica/openvpnmsica_resources.rc
+> +++ b/src/openvpnmsica/openvpnmsica_resources.rc
+> @@ -50,7 +50,7 @@ BEGIN
+>              VALUE "FileVersion", PACKAGE_VERSION ".0"
+>              VALUE "InternalName", "OpenVPN"
+>              VALUE "LegalCopyright", "Copyright © The OpenVPN Project" 
+> -            VALUE "OriginalFilename", "openvpnmsica.dll"
+> +            VALUE "OriginalFilename", "libopenvpnmsica.dll"
+>              VALUE "ProductName", "OpenVPN"
+>              VALUE "ProductVersion", PACKAGE_VERSION ".0"
+>          END
+> 
+
+
 
