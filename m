@@ -1,10 +1,9 @@
-Date: Wed, 31 Oct 2018 09:23:07 +0100 (CET)
-Message-Id: <201810310823.w9V8N7I0040248@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <87a06f64-26df-d1f2-3039-08f8addfaa3b@...277...>
-References: <87a06f64-26df-d1f2-3039-08f8addfaa3b@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Correct error message for
- --tls-crypt-v2-genkey client
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Wed, 31 Oct 2018 11:22:57 +0100
+Message-ID: <1540981377-22752-1-git-send-email-steffan.karger@...1435...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] tls-crypt-v2: clarify --tls-crypt-v2-genkey
+ man page section
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,33 +14,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: tincanteksup <tincanteksup@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+As kitsune1 mentioned in IRC, this section should explain that
+"--tls-crypt-v2-genkey client" requires the user to supply the server
+key using "--tls-crypt-v2".
 
-Thanks for your first patch contribution :-) - a few words for the next
-one:  please do use "git send-email" to send your patches out, and do not
-let exchange anywhere near your patches.  What you sent was so garbled by
-the mailer (lines wrapped, spaces at the beginning of the line changed)
-that I did not manage to apply it using "git am $mailfile" to my tree.
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+---
+ doc/openvpn.8 | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-commit 658a8ee453a236e48ecc4bf19a81d8d7717955ff
-Author: tincanteksup
-Date:   Tue Oct 30 23:20:32 2018 +0000
-
-     Correct error message for --tls-crypt-v2-genkey client
-
-     Signed-off-by: Richard Bonhomme <tincanteksup@...277...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <87a06f64-26df-d1f2-3039-08f8addfaa3b@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17862.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 94b5cc4..f38fba9 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -5314,6 +5314,11 @@ If no metadata is supplied, OpenVPN will use a 64\-bit unix timestamp
+ representing the current time in UTC, encoded in network order, as metadata for
+ the generated key.
+ 
++A tls\-crypt\-v2 client key is wrapped using a server key.  To generate a
++client key, the user must therefore supply the server key using the
++.B \-\-tls\-crypt\-v2
++option.
++
+ Servers can use
+ .B \-\-tls\-crypt\-v2\-verify
+ to specify a metadata verification command.
+-- 
+2.7.4
 
 
