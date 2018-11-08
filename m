@@ -1,13 +1,13 @@
-References: <CACqfLrwUzFhaP9F-j3s=-5iKtUpz4y3_o+8jOmT5v2+70sP4Rg@...278...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <ca556891-b8a0-0150-c086-36c376b591d3@...1227...>
-Date: Thu, 8 Nov 2018 13:42:20 +0100
+From: Jon Kunkee <jkunkee@...2393...>
+Date: Thu, 8 Nov 2018 22:34:07 +0000
+Message-ID: <DM5PR2101MB11123DBC3EECEEE5E01D3FE5B0C50@...2412...>
+References: <20181010192337.6984-1-simon@...2293...>
+ <20181016102627.18676-1-simon@...2293...>
+In-Reply-To: <20181016102627.18676-1-simon@...2293...>
+Content-Language: en-US
 MIME-Version: 1.0
-In-Reply-To: <CACqfLrwUzFhaP9F-j3s=-5iKtUpz4y3_o+8jOmT5v2+70sP4Rg@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="I4FqFrcuzO3J5ngKDKLOLoCW7xxr9fUjJ"
-Subject: Re: [Openvpn-devel] developers documentation
+Subject: Re: [Openvpn-devel] [PATCH 1/5] Set output name to
+ libopenvpnmsica.dll in MSVC builds too
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,69 +16,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: milovan bjelogrlic <mbjelo@...277...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---I4FqFrcuzO3J5ngKDKLOLoCW7xxr9fUjJ
-Content-Type: multipart/mixed; boundary="cDSz85ZCvVzrYdOY44IuDFm7OFRqpNWzi";
- protected-headers="v1"
-From: Arne Schwabe <arne@...1227...>
-To: milovan bjelogrlic <mbjelo@...277...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <ca556891-b8a0-0150-c086-36c376b591d3@...1227...>
-Subject: Re: [Openvpn-devel] developers documentation
-References: <CACqfLrwUzFhaP9F-j3s=-5iKtUpz4y3_o+8jOmT5v2+70sP4Rg@...278...>
-In-Reply-To: <CACqfLrwUzFhaP9F-j3s=-5iKtUpz4y3_o+8jOmT5v2+70sP4Rg@...278...>
-
---cDSz85ZCvVzrYdOY44IuDFm7OFRqpNWzi
-Content-Language: de-DE
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: base64
+To: Simon Rozman <simon@...2293...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Am 08.11.18 um 13:31 schrieb milovan bjelogrlic:
-> hi OpenVPN developers,
->=20
-> Could you please provide me with information if there is place with
-> documentation which contains API reference, code implementation
-> documentation and any othed kinf of(good :)) documentation. I am
-> interested in openvpn3 library development. As I could see there is no
-> such detailed documentation for developers in openvpn project.
-
-First, it is nice to see that you are intersted in developing in
-OpenVPN3 development. Yes, there are many places where to the
-documentation can be improved. Almost all the existing documentation is
-inside the code. But if you tell us what your focus is in OpenVPN3 so we
-can give you some pointers.
-
-If you "just" want to write a client, the ClientAPI should be very good
-documented. Also the test/cli.ccpp, openvpn3-linux, and ics-openvpn
-projects can be a used as examples how to implment this API.
-
-Arne
-
-
---cDSz85ZCvVzrYdOY44IuDFm7OFRqpNWzi--
-
---I4FqFrcuzO3J5ngKDKLOLoCW7xxr9fUjJ
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAlvkL0cACgkQFRhsZwKx
-RFRXBw/+Or1Vz4iOI5Sin7uRPn2r9PPnObJjulvdcXqzLqmetOkyXV9yA6venHD6
-6dhIeeXXTuKediF5RXBecsa2tutzbDaGXkL/7N5KOCNIaoe/R3DPKPBlNmnrKN4v
-76lcMWjfV4MvOWlwBKnCsNnTpP7e8ZvDuXvtypKUxFNFjF+PuKG6CZk3XGjD01W0
-o/Nxo1MWLNkzrfVTsbO36zKtKA7+nexx/SH1YOv4RKjYhwNmM784hwZ/i/TNCLtP
-a4ydaFdFyaA4WctWQx/lPH2jAJEDktMh+7YS767W9XnzsqG3woZAjeE4wEN2vL9D
-YF7t1Uk16JPdRD6I02ApuwGUSHHSXUD0AueN/jOX7XOA7IcKkfDG0BUkEXezd7GO
-vz5iA/lwv1rF5AlfrBjP3/g0ckDojK50cBFlMFPyyKlxexqC35zzn0pfty922S+e
-Vs4yD7YhG1J04BAYXjw9aIEI1rN/6L6mN/51z1+M/xNhB5/OEH4AikmARKiT40KJ
-paN2RZk3SjvYsB43QtrEiQTGRVyJiZQC5sENcfbh0f3SiL16G9c8joDOrx4hBTq3
-XqoaybL+XshWUR1Ec+c4ifqasISVRCY6tUeqIf2TqVFCTYdVZk96M1+BJ+Vkcy7t
-Cqp6NE1GuVsrsWO7+SxClIazf2+6VcNtmGMY4k9gYxvUBPuypfg=
-=MucC
------END PGP SIGNATURE-----
-
---I4FqFrcuzO3J5ngKDKLOLoCW7xxr9fUjJ--
-
+VGhpcyBsb29rcyBwcmV0dHkgc3RyYWlnaHRmb3J3YXJkIHRvIG1lLg0KDQotLS0tLU9yaWdpbmFs
+IE1lc3NhZ2UtLS0tLQ0KRnJvbTogU2ltb24gUm96bWFuIDxzaW1vbkAuLi4yMjkzLi4uPiANClNl
+bnQ6IFR1ZXNkYXksIE9jdG9iZXIgMTYsIDIwMTggMzoyNiBBTQ0KVG86IG9wZW52cG4tZGV2ZWxA
+bGlzdHMuc291cmNlZm9yZ2UubmV0DQpTdWJqZWN0OiBbT3BlbnZwbi1kZXZlbF0gW1BBVENIIDEv
+NV0gU2V0IG91dHB1dCBuYW1lIHRvIGxpYm9wZW52cG5tc2ljYS5kbGwgaW4gTVNWQyBidWlsZHMg
+dG9vDQoNCk9uIE1pbkdXIGJ1aWxkcywgdGhlIExpYnRvb2wgcHJvZHVjZXMgbGlib3BlbnZwbm1z
+aWNhLmRsbC4gVGhlIE1TVkMNCnByb3BlcnRpZXMgd2VyZSB1cGRhdGVkIHRvIG1hdGNoIHRoaXMu
+DQotLS0NCiBzcmMvb3BlbnZwbm1zaWNhL29wZW52cG5tc2ljYS5wcm9wcyAgICAgICAgfCA0ICsr
+Ky0NCiBzcmMvb3BlbnZwbm1zaWNhL29wZW52cG5tc2ljYV9yZXNvdXJjZXMucmMgfCAyICstDQog
+MiBmaWxlcyBjaGFuZ2VkLCA0IGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pDQoNCmRpZmYg
+LS1naXQgYS9zcmMvb3BlbnZwbm1zaWNhL29wZW52cG5tc2ljYS5wcm9wcyBiL3NyYy9vcGVudnBu
+bXNpY2Evb3BlbnZwbm1zaWNhLnByb3BzDQppbmRleCAwZTMxYmM0Zi4uZmE0MDgyOTYgMTAwNjQ0
+DQotLS0gYS9zcmMvb3BlbnZwbm1zaWNhL29wZW52cG5tc2ljYS5wcm9wcw0KKysrIGIvc3JjL29w
+ZW52cG5tc2ljYS9vcGVudnBubXNpY2EucHJvcHMNCkBAIC0yLDcgKzIsOSBAQA0KIDxQcm9qZWN0
+IFRvb2xzVmVyc2lvbj0iNC4wIiB4bWxucz0iaHR0cHM6Ly9uYTAxLnNhZmVsaW5rcy5wcm90ZWN0
+aW9uLm91dGxvb2suY29tLz91cmw9aHR0cCUzQSUyRiUyRnNjaGVtYXMubWljcm9zb2Z0LmNvbSUy
+RmRldmVsb3BlciUyRm1zYnVpbGQlMkYyMDAzJmFtcDtkYXRhPTAyJTdDMDElN0Nqa3Vua2VlJTQw
+bWljcm9zb2Z0LmNvbSU3QzZkZDMyNTlhZTIwNDRiNzc5YjlhMDhkNjMzNTFlZGM2JTdDNzJmOTg4
+YmY4NmYxNDFhZjkxYWIyZDdjZDAxMWRiNDclN0MxJTdDMCU3QzYzNjc1MjgyNDMxMTE2MTQwMCZh
+bXA7c2RhdGE9Z3J0QksydFFwWTdaWUJOV0klMkZhSFRKajdSUDhKSFEwdiUyQmFvWDFZd0xpNm8l
+M0QmYW1wO3Jlc2VydmVkPTAiPg0KICAgPEltcG9ydEdyb3VwIExhYmVsPSJQcm9wZXJ0eVNoZWV0
+cyIgLz4NCiAgIDxQcm9wZXJ0eUdyb3VwIExhYmVsPSJVc2VyTWFjcm9zIiAvPg0KLSAgPFByb3Bl
+cnR5R3JvdXAgLz4NCisgIDxQcm9wZXJ0eUdyb3VwPg0KKyAgICA8VGFyZ2V0TmFtZT5saWIkKFBy
+b2plY3ROYW1lKTwvVGFyZ2V0TmFtZT4NCisgIDwvUHJvcGVydHlHcm91cD4NCiAgIDxJdGVtRGVm
+aW5pdGlvbkdyb3VwPg0KICAgICA8Q2xDb21waWxlPg0KICAgICAgIDxBZGRpdGlvbmFsSW5jbHVk
+ZURpcmVjdG9yaWVzPi4uXGNvbXBhdDskKFRBUF9XSU5ET1dTX0hPTUUpL2luY2x1ZGU7JShBZGRp
+dGlvbmFsSW5jbHVkZURpcmVjdG9yaWVzKTwvQWRkaXRpb25hbEluY2x1ZGVEaXJlY3Rvcmllcz4N
+CmRpZmYgLS1naXQgYS9zcmMvb3BlbnZwbm1zaWNhL29wZW52cG5tc2ljYV9yZXNvdXJjZXMucmMg
+Yi9zcmMvb3BlbnZwbm1zaWNhL29wZW52cG5tc2ljYV9yZXNvdXJjZXMucmMNCmluZGV4IGNlNjBi
+NGExLi45ZTgwNjlmNCAxMDA2NDQNCi0tLSBhL3NyYy9vcGVudnBubXNpY2Evb3BlbnZwbm1zaWNh
+X3Jlc291cmNlcy5yYw0KKysrIGIvc3JjL29wZW52cG5tc2ljYS9vcGVudnBubXNpY2FfcmVzb3Vy
+Y2VzLnJjDQpAQCAtNTAsNyArNTAsNyBAQCBCRUdJTg0KICAgICAgICAgICAgIFZBTFVFICJGaWxl
+VmVyc2lvbiIsIFBBQ0tBR0VfVkVSU0lPTiAiLjAiDQogICAgICAgICAgICAgVkFMVUUgIkludGVy
+bmFsTmFtZSIsICJPcGVuVlBOIg0KICAgICAgICAgICAgIFZBTFVFICJMZWdhbENvcHlyaWdodCIs
+ICJDb3B5cmlnaHQgwqkgVGhlIE9wZW5WUE4gUHJvamVjdCIgDQotICAgICAgICAgICAgVkFMVUUg
+Ik9yaWdpbmFsRmlsZW5hbWUiLCAib3BlbnZwbm1zaWNhLmRsbCINCisgICAgICAgICAgICBWQUxV
+RSAiT3JpZ2luYWxGaWxlbmFtZSIsICJsaWJvcGVudnBubXNpY2EuZGxsIg0KICAgICAgICAgICAg
+IFZBTFVFICJQcm9kdWN0TmFtZSIsICJPcGVuVlBOIg0KICAgICAgICAgICAgIFZBTFVFICJQcm9k
+dWN0VmVyc2lvbiIsIFBBQ0tBR0VfVkVSU0lPTiAiLjAiDQogICAgICAgICBFTkQNCi0tIA0KMi4x
+OS4wLndpbmRvd3MuMQ0KDQoNCg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX18NCk9wZW52cG4tZGV2ZWwgbWFpbGluZyBsaXN0DQpPcGVudnBuLWRldmVsQGxp
+c3RzLnNvdXJjZWZvcmdlLm5ldA0KaHR0cHM6Ly9uYTAxLnNhZmVsaW5rcy5wcm90ZWN0aW9uLm91
+dGxvb2suY29tLz91cmw9aHR0cHMlM0ElMkYlMkZsaXN0cy5zb3VyY2Vmb3JnZS5uZXQlMkZsaXN0
+cyUyRmxpc3RpbmZvJTJGb3BlbnZwbi1kZXZlbCZhbXA7ZGF0YT0wMiU3QzAxJTdDamt1bmtlZSU0
+MG1pY3Jvc29mdC5jb20lN0M2ZGQzMjU5YWUyMDQ0Yjc3OWI5YTA4ZDYzMzUxZWRjNiU3QzcyZjk4
+OGJmODZmMTQxYWY5MWFiMmQ3Y2QwMTFkYjQ3JTdDMSU3QzAlN0M2MzY3NTI4MjQzMTExNjE0MDAm
+YW1wO3NkYXRhPTZ3JTJGS085NHA5TEF4MCUyRmxhbUg0TWNKckNiSm5EUHdpJTJGJTJCNlBEQTZB
+eDR2WSUzRCZhbXA7cmVzZXJ2ZWQ9MA0K
