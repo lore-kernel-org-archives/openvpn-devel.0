@@ -1,14 +1,7 @@
-From: Arne Schwabe <arne@...1227...>
-References: <1d93843c-6fe8-1a60-28fc-c013a57877da@...2181...>
- <20181029172040.17034-1-arne@...1227...>
-Message-ID: <cb0fcc63-f17a-1112-2b7f-a02ad77930b1@...1227...>
-Date: Mon, 12 Nov 2018 14:35:27 +0100
-MIME-Version: 1.0
-In-Reply-To: <20181029172040.17034-1-arne@...1227...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="hMwobTNxJySd3KGrAh2P9D47HDBYnfROF"
-Subject: Re: [Openvpn-devel] [PATCH v5] Implement block-ipv6
+From: Lev Stipakov <lstipakov@...277...>
+Date: Mon, 12 Nov 2018 16:16:15 +0200
+Message-Id: <1542032175-5716-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] Fix broken fragment/mssfix with NCP
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,62 +10,182 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---hMwobTNxJySd3KGrAh2P9D47HDBYnfROF
-Content-Type: multipart/mixed; boundary="AiR7bGoiRLyXlLtV4oqIVP9Ebzz7feogj";
- protected-headers="v1"
-From: Arne Schwabe <arne@...1227...>
-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <cb0fcc63-f17a-1112-2b7f-a02ad77930b1@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v5] Implement block-ipv6
-References: <1d93843c-6fe8-1a60-28fc-c013a57877da@...2181...>
- <20181029172040.17034-1-arne@...1227...>
-In-Reply-To: <20181029172040.17034-1-arne@...1227...>
-
---AiR7bGoiRLyXlLtV4oqIVP9Ebzz7feogj
-Content-Language: de-DE
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Am 29.10.18 um 18:20 schrieb Arne Schwabe:
-> +#define MAX_ICMPV6LEN IPV6_MIN_MTU
+From: Lev Stipakov <lev@...515...>
 
-This should be
+NCP negotiation replaces worst cast crypto overhead
+with actual one in data channel frame. That frame
+params are used by mssfix.
 
-#define MAX_ICMPV6LEN 1280
+Fragment frame still contains worst case overhead.
+Because of that TCP packets are fragmented, since
+MSS value exceeds max fragment size.
 
-Antonios suggestion of using IPV6_MIN_MTU works on Android on my linux
-test box but breaks on other Linux machines and FreeBSD does not even
-have this define.
+Fix by replacing worst case crypto overhead with
+actual one for fragment frame, as it is done for data
+channel frame.
 
-Arne
+Trac #1140
 
+Signed-off-by: Lev Stipakov <lstipakov@...277...>
+---
+ src/openvpn/forward.c |  1 +
+ src/openvpn/init.c    | 12 +++++++++++-
+ src/openvpn/openvpn.h |  1 +
+ src/openvpn/push.c    |  9 ++++++++-
+ src/openvpn/ssl.c     | 19 ++++++++++++++++++-
+ src/openvpn/ssl.h     | 13 ++++++++-----
+ 6 files changed, 47 insertions(+), 8 deletions(-)
 
---AiR7bGoiRLyXlLtV4oqIVP9Ebzz7feogj--
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index f8faa81..773f5d7 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1090,6 +1090,7 @@ process_incoming_link_part1(struct context *c, struct link_socket_info *lsi, boo
+                 if (is_hard_reset(opcode, c->options.key_method))
+                 {
+                     c->c2.frame = c->c2.frame_initial;
++                    c->c2.frame_fragment = c->c2.frame_fragment_initial;
+                 }
+ 
+                 interval_action(&c->c2.tmp_int);
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 39e8ca5..db96353 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2300,9 +2300,18 @@ do_deferred_options(struct context *c, const unsigned int found)
+         {
+             tls_poor_mans_ncp(&c->options, c->c2.tls_multi->remote_ciphername);
+         }
++        struct frame *frame_fragment = NULL;
++#ifdef ENABLE_FRAGMENT
++        if (c->options.ce.fragment)
++        {
++            frame_fragment = &c->c2.frame_fragment;
++        }
++#endif
++
+         /* Do not regenerate keys if server sends an extra push reply */
+         if (!session->key[KS_PRIMARY].crypto_options.key_ctx_bi.initialized
+-            && !tls_session_update_crypto_params(session, &c->options, &c->c2.frame))
++            && !tls_session_update_crypto_params(session, &c->options, &c->c2.frame,
++                                                 frame_fragment))
+         {
+             msg(D_TLS_ERRORS, "OPTIONS ERROR: failed to import crypto options");
+             return false;
+@@ -3082,6 +3091,7 @@ do_init_frame(struct context *c)
+      */
+     c->c2.frame_fragment = c->c2.frame;
+     frame_subtract_extra(&c->c2.frame_fragment, &c->c2.frame_fragment_omit);
++    c->c2.frame_fragment_initial = c->c2.frame_fragment;
+ #endif
+ 
+ #if defined(ENABLE_FRAGMENT) && defined(ENABLE_OCC)
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index d11f61d..a5d250f 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -265,6 +265,7 @@ struct context_2
+     /* Object to handle advanced MTU negotiation and datagram fragmentation */
+     struct fragment_master *fragment;
+     struct frame frame_fragment;
++    struct frame frame_fragment_initial;
+     struct frame frame_fragment_omit;
+ #endif
+ 
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 72f0996..a44646a 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -274,11 +274,18 @@ incoming_push_message(struct context *c, const struct buffer *buffer)
+     {
+         if (c->options.mode == MODE_SERVER)
+         {
++            struct frame *frame_fragment = NULL;
++#ifdef ENABLE_FRAGMENT
++            if (c->options.ce.fragment)
++            {
++                frame_fragment = &c->c2.frame_fragment;
++            }
++#endif
+             struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
+             /* Do not regenerate keys if client send a second push request */
+             if (!session->key[KS_PRIMARY].crypto_options.key_ctx_bi.initialized
+                 && !tls_session_update_crypto_params(session, &c->options,
+-                                                     &c->c2.frame))
++                                                     &c->c2.frame, frame_fragment))
+             {
+                 msg(D_TLS_ERRORS, "TLS Error: initializing data channel failed");
+                 goto error;
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 74b88ce..8942f71 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1986,7 +1986,8 @@ cleanup:
+ 
+ bool
+ tls_session_update_crypto_params(struct tls_session *session,
+-                                 struct options *options, struct frame *frame)
++                                 struct options *options, struct frame *frame,
++                                 struct frame *frame_fragment)
+ {
+     if (!session->opt->server
+         && 0 != strcmp(options->ciphername, session->opt->config_ciphername)
+@@ -2030,6 +2031,22 @@ tls_session_update_crypto_params(struct tls_session *session,
+     frame_init_mssfix(frame, options);
+     frame_print(frame, D_MTU_INFO, "Data Channel MTU parms");
+ 
++    /*
++     * mssfix uses data channel framing, which at this point contains
++     * actual overhead. Fragmentation logic uses frame_fragment, which
++     * still contains worst case overhead. Replace it with actual overhead
++     * to prevent unneeded fragmentation.
++     */
++
++    if (frame_fragment)
++    {
++        frame_remove_from_extra_frame(frame_fragment, crypto_max_overhead());
++        crypto_adjust_frame_parameters(frame_fragment, &session->opt->key_type,
++	                               options->replay, packet_id_long_form);
++        frame_set_mtu_dynamic(frame_fragment, options->ce.fragment, SET_MTU_UPPER_BOUND);
++        frame_print(frame_fragment, D_MTU_INFO, "Fragmentation MTU parms");
++    }
++
+     return tls_session_generate_data_channel_keys(session);
+ }
+ 
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index ac6fef7..4802e62 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -474,15 +474,18 @@ void tls_update_remote_addr(struct tls_multi *multi,
+  * Update TLS session crypto parameters (cipher and auth) and derive data
+  * channel keys based on the supplied options.
+  *
+- * @param session       The TLS session to update.
+- * @param options       The options to use when updating session.
+- * @param frame         The frame options for this session (frame overhead is
+- *                      adjusted based on the selected cipher/auth).
++ * @param session         The TLS session to update.
++ * @param options         The options to use when updating session.
++ * @param frame           The frame options for this session (frame overhead is
++ *                        adjusted based on the selected cipher/auth).
++ * @param frame_fragment  The fragment frame options.
+  *
+  * @return true if updating succeeded, false otherwise.
+  */
+ bool tls_session_update_crypto_params(struct tls_session *session,
+-                                      struct options *options, struct frame *frame);
++                                      struct options *options,
++                                      struct frame *frame,
++                                      struct frame *frame_fragment);
+ 
+ /**
+  * "Poor man's NCP": Use peer cipher if it is an allowed (NCP) cipher.
+-- 
+2.7.4
 
---hMwobTNxJySd3KGrAh2P9D47HDBYnfROF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAlvpgb0ACgkQFRhsZwKx
-RFRgtw/+IkMqPAPhSMCxSNQMP/k4YwaamAw5Iob0bLnvBPXCsSlpPPpOslnm/F1l
-nDT2zR4kXbtGylGrOqD8U7m9ZiNcqvWWM3ijVx9pc1iFHNci0kKy+lBeAO0pm1b6
-bsiOz+F2JnqTIo20XCsjPrUqApyXfwGsQtTO+1jqP3Liv6rVmDcIzAyS0Sb1Heqy
-dOLwbOD4yGxJUilNoC/nxMIuaz5oLpQjr4qVpabHDjSbHT+B4daqnjyCVAMhNX3R
-kdMTMTB2qPvCSg7UKQlmL/QhlkQ0Y4IxZWzn3lXX+ykhuaNcXPWaPE1vhMhxfxso
-ccIn9H3gje//u2Q6Mt+8zWT8T+Ap/EumEAKnN+ydt/KYXmOuamXPIrVlAU473cP6
-R47VNW90ZOc7ktzp1RFUG0C9FboKfNDKlKs2ICQlpMcnPn1YYxglrKJpSYykeUJr
-pc0BvkbPJBS/ajY1jIRFuzEWslkUevQ08X0c1oSxBkprdBcHagOeWB3lQ3L5QONy
-F+hcqYev3hShXt0rWaXBoRTzJZ6NwTaHN5jXwBiIYO+uWhUGwgzP4LZaRQyEjKuD
-OKe4qiLIf8eE8q71o8ofgjT6SmB/rYvoPgTBb9edqHyjT4kOZxGe++v/GAkxbQAA
-uraRJlWhAWs5wNnKNEx3E0BJRaw3GUH6Ei+DxpgUzD3IjEhDvfk=
-=zPp4
------END PGP SIGNATURE-----
-
---hMwobTNxJySd3KGrAh2P9D47HDBYnfROF--
 
