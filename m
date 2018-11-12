@@ -1,10 +1,7 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 12 Nov 2018 12:56:16 +0100
-Message-Id: <20181112115627.5096-3-arne@...1227...>
-In-Reply-To: <20181112115627.5096-1-arne@...1227...>
-References: <20181112115627.5096-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v3 02/13] client-connect: Refactor
- multi_client_connect_source_ccd
+Date: Mon, 12 Nov 2018 12:56:14 +0100
+Message-Id: <20181112115627.5096-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v3 00/13] Deferred client-connect patch set
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,68 +14,44 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Fabian Knittel <fabian.knittel@...1547...>
+Fabian submitted the original patch set in 2015. When I started working on it
+I had quite big rebase conflicts and decided to rebsae it manually. During
+this rebase I adjusted the code and made other minor and major adjustments
+to the code to better fit our current code style. The minor adjustments are
+mostly not mentioned in the commit message. The larger changes are mentioned
+or if feasible and sensible in their own commits. 
 
-Refactor multi_client_connect_source_ccd(), so that options_server_import() (or
-the success path in general) is only entered in one place within the function.
+Arne Schwabe (5):
+  client-connect: Change connection_established_flag from bool to enum
+  client-connect: Move adding inotify watch into its own function
+  client-connect: Also use inotify for the deferred client-connect
+    status file
+  Implement deferred connect support for plugin API v2
+  Add documentation for the deferred client connect feature
 
-Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/multi.c | 31 +++++++++++++++----------------
- 1 file changed, 15 insertions(+), 16 deletions(-)
+Fabian Knittel (8):
+  client-connect: Split multi_connection_established into separate
+    functions
+  client-connect: Refactor multi_client_connect_source_ccd
+  client-connect: Move multi_client_connect_setenv into early_setup
+  client-connect: Refactor to use return values instead of modifying a
+    passed-in flag
+  client-connect: Refactor client-connect handling to calling a bunch of
+    hooks in a loop
+  client-connect: Add CC_RET_DEFERRED and cope with deferred
+    client-connect
+  client-connect: Add deferred support to the client-connect script
+    handler
+  client-connect: Add deferred support to the client-connect plugin v1
+    handler
 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 13106fcc..282464fb 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -2064,31 +2064,30 @@ multi_client_connect_source_ccd(struct multi_context *m,
-                                      &gc);
- 
-         /* try common-name file */
--        if (platform_test_file(ccd_file))
-+        if (!platform_test_file(ccd_file))
-         {
--            options_server_import(&mi->context.options,
--                                  ccd_file,
--                                  D_IMPORT_ERRORS|M_OPTERR,
--                                  CLIENT_CONNECT_OPT_MASK,
--                                  option_types_found,
--                                  mi->context.c2.es);
-+            ccd_file = NULL;
-         }
--        else /* try default file */
-+        /* try default file */
-         {
-             ccd_file = platform_gen_path(mi->context.options.client_config_dir,
-                                          CCD_DEFAULT,
-                                          &gc);
--
--            if (platform_test_file(ccd_file))
-+            if (!platform_test_file(ccd_file))
-             {
--                options_server_import(&mi->context.options,
--                                      ccd_file,
--                                      D_IMPORT_ERRORS|M_OPTERR,
--                                      CLIENT_CONNECT_OPT_MASK,
--                                      option_types_found,
--                                      mi->context.c2.es);
-+                ccd_file = NULL;
-             }
-         }
-+
-+        if (ccd_file)
-+        {
-+            options_server_import(&mi->context.options,
-+                                  ccd_file,
-+                                  D_IMPORT_ERRORS|M_OPTERR,
-+                                  CLIENT_CONNECT_OPT_MASK,
-+                                  option_types_found,
-+                                  mi->context.c2.es);
-+        }
-         gc_free(&gc);
-     }
- }
+ doc/openvpn.8               |   47 +-
+ include/openvpn-plugin.h.in |   51 +-
+ src/openvpn/multi.c         | 1032 ++++++++++++++++++++++++++---------
+ src/openvpn/multi.h         |   52 +-
+ src/openvpn/plugin.c        |    6 +
+ 5 files changed, 891 insertions(+), 297 deletions(-)
+
 -- 
 2.19.1
 
