@@ -1,9 +1,11 @@
 From: Simon Rozman <simon@...2293...>
-Date: Mon, 12 Nov 2018 13:22:44 +0100
-Message-Id: <20181112122246.13556-1-simon@...2293...>
+Date: Mon, 12 Nov 2018 13:22:46 +0100
+Message-Id: <20181112122246.13556-3-simon@...2293...>
+In-Reply-To: <20181112122246.13556-1-simon@...2293...>
+References: <20181112122246.13556-1-simon@...2293...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/3] Delete TAP interface before the TAP
- driver is uninstalled
+Subject: [Openvpn-devel] [PATCH 3/3] Make MSI custom action debug pop-up
+ more informative
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,134 +18,117 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The previous version of MSI installer did:
-- Execution Pass:       rename the TAP interface to some temporary name
-- Commit/Rollback Pass: delete the TAP interface / rename the interface
-                        back to original name
+Each MSI custom action pops-up a message box in the _DEBUG version
+before commencing execution. This opens a time window for developer to
+attach debugger to the msiexec.exe process, set the breakpoints before
+custom action proceeds with execution.
 
-However, the WiX Toolset's Diffx extension to install and remove drivers
-removed the TAP driver between the execution and commit passes. The TAP
-driver removal makes all TAP interfaces unavailable and our custom
-action couldn't find the interface to delete any more.
-
-While the system where OpenVPN was uninstalled didn't have any TAP
-interfaces any more as expected behaviour, the problem appears after
-reinstalling the OpenVPN. Some residue TAP interface registry keys
-remain on the system, causing the TAP interface to reappear as "Ethernet
-NN" interface next time the TAP driver is installed. This causes TAP
-interfaces to accumulate when cycling install-uninstall-install...
-
-Therefore, it is better to remove the TAP interfaces before the TAP
-driver is removed, and reinstall the TAP interface back should the
-rollback be required. Though it won't be exactly the same interface
-again.
-
-I wonder if the WiX Diffx extension supports execute/commit/rollback
-feature of MSI in the first place.
+While those pop-up dialogs are targeted to a limited audience, they were
+very sparse. With this patch, they become more informative and they also
+provide PID of the msiexec.exe process to attach debugger to.
 ---
- src/openvpnmsica/msica_op.c | 87 ++++++++++++++-----------------------
- 1 file changed, 33 insertions(+), 54 deletions(-)
+ src/openvpnmsica/openvpnmsica.c | 60 ++++++++++++++++++++++++++-------
+ 1 file changed, 48 insertions(+), 12 deletions(-)
 
-diff --git a/src/openvpnmsica/msica_op.c b/src/openvpnmsica/msica_op.c
-index 8e9a3832..2ce69444 100644
---- a/src/openvpnmsica/msica_op.c
-+++ b/src/openvpnmsica/msica_op.c
-@@ -454,62 +454,41 @@ msica_op_tap_interface_delete(
+diff --git a/src/openvpnmsica/openvpnmsica.c b/src/openvpnmsica/openvpnmsica.c
+index 99b47bf0..a2819e62 100644
+--- a/src/openvpnmsica/openvpnmsica.c
++++ b/src/openvpnmsica/openvpnmsica.c
+@@ -144,6 +144,50 @@ openvpnmsica_setup_sequence_filename(
+ }
  
-     DWORD dwResult;
  
--    if (session->rollback_enabled)
--    {
--        int count = 0;
--
--        do {
--            /* Rename the interface to keep it as a backup. */
--            TCHAR szNameBackup[10/*"Interface "*/ + 10/*maximum int*/ + 1/*terminator*/];
--            _stprintf_s(
--                szNameBackup, _countof(szNameBackup),
--                TEXT("Interface %i"),
--                ++count);
--            for (struct tap_interface_node *pInterfaceOther = pInterfaceList; ; pInterfaceOther = pInterfaceOther->pNext)
--            {
--                if (pInterfaceOther == NULL)
--                {
--                    /* No interface with a same name found. All clear to rename the interface. */
--                    dwResult = tap_set_interface_name(&pInterface->guid, szNameBackup);
--                    break;
--                }
--                else if (_tcsicmp(szNameBackup, pInterfaceOther->szName) == 0)
--                {
--                    /* Interface with a same name found. Duplicate interface names are not allowed. */
--                    dwResult = ERROR_ALREADY_EXISTS;
--                    break;
--                }
--            }
--        } while (dwResult == ERROR_ALREADY_EXISTS);
-+    /* Delete the interface. */
-+    BOOL bRebootRequired = FALSE;
-+    dwResult = tap_delete_interface(NULL, &pInterface->guid, &bRebootRequired);
-+    if (bRebootRequired)
-+        MsiSetMode(session->hInstall, MSIRUNMODE_REBOOTATEND, TRUE);
++#ifdef _DEBUG
++
++/**
++ * Pops up a message box creating a time window to attach a debugger to the installer process in
++ * order to debug custom actions.
++ *
++ * @param szFunctionName  Function name that triggered the pop-up. Displayed in message box's
++ *                        title.
++ */
++static void
++_openvpnmsica_debug_popup(_In_z_ LPCTSTR szFunctionName)
++{
++    TCHAR szTitle[0x100], szMessage[0x100+MAX_PATH], szProcessPath[MAX_PATH];
++
++    /* Compose pop-up title. The dialog title will contain function name to ease the process
++       locating. Mind that Visual Studio displays window titles on the process list. */
++    _stprintf_s(szTitle, _countof(szTitle), TEXT("%s v%s"), szFunctionName, TEXT(PACKAGE_VERSION));
++
++    /* Get process name. */
++    GetModuleFileName(NULL, szProcessPath, _countof(szProcessPath));
++    LPCTSTR szProcessName = _tcsrchr(szProcessPath, TEXT('\\'));
++    szProcessName = szProcessName ? szProcessName + 1 : szProcessPath;
++
++    /* Compose the pop-up message. */
++    _stprintf_s(
++        szMessage, _countof(szMessage),
++        TEXT("The %s process (PID: %u) has started to execute the %s custom action.\r\n")
++        TEXT("\r\n")
++        TEXT("If you would like to debug the custom action, attach a debugger to this process and set breakpoints before dismissing this dialog.\r\n")
++        TEXT("\r\n")
++        TEXT("If you are not debugging this custom action, you can safely ignore this message."),
++        szProcessName,
++        GetCurrentProcessId(),
++        szFunctionName);
++
++    MessageBox(NULL, szMessage, szTitle, MB_OK);
++}
++
++#define openvpnmsica_debug_popup(f) _openvpnmsica_debug_popup(f)
++#else
++#define openvpnmsica_debug_popup(f)
++#endif
++
++
+ UINT __stdcall
+ FindSystemInfo(_In_ MSIHANDLE hInstall)
+ {
+@@ -151,9 +195,7 @@ FindSystemInfo(_In_ MSIHANDLE hInstall)
+ #pragma comment(linker, DLLEXP_EXPORT)
+ #endif
  
--        if (dwResult == ERROR_SUCCESS) {
--            /* Schedule rollback action to rename the interface back. */
--            msica_op_seq_add_head(
--                &session->seq_cleanup[MSICA_CLEANUP_ACTION_ROLLBACK],
--                msica_op_create_guid_string(
--                    msica_op_tap_interface_set_name,
--                    0,
--                    NULL,
--                    &pInterface->guid,
--                    pInterface->szName));
--
--            /* Schedule commit action to delete the interface. */
--            msica_op_seq_add_tail(
--                &session->seq_cleanup[MSICA_CLEANUP_ACTION_COMMIT],
--                msica_op_create_guid(
--                    msica_op_tap_interface_delete_by_guid,
--                    0,
--                    NULL,
--                    &pInterface->guid));
--        }
--    }
--    else
-+    if (session->rollback_enabled)
-     {
--        /* Delete the interface. */
--        BOOL bRebootRequired = FALSE;
--        dwResult = tap_delete_interface(NULL, &pInterface->guid, &bRebootRequired);
--        if (bRebootRequired)
--            MsiSetMode(session->hInstall, MSIRUNMODE_REBOOTATEND, TRUE);
-+        /*
-+        Schedule rollback action to create the interface back. Though it won't be exactly the same interface again.
-+
-+        The previous version of this function did:
-+        - Execution Pass:       rename the interface to some temporary name
-+        - Commit/Rollback Pass: delete the interface / rename the interface back to original name
-+
-+        However, the WiX Toolset's Diffx extension to install and remove drivers removed the TAP driver between the
-+        execution and commit passes. TAP driver removal makes all TAP interfaces unavailable and our CA couldn't find
-+        the interface to delete any more.
-+
-+        While the system where OpenVPN was uninstalled didn't have any TAP interfaces any more as expected behaviour,
-+        the problem appears after reinstalling the OpenVPN. Some residue TAP interface registry keys remain on the
-+        system, causing the TAP interface to reappear as "Ethernet NN" interface next time the TAP driver is
-+        installed. This causes TAP interfaces to accumulate over cyclic install-uninstall-install...
-+
-+        Therefore, it is better to remove the TAP interfaces before the TAP driver is removed, and reinstall the TAP
-+        interface back should the rollback be required. I wonder if the WiX Diffx extension supports execute/commit/
-+        rollback feature of MSI in the first place.
-+        */
-+        msica_op_seq_add_head(
-+            &session->seq_cleanup[MSICA_CLEANUP_ACTION_ROLLBACK],
-+            msica_op_create_string(
-+                msica_op_tap_interface_create,
-+                0,
-+                NULL,
-+                pInterface->szName));
-     }
+-#ifdef _DEBUG
+-    MessageBox(NULL, TEXT("Attach debugger!"), TEXT(__FUNCTION__) TEXT(" v")  TEXT(PACKAGE_VERSION), MB_OK);
+-#endif
++    openvpnmsica_debug_popup(TEXT(__FUNCTION__));
  
-     return dwResult;
+     UINT uiResult;
+     BOOL bIsCoInitialized = SUCCEEDED(CoInitialize(NULL));
+@@ -265,9 +307,7 @@ FindTAPInterfaces(_In_ MSIHANDLE hInstall)
+ #pragma comment(linker, DLLEXP_EXPORT)
+ #endif
+ 
+-#ifdef _DEBUG
+-    MessageBox(NULL, TEXT("Attach debugger!"), TEXT(__FUNCTION__) TEXT(" v")  TEXT(PACKAGE_VERSION), MB_OK);
+-#endif
++    openvpnmsica_debug_popup(TEXT(__FUNCTION__));
+ 
+     UINT uiResult;
+     BOOL bIsCoInitialized = SUCCEEDED(CoInitialize(NULL));
+@@ -371,9 +411,7 @@ EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall)
+ #pragma comment(linker, DLLEXP_EXPORT)
+ #endif
+ 
+-#ifdef _DEBUG
+-    MessageBox(NULL, TEXT("Attach debugger!"), TEXT(__FUNCTION__) TEXT(" v")  TEXT(PACKAGE_VERSION), MB_OK);
+-#endif
++    openvpnmsica_debug_popup(TEXT(__FUNCTION__));
+ 
+     UINT uiResult;
+     BOOL bIsCoInitialized = SUCCEEDED(CoInitialize(NULL));
+@@ -633,9 +671,7 @@ ProcessDeferredAction(_In_ MSIHANDLE hInstall)
+ #pragma comment(linker, DLLEXP_EXPORT)
+ #endif
+ 
+-#ifdef _DEBUG
+-    MessageBox(NULL, TEXT("Attach debugger!"), TEXT(__FUNCTION__) TEXT(" v")  TEXT(PACKAGE_VERSION), MB_OK);
+-#endif
++    openvpnmsica_debug_popup(TEXT(__FUNCTION__));
+ 
+     UINT uiResult;
+     BOOL bIsCoInitialized = SUCCEEDED(CoInitialize(NULL));
 -- 
 2.19.1.windows.1
 
