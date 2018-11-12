@@ -1,7 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 12 Nov 2018 12:56:14 +0100
-Message-Id: <20181112115627.5096-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v3 00/13] Deferred client-connect patch set
+Date: Mon, 12 Nov 2018 12:56:24 +0100
+Message-Id: <20181112115627.5096-11-arne@...1227...>
+In-Reply-To: <20181112115627.5096-1-arne@...1227...>
+References: <20181112115627.5096-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v3 10/13] client-connect: Also use inotify
+ for the deferred client-connect status file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,44 +17,49 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Fabian submitted the original patch set in 2015. When I started working on it
-I had quite big rebase conflicts and decided to rebsae it manually. During
-this rebase I adjusted the code and made other minor and major adjustments
-to the code to better fit our current code style. The minor adjustments are
-mostly not mentioned in the commit message. The larger changes are mentioned
-or if feasible and sensible in their own commits. 
+As we never do client-connect and authentication at the same time
+it is safe to reuse the existing fields for client-connect return
+status file
 
-Arne Schwabe (5):
-  client-connect: Change connection_established_flag from bool to enum
-  client-connect: Move adding inotify watch into its own function
-  client-connect: Also use inotify for the deferred client-connect
-    status file
-  Implement deferred connect support for plugin API v2
-  Add documentation for the deferred client connect feature
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/multi.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-Fabian Knittel (8):
-  client-connect: Split multi_connection_established into separate
-    functions
-  client-connect: Refactor multi_client_connect_source_ccd
-  client-connect: Move multi_client_connect_setenv into early_setup
-  client-connect: Refactor to use return values instead of modifying a
-    passed-in flag
-  client-connect: Refactor client-connect handling to calling a bunch of
-    hooks in a loop
-  client-connect: Add CC_RET_DEFERRED and cope with deferred
-    client-connect
-  client-connect: Add deferred support to the client-connect script
-    handler
-  client-connect: Add deferred support to the client-connect plugin v1
-    handler
-
- doc/openvpn.8               |   47 +-
- include/openvpn-plugin.h.in |   51 +-
- src/openvpn/multi.c         | 1032 ++++++++++++++++++++++++++---------
- src/openvpn/multi.h         |   52 +-
- src/openvpn/plugin.c        |    6 +
- 5 files changed, 891 insertions(+), 297 deletions(-)
-
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index dafc86d7..d515ee0d 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -2491,8 +2491,10 @@ multi_connection_established(struct multi_context *m, struct multi_instance *mi)
+ 
+ #ifdef ENABLE_ASYNC_PUSH
+ /*
+- * Called when inotify event is fired, which happens when acf file is closed or deleted.
+- * Continues authentication and sends push_reply.
++ * Called when inotify event is fired, which happens when acf
++ * or connect-status file is closed or deleted.
++ * Continues authentication and sends push_reply
++ * (or be deferred again by client-connect)
+  */
+ void
+ multi_process_file_closed(struct multi_context *m, const unsigned int mpp_flags)
+@@ -2768,7 +2770,15 @@ multi_process_post(struct multi_context *m, struct multi_instance *mi, const uns
+             {
+                 multi_connection_established(m, mi);
+             }
+-
++#if defined(ENABLE_ASYNC_PUSH) && defined(ENABLE_DEF_AUTH)
++            if (mi->client_connect_status != CC_STATUS_ESTABLISHED &&
++                mi->client_connect_defer_state.deferred_ret_file)
++            {
++                add_inotify_file_watch(m, mi, m->top.c2.inotify_fd,
++                                       mi->client_connect_defer_state.
++                                       deferred_ret_file);
++            }
++#endif
+             /* tell scheduler to wake us up at some point in the future */
+             multi_schedule_context_wakeup(m, mi);
+         }
 -- 
 2.19.1
 
