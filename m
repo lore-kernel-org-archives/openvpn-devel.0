@@ -1,15 +1,19 @@
+From: Simon Rozman <simon@...2293...>
+Date: Mon, 12 Nov 2018 11:36:05 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE109936F62F@...2294...>
+References: <20181010192337.6984-1-simon@...2293...>
+ <20181016102627.18676-1-simon@...2293...>
+ <20181016102627.18676-4-simon@...2293...>
+ <DM5PR2101MB1112DB68D163884AD7ACDA80B0C50@...2412...>
+ <99D61A626FDA8A4B90A270669121BE109936403D@...2294...>
+In-Reply-To: <99D61A626FDA8A4B90A270669121BE109936403D@...2294...>
+Content-Language: en-US
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
+ micalg=2.16.840.1.101.3.4.2.1;
+ boundary="----=_NextPart_000_003C_01D47A84.4712C070"
 MIME-Version: 1.0
-References: <1530633509-4959-1-git-send-email-selva.nair@...277...>
- <1531491395-29049-1-git-send-email-selva.nair@...277...>
- <4e0e285a-482a-700a-e359-fc8cf8c1613c@...1856...>
- <CAKuzo_iXRkuzeVG0ec2mDA8a-arQe-J9seo1R+ZdRA7ktWbt=w@...278...>
- <da22fd72-2b38-1f46-a4f7-0688fea3babe@...1856...>
-In-Reply-To: <da22fd72-2b38-1f46-a4f7-0688fea3babe@...1856...>
-From: Selva Nair <selva.nair@...277...>
-Date: Sun, 11 Nov 2018 12:03:10 -0500
-Message-ID: <CAKuzo_h0xMzB7ST7xbQOZ_5R5tDJny6OfYEzKD46yVT4kVEMOQ@...278...>
-Content-Type: multipart/alternative; boundary="00000000000037035a057a66908e"
-Subject: Re: [Openvpn-devel] [PATCH v3] Make up/down script errors not FATAL
+Subject: Re: [Openvpn-devel] [PATCH 4/5] Add MSI custom action for reliable
+ Windows 10 detection
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,188 +22,145 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Simon Rozman <simon@...2293...>, Jon Kunkee <jkunkee@...2393...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---00000000000037035a057a66908e
-Content-Type: text/plain; charset="UTF-8"
+------=_NextPart_000_003C_01D47A84.4712C070
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-Hi Steffan,
+Hi,
 
-On Sun, Nov 11, 2018 at 8:43 AM Steffan Karger <steffan@...1856...> wrote:
-
-> Hi,
->
-> I've postponed replying to this mail a couple of times because I felt I
-> missed something and needed to look closer, but today once again I don't
-> get it. So here goes for a potentially stupid reply:
->
-
-Not so fast, likely its my stupidity to push for this.
-
-
->
-> On 05-10-18 17:30, Selva Nair wrote:
-> > On Fri, Oct 5, 2018 at 5:44 AM Steffan Karger <steffan@...1856...
-> > <mailto:steffan@...1856...>> wrote:
+> > It might be somewhat more convenient to add the PID to the debug
+> > MessageBox call, but it is probably MUCH more convenient to use the
+> > CustomAction debugging facility built into the MSI service itself:
 > >
-> >     Hi,
-> >
-> >     On 13-07-18 16:16, selva.nair@...277...
-> >     <mailto:selva.nair@...277...> wrote:
-> >     > From: Selva Nair <selva.nair@...277... <mailto:
-> selva.nair@...277...>>
-> >     >
-> >     > The error is treated as a warning only if its triggered due
-> >     > to script_security < SSEC_SCRIPTS.
-> >     >
-> >     > This helps user interfaces enforce a safer script-security setting
-> >     > without causing a FATAL error.
-> >
-> >     But does it make sense at all to accept configs that have a --up
-> script
-> >     without a sufficiently-high script-security set?
-> >
-> >
-> > This came out of a proposed patch for the GUI to protect lay users from
-> > malicious
-> > scripts embedded in config files.
-> >
-> > Recall the ado about exploiting scripts using unsuspecting "inline"
-> > commands.
-> > To defeat such exploits we want to enforce a safer script security
-> > setting from
-> > the GUI but do not want to cause a FATAL error as that would be counter
-> > productive.
-> >
-> > Please see GUI PR #271 https://github.com/OpenVPN/openvpn-gui/pull/271
-> and
-> > my comment dated Jul 3 under it.
-> >
-> > The discussion that led to this is here:
-> > https://github.com/OpenVPN/openvpn-gui/issues/270
->
-> I fail to understand why you believe a fatal error in this case is
-> counterproductive.
->
-> A config file that has a script configured, but is not allowed to run
-> that script is a faulty setup that might result is connections that are
-> not working properly or maybe even not providing the expected security
-> level. Consider for example someone changing DNS or proxy settings in a
-> --up script to avoid leaking data. Most users will never reads warnings
-> if the connection pretends to be set up correctly. This makes me believe
-> that the best thing we can do is to error out if someone tries to
-> connect using such a configuration, and have them review their
-> configuration.
->
-> Why is a fatal error not exactly what you would want?
->
+> > https://docs.microsoft.com/en-us/windows/desktop/Msi/debugging-custom-
+> > actions
+> 
+> Many thanks for this. I will test the MsiBreak method shortly and remove
+> the MessageBox calls completely for a cleaner code then.
 
-When you put it that way I can't disagree. Either I hadn't thought through
-it properly, or have forgotten my reasoning (it has been a while since I
-tested the GUI patch that prompted this).
+I gave the MsiBreak method a quick try, but I couldn't make it work. I have
+set MsiBreak as a system environment variable, restarted Windows Installer
+service, restarted the shell window from where I invoke msiexec calls to
+make sure the environment is updated. But it doesn't pop-up any prompt to
+attach debugger as advertised.
 
-I will drop this patch at least for now and go ahead with the
-feature to override script security setting from the GUI.
+I haven't installed the Debugging Tools for Windows, as I run Visual Studio
+elevated to debug processes. I haven't restarted my computer: restart of a
+working machine with stage set to debug something is a royal PITA: the
+libopenvpnmsica.dll has more than one custom property to debug, restarting
+each time to switch MsiBreak to a different custom action is not viable.
 
-Thanks for your time, and sorry for wasting it.
+Therefore, I'd prefer to keep own MessageBox() call in the beginning of each
+custom action. It works 100%.
 
-Selva
+Adding PID to the message is an option. I personally never needed it. When
+running Visual Studio elevated, you press Ctrl+Alt+P, followed by "msi"
+keystrokes to focus on "msiexec.exe" processes, then observe the
+MessageBox()'s title (which is deliberately set to function name) in the
+"Title" column of the available process list. Way faster than searching
+process by PID.
 
---00000000000037035a057a66908e
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Anyway, I have extended the debug pop-up dialogs to be more informative and
+include PID. Patch follows...
 
-<div dir=3D"ltr"><br>Hi Steffan,<div><br><div class=3D"gmail_quote"><div di=
-r=3D"ltr">On Sun, Nov 11, 2018 at 8:43 AM Steffan Karger &lt;<a href=3D"mai=
-lto:steffan@...1856...">steffan@...1856...</a>&gt; wrote:<br></div><blockqu=
-ote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc s=
-olid;padding-left:1ex">Hi,<br>
-<br>
-I&#39;ve postponed replying to this mail a couple of times because I felt I=
-<br>
-missed something and needed to look closer, but today once again I don&#39;=
-t<br>
-get it. So here goes for a potentially stupid reply:<br></blockquote><div><=
-br></div><div>Not so fast, likely its my stupidity to push for this.</div><=
-div>=C2=A0<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0=
- .8ex;border-left:1px #ccc solid;padding-left:1ex">
-<br>
-On 05-10-18 17:30, Selva Nair wrote:<br>
-&gt; On Fri, Oct 5, 2018 at 5:44 AM Steffan Karger &lt;<a href=3D"mailto:st=
-effan@...1856..." target=3D"_blank">steffan@...1856...</a><br>
-&gt; &lt;mailto:<a href=3D"mailto:steffan@...1856..." target=3D"_blank">ste=
-ffan@...1856...</a>&gt;&gt; wrote:<br>
-&gt; <br>
-&gt;=C2=A0 =C2=A0 =C2=A0Hi,<br>
-&gt; <br>
-&gt;=C2=A0 =C2=A0 =C2=A0On 13-07-18 16:16, <a href=3D"mailto:selva.nair@...493...=
-277..." target=3D"_blank">selva.nair@...277...</a><br>
-&gt;=C2=A0 =C2=A0 =C2=A0&lt;mailto:<a href=3D"mailto:selva.nair@...277..." =
-target=3D"_blank">selva.nair@...277...</a>&gt; wrote:<br>
-&gt;=C2=A0 =C2=A0 =C2=A0&gt; From: Selva Nair &lt;<a href=3D"mailto:selva.n=
-air@...277..." target=3D"_blank">selva.nair@...277...</a> &lt;mailto:<a hre=
-f=3D"mailto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a=
->&gt;&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0&gt; The error is treated as a warning only if its =
-triggered due<br>
-&gt;=C2=A0 =C2=A0 =C2=A0&gt; to script_security &lt; SSEC_SCRIPTS.<br>
-&gt;=C2=A0 =C2=A0 =C2=A0&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0&gt; This helps user interfaces enforce a safer scr=
-ipt-security setting<br>
-&gt;=C2=A0 =C2=A0 =C2=A0&gt; without causing a FATAL error.<br>
-&gt; <br>
-&gt;=C2=A0 =C2=A0 =C2=A0But does it make sense at all to accept configs tha=
-t have a --up script<br>
-&gt;=C2=A0 =C2=A0 =C2=A0without a sufficiently-high script-security set?<br>
-&gt; <br>
-&gt; <br>
-&gt; This came out of a proposed patch for the GUI to protect lay users fro=
-m<br>
-&gt; malicious<br>
-&gt; scripts embedded in config files.<br>
-&gt; <br>
-&gt; Recall the ado about exploiting scripts using unsuspecting &quot;inlin=
-e&quot;<br>
-&gt; commands.<br>
-&gt; To defeat such exploits we want to enforce a safer script security<br>
-&gt; setting from<br>
-&gt; the GUI but do not want to cause a FATAL error as that would be counte=
-r<br>
-&gt; productive.<br>
-&gt; <br>
-&gt; Please see GUI PR #271 <a href=3D"https://github.com/OpenVPN/openvpn-g=
-ui/pull/271" rel=3D"noreferrer" target=3D"_blank">https://github.com/OpenVP=
-N/openvpn-gui/pull/271</a> and<br>
-&gt; my comment dated Jul 3 under it.<br>
-&gt; <br>
-&gt; The discussion that led to this is here:<br>
-&gt; <a href=3D"https://github.com/OpenVPN/openvpn-gui/issues/270" rel=3D"n=
-oreferrer" target=3D"_blank">https://github.com/OpenVPN/openvpn-gui/issues/=
-270</a><br>
-<br>
-I fail to understand why you believe a fatal error in this case is<br>
-counterproductive.<br>
-<br>
-A config file that has a script configured, but is not allowed to run<br>
-that script is a faulty setup that might result is connections that are<br>
-not working properly or maybe even not providing the expected security<br>
-level. Consider for example someone changing DNS or proxy settings in a<br>
---up script to avoid leaking data. Most users will never reads warnings<br>
-if the connection pretends to be set up correctly. This makes me believe<br>
-that the best thing we can do is to error out if someone tries to<br>
-connect using such a configuration, and have them review their<br>
-configuration.<br>
-<br>
-Why is a fatal error not exactly what you would want?<br></blockquote><div>=
-=C2=A0</div><div>When you put it that way I can&#39;t disagree. Either I ha=
-dn&#39;t thought through</div><div>it properly, or have forgotten my reason=
-ing (it has been a while since I</div><div>tested the GUI patch that prompt=
-ed this).</div><div><br></div><div>I will drop this patch at least for now =
-and go ahead with the</div><div>feature to override script security setting=
- from the GUI.</div><div><br></div><div>Thanks for your time, and sorry for=
- wasting it.</div><div><br></div><div>Selva</div></div></div></div>
+Best regards,
+Simon
 
---00000000000037035a057a66908e--
+------=_NextPart_000_003C_01D47A84.4712C070
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCD9Qw
+ggSKMIIC8qADAgECAg0AkK53dgAAAABXHdBvMA0GCSqGSIb3DQEBCwUAMFwxCzAJBgNVBAYTAlNJ
+MRwwGgYDVQQKExNSZXB1Ymxpa2EgU2xvdmVuaWphMRcwFQYDVQRhEw5WQVRTSS0xNzY1OTk1NzEW
+MBQGA1UEAxMNU0ktVFJVU1QgUm9vdDAeFw0xNjA0MjUwNzM4MTdaFw0zNzEyMjUwODA4MTdaMFwx
+CzAJBgNVBAYTAlNJMRwwGgYDVQQKExNSZXB1Ymxpa2EgU2xvdmVuaWphMRcwFQYDVQRhEw5WQVRT
+SS0xNzY1OTk1NzEWMBQGA1UEAxMNU0ktVFJVU1QgUm9vdDCCAaIwDQYJKoZIhvcNAQEBBQADggGP
+ADCCAYoCggGBANPLnC3C4DBDZTEk/0uwONmpU9c10du3S5O0co3xy5XSUyt0mzKapC8+Agbdr3AV
+oarPEYeKZnvLzB1wRFyPrMrmw1sntI2jjhC/blR0CHCKI+jKx3TEZpEg3UvopYR1pZiVgosb4SAk
+B0arDGU2QGeLde6p2ZEpG+1vLUXC1uJgAbHzTjkrO28/hb4I9lMre6LJRaFEgYBmmmA6G8S+DMww
+EH8RNjhK5puhllOclMwRxgRMolVL/4Dhr4wcNfy5kzff+V093OsNJ2xEyVlmK1Zv/wQb9/Vpw13D
+GP69p9lkL6KfYNlybD08dfIlJ5guOrjJ3U11vauwImFYATcopiCdLmBc+5C8RkO4/m3YwGYiJGs0
+eCLlueJY6Ug47ky9AXtuPkDq0cIKQpNnwyYvPwdbz6/jHeg64mXhhJE/9WYA/aozRkLsFj7SE2Uv
+DglT9uQqdRScGTMWmkXh21fPzzjUp/ftWEPkDphcxOAxP5Skb0tKotVKjSapHWQlCDUN5wIDAQAB
+o0swSTAPBgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB/wQEAwIBBjATBgNVHSMEDDAKgAhMo8NoXggC
+YzARBgNVHQ4ECgQITKPDaF4IAmMwDQYJKoZIhvcNAQELBQADggGBACYjhbtdQRlukoOK7gGLBDUZ
+f6uP3NYzwfl5ll4j9fDO3erbYTtar91Y6UKJQO/52WcRf03x7ekRe7FBD+2k0ha278H9i/YRKyzv
+/AcGRgzPAgvtO96PCbkzqyaAVERCZdfnr81QDsrIiKESnCqVOz5UPEhz9nx41Jv/k/dF5CmEY/z6
+fhrnXOByV7AveB0wxhP9iF+xZYjaXpcTgXv+Hs97v1cwwXCSQ6aZ8FWfmMUjQr10HDGOEqXZRWoq
+WshYzb3W3T41Cxl/AxzOBw+HRZMVoWu9NBzg3vXUuOWRHEsFtScmvM/RCZgWxuHxVUs6e23exme2
+wTctn6iOWce3psXv3xbi7d6yt/OiNqQoMjoKlMs/Xv5uWe26NrKT1sbDGf71mXjrR0flrUJ67Lx7
+yS5BTk0PBA6KSzOH3PF2fFoYjJwKEteis8KFh65tMVBiMiGgaBZflDV0VSnScYEISuHXXapUAbMb
+fFmuvqwMyrhAZGdbneoGBhHW0DBzHuO8KzCCBVkwggRBoAMCAQICBDtKDS4wDQYJKoZIhvcNAQEF
+BQAwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMI
+c2lnZW4tY2EwHhcNMTYwMjE5MTc1NDQxWhcNMjEwMjE5MjEzODE1WjCBgDELMAkGA1UEBhMCU0kx
+GzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMIc2lnZW4tY2ExFDASBgNVBAsT
+C2luZGl2aWR1YWxzMSswEwYDVQQDEwxTaW1vbiBSb3ptYW4wFAYDVQQFEw0yMzQ1Njc5NTEyMDQy
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA/ixFbpZjenz5GnanvNlfDNca0OdgWBg5
+GsalcP7RMGpaShIjEegzvFXwqZI49SmuSRKFNtUq5tTBYOk5KLfW/MpBwBhFhmpAUQUoCRgQUAKo
+jvJJ47ULqIV0gBXlFoyzHwN5jmRvKyWxqwsoN/RZptY3ns1mLgf+7Nsa6iu0rXPxsyIXqrGBND8N
+RYarRAgOdibs6CLTl9+vHd9bTfztcp5B+xdE18uPBhZ3JquWInd3d0FTpNakAuvJaCC8EkpCwOcT
+leph8/15QAG/43zS37CMsU9UTuPqz5TrpU2FXsf238ZWyhlzeKnyv6POExal1tXWw1Cu40vT8zMb
+YVqU3wIDAQABo4ICGzCCAhcwDgYDVR0PAQH/BAQDAgWgMEsGA1UdIAREMEIwNgYLKwYBBAGvWQIC
+AwMwJzAlBggrBgEFBQcCARYZaHR0cDovL3d3dy5jYS5nb3Yuc2kvY3BzLzAIBgYEAIswAQIwGAYI
+KwYBBQUHAQMEDDAKMAgGBgQAjkYBATAaBgNVHREEEzARgQ9zaW1vbkByb3ptYW4uc2kwge4GA1Ud
+HwSB5jCB4zBWoFSgUqRQME4xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJzdGF0ZS1pbnN0aXR1dGlv
+bnMxETAPBgNVBAsTCHNpZ2VuLWNhMQ8wDQYDVQQDEwZDUkw0NTUwgYiggYWggYKGV2xkYXA6Ly94
+NTAwLmdvdi5zaS9vdT1zaWdlbi1jYSxvPXN0YXRlLWluc3RpdHV0aW9ucyxjPXNpP2NlcnRpZmlj
+YXRlUmV2b2NhdGlvbkxpc3Q/YmFzZYYnaHR0cDovL3d3dy5zaWdlbi1jYS5zaS9jcmwvc2lnZW4t
+Y2EuY3JsMCsGA1UdEAQkMCKADzIwMTYwMjE5MTc1NDQxWoEPMjAyMTAyMTkyMTM4MTVaMB8GA1Ud
+IwQYMBaAFHF7igYfMQVVq2ASd0cgHgOIGOyJMB0GA1UdDgQWBBS7/7AHyQYI0e8GOPmwTc1ZTNw5
+lzAJBgNVHRMEAjAAMBkGCSqGSIb2fQdBAAQMMAobBFY4LjEDAgOoMA0GCSqGSIb3DQEBBQUAA4IB
+AQBBUL4KG1Z1oBIIdKIZs9yJxnJg/LfEPVvzNH8+CCqegq0D6k48Doo72oVEiskjqggdbUGj30uA
+H8PjCD5kLGVoDwh5a2atQ3qQzaYA/lj2Js2f4fdXNn60vRp7XzbGsQdwYYecIrKzO5x6XVAIRb+T
+HZNjXL3VX6vOozwBQv/+dx1P9H/rMUn7d8ci7v4PeqShbWbWwi6ez19cZvSKSkz/lWf4tj8QbA0n
+WeUBlk3Bx6/TRda7kwXzcFExt+ROGt0YJjbZCN3kd7swcRvRT6gEi9L6n1XLghwPSYhzZjaL5fXv
+I11JuSoQCy13XWBkq35Moo4iY19wanS1W6UM8Yq0MIIF5TCCBE2gAwIBAgINAKZovVEAAAAAVx3Q
+6DANBgkqhkiG9w0BAQsFADBcMQswCQYDVQQGEwJTSTEcMBoGA1UEChMTUmVwdWJsaWthIFNsb3Zl
+bmlqYTEXMBUGA1UEYRMOVkFUU0ktMTc2NTk5NTcxFjAUBgNVBAMTDVNJLVRSVVNUIFJvb3QwHhcN
+MTYwNTI0MTE1ODI3WhcNMjEwNjI3MjIwMDAwWjA9MQswCQYDVQQGEwJzaTEbMBkGA1UEChMSc3Rh
+dGUtaW5zdGl0dXRpb25zMREwDwYDVQQLEwhzaWdlbi1jYTCCASIwDQYJKoZIhvcNAQEBBQADggEP
+ADCCAQoCggEBALDlZbLArGSW8ogbs+2e5ALGTyuIzi6KUYB1rxBb8ss4ZpuiDm00R5alkhGv9jVH
+onciDM4WiGKq00luGLwuRNi+xp7CGhmsQY78MAcC8sZq1FsjAO9BNNikc2PfIpIzhAGljfODXPq4
+1Ho13+z4bQ/gTO2tnDp9htalCJS+fXoRH/6FP1RaiGOHnKWxp07Nt0Rzr8+KSWsf483XSU1aKxfm
+XHazu3K5byfSm4kViN8QX3YhAWrHFTEK0ZxY+CgWBW3ZTtmh1wcgy0smiU2Ssqe6lujjWI8inAGW
+WsT3MU0LSbXheGHiVBgGu55UNH4MPuvutYAf3RaEHWg4Zmdz+JECAwEAAaOCAkMwggI/MBIGA1Ud
+EwEB/wQIMAYBAf8CAQAwDgYDVR0PAQH/BAQDAgEGMDoGA1UdIAQzMDEwLwYEVR0gADAnMCUGCCsG
+AQUFBwIBFhlodHRwOi8vd3d3LmNhLmdvdi5zaS9jcHMvMGkGCCsGAQUFBwEBBF0wWzA2BggrBgEF
+BQcwAoYqaHR0cDovL3d3dy5jYS5nb3Yuc2kvY3J0L3NpLXRydXN0LXJvb3QuY3J0MCEGCCsGAQUF
+BzABhhVodHRwOi8vb2NzcC5jYS5nb3Yuc2kwHQYDVR0OBBYEFHF7igYfMQVVq2ASd0cgHgOIGOyJ
+MIIBPAYDVR0fBIIBMzCCAS8wgbeggbSggbGGKmh0dHA6Ly93d3cuY2EuZ292LnNpL2NybC9zaS10
+cnVzdC1yb290LmNybIaBgmxkYXA6Ly94NTAwLmdvdi5zaS9jbj1TSS1UUlVTVCUyMFJvb3Qsb3Jn
+YW5pemF0aW9uSWRlbnRpZmllcj1WQVRTSS0xNzY1OTk1NyxvPVJlcHVibGlrYSUyMFNsb3Zlbmlq
+YSxjPVNJP2NlcnRpZmljYXRlUmV2b2NhdGlvbkxpc3Qwc6BxoG+kbTBrMQswCQYDVQQGEwJTSTEc
+MBoGA1UEChMTUmVwdWJsaWthIFNsb3ZlbmlqYTEXMBUGA1UEYRMOVkFUU0ktMTc2NTk5NTcxFjAU
+BgNVBAMTDVNJLVRSVVNUIFJvb3QxDTALBgNVBAMTBENSTDEwEwYDVR0jBAwwCoAITKPDaF4IAmMw
+DQYJKoZIhvcNAQELBQADggGBAHuvNSPhY4qcirWJkTwkqaOPqOSV06J/ZepFQfUEJ87TlrGjp4XR
+5FLktTAEY/7R4Sgeb2K8OWEl/Koc1BbH6+uyZYvfa+WnnJEWeWOmyPy/vooO7eZyOVvaORxurWOL
+CCVDW2wBkbtUoKZaUyzgP+ZPPGRV8GFlbZLCzGmArMGXJXe8t/XNiJDLehGqSWT49NYjyYQdIgI+
+qi9W+A6BSUQ9jsMdYJqKhXQcosfH51sc6gZVxTKMr3PsItsa8XFiNazECAAFr0ms7HB6zb8QvHRF
+eBGk/CLrW4VkZEBN/JtuyhvgktQ2BvuGtauEvHZQAYpMSh35D7pwtavRMpmhaAsQb4yPqhIMcztw
+RqsKPBhWoaFEVZ+Vn3wxap5h/oAhocifNzkWJTNWjxnoPM2eNz2uWFJsgsNhlwteUvnq7+bKTNte
+SKWKr6pI+GUsZhmCh5URpUnqUanp0Uie0MD9f3tiOLOp711sNb0xwi+VdDuDB37IddOIsfhPBood
+wpoFrTGCAyEwggMdAgEBMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0
+aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4wDQYJYIZIAWUDBAIBBQCgggGtMBgGCSqGSIb3
+DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE4MTExMjExMzYwNFowLwYJKoZIhvcN
+AQkEMSIEII7CBQTypA2Ez2PPuKIJHvh7kszsBKEBHoTKjOmEG5MKMFQGCSsGAQQBgjcQBDFHMEUw
+PTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMIc2ln
+ZW4tY2ECBDtKDS4wVgYLKoZIhvcNAQkQAgsxR6BFMD0xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJz
+dGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsTCHNpZ2VuLWNhAgQ7Sg0uMIGTBgkqhkiG9w0BCQ8x
+gYUwgYIwCwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQBFjAKBggqhkiG9w0DBzALBglghkgBZQMEAQIw
+DgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAsGCWCGSAFlAwQCATALBglghkgBZQMEAgMw
+CwYJYIZIAWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBAJu6EJZVAtqtlW9E2EXBx8Tt
+8dlyS1ux9n0MHjgRjLcWS3VHIXCftylFPQSJDfQBkPCNK62AO53jKw/KgButuYwxNAJg4HDmn2U3
+wZV+p1UpiswWQOF7UYb2c/S2PMvaYVD/yVeeFZEJ9wYGppE+xws8llnypuCY8iEUHRR0x6acj29h
++rD7DqESiLBkA45HfG3aqhFXSD6enRlKQhd2xP7coFzvOv627qmiwKwRO2RFNLcbj2jaE1opzsB6
+PA8PKx9rlg0JEBiYs1uNtA+a8yuFoV0icgEz9nN6YabGcbF1o8uue5StyEcx/QoN7VPklrhIfGf3
+gtD+SJx6VZBD/9QAAAAAAAA=
+
+------=_NextPart_000_003C_01D47A84.4712C070--
 
