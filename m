@@ -1,10 +1,14 @@
-From: Simon Rozman <simon@...2293...>
-Date: Mon, 12 Nov 2018 13:22:45 +0100
-Message-Id: <20181112122246.13556-2-simon@...2293...>
-In-Reply-To: <20181112122246.13556-1-simon@...2293...>
-References: <20181112122246.13556-1-simon@...2293...>
+From: Arne Schwabe <arne@...1227...>
+References: <1d93843c-6fe8-1a60-28fc-c013a57877da@...2181...>
+ <20181029172040.17034-1-arne@...1227...>
+Message-ID: <cb0fcc63-f17a-1112-2b7f-a02ad77930b1@...1227...>
+Date: Mon, 12 Nov 2018 14:35:27 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/3] Change C++ to C comments
+In-Reply-To: <20181029172040.17034-1-arne@...1227...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="hMwobTNxJySd3KGrAh2P9D47HDBYnfROF"
+Subject: Re: [Openvpn-devel] [PATCH v5] Implement block-ipv6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,77 +17,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
----
- src/openvpnmsica/openvpnmsica.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--hMwobTNxJySd3KGrAh2P9D47HDBYnfROF
+Content-Type: multipart/mixed; boundary="AiR7bGoiRLyXlLtV4oqIVP9Ebzz7feogj";
+ protected-headers="v1"
+From: Arne Schwabe <arne@...1227...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <cb0fcc63-f17a-1112-2b7f-a02ad77930b1@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH v5] Implement block-ipv6
+References: <1d93843c-6fe8-1a60-28fc-c013a57877da@...2181...>
+ <20181029172040.17034-1-arne@...1227...>
+In-Reply-To: <20181029172040.17034-1-arne@...1227...>
 
-diff --git a/src/openvpnmsica/openvpnmsica.c b/src/openvpnmsica/openvpnmsica.c
-index d1642d6a..99b47bf0 100644
---- a/src/openvpnmsica/openvpnmsica.c
-+++ b/src/openvpnmsica/openvpnmsica.c
-@@ -162,7 +162,7 @@ FindSystemInfo(_In_ MSIHANDLE hInstall)
-     struct openvpnmsica_tls_data *s = (struct openvpnmsica_tls_data *)TlsGetValue(openvpnmsica_tlsidx_session);
-     s->hInstall = hInstall;
- 
--    // Get Windows version.
-+    /* Get Windows version. */
-     OSVERSIONINFOEX ver_info = { .dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX) };
-     if (!GetVersionEx((LPOSVERSIONINFO)&ver_info)) {
-         uiResult = GetLastError();
-@@ -170,7 +170,7 @@ FindSystemInfo(_In_ MSIHANDLE hInstall)
-         goto cleanup_CoInitialize;
-     }
- 
--    // The Windows version is usually spoofed, check using RtlGetVersion().
-+    /* The Windows version is usually spoofed, check using RtlGetVersion(). */
-     TCHAR szDllPath[0x1000];
-     ExpandEnvironmentStrings(TEXT("%SystemRoot%\\System32\\ntdll.dll"), szDllPath,
- #ifdef UNICODE
-@@ -193,7 +193,7 @@ FindSystemInfo(_In_ MSIHANDLE hInstall)
-                     rtl_ver_info.dwMajorVersion == ver_info.dwMajorVersion && rtl_ver_info.dwMinorVersion >  ver_info.dwMinorVersion ||
-                     rtl_ver_info.dwMajorVersion == ver_info.dwMajorVersion && rtl_ver_info.dwMinorVersion == ver_info.dwMinorVersion && rtl_ver_info.dwBuildNumber > ver_info.dwBuildNumber)
-                 {
--                    // We got RtlGetVersion() and it reported newer version than GetVersionEx().
-+                    /* We got RtlGetVersion() and it reported newer version than GetVersionEx(). */
-                     ver_info.dwMajorVersion = rtl_ver_info.dwMajorVersion;
-                     ver_info.dwMinorVersion = rtl_ver_info.dwMinorVersion;
-                     ver_info.dwBuildNumber  = rtl_ver_info.dwBuildNumber;
-@@ -204,7 +204,7 @@ FindSystemInfo(_In_ MSIHANDLE hInstall)
-         FreeLibrary(hNtDllModule);
-     }
- 
--    // We don't trust RtlGetVersion() either. Check the version resource of kernel32.dll.
-+    /* We don't trust RtlGetVersion() either. Check the version resource of kernel32.dll. */
-     ExpandEnvironmentStrings(TEXT("%SystemRoot%\\System32\\kernel32.dll"), szDllPath,
- #ifdef UNICODE
-         _countof(szDllPath)
-@@ -220,10 +220,10 @@ FindSystemInfo(_In_ MSIHANDLE hInstall)
-         LPVOID pVersionInfo = malloc(dwVerInfoSize);
-         if (pVersionInfo)
-         {
--            // Read version info.
-+            /* Read version info. */
-             if (GetFileVersionInfo(szDllPath, dwHandle, dwVerInfoSize, pVersionInfo))
-             {
--                // Get the value for the root block.
-+                /* Get the value for the root block. */
-                 UINT uiSize = 0;
-                 VS_FIXEDFILEINFO *pVSFixedFileInfo = NULL;
-                 if (VerQueryValue(pVersionInfo, TEXT("\\"), &pVSFixedFileInfo, &uiSize) && uiSize && pVSFixedFileInfo)
-@@ -231,7 +231,7 @@ FindSystemInfo(_In_ MSIHANDLE hInstall)
-                         HIWORD(pVSFixedFileInfo->dwProductVersionMS) == ver_info.dwMajorVersion && LOWORD(pVSFixedFileInfo->dwProductVersionMS) >  ver_info.dwMinorVersion ||
-                         HIWORD(pVSFixedFileInfo->dwProductVersionMS) == ver_info.dwMajorVersion && LOWORD(pVSFixedFileInfo->dwProductVersionMS) == ver_info.dwMinorVersion && HIWORD(pVSFixedFileInfo->dwProductVersionLS) > ver_info.dwBuildNumber)
-                     {
--                        // We got kernel32.dll version and it is newer.
-+                        /* We got kernel32.dll version and it is newer. */
-                         ver_info.dwMajorVersion = HIWORD(pVSFixedFileInfo->dwProductVersionMS);
-                         ver_info.dwMinorVersion = LOWORD(pVSFixedFileInfo->dwProductVersionMS);
-                         ver_info.dwBuildNumber  = HIWORD(pVSFixedFileInfo->dwProductVersionLS);
--- 
-2.19.1.windows.1
+--AiR7bGoiRLyXlLtV4oqIVP9Ebzz7feogj
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
+Am 29.10.18 um 18:20 schrieb Arne Schwabe:
+> +#define MAX_ICMPV6LEN IPV6_MIN_MTU
+
+This should be
+
+#define MAX_ICMPV6LEN 1280
+
+Antonios suggestion of using IPV6_MIN_MTU works on Android on my linux
+test box but breaks on other Linux machines and FreeBSD does not even
+have this define.
+
+Arne
+
+
+--AiR7bGoiRLyXlLtV4oqIVP9Ebzz7feogj--
+
+--hMwobTNxJySd3KGrAh2P9D47HDBYnfROF
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAlvpgb0ACgkQFRhsZwKx
+RFRgtw/+IkMqPAPhSMCxSNQMP/k4YwaamAw5Iob0bLnvBPXCsSlpPPpOslnm/F1l
+nDT2zR4kXbtGylGrOqD8U7m9ZiNcqvWWM3ijVx9pc1iFHNci0kKy+lBeAO0pm1b6
+bsiOz+F2JnqTIo20XCsjPrUqApyXfwGsQtTO+1jqP3Liv6rVmDcIzAyS0Sb1Heqy
+dOLwbOD4yGxJUilNoC/nxMIuaz5oLpQjr4qVpabHDjSbHT+B4daqnjyCVAMhNX3R
+kdMTMTB2qPvCSg7UKQlmL/QhlkQ0Y4IxZWzn3lXX+ykhuaNcXPWaPE1vhMhxfxso
+ccIn9H3gje//u2Q6Mt+8zWT8T+Ap/EumEAKnN+ydt/KYXmOuamXPIrVlAU473cP6
+R47VNW90ZOc7ktzp1RFUG0C9FboKfNDKlKs2ICQlpMcnPn1YYxglrKJpSYykeUJr
+pc0BvkbPJBS/ajY1jIRFuzEWslkUevQ08X0c1oSxBkprdBcHagOeWB3lQ3L5QONy
+F+hcqYev3hShXt0rWaXBoRTzJZ6NwTaHN5jXwBiIYO+uWhUGwgzP4LZaRQyEjKuD
+OKe4qiLIf8eE8q71o8ofgjT6SmB/rYvoPgTBb9edqHyjT4kOZxGe++v/GAkxbQAA
+uraRJlWhAWs5wNnKNEx3E0BJRaw3GUH6Ei+DxpgUzD3IjEhDvfk=
+=zPp4
+-----END PGP SIGNATURE-----
+
+--hMwobTNxJySd3KGrAh2P9D47HDBYnfROF--
 
