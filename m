@@ -1,10 +1,10 @@
-Date: Sun, 18 Nov 2018 15:10:02 +0100 (CET)
-Message-Id: <201811181410.wAIEA2E3029747@...2054...>
+Date: Sun, 18 Nov 2018 19:58:08 +0100 (CET)
+Message-Id: <201811181858.wAIIw8YW032234@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1540981377-22752-1-git-send-email-steffan.karger@...1435...>
-References: <1540981377-22752-1-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH applied] Re: tls-crypt-v2: clarify
- --tls-crypt-v2-genkey man page section
+In-Reply-To: <1540991236-4016-1-git-send-email-steffan.karger@...1435...>
+References: <1540991236-4016-1-git-send-email-steffan.karger@...1435...>
+Subject: [Openvpn-devel] [PATCH applied] Re: tls-crypt-v2: fix client
+ reconnect bug
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,20 +18,20 @@ Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan.karger@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Documentation is always welcome :-)
-
 Your patch has been applied to the master branch.
 
-commit 01039891ece9f38f7a17c80e5afc261ab5bcbaf3
-Author: Steffan Karger
-Date:   Wed Oct 31 11:22:57 2018 +0100
+(Gave it a test run, but didn't really look hard at the code)
 
-     tls-crypt-v2: clarify --tls-crypt-v2-genkey man page section
+commit 19d6d9c3533b83f934ea93359bca086a5d06011a
+Author: Steffan Karger
+Date:   Wed Oct 31 14:07:16 2018 +0100
+
+     tls-crypt-v2: fix client reconnect bug
 
      Signed-off-by: Steffan Karger <steffan.karger@...1435...>
      Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <1540981377-22752-1-git-send-email-steffan.karger@...1435...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17865.html
+     Message-Id: <1540991236-4016-1-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17866.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
