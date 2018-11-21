@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Wed, 21 Nov 2018 11:10:15 +0100
-Message-Id: <20181121101019.1801-10-arne@...1227...>
+Date: Wed, 21 Nov 2018 11:10:11 +0100
+Message-Id: <20181121101019.1801-6-arne@...1227...>
 In-Reply-To: <20181121101019.1801-1-arne@...1227...>
 References: <20181121101019.1801-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v4 09/13] client-connect: Move adding
- inotify watch into its own function
+Subject: [Openvpn-devel] [PATCH v4 05/13] client-connect: Refactor
+ client-connect handling to calling a bunch of hooks in a loop
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,78 +17,79 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This make the code a bit better readable and also prepares resuing
-the function for client-connect return files
+From: Fabian Knittel <fabian.knittel@...1547...>
 
+This patch changes the calling of the client-connect functions into an array
+of hooks and a block of code that calls them in a loop.
+
+Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/multi.c | 46 +++++++++++++++++++++++++++++----------------
- 1 file changed, 30 insertions(+), 16 deletions(-)
+ src/openvpn/multi.c | 44 ++++++++++++++++----------------------------
+ 1 file changed, 16 insertions(+), 28 deletions(-)
 
 diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index df6e4610..63d9db05 100644
+index 4182b553..18a1313e 100644
 --- a/src/openvpn/multi.c
 +++ b/src/openvpn/multi.c
-@@ -2710,6 +2710,32 @@ multi_schedule_context_wakeup(struct multi_context *m, struct multi_instance *mi
-                        compute_wakeup_sigma(&mi->context.c2.timeval));
- }
- 
-+#if defined(ENABLE_ASYNC_PUSH) && defined(ENABLE_DEF_AUTH)
-+static void
-+add_inotify_file_watch(struct multi_context *m, struct multi_instance *mi,
-+                       int inotify_fd, const char *file)
-+{
-+    /* watch acf file */
-+    long watch_descriptor = inotify_add_watch(inotify_fd, file,
-+                                              IN_CLOSE_WRITE | IN_ONESHOT);
-+    if (watch_descriptor >= 0)
-+    {
-+        if (mi->inotify_watch != -1)
-+        {
-+            hash_remove(m->inotify_watchers,
-+                        (void *) (unsigned long)mi->inotify_watch);
-+        }
-+        hash_add(m->inotify_watchers, (const uintptr_t *)watch_descriptor,
-+                 mi, true);
-+        mi->inotify_watch = watch_descriptor;
-+    }
-+    else
-+    {
-+        msg(M_NONFATAL | M_ERRNO, "MULTI: inotify_add_watch error");
-+    }
-+}
-+#endif /* if defined(ENABLE_ASYNC_PUSH) && defined(ENABLE_DEF_AUTH) */
+@@ -2144,6 +2144,20 @@ multi_connection_established(struct multi_context *m, struct multi_instance *mi)
+     if (tls_authentication_status(mi->context.c2.tls_multi, 0)
+         == TLS_AUTHENTICATION_SUCCEEDED)
+     {
++        typedef enum client_connect_return
++        (*multi_client_connect_handler)
++            (struct multi_context *m, struct multi_instance *mi,
++            unsigned int *option_types_found);
 +
- /*
-  * Figure instance-specific timers, convert
-  * earliest to absolute time in mi->wakeup,
-@@ -2739,23 +2765,11 @@ multi_process_post(struct multi_context *m, struct multi_instance *mi, const uns
-         pre_select(&mi->context);
++        multi_client_connect_handler handlers[] = {
++            multi_client_connect_source_ccd,
++            multi_client_connect_call_plugin_v1,
++            multi_client_connect_call_plugin_v2,
++            multi_client_connect_call_script,
++            multi_client_connect_mda,
++            NULL
++        };
++
+         unsigned int option_types_found = 0;
  
- #if defined(ENABLE_ASYNC_PUSH) && defined(ENABLE_DEF_AUTH)
--        if (ks && ks->auth_control_file && ks->auth_deferred && !was_authenticated)
-+        if (ks && ks->auth_control_file
-+            && ks->auth_deferred && !was_authenticated)
+         int cc_succeeded = true; /* client connect script status */
+@@ -2152,35 +2166,9 @@ multi_connection_established(struct multi_context *m, struct multi_instance *mi)
+ 
+         multi_client_connect_early_setup(m, mi);
+ 
+-        ret = multi_client_connect_source_ccd(m, mi, &option_types_found);
+-        cc_succeeded = cc_check_return(&cc_succeeded_count, ret);
+-
+-        if (cc_succeeded)
+-        {
+-            ret = multi_client_connect_call_plugin_v1(m, mi,
+-                                                      &option_types_found);
+-            cc_succeeded = cc_check_return(&cc_succeeded_count, ret);
+-        }
+-
+-        if (cc_succeeded)
+-        {
+-            ret = multi_client_connect_call_plugin_v2(m, mi,
+-                                                      &option_types_found);
+-            cc_succeeded = cc_check_return(&cc_succeeded_count, ret);
+-        }
+-
+-        /*
+-         * Check for client-connect script left by management interface client
+-         */
+-        if (cc_succeeded)
+-        {
+-            ret = multi_client_connect_call_script(m, mi, &option_types_found);
+-            cc_succeeded = cc_check_return(&cc_succeeded_count, ret);
+-        }
+-
+-        if (cc_succeeded)
++        for (int i = 0; cc_succeeded && handlers[i]; i++)
          {
--            /* watch acf file */
--            long watch_descriptor = inotify_add_watch(m->top.c2.inotify_fd, ks->auth_control_file, IN_CLOSE_WRITE | IN_ONESHOT);
--            if (watch_descriptor >= 0)
--            {
--                if (mi->inotify_watch != -1)
--                {
--                    hash_remove(m->inotify_watchers, (void *) (unsigned long)mi->inotify_watch);
--                }
--                hash_add(m->inotify_watchers, (const uintptr_t *)watch_descriptor, mi, true);
--                mi->inotify_watch = watch_descriptor;
--            }
--            else
--            {
--                msg(M_NONFATAL | M_ERRNO, "MULTI: inotify_add_watch error");
--            }
-+            add_inotify_file_watch(m, mi, m->top.c2.inotify_fd,
-+                                   ks->auth_control_file);
+-            ret = multi_client_connect_mda(m, mi, &option_types_found);
++            ret = handlers[i](m, mi, &option_types_found);
+             cc_succeeded = cc_check_return(&cc_succeeded_count, ret);
          }
- #endif
  
 -- 
 2.19.1
