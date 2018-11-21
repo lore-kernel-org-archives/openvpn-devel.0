@@ -1,7 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Wed, 21 Nov 2018 11:10:06 +0100
-Message-Id: <20181121101019.1801-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v4 00/13] Deferred client-connect patch set
+Date: Wed, 21 Nov 2018 11:10:12 +0100
+Message-Id: <20181121101019.1801-7-arne@...1227...>
+In-Reply-To: <20181121101019.1801-1-arne@...1227...>
+References: <20181121101019.1801-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v4 06/13] client-connect: Change
+ connection_established_flag from bool to enum
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,51 +17,115 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Fabian submitted the original patch set in 2015. When I started working on it
-I had quite big rebase conflicts and decided to rebsae it manually. During
-this rebase I adjusted the code and made other minor and major adjustments
-to the code to better fit our current code style. The minor adjustments are
-mostly not mentioned in the commit message. The larger changes are mentioned
-or if feasible and sensible in their own commits. 
+This prepares from the yes/no logic to a tristate logic with defered being
+the third state. This deviates from Fabian's original patch that
+that used a pointer being NULL or non NULL as implicit third state.
 
-The V4 patch fixes minor code style problems, spotted by
-uncrustify. Since modifying the first patch creates merge conflicts in
-all other patches, the whole patch series is rebased and resend. The
-patches themsevles do not have a V4 item in them that mentions this
-reformatting.
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/multi.c | 14 ++++++++------
+ src/openvpn/multi.h | 14 ++++++++++----
+ 2 files changed, 18 insertions(+), 10 deletions(-)
 
-Arne Schwabe (5):
-  client-connect: Change connection_established_flag from bool to enum
-  client-connect: Move adding inotify watch into its own function
-  client-connect: Also use inotify for the deferred client-connect
-    status file
-  client-connect: Implement deferred connect support for plugin API v2
-  client-connect: Add documentation for the deferred client connect
-    feature
-
-Fabian Knittel (8):
-  client-connect: Split multi_connection_established into separate
-    functions
-  client-connect: Refactor multi_client_connect_source_ccd
-  client-connect: Move multi_client_connect_setenv into early_setup
-  client-connect: Refactor to use return values instead of modifying a
-    passed-in flag
-  client-connect: Refactor client-connect handling to calling a bunch of
-    hooks in a loop
-  client-connect: Add CC_RET_DEFERRED and cope with deferred
-    client-connect
-  client-connect: Add deferred support to the client-connect script
-    handler
-  client-connect: Add deferred support to the client-connect plugin v1
-    handler
-
- doc/openvpn.8               |   47 +-
- include/openvpn-plugin.h.in |   51 +-
- src/openvpn/multi.c         | 1045 ++++++++++++++++++++++++++---------
- src/openvpn/multi.h         |   52 +-
- src/openvpn/plugin.c        |    6 +
- 5 files changed, 906 insertions(+), 295 deletions(-)
-
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 18a1313e..1093d8aa 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -574,7 +574,8 @@ static void
+ multi_client_disconnect_script(struct multi_context *m,
+                                struct multi_instance *mi)
+ {
+-    if ((mi->context.c2.context_auth == CAS_SUCCEEDED && mi->connection_established_flag)
++    if ((mi->context.c2.context_auth == CAS_SUCCEEDED
++         && mi->client_connect_status == CC_STATUS_ESTABLISHED)
+         || mi->context.c2.context_auth == CAS_PARTIAL)
+     {
+         multi_client_disconnect_setenv(m, mi);
+@@ -2051,7 +2052,7 @@ multi_client_connect_early_setup(struct multi_context *m,
+  * Try to source a dynamic config file from the
+  * --client-config-dir directory.
+  */
+-enum client_connect_return
++static enum client_connect_return
+ multi_client_connect_source_ccd(struct multi_context *m,
+                                 struct multi_instance *mi,
+                                 unsigned int *option_types_found)
+@@ -2196,7 +2197,7 @@ multi_connection_established(struct multi_context *m, struct multi_instance *mi)
+         }
+ 
+         /* set flag so we don't get called again */
+-        mi->connection_established_flag = true;
++        mi->client_connect_status = CC_STATUS_ESTABLISHED;
+ 
+         /* increment number of current authenticated clients */
+         ++m->n_clients;
+@@ -2479,7 +2480,8 @@ multi_process_post(struct multi_context *m, struct multi_instance *mi, const uns
+         {
+             /* connection is "established" when SSL/TLS key negotiation succeeds
+              * and (if specified) auth user/pass succeeds */
+-            if (!mi->connection_established_flag && CONNECTION_ESTABLISHED(&mi->context))
++            if (mi->client_connect_status != CC_STATUS_ESTABLISHED
++                && CONNECTION_ESTABLISHED(&mi->context))
+             {
+                 multi_connection_established(m, mi);
+             }
+@@ -3385,7 +3387,7 @@ management_client_auth(void *arg,
+         {
+             if (auth)
+             {
+-                if (!mi->connection_established_flag)
++                if (mi->client_connect_status == CC_STATUS_NOT_ESTABLISHED)
+                 {
+                     set_cc_config(mi, cc_config);
+                     cc_config_owned = false;
+@@ -3397,7 +3399,7 @@ management_client_auth(void *arg,
+                 {
+                     msg(D_MULTI_LOW, "MULTI: connection rejected: %s, CLI:%s", reason, np(client_reason));
+                 }
+-                if (mi->connection_established_flag)
++                if (mi->client_connect_status == CC_STATUS_ESTABLISHED)
+                 {
+                     send_auth_failed(&mi->context, client_reason); /* mid-session reauth failed */
+                     multi_schedule_context_wakeup(m, mi);
+diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
+index 0a1ab2c3..bd4882ea 100644
+--- a/src/openvpn/multi.h
++++ b/src/openvpn/multi.h
+@@ -63,6 +63,12 @@ struct deferred_signal_schedule_entry
+     struct timeval wakeup;
+ };
+ 
++enum client_connect_status
++{
++    CC_STATUS_NOT_ESTABLISHED,
++    CC_STATUS_ESTABLISHED
++};
++
+ /**
+  * Server-mode state structure for one single VPN tunnel.
+  *
+@@ -105,7 +111,7 @@ struct multi_instance {
+     bool did_cid_hash;
+     struct buffer_list *cc_config;
+ #endif
+-    bool connection_established_flag;
++    enum client_connect_status client_connect_status;
+     bool did_iroutes;
+     int n_clients_delta; /* added to multi_context.n_clients when instance is closed */
+ 
+@@ -196,9 +202,9 @@ struct multi_context {
+  */
+ enum client_connect_return
+ {
+-  CC_RET_FAILED,
+-  CC_RET_SUCCEEDED,
+-  CC_RET_SKIPPED
++    CC_RET_FAILED,
++    CC_RET_SUCCEEDED,
++    CC_RET_SKIPPED
+ };
+ 
+ /*
 -- 
 2.19.1
 
