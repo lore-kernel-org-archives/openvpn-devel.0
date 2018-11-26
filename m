@@ -1,9 +1,10 @@
-MIME-Version: 1.0
-From: Lev Stipakov <lstipakov@...277...>
-Date: Fri, 23 Nov 2018 10:49:10 +0200
-Message-ID: <CAGyAFMVEP_=W=JUSrBqx9TWPW4yn=ffCsF_r2b3y5eHdGiKwNQ@...278...>
-Content-Type: multipart/alternative; boundary="0000000000001cebfd057b510fb2"
-Subject: [Openvpn-devel] Man for mssfix
+From: Arne Schwabe <arne@...1227...>
+Date: Mon, 26 Nov 2018 09:12:24 +0100
+Message-Id: <20181126081224.30779-1-arne@...1227...>
+In-Reply-To: <20181121101019.1801-14-arne@...1227...>
+References: <20181121101019.1801-14-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v6 13/13] client-connect: Add documentation
+ for the deferred client connect feature
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,113 +13,151 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
---0000000000001cebfd057b510fb2
-Content-Type: text/plain; charset="UTF-8"
+Patch V5: Fix typos, clarify man page section about deferred client-connect
+          script. Add section to Changes.rst
 
-Hi,
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ Changes.rst                 |  4 +++
+ doc/openvpn.8               | 55 +++++++++++++++++++++++++++++++++++--
+ include/openvpn-plugin.h.in | 21 ++++++++++----
+ 3 files changed, 71 insertions(+), 9 deletions(-)
 
-I think that man page statement about "mssfix" doesn't fully reflect actual
-functionality. Specifically, man page says:
+diff --git a/Changes.rst b/Changes.rst
+index a7429b11..357b0901 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -3,6 +3,10 @@ Overview of changes in 2.5
+ 
+ New features
+ ------------
++Deferred client-connect
++    client-connect and the connect plugin API allow now asynchronous/deferred
++    return of configuration file in the same way as the auth-plugin.
++
+ Client-specific tls-crypt keys (``--tls-crypt-v2``)
+     ``tls-crypt-v2`` adds the ability to supply each client with a unique
+     tls-crypt key.  This allows large organisations and VPN providers to profit
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 94b5cc4f..a5ec3b07 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -3346,6 +3346,13 @@ is significant.  If
+ .B script
+ returns a non\-zero error status, it will cause the client
+ to be disconnected.
++
++If a
++.B \-\-client\-connect cmd
++wants to defer the generating the configuration the script, should
++use the client_connect_deferred_file and client_connect_config_file
++environment variables and write status accordingly into these files
++(See the environment section below for more details).
+ .\"*********************************************************
+ .TP
+ .B \-\-client\-disconnect cmd
+@@ -3428,12 +3435,18 @@ This directory will be used by in the following cases:
+ 
+ *
+ .B \-\-client\-connect
+-scripts to dynamically generate client\-specific
+-configuration files.
++scripts and
++.B OPENVPN_PLUGIN_CLIENT_CONNECT
++plugin hook 
++to dynamically generate client\-specific configuration files
++and return success/failure via client_connect_deferred_file
++when using deferred client connect method
+ 
+ *
+ .B OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY
+-plugin hook to return success/failure via auth_control_file
++and 
++
++plugin hook to return success/failure via auth_control_file/
+ when using deferred auth method
+ 
+ *
+@@ -6431,6 +6444,42 @@ Set prior to execution of the
+ script.
+ .\"*********************************************************
+ .TP
++.B client_connect_config_file
++The path to the configuration file that should be written by
++the
++.B \-\-client\-connect
++The content of this environment variable is identical to the
++file as a argument of the called
++.B \-\-client\-connect
++script.
++.\"*********************************************************
++.TP
++.B client_connect_deferred_file
++This file can be optionally written to communicate a status
++code of the
++.TP
++.B \-\-client\-connect
++script. If used for deferring, this file must be written
++before the
++.B \-\-client\-connect
++script exits. The first character in the file is interpreted
++and '1 is equal to normal script execution, '0' indicates an
++error (in the same way that a non zero exit status does) and
++'2 indicates that the script deferred returning the config
++file. When the script defers returning the configuration, it must
++must '2' to to the file to indicate the deferral.
++A background process or similar must then take of writing the
++configuration to the file indicated by the
++.B
++client_connect_config_file
++environment variable and when finished, write the a '1' to this
++file (or '0' in case of an error).
++
++The absence of any character in the file when the script finishes
++executing is interpreted the same as '1'. This allows script that
++are not written to support the defer mechanism to be used unmodified.
++.\"*********************************************************
++.TP
+ .B common_name
+ The X509 common name of an authenticated client.
+ Set prior to execution of
+diff --git a/include/openvpn-plugin.h.in b/include/openvpn-plugin.h.in
+index 38fbe097..c776178f 100644
+--- a/include/openvpn-plugin.h.in
++++ b/include/openvpn-plugin.h.in
+@@ -557,12 +557,21 @@ OPENVPN_PLUGIN_DEF openvpn_plugin_handle_t OPENVPN_PLUGIN_FUNC(openvpn_plugin_op
+  * OPENVPN_PLUGIN_FUNC_SUCCESS on success, OPENVPN_PLUGIN_FUNC_ERROR on failure
+  *
+  * In addition, OPENVPN_PLUGIN_FUNC_DEFERRED may be returned by
+- * OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY.  This enables asynchronous
+- * authentication where the plugin (or one of its agents) may indicate
+- * authentication success/failure some number of seconds after the return
+- * of the OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY handler by writing a single
+- * char to the file named by auth_control_file in the environmental variable
+- * list (envp).
++ * OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY, OPENVPN_PLUGIN_CLIENT_CONNECT and
++ * OPENVPN_PLUGIN_CLIENT_CONNECT_V2. This enables asynchronous
++ * authentication or client connect  where the plugin (or one of its agents) 
++ * may indicate authentication success/failure or client configuration some
++ * number of seconds after the return of the function handler.
++ * For OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY and OPENVPN_PLUGIN_CLIENT_CONNECT
++ * this is done by writing a single char to the file named by
++ * auth_control_file/client_connect_deferred_file
++ * in the environmental variable list (envp).
++ *
++ * In addition the OPENVPN_PLUGIN_CLIENT_CONNECT_DEFER and 
++ * OPENVPN_PLUGIN_CLIENT_CONNECT_DEFER_V2 are called when OpenVPN tries to
++ * get the deferred result. For a V2 call implementing this function is 
++ * required as information is not passed by files. For the normal version
++ * the call is optional.
+  *
+  * first char of auth_control_file:
+  * '0' -- indicates auth failure
+-- 
+2.19.1
 
-              Announce to TCP sessions running over the tunnel that they
-should limit their send packet sizes such that after OpenVPN has
-encapsulated them, the resulting UDP packet size that OpenVPN sends to its
-peer will not exceed max bytes. The  default  value is 1450.
-
-              The max parameter is interpreted in the same way as the
---link-mtu parameter, i.e. the UDP packet size after encapsulation overhead
-has been added in, but not including the UDP header itself. Resulting
-packet would be at most 28 bytes larger for IPv4 and 48 bytes for IPv6
-(20/40 bytes for IP header and 8 bytes for UDP header).
-
-So it means that with "mssfix" 1300 resulting IPv4 packet size would be at
-most 1328.
-
-This is what I see in Wireshark (server - git master, client 2.4.6):
-
-Internet Protocol Version 4, Src: 128.199.xxx.yyy, Dst: 10.0.200.20
-    0100 .... = Version: 4
-    .... 0101 = Header Length: 20 bytes (5)
-    Total Length: 1300
-    Protocol: UDP (17)
-User Datagram Protocol, Src Port: 1194, Dst Port: 1194
-    Source Port: 1194
-    Destination Port: 1194
-    Length: 1280
-OpenVPN Protocol
-    Type: 0x49 [opcode/key_id]
-    Peer ID: 0
-    Data (1268 bytes)
-
-While man page statement is technically correct - UDP packet size is 1300,
-which is "at most 1328", I think it should say:
-
-> the resulting IP packet size that OpenVPN sends to its peer will not
-exceed max bytes
-
-and
-
-> The max parameter is interpreted in the same way as the --link-mtu
-parameter, i.e. the IP packet size
-after encapsulation overhead has been added in, including UDP and IP
-headers.
-
-Same results without explicitly defining mssfix - IP packet size is 1450
-(which is default value).
-
-Most likely initially mssfix has worked as stated in man but then
-implementation has changed. So either
-we may want to fix implementation or change man. Since mssfix behaves like
-link-mtu, maybe we could also
-change its default value to 1500 to get 50 more bytes for payload.
-
-What do you think?
-
---
--Lev
-
---0000000000001cebfd057b510fb2
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Hi,<br><br>I think that man page statement about &quot;mss=
-fix&quot; doesn&#39;t fully reflect actual functionality. Specifically, man=
- page says:<br><br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 Announc=
-e to TCP sessions running over the tunnel that they should limit their send=
- packet sizes such that after OpenVPN has encapsulated them, the resulting =
-UDP packet size that OpenVPN sends to its peer will not exceed max bytes. T=
-he =C2=A0default =C2=A0value is 1450.<br><br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 The max parameter is interpreted in the same way as th=
-e --link-mtu parameter, i.e. the UDP packet size after encapsulation overhe=
-ad has been added in, but not including the UDP header itself. Resulting pa=
-cket would be at most 28 bytes larger for IPv4 and 48 bytes for IPv6 (20/40=
- bytes for IP header and 8 bytes for UDP header).<br><br>So it means that w=
-ith &quot;mssfix&quot; 1300 resulting IPv4 packet size would be at most 132=
-8.<br><br>This is what I see in Wireshark (server - git master, client 2.4.=
-6):<br><br>Internet Protocol Version 4, Src: 128.199.xxx.yyy, Dst: 10.0.200=
-.20<br>=C2=A0 =C2=A0 0100 .... =3D Version: 4<br>=C2=A0 =C2=A0 .... 0101 =
-=3D Header Length: 20 bytes (5)<br>=C2=A0 =C2=A0 Total Length: 1300<br>=C2=
-=A0 =C2=A0 Protocol: UDP (17)<br>User Datagram Protocol, Src Port: 1194, Ds=
-t Port: 1194<br>=C2=A0 =C2=A0 Source Port: 1194<br>=C2=A0 =C2=A0 Destinatio=
-n Port: 1194<br>=C2=A0 =C2=A0 Length: 1280<br>OpenVPN Protocol<br>=C2=A0 =
-=C2=A0 Type: 0x49 [opcode/key_id]<br>=C2=A0 =C2=A0 Peer ID: 0<br>=C2=A0 =C2=
-=A0 Data (1268 bytes)<br><br>While man page statement is technically correc=
-t - UDP packet size is 1300, which is &quot;at most 1328&quot;, I think it =
-should say:<div><br></div><div>&gt; the resulting IP packet size that OpenV=
-PN sends to its peer will not exceed max bytes=C2=A0=C2=A0</div><div><br></=
-div><div>and</div><div><br></div><div>&gt; The max parameter is interpreted=
- in the same way as the --link-mtu parameter, i.e. the IP packet size</div>=
-<div>after encapsulation overhead has been added in, including UDP and IP h=
-eaders.</div><div><br></div><div>Same results without explicitly defining m=
-ssfix - IP packet size is 1450 (which is default value).</div><div><br><div=
-><div>Most likely initially mssfix has worked as stated in man but then imp=
-lementation has changed. So either</div><div>we may want to fix implementat=
-ion or change man. Since mssfix behaves like link-mtu, maybe we could also<=
-/div><div>change its default value to 1500 to get 50 more bytes for payload=
-.</div><div><br></div><div>What do you think?</div><div><br>--<br>-Lev</div=
-></div></div></div>
-
---0000000000001cebfd057b510fb2--
 
