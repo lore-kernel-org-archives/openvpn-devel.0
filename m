@@ -1,10 +1,15 @@
+References: <20181011184200.22175-1-a@...2181...>
+ <20181011184200.22175-3-a@...2181...>
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 26 Nov 2018 09:12:24 +0100
-Message-Id: <20181126081224.30779-1-arne@...1227...>
-In-Reply-To: <20181121101019.1801-14-arne@...1227...>
-References: <20181121101019.1801-14-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v6 13/13] client-connect: Add documentation
- for the deferred client connect feature
+Message-ID: <083568d5-2591-cdbd-4223-44b5dd46bbd6@...1227...>
+Date: Mon, 26 Nov 2018 13:44:57 +0100
+MIME-Version: 1.0
+In-Reply-To: <20181011184200.22175-3-a@...2181...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="H7EgWqe5NOElWow4RaUJiIJyqk33uXKpO"
+Subject: Re: [Openvpn-devel] [PATCH v2 2/7] implement networking API for
+ iproute2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,151 +18,209 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Antonio Quartulli <a@...2181...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--H7EgWqe5NOElWow4RaUJiIJyqk33uXKpO
+Content-Type: multipart/mixed; boundary="6yVX6W0oBZdLDmvlukw4t7dTSguGwSlig";
+ protected-headers="v1"
+From: Arne Schwabe <arne@...1227...>
+To: Antonio Quartulli <a@...2181...>,
+ "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Message-ID: <083568d5-2591-cdbd-4223-44b5dd46bbd6@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH v2 2/7] implement networking API for
+ iproute2
+References: <20181011184200.22175-1-a@...2181...>
+ <20181011184200.22175-3-a@...2181...>
+In-Reply-To: <20181011184200.22175-3-a@...2181...>
+
+--6yVX6W0oBZdLDmvlukw4t7dTSguGwSlig
+Content-Language: de-DE
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-Patch V5: Fix typos, clarify man page section about deferred client-connect
-          script. Add section to Changes.rst
+Am 11.10.18 um 20:41 schrieb Antonio Quartulli:
+> iproute2 is the first user of the new networking API and
+> its one of the two currently supported functionalities on
+> Linux (the other being net-tools).
+>=20
+> This patch simply copies the current code from tun.c/route.c
+> to networking_ip.c without introducing any funcional
+> change to the code.
+>=20
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- Changes.rst                 |  4 +++
- doc/openvpn.8               | 55 +++++++++++++++++++++++++++++++++++--
- include/openvpn-plugin.h.in | 21 ++++++++++----
- 3 files changed, 71 insertions(+), 9 deletions(-)
+I skipped the first patch and added notes about the proposed API in this
+patch.
 
-diff --git a/Changes.rst b/Changes.rst
-index a7429b11..357b0901 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -3,6 +3,10 @@ Overview of changes in 2.5
- 
- New features
- ------------
-+Deferred client-connect
-+    client-connect and the connect plugin API allow now asynchronous/deferred
-+    return of configuration file in the same way as the auth-plugin.
-+
- Client-specific tls-crypt keys (``--tls-crypt-v2``)
-     ``tls-crypt-v2`` adds the ability to supply each client with a unique
-     tls-crypt key.  This allows large organisations and VPN providers to profit
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 94b5cc4f..a5ec3b07 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -3346,6 +3346,13 @@ is significant.  If
- .B script
- returns a non\-zero error status, it will cause the client
- to be disconnected.
-+
-+If a
-+.B \-\-client\-connect cmd
-+wants to defer the generating the configuration the script, should
-+use the client_connect_deferred_file and client_connect_config_file
-+environment variables and write status accordingly into these files
-+(See the environment section below for more details).
- .\"*********************************************************
- .TP
- .B \-\-client\-disconnect cmd
-@@ -3428,12 +3435,18 @@ This directory will be used by in the following cases:
- 
- *
- .B \-\-client\-connect
--scripts to dynamically generate client\-specific
--configuration files.
-+scripts and
-+.B OPENVPN_PLUGIN_CLIENT_CONNECT
-+plugin hook 
-+to dynamically generate client\-specific configuration files
-+and return success/failure via client_connect_deferred_file
-+when using deferred client connect method
- 
- *
- .B OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY
--plugin hook to return success/failure via auth_control_file
-+and 
-+
-+plugin hook to return success/failure via auth_control_file/
- when using deferred auth method
- 
- *
-@@ -6431,6 +6444,42 @@ Set prior to execution of the
- script.
- .\"*********************************************************
- .TP
-+.B client_connect_config_file
-+The path to the configuration file that should be written by
-+the
-+.B \-\-client\-connect
-+The content of this environment variable is identical to the
-+file as a argument of the called
-+.B \-\-client\-connect
-+script.
-+.\"*********************************************************
-+.TP
-+.B client_connect_deferred_file
-+This file can be optionally written to communicate a status
-+code of the
-+.TP
-+.B \-\-client\-connect
-+script. If used for deferring, this file must be written
-+before the
-+.B \-\-client\-connect
-+script exits. The first character in the file is interpreted
-+and '1 is equal to normal script execution, '0' indicates an
-+error (in the same way that a non zero exit status does) and
-+'2 indicates that the script deferred returning the config
-+file. When the script defers returning the configuration, it must
-+must '2' to to the file to indicate the deferral.
-+A background process or similar must then take of writing the
-+configuration to the file indicated by the
-+.B
-+client_connect_config_file
-+environment variable and when finished, write the a '1' to this
-+file (or '0' in case of an error).
-+
-+The absence of any character in the file when the script finishes
-+executing is interpreted the same as '1'. This allows script that
-+are not written to support the defer mechanism to be used unmodified.
-+.\"*********************************************************
-+.TP
- .B common_name
- The X509 common name of an authenticated client.
- Set prior to execution of
-diff --git a/include/openvpn-plugin.h.in b/include/openvpn-plugin.h.in
-index 38fbe097..c776178f 100644
---- a/include/openvpn-plugin.h.in
-+++ b/include/openvpn-plugin.h.in
-@@ -557,12 +557,21 @@ OPENVPN_PLUGIN_DEF openvpn_plugin_handle_t OPENVPN_PLUGIN_FUNC(openvpn_plugin_op
-  * OPENVPN_PLUGIN_FUNC_SUCCESS on success, OPENVPN_PLUGIN_FUNC_ERROR on failure
-  *
-  * In addition, OPENVPN_PLUGIN_FUNC_DEFERRED may be returned by
-- * OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY.  This enables asynchronous
-- * authentication where the plugin (or one of its agents) may indicate
-- * authentication success/failure some number of seconds after the return
-- * of the OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY handler by writing a single
-- * char to the file named by auth_control_file in the environmental variable
-- * list (envp).
-+ * OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY, OPENVPN_PLUGIN_CLIENT_CONNECT and
-+ * OPENVPN_PLUGIN_CLIENT_CONNECT_V2. This enables asynchronous
-+ * authentication or client connect  where the plugin (or one of its agents) 
-+ * may indicate authentication success/failure or client configuration some
-+ * number of seconds after the return of the function handler.
-+ * For OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY and OPENVPN_PLUGIN_CLIENT_CONNECT
-+ * this is done by writing a single char to the file named by
-+ * auth_control_file/client_connect_deferred_file
-+ * in the environmental variable list (envp).
-+ *
-+ * In addition the OPENVPN_PLUGIN_CLIENT_CONNECT_DEFER and 
-+ * OPENVPN_PLUGIN_CLIENT_CONNECT_DEFER_V2 are called when OpenVPN tries to
-+ * get the deferred result. For a V2 call implementing this function is 
-+ * required as information is not passed by files. For the normal version
-+ * the call is optional.
-  *
-  * first char of auth_control_file:
-  * '0' -- indicates auth failure
--- 
-2.19.1
+>  create mode 100644 src/openvpn/networking_ip.h
+>=20
+> diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+> index 8afc4146..3caad17d 100644
+> --- a/src/openvpn/Makefile.am
+> +++ b/src/openvpn/Makefile.am
+> @@ -80,7 +80,7 @@ openvpn_SOURCES =3D \
+>  	mtu.c mtu.h \
+>  	mudp.c mudp.h \
+>  	multi.c multi.h \
+> -	networking.h \
+> +	networking_ip.c networking_ip.h networking.h \
 
+As ip is not really but a linux specific tool, I think naming this
+networking_linuxip.c is better as networking_ip sounds like something
+generic.
+
+
+>  	ntlm.c ntlm.h \
+>  	occ.c occ.h \
+>  	openssl_compat.h \
+> diff --git a/src/openvpn/networking_ip.c b/src/openvpn/networking_ip.c
+> new file mode 100644
+> index 00000000..ae667a9c
+> --- /dev/null
+> +++ b/src/openvpn/networking_ip.c
+> @@ -0,0 +1,386 @@
+> +/*
+> + *  Networking API implementation for iproute2
+> + *
+> + *  Copyright (C) 2018 Antonio Quartulli <a@...2181...>
+
+I think since you copied/pasted from other files this should also have
+the normal copyrights, right?
+
+> +
+> +#if defined(TARGET_LINUX) && defined(ENABLE_IPROUTE)
+> +
+> +#include "syshead.h"
+> +
+> +#include "networking.h"
+> +#include "networking_ip.h"
+> +#include "misc.h"
+> +#include "openvpn.h"
+> +#include "run_command.h"
+> +#include "socket.h"
+> +
+> +#include <stdbool.h>
+> +#include <netinet/in.h>
+> +
+> +int
+> +net_ctx_init(struct context *c, openvpn_net_ctx_t *ctx)
+> +{
+> +    ctx->es =3D NULL;
+> +    if (c)
+> +        ctx->es =3D c->es;
+> +
+> +    return 0;
+> +}
+
+I know that calling our execve with es=3D=3DNULL is valid but should not we
+aim here for consistency and always require c to be non NULL aka ASSERT(c)?
+
+
+> +int
+> +net_iface_up(openvpn_net_ctx_t *ctx, const char *iface, bool up)
+> +{
+> +    struct argv argv =3D argv_new();
+> +
+> +    argv_printf(&argv, "%s link set dev %s %s", iproute_path, iface,
+> +                up ? "up" : "down");
+> +    argv_msg(M_INFO, &argv);
+> +    openvpn_execve_check(&argv, ctx->es, S_FATAL, "Linux ip link set fai=
+led");
+> +
+> +    argv_reset(&argv);
+> +
+> +    return 0;
+> +}
+> +
+> +int
+> +net_iface_mtu_set(openvpn_net_ctx_t *ctx, const char *iface, uint32_t mt=
+u)
+> +{
+> +    struct argv argv =3D argv_new();
+> +
+> +    argv_printf(&argv, "%s link set dev %s up mtu %d", iproute_path, ifa=
+ce,
+> +                mtu);
+> +    argv_msg(M_INFO, &argv);
+> +    openvpn_execve_check(&argv, ctx->es, S_FATAL, "Linux ip link set fai=
+led");
+> +
+> +    return 0;
+> +}
+> +
+> +int
+> +net_addr_v4_add(openvpn_net_ctx_t *ctx, const char *iface,
+> +                const in_addr_t *addr, int prefixlen,
+> +                const in_addr_t *broadcast)
+> +{
+> +    struct argv argv =3D argv_new();
+> +
+> +    char *addr_str =3D (char *)print_in_addr_t(*addr, 0, NULL);
+> +    char *brd_str =3D (char *)print_in_addr_t(*broadcast, 0, NULL);
+> +
+> +    argv_printf(&argv, "%s addr add dev %s %s/%d broadcast %s", iproute_=
+path,
+> +                iface, addr_str, prefixlen, brd_str);
+> +    argv_msg(M_INFO, &argv);
+> +    openvpn_execve_check(&argv, ctx->es, S_FATAL, "Linux ip addr add fai=
+led");
+> +
+> +    free(addr_str);
+> +    free(brd_str);
+> +
+> +    argv_reset(&argv);
+> +
+> +    return 0;
+> +}
+> +
+
+I initially written a comment that this method removes the ptp variant
+of the method but later saw that there is also a ptp variant of the
+method. I would suggest to either ranme this method to
+net_addr_bcast_v4_add or have a bool ptp paramter and then call out to
+two different methods.
+
+
+
+> +net_addr_v6_add(openvpn_net_ctx_t *ctx, const char *iface,
+> +                const struct in6_addr *addr, int prefixlen)
+
+Same comment as for v4.
+> +net_addr_v4_del(openvpn_net_ctx_t *ctx, const char *iface,
+> +                const in_addr_t *addr, int prefixlen)
+
+> +net_addr_v6_del(openvpn_net_ctx_t *ctx, const char *iface,
+> +                const struct in6_addr *addr, int prefixlen)
+>
+These methods assume that removing ip on ptp and broadcast is the same
+for ptp and boradcast on all platforms, is that really a sane assumption?
+
+Arne
+
+
+--6yVX6W0oBZdLDmvlukw4t7dTSguGwSlig--
+
+--H7EgWqe5NOElWow4RaUJiIJyqk33uXKpO
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAlv76skACgkQFRhsZwKx
+RFT7ug//bHkbt+m6b+M5bNTaGAdmqxAxlHTcNQpr5SEQs2uVIbpUwnpPxhz//KjG
+zbK8T+YimB7uyULk6J2iEjxbqhm2AFW2ILDY2FilL5A+W6X/2MZ+RUgSb0L7EOOG
++HyRjn7OjxApgvHD+DY7zMyQuTPuAe9BO5kgG/jwJWpw/NThlRUImwSeqapjbbVF
+yGqdSN/lPr0jTRMiWSGWjTc5/uYoa9yV6frD0qHZmR/gG3E9XTPwTCu5aLRhCk8J
+JlY6/fDsQ050eoQxS76HsYmJS/YbP/OhFHIr1WN8jEZKxTNoEXXma8/MhHhs7kyQ
+x2XSyEbWg6oqeqhVWAGzJdf+RIeZowuzc/IEOhqdT2VOn1ScmZLAVXEcj6md8XFL
+YExae2eLfY/v/XJ1WmM9pRnPSjmO2n142jcXydelGQZ16PAMkiRDqkDXScIy9ewj
+B/IohN+YTfXKDhFdvKQsZXlk5gUW31EB/0H5mU3sgvr7xSxloQUzFIHYEGwDZ6Tv
+of01bZRK9Q1nPUyZsEcDDLVYQxckYxNTM2exFwEGgYCTNjhypJJebMfdbWAX+mTr
+dmfyB+z2HLmTf7pbpgAcC8IS9uDv7YTs4oAglJYB8+wZuG3ysitZ+QXAueSbuDBJ
+u+mE5sZxeqkdFdTQQ5QmMTWiHiZA9b54lUY7Ob4uKt26b8UYJI0=
+=QvIN
+-----END PGP SIGNATURE-----
+
+--H7EgWqe5NOElWow4RaUJiIJyqk33uXKpO--
 
