@@ -1,9 +1,16 @@
-From: Simon Rozman <simon@...2293...>
-Date: Tue, 27 Nov 2018 01:28:08 +0100
-Message-Id: <20181127002808.19200-1-simon@...2293...>
+References: <20181011184200.22175-1-a@...2181...>
+ <20181011184200.22175-2-a@...2181...>
+ <f9bc4804-b75a-ec1d-fbc3-f2f09376b387@...1227...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <cf9a251c-2135-cc5c-76c6-faef9fb47d0f@...2181...>
+Date: Tue, 27 Nov 2018 10:53:58 +1000
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Add a MSI custom actions to close and
- relaunch OpenVPN GUI
+In-Reply-To: <f9bc4804-b75a-ec1d-fbc3-f2f09376b387@...1227...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="Lc0ey2TzPp9RJ1a7zVC9Scn5hZet8VqZp"
+Subject: Re: [Openvpn-devel] [PATCH v2 1/7] implement platform generic
+ networking API
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,195 +19,124 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Arne Schwabe <arne@...1227...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--Lc0ey2TzPp9RJ1a7zVC9Scn5hZet8VqZp
+Content-Type: multipart/mixed; boundary="FdEMk92pgsb5YH6ucAqGLEaqTvrxIZ4nC";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: Arne Schwabe <arne@...1227...>
+Cc: "openvpn-devel@lists.sourceforge.net"
+ <openvpn-devel@lists.sourceforge.net>
+Message-ID: <cf9a251c-2135-cc5c-76c6-faef9fb47d0f@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v2 1/7] implement platform generic
+ networking API
+References: <20181011184200.22175-1-a@...2181...>
+ <20181011184200.22175-2-a@...2181...>
+ <f9bc4804-b75a-ec1d-fbc3-f2f09376b387@...1227...>
+In-Reply-To: <f9bc4804-b75a-ec1d-fbc3-f2f09376b387@...1227...>
+
+--FdEMk92pgsb5YH6ucAqGLEaqTvrxIZ4nC
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-This custom actions are used by MSI setup to close OpenVPN GUI before
-performing an upgrade and relaunch it afterwards.
----
- src/openvpnmsica/Makefile.am    |   2 +-
- src/openvpnmsica/openvpnmsica.c | 102 ++++++++++++++++++++++++++++++++
- src/openvpnmsica/openvpnmsica.h |  25 ++++++++
- 3 files changed, 128 insertions(+), 1 deletion(-)
+Hi,
 
-diff --git a/src/openvpnmsica/Makefile.am b/src/openvpnmsica/Makefile.am
-index f4725a53..f00a01d8 100644
---- a/src/openvpnmsica/Makefile.am
-+++ b/src/openvpnmsica/Makefile.am
-@@ -41,7 +41,7 @@ libopenvpnmsica_la_CFLAGS = \
- 	-municode -D_UNICODE \
- 	-UNTDDI_VERSION -U_WIN32_WINNT \
- 	-D_WIN32_WINNT=_WIN32_WINNT_VISTA
--libopenvpnmsica_la_LDFLAGS = -ladvapi32 -lole32 -lmsi -lsetupapi -liphlpapi -lshlwapi -lversion -no-undefined -avoid-version
-+libopenvpnmsica_la_LDFLAGS = -ladvapi32 -lole32 -lmsi -lsetupapi -liphlpapi -lshell32 -lshlwapi -lversion -no-undefined -avoid-version
- endif
- 
- libopenvpnmsica_la_SOURCES = \
-diff --git a/src/openvpnmsica/openvpnmsica.c b/src/openvpnmsica/openvpnmsica.c
-index e8988ac8..86434801 100644
---- a/src/openvpnmsica/openvpnmsica.c
-+++ b/src/openvpnmsica/openvpnmsica.c
-@@ -37,6 +37,7 @@
- #include <malloc.h>
- #include <memory.h>
- #include <msiquery.h>
-+#include <shellapi.h>
- #include <shlwapi.h>
- #include <stdbool.h>
- #include <stdlib.h>
-@@ -44,6 +45,7 @@
- 
- #ifdef _MSC_VER
- #pragma comment(lib, "iphlpapi.lib")
-+#pragma comment(lib, "shell32.lib")
- #pragma comment(lib, "shlwapi.lib")
- #pragma comment(lib, "version.lib")
- #endif
-@@ -475,6 +477,106 @@ cleanup_CoInitialize:
- }
- 
- 
-+UINT __stdcall
-+CloseOpenVPNGUI(_In_ MSIHANDLE hInstall)
-+{
-+#ifdef _MSC_VER
-+#pragma comment(linker, DLLEXP_EXPORT)
-+#endif
-+    UNREFERENCED_PARAMETER(hInstall); /* This CA is does not interact with MSI session (report errors, access properties, tables, etc.). */
-+
-+    openvpnmsica_debug_popup(TEXT(__FUNCTION__));
-+
-+    /* Find OpenVPN GUI window. */
-+    HWND hWnd = FindWindow(TEXT("OpenVPN-GUI"), NULL);
-+    if (hWnd)
-+    {
-+        /* Ask it to close and wait for 100ms. Unfortunately, this will succeed only for recent OpenVPN GUI that do not run elevated. */
-+        SendMessage(hWnd, WM_CLOSE, 0, 0);
-+        Sleep(100);
-+    }
-+
-+    return ERROR_SUCCESS;
-+}
-+
-+
-+UINT __stdcall
-+StartOpenVPNGUI(_In_ MSIHANDLE hInstall)
-+{
-+#ifdef _MSC_VER
-+#pragma comment(linker, DLLEXP_EXPORT)
-+#endif
-+
-+    openvpnmsica_debug_popup(TEXT(__FUNCTION__));
-+
-+    UINT uiResult;
-+    BOOL bIsCoInitialized = SUCCEEDED(CoInitialize(NULL));
-+
-+    /* Set MSI session handle in TLS. */
-+    struct openvpnmsica_tls_data *s = (struct openvpnmsica_tls_data *)TlsGetValue(openvpnmsica_tlsidx_session);
-+    s->hInstall = hInstall;
-+
-+    /* Create and populate a MSI record. */
-+    MSIHANDLE hRecord = MsiCreateRecord(1);
-+    if (!hRecord)
-+    {
-+        uiResult = ERROR_INVALID_HANDLE;
-+        msg(M_NONFATAL, "%s: MsiCreateRecord failed", __FUNCTION__);
-+        goto cleanup_CoInitialize;
-+    }
-+    uiResult = MsiRecordSetString(hRecord, 0, TEXT("\"[#bin.openvpn_gui.exe]\""));
-+    if (uiResult != ERROR_SUCCESS)
-+    {
-+        SetLastError(uiResult); /* MSDN does not mention MsiRecordSetString() to set GetLastError(). But we do have an error code. Set last error manually. */
-+        msg(M_NONFATAL | M_ERRNO, "%s: MsiRecordSetString failed", __FUNCTION__);
-+        goto cleanup_MsiCreateRecord;
-+    }
-+
-+    /* Format string. */
-+    TCHAR szStackBuf[MAX_PATH];
-+    DWORD dwPathSize = _countof(szStackBuf);
-+    LPTSTR szPath = szStackBuf;
-+    uiResult = MsiFormatRecord(hInstall, hRecord, szPath, &dwPathSize);
-+    if (uiResult == ERROR_MORE_DATA)
-+    {
-+        /* Allocate buffer on heap (+1 for terminator), and retry. */
-+        szPath = (LPTSTR)malloc((++dwPathSize) * sizeof(TCHAR));
-+        uiResult = MsiFormatRecord(hInstall, hRecord, szPath, &dwPathSize);
-+    }
-+    if (uiResult != ERROR_SUCCESS)
-+    {
-+        SetLastError(uiResult); /* MSDN does not mention MsiFormatRecord() to set GetLastError(). But we do have an error code. Set last error manually. */
-+        msg(M_NONFATAL | M_ERRNO, "%s: MsiFormatRecord failed", __FUNCTION__);
-+        goto cleanup_malloc_szPath;
-+    }
-+
-+    /* Launch the OpenVPN GUI. */
-+    SHELLEXECUTEINFO sei = {
-+        .cbSize = sizeof(SHELLEXECUTEINFO),
-+        .fMask  = SEE_MASK_FLAG_NO_UI, /* Don't show error UI, we'll display it. */
-+        .lpFile = szPath,
-+        .nShow  = SW_SHOWNORMAL
-+    };
-+    if (!ShellExecuteEx(&sei))
-+    {
-+        uiResult = GetLastError();
-+        msg(M_NONFATAL | M_ERRNO, "%s: ShellExecuteEx(%s) failed", __FUNCTION__, szPath);
-+        goto cleanup_malloc_szPath;
-+    }
-+
-+    uiResult = ERROR_SUCCESS;
-+
-+cleanup_malloc_szPath:
-+    if (szPath != szStackBuf)
-+        free(szPath);
-+cleanup_MsiCreateRecord:
-+    MsiCloseHandle(hRecord);
-+cleanup_CoInitialize:
-+    if (bIsCoInitialized) CoUninitialize();
-+    return uiResult;
-+}
-+
-+
- UINT __stdcall
- EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall)
- {
-diff --git a/src/openvpnmsica/openvpnmsica.h b/src/openvpnmsica/openvpnmsica.h
-index da145062..4ee5c05f 100644
---- a/src/openvpnmsica/openvpnmsica.h
-+++ b/src/openvpnmsica/openvpnmsica.h
-@@ -91,6 +91,31 @@ DLLEXP_DECL UINT __stdcall
- FindTAPInterfaces(_In_ MSIHANDLE hInstall);
- 
- 
-+/**
-+ * Find OpenVPN GUI window and send it a WM_CLOSE message.
-+ *
-+ * @param hInstall      Handle to the installation provided to the DLL custom action
-+ *
-+ * @return ERROR_SUCCESS on success; An error code otherwise
-+ *         See: https://msdn.microsoft.com/en-us/library/windows/desktop/aa368072.aspx
-+ */
-+DLLEXP_DECL UINT __stdcall
-+CloseOpenVPNGUI(_In_ MSIHANDLE hInstall);
-+
-+
-+/**
-+ * Launches OpenVPN GUI. It's path is obtained by expanding the `[#bin.openvpn_gui.exe]`
-+ * therefore, its Id field in File table must be "bin.openvpn_gui.exe".
-+ *
-+ * @param hInstall      Handle to the installation provided to the DLL custom action
-+ *
-+ * @return ERROR_SUCCESS on success; An error code otherwise
-+ *         See: https://msdn.microsoft.com/en-us/library/windows/desktop/aa368072.aspx
-+ */
-+DLLEXP_DECL UINT __stdcall
-+StartOpenVPNGUI(_In_ MSIHANDLE hInstall);
-+
-+
- /**
-  * Evaluate the TAPInterface table of the MSI package database and prepare a list of TAP
-  * interfaces to install/remove.
--- 
-2.19.0.windows.1
+On 26/11/2018 22:55, Arne Schwabe wrote:
+> Am 11.10.18 um 20:41 schrieb Antonio Quartulli:
+>> tun.c and route.c contain all the code used by openvpn
+>> to manage the tun interface and the routing table on all
+>> the supported platforms.
+>>
+>> Across the years, this resulted in a longer functions
+>> and series of ifdefs.
+>>
+>> This patch introduces a new "networking API" which aims at
+>> creating a simple abstraction between the tun/route logic
+>> and the platform dependent code.
+>>
+>> The is API expected to be implemented outside of tun.c/route.c
+>> by using platform specific functionalities.
+>=20
+> If I understand it right, the goal is to create a platform independent
+> API, Android needs either still hacks in the non platform specific code
+> or the API needs to communicate also
+>=20
+> - route/adding addr before interface up
+> - type of route to add (android wants to ignores the host route to VPN
+> server and wants to isntall a 0.0.0.0/0 instead of two /1 even with def1
+> in place, the last one to workaround buggy Samsung code that special
+> cases 0.0.0.0/0 but sadly still needed.
+>=20
+> Should we try to design the API right from the start to allow also for
+> these specifics?
+>=20
 
+This sounds like a problem that has to be addressed at a layer above
+compared to what this networking API is doing.
+
+With this I mean that the specific "Android case" you explained cannot
+be addressed by changing the networking API (meant to be low level API
+to configure/deconfigure th enetworking stack), but should be taken care
+by the login in tun.c/route.c directly.
+
+What yo are suggesting is a change to the logic passing the information
+from the control plane to the platform dependent code.
+
+This change to me seems independent from the technology used to
+configure the interface (i.e. iproute/nettools/netlink/anything-else).
+
+What you are after is probably an abstraction similar to the one we have
+in OpenVPN 3, but that one is indeed implemented at an higher level
+compared to what we are introducing with this patchset.
+
+If you note, this is why my patches for OpenVPN 3 consists of two
+components.
+
+In my opinion, the logic change you are talking about is not required
+because:
+- this is already implemented in tun.c/route.c at the moment and won't
+be changed for now
+- this can be "improved" later once this networking API is in place,
+because the code will have to deal with will already be much slimmer.
+
+Attempting to work on both layers with one big change will just make
+things more complicated imho, hence my proposal to go step by step.
+
+
+Best Regards,
+
+
+--=20
+Antonio Quartulli
+
+
+--FdEMk92pgsb5YH6ucAqGLEaqTvrxIZ4nC--
+
+--Lc0ey2TzPp9RJ1a7zVC9Scn5hZet8VqZp
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlv8laYACgkQ9FVsWUWD
+Dm00nA//WY3+WmCMcqTbF3TvSogpOYJvr6rpT92t41bVf4kiQ1/LCX5afB9EjdeG
+4kE2D54lgmXX4caIA6xc+JxU8zg/nMcMlahH+o/cBeD/a2n5BITTXNNjQQslU1xm
+xu5u9zTqxfQMxnR4jwxo8iUFxV1fnl3YPSMTPFzUhT2AyLZXkiTAufUcomxKb/ev
+C9LLOMPGgyKn4lIh37C9vWkxEgt2WtagPf2vkIhHsvyWmw2hQSwMxeq+fDvswRtZ
++rQIYtAvnw5cHEdR2p8h4fqIdtL0vYH1eIgjybZubMD5N5y/RcDyIWL6kXZOIQof
+b1xaSPYiphk5xOETjb0V+hkIVxpEKg4XEpnVAedPd3FlcI1wQKNnc+COb7RDHlT3
+caSZKueYjAkIyMCjvoATFUR4B2MJNqnFv2zcLguiS/HajwOJKFTc23/cyWG5/dRW
+6WLhozrnZy+RxH+WlqOyGtIJUVbwIi0RuV4bqc3yRmhCn8cejVi4hZiGFtwtCxvH
+vUtU9UAFs1q0lRO2va5pmoETrimjg2aPD+ekEiUrxwkgMKbG4Rz6Jnh7TwHAdkLc
+3/d84xujTjA0s4UyUG+Njljl39BHd/TGiOVtMGhkX/CsSbLytNQ5aeoe4IxuRYpB
+EcbLnkQYtDj18dOBdaHK8OBCN7C2kP+yAhrWEdiNS0EBh5PfuXI=
+=X+TB
+-----END PGP SIGNATURE-----
+
+--Lc0ey2TzPp9RJ1a7zVC9Scn5hZet8VqZp--
 
