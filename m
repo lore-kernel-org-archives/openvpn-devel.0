@@ -1,16 +1,12 @@
-References: <20181011184200.22175-1-a@...2181...>
- <20181011184200.22175-3-a@...2181...>
- <083568d5-2591-cdbd-4223-44b5dd46bbd6@...1227...>
- <d963568b-232c-f681-94c7-16e320e244a2@...2181...>
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <233c6900-3d0b-8004-1b8e-813b0e459285@...2080...>
-Date: Tue, 27 Nov 2018 13:13:45 +0100
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <6cc03a83-47e6-cedb-254b-f445972788f5@...515...>
+Date: Tue, 27 Nov 2018 20:39:11 +0200
 MIME-Version: 1.0
-In-Reply-To: <d963568b-232c-f681-94c7-16e320e244a2@...2181...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH v2 2/7] implement networking API for
- iproute2
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="zna0mXsjYgmoNvPSaGrsYlBFDNEUFdpAR"
+Subject: [Openvpn-devel] Topics for the community meeting (Wed,
+ 28th Nov 2018)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,105 +15,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>, Arne Schwabe <arne@...1227...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-On 27/11/2018 02:04, Antonio Quartulli wrote:
-> 
-[...snip...]
->>>  create mode 100644 src/openvpn/networking_ip.h
->>>
->>> diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
->>> index 8afc4146..3caad17d 100644
->>> --- a/src/openvpn/Makefile.am
->>> +++ b/src/openvpn/Makefile.am
->>> @@ -80,7 +80,7 @@ openvpn_SOURCES = \
->>>  	mtu.c mtu.h \
->>>  	mudp.c mudp.h \
->>>  	multi.c multi.h \
->>> -	networking.h \
->>> +	networking_ip.c networking_ip.h networking.h \
->>
->> As ip is not really but a linux specific tool, I think naming this
->> networking_linuxip.c is better as networking_ip sounds like something
->> generic.
-> 
-> I did not want to make any assumption - you never know if iproute will
-> later be ported to *BSD as well. But I am fine with either name.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--zna0mXsjYgmoNvPSaGrsYlBFDNEUFdpAR
+Content-Type: multipart/mixed; boundary="cVeCdTXstYsbS7NQ3pM3R838wPABsfWgl";
+ protected-headers="v1"
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <6cc03a83-47e6-cedb-254b-f445972788f5@...515...>
+Subject: Topics for the community meeting (Wed, 28th Nov 2018)
 
-Just adding more paint to the shed :-P  networking_ip.[ch] sounds a bit too
-generic, but I'd prefer networking_iproute2.[ch], which I consider more
-consistent to what these files implement.
+--cVeCdTXstYsbS7NQ3pM3R838wPABsfWgl
+Content-Language: en-US
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-Otherwise, both Arne is right (iproute2 is currently only widely used on
-Linux) and Antonio is perhaps right to (iproute2 might be ported in the future).
+Hi,
 
-[...snip...]
+We're going to have an IRC meeting starting at 11:30 CET
+(10:30 UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have
+to be logged in to Freenode to join the channel.
 
->>> +int
->>> +net_addr_v4_add(openvpn_net_ctx_t *ctx, const char *iface,
->>> +                const in_addr_t *addr, int prefixlen,
->>> +                const in_addr_t *broadcast)
->>> +{
->>> +    struct argv argv = argv_new();
->>> +
->>> +    char *addr_str = (char *)print_in_addr_t(*addr, 0, NULL);
->>> +    char *brd_str = (char *)print_in_addr_t(*broadcast, 0, NULL);
->>> +
->>> +    argv_printf(&argv, "%s addr add dev %s %s/%d broadcast %s", iproute_path,
->>> +                iface, addr_str, prefixlen, brd_str);
->>> +    argv_msg(M_INFO, &argv);
->>> +    openvpn_execve_check(&argv, ctx->es, S_FATAL, "Linux ip addr add failed");
->>> +
->>> +    free(addr_str);
->>> +    free(brd_str);
->>> +
->>> +    argv_reset(&argv);
->>> +
->>> +    return 0;
->>> +}
->>> +
->>
->> I initially written a comment that this method removes the ptp variant
->> of the method but later saw that there is also a ptp variant of the
->> method. I would suggest to either ranme this method to
->> net_addr_bcast_v4_add or have a bool ptp paramter and then call out to
->> two different methods.
-> 
-> To me it feels like the PtP case is a special case, therefore I
-> preferred to keep the "standard & simple" name for the non-PtP case and
-> then add a special function just for PtP.
-> 
-> Actually this function may even be called without a broadcast address.
-> 
-> Mh..dunno to be honest. Maybe somebody else has an opinion?
+Current topic list along with basic information is here:
 
-I agree with Antonio.  It's not just the broadcast which is different, the ptp
-variant uses 'peer x.x.x.x' too.  It is a different configuration type, so
-this makes it clearer to me when reading:
+<https://community.openvpn.net/openvpn/wiki/Topics-2018-11-28>
 
-    net_addr_ptp_v4_addr(ctx, iface, local, remote);
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
 
-Instead of:
+In case you can't attend the meeting, please feel free to make comments
+on the topics by responding to this email or to the summary email sent
+after the meeting. Whenever possible, we'll also respond to existing,
+related email threads.
 
-    net_addr_v4_add(ctx, iface, local, 0, remote , true);
+--
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-Of course, the 'true' could be a variable, but I don't see the real benefit of
-making net_addr_v4_add() implemented wit different modes.  Especially when the
-"broadcast" and "peer" passing would most likely go via a shared variable.
-And it wouldn't make it cleared if peer and remote was separate arguments
-either; as only one of them can be present at the same time.
-
-So from code clarity, I like the distinction via the function names instead.
-It is more straight to the point for me.
+irc freenode net: mattock
 
 
--- 
-kind regards,
 
-David Sommerseth
-OpenVPN Inc
 
+
+
+
+
+
+
+
+
+--cVeCdTXstYsbS7NQ3pM3R838wPABsfWgl--
+
+--zna0mXsjYgmoNvPSaGrsYlBFDNEUFdpAR
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAlv9j08ACgkQKVhNn0CG
+RXg44Qf/dAz91gcGNC74WBrBivkvqK2C22896Dg4vfWF+5a09Lp5bfBfCy+m9EUZ
+fJHy2hlH3P6zgZxJu8LAHQlWXjBKCwp862tbKQ31K0K/Sg0SRw7xoz9zv28Cvcgu
+UGhD+PK0JV68L8aKf+ip6sYvmATcsG+8UiFqyT132uCLif8ZJZ3/CMetv46P7AgU
+cEpuLQ+tVI35c6syOdNxUGtZhW/FLAkqE2aZPdLXd05Qc7ESzH2rj+QuFnplY+aQ
+JmtnVxiFuOMIbMhMjk2u45Kfa9Ex9smnnPUIDaM3uSaxzUVYyLczTC+ZEukBENC4
+BPnT0J+iFzNHOS97k+GLqtye8qUb/Q==
+=FeIl
+-----END PGP SIGNATURE-----
+
+--zna0mXsjYgmoNvPSaGrsYlBFDNEUFdpAR--
 
