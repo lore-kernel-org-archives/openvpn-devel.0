@@ -1,16 +1,16 @@
 References: <20181011184200.22175-1-a@...2181...>
- <20181011184200.22175-2-a@...2181...>
- <f9bc4804-b75a-ec1d-fbc3-f2f09376b387@...1227...>
+ <20181011184200.22175-3-a@...2181...>
+ <083568d5-2591-cdbd-4223-44b5dd46bbd6@...1227...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <cf9a251c-2135-cc5c-76c6-faef9fb47d0f@...2181...>
-Date: Tue, 27 Nov 2018 10:53:58 +1000
+Message-ID: <d963568b-232c-f681-94c7-16e320e244a2@...2181...>
+Date: Tue, 27 Nov 2018 11:04:12 +1000
 MIME-Version: 1.0
-In-Reply-To: <f9bc4804-b75a-ec1d-fbc3-f2f09376b387@...1227...>
+In-Reply-To: <083568d5-2591-cdbd-4223-44b5dd46bbd6@...1227...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="Lc0ey2TzPp9RJ1a7zVC9Scn5hZet8VqZp"
-Subject: Re: [Openvpn-devel] [PATCH v2 1/7] implement platform generic
- networking API
+ boundary="D9SGoNbS3dL4ItGBxpeu1Ls4JgMpDnQHx"
+Subject: Re: [Openvpn-devel] [PATCH v2 2/7] implement networking API for
+ iproute2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,120 +23,243 @@ To: Arne Schwabe <arne@...1227...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---Lc0ey2TzPp9RJ1a7zVC9Scn5hZet8VqZp
-Content-Type: multipart/mixed; boundary="FdEMk92pgsb5YH6ucAqGLEaqTvrxIZ4nC";
+--D9SGoNbS3dL4ItGBxpeu1Ls4JgMpDnQHx
+Content-Type: multipart/mixed; boundary="AieM1AKNsakLY45cj76ziKuNnCR4tZuGY";
  protected-headers="v1"
 From: Antonio Quartulli <a@...2181...>
 To: Arne Schwabe <arne@...1227...>
 Cc: "openvpn-devel@lists.sourceforge.net"
  <openvpn-devel@lists.sourceforge.net>
-Message-ID: <cf9a251c-2135-cc5c-76c6-faef9fb47d0f@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v2 1/7] implement platform generic
- networking API
+Message-ID: <d963568b-232c-f681-94c7-16e320e244a2@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v2 2/7] implement networking API for
+ iproute2
 References: <20181011184200.22175-1-a@...2181...>
- <20181011184200.22175-2-a@...2181...>
- <f9bc4804-b75a-ec1d-fbc3-f2f09376b387@...1227...>
-In-Reply-To: <f9bc4804-b75a-ec1d-fbc3-f2f09376b387@...1227...>
+ <20181011184200.22175-3-a@...2181...>
+ <083568d5-2591-cdbd-4223-44b5dd46bbd6@...1227...>
+In-Reply-To: <083568d5-2591-cdbd-4223-44b5dd46bbd6@...1227...>
 
---FdEMk92pgsb5YH6ucAqGLEaqTvrxIZ4nC
+--AieM1AKNsakLY45cj76ziKuNnCR4tZuGY
 Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
 
-On 26/11/2018 22:55, Arne Schwabe wrote:
+
+On 26/11/2018 22:44, Arne Schwabe wrote:
 > Am 11.10.18 um 20:41 schrieb Antonio Quartulli:
->> tun.c and route.c contain all the code used by openvpn
->> to manage the tun interface and the routing table on all
->> the supported platforms.
+>> iproute2 is the first user of the new networking API and
+>> its one of the two currently supported functionalities on
+>> Linux (the other being net-tools).
 >>
->> Across the years, this resulted in a longer functions
->> and series of ifdefs.
+>> This patch simply copies the current code from tun.c/route.c
+>> to networking_ip.c without introducing any funcional
+>> change to the code.
 >>
->> This patch introduces a new "networking API" which aims at
->> creating a simple abstraction between the tun/route logic
->> and the platform dependent code.
+>=20
+> I skipped the first patch and added notes about the proposed API in this
+> patch.
+>=20
+>>  create mode 100644 src/openvpn/networking_ip.h
 >>
->> The is API expected to be implemented outside of tun.c/route.c
->> by using platform specific functionalities.
+>> diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+>> index 8afc4146..3caad17d 100644
+>> --- a/src/openvpn/Makefile.am
+>> +++ b/src/openvpn/Makefile.am
+>> @@ -80,7 +80,7 @@ openvpn_SOURCES =3D \
+>>  	mtu.c mtu.h \
+>>  	mudp.c mudp.h \
+>>  	multi.c multi.h \
+>> -	networking.h \
+>> +	networking_ip.c networking_ip.h networking.h \
 >=20
-> If I understand it right, the goal is to create a platform independent
-> API, Android needs either still hacks in the non platform specific code
-> or the API needs to communicate also
+> As ip is not really but a linux specific tool, I think naming this
+> networking_linuxip.c is better as networking_ip sounds like something
+> generic.
+
+I did not want to make any assumption - you never know if iproute will
+later be ported to *BSD as well. But I am fine with either name.
+
 >=20
-> - route/adding addr before interface up
-> - type of route to add (android wants to ignores the host route to VPN
-> server and wants to isntall a 0.0.0.0/0 instead of two /1 even with def1
-> in place, the last one to workaround buggy Samsung code that special
-> cases 0.0.0.0/0 but sadly still needed.
 >=20
-> Should we try to design the API right from the start to allow also for
-> these specifics?
+>>  	ntlm.c ntlm.h \
+>>  	occ.c occ.h \
+>>  	openssl_compat.h \
+>> diff --git a/src/openvpn/networking_ip.c b/src/openvpn/networking_ip.c
+>> new file mode 100644
+>> index 00000000..ae667a9c
+>> --- /dev/null
+>> +++ b/src/openvpn/networking_ip.c
+>> @@ -0,0 +1,386 @@
+>> +/*
+>> + *  Networking API implementation for iproute2
+>> + *
+>> + *  Copyright (C) 2018 Antonio Quartulli <a@...2181...>
+>=20
+> I think since you copied/pasted from other files this should also have
+> the normal copyrights, right?
+
+Yeah, it makes sense because in this file there is code coming from the
+current implementation.
+
+>=20
+>> +
+>> +#if defined(TARGET_LINUX) && defined(ENABLE_IPROUTE)
+>> +
+>> +#include "syshead.h"
+>> +
+>> +#include "networking.h"
+>> +#include "networking_ip.h"
+>> +#include "misc.h"
+>> +#include "openvpn.h"
+>> +#include "run_command.h"
+>> +#include "socket.h"
+>> +
+>> +#include <stdbool.h>
+>> +#include <netinet/in.h>
+>> +
+>> +int
+>> +net_ctx_init(struct context *c, openvpn_net_ctx_t *ctx)
+>> +{
+>> +    ctx->es =3D NULL;
+>> +    if (c)
+>> +        ctx->es =3D c->es;
+>> +
+>> +    return 0;
+>> +}
+>=20
+> I know that calling our execve with es=3D=3DNULL is valid but should not =
+we
+> aim here for consistency and always require c to be non NULL aka ASSERT(c=
+)?
+
+No, because this can be invoked when calling openvpn with "--show-gateway".
+In that case we need to talk to the network stack but there is no context.
+
+>=20
+>=20
+>> +int
+>> +net_iface_up(openvpn_net_ctx_t *ctx, const char *iface, bool up)
+>> +{
+>> +    struct argv argv =3D argv_new();
+>> +
+>> +    argv_printf(&argv, "%s link set dev %s %s", iproute_path, iface,
+>> +                up ? "up" : "down");
+>> +    argv_msg(M_INFO, &argv);
+>> +    openvpn_execve_check(&argv, ctx->es, S_FATAL, "Linux ip link set fa=
+iled");
+>> +
+>> +    argv_reset(&argv);
+>> +
+>> +    return 0;
+>> +}
+>> +
+>> +int
+>> +net_iface_mtu_set(openvpn_net_ctx_t *ctx, const char *iface, uint32_t m=
+tu)
+>> +{
+>> +    struct argv argv =3D argv_new();
+>> +
+>> +    argv_printf(&argv, "%s link set dev %s up mtu %d", iproute_path, if=
+ace,
+>> +                mtu);
+>> +    argv_msg(M_INFO, &argv);
+>> +    openvpn_execve_check(&argv, ctx->es, S_FATAL, "Linux ip link set fa=
+iled");
+>> +
+>> +    return 0;
+>> +}
+>> +
+>> +int
+>> +net_addr_v4_add(openvpn_net_ctx_t *ctx, const char *iface,
+>> +                const in_addr_t *addr, int prefixlen,
+>> +                const in_addr_t *broadcast)
+>> +{
+>> +    struct argv argv =3D argv_new();
+>> +
+>> +    char *addr_str =3D (char *)print_in_addr_t(*addr, 0, NULL);
+>> +    char *brd_str =3D (char *)print_in_addr_t(*broadcast, 0, NULL);
+>> +
+>> +    argv_printf(&argv, "%s addr add dev %s %s/%d broadcast %s", iproute=
+_path,
+>> +                iface, addr_str, prefixlen, brd_str);
+>> +    argv_msg(M_INFO, &argv);
+>> +    openvpn_execve_check(&argv, ctx->es, S_FATAL, "Linux ip addr add fa=
+iled");
+>> +
+>> +    free(addr_str);
+>> +    free(brd_str);
+>> +
+>> +    argv_reset(&argv);
+>> +
+>> +    return 0;
+>> +}
+>> +
+>=20
+> I initially written a comment that this method removes the ptp variant
+> of the method but later saw that there is also a ptp variant of the
+> method. I would suggest to either ranme this method to
+> net_addr_bcast_v4_add or have a bool ptp paramter and then call out to
+> two different methods.
+
+To me it feels like the PtP case is a special case, therefore I
+preferred to keep the "standard & simple" name for the non-PtP case and
+then add a special function just for PtP.
+
+Actually this function may even be called without a broadcast address.
+
+Mh..dunno to be honest. Maybe somebody else has an opinion?
+
+>=20
+>=20
+>=20
+>> +net_addr_v6_add(openvpn_net_ctx_t *ctx, const char *iface,
+>> +                const struct in6_addr *addr, int prefixlen)
+>=20
+> Same comment as for v4.
+>> +net_addr_v4_del(openvpn_net_ctx_t *ctx, const char *iface,
+>> +                const in_addr_t *addr, int prefixlen)
+>=20
+>> +net_addr_v6_del(openvpn_net_ctx_t *ctx, const char *iface,
+>> +                const struct in6_addr *addr, int prefixlen)
+>>
+> These methods assume that removing ip on ptp and broadcast is the same
+> for ptp and boradcast on all platforms, is that really a sane assumption?
 >=20
 
-This sounds like a problem that has to be addressed at a layer above
-compared to what this networking API is doing.
-
-With this I mean that the specific "Android case" you explained cannot
-be addressed by changing the networking API (meant to be low level API
-to configure/deconfigure th enetworking stack), but should be taken care
-by the login in tun.c/route.c directly.
-
-What yo are suggesting is a change to the logic passing the information
-from the control plane to the platform dependent code.
-
-This change to me seems independent from the technology used to
-configure the interface (i.e. iproute/nettools/netlink/anything-else).
-
-What you are after is probably an abstraction similar to the one we have
-in OpenVPN 3, but that one is indeed implemented at an higher level
-compared to what we are introducing with this patchset.
-
-If you note, this is why my patches for OpenVPN 3 consists of two
-components.
-
-In my opinion, the logic change you are talking about is not required
-because:
-- this is already implemented in tun.c/route.c at the moment and won't
-be changed for now
-- this can be "improved" later once this networking API is in place,
-because the code will have to deal with will already be much slimmer.
-
-Attempting to work on both layers with one big change will just make
-things more complicated imho, hence my proposal to go step by step.
+Good point ! It is a sane assumption at least for netlink and iproute. I
+am not sure about nettols.
+How about Android?
 
 
-Best Regards,
-
+Regards,
 
 --=20
 Antonio Quartulli
 
 
---FdEMk92pgsb5YH6ucAqGLEaqTvrxIZ4nC--
+--AieM1AKNsakLY45cj76ziKuNnCR4tZuGY--
 
---Lc0ey2TzPp9RJ1a7zVC9Scn5hZet8VqZp
+--D9SGoNbS3dL4ItGBxpeu1Ls4JgMpDnQHx
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlv8laYACgkQ9FVsWUWD
-Dm00nA//WY3+WmCMcqTbF3TvSogpOYJvr6rpT92t41bVf4kiQ1/LCX5afB9EjdeG
-4kE2D54lgmXX4caIA6xc+JxU8zg/nMcMlahH+o/cBeD/a2n5BITTXNNjQQslU1xm
-xu5u9zTqxfQMxnR4jwxo8iUFxV1fnl3YPSMTPFzUhT2AyLZXkiTAufUcomxKb/ev
-C9LLOMPGgyKn4lIh37C9vWkxEgt2WtagPf2vkIhHsvyWmw2hQSwMxeq+fDvswRtZ
-+rQIYtAvnw5cHEdR2p8h4fqIdtL0vYH1eIgjybZubMD5N5y/RcDyIWL6kXZOIQof
-b1xaSPYiphk5xOETjb0V+hkIVxpEKg4XEpnVAedPd3FlcI1wQKNnc+COb7RDHlT3
-caSZKueYjAkIyMCjvoATFUR4B2MJNqnFv2zcLguiS/HajwOJKFTc23/cyWG5/dRW
-6WLhozrnZy+RxH+WlqOyGtIJUVbwIi0RuV4bqc3yRmhCn8cejVi4hZiGFtwtCxvH
-vUtU9UAFs1q0lRO2va5pmoETrimjg2aPD+ekEiUrxwkgMKbG4Rz6Jnh7TwHAdkLc
-3/d84xujTjA0s4UyUG+Njljl39BHd/TGiOVtMGhkX/CsSbLytNQ5aeoe4IxuRYpB
-EcbLnkQYtDj18dOBdaHK8OBCN7C2kP+yAhrWEdiNS0EBh5PfuXI=
-=X+TB
+iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlv8mAwACgkQ9FVsWUWD
+Dm0jvQ/9EK4gbkpzURWd0CBkmj/AQiZ7IBBLhp9MTzbA/lnwJ2x823tvDlqqSzBa
+5uM1UUKuLJjMLat/Ns5HG6UPoOPHfSd5F+an+f5sX/SGJaqPD91D3FlXeQOLo9sa
+C8G+VKkE0StHBzXyrmg5nR3tbgPRTyjHspl3tpMt7lIgMtcOsz1NMVFRCLQJnwZJ
+4ociEkXAJ0VMeKuAB7wZB7uP3ZJOafkAWtJLzjKuwmBUXfX/xiv7SvqNsPXMb9Hv
+yDxlkkUjdW7FXrztwxq/kapKFvVslkOLCafd1Y091SL71M2t7c+WtEhdf5EF2xKm
+cnTBdODIEliayVJvqMG+24BsxYT+hFRREGdVCCGrkp+cf/A/jhAhdhE4GhjKkH/d
+HSTOPBrRtmQBz/tgk6VSYwDeD2R09bZe0kRK/djtN4sWhNgYIgbpkuO90eo0lDlt
+P5Q9Tid93Oxc0E1xeUd3IH2OQ1WVBR8CLev/0GJxndscPRQMY7Fb0SzH1MG5VA/v
+l3AqFMwe10yk3M+G/hijM9HFBNpRrcp+V/FHDBfZS0fDA5AWkQajcTck8gqMeHPY
+WdyqLIERS5z6cC6lcRkJaUL03LOS6yIN/SG9JYhqyCaGHZEHixyuqY3EoU+OZ3w3
+K37jtL9WOWuCROB7AkQ2KKPxm0QYg0Gc2I6FoNmO2ec70rxaG2w=
+=IL7K
 -----END PGP SIGNATURE-----
 
---Lc0ey2TzPp9RJ1a7zVC9Scn5hZet8VqZp--
+--D9SGoNbS3dL4ItGBxpeu1Ls4JgMpDnQHx--
 
