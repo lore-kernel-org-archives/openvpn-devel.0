@@ -1,9 +1,10 @@
 From: Gert Doering <gert@...1296...>
-Date: Fri, 30 Nov 2018 14:56:39 +0100
-Message-Id: <20181130135641.11533-1-gert@...1296...>
+Date: Fri, 30 Nov 2018 14:56:40 +0100
+Message-Id: <20181130135641.11533-2-gert@...1296...>
+In-Reply-To: <20181130135641.11533-1-gert@...1296...>
+References: <20181130135641.11533-1-gert@...1296...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/3] Uncrustify sample-plugin sources
- according to code style
+Subject: [Openvpn-devel] [PATCH 2/3] uncrustify openvpnserv/ sources
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,77 +17,92 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+this is really just whitespace changes, but will make
+running uncrustify as pre-commit-check easier if the
+"base sources" won't see changes
+
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
- .../keying-material-exporter-demo/keyingmaterialexporter.c  | 6 ++++--
- sample/sample-plugins/log/log.c                             | 4 ++++
- sample/sample-plugins/log/log_v3.c                          | 4 ++++
- 3 files changed, 12 insertions(+), 2 deletions(-)
+ src/openvpnserv/interactive.c | 4 ++--
+ src/openvpnserv/service.c     | 4 ++--
+ src/openvpnserv/service.h     | 2 ++
+ src/openvpnserv/validate.c    | 3 ++-
+ 4 files changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c b/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c
-index 9986461b..b53f13f6 100644
---- a/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c
-+++ b/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c
-@@ -230,7 +230,8 @@ tls_final(struct openvpn_plugin_args_func_in const *args,
-     snprintf(sess->key, sizeof(sess->key) - 1, "%s", key);
-     ovpn_note("app session key:  %s", sess->key);
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 2dc152c2..623c3ff7 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -514,7 +514,7 @@ GetStartupData(HANDLE pipe, STARTUP_DATA *sud)
+     return TRUE;
  
--    switch (plugin->type) {
-+    switch (plugin->type)
-+    {
-         case SERVER:
-             server_store(args);
-             break;
-@@ -249,7 +250,8 @@ openvpn_plugin_func_v3(const int version,
-                        struct openvpn_plugin_args_func_in const *args,
-                        struct openvpn_plugin_args_func_return *rv)
- {
--    switch (args->type) {
-+    switch (args->type)
-+    {
-         case OPENVPN_PLUGIN_TLS_VERIFY:
-             return tls_verify(args);
- 
-diff --git a/sample/sample-plugins/log/log.c b/sample/sample-plugins/log/log.c
-index ecf62c0e..b5c1c3be 100644
---- a/sample/sample-plugins/log/log.c
-+++ b/sample/sample-plugins/log/log.c
-@@ -156,11 +156,15 @@ show(const int type, const char *argv[], const char *envp[])
- 
-     printf("ARGV\n");
-     for (i = 0; argv[i] != NULL; ++i)
-+    {
-         printf("%d '%s'\n", (int)i, argv[i]);
-+    }
- 
-     printf("ENVP\n");
-     for (i = 0; envp[i] != NULL; ++i)
-+    {
-         printf("%d '%s'\n", (int)i, envp[i]);
-+    }
+ err:
+-    sud->directory = NULL;		/* caller must not free() */
++    sud->directory = NULL;              /* caller must not free() */
+     free(data);
+     return FALSE;
  }
+@@ -1318,7 +1318,7 @@ Undo(undo_lists_t *lists)
+                     break;
  
- OPENVPN_EXPORT int
-diff --git a/sample/sample-plugins/log/log_v3.c b/sample/sample-plugins/log/log_v3.c
-index 3ef4a1cb..17b83f3f 100644
---- a/sample/sample-plugins/log/log_v3.c
-+++ b/sample/sample-plugins/log/log_v3.c
-@@ -177,11 +177,15 @@ show(const int type, const char *argv[], const char *envp[])
+                 case block_dns:
+-                    interface_data = (block_dns_data_t*)(item->data);
++                    interface_data = (block_dns_data_t *)(item->data);
+                     delete_block_dns_filters(interface_data->engine);
+                     if (interface_data->metric_v4 >= 0)
+                     {
+diff --git a/src/openvpnserv/service.c b/src/openvpnserv/service.c
+index 7157bea2..8efe25f9 100644
+--- a/src/openvpnserv/service.c
++++ b/src/openvpnserv/service.c
+@@ -270,8 +270,8 @@ _tmain(int argc, TCHAR *argv[])
+             else if (argc > i + 2 && _tcsicmp(TEXT("instance"), argv[i] + 1) == 0)
+             {
+                 dispatchTable = _tcsicmp(TEXT("interactive"), argv[i + 1]) != 0 ?
+-                    dispatchTable_automatic :
+-                    dispatchTable_interactive;
++                                dispatchTable_automatic :
++                                dispatchTable_interactive;
  
-     printf("ARGV\n");
-     for (i = 0; argv[i] != NULL; ++i)
-+    {
-         printf("%d '%s'\n", (int)i, argv[i]);
-+    }
+                 service_instance = argv[i + 2];
+                 i += 2;
+diff --git a/src/openvpnserv/service.h b/src/openvpnserv/service.h
+index cb7020fc..f5afe2f0 100644
+--- a/src/openvpnserv/service.h
++++ b/src/openvpnserv/service.h
+@@ -77,9 +77,11 @@ extern openvpn_service_t interactive_service;
+ extern LPCTSTR service_instance;
  
-     printf("ENVP\n");
-     for (i = 0; envp[i] != NULL; ++i)
-+    {
-         printf("%d '%s'\n", (int)i, envp[i]);
-+    }
- }
+ VOID WINAPI ServiceStartAutomaticOwn(DWORD argc, LPTSTR *argv);
++
+ VOID WINAPI ServiceStartAutomatic(DWORD argc, LPTSTR *argv);
  
- static void
+ VOID WINAPI ServiceStartInteractiveOwn(DWORD argc, LPTSTR *argv);
++
+ VOID WINAPI ServiceStartInteractive(DWORD argc, LPTSTR *argv);
+ 
+ BOOL openvpn_vsntprintf(LPTSTR str, size_t size, LPCTSTR format, va_list arglist);
+diff --git a/src/openvpnserv/validate.c b/src/openvpnserv/validate.c
+index 5506e902..9e1d7d2d 100644
+--- a/src/openvpnserv/validate.c
++++ b/src/openvpnserv/validate.c
+@@ -49,6 +49,7 @@ static const WCHAR *white_list[] =
+ };
+ 
+ static BOOL IsUserInGroup(PSID sid, const PTOKEN_GROUPS groups, const WCHAR *group_name);
++
+ static PTOKEN_GROUPS GetTokenGroups(const HANDLE token);
+ 
+ /*
+@@ -305,7 +306,7 @@ IsUserInGroup(PSID sid, const PTOKEN_GROUPS token_groups, const WCHAR *group_nam
+             ret = EqualSid(members[i].lgrmi0_sid, sid);
+         }
+         NetApiBufferFree(members);
+-    /* MSDN says the lookup should always iterate until err != ERROR_MORE_DATA */
++        /* MSDN says the lookup should always iterate until err != ERROR_MORE_DATA */
+     } while (err == ERROR_MORE_DATA && nloop++ < 100);
+ 
+     if (err != NERR_Success && err != NERR_GroupNotFound)
 -- 
 2.19.2
 
