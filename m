@@ -1,14 +1,15 @@
+From: Kristian McColm <kristianmccolm@...160...>
+Date: Fri, 30 Nov 2018 16:27:16 +0000
+Message-ID: <CY4PR04MB0935D91D8A4378A6066D8D61DDD30@...2478...>
 References: <6cc03a83-47e6-cedb-254b-f445972788f5@...515...>
  <b9c984d6-bcde-0d0e-349d-3a586600b668@...515...>
  <6ebf219f-6a8e-6e39-893c-5610129abaef@...1147...>
  <CAGyAFMU1iS3FJjVbmBqYq6BeSt+UyxUrAUg=xd=cmiH3nVac6g@...278...>
  <83d19b4c0ee74daa2f5636b40cc9900b.squirrel@...2257...>
-From: Jan Just Keijser <janjust@...1147...>
-Message-ID: <4b777767-70f1-ebe2-f659-4687c0c640ec@...1147...>
-Date: Fri, 30 Nov 2018 17:15:47 +0100
+ <4b777767-70f1-ebe2-f659-4687c0c640ec@...1147...>
+In-Reply-To: <4b777767-70f1-ebe2-f659-4687c0c640ec@...1147...>
+Content-Language: en-US
 MIME-Version: 1.0
-In-Reply-To: <83d19b4c0ee74daa2f5636b40cc9900b.squirrel@...2257...>
-Content-Language: nl-NL
 Subject: Re: [Openvpn-devel] Summary of the community meeting (Wed,
  28th Nov 2018)
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,86 +20,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: Simon Matter <simon.matter@...2249...>, Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Jan Just Keijser <janjust@...1147...>, Simon Matter <simon.matter@...2249...>, Lev Stipakov <lstipakov@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi Lev, Simon,
-
-On 30/11/18 07:10, Simon Matter wrote:
->> Hi Jan Just,
->>
->> (forgot to add openvpn-devel in previous mail)
->>
->> Some background information.
->>
->> In openvpn3 we decided not to implement fragments, because:
->>
->>   - this is quite a big feature which has to be supported through the whole
->> stack (client, server, kernel module)
->>   - we assume that it is not used by most of users
->>
->> However, for those who needs --fragment, we'll implement:
->>
->>   - mssfix support, this should solve problems with tcp-based protocols
->>   - sending icmp "packet too big" for other protocols, we assume that
->> they'll respect icmp response
->>
->> --fragment is/was very useful on a system where you do not / cannot change
->>> the tun MTU size. Up to Windows XP, this was not
->>> possible without rebooting the OS. Since Vista, it *is* possible to
->>> change
->>> the MTU of an adapter on the fly (as explained in my
->>> trusty old cookbook, of course ;))
->>>
->> As James wrote a while ago (13 years ago :)
->>
->> https://openvpn.net/archive/openvpn-users/2005-10/msg00354.html
->>
->>> A lot of experience gained during the OpenVPN 1.x releases showed that
->> it's best to fix the tunnel MTU at
->>> 1500 and vary the other parameters (and use --mssfix to prevent
->> fragmentation rather than a lower tunnel MTU).
->>
->> Don't know if still holds. Assuming that we can change tun-mtu on any
->> supported platforms, do you think that it is better
->> to do _that_, rather than have mssfix/icmp ptb workaround?
->>
->>
->>> With that, it would be possible to fix the link-mtu to 1500 (or
->>> whatever is set on the outbound interface) and then subtract the header
->>> size to get a meaningful tun-mtu size.
->>>
->> Do you think 1500 is a safe value? Arne just mentioned today that his
->> network interface MTU is 1500 and router's MTU is 1492 due to
->> PPPoE, and openvpn2 works because it assumes that mtu is 1450.
-> I also think 1500 isn't safe because different types ob internet
-> connections may reduce it, like the mentioned PPPoE.
->
->
-this is why the --fragment feature is so handy - no need to change the 
-mtu values on either end, yet you can fiddle with the fragmentation size 
-to tune performance.
-
-I agree that in most home environments the MTU size should be lower - if 
-you look at e.g. IPsec you will find that it sets the tunnel MTU size to 
-1360 to ensure that it will "almost always" work.
-Having said that, I'd like see a solution that will work in 99% of the 
-cases *AND* that will give most users close-to-optimal performance.  If 
-"fragment" is not implemented in OpenVPN 3 then what happens if the tun 
-MTU is too high?  where does fragmentation occur? at the OS level? at 
-the UDP level?  I'd prefer to leave any fragmenting to the underlying OS 
-as much as possible - hence if I want to send packets of 4000 bytes than 
-either they are fragmented at the tun level (i.e. before they are 
-processed by OpenVPN) or at the transport level (i.e. OpenVPN spits out 
-a 4000 byte packet over the UDP/TCP connection, which the OS then 
-fragements).  The problem with fragmenting at the UDP level is that you 
-need to keep track of the fragments in order to reassemble them - TCP 
-does this for you.
-
-cheers,
-
-JJK
-
-
+MTUwMCBpcyBub3Qgc2FmZSBvbiBtYW55IG1vYmlsZS9jZWxsIG5ldHdvcmtzIGFzIG1vc3QgaGF2
+ZSBhIHNtYWxsZXIgTVRVIGxpa2UgMTQ2MCBkdWUgdG8gR1RQIGhlYWRlcnMgdXNlZCBiZXR3ZWVu
+IHRoZSBQR1cgYW5kIGVOb2RlQi4gVGhlcmUgaXMgYWxzbyByZWR1Y2VkIE1UVSB3aGVuIHBlcmZv
+cm1pbmcgTkFUNjQsIGkuZS4gcGFja2V0cyB0cmFuc2xhdGVkIGZyb20gSVB2NCB0byBJUHY2IGJl
+Y29tZSAyMCBieXRlcyBsYXJnZXIgYWZ0ZXIgdHJhbnNsYXRpb24gZHVlIHRvIGFkZGl0aW9uYWwg
+SVAgaGVhZGVyIGJ5dGVzLiANCg0KSSBiZWxpZXZlIGl0IGlzIG1vc3QgZWZmaWNpZW50IHRvIGlt
+cGxlbWVudCBhbiBhcHBsaWNhdGlvbiBsYXllciBmcmFnbWVudGF0aW9uIGZlYXR1cmUsIHNpbWls
+YXIgdG8gSUtFdjIgZnJhZ21lbnRhdGlvbiAoUkZDNzM4Mykgc28gdGhhdCB0aGUgdW5kZXJseWlu
+ZyBuZXR3b3JrIGxheWVyIGRvZXMgbm90IGhhdmUgdG8gcGVyZm9ybSBJUCBsYXllciBmcmFnbWVu
+dGF0aW9uIHdoaWNoIGhhcyBrbm93biByaXNrcy4NCg0KQWRkaXRpb25hbGx5LCBUQ1AgTVNTIHJl
+d3JpdGluZyBvbmx5IHdvcmtzIGZvciBUQ1AuIE1hbnkgVlBOcyB1c2UgVURQIHdoaWNoIGlzIG5v
+dCBoZWxwZWQgYnkgTVNTIGZpeCBvYnZpb3VzbHkuIElmIHN1cHBvcnRlZCBieSB0aGUgY2xpZW50
+L3NlcnZlciBPUywgcGF0aCBNVFUgZGlzY292ZXJ5IGNhbiBiZSB1c2VkIHRvIGRldGVybWluZSB0
+aGUgTVRVIG9mIGEgZ2l2ZW4gY29ubmVjdGlvbi4gDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0t
+LS0tDQpGcm9tOiBKYW4gSnVzdCBLZWlqc2VyIFttYWlsdG86amFuanVzdEAuLi4xMTQ3Li4uXSAN
+ClNlbnQ6IE5vdmVtYmVyIDMwLCAyMDE4IDExOjE2DQpUbzogU2ltb24gTWF0dGVyIDxzaW1vbi5t
+YXR0ZXJALi4uMjI0OS4uLj47IExldiBTdGlwYWtvdiA8bHN0aXBha292QC4uLjI3Ny4uLj4NCkNj
+OiBvcGVudnBuLWRldmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldA0KU3ViamVjdDogUmU6IFtPcGVu
+dnBuLWRldmVsXSBTdW1tYXJ5IG9mIHRoZSBjb21tdW5pdHkgbWVldGluZyAoV2VkLCAyOHRoIE5v
+diAyMDE4KQ0KDQpIaSBMZXYsIFNpbW9uLA0KDQpPbiAzMC8xMS8xOCAwNzoxMCwgU2ltb24gTWF0
+dGVyIHdyb3RlOg0KPj4gSGkgSmFuIEp1c3QsDQo+Pg0KPj4gKGZvcmdvdCB0byBhZGQgb3BlbnZw
+bi1kZXZlbCBpbiBwcmV2aW91cyBtYWlsKQ0KPj4NCj4+IFNvbWUgYmFja2dyb3VuZCBpbmZvcm1h
+dGlvbi4NCj4+DQo+PiBJbiBvcGVudnBuMyB3ZSBkZWNpZGVkIG5vdCB0byBpbXBsZW1lbnQgZnJh
+Z21lbnRzLCBiZWNhdXNlOg0KPj4NCj4+ICAgLSB0aGlzIGlzIHF1aXRlIGEgYmlnIGZlYXR1cmUg
+d2hpY2ggaGFzIHRvIGJlIHN1cHBvcnRlZCB0aHJvdWdoIHRoZSANCj4+IHdob2xlIHN0YWNrIChj
+bGllbnQsIHNlcnZlciwga2VybmVsIG1vZHVsZSkNCj4+ICAgLSB3ZSBhc3N1bWUgdGhhdCBpdCBp
+cyBub3QgdXNlZCBieSBtb3N0IG9mIHVzZXJzDQo+Pg0KPj4gSG93ZXZlciwgZm9yIHRob3NlIHdo
+byBuZWVkcyAtLWZyYWdtZW50LCB3ZSdsbCBpbXBsZW1lbnQ6DQo+Pg0KPj4gICAtIG1zc2ZpeCBz
+dXBwb3J0LCB0aGlzIHNob3VsZCBzb2x2ZSBwcm9ibGVtcyB3aXRoIHRjcC1iYXNlZCBwcm90b2Nv
+bHMNCj4+ICAgLSBzZW5kaW5nIGljbXAgInBhY2tldCB0b28gYmlnIiBmb3Igb3RoZXIgcHJvdG9j
+b2xzLCB3ZSBhc3N1bWUgdGhhdCANCj4+IHRoZXknbGwgcmVzcGVjdCBpY21wIHJlc3BvbnNlDQo+
+Pg0KPj4gLS1mcmFnbWVudCBpcy93YXMgdmVyeSB1c2VmdWwgb24gYSBzeXN0ZW0gd2hlcmUgeW91
+IGRvIG5vdCAvIGNhbm5vdCANCj4+IGNoYW5nZQ0KPj4+IHRoZSB0dW4gTVRVIHNpemUuIFVwIHRv
+IFdpbmRvd3MgWFAsIHRoaXMgd2FzIG5vdCBwb3NzaWJsZSB3aXRob3V0IA0KPj4+IHJlYm9vdGlu
+ZyB0aGUgT1MuIFNpbmNlIFZpc3RhLCBpdCAqaXMqIHBvc3NpYmxlIHRvIGNoYW5nZSB0aGUgTVRV
+IG9mIA0KPj4+IGFuIGFkYXB0ZXIgb24gdGhlIGZseSAoYXMgZXhwbGFpbmVkIGluIG15IHRydXN0
+eSBvbGQgY29va2Jvb2ssIG9mIA0KPj4+IGNvdXJzZSA7KSkNCj4+Pg0KPj4gQXMgSmFtZXMgd3Jv
+dGUgYSB3aGlsZSBhZ28gKDEzIHllYXJzIGFnbyA6KQ0KPj4NCj4+IGh0dHBzOi8vb3BlbnZwbi5u
+ZXQvYXJjaGl2ZS9vcGVudnBuLXVzZXJzLzIwMDUtMTAvbXNnMDAzNTQuaHRtbA0KPj4NCj4+PiBB
+IGxvdCBvZiBleHBlcmllbmNlIGdhaW5lZCBkdXJpbmcgdGhlIE9wZW5WUE4gMS54IHJlbGVhc2Vz
+IHNob3dlZCANCj4+PiB0aGF0DQo+PiBpdCdzIGJlc3QgdG8gZml4IHRoZSB0dW5uZWwgTVRVIGF0
+DQo+Pj4gMTUwMCBhbmQgdmFyeSB0aGUgb3RoZXIgcGFyYW1ldGVycyAoYW5kIHVzZSAtLW1zc2Zp
+eCB0byBwcmV2ZW50DQo+PiBmcmFnbWVudGF0aW9uIHJhdGhlciB0aGFuIGEgbG93ZXIgdHVubmVs
+IE1UVSkuDQo+Pg0KPj4gRG9uJ3Qga25vdyBpZiBzdGlsbCBob2xkcy4gQXNzdW1pbmcgdGhhdCB3
+ZSBjYW4gY2hhbmdlIHR1bi1tdHUgb24gYW55IA0KPj4gc3VwcG9ydGVkIHBsYXRmb3JtcywgZG8g
+eW91IHRoaW5rIHRoYXQgaXQgaXMgYmV0dGVyIHRvIGRvIF90aGF0XywgDQo+PiByYXRoZXIgdGhh
+biBoYXZlIG1zc2ZpeC9pY21wIHB0YiB3b3JrYXJvdW5kPw0KPj4NCj4+DQo+Pj4gV2l0aCB0aGF0
+LCBpdCB3b3VsZCBiZSBwb3NzaWJsZSB0byBmaXggdGhlIGxpbmstbXR1IHRvIDE1MDAgKG9yIA0K
+Pj4+IHdoYXRldmVyIGlzIHNldCBvbiB0aGUgb3V0Ym91bmQgaW50ZXJmYWNlKSBhbmQgdGhlbiBz
+dWJ0cmFjdCB0aGUgDQo+Pj4gaGVhZGVyIHNpemUgdG8gZ2V0IGEgbWVhbmluZ2Z1bCB0dW4tbXR1
+IHNpemUuDQo+Pj4NCj4+IERvIHlvdSB0aGluayAxNTAwIGlzIGEgc2FmZSB2YWx1ZT8gQXJuZSBq
+dXN0IG1lbnRpb25lZCB0b2RheSB0aGF0IGhpcyANCj4+IG5ldHdvcmsgaW50ZXJmYWNlIE1UVSBp
+cyAxNTAwIGFuZCByb3V0ZXIncyBNVFUgaXMgMTQ5MiBkdWUgdG8gUFBQb0UsIA0KPj4gYW5kIG9w
+ZW52cG4yIHdvcmtzIGJlY2F1c2UgaXQgYXNzdW1lcyB0aGF0IG10dSBpcyAxNDUwLg0KPiBJIGFs
+c28gdGhpbmsgMTUwMCBpc24ndCBzYWZlIGJlY2F1c2UgZGlmZmVyZW50IHR5cGVzIG9iIGludGVy
+bmV0IA0KPiBjb25uZWN0aW9ucyBtYXkgcmVkdWNlIGl0LCBsaWtlIHRoZSBtZW50aW9uZWQgUFBQ
+b0UuDQo+DQo+DQp0aGlzIGlzIHdoeSB0aGUgLS1mcmFnbWVudCBmZWF0dXJlIGlzIHNvIGhhbmR5
+IC0gbm8gbmVlZCB0byBjaGFuZ2UgdGhlIG10dSB2YWx1ZXMgb24gZWl0aGVyIGVuZCwgeWV0IHlv
+dSBjYW4gZmlkZGxlIHdpdGggdGhlIGZyYWdtZW50YXRpb24gc2l6ZSB0byB0dW5lIHBlcmZvcm1h
+bmNlLg0KDQpJIGFncmVlIHRoYXQgaW4gbW9zdCBob21lIGVudmlyb25tZW50cyB0aGUgTVRVIHNp
+emUgc2hvdWxkIGJlIGxvd2VyIC0gaWYgeW91IGxvb2sgYXQgZS5nLiBJUHNlYyB5b3Ugd2lsbCBm
+aW5kIHRoYXQgaXQgc2V0cyB0aGUgdHVubmVsIE1UVSBzaXplIHRvDQoxMzYwIHRvIGVuc3VyZSB0
+aGF0IGl0IHdpbGwgImFsbW9zdCBhbHdheXMiIHdvcmsuDQpIYXZpbmcgc2FpZCB0aGF0LCBJJ2Qg
+bGlrZSBzZWUgYSBzb2x1dGlvbiB0aGF0IHdpbGwgd29yayBpbiA5OSUgb2YgdGhlIGNhc2VzICpB
+TkQqIHRoYXQgd2lsbCBnaXZlIG1vc3QgdXNlcnMgY2xvc2UtdG8tb3B0aW1hbCBwZXJmb3JtYW5j
+ZS7CoCBJZiAiZnJhZ21lbnQiIGlzIG5vdCBpbXBsZW1lbnRlZCBpbiBPcGVuVlBOIDMgdGhlbiB3
+aGF0IGhhcHBlbnMgaWYgdGhlIHR1biBNVFUgaXMgdG9vIGhpZ2g/wqAgd2hlcmUgZG9lcyBmcmFn
+bWVudGF0aW9uIG9jY3VyPyBhdCB0aGUgT1MgbGV2ZWw/IGF0IHRoZSBVRFAgbGV2ZWw/wqAgSSdk
+IHByZWZlciB0byBsZWF2ZSBhbnkgZnJhZ21lbnRpbmcgdG8gdGhlIHVuZGVybHlpbmcgT1MgYXMg
+bXVjaCBhcyBwb3NzaWJsZSAtIGhlbmNlIGlmIEkgd2FudCB0byBzZW5kIHBhY2tldHMgb2YgNDAw
+MCBieXRlcyB0aGFuIGVpdGhlciB0aGV5IGFyZSBmcmFnbWVudGVkIGF0IHRoZSB0dW4gbGV2ZWwg
+KGkuZS4gYmVmb3JlIHRoZXkgYXJlIHByb2Nlc3NlZCBieSBPcGVuVlBOKSBvciBhdCB0aGUgdHJh
+bnNwb3J0IGxldmVsIChpLmUuIE9wZW5WUE4gc3BpdHMgb3V0IGEgNDAwMCBieXRlIHBhY2tldCBv
+dmVyIHRoZSBVRFAvVENQIGNvbm5lY3Rpb24sIHdoaWNoIHRoZSBPUyB0aGVuIGZyYWdlbWVudHMp
+LsKgIFRoZSBwcm9ibGVtIHdpdGggZnJhZ21lbnRpbmcgYXQgdGhlIFVEUCBsZXZlbCBpcyB0aGF0
+IHlvdSBuZWVkIHRvIGtlZXAgdHJhY2sgb2YgdGhlIGZyYWdtZW50cyBpbiBvcmRlciB0byByZWFz
+c2VtYmxlIHRoZW0gLSBUQ1AgZG9lcyB0aGlzIGZvciB5b3UuDQoNCmNoZWVycywNCg0KSkpLDQoN
+Cg0KDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KT3Bl
+bnZwbi1kZXZlbCBtYWlsaW5nIGxpc3QNCk9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2Uu
+bmV0DQpodHRwczovL2xpc3RzLnNvdXJjZWZvcmdlLm5ldC9saXN0cy9saXN0aW5mby9vcGVudnBu
+LWRldmVsDQo=
