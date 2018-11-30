@@ -1,14 +1,16 @@
-Date: Fri, 30 Nov 2018 16:38:02 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20181130153802.GW962@...1296...>
-References: <1d93843c-6fe8-1a60-28fc-c013a57877da@...2181...>
- <20181029172040.17034-1-arne@...1227...>
+References: <6cc03a83-47e6-cedb-254b-f445972788f5@...515...>
+ <b9c984d6-bcde-0d0e-349d-3a586600b668@...515...>
+ <6ebf219f-6a8e-6e39-893c-5610129abaef@...1147...>
+ <CAGyAFMU1iS3FJjVbmBqYq6BeSt+UyxUrAUg=xd=cmiH3nVac6g@...278...>
+ <83d19b4c0ee74daa2f5636b40cc9900b.squirrel@...2257...>
+From: Jan Just Keijser <janjust@...1147...>
+Message-ID: <4b777767-70f1-ebe2-f659-4687c0c640ec@...1147...>
+Date: Fri, 30 Nov 2018 17:15:47 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="SIa6NwWvRsr2U8xx"
-Content-Disposition: inline
-In-Reply-To: <20181029172040.17034-1-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v5] Implement block-ipv6
+In-Reply-To: <83d19b4c0ee74daa2f5636b40cc9900b.squirrel@...2257...>
+Content-Language: nl-NL
+Subject: Re: [Openvpn-devel] Summary of the community meeting (Wed,
+ 28th Nov 2018)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,79 +19,86 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+To: Simon Matter <simon.matter@...2249...>, Lev Stipakov <lstipakov@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---SIa6NwWvRsr2U8xx
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hi Lev, Simon,
 
-Hi,
+On 30/11/18 07:10, Simon Matter wrote:
+>> Hi Jan Just,
+>>
+>> (forgot to add openvpn-devel in previous mail)
+>>
+>> Some background information.
+>>
+>> In openvpn3 we decided not to implement fragments, because:
+>>
+>>   - this is quite a big feature which has to be supported through the whole
+>> stack (client, server, kernel module)
+>>   - we assume that it is not used by most of users
+>>
+>> However, for those who needs --fragment, we'll implement:
+>>
+>>   - mssfix support, this should solve problems with tcp-based protocols
+>>   - sending icmp "packet too big" for other protocols, we assume that
+>> they'll respect icmp response
+>>
+>> --fragment is/was very useful on a system where you do not / cannot change
+>>> the tun MTU size. Up to Windows XP, this was not
+>>> possible without rebooting the OS. Since Vista, it *is* possible to
+>>> change
+>>> the MTU of an adapter on the fly (as explained in my
+>>> trusty old cookbook, of course ;))
+>>>
+>> As James wrote a while ago (13 years ago :)
+>>
+>> https://openvpn.net/archive/openvpn-users/2005-10/msg00354.html
+>>
+>>> A lot of experience gained during the OpenVPN 1.x releases showed that
+>> it's best to fix the tunnel MTU at
+>>> 1500 and vary the other parameters (and use --mssfix to prevent
+>> fragmentation rather than a lower tunnel MTU).
+>>
+>> Don't know if still holds. Assuming that we can change tun-mtu on any
+>> supported platforms, do you think that it is better
+>> to do _that_, rather than have mssfix/icmp ptb workaround?
+>>
+>>
+>>> With that, it would be possible to fix the link-mtu to 1500 (or
+>>> whatever is set on the outbound interface) and then subtract the header
+>>> size to get a meaningful tun-mtu size.
+>>>
+>> Do you think 1500 is a safe value? Arne just mentioned today that his
+>> network interface MTU is 1500 and router's MTU is 1492 due to
+>> PPPoE, and openvpn2 works because it assumes that mtu is 1450.
+> I also think 1500 isn't safe because different types ob internet
+> connections may reduce it, like the mentioned PPPoE.
+>
+>
+this is why the --fragment feature is so handy - no need to change the 
+mtu values on either end, yet you can fiddle with the fragmentation size 
+to tune performance.
 
-On Mon, Oct 29, 2018 at 06:20:40PM +0100, Arne Schwabe wrote:
-> This can be used to redirect all IPv6 traffic to the tun interface,
-> effectively black holing the IPv6 traffic. Without ICMPv6 error
-> messages this will result in timeouts when the server does not send
-> error codes.  block-ipv6 allows client side only blocking on all
-> platforms that OpenVPN supports IPv6. On Android it is only way to do
-> sensible IPv6 blocking on Android < 5.0 and broken devices (Samsung).
+I agree that in most home environments the MTU size should be lower - if 
+you look at e.g. IPsec you will find that it sets the tunnel MTU size to 
+1360 to ensure that it will "almost always" work.
+Having said that, I'd like see a solution that will work in 99% of the 
+cases *AND* that will give most users close-to-optimal performance.  If 
+"fragment" is not implemented in OpenVPN 3 then what happens if the tun 
+MTU is too high?  where does fragmentation occur? at the OS level? at 
+the UDP level?  I'd prefer to leave any fragmenting to the underlying OS 
+as much as possible - hence if I want to send packets of 4000 bytes than 
+either they are fragmented at the tun level (i.e. before they are 
+processed by OpenVPN) or at the transport level (i.e. OpenVPN spits out 
+a 4000 byte packet over the UDP/TCP connection, which the OS then 
+fragements).  The problem with fragmenting at the UDP level is that you 
+need to keep track of the fragments in order to reassemble them - TCP 
+does this for you.
 
-Generally I agree with the need for this, so feature-ACK.
+cheers,
 
-Functionally, I've tested this on Linux, and it does what it says
-on the lid (I've only tested client, but if that works, I expect server
-to work as well).
+JJK
 
-Style-wise, there is, unfortunately, still way to go - missing brackets,
-non-pretty alignment, etc. -> so please run uncrustify, then send us
-a v6.
-
-Besides the uncrustify things, please leave af_addr_size() in socket.h -=20
-its only callers are in socket.c, so the move to proto.h does not make
-any sense anymore (I assume you wanted to call it from ip_checksum(),
-but since that one does a local decision for 4/16 byte address size,
-moving the other function is no longer needed).
-
-Lastly, the context of the hunk in options.c has no=20
- #ifdef ENABLE_PUSH_PEER_INFO
-anymore, but "master" still has that - so please send the patch that
-removes this #ifdef to the list as well :-)
-
-
-So, "changes requested" :-) - thanks.
-
-As a side note, how did you test the "without ifconfig-ipv6" variant?
-
-When I tried this it refused to install the IPv6 routes...
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---SIa6NwWvRsr2U8xx
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJcAVlaAAoJEB2Cnv7KVigSt04L/RJ1fNVdYE77bU0v2V+GSSKe
-PfFbrrTsaG2ilgedUadDdM+PXFmCBE6ogf8HCs+eOEBm3LZhfi11KodD7O2vjE9S
-WgPosks9ruU87p3NIz9pVSd5iFfR8FidFHlY9qeArwef0rHhkHL8rm2qg6lym7mz
-E2/oouDjrkpjko/tgA2+HGnmeAjQE3iyD7c/xUgeKwNlg/oLDTzsZbmwBh33gVb3
-F+vqHFufITFx/ZNiHZ47JCQrMRUdIhAGLyPCORlSIW4Yki4m/UtrqSWoXViCcHjK
-Gv1/bxvMm5MnHY4GSmNzbhpLDFmysGyyerjFWi0o3UD07veLxU2RjyEh5UgV6F7f
-FGK4sgXXwuhcYbaMvSX7JbSGMMaINgObc+PmfJybgGHoh3CSjBzlaH1xme2Nz8Tk
-FSYWmeXsoG0qW4VgKAIC1/Mh1P2CmO7cirGKJlq6yCHTtYrPflWvjCYpACWh5Hf7
-iVS+mMuKcGmSjKQ43pzDvrJ3YYLIStfC0ZYBSuOwAg==
-=x5e9
------END PGP SIGNATURE-----
-
---SIa6NwWvRsr2U8xx--
 
