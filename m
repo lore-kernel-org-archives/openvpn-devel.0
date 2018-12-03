@@ -1,16 +1,15 @@
-From: Jan Just Keijser <janjust@...1147...>
 References: <6cc03a83-47e6-cedb-254b-f445972788f5@...515...>
  <b9c984d6-bcde-0d0e-349d-3a586600b668@...515...>
  <6ebf219f-6a8e-6e39-893c-5610129abaef@...1147...>
- <CAGyAFMU1iS3FJjVbmBqYq6BeSt+UyxUrAUg=xd=cmiH3nVac6g@...278...>
- <83d19b4c0ee74daa2f5636b40cc9900b.squirrel@...2257...>
- <4b777767-70f1-ebe2-f659-4687c0c640ec@...1147...>
- <CY4PR04MB0935D91D8A4378A6066D8D61DDD30@...2478...>
-Message-ID: <fdd85141-b525-d629-23ad-0643e7a55461@...1147...>
-Date: Fri, 30 Nov 2018 18:22:06 +0100
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+Message-ID: <d00fef38-e26b-6b78-1181-95f24eb37748@...2080...>
+Date: Mon, 3 Dec 2018 12:14:07 +0100
 MIME-Version: 1.0
-In-Reply-To: <CY4PR04MB0935D91D8A4378A6066D8D61DDD30@...2478...>
-Content-Language: nl-NL
+In-Reply-To: <6ebf219f-6a8e-6e39-893c-5610129abaef@...1147...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="x16w3X6krDeLqBBHKsQO9ID7MIhKjFTlH"
 Subject: Re: [Openvpn-devel] Summary of the community meeting (Wed,
  28th Nov 2018)
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,104 +20,180 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: Kristian McColm <kristianmccolm@...160...>, Simon Matter <simon.matter@...2249...>, Lev Stipakov <lstipakov@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Jan Just Keijser <janjust@...1147...>, openvpn-devel@lists.sourceforge.net
 
-On 30/11/18 17:27, Kristian McColm wrote:
-> 1500 is not safe on many mobile/cell networks as most have a smaller MTU like 1460 due to GTP headers used between the PGW and eNodeB. There is also reduced MTU when performing NAT64, i.e. packets translated from IPv4 to IPv6 become 20 bytes larger after translation due to additional IP header bytes.
->
-> I believe it is most efficient to implement an application layer fragmentation feature, similar to IKEv2 fragmentation (RFC7383) so that the underlying network layer does not have to perform IP layer fragmentation which has known risks.
-that is pretty much what --fragment does...
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--x16w3X6krDeLqBBHKsQO9ID7MIhKjFTlH
+Content-Type: multipart/mixed; boundary="AwymSxCAdRSvyjvc3DC7TQ1PlNjaBiUfL";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Jan Just Keijser <janjust@...1147...>, openvpn-devel@lists.sourceforge.net
+Cc: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <d00fef38-e26b-6b78-1181-95f24eb37748@...2080...>
+Subject: Re: [Openvpn-devel] Summary of the community meeting (Wed, 28th Nov
+ 2018)
+References: <6cc03a83-47e6-cedb-254b-f445972788f5@...515...>
+ <b9c984d6-bcde-0d0e-349d-3a586600b668@...515...>
+ <6ebf219f-6a8e-6e39-893c-5610129abaef@...1147...>
+In-Reply-To: <6ebf219f-6a8e-6e39-893c-5610129abaef@...1147...>
 
-> Additionally, TCP MSS rewriting only works for TCP. Many VPNs use UDP which is not helped by MSS fix obviously. If supported by the client/server OS, path MTU discovery can be used to determine the MTU of a given connection.
-TCP MSS using --mssfix works inside the tunnel only, and only for TCP 
-connections. It does not depend on the outside protocol (UDP or TCP).
+--AwymSxCAdRSvyjvc3DC7TQ1PlNjaBiUfL
+Content-Language: en-GB
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-I fully agree that having PMTUD would be nice to have, but even that has 
-its drawbacks...
-
-JM2CW,
-
-JJK
-
-> -----Original Message-----
-> From: Jan Just Keijser [mailto:janjust@...1147...]
-> Sent: November 30, 2018 11:16
-> To: Simon Matter <simon.matter@...2249...>; Lev Stipakov <lstipakov@...277...>
-> Cc: openvpn-devel@lists.sourceforge.net
-> Subject: Re: [Openvpn-devel] Summary of the community meeting (Wed, 28th Nov 2018)
->
-> Hi Lev, Simon,
->
-> On 30/11/18 07:10, Simon Matter wrote:
->>> Hi Jan Just,
->>>
->>> (forgot to add openvpn-devel in previous mail)
->>>
->>> Some background information.
->>>
->>> In openvpn3 we decided not to implement fragments, because:
->>>
->>>    - this is quite a big feature which has to be supported through the
->>> whole stack (client, server, kernel module)
->>>    - we assume that it is not used by most of users
->>>
->>> However, for those who needs --fragment, we'll implement:
->>>
->>>    - mssfix support, this should solve problems with tcp-based protocols
->>>    - sending icmp "packet too big" for other protocols, we assume that
->>> they'll respect icmp response
->>>
->>> --fragment is/was very useful on a system where you do not / cannot
->>> change
->>>> the tun MTU size. Up to Windows XP, this was not possible without
->>>> rebooting the OS. Since Vista, it *is* possible to change the MTU of
->>>> an adapter on the fly (as explained in my trusty old cookbook, of
->>>> course ;))
->>>>
->>> As James wrote a while ago (13 years ago :)
->>>
->>> https://openvpn.net/archive/openvpn-users/2005-10/msg00354.html
->>>
->>>> A lot of experience gained during the OpenVPN 1.x releases showed
->>>> that
->>> it's best to fix the tunnel MTU at
->>>> 1500 and vary the other parameters (and use --mssfix to prevent
->>> fragmentation rather than a lower tunnel MTU).
->>>
->>> Don't know if still holds. Assuming that we can change tun-mtu on any
->>> supported platforms, do you think that it is better to do _that_,
->>> rather than have mssfix/icmp ptb workaround?
->>>
->>>
->>>> With that, it would be possible to fix the link-mtu to 1500 (or
->>>> whatever is set on the outbound interface) and then subtract the
->>>> header size to get a meaningful tun-mtu size.
->>>>
->>> Do you think 1500 is a safe value? Arne just mentioned today that his
->>> network interface MTU is 1500 and router's MTU is 1492 due to PPPoE,
->>> and openvpn2 works because it assumes that mtu is 1450.
->> I also think 1500 isn't safe because different types ob internet
->> connections may reduce it, like the mentioned PPPoE.
+On 29/11/2018 10:49, Jan Just Keijser wrote:
+> Hi,
+>=20
+> On 29/11/18 09:03, Samuli Sepp=E4nen wrote:
+>> [...]
+>=20
+>> Had a discussion about --fragment. Agreed that if we can fix internal
+>> fragmentation without needing a change in frame format then we can
+>> definitely deprecate --fragment in the long-term. Also noted that lack
+>> of tun-mtu support on Windows might be for historic reasons and might
+>> not apply to tap-windows6. Also questioned whether the default MTU of
+>> 1500 is the best possible choice.
 >>
->>
-> this is why the --fragment feature is so handy - no need to change the mtu values on either end, yet you can fiddle with the fragmentation size to tune performance.
->
-> I agree that in most home environments the MTU size should be lower - if you look at e.g. IPsec you will find that it sets the tunnel MTU size to
-> 1360 to ensure that it will "almost always" work.
-> Having said that, I'd like see a solution that will work in 99% of the cases *AND* that will give most users close-to-optimal performance.  If "fragment" is not implemented in OpenVPN 3 then what happens if the tun MTU is too high?  where does fragmentation occur? at the OS level? at the UDP level?  I'd prefer to leave any fragmenting to the underlying OS as much as possible - hence if I want to send packets of 4000 bytes than either they are fragmented at the tun level (i.e. before they are processed by OpenVPN) or at the transport level (i.e. OpenVPN spits out a 4000 byte packet over the UDP/TCP connection, which the OS then fragements).  The problem with fragmenting at the UDP level is that you need to keep track of the fragments in order to reassemble them - TCP does this for you.
->
-> cheers,
->
-> JJK
->
->
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+> I wish I'd known about this discussion - I saw the topic list and figured=
+ I
+> wouldn't be able to contribute much to the discussion.
+> Regarding MTU/fragment however.....
 
+Hi Jan,
+
+First of all, I'm terribly sorry I didn't get a chance to update the topics
+page in a timely manner.  That should have been done, but we have been
+discussing this internally for a little while and I thought it was about ti=
+me
+to get a bigger audience included in this discussion too.
+
+I brought up this discussion now because we do need to find a better way to
+handle --fragment.  I had no goal of ending up with a complete solution in
+this meeting, and we didn't really conclude either how to resolve this issu=
+e.
+ But I felt it was important to at least start this discussion so we can fi=
+nd
+a better solution for the future, with the community more involved in this
+discussion too.
+
+We (OpenVPN Inc) fully understand the usefulness of --fragment, but this is=
+ a
+very intrusive feature - from a code perspective.  We also want to reduce t=
+he
+number of options which is needed to manually tweak a setup into a function=
+al
+or better performing state.
+
+We believe a modern VPN solution should figure this out automatically and it
+should just work.  But at the same time, automation in this area is tricky =
+and
+hard - after all, how do you know if a packet was lost and why?  Sometimes =
+the
+packet drop is expected while other times it should not have happened.  The=
+re
+is no quick-fix for this.
+
+So part of what we want (from a high level perspective) is to push lots of
+this "tackle fragmentation logic" to be handled by the kernel primarily.  T=
+he
+kernel network stack (on all platforms) have logic to reassemble fragmented
+packets.  But we need to find ways to better facilitate this behaviour in t=
+he
+kernel scope from OpenVPN.  Which is why we started looking into --mssfix a=
+nd
+--tun-mtu.
+
+Combine these areas with the ultimate goal of automation ... If the OpenVPN
+stack can somehow figure out that "something broke the connection to the
+remote side now" and then start trying resolving this automatically can
+provide a much better end-user experience.  If that is by dynamically tweak=
+ing
+the --tun-mtu, --mssfix or whatever else ... that would be good.  But we
+generally want to avoid implementing code which needs to keep track of pack=
+et
+reassembly due to needed fragmentation.  If we really end up needing it, we=
+ll,
+then we have at least tried resolving it in a simpler way.  Kind of like
+trying to make it as simple as possible but no simpler.
+
+At the same time we also don't want to provide a worse end-user experience =
+by
+today's standards for the vast majority of users by having the wrong default
+values.  To exemplify this quite a bit (disregarding other comments related=
+ to
+--tun-mtu, this is just a stupid and simple example): It is better to start
+with --tun-mtu 1500 which works for 90% of our users and breaks 10% of conf=
+igs
+which will then be automatically resolved after a shorter time (20-60
+seconds?), rather than starting with --tun-mtu 1280 which works for 99.9% of
+users out-of-the box.  We don't want to punish 90% of the users because 9.9%
+of the users would need a lower --tun-mtu to get things working instantly. =
+ It
+is better then to have code which then saves the solution or provides optio=
+ns
+for the 9.9% of users to more quickly recover - if the default resolving
+method can't be done faster without a pre-save state.
+
+But in the end, it might not be the --tun-mtu option we end up with modifyi=
+ng,
+it could be something different - or it could be combination of things.  Ri=
+ght
+now, we just need start on a path figuring out the alternatives to reduce t=
+he
+need of fragmentation processing inside OpenVPN.
+
+This is basically the more detailed background of why this discussion was
+opened.  If we can make OpenVPN even better with lesser configuration
+complexity we believe we're providing a better end-user experience.  But
+neither I nor OpenVPN Inc says this will be an easy or quick path.
+
+In addition, we need to keep whatever changes compatible between OpenVPN 2 =
+and
+OpenVPN 3, so we're sure there is a reasonable migration path in the future=
+ -
+so clients and servers can be upgraded independently without really breaking
+anything.
+
+
+With all that said:  Thank you for valuable feedback regardless.  And your
+feedback on changing the "change of MTU" on Windows prior to Vista was gold!
+  For the rest of your points, I believe Lev has followed well up on those.
+
+
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
+
+
+
+--AwymSxCAdRSvyjvc3DC7TQ1PlNjaBiUfL--
+
+--x16w3X6krDeLqBBHKsQO9ID7MIhKjFTlH
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJcBRAGAAoJEIbPlEyWcf3yu6UQAMneforsvPDf0VsAzLrHAab/
+8up9k66icatUrHnVFaT6U+IY7Vb+sDhi50cTLFoQn1Afn487NL0RfAw+MXwDEPlD
+OU5mpYvKAfL5KDZpOddU/QWb6PGUwkxdnYIkKMOq2iMm8aQ7G5onkHU/Nlw63680
+tC8I/V5OZjE4d00bFGl01nnn8KCcMSFDQbf6n9raf/Rj0E8il8Hd7Um8wk8iDOgX
+BK1PoC1bCQLP5tg1jJgA05CB13MJYEJx2JKuqHYnM/2yYhzjf6bKX4YGATEpeJBa
+0uTrbp1PXfF/fJAeNYJgc1D8Qtj2G9M3xvwyvtIYi5X1oYnuvayyAJaxuaeGNYpI
+mDo6v57NFvCqubN3dee+nfYuvEdilISdJpBRNzmSJ4nKknx8zea9VEcvqv3zKTpj
+Aq3DZ3kWhsMx/GAv6/JVTZPa8zaXczAAekJ4Vrjr7dnpJecLwLnryQfbfyz/9eRU
+S2LYWNW+kn+u2A4gGCiQrNiEsGEDAqgKf082fDycZtVo/sH07RO4uzP6TKl1Nv0F
+PUlpPzhDRoo8Dvm1kiJyhAON9gSlOcdBQBLxKqqLthv36Nqclk4ktGqY+oj/91JS
+vvyW6xMJ6nZea0458eEfDO1lAArCczlB3rYJfrRBnTMhWCsPduTb23PiaFzjTyPm
+geuvNm1FexWaq5SINVOn
+=IGU1
+-----END PGP SIGNATURE-----
+
+--x16w3X6krDeLqBBHKsQO9ID7MIhKjFTlH--
 
