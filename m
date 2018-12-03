@@ -1,17 +1,9 @@
-References: <6cc03a83-47e6-cedb-254b-f445972788f5@...515...>
- <b9c984d6-bcde-0d0e-349d-3a586600b668@...515...>
- <6ebf219f-6a8e-6e39-893c-5610129abaef@...1147...>
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <d00fef38-e26b-6b78-1181-95f24eb37748@...2080...>
-Date: Mon, 3 Dec 2018 12:14:07 +0100
-MIME-Version: 1.0
-In-Reply-To: <6ebf219f-6a8e-6e39-893c-5610129abaef@...1147...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="x16w3X6krDeLqBBHKsQO9ID7MIhKjFTlH"
-Subject: Re: [Openvpn-devel] Summary of the community meeting (Wed,
- 28th Nov 2018)
+From: Arne Schwabe <arne@...1227...>
+Date: Mon,  3 Dec 2018 17:48:18 +0100
+Message-Id: <20181203164818.15756-1-arne@...1227...>
+In-Reply-To: <20181130153802.GW962@...1296...>
+References: <20181130153802.GW962@...1296...>
+Subject: [Openvpn-devel] [PATCH v7] Implement block-ipv6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,180 +12,594 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jan Just Keijser <janjust@...1147...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---x16w3X6krDeLqBBHKsQO9ID7MIhKjFTlH
-Content-Type: multipart/mixed; boundary="AwymSxCAdRSvyjvc3DC7TQ1PlNjaBiUfL";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Jan Just Keijser <janjust@...1147...>, openvpn-devel@lists.sourceforge.net
-Cc: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <d00fef38-e26b-6b78-1181-95f24eb37748@...2080...>
-Subject: Re: [Openvpn-devel] Summary of the community meeting (Wed, 28th Nov
- 2018)
-References: <6cc03a83-47e6-cedb-254b-f445972788f5@...515...>
- <b9c984d6-bcde-0d0e-349d-3a586600b668@...515...>
- <6ebf219f-6a8e-6e39-893c-5610129abaef@...1147...>
-In-Reply-To: <6ebf219f-6a8e-6e39-893c-5610129abaef@...1147...>
+This can be used to redirect all IPv6 traffic to the tun interface,
+effectively black holing the IPv6 traffic. Without ICMPv6 error
+messages this will result in timeouts when the server does not send
+error codes.  block-ipv6 allows client side only blocking on all
+platforms that OpenVPN supports IPv6. On Android it is only way to do
+sensible IPv6 blocking on Android < 5.0 and broken devices (Samsung).
 
---AwymSxCAdRSvyjvc3DC7TQ1PlNjaBiUfL
-Content-Language: en-GB
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+PATCH V6:
+- Rebase on master and run uncrustify on the patch
 
-On 29/11/2018 10:49, Jan Just Keijser wrote:
-> Hi,
->=20
-> On 29/11/18 09:03, Samuli Sepp=E4nen wrote:
->> [...]
->=20
->> Had a discussion about --fragment. Agreed that if we can fix internal
->> fragmentation without needing a change in frame format then we can
->> definitely deprecate --fragment in the long-term. Also noted that lack
->> of tun-mtu support on Windows might be for historic reasons and might
->> not apply to tap-windows6. Also questioned whether the default MTU of
->> 1500 is the best possible choice.
->>
-> I wish I'd known about this discussion - I saw the topic list and figured=
- I
-> wouldn't be able to contribute much to the discussion.
-> Regarding MTU/fragment however.....
+PATCH V5:
+- Fix even more style issues by Antonio
+- Remove check for dev == tun as this also works for tap
 
-Hi Jan,
+PATCH V4:
+- Fix more style issues reported by Antonio
+- Clarify parts of the patch in comments and manpage
 
-First of all, I'm terribly sorry I didn't get a chance to update the topics
-page in a timely manner.  That should have been done, but we have been
-discussing this internally for a little while and I thought it was about ti=
-me
-to get a bigger audience included in this discussion too.
+PATCH V3:
+- Fix style iusses reported by Antonio and accidentily commited parts
+- merge udp_checksum and ipv6_checkusm into common ip_checksum method
+- Use fake ff80::7 address when no other address is configured.
+- Make block-ipv6 also work for server  by replying block-ipv6 to all
+  ipv6 traffic send to the server
 
-I brought up this discussion now because we do need to find a better way to
-handle --fragment.  I had no goal of ending up with a complete solution in
-this meeting, and we didn't really conclude either how to resolve this issu=
-e.
- But I felt it was important to at least start this discussion so we can fi=
-nd
-a better solution for the future, with the community more involved in this
-discussion too.
+Note for the server the process_ip happens before the ipv6 route
+lookup so every ipv6 packet, regardless of its source address is
+replyied to with a no route to host packet.
 
-We (OpenVPN Inc) fully understand the usefulness of --fragment, but this is=
- a
-very intrusive feature - from a code perspective.  We also want to reduce t=
-he
-number of options which is needed to manually tweak a setup into a function=
-al
-or better performing state.
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ doc/openvpn.8         |  37 ++++++++++
+ src/openvpn/dhcp.c    |  51 +------------
+ src/openvpn/forward.c | 165 +++++++++++++++++++++++++++++++++++++++++-
+ src/openvpn/forward.h |  12 +--
+ src/openvpn/multi.c   |   2 +-
+ src/openvpn/options.c |   9 +++
+ src/openvpn/options.h |   1 +
+ src/openvpn/proto.c   |  52 +++++++++++++
+ src/openvpn/proto.h   |  42 ++++++++++-
+ 9 files changed, 311 insertions(+), 60 deletions(-)
 
-We believe a modern VPN solution should figure this out automatically and it
-should just work.  But at the same time, automation in this area is tricky =
-and
-hard - after all, how do you know if a packet was lost and why?  Sometimes =
-the
-packet drop is expected while other times it should not have happened.  The=
-re
-is no quick-fix for this.
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index eae2bd94..11ebdbe5 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -1243,6 +1243,43 @@ Like \-\-redirect\-gateway, but omit actually changing the default
+ gateway.  Useful when pushing private subnets.
+ .\"*********************************************************
+ .TP
++.B \-\-block\-ipv6
++On the client, instead of sending IPv6 packets over the VPN tunnel, all
++IPv6 packets are answered with an ICMPv6 no route host message. On the
++server, all IPv6 packets from clients are answered with an ICMPv6
++no route to host message. This options is intended for cases when IPv6
++should be blocked and other options are not available.
++\.B \-\-block\-ipv6
++will use the remote IPv6 as source address of the ICMPv6 packets if set,
++otherwise will use fe80::7 as source address.
++
++For this option to make sense you actually have to route traffic to the tun
++interface. The following example config block would send all IPv6 traffic to
++OpenVPN and answer all requests with no route to host, effectively blocking
++IPv6.
++
++# client config
++.br
++.B \-\-ifconfig-ipv6
++fd15:53b6:dead::2/64  fd15:53b6:dead::1
++.br
++.B \-\-redirect\-gateway
++ipv6
++.br
++.B \-\-block\-ipv6
++
++# Server config, push a "valid" ipv6 config to the client and block
++# on the server
++.br
++.B \-\-push
++"ifconfig-ipv6 fd15:53b6:dead::2/64  fd15:53b6:dead::1"
++.br
++.B \-\-push
++"redirect\-gateway ipv6"
++.br
++.B \-\-block\-ipv6
++.\"*********************************************************
++.TP
+ .B \-\-tun\-mtu n
+ Take the TUN device MTU to be
+ .B n
+diff --git a/src/openvpn/dhcp.c b/src/openvpn/dhcp.c
+index fb28b27d..c19370eb 100644
+--- a/src/openvpn/dhcp.c
++++ b/src/openvpn/dhcp.c
+@@ -147,49 +147,6 @@ do_extract(struct dhcp *dhcp, int optlen)
+     return ret;
+ }
+ 
+-static uint16_t
+-udp_checksum(const uint8_t *buf,
+-             const int len_udp,
+-             const uint8_t *src_addr,
+-             const uint8_t *dest_addr)
+-{
+-    uint16_t word16;
+-    uint32_t sum = 0;
+-    int i;
+-
+-    /* make 16 bit words out of every two adjacent 8 bit words and  */
+-    /* calculate the sum of all 16 bit words */
+-    for (i = 0; i < len_udp; i += 2)
+-    {
+-        word16 = ((buf[i] << 8) & 0xFF00) + ((i + 1 < len_udp) ? (buf[i+1] & 0xFF) : 0);
+-        sum += word16;
+-    }
+-
+-    /* add the UDP pseudo header which contains the IP source and destination addresses */
+-    for (i = 0; i < 4; i += 2)
+-    {
+-        word16 = ((src_addr[i] << 8) & 0xFF00) + (src_addr[i+1] & 0xFF);
+-        sum += word16;
+-    }
+-    for (i = 0; i < 4; i += 2)
+-    {
+-        word16 = ((dest_addr[i] << 8) & 0xFF00) + (dest_addr[i+1] & 0xFF);
+-        sum += word16;
+-    }
+-
+-    /* the protocol number and the length of the UDP packet */
+-    sum += (uint16_t) OPENVPN_IPPROTO_UDP + (uint16_t) len_udp;
+-
+-    /* keep only the last 16 bits of the 32 bit calculated sum and add the carries */
+-    while (sum >> 16)
+-    {
+-        sum = (sum & 0xFFFF) + (sum >> 16);
+-    }
+-
+-    /* Take the one's complement of sum */
+-    return ((uint16_t) ~sum);
+-}
+-
+ in_addr_t
+ dhcp_extract_router_msg(struct buffer *ipbuf)
+ {
+@@ -210,10 +167,10 @@ dhcp_extract_router_msg(struct buffer *ipbuf)
+ 
+             /* recompute the UDP checksum */
+             df->udp.check = 0;
+-            df->udp.check = htons(udp_checksum((uint8_t *) &df->udp,
+-                                               sizeof(struct openvpn_udphdr) + sizeof(struct dhcp) + optlen,
+-                                               (uint8_t *)&df->ip.saddr,
+-                                               (uint8_t *)&df->ip.daddr));
++            df->udp.check = htons(ip_checksum(AF_INET, (uint8_t *)&df->udp,
++                                              sizeof(struct openvpn_udphdr) + sizeof(struct dhcp) + optlen,
++                                              (uint8_t *)&df->ip.saddr, (uint8_t *)&df->ip.daddr,
++                                              OPENVPN_IPPROTO_UDP));
+ 
+             /* only return the extracted Router address if DHCPACK */
+             if (message_type == DHCPACK)
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index f8faa810..3b0b58d4 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1412,7 +1412,9 @@ process_incoming_tun(struct context *c)
+          * The --passtos and --mssfix options require
+          * us to examine the IP header (IPv4 or IPv6).
+          */
+-        process_ip_header(c, PIPV4_PASSTOS|PIP_MSSFIX|PIPV4_CLIENT_NAT, &c->c2.buf);
++        unsigned int flags = PIPV4_PASSTOS | PIP_MSSFIX | PIPV4_CLIENT_NAT
++                             | PIPV6_IMCP_NOHOST_CLIENT;
++        process_ip_header(c, flags, &c->c2.buf);
+ 
+ #ifdef PACKET_TRUNCATION_CHECK
+         /* if (c->c2.buf.len > 1) --c->c2.buf.len; */
+@@ -1423,6 +1425,9 @@ process_incoming_tun(struct context *c)
+                                 &c->c2.n_trunc_pre_encrypt);
+ #endif
+ 
++    }
++    if (c->c2.buf.len > 0)
++    {
+         encrypt_sign(c, true);
+     }
+     else
+@@ -1433,6 +1438,142 @@ process_incoming_tun(struct context *c)
+     gc_free(&gc);
+ }
+ 
++/**
++ * Forges a IPv6 ICMP packet with a no route to host error code from the
++ * IPv6 packetin buf and sends it directly back to the client via the tun device
++ * when used on a client and via the link if used on the server.
++ *
++ * @param buf       - The buf containing the packet for which the icmp6
++ *                    unreachable should be constructed.
++ *
++ * @param client    - determines whether to the send packet back via tun or link
++ */
++void
++ipv6_send_icmp_unreachable(struct context *c, struct buffer *buf, bool client)
++{
++#define MAX_ICMPV6LEN 1280
++    struct openvpn_icmp6hdr icmp6out;
++    CLEAR(icmp6out);
++
++    /*
++     * Get a buffer to the ip packet, is_ipv6 automatically forwards
++     * the buffer to the ip packet
++     */
++    struct buffer inputipbuf = *buf;
++
++    is_ipv6(TUNNEL_TYPE(c->c1.tuntap), &inputipbuf);
++
++    if (BLEN(&inputipbuf) < (int)sizeof(struct openvpn_ipv6hdr))
++    {
++        return;
++    }
++
++    const struct openvpn_ipv6hdr *pip6 = (struct openvpn_ipv6hdr *)BPTR(&inputipbuf);
++
++    /* Copy version, traffic class, flow label from input packet */
++    struct openvpn_ipv6hdr pip6out = *pip6;
++
++    pip6out.version_prio = pip6->version_prio;
++    pip6out.daddr = pip6->saddr;
++
++    /*
++     * Use the IPv6 remote address if we have one, otherwise use a fake one
++     * using the remote address is preferred since it makes debugging and
++     * understanding where the ICMPv6 error originates easier
++     */
++    if (c->options.ifconfig_ipv6_remote)
++    {
++        inet_pton(AF_INET6, c->options.ifconfig_ipv6_remote, &pip6out.saddr);
++    }
++    else
++    {
++        inet_pton(AF_INET6, "fe80::7", &pip6out.saddr);
++    }
++
++    pip6out.nexthdr = OPENVPN_IPPROTO_ICMPV6;
++
++    /*
++     * The ICMPv6 unreachable code worked best in my (arne) tests with Windows,
++     * Linux and Android. Windows did not like the administratively prohibited
++     * return code (no fast fail)
++     */
++    icmp6out.icmp6_type = OPENVPN_ICMP6_DESTINATION_UNREACHABLE;
++    icmp6out.icmp6_code = OPENVPN_ICMP6_DU_NOROUTE;
++
++    int icmpheader_len = sizeof(struct openvpn_ipv6hdr)
++                         + sizeof(struct openvpn_icmp6hdr);
++    int totalheader_len = icmpheader_len;
++
++    if (TUNNEL_TYPE(c->c1.tuntap) == DEV_TYPE_TAP)
++    {
++        totalheader_len += sizeof(struct openvpn_ethhdr);
++    }
++
++    /*
++     * Calculate size for payload, defined in the standard that the resulting
++     * frame should be <= 1280 and have as much as possible of the original
++     * packet
++     */
++    int max_payload_size = min_int(MAX_ICMPV6LEN,
++                                   TUN_MTU_SIZE(&c->c2.frame) - icmpheader_len);
++    int payload_len = min_int(max_payload_size, BLEN(&inputipbuf));
++
++    pip6out.payload_len = htons(sizeof(struct openvpn_icmp6hdr) + payload_len);
++
++    /* Construct the packet as outgoing packet back to the client */
++    struct buffer *outbuf;
++    if (client)
++    {
++        c->c2.to_tun = c->c2.buffers->aux_buf;
++        outbuf = &(c->c2.to_tun);
++    }
++    else
++    {
++        c->c2.to_link = c->c2.buffers->aux_buf;
++        outbuf = &(c->c2.to_link);
++    }
++    ASSERT(buf_init(outbuf, totalheader_len));
++
++    /* Fill the end of the buffer with original packet */
++    ASSERT(buf_safe(outbuf, payload_len));
++    ASSERT(buf_copy_n(outbuf, &inputipbuf, payload_len));
++
++    /* ICMP Header, copy into buffer to allow checksum calculation */
++    ASSERT(buf_write_prepend(outbuf, &icmp6out, sizeof(struct openvpn_icmp6hdr)));
++
++    /* Calculate checksum over the packet and write to header */
++
++    uint16_t new_csum = ip_checksum(AF_INET6, BPTR(outbuf), BLEN(outbuf),
++                                    (const uint8_t *)&pip6out.saddr,
++                                    (uint8_t *)&pip6out.daddr, OPENVPN_IPPROTO_ICMPV6);
++    ((struct openvpn_icmp6hdr *) BPTR(outbuf))->icmp6_cksum = htons(new_csum);
++
++
++    /* IPv6 Header */
++    ASSERT(buf_write_prepend(outbuf, &pip6out, sizeof(struct openvpn_ipv6hdr)));
++
++    /*
++     * Tap mode, we also need to create an Ethernet header.
++     */
++    if (TUNNEL_TYPE(c->c1.tuntap) == DEV_TYPE_TAP)
++    {
++        if (BLEN(buf) < (int)sizeof(struct openvpn_ethhdr))
++        {
++            return;
++        }
++
++        const struct openvpn_ethhdr *orig_ethhdr = (struct openvpn_ethhdr *) BPTR(buf);
++
++        /* Copy frametype and reverse source/destination for the response */
++        struct openvpn_ethhdr ethhdr;
++        memcpy(ethhdr.source, orig_ethhdr->dest, OPENVPN_ETH_ALEN);
++        memcpy(ethhdr.dest, orig_ethhdr->source, OPENVPN_ETH_ALEN);
++        ethhdr.proto = htons(OPENVPN_ETH_P_IPV6);
++        ASSERT(buf_write_prepend(outbuf, &ethhdr, sizeof(struct openvpn_ethhdr)));
++    }
++#undef MAX_ICMPV6LEN
++}
++
+ void
+ process_ip_header(struct context *c, unsigned int flags, struct buffer *buf)
+ {
+@@ -1454,6 +1595,10 @@ process_ip_header(struct context *c, unsigned int flags, struct buffer *buf)
+     {
+         flags &= ~PIPV4_EXTRACT_DHCP_ROUTER;
+     }
++    if (!c->options.block_ipv6)
++    {
++        flags &= ~(PIPV6_IMCP_NOHOST_CLIENT | PIPV6_IMCP_NOHOST_SERVER);
++    }
+ 
+     if (buf->len > 0)
+     {
+@@ -1489,7 +1634,7 @@ process_ip_header(struct context *c, unsigned int flags, struct buffer *buf)
+                 /* possibly do NAT on packet */
+                 if ((flags & PIPV4_CLIENT_NAT) && c->options.client_nat)
+                 {
+-                    const int direction = (flags & PIPV4_OUTGOING) ? CN_INCOMING : CN_OUTGOING;
++                    const int direction = (flags & PIP_OUTGOING) ? CN_INCOMING : CN_OUTGOING;
+                     client_nat_transform(c->options.client_nat, &ipbuf, direction);
+                 }
+                 /* possibly extract a DHCP router message */
+@@ -1507,8 +1652,18 @@ process_ip_header(struct context *c, unsigned int flags, struct buffer *buf)
+                 /* possibly alter the TCP MSS */
+                 if (flags & PIP_MSSFIX)
+                 {
+-                    mss_fixup_ipv6(&ipbuf, MTU_TO_MSS(TUN_MTU_SIZE_DYNAMIC(&c->c2.frame)));
++                    mss_fixup_ipv6(&ipbuf,
++                                   MTU_TO_MSS(TUN_MTU_SIZE_DYNAMIC(&c->c2.frame)));
++                }
++                if (!(flags & PIP_OUTGOING) && (flags
++                                                &(PIPV6_IMCP_NOHOST_CLIENT | PIPV6_IMCP_NOHOST_SERVER)))
++                {
++                    ipv6_send_icmp_unreachable(c, buf,
++                                               (bool)(flags & PIPV6_IMCP_NOHOST_CLIENT));
++                    /* Drop the IPv6 packet */
++                    buf->len = 0;
+                 }
++
+             }
+         }
+     }
+@@ -1689,7 +1844,9 @@ process_outgoing_tun(struct context *c)
+      * The --mssfix option requires
+      * us to examine the IP header (IPv4 or IPv6).
+      */
+-    process_ip_header(c, PIP_MSSFIX|PIPV4_EXTRACT_DHCP_ROUTER|PIPV4_CLIENT_NAT|PIPV4_OUTGOING, &c->c2.to_tun);
++    process_ip_header(c,
++                      PIP_MSSFIX | PIPV4_EXTRACT_DHCP_ROUTER | PIPV4_CLIENT_NAT | PIP_OUTGOING,
++                      &c->c2.to_tun);
+ 
+     if (c->c2.to_tun.len <= MAX_RW_SIZE_TUN(&c->c2.frame))
+     {
+diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
+index 58b75d64..a7913088 100644
+--- a/src/openvpn/forward.h
++++ b/src/openvpn/forward.h
+@@ -286,11 +286,13 @@ void process_outgoing_tun(struct context *c);
+ 
+ bool send_control_channel_string(struct context *c, const char *str, int msglevel);
+ 
+-#define PIPV4_PASSTOS         (1<<0)
+-#define PIP_MSSFIX            (1<<1)         /* v4 and v6 */
+-#define PIPV4_OUTGOING        (1<<2)
+-#define PIPV4_EXTRACT_DHCP_ROUTER (1<<3)
+-#define PIPV4_CLIENT_NAT      (1<<4)
++#define PIPV4_PASSTOS                   (1<<0)
++#define PIP_MSSFIX                      (1<<1)         /* v4 and v6 */
++#define PIP_OUTGOING                    (1<<2)
++#define PIPV4_EXTRACT_DHCP_ROUTER       (1<<3)
++#define PIPV4_CLIENT_NAT                (1<<4)
++#define PIPV6_IMCP_NOHOST_CLIENT        (1<<5)
++#define PIPV6_IMCP_NOHOST_SERVER        (1<<6)
+ 
+ void process_ip_header(struct context *c, unsigned int flags, struct buffer *buf);
+ 
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 8440f311..d3278938 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -2855,7 +2855,7 @@ multi_get_queue(struct mbuf_set *ms)
+ 
+     if (mbuf_extract_item(ms, &item)) /* cleartext IP packet */
+     {
+-        unsigned int pip_flags = PIPV4_PASSTOS;
++        unsigned int pip_flags = PIPV4_PASSTOS | PIPV6_IMCP_NOHOST_SERVER;
+ 
+         set_prefix(item.instance);
+         item.instance->context.c2.buf = item.buffer->buf;
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 9ee1836b..38f668ff 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -225,6 +225,10 @@ static const char usage_message[] =
+     "                  Add 'bypass-dns' flag to similarly bypass tunnel for DNS.\n"
+     "--redirect-private [flags]: Like --redirect-gateway, but omit actually changing\n"
+     "                  the default gateway.  Useful when pushing private subnets.\n"
++    "--block-ipv6     : (Client) Instead sending IPv6 to the server generate\n"
++    "                   ICMPv6 host unreachable messages on the client.\n"
++    "                   (Server) Instead of forwarding IPv6 packets send\n"
++    "                   ICMPv6 host unreachable packets to the client.\n"
+     "--client-nat snat|dnat network netmask alias : on client add 1-to-1 NAT rule.\n"
+     "--push-peer-info : (client only) push client info to server.\n"
+     "--setenv name value : Set a custom environmental variable to pass to script.\n"
+@@ -6364,6 +6368,11 @@ add_option(struct options *options,
+ #endif
+         options->routes->flags |= RG_ENABLE;
+     }
++    else if (streq(p[0], "block-ipv6") && !p[1])
++    {
++        VERIFY_PERMISSION(OPT_P_ROUTE);
++        options->block_ipv6 = true;
++    }
+     else if (streq(p[0], "remote-random-hostname") && !p[1])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 575777f5..93df21b4 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -350,6 +350,7 @@ struct options
+     bool route_delay_defined;
+     struct route_option_list *routes;
+     struct route_ipv6_option_list *routes_ipv6;                 /* IPv6 */
++    bool block_ipv6;
+     bool route_nopull;
+     bool route_gateway_via_dhcp;
+     bool allow_pull_fqdn; /* as a client, allow server to push a FQDN for certain parameters */
+diff --git a/src/openvpn/proto.c b/src/openvpn/proto.c
+index 87c18e84..3bf22174 100644
+--- a/src/openvpn/proto.c
++++ b/src/openvpn/proto.c
+@@ -98,6 +98,58 @@ is_ipv6(int tunnel_type, struct buffer *buf)
+     return is_ipv_X( tunnel_type, buf, 6 );
+ }
+ 
++
++uint16_t
++ip_checksum(const sa_family_t af, const uint8_t *payload, const int len_payload,
++            const uint8_t *src_addr, const uint8_t *dest_addr, const int proto)
++{
++    uint32_t sum = 0;
++    int addr_len = (af == AF_INET) ? 4 : 16;
++
++    /*
++     * make 16 bit words out of every two adjacent 8 bit words and  */
++    /* calculate the sum of all 16 bit words
++     */
++    for (int i = 0; i < len_payload; i += 2)
++    {
++        sum +=  (uint16_t)(((payload[i] << 8) & 0xFF00)
++                           +((i + 1 < len_payload) ? (payload[i + 1] & 0xFF) : 0));
++
++    }
++
++    /*
++     * add the pseudo header which contains the IP source and destination
++     * addresses
++     */
++    for (int i = 0; i < addr_len; i += 2)
++    {
++        sum += (uint16_t)((src_addr[i] << 8) & 0xFF00) + (src_addr[i + 1] & 0xFF);
++
++    }
++    for (int i = 0; i < addr_len; i += 2)
++    {
++        sum += (uint16_t)((dest_addr[i] << 8) & 0xFF00) + (dest_addr[i + 1] & 0xFF);
++    }
++
++    /* the length of the payload */
++    sum += (uint16_t)len_payload;
++
++    /* The next header or proto field*/
++    sum += (uint16_t)proto;
++
++    /*
++     * keep only the last 16 bits of the 32 bit calculated sum and add
++     * the carries
++     */
++    while (sum >> 16)
++    {
++        sum = (sum & 0xFFFF) + (sum >> 16);
++    }
++
++    /* Take the one's complement of sum */
++    return ((uint16_t) ~sum);
++}
++
+ #ifdef PACKET_TRUNCATION_CHECK
+ 
+ void
+diff --git a/src/openvpn/proto.h b/src/openvpn/proto.h
+index 985aa99b..4ddffc7d 100644
+--- a/src/openvpn/proto.h
++++ b/src/openvpn/proto.h
+@@ -95,9 +95,10 @@ struct openvpn_iphdr {
+ 
+     uint8_t ttl;
+ 
+-#define OPENVPN_IPPROTO_IGMP 2  /* IGMP protocol */
+-#define OPENVPN_IPPROTO_TCP  6  /* TCP protocol */
+-#define OPENVPN_IPPROTO_UDP 17  /* UDP protocol */
++#define OPENVPN_IPPROTO_IGMP    2  /* IGMP protocol */
++#define OPENVPN_IPPROTO_TCP     6  /* TCP protocol */
++#define OPENVPN_IPPROTO_UDP    17  /* UDP protocol */
++#define OPENVPN_IPPROTO_ICMPV6 58 /* ICMPV6 protocol */
+     uint8_t protocol;
+ 
+     uint16_t check;
+@@ -120,6 +121,24 @@ struct openvpn_ipv6hdr {
+     struct  in6_addr daddr;
+ };
+ 
++/*
++ * ICMPv6 header
++ */
++struct openvpn_icmp6hdr {
++#define OPENVPN_ICMP6_DESTINATION_UNREACHABLE       1
++#define OPENVPN_ND_ROUTER_SOLICIT                 133
++#define OPENVPN_ND_ROUTER_ADVERT                  134
++#define OPENVPN_ND_NEIGHBOR_SOLICIT               135
++#define OPENVPN_ND_NEIGHBOR_ADVERT                136
++#define OPENVPN_ND_INVERSE_SOLICIT                141
++#define OPENVPN_ND_INVERSE_ADVERT                 142
++    uint8_t icmp6_type;
++#define OPENVPN_ICMP6_DU_NOROUTE                    0
++#define OPENVPN_ICMP6_DU_COMMUNICATION_PROHIBTED    1
++    uint8_t icmp6_code;
++    uint16_t icmp6_cksum;
++    uint8_t icmp6_dataun[4];
++};
+ 
+ /*
+  * UDP header
+@@ -265,6 +284,23 @@ bool is_ipv4(int tunnel_type, struct buffer *buf);
+ 
+ bool is_ipv6(int tunnel_type, struct buffer *buf);
+ 
++/**
++ *  Calculates an IP or IPv6 checksum with a pseudo header as required by
++ *  TCP, UDP and ICMPv6
++ *
++ * @param af            - Address family for which the checksum is calculated
++ *                        AF_INET or AF_INET6
++ * @param payload       - the TCP, ICMPv6 or UDP packet
++ * @param len_payload   - length of payload
++ * @param src_addr      - Source address of the packet
++ * @param dest_addr     - Destination address of the packet
++ * @param proto next    - header or IP protocol of the packet
++ * @return The calculated checksum in host order
++ */
++uint16_t
++ip_checksum(const sa_family_t af, const uint8_t *payload, const int len_payload,
++            const uint8_t *src_addr, const uint8_t *dest_addr,  const int proto);
++
+ #ifdef PACKET_TRUNCATION_CHECK
+ void ipv4_packet_size_verify(const uint8_t *data,
+                              const int size,
+-- 
+2.19.2
 
-So part of what we want (from a high level perspective) is to push lots of
-this "tackle fragmentation logic" to be handled by the kernel primarily.  T=
-he
-kernel network stack (on all platforms) have logic to reassemble fragmented
-packets.  But we need to find ways to better facilitate this behaviour in t=
-he
-kernel scope from OpenVPN.  Which is why we started looking into --mssfix a=
-nd
---tun-mtu.
-
-Combine these areas with the ultimate goal of automation ... If the OpenVPN
-stack can somehow figure out that "something broke the connection to the
-remote side now" and then start trying resolving this automatically can
-provide a much better end-user experience.  If that is by dynamically tweak=
-ing
-the --tun-mtu, --mssfix or whatever else ... that would be good.  But we
-generally want to avoid implementing code which needs to keep track of pack=
-et
-reassembly due to needed fragmentation.  If we really end up needing it, we=
-ll,
-then we have at least tried resolving it in a simpler way.  Kind of like
-trying to make it as simple as possible but no simpler.
-
-At the same time we also don't want to provide a worse end-user experience =
-by
-today's standards for the vast majority of users by having the wrong default
-values.  To exemplify this quite a bit (disregarding other comments related=
- to
---tun-mtu, this is just a stupid and simple example): It is better to start
-with --tun-mtu 1500 which works for 90% of our users and breaks 10% of conf=
-igs
-which will then be automatically resolved after a shorter time (20-60
-seconds?), rather than starting with --tun-mtu 1280 which works for 99.9% of
-users out-of-the box.  We don't want to punish 90% of the users because 9.9%
-of the users would need a lower --tun-mtu to get things working instantly. =
- It
-is better then to have code which then saves the solution or provides optio=
-ns
-for the 9.9% of users to more quickly recover - if the default resolving
-method can't be done faster without a pre-save state.
-
-But in the end, it might not be the --tun-mtu option we end up with modifyi=
-ng,
-it could be something different - or it could be combination of things.  Ri=
-ght
-now, we just need start on a path figuring out the alternatives to reduce t=
-he
-need of fragmentation processing inside OpenVPN.
-
-This is basically the more detailed background of why this discussion was
-opened.  If we can make OpenVPN even better with lesser configuration
-complexity we believe we're providing a better end-user experience.  But
-neither I nor OpenVPN Inc says this will be an easy or quick path.
-
-In addition, we need to keep whatever changes compatible between OpenVPN 2 =
-and
-OpenVPN 3, so we're sure there is a reasonable migration path in the future=
- -
-so clients and servers can be upgraded independently without really breaking
-anything.
-
-
-With all that said:  Thank you for valuable feedback regardless.  And your
-feedback on changing the "change of MTU" on Windows prior to Vista was gold!
-  For the rest of your points, I believe Lev has followed well up on those.
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
-
-
-
---AwymSxCAdRSvyjvc3DC7TQ1PlNjaBiUfL--
-
---x16w3X6krDeLqBBHKsQO9ID7MIhKjFTlH
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJcBRAGAAoJEIbPlEyWcf3yu6UQAMneforsvPDf0VsAzLrHAab/
-8up9k66icatUrHnVFaT6U+IY7Vb+sDhi50cTLFoQn1Afn487NL0RfAw+MXwDEPlD
-OU5mpYvKAfL5KDZpOddU/QWb6PGUwkxdnYIkKMOq2iMm8aQ7G5onkHU/Nlw63680
-tC8I/V5OZjE4d00bFGl01nnn8KCcMSFDQbf6n9raf/Rj0E8il8Hd7Um8wk8iDOgX
-BK1PoC1bCQLP5tg1jJgA05CB13MJYEJx2JKuqHYnM/2yYhzjf6bKX4YGATEpeJBa
-0uTrbp1PXfF/fJAeNYJgc1D8Qtj2G9M3xvwyvtIYi5X1oYnuvayyAJaxuaeGNYpI
-mDo6v57NFvCqubN3dee+nfYuvEdilISdJpBRNzmSJ4nKknx8zea9VEcvqv3zKTpj
-Aq3DZ3kWhsMx/GAv6/JVTZPa8zaXczAAekJ4Vrjr7dnpJecLwLnryQfbfyz/9eRU
-S2LYWNW+kn+u2A4gGCiQrNiEsGEDAqgKf082fDycZtVo/sH07RO4uzP6TKl1Nv0F
-PUlpPzhDRoo8Dvm1kiJyhAON9gSlOcdBQBLxKqqLthv36Nqclk4ktGqY+oj/91JS
-vvyW6xMJ6nZea0458eEfDO1lAArCczlB3rYJfrRBnTMhWCsPduTb23PiaFzjTyPm
-geuvNm1FexWaq5SINVOn
-=IGU1
------END PGP SIGNATURE-----
-
---x16w3X6krDeLqBBHKsQO9ID7MIhKjFTlH--
 
