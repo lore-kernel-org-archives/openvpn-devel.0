@@ -1,10 +1,10 @@
+Date: Wed, 5 Dec 2018 22:41:34 +0100 (CET)
+Message-Id: <201812052141.wB5LfYCK070831@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Wed,  5 Dec 2018 22:40:37 +0100
-Message-Id: <20181205214037.70783-1-gert@...1296...>
-In-Reply-To: <20181205212453.GR962@...1296...>
-References: <20181205212453.GR962@...1296...>
-Subject: [Openvpn-devel] [PATCH v2] Stop complaining about IPv6 routes
- without gateway address.
+In-Reply-To: <777939F9-A753-4A66-B40E-1346AFD588DE@...1918...>
+References: <777939F9-A753-4A66-B40E-1346AFD588DE@...1918...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Adds support for setting the
+ default IPv6 gateway for routes using the route-ipv6-gateway option.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,80 +15,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: James Bekkema <james@...1918...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-The IPv6 routing code inherited assumptions and the message
+Your patch has been applied to the master branch.
 
-   "OpenVPN ROUTE6: OpenVPN needs a gateway parameter for a --route-ipv6
-    option and no default was specified by either --route-ipv6-gateway or
-    --ifconfig-ipv6 options"
+Thanks for not just enabling the option but for also showing a valid
+use case (which was mostly the reason why this got never implemented,
+I couldn't see a case where this was really useful).
 
-from the IPv4 routing code.
+commit d24e1b179b95a57b81d9802c13426b5cde66de10 (master)
+Author: James Bekkema
+Date:   Mon Jul 23 13:28:31 2018 +1000
 
-This was never really correct, as no gateway is needed for "into tun
-device" IPv6 routes, and the "--route-ipv6-gateway" option it refers
-to also never existed.  (Routes on tap interfaces *do* need a gateway
-due to neighbour discovery being involved.  As do routes on Windows,
-but there we fake the gateway in tun mode anyway).
+     Adds support for setting the default IPv6 gateway for routes using the route-ipv6-gateway option.
 
-While commit d24e1b179b95 introduces support for "--route-ipv6-gateway",
-the message is still falsely triggered for IPv6 routes in tun mode.
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <777939F9-A753-4A66-B40E-1346AFD588DE@...1918...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17290.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Change the code to generally accept IPv6 routes with no gateway
-specification (so "--block-ipv6 --redirect-gateway ipv6" can work
-without additional config).  When installing IPv6 routes, check
-if a gateway is needed (tap mode) but missing, and if yes, print
-correct message.
 
-Trac: #1143
+--
+kind regards,
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/openvpn/route.c | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
-
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index d97e8dba..ac38bf15 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -448,11 +448,6 @@ init_route_ipv6(struct route_ipv6 *r6,
-     {
-         r6->gateway = rl6->remote_endpoint_ipv6;
-     }
--    else
--    {
--        msg(M_WARN, PACKAGE_NAME " ROUTE6: " PACKAGE_NAME " needs a gateway parameter for a --route-ipv6 option and no default was specified by either --route-ipv6-gateway or --ifconfig-ipv6 options");
--        goto fail;
--    }
- 
-     /* metric */
- 
-@@ -1917,6 +1912,16 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt, unsigned int flag
-         gateway_needed = true;
-     }
- 
-+    if (gateway_needed && IN6_IS_ADDR_UNSPECIFIED(&r6->gateway) )
-+    {
-+        msg(M_WARN, "ROUTE6 WARNING: " PACKAGE_NAME " needs a gateway "
-+            "parameter for a --route-ipv6 option and no default was set via "
-+            "--ifconfig-ipv6 or --route-ipv6-gateway option.  Not installing "
-+            "IPv6 route to %s/%d.", network, r6->netbits );
-+        status = false;
-+        goto done;
-+    }
-+
- #if defined(TARGET_LINUX)
- #ifdef ENABLE_IPROUTE
-     argv_printf(&argv, "%s -6 route add %s/%d dev %s",
-@@ -2114,6 +2119,7 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt, unsigned int flag
-     msg(M_FATAL, "Sorry, but I don't know how to do 'route ipv6' commands on this operating system.  Try putting your routes in a --route-up script");
- #endif /* if defined(TARGET_LINUX) */
- 
-+done:
-     if (status)
-     {
-         r6->flags |= RT_ADDED;
--- 
-2.18.1
+Gert Doering
 
 
