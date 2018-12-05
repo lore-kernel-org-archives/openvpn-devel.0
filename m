@@ -1,14 +1,8 @@
-References: <CAATJJ0JWDwT-BLR2W4bxRrJJu+jooVOhGpG2yrRvoXW3H1ii8g@...278...>
- <80bf080e-a293-70a5-fab0-c4f814dd154e@...515...>
-From: =?UTF-8?Q?Enno_Gr=c3=b6per?= <groepeen@...1879...>
-Message-ID: <6e4e455e-b37a-c262-c39b-f04f34842799@...1879...>
-Date: Wed, 5 Dec 2018 17:43:45 +0100
-MIME-Version: 1.0
-In-Reply-To: <80bf080e-a293-70a5-fab0-c4f814dd154e@...515...>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature";
- micalg=sha-256; boundary="------------ms010404080809040705030404"
-Subject: Re: [Openvpn-devel] sbuild_wrapper: please unify service rules with
- openvpn repository
+From: Gert Doering <gert@...1296...>
+Date: Wed,  5 Dec 2018 22:07:34 +0100
+Message-Id: <20181205210734.62565-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Stop complaining about IPv6 routes without
+ gateway address.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,174 +11,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is a cryptographically signed message in MIME format.
+The IPv6 routing code inherited assumptions and the message
 
---------------ms010404080809040705030404
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: quoted-printable
+   "OpenVPN ROUTE6: OpenVPN needs a gateway parameter for a --route-ipv6
+    option and no default was specified by either --route-ipv6-gateway or
+    --ifconfig-ipv6 options"
 
-Hi Samuli,
+from the IPv4 routing code.
 
-Some background first:
-I'm currently building new openvpn servers and want to start using this=20
-packages sources. I think about using the current debian stable or the=20
-current Ubuntu LTS (18.04).
-In the past I used to use the distribution supplied openvpn packages,=20
-but these are usually quite outdated.
+This was never really correct, as no gateway is needed for "into tun
+device" IPv6 routes, and the "--route-ipv6-gateway" option it refers
+to also never existed.  (Routes on tap interfaces *do* need a gateway
+due to neighbour discovery being involved.  As do routes on Windows,
+but there we fake the gateway in tun mode anyway).
 
-Now the questions:
+Change the code to generally accept IPv6 routes with no gateway
+specification (so "--block-ipv6 --redirect-gateway ipv6" can work
+without additional config).  When installing IPv6 routes, check
+if a gateway is needed (tap mode) but missing, and if yes, print
+correct message.
 
+Trac: #1143
 
-Am 06.09.18 um 14:25 schrieb Samuli Sepp=C3=A4nen:
-> Also, we don't have packages for Ubuntu 18.04 yet.
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/route.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
-May I ask what is stopping this?
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index d97e8dba..cf51063b 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -448,11 +448,6 @@ init_route_ipv6(struct route_ipv6 *r6,
+     {
+         r6->gateway = rl6->remote_endpoint_ipv6;
+     }
+-    else
+-    {
+-        msg(M_WARN, PACKAGE_NAME " ROUTE6: " PACKAGE_NAME " needs a gateway parameter for a --route-ipv6 option and no default was specified by either --route-ipv6-gateway or --ifconfig-ipv6 options");
+-        goto fail;
+-    }
+ 
+     /* metric */
+ 
+@@ -1917,6 +1912,16 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt, unsigned int flag
+         gateway_needed = true;
+     }
+ 
++    if (gateway_needed && IN6_IS_ADDR_UNSPECIFIED(&r6->gateway) )
++    {
++        msg(M_WARN, "ROUTE6 WARNING: " PACKAGE_NAME " needs a gateway "
++            "parameter for a --route-ipv6 option and no default was set via "
++            "--ifconfig-ipv6 option.  Not installing IPv6 route to %s/%d.",
++            network, r6->netbits );
++        status = false;
++        goto done;
++    }
++
+ #if defined(TARGET_LINUX)
+ #ifdef ENABLE_IPROUTE
+     argv_printf(&argv, "%s -6 route add %s/%d dev %s",
+@@ -2114,6 +2119,7 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt, unsigned int flag
+     msg(M_FATAL, "Sorry, but I don't know how to do 'route ipv6' commands on this operating system.  Try putting your routes in a --route-up script");
+ #endif /* if defined(TARGET_LINUX) */
+ 
++done:
+     if (status)
+     {
+         r6->flags |= RT_ADDED;
+-- 
+2.18.1
 
-Or let's rephrase it: What kind and/or amount of support is needed to=20
-get this done?
-
-Christian Erhardt wrote:
-> That is exactly what my report here is about, it currently ships very old=
- service files.
-> Not from the repo, nor the last ones from Debian/Ubuntu - older than both=
- actually
-
-Is there any progress with this?
-I would prefer using openvpn packages with recent systemd service files.
-What needs to be done to switch to the recent systemd files? Only=20
-copying? What kind of testing?
-
-
-The docs at CreatingUnixPackages [1] should be updated.
-It still refers to your fork of openvpn-build [2], but I'm unable to=20
-find any build scripts or the mentioned "debian/README" there.
-
-Is it correct, that the official builds are made using sbuild_wrapper [3]?
-And then the workflow there is to copy the files from the distribution=20
-source packages and rebuild with more recent openvpn (with some changes=20
-to the files of the distribution build env)?
-
-
-[1] https://community.openvpn.net/openvpn/wiki/CreatingUnixPackages
-[2] https://github.com/mattock/openvpn-build
-[3] https://github.com/OpenVPN/sbuild_wrapper
-
-And last, but not least: Thank you very much for all the work you=20
-already did for us!
-
-
-Kind regards,
-Enno
-
---=20
-Enno Gr=C3=B6per
-Humboldt-Universit=C3=A4t zu Berlin - http://www.hu-berlin.de/
-ZE Computer- und Medienservice - http://www.cms.hu-berlin.de/
-Unter den Linden 6, D-10099 Berlin, Germany
-
-
---------------ms010404080809040705030404
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCC
-D+8wggTVMIIDvaADAgECAghQTsb1PRG0ZDANBgkqhkiG9w0BAQsFADBxMQswCQYDVQQGEwJE
-RTEcMBoGA1UEChMTRGV1dHNjaGUgVGVsZWtvbSBBRzEfMB0GA1UECxMWVC1UZWxlU2VjIFRy
-dXN0IENlbnRlcjEjMCEGA1UEAxMaRGV1dHNjaGUgVGVsZWtvbSBSb290IENBIDIwHhcNMTQw
-NzIyMTIwODI2WhcNMTkwNzA5MjM1OTAwWjBaMQswCQYDVQQGEwJERTETMBEGA1UEChMKREZO
-LVZlcmVpbjEQMA4GA1UECxMHREZOLVBLSTEkMCIGA1UEAxMbREZOLVZlcmVpbiBQQ0EgR2xv
-YmFsIC0gRzAxMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6ZvDZ4X5Da71jVTD
-llA1PWLpbkztlNcAW5UidNQg6zSP1uzAMQQLmYHiphTSUqAoI4SLdIkEXlvg4njBeMsWyyg1
-OXstkEXQ7aAAeny/Sg4bAMOG6VwrMRF7DPOCJEOMHDiLamgAmu7cT3ir0sYTm3at7t4m6O8B
-r3QPwQmi9mvOvdPNFDBP9eXjpMhim4IaAycwDQJlYE3t0QkjKpY1WCfTdsZxtpAdxO3/NYZ9
-bzOz2w/FEcKKg6GUXUFr2NIQ9Uz9ylGs2b3vkoO72uuLFlZWQ8/h1RM9ph8nMM1JVNvJEzSa
-cXXFbOqnC5j5IZ0nrz6jOTlIaoytyZn7wxLyvQIDAQABo4IBhjCCAYIwDgYDVR0PAQH/BAQD
-AgEGMB0GA1UdDgQWBBRJt8bP6D0ff+pEexMp9/EKcD7eZDAfBgNVHSMEGDAWgBQxw3kbuvVT
-1xfgiXotF2wKsyudMzASBgNVHRMBAf8ECDAGAQH/AgECMGIGA1UdIARbMFkwEQYPKwYBBAGB
-rSGCLAEBBAICMBEGDysGAQQBga0hgiwBAQQDADARBg8rBgEEAYGtIYIsAQEEAwEwDwYNKwYB
-BAGBrSGCLAEBBDANBgsrBgEEAYGtIYIsHjA+BgNVHR8ENzA1MDOgMaAvhi1odHRwOi8vcGtp
-MDMzNi50ZWxlc2VjLmRlL3JsL0RUX1JPT1RfQ0FfMi5jcmwweAYIKwYBBQUHAQEEbDBqMCwG
-CCsGAQUFBzABhiBodHRwOi8vb2NzcDAzMzYudGVsZXNlYy5kZS9vY3NwcjA6BggrBgEFBQcw
-AoYuaHR0cDovL3BraTAzMzYudGVsZXNlYy5kZS9jcnQvRFRfUk9PVF9DQV8yLmNlcjANBgkq
-hkiG9w0BAQsFAAOCAQEAYyAo/ZwhhnK+OUZZOTIlvKkBmw3Myn1BnIZtCm4ssxNZdbEzkhth
-Jxb/w7LVNYL7hCoBSb1mu2YvssIGXW4/buMBWlvKQ2NclbbhMacf1QdfTeZlgk4y+cN8ekvN
-TVx07iHydQLsUj7SyWrTkCNuSWc1vn9NVqTszC/Pt6GXqHI+ybxA1lqkCD3WvILDt7cyjrEs
-jmpttzUCGc/1OURYY6ckABCwu/xOr24vOLulV0k/2G5QbyyXltwdRpplic+uzPLl2Z9Tsz6h
-L5Kp2AvGhB8Exuse6J99tXulAvEkxSRjETTMWpMgKnmIOiVCkKllO3yG0xIVIyn8LNrMOVtU
-FzCCBUIwggQqoAMCAQICBxekJOs9DNcwDQYJKoZIhvcNAQELBQAwWjELMAkGA1UEBhMCREUx
-EzARBgNVBAoTCkRGTi1WZXJlaW4xEDAOBgNVBAsTB0RGTi1QS0kxJDAiBgNVBAMTG0RGTi1W
-ZXJlaW4gUENBIEdsb2JhbCAtIEcwMTAeFw0xNDA1MjcxNDU1MjNaFw0xOTA3MDkyMzU5MDBa
-MGgxCzAJBgNVBAYTAkRFMSgwJgYDVQQKEx9IdW1ib2xkdC1Vbml2ZXJzaXRhZXQgenUgQmVy
-bGluMQ4wDAYDVQQDEwVIVS1DQTEfMB0GCSqGSIb3DQEJARYQcGtpQGh1LWJlcmxpbi5kZTCC
-ASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOsMQdewKIwAb0e6xJEfL98H6ridUQBg
-cfQYb9KUIrPfJAiWmmGDtXLKXNM53xADnAZPZQYW/7Fn1ddyhSg3Im+1pWNbBQRwiQGxpKXD
-U36qf3p07Q2Ts1xVM1zo+fpXGh8J+qrdh0O6Gn5vMHz6fXn3d8pEcwloW2eyt6P5AgjB8OQ8
-XvZ2uDnUAl6sKeh4aZsfQhh6tkj1sa0WanWSc5n4Zg1d8lWIISLshzf4w06K7IZIt6VhdzhR
-6aJNcNPSyjw1GUXR2c1Le2SGWBMHb41QCiQLB8io86wEkXxyYF7yUCxDXAScDxl3yRjEl49w
-HEvQo8EHbTJcg7FOA+UVeAUCAwEAAaOCAf0wggH5MBIGA1UdEwEB/wQIMAYBAf8CAQEwDgYD
-VR0PAQH/BAQDAgEGMBEGA1UdIAQKMAgwBgYEVR0gADAdBgNVHQ4EFgQUH/UsPvdAqy6QoGrT
-4nle8nbNg3QwHwYDVR0jBBgwFoAUSbfGz+g9H3/qRHsTKffxCnA+3mQwGwYDVR0RBBQwEoEQ
-cGtpQGh1LWJlcmxpbi5kZTCBiAYDVR0fBIGAMH4wPaA7oDmGN2h0dHA6Ly9jZHAxLnBjYS5k
-Zm4uZGUvZ2xvYmFsLXJvb3QtY2EvcHViL2NybC9jYWNybC5jcmwwPaA7oDmGN2h0dHA6Ly9j
-ZHAyLnBjYS5kZm4uZGUvZ2xvYmFsLXJvb3QtY2EvcHViL2NybC9jYWNybC5jcmwwgdcGCCsG
-AQUFBwEBBIHKMIHHMDMGCCsGAQUFBzABhidodHRwOi8vb2NzcC5wY2EuZGZuLmRlL09DU1At
-U2VydmVyL09DU1AwRwYIKwYBBQUHMAKGO2h0dHA6Ly9jZHAxLnBjYS5kZm4uZGUvZ2xvYmFs
-LXJvb3QtY2EvcHViL2NhY2VydC9jYWNlcnQuY3J0MEcGCCsGAQUFBzAChjtodHRwOi8vY2Rw
-Mi5wY2EuZGZuLmRlL2dsb2JhbC1yb290LWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDANBgkq
-hkiG9w0BAQsFAAOCAQEAqhMvFBZf+siO7fyhmVQtobEqY2lvvtGwwjcBv69585nVApskHYcB
-raAkVJor+A6opJfI4TRXsmBtlaFqTpBPAjTzpSrrrMTgjarwq4f+IwMCXqb7RETq2aSsXL4Q
-wqGNjqaPQ8nGpBqvMtEfcLjEU2ncQS6JmEo3WZKHAJw1QzJXJYZT8VXANc4bXOrUDSOWMBol
-m1UHm3hKCCel9b32/QdTljItQwCAmUEDWSZ5PacWlJ2x7ODBu/y6+Ov6AJvIYo9A945gbWfh
-Vg//ruwxwYCcsCATourah/GZzoaIuO9hzl6L4Y2zB/hn1DJcuIOpzEop1q6DZzQ9dPbpQ5CX
-jzCCBcwwggS0oAMCAQICBxrX02jAkfQwDQYJKoZIhvcNAQELBQAwaDELMAkGA1UEBhMCREUx
-KDAmBgNVBAoTH0h1bWJvbGR0LVVuaXZlcnNpdGFldCB6dSBCZXJsaW4xDjAMBgNVBAMTBUhV
-LUNBMR8wHQYJKoZIhvcNAQkBFhBwa2lAaHUtYmVybGluLmRlMB4XDTE2MDIwODA4NDYxNloX
-DTE5MDIwNzA4NDYxNlowgaExCzAJBgNVBAYTAkRFMSgwJgYDVQQKDB9IdW1ib2xkdC1Vbml2
-ZXJzaXRhZXQgenUgQmVybGluMTcwNQYDVQQLDC5aZW50cmFsZWlucmljaHR1bmcgQ29tcHV0
-ZXItIHVuZCBNZWRpZW5zZXJ2aWNlMRUwEwYDVQQDDAxFbm5vIEdyb2VwZXIxGDAWBgoJkiaJ
-k/IsZAEBDAhncm9lcGVlbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAON0e3an
-UZZ0dgz2fipmgP8f9mGm5qytEqriE0cdkn4GQQcJl4Pj/V51k+dH3ygdLPTu1iUuSNrob/qF
-tnAWvYz01iM8UXRYmSYvp2YFz5y38DMmxk3JbFsuFQQFIDzAwNGHLWAZz4kHd0vMSyIzPR+k
-C/WD110/6BcZUBCE61HrdeUYv3VNxtupCd9YG0JMwx64oXTDhdeDAHylIsGpc+n5L30s2tjk
-bmwTFpuWGaDTVSLNL2ufTbq/JmSTUJCovGw7ZL5O+pULHUVjkn4Kx6WmSeJelpThtbqdBjqD
-W3x8w2Wovgjwm5SMYg0+S+n2Uzk3lzZgPI8OLj41qkumPa8CAwEAAaOCAj8wggI7MEAGA1Ud
-IAQ5MDcwEQYPKwYBBAGBrSGCLAEBBAMEMBEGDysGAQQBga0hgiwCAQQDATAPBg0rBgEEAYGt
-IYIsAQEEMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgXgMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggr
-BgEFBQcDBDAdBgNVHQ4EFgQUGSk7dpLGZmPlRrqNAGuV45Ey2kkwHwYDVR0jBBgwFoAUH/Us
-PvdAqy6QoGrT4nle8nbNg3QwJAYDVR0RBB0wG4EZZ3JvZXBlZW5AY21zLmh1LWJlcmxpbi5k
-ZTCBgwYDVR0fBHwwejA7oDmgN4Y1aHR0cDovL2NkcDEucGNhLmRmbi5kZS9odS1iZXJsaW4t
-Y2EvcHViL2NybC9jYWNybC5jcmwwO6A5oDeGNWh0dHA6Ly9jZHAyLnBjYS5kZm4uZGUvaHUt
-YmVybGluLWNhL3B1Yi9jcmwvY2FjcmwuY3JsMIHTBggrBgEFBQcBAQSBxjCBwzAzBggrBgEF
-BQcwAYYnaHR0cDovL29jc3AucGNhLmRmbi5kZS9PQ1NQLVNlcnZlci9PQ1NQMEUGCCsGAQUF
-BzAChjlodHRwOi8vY2RwMS5wY2EuZGZuLmRlL2h1LWJlcmxpbi1jYS9wdWIvY2FjZXJ0L2Nh
-Y2VydC5jcnQwRQYIKwYBBQUHMAKGOWh0dHA6Ly9jZHAyLnBjYS5kZm4uZGUvaHUtYmVybGlu
-LWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDANBgkqhkiG9w0BAQsFAAOCAQEAStc3OzWKnyGa
-L8FFgp+zl3RU3sAwnh9rGFvFDDDulMih0FySAUNFs/ABT1CfQY9sul3o2w8YcXpuIv5rXDXc
-N6z2W9LkLsb9WtjAYZ4sCIOUS4HVpJducgQzAKF304ugCLytdZga9RKeCa96idhoHKCbMOn8
-LR5rNtevCesMSv7EoPg74uNFV4XpQeItTB4zgXecnF5BfZ8ZSZvUCze0zgS6vlIwMPCQ4gxf
-4qI+jyElrcsIvhmEPGTlUaegSjTRDJwwi2VF75/6KpWOsfhjQjsarEHTPzRpj7q/NH4EXGj/
-nPKSvOBqm+tpbW+4RbIp/LnrAgTj3+BGef//RPprPzGCA4UwggOBAgEBMHMwaDELMAkGA1UE
-BhMCREUxKDAmBgNVBAoTH0h1bWJvbGR0LVVuaXZlcnNpdGFldCB6dSBCZXJsaW4xDjAMBgNV
-BAMTBUhVLUNBMR8wHQYJKoZIhvcNAQkBFhBwa2lAaHUtYmVybGluLmRlAgca19NowJH0MA0G
-CWCGSAFlAwQCAQUAoIIB4zAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
-BTEPFw0xODEyMDUxNjQzNDZaMC8GCSqGSIb3DQEJBDEiBCCsSZutMfUd+iAB3oOW/QMWTP7/
-lokQREoOi859MupC7TBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglghkgBZQME
-AQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIH
-MA0GCCqGSIb3DQMCAgEoMIGCBgkrBgEEAYI3EAQxdTBzMGgxCzAJBgNVBAYTAkRFMSgwJgYD
-VQQKEx9IdW1ib2xkdC1Vbml2ZXJzaXRhZXQgenUgQmVybGluMQ4wDAYDVQQDEwVIVS1DQTEf
-MB0GCSqGSIb3DQEJARYQcGtpQGh1LWJlcmxpbi5kZQIHGtfTaMCR9DCBhAYLKoZIhvcNAQkQ
-AgsxdaBzMGgxCzAJBgNVBAYTAkRFMSgwJgYDVQQKEx9IdW1ib2xkdC1Vbml2ZXJzaXRhZXQg
-enUgQmVybGluMQ4wDAYDVQQDEwVIVS1DQTEfMB0GCSqGSIb3DQEJARYQcGtpQGh1LWJlcmxp
-bi5kZQIHGtfTaMCR9DANBgkqhkiG9w0BAQEFAASCAQC2vaYsGuTXc3gWsOpb18BqvWvG/7gd
-glFzgbZdZA3Zw+6PGChpAElFAPf6qKfmJ1pBJEH1n5GdAbY5hv8skiZaueW89SH/6d/ecoWW
-47VxAOErrBCtlhpSaVXzmCoGDBLNVSc7TTSmfTHQe2REs49JGTgca6xXimrwlZqdpvoagBa/
-uMczZuLnZRAugJ6v/XVpz81VJ4qGvpacR/r/n2sNN+jMbo/ssd8MQAO6uE3pAFUL1EPYBfPN
-VEfm0fL9ESELjI5gbQxSqKMIE7dz1mlJbxu5MmlxngowMasiqK9jIaEWF6oGTnR4j+VrWOVY
-B1n1MUhlqeiL8nHPZr9C+XihAAAAAAAA
---------------ms010404080809040705030404--
 
