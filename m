@@ -1,9 +1,11 @@
-From: selva.nair@...277...
-Date: Fri,  7 Dec 2018 14:17:38 -0500
-Message-Id: <1544210258-8754-2-git-send-email-selva.nair@...277...>
-In-Reply-To: <1544210258-8754-1-git-send-email-selva.nair@...277...>
-References: <1544210258-8754-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH 2/2] Handle PSS padding in cryptoapicert
+From: Gert Doering <gert@...1296...>
+Date: Fri,  7 Dec 2018 21:28:29 +0100
+Message-Id: <20181207202829.76371-1-gert@...1296...>
+In-Reply-To: <20181207142003.73175-1-gert@...1296...>
+References: <20181207142003.73175-1-gert@...1296...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v3] Stop state-exhaustion attacks from a
+ single source address.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,366 +18,220 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+If an attacker sends lots of RESET packets from different source
+ports (but the same source address), every packet will create a
+new multi_instance, leading to resource waste on the server, and
+to lots of reply packets while OpenVPN tries to establish a
+TLS handshake.
 
-For PSS padding, CNG requires the digest to be signed
-and the digest algorithm in use, which are not accessible
-via the rsa_sign and rsa_priv_enc callbacks of OpenSSL.
-This patch uses the EVP_KEY interface to hook to
-evp_pkey_sign callback if OpenSSL version is > 1.1.0.
+This can be rate-limited with "connect-freq", but if this is set
+too tightly, an attacker can drown out legitimate users of the
+same OpenVPN server.
 
-To test this code path, both the server and client should
-be built with OpenSSL 1.1.1 and use TLS version >= 1.2
+So, when deciding whether or not to create a new instance, iterate
+over all existing instances, counting all from the same source IP
+(ignoring source port info) that are "in TLS negotiation" state -
+if more than <n> instances are already active, refuse new instance.
 
-Tested on Windows 7 client against a Linux server.
+The cutoff parameter can be configured by a newly introduced 3rd
+argument to "connect-freq".  So something like this might be
+reasonable for a medium-sized server:
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
+   connect-freq 20 20 3
+
+("permit 20 new connections per 20 seconds, but only 3 from the same
+source IP address")
+
+Drawback: if many users are sitting behind a shared NAT ip address
+and they all reconnect at the same time, session setup will take
+longer for some of the users while the server is still handshaking
+with others.
+
+v1:
+  this is really a "request for discussion" and needs removal of lots
+  of debugging printout.  Also, it needs to be configurable.
+
+v2:
+  make it configurable
+
+v3:
+  Swap order of checks - check "per instance dangling limit" before
+  generic "connect-freq" limiter.  Otherwise a really massive flood of
+  incoming RESET packets from a single host will trigger the global
+  "connect-freq" limiter *first*, and thus drown out other sessions
+  (again).
+  Clarify wording of refusal message.
+
+Signed-off-by: Gert Doering <gert@...1296...>
 ---
- src/openvpn/cryptoapi.c | 257 +++++++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 244 insertions(+), 13 deletions(-)
+ src/openvpn/mudp.c    | 108 +++++++++++++++++++++++++++++++++++++++++-
+ src/openvpn/options.c |   6 ++-
+ src/openvpn/options.h |   1 +
+ 3 files changed, 113 insertions(+), 2 deletions(-)
 
-diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
-index 1ce97f5..653b76a 100644
---- a/src/openvpn/cryptoapi.c
-+++ b/src/openvpn/cryptoapi.c
-@@ -40,6 +40,7 @@
- #ifdef ENABLE_CRYPTOAPI
+diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
+index a604d217..be8e0fe7 100644
+--- a/src/openvpn/mudp.c
++++ b/src/openvpn/mudp.c
+@@ -41,6 +41,111 @@
+ #include <sys/inotify.h>
+ #endif
  
- #include <openssl/ssl.h>
-+#include <openssl/evp.h>
- #include <openssl/err.h>
- #include <windows.h>
- #include <wincrypt.h>
-@@ -105,6 +106,12 @@ static ERR_STRING_DATA CRYPTOAPI_str_functs[] = {
- /* index for storing external data in EC_KEY: < 0 means uninitialized */
- static int ec_data_idx = -1;
- 
-+/* Global EVP_PKEY_METHOD used to override the sign operation */
-+static EVP_PKEY_METHOD *pmethod;
-+static int (*default_pkey_sign_init) (EVP_PKEY_CTX *ctx);
-+static int (*default_pkey_sign) (EVP_PKEY_CTX *ctx, unsigned char *sig,
-+                size_t *siglen, const unsigned char *tbs, size_t tbslen);
-+
- typedef struct _CAPI_DATA {
-     const CERT_CONTEXT *cert_context;
-     HCRYPTPROV_OR_NCRYPT_KEY_HANDLE crypt_prov;
-@@ -318,28 +325,44 @@ rsa_pub_dec(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, in
-  * Sign the hash in 'from' using NCryptSignHash(). This requires an NCRYPT
-  * key handle in cd->crypt_prov. On return the signature is in 'to'. Returns
-  * the length of the signature or 0 on error.
-+ * This is used only for RSA and padding should be BCRYPT_PAD_PKCS1 or
-+ * BCRYPT_PAD_PSS.
-  * If the hash_algo is not NULL, PKCS #1 DigestInfo header gets added
-- * to 'from', else it is signed as is.
-- * For now we support only RSA and the padding is assumed to be PKCS1 v1.5
-+ * to |from|, else it is signed as is. Use NULL for MD5 + SHA1 hash used
-+ * in TLS 1.1 and earlier.
-+ * In case of PSS padding, |saltlen| should specify the size of salt to use.
-+ * If |to| is NULL returns the required buffer size.
-  */
- static int
- priv_enc_CNG(const CAPI_DATA *cd, const wchar_t *hash_algo, const unsigned char *from,
--             int flen, unsigned char *to, int tlen, DWORD padding)
-+             int flen, unsigned char *to, int tlen, DWORD padding, DWORD saltlen)
- {
-     NCRYPT_KEY_HANDLE hkey = cd->crypt_prov;
-     DWORD len = 0;
-     ASSERT(cd->key_spec == CERT_NCRYPT_KEY_SPEC);
- 
--    msg(D_LOW, "Signing hash using CNG: data size = %d", flen);
--
--    /* The hash OID is already in 'from'.  So set the hash algorithm
--     * in the padding info struct to NULL.
--     */
--    BCRYPT_PKCS1_PADDING_INFO padinfo = {hash_algo};
-     DWORD status;
- 
--    status = NCryptSignHash(hkey, padding? &padinfo : NULL, (BYTE*) from, flen,
--                            to, tlen, &len, padding);
-+    msg(D_LOW, "Signing hash using CNG: data size = %d padding = %lu", flen, padding);
-+
-+    if (padding == BCRYPT_PAD_PKCS1)
-+    {
-+        BCRYPT_PKCS1_PADDING_INFO padinfo = {hash_algo};
-+        status = NCryptSignHash(hkey, &padinfo, (BYTE*) from, flen,
-+                                to, tlen, &len, padding);
-+    }
-+    else if (padding == BCRYPT_PAD_PSS)
-+    {
-+        BCRYPT_PSS_PADDING_INFO padinfo = {hash_algo, saltlen};
-+        status = NCryptSignHash(hkey, &padinfo, (BYTE*) from, flen,
-+                                to, tlen, &len, padding);
-+    }
-+    else
-+    {
-+        RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE);
-+        return 0;
-+    }
-+
-     if (status != ERROR_SUCCESS)
-     {
-         SetLastError(status);
-@@ -365,16 +388,18 @@ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
-         RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, ERR_R_PASSED_NULL_PARAMETER);
-         return 0;
-     }
-+
-     if (padding != RSA_PKCS1_PADDING)
-     {
-         /* AFAICS, CryptSignHash() *always* uses PKCS1 padding. */
-         RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE);
-         return 0;
-     }
-+
-     if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
-     {
-         return priv_enc_CNG(cd, NULL, from, flen, to, RSA_size(rsa),
--                            cng_padding_type(padding));
-+                            cng_padding_type(padding), 0);
-     }
- 
-     /* Unfortunately, there is no "CryptSign()" function in CryptoAPI, that would
-@@ -444,6 +469,7 @@ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
-  * NCryptSignHash() is used to sign and it is instructed to add the
-  * the PKCS #1 DigestInfo header to |m| unless the hash algorithm is
-  * the MD5/SHA1 combination used in TLS 1.1 and earlier versions.
-+ * OpenSSL exercises this callback only when padding is PKCS1 v1.5.
-  */
- static int
- rsa_sign_CNG(int type, const unsigned char *m, unsigned int m_len,
-@@ -468,7 +494,7 @@ rsa_sign_CNG(int type, const unsigned char *m, unsigned int m_len,
-     }
- 
-     *siglen = priv_enc_CNG(cd, alg, m, (int)m_len, sig, RSA_size(rsa),
--                           cng_padding_type(padding));
-+                           cng_padding_type(padding), 0);
- 
-     return (siglen == 0) ? 0 : 1;
- }
-@@ -775,6 +801,175 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
-     return rv;
- }
- 
-+#if (OPENSSL_VERSION_NUMBER >= 0x10100000L)
-+
-+static const CAPI_DATA*
-+retrieve_capi_data(EVP_PKEY *pkey)
-+{
-+    const CAPI_DATA *cd = NULL;
-+
-+    if (pkey && EVP_PKEY_id(pkey) == EVP_PKEY_RSA)
-+    {
-+        RSA *rsa = EVP_PKEY_get0_RSA(pkey);
-+        if (rsa)
-+        {
-+            cd = (CAPI_DATA *) RSA_meth_get0_app_data(RSA_get_method(rsa));
-+        }
-+    }
-+    return cd;
-+}
-+
-+static int
-+pkey_rsa_sign_init(EVP_PKEY_CTX *ctx)
-+{
-+    msg(D_LOW, "cryptoapicert: enter pkey_rsa_sign_init");
-+
-+    EVP_PKEY *pkey = EVP_PKEY_CTX_get0_pkey(ctx);
-+
-+    if (pkey && retrieve_capi_data(pkey))
-+    {
-+        return 1; /* Return success */
-+    }
-+    else if (default_pkey_sign_init)  /* Not our key. Call the default method */
-+    {
-+        return default_pkey_sign_init(ctx);
-+    }
-+    return 1;
-+}
-+
-+/* Implementation of EVP_PKEY_sign() using CNG: sign the digest in |tbs|
-+ * and save the the signature in |sig| and its size in |*siglen|.
-+ * If |sig| is NULL the required buffer size is returned in |*siglen|.
-+ * Returns value is 1 on success, 0 or a negative integer on error.
++/* compare two mroute_addr, ignoring the port info
 + */
-+static int
-+pkey_rsa_sign(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen,
-+              const unsigned char *tbs, size_t tbslen)
++static inline bool
++mroute_addr_equal_no_port(const struct mroute_addr *a1,
++                          const struct mroute_addr *a2)
 +{
-+    EVP_PKEY *pkey = NULL;
-+    const CAPI_DATA *cd = NULL;
-+    EVP_MD *md = NULL;
-+    const wchar_t *alg = NULL;
-+
-+    int padding;
-+    int hashlen;
-+    int saltlen;
-+
-+    pkey = EVP_PKEY_CTX_get0_pkey(ctx);
-+    if (pkey)
++    if (a1->type != a2->type)
 +    {
-+        cd = retrieve_capi_data(pkey);
++        return false;
 +    }
-+
-+    /* We intercept all sign requests, not just the one's for our key.
-+     * Check the key and call the saved OpenSSL method for unknown keys.
-+     */
-+    if (!pkey || !cd)
++    if (a1->netbits != a2->netbits)
 +    {
-+        if (default_pkey_sign)
-+        {
-+           return default_pkey_sign(ctx, sig, siglen, tbs, tbslen);
-+        }
-+        else  /* This should not happen */
-+        {
-+            msg(M_FATAL, "cryptopaicert: Unknown key and no default sign operation to fallback on");
-+            return -1;
-+        }
++        return false;
 +    }
-+
-+    if (!EVP_PKEY_CTX_get_rsa_padding(ctx, &padding))
++    if (a1->len != a2->len)
 +    {
-+        padding = RSA_PKCS1_PADDING; /* Default padding for RSA */
++        return false;
 +    }
-+
-+    if (EVP_PKEY_CTX_get_signature_md(ctx, &md))
++    int len = a1->len;
++    if ( len == 6 || len == 18 )	/* AF_INET or AF_INET6 + Port */
 +    {
-+        hashlen = EVP_MD_size(md);
-+        alg = cng_hash_algo(EVP_MD_type(md));
-+
-+        /* alg == NULL indicates legacy MD5+SHA1 hash, else alg should be a valid
-+         * digest algorithm.
-+         */
-+        if (alg && wcscmp(alg, L"UNKNOWN") == 0)
-+        {
-+            RSAerr(RSA_F_PKEY_RSA_SIGN, RSA_R_UNKNOWN_ALGORITHM_TYPE);
-+            return -1;
-+        }
++	len -= 2;
 +    }
-+    else
-+    {
-+        msg(M_NONFATAL, "cryptoapicert: could not determine the signature digest algorithm");
-+        RSAerr(RSA_F_PKEY_RSA_SIGN, RSA_R_UNKNOWN_ALGORITHM_TYPE);
-+        return -1;
-+    }
-+
-+    if (tbslen != (size_t) hashlen)
-+    {
-+        RSAerr(RSA_F_PKEY_RSA_SIGN, RSA_R_INVALID_DIGEST_LENGTH);
-+        return -1;
-+    }
-+
-+    /* If padding is PSS, determine parameters to pass to CNG */
-+    if (padding == RSA_PKCS1_PSS_PADDING)
-+    {
-+        /* Ensure the digest type for signature and mask generation match.
-+         * In CNG there is no option to specify separate hash functions for
-+         * the two, but OpenSSL supports it. However, I have not seen the
-+         * two being different in practice. Also the recommended practice is
-+         * to use the same for both (rfc 8017 sec 8.1).
-+         */
-+        EVP_MD *mgf1md;
-+        if (!EVP_PKEY_CTX_get_rsa_mgf1_md(ctx, &mgf1md)
-+            || EVP_MD_type(mgf1md) != EVP_MD_type(md))
-+        {
-+            msg(M_NONFATAL, "cryptoapicert: Unknown MGF1 digest type or does"
-+                            " not match the signature digest type.");
-+            RSAerr(RSA_F_PKEY_RSA_SIGN, RSA_R_UNSUPPORTED_MASK_PARAMETER);
-+        }
-+
-+        if (!EVP_PKEY_CTX_get_rsa_pss_saltlen(ctx, &saltlen))
-+        {
-+            msg(M_WARN, "cryptoapicert: unable to get the salt length from context."
-+                        " Using the default value.");
-+            saltlen = -1;
-+        }
-+
-+        /* In OpenSSL saltlen = -1 indicates to use the size of the digest as
-+         * size of the salt. A value of -2 or -3 indicates maximum salt length
-+         * that will fit. See RSA_padding_add_PKCS1_PSS_mgf1() of OpenSSL.
-+         */
-+        if (saltlen == -1)
-+        {
-+            saltlen = hashlen;
-+        }
-+        else if (saltlen < 0)
-+        {
-+            const RSA *rsa = EVP_PKEY_get0_RSA(pkey);
-+            saltlen = RSA_size(rsa) - hashlen - 2; /* max salt length for RSASSA-PSS */
-+            if (RSA_bits(rsa) &0x7) /* number of bits in the key not a multiple of 8 */
-+            {
-+                saltlen--;
-+            }
-+        }
-+
-+        if (saltlen < 0)
-+        {
-+            RSAerr(RSA_F_PKEY_RSA_SIGN, RSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE);
-+            return -1;
-+        }
-+        msg(D_LOW, "cryptoapicert: PSS padding using saltlen = %d", saltlen);
-+        EVP_MD_size(md);
-+    }
-+
-+    msg(D_LOW, "cryptoapicert: calling priv_enc_CNG with alg = %ls", alg);
-+    *siglen = priv_enc_CNG(cd, alg, tbs, (int) tbslen, sig, *siglen,
-+                           cng_padding_type(padding), (DWORD) saltlen);
-+
-+    return (siglen == 0)? 0 : 1;
++    return memcmp(a1->raw_addr, a2->raw_addr, len) == 0;
 +}
 +
-+#endif /* OPENSSL_VERSION >= 1.1.0 */
++/*
++ * allow no more than <n> instances for the same source IP
++ * in "key state not active yet" state - this is almost always a
++ * state exhaustion and/or reflection attack
++ *
++ * real use cases might hit "multiple instances for the same source IP"
++ * if there are multiple users behind the same NAT gateway - but those
++ * will not be in "ks->state < S_START" for more than a few seconds
++ * (so we might see a few false positives if many users behind the same
++ * NAT gateway restart their VPNs at the same time, but TLS handshake
++ * will succeed for one after another, eventually for all)
++ */
 +
- static int
- ssl_ctx_set_rsakey(SSL_CTX *ssl_ctx, CAPI_DATA *cd, EVP_PKEY *pkey)
- {
-@@ -796,10 +991,46 @@ ssl_ctx_set_rsakey(SSL_CTX *ssl_ctx, CAPI_DATA *cd, EVP_PKEY *pkey)
-     /* For CNG, set the RSA_sign method which gets priority over priv_enc().
-      * This method is called with the raw hash without the digestinfo
-      * header and works better when using NCryptSignHash() with some tokens.
-+     * However, if PSS padding is in use, openssl does not call this
-+     * function but adds the padding and then calls rsa_priv_enc()
-+     * with padding set to NONE which is not supported by CNG.
-+     * So, when posisble (OpenSSL 1.1.0 and up), we hook on to the sign
-+     * operation in EVP_PKEY_METHOD struct.
-      */
-     if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
-     {
-+#if (OPENSSL_VERSION_NUMBER < 0x10100000L)
-         RSA_meth_set_sign(my_rsa_method, rsa_sign_CNG);
-+#else
-+        /* pmethod is global -- initialize only if NULL */
-+        if (!pmethod)
-+        {
-+            pmethod = EVP_PKEY_meth_new(EVP_PKEY_RSA, 0);
-+            if (!pmethod)
-+            {
-+                SSLerr(SSL_F_SSL_CTX_USE_CERTIFICATE_FILE, ERR_R_MALLOC_FAILURE);
-+                goto err;
-+            }
-+            const EVP_PKEY_METHOD *default_pmethod = EVP_PKEY_meth_find(EVP_PKEY_RSA);
-+            EVP_PKEY_meth_copy(pmethod, default_pmethod);
 +
-+            /* We want to override only sign_init() and sign() */
-+            EVP_PKEY_meth_set_sign(pmethod, pkey_rsa_sign_init, pkey_rsa_sign);
-+            EVP_PKEY_meth_add0(pmethod);
++bool
++dangling_instances_per_source_allowed(struct multi_context *m,
++				      struct mroute_addr *new_source)
++{
++    /* nothing configured -> default = allow all */
++    if ( m->top.options.cf_max_dangling <= 0 )
++    {
++	return true;
++    }
 +
-+            /* Keep a copy of the default sign and sign_init methods */
++    struct gc_arena gc = gc_new();
++    msg(M_INFO, "MULTI dipsa: new_source=%s (len=%d)",
++		mroute_addr_print(new_source, &gc), new_source->len );
 +
-+#if (OPENSSL_VERSION_NUMBER < 0x1010009fL)   /* > version 1.1.0i */
-+            /* The function signature is not const-correct in these versions */
-+            EVP_PKEY_meth_get_sign((EVP_PKEY_METHOD*)default_pmethod, &default_pkey_sign_init,
-+                                   &default_pkey_sign);
-+#else
-+            EVP_PKEY_meth_get_sign(default_pmethod, &default_pkey_sign_init,
-+                                   &default_pkey_sign);
++    struct hash_iterator hi;
++    struct hash_element *he;
++    int count = 0;
 +
-+#endif
-+        }
-+#endif /* (OPENSSL_VERSION_NUMBER < 0x10100000L) */
++    hash_iterator_init(m->iter, &hi);
++    while ((he = hash_iterator_next(&hi)))
++    {
++	struct multi_instance *mi = (struct multi_instance *) he->value;
++
++	msg(M_INFO, "MULTI dipsa: instance: halt=%d real=%s",
++		mi->halt, mroute_addr_print(&mi->real, &gc));
++	if (!mi->halt && mroute_addr_equal_no_port(new_source, &mi->real))
++	{
++	    msg(M_INFO, "MULTI dipsa: ip match found!");
++
++	    struct tls_multi * tls_multi = mi->context.c2.tls_multi;
++
++	    for (int i=0; i<TM_SIZE; i++ )
++	    {
++	        msg(M_INFO, "MULTI dipsa: session[%d].key[KS_PRIMARY].state=%d",
++		    i, tls_multi->session[i].key[KS_PRIMARY].state );
++	    }
++
++	    /* session not fully established yet?
++	     * (TM_ACTIVE seems to be the one that goes from "2" to "6"
++             * after successful handshake, while TM_UNTRUST sticks to "1")
++             */
++	    struct tls_session *session = &tls_multi->session[TM_ACTIVE];
++	    struct key_state *ks = &session->key[KS_PRIMARY];
++	    if ( ks->state < S_START )
++	    {
++	        msg(M_INFO, "MULTI dipsa: dangling session (ks->state=%d)",
++			    ks->state );
++	        count++;
++	    }
++	}
++    }
++    hash_iterator_free(&hi);
++
++    gc_free(&gc);
++
++    msg( M_INFO, "MULTI dipsa: count=%d", count );
++    if ( count >= m->top.options.cf_max_dangling )
++    {
++	msg( M_INFO, "MULTI dipsa: maximum number of instances doing TLS handshake for this source IP reached (%d)", count );
++	return false;
++    }
++
++    return true;
++}
++
+ /*
+  * Get a client instance based on real address.  If
+  * the instance doesn't exist, create it while
+@@ -100,7 +205,8 @@ multi_get_create_instance_udp(struct multi_context *m, bool *floated)
+             if (!m->top.c2.tls_auth_standalone
+                 || tls_pre_decrypt_lite(m->top.c2.tls_auth_standalone, &m->top.c2.from, &m->top.c2.buf))
+             {
+-                if (frequency_limit_event_allowed(m->new_connection_limiter))
++                if (dangling_instances_per_source_allowed(m, &real)
++                    && frequency_limit_event_allowed(m->new_connection_limiter))
+                 {
+                     mi = multi_create_instance(m, &real);
+                     if (mi)
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 26f056fc..b8e28df6 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -6644,7 +6644,7 @@ add_option(struct options *options,
+         options->real_hash_size = real;
+         options->virtual_hash_size = real;
      }
+-    else if (streq(p[0], "connect-freq") && p[1] && p[2] && !p[3])
++    else if (streq(p[0], "connect-freq") && p[1] && p[2] && !p[4])
+     {
+         int cf_max, cf_per;
  
-     rsa = RSA_new();
+@@ -6658,6 +6658,10 @@ add_option(struct options *options,
+         }
+         options->cf_max = cf_max;
+         options->cf_per = cf_per;
++	if ( p[3] )
++	{
++	    options->cf_max_dangling = atoi(p[3]);
++	}
+     }
+     else if (streq(p[0], "max-clients") && p[1] && !p[2])
+     {
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index e2b38939..26a78878 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -451,6 +451,7 @@ struct options
+     bool duplicate_cn;
+     int cf_max;
+     int cf_per;
++    int cf_max_dangling;
+     int max_clients;
+     int max_routes_per_client;
+     int stale_routes_check_interval;
 -- 
-2.1.4
+2.19.1
 
 
