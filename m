@@ -1,11 +1,8 @@
-From: Gert Doering <gert@...1296...>
-Date: Fri,  7 Dec 2018 15:20:03 +0100
-Message-Id: <20181207142003.73175-1-gert@...1296...>
-In-Reply-To: <20181207123303.70827-1-gert@...1296...>
-References: <20181207123303.70827-1-gert@...1296...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Stop state-exhaustion attacks from a
- single source address.
+From: selva.nair@...277...
+Date: Fri,  7 Dec 2018 14:17:37 -0500
+Message-Id: <1544210258-8754-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH 1/2] Move OpenSSL vs CNG signature digest
+ type mapping to a function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,212 +15,182 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-If an attacker sends lots of RESET packets from different source
-ports (but the same source address), every packet will create a
-new multi_instance, leading to resource waste on the server, and
-to lots of reply packets while OpenVPN tries to establish a
-TLS handshake.
+From: Selva Nair <selva.nair@...277...>
 
-This can be rate-limited with "connect-freq", but if this is set
-too tightly, an attacker can drown out legitimate users of the
-same OpenVPN server.
+Also add a function to map  OpenSSL padding identifier to
+corresponding CNG constant.
 
-So, when deciding whether or not to create a new instance, iterate
-over all existing instances, counting all from the same source IP
-(ignoring source port info) that are "in TLS negotiation" state -
-if more than <n> instances are already active, refuse new instance.
+This is to help add support for additional padding
+types: only refactoring, no functional changes.
 
-The cutoff parameter can be configured by a newly introduced 3rd
-argument to "connect-freq".  So something like this might be
-reasonable for a medium-sized server:
-
-   connect-freq 20 20 3
-
-("permit 20 new connections per 20 seconds, but only 3 from the same
-source IP address")
-
-Drawback: if many users are sitting behind a shared NAT ip address
-and they all reconnect at the same time, session setup will take
-longer for some of the users while the server is still handshaking
-with others.
-
-v1:
-  this is really a "request for discussion" and needs removal of lots
-  of debugging printout.  Also, it needs to be configurable.
-
-v2:
-  make it configurable
-
-Signed-off-by: Gert Doering <gert@...1296...>
+Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- src/openvpn/mudp.c    | 108 +++++++++++++++++++++++++++++++++++++++++-
- src/openvpn/options.c |   6 ++-
- src/openvpn/options.h |   1 +
- 3 files changed, 113 insertions(+), 2 deletions(-)
+ src/openvpn/cryptoapi.c | 120 +++++++++++++++++++++++++++++++++---------------
+ 1 file changed, 82 insertions(+), 38 deletions(-)
 
-diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index a604d217..ff5eb688 100644
---- a/src/openvpn/mudp.c
-+++ b/src/openvpn/mudp.c
-@@ -41,6 +41,111 @@
- #include <sys/inotify.h>
- #endif
+diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
+index fa057cb..1ce97f5 100644
+--- a/src/openvpn/cryptoapi.c
++++ b/src/openvpn/cryptoapi.c
+@@ -113,6 +113,77 @@ typedef struct _CAPI_DATA {
+     int ref_count;
+ } CAPI_DATA;
  
-+/* compare two mroute_addr, ignoring the port info
++/* Translate OpenSSL padding type to CNG padding type
++ * Returns 0 for unknown/unsupported padding.
 + */
-+static inline bool
-+mroute_addr_equal_no_port(const struct mroute_addr *a1,
-+                          const struct mroute_addr *a2)
++static DWORD
++cng_padding_type(int padding)
 +{
-+    if (a1->type != a2->type)
++    DWORD pad = 0;
++
++    switch (padding)
 +    {
-+        return false;
++        case RSA_NO_PADDING:
++            break;
++
++        case RSA_PKCS1_PADDING:
++            pad = BCRYPT_PAD_PKCS1;
++            break;
++
++        case RSA_PKCS1_PSS_PADDING:
++            pad = BCRYPT_PAD_PSS;
++            break;
++
++        default:
++            msg(M_WARN|M_INFO, "cryptoapicert: unknown OpenSSL padding type %d.",
++                padding);
 +    }
-+    if (a1->netbits != a2->netbits)
-+    {
-+        return false;
-+    }
-+    if (a1->len != a2->len)
-+    {
-+        return false;
-+    }
-+    int len = a1->len;
-+    if ( len == 6 || len == 18 )	/* AF_INET or AF_INET6 + Port */
-+    {
-+	len -= 2;
-+    }
-+    return memcmp(a1->raw_addr, a2->raw_addr, len) == 0;
++
++    return pad;
 +}
 +
 +/*
-+ * allow no more than <n> instances for the same source IP
-+ * in "key state not active yet" state - this is almost always a
-+ * state exhaustion and/or reflection attack
-+ *
-+ * real use cases might hit "multiple instances for the same source IP"
-+ * if there are multiple users behind the same NAT gateway - but those
-+ * will not be in "ks->state < S_START" for more than a few seconds
-+ * (so we might see a few false positives if many users behind the same
-+ * NAT gateway restart their VPNs at the same time, but TLS handshake
-+ * will succeed for one after another, eventually for all)
++ * Translate OpenSSL hash OID to CNG algorithm name. Returns
++ * "UNKNOWN" for unsupported algorithms and NULL for MD5+SHA1
++ * mixed hash used in TLS 1.1 and earlier.
 + */
-+
-+
-+bool
-+dangling_instances_per_source_allowed(struct multi_context *m,
-+				      struct mroute_addr *new_source)
++static const wchar_t *
++cng_hash_algo(int md_type)
 +{
-+    /* nothing configured -> default = allow all */
-+    if ( m->top.options.cf_max_dangling <= 0 )
++    const wchar_t *alg = L"UNKNOWN";
++    switch (md_type)
 +    {
-+	return true;
++        case NID_md5:
++            alg = BCRYPT_MD5_ALGORITHM;
++            break;
++
++        case NID_sha1:
++            alg = BCRYPT_SHA1_ALGORITHM;
++            break;
++
++        case NID_sha256:
++            alg = BCRYPT_SHA256_ALGORITHM;
++            break;
++
++        case NID_sha384:
++            alg = BCRYPT_SHA384_ALGORITHM;
++            break;
++
++        case NID_sha512:
++            alg = BCRYPT_SHA512_ALGORITHM;
++            break;
++
++        case NID_md5_sha1:
++        case 0:
++            alg = NULL;
++            break;
++        default:
++            msg(M_WARN|M_INFO, "cryptoapicert: Unknown hash type NID=0x%x", md_type);
++            break;
 +    }
-+
-+    struct gc_arena gc = gc_new();
-+    msg(M_INFO, "MULTI dipsa: new_source=%s (len=%d)",
-+		mroute_addr_print(new_source, &gc), new_source->len );
-+
-+    struct hash_iterator hi;
-+    struct hash_element *he;
-+    int count = 0;
-+
-+    hash_iterator_init(m->iter, &hi);
-+    while ((he = hash_iterator_next(&hi)))
-+    {
-+	struct multi_instance *mi = (struct multi_instance *) he->value;
-+
-+	msg(M_INFO, "MULTI dipsa: instance: halt=%d real=%s",
-+		mi->halt, mroute_addr_print(&mi->real, &gc));
-+	if (!mi->halt && mroute_addr_equal_no_port(new_source, &mi->real))
-+	{
-+	    msg(M_INFO, "MULTI dipsa: ip match found!");
-+
-+	    struct tls_multi * tls_multi = mi->context.c2.tls_multi;
-+
-+	    for (int i=0; i<TM_SIZE; i++ )
-+	    {
-+	        msg(M_INFO, "MULTI dipsa: session[%d].key[KS_PRIMARY].state=%d",
-+		    i, tls_multi->session[i].key[KS_PRIMARY].state );
-+	    }
-+
-+	    /* session not fully established yet?
-+	     * (TM_ACTIVE seems to be the one that goes from "2" to "6"
-+             * after successful handshake, while TM_UNTRUST sticks to "1")
-+             */
-+	    struct tls_session *session = &tls_multi->session[TM_ACTIVE];
-+	    struct key_state *ks = &session->key[KS_PRIMARY];
-+	    if ( ks->state < S_START )
-+	    {
-+	        msg(M_INFO, "MULTI dipsa: dangling session (ks->state=%d)",
-+			    ks->state );
-+	        count++;
-+	    }
-+	}
-+    }
-+    hash_iterator_free(&hi);
-+
-+    gc_free(&gc);
-+
-+    msg( M_INFO, "MULTI dipsa: count=%d", count );
-+    if ( count >= m->top.options.cf_max_dangling )
-+    {
-+	msg( M_INFO, "MULTI dipsa: too many dangling instances (%d) for this source IP", count );
-+	return false;
-+    }
-+
-+    return true;
++    return alg;
 +}
 +
- /*
-  * Get a client instance based on real address.  If
-  * the instance doesn't exist, create it while
-@@ -100,7 +205,8 @@ multi_get_create_instance_udp(struct multi_context *m, bool *floated)
-             if (!m->top.c2.tls_auth_standalone
-                 || tls_pre_decrypt_lite(m->top.c2.tls_auth_standalone, &m->top.c2.from, &m->top.c2.buf))
-             {
--                if (frequency_limit_event_allowed(m->new_connection_limiter))
-+                if (frequency_limit_event_allowed(m->new_connection_limiter)
-+                    && dangling_instances_per_source_allowed(m, &real) )
-                 {
-                     mi = multi_create_instance(m, &real);
-                     if (mi)
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 26f056fc..b8e28df6 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -6644,7 +6644,7 @@ add_option(struct options *options,
-         options->real_hash_size = real;
-         options->virtual_hash_size = real;
-     }
--    else if (streq(p[0], "connect-freq") && p[1] && p[2] && !p[3])
-+    else if (streq(p[0], "connect-freq") && p[1] && p[2] && !p[4])
-     {
-         int cf_max, cf_per;
+ static void
+ CAPI_DATA_free(CAPI_DATA *cd)
+ {
+@@ -253,7 +324,7 @@ rsa_pub_dec(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, in
+  */
+ static int
+ priv_enc_CNG(const CAPI_DATA *cd, const wchar_t *hash_algo, const unsigned char *from,
+-             int flen, unsigned char *to, int tlen, int padding)
++             int flen, unsigned char *to, int tlen, DWORD padding)
+ {
+     NCRYPT_KEY_HANDLE hkey = cd->crypt_prov;
+     DWORD len = 0;
+@@ -268,7 +339,7 @@ priv_enc_CNG(const CAPI_DATA *cd, const wchar_t *hash_algo, const unsigned char
+     DWORD status;
  
-@@ -6658,6 +6658,10 @@ add_option(struct options *options,
-         }
-         options->cf_max = cf_max;
-         options->cf_per = cf_per;
-+	if ( p[3] )
-+	{
-+	    options->cf_max_dangling = atoi(p[3]);
-+	}
-     }
-     else if (streq(p[0], "max-clients") && p[1] && !p[2])
+     status = NCryptSignHash(hkey, padding? &padinfo : NULL, (BYTE*) from, flen,
+-                            to, tlen, &len, padding? BCRYPT_PAD_PKCS1 : 0);
++                            to, tlen, &len, padding);
+     if (status != ERROR_SUCCESS)
      {
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index e2b38939..26a78878 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -451,6 +451,7 @@ struct options
-     bool duplicate_cn;
-     int cf_max;
-     int cf_per;
-+    int cf_max_dangling;
-     int max_clients;
-     int max_routes_per_client;
-     int stale_routes_check_interval;
+         SetLastError(status);
+@@ -302,7 +373,8 @@ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
+     }
+     if (cd->key_spec == CERT_NCRYPT_KEY_SPEC)
+     {
+-        return priv_enc_CNG(cd, NULL, from, flen, to, RSA_size(rsa), padding);
++        return priv_enc_CNG(cd, NULL, from, flen, to, RSA_size(rsa),
++                            cng_padding_type(padding));
+     }
+ 
+     /* Unfortunately, there is no "CryptSign()" function in CryptoAPI, that would
+@@ -388,44 +460,16 @@ rsa_sign_CNG(int type, const unsigned char *m, unsigned int m_len,
+         return 0;
+     }
+ 
+-    switch (type)
++    alg = cng_hash_algo(type);
++    if (alg && wcscmp(alg, L"UNKNOWN") == 0)
+     {
+-        case NID_md5:
+-            alg = BCRYPT_MD5_ALGORITHM;
+-            break;
+-
+-        case NID_sha1:
+-            alg = BCRYPT_SHA1_ALGORITHM;
+-            break;
+-
+-        case NID_sha256:
+-            alg = BCRYPT_SHA256_ALGORITHM;
+-            break;
+-
+-        case NID_sha384:
+-            alg = BCRYPT_SHA384_ALGORITHM;
+-            break;
+-
+-        case NID_sha512:
+-            alg = BCRYPT_SHA512_ALGORITHM;
+-            break;
+-
+-        case NID_md5_sha1:
+-            if (m_len != SSL_SIG_LENGTH)
+-            {
+-                RSAerr(RSA_F_RSA_SIGN, RSA_R_INVALID_MESSAGE_LENGTH);
+-                return 0;
+-            }
+-            /* No DigestInfo header is required -- set alg-name to NULL */
+-            alg = NULL;
+-            break;
+-        default:
+-            msg(M_WARN, "cryptoapicert: Unknown hash type NID=0x%x", type);
+-            RSAerr(RSA_F_RSA_SIGN, RSA_R_UNKNOWN_ALGORITHM_TYPE);
+-            return 0;
++        RSAerr(RSA_F_RSA_SIGN, RSA_R_UNKNOWN_ALGORITHM_TYPE);
++        return 0;
+     }
+ 
+-    *siglen = priv_enc_CNG(cd, alg, m, (int)m_len, sig, RSA_size(rsa), padding);
++    *siglen = priv_enc_CNG(cd, alg, m, (int)m_len, sig, RSA_size(rsa),
++                           cng_padding_type(padding));
++
+     return (siglen == 0) ? 0 : 1;
+ }
+ 
 -- 
-2.19.1
+2.1.4
 
 
