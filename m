@@ -1,15 +1,10 @@
-Date: Sat, 8 Dec 2018 09:03:05 +0100
+Date: Mon, 10 Dec 2018 14:41:52 +0100 (CET)
+Message-Id: <201812101341.wBADfqGh030463@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20181208080305.GR962@...1296...>
-References: <20181207123303.70827-1-gert@...1296...>
- <4e683bf2-541b-b320-5166-5753716e75ca@...2181...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="hfgAxNVv3cGfhs8o"
-Content-Disposition: inline
-In-Reply-To: <4e683bf2-541b-b320-5166-5753716e75ca@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] Add 'printing of port number' to
- mroute_addr_print_ex() for v4-mapped v6.
+In-Reply-To: <20181010143051.27163-1-arne@...1227...>
+References: <20181010143051.27163-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fallback to password
+ authentication when auth-token fails
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,83 +13,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---hfgAxNVv3cGfhs8o
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Your patch has been applied to the master and release/2.4 branch.
 
-Hi,
+Commit messages amended according to the comittee proposal ;-)
 
-On Sat, Dec 08, 2018 at 09:47:37AM +1000, Antonio Quartulli wrote:
-> > +		    /* we only print port numbers for v4mapped v6 as of
-> > +		     * today, because "v6addr:port" is too ambiguous
-> > +		     */
->=20
-> The comments above are indented with tab+spaces, while the code below is
-> just all spaces. Please use the all spaces everywhere.
+Uncrustify will complain to us that the switch/case block in push.c
+grew an extra nesting level but indentation didn't change... but that's
+just whitespace, so fixed on the next uncrustify run.
 
-Gah.  That was the intention, but the comment was added later on and
-using the wrong editor :-)
+I haven't really reviewed the code - trusting Antonio here.  (I did look
+over the changes and didn't see anything glaringly broken, and it passes
+full t_client tests on both 2.4 and master - though these are not doing
+auth token tests today)
 
-> > +                    if (maddr.type & MR_WITH_PORT)
-> > +                    {
-> > +                        buf_printf(&out, ":%d", ntohs(maddr.v6.port));
-> > +                    }
->=20
-> I don't understand how is this solving the ambiguity?=20
+commit e61b401ac50d2a9cfabf0289811ad14cf3bd2751 (master)
+commit 004f13b60d87fe7815f4feee9aded22ae4eacbaf (release/2.4)
+Author: Arne Schwabe
+Date:   Wed Oct 10 16:30:51 2018 +0200
 
-These are *v4* addresses, just masquerading as v6 in the socket structure.
+     Fallback to password authentication when auth-token fails
 
-So 1.2.3.4:567 is never ambiguous.
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20181010143051.27163-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17718.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-For "true v6 addresses" (the other branch) we keep on not printing the
-port number.
 
-> Or you are just
-> saying: "we can't do much, let's just print the port anyway"? My
-> suggestion would be to surround the address with [], so basically change
-> the printf format above from %s to [%s]. Does it make sense?
+--
+kind regards,
 
-This is something I want to discuss.  Changing mroute_print_addr_ex()
-for "true v6 addresses" and printing the port number in a new format
-will affect status file printing, management interface, etc. - so it
-needs to be well considered.
+Gert Doering
 
-*This* patch just fixes the discrepancy that v4 addresses are printed
-"with port" if doing "proto udp4", and "without port" if a v4 connect
-comes in on a "proto udp / v6only=3Dno" socket.  (We do not need to discuss
-how many problems the v4mapped v6 address format brings with it...)
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---hfgAxNVv3cGfhs8o
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJcC3q4AAoJEB2Cnv7KVigSWQML/0HHVFAwKCXhm/oKWO3BXT9u
-76VVDAqezrTXKaoPUhjdtBl5AuBDsLHImjHmjDSf8gQayzTjlUp7Bp/CnCgaNOqL
-1Ifoe323IeTa1DQShrehz6h7sWAjSB3aHVofHrOLBPsGDvWyCVAaqjSNxvRemX3P
-i6kI1c+jgaVHzYGqAc3hdVy15JDRDPFAmQTDSMMot4repVeML5LLZpI8pASpr9pv
-qrS3v5hhcYqydQlIXRHXJK3kSG1EWvp89tsZTIgzRZCvZuoTnrUWQR7e4IWCaIeD
-8J5rjKQmqtzBikvxaXY9+5Ml2qlBJjHQtI+LT66CeHayqs425L5+cAu/Wu51tfc+
-8BhyX0XEP8ZXzmDLYFoRMUibRItUVdZL5tjIZnOJW57KeQxfa59qIOXcxmWqJxBX
-Img310grprJOiwXPf71KRKepjky4C/H6MEwIwvQQ34KKOEPTBdQkekb4DzoLHZ5i
-H+5Box1y1CJJV4CFrb232EWYXGksULrrqXiRJskARA==
-=Rx1H
------END PGP SIGNATURE-----
-
---hfgAxNVv3cGfhs8o--
 
