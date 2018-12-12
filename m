@@ -1,10 +1,9 @@
 From: David Sommerseth <davids@...515...>
-Date: Wed, 12 Dec 2018 14:19:33 +0100
-Message-Id: <20181212131933.21371-1-davids@...515...>
-In-Reply-To: <20181130135641.11533-1-gert@...1296...>
-References: <20181130135641.11533-1-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Uncrustify sample-plugin
- sources according to code style
+Date: Wed, 12 Dec 2018 14:21:31 +0100
+Message-Id: <20181212132131.21814-1-davids@...515...>
+In-Reply-To: <20181130135641.11533-2-gert@...1296...>
+References: <20181130135641.11533-2-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH applied] uncrustify openvpnserv/ sources
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,21 +20,20 @@ Cc: openvpn-devel@lists.sourceforge.net
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA512
 
-ACK.  Double checked by re-running uncrustify and there were no
-additional changes.
+ACK.  Also tested successfully with re-running uncrustify.
 
 Your patch has been applied to the master branch
 
-commit 8e2ec9e0cfa2f6bcb559927e427182635ff9f7e6
+commit a7b5993d9d6319c77d80212db61c74060cd7e7f1
 Author: Gert Doering
-Date:   Fri Nov 30 14:56:39 2018 +0100
+Date:   Fri Nov 30 14:56:40 2018 +0100
 
-     Uncrustify sample-plugin sources according to code style
+     uncrustify openvpnserv/ sources
 
      Signed-off-by: Gert Doering <gert@...1296...>
      Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20181130135641.11533-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17969.html
+     Message-Id: <20181130135641.11533-2-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17971.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -47,18 +45,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIbBAEBCgAGBQJcEQrdAAoJEIbPlEyWcf3yCskP+JBULnmrs7eWvR+Wgv9xrP3p
-2IofRkLItavCGvuepxCclWDbVV+T3XnZgMa/64Zo+VCoxiVgRKG/AvToTKRNuKfc
-Xwow1yKX61JNSRRKFuIymRjnkTMmKQblnltY77oiA3m0OUFTflc9R6KK/JOT9Lxc
-MUd8X9S1jyzJNj/X2CIksd6BocPF4H4a+2iMVFSUUFE3LvbWnkxbmm0S2f+/Jxfz
-CGpkWvJvz42g8zhF5eBaA5B98u4iBrDid/g+KY0bu5H57EcAGG4j2RvkFwuAjdcb
-l7TaRslwTdy1/jlC5YtMm+de5ysQK/2kLIoRVnKYYVFmtDSopVPimZEgor2Gs2f+
-JohGgTkDFAYYuysaBnKS1t3GDcZPILTpdcZSfcvbBSdOFxc77YCa9D9FO6bk1HT4
-WHD/GCXAw15hOwufD8L+QrgTy+eiRl/0ho/2U3VR+8I/8918ULCbcqHe7aIjQhRv
-4SZMlko9zIU8MfMZQ7UXloN2EBzp5OKsYA2YfUIDgQMhFTEGMLRbs5t0gCibs5tP
-lEc7M+rP0UhSbZEqfMDBuMTIDtnpC5qaw9Hq8/rPp8uOZMEBC5Lueie+lvaiN4zB
-QW0nDe48iT5fn8GJ60BoPxveIBqq6McupxfqjSgU6ImwMN22vgoqzoV7RFXoGtmK
-KFO86JPHTVKFannocKk=
-=xn4G
+iQIcBAEBCgAGBQJcEQtLAAoJEIbPlEyWcf3ykeAP/3RFW+FKpNfjxyoYIGe6OGG6
+X8/fdW9TqfrPT1yXthYYtspQHU8BIMjtMs5NzfOQtdLdt6mxAV2dkm3IslA50xvk
+fEg6fv8KCMBz7ptVmWyDdHeSoPf6U8M19Om39k5bCFOkxSmLxNOhBN16Ftpay6E4
+IeU2tvClcrPGgaIez9tMV8woILKftmDipPL9WgzFpDBdraRiFRq/MTSHF5mofnu4
+P06WvNNHNnes7BkVvGGal8wt8NFPWU101eO7UfstXwiYjguCzPg8docgqD2u21+Y
+YapvhcxPJWsvWQ9e0bnwR9kCH47bNR4nsUGZ4/xOtM3DqLVMElyLMQiDj6/CLH1w
+TrJKojCXvCa2kYtx3Rfg2047iOf0Ls7sR+jnBBhvJTQ7qtfRyTZXnj1IcLk7j/Yd
+GG5EhtfCWjLNJblc/TJ+YyGMJyGijrTixPzC7ln+pTIobxbRbiNuGBxM3556eFaF
+KoDpNrfmOf3PcAW0F2qPDIjT9gSZ2qsFay8nVF0vj405dBlWnGENR82Mbk1TC1vz
+WY40ZeW05q/YbQhppyjXmuqqcby7k2eTPyf+lPCbDtzM2udE/+/7TloVKo3Hyrbv
+Ria14cFjB5Imuge3QTnVejkuhNUoDNve+6cQmdVer5Xt37dSQCLz6aAoMN7kp570
+5gjcQhHAviBu4yNBn9kq
+=iIIu
 -----END PGP SIGNATURE-----
 
