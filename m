@@ -1,9 +1,15 @@
-From: David Sommerseth <davids@...515...>
-Date: Wed, 12 Dec 2018 14:34:44 +0100
-Message-Id: <20181212133444.23833-1-davids@...515...>
-In-Reply-To: <20181130135641.11533-3-gert@...1296...>
-References: <20181130135641.11533-3-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH applied] uncrustify openvpn/ sources
+References: <20181130135641.11533-1-gert@...1296...>
+ <20181130135641.11533-3-gert@...1296...>
+ <5e07f322-7d84-7758-8f46-f579579bd45d@...2181...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <ebd4c068-6046-81d5-9763-ec5dec8cdddb@...2080...>
+Date: Wed, 12 Dec 2018 23:50:20 +0100
+MIME-Version: 1.0
+In-Reply-To: <5e07f322-7d84-7758-8f46-f579579bd45d@...2181...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="uWF2OcqLxgIHhv59WBMuFJgx7w1sozcGY"
+Subject: Re: [Openvpn-devel] [PATCH 3/3] uncrustify openvpn/ sources
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,73 +18,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Antonio Quartulli <a@...2181...>, Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--uWF2OcqLxgIHhv59WBMuFJgx7w1sozcGY
+Content-Type: multipart/mixed; boundary="N8NVLyu8kZWGX1xSl9IWFLA2cC3bx1jTY";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: Antonio Quartulli <a@...2181...>, Gert Doering <gert@...1296...>,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <ebd4c068-6046-81d5-9763-ec5dec8cdddb@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH 3/3] uncrustify openvpn/ sources
+References: <20181130135641.11533-1-gert@...1296...>
+ <20181130135641.11533-3-gert@...1296...>
+ <5e07f322-7d84-7758-8f46-f579579bd45d@...2181...>
+In-Reply-To: <5e07f322-7d84-7758-8f46-f579579bd45d@...2181...>
+
+--N8NVLyu8kZWGX1xSl9IWFLA2cC3bx1jTY
+Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: gert@...1296...
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA512
+On 12/12/2018 12:33, Antonio Quartulli wrote:
+> I know we want to get "uncrustity-clean", but maybe we can tweak some
+> options to comply with my remarks above? if not...well...uncrustify will
+> decide for our codestyle ;P
 
-ACK.  Checked with re-running uncrustify.  It did find two more places
-which needed fixing, both came from commit e61b401ac50d2a9cfab which
-were added after this patch-set, so not a fault of this patch.  This
-can be fixed afterwards.
+Now I spotted your feedbacks, way too late :(  Sorry about that!
 
-I did one-on-the-fly fix as well, in plugin.c - plugin_call_item() -
-which uncrustify did not change with a re-run.
+As I walked through this file, I thought this is better keeping it
+out-of-the-loop for a few more weeks.  The code now is mostly compatible wi=
+th
+the _current_ uncrustify.conf available in the ./dev-tools, which is a good
+step forward from the current state.  And I considered the current result
+acceptable for now.
 
-The patch resulted in this (line 549) 
-- ---------------------------------------------------
-  struct openvpn_plugin_args_func_in args = { type,
-                                              (const char **const) a.argv,
-                                              (const char **const) envp,
-                                              p->plugin_handle,
-                                              per_client_context,
-                                              (current_cert ? certdepth : -1),
-                                              current_cert};
-- ---------------------------------------------------
+I do see my uncrustify run have some weird disagreements in
+src/openvpn/push.c, where it wants to indent all the switch case parts one
+more level.  Not sure why this didn't hit Gerts run though, this change does
+seem appropriate to our CodeStyle wiki page.  My uncrustify also disagrees =
+in
+src/openvpn/buffer.c:474, where gc_addspecial(...) gets the space between
+'void' and '(free_function)' removed.  Otherwise there is nothing unexpected
+(including the change in src/openvpn/ssl.c already mentioned in the "PATCH
+applied" mail).  But this can all be related to uncrustify versions and bugs
+there.   I'll try to get a newer version built and see what happens then.
 
-I changed the last line above to:  "current_cert };" (adding a space).
-This was due to the initial spacing in the opening bracket, to be
-consistent with opening and closing.
-
-
-Your patch has been applied to the master branch
-
-commit f57431cdc88f22fa4d7962946f0d3187fe058539
-Author: Gert Doering
-Date:   Fri Nov 30 14:56:41 2018 +0100
-
-     uncrustify openvpn/ sources
-
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20181130135641.11533-3-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17970.html
-     Signed-off-by: David Sommerseth <davids@...515...>
+But I think we just need to accept that we can only push uncrustify to some
+degree towards our desired coding style and then to accept the minor gaps to
+our view of full perfection.  Telling contributors to "run your changes
+through uncrustify before sending patches" will definitely help.
 
 
-- --
+--=20
 kind regards,
 
 David Sommerseth
+OpenVPN Inc
+
+
+
+--N8NVLyu8kZWGX1xSl9IWFLA2cC3bx1jTY--
+
+--uWF2OcqLxgIHhv59WBMuFJgx7w1sozcGY
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJcEQ5sAAoJEIbPlEyWcf3yOh0P/AihfHG6OP8Gi2H1Z4jXrSJP
-+hszq/pLeP1BjOfArE6+DNHHR2AhMXj0qUzx0e0CvqGVvlTdMpLorXk9jP2oSBFg
-bpBG/YVyGl0QPv+7F9lo2YOOZIazOxwk3IqBBE2RZt4v12gShX5cWvvrbUJgN6Xl
-+qhEzIhWJbCjAVQza8V0EHP3/agieLbNK2PvhfPe8/0muHou99sBRwWhVaJvqsoi
-tyxAMsort/6IyWc/Il185TNqyK4+a6hpNCpvXBPFQBehL5SQnw87kXeTxsbZtFxT
-ERO2ZD14HyNgdFCJeaAKOZCZckenQlQJp5wyj7gsW5GSylKGPrYOgTbN7ynVWm3y
-wi/T8MvQz40YmBCitpMMxPN33EPLMz0gchwpp9Wf+cj+Qm02uQso5khO6lcJF/yw
-m8S+mIdCce+JSBvxjwhyMOEXwu/iHECO9jmoSqVcFKpXKEML3gEisIAvwofOjCyS
-oGT74wcW0VgnsYLfLI9XXC87ncqtVNYd4VObWaGOovtD9W4R+53PQIC10qhPg36a
-gGIpfbp447l7eGrP0rznjRmorjnPh+1SbW4kgvPQkjf+eexlb0n7wLLzorKeYuH4
-9h7WMHgCO/AKR7YzT2TU2m+7xFMDX+0X8fn0Ef+1/E4fDftFMpJaaM8UB1J7oJrO
-yMCmlIjwHupgMtfH5OvK
-=SBiH
+iQIcBAEBCgAGBQJcEZCsAAoJEIbPlEyWcf3yeSMQAKjItjwaMZyQP+1aUbsnSum0
+tVQ1ISRDqXAPAphke1gTp3V5ovNwnXFcY3Nib/bM/3T6CGCCX+0rb3OqzDc6e2yE
+smMKa7aD+mB/d0Zw5UbnknGWZ8RK0Av2WW+fItVA+iotluZ+qf/mZaikXC4qykqd
+gV6jWgDLgmxWsVqzeDd44XtpYMXigdidoEZ8LO/aEi1+8pX87/qpqAjBzASRrcf4
+TjU1jD4Ckdeou0BLcZczV4UlPpRmgyo3AbemW8ioT8LQdeEsOo9YnAqq97JhgCtA
+npA6qfQZYgQvRFmChkF6zUgivh6qwq+NjlCuNcQ24lLyzrLyxB5a7byJcfHyOFB/
+kA4eU/j1vrjA9cubiIuDJPFmjhJ7B7ljNvKOXBbh88xmkMwEnqO3M0z2PbeUgecZ
+WOa5s4hCTG+YRzqbDtwCCPbvYMOQjY6UhSjrmtXMUp6ZUEKQk8ghNeca/WJj4aqX
+0Nane9ujcJHnVOGbyEj7TvWYiy6YSjWbxKjhne+BxvQuGTrstmFCDADJot4pSONl
+kbRYtQpdP4r6yn5rXCtJoTF2VAO7V8St8kjSeqG2h8UzNW6jPBAp+zGq5TYJkeSV
+JDdFt01MgKlLTyHaeIpxX7EsxhOM0G41XyGSe+NfiHptY+Vz0D9e99I9h5KSpKcm
+Afd+f5x+4JnL9ETGHhD2
+=sLrc
 -----END PGP SIGNATURE-----
+
+--uWF2OcqLxgIHhv59WBMuFJgx7w1sozcGY--
 
