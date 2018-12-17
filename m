@@ -1,10 +1,12 @@
 References: <a3b6dcb2-9c04-3001-797f-fa49fccda790@...1879...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <d4d4f37c-b5a3-4bf3-361c-ff4ae2e9ec8d@...515...>
-Date: Mon, 17 Dec 2018 15:29:15 +0200
+ <d4d4f37c-b5a3-4bf3-361c-ff4ae2e9ec8d@...515...>
+From: =?UTF-8?Q?Enno_Gr=c3=b6per?= <groepeen@...1879...>
+Message-ID: <325823f7-1c48-d86a-fd22-3e8eac2971b6@...1879...>
+Date: Mon, 17 Dec 2018 15:06:43 +0100
 MIME-Version: 1.0
-In-Reply-To: <a3b6dcb2-9c04-3001-797f-fa49fccda790@...1879...>
-Content-Language: en-US
+In-Reply-To: <d4d4f37c-b5a3-4bf3-361c-ff4ae2e9ec8d@...515...>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature";
+ micalg=sha-256; boundary="------------ms090406040502090308030801"
 Subject: Re: [Openvpn-devel] sbuild_wrapper: state of official openvpn
  repository
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,109 +17,148 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: =?UTF-8?Q?Enno_Gr=c3=b6per?= <groepeen@...1879...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+
+This is a cryptographically signed message in MIME format.
+
+--------------ms090406040502090308030801
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-Il 17/12/18 13:45, Enno Gröper ha scritto:
-> Hi Samuli,
-> Hi list,
-> 
-> Some background first:
-> I'm currently building new openvpn servers and want to start using the
-> official package repositories [0]. I think about using the current
-> debian stable or the current Ubuntu LTS (18.04).
-> In the past I used to use the distribution supplied openvpn packages,
-> but these are usually quite outdated.
+Am 17.12.18 um 14:29 schrieb Samuli Sepp=C3=A4nen:
+> Somebody needs to do it. I started the work, but my sbuild_wrapper VM
+> was too old (Debian 7) and it gave me serious issues with the Ubuntu
+> 18.04 shcroot. So I decided to upgrade the builder. Then other work
+> slowed that project down and I haven't been able to really resume it
+> yet.
 
-Indeed. I generally try to use our own OpenVPN packages for that very
-reason.
+I'm currently trying with Ubuntu 18.04 as build machine.
 
-> Now the questions:
-> 
-> Am 06.09.18 um 14:25 schrieb Samuli Seppänen:
->> Also, we don't have packages for Ubuntu 18.04 yet.
-> 
-> May I ask what is stopping this?
-> 
-> Or let's rephrase it: What kind and/or amount of support is needed to
-> get this done?
+> I think I might actually setup a Vagrant environment for
+> this - we have it for openvpn-build already. That would make it easier
+> for others to setup the sbuild_wrapper environment and provide
+> contributions to it. I could do this fairly quickly.
 
-Somebody needs to do it. I started the work, but my sbuild_wrapper VM
-was too old (Debian 7) and it gave me serious issues with the Ubuntu
-18.04 shcroot. So I decided to upgrade the builder. Then other work
-slowed that project down and I haven't been able to really resume it
-yet. Now that my new buildslaves are up there is a small chance I could
-work on this again, but then again, handling MSI is at least as high
-priority.
+I fully agree with that. Currently I'm trying to follow your README and=20
+it's not that easy-going.
 
-> Christian Erhardt wrote:
->> That is exactly what my report here is about, it currently ships very
-> old service files.
->> Not from the repo, nor the last ones from Debian/Ubuntu - older than
-> both actually
-> 
-> Is there any progress with this?
-> I would prefer using openvpn packages with recent systemd service files.
-> What needs to be done to switch to the recent systemd files? Only
-> copying? What kind of testing?
+> Fixed. The CreatingUnixPackages page was truly obsolete.
 
-There is some_ progress but I have not done anything concrete yet on the
-packaging side. The OpenVPN packages provided by Ubuntu for 18.04 seem
-to have the openvpn-client@ and openvpn-server@ units. There is still
-the old openvpn@ unit in there, but we should move away from it even if
-it works. On Fedora 29, for example, openvpn@ is gone already.
+Nice. Since I wasn't sure about the state, I didn't want to change=20
+things prematurely.
 
-David S. wanted us to use our own versions of openvpn-client@ and
-openvpn-server@ unit files. I tend to agree, especially as Ubuntu 18.04
-already has the same setup (with slightly different unit files), so it
-would not require major refactoring of the packaging files/metadata.
-With some luck our own unit files would be mostly drop-in replacements.
+Kind Regards,
+Enno
 
-So what needs to be done:
-- Get the packaging files for 18.04 from Ubuntu
-- Apply our own unit files on top
-- Add 18.04 to sbuild_wrapper
-- Ensure that 18.04 builds
-- Test the resulting package
+--=20
+Enno Gr=C3=B6per
+Humboldt-Universit=C3=A4t zu Berlin - http://www.hu-berlin.de/
+ZE Computer- und Medienservice - http://www.cms.hu-berlin.de/
+Unter den Linden 6, D-10099 Berlin, Germany
 
-All this could be done by anyone who is willing to take a stab at
-sbuild_wrapper. I think I might actually setup a Vagrant environment for
-this - we have it for openvpn-build already. That would make it easier
-for others to setup the sbuild_wrapper environment and provide
-contributions to it. I could do this fairly quickly.
 
-If somebody wants and can help out here, I will gladly take the offer.
+--------------ms090406040502090308030801
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
-> The docs at CreatingUnixPackages [1] should be updated.
-> It still refers to your fork of openvpn-build [2], but I'm unable to
-> find any build scripts or the mentioned "debian/README" there.
-
-Fixed. The CreatingUnixPackages page was truly obsolete.
-
-> Is it correct, that the official builds are made using sbuild_wrapper [3]?
-> And then the workflow there is to copy the files from the distribution
-> source packages and rebuild with more recent openvpn (with some changes
-> to the files of the distribution build env)?
-
-That is correct. More details above.
-
-> 
-> [0] https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos
-> [1] https://community.openvpn.net/openvpn/wiki/CreatingUnixPackages
-> [2] https://github.com/mattock/openvpn-build
-> [3] https://github.com/OpenVPN/sbuild_wrapper
-
-> And last, but not least: Thank you very much for all the work you
-> already did for us!
-
-Too bad I have not had that much time to work on the packaging recently.
-Too much other stuff going on at the same time. Any help with
-sbuild_wrapper (OS support or otherwise) would be really nice.
-Openvpn-build already has a semi-active community of contributors, but
-that is missing for sbuild_wrapper.
-
-Samuli
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCC
+D+8wggTVMIIDvaADAgECAghQTsb1PRG0ZDANBgkqhkiG9w0BAQsFADBxMQswCQYDVQQGEwJE
+RTEcMBoGA1UEChMTRGV1dHNjaGUgVGVsZWtvbSBBRzEfMB0GA1UECxMWVC1UZWxlU2VjIFRy
+dXN0IENlbnRlcjEjMCEGA1UEAxMaRGV1dHNjaGUgVGVsZWtvbSBSb290IENBIDIwHhcNMTQw
+NzIyMTIwODI2WhcNMTkwNzA5MjM1OTAwWjBaMQswCQYDVQQGEwJERTETMBEGA1UEChMKREZO
+LVZlcmVpbjEQMA4GA1UECxMHREZOLVBLSTEkMCIGA1UEAxMbREZOLVZlcmVpbiBQQ0EgR2xv
+YmFsIC0gRzAxMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6ZvDZ4X5Da71jVTD
+llA1PWLpbkztlNcAW5UidNQg6zSP1uzAMQQLmYHiphTSUqAoI4SLdIkEXlvg4njBeMsWyyg1
+OXstkEXQ7aAAeny/Sg4bAMOG6VwrMRF7DPOCJEOMHDiLamgAmu7cT3ir0sYTm3at7t4m6O8B
+r3QPwQmi9mvOvdPNFDBP9eXjpMhim4IaAycwDQJlYE3t0QkjKpY1WCfTdsZxtpAdxO3/NYZ9
+bzOz2w/FEcKKg6GUXUFr2NIQ9Uz9ylGs2b3vkoO72uuLFlZWQ8/h1RM9ph8nMM1JVNvJEzSa
+cXXFbOqnC5j5IZ0nrz6jOTlIaoytyZn7wxLyvQIDAQABo4IBhjCCAYIwDgYDVR0PAQH/BAQD
+AgEGMB0GA1UdDgQWBBRJt8bP6D0ff+pEexMp9/EKcD7eZDAfBgNVHSMEGDAWgBQxw3kbuvVT
+1xfgiXotF2wKsyudMzASBgNVHRMBAf8ECDAGAQH/AgECMGIGA1UdIARbMFkwEQYPKwYBBAGB
+rSGCLAEBBAICMBEGDysGAQQBga0hgiwBAQQDADARBg8rBgEEAYGtIYIsAQEEAwEwDwYNKwYB
+BAGBrSGCLAEBBDANBgsrBgEEAYGtIYIsHjA+BgNVHR8ENzA1MDOgMaAvhi1odHRwOi8vcGtp
+MDMzNi50ZWxlc2VjLmRlL3JsL0RUX1JPT1RfQ0FfMi5jcmwweAYIKwYBBQUHAQEEbDBqMCwG
+CCsGAQUFBzABhiBodHRwOi8vb2NzcDAzMzYudGVsZXNlYy5kZS9vY3NwcjA6BggrBgEFBQcw
+AoYuaHR0cDovL3BraTAzMzYudGVsZXNlYy5kZS9jcnQvRFRfUk9PVF9DQV8yLmNlcjANBgkq
+hkiG9w0BAQsFAAOCAQEAYyAo/ZwhhnK+OUZZOTIlvKkBmw3Myn1BnIZtCm4ssxNZdbEzkhth
+Jxb/w7LVNYL7hCoBSb1mu2YvssIGXW4/buMBWlvKQ2NclbbhMacf1QdfTeZlgk4y+cN8ekvN
+TVx07iHydQLsUj7SyWrTkCNuSWc1vn9NVqTszC/Pt6GXqHI+ybxA1lqkCD3WvILDt7cyjrEs
+jmpttzUCGc/1OURYY6ckABCwu/xOr24vOLulV0k/2G5QbyyXltwdRpplic+uzPLl2Z9Tsz6h
+L5Kp2AvGhB8Exuse6J99tXulAvEkxSRjETTMWpMgKnmIOiVCkKllO3yG0xIVIyn8LNrMOVtU
+FzCCBUIwggQqoAMCAQICBxekJOs9DNcwDQYJKoZIhvcNAQELBQAwWjELMAkGA1UEBhMCREUx
+EzARBgNVBAoTCkRGTi1WZXJlaW4xEDAOBgNVBAsTB0RGTi1QS0kxJDAiBgNVBAMTG0RGTi1W
+ZXJlaW4gUENBIEdsb2JhbCAtIEcwMTAeFw0xNDA1MjcxNDU1MjNaFw0xOTA3MDkyMzU5MDBa
+MGgxCzAJBgNVBAYTAkRFMSgwJgYDVQQKEx9IdW1ib2xkdC1Vbml2ZXJzaXRhZXQgenUgQmVy
+bGluMQ4wDAYDVQQDEwVIVS1DQTEfMB0GCSqGSIb3DQEJARYQcGtpQGh1LWJlcmxpbi5kZTCC
+ASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOsMQdewKIwAb0e6xJEfL98H6ridUQBg
+cfQYb9KUIrPfJAiWmmGDtXLKXNM53xADnAZPZQYW/7Fn1ddyhSg3Im+1pWNbBQRwiQGxpKXD
+U36qf3p07Q2Ts1xVM1zo+fpXGh8J+qrdh0O6Gn5vMHz6fXn3d8pEcwloW2eyt6P5AgjB8OQ8
+XvZ2uDnUAl6sKeh4aZsfQhh6tkj1sa0WanWSc5n4Zg1d8lWIISLshzf4w06K7IZIt6VhdzhR
+6aJNcNPSyjw1GUXR2c1Le2SGWBMHb41QCiQLB8io86wEkXxyYF7yUCxDXAScDxl3yRjEl49w
+HEvQo8EHbTJcg7FOA+UVeAUCAwEAAaOCAf0wggH5MBIGA1UdEwEB/wQIMAYBAf8CAQEwDgYD
+VR0PAQH/BAQDAgEGMBEGA1UdIAQKMAgwBgYEVR0gADAdBgNVHQ4EFgQUH/UsPvdAqy6QoGrT
+4nle8nbNg3QwHwYDVR0jBBgwFoAUSbfGz+g9H3/qRHsTKffxCnA+3mQwGwYDVR0RBBQwEoEQ
+cGtpQGh1LWJlcmxpbi5kZTCBiAYDVR0fBIGAMH4wPaA7oDmGN2h0dHA6Ly9jZHAxLnBjYS5k
+Zm4uZGUvZ2xvYmFsLXJvb3QtY2EvcHViL2NybC9jYWNybC5jcmwwPaA7oDmGN2h0dHA6Ly9j
+ZHAyLnBjYS5kZm4uZGUvZ2xvYmFsLXJvb3QtY2EvcHViL2NybC9jYWNybC5jcmwwgdcGCCsG
+AQUFBwEBBIHKMIHHMDMGCCsGAQUFBzABhidodHRwOi8vb2NzcC5wY2EuZGZuLmRlL09DU1At
+U2VydmVyL09DU1AwRwYIKwYBBQUHMAKGO2h0dHA6Ly9jZHAxLnBjYS5kZm4uZGUvZ2xvYmFs
+LXJvb3QtY2EvcHViL2NhY2VydC9jYWNlcnQuY3J0MEcGCCsGAQUFBzAChjtodHRwOi8vY2Rw
+Mi5wY2EuZGZuLmRlL2dsb2JhbC1yb290LWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDANBgkq
+hkiG9w0BAQsFAAOCAQEAqhMvFBZf+siO7fyhmVQtobEqY2lvvtGwwjcBv69585nVApskHYcB
+raAkVJor+A6opJfI4TRXsmBtlaFqTpBPAjTzpSrrrMTgjarwq4f+IwMCXqb7RETq2aSsXL4Q
+wqGNjqaPQ8nGpBqvMtEfcLjEU2ncQS6JmEo3WZKHAJw1QzJXJYZT8VXANc4bXOrUDSOWMBol
+m1UHm3hKCCel9b32/QdTljItQwCAmUEDWSZ5PacWlJ2x7ODBu/y6+Ov6AJvIYo9A945gbWfh
+Vg//ruwxwYCcsCATourah/GZzoaIuO9hzl6L4Y2zB/hn1DJcuIOpzEop1q6DZzQ9dPbpQ5CX
+jzCCBcwwggS0oAMCAQICBxrX02jAkfQwDQYJKoZIhvcNAQELBQAwaDELMAkGA1UEBhMCREUx
+KDAmBgNVBAoTH0h1bWJvbGR0LVVuaXZlcnNpdGFldCB6dSBCZXJsaW4xDjAMBgNVBAMTBUhV
+LUNBMR8wHQYJKoZIhvcNAQkBFhBwa2lAaHUtYmVybGluLmRlMB4XDTE2MDIwODA4NDYxNloX
+DTE5MDIwNzA4NDYxNlowgaExCzAJBgNVBAYTAkRFMSgwJgYDVQQKDB9IdW1ib2xkdC1Vbml2
+ZXJzaXRhZXQgenUgQmVybGluMTcwNQYDVQQLDC5aZW50cmFsZWlucmljaHR1bmcgQ29tcHV0
+ZXItIHVuZCBNZWRpZW5zZXJ2aWNlMRUwEwYDVQQDDAxFbm5vIEdyb2VwZXIxGDAWBgoJkiaJ
+k/IsZAEBDAhncm9lcGVlbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAON0e3an
+UZZ0dgz2fipmgP8f9mGm5qytEqriE0cdkn4GQQcJl4Pj/V51k+dH3ygdLPTu1iUuSNrob/qF
+tnAWvYz01iM8UXRYmSYvp2YFz5y38DMmxk3JbFsuFQQFIDzAwNGHLWAZz4kHd0vMSyIzPR+k
+C/WD110/6BcZUBCE61HrdeUYv3VNxtupCd9YG0JMwx64oXTDhdeDAHylIsGpc+n5L30s2tjk
+bmwTFpuWGaDTVSLNL2ufTbq/JmSTUJCovGw7ZL5O+pULHUVjkn4Kx6WmSeJelpThtbqdBjqD
+W3x8w2Wovgjwm5SMYg0+S+n2Uzk3lzZgPI8OLj41qkumPa8CAwEAAaOCAj8wggI7MEAGA1Ud
+IAQ5MDcwEQYPKwYBBAGBrSGCLAEBBAMEMBEGDysGAQQBga0hgiwCAQQDATAPBg0rBgEEAYGt
+IYIsAQEEMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgXgMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggr
+BgEFBQcDBDAdBgNVHQ4EFgQUGSk7dpLGZmPlRrqNAGuV45Ey2kkwHwYDVR0jBBgwFoAUH/Us
+PvdAqy6QoGrT4nle8nbNg3QwJAYDVR0RBB0wG4EZZ3JvZXBlZW5AY21zLmh1LWJlcmxpbi5k
+ZTCBgwYDVR0fBHwwejA7oDmgN4Y1aHR0cDovL2NkcDEucGNhLmRmbi5kZS9odS1iZXJsaW4t
+Y2EvcHViL2NybC9jYWNybC5jcmwwO6A5oDeGNWh0dHA6Ly9jZHAyLnBjYS5kZm4uZGUvaHUt
+YmVybGluLWNhL3B1Yi9jcmwvY2FjcmwuY3JsMIHTBggrBgEFBQcBAQSBxjCBwzAzBggrBgEF
+BQcwAYYnaHR0cDovL29jc3AucGNhLmRmbi5kZS9PQ1NQLVNlcnZlci9PQ1NQMEUGCCsGAQUF
+BzAChjlodHRwOi8vY2RwMS5wY2EuZGZuLmRlL2h1LWJlcmxpbi1jYS9wdWIvY2FjZXJ0L2Nh
+Y2VydC5jcnQwRQYIKwYBBQUHMAKGOWh0dHA6Ly9jZHAyLnBjYS5kZm4uZGUvaHUtYmVybGlu
+LWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDANBgkqhkiG9w0BAQsFAAOCAQEAStc3OzWKnyGa
+L8FFgp+zl3RU3sAwnh9rGFvFDDDulMih0FySAUNFs/ABT1CfQY9sul3o2w8YcXpuIv5rXDXc
+N6z2W9LkLsb9WtjAYZ4sCIOUS4HVpJducgQzAKF304ugCLytdZga9RKeCa96idhoHKCbMOn8
+LR5rNtevCesMSv7EoPg74uNFV4XpQeItTB4zgXecnF5BfZ8ZSZvUCze0zgS6vlIwMPCQ4gxf
+4qI+jyElrcsIvhmEPGTlUaegSjTRDJwwi2VF75/6KpWOsfhjQjsarEHTPzRpj7q/NH4EXGj/
+nPKSvOBqm+tpbW+4RbIp/LnrAgTj3+BGef//RPprPzGCA4UwggOBAgEBMHMwaDELMAkGA1UE
+BhMCREUxKDAmBgNVBAoTH0h1bWJvbGR0LVVuaXZlcnNpdGFldCB6dSBCZXJsaW4xDjAMBgNV
+BAMTBUhVLUNBMR8wHQYJKoZIhvcNAQkBFhBwa2lAaHUtYmVybGluLmRlAgca19NowJH0MA0G
+CWCGSAFlAwQCAQUAoIIB4zAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
+BTEPFw0xODEyMTcxNDA2NDNaMC8GCSqGSIb3DQEJBDEiBCDA6DXqBxUzYLYv8j4Qi1koEPo9
+4+2Uke8nzdDTQillcDBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglghkgBZQME
+AQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIH
+MA0GCCqGSIb3DQMCAgEoMIGCBgkrBgEEAYI3EAQxdTBzMGgxCzAJBgNVBAYTAkRFMSgwJgYD
+VQQKEx9IdW1ib2xkdC1Vbml2ZXJzaXRhZXQgenUgQmVybGluMQ4wDAYDVQQDEwVIVS1DQTEf
+MB0GCSqGSIb3DQEJARYQcGtpQGh1LWJlcmxpbi5kZQIHGtfTaMCR9DCBhAYLKoZIhvcNAQkQ
+AgsxdaBzMGgxCzAJBgNVBAYTAkRFMSgwJgYDVQQKEx9IdW1ib2xkdC1Vbml2ZXJzaXRhZXQg
+enUgQmVybGluMQ4wDAYDVQQDEwVIVS1DQTEfMB0GCSqGSIb3DQEJARYQcGtpQGh1LWJlcmxp
+bi5kZQIHGtfTaMCR9DANBgkqhkiG9w0BAQEFAASCAQA1eF0OQtuZ0eCPcCOP+CMmqINIRXyp
+Hg1Q56M2lSsmptfiXQhMSyPqyQegctkWE77ARJfmp4qBDiXWn7E29mYXrEddjxLMwCjG1Jvx
+KO6cTHVlqaRYWpvfAomQxIgKUAouMlnJihEvyTzdrY+MQA4Y1vZo7oK6EFgw/VyHHOw6crNx
+MTWviMVQhuoRkxAXmxUJopZci+OSrPHx95e3/+PypixYeRIe6DbGqKFaNjFcYrdrHWoJD7Gq
+qOiOtA7nWu7pcIkmBU0mdXVMdBijboqwIGbGPCdOuTfTD22RF/70EbiwnWJkRnpe7pmhhOJj
+Sr/HNtu+4GxAdjE08ROfzUGNAAAAAAAA
+--------------ms090406040502090308030801--
 
