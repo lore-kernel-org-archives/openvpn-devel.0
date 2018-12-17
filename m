@@ -1,16 +1,16 @@
-Date: Thu, 13 Dec 2018 08:09:17 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20181213070916.GX962@...1296...>
-References: <20181130135641.11533-1-gert@...1296...>
- <20181130135641.11533-3-gert@...1296...>
- <5e07f322-7d84-7758-8f46-f579579bd45d@...2181...>
- <ebd4c068-6046-81d5-9763-ec5dec8cdddb@...2080...>
+References: <20181207123303.70827-1-gert@...1296...>
+ <4e683bf2-541b-b320-5166-5753716e75ca@...2181...>
+ <20181208080305.GR962@...1296...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <0c112c52-57bd-6cc3-000a-242a8cd755f7@...2181...>
+Date: Mon, 17 Dec 2018 16:31:48 +1000
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="q74XNxSV1vRgrnoy"
-Content-Disposition: inline
-In-Reply-To: <ebd4c068-6046-81d5-9763-ec5dec8cdddb@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH 3/3] uncrustify openvpn/ sources
+In-Reply-To: <20181208080305.GR962@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="2Kz4SJ6mxCmOlsRoDO1pC58UTWGcFko8n"
+Subject: Re: [Openvpn-devel] [PATCH] Add 'printing of port number' to
+ mroute_addr_print_ex() for v4-mapped v6.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,72 +19,117 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn@...2080...>
-Cc: Antonio Quartulli <a@...2181...>, Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---q74XNxSV1vRgrnoy
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--2Kz4SJ6mxCmOlsRoDO1pC58UTWGcFko8n
+Content-Type: multipart/mixed; boundary="lgwxNNcXPxHXjVEMrZ9BgVcE7b4N9Do4V";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
+Message-ID: <0c112c52-57bd-6cc3-000a-242a8cd755f7@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH] Add 'printing of port number' to
+ mroute_addr_print_ex() for v4-mapped v6.
+References: <20181207123303.70827-1-gert@...1296...>
+ <4e683bf2-541b-b320-5166-5753716e75ca@...2181...>
+ <20181208080305.GR962@...1296...>
+In-Reply-To: <20181208080305.GR962@...1296...>
+
+--lgwxNNcXPxHXjVEMrZ9BgVcE7b4N9Do4V
+Content-Language: en-US
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
 Hi,
 
-On Wed, Dec 12, 2018 at 11:50:20PM +0100, David Sommerseth wrote:
-> I do see my uncrustify run have some weird disagreements in
-> src/openvpn/push.c, where it wants to indent all the switch case parts one
-> more level.  Not sure why this didn't hit Gerts run though, this change d=
-oes
-> seem appropriate to our CodeStyle wiki page.=20=20
-
-This is Arne's forget-auth-token patch which added a level of brackets
-but did not re-indent the switch/case part (e61b401ac5).  I commented
-on this in the "merge and pushed" mail, but decided to merge it nonetheless
-as this is another one that had been going in circles for too many moons...
-
-[..]
-> But I think we just need to accept that we can only push uncrustify to so=
-me
-> degree towards our desired coding style and then to accept the minor gaps=
- to
-> our view of full perfection.=20=20
-
-I am fine with this.  Yes, some of the changes look funky, and I wouldn't
-personally do other stuff, but I can live with the result - and it's way
-better than having to argue style questions all the time, instead of
-focusing on code and "possible logic flaws in the code".
-
-> Telling contributors to "run your changes
-> through uncrustify before sending patches" will definitely help.
-
-Indeed.
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+On 08/12/2018 18:03, Gert Doering wrote:
+> Hi,
+>=20
+> On Sat, Dec 08, 2018 at 09:47:37AM +1000, Antonio Quartulli wrote:
+>>> +		    /* we only print port numbers for v4mapped v6 as of
+>>> +		     * today, because "v6addr:port" is too ambiguous
+>>> +		     */
+>>
+>> The comments above are indented with tab+spaces, while the code below is
+>> just all spaces. Please use the all spaces everywhere.
+>=20
+> Gah.  That was the intention, but the comment was added later on and
+> using the wrong editor :-)
+>=20
+>>> +                    if (maddr.type & MR_WITH_PORT)
+>>> +                    {
+>>> +                        buf_printf(&out, ":%d", ntohs(maddr.v6.port));
+>>> +                    }
+>>
+>> I don't understand how is this solving the ambiguity?=20
+>=20
+> These are *v4* addresses, just masquerading as v6 in the socket structure.
+>=20
+> So 1.2.3.4:567 is never ambiguous.
+>=20
+> For "true v6 addresses" (the other branch) we keep on not printing the
+> port number.
+>=20
+>> Or you are just
+>> saying: "we can't do much, let's just print the port anyway"? My
+>> suggestion would be to surround the address with [], so basically change
+>> the printf format above from %s to [%s]. Does it make sense?
+>=20
+> This is something I want to discuss.  Changing mroute_print_addr_ex()
+> for "true v6 addresses" and printing the port number in a new format
+> will affect status file printing, management interface, etc. - so it
+> needs to be well considered.
+>=20
+> *This* patch just fixes the discrepancy that v4 addresses are printed
+> "with port" if doing "proto udp4", and "without port" if a v4 connect
+> comes in on a "proto udp / v6only=3Dno" socket.  (We do not need to discu=
 ss
+> how many problems the v4mapped v6 address format brings with it...)
+>=20
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Thanks for the clarification.
 
---q74XNxSV1vRgrnoy
+The patch looks good and does what it says on the lid.
+Tested by checking the status output (with and without the patch) and
+everything looked good.
+
+Now it only needs to have the tabs fixed on the comment lines, but other
+than that:
+
+Acked-by: Antonio Quartulli <antonio@...515...>
+
+
+Regards,
+
+--=20
+Antonio Quartulli
+
+
+--lgwxNNcXPxHXjVEMrZ9BgVcE7b4N9Do4V--
+
+--2Kz4SJ6mxCmOlsRoDO1pC58UTWGcFko8n
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJcEgWcAAoJEB2Cnv7KVigSpNQL/3/lomFDEe17zfmv6YqH5r3V
-h/tFxI2wunKk5gj9FaLQ/ZSgUNpDULX0RUrHSjsgTt2iCinFZUuglv/8c96zHeS3
-bgjLGwKEKBjpJaEY97dvF7y2AyzNmGQesbr7LRel4veEgucsz73PkmlWFYelzh8U
-8AF4Sjfw1XWtz5MryuHcTvhj19Ehn6ptviSIBfyC9HRuqmOX36E0E9a9PL7XZYPj
-4g4XnQ9hyzLOtnYIfndWs0G1h/NTUihCZgPIVe+W6XwZe5dEOyMevHoYx2WZXiWu
-usXfT/iVN/mvmVCEDOfIvQqmogpgTsNgmtCYAxj/lIWIl7/C0l5wR2OBnEt5u43+
-+mdky7eCGbTaW/TSWnB+TKFP1+LfOOGgCvzMjBWCydC0eVAs4QzLck77PpKPPS4z
-RzhXxaPLCxhL+a9/eu7H5rioHoXCDZDFeTJ2gh5lrp8FfJNcfB/qLRETP3Re6o8I
-aU7W9+H6cIiuvuZb6aaeGgmVfHr5S8rRjb4P9sQ1/g==
-=LkuA
+iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlwXQtQACgkQ9FVsWUWD
+Dm1YFg/+Is+To1o208yU8GbyO8c/R2tYJJ3NnCUcylPBXdDK2+ALNNClbNXEEiEK
+Rhih3GHmxEeBFGJ1gcADfLZ3DK10io4yrlwYn86syFsC/EYNJwjqlkiiAHb3dvsH
+YZkAMaQcs5oXz8sFc/Yo25I6RP1iraTmxW7DTFTaELMaGJ6LiO5KoxJ0WobfFSar
+OhXXoK36r1PcqFPPK3tDiAISYeQnrl1Yr1+IYKNNaYoW0jWWo9zEaYAhSm5MnpyS
+9tCxOhppmiQ/j+VrWkm4ucng7RkO42B8yxBKpxEBR2o1KrH08ztAXaV6lONu1khl
+oXfE6Fnet9TzmZjvsSs/45ZCAM1FQx5tLh9icxx76t9aVO7LHZf7A01K7lnntrNf
+JOe01+J4wSL4m75b/3tWpfAkBri78k2H/Gsf78yuMW9I5w4MU0TiWq+N85N2c0sN
+mkEOojlCzA6LLRpS9a2yIQHPWqOnq2mZvULyEPuizI6Zx40FP9Opkt4jo0etyUrD
+8Z6wwC4xP1inotsDrpiMJN1sdbz7PYXzUMdc3nX737IM06MZYCKK9LWEtS5aqehY
+dN0lQ/zKf5b/gCn4Yq7JPddrsszUW2XmNO4rz/VqU7lgqZOEKY0O5up/4/SyGFLH
+5kSt0eTHquHMQI1rwU1io5RwVggbDDJ1OVt3+4VojjigDXv1dJM=
+=ZeJD
 -----END PGP SIGNATURE-----
 
---q74XNxSV1vRgrnoy--
+--2Kz4SJ6mxCmOlsRoDO1pC58UTWGcFko8n--
 
