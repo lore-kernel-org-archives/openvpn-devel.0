@@ -1,16 +1,15 @@
-References: <20181207123303.70827-1-gert@...1296...>
- <4e683bf2-541b-b320-5166-5753716e75ca@...2181...>
- <20181208080305.GR962@...1296...>
+References: <20181205212453.GR962@...1296...>
+ <20181205214037.70783-1-gert@...1296...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <0c112c52-57bd-6cc3-000a-242a8cd755f7@...2181...>
-Date: Mon, 17 Dec 2018 16:31:48 +1000
+Message-ID: <6eb1df8d-9047-8357-a64b-674284d30403@...2181...>
+Date: Mon, 17 Dec 2018 16:53:45 +1000
 MIME-Version: 1.0
-In-Reply-To: <20181208080305.GR962@...1296...>
+In-Reply-To: <20181205214037.70783-1-gert@...1296...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="2Kz4SJ6mxCmOlsRoDO1pC58UTWGcFko8n"
-Subject: Re: [Openvpn-devel] [PATCH] Add 'printing of port number' to
- mroute_addr_print_ex() for v4-mapped v6.
+ boundary="MTy7aqP73LTrtknGu6XmYaTyZkTbeEfxO"
+Subject: Re: [Openvpn-devel] [PATCH v2] Stop complaining about IPv6 routes
+ without gateway address.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,84 +18,132 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---2Kz4SJ6mxCmOlsRoDO1pC58UTWGcFko8n
-Content-Type: multipart/mixed; boundary="lgwxNNcXPxHXjVEMrZ9BgVcE7b4N9Do4V";
+--MTy7aqP73LTrtknGu6XmYaTyZkTbeEfxO
+Content-Type: multipart/mixed; boundary="WpiIbUHn6m6jXa4VatrjEmf4DYDHU1Yd3";
  protected-headers="v1"
 From: Antonio Quartulli <a@...2181...>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <0c112c52-57bd-6cc3-000a-242a8cd755f7@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] Add 'printing of port number' to
- mroute_addr_print_ex() for v4-mapped v6.
-References: <20181207123303.70827-1-gert@...1296...>
- <4e683bf2-541b-b320-5166-5753716e75ca@...2181...>
- <20181208080305.GR962@...1296...>
-In-Reply-To: <20181208080305.GR962@...1296...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <6eb1df8d-9047-8357-a64b-674284d30403@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Stop complaining about IPv6 routes
+ without gateway address.
+References: <20181205212453.GR962@...1296...>
+ <20181205214037.70783-1-gert@...1296...>
+In-Reply-To: <20181205214037.70783-1-gert@...1296...>
 
---lgwxNNcXPxHXjVEMrZ9BgVcE7b4N9Do4V
+--WpiIbUHn6m6jXa4VatrjEmf4DYDHU1Yd3
 Content-Language: en-US
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-On 08/12/2018 18:03, Gert Doering wrote:
-> Hi,
+On 06/12/2018 07:40, Gert Doering wrote:
+> The IPv6 routing code inherited assumptions and the message
 >=20
-> On Sat, Dec 08, 2018 at 09:47:37AM +1000, Antonio Quartulli wrote:
->>> +		    /* we only print port numbers for v4mapped v6 as of
->>> +		     * today, because "v6addr:port" is too ambiguous
->>> +		     */
->>
->> The comments above are indented with tab+spaces, while the code below is
->> just all spaces. Please use the all spaces everywhere.
+>    "OpenVPN ROUTE6: OpenVPN needs a gateway parameter for a --route-ipv6
+>     option and no default was specified by either --route-ipv6-gateway or
+>     --ifconfig-ipv6 options"
 >=20
-> Gah.  That was the intention, but the comment was added later on and
-> using the wrong editor :-)
+> from the IPv4 routing code.
 >=20
->>> +                    if (maddr.type & MR_WITH_PORT)
->>> +                    {
->>> +                        buf_printf(&out, ":%d", ntohs(maddr.v6.port));
->>> +                    }
->>
->> I don't understand how is this solving the ambiguity?=20
+> This was never really correct, as no gateway is needed for "into tun
+> device" IPv6 routes, and the "--route-ipv6-gateway" option it refers
+> to also never existed.  (Routes on tap interfaces *do* need a gateway
+> due to neighbour discovery being involved.  As do routes on Windows,
+> but there we fake the gateway in tun mode anyway).
 >=20
-> These are *v4* addresses, just masquerading as v6 in the socket structure.
+> While commit d24e1b179b95 introduces support for "--route-ipv6-gateway",
+> the message is still falsely triggered for IPv6 routes in tun mode.
 >=20
-> So 1.2.3.4:567 is never ambiguous.
->=20
-> For "true v6 addresses" (the other branch) we keep on not printing the
-> port number.
->=20
->> Or you are just
->> saying: "we can't do much, let's just print the port anyway"? My
->> suggestion would be to surround the address with [], so basically change
->> the printf format above from %s to [%s]. Does it make sense?
->=20
-> This is something I want to discuss.  Changing mroute_print_addr_ex()
-> for "true v6 addresses" and printing the port number in a new format
-> will affect status file printing, management interface, etc. - so it
-> needs to be well considered.
->=20
-> *This* patch just fixes the discrepancy that v4 addresses are printed
-> "with port" if doing "proto udp4", and "without port" if a v4 connect
-> comes in on a "proto udp / v6only=3Dno" socket.  (We do not need to discu=
-ss
-> how many problems the v4mapped v6 address format brings with it...)
+> Change the code to generally accept IPv6 routes with no gateway
+> specification (so "--block-ipv6 --redirect-gateway ipv6" can work
+> without additional config).  When installing IPv6 routes, check
+> if a gateway is needed (tap mode) but missing, and if yes, print
+> correct message.
 >=20
 
-Thanks for the clarification.
+Thanks for this commit message. It was very clear as of what the patch
+is addressing, how and why,
 
-The patch looks good and does what it says on the lid.
-Tested by checking the status output (with and without the patch) and
-everything looked good.
+> Trac: #1143
+>=20
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>  src/openvpn/route.c | 16 +++++++++++-----
+>  1 file changed, 11 insertions(+), 5 deletions(-)
+>=20
+> diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+> index d97e8dba..ac38bf15 100644
+> --- a/src/openvpn/route.c
+> +++ b/src/openvpn/route.c
+> @@ -448,11 +448,6 @@ init_route_ipv6(struct route_ipv6 *r6,
+>      {
+>          r6->gateway =3D rl6->remote_endpoint_ipv6;
+>      }
+> -    else
+> -    {
+> -        msg(M_WARN, PACKAGE_NAME " ROUTE6: " PACKAGE_NAME " needs a gate=
+way parameter for a --route-ipv6 option and no default was specified by eit=
+her --route-ipv6-gateway or --ifconfig-ipv6 options");
+> -        goto fail;
+> -    }
+>=20=20
+>      /* metric */
+>=20=20
+> @@ -1917,6 +1912,16 @@ add_route_ipv6(struct route_ipv6 *r6, const struct=
+ tuntap *tt, unsigned int flag
+>          gateway_needed =3D true;
+>      }
+>=20=20
+> +    if (gateway_needed && IN6_IS_ADDR_UNSPECIFIED(&r6->gateway) )
 
-Now it only needs to have the tabs fixed on the comment lines, but other
-than that:
+please remove the space before the last ')'
+
+> +    {
+> +        msg(M_WARN, "ROUTE6 WARNING: " PACKAGE_NAME " needs a gateway "
+> +            "parameter for a --route-ipv6 option and no default was set =
+via "
+> +            "--ifconfig-ipv6 or --route-ipv6-gateway option.  Not instal=
+ling "
+> +            "IPv6 route to %s/%d.", network, r6->netbits );
+
+please remove the space before the last ')'
+
+As quickly discussed during the meeting, it might be better to have the
+string all on one line to make it easier to grep. You could go on a new
+line after M_WARN, and then right after the long string.
+
+One dis-advantage I have seen while testing this patch is that we now
+get one message for each route we try to install.
+
+However, I think it is ok because the message explicitly mentions each
+failing route.
+
+> +        status =3D false;
+> +        goto done;
+> +    }
+> +
+>  #if defined(TARGET_LINUX)
+>  #ifdef ENABLE_IPROUTE
+>      argv_printf(&argv, "%s -6 route add %s/%d dev %s",
+> @@ -2114,6 +2119,7 @@ add_route_ipv6(struct route_ipv6 *r6, const struct =
+tuntap *tt, unsigned int flag
+>      msg(M_FATAL, "Sorry, but I don't know how to do 'route ipv6' command=
+s on this operating system.  Try putting your routes in a --route-up script=
+");
+>  #endif /* if defined(TARGET_LINUX) */
+>=20=20
+> +done:
+>      if (status)
+>      {
+>          r6->flags |=3D RT_ADDED;
+>=20
+
+Other than those comments above, the patch looks good and my tests did
+not reveal any issue.
 
 Acked-by: Antonio Quartulli <antonio@...515...>
 
@@ -107,29 +154,29 @@ Regards,
 Antonio Quartulli
 
 
---lgwxNNcXPxHXjVEMrZ9BgVcE7b4N9Do4V--
+--WpiIbUHn6m6jXa4VatrjEmf4DYDHU1Yd3--
 
---2Kz4SJ6mxCmOlsRoDO1pC58UTWGcFko8n
+--MTy7aqP73LTrtknGu6XmYaTyZkTbeEfxO
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlwXQtQACgkQ9FVsWUWD
-Dm1YFg/+Is+To1o208yU8GbyO8c/R2tYJJ3NnCUcylPBXdDK2+ALNNClbNXEEiEK
-Rhih3GHmxEeBFGJ1gcADfLZ3DK10io4yrlwYn86syFsC/EYNJwjqlkiiAHb3dvsH
-YZkAMaQcs5oXz8sFc/Yo25I6RP1iraTmxW7DTFTaELMaGJ6LiO5KoxJ0WobfFSar
-OhXXoK36r1PcqFPPK3tDiAISYeQnrl1Yr1+IYKNNaYoW0jWWo9zEaYAhSm5MnpyS
-9tCxOhppmiQ/j+VrWkm4ucng7RkO42B8yxBKpxEBR2o1KrH08ztAXaV6lONu1khl
-oXfE6Fnet9TzmZjvsSs/45ZCAM1FQx5tLh9icxx76t9aVO7LHZf7A01K7lnntrNf
-JOe01+J4wSL4m75b/3tWpfAkBri78k2H/Gsf78yuMW9I5w4MU0TiWq+N85N2c0sN
-mkEOojlCzA6LLRpS9a2yIQHPWqOnq2mZvULyEPuizI6Zx40FP9Opkt4jo0etyUrD
-8Z6wwC4xP1inotsDrpiMJN1sdbz7PYXzUMdc3nX737IM06MZYCKK9LWEtS5aqehY
-dN0lQ/zKf5b/gCn4Yq7JPddrsszUW2XmNO4rz/VqU7lgqZOEKY0O5up/4/SyGFLH
-5kSt0eTHquHMQI1rwU1io5RwVggbDDJ1OVt3+4VojjigDXv1dJM=
-=ZeJD
+iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlwXR/kACgkQ9FVsWUWD
+Dm1KQA//bOV3Ya9xQKhvUTsxTfGuLmNwHCnLbZqPSp5QqYtHMPN/tXl/QqYvVW+R
+MM6ZYeMBBIoTruqgmqTgal+Y0UPjRNzx5H7x01zIP/C7dpQaT6WEJ5HgXyMDg+yU
+Sn0wRolkYy2lHc8pl2ikzpJYAytfad+wMedvmAd4j1Lnk3TZXtlGj4v4VS28sjwc
+VBqpsZtFRLjvmXMY+zRlx6H4LNUvysBQDeQs23+XkW+R8MA6I/kPcxnG7w3rBmw0
+yC36AKp8vBtoaf1pR+3tSJb5x6hYQSS9Nzv6aH5XKlGnXXX/AlOWxyP9CxlzE203
+QpdQHu0k0HmSwiDSsldZijZFZggXW3ZSJ1NXFzlql/nVxTd2TnuZSwUMYjPhdkrX
+73QGf6GOKicaHYlQXUIUOruivUrmNzkkG66rTwK1goCphAOJdw67RCKe+fBoX96P
+Ha9lKEMQ9srDkIRotygRrCKw+yqUtyTGUyuG06ZPmad+4aiv+dhRRtNw7Lin+dxh
+FJ4dsIAFlnzO1pqnIRPBwWMwLRRWF4abTJsBeMpQKnE666M5u8usxISyZ1C6/ZOB
+BorQ31sM/n5TlEJzmgBRXJjjo9WaMF+ewUZPE/nqbulCqJaMSPREtsZ5J4HzFm9R
+KNAPK2Ch6TzqN0oSg6pYczp9oJWAsvcSXPc6/q4cqkt89LwFAMQ=
+=JCd7
 -----END PGP SIGNATURE-----
 
---2Kz4SJ6mxCmOlsRoDO1pC58UTWGcFko8n--
+--MTy7aqP73LTrtknGu6XmYaTyZkTbeEfxO--
 
