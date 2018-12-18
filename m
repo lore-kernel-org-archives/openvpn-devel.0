@@ -1,10 +1,10 @@
-Date: Tue, 18 Dec 2018 15:39:36 +0100 (CET)
-Message-Id: <201812181439.wBIEdaBo043544@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20181205214037.70783-1-gert@...1296...>
-References: <20181205214037.70783-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Stop complaining about IPv6
- routes without gateway address.
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <9a1a18c6-67ff-73ad-69aa-bbb75df45490@...515...>
+Date: Tue, 18 Dec 2018 16:56:32 +0200
+MIME-Version: 1.0
+Content-Language: en-US
+Subject: [Openvpn-devel]  Topics for the community meeting (Wed,
+ 19th Dec 2018)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,42 +13,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master branch.
+Hi,
 
-I haven't put it into release/2.4 as this is more a "make things nicer"
-than a bugfix - plus it needs the "--route-ipv6-gateway" feature from
-d24e1b179b95, which is "new feature" and thus not in 2.4.
+We're going to have an IRC meeting starting at 11:30 CET
+(10:30 UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have
+to be logged in to Freenode to join the channel.
 
-Reformatted braces as suggested.  Interesting enough, our uncrustify 
-rules permit both "a space before the closing bracked" and "no space" 
-(and I think this is good enough, sometimes you just want the extra 
-space for readability - but maybe not in this case).
+Current topic list along with basic information is here:
 
-I've left the message as it was, because "putting it all in one line" 
-creates a 220 characters wide line - which is definitely in "Steffan
-will come and kick me" land.
+<https://community.openvpn.net/openvpn/wiki/Topics-2018-12-19>
 
-commit 14d7e0e496f15563005fffc6d4791a95444ddf23 (master)
-Author: Gert Doering
-Date:   Wed Dec 5 22:40:37 2018 +0100
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
 
-     Stop complaining about IPv6 routes without gateway address.
-
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20181205214037.70783-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17990.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
+In case you can't attend the meeting, please feel free to make comments
+on the topics by responding to this email or to the summary email sent
+after the meeting. Whenever possible, we'll also respond to existing,
+related email threads.
 
 --
-kind regards,
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-Gert Doering
+irc freenode net: mattock
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
