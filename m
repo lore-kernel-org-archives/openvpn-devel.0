@@ -1,14 +1,10 @@
-References: <a3b6dcb2-9c04-3001-797f-fa49fccda790@...1879...>
- <d4d4f37c-b5a3-4bf3-361c-ff4ae2e9ec8d@...515...>
- <325823f7-1c48-d86a-fd22-3e8eac2971b6@...1879...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <56cdde83-aa02-5b75-beae-629a2d480355@...515...>
-Date: Mon, 17 Dec 2018 16:17:57 +0200
-MIME-Version: 1.0
-In-Reply-To: <325823f7-1c48-d86a-fd22-3e8eac2971b6@...1879...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] sbuild_wrapper: state of official openvpn
- repository
+Date: Tue, 18 Dec 2018 14:48:50 +0100 (CET)
+Message-Id: <201812181348.wBIDmoAG041237@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20181207123303.70827-1-gert@...1296...>
+References: <20181207123303.70827-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add 'printing of port number'
+ to mroute_addr_print_ex() for v4-mapped v6.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,52 +15,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: =?UTF-8?Q?Enno_Gr=c3=b6per?= <groepeen@...1879...>, openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Il 17/12/18 16:06, Enno Gröper ha scritto:
-> Hi,
-> 
-> Am 17.12.18 um 14:29 schrieb Samuli Seppänen:
->> Somebody needs to do it. I started the work, but my sbuild_wrapper VM
->> was too old (Debian 7) and it gave me serious issues with the Ubuntu
->> 18.04 shcroot. So I decided to upgrade the builder. Then other work
->> slowed that project down and I haven't been able to really resume it
->> yet.
-> 
-> I'm currently trying with Ubuntu 18.04 as build machine.
+Patch has been applied to the master and release/2.4 branch (as I see
+this as a bugfix).  Uncrustify applied, tabs are spaced.
 
-That should be perfect. My new build VM is Ubuntu 18.04 as well.
+"Print port numbers on v6 addresses" landed on my agenda again, need
+to make up my mind on address format and then come up with a proposal.
 
->> I think I might actually setup a Vagrant environment for
->> this - we have it for openvpn-build already. That would make it easier
->> for others to setup the sbuild_wrapper environment and provide
->> contributions to it. I could do this fairly quickly.
-> 
-> I fully agree with that. Currently I'm trying to follow your README and
-> it's not that easy-going.
+commit 4543b13b8540836f6faf67a03b5358bb8bb94a4a (master)
+commit c2f7058700bc12858a74c53266534c567d1b05f2 (release/2.4)
+Author: Gert Doering
+Date:   Fri Dec 7 13:33:03 2018 +0100
 
-Ok. I will, as a first step, publish a Vagrant VM in
-https://github.com/OpenVPN/openvpn-vagrant that sets up everything
-needed to use sbuild_wrapper. I'll do the provisioning so that I can
-reuse the same code in production. Launching the VM will require
-Virtualbox, at least until somebody is sufficiently motivated to make
-the VM run on something else (e.g. via libvirt).
+     Add 'printing of port number' to mroute_addr_print_ex() for v4-mapped v6.
 
-> 
->> Fixed. The CreatingUnixPackages page was truly obsolete.
-> 
-> Nice. Since I wasn't sure about the state, I didn't want to change
-> things prematurely.
-> 
-> Kind Regards,
-> Enno
-> 
-> 
-> 
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> 
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20181207123303.70827-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17996.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
