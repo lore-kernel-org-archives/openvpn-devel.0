@@ -1,13 +1,9 @@
-References: <20181218140945.GU962@...1296...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <8d921fbc-7baa-62c7-5689-ccfc9bf16240@...2181...>
-Date: Wed, 19 Dec 2018 09:09:30 +1000
+Date: Wed, 19 Dec 2018 15:01:11 +1000
+Message-Id: <20181219050118.6568-1-a@...2181...>
 MIME-Version: 1.0
-In-Reply-To: <20181218140945.GU962@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="Ynd08K8Ybpr8uTNNs3DpWMa0IVasAxRLw"
-Subject: Re: [Openvpn-devel] RfD: printing of port numbers on v6 addresses
+Subject: [Openvpn-devel] [PATCH v3 0/7] introduce networking API and add
+ netlink support for Linux
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,115 +12,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---Ynd08K8Ybpr8uTNNs3DpWMa0IVasAxRLw
-Content-Type: multipart/mixed; boundary="9TaZjD5K9UXBMpbnylBTi7wExnLw9s1S2";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <8d921fbc-7baa-62c7-5689-ccfc9bf16240@...2181...>
-Subject: Re: [Openvpn-devel] RfD: printing of port numbers on v6 addresses
-References: <20181218140945.GU962@...1296...>
-In-Reply-To: <20181218140945.GU962@...1296...>
+From a high level description of this patchset, please refer to
+"[PATCH 0/4] add netlink support for Linux" sent to the mailing list on
+Apr, 20th 2018.
 
---9TaZjD5K9UXBMpbnylBTi7wExnLw9s1S2
-Content-Language: en-US
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Changes from v2:
+- addressed some of Arne's comments sent to the mailing list
+- renamed networking_ip.* to networking_iproute2.* 
+- fixed minor bugs discovered during the integration with OVPN3
 
-Hi,
-
-On 19/12/2018 00:09, Gert Doering wrote:
-> Hi,
->=20
-> somewhen before 2.4 we lost "printing of port numbers on v6 addresses"
-> - we used to dumbly print v6addr:port, leading to
->=20
->   2001:db8::123:1194
->=20
-> which is less than clear on "is this a v6 address plus port 1194" or=20
-> "just a longer v6 address".  Now we just print 2001:db8::123 in things
-> like the log line prefix, with no port indication.
->=20
-> "The Internet" says there are two widely used conventions:
->=20
-> - One is "the URI format as per rfc3986", which would make this
->=20
->      [2001:db8::123]:1194
->=20
->   which is "IPv6 literal addresses are always enclosed in square brackets=
-",
->   and if the port is printed, it's tacked on with ":port".
->=20
-> - the other one is "what tcpdump and others do", tacking the port onto
->   the v6 address with ".", so this would become:
->=20
->      2001:db8::123.1194
->=20
->   also unambiguous (even in the v4-compatible 2001:db8::1.2.3.4.1194=20
->   form), though possibly confusing.  This is what RFC5952 has to offer
->   (plus "2001:db8::1 port 80" and "2001:db8::1p80" and "#80") - see
->   https://tools.ietf.org/html/rfc5952#section-6
->=20
->=20
-> I find most of these forms ugly, but I want to "repair" this issue - not=
-=20
-> the least because our management interface has "kill client by IP+Port",
-> which is currently broken because we do not print the port number at
-> all... (it might still be broken due to the way it works internally,
-> but that's a new can of worms).
->=20
-> See also https://community.openvpn.net/openvpn/ticket/664 for more
-> background.
->=20
->=20
-> Opinions?
-
-
-I personally prefer the rfc3986 notation because it is more widespread
-and, therefore, easier to understand/recognize.
-
-The tcpdump notation has the advantage of working with both v4 and v6,
-but it's not really standard, so less ideal imho.
-
-After all somebody has already agreed on a notation, so there is no need
-to re-invent the wheel on our side.
-
+Changes from v1:
+- introduced opaque context object containing implementation specific
+  state;
+- fixed env passed to ip command (thanks to opaque context);
+- rebased on to pof latest master (00d78cd5)
 
 Regards,
 
 
---=20
-Antonio Quartulli
+Antonio Quartulli (7):
+  implement networking API for iproute2
+  introduce sitnl: Simplified Interface To NetLink
+  tun.c: use new networking API to handle tun interface on Linux
+  route.c: use new networking API to handle routing table on Linux
+  route.c: use sitnl to implement get_default_gateway_ipv6()
+  unit tests: implement test for sitnl
+  travis.yml: add test for iproute2 net implementation
 
+ .travis.yml                                |    3 +
+ configure.ac                               |   15 +-
+ src/openvpn/Makefile.am                    |    2 +
+ src/openvpn/errlevel.h                     |    1 +
+ src/openvpn/forward.c                      |    2 +-
+ src/openvpn/init.c                         |   55 +-
+ src/openvpn/init.h                         |    5 +-
+ src/openvpn/networking.h                   |    8 +-
+ src/openvpn/networking_iproute2.c          |  385 ++++++
+ src/openvpn/networking_iproute2.h          |   36 +
+ src/openvpn/networking_sitnl.c             | 1228 ++++++++++++++++++++
+ src/openvpn/networking_sitnl.h             |   28 +
+ src/openvpn/openvpn.c                      |    4 +-
+ src/openvpn/openvpn.h                      |    2 +
+ src/openvpn/options.c                      |   10 +-
+ src/openvpn/options.h                      |    1 +
+ src/openvpn/route.c                        |  497 +++-----
+ src/openvpn/route.h                        |   26 +-
+ src/openvpn/sitnl.h                        |  217 ++++
+ src/openvpn/ssl.c                          |    2 +-
+ src/openvpn/ssl_common.h                   |    1 +
+ src/openvpn/tun.c                          |  233 ++--
+ src/openvpn/tun.h                          |   14 +-
+ tests/Makefile.am                          |    3 +-
+ tests/t_net.sh                             |  180 +++
+ tests/unit_tests/openvpn/Makefile.am       |   30 +-
+ tests/unit_tests/openvpn/test_networking.c |  229 ++++
+ 27 files changed, 2707 insertions(+), 510 deletions(-)
+ create mode 100644 src/openvpn/networking_iproute2.c
+ create mode 100644 src/openvpn/networking_iproute2.h
+ create mode 100644 src/openvpn/networking_sitnl.c
+ create mode 100644 src/openvpn/networking_sitnl.h
+ create mode 100644 src/openvpn/sitnl.h
+ create mode 100755 tests/t_net.sh
+ create mode 100644 tests/unit_tests/openvpn/test_networking.c
 
---9TaZjD5K9UXBMpbnylBTi7wExnLw9s1S2--
+-- 
+2.19.2
 
---Ynd08K8Ybpr8uTNNs3DpWMa0IVasAxRLw
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlwZfioACgkQ9FVsWUWD
-Dm2Z/hAAuL7iLwX24RnZYLEOJD7D6fFr+HZUMCnMlIPo+jNMXQYRe3Xu4H0bAz5b
-oy1mJ8oj3TKUOZ3WiHq3ocO0YHYdYX4fD915cfNw034ag3JrBOMVXjmaOx0NUVuz
-v3uiONR1M4iak7KQ8qK1MbO0yx+cBcFLxkVtGkslG/ujBOkYcEwbLCh1K2o77P4w
-0h+1hYKpKUIhVXGps2f8F02VaSSMoUWCBxKgymOTL8TdZwxhPCDIhyG9ffj3qryX
-+1WKY+cqp1P/sy5IZseKpLTWtEnQSpO0FGtLkKuNGl6hw8m7vUzutbG5noAEu+O2
-q2D2B7UEDiPsYp5jy/+6XI9WiSFdE7V7xOnQjZU20HzdCFST8MmN0Tgt0JBMVYKN
-et8R7rrCCObKX7d9PLlhDU2RFyX2aDJ1o+J22zRfVrr3WdiskOFMVLVx+WILhf5V
-KXSfzkxDaV+IsrzL4cfA9pgwnFL9rtCxoWRzTDxlMAPC/d2UnhzzKR2I2TXpORT/
-xBS9GyxQHEnj1/9ZL/gC7K6OxJFvCzb3tBGvwQK0kJS2jgzAW/KYIp8LSC2QUuUx
-P4NJqokERPlTzsZklUTF2O1f+RDcm72iqaNon7t+FyTpCFsoRGZzkZM0Tz/BwkD3
-oP0HAzKwhOy5Q64jsuIBNR823oH11T5NnuHcVJF9VTWRAtVRXpU=
-=Vd+b
------END PGP SIGNATURE-----
-
---Ynd08K8Ybpr8uTNNs3DpWMa0IVasAxRLw--
 
