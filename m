@@ -1,11 +1,10 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Wed, 19 Dec 2018 15:01:15 +1000
-Message-Id: <20181219050118.6568-5-a@...2181...>
+Date: Wed, 19 Dec 2018 15:01:17 +1000
+Message-Id: <20181219050118.6568-7-a@...2181...>
 In-Reply-To: <20181219050118.6568-1-a@...2181...>
 References: <20181219050118.6568-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 4/7] route.c: use new networking API to
- handle routing table on Linux
+Subject: [Openvpn-devel] [PATCH v3 6/7] unit tests: implement test for sitnl
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,1111 +18,541 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <a@...2181...>
 
-By switching to the networking API (for Linux) openvpn will
-now use any of the available implementations to handle the
-routing table.
+This patch introduces a new unit test that is not executed
+by the cmocka framework, but rather used by a new t_net.sh
+bash script.
 
-At the moment only iproute2 is implemented.
+The idea behind this test is to ensure that invoking sitnl
+functions or running iproute commands leads to the same
+networking (interface and routing table) state.
+
+To achieve this, the t_net.sh script first runs a binary
+implemented invoking sitnl functions and then takes a
+"screenshot" of the state. Subsequently a series of
+iproute commands, expected to mimic exactly the same behaviour
+as the sitnl functions invoked before, are executed.
+The final state is then compared with the screenshot
+previously taken.
+
+If no mismatching is found, the test is passed.
+
+The current unit_test, however, does not cover all the
+sitnl functionalities and it is expected to be extended
+in the future.
 
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- src/openvpn/forward.c             |   2 +-
- src/openvpn/init.c                |  24 ++-
- src/openvpn/init.h                |   3 +-
- src/openvpn/networking_iproute2.c |   1 -
- src/openvpn/options.c             |   4 +-
- src/openvpn/route.c               | 336 ++++++++++++------------------
- src/openvpn/route.h               |  19 +-
- src/openvpn/ssl.c                 |   2 +-
- src/openvpn/ssl_common.h          |   1 +
- src/openvpn/tun.c                 |  18 +-
- src/openvpn/tun.h                 |   2 +-
- 11 files changed, 184 insertions(+), 228 deletions(-)
+ configure.ac                               |   2 +
+ tests/Makefile.am                          |   3 +-
+ tests/t_net.sh                             | 180 ++++++++++++++++
+ tests/unit_tests/openvpn/Makefile.am       |  30 ++-
+ tests/unit_tests/openvpn/test_networking.c | 229 +++++++++++++++++++++
+ 5 files changed, 438 insertions(+), 6 deletions(-)
+ create mode 100755 tests/t_net.sh
+ create mode 100644 tests/unit_tests/openvpn/test_networking.c
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 0a90fff0..baa0585a 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -508,7 +508,7 @@ static void
- check_add_routes_action(struct context *c, const bool errors)
- {
-     do_route(&c->options, c->c1.route_list, c->c1.route_ipv6_list,
--             c->c1.tuntap, c->plugins, c->c2.es);
-+             c->c1.tuntap, c->plugins, c->c2.es, &c->net_ctx);
-     update_time();
-     event_timeout_clear(&c->c2.route_wakeup);
-     event_timeout_clear(&c->c2.route_wakeup_expire);
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index bf27ff12..395f4ff0 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1426,7 +1426,8 @@ static void
- do_init_route_list(const struct options *options,
-                    struct route_list *route_list,
-                    const struct link_socket_info *link_socket_info,
--                   struct env_set *es)
-+                   struct env_set *es,
-+                   openvpn_net_ctx_t *ctx)
- {
-     const char *gw = NULL;
-     int dev = dev_type_enum(options->dev, options->dev_type);
-@@ -1450,7 +1451,8 @@ do_init_route_list(const struct options *options,
-                         gw,
-                         metric,
-                         link_socket_current_remote(link_socket_info),
--                        es))
-+                        es,
-+                        ctx))
-     {
-         /* copy routes to environment */
-         setenv_routes(es, route_list);
-@@ -1633,11 +1635,13 @@ do_route(const struct options *options,
-          struct route_ipv6_list *route_ipv6_list,
-          const struct tuntap *tt,
-          const struct plugin_list *plugins,
--         struct env_set *es)
-+         struct env_set *es,
-+         openvpn_net_ctx_t *ctx)
- {
-     if (!options->route_noexec && ( route_list || route_ipv6_list ) )
-     {
--        add_routes(route_list, route_ipv6_list, tt, ROUTE_OPTION_FLAGS(options), es);
-+        add_routes(route_list, route_ipv6_list, tt, ROUTE_OPTION_FLAGS(options),
-+                   es, ctx);
-         setenv_int(es, "redirect_gateway", route_did_redirect_default_gateway(route_list));
-     }
- #ifdef ENABLE_MANAGEMENT
-@@ -1750,7 +1754,7 @@ do_open_tun(struct context *c)
-     if (c->options.routes && c->c1.route_list)
-     {
-         do_init_route_list(&c->options, c->c1.route_list,
--                           &c->c2.link_socket->info, c->c2.es);
-+                           &c->c2.link_socket->info, c->c2.es, &c->net_ctx);
-     }
-     if (c->options.routes_ipv6 && c->c1.route_ipv6_list)
-     {
-@@ -1777,7 +1781,7 @@ do_open_tun(struct context *c)
-     {
-         /* Ignore route_delay, would cause ROUTE_BEFORE_TUN to be ignored */
-         do_route(&c->options, c->c1.route_list, c->c1.route_ipv6_list,
--                 c->c1.tuntap, c->plugins, c->c2.es);
-+                 c->c1.tuntap, c->plugins, c->c2.es, &c->net_ctx);
-     }
- #ifdef TARGET_ANDROID
-     /* Store the old fd inside the fd so open_tun can use it */
-@@ -1834,7 +1838,7 @@ do_open_tun(struct context *c)
-     if ((route_order() == ROUTE_AFTER_TUN) && (!c->options.route_delay_defined))
-     {
-         do_route(&c->options, c->c1.route_list, c->c1.route_ipv6_list,
--                 c->c1.tuntap, c->plugins, c->c2.es);
-+                 c->c1.tuntap, c->plugins, c->c2.es, &c->net_ctx);
-     }
+diff --git a/configure.ac b/configure.ac
+index 2a51ad46..90666f04 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -294,9 +294,11 @@ else
+ fi
  
-     /*
-@@ -1963,7 +1967,8 @@ do_close_tun(struct context *c, bool force)
-                             c->c2.es);
+ AC_DEFINE_UNQUOTED([TARGET_ALIAS], ["${host}"], [A string representing our host])
++AM_CONDITIONAL([TARGET_LINUX], [false])
+ case "$host" in
+ 	*-*-linux*)
+ 		AC_DEFINE([TARGET_LINUX], [1], [Are we running on Linux?])
++		AM_CONDITIONAL([TARGET_LINUX], [true])
+ 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["L"], [Target prefix])
+ 		have_sitnl="yes"
+ 		;;
+diff --git a/tests/Makefile.am b/tests/Makefile.am
+index e6803864..67acf7e3 100644
+--- a/tests/Makefile.am
++++ b/tests/Makefile.am
+@@ -14,7 +14,8 @@ MAINTAINERCLEANFILES = \
  
-                 delete_routes(c->c1.route_list, c->c1.route_ipv6_list,
--                              c->c1.tuntap, ROUTE_OPTION_FLAGS(&c->options), c->c2.es);
-+                              c->c1.tuntap, ROUTE_OPTION_FLAGS(&c->options),
-+                              c->c2.es, &c->net_ctx);
-             }
+ SUBDIRS = unit_tests
  
-             /* actually close tun/tap device based on --down-pre flag */
-@@ -2820,6 +2825,7 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
-     to.x509_username_field = X509_USERNAME_FIELD_DEFAULT;
- #endif
-     to.es = c->c2.es;
-+    to.net_ctx = &c->net_ctx;
+-test_scripts = t_client.sh
++test_scripts = t_net.sh
++test_scripts += t_client.sh
+ test_scripts += t_lpback.sh t_cltsrv.sh
  
- #ifdef ENABLE_DEBUG
-     to.gremlin = c->options.gremlin;
-@@ -3182,7 +3188,7 @@ do_option_warnings(struct context *c)
+ TESTS_ENVIRONMENT = top_srcdir="$(top_srcdir)"
+diff --git a/tests/t_net.sh b/tests/t_net.sh
+new file mode 100755
+index 00000000..0be5bb42
+--- /dev/null
++++ b/tests/t_net.sh
+@@ -0,0 +1,180 @@
++#!/bin/sh
++
++IFACE="dummy0"
++UNIT_TEST="./unit_tests/openvpn/networking_testdriver"
++MAX_TEST=${1:-7}
++
++KILL_EXEC=`which kill`
++CC=${CC:-gcc}
++
++srcdir="${srcdir:-.}"
++top_builddir="${top_builddir:-..}"
++openvpn="${top_builddir}/src/openvpn/openvpn"
++
++
++# bail out right away on non-linux. NetLink (the object of this test) is only
++# used on Linux, therefore testing other platform is not needed.
++#
++# Note: statements in the rest of the script may not even pass syntax check on
++# solaris/bsd. It uses /bin/bash
++if [ "$(uname -s)" != "Linux" ]; then
++    echo "$0: this test runs only on Linux. SKIPPING TEST."
++    exit 77
++fi
++
++# Commands used to retrieve the network state.
++# State is retrieved after running sitnl and after running
++# iproute commands. The two are then compared and expected to be equal.
++typeset -a GET_STATE
++GET_STATE[0]="ip link show dev $IFACE | sed 's/^[0-9]\+: //'"
++GET_STATE[1]="ip addr show dev $IFACE | sed 's/^[0-9]\+: //'"
++GET_STATE[2]="ip route show dev $IFACE"
++GET_STATE[3]="ip -6 route show dev $IFACE"
++
++LAST_STATE=$((${#GET_STATE[@]} - 1))
++
++reload_dummy()
++{
++    $RUN_SUDO $openvpn --dev $IFACE --dev-type tun --rmtun >/dev/null
++    $RUN_SUDO $openvpn --dev $IFACE --dev-type tun --mktun >/dev/null
++    if [ $? -ne 0 ]; then
++        echo "can't create interface $IFACE"
++        exit 1
++    fi
++
++    #ip link set dev $IFACE address 00:11:22:33:44:55
++}
++
++run_test()
++{
++    # run all test cases from 0 to $1 in sequence
++    CMD=
++    for k in $(seq 0 $1); do
++        # the unit-test prints to stdout the iproute command corresponding
++        # to the sitnl operation being executed.
++        # Format is "CMD: <commandhere>"
++        OUT=$($RUN_SUDO $UNIT_TEST $k $IFACE)
++        # ensure unit test worked properly
++        if [ $? -ne 0 ]; then
++            echo "unit-test $k errored out:"
++            echo "$OUT"
++            exit 1
++        fi
++
++        NEW=$(echo "$OUT" | sed -n 's/CMD: //p')
++        CMD="$CMD $RUN_SUDO $NEW ;"
++    done
++
++    # collect state for later comparison
++    for k in $(seq 0 $LAST_STATE); do
++        STATE_TEST[$k]="$(eval ${GET_STATE[$k]})"
++    done
++}
++
++
++## execution starts here
++
++if [ -r "${top_builddir}"/t_client.rc ]; then
++    . "${top_builddir}"/t_client.rc
++elif [ -r "${srcdir}"/t_client.rc ]; then
++    . "${srcdir}"/t_client.rc
++else
++    echo "$0: cannot find 't_client.rc' in build dir ('${top_builddir}')" >&2
++    echo "$0: or source directory ('${srcdir}'). SKIPPING TEST." >&2
++    exit 77
++fi
++
++if [ ! -x "$openvpn" ]; then
++    echo "no (executable) openvpn binary in current build tree. FAIL." >&2
++    exit 1
++fi
++
++if [ ! -x "$UNIT_TEST" ]; then
++    echo "no test_networking driver available. SKIPPING TEST." >&2
++    exit 77
++fi
++
++
++# Ensure PREFER_KSU is in a known state
++PREFER_KSU="${PREFER_KSU:-0}"
++
++# make sure we have permissions to run ifconfig/route from OpenVPN
++# can't use "id -u" here - doesn't work on Solaris
++ID=`id`
++if expr "$ID" : "uid=0" >/dev/null
++then :
++else
++    if [ "${PREFER_KSU}" -eq 1 ];
++    then
++        # Check if we have a valid kerberos ticket
++        klist -l 1>/dev/null 2>/dev/null
++        if [ $? -ne 0 ];
++        then
++            # No kerberos ticket found, skip ksu and fallback to RUN_SUDO
++            PREFER_KSU=0
++            echo "$0: No Kerberos ticket available.  Will not use ksu."
++        else
++            RUN_SUDO="ksu -q -e"
++        fi
++    fi
++
++    if [ -z "$RUN_SUDO" ]
++    then
++        echo "$0: this test must run be as root, or RUN_SUDO=... " >&2
++        echo "      must be set correctly in 't_client.rc'. SKIP." >&2
++        exit 77
++    else
++        # We have to use sudo. Make sure that we (hopefully) do not have
++        # to ask the users password during the test. This is done to
++        # prevent timing issues, e.g. when the waits for openvpn to start
++	    if $RUN_SUDO $KILL_EXEC -0 $$
++        then
++	        echo "$0: $RUN_SUDO $KILL_EXEC -0 succeeded, good."
++        else
++	        echo "$0: $RUN_SUDO $KILL_EXEC -0 failed, cannot go on. SKIP." >&2
++	        exit 77
++        fi
++    fi
++fi
++
++for i in $(seq 0 $MAX_TEST); do
++    # reload dummy module to cleanup state
++    reload_dummy
++    typeset -a STATE_TEST
++    run_test $i
++
++    # reload dummy module to cleanup state before running iproute commands
++    reload_dummy
++
++    # CMD has been set by the unit test
++    eval $CMD
++    if [ $? -ne 0 ]; then
++        echo "error while executing:"
++        echo "$CMD"
++        exit 1
++    fi
++
++    # collect state after running manual ip command
++    for k in $(seq 0 $LAST_STATE); do
++        STATE_IP[$k]="$(eval ${GET_STATE[$k]})"
++    done
++
++    # ensure states after running unit test matches the one after running
++    # manual iproute commands
++    for j in $(seq 0 $LAST_STATE); do
++        if [ "${STATE_TEST[$j]}" != "${STATE_IP[$j]}" ]; then
++            echo "state $j mismatching after '$CMD'"
++            echo "after unit-test:"
++            echo "${STATE_TEST[$j]}"
++            echo "after iproute command:"
++            echo "${STATE_IP[$j]}"
++            exit 1
++        fi
++    done
++
++done
++
++# remove interface for good
++$RUN_SUDO $openvpn --dev $IFACE --dev-type tun --rmtun >/dev/null
++
++exit 0
+diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
+index b4304e35..e4471c09 100644
+--- a/tests/unit_tests/openvpn/Makefile.am
++++ b/tests/unit_tests/openvpn/Makefile.am
+@@ -1,17 +1,22 @@
+ AUTOMAKE_OPTIONS = foreign
  
-     if (o->tls_server)
-     {
--        warn_on_use_of_common_subnets();
-+        warn_on_use_of_common_subnets(&c->net_ctx);
-     }
-     if (o->tls_client
-         && !o->tls_verify
-diff --git a/src/openvpn/init.h b/src/openvpn/init.h
-index ba5eda06..fa70bab2 100644
---- a/src/openvpn/init.h
-+++ b/src/openvpn/init.h
-@@ -76,7 +76,8 @@ void do_route(const struct options *options,
-               struct route_ipv6_list *route_ipv6_list,
-               const struct tuntap *tt,
-               const struct plugin_list *plugins,
--              struct env_set *es);
-+              struct env_set *es,
-+              openvpn_net_ctx_t *ctx);
+-check_PROGRAMS=
++test_binaries=
  
- void close_instance(struct context *c);
+ if HAVE_LD_WRAP_SUPPORT
+-check_PROGRAMS += argv_testdriver buffer_testdriver
++test_binaries += argv_testdriver buffer_testdriver
+ endif
  
-diff --git a/src/openvpn/networking_iproute2.c b/src/openvpn/networking_iproute2.c
-index a5a6585f..918d62ef 100644
---- a/src/openvpn/networking_iproute2.c
-+++ b/src/openvpn/networking_iproute2.c
-@@ -29,7 +29,6 @@
- #include "syshead.h"
+-check_PROGRAMS += crypto_testdriver packet_id_testdriver
++test_binaries += crypto_testdriver packet_id_testdriver
+ if HAVE_LD_WRAP_SUPPORT
+-check_PROGRAMS += tls_crypt_testdriver
++test_binaries += tls_crypt_testdriver
+ endif
  
- #include "networking.h"
--#include "networking_iproute2.h"
- #include "misc.h"
- #include "openvpn.h"
- #include "run_command.h"
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 97a2723a..1f890f45 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -5006,12 +5006,14 @@ add_option(struct options *options,
-         struct route_gateway_info rgi;
-         struct route_ipv6_gateway_info rgi6;
-         struct in6_addr remote = IN6ADDR_ANY_INIT;
-+        openvpn_net_ctx_t net_ctx;
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-         if (p[1])
-         {
-             get_ipv6_addr(p[1], &remote, NULL, M_WARN);
-         }
--        get_default_gateway(&rgi);
-+        net_ctx_init(NULL, &net_ctx);
-+        get_default_gateway(&rgi, &net_ctx);
-         get_default_gateway_ipv6(&rgi6, &remote);
-         print_default_gateway(M_INFO, &rgi, &rgi6);
-         openvpn_exit(OPENVPN_EXIT_STATUS_GOOD); /* exit point */
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 2836d532..483b46ae 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -41,6 +41,7 @@
- #include "manage.h"
- #include "win32.h"
- #include "options.h"
+-TESTS = $(check_PROGRAMS)
++TESTS = $(test_binaries)
++check_PROGRAMS = $(test_binaries)
++
++if TARGET_LINUX
++check_PROGRAMS += networking_testdriver
++endif
+ 
+ openvpn_includedir = $(top_srcdir)/include
+ openvpn_srcdir = $(top_srcdir)/src/openvpn
+@@ -68,3 +73,18 @@ tls_crypt_testdriver_SOURCES = test_tls_crypt.c mock_msg.c \
+ 	$(openvpn_srcdir)/packet_id.c \
+ 	$(openvpn_srcdir)/platform.c \
+ 	$(openvpn_srcdir)/run_command.c
++
++networking_testdriver_CFLAGS = @TEST_CFLAGS@ \
++	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir) \
++	$(OPTIONAL_CRYPTO_CFLAGS)
++networking_testdriver_LDFLAGS = @TEST_LDFLAGS@ -L$(openvpn_srcdir) \
++	$(OPTIONAL_CRYPTO_LIBS)
++networking_testdriver_SOURCES = test_networking.c mock_msg.c \
++	$(openvpn_srcdir)/networking_sitnl.c \
++	$(openvpn_srcdir)/buffer.c \
++	$(openvpn_srcdir)/crypto.c \
++	$(openvpn_srcdir)/crypto_mbedtls.c \
++	$(openvpn_srcdir)/crypto_openssl.c \
++	$(openvpn_srcdir)/otime.c \
++	$(openvpn_srcdir)/packet_id.c \
++	$(openvpn_srcdir)/platform.c
+diff --git a/tests/unit_tests/openvpn/test_networking.c b/tests/unit_tests/openvpn/test_networking.c
+new file mode 100644
+index 00000000..66035011
+--- /dev/null
++++ b/tests/unit_tests/openvpn/test_networking.c
+@@ -0,0 +1,229 @@
++#include "config.h"
++#include "syshead.h"
 +#include "networking.h"
- 
- #include "memdbg.h"
- 
-@@ -62,7 +63,7 @@ static bool del_route_ipv6_service(const struct route_ipv6 *, const struct tunta
- 
- #endif
- 
--static void delete_route(struct route_ipv4 *r, const struct tuntap *tt, unsigned int flags, const struct route_gateway_info *rgi, const struct env_set *es);
-+static void delete_route(struct route_ipv4 *r, const struct tuntap *tt, unsigned int flags, const struct route_gateway_info *rgi, const struct env_set *es, openvpn_net_ctx_t *ctx);
- 
- static void get_bypass_addresses(struct route_bypass *rb, const unsigned int flags);
- 
-@@ -608,7 +609,8 @@ init_route_list(struct route_list *rl,
-                 const char *remote_endpoint,
-                 int default_metric,
-                 in_addr_t remote_host,
--                struct env_set *es)
-+                struct env_set *es,
-+                openvpn_net_ctx_t *ctx)
- {
-     struct gc_arena gc = gc_new();
-     bool ret = true;
-@@ -629,7 +631,7 @@ init_route_list(struct route_list *rl,
-         rl->spec.flags |= RTSA_DEFAULT_METRIC;
-     }
- 
--    get_default_gateway(&rl->rgi);
-+    get_default_gateway(&rl->rgi, ctx);
-     if (rl->rgi.flags & RGI_ADDR_DEFINED)
-     {
-         setenv_route_addr(es, "net_gateway", rl->rgi.gateway.addr, -1);
-@@ -896,7 +898,8 @@ add_route3(in_addr_t network,
-            const struct tuntap *tt,
-            unsigned int flags,
-            const struct route_gateway_info *rgi,
--           const struct env_set *es)
-+           const struct env_set *es,
-+           openvpn_net_ctx_t *ctx)
- {
-     struct route_ipv4 r;
-     CLEAR(r);
-@@ -904,7 +907,7 @@ add_route3(in_addr_t network,
-     r.network = network;
-     r.netmask = netmask;
-     r.gateway = gateway;
--    add_route(&r, tt, flags, rgi, es);
-+    add_route(&r, tt, flags, rgi, es, ctx);
- }
- 
- static void
-@@ -914,7 +917,8 @@ del_route3(in_addr_t network,
-            const struct tuntap *tt,
-            unsigned int flags,
-            const struct route_gateway_info *rgi,
--           const struct env_set *es)
-+           const struct env_set *es,
-+           openvpn_net_ctx_t *ctx)
- {
-     struct route_ipv4 r;
-     CLEAR(r);
-@@ -922,7 +926,7 @@ del_route3(in_addr_t network,
-     r.network = network;
-     r.netmask = netmask;
-     r.gateway = gateway;
--    delete_route(&r, tt, flags, rgi, es);
-+    delete_route(&r, tt, flags, rgi, es, ctx);
- }
- 
- static void
-@@ -931,7 +935,8 @@ add_bypass_routes(struct route_bypass *rb,
-                   const struct tuntap *tt,
-                   unsigned int flags,
-                   const struct route_gateway_info *rgi,
--                  const struct env_set *es)
-+                  const struct env_set *es,
-+                  openvpn_net_ctx_t *ctx)
- {
-     int i;
-     for (i = 0; i < rb->n_bypass; ++i)
-@@ -944,7 +949,8 @@ add_bypass_routes(struct route_bypass *rb,
-                        tt,
-                        flags | ROUTE_REF_GW,
-                        rgi,
--                       es);
-+                       es,
-+                       ctx);
-         }
-     }
- }
-@@ -955,7 +961,8 @@ del_bypass_routes(struct route_bypass *rb,
-                   const struct tuntap *tt,
-                   unsigned int flags,
-                   const struct route_gateway_info *rgi,
--                  const struct env_set *es)
-+                  const struct env_set *es,
-+                  openvpn_net_ctx_t *ctx)
- {
-     int i;
-     for (i = 0; i < rb->n_bypass; ++i)
-@@ -968,13 +975,16 @@ del_bypass_routes(struct route_bypass *rb,
-                        tt,
-                        flags | ROUTE_REF_GW,
-                        rgi,
--                       es);
-+                       es,
-+                       ctx);
-         }
-     }
- }
- 
- static void
--redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt, unsigned int flags, const struct env_set *es)
-+redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt,
-+                              unsigned int flags, const struct env_set *es,
-+                              openvpn_net_ctx_t *ctx)
- {
-     const char err[] = "NOTE: unable to redirect default gateway --";
- 
-@@ -1030,7 +1040,8 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt, un
-                                tt,
-                                flags | ROUTE_REF_GW,
-                                &rl->rgi,
--                               es);
-+                               es,
-+                               ctx);
-                     rl->iflags |= RL_DID_LOCAL;
-                 }
-                 else
-@@ -1041,7 +1052,8 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt, un
- #endif /* ifndef TARGET_ANDROID */
- 
-             /* route DHCP/DNS server traffic through original default gateway */
--            add_bypass_routes(&rl->spec.bypass, rl->rgi.gateway.addr, tt, flags, &rl->rgi, es);
-+            add_bypass_routes(&rl->spec.bypass, rl->rgi.gateway.addr, tt, flags,
-+                              &rl->rgi, es, ctx);
- 
-             if (rl->flags & RG_REROUTE_GW)
-             {
-@@ -1054,7 +1066,8 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt, un
-                                tt,
-                                flags,
-                                &rl->rgi,
--                               es);
-+                               es,
-+                               ctx);
- 
-                     /* add new default route (2nd component) */
-                     add_route3(0x80000000,
-@@ -1063,7 +1076,8 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt, un
-                                tt,
-                                flags,
-                                &rl->rgi,
--                               es);
-+                               es,
-+                               ctx);
-                 }
-                 else
-                 {
-@@ -1072,7 +1086,7 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt, un
-                     {
-                         /* delete default route */
-                         del_route3(0, 0, rl->rgi.gateway.addr, tt,
--                                   flags | ROUTE_REF_GW, &rl->rgi, es);
-+                                   flags | ROUTE_REF_GW, &rl->rgi, es, ctx);
-                     }
- 
-                     /* add new default route */
-@@ -1082,7 +1096,8 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt, un
-                                tt,
-                                flags,
-                                &rl->rgi,
--                               es);
-+                               es,
-+                               ctx);
-                 }
-             }
- 
-@@ -1093,7 +1108,10 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt, un
- }
- 
- static void
--undo_redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt, unsigned int flags, const struct env_set *es)
-+undo_redirect_default_route_to_vpn(struct route_list *rl,
-+                                   const struct tuntap *tt, unsigned int flags,
-+                                   const struct env_set *es,
-+                                   openvpn_net_ctx_t *ctx)
- {
-     if (rl && rl->iflags & RL_DID_REDIRECT_DEFAULT_GATEWAY)
-     {
-@@ -1106,12 +1124,14 @@ undo_redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *t
-                        tt,
-                        flags | ROUTE_REF_GW,
-                        &rl->rgi,
--                       es);
-+                       es,
-+                       ctx);
-             rl->iflags &= ~RL_DID_LOCAL;
-         }
- 
-         /* delete special DHCP/DNS bypass route */
--        del_bypass_routes(&rl->spec.bypass, rl->rgi.gateway.addr, tt, flags, &rl->rgi, es);
-+        del_bypass_routes(&rl->spec.bypass, rl->rgi.gateway.addr, tt, flags,
-+                          &rl->rgi, es, ctx);
- 
-         if (rl->flags & RG_REROUTE_GW)
-         {
-@@ -1124,7 +1144,8 @@ undo_redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *t
-                            tt,
-                            flags,
-                            &rl->rgi,
--                           es);
-+                           es,
-+                           ctx);
- 
-                 /* delete default route (2nd component) */
-                 del_route3(0x80000000,
-@@ -1133,7 +1154,8 @@ undo_redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *t
-                            tt,
-                            flags,
-                            &rl->rgi,
--                           es);
-+                           es,
-+                           ctx);
-             }
-             else
-             {
-@@ -1144,12 +1166,13 @@ undo_redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *t
-                            tt,
-                            flags,
-                            &rl->rgi,
--                           es);
-+                           es,
-+                           ctx);
-                 /* restore original default route if there was any */
-                 if (rl->rgi.flags & RGI_ADDR_DEFINED)
-                 {
-                     add_route3(0, 0, rl->rgi.gateway.addr, tt,
--                               flags | ROUTE_REF_GW, &rl->rgi, es);
-+                               flags | ROUTE_REF_GW, &rl->rgi, es, ctx);
-                 }
-             }
-         }
-@@ -1159,9 +1182,11 @@ undo_redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *t
- }
- 
- void
--add_routes(struct route_list *rl, struct route_ipv6_list *rl6, const struct tuntap *tt, unsigned int flags, const struct env_set *es)
-+add_routes(struct route_list *rl, struct route_ipv6_list *rl6,
-+           const struct tuntap *tt, unsigned int flags,
-+           const struct env_set *es, openvpn_net_ctx_t *ctx)
- {
--    redirect_default_route_to_vpn(rl, tt, flags, es);
-+    redirect_default_route_to_vpn(rl, tt, flags, es, ctx);
-     if (rl && !(rl->iflags & RL_ROUTES_ADDED) )
-     {
-         struct route_ipv4 *r;
-@@ -1184,9 +1209,9 @@ add_routes(struct route_list *rl, struct route_ipv6_list *rl6, const struct tunt
-             check_subnet_conflict(r->network, r->netmask, "route");
-             if (flags & ROUTE_DELETE_FIRST)
-             {
--                delete_route(r, tt, flags, &rl->rgi, es);
-+                delete_route(r, tt, flags, &rl->rgi, es, ctx);
-             }
--            add_route(r, tt, flags, &rl->rgi, es);
-+            add_route(r, tt, flags, &rl->rgi, es, ctx);
-         }
-         rl->iflags |= RL_ROUTES_ADDED;
-     }
-@@ -1206,9 +1231,9 @@ add_routes(struct route_list *rl, struct route_ipv6_list *rl6, const struct tunt
-         {
-             if (flags & ROUTE_DELETE_FIRST)
-             {
--                delete_route_ipv6(r, tt, flags, es);
-+                delete_route_ipv6(r, tt, flags, es, ctx);
-             }
--            add_route_ipv6(r, tt, flags, es);
-+            add_route_ipv6(r, tt, flags, es, ctx);
-         }
-         rl6->iflags |= RL_ROUTES_ADDED;
-     }
-@@ -1216,19 +1241,20 @@ add_routes(struct route_list *rl, struct route_ipv6_list *rl6, const struct tunt
- 
- void
- delete_routes(struct route_list *rl, struct route_ipv6_list *rl6,
--              const struct tuntap *tt, unsigned int flags, const struct env_set *es)
-+              const struct tuntap *tt, unsigned int flags,
-+              const struct env_set *es, openvpn_net_ctx_t *ctx)
- {
-     if (rl && rl->iflags & RL_ROUTES_ADDED)
-     {
-         struct route_ipv4 *r;
-         for (r = rl->routes; r; r = r->next)
-         {
--            delete_route(r, tt, flags, &rl->rgi, es);
-+            delete_route(r, tt, flags, &rl->rgi, es, ctx);
-         }
-         rl->iflags &= ~RL_ROUTES_ADDED;
-     }
- 
--    undo_redirect_default_route_to_vpn(rl, tt, flags, es);
-+    undo_redirect_default_route_to_vpn(rl, tt, flags, es, ctx);
- 
-     if (rl)
-     {
-@@ -1240,7 +1266,7 @@ delete_routes(struct route_list *rl, struct route_ipv6_list *rl6,
-         struct route_ipv6 *r6;
-         for (r6 = rl6->routes_ipv6; r6; r6 = r6->next)
-         {
--            delete_route_ipv6(r6, tt, flags, es);
-+            delete_route_ipv6(r6, tt, flags, es, ctx);
-         }
-         rl6->iflags &= ~RL_ROUTES_ADDED;
-     }
-@@ -1520,15 +1546,21 @@ add_route(struct route_ipv4 *r,
-           const struct tuntap *tt,
-           unsigned int flags,
-           const struct route_gateway_info *rgi,  /* may be NULL */
--          const struct env_set *es)
-+          const struct env_set *es,
-+          openvpn_net_ctx_t *ctx)
- {
-     struct gc_arena gc;
-     struct argv argv = argv_new();
-+#if !defined(TARGET_LINUX)
-     const char *network;
- #if !defined(ENABLE_IPROUTE) && !defined(TARGET_AIX)
-     const char *netmask;
- #endif
-     const char *gateway;
-+#else
-+    const char *iface;
-+    int metric;
-+#endif
-     bool status = false;
-     int is_local_route;
- 
-@@ -1539,11 +1571,13 @@ add_route(struct route_ipv4 *r,
- 
-     gc_init(&gc);
- 
-+#if !defined(TARGET_LINUX)
-     network = print_in_addr_t(r->network, 0, &gc);
- #if !defined(ENABLE_IPROUTE) && !defined(TARGET_AIX)
-     netmask = print_in_addr_t(r->netmask, 0, &gc);
- #endif
-     gateway = print_in_addr_t(r->gateway, 0, &gc);
-+#endif
- 
-     is_local_route = local_route(r->network, r->netmask, r->gateway, rgi);
-     if (is_local_route == LR_ERROR)
-@@ -1552,47 +1586,26 @@ add_route(struct route_ipv4 *r,
-     }
- 
- #if defined(TARGET_LINUX)
--#ifdef ENABLE_IPROUTE
--    argv_printf(&argv, "%s route add %s/%d",
--                iproute_path,
--                network,
--                netmask_to_netbits2(r->netmask));
--
--    if (r->flags & RT_METRIC_DEFINED)
--    {
--        argv_printf_cat(&argv, "metric %d", r->metric);
--    }
--
-+    iface = NULL;
-     if (is_on_link(is_local_route, flags, rgi))
-     {
--        argv_printf_cat(&argv, "dev %s", rgi->iface);
-+        iface = rgi->iface;
-     }
--    else
--    {
--        argv_printf_cat(&argv, "via %s", gateway);
--    }
--#else  /* ifdef ENABLE_IPROUTE */
--    argv_printf(&argv, "%s add -net %s netmask %s",
--                ROUTE_PATH,
--                network,
--                netmask);
 +
-+    metric = -1;
-     if (r->flags & RT_METRIC_DEFINED)
-     {
--        argv_printf_cat(&argv, "metric %d", r->metric);
-+        metric = r->metric;
-     }
--    if (is_on_link(is_local_route, flags, rgi))
--    {
--        argv_printf_cat(&argv, "dev %s", rgi->iface);
--    }
--    else
++#include "mock_msg.h"
 +
-+    status = true;
-+    if (net_route_v4_add(ctx, &r->network, netmask_to_netbits2(r->netmask),
-+                         &r->gateway, iface, 0, metric) < 0)
-     {
--        argv_printf_cat(&argv, "gw %s", gateway);
-+        msg(M_WARN, "ERROR: Linux route add command failed");
-+        status = false;
-     }
- 
--#endif  /*ENABLE_IPROUTE*/
--    argv_msg(D_ROUTE, &argv);
--    status = openvpn_execve_check(&argv, es, 0, "ERROR: Linux route add command failed");
--
- #elif defined (TARGET_ANDROID)
-     char out[128];
- 
-@@ -1839,7 +1852,9 @@ route_ipv6_clear_host_bits( struct route_ipv6 *r6 )
- }
- 
- void
--add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt, unsigned int flags, const struct env_set *es)
-+add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
-+               unsigned int flags, const struct env_set *es,
-+               openvpn_net_ctx_t *ctx)
- {
-     struct gc_arena gc;
-     struct argv argv = argv_new();
-@@ -1848,7 +1863,9 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt, unsigned int flag
-     const char *gateway;
-     bool status = false;
-     const char *device = tt->actual_name;
--
-+#if defined(TARGET_LINUX)
-+    int metric;
-+#endif
-     bool gateway_needed = false;
- 
-     if (!(r6->flags & RT_DEFINED) )
-@@ -1923,38 +1940,20 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt, unsigned int flag
-     }
- 
- #if defined(TARGET_LINUX)
--#ifdef ENABLE_IPROUTE
--    argv_printf(&argv, "%s -6 route add %s/%d dev %s",
--                iproute_path,
--                network,
--                r6->netbits,
--                device);
--    if (gateway_needed)
--    {
--        argv_printf_cat(&argv, "via %s", gateway);
--    }
--    if ( (r6->flags & RT_METRIC_DEFINED) && r6->metric > 0)
-+    metric = -1;
-+    if ((r6->flags & RT_METRIC_DEFINED) && (r6->metric > 0))
-     {
--        argv_printf_cat(&argv, " metric %d", r6->metric);
-+        metric = r6->metric;
-     }
- 
--#else  /* ifdef ENABLE_IPROUTE */
--    argv_printf(&argv, "%s -A inet6 add %s/%d dev %s",
--                ROUTE_PATH,
--                network,
--                r6->netbits,
--                device);
--    if (gateway_needed)
-+    status = true;
-+    if (net_route_v6_add(ctx, &r6->network, r6->netbits,
-+                         gateway_needed ? &r6->gateway : NULL, device, 0,
-+                         metric) < 0)
-     {
--        argv_printf_cat(&argv, "gw %s", gateway);
--    }
--    if ( (r6->flags & RT_METRIC_DEFINED) && r6->metric > 0)
--    {
--        argv_printf_cat(&argv, " metric %d", r6->metric);
-+        msg(M_WARN, "ERROR: Linux IPv6 route can't be added");
-+        status = false;
-     }
--#endif  /*ENABLE_IPROUTE*/
--    argv_msg(D_ROUTE, &argv);
--    status = openvpn_execve_check(&argv, es, 0, "ERROR: Linux route -6/-A inet6 add command failed");
- 
- #elif defined (TARGET_ANDROID)
-     char out[64];
-@@ -2137,16 +2136,21 @@ delete_route(struct route_ipv4 *r,
-              const struct tuntap *tt,
-              unsigned int flags,
-              const struct route_gateway_info *rgi,
--             const struct env_set *es)
-+             const struct env_set *es,
-+             openvpn_net_ctx_t *ctx)
- {
-     struct gc_arena gc;
-     struct argv argv = argv_new();
-+#if !defined(TARGET_LINUX)
-     const char *network;
- #if !defined(ENABLE_IPROUTE) && !defined(TARGET_AIX)
-     const char *netmask;
- #endif
- #if !defined(TARGET_LINUX) && !defined(TARGET_ANDROID)
-     const char *gateway;
-+#endif
-+#else
-+    int metric;
- #endif
-     int is_local_route;
- 
-@@ -2157,12 +2161,14 @@ delete_route(struct route_ipv4 *r,
- 
-     gc_init(&gc);
- 
-+#if !defined(TARGET_LINUX)
-     network = print_in_addr_t(r->network, 0, &gc);
- #if !defined(ENABLE_IPROUTE) && !defined(TARGET_AIX)
-     netmask = print_in_addr_t(r->netmask, 0, &gc);
- #endif
- #if !defined(TARGET_LINUX) && !defined(TARGET_ANDROID)
-     gateway = print_in_addr_t(r->gateway, 0, &gc);
-+#endif
- #endif
- 
-     is_local_route = local_route(r->network, r->netmask, r->gateway, rgi);
-@@ -2172,24 +2178,17 @@ delete_route(struct route_ipv4 *r,
-     }
- 
- #if defined(TARGET_LINUX)
--#ifdef ENABLE_IPROUTE
--    argv_printf(&argv, "%s route del %s/%d",
--                iproute_path,
--                network,
--                netmask_to_netbits2(r->netmask));
--#else
--    argv_printf(&argv, "%s del -net %s netmask %s",
--                ROUTE_PATH,
--                network,
--                netmask);
--#endif /*ENABLE_IPROUTE*/
-+    metric = -1;
-     if (r->flags & RT_METRIC_DEFINED)
-     {
--        argv_printf_cat(&argv, "metric %d", r->metric);
-+        metric = r->metric;
-     }
--    argv_msg(D_ROUTE, &argv);
--    openvpn_execve_check(&argv, es, 0, "ERROR: Linux route delete command failed");
- 
-+    if (net_route_v4_del(ctx, &r->network, netmask_to_netbits2(r->netmask),
-+                         &r->gateway, NULL, 0, metric) < 0)
++
++static char *iface = "dummy0";
++
++#ifdef ENABLE_SITNL
++
++static int
++net__iface_up(bool up)
++{
++    printf("CMD: ip link set %s %s\n", iface, up ? "up" : "down");
++
++    return net_iface_up(NULL, iface, up);
++}
++
++static int
++net__iface_mtu_set(int mtu)
++{
++    printf("CMD: ip link set %s mtu %d\n", iface, mtu);
++
++    return net_iface_mtu_set(NULL, iface, mtu);
++}
++
++static int
++net__addr_v4_add(const char *addr_str, int prefixlen, const char *brd_str)
++{
++    in_addr_t addr, brd;
++    int ret;
++
++    ret = inet_pton(AF_INET, addr_str, &addr);
++    if (ret != 1)
++        return -1;
++
++    ret = inet_pton(AF_INET, brd_str, &brd);
++    if (ret != 1)
++        return -1;
++
++    addr = ntohl(addr);
++    brd = ntohl(brd);
++
++    printf("CMD: ip addr add %s/%d brd %s dev %s\n", addr_str, prefixlen,
++           brd_str, iface);
++
++    return net_addr_v4_add(NULL, iface, &addr, prefixlen, &brd);
++}
++
++static int
++net__addr_v6_add(const char *addr_str, int prefixlen)
++{
++    struct in6_addr addr;
++    int ret;
++
++    ret = inet_pton(AF_INET6, addr_str, &addr);
++    if (ret != 1)
++        return -1;
++
++    printf("CMD: ip -6 addr add %s/%d dev %s\n", addr_str, prefixlen, iface);
++
++    return net_addr_v6_add(NULL, iface, &addr, prefixlen);
++}
++
++static int
++net__route_v4_add(const char *dst_str, int prefixlen, int metric)
++{
++    in_addr_t dst;
++    int ret;
++
++    if (!dst_str)
++        return -1;
++
++    ret = inet_pton(AF_INET, dst_str, &dst);
++    if (ret != 1)
++        return -1;
++
++    dst = ntohl(dst);
++
++    printf("CMD: ip route add %s/%d dev %s", dst_str, prefixlen, iface);
++    if (metric > 0)
++        printf(" metric %d", metric);
++    printf("\n");
++
++    return net_route_v4_add(NULL, &dst, prefixlen, NULL, iface, 0, metric);
++
++}
++
++static int
++net__route_v4_add_gw(const char *dst_str, int prefixlen, const char *gw_str,
++                     int metric)
++{
++    in_addr_t dst, gw;
++    int ret;
++
++    if (!dst_str || !gw_str)
++        return -1;
++
++    ret = inet_pton(AF_INET, dst_str, &dst);
++    if (ret != 1)
++        return -1;
++
++    ret = inet_pton(AF_INET, gw_str, &gw);
++    if (ret != 1)
++        return -1;
++
++    dst = ntohl(dst);
++    gw = ntohl(gw);
++
++    printf("CMD: ip route add %s/%d dev %s via %s", dst_str, prefixlen, iface,
++           gw_str);
++    if (metric > 0)
++        printf(" metric %d", metric);
++    printf("\n");
++
++    return net_route_v4_add(NULL, &dst, prefixlen, &gw, iface, 0, metric);
++}
++
++static int
++net__route_v6_add(const char *dst_str, int prefixlen, int metric)
++{
++    struct in6_addr dst;
++    int ret;
++
++    if (!dst_str)
++        return -1;
++
++    ret = inet_pton(AF_INET6, dst_str, &dst);
++    if (ret != 1)
++        return -1;
++
++    printf("CMD: ip -6 route add %s/%d dev %s", dst_str, prefixlen, iface);
++    if (metric > 0)
++        printf(" metric %d", metric);
++    printf("\n");
++
++    return net_route_v6_add(NULL, &dst, prefixlen, NULL, iface, 0, metric);
++
++}
++
++static int
++net__route_v6_add_gw(const char *dst_str, int prefixlen, const char *gw_str,
++                     int metric)
++{
++    struct in6_addr dst, gw;
++    int ret;
++
++    if (!dst_str || !gw_str)
++        return -1;
++
++    ret = inet_pton(AF_INET6, dst_str, &dst);
++    if (ret != 1)
++        return -1;
++
++    ret = inet_pton(AF_INET6, gw_str, &gw);
++    if (ret != 1)
++        return -1;
++
++    printf("CMD: ip -6 route add %s/%d dev %s via %s", dst_str, prefixlen,
++           iface, gw_str);
++    if (metric > 0)
++        printf(" metric %d", metric);
++    printf("\n");
++
++    return net_route_v6_add(NULL, &dst, prefixlen, &gw, iface, 0, metric);
++}
++
++static void
++usage(char *name)
++{
++    printf("Usage: %s <0-7>\n", name);
++}
++
++int
++main(int argc, char *argv[])
++{
++    int test;
++
++    mock_set_debug_level(10);
++
++    if (argc < 2)
 +    {
-+        msg(M_WARN, "ERROR: Linux route delete command failed");
++        usage(argv[0]);
++        return -1;
 +    }
- #elif defined (_WIN32)
- 
-     argv_printf(&argv, "%s%sc DELETE %s MASK %s %s",
-@@ -2325,12 +2324,18 @@ done:
- }
- 
- void
--delete_route_ipv6(const struct route_ipv6 *r6, const struct tuntap *tt, unsigned int flags, const struct env_set *es)
-+delete_route_ipv6(const struct route_ipv6 *r6, const struct tuntap *tt,
-+                  unsigned int flags, const struct env_set *es,
-+                  openvpn_net_ctx_t *ctx)
- {
-     struct gc_arena gc;
-     struct argv argv = argv_new();
-     const char *network;
-+#if !defined(TARGET_LINUX)
-     const char *gateway;
-+#else
-+    int metric;
-+#endif
-     const char *device = tt->actual_name;
-     bool gateway_needed = false;
- 
-@@ -2350,7 +2355,9 @@ delete_route_ipv6(const struct route_ipv6 *r6, const struct tuntap *tt, unsigned
-     gc_init(&gc);
- 
-     network = print_in6_addr( r6->network, 0, &gc);
-+#if !defined(TARGET_LINUX)
-     gateway = print_in6_addr( r6->gateway, 0, &gc);
-+#endif
- 
- #if defined(TARGET_DARWIN)    \
-     || defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY)    \
-@@ -2381,35 +2388,19 @@ delete_route_ipv6(const struct route_ipv6 *r6, const struct tuntap *tt, unsigned
-         gateway_needed = true;
-     }
- 
--
- #if defined(TARGET_LINUX)
--#ifdef ENABLE_IPROUTE
--    argv_printf(&argv, "%s -6 route del %s/%d dev %s",
--                iproute_path,
--                network,
--                r6->netbits,
--                device);
--    if (gateway_needed)
--    {
--        argv_printf_cat(&argv, "via %s", gateway);
--    }
--#else  /* ifdef ENABLE_IPROUTE */
--    argv_printf(&argv, "%s -A inet6 del %s/%d dev %s",
--                ROUTE_PATH,
--                network,
--                r6->netbits,
--                device);
--    if (gateway_needed)
-+    metric = -1;
-+    if ((r6->flags & RT_METRIC_DEFINED) && (r6->metric > 0))
-     {
--        argv_printf_cat(&argv, "gw %s", gateway);
-+        metric = r6->metric;
-     }
--    if ( (r6->flags & RT_METRIC_DEFINED) && r6->metric > 0)
 +
-+    if (net_route_v6_del(ctx, &r6->network, r6->netbits,
-+                         gateway_needed ? &r6->gateway : NULL, device, 0,
-+                         metric) < 0)
-     {
--        argv_printf_cat(&argv, " metric %d", r6->metric);
-+        msg(M_WARN, "ERROR: Linux route v6 delete command failed");
-     }
--#endif  /*ENABLE_IPROUTE*/
--    argv_msg(D_ROUTE, &argv);
--    openvpn_execve_check(&argv, es, 0, "ERROR: Linux route -6/-A inet6 del command failed");
- 
- #elif defined (_WIN32)
- 
-@@ -2721,7 +2712,7 @@ get_default_gateway_row(const MIB_IPFORWARDTABLE *routes)
- }
- 
- void
--get_default_gateway(struct route_gateway_info *rgi)
-+get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
- {
-     struct gc_arena gc = gc_new();
- 
-@@ -2808,7 +2799,7 @@ windows_route_find_if_index(const struct route_ipv4 *r, const struct tuntap *tt)
-  */
- void
- get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
--                         const struct in6_addr *dest)
-+                         const struct in6_addr *dest, openvpn_net_ctx_t *ctx)
- {
-     struct gc_arena gc = gc_new();
-     MIB_IPFORWARD_ROW2 BestRoute;
-@@ -3169,72 +3160,23 @@ show_routes(int msglev)
- #elif defined(TARGET_LINUX) || defined(TARGET_ANDROID)
- 
- void
--get_default_gateway(struct route_gateway_info *rgi)
-+get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
- {
-     struct gc_arena gc = gc_new();
-     int sd = -1;
--    char best_name[16];
--    best_name[0] = 0;
-+    char best_name[IFNAMSIZ];
- 
-     CLEAR(*rgi);
-+    CLEAR(best_name);
- 
- #ifndef TARGET_ANDROID
-     /* get default gateway IP addr */
-+    if (net_route_v4_best_gw(ctx, NULL, 0, &rgi->gateway.addr, best_name) == 0)
-     {
--        FILE *fp = fopen("/proc/net/route", "r");
--        if (fp)
-+        rgi->flags |= RGI_ADDR_DEFINED;
-+        if (!rgi->gateway.addr && best_name[0])
-         {
--            char line[256];
--            int count = 0;
--            unsigned int lowest_metric = UINT_MAX;
--            in_addr_t best_gw = 0;
--            bool found = false;
--            while (fgets(line, sizeof(line), fp) != NULL)
--            {
--                if (count)
--                {
--                    unsigned int net_x = 0;
--                    unsigned int mask_x = 0;
--                    unsigned int gw_x = 0;
--                    unsigned int metric = 0;
--                    unsigned int flags = 0;
--                    char name[16];
--                    name[0] = 0;
--                    const int np = sscanf(line, "%15s\t%x\t%x\t%x\t%*s\t%*s\t%d\t%x",
--                                          name,
--                                          &net_x,
--                                          &gw_x,
--                                          &flags,
--                                          &metric,
--                                          &mask_x);
--                    if (np == 6 && (flags & IFF_UP))
--                    {
--                        const in_addr_t net = ntohl(net_x);
--                        const in_addr_t mask = ntohl(mask_x);
--                        const in_addr_t gw = ntohl(gw_x);
--
--                        if (!net && !mask && metric < lowest_metric)
--                        {
--                            found = true;
--                            best_gw = gw;
--                            strcpy(best_name, name);
--                            lowest_metric = metric;
--                        }
--                    }
--                }
--                ++count;
--            }
--            fclose(fp);
--
--            if (found)
--            {
--                rgi->gateway.addr = best_gw;
--                rgi->flags |= RGI_ADDR_DEFINED;
--                if (!rgi->gateway.addr && best_name[0])
--                {
--                    rgi->flags |= RGI_ON_LINK;
--                }
--            }
-+            rgi->flags |= RGI_ON_LINK;
-         }
-     }
- #else  /* ifndef TARGET_ANDROID */
-@@ -3596,7 +3538,7 @@ struct rtmsg {
- #define max(a,b) ((a) > (b) ? (a) : (b))
- 
- void
--get_default_gateway(struct route_gateway_info *rgi)
-+get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
- {
-     struct gc_arena gc = gc_new();
-     struct rtmsg m_rtmsg;
-@@ -3996,7 +3938,7 @@ done:
-  * may be disabled by missing items.
-  */
- void
--get_default_gateway(struct route_gateway_info *rgi)
-+get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
- {
-     CLEAR(*rgi);
- }
-diff --git a/src/openvpn/route.h b/src/openvpn/route.h
-index 69420228..e552e6ec 100644
---- a/src/openvpn/route.h
-+++ b/src/openvpn/route.h
-@@ -256,15 +256,16 @@ void copy_route_ipv6_option_list(struct route_ipv6_option_list *dest,
- 
- void route_ipv6_clear_host_bits( struct route_ipv6 *r6 );
- 
--void add_route_ipv6(struct route_ipv6 *r, const struct tuntap *tt, unsigned int flags, const struct env_set *es);
-+void add_route_ipv6(struct route_ipv6 *r, const struct tuntap *tt, unsigned int flags, const struct env_set *es, openvpn_net_ctx_t *ctx);
- 
--void delete_route_ipv6(const struct route_ipv6 *r, const struct tuntap *tt, unsigned int flags, const struct env_set *es);
-+void delete_route_ipv6(const struct route_ipv6 *r, const struct tuntap *tt, unsigned int flags, const struct env_set *es, openvpn_net_ctx_t *ctx);
- 
- void add_route(struct route_ipv4 *r,
-                const struct tuntap *tt,
-                unsigned int flags,
-                const struct route_gateway_info *rgi,
--               const struct env_set *es);
-+               const struct env_set *es,
-+               openvpn_net_ctx_t *ctx);
- 
- void add_route_to_option_list(struct route_option_list *l,
-                               const char *network,
-@@ -282,7 +283,8 @@ bool init_route_list(struct route_list *rl,
-                      const char *remote_endpoint,
-                      int default_metric,
-                      in_addr_t remote_host,
--                     struct env_set *es);
-+                     struct env_set *es,
-+                     openvpn_net_ctx_t *ctx);
- 
- bool init_route_ipv6_list(struct route_ipv6_list *rl6,
-                           const struct route_ipv6_option_list *opt6,
-@@ -299,13 +301,15 @@ void add_routes(struct route_list *rl,
-                 struct route_ipv6_list *rl6,
-                 const struct tuntap *tt,
-                 unsigned int flags,
--                const struct env_set *es);
-+                const struct env_set *es,
-+                openvpn_net_ctx_t *ctx);
- 
- void delete_routes(struct route_list *rl,
-                    struct route_ipv6_list *rl6,
-                    const struct tuntap *tt,
-                    unsigned int flags,
--                   const struct env_set *es);
-+                   const struct env_set *es,
-+                   openvpn_net_ctx_t *ctx);
- 
- void setenv_routes(struct env_set *es, const struct route_list *rl);
- 
-@@ -315,7 +319,8 @@ void setenv_routes_ipv6(struct env_set *es, const struct route_ipv6_list *rl6);
- 
- bool is_special_addr(const char *addr_str);
- 
--void get_default_gateway(struct route_gateway_info *rgi);
-+void get_default_gateway(struct route_gateway_info *rgi,
-+                         openvpn_net_ctx_t *ctx);
- 
- void get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi,
-                               const struct in6_addr *dest);
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index e9927eb8..fc2c7953 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2324,7 +2324,7 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
-         {
-             /* push mac addr */
-             struct route_gateway_info rgi;
--            get_default_gateway(&rgi);
-+            get_default_gateway(&rgi, session->opt->net_ctx);
-             if (rgi.flags & RGI_HWADDR_DEFINED)
-             {
-                 buf_printf(&out, "IV_HWADDR=%s\n", format_hex_ex(rgi.hwaddr, 6, 0, 1, ":", &gc));
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 410b2163..0312c1f8 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -315,6 +315,7 @@ struct tls_options
- 
-     /* instance-wide environment variable set */
-     struct env_set *es;
-+    openvpn_net_ctx_t *net_ctx;
-     const struct plugin_list *plugins;
- 
-     /* compression parms */
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 0d15d469..dcbbf2f3 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -453,13 +453,13 @@ check_subnet_conflict(const in_addr_t ip,
- }
- 
- void
--warn_on_use_of_common_subnets(void)
-+warn_on_use_of_common_subnets(openvpn_net_ctx_t *ctx)
- {
-     struct gc_arena gc = gc_new();
-     struct route_gateway_info rgi;
-     const int needed = (RGI_ADDR_DEFINED|RGI_NETMASK_DEFINED);
- 
--    get_default_gateway(&rgi);
-+    get_default_gateway(&rgi, ctx);
-     if ((rgi.flags & needed) == needed)
-     {
-         const in_addr_t lan_network = rgi.gateway.addr & rgi.gateway.netmask;
-@@ -818,7 +818,7 @@ add_route_connected_v6_net(struct tuntap *tt,
-     r6.gateway = tt->local_ipv6;
-     r6.metric  = 0;                     /* connected route */
-     r6.flags   = RT_DEFINED | RT_METRIC_DEFINED;
--    add_route_ipv6(&r6, tt, 0, es);
-+    add_route_ipv6(&r6, tt, 0, es, NULL);
- }
- 
- void
-@@ -834,7 +834,7 @@ delete_route_connected_v6_net(struct tuntap *tt,
-     r6.metric  = 0;                     /* connected route */
-     r6.flags   = RT_DEFINED | RT_ADDED | RT_METRIC_DEFINED;
-     route_ipv6_clear_host_bits(&r6);
--    delete_route_ipv6(&r6, tt, 0, es);
-+    delete_route_ipv6(&r6, tt, 0, es, NULL);
- }
- #endif /* if defined(_WIN32) || defined(TARGET_DARWIN) || defined(TARGET_NETBSD) || defined(TARGET_OPENBSD) */
- 
-@@ -1170,7 +1170,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-         r.netmask = tt->remote_netmask;
-         r.gateway = tt->local;
-         r.metric = 0;
--        add_route(&r, tt, 0, NULL, es);
-+        add_route(&r, tt, 0, NULL, es, NULL);
-     }
- 
- #elif defined(TARGET_OPENBSD)
-@@ -1217,7 +1217,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-         r.network = tt->local & tt->remote_netmask;
-         r.netmask = tt->remote_netmask;
-         r.gateway = remote_end;
--        add_route(&r, tt, 0, NULL, es);
-+        add_route(&r, tt, 0, NULL, es, NULL);
-     }
- 
- #elif defined(TARGET_NETBSD)
-@@ -1259,7 +1259,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-         r.network = tt->local & tt->remote_netmask;
-         r.netmask = tt->remote_netmask;
-         r.gateway = remote_end;
--        add_route(&r, tt, 0, NULL, es);
-+        add_route(&r, tt, 0, NULL, es, NULL);
-     }
- 
- #elif defined(TARGET_DARWIN)
-@@ -1309,7 +1309,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-         r.network = tt->local & tt->remote_netmask;
-         r.netmask = tt->remote_netmask;
-         r.gateway = tt->local;
--        add_route(&r, tt, 0, NULL, es);
-+        add_route(&r, tt, 0, NULL, es, NULL);
-     }
- 
- #elif defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY)
-@@ -1348,7 +1348,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-         r.network = tt->local & tt->remote_netmask;
-         r.netmask = tt->remote_netmask;
-         r.gateway = remote_end;
--        add_route(&r, tt, 0, NULL, es);
-+        add_route(&r, tt, 0, NULL, es, NULL);
-     }
- 
- #elif defined(TARGET_AIX)
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index a68ecaa9..24c2ae58 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -275,7 +275,7 @@ void check_subnet_conflict(const in_addr_t ip,
-                            const in_addr_t netmask,
-                            const char *prefix);
- 
--void warn_on_use_of_common_subnets(void);
-+void warn_on_use_of_common_subnets(openvpn_net_ctx_t *ctx);
- 
- /*
-  * Inline functions
++    if (argc > 3)
++    {
++        iface = argv[2];
++    }
++
++    test = atoi(argv[1]);
++    switch (test)
++    {
++        case 0:
++            return net__iface_up(true);
++        case 1:
++            return net__iface_mtu_set(1281);
++        case 2:
++            return net__addr_v4_add("10.255.255.1", 24, "10.255.255.255");
++        case 3:
++            return net__addr_v6_add("2001::1", 64);
++        case 4:
++            return net__route_v4_add("11.11.11.0", 24, 0);
++        case 5:
++            return net__route_v4_add_gw("11.11.12.0", 24, "10.255.255.2", 0);
++        case 6:
++            return net__route_v6_add("2001:babe:cafe:babe::", 64, 600);
++        case 7:
++            return net__route_v6_add_gw("2001:cafe:babe::", 48, "2001::2", 600);
++        default:
++            printf("invalid test: %d\n", test);
++            break;
++    }
++
++    usage(argv[0]);
++    return -1;
++}
++
++#else
++
++int
++main(int argc, char *argv[])
++{
++    return 0;
++}
++
++#endif /* ENABLE_SITNL */
 -- 
 2.19.2
 
