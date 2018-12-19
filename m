@@ -1,12 +1,16 @@
 From: Simon Rozman <simon@...2293...>
-Date: Wed, 19 Dec 2018 21:55:26 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE109BE8AA4C@...2294...>
+Date: Wed, 19 Dec 2018 21:57:33 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE109BE8AA64@...2294...>
+References: <20181219202611.2144-1-simon@...2293...>
+ <CAKuzo_iTTMtNMoDvkjXaADmTtEDAbpDDSmDxaQhbaDSSLvk1Pg@...278...>
+In-Reply-To: <CAKuzo_iTTMtNMoDvkjXaADmTtEDAbpDDSmDxaQhbaDSSLvk1Pg@...278...>
 Content-Language: en-US
 Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
  micalg=2.16.840.1.101.3.4.2.1;
- boundary="----=_NextPart_000_0038_01D497ED.EDE18450"
+ boundary="----=_NextPart_000_003D_01D497EE.39D618D0"
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [Help required] Testing MSI installations
+Subject: Re: [Openvpn-devel] [PATCH 1/4] Make DriverCertification MSI
+ property public
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,51 +19,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel (openvpn-devel@lists.sourceforge.net)" <openvpn-devel@lists.sourceforge.net>
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-------=_NextPart_000_0038_01D497ED.EDE18450
+------=_NextPart_000_003D_01D497EE.39D618D0
 Content-Type: text/plain;
-	charset="us-ascii"
+	charset="utf-8"
 Content-Transfer-Encoding: 7bit
 
 Hi,
 
-I have prepared binaries to test Windows MSI-based OpenVPN installations and
-upgrading at https://github.com/rozmansi/openvpn/releases.
+> It seems I'm behind times and cant figure out where these patches apply.
+> Are these for openvpn, openvpn-build or something else?
 
-I have tested them myself in various conditions to get started. However, I
-would kindly ask everybody to give it a test.
+They are for openvpn repo. The MSI custom action DLL and the tapctl.exe 
+utility were packed inside the openvpn repo to join the same workflow as 
+openvpn.exe and other binaries (compile using openvpn-build, digitally sign, 
+etc.).
 
-Focus on the latest v2.4.6m3, please.
-
-In the absence of documentation (should follow early next year), here is
-some quick explanation:
-
-- The MSI files are complete installers but they are architecture specific.
-They are intended for Group Policy deployment.
-
-- The EXE installer is an all-in-one SFX with both MSI files and a simple
-bootstrapper to pick the right MSI according to the architecture detected at
-run-time. EXE installer is targeted for general audience. This one also logs
-the output of the installation to %TEMP%\OpenVPN-install.log. Just type the
-"%TEMP%\OpenVPN-install.log" in the Explorer's address bar, should you need
-to see what was happening under the hood.
-
-- The setup should be able to upgrade NSIS OpenVPN 2.3.x and 2.4.x
-installations by installing over them. No need to uninstall first. Though,
-if you have any exotic Windows configuration available, do test a fresh
-install too.
-
-Remember: Test it to fail!
-
-Any feedback kindly appreciated.
-
-Thank you in advance and best regards,
+Regards,
 Simon
 
 
-
-------=_NextPart_000_0038_01D497ED.EDE18450
+------=_NextPart_000_003D_01D497EE.39D618D0
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -138,19 +120,19 @@ RqsKPBhWoaFEVZ+Vn3wxap5h/oAhocifNzkWJTNWjxnoPM2eNz2uWFJsgsNhlwteUvnq7+bKTNte
 SKWKr6pI+GUsZhmCh5URpUnqUanp0Uie0MD9f3tiOLOp711sNb0xwi+VdDuDB37IddOIsfhPBood
 wpoFrTGCAyEwggMdAgEBMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0
 aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4wDQYJYIZIAWUDBAIBBQCgggGtMBgGCSqGSIb3
-DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE4MTIxOTIxNTUyNVowLwYJKoZIhvcN
-AQkEMSIEILWtGnxxBX+ZLWybeZWVxOJvMJtYLWw0cOMnSOsZ5YiTMFQGCSsGAQQBgjcQBDFHMEUw
+DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE4MTIxOTIxNTczMlowLwYJKoZIhvcN
+AQkEMSIEIHINCk5dpim8T5w2dNe9GGmyaIgP6TEOJuau5K+yQ/m1MFQGCSsGAQQBgjcQBDFHMEUw
 PTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMIc2ln
 ZW4tY2ECBDtKDS4wVgYLKoZIhvcNAQkQAgsxR6BFMD0xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJz
 dGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsTCHNpZ2VuLWNhAgQ7Sg0uMIGTBgkqhkiG9w0BCQ8x
 gYUwgYIwCwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQBFjAKBggqhkiG9w0DBzALBglghkgBZQMEAQIw
 DgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAsGCWCGSAFlAwQCATALBglghkgBZQMEAgMw
-CwYJYIZIAWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBAGqCOuYEZIguXOHkL8ntmmPm
-rETJU1YrCWdlk7BkIt2+cUdNoKaHns2+kKvgFfKmmgt44ieIt75uwXIxs6npUCKZ9vGwSuMXQaDO
-N2lyFHXWxBgUhctoDVtnBmYvDRP5gSC6KSSQgOmazLNPzlM5HHToqHVW9t3Fp4wuMWO97ykyd2RV
-Xey9c5yXkK3+vR4zXXJCElMNG6nwPKp8zTcUrzTzAQBx7O1II9QVYTFiFR4nDXdsg1J2CB4yDWTG
-q7piGPsHX3A51ISIfCIkVII5ngd/V73eY3ul4CayY0izjrIYWs1rkX4f9U//n52B/tme0Ga8ArkL
-HttDpFAjqMO/mYMAAAAAAAA=
+CwYJYIZIAWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBABJE+qTlE/AH5zCU8MgsQkeI
++L6xiw5f/KLLSvufQqsKHdlrYwuvuWl8Hh5amLXZ8F3FWN1TrF4aD2LuA8U5OEypi1okYNFbij24
+43CfvTE9I2Sk/3QQP+h1JoHtOJlV9c0QfFdIa3FJK8S/bx2jXol7wMeDX0SPVQS2z+mU5lu9kUSD
+4dZGIpz5oBRKnoEqMWovT6uVUsBh/YFNObPrR0URE+3F51iw/JVvQZFoHNhSMYii+IEre9lIP4KF
+/8NJDhz/0tEgAYXwobRWsYmW50O7c5uaKkQ4bN2liqmH+GqeFwM95pHJ5jjHWixD1OuICu0uL1fD
+KDOm4OWHq7Y0EswAAAAAAAA=
 
-------=_NextPart_000_0038_01D497ED.EDE18450--
+------=_NextPart_000_003D_01D497EE.39D618D0--
 
