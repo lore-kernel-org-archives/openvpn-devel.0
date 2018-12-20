@@ -1,16 +1,17 @@
-References: <9a1a18c6-67ff-73ad-69aa-bbb75df45490@...515...>
- <07d3e88f-6f34-79b3-7244-a057b0820443@...515...>
- <4b142edb-34f0-2b53-8012-8b8d553de323@...1147...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <f5ade374-b6bf-9571-bac0-7dd6fafb1fa2@...2181...>
-Date: Thu, 20 Dec 2018 10:26:33 +1000
+References: <a3b6dcb2-9c04-3001-797f-fa49fccda790@...1879...>
+ <d4d4f37c-b5a3-4bf3-361c-ff4ae2e9ec8d@...515...>
+ <325823f7-1c48-d86a-fd22-3e8eac2971b6@...1879...>
+ <56cdde83-aa02-5b75-beae-629a2d480355@...515...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <bf3f61cf-6ff5-4c24-4878-2c646f704138@...515...>
+Date: Thu, 20 Dec 2018 14:45:01 +0200
 MIME-Version: 1.0
-In-Reply-To: <4b142edb-34f0-2b53-8012-8b8d553de323@...1147...>
+In-Reply-To: <56cdde83-aa02-5b75-beae-629a2d480355@...515...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="gv3jt0MIqFpMa6d9Mpd6fJw6hUbWYqvWe"
-Subject: Re: [Openvpn-devel] Summary of the community meeting (Wed,
- 19th Dec 2018)
+ boundary="fTA1uCtgYkB9tF9tjXgo9tFS6l7MOfRBm"
+Subject: Re: [Openvpn-devel] sbuild_wrapper: state of official openvpn
+ repository
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,69 +20,121 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jan Just Keijser <janjust@...1147...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?Q?Enno_Gr=c3=b6per?= <groepeen@...1879...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---gv3jt0MIqFpMa6d9Mpd6fJw6hUbWYqvWe
-Content-Type: multipart/mixed; boundary="5XrBfZy14oVkYgf9y1IOke59GWz0sPFO8";
+--fTA1uCtgYkB9tF9tjXgo9tFS6l7MOfRBm
+Content-Type: multipart/mixed; boundary="79UVfc1HPOHisTfHkAvIawSJdP2HhOZbR";
  protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Jan Just Keijser <janjust@...1147...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <f5ade374-b6bf-9571-bac0-7dd6fafb1fa2@...2181...>
-Subject: Re: [Openvpn-devel] Summary of the community meeting (Wed, 19th Dec
- 2018)
-References: <9a1a18c6-67ff-73ad-69aa-bbb75df45490@...515...>
- <07d3e88f-6f34-79b3-7244-a057b0820443@...515...>
- <4b142edb-34f0-2b53-8012-8b8d553de323@...1147...>
-In-Reply-To: <4b142edb-34f0-2b53-8012-8b8d553de323@...1147...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+To: =?UTF-8?Q?Enno_Gr=c3=b6per?= <groepeen@...1879...>,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <bf3f61cf-6ff5-4c24-4878-2c646f704138@...515...>
+Subject: Re: [Openvpn-devel] sbuild_wrapper: state of official openvpn
+ repository
+References: <a3b6dcb2-9c04-3001-797f-fa49fccda790@...1879...>
+ <d4d4f37c-b5a3-4bf3-361c-ff4ae2e9ec8d@...515...>
+ <325823f7-1c48-d86a-fd22-3e8eac2971b6@...1879...>
+ <56cdde83-aa02-5b75-beae-629a2d480355@...515...>
+In-Reply-To: <56cdde83-aa02-5b75-beae-629a2d480355@...515...>
 
---5XrBfZy14oVkYgf9y1IOke59GWz0sPFO8
+--79UVfc1HPOHisTfHkAvIawSJdP2HhOZbR
 Content-Language: en-US
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-On 20/12/2018 02:00, Jan Just Keijser wrote:
-> No, it is NOT possible to specify a new "auth" parameter, e.g. "auth
-> sha512" as this would break many things, including tls-crypt.
+Il 17/12/18 16:17, Samuli Sepp=C3=A4nen ha scritto:
+> Il 17/12/18 16:06, Enno Gr=C3=B6per ha scritto:
+>> Hi,
+>>
+>> Am 17.12.18 um 14:29 schrieb Samuli Sepp=C3=A4nen:
+>>> Somebody needs to do it. I started the work, but my sbuild_wrapper VM
+>>> was too old (Debian 7) and it gave me serious issues with the Ubuntu
+>>> 18.04 shcroot. So I decided to upgrade the builder. Then other work
+>>> slowed that project down and I haven't been able to really resume it
+>>> yet.
+>>
+>> I'm currently trying with Ubuntu 18.04 as build machine.
+>=20
+> That should be perfect. My new build VM is Ubuntu 18.04 as well.
+>=20
+>>> I think I might actually setup a Vagrant environment for
+>>> this - we have it for openvpn-build already. That would make it easier
+>>> for others to setup the sbuild_wrapper environment and provide
+>>> contributions to it. I could do this fairly quickly.
+>>
+>> I fully agree with that. Currently I'm trying to follow your README and
+>> it's not that easy-going.
+>=20
+> Ok. I will, as a first step, publish a Vagrant VM in
+> https://github.com/OpenVPN/openvpn-vagrant that sets up everything
+> needed to use sbuild_wrapper. I'll do the provisioning so that I can
+> reuse the same code in production. Launching the VM will require
+> Virtualbox, at least until somebody is sufficiently motivated to make
+> the VM run on something else (e.g. via libvirt).
 
-Little note here: tls-auth would "break" because it learns the algorithm
-to use from the "auth" parameter, but tls-crypt(-v2) statically uses
-AES-256-CTR/SHA256, so that can't be changed.
+I added a Vagrant VM called "sbuild" to openvpn-vagrant. Its
+provisioning script will fully configure sbuild_wrapper so that you can
+just do
 
-Cheers,
+$ vagrant ssh sbuild
+$ cd sbuild_wrapper
+$ scripts/build-all.sh
+
+and you will end up with all the packages under the "output" directory
+and in output.tar.gz. The provisioning part will take quite a while to
+finish.
+
+The changes that make all of this possible have not, however, been
+merged upstream and need review and independent testing:
+
+https://github.com/OpenVPN/sbuild_wrapper/pull/1
+https://github.com/OpenVPN/openvpn-vagrant/pull/6
+
+While the provisioning script (sbuild.sh) can be run outside of Vagrant,
+it may fail due to minor differences in the base OS.
+
+I'll look into adding Ubuntu 18.04 support next.
+
+>>> Fixed. The CreatingUnixPackages page was truly obsolete.
+>>
+>> Nice. Since I wasn't sure about the state, I didn't want to change
+>> things prematurely.
+>>
+>> Kind Regards,
+>> Enno
+>>
+>>
+>>
+>> _______________________________________________
+>> Openvpn-devel mailing list
+>> Openvpn-devel@lists.sourceforge.net
+>> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>>
+>=20
 
 
---=20
-Antonio Quartulli
 
+--79UVfc1HPOHisTfHkAvIawSJdP2HhOZbR--
 
---5XrBfZy14oVkYgf9y1IOke59GWz0sPFO8--
-
---gv3jt0MIqFpMa6d9Mpd6fJw6hUbWYqvWe
+--fTA1uCtgYkB9tF9tjXgo9tFS6l7MOfRBm
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlwa4bkACgkQ9FVsWUWD
-Dm0H3A/9Gd31T4cMHWA8uAIugQDj4hhv+UXX8u6AiIcptvr75oWS5oaelfei2Q6W
-Kp3nEKh2MrLg1Nzshh3lnpG++p8JGjGCL5WTrqTKdQnqzQIW0nnzqwXfZm+BYlyQ
-XfTygWUgD2gUQCMoUuEZBKY9lRJawgOI/ZgiezKOKoYBtYsyVm9SyYK7c37AXlCx
-TpSo9MVaRiMCgnktKihSbPh3t5VQqy58qxkwAk9BLXvoFB3ridS7152alWPEv6Qg
-aE9e+yHyZuW4Mm+8raT1itkNGFVR8ObXHHUowfoKZuQT0sltpnWLmZvQX/JytIhM
-CAS8C3N9wyMYmeW4gOQ1jCdLXZhjB2PlOQ+OVwyXnoMq9lFTx7na2A6mQsoJo+ir
-mkzoIKtLkH+DkLNa9H7jGYbRe5g+8Dt/rKfXtckgg00I/ZZkbweQzTMwJ20eJ2ks
-mnVb45884pC1pNUtuQ5f5inWqeH+9FojmNV6P4ddg2ukQuk2FqGdrPDY1k2SLe83
-PxwiNJG/slUU5DKpZ03KQT5mmVGheAagDlPd0Iu5OnUMh5o4Bl+GT4hnwj4BLQJ7
-mPsunvMOMxZecxN9RPvfGvCkSat5GvdzOfkn2uI4gL4rRrFzSDkaA4rgOhlWKm/w
-HufpHX8F6tOc6zWpNBZajJd6ZTQKUcuPzeQ5Dd/KT8UE/Sz1alQ=
-=4K3b
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAlwbjtEACgkQKVhNn0CG
+RXhwLAf+OQpG/Hkq8Mc0MVkKBqa0dK1KqID5KHhxlRCXpo2vkwTIMSztNr8woJHv
+9fNDsOic6AM06bF9R9ZIqFfyrkoqWs+n2TVl86RF8BHkDFKLigXBwBf8+FeOhPR2
+9xl2gG8yBsPX5WRZgNCaluNmnXLgvvv+honh7CpTc2w5xZCrxS71/Gji8w/PKxri
+LN3J7KgWFpCabK9PD7ZDVawI359A0ouBRqvrWfGFFUMnjefSTIJ+LMzueokXd8eU
+4F0/4UdkPJ+J1lY5ZCGKjjNQ+CAPT4FzUWdK84UN3hJzZUIqoEhpFLmVR0qSN1/E
+WCLK5MzrtiE4Xmh6hsFHGI6iZ+4Ipg==
+=RsdR
 -----END PGP SIGNATURE-----
 
---gv3jt0MIqFpMa6d9Mpd6fJw6hUbWYqvWe--
+--fTA1uCtgYkB9tF9tjXgo9tFS6l7MOfRBm--
 
