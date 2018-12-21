@@ -1,14 +1,14 @@
-From: tincanteksup <tincanteksup@...277...>
+From: Simon Rozman <simon@...2293...>
+Date: Fri, 21 Dec 2018 04:46:19 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE109BE8D339@...2294...>
 References: <99D61A626FDA8A4B90A270669121BE109BE8AA4C@...2294...>
  <76addf9c-a14e-0e59-bb01-dace07b56a03@...277...>
- <775f6ca7-227f-6ae9-2206-1fa3d11b6376@...277...>
- <5aa26403-9948-df7a-6eaa-a6c1d0ba0a29@...277...>
- <874acac0-8e68-765d-43b1-f1fd185bbb05@...277...>
-Message-ID: <b6b7263c-2daa-1678-b5d7-7f4e202f1a44@...277...>
-Date: Thu, 20 Dec 2018 14:46:23 +0000
+In-Reply-To: <76addf9c-a14e-0e59-bb01-dace07b56a03@...277...>
+Content-Language: en-US
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
+ micalg=2.16.840.1.101.3.4.2.1;
+ boundary="----=_NextPart_000_005F_01D498F0.7E0E5AF0"
 MIME-Version: 1.0
-In-Reply-To: <874acac0-8e68-765d-43b1-f1fd185bbb05@...277...>
-Content-Language: en-GB
 Subject: Re: [Openvpn-devel] [Help required] Testing MSI installations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -18,230 +18,140 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+To: tincanteksup <tincanteksup@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
+------=_NextPart_000_005F_01D498F0.7E0E5AF0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
+Hi,
 
-On 20/12/2018 14:22, tincanteksup wrote:
->=20
->=20
-> On 20/12/2018 14:00, tincanteksup wrote:
->>
->>
->> On 20/12/2018 13:52, tincanteksup wrote:
->>>
->>>
->>> On 20/12/2018 13:46, tincanteksup wrote:
->>>> Hi,
->>>>
->>>> On 19/12/2018 21:55, Simon Rozman wrote:
->>>>> Hi,
->>>>
->>>>> Remember: Test it to fail!
->>>>>
->>>>> Any feedback kindly appreciated.
->>>>>
->>>>
->>>> I just tested this on a "fresh" Win7 VM and it failed.
->>>>
->>>> By "fresh" I mean this:
->>>>
->>>> =A0=A0 The Win7 VM is from:
->>>> =A0=A0 https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/
->>>>
->>>> =A0=A0 Credit the find to:
->>>> =A0=A0 https://easylinuxtipsproject.blogspot.com/p/virtualbox.html
->>>>
->>>> =A0=A0 The VM i used is IE11-Win7 x86
->>>>
->>
->>
->>
->> This may be a false alarm because Windows has decided this VM needs
->> "some" updates .. I'll update after the reboot dance. *yawn*
->>
+> Action 05:28:59: FindTAPInterfaces. Searching for TAP interfaces Action
+> start 05:28:59: FindTAPInterfaces.
+> CustomAction FindTAPInterfaces returned actual error code 1154 (note
+> this may not be 100% accurate if translation happened inside sandbox)
 
-Even more updates later, the same "apparent" problem persists.
+error code 1154 = ERROR_INVALID_DLL
 
-log:
+The error code 1154 (ERROR_INVALID_DLL) indicates, one of the DLLs required
+by libopenvpnmsica.dll was missing, failed to load or it's too old (missing
+some functions perhaps introduced later).
 
-=3D=3D=3D Logging started: 20/12/2018  06:41:08 =3D=3D=3D
-Action 06:41:08: INSTALL.
-Action start 06:41:08: INSTALL.
-Action 06:41:08: SetDefaultUIFontVista.
-Action start 06:41:08: SetDefaultUIFontVista.
-Action ended 06:41:08: SetDefaultUIFontVista. Return value 1.
-Action 06:41:08: SetDlgStrongFontVista.
-Action start 06:41:08: SetDlgStrongFontVista.
-Action ended 06:41:08: SetDlgStrongFontVista. Return value 1.
-Action 06:41:08: SetDlgTitleFontVista.
-Action start 06:41:08: SetDlgTitleFontVista.
-Action ended 06:41:08: SetDlgTitleFontVista. Return value 1.
-Action 06:41:08: PreparePage.
-Action start 06:41:08: PreparePage.
-Info 2898. For DefaultUIFontVista textstyle, the system created a 'Segoe=20
-UI' font, in 1 character set, of 20 pixels height.
-Info 2898. For DlgTitleFontVista textstyle, the system created a 'Segoe=20
-UI' font, in 1 character set, of 25 pixels height.
-Action 06:41:08: PreparePage. Dialog created
-Action ended 06:41:08: PreparePage. Return value 1.
-Action 06:41:08: FindRelatedProducts. Searching for related applications
-Action start 06:41:08: FindRelatedProducts.
-Action ended 06:41:08: FindRelatedProducts. Return value 1.
-Action 06:41:08: FindTAPInterfaces. Searching for TAP interfaces
-Action start 06:41:08: FindTAPInterfaces.
-CustomAction FindTAPInterfaces returned actual error code 1154 (note=20
-this may not be 100% accurate if translation happened inside sandbox)
-Error 1723. There is a problem with this Windows Installer package. A=20
-DLL required for this install to complete could not be run. Contact your=20
-support personnel or package vendor.  Action FindTAPInterfaces, entry:=20
-FindTAPInterfaces, library: C:\Users\IEUser\AppData\Local\Temp\MSIE9C3.tmp
-MSI (c) (DC:E4) [06:41:16:156]: Product: OpenVPN 2.4.6m3-I603 x86 --=20
-Error 1723. There is a problem with this Windows Installer package. A=20
-DLL required for this install to complete could not be run. Contact your=20
-support personnel or package vendor.  Action FindTAPInterfaces, entry:=20
-FindTAPInterfaces, library: C:\Users\IEUser\AppData\Local\Temp\MSIE9C3.tmp
+The libopenvpnmsica.dll requires the following DLLs in System32 folder:
 
-Action ended 06:41:16: FindTAPInterfaces. Return value 3.
-Action 06:41:16: FatalErrorPage.
-Action start 06:41:16: FatalErrorPage.
-Action 06:41:16: FatalErrorPage. Dialog created
-Action ended 06:41:18: FatalErrorPage. Return value 2.
-Action ended 06:41:18: INSTALL. Return value 3.
-Property(C): InstallMode =3D Typical
-Property(C): UpgradeCode =3D {1195A47B-A37A-4055-9D34-B7A691F7E97B}
-Property(C): DesktopFolder =3D C:\Users\Public\Desktop\
-Property(C): InstallModeRB =3D Change
-Property(C): ErrorDialog =3D ErrorDialog
-Property(C): LOGAPPEND =3D 0
-Property(C): DISABLESAVEPWD =3D #0
-Property(C): ADMINGROUP =3D OpenVPN Administrators
-Property(C): PRIORITY =3D NORMAL_PRIORITY_CLASS
-Property(C): DefaultUIFont =3D DefaultUIFontVista
-Property(C): DlgStrongFont =3D {\DlgStrongFontVista}
-Property(C): DlgTitleFont =3D {\DlgTitleFontVista}
-Property(C): ProgramFilesFolder =3D C:\Program Files\
-Property(C): ProgramMenuFolder =3D C:\ProgramData\Microsoft\Windows\Start=20
-Menu\Programs\
-Property(C): SourceDir =3D C:\Users\IEUser\AppData\Local\Temp\7zS87C46480\
-Property(C): VersionNT =3D 601
-Property(C): ALLUSERS =3D 1
-Property(C): ARPPRODUCTICON =3D openvpn.ico
-Property(C): ARPURLINFOABOUT =3D https://openvpn.net/index.php/open-source/
-Property(C): ARPURLUPDATEINFO =3D=20
-https://openvpn.net/index.php/open-source/downloads.html
-Property(C): SimpleProductName =3D OpenVPN
-Property(C): DisplayVersion =3D 2.4.6m3-I603
-Property(C): MSICHECKCRCS =3D 1
-Property(C): PROMPTROLLBACKCOST =3D P
-Property(C): EDITOR =3D notepad.exe
-Property(C): INSTALLLEVEL =3D 2
-Property(C): Manufacturer =3D OpenVPN Technologies, Inc.
-Property(C): ProductCode =3D {45521BD6-AC59-4050-A7A9-4B4EDDD3DC3D}
-Property(C): ProductLanguage =3D 1033
-Property(C): ProductName =3D OpenVPN 2.4.6m3-I603 x86
-Property(C): ProductVersion =3D 2.4.603
-Property(C): Setup =3D Setup
-Property(C): ButtonTextInstall =3D &Install Now
-Property(C): TitleCustomize =3D Custom Installation
-Property(C): Progress1 =3D Installing
-Property(C): Progress2 =3D Setup
-Property(C): SecureCustomProperties =3D=20
-ACTIVETAPINTERFACES;DRIVERCERTIFICATION;NETFRAMEWORK40FULL;TAPINTERFACES;WI=
-X_DOWNGRADE_DETECTED;WIX_UPGRADE_DETECTED
-Property(C): MsiHiddenProperties =3D=20
-AddMachineCertificate;AddUserCertificate;DeleteMachineCertificate;DeleteUse=
-rCertificate;RollbackAddMachineCertificate;RollbackAddUserCertificate;Rollb=
-ackDeleteMachineCertificate;RollbackDeleteUserCertificate
-Property(C): MsiLogFileLocation =3D=20
-C:\Users\IEUser\AppData\Local\Temp\OpenVPN-install.log
-Property(C): PackageCode =3D {E27BDB21-564E-4BCA-82D4-F33A921B88CC}
-Property(C): ProductState =3D -1
-Property(C): PackagecodeChanging =3D 1
-Property(C): CURRENTDIRECTORY =3D=20
-C:\Users\IEUser\AppData\Local\Temp\7zS87C46480
-Property(C): CLIENTUILEVEL =3D 0
-Property(C): CLIENTPROCESSID =3D 3292
-Property(C): VersionDatabase =3D 400
-Property(C): VersionMsi =3D 5.00
-Property(C): WindowsBuild =3D 7601
-Property(C): ServicePackLevel =3D 1
-Property(C): ServicePackLevelMinor =3D 0
-Property(C): MsiNTProductType =3D 1
-Property(C): WindowsFolder =3D C:\Windows\
-Property(C): WindowsVolume =3D C:\
-Property(C): SystemFolder =3D C:\Windows\system32\
-Property(C): System16Folder =3D C:\Windows\system\
-Property(C): RemoteAdminTS =3D 1
-Property(C): TempFolder =3D C:\Users\IEUser\AppData\Local\Temp\
-Property(C): CommonFilesFolder =3D C:\Program Files\Common Files\
-Property(C): AppDataFolder =3D C:\Users\IEUser\AppData\Roaming\
-Property(C): FavoritesFolder =3D C:\Users\IEUser\Favorites\
-Property(C): NetHoodFolder =3D=20
-C:\Users\IEUser\AppData\Roaming\Microsoft\Windows\Network Shortcuts\
-Property(C): PersonalFolder =3D C:\Users\IEUser\Documents\
-Property(C): PrintHoodFolder =3D=20
-C:\Users\IEUser\AppData\Roaming\Microsoft\Windows\Printer Shortcuts\
-Property(C): RecentFolder =3D=20
-C:\Users\IEUser\AppData\Roaming\Microsoft\Windows\Recent\
-Property(C): SendToFolder =3D=20
-C:\Users\IEUser\AppData\Roaming\Microsoft\Windows\SendTo\
-Property(C): TemplateFolder =3D C:\ProgramData\Microsoft\Windows\Templates\
-Property(C): CommonAppDataFolder =3D C:\ProgramData\
-Property(C): LocalAppDataFolder =3D C:\Users\IEUser\AppData\Local\
-Property(C): MyPicturesFolder =3D C:\Users\IEUser\Pictures\
-Property(C): AdminToolsFolder =3D C:\ProgramData\Microsoft\Windows\Start=20
-Menu\Programs\Administrative Tools\
-Property(C): StartupFolder =3D C:\ProgramData\Microsoft\Windows\Start=20
-Menu\Programs\Startup\
-Property(C): StartMenuFolder =3D C:\ProgramData\Microsoft\Windows\Start Men=
-u\
-Property(C): FontsFolder =3D C:\Windows\Fonts\
-Property(C): GPTSupport =3D 1
-Property(C): OLEAdvtSupport =3D 1
-Property(C): ShellAdvtSupport =3D 1
-Property(C): Intel =3D 6
-Property(C): PhysicalMemory =3D 2048
-Property(C): VirtualMemory =3D 3696
-Property(C): AdminUser =3D 1
-Property(C): MsiTrueAdminUser =3D 1
-Property(C): LogonUser =3D IEUser
-Property(C): UserSID =3D S-1-5-21-3583694148-1414552638-2922671848-1000
-Property(C): UserLanguageID =3D 2057
-Property(C): ComputerName =3D IEWIN7
-Property(C): SystemLanguageID =3D 2057
-Property(C): ScreenX =3D 1680
-Property(C): ScreenY =3D 936
-Property(C): CaptionHeight =3D 24
-Property(C): BorderTop =3D 1
-Property(C): BorderSide =3D 1
-Property(C): TextHeight =3D 20
-Property(C): TextInternalLeading =3D 4
-Property(C): ColorBits =3D 32
-Property(C): TTCSupport =3D 1
-Property(C): Time =3D 06:41:18
-Property(C): Date =3D 20/12/2018
-Property(C): MsiNetAssemblySupport =3D 4.7.3062.0
-Property(C): MsiWin32AssemblySupport =3D 6.1.7601.17514
-Property(C): RedirectedDllSupport =3D 2
-Property(C): MsiRunningElevated =3D 1
-Property(C): Privileged =3D 1
-Property(C): COMPANYNAME =3D Microsoft
-Property(C): DATABASE =3D=20
-C:\Users\IEUser\AppData\Local\Temp\7zS87C46480\OpenVPN-2.4.6m3-I603-x86.msi
-Property(C): OriginalDatabase =3D=20
-C:\Users\IEUser\AppData\Local\Temp\7zS87C46480\OpenVPN-2.4.6m3-I603-x86.msi
-Property(C): SOURCEDIR =3D C:\Users\IEUser\AppData\Local\Temp\7zS87C46480\
-Property(C): VersionHandler =3D 5.00
-Property(C): UILevel =3D 5
-Property(C): ACTION =3D INSTALL
-Property(C): EXECUTEACTION =3D INSTALL
-=3D=3D=3D Logging stopped: 20/12/2018  06:41:18 =3D=3D=3D
-MSI (c) (DC:E4) [06:41:18:218]: Windows Installer installed the product.=20
-Product Name: OpenVPN 2.4.6m3-I603 x86. Product Version: 2.4.603.=20
-Product Language: 1033. Manufacturer: OpenVPN Technologies, Inc..=20
-Installation success or error status: 1603.
+  ADVAPI32.dll
+  IPHLPAPI.DLL
+  KERNEL32.dll
+  msi.dll
+  msvcrt.dll
+  ole32.dll
+  SETUPAPI.dll
+  SHELL32.dll
+  SHLWAPI.dll
+  USER32.dll
+  VERSION.dll
 
+I'm not sure about msvcrt.dll, but the rest are stock since more or less
+Windows NT, so your Windows should have them out of the box.
+
+To be continued...
+
+Regards,
+Simon
+
+------=_NextPart_000_005F_01D498F0.7E0E5AF0
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+
+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
+AwMwJzAlBggrBgEFBQcCARYZaHR0cDovL3d3dy5jYS5nb3Yuc2kvY3BzLzAIBgYEAIswAQIwGAYI
+KwYBBQUHAQMEDDAKMAgGBgQAjkYBATAaBgNVHREEEzARgQ9zaW1vbkByb3ptYW4uc2kwge4GA1Ud
+HwSB5jCB4zBWoFSgUqRQME4xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJzdGF0ZS1pbnN0aXR1dGlv
+bnMxETAPBgNVBAsTCHNpZ2VuLWNhMQ8wDQYDVQQDEwZDUkw0NTUwgYiggYWggYKGV2xkYXA6Ly94
+NTAwLmdvdi5zaS9vdT1zaWdlbi1jYSxvPXN0YXRlLWluc3RpdHV0aW9ucyxjPXNpP2NlcnRpZmlj
+YXRlUmV2b2NhdGlvbkxpc3Q/YmFzZYYnaHR0cDovL3d3dy5zaWdlbi1jYS5zaS9jcmwvc2lnZW4t
+Y2EuY3JsMCsGA1UdEAQkMCKADzIwMTYwMjE5MTc1NDQxWoEPMjAyMTAyMTkyMTM4MTVaMB8GA1Ud
+IwQYMBaAFHF7igYfMQVVq2ASd0cgHgOIGOyJMB0GA1UdDgQWBBS7/7AHyQYI0e8GOPmwTc1ZTNw5
+lzAJBgNVHRMEAjAAMBkGCSqGSIb2fQdBAAQMMAobBFY4LjEDAgOoMA0GCSqGSIb3DQEBBQUAA4IB
+AQBBUL4KG1Z1oBIIdKIZs9yJxnJg/LfEPVvzNH8+CCqegq0D6k48Doo72oVEiskjqggdbUGj30uA
+H8PjCD5kLGVoDwh5a2atQ3qQzaYA/lj2Js2f4fdXNn60vRp7XzbGsQdwYYecIrKzO5x6XVAIRb+T
+HZNjXL3VX6vOozwBQv/+dx1P9H/rMUn7d8ci7v4PeqShbWbWwi6ez19cZvSKSkz/lWf4tj8QbA0n
+WeUBlk3Bx6/TRda7kwXzcFExt+ROGt0YJjbZCN3kd7swcRvRT6gEi9L6n1XLghwPSYhzZjaL5fXv
+I11JuSoQCy13XWBkq35Moo4iY19wanS1W6UM8Yq0MIIF5TCCBE2gAwIBAgINAKZovVEAAAAAVx3Q
+6DANBgkqhkiG9w0BAQsFADBcMQswCQYDVQQGEwJTSTEcMBoGA1UEChMTUmVwdWJsaWthIFNsb3Zl
+bmlqYTEXMBUGA1UEYRMOVkFUU0ktMTc2NTk5NTcxFjAUBgNVBAMTDVNJLVRSVVNUIFJvb3QwHhcN
+MTYwNTI0MTE1ODI3WhcNMjEwNjI3MjIwMDAwWjA9MQswCQYDVQQGEwJzaTEbMBkGA1UEChMSc3Rh
+dGUtaW5zdGl0dXRpb25zMREwDwYDVQQLEwhzaWdlbi1jYTCCASIwDQYJKoZIhvcNAQEBBQADggEP
+ADCCAQoCggEBALDlZbLArGSW8ogbs+2e5ALGTyuIzi6KUYB1rxBb8ss4ZpuiDm00R5alkhGv9jVH
+onciDM4WiGKq00luGLwuRNi+xp7CGhmsQY78MAcC8sZq1FsjAO9BNNikc2PfIpIzhAGljfODXPq4
+1Ho13+z4bQ/gTO2tnDp9htalCJS+fXoRH/6FP1RaiGOHnKWxp07Nt0Rzr8+KSWsf483XSU1aKxfm
+XHazu3K5byfSm4kViN8QX3YhAWrHFTEK0ZxY+CgWBW3ZTtmh1wcgy0smiU2Ssqe6lujjWI8inAGW
+WsT3MU0LSbXheGHiVBgGu55UNH4MPuvutYAf3RaEHWg4Zmdz+JECAwEAAaOCAkMwggI/MBIGA1Ud
+EwEB/wQIMAYBAf8CAQAwDgYDVR0PAQH/BAQDAgEGMDoGA1UdIAQzMDEwLwYEVR0gADAnMCUGCCsG
+AQUFBwIBFhlodHRwOi8vd3d3LmNhLmdvdi5zaS9jcHMvMGkGCCsGAQUFBwEBBF0wWzA2BggrBgEF
+BQcwAoYqaHR0cDovL3d3dy5jYS5nb3Yuc2kvY3J0L3NpLXRydXN0LXJvb3QuY3J0MCEGCCsGAQUF
+BzABhhVodHRwOi8vb2NzcC5jYS5nb3Yuc2kwHQYDVR0OBBYEFHF7igYfMQVVq2ASd0cgHgOIGOyJ
+MIIBPAYDVR0fBIIBMzCCAS8wgbeggbSggbGGKmh0dHA6Ly93d3cuY2EuZ292LnNpL2NybC9zaS10
+cnVzdC1yb290LmNybIaBgmxkYXA6Ly94NTAwLmdvdi5zaS9jbj1TSS1UUlVTVCUyMFJvb3Qsb3Jn
+YW5pemF0aW9uSWRlbnRpZmllcj1WQVRTSS0xNzY1OTk1NyxvPVJlcHVibGlrYSUyMFNsb3Zlbmlq
+YSxjPVNJP2NlcnRpZmljYXRlUmV2b2NhdGlvbkxpc3Qwc6BxoG+kbTBrMQswCQYDVQQGEwJTSTEc
+MBoGA1UEChMTUmVwdWJsaWthIFNsb3ZlbmlqYTEXMBUGA1UEYRMOVkFUU0ktMTc2NTk5NTcxFjAU
+BgNVBAMTDVNJLVRSVVNUIFJvb3QxDTALBgNVBAMTBENSTDEwEwYDVR0jBAwwCoAITKPDaF4IAmMw
+DQYJKoZIhvcNAQELBQADggGBAHuvNSPhY4qcirWJkTwkqaOPqOSV06J/ZepFQfUEJ87TlrGjp4XR
+5FLktTAEY/7R4Sgeb2K8OWEl/Koc1BbH6+uyZYvfa+WnnJEWeWOmyPy/vooO7eZyOVvaORxurWOL
+CCVDW2wBkbtUoKZaUyzgP+ZPPGRV8GFlbZLCzGmArMGXJXe8t/XNiJDLehGqSWT49NYjyYQdIgI+
+qi9W+A6BSUQ9jsMdYJqKhXQcosfH51sc6gZVxTKMr3PsItsa8XFiNazECAAFr0ms7HB6zb8QvHRF
+eBGk/CLrW4VkZEBN/JtuyhvgktQ2BvuGtauEvHZQAYpMSh35D7pwtavRMpmhaAsQb4yPqhIMcztw
+RqsKPBhWoaFEVZ+Vn3wxap5h/oAhocifNzkWJTNWjxnoPM2eNz2uWFJsgsNhlwteUvnq7+bKTNte
+SKWKr6pI+GUsZhmCh5URpUnqUanp0Uie0MD9f3tiOLOp711sNb0xwi+VdDuDB37IddOIsfhPBood
+wpoFrTGCAyEwggMdAgEBMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0
+aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4wDQYJYIZIAWUDBAIBBQCgggGtMBgGCSqGSIb3
+DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE4MTIyMTA0NDYxN1owLwYJKoZIhvcN
+AQkEMSIEIA/waRGYVB1MQN4IpS1U6vsDLQqAtAPWCihBmDiS+D/xMFQGCSsGAQQBgjcQBDFHMEUw
+PTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMIc2ln
+ZW4tY2ECBDtKDS4wVgYLKoZIhvcNAQkQAgsxR6BFMD0xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJz
+dGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsTCHNpZ2VuLWNhAgQ7Sg0uMIGTBgkqhkiG9w0BCQ8x
+gYUwgYIwCwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQBFjAKBggqhkiG9w0DBzALBglghkgBZQMEAQIw
+DgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAsGCWCGSAFlAwQCATALBglghkgBZQMEAgMw
+CwYJYIZIAWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBAF22bcyb3wEFJut9e/TZMb/I
+WjrAjUE/cUuQufCS3TmoRcghuHj/we07utwNrF48hD2tCxbrpGn7JwJYTbXZnZzikHp3pgx1vHhF
+Js7h8xUG+rRZZb3EMx0Qp+te/aQpKv3wRIfO2hGMsfOh8crYTUXi9xTqsJXUzzIeWaK0LXmVJ/SR
+HidfPAdOoV0rPJahLahFFEQDvmuqWqf18AD0jfm71tRlt6tLhSPB4nqbtWXfAQmB7EuHpc4vbe0n
+W8R2Tavgj8i6nGj6hU4tcgBzVF2BaQMF96B8g1+JblL+jvXtxKea0S6VBYdL7Ydu02NUwkIdYP0p
+CP8jXPRUPXmFAxUAAAAAAAA=
+
+------=_NextPart_000_005F_01D498F0.7E0E5AF0--
 
