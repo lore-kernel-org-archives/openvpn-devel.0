@@ -1,14 +1,17 @@
 From: Simon Rozman <simon@...2293...>
-Date: Fri, 21 Dec 2018 04:46:27 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE109BE8D352@...2294...>
+Date: Fri, 21 Dec 2018 04:48:32 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE109BE8D381@...2294...>
 References: <99D61A626FDA8A4B90A270669121BE109BE8AA4C@...2294...>
  <76addf9c-a14e-0e59-bb01-dace07b56a03@...277...>
  <775f6ca7-227f-6ae9-2206-1fa3d11b6376@...277...>
-In-Reply-To: <775f6ca7-227f-6ae9-2206-1fa3d11b6376@...277...>
+ <5aa26403-9948-df7a-6eaa-a6c1d0ba0a29@...277...>
+ <874acac0-8e68-765d-43b1-f1fd185bbb05@...277...>
+ <b6b7263c-2daa-1678-b5d7-7f4e202f1a44@...277...>
+In-Reply-To: <b6b7263c-2daa-1678-b5d7-7f4e202f1a44@...277...>
 Content-Language: en-US
 Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
  micalg=2.16.840.1.101.3.4.2.1;
- boundary="----=_NextPart_000_0073_01D498F0.831C9B10"
+ boundary="----=_NextPart_000_0078_01D498F0.CDB5BE40"
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] [Help required] Testing MSI installations
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,30 +24,41 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: tincanteksup <tincanteksup@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-------=_NextPart_000_0073_01D498F0.831C9B10
+------=_NextPart_000_0078_01D498F0.CDB5BE40
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 
 Hi,
 
-> > The %TEMP%/openvpn-install.log is:
+> Action 06:41:08: FindTAPInterfaces. Searching for TAP interfaces Action
+> start 06:41:08: FindTAPInterfaces.
+> CustomAction FindTAPInterfaces returned actual error code 1154 (note
+> this may not be 100% accurate if translation happened inside sandbox)
+> Error 1723. There is a problem with this Windows Installer package. A
+> DLL required for this install to complete could not be run. Contact your
+> support personnel or package vendor.  Action FindTAPInterfaces, entry:
+> FindTAPInterfaces, library:
+> C:\Users\IEUser\AppData\Local\Temp\MSIE9C3.tmp
+> MSI (c) (DC:E4) [06:41:16:156]: Product: OpenVPN 2.4.6m3-I603 x86 --
+> Error 1723. There is a problem with this Windows Installer package. A
+> DLL required for this install to complete could not be run. Contact your
+> support personnel or package vendor.  Action FindTAPInterfaces, entry:
+> FindTAPInterfaces, library:
+> C:\Users\IEUser\AppData\Local\Temp\MSIE9C3.tmp
+> 
+> Action ended 06:41:16: FindTAPInterfaces. Return value 3.
 
-...
+The "Error 1723" translates to RPC_S_SERVER_TOO_BUSY. So, this is something
+new.
 
-> I should mention I tested the .exe installer.
-
-You didn't need to. The MSI packages does not setup any logging to file by
-default. The EXE installer is the one who adds /l*
-%TEMP%/openvpn-install.log to the msiexec command line. The
-%TEMP%/openvpn-install.log is EXE-installer-specific.
+I'll try to reproduce it.
 
 Regards,
 Simon
 
 
-
-------=_NextPart_000_0073_01D498F0.831C9B10
+------=_NextPart_000_0078_01D498F0.CDB5BE40
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -123,19 +137,19 @@ RqsKPBhWoaFEVZ+Vn3wxap5h/oAhocifNzkWJTNWjxnoPM2eNz2uWFJsgsNhlwteUvnq7+bKTNte
 SKWKr6pI+GUsZhmCh5URpUnqUanp0Uie0MD9f3tiOLOp711sNb0xwi+VdDuDB37IddOIsfhPBood
 wpoFrTGCAyEwggMdAgEBMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0
 aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4wDQYJYIZIAWUDBAIBBQCgggGtMBgGCSqGSIb3
-DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE4MTIyMTA0NDYyNVowLwYJKoZIhvcN
-AQkEMSIEINjuhWJflUFwcWzwiz+dx6lObsSwqEKKIde/Yz4gWeGXMFQGCSsGAQQBgjcQBDFHMEUw
+DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE4MTIyMTA0NDgzMVowLwYJKoZIhvcN
+AQkEMSIEIOaKUlo9Z2lHVlKYcHSFJ4Ana7U1fRBwGFQOs+gawV2KMFQGCSsGAQQBgjcQBDFHMEUw
 PTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMIc2ln
 ZW4tY2ECBDtKDS4wVgYLKoZIhvcNAQkQAgsxR6BFMD0xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJz
 dGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsTCHNpZ2VuLWNhAgQ7Sg0uMIGTBgkqhkiG9w0BCQ8x
 gYUwgYIwCwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQBFjAKBggqhkiG9w0DBzALBglghkgBZQMEAQIw
 DgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAsGCWCGSAFlAwQCATALBglghkgBZQMEAgMw
-CwYJYIZIAWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBAEnkSUwT69GdKr4uspcWvkib
-C6Kcawcj5hkr2ctM0yM/u7NetNxga/4+1jGNlGqLiKTsoXLASBnMKeWA+CubYh8qgeeU6lrCSe8k
-6ipiFy75h9sg4Tgak1NnPv9yBC0/5P6Rnk+Orc82Fj9bxYcpwYS36OiTopH2Cmsp1bL8LlafigPo
-vxlMhPGmQdyXU5gcnNRovkxKlu7BaPMJpufyjt/AWecFi9+iH6AAZHmjDQH2bGkgnq0NenaLrHTQ
-stVAFJ3QmySTHPF8AmFRvPO1iODUtKXjPZWs4XMW0+c5sF7jQbza8iVPbPnFK4UnEIKs84ieXBy/
-Boocij6w2qez4CIAAAAAAAA=
+CwYJYIZIAWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBAPVJS688+dyeLztpoD2V2qOq
+GCqcBgWpNNTUJ9N9o+TRjPKF6OtG1uEOrbN4MZXd1ssmDgQRYRPqUdmoHUAoMw+FBI2BezVdnuC4
+dj+oeKX4HhYQ5XIyV0y0uFPC6RoI3MMBAGmN54/lNhNfDj7N7wayWb/a4Rgvs9BWuzVjTYjAi3OT
+A/5zYUPsozuIm/+cMG/B8THs5Wbf6mb3fjrU8YIrCALGTwDVyPTV+PQEesNTokVFrc/B5M5EKE7d
+lfMvkEewNDd4J56B16SSmxQ1hj9miXHCh8NUqtOoLzL8+eZ7I0B7AlU3zWZ5kOlfgJhm44Ii5I7p
+kqWFHKxStHfrQXcAAAAAAAA=
 
-------=_NextPart_000_0073_01D498F0.831C9B10--
+------=_NextPart_000_0078_01D498F0.CDB5BE40--
 
