@@ -1,13 +1,15 @@
 From: Simon Rozman <simon@...2293...>
-Date: Fri, 21 Dec 2018 04:46:19 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE109BE8D339@...2294...>
+Date: Fri, 21 Dec 2018 04:46:21 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE109BE8D349@...2294...>
 References: <99D61A626FDA8A4B90A270669121BE109BE8AA4C@...2294...>
  <76addf9c-a14e-0e59-bb01-dace07b56a03@...277...>
-In-Reply-To: <76addf9c-a14e-0e59-bb01-dace07b56a03@...277...>
+ <775f6ca7-227f-6ae9-2206-1fa3d11b6376@...277...>
+ <5aa26403-9948-df7a-6eaa-a6c1d0ba0a29@...277...>
+In-Reply-To: <5aa26403-9948-df7a-6eaa-a6c1d0ba0a29@...277...>
 Content-Language: en-US
 Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
  micalg=2.16.840.1.101.3.4.2.1;
- boundary="----=_NextPart_000_005F_01D498F0.7E0E5AF0"
+ boundary="----=_NextPart_000_0069_01D498F0.7FF4A720"
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] [Help required] Testing MSI installations
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,47 +22,26 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: tincanteksup <tincanteksup@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-------=_NextPart_000_005F_01D498F0.7E0E5AF0
+------=_NextPart_000_0069_01D498F0.7FF4A720
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 
 Hi,
 
-> Action 05:28:59: FindTAPInterfaces. Searching for TAP interfaces Action
-> start 05:28:59: FindTAPInterfaces.
-> CustomAction FindTAPInterfaces returned actual error code 1154 (note
-> this may not be 100% accurate if translation happened inside sandbox)
+> This may be a false alarm because Windows has decided this VM needs
+> "some" updates .. I'll update after the reboot dance. *yawn*
 
-error code 1154 = ERROR_INVALID_DLL
+Actually, setup should work with a vanilla non-updated Windows 7 too. Though
+we should encourage our users to run up-to-date Windows.
 
-The error code 1154 (ERROR_INVALID_DLL) indicates, one of the DLLs required
-by libopenvpnmsica.dll was missing, failed to load or it's too old (missing
-some functions perhaps introduced later).
-
-The libopenvpnmsica.dll requires the following DLLs in System32 folder:
-
-  ADVAPI32.dll
-  IPHLPAPI.DLL
-  KERNEL32.dll
-  msi.dll
-  msvcrt.dll
-  ole32.dll
-  SETUPAPI.dll
-  SHELL32.dll
-  SHLWAPI.dll
-  USER32.dll
-  VERSION.dll
-
-I'm not sure about msvcrt.dll, but the rest are stock since more or less
-Windows NT, so your Windows should have them out of the box.
-
-To be continued...
+Thank you very much for your report. I am downloading the IE11-Win7 image as
+we speak and will test _before_ and _after_ the updates.
 
 Regards,
 Simon
 
-------=_NextPart_000_005F_01D498F0.7E0E5AF0
+------=_NextPart_000_0069_01D498F0.7FF4A720
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -139,19 +120,19 @@ RqsKPBhWoaFEVZ+Vn3wxap5h/oAhocifNzkWJTNWjxnoPM2eNz2uWFJsgsNhlwteUvnq7+bKTNte
 SKWKr6pI+GUsZhmCh5URpUnqUanp0Uie0MD9f3tiOLOp711sNb0xwi+VdDuDB37IddOIsfhPBood
 wpoFrTGCAyEwggMdAgEBMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0
 aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4wDQYJYIZIAWUDBAIBBQCgggGtMBgGCSqGSIb3
-DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE4MTIyMTA0NDYxN1owLwYJKoZIhvcN
-AQkEMSIEIA/waRGYVB1MQN4IpS1U6vsDLQqAtAPWCihBmDiS+D/xMFQGCSsGAQQBgjcQBDFHMEUw
+DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE4MTIyMTA0NDYyMFowLwYJKoZIhvcN
+AQkEMSIEIOFkZoGxRbkN0p0tW5iqxaFtV3Es4ONVtFnCVCQJJ1pHMFQGCSsGAQQBgjcQBDFHMEUw
 PTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMIc2ln
 ZW4tY2ECBDtKDS4wVgYLKoZIhvcNAQkQAgsxR6BFMD0xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJz
 dGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsTCHNpZ2VuLWNhAgQ7Sg0uMIGTBgkqhkiG9w0BCQ8x
 gYUwgYIwCwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQBFjAKBggqhkiG9w0DBzALBglghkgBZQMEAQIw
 DgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAsGCWCGSAFlAwQCATALBglghkgBZQMEAgMw
-CwYJYIZIAWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBAF22bcyb3wEFJut9e/TZMb/I
-WjrAjUE/cUuQufCS3TmoRcghuHj/we07utwNrF48hD2tCxbrpGn7JwJYTbXZnZzikHp3pgx1vHhF
-Js7h8xUG+rRZZb3EMx0Qp+te/aQpKv3wRIfO2hGMsfOh8crYTUXi9xTqsJXUzzIeWaK0LXmVJ/SR
-HidfPAdOoV0rPJahLahFFEQDvmuqWqf18AD0jfm71tRlt6tLhSPB4nqbtWXfAQmB7EuHpc4vbe0n
-W8R2Tavgj8i6nGj6hU4tcgBzVF2BaQMF96B8g1+JblL+jvXtxKea0S6VBYdL7Ydu02NUwkIdYP0p
-CP8jXPRUPXmFAxUAAAAAAAA=
+CwYJYIZIAWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBALVLMOKbYGNSlwWBdscdBSmP
+3nDO2iI8dIT4ZAL/UQqd+NbLXV8+Db+WC4lOs6hvSa6THyFz1u29NNRpEUkLZ5UMU7lB5Ws1kYGv
+Ut8vxfg1iTy1kBBBEoQokIfoL2AhSLAQoV8T1mPzIzdnV2CV543DiYImvfxbBgsWH8rJIiVaprBI
+XfzGa27eIpQ6sXYkLKFvJgKUVKgw6GYIeVZHKfovkutV4cbYJU2HijZ/JG+vwM5/9ANjURt4qCBV
+8eLE08/tjrg8lHvduDbghmyp7oN26Aa1pxww0S3SPE1BFOex32AeAPdRULT25a3GParFlXxDiEou
+yGpWclbIfQeIbFUAAAAAAAA=
 
-------=_NextPart_000_005F_01D498F0.7E0E5AF0--
+------=_NextPart_000_0069_01D498F0.7FF4A720--
 
