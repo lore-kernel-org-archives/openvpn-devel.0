@@ -1,12 +1,13 @@
+Date: Tue, 25 Dec 2018 09:03:37 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20181225080337.GX962@...1296...>
 References: <c042fd01f62d707477c37e0298e303f1@...2482...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <b49e6ca0-5ff5-5519-2078-87bd19225362@...2080...>
-Date: Tue, 25 Dec 2018 00:59:34 +0100
+ <b49e6ca0-5ff5-5519-2078-87bd19225362@...2080...>
 MIME-Version: 1.0
-In-Reply-To: <c042fd01f62d707477c37e0298e303f1@...2482...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="oWmw72ncIFLvWQprDNuMG8UhbNj2fZo9j"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="vOCXB21EVDvwfuLa"
+Content-Disposition: inline
+In-Reply-To: <b49e6ca0-5ff5-5519-2078-87bd19225362@...2080...>
 Subject: Re: [Openvpn-devel] [PATCH] Fix error message when using RHEL init
  script
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,86 +18,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Richard van den Berg <richard@...2482...>, openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <openvpn@...2080...>
+Cc: Richard van den Berg <richard@...2482...>, openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---oWmw72ncIFLvWQprDNuMG8UhbNj2fZo9j
-Content-Type: multipart/mixed; boundary="yiFCFJKB5zUL8JFUhmxS2RrBJHWNWMIc2";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-To: Richard van den Berg <richard@...2482...>,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <b49e6ca0-5ff5-5519-2078-87bd19225362@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix error message when using RHEL init
- script
-References: <c042fd01f62d707477c37e0298e303f1@...2482...>
-In-Reply-To: <c042fd01f62d707477c37e0298e303f1@...2482...>
-
---yiFCFJKB5zUL8JFUhmxS2RrBJHWNWMIc2
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
+--vOCXB21EVDvwfuLa
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 21/12/2018 07:43, Richard van den Berg via Openvpn-devel wrote:
-> In RHEL 7 /etc/sysconfig/network is no longer used (still there but empty=
-).
-> This results in the following error when openvpn starts:
+Hi,
+
+On Tue, Dec 25, 2018 at 12:59:34AM +0100, David Sommerseth wrote:
+> On 21/12/2018 07:43, Richard van den Berg via Openvpn-devel wrote:
+> > In RHEL 7 /etc/sysconfig/network is no longer used (still there but emp=
+ty).
+> > This results in the following error when openvpn starts:
+> >=20
+> > Dec 20 09:01:25 localhost openvpn: /etc/rc.d/init.d/openvpn: line 94: [=
+: =3D:
+> > unary operator expected
 >=20
-> Dec 20 09:01:25 localhost openvpn: /etc/rc.d/init.d/openvpn: line 94: [: =
-=3D:
-> unary operator expected
+> Not related to this fix, but we really need to get rid of the distro/rpm
+> folder.  These init script should NOT be used on any systemd based system=
+s at all.
 
-Not related to this fix, but we really need to get rid of the distro/rpm
-folder.  These init script should NOT be used on any systemd based systems =
-at all.
+I've expected a comment along that lines :-)  - and I'm not objecting
+to a massive cleanup here.=20=20
 
-The complete distro/rpm folder is essentially unmaintained, as the .spec fi=
-le
-here most likely breaks any modern packaging guidelines.  If you want the
-proper maintained .spec file, look at the ones in the Fedora EPEL repositor=
-y [0].
+But as long as we keep the script, it should better be well-behaved,
+thus, my ACK :-)
 
-As we don't here much from the upstream SUSE package maintainers, I don't h=
-ave
-a good pointer for that RPM flavour.  But I presume their spec file is also
-far better maintained than the one we ship here.
-
-
-[0] <https://src.fedoraproject.org/rpms/openvpn/tree/epel7>
-
-
+gert
 --=20
-kind regards,
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-David Sommerseth
-OpenVPN Inc
+Gert Doering - Munich, Germany                             gert@...1296...
 
-
-
---yiFCFJKB5zUL8JFUhmxS2RrBJHWNWMIc2--
-
---oWmw72ncIFLvWQprDNuMG8UhbNj2fZo9j
+--vOCXB21EVDvwfuLa
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJcIXLrAAoJEIbPlEyWcf3yBR4P/A81+u/dcCVUZ7QGtUamRBCt
-OkD+Jg3JpBZXHpR2QXIrIN2gjwsU1Vu4beXKE5s3gYmiwa7YlRRDpr0suVoJ4WIH
-kmpnTDE8zLTVF8jx5hzf9Psc8qK7a6iOh0cyDtfY49jY/evN13BerYLI9LU5NzIL
-2UpBFIO0wQ7JrRjNKNDGFoGlnjjV1F/COtEX44ctTB0NdYfz9wB+3EXnoj/9tlhk
-bR2Ij3TzMfW2aGDsUoWdVqw0fmLds+fiuVmXu/kkpnF78swQ0zVLUTaZ0wiQp+vI
-8zHNXn5kseydiKgMd95mY1s0HeAAx9kj6zxMU2hJXQwkwkeew7+QZ2nrHqoBluRA
-KegizXDHmwKA9NY5pIfhCL3MdY2XgYtffDu02sGYCX3Pe4j18zoYK/7pkmTDY4GW
-IT/oPj62gS5pGsIoPM5j7w1GIY/ykBOFn4oT7ULoXGZrBgG0IFUVQdXaQxhj4gyR
-avVocTGC0eSURRaNW1TK8GO/rCKwIVt+ufVb03z20/kXxkPsJx6D1NiDUoH4/dyn
-JJHhGDSqE4xPJJ495zRntAcVzETjf9kdnd27bchhBAL+jJMpvXk0SnuSJ17FeMXp
-WtNzl8/lzk6bL/CJgfu1Au7ku0e+WHutVkpQcijrRGdCMj86gQGw+Rdntv9tlFPS
-BBqgaVyJ79i4+7OZl/pv
-=Gna9
+iQGcBAEBAgAGBQJcIeRYAAoJEB2Cnv7KVigS5hcL/As8cb8Zwd9sjZknh4pP3b4a
+pqDQ6Y42IksPvUgiFvbfENM3O/1e+/M996CVnZFKLx+BzvBYopGHeex0uZlS639w
+KqHX+rJFk3uEdOMJeaUpXg0h1kCGe2AWW4An+v2wRgIspJ7m9F3uFoX4h8aQM5/5
+une93Gmdc1jq6RLv/gnqyczaD+a3OVFmpCMlUksr54eLmkqAIB1O25yTrZO6HW5e
+LP0AVEsilxKiAcMBkRrWMOGjRD07RfaK8jHnnZ6yTTGdQnNgb9r64/TKzQ+EiOew
+5cospc4W8fJxrbpXjoe3MBHzf8tqJpkWGWcR0INswUQ6R018Neg5/JPWMyeW0gCK
+grdUYwWUpJlXG59KjHPQcnnsgdz/YAU2PCr7b0M971VqBXW9s3vy+gMY1TfXvMY7
+qk/kQRASuIOtdFz/J5/lv03yODuQB5rT/n0cJOCgZqOUBpjUzw7hs/7Fw9AHhywb
+U/dOzppZ3HyvFKOnRhvhTTCnuydEbJph4ZRnm39oOQ==
+=8NPr
 -----END PGP SIGNATURE-----
 
---oWmw72ncIFLvWQprDNuMG8UhbNj2fZo9j--
+--vOCXB21EVDvwfuLa--
 
