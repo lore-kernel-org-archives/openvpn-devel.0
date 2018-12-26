@@ -1,15 +1,14 @@
-Date: Tue, 25 Dec 2018 09:03:37 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20181225080337.GX962@...1296...>
-References: <c042fd01f62d707477c37e0298e303f1@...2482...>
- <b49e6ca0-5ff5-5519-2078-87bd19225362@...2080...>
+References: <20181218140945.GU962@...1296...>
+ <8d921fbc-7baa-62c7-5689-ccfc9bf16240@...2181...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <5769657c-ee4a-435b-9938-16700c8079d8@...1856...>
+Date: Wed, 26 Dec 2018 11:07:18 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="vOCXB21EVDvwfuLa"
-Content-Disposition: inline
-In-Reply-To: <b49e6ca0-5ff5-5519-2078-87bd19225362@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix error message when using RHEL init
- script
+In-Reply-To: <8d921fbc-7baa-62c7-5689-ccfc9bf16240@...2181...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="sfnCnRiQBNgGwkZgYwXztSl5KU0TGAu6v"
+Subject: Re: [Openvpn-devel] RfD: printing of port numbers on v6 addresses
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,63 +17,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn@...2080...>
-Cc: Richard van den Berg <richard@...2482...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
---vOCXB21EVDvwfuLa
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--sfnCnRiQBNgGwkZgYwXztSl5KU0TGAu6v
+Content-Type: multipart/mixed; boundary="sLF13iG6CXnZIJovvJMJ9DoOVdKkLTgAS";
+ protected-headers="v1"
+From: Steffan Karger <steffan@...1856...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <5769657c-ee4a-435b-9938-16700c8079d8@...1856...>
+Subject: Re: [Openvpn-devel] RfD: printing of port numbers on v6 addresses
+References: <20181218140945.GU962@...1296...>
+ <8d921fbc-7baa-62c7-5689-ccfc9bf16240@...2181...>
+In-Reply-To: <8d921fbc-7baa-62c7-5689-ccfc9bf16240@...2181...>
+
+--sLF13iG6CXnZIJovvJMJ9DoOVdKkLTgAS
+Content-Language: en-GB
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
 
-On Tue, Dec 25, 2018 at 12:59:34AM +0100, David Sommerseth wrote:
-> On 21/12/2018 07:43, Richard van den Berg via Openvpn-devel wrote:
-> > In RHEL 7 /etc/sysconfig/network is no longer used (still there but emp=
-ty).
-> > This results in the following error when openvpn starts:
-> >=20
-> > Dec 20 09:01:25 localhost openvpn: /etc/rc.d/init.d/openvpn: line 94: [=
-: =3D:
-> > unary operator expected
->=20
-> Not related to this fix, but we really need to get rid of the distro/rpm
-> folder.  These init script should NOT be used on any systemd based system=
-s at all.
+On 19-12-18 00:09, Antonio Quartulli wrote:
+> I personally prefer the rfc3986 notation because it is more widespread
+> and, therefore, easier to understand/recognize.
 
-I've expected a comment along that lines :-)  - and I'm not objecting
-to a massive cleanup here.=20=20
++1
 
-But as long as we keep the script, it should better be well-behaved,
-thus, my ACK :-)
+-Steffan
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
 
-Gert Doering - Munich, Germany                             gert@...1296...
+--sLF13iG6CXnZIJovvJMJ9DoOVdKkLTgAS--
 
---vOCXB21EVDvwfuLa
+--sfnCnRiQBNgGwkZgYwXztSl5KU0TGAu6v
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJcIeRYAAoJEB2Cnv7KVigS5hcL/As8cb8Zwd9sjZknh4pP3b4a
-pqDQ6Y42IksPvUgiFvbfENM3O/1e+/M996CVnZFKLx+BzvBYopGHeex0uZlS639w
-KqHX+rJFk3uEdOMJeaUpXg0h1kCGe2AWW4An+v2wRgIspJ7m9F3uFoX4h8aQM5/5
-une93Gmdc1jq6RLv/gnqyczaD+a3OVFmpCMlUksr54eLmkqAIB1O25yTrZO6HW5e
-LP0AVEsilxKiAcMBkRrWMOGjRD07RfaK8jHnnZ6yTTGdQnNgb9r64/TKzQ+EiOew
-5cospc4W8fJxrbpXjoe3MBHzf8tqJpkWGWcR0INswUQ6R018Neg5/JPWMyeW0gCK
-grdUYwWUpJlXG59KjHPQcnnsgdz/YAU2PCr7b0M971VqBXW9s3vy+gMY1TfXvMY7
-qk/kQRASuIOtdFz/J5/lv03yODuQB5rT/n0cJOCgZqOUBpjUzw7hs/7Fw9AHhywb
-U/dOzppZ3HyvFKOnRhvhTTCnuydEbJph4ZRnm39oOQ==
-=8NPr
+iQEzBAEBCAAdFiEED9EpzGW9WeE8Ifd8mALKPQB+0ogFAlwjUt4ACgkQmALKPQB+
+0oj+UAgAlkvpzWQWugVpVOIg3l7CQI8NvcIYUyw7D0wqiKJTqJEHYwqR6c8iaaTl
+f/InEIUr0nwcyanstDgj6iEZT082hSu6Yvgn8Z2/Jyr39nvvY3KUhuRBGAPuGDbl
+weuzZMo35Dl0u1c9jyeiN5DMkTjDpCOEVbTvoddns7q2I6NEDt+1gx7v2dam2Wqx
+Cte7Vo/zOQXCNSokQtaha+deOgi/7i/SncyJIq8Wa3/98o1aqGqtnD1C5P/iaDxo
+yoWtaOeacT9h2x//XzANbi3wdRnXnDqHzp8isR7vCNesOr/JN2OHLdws1mKFNDXE
+tdZcoHup/+1l8VhkAZh1HXBuiQOmUA==
+=j6DT
 -----END PGP SIGNATURE-----
 
---vOCXB21EVDvwfuLa--
+--sfnCnRiQBNgGwkZgYwXztSl5KU0TGAu6v--
 
