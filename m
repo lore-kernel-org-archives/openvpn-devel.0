@@ -1,17 +1,9 @@
 From: Simon Rozman <simon@...2293...>
-Date: Tue, 1 Jan 2019 23:34:29 +0000
-Message-ID: <CC83ED38-544A-4750-8AD0-6E5B60141864@...2293...>
-References: <99D61A626FDA8A4B90A270669121BE109BE8AA4C@...2294...>
- <76addf9c-a14e-0e59-bb01-dace07b56a03@...277...>
- <775f6ca7-227f-6ae9-2206-1fa3d11b6376@...277...>
- <5aa26403-9948-df7a-6eaa-a6c1d0ba0a29@...277...>
- <99D61A626FDA8A4B90A270669121BE109BE8D349@...2294...>
-In-Reply-To: <99D61A626FDA8A4B90A270669121BE109BE8D349@...2294...>
-Content-Language: en-US
-Content-Type: multipart/signed; protocol="application/pkcs7-signature";
- micalg=sha256; boundary="B_3629234068_1608247312"
+Date: Wed,  2 Jan 2019 00:35:47 +0100
+Message-Id: <20190101233547.10100-1-simon@...2293...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [Help required] Testing MSI installations
+Subject: [Openvpn-devel] [PATCH] Strip _stdcall suffixes (@nn) for 32-bit
+ builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,132 +12,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: tincanteksup <tincanteksup@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---B_3629234068_1608247312
-Content-type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This makes DLL exported function names consistent between 32 and 64-bit
+builds.
 
-Hi,
+Signed-off-by: Simon Rozman <simon@...2293...>
+---
+ src/openvpnmsica/Makefile.am | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-I have found and fixed the issue with the installer: all 32-bit MSI package=
-s were affected - didn't notice it myself as all my testing machines turned=
- out to be 64-bit :(. New version of the installer is available at https://=
-github.com/rozmansi/openvpn/releases.
+diff --git a/src/openvpnmsica/Makefile.am b/src/openvpnmsica/Makefile.am
+index f00a01d8..db8502b8 100644
+--- a/src/openvpnmsica/Makefile.am
++++ b/src/openvpnmsica/Makefile.am
+@@ -2,7 +2,7 @@
+ #  openvpnmsica -- Custom Action DLL to provide OpenVPN-specific support to MSI packages
+ #
+ #  Copyright (C) 2002-2018 OpenVPN Inc <sales@...515...>
+-#  Copyright (C) 2018 Simon Rozman <simon@...2293...>
++#  Copyright (C) 2018-2019 Simon Rozman <simon@...2293...>
+ #
+ #  This program is free software; you can redistribute it and/or modify
+ #  it under the terms of the GNU General Public License version 2
+@@ -40,7 +40,8 @@ lib_LTLIBRARIES = libopenvpnmsica.la
+ libopenvpnmsica_la_CFLAGS = \
+ 	-municode -D_UNICODE \
+ 	-UNTDDI_VERSION -U_WIN32_WINNT \
+-	-D_WIN32_WINNT=_WIN32_WINNT_VISTA
++	-D_WIN32_WINNT=_WIN32_WINNT_VISTA \
++	-Wl,--kill-at
+ libopenvpnmsica_la_LDFLAGS = -ladvapi32 -lole32 -lmsi -lsetupapi -liphlpapi -lshell32 -lshlwapi -lversion -no-undefined -avoid-version
+ endif
+ 
+-- 
+2.19.0.windows.1
 
-Best regards,
-Simon=20
-
-=EF=BB=BFOn 21.12.2018, 05:48, "Simon Rozman" <simon@...2293...> wrote:
-
-    Hi,
-=20=20=20=20
-    > This may be a false alarm because Windows has decided this VM needs
-    > "some" updates .. I'll update after the reboot dance. *yawn*
-=20=20=20=20
-    Actually, setup should work with a vanilla non-updated Windows 7 too. T=
-hough
-    we should encourage our users to run up-to-date Windows.
-=20=20=20=20
-    Thank you very much for your report. I am downloading the IE11-Win7 ima=
-ge as
-    we speak and will test _before_ and _after_ the updates.
-=20=20=20=20
-    Regards,
-    Simon
-=20=20=20=20
-
---B_3629234068_1608247312
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-
-MIIR6wYJKoZIhvcNAQcCoIIR3DCCEdgCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0B
-BwGggg/UMIIFWTCCBEGgAwIBAgIEO0oNLjANBgkqhkiG9w0BAQUFADA9MQswCQYDVQQGEwJz
-aTEbMBkGA1UEChMSc3RhdGUtaW5zdGl0dXRpb25zMREwDwYDVQQLEwhzaWdlbi1jYTAeFw0x
-NjAyMTkxNzU0NDFaFw0yMTAyMTkyMTM4MTVaMIGAMQswCQYDVQQGEwJTSTEbMBkGA1UEChMS
-c3RhdGUtaW5zdGl0dXRpb25zMREwDwYDVQQLEwhzaWdlbi1jYTEUMBIGA1UECxMLaW5kaXZp
-ZHVhbHMxKzATBgNVBAMTDFNpbW9uIFJvem1hbjAUBgNVBAUTDTIzNDU2Nzk1MTIwNDIwggEi
-MA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQD+LEVulmN6fPkadqe82V8M1xrQ52BYGDka
-xqVw/tEwalpKEiMR6DO8VfCpkjj1Ka5JEoU21Srm1MFg6Tkot9b8ykHAGEWGakBRBSgJGBBQ
-AqiO8knjtQuohXSAFeUWjLMfA3mOZG8rJbGrCyg39Fmm1jeezWYuB/7s2xrqK7Stc/GzIheq
-sYE0Pw1FhqtECA52JuzoItOX368d31tN/O1ynkH7F0TXy48GFncmq5Yid3d3QVOk1qQC68lo
-ILwSSkLA5xOV6mHz/XlAAb/jfNLfsIyxT1RO4+rPlOulTYVex/bfxlbKGXN4qfK/o84TFqXW
-1dbDUK7jS9PzMxthWpTfAgMBAAGjggIbMIICFzAOBgNVHQ8BAf8EBAMCBaAwSwYDVR0gBEQw
-QjA2BgsrBgEEAa9ZAgIDAzAnMCUGCCsGAQUFBwIBFhlodHRwOi8vd3d3LmNhLmdvdi5zaS9j
-cHMvMAgGBgQAizABAjAYBggrBgEFBQcBAwQMMAowCAYGBACORgEBMBoGA1UdEQQTMBGBD3Np
-bW9uQHJvem1hbi5zaTCB7gYDVR0fBIHmMIHjMFagVKBSpFAwTjELMAkGA1UEBhMCc2kxGzAZ
-BgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMIc2lnZW4tY2ExDzANBgNVBAMT
-BkNSTDQ1NTCBiKCBhaCBgoZXbGRhcDovL3g1MDAuZ292LnNpL291PXNpZ2VuLWNhLG89c3Rh
-dGUtaW5zdGl0dXRpb25zLGM9c2k/Y2VydGlmaWNhdGVSZXZvY2F0aW9uTGlzdD9iYXNlhido
-dHRwOi8vd3d3LnNpZ2VuLWNhLnNpL2NybC9zaWdlbi1jYS5jcmwwKwYDVR0QBCQwIoAPMjAx
-NjAyMTkxNzU0NDFagQ8yMDIxMDIxOTIxMzgxNVowHwYDVR0jBBgwFoAUcXuKBh8xBVWrYBJ3
-RyAeA4gY7IkwHQYDVR0OBBYEFLv/sAfJBgjR7wY4+bBNzVlM3DmXMAkGA1UdEwQCMAAwGQYJ
-KoZIhvZ9B0EABAwwChsEVjguMQMCA6gwDQYJKoZIhvcNAQEFBQADggEBAEFQvgobVnWgEgh0
-ohmz3InGcmD8t8Q9W/M0fz4IKp6CrQPqTjwOijvahUSKySOqCB1tQaPfS4Afw+MIPmQsZWgP
-CHlrZq1DepDNpgD+WPYmzZ/h91c2frS9GntfNsaxB3Bhh5wisrM7nHpdUAhFv5Mdk2NcvdVf
-q86jPAFC//53HU/0f+sxSft3xyLu/g96pKFtZtbCLp7PX1xm9IpKTP+VZ/i2PxBsDSdZ5QGW
-TcHHr9NF1ruTBfNwUTG35E4a3RgmNtkI3eR3uzBxG9FPqASL0vqfVcuCHA9JiHNmNovl9e8j
-XUm5KhALLXddYGSrfkyijiJjX3BqdLVbpQzxirQwggXlMIIETaADAgECAg0Apmi9UQAAAABX
-HdDoMA0GCSqGSIb3DQEBCwUAMFwxCzAJBgNVBAYTAlNJMRwwGgYDVQQKExNSZXB1Ymxpa2Eg
-U2xvdmVuaWphMRcwFQYDVQRhEw5WQVRTSS0xNzY1OTk1NzEWMBQGA1UEAxMNU0ktVFJVU1Qg
-Um9vdDAeFw0xNjA1MjQxMTU4MjdaFw0yMTA2MjcyMjAwMDBaMD0xCzAJBgNVBAYTAnNpMRsw
-GQYDVQQKExJzdGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsTCHNpZ2VuLWNhMIIBIjANBgkq
-hkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsOVlssCsZJbyiBuz7Z7kAsZPK4jOLopRgHWvEFvy
-yzhmm6IObTRHlqWSEa/2NUeidyIMzhaIYqrTSW4YvC5E2L7GnsIaGaxBjvwwBwLyxmrUWyMA
-70E02KRzY98ikjOEAaWN84Nc+rjUejXf7PhtD+BM7a2cOn2G1qUIlL59ehEf/oU/VFqIY4ec
-pbGnTs23RHOvz4pJax/jzddJTVorF+ZcdrO7crlvJ9KbiRWI3xBfdiEBascVMQrRnFj4KBYF
-bdlO2aHXByDLSyaJTZKyp7qW6ONYjyKcAZZaxPcxTQtJteF4YeJUGAa7nlQ0fgw+6+61gB/d
-FoQdaDhmZ3P4kQIDAQABo4ICQzCCAj8wEgYDVR0TAQH/BAgwBgEB/wIBADAOBgNVHQ8BAf8E
-BAMCAQYwOgYDVR0gBDMwMTAvBgRVHSAAMCcwJQYIKwYBBQUHAgEWGWh0dHA6Ly93d3cuY2Eu
-Z292LnNpL2Nwcy8waQYIKwYBBQUHAQEEXTBbMDYGCCsGAQUFBzAChipodHRwOi8vd3d3LmNh
-Lmdvdi5zaS9jcnQvc2ktdHJ1c3Qtcm9vdC5jcnQwIQYIKwYBBQUHMAGGFWh0dHA6Ly9vY3Nw
-LmNhLmdvdi5zaTAdBgNVHQ4EFgQUcXuKBh8xBVWrYBJ3RyAeA4gY7IkwggE8BgNVHR8EggEz
-MIIBLzCBt6CBtKCBsYYqaHR0cDovL3d3dy5jYS5nb3Yuc2kvY3JsL3NpLXRydXN0LXJvb3Qu
-Y3JshoGCbGRhcDovL3g1MDAuZ292LnNpL2NuPVNJLVRSVVNUJTIwUm9vdCxvcmdhbml6YXRp
-b25JZGVudGlmaWVyPVZBVFNJLTE3NjU5OTU3LG89UmVwdWJsaWthJTIwU2xvdmVuaWphLGM9
-U0k/Y2VydGlmaWNhdGVSZXZvY2F0aW9uTGlzdDBzoHGgb6RtMGsxCzAJBgNVBAYTAlNJMRww
-GgYDVQQKExNSZXB1Ymxpa2EgU2xvdmVuaWphMRcwFQYDVQRhEw5WQVRTSS0xNzY1OTk1NzEW
-MBQGA1UEAxMNU0ktVFJVU1QgUm9vdDENMAsGA1UEAxMEQ1JMMTATBgNVHSMEDDAKgAhMo8No
-XggCYzANBgkqhkiG9w0BAQsFAAOCAYEAe681I+FjipyKtYmRPCSpo4+o5JXTon9l6kVB9QQn
-ztOWsaOnhdHkUuS1MARj/tHhKB5vYrw5YSX8qhzUFsfr67Jli99r5aeckRZ5Y6bI/L++ig7t
-5nI5W9o5HG6tY4sIJUNbbAGRu1SgplpTLOA/5k88ZFXwYWVtksLMaYCswZcld7y39c2IkMt6
-EapJZPj01iPJhB0iAj6qL1b4DoFJRD2Owx1gmoqFdByix8fnWxzqBlXFMoyvc+wi2xrxcWI1
-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
-gw==
-
---B_3629234068_1608247312--
 
