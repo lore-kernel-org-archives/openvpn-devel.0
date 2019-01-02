@@ -1,6 +1,6 @@
-Date: Wed, 2 Jan 2019 19:46:34 +0100
+Date: Wed, 2 Jan 2019 19:51:38 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20190102184634.GE962@...1296...>
+Message-ID: <20190102185138.GF962@...1296...>
 References: <99D61A626FDA8A4B90A270669121BE109BE8AA4C@...2294...>
  <76addf9c-a14e-0e59-bb01-dace07b56a03@...277...>
  <775f6ca7-227f-6ae9-2206-1fa3d11b6376@...277...>
@@ -10,11 +10,12 @@ References: <99D61A626FDA8A4B90A270669121BE109BE8AA4C@...2294...>
  <a9509aa8-559c-9abc-db30-b3588bb2b6e1@...277...>
  <b3c46f54-fc61-80c8-a8c8-328e2bb1f9af@...277...>
  <10B663D4-5299-4299-A6F7-D3DFEBD1FA44@...2293...>
+ <20190102184634.GE962@...1296...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
- micalg=sha-256; boundary="faQnCbRvEv19yW2P"
+ micalg=sha-256; boundary="JfSuFrk/HJf5hBmx"
 Content-Disposition: inline
-In-Reply-To: <10B663D4-5299-4299-A6F7-D3DFEBD1FA44@...2293...>
+In-Reply-To: <20190102184634.GE962@...1296...>
 Subject: Re: [Openvpn-devel] [Help required] Testing MSI installations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -25,28 +26,25 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Simon Rozman <simon@...2293...>
-Cc: tincanteksup <tincanteksup@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---faQnCbRvEv19yW2P
+--JfSuFrk/HJf5hBmx
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Wed, Jan 02, 2019 at 04:37:33PM +0000, Simon Rozman wrote:
-> > Even though there are errors reported the VPN still works for both
-> > IPv4 and 6 with both versions of the binary.
->=20
-> Probably a patch between 2.4.6 from 26/Apr/2018 and 2.4.6-m4 from 1/Jan/2=
-019 introduced an error-level check after the netsh.exe interface ipv6 add =
-route call.
+On Wed, Jan 02, 2019 at 07:46:34PM +0100, Gert Doering wrote:
+> So it's likely something else.  Need to look at the details in the log
+> (what is pushed, how is netsh called, what is failing?).
 
-Not that I'm aware of (re-read "git log release/2.4" to be sure).   We added
-"turn on dhcp via iservice" support, but that's not "add route".
+The netsh calls look reasonable (and very much the same as for the
+"no error" case).  So either it's some sort of "duplicate route" mishap,
+or we broke something in the environment when calling netsh - I see a
+few env related patches in release/2.4
 
-So it's likely something else.  Need to look at the details in the log
-(what is pushed, how is netsh called, what is failing?).
+Need to build a binary and test without iservice...
 
 gert
 
@@ -60,7 +58,7 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---faQnCbRvEv19yW2P
+--JfSuFrk/HJf5hBmx
 Content-Type: application/x-pkcs7-signature
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -123,15 +121,15 @@ AQEwgawwgZcxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAO
 BgNVBAcTB1NhbGZvcmQxGjAYBgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRD
 T01PRE8gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhBo
 KGrilYL+DkBaaHjtexKaMA0GCWCGSAFlAwQCAQUAoIHkMBgGCSqGSIb3DQEJAzELBgkqhkiG
-9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE5MDEwMjE4NDYzNFowLwYJKoZIhvcNAQkEMSIEIIpP
-9/Yp1wnP24mm2Q/1MXwbgJ6VlobxUaAa5KkiaH6uMHkGCSqGSIb3DQEJDzFsMGowCwYJYIZI
+9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE5MDEwMjE4NTEzOFowLwYJKoZIhvcNAQkEMSIEIOMH
+icmk+jAnkLQ6Kwhy+6hPksO6Fk9xQF9oedlxV7h0MHkGCSqGSIb3DQEJDzFsMGowCwYJYIZI
 AWUDBAEqMAsGCWCGSAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcN
 AwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIHMA0GCCqGSIb3DQMCAgEoMA0GCSqGSIb3
-DQEBAQUABIIBAHviJcOyVQr1FHIfUfMZm68ToNsFhCetmtiHBFqUiy6yCyz4VoHaZCqBL83F
-SNgimT7MtkilWgCqYtO2y3H+M0C272Yf3qyJYm5OS7gRq0MBfQUPX+L4LKLxdnMezbU/DHbK
-aXdnytBjdzrCoaZ0Cer4hTVvHdEBJ+DCM35sx+XTyCnjb8oUmcY6j6EcBnOlSgau8VWtjNRv
-5kosuxnoYi7TThtmTwCs2ucv1Utx4ekIDbW9gIxi2kAVIy73k08nLP5DENKXksEYlSZdH29U
-wegt3q8A1oOUoa/Iih7uENbzNFdXsDVtxOLMFJ8gWnMtMm5hfPXg0UysmAX8I4hwp60=
+DQEBAQUABIIBAGSNmL8BnR6dRPQsVD3CZR7XMBLYD6GWX85rS5U9LdEkQacCcBd7gMr6Hpib
+dug00UzhYED6FdsSzn6SJ3ixrxupc0d5bBvkKB3eUtMdAwNeG3lG+aIEuvyzJm1wSm35t/rS
+zbyKsujJDvMbOrv/1fpUbjGjkg7mv3ms52JLmtZRaXMB377eDSUmM/SC2uDVVOhoUznGmwYA
+DGRR/kJw8Oo+5/m4HSlcFjiYCbOAkNHy2J60HTHd7VU+mmMeAAEVp9u7XbYkif4xB6RDhok0
+k9sPwqZUMzdBdwupHg8zORx4ui//UwnlpjV6qlbgdRthOlfohlf2kwMS6s4Vu6w4hQg=
 
---faQnCbRvEv19yW2P--
+--JfSuFrk/HJf5hBmx--
 
