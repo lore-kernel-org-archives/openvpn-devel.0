@@ -1,10 +1,10 @@
-Date: Wed, 16 Jan 2019 20:00:00 +0100 (CET)
-Message-Id: <201901161900.x0GJ00kw067548@...2054...>
+Date: Wed, 16 Jan 2019 20:54:03 +0100 (CET)
+Message-Id: <201901161954.x0GJs3EV076940@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20190114154819.6064-2-arne@...1227...>
-References: <20190114154819.6064-2-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Refactor
- tls_crypt_v2_write_server_key_file into crypto.c
+In-Reply-To: <20190114154819.6064-3-arne@...1227...>
+References: <20190114154819.6064-3-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add
+ send_control_channel_string_dowork variant
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,17 +18,23 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
+Acked-by: Gert Doering <gert@...1296...>
+
+"Just moving of code" (though the change c2->c2.multi -> multi makes this 
+harder for git to show).  Tested with t_client testset plus a profile that
+uses user+pass auth so these still go out.
+
 Your patch has been applied to the master branch.
 
-commit 801be382702f943c42784d26eb07605be8ba0a18
+commit 1000d5e1191d0a372e9e82f76dd1d1f101fe308e
 Author: Arne Schwabe
-Date:   Mon Jan 14 16:48:15 2019 +0100
+Date:   Mon Jan 14 16:48:16 2019 +0100
 
-     Refactor tls_crypt_v2_write_server_key_file into crypto.c
+     Add send_control_channel_string_dowork variant
 
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <20190114154819.6064-2-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18090.html
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20190114154819.6064-3-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18092.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
