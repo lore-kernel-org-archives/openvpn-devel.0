@@ -1,10 +1,9 @@
-Date: Wed, 16 Jan 2019 20:54:03 +0100 (CET)
-Message-Id: <201901161954.x0GJs3EV076940@...2054...>
+Date: Wed, 16 Jan 2019 20:55:54 +0100 (CET)
+Message-Id: <201901161955.x0GJtsr6076990@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20190114154819.6064-3-arne@...1227...>
-References: <20190114154819.6064-3-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add
- send_control_channel_string_dowork variant
+In-Reply-To: <E1gjn4T-0003e9-LN@...2487...>
+References: <E1gjn4T-0003e9-LN@...2487...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Extend tls-crypt-v2 unit tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +14,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...515...>
+To: Steffan Karger <steffan.karger@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-"Just moving of code" (though the change c2->c2.multi -> multi makes this 
-harder for git to show).  Tested with t_client testset plus a profile that
-uses user+pass auth so these still go out.
+Patch does what it says on the tin - test for this particular regression.
 
-Your patch has been applied to the master branch.
+Without Arne's patch, running "make check" with mbedtls fails (openssl
+succeeds).  With Arne's patch applied - commit 92a5ec31363e76e6 -
+both succeed.
 
-commit 1000d5e1191d0a372e9e82f76dd1d1f101fe308e
-Author: Arne Schwabe
-Date:   Mon Jan 14 16:48:16 2019 +0100
+Your patch has been applied to the master branch. 
 
-     Add send_control_channel_string_dowork variant
+commit ef4b8c972f8f4f9debf56bd1ccff7b5889b3305d
+Author: Steffan Karger
+Date:   Wed Jan 16 16:24:50 2019 +0100
 
+     Extend tls-crypt-v2 unit tests
+
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20190114154819.6064-3-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18092.html
+     Message-Id: <E1gjn4T-0003e9-LN@...2487...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18095.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
