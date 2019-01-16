@@ -1,11 +1,9 @@
-References: <b174d626-1cf3-3c85-c61c-34ad587c454e@...515...>
-From: Matthias Andree <matthias.andree@...68...>
-Message-ID: <dd69acae-6d9f-938b-510a-69fe105ba531@...68...>
-Date: Wed, 16 Jan 2019 16:42:17 +0100
-MIME-Version: 1.0
-In-Reply-To: <b174d626-1cf3-3c85-c61c-34ad587c454e@...515...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] Dropping Ubuntu 12.04 packages?
+Date: Wed, 16 Jan 2019 19:42:35 +0100 (CET)
+Message-Id: <201901161842.x0GIgZfP053010@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <E1gjn4T-0003e9-LN@...2487...>
+References: <E1gjn4T-0003e9-LN@...2487...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Extend tls-crypt-v2 unit tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,35 +13,36 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan.karger@...1435...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 20.12.18 um 14:17 schrieb Samuli Sepp=C3=A4nen:
-> Hi,
->
-> I've worked on openvpn-vagrant and sbuild_wrapper recently[*] and
-> noticed that mainstream support for Debian 7 and Ubuntu 12.04 ended:
->
-> https://wiki.debian.org/DebianReleases
-> https://wiki.ubuntu.com/Releases
->
-> However, Ubuntu 12.04 is still under "Extended Security Maintenance",
-> meaning that a small subset of packages still receive security updates:
->
-> https://wiki.ubuntu.com/SecurityTeam/ESM/12.04
->
-> OpenVPN and OpenSSL are among the packages that Canonical still supports.
->
-> The question is: do _we_ want to keep releasing OpenVPN packages for
-> Ubuntu 12.04?
+Acked-by: Gert Doering <gert@...1296...>
 
-Kill it, along with 14.04. <https://wiki.ubuntu.com/LTS>: "The LTS
-designation applies only to specific subsets of the Ubuntu archive." -
-and among those only a subset of packages, see
-<https://wiki.ubuntu.com/Releases>: "Packages in main and restricted are
-supported for 5 years in long term support (LTS) releases". You run
-universe packages, you lose, and for whatever "supported" means in a
-Ubuntu context.
+Patch does what it says on the tin - test for this particular regression.
 
+Without Arne's patch, running "make check" with mbedtls fails (openssl
+succeeds).  With Arne's patch applied - commit 92a5ec31363e76e6 -
+both succeed.
+
+Your patch has been applied to the master branch. 
+
+commit ef4b8c972f8f4f9debf56bd1ccff7b5889b3305d
+Author: Steffan Karger
+Date:   Wed Jan 16 16:24:50 2019 +0100
+
+     Extend tls-crypt-v2 unit tests
+
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <E1gjn4T-0003e9-LN@...2487...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18095.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
