@@ -1,10 +1,10 @@
-Date: Thu, 17 Jan 2019 18:42:53 +0100 (CET)
-Message-Id: <201901171742.x0HHgrBO093445@...2054...>
+Date: Thu, 17 Jan 2019 19:25:26 +0100 (CET)
+Message-Id: <201901171825.x0HIPQMa093731@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20181112122246.13556-1-simon@...2293...>
-References: <20181112122246.13556-1-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Delete TAP interface before the
- TAP driver is uninstalled
+In-Reply-To: <20181121163653.4904-1-simon@...2293...>
+References: <20181121163653.4904-1-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add detection of active VPN
+ connections for MSI packages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,30 +20,19 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-The explanation of "what could possibly go wrong" sounds logical, and
-the code change seems to match that (... and has no obvious pitfalls).
-
-Test compiled on ubuntu 16.04 / mingw.
-
-I have not tested this (because I have no idea how to trigger all these
-scenarios) so I trust you and Tincantech to have tested the variants
-(automated regression testing of this stuff is going to be interesting).
-
-The comment lines are a bit on the long side ("<80 characters, please")
-but I've seen an upcoming uncrustify patch, so I hope that will be taken
-care of.
+Looks reasonable.  Passes compile-tests on Ubuntu 16.04/mingw.
 
 Your patch has been applied to the master branch.
 
-commit 39c9811e7d3a509405b2986e9684a99054f25923
+commit ec7a03ee5bf9a659d0c49bf8ea27ead08b8b84d0
 Author: Simon Rozman
-Date:   Mon Nov 12 13:22:44 2018 +0100
+Date:   Wed Nov 21 17:36:53 2018 +0100
 
-     Delete TAP interface before the TAP driver is uninstalled
+     Add detection of active VPN connections for MSI packages
 
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20181112122246.13556-1-simon@...2293...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17906.html
+     Message-Id: <20181121163653.4904-1-simon@...2293...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17942.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
