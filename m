@@ -1,10 +1,10 @@
-Date: Thu, 17 Jan 2019 17:26:33 +0100 (CET)
-Message-Id: <201901171626.x0HGQXSA092661@...2054...>
+Date: Thu, 17 Jan 2019 17:29:48 +0100 (CET)
+Message-Id: <201901171629.x0HGTmVU092731@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20181016102627.18676-4-simon@...2293...>
-References: <20181016102627.18676-4-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add MSI custom action for
- reliable Windows 10 detection
+In-Reply-To: <20181016102627.18676-5-simon@...2293...>
+References: <20181016102627.18676-5-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Detect TAP interfaces with
+ root-enumerated hardware ID
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,22 +18,25 @@ Content-Transfer-Encoding: 8bit
 To: Simon Rozman <simon@...2293...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+Acked-by: Gert Doering <gert@...1296...>
 
-"LGTM" from Jon after quite some discussion.  I'm not trying to understand
-the intricacies of the code, just some basic sanity checking ("no chance
-this will scribble over a registry entry or execute unwanted binaries
-by means of an uninitialized buffer").
+We have a LGTM from Jon as well, but I'm taking this on me - because I
+decided I want this in 2.4 as well.  Unlikely as it may be, we *will*
+have people that happen to have a tap adapter on their system and try
+to run 2.4.x binaries on it...  so this is long-term compatibility.
 
-commit e2faae87b49379ce8bcffb2f0ae67b0671996f64
+Your patch has been applied to the master and release/2.4 branch.
+
+commit 6e03336d8a4aada12c4950a9683a483470fe4f15 (master)
+commit eef040cc909bb0e9bae793b61c2f4f0da7e109d5 (release/2.4)
 Author: Simon Rozman
-Date:   Tue Oct 16 12:26:26 2018 +0200
+Date:   Tue Oct 16 12:26:27 2018 +0200
 
-     Add MSI custom action for reliable Windows 10 detection
+     Detect TAP interfaces with root-enumerated hardware ID
 
-Acked-by: Jon Kunkee <jkunkee@...2393...>
-     Message-Id: <20181016102627.18676-4-simon@...2293...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17763.html
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20181016102627.18676-5-simon@...2293...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17762.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
