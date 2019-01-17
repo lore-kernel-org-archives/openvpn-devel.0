@@ -1,10 +1,9 @@
-Date: Thu, 17 Jan 2019 17:29:48 +0100 (CET)
-Message-Id: <201901171629.x0HGTmVU092731@...2054...>
+Date: Thu, 17 Jan 2019 17:38:17 +0100 (CET)
+Message-Id: <201901171638.x0HGcHpQ092878@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20181016102627.18676-5-simon@...2293...>
-References: <20181016102627.18676-5-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Detect TAP interfaces with
- root-enumerated hardware ID
+In-Reply-To: <20181112122246.13556-2-simon@...2293...>
+References: <20181112122246.13556-2-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Change C++ to C comments
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,23 +19,19 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-We have a LGTM from Jon as well, but I'm taking this on me - because I
-decided I want this in 2.4 as well.  Unlikely as it may be, we *will*
-have people that happen to have a tap adapter on their system and try
-to run 2.4.x binaries on it...  so this is long-term compatibility.
+"Now that was an easy one" :-)
 
-Your patch has been applied to the master and release/2.4 branch.
+Your patch has been applied to the master branch.
 
-commit 6e03336d8a4aada12c4950a9683a483470fe4f15 (master)
-commit eef040cc909bb0e9bae793b61c2f4f0da7e109d5 (release/2.4)
+commit 49cb9f9469e993abc13d317bdcd671822b47fab6
 Author: Simon Rozman
-Date:   Tue Oct 16 12:26:27 2018 +0200
+Date:   Mon Nov 12 13:22:45 2018 +0100
 
-     Detect TAP interfaces with root-enumerated hardware ID
+     Change C++ to C comments
 
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20181016102627.18676-5-simon@...2293...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17762.html
+     Message-Id: <20181112122246.13556-2-simon@...2293...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17908.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
