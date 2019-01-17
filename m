@@ -1,10 +1,10 @@
-Date: Thu, 17 Jan 2019 17:44:37 +0100 (CET)
-Message-Id: <201901171644.x0HGibJw092970@...2054...>
+Date: Thu, 17 Jan 2019 18:42:53 +0100 (CET)
+Message-Id: <201901171742.x0HHgrBO093445@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20181112122246.13556-3-simon@...2293...>
-References: <20181112122246.13556-3-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Make MSI custom action debug
- pop-up more informative
+In-Reply-To: <20181112122246.13556-1-simon@...2293...>
+References: <20181112122246.13556-1-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Delete TAP interface before the
+ TAP driver is uninstalled
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,21 +20,30 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-"Makes sense" :-) - I have only looked at the code and built a non-debug
-build (because I'm lazy) but that looked reasonable, and there is nothing
-in the _DEBUG block that looks suspicious.
+The explanation of "what could possibly go wrong" sounds logical, and
+the code change seems to match that (... and has no obvious pitfalls).
+
+Test compiled on ubuntu 16.04 / mingw.
+
+I have not tested this (because I have no idea how to trigger all these
+scenarios) so I trust you and Tincantech to have tested the variants
+(automated regression testing of this stuff is going to be interesting).
+
+The comment lines are a bit on the long side ("<80 characters, please")
+but I've seen an upcoming uncrustify patch, so I hope that will be taken
+care of.
 
 Your patch has been applied to the master branch.
 
-commit 27556854a512a901dba5118ad18b37f3abf0d440
+commit 39c9811e7d3a509405b2986e9684a99054f25923
 Author: Simon Rozman
-Date:   Mon Nov 12 13:22:46 2018 +0100
+Date:   Mon Nov 12 13:22:44 2018 +0100
 
-     Make MSI custom action debug pop-up more informative
+     Delete TAP interface before the TAP driver is uninstalled
 
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20181112122246.13556-3-simon@...2293...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17907.html
+     Message-Id: <20181112122246.13556-1-simon@...2293...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17906.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
