@@ -1,16 +1,18 @@
 From: Simon Rozman <simon@...2293...>
-Date: Sat, 19 Jan 2019 17:15:33 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE109BF53B38@...2294...>
+Date: Sat, 19 Jan 2019 17:38:27 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE109BF53B73@...2294...>
 References: <20181010192337.6984-1-simon@...2293...>
- <20190117155829.GA92142@...1296...>
-In-Reply-To: <20190117155829.GA92142@...1296...>
+ <20181016102627.18676-1-simon@...2293...>
+ <20181016102627.18676-5-simon@...2293...>
+ <20190117161819.GG962@...1296...>
+In-Reply-To: <20190117161819.GG962@...1296...>
 Content-Language: en-US
 Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
  micalg=2.16.840.1.101.3.4.2.1;
- boundary="----=_NextPart_000_0023_01D4B022.F775DBE0"
+ boundary="----=_NextPart_000_0050_01D4B026.2A09ACF0"
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Introduce tapctl.exe
- utility and openvpnmsica.dll MSI CA
+Subject: Re: [Openvpn-devel] [PATCH 5/5] Detect TAP interfaces with
+ root-enumerated hardware ID
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,71 +24,58 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Gert Doering <gert@...1296...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-------=_NextPart_000_0023_01D4B022.F775DBE0
+------=_NextPart_000_0050_01D4B026.2A09ACF0
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 
 Hi,
 
-> (I *have* glanced over the code to see that there isn't anything that
-> looks "suspicious" - and of course it does not modify openvpn code, so
-> there is no risk for introducing remote exploits, crypto breaches, etc.)
+> On Tue, Oct 16, 2018 at 12:26:27PM +0200, Simon Rozman wrote:
+> > This patch extends the TAP interface enumerating to detect the TAP
+> > interfaces registered using "root\tap0901" hardware ID. Before, only
+> > TAP interfaces with legacy "tap0901" HWID were detected by
+> openvpn.exe.
+> >
+> > The openvpnmsica.dll and tapctl.exe install TAP interfaces using root-
+> > enumerated HWIDs, and were not detected by openvpn.exe.
 > 
-> I found a few things I'd like to see cleaned up eventually...
+> I do not see a specific reason to *not* apply this patch, but I'm
+> wondering if you could shed some background light on the changed
+> behaviour in openvpnmsica.dll and tapctl.exe?
 
-Thank you. I am reviewing your suggestions and preparing patches for them.
-Stay tuned.
+The tapctl.exe and openvpnmsica.dll use a simplified interface installation
+compared to devcon.exe/tapinstall.exe. They assume the driver is already
+installed and they don't require INF file to create a TAP interface.
+However, when the interface is installed this way, Windows reports its
+hardware ID as "root\\tap0901". Whereas, tapinstall.exe installed TAP
+interfaces report their HWID as "tap0901". That's about the only difference
+I noticed.
 
-> Then, it would be nice if file headers had a short comment "what is this
-> doing" (like, I just read through "msiex.c", and having an idea what I
-> can find in there makes life easier).
-> 
-> Does some other patch in the series have an "overall picture" document
-> that explains how the "large picture" in MSI custom DLL works?  Like,
-> first happens <this>, than <that>, and for a silent installer <there>
-> will be a change?  Maybe just a pointer to a MS document?
+(Tested with driver versions 9.21.x and later.)
 
-Good idea. I have put this on my TODO list. I still owe you "Administrators
-Guide for OpenVPN MSI Deployment". This would make a second document:
-"Developers Guide to OpenVPN MSI Setup". I should have done the later first,
-to make the code review easier for you, sorry. I have so much to explain you
-and so little time. :(
+Rather than exploring, what causes the difference and fuelled by Microsoft's
+recommendation to use root-enumerated HWIDs anyway, I proposed to extend the
+openvpn.exe's TAP interface detection to accept both: "tap0901" _and_
+"root\\tap0901" interfaces.
 
-IIRC, we agreed, I prepare documentation at OpenVPN Wiki. After it's
-published, remind me to URL it in the source code.
+> I'm not sure if we're going to care for someone who uses a 2.5 msi
+> installer to set up a TAP interface and then runs a 2.3 openvpn.exe on
+> top of it and wonders why it isn't finding the TAP driver - but the
+> question might come up, and I like having good answers... :-)
 
-> I have test-run the mingw-compilede tapctl on Win10, and "tapctl list"
-> "did something" (= it did not crash or complain about missing DLLs) -
-> but
-> it did not actually *work*.  The machine has no TAP interfaces, just one
-> LAN card - and "tapctl list" prints out 2 or 10 different "LAN" adapters
-> (see attached image).  Not sure this is how it should be... after I
-> installed OpenVPN & had it create a TAP interface, I still have 9 times
-> "LAN-Verbindung" but I also get an "Ethernet 2" now (which is correct).
+Suggest them to remove the TAP interface and reinstall it using
+tapinstall.exe. The tapinstall.exe should still be able to install 9.22 and
+later TUN interfaces.
 
-"tapctl list" lists all NICs found. Including the non-TAP ones. On my
-computer it shows 12, where I see only 2 in the Network Connections window.
-That's normal, as Windows have separate NICs for RAS: WAN, WAN IPv6, PPPoE,
-PPTP, L2TP, GRE, SSTP, etc. They all have silly names like "Local Area
-Connection* <n>" (note the asterisk in their name). They don't display
-elsewhere normally.
-
-Don't delete them with "tapctl delete" - like the "list" command lists _all_
-interfaces, the "delete" can delete _any_ interface on your computer. Even
-with no TAP-Windows6 driver installed.
-
-On the other hand: "tapctl create" supports creating a TAP-Windows6
-interface only.
-
-Shall I limit the "tapctl list" and "tapctl delete" commands to the
-TAP-Windows6 interfaces too? The utility is called *tap*ctl after all.
+Or even better: apply this patch to 2.4 and 2.3 branches (it's a really
+minor change) and ask them to compile and use the patched version of 2.3. :)
 
 Best regards,
 Simon
 
 
-------=_NextPart_000_0023_01D4B022.F775DBE0
+------=_NextPart_000_0050_01D4B026.2A09ACF0
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -165,19 +154,19 @@ RqsKPBhWoaFEVZ+Vn3wxap5h/oAhocifNzkWJTNWjxnoPM2eNz2uWFJsgsNhlwteUvnq7+bKTNte
 SKWKr6pI+GUsZhmCh5URpUnqUanp0Uie0MD9f3tiOLOp711sNb0xwi+VdDuDB37IddOIsfhPBood
 wpoFrTGCAyEwggMdAgEBMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0
 aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4wDQYJYIZIAWUDBAIBBQCgggGtMBgGCSqGSIb3
-DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE5MDExOTE3MTUzMlowLwYJKoZIhvcN
-AQkEMSIEIEo52qc60z00z8grZJTT/jlUwTQSn/GtV/XryCJ9EIvOMFQGCSsGAQQBgjcQBDFHMEUw
+DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE5MDExOTE3MzgyNlowLwYJKoZIhvcN
+AQkEMSIEIHJxjei7+r5Djmj49rLpYblm+k3csljh8rFKiKhHcoZyMFQGCSsGAQQBgjcQBDFHMEUw
 PTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMIc2ln
 ZW4tY2ECBDtKDS4wVgYLKoZIhvcNAQkQAgsxR6BFMD0xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJz
 dGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsTCHNpZ2VuLWNhAgQ7Sg0uMIGTBgkqhkiG9w0BCQ8x
 gYUwgYIwCwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQBFjAKBggqhkiG9w0DBzALBglghkgBZQMEAQIw
 DgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAsGCWCGSAFlAwQCATALBglghkgBZQMEAgMw
-CwYJYIZIAWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBAD0ctOrucRdieZSLffy4Qn7I
-LSDb1IG0Jt67ajMXvD3m+u/JCdRmFhNmnxeoibMaLkpx3ESMZBWrviwvv8kuh48ofbYsgUMqX3CP
-yJNAv3z0sgzKqxxTSMn/CTMYlaiWzFBhMv7PMauDaAHmMde9JxLV62PntQn4thuDyNpTY4sxrsT1
-3bxNmBuJQsZiJ3W9SkfSn32ot4hg1e1ucSeVDyoSWCZEzIsWeGVk/09VkT7VoQix6Ab27yfVvoN5
-URjPa2oeVcwDbF6AE7khzKf9BaQjM/6fp1kEZ3P0af2ykSGP4By8lqatfjovulMyaRonjmjZc+s6
-WWRvvT6bs/L7/j8AAAAAAAA=
+CwYJYIZIAWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBABSdHUnJ2KuxiX/WP/jyzV11
+KpXIgBrItHdOxxCnYthS72Oko/AbcQM6vQYUiWzYtX56oH/55jiAoiOuv9FsXjCf/MRM2tTrcqp5
+KhqAo0s7mIE99yMmVbTNNzYl7/huY26c1doDohC9olnNvZW738v6/UxjaKfEQv4Eiy196zWFw5LI
+kJ7lVQEL3CIgq/II8YuoIV4FHw/nyOHhYJ+8Xps8iv+q59sFuqgb259wICEagl7fFmer05vf1upi
+C/taPBeBcsmDmJOGW6tDL21vTHF3ln/YoxpwdLQ1gmg+9vAag7Cq0O87sOYZek5ySUJmA9YyZb3m
+gzSU8PbMM4Y0N/oAAAAAAAA=
 
-------=_NextPart_000_0023_01D4B022.F775DBE0--
+------=_NextPart_000_0050_01D4B026.2A09ACF0--
 
