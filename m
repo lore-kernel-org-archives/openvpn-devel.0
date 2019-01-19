@@ -1,7 +1,9 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Sat, 19 Jan 2019 11:30:28 +0100
-Message-Id: <20190119103028.12497-1-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] Fix tls-auth/crypt in connection blocks
+Date: Sat, 19 Jan 2019 11:34:00 +0100
+Message-Id: <20190119103400.12887-1-steffan@...1856...>
+In-Reply-To: <20190119103028.12497-1-steffan@...1856...>
+References: <20190119103028.12497-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH v2] Fix tls-auth/crypt in connection blocks
  with --persist-key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -26,11 +28,13 @@ Fix that by loading loading the key from the current connection entry.
 
 Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
- src/openvpn/options.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+v2: Also fix tls-crypt, not just tls-auth.
+
+ src/openvpn/options.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 0cf8db767..3d4da38d9 100644
+index 0cf8db767..bebd30059 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
 @@ -2863,11 +2863,11 @@ options_postprocess_mutate_ce(struct options *o, struct connection_entry *ce)
@@ -47,6 +51,20 @@ index 0cf8db767..3d4da38d9 100644
              }
  
              ce->tls_auth_file = INLINE_FILE_TAG;
+@@ -2876,11 +2876,11 @@ options_postprocess_mutate_ce(struct options *o, struct connection_entry *ce)
+ 
+         if (ce->tls_crypt_file && !ce->tls_crypt_inline)
+         {
+-            struct buffer in = buffer_read_from_file(o->tls_crypt_file, &o->gc);
++            struct buffer in = buffer_read_from_file(ce->tls_crypt_file, &o->gc);
+             if (!buf_valid(&in))
+             {
+                 msg(M_FATAL, "Cannot pre-load tls-crypt keyfile (%s)",
+-                    o->tls_auth_file);
++                    ce->tls_crypt_file);
+             }
+ 
+             ce->tls_crypt_file = INLINE_FILE_TAG;
 -- 
 2.17.1
 
