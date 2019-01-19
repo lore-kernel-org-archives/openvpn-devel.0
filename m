@@ -1,10 +1,8 @@
-Date: Fri, 18 Jan 2019 20:57:47 +0100 (CET)
-Message-Id: <201901181957.x0IJvlQ2003900@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20190101233547.10100-1-simon@...2293...>
-References: <20190101233547.10100-1-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Strip _stdcall suffixes (@nn)
- for 32-bit builds
+From: Steffan Karger <steffan@...1856...>
+Date: Sat, 19 Jan 2019 11:30:28 +0100
+Message-Id: <20190119103028.12497-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Fix tls-auth/crypt in connection blocks
+ with --persist-key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,33 +13,41 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Simon Rozman <simon@...2293...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+If --persist-key was used, we would always try to pre-load the 'global'
+tls-auth/crypt file. That would result in using the wrong key (leading
+to a failed connection) or en error is there was to 'global' key:
 
-You really do not like this calling convention, do you?  ;-) - learned
-something new today, what "-Wl,--kill-at" does...  (while the original
-round of stdcall discussion was MSVC, here's the mingw variant)
+  Sat Jan 19 11:09:01 2019 Cannot pre-load tls-auth keyfile ((null))
+  Sat Jan 19 11:09:01 2019 Exiting due to fatal error
 
-Your patch has been applied to the master branch.
+Fix that by loading loading the key from the current connection entry.
 
-commit f9f1605194281a6103d889298d4f303f94bc9d96
-Author: Simon Rozman
-Date:   Wed Jan 2 00:35:47 2019 +0100
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/options.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-     Strip _stdcall suffixes (@nn) for 32-bit builds
-
-     Signed-off-by: Simon Rozman <simon@...2293...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20190101233547.10100-1-simon@...2293...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18077.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 0cf8db767..3d4da38d9 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2863,11 +2863,11 @@ options_postprocess_mutate_ce(struct options *o, struct connection_entry *ce)
+     {
+         if (ce->tls_auth_file && !ce->tls_auth_file_inline)
+         {
+-            struct buffer in = buffer_read_from_file(o->tls_auth_file, &o->gc);
++            struct buffer in = buffer_read_from_file(ce->tls_auth_file, &o->gc);
+             if (!buf_valid(&in))
+             {
+                 msg(M_FATAL, "Cannot pre-load tls-auth keyfile (%s)",
+-                    o->tls_auth_file);
++                    ce->tls_auth_file);
+             }
+ 
+             ce->tls_auth_file = INLINE_FILE_TAG;
+-- 
+2.17.1
 
 
