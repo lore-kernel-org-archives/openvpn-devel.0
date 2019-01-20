@@ -1,18 +1,16 @@
-Date: Sun, 20 Jan 2019 14:04:53 +0100
+Date: Sun, 20 Jan 2019 14:08:13 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20190120130453.GX962@...1296...>
+Message-ID: <20190120130813.GY962@...1296...>
 References: <20181010192337.6984-1-simon@...2293...>
- <20181016102627.18676-1-simon@...2293...>
- <20181016102627.18676-5-simon@...2293...>
- <20190117161819.GG962@...1296...>
- <99D61A626FDA8A4B90A270669121BE109BF53B73@...2294...>
+ <20190117155829.GA92142@...1296...>
+ <99D61A626FDA8A4B90A270669121BE109BF53B38@...2294...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
- micalg=sha-256; boundary="blyN2HtnWI+DXgcG"
+ micalg=sha-256; boundary="k0j+GZr3O2GtbIVb"
 Content-Disposition: inline
-In-Reply-To: <99D61A626FDA8A4B90A270669121BE109BF53B73@...2294...>
-Subject: Re: [Openvpn-devel] [PATCH 5/5] Detect TAP interfaces with
- root-enumerated hardware ID
+In-Reply-To: <99D61A626FDA8A4B90A270669121BE109BF53B38@...2294...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Introduce tapctl.exe
+ utility and openvpnmsica.dll MSI CA
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,60 +22,61 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Simon Rozman <simon@...2293...>
 Cc: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---blyN2HtnWI+DXgcG
+--k0j+GZr3O2GtbIVb
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Sat, Jan 19, 2019 at 05:38:27PM +0000, Simon Rozman wrote:
-> > > The openvpnmsica.dll and tapctl.exe install TAP interfaces using root-
-> > > enumerated HWIDs, and were not detected by openvpn.exe.
-> >=20
-> > I do not see a specific reason to *not* apply this patch, but I'm
-> > wondering if you could shed some background light on the changed
-> > behaviour in openvpnmsica.dll and tapctl.exe?
+On Sat, Jan 19, 2019 at 05:15:33PM +0000, Simon Rozman wrote:
+> Stay tuned.
+
+I am :-)
+
+[..]
+> IIRC, we agreed, I prepare documentation at OpenVPN Wiki. After it's
+> published, remind me to URL it in the source code.
+
+Works for me!
+
+> > [ Tapctl funnies ]
 >=20
-> The tapctl.exe and openvpnmsica.dll use a simplified interface installati=
-on
-> compared to devcon.exe/tapinstall.exe. They assume the driver is already
-> installed and they don't require INF file to create a TAP interface.
-> However, when the interface is installed this way, Windows reports its
-> hardware ID as "root\\tap0901". Whereas, tapinstall.exe installed TAP
-> interfaces report their HWID as "tap0901". That's about the only differen=
-ce
-> I noticed.
+> "tapctl list" lists all NICs found. Including the non-TAP ones. On my
+> computer it shows 12, where I see only 2 in the Network Connections windo=
+w.
+> That's normal, as Windows have separate NICs for RAS: WAN, WAN IPv6, PPPo=
+E,
+> PPTP, L2TP, GRE, SSTP, etc. They all have silly names like "Local Area
+> Connection* <n>" (note the asterisk in their name). They don't display
+> elsewhere normally.
 
-O-kay... :-) - I do not know enough about driver *installation* on Windows
-to know whether this is all good or there might be dragons lurking.  We'll
-have to test quite a bit, it seems :-)
+Ah.  This is very confusing.  I can see the benefit of a diagnostic utility
+to tell me "show me *all* network adapters in the system!", but maybe it=20
+should not be the default output of something called "*tap* ctl" :-)
 
-> (Tested with driver versions 9.21.x and later.)
+> Don't delete them with "tapctl delete" - like the "list" command lists _a=
+ll_
+> interfaces, the "delete" can delete _any_ interface on your computer. Even
+> with no TAP-Windows6 driver installed.
 >=20
-> Rather than exploring, what causes the difference and fuelled by Microsof=
-t's
-> recommendation to use root-enumerated HWIDs anyway, I proposed to extend =
-the
-> openvpn.exe's TAP interface detection to accept both: "tap0901" _and_
-> "root\\tap0901" interfaces.
+> On the other hand: "tapctl create" supports creating a TAP-Windows6
+> interface only.
+>=20
+> Shall I limit the "tapctl list" and "tapctl delete" commands to the
+> TAP-Windows6 interfaces too? The utility is called *tap*ctl after all.
 
-Works for me.  Which is why I ...
+Yes, this sounds like "less room for confusion, accidents and user=20
+frustration".
 
-> Or even better: apply this patch to 2.4 and 2.3 branches (it's a really
-> minor change) and ask them to compile and use the patched version of 2.3.=
- :)
+"tapctl list" could grow a "--all" parameter to "really display all"
+(including some sort of flaggin "this is is a tap adapter", maybe even
+displaying the "tap901.sys" vs "root\\tap901.sys" difference), but=20
+"delete" really should not touch not-ours interfaces.
 
-... applied it to 2.4 as well.=20=20
-
-If someone struggles with 2.3 on windows (beyond XP), my empathy for them
-will be close to zero.  2.4 is so much better, especially on windows, that
-there is no reason to stick to 2.3... (on Linux distributions, sticking
-to the "distro provided package" might give people 2.3.x for years to=20
-come :-( - but this is no argument on Windows).
+thanks :)
 
 gert
-
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -88,7 +87,7 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---blyN2HtnWI+DXgcG
+--k0j+GZr3O2GtbIVb
 Content-Type: application/x-pkcs7-signature
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -151,15 +150,15 @@ AQEwgawwgZcxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAO
 BgNVBAcTB1NhbGZvcmQxGjAYBgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRD
 T01PRE8gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhBo
 KGrilYL+DkBaaHjtexKaMA0GCWCGSAFlAwQCAQUAoIHkMBgGCSqGSIb3DQEJAzELBgkqhkiG
-9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE5MDEyMDEzMDQ1M1owLwYJKoZIhvcNAQkEMSIEIFs/
-kDMPwQc2z7+Q+AoNWjrEInOxvbifKdA6Qt/miljnMHkGCSqGSIb3DQEJDzFsMGowCwYJYIZI
+9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE5MDEyMDEzMDgxM1owLwYJKoZIhvcNAQkEMSIEIMQn
+6CYsk5+e3VldVr5R9HpyFrTc5Tx6KUe5SiLGYLM3MHkGCSqGSIb3DQEJDzFsMGowCwYJYIZI
 AWUDBAEqMAsGCWCGSAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcN
 AwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIHMA0GCCqGSIb3DQMCAgEoMA0GCSqGSIb3
-DQEBAQUABIIBAG/DoXURP+ky94GQUZjAd475aKi2Mb/8hlPSHcOnpfcVTuX1OcuILbjSgEZY
-fH0q2MpFhZ3NlBKAD7Z6iWH78a95oAnxu2yVKCBIVnj05JID4oOjHJMRK3GDv3Xgyx12iL+N
-CCy5FmANZ27O/viNUwFF3xLWQCKBonepTdBuI/m0X1JtdRv+rivxE9jFN/3a2lK4/PAxbMh2
-Ugh159ncJ3jVrndgyjwldg0TlDyFxNcQ+zjmYw8uu9LAw+EJjF9HnCAU/3+7ymWbR2bAhK8v
-M3z8ivJBxplyeCqUiWcU8I7uzGKidmy/KhC8X4lZ47ELR+rYZwEg4r0PyE5LMe1vcn0=
+DQEBAQUABIIBAEep+WAl1shx+3I56uXpYYnkr5EkYNonrU6A/D4LQbjRAW3aUpCc493QWArn
+97/YnZDdC5wDaRlRElH62QDuuLMZTEOV1mSzD7V2A1XR3kwbvbt52y/6CZYE6iFKYGezKNv6
+g96i61z5Ye7uir2U8TmUF02fSI/gIVepSFyh3GI6H/ywmdFmEPvxGsUHG21CTyvFHwvnPRtK
+JDiB20e13MwsiwX0ewMs/zb2N2WujR8kYWybRqLNIxMuqoz2xtT5hUGv2qKiFbQBJTRaow5s
+OeumxbfNH00dvNBpBwyHvidRuWbLPzBuGzT5pYLtJCsfncP7Mf1orgrcuuIOprYVANg=
 
---blyN2HtnWI+DXgcG--
+--k0j+GZr3O2GtbIVb--
 
