@@ -1,16 +1,15 @@
-From: Simon Rozman <simon@...2293...>
-Date: Sun, 20 Jan 2019 14:54:01 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE109BF557CD@...2294...>
-References: <20190101233547.10100-1-simon@...2293...>
- <201901181957.x0IJvlQ2003900@...2054...>
-In-Reply-To: <201901181957.x0IJvlQ2003900@...2054...>
-Content-Language: en-US
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
- micalg=2.16.840.1.101.3.4.2.1;
- boundary="----=_NextPart_000_0088_01D4B0D8.5C089D80"
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Strip _stdcall suffixes
- (@nn) for 32-bit builds
+References: <CADkMwqTKd1tjTboxmvgrvk9kVtHDtubvQmEQ0m=nt4GB-RtoqA@...278...>
+ <82cf3c7a-f738-2821-f294-1cd954a0b491@...277...>
+ <51044224-1010-87b3-3f6b-6deac5fbd88b@...515...>
+ <CADkMwqRb0cSRrzctP090nZ_qGxRrSmSSmMqtQT_mbCxjPx2rpQ@...278...>
+In-Reply-To: <CADkMwqRb0cSRrzctP090nZ_qGxRrSmSSmMqtQT_mbCxjPx2rpQ@...278...>
+From: Rostyslav Maryliak <rostyslav.maryliak@...2454...>
+Date: Mon, 21 Jan 2019 14:58:06 +0200
+Message-ID: <CADkMwqTeOp=aHCDP8JN19XK=uS3XySKgO=E8_MM0eF3mN9D9ag@...278...>
+Content-Type: multipart/alternative; boundary="000000000000a0bf0b057ff76b0b"
+Subject: Re: [Openvpn-devel] Slow outbound network speed for Windows Server
+ 2016 only via the OpenVPN tunnel
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,184 +18,433 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: samuli@...515...
+Cc: Tin Can <tincanteksup@...277...>, openvpn-devel@lists.sourceforge.net
 
-------=_NextPart_000_0088_01D4B0D8.5C089D80
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+--000000000000a0bf0b057ff76b0b
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Dear All,
 
-> You really do not like this calling convention, do you?  ;-) - learned
-> something new today, what "-Wl,--kill-at" does...  (while the original
-> round of stdcall discussion was MSVC, here's the mingw variant)
+Is there any update on a new OpenVPN 3 for Windows ETA? Or at least ETA for
+implementing missing OIDs in the tap driver?
 
-If I was importing this library into a C/C++ project, I wouldn't mind
-function name decorations at all.
+On Thu, Oct 25, 2018 at 12:12 AM Rostyslav Maryliak <
+rostyslav.maryliak@...2454...> wrote:
 
-However, DLL exported functions are authored in MSI package by name. Having
-a different name for i386 and x64 platforms would require "#ifdefs" in WiX
-XML files.
+> Dear tincanteksup,
+>
+> Yes, Samuli is correct. It is impossible to install the older version of
+> TAP adapter (NDIS 5) on Windows Server 2016
+>
+> On Wed, Oct 24, 2018 at 3:20 PM Samuli Sepp=C3=A4nen <samuli@...515...>
+> wrote:
+>
+>> Hi,
+>>
+>> If I recall correctly, NDIS 5 support was dropped in Windows 8 or early
+>> Windows 10. Tap-windows uses NDIS 5, so it almost certainly does not
+>> work on Windows Server 2016.
+>>
+>> --
+>> Samuli Sepp=C3=A4nen
+>> Community Manager
+>> OpenVPN Technologies, Inc
+>>
+>> irc freenode net: mattock
+>>
+>>
+>>
+>> Il 24/10/18 15:09, tincanteksup ha scritto:
+>> > Hi,
+>> >
+>> > a completely different approach ..
+>> >
+>> > On the Forum somebody claimed that the old Tap Adaptor works better
+>> > than the new one on W2012r2.
+>> >
+>> > https://forums.openvpn.net/viewtopic.php?f=3D6&t=3D27288#p81973
+>> >
+>> > Could you test that ?
+>> >
+>> > Thanks
+>> > tct
+>> >
+>> >
+>> > On 03/10/2018 16:15, Rostyslav Maryliak wrote:
+>> >> Dear OpenVPN developers,
+>> >>
+>> >> I've faced a very strange issue with slow outbound network speed from
+>> >> Windows Server 2016 Standard server via the OpenVPN tunnel.
+>> >> OpenVPN server is Windows Server 2012 R2, client is Windows Server
+>> 2016.
+>> >> The inbound network speed for Windows Server 2016 is great.
+>> >> But the outbound network speed is nearly 30-40 kbps. I've got the same
+>> >> results using several tests: iperf testings, file download via SMB,
+>> >> Web-based downloading (using HTTP) etc.
+>> >>
+>> >> The tunnels is getting up and it works greatly, but only in one
+>> >> direction -
+>> >> from Windows Server 2012 R2 to Windows Server 2016.
+>> >> I've been using such server-client configurations setup for several
+>> years
+>> >> with Windows Server 2012 R2 servers and I've never faced such issue
+>> >> before.
+>> >> At first I thought that our ISP has some network limitations, but it
+>> >> turned
+>> >> out that the same tests shows great network speed results using the
+>> >> public
+>> >> IP addresses in both directions.
+>> >> The issue only occurs inside the VPN tunnel. I've spent 3 days tryng =
+to
+>> >> figure it out, but failed. I've installed all latest Windows updates,
+>> >> reinstalled OpenVPN, tried to switch from UDP to TCP,
+>> >> played with performance settings in configs (link-mtu, sndbuf, rcvbuf
+>> >> etc)
+>> >> but still no luck. I've tested the same setup between two Windows
+>> Server
+>> >> 2012 R2 servers and it works greatly in both directions.
+>> >> Then I've tested it with another Windows Server 2016 Standard server
+>> >> (different server and different ISP) and it showed the same awful
+>> results
+>> >> in outbound direction.
+>> >> When I've set the same OpenVPN tunnel between two Windows Server 2016
+>> >> Standard servers I've got the same poor network speed in both
+>> directions.
+>> >>
+>> >> I believe that the issue is somehow related only to the Windows Server
+>> >> 2016
+>> >> version and I am more than confident that it depends on server's TCP
+>> >> stack
+>> >> settings.
+>> >> I've noticed that Windows Server 2016 has a congestion control provid=
+er
+>> >> setting set to "default", while previous versions of Windows has this
+>> >> setting set to "none".
+>> >>
+>> >> I've created a topic on OpenVPN Support Forum and it was suggested to
+>> >> post
+>> >> my issue to you and reference the thread.
+>> >>
+>> >> You can reference to the
+>> >> https://forums.openvpn.net/viewtopic.php?f=3D6&t=3D27173 for config f=
+iles
+>> and
+>> >> additional information.
+>> >>
+>> >> Have you faced a similar issue before? Can you provide any hint how
+>> can I
+>> >> resolve the issue? What did I missed?
+>> >> I would be very grateful for any help. Thank you in advance.
+>> >>
+>> >>
+>> >>
+>> >>
+>> >> _______________________________________________
+>> >> Openvpn-devel mailing list
+>> >> Openvpn-devel@lists.sourceforge.net
+>> >> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>> >>
+>> >
+>> >
+>> > _______________________________________________
+>> > Openvpn-devel mailing list
+>> > Openvpn-devel@lists.sourceforge.net
+>> > https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>>
+>>
+>> _______________________________________________
+>> Openvpn-devel mailing list
+>> Openvpn-devel@lists.sourceforge.net
+>> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>>
+>
+>
+> --
+>
+> Best regards,
+>
+> *Rostyslav Maryliak*
+>
+> System Administrator
+>
+>
+>
+> *iDeals=E2=84=A2 Solutions Group*| + 38(073)437-72-51 <%2B%2038%28093%295=
+75-35-16> |
+> Skype: rostyslav.maryliak.ideals| *rostyslav.maryliak@...2454...
+> <dmitry.zaporozhchenko@...2454...>* | www.idealsvdr.com
+> <http://www.idealscorp.com/>
+>
+
+
+--=20
+
+Best regards,
+
+*Rostyslav Maryliak*
+
+System Administrator
 
 
 
-I'll explain this in the developer documentation but briefly I can explain
-it here already: Consider the openvpnmsica.dll as a collection of functions
-(aka "Custom Actions") the MSI installer calls to perform tasks that are not
-implemented by stock MSI actions.
+*iDeals=E2=84=A2 Solutions Group*| + 38(073)437-72-51 <%2B%2038%28093%29575=
+-35-16> |
+Skype: rostyslav.maryliak.ideals| *rostyslav.maryliak@...2454...
+<dmitry.zaporozhchenko@...2454...>* | www.idealsvdr.com
+<http://www.idealscorp.com/>
 
-Some functions are completely stand-alone. FindSystemInfo() and
-FindTAPInterfaces() are sequenced in the MSI package to execute early. They
-perform some tests MSI is too limited to do itself, and set various MSI
-properties accordingly. Later, those MSI properties are used to form
-conditions in MSI. Like which version of driver to install, should
-OpenVPNServ be selected to install or not, etc. The CloseOpenVPNGUI() and
-StartOpenVPNGUI() do just what they say immediately when called.
+--=20
+CONFIDENTIALITY NOTE:
+The information transmitted, including attachments,
 
-Then there are other functions that form an <evaluation, execute, commit,
-rollback> tuple. The <EvaluateTAPInterfaces(), ProcessDeferredAction(),
-ProcessDeferredAction(), ProcessDeferredAction()> is an example of those.
-They are sequenced in the MSI package like this:
+is intended only for the person(s) or entity to which it is addressed and
 
-1. EvaluateTAPInterfaces() executes in the first pass. It runs in the
-current user context and it doesn't touch computer in any way. Well, it just
-prepares a list of TAP-interface-related operations to be executed and saves
-it in a temporary file. The list contains operations like: "install TAP
-interface X", "delete TAP interface X", "rename TAP interface X>Y", "delete
-file X", etc. Operations are implemented in msica_op.h/.c.
+may contain confidential and/or privileged material. Any review,
 
-2. ProcessDeferredAction() runs in the so called deferred MSI execution pass
-run by Windows Installer service as the SYSTEM user. It loads the list of
-operations from the temporary file and executes them one by one.
+retransmission, dissemination or other use of, or taking of any action in
 
-Let's look at a sample operation "delete file X". Normally, this operation
-does not really delete the file X. It renames it to Y instead, while adding
-"delete file Y" to a separate commit list tail, and inserting "move file
-Y>X" to a rollback list head. Unless MSI rollback is explicitly disabled -
-in this case it just deletes the file immediately and doesn't touch
-commit/rollback lists.
+reliance upon this information by persons or entities other than the
 
-After all operations on the list are executed, the newly created commit and
-rollback operation lists are saved to separate temporary files.
+intended recipient is prohibited. If you received this in error, please
 
-3. Should the installation succeed, the MSI calls all deferred commit
-actions: This time, the ProcessDeferredAction() is called with the commit
-list filename as the action parameter.
+contact the sender and destroy any copies of this information.
 
-Should the installation fail, the MSI calls all deferred rollback actions in
-reverse order: This time, the ProcessDeferredAction() would be called with
-the rollback list filename as the action parameter.
+--000000000000a0bf0b057ff76b0b
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Since execution, commit and rollback list files are of the same syntax, the
-same ProcessDeferredAction() function is reused. The only detail worth
-noting is that when ProcessDeferredAction() detects it is run in the
-commit/rollback pass it disables the MSI rollback: this makes all sequenced
-operations execute immediately and no longer bother with commit/rollback
-lists.
+<div dir=3D"ltr"><div class=3D"gmail_default" style=3D"font-family:arial,he=
+lvetica,sans-serif">Dear All,</div><div class=3D"gmail_default" style=3D"fo=
+nt-family:arial,helvetica,sans-serif"><br></div><div class=3D"gmail_default=
+" style=3D"font-family:arial,helvetica,sans-serif">Is there any update on a=
+ new OpenVPN 3 for Windows ETA? Or at least ETA for i<span style=3D"font-fa=
+mily:Arial,Helvetica,sans-serif">mplementing missing OIDs in the tap driver=
+?</span></div></div><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=
+=3D"gmail_attr">On Thu, Oct 25, 2018 at 12:12 AM Rostyslav Maryliak &lt;<a =
+href=3D"mailto:rostyslav.maryliak@...2454...">rostyslav.maryliak@...2454...=
+</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:=
+0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">=
+<div dir=3D"ltr"><div dir=3D"ltr"><div class=3D"gmail_default" style=3D"fon=
+t-family:arial,helvetica,sans-serif">Dear=C2=A0tincanteksup,</div><div clas=
+s=3D"gmail_default" style=3D"font-family:arial,helvetica,sans-serif"><br></=
+div><div class=3D"gmail_default" style=3D"font-family:arial,helvetica,sans-=
+serif">Yes, Samuli is correct. It is impossible to install the older versio=
+n of TAP adapter (NDIS 5) on Windows Server 2016</div></div></div><br><div =
+class=3D"gmail_quote"><div dir=3D"ltr">On Wed, Oct 24, 2018 at 3:20 PM Samu=
+li Sepp=C3=A4nen &lt;<a href=3D"mailto:samuli@...515..." target=3D"_blank">=
+samuli@...515...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" =
+style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);pa=
+dding-left:1ex">Hi,<br>
+<br>
+If I recall correctly, NDIS 5 support was dropped in Windows 8 or early<br>
+Windows 10. Tap-windows uses NDIS 5, so it almost certainly does not<br>
+work on Windows Server 2016.<br>
+<br>
+-- <br>
+Samuli Sepp=C3=A4nen<br>
+Community Manager<br>
+OpenVPN Technologies, Inc<br>
+<br>
+irc freenode net: mattock<br>
+<br>
+<br>
+<br>
+Il 24/10/18 15:09, tincanteksup ha scritto:<br>
+&gt; Hi,<br>
+&gt; <br>
+&gt; a completely different approach ..<br>
+&gt; <br>
+&gt; On the Forum somebody claimed that the old Tap Adaptor works better<br>
+&gt; than the new one on W2012r2.<br>
+&gt; <br>
+&gt; <a href=3D"https://forums.openvpn.net/viewtopic.php?f=3D6&amp;t=3D2728=
+8#p81973" rel=3D"noreferrer" target=3D"_blank">https://forums.openvpn.net/v=
+iewtopic.php?f=3D6&amp;t=3D27288#p81973</a><br>
+&gt; <br>
+&gt; Could you test that ?<br>
+&gt; <br>
+&gt; Thanks<br>
+&gt; tct<br>
+&gt; <br>
+&gt; <br>
+&gt; On 03/10/2018 16:15, Rostyslav Maryliak wrote:<br>
+&gt;&gt; Dear OpenVPN developers,<br>
+&gt;&gt;<br>
+&gt;&gt; I&#39;ve faced a very strange issue with slow outbound network spe=
+ed from<br>
+&gt;&gt; Windows Server 2016 Standard server via the OpenVPN tunnel.<br>
+&gt;&gt; OpenVPN server is Windows Server 2012 R2, client is Windows Server=
+ 2016.<br>
+&gt;&gt; The inbound network speed for Windows Server 2016 is great.<br>
+&gt;&gt; But the outbound network speed is nearly 30-40 kbps. I&#39;ve got =
+the same<br>
+&gt;&gt; results using several tests: iperf testings, file download via SMB=
+,<br>
+&gt;&gt; Web-based downloading (using HTTP) etc.<br>
+&gt;&gt;<br>
+&gt;&gt; The tunnels is getting up and it works greatly, but only in one<br>
+&gt;&gt; direction -<br>
+&gt;&gt; from Windows Server 2012 R2 to Windows Server 2016.<br>
+&gt;&gt; I&#39;ve been using such server-client configurations setup for se=
+veral years<br>
+&gt;&gt; with Windows Server 2012 R2 servers and I&#39;ve never faced such =
+issue<br>
+&gt;&gt; before.<br>
+&gt;&gt; At first I thought that our ISP has some network limitations, but =
+it<br>
+&gt;&gt; turned<br>
+&gt;&gt; out that the same tests shows great network speed results using th=
+e<br>
+&gt;&gt; public<br>
+&gt;&gt; IP addresses in both directions.<br>
+&gt;&gt; The issue only occurs inside the VPN tunnel. I&#39;ve spent 3 days=
+ tryng to<br>
+&gt;&gt; figure it out, but failed. I&#39;ve installed all latest Windows u=
+pdates,<br>
+&gt;&gt; reinstalled OpenVPN, tried to switch from UDP to TCP,<br>
+&gt;&gt; played with performance settings in configs (link-mtu, sndbuf, rcv=
+buf<br>
+&gt;&gt; etc)<br>
+&gt;&gt; but still no luck. I&#39;ve tested the same setup between two Wind=
+ows Server<br>
+&gt;&gt; 2012 R2 servers and it works greatly in both directions.<br>
+&gt;&gt; Then I&#39;ve tested it with another Windows Server 2016 Standard =
+server<br>
+&gt;&gt; (different server and different ISP) and it showed the same awful =
+results<br>
+&gt;&gt; in outbound direction.<br>
+&gt;&gt; When I&#39;ve set the same OpenVPN tunnel between two Windows Serv=
+er 2016<br>
+&gt;&gt; Standard servers I&#39;ve got the same poor network speed in both =
+directions.<br>
+&gt;&gt;<br>
+&gt;&gt; I believe that the issue is somehow related only to the Windows Se=
+rver<br>
+&gt;&gt; 2016<br>
+&gt;&gt; version and I am more than confident that it depends on server&#39=
+;s TCP<br>
+&gt;&gt; stack<br>
+&gt;&gt; settings.<br>
+&gt;&gt; I&#39;ve noticed that Windows Server 2016 has a congestion control=
+ provider<br>
+&gt;&gt; setting set to &quot;default&quot;, while previous versions of Win=
+dows has this<br>
+&gt;&gt; setting set to &quot;none&quot;.<br>
+&gt;&gt;<br>
+&gt;&gt; I&#39;ve created a topic on OpenVPN Support Forum and it was sugge=
+sted to<br>
+&gt;&gt; post<br>
+&gt;&gt; my issue to you and reference the thread.<br>
+&gt;&gt;<br>
+&gt;&gt; You can reference to the<br>
+&gt;&gt; <a href=3D"https://forums.openvpn.net/viewtopic.php?f=3D6&amp;t=3D=
+27173" rel=3D"noreferrer" target=3D"_blank">https://forums.openvpn.net/view=
+topic.php?f=3D6&amp;t=3D27173</a> for config files and<br>
+&gt;&gt; additional information.<br>
+&gt;&gt;<br>
+&gt;&gt; Have you faced a similar issue before? Can you provide any hint ho=
+w can I<br>
+&gt;&gt; resolve the issue? What did I missed?<br>
+&gt;&gt; I would be very grateful for any help. Thank you in advance.<br>
+&gt;&gt;<br>
+&gt;&gt;<br>
+&gt;&gt;<br>
+&gt;&gt;<br>
+&gt;&gt; _______________________________________________<br>
+&gt;&gt; Openvpn-devel mailing list<br>
+&gt;&gt; <a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_=
+blank">Openvpn-devel@lists.sourceforge.net</a><br>
+&gt;&gt; <a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-de=
+vel" rel=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lis=
+ts/listinfo/openvpn-devel</a><br>
+&gt;&gt;<br>
+&gt; <br>
+&gt; <br>
+&gt; _______________________________________________<br>
+&gt; Openvpn-devel mailing list<br>
+&gt; <a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blan=
+k">Openvpn-devel@lists.sourceforge.net</a><br>
+&gt; <a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel"=
+ rel=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/l=
+istinfo/openvpn-devel</a><br>
+<br>
+<br>
+_______________________________________________<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
+envpn-devel@lists.sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
+=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
+nfo/openvpn-devel</a><br>
+</blockquote></div><br clear=3D"all"><div><br></div>-- <br><div dir=3D"ltr"=
+ class=3D"gmail-m_2817725046248387835gmail_signature"><div dir=3D"ltr"><div=
+><div dir=3D"ltr"><div><div dir=3D"ltr"><div><div dir=3D"ltr"><p style=3D"m=
+argin:0in 0in 0.0001pt;font-size:11pt;font-family:Calibri,sans-serif"><span=
+ style=3D"font-size:12pt;color:rgb(89,89,89)">Best regards,</span></p><p st=
+yle=3D"margin:0in 0in 0.0001pt;font-family:Calibri,sans-serif"><font color=
+=3D"#595959"><span style=3D"font-size:16px"><b>Rostyslav Maryliak</b></span=
+></font></p><p style=3D"margin:0in 0in 0.0001pt;font-size:11pt;font-family:=
+Calibri,sans-serif"><span style=3D"font-size:12pt;color:rgb(89,89,89)">Syst=
+em Administrator</span></p><p style=3D"margin:0in 0in 0.0001pt;font-size:11=
+pt;font-family:Calibri,sans-serif"><span style=3D"font-size:12pt;color:rgb(=
+89,89,89)">=C2=A0</span></p><p style=3D"margin:0in 0in 0.0001pt;font-size:1=
+1pt;font-family:Calibri,sans-serif"><b><span style=3D"font-size:12pt;color:=
+rgb(35,176,24)">iDeals=E2=84=A2 Solutions Group</span></b><span style=3D"fo=
+nt-size:12pt;color:rgb(89,89,89)">|=C2=A0<a href=3D"tel:%2B%2038%28093%2957=
+5-35-16" value=3D"+380935753516" style=3D"color:rgb(17,85,204)" target=3D"_=
+blank">+ 38(073)437-72-51</a>=C2=A0| Skype: rostyslav.maryliak.ideals|</spa=
+n><span style=3D"color:rgb(31,73,125)">=C2=A0</span><u><span style=3D"font-=
+size:12pt;color:rgb(35,176,24)"><a href=3D"mailto:dmitry.zaporozhchenko@...493...=
+2454..." style=3D"color:rgb(17,85,204)" target=3D"_blank"><span style=3D"co=
+lor:rgb(5,99,193)">rostyslav.maryliak@...2454...</span></a></span></u><u><s=
+pan style=3D"color:rgb(35,176,24)">=C2=A0</span></u><span style=3D"font-siz=
+e:12pt;color:rgb(89,89,89)">|</span><span style=3D"font-size:12pt;color:rgb=
+(35,176,24)">=C2=A0</span><span lang=3D"RU" style=3D"font-size:12pt;color:r=
+gb(35,176,24)"><a href=3D"http://www.idealscorp.com/" style=3D"color:rgb(17=
+,85,204)" target=3D"_blank"><span lang=3D"EN-US" style=3D"color:rgb(35,176,=
+24)">www.idealsvdr.com</span></a></span></p></div></div></div></div></div><=
+/div></div></div>
+</blockquote></div><br clear=3D"all"><div><br></div>-- <br><div dir=3D"ltr"=
+ class=3D"gmail_signature"><div dir=3D"ltr"><div><div dir=3D"ltr"><div><div=
+ dir=3D"ltr"><div><div dir=3D"ltr"><p style=3D"margin:0in 0in 0.0001pt;font=
+-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:12pt;co=
+lor:rgb(89,89,89)">Best regards,</span></p><p style=3D"margin:0in 0in 0.000=
+1pt;font-family:Calibri,sans-serif"><font color=3D"#595959"><span style=3D"=
+font-size:16px"><b>Rostyslav Maryliak</b></span></font></p><p style=3D"marg=
+in:0in 0in 0.0001pt;font-size:11pt;font-family:Calibri,sans-serif"><span st=
+yle=3D"font-size:12pt;color:rgb(89,89,89)">System Administrator</span></p><=
+p style=3D"margin:0in 0in 0.0001pt;font-size:11pt;font-family:Calibri,sans-=
+serif"><span style=3D"font-size:12pt;color:rgb(89,89,89)">=C2=A0</span></p>=
+<p style=3D"margin:0in 0in 0.0001pt;font-size:11pt;font-family:Calibri,sans=
+-serif"><b><span style=3D"font-size:12pt;color:rgb(35,176,24)">iDeals=E2=84=
+=A2 Solutions Group</span></b><span style=3D"font-size:12pt;color:rgb(89,89=
+,89)">|=C2=A0<a href=3D"tel:%2B%2038%28093%29575-35-16" value=3D"+380935753=
+516" style=3D"color:rgb(17,85,204)" target=3D"_blank">+ 38(073)437-72-51</a=
+>=C2=A0| Skype: rostyslav.maryliak.ideals|</span><span style=3D"color:rgb(3=
+1,73,125)">=C2=A0</span><u><span style=3D"font-size:12pt;color:rgb(35,176,2=
+4)"><a href=3D"mailto:dmitry.zaporozhchenko@...2454..." style=3D"color:rgb(=
+17,85,204)" target=3D"_blank"><span style=3D"color:rgb(5,99,193)">rostyslav=
+.maryliak@...2454...</span></a></span></u><u><span style=3D"color:rgb(35,17=
+6,24)">=C2=A0</span></u><span style=3D"font-size:12pt;color:rgb(89,89,89)">=
+|</span><span style=3D"font-size:12pt;color:rgb(35,176,24)">=C2=A0</span><s=
+pan lang=3D"RU" style=3D"font-size:12pt;color:rgb(35,176,24)"><a href=3D"ht=
+tp://www.idealscorp.com/" style=3D"color:rgb(17,85,204)" target=3D"_blank">=
+<span lang=3D"EN-US" style=3D"color:rgb(35,176,24)">www.idealsvdr.com</span=
+></a></span></p></div></div></div></div></div></div></div></div>
 
+<br>
+<span style=3D"font-family:&quot;Times New Roman&quot;,&quot;serif&quot;;fo=
+nt-size:12pt"><font face=3D"Trebuchet" size=3D"2">CONFIDENTIALITY NOTE:
+The information transmitted, including attachments,
+is intended only for the person(s) or entity to which it is addressed and
+may contain confidential and/or privileged material. Any review,
+retransmission, dissemination or other use of, or taking of any action in
+reliance upon this information by persons or entities other than the
+intended recipient is prohibited. If you received this in error, please
+contact the sender and destroy any copies of this information.</font></span=
+>=
 
-
-
-Wow, this made a nice text to start the developer documentation of MSI
-setup. If it was understandable enough. :)
-
-Regards,
-Simon
-
-------=_NextPart_000_0088_01D4B0D8.5C089D80
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-
-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
-AwMwJzAlBggrBgEFBQcCARYZaHR0cDovL3d3dy5jYS5nb3Yuc2kvY3BzLzAIBgYEAIswAQIwGAYI
-KwYBBQUHAQMEDDAKMAgGBgQAjkYBATAaBgNVHREEEzARgQ9zaW1vbkByb3ptYW4uc2kwge4GA1Ud
-HwSB5jCB4zBWoFSgUqRQME4xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJzdGF0ZS1pbnN0aXR1dGlv
-bnMxETAPBgNVBAsTCHNpZ2VuLWNhMQ8wDQYDVQQDEwZDUkw0NTUwgYiggYWggYKGV2xkYXA6Ly94
-NTAwLmdvdi5zaS9vdT1zaWdlbi1jYSxvPXN0YXRlLWluc3RpdHV0aW9ucyxjPXNpP2NlcnRpZmlj
-YXRlUmV2b2NhdGlvbkxpc3Q/YmFzZYYnaHR0cDovL3d3dy5zaWdlbi1jYS5zaS9jcmwvc2lnZW4t
-Y2EuY3JsMCsGA1UdEAQkMCKADzIwMTYwMjE5MTc1NDQxWoEPMjAyMTAyMTkyMTM4MTVaMB8GA1Ud
-IwQYMBaAFHF7igYfMQVVq2ASd0cgHgOIGOyJMB0GA1UdDgQWBBS7/7AHyQYI0e8GOPmwTc1ZTNw5
-lzAJBgNVHRMEAjAAMBkGCSqGSIb2fQdBAAQMMAobBFY4LjEDAgOoMA0GCSqGSIb3DQEBBQUAA4IB
-AQBBUL4KG1Z1oBIIdKIZs9yJxnJg/LfEPVvzNH8+CCqegq0D6k48Doo72oVEiskjqggdbUGj30uA
-H8PjCD5kLGVoDwh5a2atQ3qQzaYA/lj2Js2f4fdXNn60vRp7XzbGsQdwYYecIrKzO5x6XVAIRb+T
-HZNjXL3VX6vOozwBQv/+dx1P9H/rMUn7d8ci7v4PeqShbWbWwi6ez19cZvSKSkz/lWf4tj8QbA0n
-WeUBlk3Bx6/TRda7kwXzcFExt+ROGt0YJjbZCN3kd7swcRvRT6gEi9L6n1XLghwPSYhzZjaL5fXv
-I11JuSoQCy13XWBkq35Moo4iY19wanS1W6UM8Yq0MIIF5TCCBE2gAwIBAgINAKZovVEAAAAAVx3Q
-6DANBgkqhkiG9w0BAQsFADBcMQswCQYDVQQGEwJTSTEcMBoGA1UEChMTUmVwdWJsaWthIFNsb3Zl
-bmlqYTEXMBUGA1UEYRMOVkFUU0ktMTc2NTk5NTcxFjAUBgNVBAMTDVNJLVRSVVNUIFJvb3QwHhcN
-MTYwNTI0MTE1ODI3WhcNMjEwNjI3MjIwMDAwWjA9MQswCQYDVQQGEwJzaTEbMBkGA1UEChMSc3Rh
-dGUtaW5zdGl0dXRpb25zMREwDwYDVQQLEwhzaWdlbi1jYTCCASIwDQYJKoZIhvcNAQEBBQADggEP
-ADCCAQoCggEBALDlZbLArGSW8ogbs+2e5ALGTyuIzi6KUYB1rxBb8ss4ZpuiDm00R5alkhGv9jVH
-onciDM4WiGKq00luGLwuRNi+xp7CGhmsQY78MAcC8sZq1FsjAO9BNNikc2PfIpIzhAGljfODXPq4
-1Ho13+z4bQ/gTO2tnDp9htalCJS+fXoRH/6FP1RaiGOHnKWxp07Nt0Rzr8+KSWsf483XSU1aKxfm
-XHazu3K5byfSm4kViN8QX3YhAWrHFTEK0ZxY+CgWBW3ZTtmh1wcgy0smiU2Ssqe6lujjWI8inAGW
-WsT3MU0LSbXheGHiVBgGu55UNH4MPuvutYAf3RaEHWg4Zmdz+JECAwEAAaOCAkMwggI/MBIGA1Ud
-EwEB/wQIMAYBAf8CAQAwDgYDVR0PAQH/BAQDAgEGMDoGA1UdIAQzMDEwLwYEVR0gADAnMCUGCCsG
-AQUFBwIBFhlodHRwOi8vd3d3LmNhLmdvdi5zaS9jcHMvMGkGCCsGAQUFBwEBBF0wWzA2BggrBgEF
-BQcwAoYqaHR0cDovL3d3dy5jYS5nb3Yuc2kvY3J0L3NpLXRydXN0LXJvb3QuY3J0MCEGCCsGAQUF
-BzABhhVodHRwOi8vb2NzcC5jYS5nb3Yuc2kwHQYDVR0OBBYEFHF7igYfMQVVq2ASd0cgHgOIGOyJ
-MIIBPAYDVR0fBIIBMzCCAS8wgbeggbSggbGGKmh0dHA6Ly93d3cuY2EuZ292LnNpL2NybC9zaS10
-cnVzdC1yb290LmNybIaBgmxkYXA6Ly94NTAwLmdvdi5zaS9jbj1TSS1UUlVTVCUyMFJvb3Qsb3Jn
-YW5pemF0aW9uSWRlbnRpZmllcj1WQVRTSS0xNzY1OTk1NyxvPVJlcHVibGlrYSUyMFNsb3Zlbmlq
-YSxjPVNJP2NlcnRpZmljYXRlUmV2b2NhdGlvbkxpc3Qwc6BxoG+kbTBrMQswCQYDVQQGEwJTSTEc
-MBoGA1UEChMTUmVwdWJsaWthIFNsb3ZlbmlqYTEXMBUGA1UEYRMOVkFUU0ktMTc2NTk5NTcxFjAU
-BgNVBAMTDVNJLVRSVVNUIFJvb3QxDTALBgNVBAMTBENSTDEwEwYDVR0jBAwwCoAITKPDaF4IAmMw
-DQYJKoZIhvcNAQELBQADggGBAHuvNSPhY4qcirWJkTwkqaOPqOSV06J/ZepFQfUEJ87TlrGjp4XR
-5FLktTAEY/7R4Sgeb2K8OWEl/Koc1BbH6+uyZYvfa+WnnJEWeWOmyPy/vooO7eZyOVvaORxurWOL
-CCVDW2wBkbtUoKZaUyzgP+ZPPGRV8GFlbZLCzGmArMGXJXe8t/XNiJDLehGqSWT49NYjyYQdIgI+
-qi9W+A6BSUQ9jsMdYJqKhXQcosfH51sc6gZVxTKMr3PsItsa8XFiNazECAAFr0ms7HB6zb8QvHRF
-eBGk/CLrW4VkZEBN/JtuyhvgktQ2BvuGtauEvHZQAYpMSh35D7pwtavRMpmhaAsQb4yPqhIMcztw
-RqsKPBhWoaFEVZ+Vn3wxap5h/oAhocifNzkWJTNWjxnoPM2eNz2uWFJsgsNhlwteUvnq7+bKTNte
-SKWKr6pI+GUsZhmCh5URpUnqUanp0Uie0MD9f3tiOLOp711sNb0xwi+VdDuDB37IddOIsfhPBood
-wpoFrTGCAyEwggMdAgEBMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0
-aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4wDQYJYIZIAWUDBAIBBQCgggGtMBgGCSqGSIb3
-DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE5MDEyMDE0NTQwMFowLwYJKoZIhvcN
-AQkEMSIEIBpyYscvr8IY9ZtEYnTLjScwxQvtJWndZWvdKmZiXRC6MFQGCSsGAQQBgjcQBDFHMEUw
-PTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMIc2ln
-ZW4tY2ECBDtKDS4wVgYLKoZIhvcNAQkQAgsxR6BFMD0xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJz
-dGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsTCHNpZ2VuLWNhAgQ7Sg0uMIGTBgkqhkiG9w0BCQ8x
-gYUwgYIwCwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQBFjAKBggqhkiG9w0DBzALBglghkgBZQMEAQIw
-DgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAsGCWCGSAFlAwQCATALBglghkgBZQMEAgMw
-CwYJYIZIAWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBAIvpsOP7EZQhwB/LKurgfzk8
-WDaCah+yotIe64fwP4N7z1GX5qa0c8RUgXB46KliWDNxQHjaVqsB6CK0IK8ogXA4ACqMUPYN1cIl
-BcYWHonZ3QB002yR+yvxwr1TMN+Zv47/fuQ/kRLmOow6Mehbgrmtg3KAB50zefjU337C+q6EBi7c
-I3mZLxCNCq0sSiF9uVq7XSy7c07K6hatfdFQDPRjzPl6M0xobc/ulCa/NlVtBclCXVpWueQgEgY/
-RZO8ZK+spS9FdyGnUE3XTvHFi/zxUsSGqYu1ngYHnbWPbqZmUCIVwbW5tRzyP7mDkEQ7YzFpFipl
-CwJqrDrv8AXgSBsAAAAAAAA=
-
-------=_NextPart_000_0088_01D4B0D8.5C089D80--
+--000000000000a0bf0b057ff76b0b--
 
