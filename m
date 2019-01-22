@@ -1,8 +1,14 @@
+References: <20190119103028.12497-1-steffan@...1856...>
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 22 Jan 2019 16:03:28 +0100
-Message-Id: <20190122150333.1061-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v2 1/6] Rename tls_crypt_v2_read_keyfile
- into generic pem_read_key_file
+Message-ID: <69d79849-cd27-60f2-c98d-95ee1c09c91b@...1227...>
+Date: Tue, 22 Jan 2019 16:31:29 +0100
+MIME-Version: 1.0
+In-Reply-To: <20190119103028.12497-1-steffan@...1856...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="Bfg4w2KQeBbcqwqjDJSlPH9BjcIlGTbpu"
+Subject: Re: [Openvpn-devel] [PATCH] Fix tls-auth/crypt in connection blocks
+ with --persist-key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,176 +17,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--Bfg4w2KQeBbcqwqjDJSlPH9BjcIlGTbpu
+Content-Type: multipart/mixed; boundary="HNU7mmJLtJd06VbnYykBYDTbl5Ik9t2IE";
+ protected-headers="v1"
+From: Arne Schwabe <arne@...1227...>
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <69d79849-cd27-60f2-c98d-95ee1c09c91b@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix tls-auth/crypt in connection blocks
+ with --persist-key
+References: <20190119103028.12497-1-steffan@...1856...>
+In-Reply-To: <20190119103028.12497-1-steffan@...1856...>
+
+--HNU7mmJLtJd06VbnYykBYDTbl5Ik9t2IE
+Content-Language: de-DE
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Arne Schwabe <arne@...515...>
+Content-Transfer-Encoding: quoted-printable
 
-From: Arne Schwabe <arne@...515...>
+Am 19.01.19 um 11:30 schrieb Steffan Karger:
+> If --persist-key was used, we would always try to pre-load the 'global'
+> tls-auth/crypt file. That would result in using the wrong key (leading
+> to a failed connection) or en error is there was to 'global' key:
+>=20
+>   Sat Jan 19 11:09:01 2019 Cannot pre-load tls-auth keyfile ((null))
+>   Sat Jan 19 11:09:01 2019 Exiting due to fatal error
+>=20
+> Fix that by loading loading the key from the current connection entry.
 
-The function is fairly generic and to avoid duplicating the same
-functionality move the function to crypto.c and change fixed string to
-be the same as the pem_name parameter.
----
- src/openvpn/crypto.c    | 39 ++++++++++++++++++++++++++++++++++
- src/openvpn/crypto.h    | 12 +++++++++++
- src/openvpn/ssl.h       |  1 -
- src/openvpn/tls_crypt.c | 47 ++++-------------------------------------
- 4 files changed, 55 insertions(+), 44 deletions(-)
+Acked-By: Arne Schabe <arne@...1227...>
+This also changes the logic to be similar with the other logic used in
+the function.
 
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index 19136799..ff9dbfdc 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -1882,3 +1882,42 @@ cleanup:
-     gc_free(&gc);
-     return;
- }
-+
-+bool
-+read_pem_key_file(struct buffer *key, const char *pem_name,
-+                  const char *key_file, const char *key_inline)
-+{
-+    bool ret = false;
-+    struct buffer key_pem = { 0 };
-+    struct gc_arena gc = gc_new();
-+
-+    if (strcmp(key_file, INLINE_FILE_TAG))
-+    {
-+        key_pem = buffer_read_from_file(key_file, &gc);
-+        if (!buf_valid(&key_pem))
-+        {
-+            msg(M_WARN, "ERROR: failed to read %s file (%s)",
-+                pem_name, key_file);
-+            goto cleanup;
-+        }
-+    }
-+    else
-+    {
-+        buf_set_read(&key_pem, (const void *)key_inline, strlen(key_inline) + 1);
-+    }
-+
-+    if (!crypto_pem_decode(pem_name, key, &key_pem))
-+    {
-+        msg(M_WARN, "ERROR: %s pem decode failed", pem_name);
-+        goto cleanup;
-+    }
-+
-+    ret = true;
-+cleanup:
-+    if (strcmp(key_file, INLINE_FILE_TAG))
-+    {
-+        buf_clear(&key_pem);
-+    }
-+    gc_free(&gc);
-+    return ret;
-+}
-diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
-index c0574ff6..09f7bb25 100644
---- a/src/openvpn/crypto.h
-+++ b/src/openvpn/crypto.h
-@@ -430,6 +430,18 @@ unsigned int crypto_max_overhead(void);
- void
- write_pem_key_file(const char *filename, const char *pem_name);
- 
-+/**
-+ * Read key material from a PEM encoded files into the key structure
-+ * @param key           the key structure that will hold the key material
-+ * @param pem_name      the name used in the pem encoding start/end lines
-+ * @param key_file      name of the file to read
-+ * @param key_inline    a string holding the data in case of an inline key
-+ * @return              true if reading into key was successful
-+ */
-+bool
-+read_pem_key_file(struct buffer *key, const char *pem_name,
-+                  const char *key_file, const char *key_inline);
-+
- /* Minimum length of the nonce used by the PRNG */
- #define NONCE_SECRET_LEN_MIN 16
- 
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index eafb235e..660e9eb4 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -634,5 +634,4 @@ void
- show_available_tls_ciphers(const char *cipher_list,
-                            const char *cipher_list_tls13,
-                            const char *tls_cert_profile);
--
- #endif /* ifndef OPENVPN_SSL_H */
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index eeac794b..d6a82252 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -278,45 +278,6 @@ error_exit:
-     return false;
- }
- 
--static inline bool
--tls_crypt_v2_read_keyfile(struct buffer *key, const char *pem_name,
--                          const char *key_file, const char *key_inline)
--{
--    bool ret = false;
--    struct buffer key_pem = { 0 };
--    struct gc_arena gc = gc_new();
--
--    if (strcmp(key_file, INLINE_FILE_TAG))
--    {
--        key_pem = buffer_read_from_file(key_file, &gc);
--        if (!buf_valid(&key_pem))
--        {
--            msg(M_WARN, "ERROR: failed to read tls-crypt-v2 key file (%s)",
--                key_file);
--            goto cleanup;
--        }
--    }
--    else
--    {
--        buf_set_read(&key_pem, (const void *)key_inline, strlen(key_inline) + 1);
--    }
--
--    if (!crypto_pem_decode(pem_name, key, &key_pem))
--    {
--        msg(M_WARN, "ERROR: tls-crypt-v2 pem decode failed");
--        goto cleanup;
--    }
--
--    ret = true;
--cleanup:
--    if (strcmp(key_file, INLINE_FILE_TAG))
--    {
--        buf_clear(&key_pem);
--    }
--    gc_free(&gc);
--    return ret;
--}
--
- static inline void
- tls_crypt_v2_load_client_key(struct key_ctx_bi *key, const struct key2 *key2,
-                              bool tls_server)
-@@ -339,8 +300,8 @@ tls_crypt_v2_init_client_key(struct key_ctx_bi *key, struct buffer *wkc_buf,
-     struct buffer client_key = alloc_buf(TLS_CRYPT_V2_CLIENT_KEY_LEN
-                                          + TLS_CRYPT_V2_MAX_WKC_LEN);
- 
--    if (!tls_crypt_v2_read_keyfile(&client_key, tls_crypt_v2_cli_pem_name,
--                                   key_file, key_inline))
-+    if (!read_pem_key_file(&client_key, tls_crypt_v2_cli_pem_name,
-+                           key_file, key_inline))
-     {
-         msg(M_FATAL, "ERROR: invalid tls-crypt-v2 client key format");
-     }
-@@ -365,8 +326,8 @@ tls_crypt_v2_init_server_key(struct key_ctx *key_ctx, bool encrypt,
-     struct buffer srv_key_buf;
- 
-     buf_set_write(&srv_key_buf, (void *)&srv_key, sizeof(srv_key));
--    if (!tls_crypt_v2_read_keyfile(&srv_key_buf, tls_crypt_v2_srv_pem_name,
--                                   key_file, key_inline))
-+    if (!read_pem_key_file(&srv_key_buf, tls_crypt_v2_srv_pem_name,
-+                           key_file, key_inline))
-     {
-         msg(M_FATAL, "ERROR: invalid tls-crypt-v2 server key format");
-     }
--- 
-2.20.1
+Arne
 
+
+--HNU7mmJLtJd06VbnYykBYDTbl5Ik9t2IE--
+
+--Bfg4w2KQeBbcqwqjDJSlPH9BjcIlGTbpu
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAlxHN1IACgkQFRhsZwKx
+RFTNzA//UsL0bUVDJkYW8usi9T7pdM5JwpJp6k0s6hhFSmygoK7Nc0SyBja4Xk1D
+EmZ7RaGnx7tz2jjSZIZdJcArqG4Ge7S22qe52Xm/8v6rz/jq0UUJm9FHvDyt6wwW
+BvbCN2fvOci+ZanLPn+FWQNj4aBWtEUN3oTZ4g1w98PwMNOiie6YKPzUzEjM2SbD
+idAF2/FCCUsFHiWRwrke8PWnE+XqViKBfZ/riH3uicpq4mlnpcSSj6wBDUHVsVp3
+xT5NuKqQrvS9f5CVgidTMgwWPiEim9CPTLUIepmwzMrfCSK5phjy0ZfrnSZddUdh
+EiMNkeah7Ynh/bWRzv0KutpEFm61kHcHDWNR7wczGdJtDkHdUdvlUYbBJYpwdGac
+dnn1GB4rs0m3DbNcEreiiSnUFhUzOVGTQjKI8qCviH6EhSu6nRkslY0ZQ3ly8NWH
+1r2XO1CAxzTwnYa+6N82hht3lzt+ujgeZOcr5Kyb93qUZSeC1tAnYtV/QtY16XZe
+KTENlXhMiU/2r754aWpo936TwWSmIMpRbt8za330xVYrnr5GJ+OliJolt/eALu/g
+R4hlvqoUK+FGIr20dyz12R/eY+I6LGd+ir9QlcMyAMJ4nXnIzAzxL+H3n06F3TX0
+rakBK4d+Ra3TLsMv5xycIVsahBybdd8WnIsSYyNna5fc3hS6BbA=
+=3asO
+-----END PGP SIGNATURE-----
+
+--Bfg4w2KQeBbcqwqjDJSlPH9BjcIlGTbpu--
 
