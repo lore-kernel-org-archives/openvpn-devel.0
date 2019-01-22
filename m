@@ -1,10 +1,10 @@
-Date: Tue, 22 Jan 2019 17:20:12 +0100 (CET)
-Message-Id: <201901221620.x0MGKC9x045512@...2054...>
+Date: Tue, 22 Jan 2019 17:32:43 +0100 (CET)
+Message-Id: <201901221632.x0MGWhVC045655@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1548164463-13366-1-git-send-email-lstipakov@...277...>
-References: <1548164463-13366-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: crypto_openssl.c: fix
- heap-buffer-overflow found by AddressSanitizer
+In-Reply-To: <20190119103400.12887-1-steffan@...1856...>
+References: <20190119103400.12887-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix tls-auth/crypt in
+ connection blocks with --persist-key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,21 +15,23 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
+To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master branch.
 
-commit eb1fed3f3bb817332183672dd1ca665ece83d6a8
-Author: Lev Stipakov
-Date:   Tue Jan 22 15:41:03 2019 +0200
+(I had a look at the patch as well, and second the ACK :) )
 
-     crypto_openssl.c: fix heap-buffer-overflow found by AddressSanitizer
+commit dcfc51457789d8a62ff8bd266dd3a3bf0a0c9763
+Author: Steffan Karger
+Date:   Sat Jan 19 11:34:00 2019 +0100
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
+     Fix tls-auth/crypt in connection blocks with --persist-key
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
      Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1548164463-13366-1-git-send-email-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18141.html
+     Message-Id: <20190119103400.12887-1-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18123.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
