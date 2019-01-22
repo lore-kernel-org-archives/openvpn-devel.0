@@ -1,10 +1,8 @@
-Date: Tue, 22 Jan 2019 16:45:32 +0100 (CET)
-Message-Id: <201901221545.x0MFjWDo045093@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1548164060-13144-1-git-send-email-lstipakov@...277...>
-References: <1548164060-13144-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: test_tls_crypt.c: fix
- global-buffer-overflow found by AddressSanitizer
+From: selva.nair@...277...
+Date: Tue, 22 Jan 2019 10:50:32 -0500
+Message-Id: <1548172232-11268-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH] White-list pull-filter and script-security
+ in interactive service
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +13,40 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+From: Selva Nair <selva.nair@...277...>
 
-commit a3fd78d48616ab21908b116d5ce785986893e02d
-Author: Lev Stipakov
-Date:   Tue Jan 22 15:34:20 2019 +0200
+This allows the Windows GUI to use these options on the command
+line without triggering user authorization errors.
 
-     test_tls_crypt.c: fix global-buffer-overflow found by AddressSanitizer
+Useful for
+(i) ignoring certain pushed options such as "route-method" which
+could otherwise bypass the interactive service
+(ii) enforcing a safer script-security setting from the GUI
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1548164060-13144-1-git-send-email-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18140.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+See also:
+https://github.com/OpenVPN/openvpn-gui/issues/235#issuecomment-456142928
 
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpnserv/validate.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpnserv/validate.c b/src/openvpnserv/validate.c
+index 9e1d7d2..9b01770 100644
+--- a/src/openvpnserv/validate.c
++++ b/src/openvpnserv/validate.c
+@@ -44,6 +44,8 @@ static const WCHAR *white_list[] =
+     L"setenv",
+     L"service",
+     L"verb",
++    L"pull-filter",
++    L"script-security",
+ 
+     NULL                                /* last value */
+ };
+-- 
+2.6.2
 
 
