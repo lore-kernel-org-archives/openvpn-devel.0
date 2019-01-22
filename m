@@ -1,10 +1,8 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Tue, 22 Jan 2019 13:02:48 +0200
-Message-Id: <1548154968-13019-2-git-send-email-lstipakov@...277...>
-In-Reply-To: <1548154968-13019-1-git-send-email-lstipakov@...277...>
-References: <1548154968-13019-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH 2/2] test_tls_crypt.c: fix
- global-buffer-overflow found by AddressSanitizer
+Date: Tue, 22 Jan 2019 13:02:47 +0200
+Message-Id: <1548154968-13019-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH 1/2] crypto_openssl.c: fix
+ heap-buffer-overflow found by AddressSanitizer
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,39 +17,35 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Lev Stipakov <lev@...515...>
 
-When writing data to buffer we incorrectly specify source length
- - sizeof for pointer returns 8, but actual buffer length is 1.
+OpenSSL's version of crypto_pem_encode() uses PEM_write_bio()
+function to write PEM-encoded data to BIO object. That method doesn't
+add NUL termanator, unlike its mbedTLS counterpart mbedtls_pem_write_buffer().
 
-Fix by replacing empty global string to local string literal and
-specifying the correct length.
+The code which uses PEM data treats it as a string, so missing NUL
+terminator makes sanitizer to compain.
+
+Fix by adding a NUL terminator.
 
 Signed-off-by: Lev Stipakov <lev@...515...>
 ---
- tests/unit_tests/openvpn/test_tls_crypt.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ src/openvpn/crypto_openssl.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c
-index b793a7a..b4ce03d 100644
---- a/tests/unit_tests/openvpn/test_tls_crypt.c
-+++ b/tests/unit_tests/openvpn/test_tls_crypt.c
-@@ -49,8 +49,6 @@
- #define PARAM1      "param1"
- #define PARAM2      "param two"
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 9691ce0..6a49067 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -400,8 +400,9 @@ crypto_pem_encode(const char *name, struct buffer *dst,
+     BUF_MEM *bptr;
+     BIO_get_mem_ptr(bio, &bptr);
  
--static const char *plaintext_short = "";
--
- static const char *test_server_key = \
-         "-----BEGIN OpenVPN tls-crypt-v2 server key-----\n"
-         "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4v\n"
-@@ -148,7 +146,7 @@ test_tls_crypt_setup(void **state) {
-     ctx->unwrapped = alloc_buf(TESTBUF_SIZE);
+-    *dst = alloc_buf_gc(bptr->length, gc);
++    *dst = alloc_buf_gc(bptr->length + 1, gc);
+     ASSERT(buf_write(dst, bptr->data, bptr->length));
++    *BEND(dst) = '\0';
  
-     /* Write test plaintext */
--    buf_write(&ctx->source, plaintext_short, sizeof(plaintext_short));
-+    buf_write(&ctx->source, "1234567890", 10);
- 
-     /* Write dummy opcode and session id */
-     buf_write(&ctx->ciphertext, "012345678", 1 + 8);
+     ret = true;
+ cleanup:
 -- 
 2.7.4
 
