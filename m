@@ -1,15 +1,14 @@
-References: <20190119103028.12497-1-steffan@...1856...>
- <20190119103400.12887-1-steffan@...1856...>
+References: <20181219050118.6568-1-a@...2181...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <c71f7c3a-461c-5d1b-2894-b13e3e05da3e@...1227...>
-Date: Tue, 22 Jan 2019 16:32:08 +0100
+Message-ID: <eb47b6f4-0f40-77e2-7bce-c0bb95c69dad@...1227...>
+Date: Tue, 22 Jan 2019 16:45:30 +0100
 MIME-Version: 1.0
-In-Reply-To: <20190119103400.12887-1-steffan@...1856...>
+In-Reply-To: <20181219050118.6568-1-a@...2181...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="HWgXWRJMrYjMplvoUzvpQ13HlAVeRhJPd"
-Subject: Re: [Openvpn-devel] [PATCH v2] Fix tls-auth/crypt in connection
- blocks with --persist-key
+ boundary="Nw2cxtLHT3n6mV5qpo6HhcqgLsbRUZeNF"
+Subject: Re: [Openvpn-devel] [PATCH v3 0/7] introduce networking API and add
+ netlink support for Linux
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,68 +17,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---HWgXWRJMrYjMplvoUzvpQ13HlAVeRhJPd
-Content-Type: multipart/mixed; boundary="CYbrezgDrJmr5XcMjhPkqfcpIxoEH8oFN";
+--Nw2cxtLHT3n6mV5qpo6HhcqgLsbRUZeNF
+Content-Type: multipart/mixed; boundary="Mtnp4CgvFQokGCKzznfOmX7PBHS32HjsO";
  protected-headers="v1"
 From: Arne Schwabe <arne@...1227...>
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <c71f7c3a-461c-5d1b-2894-b13e3e05da3e@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Fix tls-auth/crypt in connection
- blocks with --persist-key
-References: <20190119103028.12497-1-steffan@...1856...>
- <20190119103400.12887-1-steffan@...1856...>
-In-Reply-To: <20190119103400.12887-1-steffan@...1856...>
+To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <eb47b6f4-0f40-77e2-7bce-c0bb95c69dad@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH v3 0/7] introduce networking API and add
+ netlink support for Linux
+References: <20181219050118.6568-1-a@...2181...>
+In-Reply-To: <20181219050118.6568-1-a@...2181...>
 
---CYbrezgDrJmr5XcMjhPkqfcpIxoEH8oFN
+--Mtnp4CgvFQokGCKzznfOmX7PBHS32HjsO
 Content-Language: de-DE
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-Am 19.01.19 um 11:34 schrieb Steffan Karger:
-> If --persist-key was used, we would always try to pre-load the 'global'
-> tls-auth/crypt file. That would result in using the wrong key (leading
-> to a failed connection) or en error is there was to 'global' key:
->=20
->   Sat Jan 19 11:09:01 2019 Cannot pre-load tls-auth keyfile ((null))
->   Sat Jan 19 11:09:01 2019 Exiting due to fatal error
->=20
-> Fix that by loading loading the key from the current connection entry.
->=20
+Am 19.12.18 um 06:01 schrieb Antonio Quartulli:
+> From a high level description of this patchset, please refer to
+> "[PATCH 0/4] add netlink support for Linux" sent to the mailing list on
+> Apr, 20th 2018.
+>
 
-Acked-By: Arne Schabe <arne@...1227...>
+This patch set seem to be missing the commit
 
-This also changes the logic to be similar with the other logic used in
-the function. The bug is pretty obvious by just looking at the code.
+implement platform generic networking API
+
+from the v1 of the patch set, so I will review the v1 instead again as
+it looks it is still identical in your git tree.
 
 Arne
 
 
---CYbrezgDrJmr5XcMjhPkqfcpIxoEH8oFN--
+--Mtnp4CgvFQokGCKzznfOmX7PBHS32HjsO--
 
---HWgXWRJMrYjMplvoUzvpQ13HlAVeRhJPd
+--Nw2cxtLHT3n6mV5qpo6HhcqgLsbRUZeNF
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAlxHN3gACgkQFRhsZwKx
-RFQfRw/7BcM25mwf6RLdTjKM6g2YEWTjlZRVVkZIs9VS1F1t+GJM7VSBQmEV9YY9
-omZB5UAWqo5DlsbVWpiRzH+7t6v+QZYsWllVQTUA3oxjeTOprZKwKMk21e6zP1sV
-1HFmRqJmkrBirsMlZNJsWoxxEwyrgoIuH806NgckuR7zenUB6sXhEusF2FlDR27l
-y6L1MytKWHljHGKMn2V1+Uvyoa4qRSteTnJ4K3C4XF34OW3U7FWPSFC5hqSKtmQ0
-aYNIyEnNi5xaLY+eOrSfw5hZJxKqKetmsKcEaTrU3qIx5e2K20FkY2fbF35TdDv+
-0A967jNfWVgPbxQXGFVo1/irtAF2xsO84kwl4tLcLqpZSwiqPuhpHFCzQ+QyFZke
-husGYl9ZEBWHJkaHnqfgU3vZwO6/d/8ut7kCJN7JoAcxkXuLABMqllHXNB119Lvc
-qUxgHK3oIO5e7SNuEUIYO1hU/nLGW1JSMRL9NETVaKVSjwAPKnjL3/87GYmlBEDx
-j0nqCPFAVqbJAHuOXhVtztkwHWDJNzX3NnRJBm8kYrMGKh1+s4ILxfesh1nSWNaS
-OlNFeGW5e+gWrbmfyNIkl6K4mFvuqOtSwzJRteMFDoTj4UF3KXU33Ie8jtu7+p6+
-gR/QWJeuN4iftP/oiSWEuZDsn81pqdVFxsmDc/E/4M8dUKaAwyg=
-=aEMk
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAlxHOpoACgkQFRhsZwKx
+RFQvTRAAnzlXGw/QK6j8M7USPBiRgq/wbc/wWxDZBaYalQT6Ufz1DJaEK59ujQBQ
+86qyjIzAP58p1jXFuuU8HVovTwYACpFD1L0tBleZguE75DG1V+x7VrGxVcXSwfSK
+MFR6GJP/dxLh3843m9pWtFpah+1OW6SORoEwlZh9dwJFIbruGp5fpUf3N9QmxCvY
+nlpzKhbyPdeh4B42f5Tww3rSglrE7YbyKTO5jUde+d3FkwWReIez0tQn9PlyDtxp
+oB4utWEuXBF/WQI6JNOaPAl3Apm1bcfzINQxIZXGmHuizkG7zqO/Dexf60158w9R
+LTaQAVgGQzKJH4MrqKkZbJViH2Jhovhasg4TJaXbNVn+yWS82DOVVc7JvDDZ6Bvq
+YzwOr4eT64Gt1IqwL9MCL1ivDDax3OMFUyW9RDzUStMSRXm7FzW/r0L134JgQmjT
+ko9ccSBQcrr7UN0Z2Wm7YYqAJ/bmFNfsfAmMggEMa2s+Dgy4KQeYCn4pX+5RKtGN
+kVS8K7IfukPbkrYw/WyjqjqbnQUnDvKaxlQx8293OuDcznlg/92QOAhHyDz9hTND
+bePSpN9ln5yXvp7AX9jb/jobTNAPlp5IeDCVcKxQYtAe4NcpSv1Y8U42MwjDCy9b
+RXOt+YRcg8HsYaFu5tKAE94Wqjk+6kJGgHdDt9XR4isgNFAgROM=
+=LnS4
 -----END PGP SIGNATURE-----
 
---HWgXWRJMrYjMplvoUzvpQ13HlAVeRhJPd--
+--Nw2cxtLHT3n6mV5qpo6HhcqgLsbRUZeNF--
 
