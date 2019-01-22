@@ -1,10 +1,10 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Tue, 22 Jan 2019 15:34:20 +0200
-Message-Id: <1548164060-13144-1-git-send-email-lstipakov@...277...>
-In-Reply-To: <e5ec298b-cd2e-ee95-955e-56df133e0ef8@...1227...>
-References: <e5ec298b-cd2e-ee95-955e-56df133e0ef8@...1227...>
-Subject: [Openvpn-devel] [PATCH v2] test_tls_crypt.c: fix
- global-buffer-overflow found by AddressSanitizer
+Date: Tue, 22 Jan 2019 15:41:03 +0200
+Message-Id: <1548164463-13366-1-git-send-email-lstipakov@...277...>
+In-Reply-To: <bbaef48a-56ea-106f-b68f-abe0d5a11fe6@...1227...>
+References: <bbaef48a-56ea-106f-b68f-abe0d5a11fe6@...1227...>
+Subject: [Openvpn-devel] [PATCH v2] crypto_openssl.c: fix
+ heap-buffer-overflow found by AddressSanitizer
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,48 +19,37 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Lev Stipakov <lev@...515...>
 
-When writing data to buffer we incorrectly specify source length
- - sizeof for pointer returns 8, but actual buffer length is 1.
+OpenSSL's version of crypto_pem_encode() uses PEM_write_bio()
+function to write PEM-encoded data to BIO object. That method doesn't
+add NUL termanator, unlike its mbedTLS counterpart mbedtls_pem_write_buffer().
 
-Fix by replacing empty global string to local string literal and
-specifying the correct length.
+The code which uses PEM data treats it as a string, so missing NUL
+terminator makes sanitizer to compain.
+
+Fix by adding a NUL terminator.
 
 Signed-off-by: Lev Stipakov <lev@...515...>
 ---
- v2: use strlen(), fix misleading comments
+ v2: use a dedivcated function to add a nul terminator
 
- tests/unit_tests/openvpn/test_tls_crypt.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ src/openvpn/crypto_openssl.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c
-index b793a7a..17f7d89 100644
---- a/tests/unit_tests/openvpn/test_tls_crypt.c
-+++ b/tests/unit_tests/openvpn/test_tls_crypt.c
-@@ -49,8 +49,6 @@
- #define PARAM1      "param1"
- #define PARAM2      "param two"
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 9691ce0..c049e52 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -400,8 +400,9 @@ crypto_pem_encode(const char *name, struct buffer *dst,
+     BUF_MEM *bptr;
+     BIO_get_mem_ptr(bio, &bptr);
  
--static const char *plaintext_short = "";
--
- static const char *test_server_key = \
-         "-----BEGIN OpenVPN tls-crypt-v2 server key-----\n"
-         "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4v\n"
-@@ -148,10 +146,12 @@ test_tls_crypt_setup(void **state) {
-     ctx->unwrapped = alloc_buf(TESTBUF_SIZE);
+-    *dst = alloc_buf_gc(bptr->length, gc);
++    *dst = alloc_buf_gc(bptr->length + 1, gc);
+     ASSERT(buf_write(dst, bptr->data, bptr->length));
++    buf_null_terminate(dst);
  
-     /* Write test plaintext */
--    buf_write(&ctx->source, plaintext_short, sizeof(plaintext_short));
-+    const char *plaintext = "1234567890";
-+    buf_write(&ctx->source, plaintext, strlen(plaintext));
- 
--    /* Write dummy opcode and session id */
--    buf_write(&ctx->ciphertext, "012345678", 1 + 8);
-+    /* Write test ciphertext */
-+    const char *ciphertext = "012345678";
-+    buf_write(&ctx->ciphertext, ciphertext, strlen(ciphertext));
- 
-     return 0;
- }
+     ret = true;
+ cleanup:
 -- 
 2.7.4
 
