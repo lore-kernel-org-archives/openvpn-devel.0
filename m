@@ -1,10 +1,13 @@
-Date: Wed, 23 Jan 2019 20:08:23 +0100 (CET)
-Message-Id: <201901231908.x0NJ8NBX056343@...2054...>
+Date: Wed, 23 Jan 2019 20:14:05 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1544210258-8754-1-git-send-email-selva.nair@...277...>
-References: <1544210258-8754-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Move OpenSSL vs CNG signature
- digest type mapping to a function
+Message-ID: <20190123191405.GW962@...1296...>
+References: <1cfa91c6-2c77-1d82-812b-269c941eba4d@...2489...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="fXHnzzUzchrr8Ukn"
+Content-Disposition: inline
+In-Reply-To: <1cfa91c6-2c77-1d82-812b-269c941eba4d@...2489...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix various spelling mistakes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,40 +16,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
+To: Jonathan Tooker <jonathan@...2489...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+--fXHnzzUzchrr8Ukn
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-It needed a bit of massaging due to the uncrustify patches to cryptoapi.c
-that happened in between (f57431cdc88f2), but since the relevant conflicts
-were all "simple whitespace changes", fairly easily solved.
+Hi,
 
-From a quick clance on cryptoapi.c in release/2.4 it looks like this
-might also be applicable - but "by default" I won't apply pure refactoring
-changes.  So: if you need this for a change that falls into release/2.4
-land ("long-term compatibility" or "bugfix"), please let me know.
+On Tue, Jan 22, 2019 at 09:31:03PM -0600, Jonathan Tooker wrote:
+> Fork @ github: https://github.com/JDTX/openvpn (76ab12606155f51aaaf376a46=
+f4a52a459af105c)
+>=20
+> From: Jonathan Tooker <jonathan@...2489...>
+> Date: Tue, 22 Jan 2019 18:27:39 -0600
+> Subject: [PATCH] Fix various spelling mistakes
+>=20
+> Fix spelling mistakes in code/headers/manpages/etc.
 
-Test built on ubuntu 16.04/mingw.
+While I'm always happy to receive spelling/documentation fixes, *this*
+patch got mangled by your mail client and git refuses to apply it - your
+mail client removed leading blanks in *some* lines, so pieces like this:
 
-commit 0cab3475a83e9bad35b0eeb39b9ca886e6afaf1e
-Author: Selva Nair
-Date:   Fri Dec 7 14:17:37 2018 -0500
+> diff --git a/distro/rpm/openvpn.init.d.suse b/distro/rpm/openvpn.init.d.s=
+use
+> index 270024e8..1b4bcf06 100644
+> --- a/distro/rpm/openvpn.init.d.suse
+> +++ b/distro/rpm/openvpn.init.d.suse
+> @@ -72,7 +72,7 @@
+> #                            - removed sourcing "network"
+> #                            - removed network checking. it seemed not to=
+ work with SuSE.
+> #                            - added sourcing "rc.status", comments and "=
+rc_reset" command
+> -#                            - removed "succes; echo" and "failure; echo=
+" lines
+> +#                           - removed "success; echo" and "failure; echo=
+" lines
 
-     Move OpenSSL vs CNG signature digest type mapping to a function
+... are no longer a valid patch.
 
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1544210258-8754-1-git-send-email-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17999.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Can you please re-send with "git send-email", which normally gets things
+right even though everything out there is intent on massacring mails=20
+these days?
 
+thanks,
 
---
-kind regards,
+gert
 
-Gert Doering
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--fXHnzzUzchrr8Ukn
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJcSLz9AAoJEB2Cnv7KVigS53IMAKqjkt9e98B17vxXWf7j119t
+IvxAAmFMMnombbS8UEN37BaA/ZBrbsjA5NuFSLr5zaqTLP5q9nlT655EGDBMsPUi
+yXFdIVibHXFu6yDs0pbCrG/eBuEGkRh1E7CX4m1k46EVDb1RUX/ByI+iXBq9E4V3
+FWGryvmnM7SXGpqSXjNrzFaUIscaxCmOCeMTidGfRiEd73ieXY1ESq6PDr0lSxc9
+dKCMSVIo2qmOEb9yrdv6qWbIRbS2XB7aiQsFlNiLvSoqWhqInr89+5J2cOg5ZNgB
+7Njr3Po92VRoAKmrY2JBUXfTAFW9CUgdjuWZoM/VdEOGLStTu8vRtQFTNAs0diHu
+Cz3O69BTP1yVpfP1KfF5CI3ceoZ2v1WAa+JR3eWIgVk0PAaXSkrZWoBAj7OnIwSi
+JdSWjCo2JDIyzlXhZiBpkZ4Np0e1G98+Osf6S1B3J0qeaduO20BDrF1Ck9+lVVcR
+Fb2dJ1V6nMPrs8XYroCXmWiVkz882G17aLkZjoRPXA==
+=9dd6
+-----END PGP SIGNATURE-----
+
+--fXHnzzUzchrr8Ukn--
 
