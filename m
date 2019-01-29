@@ -1,16 +1,17 @@
+From: Arne Schwabe <arne@...1227...>
 References: <20181230112901.29241-1-a@...2181...>
- <20181230112901.29241-4-a@...2181...>
- <6480dfbb-11a4-f370-1b61-87a2331914ad@...1227...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <e63eb370-2428-71cc-7179-7f5380aa7d46@...2181...>
-Date: Tue, 29 Jan 2019 15:00:35 +1000
+ <20181230112901.29241-3-a@...2181...>
+ <2d900a52-6b19-1925-9d51-cfa479c1a75d@...1227...>
+ <f1eb39b5-8c11-47e7-cb62-65d5d5363f82@...2181...>
+Message-ID: <ce732220-cfef-ff07-0808-da78f21095c0@...1227...>
+Date: Tue, 29 Jan 2019 17:45:33 +0100
 MIME-Version: 1.0
-In-Reply-To: <6480dfbb-11a4-f370-1b61-87a2331914ad@...1227...>
+In-Reply-To: <f1eb39b5-8c11-47e7-cb62-65d5d5363f82@...2181...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="N7eDrqH2eQGJxvK6Ypt8To66ZJVFWEiit"
-Subject: Re: [Openvpn-devel] [PATCH 3/4] options: add support for
- --transport-plugin
+ boundary="txOKD6LWFpm5G3lqWgUNX6K2hs5rwYNgG"
+Subject: Re: [Openvpn-devel] [PATCH 2/4] socket: introduce INDIRECT
+ transport protocol abstraction
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,149 +20,172 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---N7eDrqH2eQGJxvK6Ypt8To66ZJVFWEiit
-Content-Type: multipart/mixed; boundary="PubRNkeYtvNgeQ7oh0ws29sw0ss7LUMQP";
+--txOKD6LWFpm5G3lqWgUNX6K2hs5rwYNgG
+Content-Type: multipart/mixed; boundary="mm6lVpihzeaPPMkzP96OkBWUIOIMFCC16";
  protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <e63eb370-2428-71cc-7179-7f5380aa7d46@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH 3/4] options: add support for
- --transport-plugin
+From: Arne Schwabe <arne@...1227...>
+To: Antonio Quartulli <a@...2181...>,
+ "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Message-ID: <ce732220-cfef-ff07-0808-da78f21095c0@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH 2/4] socket: introduce INDIRECT transport
+ protocol abstraction
 References: <20181230112901.29241-1-a@...2181...>
- <20181230112901.29241-4-a@...2181...>
- <6480dfbb-11a4-f370-1b61-87a2331914ad@...1227...>
-In-Reply-To: <6480dfbb-11a4-f370-1b61-87a2331914ad@...1227...>
+ <20181230112901.29241-3-a@...2181...>
+ <2d900a52-6b19-1925-9d51-cfa479c1a75d@...1227...>
+ <f1eb39b5-8c11-47e7-cb62-65d5d5363f82@...2181...>
+In-Reply-To: <f1eb39b5-8c11-47e7-cb62-65d5d5363f82@...2181...>
 
---PubRNkeYtvNgeQ7oh0ws29sw0ss7LUMQP
-Content-Language: en-US
+--mm6lVpihzeaPPMkzP96OkBWUIOIMFCC16
+Content-Language: de-DE
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
 
-On 23/01/2019 03:27, Arne Schwabe wrote:
-> Am 30.12.18 um 12:29 schrieb Antonio Quartulli:
->> From: Robin Tarsiger <rtt@...2484...>
+>>> +++ b/src/openvpn/forward.c
+>>> @@ -2150,6 +2150,11 @@ io_wait_dowork(struct context *c, const unsigned=
+ int flags)
+>>>              {
+>>>                  int i;
+>>>                  c->c2.event_set_status =3D 0;
+>>> +#ifdef ENABLE_PLUGIN
+>>> +                c->c2.event_set_status |=3D
+>>> +                    (socket_indirect_pump(c->c2.link_socket, esr, &sta=
+tus) & 3)
 >>
->> Add a new config option to allow the user to specify a transport plugin
->> implementing the new API. This plugin can be used to manipulate traffic
->> in any way, as designed by the plugin developer.
+>> The & 3 looks like some defined should be used instead.
+>=20
+> I think this is simply about fetching the last two bits..not much fuzz
+> here..this is mostly because of how event_set_status works. But will see
+> if I find a meaningful name.
+>=20
+
+INDIRECT_FLAG_MASK or something.
+
+>>>  bool
+>>> @@ -3167,6 +3236,10 @@ proto_is_net(int proto)
+>>>  bool
+>>>  proto_is_dgram(int proto)
+>>>  {
+>>> +    if (proto_is_indirect(proto))
+>>> +    {
+>>> +        return true;
+>>> +    }
+>>>      return proto_is_udp(proto);
+>>>  }
 >>
->> The fondamental advantage of this plugin is that the core codebase does
-> typo fundamental.
+>> I think here need to be a good explaination why indirect is dgram but
+>> not udp and also proto_is_dgram and proto_is_udp need to get some
+>> comment to explain their difference in usage as this is now different.
 >=20
->=20
->> +.B \-\-transport-plugin module-pathname [connection-args]
->                   \- missing here.
-
-oh right! thanks!
-
->=20
->> +Use the loaded plugin module identified by
->> +.B module-pathname
->> +to provide a transport layer for the connection. The
->> +.B module-pathname
->> +must be exactly equivalent to a pathname supplied to a
->> +.B \-\-plugin
->> +option. The same transport plugin may be used for
->> +multiple connections, in which case the
->> +.B \-\-plugin
->> +option which loads it should only occur once. However,
->> +only one transport plugin may be specified per
->> +connection.
->=20
-> Specify if this includes the .dll/.so suffix or not.
-
-it is matched against the pathname of the --plugin option, therefore the
-same form is expected (hence including the .so/.dll extension).
-
->=20
->=20
->> +If
->> +.B connection-args
-> I think there is a \- missing here.
-
-thanks!
-
->=20
->> +are present, these arguments are passed to the transport
->> +plugin when establishing this connection specifically; this
->> +is distinct from any per-plugin arguments which may have
->> +been specified using the
->> +.B \-\-plugin
->> +option. Documentation for possible
->> +.B connection-args
->> +may be provided along with the plugin in use.
->> +
->=20
->> +#ifdef ENABLE_PLUGIN
->> +    /*
->> +     * "proto indirect" may not be specified directly without a
->> +     * transport-plugin, and vice versa.
->> +     */
->> +    if (ce->proto =3D=3D PROTO_INDIRECT && !ce->transport_plugin_argv)
->> +    {
->> +        msg(M_USAGE, "--proto indirect may not be used without a transp=
-ort-plugin line");
->> +    }
->> +
->> +    if (ce->transport_plugin_argv && ce->proto !=3D PROTO_INDIRECT)
->> +    {
->> +        msg(M_USAGE, "--transport-plugin must be used with --proto indi=
-rect");
->> +    }
->> +#endif
->=20
-> Why are not doing that implicitly when transport-plugin is specified.
-> Any particular reason or just to get a more consistent way of specifying =
-it?
->=20
+> I wouldn't say is_udp and is_dgram are now different, but is_dgram has
+> been extended to account for the indirect case as well.
 >=20
 
-It is done implicitly, but the user has a chance to override it because
-he may specify indirect6 or indirect4 to limit the plugin to work on a
-single address family only.
+is_dgram and is_udp return different values for INDIRECT, so they are
+different. I would like some comment why that is. Without having looked
+deeper I suspect the one function is used to determine the wire format
+and the other is used for determing the actual outer protocol. Just
+adding that as comment in the is_dgram function would be nice (double
+check first).
 
-Therefore, by giving a chance to the user to override the value, we also
-need to check that was set.
+>>
+>>>=20=20
+>>> @@ -3301,6 +3374,18 @@ proto_remote(int proto, bool remote)
+>>>          return "TCPv4_CLIENT";
+>>>      }
+>>>=20=20
+>>> +#ifdef ENABLE_PLUGIN
+>>> +    if (proto =3D=3D PROTO_INDIRECT)
+>>> +    {
+>>> +        /* FIXME: the string reported here should match the actual tra=
+nsport
+>>> +         * protocol being used, however in this function we have no kn=
+owledge of
+>>> +         * what protocol is exactly being used by the transport-plugin.
+>>> +         * Therefore we simply return INDIRECT for now.
+>>> +         */
+>>> +        return "INDIRECT";
+>>> +    }
+>>> +#endif
+>>
+>> From reading the code this function is only used in creating the string
+>> in options_string which needs to match between peers. As the plugin
+>> emulates UDP/DGRAM behaviour I think we should instead return here the
+>> same as a real UDP protocol.
+>=20
+> well, the problem here is that if I use transport-plugin1 and you use
+> transport-plugin2 these strings will match between client and server
+> even though they should not (because the protocols being used are
+> actually different).
 
+If we get to the point that the cleartext inside the openvpn tunnel is
+compared the methods are compatible. And if you have a client on the one
+side that has plugin in it and a proxy+openvpn server on the other side,
+it should also work.
 
-Cheers,
+> I don't think INDIRECT is UDP only. That is just how it prefers to be
+> treated, but could be non-UDP as well, I think. (need to double check)
+
+But for this check it is only important that the wire format is the TCP
+or UDP wire format. Not the actual protocol being used.
 
 >=20
-> Arne
+>>
+>>>=20=20
+>>> +#ifdef ENABLE_PLUGIN
+>>> +
+>>> +int link_socket_read_indirect(struct link_socket *sock,
+>>> +                              struct buffer *buf,
+>>> +                              struct link_socket_actual *from);
+>>> +
+>>> +int link_socket_write_indirect(struct link_socket *sock,
+>>> +                               struct buffer *buf,
+>>> +                               struct link_socket_actual *from);
+>>> +
+>>> +bool proto_is_indirect(int proto);
+>>> +
+>>
+>> This prototype definition looks a bit weird here. I see not reason why
+>> the real proto_is_indirect cannot be here
 >=20
+> you mean the proto_is_indirect() implementation should be here in the
+> header? Why?
 
---=20
-Antonio Quartulli
+It is already in the header. Having an inline implementation AND a
+prototype in the same header is what I am complaining about.
 
 
---PubRNkeYtvNgeQ7oh0ws29sw0ss7LUMQP--
+Arne
 
---N7eDrqH2eQGJxvK6Ypt8To66ZJVFWEiit
+
+
+
+--mm6lVpihzeaPPMkzP96OkBWUIOIMFCC16--
+
+--txOKD6LWFpm5G3lqWgUNX6K2hs5rwYNgG
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlxP3fMACgkQ9FVsWUWD
-Dm2ReA/6Avk8PorraVc7JJ3yecPGFBMqnc7NIrfQ3JbJgLX3FKghcmKdheEi1rtt
-MEssA3HOwaYktuC/eLRs5D9UoLX13OzclfNC9dHUmPwXn2LPVHibvPZ+pLyseqWK
-TjOnCNupfSi46T/Y7BqrIM4x1KTiw5haxEtU/M1azDETX2efP2J7zGhSGKfLLpDH
-rPpMIR4cEyQqopQyUWT5nDZlHPa84nqEtgDziEsKroSxMxO85HTqG73XYA1W3w3c
-cAfVtCaPCoXK6wYSIDGn5sMP8PXXGnsjO5IvQcuOImIVGeI+2JylSfz8GiRG7YIA
-jYNA+ULPdwCk5uLyOaSKiRSqEv6LvGh4oDkNyGkfvlFKqADwNW33x+YlgZH0HDKV
-KHcOz/S6cEYoHVo0mQsWnFcCvZxiMcZOLeTjPMKw7tlBhmaSbgVaCcwndClf1VjI
-gdKURgUyUvLH6yuxPiDEYN5F+TgZB0oHq9bwra7VxgwZbSLy0Qg/Pxn5+29FH0aq
-1IADcSAnxPpr6LDSyR3hhcturnDc2oRvQ0lZqBh5lPH/omQQ3gPAJJ+T7JkG4bUf
-4p1oDlKivex29ZYqjhtqYkdSRl5mSyEx/bYFSiuN5/R6OjLyQHHkrJGrT7n2K+Pl
-NiW/FRvi0VpvnWrHtncpHt8y3eaq/scVbklypHFfOezjmu1DMhk=
-=zo5a
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAlxQgy4ACgkQFRhsZwKx
+RFQ4WRAAs8sJVSP5lXUVzLmY+8yqZd+LnxUIQVQYEJgCHvxOHgYzIL+2HaPByyDU
+JF+GfQA6PsXX9cgqs52r7KEht+eNt0A02pOeTVlNXscV3lhTRg6Npj+fNJatmgBN
+h25ZIH+wULcL/G2gDmaVeV54d88GpVFeInDzTVutdAPvX9RFVPd5FXIYaOWcULe8
+6iAcp38HTMb/NmkBI6rLTxa5oC8kqVzzNGku8i8LW7YQ3X/5y+TSHp4ux/9oA+Ah
+OsQpxJU1iWHTOO9f64lqlIdDMIAutQvIozJokO2Pw9a4edLDWovRpaYIhvaR5xEN
+p9qr8fo4JLGI/mREoG4i10idBYdzFa5HNT0s/i2N1RC828nXQf/HVErLS4jgUo6Q
+CaSXHC+RhOsWcR9DZZhTaIElH2s6eMG/THIpduQnJBRP8dRZVdH2RfDxsRQZm9Is
+09MyiCItc+g7E/rjQU1M2+vaS+oPfShRp5+36P434sqQo+nP0Lif50shFipda21H
+Z68uulxLDcICSF100ZGovrt6wDBsBPEUmwi5WNznb8l7WQe4VPipQyjbQaNWG33u
+BxX3qaSktp7hQhgJQ1HBB3UMNtsb86wHk6OiCbCmkTNtpt62ULgAwPW6natNJ4LD
+LiUxTMyemd32lHYbgakaSHb3ii1kklNm9OuaCR+o2wC4m6NEYpI=
+=0/Bc
 -----END PGP SIGNATURE-----
 
---N7eDrqH2eQGJxvK6Ypt8To66ZJVFWEiit--
+--txOKD6LWFpm5G3lqWgUNX6K2hs5rwYNgG--
 
