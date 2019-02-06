@@ -1,15 +1,13 @@
-References: <20180404121357.2126-1-davids@...515...>
- <CAKuzo_iYEY59K_SR4QRP3-X4bayF0BaCZdAxit6RQBmaDCsp0A@...278...>
- <a0ac1495-d40f-94f0-8770-bc4ed7669df7@...2080...>
+References: <20190123201717.15048-1-jonathan@...2489...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <04c8c393-8d9a-7d24-381a-7f243748cfdc@...1227...>
-Date: Wed, 6 Feb 2019 14:08:16 +0100
+Message-ID: <0b4d447b-cde7-9a35-8222-fb4118a305e6@...1227...>
+Date: Wed, 6 Feb 2019 15:04:13 +0100
 MIME-Version: 1.0
-In-Reply-To: <a0ac1495-d40f-94f0-8770-bc4ed7669df7@...2080...>
+In-Reply-To: <20190123201717.15048-1-jonathan@...2489...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="0jdd51IfqCIprCPom4YdxdY5zXMntqnSf"
-Subject: Re: [Openvpn-devel] [PATCH] man: Improve token based authentication
+ boundary="y2NyjC7aZB5mLRCKZvaHVo22Rpva1yx50"
+Subject: Re: [Openvpn-devel] [PATCH] Fix various spelling mistakes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,87 +16,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn@...2080...>
+To: jonathan@...2489...
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---0jdd51IfqCIprCPom4YdxdY5zXMntqnSf
-Content-Type: multipart/mixed; boundary="cP8pNMcK47lAnsengJ4GQtu2eMZc5ngoP";
+--y2NyjC7aZB5mLRCKZvaHVo22Rpva1yx50
+Content-Type: multipart/mixed; boundary="m6WwsmQlAGBdDvrX7zOC8GYtoG5gu4Sfk";
  protected-headers="v1"
 From: Arne Schwabe <arne@...1227...>
-To: David Sommerseth <openvpn@...2080...>
+To: jonathan@...2489...
 Cc: "openvpn-devel@lists.sourceforge.net"
  <openvpn-devel@lists.sourceforge.net>
-Message-ID: <04c8c393-8d9a-7d24-381a-7f243748cfdc@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] man: Improve token based authentication
-References: <20180404121357.2126-1-davids@...515...>
- <CAKuzo_iYEY59K_SR4QRP3-X4bayF0BaCZdAxit6RQBmaDCsp0A@...278...>
- <a0ac1495-d40f-94f0-8770-bc4ed7669df7@...2080...>
-In-Reply-To: <a0ac1495-d40f-94f0-8770-bc4ed7669df7@...2080...>
+Message-ID: <0b4d447b-cde7-9a35-8222-fb4118a305e6@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix various spelling mistakes
+References: <20190123201717.15048-1-jonathan@...2489...>
+In-Reply-To: <20190123201717.15048-1-jonathan@...2489...>
 
---cP8pNMcK47lAnsengJ4GQtu2eMZc5ngoP
-Content-Language: en-GB
+--m6WwsmQlAGBdDvrX7zOC8GYtoG5gu4Sfk
+Content-Language: de-DE
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
+Am 23.01.19 um 21:17 schrieb jonathan@...2489...:
+> From: Jonathan Tooker <jonathan@...2489...>
+>=20
+> New patch, omitted changes to copyrights/licenses & changelog.
+> ---
 
->=20
-> The intention to this patch is actually not directly tied to the fixes ne=
-eded
-> to the --auth-gen-token handling at all.  This is just to clarify the cur=
-rent
-> behaviour.
->=20
-> In addition, it became clearer to me that the --auth-gen-token might be
-> perceived as a "one-stop-fix" for authentication plug-ins/scripts not
-> supporting auth-tokens.
->=20
-> Further, the token expiry is an opt-in feature.  It is something the
-> authentication script/plug-in need to handle, or explicitly enabled with
-> --auth-gen-token by providing an expiry timeout.
->=20
-> Arne and I have discussed his patch today, and agreed upon a path forward=
- of
-> fixing these issues as well and ensure that both OpenVPN 2 in client mode=
- and
-> OpenVPN 3 based clients all behave in a similar way.  This does also not =
-rule
-> out that we might need to fix OpenVPN 3 as well.  But consistent behaviour
-> across versions with a reasonably good user experience is the core goal. =
- We
-> just need to take this carefully, step by step.
->=20
->=20
-
-I think with my current new auth-token patch set, it makes auth-token a
-real feature instead of just a workaround. I will mark this one superseded.
-
-Arne
+Thanks!
 
 
---cP8pNMcK47lAnsengJ4GQtu2eMZc5ngoP--
+Acked-By: Arne Schwabe <arne@...1227...>
 
---0jdd51IfqCIprCPom4YdxdY5zXMntqnSf
+
+--m6WwsmQlAGBdDvrX7zOC8GYtoG5gu4Sfk--
+
+--y2NyjC7aZB5mLRCKZvaHVo22Rpva1yx50
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAlxa3SQACgkQFRhsZwKx
-RFSn4A/8DrKEXPQ7RLkm02x4VhDkzFavWYCY/F0315dcDPsuezufz2JbPMD9R+qM
-M13+OAqeExbN9KCsjvZHkk6/3ixMw14b0suP2kj5mnIA362GwO2WENtxbK/30Fo+
-lQA6ChCc5j33X5KOfj3skoEvebBREteXxdkT3jBjRqFh0wjKeri2jZz8xueIM6CJ
-It8670/XkNQy3i+O1RRQafa2CUdAUUjXt+y/Gh+Z6KhSzjDL0YNHCpcxLrlUe9Sf
-50w4SrEAEPtoQmxlYtcsIY4c65Iow6KCCWnxNaIV6MwCxfmW4oNVBnaQsth0cc3d
-/ptc8SRvJVlQqJmH01lXpXz12Jx80pd64ZGP/qr8aO03L5s0GAIe6mDW4Nf4Uzko
-cygtTUeco4Mx0QJ17kR+0PTMbdRtAokc4AqLVLym0+GkeIIqMEdtX19xteKgCLMg
-GxAgRMTDS0uAomZDaK/BgppAr9783LivhH+Z4RKlHF5PXmGc65RtxQTwwl3weCEf
-zikK0V4EaBtsqg2dchALUaKah5tlumwlnguuylkCt2sNwfMPMt1JpO5Pvrameria
-pRbOqzdMef6X7XSzOhANG/C+Ce02AH7rGLiOyqdZjIkPIJl3K90AKbImY3e7yXvj
-txamlBYkssnhcds8DOT5CmKwUxrGDWUocZxFXqBKDIFFrVFSYYs=
-=0AfT
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAlxa6V0ACgkQFRhsZwKx
+RFSQUA//fufAU9KrTD/hQSVsa0vHBCMYyEqmPGPv+gX3IxwrikxionITBysVnu1b
+8abUya7EyBt3N1CDr7vE6uUZki50tYEmO85Q524sDqt5x/nfAI3Nrrjl94uxj5f4
+xQMB6V0P+z3twglnyRO5P47n82EZDN4Gk8wbEGYNeQCk3LKVT1MvAaXzxaQspOBK
+5nuFzs3Nt2sv4McIt11rA839zjy40imfo6m/o1kTSuuXY7pIfNsUOi8ew0A0NBFU
+C4C3FC4e5eqXcftvYBvH0aA2qA5hvZYw0OWYTK7MbU1aN8QTtfKpYMlZlET6k2Sh
+myZZtx2/tFpu5xviGgONu01lt6jHgF7EdSoPqohgNa84bJn67GZdu+H0rY69VOg3
+TA+XGkMNMZp9c9j7O68+XMFsjct66IAIY/X72r5GUsydbJpykm2+ctCI2R5BlNDv
+/TiDxj/qtGGKf4mDFwORkTR2zzp/xJSVkSGist1qQZRHPKyiOzPhrh9jb0UI3cR+
+qTmkOCkbRRIscn8/SBc79XLTxHgJVjFWDnGrGNKi9BajLwjZUW9ZVGQO2mrS6jUB
+mjYAwtz13rmOHr8elMDQEBmB+1RTt1CQVLgG2Mwq+DCzlOqp+swEI1GYftE2UtWb
+TH3dijZtcGlVm7yGtg+QauNobKUjVLT0EljQTtA7tZ2bj7pBlqw=
+=1Qcy
 -----END PGP SIGNATURE-----
 
---0jdd51IfqCIprCPom4YdxdY5zXMntqnSf--
+--y2NyjC7aZB5mLRCKZvaHVo22Rpva1yx50--
 
