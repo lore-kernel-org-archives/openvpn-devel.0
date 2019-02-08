@@ -1,13 +1,8 @@
-References: <20190122150333.1061-1-arne@...1227...>
- <20190122150333.1061-2-arne@...1227...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <38ffdb09-276d-8f5a-ce81-f3d36a1e685b@...2080...>
-Date: Fri, 8 Feb 2019 13:30:10 +0100
-MIME-Version: 1.0
-In-Reply-To: <20190122150333.1061-2-arne@...1227...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH v2 2/6] Allow pem_read_key_file to
- generate a random key
+From: Gert Doering <gert@...1296...>
+Date: Fri,  8 Feb 2019 20:40:18 +0100
+Message-Id: <20190208194018.20325-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Add unknown-unicast flooding to p2mp tap
+ bridge.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,86 +11,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
-Cc: Arne Schwabe <arne@...515...>
+To: openvpn-devel@lists.sourceforge.net
 
-On 22/01/2019 16:03, Arne Schwabe wrote:
-> From: Arne Schwabe <arne@...515...>
-> 
-> This is useful for features that can use either a persistent
-> or an ephemeral key.
+Enable flooding of "unknown-unicast" packets from the server to
+all connected clients (+tap).
 
-Agreed, this is valuable.  But I generally don't like "hiding" this feature
-behind an argument to {read,write}_pem_key_file().  I prefer having functions
-doing explicit things, not "I can do this, or this, or this" depending on the
-arguments given.
+These are packets that are sent to an unknown destination MAC address
+and which are not broadcast/multicast packets.  "Normal" switches also
+flood these packets, which allows client-to-client MAC learning without
+having to have an initial broadcast packet.
 
-Rather add a generate_random_pem_key() which does just that.
+Without the patch, the p2mp tap server will only forward such packets
+to the tap interface on the host.
 
-> ---
->  src/openvpn/crypto.c    | 23 ++++++++++++++++++++---
->  src/openvpn/crypto.h    |  4 +++-
->  src/openvpn/tls_crypt.c |  5 +++--
->  3 files changed, 26 insertions(+), 6 deletions(-)
-> 
-> diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-> index ff9dbfdc..68a28dee 100644
-> --- a/src/openvpn/crypto.c
-> +++ b/src/openvpn/crypto.c
-> @@ -1885,13 +1885,30 @@ cleanup:
->  
->  bool
->  read_pem_key_file(struct buffer *key, const char *pem_name,
-> -                  const char *key_file, const char *key_inline)
-> +                  const char *key_file, const char *key_inline,
-> +                  bool allow_random)
->  {
->      bool ret = false;
->      struct buffer key_pem = { 0 };
->      struct gc_arena gc = gc_new();
->  
-> -    if (strcmp(key_file, INLINE_FILE_TAG))
-> +
-> +    if (allow_random && key_file == NULL)
-> +    {
-> +        msg(M_INFO, "Using random %s.", pem_name);
-> +        uint8_t rand[BCAP(key)];
-> +        if (!rand_bytes(rand, BCAP(key)))
-> +        {
-> +            msg(M_WARN, "ERROR: could not generate random key");
-> +        }
-> +        else
-> +        {
-> +            buf_write(key, rand, BCAP(key));
-> +            ret = true;
-> +        }
+This is only active if --client-to-client is configured on the server.
 
-The if (rand_bytes(rand, BCAP(key))) logic could be improved when splitting it
-into a separate function.
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/multi.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-    if (!rand_bytes(rand, BCAP(key)))
-    {
-         msg(...);
-	return false;
-    }
-    buf_write(...);
-    return true;
-
-
-[...]
-
-> -    if (strcmp(key_file, INLINE_FILE_TAG))
-> +    if (key_file && strcmp(key_file, INLINE_FILE_TAG))
-
-Is this fixing a bug?  I'd recommend putting such fixes in a separate commit.
-
-
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 55c167b..aa5ae26 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -2689,6 +2689,13 @@ multi_process_incoming_link(struct multi_context *m, struct multi_instance *inst
+                                     }
+                                     c->c2.to_tun.len = 0;
+                                 }
++				else
++				{
++                                    /* flood "unknown unicast" packets */
++                                    msg(D_MULTI_LOW, "MULTI: unknown unicast destination [%s], flood",
++                                        mroute_addr_print(&src, &gc));
++                                    multi_bcast(m, &c->c2.to_tun, m->pending, NULL);
++				}
+                             }
+                         }
+ #ifdef ENABLE_PF
 -- 
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
+2.7.3
 
 
