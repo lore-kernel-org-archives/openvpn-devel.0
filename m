@@ -1,15 +1,12 @@
-Date: Fri, 8 Feb 2019 20:50:11 +0100
+Date: Sun, 10 Feb 2019 18:12:20 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20190208195011.GY962@...1296...>
-References: <20190208194018.20325-1-gert@...1296...>
- <20190208194553.GX962@...1296...>
+Message-ID: <20190210171220.GU962@...1296...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="V3v4ZfinIQ/GzAkm"
+ protocol="application/pgp-signature"; boundary="d/XSY4ofXLUQC+hX"
 Content-Disposition: inline
-In-Reply-To: <20190208194553.GX962@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Add unknown-unicast flooding to p2mp
- tap bridge.
+Subject: [Openvpn-devel] [OpenVPN/openvpn-gui] update korean resource file
+ (#289)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,37 +15,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
---V3v4ZfinIQ/GzAkm
+--d/XSY4ofXLUQC+hX
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Feb 08, 2019 at 08:45:53PM +0100, Gert Doering wrote:
-> On Fri, Feb 08, 2019 at 08:40:18PM +0100, Gert Doering wrote:
-> > Enable flooding of "unknown-unicast" packets from the server to
-> > all connected clients (+tap).
->=20
-> Hrmph, this is incomplete.
+do we have a Korean speaker on one of these lists that can read=20
+over this PR and tell me whether the language is fine?
 
-And broken.
+"Change-wise" this looks reasonable, but since I do not speak Korean
+I do not want to merge anything that hasn't been reviewed by a second
+pair of eyes...
 
-Packets coming in "from TAP" do not trigger MAC learning, so if you
-ping "from client 1" to "out the tap", every single ping packet=20
-client 1 -> tap will trigger an
-
-Fri Feb  8 20:47:39 2019 us=3D707460 freebsd-82-amd64/2001:608:0:814::f000:=
-2 MULTI: unknown unicast destination [00:bd:50:58:45:00], flood
-
-... we do have a trac ticket regarding MAC learning and TAP interface,
-so it seems I need to revisit this...
-
-"Now I see why our code does not do UU flooding".
+thanks,
 
 gert
+
+
+----- Forwarded message from JoungKyun Kim <notifications@...1714...> -----
+
+Date: Wed, 06 Feb 2019 17:25:12 +0000 (UTC)
+From: JoungKyun Kim <notifications@...1714...>
+To: OpenVPN/openvpn-gui <openvpn-gui@...2494...>
+Cc: Subscribed <subscribed@...2494...>
+Subject: [OpenVPN/openvpn-gui] update korean resource file (#289)
+
+synchronized the korean resource file with the english version
+You can view, comment on, or merge this pull request online at:
+
+  https://github.com/OpenVPN/openvpn-gui/pull/289
+
+-- Commit Summary --
+
+  * synchronized the korean resource files with the english version
+
+-- File Changes --
+
+    M res/openvpn-gui-res-kr.rc (22)
+
+-- Patch Links --
+
+https://github.com/OpenVPN/openvpn-gui/pull/289.patch
+https://github.com/OpenVPN/openvpn-gui/pull/289.diff
+
+--=20
+You are receiving this because you are subscribed to this thread.
+Reply to this email directly or view it on GitHub:
+https://github.com/OpenVPN/openvpn-gui/pull/289
+
+----- End forwarded message -----
 
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
@@ -60,22 +79,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---V3v4ZfinIQ/GzAkm
+--d/XSY4ofXLUQC+hX
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJcXd1zAAoJEB2Cnv7KVigSw8MMAKIeIXiEBQAHHkzxhb2/xLeE
-Xbl8BJgsEm9alDLcG+uILPrjb1V2ch1vUj8VE2El74C8jGOXdfXTrNL7U5n41a73
-UjAjuSXH6QYis1cxUD6HdtPVbBHJ2Kv9dxUxat8jwBdwkL/CkPdGb9rDEa0VWuIK
-AUkNDnUJ24he4zoX/0Z+4swy8v+X8uHrw9DBVQwXsIdEE2QscOfcb3LbsXotr+zH
-aQqrHj58U7DZOrmiRVdJjgXpbAS9/t4shJXeDyEaigN+mQ9Pjch1fH39wPHbBU9a
-efeT7mJ91De0cGo8hx/KFtSLrrlm0rRrWJQnsoogFGZPmwTMX2CHhoVrRzgbo3Rf
-Lk3wfMe6Acpnbki3yZNSj57YRo46/lFnXNZSkDoSR1So8UA7ahUdukN8gRmN5VXj
-1U/31q5WqX7snvn2Fx91ZnlseFeuDZaU9Ac2bc2AdxnqQl/b2XWnizB80h9MeEO0
-efU1olrwKGlhS5FYOpXNXsYgyHYlH1lA9X21AdkjWw==
-=0fcr
+iQGcBAEBAgAGBQJcYFt0AAoJEB2Cnv7KVigSAb8L/2GRP742mNopeoSzm5MMp3fN
+DAFfc8xLCCOekpXA3NqMD1ZeMGaXH1Y9sc/JAxB0uT/2HoP+1ZpZm5plqm/dR0aX
+AH/+4S6OTafHW3j+J9ZGZeY0NtrRd7z+AuRRxpUbp92OtxybWxFFbJ7YYuH9y1zk
+rCQEqpIH9XcddLIUdZY+g5PGyDy7sN05lax5AeW4GylgbzikzFiUbCED7UbcY0Ng
+ZXOz5/RFyj0sZ8d312WvOCPr4zaAZ6y5Lh2FOdkTXMuuOlok1flqlA0s+g39Pr2d
+ee9O7jQdypUneXQ35T+ckegtMR4pvMnlpmZi5hugPI0w8IBVQoQDabnQJNpFwODQ
+t5OwHC31ohwu0GImayvf7O4vfYnEfgppaEOPRgOzA7BZWsUOxaKjpvxgN8D2QxoD
+tQPF2ZtddvWdX1EVccITaMjXwzQcapq+eDs9U93eflelT4mZw+oyN8k4a+1Bxkh5
+1N53L7+hN9wz603Z9vPTIKgaaGpSsDITOql7ELQPeg==
+=hrSa
 -----END PGP SIGNATURE-----
 
---V3v4ZfinIQ/GzAkm--
+--d/XSY4ofXLUQC+hX--
 
