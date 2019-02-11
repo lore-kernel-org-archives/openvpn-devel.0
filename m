@@ -1,12 +1,10 @@
-Date: Sun, 10 Feb 2019 18:12:20 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20190210171220.GU962@...1296...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <b5f2ab31-3e15-932e-87dd-ddf068b8dee6@...515...>
+Date: Mon, 11 Feb 2019 11:14:21 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="d/XSY4ofXLUQC+hX"
-Content-Disposition: inline
-Subject: [Openvpn-devel] [OpenVPN/openvpn-gui] update korean resource file
- (#289)
+Content-Language: en-US
+Subject: [Openvpn-devel]  Topics for the community meeting (Wed,
+ 13th Feb 2019)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,86 +13,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
-
---d/XSY4ofXLUQC+hX
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-do we have a Korean speaker on one of these lists that can read=20
-over this PR and tell me whether the language is fine?
+We're going to have an IRC meeting starting at 11:30 CET
+(10:30 UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have
+to be logged in to Freenode to join the channel.
 
-"Change-wise" this looks reasonable, but since I do not speak Korean
-I do not want to merge anything that hasn't been reviewed by a second
-pair of eyes...
+Current topic list along with basic information is here:
 
-thanks,
+<https://community.openvpn.net/openvpn/wiki/Topics-2019-02-13>
 
-gert
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
+
+In case you can't attend the meeting, please feel free to make comments
+on the topics by responding to this email or to the summary email sent
+after the meeting. Whenever possible, we'll also respond to existing,
+related email threads.
+
+--
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
 
------ Forwarded message from JoungKyun Kim <notifications@...1714...> -----
 
-Date: Wed, 06 Feb 2019 17:25:12 +0000 (UTC)
-From: JoungKyun Kim <notifications@...1714...>
-To: OpenVPN/openvpn-gui <openvpn-gui@...2494...>
-Cc: Subscribed <subscribed@...2494...>
-Subject: [OpenVPN/openvpn-gui] update korean resource file (#289)
 
-synchronized the korean resource file with the english version
-You can view, comment on, or merge this pull request online at:
 
-  https://github.com/OpenVPN/openvpn-gui/pull/289
 
--- Commit Summary --
 
-  * synchronized the korean resource files with the english version
 
--- File Changes --
 
-    M res/openvpn-gui-res-kr.rc (22)
 
--- Patch Links --
 
-https://github.com/OpenVPN/openvpn-gui/pull/289.patch
-https://github.com/OpenVPN/openvpn-gui/pull/289.diff
 
---=20
-You are receiving this because you are subscribed to this thread.
-Reply to this email directly or view it on GitHub:
-https://github.com/OpenVPN/openvpn-gui/pull/289
 
------ End forwarded message -----
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---d/XSY4ofXLUQC+hX
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJcYFt0AAoJEB2Cnv7KVigSAb8L/2GRP742mNopeoSzm5MMp3fN
-DAFfc8xLCCOekpXA3NqMD1ZeMGaXH1Y9sc/JAxB0uT/2HoP+1ZpZm5plqm/dR0aX
-AH/+4S6OTafHW3j+J9ZGZeY0NtrRd7z+AuRRxpUbp92OtxybWxFFbJ7YYuH9y1zk
-rCQEqpIH9XcddLIUdZY+g5PGyDy7sN05lax5AeW4GylgbzikzFiUbCED7UbcY0Ng
-ZXOz5/RFyj0sZ8d312WvOCPr4zaAZ6y5Lh2FOdkTXMuuOlok1flqlA0s+g39Pr2d
-ee9O7jQdypUneXQ35T+ckegtMR4pvMnlpmZi5hugPI0w8IBVQoQDabnQJNpFwODQ
-t5OwHC31ohwu0GImayvf7O4vfYnEfgppaEOPRgOzA7BZWsUOxaKjpvxgN8D2QxoD
-tQPF2ZtddvWdX1EVccITaMjXwzQcapq+eDs9U93eflelT4mZw+oyN8k4a+1Bxkh5
-1N53L7+hN9wz603Z9vPTIKgaaGpSsDITOql7ELQPeg==
-=hrSa
------END PGP SIGNATURE-----
-
---d/XSY4ofXLUQC+hX--
 
