@@ -1,13 +1,13 @@
 References: <20190122150333.1061-1-arne@...1227...>
- <20190122150333.1061-4-arne@...1227...>
+ <20190122150333.1061-5-arne@...1227...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <d1900648-2ba5-0e0b-8402-d1fa672fa741@...2080...>
-Date: Fri, 15 Feb 2019 22:56:28 +0100
+Message-ID: <3c76be60-dd30-cc3d-f401-013f3465341e@...2080...>
+Date: Fri, 15 Feb 2019 23:10:29 +0100
 MIME-Version: 1.0
-In-Reply-To: <20190122150333.1061-4-arne@...1227...>
+In-Reply-To: <20190122150333.1061-5-arne@...1227...>
 Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH v2 4/6] Implement a permanent session id
- in auth-token
+Subject: Re: [Openvpn-devel] [PATCH v2 5/6] Sent indication that a session
+ is expired to clients
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,39 +24,45 @@ Cc: Arne Schwabe <arne@...515...>
 On 22/01/2019 16:03, Arne Schwabe wrote:
 > From: Arne Schwabe <arne@...515...>
 > 
-> This allows an external authentication method
-> (e.g. management interface) to track the connection and distinguish a
-> reconnection from multiple connections.
+> This allows OpenVPN 3 core to fall back to the original authentication
+> method.
 > 
-> Addtionally this now also checks to workaround a problem with
-> OpenVPN 3 core that sometimes uses a username hint from the config
-> instead of using an empty username if the token would be valid
-> with an empty username. Accepting such token can only be explicitly
-> done if the auth keyword to auth-gen-token is present.
-Meh .... I'm not sure about this feature at all.  I understand the use case
-for it, but I don't see the full benefit of it.  Why?  Because if you still
-want to do partially authentication based on and existing auth-token, why
-can't you implement the full auth-token pushing in the auth-backend?
+> This commit changes man_def_auth_set_client_reason to
+> auth_set_client_reason since it now used in more contexts.
+> 
+> Also remove a FIXME about client_reason not being freed, as it is freed
+> in tls_multi_free with auth_set_client_reason(multi, NULL);
+> ---
+>  src/openvpn/auth_token.c |  3 +++
+>  src/openvpn/ssl.c        |  6 ++----
+>  src/openvpn/ssl_common.h | 10 +++++-----
+>  src/openvpn/ssl_verify.c |  8 ++++----
+>  src/openvpn/ssl_verify.h | 15 ++++++++++-----
+>  5 files changed, 24 insertions(+), 18 deletions(-)
+> 
+> diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
+> index 12bb724a..74a76b72 100644
+> --- a/src/openvpn/auth_token.c
+> +++ b/src/openvpn/auth_token.c
+> @@ -15,6 +15,7 @@
+>  #include "push.h"
+>  #include "integer.h"
+>  #include "ssl.h"
+> +#include "ssl_verify.h"
+>  
+>  const char *auth_token_pem_name = "OpenVPN auth-token server key";
+>  
+> @@ -356,6 +357,8 @@ verify_auth_token(struct user_pass *up, struct tls_multi *multi,
+>  
+>      if (ret & AUTH_TOKEN_EXPIRED)
+>      {
+> +        /* Tell client that the session token is expired */
+> +        auth_set_client_reason(multi, "SESSION: token expired");
+>          msg(M_INFO, "--auth-token-gen: auth-token from client expired");
+Feature-ACK!  Code change looks sane, but need to test this more carefully -
+where it would be good to have the changes from previous comments implemented.
 
-And with the trap that incorrectly implementing the "auth" mode, where it
-would actually by default accept invalid tokens is a no-go from a security
-perspective.
-
-The background for --auth-gen-token was primarily to make life easier for
-users using auth-backends NOT supporting auth-tokens and who had issues with
-tunnel renegotiations.
-
-Extending --auth-gen-token with a secret so it can handle server-side restarts
-without breaking already authenticated clients is a nice feature.  Even the
-possibility to share this secret among multiple servers providing connection
-migrations without authentication breakage are all good features.
-
-But pushing this towards a new level where token expiry/validity checks is
-still pushed towards an external authentication module I find stretching this
-feature a bit too much.  And in particular if the auth backend is not tackling
-invalidated tokens correctly results in authentication success.
-
-In this case, why can't the auth backend do everything?
+But, we should fix the incorrect msg() above.  It should say --auth-gen-token.
 
 
 -- 
