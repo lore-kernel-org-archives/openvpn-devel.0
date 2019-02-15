@@ -1,15 +1,13 @@
-Date: Fri, 15 Feb 2019 21:56:21 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20190215205621.GG962@...1296...>
-References: <1549917961-632-1-git-send-email-selva.nair@...277...>
- <44fea524-53ef-8125-5d81-cd8aaac0ad16@...2080...>
+References: <20190122150333.1061-1-arne@...1227...>
+ <20190122150333.1061-3-arne@...1227...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <c3186992-a85d-5934-f6ab-0e8512952e3c@...2080...>
+Date: Fri, 15 Feb 2019 22:19:18 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="gPEtRQsivC9KyqIm"
-Content-Disposition: inline
-In-Reply-To: <44fea524-53ef-8125-5d81-cd8aaac0ad16@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Exit early when external scripts are
- specified with script-security < 2
+In-Reply-To: <20190122150333.1061-3-arne@...1227...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH v2 3/6] Rewrite auth-token-gen to be
+ based on HMAC based tokens
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,66 +16,131 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn@...2080...>
-Cc: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
---gPEtRQsivC9KyqIm
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+On 22/01/2019 16:03, Arne Schwabe wrote:
+> The previous auth-token implementation had a serious problem, especially when
+> paired with an unpatched OpenVPN client that keeps trying the auth-token
+> (commit e61b401a).
+> 
+> The auth-token-gen implementation forgot the auth-token on reconnect, this
+> lead to reconnect with auth-token never working.
+> 
+> This new implementation implements the auth-token in a stateles variant. By
+> using HMAC to sign the auth-token the server can verify if a token has been
+> authenticated and by checking the embedded timestamp in the token it can
+> also verify that the auth-token is still valid.
+> 
+> Patch V2: cleaned up code, use refactored read_pem_key_file function
+> ---
+>  doc/openvpn.8            |  27 ++++
+>  src/openvpn/Makefile.am  |   1 +
+>  src/openvpn/auth_token.c | 260 +++++++++++++++++++++++++++++++++++++++
+>  src/openvpn/auth_token.h | 116 +++++++++++++++++
+>  src/openvpn/init.c       |  34 ++++-
+>  src/openvpn/openvpn.h    |   1 +
+>  src/openvpn/options.c    |  24 +++-
+>  src/openvpn/options.h    |   4 +
+>  src/openvpn/push.c       |  70 +++++++++--
+>  src/openvpn/push.h       |   8 ++
+>  src/openvpn/ssl.c        |   7 +-
+>  src/openvpn/ssl_common.h |  36 +++---
+>  src/openvpn/ssl_verify.c | 182 ++++++++++++---------------
+>  13 files changed, 635 insertions(+), 135 deletions(-)
+>  create mode 100644 src/openvpn/auth_token.c
+>  create mode 100644 src/openvpn/auth_token.h
+> 
+[...snip...]
 
-Hi,
-
-On Fri, Feb 15, 2019 at 09:26:50PM +0100, David Sommerseth wrote:
-> So I can give this a full ACK for git master only.
-
-I can see your line of reasoning, but there is another aspect to it - we
-want to change the windows GUI to override script-security, to disarm
-possibly dangerous .ovpn files that have "--up $eviltrickery" in them.
-
-With this change, the GUI has a chance to tell people "look, this is
-the problem.  If you trust the source, you can enable scripts in this
-config (press <here>), if not, you better leave the ovpn alone!" -=20
-without, things will silently stop working for windows users...
-
-But we *do* want this on windows, disable script-security unless=20
-explicitely activated *outside* the .ovpn file...
-
-(I'm halfway tempted to make this an #ifdef _WIN32, but that cannot
-truly be the way forward)
+This review cannot be complete, due to my remarks to the previous commit
+suggesting not touching read_pem_key_file() at all.
 
 
-So - I had planned to give this an ACK both for 2.4 and master, but
-since you have reservations, we need to find the best way forward.
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index 0cf8db76..87632551 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -6769,6 +6774,23 @@ add_option(struct options *options,
+>          options->auth_token_generate = true;
+>          options->auth_token_lifetime = p[1] ? positive_atoi(p[1]) : 0;
+>      }
+> +    else if (streq(p[0], "auth-gen-token-secret") && p[1] && (!p[2]
+> +                                                              || (p[2] && streq(p[1], INLINE_FILE_TAG))))
+> +    {
+> +        VERIFY_PERMISSION(OPT_P_GENERAL);
+> +        options->auth_token_secret_file = p[1];
+> +
+> +        if (streq(p[1], INLINE_FILE_TAG) && p[2])
+> +        {
+> +            options->auth_token_secret_file_inline = p[2];
+> +        }
+> +    }
+> +    else if (streq(p[0], "auth-gen-token-secret-genkey") && !p[1])
+> +    {
+> +        VERIFY_PERMISSION(OPT_P_GENERAL);
+> +        options->auth_token_gen_secret_file = true;
+> +    }
+> +
 
-gert
+I see you add --auth-gen-token-secret and --auth-gen-token-secret-genkey ... I
+find this a bit confusing ... gen-token-secret-genkey ...
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Why not extend --auth-gen-token to take an additional file argument.  Today it
+is defined as:
 
-Gert Doering - Munich, Germany                             gert@...1296...
+     --auth-gen-token [lifetime]
 
---gPEtRQsivC9KyqIm
-Content-Type: application/pgp-signature; name="signature.asc"
+I suggest:
 
------BEGIN PGP SIGNATURE-----
+     --auth-gen-token [lifetime] [secret-key]
 
-iQGcBAEBAgAGBQJcZyd0AAoJEB2Cnv7KVigSieYL/iYpl8VCCahiRcN2Y2KZOb9E
-c5dTl/7iJhM3a0U940BvwOo2s3lUnJT6nDdYQiZtmBvMTukMAOEEshRxZS5bgXVr
-YXN4Q4fJkhl92333uHoLT3w2XGgLhwk49v+uzLzgAZTBBDIe8yuqxOIASst7ypva
-6rjd5pzOtBWFRgEtEYBS58rumKxGMw5lETYYXmgt3xq3F5EF0c3DCqxFIFHKwSrC
-nHJa1FYx9Ov1MT4LgOlzPjVMgoiVZxIvOlvJ/NRj5Ulbe9scnZtRm45PYhrZnFdW
-4ixEVpY1E9jaFuqcoUzVBhUHitVsWieYe3SDUpdwxRjTAz9HLDfOTTX1KV0qwPDk
-k+eJI9OZwfzFmihy9oe//sObSLeeTkG45PzK2cLhN1gkPWtlX+CuTKujUPBIiGct
-9YJ4OJnNQmdL8AfkOkWammSqeUoiCWAhKFzTCts9CTMsjQESmp2Aih6w+M2JtEVc
-7RtSbU88plBYInG2GHumRDubQkRAnQrohZrooQjAcw==
-=BMmp
------END PGP SIGNATURE-----
+If you want non-expiring tokens using a secret key, you can set the lifetime
+value to 0.
 
---gPEtRQsivC9KyqIm--
+Then instead of the --auth-gen-token-secret-genkey .... I suggest renaming
+that to: --genkey-auth-token-secret
+
+I see that your initial suggetion maps nicely to the same structure we have in
+--tls-crypt-v2-genkey.  But I find auth-gen-token-secret-genkey too long and
+repetetive without being that explicit on what it does.  I think
+--genkey-auth-token-secret is a bit clearer in what that option does.
+
+
+Another segment (I'm shuffling things around a bit, sorry about that)
+
+> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+> index 560d87db..983b49e4 100644
+> --- a/src/openvpn/init.c
+> +++ b/src/openvpn/init.c
+> @@ -1098,6 +1099,17 @@ do_genkey(const struct options *options)
+>  
+>          msg(M_USAGE, "--tls-crypt-v2-genkey type should be \"client\" or \"server\"");
+>      }
+> +
+> +    if (options->auth_token_gen_secret_file)
+> +    {
+> +        if (!options->auth_token_secret_file)
+> +        {
+> +            msg(M_USAGE, "--auth-gen-token-secret-genkey requires a server key "
+> +                "to be set via --auth-gen-token-secret to create a shared secret");
+> +        }
+> +        auth_token_write_server_key_file(options->auth_token_secret_file);
+
+Any reason we can't just skip this wrapper function and call the line below
+directly?
+
+   write_pem_key_file(filename, auth_token_pem_name);
+
+Otherwise, the rest looks reasonable.  But I've only glared at the code for
+now.  I will dig deeper when starting to test the code.
+
+
+-- 
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
+
 
