@@ -1,8 +1,14 @@
-From: selva.nair@...277...
-Date: Sat, 16 Feb 2019 20:55:41 -0500
-Message-Id: <1550368541-10402-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH] Better error message when script fails due
- to script-security setting
+Date: Mon, 18 Feb 2019 15:24:26 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20190218142426.GC962@...1296...>
+References: <1550368541-10402-1-git-send-email-selva.nair@...277...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="IRz9Vl8ucjVxogOP"
+Content-Disposition: inline
+In-Reply-To: <1550368541-10402-1-git-send-email-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Better error message when script fails
+ due to script-security setting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,124 +17,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: selva.nair@...277...
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+--IRz9Vl8ucjVxogOP
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-- Add a new return value (-2) for openvpn_execve() when external
-program execution is not allowed due to a low script-security
-setting.
+Hi,
 
-- Add a corresponding error message
+On Sat, Feb 16, 2019 at 08:55:41PM -0500, selva.nair@...277... wrote:
+> From: Selva Nair <selva.nair@...277...>
+>=20
+> - Add a new return value (-2) for openvpn_execve() when external
+> program execution is not allowed due to a low script-security
+> setting.
+>=20
+> - Add a corresponding error message
 
-Errors and warnings in such cases will now display as
-"WARNING: failed running command (<cmd>) :" followed by
+I find this a useful way forward (because it will not introduce new FATALs
+where we had none before, just make the errors more clear).=20=20
 
-"disallowed by script-security setting" on all platforms
+Since David had reservations on the other patch, I want to have explicit
+agreement from him before going on - and will poke on IRC to make sure I
+get attention.
 
-instead of the current
+Nevertheless, as we agreed to tag 2.4.7 *today* to make the release tomorrow
+and meet the Debian deadline, I will not include this in 2.4.7.
 
-"external program did not execute -- returned error code -1"
-on Windows and
-"external program fork failed" on other platforms.
+We can always do a 2.4.8 release "really soon", and include this (plus
+other potential 2.4 material which is important for Windows, like the=20
+OpenSSL 1.1.1 / cryptoapi stuff).
 
-The error is FATAL for some scripts and that behaviour is unchanged.
 
-This helps the Windows GUI to detect when a connection failure
-results from a safer script-security setting enforced by the GUI,
-and show a relevant message.
+"Release early, release often" used to be the mantra... :-)
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
-This is being presented as a better alternative for patch 684.
-A separate patch may be needed for 2.4 -- will do if this is found
-acceptable.
+gert
 
- src/openvpn/run_command.c | 25 +++++++++++++++++++++----
- src/openvpn/win32.c       | 10 +++++++---
- 2 files changed, 28 insertions(+), 7 deletions(-)
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-diff --git a/src/openvpn/run_command.c b/src/openvpn/run_command.c
-index 2d75a3e..7df7576 100644
---- a/src/openvpn/run_command.c
-+++ b/src/openvpn/run_command.c
-@@ -65,12 +65,23 @@ system_error_message(int stat, struct gc_arena *gc)
-     {
-         buf_printf(&out, "external program did not execute -- ");
-     }
--    buf_printf(&out, "returned error code %d", stat);
-+    if (stat == -2)
-+    {
-+        buf_printf(&out, "disallowed by script-security setting");
-+    }
-+    else
-+    {
-+        buf_printf(&out, "returned error code %d", stat);
-+    }
- #else  /* ifdef _WIN32 */
-     if (stat == -1)
-     {
-         buf_printf(&out, "external program fork failed");
-     }
-+    else if (stat == -2)
-+    {
-+        buf_printf(&out, "disallowed by script-security setting");
-+    }
-     else if (!WIFEXITED(stat))
-     {
-         buf_printf(&out, "external program did not exit normally");
-@@ -114,6 +125,8 @@ openvpn_execve_allowed(const unsigned int flags)
-  * Run execve() inside a fork().  Designed to replicate the semantics of system() but
-  * in a safer way that doesn't require the invocation of a shell or the risks
-  * associated with formatting and parsing a command line.
-+ * Returns the exit status of child, -2 if openvpn_execve_allowed() returned false,
-+ * or -1 on other errors.
-  */
- int
- openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned int flags)
-@@ -150,10 +163,14 @@ openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned in
-                 }
-             }
-         }
--        else if (!warn_shown && (script_security() < SSEC_SCRIPTS))
-+        else
-         {
--            msg(M_WARN, SCRIPT_SECURITY_WARNING);
--            warn_shown = true;
-+            ret = -2;
-+            if (!warn_shown && (script_security() < SSEC_SCRIPTS))
-+            {
-+                msg(M_WARN, SCRIPT_SECURITY_WARNING);
-+                warn_shown = true;
-+            }
-         }
- #else  /* if defined(ENABLE_FEATURE_EXECVE) */
-         msg(M_WARN, "openvpn_execve: execve function not available");
-diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index 463ac07..4eb7c40 100644
---- a/src/openvpn/win32.c
-+++ b/src/openvpn/win32.c
-@@ -1137,10 +1137,14 @@ openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned in
-             free(env);
-             gc_free(&gc);
-         }
--        else if (!exec_warn && (script_security() < SSEC_SCRIPTS))
-+        else
-         {
--            msg(M_WARN, SCRIPT_SECURITY_WARNING);
--            exec_warn = true;
-+            ret = -2;
-+            if (!exec_warn && (script_security() < SSEC_SCRIPTS))
-+            {
-+                msg(M_WARN, SCRIPT_SECURITY_WARNING);
-+                exec_warn = true;
-+            }
-         }
-     }
-     else
--- 
-2.1.4
+Gert Doering - Munich, Germany                             gert@...1296...
 
+--IRz9Vl8ucjVxogOP
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJcasAZAAoJEB2Cnv7KVigS8X8L/jYLeoe3YhPijgtzs7lwBpRK
+bM/a1CLLE7EjouI7sDTNKMiGRwIzihebo/nPVr5DRSbYV2+6xmZCz3MMbIYn+lv1
+qjAcdBCsjpjvzlbPxHa6Ck1OT4j9M0QJtqGEXfJcl7mDu/d5up/6q1uh1QP9vTDG
+YSzQ3hNGN8Ud/1n7AP//HybtMshEFXmEG4CoUaeWSjn0Hf99FmToI5CuT4giiClm
++nRZx0EoRG7d3FOFPVQO2ppkgUAz+2WTXOSZ4Y080s4k6CpBcuOIJ833RFvUbvTA
+oItoONunDweLHqolmqJLGljT++AZ7SJR2UjRDcxumGrYmbYjH/tCLj1F32Y8XnI7
+GfoEHc2i3bIk1uhZUqH9P5F+ebjUOYDhGw3CyfX0MbkGgGhxJQChJeKLO0QiAL8C
+rQaTpcE6WRm6Pnn0irpmRYmrNATYLP6cTtdBjp3YcL0GmIp1v9ZXF0zfDhLXgJZv
+dYmlUEXZh6Aj69WIElNyoC/zM879kQFJ4dqCqbhjTg==
+=AFa3
+-----END PGP SIGNATURE-----
+
+--IRz9Vl8ucjVxogOP--
 
