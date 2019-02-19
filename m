@@ -1,11 +1,12 @@
-MIME-Version: 1.0
 References: <1550368541-10402-1-git-send-email-selva.nair@...277...>
- <20190218142426.GC962@...1296...>
-In-Reply-To: <20190218142426.GC962@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 18 Feb 2019 12:32:06 -0500
-Message-ID: <CAKuzo_hfb-MUkMpXnj0dtWe4Lk5C+HoGZuDfOrcR7mboXrxn6g@...278...>
-Content-Type: multipart/alternative; boundary="000000000000ec5ce805822e81a2"
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <ad1a285d-fa22-54b0-01ac-9a066e752065@...2080...>
+Date: Tue, 19 Feb 2019 18:39:31 +0100
+MIME-Version: 1.0
+In-Reply-To: <1550368541-10402-1-git-send-email-selva.nair@...277...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="pFrSRVNQ7aWjZ2ym5d1JRcbDdDCytmWtb"
 Subject: Re: [Openvpn-devel] [PATCH] Better error message when script fails
  due to script-security setting
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,91 +17,145 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
 
---000000000000ec5ce805822e81a2
-Content-Type: text/plain; charset="UTF-8"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--pFrSRVNQ7aWjZ2ym5d1JRcbDdDCytmWtb
+Content-Type: multipart/mixed; boundary="2yWjKO91v5OXGezLslFWlmLfScsLgXaiX";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
+Message-ID: <ad1a285d-fa22-54b0-01ac-9a066e752065@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] Better error message when script fails
+ due to script-security setting
+References: <1550368541-10402-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1550368541-10402-1-git-send-email-selva.nair@...277...>
 
-Hi
-
-On Mon, Feb 18, 2019 at 9:24 AM Gert Doering <gert@...1296...> wrote:
-
-> Hi,
->
-> On Sat, Feb 16, 2019 at 08:55:41PM -0500, selva.nair@...277... wrote:
-> > From: Selva Nair <selva.nair@...277...>
-> >
-> > - Add a new return value (-2) for openvpn_execve() when external
-> > program execution is not allowed due to a low script-security
-> > setting.
-> >
-> > - Add a corresponding error message
->
-> I find this a useful way forward (because it will not introduce new FATALs
-> where we had none before, just make the errors more clear).
->
-> Since David had reservations on the other patch, I want to have explicit
-> agreement from him before going on - and will poke on IRC to make sure I
-> get attention.
->
-
-Just to be explicit:
-
-Since David pointed out the "regressive" nature of the earlier patch, I too
-have
-reservations about it, and prefer this approach.
-
-Nevertheless, as we agreed to tag 2.4.7 *today* to make the release tomorrow
-> and meet the Debian deadline, I will not include this in 2.4.7.
-
-
-The planned script-security over-ride feature in the GUI is pretty
-intrusive. Taking
-time to give it more thought, and preferably get some user feedback, is not
-a bad thing.
-
-Selva
-
---000000000000ec5ce805822e81a2
-Content-Type: text/html; charset="UTF-8"
+--2yWjKO91v5OXGezLslFWlmLfScsLgXaiX
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr"><div>Hi</div><br><div cl=
-ass=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">On Mon, Feb 18, 2=
-019 at 9:24 AM Gert Doering &lt;<a href=3D"mailto:gert@...1296..." target=
-=3D"_blank">gert@...1296...</a>&gt; wrote:<br></div><blockquote class=3D"gm=
-ail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,=
-204,204);padding-left:1ex">Hi,<br>
-<br>
-On Sat, Feb 16, 2019 at 08:55:41PM -0500, <a href=3D"mailto:selva.nair@...1665...=
-77..." target=3D"_blank">selva.nair@...277...</a> wrote:<br>
-&gt; From: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277..." target=3D=
-"_blank">selva.nair@...277...</a>&gt;<br>
-&gt; <br>
-&gt; - Add a new return value (-2) for openvpn_execve() when external<br>
-&gt; program execution is not allowed due to a low script-security<br>
-&gt; setting.<br>
-&gt; <br>
-&gt; - Add a corresponding error message<br>
-<br>
-I find this a useful way forward (because it will not introduce new FATALs<=
-br>
-where we had none before, just make the errors more clear).=C2=A0 <br>
-<br>
-Since David had reservations on the other patch, I want to have explicit<br>
-agreement from him before going on - and will poke on IRC to make sure I<br>
-get attention.<br></blockquote><div><br></div><div>Just to be explicit:</di=
-v><div><br></div><div>Since David pointed out the &quot;regressive&quot; na=
-ture of the earlier patch, I too have</div><div>reservations about it, and =
-prefer this approach.</div><div><br></div><blockquote class=3D"gmail_quote"=
- style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);p=
-adding-left:1ex">Nevertheless, as we agreed to tag 2.4.7 *today* to make th=
-e release tomorrow<br>and meet the Debian deadline, I will not include this=
- in 2.4.7.</blockquote><div><br></div><div>The planned script-security over=
--ride feature in the GUI is pretty intrusive. Taking</div><div>time to give=
- it more thought, and preferably get some user feedback, is not a bad thing=
-.</div><div><br></div><div>Selva</div></div></div></div></div>
+On 17/02/2019 02:55, selva.nair@...277... wrote:
+> From: Selva Nair <selva.nair@...277...>
+>=20
+> - Add a new return value (-2) for openvpn_execve() when external
+> program execution is not allowed due to a low script-security
+> setting.
+>=20
+> - Add a corresponding error message
+>=20
+> Errors and warnings in such cases will now display as
+> "WARNING: failed running command (<cmd>) :" followed by
+>=20
+> "disallowed by script-security setting" on all platforms
+>=20
+> instead of the current
+>=20
+> "external program did not execute -- returned error code -1"
+> on Windows and
+> "external program fork failed" on other platforms.
+>=20
+> The error is FATAL for some scripts and that behaviour is unchanged.
+>=20
+> This helps the Windows GUI to detect when a connection failure
+> results from a safer script-security setting enforced by the GUI,
+> and show a relevant message.
+>=20
+> Signed-off-by: Selva Nair <selva.nair@...277...>
+> ---
+> This is being presented as a better alternative for patch 684.
+> A separate patch may be needed for 2.4 -- will do if this is found
+> acceptable.
 
---000000000000ec5ce805822e81a2--
+Generally speaking, this looks much better and should avoid changing the
+behaviour.  It just clarifies the error better.  Feature-ACK from me.
+
+
+[...]
+> diff --git a/src/openvpn/run_command.c b/src/openvpn/run_command.c
+> index 2d75a3e..7df7576 100644
+> --- a/src/openvpn/run_command.c
+> +++ b/src/openvpn/run_command.c
+> @@ -65,12 +65,23 @@ system_error_message(int stat, struct gc_arena *gc)
+>      {
+>          buf_printf(&out, "external program did not execute -- ");
+>      }
+> -    buf_printf(&out, "returned error code %d", stat);
+> +    if (stat =3D=3D -2)
+> +    {
+> +        buf_printf(&out, "disallowed by script-security setting");
+> +    }
+> +    else
+> +    {
+> +        buf_printf(&out, "returned error code %d", stat);
+> +    }
+
+Perhaps we could swap out the -1 and -2 values with macro constants, for co=
+de
+clarity?  Also, perhaps it would look more structured if using a switch()
+instead of if()/else if().
+
+Otherwise, the code looks good.
+
+Another interesting are which most likely quite seldom fails, but we actual=
+ly
+have yet another "undocumented" exit code ...  This is not this patch's fau=
+lt,
+but should probably be reviewed a bit more carefully.
+
+In run_command.c:149-153:
+--------------------------------------------------------------------
+            pid =3D fork();
+            if (pid =3D=3D (pid_t)0) /* child side */
+            {
+                execve(cmd, argv, envp);
+                exit(127);
+            }
+--------------------------------------------------------------------
+
+If execve() fails, the exit code is 127.  That would normally be caught by =
+the
+waitpid() later on and this exit code would be returned by openvpn_execve().
+
+This should be improved in a separate patch though, but is not of high
+urgency.  I don't expect most setups having a high execve() failure rate.  =
+But
+catching it and reporting this error path would be good.
+
+
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
+
+
+
+--2yWjKO91v5OXGezLslFWlmLfScsLgXaiX--
+
+--pFrSRVNQ7aWjZ2ym5d1JRcbDdDCytmWtb
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJcbD9eAAoJEIbPlEyWcf3y6XIP/094tBPP5jDFQglPVbxKbtlB
+oZp+VwwqNb/ysafvxsIfgmSfVzmZO6CNVprNmZtf7E4qZo/qqVNGHztaF5UchIuo
+a8NIfITfPUWVYXNy+1rGbdjVLqRiQd7isdcmBGU3jNXR/IwLmdCiqaoTwc8XFqL9
+8MqCOYKNd6HT3Dp9p/2s3uYQRBpva8AITnNaZdGgzEKWqduNPv6xcBvDJhFaCOEN
+ZxTmeyx62Cz2yHHfxartizmKN5TlJcIIOoZyrrpd/rm4eeos5+pVJMUlnNlQ92Of
+37pZIFoIVFDSSOP4TKpL0tmwcUvaCoQYX4Pad/IO7JjOQPTpv+y2vte8wU0Uq5g1
+2JAnet5aSsXcDm2WhR8NnFhsa4UhD7Z2PlDzGc+Ec+EjOp73SW3gsOVThg0Q1khA
+fGF/tyohZmdj42MNL8rzNl31w6ToW2ftIAtwABQeo+W1L/raoSX2RnGGL41rIblc
+WR8SX0+UGQbAQOpvNp1bBxqaTQZ3HzdF1cSii6y/fZ1YOzHF0uCwH5rrEDlA+5jF
+W/MOGc4y81EzptghzoNtzY9D6oaY8vC+YiC90PyVJT61qQBC1VR5w+XO5Cd/imwJ
+DMfpURiCAdGY7R27vr45m9dLByBLhHZAWVbCTELBawekj3JuKtnKcqOTS6PBume+
+dvbMtL36YEdxRkiIWaaD
+=spMS
+-----END PGP SIGNATURE-----
+
+--pFrSRVNQ7aWjZ2ym5d1JRcbDdDCytmWtb--
 
