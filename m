@@ -1,10 +1,11 @@
-From: selva.nair@...277...
-Date: Wed, 20 Feb 2019 19:46:22 -0500
-Message-Id: <1550709982-19319-1-git-send-email-selva.nair@...277...>
-In-Reply-To: <1550368541-10402-1-git-send-email-selva.nair@...277...>
-References: <1550368541-10402-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH v2] Better error message when script fails
- due to script-security setting
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <ef819f31-d8e8-4926-ecef-df20f3237564@...515...>
+Date: Thu, 21 Feb 2019 11:36:47 +0200
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="Qs1e5PNJQ6yaK7vlAKUvJolDPrpPSQv8c"
+Subject: [Openvpn-devel] OpenVPN 2.4.7 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,243 +14,186 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--Qs1e5PNJQ6yaK7vlAKUvJolDPrpPSQv8c
+Content-Type: multipart/mixed; boundary="MTh7zUuEHJDbPJFYOPM9nOivdKCeJLgws";
+ protected-headers="v1"
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net,
+ openvpn-announce@lists.sourceforge.net
+Message-ID: <ef819f31-d8e8-4926-ecef-df20f3237564@...515...>
+Subject: OpenVPN 2.4.7 released
+
+--MTh7zUuEHJDbPJFYOPM9nOivdKCeJLgws
+Content-Type: multipart/mixed;
+ boundary="------------7DFBC506C2D804066B2E2F89"
+Content-Language: en-US
+
+This is a multi-part message in MIME format.
+--------------7DFBC506C2D804066B2E2F89
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-From: Selva Nair <selva.nair@...277...>
+The OpenVPN community project team is proud to release OpenVPN 2.4.7. It
+can be downloaded from here:
 
-- Add a new return value (-2) for openvpn_execve() when external
-  program execution is not allowed due to a low script-security
-  setting.
+<https://openvpn.net/community-downloads/>
 
-- Add a corresponding error message
+This is primarily a maintenance release with bugfixes and improvements.
+One of the big things is enhanced TLS 1.3 support
 
-Errors and warnings in such cases will now display as
-"WARNING: failed running command (<cmd>) :" followed by
+Please note that LibreSSL is not a supported crypto backend. We accept
+patches and we do test on OpenBSD 6.0 which comes with LibreSSL, but if
+newer versions of LibreSSL break API compatibility we do not take
+responsibility to fix that.
 
-"disallowed by script-security setting" on all platforms
+Also note that  Windows installers have been built with NSIS version
+that has been patched against several NSIS installer code execution and
+privilege escalation problems:
 
-instead of the current
+<https://community.openvpn.net/openvpn/wiki/NSISBug1125>
 
-"external program did not execute -- returned error code -1"
-on Windows and
-"external program fork failed" on other platforms.
+Based on our testing, though, older Windows versions such as Windows 7
+might not benefit from these fixes. We thus strongly encourage you to
+always move NSIS installers to a non-user-writeable location before
+running them. Our long-term plan is to migrate to using MSI installers
+instead.
 
-The error is FATAL for some scripts and that behaviour is unchanged.
+A summary of all included changes is available here:
 
-This helps the Windows GUI to detect when a connection failure
-results from a safer script-security setting enforced by the GUI,
-and show a relevant message.
+<https://github.com/OpenVPN/openvpn/blob/release/2.4/Changes.rst>
 
-v2 changes as suggested by <davds@...515...>
+A full list of changes is available here:
 
-- define macros for return values of openvpn_execve()
-- replace if/else by switch() in system_error_message()
+<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn24>
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- src/openvpn/run_command.c | 93 ++++++++++++++++++++++++++++-------------------
- src/openvpn/run_command.h |  4 ++
- src/openvpn/win32.c       | 12 ++++--
- 3 files changed, 68 insertions(+), 41 deletions(-)
+Compared to OpenVPN 2.3 this is a major update with a large number of
+new features, improvements and fixes. Some of the major features are
+AEAD (GCM) cipher and Elliptic Curve DH key exchange support, improved
+IPv4/IPv6 dual stack support and more seamless connection migration when
+client's IP address changes (Peer-ID). Also, the new --tls-crypt feature
+can be used to increase users' connection privacy.
 
-diff --git a/src/openvpn/run_command.c b/src/openvpn/run_command.c
-index 2d75a3e..4c4adf9 100644
---- a/src/openvpn/run_command.c
-+++ b/src/openvpn/run_command.c
-@@ -54,44 +54,57 @@ script_security_set(int level)
- }
- 
- /*
-- * Print an error message based on the status code returned by system().
-+ * Generate an error message based on the status code returned by openvpn_execve().
-  */
- static const char *
- system_error_message(int stat, struct gc_arena *gc)
- {
-     struct buffer out = alloc_buf_gc(256, gc);
--#ifdef _WIN32
--    if (stat == -1)
-+
-+    switch (stat)
-     {
--        buf_printf(&out, "external program did not execute -- ");
--    }
--    buf_printf(&out, "returned error code %d", stat);
-+        case OPENVPN_EXECVE_NOT_ALLOWED:
-+            buf_printf(&out, "disallowed by script-security setting");
-+            break;
-+
-+#ifdef _WIN32
-+        case OPENVPN_EXECVE_ERROR:
-+            buf_printf(&out, "external program did not execute -- ");
-+        /* fall through */
-+
-+        default:
-+            buf_printf(&out, "returned error code %d", stat);
-+            break;
- #else  /* ifdef _WIN32 */
--    if (stat == -1)
--    {
--        buf_printf(&out, "external program fork failed");
--    }
--    else if (!WIFEXITED(stat))
--    {
--        buf_printf(&out, "external program did not exit normally");
--    }
--    else
--    {
--        const int cmd_ret = WEXITSTATUS(stat);
--        if (!cmd_ret)
--        {
--            buf_printf(&out, "external program exited normally");
--        }
--        else if (cmd_ret == 127)
--        {
--            buf_printf(&out, "could not execute external program");
--        }
--        else
--        {
--            buf_printf(&out, "external program exited with error status: %d", cmd_ret);
--        }
--    }
-+
-+        case OPENVPN_EXECVE_ERROR:
-+            buf_printf(&out, "external program fork failed");
-+            break;
-+
-+        default:
-+            if (!WIFEXITED(stat))
-+            {
-+                buf_printf(&out, "external program did not exit normally");
-+            }
-+            else
-+            {
-+                const int cmd_ret = WEXITSTATUS(stat);
-+                if (!cmd_ret)
-+                {
-+                    buf_printf(&out, "external program exited normally");
-+                }
-+                else if (cmd_ret == OPENVPN_EXECVE_FAILURE)
-+                {
-+                    buf_printf(&out, "could not execute external program");
-+                }
-+                else
-+                {
-+                    buf_printf(&out, "external program exited with error status: %d", cmd_ret);
-+                }
-+            }
-+            break;
- #endif /* ifdef _WIN32 */
-+    }
-     return (const char *)out.data;
- }
- 
-@@ -114,12 +127,14 @@ openvpn_execve_allowed(const unsigned int flags)
-  * Run execve() inside a fork().  Designed to replicate the semantics of system() but
-  * in a safer way that doesn't require the invocation of a shell or the risks
-  * associated with formatting and parsing a command line.
-+ * Returns the exit status of child, OPENVPN_EXECVE_NOT_ALLOWED if openvpn_execve_allowed()
-+ * returns false, or OPENVPN_EXECVE_ERROR on other errors.
-  */
- int
- openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned int flags)
- {
-     struct gc_arena gc = gc_new();
--    int ret = -1;
-+    int ret = OPENVPN_EXECVE_ERROR;
-     static bool warn_shown = false;
- 
-     if (a && a->argv[0])
-@@ -136,7 +151,7 @@ openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned in
-             if (pid == (pid_t)0) /* child side */
-             {
-                 execve(cmd, argv, envp);
--                exit(127);
-+                exit(OPENVPN_EXECVE_FAILURE);
-             }
-             else if (pid < (pid_t)0) /* fork failed */
-             {
-@@ -146,14 +161,18 @@ openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned in
-             {
-                 if (waitpid(pid, &ret, 0) != pid)
-                 {
--                    ret = -1;
-+                    ret = OPENVPN_EXECVE_ERROR;
-                 }
-             }
-         }
--        else if (!warn_shown && (script_security() < SSEC_SCRIPTS))
-+        else
-         {
--            msg(M_WARN, SCRIPT_SECURITY_WARNING);
--            warn_shown = true;
-+            ret = OPENVPN_EXECVE_NOT_ALLOWED;
-+            if (!warn_shown && (script_security() < SSEC_SCRIPTS))
-+            {
-+                msg(M_WARN, SCRIPT_SECURITY_WARNING);
-+                warn_shown = true;
-+            }
-         }
- #else  /* if defined(ENABLE_FEATURE_EXECVE) */
-         msg(M_WARN, "openvpn_execve: execve function not available");
-@@ -227,7 +246,7 @@ openvpn_popen(const struct argv *a,  const struct env_set *es)
-                     close(pipe_stdout[0]);         /* Close read end */
-                     dup2(pipe_stdout[1],1);
-                     execve(cmd, argv, envp);
--                    exit(127);
-+                    exit(OPENVPN_EXECVE_FAILURE);
-                 }
-                 else if (pid > (pid_t)0)       /* parent side */
-                 {
-diff --git a/src/openvpn/run_command.h b/src/openvpn/run_command.h
-index 4501a5c..7ccb13c 100644
---- a/src/openvpn/run_command.h
-+++ b/src/openvpn/run_command.h
-@@ -33,6 +33,10 @@
- #define SSEC_SCRIPTS   2 /* allow calling of built-in programs and user-defined scripts */
- #define SSEC_PW_ENV    3 /* allow calling of built-in programs and user-defined scripts that may receive a password as an environmental variable */
- 
-+#define OPENVPN_EXECVE_ERROR       -1 /* generic error while forking to run an external program */
-+#define OPENVPN_EXECVE_NOT_ALLOWED -2 /* external program not run due to script security */
-+#define OPENVPN_EXECVE_FAILURE    127 /* exit code passed back from child when execve fails */
-+
- int script_security(void);
- 
- void script_security_set(int level);
-diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index 463ac07..55d9843 100644
---- a/src/openvpn/win32.c
-+++ b/src/openvpn/win32.c
-@@ -1088,7 +1088,7 @@ wide_cmd_line(const struct argv *a, struct gc_arena *gc)
- int
- openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned int flags)
- {
--    int ret = -1;
-+    int ret = OPENVPN_EXECVE_ERROR;
-     static bool exec_warn = false;
- 
-     if (a && a->argv[0])
-@@ -1137,10 +1137,14 @@ openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned in
-             free(env);
-             gc_free(&gc);
-         }
--        else if (!exec_warn && (script_security() < SSEC_SCRIPTS))
-+        else
-         {
--            msg(M_WARN, SCRIPT_SECURITY_WARNING);
--            exec_warn = true;
-+            ret = OPENVPN_EXECVE_NOT_ALLOWED;
-+            if (!exec_warn && (script_security() < SSEC_SCRIPTS))
-+            {
-+                msg(M_WARN, SCRIPT_SECURITY_WARNING);
-+                exec_warn = true;
-+            }
-         }
-     }
-     else
--- 
-2.1.4
+OpenVPN GUI bundled with the Windows installer has a large number of new
+features compared to the one bundled with OpenVPN 2.3. One of major
+features is the ability to run OpenVPN GUI without administrator privileges.
 
+For full details, look here:
+
+<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn24>
+
+The new OpenVPN GUI features are documented here:
+
+<https://github.com/OpenVPN/openvpn-gui>
+
+Please note that OpenVPN 2.4 installers will not work on Windows XP.
+
+For generic help use these support channels:
+
+Official documentation:
+<http://openvpn.net/index.php/open-source/documentation/howto.html>
+Wiki: <https://community.openvpn.net>
+Forums: <https://forums.openvpn.net>
+User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+User IRC channel: #openvpn at irc.freenode.net
+
+Please report bugs and ask development questions here:
+
+Bug tracker and wiki: <https://community.openvpn.net>
+Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+Developer IRC channel: #openvpn-devel at irc.freenode.net (requires
+Freenode registration)
+
+--=20
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+--------------7DFBC506C2D804066B2E2F89
+Content-Type: text/plain; charset=UTF-8;
+ name="openvpn-2.4.7-changelog"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="openvpn-2.4.7-changelog"
+
+QWRhbSBDaWFyY2luzIFza2kgKDEpOgogICAgICBGaXggc3VibmV0IHRvcG9sb2d5IG9uIE5l
+dEJTRCAoMi40KS4KCkFudG9uaW8gUXVhcnR1bGxpICgzKToKICAgICAgYWRkIHN1cHBvcnQg
+Zm9yICVsdSBpbiBhcmd2X3ByaW50ZiBhbmQgcHJldmVudCBBU1NFUlQKICAgICAgYnVmZmVy
+X2xpc3Q6IGFkZCBmdW5jdGlvbnMgZG9jdW1lbnRhdGlvbgogICAgICBpZmNvbmZpZy1pcHY2
+KC1wdXNoKTogYWxsb3cgdXNpbmcgaG9zdG5hbWVzCgpBcm5lIFNjaHdhYmUgKDcpOgogICAg
+ICBQcm9wZXJseSBmcmVlIHR1bnRhcCBzdHJ1Y3Qgb24gYW5kcm9pZCB3aGVuIGVtdWxhdGlu
+ZyBwZXJzaXN0LXR1bgogICAgICBBZGQgT3BlblNTTCBjb21wYXQgZGVmaW5pdGlvbiBmb3Ig
+UlNBX21ldGhfc2V0X3NpZ24KICAgICAgQWRkIHN1cHBvcnQgZm9yIHRscy1jaXBoZXJzdWl0
+ZXMgZm9yIFRMUyAxLjMKICAgICAgQWRkIGJldHRlciBzdXBwb3J0IGZvciBzaG93aW5nIFRM
+UyAxLjMgY2lwaGVyc3VpdGVzIGluIC0tc2hvdy10bHMKICAgICAgVXNlIHJpZ2h0IGZ1bmN0
+aW9uIHRvIHNldCBUTFMxLjMgcmVzdHJpY3Rpb25zIGluIHNob3ctdGxzCiAgICAgIEFkZCBt
+ZXNzYWdlIGV4cGxhaW5pbmcgZWFybHkgVExTIGNsaWVudCBoZWxsbyBmYWlsdXJlCiAgICAg
+IEZhbGxiYWNrIHRvIHBhc3N3b3JkIGF1dGhlbnRpY2F0aW9uIHdoZW4gYXV0aC10b2tlbiBm
+YWlscwoKQ2hyaXN0aWFuIEVocmhhcmR0ICgxKToKICAgICAgc3lzdGVtZDogZXh0ZW5kIENh
+cGFiaWxpdHlCb3VuZGluZ1NldCBmb3IgYXV0aF9wYW0KCkRhdmlkIFNvbW1lcnNldGggKDEp
+OgogICAgICBwbHVnaW46IEV4cG9ydCBiYXNlNjQgZW5jb2RlIGFuZCBkZWNvZGUgZnVuY3Rp
+b25zCgpHZXJ0IERvZXJpbmcgKDQpOgogICAgICBBZGQgJWQsICV1IGFuZCAlbHUgdGVzdHMg
+dG8gdGVzdF9hcmd2IHVuaXQgdGVzdHMuCiAgICAgIEZpeCBjb21iaW5hdGlvbiBvZiAtLWRl
+diB0YXAgYW5kIC0tdG9wb2xvZ3kgc3VibmV0IGFjcm9zcyBtdWx0aXBsZSBwbGF0Zm9ybXMu
+CiAgICAgIEFkZCAncHJpbnRpbmcgb2YgcG9ydCBudW1iZXInIHRvIG1yb3V0ZV9hZGRyX3By
+aW50X2V4KCkgZm9yIHY0LW1hcHBlZCB2Ni4KICAgICAgcHJlcGFyaW5nIHJlbGVhc2UgdjIu
+NC43IChDaGFuZ2VMb2csIHZlcnNpb24ubTQsIENoYW5nZXMucnN0KQoKR2VydCB2YW4gRGlq
+ayAoMSk6CiAgICAgIE1pbm9yIHJlbGlhYmlsaXR5IGxheWVyIGRvY3VtZW50YXRpb24gZml4
+ZXMKCkphbWVzIEJla2tlbWEgKDEpOgogICAgICBSZXNvbHZlcyBzbWFsbCBJVl9HVUlfVkVS
+IHR5cG8gaW4gdGhlIGRvY3VtZW50YXRpb24uCgpKb25hdGhhbiBLLiBCdWxsYXJkICgxKToK
+ICAgICAgQ2xhcmlmeSBhbmQgZXhwYW5kIG1hbmFnZW1lbnQgaW50ZXJmYWNlIGRvY3VtZW50
+YXRpb24KCkxldiBTdGlwYWtvdiAoNSk6CiAgICAgIFJlZmFjdG9yIE5DUC1uZWdvdGlhYmxl
+IG9wdGlvbnMgaGFuZGxpbmcKICAgICAgaW5pdC5jOiByZWZpbmUgZnVuY3Rpb25zIG5hbWVz
+IGFuZCBkZXNjcmlwdGlvbgogICAgICBpbnRlcmFjdGl2ZS5jOiBmaXggdXNhZ2Ugb2YgcG90
+ZW50aWFsbHkgdW5pbml0aWFsaXplZCB2YXJpYWJsZQogICAgICBvcHRpb25zLmM6IGZpeCBi
+cm9rZW4gdW5hcnkgbWludXMgdXNhZ2UKICAgICAgUmVtb3ZlIGV4dHJhIHRva2VuIGFmdGVy
+ICNlbmRpZgoKUmljaGFyZCB2YW4gZGVuIEJlcmcgdmlhIE9wZW52cG4tZGV2ZWwgKDEpOgog
+ICAgICBGaXggZXJyb3IgbWVzc2FnZSB3aGVuIHVzaW5nIFJIRUwgaW5pdCBzY3JpcHQKClNh
+bXkgTWFobW91ZGkgKDEpOgogICAgICBtYW46IGNvcnJlY3QgYSAtLXJlZGlyZWN0aW9uLWdh
+dGV3YXkgb3B0aW9uIGZsYWcKClNlbHZhIE5haXIgKDcpOgogICAgICBSZXBsYWNlIE1fREVC
+VUcgd2l0aCBEX0xPVyBhcyB0aGUgZm9ybWVyIGlzIHRvbyB2ZXJib3NlCiAgICAgIENvcnJl
+Y3QgdGhlIGRlY2xhcmF0aW9uIG9mIGhhbmRsZSBpbiAnc3RydWN0IG9wZW52cG5fcGx1Z2lu
+X2FyZ3Nfb3Blbl9yZXR1cm4nCiAgICAgIEJ1bXAgdmVyc2lvbiBvZiBvcGVudnBuIHBsdWdp
+biBhcmd1bWVudCBzdHJ1Y3RzIHRvIDUKICAgICAgTW92ZSBnZXQgc3lzdGVtIGRpcmVjdG9y
+eSB0byBhIHNlcGFyYXRlIGZ1bmN0aW9uCiAgICAgIEVuYWJsZSBkaGNwIG9uIHRhcCBhZGFw
+dGVyIHVzaW5nIGludGVyYWN0aXZlIHNlcnZpY2UKICAgICAgUGFzcyB0aGUgaGFzaCB3aXRo
+b3V0IHRoZSBEaWdlc3RJbmZvIGhlYWRlciB0byBOQ3J5cHRTaWduSGFzaCgpCiAgICAgIFdo
+aXRlLWxpc3QgcHVsbC1maWx0ZXIgYW5kIHNjcmlwdC1zZWN1cml0eSBpbiBpbnRlcmFjdGl2
+ZSBzZXJ2aWNlCgpTaW1vbiBSb3ptYW4gKDIpOgogICAgICBBZGQgSW50ZXJhY3RpdmUgU2Vy
+dmljZSBkZXZlbG9wZXIgZG9jdW1lbnRhdGlvbgogICAgICBEZXRlY3QgVEFQIGludGVyZmFj
+ZXMgd2l0aCByb290LWVudW1lcmF0ZWQgaGFyZHdhcmUgSUQKClN0ZWZmYW4gS2FyZ2VyICg3
+KToKICAgICAgbWFuOiBhZGQgc2VjdXJpdHkgY29uc2lkZXJhdGlvbnMgdG8gLS1jb21wcmVz
+cyBzZWN0aW9uCiAgICAgIG1iZWR0bHM6IHByaW50IHdhcm5pbmcgaWYgcmFuZG9tIHBlcnNv
+bmFsaXNhdGlvbiBmYWlscwogICAgICBGaXggbWVtb3J5IGxlYWsgYWZ0ZXIgc2lnaHVwCiAg
+ICAgIHRyYXZpczogYWRkIE9wZW5TU0wgMS4xIFdpbmRvd3MgYnVpbGQKICAgICAgRml4IC0t
+ZGlzYWJsZS1jcnlwdG8gYnVpbGQKICAgICAgRG9uJ3QgcHJpbnQgT0NDIHdhcm5pbmdzIGFi
+b3V0ICdrZXktbWV0aG9kJywgJ2tleWRpcicgYW5kICd0bHMtYXV0aCcKICAgICAgYnVmZmVy
+X2xpc3RfYWdncmVnYXRlX3NlcGFyYXRvcigpOiBzaW1wbGlmeSBjb2RlCgo=
+
+--------------7DFBC506C2D804066B2E2F89--
+
+--MTh7zUuEHJDbPJFYOPM9nOivdKCeJLgws--
+
+--Qs1e5PNJQ6yaK7vlAKUvJolDPrpPSQv8c
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAlxucS8ACgkQKVhNn0CG
+RXh1nAgAhWD4nMSHRok7EMsJ05GWwDk9bvro1r3R5AwXCKTEN1rwRD/x40Rilvxv
+l+gzlQ51CWOCReDpzNpKAoTgSXKxH+Hmiv+dVsCZv691qXWeBEnQoZOm9RZ2alNN
+b4Tnkq/6A2phSpWODG+Xgodr8jwcyBHvfHsLEMbGAh+oMRhfa7V7sUuhzKF6ky2d
+tUO9mMwiogMny65qLO8wcN7JJwZKF8DfhpVKpiojnZFIlSgT53A3/rMDwqyPiNZr
+Ba2daqOfUeatTvG2PtHc5byMolo+fX8/MeciyxGPC0agO7sq0qc/mAtnSGukFVyI
+/3Ci3XpZQtHod/5+VNak9IzYOIE3UQ==
+=Dn54
+-----END PGP SIGNATURE-----
+
+--Qs1e5PNJQ6yaK7vlAKUvJolDPrpPSQv8c--
 
