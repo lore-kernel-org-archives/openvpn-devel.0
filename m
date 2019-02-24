@@ -1,11 +1,10 @@
 From: Simon Rozman <simon@...2293...>
-Date: Sun, 24 Feb 2019 19:15:04 +0100
-Message-Id: <20190224181504.38328-1-simon@...2293...>
-In-Reply-To: <20190117155829.GA92142@...1296...>
-References: <20190117155829.GA92142@...1296...>
+Date: Sun, 24 Feb 2019 19:15:44 +0100
+Message-Id: <20190224181544.17232-1-simon@...2293...>
+In-Reply-To: <201901181944.x0IJiGuV003728@...2054...>
+References: <201901181944.x0IJiGuV003728@...2054...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Add user manual and developer notes URL for
- tapctl.exe
+Subject: [Openvpn-devel] [PATCH] Refactor OpenVPNService state detection code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,85 +17,103 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+The code was standardized to avoid "E1072: a declaration cannot have a
+label" warning of Visual Studio 2017 IntelliSense.
+
+Furthermore, a comment explaining what `dwStartType <=
+SERVICE_AUTO_START` condition is about.
+
 This patch follows Gert's recommendations from [openvpn-devel].
 
 Signed-off-by: Simon Rozman <simon@...2293...>
-Message-ID: <20190117155829.GA92142@...1296...>
+Message-ID: <201901181944.x0IJiGuV003728@...2054...>
 ---
- src/tapctl/basic.h | 1 +
- src/tapctl/error.c | 1 +
- src/tapctl/error.h | 1 +
- src/tapctl/main.c  | 1 +
- src/tapctl/tap.c   | 1 +
- src/tapctl/tap.h   | 1 +
- 6 files changed, 6 insertions(+)
+ src/openvpnmsica/openvpnmsica.c | 59 +++++++++++++++++----------------
+ 1 file changed, 31 insertions(+), 28 deletions(-)
 
-diff --git a/src/tapctl/basic.h b/src/tapctl/basic.h
-index 3469cb1c..bfbcc30d 100644
---- a/src/tapctl/basic.h
-+++ b/src/tapctl/basic.h
-@@ -1,5 +1,6 @@
- /*
-  *  basic -- Basic macros
-+ *           https://community.openvpn.net/openvpn/wiki/Tapctl
-  *
-  *  Copyright (C) 2002-2018 OpenVPN Inc <sales@...515...>
-  *  Copyright (C) 2018 Simon Rozman <simon@...2293...>
-diff --git a/src/tapctl/error.c b/src/tapctl/error.c
-index 42ab6ccb..d1f77d20 100644
---- a/src/tapctl/error.c
-+++ b/src/tapctl/error.c
-@@ -1,5 +1,6 @@
- /*
-  *  error -- OpenVPN compatible error reporting API
-+ *           https://community.openvpn.net/openvpn/wiki/Tapctl
-  *
-  *  Copyright (C) 2002-2018 OpenVPN Inc <sales@...515...>
-  *  Copyright (C) 2018 Simon Rozman <simon@...2293...>
-diff --git a/src/tapctl/error.h b/src/tapctl/error.h
-index 1ac9b835..924cbbe8 100644
---- a/src/tapctl/error.h
-+++ b/src/tapctl/error.h
-@@ -1,5 +1,6 @@
- /*
-  *  error -- OpenVPN compatible error reporting API
-+ *           https://community.openvpn.net/openvpn/wiki/Tapctl
-  *
-  *  Copyright (C) 2002-2018 OpenVPN Inc <sales@...515...>
-  *  Copyright (C) 2018 Simon Rozman <simon@...2293...>
-diff --git a/src/tapctl/main.c b/src/tapctl/main.c
-index 5e6e1752..295366b4 100644
---- a/src/tapctl/main.c
-+++ b/src/tapctl/main.c
-@@ -1,5 +1,6 @@
- /*
-  *  tapctl -- Utility to manipulate TUN/TAP interfaces on Windows
-+ *            https://community.openvpn.net/openvpn/wiki/Tapctl
-  *
-  *  Copyright (C) 2002-2018 OpenVPN Inc <sales@...515...>
-  *  Copyright (C) 2008-2013 David Sommerseth <dazo@...384...>
-diff --git a/src/tapctl/tap.c b/src/tapctl/tap.c
-index ba80237f..b2cb2dca 100644
---- a/src/tapctl/tap.c
-+++ b/src/tapctl/tap.c
-@@ -1,5 +1,6 @@
- /*
-  *  tapctl -- Utility to manipulate TUN/TAP interfaces on Windows
-+ *            https://community.openvpn.net/openvpn/wiki/Tapctl
-  *
-  *  Copyright (C) 2018 Simon Rozman <simon@...2293...>
-  *
-diff --git a/src/tapctl/tap.h b/src/tapctl/tap.h
-index 39dc28b0..c09c4766 100644
---- a/src/tapctl/tap.h
-+++ b/src/tapctl/tap.h
-@@ -1,5 +1,6 @@
- /*
-  *  tapctl -- Utility to manipulate TUN/TAP interfaces on Windows
-+ *            https://community.openvpn.net/openvpn/wiki/Tapctl
-  *
-  *  Copyright (C) 2018 Simon Rozman <simon@...2293...>
-  *
+diff --git a/src/openvpnmsica/openvpnmsica.c b/src/openvpnmsica/openvpnmsica.c
+index 00ed2765..2477e81a 100644
+--- a/src/openvpnmsica/openvpnmsica.c
++++ b/src/openvpnmsica/openvpnmsica.c
+@@ -365,40 +365,42 @@ openvpnmsica_set_openvpnserv_state(_In_ MSIHANDLE hInstall)
+     /* Query service status. */
+     SERVICE_STATUS_PROCESS ssp;
+     DWORD dwBufSize;
+-    if (!QueryServiceStatusEx(hService, SC_STATUS_PROCESS_INFO, (LPBYTE)&ssp, sizeof(ssp), &dwBufSize))
++    if (QueryServiceStatusEx(hService, SC_STATUS_PROCESS_INFO, (LPBYTE)&ssp, sizeof(ssp), &dwBufSize))
+     {
+-        uiResult = GetLastError();
+-        msg(M_NONFATAL | M_ERRNO, "%s: QueryServiceStatusEx(\"OpenVPNService\") failed", __FUNCTION__);
+-        goto finish_QueryServiceStatusEx;
+-    }
+-
+-    switch (ssp.dwCurrentState)
+-    {
+-        case SERVICE_START_PENDING:
+-        case SERVICE_RUNNING:
+-        case SERVICE_STOP_PENDING:
+-        case SERVICE_PAUSE_PENDING:
+-        case SERVICE_PAUSED:
+-        case SERVICE_CONTINUE_PENDING:
++        switch (ssp.dwCurrentState)
+         {
+-            /* Set OPENVPNSERVICE property to service PID. */
+-            TCHAR szPID[10 /*MAXDWORD in decimal*/ + 1 /*terminator*/];
+-            _stprintf_s(
+-                szPID, _countof(szPID),
+-                TEXT("%u"),
+-                ssp.dwProcessId);
+-
+-            uiResult = MsiSetProperty(hInstall, TEXT("OPENVPNSERVICE"), szPID);
+-            if (uiResult != ERROR_SUCCESS)
++            case SERVICE_START_PENDING:
++            case SERVICE_RUNNING:
++            case SERVICE_STOP_PENDING:
++            case SERVICE_PAUSE_PENDING:
++            case SERVICE_PAUSED:
++            case SERVICE_CONTINUE_PENDING:
+             {
+-                SetLastError(uiResult); /* MSDN does not mention MsiSetProperty() to set GetLastError(). But we do have an error code. Set last error manually. */
+-                msg(M_NONFATAL | M_ERRNO, "%s: MsiSetProperty(\"OPENVPNSERVICE\") failed", __FUNCTION__);
++                /* Service is started (kind of). Set OPENVPNSERVICE property to service PID. */
++                TCHAR szPID[10 /*MAXDWORD in decimal*/ + 1 /*terminator*/];
++                _stprintf_s(
++                    szPID, _countof(szPID),
++                    TEXT("%u"),
++                    ssp.dwProcessId);
++
++                uiResult = MsiSetProperty(hInstall, TEXT("OPENVPNSERVICE"), szPID);
++                if (uiResult != ERROR_SUCCESS)
++                {
++                    SetLastError(uiResult); /* MSDN does not mention MsiSetProperty() to set GetLastError(). But we do have an error code. Set last error manually. */
++                    msg(M_NONFATAL | M_ERRNO, "%s: MsiSetProperty(\"OPENVPNSERVICE\") failed", __FUNCTION__);
++                }
++
++                /* We know user is using the service. Skip auto-start setting check. */
++                goto cleanup_OpenService;
+             }
+-            goto cleanup_OpenService;
++            break;
+         }
+-        break;
+     }
+-finish_QueryServiceStatusEx:;
++    else
++    {
++        uiResult = GetLastError();
++        msg(M_NONFATAL | M_ERRNO, "%s: QueryServiceStatusEx(\"OpenVPNService\") failed", __FUNCTION__);
++    }
+ 
+     /* Service is not started. Is it set to auto-start? */
+     /* MSDN describes the maximum buffer size for QueryServiceConfig() to be 8kB. */
+@@ -415,6 +417,7 @@ finish_QueryServiceStatusEx:;
+ 
+     if (pQsc->dwStartType <= SERVICE_AUTO_START)
+     {
++        /* Service is set to auto-start. Set OPENVPNSERVICE property to its path. */
+         uiResult = MsiSetProperty(hInstall, TEXT("OPENVPNSERVICE"), pQsc->lpBinaryPathName);
+         if (uiResult != ERROR_SUCCESS)
+         {
 -- 
 2.19.0.windows.1
 
