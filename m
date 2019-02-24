@@ -1,11 +1,11 @@
-References: <20190223180241.18374-1-stefan.strogin@...277...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <4b330b38-6408-c148-d1a7-d025021503df@...1227...>
-Date: Sun, 24 Feb 2019 02:28:32 +0100
+From: Simon Rozman <simon@...2293...>
+Date: Sun, 24 Feb 2019 19:12:52 +0100
+Message-Id: <20190224181252.43996-1-simon@...2293...>
+In-Reply-To: <20190117155829.GA92142@...1296...>
+References: <20190117155829.GA92142@...1296...>
 MIME-Version: 1.0
-In-Reply-To: <20190223180241.18374-1-stefan.strogin@...277...>
-Content-Language: de-DE
-Subject: Re: [Openvpn-devel] [PATCH] Fix compilation with LibreSSL
+Subject: [Openvpn-devel] [PATCH] Disambiguate thread local storage
+ references from TLS
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,83 +14,193 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Stefan Strogin <stefan.strogin@...277...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Am 23.02.19 um 19:02 schrieb Stefan Strogin:
-> TLS 1.3 is not ready yet in LibreSSL.
-> Also SSL_get1_supported_ciphers() has been just added into master (not yet
-> released).
+Since OpenVPN is security software, "TLS" usually stands for Transport
+Layer Security.
 
-So I written already a rant about LibreSSL in this trac ticket
-(https://community.openvpn.net/openvpn/ticket/1159), I will just copy
-the relevant part here:
+Furthermore, repetitive copy&paste code was refactored using a macro.
 
-Biggest problem is that we have no one who really tests or works with us
-doing LibreSSL. There have been multiple people saying that will work
-with us and maintain LibreSSL but that has not materialised yet. And I
-am getting quite fed up with way that LibreSSL does API compatiblity. It
-claims to support OpenSSL 2.0.0 API when it clearly doesn't. This also
-means that every new feature needs an or !LIBRE_SSL. I would be okay to
-add FEATURE macros for libressl if they actually support new featues
-like TLS1.3 etc but the current way is just a pain to maintain.
-Also the patch should be send to the mailing list for proper review.
+This patch follows Gert's recommendations from [openvpn-devel].
 
-The || !defined(LIBRESSL_VERSION_NUMBER) means that I have no idea of
-knowing when it is safe to remove the code. The idea of having the
-OPENSSL_VERSION macros is to remove the ifdefs when we drop support for
-old version but the unversioned LIBRESSL sounds like we would have to
-keep ancient OpenSSL APIs forever in the code to support LibreSSL.
+Signed-off-by: Simon Rozman <simon@...2293...>
+Message-ID: <20190117155829.GA92142@...1296...>
+---
+ src/openvpnmsica/dllmain.c      | 30 +++++++++++++++---------------
+ src/openvpnmsica/openvpnmsica.c | 20 +++++---------------
+ src/openvpnmsica/openvpnmsica.h | 18 ++++++++++++++----
+ 3 files changed, 34 insertions(+), 34 deletions(-)
 
-Your comment that TLS 1.3 and SSL_get1_supported_ciphers will become
-available with some later LibreSSL, means that the current patch is
-wrong here and we will need to patch it again.
-
-In summary I really do not like this stuff. But I also accept that
-having these defines in there makes same sense to have at least
-unofficial support.  If you can send a follow up patch that at least
-uses some feature or libressl version in the ifdef, we have an easier
-time identifying those parts in the future to be obsolete.
-
-Arne
-
-> Signed-off-by: Stefan Strogin <stefan.strogin@...277...>
-> ---
->  src/openvpn/ssl_openssl.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-> index ddb78da7..fcaac080 100644
-> --- a/src/openvpn/ssl_openssl.c
-> +++ b/src/openvpn/ssl_openssl.c
-> @@ -465,7 +465,7 @@ tls_ctx_restrict_ciphers_tls13(struct tls_root_ctx *ctx, const char *ciphers)
->          return;
->      }
->  
-> -#if (OPENSSL_VERSION_NUMBER < 0x1010100fL)
-> +#if (OPENSSL_VERSION_NUMBER < 0x1010100fL) || defined(LIBRESSL_VERSION_NUMBER)
->      crypto_msg(M_WARN, "Not compiled with OpenSSL 1.1.1 or higher. "
->                 "Ignoring TLS 1.3 only tls-ciphersuites '%s' setting.",
->                 ciphers);
-> @@ -1998,7 +1998,7 @@ show_available_tls_ciphers_list(const char *cipher_list,
->          crypto_msg(M_FATAL, "Cannot create SSL_CTX object");
->      }
->  
-> -#if (OPENSSL_VERSION_NUMBER >= 0x1010100fL)
-> +#if (OPENSSL_VERSION_NUMBER >= 0x1010100fL && !defined(LIBRESSL_VERSION_NUMBER))
->      if (tls13)
->      {
->          SSL_CTX_set_min_proto_version(tls_ctx.ctx, TLS1_3_VERSION);
-> @@ -2019,7 +2019,7 @@ show_available_tls_ciphers_list(const char *cipher_list,
->          crypto_msg(M_FATAL, "Cannot create SSL object");
->      }
->  
-> -#if (OPENSSL_VERSION_NUMBER < 0x1010000fL)
-> +#if (OPENSSL_VERSION_NUMBER < 0x1010000fL) || defined(LIBRESSL_VERSION_NUMBER)
->      STACK_OF(SSL_CIPHER) *sk = SSL_get_ciphers(ssl);
->  #else
->      STACK_OF(SSL_CIPHER) *sk = SSL_get1_supported_ciphers(ssl);
-> 
+diff --git a/src/openvpnmsica/dllmain.c b/src/openvpnmsica/dllmain.c
+index 50231e4c..5f5092a0 100644
+--- a/src/openvpnmsica/dllmain.c
++++ b/src/openvpnmsica/dllmain.c
+@@ -36,7 +36,7 @@
+ #include <tchar.h>
+ 
+ 
+-DWORD openvpnmsica_tlsidx_session = TLS_OUT_OF_INDEXES;
++DWORD openvpnmsica_thread_data_idx = TLS_OUT_OF_INDEXES;
+ 
+ 
+ /**
+@@ -54,9 +54,9 @@ DllMain(
+     switch (dwReason)
+     {
+         case DLL_PROCESS_ATTACH:
+-            /* Allocate TLS index. */
+-            openvpnmsica_tlsidx_session = TlsAlloc();
+-            if (openvpnmsica_tlsidx_session == TLS_OUT_OF_INDEXES)
++            /* Allocate thread local storage index. */
++            openvpnmsica_thread_data_idx = TlsAlloc();
++            if (openvpnmsica_thread_data_idx == TLS_OUT_OF_INDEXES)
+             {
+                 return FALSE;
+             }
+@@ -64,25 +64,25 @@ DllMain(
+ 
+         case DLL_THREAD_ATTACH:
+         {
+-            /* Create TLS data. */
+-            struct openvpnmsica_tls_data *s = (struct openvpnmsica_tls_data *)malloc(sizeof(struct openvpnmsica_tls_data));
+-            memset(s, 0, sizeof(struct openvpnmsica_tls_data));
+-            TlsSetValue(openvpnmsica_tlsidx_session, s);
++            /* Create thread local storage data. */
++            struct openvpnmsica_thread_data *s = (struct openvpnmsica_thread_data *)malloc(sizeof(struct openvpnmsica_thread_data));
++            memset(s, 0, sizeof(struct openvpnmsica_thread_data));
++            TlsSetValue(openvpnmsica_thread_data_idx, s);
+             break;
+         }
+ 
+         case DLL_PROCESS_DETACH:
+-            if (openvpnmsica_tlsidx_session != TLS_OUT_OF_INDEXES)
++            if (openvpnmsica_thread_data_idx != TLS_OUT_OF_INDEXES)
+             {
+-                /* Free TLS data and TLS index. */
+-                free(TlsGetValue(openvpnmsica_tlsidx_session));
+-                TlsFree(openvpnmsica_tlsidx_session);
++                /* Free thread local storage data and index. */
++                free(TlsGetValue(openvpnmsica_thread_data_idx));
++                TlsFree(openvpnmsica_thread_data_idx);
+             }
+             break;
+ 
+         case DLL_THREAD_DETACH:
+-            /* Free TLS data. */
+-            free(TlsGetValue(openvpnmsica_tlsidx_session));
++            /* Free thread local storage data. */
++            free(TlsGetValue(openvpnmsica_thread_data_idx));
+             break;
+     }
+ 
+@@ -105,7 +105,7 @@ x_msg_va(const unsigned int flags, const char *format, va_list arglist)
+     /* Secure last error before it is overridden. */
+     DWORD dwResult = (flags & M_ERRNO) != 0 ? GetLastError() : ERROR_SUCCESS;
+ 
+-    struct openvpnmsica_tls_data *s = (struct openvpnmsica_tls_data *)TlsGetValue(openvpnmsica_tlsidx_session);
++    struct openvpnmsica_thread_data *s = (struct openvpnmsica_thread_data *)TlsGetValue(openvpnmsica_thread_data_idx);
+     if (s->hInstall == 0)
+     {
+         /* No MSI session, no fun. */
+diff --git a/src/openvpnmsica/openvpnmsica.c b/src/openvpnmsica/openvpnmsica.c
+index 3232a47c..b8108b99 100644
+--- a/src/openvpnmsica/openvpnmsica.c
++++ b/src/openvpnmsica/openvpnmsica.c
+@@ -435,9 +435,7 @@ FindSystemInfo(_In_ MSIHANDLE hInstall)
+ 
+     BOOL bIsCoInitialized = SUCCEEDED(CoInitialize(NULL));
+ 
+-    /* Set MSI session handle in TLS. */
+-    struct openvpnmsica_tls_data *s = (struct openvpnmsica_tls_data *)TlsGetValue(openvpnmsica_tlsidx_session);
+-    s->hInstall = hInstall;
++    OPENVPNMSICA_SAVE_MSI_SESSION(hInstall);
+ 
+     openvpnmsica_set_driver_certification(hInstall);
+     openvpnmsica_set_openvpnserv_state(hInstall);
+@@ -462,9 +460,7 @@ FindTAPInterfaces(_In_ MSIHANDLE hInstall)
+     UINT uiResult;
+     BOOL bIsCoInitialized = SUCCEEDED(CoInitialize(NULL));
+ 
+-    /* Set MSI session handle in TLS. */
+-    struct openvpnmsica_tls_data *s = (struct openvpnmsica_tls_data *)TlsGetValue(openvpnmsica_tlsidx_session);
+-    s->hInstall = hInstall;
++    OPENVPNMSICA_SAVE_MSI_SESSION(hInstall);
+ 
+     /* Get available network interfaces. */
+     struct tap_interface_node *pInterfaceList = NULL;
+@@ -677,9 +673,7 @@ StartOpenVPNGUI(_In_ MSIHANDLE hInstall)
+     UINT uiResult;
+     BOOL bIsCoInitialized = SUCCEEDED(CoInitialize(NULL));
+ 
+-    /* Set MSI session handle in TLS. */
+-    struct openvpnmsica_tls_data *s = (struct openvpnmsica_tls_data *)TlsGetValue(openvpnmsica_tlsidx_session);
+-    s->hInstall = hInstall;
++    OPENVPNMSICA_SAVE_MSI_SESSION(hInstall);
+ 
+     /* Create and populate a MSI record. */
+     MSIHANDLE hRecord = MsiCreateRecord(1);
+@@ -759,9 +753,7 @@ EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall)
+     UINT uiResult;
+     BOOL bIsCoInitialized = SUCCEEDED(CoInitialize(NULL));
+ 
+-    /* Set MSI session handle in TLS. */
+-    struct openvpnmsica_tls_data *s = (struct openvpnmsica_tls_data *)TlsGetValue(openvpnmsica_tlsidx_session);
+-    s->hInstall = hInstall;
++    OPENVPNMSICA_SAVE_MSI_SESSION(hInstall);
+ 
+     /* List of deferred custom actions EvaluateTAPInterfaces prepares operation sequence for. */
+     static const LPCTSTR szActionNames[] =
+@@ -1052,9 +1044,7 @@ ProcessDeferredAction(_In_ MSIHANDLE hInstall)
+     UINT uiResult;
+     BOOL bIsCoInitialized = SUCCEEDED(CoInitialize(NULL));
+ 
+-    /* Set MSI session handle in TLS. */
+-    struct openvpnmsica_tls_data *s = (struct openvpnmsica_tls_data *)TlsGetValue(openvpnmsica_tlsidx_session);
+-    s->hInstall = hInstall;
++    OPENVPNMSICA_SAVE_MSI_SESSION(hInstall);
+ 
+     BOOL bIsCleanup = MsiGetMode(hInstall, MSIRUNMODE_COMMIT) || MsiGetMode(hInstall, MSIRUNMODE_ROLLBACK);
+ 
+diff --git a/src/openvpnmsica/openvpnmsica.h b/src/openvpnmsica/openvpnmsica.h
+index 382064b6..d6a09127 100644
+--- a/src/openvpnmsica/openvpnmsica.h
++++ b/src/openvpnmsica/openvpnmsica.h
+@@ -33,18 +33,28 @@
+ 
+ 
+ /**
+- * TLS data
++ * Thread local storage data
+  */
+-struct openvpnmsica_tls_data
++struct openvpnmsica_thread_data
+ {
+     MSIHANDLE hInstall; /** Handle to the installation session. */
+ };
+ 
+ 
+ /**
+- * MSI session handle TLS index
++ * MSI session handle thread local storage index
+  */
+-extern DWORD openvpnmsica_tlsidx_session;
++extern DWORD openvpnmsica_thread_data_idx;
++
++
++/**
++ * Set MSI session handle in thread local storage.
++ */
++#define OPENVPNMSICA_SAVE_MSI_SESSION(hInstall) \
++{ \
++    struct openvpnmsica_thread_data *s = (struct openvpnmsica_thread_data *)TlsGetValue(openvpnmsica_thread_data_idx); \
++    s->hInstall = (hInstall); \
++}
+ 
+ 
+ /*
+-- 
+2.19.0.windows.1
 
 
