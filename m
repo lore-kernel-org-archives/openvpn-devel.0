@@ -1,16 +1,8 @@
-References: <20190223180241.18374-1-stefan.strogin@...277...>
- <4b330b38-6408-c148-d1a7-d025021503df@...1227...>
- <13090aae-9e74-6a24-4b1e-1b7b8ad18a88@...277...>
- <8ad35f89-7e2a-f780-d0a9-efabc85ad97f@...1227...>
 From: Stefan Strogin <stefan.strogin@...277...>
-Message-ID: <85a0584e-e607-4e11-dc66-7f5ce090d356@...277...>
-Date: Mon, 25 Feb 2019 14:04:05 +0200
+Date: Mon, 25 Feb 2019 20:35:31 +0200
+Message-Id: <20190225183531.27399-1-stefan.strogin@...277...>
 MIME-Version: 1.0
-In-Reply-To: <8ad35f89-7e2a-f780-d0a9-efabc85ad97f@...1227...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="IJV3N99YoeJPafko1gLy0G0IAMylHQh3j"
-Subject: Re: [Openvpn-devel] [PATCH] Fix compilation with LibreSSL
+Subject: [Openvpn-devel] [PATCH v2] Use correct ifdefs for LibreSSL support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,72 +11,138 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---IJV3N99YoeJPafko1gLy0G0IAMylHQh3j
-Content-Type: multipart/mixed; boundary="WtO2eceqScimZq03VIS9pAGzs2sA6pHXI";
- protected-headers="v1"
-From: Stefan Strogin <stefan.strogin@...277...>
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <85a0584e-e607-4e11-dc66-7f5ce090d356@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix compilation with LibreSSL
-References: <20190223180241.18374-1-stefan.strogin@...277...>
- <4b330b38-6408-c148-d1a7-d025021503df@...1227...>
- <13090aae-9e74-6a24-4b1e-1b7b8ad18a88@...277...>
- <8ad35f89-7e2a-f780-d0a9-efabc85ad97f@...1227...>
-In-Reply-To: <8ad35f89-7e2a-f780-d0a9-efabc85ad97f@...1227...>
-
---WtO2eceqScimZq03VIS9pAGzs2sA6pHXI
-Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net, Arne Schwabe <arne@...1227...>
 
-On 25/02/2019 13:10, Arne Schwabe wrote:
-> Am 25.02.19 um 07:29 schrieb Stefan Strogin:
-> Hm, both have advantages. But if we can fix the rare corner case of
-> OpenSSL 1.1.1 without TLS_13 then lets go for the TLS1_3_VERSION variant.
+- TLS 1.3 is not ready yet in LibreSSL. Also there is a theoretical
+possibility of OpenSSL >=1.1.1 built without TLS 1.3 support.
+- EC_KEY_METHOD API and SSL_get1_supported_ciphers are added into LibreSSL
+master (not yet released in 2.9.0).
+- Some methods that are available since LibreSSL 2.7.0 were thrown away
+in ssl_openssl.c regardless of LibreSSL version. Use them with newer LibreSSL.
 
-Thanks, I'll use this one then.
+Signed-off-by: Stefan Strogin <stefan.strogin@...277...>
+---
+ src/openvpn/ssl_openssl.c | 33 +++++++++++++++++++++------------
+ 1 file changed, 21 insertions(+), 12 deletions(-)
 
-> Are there really Libressl versions that do not define
-> LIBRESSL_VERSION_NUMBER that are worth supporting? Otherwise I would
-> prefer to have only the LIBRESSL_VERSION_NUMBER < 0x2090100fL or
-> inverted and >,. Need to double check what is true for undefined things.
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index ddb78da7..8bcebac4 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -465,7 +465,7 @@ tls_ctx_restrict_ciphers_tls13(struct tls_root_ctx *ctx, const char *ciphers)
+         return;
+     }
+ 
+-#if (OPENSSL_VERSION_NUMBER < 0x1010100fL)
++#if !defined(TLS1_3_VERSION)
+     crypto_msg(M_WARN, "Not compiled with OpenSSL 1.1.1 or higher. "
+                "Ignoring TLS 1.3 only tls-ciphersuites '%s' setting.",
+                ciphers);
+@@ -526,7 +526,8 @@ tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
+ 
+     ASSERT(ctx);
+ 
+-#if OPENSSL_VERSION_NUMBER >= 0x10002000L && !defined(LIBRESSL_VERSION_NUMBER)
++#if (OPENSSL_VERSION_NUMBER >= 0x10002000L && !defined(LIBRESSL_VERSION_NUMBER)) \
++    || LIBRESSL_VERSION_NUMBER >= 0x2070000fL
+     /* OpenSSL 1.0.2 and up */
+     cert = SSL_CTX_get0_certificate(ctx->ctx);
+ #else
+@@ -561,7 +562,8 @@ tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
+     }
+ 
+ cleanup:
+-#if OPENSSL_VERSION_NUMBER < 0x10002000L || defined(LIBRESSL_VERSION_NUMBER)
++#if OPENSSL_VERSION_NUMBER < 0x10002000L \
++    || (defined(LIBRESSL_VERSION_NUMBER) && LIBRESSL_VERSION_NUMBER < 0x2070000fL)
+     SSL_free(ssl);
+ #endif
+     return;
+@@ -1209,7 +1211,9 @@ err:
+     return 0;
+ }
+ 
+-#if OPENSSL_VERSION_NUMBER > 0x10100000L && !defined(OPENSSL_NO_EC) && !defined(LIBRESSL_VERSION_NUMBER)
++#if ((OPENSSL_VERSION_NUMBER > 0x10100000L && !defined(LIBRESSL_VERSION_NUMBER)) \
++     || LIBRESSL_VERSION_NUMBER > 0x2090000fL) \
++    && !defined(OPENSSL_NO_EC)
+ 
+ /* called when EC_KEY is destroyed */
+ static void
+@@ -1331,7 +1335,7 @@ err:
+     }
+     return 0;
+ }
+-#endif /* OPENSSL_VERSION_NUMBER > 1.1.0 dev */
++#endif /* OPENSSL_VERSION_NUMBER > 1.1.0 dev && !defined(OPENSSL_NO_EC) */
+ 
+ int
+ tls_ctx_use_management_external_key(struct tls_root_ctx *ctx)
+@@ -1340,7 +1344,8 @@ tls_ctx_use_management_external_key(struct tls_root_ctx *ctx)
+ 
+     ASSERT(NULL != ctx);
+ 
+-#if OPENSSL_VERSION_NUMBER >= 0x10002000L && !defined(LIBRESSL_VERSION_NUMBER)
++#if (OPENSSL_VERSION_NUMBER >= 0x10002000L && !defined(LIBRESSL_VERSION_NUMBER)) \
++    || LIBRESSL_VERSION_NUMBER >= 0x2070000fL
+     /* OpenSSL 1.0.2 and up */
+     X509 *cert = SSL_CTX_get0_certificate(ctx->ctx);
+ #else
+@@ -1362,7 +1367,9 @@ tls_ctx_use_management_external_key(struct tls_root_ctx *ctx)
+             goto cleanup;
+         }
+     }
+-#if OPENSSL_VERSION_NUMBER > 0x10100000L && !defined(OPENSSL_NO_EC) && !defined(LIBRESSL_VERSION_NUMBER)
++#if ((OPENSSL_VERSION_NUMBER > 0x10100000L && !defined(LIBRESSL_VERSION_NUMBER)) \
++     || LIBRESSL_VERSION_NUMBER > 0x2090000fL) \
++    && !defined(OPENSSL_NO_EC)
+     else if (EVP_PKEY_id(pkey) == EVP_PKEY_EC)
+     {
+         if (!tls_ctx_use_external_ec_key(ctx, pkey))
+@@ -1375,17 +1382,18 @@ tls_ctx_use_management_external_key(struct tls_root_ctx *ctx)
+         crypto_msg(M_WARN, "management-external-key requires an RSA or EC certificate");
+         goto cleanup;
+     }
+-#else  /* if OPENSSL_VERSION_NUMBER > 0x10100000L && !defined(OPENSSL_NO_EC) && !defined(LIBRESSL_VERSION_NUMBER) */
++#else  /* OPENSSL_VERSION_NUMBER > 1.1.0 dev && !defined(OPENSSL_NO_EC) */
+     else
+     {
+         crypto_msg(M_WARN, "management-external-key requires an RSA certificate");
+         goto cleanup;
+     }
+-#endif /* OPENSSL_VERSION_NUMBER > 1.1.0 dev */
++#endif /* OPENSSL_VERSION_NUMBER > 1.1.0 dev && !defined(OPENSSL_NO_EC) */
+ 
+     ret = 0;
+ cleanup:
+-#if OPENSSL_VERSION_NUMBER < 0x10002000L || defined(LIBRESSL_VERSION_NUMBER)
++#if OPENSSL_VERSION_NUMBER < 0x10002000L \
++    || (defined(LIBRESSL_VERSION_NUMBER) && LIBRESSL_VERSION_NUMBER < 0x2070000fL)
+     if (ssl)
+     {
+         SSL_free(ssl);
+@@ -1998,7 +2006,7 @@ show_available_tls_ciphers_list(const char *cipher_list,
+         crypto_msg(M_FATAL, "Cannot create SSL_CTX object");
+     }
+ 
+-#if (OPENSSL_VERSION_NUMBER >= 0x1010100fL)
++#if defined(TLS1_3_VERSION)
+     if (tls13)
+     {
+         SSL_CTX_set_min_proto_version(tls_ctx.ctx, TLS1_3_VERSION);
+@@ -2019,7 +2027,8 @@ show_available_tls_ciphers_list(const char *cipher_list,
+         crypto_msg(M_FATAL, "Cannot create SSL object");
+     }
+ 
+-#if (OPENSSL_VERSION_NUMBER < 0x1010000fL)
++#if (OPENSSL_VERSION_NUMBER < 0x1010000fL) || \
++    (defined(LIBRESSL_VERSION_NUMBER) && LIBRESSL_VERSION_NUMBER <= 0x2090000fL)
+     STACK_OF(SSL_CIPHER) *sk = SSL_get_ciphers(ssl);
+ #else
+     STACK_OF(SSL_CIPHER) *sk = SSL_get1_supported_ciphers(ssl);
+-- 
+2.21.0
 
-"After all replacements due to macro expansion and the defined unary operat=
-or have been performed, all remaining identifiers (including those lexicall=
-y identical to keywords) are replaced with the pp-number 0" - C99, 6.10.1.
-So "#if (LIBRESSL_VERSION_NUMBER < 0x2090100fL)" will be true with undefined
-LIBRESSL_VERSION_NUMBER.
-
---
-Stefan
-
-
---WtO2eceqScimZq03VIS9pAGzs2sA6pHXI--
-
---IJV3N99YoeJPafko1gLy0G0IAMylHQh3j
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEkfUG6Y1yNm+33DMMHWzUMpXJe34FAlxz2bwACgkQHWzUMpXJ
-e36M0w/+L5As00ctbWNHklfRNPE5qEi1/gqKQ0p2R6f3IwdFVUaZzARyJVsJGub3
-B6/jSNqd3bCnFIaFctUKBMTt2GW3kOr58hDizqsZtmy/XdHFifyT5PUuehxmtoDb
-kJ80gbbzNdZjfIGd0TvSeVVRuI+Y/inmzOn0jELL/ENwwn4ShQINmKHpZdcIsger
-8jDhHztr58SVDCKr+ur7BhIE+P8tuTZ5PRpBm+qSm94TQ2coAlU0TPtM3U3RkIrk
-Jg8Z7n9lDge5HJDo0XYR6b4Re1yjWex5oGRv98wvBQS7xedTR7LAfOlCvRk68YKs
-PBydZevWtdR/j0kU0s9wYnNep+eaAt510K5Ao/t13MaHuNr/GjANkI+/QM+6OB6z
-vr6ms3a5DKURFwVnndH7d3J/FqSQ29Haxl8B0ytk+937b116SDLs+KQ8ZuknFxjf
-niWwI3pof6xln3Yv//2MuSJREbb0/TWJMBi+K8EXp9/dCv4IfHtTbrWieX/h3b+3
-BtGB2yS0ambPr0wK7VvyYm6hJhtRztgHO9Wa5P62Fu0XVffMJxCSbn5261nt3sKb
-oy0KKbK7aNNDtMqfLgUETVIogepy1mBbrgMRB2d9O5m2DnXOcNFNktnESM8taZQ3
-QFFGfNI1rOnbM1YEz76wQQ+/SCJyW/sHOwr+z2xGfu/S7OgNbPg=
-=B9V+
------END PGP SIGNATURE-----
-
---IJV3N99YoeJPafko1gLy0G0IAMylHQh3j--
 
