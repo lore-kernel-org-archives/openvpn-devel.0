@@ -1,10 +1,10 @@
-Date: Thu, 28 Feb 2019 17:00:04 +0100 (CET)
-Message-Id: <201902281600.x1SG04Hb041873@...2054...>
+Date: Thu, 28 Feb 2019 18:25:33 +0100 (CET)
+Message-Id: <201902281725.x1SHPXJq043376@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20190220131906.22970-1-davids@...515...>
-References: <20190220131906.22970-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: cleanup: Remove RPM
- openvpn.spec build approach
+In-Reply-To: <1550709982-19319-1-git-send-email-selva.nair@...277...>
+References: <1550709982-19319-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Better error message when
+ script fails due to script-security setting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,32 +15,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: David Sommerseth <davids@...515...>
+To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-.. for the reasons given (as this is mostly removing non-code files, 
-easy to review).  Thanks for the documentation pointers.
+Thanks.  I have not tested the various error conditions, but the code
+makes sense to me and it passes compile and t_client tests (which use
+--up here), so it's not breaking stuff in fundamental and non-obvious
+ways.
 
-I have tested with "make distcheck" that autoconf still agrees with
-you on "which files should be there for packaging" (it does).
+(Since David was mostly happy with the v1 approach except for the
+"127" and "switch()", I assume he's totally fine with v2 now :-) )
 
-Your patch has been applied to the master branch - I have no objections
-against inclusion in 2.4, but it wouldn't trivially apply and I was a bit
-too lazy to go fight the conflicts.  So if you think it should be in 2.4,
-feel free to take my ACK and apply it yourself :-)
+Your patch has been applied to the master branch - it won't apply to
+2.4 as we have no "run_command.*" there yet.  Shall we cherrypick
+bf97c00f7dba4 and 253f015558 to get there?  Or do you want to do a
+2.4 version of the patch?
 
-commit 57ec6cec85b92e6af35a7871d105d84a753d6549
-Author: David Sommerseth
-Date:   Wed Feb 20 14:19:06 2019 +0100
+commit 01a3c876d4911ff7ea82b04edeb43defdebc69d7 (master)
+Author: Selva Nair
+Date:   Wed Feb 20 19:46:22 2019 -0500
 
-     cleanup: Remove RPM openvpn.spec build approach
+     Better error message when script fails due to script-security setting
 
-     Signed-off-by: David Sommerseth <davids@...515...>
+     Signed-off-by: Selva Nair <selva.nair@...277...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20190220131906.22970-1-davids@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18222.html
+     Message-Id: <1550709982-19319-1-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18223.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
