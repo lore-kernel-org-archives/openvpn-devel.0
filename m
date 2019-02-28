@@ -1,10 +1,10 @@
-Date: Thu, 28 Feb 2019 16:07:46 +0100 (CET)
-Message-Id: <201902281507.x1SF7kOh041235@...2054...>
+Date: Thu, 28 Feb 2019 16:07:57 +0100 (CET)
+Message-Id: <201902281507.x1SF7v07041244@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20190224181252.43996-1-simon@...2293...>
-References: <20190224181252.43996-1-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Disambiguate thread local
- storage references from TLS
+In-Reply-To: <20190224181504.38328-1-simon@...2293...>
+References: <20190224181504.38328-1-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add user manual and developer
+ notes URL for tapctl.exe
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,20 +23,20 @@ each other today)
 
 Acked-by: Gert Doering <gert@...1296...>
 
-"Does what I asked for and looks reasonable" ;-) - thanks.
+Trival but useful :)
 
 Your patch has been applied to the master branch.
 
-commit f75351da2974dac10baca5fa83c18be7f27c73cf
+commit 890f9a85ca86fbba678fddb2e589a0180a6f1784
 Author: Simon Rozman
-Date:   Sun Feb 24 19:12:52 2019 +0100
+Date:   Sun Feb 24 19:15:04 2019 +0100
 
-     Disambiguate thread local storage references from TLS
+     Add user manual and developer notes URL for tapctl.exe
 
      Signed-off-by: Simon Rozman <simon@...2293...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20190224181252.43996-1-simon@...2293...
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18230.html
+     Message-Id: <20190224181504.38328-1-simon@...2293...
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18232.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
