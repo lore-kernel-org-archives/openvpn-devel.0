@@ -1,10 +1,10 @@
-Date: Thu, 28 Feb 2019 16:32:39 +0100 (CET)
-Message-Id: <201902281532.x1SFWdxE041529@...2054...>
+Date: Thu, 28 Feb 2019 16:45:40 +0100 (CET)
+Message-Id: <201902281545.x1SFjeBP041694@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20190224185500.45300-1-simon@...2293...>
-References: <20190224185500.45300-1-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add developer notes URL for
- openvpnmsica.dll
+In-Reply-To: <20190224181621.27020-1-simon@...2293...>
+References: <20190224181621.27020-1-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Limit tapctl.exe and
+ openvpnmsica.dll to TAP-Windows6 adapters only
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,20 +20,23 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Trivial change, but very useful :-) - thanks.
+Thanks for the change.  I have *not* tested it, just test compiled it
+(the usual ubuntu 16.04/mingw combo), but staring at the code, this look
+reasonable.  Actually the change seems to make the code *more simple*
+(in FindTAPInterfaces() ) which is always welcome...
 
 Your patch has been applied to the master branch.
 
-commit 5a05352f0ae06d2f79072fdc86370f279ed84074
+commit f20dd0ee77c37c5d99106d0cbf29658b3c57fd3f
 Author: Simon Rozman
-Date:   Sun Feb 24 19:55:00 2019 +0100
+Date:   Sun Feb 24 19:16:21 2019 +0100
 
-     Add developer notes URL for openvpnmsica.dll
+     Limit tapctl.exe and openvpnmsica.dll to TAP-Windows6 adapters only
 
      Signed-off-by: Simon Rozman <simon@...2293...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20190224185500.45300-1-simon@...2293...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18235.html
+     Message-Id: <20190224181621.27020-1-simon@...2293...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18234.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
