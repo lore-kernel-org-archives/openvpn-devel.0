@@ -1,12 +1,15 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <d54b01ca-1001-ccfc-cb97-1e1a826a5f94@...515...>
-Date: Tue, 19 Mar 2019 14:04:10 +0200
+References: <1552943809-6367-1-git-send-email-selva.nair@...277...>
+ <5a54b7c9-d466-c8c2-e468-42c16c88d1dd@...277...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <2bf767b9-8459-c0bf-3914-9afaee3093f8@...2181...>
+Date: Wed, 20 Mar 2019 09:00:23 +0100
 MIME-Version: 1.0
+In-Reply-To: <5a54b7c9-d466-c8c2-e468-42c16c88d1dd@...277...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="gulyrHTyCLHTr9R4mxih6Wk7eEA9NqQNZ"
-Subject: [Openvpn-devel] Upcoming community meetings (Wednesdays 11:30
- CET/CEST)
+ boundary="K0smtSRU0mF4FYW5mT7viBCb7vaT7NNy3"
+Subject: Re: [Openvpn-devel] [PATCH] Improve the documentation for
+ --dhcp-option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,71 +18,85 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: tincanteksup <tincanteksup@...277...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---gulyrHTyCLHTr9R4mxih6Wk7eEA9NqQNZ
-Content-Type: multipart/mixed; boundary="3w028aBUyngIORmQxGAEcIam38hoQ2iY6";
+--K0smtSRU0mF4FYW5mT7viBCb7vaT7NNy3
+Content-Type: multipart/mixed; boundary="3MnCNje3Luftpj1Cb3AIE1Cc5GGoHHzU4";
  protected-headers="v1"
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <d54b01ca-1001-ccfc-cb97-1e1a826a5f94@...515...>
-Subject: Upcoming community meetings (Wednesdays 11:30 CET/CEST)
+From: Antonio Quartulli <a@...2181...>
+To: tincanteksup <tincanteksup@...277...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <2bf767b9-8459-c0bf-3914-9afaee3093f8@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH] Improve the documentation for
+ --dhcp-option
+References: <1552943809-6367-1-git-send-email-selva.nair@...277...>
+ <5a54b7c9-d466-c8c2-e468-42c16c88d1dd@...277...>
+In-Reply-To: <5a54b7c9-d466-c8c2-e468-42c16c88d1dd@...277...>
 
---3w028aBUyngIORmQxGAEcIam38hoQ2iY6
+--3MnCNje3Luftpj1Cb3AIE1Cc5GGoHHzU4
 Content-Language: en-US
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-As discussed in last week's community meeting we will start having
-weekly meetings on #openvpn-meeting <at> irc.freenode.net. You do not
-have to be logged in to Freenode to join the channel.
+On 18/03/2019 22:30, tincanteksup wrote:
+> Hi,
+>=20
+> this situation has been hanging around for so long is this brief note
+> really enough? Considering that the manual has numerous other URLs why
+> not include this URL here:
+> https://community.openvpn.net/openvpn/wiki/Pushing-DNS-to-clients
+>=20
+> We already have this:
+> https://community.openvpn.net/openvpn/wiki/SWEET32
+>=20
 
-These meetings will be held on Wednesdays at 11:30 CET/CEST. During
-winter time this translates to 10:30 UTC and in summer time to 9:30 UTC.
-
-Next three meetings have been scheduled already:
-
-<https://community.openvpn.net/openvpn/wiki/Topics-2019-03-20>
-<https://community.openvpn.net/openvpn/wiki/Topics-2019-03-27>
-<https://community.openvpn.net/openvpn/wiki/Topics-2019-04-03>
-
-If you have any other things you'd like to bring up, respond to this
-mail, send me mail privately or add them to the list yourself.
-
-In case you can't attend the meeting, please feel free to make comments
-on the topics by responding to this email or to the summary email sent
-after the meeting. Whenever possible, we'll also respond to existing,
-related email threads.
-
---
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
+the problem with URLs is that they become obsolete and we need to
+re-patch the manual in order to update them (or ensure the URL always
+work/redirect to something).
 
 
---3w028aBUyngIORmQxGAEcIam38hoQ2iY6--
+However, I was thinking that a WARNING in the log when parsing a
+dhcp-option without any script configured (on non-windows platform) may
+also be beneficial.
 
---gulyrHTyCLHTr9R4mxih6Wk7eEA9NqQNZ
+Not many people will read it, but at least it will be there to be seen
+at the first attempt of understanding what's wrong.
+
+What do you think?
+
+This said, the warning could/should be implemented as a separate patch.
+
+Regards,
+
+--=20
+Antonio Quartulli
+
+
+--3MnCNje3Luftpj1Cb3AIE1Cc5GGoHHzU4--
+
+--K0smtSRU0mF4FYW5mT7viBCb7vaT7NNy3
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAlyQ2roACgkQKVhNn0CG
-RXhjLggAjj9zSOfAcJ7jXYHcCDWh9UzuF/zXcS2YUgdXdOC4zE9OTG7fxniPKLGl
-bba3Vp0PR/cls4mCjFzBm3zcLp/HWzKi4LGQo5sA+FKaUI8Ju7Eyzf1BTj9u6MJG
-ElS9dN26BQ/tLfjZu64W6JOmiuX96gXNqH8P0hSsT2oIpL4mVVoKW9Iipm8StK2n
-+OFqdtDIT6pog1S0cCLPi81RUE4QYtVpXGgpl45nqGztwXQGucdSN/akdm7FN1Vy
-yQs2iRl/7i8X60GHIkoJGIHiMlMeh/mzxwwPsGHudQwQBsOMMHOf4E0+RflhGKQY
-GSgT1QmynSqB16syBqhFK5fT1i5MvQ==
-=6vW0
+iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlyR8xcACgkQ9FVsWUWD
+Dm1Akw//YP8b9VIAA0GkybkPVpCigf5n6Y8wXbuGv8SyC5fnCVN2fv+/HcbZKs/y
+UBKFh8A8zo2hTkM41VYKY5YUBcyKY0wQ+lJ+4qU+lWc7OdMfhzSe3/dIBecw02pQ
+RTGxZS4KYdWoYNUkclrVqRrpmLrMsE/LWDQmZM16GodeSZjjhP8XicYxuEzHyvg1
+pAT57a+M2/lCRcDmqYsyNYpyv/WYDkBJB+f89gl9wQoZn8yTxt8AMBNqMSe2Cpqn
+dHcqdabjgLIc5CQ/o4dVZcIBCsWVdnSWm5BqMwriAqs5G3tFmc1cu6rsCMGAP6C+
+yDjHdgVHwTz/PhrpmBthJGsp1F+1NhKfDJthClVWY0WUARf6GlHhdE7CTSPWrHrX
+nW9Q+wA/RlRjxmxNVdCBJNwwp6q3vERWUmU6YMnT+YE0+zSmB37aClRHbU4M3Ajc
+xFlJESL0oNmFqUgfPl2NjcdOpRKQReObcjvm59EqNCbRqAn7epsVjZUcFPorbDdy
+krhaQjlPmFdgDE4QyIw1QN8sJFVrx8ppJnjboC0igCmP9CO0PB2zKnCsX1oEu9lv
+jUfFWDrWbuFBzXhNU5Wdz2sy1+m8Ua3t3xMUFs447x7SpJ69O3GQTrtqTDvoTay5
+H0LuFdOGdaBG8CZqe06TTT95DNLa8ce/dW9jeR2NZ646pKhEGfU=
+=xTcK
 -----END PGP SIGNATURE-----
 
---gulyrHTyCLHTr9R4mxih6Wk7eEA9NqQNZ--
+--K0smtSRU0mF4FYW5mT7viBCb7vaT7NNy3--
 
