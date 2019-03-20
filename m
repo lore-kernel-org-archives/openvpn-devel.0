@@ -1,15 +1,16 @@
-References: <1552943809-6367-1-git-send-email-selva.nair@...277...>
- <5a54b7c9-d466-c8c2-e468-42c16c88d1dd@...277...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <2bf767b9-8459-c0bf-3914-9afaee3093f8@...2181...>
-Date: Wed, 20 Mar 2019 09:00:23 +0100
+Date: Wed, 20 Mar 2019 12:40:26 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20190320114026.GW962@...1296...>
+References: <20190311133620.18278-3-chipitsine@...277...>
+ <201903181900.x2IJ01hV043882@...2054...>
+ <CAFHpkQHGchzS8_=sxVZEi5V20VLCEFuv2dSDZYM1bsaQKmcrvA@...278...>
 MIME-Version: 1.0
-In-Reply-To: <5a54b7c9-d466-c8c2-e468-42c16c88d1dd@...277...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="K0smtSRU0mF4FYW5mT7viBCb7vaT7NNy3"
-Subject: Re: [Openvpn-devel] [PATCH] Improve the documentation for
- --dhcp-option
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="O+m0AVbsNU64TeWp"
+Content-Disposition: inline
+In-Reply-To: <CAFHpkQHGchzS8_=sxVZEi5V20VLCEFuv2dSDZYM1bsaQKmcrvA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: travis-ci: change trusty
+ image to xenial
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,85 +19,196 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: tincanteksup <tincanteksup@...277...>, openvpn-devel@lists.sourceforge.net
+To: ???????? ?????????????? <chipitsine@...277...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---K0smtSRU0mF4FYW5mT7viBCb7vaT7NNy3
-Content-Type: multipart/mixed; boundary="3MnCNje3Luftpj1Cb3AIE1Cc5GGoHHzU4";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: tincanteksup <tincanteksup@...277...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <2bf767b9-8459-c0bf-3914-9afaee3093f8@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] Improve the documentation for
- --dhcp-option
-References: <1552943809-6367-1-git-send-email-selva.nair@...277...>
- <5a54b7c9-d466-c8c2-e468-42c16c88d1dd@...277...>
-In-Reply-To: <5a54b7c9-d466-c8c2-e468-42c16c88d1dd@...277...>
+--O+m0AVbsNU64TeWp
+Content-Type: multipart/mixed; boundary="s2DZqDUwsJbKKj+e"
+Content-Disposition: inline
 
---3MnCNje3Luftpj1Cb3AIE1Cc5GGoHHzU4
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
+--s2DZqDUwsJbKKj+e
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On 18/03/2019 22:30, tincanteksup wrote:
-> Hi,
->=20
-> this situation has been hanging around for so long is this brief note
-> really enough? Considering that the manual has numerous other URLs why
-> not include this URL here:
-> https://community.openvpn.net/openvpn/wiki/Pushing-DNS-to-clients
->=20
-> We already have this:
-> https://community.openvpn.net/openvpn/wiki/SWEET32
->=20
+On Tue, Mar 19, 2019 at 01:18:37AM +0500, ???????? ?????????????? wrote:
+> can we apply it to 2.4 as well ?
+> ubuntu trusty is EOL soon
 
-the problem with URLs is that they become obsolete and we need to
-re-patch the manual in order to update them (or ensure the URL always
-work/redirect to something).
+Steffan ACKed merging it into 2.4 as well.  For brevity I squashed the
+three commits to the same file into one, which is appended below.
 
-
-However, I was thinking that a WARNING in the log when parsing a
-dhcp-option without any script configured (on non-windows platform) may
-also be beneficial.
-
-Not many people will read it, but at least it will be there to be seen
-at the first attempt of understanding what's wrong.
-
-What do you think?
-
-This said, the warning could/should be implemented as a separate patch.
-
-Regards,
+gert
 
 --=20
-Antonio Quartulli
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--s2DZqDUwsJbKKj+e
+Content-Type: text/x-diff; charset=us-ascii
+Content-Disposition: attachment; filename="0001-travis-ci-add-linux-ppc64le-to-build-matrix-change-t.patch"
+Content-Transfer-Encoding: quoted-printable
+
+=46rom 6a5c9bb146061e3331a9000405c84150c8bad310 Mon Sep 17 00:00:00 2001
+=46rom: Ilya Shipitsin <chipitsine@...277...>
+Date: Mon, 11 Mar 2019 18:36:18 +0500
+Subject: [PATCH] travis-ci: add "linux-ppc64le" to build matrix, change tru=
+sty
+ image to xenial, update osx to xcode9.4 and modernize brew management
+
+Signed-off-by: Ilya Shipitsin <chipitsine@...277...>
+Acked-by: Steffan Karger <steffan.karger@...1435...>
+Message-Id: <20190311133620.18278-2-chipitsine@...277...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18=
+271.html
+Signed-off-by: Gert Doering <gert@...1296...>
+(cherry picked from commit 27fb43da6f86eda7a6e5a033e060cab5be0cdbe9)
+
+Ubuntu Trusty reaches End of Life on April 30, 2019
+Let us switch to xenial. Also, it simplifies mingw builds.
+We do not need to add xenial mingw manually anymore
+
+Signed-off-by: Ilya Shipitsin <chipitsine@...277...>
+Acked-by: Steffan Karger <steffan.karger@...1435...>
+Message-Id: <20190311133620.18278-3-chipitsine@...277...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18=
+270.html
+Signed-off-by: Gert Doering <gert@...1296...>
+(cherry picked from commit 4ca813798af89997441bc35723ed1995b6b269e1)
+
+osx image used for builds, i.e. xcode7.3 is outdated, we
+can switch to "default" xcode9.4 and use more fast brew
+travis-ci plugin
+
+Signed-off-by: Ilya Shipitsin <chipitsine@...277...>
+Acked-by: Steffan Karger <steffan.karger@...1435...>
+Message-Id: <20190311133620.18278-4-chipitsine@...277...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18=
+269.html
+Signed-off-by: Gert Doering <gert@...1296...>
+(cherry picked from commit 2cae16aae55dd1ef2ae41c36bec752db34ab4695)
+---
+ .travis.yml           | 21 ++++++++-------------
+ .travis/build-deps.sh |  9 ---------
+ 2 files changed, 8 insertions(+), 22 deletions(-)
+
+diff --git a/.travis.yml b/.travis.yml
+index 62587d28..d7aff06e 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -1,5 +1,5 @@
+ sudo: required
+-dist: trusty
++dist: xenial
+=20
+ os: linux
+=20
+@@ -33,6 +33,9 @@ matrix:
+     - env: SSLLIB=3D"openssl" OPENSSL_VERSION=3D"1.1.0f"
+       os: linux
+       compiler: gcc
++    - env: SSLLIB=3D"openssl" OPENSSL_VERSION=3D"1.1.0h" LABEL=3D"linux-pp=
+c64le"
++      os: linux-ppc64le
++      compiler: gcc
+     - env: SSLLIB=3D"openssl" CFLAGS=3D"-fsanitize=3Daddress"
+       os: linux
+       compiler: clang
+@@ -47,11 +50,9 @@ matrix:
+       compiler: clang
+     - env: SSLLIB=3D"openssl"
+       os: osx
+-      osx_image: xcode7.3
+       compiler: clang
+     - env: SSLLIB=3D"mbedtls"
+       os: osx
+-      osx_image: xcode7.3
+       compiler: clang
+     - env: SSLLIB=3D"openssl" CHOST=3Dx86_64-w64-mingw32 OPENSSL_VERSION=
+=3D"1.0.1u"
+       os: linux
+@@ -76,12 +77,10 @@ matrix:
+=20
+ addons:
+   apt:
+-    packages:
+-      - liblzo2-dev
+-      - libpam0g-dev
+-      - liblz4-dev
+-      - linux-libc-dev
+-      - man2html
++    update: true
++    packages: [ liblzo2-dev, libpam0g-dev, liblz4-dev, linux-libc-dev, man=
+2html, mingw-w64]
++  homebrew:
++    packages: [ lzo ]
+=20
+ cache:
+   directories:
+@@ -89,10 +88,6 @@ cache:
+   - ${HOME}/opt
+   - ${HOME}/Library/Caches/Homebrew
+=20
+-before_install:
+-  - if [ "${TRAVIS_OS_NAME}" =3D "osx" ]; then brew update     ; fi
+-  - if [ "${TRAVIS_OS_NAME}" =3D "osx" ]; then brew install lzo; fi
+-
+ install:
+   - if [ ! -z "${CHOST}" ]; then unset CC; fi
+   - .travis/build-deps.sh > build-deps.log 2>&1 || (cat build-deps.log && =
+exit 1)
+diff --git a/.travis/build-deps.sh b/.travis/build-deps.sh
+index 96a030cc..391b35ef 100755
+--- a/.travis/build-deps.sh
++++ b/.travis/build-deps.sh
+@@ -130,15 +130,6 @@ build_openssl () {
+     fi
+ }
+=20
+-if [ ! -z ${CHOST+x} ]; then
+-      #
+-      # openvpn requires at least mingw-gcc-4.9, which is available at xen=
+ial repo
+-      #
+-      sudo apt-add-repository "deb http://archive.ubuntu.com/ubuntu xenial=
+ main universe"
+-      sudo apt-get update
+-      sudo apt-get -y install dpkg mingw-w64
+-fi
+-
+ # Download and build crypto lib
+ if [ "${SSLLIB}" =3D "openssl" ]; then
+     download_openssl
+--=20
+2.18.0
 
 
---3MnCNje3Luftpj1Cb3AIE1Cc5GGoHHzU4--
+--s2DZqDUwsJbKKj+e--
 
---K0smtSRU0mF4FYW5mT7viBCb7vaT7NNy3
+--O+m0AVbsNU64TeWp
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlyR8xcACgkQ9FVsWUWD
-Dm1Akw//YP8b9VIAA0GkybkPVpCigf5n6Y8wXbuGv8SyC5fnCVN2fv+/HcbZKs/y
-UBKFh8A8zo2hTkM41VYKY5YUBcyKY0wQ+lJ+4qU+lWc7OdMfhzSe3/dIBecw02pQ
-RTGxZS4KYdWoYNUkclrVqRrpmLrMsE/LWDQmZM16GodeSZjjhP8XicYxuEzHyvg1
-pAT57a+M2/lCRcDmqYsyNYpyv/WYDkBJB+f89gl9wQoZn8yTxt8AMBNqMSe2Cpqn
-dHcqdabjgLIc5CQ/o4dVZcIBCsWVdnSWm5BqMwriAqs5G3tFmc1cu6rsCMGAP6C+
-yDjHdgVHwTz/PhrpmBthJGsp1F+1NhKfDJthClVWY0WUARf6GlHhdE7CTSPWrHrX
-nW9Q+wA/RlRjxmxNVdCBJNwwp6q3vERWUmU6YMnT+YE0+zSmB37aClRHbU4M3Ajc
-xFlJESL0oNmFqUgfPl2NjcdOpRKQReObcjvm59EqNCbRqAn7epsVjZUcFPorbDdy
-krhaQjlPmFdgDE4QyIw1QN8sJFVrx8ppJnjboC0igCmP9CO0PB2zKnCsX1oEu9lv
-jUfFWDrWbuFBzXhNU5Wdz2sy1+m8Ua3t3xMUFs447x7SpJ69O3GQTrtqTDvoTay5
-H0LuFdOGdaBG8CZqe06TTT95DNLa8ce/dW9jeR2NZ646pKhEGfU=
-=xTcK
+iQGcBAEBAgAGBQJckiapAAoJEB2Cnv7KVigSZcUL/i/PvGpnfG7p7Y4Ax/qcFaPd
+Ze6RicD17Nc6+ELHOSCDVezdFjqMMMQJpMDot9aGSaG47X6IrRXHvWLpJ3ElUDi2
+yrBS5h76nVs6TwVmfe3vTWoaqE0h48mAEPyEz9VW2tfYM7rx+qYrFkhPtcFdkTE1
+Qh6AW1+O2EEyw3oxVlpVO9nswF5ZBp/vXO9ewSLaVtAXfsEr0BHyzAIOX4kYg5vh
+VDbx6wmppVXVW3Kd4etJo44P00JUcuPKKHHCpQi6Y2FI6eM4LhCYzLvEfm+LY98C
+XvJnVgi4DpBPBlfKGg/z8rrXYt7X2TydPg12pzdSvB8xImvMCQM/GltARtwYbNMv
+WPNHo8Bg96B2HkUD3sqOKJIg7FSO7QZuntHQnJ3KLU992Xl798ZOvZ1cBbP4QqDU
+oDpbCK/px+v7SM3yZp95XXOP1EFF8vHCEe2TN6kQ5nhbelNwmEnNjNcDrTcHwrum
+gQvAaOAxKnm61A91EuCvyQuUUKtkx+hcUImaosY4dQ==
+=HjFW
 -----END PGP SIGNATURE-----
 
---K0smtSRU0mF4FYW5mT7viBCb7vaT7NNy3--
+--O+m0AVbsNU64TeWp--
 
