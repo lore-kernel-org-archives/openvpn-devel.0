@@ -1,14 +1,8 @@
-From: Antonio Quartulli <a@...2181...>
-References: <7257ba13-caaa-2a07-448a-eba98168c93e@...2181...>
-Message-ID: <9a0e4f97-97af-2e57-b823-7d974fdb9188@...2181...>
-Date: Thu, 21 Mar 2019 16:05:46 +0100
 MIME-Version: 1.0
-In-Reply-To: <7257ba13-caaa-2a07-448a-eba98168c93e@...2181...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="EGSq5LcoOL15vcPggzXPKNpjVoxAKrUCm"
-Subject: Re: [Openvpn-devel] Doodle: day/time for next weekly community
- meetings
+From: "Jason A. Donenfeld" <Jason@...2390...>
+Date: Fri, 22 Mar 2019 19:04:02 -0600
+Message-ID: <CAHmME9r1VmJLSqrb8vQN3HOqeVX2QLs1-9wPYQL-UwNU6EJNLA@...278...>
+Subject: [Openvpn-devel] [ANNOUNCE] Wintun: Layer 3 TUN Driver for Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,75 +11,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: WireGuard mailing list <wireguard@...2500...>, openvpn-devel@lists.sourceforge.net, dev@...2501..., Simon Rozman <simon@...2293...>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---EGSq5LcoOL15vcPggzXPKNpjVoxAKrUCm
-Content-Type: multipart/mixed; boundary="wc2iPLyiHfSGZrJyx8xDSDFdTojeUGERL";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Message-ID: <9a0e4f97-97af-2e57-b823-7d974fdb9188@...2181...>
-Subject: Re: Doodle: day/time for next weekly community meetings
-References: <7257ba13-caaa-2a07-448a-eba98168c93e@...2181...>
-In-Reply-To: <7257ba13-caaa-2a07-448a-eba98168c93e@...2181...>
+Hi everybody,
 
---wc2iPLyiHfSGZrJyx8xDSDFdTojeUGERL
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+[Cross-posting to WireGuard, OpenVPN, and Nmap/npcap mailing lists.]
 
-Hi all,
+Simon and I are pleased to announce the start of a new project, made
+for WireGuard and for others too: Wintun, a layer 3 TUN driver for
+Windows.
 
-On 20/03/2019 21:04, Antonio Quartulli wrote:
-> Hi all,
->=20
-> As mentioned today on IRC, I have prepared a doodle to help us choose
-> when to schedule the next community meetings.
->=20
-> The doodle targets next week, but the idea is to choose a time slot that
-> is good "from now on".
->=20
+Homepage: https://www.wintun.net/
 
-To clarify:
+A TUN driver lets userspace programs act as virtual network cards,
+reading and writing packets directly into the network stack, as though
+they came from a real network adapter. While Linux and the BSDs have
+had /dev/tun for ages, Windows typically hasn't had any native
+facilities.
 
-since most of the OpenVPN contributors live in Central Europe, the
-meeting time slot will follow the CET->CEST transition and back (as we
-did in the past).
+Recently, Microsoft released a VPN UWP API, but it's lacking in
+features, documentation is under NDA, and after reversing it for a
+bit, it doesn't seem capable of doing many of the more advanced
+routing and roaming things we want. Indeed it turns out that having a
+real network adapter and some basic file handles is much preferable to
+layers of API and abstraction.
 
-This means that if the winning time slot it 8PM CET (UTC+1), next month
-it will become 8PM CEST (UTC+2).
+On the flipside, OpenVPN's tap-windows6 project and the numerous
+drivers from SoftEther have all provided similar functionality for
+many years, and these efforts have produced something moderately
+stable. We were, in fact, quite inspired by SoftEther's Neo6 driver.
+However, these projects were written in a different age, the era of
+NDIS5, and then ported later to NDIS6. This means they haven't
+benefited from things like Windows 7's NdisMediumIP, which allows for
+native layer 3 tunneling, without having to do layer 2 emulation.
+Drivers like OpenVPN's tap-windows6 also do some somewhat nasty
+things, like emulate DHCP from inside the kernel for network
+configuration. The code is old and complicated. As usual, I wanted
+instead something tiny and dumb that we can reason about, which does
+things in a "right" and "boring" way for a narrower use case: layer 3
+TUN.
 
+Wintun is our attempt at making a dumb layer 3 pipe, that doesn't do
+anything fancy, and just shuffles bundles of packets between userspace
+and the kernel driver. It's being used for WireGuard's Windows port.
+We'd like to make it available and easy to use for other projects too
+that need layer 3 userspace tunneling capabilities, like OpenVPN and
+SoftEther. (Also, it may be just a matter of time before somebody
+takes the tiny base of it, sticks the crypto in the kernel, and makes
+WireGuard super fast on Windows.)
+
+Have we succeeded in accomplishing our goals? Certainly not yet. At
+the present moment [folks reading this in the future: check the date
+of this email], I'd except for Wintun to be slower, buggier, and lower
+quality than anything else out there. But we thought it'd be a good
+idea to release sooner rather than later in order to have some more
+eyeballs on it. It's the kind of codebase that _certainly_ needs some
+cleanup and a thorough security audit. On the plus side, cloc(1) tells
+me that it's only 950 lines. Still, NT programming is hard, and I'm
+pretty certain we've made mistakes and left ugly corners. Consider
+this email a statement of intent rather than an announcement of a
+completed project.
+
+So, if you're interested in NDIS programming and want to lend a hand,
+don't hesitate to get in touch. We're eager for smart NT folks to help
+us out.
+
+Details are over on https://www.wintun.net/ where you may also find
+rabbits bringing windows into tunnels. Enjoy!
 
 Regards,
-
---=20
-Antonio Quartulli
-
-
---wc2iPLyiHfSGZrJyx8xDSDFdTojeUGERL--
-
---EGSq5LcoOL15vcPggzXPKNpjVoxAKrUCm
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlyTqEoACgkQ9FVsWUWD
-Dm232RAAtB5sttaigKqlg0LDvGwoRRTHEzOEhzJo7w4nfxWnGu5jjVvlL5et1qQt
-8Who2rGk2hTvB0hz9Nz3JwZVSewh5BA8Wii4NyAtmHIr21wkcwcn0yeUB3xCF8/Q
-36ObDnpCt06PzII6YPxsNqXeJ1uiPjU26nhAwe7lZxBZU5C11POLMLH68ZfmaeqL
-UajQ0Y41/+7S7pZDW3Vii34DrDZnhoTB3hWmSkiURIy7z8WJRNHlOH24WPWzWR/R
-a6I8/ZYz5bf917kMT9ruR7RP2aCcNvUORgx/DPRXfedeTHkpUgdlyIPTkuVhzW8p
-+z1X+LzvlvAm5G/ozMNhuwXBqn5u9yh/kcKZzD5me5XUnyI9k9JZT6l2KjDwyG7M
-n5ati5BcaHBeG/lnX/YkeG26ZVkVTCdDkoYddFp1AzNc10pRe5/ivSMVFMDrvSdO
-I5mxUnyEnKiQbx33+6J6DiI9nSxZqD5zJS82qCT89YxOJVL+qfCr6wgaXEX6hlGx
-dN1QWyyhOpBKNfKILD15tF2ERWW+W7RhH958hyLph1iJ/1BKMElYBQQe0VYOkKoN
-RsS4I40IKThBRgyvq3wkylDy6LYgW0l0ZitSWts8nwlH7UXBNVU6ga+XfSGZXsqf
-ly0NjFTNCCRYv2+l+KK3wThc2qpKRQ3ygEiia6bteBEGDyIOdCc=
-=37qg
------END PGP SIGNATURE-----
-
---EGSq5LcoOL15vcPggzXPKNpjVoxAKrUCm--
+Jason
 
