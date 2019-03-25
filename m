@@ -1,8 +1,12 @@
+References: <CAHmME9r1VmJLSqrb8vQN3HOqeVX2QLs1-9wPYQL-UwNU6EJNLA@...278...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <0fe186bb-7df2-e3c4-cccd-b3b624fbc1bf@...1227...>
+Date: Mon, 25 Mar 2019 11:23:06 +0100
 MIME-Version: 1.0
-From: "Jason A. Donenfeld" <Jason@...2390...>
-Date: Fri, 22 Mar 2019 19:04:02 -0600
-Message-ID: <CAHmME9r1VmJLSqrb8vQN3HOqeVX2QLs1-9wPYQL-UwNU6EJNLA@...278...>
-Subject: [Openvpn-devel] [ANNOUNCE] Wintun: Layer 3 TUN Driver for Windows
+In-Reply-To: <CAHmME9r1VmJLSqrb8vQN3HOqeVX2QLs1-9wPYQL-UwNU6EJNLA@...278...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [ANNOUNCE] Wintun: Layer 3 TUN Driver for
+ Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,76 +15,72 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-To: WireGuard mailing list <wireguard@...2500...>, openvpn-devel@lists.sourceforge.net, dev@...2501..., Simon Rozman <simon@...2293...>
+To: "Jason A. Donenfeld" <Jason@...2390...>, WireGuard mailing list <wireguard@...2500...>, openvpn-devel@lists.sourceforge.net, dev@...2501..., Simon Rozman <simon@...2293...>
 
-Hi everybody,
+Am 23.03.19 um 02:04 schrieb Jason A. Donenfeld:
+> Hi everybody,
+> 
+> [Cross-posting to WireGuard, OpenVPN, and Nmap/npcap mailing lists.]
+> 
+> Simon and I are pleased to announce the start of a new project, made
+> for WireGuard and for others too: Wintun, a layer 3 TUN driver for
+> Windows.
 
-[Cross-posting to WireGuard, OpenVPN, and Nmap/npcap mailing lists.]
+I wish you good luck in this endeavour and welcome the prospect of
+having a better tun driver for Windows. We know that our own TAP/TUN
+driver is a pain point for us as well and having a better alternative is
+something we would definitively like to have/support a more modern driver.
 
-Simon and I are pleased to announce the start of a new project, made
-for WireGuard and for others too: Wintun, a layer 3 TUN driver for
-Windows.
+> Wintun is our attempt at making a dumb layer 3 pipe, that doesn't do
+> anything fancy, and just shuffles bundles of packets between userspace
+> and the kernel driver. It's being used for WireGuard's Windows port.
+> We'd like to make it available and easy to use for other projects too
+> that need layer 3 userspace tunneling capabilities, like OpenVPN and
+> SoftEther. (Also, it may be just a matter of time before somebody
+> takes the tiny base of it, sticks the crypto in the kernel, and makes
+> WireGuard super fast on Windows.)
 
-Homepage: https://www.wintun.net/
+If someone does that, it would be nice to have a bit more generic so we
+can also push our openvpn keys to the driver. Our AEAD-GCM data format
+and Wireshark's data format are reasonable close to use the same code
+for it.
 
-A TUN driver lets userspace programs act as virtual network cards,
-reading and writing packets directly into the network stack, as though
-they came from a real network adapter. While Linux and the BSDs have
-had /dev/tun for ages, Windows typically hasn't had any native
-facilities.
+The lack of tap is not a big deal for OpenVPN anymore. The world shifted
+quite a bit and tap support is not needed that much anymore. Android
+does not support it. MacOS client supports tun natively (utun) and tap
+requires extra kext. And so on...
 
-Recently, Microsoft released a VPN UWP API, but it's lacking in
-features, documentation is under NDA, and after reversing it for a
-bit, it doesn't seem capable of doing many of the more advanced
-routing and roaming things we want. Indeed it turns out that having a
-real network adapter and some basic file handles is much preferable to
-layers of API and abstraction.
+> Have we succeeded in accomplishing our goals? Certainly not yet. At
+> the present moment [folks reading this in the future: check the date
+> of this email], I'd except for Wintun to be slower, buggier, and lower
+> quality than anything else out there. But we thought it'd be a good
+> idea to release sooner rather than later in order to have some more
+> eyeballs on it. It's the kind of codebase that _certainly_ needs some
+> cleanup and a thorough security audit. On the plus side, cloc(1) tells
+> me that it's only 950 lines. Still, NT programming is hard, and I'm
+> pretty certain we've made mistakes and left ugly corners. Consider
+> this email a statement of intent rather than an announcement of a
+> completed project.
 
-On the flipside, OpenVPN's tap-windows6 project and the numerous
-drivers from SoftEther have all provided similar functionality for
-many years, and these efforts have produced something moderately
-stable. We were, in fact, quite inspired by SoftEther's Neo6 driver.
-However, these projects were written in a different age, the era of
-NDIS5, and then ported later to NDIS6. This means they haven't
-benefited from things like Windows 7's NdisMediumIP, which allows for
-native layer 3 tunneling, without having to do layer 2 emulation.
-Drivers like OpenVPN's tap-windows6 also do some somewhat nasty
-things, like emulate DHCP from inside the kernel for network
-configuration. The code is old and complicated. As usual, I wanted
-instead something tiny and dumb that we can reason about, which does
-things in a "right" and "boring" way for a narrower use case: layer 3
-TUN.
+I am afraid our project members are currently busy and cannot really
+contribute much to your new shiny driver. We barely have enough time for
+OpenVPN itself. But if you have something that is good enough at least
+for testing and has a reasonable stable API just an extra mail and I
+think we can implement it as alternative to our own driver.
 
-Wintun is our attempt at making a dumb layer 3 pipe, that doesn't do
-anything fancy, and just shuffles bundles of packets between userspace
-and the kernel driver. It's being used for WireGuard's Windows port.
-We'd like to make it available and easy to use for other projects too
-that need layer 3 userspace tunneling capabilities, like OpenVPN and
-SoftEther. (Also, it may be just a matter of time before somebody
-takes the tiny base of it, sticks the crypto in the kernel, and makes
-WireGuard super fast on Windows.)
+> Details are over on https://www.wintun.net/ where you may also find
+> rabbits bringing windows into tunnels. Enjoy!
 
-Have we succeeded in accomplishing our goals? Certainly not yet. At
-the present moment [folks reading this in the future: check the date
-of this email], I'd except for Wintun to be slower, buggier, and lower
-quality than anything else out there. But we thought it'd be a good
-idea to release sooner rather than later in order to have some more
-eyeballs on it. It's the kind of codebase that _certainly_ needs some
-cleanup and a thorough security audit. On the plus side, cloc(1) tells
-me that it's only 950 lines. Still, NT programming is hard, and I'm
-pretty certain we've made mistakes and left ugly corners. Consider
-this email a statement of intent rather than an announcement of a
-completed project.
+Frome the site: The source code is provided under the GPL 2.0 and is
+available via git:
 
-So, if you're interested in NDIS programming and want to lend a hand,
-don't hesitate to get in touch. We're eager for smart NT folks to help
-us out.
+One detail here. If you have/add a file that defines the API for
+external programs, to license it under a freeer license for 3rd party to
+include that API file without license worries. Like our tap-windows.h
+(https://github.com/OpenVPN/tap-windows6/blob/master/src/tap-windows.h).
+This was primarily requested by the Freeswan developer iirc.
 
-Details are over on https://www.wintun.net/ where you may also find
-rabbits bringing windows into tunnels. Enjoy!
-
-Regards,
-Jason
+Arne
 
