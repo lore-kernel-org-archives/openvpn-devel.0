@@ -1,12 +1,8 @@
+From: Christopher Schenk <cschenk@...2502...>
+Date: Thu, 28 Mar 2019 13:27:01 +0100
+Message-Id: <20190328122701.7396-1-cschenk@...2502...>
 MIME-Version: 1.0
-References: <20190327215626.23502-1-rosenp@...277...>
- <20190328075111.GE31008@...1296...>
-In-Reply-To: <20190328075111.GE31008@...1296...>
-From: Rosen Penev <rosenp@...277...>
-Date: Thu, 28 Mar 2019 02:36:18 -0700
-Message-ID: <CAKxU2N-1A3xzHbnDp-7t550RSi2aRMx8P-wNKopj7wmZrbYwBA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] openssl: Replace not[Before/After]
- functions with get0 variants
+Subject: [Openvpn-devel] [PATCH] Setting adapter mtu on windows systems
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,42 +11,91 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Christopher Schenk <Christopher.Schenk@...160...>
 
-On Thu, Mar 28, 2019 at 12:51 AM Gert Doering <gert@...1296...> wrote:
->
-> Hi,
->
-> On Wed, Mar 27, 2019 at 02:56:26PM -0700, Rosen Penev wrote:
-> > Also removed initialization with OpenSSL 1.1 as it is no longer needed and
-> > causes compilation errors when disabling deprecated APIs.
-> >
-> > Same with SSL_CTX_set_ecdh_auto as it got removed.
->
-> The Subject: line is a bit misleading - shouldn't this be more something
-> like "Avoid calling deprecated-API calls of OpenSSL 1.1" or similar?
-Yeah. The patch doesn't fully fix it though. I ended up with a
-somewhat workable solution though.
+From: Christopher Schenk <Christopher.Schenk@...160...>
 
-https://github.com/neheb/openvpn/commit/945f190a1bfbde3d6bf11f5b576f5c9e5ec1b0f3
+---
+ src/openvpn/tun.c | 39 ++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 38 insertions(+), 1 deletion(-)
 
-I can squash both of these so that they get the same Subject line.
->
-> (People *do* look at commit logs, and the current subject does not cover
-> making the SSL_library_init() call conditional, etc.)
->
-> On the patch itself, I have no strong opinion and would welcome a review
-> from Steffan or Arne :-) - the Subject: line I can fix at commit time.
->
-> gert
-> --
-> "If was one thing all people took for granted, was conviction that if you
->  feed honest figures into a computer, honest figures come out. Never doubted
->  it myself till I met a computer with a sense of humor."
->                              Robert A. Heinlein, The Moon is a Harsh Mistress
->
-> Gert Doering - Munich, Germany                             gert@...1296...
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 48a8fdf7..93d028c8 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -69,6 +69,12 @@ static void netsh_ifconfig(const struct tuntap_options *to,
+                            const in_addr_t netmask,
+                            const unsigned int flags);
+ 
++static void netsh_set_mtu_ipv4(const char *flex_name,
++                               const int mtu);
++
++static void netsh_set_mtu_ipv6(const char *flex_name,
++                               const int mtu);
++
+ static void netsh_set_dns6_servers(const struct in6_addr *addr_list,
+                                    const int addr_len,
+                                    const char *flex_name);
+@@ -1000,6 +1006,7 @@ do_ifconfig_ipv6(struct tuntap *tt, const char *ifname, int tun_mtu,
+         netsh_command(&argv, 4, M_FATAL);
+         /* set ipv6 dns servers if any are specified */
+         netsh_set_dns6_servers(tt->options.dns6, tt->options.dns6_len, ifname);
++        netsh_set_mtu_ipv6(ifname, tun_mtu);
+     }
+ 
+     /* explicit route needed */
+@@ -1391,9 +1398,9 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
+             case IPW32_SET_NETSH:
+                 netsh_ifconfig(&tt->options, ifname, tt->local,
+                                tt->adapter_netmask, NI_IP_NETMASK|NI_OPTIONS);
+-
+                 break;
+         }
++		netsh_set_mtu_ipv4(ifname, tun_mtu);
+     }
+ 
+ #else  /* if defined(TARGET_LINUX) */
+@@ -5236,6 +5243,36 @@ out:
+     return ret;
+ }
+ 
++static void
++netsh_set_mtu_ipv4(const char *flex_name,
++                   const int mtu)
++{
++	struct argv argv = argv_new();
++	argv_printf(&argv, "%s%sc interface ipv4 set subinterface %s mtu = %d store=active",
++		get_win_sys_path(),
++		NETSH_PATH_SUFFIX,
++		flex_name,
++		mtu);
++
++	netsh_command(&argv, 3, M_WARN);
++	argv_reset(&argv);
++}
++
++static void
++netsh_set_mtu_ipv6(const char *flex_name,
++	const int mtu)
++{
++	struct argv argv = argv_new();
++	argv_printf(&argv, "%s%sc interface ipv6 set subinterface %s mtu = %d store=active",
++		get_win_sys_path(),
++		NETSH_PATH_SUFFIX,
++		flex_name,
++		mtu);
++
++	netsh_command(&argv, 3, M_WARN);
++	argv_reset(&argv);
++}
++
+ /*
+  * Return a TAP name for netsh commands.
+  */
+-- 
+2.21.0.windows.1
+
 
