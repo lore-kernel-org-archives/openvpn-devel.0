@@ -1,12 +1,16 @@
-MIME-Version: 1.0
+Date: Fri, 29 Mar 2019 20:38:05 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20190329193805.GQ31008@...1296...>
 References: <20190328122701.7396-1-cschenk@...2502...>
  <1363f761-21e4-f5e6-8c49-234e1339bc3d@...1227...>
  <CAKuzo_gmJSuz0vYx+YugB4qcz3M8MRWNEVw3FuHXsL2KKRSH2Q@...278...>
  <2c639a7a-0cf6-4648-44d2-d6b876959eb7@...2502...>
-In-Reply-To: <2c639a7a-0cf6-4648-44d2-d6b876959eb7@...2502...>
-From: Selva Nair <selva.nair@...277...>
-Date: Fri, 29 Mar 2019 15:33:24 -0400
-Message-ID: <CAKuzo_jNH0NpFC5kJxLpt7e9q39_Qm5rYXHhFmdE9N5U5=r91Q@...278...>
+ <CAKuzo_jNH0NpFC5kJxLpt7e9q39_Qm5rYXHhFmdE9N5U5=r91Q@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="+nBD6E3TurpgldQp"
+Content-Disposition: inline
+In-Reply-To: <CAKuzo_jNH0NpFC5kJxLpt7e9q39_Qm5rYXHhFmdE9N5U5=r91Q@...278...>
 Subject: Re: [Openvpn-devel] [PATCH] Setting adapter mtu on windows systems
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -16,317 +20,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Christopher Schenk <cschenk@...2502...>
-Cc: Arne Schwabe <arne@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Selva Nair <selva.nair@...277...>
+Cc: Christopher Schenk <cschenk@...2502...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--+nBD6E3TurpgldQp
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On Fri, Mar 29, 2019 at 6:25 AM Christopher Schenk
-<cschenk@...2502...> wrote:
->
-> Hi,
->
-> On 28/03/2019 16:00, Selva Nair wrote:
-> > I would go a step further to say we should not add new features that
-> > do not work when started using the interactive service.
-> >
-> > Secondly, we should avoid the old style use of netsh and instead use the
-> > iphelper API as far as possible. It should be possible to
-> > set MTU using the SetIfEntry() or SetIpInterfaceEnrty() function -- I
-> > haven't
-> > checked which one is appropriate here.
->
-> I agree on the point that we should add this functionality to the
-> interactive service as well. So i modified the patch accordingly.
-> I also modified my patch so that it uses the SetIpInterfaceEnrty
-> function instead of netsh.
+On Fri, Mar 29, 2019 at 03:33:24PM -0400, Selva Nair wrote:
+> > +    else if (family =3D=3D AF_INET6)
+> > +    {
+> > +        if (ack.error_number !=3D NO_ERROR)
+> > +        {
+> > +            msg(M_NONFATAL, "TUN: setting IPv6 mtu using service
+> > failed: %s [status=3D%u if_index=3D%d]",
+> > +                strerror_win32(ack.error_number, &gc),
+> > ack.error_number, mtu_msg.iface.index);
+> > +        }
+>=20
+> Though this repetition is fine with me and may be we do
+> the same in other similar contexts, cant we combine these
+> two cases into one by defining a string "IPv4" or "IPv6"
+> based on the value of family?
+>=20
+> The same applies to windows_set_mtu() as well.
 
-Thanks for the update. Looks okay, but would prefer a version
-sent out by git-send-email so that we can apply and test the patch.
+Yes please,  Newer code already tries to do this (like most of the
+service-related stuff calling a common function for ipv4-or-ipv6 stuff).
 
-Some minor comments below.
+(We don't do this for the existing ifconfig orgy because it would not
+really help readibility... but hopefully that one will get cleaned
+up more thoroughly eventually)
 
->
-> ---
-> diff --git a/include/openvpn-msg.h b/include/openvpn-msg.h
-> index 66177a21..f59c5a21 100644
-> --- a/include/openvpn-msg.h
-> +++ b/include/openvpn-msg.h
-> @@ -39,6 +39,7 @@ typedef enum {
->       msg_del_block_dns,
->       msg_register_dns,
->       msg_enable_dhcp,
-> +    msg_set_mtu,
->   } message_type_t;
->
->   typedef struct {
-> @@ -117,4 +118,11 @@ typedef struct {
->       interface_t iface;
->   } enable_dhcp_message_t;
->
-> +typedef struct {
-> +    message_header_t header;
-> +    interface_t iface;
-> +    short family;
-> +    int mtu;
-> +} set_mtu_message_t;
-> +
->   #endif /* ifndef OPENVPN_MSG_H_ */
-> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-> index 48a8fdf7..9fe8444f 100644
-> --- a/src/openvpn/tun.c
-> +++ b/src/openvpn/tun.c
-> @@ -69,6 +69,10 @@ static void netsh_ifconfig(const struct
-> tuntap_options *to,
->                              const in_addr_t netmask,
->                              const unsigned int flags);
->
-> +static void windows_set_mtu(const int iface_indey,
+gert=20
 
-iface_indey -> iface_index ?
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-> +                                short family,
-> +                               const int mtu);
-> +
->   static void netsh_set_dns6_servers(const struct in6_addr *addr_list,
->                                      const int addr_len,
->                                      const char *flex_name);
-> @@ -201,6 +205,63 @@ out:
->       return ret;
->   }
->
-> +static bool
-> +do_set_mtu_service(const struct tuntap *tt, const short family, const
-> int mtu)
-> +{
-> +    DWORD len;
-> +    bool ret = false;
-> +    ack_message_t ack;
-> +    struct gc_arena gc = gc_new();
-> +    HANDLE pipe = tt->options.msg_channel;
-> +
-> +    set_mtu_message_t mtu_msg = {
-> +        .header = {
-> +            msg_set_mtu,
-> +            sizeof(set_mtu_message_t),
-> +            0
-> +        },
-> +        .iface = {.index = tt->adapter_index,.name = tt->actual_name },
-> +        .mtu = mtu,
-> +        .family = family
-> +    };
-> +
-> +    if (!send_msg_iservice(pipe, &mtu_msg, sizeof(mtu_msg), &ack,
-> "Set_mtu"))
-> +    {
-> +        goto out;
-> +    }
-> +
-> +    if (family == AF_INET)
-> +    {
-> +        if (ack.error_number != NO_ERROR)
-> +        {
-> +            msg(M_NONFATAL, "TUN: setting IPv4 mtu using service
-> failed: %s [status=%u if_index=%d]",
-> +                strerror_win32(ack.error_number, &gc),
-> ack.error_number, mtu_msg.iface.index);
-> +        }
-> +        else
-> +        {
-> +            msg(M_INFO, "IPv4 MTU set to %d on interface %d using
-> service", mtu, mtu_msg.iface.index);
-> +            ret = true;
-> +        }
-> +    }
-> +    else if (family == AF_INET6)
-> +    {
-> +        if (ack.error_number != NO_ERROR)
-> +        {
-> +            msg(M_NONFATAL, "TUN: setting IPv6 mtu using service
-> failed: %s [status=%u if_index=%d]",
-> +                strerror_win32(ack.error_number, &gc),
-> ack.error_number, mtu_msg.iface.index);
-> +        }
+Gert Doering - Munich, Germany                             gert@...1296...
 
-Though this repetition is fine with me and may be we do
-the same in other similar contexts, cant we combine these
-two cases into one by defining a string "IPv4" or "IPv6"
-based on the value of family?
+--+nBD6E3TurpgldQp
+Content-Type: application/pgp-signature; name="signature.asc"
 
-The same applies to windows_set_mtu() as well.
+-----BEGIN PGP SIGNATURE-----
 
-> +        else
-> +        {
-> +            msg(M_INFO, "IPv6 MTU set to %d on interface %d using
-> service", mtu, mtu_msg.iface.index);
-> +            ret = true;
-> +        }
-> +    }
-> +
-> +out:
-> +    gc_free(&gc);
-> +    return ret;
-> +}
-> +
->   #endif /* ifdef _WIN32 */
->
->   #ifdef TARGET_SOLARIS
-> @@ -984,6 +1045,7 @@ do_ifconfig_ipv6(struct tuntap *tt, const char
-> *ifname, int tun_mtu,
->       {
->           do_address_service(true, AF_INET6, tt);
->           do_dns6_service(true, tt);
-> +        do_set_mtu_service(tt, AF_INET6, tun_mtu);
->       }
->       else
->       {
-> @@ -1000,6 +1062,7 @@ do_ifconfig_ipv6(struct tuntap *tt, const char
-> *ifname, int tun_mtu,
->           netsh_command(&argv, 4, M_FATAL);
->           /* set ipv6 dns servers if any are specified */
->           netsh_set_dns6_servers(tt->options.dns6, tt->options.dns6_len,
-> ifname);
-> +        windows_set_mtu(tt->adapter_index, AF_INET6, tun_mtu);
->       }
->
->       /* explicit route needed */
-> @@ -1391,9 +1454,16 @@ do_ifconfig_ipv4(struct tuntap *tt, const char
-> *ifname, int tun_mtu,
->               case IPW32_SET_NETSH:
->                   netsh_ifconfig(&tt->options, ifname, tt->local,
->                                  tt->adapter_netmask,
-> NI_IP_NETMASK|NI_OPTIONS);
-> -
->                   break;
->           }
-> +        if (tt->options.msg_channel)
-> +        {
-> +            do_set_mtu_service(tt, AF_INET, tun_mtu);
-> +        }
-> +        else
-> +        {
-> +            windows_set_mtu(tt->adapter_index, AF_INET, tun_mtu);
-> +        }
->       }
->
->   #else  /* if defined(TARGET_LINUX) */
-> @@ -5236,6 +5306,46 @@ out:
->       return ret;
->   }
->
-> +static void
-> +windows_set_mtu(const int iface_index, const short family,
-> +    const int mtu)
-> +{
-> +    DWORD err = 0;
-> +    struct gc_arena gc = gc_new();
-> +    MIB_IPINTERFACE_ROW row;
-> +    InitializeIpInterfaceEntry(&row);
-> +    row.Family = family;
-> +    row.InterfaceIndex = iface_index;
-> +    row.NlMtu = mtu;
-> +
-> +    err = SetIpInterfaceEntry(&row);
-> +    if (family == AF_INET)
-> +    {
-> +        if (err != NO_ERROR)
-> +        {
-> +            msg(M_WARN, "TUN: Setting IPv4 mtu failed: %s [status=%u
-> if_index=%d]",
-> +                strerror_win32(err, &gc), err, iface_index);
-> +        }
-> +        else
-> +        {
-> +            msg(M_INFO, "Successfully set IPv4 mtu on interface %d",
-> iface_index);
-> +        }
-> +    }
-> +    else if (family == AF_INET6)
-> +    {
-> +        if (err != NO_ERROR)
-> +        {
-> +            msg(M_WARN, "TUN: Setting IPv6 mtu failed: %s [status=%u
-> if_index=%d]",
-> +                strerror_win32(err, &gc), err, iface_index);
-> +        }
-> +        else
-> +        {
-> +            msg(M_INFO, "Successfully set IPv6 mtu on interface %d",
-> iface_index);
-> +        }
-> +    }
+iQGcBAEBAgAGBQJcnnQdAAoJEB2Cnv7KVigSxgYMAK4dsVU+HcHNP2BVAv7MNqta
+bZm0bfIq+K8ai4SyNkCFEw4PtV8rtK0e9u0esE5FCwBCiVmV1IQvNbQWkpjbdeqJ
+1U/0CFWzMZ/Zt2ILXFe6UnIX4+bU/bacrA87kkGruhWzceavclrQnTUKl/OWW6jk
+fytauFb4rlnEfTpmCKcSK1NGh2vUpifys6IF1f4KwkUfyeuAa1PsDbLNGUbDx6lO
+i1iWg2WN6zMDmDqnHg9hcIKmha6jDuI2+H07B4d3apqP7QANbbbjFMJ0tHncYJV5
+B8NaFhcfPQpevdt+nh3+oA98DkWCWk+9eDjPh3X8Ae2sKU0LKV18Uqt5AeAC6anr
+3Qciel79cjtWbeQsX6jXF0/5Uxy3yWTq+XQ1iDPM/Mq5qCcbFZ6cmKa4Bsd81ETS
+PM2d4ylqBoJTdiXdg3PXZ2CKnGiXU+Qg+ycdiOXn1pXD5sSwmabGgc1Jwgf/E5yY
+epv3SjS1H1cX+QkH1aK47s9zvLfvh1ikbz8sNfEttA==
+=HYOG
+-----END PGP SIGNATURE-----
 
-See the comment above..
-
-
-
-> +}
-> +
-> +
->   /*
->    * Return a TAP name for netsh commands.
->    */
-> diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-> index 623c3ff7..6e6a63fe 100644
-> --- a/src/openvpnserv/interactive.c
-> +++ b/src/openvpnserv/interactive.c
-> @@ -33,6 +33,7 @@
->   #include <sddl.h>
->   #include <shellapi.h>
->   #include <mstcpip.h>
-> +#include <netioapi.h>
->
->   #ifdef HAVE_VERSIONHELPERS_H
->   #include <versionhelpers.h>
-> @@ -1198,6 +1199,20 @@ HandleEnableDHCPMessage(const
-> enable_dhcp_message_t *dhcp)
->       return err;
->   }
->
-> +static DWORD
-> +HandleMTUMessage(const set_mtu_message_t *mtu)
-> +{
-> +    DWORD err = 0;
-> +    MIB_IPINTERFACE_ROW row;
-> +    InitializeIpInterfaceEntry(&row);
-> +    row.Family = mtu->family;
-> +    row.InterfaceIndex = mtu->iface.index;
-> +    row.NlMtu = mtu->mtu;
-> +
-> +    err = SetIpInterfaceEntry(&row);
-> +    return err;
-> +}
-> +
->   static VOID
->   HandleMessage(HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events,
-> undo_lists_t *lists)
->   {
-> @@ -1210,6 +1225,7 @@ HandleMessage(HANDLE pipe, DWORD bytes, DWORD
-> count, LPHANDLE events, undo_lists
->           block_dns_message_t block_dns;
->           dns_cfg_message_t dns;
->           enable_dhcp_message_t dhcp;
-> +        set_mtu_message_t mtu;
->       } msg;
->       ack_message_t ack = {
->           .header = {
-> @@ -1276,6 +1292,12 @@ HandleMessage(HANDLE pipe, DWORD bytes, DWORD
-> count, LPHANDLE events, undo_lists
->                   ack.error_number = HandleEnableDHCPMessage(&msg.dhcp);
->               }
->               break;
-> +        case msg_set_mtu:
-> +            if (msg.header.size == sizeof(msg.mtu))
-> +            {
-> +                ack.error_number = HandleMTUMessage(&msg.mtu);
-> +            }
-> +            break;
->
->           default:
->               ack.error_number = ERROR_MESSAGE_TYPE;
->
-
-Selva
+--+nBD6E3TurpgldQp--
 
