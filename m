@@ -1,14 +1,11 @@
-References: <CAM1xzG1X-iERU2ZXFS_m_VqCKOwjt_gD8oi0F8J5h38Xx+FQ9A@...278...>
- <CAKuzo_gXgqWSLhpvMhjTS+VfbWmQ8JXnHEiOVEPyPSOMCbPKcQ@...278...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <3f0208be-60e9-118d-b148-fe05e3da031b@...2080...>
-Date: Wed, 10 Apr 2019 23:46:00 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_gXgqWSLhpvMhjTS+VfbWmQ8JXnHEiOVEPyPSOMCbPKcQ@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="0IyEfwqcbSrPwkPBUgflWlVYJZ14a2vY7"
-Subject: Re: [Openvpn-devel] Issue with smartcard authentication for openvpn
+References: <CAFHpkQFauuHVbkLAVCz2b1s2m4dwUjxQPyBn9Laa0BmwyYQmGQ@...278...>
+In-Reply-To: <CAFHpkQFauuHVbkLAVCz2b1s2m4dwUjxQPyBn9Laa0BmwyYQmGQ@...278...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Thu, 11 Apr 2019 03:51:50 +0500
+Message-ID: <CAFHpkQFwOTOrqucoFs+mcLr7bCvVzYnUhK7hEM084suOFjm85Q@...278...>
+Content-Type: multipart/alternative; boundary="000000000000ea3d57058634ead5"
+Subject: Re: [Openvpn-devel] cirrus-ci: freebsd builds ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,82 +14,96 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>, Francois Gelis <francois.gelis@...277...>, antiac@...277...
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---0IyEfwqcbSrPwkPBUgflWlVYJZ14a2vY7
-Content-Type: multipart/mixed; boundary="REjKg9HGE6hnRN6ySjmLxTsu8bdX9hTtP";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-To: Selva Nair <selva.nair@...277...>,
- Francois Gelis <francois.gelis@...277...>, antiac@...277...
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Message-ID: <3f0208be-60e9-118d-b148-fe05e3da031b@...2080...>
-Subject: Re: [Openvpn-devel] Issue with smartcard authentication for openvpn
-References: <CAM1xzG1X-iERU2ZXFS_m_VqCKOwjt_gD8oi0F8J5h38Xx+FQ9A@...278...>
- <CAKuzo_gXgqWSLhpvMhjTS+VfbWmQ8JXnHEiOVEPyPSOMCbPKcQ@...278...>
-In-Reply-To: <CAKuzo_gXgqWSLhpvMhjTS+VfbWmQ8JXnHEiOVEPyPSOMCbPKcQ@...278...>
-
---REjKg9HGE6hnRN6ySjmLxTsu8bdX9hTtP
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
+--000000000000ea3d57058634ead5
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 10/04/2019 17:58, Selva Nair wrote:
->=20
-> As I replied to the openssl-users list[*], pkcs11-helper only supports PK=
-CS1
-> signatures, not raw signature needed in this case.
->=20
-> We have to either patch pkcs11-helper or switch to something else.
+couple of findings:
 
-It would be wonderful to switch it for something else.  Unfortunately, it d=
-oes
-a lot of gluing between the lower-level operations (similarly available via
-p11-kit) and the interfaces implemented in OpenVPN is fairly high-level.  So
-this "glue code" which pkcs11-helper is, is not that trivial and last time I
-checked the alternatives were scarce :(
+1) error when built with mbedtls-2.16.0 (surprizingly, build does not fail)
 
-Is this a Windows only issue?  Or is it present on other platforms as well?
-If it's Windows only, I think we can get around it by patching it and ensur=
-ing
-upstream is aware of this.  But if it is more platforms, patching
-pkcs11-helper gets nasty quickly.
+[       OK ] tls_crypt_v2_wrap_unwrap_no_metadata
+[ RUN      ] tls_crypt_v2_wrap_unwrap_max_metadata
+[       OK ] tls_crypt_v2_wrap_unwrap_max_metadata
+[ RUN      ] tls_crypt_v2_wrap_too_long_metadata
+ERROR: could not crypt: insufficient space in dst
+[       OK ] tls_crypt_v2_wrap_too_long_metadata
+[ RUN      ] tls_crypt_v2_wrap_unwrap_wrong_key
+[       OK ] tls_crypt_v2_wrap_unwrap_wrong_key
 
 
---=20
-kind regards,
+2) base64 is missing --> build is ok (we have similar "failures" on
+travis-ci osx builds)
 
-David Sommerseth
-OpenVPN Inc
+Testing tls-crypt-v2 key generation (max length metadata)..../t_lpback.sh:
+base64: not found
+OK
+PASS: t_lpback.sh
 
 
+=D1=81=D1=80, 10 =D0=B0=D0=BF=D1=80. 2019 =D0=B3. =D0=B2 23:44, =D0=98=D0=
+=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...1665...=
+77...>:
 
---REjKg9HGE6hnRN6ySjmLxTsu8bdX9hTtP--
+> hello,
+>
+> I have implemented cirrus-ci support (with freebsd fix),
+> please have a look
+>
+> https://github.com/OpenVPN/openvpn/pull/125
+>
+> builds:
+>
+> https://cirrus-ci.com/task/6511771119517696
+> https://cirrus-ci.com/task/5385871212675072
+>
+> thoughts ? suggestions ?
+>
 
---0IyEfwqcbSrPwkPBUgflWlVYJZ14a2vY7
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+--000000000000ea3d57058634ead5
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+<div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr"><div>couple of findings:=
+</div><div><br></div><div>1) error when built with mbedtls-2.16.0 (surprizi=
+ngly, build does not fail)<br></div><div><br></div><div>[=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 OK ] tls_crypt_v2_wrap_unwrap_no_metadata
+<br>[ RUN=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ] tls_crypt_v2_wrap_unwrap_max_meta=
+data
+<br>[=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 OK ] tls_crypt_v2_wrap_unwrap_max=
+_metadata
+<br>[ RUN=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ] tls_crypt_v2_wrap_too_long_metada=
+ta
+<br>ERROR: could not crypt: insufficient space in dst
+<br>[=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 OK ] tls_crypt_v2_wrap_too_long_m=
+etadata
+<br>[ RUN=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ] tls_crypt_v2_wrap_unwrap_wrong_key
+<br>[=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 OK ] tls_crypt_v2_wrap_unwrap_wro=
+ng_key</div><div></div><div><br></div><div><br></div><div>2) base64 is miss=
+ing --&gt; build is ok (we have similar &quot;failures&quot; on travis-ci o=
+sx builds)<br></div><div><br></div><div>Testing tls-crypt-v2 key generation=
+ (max length metadata)..../t_lpback.sh: base64: not found
+<br>OK
+<br>PASS: t_lpback.sh<br></div><div><br></div></div></div></div><br><div cl=
+ass=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">=D1=81=D1=80, 10 =
+=D0=B0=D0=BF=D1=80. 2019 =D0=B3. =D0=B2 23:44, =D0=98=D0=BB=D1=8C=D1=8F =D0=
+=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD &lt;<a href=3D"mailto:chipitsine@...1186...=
+.277...">chipitsine@...277...</a>&gt;:<br></div><blockquote class=3D"gmail_=
+quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,=
+204);padding-left:1ex"><div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr"><=
+div dir=3D"ltr"><div>hello,</div><div><br></div><div>I have implemented cir=
+rus-ci support (with freebsd fix),</div><div>please have a look</div><div><=
+br></div><div><a href=3D"https://github.com/OpenVPN/openvpn/pull/125" targe=
+t=3D"_blank">https://github.com/OpenVPN/openvpn/pull/125</a></div><div><br>=
+</div><div>builds:</div><div><br></div><div><a href=3D"https://cirrus-ci.co=
+m/task/6511771119517696" target=3D"_blank">https://cirrus-ci.com/task/65117=
+71119517696</a></div><div><a href=3D"https://cirrus-ci.com/task/53858712126=
+75072" target=3D"_blank">https://cirrus-ci.com/task/5385871212675072</a></d=
+iv><div><br></div><div>thoughts ? suggestions ?<br></div></div></div></div>=
+</div>
+</blockquote></div>
 
-iQIcBAEBCgAGBQJcrmQYAAoJEIbPlEyWcf3yZEYP/iIaa31SqKqJmuVI+9QMfTCY
-/ZGkRxLGaxkX/vOdGt9IGr4IN9AVR6uLg/rE/gRrSkJbUdPP7OF32XoZX9epQcl4
-KFF50TLF3DtgES9uDmEaH8oYrBT4Xr/Qs4MtDzB5mNb8hi2rB14md2UjGkoOI+oF
-9ZNwCIL4DFTx7Ul1fOsfIkEjGDTBKe0eYp6ZFj/xliFP5r5edQZKCFaaLKEkOVDm
-IHnNuE12mRc+T+L+48WlHSAfvi2uDENeStWcfVOiFSPMRtGSI7bbIXQuUrlxf3IH
-VRJ0u0TFqD+29PrrFytJE8B6eah+d5czxBjZ2GwZdQTi5pMkhNdwv9fMwmnnSYfe
-Gd6CznXAM13ZFOoJB1xtupR19WnODHh5mxPmqlI6Cy237+I0dHJr0LOkbJoN3vVl
-l/uRhmnAw8sETOnTfLftRnZFvDv0GpEvtWAb3I7ZRL87Vg2uZKX9OR9Ywgw/fITF
-Fo8WMfgfEKYImt7cg3CV5JJvek1j1rBFdBVE+8KWAVqZLphly0mYZ3pukeVcBmd/
-EQdpkNaEoHiyMu+Pzq8WTpfG34Faec91kB9yhGYmGQghXvKnL5C3CnXgsfdxMglH
-M6kJNdQ4pQzHMOHqJYOlAYW7AFoLHzMbxMRRdyr7kACKuyqBUHBvroYJRxpoKEj5
-IssRCeZRrMlLCHG8vcBZ
-=74rW
------END PGP SIGNATURE-----
-
---0IyEfwqcbSrPwkPBUgflWlVYJZ14a2vY7--
+--000000000000ea3d57058634ead5--
 
