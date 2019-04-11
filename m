@@ -1,11 +1,13 @@
 MIME-Version: 1.0
-References: <CAFHpkQFauuHVbkLAVCz2b1s2m4dwUjxQPyBn9Laa0BmwyYQmGQ@...278...>
-In-Reply-To: <CAFHpkQFauuHVbkLAVCz2b1s2m4dwUjxQPyBn9Laa0BmwyYQmGQ@...278...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Thu, 11 Apr 2019 03:51:50 +0500
-Message-ID: <CAFHpkQFwOTOrqucoFs+mcLr7bCvVzYnUhK7hEM084suOFjm85Q@...278...>
-Content-Type: multipart/alternative; boundary="000000000000ea3d57058634ead5"
-Subject: Re: [Openvpn-devel] cirrus-ci: freebsd builds ?
+References: <CAM1xzG1X-iERU2ZXFS_m_VqCKOwjt_gD8oi0F8J5h38Xx+FQ9A@...278...>
+ <CAKuzo_gXgqWSLhpvMhjTS+VfbWmQ8JXnHEiOVEPyPSOMCbPKcQ@...278...>
+ <3f0208be-60e9-118d-b148-fe05e3da031b@...2080...>
+In-Reply-To: <3f0208be-60e9-118d-b148-fe05e3da031b@...2080...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 10 Apr 2019 21:58:24 -0400
+Message-ID: <CAKuzo_ivfR68SAUTBvAiGg2yTcf85U=Sh3w4EBcSwcGZEH=gfg@...278...>
+Content-Type: multipart/alternative; boundary="00000000000075f72e058637867c"
+Subject: Re: [Openvpn-devel] Issue with smartcard authentication for openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,96 +16,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: David Sommerseth <openvpn@...2080...>
+Cc: Francois Gelis <francois.gelis@...277...>, antiac@...277..., openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---000000000000ea3d57058634ead5
+--00000000000075f72e058637867c
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-couple of findings:
-
-1) error when built with mbedtls-2.16.0 (surprizingly, build does not fail)
-
-[       OK ] tls_crypt_v2_wrap_unwrap_no_metadata
-[ RUN      ] tls_crypt_v2_wrap_unwrap_max_metadata
-[       OK ] tls_crypt_v2_wrap_unwrap_max_metadata
-[ RUN      ] tls_crypt_v2_wrap_too_long_metadata
-ERROR: could not crypt: insufficient space in dst
-[       OK ] tls_crypt_v2_wrap_too_long_metadata
-[ RUN      ] tls_crypt_v2_wrap_unwrap_wrong_key
-[       OK ] tls_crypt_v2_wrap_unwrap_wrong_key
+Hi,
 
 
-2) base64 is missing --> build is ok (we have similar "failures" on
-travis-ci osx builds)
+On Wed, Apr 10, 2019 at 6:00 PM David Sommerseth <
+openvpn@...2080...> wrote:
 
-Testing tls-crypt-v2 key generation (max length metadata)..../t_lpback.sh:
-base64: not found
-OK
-PASS: t_lpback.sh
-
-
-=D1=81=D1=80, 10 =D0=B0=D0=BF=D1=80. 2019 =D0=B3. =D0=B2 23:44, =D0=98=D0=
-=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...1665...=
-77...>:
-
-> hello,
+> On 10/04/2019 17:58, Selva Nair wrote:
+> >
+> > As I replied to the openssl-users list[*], pkcs11-helper only supports
+> PKCS1
+> > signatures, not raw signature needed in this case.
+> >
+> > We have to either patch pkcs11-helper or switch to something else.
 >
-> I have implemented cirrus-ci support (with freebsd fix),
-> please have a look
+> It would be wonderful to switch it for something else.  Unfortunately, it
+> does
+> a lot of gluing between the lower-level operations (similarly available via
+> p11-kit) and the interfaces implemented in OpenVPN is fairly high-level.
+> So
+> this "glue code" which pkcs11-helper is, is not that trivial and last time
+> I
+> checked the alternatives were scarce :(
 >
-> https://github.com/OpenVPN/openvpn/pull/125
->
-> builds:
->
-> https://cirrus-ci.com/task/6511771119517696
-> https://cirrus-ci.com/task/5385871212675072
->
-> thoughts ? suggestions ?
+> Is this a Windows only issue?  Or is it present on other platforms as well?
+> If it's Windows only, I think we can get around it by patching it and
+> ensuring
+> upstream is aware of this.  But if it is more platforms, patching
+> pkcs11-helper gets nasty quickly.
 >
 
---000000000000ea3d57058634ead5
+This has nothing to do with Windows. This is a limitation of pkcs11-helper
+no matter what OS its used in. In fact on Windows we have an alternative
+option to use hardware tokens through cryptoapicert, but on other OSes we
+are dependent on pkcs11-helper.
+
+So this has everything non-Windows written on it.
+
+Selva
+
+--00000000000075f72e058637867c
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr"><div>couple of findings:=
-</div><div><br></div><div>1) error when built with mbedtls-2.16.0 (surprizi=
-ngly, build does not fail)<br></div><div><br></div><div>[=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 OK ] tls_crypt_v2_wrap_unwrap_no_metadata
-<br>[ RUN=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ] tls_crypt_v2_wrap_unwrap_max_meta=
-data
-<br>[=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 OK ] tls_crypt_v2_wrap_unwrap_max=
-_metadata
-<br>[ RUN=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ] tls_crypt_v2_wrap_too_long_metada=
-ta
-<br>ERROR: could not crypt: insufficient space in dst
-<br>[=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 OK ] tls_crypt_v2_wrap_too_long_m=
-etadata
-<br>[ RUN=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ] tls_crypt_v2_wrap_unwrap_wrong_key
-<br>[=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 OK ] tls_crypt_v2_wrap_unwrap_wro=
-ng_key</div><div></div><div><br></div><div><br></div><div>2) base64 is miss=
-ing --&gt; build is ok (we have similar &quot;failures&quot; on travis-ci o=
-sx builds)<br></div><div><br></div><div>Testing tls-crypt-v2 key generation=
- (max length metadata)..../t_lpback.sh: base64: not found
-<br>OK
-<br>PASS: t_lpback.sh<br></div><div><br></div></div></div></div><br><div cl=
-ass=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">=D1=81=D1=80, 10 =
-=D0=B0=D0=BF=D1=80. 2019 =D0=B3. =D0=B2 23:44, =D0=98=D0=BB=D1=8C=D1=8F =D0=
-=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD &lt;<a href=3D"mailto:chipitsine@...1186...=
-.277...">chipitsine@...277...</a>&gt;:<br></div><blockquote class=3D"gmail_=
-quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,=
-204);padding-left:1ex"><div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr"><=
-div dir=3D"ltr"><div>hello,</div><div><br></div><div>I have implemented cir=
-rus-ci support (with freebsd fix),</div><div>please have a look</div><div><=
-br></div><div><a href=3D"https://github.com/OpenVPN/openvpn/pull/125" targe=
-t=3D"_blank">https://github.com/OpenVPN/openvpn/pull/125</a></div><div><br>=
-</div><div>builds:</div><div><br></div><div><a href=3D"https://cirrus-ci.co=
-m/task/6511771119517696" target=3D"_blank">https://cirrus-ci.com/task/65117=
-71119517696</a></div><div><a href=3D"https://cirrus-ci.com/task/53858712126=
-75072" target=3D"_blank">https://cirrus-ci.com/task/5385871212675072</a></d=
-iv><div><br></div><div>thoughts ? suggestions ?<br></div></div></div></div>=
-</div>
-</blockquote></div>
+<div dir=3D"ltr"><div dir=3D"ltr">Hi,<div><br></div></div><br><div class=3D=
+"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">On Wed, Apr 10, 2019 at=
+ 6:00 PM David Sommerseth &lt;<a href=3D"mailto:openvpn@...2080...">openvpn=
+@...2080...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=
+=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding=
+-left:1ex">On 10/04/2019 17:58, Selva Nair wrote:<br>
+&gt; <br>
+&gt; As I replied to the openssl-users list[*], pkcs11-helper only supports=
+ PKCS1<br>
+&gt; signatures, not raw signature needed in this case.<br>
+&gt; <br>
+&gt; We have to either patch pkcs11-helper or switch to something else.<br>
+<br>
+It would be wonderful to switch it for something else.=C2=A0 Unfortunately,=
+ it does<br>
+a lot of gluing between the lower-level operations (similarly available via=
+<br>
+p11-kit) and the interfaces implemented in OpenVPN is fairly high-level.=C2=
+=A0 So<br>
+this &quot;glue code&quot; which pkcs11-helper is, is not that trivial and =
+last time I<br>
+checked the alternatives were scarce :(<br>
+<br>
+Is this a Windows only issue?=C2=A0 Or is it present on other platforms as =
+well?<br>
+If it&#39;s Windows only, I think we can get around it by patching it and e=
+nsuring<br>
+upstream is aware of this.=C2=A0 But if it is more platforms, patching<br>
+pkcs11-helper gets nasty quickly.<br></blockquote><div><br></div><div>This =
+has nothing to do with Windows. This is a limitation of pkcs11-helper no ma=
+tter what OS its used in. In fact on Windows we have an alternative option =
+to use hardware tokens through cryptoapicert, but on other OSes we are depe=
+ndent on pkcs11-helper.</div><div><br></div><div>So this has everything non=
+-Windows written on it.</div><div><br></div><div>Selva</div></div></div>
 
---000000000000ea3d57058634ead5--
+--00000000000075f72e058637867c--
 
