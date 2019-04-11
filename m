@@ -1,10 +1,9 @@
-Date: Thu, 11 Apr 2019 20:32:15 +0200 (CEST)
-Message-Id: <201904111832.x3BIWFRK089413@...2054...>
+Date: Thu, 11 Apr 2019 21:13:01 +0200 (CEST)
+Message-Id: <201904111913.x3BJD1Y2089795@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20190411074519.9982-2-chipitsine@...277...>
-References: <20190411074519.9982-2-chipitsine@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: configure.ac: fix compile-time
- error in argv_testdriver
+In-Reply-To: <20190403225740.8285-1-rosenp@...277...>
+References: <20190403225740.8285-1-rosenp@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove wrong poll.h include
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,29 +14,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Ilya Shipitsin <chipitsine@...277...>
+To: Rosen Penev <rosenp@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Tested on FreeBSD 12, fixes the problem.  Thanks.  
-
-(For the record, this needs a setup where *lzo* needs extra -L/-I 
-flags, but OpenSSL does *not*.  If you have your local OpenSSL in 
-the same place as your local lzo, the "OpenSSL cflags" will bring 
-in all the build needs, so I had a bit of trouble to figure this out)
+"This is what the standard says" - and we checked everything that we
+currently support (back to FreeBSD 7.4, old Solaris, AIX) and all
+systems have a poll.h, which is either a symlink to sys/poll.h or
+just does "#include <sys/poll.h>".  So it's fairly much a no-op today,
+but might prevent compile-time issues on more standards-enforcing 
+future systems... (very theoretical, this)
 
 Your patch has been applied to the master branch.
 
-commit aa830e1217ddce8fdcf9995a13a8907124508e36
-Author: Ilya Shipitsin
-Date:   Thu Apr 11 12:45:19 2019 +0500
+commit 6206316275b14bd433a8651568f0185f4fa9f038
+Author: Rosen Penev
+Date:   Wed Apr 3 15:57:40 2019 -0700
 
-     configure.ac: fix compile-time error in argv_testdriver
+     Remove wrong poll.h include
 
+     Signed-off-by: Rosen Penev <rosenp@...277...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20190411074519.9982-2-chipitsine@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18357.html
+     Message-Id: <20190403225740.8285-1-rosenp@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18336.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
