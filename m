@@ -1,9 +1,8 @@
-Date: Sat, 13 Apr 2019 10:24:26 +0200 (CEST)
-Message-Id: <201904130824.x3D8OQtv013215@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20190412202020.24045-1-davids@...515...>
-References: <20190412202020.24045-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: docs: Update INSTALL
+MIME-Version: 1.0
+From: wei wang <lnykww@...277...>
+Date: Mon, 15 Apr 2019 20:29:10 +0800
+Message-ID: <CAPM6dUC_L=Q2HseFEKS7bfrff6McwQo9TSuWKramkbC+5k9Phw@...278...>
+Subject: [Openvpn-devel] openvpn with udp lost event.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,33 +11,20 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Hi,
 
-thanks.
+For function multi_process_io_udp receive many events, but only
+process one at a time. Doest it cause the event to be lost?
 
-Your patch has been applied to the release/2.4 branch.
+In our test, we had create thousands of client. When clients connect
+to server at a time, for the clients which already connected on this
+server will not receive packet from tun device.
 
-commit abbfd4c88780b6836e7897e7bd6c7c1f9a788fe3
-Author: David Sommerseth
-Date:   Fri Apr 12 22:20:20 2019 +0200
-
-     docs: Update INSTALL
-
-     Signed-off-by: David Sommerseth <davids@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20190412202020.24045-1-davids@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18364.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+-- 
+Regards,
+Wang Wei
 
