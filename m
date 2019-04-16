@@ -1,14 +1,11 @@
-References: <20190411205159.7369-1-chipitsine@...277...>
- <20190411205159.7369-2-chipitsine@...277...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <974b3444-da8b-2bad-a3ad-7852e81892d2@...2080...>
-Date: Tue, 16 Apr 2019 19:36:43 +0200
+From: Marcus Wichelmann <marcus.wichelmann@...2504...>
+Date: Tue, 16 Apr 2019 22:11:36 +0000
+Message-ID: <DB8PR05MB58656572C58F306B5084368F8A240@...2505...>
+Content-Language: en-US
+Content-Type: multipart/alternative;
+ boundary="_000_DB8PR05MB58656572C58F306B5084368F8A240DB8PR05MB5865eurp_"
 MIME-Version: 1.0
-In-Reply-To: <20190411205159.7369-2-chipitsine@...277...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="f2WirIAj4tXYUZd1W8DFRUqyPRStz9bmI"
-Subject: Re: [Openvpn-devel] [PATCH 1/1] initial cirrus-ci support
+Subject: [Openvpn-devel] Why does the tun-mtu default to 1500 bytes?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,83 +14,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: chipitsine@...277..., openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---f2WirIAj4tXYUZd1W8DFRUqyPRStz9bmI
-Content-Type: multipart/mixed; boundary="DLb3Ym6fRiMnTB3No3GzHo24FPnaYLqc6";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-To: chipitsine@...277..., openvpn-devel@lists.sourceforge.net
-Message-ID: <974b3444-da8b-2bad-a3ad-7852e81892d2@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH 1/1] initial cirrus-ci support
-References: <20190411205159.7369-1-chipitsine@...277...>
- <20190411205159.7369-2-chipitsine@...277...>
-In-Reply-To: <20190411205159.7369-2-chipitsine@...277...>
-
---DLb3Ym6fRiMnTB3No3GzHo24FPnaYLqc6
-Content-Language: en-GB
+--_000_DB8PR05MB58656572C58F306B5084368F8A240DB8PR05MB5865eurp_
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: base64
 
-On 11/04/2019 22:51, chipitsine@...277... wrote:
-> From: Ilya Shipitsin <chipitsine@...277...>
->=20
-> enabled FreeBSD 12.0 builds
->=20
-> Signed-off-by: Ilya Shipitsin <chipitsine@...277...>
-Hey,
+SGVsbG8sDQoNCkknbSB3b25kZXJpbmcgd2hhdCB0aGUgcmVhc29uIGlzIHRoYXQgT3BlblZQTiBD
+b21tdW5pdHkgc2V0cyB0aGUgZGVmYXVsdCBUVU4tTVRVIHRvIDE1MDAgYnl0ZXMsIGFzIHNlZW4g
+aGVyZTogaHR0cHM6Ly9naXRodWIuY29tL09wZW5WUE4vb3BlbnZwbi9ibG9iL2VkMzFjZjJhYjcx
+OGQ4Nzk2MTVkZWE4MWU2YTE3ZDI2NTM3YWI0M2Evc3JjL29wZW52cG4vbXR1LmgjTDcwDQpJbiBt
+eSB1bmRlcnN0YW5kaW5nLCBiZWNhdXNlIG9mIHRoZSBhZGRpdGlvbmFsIG92ZXJoZWFkIHRoYXQg
+dGhlIFZQTiB0dW5uZWwgYWRkcyB0byB0aGUgdHJhbnNtaXR0ZWQgcGFja2FnZXMsIHRoZSByZXN1
+bHRpbmcgcGFja2FnZXMgb24gdGhlIGxpbmsgaW50ZXJmYWNlIGNhbiBiZSBsYXJnZXIgdGhhbiAx
+NTAwIGJ5dGVzIGFuZCB3aWxsbCBub3QgZml0IHRocm91Z2ggYSByZWd1bGFyIGxpbmsuIFRoaXMg
+c2hvdWxkIHJlc3VsdCBpbiBmcmFnbWVudGF0aW9uIHdoaWNoIGh1cnRzIHRoZSB0dW5uZWwgdGhy
+b3VnaHB1dC4NCg0KU28gZG8gdGhlIGRlZmF1bHQgc2V0dGluZ3MgYXNzdW1lIHRoYXQgdGhlIFZQ
+TiB0dW5uZWwgaXMgYnVpbHQgdXNpbmcgYSBsaW5rIHRoYXQgc3VwcG9ydHMganVtYm8tZnJhbWVz
+PyBIb3cgZG9lcyBpdCBtYWtlIHNlbnNlIHRvIGV4cGVjdCBhIGxpbmsgd2l0aCBqdW1iby1mcmFt
+ZS1zdXBwb3J0IHdoZW4gcHJvYmFibHkgbW9zdCBPcGVuVlBOIGNvbm5lY3Rpb25zIHdpbGwgYmUg
+bWFkZSBvdmVyIHRoZSBpbnRlcm5ldD8NCg0KQ291bGQgc29tZWJvZHkgcGxlYXNlIGV4cGxhaW4g
+dG8gbWUsIHdoYXQgdGhlIGlkZWEgYmVoaW5kIHRoaXMgZGVjaXNpb24gd2FzPyBJJ20gdmVyeSBp
+bnRlcmVzdGVkIGluIGlmIEkndmUgb3Zlcmxvb2tlZCBzb21ldGhpbmcuDQpXb3VsZG4ndCBpdCBi
+ZSBtb3JlIGhlbHBmdWwgdG8gbW9zdCBPcGVuVlBOIHVzZXJzIHdoZW4gdGhlIFRVTi1NVFUgaXMg
+ZHluYW1pY2FsbHkgY2FsY3VsYXRlZCBiYXNlZCBvbiB0aGUgTElOSy1NVFUgd2hpY2ggY291bGQg
+ZGVmYXVsdCB0byAxNTAwIChvciBldmVuIDE0OTIgdG8gc3VwcG9ydCBEU0wvUFBQb0UgaW50ZXJu
+ZXQgY29ubmVjdGlvbnMpPw0KDQpUaGFuayB5b3UgdmVyeSBtdWNoIQ0KTWFyY3VzIFdpY2hlbG1h
+bm4NCg==
 
-Just wondering about the value of adding yet another CI into the mix we hav=
-e?
-We have Travis and buildbot.
+--_000_DB8PR05MB58656572C58F306B5084368F8A240DB8PR05MB5865eurp_
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: base64
+Content-ID: <4FB57C9D7F52FF4F8C3A900E2B81E5C9@...2506...>
 
-Travis doesn't handle all the *BSD flavours but gives us Windows.  Our
-buildbot setup does Linux (CentOS, Fedora, Ubuntu, Arch), macOS, FreeBSD (7=
-.4,
-9.0, 10.3, 11), NetBSD (5.1, 7.0), OpenBSD (4.9, 6.0), OpenSolaris 10 ... I
-might have overlooked a few.
+PGh0bWw+DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIgY29udGVudD0i
+dGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij4NCjwvaGVhZD4NCjxib2R5IHRleHQ9IiMwMDAwMDAi
+IGJnY29sb3I9IiNGRkZGRkYiPg0KPGZvbnQgc2l6ZT0iLTIiPkhlbGxvLDxicj4NCjxicj4NCkkn
+bSB3b25kZXJpbmcgd2hhdCB0aGUgcmVhc29uIGlzIHRoYXQgT3BlblZQTiBDb21tdW5pdHkgc2V0
+cyB0aGUgZGVmYXVsdCBUVU4tTVRVIHRvIDE1MDAgYnl0ZXMsIGFzIHNlZW4gaGVyZToNCjxhIGhy
+ZWY9Imh0dHBzOi8vZ2l0aHViLmNvbS9PcGVuVlBOL29wZW52cG4vYmxvYi9lZDMxY2YyYWI3MThk
+ODc5NjE1ZGVhODFlNmExN2QyNjUzN2FiNDNhL3NyYy9vcGVudnBuL210dS5oI0w3MCI+DQpodHRw
+czovL2dpdGh1Yi5jb20vT3BlblZQTi9vcGVudnBuL2Jsb2IvZWQzMWNmMmFiNzE4ZDg3OTYxNWRl
+YTgxZTZhMTdkMjY1MzdhYjQzYS9zcmMvb3BlbnZwbi9tdHUuaCNMNzA8L2E+PGJyPg0KSW4gbXkg
+dW5kZXJzdGFuZGluZywgYmVjYXVzZSBvZiB0aGUgYWRkaXRpb25hbCBvdmVyaGVhZCB0aGF0IHRo
+ZSBWUE4gdHVubmVsIGFkZHMgdG8gdGhlIHRyYW5zbWl0dGVkIHBhY2thZ2VzLCB0aGUgcmVzdWx0
+aW5nIHBhY2thZ2VzIG9uIHRoZSBsaW5rIGludGVyZmFjZSBjYW4gYmUgbGFyZ2VyIHRoYW4gMTUw
+MCBieXRlcyBhbmQgd2lsbGwgbm90IGZpdCB0aHJvdWdoIGEgcmVndWxhciBsaW5rLiBUaGlzIHNo
+b3VsZCByZXN1bHQgaW4gZnJhZ21lbnRhdGlvbg0KIHdoaWNoIGh1cnRzIHRoZSB0dW5uZWwgdGhy
+b3VnaHB1dC48YnI+DQo8YnI+DQpTbyBkbyB0aGUgZGVmYXVsdCBzZXR0aW5ncyBhc3N1bWUgdGhh
+dCB0aGUgVlBOIHR1bm5lbCBpcyBidWlsdCB1c2luZyBhIGxpbmsgdGhhdCBzdXBwb3J0cyBqdW1i
+by1mcmFtZXM/IEhvdyBkb2VzIGl0IG1ha2Ugc2Vuc2UgdG8gZXhwZWN0IGEgbGluayB3aXRoIGp1
+bWJvLWZyYW1lLXN1cHBvcnQgd2hlbiBwcm9iYWJseSBtb3N0IE9wZW5WUE4gY29ubmVjdGlvbnMg
+d2lsbCBiZSBtYWRlIG92ZXIgdGhlIGludGVybmV0Pzxicj4NCjxicj4NCkNvdWxkIHNvbWVib2R5
+IHBsZWFzZSBleHBsYWluIHRvIG1lLCB3aGF0IHRoZSBpZGVhIGJlaGluZCB0aGlzIGRlY2lzaW9u
+IHdhcz8gSSdtIHZlcnkgaW50ZXJlc3RlZCBpbiBpZiBJJ3ZlIG92ZXJsb29rZWQgc29tZXRoaW5n
+Ljxicj4NCldvdWxkbid0IGl0IGJlIG1vcmUgaGVscGZ1bCB0byBtb3N0IE9wZW5WUE4gdXNlcnMg
+d2hlbiB0aGUgVFVOLU1UVSBpcyBkeW5hbWljYWxseSBjYWxjdWxhdGVkIGJhc2VkIG9uIHRoZSBM
+SU5LLU1UVSB3aGljaCBjb3VsZCBkZWZhdWx0IHRvIDE1MDAgKG9yIGV2ZW4gMTQ5MiB0byBzdXBw
+b3J0IERTTC9QUFBvRSBpbnRlcm5ldCBjb25uZWN0aW9ucyk/PGJyPg0KPGJyPg0KVGhhbmsgeW91
+IHZlcnkgbXVjaCE8YnI+DQpNYXJjdXMgV2ljaGVsbWFubjwvZm9udD4NCjwvYm9keT4NCjwvaHRt
+bD4NCg==
 
-The sum of this seems far more than what cirrus-ci provides.  So I really
-wonder about the value here.  You can always argue that it's just a text fi=
-le
-laying there if not being used, but we also want to avoid "dead files" in o=
-ur
-repository.
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
-
-
-
---DLb3Ym6fRiMnTB3No3GzHo24FPnaYLqc6--
-
---f2WirIAj4tXYUZd1W8DFRUqyPRStz9bmI
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJcthKwAAoJEIbPlEyWcf3y1g4QALet7nNUfNqQJAapUYX7eQuD
-j9uSz9l9+G/0NvXJ5iDqS8k/2nbI580jv5XMe7t3f5KS0l/VBs85ZSSmM0+3Bwzl
-KupP84uPury2QHZi6vr2cmSsgrA3Z92iVwm0+ZAJPtkSUVeRDzsD1Zzfacxuenlt
-BJreLPlNPwnODmkWc/YKTCB1UNAfcqTq54q39FSIDB46NFZSje/lgRKGRyiunzJi
-naixXd2SiME7RZgHR90jXIbfhQE3fKpLP421l8orjjg2Ww5qAOVkR1Q1dFjU18BJ
-nRSmxSldy+X+1mg1uhYVcYV9Vl2NSgKYFLMpNVZ5JKCDJFOPQhH7IQhn6vWdnsSj
-pvXrY2Y3ETt7fK/6W3/M7BtxJTu95CWVREynulaSXa8kw53ex23IxltIuigtjEXL
-5yZL5Hfyjc6kSjoo+52gmxAPDyG1GK31O/T8OZK5ZjgzRVJkNI0+NPY0PBAYZvur
-BAjy3RxR2nQ8RcEEgs1n5qcDtNwRjDRK8gWDt5Kw4J2s7X0OR69cR9y+2F/obU+t
-/59K3b25vyha+hqVto2X5QaMkDpO7d0+w9mvml/efmIjCf8jl+ZxvRk2uabdc3VW
-c6G/IWMSgy85zg3Mr3kNWJADavbp0ocixb+oXjszrURuBNdUYcs1KTVdfqk1wAWJ
-Um25NZTg/iG4Tea8R/lP
-=Pzx0
------END PGP SIGNATURE-----
-
---f2WirIAj4tXYUZd1W8DFRUqyPRStz9bmI--
+--_000_DB8PR05MB58656572C58F306B5084368F8A240DB8PR05MB5865eurp_--
 
