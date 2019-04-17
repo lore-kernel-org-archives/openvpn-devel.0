@@ -1,11 +1,13 @@
-From: Marcus Wichelmann <marcus.wichelmann@...2504...>
-Date: Tue, 16 Apr 2019 22:11:36 +0000
-Message-ID: <DB8PR05MB58656572C58F306B5084368F8A240@...2505...>
-Content-Language: en-US
-Content-Type: multipart/alternative;
- boundary="_000_DB8PR05MB58656572C58F306B5084368F8A240DB8PR05MB5865eurp_"
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Why does the tun-mtu default to 1500 bytes?
+References: <CAFHpkQFauuHVbkLAVCz2b1s2m4dwUjxQPyBn9Laa0BmwyYQmGQ@...278...>
+ <CAFHpkQFwOTOrqucoFs+mcLr7bCvVzYnUhK7hEM084suOFjm85Q@...278...>
+ <CAA1AbxLG8Ab+zU-V8N_5u8mnLRGXWXy5a9FYgVEM6NVHr8_2HA@...278...>
+In-Reply-To: <CAA1AbxLG8Ab+zU-V8N_5u8mnLRGXWXy5a9FYgVEM6NVHr8_2HA@...278...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Wed, 17 Apr 2019 15:06:41 +0500
+Message-ID: <CAFHpkQHBURmteQi1eXqp=W9opx4H7oM-EmdbSVry-JJN6pMvdw@...278...>
+Content-Type: multipart/alternative; boundary="0000000000007d60f40586b70b4b"
+Subject: Re: [Openvpn-devel] cirrus-ci: freebsd builds ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,66 +16,96 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---_000_DB8PR05MB58656572C58F306B5084368F8A240DB8PR05MB5865eurp_
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+--0000000000007d60f40586b70b4b
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-SGVsbG8sDQoNCkknbSB3b25kZXJpbmcgd2hhdCB0aGUgcmVhc29uIGlzIHRoYXQgT3BlblZQTiBD
-b21tdW5pdHkgc2V0cyB0aGUgZGVmYXVsdCBUVU4tTVRVIHRvIDE1MDAgYnl0ZXMsIGFzIHNlZW4g
-aGVyZTogaHR0cHM6Ly9naXRodWIuY29tL09wZW5WUE4vb3BlbnZwbi9ibG9iL2VkMzFjZjJhYjcx
-OGQ4Nzk2MTVkZWE4MWU2YTE3ZDI2NTM3YWI0M2Evc3JjL29wZW52cG4vbXR1LmgjTDcwDQpJbiBt
-eSB1bmRlcnN0YW5kaW5nLCBiZWNhdXNlIG9mIHRoZSBhZGRpdGlvbmFsIG92ZXJoZWFkIHRoYXQg
-dGhlIFZQTiB0dW5uZWwgYWRkcyB0byB0aGUgdHJhbnNtaXR0ZWQgcGFja2FnZXMsIHRoZSByZXN1
-bHRpbmcgcGFja2FnZXMgb24gdGhlIGxpbmsgaW50ZXJmYWNlIGNhbiBiZSBsYXJnZXIgdGhhbiAx
-NTAwIGJ5dGVzIGFuZCB3aWxsbCBub3QgZml0IHRocm91Z2ggYSByZWd1bGFyIGxpbmsuIFRoaXMg
-c2hvdWxkIHJlc3VsdCBpbiBmcmFnbWVudGF0aW9uIHdoaWNoIGh1cnRzIHRoZSB0dW5uZWwgdGhy
-b3VnaHB1dC4NCg0KU28gZG8gdGhlIGRlZmF1bHQgc2V0dGluZ3MgYXNzdW1lIHRoYXQgdGhlIFZQ
-TiB0dW5uZWwgaXMgYnVpbHQgdXNpbmcgYSBsaW5rIHRoYXQgc3VwcG9ydHMganVtYm8tZnJhbWVz
-PyBIb3cgZG9lcyBpdCBtYWtlIHNlbnNlIHRvIGV4cGVjdCBhIGxpbmsgd2l0aCBqdW1iby1mcmFt
-ZS1zdXBwb3J0IHdoZW4gcHJvYmFibHkgbW9zdCBPcGVuVlBOIGNvbm5lY3Rpb25zIHdpbGwgYmUg
-bWFkZSBvdmVyIHRoZSBpbnRlcm5ldD8NCg0KQ291bGQgc29tZWJvZHkgcGxlYXNlIGV4cGxhaW4g
-dG8gbWUsIHdoYXQgdGhlIGlkZWEgYmVoaW5kIHRoaXMgZGVjaXNpb24gd2FzPyBJJ20gdmVyeSBp
-bnRlcmVzdGVkIGluIGlmIEkndmUgb3Zlcmxvb2tlZCBzb21ldGhpbmcuDQpXb3VsZG4ndCBpdCBi
-ZSBtb3JlIGhlbHBmdWwgdG8gbW9zdCBPcGVuVlBOIHVzZXJzIHdoZW4gdGhlIFRVTi1NVFUgaXMg
-ZHluYW1pY2FsbHkgY2FsY3VsYXRlZCBiYXNlZCBvbiB0aGUgTElOSy1NVFUgd2hpY2ggY291bGQg
-ZGVmYXVsdCB0byAxNTAwIChvciBldmVuIDE0OTIgdG8gc3VwcG9ydCBEU0wvUFBQb0UgaW50ZXJu
-ZXQgY29ubmVjdGlvbnMpPw0KDQpUaGFuayB5b3UgdmVyeSBtdWNoIQ0KTWFyY3VzIFdpY2hlbG1h
-bm4NCg==
+=D1=81=D1=80, 17 =D0=B0=D0=BF=D1=80. 2019 =D0=B3. =D0=B2 14:45, Steffan Kar=
+ger <steffan@...1856...>:
 
---_000_DB8PR05MB58656572C58F306B5084368F8A240DB8PR05MB5865eurp_
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: base64
-Content-ID: <4FB57C9D7F52FF4F8C3A900E2B81E5C9@...2506...>
+> On Thu, 11 Apr 2019 at 00:54, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=
+=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...> wrote:
+> > 1) error when built with mbedtls-2.16.0 (surprizingly, build does not
+> fail)
+> >
+> > [       OK ] tls_crypt_v2_wrap_unwrap_no_metadata
+> > [ RUN      ] tls_crypt_v2_wrap_unwrap_max_metadata
+> > [       OK ] tls_crypt_v2_wrap_unwrap_max_metadata
+> > [ RUN      ] tls_crypt_v2_wrap_too_long_metadata
+> > ERROR: could not crypt: insufficient space in dst
+>
+> This is not a test error, but an error message printed by the code
+> that is tested. See the test name, it feeds the code too much
+> metadata, and checks that the code errors out as expected.
+>
+> > 2) base64 is missing --> build is ok (we have similar "failures" on
+> travis-ci osx builds)
+> >
+> > Testing tls-crypt-v2 key generation (max length
+> metadata)..../t_lpback.sh: base64: not found
+> > OK
+> > PASS: t_lpback.sh
+>
+> This is an error in t_lpback.sh, will check it out.
+>
 
-PGh0bWw+DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIgY29udGVudD0i
-dGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij4NCjwvaGVhZD4NCjxib2R5IHRleHQ9IiMwMDAwMDAi
-IGJnY29sb3I9IiNGRkZGRkYiPg0KPGZvbnQgc2l6ZT0iLTIiPkhlbGxvLDxicj4NCjxicj4NCkkn
-bSB3b25kZXJpbmcgd2hhdCB0aGUgcmVhc29uIGlzIHRoYXQgT3BlblZQTiBDb21tdW5pdHkgc2V0
-cyB0aGUgZGVmYXVsdCBUVU4tTVRVIHRvIDE1MDAgYnl0ZXMsIGFzIHNlZW4gaGVyZToNCjxhIGhy
-ZWY9Imh0dHBzOi8vZ2l0aHViLmNvbS9PcGVuVlBOL29wZW52cG4vYmxvYi9lZDMxY2YyYWI3MThk
-ODc5NjE1ZGVhODFlNmExN2QyNjUzN2FiNDNhL3NyYy9vcGVudnBuL210dS5oI0w3MCI+DQpodHRw
-czovL2dpdGh1Yi5jb20vT3BlblZQTi9vcGVudnBuL2Jsb2IvZWQzMWNmMmFiNzE4ZDg3OTYxNWRl
-YTgxZTZhMTdkMjY1MzdhYjQzYS9zcmMvb3BlbnZwbi9tdHUuaCNMNzA8L2E+PGJyPg0KSW4gbXkg
-dW5kZXJzdGFuZGluZywgYmVjYXVzZSBvZiB0aGUgYWRkaXRpb25hbCBvdmVyaGVhZCB0aGF0IHRo
-ZSBWUE4gdHVubmVsIGFkZHMgdG8gdGhlIHRyYW5zbWl0dGVkIHBhY2thZ2VzLCB0aGUgcmVzdWx0
-aW5nIHBhY2thZ2VzIG9uIHRoZSBsaW5rIGludGVyZmFjZSBjYW4gYmUgbGFyZ2VyIHRoYW4gMTUw
-MCBieXRlcyBhbmQgd2lsbGwgbm90IGZpdCB0aHJvdWdoIGEgcmVndWxhciBsaW5rLiBUaGlzIHNo
-b3VsZCByZXN1bHQgaW4gZnJhZ21lbnRhdGlvbg0KIHdoaWNoIGh1cnRzIHRoZSB0dW5uZWwgdGhy
-b3VnaHB1dC48YnI+DQo8YnI+DQpTbyBkbyB0aGUgZGVmYXVsdCBzZXR0aW5ncyBhc3N1bWUgdGhh
-dCB0aGUgVlBOIHR1bm5lbCBpcyBidWlsdCB1c2luZyBhIGxpbmsgdGhhdCBzdXBwb3J0cyBqdW1i
-by1mcmFtZXM/IEhvdyBkb2VzIGl0IG1ha2Ugc2Vuc2UgdG8gZXhwZWN0IGEgbGluayB3aXRoIGp1
-bWJvLWZyYW1lLXN1cHBvcnQgd2hlbiBwcm9iYWJseSBtb3N0IE9wZW5WUE4gY29ubmVjdGlvbnMg
-d2lsbCBiZSBtYWRlIG92ZXIgdGhlIGludGVybmV0Pzxicj4NCjxicj4NCkNvdWxkIHNvbWVib2R5
-IHBsZWFzZSBleHBsYWluIHRvIG1lLCB3aGF0IHRoZSBpZGVhIGJlaGluZCB0aGlzIGRlY2lzaW9u
-IHdhcz8gSSdtIHZlcnkgaW50ZXJlc3RlZCBpbiBpZiBJJ3ZlIG92ZXJsb29rZWQgc29tZXRoaW5n
-Ljxicj4NCldvdWxkbid0IGl0IGJlIG1vcmUgaGVscGZ1bCB0byBtb3N0IE9wZW5WUE4gdXNlcnMg
-d2hlbiB0aGUgVFVOLU1UVSBpcyBkeW5hbWljYWxseSBjYWxjdWxhdGVkIGJhc2VkIG9uIHRoZSBM
-SU5LLU1UVSB3aGljaCBjb3VsZCBkZWZhdWx0IHRvIDE1MDAgKG9yIGV2ZW4gMTQ5MiB0byBzdXBw
-b3J0IERTTC9QUFBvRSBpbnRlcm5ldCBjb25uZWN0aW9ucyk/PGJyPg0KPGJyPg0KVGhhbmsgeW91
-IHZlcnkgbXVjaCE8YnI+DQpNYXJjdXMgV2ljaGVsbWFubjwvZm9udD4NCjwvYm9keT4NCjwvaHRt
-bD4NCg==
+that bug also appears on osx
 
---_000_DB8PR05MB58656572C58F306B5084368F8A240DB8PR05MB5865eurp_--
+https://travis-ci.org/OpenVPN/openvpn/jobs/518916670#L1477-L1485
+
+
+>
+> -Steffan
+>
+
+--0000000000007d60f40586b70b4b
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=
+=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">=D1=81=D1=80, 17 =D0=
+=B0=D0=BF=D1=80. 2019 =D0=B3. =D0=B2 14:45, Steffan Karger &lt;<a href=3D"m=
+ailto:steffan@...1856...">steffan@...1856...</a>&gt;:<br></div><blockquote =
+class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px sol=
+id rgb(204,204,204);padding-left:1ex">On Thu, 11 Apr 2019 at 00:54, =D0=98=
+=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD &lt;<a href=
+=3D"mailto:chipitsine@...277..." target=3D"_blank">chipitsine@...277...</a>=
+&gt; wrote:<br>
+&gt; 1) error when built with mbedtls-2.16.0 (surprizingly, build does not =
+fail)<br>
+&gt;<br>
+&gt; [=C2=A0 =C2=A0 =C2=A0 =C2=A0OK ] tls_crypt_v2_wrap_unwrap_no_metadata<=
+br>
+&gt; [ RUN=C2=A0 =C2=A0 =C2=A0 ] tls_crypt_v2_wrap_unwrap_max_metadata<br>
+&gt; [=C2=A0 =C2=A0 =C2=A0 =C2=A0OK ] tls_crypt_v2_wrap_unwrap_max_metadata=
+<br>
+&gt; [ RUN=C2=A0 =C2=A0 =C2=A0 ] tls_crypt_v2_wrap_too_long_metadata<br>
+&gt; ERROR: could not crypt: insufficient space in dst<br>
+<br>
+This is not a test error, but an error message printed by the code<br>
+that is tested. See the test name, it feeds the code too much<br>
+metadata, and checks that the code errors out as expected.<br>
+<br>
+&gt; 2) base64 is missing --&gt; build is ok (we have similar &quot;failure=
+s&quot; on travis-ci osx builds)<br>
+&gt;<br>
+&gt; Testing tls-crypt-v2 key generation (max length metadata)..../t_lpback=
+.sh: base64: not found<br>
+&gt; OK<br>
+&gt; PASS: t_lpback.sh<br>
+<br>
+This is an error in t_lpback.sh, will check it out.<br></blockquote><div><b=
+r></div><div>that bug also appears on osx</div><div><br></div><div><a href=
+=3D"https://travis-ci.org/OpenVPN/openvpn/jobs/518916670#L1477-L1485">https=
+://travis-ci.org/OpenVPN/openvpn/jobs/518916670#L1477-L1485</a><br></div><d=
+iv>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0p=
+x 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
+<br>
+-Steffan<br>
+</blockquote></div></div></div>
+
+--0000000000007d60f40586b70b4b--
 
