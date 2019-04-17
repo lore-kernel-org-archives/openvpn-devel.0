@@ -1,15 +1,14 @@
+MIME-Version: 1.0
 References: <CAM1xzG1X-iERU2ZXFS_m_VqCKOwjt_gD8oi0F8J5h38Xx+FQ9A@...278...>
  <CAKuzo_gXgqWSLhpvMhjTS+VfbWmQ8JXnHEiOVEPyPSOMCbPKcQ@...278...>
  <63b81ed6-dce7-94b8-0dd5-8864a8314ec6@...1147...>
  <CAKuzo_iikr28FJcXNMz+xSbkoqZAyutJ3cx5J5zBvnEnEEw5bw@...278...>
-From: Jan Just Keijser <janjust@...1147...>
-Message-ID: <d2f35ef2-dfbc-0202-2eb9-68e69051f742@...1147...>
-Date: Wed, 17 Apr 2019 16:45:27 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_iikr28FJcXNMz+xSbkoqZAyutJ3cx5J5zBvnEnEEw5bw@...278...>
-Content-Type: multipart/alternative;
- boundary="------------A0045627007C1E09FAA4EC7D"
-Content-Language: nl-NL
+ <d2f35ef2-dfbc-0202-2eb9-68e69051f742@...1147...>
+In-Reply-To: <d2f35ef2-dfbc-0202-2eb9-68e69051f742@...1147...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 17 Apr 2019 11:52:57 -0400
+Message-ID: <CAKuzo_jn38kJm4izesNzK6fedgbc55MUYmmsyZRrZa1oaix5wg@...278...>
+Content-Type: multipart/mixed; boundary="0000000000003718250586bbe29b"
 Subject: Re: [Openvpn-devel] Issue with smartcard authentication for openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -19,294 +18,112 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>, Francois Gelis <francois.gelis@...277...>
+To: Jan Just Keijser <janjust@...1147...>, Francois Gelis <francois.gelis@...277...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------A0045627007C1E09FAA4EC7D
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+--0000000000003718250586bbe29b
+Content-Type: multipart/alternative; boundary="0000000000003718210586bbe299"
 
-Hi Selva,
+--0000000000003718210586bbe299
+Content-Type: text/plain; charset="UTF-8"
 
-On 10/04/19 19:09, Selva Nair wrote:
+Hi JJK,
+
+On Wed, Apr 17, 2019 at 10:50 AM Jan Just Keijser <janjust@...1147...> wrote:
+
+> Hi Selva,
+>
+> On 10/04/19 19:09, Selva Nair wrote:
 >
 >
-> On Wed, Apr 10, 2019 at 12:59 PM Jan Just Keijser <janjust@...1147... 
-> <mailto:janjust@...1147...>> wrote:
 >
->     On 10/04/19 17:58, Selva Nair wrote:
->>     Hi,
->>
->>     This is more relevant to OpenVPN than OpenSSL, so copying to the
->>     openvpn-devel list.
->>
->>     On Wed, Apr 10, 2019 at 10:11 AM Francois Gelis
->>     <francois.gelis@...277... <mailto:francois.gelis@...277...>> wrote:
->>
->>         Hi all,
->>
->>         I have a working openvpn setup with client certificate and
->>         private key stored on my laptop. Then, I have loaded them
->>         into a smartcard (Yubico 5 NFC), and modified accordingly the
->>         openvpn client config. But running the openvpn client now
->>         fails with an error that seems to originate inside openssl.
->>         Here is a verbose openvpn log (only the portion that seems
->>         relevant for this error, but I have the full log if useful):
->>
->>         Sat Apr  6 15:57:20 2019 us=467260 Incoming Ciphertext -> TLS
->>         Sat Apr  6 15:57:20 2019 us=467271 SSL state (connect):
->>         SSLv3/TLS read server hello
->>         Sat Apr  6 15:57:20 2019 us=467468 VERIFY OK: depth=1, CN=FG-CA
->>         Sat Apr  6 15:57:20 2019 us=467598 VERIFY KU OK
->>         Sat Apr  6 15:57:20 2019 us=467609 Validating certificate
->>         extended key usage
->>         Sat Apr  6 15:57:20 2019 us=467615 ++ Certificate has EKU
->>         (str) TLS Web Server Authentication, expects TLS Web Server
->>         Authentication
->>         Sat Apr  6 15:57:20 2019 us=467620 VERIFY EKU OK
->>         Sat Apr  6 15:57:20 2019 us=467625 VERIFY OK: depth=0, CN=tx2
->>         Sat Apr  6 15:57:20 2019 us=467650 SSL state (connect):
->>         SSLv3/TLS read server certificate
->>         Sat Apr  6 15:57:20 2019 us=467735 SSL state (connect):
->>         SSLv3/TLS read server key exchange
->>         Sat Apr  6 15:57:20 2019 us=467763 SSL state (connect):
->>         SSLv3/TLS read server certificate request
->>         Sat Apr  6 15:57:20 2019 us=467771 SSL state (connect):
->>         SSLv3/TLS read server done
->>         Sat Apr  6 15:57:20 2019 us=467845 SSL state (connect):
->>         SSLv3/TLS write client certificate
->>         Sat Apr  6 15:57:20 2019 us=468012 SSL state (connect):
->>         SSLv3/TLS write client key exchange
->>         Sat Apr  6 15:57:20 2019 us=468053 PKCS#11:
->>         __pkcs11h_openssl_rsa_enc entered - flen=256,
->>         from=0x559d078d6e70, to=0x559d078d6bc0, rsa=0x559d078b3630,
->>         padding=3
->>         Sat Apr  6 15:57:20 2019 us=468060 PKCS#11:
->>         __pkcs11h_openssl_rsa_enc - return rv=112-'CKR_MECHANISM_INVALID'
->>         Sat Apr  6 15:57:20 2019 us=468070 SSL alert (write): fatal:
->>         internal error
->>         Sat Apr  6 15:57:20 2019 us=468085 OpenSSL:
->>         error:141F0006:SSL routines:tls_construct_cert_verify:EVP lib
->>         Sat Apr  6 15:57:20 2019 us=468092 TLS_ERROR: BIO read
->>         tls_read_plaintext error
->>         Sat Apr  6 15:57:20 2019 us=468097 TLS Error: TLS object ->
->>         incoming plaintext read error
->>         Sat Apr  6 15:57:20 2019 us=468101 TLS Error: TLS handshake
->>         failed
->>
->>         Somehow, it seems that __pkcs11h_openssl_rsa_enc was called
->>         with an unexpected padding. Any ideas on what might be the
->>         cause of this?
->>
->>
->>     As I replied to the openssl-users list[*], pkcs11-helper only
->>     supports PKCS1 signatures, not raw signature needed in this case.
->>
->>     We have to either patch pkcs11-helper or switch to something else.
->>
->>
->     patching pkcs11-helper does not seem too difficult for this
->     particular case - but how can we test it? I have access to hw
->     tokens but I don't know how to trigger the "raw signature" bit.
+> On Wed, Apr 10, 2019 at 12:59 PM Jan Just Keijser <janjust@...1147...>
+> wrote:
 >
 >
-> If both server and client are built with OpenSSL 1.1.1 and TLS version 
-> is >= 1.2, PSS padding will get used and trigger this. OpenSSL does 
-> PSS padding internally and passes the padded data to the rsa_priv_enc 
-> calback for raw signature.
+snipped...
+
+
+> patching pkcs11-helper does not seem too difficult for this particular
+>> case - but how can we test it? I have access to hw tokens but I don't know
+>> how to trigger the "raw signature" bit.
+>>
 >
-> This is based on my tests for our Windows cryptoapi and 
-> management-external-key patches for the same -- never tried this using 
+> If both server and client are built with OpenSSL 1.1.1 and TLS version is
+> >= 1.2, PSS padding will get used and trigger this. OpenSSL does PSS
+> padding internally and passes the padded data to the rsa_priv_enc calback
+> for raw signature.
+>
+> This is based on my tests for our Windows cryptoapi and
+> management-external-key patches for the same -- never tried this using
 > pkcs11-helper, but I expect the same behaviour.
 >
 >
-The good news: I can reproduce this with
-- openvpn 2.4.7
-- openssl 1.1.1b
-- pkcs11helper 1.25.1
-- Safenet etoken
-- client+server CentOS 7
+> The good news: I can reproduce this with
+> - openvpn 2.4.7
+> - openssl 1.1.1b
+> - pkcs11helper 1.25.1
+> - Safenet etoken
+> - client+server CentOS 7
+>
+> The bad news: I don't have a fix yet.
+>
 
-The bad news: I don't have a fix yet.
+What I has in mind was a very simple patch like the one attached (totally
+untested).
+But I guess you tried that already and it doesn't work? Is it because the
+token
+does not support raw signature (not all do) or something else?
 
-I will keep the list posted on any progress I make,
+Selva
 
-JJK
+--0000000000003718210586bbe299
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-
---------------A0045627007C1E09FAA4EC7D
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  </head>
-  <body text="#000000" bgcolor="#FFFFFF">
-    <div class="moz-cite-prefix">Hi Selva,<br>
+<div dir=3D"ltr"><div dir=3D"ltr"><div><div>Hi JJK,</div></div></div><br><d=
+iv class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">On Wed, Apr =
+17, 2019 at 10:50 AM Jan Just Keijser &lt;<a href=3D"mailto:janjust@...2303...=
+...">janjust@...1147...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_=
+quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,=
+204);padding-left:1ex">
+=20=20
+=20=20=20=20
+=20=20
+  <div bgcolor=3D"#FFFFFF">
+    <div class=3D"gmail-m_-4512286871544203907moz-cite-prefix">Hi Selva,<br>
       <br>
       On 10/04/19 19:09, Selva Nair wrote:<br>
     </div>
-    <blockquote type="cite"
-cite="mid:CAKuzo_iikr28FJcXNMz+xSbkoqZAyutJ3cx5J5zBvnEnEEw5bw@...278...">
-      <meta http-equiv="content-type" content="text/html; charset=utf-8">
-      <div dir="ltr">
-        <div dir="ltr"><br>
+    <blockquote type=3D"cite">
+=20=20=20=20=20=20
+      <div dir=3D"ltr">
+        <div dir=3D"ltr"><br>
         </div>
         <br>
-        <div class="gmail_quote">
-          <div dir="ltr" class="gmail_attr">On Wed, Apr 10, 2019 at
-            12:59 PM Jan Just Keijser &lt;<a
-              href="mailto:janjust@...1147..." target="_blank"
-              moz-do-not-send="true">janjust@...1147...</a>&gt; wrote:<br>
+        <div class=3D"gmail_quote">
+          <div dir=3D"ltr" class=3D"gmail_attr">On Wed, Apr 10, 2019 at
+            12:59 PM Jan Just Keijser &lt;<a href=3D"mailto:janjust@...2303...=
+..." target=3D"_blank">janjust@...1147...</a>&gt; wrote:<br></div></div></d=
+iv></blockquote></div></blockquote><div><br></div><div>snipped...<br>=C2=A0=
+<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8=
+ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><div bgcolor=3D=
+"#FFFFFF"><blockquote type=3D"cite"><div dir=3D"ltr"><div class=3D"gmail_qu=
+ote"><div dir=3D"ltr" class=3D"gmail_attr">
           </div>
-          <blockquote class="gmail_quote" style="margin:0px 0px 0px
-            0.8ex;border-left:1px solid
-            rgb(204,204,204);padding-left:1ex">
-            <div bgcolor="#FFFFFF">
-              <div
-                class="m_1964221307044804475gmail-m_1867414188553678211moz-cite-prefix">On
-                10/04/19 17:58, Selva Nair wrote:<br>
-              </div>
-              <blockquote type="cite">
-                <div dir="ltr">
-                  <div dir="ltr">
-                    <div>Hi,<br>
-                      <br>
-                    </div>
-                    This is more relevant to OpenVPN than OpenSSL, so
-                    copying to the openvpn-devel list.<br>
-                  </div>
-                  <br>
-                  <div class="gmail_quote">
-                    <div dir="ltr" class="gmail_attr">On Wed, Apr 10,
-                      2019 at 10:11 AM Francois Gelis &lt;<a
-                        href="mailto:francois.gelis@...277..."
-                        target="_blank" moz-do-not-send="true">francois.gelis@...277...</a>&gt;
-                      wrote:<br>
-                    </div>
-                    <blockquote class="gmail_quote" style="margin:0px
-                      0px 0px 0.8ex;border-left:1px solid
-                      rgb(204,204,204);padding-left:1ex">
-                      <div dir="ltr">
-                        <div dir="ltr">
-                          <div dir="ltr">Hi all,
-                            <div><br>
-                            </div>
-                            <div>I have a working openvpn setup with
-                              client certificate and private key stored
-                              on my laptop. Then, I have loaded them
-                              into a smartcard (Yubico 5 NFC), and
-                              modified accordingly the openvpn client
-                              config. But running the openvpn client now
-                              fails with an error that seems to
-                              originate inside openssl. Here is a
-                              verbose openvpn log (only the portion that
-                              seems relevant for this error, but I have
-                              the full log if useful):</div>
-                            <div><br>
-                            </div>
-                            <div>
-                              <div>Sat Apr  6 15:57:20 2019 us=467260
-                                Incoming Ciphertext -&gt; TLS</div>
-                              <div>Sat Apr  6 15:57:20 2019 us=467271
-                                SSL state (connect): SSLv3/TLS read
-                                server hello</div>
-                              <div>Sat Apr  6 15:57:20 2019 us=467468
-                                VERIFY OK: depth=1, CN=FG-CA</div>
-                              <div>Sat Apr  6 15:57:20 2019 us=467598
-                                VERIFY KU OK</div>
-                              <div>Sat Apr  6 15:57:20 2019 us=467609
-                                Validating certificate extended key
-                                usage</div>
-                              <div>Sat Apr  6 15:57:20 2019 us=467615 ++
-                                Certificate has EKU (str) TLS Web Server
-                                Authentication, expects TLS Web Server
-                                Authentication</div>
-                              <div>Sat Apr  6 15:57:20 2019 us=467620
-                                VERIFY EKU OK</div>
-                              <div>Sat Apr  6 15:57:20 2019 us=467625
-                                VERIFY OK: depth=0, CN=tx2</div>
-                              <div>Sat Apr  6 15:57:20 2019 us=467650
-                                SSL state (connect): SSLv3/TLS read
-                                server certificate</div>
-                              <div>Sat Apr  6 15:57:20 2019 us=467735
-                                SSL state (connect): SSLv3/TLS read
-                                server key exchange</div>
-                              <div>Sat Apr  6 15:57:20 2019 us=467763
-                                SSL state (connect): SSLv3/TLS read
-                                server certificate request</div>
-                              <div>Sat Apr  6 15:57:20 2019 us=467771
-                                SSL state (connect): SSLv3/TLS read
-                                server done</div>
-                              <div>Sat Apr  6 15:57:20 2019 us=467845
-                                SSL state (connect): SSLv3/TLS write
-                                client certificate</div>
-                              <div>Sat Apr  6 15:57:20 2019 us=468012
-                                SSL state (connect): SSLv3/TLS write
-                                client key exchange</div>
-                              <div>Sat Apr  6 15:57:20 2019 us=468053
-                                PKCS#11: __pkcs11h_openssl_rsa_enc
-                                entered - flen=256, from=0x559d078d6e70,
-                                to=0x559d078d6bc0, rsa=0x559d078b3630,
-                                padding=3</div>
-                              <div>Sat Apr  6 15:57:20 2019 us=468060
-                                PKCS#11: __pkcs11h_openssl_rsa_enc -
-                                return rv=112-'CKR_MECHANISM_INVALID'</div>
-                              <div>Sat Apr  6 15:57:20 2019 us=468070
-                                SSL alert (write): fatal: internal error</div>
-                              <div>Sat Apr  6 15:57:20 2019 us=468085
-                                OpenSSL: error:141F0006:SSL
-                                routines:tls_construct_cert_verify:EVP
-                                lib</div>
-                              <div>Sat Apr  6 15:57:20 2019 us=468092
-                                TLS_ERROR: BIO read tls_read_plaintext
-                                error</div>
-                              <div>Sat Apr  6 15:57:20 2019 us=468097
-                                TLS Error: TLS object -&gt; incoming
-                                plaintext read error</div>
-                              <div>Sat Apr  6 15:57:20 2019 us=468101
-                                TLS Error: TLS handshake failed<br>
-                              </div>
-                            </div>
-                            <div><br>
-                            </div>
-                            <div>Somehow, it seems
-                              that __pkcs11h_openssl_rsa_enc was called
-                              with an unexpected padding. Any ideas on
-                              what might be the cause of this?</div>
-                            <div><br>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </blockquote>
-                    <div><br>
-                    </div>
-                    <div>As I replied to the openssl-users list[*],
-                      pkcs11-helper only supports PKCS1 signatures, not
-                      raw signature needed in this case.<br>
-                    </div>
-                    <div><br>
-                      We have to either patch pkcs11-helper or switch to
-                      something else.<br>
-                      <br>
-                    </div>
-                    <br>
-                  </div>
-                </div>
-              </blockquote>
-              patching pkcs11-helper does not seem too difficult for
+          <blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8=
+ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
+            <div bgcolor=3D"#FFFFFF">patching pkcs11-helper does not seem t=
+oo difficult for
               this particular case - but how can we test it? I have
-              access to hw tokens but I don't know how to trigger the
-              "raw signature" bit.<br>
+              access to hw tokens but I don&#39;t know how to trigger the
+              &quot;raw signature&quot; bit.<br>
             </div>
           </blockquote>
           <div><br>
           </div>
           <div>If both server and client are built with OpenSSL 1.1.1
-            and TLS version is &gt;= 1.2, PSS padding will get used and
+            and TLS version is &gt;=3D 1.2, PSS padding will get used and
             trigger this. OpenSSL does PSS padding internally and passes
             the padded data to the rsa_priv_enc calback for raw
             signature.<br>
@@ -328,14 +145,38 @@ cite="mid:CAKuzo_iikr28FJcXNMz+xSbkoqZAyutJ3cx5J5zBvnEnEEw5bw@...278...">
     - Safenet etoken<br>
     - client+server CentOS 7<br>
     <br>
-    The bad news: I don't have a fix yet.  <br>
-    <br>
-    I will keep the list posted on any progress I make,<br>
-    <br>
-    JJK<br>
-    <br>
-  </body>
-</html>
+    The bad news: I don&#39;t have a fix yet.=C2=A0 <br></div></blockquote>=
+<div><br>What I has in mind was a very simple patch like the one attached (=
+totally untested).<br>But I guess you tried that already and it doesn&#39;t=
+ work? Is it because the token<br>does not support raw signature (not all d=
+o) or something else?<br><br></div><div>Selva<br></div></div></div>
 
---------------A0045627007C1E09FAA4EC7D--
+--0000000000003718210586bbe299--
+
+--0000000000003718250586bbe29b
+Content-Type: text/x-patch; charset="US-ASCII"; name="0001-Support-raw-RSA-signature.patch"
+Content-Disposition: attachment; 
+	filename="0001-Support-raw-RSA-signature.patch"
+Content-Transfer-Encoding: base64
+Content-ID: <f_jule7pja0>
+X-Attachment-Id: f_jule7pja0
+
+RnJvbSA1NDdjNThjZTI0ZTc2NTk4YjUwNGM5MDYyODIwZGFlNDNmYTljYzM4IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBTZWx2YSBOYWlyIDxzZWx2YS5uYWlyQGdtYWlsLmNvbT4KRGF0
+ZTogV2VkLCAxNyBBcHIgMjAxOSAxMToyNjo0MCAtMDQwMApTdWJqZWN0OiBbUEFUQ0hdIFN1cHBv
+cnQgcmF3IFJTQSBzaWduYXR1cmUKClNpZ25lZC1vZmYtYnk6IFNlbHZhIE5haXIgPHNlbHZhLm5h
+aXJAZ21haWwuY29tPgotLS0KIGxpYi9wa2NzMTFoLW9wZW5zc2wuYyB8IDEwICsrKysrKysrLS0K
+IDEgZmlsZSBjaGFuZ2VkLCA4IGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pCgpkaWZmIC0t
+Z2l0IGEvbGliL3BrY3MxMWgtb3BlbnNzbC5jIGIvbGliL3BrY3MxMWgtb3BlbnNzbC5jCmluZGV4
+IDRlYmMyMTEuLjZhMzk2YmIgMTAwNjQ0Ci0tLSBhL2xpYi9wa2NzMTFoLW9wZW5zc2wuYworKysg
+Yi9saWIvcGtjczExaC1vcGVuc3NsLmMKQEAgLTU2Nyw3ICs1NjcsMTMgQEAgX19wa2NzMTFoX29w
+ZW5zc2xfcnNhX2VuYyAoCiAJCXBhZGRpbmcKIAkpOwogCi0JaWYgKHBhZGRpbmcgIT0gUlNBX1BL
+Q1MxX1BBRERJTkcpIHsKKwlpZiAocGFkZGluZyA9PSBSU0FfUEtDUzFfUEFERElORykgeworCQlw
+YWRkaW5nID0gQ0tNX1JTQV9QS0NTOworCX0KKwllbHNlIGlmIChwYWRkaW5nID09IFJTQV9OT19Q
+QURESU5HKSB7CisJCXBhZGRpbmcgPSBDS01fUlNBX1hfNTA5OworCX0KKwllbHNlIHsKIAkJcnYg
+PSBDS1JfTUVDSEFOSVNNX0lOVkFMSUQ7CiAJCWdvdG8gY2xlYW51cDsKIAl9CkBAIC01ODcsNyAr
+NTkzLDcgQEAgX19wa2NzMTFoX29wZW5zc2xfcnNhX2VuYyAoCiAJaWYgKAogCQkocnYgPSBwa2Nz
+MTFoX2NlcnRpZmljYXRlX3NpZ25BbnkgKAogCQkJY2VydGlmaWNhdGUsCi0JCQlDS01fUlNBX1BL
+Q1MsCisJCQlwYWRkaW5nLAogCQkJZnJvbSwKIAkJCWZsZW4sCiAJCQl0bywKLS0gCjIuMS40Cgo=
+--0000000000003718250586bbe29b--
 
