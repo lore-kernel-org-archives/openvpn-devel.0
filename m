@@ -1,9 +1,18 @@
+References: <CAM1xzG1X-iERU2ZXFS_m_VqCKOwjt_gD8oi0F8J5h38Xx+FQ9A@...278...>
+ <CAKuzo_gXgqWSLhpvMhjTS+VfbWmQ8JXnHEiOVEPyPSOMCbPKcQ@...278...>
+ <63b81ed6-dce7-94b8-0dd5-8864a8314ec6@...1147...>
+ <CAKuzo_iikr28FJcXNMz+xSbkoqZAyutJ3cx5J5zBvnEnEEw5bw@...278...>
+ <d2f35ef2-dfbc-0202-2eb9-68e69051f742@...1147...>
+ <CAKuzo_jn38kJm4izesNzK6fedgbc55MUYmmsyZRrZa1oaix5wg@...278...>
+From: Jan Just Keijser <janjust@...1147...>
+Message-ID: <f120b337-53d1-b6b3-2188-db81fadc5bae@...1147...>
+Date: Fri, 19 Apr 2019 15:12:49 +0200
 MIME-Version: 1.0
-From: Pieter Hulshoff <pieter.hulshoff@...2499...>
-Date: Fri, 19 Apr 2019 13:38:58 +0200
-Message-ID: <CAEYw=WoZDJap1cwCh-SAqJr8KiQEv80XmBkVbVijTbCbOCOP0g@...278...>
-Content-Type: multipart/alternative; boundary="00000000000024f8be0586e091f9"
-Subject: [Openvpn-devel] Client reconnect issues
+In-Reply-To: <CAKuzo_jn38kJm4izesNzK6fedgbc55MUYmmsyZRrZa1oaix5wg@...278...>
+Content-Type: multipart/alternative;
+ boundary="------------2373758E59910A8A5E9F81D3"
+Content-Language: nl-NL
+Subject: Re: [Openvpn-devel] Issue with smartcard authentication for openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,72 +21,212 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Openvpn-users@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>, Francois Gelis <francois.gelis@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---00000000000024f8be0586e091f9
-Content-Type: text/plain; charset="UTF-8"
+This is a multi-part message in MIME format.
+--------------2373758E59910A8A5E9F81D3
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
-Hello all,
+Hi Selva,
 
-I've been looking at https://community.openvpn.net/openvpn/ticket/880 for a
-while now, and was wondering if there'd been any answers to this problem
-yet. It appears that mbedtls (according to krzee the problem disappeared
-when using OpenSSL, but since I use OpenVPN-NL that's not an option for me)
-refuses to answer a PUSH request for a connection it considers to already
-exist. As a result, a reconnect (e.g. after a client reboot) will stall
-until the reconnect timer exceeds the server's time-out, after which the
-server closes the connection, and accepts the following reconnect attempt.
-Reconnect from a 2.3.9 client is stalled indefinitely, since the re-connect
-seems fixed at 2 seconds.
+On 17/04/19 17:52, Selva Nair wrote:
+>
+> On Wed, Apr 17, 2019 at 10:50 AM Jan Just Keijser <janjust@...1147... 
+> <mailto:janjust@...1147...>> wrote:
+>
+>
+>     On 10/04/19 19:09, Selva Nair wrote:
+>>
+>>
+>>     On Wed, Apr 10, 2019 at 12:59 PM Jan Just Keijser
+>>     <janjust@...1147... <mailto:janjust@...1147...>> wrote:
+>
+>
+> snipped...
+>
+>>         patching pkcs11-helper does not seem too difficult for this
+>>         particular case - but how can we test it? I have access to hw
+>>         tokens but I don't know how to trigger the "raw signature" bit.
+>>
+>>
+>>     If both server and client are built with OpenSSL 1.1.1 and TLS
+>>     version is >= 1.2, PSS padding will get used and trigger this.
+>>     OpenSSL does PSS padding internally and passes the padded data to
+>>     the rsa_priv_enc calback for raw signature.
+>>
+>>     This is based on my tests for our Windows cryptoapi and
+>>     management-external-key patches for the same -- never tried this
+>>     using pkcs11-helper, but I expect the same behaviour.
+>>
+>>
+>     The good news: I can reproduce this with
+>     - openvpn 2.4.7
+>     - openssl 1.1.1b
+>     - pkcs11helper 1.25.1
+>     - Safenet etoken
+>     - client+server CentOS 7
+>
+>     The bad news: I don't have a fix yet.
+>
+>
+> What I has in mind was a very simple patch like the one attached 
+> (totally untested).
+> But I guess you tried that already and it doesn't work? Is it because 
+> the token
+> does not support raw signature (not all do) or something else?
+>
+>
+I had not written a patch when I wrote my earlier email, but your patch 
+is exactly what I had in mind; getting it all to compile and run with 
+OpenSSL 1.1.1b + OpenVPN 2.4.7 was a bit of a challenge, but I finally 
+managed...
 
-Using nobind will also solve the issue, since the server will see it as a
-new connection, but I'm not sure nobind is a proper solution for everyone.
+and yes, your patch works admirably - I can connect again using TLSv1.3 
++ token.  If I comment out your patch, do a rebuild of 
+libpkcs11helper.so then it fails again, proving your patch works.
 
-Any thoughts on this matter? Is it true that this only happens with
-mbedtls, and as such should this issue be taken up with that community in
-stead of this one? Any idea on why the server would refuse a PUSH request
-for an already existing connection?
+Can you do a pull request for your pkcs11-helper patch on the 
+pkcs11helper github page?  or shall we simply patch pkcs11-helper ourselves?
 
-Kind regards,
+cheers,
 
-Pieter Hulshoff
+JJK
 
---00000000000024f8be0586e091f9
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div class=3D"gmail_default" style=3D"font-family:arial,he=
-lvetica,sans-serif">Hello all,</div><div class=3D"gmail_default" style=3D"f=
-ont-family:arial,helvetica,sans-serif"><br></div><div class=3D"gmail_defaul=
-t" style=3D"font-family:arial,helvetica,sans-serif">I&#39;ve been looking a=
-t=C2=A0<a href=3D"https://community.openvpn.net/openvpn/ticket/880" style=
-=3D"font-family:Arial,Helvetica,sans-serif">https://community.openvpn.net/o=
-penvpn/ticket/880</a>=C2=A0for a while now, and was wondering if there&#39;=
-d been any answers to this problem yet. It appears that mbedtls (according =
-to krzee the problem disappeared when using OpenSSL, but since I use OpenVP=
-N-NL that&#39;s not an option for me) refuses to answer a PUSH request for =
-a connection it considers to already exist. As a result, a reconnect (e.g. =
-after a client reboot) will stall until the reconnect timer exceeds the ser=
-ver&#39;s time-out, after which the server closes the connection, and accep=
-ts the following reconnect attempt. Reconnect from a 2.3.9 client is stalle=
-d indefinitely, since the re-connect seems fixed at 2 seconds.</div><div cl=
-ass=3D"gmail_default" style=3D"font-family:arial,helvetica,sans-serif"><br>=
-</div><div class=3D"gmail_default" style=3D"font-family:arial,helvetica,san=
-s-serif">Using nobind will also solve the issue, since the server will see =
-it as a new connection, but I&#39;m not sure nobind is a proper solution fo=
-r everyone.</div><div class=3D"gmail_default" style=3D"font-family:arial,he=
-lvetica,sans-serif"><br></div><div class=3D"gmail_default" style=3D"font-fa=
-mily:arial,helvetica,sans-serif">Any thoughts on this matter? Is it true th=
-at this only happens with mbedtls, and as such should this issue be taken u=
-p with that community in stead of this one? Any idea on why the server woul=
-d refuse a PUSH request for an already existing connection?</div><div class=
-=3D"gmail_default" style=3D"font-family:arial,helvetica,sans-serif"><br></d=
-iv><div class=3D"gmail_default" style=3D"font-family:arial,helvetica,sans-s=
-erif">Kind regards,</div><div class=3D"gmail_default" style=3D"font-family:=
-arial,helvetica,sans-serif"><br></div><div class=3D"gmail_default" style=3D=
-"font-family:arial,helvetica,sans-serif">Pieter Hulshoff</div><div class=3D=
-"gmail_default" style=3D"font-family:arial,helvetica,sans-serif"><br></div>=
-</div>
+--------------2373758E59910A8A5E9F81D3
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
---00000000000024f8be0586e091f9--
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  </head>
+  <body text="#000000" bgcolor="#FFFFFF">
+    <div class="moz-cite-prefix">Hi Selva,<br>
+      <br>
+      On 17/04/19 17:52, Selva Nair wrote:<br>
+    </div>
+    <blockquote type="cite"
+cite="mid:CAKuzo_jn38kJm4izesNzK6fedgbc55MUYmmsyZRrZa1oaix5wg@...278...">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <div dir="ltr"><br>
+        <div class="gmail_quote">
+          <div dir="ltr" class="gmail_attr">On Wed, Apr 17, 2019 at
+            10:50 AM Jan Just Keijser &lt;<a
+              href="mailto:janjust@...1147..." moz-do-not-send="true">janjust@...1147...</a>&gt;
+            wrote:<br>
+          </div>
+          <blockquote class="gmail_quote" style="margin:0px 0px 0px
+            0.8ex;border-left:1px solid
+            rgb(204,204,204);padding-left:1ex">
+            <div bgcolor="#FFFFFF">
+              <div class="gmail-m_-4512286871544203907moz-cite-prefix"><br>
+                On 10/04/19 19:09, Selva Nair wrote:<br>
+              </div>
+              <blockquote type="cite">
+                <div dir="ltr">
+                  <div dir="ltr"><br>
+                  </div>
+                  <br>
+                  <div class="gmail_quote">
+                    <div dir="ltr" class="gmail_attr">On Wed, Apr 10,
+                      2019 at 12:59 PM Jan Just Keijser &lt;<a
+                        href="mailto:janjust@...1147..." target="_blank"
+                        moz-do-not-send="true">janjust@...1147...</a>&gt;
+                      wrote:<br>
+                    </div>
+                  </div>
+                </div>
+              </blockquote>
+            </div>
+          </blockquote>
+          <div><br>
+          </div>
+          <div>snipped...<br>
+             <br>
+          </div>
+          <blockquote class="gmail_quote" style="margin:0px 0px 0px
+            0.8ex;border-left:1px solid
+            rgb(204,204,204);padding-left:1ex">
+            <div bgcolor="#FFFFFF">
+              <blockquote type="cite">
+                <div dir="ltr">
+                  <div class="gmail_quote">
+                    <div dir="ltr" class="gmail_attr"> </div>
+                    <blockquote class="gmail_quote" style="margin:0px
+                      0px 0px 0.8ex;border-left:1px solid
+                      rgb(204,204,204);padding-left:1ex">
+                      <div bgcolor="#FFFFFF">patching pkcs11-helper does
+                        not seem too difficult for this particular case
+                        - but how can we test it? I have access to hw
+                        tokens but I don't know how to trigger the "raw
+                        signature" bit.<br>
+                      </div>
+                    </blockquote>
+                    <div><br>
+                    </div>
+                    <div>If both server and client are built with
+                      OpenSSL 1.1.1 and TLS version is &gt;= 1.2, PSS
+                      padding will get used and trigger this. OpenSSL
+                      does PSS padding internally and passes the padded
+                      data to the rsa_priv_enc calback for raw
+                      signature.<br>
+                      <br>
+                    </div>
+                    <div>This is based on my tests for our Windows
+                      cryptoapi and management-external-key patches for
+                      the same -- never tried this using pkcs11-helper,
+                      but I expect the same behaviour.<br>
+                      <br>
+                    </div>
+                    <br>
+                  </div>
+                </div>
+              </blockquote>
+              The good news: I can reproduce this with<br>
+              - openvpn 2.4.7<br>
+              - openssl 1.1.1b<br>
+              - pkcs11helper 1.25.1<br>
+              - Safenet etoken<br>
+              - client+server CentOS 7<br>
+              <br>
+              The bad news: I don't have a fix yet.  <br>
+            </div>
+          </blockquote>
+          <div><br>
+            What I has in mind was a very simple patch like the one
+            attached (totally untested).<br>
+            But I guess you tried that already and it doesn't work? Is
+            it because the token<br>
+            does not support raw signature (not all do) or something
+            else?<br>
+            <br>
+          </div>
+          <br>
+        </div>
+      </div>
+    </blockquote>
+    I had not written a patch when I wrote my earlier email, but your
+    patch is exactly what I had in mind; getting it all to compile and
+    run with OpenSSL 1.1.1b + OpenVPN 2.4.7 was a bit of a challenge,
+    but I finally managed...<br>
+    <br>
+    and yes, your patch works admirably - I can connect again using
+    TLSv1.3 + token.  If I comment out your patch, do a rebuild of
+    libpkcs11helper.so then it fails again, proving your patch works.<br>
+    <br>
+    Can you do a pull request for your pkcs11-helper patch on the
+    pkcs11helper github page?  or shall we simply patch pkcs11-helper
+    ourselves?<br>
+    <br>
+    cheers,<br>
+    <br>
+    JJK<br>
+    <br>
+  </body>
+</html>
+
+--------------2373758E59910A8A5E9F81D3--
 
