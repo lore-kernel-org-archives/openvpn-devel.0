@@ -1,12 +1,12 @@
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <51d6f746-c379-3cba-d204-103d722f1fde@...515...>
+Date: Sat, 20 Apr 2019 12:16:49 +0300
 MIME-Version: 1.0
-References: <CAPM6dUC_L=Q2HseFEKS7bfrff6McwQo9TSuWKramkbC+5k9Phw@...278...>
- <5d43db38-5481-3f67-555d-b2b59b89be63@...1147...>
- <CAFHpkQEetMrGST3DziN5gedP32DbN4v7w+NDmViZcccmaZf7Fg@...278...>
-In-Reply-To: <CAFHpkQEetMrGST3DziN5gedP32DbN4v7w+NDmViZcccmaZf7Fg@...278...>
-From: wei wang <lnykww@...277...>
-Date: Sat, 20 Apr 2019 16:37:03 +0800
-Message-ID: <CAPM6dUBfeuEnfqW59YBNdtRDMhWfSc_9NXSsxuKskPzqK=4qVA@...278...>
-Subject: Re: [Openvpn-devel] openvpn with udp lost event.
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="OLfREYvLpixGuLVYwhDxTwW80yhqOTsf4"
+Subject: [Openvpn-devel] New OpenVPN 2.4.7 installers with tap-windows6 and
+ other componets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,69 +15,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+To: openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--OLfREYvLpixGuLVYwhDxTwW80yhqOTsf4
+Content-Type: multipart/mixed; boundary="kl9N6oF6QAHTa6I5qTBjqSnZDl5gploDM";
+ protected-headers="v1"
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <51d6f746-c379-3cba-d204-103d722f1fde@...515...>
+Subject: New OpenVPN 2.4.7 installers with tap-windows6 and other componets
+
+--kl9N6oF6QAHTa6I5qTBjqSnZDl5gploDM
+Content-Language: en-US
+Content-Type: text/plain; charset="iso-8859-15"
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Cc: Jan Just Keijser <janjust@...1147...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Thanks for your guys reply.
+Hi all,
 
-The correct thing is that synchronous authentication increases the
-probability of event loss.
-But deferred auth is not what we need, we need deferred client-connect actu=
-ally.
-I have found that the patch set
-"https://patchwork.openvpn.net/project/openvpn2/list/?series=3D413" has
-implement it.
-But it has not been updated for several months. Is there someone still
-work on it?  We test with it for client-connect script, and find some
-bug.
-I am very happy to provide if needed.
+Here are completely untested OpenVPN 2.4.7 installers which I wanted to
+get out for testing a.s.a.p.:
 
-=D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD <chipit=
-sine@...277...> =E4=BA=8E2019=E5=B9=B44=E6=9C=8817=E6=97=A5=E5=91=A8=E4=B8=
-=89 =E4=B8=8B=E5=8D=886:24=E5=86=99=E9=81=93=EF=BC=9A
->
->
->
-> =D1=81=D1=80, 17 =D0=B0=D0=BF=D1=80. 2019 =D0=B3. =D0=B2 15:19, Jan Just =
-Keijser <janjust@...1147...>:
->>
->> On 15/04/19 14:29, wei wang wrote:
->> > Hi,
->> >
->> > For function multi_process_io_udp receive many events, but only
->> > process one at a time. Doest it cause the event to be lost?
->> yes it does
->> > In our test, we had create thousands of client. When clients connect
->> > to server at a time, for the clients which already connected on this
->> > server will not receive packet from tun device.
->> that is correct - this is known limitation of  the OpenVPN 2 code base.
->> Fixing this limitation is far from trivial, however.
->
->
-> that is true.
->
-> however you can choose "deffered" auth mode
-> here's example https://github.com/mozilla-it/openvpn_defer_auth
->
->
->>
->>
->> HTH,
->>
->> JJK
->>
->>
->>
->> _______________________________________________
->> Openvpn-devel mailing list
->> Openvpn-devel@lists.sourceforge.net
->> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+<https://build.openvpn.net/downloads/releases/openvpn-install-2.4.7-I604-Wi=
+n7.exe>
+<https://build.openvpn.net/downloads/releases/openvpn-install-2.4.7-I604-Wi=
+n10.exe>
 
+As the name implies, there is a different version for Windows 7 (plus
+8/8.1/Server 2012r2) and for Windows 10 (all versions). This is
+necessary due to code signatures in the tap-windows6 driver.
 
+The above installers bundle the following components:
+
+- tap-windows6 9.23.2 (many improvements incl. arm64 support)
+- openvpn-gui 11 (latest from Git master)
+- openvpnserv2 1.4.0.0 (latest from Git master)
+
+If you want to just test the tap-windows6 installers they're here:
+
+<https://build.openvpn.net/downloads/releases/tap-windows-9.23.2-I601-Win7.=
+exe>
+<https://build.openvpn.net/downloads/releases/tap-windows-9.23.2-I601-Win10=
+.exe>
+
+The latter installer _might_ work on Windows 10-based ARM64 devices, but
+that has not been tested at all.
+
+I will run my pre-release tests as soon as I can, but probably not
+today. Any help in testing these would be most welcome!
 
 --=20
-Regards,
-Wang Wei
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+
+--kl9N6oF6QAHTa6I5qTBjqSnZDl5gploDM--
+
+--OLfREYvLpixGuLVYwhDxTwW80yhqOTsf4
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAly644EACgkQKVhNn0CG
+RXgH6ggAvI0W6bS/BZYtJWbbCCykG//A/NJloxdvwMgBmwff+zkbwJUKZwHUQVAi
+xub/0+PH2VtWCM4xXpbSzfNzRZVeOfpuzWqn+TDcQ2hPSkkbabmvnuLj3dCm7cYN
+VZkDFDHiABSn/yBH76sLYmmh3qHCYL/JzgWnQNujtg5thL0IItz1+PTSpJj9Y9Xc
+637NNIVSkMBhg4DNL+CKIU+FRMDT42pq0eJS8U0kQOOJS05J6/GKbIoxiL5DDfR2
+6e1D31R3OZmNSbiaEdBg9UhYea/P38fApdvMGkPNeG3XzUbqcgcVXwoEHRMtZeD+
+PbBeG1BCWPk7dS5IiD+dAR8igNomrg==
+=qaks
+-----END PGP SIGNATURE-----
+
+--OLfREYvLpixGuLVYwhDxTwW80yhqOTsf4--
 
