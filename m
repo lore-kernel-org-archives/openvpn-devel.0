@@ -4,10 +4,11 @@ References: <CAPM6dUC_L=Q2HseFEKS7bfrff6McwQo9TSuWKramkbC+5k9Phw@...278...>
  <CAFHpkQEetMrGST3DziN5gedP32DbN4v7w+NDmViZcccmaZf7Fg@...278...>
  <CAPM6dUBfeuEnfqW59YBNdtRDMhWfSc_9NXSsxuKskPzqK=4qVA@...278...>
  <20190420150719.GM31008@...1296...>
-In-Reply-To: <20190420150719.GM31008@...1296...>
+ <CAPM6dUCeYFFNE_M+0FFOrfS=025hSaEv6LgPqXcA41Z++Uk1DA@...278...>
+In-Reply-To: <CAPM6dUCeYFFNE_M+0FFOrfS=025hSaEv6LgPqXcA41Z++Uk1DA@...278...>
 From: wei wang <lnykww@...277...>
-Date: Mon, 22 Apr 2019 17:26:10 +0800
-Message-ID: <CAPM6dUCeYFFNE_M+0FFOrfS=025hSaEv6LgPqXcA41Z++Uk1DA@...278...>
+Date: Mon, 22 Apr 2019 17:34:15 +0800
+Message-ID: <CAPM6dUBMn3ehoqW+A7fevJ3jqhYwUV4Bs7T2pm1q4dTq=c3dxg@...278...>
 Subject: Re: [Openvpn-devel] openvpn with udp lost event.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -22,80 +23,135 @@ Content-Transfer-Encoding: quoted-printable
 To: Gert Doering <gert@...1296...>
 Cc: ???????? ?????????????? <chipitsine@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-1. When client-connect tests whether the user has written the
-configuration, we should check to see if the file size is 0, not
-whether the file exists.
-    Because the configuration file is created by openvpn itself.
-2. multi_client_connect_early_setup should be called for the first time.
+And I have another question about  multi_process_io_udp lost event.
+Is there some problem if we change if{} else if{} to if {} if {}.
+e.g.:
 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 697994b8..27c6e935 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -1641,9 +1641,13 @@ multi_client_connect_post(struct multi_context *m,
-                           const char *dc_file,
-                           unsigned int *option_types_found)
- {
--    /* Did script generate a dynamic config file? */
--    if (platform_test_file(dc_file))
--    {
-+    /* Did script write config to dynamic config file? */
-+    platform_stat_t dc_stat =3D {0};
-+    if (platform_stat(dc_file, &dc_stat) < 0) {
-+        return;
-+    }
-+
-+    if (dc_stat.st_size > 0) {
-         options_server_import(&mi->context.options,
-                               dc_file,
-                               D_IMPORT_ERRORS|M_OPTERR,
-@@ -2474,13 +2478,13 @@ multi_connection_established(struct
-multi_context *m, struct multi_instance *mi)
-             /* Initially we have no handler that has returned a result */
-             mi->client_connect_status =3D CC_STATUS_DEFERRED_NO_RESULT;
-             from_deferred =3D false;
-+            multi_client_connect_early_setup(m, mi);
+diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
+index a604d217..18dc009d 100644
+--- a/src/openvpn/mudp.c
++++ b/src/openvpn/mudp.c
+@@ -220,12 +220,12 @@ multi_process_io_udp(struct multi_context *m)
+         multi_process_outgoing_link(m, mpp_flags);
+     }
+     /* TUN device ready to accept write */
+-    else if (status & TUN_WRITE)
++    if (status & TUN_WRITE)
+     {
+         multi_process_outgoing_tun(m, mpp_flags);
+     }
+     /* Incoming data on UDP port */
+-    else if (status & SOCKET_READ)
++    if (status & SOCKET_READ)
+     {
+         read_incoming_link(&m->top);
+         if (!IS_SIG(&m->top))
+@@ -234,7 +234,7 @@ multi_process_io_udp(struct multi_context *m)
          }
-         else
-         {
-             from_deferred =3D true;
-         }
+     }
+     /* Incoming data on TUN device */
+-    else if (status & TUN_READ)
++    if (status & TUN_READ)
+     {
+         read_incoming_tun(&m->top);
+         if (!IS_SIG(&m->top))
+@@ -244,7 +244,7 @@ multi_process_io_udp(struct multi_context *m)
+     }
+ #ifdef ENABLE_ASYNC_PUSH
+     /* INOTIFY callback */
+-    else if (status & FILE_CLOSED)
++    if (status & FILE_CLOSED)
+     {
+         multi_process_file_closed(m, mpp_flags);
+     }
 
--        multi_client_connect_early_setup(m, mi);
-
-         bool cc_succeeded =3D true;
-
-Gert Doering <gert@...1296...> =E4=BA=8E2019=E5=B9=B44=E6=9C=8820=E6=97=A5=
-=E5=91=A8=E5=85=AD =E4=B8=8B=E5=8D=8811:07=E5=86=99=E9=81=93=EF=BC=9A
+wei wang <lnykww@...277...> =E4=BA=8E2019=E5=B9=B44=E6=9C=8822=E6=97=A5=E5=
+=91=A8=E4=B8=80 =E4=B8=8B=E5=8D=885:26=E5=86=99=E9=81=93=EF=BC=9A
 >
-> Hi,
+> 1. When client-connect tests whether the user has written the
+> configuration, we should check to see if the file size is 0, not
+> whether the file exists.
+>     Because the configuration file is created by openvpn itself.
+> 2. multi_client_connect_early_setup should be called for the first time.
 >
-> On Sat, Apr 20, 2019 at 04:37:03PM +0800, wei wang wrote:
-> > I have found that the patch set
-> > "https://patchwork.openvpn.net/project/openvpn2/list/?series=3D413" has
-> > implement it.
-> > But it has not been updated for several months. Is there someone still
-> > work on it?  We test with it for client-connect script, and find some
-> > bug.
-> > I am very happy to provide if needed.
+> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+> index 697994b8..27c6e935 100644
+> --- a/src/openvpn/multi.c
+> +++ b/src/openvpn/multi.c
+> @@ -1641,9 +1641,13 @@ multi_client_connect_post(struct multi_context *m,
+>                            const char *dc_file,
+>                            unsigned int *option_types_found)
+>  {
+> -    /* Did script generate a dynamic config file? */
+> -    if (platform_test_file(dc_file))
+> -    {
+> +    /* Did script write config to dynamic config file? */
+> +    platform_stat_t dc_stat =3D {0};
+> +    if (platform_stat(dc_file, &dc_stat) < 0) {
+> +        return;
+> +    }
+> +
+> +    if (dc_stat.st_size > 0) {
+>          options_server_import(&mi->context.options,
+>                                dc_file,
+>                                D_IMPORT_ERRORS|M_OPTERR,
+> @@ -2474,13 +2478,13 @@ multi_connection_established(struct
+> multi_context *m, struct multi_instance *mi)
+>              /* Initially we have no handler that has returned a result */
+>              mi->client_connect_status =3D CC_STATUS_DEFERRED_NO_RESULT;
+>              from_deferred =3D false;
+> +            multi_client_connect_early_setup(m, mi);
+>          }
+>          else
+>          {
+>              from_deferred =3D true;
+>          }
 >
-> We're working on reviewing, fixing and merging it.
+> -        multi_client_connect_early_setup(m, mi);
 >
-> So if you have feedback or even found a bug, please send it in (preferrab=
-ly
-> in reply to the original mail, so patchwork can pick it up, but just here
-> in the thread is good enough).
+>          bool cc_succeeded =3D true;
 >
-> gert
+> Gert Doering <gert@...1296...> =E4=BA=8E2019=E5=B9=B44=E6=9C=8820=E6=97=
+=A5=E5=91=A8=E5=85=AD =E4=B8=8B=E5=8D=8811:07=E5=86=99=E9=81=93=EF=BC=9A
+> >
+> > Hi,
+> >
+> > On Sat, Apr 20, 2019 at 04:37:03PM +0800, wei wang wrote:
+> > > I have found that the patch set
+> > > "https://patchwork.openvpn.net/project/openvpn2/list/?series=3D413" h=
+as
+> > > implement it.
+> > > But it has not been updated for several months. Is there someone still
+> > > work on it?  We test with it for client-connect script, and find some
+> > > bug.
+> > > I am very happy to provide if needed.
+> >
+> > We're working on reviewing, fixing and merging it.
+> >
+> > So if you have feedback or even found a bug, please send it in (preferr=
+ably
+> > in reply to the original mail, so patchwork can pick it up, but just he=
+re
+> > in the thread is good enough).
+> >
+> > gert
+> > --
+> > "If was one thing all people took for granted, was conviction that if y=
+ou
+> >  feed honest figures into a computer, honest figures come out. Never do=
+ubted
+> >  it myself till I met a computer with a sense of humor."
+> >                              Robert A. Heinlein, The Moon is a Harsh Mi=
+stress
+> >
+> > Gert Doering - Munich, Germany                             gert@...1726...=
+...
+>
+>
+>
 > --
-> "If was one thing all people took for granted, was conviction that if you
->  feed honest figures into a computer, honest figures come out. Never doub=
-ted
->  it myself till I met a computer with a sense of humor."
->                              Robert A. Heinlein, The Moon is a Harsh Mist=
-ress
->
-> Gert Doering - Munich, Germany                             gert@...1296...
+> Regards,
+> Wang Wei
 
 
 
