@@ -1,13 +1,13 @@
+MIME-Version: 1.0
 References: <CAPM6dUC_L=Q2HseFEKS7bfrff6McwQo9TSuWKramkbC+5k9Phw@...278...>
  <5d43db38-5481-3f67-555d-b2b59b89be63@...1147...>
  <CAFHpkQEetMrGST3DziN5gedP32DbN4v7w+NDmViZcccmaZf7Fg@...278...>
  <CAPM6dUBfeuEnfqW59YBNdtRDMhWfSc_9NXSsxuKskPzqK=4qVA@...278...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <55089415-3a26-8bf1-f23d-62dc6f0fcc7d@...1227...>
-Date: Mon, 22 Apr 2019 04:51:46 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAPM6dUBfeuEnfqW59YBNdtRDMhWfSc_9NXSsxuKskPzqK=4qVA@...278...>
-Content-Language: de-DE
+ <20190420150719.GM31008@...1296...>
+In-Reply-To: <20190420150719.GM31008@...1296...>
+From: wei wang <lnykww@...277...>
+Date: Mon, 22 Apr 2019 17:26:10 +0800
+Message-ID: <CAPM6dUCeYFFNE_M+0FFOrfS=025hSaEv6LgPqXcA41Z++Uk1DA@...278...>
 Subject: Re: [Openvpn-devel] openvpn with udp lost event.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -17,28 +17,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: wei wang <lnykww@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: Gert Doering <gert@...1296...>
+Cc: ???????? ?????????????? <chipitsine@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Am 20.04.2019 um 10:37 schrieb wei wang:
-> Thanks for your guys reply.
+1. When client-connect tests whether the user has written the
+configuration, we should check to see if the file size is 0, not
+whether the file exists.
+    Because the configuration file is created by openvpn itself.
+2. multi_client_connect_early_setup should be called for the first time.
+
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 697994b8..27c6e935 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -1641,9 +1641,13 @@ multi_client_connect_post(struct multi_context *m,
+                           const char *dc_file,
+                           unsigned int *option_types_found)
+ {
+-    /* Did script generate a dynamic config file? */
+-    if (platform_test_file(dc_file))
+-    {
++    /* Did script write config to dynamic config file? */
++    platform_stat_t dc_stat =3D {0};
++    if (platform_stat(dc_file, &dc_stat) < 0) {
++        return;
++    }
++
++    if (dc_stat.st_size > 0) {
+         options_server_import(&mi->context.options,
+                               dc_file,
+                               D_IMPORT_ERRORS|M_OPTERR,
+@@ -2474,13 +2478,13 @@ multi_connection_established(struct
+multi_context *m, struct multi_instance *mi)
+             /* Initially we have no handler that has returned a result */
+             mi->client_connect_status =3D CC_STATUS_DEFERRED_NO_RESULT;
+             from_deferred =3D false;
++            multi_client_connect_early_setup(m, mi);
+         }
+         else
+         {
+             from_deferred =3D true;
+         }
+
+-        multi_client_connect_early_setup(m, mi);
+
+         bool cc_succeeded =3D true;
+
+Gert Doering <gert@...1296...> =E4=BA=8E2019=E5=B9=B44=E6=9C=8820=E6=97=A5=
+=E5=91=A8=E5=85=AD =E4=B8=8B=E5=8D=8811:07=E5=86=99=E9=81=93=EF=BC=9A
 >
-> The correct thing is that synchronous authentication increases the
-> probability of event loss.
-> But deferred auth is not what we need, we need deferred client-connect actually.
-> I have found that the patch set
-> "https://patchwork.openvpn.net/project/openvpn2/list/?series=413" has
-> implement it.
-> But it has not been updated for several months. Is there someone still
-> work on it?  We test with it for client-connect script, and find some
-> bug.
-> I am very happy to provide if needed.
+> Hi,
 >
-Yes, any review and testing is appricated. Note that this patch set is
-already version 4 so it should be pretty stable and safe for production use.
+> On Sat, Apr 20, 2019 at 04:37:03PM +0800, wei wang wrote:
+> > I have found that the patch set
+> > "https://patchwork.openvpn.net/project/openvpn2/list/?series=3D413" has
+> > implement it.
+> > But it has not been updated for several months. Is there someone still
+> > work on it?  We test with it for client-connect script, and find some
+> > bug.
+> > I am very happy to provide if needed.
+>
+> We're working on reviewing, fixing and merging it.
+>
+> So if you have feedback or even found a bug, please send it in (preferrab=
+ly
+> in reply to the original mail, so patchwork can pick it up, but just here
+> in the thread is good enough).
+>
+> gert
+> --
+> "If was one thing all people took for granted, was conviction that if you
+>  feed honest figures into a computer, honest figures come out. Never doub=
+ted
+>  it myself till I met a computer with a sense of humor."
+>                              Robert A. Heinlein, The Moon is a Harsh Mist=
+ress
+>
+> Gert Doering - Munich, Germany                             gert@...1296...
 
-Arne
 
+
+--=20
+Regards,
+Wang Wei
 
