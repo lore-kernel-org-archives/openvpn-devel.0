@@ -1,14 +1,18 @@
-Date: Sat, 20 Apr 2019 17:09:42 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20190420150941.GN31008@...1296...>
-References: <51d6f746-c379-3cba-d204-103d722f1fde@...515...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="1Ohz8t0v+ZTQEWKa"
-Content-Disposition: inline
-In-Reply-To: <51d6f746-c379-3cba-d204-103d722f1fde@...515...>
-Subject: Re: [Openvpn-devel] New OpenVPN 2.4.7 installers with tap-windows6
- and other componets
+References: <CAM1xzG1X-iERU2ZXFS_m_VqCKOwjt_gD8oi0F8J5h38Xx+FQ9A@...278...>
+ <CAKuzo_gXgqWSLhpvMhjTS+VfbWmQ8JXnHEiOVEPyPSOMCbPKcQ@...278...>
+ <63b81ed6-dce7-94b8-0dd5-8864a8314ec6@...1147...>
+ <CAKuzo_iikr28FJcXNMz+xSbkoqZAyutJ3cx5J5zBvnEnEEw5bw@...278...>
+ <d2f35ef2-dfbc-0202-2eb9-68e69051f742@...1147...>
+ <CAKuzo_jn38kJm4izesNzK6fedgbc55MUYmmsyZRrZa1oaix5wg@...278...>
+ <f120b337-53d1-b6b3-2188-db81fadc5bae@...1147...>
+ <20190419191555.GK31008@...1296...>
+In-Reply-To: <20190419191555.GK31008@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sun, 21 Apr 2019 21:04:04 -0400
+Message-ID: <CAKuzo_jWvtLxbt_SXyRhKAYTaV=YJWxfk4pzH9wx3A=JTStCwg@...278...>
+Content-Type: multipart/alternative; boundary="0000000000006767760587140c7e"
+Subject: Re: [Openvpn-devel] Issue with smartcard authentication for openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,62 +21,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: Jan Just Keijser <janjust@...1147...>, Francois Gelis <francois.gelis@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---1Ohz8t0v+ZTQEWKa
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+--0000000000006767760587140c7e
+Content-Type: text/plain; charset="UTF-8"
 
 Hi,
 
-On Sat, Apr 20, 2019 at 12:16:49PM +0300, Samuli Sepp=E4nen wrote:
-> Here are completely untested OpenVPN 2.4.7 installers which I wanted to
-> get out for testing a.s.a.p.:
->=20
-> <https://build.openvpn.net/downloads/releases/openvpn-install-2.4.7-I604-=
-Win7.exe>
-> <https://build.openvpn.net/downloads/releases/openvpn-install-2.4.7-I604-=
-Win10.exe>
->=20
-> As the name implies, there is a different version for Windows 7 (plus
-> 8/8.1/Server 2012r2) and for Windows 10 (all versions). This is
-> necessary due to code signatures in the tap-windows6 driver.
+On Fri, Apr 19, 2019 at 3:15 PM Gert Doering <gert@...1296...> wrote:
 
-Shouldn't it be possible to have a normal signed driver also attestation
-signed, so "one driver for win7+win10"?
+> Hi,
+>
+> On Fri, Apr 19, 2019 at 03:12:49PM +0200, Jan Just Keijser wrote:
+> > Can you do a pull request for your pkcs11-helper patch on the
+> > pkcs11helper github page?  or shall we simply patch pkcs11-helper
+> ourselves?
+>
+> I agree with Selva that it should go upstream - since this is not about
+> windows, we do not provide our own pkcs11-helper builds anywhere, so
+> either we get the distribution maintainers involved (lots...) or
+> upstream.
+>
+> (On *windows* we could just patch whatever library we use for our builds)
+>
+>
+I've submitted a PR upstream:
+https://github.com/OpenSC/pkcs11-helper/pull/22
 
-Or have we just never tested this?
+Selva
 
-gert
+--0000000000006767760587140c7e
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+<div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr">Hi,</div><br><div class=
+=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">On Fri, Apr 19, 2019=
+ at 3:15 PM Gert Doering &lt;<a href=3D"mailto:gert@...1296...">gert@...1826...=
+6...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"mar=
+gin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1=
+ex">Hi,<br>
+<br>
+On Fri, Apr 19, 2019 at 03:12:49PM +0200, Jan Just Keijser wrote:<br>
+&gt; Can you do a pull request for your pkcs11-helper patch on the <br>
+&gt; pkcs11helper github page?=C2=A0 or shall we simply patch pkcs11-helper=
+ ourselves?<br>
+<br>
+I agree with Selva that it should go upstream - since this is not about<br>
+windows, we do not provide our own pkcs11-helper builds anywhere, so<br>
+either we get the distribution maintainers involved (lots...) or<br>
+upstream.<br>
+<br>
+(On *windows* we could just patch whatever library we use for our builds)<b=
+r><br></blockquote><div><br></div><div>I&#39;ve submitted a PR upstream:</d=
+iv><div><a href=3D"https://github.com/OpenSC/pkcs11-helper/pull/22">https:/=
+/github.com/OpenSC/pkcs11-helper/pull/22</a></div><div><br></div><div>Selva=
+</div></div></div></div>
 
-Gert Doering - Munich, Germany                             gert@...1296...
-
---1Ohz8t0v+ZTQEWKa
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJcuzY1AAoJEB2Cnv7KVigSy8sL/14vUkbFCynE7TgEnnK2upOs
-LMSN0Z6oRUl36mhfVdqE810RQGiWcAVcRhft+OIuURReCB6UXiNBIJ6SV4oJtrRf
-++QnkK7O2FjLoifqvsdvIL3/xUJYshJDJAFnozPt/hHiMq+vVHcGk/kIwsGBfqJt
-M+fIVMppTAb4+0MpBYBOXebcWq7p75j7luUr4G7LzOepT9aBnz/kpRozYQAXaJLr
-9F4mZDcKQVtA/f0V0kFt2Ve0lCNrvEAVhBlW+fD/cSeF+mrerDlEQi+vNDHB7iaq
-P3bLZ2OGfC/qoWst8fgeFnBsTZrGtVnVfS7L7UyNC2t/Yuzj2h4SveXlCrgKkfO9
-m26FLR56c4yMbMGkQBI9i3Zx6+NWu5Hm2D17UGWa0/FWMZNo0gSrrhK2tLLaUeuH
-UkXK9OkEqzgkhCgY7qMOHWrX312Y6nppyKpsj8Q51zFKRGdnFepzSE0ozJJuNjxg
-+8AKhIY8hNVGRzpK6g5O73yOZehhhbOekc6gBc4pUA==
-=9sMM
------END PGP SIGNATURE-----
-
---1Ohz8t0v+ZTQEWKa--
+--0000000000006767760587140c7e--
 
