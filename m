@@ -1,9 +1,13 @@
-MIME-Version: 1.0
+Date: Tue, 23 Apr 2019 17:56:55 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20190423155655.GU31008@...1296...>
 References: <51d6f746-c379-3cba-d204-103d722f1fde@...515...>
-In-Reply-To: <51d6f746-c379-3cba-d204-103d722f1fde@...515...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 23 Apr 2019 11:50:28 -0400
-Message-ID: <CAKuzo_i3xee94jgGBZFgcpXkU5eZuQrbrVO09+Fbp7ApX1rn2Q@...278...>
+ <CAKuzo_i3xee94jgGBZFgcpXkU5eZuQrbrVO09+Fbp7ApX1rn2Q@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="42/8TDB0GUY6FXEm"
+Content-Disposition: inline
+In-Reply-To: <CAKuzo_i3xee94jgGBZFgcpXkU5eZuQrbrVO09+Fbp7ApX1rn2Q@...278...>
 Subject: Re: [Openvpn-devel] New OpenVPN 2.4.7 installers with tap-windows6
  and other componets
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -14,57 +18,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+To: Selva Nair <selva.nair@...277...>
+Cc: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--42/8TDB0GUY6FXEm
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
 Hi,
 
-On Sat, Apr 20, 2019 at 5:17 AM Samuli Sepp=C3=A4nen <samuli@...515...> wro=
-te:
->
-> Hi all,
->
-> Here are completely untested OpenVPN 2.4.7 installers which I wanted to
-> get out for testing a.s.a.p.:
->
-> <https://build.openvpn.net/downloads/releases/openvpn-install-2.4.7-I604-=
-Win7.exe>
-> <https://build.openvpn.net/downloads/releases/openvpn-install-2.4.7-I604-=
-Win10.exe>
->
-> As the name implies, there is a different version for Windows 7 (plus
-> 8/8.1/Server 2012r2) and for Windows 10 (all versions). This is
-> necessary due to code signatures in the tap-windows6 driver.
->
-> The above installers bundle the following components:
->
-> - tap-windows6 9.23.2 (many improvements incl. arm64 support)
-> - openvpn-gui 11 (latest from Git master)
-> - openvpnserv2 1.4.0.0 (latest from Git master)
->
-> If you want to just test the tap-windows6 installers they're here:
->
-> <https://build.openvpn.net/downloads/releases/tap-windows-9.23.2-I601-Win=
-7.exe>
-> <https://build.openvpn.net/downloads/releases/tap-windows-9.23.2-I601-Win=
-10.exe>
->
-> The latter installer _might_ work on Windows 10-based ARM64 devices, but
-> that has not been tested at all.
->
-> I will run my pre-release tests as soon as I can, but probably not
-> today. Any help in testing these would be most welcome!
+On Tue, Apr 23, 2019 at 11:50:28AM -0400, Selva Nair wrote:
+> On further tests, one issue is that tapinstall.exe now depends on
+> VCRUNTIME140.dll which is not present in stock Windows. Probably
+> that's what causes the failure.
+
+Sorry for that time bomb.  Samuli found the reason today (build
+defaults to "dynamic linking" now) and has fixed it.  New installers
+coming up RSN...
+
+13:04 <@mattock1> more visual studio project tuning I guess
+13:24 <@mattock1> <UseOfMfc>Static</UseOfMfc> seems to resolve the issue
+13:35 <@mattock1> yes, looks good, quadruples tapinstall.exe size to 400k
+...
+13:57 <@mattock1> all tapinstall.exe architectures statically linked based =
+on=20
+                  4x size :)
+...
+14:53 <@mattock1> smoke-testing on windows 7 is a pass, and windows 10 look=
+s as=20
+                  good so far
+14:53 <@mattock1> I may just dare do a release today
 
 
-Sorry for the delayed response: this installer doesn't work for me on
-Windows 10. Installation of TAP driver fails with a cryptic message
-"An error occurred" and nothing in setupapi logs.
+"we'll see"... ;-)
 
-On further tests, one issue is that tapinstall.exe now depends on
-VCRUNTIME140.dll which is not present in stock Windows. Probably
-that's what causes the failure.
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-Selva
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--42/8TDB0GUY6FXEm
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJcvzXGAAoJEB2Cnv7KVigSIDIL/1WfTVS47c1uTez75zAY/Fj/
+VHNm7lQB7ettXUj5r8A9s1OKLLlcfF0dvmTTtZaSYmLIaYiB/ic+o0PU5bMaWoYm
+MepX9ha1bMqzbDn8BX/Rna0yr+EecXjHoGsyzaK+GTBgVX55PUWIiJuYRx8XYywM
++r6jAK+7ka0f4kyLWC6Vw2Lb3Z1QkksIxvZPfP2fV49iWYsAXVGQt1lGq7uDmJX3
+yaNOAxcJ0WdFDwckkoafXNFE7tH9JHHM8gpPx8Lg9T1n5HeeiDtI4sQ/RVTYnD7b
+vTBWb4tQUFLJb3JWDortFQj+MEUbUUeIQpET2cnQ0z7iy3wXU/m9iocRBznX2R7f
+hgPWZX/WNnMduQM+Ajcp5DocoXs8p/58Q2P5ieX9TaiwbDnV+NOwC/2HQeyudT5v
+GnLp8NaJoknbBNAa+rprkCFyNiMjfmhdeAp4qMRS2+r41Uw8i+xgaUsyTuegH+ty
+SylPEQYGmfHbUZr4OHR/cWt7/NTZLxyzq3viUwoQEA==
+=NQXV
+-----END PGP SIGNATURE-----
+
+--42/8TDB0GUY6FXEm--
 
