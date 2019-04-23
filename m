@@ -1,14 +1,15 @@
-References: <20190401204032.GH31008@...1296...>
- <20190404111656.14916-1-cschenk@...2502...>
- <CAKuzo_ipef3kq+S0kiuz18RzgyYRZSTORgwqWPyNQot-Zk=rTg@...278...>
-From: Christopher Schenk <cschenk@...2502...>
-Message-ID: <8eadc078-bd08-1431-2a11-67567fc8abe4@...2502...>
-Date: Tue, 23 Apr 2019 17:35:10 +0200
+References: <51d6f746-c379-3cba-d204-103d722f1fde@...515...>
+ <20190420150941.GN31008@...1296...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <c054eb3a-027f-fc11-da9b-67a4ad18ecca@...515...>
+Date: Tue, 23 Apr 2019 20:38:04 +0300
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_ipef3kq+S0kiuz18RzgyYRZSTORgwqWPyNQot-Zk=rTg@...278...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Set the correct mtu on windows based
- systems
+In-Reply-To: <20190420150941.GN31008@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="EC93rqCe5b2GYNB7eY0ESUB2dKHHFjznS"
+Subject: Re: [Openvpn-devel] New OpenVPN 2.4.7 installers with tap-windows6
+ and other componets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,293 +18,95 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--EC93rqCe5b2GYNB7eY0ESUB2dKHHFjznS
+Content-Type: multipart/mixed; boundary="7ViqCPzRmAVgUWSSNo5Huq4aRHRiryPg6";
+ protected-headers="v1"
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
+Message-ID: <c054eb3a-027f-fc11-da9b-67a4ad18ecca@...515...>
+Subject: Re: [Openvpn-devel] New OpenVPN 2.4.7 installers with tap-windows6
+ and other componets
+References: <51d6f746-c379-3cba-d204-103d722f1fde@...515...>
+ <20190420150941.GN31008@...1296...>
+In-Reply-To: <20190420150941.GN31008@...1296...>
+
+--7ViqCPzRmAVgUWSSNo5Huq4aRHRiryPg6
+Content-Language: en-US
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+Il 20/04/19 18:09, Gert Doering ha scritto:
+> Hi,
+>=20
+> On Sat, Apr 20, 2019 at 12:16:49PM +0300, Samuli Sepp=E4nen wrote:
+>> Here are completely untested OpenVPN 2.4.7 installers which I wanted to
+>> get out for testing a.s.a.p.:
+>>
+>> <https://build.openvpn.net/downloads/releases/openvpn-install-2.4.7-I604=
+-Win7.exe>
+>> <https://build.openvpn.net/downloads/releases/openvpn-install-2.4.7-I604=
+-Win10.exe>
+>>
+>> As the name implies, there is a different version for Windows 7 (plus
+>> 8/8.1/Server 2012r2) and for Windows 10 (all versions). This is
+>> necessary due to code signatures in the tap-windows6 driver.
+>=20
+> Shouldn't it be possible to have a normal signed driver also attestation
+> signed, so "one driver for win7+win10"?
+>=20
+> Or have we just never tested this?
+>=20
+> gert
+>=20
 
 Hi,
 
-i think this is not a big issue since the mtu is only set until the 
-system gets rebooted. So it behaves exactly like my netsh version where 
-i specified a "store=active" in the set command.
+This is a good question. Attestation signing at Microsoft end has some
+interesting properties:
 
-Christopher
+- It removes any existing signatures from tap0901.cat and tap0901.sys
+- It does _not_ remove existing signatures from tapinstall.exe
 
-On 18/04/2019 17:47, Selva Nair wrote:
-> Hi,
->
-> Thanks for the new version. I somehow missed it as it
-> went into a new thread.
->
-> For the record, this is an updated version of the series
-> https://patchwork.openvpn.net/project/openvpn2/list/?series=471
-> with requested changes:
->
-> (i) tabs removed + some good white-space changes
-> (ii) GetIpInterfaceEntry() called first to read-in the current
-> parameters before calling SetIpInterfaceEntry()
->
-> Summary:
-> The  patch sets the tun_mtu value (either the default of 1500 or
-> user-specified --tun-mtu xxx) on the tun/tap  interface on Windows
-> using the IP helper API, preferably via the interactive service.
->
-> Looks good now and a quick test on WIndows 7 behaves
-> as expected.
->
-> I'm ACKing this, but one remark: the patch does not revert the
-> mtu back to the previous value on disconnect. This is an issue
-> only (?) if we want to support clean downgrades to an earlier
-> version without recreating the tun/tap interfaces.
->
-> On Thu, Apr 4, 2019 at 7:18 AM Christopher Schenk <
-> cschenk@...2502...> wrote:
->
->> Signed-off-by: Christopher Schenk <cschenk@...2502...>
->> ---
->>   include/openvpn-msg.h         |  8 ++++
->>   src/openvpn/tun.c             | 89 +++++++++++++++++++++++++++++++++++
->>   src/openvpnserv/interactive.c | 31 ++++++++++++
->>   3 files changed, 128 insertions(+)
->>
->> diff --git a/include/openvpn-msg.h b/include/openvpn-msg.h
->> index 66177a21..10cd68ac 100644
->> --- a/include/openvpn-msg.h
->> +++ b/include/openvpn-msg.h
->> @@ -39,6 +39,7 @@ typedef enum {
->>       msg_del_block_dns,
->>       msg_register_dns,
->>       msg_enable_dhcp,
->> +    msg_set_mtu,
->>   } message_type_t;
->>
->>   typedef struct {
->> @@ -117,4 +118,11 @@ typedef struct {
->>       interface_t iface;
->>   } enable_dhcp_message_t;
->>
->> +typedef struct {
->> +    message_header_t header;
->> +    interface_t iface;
->> +    short family;
->> +    int mtu;
->> +} set_mtu_message_t;
->> +
->>   #endif /* ifndef OPENVPN_MSG_H_ */
->> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
->> index 48a8fdf7..3895e421 100644
->> --- a/src/openvpn/tun.c
->> +++ b/src/openvpn/tun.c
->> @@ -69,6 +69,10 @@ static void netsh_ifconfig(const struct tuntap_options
->> *to,
->>                              const in_addr_t netmask,
->>                              const unsigned int flags);
->>
->> +static void windows_set_mtu(const int iface_index,
->> +                            const short family,
->> +                            const int mtu);
->> +
->>   static void netsh_set_dns6_servers(const struct in6_addr *addr_list,
->>                                      const int addr_len,
->>                                      const char *flex_name);
->> @@ -201,6 +205,47 @@ out:
->>       return ret;
->>   }
->>
->> +static bool
->> +do_set_mtu_service(const struct tuntap *tt, const short family, const int
->> mtu)
->> +{
->> +    DWORD len;
->> +    bool ret = false;
->> +    ack_message_t ack;
->> +    struct gc_arena gc = gc_new();
->> +    HANDLE pipe = tt->options.msg_channel;
->> +    const char *family_name = (family == AF_INET6) ? "IPv6" : "IPv4";
->> +    set_mtu_message_t mtu_msg = {
->> +        .header = {
->> +            msg_set_mtu,
->> +            sizeof(set_mtu_message_t),
->> +            0
->> +        },
->> +        .iface = {.index = tt->adapter_index,.name = tt->actual_name },
->> +        .mtu = mtu,
->> +        .family = family
->> +    };
->> +
->> +    if (!send_msg_iservice(pipe, &mtu_msg, sizeof(mtu_msg), &ack,
->> "Set_mtu"))
->> +    {
->> +        goto out;
->> +    }
->> +
->> +    if (ack.error_number != NO_ERROR)
->> +    {
->> +        msg(M_NONFATAL, "TUN: setting %s mtu using service failed: %s
->> [status=%u if_index=%d]",
->> +            family_name, strerror_win32(ack.error_number, &gc),
->> ack.error_number, mtu_msg.iface.index);
->>
-> +    }
->> +    else
->> +    {
->> +        msg(M_INFO, "%s MTU set to %d on interface %d using service",
->> family_name, mtu, mtu_msg.iface.index);
->> +        ret = true;
->> +    }
->> +
->> +out:
->> +    gc_free(&gc);
->> +    return ret;
->> +}
->> +
->>   #endif /* ifdef _WIN32 */
->>
->>   #ifdef TARGET_SOLARIS
->> @@ -984,6 +1029,7 @@ do_ifconfig_ipv6(struct tuntap *tt, const char
->> *ifname, int tun_mtu,
->>       {
->>           do_address_service(true, AF_INET6, tt);
->>           do_dns6_service(true, tt);
->> +        do_set_mtu_service(tt, AF_INET6, tun_mtu);
->>       }
->>       else
->>       {
->> @@ -1000,6 +1046,7 @@ do_ifconfig_ipv6(struct tuntap *tt, const char
->> *ifname, int tun_mtu,
->>           netsh_command(&argv, 4, M_FATAL);
->>           /* set ipv6 dns servers if any are specified */
->>           netsh_set_dns6_servers(tt->options.dns6, tt->options.dns6_len,
->> ifname);
->> +        windows_set_mtu(tt->adapter_index, AF_INET6, tun_mtu);
->>       }
->>
->>       /* explicit route needed */
->> @@ -1394,6 +1441,14 @@ do_ifconfig_ipv4(struct tuntap *tt, const char
->> *ifname, int tun_mtu,
->>
->>                   break;
->>           }
->> +        if (tt->options.msg_channel)
->> +        {
->> +            do_set_mtu_service(tt, AF_INET, tun_mtu);
->> +        }
->> +        else
->> +        {
->> +            windows_set_mtu(tt->adapter_index, AF_INET, tun_mtu);
->> +        }
->>       }
->>
->>   #else  /* if defined(TARGET_LINUX) */
->> @@ -5236,6 +5291,40 @@ out:
->>       return ret;
->>   }
->>
->> +static void
->> +windows_set_mtu(const int iface_index, const short family,
->> +                const int mtu)
->> +{
->> +    DWORD err = 0;
->> +    struct gc_arena gc = gc_new();
->> +    MIB_IPINTERFACE_ROW ipiface;
->> +    InitializeIpInterfaceEntry(&ipiface);
->> +    const char *family_name = (family == AF_INET6) ? "IPv6" : "IPv4";
->> +    ipiface.Family = family;
->> +    ipiface.InterfaceIndex = iface_index;
->> +    err = GetIpInterfaceEntry(&ipiface);
->> +    if (err == NO_ERROR)
->> +    {
->> +        if (family == AF_INET)
->> +        {
->> +            ipiface.SitePrefixLength = 0;
->> +        }
->> +        ipiface.NlMtu = mtu;
->> +        err = SetIpInterfaceEntry(&ipiface);
->> +    }
->> +
->> +    if (err != NO_ERROR)
->> +    {
->> +        msg(M_WARN, "TUN: Setting %s mtu failed: %s [status=%u
->> if_index=%d]",
->> +            family_name, strerror_win32(err, &gc), err, iface_index);
->> +    }
->> +    else
->> +    {
->> +        msg(M_INFO, "Successfully set %s mtu on interface %d",
->> family_name, iface_index);
->> +    }
->> +}
->> +
->> +
->>   /*
->>    * Return a TAP name for netsh commands.
->>    */
->> diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
->> index 623c3ff7..c24cb22b 100644
->> --- a/src/openvpnserv/interactive.c
->> +++ b/src/openvpnserv/interactive.c
->> @@ -1198,6 +1198,29 @@ HandleEnableDHCPMessage(const enable_dhcp_message_t
->> *dhcp)
->>       return err;
->>   }
->>
->> +static DWORD
->> +HandleMTUMessage(const set_mtu_message_t *mtu)
->> +{
->> +    DWORD err = 0;
->> +    MIB_IPINTERFACE_ROW ipiface;
->> +    InitializeIpInterfaceEntry(&ipiface);
->> +    ipiface.Family = mtu->family;
->> +    ipiface.InterfaceIndex = mtu->iface.index;
->> +    err = GetIpInterfaceEntry(&ipiface);
->> +    if (err != NO_ERROR)
->> +    {
->> +        return err;
->> +    }
->> +    if (mtu->family == AF_INET)
->> +    {
->> +        ipiface.SitePrefixLength = 0;
->> +    }
->> +    ipiface.NlMtu = mtu->mtu;
->> +
->> +    err = SetIpInterfaceEntry(&ipiface);
->> +    return err;
->> +}
->> +
->>   static VOID
->>   HandleMessage(HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events,
->> undo_lists_t *lists)
->>   {
->> @@ -1210,6 +1233,7 @@ HandleMessage(HANDLE pipe, DWORD bytes, DWORD count,
->> LPHANDLE events, undo_lists
->>           block_dns_message_t block_dns;
->>           dns_cfg_message_t dns;
->>           enable_dhcp_message_t dhcp;
->> +        set_mtu_message_t mtu;
->>       } msg;
->>       ack_message_t ack = {
->>           .header = {
->> @@ -1277,6 +1301,13 @@ HandleMessage(HANDLE pipe, DWORD bytes, DWORD
->> count, LPHANDLE events, undo_lists
->>               }
->>               break;
->>
->> +        case msg_set_mtu:
->> +            if (msg.header.size == sizeof(msg.mtu))
->> +            {
->> +                ack.error_number = HandleMTUMessage(&msg.mtu);
->> +            }
->> +            break;
->> +
->>           default:
->>               ack.error_number = ERROR_MESSAGE_TYPE;
->>               MsgToEventLog(MSG_FLAGS_ERROR, TEXT("Unknown message type
->> %d"), msg.header.type);
->>
->>
-> Acked-by: Selva Nair <selva.nair@...277...>
->
-> Selva
->
+We could potentially attestation-sign tap-windows6 first, then
+cross-sign it. The result _might_ work on everything except Windows
+Server 2016/2019.
+
+I intend to do final installer / tap-windows6 testing tomorrow (Windows
+7 and 10 work already). I can give double signatures a go in
+tap-windows6 as well. Due to historic reasons the Powershell scripts I
+use already support appending signatures.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+
+--7ViqCPzRmAVgUWSSNo5Huq4aRHRiryPg6--
+
+--EC93rqCe5b2GYNB7eY0ESUB2dKHHFjznS
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAly/TX0ACgkQKVhNn0CG
+RXh3TwgAhWAZdzQIH8HLMRibkK5LI6KZPpSYpLVHtODJO04TGSABAhP6YJMF5zkN
+YYo6W/5hAhVtgrUMjw87iwN3x/OB4SOoVo5+MnD4fgdunPZMucPnF5I//Cmo1Bzu
+kBU4CuxczqNCPQBW+XRoM2whWx/yyqlmlIBsnrxPMIzVPjVEz21vtt/JDrWelduE
+rPlsxSKD/lPJgcPOz7ZMumzrtMVyoGVNrLFCuXc2foxeOi0Amh6gPTiad7s+B86M
+weoahekC3gEhJmwSb8+nvhVv7ZBlMy8bWXL2WFYFx5N08l1CSZDhONgMlIa7+USB
+s48Tz5c8jgtaxBYX0+exGLr/IkqKEg==
+=z55y
+-----END PGP SIGNATURE-----
+
+--EC93rqCe5b2GYNB7eY0ESUB2dKHHFjznS--
 
