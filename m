@@ -1,14 +1,17 @@
-MIME-Version: 1.0
 References: <CAPM6dUC_L=Q2HseFEKS7bfrff6McwQo9TSuWKramkbC+5k9Phw@...278...>
  <5d43db38-5481-3f67-555d-b2b59b89be63@...1147...>
  <CAFHpkQEetMrGST3DziN5gedP32DbN4v7w+NDmViZcccmaZf7Fg@...278...>
  <CAPM6dUBfeuEnfqW59YBNdtRDMhWfSc_9NXSsxuKskPzqK=4qVA@...278...>
  <20190420150719.GM31008@...1296...>
  <CAPM6dUCeYFFNE_M+0FFOrfS=025hSaEv6LgPqXcA41Z++Uk1DA@...278...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <1336b8a0-eebd-ecd0-575f-4b0280d44320@...1227...>
+Date: Tue, 23 Apr 2019 13:25:07 +0200
+MIME-Version: 1.0
 In-Reply-To: <CAPM6dUCeYFFNE_M+0FFOrfS=025hSaEv6LgPqXcA41Z++Uk1DA@...278...>
-From: wei wang <lnykww@...277...>
-Date: Tue, 23 Apr 2019 11:01:59 +0800
-Message-ID: <CAPM6dUDJXL+Ncf3Fm2xW1rsf4ohYkzWMrhr8hJ9WraRQOtUHFw@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="5ETllvHEFDYdXbfQrmsVWKBK65XUOdozR"
 Subject: Re: [Openvpn-devel] openvpn with udp lost event.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -18,118 +21,94 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+To: wei wang <lnykww@...277...>, Gert Doering <gert@...1296...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--5ETllvHEFDYdXbfQrmsVWKBK65XUOdozR
+Content-Type: multipart/mixed; boundary="bzm7lX38r9h04QOxnNcf7LwQWbgzxegbe";
+ protected-headers="v1"
+From: Arne Schwabe <arne@...1227...>
+To: wei wang <lnykww@...277...>, Gert Doering <gert@...1296...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Message-ID: <1336b8a0-eebd-ecd0-575f-4b0280d44320@...1227...>
+Subject: Re: [Openvpn-devel] openvpn with udp lost event.
+References: <CAPM6dUC_L=Q2HseFEKS7bfrff6McwQo9TSuWKramkbC+5k9Phw@...278...>
+ <5d43db38-5481-3f67-555d-b2b59b89be63@...1147...>
+ <CAFHpkQEetMrGST3DziN5gedP32DbN4v7w+NDmViZcccmaZf7Fg@...278...>
+ <CAPM6dUBfeuEnfqW59YBNdtRDMhWfSc_9NXSsxuKskPzqK=4qVA@...278...>
+ <20190420150719.GM31008@...1296...>
+ <CAPM6dUCeYFFNE_M+0FFOrfS=025hSaEv6LgPqXcA41Z++Uk1DA@...278...>
+In-Reply-To: <CAPM6dUCeYFFNE_M+0FFOrfS=025hSaEv6LgPqXcA41Z++Uk1DA@...278...>
+
+--bzm7lX38r9h04QOxnNcf7LwQWbgzxegbe
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: ???????? ?????????????? <chipitsine@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-3. clean client connect defered ret file when close instance.
-
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 27c6e935..7291d651 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -685,6 +685,9 @@ multi_close_instance(struct multi_context *m,
-     set_cc_config(mi, NULL);
- #endif
-
-+    // client connect deferred ret file delete
-+    ccs_delete_deferred_ret_file(mi);
-+
-     multi_client_disconnect_script(m, mi);
-
-     if (mi->did_open_context)
-wei wang <lnykww@...277...> =E4=BA=8E2019=E5=B9=B44=E6=9C=8822=E6=97=A5=E5=
-=91=A8=E4=B8=80 =E4=B8=8B=E5=8D=885:26=E5=86=99=E9=81=93=EF=BC=9A
->
+Am 22.04.19 um 11:26 schrieb wei wang:
 > 1. When client-connect tests whether the user has written the
 > configuration, we should check to see if the file size is 0, not
 > whether the file exists.
+
+I am sorry but you need to provide a bit more context to point out why
+you think that change is right.
+
+In non defferred we wait for the script to exit and in deferred we check
+the return status of an extra file before reading in the client connect
+file, so I don't get we this change is required.
+
+
 >     Because the configuration file is created by openvpn itself.
 > 2. multi_client_connect_early_setup should be called for the first time.
->
+>=20
+
+Again, I don't get your line of argument why we should NOT call this
+function if coming from a deferred code path. That seems to be a change
+in the wrong direction. So an explaination of the problem you are seeing
+and what this is trying to fix would be appreciated.
+
 > diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
 > index 697994b8..27c6e935 100644
-> --- a/src/openvpn/multi.c
-> +++ b/src/openvpn/multi.c
-> @@ -1641,9 +1641,13 @@ multi_client_connect_post(struct multi_context *m,
->                            const char *dc_file,
->                            unsigned int *option_types_found)
->  {
-> -    /* Did script generate a dynamic config file? */
-> -    if (platform_test_file(dc_file))
-> -    {
-> +    /* Did script write config to dynamic config file? */
-> +    platform_stat_t dc_stat =3D {0};
-> +    if (platform_stat(dc_file, &dc_stat) < 0) {
-> +        return;
-> +    }
-> +
-> +    if (dc_stat.st_size > 0) {
->          options_server_import(&mi->context.options,
->                                dc_file,
->                                D_IMPORT_ERRORS|M_OPTERR,
-> @@ -2474,13 +2478,13 @@ multi_connection_established(struct
-> multi_context *m, struct multi_instance *mi)
->              /* Initially we have no handler that has returned a result */
->              mi->client_connect_status =3D CC_STATUS_DEFERRED_NO_RESULT;
->              from_deferred =3D false;
-> +            multi_client_connect_early_setup(m, mi);
->          }
->          else
->          {
->              from_deferred =3D true;
->          }
 >
-> -        multi_client_connect_early_setup(m, mi);
->
->          bool cc_succeeded =3D true;
->
-> Gert Doering <gert@...1296...> =E4=BA=8E2019=E5=B9=B44=E6=9C=8820=E6=97=
-=A5=E5=91=A8=E5=85=AD =E4=B8=8B=E5=8D=8811:07=E5=86=99=E9=81=93=EF=BC=9A
-> >
-> > Hi,
-> >
-> > On Sat, Apr 20, 2019 at 04:37:03PM +0800, wei wang wrote:
-> > > I have found that the patch set
-> > > "https://patchwork.openvpn.net/project/openvpn2/list/?series=3D413" h=
-as
-> > > implement it.
-> > > But it has not been updated for several months. Is there someone still
-> > > work on it?  We test with it for client-connect script, and find some
-> > > bug.
-> > > I am very happy to provide if needed.
-> >
-> > We're working on reviewing, fixing and merging it.
-> >
-> > So if you have feedback or even found a bug, please send it in (preferr=
-ably
-> > in reply to the original mail, so patchwork can pick it up, but just he=
-re
-> > in the thread is good enough).
-> >
-> > gert
-> > --
-> > "If was one thing all people took for granted, was conviction that if y=
-ou
-> >  feed honest figures into a computer, honest figures come out. Never do=
-ubted
-> >  it myself till I met a computer with a sense of humor."
-> >                              Robert A. Heinlein, The Moon is a Harsh Mi=
-stress
-> >
-> > Gert Doering - Munich, Germany                             gert@...1726...=
-...
->
->
->
-> --
-> Regards,
-> Wang Wei
 
 
+It is unclear on what you are referring here to:
 
---=20
-Regards,
-Wang Wei
+git branch --contains 697994b8
+error: object 697994b8acd6094aa585c711855b970e1c2bd1c3 is a blob, not a
+commit
+error: no such commit 697994b8
+
+It looks from the code like my deferred client connect patch set. In
+future please include a reference what this is based one.
+
+Arne
+
+
+--bzm7lX38r9h04QOxnNcf7LwQWbgzxegbe--
+
+--5ETllvHEFDYdXbfQrmsVWKBK65XUOdozR
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAly+9h8ACgkQFRhsZwKx
+RFTlFxAApBovghyB7PL3rqUyHlN1xmCTDua02DOWm4PhYPIOoHbFtgz9/3EzTSVu
+PH3hqSfPUOcJPssjj0qfYONV4LYTouSti6WMbxPedA2ILNP6NcLu/LZaK/1iYgC/
+QM2p7h9ZeBXx0CvuTy/9jg2Nm+KL1x4wj10eaJpBoD/mU0dyGndly18Vun72CdzU
+Ml97FIPAAEj8VffddTG0lo7jvaV16fAP7DMpx8VxGhLml2DCa9fMdaqG9ghPIFB1
+p05VbtUUd+p4JeEl0nQrlawXr9hs/CMqdOLkzHDkNHjsDp6ag0q9Oh2QFcae6O9t
+8ah1dQn7VmZt8yFoiZlD1azwTtXsVeCkxDHjWTiq01GsuzRlqTUUfu51ihdUwmlk
+CZnacpQWmwxMiRCiVTw4QUISBG1QKqdZjV3OPGK/36yS6Bilo8lTI57VOCrBRG6i
+a8kEil4YdMwtVxpoRSuwC4TcCIWYAs/LJQ1fhYtsLOckfsGDuvsrIace9ex2YtDL
+Dj2GUrT7D8lyxtyS9boaG+BwuHWlAH3NIKrDqAa8slFvgs/IyOOkTusjMzPtN5sz
+dlN4SQWx3uytbBb69qN/veXDgMEaNH4Pj1P0Z6grQLMOtTCGogiVPvWOlr7fLtlD
+vv9lpMKg+6RG5VdI59AkWX6jzt8P7HVKQVJh1f4S1e6lTJcyaFQ=
+=QG1V
+-----END PGP SIGNATURE-----
+
+--5ETllvHEFDYdXbfQrmsVWKBK65XUOdozR--
 
