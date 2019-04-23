@@ -7,8 +7,8 @@ References: <CAPM6dUC_L=Q2HseFEKS7bfrff6McwQo9TSuWKramkbC+5k9Phw@...278...>
  <CAPM6dUCeYFFNE_M+0FFOrfS=025hSaEv6LgPqXcA41Z++Uk1DA@...278...>
 In-Reply-To: <CAPM6dUCeYFFNE_M+0FFOrfS=025hSaEv6LgPqXcA41Z++Uk1DA@...278...>
 From: wei wang <lnykww@...277...>
-Date: Mon, 22 Apr 2019 17:34:15 +0800
-Message-ID: <CAPM6dUBMn3ehoqW+A7fevJ3jqhYwUV4Bs7T2pm1q4dTq=c3dxg@...278...>
+Date: Tue, 23 Apr 2019 11:01:59 +0800
+Message-ID: <CAPM6dUDJXL+Ncf3Fm2xW1rsf4ohYkzWMrhr8hJ9WraRQOtUHFw@...278...>
 Subject: Re: [Openvpn-devel] openvpn with udp lost event.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -23,48 +23,22 @@ Content-Transfer-Encoding: quoted-printable
 To: Gert Doering <gert@...1296...>
 Cc: ???????? ?????????????? <chipitsine@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-And I have another question about  multi_process_io_udp lost event.
-Is there some problem if we change if{} else if{} to if {} if {}.
-e.g.:
+3. clean client connect defered ret file when close instance.
 
-diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index a604d217..18dc009d 100644
---- a/src/openvpn/mudp.c
-+++ b/src/openvpn/mudp.c
-@@ -220,12 +220,12 @@ multi_process_io_udp(struct multi_context *m)
-         multi_process_outgoing_link(m, mpp_flags);
-     }
-     /* TUN device ready to accept write */
--    else if (status & TUN_WRITE)
-+    if (status & TUN_WRITE)
-     {
-         multi_process_outgoing_tun(m, mpp_flags);
-     }
-     /* Incoming data on UDP port */
--    else if (status & SOCKET_READ)
-+    if (status & SOCKET_READ)
-     {
-         read_incoming_link(&m->top);
-         if (!IS_SIG(&m->top))
-@@ -234,7 +234,7 @@ multi_process_io_udp(struct multi_context *m)
-         }
-     }
-     /* Incoming data on TUN device */
--    else if (status & TUN_READ)
-+    if (status & TUN_READ)
-     {
-         read_incoming_tun(&m->top);
-         if (!IS_SIG(&m->top))
-@@ -244,7 +244,7 @@ multi_process_io_udp(struct multi_context *m)
-     }
- #ifdef ENABLE_ASYNC_PUSH
-     /* INOTIFY callback */
--    else if (status & FILE_CLOSED)
-+    if (status & FILE_CLOSED)
-     {
-         multi_process_file_closed(m, mpp_flags);
-     }
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 27c6e935..7291d651 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -685,6 +685,9 @@ multi_close_instance(struct multi_context *m,
+     set_cc_config(mi, NULL);
+ #endif
 
++    // client connect deferred ret file delete
++    ccs_delete_deferred_ret_file(mi);
++
+     multi_client_disconnect_script(m, mi);
+
+     if (mi->did_open_context)
 wei wang <lnykww@...277...> =E4=BA=8E2019=E5=B9=B44=E6=9C=8822=E6=97=A5=E5=
 =91=A8=E4=B8=80 =E4=B8=8B=E5=8D=885:26=E5=86=99=E9=81=93=EF=BC=9A
 >
