@@ -1,10 +1,14 @@
+Date: Wed, 24 Apr 2019 19:05:16 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20190424170516.GC31008@...1296...>
+References: <62A0A577-3DAF-428A-ABC1-D6E062DA1D68@...1834...>
 MIME-Version: 1.0
-References: <9f75757c-6668-c521-af6f-b18e8db3fa72@...515...>
-In-Reply-To: <9f75757c-6668-c521-af6f-b18e8db3fa72@...515...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 24 Apr 2019 08:46:44 -0400
-Message-ID: <CAKuzo_gwpPebkt_+o9paaR_MFy7c_BJOFW=0CB7K5YT7LVD+bQ@...278...>
-Subject: Re: [Openvpn-devel] New OpenVPN 2.4.7 Windows installers released
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="i57Ucs80xkCVE1Ce"
+Content-Disposition: inline
+In-Reply-To: <62A0A577-3DAF-428A-ABC1-D6E062DA1D68@...1834...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] Windows Service does not pick
+ up config
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,63 +17,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+To: David Gstir <david@...1834...>
+Cc: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
+
+--i57Ucs80xkCVE1Ce
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
-Hi,
+HI,
 
-On Wed, Apr 24, 2019 at 6:50 AM Samuli Sepp=C3=A4nen <samuli@...515...> wro=
-te:
->
-> Hi,
->
-> New OpenVPN Windows installers have been released. The release
-> highlights are:
->
-> - Latest openvpn-gui
-> - Latest openvpnserv2 (OpenVPNService)
-> - Latest tap-windows6 driver
->   - ARM64 support
->   - NDIS 6.30 support
->   - other enhancements
->   - fix to local privilege exploit vulnerability
->
-> The installers come in two flavors. Windows 7/8/8.1/Server 2012r2:
->
-> <https://swupdate.openvpn.org/community/releases/openvpn-install-2.4.7-I6=
-06-Win7.exe>
->
-> Windows 10 (any version):
->
-> <https://swupdate.openvpn.org/community/releases/openvpn-install-2.4.7-I6=
-06-Win10.exe>
->
-> We're unable to release a version for Windows Server 2016 at this point,
->  so you need to use the old installer:
->
-> <https://swupdate.openvpn.org/community/releases/openvpn-install-2.4.7-I6=
-03.exe>
->
-> We're working on getting tap-windows6 pass the HLK test suite on Windows
-> Server 2016. This will allow us to get a signature from Microsoft and
-> release an updated tap-windows6 on that platform as well. While waiting
-> please avoid running OpenVPN on nodes where all users are not trusted.
->
-> For further details see the download page:
->
-> <https://openvpn.net/community-downloads/>
+On Wed, Apr 24, 2019 at 01:52:45PM +0200, David Gstir wrote:
+> After a lot of digging I found this merge request [1] that changes the re=
+gistry
+> entry the service looks for from "config_dir" to "autostart_config_dir"!
+> Manually adding the "autostart_config_dir" and setting the value to
+> C:\Program Files\OpenVPN\config got it finally working again!
 
-I think we were supposed to continue using openvpnserv2 version
-1.3.0 until the MSI installer is ready. Version 1.4.0 included here
-requires some logic in the installer to create the new config_dir location
-if missing, and move contents from the old location.
+"oops, sorry"
 
-See also this PR:
-https://github.com/OpenVPN/openvpn-build/pull/141/commits/9c2774ca3841763ad=
-a64986b18d1df7634c59a20
+(We were told over on the openvpn-devel list already - in the end, the=20
+wrong openvpnserv2 branch was packaged - this is intended to be used=20
+with the MSI installers, which will handle the directory renaming,=20
+config file moving, etc.)
 
+gert
 
-Selva
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--i57Ucs80xkCVE1Ce
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGbBAEBAgAGBQJcwJdLAAoJEB2Cnv7KVigSkxoL+IWSQAfuCqCUbhia+A4XOvh7
+u0HeiK6FWY7OQg6HbGzGwkbj4nhNwS/BmOl6LxWlW1CZbUbVVYsNfTx+PUfQSlX2
+K18qycmEA6FD3BbEe12i0ScddXb/GdU/RFh4QgxiyXWyRYc+qlHl4vcYOPCKjvM6
+x4ASskpiB5Kbo/+32pdC/T3MVGToUSWvMj3kdZvgBP56KiJ/TICqkmG+iC22x9/A
+ek6CaNY6J+VF5MAU7Ww8mcHfg5OXae7A5dQ+46nvSVlrRL/r05lc7YsJD9BkLibf
+ICWadu7IeHZC23HfolkWr7vVo5rWCKab/1wqNw8Pis+Ow5z+tTf9JPxFlG+uZoCN
+qsn1o+muehG1dWc4KlYbkYYkvz1HWCAfrkHTG7LRRzrN3S+24y9bepjBwYp4YhJ3
+7Jb5QKwcWXV+fto3BDnBld4yQK7+F8cEVTpr7M4RocoJSznFY0zGZ7lY2S3/Rk0L
+e1XCOLF1P0XFTad475SaejKk3O+DZ+Lrnb5kAHyy
+=Ynn5
+-----END PGP SIGNATURE-----
+
+--i57Ucs80xkCVE1Ce--
 
