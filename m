@@ -1,14 +1,14 @@
-Date: Wed, 24 Apr 2019 19:05:16 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20190424170516.GC31008@...1296...>
-References: <62A0A577-3DAF-428A-ABC1-D6E062DA1D68@...1834...>
+References: <9f75757c-6668-c521-af6f-b18e8db3fa72@...515...>
+ <CAKuzo_gwpPebkt_+o9paaR_MFy7c_BJOFW=0CB7K5YT7LVD+bQ@...278...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <ed95a733-246d-e313-b3da-5004299137c7@...515...>
+Date: Thu, 25 Apr 2019 08:16:34 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="i57Ucs80xkCVE1Ce"
-Content-Disposition: inline
-In-Reply-To: <62A0A577-3DAF-428A-ABC1-D6E062DA1D68@...1834...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] Windows Service does not pick
- up config
+In-Reply-To: <CAKuzo_gwpPebkt_+o9paaR_MFy7c_BJOFW=0CB7K5YT7LVD+bQ@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="066jMYabLq4KofzDPG7gFmoTupGnPJo70"
+Subject: Re: [Openvpn-devel] New OpenVPN 2.4.7 Windows installers released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,58 +17,115 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Gstir <david@...1834...>
-Cc: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---i57Ucs80xkCVE1Ce
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--066jMYabLq4KofzDPG7gFmoTupGnPJo70
+Content-Type: multipart/mixed; boundary="sVAYr9gWHxIOQeYhu7qbfwpVM3VL34H1O";
+ protected-headers="v1"
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Message-ID: <ed95a733-246d-e313-b3da-5004299137c7@...515...>
+Subject: Re: [Openvpn-devel] New OpenVPN 2.4.7 Windows installers released
+References: <9f75757c-6668-c521-af6f-b18e8db3fa72@...515...>
+ <CAKuzo_gwpPebkt_+o9paaR_MFy7c_BJOFW=0CB7K5YT7LVD+bQ@...278...>
+In-Reply-To: <CAKuzo_gwpPebkt_+o9paaR_MFy7c_BJOFW=0CB7K5YT7LVD+bQ@...278...>
+
+--sVAYr9gWHxIOQeYhu7qbfwpVM3VL34H1O
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-HI,
+Il 24/04/19 15:46, Selva Nair ha scritto:
+> Hi,
+>=20
+> On Wed, Apr 24, 2019 at 6:50 AM Samuli Sepp=C3=A4nen <samuli@...515...> w=
+rote:
+>>
+>> Hi,
+>>
+>> New OpenVPN Windows installers have been released. The release
+>> highlights are:
+>>
+>> - Latest openvpn-gui
+>> - Latest openvpnserv2 (OpenVPNService)
+>> - Latest tap-windows6 driver
+>>   - ARM64 support
+>>   - NDIS 6.30 support
+>>   - other enhancements
+>>   - fix to local privilege exploit vulnerability
+>>
+>> The installers come in two flavors. Windows 7/8/8.1/Server 2012r2:
+>>
+>> <https://swupdate.openvpn.org/community/releases/openvpn-install-2.4.7-I=
+606-Win7.exe>
+>>
+>> Windows 10 (any version):
+>>
+>> <https://swupdate.openvpn.org/community/releases/openvpn-install-2.4.7-I=
+606-Win10.exe>
+>>
+>> We're unable to release a version for Windows Server 2016 at this point,
+>>  so you need to use the old installer:
+>>
+>> <https://swupdate.openvpn.org/community/releases/openvpn-install-2.4.7-I=
+603.exe>
+>>
+>> We're working on getting tap-windows6 pass the HLK test suite on Windows
+>> Server 2016. This will allow us to get a signature from Microsoft and
+>> release an updated tap-windows6 on that platform as well. While waiting
+>> please avoid running OpenVPN on nodes where all users are not trusted.
+>>
+>> For further details see the download page:
+>>
+>> <https://openvpn.net/community-downloads/>
+>=20
+> I think we were supposed to continue using openvpnserv2 version
+> 1.3.0 until the MSI installer is ready. Version 1.4.0 included here
+> requires some logic in the installer to create the new config_dir location
+> if missing, and move contents from the old location.
+>=20
+> See also this PR:
+> https://github.com/OpenVPN/openvpn-build/pull/141/commits/9c2774ca3841763=
+ada64986b18d1df7634c59a20
+>=20
+>=20
+> Selva
+>=20
 
-On Wed, Apr 24, 2019 at 01:52:45PM +0200, David Gstir wrote:
-> After a lot of digging I found this merge request [1] that changes the re=
-gistry
-> entry the service looks for from "config_dir" to "autostart_config_dir"!
-> Manually adding the "autostart_config_dir" and setting the value to
-> C:\Program Files\OpenVPN\config got it finally working again!
+Hi,
 
-"oops, sorry"
-
-(We were told over on the openvpn-devel list already - in the end, the=20
-wrong openvpnserv2 branch was packaged - this is intended to be used=20
-with the MSI installers, which will handle the directory renaming,=20
-config file moving, etc.)
-
-gert
+I completely forgot about this rather invasive change. I will produce
+new installers with openvpnserv2 1.3.0.0 in a couple of hours.
 
 --=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-Gert Doering - Munich, Germany                             gert@...1296...
+irc freenode net: mattock
 
---i57Ucs80xkCVE1Ce
+
+--sVAYr9gWHxIOQeYhu7qbfwpVM3VL34H1O--
+
+--066jMYabLq4KofzDPG7gFmoTupGnPJo70
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGbBAEBAgAGBQJcwJdLAAoJEB2Cnv7KVigSkxoL+IWSQAfuCqCUbhia+A4XOvh7
-u0HeiK6FWY7OQg6HbGzGwkbj4nhNwS/BmOl6LxWlW1CZbUbVVYsNfTx+PUfQSlX2
-K18qycmEA6FD3BbEe12i0ScddXb/GdU/RFh4QgxiyXWyRYc+qlHl4vcYOPCKjvM6
-x4ASskpiB5Kbo/+32pdC/T3MVGToUSWvMj3kdZvgBP56KiJ/TICqkmG+iC22x9/A
-ek6CaNY6J+VF5MAU7Ww8mcHfg5OXae7A5dQ+46nvSVlrRL/r05lc7YsJD9BkLibf
-ICWadu7IeHZC23HfolkWr7vVo5rWCKab/1wqNw8Pis+Ow5z+tTf9JPxFlG+uZoCN
-qsn1o+muehG1dWc4KlYbkYYkvz1HWCAfrkHTG7LRRzrN3S+24y9bepjBwYp4YhJ3
-7Jb5QKwcWXV+fto3BDnBld4yQK7+F8cEVTpr7M4RocoJSznFY0zGZ7lY2S3/Rk0L
-e1XCOLF1P0XFTad475SaejKk3O+DZ+Lrnb5kAHyy
-=Ynn5
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAlzBQrIACgkQKVhNn0CG
+RXhN0Qf+PDkCS/FCFXmW5Oi03vcCwVdvpoaqIu2PXGW17JUxtnH6lLRL4VRHodjo
+whM1btJ+l+xh7bvY9wx/IFTwuLuhueEukdaktWwIoJ82INmpKzbnSJxLXorRup/H
+3weBHV6JuiQeRvY2KLHMXrSkmfDgGMSV38UvNv5r9OMBiD4ABHM0ceKXBj8KhzCk
+xinp4MiD7ev6rnHEr9xJkZZWIR9JOSC2+yt9c8K/Vmr9ytT2kScUrem6gv4i1wZW
+PuanBQuF6bli2UoimXOyyUA7T6ROsH7cKMhibwvRuzLZUb47cKDn770SaMLiHFNe
+kcA7RBXQUmJ6hU7nrH6ywg+nWcJhhQ==
+=8ZZ5
 -----END PGP SIGNATURE-----
 
---i57Ucs80xkCVE1Ce--
+--066jMYabLq4KofzDPG7gFmoTupGnPJo70--
 
