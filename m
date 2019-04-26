@@ -1,13 +1,13 @@
 References: <CAEYw=WoZDJap1cwCh-SAqJr8KiQEv80XmBkVbVijTbCbOCOP0g@...278...>
  <CAEYw=Wqna4PnOf+ZQV2sqkrQ6sLdCUQgwxRnrFBVuRx60uAbZA@...278...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <24961e3f-19da-a7b3-50db-d67aef792b62@...2181...>
-Date: Fri, 26 Apr 2019 15:46:53 +0200
+From: Jan Just Keijser <janjust@...1147...>
+Message-ID: <bbf01b87-32bf-f234-cd95-6b5738ad463b@...1147...>
+Date: Fri, 26 Apr 2019 15:57:21 +0200
 MIME-Version: 1.0
 In-Reply-To: <CAEYw=Wqna4PnOf+ZQV2sqkrQ6sLdCUQgwxRnrFBVuRx60uAbZA@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="DtJ8Kv0KKCyXMi1qoZRbAzNExD3U6TODK"
+Content-Type: multipart/alternative;
+ boundary="------------11DCD76661250BB8D1F0C7AD"
+Content-Language: nl-NL
 Subject: Re: [Openvpn-devel] Client reconnect issues
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -19,95 +19,181 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Pieter Hulshoff <pieter.hulshoff@...2499...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>, Openvpn-users@lists.sourceforge.net, Gert Doering <gert@...1296...>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---DtJ8Kv0KKCyXMi1qoZRbAzNExD3U6TODK
-Content-Type: multipart/mixed; boundary="UHKdyQ1uazMHutg2Ku3Dj0vmOJJsvhSBA";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Pieter Hulshoff <pieter.hulshoff@...2499...>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- Openvpn-users@lists.sourceforge.net, Gert Doering <gert@...1296...>
-Message-ID: <24961e3f-19da-a7b3-50db-d67aef792b62@...2181...>
-Subject: Re: [Openvpn-devel] Client reconnect issues
-References: <CAEYw=WoZDJap1cwCh-SAqJr8KiQEv80XmBkVbVijTbCbOCOP0g@...278...>
- <CAEYw=Wqna4PnOf+ZQV2sqkrQ6sLdCUQgwxRnrFBVuRx60uAbZA@...278...>
-In-Reply-To: <CAEYw=Wqna4PnOf+ZQV2sqkrQ6sLdCUQgwxRnrFBVuRx60uAbZA@...278...>
+This is a multi-part message in MIME format.
+--------------11DCD76661250BB8D1F0C7AD
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
---UHKdyQ1uazMHutg2Ku3Dj0vmOJJsvhSBA
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Hi Pieter,
 
-Hi,
+On 26/04/19 15:32, Pieter Hulshoff wrote:
+> Gert,
+>
+> Op vr 19 apr. 2019 om 13:38 schreef Pieter Hulshoff 
+> <pieter.hulshoff@...2499... 
+> <mailto:pieter.hulshoff@...2499...>>:
+>
+>     I've been looking at
+>     https://community.openvpn.net/openvpn/ticket/880 for a while now,
+>     and was wondering if there'd been any answers to this problem yet.
+>     It appears that mbedtls (according to krzee the problem
+>     disappeared when using OpenSSL, but since I use OpenVPN-NL that's
+>     not an option for me) refuses to answer a PUSH request for a
+>     connection it considers to already exist. As a result, a reconnect
+>     (e.g. after a client reboot) will stall until the reconnect timer
+>     exceeds the server's time-out, after which the server closes the
+>     connection, and accepts the following reconnect attempt. Reconnect
+>     from a 2.3.9 client is stalled indefinitely, since the re-connect
+>     seems fixed at 2 seconds.
+>
+>     Using nobind will also solve the issue, since the server will see
+>     it as a new connection, but I'm not sure nobind is a proper
+>     solution for everyone.
+>
+>     Any thoughts on this matter? Is it true that this only happens
+>     with mbedtls, and as such should this issue be taken up with that
+>     community in stead of this one? Any idea on why the server would
+>     refuse a PUSH request for an already existing connection?
+>
+>
+> You were looking into this matter in 2017. Did you ever figure out 
+> what the cause of this issue was, and if so how it could be remedied?
+>
+>
+I'd look into the way session tickets are configured and used in 
+mbedtls, e.g. read up on
+https://tls.mbed.org/discussions/generic/what-is-the-correct-way-to-use-session-tickets
 
-On 26/04/2019 15:32, Pieter Hulshoff wrote:
->> Any thoughts on this matter? Is it true that this only happens with
->> mbedtls, and as such should this issue be taken up with that community in
->> stead of this one? Any idea on why the server would refuse a PUSH request
->> for an already existing connection?
->>
+For OpenSSL, OpenVPN uses SSL_OP_NO_TICKET, i.e. no session tickets are 
+allowed. I don't know the mbedtls code base well enough, but as a start, 
+I'd make sure that mbedtls is also configured to NOT accept session tickets.
 
-mbedtls is not responsible for answering PUSH_REQUEST messages.
+An easy way to test my hypothesis would be to
+- allow session tickets in the OpenSSL version (i.e. modify one line in 
+ssl_opensls.c)
+- build OpenVPN using OpenSSL
+- use this patched OpenVPN binary to connect to your (mbedtls) server to 
+see if the problem now also occurs with an openssl-linked version of OpenVPN
+If so, then you know it's a session ticket issue. If not, then you can 
+(most likely) rule out session tickets as the root cause of the problem.
 
-mbedtls is just the SSL library providing a number of functionalities
-and does not know anything about the OpenVPN protocol (which PUSH
-messages belong to).
+HTH,
 
-So, if this behaviour is different compared to when using OpenSSL, then
-it means there is something else behind.
-
-This said, OpenVPN has a protection that prevents a server to reply to a
-PUSH_REQUEST from the same client more than once within 30 seconds.
-
-Therefore if you are shutting down a client and restarting it within
-this short timeframe, it is expected that you won't get any PUSH_REPLY.
-
-Does this match your observations?
-
-If not, could you please mention step by step what to do to reproduce
-the faulty problem?
-
-This will help on two fronts:
-1) allow us to better understand your case
-2) allow us to replicate the issue
-
-
-Note: that using nobind probably fools this logic because the client
-will re-connect using a different source port and thus will be
-recognized as different.
-
-Thanks.
-
-Regards,
-
-
---=20
-Antonio Quartulli
+JJK
 
 
---UHKdyQ1uazMHutg2Ku3Dj0vmOJJsvhSBA--
+--------------11DCD76661250BB8D1F0C7AD
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
---DtJ8Kv0KKCyXMi1qoZRbAzNExD3U6TODK
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  </head>
+  <body text="#000000" bgcolor="#FFFFFF">
+    <div class="moz-cite-prefix">Hi Pieter,<br>
+      <br>
+      On 26/04/19 15:32, Pieter Hulshoff wrote:<br>
+    </div>
+    <blockquote type="cite"
+cite="mid:CAEYw=Wqna4PnOf+ZQV2sqkrQ6sLdCUQgwxRnrFBVuRx60uAbZA@...278...">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <div dir="ltr">
+        <div dir="ltr">
+          <div class="gmail_default"
+            style="font-family:arial,helvetica,sans-serif">Gert,</div>
+          <div class="gmail_default"
+            style="font-family:arial,helvetica,sans-serif"><br>
+          </div>
+          <div class="gmail_default"
+            style="font-family:arial,helvetica,sans-serif"><span
+              style="font-family:Arial,Helvetica,sans-serif">Op vr 19
+              apr. 2019 om 13:38 schreef Pieter Hulshoff &lt;<a
+                href="mailto:pieter.hulshoff@...2499..."
+                moz-do-not-send="true">pieter.hulshoff@...2499...</a>&gt;:</span><br>
+          </div>
+        </div>
+        <div class="gmail_quote">
+          <blockquote class="gmail_quote" style="margin:0px 0px 0px
+            0.8ex;border-left:1px solid
+            rgb(204,204,204);padding-left:1ex">
+            <div dir="ltr">
+              <div style="font-family:arial,helvetica,sans-serif">I've
+                been looking at <a
+                  href="https://community.openvpn.net/openvpn/ticket/880"
+                  target="_blank"
+                  style="font-family:Arial,Helvetica,sans-serif"
+                  moz-do-not-send="true">https://community.openvpn.net/openvpn/ticket/880</a> for
+                a while now, and was wondering if there'd been any
+                answers to this problem yet. It appears that mbedtls
+                (according to krzee the problem disappeared when using
+                OpenSSL, but since I use OpenVPN-NL that's not an option
+                for me) refuses to answer a PUSH request for a
+                connection it considers to already exist. As a result, a
+                reconnect (e.g. after a client reboot) will stall until
+                the reconnect timer exceeds the server's time-out, after
+                which the server closes the connection, and accepts the
+                following reconnect attempt. Reconnect from a 2.3.9
+                client is stalled indefinitely, since the re-connect
+                seems fixed at 2 seconds.<br>
+              </div>
+              <div style="font-family:arial,helvetica,sans-serif"><br>
+              </div>
+              <div style="font-family:arial,helvetica,sans-serif">Using
+                nobind will also solve the issue, since the server will
+                see it as a new connection, but I'm not sure nobind is a
+                proper solution for everyone.</div>
+              <div style="font-family:arial,helvetica,sans-serif"><br>
+              </div>
+              <div style="font-family:arial,helvetica,sans-serif">Any
+                thoughts on this matter? Is it true that this only
+                happens with mbedtls, and as such should this issue be
+                taken up with that community in stead of this one? Any
+                idea on why the server would refuse a PUSH request for
+                an already existing connection?</div>
+            </div>
+          </blockquote>
+          <div><br>
+          </div>
+          <div class="gmail_default"
+            style="font-family:arial,helvetica,sans-serif">You were
+            looking into this matter in 2017. Did you ever figure out
+            what the cause of this issue was, and if so how it could be
+            remedied?</div>
+          <div class="gmail_default"
+            style="font-family:arial,helvetica,sans-serif"><br>
+          </div>
+          <br>
+        </div>
+      </div>
+    </blockquote>
+    I'd look into the way session tickets are configured and used in
+    mbedtls, e.g. read up on<br>
+     
+<a class="moz-txt-link-freetext" href="https://tls.mbed.org/discussions/generic/what-is-the-correct-way-to-use-session-tickets">https://tls.mbed.org/discussions/generic/what-is-the-correct-way-to-use-session-tickets</a><br>
+    <br>
+    For OpenSSL, OpenVPN uses SSL_OP_NO_TICKET, i.e. no session tickets
+    are allowed. I don't know the mbedtls code base well enough, but as
+    a start, I'd make sure that mbedtls is also configured to NOT accept
+    session tickets.<br>
+    <br>
+    An easy way to test my hypothesis would be to<br>
+    - allow session tickets in the OpenSSL version (i.e. modify one line
+    in ssl_opensls.c)<br>
+    - build OpenVPN using OpenSSL<br>
+    - use this patched OpenVPN binary to connect to your (mbedtls)
+    server to see if the problem now also occurs with an openssl-linked
+    version of OpenVPN<br>
+    If so, then you know it's a session ticket issue. If not, then you
+    can (most likely) rule out session tickets as the root cause of the
+    problem.<br>
+    <br>
+    HTH,<br>
+    <br>
+    JJK<br>
+    <br>
+  </body>
+</html>
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlzDC80ACgkQ9FVsWUWD
-Dm0t4w/+KMRJBVBHappXoKVd/gStW7CG09wZfkxrybYO5Dx5/kgOvTo/Y43Ni87p
-MnbMQZgqpXMKwaUlY+o90zzlGRW954kxfOMzUJhwIoWMgUv8WLkDmcIhBpCqIhsU
-4gEBbmP0SfAgA53dTk4d6b0kpcjRkghpwCpdvwsnDR0oTGLyw8ZbV9KryDcsGfOj
-kXH28YZLenHXnGeisjgP7aTP6KZqBuFNZLIi26e2QeUBuCQgME5Q0Wnkv+d0SufW
-X4AaSVukK7T5Re4RlM8OLLix2H+NiDz45W4kRemnDoRebxDOyx0MwgK5/JWlfWqQ
-Ib26WI/cRTDz0+Tx0rhxK2u7rHMK+26z7i15TWkvLe1gxDFqNTKSuDj1tuj/1IVg
-5EJM9IzqWB3SOcBcF+T4XEDzVUBt14hLtE2qXHyOEuFKV0quvOgSesNKekillNZG
-uYUv/XEvJyinht+ccjfo4xIM0rHuGstsFd50QpFyrJuhetdCKqq1ed7AJyoXYJbb
-m+ShJApbxR84qaRfTkyCAOvWAeO7wq/8pNVtrDu1Fx5TgGM3buNSGXzmjYTllr0v
-8wZrmxnJQvoh/oOy5NAFl8YOPnJVYpr5LRZo+Jl/dYX1KGAd7oVRxKn/qK2nD58x
-2UCDs26ZII3Qv2ZTQF2wh8S9gKewZ5pnvpQAV25wS6R7N+W1kwU=
-=sgF9
------END PGP SIGNATURE-----
-
---DtJ8Kv0KKCyXMi1qoZRbAzNExD3U6TODK--
+--------------11DCD76661250BB8D1F0C7AD--
 
