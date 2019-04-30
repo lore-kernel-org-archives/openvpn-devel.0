@@ -1,18 +1,11 @@
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <796722c6-e08b-6de4-67aa-6f2ecc21623e@...515...>
+Date: Tue, 30 Apr 2019 08:18:00 +0300
 MIME-Version: 1.0
-References: <CAEYw=WoZDJap1cwCh-SAqJr8KiQEv80XmBkVbVijTbCbOCOP0g@...278...>
- <CAEYw=Wqna4PnOf+ZQV2sqkrQ6sLdCUQgwxRnrFBVuRx60uAbZA@...278...>
- <bbf01b87-32bf-f234-cd95-6b5738ad463b@...1147...>
- <59329176-c948-a816-d128-4601d7720dcd@...2181...>
- <0600680d-4eb6-0790-9990-26a7cdf0b7cc@...1147...>
- <CAEYw=Woe1ycyBRx=FtL9pQOhSr66-Njwr5x3VR_46DFMQ9W52w@...278...>
- <CAEYw=WrCmqAwGDY=xEtL7Huy6pDvXVY=fgwrPz0zndKtdM1XRA@...278...>
- <20190426175629.GK31008@...1296...>
-In-Reply-To: <20190426175629.GK31008@...1296...>
-From: Pieter Hulshoff <pieter.hulshoff@...2499...>
-Date: Mon, 29 Apr 2019 08:17:11 +0200
-Message-ID: <CAEYw=WoDdAcrnOop1oMWjo8FDSdzy2TOK8Ep5rJRkOBJ2atAsw@...278...>
-Content-Type: multipart/alternative; boundary="000000000000ac60460587a53cd0"
-Subject: Re: [Openvpn-devel] Client reconnect issues
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="45OCIXquxEyZIWIXoZDx9TO8OC0t7oiKZ"
+Subject: [Openvpn-devel] Community meetings in May 2019
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,60 +14,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: Jan Just Keijser <janjust@...1147...>, Antonio Quartulli <a@...2181...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>, Openvpn-users@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
---000000000000ac60460587a53cd0
-Content-Type: text/plain; charset="UTF-8"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--45OCIXquxEyZIWIXoZDx9TO8OC0t7oiKZ
+Content-Type: multipart/mixed; boundary="RcxKZyfV7ZU2kvQLPZbie0WtA0MKePK6o";
+ protected-headers="v1"
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <796722c6-e08b-6de4-67aa-6f2ecc21623e@...515...>
+Subject: Community meetings in May 2019
 
-Hello Gert,
-
-Op vr 26 apr. 2019 om 19:56 schreef Gert Doering <gert@...1296...>:
-
-> On Fri, Apr 26, 2019 at 04:55:36PM +0200, Pieter Hulshoff wrote:
-> > As you can see, the message is never actually decrypted after the
-> > reconnect, and as such the server will never receive it.
->
-> So that's most certainly a bug, but not related to the suppression
-> of PUSH_REPLY messages - but "something handshake crypto mumble mumble".
->
-> I'm not the one who understands these bits, though..
->
-
-Fair enough. :) Who would be the best person to ask to take a look at this?
-
-Kind regards,
-
-Pieter
-
---000000000000ac60460587a53cd0
-Content-Type: text/html; charset="UTF-8"
+--RcxKZyfV7ZU2kvQLPZbie0WtA0MKePK6o
+Content-Language: en-US
+Content-Type: text/plain; charset="iso-8859-15"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div dir=3D"ltr"><div class=3D"gmail_default" style=3D"fon=
-t-family:arial,helvetica,sans-serif">Hello Gert,</div></div><br><div class=
-=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">Op vr 26 apr. 2019 o=
-m 19:56 schreef Gert Doering &lt;<a href=3D"mailto:gert@...1296...">gert@...1186...=
-.1296...</a>&gt;:<br></div><blockquote class=3D"gmail_quote" style=3D"margi=
-n:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex=
-">On Fri, Apr 26, 2019 at 04:55:36PM +0200, Pieter Hulshoff wrote:<br>
-&gt; As you can see, the message is never actually decrypted after the<br>
-&gt; reconnect, and as such the server will never receive it.<br>
-<br>
-So that&#39;s most certainly a bug, but not related to the suppression<br>
-of PUSH_REPLY messages - but &quot;something handshake crypto mumble mumble=
-&quot;.<br>
-<br>
-I&#39;m not the one who understands these bits, though..<br></blockquote><d=
-iv><br></div><div class=3D"gmail_default" style=3D"font-family:arial,helvet=
-ica,sans-serif">Fair enough. :) Who would be the best person to ask to take=
- a look at this?</div><div class=3D"gmail_default" style=3D"font-family:ari=
-al,helvetica,sans-serif"><br></div><div class=3D"gmail_default" style=3D"fo=
-nt-family:arial,helvetica,sans-serif">Kind regards,</div><div class=3D"gmai=
-l_default" style=3D"font-family:arial,helvetica,sans-serif"><br></div><div =
-class=3D"gmail_default" style=3D"font-family:arial,helvetica,sans-serif">Pi=
-eter</div><div class=3D"gmail_default" style=3D"font-family:arial,helvetica=
-,sans-serif"><br></div></div></div>
+Hi,
 
---000000000000ac60460587a53cd0--
+Our community meetings will alternate between Wed 11:30 CEST and Thu
+20:00 CEST.
+
+Next meetings have been scheduled to
+
+- Wed 1st May 11:30 CEST
+- Thu 9th May 20:00 CEST
+- Wed 15th May 11:30 CEST
+- Thu 23rd May 20:00 CEST
+- Wed 29th May 11:30 CEST
+
+The place is #openvpn-meeting IRC channel at Freenode. Meeting agendas
+and summaries are in here:
+
+<https://community.openvpn.net/openvpn/wiki/IrcMeetings>
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+
+
+
+--RcxKZyfV7ZU2kvQLPZbie0WtA0MKePK6o--
+
+--45OCIXquxEyZIWIXoZDx9TO8OC0t7oiKZ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAlzH2ogACgkQKVhNn0CG
+RXj19QgAhMXrNbOPyQeoTr1NM62dSVCwLnTYsxGsYDG6CDiBzS2T0lleVjDBa8hy
+q97sW2ipTi6WNCHdwzvqPBt7iYvGMeN/xhQHo7KIe1N0t+GC920x829XFzdFcH3+
+tVMpc59kBbPzAMrbbXWPA2ZpLGT9ji+dS9CKcL8w/hnrDd2Qt3QiXiF3X/mhzEJr
+BYFoFtyH04us2lfYZRgbuVMBklaEdnJtQMQ96y3xQE34gYFXDL1Y46T6XkGj9XXw
+pRLVoPMEAidpiTHRVjcMbj1kcCeELsgfebMMe/W02k2CYfBOkJlL1ubAhc45PRh2
+Sv8Y7XMxo/BMUkCIapfZtyeupjvLzQ==
+=1urM
+-----END PGP SIGNATURE-----
+
+--45OCIXquxEyZIWIXoZDx9TO8OC0t7oiKZ--
 
