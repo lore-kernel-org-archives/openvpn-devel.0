@@ -1,14 +1,9 @@
-Date: Tue, 7 May 2019 13:20:39 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20190507112039.GC31008@...1296...>
-References: <E1hGico-0000de-16@...2508...>
- <30cb0306-9884-6599-3a1e-7983167720ba@...1227...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="katipD9Aau0kmf50"
-Content-Disposition: inline
-In-Reply-To: <30cb0306-9884-6599-3a1e-7983167720ba@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] tests: remove dependency on base64
+From: David Sommerseth <davids@...515...>
+Date: Tue,  7 May 2019 22:04:34 +0200
+Message-Id: <20190507200434.24931-1-davids@...515...>
+In-Reply-To: <20190417203015.1903-1-davids@...515...>
+References: <20190417203015.1903-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH v2.4] build: Package missing mock_msg.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,52 +12,85 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: Steffan Karger <steffan.karger@...2507...>, openvpn-devel@lists.sourceforge.net, Steffan Karger <steffan.karger@...1435...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---katipD9Aau0kmf50
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+The mock_msg.h file was not enlisted in the _SOURCES lists in
+Makefile.am for the unit tests.  This caused the mock_msg.h file to not
+be present in the .tar.gz file created by 'make dist'.
 
-Hi,
+This was not noticed earlier as we haven't really tried much to run git
+clone of the cmocka project manually in vendor/ from an unpacked
+tarball.
 
-On Tue, May 07, 2019 at 01:04:44PM +0200, Arne Schwabe wrote:
-> ACK on the basis that is actually improves things until Gert comes along
-> with a super obscure UNIX without seq.
+With this fix the cmocka unit tests can also run from tarballs, with
+manually extracting/fetching the cmocka source code in vendor/cmocka.
 
-Like, OpenBSD?
+This patch is a backport of git master commit 19a22ac5a8673e8715.
 
-AIX and OpenSolaris do have seq :-)
+Signed-off-by: David Sommerseth <davids@...515...>
+Cc: Steffan Karger <steffan.karger@...2507...>
 
-gert
+----8<----8<----8<----8<----8<----8<----8<----8<----8<----8<----8<----
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+How to test:
 
-Gert Doering - Munich, Germany                             gert@...1296...
+- Create a tarball: make distcheck (or just 'dist')
+- Extract openvpn-2.4.*.tar.gz in a clean directory
+- cd openvpn-2.4.*/vendor
+- git clone https://git.cryptomilk.org/projects/cmocka.git
+- cd ..
+- ./configure
+- make check
+- Observe that the cmocka unit tests ran as expected
 
---katipD9Aau0kmf50
-Content-Type: application/pgp-signature; name="signature.asc"
+Depending on the CMake version, you might want to check out cmocka git
+commit b2732b52202ae48f; which is the one we use in the git submodule.
+---
+ tests/unit_tests/openvpn/Makefile.am | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
------BEGIN PGP SIGNATURE-----
+diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
+index 7b44f42e..55e29e40 100644
+--- a/tests/unit_tests/openvpn/Makefile.am
++++ b/tests/unit_tests/openvpn/Makefile.am
+@@ -20,14 +20,14 @@ argv_testdriver_CFLAGS  = @TEST_CFLAGS@ -I$(openvpn_srcdir) -I$(compat_srcdir) \
+ 	$(OPTIONAL_CRYPTO_CFLAGS)
+ argv_testdriver_LDFLAGS = @TEST_LDFLAGS@ -L$(openvpn_srcdir) -Wl,--wrap=parse_line \
+ 	$(OPTIONAL_CRYPTO_LIBS)
+-argv_testdriver_SOURCES = test_argv.c mock_msg.c \
++argv_testdriver_SOURCES = test_argv.c mock_msg.c mock_msg.h \
+ 	$(openvpn_srcdir)/platform.c \
+ 	$(openvpn_srcdir)/buffer.c \
+ 	$(openvpn_srcdir)/argv.c
+ 
+ buffer_testdriver_CFLAGS  = @TEST_CFLAGS@ -I$(openvpn_srcdir) -I$(compat_srcdir)
+ buffer_testdriver_LDFLAGS = @TEST_LDFLAGS@ -L$(openvpn_srcdir) -Wl,--wrap=parse_line
+-buffer_testdriver_SOURCES = test_buffer.c mock_msg.c \
++buffer_testdriver_SOURCES = test_buffer.c mock_msg.c mock_msg.h \
+ 	$(openvpn_srcdir)/buffer.c \
+ 	$(openvpn_srcdir)/platform.c
+ 
+@@ -36,7 +36,7 @@ packet_id_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+ 	$(OPTIONAL_CRYPTO_CFLAGS)
+ packet_id_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
+ 	$(OPTIONAL_CRYPTO_LIBS)
+-packet_id_testdriver_SOURCES = test_packet_id.c mock_msg.c \
++packet_id_testdriver_SOURCES = test_packet_id.c mock_msg.c mock_msg.h \
+ 	$(openvpn_srcdir)/buffer.c \
+ 	$(openvpn_srcdir)/otime.c \
+ 	$(openvpn_srcdir)/packet_id.c \
+@@ -47,7 +47,7 @@ tls_crypt_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+ 	$(OPTIONAL_CRYPTO_CFLAGS)
+ tls_crypt_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
+ 	$(OPTIONAL_CRYPTO_LIBS)
+-tls_crypt_testdriver_SOURCES = test_tls_crypt.c mock_msg.c \
++tls_crypt_testdriver_SOURCES = test_tls_crypt.c mock_msg.c mock_msg.h \
+ 	$(openvpn_srcdir)/buffer.c \
+ 	$(openvpn_srcdir)/crypto.c \
+ 	$(openvpn_srcdir)/crypto_mbedtls.c \
+-- 
+2.17.1
 
-iQGcBAEBAgAGBQJc0WoGAAoJEB2Cnv7KVigSmRkL/0kCxzbrid7DT+N2IoNRWKI7
-sDXFgAXr1RQNsba/vvWmrInnCerUr/DpC8FPAC0DO6uVYmf5ufACkpg5ip6Ru0uM
-452iVeKDbh02E/G01yMCnLgTK2/8tg3NhPtW/AVps//ZfOXRXmsDAOiNnej7iC6A
-nv/Dv28YUdnjISCc34/QSC4+QsfRkAwpnkDRzkeRcNJS2Uib50HRhYb0Q9zsWppU
-zbbTPGMbnUJFj2V3/f6dLLs6e2BGTYe9IZkESBSbYLM2W9CevmeT+K8yENrxkKM+
-MZhKC8L/H8sSgIXvSosN+KGxGhxyTRoCu6iR957PeIlqioljxoJ3s0Zo17Jkj9If
-H06Z+antvnz5dx/7W6lZJMDHhfktH/l2mv99QzP8Z3qcQfOMNzNrdjP+POgNlUFw
-pg/RH0xAIne/d+CfyCB4lZUfOcu5VCZ2TqaFHSv8PXlaToqo0jbN4ue18m1MMFQy
-None5XOFAgdB4exxhtZt7hIg/vkVIlYjvHZMD2lFrQ==
-=qWlQ
------END PGP SIGNATURE-----
-
---katipD9Aau0kmf50--
 
