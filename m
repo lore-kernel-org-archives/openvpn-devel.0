@@ -1,15 +1,10 @@
-Date: Fri, 10 May 2019 15:59:23 +0200
+Date: Fri, 10 May 2019 16:30:01 +0200 (CEST)
+Message-Id: <201905101430.x4AEU1up082739@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20190510135923.GP31008@...1296...>
-References: <20181219050118.6568-1-a@...2181...>
- <20181219050118.6568-2-a@...2181...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="TbCLU7yw/pV5zSId"
-Content-Disposition: inline
-In-Reply-To: <20181219050118.6568-2-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v3 1/7] implement networking API for
- iproute2
+In-Reply-To: <20190507200434.24931-1-davids@...515...>
+References: <20190507200434.24931-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: build: Package missing
+ mock_msg.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,69 +13,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: David Sommerseth <davids@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---TbCLU7yw/pV5zSId
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Acked-by: Gert Doering <gert@...1296...>
 
-Hi,
+Thanks (briefly stared at the patch, similar enough to the master patch, just
+context differences plus instructional differences).
 
-On Wed, Dec 19, 2018 at 03:01:12PM +1000, Antonio Quartulli wrote:
-> iproute2 is the first user of the new networking API and
-> its one of the two currently supported functionalities on
-> Linux (the other being net-tools).
->=20
-> This patch simply copies the current code from tun.c/route.c
-> to networking_ip.c without introducing any funcional
-> change to the code.
->=20
-> Signed-off-by: Antonio Quartulli <a@...2181...>
-> ---
->  src/openvpn/Makefile.am           |   2 +-
->  src/openvpn/networking.h          |   2 +-
+Your patch has been applied to the release/2.4 branch.
 
-"something is missing".  It is nice that Arne ACKed this, but this
-patch does not apply to master, because we do not have a networking.h
-that it could modify...
+commit a86eaf6f16c1c8c8a62944cc66203278634a8c62
+Author: David Sommerseth
+Date:   Tue May 7 22:04:34 2019 +0200
 
-I have quickly checked my inbox for other patch sets that would
-introduce "networking.h" but the only place I can see this mentioned
-is this patch set - so could you please send a "-1/7" that makes
-this patchset apply?
+     build: Package missing mock_msg.h
 
-Or rebase on a clean "master", re-test, and re-send as v4?
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20190507200434.24931-1-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18430.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-gert
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+--
+kind regards,
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Gert Doering
 
---TbCLU7yw/pV5zSId
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJc1YO7AAoJEB2Cnv7KVigSIbQMAJcDAnrDTAk36ISsmctnKlPv
-pap19Khb+iG11BFDWkrr4sNAKPRf8KrUDGrjGejQjgX7zIus2dJB/b0Ek2iFmgPZ
-bMBbpLw96ujYmbKvWt6JyKVp92rrfU7y+1iFV9oxHl7t2l0SmkUzQURj56s80qPt
-LNaDvdFZcQHKJ4ZLxq9GNl5GT7CveE56NIrF9lomZxdBQGulpSj3hI/UE0L31pc3
-i3g/FK0flXOCK9h1wno048EN3VfVIXs0keJ3+op/vfOpPEJQyoQdY5kEfJV4vHON
-AcQ7rSlPduq3xMyWRQ8HOJf2v+oZrJbQJXj3c2acaBk+oyufK1Q3dUABF0/BVo+R
-xa/K15MDY1Tr+TUbFJ3gA5jZaXMhRzHwtSBlWQTz69A5mzLLIGAPxIcKuKMvx/KB
-mxfdAYKnm0ZK6i/NJTa9wqVXZ5r4e+IulYjejQ70q1O9IKZHiKY2tvu/oUmtpL6E
-YXbGuB2h0gRRkRK3smVfOqlzi9Meg1U9yzagr+aOVQ==
-=0LQN
------END PGP SIGNATURE-----
-
---TbCLU7yw/pV5zSId--
 
