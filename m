@@ -1,15 +1,15 @@
-Date: Fri, 10 May 2019 15:27:09 +0200
+Date: Fri, 10 May 2019 15:59:23 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20190510132709.GO31008@...1296...>
-References: <E1hON0G-0007yB-3H@...2508...>
- <201905101303.x4AD3j6e081933@...2054...>
+Message-ID: <20190510135923.GP31008@...1296...>
+References: <20181219050118.6568-1-a@...2181...>
+ <20181219050118.6568-2-a@...2181...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="B2GzrzFQbYDXIsTK"
+ protocol="application/pgp-signature"; boundary="TbCLU7yw/pV5zSId"
 Content-Disposition: inline
-In-Reply-To: <201905101303.x4AD3j6e081933@...2054...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: tests: remove dependency on
- base64
+In-Reply-To: <20181219050118.6568-2-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v3 1/7] implement networking API for
+ iproute2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,75 +18,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan.karger@...1435...>
+To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---B2GzrzFQbYDXIsTK
+--TbCLU7yw/pV5zSId
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-just for the record, so the archives know we're aware of it - "something"
-is mishandling message-IDs - the mail I received from Steffan contains
-the same patch that patchwork has [1] and that is visible on=20
-mail-archive.org [2], but has subtly different message-ids
+On Wed, Dec 19, 2018 at 03:01:12PM +1000, Antonio Quartulli wrote:
+> iproute2 is the first user of the new networking API and
+> its one of the two currently supported functionalities on
+> Linux (the other being net-tools).
+>=20
+> This patch simply copies the current code from tun.c/route.c
+> to networking_ip.c without introducing any funcional
+> change to the code.
+>=20
+> Signed-off-by: Antonio Quartulli <a@...2181...>
+> ---
+>  src/openvpn/Makefile.am           |   2 +-
+>  src/openvpn/networking.h          |   2 +-
 
-   E1hON0G-0007yB-3H@
-   E1hON0G-0007yB-2h@
-   E1hON0G-0007yB-1d@
+"something is missing".  It is nice that Arne ACKed this, but this
+patch does not apply to master, because we do not have a networking.h
+that it could modify...
 
-[1] https://patchwork.openvpn.net/patch/728/
-[2] https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg184=
-31.html
+I have quickly checked my inbox for other patch sets that would
+introduce "networking.h" but the only place I can see this mentioned
+is this patch set - so could you please send a "-1/7" that makes
+this patchset apply?
 
-so both my threading and the URL referenced in the commit are not
-right.
-
-The patch itself has not been mistreated.
+Or rebase on a clean "master", re-test, and re-send as v4?
 
 gert
-
-
-On Fri, May 10, 2019 at 03:03:45PM +0200, Gert Doering wrote:
-> Acked-by: Gert Doering <gert@...1296...>
->=20
-> "Does what it says, and succeeds on FreeBSD 10+11" (and should succeed
-> everywhere that has a halfway posix compliant shell).  As a side note,
-> "dd if=3D$0 bs=3D732 count=3D1" should also work on all unix plattforms a=
-nd is=20
-> *much* more efficient :-) (but then, we have more important work than
-> making a developer test perfectly efficient).
->=20
-> Your patch has been applied to the master branch.
->=20
-> commit 90c61ef3df7255637cf84b6a23e51742954acde8
-> Author: Steffan Karger
-> Date:   Wed May 8 15:52:20 2019 +0200
->=20
->      tests: remove dependency on base64
->=20
->      Signed-off-by: Steffan Karger <steffan.karger@...1435...>
->      Acked-by: Gert Doering <gert@...1296...>
->      Message-Id: <E1hON0G-0007yB-3H@...2508...>
->      URL: https://www.mail-archive.com/search?l=3Dmid&q=3DE1hON0G-0007yB-=
-3H@...2508...
->      Signed-off-by: Gert Doering <gert@...1296...>
->=20
->=20
-> --
-> kind regards,
->=20
-> Gert Doering
->=20
->=20
->=20
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->=20
 
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
@@ -98,22 +65,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---B2GzrzFQbYDXIsTK
+--TbCLU7yw/pV5zSId
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJc1XwsAAoJEB2Cnv7KVigSBJAL/0phY6kIVKGDz3HvWigt0Y23
-9m0MfOHp5JN723pX/p/CKWXUNa7kbDPyOOQCSFacvWoxR0oGupycAMblzLh61qDA
-NBj6OcOexR5nZkdxq8p1aR63RxHQ0pSuOa3pSm5ibrAcCTcZv9SUUUZxMTemtmel
-PhZd3ajBoGil/GXvF6H4++UIW7tqi4FUe9Abyv/QMTF7uSEeVjY+IumoTE6WMJmI
-AES6m4UvfiDbgJiLUI69oxPbY13Z6Ug8PlZ3f0wN65Vyj+7dX4/8zt7y6Czx0H/6
-BZ8w+kcoqDBGbJlA17cg46H0Z92YoK5jhwUvvQrun/9FOJSdCy8TW97M4QH4LOW2
-i1yGaE5fOppjLpSRkVTtOE2eQiSRsN8ESMpmGQ9WMHo/eHIeWfkMnxUvLWdJYhIF
-piuQlo9eKwykya7Q0Wtw4HZGz/+/WmfMwgtPAyCzbQ7iJSK4kHbd5Uh3wBSNDZ1J
-63eT6yAqGqkgLK+lrclEQ+71LAXLzK4NOM9bnbR1yA==
-=8bJR
+iQGcBAEBAgAGBQJc1YO7AAoJEB2Cnv7KVigSIbQMAJcDAnrDTAk36ISsmctnKlPv
+pap19Khb+iG11BFDWkrr4sNAKPRf8KrUDGrjGejQjgX7zIus2dJB/b0Ek2iFmgPZ
+bMBbpLw96ujYmbKvWt6JyKVp92rrfU7y+1iFV9oxHl7t2l0SmkUzQURj56s80qPt
+LNaDvdFZcQHKJ4ZLxq9GNl5GT7CveE56NIrF9lomZxdBQGulpSj3hI/UE0L31pc3
+i3g/FK0flXOCK9h1wno048EN3VfVIXs0keJ3+op/vfOpPEJQyoQdY5kEfJV4vHON
+AcQ7rSlPduq3xMyWRQ8HOJf2v+oZrJbQJXj3c2acaBk+oyufK1Q3dUABF0/BVo+R
+xa/K15MDY1Tr+TUbFJ3gA5jZaXMhRzHwtSBlWQTz69A5mzLLIGAPxIcKuKMvx/KB
+mxfdAYKnm0ZK6i/NJTa9wqVXZ5r4e+IulYjejQ70q1O9IKZHiKY2tvu/oUmtpL6E
+YXbGuB2h0gRRkRK3smVfOqlzi9Meg1U9yzagr+aOVQ==
+=0LQN
 -----END PGP SIGNATURE-----
 
---B2GzrzFQbYDXIsTK--
+--TbCLU7yw/pV5zSId--
 
