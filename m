@@ -1,15 +1,15 @@
 References: <20181219050118.6568-1-a@...2181...>
- <20181219050118.6568-6-a@...2181...>
+ <20181219050118.6568-7-a@...2181...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <8d4d0f1a-e9dc-8f3a-43a4-7c8d48d909c6@...1227...>
-Date: Fri, 10 May 2019 14:23:27 +0200
+Message-ID: <96d8f57b-e78f-578c-10f4-6ed2ce87cec2@...1227...>
+Date: Fri, 10 May 2019 14:24:49 +0200
 MIME-Version: 1.0
-In-Reply-To: <20181219050118.6568-6-a@...2181...>
+In-Reply-To: <20181219050118.6568-7-a@...2181...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="ARMAXYM9xu7v13uLY6wbvcNuZ8lycyMA1"
-Subject: Re: [Openvpn-devel] [PATCH v3 5/7] route.c: use sitnl to implement
- get_default_gateway_ipv6()
+ boundary="irlfpYN9lUlpUXk9nGOdp8HYE8DU3dwTm"
+Subject: Re: [Openvpn-devel] [PATCH v3 6/7] unit tests: implement test for
+ sitnl
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,55 +21,78 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---ARMAXYM9xu7v13uLY6wbvcNuZ8lycyMA1
-Content-Type: multipart/mixed; boundary="ceZ2TdlIt6IlYCu6GcKhz6w8X1njGdP19";
+--irlfpYN9lUlpUXk9nGOdp8HYE8DU3dwTm
+Content-Type: multipart/mixed; boundary="15HjknwTokstQPCPOBqGa8JE3LVTnWFQR";
  protected-headers="v1"
 From: Arne Schwabe <arne@...1227...>
 To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <8d4d0f1a-e9dc-8f3a-43a4-7c8d48d909c6@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v3 5/7] route.c: use sitnl to implement
- get_default_gateway_ipv6()
+Message-ID: <96d8f57b-e78f-578c-10f4-6ed2ce87cec2@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH v3 6/7] unit tests: implement test for
+ sitnl
 References: <20181219050118.6568-1-a@...2181...>
- <20181219050118.6568-6-a@...2181...>
-In-Reply-To: <20181219050118.6568-6-a@...2181...>
+ <20181219050118.6568-7-a@...2181...>
+In-Reply-To: <20181219050118.6568-7-a@...2181...>
 
---ceZ2TdlIt6IlYCu6GcKhz6w8X1njGdP19
+--15HjknwTokstQPCPOBqGa8JE3LVTnWFQR
 Content-Language: de-DE
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
 Am 19.12.18 um 06:01 schrieb Antonio Quartulli:
-> get_default_gateway_ipv6() has always been implemented using
-> netlink, however, now that we have sitnl, we can re-use the
-> latter and get rid of the netlink code from route.c.
+> This patch introduces a new unit test that is not executed
+> by the cmocka framework, but rather used by a new t_net.sh
+> bash script.
 >=20
+> The idea behind this test is to ensure that invoking sitnl
+> functions or running iproute commands leads to the same
+> networking (interface and routing table) state.
+>=20
+> To achieve this, the t_net.sh script first runs a binary
+> implemented invoking sitnl functions and then takes a
+> "screenshot" of the state. Subsequently a series of
+> iproute commands, expected to mimic exactly the same behaviour
+> as the sitnl functions invoked before, are executed.
+> The final state is then compared with the screenshot
+> previously taken.
+>=20
+> If no mismatching is found, the test is passed.
+>=20
+> The current unit_test, however, does not cover all the
+> sitnl functionalities and it is expected to be extended
+> in the future.
+>=20
+
+I first wanted to make a remark about the usage of seq but trying to run
+the test on OpenBSD is pointless anyway, so:
 
 Acked-By: Arne Schwabe <arne@...1227...>
 
 
---ceZ2TdlIt6IlYCu6GcKhz6w8X1njGdP19--
 
---ARMAXYM9xu7v13uLY6wbvcNuZ8lycyMA1
+
+--15HjknwTokstQPCPOBqGa8JE3LVTnWFQR--
+
+--irlfpYN9lUlpUXk9nGOdp8HYE8DU3dwTm
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAlzVbT8ACgkQFRhsZwKx
-RFRwYg//WwDVhzM8yBROICMO7EovLpjXsfh27HXBuquQWEkq2Pmt0f70I8GPRmNl
-cMpaEDbTu5q9rftXWLuxU3hZ3osqlANe133U46AYmMc0+awVJh8OhxAHSZGlaHV+
-45bC/Jmlullun1tNbZPbyc9juijJgDpbo/MG2ZwCBGklZv4OYweaT75UPMcnTwA9
-K1TrA2WXQk6MMPVRpj/ltEVOBJRnSn9Medu1Wkt0hNoX4iDzyurFhyh0CI0sDdXv
-EJJY8WXNwDFd+/1HIlyPvE/UMKvJzsIu59xadOvGl++zbBYHxLs/n+XBJ0+hsznA
-M6DerdPWF6L5XRdsZJ0VpHSj5sHHBl9TcC+JnhZoyFs4w27K0vUw4Q+tUklNqFnd
-p5dcALkEz/iTpOoud+p6NFydQI57UPC4rgcpicR5pESSD3DvRxlNdoATK1kubP2l
-NSpOkTO/77PECUrIQb8dpMS/YUSm8tXzwRKfz9dMA6BjFtQ4pRDfDUjLJR0v1kS9
-BTgCk5fcmZHmCcKeUFUnU5KowNHI6p6N5KJm3mAf3enZbZajbqXzgxK/+iA9Q2y5
-UnNRzBTelERCWERIHKLGE+lrZdMRZs/aJRnEq0NA5VKGQB94hvEN3CI1gyIW9Exl
-3vHEP/cYYXOITqGCwW/Epo2MIXPdUT/X5eDC6e/2GVx0wevdl7c=
-=S1ms
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAlzVbZEACgkQFRhsZwKx
+RFTiYA/+LL27EExACS0A5OcrOjTBgueBpbczyPYZNi+aWOqne3Tg8tSCjbnKw1A7
+KkNEs2q72rNWhWJ0w2IxSYLpZkb1ZGHjTp10XVzsgtqksf+mg6NHgFhFK9K0SmzF
+5Jw4X5uKLsoq73s1Q2alD6EpCavGMQsv3Vokjb8457XyiXKQ/Hk/ZSmf0YKdLXf7
+KOeMb5ZStllsa51RoHQNUpTlzhNZ0D2H7Cs0zp9IxRVush0jWVOqnyZexOs/pifm
++H5UOytT09pmB/i6A5S4umFMux6ILeOGPm75rs4YizYOW2qjP8u1ZhyR1tKtHGAu
+I20JzZiU9sLguadud5UHuuh9zjHDQ8iqptsKt3aKsed3BvibmnID4J93uyNRsJMu
++MlQ6GTW6Ioe4ndLu82KilsH6sgia8egX4rajVwJhYQnM9i8slR2LNq7vlmCprSc
+jhqjLyR5u3p9v6xnxaiF7ZFvk2dmll4Il+PEur4NYALnHMFqJLCEO0V+3Iw5QEHN
+LWmXSkKCNcN/3fxNtwq0rmbKi5wF4neNhAz6ML9LHDThF4uftsPWkfG1tS2jI7Wa
+jnFKLWb3uIu6pc2XXDCHEWw9tT62y/2r5BvTwqI8IHz6O8VXOkRvH/202wtLfqh/
+64m82dRxCHzjkwlvV7UukKZ8mwyBTYhVNpsOi+K28HPz/oOGTcI=
+=TI31
 -----END PGP SIGNATURE-----
 
---ARMAXYM9xu7v13uLY6wbvcNuZ8lycyMA1--
+--irlfpYN9lUlpUXk9nGOdp8HYE8DU3dwTm--
 
