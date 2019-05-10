@@ -1,7 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri, 10 May 2019 14:11:07 +0200
-Message-Id: <20190510121114.30468-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v3 0/7] Auth token patches v3
+Date: Fri, 10 May 2019 14:11:10 +0200
+Message-Id: <20190510121114.30468-4-arne@...1227...>
+In-Reply-To: <20190510121114.30468-1-arne@...1227...>
+References: <20190510121114.30468-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v3 3/7] Add pem_read_key_file variant that
+ allows a random key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,46 +16,79 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Arne Schwabe <arne@...515...>
 
-This is the v3 of the patch series. I choose to resend all of the patches
-so they all cleanly apply. Since the patches depend on the changes suggested
-to --genkey, I made them part of the patch series. The other patches have
-been updated to incoperate the feedback.
+From: Arne Schwabe <arne@...515...>
 
-Arne Schwabe (7):
-  Write key to stdout if filename is not given
-  Implement --genkey type keyfile syntax and migrate tls-crypt-v2
-  Add pem_read_key_file variant that allows a random key
-  Rewrite auth-token-gen to be based on HMAC based tokens
-  Implement a permanent session id in auth-token
-  Sent indication that a session is expired to clients
-  Implement unit tests for auth-gen-token
+This is useful for features that can use enither a persistent
+or an ephemeral key.
 
- doc/openvpn.8                              | 141 ++++++--
- src/openvpn/Makefile.am                    |   1 +
- src/openvpn/auth_token.c                   | 387 +++++++++++++++++++++
- src/openvpn/auth_token.h                   | 129 +++++++
- src/openvpn/crypto.c                       |  35 +-
- src/openvpn/crypto.h                       |  15 +
- src/openvpn/init.c                         |  90 +++--
- src/openvpn/manage.c                       |   4 +-
- src/openvpn/openvpn.h                      |   1 +
- src/openvpn/options.c                      | 103 ++++--
- src/openvpn/options.h                      |  19 +-
- src/openvpn/push.c                         |  70 +++-
- src/openvpn/push.h                         |   8 +
- src/openvpn/ssl.c                          |  13 +-
- src/openvpn/ssl_common.h                   |  56 +--
- src/openvpn/ssl_verify.c                   | 213 ++++++------
- src/openvpn/ssl_verify.h                   |  15 +-
- src/openvpn/tls_crypt.c                    |  13 +-
- tests/unit_tests/openvpn/Makefile.am       |  18 +-
- tests/unit_tests/openvpn/test_auth_token.c | 375 ++++++++++++++++++++
- 20 files changed, 1457 insertions(+), 249 deletions(-)
- create mode 100644 src/openvpn/auth_token.c
- create mode 100644 src/openvpn/auth_token.h
- create mode 100644 tests/unit_tests/openvpn/test_auth_token.c
+Patch V2: Move the functionality of generating a random key into a
+          separate function that acts as wrapper for pem_read_key_file
+---
+ src/openvpn/crypto.c | 22 ++++++++++++++++++++++
+ src/openvpn/crypto.h | 15 +++++++++++++++
+ 2 files changed, 37 insertions(+)
 
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index eb56421b..0e17c351 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -1892,6 +1892,28 @@ cleanup:
+     return;
+ }
+ 
++bool
++load_pem_file_or_ephemeral_key(struct buffer *key, const char *pem_name,
++                               const char *key_file, const char *key_inline)
++{
++    if (key_file == NULL)
++    {
++        msg(M_INFO, "Using random %s.", pem_name);
++        uint8_t rand[BCAP(key)];
++        if (!rand_bytes(rand, BCAP(key)))
++        {
++            msg(M_WARN, "ERROR: could not generate random key");
++            return false;
++        }
++        buf_write(key, rand, BCAP(key));
++        return true;
++    }
++    else
++    {
++        return read_pem_key_file(key, pem_name, key_file, key_inline);
++    }
++}
++
+ bool
+ read_pem_key_file(struct buffer *key, const char *pem_name,
+                   const char *key_file, const char *key_inline)
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index c5947483..4ae02571 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -430,6 +430,21 @@ unsigned int crypto_max_overhead(void);
+ void
+ write_pem_key_file(const char *filename, const char *pem_name);
+ 
++/**
++ * Read key material from a PEM encoded files into the key structure or if
++ * the filename is not passed generate a ephemeral key
++ *
++ * @param key           the key structure that will hold the key material
++ * @param pem_name      the name used in the pem encoding start/end lines
++ * @param key_file      name of the file to read or NULL if an ephermal key
++ *                      should be generated
++ * @param key_inline    a string holding the data in case of an inline key
++ * @return              true if reading into key was successful or generated
++ */
++bool
++load_pem_file_or_ephemeral_key(struct buffer *key, const char *pem_name,
++                               const char *key_file, const char *key_inline);
++
+ /**
+  * Read key material from a PEM encoded files into the key structure
+  * @param key           the key structure that will hold the key material
 -- 
 2.21.0
 
