@@ -1,10 +1,7 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri, 10 May 2019 14:11:08 +0200
-Message-Id: <20190510121114.30468-2-arne@...1227...>
-In-Reply-To: <20190510121114.30468-1-arne@...1227...>
-References: <20190510121114.30468-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v3 1/7] Write key to stdout if filename is
- not given
+Date: Fri, 10 May 2019 14:11:07 +0200
+Message-Id: <20190510121114.30468-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v3 0/7] Auth token patches v3
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,75 +14,45 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This change is preperation for changing the way --genkey works.
----
- src/openvpn/crypto.c    | 13 +++++++++++--
- src/openvpn/tls_crypt.c | 13 +++++++++++--
- 2 files changed, 22 insertions(+), 4 deletions(-)
+This is the v3 of the patch series. I choose to resend all of the patches
+so they all cleanly apply. Since the patches depend on the changes suggested
+to --genkey, I made them part of the patch series. The other patches have
+been updated to incoperate the feedback.
 
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index ff9dbfdc..eb56421b 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -1465,8 +1465,13 @@ write_key_file(const int nkeys, const char *filename)
- 
-     buf_printf(&out, "%s\n", static_key_foot);
- 
-+    /* write key file to stdout if no filename given */
-+    if (!filename || strcmp(filename, "")==0)
-+    {
-+        printf("%s\n", BPTR(&out));
-+    }
-     /* write key file, now formatted in out, to file */
--    if (!buffer_write_file(filename, &out))
-+    else if (!buffer_write_file(filename, &out))
-     {
-         nbits = -1;
-     }
-@@ -1870,7 +1875,11 @@ write_pem_key_file(const char *filename, const char *pem_name)
-         goto cleanup;
-     }
- 
--    if (!buffer_write_file(filename, &server_key_pem))
-+    if (!filename || strcmp(filename, "")==0)
-+    {
-+        printf("%s\n", BPTR(&server_key_pem));
-+    }
-+    else if (!buffer_write_file(filename, &server_key_pem))
-     {
-         msg(M_ERR, "ERROR: could not write key file");
-         goto cleanup;
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index d6a82252..e8889e93 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -697,7 +697,16 @@ tls_crypt_v2_write_client_key_file(const char *filename,
-         goto cleanup;
-     }
- 
--    if (!buffer_write_file(filename, &client_key_pem))
-+    const char *client_filename = filename;
-+    const char *client_inline = NULL;
-+
-+    if (!filename || streq(filename, ""))
-+    {
-+        printf("%s\n", BPTR(&client_key_pem));
-+        client_filename = INLINE_FILE_TAG;
-+        client_inline = (const char *)BPTR(&client_key_pem);
-+    }
-+    else if (!buffer_write_file(filename, &client_key_pem))
-     {
-         msg(M_FATAL, "ERROR: could not write client key file");
-         goto cleanup;
-@@ -708,7 +717,7 @@ tls_crypt_v2_write_client_key_file(const char *filename,
-     struct buffer test_wrapped_client_key;
-     msg(D_GENKEY, "Testing client-side key loading...");
-     tls_crypt_v2_init_client_key(&test_client_key, &test_wrapped_client_key,
--                                 filename, NULL);
-+                                 client_filename, client_inline);
-     free_key_ctx_bi(&test_client_key);
- 
-     /* Sanity check: unwrap and load client key (as "server") */
+Arne Schwabe (7):
+  Write key to stdout if filename is not given
+  Implement --genkey type keyfile syntax and migrate tls-crypt-v2
+  Add pem_read_key_file variant that allows a random key
+  Rewrite auth-token-gen to be based on HMAC based tokens
+  Implement a permanent session id in auth-token
+  Sent indication that a session is expired to clients
+  Implement unit tests for auth-gen-token
+
+ doc/openvpn.8                              | 141 ++++++--
+ src/openvpn/Makefile.am                    |   1 +
+ src/openvpn/auth_token.c                   | 387 +++++++++++++++++++++
+ src/openvpn/auth_token.h                   | 129 +++++++
+ src/openvpn/crypto.c                       |  35 +-
+ src/openvpn/crypto.h                       |  15 +
+ src/openvpn/init.c                         |  90 +++--
+ src/openvpn/manage.c                       |   4 +-
+ src/openvpn/openvpn.h                      |   1 +
+ src/openvpn/options.c                      | 103 ++++--
+ src/openvpn/options.h                      |  19 +-
+ src/openvpn/push.c                         |  70 +++-
+ src/openvpn/push.h                         |   8 +
+ src/openvpn/ssl.c                          |  13 +-
+ src/openvpn/ssl_common.h                   |  56 +--
+ src/openvpn/ssl_verify.c                   | 213 ++++++------
+ src/openvpn/ssl_verify.h                   |  15 +-
+ src/openvpn/tls_crypt.c                    |  13 +-
+ tests/unit_tests/openvpn/Makefile.am       |  18 +-
+ tests/unit_tests/openvpn/test_auth_token.c | 375 ++++++++++++++++++++
+ 20 files changed, 1457 insertions(+), 249 deletions(-)
+ create mode 100644 src/openvpn/auth_token.c
+ create mode 100644 src/openvpn/auth_token.h
+ create mode 100644 tests/unit_tests/openvpn/test_auth_token.c
+
 -- 
 2.21.0
 
