@@ -1,13 +1,14 @@
-Date: Tue, 14 May 2019 10:18:48 +0200
+Date: Tue, 14 May 2019 10:20:30 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20190514081848.GL1097@...1296...>
+Message-ID: <20190514082030.GM1097@...1296...>
 References: <20181219050118.6568-1-a@...2181...>
  <20190514081159.12192-1-a@...2181...>
+ <20190514081848.GL1097@...1296...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="+g7M9IMkV8truYOl"
+ protocol="application/pgp-signature"; boundary="2/5bycvrmDh4d1IB"
 Content-Disposition: inline
-In-Reply-To: <20190514081159.12192-1-a@...2181...>
+In-Reply-To: <20190514081848.GL1097@...1296...>
 Subject: Re: [Openvpn-devel] [PATCH v3 -1/7] implement platform generic
  networking API
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,28 +22,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---+g7M9IMkV8truYOl
+--2/5bycvrmDh4d1IB
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Tue, May 14, 2019 at 10:11:59AM +0200, Antonio Quartulli wrote:
-> +#ifdef ENABLE_SITNL
-> +#include "networking_sitnl.h"
-> +#elif ENABLE_IPROUTE
-> +#include "networking_ip.h"
-> +#else
+On Tue, May 14, 2019 at 10:18:48AM +0200, Gert Doering wrote:
+> On Tue, May 14, 2019 at 10:11:59AM +0200, Antonio Quartulli wrote:
+> > +#ifdef ENABLE_SITNL
+> > +#include "networking_sitnl.h"
+> > +#elif ENABLE_IPROUTE
+> > +#include "networking_ip.h"
+> > +#else
+>=20
+> NAK, this patch breaks compilation - there is no "networking_ip.h" in
+> our tree, and this patch isn't introducing it either.
 
-NAK, this patch breaks compilation - there is no "networking_ip.h" in
-our tree, and this patch isn't introducing it either.
+Oh well.  It doesn't break compilation, as networking.h is not yet
+included anywhere.  And "1/7 v3" fixes the include.
 
-If we need this together with 1/7 of the v3 series, maybe we really
-need to make this into a joint "1/7 v4"... but every single patch needs
-to compile (on mainstream platforms).
+So while this is a slightly confusing commit, it won't *break* anything
+and I'll merge it ASAP.
+
+Acked-By: gert@...1296... (Gert Doering)
 
 gert
+
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -53,22 +60,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---+g7M9IMkV8truYOl
+--2/5bycvrmDh4d1IB
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJc2nnoAAoJEB2Cnv7KVigS/xsL/3h/5vPwYwXdoQWiddpAYAz1
-WEUk/sKR7Dee+uzn/CqWmi0T5UKUvdMgEeX6z8OKJEtL6ju16eZVwYUC+k3LTk0W
-bo1jhOzwUrA+fPDbJHIcyqqciAMlv0qgUaGm/o30m8bAyP3+4NeRPszEZv0MfqOQ
-B4uHbWri1W7W9ujX/g11DYnMlc63ph4BvYPodZT9TyZFBN2sheEVIXyiM4FA4xo3
-kPIrMV3W7ow65/+FYOhsOxZtyHSv4Z1gEjQpYpRTxIP39p6Z2/jQkPvClw4H0TAd
-oiUlbkwfdMXwUmlad60e9VYnpWIY10tuRWP1XGyc8KtG0UxBZS/FtiGgY+Qutr8g
-/FmVSuuN1/DmxgEcDkldsAp3MWFLaqoE4EjPMZivLZPJLIvvAqHtH5M3RwYlzbiU
-kcWONRqZWPsSTkBNegtF/WyTb0sBBulqoxjpji0lfXdRoU+WQTuV+KsBbCqyQqDA
-rocQa8JzlTdOmT1i7oFJPN9dx2FRFZjUu62NwPoJjQ==
-=9ALo
+iQGcBAEBAgAGBQJc2npNAAoJEB2Cnv7KVigS4C0MAIFxJrVadHwHREFsNl8+EwuF
+j5pPDVzYNjCTA4Lfn5jmVCxgA62K3TF56zLxOH2Sjsw6+s0C2wnTz8cfpl8cKT8X
+z/BUAs9VwYohkuzCnptGpd1p8auWFE7WjXrVYh++XLas8d9kjaICmiU017GIkB3M
+RkvXjPFs5XzLxBRWg8vTM0Z3w25wLxMOIBVCjKSfw0ZY+osP6E8hC4KgjfAegNKK
+1hiDuFnWnKHfLLDJlHC68M/2f1uq5KBqHfb5w96TjKrbdMiu7Iu9GMMw9CJYCRSX
+mKTIN+Vko4ujd+at/dAz87eDgQZaGZDRSpL+QkUcxN1h8HPDrSYDAS8M489joevY
+svJHzpLdX/Knw215TR0aOxwRsYSpgXlLscApsF79JoBxCaP7FegHFV9EnKi9kpbX
+s94Rg1bPpQSI0T7d8vmKeVKwRdFV+OgabRHYyBATL6P/5RtakG8mJmS5p6M4DvmE
++ja7TcVYDyf8BwUGKxnuFbdZMe+RLROoqhC1PJiqog==
+=cX73
 -----END PGP SIGNATURE-----
 
---+g7M9IMkV8truYOl--
+--2/5bycvrmDh4d1IB--
 
