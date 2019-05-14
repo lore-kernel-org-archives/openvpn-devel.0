@@ -1,9 +1,11 @@
-Date: Fri, 10 May 2019 17:38:42 +0200 (CEST)
-Message-Id: <201905101538.x4AFcgP2090601@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1540889615-24868-1-git-send-email-lstipakov@...277...>
-References: <1540889615-24868-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix various compiler warnings
+From: Antonio Quartulli <a@...2181...>
+Date: Tue, 14 May 2019 10:11:59 +0200
+Message-Id: <20190514081159.12192-1-a@...2181...>
+In-Reply-To: <20181219050118.6568-1-a@...2181...>
+References: <20181219050118.6568-1-a@...2181...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v3 -1/7] implement platform generic
+ networking API
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,34 +16,327 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-Your patch has been applied to the master and release/2.4 branch.
+tun.c and route.c contain all the code used by openvpn
+to manage the tun interface and the routing table on all
+the supported platforms.
 
-Why 2.4?  Because since this changes the calling convention of quite a 
-number of functions (by removing never-used arguments) I'm fairly sure it 
-will get in the way of future bugfixes that tackle "related code" - and
-*those* need to go to 2.4.  So take this in, even if "refactoring" is
-normally not done here.  But these are very straightforward changes.
+Across the years, this resulted in a longer functions
+and series of ifdefs.
 
-commit 91ba1add2f8f231a7ccf4557cdd593547e625723 (master)
-commit 0c1cc8d65539f5e156866056df9074d47bc3ed4b (release/2.4)
-Author: Lev Stipakov
-Date:   Tue Oct 30 10:53:35 2018 +0200
+This patch introduces a new "networking API" which aims at
+creating a simple abstraction between the tun/route logic
+and the platform dependent code.
 
-     Fix various compiler warnings
+The is API expected to be implemented outside of tun.c/route.c
+by using platform specific functionalities.
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1540889615-24868-1-git-send-email-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg17855.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+ src/openvpn/Makefile.am  |   1 +
+ src/openvpn/networking.h | 278 +++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 279 insertions(+)
+ create mode 100644 src/openvpn/networking.h
 
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index 197e62ba..8afc4146 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -80,6 +80,7 @@ openvpn_SOURCES = \
+ 	mtu.c mtu.h \
+ 	mudp.c mudp.h \
+ 	multi.c multi.h \
++	networking.h \
+ 	ntlm.c ntlm.h \
+ 	occ.c occ.h \
+ 	openssl_compat.h \
+diff --git a/src/openvpn/networking.h b/src/openvpn/networking.h
+new file mode 100644
+index 00000000..716e61a5
+--- /dev/null
++++ b/src/openvpn/networking.h
+@@ -0,0 +1,278 @@
++/*
++ *  Generic interface to platform specific networking code
++ *
++ *  Copyright (C) 2016-2018 Antonio Quartulli <a@...2181...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program (see the file COPYING included with this
++ *  distribution); if not, write to the Free Software Foundation, Inc.,
++ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ */
++
++#ifndef NETWORKING_H_
++#define NETWORKING_H_
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#elif defined(_MSC_VER)
++#include "config-msvc.h"
++#endif
++
++#include "syshead.h"
++
++struct context;
++
++#ifdef ENABLE_SITNL
++#include "networking_sitnl.h"
++#elif ENABLE_IPROUTE
++#include "networking_ip.h"
++#else
++/* define mock types to ensure code builds on any platform */
++typedef void * openvpn_net_ctx_t;
++typedef void * openvpn_net_iface_t;
++
++static inline int
++net_ctx_init(struct context *c, openvpn_net_ctx_t *ctx)
++{
++    return 0;
++}
++#endif
++
++#if defined(ENABLE_SITNL) || defined(ENABLE_IPROUTE)
++
++/**
++ * Initialize the platform specific context object
++ *
++ * @param c         openvpn generic context
++ * @param ctx       the implementation specific context to initialize
++ *
++ * @return          0 on success, a negative error code otherwise
++ */
++int net_ctx_init(struct context *c, openvpn_net_ctx_t *ctx);
++
++/**
++ * Bring interface up or down.
++ *
++ * @param ctx       the implementation specific context
++ * @param iface     the interface to modify
++ * @param up        true if the interface has to be brought up, false otherwise
++ *
++ * @return          0 on success, a negative error code otherwise
++ */
++int net_iface_up(openvpn_net_ctx_t *ctx, const openvpn_net_iface_t *iface,
++                 bool up);
++
++/**
++ * Set the MTU for an interface
++ *
++ * @param ctx       the implementation specific context
++ * @param iface     the interface to modify
++ * @param mtru      the new MTU
++ *
++ * @return          0 on success, a negative error code otherwise
++ */
++int net_iface_mtu_set(openvpn_net_ctx_t *ctx,
++                      const openvpn_net_iface_t *iface, uint32_t mtu);
++
++/**
++ * Add an IPv4 address to an interface
++ *
++ * @param ctx       the implementation specific context
++ * @param iface     the interface where the address has to be added
++ * @param addr      the address to add
++ * @param prefixlen the prefix length of the network associated with the address
++ * @param broadcast the broadcast address to configure on the interface
++ *
++ * @return          0 on success, a negative error code otherwise
++ */
++int net_addr_v4_add(openvpn_net_ctx_t *ctx, const openvpn_net_iface_t *iface,
++                    const in_addr_t *addr, int prefixlen,
++                    const in_addr_t *broadcast);
++
++/**
++ * Add an IPv6 address to an interface
++ *
++ * @param ctx       the implementation specific context
++ * @param iface     the interface where the address has to be added
++ * @param addr      the address to add
++ * @param prefixlen the prefix length of the network associated with the address
++ *
++ * @return          0 on success, a negative error code otherwise
++ */
++
++int net_addr_v6_add(openvpn_net_ctx_t *ctx, const openvpn_net_iface_t *iface,
++                    const struct in6_addr *addr, int prefixlen);
++
++/**
++ * Remove an IPv4 from an interface
++ *
++ * @param ctx       the implementation specific context
++ * @param iface     the interface to remove the address from
++ * @param prefixlen the prefix length of the network associated with the address
++ *
++ * @return          0 on success, a negative error code otherwise
++ */
++int net_addr_v4_del(openvpn_net_ctx_t *ctx, const openvpn_net_iface_t *iface,
++                    const in_addr_t *addr, int prefixlen);
++
++/**
++ * Remove an IPv6 from an interface
++ *
++ * @param ctx       the implementation specific context
++ * @param iface     the interface to remove the address from
++ * @param prefixlen the prefix length of the network associated with the address
++ *
++ * @return          0 on success, a negative error code otherwise
++ */
++int net_addr_v6_del(openvpn_net_ctx_t *ctx, const openvpn_net_iface_t *iface,
++                    const struct in6_addr *addr, int prefixlen);
++
++/**
++ * Add a point-to-point IPv4 address to an interface
++ *
++ * @param ctx       the implementation specific context
++ * @param iface     the interface where the address has to be added
++ * @param local     the address to add
++ * @param remote    the associated p-t-p remote address
++ *
++ * @return          0 on success, a negative error code otherwise
++ */
++int net_addr_ptp_v4_add(openvpn_net_ctx_t *ctx,
++                        const openvpn_net_iface_t *iface,
++                        const in_addr_t *local, const in_addr_t *remote);
++
++/**
++ * Remove a point-to-point IPv4 address from an interface
++ *
++ * @param ctx       the implementation specific context
++ * @param iface     the interface to remove the address from
++ * @param local     the address to remove
++ * @param remote    the associated p-t-p remote address
++ *
++ * @return          0 on success, a negative error code otherwise
++ */
++int net_addr_ptp_v4_del(openvpn_net_ctx_t *ctx,
++                        const openvpn_net_iface_t *iface,
++                        const in_addr_t *local, const in_addr_t *remote);
++
++
++/**
++ * Add a route for an IPv4 address/network
++ *
++ * @param ctx       the implementation specific context
++ * @param dst       the destination of the route
++ * @param prefixlen the length of the prefix of the destination
++ * @param gw        the gateway for this route
++ * @param iface     the interface for this route (can be NULL)
++ * @param table     the table to add this route to (if 0, will be added to the
++ *                  main table)
++ * @param metric    the metric associated with the route
++ *
++ * @return          0 on success, a negative error code otherwise
++ */
++int net_route_v4_add(openvpn_net_ctx_t *ctx, const in_addr_t *dst,
++                     int prefixlen, const in_addr_t *gw,
++                     const openvpn_net_iface_t *iface, uint32_t table,
++                     int metric);
++
++/**
++ * Add a route for an IPv6 address/network
++ *
++ * @param ctx       the implementation specific context
++ * @param dst       the destination of the route
++ * @param prefixlen the length of the prefix of the destination
++ * @param gw        the gateway for this route
++ * @param iface     the interface for this route (can be NULL)
++ * @param table     the table to add this route to (if 0, will be added to the
++ *                  main table)
++ * @param metric    the metric associated with the route
++ *
++ * @return          0 on success, a negative error code otherwise
++ */
++int net_route_v6_add(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
++                     int prefixlen, const struct in6_addr *gw,
++                     const openvpn_net_iface_t *iface,
++                     uint32_t table, int metric);
++
++/**
++ * Delete a route for an IPv4 address/network
++ *
++ * @param ctx       the implementation specific context
++ * @param dst       the destination of the route
++ * @param prefixlen the length of the prefix of the destination
++ * @param gw        the gateway for this route
++ * @param iface     the interface for this route (can be NULL)
++ * @param table     the table to add this route to (if 0, will be added to the
++ *                  main table)
++ * @param metric    the metric associated with the route
++ *
++ * @return          0 on success, a negative error code otherwise
++ */
++int net_route_v4_del(openvpn_net_ctx_t *ctx, const in_addr_t *dst,
++                     int prefixlen, const in_addr_t *gw,
++                     const openvpn_net_iface_t *iface, uint32_t table,
++                     int metric);
++
++/**
++ * Delete a route for an IPv4 address/network
++ *
++ * @param ctx       the implementation specific context
++ * @param dst       the destination of the route
++ * @param prefixlen the length of the prefix of the destination
++ * @param gw        the gateway for this route
++ * @param iface     the interface for this route (can be NULL)
++ * @param table     the table to add this route to (if 0, will be added to the
++ *                  main table)
++ * @param metric    the metric associated with the route
++ *
++ * @return          0 on success, a negative error code otherwise
++ */
++int net_route_v6_del(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
++                     int prefixlen, const struct in6_addr *gw,
++                     const openvpn_net_iface_t *iface,
++                     uint32_t table, int metric);
++
++/**
++ * Retrieve the gateway and outgoing interface for the specified IPv4
++ * address/network
++ *
++ * @param ctx           the implementation specific context
++ * @param dst           The destination to lookup
++ * @param prefixlen     The length of the prefix of the destination
++ * @param best_gw       Location where the retrieved GW has to be stored
++ * @param best_iface    Location where the retrieved interface has to be stored
++ *
++ * @return              0 on success, a negative error code otherwise
++ */
++int net_route_v4_best_gw(openvpn_net_ctx_t *ctx, const in_addr_t *dst,
++                         int prefixlen, in_addr_t *best_gw,
++                         openvpn_net_iface_t *best_iface);
++
++/**
++ * Retrieve the gateway and outgoing interface for the specified IPv6
++ * address/network
++ *
++ * @param ctx           the implementation specific context
++ * @param dst           The destination to lookup
++ * @param prefixlen     The length of the prefix of the destination
++ * @param best_gw       Location where the retrieved GW has to be stored
++ * @param best_iface    Location where the retrieved interface has to be stored
++ *
++ * @return              0 on success, a negative error code otherwise
++ */
++int net_route_v6_best_gw(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
++                         int prefixlen, struct in6_addr *best_gw,
++                         openvpn_net_iface_t *best_iface);
++
++#endif /* ENABLE_SITNL || ENABLE_IPROUTE */
++
++#endif /* NETWORKING_H_ */
+-- 
+2.21.0
 
 
