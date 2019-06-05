@@ -1,16 +1,10 @@
-MIME-Version: 1.0
-References: <CAGyAFMV=HvOYDRSB7eRpBDp-47wX2vie8JPgp48in1fH+eXn=A@...278...>
- <CAFHpkQFVpN-+Uoc6QsLmD8hjwEC7Ba1Q2SP4SuS_EMu_PT=3nw@...278...>
- <7bdf712d-4e0c-0667-c9eb-1bdd862b1e40@...2080...>
- <bfead88f-3e91-6d49-ea70-e73f626468f1@...1147...>
- <CAGyAFMW10tUVswPa8NfVieUJMm1oX1BFQaa9a0GP3NmgWpRshg@...278...>
- <CAGyAFMWODccNnD+yby7HrOUfdDFaceC3AX70+jG9_hL9vF=q+A@...278...>
-In-Reply-To: <CAGyAFMWODccNnD+yby7HrOUfdDFaceC3AX70+jG9_hL9vF=q+A@...278...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Mon, 3 Jun 2019 21:04:53 +0300
-Message-ID: <CAGyAFMUqqjF67DDdr+BQXvFU515_zK=fDehUJH1TF+zjyjuiAA@...278...>
-Content-Type: multipart/alternative; boundary="0000000000003f4325058a6f348c"
-Subject: Re: [Openvpn-devel] Wintun performance results
+Date: Wed, 5 Jun 2019 11:35:27 +0200 (CEST)
+Message-Id: <201906050935.x559ZRUB079748@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20181219050118.6568-5-a@...2181...>
+References: <20181219050118.6568-5-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: route.c: use new networking API
+ to handle routing table on Linux
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,43 +13,96 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>, wireguard@...2500...
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---0000000000003f4325058a6f348c
-Content-Type: text/plain; charset="UTF-8"
+Your patch has been applied to the master branch.
 
-Hi,
+Tested with t_client test, one binary with --enable-iproute2, one without.
 
-Here you can get the latest binary of openvpn3 test Windows client with
-both wintun and tap-windows6 support.
+"Route add"-Diffs look nicely different, including the /128 bypass...
 
-https://ci.appveyor.com/project/openvpn/openvpn3/build/artifacts
+Wed Jun  5 11:09:02 2019 /bin/ip route add 194.97.144.0/24 via x.x.x.73
+Wed Jun  5 11:09:02 2019 add_route_ipv6(2001:x:x:x::f000:11/128 -> fe80::250:43ff:fe01:dc37 metric 1) dev enp0s25
+Wed Jun  5 11:09:02 2019 /bin/ip -6 route add 2001:x:x:x::f000:11/128 dev enp0s25 via fe80::250:43ff:fe01:dc37 metric 1
+Wed Jun  5 11:09:02 2019 add_route_ipv6(2001:608::/32 -> 2001:x:x:x::1 metric -1) dev tun0
+Wed Jun  5 11:09:02 2019 /bin/ip -6 route add 2001:608::/32 dev tun0
 
-To use it with wintun, open admin command prompt and run:
+Wed Jun  5 11:09:21 2019 net_route_v4_add: 194.97.144.0/24 via x.x.x.73 dev [NULL] table 0 metric -1
+Wed Jun  5 11:09:21 2019 add_route_ipv6(2001:x:x:x::f000:11/128 -> fe80::250:43ff:fe01:dc37 metric 1) dev enp0s25
+Wed Jun  5 11:09:21 2019 net_route_v6_add: 2001:x:x:x::f000:11/128 via fe80::250:43ff:fe01:dc37 dev enp0s25 table 0 metric 1
+Wed Jun  5 11:09:21 2019 add_route_ipv6(2001:608::/32 -> 2001:x:x:x::1 metric -1) dev tun0
+Wed Jun  5 11:09:21 2019 net_route_v6_add: 2001:608::/32 via :: dev tun0 table 0 metric -1
 
-> cli.exe -w profile.ovpn
 
-To use tap-windows6, just omit "-w" switch.
+.. but the resulting output of "ip route" + "ip -6 route" is exactly
+the same.  Well done :-)
 
-Please note that this is a development tool first of all, not a client to
-be consumed by most of users.
 
--Lev
+OTOH... :-) - looking at all the changes needed to transport &c->net_ctx,
+I wonder why you didn't just hide it in c->c1.tuntap, as we did for the
+windows socket... (tt->options.msg_channel).  Almost everything related 
+to "routing and ifconfig" needs to have the tt pointer available already
+today...
 
---0000000000003f4325058a6f348c
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Warts:
 
-<div dir=3D"ltr"><div dir=3D"ltr">Hi,<div><br></div><div>Here you can get t=
-he latest binary of openvpn3 test Windows client with both wintun and tap-w=
-indows6 support.</div><div><br></div><div><a href=3D"https://ci.appveyor.co=
-m/project/openvpn/openvpn3/build/artifacts">https://ci.appveyor.com/project=
-/openvpn/openvpn3/build/artifacts</a>=C2=A0</div><div><br></div><div>To use=
- it with wintun, open admin command prompt and run:</div><div><br></div><di=
-v>&gt; cli.exe -w profile.ovpn<br></div><div><br></div><div>To use tap-wind=
-ows6, just omit &quot;-w&quot; switch.</div><div><br></div><div>Please note=
- that this is a development tool first of all, not a client to be consumed =
-by most of users.=C2=A0</div><div><br></div><div>-Lev</div></div></div>
++#else
++    const char *iface;
++    int metric;
++#endif
 
---0000000000003f4325058a6f348c--
+.. I think this really should be inside the #ifdef TARGET_LINUX block,
+not outside in an #else for an #if !defined(TARGET_LINUX)...  so the
+code further down would then become
+
+#if defined(TARGET_LINUX)
+    const char *ifcace = NULL;
+    if (is_on_link(...))
+
+.. having declaration and initialization in one place, and "where it
+belongs".  Same thing for add_route_ipv6()...
+
++#if defined(TARGET_LINUX)
++    int metric;
++#endif
+
+.. this is adding an extra #ifdef and taking 3 extra lines instead of
+just having "int metric = -1;" down where it's initialized.
+
+delete_route() sports this beauty...
+
++#if !defined(TARGET_LINUX)
+     const char *network;
+ #if !defined(ENABLE_IPROUTE) && !defined(TARGET_AIX)
+     const char *netmask;
+ #endif
+ #if !defined(TARGET_LINUX) && !defined(TARGET_ANDROID)
+     const char *gateway;
++#endif
+
+.. so you have two linux-specific defines (ENABLE_IPROUTE and TARGET_LINUX)
+*inside* an "#if !defined(TARGET_LINUX)"...  plus the "metric" thing...
+
+
+commit aec4a3d1b6a9e4d9e584b368126da061c15b174b
+Author: Antonio Quartulli
+Date:   Wed Dec 19 15:01:15 2018 +1000
+
+     route.c: use new networking API to handle routing table on Linux
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20181219050118.6568-5-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18029.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
