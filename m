@@ -1,10 +1,11 @@
-Date: Wed, 5 Jun 2019 12:34:39 +0200 (CEST)
-Message-Id: <201906051034.x55AYdRT080096@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20181219050118.6568-6-a@...2181...>
-References: <20181219050118.6568-6-a@...2181...>
-Subject: [Openvpn-devel] [NAK] Re: route.c: use sitnl to implement
- get_default_gateway_ipv6()
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <e55f098a-1ba1-02d7-5f50-b12e4eec054a@...515...>
+Date: Wed, 5 Jun 2019 14:55:30 +0300
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="BOgP7Atns0ltb1vLepVLPtRuoVxS23qNm"
+Subject: [Openvpn-devel] Community meetings in June 2019
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,96 +14,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Unfortunately, I need to NAK this, because this will break some people's
-use of OpenVPN in an IPv6 context (namely, where the OpenVPN server is
-sitting in the same LAN as the client - think "EduRoam WiFi").
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--BOgP7Atns0ltb1vLepVLPtRuoVxS23qNm
+Content-Type: multipart/mixed; boundary="T3bvayFcJvYPbUj4RZvI28o3WjjUUG2tr";
+ protected-headers="v1"
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Message-ID: <e55f098a-1ba1-02d7-5f50-b12e4eec054a@...515...>
+Subject: Community meetings in June 2019
 
+--T3bvayFcJvYPbUj4RZvI28o3WjjUUG2tr
+Content-Language: en-US
+Content-Type: text/plain; charset="iso-8859-15"
+Content-Transfer-Encoding: quoted-printable
 
-I did the same thing as before - built an iproute2 binary and a sitnl
-binary, and tested t_client plus some manual commands.
+Hi,
 
-Under some conditions, the output is *differen*, and this is very bad.
+Our community meetings will alternate between Wed 11:30 CEST and Thu
+20:00 CEST.
 
-Here's the output of "openvpn --show-gateway" for my local network...
+Next meetings have been scheduled to
 
-iproute2 build:
-Wed Jun  5 12:04:53 2019 ROUTE6_GATEWAY fe80::250:43ff:fe01:dc37 IFACE=enp0s25
+- Thu 6th June 20:00 CEST
+- Wed 12th June 11:30 CEST
+- Thu 20th June 20:00 CEST
+- Wed 26th May 11:30 CEST
 
-sitnl build:
-Wed Jun  5 12:04:56 2019 ROUTE6_GATEWAY fe80::250:43ff:fe01:dc37 ON_LINK IFACE=enp0s25
+The place is #openvpn-meeting IRC channel at Freenode. Meeting agendas
+and summaries are in here:
 
-which I find surprising, since they should both use the same backend
-now...?  "Older binaries" print the gateway without ON_LINK.
+<https://community.openvpn.net/openvpn/wiki/IrcMeetings>
 
-It gets weirder... if I ask for something which actually *is* on-link
-(another address out of my on-link subnet), I get the same thing:
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-$ src/openvpn/openvpn --show-gateway 2001:608:4::1
-
-iproute2 build:
-Wed Jun  5 12:19:37 2019 ROUTE6_GATEWAY :: IFACE=enp0s25
-
-sitnl build:
-Wed Jun  5 12:18:20 2019 ROUTE6_GATEWAY :: ON_LINK IFACE=enp0s25 HWADDR=00:00:00:00:54:57
-
-and *sometimes*
-Wed Jun  5 12:19:56 2019 ROUTE6_GATEWAY :: IFACE=enp0s25
-
-
-while my old code alwyays prints
-
-Wed Jun  5 12:24:51 2019 ROUTE6_GATEWAY 2001:608:4::1 ON_LINK IFACE=enp0s25
-
-("what you are looking for is on this link and it is the gateway").
+irc freenode net: mattock
 
 
 
-This is a regression and needs to be fixed -> so, NAK.  
-
-On-Link targets always need to have ON_LINK set for both builds, off-link 
-targets (if there exists a default-gateway) must never have it set, and 
-the gateway address should.
-
-I have no idea what is going wrong here, because both implementations
-should behave exactly the same, since they use the same backend - but
-this smells like "something is not correct, and it depends on build
-or run-time factors".  Maybe something isn't properly initialized 
-when rewriting this...  the bug is not in code that is introduced
-by this patch (it's hiding in networking_sitnl.c, I assume) but this
-patch is what activates the code path, 
 
 
-A few comments on the actual code changes :-) - the introduction of 
-*ctx here cannot be avoided.
-
-This strikes me as a bit funky, though...
-
-+    struct in_addr gw;
-+    CLEAR(gw);
-
-.. and then "gw" is not used at all?
-
-The introduction of a "flags" temporary variable can be certainly be
-argued about (I find it less readable for a one-shot comparison), but 
-if you do, why not define it where it's used (C99)?
-
-While at it, please kick out the definition of "struct rtreq" in
-route.c, right above the TARGET_LINUX get_default_gateway_ipv6() - no
-longer needed since we do not do the netlink stuff here anymore.
+_______________________________________________
+Openvpn-devel mailing list
+Openvpn-devel@lists.sourceforge.net
+https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
 
-thanks,
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-gert
+irc freenode net: mattock
 
---
-kind regards,
 
-Gert Doering
+--T3bvayFcJvYPbUj4RZvI28o3WjjUUG2tr--
 
+--BOgP7Atns0ltb1vLepVLPtRuoVxS23qNm
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAlz3rbIACgkQKVhNn0CG
+RXgZSAgAjsbu1aUg++4/nyYVSIiUv9hHo/AgpBofdbH3FdCjKOO+xclsnEOZh24y
+AYqCQcKenyGxdBzI9iVzpobRh2m+q/ZgjPRNxOeP1G/P5Q1jhz0B5yCg7JPZKJei
+ERFh7UxQgbVe2qwI5Q+kmBuHJ8Xq7akW+D1uGQxRYhR2wJYISUTOaowZ0K1Zqu6u
+9t/FNZUkpAUna+Fn2fWVLRbBygGLJyTeQXRoJ7iGfoH1059aJdLkJi92KyM+JT44
+zk9FE50M+ApECrMVucgWl5kUF5QayFHrTHAbvzYrCf8b5QxAm3FecpwoToy7hcR8
+Yq4FJh6ISXxF/qui004fHrKGzbi+5w==
+=ZGxO
+-----END PGP SIGNATURE-----
+
+--BOgP7Atns0ltb1vLepVLPtRuoVxS23qNm--
 
