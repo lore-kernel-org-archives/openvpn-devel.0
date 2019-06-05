@@ -1,10 +1,10 @@
-Date: Wed, 5 Jun 2019 11:35:27 +0200 (CEST)
-Message-Id: <201906050935.x559ZRUB079748@...2054...>
+Date: Wed, 5 Jun 2019 12:34:39 +0200 (CEST)
+Message-Id: <201906051034.x55AYdRT080096@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20181219050118.6568-5-a@...2181...>
-References: <20181219050118.6568-5-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: route.c: use new networking API
- to handle routing table on Linux
+In-Reply-To: <20181219050118.6568-6-a@...2181...>
+References: <20181219050118.6568-6-a@...2181...>
+Subject: [Openvpn-devel] [NAK] Re: route.c: use sitnl to implement
+ get_default_gateway_ipv6()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,87 +18,87 @@ Content-Transfer-Encoding: 8bit
 To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
-
-Tested with t_client test, one binary with --enable-iproute2, one without.
-
-"Route add"-Diffs look nicely different, including the /128 bypass...
-
-Wed Jun  5 11:09:02 2019 /bin/ip route add 194.97.144.0/24 via x.x.x.73
-Wed Jun  5 11:09:02 2019 add_route_ipv6(2001:x:x:x::f000:11/128 -> fe80::250:43ff:fe01:dc37 metric 1) dev enp0s25
-Wed Jun  5 11:09:02 2019 /bin/ip -6 route add 2001:x:x:x::f000:11/128 dev enp0s25 via fe80::250:43ff:fe01:dc37 metric 1
-Wed Jun  5 11:09:02 2019 add_route_ipv6(2001:608::/32 -> 2001:x:x:x::1 metric -1) dev tun0
-Wed Jun  5 11:09:02 2019 /bin/ip -6 route add 2001:608::/32 dev tun0
-
-Wed Jun  5 11:09:21 2019 net_route_v4_add: 194.97.144.0/24 via x.x.x.73 dev [NULL] table 0 metric -1
-Wed Jun  5 11:09:21 2019 add_route_ipv6(2001:x:x:x::f000:11/128 -> fe80::250:43ff:fe01:dc37 metric 1) dev enp0s25
-Wed Jun  5 11:09:21 2019 net_route_v6_add: 2001:x:x:x::f000:11/128 via fe80::250:43ff:fe01:dc37 dev enp0s25 table 0 metric 1
-Wed Jun  5 11:09:21 2019 add_route_ipv6(2001:608::/32 -> 2001:x:x:x::1 metric -1) dev tun0
-Wed Jun  5 11:09:21 2019 net_route_v6_add: 2001:608::/32 via :: dev tun0 table 0 metric -1
+Unfortunately, I need to NAK this, because this will break some people's
+use of OpenVPN in an IPv6 context (namely, where the OpenVPN server is
+sitting in the same LAN as the client - think "EduRoam WiFi").
 
 
-.. but the resulting output of "ip route" + "ip -6 route" is exactly
-the same.  Well done :-)
+I did the same thing as before - built an iproute2 binary and a sitnl
+binary, and tested t_client plus some manual commands.
+
+Under some conditions, the output is *differen*, and this is very bad.
+
+Here's the output of "openvpn --show-gateway" for my local network...
+
+iproute2 build:
+Wed Jun  5 12:04:53 2019 ROUTE6_GATEWAY fe80::250:43ff:fe01:dc37 IFACE=enp0s25
+
+sitnl build:
+Wed Jun  5 12:04:56 2019 ROUTE6_GATEWAY fe80::250:43ff:fe01:dc37 ON_LINK IFACE=enp0s25
+
+which I find surprising, since they should both use the same backend
+now...?  "Older binaries" print the gateway without ON_LINK.
+
+It gets weirder... if I ask for something which actually *is* on-link
+(another address out of my on-link subnet), I get the same thing:
+
+$ src/openvpn/openvpn --show-gateway 2001:608:4::1
+
+iproute2 build:
+Wed Jun  5 12:19:37 2019 ROUTE6_GATEWAY :: IFACE=enp0s25
+
+sitnl build:
+Wed Jun  5 12:18:20 2019 ROUTE6_GATEWAY :: ON_LINK IFACE=enp0s25 HWADDR=00:00:00:00:54:57
+
+and *sometimes*
+Wed Jun  5 12:19:56 2019 ROUTE6_GATEWAY :: IFACE=enp0s25
 
 
-OTOH... :-) - looking at all the changes needed to transport &c->net_ctx,
-I wonder why you didn't just hide it in c->c1.tuntap, as we did for the
-windows socket... (tt->options.msg_channel).  Almost everything related 
-to "routing and ifconfig" needs to have the tt pointer available already
-today...
+while my old code alwyays prints
 
-Warts:
+Wed Jun  5 12:24:51 2019 ROUTE6_GATEWAY 2001:608:4::1 ON_LINK IFACE=enp0s25
 
-+#else
-+    const char *iface;
-+    int metric;
-+#endif
-
-.. I think this really should be inside the #ifdef TARGET_LINUX block,
-not outside in an #else for an #if !defined(TARGET_LINUX)...  so the
-code further down would then become
-
-#if defined(TARGET_LINUX)
-    const char *ifcace = NULL;
-    if (is_on_link(...))
-
-.. having declaration and initialization in one place, and "where it
-belongs".  Same thing for add_route_ipv6()...
-
-+#if defined(TARGET_LINUX)
-+    int metric;
-+#endif
-
-.. this is adding an extra #ifdef and taking 3 extra lines instead of
-just having "int metric = -1;" down where it's initialized.
-
-delete_route() sports this beauty...
-
-+#if !defined(TARGET_LINUX)
-     const char *network;
- #if !defined(ENABLE_IPROUTE) && !defined(TARGET_AIX)
-     const char *netmask;
- #endif
- #if !defined(TARGET_LINUX) && !defined(TARGET_ANDROID)
-     const char *gateway;
-+#endif
-
-.. so you have two linux-specific defines (ENABLE_IPROUTE and TARGET_LINUX)
-*inside* an "#if !defined(TARGET_LINUX)"...  plus the "metric" thing...
+("what you are looking for is on this link and it is the gateway").
 
 
-commit aec4a3d1b6a9e4d9e584b368126da061c15b174b
-Author: Antonio Quartulli
-Date:   Wed Dec 19 15:01:15 2018 +1000
 
-     route.c: use new networking API to handle routing table on Linux
+This is a regression and needs to be fixed -> so, NAK.  
 
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20181219050118.6568-5-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18029.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+On-Link targets always need to have ON_LINK set for both builds, off-link 
+targets (if there exists a default-gateway) must never have it set, and 
+the gateway address should.
 
+I have no idea what is going wrong here, because both implementations
+should behave exactly the same, since they use the same backend - but
+this smells like "something is not correct, and it depends on build
+or run-time factors".  Maybe something isn't properly initialized 
+when rewriting this...  the bug is not in code that is introduced
+by this patch (it's hiding in networking_sitnl.c, I assume) but this
+patch is what activates the code path, 
+
+
+A few comments on the actual code changes :-) - the introduction of 
+*ctx here cannot be avoided.
+
+This strikes me as a bit funky, though...
+
++    struct in_addr gw;
++    CLEAR(gw);
+
+.. and then "gw" is not used at all?
+
+The introduction of a "flags" temporary variable can be certainly be
+argued about (I find it less readable for a one-shot comparison), but 
+if you do, why not define it where it's used (C99)?
+
+While at it, please kick out the definition of "struct rtreq" in
+route.c, right above the TARGET_LINUX get_default_gateway_ipv6() - no
+longer needed since we do not do the netlink stuff here anymore.
+
+
+thanks,
+
+gert
 
 --
 kind regards,
