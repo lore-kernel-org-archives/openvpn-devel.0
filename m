@@ -1,17 +1,15 @@
+Date: Thu, 6 Jun 2019 12:18:25 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20190606101824.GT1097@...1296...>
+References: <20181219050118.6568-7-a@...2181...>
+ <201906060650.x566o635087246@...2054...>
 MIME-Version: 1.0
-References: <CAPM6dUC_L=Q2HseFEKS7bfrff6McwQo9TSuWKramkbC+5k9Phw@...278...>
- <5d43db38-5481-3f67-555d-b2b59b89be63@...1147...>
- <CAFHpkQEetMrGST3DziN5gedP32DbN4v7w+NDmViZcccmaZf7Fg@...278...>
- <CAPM6dUBfeuEnfqW59YBNdtRDMhWfSc_9NXSsxuKskPzqK=4qVA@...278...>
- <20190420150719.GM31008@...1296...>
- <CAPM6dUCeYFFNE_M+0FFOrfS=025hSaEv6LgPqXcA41Z++Uk1DA@...278...>
- <CAPM6dUDJXL+Ncf3Fm2xW1rsf4ohYkzWMrhr8hJ9WraRQOtUHFw@...278...>
- <153a66cf-50dc-764c-b1be-ca471a27ac18@...1227...>
-In-Reply-To: <153a66cf-50dc-764c-b1be-ca471a27ac18@...1227...>
-From: wei wang <lnykww@...277...>
-Date: Thu, 6 Jun 2019 17:34:28 +0800
-Message-ID: <CAPM6dUAfb9mE7XX0zhDwThWLDmk_HMRgPWknbx2vFdOEm5=mrw@...278...>
-Subject: Re: [Openvpn-devel] openvpn with udp lost event.
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="yAzUYvkKIfeS0jQX"
+Content-Disposition: inline
+In-Reply-To: <201906060650.x566o635087246@...2054...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: unit tests: implement test
+ for sitnl
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,30 +18,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Arne Schwabe <arne@...1227...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Tue, Apr 23, 2019 at 7:30 PM Arne Schwabe <arne@...1227...> wrote:
->
-> Am 23.04.19 um 05:01 schrieb wei wang:
-> > 3. clean client connect defered ret file when close instance.
-> >
->
-> I agree that I missed a place in which I should cleaning up the temp
-> file but adding it to close_instance seem more like a workaround than a
-> real solution. Again describing more context would be nice here. What
-> exactly is this trying to fix and why in this way.
->
-> Arne
->
-UPDATE the status for patch
-("https://patchwork.openvpn.net/project/openvpn2/list/?series=3D413")=EF=BC=
-=9A
-We has run this patch for one month. and it works well.
+--yAzUYvkKIfeS0jQX
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+Hi,
+
+t_net.sh definitely needs more polishing... I see quite a bit of
+buildbot explosions after this last commit.  Some of these look
+like "why...?"
+
+./t_net.sh: sudo /usr/bin/kill -0 succeeded, good.
+
+We trust you have received the usual lecture from the local System
+Administrator. It usually boils down to these three things:
+
+    #1) Respect the privacy of others.
+    #2) Think before you type.
+    #3) With great power comes great responsibility.
+
+sudo: no tty present and no askpass program specified
+unit-test 0 errored out:
+
+FAIL: t_net.sh
+
+... so it really shouldn't check whether "kill" works, but whether
+the "sudo $mytestprogram" works...  (and the buildslaves need to be
+adjusted to permit this extra path) - and if not, make this a SKIP,
+not a FAIL.
+
+gert
 
 --=20
-Regards,
-Wang Wei
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--yAzUYvkKIfeS0jQX
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJc+OhgAAoJEB2Cnv7KVigSRw0L/1UWOfVTNkqkSuqafM8wxCgm
+Hty8vH+nGbMXxOqPoKBh6OyzX5+I6wG960vphCTg17u3ZJkt41+9JeqXCXw2Q7p1
+8hmvYBrrR71ppNrfrGlvuCW+5P7b/1QLy1FBmIWIEmekx64CczLB9+ikyr/MD99i
+AkI/Oh5gUHOPnkyh0zK2RnXEt4mrAw8IIOqEQ/gjEoigqX06UCF6Pttvmhz0Fe3W
+gsiXJqP0V3wBGA/4RF46TtrpMyB2AKtUuiZJcgXCHvd10dxGs4xrB7XfJfO2ZGIt
+Ll1wFpJvDjjUlASRGzNwwup8FJkhdIzpX4Q7mauVHUOIHYQ5nXEXoAHUGkWKC6Cx
+LxOY4y2HYYWiJSfHTYM4P/bjkFjXHk0mt6ku57WRpugGoqUkRyWn74iuwz0/rvhI
+aGSWHdK/iwxeMuQXIzwyyhsloGu6s9ZibfBrWNa9CKCapDJWUqWnAmHkfUHGvvjs
+Ko6rVa3eiO7I5/NbOVr3LdIU0d8TO/+oT80u9ylNuA==
+=kaTi
+-----END PGP SIGNATURE-----
+
+--yAzUYvkKIfeS0jQX--
 
