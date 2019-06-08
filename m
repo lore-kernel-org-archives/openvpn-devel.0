@@ -1,15 +1,14 @@
-Date: Sat, 8 Jun 2019 17:11:24 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20190608151124.GB1097@...1296...>
-References: <6dc68129-a70d-2283-9ab7-b7621e6871b2@...68...>
- <3b604c5e-1421-4286-0a54-2875e0ec1645@...1227...>
+References: <20190228185128.43982-1-gert@...1296...>
+ <20190608075622.11589-1-gert@...1296...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <6dce2777-2784-2db4-ec59-b1c49e3951ee@...2181...>
+Date: Sat, 8 Jun 2019 19:51:57 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="6zipuvUKAEymKn2g"
-Content-Disposition: inline
-In-Reply-To: <3b604c5e-1421-4286-0a54-2875e0ec1645@...1227...>
-Subject: Re: [Openvpn-devel] RFC: release/2.4 (OpenVPN 2.4.7) patch for
- building with LibreSSL
+In-Reply-To: <20190608075622.11589-1-gert@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="KPFVCLCACRXnOA9RLA0VtXTLSog6qQRLU"
+Subject: Re: [Openvpn-devel] [PATCH v2] Copy one byte less in strncpynt()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,60 +17,97 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: Matthias Andree <matthias.andree@...68...>, openvpn-devel@lists.sourceforge.net, Luca Pizzamiglio <pizzamig@...1249...>
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
---6zipuvUKAEymKn2g
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--KPFVCLCACRXnOA9RLA0VtXTLSog6qQRLU
+Content-Type: multipart/mixed; boundary="fXV0b1edvGZEXzaDvZspbbTQpeS98iec6";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <6dce2777-2784-2db4-ec59-b1c49e3951ee@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Copy one byte less in strncpynt()
+References: <20190228185128.43982-1-gert@...1296...>
+ <20190608075622.11589-1-gert@...1296...>
+In-Reply-To: <20190608075622.11589-1-gert@...1296...>
+
+--fXV0b1edvGZEXzaDvZspbbTQpeS98iec6
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
 Hi,
 
-On Sat, Jun 08, 2019 at 02:57:27PM +0200, Arne Schwabe wrote:
-> Am 07.06.19 um 20:26 schrieb Matthias Andree:
-> > FreeBSD has received a patch contribution to enable OpenVPN 2.4.x to be
-> > built with LibreSSL. I'm seeking comments, and yes I am aware of
-> > master's a47508606be2c6359d4b27c3b65b72dfe4786222 commit description
-> > that claims LibreSSL isn't in the best shape for TLS 1.3.
-> >=20
+On 08/06/2019 09:56, Gert Doering wrote:
+> While the existing code is not wrong and will never cause an overflow,
+> it will copy (on a too-long source string) "maxlen" bytes to dest, and
+> then overwrite the last byte just copied with "0" - which causes a
+> warning in gcc 9 about filling the target buffer "up to the end,
+> with no room for a trailing 0 anymore".
 >=20
-> I think got/merged already a similar patch to master. So this patch
-> might be just a backport of it?
+> Reducing the maximum bytes-to-be-copied to "maxlen -1", because the
+> last byte will be stamped with 0 anyway.
+>=20
+> v2: do not ASSERT() on "maxlen =3D=3D 0", but move the strncpy() call ins=
+ide
+> the if() clause - so "just do nothing" on maxlen =3D=3D 0, as before.
+>=20
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>  src/openvpn/buffer.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
+> index a4fe6f9b..e8b83a5e 100644
+> --- a/src/openvpn/buffer.h
+> +++ b/src/openvpn/buffer.h
+> @@ -347,9 +347,9 @@ buf_set_read(struct buffer *buf, const uint8_t *data,=
+ int size)
+>  static inline void
+>  strncpynt(char *dest, const char *src, size_t maxlen)
+>  {
+> -    strncpy(dest, src, maxlen);
+>      if (maxlen > 0)
+>      {
+> +	strncpy(dest, src, maxlen-1);
 
-cherry-picking a47508606be2c6359d to 2.4 doesn't work "trivially", as
-there are some conflicts - I think it might make sense to backport it,
-but have no time to do it myself and test against the different library
-variants (1.0, 1.1.1, libressl) .
+can you add spaces around the '-' when you commit this change?
+(basically like the line below)
 
-gert
+>          dest[maxlen - 1] =3D 0;
+>      }
+>  }
+>=20
+
+Acked-by: Antonio Quartulli <a@...2181...>
 
 --=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Antonio Quartulli
 
-Gert Doering - Munich, Germany                             gert@...1296...
 
---6zipuvUKAEymKn2g
+--fXV0b1edvGZEXzaDvZspbbTQpeS98iec6--
+
+--KPFVCLCACRXnOA9RLA0VtXTLSog6qQRLU
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJc+9AbAAoJEB2Cnv7KVigSjLUL/1e7dZWWRwb3OCHLe5srr/EZ
-zglz4RUuGmzdAMLLjxupPgeZImU4gcU4GCupKQPkx4iQBq7njnZMChznkUPN2HL4
-HO6FqvvRAxpGufuQ7lTPn7Cs1qzpbupRymAb/nmYLt7cufRBJONMPeqUcQ/wbf6M
-d/45QeGpVueSO3wkpqEYYuZXyAEp7NyLEKLkT1mzcmqUaE2oFJFqNNi1666SbTpt
-f3eW63Q6Lkan4GpkrRh6R9vvJcXeChlCT0Ki3BmZ2LiB+6Iizx0S8N+FwyylHKLk
-O4B129mO9R8BweeRzTUxzNTXH1oYLanklTJd6Dc39+d0jTXppIDLsLO9WSXPTDuw
-8fuRAZGei5MlU5GVnBkEUQ7w2CItQ0UOGVkpKiSliCA2al1Y4kRKpchZtf77uy4S
-ZcbsDMT6pNahEHYAlZqkjuZxA98aYKTcUBiVUxpVFE67ccAPPHHvp3KZIyFXKGLZ
-hNg566AEWhxQQSqWUjmnzoGzjgRBIhfet6qLIF5EQg==
-=3SJ7
+iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAlz79b0ACgkQ9FVsWUWD
+Dm2z4g/+JC0pszp7XECEP+5wuDaSzm+PlqgazRv4I1ji6W4g5Iv0S+TmkZ0oGUaf
+6ZCW2Bu9CIjSbYE8B9xLzhk/wREhJeFaECEyQ1Px83FrAo5IuGe5kVNNl6oUAFpK
+6OCDg0gJmLvLG/9JUpLtY6UtclaGqkeQJK93PlHVn8zF2tysk4RQbP2LcNrglFvJ
+63PRaqq8qAqiQtPF6Du9k9uKpP2WXUQu9DHQ0EpRb5SZszKovyvkg3eDTb0UsAYd
+ZaCxbJroobjLOLki4VEhcnF+EEStnDkrBGYgbO8Ojk0m6iUwRYOeoC27yX2PjaWb
+fLv/ecaIqbyDT1G37r1e9yH/tBf5E7qPpbuteYU/nTskzPlIX7X3jIxZbeSKzE8I
+ykc4YEqUNx/Axo51/eIY3d+WXHM2JMN23hIwOiq1h6oIzEKNTGdjl24zuXoy4uHa
+G0fLNo0tyTVlkkyg0GiItW2lS57NRmk2lAXu/yLtLC4cTEDAlK7LzqRMHZ40DlGb
+GpgsxgvPu+/2AAeO6XN9BnZ/KHpyzDLvRP2hiWwp6iV6J6fHv3TBCtmcPUwnsBbY
+15GqDaJfGmZCQ9neF5Qijm9QoHvqKcwit2Up4xrM7i04dIBQAKtq0AnAgRlEXetF
+n4d+ZjJ6U3DhbXui0RYgdEhiboMbK85mOcznXz4BzXczXHVF3K8=
+=ILxj
 -----END PGP SIGNATURE-----
 
---6zipuvUKAEymKn2g--
+--KPFVCLCACRXnOA9RLA0VtXTLSog6qQRLU--
 
