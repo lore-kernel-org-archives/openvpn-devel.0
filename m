@@ -1,12 +1,9 @@
-References: <20190510121114.30468-1-arne@...1227...>
- <20190510121114.30468-2-arne@...1227...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <4dc2554e-b92c-b870-feac-c18036bd5e14@...2080...>
-Date: Fri, 7 Jun 2019 22:46:13 +0200
-MIME-Version: 1.0
+Date: Sat, 8 Jun 2019 09:03:21 +0200 (CEST)
+Message-Id: <201906080703.x5873Luh011416@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20190510121114.30468-2-arne@...1227...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH v3 1/7] Write key to stdout if filename
+References: <20190510121114.30468-2-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Write key to stdout if filename
  is not given
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -16,88 +13,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 10/05/2019 14:11, Arne Schwabe wrote:
-> This change is preperation for changing the way --genkey works.
-> ---
->  src/openvpn/crypto.c    | 13 +++++++++++--
->  src/openvpn/tls_crypt.c | 13 +++++++++++--
->  2 files changed, 22 insertions(+), 4 deletions(-)
-> 
-> diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-> index ff9dbfdc..eb56421b 100644
-> --- a/src/openvpn/crypto.c
-> +++ b/src/openvpn/crypto.c
-> @@ -1465,8 +1465,13 @@ write_key_file(const int nkeys, const char *filename)
->  
->      buf_printf(&out, "%s\n", static_key_foot);
->  
-> +    /* write key file to stdout if no filename given */
-> +    if (!filename || strcmp(filename, "")==0)
-> +    {
-> +        printf("%s\n", BPTR(&out));
-> +    }
->      /* write key file, now formatted in out, to file */
-> -    if (!buffer_write_file(filename, &out))
-> +    else if (!buffer_write_file(filename, &out))
->      {
->          nbits = -1;
->      }
-> @@ -1870,7 +1875,11 @@ write_pem_key_file(const char *filename, const char *pem_name)
->          goto cleanup;
->      }
->  
-> -    if (!buffer_write_file(filename, &server_key_pem))
-> +    if (!filename || strcmp(filename, "")==0)
-> +    {
-> +        printf("%s\n", BPTR(&server_key_pem));
-> +    }
-> +    else if (!buffer_write_file(filename, &server_key_pem))
->      {
->          msg(M_ERR, "ERROR: could not write key file");
->          goto cleanup;
-> diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-> index d6a82252..e8889e93 100644
-> --- a/src/openvpn/tls_crypt.c
-> +++ b/src/openvpn/tls_crypt.c
-> @@ -697,7 +697,16 @@ tls_crypt_v2_write_client_key_file(const char *filename,
->          goto cleanup;
->      }
->  
-> -    if (!buffer_write_file(filename, &client_key_pem))
-> +    const char *client_filename = filename;
-> +    const char *client_inline = NULL;
-> +
-> +    if (!filename || streq(filename, ""))
-> +    {
-> +        printf("%s\n", BPTR(&client_key_pem));
-> +        client_filename = INLINE_FILE_TAG;
-> +        client_inline = (const char *)BPTR(&client_key_pem);
-> +    }
-> +    else if (!buffer_write_file(filename, &client_key_pem))
->      {
->          msg(M_FATAL, "ERROR: could not write client key file");
->          goto cleanup;
-> @@ -708,7 +717,7 @@ tls_crypt_v2_write_client_key_file(const char *filename,
->      struct buffer test_wrapped_client_key;
->      msg(D_GENKEY, "Testing client-side key loading...");
->      tls_crypt_v2_init_client_key(&test_client_key, &test_wrapped_client_key,
-> -                                 filename, NULL);
-> +                                 client_filename, client_inline);
->      free_key_ctx_bi(&test_client_key);
->  
->      /* Sanity check: unwrap and load client key (as "server") */
-> 
+Your patch has been applied to the master branch.
 
-Acked-By: David Sommerseth <davids@...515...>
+(No further review done on my side, just basic compile / make check)
 
--- 
+commit f636d11ff50658c18e0b90b20d641dc54b63e517
+Author: Arne Schwabe
+Date:   Fri May 10 14:11:08 2019 +0200
+
+     Write key to stdout if filename is not given
+
+     Acked-by: David Sommerseth <davids@...515...>
+     Message-Id: <20190510121114.30468-2-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18445.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
 kind regards,
 
-David Sommerseth
-OpenVPN Inc
+Gert Doering
 
 
