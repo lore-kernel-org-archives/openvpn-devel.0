@@ -1,14 +1,14 @@
-References: <6dc68129-a70d-2283-9ab7-b7621e6871b2@...68...>
+References: <20190510121114.30468-1-arne@...1227...>
+ <20190510121114.30468-3-arne@...1227...>
+ <a23bf109-eb28-1f56-ed4a-039a3ab43d45@...2080...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <3b604c5e-1421-4286-0a54-2875e0ec1645@...1227...>
-Date: Sat, 8 Jun 2019 14:57:27 +0200
+Message-ID: <a22548e2-8c06-ddcd-fb02-cfc6ba62bbe4@...1227...>
+Date: Sat, 8 Jun 2019 15:30:11 +0200
 MIME-Version: 1.0
-In-Reply-To: <6dc68129-a70d-2283-9ab7-b7621e6871b2@...68...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="hVUG5kZ1rJKWvdzJKDKj85y2dbFZLwZHE"
-Subject: Re: [Openvpn-devel] RFC: release/2.4 (OpenVPN 2.4.7) patch for
- building with LibreSSL
+In-Reply-To: <a23bf109-eb28-1f56-ed4a-039a3ab43d45@...2080...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH v3 2/7] Implement --genkey type keyfile
+ syntax and migrate tls-crypt-v2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,66 +17,160 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Matthias Andree <matthias.andree@...68...>, openvpn-devel@lists.sourceforge.net
-Cc: Luca Pizzamiglio <pizzamig@...1249...>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: David Sommerseth <openvpn@...2080...>, openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---hVUG5kZ1rJKWvdzJKDKj85y2dbFZLwZHE
-Content-Type: multipart/mixed; boundary="3qdPzCtiiX4E5ptQ3m8GKe3UvHTBh4PZq";
- protected-headers="v1"
-From: Arne Schwabe <arne@...1227...>
-To: Matthias Andree <matthias.andree@...68...>,
- openvpn-devel@lists.sourceforge.net
-Cc: Luca Pizzamiglio <pizzamig@...1249...>
-Message-ID: <3b604c5e-1421-4286-0a54-2875e0ec1645@...1227...>
-Subject: Re: [Openvpn-devel] RFC: release/2.4 (OpenVPN 2.4.7) patch for
- building with LibreSSL
-References: <6dc68129-a70d-2283-9ab7-b7621e6871b2@...68...>
-In-Reply-To: <6dc68129-a70d-2283-9ab7-b7621e6871b2@...68...>
+Am 07.06.2019 um 22:46 schrieb David Sommerseth:
+> On 10/05/2019 14:11, Arne Schwabe wrote:
+>> This unifies our key generation and also migrates the generation
+>> of the tls-crypt-v2 keys. Since tls-crypt-v2 is not included in any
+>> released version, we remove the the old syntax without compatibility.
+>> ---
+>>  doc/openvpn.8         | 79 +++++++++++++++++++++++--------------------
+>>  src/openvpn/init.c    | 61 ++++++++++++++++++++-------------
+>>  src/openvpn/options.c | 67 ++++++++++++++++++++++--------------
+>>  src/openvpn/options.h | 11 ++++--
+>>  4 files changed, 131 insertions(+), 87 deletions(-)
+>>
+>> diff --git a/doc/openvpn.8 b/doc/openvpn.8
+>> index ce440447..90a6be91 100644
+>> --- a/doc/openvpn.8
+>> +++ b/doc/openvpn.8
+>> @@ -5242,7 +5242,7 @@ Use client\-specific tls\-crypt keys.
+>>  For clients,
+>>  .B keyfile
+>>  is a client\-specific tls\-crypt key.  Such a key can be generated using the
+>> -.B \-\-tls\-crypt\-v2\-genkey
+>> +.B \-\-genkey tls\-crypt\-v2\-client
+>>  option.
+>>  
+>>  For servers,
+>> @@ -5250,7 +5250,7 @@ For servers,
+>>  is used to unwrap client\-specific keys supplied by the client during connection
+>>  setup.  This key must be the same as the key used to generate the
+>>  client\-specific key (see
+>> -.B \-\-tls\-crypt\-v2\-genkey\fR).
+>> +.B \-\-genkey tls\-crypt\-v2\-client\fR).
+>>  
+>>  On servers, this option can be used together with the
+>>  .B \-\-tls\-auth
+>> @@ -5260,36 +5260,6 @@ option.  In that case, the server will detect whether the client is using
+>>  client\-specific keys, and automatically select the right mode.
+>>  .\"*********************************************************
+>>  .TP
+>> -.B \-\-tls\-crypt\-v2\-genkey client|server keyfile [metadata]
+>> -
+>> -If the first parameter equals "server", generate a \-\-tls\-crypt\-v2 server
+>> -key and store the key in
+>> -.B keyfile\fR.
+>> -
+>> -
+>> -If the first parameter equals "client", generate a \-\-tls\-crypt\-v2 client
+>> -key, and store the key in
+>> -.B keyfile\fR.
+>> -
+>> -If supplied, include the supplied
+>> -.B metadata
+>> -in the wrapped client key.  This metadata must be supplied in base64\-encoded
+>> -form.  The metadata must be at most 735 bytes long (980 bytes in base64).
+>> -
+>> -If no metadata is supplied, OpenVPN will use a 64\-bit unix timestamp
+>> -representing the current time in UTC, Rencoded in network order, as metadata for
+>> -the generated key.
+>> -
+>> -A tls\-crypt\-v2 client key is wrapped using a server key.  To generate a
+>> -client key, the user must therefore supply the server key using the
+>> -.B \-\-tls\-crypt\-v2
+>> -option.
+>> -
+>> -Servers can use
+>> -.B \-\-tls\-crypt\-v2\-verify
+>> -to specify a metadata verification command.
+>> -.\"*********************************************************
+>> -.TP
+>>  .B \-\-tls\-crypt\-v2\-verify cmd
+>>  
+>>  Run command
+>> @@ -5741,13 +5711,18 @@ Show all available elliptic curves to use with the
+>>  .B \-\-ecdh\-curve
+>>  option.
+>>  .\"*********************************************************
+>> -.SS Generate a random key:
+>> -Used only for non\-TLS static key encryption mode.
+>> +.SS Generating random key material:
+> "Random key material" sounds a bit odd.  Is it important for most end-users
+> that we emphasize "random"?  Isn't enough saying: "Generating key material"?
+>
+>>  .\"*********************************************************
+>>  .TP
+>> -.B \-\-genkey file
+>> +.B \-\-genkey keytype keyfile
+>>  (Standalone)
+>> -Generate a random key to be used as a shared secret, for use with the
+>> +Generate a random key to be used of the type keytype. if keyfile is left out or empty
+>> +the key will be output on stdout. See the following sections for the different keytypes.
+> Same as the comment above.
+>
+> There is also some odd and unexpected behaviour, some which I already touched
+> in my initial review overview mail.
+>
+>  $ openvpn --genkey
+>  [new static key is sent to stdout, this is fine]
+>
+>  $ openvpn --genkey --secret test.key
+>  [new static key saved to test.key, this is fine]
+>
+>  $ openvpn --genkey secret
+>  [new static key is sent to stdout, this is fine]
+>
+>  $ openvpn --genkey secret --secret test.key
+>  [new static key is saved to test.key, this is fine]
+>
+>  $ openvpn --genkey auth-token
+>  [new static key is sent to stdout, this is fine]
+>
+>  $ openvpn --genkey auth-token --secret test.key
+>  [new static key is sent to stdout - huh!?]
+>
+>  $ openvpn --genkey tls-crypt --secret test.key
+>  [new static key is saved to test.key, this is fine]
+>
+>  $ openvpn --genkey tls-crypt-v2-server --secret test.key
+>  [new static key is sent to stdout - huh!?]
+I will add an error if genkey is used with -secret for anything other
+than secret.
 
---3qdPzCtiiX4E5ptQ3m8GKe3UvHTBh4PZq
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+> This behaviour change with/without --secret where it sometimes writes file to
+> stdout, sometimes to file is confusing.  *I* know why, but users not diving
+> into the code does not.
+>
+> I also know filename can be given as an argument to --genkey.  So I propose
+> that we either ditch --secret with --genkey all together.  OpenVPN 2.5 is a
+> new major release, we can allow such a change; it will not break existing
+> configuration files.  By not allowing --secret to be used with --genkey, we
+> avoid this ambiguity.
 
-Am 07.06.19 um 20:26 schrieb Matthias Andree:
-> Greetings,
->=20
-> FreeBSD has received a patch contribution to enable OpenVPN 2.4.x to be
-> built with LibreSSL. I'm seeking comments, and yes I am aware of
-> master's a47508606be2c6359d4b27c3b65b72dfe4786222 commit description
-> that claims LibreSSL isn't in the best shape for TLS 1.3.
->=20
+For 2.5 I would rather have a warning telling that --gen-key --secret
+filename is deprecated in favour of --gen-key secret filename in 2.5 and
+will be removed in the next version.
 
-I think got/merged already a similar patch to master. So this patch
-might be just a backport of it?
+> We could consider to support --secret properly with --genkey, but that will
+> make the '--genkey tls-crypt-v2-client KEYFILE [METADATA]' trickier and less
+> consistent.  If --secret is present, should that remove the need for KEYFILE,
+> should KEYFILE overrule --secret or should KEYFILE be ignored?  This makes it
+> much less consistent.
+>
+> Another challenge: Currently we cannot generate tls-crypt-v2-client keys to
+> stdout with METADATA.
+>
+> Should we rather do what other *nix programs often do, use '-' as and
+> indication for "write to stdout"?  Or have a specific keyword (like 'stdout:')?
+
+Hm, using - seems to be the standard way but we need to check if there
+are other instances where we need to support - then too, to not make it
+inconsistent.
 
 Arne
 
-
---3qdPzCtiiX4E5ptQ3m8GKe3UvHTBh4PZq--
-
---hVUG5kZ1rJKWvdzJKDKj85y2dbFZLwZHE
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAlz7sNsACgkQFRhsZwKx
-RFSd1xAAhw34zlfAUEMkrg8z1QccTDorbKlB7pfUFCgHMggoHOEtkZ4/Qx1wBgjo
-WWxstaTHtK20AOc1c3pqg7PW37BXvznTg+lM+6vfQLUU0sF3/3d4wAFWLS/YYCmo
-S0bTw3YhUtDUpqz13BIOKhS5MtNKWiXKv7udWtFpXU5XMU+4DrSjnQcuqG+Ps8VF
-8toznbJQtAvBneQ7q80T06FlUsAUmhXAAKoZIp5nfF6BFDVni6DH8GGxpSkn0uhG
-Y3tVr9x8AVyDnwmx1DK66UYIuBuxaApWEM8PpsSPJgnoPWT+GbtL5qA0Y1yElEtb
-KZkVe+2fKOTHgilFd3ojZYn+LR3l5oy8erEtP85pTZoP9E9OPhUr7aRuzmS6uswW
-WURoVeVvcqgttiraopMgky6lQeDxqGWEsCMjABGcLf32JrYyy8xyu5Md5DhHlrmM
-bYx2U9CuDgJ9t6f/q2J4HMLKMEsPU9Fg8JcyYvZ8JSZ7u2Gr0+XnVAKL2JyI/Ux1
-dKk4dEqanWalFIY0WjCHfdxAwhs7HAH+trp0/HQW/8SNHTdwDiA/LgWckUlvAdph
-ryXaqFa2vmTaU5aBQUhZHUAIj2VLItL38SG0n29RQbZOU5NWn87Uf3DC5Z2qwcCs
-+YdQwTsW4t53dw/6qeborbTyeWfwBnmRdAxmohnVgQ3G+XOJzwY=
-=5nek
------END PGP SIGNATURE-----
-
---hVUG5kZ1rJKWvdzJKDKj85y2dbFZLwZHE--
 
