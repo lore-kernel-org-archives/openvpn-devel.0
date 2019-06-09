@@ -1,9 +1,12 @@
 MIME-Version: 1.0
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Mon, 10 Jun 2019 00:05:52 +0500
-Message-ID: <CAFHpkQG=oJzBFcipDjTtJJs1Bvz=0jP2kV2M+zRwVZxnMxaiOA@...278...>
-Content-Type: multipart/alternative; boundary="00000000000048db69058ae8c1f9"
-Subject: [Openvpn-devel] state of sitnl patchset ?
+References: <1521522224-18829-1-git-send-email-selva.nair@...277...>
+ <1521522224-18829-2-git-send-email-selva.nair@...277...>
+In-Reply-To: <1521522224-18829-2-git-send-email-selva.nair@...277...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sun, 9 Jun 2019 15:33:55 -0400
+Message-ID: <CAKuzo_iZtshFKPdFBwnLHP2Z9_rdKRsZ_jLxPiVyhkNq9xu1iw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 2/2] Allow repeated cycles through
+ remotes when management-query-remote is in use
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,31 +15,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---00000000000048db69058ae8c1f9
-Content-Type: text/plain; charset="UTF-8"
+Ref: https://patchwork.openvpn.net/project/openvpn2/list/?series=201
 
-Hello,
+Hi,
 
-https://patchwork.openvpn.net/project/openvpn2/list/?series=428 says "new"
-however, I see patchset is applied (and travis-ci is somewhat broken)
+These patches were meant to help implement choosing the remote through
+the GUI. I may not find time for that but the patches by themselves
+are still relevant.
 
-are all paches applied already ?
+If there is some interest I'll rebase to master.
 
-cheers,
-Ilya Shipitsin
-
---00000000000048db69058ae8c1f9
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Hello,<div><br></div><div><a href=3D"https://patchwork.ope=
-nvpn.net/project/openvpn2/list/?series=3D428">https://patchwork.openvpn.net=
-/project/openvpn2/list/?series=3D428</a>=C2=A0says &quot;new&quot;<br></div=
-><div>however, I see patchset is applied (and travis-ci is somewhat broken)=
-</div><div><br></div><div>are all paches applied already ?</div><div><br></=
-div><div>cheers,</div><div>Ilya Shipitsin</div></div>
-
---00000000000048db69058ae8c1f9--
+Selva
 
