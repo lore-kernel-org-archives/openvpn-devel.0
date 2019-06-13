@@ -1,16 +1,16 @@
-From: Michal Soltys <soltys@...2503...>
-References: <20190409143438.25348-1-soltys@...2503...>
- <20190409143438.25348-2-soltys@...2503...>
- <e6c17503-b1b4-7bba-e03e-3a8c8b6565e6@...1227...>
- <299950cf-ab6b-527c-ae95-d035457077d2@...2503...>
- <18b5b8e7-c5d3-e684-7241-1a563c119f08@...2503...>
-Message-ID: <ea47e639-935a-a5ce-b14e-e3be77a164ea@...2503...>
-Date: Thu, 13 Jun 2019 10:49:30 +0200
 MIME-Version: 1.0
-In-Reply-To: <18b5b8e7-c5d3-e684-7241-1a563c119f08@...2503...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH 1/1] man: correct the description of
- --capath and --crl-verify regarding CRLs
+References: <CAGyAFMWpLKixwrmOqLy-OZ86h-zXwgPMyJQ3HqV8O3GQRGE1UA@...278...>
+ <193E6898-A1C8-4319-8847-866E3CEB3E97@...2293...>
+ <CAKuzo_ihkXkr_-2+VQ5bSaoi-MrEM+u051_WNoMtdhVdubOhAw@...278...>
+ <20190612052402.GL1097@...1296...>
+ <CAGyAFMX9ZxkArOT+A9f14cHYE37vwEiuTGBvgmvXPe6xy=bA9Q@...278...>
+ <CAGyAFMVqsD1Jqwebu5haknoFCi6s3ju8769tCu5no+5H9uaeHg@...278...>
+In-Reply-To: <CAGyAFMVqsD1Jqwebu5haknoFCi6s3ju8769tCu5no+5H9uaeHg@...278...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Thu, 13 Jun 2019 14:39:36 +0300
+Message-ID: <CAGyAFMU-u3KHETH9YS8Ouv4iP32qW-Xd9_AeWXob2B3gc8ZKYA@...278...>
+Content-Type: multipart/alternative; boundary="000000000000bf9751058b32fc0c"
+Subject: Re: [Openvpn-devel] Preliminary Wintun support in OpenVPN2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,35 +19,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-On 19/04/10 15:51, Michal Soltys wrote:
-> On 4/10/19 3:45 PM, Michal Soltys wrote:
->> On 4/10/19 10:24 AM, Arne Schwabe wrote:
->>> Am 09.04.19 um 16:34 schrieb Michal Soltys:
->>>> The man page states that when using --capath, the user is required to
->>>> provide CRLs for CAs. This is not true and providing CRLs is optional -
->>>> both in case of --capath as well as --crl-verify options. When relevant
->>>> CRL is not found OpenVPN simply logs the warning in the logs while
->>>> allowing the connection, e.g.:
->>>>
->>>
->>> On my server the connection used to fail without CRLs. I just retested
->>> this and with OpenSSL 1.1.1 there is not even a warning, so I am really
->>> confused now.
->>>
->>> Arne
+--000000000000bf9751058b32fc0c
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+For the record - it seems that TransmitPackets is a Windows equivalent of
+sendmmsg which sends each passed buffer in its own UDP datagram,
+
+I have created a test project to understand better how it works,
+https://github.com/lstipakov/TransmitPackets/blob/master/TransmitPackets.cp=
+p ,
+will try at some point with OpenVPN.
+
+
+
+ke 12. kes=C3=A4k. 2019 klo 19.43 Lev Stipakov (lstipakov@...277...) kirjoi=
+tti:
+
+>
+> WSASend / WSASendTo methods, which we use to write to link on Windows,
+>> already support multiple buffers (but we do not use that feature):
 >>
->> Hmm, I do have warnings (with 1.1.1 and 1.1.0), at least at --verb 3:
->>
-> 
-> For the record, --verb 3 or stronger is required for those warnings to 
-> be logged. 2 will only record verify success, 1 won't log any of those.
-> 
+>
+> Argh, turns out that WSASend combines multiple buffers (openvpn packets)
+> into single UDP packet,
+> which doesn't work for openvpn - we expect UDP packet to contain single
+> openvpn packet.
+>
+> --
+> -Lev
+>
 
 
-Anyway, it's beeen a bit since that thread - any chance to update the 
-docs about this ? I can redo/rebase the patch as necessary.
+--=20
+-Lev
+
+--000000000000bf9751058b32fc0c
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">For the record - it seems that TransmitPackets is a Window=
+s equivalent of sendmmsg which sends each passed buffer in its own UDP data=
+gram,<div><br></div><div>I have created a test project to understand better=
+ how it works,=C2=A0
+
+<a href=3D"https://github.com/lstipakov/TransmitPackets/blob/master/Transmi=
+tPackets.cpp">https://github.com/lstipakov/TransmitPackets/blob/master/Tran=
+smitPackets.cpp</a>=C2=A0, will try at some point with OpenVPN.=C2=A0<br><d=
+iv><br></div><div><br></div></div></div><br><div class=3D"gmail_quote"><div=
+ dir=3D"ltr" class=3D"gmail_attr">ke 12. kes=C3=A4k. 2019 klo 19.43 Lev Sti=
+pakov (<a href=3D"mailto:lstipakov@...277...">lstipakov@...277...</a>) kirj=
+oitti:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0=
+px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><div dir=
+=3D"ltr"><div dir=3D"ltr"><br></div><div class=3D"gmail_quote"><blockquote =
+class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px sol=
+id rgb(204,204,204);padding-left:1ex"><div dir=3D"ltr"><div class=3D"gmail_=
+quote"><div>WSASend / WSASendTo methods, which we use to write to link on W=
+indows,</div><div>already support multiple buffers (but we do not use that =
+feature):</div></div></div></blockquote><div><br></div><div>Argh, turns out=
+ that WSASend combines multiple buffers (openvpn packets) into single UDP p=
+acket,</div><div>which doesn&#39;t work for openvpn - we expect UDP packet =
+to contain single openvpn packet.</div></div><div><br></div>-- <br><div dir=
+=3D"ltr" class=3D"gmail-m_6600182085144398004gmail_signature">-Lev</div></d=
+iv>
+</blockquote></div><br clear=3D"all"><div><br></div>-- <br><div dir=3D"ltr"=
+ class=3D"gmail_signature">-Lev</div>
+
+--000000000000bf9751058b32fc0c--
 
