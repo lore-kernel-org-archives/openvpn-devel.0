@@ -1,10 +1,8 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu, 13 Jun 2019 15:48:34 +0200
-Message-Id: <20190613134834.5709-6-arne@...1227...>
-In-Reply-To: <20190613134834.5709-1-arne@...1227...>
-References: <20190613134834.5709-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v4 7/7] Implement unit tests for
- auth-gen-token
+Date: Thu, 13 Jun 2019 15:48:29 +0200
+Message-Id: <20190613134834.5709-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v4 2/7] Implement --genkey type keyfile
+ syntax and migrate tls-crypt-v2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,434 +14,537 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Arne Schwabe <arne@...515...>
 
-From: Arne Schwabe <arne@...515...>
+This unifies our key generation and also migrates the generation
+of the tls-crypt-v2 keys. Since tls-crypt-v2 is not included in any
+released version, we remove the the old syntax without compatibility.
 
-Patch V2: adapt unit tests to other V2 patches
-Patch V4: Resolve rebase conflicts
+PATCH V4: Introduce warning/error when using --secret with --genkey
+          Update non code usages to use new --genkey syntax
 ---
- tests/unit_tests/openvpn/Makefile.am       |  20 +-
- tests/unit_tests/openvpn/test_auth_token.c | 375 +++++++++++++++++++++
- 2 files changed, 394 insertions(+), 1 deletion(-)
- create mode 100644 tests/unit_tests/openvpn/test_auth_token.c
+ INSTALL                                |  2 +-
+ doc/openvpn.8                          | 81 ++++++++++++++------------
+ sample/sample-config-files/server.conf |  2 +-
+ sample/sample-keys/gen-sample-keys.sh  |  2 +-
+ sample/sample-windows/sample.ovpn      |  2 +-
+ src/openvpn/crypto.c                   |  2 +-
+ src/openvpn/init.c                     | 71 ++++++++++++++--------
+ src/openvpn/options.c                  | 67 +++++++++++++--------
+ src/openvpn/options.h                  | 11 +++-
+ tests/t_lpback.sh                      |  8 +--
+ 10 files changed, 151 insertions(+), 97 deletions(-)
 
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index c6da91a8..e941f488 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -6,7 +6,7 @@ if HAVE_LD_WRAP_SUPPORT
- test_binaries += argv_testdriver buffer_testdriver
- endif
+diff --git a/INSTALL b/INSTALL
+index 0ba3bba6..b82cda19 100644
+--- a/INSTALL
++++ b/INSTALL
+@@ -145,7 +145,7 @@ make check (Run all tests below)
  
--test_binaries += crypto_testdriver packet_id_testdriver
-+test_binaries += crypto_testdriver packet_id_testdriver auth_token_testdriver
- if HAVE_LD_WRAP_SUPPORT
- test_binaries += tls_crypt_testdriver
- endif
-@@ -92,3 +92,21 @@ networking_testdriver_SOURCES = test_networking.c mock_msg.c \
- 	$(openvpn_srcdir)/otime.c \
- 	$(openvpn_srcdir)/packet_id.c \
- 	$(openvpn_srcdir)/platform.c
+ Test Crypto:
+ 
+-./openvpn --genkey --secret key
++./openvpn --genkey secret key
+ ./openvpn --test-crypto --secret key
+ 
+ Test SSL/TLS negotiations (runs for 2 minutes):
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index ce440447..25195fd4 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -5242,7 +5242,7 @@ Use client\-specific tls\-crypt keys.
+ For clients,
+ .B keyfile
+ is a client\-specific tls\-crypt key.  Such a key can be generated using the
+-.B \-\-tls\-crypt\-v2\-genkey
++.B \-\-genkey tls\-crypt\-v2\-client
+ option.
+ 
+ For servers,
+@@ -5250,7 +5250,7 @@ For servers,
+ is used to unwrap client\-specific keys supplied by the client during connection
+ setup.  This key must be the same as the key used to generate the
+ client\-specific key (see
+-.B \-\-tls\-crypt\-v2\-genkey\fR).
++.B \-\-genkey tls\-crypt\-v2\-client\fR).
+ 
+ On servers, this option can be used together with the
+ .B \-\-tls\-auth
+@@ -5260,36 +5260,6 @@ option.  In that case, the server will detect whether the client is using
+ client\-specific keys, and automatically select the right mode.
+ .\"*********************************************************
+ .TP
+-.B \-\-tls\-crypt\-v2\-genkey client|server keyfile [metadata]
+-
+-If the first parameter equals "server", generate a \-\-tls\-crypt\-v2 server
+-key and store the key in
+-.B keyfile\fR.
+-
+-
+-If the first parameter equals "client", generate a \-\-tls\-crypt\-v2 client
+-key, and store the key in
+-.B keyfile\fR.
+-
+-If supplied, include the supplied
+-.B metadata
+-in the wrapped client key.  This metadata must be supplied in base64\-encoded
+-form.  The metadata must be at most 735 bytes long (980 bytes in base64).
+-
+-If no metadata is supplied, OpenVPN will use a 64\-bit unix timestamp
+-representing the current time in UTC, encoded in network order, as metadata for
+-the generated key.
+-
+-A tls\-crypt\-v2 client key is wrapped using a server key.  To generate a
+-client key, the user must therefore supply the server key using the
+-.B \-\-tls\-crypt\-v2
+-option.
+-
+-Servers can use
+-.B \-\-tls\-crypt\-v2\-verify
+-to specify a metadata verification command.
+-.\"*********************************************************
+-.TP
+ .B \-\-tls\-crypt\-v2\-verify cmd
+ 
+ Run command
+@@ -5741,13 +5711,18 @@ Show all available elliptic curves to use with the
+ .B \-\-ecdh\-curve
+ option.
+ .\"*********************************************************
+-.SS Generate a random key:
+-Used only for non\-TLS static key encryption mode.
++.SS Generating key material:
+ .\"*********************************************************
+ .TP
+-.B \-\-genkey file
++.B \-\-genkey keytype keyfile
+ (Standalone)
+-Generate a random key to be used as a shared secret, for use with the
++Generate a key to be used of the type keytype. if keyfile is left out or empty
++the key will be output on stdout. See the following sections for the different keytypes.
 +
-+auth_token_testdriver_CFLAGS  = @TEST_CFLAGS@ \
-+	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir) \
-+	$(OPTIONAL_CRYPTO_CFLAGS)
-+auth_token_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
-+	$(OPTIONAL_CRYPTO_LIBS)
++.\"*********************************************************
++.TP
++.B \-\-genkey secret|tls-crypt|tls-auth keyfile
++Generate a shared secret, for use with the
+ .B \-\-secret
+ ,
+ .B \-\-tls-auth
+@@ -5755,6 +5730,8 @@ or
+ .B \-\-tls-crypt
+ options.  Stores the key in
+ .B file\fR.
++All three variants (secret, tls-crypt, and tls-auth) generate the same type of
++key. The aliases are added for convience.
+ 
+ If using this for
+ .B \-\-secret
+@@ -5762,6 +5739,36 @@ If using this for
+ such as
+ .BR scp (1)\fR.
+ .\"*********************************************************
++.TP
++.B \-\-genkey tls\-crypt\-v2-server keyfile
 +
-+auth_token_testdriver_SOURCES = test_auth_token.c mock_msg.c \
-+	$(openvpn_srcdir)/buffer.c \
-+	$(openvpn_srcdir)/crypto.c \
-+	$(openvpn_srcdir)/crypto_mbedtls.c \
-+	$(openvpn_srcdir)/crypto_openssl.c \
-+	$(openvpn_srcdir)/otime.c \
-+	$(openvpn_srcdir)/packet_id.c \
-+	$(openvpn_srcdir)/platform.c
-+	$(openvpn_srcdir)/platform.c \
-+	$(openvpn_srcdir)/base64.c
++Generate a \-\-tls\-crypt\-v2 server key and store the key in
++.B keyfile\fR.
 +
-diff --git a/tests/unit_tests/openvpn/test_auth_token.c b/tests/unit_tests/openvpn/test_auth_token.c
-new file mode 100644
-index 00000000..a3591b4a
---- /dev/null
-+++ b/tests/unit_tests/openvpn/test_auth_token.c
-@@ -0,0 +1,375 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2016-2018 Fox Crypto B.V. <openvpn@...1435...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+ */
++.TP
++.B \-\-genkey tls\-crypt\-v2-client keyfile [metadata]
 +
-+#ifdef HAVE_CONFIG_H
-+#include "config.h"
-+#elif defined(_MSC_VER)
-+#include "config-msvc.h"
-+#endif
++Generate a \-\-tls\-crypt\-v2 client key, and store the key in
++.B keyfile\fR.
 +
-+#include "syshead.h"
++If supplied, include the supplied
++.B metadata
++in the wrapped client key.  This metadata must be supplied in base64\-encoded
++form.  The metadata must be at most 735 bytes long (980 bytes in base64).
 +
-+#include <stdio.h>
-+#include <unistd.h>
-+#include <stdlib.h>
-+#include <stdarg.h>
-+#include <string.h>
-+#include <setjmp.h>
-+#include <cmocka.h>
++If no metadata is supplied, OpenVPN will use a 64\-bit unix timestamp
++representing the current time in UTC, encoded in network order, as metadata for
++the generated key.
 +
-+#include "auth_token.c"
++A tls\-crypt\-v2 client key is wrapped using a server key.  To generate a
++client key, the user must therefore supply the server key using the
++.B \-\-tls\-crypt\-v2
++option.
 +
-+#include "mock_msg.h"
++Servers can use
++.B \-\-tls\-crypt\-v2\-verify
++to specify a metadata verification command.
++.\"*********************************************************
+ .SS TUN/TAP persistent tunnel config mode:
+ Available with Linux 2.4.7+.  These options comprise a standalone mode
+ of OpenVPN which can be used to create and delete persistent tunnels.
+@@ -7185,7 +7192,7 @@ First build a static key on bob.
+ .IP
+ .B openvpn \-\-genkey \-\-secret key
+ .LP
+-This command will build a random key file called
++This command will build a key file called
+ .B key
+ (in ascii format).
+ Now copy
+diff --git a/sample/sample-config-files/server.conf b/sample/sample-config-files/server.conf
+index 1dd477bd..e7020639 100644
+--- a/sample/sample-config-files/server.conf
++++ b/sample/sample-config-files/server.conf
+@@ -235,7 +235,7 @@ keepalive 10 120
+ # to help block DoS attacks and UDP port flooding.
+ #
+ # Generate with:
+-#   openvpn --genkey --secret ta.key
++#   openvpn --genkey tls-auth ta.key
+ #
+ # The server and each client must have
+ # a copy of this key.
+diff --git a/sample/sample-keys/gen-sample-keys.sh b/sample/sample-keys/gen-sample-keys.sh
+index 920513a1..fda4ffe6 100755
+--- a/sample/sample-keys/gen-sample-keys.sh
++++ b/sample/sample-keys/gen-sample-keys.sh
+@@ -15,7 +15,7 @@ then
+ fi
+ 
+ # Generate static key for tls-auth (or static key mode)
+-$(dirname ${0})/../../src/openvpn/openvpn --genkey --secret ta.key
++$(dirname ${0})/../../src/openvpn/openvpn --genkey tls-auth ta.key
+ 
+ # Create required directories and files
+ mkdir -p sample-ca
+diff --git a/sample/sample-windows/sample.ovpn b/sample/sample-windows/sample.ovpn
+index 5accd573..51e32744 100755
+--- a/sample/sample-windows/sample.ovpn
++++ b/sample/sample-windows/sample.ovpn
+@@ -68,7 +68,7 @@ ifconfig 10.3.0.1 255.255.255.0
+ #
+ # You can also generate key.txt manually
+ # with the following command:
+-#   openvpn --genkey --secret key.txt
++#   openvpn --genkey secret key.txt
+ #
+ # key must match on both ends of the connection,
+ # so you should generate it on one machine and
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index eb56421b..9a150fa2 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -1493,7 +1493,7 @@ must_have_n_keys(const char *filename, const char *option, const struct key2 *ke
+ #ifdef ENABLE_SMALL
+         msg(M_FATAL, "Key file '%s' used in --%s contains insufficient key material [keys found=%d required=%d]", filename, option, key2->n, n);
+ #else
+-        msg(M_FATAL, "Key file '%s' used in --%s contains insufficient key material [keys found=%d required=%d] -- try generating a new key file with '" PACKAGE " --genkey --secret [file]', or use the existing key file in bidirectional mode by specifying --%s without a key direction parameter", filename, option, key2->n, n, option);
++        msg(M_FATAL, "Key file '%s' used in --%s contains insufficient key material [keys found=%d required=%d] -- try generating a new key file with '" PACKAGE " --genkey secret [file]', or use the existing key file in bidirectional mode by specifying --%s without a key direction parameter", filename, option, key2->n, n, option);
+ #endif
+     }
+ }
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 647f5336..87976290 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1053,18 +1053,43 @@ bool
+ do_genkey(const struct options *options)
+ {
+     /* should we disable paging? */
+-    if (options->mlock && (options->genkey || options->tls_crypt_v2_genkey_file))
++    if (options->mlock && (options->genkey))
+     {
+         platform_mlockall(true);
+     }
+-    if (options->genkey)
 +
-+struct test_context {
-+    struct tls_multi multi;
-+    struct key_type kt;
-+    struct user_pass up;
-+    struct tls_session session;
++    /*
++     * We do not want user to use --genkey with --secret. In the transistion
++     * phase we for secret.
++     */
++    if (options->genkey && options->genkey_type != GENKEY_SECRET
++        && options->shared_secret_file)
++    {
++        msg(M_USAGE, "Using --genkey type with --secret filename is "
++            "not supported.  Use --genkey type filename instead.");
++    }
++    if (options->genkey && options->genkey_type == GENKEY_SECRET)
+     {
+         int nbits_written;
++        const char *genkey_filename = options->genkey_filename;
++        if (options->shared_secret_file && options->genkey_filename)
++        {
++            msg(M_USAGE, "You must provide a filename to either --genkey "
++                "or --secret, not both");
++        }
+ 
+-        notnull(options->shared_secret_file,
+-                "shared secret output file (--secret)");
++        /*
++         * Copy filename from shared_secret_file to genkey_filename to support
++         * the old --genkey --secret foo.file syntax.
++         */
++        if (options->shared_secret_file)
++        {
++            msg(M_WARN, "WARNING: Using --genkey --secret filename is "
++                "DEPRECATED.  Use --genkey secret filename instead.");
++            genkey_filename = options->shared_secret_file;
++        }
+ 
+-        nbits_written = write_key_file(2, options->shared_secret_file);
++        nbits_written = write_key_file(2, genkey_filename);
+         if (nbits_written < 0)
+         {
+             msg(M_FATAL, "Failed to write key file");
+@@ -1075,30 +1100,28 @@ do_genkey(const struct options *options)
+             options->shared_secret_file);
+         return true;
+     }
+-    if (options->tls_crypt_v2_genkey_type)
++    else if (options->genkey && options->genkey_type == GENKEY_TLS_CRYPTV2_SERVER)
+     {
+-        if (!strcmp(options->tls_crypt_v2_genkey_type, "server"))
+-        {
+-            tls_crypt_v2_write_server_key_file(options->tls_crypt_v2_genkey_file);
+-            return true;
+-        }
+-        if (options->tls_crypt_v2_genkey_type
+-            && !strcmp(options->tls_crypt_v2_genkey_type, "client"))
++        tls_crypt_v2_write_server_key_file(options->genkey_filename);
++        return true;
++    }
++    else if (options->genkey && options->genkey_type == GENKEY_TLS_CRYPTV2_CLIENT)
++    {
++        if (!options->tls_crypt_v2_file)
+         {
+-            if (!options->tls_crypt_v2_file)
+-            {
+-                msg(M_USAGE, "--tls-crypt-v2-genkey requires a server key to be set via --tls-crypt-v2 to create a client key");
+-            }
+-
+-            tls_crypt_v2_write_client_key_file(options->tls_crypt_v2_genkey_file,
+-                                               options->tls_crypt_v2_metadata, options->tls_crypt_v2_file,
+-                                               options->tls_crypt_v2_inline);
+-            return true;
++            msg(M_USAGE,
++                "--genkey tls-crypt-v2-client requires a server key to be set via --tls-crypt-v2 to create a client key");
+         }
+ 
+-        msg(M_USAGE, "--tls-crypt-v2-genkey type should be \"client\" or \"server\"");
++        tls_crypt_v2_write_client_key_file(options->genkey_filename,
++                                           options->genkey_extra_data, options->tls_crypt_v2_file,
++                                           options->tls_crypt_v2_inline);
++        return true;
++    }
++    else
++    {
++        return false;
+     }
+-    return false;
+ }
+ 
+ /*
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 7ced4607..a37b7146 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -632,9 +632,11 @@ static const char usage_message[] =
+     "                  For servers: use key to decrypt client-specific keys.  For\n"
+     "                  key generation (--tls-crypt-v2-genkey): use key to\n"
+     "                  encrypt generated client-specific key.  (See --tls-crypt.)\n"
+-    "--tls-crypt-v2-genkey client|server keyfile [base64 metadata]: Generate a\n"
+-    "                  fresh tls-crypt-v2 client or server key, and store to\n"
++    "--genkey tls-crypt-v2-client [keyfile] [base64 metadata]: Generate a\n"
++    "                  fresh tls-crypt-v2 client key, and store to\n"
+     "                  keyfile.  If supplied, include metadata in wrapped key.\n"
++    "--genkey tls-crypt-v2-server [keyfile] [base64 metadata]: Generate a\n"
++    "                  fresh tls-crypt-v2 server key, and store to keyfile\n"
+     "--tls-crypt-v2-verify cmd : Run command cmd to verify the metadata of the\n"
+     "                  client-supplied tls-crypt-v2 client key\n"
+     "--askpass [file]: Get PEM password from controlling tty before we daemonize.\n"
+@@ -754,8 +756,9 @@ static const char usage_message[] =
+     "                                 to access TAP adapter.\n"
+ #endif /* ifdef _WIN32 */
+     "\n"
+-    "Generate a new key (for use with --secret, --tls-auth or --tls-crypt):\n"
+-    "--genkey file   : Generate a new random key and write to file.\n"
++    "Generate a new key :\n"
++    "--genkey secret file   : Generate a new random key of type and write to file\n"
++    "                         (for use with --secret, --tls-auth or --tls-crypt)."
+ #ifdef ENABLE_FEATURE_TUN_PERSIST
+     "\n"
+     "Tun/tap config mode (available with linux 2.4+):\n"
+@@ -1526,6 +1529,7 @@ show_settings(const struct options *o)
+     SHOW_BOOL(show_digests);
+     SHOW_BOOL(show_engines);
+     SHOW_BOOL(genkey);
++    SHOW_STR(genkey_filename);
+     SHOW_STR(key_pass_file);
+     SHOW_BOOL(show_tls_ciphers);
+ 
+@@ -1746,8 +1750,6 @@ show_settings(const struct options *o)
+     SHOW_BOOL(push_peer_info);
+     SHOW_BOOL(tls_exit);
+ 
+-    SHOW_STR(tls_crypt_v2_genkey_type);
+-    SHOW_STR(tls_crypt_v2_genkey_file);
+     SHOW_STR(tls_crypt_v2_metadata);
+ 
+ #ifdef ENABLE_PKCS11
+@@ -2689,10 +2691,6 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
+         {
+             msg(M_USAGE, "--tls-crypt-v2, --tls-auth and --tls-crypt are mutually exclusive in client mode");
+         }
+-        if (options->genkey && options->tls_crypt_v2_genkey_type)
+-        {
+-            msg(M_USAGE, "--genkey and --tls-crypt-v2-genkey are mutually exclusive");
+-        }
+     }
+     else
+     {
+@@ -3320,8 +3318,8 @@ options_postprocess_filechecks(struct options *options)
+     }
+ 
+     errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
+-                              options->tls_crypt_v2_genkey_file, R_OK,
+-                              "--tls-crypt-v2-genkey");
++                              options->genkey_filename, R_OK,
++                              "--genkey");
+     errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
+                               options->shared_secret_file, R_OK, "--secret");
+ 
+@@ -7521,13 +7519,42 @@ add_option(struct options *options,
+         }
+         options->shared_secret_file = p[1];
+     }
+-    else if (streq(p[0], "genkey") && !p[2])
++    else if (streq(p[0], "genkey") && !p[4])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+         options->genkey = true;
+-        if (p[1])
++        if (!p[1])
++        {
++            options->genkey_type = GENKEY_SECRET;
++        }
++        else
++        {
++            if (streq(p[1], "secret") || streq(p[1], "tls-auth") ||
++                streq(p[1], "tls-crypt"))
++            {
++                options->genkey_type = GENKEY_SECRET;
++            }
++            else if (streq(p[1], "tls-crypt-v2-server"))
++            {
++                options->genkey_type = GENKEY_TLS_CRYPTV2_SERVER;
++            }
++            else if (streq(p[1], "tls-crypt-v2-client"))
++            {
++                options->genkey_type = GENKEY_TLS_CRYPTV2_CLIENT;
++                if (p[3])
++                {
++                    options->genkey_extra_data = p[3];
++                }
++            }
++            else
++            {
++                msg(msglevel, "unknown --genkey type: %s", p[1]);
++            }
++
++        }
++        if (p[2])
+         {
+-            options->shared_secret_file = p[1];
++            options->genkey_filename = p[2];
+         }
+     }
+     else if (streq(p[0], "auth") && p[1] && !p[2])
+@@ -8125,16 +8152,6 @@ add_option(struct options *options,
+             options->ce.tls_crypt_v2_file = p[1];
+         }
+     }
+-    else if (streq(p[0], "tls-crypt-v2-genkey") && p[2] && !p[4])
+-    {
+-        VERIFY_PERMISSION(OPT_P_GENERAL);
+-        options->tls_crypt_v2_genkey_type = p[1];
+-        options->tls_crypt_v2_genkey_file = p[2];
+-        if (p[3])
+-        {
+-            options->tls_crypt_v2_metadata = p[3];
+-        }
+-    }
+     else if (streq(p[0], "tls-crypt-v2-verify") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index fb2d84a1..63f0f4cb 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -177,6 +177,12 @@ struct remote_host_store
+     char port[RH_PORT_LEN];
+ };
+ 
++enum genkey_type {
++    GENKEY_SECRET,
++    GENKEY_TLS_CRYPTV2_CLIENT,
++    GENKEY_TLS_CRYPTV2_SERVER,
 +};
 +
-+static const char *now0key0 = "SESS_ID_AT_0123456789abcdefAAAAAAAAAAAAAAAAAAAAAE5JsQJOVfo8jnI3RL3tBaR5NkE4yPfcylFUHmHSc5Bu";
-+
-+static const char *zeroinline = "-----BEGIN OpenVPN auth-token server key-----\n"
-+                                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
-+                                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
-+                                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n"
-+                                "-----END OpenVPN auth-token server key-----";
-+
-+static const char *allx01inline = "-----BEGIN OpenVPN auth-token server key-----\n"
-+                                  "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEB\n"
-+                                  "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEB\n"
-+                                  "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n"
-+                                  "-----END OpenVPN auth-token server key-----";
-+
-+static const char *random_key = "-----BEGIN OpenVPN auth-token server key-----\n"
-+                                "+mmmf7IQ5cymtMVjKYTWk8IOcYanRlpQmV9Tb3EjkHYxueBVDg3yqRgzeBlVGzNLD//rAPiOVhau\n"
-+                                "3NDBjNOQB8951bfs7Cc2mYfay92Bh2gRJ5XEM/DMfzCWN+7uU6NWoTTHr4FuojnIQtjtqVAj/JS9\n"
-+                                "w+dTSp/vYHl+c7uHd19uVRu/qLqV85+rm4tUGIjO7FfYuwyPqwmhuIsi3hs9QkSimh888FmBpoKY\n"
-+                                "/tbKVTJZmSERKti9KEwtV2eVAR0znN5KW7lCB3mHVAhN7bUpcoDjfCzYIFARxwswTFu9gFkwqUMY\n"
-+                                "I1KUOgIsVNs4llACioeXplYekWETR+YkJwDc/A==\n"
-+                                "-----END OpenVPN auth-token server key-----";
-+
-+static const char *random_token = "SESS_ID_AT_ThhRItzOKNKrh3dfAAAAAFwzHpwAAAAAXDMenDdrq0RoH3dkA1f7O3wO+7kZcx2DusVZrRmFlWQM9HOb";
-+
-+
-+static int
-+setup(void **state)
-+{
-+    struct test_context *ctx = calloc(1, sizeof(*ctx));
-+    *state = ctx;
-+
-+    struct key key = { 0 };
-+
-+    ctx->kt = auth_token_kt();
-+    if (!ctx->kt.digest)
-+    {
-+        return 0;
-+    }
-+    ctx->multi.opt.auth_token_generate = true;
-+    ctx->multi.opt.auth_token_lifetime = 3000;
-+
-+    ctx->session.opt = calloc(1, sizeof(struct tls_options));
-+    ctx->session.opt->renegotiate_seconds = 120;
-+    ctx->session.opt->auth_token_lifetime = 3000;
-+
-+    strcpy(ctx->up.username, "test user name");
-+    strcpy(ctx->up.password, "ignored");
-+
-+    init_key_ctx(&ctx->multi.opt.auth_token_key, &key, &ctx->kt, false, "TEST");
-+
-+    now = 0;
-+    return 0;
-+}
-+
-+static int
-+teardown(void **state)
-+{
-+    struct test_context *ctx = (struct test_context *) *state;
-+
-+    free_key_ctx(&ctx->multi.opt.auth_token_key);
-+    wipe_auth_token(&ctx->multi);
-+
-+    free(ctx->session.opt);
-+    free(ctx);
-+
-+    return 0;
-+}
-+
-+static void
-+auth_token_basic_test(void **state)
-+{
-+    struct test_context *ctx = (struct test_context *) *state;
-+
-+    generate_auth_token(&ctx->up, &ctx->multi);
-+    strcpy(ctx->up.password, ctx->multi.auth_token);
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session), AUTH_TOKEN_HMAC_OK);
-+}
-+
-+static void
-+auth_token_fail_invalid_key(void **state)
-+{
-+    struct test_context *ctx = (struct test_context *) *state;
-+
-+    generate_auth_token(&ctx->up, &ctx->multi);
-+    strcpy(ctx->up.password, ctx->multi.auth_token);
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session), AUTH_TOKEN_HMAC_OK);
-+
-+    /* Change auth-token key */
-+    struct key key;
-+    memset(&key, '1', sizeof(key));
-+    free_key_ctx(&ctx->multi.opt.auth_token_key);
-+    init_key_ctx(&ctx->multi.opt.auth_token_key, &key, &ctx->kt, false, "TEST");
-+
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session), 0);
-+
-+    /* Load original test key again */
-+    memset(&key, 0, sizeof(key));
-+    free_key_ctx(&ctx->multi.opt.auth_token_key);
-+    init_key_ctx(&ctx->multi.opt.auth_token_key, &key, &ctx->kt, false, "TEST");
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session), AUTH_TOKEN_HMAC_OK);
-+
-+}
-+
-+static void
-+auth_token_test_timeout(void **state)
-+{
-+    struct test_context *ctx = (struct test_context *) *state;
-+
-+    now = 100000;
-+    generate_auth_token(&ctx->up, &ctx->multi);
-+    strcpy(ctx->up.password, ctx->multi.auth_token);
-+
-+    /* No time has passed */
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session), AUTH_TOKEN_HMAC_OK);
-+
-+    /* Token before validity, should be rejected */
-+    now = 100000 - 100;
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session), AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED);
-+
-+    /* Token still in validity, should be accepted */
-+    now = 100000 + 2*ctx->session.opt->renegotiate_seconds - 20;
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session), AUTH_TOKEN_HMAC_OK);
-+
-+    /* Token past validity, should be rejected */
-+    now = 100000 + 2*ctx->session.opt->renegotiate_seconds + 20;
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session), AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED);
-+
-+    /* Check if the mode for a client that never updates its token works */
-+    ctx->multi.auth_token_initial = strdup(ctx->up.password);
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),  AUTH_TOKEN_HMAC_OK);
-+
-+    /* But not when we reached our timeout */
-+    now = 100000 + ctx->session.opt->auth_token_lifetime + 1;
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session), AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED);
-+
-+    free(ctx->multi.auth_token_initial);
-+    ctx->multi.auth_token_initial = NULL;
-+
-+    /* regenerate the token util it hits the expiry */
-+    now = 100000;
-+    while (now < 100000 + ctx->session.opt->auth_token_lifetime + 1)
-+    {
-+        assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session), AUTH_TOKEN_HMAC_OK);
-+        generate_auth_token(&ctx->up, &ctx->multi);
-+        strcpy(ctx->up.password, ctx->multi.auth_token);
-+        now += ctx->session.opt->renegotiate_seconds;
-+    }
-+
-+
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session), AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED);
-+    ctx->multi.opt.auth_token_lifetime = 0;
-+
-+    /* Non expiring token should be fine */
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session), AUTH_TOKEN_HMAC_OK);
-+}
-+
-+static void
-+zerohmac(char *token)
-+{
-+    char *hmacstart = token + AUTH_TOKEN_SESSION_ID_LEN
-+                      + strlen(SESSION_ID_PREFIX) + 2*sizeof(uint64_t);
-+    memset(hmacstart, 0x8d, strlen(hmacstart));
-+}
-+
-+static void
-+auth_token_test_known_keys(void **state)
-+{
-+    struct test_context *ctx = (struct test_context *) *state;
-+
-+    now = 0;
-+    /* Preload the session id so the same session id is used here */
-+    ctx->multi.auth_token = strdup(now0key0);
-+
-+    /* Zero the hmac part to ensure we have a newly generated token */
-+    zerohmac(ctx->multi.auth_token);
-+
-+    generate_auth_token(&ctx->up, &ctx->multi);
-+
-+    assert_string_equal(now0key0, ctx->multi.auth_token);
-+
-+    strcpy(ctx->up.password, ctx->multi.auth_token);
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session), AUTH_TOKEN_HMAC_OK);
-+}
-+
-+static const char *lastsesion_statevalue;
-+void
-+setenv_str(struct env_set *es, const char *name, const char *value)
-+{
-+    if (streq(name, "session_state"))
-+    {
-+        lastsesion_statevalue = value;
-+    }
-+}
-+
-+static void
-+auth_token_test_empty_user(void **state)
-+{
-+    struct test_context *ctx = (struct test_context *) *state;
-+
-+    CLEAR(ctx->up.username);
-+    now = 0;
-+
-+    generate_auth_token(&ctx->up, &ctx->multi);
-+    strcpy(ctx->up.password, ctx->multi.auth_token);
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session), AUTH_TOKEN_HMAC_OK);
-+
-+    now = 100000;
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session), AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED);
-+    strcpy(ctx->up.username, "test user name");
-+
-+    now = 0;
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session), AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_VALID_EMPTYUSER);
-+
-+    now = 100000;
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session), AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED|AUTH_TOKEN_VALID_EMPTYUSER);
-+
-+    zerohmac(ctx->up.password);
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session), 0);
-+}
-+
-+static void
-+auth_token_test_env(void **state)
-+{
-+    struct test_context *ctx = (struct test_context *) *state;
-+
-+    ctx->multi.auth_token_state_flags = 0;
-+    ctx->multi.auth_token = NULL;
-+    add_session_token_env(&ctx->session, &ctx->multi, &ctx->up);
-+    assert_string_equal(lastsesion_statevalue, "Initial");
-+
-+    ctx->multi.auth_token_state_flags = 0;
-+    strcpy(ctx->up.password, now0key0);
-+    add_session_token_env(&ctx->session, &ctx->multi, &ctx->up);
-+    assert_string_equal(lastsesion_statevalue, "Invalid");
-+
-+    ctx->multi.auth_token_state_flags = AUTH_TOKEN_HMAC_OK;
-+    add_session_token_env(&ctx->session, &ctx->multi, &ctx->up);
-+    assert_string_equal(lastsesion_statevalue, "Authenticated");
-+
-+    ctx->multi.auth_token_state_flags = AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED;
-+    add_session_token_env(&ctx->session, &ctx->multi, &ctx->up);
-+    assert_string_equal(lastsesion_statevalue, "Expired");
-+
-+    ctx->multi.auth_token_state_flags = AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_VALID_EMPTYUSER;
-+    add_session_token_env(&ctx->session, &ctx->multi, &ctx->up);
-+    assert_string_equal(lastsesion_statevalue, "AuthenticatedEmptyUser");
-+
-+    ctx->multi.auth_token_state_flags = AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED|AUTH_TOKEN_VALID_EMPTYUSER;
-+    add_session_token_env(&ctx->session, &ctx->multi, &ctx->up);
-+    assert_string_equal(lastsesion_statevalue, "ExpiredEmptyUser");
-+}
-+
-+static void
-+auth_token_test_random_keys(void **state)
-+{
-+    struct test_context *ctx = (struct test_context *) *state;
-+
-+    now = 0x5c331e9c;
-+    /* Preload the session id so the same session id is used here */
-+    ctx->multi.auth_token = strdup(random_token);
-+
-+    free_key_ctx(&ctx->multi.opt.auth_token_key);
-+    auth_token_init_secret(&ctx->multi.opt.auth_token_key, INLINE_FILE_TAG, random_key);
-+
-+    /* Zero the hmac part to ensure we have a newly generated token */
-+    zerohmac(ctx->multi.auth_token);
-+
-+    generate_auth_token(&ctx->up, &ctx->multi);
-+
-+    assert_string_equal(random_token, ctx->multi.auth_token);
-+
-+    strcpy(ctx->up.password, ctx->multi.auth_token);
-+    assert_true(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session));
-+}
-+
-+
-+static void
-+auth_token_test_key_load(void **state)
-+{
-+    struct test_context *ctx = (struct test_context *) *state;
-+
-+    free_key_ctx(&ctx->multi.opt.auth_token_key);
-+    auth_token_init_secret(&ctx->multi.opt.auth_token_key, INLINE_FILE_TAG, zeroinline);
-+    strcpy(ctx->up.password, now0key0);
-+    assert_true(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session));
-+
-+    free_key_ctx(&ctx->multi.opt.auth_token_key);
-+    auth_token_init_secret(&ctx->multi.opt.auth_token_key, INLINE_FILE_TAG, allx01inline);
-+    assert_false(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session));
-+}
-+
-+int
-+main(void)
-+{
-+    const struct CMUnitTest tests[] = {
-+        cmocka_unit_test_setup_teardown(auth_token_basic_test, setup, teardown),
-+        cmocka_unit_test_setup_teardown(auth_token_fail_invalid_key, setup, teardown),
-+        cmocka_unit_test_setup_teardown(auth_token_test_known_keys, setup, teardown),
-+        cmocka_unit_test_setup_teardown(auth_token_test_empty_user, setup, teardown),
-+        cmocka_unit_test_setup_teardown(auth_token_test_env, setup, teardown),
-+        cmocka_unit_test_setup_teardown(auth_token_test_random_keys, setup, teardown),
-+        cmocka_unit_test_setup_teardown(auth_token_test_key_load, setup, teardown),
-+        cmocka_unit_test_setup_teardown(auth_token_test_timeout, setup, teardown),
-+    };
-+
-+#if defined(ENABLE_CRYPTO_OPENSSL)
-+    OpenSSL_add_all_algorithms();
-+#endif
-+
-+    int ret = cmocka_run_group_tests_name("auth-token tests", tests, NULL, NULL);
-+
-+    return ret;
-+}
-+
-+/* Dummy functions that do nothing to mock the functionality */
-+void
-+send_push_reply_auth_token(struct tls_multi *multi)
-+{
-+}
-+
-+void
-+auth_set_client_reason(struct tls_multi *multi, const char *reason)
-+{
-+
-+}
+ /* Command line options */
+ struct options
+ {
+@@ -207,6 +213,9 @@ struct options
+     bool show_tls_ciphers;
+     bool show_curves;
+     bool genkey;
++    enum genkey_type genkey_type;
++    const char* genkey_filename;
++    const char* genkey_extra_data;
+ 
+     /* Networking parms */
+     int connect_retry_max;
+@@ -589,8 +598,6 @@ struct options
+     const char *tls_crypt_v2_file;
+     const char *tls_crypt_v2_inline;
+ 
+-    const char *tls_crypt_v2_genkey_type;
+-    const char *tls_crypt_v2_genkey_file;
+     const char *tls_crypt_v2_metadata;
+ 
+     const char *tls_crypt_v2_verify_script;
+diff --git a/tests/t_lpback.sh b/tests/t_lpback.sh
+index 3b1e73a8..d8512896 100755
+--- a/tests/t_lpback.sh
++++ b/tests/t_lpback.sh
+@@ -38,7 +38,7 @@ CIPHERS=$(echo "$CIPHERS" | egrep -v '^(DES-EDE3-CFB1|DES-CFB1|RC5-)' )
+ # Also test cipher 'none'
+ CIPHERS=${CIPHERS}$(printf "\nnone")
+ 
+-"${top_builddir}/src/openvpn/openvpn" --genkey --secret key.$$
++"${top_builddir}/src/openvpn/openvpn" --genkey secret key.$$
+ set +e
+ 
+ e=0
+@@ -57,7 +57,7 @@ done
+ 
+ echo -n "Testing tls-crypt-v2 server key generation..."
+ "${top_builddir}/src/openvpn/openvpn" \
+-    --tls-crypt-v2-genkey server tc-server-key.$$ >log.$$ 2>&1
++    --genkey tls-crypt-v2-server tc-server-key.$$ >log.$$ 2>&1
+ if [ $? != 0 ] ; then
+     echo "FAILED"
+     cat log.$$
+@@ -68,7 +68,7 @@ fi
+ 
+ echo -n "Testing tls-crypt-v2 key generation (no metadata)..."
+ "${top_builddir}/src/openvpn/openvpn" --tls-crypt-v2 tc-server-key.$$ \
+-    --tls-crypt-v2-genkey client tc-client-key.$$ >log.$$ 2>&1
++    --genkey tls-crypt-v2-client tc-client-key.$$ >log.$$ 2>&1
+ if [ $? != 0 ] ; then
+     echo "FAILED"
+     cat log.$$
+@@ -86,7 +86,7 @@ while [ $i -lt 732 ]; do
+ done
+ echo -n "Testing tls-crypt-v2 key generation (max length metadata)..."
+ "${top_builddir}/src/openvpn/openvpn" --tls-crypt-v2 tc-server-key.$$ \
+-    --tls-crypt-v2-genkey client tc-client-key.$$ "${METADATA}" \
++    --genkey tls-crypt-v2-client tc-client-key.$$ "${METADATA}" \
+     >log.$$ 2>&1
+ if [ $? != 0 ] ; then
+     echo "FAILED"
 -- 
 2.22.0
 
