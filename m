@@ -1,14 +1,15 @@
-References: <a9f4fde1-61a1-5706-060b-58b8ba687314@...1918...>
+References: <20190409143438.25348-1-soltys@...2503...>
+ <20190409143438.25348-2-soltys@...2503...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <6bd7df38-a56c-b5d1-a2c5-329afa6d4346@...1227...>
-Date: Fri, 14 Jun 2019 12:07:45 +0200
+Message-ID: <42b1cead-31e0-b382-9573-626517c89526@...1227...>
+Date: Fri, 14 Jun 2019 12:15:51 +0200
 MIME-Version: 1.0
-In-Reply-To: <a9f4fde1-61a1-5706-060b-58b8ba687314@...1918...>
+In-Reply-To: <20190409143438.25348-2-soltys@...2503...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="RNK3Ygx4MhNx37hXk0hwmIcy5V02u0kE5"
-Subject: Re: [Openvpn-devel] [PATCH v2 2/2] Support client reason from auth
- plugin
+ boundary="uYcqwZeSoBjDj1L6bksJoqSvOBThhN3Vu"
+Subject: Re: [Openvpn-devel] [PATCH 1/1] man: correct the description of
+ --capath and --crl-verify regarding CRLs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,74 +18,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Eric Thorpe <eric@...1918...>, openvpn-devel@lists.sourceforge.net
+To: Michal Soltys <soltys@...2503...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---RNK3Ygx4MhNx37hXk0hwmIcy5V02u0kE5
-Content-Type: multipart/mixed; boundary="XuZohJfKNiqMGoNDZyhaPDvuh3HQiosHA";
+--uYcqwZeSoBjDj1L6bksJoqSvOBThhN3Vu
+Content-Type: multipart/mixed; boundary="Tcwdv3oVn1XumsBlxdifkGXptSZen5yEe";
  protected-headers="v1"
 From: Arne Schwabe <arne@...1227...>
-To: Eric Thorpe <eric@...1918...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <6bd7df38-a56c-b5d1-a2c5-329afa6d4346@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v2 2/2] Support client reason from auth
- plugin
-References: <a9f4fde1-61a1-5706-060b-58b8ba687314@...1918...>
-In-Reply-To: <a9f4fde1-61a1-5706-060b-58b8ba687314@...1918...>
+To: Michal Soltys <soltys@...2503...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <42b1cead-31e0-b382-9573-626517c89526@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH 1/1] man: correct the description of
+ --capath and --crl-verify regarding CRLs
+References: <20190409143438.25348-1-soltys@...2503...>
+ <20190409143438.25348-2-soltys@...2503...>
+In-Reply-To: <20190409143438.25348-2-soltys@...2503...>
 
---XuZohJfKNiqMGoNDZyhaPDvuh3HQiosHA
+--Tcwdv3oVn1XumsBlxdifkGXptSZen5yEe
 Content-Language: de-DE
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-Am 11.04.19 um 04:07 schrieb Eric Thorpe:
-> Hi All,
->=20
-> This patch allows for a client reason to be returned from an auth plugin
-> and sent to the connecting client on an auth fail. This change is
-> backwards compatible with existing plugins and hasn't caused issues with
-> existing plugins like the included pam plugin in our testing. The main
-> purpose of this change is to support dynamic challenge/response from
-> plugins, currently this is only possible from the management interface.
->=20
-> Example usage for this change can be found in a new plugin here modified
-> from the included PAM plugin -
-> https://github.com/thesparklabs/openvpn-two-factor-extensions/tree/master=
-/yubikey-u2f-pam-plugin
->=20
+Am 09.04.19 um 16:34 schrieb Michal Soltys:
+> The man page states that when using --capath, the user is required to
+> provide CRLs for CAs. This is not true and providing CRLs is optional -
+> both in case of --capath as well as --crl-verify options. When relevant
+> CRL is not found OpenVPN simply logs the warning in the logs while
+> allowing the connection, e.g.:
 
-Same as for the 1/2 patch, I would like to postpone this after the
-auth-token set has been merged.
+I cannot get my OpenVPN to fail without CRLs, so it might be change in
+OpenSSL or OpenVPN but this patch changes to documentation to reflect
+current behaviour, so
 
-The patch "Sent indication that a session is expired to clients" of
-auth-token also does the renaming from man_def_auth_set_client_reason to
-auth_set_client_reason so this creates a big conflict.
-
-Arne
+Acked-By: Arne Schwabe <arne@...1227...>
 
 
---XuZohJfKNiqMGoNDZyhaPDvuh3HQiosHA--
 
---RNK3Ygx4MhNx37hXk0hwmIcy5V02u0kE5
+--Tcwdv3oVn1XumsBlxdifkGXptSZen5yEe--
+
+--uYcqwZeSoBjDj1L6bksJoqSvOBThhN3Vu
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl0DcfEACgkQFRhsZwKx
-RFSK2hAAk2IxhtTOvLQerEqbOihy7fLgDyTo7OLfmi6AQdpME4XEBrbUmV1L+F5j
-vyXw/he23vU/WrFQrrx1Qxi2Ore3u35UJEhZIkWSMNoo7teypseSqrULCPx8NDrD
-pv6mZcJ1YlEPxxpHDy8e8kdywv0Cbi0GwzasWMcJDsac+eP1gL/7kYE3n6yi60tr
-3ss7GXBbPNmrTUQZyr/vJlqbkmCVQGusz77MChkOfOfQld267eRdkigIcd+jDY99
-auOW4DH49P410Pp7tLv21FbEJn4iVi73NVpAztDovFqTaB3HShnzYYN/8FIb2NMf
-+QkQhP3x9EH9uClkziUiXspN990tr4T+Cui8KeB31+YtHn2gNohsMa6ddchP4JY7
-rqKjKrLnizujGx/Ac2oXt3JZbnIQYfmxNnYI87X6DXMvNkc8WRaD8l971its0Vsz
-UOa0md64nugqTRcAfP6hYnlOaz3v2mghbdrVJg30nvFww3KwGZuLrf0jTlWXJM0e
-xFh/8IrFezfOP+vxlGK8JEayUvAdetar1QHKqmOUSX7Gy2vP/9zFC5DR0N9chUa+
-D2sxtSshZfy0qh/Y1SintYwImZmbmFLX0URzeyUXoLQT89eeUW8e3ijmohtuqC7L
-Fc06PDZdVSK30RmDzCk5M5faR6lvpZAQZpwsI+rZ/J91XqthUI4=
-=2Ycb
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl0Dc9cACgkQFRhsZwKx
+RFQ5rA/9Guq2sxUPz42IXdPh8kedSo1WNhdstsKucALYkzelGNiHSz925tiwrps1
+Rl4nTODTF+aw5+7nbYmQUQ2ZwNWjZIZunQa9FnqLC9VF0cpFgqrXF2i8IkYm11mN
+dErSa1JSX9QZYICvCKMsHElXw722Y6GqQifIV5ROWNTOnF/digwXIUPDOzkVkikR
+py+2zWyA5c7tPxX0Kxnm0gonyL7REfSPUo6EmpdoRrkfMhbNj7f6QQ3QDoz457VX
+BoswoiHP/INL+dgYezpMyJ5J8BNExPfgufHOSQSbAe4zw0NqsDl++XHySnwod2kr
+wrbZIb1S8+cZRTQk4mkd6eE+tdz5weaCoedKJxa/yMvYl6azbcQGaolFVfnFtSY1
+Nt2QCMSjlB7u/nP8P2iFuE/kLY+UH9h+rYTC28yBZBjfu2riW59ra48+PHfZbn5o
+5gLh/N9l+9GXT/r5YEQ2/OND13c9RcYm0s4yVesEVIGRuI2Tk28C6k8FxYlF/Ijh
+WJ0jB8z637Z6MfwOaqC3JPifPvXiepQC+m5+wIyxR2YHfrUD0OrVTX0lDaGAcCPz
+tpKUZtv8ylmoMfMOXxpIbxb+ACFZK9KptGAR0AiTATEyQYgA7UIL4etypnnQRv+K
+heq5jzbugY0Ja67nj6JhUUeGIswcY5bdgiHufvvYPxDtl7ZoH7c=
+=/a2o
 -----END PGP SIGNATURE-----
 
---RNK3Ygx4MhNx37hXk0hwmIcy5V02u0kE5--
+--uYcqwZeSoBjDj1L6bksJoqSvOBThhN3Vu--
 
