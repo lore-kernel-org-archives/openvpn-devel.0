@@ -1,20 +1,11 @@
-Date: Fri, 14 Jun 2019 19:59:30 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20190614175930.GH1097@...1296...>
-References: <CAGyAFMV=HvOYDRSB7eRpBDp-47wX2vie8JPgp48in1fH+eXn=A@...278...>
- <CAFHpkQFVpN-+Uoc6QsLmD8hjwEC7Ba1Q2SP4SuS_EMu_PT=3nw@...278...>
- <7bdf712d-4e0c-0667-c9eb-1bdd862b1e40@...2080...>
- <bfead88f-3e91-6d49-ea70-e73f626468f1@...1147...>
- <CAGyAFMW10tUVswPa8NfVieUJMm1oX1BFQaa9a0GP3NmgWpRshg@...278...>
- <CAGyAFMWODccNnD+yby7HrOUfdDFaceC3AX70+jG9_hL9vF=q+A@...278...>
- <CAGyAFMUqqjF67DDdr+BQXvFU515_zK=fDehUJH1TF+zjyjuiAA@...278...>
- <CAGyAFMWaHBAR1fPVx5PUERg=JU9hg+mQMhtQExqpE_tHvevSAw@...278...>
+From: Antonio Quartulli <a@...2181...>
+Date: Sun, 16 Jun 2019 01:02:13 +0200
+Message-Id: <20190615230213.14888-2-a@...2181...>
+In-Reply-To: <20190615230213.14888-1-a@...2181...>
+References: <20190615230213.14888-1-a@...2181...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="aSOv3uy5xJSQbCk1"
-Content-Disposition: inline
-In-Reply-To: <CAGyAFMWaHBAR1fPVx5PUERg=JU9hg+mQMhtQExqpE_tHvevSAw@...278...>
-Subject: Re: [Openvpn-devel] Wintun performance results
+Subject: [Openvpn-devel] [PATCH 2/2] t_net.sh: properly perform sudo check
+ and print test steps
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,51 +14,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, wireguard@...2500...
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <antonio@...515...>
 
---aSOv3uy5xJSQbCk1
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: Antonio Quartulli <antonio@...515...>
 
-Hi,
+The current script is performing a tes ton the "kill" command, but this
+is not useful to the t_net.sh script as it never really executes it.
 
-On Fri, Jun 14, 2019 at 06:56:56PM +0300, Lev Stipakov wrote:
-> ovpn3 wintun   1.90 Gbit/s
-> ovpn3 tap6       890 Mbit/s
+Rather test that "sudo <unit-test-binary>" really works.
 
-This is amazing indeed.  Now, if you do readmmsg() in openvpn3 for
-the tap6 case - will that also speed up things significantly?
+<unit-test-binary> has to be added to the sudoers file if this test
+has to be performend unattanded. The path is:
+./unit_tests/openvpn/networking_testdriver
 
-gert
+On to pof that, print a simple OK for every test that is succesful.
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Signed-off-by: Antonio Quartulli <antonio@...515...>
+---
+ tests/t_net.sh                             | 12 +++++-------
+ tests/unit_tests/openvpn/test_networking.c |  6 ++++++
+ 2 files changed, 11 insertions(+), 7 deletions(-)
 
-Gert Doering - Munich, Germany                             gert@...1296...
+diff --git a/tests/t_net.sh b/tests/t_net.sh
+index 1940ec92..70e8517d 100755
+--- a/tests/t_net.sh
++++ b/tests/t_net.sh
+@@ -125,14 +125,12 @@ else
+         echo "      must be set correctly in 't_client.rc'. SKIP." >&2
+         exit 77
+     else
+-        # We have to use sudo. Make sure that we (hopefully) do not have
+-        # to ask the users password during the test. This is done to
+-        # prevent timing issues, e.g. when the waits for openvpn to start
+-	    if $RUN_SUDO $KILL_EXEC -0 $$
++        # check that we can run the unit-test binary with sudo
++	    if $RUN_SUDO $UNIT_TEST test
+         then
+-	        echo "$0: $RUN_SUDO $KILL_EXEC -0 succeeded, good."
++	        echo "$0: $RUN_SUDO $UNIT_TEST succeeded, good."
+         else
+-	        echo "$0: $RUN_SUDO $KILL_EXEC -0 failed, cannot go on. SKIP." >&2
++	        echo "$0: $RUN_SUDO $UNIT_TEST failed, cannot go on. SKIP." >&2
+ 	        exit 77
+         fi
+     fi
+@@ -172,7 +170,7 @@ for i in $(seq 0 $MAX_TEST); do
+             exit 1
+         fi
+     done
+-
++    echo "Test $i: OK"
+ done
+ 
+ # remove interface for good
+diff --git a/tests/unit_tests/openvpn/test_networking.c b/tests/unit_tests/openvpn/test_networking.c
+index 66035011..6c50da92 100644
+--- a/tests/unit_tests/openvpn/test_networking.c
++++ b/tests/unit_tests/openvpn/test_networking.c
+@@ -185,6 +185,12 @@ main(int argc, char *argv[])
+         return -1;
+     }
+ 
++    /* the t_net script can use this command to perform a dry-run test */
++    if (strcmp(argv[1], "test") == 0)
++    {
++        return 0;
++    }
++
+     if (argc > 3)
+     {
+         iface = argv[2];
+-- 
+2.22.0
 
---aSOv3uy5xJSQbCk1
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJdA+CCAAoJEB2Cnv7KVigS6BkMAJ0lMKm2Lm8JvLOm12/J5mrS
-u+O48b8b4aZFl2PNIIEYHLJ1AG1/Ih80bC84mOyHJUxN0RqKL8h0QOOMfvvECgz7
-q/7rxrduUnd7KPh46PTGcywjfZFnTEOoWL8NYk2BwZyHm0tOhQKuXr9Uq+U9o2O+
-tXFfUKQjCxbAakaiwYtqnuZPRrdBZoLs833GXDxwjnJzUtMhvfisU1IZuilktT94
-bPFW7bjrS1NIKmP/tuxErpO2l0/ffTBPJOLwe1lMoCH2Hq9bUWFzgwseZX4ffklx
-Y06vSZVv3tuKamoFhuoJeSywJlQJ/8uocFrAnS6+SIc48XhKT4d1PUUg59k2HXe5
-WJKRQ+N8mtyY0TDX8IRr3OdebfsQu6Wz2xcTRs7IklBGqOI9YAUom2gtAAiBsxuH
-qFnc9t/nBkQC01ZoIT4Oe+50hc6yobt2ubdvA+y2ptlSfjs9VgfxJlkiOSJ81gSf
-1FEDAUHYpvaNONW3viKDp49iZ1P6FbJBdRaN71zA9Q==
-=Wx7L
------END PGP SIGNATURE-----
-
---aSOv3uy5xJSQbCk1--
 
