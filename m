@@ -1,10 +1,10 @@
-Date: Sun, 16 Jun 2019 10:28:27 +0200 (CEST)
-Message-Id: <201906160828.x5G8SRWD087627@...2054...>
+Date: Sun, 16 Jun 2019 10:35:30 +0200 (CEST)
+Message-Id: <201906160835.x5G8ZUxu088510@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20190615230213.14888-1-a@...2181...>
-References: <20190615230213.14888-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: t_net.sh: make bash dep
- explicit and run only if SITNL is compiled
+In-Reply-To: <20190615230213.14888-2-a@...2181...>
+References: <20190615230213.14888-2-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: t_net.sh: properly perform sudo
+ check and print test steps
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,26 +20,22 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Does what it says and fixes "make check" errors on platforms that either
-have a non-bash in /bin/sh, or are not compiled with SITNL.  (As a side note,
-the claim "this is fine on most distros" is one of the aspects that annoys
-me very much as a sysadmin - it is *never* fine to call /bin/sh and assume
-you can get any sort of functionality that is more than POSIX sh that way.
-Even if it works on your Linux system and that of your friend, it is still
-not *fine*, it will just cause annoyance for other people)
+"because it makes sense" :-) - for added point, the declarations of
+KILL_EXEC= and CC= could also be removed.  And the comment about 
+Solaris...  dead code...
 
 Your patch has been applied to the master branch.
 
-commit af7d6d78ad5db7d538d908df42e03a8d1baa1708
+commit 6f89dac0ed8b84bc581ceda710c506be2287f2b5
 Author: Antonio Quartulli
-Date:   Sun Jun 16 01:02:12 2019 +0200
+Date:   Sun Jun 16 01:02:13 2019 +0200
 
-     t_net.sh: make bash dep explicit and run only if SITNL is compiled
+     t_net.sh: properly perform sudo check and print test steps
 
      Signed-off-by: Antonio Quartulli <antonio@...515...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20190615230213.14888-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18547.html
+     Message-Id: <20190615230213.14888-2-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18548.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
