@@ -1,11 +1,10 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Mon, 17 Jun 2019 14:41:10 +0200
-Message-Id: <20190617124110.30907-2-a@...2181...>
-In-Reply-To: <20190617124110.30907-1-a@...2181...>
-References: <20190617124110.30907-1-a@...2181...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/2] route.c: fix windows build by removing
- mismatching function parameter
+Date: Mon, 17 Jun 2019 19:36:31 +0200 (CEST)
+Message-Id: <201906171736.x5HHaVXB011333@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20190617124110.30907-2-a@...2181...>
+References: <20190617124110.30907-2-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: route.c: fix windows build by
+ removing mismatching function parameter
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,30 +15,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <antonio@...515...>
+To: Antonio Quartulli <antonio@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Antonio Quartulli <antonio@...515...>
+Acked-by: Gert Doering <gert@...1296...>
 
-Signed-off-by: Antonio Quartulli <antonio@...515...>
----
- src/openvpn/route.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+"Because it's the quick fix, reverting one too-eager argument change while
+we do not have the rest of the get_default_gateway_ipv6() stuff in-tree"
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index c92a1343..4cdc4a9f 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -2799,7 +2799,7 @@ windows_route_find_if_index(const struct route_ipv4 *r, const struct tuntap *tt)
-  */
- void
- get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
--                         const struct in6_addr *dest, openvpn_net_ctx_t *ctx)
-+                         const struct in6_addr *dest)
- {
-     struct gc_arena gc = gc_new();
-     MIB_IPFORWARD_ROW2 BestRoute;
--- 
-2.22.0
+I have not test-compiled it, but it looks very reasonable :-)
+
+Your patch has been applied to the master branch.
+
+commit 22020547cbfa4a7199925bc4f32d95e84c504af2
+Author: Antonio Quartulli
+Date:   Mon Jun 17 14:41:10 2019 +0200
+
+     route.c: fix windows build by removing mismatching function parameter
+
+     Signed-off-by: Antonio Quartulli <antonio@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20190617124110.30907-2-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18551.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
