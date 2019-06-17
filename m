@@ -1,10 +1,14 @@
-Date: Mon, 17 Jun 2019 19:36:31 +0200 (CEST)
-Message-Id: <201906171736.x5HHaVXB011333@...2054...>
+Date: Mon, 17 Jun 2019 19:46:54 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20190617124110.30907-2-a@...2181...>
-References: <20190617124110.30907-2-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: route.c: fix windows build by
- removing mismatching function parameter
+Message-ID: <20190617174653.GM1097@...1296...>
+References: <20190617124110.30907-1-a@...2181...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="Ix2jQZQ3wXOip0b1"
+Content-Disposition: inline
+In-Reply-To: <20190617124110.30907-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH 1/2] t_net.sh: fixes for the networking
+ test script
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,36 +17,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <antonio@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net, Antonio Quartulli <antonio@...515...>
 
-Acked-by: Gert Doering <gert@...1296...>
+--Ix2jQZQ3wXOip0b1
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-"Because it's the quick fix, reverting one too-eager argument change while
-we do not have the rest of the get_default_gateway_ipv6() stuff in-tree"
+Hi,
 
-I have not test-compiled it, but it looks very reasonable :-)
+On Mon, Jun 17, 2019 at 02:41:09PM +0200, Antonio Quartulli wrote:
+> +UNIT_TEST=3D"LD_LIBRARY_PATH=3D$LD_LIBRARY_PATH:../vendor/dist/lib/ ./un=
+it_tests/openvpn/networking_testdriver"
 
-Your patch has been applied to the master branch.
+While this *looks* promising, it fails the=20
 
-commit 22020547cbfa4a7199925bc4f32d95e84c504af2
-Author: Antonio Quartulli
-Date:   Mon Jun 17 14:41:10 2019 +0200
+if [ ! -x "$UNIT_TEST" ]; then
+    echo "no test_networking driver available. SKIPPING TEST." >&2
+    exit 77
+fi
 
-     route.c: fix windows build by removing mismatching function parameter
+test later on.  Well, it quiets the buildbot failures, but a test that is
+always skipped cannot be the goal - so, NAK on this, sorry.
 
-     Signed-off-by: Antonio Quartulli <antonio@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20190617124110.30907-2-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18551.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
 
---
-kind regards,
+--Ix2jQZQ3wXOip0b1
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Gert Doering
+-----BEGIN PGP SIGNATURE-----
 
+iQGcBAEBAgAGBQJdB9INAAoJEB2Cnv7KVigS968L/2G19RF5h2rWqlEmFZmZiTwu
+LGVYMutFF4KT65Lr4LZZ7d99fIeCFUmJHIqrWrke5N4vyWVtCILXoYdcafym4J43
+Cgn/28hf/24P0A2WmO7RIqX7z1qOrlYLxW715X213Q+N0Mm7CQ4WN2srUB+jJl5Z
+1FwvMwYhJuDtpcL7YBKif++OExjkyIZn3yJhNaUE9QkjK/55njUmVUveEHNw2H5E
+f9DIjM9dHRjLHENNiyptZEVd0PfsMtoo3oe02USQTQI1UDE0C4euk+2hgKyutSG7
+UJ1Nk81LTGXmtXQDVyh7rIsBmZ6bYMl4kG6FHm4jsTq+vlKJ+HQbrfn+eTsDE/h0
+b3CPrc1J1PlslM4bnlFoM4eWAqUVuad93EK3gJHRuLk7Z7SrE3vWE5qp39P5OlfN
+aoUxTs9AcRpFNGmSnihxZXw6GsuXzOP/0rt8kdTgtDS3689GChL8cmSedS9hHau7
+I92WXHH2nRuTUs61/MD24QwZpWHUIlZbK0M0mWVS7w==
+=g2Sc
+-----END PGP SIGNATURE-----
+
+--Ix2jQZQ3wXOip0b1--
 
