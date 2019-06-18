@@ -1,15 +1,9 @@
-References: <20190617124110.30907-1-a@...2181...>
- <20190617174653.GM1097@...1296...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <e91322a0-168c-e815-33f7-e72e7c8a0954@...2181...>
-Date: Mon, 17 Jun 2019 20:01:44 +0200
+Date: Tue, 18 Jun 2019 18:34:35 +0200
+Message-Id: <20190618163435.26431-1-a@...2181...>
 MIME-Version: 1.0
-In-Reply-To: <20190617174653.GM1097@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="lP5r0dLTtGbxYhe1BnC9ONlF1XAYGcKtt"
-Subject: Re: [Openvpn-devel] [PATCH 1/2] t_net.sh: fixes for the networking
- test script
+Subject: [Openvpn-devel] [PATCH v2] t_net.sh: fixes for the networking test
+ script
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,84 +12,116 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net, Antonio Quartulli <antonio@...515...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <antonio@...515...>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---lP5r0dLTtGbxYhe1BnC9ONlF1XAYGcKtt
-Content-Type: multipart/mixed; boundary="FdFmFdKSwQazhbMcCtYdnY6fTZGJCli3K";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net,
- Antonio Quartulli <antonio@...515...>
-Message-ID: <e91322a0-168c-e815-33f7-e72e7c8a0954@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH 1/2] t_net.sh: fixes for the networking
- test script
-References: <20190617124110.30907-1-a@...2181...>
- <20190617174653.GM1097@...1296...>
-In-Reply-To: <20190617174653.GM1097@...1296...>
+From: Antonio Quartulli <antonio@...515...>
 
---FdFmFdKSwQazhbMcCtYdnY6fTZGJCli3K
-Content-Language: en-US
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+1) Building the networking unit-test when SITNL is not enabled does not
+make much sense right now.
+Make compilation dependent on having SITNL configured.
 
-Hi,
+2) Remove some no-op mock_msg function calls.
 
-On 17/06/2019 19:46, Gert Doering wrote:
-> Hi,
->=20
-> On Mon, Jun 17, 2019 at 02:41:09PM +0200, Antonio Quartulli wrote:
->> +UNIT_TEST=3D"LD_LIBRARY_PATH=3D$LD_LIBRARY_PATH:../vendor/dist/lib/ ./u=
-nit_tests/openvpn/networking_testdriver"
->=20
-> While this *looks* promising, it fails the=20
->=20
-> if [ ! -x "$UNIT_TEST" ]; then
->     echo "no test_networking driver available. SKIPPING TEST." >&2
->     exit 77
-> fi
->=20
-> test later on.  Well, it quiets the buildbot failures, but a test that is
-> always skipped cannot be the goal - so, NAK on this, sorry.
->=20
+3) Remove obsolete comment and declarations
 
-Absolutely right. In the jungle of tests I must have missed that.
-Will send v2 of this.
+Signed-off-by: Antonio Quartulli <antonio@...515...>
+---
 
-Regards,
+Changes from v1:
+- get rid of LD_LIBRARY_PATH: consensus is to have cmocka installed
+  system-wide
 
-> gert
->=20
+ tests/t_net.sh                             |  6 +-----
+ tests/unit_tests/openvpn/Makefile.am       |  2 ++
+ tests/unit_tests/openvpn/test_networking.c | 16 ----------------
+ 3 files changed, 3 insertions(+), 21 deletions(-)
 
---=20
-Antonio Quartulli
+diff --git a/tests/t_net.sh b/tests/t_net.sh
+index 70e8517d..18799d12 100755
+--- a/tests/t_net.sh
++++ b/tests/t_net.sh
+@@ -4,9 +4,6 @@ IFACE="dummy0"
+ UNIT_TEST="./unit_tests/openvpn/networking_testdriver"
+ MAX_TEST=${1:-7}
+ 
+-KILL_EXEC=`which kill`
+-CC=${CC:-gcc}
+-
+ srcdir="${srcdir:-.}"
+ top_builddir="${top_builddir:-..}"
+ openvpn="${top_builddir}/src/openvpn/openvpn"
+@@ -99,8 +96,7 @@ fi
+ # Ensure PREFER_KSU is in a known state
+ PREFER_KSU="${PREFER_KSU:-0}"
+ 
+-# make sure we have permissions to run ifconfig/route from OpenVPN
+-# can't use "id -u" here - doesn't work on Solaris
++# make sure we have permissions to run the networking unit-test
+ ID=`id`
+ if expr "$ID" : "uid=0" >/dev/null
+ then :
+diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
+index e61c57c4..d015b293 100644
+--- a/tests/unit_tests/openvpn/Makefile.am
++++ b/tests/unit_tests/openvpn/Makefile.am
+@@ -78,6 +78,7 @@ tls_crypt_testdriver_SOURCES = test_tls_crypt.c mock_msg.c mock_msg.h \
+ 	$(openvpn_srcdir)/platform.c \
+ 	$(openvpn_srcdir)/run_command.c
+ 
++if HAVE_SITNL
+ networking_testdriver_CFLAGS = @TEST_CFLAGS@ \
+ 	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir) \
+ 	$(OPTIONAL_CRYPTO_CFLAGS)
+@@ -92,3 +93,4 @@ networking_testdriver_SOURCES = test_networking.c mock_msg.c \
+ 	$(openvpn_srcdir)/otime.c \
+ 	$(openvpn_srcdir)/packet_id.c \
+ 	$(openvpn_srcdir)/platform.c
++endif
+diff --git a/tests/unit_tests/openvpn/test_networking.c b/tests/unit_tests/openvpn/test_networking.c
+index 6c50da92..22d8babe 100644
+--- a/tests/unit_tests/openvpn/test_networking.c
++++ b/tests/unit_tests/openvpn/test_networking.c
+@@ -2,13 +2,9 @@
+ #include "syshead.h"
+ #include "networking.h"
+ 
+-#include "mock_msg.h"
+-
+ 
+ static char *iface = "dummy0";
+ 
+-#ifdef ENABLE_SITNL
+-
+ static int
+ net__iface_up(bool up)
+ {
+@@ -177,8 +173,6 @@ main(int argc, char *argv[])
+ {
+     int test;
+ 
+-    mock_set_debug_level(10);
+-
+     if (argc < 2)
+     {
+         usage(argv[0]);
+@@ -223,13 +217,3 @@ main(int argc, char *argv[])
+     usage(argv[0]);
+     return -1;
+ }
+-
+-#else
+-
+-int
+-main(int argc, char *argv[])
+-{
+-    return 0;
+-}
+-
+-#endif /* ENABLE_SITNL */
+-- 
+2.22.0
 
-
---FdFmFdKSwQazhbMcCtYdnY6fTZGJCli3K--
-
---lP5r0dLTtGbxYhe1BnC9ONlF1XAYGcKtt
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAl0H1YgACgkQ9FVsWUWD
-Dm0otBAAtw6jmSST5u+822sukTUbC1SDLbSk6Mtw5gGkzk0tEBs/sXjUuj7y8bwG
-Ez3Pe3nDrw0D55ew0o2vRBmeHX8c8WL4En5jvWEgauDM3pUZCEDSiYWhgr2q0Mai
-JQnNxqzJRyKqUeSGgG/tJP/g01UUz7AGtUfkd6RxhHAGZrR9tlzVdJgKKyvlR8Pl
-5qDx5q03ndTbwILNWTLTFUNlmzGdh1i85ZMELU0ei7oNJvG1fbAzImQebmDPV2uq
-i5L2yimg2aGFE5613RlBGvYCukgrbXVBuu8a162DPjWspSVQZsyFuJcFszY4Hwjq
-daHYzGPj37iD5OG9yXoDjyRkB648k6wHPVA2zQAyXgrFa07laXFKprQD2YL04lH/
-v8+ZCi57sZP2CKQ6k6z6FQQS5oppL7BtpvEbVLM2bqsCo98hYg8Iz/cLLfHOzLQa
-+NMNa0R3OcJeTHNU6JeruHiZM5kMSrgL2HNQ3aapzrzR0ROV/aKRUynNne124wbG
-YQzdo9cPyiZKpk6hCAWBrNuwbOOE/HUEsvmdg/P+JysoOSGDW7/bsyhAAmjcHCKW
-6otromW8h1Ru4HkdMb0fBWDU5ShqwbzY55AmuQt2WOz1cUYjOlZ9AYxGa+C4yCd1
-24zb1yuqORyh8eyFC9B4dwcZ4THFp1054WadgD0WjUkp9LOThCg=
-=1BtB
------END PGP SIGNATURE-----
-
---lP5r0dLTtGbxYhe1BnC9ONlF1XAYGcKtt--
 
