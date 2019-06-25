@@ -1,12 +1,10 @@
-Date: Tue, 25 Jun 2019 21:49:06 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20190625194905.GM1097@...1296...>
-References: <1561491241-16380-1-git-send-email-lstipakov@...277...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="Lqu5hkAdORZH7CMT"
-Content-Disposition: inline
-In-Reply-To: <1561491241-16380-1-git-send-email-lstipakov@...277...>
+References: <1561491241-16380-1-git-send-email-lstipakov@...277...>
+ <20190625194905.GM1097@...1296...>
+In-Reply-To: <20190625194905.GM1097@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Tue, 25 Jun 2019 15:57:18 -0400
+Message-ID: <CAKuzo_g200Ck8fBTMmTe93R5A_+FjGoK0zKNQr49i01RmHfHkw@...278...>
 Subject: Re: [Openvpn-devel] [PATCH] openvpnserv: enable interactive service
  to open tun
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,59 +15,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: Lev Stipakov <lstipakov@...277...>, Lev Stipakov <lev@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Lqu5hkAdORZH7CMT
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hi
 
-Hi,
+On Tue, Jun 25, 2019 at 3:49 PM Gert Doering <gert@...1296...> wrote:
+>
+> Hi,
+>
+> On Tue, Jun 25, 2019 at 10:34:01PM +0300, Lev Stipakov wrote:
+> >      ack_message_t ack;
+> >      struct gc_arena gc = gc_new();
+> >
+> > -    if (!send_msg_iservice(pipe, rt, size, &ack, "ROUTE"))
+> > +    if (!send_msg_iservice(pipe, rt, size, &ack, sizeof(ack), "ROUTE"))
+>
+> I do not like this.  Please find another way to send the request message
+> "with length" than to add an extra parameter to every single caller of
+> send_msg_iservice().
 
-On Tue, Jun 25, 2019 at 10:34:01PM +0300, Lev Stipakov wrote:
->      ack_message_t ack;
->      struct gc_arena gc =3D gc_new();
->=20=20
-> -    if (!send_msg_iservice(pipe, rt, size, &ack, "ROUTE"))
-> +    if (!send_msg_iservice(pipe, rt, size, &ack, sizeof(ack), "ROUTE"))
+Gert beat me to it :) Anyway, me too!
 
-I do not like this.  Please find another way to send the request message
-"with length" than to add an extra parameter to every single caller of=20
-send_msg_iservice().
+The way interactive service structures are coded should not require
+this at all, does it? The size and message type are already in the
+header, so why do we need to pass it? The result here is a new kind of
+ack message with a different size and type and that could be checked
+by accessing the header element. Unless I'm missing something.
 
-Possibly introduce a wrapper for the "standard" case which calls a new
-function send_msg_iservice_ex() that takes a length field for the return=20
-data type.  And the open wintun / return handle would then use _ex().
+>
+> +    HANDLE local_handle = CreateFileA(open_tun->device_path, GENERIC_READ | GENERIC_WRITE, 0, 0,
+> +                                      OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, 0);
+> +
+> +    if (local_handle == INVALID_HANDLE_VALUE)
+> +    {
+> +        WCHAR *device_path_wchar = NULL;
+> +        int size = sizeof(open_tun->device_path);
+> +        err = GetLastError();
+> +
+> +        device_path_wchar = malloc(size * sizeof(WCHAR));
+> +        if (device_path_wchar)
+> +        {
+> +            MultiByteToWideChar(CP_UTF8, 0, open_tun->device_path, size, device_path_wchar, size);
+> +            device_path_wchar[size - 1] = 0;
+> +        }
+> +        MsgToEventLog(M_SYSERR, TEXT("Error opening tun device (%s)"), device_path_wchar);
+> +        free(device_path_wchar);
+> +        return err;
+> +    }
+>
 
-gert
+Also this one -- I think we should just use the wide version of
+CreateFile  -- all strings in OpenVPN.exe are supposed to be in utf8,
+so convert to widechar and call CreateFileW.
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---Lqu5hkAdORZH7CMT
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJdEnqxAAoJEB2Cnv7KVigSil8MAIHzFR9ryLd/YhfXtOOpqF08
-DKSz40MZ5lg5mif/GsIxLu0wxSMNhOyxMV/KYPbXskRZVSLvJTPm9zm9FCE8H1uk
-8O/9XRmH5Uxvq6wCfj21nZFqAIXTzVR/rzUIUOp/pvSqy9FD2AdhCmkY2fc2B7Wy
-c1EiFmopKqSRzc7YAfz9yjejru+31GU0zmfGd+OgHTnd/x1q09wGGyCcJJYhRnjg
-nfZWL2ojqJamhMDToiNgl7ReFoCJBnWNgAJZ8GMTqRsT/YZDIeivn0ZhjXh1GWBN
-z8FuCjsRpx2xRIGG6Tp89FqPRtrk1pvjIhc0YneoodymsJnSY/3rLDEXg6kqorsu
-+fCLpbfhEpWrXFCDi9JCSis6rdOg9R27S1VbfzioDuh6O9OLdn+tckuNmKcyps9a
-+jEzNW3S/xD5f1rfcfP0hIt9PAz0+1eBlNhDzU9ncgMaaGUgSsDO/VmdAZedtCgQ
-7/Lps/nWIf7kQpo4wX2jn3tBlTpiLpDiDTjyh16AKg==
-=VwLn
------END PGP SIGNATURE-----
-
---Lqu5hkAdORZH7CMT--
+Selva
 
