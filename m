@@ -1,16 +1,14 @@
-Resent-To: "openvpn-devel@lists.sourceforge.net"
- <openvpn-devel@lists.sourceforge.net>
-Resent-Message-ID: <5deb36e0-550c-615a-4dd5-d0a0b9452dfd@...2162...>
-References: <20190613134834.5709-1-arne@...1227...>
- <20190613134834.5709-5-arne@...1227...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <414b5e76-c18d-5348-0d3c-84b121ca46bd@...2080...>
-Date: Tue, 25 Jun 2019 22:17:26 +0200
 MIME-Version: 1.0
-In-Reply-To: <20190613134834.5709-5-arne@...1227...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH v4 6/7] Sent indication that a session
- is expired to clients
+References: <1561491241-16380-1-git-send-email-lstipakov@...277...>
+ <20190625194905.GM1097@...1296...>
+ <CAKuzo_g200Ck8fBTMmTe93R5A_+FjGoK0zKNQr49i01RmHfHkw@...278...>
+ <CAGyAFMWRqAhpsXaSPouXQPEzmCM5qDMD-Pie2XaqdXPL3weLMA@...278...>
+In-Reply-To: <CAGyAFMWRqAhpsXaSPouXQPEzmCM5qDMD-Pie2XaqdXPL3weLMA@...278...>
+From: Selva Nair <selva.nair@...277...>
+Date: Tue, 25 Jun 2019 17:00:05 -0400
+Message-ID: <CAKuzo_j7zdB6oeJ59NxFOKmZi6m9iyBq67cWMJFYt513mdXs_w@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] openvpnserv: enable interactive service
+ to open tun
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,42 +17,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lstipakov@...277...>
+Cc: Gert Doering <gert@...1296...>, Lev Stipakov <lev@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-On 13/06/2019 15:48, Arne Schwabe wrote:
-> From: Arne Schwabe <arne@...515...>
-> 
-> This allows OpenVPN 3 core to fall back to the original authentication
-> method.
-> 
-> This commit changes man_def_auth_set_client_reason to
-> auth_set_client_reason since it now used in more contexts.
-> 
-> Also remove a FIXME about client_reason not being freed, as it is freed
-> in tls_multi_free with auth_set_client_reason(multi, NULL);
-> 
-> Patch V4: Rebase on master
-> ---
->  src/openvpn/auth_token.c |  3 +++
->  src/openvpn/ssl.c        |  6 ++----
->  src/openvpn/ssl_common.h | 10 +++++-----
->  src/openvpn/ssl_verify.c |  8 ++++----
->  src/openvpn/ssl_verify.h | 15 ++++++++++-----
->  5 files changed, 24 insertions(+), 18 deletions(-)
-> 
+Hi,
 
-There's a typo in the subject line (Sent -> Send), otherwise this is fine and
-works as expected.
+On Tue, Jun 25, 2019 at 4:38 PM Lev Stipakov <lstipakov@...277...> wrote:
+>
+> Hi,
+>
+>>
+>> The way interactive service structures are coded should not require
+>> this at all, does it? The size and message type are already in the
+>> header, so why do we need to pass it?
+>
+>
+> But we need to know the response size in send_msg_iservice() since
+> we pass it to ReadFile(). So far we assumed that response is always ask_message_t
+> and we could do sizeof(*ack). With new response type this assumption doesn't hold so
+> as Gert suggested I added another version which accepts arbitrary response type and size.
 
-Acked-by: David Sommerseth <davids@...515...>
+My point is that, this is not in the spirit of the rest of iservice code. See
+HandleMessage in interactive.c where the data is and then interpreted
+using the header type and size.
+
+For what max-size to pass to ReadFile, we know it from the size in the header
+element of the struct.
+
+Selva
 
 
--- 
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
-
+>
+> bool
+> send_msg_iservice(HANDLE pipe, const void *data, size_t size,
+>                   ack_message_t *ack, const char *context)
+> {
+>     return send_msg_iservice_ex(pipe, data, size, ack, sizeof(*ack), context);
+> }
+>
+> bool
+> send_msg_iservice_ex(HANDLE pipe, const void *data, size_t size,
+>                      void *response, size_t response_size, const char *context)
+> {
+>
+> Will send V2 tomorrow with this and CreateFileW changes.
+>
+>
+> --
+> -Lev
 
