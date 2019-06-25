@@ -1,16 +1,8 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-References: <e55f098a-1ba1-02d7-5f50-b12e4eec054a@...515...>
- <ef6133bb-cb4a-d70a-c0b4-1b9466fc19fd@...515...>
- <FF8443AE-D430-496D-881A-C75171649BA6@...2293...>
- <66e96fe1-46ef-ba52-8db3-ae575f105d1d@...515...>
- <e1a67659-043d-9ddd-1f5d-f4461e056aae@...515...>
-Message-ID: <261da5e7-6997-7a37-2ce6-b1a408aaebee@...515...>
-Date: Tue, 25 Jun 2019 11:55:47 +0300
-MIME-Version: 1.0
-In-Reply-To: <e1a67659-043d-9ddd-1f5d-f4461e056aae@...515...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] Summary of the community meeting (20th June
- 2019)
+From: Lev Stipakov <lstipakov@...277...>
+Date: Tue, 25 Jun 2019 22:34:01 +0300
+Message-Id: <1561491241-16380-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] openvpnserv: enable interactive service to
+ open tun
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,152 +13,343 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Simon Rozman <simon@...2293...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Hi,
+From: Lev Stipakov <lev@...515...>
 
-I got the Static Driver Verifier to run with help from Stephen. The
-correct (command-line) procedure is now documented here:
+This patch enables interactive service to open tun device.
+This is mostly needed by Wintun, which could be opened
+only by privileged process.
 
-<https://community.openvpn.net/openvpn/wiki/HLKTesting#StaticToolsLogoTest>
+When interactive service is used, instead of calling
+CreateFile() directly by openvpn process we pass tun device path
+into service process. There we open device, duplicate handle
+and pass it back to openvpn process.
 
-So it was bad usability after all. The tests are now running and
-hopefully I can create the merged test result package from SDV and Code
-Analysis today.
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ include/openvpn-msg.h         | 12 ++++++++
+ src/openvpn/route.c           |  2 +-
+ src/openvpn/tun.c             | 70 +++++++++++++++++++++++++++++++++++--------
+ src/openvpn/win32.c           |  6 ++--
+ src/openvpn/win32.h           |  6 ++--
+ src/openvpnserv/interactive.c | 59 +++++++++++++++++++++++++++++++++++-
+ 6 files changed, 134 insertions(+), 21 deletions(-)
 
-Meanwhile I'll make the HLK client work for its money by running the
-other tests.
-
-Samuli
-
-Il 24/06/19 21:13, Samuli Seppänen ha scritto:
-> Hi,
-> 
-> Il 24/06/19 14:33, Samuli Seppänen ha scritto:
->> Hi Simon,
->>
->> Thanks for the info again!
->>
->> Il 21/06/19 18:59, Simon Rozman ha scritto:
->>> (21:04:58) mattock: assuming Microsoft's systems are happy with the test submission package, that is
->>> (21:05:12) mattock: they _should_ be, but we have not tested submitting anything yes
->>>
->>> 1. Do the SDV and DVL to get tap901.DVL.xml.
->>
->> I'm working on this right now. Based on brief practical testing EWDK may
->> not be able to do this, even though it is apparently possible to produce
->> SDV logs from the command-line:>
->> https://docs.microsoft.com/en-us/windows-hardware/drivers/develop/creating-a-log-file-for-static-driver-verifier
->>
->> It _seems_ that EWDK might not have all the necessary pieces for
->> producing SDV log files. MS does briefly mention that EWDK is not
->> suitable for doing driver testing, whatever that means. So, to play it
-> 
-> Actually it is probably possible to use the EWDK for running Static
-> Driver Verifier:
-> 
-> <https://github.com/MicrosoftDocs/windows-driver-docs/blob/staging/windows-driver-docs-pr/develop/creating-a-driver-verification-log.md>
-> <https://docs.microsoft.com/it-it/windows-hardware/drivers/devtest/static-driver-verifier>
-> 
->> safe, I'm installing Visual Studio 2019 plus the "normal" Windows Driver
->> Kit on my tapbuilder VM.
-> 
-> So, I took a stab at producing the Static Driver Verifier logs in Visual
-> Studio 2019 ("Extensions" -> "Static Driver Verifier"), but it just
-> complains about
-> 
-> "Please select a driver project for sdv to verify"
-> 
-> I wonder if I just hit a usability problem, or if something is actually
-> missing from tap-windows6?
-> 
-> Attempting to run SDV from the command-line (adapted from first link
-> above) fails as well. The /clean part works fine, but running SDV fails:
-> 
-> PS> msbuild.exe src\tap-windows6.vcxproj /p:Configuration="Release"
-> /p:Platform=x64 /target:sdv /p:inputs="/clean"
-> 
-> --- snip ---
-> 
-> PS> msbuild.exe src\tap-windows6.vcxproj /p:Configuration="Release"
-> /p:Platform=x64 /target:sdv /p:inputs="/check:default.sdv"
-> 
->   [INFO] Validating XML against schema: C:\Program Files (x86)\Windows
-> Kits\10\TOOLS\SDV\smv\bin\Config.xsd
->   [INFO] Running local scheduler with 2 threads
->   [FATAL ERROR] Unrecoverable error in NormalBuild stage.
-> C:\Program Files (x86)\Windows
-> Kits\10\build\windowsdriver.Sdv.targets(136,9): error MSB3073: The
-> command "staticdv /ch
-> eck:default.sdv" exited with code -1.
-> [C:\Users\samuli\opt\tap-windows6\src\tap-windows6.vcxproj]
-> Done Building Project
-> "C:\Users\samuli\opt\tap-windows6\src\tap-windows6.vcxproj" (sdv
-> target(s)) -- FAILED.
-> 
-> 
-> Build FAILED.
-> 
-> "C:\Users\samuli\opt\tap-windows6\src\tap-windows6.vcxproj" (sdv target)
-> (1) ->
-> (sdv target) ->
->   C:\Program Files (x86)\Windows
-> Kits\10\build\windowsdriver.Sdv.targets(136,9): error MSB3073: The
-> command "staticdv /
-> check:default.sdv" exited with code -1.
-> [C:\Users\samuli\opt\tap-windows6\src\tap-windows6.vcxproj]
-> 
->     0 Warning(s)
->     1 Error(s)
-> 
-> Time Elapsed 00:00:02.65
-> 
-> ---
-> 
-> Am I missing something [that is obvious to a Windows developer]?
-> 
-> Samuli
-> 
-> [*] Adapting the instructions of the first link, above
-> 
->>
->>> 2. Compile the driver and EV sign it. Save PDBs too.
->>
->> I assume this is not really necessary if I'm using WDKTest certificates
->> and have enabled test-signing?
->>
->>> 3. Deploy the driver on test computers (including tap901.DVL.xml, remember?).
->>> 4. Do the WHLK.
->>> 5. When creating submission package, add the driver binaries and PDBs (on HLK Studio submission page).
->>> 6. Submit the driver to Microsoft WHQL.
->>> 7. Miscrosoft should return you a WHQL signed driver in about 10 minutes.
->>>
->>> (21:07:09) mattock: worst case scenario is that I have to reinstall the HLK client as Windows Server 2019 core _if_ Microsoft is not happy with the "Operate in Server Core" having been run on a virtual machine, or on some old i5 laptop which does not have the required 4 physical processor cores
->>>
->>> Microsoft is fine with that test being run on a virtual Windows Server 2019 Core in Wintun case. And this test is pretty straight forward - just checks that driver loads and adapter responds, it doesn't need to be connected and have traffic. Use devcon to make a single TAP adapter on the Server Core. No need to have a running OpenVPN connection for this test to pass.
->>
->> This is good news. I can just use a Virtualbox VM then. This test used
->> to pass even on EC2 Windows instances.
->>
->>> (21:14:42) mattock: I also finally ate our own dogfood and installer OpenVPN on the virtual host running the HLK controller so that I can access the HLK controller and clients remotely, which speeds the testing up quite a bit
->>>
->>> Not a good idea, as WHLK tests can and will interfere with all TAP-Windows6 adapters on test computers. Not just the one that is being tested. Expect OpenVPN connections to flicker or die. Just use it to access controller server only. I never experienced any issues requiring intervention on test computers.
->>
->> The OpenVPN client I'm talking about is installed on a Linux laptop that
->> works as a Virtualbox host. The HLK controller is a VM on that host.
->> None of the HLK computers know about its existence.
->>
->> The HLK test client and support machine do have OpenVPN setup, but that
->> is a completely separate p2p bridged setup used to allow the two-machine
->> NDIS tests pass. And it works well for that purpose.
->>
-> 
-
-
+diff --git a/include/openvpn-msg.h b/include/openvpn-msg.h
+index 66177a2..273d9a6 100644
+--- a/include/openvpn-msg.h
++++ b/include/openvpn-msg.h
+@@ -39,6 +39,8 @@ typedef enum {
+     msg_del_block_dns,
+     msg_register_dns,
+     msg_enable_dhcp,
++    msg_open_tun_device,
++    msg_open_tun_device_result,
+ } message_type_t;
+ 
+ typedef struct {
+@@ -117,4 +119,14 @@ typedef struct {
+     interface_t iface;
+ } enable_dhcp_message_t;
+ 
++typedef struct {
++    message_header_t header;
++    char device_path[512];
++} open_tun_device_message_t;
++
++typedef struct {
++    message_header_t header;
++    HANDLE handle;
++    int error_number;
++} open_tun_device_result_message_t;
+ #endif /* ifndef OPENVPN_MSG_H_ */
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 4cdc4a9..27fa18c 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -2992,7 +2992,7 @@ do_route_service(const bool add, const route_message_t *rt, const size_t size, H
+     ack_message_t ack;
+     struct gc_arena gc = gc_new();
+ 
+-    if (!send_msg_iservice(pipe, rt, size, &ack, "ROUTE"))
++    if (!send_msg_iservice(pipe, rt, size, &ack, sizeof(ack), "ROUTE"))
+     {
+         goto out;
+     }
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 8f8f7c6..2d7bd0d 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -115,7 +115,7 @@ do_address_service(const bool add, const short family, const struct tuntap *tt)
+         addr.prefix_len = tt->netbits_ipv6;
+     }
+ 
+-    if (!send_msg_iservice(pipe, &addr, sizeof(addr), &ack, "TUN"))
++    if (!send_msg_iservice(pipe, &addr, sizeof(addr), &ack, sizeof(ack), "TUN"))
+     {
+         goto out;
+     }
+@@ -181,7 +181,7 @@ do_dns6_service(bool add, const struct tuntap *tt)
+     msg(D_LOW, "%s IPv6 dns servers on '%s' (if_index = %d) using service",
+         (add ? "Setting" : "Deleting"), dns.iface.name, dns.iface.index);
+ 
+-    if (!send_msg_iservice(pipe, &dns, sizeof(dns), &ack, "TUN"))
++    if (!send_msg_iservice(pipe, &dns, sizeof(dns), &ack, sizeof(ack), "TUN"))
+     {
+         goto out;
+     }
+@@ -5227,7 +5227,7 @@ service_enable_dhcp(const struct tuntap *tt)
+         .iface = { .index = tt->adapter_index, .name = "" }
+     };
+ 
+-    if (!send_msg_iservice(pipe, &dhcp, sizeof(dhcp), &ack, "Enable_dhcp"))
++    if (!send_msg_iservice(pipe, &dhcp, sizeof(dhcp), &ack, sizeof(ack), "Enable_dhcp"))
+     {
+         goto out;
+     }
+@@ -5248,6 +5248,43 @@ out:
+     return ret;
+ }
+ 
++static HANDLE
++service_open_tun_device(const HANDLE pipe, const char* device_path)
++{
++    open_tun_device_result_message_t result_msg;
++    struct gc_arena gc = gc_new();
++    open_tun_device_message_t open_tun_device = {
++        .header = {
++            msg_open_tun_device,
++            sizeof(open_tun_device_message_t),
++            0
++        }
++    };
++    result_msg.handle = INVALID_HANDLE_VALUE;
++
++    strncpynt(open_tun_device.device_path, device_path, sizeof(open_tun_device.device_path));
++
++    if (!send_msg_iservice(pipe, &open_tun_device, sizeof(open_tun_device),
++        &result_msg, sizeof(result_msg), "Open_tun_device"))
++    {
++        goto out;
++    }
++
++    if (result_msg.error_number != NO_ERROR)
++    {
++        msg(D_TUNTAP_INFO, "TUN: opening tun handle using service failed: %s [status=%u device_path=%s]",
++            strerror_win32(result_msg.error_number, &gc), result_msg.error_number, device_path);
++    }
++    else
++    {
++        msg(M_INFO, "Opened tun device %s using service", device_path);
++    }
++
++out:
++    gc_free(&gc);
++    return result_msg.handle;
++}
++
+ /*
+  * Return a TAP name for netsh commands.
+  */
+@@ -5469,7 +5506,7 @@ register_dns_service(const struct tuntap *tt)
+ 
+     message_header_t rdns = { msg_register_dns, sizeof(message_header_t), 0 };
+ 
+-    if (!send_msg_iservice(msg_channel, &rdns, sizeof(rdns), &ack, "Register_dns"))
++    if (!send_msg_iservice(msg_channel, &rdns, sizeof(rdns), &ack, sizeof(ack), "Register_dns"))
+     {
+         gc_free(&gc);
+         return;
+@@ -5631,15 +5668,22 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+                                  device_guid,
+                                  TAP_WIN_SUFFIX);
+ 
+-                tt->hand = CreateFile(
+-                    device_path,
+-                    GENERIC_READ | GENERIC_WRITE,
+-                    0,                /* was: FILE_SHARE_READ */
+-                    0,
+-                    OPEN_EXISTING,
+-                    FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED,
+-                    0
++                if (tt->options.msg_channel)
++                {
++                    tt->hand = service_open_tun_device(tt->options.msg_channel, device_path);
++                }
++                else
++                {
++                    tt->hand = CreateFile(
++                        device_path,
++                        GENERIC_READ | GENERIC_WRITE,
++                        0,                /* was: FILE_SHARE_READ */
++                        0,
++                        OPEN_EXISTING,
++                        FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED,
++                        0
+                     );
++                }
+ 
+                 if (tt->hand == INVALID_HANDLE_VALUE)
+                 {
+@@ -5937,7 +5981,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+                 };
+ 
+                 if (send_msg_iservice(tt->options.msg_channel, &msg, sizeof(msg),
+-                                      &ack, "TUN"))
++                                      &ack, sizeof(ack), "TUN"))
+                 {
+                     status = ack.error_number;
+                 }
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index eb4c030..80d2025 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -1280,7 +1280,7 @@ win_block_dns_service(bool add, int index, const HANDLE pipe)
+         .iface = { .index = index, .name = "" }
+     };
+ 
+-    if (!send_msg_iservice(pipe, &data, sizeof(data), &ack, "Block_DNS"))
++    if (!send_msg_iservice(pipe, &data, sizeof(data), &ack, sizeof(ack), "Block_DNS"))
+     {
+         goto out;
+     }
+@@ -1474,14 +1474,14 @@ win32_version_string(struct gc_arena *gc, bool add_name)
+ 
+ bool
+ send_msg_iservice(HANDLE pipe, const void *data, size_t size,
+-                  ack_message_t *ack, const char *context)
++                  void *response, size_t response_size, const char *context)
+ {
+     struct gc_arena gc = gc_new();
+     DWORD len;
+     bool ret = true;
+ 
+     if (!WriteFile(pipe, data, size, &len, NULL)
+-        || !ReadFile(pipe, ack, sizeof(*ack), &len, NULL))
++        || !ReadFile(pipe, response, response_size, &len, NULL))
+     {
+         msg(M_WARN, "%s: could not talk to service: %s [%lu]",
+             context ? context : "Unknown",
+diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
+index 4814bbc..6602552 100644
+--- a/src/openvpn/win32.h
++++ b/src/openvpn/win32.h
+@@ -311,11 +311,11 @@ const char *win32_version_string(struct gc_arena *gc, bool add_name);
+ 
+ /*
+  * Send the |size| bytes in buffer |data| to the interactive service |pipe|
+- * and read the result in |ack|. Returns false on communication error.
+- * The string in |context| is used to prefix error messages.
++ * and read the result in |response| of size |response_size|. Returns false
++ * on communication error. The string in |context| is used to prefix error messages.
+  */
+ bool send_msg_iservice(HANDLE pipe, const void *data, size_t size,
+-                       ack_message_t *ack, const char *context);
++                       void *response, size_t response_size, const char *context);
+ 
+ /*
+  * Attempt to simulate fork/execve on Windows
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 623c3ff..f530c82 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -57,7 +57,7 @@ static HANDLE exit_event = NULL;
+ static settings_t settings;
+ static HANDLE rdns_semaphore = NULL;
+ #define RDNS_TIMEOUT 600  /* seconds to wait for the semaphore */
+-
++static HANDLE ovpn_process = NULL; /* used by DuplicateHandle() when passing tun device handle to openvpn process */
+ 
+ openvpn_service_t interactive_service = {
+     interactive,
+@@ -1198,6 +1198,44 @@ HandleEnableDHCPMessage(const enable_dhcp_message_t *dhcp)
+     return err;
+ }
+ 
++static DWORD
++HandleOpenTunDeviceMessage(const open_tun_device_message_t *open_tun, HANDLE *remote_handle)
++{
++    DWORD err = 0;
++
++    *remote_handle = INVALID_HANDLE_VALUE;
++
++    HANDLE local_handle = CreateFileA(open_tun->device_path, GENERIC_READ | GENERIC_WRITE, 0, 0,
++                                      OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, 0);
++
++    if (local_handle == INVALID_HANDLE_VALUE)
++    {
++        WCHAR *device_path_wchar = NULL;
++        int size = sizeof(open_tun->device_path);
++        err = GetLastError();
++
++        device_path_wchar = malloc(size * sizeof(WCHAR));
++        if (device_path_wchar)
++        {
++            MultiByteToWideChar(CP_UTF8, 0, open_tun->device_path, size, device_path_wchar, size);
++            device_path_wchar[size - 1] = 0;
++        }
++        MsgToEventLog(M_SYSERR, TEXT("Error opening tun device (%s)"), device_path_wchar);
++        free(device_path_wchar);
++        return err;
++    }
++
++    if (!DuplicateHandle(GetCurrentProcess(), local_handle, ovpn_process, remote_handle, 0, FALSE,
++            DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS))
++    {
++        err = GetLastError();
++        MsgToEventLog(M_SYSERR, TEXT("Error duplicating tun device handle"));
++        return err;
++    }
++
++    return err;
++}
++
+ static VOID
+ HandleMessage(HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events, undo_lists_t *lists)
+ {
+@@ -1210,6 +1248,7 @@ HandleMessage(HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events, undo_lists
+         block_dns_message_t block_dns;
+         dns_cfg_message_t dns;
+         enable_dhcp_message_t dhcp;
++        open_tun_device_message_t open_tun;
+     } msg;
+     ack_message_t ack = {
+         .header = {
+@@ -1277,6 +1316,22 @@ HandleMessage(HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events, undo_lists
+             }
+             break;
+ 
++        case msg_open_tun_device:
++            if (msg.header.size == sizeof(msg.open_tun))
++            {
++                open_tun_device_result_message_t res = {
++                    .header = {
++                        .type = msg_open_tun_device_result,
++                        .size = sizeof(res),
++                        .message_id = msg.header.message_id
++                    }
++                };
++                res.error_number = HandleOpenTunDeviceMessage(&msg.open_tun, &res.handle);
++                WritePipeAsync(pipe, &res, sizeof(res), count, events);
++                return;
++            }
++            break;
++
+         default:
+             ack.error_number = ERROR_MESSAGE_TYPE;
+             MsgToEventLog(MSG_FLAGS_ERROR, TEXT("Unknown message type %d"), msg.header.type);
+@@ -1603,6 +1658,8 @@ RunOpenvpn(LPVOID p)
+         free(input);
+     }
+ 
++    ovpn_process = proc_info.hProcess;
++
+     while (TRUE)
+     {
+         DWORD bytes = PeekNamedPipeAsync(ovpn_pipe, 1, &exit_event);
 -- 
-Samuli Seppänen
-Community Manager
-OpenVPN Technologies, Inc
+2.7.4
 
-irc freenode net: mattock
 
