@@ -1,14 +1,16 @@
+Resent-To: "openvpn-devel@lists.sourceforge.net"
+ <openvpn-devel@lists.sourceforge.net>
+Resent-Message-ID: <5deb36e0-550c-615a-4dd5-d0a0b9452dfd@...2162...>
+References: <20190613134834.5709-1-arne@...1227...>
+ <20190613134834.5709-5-arne@...1227...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <414b5e76-c18d-5348-0d3c-84b121ca46bd@...2080...>
+Date: Tue, 25 Jun 2019 22:17:26 +0200
 MIME-Version: 1.0
-References: <1561491241-16380-1-git-send-email-lstipakov@...277...>
- <20190625194905.GM1097@...1296...>
- <CAKuzo_g200Ck8fBTMmTe93R5A_+FjGoK0zKNQr49i01RmHfHkw@...278...>
- <20190625203414.GN1097@...1296...>
-In-Reply-To: <20190625203414.GN1097@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 25 Jun 2019 16:54:03 -0400
-Message-ID: <CAKuzo_hz8vZ+WONCmY4ppc88A15Jvb=G+oBqBQnhxrCWRKv_eA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] openvpnserv: enable interactive service
- to open tun
+In-Reply-To: <20190613134834.5709-5-arne@...1227...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH v4 6/7] Sent indication that a session
+ is expired to clients
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,52 +19,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: Lev Stipakov <lstipakov@...277...>, Lev Stipakov <lev@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>
 
-Hi
+On 13/06/2019 15:48, Arne Schwabe wrote:
+> From: Arne Schwabe <arne@...515...>
+> 
+> This allows OpenVPN 3 core to fall back to the original authentication
+> method.
+> 
+> This commit changes man_def_auth_set_client_reason to
+> auth_set_client_reason since it now used in more contexts.
+> 
+> Also remove a FIXME about client_reason not being freed, as it is freed
+> in tls_multi_free with auth_set_client_reason(multi, NULL);
+> 
+> Patch V4: Rebase on master
+> ---
+>  src/openvpn/auth_token.c |  3 +++
+>  src/openvpn/ssl.c        |  6 ++----
+>  src/openvpn/ssl_common.h | 10 +++++-----
+>  src/openvpn/ssl_verify.c |  8 ++++----
+>  src/openvpn/ssl_verify.h | 15 ++++++++++-----
+>  5 files changed, 24 insertions(+), 18 deletions(-)
+> 
 
-On Tue, Jun 25, 2019 at 4:34 PM Gert Doering <gert@...1296...> wrote:
->
-> Hi,
->
-> On Tue, Jun 25, 2019 at 03:57:18PM -0400, Selva Nair wrote:
-> > The way interactive service structures are coded should not require
-> > this at all, does it? The size and message type are already in the
-> > header, so why do we need to pass it? The result here is a new kind of
-> > ack message with a different size and type and that could be checked
-> > by accessing the header element. Unless I'm missing something.
->
-> You could, indeed, do this inside send_msg_iservice() by looking
-> at "what request did we sent?  so what should be coming back?" but
-> I'm not sure I find this safe enough (caller allocates memory, and
-> maybe we shouldn't rely on "it being big enough" unless explicitly
-> told).  It would work, yes, but leaves me with a bit uneasy feeling.
+There's a typo in the subject line (Sent -> Send), otherwise this is fine and
+works as expected.
 
-I was thinking of dereferening the response pointer as a union and check the
-header size which the caller is supposed to have set. So change ack * to
-void * in send_msg_iservice()  as in the patch, and treat it as
-ack or and extended ack depending on the specified size. Further, when
-reading from the pipe one should also check the size of data received
-matches what is expected.
-
-It may be also useful to make all reply messages made up of an ack message
-plus optional additional data -- ie., all start with a header and an error code.
-
-Selva
+Acked-by: David Sommerseth <davids@...515...>
 
 
+-- 
+kind regards,
 
+David Sommerseth
+OpenVPN Inc
 
->
-> gert
-> --
-> "If was one thing all people took for granted, was conviction that if you
->  feed honest figures into a computer, honest figures come out. Never doubted
->  it myself till I met a computer with a sense of humor."
->                              Robert A. Heinlein, The Moon is a Harsh Mistress
->
-> Gert Doering - Munich, Germany                             gert@...1296...
 
