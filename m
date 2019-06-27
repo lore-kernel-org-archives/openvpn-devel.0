@@ -1,13 +1,9 @@
-Date: Thu, 27 Jun 2019 09:53:21 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20190627075321.GD1097@...1296...>
-References: <da61f7b0-f9e1-e4e7-3aa0-a0dd603a3f32@...277...>
+From: Paolo Cerrito <wardragon78@...277...>
+Date: Thu, 27 Jun 2019 10:26:31 +0200
+Message-Id: <20190627082631.25576-1-wardragon78@...277...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="sQTf9N6XI0Qk9QIT"
-Content-Disposition: inline
-In-Reply-To: <da61f7b0-f9e1-e4e7-3aa0-a0dd603a3f32@...277...>
-Subject: Re: [Openvpn-devel] Patch for pam recent module
+Subject: [Openvpn-devel] [PATCH] Insert client connection data into PAM
+ environment
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,62 +12,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Paolo <wardragon78@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: paolo <paolo.cerrito@...2517...>
 
---sQTf9N6XI0Qk9QIT
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: paolo <paolo.cerrito@...2517...>
 
-Hi,
+Signed-off-by: Paolo Cerrito <paolo.cerrito@...2517...>
+---
+ src/plugins/auth-pam/auth-pam.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
 
-On Wed, Jun 26, 2019 at 03:37:56PM +0200, Paolo wrote:
-> i make a pull reuqest ofr this patch some times ago over github, this
-> patch implements the right peace of software for passing ip and hostname
-> to pam modules, to use for example in firewall or modules like
-> pam_recent, this patch is succefull running by more tha 7 years into our
-> systems.
+diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
+index 88b53204..9d8dfb95 100644
+--- a/src/plugins/auth-pam/auth-pam.c
++++ b/src/plugins/auth-pam/auth-pam.c
+@@ -115,6 +115,7 @@ struct user_pass {
+     char password[128];
+     char common_name[128];
+     char response[128];
++    char remote[128];
+ 
+     const struct name_value_list *name_value_list;
+ };
+@@ -517,13 +518,15 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
+         const char *username = get_env("username", envp);
+         const char *password = get_env("password", envp);
+         const char *common_name = get_env("common_name", envp) ? get_env("common_name", envp) : "";
++        const char *remote = get_env("untrusted_ip", envp) ? get_env("untrusted_ip", envp) : get_env("untrusted_ip6", envp);
+ 
+         if (username && strlen(username) > 0 && password)
+         {
+             if (send_control(context->foreground_fd, COMMAND_VERIFY) == -1
+                 || send_string(context->foreground_fd, username) == -1
+                 || send_string(context->foreground_fd, password) == -1
+-                || send_string(context->foreground_fd, common_name) == -1)
++                || send_string(context->foreground_fd, common_name) == -1
++                || send_string(context->foreground_fd, remote) == -1)
+             {
+                 fprintf(stderr, "AUTH-PAM: Error sending auth info to background process\n");
+             }
+@@ -750,8 +753,16 @@ pam_auth(const char *service, const struct user_pass *up)
+     status = pam_start(service, name_value_list_provided ? NULL : up->username, &conv, &pamh);
+     if (status == PAM_SUCCESS)
+     {
++        /* Set PAM_RHOST environment variable */
++        if (*(up->remote))
++        {
++            status = pam_set_item(pamh, PAM_RHOST, up->remote);
++        }
+         /* Call PAM to verify username/password */
+-        status = pam_authenticate(pamh, 0);
++        if (status == PAM_SUCCESS)
++        {
++            status = pam_authenticate(pamh, 0);
++        }
+         if (status == PAM_SUCCESS)
+         {
+             status = pam_acct_mgmt(pamh, 0);
+@@ -839,7 +850,8 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
+             case COMMAND_VERIFY:
+                 if (recv_string(fd, up.username, sizeof(up.username)) == -1
+                     || recv_string(fd, up.password, sizeof(up.password)) == -1
+-                    || recv_string(fd, up.common_name, sizeof(up.common_name)) == -1)
++                    || recv_string(fd, up.common_name, sizeof(up.common_name)) == -1
++                    || recv_string(fd, up.remote, sizeof(up.remote)) == -1)
+                 {
+                     fprintf(stderr, "AUTH-PAM: BACKGROUND: read error on command channel: code=%d, exiting\n",
+                             command);
+@@ -853,6 +865,7 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
+                             up.username, up.password);
+ #else
+                     fprintf(stderr, "AUTH-PAM: BACKGROUND: USER: %s\n", up.username);
++                    fprintf(stderr, "AUTH-PAM: BACKGROUND: REMOTE: %s\n", up.remote);
+ #endif
+                 }
+ 
+-- 
+2.20.1
 
-Please send patches with "git send-email".  Your mail program totally
-massacred the patch (most spaces were replaced by alt-space, 0xa0, which
-looks like a space but isn't)
-
-Please do also use a meaningful commit message that describes what
-the patch does, and use "git commit -s" to add a signed-off-by line.
-
-> \xa0\xa0\xa0\xa0 char response[128];
-> +\xa0\xa0\xa0 char remote[128];
-
-This is how the patch arrived here...
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---sQTf9N6XI0Qk9QIT
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJdFHXxAAoJEB2Cnv7KVigSREkL/1bD88u9KtOVvwDtWjz1hHuG
-j4+axauBKfneUXkZ7CB1XcXyLlX2sZillE9gqSEwD27UzaVUzOVHCgOPijIQlEyC
-xie12CRqOauWdw/CZqeVdF6LnKILWY35eYGoCP8DrKz+HZ5bRDgHxHSF3BGH+rwA
-TF4ambcAzqM5CIvKtXpuPmSiIhDphQlVTN4e+KKtSE91r8IMIB5zqhF5WAw/9JQJ
-p70Y71s3VugPxcNeBDFHp8pKe0WcqfwZExS2Qq/Mzhv7zmhqkvHNJ/X3ScOuaO5w
-3WEaL/Ose1Ta/9KKIvGp2Jn5kSkxHXXciC+ypvHJk2CBPgvbBsL3QRx6O1qGqwnz
-sK+cEC+aUr87dzpVwajvhFIwUlCrQVtdkz/DYKLQuH0+YWgGDmtata3lkRNIBNL8
-iXccSGsQ3CH1OqyEOW3ZAVXx8k8a9zGTfmcHjwcJ+mJCmhfs9pKb3VOeNZCjN+k0
-EpLUwDyJMb91SbqLb8wbC33vUFCAom576xQdDcDvWA==
-=tGev
------END PGP SIGNATURE-----
-
---sQTf9N6XI0Qk9QIT--
 
