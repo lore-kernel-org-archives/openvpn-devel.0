@@ -1,17 +1,13 @@
-Date: Thu, 27 Jun 2019 09:39:24 +0200
+Date: Thu, 27 Jun 2019 09:53:21 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20190627073924.GB1097@...1296...>
-References: <CAFHpkQFOUB6hq4rQjCGLvbXprjvUL0aD3y107oYj15t6CSMxTg@...278...>
- <20190626063502.GS1097@...1296...>
- <9f92ae0a-cae6-39bd-932b-fa977686f27a@...1227...>
- <CAFHpkQFn0Yn8dWya9H=EgC4MLugvrpHLkA=-eqyscQWZy_eDCw@...278...>
- <2d1c2e8a-7f60-6a40-164e-f8657d6f2103@...1227...>
+Message-ID: <20190627075321.GD1097@...1296...>
+References: <da61f7b0-f9e1-e4e7-3aa0-a0dd603a3f32@...277...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="8MIuRhPDBHHz1F6y"
+ protocol="application/pgp-signature"; boundary="sQTf9N6XI0Qk9QIT"
 Content-Disposition: inline
-In-Reply-To: <2d1c2e8a-7f60-6a40-164e-f8657d6f2103@...1227...>
-Subject: Re: [Openvpn-devel] how to migrate users to "no compression" config
+In-Reply-To: <da61f7b0-f9e1-e4e7-3aa0-a0dd603a3f32@...277...>
+Subject: Re: [Openvpn-devel] Patch for pam recent module
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,21 +16,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: ???????? ?????????????? <chipitsine@...277...>, Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Paolo <wardragon78@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---8MIuRhPDBHHz1F6y
+--sQTf9N6XI0Qk9QIT
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Wed, Jun 26, 2019 at 11:14:34PM +0200, Arne Schwabe wrote:
-> My patch that enables asymmetrical compression by default adds a bit of
-> documentation in that regard iirc.
+On Wed, Jun 26, 2019 at 03:37:56PM +0200, Paolo wrote:
+> i make a pull reuqest ofr this patch some times ago over github, this
+> patch implements the right peace of software for passing ip and hostname
+> to pam modules, to use for example in firewall or modules like
+> pam_recent, this patch is succefull running by more tha 7 years into our
+> systems.
 
-Where did that get stuck?  Still in limbo between David and you?
+Please send patches with "git send-email".  Your mail program totally
+massacred the patch (most spaces were replaced by alt-space, 0xa0, which
+looks like a space but isn't)
+
+Please do also use a meaningful commit message that describes what
+the patch does, and use "git commit -s" to add a signed-off-by line.
+
+> \xa0\xa0\xa0\xa0 char response[128];
+> +\xa0\xa0\xa0 char remote[128];
+
+This is how the patch arrived here...
 
 gert
 --=20
@@ -47,22 +56,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---8MIuRhPDBHHz1F6y
+--sQTf9N6XI0Qk9QIT
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJdFHKqAAoJEB2Cnv7KVigS9ZEMAJNpDuvr7YR0eOBD5ZN0Fu/4
-0kg2s0kUCurZgYVBmjX8GhrjBekDefXXXrNb22m54R6SiNFa1ML6mQFgoP+H9mY4
-VFarIIrCmfTJUx6xWrLOoK67n7JKxZfPW/9z6Iv4XsMgFaVyyrxobiGO6PhvysEQ
-OfTclx1CB5iqQKS8PD3Ncnhfitthq/5yQ+YLnzurmOiU01ELDRVwwbvv/xAAfiFL
-Fx7vrcTx09x6JoeY2DJtWihQnUhR180msV8wddRDMoADBI1/S8sbBKQN+CThYTlf
-/K4l6R0T7tGxXeRrb5oNQh/QcUAAa1F6r2dWMyUF1oyq47/bT1M4dx4jk1Z9XKDo
-m3cfccbWjqQjeLNbKKEiRQd7TwzOdqcuuuUvY0Oi+cN8N9eWs/fFV0qyZMQVNHjP
-7gyZ+m8jl7fuye9bFV/GOp4GM+tvri7u8zWezJkMMBLLXa+xYkh9sjYRrsySkohT
-nUTjM7UXTbRNrxDIBdBaLulMOnQh1fXuZvflD9I1mA==
-=PtCR
+iQGcBAEBAgAGBQJdFHXxAAoJEB2Cnv7KVigSREkL/1bD88u9KtOVvwDtWjz1hHuG
+j4+axauBKfneUXkZ7CB1XcXyLlX2sZillE9gqSEwD27UzaVUzOVHCgOPijIQlEyC
+xie12CRqOauWdw/CZqeVdF6LnKILWY35eYGoCP8DrKz+HZ5bRDgHxHSF3BGH+rwA
+TF4ambcAzqM5CIvKtXpuPmSiIhDphQlVTN4e+KKtSE91r8IMIB5zqhF5WAw/9JQJ
+p70Y71s3VugPxcNeBDFHp8pKe0WcqfwZExS2Qq/Mzhv7zmhqkvHNJ/X3ScOuaO5w
+3WEaL/Ose1Ta/9KKIvGp2Jn5kSkxHXXciC+ypvHJk2CBPgvbBsL3QRx6O1qGqwnz
+sK+cEC+aUr87dzpVwajvhFIwUlCrQVtdkz/DYKLQuH0+YWgGDmtata3lkRNIBNL8
+iXccSGsQ3CH1OqyEOW3ZAVXx8k8a9zGTfmcHjwcJ+mJCmhfs9pKb3VOeNZCjN+k0
+EpLUwDyJMb91SbqLb8wbC33vUFCAom576xQdDcDvWA==
+=tGev
 -----END PGP SIGNATURE-----
 
---8MIuRhPDBHHz1F6y--
+--sQTf9N6XI0Qk9QIT--
 
