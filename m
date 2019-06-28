@@ -1,10 +1,16 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Thu, 27 Jun 2019 15:07:06 +0300
-Message-Id: <1561637226-18464-1-git-send-email-lstipakov@...277...>
-In-Reply-To: <CAGyAFMUgS+WaDf5Xx8S-jX3MbAu4QT7_Ln86JDtmZEaV2PPLcA@...278...>
-References: <CAGyAFMUgS+WaDf5Xx8S-jX3MbAu4QT7_Ln86JDtmZEaV2PPLcA@...278...>
-Subject: [Openvpn-devel] [PATCH v3] openvpnserv: enable interactive service
- to open tun
+MIME-Version: 1.0
+References: <CAFHpkQFOUB6hq4rQjCGLvbXprjvUL0aD3y107oYj15t6CSMxTg@...278...>
+ <20190626063502.GS1097@...1296...>
+ <9f92ae0a-cae6-39bd-932b-fa977686f27a@...1227...>
+ <CAFHpkQFn0Yn8dWya9H=EgC4MLugvrpHLkA=-eqyscQWZy_eDCw@...278...>
+ <2d1c2e8a-7f60-6a40-164e-f8657d6f2103@...1227...>
+ <20190627073924.GB1097@...1296...>
+In-Reply-To: <20190627073924.GB1097@...1296...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Fri, 28 Jun 2019 12:14:40 +0500
+Message-ID: <CAFHpkQEuGSh+7Mn1F17Ri7sqnhprnygAMpK3sXL19M-fHMHBbA@...278...>
+Content-Type: multipart/alternative; boundary="000000000000daca62058c5d08a9"
+Subject: Re: [Openvpn-devel] how to migrate users to "no compression" config
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,353 +19,92 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: Arne Schwabe <arne@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Lev Stipakov <lev@...515...>
+--000000000000daca62058c5d08a9
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-This patch enables interactive service to open tun device.
-This is mostly needed by Wintun, which could be opened
-only by privileged process.
+by "high level" compression doc I mean something like that
 
-When interactive service is used, instead of calling
-CreateFile() directly by openvpn process we pass tun device path
-into service process. There we open device, duplicate handle
-and pass it back to openvpn process.
+a) road warrior scenario (remote access for enterprise users) - should we
+enable compression ? or traffic usually is compressed ? RDP is compressed ?
+any way to estimate compression (like $gzip_ratio in nginx)
+b) lz4, lzo, ... which one to choose ?
+c) how to push compression settings, best practices on that
 
-Signed-off-by: Lev Stipakov <lev@...515...>
----
- v3:
-  - ensure that device path passed by client is null-terminated
-  - support for multiple openvpn processes
-  - return proper error code when device handle is invalid
+@mattock, what do you think, should some such documentation present on
+https://openvpn.net ?
 
- v2:
-  - introduce send_msg_iservice_ex() instead of changing
-  signature of existing send_msg_iservice()
-  - use wchar_t strings in interactive service code
 
- include/openvpn-msg.h         | 12 +++++++
- src/openvpn/tun.c             | 83 ++++++++++++++++++++++++++++++++++---------
- src/openvpn/win32.c           |  9 ++++-
- src/openvpn/win32.h           | 30 +++++++++++++---
- src/openvpnserv/interactive.c | 64 +++++++++++++++++++++++++++++++--
- 5 files changed, 174 insertions(+), 24 deletions(-)
 
-diff --git a/include/openvpn-msg.h b/include/openvpn-msg.h
-index 66177a2..53d59a7 100644
---- a/include/openvpn-msg.h
-+++ b/include/openvpn-msg.h
-@@ -39,6 +39,8 @@ typedef enum {
-     msg_del_block_dns,
-     msg_register_dns,
-     msg_enable_dhcp,
-+    msg_open_tun_device,
-+    msg_open_tun_device_result,
- } message_type_t;
- 
- typedef struct {
-@@ -117,4 +119,14 @@ typedef struct {
-     interface_t iface;
- } enable_dhcp_message_t;
- 
-+typedef struct {
-+    message_header_t header;
-+    char device_path[256];
-+} open_tun_device_message_t;
-+
-+typedef struct {
-+    message_header_t header;
-+    HANDLE handle;
-+    int error_number;
-+} open_tun_device_result_message_t;
- #endif /* ifndef OPENVPN_MSG_H_ */
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 8f8f7c6..8c7e705 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -5248,6 +5248,43 @@ out:
-     return ret;
- }
- 
-+static HANDLE
-+service_open_tun_device(const HANDLE pipe, const char* device_path)
-+{
-+    open_tun_device_result_message_t result_msg;
-+    struct gc_arena gc = gc_new();
-+    open_tun_device_message_t open_tun_device = {
-+        .header = {
-+            msg_open_tun_device,
-+            sizeof(open_tun_device_message_t),
-+            0
-+        }
-+    };
-+    result_msg.handle = INVALID_HANDLE_VALUE;
-+
-+    strncpynt(open_tun_device.device_path, device_path, sizeof(open_tun_device.device_path));
-+
-+    if (!send_msg_iservice_ex(pipe, &open_tun_device, sizeof(open_tun_device),
-+        &result_msg, sizeof(result_msg), "Open_tun_device"))
-+    {
-+        goto out;
-+    }
-+
-+    if (result_msg.error_number != NO_ERROR)
-+    {
-+        msg(D_TUNTAP_INFO, "TUN: opening tun handle using service failed: %s [status=%u device_path=%s]",
-+            strerror_win32(result_msg.error_number, &gc), result_msg.error_number, device_path);
-+    }
-+    else
-+    {
-+        msg(M_INFO, "Opened tun device %s using service", device_path);
-+    }
-+
-+out:
-+    gc_free(&gc);
-+    return result_msg.handle;
-+}
-+
- /*
-  * Return a TAP name for netsh commands.
-  */
-@@ -5591,15 +5628,22 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
-                              device_guid,
-                              TAP_WIN_SUFFIX);
- 
--            tt->hand = CreateFile(
--                device_path,
--                GENERIC_READ | GENERIC_WRITE,
--                0,                /* was: FILE_SHARE_READ */
--                0,
--                OPEN_EXISTING,
--                FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED,
--                0
-+            if (tt->options.msg_channel)
-+            {
-+                tt->hand = service_open_tun_device(tt->options.msg_channel, device_path);
-+            }
-+            else
-+            {
-+                tt->hand = CreateFile(
-+                    device_path,
-+                    GENERIC_READ | GENERIC_WRITE,
-+                    0,                /* was: FILE_SHARE_READ */
-+                    0,
-+                    OPEN_EXISTING,
-+                    FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED,
-+                    0
-                 );
-+            }
- 
-             if (tt->hand == INVALID_HANDLE_VALUE)
-             {
-@@ -5631,15 +5675,22 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
-                                  device_guid,
-                                  TAP_WIN_SUFFIX);
- 
--                tt->hand = CreateFile(
--                    device_path,
--                    GENERIC_READ | GENERIC_WRITE,
--                    0,                /* was: FILE_SHARE_READ */
--                    0,
--                    OPEN_EXISTING,
--                    FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED,
--                    0
-+                if (tt->options.msg_channel)
-+                {
-+                    tt->hand = service_open_tun_device(tt->options.msg_channel, device_path);
-+                }
-+                else
-+                {
-+                    tt->hand = CreateFile(
-+                        device_path,
-+                        GENERIC_READ | GENERIC_WRITE,
-+                        0,                /* was: FILE_SHARE_READ */
-+                        0,
-+                        OPEN_EXISTING,
-+                        FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED,
-+                        0
-                     );
-+                }
- 
-                 if (tt->hand == INVALID_HANDLE_VALUE)
-                 {
-diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index eb4c030..039c1a4 100644
---- a/src/openvpn/win32.c
-+++ b/src/openvpn/win32.c
-@@ -1476,12 +1476,19 @@ bool
- send_msg_iservice(HANDLE pipe, const void *data, size_t size,
-                   ack_message_t *ack, const char *context)
- {
-+    return send_msg_iservice_ex(pipe, data, size, ack, sizeof(*ack), context);
-+}
-+
-+bool
-+send_msg_iservice_ex(HANDLE pipe, const void *data, size_t size,
-+                     void *response, size_t response_size, const char *context)
-+{
-     struct gc_arena gc = gc_new();
-     DWORD len;
-     bool ret = true;
- 
-     if (!WriteFile(pipe, data, size, &len, NULL)
--        || !ReadFile(pipe, ack, sizeof(*ack), &len, NULL))
-+        || !ReadFile(pipe, response, response_size, &len, NULL))
-     {
-         msg(M_WARN, "%s: could not talk to service: %s [%lu]",
-             context ? context : "Unknown",
-diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
-index 4814bbc..8ccddc0 100644
---- a/src/openvpn/win32.h
-+++ b/src/openvpn/win32.h
-@@ -309,14 +309,36 @@ int win32_version_info(void);
-  */
- const char *win32_version_string(struct gc_arena *gc, bool add_name);
- 
--/*
-- * Send the |size| bytes in buffer |data| to the interactive service |pipe|
-- * and read the result in |ack|. Returns false on communication error.
-- * The string in |context| is used to prefix error messages.
-+
-+/**
-+ * Send data to interactive service and receive response of type ack_message_t.
-+ *
-+ * @param  pipe      The handle of communication pipe
-+ * @param  data      The data to send
-+ * @param  size      The size of data to send
-+ * @param  response  The pointer to ack_message_t structure to where response is written
-+ * @param  context   The string used to prefix error messages
-+ *
-+ * @returns True on success, false on failure.
-  */
- bool send_msg_iservice(HANDLE pipe, const void *data, size_t size,
-                        ack_message_t *ack, const char *context);
- 
-+/**
-+ * Send data to interactive service and receive response.
-+ *
-+ * @param  pipe           The handle of communication pipe
-+ * @param  data           The data to send
-+ * @param  size           The size of data to send
-+ * @param  response       The buffer to where response is written
-+ * @param  response_size  The size of response buffer
-+ * @param  context        The string used to prefix error messages
-+ *
-+ * @returns True on success, false on failure.
-+ */
-+bool send_msg_iservice_ex(HANDLE pipe, const void *data, size_t size,
-+                          void *response, size_t response_size, const char *context);
-+
- /*
-  * Attempt to simulate fork/execve on Windows
-  */
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index 623c3ff..1729a08 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -58,7 +58,6 @@ static settings_t settings;
- static HANDLE rdns_semaphore = NULL;
- #define RDNS_TIMEOUT 600  /* seconds to wait for the semaphore */
- 
--
- openvpn_service_t interactive_service = {
-     interactive,
-     TEXT(PACKAGE_NAME "ServiceInteractive"),
-@@ -1198,8 +1197,48 @@ HandleEnableDHCPMessage(const enable_dhcp_message_t *dhcp)
-     return err;
- }
- 
-+static DWORD
-+HandleOpenTunDeviceMessage(const open_tun_device_message_t *open_tun, HANDLE ovpn_proc, HANDLE *remote_handle)
-+{
-+    DWORD err = ERROR_SUCCESS;
-+    HANDLE local_handle;
-+    LPWSTR device_path;
-+
-+    *remote_handle = INVALID_HANDLE_VALUE;
-+
-+    device_path = utf8to16(open_tun->device_path);
-+    if (!device_path)
-+    {
-+        err = ERROR_OUTOFMEMORY;
-+        goto out;
-+    }
-+
-+    /* open tun device */
-+    local_handle = CreateFileW(device_path, GENERIC_READ | GENERIC_WRITE, 0, 0,
-+                               OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, 0);
-+    if (local_handle == INVALID_HANDLE_VALUE)
-+    {
-+        err = GetLastError();
-+        MsgToEventLog(M_SYSERR, TEXT("Error opening tun device (%s)"), device_path);
-+        goto out;
-+    }
-+
-+    /* duplicate tun device handle to openvpn process */
-+    if (!DuplicateHandle(GetCurrentProcess(), local_handle, ovpn_proc, remote_handle, 0, FALSE,
-+                         DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS))
-+    {
-+        err = GetLastError();
-+        MsgToEventLog(M_SYSERR, TEXT("Error duplicating tun device handle"));
-+    }
-+
-+out:
-+    free(device_path);
-+
-+    return err;
-+}
-+
- static VOID
--HandleMessage(HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events, undo_lists_t *lists)
-+HandleMessage(HANDLE pipe, HANDLE ovpn_proc, DWORD bytes, DWORD count, LPHANDLE events, undo_lists_t *lists)
- {
-     DWORD read;
-     union {
-@@ -1210,6 +1249,7 @@ HandleMessage(HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events, undo_lists
-         block_dns_message_t block_dns;
-         dns_cfg_message_t dns;
-         enable_dhcp_message_t dhcp;
-+        open_tun_device_message_t open_tun;
-     } msg;
-     ack_message_t ack = {
-         .header = {
-@@ -1277,6 +1317,24 @@ HandleMessage(HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events, undo_lists
-             }
-             break;
- 
-+        case msg_open_tun_device:
-+            if (msg.header.size == sizeof(msg.open_tun))
-+            {
-+                open_tun_device_result_message_t res = {
-+                    .header = {
-+                        .type = msg_open_tun_device_result,
-+                        .size = sizeof(res),
-+                        .message_id = msg.header.message_id
-+                    }
-+                };
-+                /* make sure that string passed from user process is null-terminated */
-+                msg.open_tun.device_path[sizeof(msg.open_tun.device_path) - 1] = '\0';
-+                res.error_number = HandleOpenTunDeviceMessage(&msg.open_tun, ovpn_proc, &res.handle);
-+                WritePipeAsync(pipe, &res, sizeof(res), count, events);
-+                return;
-+            }
-+            break;
-+
-         default:
-             ack.error_number = ERROR_MESSAGE_TYPE;
-             MsgToEventLog(MSG_FLAGS_ERROR, TEXT("Unknown message type %d"), msg.header.type);
-@@ -1611,7 +1669,7 @@ RunOpenvpn(LPVOID p)
-             break;
-         }
- 
--        HandleMessage(ovpn_pipe, bytes, 1, &exit_event, &undo_lists);
-+        HandleMessage(ovpn_pipe, proc_info.hProcess, bytes, 1, &exit_event, &undo_lists);
-     }
- 
-     WaitForSingleObject(proc_info.hProcess, IO_TIMEOUT);
--- 
-2.7.4
+=D1=87=D1=82, 27 =D0=B8=D1=8E=D0=BD. 2019 =D0=B3. =D0=B2 12:39, Gert Doerin=
+g <gert@...1296...>:
 
+> Hi,
+>
+> On Wed, Jun 26, 2019 at 11:14:34PM +0200, Arne Schwabe wrote:
+> > My patch that enables asymmetrical compression by default adds a bit of
+> > documentation in that regard iirc.
+>
+> Where did that get stuck?  Still in limbo between David and you?
+>
+> gert
+> --
+> "If was one thing all people took for granted, was conviction that if you
+>  feed honest figures into a computer, honest figures come out. Never
+> doubted
+>  it myself till I met a computer with a sense of humor."
+>                              Robert A. Heinlein, The Moon is a Harsh
+> Mistress
+>
+> Gert Doering - Munich, Germany
+> gert@...1296...
+>
+
+--000000000000daca62058c5d08a9
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div>by &quot;high level&quot; compression doc I mean some=
+thing like that</div><div><br></div><div>a) road warrior scenario (remote a=
+ccess for enterprise users) - should we enable compression ? or traffic usu=
+ally is compressed ? RDP is compressed ? any way to estimate compression (l=
+ike <code>$gzip_ratio in nginx)</code></div><div><code>b) lz4, lzo, ... whi=
+ch one to choose ?</code></div><div><code>c) how to push compression settin=
+gs, best practices on that</code></div><div><code><br></code></div><div><co=
+de>@mattock, what do you think, should some such documentation present on <=
+a href=3D"https://openvpn.net">https://openvpn.net</a> ?</code></div><div><=
+code><br></code></div><div><code><br></code></div></div><br><div class=3D"g=
+mail_quote"><div dir=3D"ltr" class=3D"gmail_attr">=D1=87=D1=82, 27 =D0=B8=
+=D1=8E=D0=BD. 2019 =D0=B3. =D0=B2 12:39, Gert Doering &lt;<a href=3D"mailto=
+:gert@...1296...">gert@...1296...</a>&gt;:<br></div><blockquote class=3D"gm=
+ail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,=
+204,204);padding-left:1ex">Hi,<br>
+<br>
+On Wed, Jun 26, 2019 at 11:14:34PM +0200, Arne Schwabe wrote:<br>
+&gt; My patch that enables asymmetrical compression by default adds a bit o=
+f<br>
+&gt; documentation in that regard iirc.<br>
+<br>
+Where did that get stuck?=C2=A0 Still in limbo between David and you?<br>
+<br>
+gert<br>
+-- <br>
+&quot;If was one thing all people took for granted, was conviction that if =
+you <br>
+=C2=A0feed honest figures into a computer, honest figures come out. Never d=
+oubted <br>
+=C2=A0it myself till I met a computer with a sense of humor.&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Robert A. Heinlein, The Moon is a Harsh Mist=
+ress<br>
+<br>
+Gert Doering - Munich, Germany=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<a href=3D"mailt=
+o:gert@...1296..." target=3D"_blank">gert@...1296...</a><br>
+</blockquote></div>
+
+--000000000000daca62058c5d08a9--
 
