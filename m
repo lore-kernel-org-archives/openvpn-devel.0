@@ -1,10 +1,8 @@
-Date: Fri, 5 Jul 2019 12:39:12 +0200 (CEST)
-Message-Id: <201907051039.x65AdCnR097124@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20190613134834.5709-2-arne@...1227...>
-References: <20190613134834.5709-2-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add generate_ephemeral_key that
- allows a random ephermal key
+From: Arne Schwabe <arne@...1227...>
+Date: Fri,  5 Jul 2019 13:42:43 +0200
+Message-Id: <20190705114243.9481-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Remove -no-cpp-precomp flag from Darwin
+ builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,29 +13,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+GCC 9 no longer accepts this flag and trying to find out what it does do
+leads to an article
 
-I have adjusted the comment as David suggested.  Not much to test yet,
-as the new code is not used yet.
+"-no-cpp-precomp: the compiler flag that time forgot"
 
-commit fb4e8abca908d90faa98f20125e49a2590bccaa3
-Author: Arne Schwabe
-Date:   Thu Jun 13 15:48:30 2019 +0200
+that also no longer on the Internet. And most other things are
+PRs/commits from over ten years ago that remove the flag since it
+is no longer needed.
+---
+ configure.ac | 2 --
+ 1 file changed, 2 deletions(-)
 
-     Add generate_ephemeral_key that allows a random ephermal key
-
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20190613134834.5709-2-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18527.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/configure.ac b/configure.ac
+index 2cc396e5..e9f8a2f9 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -323,8 +323,6 @@ case "$host" in
+ 		AC_DEFINE([TARGET_DARWIN], [1], [Are we running on Mac OS X?])
+ 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["M"], [Target prefix])
+ 		have_tap_header="yes"
+-		dnl some Mac OS X tendering (we use vararg macros...)
+-		CPPFLAGS="$CPPFLAGS -no-cpp-precomp"
+ 		ac_cv_type_struct_in_pktinfo=no
+ 		;;
+ 	*-mingw*)
+-- 
+2.22.0
 
 
