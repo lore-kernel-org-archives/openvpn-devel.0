@@ -1,10 +1,8 @@
-Date: Fri, 5 Jul 2019 13:48:02 +0200 (CEST)
-Message-Id: <201907051148.x65Bm2I6097566@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20190705114243.9481-1-arne@...1227...>
-References: <20190705114243.9481-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove -no-cpp-precomp flag
- from Darwin builds
+Date: Fri,  5 Jul 2019 15:00:01 +0200
+Message-Id: <20190705130001.30741-1-gert@...1296...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] repair windows builds (2.4)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +13,37 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+commit 0c1cc8d65539f removed "DWORD len;" from service_enable_dhcp(),
+but that variable is far from "unused" - breaking compilation.
 
-Explanation makes sense :-)
+The problem here was that it's a larger "cleanup compiler warnings"
+patch which was fully correct for master, but this particular function
+looks different in release/2.4 because the whole iservice call
+refactoring patch isn't in release/2.4 - so master does not need the
+DWORD len, but release/2.4 does.
 
-Your patch has been applied to the master and release/2.4 branch.
+More care needed with "warning cleanup"...
 
-commit 0740e079a1c094627a69b8b5959c6be56e15d9f6 (master)
-commit c39b46e5fa0a73a1959bba30a9ca1ee59feb544b (release/2.4)
-Author: Arne Schwabe
-Date:   Fri Jul 5 13:42:43 2019 +0200
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/tun.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-     Remove -no-cpp-precomp flag from Darwin builds
-
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20190705114243.9481-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18650.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 9b830285..80eaa2c4 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -5374,6 +5374,7 @@ netsh_enable_dhcp(const char *actual_name)
+ static bool
+ service_enable_dhcp(const struct tuntap *tt)
+ {
++    DWORD len;
+     bool ret = false;
+     ack_message_t ack;
+     struct gc_arena gc = gc_new();
+-- 
+2.21.0
 
 
