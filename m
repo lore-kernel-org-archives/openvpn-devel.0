@@ -1,10 +1,10 @@
-Date: Fri, 5 Jul 2019 12:33:40 +0200 (CEST)
-Message-Id: <201907051033.x65AXeno089630@...2054...>
+Date: Fri, 5 Jul 2019 12:39:12 +0200 (CEST)
+Message-Id: <201907051039.x65AdCnR097124@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20190613134834.5709-1-arne@...1227...>
-References: <20190613134834.5709-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Implement --genkey type keyfile
- syntax and migrate tls-crypt-v2
+In-Reply-To: <20190613134834.5709-2-arne@...1227...>
+References: <20190613134834.5709-2-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add generate_ephemeral_key that
+ allows a random ephermal key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,30 +15,23 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Arne Schwabe <arne@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master branch.
 
-Have only done a cursory review + "make check" since David did the
-thorough review already.  One small code wart...
+I have adjusted the comment as David suggested.  Not much to test yet,
+as the new code is not used yet.
 
- +    if (options->mlock && (options->genkey))
-
-(asymmetric brackets) ... we can fix that when we pass here next time...
-
-I have adjusted openvpn.8 according to tincantech's comments about
-dashes and the typo.
-
-commit 0d80b562e48a243c36dba9f1f66c3da6e3b3eb98
+commit fb4e8abca908d90faa98f20125e49a2590bccaa3
 Author: Arne Schwabe
-Date:   Thu Jun 13 15:48:29 2019 +0200
+Date:   Thu Jun 13 15:48:30 2019 +0200
 
-     Implement --genkey type keyfile syntax and migrate tls-crypt-v2
+     Add generate_ephemeral_key that allows a random ephermal key
 
      Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20190613134834.5709-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18524.html
+     Message-Id: <20190613134834.5709-2-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18527.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
