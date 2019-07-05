@@ -1,8 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Fri,  5 Jul 2019 13:42:43 +0200
-Message-Id: <20190705114243.9481-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Remove -no-cpp-precomp flag from Darwin
- builds
+Date: Fri, 5 Jul 2019 13:48:02 +0200 (CEST)
+Message-Id: <201907051148.x65Bm2I6097566@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20190705114243.9481-1-arne@...1227...>
+References: <20190705114243.9481-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove -no-cpp-precomp flag
+ from Darwin builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +15,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-GCC 9 no longer accepts this flag and trying to find out what it does do
-leads to an article
+Acked-by: Gert Doering <gert@...1296...>
 
-"-no-cpp-precomp: the compiler flag that time forgot"
+Explanation makes sense :-)
 
-that also no longer on the Internet. And most other things are
-PRs/commits from over ten years ago that remove the flag since it
-is no longer needed.
----
- configure.ac | 2 --
- 1 file changed, 2 deletions(-)
+Your patch has been applied to the master and release/2.4 branch.
 
-diff --git a/configure.ac b/configure.ac
-index 2cc396e5..e9f8a2f9 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -323,8 +323,6 @@ case "$host" in
- 		AC_DEFINE([TARGET_DARWIN], [1], [Are we running on Mac OS X?])
- 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["M"], [Target prefix])
- 		have_tap_header="yes"
--		dnl some Mac OS X tendering (we use vararg macros...)
--		CPPFLAGS="$CPPFLAGS -no-cpp-precomp"
- 		ac_cv_type_struct_in_pktinfo=no
- 		;;
- 	*-mingw*)
--- 
-2.22.0
+commit 0740e079a1c094627a69b8b5959c6be56e15d9f6 (master)
+commit c39b46e5fa0a73a1959bba30a9ca1ee59feb544b (release/2.4)
+Author: Arne Schwabe
+Date:   Fri Jul 5 13:42:43 2019 +0200
+
+     Remove -no-cpp-precomp flag from Darwin builds
+
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20190705114243.9481-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18650.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
