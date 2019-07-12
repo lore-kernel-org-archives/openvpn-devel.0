@@ -1,12 +1,14 @@
-References: <6dc68129-a70d-2283-9ab7-b7621e6871b2@...68...>
-From: Matthias Andree <matthias.andree@...68...>
-Message-ID: <1910845c-fc56-f462-ff73-786bc3298aa4@...68...>
-Date: Fri, 12 Jul 2019 18:38:37 +0200
+References: <20190403225657.8003-1-rosenp@...277...>
+ <c6020cbf-4340-7e24-9bbc-50fbe6b2112d@...1227...>
+ <f44b86bf-0258-294f-9fcb-ade6059464aa@...68...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <318a10cc-4521-232c-0909-e824b3ce9a9b@...1227...>
+Date: Fri, 12 Jul 2019 18:44:06 +0200
 MIME-Version: 1.0
-In-Reply-To: <6dc68129-a70d-2283-9ab7-b7621e6871b2@...68...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] RFC: release/2.4 (OpenVPN 2.4.7) patch for
- building with LibreSSL
+In-Reply-To: <f44b86bf-0258-294f-9fcb-ade6059464aa@...68...>
+Content-Language: de-DE
+Subject: Re: [Openvpn-devel] [PATCHv2] openssl: Fix compilation without
+ deprecated OpenSSL 1.1 APIs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,22 +18,23 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Luca Pizzamiglio <pizzamig@...1249...>
+Content-Transfer-Encoding: 8bit
+To: Matthias Andree <matthias.andree@...68...>, openvpn-devel@lists.sourceforge.net
 
-Am 07.06.19 um 20:26 schrieb Matthias Andree:
-> Greetings,
->
-> FreeBSD has received a patch contribution to enable OpenVPN 2.4.x to be
-> built with LibreSSL. I'm seeking comments, and yes I am aware of
-> master's a47508606be2c6359d4b27c3b65b72dfe4786222 commit description
-> that claims LibreSSL isn't in the best shape for TLS 1.3.
->
-> <https://bz-attachments.freebsd.org/attachment.cgi?id=204874>
->
-> <https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=238382>
->
-> Comments?
-5 weeks on, anyone care to comment?
+Am 12.07.19 um 18:37 schrieb Matthias Andree:
+> Am 14.06.19 um 12:38 schrieb Arne Schwabe:
+>>
+>>> -#ifndef ENABLE_SMALL
+>>> +# ifndef ENABLE_SMALL
+>> The space between # and ifndef looks wrong.
+> 
+> It's standard C. (Chapter 3.8 in the 1989/1990 standard, chapter 6.10 in
+> recent editions, I checked 1999 and 2017/2018, although worded in a
+> quite convoluted way) and I have yet to see a relevant C compiler that
+> would reject this.
+
+I know :).
+
+Looks "wrong" in the sense that it does not match the style we want to
+have in openvpn.
 
