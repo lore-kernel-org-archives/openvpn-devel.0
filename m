@@ -1,11 +1,7 @@
-MIME-Version: 1.0
-References: <20190403225657.8003-1-rosenp@...277...>
- <c6020cbf-4340-7e24-9bbc-50fbe6b2112d@...1227...>
-In-Reply-To: <c6020cbf-4340-7e24-9bbc-50fbe6b2112d@...1227...>
 From: Rosen Penev <rosenp@...277...>
-Date: Fri, 12 Jul 2019 12:22:23 -0700
-Message-ID: <CAKxU2N_npn5fTsM=8606-Hkgm3=4pFE9nHLkaw=6Lq11E_33yA@...278...>
-Subject: Re: [Openvpn-devel] [PATCHv2] openssl: Fix compilation without
+Date: Fri, 12 Jul 2019 12:56:27 -0700
+Message-Id: <20190712195627.5937-1-rosenp@...277...>
+Subject: [Openvpn-devel] [PATCHv3] openssl: Fix compilation without
  deprecated OpenSSL 1.1 APIs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -15,83 +11,155 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Fri, Jun 14, 2019 at 3:38 AM Arne Schwabe <arne@...1227...> wrote:
->
-> Am 04.04.19 um 00:56 schrieb Rosen Penev:
-> > EVP_CIPHER_CTX_init and _cleanup were deprecated in 1.1 and both were
-> > replaced with _reset.
-> >
-> > Also removed initialization with OpenSSL 1.1 as it is no longer needed and
-> > causes compilation errors when disabling deprecated APIs.
-> >
-> > Same with SSL_CTX_set_ecdh_auto as it got removed.
-> >
->
-> This gets kind of an ACK but needs some additional changes to be really
-> good.
->
->
-> >
-> > +#if !defined(HAVE_EVP_CIPHER_CTX_INIT)
-> > +#define EVP_CIPHER_CTX_init EVP_CIPHER_CTX_reset
-> > +#endif
-> > +
-> > +#if !defined(HAVE_EVP_CIPHER_CTX_CLEANUP)
-> > +#define EVP_CIPHER_CTX_cleanup EVP_CIPHER_CTX_reset
-> > +#endif
->
-> These two keep the older API instead of switching to the new one, from
-> OpenSSL.
-Yes I know. I feel that it's a cleaner solution as _init and _cleanup
-both get defined to _reset.
->
-> # if OPENSSL_API_COMPAT < 0x10100000L
-> #  define EVP_CIPHER_CTX_init(c)      EVP_CIPHER_CTX_reset(c)
-> #  define EVP_CIPHER_CTX_cleanup(c)   EVP_CIPHER_CTX_reset(c)
-> # endif
->
-> Since just using only the new API in this case does not really work I
-> think in case it would be better to rather always use
-> EVP_CIPHER_CTX_reset isntead of init and  have ifdefs in the 2-3 places
-> where we actually use EVP_CIPHER_CTX_cleanup so we can remove the old
-> API when we bump our minimum OpenSSL version (and find this thing easy
-> since it is an ifdef depending on the openssl version).
-OK. Will change.
->
-> > +
-> > +#if !defined(HAVE_X509_GET0_NOTBEFORE)
-> > +#define X509_get0_notBefore X509_get_notBefore
-> > +#endif
-> > +
-> > +#if !defined(HAVE_X509_GET0_NOTAFTER)
-> > +#define X509_get0_notAfter X509_get_notAfter
-> > +#endif
-> > +
-> >  #if !defined(HAVE_HMAC_CTX_RESET)
-> >  /**
-> >   * Reset a HMAC context
-> > diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-> > index 8bcebac4..e41cafa5 100644
-> > --- a/src/openvpn/ssl_openssl.c
-> > +++ b/src/openvpn/ssl_openssl.c
-> > @@ -76,12 +76,13 @@ int mydata_index; /* GLOBAL */
-> >  void
-> >  tls_init_lib(void)
-> >  {
-> > +#if (OPENSSL_VERSION_NUMBER < 0x10100000L && !defined(LIBRESSL_VERSION_NUMBER))
-> >      SSL_library_init();
-> > -#ifndef ENABLE_SMALL
-> > +# ifndef ENABLE_SMALL
->
-> The space between # and ifndef looks wrong.
-Will eliminate. Not sure exactly why I added the space ATM.
->
->
-> Arne
->
+EVP_CIPHER_CTX_init and _cleanup were deprecated in 1.1 and both were
+replaced with _reset.
+
+Also removed initialization with OpenSSL 1.1 as it is no longer needed and
+causes compilation errors when disabling deprecated APIs.
+
+Signed-off-by: Rosen Penev <rosenp@...277...>
+---
+ v2: Squashed previous patches together.
+ v3: Check for _reset function only.
+ configure.ac                 |  3 +++
+ src/openvpn/crypto_openssl.c |  8 ++++++++
+ src/openvpn/openssl_compat.h |  8 ++++++++
+ src/openvpn/ssl_openssl.c    | 11 ++++++++---
+ 4 files changed, 27 insertions(+), 3 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index e9f8a2f9..c7fd7a84 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -919,10 +919,13 @@ if test "${with_crypto_library}" = "openssl"; then
+ 			EVP_MD_CTX_new \
+ 			EVP_MD_CTX_free \
+ 			EVP_MD_CTX_reset \
++			EVP_CIPHER_CTX_reset \
+ 			OpenSSL_version \
+ 			SSL_CTX_get_default_passwd_cb \
+ 			SSL_CTX_get_default_passwd_cb_userdata \
+ 			SSL_CTX_set_security_level \
++			X509_get0_notBefore \
++			X509_get0_notAfter \
+ 			X509_get0_pubkey \
+ 			X509_STORE_get0_objects \
+ 			X509_OBJECT_free \
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index c049e52d..d8aa4835 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -772,7 +772,11 @@ cipher_ctx_init(EVP_CIPHER_CTX *ctx, const uint8_t *key, int key_len,
+ {
+     ASSERT(NULL != kt && NULL != ctx);
+ 
++#if defined(HAVE_EVP_CIPHER_CTX_RESET)
++    EVP_CIPHER_CTX_reset(ctx);
++#else
+     EVP_CIPHER_CTX_init(ctx);
++#endif
+     if (!EVP_CipherInit(ctx, kt, NULL, NULL, enc))
+     {
+         crypto_msg(M_FATAL, "EVP cipher init #1");
+@@ -795,7 +799,11 @@ cipher_ctx_init(EVP_CIPHER_CTX *ctx, const uint8_t *key, int key_len,
+ void
+ cipher_ctx_cleanup(EVP_CIPHER_CTX *ctx)
+ {
++#if defined(HAVE_EVP_CIPHER_CTX_RESET)
++    EVP_CIPHER_CTX_reset(ctx);
++#else
+     EVP_CIPHER_CTX_cleanup(ctx);
++#endif
+ }
+ 
+ int
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index a4072b9a..788843a2 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -89,6 +89,14 @@ EVP_MD_CTX_new(void)
+ }
+ #endif
+ 
++#if !defined(HAVE_X509_GET0_NOTBEFORE)
++#define X509_get0_notBefore X509_get_notBefore
++#endif
++
++#if !defined(HAVE_X509_GET0_NOTAFTER)
++#define X509_get0_notAfter X509_get_notAfter
++#endif
++
+ #if !defined(HAVE_HMAC_CTX_RESET)
+ /**
+  * Reset a HMAC context
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 8bcebac4..e285bc56 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -76,12 +76,13 @@ int mydata_index; /* GLOBAL */
+ void
+ tls_init_lib(void)
+ {
++#if (OPENSSL_VERSION_NUMBER < 0x10100000L) && !defined(LIBRESSL_VERSION_NUMBER)
+     SSL_library_init();
+ #ifndef ENABLE_SMALL
+     SSL_load_error_strings();
+ #endif
+     OpenSSL_add_all_algorithms();
+-
++#endif
+     mydata_index = SSL_get_ex_new_index(0, "struct session *", NULL, NULL, NULL);
+     ASSERT(mydata_index >= 0);
+ }
+@@ -89,10 +90,12 @@ tls_init_lib(void)
+ void
+ tls_free_lib(void)
+ {
++#if (OPENSSL_VERSION_NUMBER < 0x10100000L) && !defined(LIBRESSL_VERSION_NUMBER)
+     EVP_cleanup();
+ #ifndef ENABLE_SMALL
+     ERR_free_strings();
+ #endif
++#endif
+ }
+ 
+ void
+@@ -541,7 +544,7 @@ tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
+         goto cleanup; /* Nothing to check if there is no certificate */
+     }
+ 
+-    ret = X509_cmp_time(X509_get_notBefore(cert), NULL);
++    ret = X509_cmp_time(X509_get0_notBefore(cert), NULL);
+     if (ret == 0)
+     {
+         msg(D_TLS_DEBUG_MED, "Failed to read certificate notBefore field.");
+@@ -551,7 +554,7 @@ tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
+         msg(M_WARN, "WARNING: Your certificate is not yet valid!");
+     }
+ 
+-    ret = X509_cmp_time(X509_get_notAfter(cert), NULL);
++    ret = X509_cmp_time(X509_get0_notAfter(cert), NULL);
+     if (ret == 0)
+     {
+         msg(D_TLS_DEBUG_MED, "Failed to read certificate notAfter field.");
+@@ -634,10 +637,12 @@ tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name
+     else
+     {
+ #if OPENSSL_VERSION_NUMBER >= 0x10002000L
++#if (OPENSSL_VERSION_NUMBER < 0x10100000L) && !defined(LIBRESSL_VERSION_NUMBER)
+         /* OpenSSL 1.0.2 and newer can automatically handle ECDH parameter
+          * loading */
+         SSL_CTX_set_ecdh_auto(ctx->ctx, 1);
+         return;
++#endif
+ #else
+         /* For older OpenSSL we have to extract the curve from key on our own */
+         EC_KEY *eckey = NULL;
+-- 
+2.17.1
+
 
