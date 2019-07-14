@@ -1,8 +1,13 @@
-From: Rosen Penev <rosenp@...277...>
-Date: Fri, 12 Jul 2019 12:56:27 -0700
-Message-Id: <20190712195627.5937-1-rosenp@...277...>
-Subject: [Openvpn-devel] [PATCHv3] openssl: Fix compilation without
- deprecated OpenSSL 1.1 APIs
+References: <20181207142003.73175-1-gert@...1296...>
+ <20181207202829.76371-1-gert@...1296...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <720328c3-d976-844e-4903-104f11954603@...1856...>
+Date: Sun, 14 Jul 2019 11:39:10 +0200
+MIME-Version: 1.0
+In-Reply-To: <20181207202829.76371-1-gert@...1296...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH v3] Stop state-exhaustion attacks from a
+ single source address.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,155 +16,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-EVP_CIPHER_CTX_init and _cleanup were deprecated in 1.1 and both were
-replaced with _reset.
+Hi,
 
-Also removed initialization with OpenSSL 1.1 as it is no longer needed and
-causes compilation errors when disabling deprecated APIs.
+Sorry for the terrible response time, but here goes for initial review:
 
-Signed-off-by: Rosen Penev <rosenp@...277...>
----
- v2: Squashed previous patches together.
- v3: Check for _reset function only.
- configure.ac                 |  3 +++
- src/openvpn/crypto_openssl.c |  8 ++++++++
- src/openvpn/openssl_compat.h |  8 ++++++++
- src/openvpn/ssl_openssl.c    | 11 ++++++++---
- 4 files changed, 27 insertions(+), 3 deletions(-)
+On 07-12-18 21:28, Gert Doering wrote:
+> If an attacker sends lots of RESET packets from different source
+> ports (but the same source address), every packet will create a
+> new multi_instance, leading to resource waste on the server, and
+> to lots of reply packets while OpenVPN tries to establish a
+> TLS handshake.
+> 
+> This can be rate-limited with "connect-freq", but if this is set
+> too tightly, an attacker can drown out legitimate users of the
+> same OpenVPN server.
+> 
+> So, when deciding whether or not to create a new instance, iterate
+> over all existing instances, counting all from the same source IP
+> (ignoring source port info) that are "in TLS negotiation" state -
+> if more than <n> instances are already active, refuse new instance.
+> 
+> The cutoff parameter can be configured by a newly introduced 3rd
+> argument to "connect-freq".  So something like this might be
+> reasonable for a medium-sized server:
+> 
+>    connect-freq 20 20 3
+> 
+> ("permit 20 new connections per 20 seconds, but only 3 from the same
+> source IP address")
+> 
+> Drawback: if many users are sitting behind a shared NAT ip address
+> and they all reconnect at the same time, session setup will take
+> longer for some of the users while the server is still handshaking
+> with others.
 
-diff --git a/configure.ac b/configure.ac
-index e9f8a2f9..c7fd7a84 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -919,10 +919,13 @@ if test "${with_crypto_library}" = "openssl"; then
- 			EVP_MD_CTX_new \
- 			EVP_MD_CTX_free \
- 			EVP_MD_CTX_reset \
-+			EVP_CIPHER_CTX_reset \
- 			OpenSSL_version \
- 			SSL_CTX_get_default_passwd_cb \
- 			SSL_CTX_get_default_passwd_cb_userdata \
- 			SSL_CTX_set_security_level \
-+			X509_get0_notBefore \
-+			X509_get0_notAfter \
- 			X509_get0_pubkey \
- 			X509_STORE_get0_objects \
- 			X509_OBJECT_free \
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index c049e52d..d8aa4835 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -772,7 +772,11 @@ cipher_ctx_init(EVP_CIPHER_CTX *ctx, const uint8_t *key, int key_len,
- {
-     ASSERT(NULL != kt && NULL != ctx);
- 
-+#if defined(HAVE_EVP_CIPHER_CTX_RESET)
-+    EVP_CIPHER_CTX_reset(ctx);
-+#else
-     EVP_CIPHER_CTX_init(ctx);
-+#endif
-     if (!EVP_CipherInit(ctx, kt, NULL, NULL, enc))
-     {
-         crypto_msg(M_FATAL, "EVP cipher init #1");
-@@ -795,7 +799,11 @@ cipher_ctx_init(EVP_CIPHER_CTX *ctx, const uint8_t *key, int key_len,
- void
- cipher_ctx_cleanup(EVP_CIPHER_CTX *ctx)
- {
-+#if defined(HAVE_EVP_CIPHER_CTX_RESET)
-+    EVP_CIPHER_CTX_reset(ctx);
-+#else
-     EVP_CIPHER_CTX_cleanup(ctx);
-+#endif
- }
- 
- int
-diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index a4072b9a..788843a2 100644
---- a/src/openvpn/openssl_compat.h
-+++ b/src/openvpn/openssl_compat.h
-@@ -89,6 +89,14 @@ EVP_MD_CTX_new(void)
- }
- #endif
- 
-+#if !defined(HAVE_X509_GET0_NOTBEFORE)
-+#define X509_get0_notBefore X509_get_notBefore
-+#endif
-+
-+#if !defined(HAVE_X509_GET0_NOTAFTER)
-+#define X509_get0_notAfter X509_get_notAfter
-+#endif
-+
- #if !defined(HAVE_HMAC_CTX_RESET)
- /**
-  * Reset a HMAC context
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 8bcebac4..e285bc56 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -76,12 +76,13 @@ int mydata_index; /* GLOBAL */
- void
- tls_init_lib(void)
- {
-+#if (OPENSSL_VERSION_NUMBER < 0x10100000L) && !defined(LIBRESSL_VERSION_NUMBER)
-     SSL_library_init();
- #ifndef ENABLE_SMALL
-     SSL_load_error_strings();
- #endif
-     OpenSSL_add_all_algorithms();
--
-+#endif
-     mydata_index = SSL_get_ex_new_index(0, "struct session *", NULL, NULL, NULL);
-     ASSERT(mydata_index >= 0);
- }
-@@ -89,10 +90,12 @@ tls_init_lib(void)
- void
- tls_free_lib(void)
- {
-+#if (OPENSSL_VERSION_NUMBER < 0x10100000L) && !defined(LIBRESSL_VERSION_NUMBER)
-     EVP_cleanup();
- #ifndef ENABLE_SMALL
-     ERR_free_strings();
- #endif
-+#endif
- }
- 
- void
-@@ -541,7 +544,7 @@ tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
-         goto cleanup; /* Nothing to check if there is no certificate */
-     }
- 
--    ret = X509_cmp_time(X509_get_notBefore(cert), NULL);
-+    ret = X509_cmp_time(X509_get0_notBefore(cert), NULL);
-     if (ret == 0)
-     {
-         msg(D_TLS_DEBUG_MED, "Failed to read certificate notBefore field.");
-@@ -551,7 +554,7 @@ tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
-         msg(M_WARN, "WARNING: Your certificate is not yet valid!");
-     }
- 
--    ret = X509_cmp_time(X509_get_notAfter(cert), NULL);
-+    ret = X509_cmp_time(X509_get0_notAfter(cert), NULL);
-     if (ret == 0)
-     {
-         msg(D_TLS_DEBUG_MED, "Failed to read certificate notAfter field.");
-@@ -634,10 +637,12 @@ tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name
-     else
-     {
- #if OPENSSL_VERSION_NUMBER >= 0x10002000L
-+#if (OPENSSL_VERSION_NUMBER < 0x10100000L) && !defined(LIBRESSL_VERSION_NUMBER)
-         /* OpenSSL 1.0.2 and newer can automatically handle ECDH parameter
-          * loading */
-         SSL_CTX_set_ecdh_auto(ctx->ctx, 1);
-         return;
-+#endif
- #else
-         /* For older OpenSSL we have to extract the curve from key on our own */
-         EC_KEY *eckey = NULL;
--- 
-2.17.1
+This seems a very reasonable way - on top of tls-auth/tls-crypt - to
+mitigate floods from a single IP. I'm not very familiar with this code
+paths, what happens when a cient gets rejected? Does it get told "try
+next server", or do we give it a silence treatment?
 
+Also, I think it would be nice to have separate log messages in the
+server log for "generic limit reached" and "per-ip limit reached".
+
+Finally, aside from removing the debug prints, this will need some
+whitespace polishing. The patch mixes tabs/spaces and styles surrounding
+the parentheses in ifs.
+
+-Steffan
 
