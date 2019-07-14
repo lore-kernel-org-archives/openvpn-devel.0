@@ -1,13 +1,12 @@
-References: <20181207142003.73175-1-gert@...1296...>
- <20181207202829.76371-1-gert@...1296...>
+References: <20181206171033.61310-1-gert@...1296...>
 From: Steffan Karger <steffan@...1856...>
-Message-ID: <720328c3-d976-844e-4903-104f11954603@...1856...>
-Date: Sun, 14 Jul 2019 11:39:10 +0200
+Message-ID: <06dfe01b-95dd-ae08-4b30-96f85ac2bd9d@...1856...>
+Date: Sun, 14 Jul 2019 11:45:06 +0200
 MIME-Version: 1.0
-In-Reply-To: <20181207202829.76371-1-gert@...1296...>
+In-Reply-To: <20181206171033.61310-1-gert@...1296...>
 Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH v3] Stop state-exhaustion attacks from a
- single source address.
+Subject: Re: [Openvpn-devel] [PATCH] Rate-limit incoming
+ P_CONTROL_HARD_RESET_* packets.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,54 +16,80 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-Sorry for the terrible response time, but here goes for initial review:
+On 06-12-18 18:10, Gert Doering wrote:
+> Creation of new instances (= new incoming reset packets with different
+> source IP addresses / source ports) can be rate-limited in the current
+> code by use of the "--connect-freq" option.
+> 
+> For packets sent with the same source port, OpenVPN would dilligently
+> reply to every single packet, causing route reflection issues (plus
+> using somewhat more server cycles).  This patch introduces a timestamp
+> in the tls_multi context which records when the last "reset" packet
+> was seen, and ignores all further "reset" packets coming in in the
+> next 10 second interval.
 
-On 07-12-18 21:28, Gert Doering wrote:
-> If an attacker sends lots of RESET packets from different source
-> ports (but the same source address), every packet will create a
-> new multi_instance, leading to resource waste on the server, and
-> to lots of reply packets while OpenVPN tries to establish a
-> TLS handshake.
-> 
-> This can be rate-limited with "connect-freq", but if this is set
-> too tightly, an attacker can drown out legitimate users of the
-> same OpenVPN server.
-> 
-> So, when deciding whether or not to create a new instance, iterate
-> over all existing instances, counting all from the same source IP
-> (ignoring source port info) that are "in TLS negotiation" state -
-> if more than <n> instances are already active, refuse new instance.
-> 
-> The cutoff parameter can be configured by a newly introduced 3rd
-> argument to "connect-freq".  So something like this might be
-> reasonable for a medium-sized server:
-> 
->    connect-freq 20 20 3
-> 
-> ("permit 20 new connections per 20 seconds, but only 3 from the same
-> source IP address")
-> 
-> Drawback: if many users are sitting behind a shared NAT ip address
-> and they all reconnect at the same time, session setup will take
-> longer for some of the users while the server is still handshaking
-> with others.
+This makes sense, but why 10s? Our default connect-retry value is 5
+seconds. Wouldn't 5 (or 4?) be a better value in that regard?
 
-This seems a very reasonable way - on top of tls-auth/tls-crypt - to
-mitigate floods from a single IP. I'm not very familiar with this code
-paths, what happens when a cient gets rejected? Does it get told "try
-next server", or do we give it a silence treatment?
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>  src/openvpn/ssl.c        | 14 ++++++++++++++
+>  src/openvpn/ssl_common.h |  1 +
+>  2 files changed, 15 insertions(+)
+> 
+> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+> index 74b88ce6..3078d76c 100644
+> --- a/src/openvpn/ssl.c
+> +++ b/src/openvpn/ssl.c
+> @@ -3468,6 +3468,20 @@ tls_pre_decrypt(struct tls_multi *multi,
+>                          print_link_socket_actual(from, &gc));
+>                      goto error;
+>                  }
+> +
+> +                /* only permit one is_hard_reset() packet per 10 seconds,
+> +                 * ignore more frequent packets
+> +                 */
+> +                time_t now = time(NULL);
+> +                if ( now - multi->last_hard_reset_seen < 10 )
 
-Also, I think it would be nice to have separate log messages in the
-server log for "generic limit reached" and "per-ip limit reached".
+I think we use the "if (now - multi->last_hard_reset_seen < 10)" style
+in the vast majority of the code base.
 
-Finally, aside from removing the debug prints, this will need some
-whitespace polishing. The patch mixes tabs/spaces and styles surrounding
-the parentheses in ifs.
+> +                {
+> +                    msg(D_MULTI_ERRORS, "TLS: tls_pre_decrypt: ignore incoming"
+> +                                        " '%s' (only %ds since last RESET)",
+> +                        packet_opcode_name(op),
+> +                        (int)(now - multi->last_hard_reset_seen) );
+
+Here too, no space before ).
+
+> +                    goto error;
+> +                }
+> +                multi->last_hard_reset_seen = now;
+>              }
+>  
+>              /*
+> diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+> index 7bf82b3a..e71696b5 100644
+> --- a/src/openvpn/ssl_common.h
+> +++ b/src/openvpn/ssl_common.h
+> @@ -515,6 +515,7 @@ struct tls_multi
+>       */
+>      int n_hard_errors; /* errors due to TLS negotiation failure */
+>      int n_soft_errors; /* errors due to unrecognized or failed-to-authenticate incoming packets */
+> +    time_t last_hard_reset_seen;	/* rate-limit incoming hard reset */
+>  
+>      /*
+>       * Our locked common name, username, and cert hashes (cannot change during the life of this tls_multi object)
+> 
+
+Otherwise this looks good to me. I'll ACK once I understand your pick
+for the timeout value.
 
 -Steffan
 
