@@ -1,11 +1,10 @@
-Date: Tue, 16 Jul 2019 11:34:44 -0400
-From: Nathan Stratton Treadway <nathanst@...1517...>
-Message-ID: <20190716153444.GG27773@...1518...>
-References: <1562069242-29559-1-git-send-email-lstipakov@...277...>
- <1563290085-9219-1-git-send-email-lstipakov@...277...>
-MIME-Version: 1.0
-In-Reply-To: <1563290085-9219-1-git-send-email-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH v5] Wintun - experimental support
+Date: Tue, 16 Jul 2019 21:33:56 +0200 (CEST)
+Message-Id: <201907161933.x6GJXu1n034011@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20190715144609.19616-1-a@...2181...>
+References: <20190715144609.19616-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: route.c: use sitnl to implement
+ get_default_gateway_ipv6()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,36 +13,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Lev Stipakov <lstipakov@...277...>
+To: Antonio Quartulli <antonio@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Noticed a typo in a comment:
+Acked-by: Arne Schwabe <arne@...1227...>
+Acked-by: Gert Doering <gert@...1296...>
+
+Passes the manual "--show-gateway <thing>" test now, and survived 
+staring-at-the-code.  Though that one turned up things elsewhere that
+I do not like very much (but which have already been merged) - see
+next mail.
+
+I said before I'm not a big fan of having an "int flags" declaration
+at the beginning of a function for a single-use helper variable further 
+down - C99 permits "int flags = ..." right where the thing is needed, 
+and I find that much more readable (I wouldn't introduce "flags" at 
+all, but if you do, having to look in two places "what is this?  is 
+this used anywhere else?" is more review effort).  But you ignored that
+comment, and I'm not disliking this enough for a NAK.
+
+Your patch has been applied to the master branch.
+
+commit c454b21e7ce458ce6f5bcaf6c313ab3ba3dd5baf
+Author: Antonio Quartulli
+Date:   Mon Jul 15 16:46:09 2019 +0200
+
+     route.c: use sitnl to implement get_default_gateway_ipv6()
+
+     Signed-off-by: Antonio Quartulli <antonio@...515...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20190715144609.19616-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18667.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-On Tue, Jul 16, 2019 at 18:14:45 +0300, Lev Stipakov wrote:
-> diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
-[...]
-> +/**
-> + * Reads a single packet from wintun buffer.
-> + * It is caller's responsibility to advance buffer
-> + * over the end padding after processing packet.
-> + *
-> + * @param c          - The context structure of the VPN tunnel associated with
-> + *                     the packet.
-> + *
-> + * @returns size of packet, 0 of packet cannot be read.
+--
+kind regards,
 
-                              "0 if packet"
+Gert Doering
 
-
-							Nathan
-
-----------------------------------------------------------------------------
-Nathan Stratton Treadway  -  nathanst@...1517...  -  Mid-Atlantic region
-Ray Ontko & Co.  -  Software consulting services  -   http://www.ontko.com/
- GPG Key: http://www.ontko.com/~nathanst/gpg_key.txt   ID: 1023D/ECFB6239
- Key fingerprint = 6AD8 485E 20B9 5C71 231C  0C32 15F3 ADCD ECFB 6239
 
