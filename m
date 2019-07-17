@@ -1,15 +1,14 @@
-Date: Tue, 16 Jul 2019 21:34:24 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20190716193424.GV1097@...1296...>
-References: <20190714200227.GG1097@...1296...>
- <20190715144609.19616-1-a@...2181...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="RS1722//baS0C3Tp"
-Content-Disposition: inline
-In-Reply-To: <20190715144609.19616-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v5] route.c: use sitnl to implement
- get_default_gateway_ipv6()
+References: <CAGyAFMUgS+WaDf5Xx8S-jX3MbAu4QT7_Ln86JDtmZEaV2PPLcA@...278...>
+ <1561637226-18464-1-git-send-email-lstipakov@...277...>
+ <CAKuzo_jqHYt-xbwkTG59DEbEpNKT7GPtWE8T6t-Jiwv0CiyhOQ@...278...>
+In-Reply-To: <CAKuzo_jqHYt-xbwkTG59DEbEpNKT7GPtWE8T6t-Jiwv0CiyhOQ@...278...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Wed, 17 Jul 2019 15:19:53 +0300
+Message-ID: <CAGyAFMUDx_eD4Yk9TtvWKDXNnpLg55-0tZT0zL6T61zDALTTvw@...278...>
+Content-Type: multipart/alternative; boundary="00000000000059d138058ddf8342"
+Subject: Re: [Openvpn-devel] [PATCH v3] openvpnserv: enable interactive
+ service to open tun
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,101 +17,109 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net, Antonio Quartulli <antonio@...515...>
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---RS1722//baS0C3Tp
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+--00000000000059d138058ddf8342
+Content-Type: text/plain; charset="UTF-8"
 
 Hi,
 
-On Mon, Jul 15, 2019 at 04:46:09PM +0200, Antonio Quartulli wrote:
-> From: Antonio Quartulli <antonio@...515...>
->=20
-> get_default_gateway_ipv6() has always been implemented using
-> netlink, however, now that we have sitnl, we can re-use the
-> latter and get rid of the netlink code from route.c.
->=20
-> Signed-off-by: Antonio Quartulli <antonio@...515...>
+Sorry for delay - I was on vacation.
 
-Yeah, thanks.
-
-This particular patch is ok now, but it is calling functions that are
-no save to call.  So, fixing needed.  (I considered on whether to
-NAK this again, but since it is safe *today*, this is more for the
-work queue of cleanup to do).
+(i) The new message is named message_open_tun, but it allows opening
+> any file using the service. This is not secure.
 
 
-Down in networking_sitnl.c, in sitnl_route_best_gw(), you do
+I am thinking of possible vector of attack here.
 
-    strcpy(best_iface, res.iface);
+In our case it is service which launches openvpn process using
+path set in registry, opens pipe and passes pipe handle to launched process.
 
-which *today* is safe, because best_iface is "char[16]" and=20
-res.iface is "char[IFNAMSIZ]", which happens to be 16 on linux
-*today*.  Now what if folks decide "we need longer names, because
-docker? or anything?" - bam.  This needs to be a strncpy().  Or
-"struct route_ipv6_gateway_info" -> iface needs to be [IFNAMSIZ]=20
-with an preceding "#ifndef IFNAMSIZ, #define IFNAMSIZ 16" for=20
-platforms that do not have said define...
+To make service run malicious process one needs either to replace
+executable or
+modify registry. For both actions you need to be administrator, assuming
+default security policy.
 
-Or something else to guarantee that you never overflow *best_iface.
+Alternatively, can random process hijack the pipe handle from another
+process?
 
 
-Then, I'm a bit sad that your sitnl_route_best_gw() code pretty much
-lacks all documentation about what it *does*.  My code in route.c that
-talks to netlink had quite a bit of explanations on "why a certain value=20
-is set in a certain way"...
+> We need to restrict it to open tun/tap device nodes only.
+>
 
-    rtreq.nh.nlmsg_type =3D RTM_GETROUTE;
-    rtreq.nh.nlmsg_flags =3D NLM_F_REQUEST;       /* best match only */
-    rtreq.rtm.rtm_family =3D AF_INET6;
-    rtreq.rtm.rtm_src_len =3D 0;                  /* not source dependent */
-    rtreq.rtm.rtm_dst_len =3D 128;                /* exact dst */
-    rtreq.rtm.rtm_table =3D RT_TABLE_MAIN;
-    rtreq.rtm.rtm_protocol =3D RTPROT_UNSPEC;
+Without adding too much code, I can think of:
 
-while your code leaves off initialization for "anything that is default
-anyway" and just magically copies in values for the rest - including
-"0" for "rtm_dst_len" (both callers pass in "0" for prefixlen, which
-doesn't match the documentation I've read, back then, that says you must=20
-pass in a full prefix length for an exact route match - and if you pass
-in 0 anyway, why carry a prefixlen argument at all??).
+ - check that path starts with \\\\.\\Global\\ to make sure we open device,
+not file
 
-The rtm_dst_len puzzles me, to be honest...  either I misread the
-documentation, or this is ignored by the kernel...  the way I understood
-this, it's the number of bits that is matched in the address, so "0"
-would pretty much mean "match any route" - but what it returns is
-correct, so it's not doing "match any".  *scratch head*.
+and
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+ - check that path starts with \\\\.\\Global\\WINTUN or ends with .tap
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Is this good enough or do you have better ideas?
 
---RS1722//baS0C3Tp
-Content-Type: application/pgp-signature; name="signature.asc"
+(ii) Should we allow all users to open tap6 adapters irrespective of
+> any other access restrictions that may be present? I'm conflicted
+> about this as, on closer look, access control in tap-windows6 appears
+> broken.
+>
 
------BEGIN PGP SIGNATURE-----
+I'll pass on this one. Maybe "Strengthening access control for
+tap-windows6" could be another patch.
 
-iQGcBAEBAgAGBQJdLia/AAoJEB2Cnv7KVigSOYkL/jCHETOHtzRkS+oz7KTG27uF
-fr017Uvc5JTeTWMOa1CMq2f1u3jCChd6Eksk5fNu7ighYr0PrZtX335M54E367r0
-UdZfREA0/PCb6+2NnuVpNZzy9NeKA89Xb6MyPSzJydntdBoUWYuLonRiNLvctzzH
-DJdHRKGGTDXAykBAHKweV85+5Mf3bRbhFoywu9RFFggIgj8zNDYYqMOJe8woaNPA
-Rn1AK9LSNkaWa9usljOJEd3Q2X+Hy6+ImDTFiZt1tuDGErFA3At/z0NuT5+1mJSg
-wGNi5Gk50vqb49pw4aU2Qm9rPbqARn22RRhoiZ9qSZf3xV54+aJnBwYEV5vsadGp
-LFuaGbyOxbeiCltwHBcX8Cf3JfR08g+rjGYL+7WxjJuJIBDSISFNTqvb0yHLU9nz
-9AqV5i2omsILATumBzUgeMI2kIcykzqdev1wQi4OZ1U37kXpg9TZKztvaJbmELxx
-8nadcnDOLU8I0jnYFhkJWJCt5r4dFt9LvcsPFyPjrA==
-=XCPr
------END PGP SIGNATURE-----
 
---RS1722//baS0C3Tp--
+> Defining this struct with error_number followed by handle would be
+> better (makes its head match in memory with ack_message_t). That makes
+> it possible to read a normal ack into it and resolve the error number.
+>
+
+Agreed, will do.
+
+-- 
+-Lev
+
+--00000000000059d138058ddf8342
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div dir=3D"ltr">Hi,<div><br></div><div>Sorry for delay - =
+I was on vacation.</div><div><br></div></div><div class=3D"gmail_quote"><bl=
+ockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-lef=
+t:1px solid rgb(204,204,204);padding-left:1ex">
+(i) The new message is named message_open_tun, but it allows opening<br>
+any file using the service. This is not secure. </blockquote><div><br></div=
+><div>I am thinking of possible vector of attack here.</div><div><br></div>=
+<div>In our case it is service which launches openvpn process using</div><d=
+iv>path set in registry, opens pipe and passes pipe handle to launched proc=
+ess.</div><div><br></div><div>To make service run malicious process one nee=
+ds either to replace executable or</div><div>modify registry. For both acti=
+ons you need to be administrator, assuming default security policy.</div><d=
+iv><br></div><div>Alternatively, can random process hijack the pipe handle =
+from another process?</div><div>=C2=A0</div><blockquote class=3D"gmail_quot=
+e" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204)=
+;padding-left:1ex">We need to restrict it to open tun/tap device nodes only=
+.<br></blockquote><div><br></div><div>Without adding too much code, I can t=
+hink of:</div><div><br></div><div>=C2=A0- check that path starts with=C2=A0=
+\\\\.\\Global\\ to make sure we open device, not file</div><div><br></div><=
+div>and</div><div>=C2=A0</div><div>=C2=A0- check that path starts with=C2=
+=A0\\\\.\\Global\\WINTUN or ends with .tap</div><div><br></div><div>Is this=
+ good enough or do you have better ideas?</div><div><br></div><blockquote c=
+lass=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px soli=
+d rgb(204,204,204);padding-left:1ex">
+(ii) Should we allow all users to open tap6 adapters irrespective of<br>
+any other access restrictions that may be present? I&#39;m conflicted<br>
+about this as, on closer look, access control in tap-windows6 appears<br>
+broken.<br></blockquote><div><br></div><div>I&#39;ll pass on this one. Mayb=
+e &quot;Strengthening access control for tap-windows6&quot; could be anothe=
+r patch.</div><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"m=
+argin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left=
+:1ex">
+Defining this struct with error_number followed by handle would be<br>
+better (makes its head match in memory with ack_message_t). That makes<br>
+it possible to read a normal ack into it and resolve the error number.<br><=
+/blockquote><div><br></div><div>Agreed, will do.=C2=A0</div></div><div><br>=
+</div>-- <br><div dir=3D"ltr" class=3D"gmail_signature">-Lev</div></div>
+
+--00000000000059d138058ddf8342--
 
