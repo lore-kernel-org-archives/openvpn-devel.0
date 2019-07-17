@@ -1,14 +1,10 @@
-MIME-Version: 1.0
-References: <CAGyAFMUgS+WaDf5Xx8S-jX3MbAu4QT7_Ln86JDtmZEaV2PPLcA@...278...>
- <1561637226-18464-1-git-send-email-lstipakov@...277...>
- <CAKuzo_jqHYt-xbwkTG59DEbEpNKT7GPtWE8T6t-Jiwv0CiyhOQ@...278...>
-In-Reply-To: <CAKuzo_jqHYt-xbwkTG59DEbEpNKT7GPtWE8T6t-Jiwv0CiyhOQ@...278...>
 From: Lev Stipakov <lstipakov@...277...>
-Date: Wed, 17 Jul 2019 15:19:53 +0300
-Message-ID: <CAGyAFMUDx_eD4Yk9TtvWKDXNnpLg55-0tZT0zL6T61zDALTTvw@...278...>
-Content-Type: multipart/alternative; boundary="00000000000059d138058ddf8342"
-Subject: Re: [Openvpn-devel] [PATCH v3] openvpnserv: enable interactive
- service to open tun
+Date: Wed, 17 Jul 2019 16:20:08 +0300
+Message-Id: <1563369608-10240-1-git-send-email-lstipakov@...277...>
+In-Reply-To: <CAGyAFMUDx_eD4Yk9TtvWKDXNnpLg55-0tZT0zL6T61zDALTTvw@...278...>
+References: <CAGyAFMUDx_eD4Yk9TtvWKDXNnpLg55-0tZT0zL6T61zDALTTvw@...278...>
+Subject: [Openvpn-devel] [PATCH v4] openvpnserv: enable interactive service
+ to open tun
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,109 +13,379 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---00000000000059d138058ddf8342
-Content-Type: text/plain; charset="UTF-8"
+From: Lev Stipakov <lev@...515...>
 
-Hi,
+This patch enables interactive service to open tun device.
+This is mostly needed by Wintun, which could be opened
+only by privileged process.
 
-Sorry for delay - I was on vacation.
+When interactive service is used, instead of calling
+CreateFile() directly by openvpn process we pass tun device path
+into service process. There we open device, duplicate handle
+and pass it back to openvpn process.
 
-(i) The new message is named message_open_tun, but it allows opening
-> any file using the service. This is not secure.
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ v4:
+  - strengthen security by adding basic validation to device path
+  - reorder fields in msg_open_tun_device_result for backward compatibility
 
+ v3:
+  - ensure that device path passed by client is null-terminated
+  - support for multiple openvpn processes
+  - return proper error code when device handle is invalid
 
-I am thinking of possible vector of attack here.
+ v2:
+  - introduce send_msg_iservice_ex() instead of changing
+  signature of existing send_msg_iservice()
+  - use wchar_t strings in interactive service code
 
-In our case it is service which launches openvpn process using
-path set in registry, opens pipe and passes pipe handle to launched process.
+ include/openvpn-msg.h         | 12 ++++++
+ src/openvpn/tun.c             | 83 +++++++++++++++++++++++++++++++++--------
+ src/openvpn/win32.c           |  9 ++++-
+ src/openvpn/win32.h           | 30 +++++++++++++--
+ src/openvpnserv/interactive.c | 86 +++++++++++++++++++++++++++++++++++++++++--
+ 5 files changed, 196 insertions(+), 24 deletions(-)
 
-To make service run malicious process one needs either to replace
-executable or
-modify registry. For both actions you need to be administrator, assuming
-default security policy.
-
-Alternatively, can random process hijack the pipe handle from another
-process?
-
-
-> We need to restrict it to open tun/tap device nodes only.
->
-
-Without adding too much code, I can think of:
-
- - check that path starts with \\\\.\\Global\\ to make sure we open device,
-not file
-
-and
-
- - check that path starts with \\\\.\\Global\\WINTUN or ends with .tap
-
-Is this good enough or do you have better ideas?
-
-(ii) Should we allow all users to open tap6 adapters irrespective of
-> any other access restrictions that may be present? I'm conflicted
-> about this as, on closer look, access control in tap-windows6 appears
-> broken.
->
-
-I'll pass on this one. Maybe "Strengthening access control for
-tap-windows6" could be another patch.
-
-
-> Defining this struct with error_number followed by handle would be
-> better (makes its head match in memory with ack_message_t). That makes
-> it possible to read a normal ack into it and resolve the error number.
->
-
-Agreed, will do.
-
+diff --git a/include/openvpn-msg.h b/include/openvpn-msg.h
+index 66177a2..86d82f2 100644
+--- a/include/openvpn-msg.h
++++ b/include/openvpn-msg.h
+@@ -39,6 +39,8 @@ typedef enum {
+     msg_del_block_dns,
+     msg_register_dns,
+     msg_enable_dhcp,
++    msg_open_tun_device,
++    msg_open_tun_device_result,
+ } message_type_t;
+ 
+ typedef struct {
+@@ -117,4 +119,14 @@ typedef struct {
+     interface_t iface;
+ } enable_dhcp_message_t;
+ 
++typedef struct {
++    message_header_t header;
++    char device_path[256];
++} open_tun_device_message_t;
++
++typedef struct {
++    message_header_t header;
++    int error_number;
++    HANDLE handle;
++} open_tun_device_result_message_t;
+ #endif /* ifndef OPENVPN_MSG_H_ */
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 8f8f7c6..8c7e705 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -5248,6 +5248,43 @@ out:
+     return ret;
+ }
+ 
++static HANDLE
++service_open_tun_device(const HANDLE pipe, const char* device_path)
++{
++    open_tun_device_result_message_t result_msg;
++    struct gc_arena gc = gc_new();
++    open_tun_device_message_t open_tun_device = {
++        .header = {
++            msg_open_tun_device,
++            sizeof(open_tun_device_message_t),
++            0
++        }
++    };
++    result_msg.handle = INVALID_HANDLE_VALUE;
++
++    strncpynt(open_tun_device.device_path, device_path, sizeof(open_tun_device.device_path));
++
++    if (!send_msg_iservice_ex(pipe, &open_tun_device, sizeof(open_tun_device),
++        &result_msg, sizeof(result_msg), "Open_tun_device"))
++    {
++        goto out;
++    }
++
++    if (result_msg.error_number != NO_ERROR)
++    {
++        msg(D_TUNTAP_INFO, "TUN: opening tun handle using service failed: %s [status=%u device_path=%s]",
++            strerror_win32(result_msg.error_number, &gc), result_msg.error_number, device_path);
++    }
++    else
++    {
++        msg(M_INFO, "Opened tun device %s using service", device_path);
++    }
++
++out:
++    gc_free(&gc);
++    return result_msg.handle;
++}
++
+ /*
+  * Return a TAP name for netsh commands.
+  */
+@@ -5591,15 +5628,22 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+                              device_guid,
+                              TAP_WIN_SUFFIX);
+ 
+-            tt->hand = CreateFile(
+-                device_path,
+-                GENERIC_READ | GENERIC_WRITE,
+-                0,                /* was: FILE_SHARE_READ */
+-                0,
+-                OPEN_EXISTING,
+-                FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED,
+-                0
++            if (tt->options.msg_channel)
++            {
++                tt->hand = service_open_tun_device(tt->options.msg_channel, device_path);
++            }
++            else
++            {
++                tt->hand = CreateFile(
++                    device_path,
++                    GENERIC_READ | GENERIC_WRITE,
++                    0,                /* was: FILE_SHARE_READ */
++                    0,
++                    OPEN_EXISTING,
++                    FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED,
++                    0
+                 );
++            }
+ 
+             if (tt->hand == INVALID_HANDLE_VALUE)
+             {
+@@ -5631,15 +5675,22 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+                                  device_guid,
+                                  TAP_WIN_SUFFIX);
+ 
+-                tt->hand = CreateFile(
+-                    device_path,
+-                    GENERIC_READ | GENERIC_WRITE,
+-                    0,                /* was: FILE_SHARE_READ */
+-                    0,
+-                    OPEN_EXISTING,
+-                    FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED,
+-                    0
++                if (tt->options.msg_channel)
++                {
++                    tt->hand = service_open_tun_device(tt->options.msg_channel, device_path);
++                }
++                else
++                {
++                    tt->hand = CreateFile(
++                        device_path,
++                        GENERIC_READ | GENERIC_WRITE,
++                        0,                /* was: FILE_SHARE_READ */
++                        0,
++                        OPEN_EXISTING,
++                        FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED,
++                        0
+                     );
++                }
+ 
+                 if (tt->hand == INVALID_HANDLE_VALUE)
+                 {
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index eb4c030..039c1a4 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -1476,12 +1476,19 @@ bool
+ send_msg_iservice(HANDLE pipe, const void *data, size_t size,
+                   ack_message_t *ack, const char *context)
+ {
++    return send_msg_iservice_ex(pipe, data, size, ack, sizeof(*ack), context);
++}
++
++bool
++send_msg_iservice_ex(HANDLE pipe, const void *data, size_t size,
++                     void *response, size_t response_size, const char *context)
++{
+     struct gc_arena gc = gc_new();
+     DWORD len;
+     bool ret = true;
+ 
+     if (!WriteFile(pipe, data, size, &len, NULL)
+-        || !ReadFile(pipe, ack, sizeof(*ack), &len, NULL))
++        || !ReadFile(pipe, response, response_size, &len, NULL))
+     {
+         msg(M_WARN, "%s: could not talk to service: %s [%lu]",
+             context ? context : "Unknown",
+diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
+index 4814bbc..8ccddc0 100644
+--- a/src/openvpn/win32.h
++++ b/src/openvpn/win32.h
+@@ -309,14 +309,36 @@ int win32_version_info(void);
+  */
+ const char *win32_version_string(struct gc_arena *gc, bool add_name);
+ 
+-/*
+- * Send the |size| bytes in buffer |data| to the interactive service |pipe|
+- * and read the result in |ack|. Returns false on communication error.
+- * The string in |context| is used to prefix error messages.
++
++/**
++ * Send data to interactive service and receive response of type ack_message_t.
++ *
++ * @param  pipe      The handle of communication pipe
++ * @param  data      The data to send
++ * @param  size      The size of data to send
++ * @param  response  The pointer to ack_message_t structure to where response is written
++ * @param  context   The string used to prefix error messages
++ *
++ * @returns True on success, false on failure.
+  */
+ bool send_msg_iservice(HANDLE pipe, const void *data, size_t size,
+                        ack_message_t *ack, const char *context);
+ 
++/**
++ * Send data to interactive service and receive response.
++ *
++ * @param  pipe           The handle of communication pipe
++ * @param  data           The data to send
++ * @param  size           The size of data to send
++ * @param  response       The buffer to where response is written
++ * @param  response_size  The size of response buffer
++ * @param  context        The string used to prefix error messages
++ *
++ * @returns True on success, false on failure.
++ */
++bool send_msg_iservice_ex(HANDLE pipe, const void *data, size_t size,
++                          void *response, size_t response_size, const char *context);
++
+ /*
+  * Attempt to simulate fork/execve on Windows
+  */
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 623c3ff..c3f5754 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -58,7 +58,6 @@ static settings_t settings;
+ static HANDLE rdns_semaphore = NULL;
+ #define RDNS_TIMEOUT 600  /* seconds to wait for the semaphore */
+ 
+-
+ openvpn_service_t interactive_service = {
+     interactive,
+     TEXT(PACKAGE_NAME "ServiceInteractive"),
+@@ -1198,8 +1197,70 @@ HandleEnableDHCPMessage(const enable_dhcp_message_t *dhcp)
+     return err;
+ }
+ 
++static DWORD
++HandleOpenTunDeviceMessage(const open_tun_device_message_t *open_tun, HANDLE ovpn_proc, HANDLE *remote_handle)
++{
++    DWORD err = ERROR_SUCCESS;
++    HANDLE local_handle;
++    LPWSTR device_path;
++    const WCHAR prefix[] = L"\\\\.\\Global\\";
++    const WCHAR wintun_prefix[] = L"\\\\.\\Global\\WINTUN";
++    const WCHAR tap_suffix[] = L".tap";
++    BOOL path_ok = FALSE;
++
++    *remote_handle = INVALID_HANDLE_VALUE;
++
++    device_path = utf8to16(open_tun->device_path);
++    if (!device_path)
++    {
++        err = ERROR_OUTOFMEMORY;
++        goto out;
++    }
++
++    /* ensure we open device, not file */
++    path_ok = (wcslen(device_path) > wcslen(prefix)) &&
++        (wcsncmp(device_path, prefix, wcslen(prefix)) == 0);
++
++    if (path_ok)
++    {
++        /* ensure we open path which looks like tap or wintun */
++        path_ok = (wcsncmp(device_path + wcslen(device_path) - wcslen(tap_suffix), tap_suffix, wcslen(tap_suffix)) == 0) ||
++            ((wcslen(device_path) > wcslen(wintun_prefix)) && (wcsncmp(device_path, wintun_prefix, wcslen(wintun_prefix)) == 0));
++    }
++
++    if (!path_ok)
++    {
++        err = ERROR_MESSAGE_DATA;
++        MsgToEventLog(MSG_FLAGS_ERROR, TEXT("Invalid device path (%s)"), device_path);
++        goto out;
++    }
++
++    /* open tun device */
++    local_handle = CreateFileW(device_path, GENERIC_READ | GENERIC_WRITE, 0, 0,
++                               OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, 0);
++    if (local_handle == INVALID_HANDLE_VALUE)
++    {
++        err = GetLastError();
++        MsgToEventLog(M_SYSERR, TEXT("Error opening tun device (%s)"), device_path);
++        goto out;
++    }
++
++    /* duplicate tun device handle to openvpn process */
++    if (!DuplicateHandle(GetCurrentProcess(), local_handle, ovpn_proc, remote_handle, 0, FALSE,
++                         DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS))
++    {
++        err = GetLastError();
++        MsgToEventLog(M_SYSERR, TEXT("Error duplicating tun device handle"));
++    }
++
++out:
++    free(device_path);
++
++    return err;
++}
++
+ static VOID
+-HandleMessage(HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events, undo_lists_t *lists)
++HandleMessage(HANDLE pipe, HANDLE ovpn_proc, DWORD bytes, DWORD count, LPHANDLE events, undo_lists_t *lists)
+ {
+     DWORD read;
+     union {
+@@ -1210,6 +1271,7 @@ HandleMessage(HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events, undo_lists
+         block_dns_message_t block_dns;
+         dns_cfg_message_t dns;
+         enable_dhcp_message_t dhcp;
++        open_tun_device_message_t open_tun;
+     } msg;
+     ack_message_t ack = {
+         .header = {
+@@ -1277,6 +1339,24 @@ HandleMessage(HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events, undo_lists
+             }
+             break;
+ 
++        case msg_open_tun_device:
++            if (msg.header.size == sizeof(msg.open_tun))
++            {
++                open_tun_device_result_message_t res = {
++                    .header = {
++                        .type = msg_open_tun_device_result,
++                        .size = sizeof(res),
++                        .message_id = msg.header.message_id
++                    }
++                };
++                /* make sure that string passed from user process is null-terminated */
++                msg.open_tun.device_path[sizeof(msg.open_tun.device_path) - 1] = '\0';
++                res.error_number = HandleOpenTunDeviceMessage(&msg.open_tun, ovpn_proc, &res.handle);
++                WritePipeAsync(pipe, &res, sizeof(res), count, events);
++                return;
++            }
++            break;
++
+         default:
+             ack.error_number = ERROR_MESSAGE_TYPE;
+             MsgToEventLog(MSG_FLAGS_ERROR, TEXT("Unknown message type %d"), msg.header.type);
+@@ -1611,7 +1691,7 @@ RunOpenvpn(LPVOID p)
+             break;
+         }
+ 
+-        HandleMessage(ovpn_pipe, bytes, 1, &exit_event, &undo_lists);
++        HandleMessage(ovpn_pipe, proc_info.hProcess, bytes, 1, &exit_event, &undo_lists);
+     }
+ 
+     WaitForSingleObject(proc_info.hProcess, IO_TIMEOUT);
 -- 
--Lev
+2.7.4
 
---00000000000059d138058ddf8342
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div dir=3D"ltr">Hi,<div><br></div><div>Sorry for delay - =
-I was on vacation.</div><div><br></div></div><div class=3D"gmail_quote"><bl=
-ockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-lef=
-t:1px solid rgb(204,204,204);padding-left:1ex">
-(i) The new message is named message_open_tun, but it allows opening<br>
-any file using the service. This is not secure. </blockquote><div><br></div=
-><div>I am thinking of possible vector of attack here.</div><div><br></div>=
-<div>In our case it is service which launches openvpn process using</div><d=
-iv>path set in registry, opens pipe and passes pipe handle to launched proc=
-ess.</div><div><br></div><div>To make service run malicious process one nee=
-ds either to replace executable or</div><div>modify registry. For both acti=
-ons you need to be administrator, assuming default security policy.</div><d=
-iv><br></div><div>Alternatively, can random process hijack the pipe handle =
-from another process?</div><div>=C2=A0</div><blockquote class=3D"gmail_quot=
-e" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204)=
-;padding-left:1ex">We need to restrict it to open tun/tap device nodes only=
-.<br></blockquote><div><br></div><div>Without adding too much code, I can t=
-hink of:</div><div><br></div><div>=C2=A0- check that path starts with=C2=A0=
-\\\\.\\Global\\ to make sure we open device, not file</div><div><br></div><=
-div>and</div><div>=C2=A0</div><div>=C2=A0- check that path starts with=C2=
-=A0\\\\.\\Global\\WINTUN or ends with .tap</div><div><br></div><div>Is this=
- good enough or do you have better ideas?</div><div><br></div><blockquote c=
-lass=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px soli=
-d rgb(204,204,204);padding-left:1ex">
-(ii) Should we allow all users to open tap6 adapters irrespective of<br>
-any other access restrictions that may be present? I&#39;m conflicted<br>
-about this as, on closer look, access control in tap-windows6 appears<br>
-broken.<br></blockquote><div><br></div><div>I&#39;ll pass on this one. Mayb=
-e &quot;Strengthening access control for tap-windows6&quot; could be anothe=
-r patch.</div><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"m=
-argin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left=
-:1ex">
-Defining this struct with error_number followed by handle would be<br>
-better (makes its head match in memory with ack_message_t). That makes<br>
-it possible to read a normal ack into it and resolve the error number.<br><=
-/blockquote><div><br></div><div>Agreed, will do.=C2=A0</div></div><div><br>=
-</div>-- <br><div dir=3D"ltr" class=3D"gmail_signature">-Lev</div></div>
-
---00000000000059d138058ddf8342--
 
