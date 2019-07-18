@@ -1,10 +1,11 @@
-References: <1563442503-11119-1-git-send-email-lstipakov@...277...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <f5a58db3-8469-1577-155f-db2255e1d78c@...2181...>
-Date: Thu, 18 Jul 2019 13:55:14 +0200
 MIME-Version: 1.0
-In-Reply-To: <1563442503-11119-1-git-send-email-lstipakov@...277...>
-Content-Language: en-US
+References: <1563442503-11119-1-git-send-email-lstipakov@...277...>
+ <f5a58db3-8469-1577-155f-db2255e1d78c@...2181...>
+In-Reply-To: <f5a58db3-8469-1577-155f-db2255e1d78c@...2181...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Thu, 18 Jul 2019 15:20:52 +0300
+Message-ID: <CAGyAFMXsktWkyyyoPvWjVor-18o41C8O3ScMdACXS3vCMbz26Q@...278...>
+Content-Type: multipart/alternative; boundary="0000000000008bbaa6058df3a4c1"
 Subject: Re: [Openvpn-devel] [PATCH] crypto.c: fix Visual Studio build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -14,60 +15,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--0000000000008bbaa6058df3a4c1
+Content-Type: text/plain; charset="UTF-8"
 
 Hi,
 
-On 18/07/2019 11:35, Lev Stipakov wrote:
-> From: Lev Stipakov <lev@...515...>
-> 
-> Commit fb4e8ab added variable-length array which
-> is C99 feature and is not supported by Visual Studio.
-> 
-> This removes VLA and writes data directly into passed buffer.
-> 
-> Signed-off-by: Lev Stipakov <lev@...515...>
-> ---
->  src/openvpn/crypto.c | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
-> 
-> diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-> index 69877d1..8bf33e7 100644
-> --- a/src/openvpn/crypto.c
-> +++ b/src/openvpn/crypto.c
-> @@ -1895,14 +1895,18 @@ cleanup:
->  bool
->  generate_ephemeral_key(struct buffer *key, const char *key_name)
->  {
+
+> Are we sure we can't call this function with 'len' longer than the
+> available space in 'key' ?
+
+
+Yep, because we get available space here:
+
 > +    const int len = BCAP(key);
-> +
->      msg(M_INFO, "Using random %s.", key_name);
-> -    uint8_t rand[BCAP(key)];
-> -    if (!rand_bytes(rand, BCAP(key)))
-> +
-> +    if (!rand_bytes(BEND(key), len))
+>
 
-Are we sure we can't call this function with 'len' longer than the
-available space in 'key' ?
+and then pass it to rand_bytes:
 
 
-Cheers,
+> > +    if (!rand_bytes(BEND(key), len))
 
->      {
->          msg(M_WARN, "ERROR: could not generate random key");
->          return false;
->      }
-> -    buf_write(key, rand, BCAP(key));
-> +
-> +    buf_inc_len(key, len);
-> +
->      return true;
->  }
->  
-> 
 
 -- 
-Antonio Quartulli
+-Lev
+
+--0000000000008bbaa6058df3a4c1
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div>Hi,</div><div>=C2=A0</div><blockquote class=3D"gmail_=
+quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,=
+204);padding-left:1ex">Are we sure we can&#39;t call this function with &#3=
+9;len&#39; longer than the<br>available space in &#39;key&#39; ?=C2=A0=C2=
+=A0</blockquote><div><br></div><div>Yep, because we get available space her=
+e:</div><div dir=3D"ltr"><br></div><div class=3D"gmail_quote"><blockquote c=
+lass=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px soli=
+d rgb(204,204,204);padding-left:1ex">&gt; +=C2=A0 =C2=A0 const int len =3D =
+BCAP(key);<br></blockquote><div><br></div><div>and then pass it to rand_byt=
+es:</div><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin=
+:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
+&gt; +=C2=A0 =C2=A0 if (!rand_bytes(BEND(key), len))</blockquote><div>=C2=
+=A0</div></div>-- <br><div dir=3D"ltr" class=3D"gmail_signature">-Lev</div>=
+</div>
+
+--0000000000008bbaa6058df3a4c1--
 
