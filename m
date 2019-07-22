@@ -1,10 +1,10 @@
-Date: Mon, 22 Jul 2019 20:44:17 +0200 (CEST)
-Message-Id: <201907221844.x6MIiHtw009666@...2054...>
+Date: Mon, 22 Jul 2019 20:54:14 +0200 (CEST)
+Message-Id: <201907221854.x6MIsEvG010586@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1548101094-4449-1-git-send-email-lstipakov@...277...>
-References: <1548101094-4449-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix broken fragment/mssfix with
- NCP
+In-Reply-To: <20190218153129.3818-1-bengen@...2496...>
+References: <20190218153129.3818-1-bengen@...2496...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Do not set pkcs11-helper 'safe
+ fork mode'
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,32 +15,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
+To: Hilko Bengen <bengen@...2496...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+Your patch has been applied to the master and release/2.4 branch (bugfix).
 
-I have not tried to understand the actual change, but the general
-explanation makes sense and with two ACKs already... I did run t_client
-tests, though :-)  (and there is a fragment test).
+Taking Steffan's comments on the list and AlonBL's comments in trac as
+ACK.  David had issues on CentOS, but this might have been a problematic
+version of pkcs11-helper - which should be tested, though.
 
-I did try to apply it to 2.4, because it's a bugfix (so "can I have it
-for release/2.4, please!") and while it *applied* fine, it did not 
-compile :-( - the function signature for crypto_adjust_frame_parameters() 
-is different in 2.4 - "use_iv" still exists.  Can you have a look, 
-please, and send a 2.4 version?
+I have not really tested this as I have no pkcs11 test environment today
+(but since Steffan has, and this has been part of OpenVPN-NL for a while
+now, I assume it is good).
 
-commit d22ba6b2c551fa83d23b5cf668e08a08fde446bc (master)
-Author: Lev Stipakov
-Date:   Mon Jan 21 22:04:54 2019 +0200
+commit 59e45a8bbc9084329c683730325bc5b676058e71 (master)
+commit 59e45a8bbc9084329c683730325bc5b676058e71 (release/2.4)
+Author: Hilko Bengen
+Date:   Mon Feb 18 16:31:28 2019 +0100
 
-     Fix broken fragment/mssfix with NCP
+     Do not set pkcs11-helper 'safe fork mode'
 
-     Signed-off-by: Lev Stipakov <lstipakov@...277...>
-     Acked-by: Arne Schwabe <arne@...1227...>
      Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1548101094-4449-1-git-send-email-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18135.html
+     Message-Id: <20190218153129.3818-1-bengen@...2496...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18218.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
