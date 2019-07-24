@@ -1,10 +1,11 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Tue, 23 Jul 2019 17:34:47 +0300
-Message-Id: <1563892487-12063-1-git-send-email-lstipakov@...277...>
-In-Reply-To: <201907221844.x6MIiHtw009666@...2054...>
-References: <201907221844.x6MIiHtw009666@...2054...>
-Subject: [Openvpn-devel] [PATCH v2 release/2.4] Fix broken fragment/mssfix
- with NCP
+References: <1563442503-11119-1-git-send-email-lstipakov@...277...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <e074afd3-b448-2588-a3a7-1aafd280acc4@...1227...>
+Date: Wed, 24 Jul 2019 12:29:36 +0200
+MIME-Version: 1.0
+In-Reply-To: <1563442503-11119-1-git-send-email-lstipakov@...277...>
+Content-Language: de-DE
+Subject: Re: [Openvpn-devel] [PATCH] crypto.c: fix Visual Studio build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,188 +14,21 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
 
-From: Lev Stipakov <lev@...515...>
+Am 18.07.19 um 11:35 schrieb Lev Stipakov:
+> From: Lev Stipakov <lev@...515...>
+> 
+> Commit fb4e8ab added variable-length array which
+> is C99 feature and is not supported by Visual Studio.
+> 
+> This removes VLA and writes data directly into passed buffer.
+> 
 
-This is the 2.4 backport of master patch (commit d22ba6b).
+After some confusion of the various buffer related function on my side,
+this looks good.
 
-NCP negotiation replaces worst cast crypto overhead
-with actual one in data channel frame. That frame
-params are used by mssfix.
-
-Fragment frame still contains worst case overhead.
-Because of that TCP packets are fragmented, since
-MSS value exceeds max fragment size.
-
-Fix by replacing worst case crypto overhead with
-actual one for fragment frame, as it is done for data
-channel frame.
-
-Trac #1140
-
-Signed-off-by: Lev Stipakov <lev@...515...>
----
- v2: fix --disable-fragment build
-
- src/openvpn/forward.c |  3 +++
- src/openvpn/init.c    | 12 +++++++++++-
- src/openvpn/openvpn.h |  1 +
- src/openvpn/push.c    |  9 ++++++++-
- src/openvpn/ssl.c     | 19 ++++++++++++++++++-
- src/openvpn/ssl.h     | 13 ++++++++-----
- 6 files changed, 49 insertions(+), 8 deletions(-)
-
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 65f790f..84bb584 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -873,6 +873,9 @@ process_incoming_link_part1(struct context *c, struct link_socket_info *lsi, boo
-                 if (is_hard_reset(opcode, c->options.key_method))
-                 {
-                     c->c2.frame = c->c2.frame_initial;
-+#ifdef ENABLE_FRAGMENT
-+                    c->c2.frame_fragment = c->c2.frame_fragment_initial;
-+#endif
-                 }
- 
-                 interval_action(&c->c2.tmp_int);
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index d3785ca..37b832a 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2294,9 +2294,18 @@ do_deferred_options(struct context *c, const unsigned int found)
-         {
-             tls_poor_mans_ncp(&c->options, c->c2.tls_multi->remote_ciphername);
-         }
-+        struct frame *frame_fragment = NULL;
-+#ifdef ENABLE_FRAGMENT
-+        if (c->options.ce.fragment)
-+        {
-+            frame_fragment = &c->c2.frame_fragment;
-+        }
-+#endif
-+
-         /* Do not regenerate keys if server sends an extra push reply */
-         if (!session->key[KS_PRIMARY].crypto_options.key_ctx_bi.initialized
--            && !tls_session_update_crypto_params(session, &c->options, &c->c2.frame))
-+            && !tls_session_update_crypto_params(session, &c->options, &c->c2.frame,
-+                                                 frame_fragment))
-         {
-             msg(D_TLS_ERRORS, "OPTIONS ERROR: failed to import crypto options");
-             return false;
-@@ -3035,6 +3044,7 @@ do_init_frame(struct context *c)
-      */
-     c->c2.frame_fragment = c->c2.frame;
-     frame_subtract_extra(&c->c2.frame_fragment, &c->c2.frame_fragment_omit);
-+    c->c2.frame_fragment_initial = c->c2.frame_fragment;
- #endif
- 
- #if defined(ENABLE_FRAGMENT) && defined(ENABLE_OCC)
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index 7736183..ed7975c 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -269,6 +269,7 @@ struct context_2
-     /* Object to handle advanced MTU negotiation and datagram fragmentation */
-     struct fragment_master *fragment;
-     struct frame frame_fragment;
-+    struct frame frame_fragment_initial;
-     struct frame frame_fragment_omit;
- #endif
- 
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index dd5bd41..ba2fbe4 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -287,11 +287,18 @@ incoming_push_message(struct context *c, const struct buffer *buffer)
-     {
-         if (c->options.mode == MODE_SERVER)
-         {
-+            struct frame *frame_fragment = NULL;
-+#ifdef ENABLE_FRAGMENT
-+            if (c->options.ce.fragment)
-+            {
-+                frame_fragment = &c->c2.frame_fragment;
-+            }
-+#endif
-             struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
-             /* Do not regenerate keys if client send a second push request */
-             if (!session->key[KS_PRIMARY].crypto_options.key_ctx_bi.initialized
-                 && !tls_session_update_crypto_params(session, &c->options,
--                                                     &c->c2.frame))
-+                                                     &c->c2.frame, frame_fragment))
-             {
-                 msg(D_TLS_ERRORS, "TLS Error: initializing data channel failed");
-                 goto error;
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 9696e9b..7dcd962 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1962,7 +1962,8 @@ cleanup:
- 
- bool
- tls_session_update_crypto_params(struct tls_session *session,
--                                 struct options *options, struct frame *frame)
-+                                 struct options *options, struct frame *frame,
-+                                 struct frame *frame_fragment)
- {
-     if (!session->opt->server
-         && 0 != strcmp(options->ciphername, session->opt->config_ciphername)
-@@ -2006,6 +2007,22 @@ tls_session_update_crypto_params(struct tls_session *session,
-     frame_init_mssfix(frame, options);
-     frame_print(frame, D_MTU_INFO, "Data Channel MTU parms");
- 
-+    /*
-+     * mssfix uses data channel framing, which at this point contains
-+     * actual overhead. Fragmentation logic uses frame_fragment, which
-+     * still contains worst case overhead. Replace it with actual overhead
-+     * to prevent unneeded fragmentation.
-+     */
-+
-+    if (frame_fragment)
-+    {
-+        frame_remove_from_extra_frame(frame_fragment, crypto_max_overhead());
-+        crypto_adjust_frame_parameters(frame_fragment, &session->opt->key_type,
-+                                       options->use_iv, options->replay, packet_id_long_form);
-+        frame_set_mtu_dynamic(frame_fragment, options->ce.fragment, SET_MTU_UPPER_BOUND);
-+        frame_print(frame_fragment, D_MTU_INFO, "Fragmentation MTU parms");
-+    }
-+
-     return tls_session_generate_data_channel_keys(session);
- }
- 
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index 8066789..6672d43 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -475,15 +475,18 @@ void tls_update_remote_addr(struct tls_multi *multi,
-  * Update TLS session crypto parameters (cipher and auth) and derive data
-  * channel keys based on the supplied options.
-  *
-- * @param session       The TLS session to update.
-- * @param options       The options to use when updating session.
-- * @param frame         The frame options for this session (frame overhead is
-- *                      adjusted based on the selected cipher/auth).
-+ * @param session         The TLS session to update.
-+ * @param options         The options to use when updating session.
-+ * @param frame           The frame options for this session (frame overhead is
-+ *                        adjusted based on the selected cipher/auth).
-+ * @param frame_fragment  The fragment frame options.
-  *
-  * @return true if updating succeeded, false otherwise.
-  */
- bool tls_session_update_crypto_params(struct tls_session *session,
--                                      struct options *options, struct frame *frame);
-+                                      struct options *options,
-+                                      struct frame *frame,
-+                                      struct frame *frame_fragment);
- 
- /**
-  * "Poor man's NCP": Use peer cipher if it is an allowed (NCP) cipher.
--- 
-2.7.4
-
+Acked-By: Arne Schwabe <arne@...1227...>
 
