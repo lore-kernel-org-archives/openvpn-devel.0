@@ -1,12 +1,10 @@
-MIME-Version: 1.0
-References: <CAKuzo_jTwnNZ_5QtFo8YqUyWWhEJWBCYgnO_xAqEaNkumGPgrw@...278...>
- <1563873663-25785-1-git-send-email-lstipakov@...277...>
-In-Reply-To: <1563873663-25785-1-git-send-email-lstipakov@...277...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 24 Jul 2019 10:43:39 -0400
-Message-ID: <CAKuzo_j7SxL_6Aerh9vnBDOgU20VteOCvH=da1yxK73Y1a-xLg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v6] openvpnserv: enable interactive
- service to open tun
+From: Arne Schwabe <arne@...1227...>
+Date: Wed, 24 Jul 2019 17:29:34 +0200
+Message-Id: <20190724152934.9884-1-arne@...1227...>
+In-Reply-To: <20190403225657.8003-1-rosenp@...277...>
+References: <20190403225657.8003-1-rosenp@...277...>
+Subject: [Openvpn-devel] [PATCH v3] openssl: Fix compilation without
+ deprecated OpenSSL 1.1 APIs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,119 +13,239 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+From: Rosen Penev <rosenp@...277...>
 
-Looks good now and works as expected.
+EVP_CIPHER_CTX_init and _cleanup were deprecated in 1.1 and both were
+replaced with _reset.
 
-On Tue, Jul 23, 2019 at 5:22 AM Lev Stipakov <lstipakov@...277...> wrote:
->
-> From: Lev Stipakov <lev@...515...>
->
-> This patch enables interactive service to open tun device.
-> This is mostly needed by Wintun, which could be opened
-> only by privileged process.
->
-> When interactive service is used, instead of calling
-> CreateFile() directly by openvpn process we pass tun device path
-> into service process. There we open device, duplicate handle
-> and pass it back to openvpn process.
->
-> Signed-off-by: Lev Stipakov <lev@...515...>
-> ---
->  v6:
->   - simplify and strengthen guid check with wcsspn()
->   - fix doxygen comment
->
->  v5:
->   - further strengthen security by passing only device guid from client process
->   to service, validating guid and constructing device path on service side
->
->  v4:
->   - strengthen security by adding basic validation to device path
->   - reorder fields in msg_open_tun_device_result for backward compatibility
->
->  v3:
->   - ensure that device path passed by client is null-terminated
->   - support for multiple openvpn processes
->   - return proper error code when device handle is invalid
->
->  v2:
->   - introduce send_msg_iservice_ex() instead of changing
->   signature of existing send_msg_iservice()
->   - use wchar_t strings in interactive service code
->
->  include/openvpn-msg.h         | 12 +++++++
->  src/openvpn/tun.c             | 83 ++++++++++++++++++++++++++++++++++---------
->  src/openvpn/win32.c           |  9 ++++-
->  src/openvpn/win32.h           | 30 +++++++++++++---
->  src/openvpnserv/interactive.c | 78 ++++++++++++++++++++++++++++++++++++++--
->  5 files changed, 188 insertions(+), 24 deletions(-)
+EVP_CIPHER_CTX_free in OpenSSL 1.1 replaces the cleanup/free combo of
+earlier OpenSSL version. And OpenSSL 1.0.2 already calls cleanup as part
+of _free.
 
-...
+Therefore we can remove the _cleanup calls and use the OpenSSL 1.1. API
+everywhere.
 
-> diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-> index 623c3ff..1b4a5e2 100644
-> --- a/src/openvpnserv/interactive.c
-> +++ b/src/openvpnserv/interactive.c
-> @@ -58,7 +58,6 @@ static settings_t settings;
->  static HANDLE rdns_semaphore = NULL;
->  #define RDNS_TIMEOUT 600  /* seconds to wait for the semaphore */
->
-> -
->  openvpn_service_t interactive_service = {
->      interactive,
->      TEXT(PACKAGE_NAME "ServiceInteractive"),
-> @@ -1198,8 +1197,62 @@ HandleEnableDHCPMessage(const enable_dhcp_message_t *dhcp)
->      return err;
->  }
->
-> +static DWORD
-> +HandleOpenTunDeviceMessage(const open_tun_device_message_t *open_tun, HANDLE ovpn_proc, HANDLE *remote_handle)
-> +{
-> +    DWORD err = ERROR_SUCCESS;
-> +    HANDLE local_handle;
-> +    LPWSTR wguid = NULL;
-> +    WCHAR device_path[256] = {0};
-> +    const WCHAR prefix[] = L"\\\\.\\Global\\";
-> +    const WCHAR tap_suffix[] = L".tap";
-> +
-> +    *remote_handle = INVALID_HANDLE_VALUE;
-> +
-> +    wguid = utf8to16(open_tun->device_guid);
-> +    if (!wguid)
-> +    {
-> +        err = ERROR_OUTOFMEMORY;
-> +        goto out;
-> +    }
-> +
-> +    /* validate device guid */
-> +    const size_t guid_len = wcslen(wguid);
-> +    if (guid_len != 38 || wcsspn(wguid, L"0123456789ABCDEFabcdef-{}") != guid_len)
-> +    {
-> +        err = ERROR_MESSAGE_DATA;
-> +        MsgToEventLog(MSG_FLAGS_ERROR, TEXT("Invalid device guild (%s)"), wguid);
+Also removed initialisation with OpenSSL 1.1 as it is no longer
+needed and causes compilation errors when disabling deprecated APIs.
 
-guild -> guid  (as pointed out by tincanteksup)
+Same with SSL_CTX_set_ecdh_auto as it got removed.
 
-> +        goto out;
-> +    }
-> +
+Patch V3: Use EVP_CIPHER_CTX_reset instead of init/cleanup
 
-whitespace in line above.
+Signed-off-by: Rosen Penev <rosenp@...277...>
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ configure.ac                 |  3 +++
+ src/openvpn/crypto.c         |  1 -
+ src/openvpn/crypto_backend.h |  9 +--------
+ src/openvpn/crypto_mbedtls.c |  7 +------
+ src/openvpn/crypto_openssl.c |  8 +-------
+ src/openvpn/openssl_compat.h | 12 ++++++++++++
+ src/openvpn/ssl_openssl.c    | 18 ++++++++++++------
+ 7 files changed, 30 insertions(+), 28 deletions(-)
 
-These could be fixed at commit time.
+diff --git a/configure.ac b/configure.ac
+index 59673e04..b8e2476f 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -918,10 +918,13 @@ if test "${with_crypto_library}" = "openssl"; then
+ 			EVP_MD_CTX_new \
+ 			EVP_MD_CTX_free \
+ 			EVP_MD_CTX_reset \
++			EVP_CIPHER_CTX_reset \
+ 			OpenSSL_version \
+ 			SSL_CTX_get_default_passwd_cb \
+ 			SSL_CTX_get_default_passwd_cb_userdata \
+ 			SSL_CTX_set_security_level \
++			X509_get0_notBefore \
++			X509_get0_notAfter \
+ 			X509_get0_pubkey \
+ 			X509_STORE_get0_objects \
+ 			X509_OBJECT_free \
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 8a92a8c1..585bfbc6 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -906,7 +906,6 @@ free_key_ctx(struct key_ctx *ctx)
+ {
+     if (ctx->cipher)
+     {
+-        cipher_ctx_cleanup(ctx->cipher);
+         cipher_ctx_free(ctx->cipher);
+         ctx->cipher = NULL;
+     }
+diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
+index 7e9a4bd2..d119442f 100644
+--- a/src/openvpn/crypto_backend.h
++++ b/src/openvpn/crypto_backend.h
+@@ -341,7 +341,7 @@ bool cipher_kt_mode_aead(const cipher_kt_t *cipher);
+ cipher_ctx_t *cipher_ctx_new(void);
+ 
+ /**
+- * Free a cipher context
++ * Cleanup and free a cipher context
+  *
+  * @param ctx           Cipher context.
+  */
+@@ -360,13 +360,6 @@ void cipher_ctx_free(cipher_ctx_t *ctx);
+ void cipher_ctx_init(cipher_ctx_t *ctx, const uint8_t *key, int key_len,
+                      const cipher_kt_t *kt, int enc);
+ 
+-/**
+- * Cleanup the specified context.
+- *
+- * @param ctx   Cipher context to cleanup.
+- */
+-void cipher_ctx_cleanup(cipher_ctx_t *ctx);
+-
+ /**
+  * Returns the size of the IV used by the cipher, in bytes, or 0 if no IV is
+  * used.
+diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
+index 2e931440..f924323d 100644
+--- a/src/openvpn/crypto_mbedtls.c
++++ b/src/openvpn/crypto_mbedtls.c
+@@ -616,12 +616,6 @@ cipher_ctx_init(mbedtls_cipher_context_t *ctx, const uint8_t *key, int key_len,
+     ASSERT(ctx->key_bitlen <= key_len*8);
+ }
+ 
+-void
+-cipher_ctx_cleanup(mbedtls_cipher_context_t *ctx)
+-{
+-    mbedtls_cipher_free(ctx);
+-}
+-
+ int
+ cipher_ctx_iv_length(const mbedtls_cipher_context_t *ctx)
+ {
+@@ -861,6 +855,7 @@ md_ctx_new(void)
+ void
+ md_ctx_free(mbedtls_md_context_t *ctx)
+ {
++    mbedtls_cipher_free(ctx);
+     free(ctx);
+ }
+ 
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index c049e52d..520e40ee 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -772,7 +772,7 @@ cipher_ctx_init(EVP_CIPHER_CTX *ctx, const uint8_t *key, int key_len,
+ {
+     ASSERT(NULL != kt && NULL != ctx);
+ 
+-    EVP_CIPHER_CTX_init(ctx);
++    EVP_CIPHER_CTX_reset(ctx);
+     if (!EVP_CipherInit(ctx, kt, NULL, NULL, enc))
+     {
+         crypto_msg(M_FATAL, "EVP cipher init #1");
+@@ -792,12 +792,6 @@ cipher_ctx_init(EVP_CIPHER_CTX *ctx, const uint8_t *key, int key_len,
+     ASSERT(EVP_CIPHER_CTX_key_length(ctx) <= key_len);
+ }
+ 
+-void
+-cipher_ctx_cleanup(EVP_CIPHER_CTX *ctx)
+-{
+-    EVP_CIPHER_CTX_cleanup(ctx);
+-}
+-
+ int
+ cipher_ctx_iv_length(const EVP_CIPHER_CTX *ctx)
+ {
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index a4072b9a..4ac8f24d 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -89,6 +89,18 @@ EVP_MD_CTX_new(void)
+ }
+ #endif
+ 
++#if !defined(HAVE_EVP_CIPHER_CTX_RESET)
++#define EVP_CIPHER_CTX_reset EVP_CIPHER_CTX_init
++#endif
++
++#if !defined(HAVE_X509_GET0_NOTBEFORE)
++#define X509_get0_notBefore X509_get_notBefore
++#endif
++
++#if !defined(HAVE_X509_GET0_NOTAFTER)
++#define X509_get0_notAfter X509_get_notAfter
++#endif
++
+ #if !defined(HAVE_HMAC_CTX_RESET)
+ /**
+  * Reset a HMAC context
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 05ca4113..c029d0f2 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -76,12 +76,13 @@ int mydata_index; /* GLOBAL */
+ void
+ tls_init_lib(void)
+ {
++#if (OPENSSL_VERSION_NUMBER < 0x10100000L && !defined(LIBRESSL_VERSION_NUMBER))
+     SSL_library_init();
+-#ifndef ENABLE_SMALL
++# ifndef ENABLE_SMALL
+     SSL_load_error_strings();
+-#endif
++# endif
+     OpenSSL_add_all_algorithms();
+-
++#endif
+     mydata_index = SSL_get_ex_new_index(0, "struct session *", NULL, NULL, NULL);
+     ASSERT(mydata_index >= 0);
+ }
+@@ -89,9 +90,11 @@ tls_init_lib(void)
+ void
+ tls_free_lib(void)
+ {
++#if (OPENSSL_VERSION_NUMBER < 0x10100000L && !defined(LIBRESSL_VERSION_NUMBER))
+     EVP_cleanup();
+-#ifndef ENABLE_SMALL
++# ifndef ENABLE_SMALL
+     ERR_free_strings();
++# endif
+ #endif
+ }
+ 
+@@ -567,7 +570,7 @@ tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
+         goto cleanup; /* Nothing to check if there is no certificate */
+     }
+ 
+-    ret = X509_cmp_time(X509_get_notBefore(cert), NULL);
++    ret = X509_cmp_time(X509_get0_notBefore(cert), NULL);
+     if (ret == 0)
+     {
+         msg(D_TLS_DEBUG_MED, "Failed to read certificate notBefore field.");
+@@ -577,7 +580,7 @@ tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
+         msg(M_WARN, "WARNING: Your certificate is not yet valid!");
+     }
+ 
+-    ret = X509_cmp_time(X509_get_notAfter(cert), NULL);
++    ret = X509_cmp_time(X509_get0_notAfter(cert), NULL);
+     if (ret == 0)
+     {
+         msg(D_TLS_DEBUG_MED, "Failed to read certificate notAfter field.");
+@@ -660,10 +663,13 @@ tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name
+     else
+     {
+ #if OPENSSL_VERSION_NUMBER >= 0x10002000L
++#if (OPENSSL_VERSION_NUMBER < 0x10100000L && !defined(LIBRESSL_VERSION_NUMBER))
++
+         /* OpenSSL 1.0.2 and newer can automatically handle ECDH parameter
+          * loading */
+         SSL_CTX_set_ecdh_auto(ctx->ctx, 1);
+         return;
++#endif
+ #else
+         /* For older OpenSSL we have to extract the curve from key on our own */
+         EC_KEY *eckey = NULL;
+-- 
+2.22.0
 
-Acked-by: Selva Nair <selva.nair@...277...>
-
-Selva
-
-
-
-
-Selva
 
