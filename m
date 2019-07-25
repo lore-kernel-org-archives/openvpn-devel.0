@@ -1,13 +1,14 @@
-References: <20190403225657.8003-1-rosenp@...277...>
- <20190724152934.9884-1-arne@...1227...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <686255de-a27d-54c9-76f6-ca22788bfb79@...1856...>
-Date: Thu, 25 Jul 2019 16:31:16 +0200
+Date: Thu, 25 Jul 2019 20:20:58 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20190725182058.GA1097@...1296...>
+References: <aa4f4026-a684-f96d-c8cb-d4f8a3468c4c@...277...>
+ <CAGyAFMVBdD6tkNSnkZXqMUd5i-zA_d-q1W-OEpPvHtA8gPkSVA@...278...>
 MIME-Version: 1.0
-In-Reply-To: <20190724152934.9884-1-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v3] openssl: Fix compilation without
- deprecated OpenSSL 1.1 APIs
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="hsoAP4Wa+/L9NF1J"
+Content-Disposition: inline
+In-Reply-To: <CAGyAFMVBdD6tkNSnkZXqMUd5i-zA_d-q1W-OEpPvHtA8gPkSVA@...278...>
+Subject: Re: [Openvpn-devel] Wrong FILETYPE in .rc files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,247 +17,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lstipakov@...277...>
+Cc: Gisle Vanem <gisle.vanem@...277...>, OpenVPN-dev <openvpn-devel@lists.sourceforge.net>
 
+--hsoAP4Wa+/L9NF1J
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
+Hi,
 
-On 24-07-19 17:29, Arne Schwabe wrote:
-> From: Rosen Penev <rosenp@...277...>
-> 
-> EVP_CIPHER_CTX_init and _cleanup were deprecated in 1.1 and both were
-> replaced with _reset.
-> 
-> EVP_CIPHER_CTX_free in OpenSSL 1.1 replaces the cleanup/free combo of
-> earlier OpenSSL version. And OpenSSL 1.0.2 already calls cleanup as part
-> of _free.
-> 
-> Therefore we can remove the _cleanup calls and use the OpenSSL 1.1. API
-> everywhere.
-> 
-> Also removed initialisation with OpenSSL 1.1 as it is no longer
-> needed and causes compilation errors when disabling deprecated APIs.
-> 
-> Same with SSL_CTX_set_ecdh_auto as it got removed.
-> 
-> Patch V3: Use EVP_CIPHER_CTX_reset instead of init/cleanup
-> 
-> Signed-off-by: Rosen Penev <rosenp@...277...>
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  configure.ac                 |  3 +++
->  src/openvpn/crypto.c         |  1 -
->  src/openvpn/crypto_backend.h |  9 +--------
->  src/openvpn/crypto_mbedtls.c |  7 +------
->  src/openvpn/crypto_openssl.c |  8 +-------
->  src/openvpn/openssl_compat.h | 12 ++++++++++++
->  src/openvpn/ssl_openssl.c    | 18 ++++++++++++------
->  7 files changed, 30 insertions(+), 28 deletions(-)
-> 
-> diff --git a/configure.ac b/configure.ac
-> index 59673e04..b8e2476f 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -918,10 +918,13 @@ if test "${with_crypto_library}" = "openssl"; then
->  			EVP_MD_CTX_new \
->  			EVP_MD_CTX_free \
->  			EVP_MD_CTX_reset \
-> +			EVP_CIPHER_CTX_reset \
->  			OpenSSL_version \
->  			SSL_CTX_get_default_passwd_cb \
->  			SSL_CTX_get_default_passwd_cb_userdata \
->  			SSL_CTX_set_security_level \
-> +			X509_get0_notBefore \
-> +			X509_get0_notAfter \
->  			X509_get0_pubkey \
->  			X509_STORE_get0_objects \
->  			X509_OBJECT_free \
-> diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-> index 8a92a8c1..585bfbc6 100644
-> --- a/src/openvpn/crypto.c
-> +++ b/src/openvpn/crypto.c
-> @@ -906,7 +906,6 @@ free_key_ctx(struct key_ctx *ctx)
->  {
->      if (ctx->cipher)
->      {
-> -        cipher_ctx_cleanup(ctx->cipher);
->          cipher_ctx_free(ctx->cipher);
->          ctx->cipher = NULL;
->      }
-> diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
-> index 7e9a4bd2..d119442f 100644
-> --- a/src/openvpn/crypto_backend.h
-> +++ b/src/openvpn/crypto_backend.h
-> @@ -341,7 +341,7 @@ bool cipher_kt_mode_aead(const cipher_kt_t *cipher);
->  cipher_ctx_t *cipher_ctx_new(void);
->  
->  /**
-> - * Free a cipher context
-> + * Cleanup and free a cipher context
->   *
->   * @param ctx           Cipher context.
->   */
-> @@ -360,13 +360,6 @@ void cipher_ctx_free(cipher_ctx_t *ctx);
->  void cipher_ctx_init(cipher_ctx_t *ctx, const uint8_t *key, int key_len,
->                       const cipher_kt_t *kt, int enc);
->  
-> -/**
-> - * Cleanup the specified context.
-> - *
-> - * @param ctx   Cipher context to cleanup.
-> - */
-> -void cipher_ctx_cleanup(cipher_ctx_t *ctx);
-> -
->  /**
->   * Returns the size of the IV used by the cipher, in bytes, or 0 if no IV is
->   * used.
-> diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-> index 2e931440..f924323d 100644
-> --- a/src/openvpn/crypto_mbedtls.c
-> +++ b/src/openvpn/crypto_mbedtls.c
-> @@ -616,12 +616,6 @@ cipher_ctx_init(mbedtls_cipher_context_t *ctx, const uint8_t *key, int key_len,
->      ASSERT(ctx->key_bitlen <= key_len*8);
->  }
->  
-> -void
-> -cipher_ctx_cleanup(mbedtls_cipher_context_t *ctx)
-> -{
-> -    mbedtls_cipher_free(ctx);
-> -}
-> -
->  int
->  cipher_ctx_iv_length(const mbedtls_cipher_context_t *ctx)
->  {
-> @@ -861,6 +855,7 @@ md_ctx_new(void)
->  void
->  md_ctx_free(mbedtls_md_context_t *ctx)
->  {
-> +    mbedtls_cipher_free(ctx);
->      free(ctx);
->  }
->  
-> diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-> index c049e52d..520e40ee 100644
-> --- a/src/openvpn/crypto_openssl.c
-> +++ b/src/openvpn/crypto_openssl.c
-> @@ -772,7 +772,7 @@ cipher_ctx_init(EVP_CIPHER_CTX *ctx, const uint8_t *key, int key_len,
->  {
->      ASSERT(NULL != kt && NULL != ctx);
->  
-> -    EVP_CIPHER_CTX_init(ctx);
-> +    EVP_CIPHER_CTX_reset(ctx);
->      if (!EVP_CipherInit(ctx, kt, NULL, NULL, enc))
->      {
->          crypto_msg(M_FATAL, "EVP cipher init #1");
-> @@ -792,12 +792,6 @@ cipher_ctx_init(EVP_CIPHER_CTX *ctx, const uint8_t *key, int key_len,
->      ASSERT(EVP_CIPHER_CTX_key_length(ctx) <= key_len);
->  }
->  
-> -void
-> -cipher_ctx_cleanup(EVP_CIPHER_CTX *ctx)
-> -{
-> -    EVP_CIPHER_CTX_cleanup(ctx);
-> -}
-> -
->  int
->  cipher_ctx_iv_length(const EVP_CIPHER_CTX *ctx)
->  {
-> diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-> index a4072b9a..4ac8f24d 100644
-> --- a/src/openvpn/openssl_compat.h
-> +++ b/src/openvpn/openssl_compat.h
-> @@ -89,6 +89,18 @@ EVP_MD_CTX_new(void)
->  }
->  #endif
->  
-> +#if !defined(HAVE_EVP_CIPHER_CTX_RESET)
-> +#define EVP_CIPHER_CTX_reset EVP_CIPHER_CTX_init
-> +#endif
-> +
-> +#if !defined(HAVE_X509_GET0_NOTBEFORE)
-> +#define X509_get0_notBefore X509_get_notBefore
-> +#endif
-> +
-> +#if !defined(HAVE_X509_GET0_NOTAFTER)
-> +#define X509_get0_notAfter X509_get_notAfter
-> +#endif
-> +
->  #if !defined(HAVE_HMAC_CTX_RESET)
->  /**
->   * Reset a HMAC context
-> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-> index 05ca4113..c029d0f2 100644
-> --- a/src/openvpn/ssl_openssl.c
-> +++ b/src/openvpn/ssl_openssl.c
-> @@ -76,12 +76,13 @@ int mydata_index; /* GLOBAL */
->  void
->  tls_init_lib(void)
->  {
-> +#if (OPENSSL_VERSION_NUMBER < 0x10100000L && !defined(LIBRESSL_VERSION_NUMBER))
->      SSL_library_init();
-> -#ifndef ENABLE_SMALL
-> +# ifndef ENABLE_SMALL
->      SSL_load_error_strings();
-> -#endif
-> +# endif
->      OpenSSL_add_all_algorithms();
-> -
-> +#endif
->      mydata_index = SSL_get_ex_new_index(0, "struct session *", NULL, NULL, NULL);
->      ASSERT(mydata_index >= 0);
->  }
-> @@ -89,9 +90,11 @@ tls_init_lib(void)
->  void
->  tls_free_lib(void)
->  {
-> +#if (OPENSSL_VERSION_NUMBER < 0x10100000L && !defined(LIBRESSL_VERSION_NUMBER))
->      EVP_cleanup();
-> -#ifndef ENABLE_SMALL
-> +# ifndef ENABLE_SMALL
->      ERR_free_strings();
-> +# endif
->  #endif
->  }
->  
-> @@ -567,7 +570,7 @@ tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
->          goto cleanup; /* Nothing to check if there is no certificate */
->      }
->  
-> -    ret = X509_cmp_time(X509_get_notBefore(cert), NULL);
-> +    ret = X509_cmp_time(X509_get0_notBefore(cert), NULL);
->      if (ret == 0)
->      {
->          msg(D_TLS_DEBUG_MED, "Failed to read certificate notBefore field.");
-> @@ -577,7 +580,7 @@ tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
->          msg(M_WARN, "WARNING: Your certificate is not yet valid!");
->      }
->  
-> -    ret = X509_cmp_time(X509_get_notAfter(cert), NULL);
-> +    ret = X509_cmp_time(X509_get0_notAfter(cert), NULL);
->      if (ret == 0)
->      {
->          msg(D_TLS_DEBUG_MED, "Failed to read certificate notAfter field.");
-> @@ -660,10 +663,13 @@ tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name
->      else
->      {
->  #if OPENSSL_VERSION_NUMBER >= 0x10002000L
-> +#if (OPENSSL_VERSION_NUMBER < 0x10100000L && !defined(LIBRESSL_VERSION_NUMBER))
-> +
->          /* OpenSSL 1.0.2 and newer can automatically handle ECDH parameter
->           * loading */
->          SSL_CTX_set_ecdh_auto(ctx->ctx, 1);
->          return;
-> +#endif
->  #else
->          /* For older OpenSSL we have to extract the curve from key on our own */
->          EC_KEY *eckey = NULL;
-> 
+On Thu, Jul 25, 2019 at 10:44:48AM +0300, Lev Stipakov wrote:
+> 1. Please fix your patch, I cannot apply it:
 
-Code looks good, verified that TLS connections still works with mbedtls
-and openssl builds.
+This might be something with your mailer at openvpn... Antonio complained
+about a well-formed patch yesterday, now you complain while I can apply
+the patch just fine...
 
-Acked-by: Steffan Karger <steffan@...1856...>
+$ git am /tmp/mail.eml
+warning: Patch sent with format=3Dflowed; space at the end of lines might b=
+e lost.
+Applying: Wrong FILETYPE in .rc files
 
--Steffan
+So - since I can apply the patch just fine, is the change itself ACKed?
+
+> 3. Since you patch .rc files, could you replace rest of numeric values wi=
+th
+> strings, like
+>=20
+> FILEOS VOS_NT_WINDOWS32 instead of FILEOS 0x40004L
+
+This would be a separate patch, I'd say - the patch here is actually
+changing numbers, while your suggestion would be more of a cleanup
+thing, not actually changing the result.
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--hsoAP4Wa+/L9NF1J
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJdOfMJAAoJEB2Cnv7KVigSSY0L/A0BcuFB27ZIsjT3AqBA5yv6
++/h0qgMHXxcSs/Yj19zaUaSQvYLAVsLSMWA2f8TsDPhV0XounxFG+k7pnxAGUjGo
+tmSFoya00eEzbyi7FNm2UmKrc7bKbSRFgxLNuiLJwVHJfDeU79gZnxVfm6j8Rai5
+QoJd0oxbMK5+bhMRzMMTpkiqepSxiH4O8l3GvVWQndZOv99zW0bxEjVFddWKkfZa
+3zlgl1NvVtrDj2OMTi/gQwVk5rXkZZaDHhvhj/koM+3gbpL6nxNv8ZGjwArHUCbz
+30dzekFAH1CXneiN3nTDhTofDIFbPpdbYbOT2RFPmmPrgG36Zju1W1hqVtjB24z6
+ttwmUINn32VZbN/09KHumvu7Tx+LCXZd+14thqfhY3oYCV98p1Cn96M8PoZRgrDU
+0Vk/UbAnED4/lcLpWcNnMMfWEoFislc5Hqo4A5IgPwMtwQfJwBi26O9KkD5xDy9k
+AQQVcpp2+nyBwFsPPY4SnB/oo31zCk2Rh7oRZTT+ww==
+=1jCO
+-----END PGP SIGNATURE-----
+
+--hsoAP4Wa+/L9NF1J--
 
