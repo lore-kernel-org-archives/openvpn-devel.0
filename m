@@ -1,8 +1,8 @@
-Date: Sun, 28 Jul 2019 22:02:03 +0200 (CEST)
-Message-Id: <201907282002.x6SK23tJ081635@...2054...>
+Date: Sun, 28 Jul 2019 22:04:18 +0200 (CEST)
+Message-Id: <201907282004.x6SK4Ibp082487@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1564173557-11776-1-git-send-email-selva.nair@...277...>
-References: <1564173557-11776-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1564197141-30513-1-git-send-email-selva.nair@...277...>
+References: <1564197141-30513-1-git-send-email-selva.nair@...277...>
 Subject: [Openvpn-devel] [PATCH applied] Re: Correct the return value of
  cryptoapi RSA signature callbacks
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,23 +18,21 @@ Content-Transfer-Encoding: 8bit
 To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Thanks (and thanks for sending the patch for 2.4 right with it)
+And thanks again :-)  - even less tested, just checking that this is indeed
+the only occurance of siglen/*siglen in 2.4
 
-I have not tested anything, but the patch looks very much "obviously
-correct".
+Your patch has been applied to the release/2.4 branch.
 
-Your patch has been applied to the master branch.
-
-commit f4ac6b780db2e0c3b60d180bd6545efe30a52059
+commit eed67cf0e7f6cbe596495c2f83aeea7c15db0d6e
 Author: Selva Nair
-Date:   Fri Jul 26 16:39:17 2019 -0400
+Date:   Fri Jul 26 23:12:21 2019 -0400
 
      Correct the return value of cryptoapi RSA signature callbacks
 
      Signed-off-by: Selva Nair <selva.nair@...277...>
      Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1564173557-11776-1-git-send-email-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18706.html
+     Message-Id: <1564197141-30513-1-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18708.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
