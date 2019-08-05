@@ -1,14 +1,11 @@
-From: Antonio Quartulli <a@...2181...>
 References: <20190805092529.9467-1-a@...2181...>
- <20190805092529.9467-2-a@...2181...>
- <201908050933.x759XIuU001220@...2300...>
-Message-ID: <ab105e57-1b1c-e4da-9b68-dbc84e2fe8db@...2181...>
-Date: Mon, 5 Aug 2019 11:47:53 +0200
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <1d0b4b35-1374-fde2-910a-e07db9a60b60@...2181...>
+Date: Mon, 5 Aug 2019 13:11:12 +0200
 MIME-Version: 1.0
-In-Reply-To: <201908050933.x759XIuU001220@...2300...>
+In-Reply-To: <20190805092529.9467-1-a@...2181...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH 1/6] sitnl: harden strncpy() by forcing
- arguments to have the same length
+Subject: Re: [Openvpn-devel] [PATCH 0/6] sitnl follow-up
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,50 +16,49 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-To: Casper.Dik@...2299...
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Hi and thanks for your review,
+FYI,
 
-On 05/08/2019 11:33, Casper.Dik@...2299... wrote:
+this patchset has undergone buildbot, travis-ci and gitlab-ci testing
+and nothing out of the ordinary came out.
+
+Regards,
+
+On 05/08/2019 11:25, Antonio Quartulli wrote:
+> From: Antonio Quartulli <antonio@...515...>
+> 
+> Hi all, 
+> 
+> this small patchset aims at tackling most of the concerns raised by Gert
+> while merging the sitnl introduction patchset.
+> 
+> All patches are fairly small, but they are a bit intertwined (they
+> change nearby lines), therefore it would be better to merge them in the
+> provided order to avoid ugly merge conflicts.
 > 
 > 
->> For this reason, force both strings to use IFNAMSIZ as size and, since
->> this constant may not exist on every platform, ensure it is always
->> defined.
-> 
-> A problem with this patch misght be that strncpy() does NOT NUL terminates the
-> copied string.  (It writes EXACTLY IFNAMSIZ bytes but only when the string 
-> is shorter, it will writes NUL bytes in the reminder of the char array[].)
-
-
-the assumption behind this patch is that now both source and destination
-buffer have exactly the same size (IFNAMSIZ) and the source is NULL
-terminated. Therefore the problem you mentioned should not appear here,
-I think.
-
-> 
-> You could use strlcpy() but I'm not sure if that is available in Windows.
-
-This code is currently used only on Linux - it is not expected to ever
-run on Windows.
-
-Cheers,
-
+> Cheers,
 > 
 > 
->>
->>     /* save result in output variables */
->>     memcpy(best_gw, &res.gw, res.addr_size);
-> -    strcpy(best_iface, res.iface);
->> +    strncpy(best_iface, res.iface, IFNAMSIZ);
+> Antonio Quartulli (6):
+>   sitnl: harden strncpy() by forcing arguments to have the same length
+>   networking/best_gw: remove useless prefixlen parameter
+>   networking: extend API for better memory management
+>   tun.c: undo_ifconfig_ipv4/6 remove useless gc argument
+>   networking_sitnl.c: uncrustify file
+>   route.c: simplify ifdef logic
 > 
-> Casper
+>  src/openvpn/networking.h          | 33 +++++++++--
+>  src/openvpn/networking_iproute2.c | 78 ++++++++++---------------
+>  src/openvpn/networking_iproute2.h |  1 +
+>  src/openvpn/networking_sitnl.c    | 96 +++++++++++++++++++++----------
+>  src/openvpn/openvpn.c             |  1 +
+>  src/openvpn/route.c               | 32 ++++++-----
+>  src/openvpn/route.h               |  6 +-
+>  src/openvpn/tun.c                 | 28 ++++-----
+>  8 files changed, 165 insertions(+), 110 deletions(-)
 > 
-
--- 
-Antonio Quartulli
-OpenVPN Inc.
 
 -- 
 Antonio Quartulli
