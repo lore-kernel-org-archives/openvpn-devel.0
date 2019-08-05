@@ -1,11 +1,10 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Mon,  5 Aug 2019 11:25:25 +0200
-Message-Id: <20190805092529.9467-3-a@...2181...>
+Date: Mon,  5 Aug 2019 11:25:28 +0200
+Message-Id: <20190805092529.9467-6-a@...2181...>
 In-Reply-To: <20190805092529.9467-1-a@...2181...>
 References: <20190805092529.9467-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/6] networking/best_gw: remove useless
- prefixlen parameter
+Subject: [Openvpn-devel] [PATCH 5/6] networking_sitnl.c: uncrustify file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,170 +16,210 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <antonio@...515...>
+Cc: Antonio Quartulli <a@...2181...>, Antonio Quartulli <antonio@...515...>
 
-From: Antonio Quartulli <antonio@...515...>
+Give this file a run under uncrustify to fix a few style glitches here
+and there.
 
-The prefixlen parameter is not used at all while retrieving a route
-therefore it can safely be removed.
-
-Signed-off-by: Antonio Quartulli <antonio2openvpn.net>
+Signed-off-by: Antonio Quartulli <antonio@...515...>
 ---
- src/openvpn/networking.h          |  7 ++-----
- src/openvpn/networking_iproute2.c |  4 ++--
- src/openvpn/networking_sitnl.c    | 20 +++++++++-----------
- src/openvpn/route.c               |  4 ++--
- 4 files changed, 15 insertions(+), 20 deletions(-)
+ src/openvpn/networking_sitnl.c | 62 +++++++++++++++++++++++-----------
+ 1 file changed, 43 insertions(+), 19 deletions(-)
 
-diff --git a/src/openvpn/networking.h b/src/openvpn/networking.h
-index add45edc..cf967116 100644
---- a/src/openvpn/networking.h
-+++ b/src/openvpn/networking.h
-@@ -241,15 +241,13 @@ int net_route_v6_del(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
-  *
-  * @param ctx           the implementation specific context
-  * @param dst           The destination to lookup
-- * @param prefixlen     The length of the prefix of the destination
-  * @param best_gw       Location where the retrieved GW has to be stored
-  * @param best_iface    Location where the retrieved interface has to be stored
-  *
-  * @return              0 on success, a negative error code otherwise
-  */
- int net_route_v4_best_gw(openvpn_net_ctx_t *ctx, const in_addr_t *dst,
--                         int prefixlen, in_addr_t *best_gw,
--                         openvpn_net_iface_t *best_iface);
-+                         in_addr_t *best_gw, openvpn_net_iface_t *best_iface);
- 
- /**
-  * Retrieve the gateway and outgoing interface for the specified IPv6
-@@ -257,14 +255,13 @@ int net_route_v4_best_gw(openvpn_net_ctx_t *ctx, const in_addr_t *dst,
-  *
-  * @param ctx           the implementation specific context
-  * @param dst           The destination to lookup
-- * @param prefixlen     The length of the prefix of the destination
-  * @param best_gw       Location where the retrieved GW has to be stored
-  * @param best_iface    Location where the retrieved interface has to be stored
-  *
-  * @return              0 on success, a negative error code otherwise
-  */
- int net_route_v6_best_gw(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
--                         int prefixlen, struct in6_addr *best_gw,
-+                         struct in6_addr *best_gw,
-                          openvpn_net_iface_t *best_iface);
- 
- #endif /* ENABLE_SITNL || ENABLE_IPROUTE */
-diff --git a/src/openvpn/networking_iproute2.c b/src/openvpn/networking_iproute2.c
-index a5824306..5db9a78b 100644
---- a/src/openvpn/networking_iproute2.c
-+++ b/src/openvpn/networking_iproute2.c
-@@ -325,7 +325,7 @@ net_route_v6_del(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
- 
- int
- net_route_v4_best_gw(openvpn_net_ctx_t *ctx, const in_addr_t *dst,
--                     int prefixlen, in_addr_t *best_gw, char *best_iface)
-+                     in_addr_t *best_gw, char *best_iface)
- {
-     best_iface[0] = '\0';
- 
-@@ -378,7 +378,7 @@ net_route_v4_best_gw(openvpn_net_ctx_t *ctx, const in_addr_t *dst,
-  * uses the sitnl implementation from networking_sitnl.c.
-  *
-  * int
-- * net_route_v6_best_gw(const struct in6_addr *dst, int prefixlen,
-+ * net_route_v6_best_gw(const struct in6_addr *dst,
-  *                      struct in6_addr *best_gw, char *best_iface)
-  */
- 
 diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
-index ea730ec7..21563905 100644
+index 976ecd28..e5c48932 100644
 --- a/src/openvpn/networking_sitnl.c
 +++ b/src/openvpn/networking_sitnl.c
-@@ -451,7 +451,7 @@ sitnl_route_save(struct nlmsghdr *n, void *arg)
+@@ -45,7 +45,7 @@
  
- static int
- sitnl_route_best_gw(sa_family_t af_family, const inet_address_t *dst,
--                    int prefixlen, void *best_gw, char *best_iface)
-+                    void *best_gw, char *best_iface)
- {
-     struct sitnl_route_req req;
-     route_res_t res;
-@@ -468,7 +468,6 @@ sitnl_route_best_gw(sa_family_t af_family, const inet_address_t *dst,
-     req.n.nlmsg_flags = NLM_F_REQUEST;
+ #define SITNL_ADDATTR(_msg, _max_size, _attr, _data, _size)         \
+     {                                                               \
+-        if (sitnl_addattr(_msg, _max_size, _attr, _data, _size) < 0)\
++        if (sitnl_addattr(_msg, _max_size, _attr, _data, _size) < 0) \
+         {                                                           \
+             goto err;                                               \
+         }                                                           \
+@@ -335,16 +335,16 @@ sitnl_send(struct nlmsghdr *payload, pid_t peer, unsigned int groups,
+             }
  
-     req.r.rtm_family = af_family;
--    req.r.rtm_dst_len = prefixlen;
- 
-     switch (af_family)
-     {
-@@ -503,7 +502,7 @@ err:
- /* used by iproute2 implementation too */
- int
- net_route_v6_best_gw(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
--                     int prefixlen, struct in6_addr *best_gw, char *best_iface)
-+                     struct in6_addr *best_gw, char *best_iface)
- {
-     inet_address_t dst_v6 = {0};
-     char buf[INET6_ADDRSTRLEN];
-@@ -514,11 +513,10 @@ net_route_v6_best_gw(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
-         dst_v6.ipv6 = *dst;
+ /*            if (((int)nladdr.nl_pid != peer) || (h->nlmsg_pid != nladdr.nl_pid)
+-                || (h->nlmsg_seq != seq))
+-            {
+-                rcv_len -= NLMSG_ALIGN(len);
+-                h = (struct nlmsghdr *)((char *)h + NLMSG_ALIGN(len));
+-                msg(M_DEBUG, "%s: skipping unrelated message. nl_pid:%d (peer:%d) nl_msg_pid:%d nl_seq:%d seq:%d",
+-                    __func__, (int)nladdr.nl_pid, peer, h->nlmsg_pid,
+-                    h->nlmsg_seq, seq);
+-                continue;
+-            }
+-*/
++ *               || (h->nlmsg_seq != seq))
++ *           {
++ *               rcv_len -= NLMSG_ALIGN(len);
++ *               h = (struct nlmsghdr *)((char *)h + NLMSG_ALIGN(len));
++ *               msg(M_DEBUG, "%s: skipping unrelated message. nl_pid:%d (peer:%d) nl_msg_pid:%d nl_seq:%d seq:%d",
++ *                   __func__, (int)nladdr.nl_pid, peer, h->nlmsg_pid,
++ *                   h->nlmsg_seq, seq);
++ *               continue;
++ *           }
++ */
+             if (h->nlmsg_type == NLMSG_ERROR)
+             {
+                 err = (struct nlmsgerr *)NLMSG_DATA(h);
+@@ -359,7 +359,9 @@ sitnl_send(struct nlmsghdr *payload, pid_t peer, unsigned int groups,
+                     {
+                         ret = 0;
+                         if (cb)
++                        {
+                             ret = cb(h, arg_cb);
++                        }
+                     }
+                     else
+                     {
+@@ -427,9 +429,11 @@ sitnl_route_save(struct nlmsghdr *n, void *arg)
+             case RTA_OIF:
+                 ifindex = *(unsigned int *)RTA_DATA(rta);
+                 break;
++
+             /* route prefix */
+             case RTA_DST:
+                 break;
++
+             /* GW for the route */
+             case RTA_GATEWAY:
+                 memcpy(&res->gw, RTA_DATA(rta), res->addr_size);
+@@ -475,9 +479,11 @@ sitnl_route_best_gw(sa_family_t af_family, const inet_address_t *dst,
+             res.addr_size = sizeof(in_addr_t);
+             req.n.nlmsg_flags |= NLM_F_DUMP;
+             break;
++
+         case AF_INET6:
+             res.addr_size = sizeof(struct in6_addr);
+             break;
++
+         default:
+             /* unsupported */
+             return -EINVAL;
+@@ -598,7 +604,8 @@ net_iface_up(openvpn_net_ctx_t *ctx, const char *iface, bool up)
      }
  
--    msg(D_ROUTE, "%s query: dst %s/%d", __func__,
--        inet_ntop(AF_INET6, &dst_v6.ipv6, buf, sizeof(buf)), prefixlen);
-+    msg(D_ROUTE, "%s query: dst %s", __func__,
-+        inet_ntop(AF_INET6, &dst_v6.ipv6, buf, sizeof(buf)));
+     ifindex = if_nametoindex(iface);
+-    if (ifindex == 0) {
++    if (ifindex == 0)
++    {
+         msg(M_WARN, "%s: rtnl: cannot get ifindex for %s: %s", __func__, iface,
+             strerror(errno));
+         return -ENOENT;
+@@ -612,9 +619,13 @@ net_iface_up(openvpn_net_ctx_t *ctx, const char *iface, bool up)
+     req.i.ifi_index = ifindex;
+     req.i.ifi_change |= IFF_UP;
+     if (up)
++    {
+         req.i.ifi_flags |= IFF_UP;
++    }
+     else
++    {
+         req.i.ifi_flags &= ~IFF_UP;
++    }
  
--    ret = sitnl_route_best_gw(AF_INET6, &dst_v6, prefixlen, best_gw,
--                              best_iface);
-+    ret = sitnl_route_best_gw(AF_INET6, &dst_v6, best_gw, best_iface);
-     if (ret < 0)
-     {
-         return ret;
-@@ -544,7 +542,7 @@ net_ctx_init(struct context *c, openvpn_net_ctx_t *ctx)
+     msg(M_INFO, "%s: set %s %s", __func__, iface, up ? "up" : "down");
  
- int
- net_route_v4_best_gw(openvpn_net_ctx_t *ctx, const in_addr_t *dst,
--                     int prefixlen, in_addr_t *best_gw, char *best_iface)
-+                     in_addr_t *best_gw, char *best_iface)
+@@ -631,7 +642,8 @@ net_iface_mtu_set(openvpn_net_ctx_t *ctx, const char *iface,
+     CLEAR(req);
+ 
+     ifindex = if_nametoindex(iface);
+-    if (ifindex == 0) {
++    if (ifindex == 0)
++    {
+         msg(M_WARN | M_ERRNO, "%s: rtnl: cannot get ifindex for %s", __func__,
+             iface);
+         return -1;
+@@ -676,9 +688,11 @@ sitnl_addr_set(int cmd, uint32_t flags, int ifindex, sa_family_t af_family,
+         case AF_INET:
+             size = sizeof(struct in_addr);
+             break;
++
+         case AF_INET6:
+             size = sizeof(struct in6_addr);
+             break;
++
+         default:
+             msg(M_WARN, "%s: rtnl: unknown address family %d", __func__,
+                 af_family);
+@@ -723,10 +737,12 @@ sitnl_addr_ptp_add(sa_family_t af_family, const char *iface,
  {
-     inet_address_t dst_v4 = {0};
-     char buf[INET_ADDRSTRLEN];
-@@ -555,10 +553,10 @@ net_route_v4_best_gw(openvpn_net_ctx_t *ctx, const in_addr_t *dst,
-         dst_v4.ipv4 = htonl(*dst);
+     int ifindex;
+ 
+-    switch (af_family) {
++    switch (af_family)
++    {
+         case AF_INET:
+         case AF_INET6:
+             break;
++
+         default:
+             return -EINVAL;
+     }
+@@ -755,10 +771,12 @@ sitnl_addr_ptp_del(sa_family_t af_family, const char *iface,
+ {
+     int ifindex;
+ 
+-    switch (af_family) {
++    switch (af_family)
++    {
+         case AF_INET:
+         case AF_INET6:
+             break;
++
+         default:
+             return -EINVAL;
+     }
+@@ -796,9 +814,11 @@ sitnl_route_set(int cmd, uint32_t flags, int ifindex, sa_family_t af_family,
+         case AF_INET:
+             size = sizeof(in_addr_t);
+             break;
++
+         case AF_INET6:
+             size = sizeof(struct in6_addr);
+             break;
++
+         default:
+             return -EINVAL;
+     }
+@@ -859,12 +879,14 @@ sitnl_addr_add(sa_family_t af_family, const char *iface,
+ {
+     int ifindex;
+ 
+-    switch (af_family) {
++    switch (af_family)
++    {
+         case AF_INET:
+         case AF_INET6:
+             break;
++
+         default:
+-            return -EINVAL;;
++            return -EINVAL;
      }
  
--    msg(D_ROUTE, "%s query: dst %s/%d", __func__,
--        inet_ntop(AF_INET, &dst_v4.ipv4, buf, sizeof(buf)), prefixlen);
-+    msg(D_ROUTE, "%s query: dst %s", __func__,
-+        inet_ntop(AF_INET, &dst_v4.ipv4, buf, sizeof(buf)));
+     if (!iface)
+@@ -891,12 +913,14 @@ sitnl_addr_del(sa_family_t af_family, const char *iface, inet_address_t *addr,
+ {
+     int ifindex;
  
--    ret = sitnl_route_best_gw(AF_INET, &dst_v4, prefixlen, best_gw, best_iface);
-+    ret = sitnl_route_best_gw(AF_INET, &dst_v4, best_gw, best_iface);
-     if (ret < 0)
-     {
-         return ret;
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 1341b4d2..bf036689 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -3172,7 +3172,7 @@ get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
+-    switch (af_family) {
++    switch (af_family)
++    {
+         case AF_INET:
+         case AF_INET6:
+             break;
++
+         default:
+-            return -EINVAL;;
++            return -EINVAL;
+     }
  
- #ifndef TARGET_ANDROID
-     /* get default gateway IP addr */
--    if (net_route_v4_best_gw(ctx, NULL, 0, &rgi->gateway.addr, best_name) == 0)
-+    if (net_route_v4_best_gw(ctx, NULL, &rgi->gateway.addr, best_name) == 0)
-     {
-         rgi->flags |= RGI_ADDR_DEFINED;
-         if (!rgi->gateway.addr && best_name[0])
-@@ -3330,7 +3330,7 @@ get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
- 
-     CLEAR(*rgi6);
- 
--    if (net_route_v6_best_gw(ctx, dest, 0, &rgi6->gateway.addr_ipv6,
-+    if (net_route_v6_best_gw(ctx, dest, &rgi6->gateway.addr_ipv6,
-                              rgi6->iface) == 0)
-     {
-         if (!IN6_IS_ADDR_UNSPECIFIED(rgi6->gateway.addr_ipv6.s6_addr))
+     if (!iface)
 -- 
 2.22.0
 
