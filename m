@@ -1,11 +1,8 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <596f0202-4908-6657-373e-ce6b7346b8e5@...515...>
-Date: Mon, 5 Aug 2019 10:20:55 +0300
+From: Antonio Quartulli <a@...2181...>
+Date: Mon,  5 Aug 2019 11:25:23 +0200
+Message-Id: <20190805092529.9467-1-a@...2181...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="ulRft8UI7zScuLjQfngPI4b0fjcN0NwU7"
-Subject: [Openvpn-devel] Community meetings in August 2019
+Subject: [Openvpn-devel] [PATCH 0/6] sitnl follow-up
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,66 +11,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <antonio@...515...>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---ulRft8UI7zScuLjQfngPI4b0fjcN0NwU7
-Content-Type: multipart/mixed; boundary="ZKev2sEgFiQTVSpUJ0Qlrnq38FBTe2ASj";
- protected-headers="v1"
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Message-ID: <596f0202-4908-6657-373e-ce6b7346b8e5@...515...>
-Subject: Community meetings in August 2019
+From: Antonio Quartulli <antonio@...515...>
 
---ZKev2sEgFiQTVSpUJ0Qlrnq38FBTe2ASj
-Content-Language: en-US
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
+Hi all, 
 
-Hi,
+this small patchset aims at tackling most of the concerns raised by Gert
+while merging the sitnl introduction patchset.
 
-Our community meetings will alternate between Wed 11:30 CEST and Thu
-20:00 CEST.
-
-Next meetings have been scheduled to
-
-- Wed 7th August 11:30 CEST
-- Thu 15th August 20:00 CEST
-- Wed 21st August 11:30 CEST
-- Thu 29th August 20:00 CEST
-
-The place is #openvpn-meeting IRC channel at Freenode. Meeting agendas
-and summaries are in here:
-
-<https://community.openvpn.net/openvpn/wiki/IrcMeetings>
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
+All patches are fairly small, but they are a bit intertwined (they
+change nearby lines), therefore it would be better to merge them in the
+provided order to avoid ugly merge conflicts.
 
 
+Cheers,
 
---ZKev2sEgFiQTVSpUJ0Qlrnq38FBTe2ASj--
 
---ulRft8UI7zScuLjQfngPI4b0fjcN0NwU7
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Antonio Quartulli (6):
+  sitnl: harden strncpy() by forcing arguments to have the same length
+  networking/best_gw: remove useless prefixlen parameter
+  networking: extend API for better memory management
+  tun.c: undo_ifconfig_ipv4/6 remove useless gc argument
+  networking_sitnl.c: uncrustify file
+  route.c: simplify ifdef logic
 
------BEGIN PGP SIGNATURE-----
+ src/openvpn/networking.h          | 33 +++++++++--
+ src/openvpn/networking_iproute2.c | 78 ++++++++++---------------
+ src/openvpn/networking_iproute2.h |  1 +
+ src/openvpn/networking_sitnl.c    | 96 +++++++++++++++++++++----------
+ src/openvpn/openvpn.c             |  1 +
+ src/openvpn/route.c               | 32 ++++++-----
+ src/openvpn/route.h               |  6 +-
+ src/openvpn/tun.c                 | 28 ++++-----
+ 8 files changed, 165 insertions(+), 110 deletions(-)
 
-iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAl1H2NcACgkQKVhNn0CG
-RXjM/gf9HiCpPdSH8yxViUyJejdNL0W4l6oTmGjb+BKpRXkJojp/yfYL+k4ALdPu
-D7LJVvd+Xm6QHjP9zqbptUNy+uSmqB7evtylP/w4edGS2wWSSm2gACK7fehXJP9P
-IXXKzmIFzO0I1fshx4OLWZBZEh+l7CYuIxX4fe8n2Hd8S+VyixzzftgU7okMacRN
-nw/+qDarBcTuDdAnm3f9lWh3k3WeprYavmdtjoS26iHyqqaq+HKM+UgzSo2THlxN
-GR70uXjDS/OzP1VpW5hGhUnyNuU4UL3jlrT8Q246bCRDnQOSoD+0jI4OrJmKaKKN
-7uN4StMzMExSSBXMoGtcKEtQOjlONw==
-=B3Jz
------END PGP SIGNATURE-----
+-- 
+2.22.0
 
---ulRft8UI7zScuLjQfngPI4b0fjcN0NwU7--
 
