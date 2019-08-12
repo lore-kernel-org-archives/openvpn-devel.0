@@ -1,10 +1,8 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Mon, 12 Aug 2019 15:45:13 +0200
-Message-Id: <20190812134513.20758-2-arne@...1227...>
-In-Reply-To: <20190812134513.20758-1-arne@...1227...>
-References: <20190812134513.20758-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 2/2] Adjust Android code after sitnl patch
- merge
+From: Matthias Andree <matthias.andree@...68...>
+Date: Mon, 12 Aug 2019 23:51:29 +0200
+Message-Id: <20190812215128.10993-1-matthias.andree@...68...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Fix regression, reinstate LibreSSL support.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,147 +12,82 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-It turns out that the only part of Android that still shares routing
-code with Linux is the get_default_ipv6 method.
+OpenVPN 2.4.6 could be compiled with LibreSSL, 2.4.7 cannot.  This was brok=
+en
+since 9de7fe0a "Add support for tls-ciphersuites for TLS 1.3".
 
-Instead of fixing a method that makes little sense on Android anyway,
-have a method that returns a fake ipv6 gateway like for ipv4.
+This patch avoids using TLS 1.3 directly, be it that OpenSSL was compiled
+without TLS 1.3 support, or LibreSSL was used.
+
+This patch was based on an OpenBSD patch by
+Jeremie Courreges-Anglas <jca@...2273...>, see
+https://cvsweb.openbsd.org/cgi-bin/cvsweb/ports/net/openvpn/patches/patch-s=
+rc_openvpn_ssl_openssl_c
+but was revised to be more obvious and check actual feature macros,
+do not rely on current LibreSSL implementation details alone.
+
+Franco Fichtner reports that OPNsense has been a long-time user
+of LibreSSL without reported breakage, see also:
+https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=3D238382#c10
+
+Signed-off-by: Matthias Andree <matthias.andree@...68...>
 ---
- src/openvpn/route.c | 66 ++++++++++++++++++++++++++++++---------------
- src/openvpn/tun.c   |  9 +++++--
- 2 files changed, 51 insertions(+), 24 deletions(-)
+ src/openvpn/ssl_openssl.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index a302746e..9af88f00 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -1065,7 +1065,8 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt,
-                             tt,
-                             flags,
-                             &rl->rgi,
--                            es);
-+                            es,
-+                            ctx);
- 
- #else
-                 if (rl->flags & RG_DEF1)
-@@ -3169,7 +3170,48 @@ show_routes(int msglev)
-     gc_free(&gc);
- }
- 
--#elif defined(TARGET_LINUX) || defined(TARGET_ANDROID)
-+#elif defined(TARGET_ANDROID)
-+
-+void
-+get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
-+{
-+    /* Android, set some pseudo GW, addr is in host byte order,
-+     * Determining the default GW on Android 5.0+ is non trivial
-+     * and serves almost no purpose since OpenVPN only uses the
-+     * default GW address to add routes for networks that should
-+     * NOT be routed over the VPN. Using a well known address
-+     * (127.'d'.'g'.'w') for the default GW make detecting
-+     * these routes easier from the controlling app.
-+     */
-+    CLEAR(*rgi);
-+
-+    rgi->gateway.addr = 127 << 24 | 'd' << 16 | 'g' << 8 | 'w';
-+    rgi->flags = RGI_ADDR_DEFINED | RGI_IFACE_DEFINED;
-+    strcpy(rgi->iface, "android-gw");
-+
-+    /* Skip scanning/fetching interface from loopback interface we do
-+     * normally on Linux.
-+     * It always fails and "ioctl(SIOCGIFCONF) failed" confuses users
-+     */
-+
-+}
-+
-+void
-+get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
-+                         const struct in6_addr *dest, openvpn_net_ctx_t *ctx)
-+{
-+    /* Same for ipv6 */
-+
-+    CLEAR(*rgi6);
-+
-+    /* Use a fake link-local address */
-+    ASSERT(inet_pton(AF_INET6, "fe80::ad", &rgi6->addrs->addr_ipv6) == 1);
-+    rgi6->addrs->netbits_ipv6 = 64;
-+    rgi6->flags = RGI_ADDR_DEFINED | RGI_IFACE_DEFINED;
-+    strcpy(rgi6->iface, "android-gw");
-+}
-+
-+#elif defined(TARGET_LINUX)
- 
- void
- get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
-@@ -3181,7 +3223,6 @@ get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
-     CLEAR(*rgi);
-     CLEAR(best_name);
- 
--#ifndef TARGET_ANDROID
-     /* get default gateway IP addr */
-     if (net_route_v4_best_gw(ctx, NULL, &rgi->gateway.addr, best_name) == 0)
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index a78dae99..293bb192 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -206,7 +206,7 @@ info_callback(INFO_CALLBACK_SSL_CONST SSL *s, int where=
+, int ret)
+ int
+ tls_version_max(void)
+ {
+-#if defined(TLS1_3_VERSION)
++#if defined(TLS1_3_VERSION) && !defined(OPENSSL_NO_TLS1_3)
+     return TLS_VER_1_3;
+ #elif defined(TLS1_2_VERSION) || defined(SSL_OP_NO_TLSv1_2)
+     return TLS_VER_1_2;
+@@ -233,7 +233,7 @@ openssl_tls_version(int ver)
      {
-@@ -3191,25 +3232,6 @@ get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
-             rgi->flags |= RGI_ON_LINK;
-         }
+         return TLS1_2_VERSION;
      }
--#else  /* ifndef TARGET_ANDROID */
--    /* Android, set some pseudo GW, addr is in host byte order,
--     * Determining the default GW on Android 5.0+ is non trivial
--     * and serves almost no purpose since OpenVPN only uses the
--     * default GW address to add routes for networks that should
--     * NOT be routed over the VPN. Using a well known address
--     * (127.'d'.'g'.'w') for the default GW make detecting
--     * these routes easier from the controlling app.
--     */
--    rgi->gateway.addr = 127 << 24 | 'd' << 16 | 'g' << 8 | 'w';
--    rgi->flags |= RGI_ADDR_DEFINED;
--    strcpy(best_name, "android-gw");
--
--    /*
--     * Skip scanning/fetching interface from loopback interface
--     * It always fails and "ioctl(SIOCGIFCONF) failed" confuses users
--     */
--    goto done;
--#endif /* ifndef TARGET_ANDROID */
- 
-     /* scan adapter list */
-     if (rgi->flags & RGI_ADDR_DEFINED)
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 8f8f7c6c..1db459f8 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -906,9 +906,13 @@ do_ifconfig_ipv6(struct tuntap *tt, const char *ifname, int tun_mtu,
- #elif defined(TARGET_ANDROID)
-     char out6[64];
- 
-+    const char *ifconfig_ipv6_local = print_in6_addr(tt->local_ipv6, 0, NULL);
-     openvpn_snprintf(out6, sizeof(out6), "%s/%d %d",
--                     ifconfig_ipv6_local,tt->netbits_ipv6, tun_mtu);
-+                     ifconfig_ipv6_local, tt->netbits_ipv6, tun_mtu);
-+
-     management_android_control(management, "IFCONFIG6", out6);
-+
-+    free(ifconfig_ipv6_local);
- #elif defined(TARGET_SOLARIS)
-     argv_printf(&argv, "%s %s inet6 unplumb", IFCONFIG_PATH, ifname);
-     argv_msg(M_INFO, &argv);
-@@ -1045,7 +1049,8 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
- #if defined(TARGET_OPENBSD) || defined(TARGET_NETBSD) \
-     || defined(TARGET_DARWIN) || defined(TARGET_FREEBSD) \
-     || defined(TARGET_DRAGONFLY) || defined(TARGET_AIX) \
--    || defined(TARGET_SOLARIS) || defined(_WIN32)
-+    || defined(TARGET_SOLARIS) || defined(_WIN32) \
-+    || defined(TARGET_ANDROID)
-     const char *ifconfig_local = NULL;
-     const char *ifconfig_remote_netmask = NULL;
-     const char *ifconfig_broadcast = NULL;
--- 
-2.22.0
+-#if defined(TLS1_3_VERSION)
++#if defined(TLS1_3_VERSION) && !defined(OPENSSL_NO_TLS1_3)
+     else if (ver =3D=3D TLS_VER_1_3)
+     {
+         return TLS1_3_VERSION;
+@@ -459,8 +459,8 @@ tls_ctx_restrict_ciphers_tls13(struct tls_root_ctx *ctx=
+, const char *ciphers)
+         return;
+     }
+
+-#if (OPENSSL_VERSION_NUMBER < 0x1010100fL)
+-        crypto_msg(M_WARN, "Not compiled with OpenSSL 1.1.1 or higher. "
++#if (OPENSSL_VERSION_NUMBER < 0x1010100fL) || !defined(TLS1_3_VERSION) || =
+defined(OPENSSL_NO_TLS1_3)
++        crypto_msg(M_WARN, "Not compiled with OpenSSL 1.1.1 or higher, or =
+without TLS 1.3 support. "
+                        "Ignoring TLS 1.3 only tls-ciphersuites '%s' settin=
+g.",
+                         ciphers);
+ #else
+@@ -1846,7 +1846,7 @@ show_available_tls_ciphers_list(const char *cipher_li=
+st,
+         crypto_msg(M_FATAL, "Cannot create SSL_CTX object");
+     }
+
+-#if (OPENSSL_VERSION_NUMBER >=3D 0x1010100fL)
++#if (OPENSSL_VERSION_NUMBER >=3D 0x1010100fL) && defined(TLS1_3_VERSION) &=
+& !defined(OPENSSL_NO_TLS1_3)
+     if (tls13)
+     {
+         SSL_CTX_set_min_proto_version(tls_ctx.ctx, TLS1_3_VERSION);
+--
+2.21.0
 
 
