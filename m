@@ -1,8 +1,11 @@
-From: Matthias Andree <matthias.andree@...68...>
-Date: Mon, 12 Aug 2019 23:51:29 +0200
-Message-Id: <20190812215128.10993-1-matthias.andree@...68...>
+References: <20190812134513.20758-1-arne@...1227...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <a1b2525b-fb00-4d8d-d877-797305c6ec2f@...2181...>
+Date: Tue, 13 Aug 2019 11:03:16 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix regression, reinstate LibreSSL support.
+In-Reply-To: <20190812134513.20758-1-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Fix check if iface name is set
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,83 +14,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-OpenVPN 2.4.6 could be compiled with LibreSSL, 2.4.7 cannot.  This was brok=
-en
-since 9de7fe0a "Add support for tls-ciphersuites for TLS 1.3".
+Hi Arne,
 
-This patch avoids using TLS 1.3 directly, be it that OpenSSL was compiled
-without TLS 1.3 support, or LibreSSL was used.
+On 12/08/2019 15:45, Arne Schwabe wrote:
+> Clang/Android complained
+> 
+>  warning: address of array 'rgi6->iface' will always evaluate to 'true' [-Wpointer-bool-conversion]
+>           if (rgi6->iface)
+> 
+> iface is a char[16]; So its pointer is always true.
+> 
+> we do a CLEAR(rgi6) always before setting this struct and strcpy the
+> name into iface. So using strlen instead of checking for the pointer
+> should be the right fix.
 
-This patch was based on an OpenBSD patch by
-Jeremie Courreges-Anglas <jca@...2273...>, see
-https://cvsweb.openbsd.org/cgi-bin/cvsweb/ports/net/openvpn/patches/patch-s=
-rc_openvpn_ssl_openssl_c
-but was revised to be more obvious and check actual feature macros,
-do not rely on current LibreSSL implementation details alone.
+Thanks for fixing this!
 
-Franco Fichtner reports that OPNsense has been a long-time user
-of LibreSSL without reported breakage, see also:
-https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=3D238382#c10
+However you're missing the signed off line.
 
-Signed-off-by: Matthias Andree <matthias.andree@...68...>
----
- src/openvpn/ssl_openssl.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index a78dae99..293bb192 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -206,7 +206,7 @@ info_callback(INFO_CALLBACK_SSL_CONST SSL *s, int where=
-, int ret)
- int
- tls_version_max(void)
- {
--#if defined(TLS1_3_VERSION)
-+#if defined(TLS1_3_VERSION) && !defined(OPENSSL_NO_TLS1_3)
-     return TLS_VER_1_3;
- #elif defined(TLS1_2_VERSION) || defined(SSL_OP_NO_TLSv1_2)
-     return TLS_VER_1_2;
-@@ -233,7 +233,7 @@ openssl_tls_version(int ver)
-     {
-         return TLS1_2_VERSION;
-     }
--#if defined(TLS1_3_VERSION)
-+#if defined(TLS1_3_VERSION) && !defined(OPENSSL_NO_TLS1_3)
-     else if (ver =3D=3D TLS_VER_1_3)
-     {
-         return TLS1_3_VERSION;
-@@ -459,8 +459,8 @@ tls_ctx_restrict_ciphers_tls13(struct tls_root_ctx *ctx=
-, const char *ciphers)
-         return;
-     }
+> ---
+>  src/openvpn/route.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+> index 5f63fd34..a302746e 100644
+> --- a/src/openvpn/route.c
+> +++ b/src/openvpn/route.c
+> @@ -3349,7 +3349,7 @@ get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
+>              rgi6->flags |= RGI_ADDR_DEFINED;
+>          }
+>  
+> -        if (rgi6->iface)
+> +        if (strlen(rgi6->iface))
 
--#if (OPENSSL_VERSION_NUMBER < 0x1010100fL)
--        crypto_msg(M_WARN, "Not compiled with OpenSSL 1.1.1 or higher. "
-+#if (OPENSSL_VERSION_NUMBER < 0x1010100fL) || !defined(TLS1_3_VERSION) || =
-defined(OPENSSL_NO_TLS1_3)
-+        crypto_msg(M_WARN, "Not compiled with OpenSSL 1.1.1 or higher, or =
-without TLS 1.3 support. "
-                        "Ignoring TLS 1.3 only tls-ciphersuites '%s' settin=
-g.",
-                         ciphers);
- #else
-@@ -1846,7 +1846,7 @@ show_available_tls_ciphers_list(const char *cipher_li=
-st,
-         crypto_msg(M_FATAL, "Cannot create SSL_CTX object");
-     }
+how about adding a "> 0"? I know it's basically the same here, but I
+think that's the style we use everywhere.
 
--#if (OPENSSL_VERSION_NUMBER >=3D 0x1010100fL)
-+#if (OPENSSL_VERSION_NUMBER >=3D 0x1010100fL) && defined(TLS1_3_VERSION) &=
-& !defined(OPENSSL_NO_TLS1_3)
-     if (tls13)
-     {
-         SSL_CTX_set_min_proto_version(tls_ctx.ctx, TLS1_3_VERSION);
---
-2.21.0
+Cheers,
 
+>          {
+>              rgi6->flags |= RGI_IFACE_DEFINED;
+>          }
+> 
+
+-- 
+Antonio Quartulli
 
