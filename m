@@ -1,8 +1,13 @@
-From: Gert Doering <gert@...1296...>
-Date: Thu, 15 Aug 2019 17:53:19 +0200
-Message-Id: <20190815155319.28249-1-gert@...1296...>
+References: <20190815072855.21232-1-fkooman@...2318...>
+ <aca20c96-e81b-19b7-beec-631e165868f8@...2080...>
+From: =?UTF-8?Q?Fran=c3=a7ois_Kooman?= <fkooman@...2318...>
+Message-ID: <856f12bf-5507-94c7-fe10-442463d0f500@...2318...>
+Date: Thu, 15 Aug 2019 19:23:37 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Increase listen() backlog queue to 32
+In-Reply-To: <aca20c96-e81b-19b7-beec-631e165868f8@...2080...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] More specific syslog process name with
+ systemd
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,41 +18,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <openvpn@...2080...>, openvpn-devel@lists.sourceforge.net
 
-For reasons historically unknown, OpenVPN sets the listen() backlog
-queue to "1", which signals the kernel "while there is one TCP connect
-waiting for OpenVPN to handle it, refuse all others" - which, on
-restarting a busy TCP server, will create connection issues.
+On 15.08.19 14:31, David Sommerseth wrote:
+> Could you please provide a rationale to why this is needed?  How things works
+> now, is that the systemd-journal picks up everything; including various
+> additional meta-data which syslog does not support.
 
-The exact "best" value of the backlog queue is subject of discussion,
-but for a server that is not extremely busy with many connections
-coming in in parallel, there is no real difference between "10" or "500",
-as long as it's "more than 1".
+The rationale was that when viewing the log with journalctl you only see
+the syslog identifier, i.e. "openvpn" and not the full unit name.
 
-Found and debugged by "mjo" in Trac.
+> Now you get the log data with: `journalctl -u openvpn-{client,server}@CONFIG}`
+> And this also provides filtering possibilities as well, like '-b' (only log
+> entries since last boot) or '--since yesterday'.
 
-Trac: #1208
+That's much better actually, there's also the journalctl -o verbose that
+shows the _SYSTEMD_UNIT.
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/openvpn/socket.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks!
 
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index c472cf1b..983ed38a 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -1175,7 +1175,7 @@ socket_do_listen(socket_descriptor_t sd,
-         ASSERT(local);
-         msg(M_INFO, "Listening for incoming TCP connection on %s",
-             print_sockaddr(local->ai_addr, &gc));
--        if (listen(sd, 1))
-+        if (listen(sd, 32))
-         {
-             msg(M_ERR, "TCP: listen() failed");
-         }
--- 
-2.21.0
+Please ignore the patch!
 
+Cheers,
+François
 
