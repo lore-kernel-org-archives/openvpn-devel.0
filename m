@@ -1,10 +1,8 @@
-Date: Thu, 15 Aug 2019 18:04:10 +0200 (CEST)
-Message-Id: <201908151604.x7FG4A8u016175@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20190815121053.18433-2-arne@...1227...>
-References: <20190815121053.18433-2-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Adjust Android code after sitnl
- patch merge
+Date: Thu, 15 Aug 2019 17:53:19 +0200
+Message-Id: <20190815155319.28249-1-gert@...1296...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Increase listen() backlog queue to 32
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,33 +13,41 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+For reasons historically unknown, OpenVPN sets the listen() backlog
+queue to "1", which signals the kernel "while there is one TCP connect
+waiting for OpenVPN to handle it, refuse all others" - which, on
+restarting a busy TCP server, will create connection issues.
 
-I can't really test this, but it only touches (and cleans up) android-
-specific code - and by convention if you say "android needs this", so
-it does :-) - and it looks generally sane.
+The exact "best" value of the backlog queue is subject of discussion,
+but for a server that is not extremely busy with many connections
+coming in in parallel, there is no real difference between "10" or "500",
+as long as it's "more than 1".
 
-Your patch has been applied to the master branch.
+Found and debugged by "mjo" in Trac.
 
-commit 26e5b80096a78ec7d5e7bcd15f81155be5fde2ec
-Author: Arne Schwabe
-Date:   Thu Aug 15 14:10:53 2019 +0200
+Trac: #1208
 
-     Adjust Android code after sitnl patch merge
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/socket.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20190815121053.18433-2-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18752.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index c472cf1b..983ed38a 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -1175,7 +1175,7 @@ socket_do_listen(socket_descriptor_t sd,
+         ASSERT(local);
+         msg(M_INFO, "Listening for incoming TCP connection on %s",
+             print_sockaddr(local->ai_addr, &gc));
+-        if (listen(sd, 1))
++        if (listen(sd, 32))
+         {
+             msg(M_ERR, "TCP: listen() failed");
+         }
+-- 
+2.21.0
 
 
