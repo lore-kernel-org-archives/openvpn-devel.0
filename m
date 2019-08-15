@@ -1,9 +1,9 @@
-From: =?UTF-8?q?Fran=C3=A7ois=20Kooman?= <fkooman@...2318...>
-Date: Thu, 15 Aug 2019 09:28:55 +0200
-Message-Id: <20190815072855.21232-1-fkooman@...2318...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] More specific syslog process name with
- systemd
+From: Arne Schwabe <arne@...1227...>
+Date: Thu, 15 Aug 2019 13:52:02 +0200
+Message-Id: <20190815115203.15467-1-arne@...1227...>
+In-Reply-To: <20190812134513.20758-1-arne@...1227...>
+References: <20190812134513.20758-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH 1/2] Fix check if iface name is set
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,42 +16,34 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Adds the `--syslog` option to specify the unit and configuration
-name when using systemd.
+Clang/Android complained
 
-Signed-off-by: François Kooman <fkooman@...2318...>
+ warning: address of array 'rgi6->iface' will always evaluate to 'true' [-Wpointer-bool-conversion]
+          if (rgi6->iface)
+
+iface is a char[16]; So its pointer is always true.
+
+we do a CLEAR(rgi6) always before setting this struct and strcpy the
+name into iface. So using strlen instead of checking for the pointer
+should be the right fix.
 ---
- distro/systemd/openvpn-client@...2221... | 2 +-
- distro/systemd/openvpn-server@...2221... | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ src/openvpn/route.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/distro/systemd/openvpn-client@...2221... b/distro/systemd/openvpn-client@...2221...
-index cbcef653..266d9f9c 100644
---- a/distro/systemd/openvpn-client@...2221...
-+++ b/distro/systemd/openvpn-client@...2221...
-@@ -10,7 +10,7 @@ Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
- Type=notify
- PrivateTmp=true
- WorkingDirectory=/etc/openvpn/client
--ExecStart=@sbindir@/openvpn --suppress-timestamps --nobind --config %i.conf
-+ExecStart=@sbindir@/openvpn --syslog %p@%i --suppress-timestamps --nobind --config %i.conf
- CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
- LimitNPROC=10
- DeviceAllow=/dev/null rw
-diff --git a/distro/systemd/openvpn-server@...2221... b/distro/systemd/openvpn-server@...2221...
-index d1cc72cb..be086b79 100644
---- a/distro/systemd/openvpn-server@...2221...
-+++ b/distro/systemd/openvpn-server@...2221...
-@@ -10,7 +10,7 @@ Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
- Type=notify
- PrivateTmp=true
- WorkingDirectory=/etc/openvpn/server
--ExecStart=@sbindir@/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
-+ExecStart=@sbindir@/openvpn --syslog %p@%i --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
- CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE CAP_AUDIT_WRITE
- LimitNPROC=10
- DeviceAllow=/dev/null rw
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 5f63fd34..a302746e 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -3349,7 +3349,7 @@ get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
+             rgi6->flags |= RGI_ADDR_DEFINED;
+         }
+ 
+-        if (rgi6->iface)
++        if (strlen(rgi6->iface))
+         {
+             rgi6->flags |= RGI_IFACE_DEFINED;
+         }
 -- 
-2.21.0
+2.22.0
 
 
