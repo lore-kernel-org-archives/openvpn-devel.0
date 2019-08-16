@@ -1,13 +1,16 @@
-References: <20190613134834.5709-4-arne@...1227...>
- <20190808145216.1198-1-arne@...1227...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <0eb21b1a-e4a7-3675-d6d5-79c5d28e88ee@...2080...>
-Date: Fri, 16 Aug 2019 20:43:55 +0200
+Date: Fri, 16 Aug 2019 20:44:46 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20190816184446.GQ1349@...1296...>
+References: <324fcf27-5a5a-62a7-f77d-cd279f46c712@...2080...>
+ <20190808145129.1142-1-arne@...1227...>
+ <f5258f61-c751-00a8-df92-5089bea2cb9e@...2080...>
 MIME-Version: 1.0
-In-Reply-To: <20190808145216.1198-1-arne@...1227...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH v6 5/7] Implement a permanent session id
- in auth-token
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="rV8arf8D5Dod9UkK"
+Content-Disposition: inline
+In-Reply-To: <f5258f61-c751-00a8-df92-5089bea2cb9e@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH v6 4/7] Rewrite auth-token-gen to be
+ based on HMAC based tokens
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,168 +19,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
-Cc: Arne Schwabe <arne@...515...>
+To: David Sommerseth <openvpn@...2080...>
+Cc: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-On 08/08/2019 16:52, Arne Schwabe wrote:
-> From: Arne Schwabe <arne@...515...>
-> 
-> This allows an external authentication method
-> (e.g. management interface) to track the connection and distinguish a
-> reconnection from multiple connections.
-> 
-> Addtionally this now also checks to workaround a problem with
-> OpenVPN 3 core that sometimes uses a username hint from the config
-> instead of using an empty username if the token would be valid
-> with an empty username. Accepting such token can be only done
-> explicitly when the external-auth keyword to auth-gen-token is present.
-> 
-> Patch V2: Add Empty variants to work around behaviour in openvpn 3
-> Patch V3: document the behaviour of external-auth better in the man page,
->           rename 'auth' parameter to 'external-auth'
-> Patch V4: Rebase on current master
-> Patch V6: Fix tls_lock_username rejecting clients with empty username
->           when explicitly accepting them with external-auth
-> ---
->  doc/openvpn.8            |  37 +++++++++-
->  src/openvpn/auth_token.c | 156 ++++++++++++++++++++++++++++++++++++---
->  src/openvpn/auth_token.h |  15 +++-
->  src/openvpn/init.c       |   1 +
->  src/openvpn/manage.c     |   4 +-
->  src/openvpn/options.c    |  14 +++-
->  src/openvpn/options.h    |   4 +-
->  src/openvpn/ssl_common.h |  12 ++-
->  src/openvpn/ssl_verify.c |  67 +++++++++++------
->  9 files changed, 270 insertions(+), 40 deletions(-)
+--rV8arf8D5Dod9UkK
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-[...snip...]
-> @@ -97,6 +180,8 @@ generate_auth_token(const struct user_pass *up, struct tls_multi *multi)
->      hmac_ctx_t *ctx = multi->opt.auth_token_key.hmac;
->      ASSERT(hmac_ctx_size(ctx) == 256/8);
->  
-> +    uint8_t sessid[AUTH_TOKEN_SESSION_ID_LEN];
-> +
->      if (multi->auth_token)
->      {
->          /* Just enough space to fit 8 bytes+ 1 extra to decode a non padded
-> @@ -109,27 +194,65 @@ generate_auth_token(const struct user_pass *up, struct tls_multi *multi)
->           * reuse the same session id and timestamp and null terminate it at
->           * for base64 decode it only decodes the session id part of it
->           */
-> -        char *old_tsamp_initial = multi->auth_token + strlen(SESSION_ID_PREFIX);
-> +        char *old_sessid = multi->auth_token + strlen(SESSION_ID_PREFIX);
-> +        char *old_tsamp_initial = old_sessid + AUTH_TOKEN_SESSION_ID_LEN*8/6;
->  
->          old_tsamp_initial[12] = '\0';
->          ASSERT(openvpn_base64_decode(old_tsamp_initial, old_tstamp_decode, 9) == 9);
-> -        initial_timestamp = *((uint64_t *)(old_tstamp_decode));
-> +
-> +        /*
-> +         * Avoid old gcc (4.8.x) complaining about strict aliasing
-> +         * by using a temporary variable instead of doing it in one
-> +         * line
-> +         */
-> +        uint64_t *tstamp_ptr = (uint64_t *) old_tstamp_decode;
-> +        initial_timestamp = *tstamp_ptr;
-> +
-> +        old_tsamp_initial[0] = '\0';
-> +        ASSERT(openvpn_base64_decode(old_sessid, sessid, AUTH_TOKEN_SESSION_ID_LEN)==AUTH_TOKEN_SESSION_ID_LEN);
-> +
+Hi,
 
-The gcc-4.8 strict aliasing fix works, so that is good.
+On Fri, Aug 16, 2019 at 07:13:14PM +0200, David Sommerseth wrote:
+> On 08/08/2019 16:51, Arne Schwabe wrote:
+> > The previous auth-token implementation had a serious problem, especiall=
+y when
+> > paired with an unpatched OpenVPN client that keeps trying the auth-token
+> > (commit e61b401a).
+[..]
+> Since I've tested and reviewed the rest in earlier rounds and the change =
+from
+> previous version i sjust changing %lld to PRIu64, I'm giving
+> this my ...
+>=20
+> Acked-By: David Sommerseth <davids@...515...>
 
-Could you explain (or comment) the rationale for the ASSERT() calls here?
-
-If the decoded token is only managed by the server side, then this shouldn't
-really fail.  But unless I'm misunderstanding what happens in
-verify_user_pass() [ssl_verify.c:1376], we put the "password" (token) from the
-client into multi->auth_token.  With the ASSERT() calls here, this could be
-abused to trigger a DoS attack, by sending an invalid token value.  Or am I
-missing something?
-
-And there is a superfluous additional extra new line, which should not be needed.
-
-[...snip...]
+While I'm all happy to see this ACK (and I trust David to have done a full
+review on the code changes), there is a slight problem with this - it
+breaks "--disable-server" builds:
 
 
-> diff --git a/src/openvpn/auth_token.h b/src/openvpn/auth_token.h
-> index 600ac29f..c10afde9 100644
-> --- a/src/openvpn/auth_token.h
-> +++ b/src/openvpn/auth_token.h
-[...snip...]
+cc -DHAVE_CONFIG_H -I. -I../../../openvpn/src/openvpn -I../.. -I../../inclu=
+de  -I../../../openvpn/include  -I../../../openvpn/src/compat      -I/usr/l=
+ocal/include -I/usr/local/include    -DPLUGIN_LIBDIR=3D\"/usr/local/lib/ope=
+nvpn/plugins\"  -Wall -Wno-unused-parameter -Wno-unused-function -g -O2 -st=
+d=3Dc99 -MT auth_token.o -MD -MP -MF .deps/auth_token.Tpo -c -o auth_token.=
+o ../../../openvpn/src/openvpn/auth_token.c
+../../../openvpn/src/openvpn/auth_token.c:100:16: error: no member named 'a=
+uth_token' in
+      'struct tls_multi'
+    if (multi->auth_token)
+        ~~~~~  ^
+../../../openvpn/src/openvpn/auth_token.c:112:42: error: no member named 'a=
+uth_token' in
+      'struct tls_multi'
+        char *old_tsamp_initial =3D multi->auth_token + strlen(SESSION_ID_P=
+REFIX);
+                                  ~~~~~  ^
+../../../openvpn/src/openvpn/auth_token.c:119:21: error: no member named 'a=
+uth_token' in
+      'struct tls_multi'
+        free(multi->auth_token);
+             ~~~~~  ^
 
-This file includes the following comment for verify_auth_token(), which I
-believe is wrong now:
+... so, can I have a v7 of this, plus an ACK...?
 
- * Also calls generate_auth_token to update the auth-token to extend
- * its validity
+Sorry for being a spoilsport here.
 
-I don't see verify_auth_token() being close to call generate_auth_token().  Or
-did I overlook something?
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-[...snip...]
+Gert Doering - Munich, Germany                             gert@...1296...
 
-> diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-> index d885f4d9..8f722497 100644
-> --- a/src/openvpn/options.h
-> +++ b/src/openvpn/options.h
-[...snip...]
-> @@ -553,9 +553,17 @@ struct tls_multi
->      /**< Auth-token sent from client has valid hmac */
->  #define  AUTH_TOKEN_EXPIRED              (1<<1)
->      /**< Auth-token sent from client has expired */
-> -#endif
-> +#define  AUTH_TOKEN_VALID_EMPTYUSER      (1<<2)
-> +    /**<
-> +     * Auth-token is only valid for an empty username
-> +     * and not the username actually supplied from the client
-> +     *
-> +     * OpenVPN 3 clients sometimes the empty username with a
-> +     * username hint from their config.
+--rV8arf8D5Dod9UkK
+Content-Type: application/pgp-signature; name="signature.asc"
 
-The last OpenVPN 3 paragraph is hard to understand.  Did you mean this?
+-----BEGIN PGP SIGNATURE-----
 
-  * OpenVPN 3 clients sometimes empty or replaces the username with a
-  * username hint from their config.
+iQGcBAEBAgAGBQJdVvmeAAoJEB2Cnv7KVigS+dEL/0C9jysf++53VE68svS4fOpD
+0UxgPi1xWNOEjR5M+kV64or8qYQcpnRjCx1NP2JTTXxMyC/Q1/GHmbRgkF3JvcMt
+UaQe46i3IBQTjOAnv65LqFqiEIqr0guda+OdlzcmfKuIrd47AndqhgZfUY4XPudr
+x1qbUBMpwwzVbgaMONZJ8kFdLNOA0psUV0+j7FxAeS8/miWKyWAnmiSRYS8yCoM9
+zXzR8P3NDZxvpf7uPpY8dErVVB5BQ/MaltbKAlZ7DDfA7l9fkLxsfyOBvUatA+p2
+OCq+oN/UbZl5HNjpWFASpFVCo2qeSI7/QgEpCVOA52GRKcW1CliyfX/scoTeDvB1
+BaWEisi43ureXkZ9yy3eqCyqtUnHK9s1+zs2db4hs3wwJRULlbqrUCJ/K9DS+acG
+AT8cM4fEG5Aumn+h9hnr8GkQw95l41ABajkoCRlujRLNKhIamJyC+uQX2pPE0moS
+8fKdKikS2nJrTMKvxQBlu720D8k57UOOPrPhebAo9A==
+=sCAH
+-----END PGP SIGNATURE-----
 
-[...snip...]
-
-> diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-> index b392b0ac..6535ad8d 100644
-> --- a/src/openvpn/ssl_verify.c
-> +++ b/src/openvpn/ssl_verify.c
-[...snip...]
-> @@ -1134,7 +1138,8 @@ done:
->   * Verify the username and password using a plugin
->   */
->  static int
-> -verify_user_pass_plugin(struct tls_session *session, const struct user_pass *up)
-> +verify_user_pass_plugin(struct tls_session *session, struct tls_multi *multi,
-> +                        const struct user_pass *up)
->  {
->      int retval = OPENVPN_PLUGIN_FUNC_ERROR;
->  #ifdef PLUGIN_DEF_AUTH
-> @@ -1154,6 +1159,8 @@ verify_user_pass_plugin(struct tls_session *session, const struct user_pass *up)
->          /* setenv client real IP address */
->          setenv_untrusted(session);
->  
-> +        /* add auth-token environment */
-> +        add_session_token_env(session, multi, up);
->  #ifdef PLUGIN_DEF_AUTH
->          /* generate filename for deferred auth control file */
->          if (!key_state_gen_auth_control_file(ks, session->opt))
-
-When looking through the code here; I wonder how this all will work with
-deferred authentication and plug-ins.  Have you tested this? (I will run some
-additional checks, also covering this use case)
-
-
--- 
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
-
+--rV8arf8D5Dod9UkK--
 
