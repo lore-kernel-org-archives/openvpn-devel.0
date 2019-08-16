@@ -1,12 +1,11 @@
+From: Antonio Quartulli <a@...2181...>
+Date: Fri, 16 Aug 2019 22:26:54 +0200
+Message-Id: <20190816202654.19388-1-a@...2181...>
+In-Reply-To: <20190816183852.GP1349@...1296...>
+References: <20190816183852.GP1349@...1296...>
 MIME-Version: 1.0
-References: <20190724152934.9884-1-arne@...1227...>
- <201908161931.x7GJVqP9044592@...2054...>
-In-Reply-To: <201908161931.x7GJVqP9044592@...2054...>
-From: Rosen Penev <rosenp@...277...>
-Date: Fri, 16 Aug 2019 12:42:46 -0700
-Message-ID: <CAKxU2N8dmzKb4ui85BYeoGgCyOtXNT2bOcgsC5HCCGsTNjUMYQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: openssl: Fix compilation
- without deprecated OpenSSL 1.1 APIs
+Subject: [Openvpn-devel] [PATCH v2] networking: extend API for better memory
+ management
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,43 +14,448 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <antonio@...515...>
 
-On Fri, Aug 16, 2019 at 12:31 PM Gert Doering <gert@...1296...> wrote:
->
-> Your patch has been applied to the master branch.
->
-> Is this also suitable for release/2.4?  "You folks tell me, I do the
-> cherry-picking" (if it applies) :-)
-2.4 is what I did my testing on, so yes.
->
-> I have removed the extra spaces in "# if" constructs, as this is not
-> something we use elsewhere on nested CPP expressions (it came up in the
-> discussion, but was still part of this patch).
->
-> Tested lightly with openssl 1.0.2o and 1.1.1.
->
-> commit 8a01147ff77e4ae2e377744b89fbe4b6841b2bb0 (master)
-> Author: Rosen Penev
-> Date:   Wed Jul 24 17:29:34 2019 +0200
->
->      openssl: Fix compilation without deprecated OpenSSL 1.1 APIs
->
->      Signed-off-by: Rosen Penev <rosenp@...277...>
->      Signed-off-by: Arne Schwabe <arne@...1227...>
->      Acked-by: Rosen Penev <rosenp@...277...>
->      Acked-by: Steffan Karger <steffan.karger@...1435...>
->      Message-Id: <20190724152934.9884-1-arne@...1227...>
->      URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18700.html
->      Signed-off-by: Gert Doering <gert@...1296...>
->
->
-> --
-> kind regards,
->
-> Gert Doering
->
+From: Antonio Quartulli <antonio@...515...>
+
+Networking backend implementations may need to allocate dynamic
+resources that require an explicit free/release.
+Since these cleanup are perfomed not very often, and only at specific
+times, it makes sense to have the upper layer signal when it's the right
+time to do so, by means of a new API call.
+
+For this purpose two news APIs have been implemented:
+- net_ctx_free() to release all backend specific resources. Expected to
+  be called at application cleanup time;
+- net_ctx_reset() to let backends release temporary resources (i.e.
+  reset garbage collectors). To be invoked after routines that
+  are expected to allocate memory (i.e. tun setup or shutdown).
+
+In this patch related implementations for iproute2 and sitnl are also
+provided.
+
+Signed-off-by: Antonio Quartulli <antonio@...515...>
+---
+
+Changes from v1:
+- got rid of (now) useless casts in front of print_in_addr_t()
+
+
+ src/openvpn/networking.h          | 26 +++++++++++
+ src/openvpn/networking_iproute2.c | 74 ++++++++++++-------------------
+ src/openvpn/networking_iproute2.h |  1 +
+ src/openvpn/networking_sitnl.c    | 12 +++++
+ src/openvpn/openvpn.c             |  1 +
+ src/openvpn/route.c               |  8 ++++
+ src/openvpn/tun.c                 |  5 +++
+ 7 files changed, 82 insertions(+), 45 deletions(-)
+
+diff --git a/src/openvpn/networking.h b/src/openvpn/networking.h
+index cf967116..4075ed73 100644
+--- a/src/openvpn/networking.h
++++ b/src/openvpn/networking.h
+@@ -39,6 +39,18 @@ net_ctx_init(struct context *c, openvpn_net_ctx_t *ctx)
+ {
+     return 0;
+ }
++
++static inline void
++net_ctx_reset(openvpn_net_ctx_t *ctx)
++{
++    (void)ctx;
++}
++
++static inline void
++net_ctx_free(openvpn_net_ctx_t *ctx)
++{
++    (void)ctx;
++}
+ #endif
+ 
+ #if defined(ENABLE_SITNL) || defined(ENABLE_IPROUTE)
+@@ -53,6 +65,20 @@ net_ctx_init(struct context *c, openvpn_net_ctx_t *ctx)
+  */
+ int net_ctx_init(struct context *c, openvpn_net_ctx_t *ctx);
+ 
++/**
++ * Release resources allocated by the internal garbage collector
++ *
++ * @param ctx       the implementation specific context
++ */
++void net_ctx_reset(openvpn_net_ctx_t *ctx);
++
++/**
++ * Release all resources allocated within the platform specific context object
++ *
++ * @param ctx       the implementation specific context to release
++ */
++void net_ctx_free(openvpn_net_ctx_t *ctx);
++
+ /**
+  * Bring interface up or down.
+  *
+diff --git a/src/openvpn/networking_iproute2.c b/src/openvpn/networking_iproute2.c
+index 5db9a78b..1ddeb5cf 100644
+--- a/src/openvpn/networking_iproute2.c
++++ b/src/openvpn/networking_iproute2.c
+@@ -43,10 +43,23 @@ net_ctx_init(struct context *c, openvpn_net_ctx_t *ctx)
+     ctx->es = NULL;
+     if (c)
+         ctx->es = c->es;
++    ctx->gc = gc_new();
+ 
+     return 0;
+ }
+ 
++void
++net_ctx_reset(openvpn_net_ctx_t *ctx)
++{
++    gc_reset(&ctx->gc);
++}
++
++void
++net_ctx_free(openvpn_net_ctx_t *ctx)
++{
++    gc_free(&ctx->gc);
++}
++
+ int
+ net_iface_up(openvpn_net_ctx_t *ctx, const char *iface, bool up)
+ {
+@@ -82,17 +95,14 @@ net_addr_v4_add(openvpn_net_ctx_t *ctx, const char *iface,
+ {
+     struct argv argv = argv_new();
+ 
+-    char *addr_str = (char *)print_in_addr_t(*addr, 0, NULL);
+-    char *brd_str = (char *)print_in_addr_t(*broadcast, 0, NULL);
++    const char *addr_str = print_in_addr_t(*addr, 0, &ctx->gc);
++    const char *brd_str = print_in_addr_t(*broadcast, 0, &ctx->gc);
+ 
+     argv_printf(&argv, "%s addr add dev %s %s/%d broadcast %s", iproute_path,
+                 iface, addr_str, prefixlen, brd_str);
+     argv_msg(M_INFO, &argv);
+     openvpn_execve_check(&argv, ctx->es, S_FATAL, "Linux ip addr add failed");
+ 
+-    free(addr_str);
+-    free(brd_str);
+-
+     argv_reset(&argv);
+ 
+     return 0;
+@@ -103,7 +113,7 @@ net_addr_v6_add(openvpn_net_ctx_t *ctx, const char *iface,
+                 const struct in6_addr *addr, int prefixlen)
+ {
+     struct argv argv = argv_new();
+-    char *addr_str = (char *)print_in6_addr(*addr, 0, NULL);
++    char *addr_str = (char *)print_in6_addr(*addr, 0, &ctx->gc);
+ 
+     argv_printf(&argv, "%s -6 addr add %s/%d dev %s", iproute_path, addr_str,
+                 prefixlen, iface);
+@@ -111,8 +121,6 @@ net_addr_v6_add(openvpn_net_ctx_t *ctx, const char *iface,
+     openvpn_execve_check(&argv, ctx->es, S_FATAL,
+                          "Linux ip -6 addr add failed");
+ 
+-    free(addr_str);
+-
+     argv_reset(&argv);
+ 
+     return 0;
+@@ -123,7 +131,7 @@ net_addr_v4_del(openvpn_net_ctx_t *ctx, const char *iface,
+                 const in_addr_t *addr, int prefixlen)
+ {
+     struct argv argv = argv_new();
+-    char *addr_str = (char *)print_in_addr_t(*addr, 0, NULL);
++    const char *addr_str = print_in_addr_t(*addr, 0, &ctx->gc);
+ 
+     argv_printf(&argv, "%s addr del dev %s %s/%d", iproute_path, iface,
+                 addr_str, prefixlen);
+@@ -131,8 +139,6 @@ net_addr_v4_del(openvpn_net_ctx_t *ctx, const char *iface,
+     argv_msg(M_INFO, &argv);
+     openvpn_execve_check(&argv, ctx->es, 0, "Linux ip addr del failed");
+ 
+-    free(addr_str);
+-
+     argv_reset(&argv);
+ 
+     return 0;
+@@ -143,15 +149,13 @@ net_addr_v6_del(openvpn_net_ctx_t *ctx, const char *iface,
+                 const struct in6_addr *addr, int prefixlen)
+ {
+     struct argv argv = argv_new();
+-    char *addr_str = (char *)print_in6_addr(*addr, 0, NULL);
++    char *addr_str = (char *)print_in6_addr(*addr, 0, &ctx->gc);
+ 
+     argv_printf(&argv, "%s -6 addr del %s/%d dev %s", iproute_path,
+                 addr_str, prefixlen, iface);
+     argv_msg(M_INFO, &argv);
+     openvpn_execve_check(&argv, ctx->es, 0, "Linux ip -6 addr del failed");
+ 
+-    free(addr_str);
+-
+     argv_reset(&argv);
+ 
+     return 0;
+@@ -162,17 +166,14 @@ net_addr_ptp_v4_add(openvpn_net_ctx_t *ctx, const char *iface,
+                     const in_addr_t *local, const in_addr_t *remote)
+ {
+     struct argv argv = argv_new();
+-    char *local_str = (char *)print_in_addr_t(*local, 0, NULL);
+-    char *remote_str = (char *)print_in_addr_t(*remote, 0, NULL);
++    const char *local_str = print_in_addr_t(*local, 0, &ctx->gc);
++    const char *remote_str = print_in_addr_t(*remote, 0, &ctx->gc);
+ 
+     argv_printf(&argv, "%s addr add dev %s local %s peer %s", iproute_path,
+                 iface, local_str, remote_str);
+     argv_msg(M_INFO, &argv);
+     openvpn_execve_check(&argv, ctx->es, S_FATAL, "Linux ip addr add failed");
+ 
+-    free(local_str);
+-    free(remote_str);
+-
+     argv_reset(&argv);
+ 
+     return 0;
+@@ -183,17 +184,14 @@ net_addr_ptp_v4_del(openvpn_net_ctx_t *ctx, const char *iface,
+                     const in_addr_t *local, const in_addr_t *remote)
+ {
+     struct argv argv = argv_new();
+-    char *local_str = (char *)print_in_addr_t(*local, 0, NULL);
+-    char *remote_str = (char *)print_in_addr_t(*remote, 0, NULL);
++    const char *local_str = print_in_addr_t(*local, 0, &ctx->gc);
++    const char *remote_str = print_in_addr_t(*remote, 0, &ctx->gc);
+ 
+     argv_printf(&argv, "%s addr del dev %s local %s peer %s", iproute_path,
+                 iface, local_str, remote_str);
+     argv_msg(M_INFO, &argv);
+     openvpn_execve_check(&argv, ctx->es, 0, "Linux ip addr del failed");
+ 
+-    free(local_str);
+-    free(remote_str);
+-
+     argv_reset(&argv);
+ 
+     return 0;
+@@ -205,7 +203,7 @@ net_route_v4_add(openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen,
+                  int metric)
+ {
+     struct argv argv = argv_new();
+-    char *dst_str = (char *)print_in_addr_t(*dst, 0, NULL);
++    const char *dst_str = print_in_addr_t(*dst, 0, &ctx->gc);
+ 
+     argv_printf(&argv, "%s route add %s/%d", iproute_path, dst_str, prefixlen);
+ 
+@@ -217,18 +215,14 @@ net_route_v4_add(openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen,
+ 
+     if (gw)
+     {
+-        char *gw_str = (char *)print_in_addr_t(*gw, 0, NULL);
++        const char *gw_str = print_in_addr_t(*gw, 0, &ctx->gc);
+ 
+         argv_printf_cat(&argv, "via %s", gw_str);
+-
+-        free(gw_str);
+     }
+ 
+     argv_msg(D_ROUTE, &argv);
+     openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route add command failed");
+ 
+-    free(dst_str);
+-
+     argv_reset(&argv);
+ 
+     return 0;
+@@ -240,18 +234,16 @@ net_route_v6_add(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
+                  uint32_t table, int metric)
+ {
+     struct argv argv = argv_new();
+-    char *dst_str = (char *)print_in6_addr(*dst, 0, NULL);
++    char *dst_str = (char *)print_in6_addr(*dst, 0, &ctx->gc);
+ 
+     argv_printf(&argv, "%s -6 route add %s/%d dev %s", iproute_path, dst_str,
+                 prefixlen, iface);
+ 
+     if (gw)
+     {
+-        char *gw_str = (char *)print_in6_addr(*gw, 0, NULL);
++        char *gw_str = (char *)print_in6_addr(*gw, 0, &ctx->gc);
+ 
+         argv_printf_cat(&argv, "via %s", gw_str);
+-
+-        free(gw_str);
+     }
+ 
+     if (metric > 0)
+@@ -260,8 +252,6 @@ net_route_v6_add(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
+     argv_msg(D_ROUTE, &argv);
+     openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route -6 add command failed");
+ 
+-    free(dst_str);
+-
+     argv_reset(&argv);
+ 
+     return 0;
+@@ -273,7 +263,7 @@ net_route_v4_del(openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen,
+                  int metric)
+ {
+     struct argv argv = argv_new();
+-    char *dst_str = (char *)print_in_addr_t(*dst, 0, NULL);
++    const char *dst_str = print_in_addr_t(*dst, 0, &ctx->gc);
+ 
+     argv_printf(&argv, "%s route del %s/%d", iproute_path, dst_str, prefixlen);
+ 
+@@ -283,8 +273,6 @@ net_route_v4_del(openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen,
+     argv_msg(D_ROUTE, &argv);
+     openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route delete command failed");
+ 
+-    free(dst_str);
+-
+     argv_reset(&argv);
+ 
+     return 0;
+@@ -296,18 +284,16 @@ net_route_v6_del(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
+                  uint32_t table, int metric)
+ {
+     struct argv argv = argv_new();
+-    char *dst_str = (char *)print_in6_addr(*dst, 0, NULL);
++    char *dst_str = (char *)print_in6_addr(*dst, 0, &ctx->gc);
+ 
+     argv_printf(&argv, "%s -6 route del %s/%d dev %s", iproute_path, dst_str,
+                 prefixlen, iface);
+ 
+     if (gw)
+     {
+-        char *gw_str = (char *)print_in6_addr(*gw, 0, NULL);
++        char *gw_str = (char *)print_in6_addr(*gw, 0, &ctx->gc);
+ 
+         argv_printf_cat(&argv, "via %s", gw_str);
+-
+-        free(gw_str);
+     }
+ 
+     if (metric > 0)
+@@ -316,8 +302,6 @@ net_route_v6_del(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
+     argv_msg(D_ROUTE, &argv);
+     openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route -6 del command failed");
+ 
+-    free(dst_str);
+-
+     argv_reset(&argv);
+ 
+     return 0;
+diff --git a/src/openvpn/networking_iproute2.h b/src/openvpn/networking_iproute2.h
+index 47b50a9f..24c605db 100644
+--- a/src/openvpn/networking_iproute2.h
++++ b/src/openvpn/networking_iproute2.h
+@@ -29,6 +29,7 @@ typedef char openvpn_net_iface_t;
+ struct openvpn_net_ctx
+ {
+     struct env_set *es;
++    struct gc_arena gc;
+ };
+ 
+ typedef struct openvpn_net_ctx openvpn_net_ctx_t;
+diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
+index 21563905..976ecd28 100644
+--- a/src/openvpn/networking_sitnl.c
++++ b/src/openvpn/networking_sitnl.c
+@@ -540,6 +540,18 @@ net_ctx_init(struct context *c, openvpn_net_ctx_t *ctx)
+     return 0;
+ }
+ 
++void
++net_ctx_reset(openvpn_net_ctx_t *ctx)
++{
++    (void)ctx;
++}
++
++void
++net_ctx_free(openvpn_net_ctx_t *ctx)
++{
++    (void)ctx;
++}
++
+ int
+ net_route_v4_best_gw(openvpn_net_ctx_t *ctx, const in_addr_t *dst,
+                      in_addr_t *best_gw, char *best_iface)
+diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
+index fb02b3de..a58d5075 100644
+--- a/src/openvpn/openvpn.c
++++ b/src/openvpn/openvpn.c
+@@ -332,6 +332,7 @@ openvpn_main(int argc, char *argv[])
+             env_set_destroy(c.es);
+             uninit_options(&c.options);
+             gc_reset(&c.gc);
++            net_ctx_free(&c.net_ctx);
+         }
+         while (c.sig->signal_received == SIGHUP);
+     }
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index b55a87f8..7d0bd5a1 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -1826,6 +1826,8 @@ done:
+     }
+     argv_reset(&argv);
+     gc_free(&gc);
++    /* release resources potentially allocated during route setup */
++    net_ctx_reset(ctx);
+ }
+ 
+ 
+@@ -2130,6 +2132,8 @@ done:
+     }
+     argv_reset(&argv);
+     gc_free(&gc);
++    /* release resources potentially allocated during route setup */
++    net_ctx_reset(ctx);
+ }
+ 
+ static void
+@@ -2322,6 +2326,8 @@ done:
+     r->flags &= ~RT_ADDED;
+     argv_reset(&argv);
+     gc_free(&gc);
++    /* release resources potentially allocated during route cleanup */
++    net_ctx_reset(ctx);
+ }
+ 
+ void
+@@ -2548,6 +2554,8 @@ delete_route_ipv6(const struct route_ipv6 *r6, const struct tuntap *tt,
+ 
+     argv_reset(&argv);
+     gc_free(&gc);
++    /* release resources potentially allocated during route cleanup */
++    net_ctx_reset(ctx);
+ }
+ 
+ /*
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index d4735640..0ee6c11b 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -1423,6 +1423,9 @@ do_ifconfig(struct tuntap *tt, const char *ifname, int tun_mtu,
+     {
+         do_ifconfig_ipv6(tt, ifname, tun_mtu, es, ctx);
+     }
++
++    /* release resources potentially allocated during interface setup */
++    net_ctx_free(ctx);
+ }
+ 
+ static void
+@@ -2015,6 +2018,8 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+         }
+ 
+         gc_free(&gc);
++        /* release resources potentially allocated during undo */
++        net_ctx_reset(ctx);
+     }
+ 
+     close_tun_generic(tt);
+-- 
+2.22.1
+
 
