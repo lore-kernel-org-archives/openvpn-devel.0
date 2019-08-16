@@ -1,15 +1,9 @@
-Date: Fri, 16 Aug 2019 22:29:08 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20190816202908.GR1349@...1296...>
-References: <20190724152934.9884-1-arne@...1227...>
- <201908161931.x7GJVqP9044592@...2054...>
+From: Antonio Quartulli <a@...2181...>
+Date: Fri, 16 Aug 2019 22:49:45 +0200
+Message-Id: <20190816204945.7937-1-a@...2181...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="tT3UgwmDxwvOMqfu"
-Content-Disposition: inline
-In-Reply-To: <201908161931.x7GJVqP9044592@...2054...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: openssl: Fix compilation
- without deprecated OpenSSL 1.1 APIs
+Subject: [Openvpn-devel] [PATCH] mbedtls: fix segfault by calling
+ mbedtls_cipher_free() in cipher_ctx_free()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,73 +12,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Rosen Penev <rosenp@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
---tT3UgwmDxwvOMqfu
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Commit ("openssl: Fix compilation without deprecated OpenSSL 1.1 APIs")
+has removed the cipher_ctx_cleanup() API, as it is not anymore required
+to be a distinct call. However, while doing so it also touched the
+mbedtls backend in a wrong way causing a systematic segfault upon connection.
 
-Hi,
+Basically mbedtls_cipher_free(ctx) was moved from the defunct cipher_ctx_cleanup()
+to md_ctx_free(), while it was supposed to go into cipher_ctx_free().
+This was clearly wrong as also the type of the ctx variable was not
+correct anymore.
 
-On Fri, Aug 16, 2019 at 09:31:52PM +0200, Gert Doering wrote:
-> Your patch has been applied to the master branch.
->=20
-> Is this also suitable for release/2.4?  "You folks tell me, I do the
-> cherry-picking" (if it applies) :-)
->=20
-> I have removed the extra spaces in "# if" constructs, as this is not
-> something we use elsewhere on nested CPP expressions (it came up in the
-> discussion, but was still part of this patch).
->=20
-> Tested lightly with openssl 1.0.2o and 1.1.1.
+Fix this mistake by actually moving mbedtls_cipher_free(ctx) to
+cipher_ctx_free().
 
-I should have tested with mbedtls :-/ - buildbot tells me that a good
-number of platforms have started core dumping on the mbedtls client tests=20
-with this commit.
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+ src/openvpn/crypto_mbedtls.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-*** Error in `../src/openvpn/openvpn': free(): invalid next size (fast):
-+0x0000000000c74850 ***
-./t_client.sh: line 262:  8896 Aborted                 (core dumped) $RUN_S=
-UDO
-+"${top_builddir}/src/openvpn/openvpn" $openvpn_conf >> $LOGDIR/$SUF:openvp=
-n.log
-  OpenVPN running with PID 8896
+diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
+index f924323d..648a988e 100644
+--- a/src/openvpn/crypto_mbedtls.c
++++ b/src/openvpn/crypto_mbedtls.c
+@@ -591,6 +591,7 @@ cipher_ctx_new(void)
+ void
+ cipher_ctx_free(mbedtls_cipher_context_t *ctx)
+ {
++    mbedtls_cipher_free(ctx);
+     free(ctx);
+ }
+ 
+@@ -855,7 +856,6 @@ md_ctx_new(void)
+ void
+ md_ctx_free(mbedtls_md_context_t *ctx)
+ {
+-    mbedtls_cipher_free(ctx);
+     free(ctx);
+ }
+ 
+-- 
+2.22.1
 
-(I have seen this on fedora29 and one of the FreeBSDs, but there is
-"more red" - more details on mbedTLS versions in use can be provided)
-
-Steffan, if you could have a look, this would be most appreciated...
-
-gert
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---tT3UgwmDxwvOMqfu
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJdVxITAAoJEB2Cnv7KVigS/NcMAJeinZOlMpig1zbUo/9dLzkh
-RDIn6/mXadnaeZvLpr5zRPvQHnDZR7AVXJCMFUW0bP7fpDg1Qd6OafyWlXNv+hgG
-DRBcSIhsCCphB1RggYnMjhKAtAY3MhZsCdenX++hg2SBHUWa+isL/wy+9PsljsbL
-lbAUPVTRgqsGmaBrnxSmVkPFy9rTEVYqk31lEH5KDDNjAsNNpBfb1M0pTOGLt7wx
-t6v4i/2FIxbLGiWRjmmW8ZX1XLKolm3Ax2mD/KPFUSrpXnByAQyacd946XD+k3Kp
-lhZMOGCxKnwDlR2Mts/C7axR2dq6DuK7pUAEDIVo2jsXOqD8QeEfvJ0kCfce6xd7
-Q3GzDj1np5ltbx2HBmOei1cQna96IwO57JmfcZICSY8xighN64NZpa4VZ4uvy+yc
-MF2a3l4uBR3nO+smcN3GqwffbZ59oL90rG8a3pW3iBzYMOV3kPXbesZkCRtOG0k2
-a/f9t1CGA5c3n/Hdjx2TA9DaWBx3xeAW3Hl+rnFFFA==
-=oRd+
------END PGP SIGNATURE-----
-
---tT3UgwmDxwvOMqfu--
 
