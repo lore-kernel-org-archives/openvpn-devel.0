@@ -1,13 +1,14 @@
-References: <324fcf27-5a5a-62a7-f77d-cd279f46c712@...2080...>
- <20190808145129.1142-1-arne@...1227...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <f5258f61-c751-00a8-df92-5089bea2cb9e@...2080...>
-Date: Fri, 16 Aug 2019 19:13:14 +0200
+Date: Fri, 16 Aug 2019 19:51:20 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20190816175120.GN1349@...1296...>
+References: <bd464d61-d16e-4a9b-de38-f96891e65368@...2525...>
+ <43f87c71-6da5-b777-0def-e3a0893398b0@...2181...>
 MIME-Version: 1.0
-In-Reply-To: <20190808145129.1142-1-arne@...1227...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH v6 4/7] Rewrite auth-token-gen to be
- based on HMAC based tokens
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="o0ZfoUVt4BxPQnbU"
+Content-Disposition: inline
+In-Reply-To: <43f87c71-6da5-b777-0def-e3a0893398b0@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH] Adding support for wolfSSL backend
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,79 +17,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: Juliusz Sosinowicz <juliusz@...2525...>, openvpn-devel@lists.sourceforge.net, Todd Ouska <todd@...2525...>, Sean Parkinson <sean@...2525...>
 
-On 08/08/2019 16:51, Arne Schwabe wrote:
-> The previous auth-token implementation had a serious problem, especially when
-> paired with an unpatched OpenVPN client that keeps trying the auth-token
-> (commit e61b401a).
-> 
-> The auth-token-gen implementation forgot the auth-token on reconnect, this
-> lead to reconnect with auth-token never working.
-> 
-> This new implementation implements the auth-token in a stateles variant. By
-> using HMAC to sign the auth-token the server can verify if a token has been
-> authenticated and by checking the embedded timestamp in the token it can
-> also verify that the auth-token is still valid.
-> 
-> Using the new config directive auth-gen-token-secret instead of
-> extending auth-gen-token (--auth-gen-token [lifetime] [secret-key]) was
-> chosen to allow inlinening the secret key.
-> 
-> Patch V2: cleaned up code, use refactored read_pem_key_file function
-> Patch V3: clarify some design decision in the commit message
-> Patch V4: Use ephermal_generate_key
-> Patch V5: Use C99 PRIu64 instead of %lld int printf like statement,
->           fix strict aliasing
-> ---
->  doc/openvpn.8            |  25 ++++
->  src/openvpn/Makefile.am  |   1 +
->  src/openvpn/auth_token.c | 273 +++++++++++++++++++++++++++++++++++++++
->  src/openvpn/auth_token.h | 116 +++++++++++++++++
->  src/openvpn/init.c       |  30 ++++-
->  src/openvpn/openvpn.h    |   1 +
->  src/openvpn/options.c    |  22 +++-
->  src/openvpn/options.h    |   4 +
->  src/openvpn/push.c       |  70 ++++++++--
->  src/openvpn/push.h       |   8 ++
->  src/openvpn/ssl.c        |   7 +-
->  src/openvpn/ssl_common.h |  36 ++++--
->  src/openvpn/ssl_verify.c | 182 +++++++++++---------------
->  13 files changed, 640 insertions(+), 135 deletions(-)
->  create mode 100644 src/openvpn/auth_token.c
->  create mode 100644 src/openvpn/auth_token.h
-> 
+--o0ZfoUVt4BxPQnbU
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-Thanks a lot.  This now only leaves the following warning when using gcc-4.8.5
-and gcc-6.3.1 (both on RHEL 7.7)
+On Fri, Aug 16, 2019 at 05:22:27PM +0200, Antonio Quartulli wrote:
+> The reason why I ask is that adding a new crypto backend drastically
+> increases the maintenance cost for us.=20
 
-------------------------------------------------------------
-auth_token.c: In function ‘generate_auth_token’:
-auth_token.c:115:9: warning: dereferencing type-punned pointer will break
-strict-aliasing rules [-Wstrict-aliasing]
-         initial_timestamp = *((uint64_t *)(old_tstamp_decode));
-         ^
-------------------------------------------------------------
+... and since we're already struggling with providing proper maintenance
+and getting new stuff integrated in a timely fashion, every new burden
+due to extra testing, extra backends to consider when adding crypto-
+related patches, etc., is a fairly big no-go today.
 
-This warning is not present when compiling with gcc-7.3.1, gcc-8.3.1,
-clang-3.4.2 nor clang-5.0.1.  So I'm blaming buggy/confused older GCC
-compilers for this one.
+Now, if we had 30 contributors that are all sitting idle waiting for
+patches to review, test and ACK, I might view this slightly differently...
 
-Since I've tested and reviewed the rest in earlier rounds and the change from
-previous version i sjust changing %lld to PRIu64, I'm giving
-this my ...
+> Therefore, reducing the change
+> required in OpenVPN would be extremely beneficial.
 
-Acked-By: David Sommerseth <davids@...515...>
+This.
 
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
--- 
-kind regards,
+Gert Doering - Munich, Germany                             gert@...1296...
 
-David Sommerseth
-OpenVPN Inc
+--o0ZfoUVt4BxPQnbU
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJdVu0YAAoJEB2Cnv7KVigSggEL/23Z22GwOPM1Je/254B2zHHm
+3QfaS2Ali8XOB1NP35Eq9a6PEzIXpsZxHcTClRZ0mpTh/m+80CGBV2w2JMENVyp3
+8TQ0MqYqDWcycSogvL4+YgL1gbppQqYDYcTUxSqGvyW6T/plfZK83qAJHpU6DMop
+DyUmSxLk2JjNKS3/ewQDB/2sYOa49FF+dC3hYY2oVHqZGdPqyN5CyNJ9RnZD8mq8
+8wnLrW/lyHIKFtWD0G5N3P5LKgfFf9rTiuqaEi1Ot5q28XZP8GCxRiyUiJIjW9OA
+4Vg71ADAMv4aIb7sD0fjSbd3Bb2Ev2KO5LpdHmAR+TK8Sf95nSTjBUNhwOAAvkNa
+KLSd/3QytVPxFDHzgJHE5cu2VK2kLTGApKs9hLjn9MzZ+yqEyUZy8tOy2q4m55vx
+5ENzjP4Ioi5hSTPIXE9t0No/oCkQkRbt0JRGYDzhI3972pYolILSqSiN7Mg2Dg6n
+Wrp1gbJoLqcBWNgpjeFkhXf8N95Mo6j/OFzeP8mUTA==
+=43mf
+-----END PGP SIGNATURE-----
+
+--o0ZfoUVt4BxPQnbU--
 
