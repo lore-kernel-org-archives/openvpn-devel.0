@@ -1,10 +1,12 @@
 References: <bd464d61-d16e-4a9b-de38-f96891e65368@...2525...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <7b72d228-e801-b490-86d5-6e763919d317@...1227...>
-Date: Fri, 16 Aug 2019 17:30:42 +0200
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <43f87c71-6da5-b777-0def-e3a0893398b0@...2181...>
+Date: Fri, 16 Aug 2019 17:22:27 +0200
 MIME-Version: 1.0
 In-Reply-To: <bd464d61-d16e-4a9b-de38-f96891e65368@...2525...>
-Content-Language: de-DE
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="2d0p3wEgvfS2w3AQ06QBkerAeg7yUPtEQ"
 Subject: Re: [Openvpn-devel] [PATCH] Adding support for wolfSSL backend
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -14,47 +16,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
 To: Juliusz Sosinowicz <juliusz@...2525...>, openvpn-devel@lists.sourceforge.net
 Cc: Todd Ouska <todd@...2525...>, Sean Parkinson <sean@...2525...>
 
-Am 16.08.19 um 16:14 schrieb Juliusz Sosinowicz:
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--2d0p3wEgvfS2w3AQ06QBkerAeg7yUPtEQ
+Content-Type: multipart/mixed; boundary="oPsQ23MdhPBtrXBEYX8ay3lLxaxikzONP";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: Juliusz Sosinowicz <juliusz@...2525...>,
+ openvpn-devel@lists.sourceforge.net
+Cc: Todd Ouska <todd@...2525...>, Sean Parkinson <sean@...2525...>
+Message-ID: <43f87c71-6da5-b777-0def-e3a0893398b0@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH] Adding support for wolfSSL backend
+References: <bd464d61-d16e-4a9b-de38-f96891e65368@...2525...>
+In-Reply-To: <bd464d61-d16e-4a9b-de38-f96891e65368@...2525...>
+
+--oPsQ23MdhPBtrXBEYX8ay3lLxaxikzONP
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+Hi Juliusz,
+On 16/08/2019 16:14, Juliusz Sosinowicz wrote:
 > This patch adds the option to use wolfSSL as the ssl backend. To build
 > this patch:
-> 
+>=20
+> 1. wolfSSL needs to be built with the `--enable-all` configure option.
+> 2. OpenVPN must be built with the `--with-crypto-library=3Dwolfssl`
+> =C2=A0=C2=A0 configure option.
+>=20
 
-That is great and it is also a very big patch. I skimmed only through
-the patch.
+first of all thanks a lot for your contribution!
+
+I have looked at wolfSSL more than a year ago and back then it was
+implementing an OpenSSL compatibility layer, so that it could be used as
+drop-in replacement in all those programs using OpenSSL as main TLS library.
+
+Is this layer still in place?
+If so, why not using it to link OpenVPN against wolfSSL rather than
+adding yet another backend?
+
+The reason why I ask is that adding a new crypto backend drastically
+increases the maintenance cost for us. Therefore, reducing the change
+required in OpenVPN would be extremely beneficial.
 
 
-+#ifdef ENABLE_CRYPTO_WOLFSSL
-+    o->ciphername = "AES-256-CBC";
-+#else
-     o->ciphername = "BF-CBC";
-+#endif
+Thanks a lot.
 
-Such silent changes that OpenVPN behaves different, is something we
-would like to avoid. Better to error out in this case than to behave
-diffently.
+Best Regards,
 
-Overall the WolfSSL feels to be a bit similar to OpenSSL. Is there any
-compatibility you are aiming at?
 
-Also it would be nice to have a summary for people on the OpenVPN
-perspective
+--=20
+Antonio Quartulli
 
-- Why WolfSSL in OpenVPN instead of mbed or OpenSSL
-- What features does WolfSSL offer in OpenVPN that mbed/OpenSSL don't have
-- What is missing with WolfSSL?
 
-That should also good to have in the patch like README.mbedtls.
+--oPsQ23MdhPBtrXBEYX8ay3lLxaxikzONP--
 
-And one of the important question is:
+--2d0p3wEgvfS2w3AQ06QBkerAeg7yUPtEQ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-What are your future plans in terms of involvement in OpenVPN
-development and maintaince? I think since you are first time contributer
-and this a big patch, that is something resonable to ask.
+-----BEGIN PGP SIGNATURE-----
 
-Arne
+iQIzBAEBCAAdFiEE3o8ejP0lUW4GTX3J9FVsWUWDDm0FAl1WyjMACgkQ9FVsWUWD
+Dm0ezw/+KFGB+bxw2nLfBHHbVxhjfW8XWu59G97h+6TVWbtu97ot8BMHwrqn3FOO
+zjlqHdgwmm4LFvnyY50loiDGxU2hDBVmpNjdOjaVPabzH7tMw0DH2r2xnqL1tbBa
+Oc963CJQg0PuORuJIzhxmKFcB6Doo7od+cvn6e01PUnVlrDLp2OQ1UBbobuNTVug
+8eggS6Gd2gZfYzHzA1IDw1Ndxa2usHfBCUnxXQJu1RW/DOegOK30IteyEP7mMrqU
+dzFnqkVrg1UHC9qsb8+yOl3UJWYViPo75UyR4zMjIT/O04/uZkgbpmwmJRrkYHXf
+ZITEVBDhICAAj6tj5RTif8cdW/9zhkOrKfrqH+nbMdGjacuwGNzgIq7mHv67EsgT
+2Y9xGM/tuoq+3P+JM1ilkyS8QAMOgo27rFGiJ7QJsSB2IM6mLS4TFOUvp8877LSj
+aoItbAf05v0z6PK6N8Kb5Ipv6hHDUWWlJzvNFakPREwrjrj4k5FmXWubaosQuxgV
+j6Jz6EkTgYm8HDe8ngQsOP/yGerXmes9BJYOAtKW1x9z9cjT62kpor4/jHVP+EX7
+4ifx7iPGXsUR1TNOl9vH54yC7Q+A/f+lbCe97AJLvTi2oIszo2kY/bUowJIbAe1v
+EIkBX6QHtl97orcAptE58tlXDVkvoGtUVxS7uSmJ8fn8+BLumcY=
+=2Dq3
+-----END PGP SIGNATURE-----
+
+--2d0p3wEgvfS2w3AQ06QBkerAeg7yUPtEQ--
 
