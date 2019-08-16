@@ -1,14 +1,10 @@
-Date: Fri, 16 Aug 2019 19:51:20 +0200
+Date: Fri, 16 Aug 2019 20:14:46 +0200 (CEST)
+Message-Id: <201908161814.x7GIEkpt028089@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20190816175120.GN1349@...1296...>
-References: <bd464d61-d16e-4a9b-de38-f96891e65368@...2525...>
- <43f87c71-6da5-b777-0def-e3a0893398b0@...2181...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="o0ZfoUVt4BxPQnbU"
-Content-Disposition: inline
-In-Reply-To: <43f87c71-6da5-b777-0def-e3a0893398b0@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] Adding support for wolfSSL backend
+In-Reply-To: <20190815155319.28249-1-gert@...1296...>
+References: <20190815155319.28249-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Increase listen() backlog queue
+ to 32
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,60 +13,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: Juliusz Sosinowicz <juliusz@...2525...>, openvpn-devel@lists.sourceforge.net, Todd Ouska <todd@...2525...>, Sean Parkinson <sean@...2525...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---o0ZfoUVt4BxPQnbU
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Wow, more ACKs than actual lines of codes affected .-) - I hear you
+wrt "have a #define somewhere" (and yes, we could do that) or "make it
+easier to configure for users" (nah... for the reasons Antonio gave) :-)
 
-Hi,
+Patch has been applied to the master and release/2.4 branch.
 
-On Fri, Aug 16, 2019 at 05:22:27PM +0200, Antonio Quartulli wrote:
-> The reason why I ask is that adding a new crypto backend drastically
-> increases the maintenance cost for us.=20
+2.4, because (see the discussion in the ticket) this effectively 
+acknowledges the changing nature of the internet, with ubiquitous
+background scanning on well-known ports like TCP/443 - thus getting
+in the way of production openvpn setups with "listen(s,1)".
 
-... and since we're already struggling with providing proper maintenance
-and getting new stuff integrated in a timely fashion, every new burden
-due to extra testing, extra backends to consider when adding crypto-
-related patches, etc., is a fairly big no-go today.
+commit 6d8380c78bf77766454b93b49ab2ebf713b0be48 (master)
+commit ec0ca68f4ed1e6aa6f08f470b18e0198b7e5a4da (release/2.4)
+Author: Gert Doering
+Date:   Thu Aug 15 17:53:19 2019 +0200
 
-Now, if we had 30 contributors that are all sitting idle waiting for
-patches to review, test and ACK, I might view this slightly differently...
+     Increase listen() backlog queue to 32
 
-> Therefore, reducing the change
-> required in OpenVPN would be extremely beneficial.
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Acked-by: David Sommerseth <davids@...515...>
+     Message-Id: <20190815155319.28249-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18758.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-This.
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+--
+kind regards,
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Gert Doering
 
---o0ZfoUVt4BxPQnbU
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJdVu0YAAoJEB2Cnv7KVigSggEL/23Z22GwOPM1Je/254B2zHHm
-3QfaS2Ali8XOB1NP35Eq9a6PEzIXpsZxHcTClRZ0mpTh/m+80CGBV2w2JMENVyp3
-8TQ0MqYqDWcycSogvL4+YgL1gbppQqYDYcTUxSqGvyW6T/plfZK83qAJHpU6DMop
-DyUmSxLk2JjNKS3/ewQDB/2sYOa49FF+dC3hYY2oVHqZGdPqyN5CyNJ9RnZD8mq8
-8wnLrW/lyHIKFtWD0G5N3P5LKgfFf9rTiuqaEi1Ot5q28XZP8GCxRiyUiJIjW9OA
-4Vg71ADAMv4aIb7sD0fjSbd3Bb2Ev2KO5LpdHmAR+TK8Sf95nSTjBUNhwOAAvkNa
-KLSd/3QytVPxFDHzgJHE5cu2VK2kLTGApKs9hLjn9MzZ+yqEyUZy8tOy2q4m55vx
-5ENzjP4Ioi5hSTPIXE9t0No/oCkQkRbt0JRGYDzhI3972pYolILSqSiN7Mg2Dg6n
-Wrp1gbJoLqcBWNgpjeFkhXf8N95Mo6j/OFzeP8mUTA==
-=43mf
------END PGP SIGNATURE-----
-
---o0ZfoUVt4BxPQnbU--
 
