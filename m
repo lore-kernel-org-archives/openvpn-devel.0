@@ -1,12 +1,14 @@
-From: Rolf Fokkens <rolf.fokkens@...2524...>
-Date: Fri, 16 Aug 2019 08:27:30 +0000
-Message-ID: <65530ded0938659345877e870f49d2ad4b9768ae.camel@...2524...>
-Content-Language: en-US
-Content-Type: multipart/signed; micalg=sha-256;
- protocol="application/x-pkcs7-signature"; boundary="=-JmJhfD15AkHk19Kufuc4"
+References: <65530ded0938659345877e870f49d2ad4b9768ae.camel@...2524...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <3852ddc0-a136-3e28-9925-2c597a1cfaca@...2080...>
+Date: Fri, 16 Aug 2019 13:45:19 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Patch: Export NotBefore and NotAfter items to the
- environment in client-connect
+In-Reply-To: <65530ded0938659345877e870f49d2ad4b9768ae.camel@...2524...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="66kWpoMsIgLnYiXJ5H4vfpLBPwX2S0o4b"
+Subject: Re: [Openvpn-devel] ***UNCHECKED*** Patch: Export NotBefore and
+ NotAfter items to the environment in client-connect
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,160 +17,109 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Cc: Jasper Siero <jasper.siero@...2524...>, Valentin Bajrami <valentin.bajrami@...2524...>
+To: Rolf Fokkens <rolf.fokkens@...2524...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Cc: Valentin Bajrami <valentin.bajrami@...2524...>, Jasper Siero <jasper.siero@...2524...>
 
---=-JmJhfD15AkHk19Kufuc4
-Content-Type: multipart/mixed; boundary="=-vMHR0+Dj3aPniGB/nBtp"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--66kWpoMsIgLnYiXJ5H4vfpLBPwX2S0o4b
+Content-Type: multipart/mixed; boundary="F8eLK7PY7DCCzpXwFIkU74xgPlSrDfQo0";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: Rolf Fokkens <rolf.fokkens@...2524...>,
+ "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Cc: Valentin Bajrami <valentin.bajrami@...2524...>,
+ Jasper Siero <jasper.siero@...2524...>
+Message-ID: <3852ddc0-a136-3e28-9925-2c597a1cfaca@...2080...>
+Subject: Re: ***UNCHECKED*** [Openvpn-devel] Patch: Export NotBefore and
+ NotAfter items to the environment in client-connect
+References: <65530ded0938659345877e870f49d2ad4b9768ae.camel@...2524...>
+In-Reply-To: <65530ded0938659345877e870f49d2ad4b9768ae.camel@...2524...>
 
---=-vMHR0+Dj3aPniGB/nBtp
-Content-Type: text/plain; charset="UTF-8"
+--F8eLK7PY7DCCzpXwFIkU74xgPlSrDfQo0
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-We're considering to use shorter-lived client certificates for our VPN
-users. In an effort to prevent negative impact for our staff due to
-expired certificates, we 'd like to keep track of imminent expiration
-of certificates in the client-connect script (which we're using anyway
-to check is the certificate matches the user id). Many certificate
-attributes are passed to the script, but not the "NotAfter" and
-"NotBefore" attributes.
+On 16/08/2019 10:27, Rolf Fokkens via Openvpn-devel wrote:
+> We're considering to use shorter-lived client certificates for our VPN
+> users. In an effort to prevent negative impact for our staff due to
+> expired certificates, we 'd like to keep track of imminent expiration
+> of certificates in the client-connect script (which we're using anyway
+> to check is the certificate matches the user id). Many certificate
+> attributes are passed to the script, but not the "NotAfter" and
+> "NotBefore" attributes.
+>=20
+> The attached patch adds these to the mix.
 
-The attached patch adds these to the mix.
+This gets a Feature-ACK from me.  This is useful information, and something
+other users in the community have asked for earlier too.  But there are a f=
+ew
+things here before starting to dive into the details.
 
-Rolf
+First of all, we want to have patches first into git master, and then we ne=
+ed
+to discuss in the community if this feature is something we want to backport
+to the 2.4 release.  After a new release has stabilized (which 2.4 has), we
+are quite reluctant to add new features to those releases.
 
---=-vMHR0+Dj3aPniGB/nBtp
-Content-Disposition: attachment; filename="openvpn-2.4.7-valid-to-env.patch"
-Content-Type: text/x-patch; name="openvpn-2.4.7-valid-to-env.patch"; charset="UTF-8"
-Content-Transfer-Encoding: base64
+Another thing is that I think it would be valuable to also print this
+information into the logs as well.  The X509_get_notBefore() value is proba=
+bly
+not so important unless that has a value which is in the future.  The
+X509_get_notAfter() is fine to always log, but would be nice if it would co=
+me
+a M_WARN log entry if it has expired.
 
-ZGlmZiAtcnVOIG9wZW52cG4tMi40Ljcub3JpZy9zcmMvb3BlbnZwbi9zc2xfdmVyaWZ5LmMgb3Bl
-bnZwbi0yLjQuNy9zcmMvb3BlbnZwbi9zc2xfdmVyaWZ5LmMKLS0tIG9wZW52cG4tMi40Ljcub3Jp
-Zy9zcmMvb3BlbnZwbi9zc2xfdmVyaWZ5LmMJMjAxOS0wMi0yMCAxMzoyODoyMy4wMDAwMDAwMDAg
-KzAxMDAKKysrIG9wZW52cG4tMi40Ljcvc3JjL29wZW52cG4vc3NsX3ZlcmlmeS5jCTIwMTktMDgt
-MTUgMjA6NTc6MjkuODAzMzgxMTExICswMjAwCkBAIC00NDgsNiArNDQ4LDI1IEBACiB9CiAKIC8q
-CisgKiBFeHBvcnQgQVNOMV9USU1FIGl0ZW1zIHRvIHRoZSBlbnZpcm9ubWVudAorICovCitzdGF0
-aWMgdm9pZAorc2V0ZW52X0FTTjFfVElNRShzdHJ1Y3QgZW52X3NldCAqZXMsIGNoYXIgKmVudm5h
-bWUsIGludCBlbnZuYW1lc2l6ZSwKKyAgICAgICAgICAgICAgICAgY2hhciAqZW52cHJlZml4LCBp
-bnQgZGVwdGgsIGNvbnN0IEFTTjFfVElNRSAqYXNuMV90aW1lKQoreworICAgIGNoYXIgdGltZXN0
-YW1wWzMyXTsKKyAgICBCSU8gKm1lbTsKKworICAgIG1lbSA9IEJJT19uZXcoQklPX3NfbWVtKCkp
-OworICAgIGlmIChBU04xX1RJTUVfcHJpbnQgKG1lbSwgYXNuMV90aW1lKSkgeworICAgICAgICB0
-aW1lc3RhbXBbQklPX3JlYWQobWVtLCB0aW1lc3RhbXAsIHNpemVvZih0aW1lc3RhbXApLTEpXSA9
-ICdcMCc7CisgICAgICAgIG9wZW52cG5fc25wcmludGYoZW52bmFtZSwgZW52bmFtZXNpemUsICIl
-c18lZCIsIGVudnByZWZpeCwgZGVwdGgpOworICAgICAgICBzZXRlbnZfc3RyKGVzLCBlbnZuYW1l
-LCB0aW1lc3RhbXApOworICAgIH0KKyAgICBCSU9fZnJlZShtZW0pOworfQorCisvKgogICogRXhw
-b3J0IHRoZSBzdWJqZWN0LCBjb21tb25fbmFtZSwgYW5kIHJhdyBjZXJ0aWZpY2F0ZSBmaWVsZHMg
-dG8gdGhlCiAgKiBlbnZpcm9ubWVudCBmb3IgbGF0ZXIgdmVyaWZpY2F0aW9uIGJ5IHNjcmlwdHMg
-YW5kIHBsdWdpbnMuCiAgKi8KQEAgLTUwNSw2ICs1MjQsMTIgQEAKICAgICBvcGVudnBuX3NucHJp
-bnRmKGVudm5hbWUsIHNpemVvZihlbnZuYW1lKSwgInRsc19zZXJpYWxfaGV4XyVkIiwgY2VydF9k
-ZXB0aCk7CiAgICAgc2V0ZW52X3N0cihlcywgZW52bmFtZSwgc2VyaWFsKTsKIAorICAgIHNldGVu
-dl9BU04xX1RJTUUoZXMsIGVudm5hbWUsIHNpemVvZihlbnZuYW1lKSwgInRsc19ub3RiZWZvcmUi
-LCBjZXJ0X2RlcHRoLAorCQkgICAgIFg1MDlfZ2V0X25vdEJlZm9yZShwZWVyX2NlcnQpKTsKKwor
-ICAgIHNldGVudl9BU04xX1RJTUUoZXMsIGVudm5hbWUsIHNpemVvZihlbnZuYW1lKSwgInRsc19u
-b3RhZnRlciIsIGNlcnRfZGVwdGgsCisJCSAgICAgWDUwOV9nZXRfbm90QWZ0ZXIocGVlcl9jZXJ0
-KSk7CisKICAgICBnY19mcmVlKCZnYyk7CiB9CiAK
+To achieve this logging feature, setenv_ASN1_TIME() would need to be
+refactored a bit - possibly by returning a string as well as "is now() after
+the time stamp?" bool flag.  The "printing" could happen to a gc_arena
+allocated buffer (which is available in verify_cert_set_env()).  The logging
+should probably already happen in verify_cert(), which also has its own
+gc_arena.  There are various alternatives to avoid doing the ASN1_TIME_prin=
+t()
+preparations and processing multiple times (for logging and setenv), but I
+don't have a clear idea right now what could be a reasonable approach.
 
+And lastly, this code will break compilation if using
+./configure --with-crypto-library=3Dmbedtls ... This should also be improve=
+d.
 
---=-vMHR0+Dj3aPniGB/nBtp--
+Other than that, the code looks reasonable at first glance (I have not comp=
+ile
+tested it yet)
 
---=-JmJhfD15AkHk19Kufuc4
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
+--=20
+kind regards,
 
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCEEgw
-ggUWMIID/qADAgECAhEAoAIdmb8gLXTcSHyWkn0JJzANBgkqhkiG9w0BAQsFADCBljELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYG
-A1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVTZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVu
-dGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQTAeFw0xOTA3MTUwMDAwMDBaFw0yMDA3MTQyMzU5
-NTlaMEYxFTATBgNVBAMTDFJvbGYgRm9ra2VuczEtMCsGCSqGSIb3DQEJARYecm9sZi5mb2trZW5z
-QHRhcmdldC1ob2xkaW5nLm5sMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvVZeTPX0
-bAWX1wlVBMJYEw8Gzp491tPqjnrMCzbabNw1qlwpydXfR1ZlVFBVDjtuSlu7VSRYvtrexDds9cGi
-GhTNFdEmTlqj3HsHznC7gVYsTMAHEZSZk5aY1o6EInm38erLcvAX/UhJAQH0C5PZZMZdma1I9Ach
-1fKjojUo83a/9nVyWAbh4GtE5r8e90/8hbO+R2fqONe8eDuVEWy11KYdn1ypUcqV6uwNUOS6Pvy5
-8XJ1CskIFox/iByQsZcFcVtnzYKebon535lSy2QMq8fs0+McvvFOvD9WdveplgJDHMRtLEf1dYMv
-P1pyqfCal2mtMd6QS+8cJfCKCkfx9QIDAQABo4IBrDCCAagwHwYDVR0jBBgwFoAUCcDy/AvalNtf
-/ivfqJlCz8ngrQAwHQYDVR0OBBYEFOENMzVeOF5eS7tMoN5rZ9r5ImuMMA4GA1UdDwEB/wQEAwIF
-oDAMBgNVHRMBAf8EAjAAMB0GA1UdJQQWMBQGCCsGAQUFBwMEBggrBgEFBQcDAjBABgNVHSAEOTA3
-MDUGDCsGAQQBsjEBAgEBATAlMCMGCCsGAQUFBwIBFhdodHRwczovL3NlY3RpZ28uY29tL0NQUzBa
-BgNVHR8EUzBRME+gTaBLhklodHRwOi8vY3JsLnNlY3RpZ28uY29tL1NlY3RpZ29SU0FDbGllbnRB
-dXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWlsQ0EuY3JsMIGKBggrBgEFBQcBAQR+MHwwVQYIKwYB
-BQUHMAKGSWh0dHA6Ly9jcnQuc2VjdGlnby5jb20vU2VjdGlnb1JTQUNsaWVudEF1dGhlbnRpY2F0
-aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwIwYIKwYBBQUHMAGGF2h0dHA6Ly9vY3NwLnNlY3RpZ28u
-Y29tMA0GCSqGSIb3DQEBCwUAA4IBAQCQ0SnqBAlcrm2XlTuoxtG35QtvYitDYdz+B5+CWBe/z+9b
-4LvbmPIXKqlgwy8owU7TtcEJBqosCJff7JdlghGVorB0xSOGeNEOEsmlJpbDLF3y2z51ot+OiMq5
-+GNJwn15uVjkm6NvxS6bFHA5MBFdEvCQECcx8OV49pGwsh8VWfwiHPRP0VHikZVz67FlbQpHs7FB
-fNql6sYQTD2GJMgZ6/cC3+BvAULcxgzp5j6LfEzCpNZloSP0ac9U5gfo6GBOXYtPwWiaUquKhRze
-NazkU1S7CG+mkr3g+dAcriUfb9MqooRHpAxPDGEakLai501/W1TKD/uxRAZkZ6AmxqHfMIIFFjCC
-A/6gAwIBAgIRAKACHZm/IC103Eh8lpJ9CScwDQYJKoZIhvcNAQELBQAwgZYxCzAJBgNVBAYTAkdC
-MRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGDAWBgNVBAoT
-D1NlY3RpZ28gTGltaXRlZDE+MDwGA1UEAxM1U2VjdGlnbyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0
-aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTkwNzE1MDAwMDAwWhcNMjAwNzE0MjM1OTU5WjBG
-MRUwEwYDVQQDEwxSb2xmIEZva2tlbnMxLTArBgkqhkiG9w0BCQEWHnJvbGYuZm9ra2Vuc0B0YXJn
-ZXQtaG9sZGluZy5ubDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL1WXkz19GwFl9cJ
-VQTCWBMPBs6ePdbT6o56zAs22mzcNapcKcnV30dWZVRQVQ47bkpbu1UkWL7a3sQ3bPXBohoUzRXR
-Jk5ao9x7B85wu4FWLEzABxGUmZOWmNaOhCJ5t/Hqy3LwF/1ISQEB9AuT2WTGXZmtSPQHIdXyo6I1
-KPN2v/Z1clgG4eBrROa/HvdP/IWzvkdn6jjXvHg7lRFstdSmHZ9cqVHKlersDVDkuj78ufFydQrJ
-CBaMf4gckLGXBXFbZ82Cnm6J+d+ZUstkDKvH7NPjHL7xTrw/Vnb3qZYCQxzEbSxH9XWDLz9acqnw
-mpdprTHekEvvHCXwigpH8fUCAwEAAaOCAawwggGoMB8GA1UdIwQYMBaAFAnA8vwL2pTbX/4r36iZ
-Qs/J4K0AMB0GA1UdDgQWBBThDTM1XjheXku7TKDea2fa+SJrjDAOBgNVHQ8BAf8EBAMCBaAwDAYD
-VR0TAQH/BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDBAYIKwYBBQUHAwIwQAYDVR0gBDkwNzA1Bgwr
-BgEEAbIxAQIBAQEwJTAjBggrBgEFBQcCARYXaHR0cHM6Ly9zZWN0aWdvLmNvbS9DUFMwWgYDVR0f
-BFMwUTBPoE2gS4ZJaHR0cDovL2NybC5zZWN0aWdvLmNvbS9TZWN0aWdvUlNBQ2xpZW50QXV0aGVu
-dGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNybDCBigYIKwYBBQUHAQEEfjB8MFUGCCsGAQUFBzAC
-hklodHRwOi8vY3J0LnNlY3RpZ28uY29tL1NlY3RpZ29SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFu
-ZFNlY3VyZUVtYWlsQ0EuY3J0MCMGCCsGAQUFBzABhhdodHRwOi8vb2NzcC5zZWN0aWdvLmNvbTAN
-BgkqhkiG9w0BAQsFAAOCAQEAkNEp6gQJXK5tl5U7qMbRt+ULb2IrQ2Hc/gefglgXv8/vW+C725jy
-FyqpYMMvKMFO07XBCQaqLAiX3+yXZYIRlaKwdMUjhnjRDhLJpSaWwyxd8ts+daLfjojKufhjScJ9
-eblY5Jujb8UumxRwOTARXRLwkBAnMfDlePaRsLIfFVn8Ihz0T9FR4pGVc+uxZW0KR7OxQXzaperG
-EEw9hiTIGev3At/gbwFC3MYM6eY+i3xMwqTWZaEj9GnPVOYH6OhgTl2LT8FomlKrioUc3jWs5FNU
-uwhvppK94PnQHK4lH2/TKqKER6QMTwxhGpC2oudNf1tUyg/7sUQGZGegJsah3zCCBhAwggP4oAMC
-AQICEE2ULBDUO+CUCcWBLTorBk8wDQYJKoZIhvcNAQEMBQAwgYgxCzAJBgNVBAYTAlVTMRMwEQYD
-VQQIEwpOZXcgSmVyc2V5MRQwEgYDVQQHEwtKZXJzZXkgQ2l0eTEeMBwGA1UEChMVVGhlIFVTRVJU
-UlVTVCBOZXR3b3JrMS4wLAYDVQQDEyVVU0VSVHJ1c3QgUlNBIENlcnRpZmljYXRpb24gQXV0aG9y
-aXR5MB4XDTE4MTEwMjAwMDAwMFoXDTMwMTIzMTIzNTk1OVowgZYxCzAJBgNVBAYTAkdCMRswGQYD
-VQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGDAWBgNVBAoTD1NlY3Rp
-Z28gTGltaXRlZDE+MDwGA1UEAxM1U2VjdGlnbyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFu
-ZCBTZWN1cmUgRW1haWwgQ0EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDKPO2UCkH/
-3vlGuejWO+bakr8rEE6qGryCvb4mHCkqKtLNnFCBP22ULvOXqGfV9eNKjkypdR8i0yW2sxpepwRI
-m4rx20rno0JKuriIMpoqr03E5cWapdfbM3wccaNDZvZe/S/Uvk2TUxA8oDX3F5ZBykYQYVRR3SQ3
-6gejH4v1pXWuN82IKPdsmTqQlo49ps+LbnTeef8hNfl7xZ8+cbDhW5nv0qGPVgGt/biTkR7WwtMe
-wu2mIr06MbiJBEF2rpn9OVXH+EYB7PmHfpsEkzGp0cul3AhSROpPyx7d53Q97ANyH/yQc+jl9mXm
-7UHR5ymr+wM3/mwIbnYOz5BTk7kTAgMBAAGjggFkMIIBYDAfBgNVHSMEGDAWgBRTeb9aqitKz1SA
-4dibwJ3ysgNmyzAdBgNVHQ4EFgQUCcDy/AvalNtf/ivfqJlCz8ngrQAwDgYDVR0PAQH/BAQDAgGG
-MBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMBEGA1Ud
-IAQKMAgwBgYEVR0gADBQBgNVHR8ESTBHMEWgQ6BBhj9odHRwOi8vY3JsLnVzZXJ0cnVzdC5jb20v
-VVNFUlRydXN0UlNBQ2VydGlmaWNhdGlvbkF1dGhvcml0eS5jcmwwdgYIKwYBBQUHAQEEajBoMD8G
-CCsGAQUFBzAChjNodHRwOi8vY3J0LnVzZXJ0cnVzdC5jb20vVVNFUlRydXN0UlNBQWRkVHJ1c3RD
-QS5jcnQwJQYIKwYBBQUHMAGGGWh0dHA6Ly9vY3NwLnVzZXJ0cnVzdC5jb20wDQYJKoZIhvcNAQEM
-BQADggIBAEFEdQCrOcIV9d6OlW0ycWiMAN0X13ocEDiQyOOxvRcxkfO244K0oX7GzCGHYaqRbklC
-szzNWVT4DZU/vYrLaeVEDUbCYg+Ci7vhNn9dNqscbzN0xKBoOuRVjPPWDechU70geT3pXCxpwi8E
-Xwl+oiz7xpYfY99JSs3E/piztTSxljHitcPr5yoWr9lbkFR8KU3+uGTZ11BfKfuSSaRrZFBv133S
-eY0d2AqvB9Dj2ZDaFZA0OQkkhfAqNgDpVRH99lQV4JSKx0N7/QAEtMj6OF5dRXV6hhXuU3A0Eql4
-d0247oBpxvnfcmV95QfG8HP059hZSJe7T2wwC+IzXVDQO4xnnvrQJ07ZWemxc/grFpgiG+o+pQxa
-pF1bKftysi02Rl6uhdp5wbTeLeYzt2SI9oKSChwGDQQFixtkNnxuwbdrTwvASwvViDPdIGzIQJrT
-BqriE5/9nzkXbDZmld8/7DyriJ/A73RIZllX4dH8mHqsRpU8NEX8IQZWpHWGK5A5nVgvl7MxNfRl
-IvCvKZQTSnCL8oNqJgHXm6zCB4gBwDonM8V/2kuQAUVazVA3I376eIWGwzjuqh3H88v7mNHzubLH
-m5h0ERCSQNz6UoHVZy3q5xeqbYSaxpDQz3lCNObL6sNaOQNh3DcyzqZJYTcGfuLlmC3AIteAAh7l
-bybJszYnMYIDxzCCA8MCAQEwgawwgZYxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1h
-bmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGDAWBgNVBAoTD1NlY3RpZ28gTGltaXRlZDE+MDwG
-A1UEAxM1U2VjdGlnbyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwg
-Q0ECEQCgAh2ZvyAtdNxIfJaSfQknMA0GCWCGSAFlAwQCAQUAoIIB6zAYBgkqhkiG9w0BCQMxCwYJ
-KoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0xOTA4MTYwODI3MjlaMC8GCSqGSIb3DQEJBDEiBCAU
-sLZAUPQwi3vzl67Vs1P7iPZiBdv5r+zkp4qdOwQigTCBvQYJKwYBBAGCNxAEMYGvMIGsMIGWMQsw
-CQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3Jk
-MRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBB
-dXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAoAIdmb8gLXTcSHyWkn0JJzCBvwYL
-KoZIhvcNAQkQAgsxga+ggawwgZYxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNo
-ZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGDAWBgNVBAoTD1NlY3RpZ28gTGltaXRlZDE+MDwGA1UE
-AxM1U2VjdGlnbyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EC
-EQCgAh2ZvyAtdNxIfJaSfQknMA0GCSqGSIb3DQEBAQUABIIBAJbt5MRla6blI8aVF1Y28/fOtSYE
-FYpLzJNm6R30yxxskiHW8lw5p54AKxpiP97tJdqqLhdjOb1cWsFK+VoH9QvCHoMavOeyB+j+KVJv
-YM7vN/cBjrbxY1wL7wsy4DCfUkvR853ZyuIrJihbAJw4KSl5dOfMF6obbevL5OAhHbjBLhUUG/pi
-Fpce4qqLgQMTqJ46KMkRkXa0v/yEcN1rpfhwluGUiaUW/UevyZGEGpLriKNdLGz8ru6pAnTXQJPO
-p1u0PucTcazjMLC7rCSvtJX0G/Y/vyVEk3lE+SOmr+XIYckcnPG9+HsRToQbn+U3rAi07Cc2xaz/
-F+XfIBGekXoAAAAAAAA=
+David Sommerseth
+OpenVPN Inc
 
 
---=-JmJhfD15AkHk19Kufuc4--
+
+--F8eLK7PY7DCCzpXwFIkU74xgPlSrDfQo0--
+
+--66kWpoMsIgLnYiXJ5H4vfpLBPwX2S0o4b
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJdVpdVAAoJEIbPlEyWcf3yS1EP/0xNaTFEBjRaNsxmYh8tKstc
+3plDVnsoW3FGuRAa1Zv7UXtpTgaQS+3nb7YnU5Ao42+u8RR6ZStJ9j6Cy7hsW0Mw
+6Tm1a45QHMxjLGhnEAMdfur1CX+GMC440ZANMBvlZtFvcJ1WwFfjpLJGyhGOVzZb
+8TfIEmtXGvXJT40pmlQq90rgbdg20KdFU4yCBAg0fipGd414lK3NXc3om0VCtnQH
+4uvgzdfEP3Fi5GWHPdeMl0ZXFxoDdhHCmvrhdlXuqdchcPCjdsE8g+nDtlK0ih9W
+oH03/SDoI3qRgxUxmvXoDG590DWjSqHTGBhpp3j8mu9OPLD1anQEGQ2rC8hRCpK0
+UWUIusQzpExPcLWQjcbSokLnaHewPCD7SbOkFUfQRPpxrgfGxOkrBqdvccMfe0DD
+x+9giwbXaiXRxzPwoFISF/wo0m2OGshKVYJTdZFGUmyzNpKoxT001C8RDt02IJPd
+81YH03b6Kjl7QKDj8jQ9P8Yaej45+zHQJE7NLwqSXCJFvvvXK2fGWhUmPMRP1Kzc
+v4luGe7DtBOW5N+55tC6y1A7zFQ++xA513Ii1f+GIxAut1cxytxgzZ++Z5BEJl6f
+Xwnnct25ocMYLf6SO+SN0sJagx4rtBpys2tGo7mMx4MmkPu2wGCwYubO1HMYlJg3
+0IGkyrkPU3dN4jPMeVxL
+=9W5z
+-----END PGP SIGNATURE-----
+
+--66kWpoMsIgLnYiXJ5H4vfpLBPwX2S0o4b--
 
