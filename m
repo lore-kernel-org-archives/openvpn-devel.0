@@ -1,15 +1,12 @@
-Date: Wed, 21 Aug 2019 21:09:25 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20190821190925.GP1349@...1296...>
-References: <CAL3L06G=w44OuBMUbV1YJSZ9vKb5oJOkwDbCMjPH3ALFSP+cXw@...278...>
- <E1i0R6j-0007v3-4M@...2479...>
+References: <bd464d61-d16e-4a9b-de38-f96891e65368@...2525...>
+ <7b72d228-e801-b490-86d5-6e763919d317@...1227...>
+From: Juliusz Sosinowicz <juliusz@...2525...>
+Message-ID: <cb0d489a-b2e2-bab8-b774-bdfb6e20376d@...2525...>
+Date: Fri, 23 Aug 2019 11:22:33 -0700
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="yhze8HlyfmXt1APY"
-Content-Disposition: inline
-In-Reply-To: <E1i0R6j-0007v3-4M@...2479...>
-Subject: Re: [Openvpn-devel] [PATCH 1/1] Start TLS after connection
- established without waiting.
+In-Reply-To: <7b72d228-e801-b490-86d5-6e763919d317@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] Adding support for wolfSSL backend
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,63 +15,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan.karger@...2507...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---yhze8HlyfmXt1APY
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Cc: Todd Ouska <todd@...2525...>, Sean Parkinson <sean@...2525...>
 
 Hi,
 
-On Wed, Aug 21, 2019 at 03:56:50PM +0200, Steffan Karger wrote:
-> While this sounds like something we'd like to have (i.e, feature-ACK),
-> this doesn't really explain why this change resolves the issue, nor why
-> this is the right fix.
+thank you for the feedback. To answer your questions:
 
-As a bit of background why I assume this will fix "things" - we have a
-few places in the connection sequence where we do something, and when
-it's finished, set up a coarse timer to "go on with the next step" -
-which always means "1 second delay" because that's how the coarse
-timers work.
 
-I've dug into this a bit when figuring out commit afb93fac803fbab7 -
-which helped a bit (this was setting up an "in 1 second" coarse timer,=20
-which always got an extra second due to scheduling), but I'm sure there
-is more room for improvement.
+- Why WolfSSL in OpenVPN instead of mbed or OpenSSL
+wolfSSL can be compiled to use very few resources in a wide array of 
+embedded environments.
+wolfSSL is FIPS ready - that is it has all the code available to be FIPS 
+140 validated on a platform.
+- What features does WolfSSL offer in OpenVPN that mbed/OpenSSL don't have
+wolfSSL has a large customer base and some of them would like to use 
+OpenVPN with wolfSSL.
+- What is missing with WolfSSL?
+wolfSSL doesn’t support some older, weaker algorithms like Blowfish.
+wolfSSL also lacks support for CryptoAPI and exporting of keying material.
+- What are your future plans in terms of involvement in OpenVPN
+development and maintaince?
+Our plans are to help support and maintain the wolfSSL component of any 
+project, including OpenVPN, that decides to incorporate our technology.
 
-OTOH this is all tricky code, with client and server and tcp and udp
-all intermixed.
+Regarding our OpenSSL compatibility layer: we do have a compatibility 
+layer for OpenSSL but it still lacks many features. In addition, using 
+wolfSSL directly without an additional layer allows for better 
+efficiency and performance.
 
-gert
+Sincerely
+Juliusz
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---yhze8HlyfmXt1APY
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJdXZblAAoJEB2Cnv7KVigSYqQMAJWd2yAP00uj/oDP51HcXVmu
-wsSgtuxkjVuCfNhgbCzd63TWK7PVVceh59DHYhCrELCQRJC+qmHstkcGEbDsd33a
-goywz1efnkdyeVooiF1X4um1wiVWdY7pe7QX/FtyGjZZuu9sF1yz2cyfkdeBd1q+
-KMafej59HXmEwHPSC1kTpsJsYSWJV0uGpx6LpYmlA+gUjfbK0gx2EBX1aKx7qRVe
-/33QSkwIDFi//WcL57GLQCzuhBHmvsxfNrGOtfa2d172Qb5k2orDqyVhv6OicqFH
-0fO54r36HEvVnP3z9nVjTMvE534wDEdymJu4MzYBSH9rC5wNwzG1y8H7DfiO87B1
-Ia1DEpZyJFTA/98j+/kepsC6JBTYI4YR6FCaCeDIFFfgKRAfonOeXrDdtlzVyQTe
-HKKJ/THWHMYzDqkkbBz+g289uD3mT625kzRHWX68C/gjCFMp4vsqV8Y0sKhxH7jt
-xxyBazr/2P09ILGmfLNJ3DsaodoAd2DWQIB0gXgELQ==
-=0ZsA
------END PGP SIGNATURE-----
-
---yhze8HlyfmXt1APY--
+On 8/16/19 8:30 AM, Arne Schwabe wrote:
+> Am 16.08.19 um 16:14 schrieb Juliusz Sosinowicz:
+>> This patch adds the option to use wolfSSL as the ssl backend. To build
+>> this patch:
+>>
+> That is great and it is also a very big patch. I skimmed only through
+> the patch.
+>
+>
+> +#ifdef ENABLE_CRYPTO_WOLFSSL
+> +    o->ciphername = "AES-256-CBC";
+> +#else
+>       o->ciphername = "BF-CBC";
+> +#endif
+>
+> Such silent changes that OpenVPN behaves different, is something we
+> would like to avoid. Better to error out in this case than to behave
+> diffently.
+>
+> Overall the WolfSSL feels to be a bit similar to OpenSSL. Is there any
+> compatibility you are aiming at?
+>
+> Also it would be nice to have a summary for people on the OpenVPN
+> perspective
+>
+> - Why WolfSSL in OpenVPN instead of mbed or OpenSSL
+> - What features does WolfSSL offer in OpenVPN that mbed/OpenSSL don't have
+> - What is missing with WolfSSL?
+>
+> That should also good to have in the patch like README.mbedtls.
+>
+> And one of the important question is:
+>
+> What are your future plans in terms of involvement in OpenVPN
+> development and maintaince? I think since you are first time contributer
+> and this a big patch, that is something resonable to ask.
+>
+> Arne
 
