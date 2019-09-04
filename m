@@ -1,10 +1,10 @@
 From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <dfd836b0-b578-6fb5-dd64-6c54f419c9bc@...515...>
-Date: Wed, 4 Sep 2019 13:28:51 +0300
+Message-ID: <8ac38ebd-23b0-9024-adcd-75f11c344398@...515...>
+Date: Wed, 4 Sep 2019 13:30:30 +0300
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="W4INRuVbiXeKUvEtTONSkEYciPcHAonpZ"
+ boundary="ztDFLv513Eme6NLQva0WASOyt6ooZyDYA"
 Subject: [Openvpn-devel] Community meetings in September 2019
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -17,15 +17,15 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---W4INRuVbiXeKUvEtTONSkEYciPcHAonpZ
-Content-Type: multipart/mixed; boundary="US6VJ6Y1fVi1cjidxIObzYFIAHOkFE8wL";
+--ztDFLv513Eme6NLQva0WASOyt6ooZyDYA
+Content-Type: multipart/mixed; boundary="VFVPhjUR7MlmJ9G6xW5TrUytONLYcVcdZ";
  protected-headers="v1"
 From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
 To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Message-ID: <dfd836b0-b578-6fb5-dd64-6c54f419c9bc@...515...>
+Message-ID: <8ac38ebd-23b0-9024-adcd-75f11c344398@...515...>
 Subject: Community meetings in September 2019
 
---US6VJ6Y1fVi1cjidxIObzYFIAHOkFE8wL
+--VFVPhjUR7MlmJ9G6xW5TrUytONLYcVcdZ
 Content-Language: en-US
 Content-Type: text/plain; charset="iso-8859-15"
 Content-Transfer-Encoding: quoted-printable
@@ -60,24 +60,26 @@ irc freenode net: mattock
 
 
 
---US6VJ6Y1fVi1cjidxIObzYFIAHOkFE8wL--
 
---W4INRuVbiXeKUvEtTONSkEYciPcHAonpZ
+
+--VFVPhjUR7MlmJ9G6xW5TrUytONLYcVcdZ--
+
+--ztDFLv513Eme6NLQva0WASOyt6ooZyDYA
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAl1vkeQACgkQKVhNn0CG
-RXgTeQgAs9rkMzwOE8WXMZNkMjjBkUoeYJauq1S72hHt6YfXSfx1G+6MpuAQiMjh
-2aGwjtKKHMaiFVaeh65zrSKhTB1RaPIANKtSIwSw5H7iwID6nm5p/6EgcD/ZmN/i
-FaBK7GrykWABfSSnHhAVR2Uyg0o/NE1vwq3pGu1F8ud9veEeGBjwoCD9EbU1fz4P
-GdeaAKW8U1zb9hYH3J9/FEVDE46CU8Nk9e63Fe9/MRBNQHXMevCeGUqiWNdE6zHw
-ZMdUPZCDI8iLbyw3Px4qFPvQsOSem8EeXD30LjZr+fvXtAf6R95CbWM+48Z8ObuO
-DIhkDh6LypGJvCC3rP5Urs1cC2PvsA==
-=voQF
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAl1vkkYACgkQKVhNn0CG
+RXi7QAf/S9tKT4eORUoxwQR8HvbmX679ixGq2VhT5q2sj8FzWpGm7yW4goQcW4+7
+thUAIH8hxBmaBg5hYczrR3ixXjn6oaADiq114HvmFFXzGJFtlQpNMfY58Z8TPJOI
+3DxicfgUWR+U6U0avxi6cN2AKMdVpJQ4BQEjz0hvvIOIpNs9+AODyHAXIW03mqM9
+FmWntICO4+XaYQBStcqIWtHc6Gu8ZMbf0bfjirmTbFJzchvfWICnsqeDNsxh1fCe
+dCZ+DyheZjWofm6UwOkX4LEDA7ltDpceRtwyeDXUMM3TADvVas+ccvhfs0PtrSm2
+xbtklYMnlmKhGF6kjF4csOlpuqAoHw==
+=P/OL
 -----END PGP SIGNATURE-----
 
---W4INRuVbiXeKUvEtTONSkEYciPcHAonpZ--
+--ztDFLv513Eme6NLQva0WASOyt6ooZyDYA--
 
