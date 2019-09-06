@@ -1,11 +1,12 @@
-From: Matthias Andree <matthias.andree@...68...>
-Date: Fri,  6 Sep 2019 19:44:59 +0200
-Message-Id: <20190906174458.14975-2-matthias.andree@...68...>
-In-Reply-To: <20190906174458.14975-1-matthias.andree@...68...>
-References: <20190906174458.14975-1-matthias.andree@...68...>
+References: <1567784437-25922-1-git-send-email-lstipakov@...277...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <ce5425f8-2797-e553-446f-09b824af0ef8@...2181...>
+Date: Fri, 6 Sep 2019 21:14:59 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] tests/t__lpback.sh: Switch sed(1) to
- POSIX-compatible regex.
+In-Reply-To: <1567784437-25922-1-git-send-email-lstipakov@...277...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] tun.h: change tun_set() return value
+ type to void
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,40 +15,23 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
-Cc: kevans@...1376..., Matthias Andree <matthias.andree@...68...>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
 
-From: Kyle Evans <kevans@...1376...>
+Hi,
 
-A test run with FreeBSD PR 229925 'Disallow escaping ordinary characters in=
- regex(3)'
-reveals one sed expression that uses the GNU-extension "\s".
-Given that this is the only occurrence and it's a trivial fix, update it to=
- be POSIX-compatible.
+On 06/09/2019 17:40, Lev Stipakov wrote:
+> This function's return value is never used, so make it void.
+> 
+> Signed-off-by: Lev Stipakov <lstipakov@...277...>
 
-Signed-off-by: Matthias Andree <matthias.andree@...68...>
----
- tests/t_lpback.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Does what it says and git suggests that its return value was never used.
+Using void as return type also clarifies its usage.
 
-diff --git a/tests/t_lpback.sh b/tests/t_lpback.sh
-index 2052c626..bb8a1d51 100755
---- a/tests/t_lpback.sh
-+++ b/tests/t_lpback.sh
-@@ -26,7 +26,7 @@ trap "rm -f key.$$ log.$$ ; exit 1" 0 3
+Acked-by: Antonio Quartulli <a@...2181...>
 
- # Get list of supported ciphers from openvpn --show-ciphers output
- CIPHERS=3D$(${top_builddir}/src/openvpn/openvpn --show-ciphers | \
--            sed -e '/The following/,/^$/d' -e s'/ .*//' -e '/^\s*$/d')
-+            sed -e '/The following/,/^$/d' -e s'/ .*//' -e '/^[[:space:]]*=
-$/d')
 
- # SK, 2014-06-04: currently the DES-EDE3-CFB1 implementation of OpenSSL is
- # broken (see http://rt.openssl.org/Ticket/Display.html?id=3D2867), so exc=
-lude
---
-2.21.0
-
+-- 
+Antonio Quartulli
 
