@@ -1,15 +1,13 @@
-References: <414b5e76-c18d-5348-0d3c-84b121ca46bd@...2080...>
- <20190808145339.1265-1-arne@...1227...>
+References: <d81eb6d-3378-7bf6-8c38-c8dce42f8333@...2080...>
+ <20190808145412.1321-1-arne@...1227...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <925169bb-1f1c-3f18-b8c8-857cb3ed2b3c@...2080...>
-Date: Fri, 13 Sep 2019 18:17:22 +0200
+Message-ID: <4ae4ef50-efbe-c744-7133-7f926052be0a@...2080...>
+Date: Fri, 13 Sep 2019 18:26:52 +0200
 MIME-Version: 1.0
-In-Reply-To: <20190808145339.1265-1-arne@...1227...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="V0jnSPxkrwXxWKo3HDaY5YhbKqv0gSauA"
-Subject: Re: [Openvpn-devel] [PATCH v6 6/7] Send indication that a session
- is expired to clients
+In-Reply-To: <20190808145412.1321-1-arne@...1227...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH v6 7/7] Implement unit tests for
+ auth-gen-token
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,90 +16,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 Cc: Arne Schwabe <arne@...515...>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---V0jnSPxkrwXxWKo3HDaY5YhbKqv0gSauA
-Content-Type: multipart/mixed; boundary="TdL6xuoyyR2wDqlMZ0BHVIe7aoH22b2TX";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-To: openvpn-devel@lists.sourceforge.net
-Cc: Arne Schwabe <arne@...515...>
-Message-ID: <925169bb-1f1c-3f18-b8c8-857cb3ed2b3c@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH v6 6/7] Send indication that a session is
- expired to clients
-References: <414b5e76-c18d-5348-0d3c-84b121ca46bd@...2080...>
- <20190808145339.1265-1-arne@...1227...>
-In-Reply-To: <20190808145339.1265-1-arne@...1227...>
-
---TdL6xuoyyR2wDqlMZ0BHVIe7aoH22b2TX
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-
-On 08/08/2019 16:53, Arne Schwabe wrote:
+On 08/08/2019 16:54, Arne Schwabe wrote:
 > From: Arne Schwabe <arne@...515...>
->=20
-> This allows OpenVPN 3 core to fall back to the original authentication
-> method.
->=20
-> This commit changes man_def_auth_set_client_reason to
-> auth_set_client_reason since it now used in more contexts.
->=20
-> Also remove a FIXME about client_reason not being freed, as it is freed
-> in tls_multi_free with auth_set_client_reason(multi, NULL);
->=20
-> Patch V4: Rebase on master
+> 
+> Patch V2: adapt unit tests to other V2 patches
+> Patch V4: Resolve rebase conflicts
+> Patch V5: Add \ lost in rebase that broke compilation
 > ---
->  src/openvpn/auth_token.c |  3 +++
->  src/openvpn/ssl.c        |  6 ++----
->  src/openvpn/ssl_common.h | 10 +++++-----
->  src/openvpn/ssl_verify.c |  8 ++++----
->  src/openvpn/ssl_verify.h | 15 ++++++++++-----
->  5 files changed, 24 insertions(+), 18 deletions(-)
->=20
-Acked-By: David Sommerseth <davids@...515...>
+>  tests/unit_tests/openvpn/Makefile.am       |  18 +-
+>  tests/unit_tests/openvpn/test_auth_token.c | 375 +++++++++++++++++++++
+>  2 files changed, 392 insertions(+), 1 deletion(-)
+>  create mode 100644 tests/unit_tests/openvpn/test_auth_token.c
 
-This looks reasonable and the code does what it says.  On my quick testing,=
- I
-managed to trigger this to be sent to the client:
+Code generally looks good.  But I do have some nitpicks here though.
 
-   AUTH: Received control message: AUTH_FAILED,SESSION: token expired
+* Many of the lines break our 80 chars per line rule
+* The "dummy" functions added at the end of the test_auth_token.c file should
+  be declared higher up and not after the main() function.
+
+And finally ... the unit test doesn't pass for me :/
+
+------------------------------------------------------
+[==========] Running 8 test(s).
+[ RUN      ] auth_token_basic_test
+[       OK ] auth_token_basic_test
+[ RUN      ] auth_token_fail_invalid_key
+--auth-token-gen: HMAC on token from client failed (test user name)
+[       OK ] auth_token_fail_invalid_key
+[ RUN      ] auth_token_test_known_keys
+[       OK ] auth_token_test_known_keys
+[ RUN      ] auth_token_test_empty_user
+[  ERROR   ] --- 0x3 != 0x7
+[   LINE   ] --- test_auth_token.c:265: error: Failure!
+[  FAILED  ] auth_token_test_empty_user
+[ RUN      ] auth_token_test_env
+[       OK ] auth_token_test_env
+[ RUN      ] auth_token_test_random_keys
+[       OK ] auth_token_test_random_keys
+[ RUN      ] auth_token_test_key_load
+--auth-token-gen: HMAC on token from client failed (test user name)
+[       OK ] auth_token_test_key_load
+[ RUN      ] auth_token_test_timeout
+[       OK ] auth_token_test_timeout
+[==========] 8 test(s) run.
+[  PASSED  ] 7 test(s).
+[  FAILED  ] 1 test(s), listed below:
+[  FAILED  ] auth_token_test_empty_user
+
+ 1 FAILED TEST(S)
+------------------------------------------------------
+
+Seems like the verify_auth_token() call doesn't add
+AUTH_TOKEN_VALID_EMPTYUSER flag.  I didn't dive deep enough to try to
+understand why.
 
 
---=20
+-- 
 kind regards,
 
 David Sommerseth
 OpenVPN Inc
 
-
-
---TdL6xuoyyR2wDqlMZ0BHVIe7aoH22b2TX--
-
---V0jnSPxkrwXxWKo3HDaY5YhbKqv0gSauA
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJde8EYAAoJEIbPlEyWcf3yW70P/juuOUo5+3BCVzj98RauoMP/
-e84XwUvj3dLm6hQy4KmqdPbkwK4LzpSH5sAtrRse9MlbODsO8YxPEdVmNlAL+zZS
-81qhC11nKxn73oyXzqYSfN14+hXU6aidkkcNwso40u3+VW8zd19uR25e1tc1KOlz
-/l0H7Qhwpo4FlH5CX5ssMxYsfs9DMufSdPfQK+jFBAKV7Uu5gBMkaEn6WVnLvuUp
-9eaJBYgBUgqIikgXxHgXczHfmWueoHZjfy5GhC+qQV4d2sGBzqDYAyk8t/P1mDdk
-M1c2Jk2EB7XtRpN/B2+CZUepACEz/GeKoylo3zNxV6hj6Ai31w1D1YeRoUpYK9fO
-uc7sRiHWWxTD5Ds8UwqVHma5I1JlI2+ZmQV+Q4ihMgdWuCIvzT6vm0BVXWzCtpID
-nUgEJNSMTsT+oMuPBxpFkGAHWEFcZnYMo5LxFUpQGAU0ewXUG1/vv4L16kLjs6Ot
-y7J1vtNWM6gJqGr8WWVhwM3sMTQdg1n/gK1pH8dDzSZJFeftiMUtggiLEUzif1Gg
-1h04rwUOkUnEHPD3QI7cnv/E6FQHJni9r2f3AiXwZDpyrH8j6XxN3RBYYATnR3E6
-SXozDvfGamklGTCpvVVP6jrg7QpxTAcY2rV0DedeI6sUA84g/o8G3XnrX8/eblDN
-g5NzOk3JCN4xXvdL2l8Q
-=Ulo6
------END PGP SIGNATURE-----
-
---V0jnSPxkrwXxWKo3HDaY5YhbKqv0gSauA--
 
