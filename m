@@ -1,10 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Tue, 17 Sep 2019 14:33:21 +0200
-Message-Id: <20190917123321.15993-1-arne@...1227...>
-In-Reply-To: <4ae4ef50-efbe-c744-7133-7f926052be0a@...2080...>
-References: <4ae4ef50-efbe-c744-7133-7f926052be0a@...2080...>
-Subject: [Openvpn-devel] [PATCH v7 7/7] Implement unit tests for
- auth-gen-token
+From: Lev Stipakov <lstipakov@...277...>
+Date: Tue, 17 Sep 2019 15:44:48 +0300
+Message-Id: <1568724293-5069-2-git-send-email-lstipakov@...277...>
+In-Reply-To: <1568724293-5069-1-git-send-email-lstipakov@...277...>
+References: <1568724293-5069-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH 2/7] wintun: add --windows-driver config
+ option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,458 +16,148 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Arne Schwabe <arne@...515...>
 
-From: Arne Schwabe <arne@...515...>
+From: Lev Stipakov <lev@...515...>
 
-The unit test is breaking the 80 char limit in some places
-but the remaining lines it breaks the limit I feel
-forcing the 80 char limit will impair readibility
+This allows to specify which tun driver openvpn should use,
+tap-windows6 (default) or wintun.
 
-Patch V2: adapt unit tests to other V2 patches
-Patch V4: Resolve rebase conflicts
-Patch V5: Add \ lost in rebase that broke compilation
-Patch V7: Fix unit test failure, try to stay below 80
+Note than wintun support will be added in follow-up patches.
+
+Signed-off-by: Lev Stipakov <lev@...515...>
 ---
- tests/unit_tests/openvpn/Makefile.am       |  18 +-
- tests/unit_tests/openvpn/test_auth_token.c | 394 +++++++++++++++++++++
- 2 files changed, 411 insertions(+), 1 deletion(-)
- create mode 100644 tests/unit_tests/openvpn/test_auth_token.c
+ src/openvpn/init.c    |  7 +++++++
+ src/openvpn/options.c | 37 +++++++++++++++++++++++++++++++++++++
+ src/openvpn/options.h |  1 +
+ src/openvpn/tun.h     |  1 +
+ 4 files changed, 46 insertions(+)
 
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index d015b293..60e84639 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -6,7 +6,7 @@ if HAVE_LD_WRAP_SUPPORT
- test_binaries += argv_testdriver buffer_testdriver
- endif
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index b5a034d..edd11c2 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1727,6 +1727,10 @@ do_init_tun(struct context *c)
+                             c->c2.es,
+                             &c->net_ctx);
  
--test_binaries += crypto_testdriver packet_id_testdriver
-+test_binaries += crypto_testdriver packet_id_testdriver auth_token_testdriver
- if HAVE_LD_WRAP_SUPPORT
- test_binaries += tls_crypt_testdriver
- endif
-@@ -94,3 +94,19 @@ networking_testdriver_SOURCES = test_networking.c mock_msg.c \
- 	$(openvpn_srcdir)/packet_id.c \
- 	$(openvpn_srcdir)/platform.c
- endif
-+
-+auth_token_testdriver_CFLAGS  = @TEST_CFLAGS@ \
-+	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir) \
-+	$(OPTIONAL_CRYPTO_CFLAGS)
-+auth_token_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
-+	$(OPTIONAL_CRYPTO_LIBS)
-+
-+auth_token_testdriver_SOURCES = test_auth_token.c mock_msg.c \
-+	$(openvpn_srcdir)/buffer.c \
-+	$(openvpn_srcdir)/crypto.c \
-+	$(openvpn_srcdir)/crypto_mbedtls.c \
-+	$(openvpn_srcdir)/crypto_openssl.c \
-+	$(openvpn_srcdir)/otime.c \
-+	$(openvpn_srcdir)/packet_id.c \
-+	$(openvpn_srcdir)/platform.c \
-+	$(openvpn_srcdir)/base64.c
-diff --git a/tests/unit_tests/openvpn/test_auth_token.c b/tests/unit_tests/openvpn/test_auth_token.c
-new file mode 100644
-index 00000000..6b30dfbd
---- /dev/null
-+++ b/tests/unit_tests/openvpn/test_auth_token.c
-@@ -0,0 +1,394 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2016-2018 Fox Crypto B.V. <openvpn@...1435...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+ */
-+
-+#ifdef HAVE_CONFIG_H
-+#include "config.h"
-+#elif defined(_MSC_VER)
-+#include "config-msvc.h"
++#ifdef _WIN32
++    c->c1.tuntap->wintun = c->options.wintun;
 +#endif
 +
-+#include "syshead.h"
+     init_tun_post(c->c1.tuntap,
+                   &c->c2.frame,
+                   &c->options.tuntap_options);
+@@ -1769,6 +1773,9 @@ do_open_tun(struct context *c)
+     /* store (hide) interactive service handle in tuntap_options */
+     c->c1.tuntap->options.msg_channel = c->options.msg_channel;
+     msg(D_ROUTE, "interactive service msg_channel=%u", (unsigned int) c->options.msg_channel);
 +
-+#include <stdio.h>
-+#include <unistd.h>
-+#include <stdlib.h>
-+#include <stdarg.h>
-+#include <string.h>
-+#include <setjmp.h>
-+#include <cmocka.h>
++    c->c1.tuntap->wintun = c->options.wintun;
 +
-+#include "auth_token.c"
-+
-+#include "mock_msg.h"
-+
-+struct test_context {
-+    struct tls_multi multi;
-+    struct key_type kt;
-+    struct user_pass up;
-+    struct tls_session session;
-+};
-+
-+/* Dummy functions that do nothing to mock the functionality */
-+void
-+send_push_reply_auth_token(struct tls_multi *multi)
-+{
-+}
-+
-+void
-+auth_set_client_reason(struct tls_multi *multi, const char *reason)
-+{
-+
-+}
-+
-+static const char *now0key0 = "SESS_ID_AT_0123456789abcdefAAAAAAAAAAAAAAAAAAAAAE5JsQJOVfo8jnI3RL3tBaR5NkE4yPfcylFUHmHSc5Bu";
-+
-+static const char *zeroinline = "-----BEGIN OpenVPN auth-token server key-----\n"
-+                                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
-+                                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
-+                                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n"
-+                                "-----END OpenVPN auth-token server key-----";
-+
-+static const char *allx01inline = "-----BEGIN OpenVPN auth-token server key-----\n"
-+                                  "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEB\n"
-+                                  "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEB\n"
-+                                  "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n"
-+                                  "-----END OpenVPN auth-token server key-----";
-+
-+static const char *random_key = "-----BEGIN OpenVPN auth-token server key-----\n"
-+                                "+mmmf7IQ5cymtMVjKYTWk8IOcYanRlpQmV9Tb3EjkHYxueBVDg3yqRgzeBlVGzNLD//rAPiOVhau\n"
-+                                "3NDBjNOQB8951bfs7Cc2mYfay92Bh2gRJ5XEM/DMfzCWN+7uU6NWoTTHr4FuojnIQtjtqVAj/JS9\n"
-+                                "w+dTSp/vYHl+c7uHd19uVRu/qLqV85+rm4tUGIjO7FfYuwyPqwmhuIsi3hs9QkSimh888FmBpoKY\n"
-+                                "/tbKVTJZmSERKti9KEwtV2eVAR0znN5KW7lCB3mHVAhN7bUpcoDjfCzYIFARxwswTFu9gFkwqUMY\n"
-+                                "I1KUOgIsVNs4llACioeXplYekWETR+YkJwDc/A==\n"
-+                                "-----END OpenVPN auth-token server key-----";
-+
-+static const char *random_token = "SESS_ID_AT_ThhRItzOKNKrh3dfAAAAAFwzHpwAAAAAXDMenDdrq0RoH3dkA1f7O3wO+7kZcx2DusVZrRmFlWQM9HOb";
-+
-+
-+static int
-+setup(void **state)
-+{
-+    struct test_context *ctx = calloc(1, sizeof(*ctx));
-+    *state = ctx;
-+
-+    struct key key = { 0 };
-+
-+    ctx->kt = auth_token_kt();
-+    if (!ctx->kt.digest)
+ #endif
+ 
+     /* allocate route list structure */
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 2d3865a..9f8e92b 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -744,6 +744,9 @@ static const char usage_message[] =
+     "                       optional parameter controls the initial state of ex.\n"
+     "--show-net-up   : Show " PACKAGE_NAME "'s view of routing table and net adapter list\n"
+     "                  after TAP adapter is up and routes have been added.\n"
++    "--windows-driver   : Which tun driver to use?\n"
++    "                     tap-windows6 (default)\n"
++    "                     wintun\n"
+ #ifdef _WIN32
+     "--block-outside-dns   : Block DNS on other network adapters to prevent DNS leaks\n"
+ #endif
+@@ -848,6 +851,7 @@ init_options(struct options *o, const bool init_gc)
+     o->tuntap_options.dhcp_masq_offset = 0;     /* use network address as internal DHCP server address */
+     o->route_method = ROUTE_METHOD_ADAPTIVE;
+     o->block_outside_dns = false;
++    o->wintun = false;
+ #endif
+ #if P2MP_SERVER
+     o->real_hash_size = 256;
+@@ -2935,6 +2939,12 @@ options_postprocess_mutate_invariant(struct options *options)
+         options->ifconfig_noexec = false;
+     }
+ 
++    /* for wintun kernel doesn't send DHCP requests, so use ipapi to set IP address and netmask */
++    if (options->wintun)
 +    {
-+        return 0;
-+    }
-+    ctx->multi.opt.auth_token_generate = true;
-+    ctx->multi.opt.auth_token_lifetime = 3000;
-+
-+    ctx->session.opt = calloc(1, sizeof(struct tls_options));
-+    ctx->session.opt->renegotiate_seconds = 120;
-+    ctx->session.opt->auth_token_lifetime = 3000;
-+
-+    strcpy(ctx->up.username, "test user name");
-+    strcpy(ctx->up.password, "ignored");
-+
-+    init_key_ctx(&ctx->multi.opt.auth_token_key, &key, &ctx->kt, false, "TEST");
-+
-+    now = 0;
-+    return 0;
-+}
-+
-+static int
-+teardown(void **state)
-+{
-+    struct test_context *ctx = (struct test_context *) *state;
-+
-+    free_key_ctx(&ctx->multi.opt.auth_token_key);
-+    wipe_auth_token(&ctx->multi);
-+
-+    free(ctx->session.opt);
-+    free(ctx);
-+
-+    return 0;
-+}
-+
-+static void
-+auth_token_basic_test(void **state)
-+{
-+    struct test_context *ctx = (struct test_context *) *state;
-+
-+    generate_auth_token(&ctx->up, &ctx->multi);
-+    strcpy(ctx->up.password, ctx->multi.auth_token);
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+                     AUTH_TOKEN_HMAC_OK);
-+}
-+
-+static void
-+auth_token_fail_invalid_key(void **state)
-+{
-+    struct test_context *ctx = (struct test_context *) *state;
-+
-+    generate_auth_token(&ctx->up, &ctx->multi);
-+    strcpy(ctx->up.password, ctx->multi.auth_token);
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+                     AUTH_TOKEN_HMAC_OK);
-+
-+    /* Change auth-token key */
-+    struct key key;
-+    memset(&key, '1', sizeof(key));
-+    free_key_ctx(&ctx->multi.opt.auth_token_key);
-+    init_key_ctx(&ctx->multi.opt.auth_token_key, &key, &ctx->kt, false, "TEST");
-+
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session), 0);
-+
-+    /* Load original test key again */
-+    memset(&key, 0, sizeof(key));
-+    free_key_ctx(&ctx->multi.opt.auth_token_key);
-+    init_key_ctx(&ctx->multi.opt.auth_token_key, &key, &ctx->kt, false, "TEST");
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+                     AUTH_TOKEN_HMAC_OK);
-+
-+}
-+
-+static void
-+auth_token_test_timeout(void **state)
-+{
-+    struct test_context *ctx = (struct test_context *) *state;
-+
-+    now = 100000;
-+    generate_auth_token(&ctx->up, &ctx->multi);
-+    strcpy(ctx->up.password, ctx->multi.auth_token);
-+
-+    /* No time has passed */
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+                     AUTH_TOKEN_HMAC_OK);
-+
-+    /* Token before validity, should be rejected */
-+    now = 100000 - 100;
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+                     AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED);
-+
-+    /* Token still in validity, should be accepted */
-+    now = 100000 + 2*ctx->session.opt->renegotiate_seconds - 20;
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+                     AUTH_TOKEN_HMAC_OK);
-+
-+    /* Token past validity, should be rejected */
-+    now = 100000 + 2*ctx->session.opt->renegotiate_seconds + 20;
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+                     AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED);
-+
-+    /* Check if the mode for a client that never updates its token works */
-+    ctx->multi.auth_token_initial = strdup(ctx->up.password);
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+                     AUTH_TOKEN_HMAC_OK);
-+
-+    /* But not when we reached our timeout */
-+    now = 100000 + ctx->session.opt->auth_token_lifetime + 1;
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+                     AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED);
-+
-+    free(ctx->multi.auth_token_initial);
-+    ctx->multi.auth_token_initial = NULL;
-+
-+    /* regenerate the token util it hits the expiry */
-+    now = 100000;
-+    while (now < 100000 + ctx->session.opt->auth_token_lifetime + 1)
-+    {
-+        assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+                         AUTH_TOKEN_HMAC_OK);
-+        generate_auth_token(&ctx->up, &ctx->multi);
-+        strcpy(ctx->up.password, ctx->multi.auth_token);
-+        now += ctx->session.opt->renegotiate_seconds;
++        options->tuntap_options.ip_win32_type = IPW32_SET_IPAPI;
 +    }
 +
-+
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+                     AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED);
-+    ctx->multi.opt.auth_token_lifetime = 0;
-+
-+    /* Non expiring token should be fine */
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+                     AUTH_TOKEN_HMAC_OK);
-+}
-+
-+static void
-+zerohmac(char *token)
+     remap_redirect_gateway_flags(options);
+ #endif
+ 
+@@ -3980,6 +3990,26 @@ foreign_option(struct options *o, char *argv[], int len, struct env_set *es)
+     }
+ }
+ 
++#ifdef _WIN32
++bool
++parse_windows_driver(const char *str, const int msglevel)
 +{
-+    char *hmacstart = token + AUTH_TOKEN_SESSION_ID_LEN
-+                      + strlen(SESSION_ID_PREFIX) + 2*sizeof(uint64_t);
-+    memset(hmacstart, 0x8d, strlen(hmacstart));
-+}
-+
-+static void
-+auth_token_test_known_keys(void **state)
-+{
-+    struct test_context *ctx = (struct test_context *) *state;
-+
-+    now = 0;
-+    /* Preload the session id so the same session id is used here */
-+    ctx->multi.auth_token = strdup(now0key0);
-+
-+    /* Zero the hmac part to ensure we have a newly generated token */
-+    zerohmac(ctx->multi.auth_token);
-+
-+    generate_auth_token(&ctx->up, &ctx->multi);
-+
-+    assert_string_equal(now0key0, ctx->multi.auth_token);
-+
-+    strcpy(ctx->up.password, ctx->multi.auth_token);
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+                     AUTH_TOKEN_HMAC_OK);
-+}
-+
-+static const char *lastsesion_statevalue;
-+void
-+setenv_str(struct env_set *es, const char *name, const char *value)
-+{
-+    if (streq(name, "session_state"))
++    if (streq(str, "tap-windows6"))
 +    {
-+        lastsesion_statevalue = value;
++        return false;
++    }
++    else if (streq(str, "wintun"))
++    {
++        return true;
++    }
++    else
++    {
++        msg(msglevel, "--windows-driver must be tap-windows6 or wintun");
++        return false;
 +    }
 +}
-+
-+static void
-+auth_token_test_empty_user(void **state)
-+{
-+    struct test_context *ctx = (struct test_context *) *state;
-+
-+    CLEAR(ctx->up.username);
-+    now = 0;
-+
-+    generate_auth_token(&ctx->up, &ctx->multi);
-+    strcpy(ctx->up.password, ctx->multi.auth_token);
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+                     AUTH_TOKEN_HMAC_OK);
-+
-+    now = 100000;
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+                     AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED);
-+    strcpy(ctx->up.username, "test user name");
-+
-+    now = 0;
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+                     AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_VALID_EMPTYUSER);
-+
-+    strcpy(ctx->up.username, "test user name");
-+    now = 100000;
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+                     AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED|AUTH_TOKEN_VALID_EMPTYUSER);
-+
-+    zerohmac(ctx->up.password);
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+                     0);
-+}
-+
-+static void
-+auth_token_test_env(void **state)
-+{
-+    struct test_context *ctx = (struct test_context *) *state;
-+
-+    ctx->multi.auth_token_state_flags = 0;
-+    ctx->multi.auth_token = NULL;
-+    add_session_token_env(&ctx->session, &ctx->multi, &ctx->up);
-+    assert_string_equal(lastsesion_statevalue, "Initial");
-+
-+    ctx->multi.auth_token_state_flags = 0;
-+    strcpy(ctx->up.password, now0key0);
-+    add_session_token_env(&ctx->session, &ctx->multi, &ctx->up);
-+    assert_string_equal(lastsesion_statevalue, "Invalid");
-+
-+    ctx->multi.auth_token_state_flags = AUTH_TOKEN_HMAC_OK;
-+    add_session_token_env(&ctx->session, &ctx->multi, &ctx->up);
-+    assert_string_equal(lastsesion_statevalue, "Authenticated");
-+
-+    ctx->multi.auth_token_state_flags = AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED;
-+    add_session_token_env(&ctx->session, &ctx->multi, &ctx->up);
-+    assert_string_equal(lastsesion_statevalue, "Expired");
-+
-+    ctx->multi.auth_token_state_flags = AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_VALID_EMPTYUSER;
-+    add_session_token_env(&ctx->session, &ctx->multi, &ctx->up);
-+    assert_string_equal(lastsesion_statevalue, "AuthenticatedEmptyUser");
-+
-+    ctx->multi.auth_token_state_flags = AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED|AUTH_TOKEN_VALID_EMPTYUSER;
-+    add_session_token_env(&ctx->session, &ctx->multi, &ctx->up);
-+    assert_string_equal(lastsesion_statevalue, "ExpiredEmptyUser");
-+}
-+
-+static void
-+auth_token_test_random_keys(void **state)
-+{
-+    struct test_context *ctx = (struct test_context *) *state;
-+
-+    now = 0x5c331e9c;
-+    /* Preload the session id so the same session id is used here */
-+    ctx->multi.auth_token = strdup(random_token);
-+
-+    free_key_ctx(&ctx->multi.opt.auth_token_key);
-+    auth_token_init_secret(&ctx->multi.opt.auth_token_key, INLINE_FILE_TAG, random_key);
-+
-+    /* Zero the hmac part to ensure we have a newly generated token */
-+    zerohmac(ctx->multi.auth_token);
-+
-+    generate_auth_token(&ctx->up, &ctx->multi);
-+
-+    assert_string_equal(random_token, ctx->multi.auth_token);
-+
-+    strcpy(ctx->up.password, ctx->multi.auth_token);
-+    assert_true(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session));
-+}
-+
-+
-+static void
-+auth_token_test_key_load(void **state)
-+{
-+    struct test_context *ctx = (struct test_context *) *state;
-+
-+    free_key_ctx(&ctx->multi.opt.auth_token_key);
-+    auth_token_init_secret(&ctx->multi.opt.auth_token_key, INLINE_FILE_TAG, zeroinline);
-+    strcpy(ctx->up.password, now0key0);
-+    assert_true(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session));
-+
-+    free_key_ctx(&ctx->multi.opt.auth_token_key);
-+    auth_token_init_secret(&ctx->multi.opt.auth_token_key, INLINE_FILE_TAG, allx01inline);
-+    assert_false(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session));
-+}
-+
-+int
-+main(void)
-+{
-+    const struct CMUnitTest tests[] = {
-+        cmocka_unit_test_setup_teardown(auth_token_basic_test, setup, teardown),
-+        cmocka_unit_test_setup_teardown(auth_token_fail_invalid_key, setup, teardown),
-+        cmocka_unit_test_setup_teardown(auth_token_test_known_keys, setup, teardown),
-+        cmocka_unit_test_setup_teardown(auth_token_test_empty_user, setup, teardown),
-+        cmocka_unit_test_setup_teardown(auth_token_test_env, setup, teardown),
-+        cmocka_unit_test_setup_teardown(auth_token_test_random_keys, setup, teardown),
-+        cmocka_unit_test_setup_teardown(auth_token_test_key_load, setup, teardown),
-+        cmocka_unit_test_setup_teardown(auth_token_test_timeout, setup, teardown),
-+    };
-+
-+#if defined(ENABLE_CRYPTO_OPENSSL)
-+    OpenSSL_add_all_algorithms();
 +#endif
 +
-+    int ret = cmocka_run_group_tests_name("auth-token tests", tests, NULL, NULL);
-+
-+    return ret;
-+}
+ /*
+  * parse/print topology coding
+  */
+@@ -5222,6 +5252,13 @@ add_option(struct options *options,
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+         options->dev_type = p[1];
+     }
++#ifdef _WIN32
++    else if (streq(p[0], "windows-driver") && p[1] && !p[2])
++    {
++        VERIFY_PERMISSION(OPT_P_GENERAL);
++        options->wintun = parse_windows_driver(p[1], M_FATAL);
++    }
++#endif
+     else if (streq(p[0], "dev-node") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 63f0f4c..37dee71 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -621,6 +621,7 @@ struct options
+     bool show_net_up;
+     int route_method;
+     bool block_outside_dns;
++    bool wintun;
+ #endif
+ 
+     bool use_peer_id;
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index 69831c4..a61aa22 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -175,6 +175,7 @@ struct tuntap
+      * ~0 if undefined */
+     DWORD adapter_index;
+ 
++    bool wintun; /* true if wintun is used instead of tap-windows6 */
+     int standby_iter;
+ #else  /* ifdef _WIN32 */
+     int fd; /* file descriptor for TUN/TAP dev */
 -- 
-2.22.0
+2.7.4
 
 
