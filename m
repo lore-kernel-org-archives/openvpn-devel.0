@@ -1,13 +1,11 @@
-References: <925169bb-1f1c-3f18-b8c8-857cb3ed2b3c@...2080...>
- <20190917121115.13966-1-arne@...1227...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <088f194f-19ce-b77e-88b6-ec897c67d108@...2080...>
-Date: Wed, 18 Sep 2019 15:58:54 +0200
 MIME-Version: 1.0
-In-Reply-To: <20190917121115.13966-1-arne@...1227...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH v7 6/7] Sent indication that a session
- is expired to clients
+References: <1568724293-5069-1-git-send-email-lstipakov@...277...>
+In-Reply-To: <1568724293-5069-1-git-send-email-lstipakov@...277...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 18 Sep 2019 10:38:25 -0400
+Message-ID: <CAKuzo_jdwhEhy6f2N0uXcQOyjoCMQ41Ja3Pg0LwBww7UYmY2zA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 1/7] Visual Studio: upgrade project
+ files to VS2019
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,41 +14,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
-Cc: Arne Schwabe <arne@...515...>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-On 17/09/2019 14:11, Arne Schwabe wrote:
-> From: Arne Schwabe <arne@...515...>
-> 
-> This allows OpenVPN 3 core to fall back to the original authentication
-> method.
-> 
-> This commit changes man_def_auth_set_client_reason to
-> auth_set_client_reason since it now used in more contexts.
-> 
-> Also remove a FIXME about client_reason not being freed, as it is freed
-> in tls_multi_free with auth_set_client_reason(multi, NULL);
-> 
-> Patch V4: Rebase on master
-> Patch V7: Rebase on master
-> ---
->  src/openvpn/auth_token.c |  3 +++
->  src/openvpn/ssl.c        |  6 ++----
->  src/openvpn/ssl_common.h | 10 +++++-----
->  src/openvpn/ssl_verify.c |  8 ++++----
->  src/openvpn/ssl_verify.h | 15 ++++++++++-----
->  5 files changed, 24 insertions(+), 18 deletions(-)
-Acked-By: David Sommerseth <davids@...515...>
+Hi,
 
-This is identical to the previous version, just reference points for the
-changes are changed - exactly what I'd expect with a rebase.
+On Tue, Sep 17, 2019 at 8:45 AM Lev Stipakov <lstipakov@...277...> wrote:
+>
+> From: Lev Stipakov <lev@...515...>
+>
+> This set of patches adds support of wintun kernel driver (https://www.wintun.net) to OpenVPN.
+>
+> While wintun is in beta, it performs significantly faster comparison to tap-windows6.
+>
+> Here are some performance numbers (download bandwidth):
+>
+> Server - community openvpn2
+>
+> mingw, tap-windows6   - 340Mbit/s
+> mingw, wintun         - 675Mbit/s
+> VS2019, tap-windows6  - 425Mbit/s
+> VS2019, wintun        - 750Mbit/s
+>
+> Server - propietary openvpn3 with kernel acceleration (in development)
+>
+> mingw, tap-windows6   - 360Mbit/s
+> mingw, wintun         - 840Mbit/s
+> VS2019, tap-windows6  - 430Mbit/s
+> VS2019, wintun        - 1,14Gbit/s
+>
+> And for the reference
+> openvpn3 test client, VS2019, wintun - 1,71Gbit/s
 
--- 
-kind regards,
+No doubt this is interesting and surprising given mingw (unlike
+cygwin) uses stock Windows runtime. Does the VS build target a more
+recent Windows runtime than the legacy one (msvcrt.dll) that mingw
+would link against?
 
-David Sommerseth
-OpenVPN Inc
+With some effort it may be possible to make mingw use a newer CRT (say
+mscrt110.dll) and test whether that helps. Also, do we have to
+distribute a recent CRT with this executable?
 
+Even if we manage to change the release process to support building on
+Windows, it will have to remain a hybrid process for a while at least.
+OpenVPN-GUI doesn't build with visual studio and making it do so will
+need some work -- especially with the resource file formats. Nothing
+complicated but cumbersome. Unless someone volunteers.
+
+
+Selva
 
