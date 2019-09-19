@@ -1,15 +1,14 @@
-References: <20190919072820.9913-1-a@...2181...>
- <b7bb33b3-f4f3-7286-7565-669a2a86a6b0@...1856...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <d97b80d7-dc7e-496f-48f5-64f8cf9e81eb@...2181...>
-Date: Thu, 19 Sep 2019 14:13:40 +0200
 MIME-Version: 1.0
-In-Reply-To: <b7bb33b3-f4f3-7286-7565-669a2a86a6b0@...1856...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="OOwCCo7WJx9KISnEATqiBXmraF7mrHjtL"
-Subject: Re: [Openvpn-devel] [PATCH] t_net.sh: wait for NO-CARRIER bit to
- settle before starting test
+References: <1568724293-5069-1-git-send-email-lstipakov@...277...>
+ <CAKuzo_jdwhEhy6f2N0uXcQOyjoCMQ41Ja3Pg0LwBww7UYmY2zA@...278...>
+ <CAGyAFMVr5=bbF3GA9i+i3=rNJtMMcUPgvG6r-PnW8xVmgvMUFg@...278...>
+In-Reply-To: <CAGyAFMVr5=bbF3GA9i+i3=rNJtMMcUPgvG6r-PnW8xVmgvMUFg@...278...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Thu, 19 Sep 2019 17:32:10 +0300
+Message-ID: <CAGyAFMXK3jJ=5VoxJQhwy2phXtb0WzX6sTfMVUNS4zpiTGGQaA@...278...>
+Content-Type: multipart/alternative; boundary="0000000000004e93f80592e8d2fe"
+Subject: Re: [Openvpn-devel] [PATCH 1/7] Visual Studio: upgrade project
+ files to VS2019
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,93 +17,115 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---OOwCCo7WJx9KISnEATqiBXmraF7mrHjtL
-Content-Type: multipart/mixed; boundary="ouWQmyFsoT4epUdsGz6qcvWq3JyzQkZvZ";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <d97b80d7-dc7e-496f-48f5-64f8cf9e81eb@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] t_net.sh: wait for NO-CARRIER bit to
- settle before starting test
-References: <20190919072820.9913-1-a@...2181...>
- <b7bb33b3-f4f3-7286-7565-669a2a86a6b0@...1856...>
-In-Reply-To: <b7bb33b3-f4f3-7286-7565-669a2a86a6b0@...1856...>
+--0000000000004e93f80592e8d2fe
+Content-Type: text/plain; charset="UTF-8"
 
---ouWQmyFsoT4epUdsGz6qcvWq3JyzQkZvZ
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
+Hello,
+
+> Does the VS build target a more
+> recent Windows runtime than the legacy one (msvcrt.dll) that mingw
+> would link against?
+
+Yes, VS build targets Universal CRT, while mingw targets "classis",
+pre-Visual Studio 2015 CRT.
+
+Answering to Gert's question in IRC - CPU load was 25% on 4-core machine,
+so I assume that
+client is CPU-bound.
+
+I enabled optimization (-O2 -flto) for mingw builds
+
+https://github.com/OpenVPN/openvpn-build/pull/153/commits/570bbbb27ec33f06995400b19da5db2af8b0d58a
+
+and problem seems to be fixed, I see no big difference with Visual Studio
+anymore.
+
+I performed series of tests - for each configuration I ran
+
+> iperf3.exe -c 10.8.0.1 -t 60 -V
+
+five times and used average download bandwidth value.
+
+Results below (don't know why they're bit lower comparison to previous
+runs, probably AWS datacenter has a bad day today):
+
+Server - openvpn 2.4.4, client tun driver - tap-windows6
+mingw, no optimization   - 334Mbit/s (that's what we have in windows
+release now)
+mingw, optimized            - 390Mbit/s
+VS2019 release              - 394Mbit/s
+
+Server - openvpn 2.4.4, client tun driver - wintun
+mingw, no optimization   - 650Mbit/s
+mingw, optimized            - 731Mbit/s
+VS2019 release              - 721Mbit/s
+
+Server - openvpn3 with kernel module, client tun driver - wintun
+mingw, no optimization   - 772Mbit/s
+mingw, optimized            - 924Mbit/s
+VS2019 release              - 901Mbit/s
+
+As you can see, using wintun and mingw optimization increases
+download bandwidth more than twice (334Mbit/s -> 731Mbit)
+
+So for the next release we need to build client with optimization enabled
+and
+it would be nice to have wintun support in 2.5 (see
+https://patchwork.openvpn.net/project/openvpn2/list/?series=545)
+
+-- 
+-Lev
+
+--0000000000004e93f80592e8d2fe
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+<div dir=3D"ltr"><div dir=3D"ltr"><div>Hello,</div><div><br></div><div>&gt;=
+ Does the VS build target a more<br></div><div>&gt; recent Windows runtime =
+than the legacy one (msvcrt.dll) that mingw<br>&gt; would link against?=C2=
+=A0=C2=A0<br></div><div><br></div><div>Yes, VS build targets Universal CRT,=
+ while mingw targets &quot;classis&quot;, pre-Visual Studio 2015 CRT.</div>=
+<div><br></div><div>Answering to Gert&#39;s question in IRC - CPU load was =
+25% on 4-core machine, so I assume that=C2=A0</div><div>client is CPU-bound=
+.</div><div><br></div><div>I enabled optimization (-O2 -flto) for mingw bui=
+lds</div><div><br></div><div><a href=3D"https://github.com/OpenVPN/openvpn-=
+build/pull/153/commits/570bbbb27ec33f06995400b19da5db2af8b0d58a">https://gi=
+thub.com/OpenVPN/openvpn-build/pull/153/commits/570bbbb27ec33f06995400b19da=
+5db2af8b0d58a</a></div><div><br></div><div>and problem seems to be fixed, I=
+ see no big difference with Visual Studio anymore.</div><div><br></div></di=
+v><div>I performed series=C2=A0of tests - for each configuration I ran=C2=
+=A0</div><div><br></div><div>&gt; iperf3.exe -c 10.8.0.1 -t 60 -V</div><div=
+><br></div><div>five times and used average=C2=A0download bandwidth value.<=
+/div><div><br></div><div>Results below (don&#39;t know why they&#39;re bit =
+lower comparison to previous runs, probably AWS datacenter has a bad day to=
+day):</div><div><br></div><div>Server - openvpn 2.4.4, client tun driver - =
+tap-windows6</div><div>mingw, no optimization=C2=A0 =C2=A0- 334Mbit/s (that=
+&#39;s what=C2=A0we have in windows release now)</div><div>mingw, optimized=
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 - 390Mbit/s</div><div>VS2019 rele=
+ase=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 - 394Mbit/s</div><div><=
+br></div><div>Server - openvpn 2.4.4,=20
 
-On 19/09/2019 11:17, Steffan Karger wrote:
->> diff --git a/tests/t_net.sh b/tests/t_net.sh
->> index 18799d12..97e947ab 100755
->> --- a/tests/t_net.sh
->> +++ b/tests/t_net.sh
->> @@ -34,6 +34,13 @@ reload_dummy()
->>  {
->>      $RUN_SUDO $openvpn --dev $IFACE --dev-type tun --rmtun >/dev/null
->>      $RUN_SUDO $openvpn --dev $IFACE --dev-type tun --mktun >/dev/null
->> +
->> +    # it seems that tun devices will settle on NO-CARRIER while not con=
-nected to
->> +    # any process, but this won't happen immediately. To avoid having t=
-he
->> +    # NO-CARRIER bit appear in the middle of the tests - which would co=
-mpromise
->> +    # the results - let's wait 1 sec here for it to settle.
->> +    sleep 1
->> +
->>      if [ $? -ne 0 ]; then
->>          echo "can't create interface $IFACE"
->>          exit 1
->>
->=20
-> This return value check now checks that sleep succeeded instead of the
-> openvpn --mktun command. I don't think that is what you intended.
->=20
+client=20
 
-You're absolutely right.
-The sleep should be moved right after the if-check.
+tun driver - wintun</div><div><div>mingw, no optimization=C2=A0 =C2=A0- 650=
+Mbit/s</div><div>mingw, optimized=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+- 731Mbit/s</div><div>VS2019 release=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 - 721Mbit/s</div><div></div></div><div><br></div><div>Server - o=
+penvpn3 with kernel module, client tun driver - wintun</div><div><div>mingw=
+, no optimization=C2=A0 =C2=A0- 772Mbit/s</div><div>mingw, optimized=C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 - 924Mbit/s</div><div>VS2019 release=C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 - 901Mbit/s</div></div><div><=
+br></div><div>As you can see, using wintun and mingw optimization increases=
+</div><div>download bandwidth more than twice (334Mbit/s -&gt; 731Mbit)</di=
+v><div><br></div><div>So for the next release we need to build client with =
+optimization enabled and</div><div>it would be nice to have wintun support =
+in 2.5 (see=C2=A0<a href=3D"https://patchwork.openvpn.net/project/openvpn2/=
+list/?series=3D545">https://patchwork.openvpn.net/project/openvpn2/list/?se=
+ries=3D545</a>)</div><div><br></div>-- <br><div dir=3D"ltr" class=3D"gmail_=
+signature">-Lev</div></div>
 
-Will send a new patch to fix that.
-
-Regards,
-
-
---=20
-Antonio Quartulli
-
-
---ouWQmyFsoT4epUdsGz6qcvWq3JyzQkZvZ--
-
---OOwCCo7WJx9KISnEATqiBXmraF7mrHjtL
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEOj/Eejms5Fxtp0v4pNfqZUlHtXIFAl2DcPQACgkQpNfqZUlH
-tXKcEA/+IWLrEnxOMADlyHhPejEDtZMWz00t4CwHIG25VpZ+HrUC06J5fkYJ5DT0
-rhcPyfRGPSy0Ctdzgg7y2pKOcxd2glP5VIXpgJlJc3Vn9Wq7ikvRBf69RTy+GqCS
-iHiWkOk6FJoEzuI+DRlP2doXwYmZa2XaQRHysxTMQUI8OXFEtC9LsjdvWBMoVrwa
-cf2mzZWdv0ueXguIstrB49Bka7PExI5hayjViAE/KDBDWNyUfFeURy+aGI/mrc1O
-somKnfJpN3zAG3uuu02x7bys/oGiybS7XHtnzJq8L/bWszAp8PZuXFZ+6zuStGK1
-hsGvYq6Ffft42wcHVRbK9Pd8qXp6Gg7K/69MXFDG3hhx/B4xDxlZnbZQ/N8N9SRF
-k1xEdY5WGVgL/MpCLge/YK/vTUJIFlriQLISlKffu6FNBMyAZ9ZMEO98JSL9mhw0
-CXaaYT3vmm8FACzZ75+exipqSj6h0qKVNzqQQgkGJA4YtElXMawnXPgZYQier7bj
-7bv2NO5DvETZrMPBidlUxjDQ3v+9IKpRkcOs88JMsqpqgcRMwsruV4y+5vJz1aps
-aYZp63cYnPC7nEW3UCXXrWJcABm3XrH9/jRZF5DAURUtBcD+M1kXBhnRg0t8H2VM
-oaSHI+6SkCytspEj4hUt1vaD32M2NaytXKhgXnB+YFbpo7YnNsk=
-=iaMs
------END PGP SIGNATURE-----
-
---OOwCCo7WJx9KISnEATqiBXmraF7mrHjtL--
+--0000000000004e93f80592e8d2fe--
 
