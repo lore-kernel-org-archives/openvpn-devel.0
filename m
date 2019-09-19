@@ -1,9 +1,10 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Thu, 19 Sep 2019 22:22:57 +0200
-Message-Id: <20190919202257.19405-1-a@...2181...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] t_net.sh: execute sleep after checking exit
- code of previous command
+Date: Thu, 19 Sep 2019 22:36:50 +0200 (CEST)
+Message-Id: <201909192036.x8JKao7Z028452@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20190919202257.19405-1-a@...2181...>
+References: <20190919202257.19405-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: t_net.sh: execute sleep after
+ checking exit code of previous command
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,47 +15,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>, Steffan Karger <steffan@...1856...>
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Ensure to check the exit code of the mktun command *before* running
-sleep, otherwise '$?' will resolve to the exit code of sleep itself,
-thus nullifying the check.
+Acked-by: Gert Doering <gert@...1296...>
 
-Reported-by: Steffan Karger <steffan@...1856...>
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
- tests/t_net.sh | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+Your patch has been applied to the master branch.
 
-diff --git a/tests/t_net.sh b/tests/t_net.sh
-index 97e947ab..49790f0f 100755
---- a/tests/t_net.sh
-+++ b/tests/t_net.sh
-@@ -35,17 +35,17 @@ reload_dummy()
-     $RUN_SUDO $openvpn --dev $IFACE --dev-type tun --rmtun >/dev/null
-     $RUN_SUDO $openvpn --dev $IFACE --dev-type tun --mktun >/dev/null
- 
-+    if [ $? -ne 0 ]; then
-+        echo "can't create interface $IFACE"
-+        exit 1
-+    fi
-+
-     # it seems that tun devices will settle on NO-CARRIER while not connected to
-     # any process, but this won't happen immediately. To avoid having the
-     # NO-CARRIER bit appear in the middle of the tests - which would compromise
-     # the results - let's wait 1 sec here for it to settle.
-     sleep 1
- 
--    if [ $? -ne 0 ]; then
--        echo "can't create interface $IFACE"
--        exit 1
--    fi
--
-     #ip link set dev $IFACE address 00:11:22:33:44:55
- }
- 
--- 
-2.23.0
+"Yes, of course, Steffan is right" :-)
+
+commit 6ccb3b2e3ae841934ecb461461ac1e212da64109
+Author: Antonio Quartulli
+Date:   Thu Sep 19 22:22:57 2019 +0200
+
+     t_net.sh: execute sleep after checking exit code of previous command
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20190919202257.19405-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18845.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
