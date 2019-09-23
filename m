@@ -1,10 +1,10 @@
-Date: Mon, 23 Sep 2019 20:07:21 +0200 (CEST)
-Message-Id: <201909231807.x8NI7LeA074531@...2054...>
+Date: Mon, 23 Sep 2019 21:12:27 +0200 (CEST)
+Message-Id: <201909231912.x8NJCR7v074961@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1569229682-9731-1-git-send-email-lstipakov@...277...>
-References: <1569229682-9731-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: tapctl: add optional 'hardware
- id' parameter
+In-Reply-To: <1564346061-5683-1-git-send-email-selva.nair@...277...>
+References: <1564346061-5683-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Handle PSS padding in
+ cryptoapicert
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +15,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
+To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Taking Simon's "LGTM" as an ACK (plus some own light staring at the
-code changes which seem to make sense).  Test built ("it compiles,
-ship it!") on ubuntu 1604/mingw.
+Acked-by: Gert Doering <gert@...1296...>
 
-Your patch has been applied to the master branch.
+Sorry for slacking.  
 
-Acked-by: Simon Rozman <simon@...2293...>
+I have stared at the patch a bit, compared to the master patch, and built 
+with mingw & openssl 1.0.2n & openssl 1.1.0j on ubuntu 16 (which went fine),
+didn't test 1.1.1 as my build system was a bit less than cooperative 
+today :-/
 
-commit e9ce348c93b99e76959b89739fbd74c43ee50152
-Author: Lev Stipakov
-Date:   Mon Sep 23 12:08:02 2019 +0300
+This is not a "full review" and I haven't actually *tested* the resulting 
+binary, but since the changes are close enough to the two joined commits 
+in master and those have been reviewed and tested, "this should be good 
+enough".
 
-     tapctl: add optional 'hardware id' parameter
+Your patch has been applied to the release/2.4 branch.
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Simon Rozman <simon@...2293...>
-     Message-Id: <1569229682-9731-1-git-send-email-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18854.html
+commit 1ed687e72cc1cc46ed1f5f8d9d825db6693e4b3e
+Author: Selva Nair
+Date:   Sun Jul 28 16:34:21 2019 -0400
+
+     Handle PSS padding in cryptoapicert
+
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1564346061-5683-1-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18715.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
