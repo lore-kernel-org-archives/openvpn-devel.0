@@ -1,14 +1,10 @@
-Date: Mon, 23 Sep 2019 16:34:31 +0200
+Date: Mon, 23 Sep 2019 20:07:21 +0200 (CEST)
+Message-Id: <201909231807.x8NI7LeA074531@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20190923143431.GF40538@...1296...>
-References: <20190923133224.13899-1-arne@...1227...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="7cm2iqirTL37Ot+N"
-Content-Disposition: inline
-In-Reply-To: <20190923133224.13899-1-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Only announce IV_NCP=2 when we are
- willing to support these ciphers
+In-Reply-To: <1569229682-9731-1-git-send-email-lstipakov@...277...>
+References: <1569229682-9731-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: tapctl: add optional 'hardware
+ id' parameter
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,53 +13,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lev@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---7cm2iqirTL37Ot+N
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Taking Simon's "LGTM" as an ACK (plus some own light staring at the
+code changes which seem to make sense).  Test built ("it compiles,
+ship it!") on ubuntu 1604/mingw.
 
-Hi,
+Your patch has been applied to the master branch.
 
-On Mon, Sep 23, 2019 at 03:32:24PM +0200, Arne Schwabe wrote:
-> +        if (!(tls_item_in_cipher_list("AES-128-GCM", options->ncp_cipher=
-s)
-> +              && tls_item_in_cipher_list("AES-256-GCM", options->ncp_cip=
-hers)))
+Acked-by: Simon Rozman <simon@...2293...>
 
-What about AES-192-GCM?  What *exactly* does IV_NCP=3D2 guarantee?
+commit e9ce348c93b99e76959b89739fbd74c43ee50152
+Author: Lev Stipakov
+Date:   Mon Sep 23 12:08:02 2019 +0300
 
-Can we have something nicer for cipher negotiation instead?
+     tapctl: add optional 'hardware id' parameter
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Simon Rozman <simon@...2293...>
+     Message-Id: <1569229682-9731-1-git-send-email-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18854.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Gert Doering - Munich, Germany                             gert@...1296...
 
---7cm2iqirTL37Ot+N
-Content-Type: application/pgp-signature; name="signature.asc"
+--
+kind regards,
 
------BEGIN PGP SIGNATURE-----
+Gert Doering
 
-iQGcBAEBAgAGBQJdiNf2AAoJEB2Cnv7KVigSurwL/Rt99oSaBkV5ITf5OYUFMKbK
-CsgEmDQyGvai5o4+sI/HYcyEk6JxFEdkf16iUaKcJDQKKH+kbhNbZkcZ9hzB/VMX
-QY77YqTkbu+QLgQr/WA06XUHKZZCbjfTXUnGvE4F0Prs/iN1kZbF6qOuLSTUNcBg
-mUIBVl9B2Tr7p3BUXZX1JPcxVDJMfggf55a5I0XppvgSTuiCle4eeUZh6nAMmD/c
-bQN9m+2aMgUpBNEXdvMZcBFmIsEqPhzI7SafDfFPnLfx/xkQll7FUYAHrrahfaCd
-/jg1FfYpJZfWTbbwzTEJ6R9FPB7lk2QQwuAmCoD3FuTLTsEDr0jq4rOfPu9xqTVQ
-aCxNARMNE2uKZWLycDf2NxcfhpBs3+UicaFYw15NYg39r2nC0xzt7mCLlKZ4hBga
-3EqTrSK7gGrUbMUDpC4BHYMZXABLWxrhtNONOIEJqfs/Ds6DcS3LhmLQXF2FdNZZ
-taHbtsmaweCAjXBmAinoj4YBJmVGi6KdP3tOQ1t12w==
-=D6Fg
------END PGP SIGNATURE-----
-
---7cm2iqirTL37Ot+N--
 
