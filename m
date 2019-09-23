@@ -1,12 +1,8 @@
-MIME-Version: 1.0
-References: <1551240310-11735-1-git-send-email-selva.nair@...277...>
- <1564346061-5683-1-git-send-email-selva.nair@...277...>
-In-Reply-To: <1564346061-5683-1-git-send-email-selva.nair@...277...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 23 Sep 2019 09:10:48 -0400
-Message-ID: <CAKuzo_iD6qT6FnsmK5nDfu0gjvDdtjty6pY4+uddXkGWLMPD+A@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v2 for 2.4] Handle PSS padding in
- cryptoapicert
+From: Arne Schwabe <arne@...1227...>
+Date: Mon, 23 Sep 2019 15:32:24 +0200
+Message-Id: <20190923133224.13899-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Only announce IV_NCP=2 when we are willing
+ to support these ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,42 +11,91 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+We currently always announce IV_NCP=2 when we support these ciphers even
+when we do not accept them. This lead to a server pushing a AES-GCM-128
+cipher to clients and the client then rejecting it.
+---
+ src/openvpn/init.c       | 1 +
+ src/openvpn/openvpn.h    | 1 +
+ src/openvpn/options.c    | 7 +++++++
+ src/openvpn/ssl.c        | 4 +++-
+ src/openvpn/ssl_common.h | 1 +
+ 5 files changed, 13 insertions(+), 1 deletion(-)
 
-On Sun, Jul 28, 2019 at 4:34 PM <selva.nair@...277...> wrote:
->
-> From: Selva Nair <selva.nair@...277...>
->
-> For PSS padding, CNG requires the digest to be signed
-> and the digest algorithm in use, which are not accessible
-> via the rsa_sign and rsa_priv_enc callbacks of OpenSSL.
-> This patch uses the EVP_KEY interface to hook to
-> evp_pkey_sign callback if OpenSSL version is > 1.1.0.
->
-> Mapping of OpenSSL hash algorithm types to CNG is moved
-> to a function for code-reuse.
->
-> To test, both the server and client should be built with
-> OpenSSL 1.1.1 and use TLS version >= 1.2
->
-> Tested on Windows 7 client against a Linux server.
->
-> Signed-off-by: Selva Nair <selva.nair@...277...>
-> ---
-> v2: rebased to release/2.4 after siglen -> *siglen change
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index b5a034dc..32f7bc7a 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2795,6 +2795,7 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
+     to.tcp_mode = link_socket_proto_connection_oriented(options->ce.proto);
+     to.config_ciphername = c->c1.ciphername;
+     to.config_authname = c->c1.authname;
++    to.config_ncp_ciphers = c->c1.ncp_ciphers;
+     to.ncp_enabled = options->ncp_enabled;
+     to.transition_window = options->transition_window;
+     to.handshake_window = options->handshake_window;
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index 29d21f0a..1fdbfe3c 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -208,6 +208,7 @@ struct context_1
+ 
+     const char *ciphername;     /**< Data channel cipher from config file */
+     const char *authname;       /**< Data channel auth from config file */
++    const char *ncp_ciphers;    /**< NCP Ciphers */
+     int keysize;                /**< Data channel keysize from config file */
+ #endif
+ };
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index c84b9d5e..cb25db5b 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -7687,6 +7687,13 @@ add_option(struct options *options,
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_INSTANCE);
+         options->ncp_ciphers = p[1];
++
++        if (!(tls_item_in_cipher_list("AES-128-GCM", options->ncp_ciphers)
++              && tls_item_in_cipher_list("AES-256-GCM", options->ncp_ciphers)))
++        {
++            msg(M_INFO, "Not including AES-128-GCM and AES-256-GCM in ncp-ciphers "
++                "disables announcing NCP support with IV_NCP=2");
++        }
+     }
+     else if (streq(p[0], "ncp-disable") && !p[1])
+     {
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index d5833ac6..f1719303 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2327,7 +2327,9 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+ 
+         /* support for Negotiable Crypto Parameters */
+         if (session->opt->ncp_enabled
+-            && (session->opt->mode == MODE_SERVER || session->opt->pull))
++            && (session->opt->mode == MODE_SERVER || session->opt->pull)
++            && tls_item_in_cipher_list("AES-128-GCM", session->opt->config_ncp_ciphers)
++            && tls_item_in_cipher_list("AES-256-GCM", session->opt->config_ncp_ciphers))
+         {
+             buf_printf(&out, "IV_NCP=2\n");
+         }
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 0312c1f8..133c3c22 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -290,6 +290,7 @@ struct tls_options
+ 
+     const char *config_ciphername;
+     const char *config_authname;
++    const char *config_ncp_ciphers;
+     bool ncp_enabled;
+ 
+     bool tls_crypt_v2;
+-- 
+2.22.0
 
-As this is required for cryptoapicert +  OpenSSL 1.1.1,
-nudging for a review and have it included in the next release.
-
-We have already merged this into git master, but the patch here
-is slightly different because of context differences and code
-refactorings in 2.5.
-
-Thanks,
-
-Selva
 
