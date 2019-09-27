@@ -1,11 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Sat, 28 Sep 2019 00:45:35 +0200
-Message-Id: <20190927224536.27480-3-davids@...515...>
+Date: Sat, 28 Sep 2019 00:45:34 +0200
+Message-Id: <20190927224536.27480-2-davids@...515...>
 In-Reply-To: <20190927224536.27480-1-davids@...515...>
 References: <20190927224536.27480-1-davids@...515...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/3] auth-token: Fix compiler complaints
- with --disable-management
+Subject: [Openvpn-devel] [PATCH 1/3] auth-token: Fix building with
+ --disable-server
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,38 +17,46 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-When building with --disable-management, the compiler complains with
-implicit declaration of function ‘ssl_clean_auth_token’.  This is due to
-the ssl_clean_auth_token() function being declared inside an #ifdef
-ENABLE_MANAGEMENT fence where it should not be.
+The final patches of the auth-token hmac support patches had a typo in
+the P2MP_SERVER fencing breaking --disable-server builds.  It used #if
+instead of #ifdef.
+
+While at it, also fix another missing P2MP_SERVER fencing causing the
+compiler to complain about an unused variable in push.c
 
 Signed-off-by: David Sommerseth <davids@...515...>
 ---
- src/openvpn/ssl.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ src/openvpn/push.c       | 2 ++
+ src/openvpn/ssl_common.h | 2 +-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index e98c54c7..a944ca3a 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -431,6 +431,8 @@ void ssl_purge_auth(const bool auth_user_pass_only);
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index dc1a536a..49b9d1be 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -39,7 +39,9 @@
  
- void ssl_set_auth_token(const char *token);
+ #if P2MP
  
-+bool ssl_clean_auth_token(void);
-+
- #ifdef ENABLE_MANAGEMENT
++#ifdef P2MP_SERVER
+ static char push_reply_cmd[] = "PUSH_REPLY";
++#endif
+ 
  /*
-  * ssl_get_auth_challenge will parse the server-pushed auth-failed
-@@ -439,8 +441,6 @@ void ssl_set_auth_token(const char *token);
-  */
- void ssl_purge_auth_challenge(void);
- 
--bool ssl_clean_auth_token(void);
--
- void ssl_put_auth_challenge(const char *cr_str);
- 
+  * Auth username/password
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 406601bc..5e21009e 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -530,7 +530,7 @@ struct tls_multi
+     time_t tas_last;
  #endif
+ 
+-#if P2MP_SERVER
++#ifdef P2MP_SERVER
+     /*
+      * An error message to send to client on AUTH_FAILED
+      */
 -- 
 2.17.1
 
