@@ -1,10 +1,10 @@
-Date: Tue, 1 Oct 2019 12:54:16 +0200 (CEST)
-Message-Id: <201910011054.x91AsGeD072215@...2054...>
+Date: Tue, 1 Oct 2019 13:11:00 +0200 (CEST)
+Message-Id: <201910011111.x91BB0r0086995@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20190917121039.13791-1-arne@...1227...>
-References: <20190917121039.13791-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Implement a permanent session
- id in auth-token
+In-Reply-To: <20190917121115.13966-1-arne@...1227...>
+References: <20190917121115.13966-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Sent indication that a session
+ is expired to clients
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,30 +20,24 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master branch.
 
-Again, lightly tested with client side test runs.
+This breaks --disable-server (again), but since David sent a patch to
+remedy this, I'm merging it nonetheless.  I'll merge David's patch right
+away and push both together to avoid needless buildbot fails.
 
-There is a typo in the man page change:
+The patch itself looks like a very nice approach to the problem with
+"how can we communicate authentication fail reasons to the client?" issue
+that had a few (fairly intrusiv) patch sets flying around... someone 
+needs to go through the open patches and see what has become obsolete.
 
--.B \-\-auth\-gen\-token [lifetime]
-+.B \-\-auth\-gen\-token [lifetime] [auth]
-
-this flag is called "external-auth" (the *text* correctly says so, and
-options.c agrees).  I have fixed this on the fly.
-
-Not exactly sure why we need a workaround for an OpenVPN3 bug in 2.5,
-though...  when 2.5 comes close to release, there should no longer be
-any buggy OpenVPN3 client around that mishandles username sending?  
-So maybe we want to take that part *out* again...?
-
-commit c8723aa7bebb0ddb088819590d5a9bea6ea0d669
+commit fba0e8b8964d5a1f24182ff4c48b18923b5d7ba8
 Author: Arne Schwabe
-Date:   Tue Sep 17 14:10:39 2019 +0200
+Date:   Tue Sep 17 14:11:15 2019 +0200
 
-     Implement a permanent session id in auth-token
+     Sent indication that a session is expired to clients
 
      Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20190917121039.13791-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18819.html
+     Message-Id: <20190917121115.13966-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18820.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
