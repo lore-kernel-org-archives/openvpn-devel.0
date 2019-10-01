@@ -1,15 +1,9 @@
-References: <20190917121039.13791-1-arne@...1227...>
- <201910011054.x91AsGeD072215@...2054...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <f79fe2fc-9165-821b-570a-225947d51f99@...2080...>
-Date: Tue, 1 Oct 2019 13:51:27 +0200
+From: Paolo Cerrito <wardragon78@...277...>
+Date: Tue,  1 Oct 2019 14:06:52 +0200
+Message-Id: <20191001120652.31898-1-wardragon78@...277...>
 MIME-Version: 1.0
-In-Reply-To: <201910011054.x91AsGeD072215@...2054...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="6X6Ypv9JA4aJzNyohY2C9bqLKCJfiiaaj"
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Implement a permanent
- session id in auth-token
+Subject: [Openvpn-devel] [PATCH] Insert client connection data into PAM
+ environment
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,74 +12,83 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, Arne Schwabe <arne@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---6X6Ypv9JA4aJzNyohY2C9bqLKCJfiiaaj
-Content-Type: multipart/mixed; boundary="eYg7nfBSzKJ4NILntFFilX6GH0GXqqawc";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-To: Gert Doering <gert@...1296...>, Arne Schwabe <arne@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <f79fe2fc-9165-821b-570a-225947d51f99@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Implement a permanent session
- id in auth-token
-References: <20190917121039.13791-1-arne@...1227...>
- <201910011054.x91AsGeD072215@...2054...>
-In-Reply-To: <201910011054.x91AsGeD072215@...2054...>
-
---eYg7nfBSzKJ4NILntFFilX6GH0GXqqawc
-Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: paolo <paolo.cerrito@...2517...>
 
-On 01/10/2019 12:54, Gert Doering wrote:
->=20
-> Not exactly sure why we need a workaround for an OpenVPN3 bug in 2.5,
-> though...  when 2.5 comes close to release, there should no longer be
-> any buggy OpenVPN3 client around that mishandles username sending?=20=20
-> So maybe we want to take that part *out* again...?
+From: paolo <paolo.cerrito@...2517...>
 
-I don't know the history around this behavioural change in OpenVPN 3, but i=
-t's
-the OpenVPN 3 Core library (used by OpenVPN Connect, openvpn3-linux, etc
-clients)  which has this behaviour.  But I have a feeling this is also rela=
-ted
-to how Access Server expects things to be in specific situations.
+---
+ src/plugins/auth-pam/auth-pam.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
 
---=20
-kind regards,
+diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
+index 88b53204..9d8dfb95 100644
+--- a/src/plugins/auth-pam/auth-pam.c
++++ b/src/plugins/auth-pam/auth-pam.c
+@@ -115,6 +115,7 @@ struct user_pass {
+     char password[128];
+     char common_name[128];
+     char response[128];
++    char remote[128];
+ 
+     const struct name_value_list *name_value_list;
+ };
+@@ -517,13 +518,15 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
+         const char *username = get_env("username", envp);
+         const char *password = get_env("password", envp);
+         const char *common_name = get_env("common_name", envp) ? get_env("common_name", envp) : "";
++        const char *remote = get_env("untrusted_ip", envp) ? get_env("untrusted_ip", envp) : get_env("untrusted_ip6", envp);
+ 
+         if (username && strlen(username) > 0 && password)
+         {
+             if (send_control(context->foreground_fd, COMMAND_VERIFY) == -1
+                 || send_string(context->foreground_fd, username) == -1
+                 || send_string(context->foreground_fd, password) == -1
+-                || send_string(context->foreground_fd, common_name) == -1)
++                || send_string(context->foreground_fd, common_name) == -1
++                || send_string(context->foreground_fd, remote) == -1)
+             {
+                 fprintf(stderr, "AUTH-PAM: Error sending auth info to background process\n");
+             }
+@@ -750,8 +753,16 @@ pam_auth(const char *service, const struct user_pass *up)
+     status = pam_start(service, name_value_list_provided ? NULL : up->username, &conv, &pamh);
+     if (status == PAM_SUCCESS)
+     {
++        /* Set PAM_RHOST environment variable */
++        if (*(up->remote))
++        {
++            status = pam_set_item(pamh, PAM_RHOST, up->remote);
++        }
+         /* Call PAM to verify username/password */
+-        status = pam_authenticate(pamh, 0);
++        if (status == PAM_SUCCESS)
++        {
++            status = pam_authenticate(pamh, 0);
++        }
+         if (status == PAM_SUCCESS)
+         {
+             status = pam_acct_mgmt(pamh, 0);
+@@ -839,7 +850,8 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
+             case COMMAND_VERIFY:
+                 if (recv_string(fd, up.username, sizeof(up.username)) == -1
+                     || recv_string(fd, up.password, sizeof(up.password)) == -1
+-                    || recv_string(fd, up.common_name, sizeof(up.common_name)) == -1)
++                    || recv_string(fd, up.common_name, sizeof(up.common_name)) == -1
++                    || recv_string(fd, up.remote, sizeof(up.remote)) == -1)
+                 {
+                     fprintf(stderr, "AUTH-PAM: BACKGROUND: read error on command channel: code=%d, exiting\n",
+                             command);
+@@ -853,6 +865,7 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
+                             up.username, up.password);
+ #else
+                     fprintf(stderr, "AUTH-PAM: BACKGROUND: USER: %s\n", up.username);
++                    fprintf(stderr, "AUTH-PAM: BACKGROUND: REMOTE: %s\n", up.remote);
+ #endif
+                 }
+ 
+-- 
+2.23.0
 
-David Sommerseth
-OpenVPN Inc
-
-
-
---eYg7nfBSzKJ4NILntFFilX6GH0GXqqawc--
-
---6X6Ypv9JA4aJzNyohY2C9bqLKCJfiiaaj
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJdkz2/AAoJEIbPlEyWcf3yB08P/2rJHAC2U3efh+hoiupnneZN
-KYD3iVb1OrQc/KtisgwWpuvPo8iiALLgzIkWEvPDWCbSqRELQ7HE06XHr1nyOeGj
-bWN2Ryl5lBwKPKhv0ivwbOXJz438OUrkEvM4lqMGmvLekbLo/k/XnZ5dxaEsWhSG
-jQ7P0d19VYrGLvtQ8did9jW87hNcfpuHIOQ+wy1J6RRtSafbxos3EH8OSDQouBjZ
-aaadfE9CjI0CVh56k71VbuNqHXqhm8fxVmM9xTlIuZN1KQbtESx+uZQP0nNRUIzQ
-3ljTy3hqMDlh/dy4o+xS9WJE27xYJOlCP/g1wiHKgQvwhGwMFNJuKYSt/momiR8T
-0bjpm89v7Maccnynjd/CkvSnFPgRwuCKBVixlV7D8DxXfHTOCQo+HBG/dxT+swN0
-vKOtnv1y9qjEONM2EaoPTqqcCaAB5mIk6s3+m/2sjWv7KHW9fw+3nCFtLbCz2Dfd
-s/4oQDtN1b1Pzdafktv9WU20bFlFELCkdkR+BnP0hSl/cmVPjuN/VzTtEerulOUV
-u14BdqGyrj09eYlJDlp43HsrHAYt36ifAoxiQ0o9X3HFSbcyLQD+SA2u26R9Jm3h
-Powv83bFILYz3uHhm7MajOpB+/SoLrQWroUYWTWzaRBwDbTzV3tes8HegvOEaX61
-2MKHKdOLzV+sRO55hm70
-=IPzh
------END PGP SIGNATURE-----
-
---6X6Ypv9JA4aJzNyohY2C9bqLKCJfiiaaj--
 
