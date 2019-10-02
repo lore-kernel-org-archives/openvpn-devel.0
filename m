@@ -1,13 +1,13 @@
+From: Paolo Cerrito <wardragon78@...277...>
+Date: Wed,  2 Oct 2019 11:03:36 +0200
+Message-Id: <20191002090337.22783-1-wardragon78@...277...>
+In-Reply-To: <Re: [Openvpn-devel] [PATCH] Insert client connection data into
+ PAM environment>
+References: <Re: [Openvpn-devel] [PATCH] Insert client connection data into
+ PAM environment>
 MIME-Version: 1.0
-References: <20191001120652.31898-1-wardragon78@...277...>
- <366dc3b3-388b-8d83-e6fe-70e13d4facc9@...2181...>
-In-Reply-To: <366dc3b3-388b-8d83-e6fe-70e13d4facc9@...2181...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 1 Oct 2019 13:47:43 -0400
-Message-ID: <CAKuzo_jOm+J3MtS9Gsox1Y9wA7eDPrqai_w2TP-gKHiejcvLJA@...278...>
-Content-Type: multipart/alternative; boundary="000000000000238afc0593dcf478"
-Subject: Re: [Openvpn-devel] [PATCH] Insert client connection data into PAM
- environment
+Subject: [Openvpn-devel] [PATCH 0/1] *** Insert client connection data into
+ pam environment V2***
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,90 +16,111 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: Paolo Cerrito <wardragon78@...277...>, paolo <paolo.cerrito@...2517...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: a@...2181..., selva.nair@...277..., Paolo Cerrito <wardragon78@...277...>
 
---000000000000238afc0593dcf478
-Content-Type: text/plain; charset="UTF-8"
+*** This patch make openvpn insert network client data connection into
+pam environment, so make pam modules to process them correctly.
+This improvement can make, for example, dynaminc firewalling more
+simple and can be done into pam.
 
-Hi,
+This patch is used from as into vpn environment by University of Rome
+"Tor Vergata", where we uses into pam the module pam_recent, as this:
 
-On Tue, Oct 1, 2019 at 1:02 PM Antonio Quartulli <a@...2181...> wrote:
+Firtof all, we configured iptables to for AUTHFAILS xt_recent tables:
+-A INPUT -m recent --rcheck --seconds 21600 --hitcount 10 --name AUTHFAILS --rsource -m limit --limit 20/min -j LOG --log-prefix "AUTHFAILS-DROP " 
+-A INPUT -m recent --rcheck --seconds 21600 --hitcount 10 --name AUTHFAILS --rsource -j DROP 
+-A INPUT -m recent --rcheck --seconds 21600 --hitcount 6 --name AUTHFAILS --rsource -m limit --limit 10/min -j LOG --log-prefix "AUTHFAILS " 
+-A INPUT -m recent --rcheck --seconds 21600 --hitcount 6 --name AUTHFAILS --rsource -j REJECT --reject-with icmp-host-prohibited 
 
-> Hi Paolo,
->
-> On 01/10/2019 14:06, Paolo Cerrito wrote:
-> > From: paolo <paolo.cerrito@...2517...>
->
-> On June 27th another patch with the same subject was sent by you to this
-> mailing list. Is this new patch any different?
->
-> If so, it should bear a "v2" in the subject and the differences should
-> be explicitly mentioned to ease the review.
->
-> On top of that I commented your original patch with the following:
->
-> > Why do we need this change?
-> > What benefit does it give us?
-> > How can it be used?
->
-> > IMHO it would be nice to add these pieces of information to the commit
-> > message (right now it feels .. "empty"  )
->
-> But it seems that none of this information has been added to the commit
-> message (and it is still empty).
-> Could you please take care of that, so to make the review easier for who
-> is not deep into those lines of code you have changed?
->
+next, make pam insert ip of client into AUTHFAILS whit pam recent before
+authentication, if authentication if done and ok, then pam_recent remove
+from the AUTHFAILS, else update the hitcount, so iptables can handle the
+correctly as you can se from the rules.
 
-Aha, I missed the previous thread. Looks like this one is the same
-patch as the previous one.
+pam configuration:
 
-Paolo: please improve on the commit message, address the comments,
-and submit a v2 with the message-id of this one in --in-reply-to.
+common-account:
 
-Selva
+#
+# /etc/pam.d/common-account - authorization settings common to all services
+#
+# This file is included from other service-specific PAM config files,
+# and should contain a list of the authorization modules that define
+# the central access policy for use on the system.  The default is to
+# only deny service to users whose accounts are expired in /etc/shadow.
+#
+# As of pam 1.0.1-6, this file is managed by pam-auth-update by default.
+# To take advantage of this, it is recommended that you configure any
+# local modules either before or after the default block, and use
+# pam-auth-update to manage selection of other modules.  See
+# pam-auth-update(8) for details.
+#
 
---000000000000238afc0593dcf478
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+account optional        pam_recent.so - AUTHFAILS
+#account optional        pam_recent.so - AUTHNETFAILS
 
-<div dir=3D"ltr"><div dir=3D"ltr"><br></div><div>Hi,</div><div><br></div><d=
-iv><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">On Tue,=
- Oct 1, 2019 at 1:02 PM Antonio Quartulli &lt;a@...2181...&gt; wrote:<br></=
-div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;bor=
-der-left:1px solid rgb(204,204,204);padding-left:1ex">Hi Paolo,<br>
-<br>
-On 01/10/2019 14:06, Paolo Cerrito wrote:<br>
-&gt; From: paolo &lt;<a href=3D"mailto:paolo.cerrito@...2517..." target=3D"=
-_blank">paolo.cerrito@...2517...</a>&gt;<br>
-<br>
-On June 27th another patch with the same subject was sent by you to this<br>
-mailing list. Is this new patch any different?<br>
-<br>
-If so, it should bear a &quot;v2&quot; in the subject and the differences s=
-hould<br>
-be explicitly mentioned to ease the review.<br>
-<br>
-On top of that I commented your original patch with the following:<br>
-<br>
-&gt; Why do we need this change?<br>
-&gt; What benefit does it give us?<br>
-&gt; How can it be used?<br>
-<br>
-&gt; IMHO it would be nice to add these pieces of information to the commit=
-<br>
-&gt; message (right now it feels .. &quot;empty&quot;=C2=A0 )<br>
-<br>
-But it seems that none of this information has been added to the commit<br>
-message (and it is still empty).<br>
-Could you please take care of that, so to make the review easier for who<br>
-is not deep into those lines of code you have changed?<br></blockquote><div=
-><br></div><div>Aha, I missed the previous thread. Looks like this one is t=
-he same</div><div>patch as the previous one.</div><div><br></div><div>Paolo=
-: please improve on the commit message, address the comments,<br></div><div=
->and submit a v2 with the message-id of this one in --in-reply-to.</div><di=
-v><br></div><div>Selva<br></div></div></div></div>
+# here are the per-package modules (the "Primary" block)
+account [success=2 new_authtok_reqd=done default=ignore]        pam_unix.so 
+account [success=1 default=ignore]      pam_ldap.so 
+# here's the fallback if no module succeeds
+account requisite                       pam_deny.so
+# prime the stack with a positive return value if there isn't one already;
+# this avoids us returning an error just because nothing sets a success code
+# since the modules above will each just jump around
+account required                        pam_permit.so
+# and here are more per-package modules (the "Additional" block)
+# end of pam-auth-update config
+#
+# send a notice after login success
+# account    required                        pam_warn.so
 
---000000000000238afc0593dcf478--
+
+common-auth:
+
+#
+# /etc/pam.d/common-auth - authentication settings common to all services
+#
+# This file is included from other service-specific PAM config files,
+# and should contain a list of the authentication modules that define
+# the central authentication scheme for use on the system
+# (e.g., /etc/shadow, LDAP, Kerberos, etc.).  The default is to use the
+# traditional Unix authentication mechanisms.
+#
+# As of pam 1.0.1-6, this file is managed by pam-auth-update by default.
+# To take advantage of this, it is recommended that you configure any
+# local modules either before or after the default block, and use
+# pam-auth-update to manage selection of other modules.  See
+# pam-auth-update(8) for details.
+
+auth    optional        pam_recent.so + AUTHFAILS
+#auth    optional        pam_recent.so + AUTHNETFAILS
+
+# here are the per-package modules (the "Primary" block)
+auth    [success=2 default=ignore]      pam_unix.so nullok_secure
+auth    [success=1 default=ignore]      pam_ldap.so use_first_pass
+# here's the fallback if no module succeeds
+auth    requisite                       pam_deny.so
+# prime the stack with a positive return value if there isn't one already;
+# this avoids us returning an error just because nothing sets a success code
+# since the modules above will each just jump around
+auth    required                        pam_permit.so
+# and here are more per-package modules (the "Additional" block)
+# end of pam-auth-update config
+
+***
+
+
+
+paolo (1):
+  Insert client connection data into PAM environment
+
+ src/plugins/auth-pam/auth-pam.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
+
+-- 
+2.23.0
+
 
