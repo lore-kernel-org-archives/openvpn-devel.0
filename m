@@ -1,10 +1,13 @@
+Date: Tue, 8 Oct 2019 14:42:17 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20191008124217.GI40538@...1296...>
 References: <1570537606-29323-1-git-send-email-lstipakov@...277...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <393dce92-d103-03a3-a7a7-46c00df40087@...1227...>
-Date: Tue, 8 Oct 2019 14:36:28 +0200
+ <393dce92-d103-03a3-a7a7-46c00df40087@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <1570537606-29323-1-git-send-email-lstipakov@...277...>
-Content-Language: de-DE
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="+svXpSx+RSEd8UhP"
+Content-Disposition: inline
+In-Reply-To: <393dce92-d103-03a3-a7a7-46c00df40087@...1227...>
 Subject: Re: [Openvpn-devel] [PATCH 1/2] push.c: fix Visual Studio build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -14,42 +17,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
 
-Am 08.10.19 um 14:26 schrieb Lev Stipakov:
-> From: Lev Stipakov <lev@...515...>
-> 
-> Visual Studio doesn't support designated initializers
-> for C code, so replace it with CLEAR() macro.
-> 
-> Signed-off-by: Lev Stipakov <lev@...515...>
-> ---
->  src/openvpn/push.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-> index 49b9d1b..213e2b6 100644
-> --- a/src/openvpn/push.c
-> +++ b/src/openvpn/push.c
-> @@ -504,9 +504,10 @@ void
->  send_push_reply_auth_token(struct tls_multi *multi)
->  {
->      struct gc_arena gc = gc_new();
-> +    struct push_list push_list;
->  
-> +    CLEAR(push_list);
->  
-> -    struct push_list push_list = {};
->      prepare_auth_token_push_reply(multi, &gc, &push_list);
->  
->      /* prepare auth token should always add the auth-token option */
-> 
+--+svXpSx+RSEd8UhP
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Acked-By: Arne Schwabe
+Hi,
 
-I thought we had those in other places. But I guess I was wrong.
+On Tue, Oct 08, 2019 at 02:36:28PM +0200, Arne Schwabe wrote:
+> I thought we had those in other places. But I guess I was wrong.
 
-Arne
+We do, but never with {}.
+
+Our "new style with C99" seems to be "go away from CLEAR() for
+local structs", so this is a step back.
+
+Assigning {0} should be fine with MSVC - we use this in lots of=20
+other places and it does not fail.
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--+svXpSx+RSEd8UhP
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJdnIQoAAoJEB2Cnv7KVigS68gL/RfFJN8HmxsC1g1wv3xqW79S
+SjxrYxFshSaesBFD9ktB7Xpf3AHnCch/xfAoviZg3JKmX86RjGi86NsfzUABX6fA
+bRFCukPk+pWXAVUH21HZTAbz09dUcEZOsR8xQXXqiDJPvhjbcM2oFVyzUCznreFc
+y/oCJHLGnZAhTyXRlU5gJ/Ee1XJnxrShFTtUiBEpDlLhqJL92JHy0OJ+MqGOPe6z
+lKOAtBYYnIFg098/BigeWc+xp9G6Deq/QI3y+Uyj9BmpfryKPneM9Z52wWlaINWm
+AS7qA6VNGGtVtPCCqSf8o5uFGquIFAmknALa5AKtTZUzHMzRFYNoHOis0mnol6YJ
+w99r6glqKVgWGf/UhT714oiLb2lFHq5lnOXKhunpGWE0+qw+PgtutvBVY+4Qw4a2
+ScXvoDT0GIDSMu5Ewq0GAThmlN6ivVBCMMdsbRBTC4zYjXkIES3rxDGYqSxGlVpj
+3Jr6WhP1AMusGqpH4PFExICZOJ5zuWRP4KIW4cWIbg==
+=1XfT
+-----END PGP SIGNATURE-----
+
+--+svXpSx+RSEd8UhP--
 
