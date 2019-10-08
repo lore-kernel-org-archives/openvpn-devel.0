@@ -1,14 +1,9 @@
-Date: Tue, 8 Oct 2019 14:42:17 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20191008124217.GI40538@...1296...>
-References: <1570537606-29323-1-git-send-email-lstipakov@...277...>
- <393dce92-d103-03a3-a7a7-46c00df40087@...1227...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="+svXpSx+RSEd8UhP"
-Content-Disposition: inline
-In-Reply-To: <393dce92-d103-03a3-a7a7-46c00df40087@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 1/2] push.c: fix Visual Studio build
+From: Lev Stipakov <lstipakov@...277...>
+Date: Tue,  8 Oct 2019 15:52:33 +0300
+Message-Id: <1570539154-31784-1-git-send-email-lstipakov@...277...>
+In-Reply-To: <20191008124217.GI40538@...1296...>
+References: <20191008124217.GI40538@...1296...>
+Subject: [Openvpn-devel] [PATCH v2 1/2] push.c: fix Visual Studio build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,54 +12,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---+svXpSx+RSEd8UhP
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: Lev Stipakov <lev@...515...>
 
-Hi,
+Visual Studio doesn't support empty designated initializers
+for C code, so use { 0 }. Also replace existing CLEAR() call with
+the new initializers.
 
-On Tue, Oct 08, 2019 at 02:36:28PM +0200, Arne Schwabe wrote:
-> I thought we had those in other places. But I guess I was wrong.
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/openvpn/push.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-We do, but never with {}.
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 49b9d1b..368b692 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -504,9 +504,8 @@ void
+ send_push_reply_auth_token(struct tls_multi *multi)
+ {
+     struct gc_arena gc = gc_new();
++    struct push_list push_list = { 0 };
+ 
+-
+-    struct push_list push_list = {};
+     prepare_auth_token_push_reply(multi, &gc, &push_list);
+ 
+     /* prepare auth token should always add the auth-token option */
+@@ -734,10 +733,9 @@ process_incoming_push_request(struct context *c)
+         else
+         {
+             /* per-client push options - peer-id, cipher, ifconfig, ipv6-ifconfig */
+-            struct push_list push_list;
++            struct push_list push_list = { 0 };
+             struct gc_arena gc = gc_new();
+ 
+-            CLEAR(push_list);
+             if (prepare_push_reply(c, &gc, &push_list)
+                 && send_push_reply(c, &push_list))
+             {
+-- 
+2.7.4
 
-Our "new style with C99" seems to be "go away from CLEAR() for
-local structs", so this is a step back.
-
-Assigning {0} should be fine with MSVC - we use this in lots of=20
-other places and it does not fail.
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---+svXpSx+RSEd8UhP
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJdnIQoAAoJEB2Cnv7KVigS68gL/RfFJN8HmxsC1g1wv3xqW79S
-SjxrYxFshSaesBFD9ktB7Xpf3AHnCch/xfAoviZg3JKmX86RjGi86NsfzUABX6fA
-bRFCukPk+pWXAVUH21HZTAbz09dUcEZOsR8xQXXqiDJPvhjbcM2oFVyzUCznreFc
-y/oCJHLGnZAhTyXRlU5gJ/Ee1XJnxrShFTtUiBEpDlLhqJL92JHy0OJ+MqGOPe6z
-lKOAtBYYnIFg098/BigeWc+xp9G6Deq/QI3y+Uyj9BmpfryKPneM9Z52wWlaINWm
-AS7qA6VNGGtVtPCCqSf8o5uFGquIFAmknALa5AKtTZUzHMzRFYNoHOis0mnol6YJ
-w99r6glqKVgWGf/UhT714oiLb2lFHq5lnOXKhunpGWE0+qw+PgtutvBVY+4Qw4a2
-ScXvoDT0GIDSMu5Ewq0GAThmlN6ivVBCMMdsbRBTC4zYjXkIES3rxDGYqSxGlVpj
-3Jr6WhP1AMusGqpH4PFExICZOJ5zuWRP4KIW4cWIbg==
-=1XfT
------END PGP SIGNATURE-----
-
---+svXpSx+RSEd8UhP--
 
