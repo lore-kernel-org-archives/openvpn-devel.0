@@ -1,10 +1,11 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Tue,  8 Oct 2019 15:52:34 +0300
-Message-Id: <1570539154-31784-2-git-send-email-lstipakov@...277...>
-In-Reply-To: <1570539154-31784-1-git-send-email-lstipakov@...277...>
-References: <20191008124217.GI40538@...1296...>
- <1570539154-31784-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH v2 2/2] vcxproj: add missing source files
+From: Gert Doering <gert@...1296...>
+Date: Wed,  9 Oct 2019 11:52:00 +0200
+Message-Id: <20191009095200.9337-2-gert@...1296...>
+In-Reply-To: <20191009095200.9337-1-gert@...1296...>
+References: <20191009095200.9337-1-gert@...1296...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH 2/2] Fix IPv6 routes on tap interfaces on
+ OpenSolaris/OpenIndiana
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,62 +18,36 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Lev Stipakov <lev@...515...>
+The "route add" code always used "metric 0" on OpenSolaris, because
+(on tun interfaces) it was required to make the route work on
+"non-ethernet" interfaces (connected, no NDP).
 
-Commit 1b9a88a has added new C source/header files which
-have to be added to VS project file.
+This breaks routes via tap interfaces on recent Solaris versions
+(tested on OpenIndiana 2019) - there, routes only work if metric
+is != 0 (or just not set).  Otherwise it tries to map the gateway
+address to a local address and fails.
 
-Signed-off-by: Lev Stipakov <lev@...515...>
+Signed-off-by: Gert Doering <gert@...1296...>
 ---
- src/openvpn/openvpn.vcxproj         | 2 ++
- src/openvpn/openvpn.vcxproj.filters | 6 ++++++
- 2 files changed, 8 insertions(+)
+ src/openvpn/route.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
-index 92d7e32..3b0ee60 100644
---- a/src/openvpn/openvpn.vcxproj
-+++ b/src/openvpn/openvpn.vcxproj
-@@ -124,6 +124,7 @@
-   </ItemDefinitionGroup>
-   <ItemGroup>
-     <ClCompile Include="argv.c" />
-+    <ClCompile Include="auth_token.c" />
-     <ClCompile Include="base64.c" />
-     <ClCompile Include="block_dns.c" />
-     <ClCompile Include="buffer.c" />
-@@ -199,6 +200,7 @@
-   </ItemGroup>
-   <ItemGroup>
-     <ClInclude Include="argv.h" />
-+    <ClInclude Include="auth_token.h" />
-     <ClInclude Include="base64.h" />
-     <ClInclude Include="basic.h" />
-     <ClInclude Include="block_dns.h" />
-diff --git a/src/openvpn/openvpn.vcxproj.filters b/src/openvpn/openvpn.vcxproj.filters
-index 7a9aa63..e6068af 100644
---- a/src/openvpn/openvpn.vcxproj.filters
-+++ b/src/openvpn/openvpn.vcxproj.filters
-@@ -234,6 +234,9 @@
-     <ClCompile Include="run_command.c">
-       <Filter>Source Files</Filter>
-     </ClCompile>
-+    <ClCompile Include="auth_token.c">
-+      <Filter>Source Files</Filter>
-+    </ClCompile>
-   </ItemGroup>
-   <ItemGroup>
-     <ClInclude Include="base64.h">
-@@ -488,6 +491,9 @@
-     <ClInclude Include="run_command.h">
-       <Filter>Header Files</Filter>
-     </ClInclude>
-+    <ClInclude Include="auth_token.h">
-+      <Filter>Header Files</Filter>
-+    </ClInclude>
-   </ItemGroup>
-   <ItemGroup>
-     <ResourceCompile Include="openvpn_win32_resources.rc">
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 3183fb47..97e90e56 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -2043,8 +2043,8 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
+                 r6->netbits,
+                 gateway );
+ 
+-    /* on tun/tap, not "elsewhere"? -> metric 0 */
+-    if (!r6->iface)
++    /* on tun (not tap), not "elsewhere"? -> metric 0 */
++    if (tt->type == DEV_TYPE_TUN && !r6->iface)
+     {
+         argv_printf_cat(&argv, "0");
+     }
 -- 
-2.7.4
+2.23.0
 
 
