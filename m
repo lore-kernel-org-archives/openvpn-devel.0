@@ -1,10 +1,9 @@
-Date: Wed, 9 Oct 2019 12:50:00 +0200 (CEST)
-Message-Id: <201910091050.x99Ao0Dj028580@...2054...>
+Date: Wed, 9 Oct 2019 12:55:43 +0200 (CEST)
+Message-Id: <201910091055.x99AthPR035720@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1570539154-31784-2-git-send-email-lstipakov@...277...>
-References: <1570539154-31784-2-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: vcxproj: add missing source
- files
+In-Reply-To: <1570539154-31784-1-git-send-email-lstipakov@...277...>
+References: <1570539154-31784-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: push.c: fix Visual Studio build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,21 +19,24 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-I do not have any idea about MSVC or project files, but this looks like
-a trivial extrapolation of "what is there".  And if you say it's needed, fine.
+Arne has already ACKed the first one, but this is more in line with
+what we've done in "more recent code" - and also thanks for changing
+the other occurrence.
+
+"Stared at code" and lightly tested on Linux and FreeBSD.
 
 Your patch has been applied to the master branch.
 
-commit a933d21a902adfaa3893bd0f6097a1696d5ccf69
+commit 4431d0903d4e23ef01a5582960990b77e9522ab2
 Author: Lev Stipakov
-Date:   Tue Oct 8 15:52:34 2019 +0300
+Date:   Tue Oct 8 15:52:33 2019 +0300
 
-     vcxproj: add missing source files
+     push.c: fix Visual Studio build
 
      Signed-off-by: Lev Stipakov <lev@...515...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1570539154-31784-2-git-send-email-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18903.html
+     Message-Id: <1570539154-31784-1-git-send-email-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18904.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
