@@ -1,10 +1,9 @@
-Date: Wed, 9 Oct 2019 13:44:08 +0200 (CEST)
-Message-Id: <201910091144.x99Bi8NQ038152@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20191009095200.9337-2-gert@...1296...>
-References: <20191009095200.9337-2-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix IPv6 routes on tap
- interfaces on OpenSolaris/OpenIndiana
+Date: Wed,  9 Oct 2019 14:00:43 +0200
+Message-Id: <20191009120043.22692-1-gert@...1296...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] OpenSolaris/OpenIllumos: use /bin/bash if
+ available for test scripts.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +14,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+t_client.sh relies on "echo -e" and "echo -n" to produce nicely
+looking output, which fails on Solaris /bin/sh - force SHELL=/bin/bash
+on recent-enough Solaris variants that have it.
 
-commit 01b3a48c29df6dc4bade3d8fb7903346a3f77887
-Author: Gert Doering
-Date:   Wed Oct 9 11:52:00 2019 +0200
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ configure.ac | 1 +
+ 1 file changed, 1 insertion(+)
 
-     Fix IPv6 routes on tap interfaces on OpenSolaris/OpenIndiana
-
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20191009095200.9337-2-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18906.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/configure.ac b/configure.ac
+index c7fd7a84..4159e450 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -306,6 +306,7 @@ case "$host" in
+ 		AC_DEFINE([TARGET_SOLARIS], [1], [Are we running on Solaris?])
+ 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["S"], [Target prefix])
+ 		CPPFLAGS="$CPPFLAGS -D_XPG4_2"
++		test -x /bin/bash && SHELL="/bin/bash"
+ 		;;
+ 	*-*-openbsd*)
+ 		AC_DEFINE([TARGET_OPENBSD], [1], [Are we running on OpenBSD?])
+-- 
+2.23.0
 
 
