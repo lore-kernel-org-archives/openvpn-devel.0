@@ -2,15 +2,15 @@ References: <f905ca0e-b3be-e552-2ac8-c6d48d402675@...277...>
  <20191011133021.h2s3gsr25vms2giw@...1152...>
  <54f7abfc-faab-621e-379c-386df3743b1a@...277...>
  <20191011142508.4saabj66e57dnoo4@...1152...>
-From: Lev Stipakov <lstipakov@...277...>
-Message-ID: <fdc8d8dc-401f-4cbd-d18d-d09ee63b8311@...277...>
-Date: Fri, 11 Oct 2019 17:48:45 +0300
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <e2af353f-dca5-0716-6cbd-6e292a4183d5@...2080...>
+Date: Fri, 11 Oct 2019 17:10:31 +0200
 MIME-Version: 1.0
 In-Reply-To: <20191011142508.4saabj66e57dnoo4@...1152...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
+Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="UWXkUGr3oebztLxzvKnCv6dr3g9Cg5s4f"
-Subject: Re: [Openvpn-devel] [ext] [Openvpn-users] OpenVPN GUI with Wintun
+ boundary="CSzFGbgwwVVWZkjoZEd6EQNCYz9wBJG6q"
+Subject: Re: [Openvpn-devel] [Openvpn-users] [ext] OpenVPN GUI with Wintun
  (unofficial)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -20,67 +20,88 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Ralf Hildebrandt <Ralf.Hildebrandt@...1152...>
+To: Ralf Hildebrandt <Ralf.Hildebrandt@...1152...>, Lev Stipakov <lstipakov@...277...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---UWXkUGr3oebztLxzvKnCv6dr3g9Cg5s4f
-Content-Type: multipart/mixed; boundary="epdaNoSRYe1cs7UuIIviHOPxaIadqsIep"
+--CSzFGbgwwVVWZkjoZEd6EQNCYz9wBJG6q
+Content-Type: multipart/mixed; boundary="4tteiZJ5wopOtVduk3knHYLqRdeyO9EMf";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: Ralf Hildebrandt <Ralf.Hildebrandt@...1152...>,
+ Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>,
+ "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
+Message-ID: <e2af353f-dca5-0716-6cbd-6e292a4183d5@...2080...>
+Subject: Re: [Openvpn-users] [ext] OpenVPN GUI with Wintun (unofficial)
+References: <f905ca0e-b3be-e552-2ac8-c6d48d402675@...277...>
+ <20191011133021.h2s3gsr25vms2giw@...1152...>
+ <54f7abfc-faab-621e-379c-386df3743b1a@...277...>
+ <20191011142508.4saabj66e57dnoo4@...1152...>
+In-Reply-To: <20191011142508.4saabj66e57dnoo4@...1152...>
 
---epdaNoSRYe1cs7UuIIviHOPxaIadqsIep
+--4tteiZJ5wopOtVduk3knHYLqRdeyO9EMf
+Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
-
-Ralf Hildebrandt kirjoitti 11.10.2019 klo 17.25:
+On 11/10/2019 16:25, Ralf Hildebrandt wrote:
+>> Yes, in .ovpn config file. You could also specify it in command line
+>> (requires elevated command prompt), for example:
+>>
+>> C:\Program Files\OpenVPN\bin>openvpn.exe --config
+>> C:\Users\Administrator\Desktop\client.ovpn --windows-driver wintun
 >=20
 > OK, I was just irritated since the man page of the "normal" openvpn
 > doesn't list "windows-driver" -- so I was unsure if it's
 >=20
 > a) windows-specific
 > b) 2.5-specific.
->=20
-Both, although it is not yet in 2.5.
 
-If you run openvpn.exe from that installation, you should see:
+Currently right now, neither of those.  But once the patches Lev has sent to
+the mailing list gets reviewed (hint hint, Windows devs!), it will go into =
+git
+master.  Whether that happens before or after we branch out the 2.5 release,
+is currently open, but it would be great if we could manage to get it into =
+the
+2.5 release.
 
-  C:\Program Files\OpenVPN\bin>openvpn.exe
-  <...>
-  Windows Specific:
-  <...>
-  --windows-driver   : Which tun driver to use?
-                       tap-windows6 (default)
-                       wintun
-  <...>
+I don't recall now if the patches from Lev updates the man page, but it sho=
+uld
+when the merge finally happens.
 
--Lev
+--=20
+kind regards,
 
+David Sommerseth
+OpenVPN Inc
 
 
---epdaNoSRYe1cs7UuIIviHOPxaIadqsIep--
 
---UWXkUGr3oebztLxzvKnCv6dr3g9Cg5s4f
+--4tteiZJ5wopOtVduk3knHYLqRdeyO9EMf--
+
+--CSzFGbgwwVVWZkjoZEd6EQNCYz9wBJG6q
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIzBAEBCAAdFiEEW3OHsN2W3CfLpAQqiGcL4li5wlgFAl2glk0ACgkQiGcL4li5
-wlgzWA/+KM3m6BWVqu/7cs9DCmBL2XOufcd7eUUeU7AYOnyn2BXueT3BAogpWpsS
-43kaHVIu7Z5kKoilTOYwkClJus17AIIoQapKF1ZnUOtKFh2k54cTNNfw42h2iXKc
-TMcNkxnC40kQrr6qODRiL3cI9e2M8CIwPS8l+NmLRVeOBxSKhS+5ym2ssNln+Kp6
-IuG2/za7sC1whB43GMRolVQCTXzhqc16qFwsVQhUZAHf7q2P1e1cEfGkG5gvojC/
-7hBvq59nyxyj8IfO9HYL+SXXD0PG+CssXLfuYJA9c8DVgTQD5uiMEj7g/cmsdZIE
-2cDi6vf1R5A9vhifCGS+hVN8vwSzjVWEoFp6w2+KibOEhw1g6FBuI/fxk1oG6xGL
-6iVWRh6ijpCBaapvscX7uBuwxTqFj5fZcDdlwcDg5j9GTP4MqdMNf/XK0w1tpEVy
-a9yXj4b959gqCxugZvzRGRtJ4RCZB7LLYnrln/ObhR0yJZuYIMbd0ObEm9ziVf8+
-Ei9I3iAJ5oeKxIKjuXFBOXtBBR5coypo38vOiZIii2QU4ma9MkEJcuGMkNNNr+zh
-9HgiyIJ7PLjma68Ju7kTYyekdIxLFqSd0W4dhyL5C2tCOmn8ZnAApwbEsHeY1+8o
-CWMEy8y8wHaqoAGfmNKhgKvhd1Bvpzt3c5NSQ36K2sNuvI6dXJ4=
-=Z9GV
+iQIcBAEBCgAGBQJdoJtsAAoJEIbPlEyWcf3ypdEP/3tsSr7VYJH2NcTtVm2AnSUz
++98QVMxG4nAattDk8+VyTZ1sjs0OqD/jdcbO3eIACcQbhNIvYrH0QO4lEfXORpL5
+OYCQOvq3WQIVppDml9I7J5V1SLP3s0zyPgIsv1GFLbe38spGxPC9yOfGinEolgTv
+D4c37U0U9jsONUcZRc2AIcq1eBLD+fWfXHFJfF8li8rhju1uyiy11vXLyT9PiUrn
+k7AGBxGZQpI/ggZkycvAgWLHZKbbZ7svGM1+Vrm7k0YlLJqA19fOGwTwrHAg+L++
+MRZ3kfw6jmLJqt/VMMckXiYiqnBrYS8nEGyHfj00ohtFYxiHlApWyTcIo+QsozZK
+vey7xSKZefPczmb1vyYgTq2TbClF2Z27NGBG9zZI9b1D7B4km2VqDTIetAdDXIaC
+Dk1np+P1xd9LVKZyOGT1qLiLCvxgBtVswcn233mnXphKvZRcyUyhu53Ucl3dA9n9
+JWqAzbxOVYAz2sUXY6oKaCRmnXy1Dr7nd4mTG0sVHRsQVAN2VEfvwwaE+aU2dXZd
+FngyvjwdWUeGIGV3qpFAd4onX5olRc57fpqikVt7Ct+Vjjh42kczGdMqECFW6fEx
+nJChZaW4rgAuvLa1Nugy1nBmnwRfh6O2x3PHttIu+hyC5FpOY3NamQtj8KefTehV
+L+Nnmggd+kYnnrl5RFDQ
+=1K4f
 -----END PGP SIGNATURE-----
 
---UWXkUGr3oebztLxzvKnCv6dr3g9Cg5s4f--
+--CSzFGbgwwVVWZkjoZEd6EQNCYz9wBJG6q--
 
