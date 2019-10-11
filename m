@@ -1,8 +1,11 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Fri, 11 Oct 2019 12:03:45 +0300
-Message-Id: <1570784625-8837-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH] Visual Studio: make it easier to build with
- VS
+Message-ID: <f905ca0e-b3be-e552-2ac8-c6d48d402675@...277...>
+Date: Fri, 11 Oct 2019 16:25:13 +0300
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="OUbULPG79cUE5tFgT4JqjgJ0ADqxpeZUc"
+Subject: [Openvpn-devel] OpenVPN GUI with Wintun (unofficial)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,48 +14,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--OUbULPG79cUE5tFgT4JqjgJ0ADqxpeZUc
+Content-Type: multipart/mixed; boundary="ZglHojjH552Y522gC03yfL8QWUkJC23Rp"
+
+--ZglHojjH552Y522gC03yfL8QWUkJC23Rp
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-This changes default path to openvpn dependencies, so that
-openvpn-build and openvpn projects can be cloned from the same
-folder:
+Hi,
 
-  c:\Users\Administrator\Projects>git clone git@...1714...:OpenVPN/openvpn-build.git
-  c:\Users\Administrator\Projects>git clone git@...1714...:OpenVPN/openvpn.git
+Here is (unofficial) OpenVPN GUI client with Wintun:
 
-This also removes the necessity of copying openvpn-build\msvc\image
-to %USERPROFILE%.
+http://staging.openvpn.net/openvpn2/openvpn-install-2.5_git-I607-Win10.exe
 
-To use Visual Studio, clone both projects, install dependencies
-(VS2017 Community with SDK 10.0.17143, Strawberry Perl) and run:
+I have bumped Wintun version to 0.7 and signed openvpn-gui installer
+with OpenVPN Inc certificate.
 
-  c:\Users\Administrator\Projects\openvpn-build\msvc\build.bat
+To use Wintun driver instead of tap-window6, add "windows-driver wintun"
+to your VPN profile.
 
-Then just open solution file:
+-Lev
 
-  c:\Users\Administrator\Projects\openvpn\openvpn.sln
 
-Signed-off-by: Lev Stipakov <lstipakov@...277...>
----
- src/compat/PropertySheet.props | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+--ZglHojjH552Y522gC03yfL8QWUkJC23Rp--
 
-diff --git a/src/compat/PropertySheet.props b/src/compat/PropertySheet.props
-index 4cad994..fdded31 100644
---- a/src/compat/PropertySheet.props
-+++ b/src/compat/PropertySheet.props
-@@ -3,7 +3,7 @@
-   <ImportGroup Label="PropertySheets" />
-   <PropertyGroup Label="UserMacros">
-     <SOURCEBASE>$(SolutionDir)</SOURCEBASE>
--    <OPENVPN_DEPROOT>$(SOURCEBASE)\..\..\image</OPENVPN_DEPROOT>
-+    <OPENVPN_DEPROOT>$(SOURCEBASE)\..\openvpn-build\msvc\image</OPENVPN_DEPROOT>
-     <OPENSSL_HOME>$(OPENVPN_DEPROOT)</OPENSSL_HOME>
-     <TAP_WINDOWS_HOME>$(OPENVPN_DEPROOT)</TAP_WINDOWS_HOME>
-     <LZO_HOME>$(OPENVPN_DEPROOT)</LZO_HOME>
--- 
-2.7.4
+--OUbULPG79cUE5tFgT4JqjgJ0ADqxpeZUc
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEW3OHsN2W3CfLpAQqiGcL4li5wlgFAl2ggrkACgkQiGcL4li5
+wljQ6RAAgygDFezaOTv1Nk4L48psRFcSdadgOLqF7h4sBotLoOjsOqmK2ykA5bYR
+38YmBJfjf3CNasvxALTSo3Hz9kqNRZvQC8nGnYDjVub6noAqSNG+gy3+AyoAsx3H
+7HwigEnpdArLss16nw07d9nI9X5BeemO6TV4sUW5uOM65jsoJPsvBzqql6fW4MZG
+RRKmumN63psJUQIHQfEoN/Tokx0iG4hsuwFUvvwzuWszUO9KbbQtct/KATFhFVnf
+qJL0pBtnLOoWnYMgFPWlpYs8tRkJ7dzNbI4f1T+4rcwBwfP9zkIguKMlscdmQ56q
+rh6HMQ4HsErQXHX4sbBtspxliC5RixeVwJ9eLBCiMFivBan1xBC/ymZ++IqNQWNv
+asHF2EpeaWEhCStFUQLlJAAHQVktfACjHwufYz6LoRpfgthjFD1kJCzY5uyZ1bP6
+o+YCdkN66jIUury7YeYTsgu6Y6ttTc0BNJu99r/x73p3iBD5w+K4sDSyZXsiyOca
+h2G9NiE+k4Tk+d5kD1iodXBqyU8OhIeqs5e35Tsjd4t4lLcxOR3Lu8kSX1JhXzyY
+Cy5dK3m2He0REfdlNRdCw1ZZMh8JHl4z+ewmZwBsqnn0ynRTEFG/LtAAhrprAq+G
+LyFz848zb6Y5IVRiqTdZRl5IUpfAvkC0LiLfXsJxS2WmAhvCVv4=
+=CZOW
+-----END PGP SIGNATURE-----
+
+--OUbULPG79cUE5tFgT4JqjgJ0ADqxpeZUc--
 
