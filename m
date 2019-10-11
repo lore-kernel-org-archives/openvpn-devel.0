@@ -1,13 +1,15 @@
 References: <f905ca0e-b3be-e552-2ac8-c6d48d402675@...277...>
  <20191011133021.h2s3gsr25vms2giw@...1152...>
+ <54f7abfc-faab-621e-379c-386df3743b1a@...277...>
+ <20191011142508.4saabj66e57dnoo4@...1152...>
 From: Lev Stipakov <lstipakov@...277...>
-Message-ID: <54f7abfc-faab-621e-379c-386df3743b1a@...277...>
-Date: Fri, 11 Oct 2019 17:21:47 +0300
+Message-ID: <fdc8d8dc-401f-4cbd-d18d-d09ee63b8311@...277...>
+Date: Fri, 11 Oct 2019 17:48:45 +0300
 MIME-Version: 1.0
-In-Reply-To: <20191011133021.h2s3gsr25vms2giw@...1152...>
+In-Reply-To: <20191011142508.4saabj66e57dnoo4@...1152...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="dKQBSlltBzboVX9LB64DefBJ0WQKxGelJ"
+ boundary="UWXkUGr3oebztLxzvKnCv6dr3g9Cg5s4f"
 Subject: Re: [Openvpn-devel] [ext] [Openvpn-users] OpenVPN GUI with Wintun
  (unofficial)
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,55 +24,63 @@ To: Ralf Hildebrandt <Ralf.Hildebrandt@...1152...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---dKQBSlltBzboVX9LB64DefBJ0WQKxGelJ
-Content-Type: multipart/mixed; boundary="jgekOJM2rVMeWaAsc4byVZZw14UyWS2vy"
+--UWXkUGr3oebztLxzvKnCv6dr3g9Cg5s4f
+Content-Type: multipart/mixed; boundary="epdaNoSRYe1cs7UuIIviHOPxaIadqsIep"
 
---jgekOJM2rVMeWaAsc4byVZZw14UyWS2vy
+--epdaNoSRYe1cs7UuIIviHOPxaIadqsIep
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-Ralf Hildebrandt kirjoitti 11.10.2019 klo 16.30:
+Ralf Hildebrandt kirjoitti 11.10.2019 klo 17.25:
 >=20
-> "VPN profile"? Do you mean "in the config file"?
->
+> OK, I was just irritated since the man page of the "normal" openvpn
+> doesn't list "windows-driver" -- so I was unsure if it's
+>=20
+> a) windows-specific
+> b) 2.5-specific.
+>=20
+Both, although it is not yet in 2.5.
 
-Yes, in .ovpn config file. You could also specity it in command line
-(requires elevated command prompt), for example:
+If you run openvpn.exe from that installation, you should see:
 
-C:\Program Files\OpenVPN\bin>openvpn.exe --config
-C:\Users\Administrator\Desktop\client.ovpn --windows-driver wintun
+  C:\Program Files\OpenVPN\bin>openvpn.exe
+  <...>
+  Windows Specific:
+  <...>
+  --windows-driver   : Which tun driver to use?
+                       tap-windows6 (default)
+                       wintun
+  <...>
 
 -Lev
 
 
 
+--epdaNoSRYe1cs7UuIIviHOPxaIadqsIep--
 
-
---jgekOJM2rVMeWaAsc4byVZZw14UyWS2vy--
-
---dKQBSlltBzboVX9LB64DefBJ0WQKxGelJ
+--UWXkUGr3oebztLxzvKnCv6dr3g9Cg5s4f
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEEW3OHsN2W3CfLpAQqiGcL4li5wlgFAl2gj/sACgkQiGcL4li5
-wlhUBw/9FLcuQSsAJ5mx5jqM+O0+yTFSRhvetXkxIs90d4BE7wlkumU+m5gVsA5z
-oTMZ0Ly1jGxPGFwGiKqVXex8S3fCnNBwtO9bzivVUBs5cjw2QUuhjbH5d4PeBhC+
-3lKRhrceRTDS82J79H8an9ez3FsOOE72B2RBkXvdpLaW1N2nvb70JWe6rvIHAb/h
-Pj2/CZQsx9iGROegLx274oJ32deC/I0HdVbQVFx8CgzKMR2iGPATahIBjjongV/c
-/R4PXqaiwUEV3oTL2QTfcIZs/gafIgOoxn7XPXhUvqyM5xGayo6mxL3c4D3gFkNT
-rMmeL4ssB6KOMgnNl9u7lL3i6OYBEwqcbRsxtHYe6sMB+y/fLrmPYa5tGSt4EUWR
-EK19IWJ2ZQ/8aFmZePIXqTydpHWSpf9ZMkOZepAgNz7p00pIQlk9rMRkLviZHT1P
-jXS9cKLkw0Hb7pocG0Qig2pMj/k6sEPfgjeeuSX2MtAsnl8tA9RwnDav+KfnD1Py
-YzB42m2qqHQ/CfIHOh8mSMJLXgCgouPUibu8MAJNvGVop3FjL7iiRQCnzg7NjE/3
-K5NDqPDOIbvEH+JNszsiSOIxkx6pXrjUhPCB9Uy6yGjWS5ICjQnZCpK1T5Iop7UD
-kIzaKgtzFhgJvC4eL4AqU0IEWB1Tvvcd6pGCti0uj8oI2sijIJ0=
-=IiPt
+iQIzBAEBCAAdFiEEW3OHsN2W3CfLpAQqiGcL4li5wlgFAl2glk0ACgkQiGcL4li5
+wlgzWA/+KM3m6BWVqu/7cs9DCmBL2XOufcd7eUUeU7AYOnyn2BXueT3BAogpWpsS
+43kaHVIu7Z5kKoilTOYwkClJus17AIIoQapKF1ZnUOtKFh2k54cTNNfw42h2iXKc
+TMcNkxnC40kQrr6qODRiL3cI9e2M8CIwPS8l+NmLRVeOBxSKhS+5ym2ssNln+Kp6
+IuG2/za7sC1whB43GMRolVQCTXzhqc16qFwsVQhUZAHf7q2P1e1cEfGkG5gvojC/
+7hBvq59nyxyj8IfO9HYL+SXXD0PG+CssXLfuYJA9c8DVgTQD5uiMEj7g/cmsdZIE
+2cDi6vf1R5A9vhifCGS+hVN8vwSzjVWEoFp6w2+KibOEhw1g6FBuI/fxk1oG6xGL
+6iVWRh6ijpCBaapvscX7uBuwxTqFj5fZcDdlwcDg5j9GTP4MqdMNf/XK0w1tpEVy
+a9yXj4b959gqCxugZvzRGRtJ4RCZB7LLYnrln/ObhR0yJZuYIMbd0ObEm9ziVf8+
+Ei9I3iAJ5oeKxIKjuXFBOXtBBR5coypo38vOiZIii2QU4ma9MkEJcuGMkNNNr+zh
+9HgiyIJ7PLjma68Ju7kTYyekdIxLFqSd0W4dhyL5C2tCOmn8ZnAApwbEsHeY1+8o
+CWMEy8y8wHaqoAGfmNKhgKvhd1Bvpzt3c5NSQ36K2sNuvI6dXJ4=
+=Z9GV
 -----END PGP SIGNATURE-----
 
---dKQBSlltBzboVX9LB64DefBJ0WQKxGelJ--
+--UWXkUGr3oebztLxzvKnCv6dr3g9Cg5s4f--
 
