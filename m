@@ -1,8 +1,11 @@
-From: mykola.baibuz@...277...
-Date: Mon, 14 Oct 2019 14:21:45 +0300
-Message-Id: <20191014112145.251-1-mykola.baibuz@...277...>
+References: <20191014112145.251-1-mykola.baibuz@...277...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <f9bc695b-15e7-0b76-f0f0-de67801af2f3@...2181...>
+Date: Mon, 14 Oct 2019 14:04:17 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix typo in NTLM proxy debug message
+In-Reply-To: <20191014112145.251-1-mykola.baibuz@...277...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] Fix typo in NTLM proxy debug message
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,31 +14,20 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: mykola.baibuz@...277..., openvpn-devel@lists.sourceforge.net
 
-From: Mykola Baibuz <mykola.baibuz@...277...>
+Hi,
 
-Signed-off-by: Mykola Baibuz <mykola.baibuz@...277...>
----
- src/openvpn/proxy.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 14/10/2019 13:21, mykola.baibuz@...277... wrote:
+> From: Mykola Baibuz <mykola.baibuz@...277...>
+> 
+> Signed-off-by: Mykola Baibuz <mykola.baibuz@...277...>
 
-diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
-index c8bd86dd..9998623a 100644
---- a/src/openvpn/proxy.c
-+++ b/src/openvpn/proxy.c
-@@ -354,7 +354,7 @@ get_proxy_authenticate(socket_descriptor_t sd,
- #if NTLM
-             else if (!strncmp(buf+20, "NTLM", 4))
-             {
--                msg(D_PROXY, "PROXY AUTH HTLM: '%s'", buf);
-+                msg(D_PROXY, "PROXY AUTH NTLM: '%s'", buf);
-                 *data = NULL;
-                 ret = HTTP_AUTH_NTLM;
-             }
+Acked-by: Antonio Quartulli <antonio@...515...>
+
+
 -- 
-2.23.0.windows.1
-
+Antonio Quartulli
 
