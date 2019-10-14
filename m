@@ -1,8 +1,11 @@
-From: mykola.baibuz@...277...
-Date: Sat, 12 Oct 2019 20:28:31 +0300
-Message-Id: <20191012172831.516-1-mykola.baibuz@...277...>
+References: <20191012172831.516-1-mykola.baibuz@...277...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <b7f5a384-0752-2a55-0964-3a82cbb4424c@...2181...>
+Date: Mon, 14 Oct 2019 11:58:58 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix typo in NTLM proxy debug message
+In-Reply-To: <20191012172831.516-1-mykola.baibuz@...277...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] Fix typo in NTLM proxy debug message
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,30 +14,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: mykola.baibuz@...277..., openvpn-devel@lists.sourceforge.net
 
-From: Mykola Baibuz <mykola.baibuz@...277...>
+Hi,
 
----
- src/openvpn/proxy.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 12/10/2019 19:28, mykola.baibuz@...277... wrote:
+> From: Mykola Baibuz <mykola.baibuz@...277...>
+> 
 
-diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
-index c8bd86dd..9998623a 100644
---- a/src/openvpn/proxy.c
-+++ b/src/openvpn/proxy.c
-@@ -354,7 +354,7 @@ get_proxy_authenticate(socket_descriptor_t sd,
- #if NTLM
-             else if (!strncmp(buf+20, "NTLM", 4))
-             {
--                msg(D_PROXY, "PROXY AUTH HTLM: '%s'", buf);
-+                msg(D_PROXY, "PROXY AUTH NTLM: '%s'", buf);
-                 *data = NULL;
-                 ret = HTTP_AUTH_NTLM;
-             }
+to be be properly accepted, this patch should have a Signed-off-by line.
+Please recreate this patch while adding the "-s" argument to "git
+format-patch".
+
+However, the patch looks good. I will ACK it once it lands with the
+proper SOB line.
+
+Cheers,
+
 -- 
-2.23.0.windows.1
-
+Antonio Quartulli
 
