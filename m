@@ -1,9 +1,8 @@
-From: Gert Doering <gert@...1296...>
-Date: Sun, 20 Oct 2019 17:00:39 +0200
-Message-Id: <20191020150039.21516-1-gert@...1296...>
+From: Santtu Lakkala <santtu.lakkala@...2530...>
+Date: Mon, 21 Oct 2019 14:35:06 +0300
+Message-Id: <20191021113506.30377-1-santtu.lakkala@...2530...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Force combinationation of --socks-proxy and
- --proto UDP to use IPv4.
+Subject: [Openvpn-devel] [PATCH] Fix OpenSSL private key passphrase notices
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,67 +15,52 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Our current socks.c code does not handle IPv6 + UDP mode (socket
-negotiated with server is IPv4-only, addresses passed in the
-packets are IPv4-only).  If this combination is specified, print
-an explanatory message and force IPv4-only.
+Clear error stack on successful certificate loading in
+tls_ctx_load_cert_file_and_copy() and handle errors also for
+PEM_read_bio_PrivateKey() call in tls_ctx_load_priv_file().
 
-While at it, extend socks.c code to print address+port of auxiliary
-UDP connection to SOCKS server (helps debugging).
+Due to certificate loading possibly leaking non-fatal errors on OpenSSL
+error stack, and some slight oversights in error handling, the
 
-Trac: #1221
+>PASSWORD:Verification Failed: 'Private Key'
 
-Signed-off-by: Gert Doering <gert@...1296...>
+line was never produced on the management channel for PEM formatted keys.
+
+Signed-off-by: Santtu Lakkala <santtu.lakkala@...2530...>
 ---
- src/openvpn/options.c | 18 ++++++++++++++++++
- src/openvpn/socks.c   |  4 ++++
- 2 files changed, 22 insertions(+)
+ src/openvpn/ssl_openssl.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 752f5f2c..1da14e8b 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2825,6 +2825,24 @@ options_postprocess_mutate_ce(struct options *o, struct connection_entry *ce)
- #endif
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 07916c3c..74c8fa65 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -921,6 +921,10 @@ end:
+             crypto_msg(M_FATAL, "Cannot load certificate file %s", cert_file);
+         }
      }
- 
-+    /* our socks code is not fully IPv6 enabled yet (TCP works, UDP not)
-+     * so fall back to IPv4-only (trac #1221)
-+     */
-+    if (ce->socks_proxy_server && proto_is_udp(ce->proto) && ce->af != AF_INET)
++    else
 +    {
-+        if (ce->af == AF_INET6)
-+        {
-+            msg(M_INFO, "WARNING: '--proto udp6' is not compatible with "
-+                "'--socks-proxy' today.  Forcing IPv4 mode." );
-+        }
-+        else
-+        {
-+            msg(M_INFO, "NOTICE: dual-stack mode for '--proto udp' does not "
-+                "work correctly with '--socks-proxy' today.  Forcing IPv4." );
-+        }
-+        ce->af = AF_INET;
++        crypto_print_openssl_errors(M_DEBUG);
 +    }
-+
-     /*
-      * Set MTU defaults
-      */
-diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c
-index c61ef55c..ad3a70b2 100644
---- a/src/openvpn/socks.c
-+++ b/src/openvpn/socks.c
-@@ -414,6 +414,10 @@ recv_socks_reply(socket_descriptor_t sd,
+ 
+     if (in != NULL)
      {
-         memcpy(&addr->addr.in4.sin_addr, buf + 4, sizeof(addr->addr.in4.sin_addr));
-         memcpy(&addr->addr.in4.sin_port, buf + 8, sizeof(addr->addr.in4.sin_port));
-+        struct gc_arena gc = gc_new();
-+        msg(M_INFO, "SOCKS proxy wants us to send UDP to %s",
-+            print_sockaddr(addr, &gc));
-+        gc_free(&gc);
-     }
- 
- 
+@@ -963,12 +967,7 @@ tls_ctx_load_priv_file(struct tls_root_ctx *ctx, const char *priv_key_file,
+     pkey = PEM_read_bio_PrivateKey(in, NULL,
+                                    SSL_CTX_get_default_passwd_cb(ctx->ctx),
+                                    SSL_CTX_get_default_passwd_cb_userdata(ctx->ctx));
+-    if (!pkey)
+-    {
+-        goto end;
+-    }
+-
+-    if (!SSL_CTX_use_PrivateKey(ssl_ctx, pkey))
++    if (!pkey || !SSL_CTX_use_PrivateKey(ssl_ctx, pkey))
+     {
+ #ifdef ENABLE_MANAGEMENT
+         if (management && (ERR_GET_REASON(ERR_peek_error()) == EVP_R_BAD_DECRYPT))
 -- 
-2.21.0
+2.20.1
 
 
