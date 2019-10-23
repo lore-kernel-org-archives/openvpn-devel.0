@@ -1,13 +1,11 @@
-References: <20190613144113.6418-1-arne@...1227...>
- <20190613144113.6418-5-arne@...1227...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <277155fb-bfbf-6c06-123e-5627e5f3f41d@...2080...>
-Date: Tue, 22 Oct 2019 22:37:25 +0200
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <70f8e104-6d26-b1e7-12df-50f88d02cd74@...515...>
+Date: Wed, 23 Oct 2019 14:19:32 +0300
 MIME-Version: 1.0
-In-Reply-To: <20190613144113.6418-5-arne@...1227...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH 4/5] Implement sending response to
- challenge via CR_RESPONSE
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="g1BR4VNbryigMaLWTxrgeg7fftFRdw7SK"
+Subject: [Openvpn-devel] Tap-windows6 test installer with PRs #84 and #86
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,118 +14,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-On 13/06/2019 16:41, Arne Schwabe wrote:
-> When a client announces its support to support text based
-> challenge/response via IV_SOO=cr_text,the client needs to also
-> be able to reply to that response.
-> 
-> This adds the "cr-response" management function to be able to
-> do this. The answer should be base64 encoded.
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  doc/management-notes.txt |  8 ++++++++
->  src/openvpn/init.c       | 25 +++++++++++++++++++++++++
->  src/openvpn/manage.c     | 37 ++++++++++++++++++++++++++++++++++++-
->  src/openvpn/manage.h     |  1 +
->  4 files changed, 70 insertions(+), 1 deletion(-)
-> 
-> diff --git a/doc/management-notes.txt b/doc/management-notes.txt
-> index 05d30b0a..29f2da75 100644
-> --- a/doc/management-notes.txt
-> +++ b/doc/management-notes.txt
-> @@ -806,6 +806,14 @@ To accept connecting to the host and port directly, use this command:
->  
->    proxy NONE
->  
-> +COMMAND -- cr-response (OpenVPN 2.5 or higher)
-> +-------------------------------------------------
-> +Provides support for sending responses a challenge/response
-> +query via INFOMSG,CR_TEXT. The response should be base64 encoded:
-> +
-> +  cr-response SGFsbG8gV2VsdCE=
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--g1BR4VNbryigMaLWTxrgeg7fftFRdw7SK
+Content-Type: multipart/mixed; boundary="WUCJMAanldlK7lmf5tET3Uhm47JbYopQZ";
+ protected-headers="v1"
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Message-ID: <70f8e104-6d26-b1e7-12df-50f88d02cd74@...515...>
+Subject: Tap-windows6 test installer with PRs #84 and #86
 
-I'm pondering if this response should have a version identifier as well, which
-probably should match the version in the CR_RESPONSE message.  I'm not
-entirely convinced it is needed yet, but just raising it for further discussion.
+--WUCJMAanldlK7lmf5tET3Uhm47JbYopQZ
+Content-Language: en-US
+Content-Type: text/plain; charset="iso-8859-15"
+Content-Transfer-Encoding: quoted-printable
 
-I'm leaning against adding it, because it is the "UI interface" using this
-cr-response call via the managment interface; which results in the client side
-sending the CR_RESPONSE back to the server - where the client code should add
-that in its own response.
+Hi,
 
-As said, I'm not convinced yet ... just bringing it up for a quick discussion
-to see if we've missed a few corner cases or not.
+Here is a new Windows 10 / Server 2016+ tap-windows6 installer. It is
+based on the latest code in "master" plus two currently unmerged PRs:
 
-[...snip...]
+"Introduce TAP adapter as a virtual device"
 
-> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index 647f5336..08425d85 100644
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -287,6 +287,30 @@ ce_management_query_proxy(struct context *c)
->      return ret;
->  }
->  
-> +static bool
-> +management_callback_send_cc_mesage(void *arg,
-> +                                   const char *command,
-> +                                   const char *parameters)
+<https://github.com/OpenVPN/tap-windows6/pull/84>
 
-This function could use a doxygen documentation tag.
+"constants.h: make driver not halt on suspend"
 
-> diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-> index a2b58296..8ec90bb1 100644
-> --- a/src/openvpn/manage.c
-> +++ b/src/openvpn/manage.c
-[...snip...]
-> +static void
-> +man_send_cc_message(struct management *man, const char* message, const char* parameters)
+<https://github.com/OpenVPN/tap-windows6/pull/86>
 
-This function could also benefit from a doxygen documentation tag.
+I have smoke-tested the installer on Windows Server 2016 and it passes
+the signature verification just fine.
 
-> +{
-> +    if (man->persist.callback.send_cc_message)
-> +        {
-> +            const bool status = (*man->persist.callback.send_cc_message)
-> +                (man->persist.callback.arg, message, parameters);
+We hope to later merge these two PRs and push out a new, official
+tap-windows6 release.
 
-This code is hard to read, due to the arguments being passed to the callback
-function is after a line break.  Could we use a temporary/scoped function
-pointer which is assigned to (*man->persist.callback.send_cc_message) and used
-instead?
-
-[...snip...]
-> +    else
-> +    {
-> +        msg(M_CLIENT, "ERROR: This command is not supported by the current daemon mode");
-
-Why this "current daemon mode" reference?  Can't we make it a bit clearer?
-Like "management interface does not support responding to this
-challenge/response protocol", or something like that?
-
-> 
-> +/**
-> + *
-> + * @param p         pointer to the parameter array
-> + * @param n         number of arguments required
-> + * @param flags     if MN_AT_LEAST require at least n parameters and not exactly n
-> + * @return          Return wether p has n (or at least n) parameters
-> + */
->  static bool
->  man_need(struct management *man, const char **p, const int n, unsigned int flags)
-
-There's something missing here ... like a description of the function.
+Samuli
 
 
--- 
-kind regards,
+--WUCJMAanldlK7lmf5tET3Uhm47JbYopQZ--
 
-David Sommerseth
-OpenVPN Inc
+--g1BR4VNbryigMaLWTxrgeg7fftFRdw7SK
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAl2wN0QACgkQKVhNn0CG
+RXjw3wf/ciokA8AAkOGX4NbQXWRD3b04ql4Ngr6x0DaiOoHxXF3kKWgCohXy5ltj
+KhVeFrwGJZK+t29zwsedQbJw62yWM1/iBllMp+DBQlLHO6pqUfV/ub2SCLUTcwa4
+BYAXch7zR2GMNSl+iJaBzqmr04kCgyYOZaPRvrfpUii6LdHYQm1D8IdguWMGG1b7
+ATT7kdOQ8bQPcDy/qYnZCIsvPawO0eZBKgTyzYI7iQeaaORsOSOb013uVfhX8bvE
+9+de6HZocYZyfX1HnzNOhH+jnuqsGifXz5SyGXk3IEhmDa0mIuQSdDIXh07T+DVt
+VIq29Wbw2j+9l09EGV2PaG9cxrBnmg==
+=fKRd
+-----END PGP SIGNATURE-----
+
+--g1BR4VNbryigMaLWTxrgeg7fftFRdw7SK--
 
