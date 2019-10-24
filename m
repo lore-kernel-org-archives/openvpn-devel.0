@@ -1,12 +1,9 @@
-References: <20191020150039.21516-1-gert@...1296...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <905ae85d-8b06-0cb2-40f6-e6d6b523dfb2@...2181...>
-Date: Thu, 24 Oct 2019 21:47:20 +0200
-MIME-Version: 1.0
-In-Reply-To: <20191020150039.21516-1-gert@...1296...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Force combinationation of --socks-proxy
- and --proto UDP to use IPv4.
+From: Richard Bonhomme <tincanteksup@...277...>
+Date: Thu, 24 Oct 2019 22:48:32 +0100
+Message-Id: <20191024214832.22737-1-tincanteksup@...277...>
+In-Reply-To: <20191024174414.18821-1-tincanteksup@...277...>
+References: <20191024174414.18821-1-tincanteksup@...277...>
+Subject: [Openvpn-devel] [PATCH v2] Ignore --pull-filter for --mode server
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,38 +12,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+OpenVPN-GUI (For Windows) currently always adds "--pull-filter"
+which is a fatal error when also using "--mode server"
 
-On 20/10/2019 17:00, Gert Doering wrote:
-> Our current socks.c code does not handle IPv6 + UDP mode (socket
-> negotiated with server is IPv4-only, addresses passed in the
-> packets are IPv4-only).  If this combination is specified, print
-> an explanatory message and force IPv4-only.
-> 
-> While at it, extend socks.c code to print address+port of auxiliary
-> UDP connection to SOCKS server (helps debugging).
-> 
-> Trac: #1221
-> 
-> Signed-off-by: Gert Doering <gert@...1296...>
+Using "--pull-filter" implicitly requires the use of "--pull".
+Using "--mode server" and "--pull" is a fatal error which supercedes
+"--pull-filter"
 
-I performed some basic test to ensure the rest is not being broken by
-this change and it all looks good.
+Safely ignore "--pull-filter" for "--mode server"
 
-The patch does just what it says and it makes sense. I cannot test with
-an actual socks server, but Gert said he did so and I trust his test rig.
+Trac: #1164
 
-I ensured that the "Force IPv4" was being performed when needed and it
-did so.
+v2: Improve commit message, no functional changes.
 
-Acked-by: Antonio Quartulli <antonio@...515...>
+Signed-off-by: Richard Bonhomme <tincanteksup@...277...>
+---
+ src/openvpn/options.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 752f5f2c..796e632e 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2233,7 +2233,7 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
+         }
+         if (options->pull_filter_list)
+         {
+-            msg(M_USAGE, "--pull-filter cannot be used with --mode server");
++            msg(M_WARN, "--pull-filter ignored for --mode server");
+         }
+         if (!(proto_is_udp(ce->proto) || ce->proto == PROTO_TCP_SERVER))
+         {
 -- 
-Antonio Quartulli
+2.17.1
+
 
