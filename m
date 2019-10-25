@@ -1,9 +1,10 @@
-From: Richard Bonhomme <tincanteksup@...277...>
-Date: Thu, 24 Oct 2019 22:48:32 +0100
-Message-Id: <20191024214832.22737-1-tincanteksup@...277...>
-In-Reply-To: <20191024174414.18821-1-tincanteksup@...277...>
-References: <20191024174414.18821-1-tincanteksup@...277...>
-Subject: [Openvpn-devel] [PATCH v2] Ignore --pull-filter for --mode server
+Date: Fri, 25 Oct 2019 08:29:10 +0200 (CEST)
+Message-Id: <201910250629.x9P6TAHA082435@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20191024214832.22737-1-tincanteksup@...277...>
+References: <20191024214832.22737-1-tincanteksup@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Ignore --pull-filter for --mode
+ server
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,40 +15,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Richard Bonhomme <tincanteksup@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-OpenVPN-GUI (For Windows) currently always adds "--pull-filter"
-which is a fatal error when also using "--mode server"
+Acked-by: Gert Doering <gert@...1296...>
 
-Using "--pull-filter" implicitly requires the use of "--pull".
-Using "--mode server" and "--pull" is a fatal error which supercedes
-"--pull-filter"
+Thanks.  (One could argue on whether this is the "most correct" patch,
+but while we do so, it's very non-intrusive and fixes a real world problem 
+for some users).
 
-Safely ignore "--pull-filter" for "--mode server"
+Your patch has been applied to the master and release/2.4 branch.
 
-Trac: #1164
+commit bb1ea491cd16d11b448342e8287beacae619f980 (master)
+commit 6a90f36f69e1f41d6c61ab7e566e7e7e0ba7d71a (release/2.4)
+Author: Richard Bonhomme
+Date:   Thu Oct 24 22:48:32 2019 +0100
 
-v2: Improve commit message, no functional changes.
+     Ignore --pull-filter for --mode server
 
-Signed-off-by: Richard Bonhomme <tincanteksup@...277...>
----
- src/openvpn/options.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+     Signed-off-by: Richard Bonhomme <tincanteksup@...277...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20191024214832.22737-1-tincanteksup@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18964.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 752f5f2c..796e632e 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2233,7 +2233,7 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-         }
-         if (options->pull_filter_list)
-         {
--            msg(M_USAGE, "--pull-filter cannot be used with --mode server");
-+            msg(M_WARN, "--pull-filter ignored for --mode server");
-         }
-         if (!(proto_is_udp(ce->proto) || ce->proto == PROTO_TCP_SERVER))
-         {
--- 
-2.17.1
+
+--
+kind regards,
+
+Gert Doering
 
 
