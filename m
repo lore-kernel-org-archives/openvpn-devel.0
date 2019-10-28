@@ -1,11 +1,10 @@
-MIME-Version: 1.0
-References: <20191025110631.15540-1-wardragon78@...277...>
-In-Reply-To: <20191025110631.15540-1-wardragon78@...277...>
-From: Selva Nair <selva.nair@...277...>
-Date: Fri, 25 Oct 2019 10:42:38 -0400
-Message-ID: <CAKuzo_gYw3qJBYp7osam-kbAxANFKQLHv6jA6n0eqyNTYxKarw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] [PATCH v2] Insert client connection
- data into PAM environment
+Date: Mon, 28 Oct 2019 19:12:41 +0100 (CET)
+Message-Id: <201910281812.x9SICfZJ080644@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20191020150039.21516-1-gert@...1296...>
+References: <20191020150039.21516-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Force combinationation of
+ --socks-proxy and --proto UDP to use IPv4.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,58 +13,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Paolo Cerrito <wardragon78@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, lorenzo.catucci@...2517..., paolo <paolo.cerrito@...2517...>
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Fri, Oct 25, 2019 at 7:08 AM <wardragon78@...277...> wrote:
->
-> From: Paolo Cerrito <wardragon78@...277...>
->
-> Without this patch, the PAM environment lacks any information about the remote client address.
->
-> syslog output for auth and authpriv facilities changes
-> from:
->    Oct 25 11:52:02 openvpndev openvpn: pam_unix(openvpn:auth): authentication failure;
->                    logname=root uid=0 euid=0 tty= ruser= rhost=
->    Oct 25 11:52:33 openvpndev openvpn: pam_unix(openvpn:auth): authentication failure;
->                    logname=root uid=0 euid=0 tty= ruser= rhost=  user=****
-> to:
->    Oct 25 10:56:11 openvpndev openvpn: pam_unix(openvpn:auth): authentication failure;
->                    logname=root uid=0 euid=0 tty= ruser= rhost=198.51.100.10
->    Oct 25 10:57:02 openvpndev openvpn: pam_unix(openvpn:auth): authentication failure;
->                    logname=root uid=0 euid=0 tty= ruser= rhost=198.51.100.10 user=****
->
-> Furthermore, the presence of the remote client address in PAM
-> environment, enables usage of pam modules like pam_recent
-> [https://github.com/az143/pam_recent].
->
-> Signed-off-by: Paolo Cerrito <wardragon78@...277...>
+Patch has been applied to the master and release/2.4 branch (bugfix).
 
-So, apart from the commit message, what are the changes in v2?
+commit 57623b4e40e68de983b9dfd82914dadcbe096f7b (master)
+commit bdfa0d3540b7836f72dc5f2ddb8239154d152061 (release/2.4)
+Author: Gert Doering
+Date:   Sun Oct 20 17:00:39 2019 +0200
 
-I don't see that my comment about ensuring remote read from env is not NULL
-addressed, nor any response to a number of other points raised by David.
+     Force combinationation of --socks-proxy and --proto UDP to use IPv4.
 
-> ---
->  src/plugins/auth-pam/auth-pam.c | 39 ++++++++++++++++++++++++++++-----
->  1 file changed, 33 insertions(+), 6 deletions(-)
->
-> diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
-> index 88b53204..f7b39e36 100644
-> --- a/src/plugins/auth-pam/auth-pam.c
-> +++ b/src/plugins/auth-pam/auth-pam.c
-> @@ -115,6 +115,7 @@ struct user_pass {
->      char password[128];
->      char common_name[128];
->      char response[128];
-> +    char remote[40];
-
-Textual ipv6 address buffer is usually defined to be at least 46 bytes
-including NUL (not 40) to handle all cases.
-(cf. INET6_ADDRSTRLEN = 46 in <netinet/in.h>)
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20191020150039.21516-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18952.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-Selva
+--
+kind regards,
+
+Gert Doering
+
 
