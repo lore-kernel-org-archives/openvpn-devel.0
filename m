@@ -1,16 +1,15 @@
-Date: Mon, 28 Oct 2019 21:48:25 +0100
+Date: Wed, 30 Oct 2019 11:31:48 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20191028204825.GI40538@...1296...>
-References: <20190724152934.9884-1-arne@...1227...>
- <201908161931.x7GJVqP9044592@...2054...>
- <CAKxU2N8dmzKb4ui85BYeoGgCyOtXNT2bOcgsC5HCCGsTNjUMYQ@...278...>
+Message-ID: <20191030103148.GO40538@...1296...>
+References: <201907221844.x6MIiHtw009666@...2054...>
+ <1563892487-12063-1-git-send-email-lstipakov@...277...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="7ohyzAr2DuZRs7WU"
+ protocol="application/pgp-signature"; boundary="72pTQ1Q5L511SwPT"
 Content-Disposition: inline
-In-Reply-To: <CAKxU2N8dmzKb4ui85BYeoGgCyOtXNT2bOcgsC5HCCGsTNjUMYQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: openssl: Fix compilation
- without deprecated OpenSSL 1.1 APIs
+In-Reply-To: <1563892487-12063-1-git-send-email-lstipakov@...277...>
+Subject: Re: [Openvpn-devel] [PATCH v2 release/2.4] Fix broken
+ fragment/mssfix with NCP
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,53 +18,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Rosen Penev <rosenp@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---7ohyzAr2DuZRs7WU
+--72pTQ1Q5L511SwPT
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Aug 16, 2019 at 12:42:46PM -0700, Rosen Penev wrote:
-> On Fri, Aug 16, 2019 at 12:31 PM Gert Doering <gert@...1296...> wrote:
-> >
-> > Your patch has been applied to the master branch.
-> >
-> > Is this also suitable for release/2.4?  "You folks tell me, I do the
-> > cherry-picking" (if it applies) :-)
-> 2.4 is what I did my testing on, so yes.
+On Tue, Jul 23, 2019 at 05:34:47PM +0300, Lev Stipakov wrote:
+> From: Lev Stipakov <lev@...515...>
+>=20
+> This is the 2.4 backport of master patch (commit d22ba6b).
+>=20
+> NCP negotiation replaces worst cast crypto overhead
+> with actual one in data channel frame. That frame
+> params are used by mssfix.
+>=20
+> Fragment frame still contains worst case overhead.
+> Because of that TCP packets are fragmented, since
+> MSS value exceeds max fragment size.
+>=20
+> Fix by replacing worst case crypto overhead with
+> actual one for fragment frame, as it is done for data
+> channel frame.
 
-So - took me a bit, but here we go.  I backported this and the
-mbedtls explosive patch to release/2.4, for long-term compatibility
-reasons.
+Thanks for the backport.
 
-commit 416532f8e4125adb7862b2dce5c2d47d85b260df (HEAD -> release/2.4, matto=
-ck/re
-lease/2.4)
-Author: Antonio Quartulli <a@...2181...>
-Date:   Fri Aug 16 22:49:45 2019 +0200
+Unfortunately, I can not reproduce the problem *without* the patch,
+so I wonder if the issue got fixed by something else as side-effect?
 
-    mbedtls: fix segfault by calling mbedtls_cipher_free() in cipher_ctx_fr=
-ee()
+If I do what you describe in the ticket:
 
-commit 66b93b5e708b48778a5954fdcfe708b76b947a06
-Author: Rosen Penev <rosenp@...277...>
-Date:   Wed Jul 24 17:29:34 2019 +0200
+run
 
-    openssl: Fix compilation without deprecated OpenSSL 1.1 APIs
+ openvpn --fragment 1300 --mssfix
+
+and grep out the MSS lines, I get (for IPv4, IPv6 numbers are -20 bytes):
+
+with NCP:      MSS: 1460 -> 1203
+--ncp-disable: MSS: 1284 -> 1211
+
+... and the very same numbers from master...
 
 
-I've sent the combo to the buildslaves, and no explosions were seen -
-and besides them, I tested mbedtls 2.17.0, OpenSSL 1.1.1 and OpenSSL 1.0.2o
-locally (no explosions either).
+OpenVPN versions tested:
 
-Good to go... :-)
+OpenVPN 2.4.7 [git:release/2.4/416532f8e4125adb+]=20
+OpenVPN 2.5_git [git:master/b5fe104ddbbdf59b+]
+
+
+So, I'm wondering how to proceed here...
 
 gert
-
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -76,22 +83,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---7ohyzAr2DuZRs7WU
+--72pTQ1Q5L511SwPT
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJdt1QZAAoJEB2Cnv7KVigSX8IL/1hN+0di/hiwVHxvuOvMwEUD
-A9Gv+lLM3jdH0N0nNoRW4yYI7qPrEix5tBb+3AAbFrq2m5Hnx9sFavkgEropUEL3
-XbPGzXXiTwGLfVraQjwfyWsfj0UM/GluAFmcWnL5CP3WgBZjVpDZiTdINPXoqhtE
-s+KowNm4uCwDVh6AbmrFfIs47RfZ4dvLyKcF2S4vEYfhd39R4zn76VY+nlrxDxyL
-crUwRhbzJUk0kX5Gh3QuHVBdMTfJCjZNl7varPczCgvisEXc7wlCEc7F73oWF76B
-IQKY1B5tsuGQQAr6Kkzi3xvko0JJWDeOVh7qFpIm+a4+UX8V4gz741ytNuDbpe6Z
-yhMCqqwTpU3i5Hqs15hscxEa4TKsVhUjLdpviAwVms5fA9t+9w9mQx0h67Dyb4Wc
-HqW56HJVrzmz0Bqyb0E5rwnKP9mJBQHyAg/3rWg43YImcUB8GZV1MuwUBlDvuyz4
-hIVWGcZ6SLoQT/Rsy+zcbHllodw/DYD7SxbkuQbv8w==
-=yMyB
+iQGcBAEBAgAGBQJduWaTAAoJEB2Cnv7KVigSdRUL/3fnABEiEz26zt8tveNcw68O
++WrKR8192QDsM+NHuZEXAJDoMktSnUhDsBQXDse2adESw56CM1N5XUhkOfPQUedY
+ghFAWXs1UwAFGVKuQqW918va5GP1+5zTm/NyZNFWgtEsiQa/EGG8GkVH9BqN6Wtr
+wxUCBgg5hTWHUkEFgSwbJxe/nvu36tlTaoxMvHn8S89DbFm33j1rLIAi/R+w3gV3
+hvhJi/6yidxOcG7qYTc8nzELlksDS2qg5h+sX24f7eAIY4ffJFmevrvX52egrDNG
+Lr/E2wXj9wbnVOORKpC5cweH6ZMKJBUZ0yur2r/ru8bTokACV/JK3pQS383b0F6M
+k8kbGeHT+DAktSz1mEmeXwVwf5XByp8Bwtn2StPwErbBr5GX3c8Hxdx53b4uRdKo
+x/qkBjfN5r6bTIC/mlgJJFbTnftreTmD2NycpqQNoKjNw35PMl4hSc+K1DQicgyK
+SPJVVow9Pg842JSrOsTDjKvBNBG37RWvpzzDJB+5ew==
+=TLhd
 -----END PGP SIGNATURE-----
 
---7ohyzAr2DuZRs7WU--
+--72pTQ1Q5L511SwPT--
 
