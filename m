@@ -1,10 +1,14 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Wed, 30 Oct 2019 14:44:59 +0200
-Message-Id: <1572439499-16276-1-git-send-email-lstipakov@...277...>
-In-Reply-To: <CAGyAFMUW+BBYGHfY8k5w=OQKy0_uBrUtBjoVuiMZwuJEXzE+ug@...278...>
-References: <CAGyAFMUW+BBYGHfY8k5w=OQKy0_uBrUtBjoVuiMZwuJEXzE+ug@...278...>
-Subject: [Openvpn-devel] [PATCH v3] Fix broken fragmentation logic when
- using NCP
+From: Simon Rozman <simon@...2293...>
+Date: Wed, 30 Oct 2019 15:30:44 +0000
+Message-ID: <0CC5CC49-B907-40F3-B52E-55AC5A19CCB6@...2293...>
+References: <1571304533-15614-1-git-send-email-lstipakov@...277...>
+ <1571315023-17044-1-git-send-email-lstipakov@...277...>
+In-Reply-To: <1571315023-17044-1-git-send-email-lstipakov@...277...>
+Content-Language: en-GB
+Content-Type: multipart/signed; protocol="application/pkcs7-signature";
+ micalg=sha256; boundary="B_3655297844_1571064579"
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] [PATCH v2] msvc: OpenSSL 1.1.x support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,206 +17,238 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lstipakov@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-From: Lev Stipakov <lev@...515...>
+--B_3655297844_1571064579
+Content-type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-This is the 2.4 backport of master patch (commit d22ba6b).
+Hi,
 
-NCP negotiation replaces worst case crypto overhead
-with actual one in data channel frame. That frame
-params are used by mssfix. Fragment frame still contains
-worst case overhead.
+Unfortunately, I have no Visual Studio 2017 available any more. So, I had t=
+o upgrade the openvpn-build and openvpn to build with VS2019 first.
 
-Without this patch, fragmentation logic incorrectly uses
-max crypto overhead when calculating packet size. It exceeds
-fragment size and openvpn peforms fragmentation:
+Tested with OpenSSL 1.1.1d and this patch is indeed required to build openv=
+pn.exe.
 
-> sudo tcpdump port 1194
-13:59:06.956394 IP server.fi.openvpn > nat2.panoulu.net.openvpn: UDP, length 652
-13:59:06.956489 IP server.fi.openvpn > nat2.panoulu.net.openvpn: UDP, length 648
+Acked-by: Simon Rozman <simon@...2293...>
 
-This patch fixes fragmentation calculation by
-setting actual crypto overhead, and no unnecessary
-fragmentation is performed:
+Best regards,
+Simon
 
-> sudo tcpdump port 1194
-13:58:08.685915 IP server.fi.openvpn > nat2.panoulu.net.openvpn: UDP, length 1272
-13:58:08.686007 IP server.fi.openvpn > nat2.panoulu.net.openvpn: UDP, length 1272
+=EF=BB=BFOn 17.10.2019, 14:27, "Lev Stipakov" <lstipakov@...277...> wrote:
 
-Trac #1140
+    Since we release Windows client with OpenSSL 1.1.0
+    (and will switch to 1.1.1 in the next release),
+    it makes sense to use a newer version in VS build.
+=20=20=20=20
+    This patch adds msvc-specific defines which imply
+    that underlying OpenSSL is 1.1.x (works with 1.1.0 and 1.1.1).
+=20=20=20=20
+    Also OpenSSL library names in project file are updated.
+=20=20=20=20
+    Signed-off-by: Lev Stipakov <lstipakov@...277...>
+    ---
+=20=20=20=20
+    v2: clarify in comment and commit message that
+        this supports 1.1.x, which is 1.1.0 and 1.1.1.
+=20=20=20=20
+=20=20=20=20
+     config-msvc.h               | 37 +++++++++++++++++++++++++++++++++++++
+     src/openvpn/openvpn.vcxproj |  8 ++++----
+     2 files changed, 41 insertions(+), 4 deletions(-)
+=20=20=20=20
+    diff --git a/config-msvc.h b/config-msvc.h
+    index 45fae8b..875da4a 100644
+    --- a/config-msvc.h
+    +++ b/config-msvc.h
+    @@ -76,6 +76,43 @@
+     #define HAVE_POLL 1
+=20=20=20=20=20
+     #define HAVE_OPENSSL_ENGINE 1
+    +/* hardcode usage of OpenSSL 1.1.x */
+    +#define HAVE_EVP_MD_CTX_RESET 1
+    +#define HAVE_EVP_MD_CTX_FREE 1
+    +#define HAVE_EVP_MD_CTX_NEW 1
+    +#define HAVE_HMAC_CTX_RESET 1
+    +#define HAVE_HMAC_CTX_FREE 1
+    +#define HAVE_HMAC_CTX_NEW 1
+    +#define HAVE_SSL_CTX_GET_DEFAULT_PASSWD_CB_USERDATA 1
+    +#define HAVE_SSL_CTX_GET_DEFAULT_PASSWD_CB 1
+    +#define HAVE_X509_GET0_PUBKEY 1
+    +#define HAVE_X509_STORE_GET0_OBJECTS 1
+    +#define HAVE_X509_OBJECT_FREE 1
+    +#define HAVE_X509_OBJECT_GET_TYPE 1
+    +#define HAVE_EVP_PKEY_GET0_RSA 1
+    +#define HAVE_EVP_PKEY_GET0_EC_KEY 1
+    +#define HAVE_EVP_PKEY_ID 1
+    +#define HAVE_EVP_PKEY_GET0_DSA 1
+    +#define HAVE_RSA_SET_FLAGS 1
+    +#define HAVE_RSA_GET0_KEY 1
+    +#define HAVE_RSA_SET0_KEY 1
+    +#define HAVE_RSA_BITS 1
+    +#define HAVE_DSA_GET0_PQG 1
+    +#define HAVE_DSA_BITS 1
+    +#define HAVE_RSA_METH_NEW 1
+    +#define HAVE_RSA_METH_FREE 1
+    +#define HAVE_RSA_METH_SET_PUB_ENC 1
+    +#define HAVE_RSA_METH_SET_PUB_DEC 1
+    +#define HAVE_RSA_METH_SET_PRIV_ENC 1
+    +#define HAVE_RSA_METH_SET_PRIV_DEC 1
+    +#define HAVE_RSA_METH_SET_INIT 1
+    +#define HAVE_RSA_METH_SET_SIGN 1
+    +#define HAVE_RSA_METH_SET_FINISH 1
+    +#define HAVE_RSA_METH_SET0_APP_DATA 1
+    +#define HAVE_RSA_METH_GET0_APP_DATA 1
+    +#define HAVE_EC_GROUP_ORDER_BITS 1
+    +#define OPENSSL_NO_EC 1
+    +#define HAVE_EVP_CIPHER_CTX_RESET 1
+=20=20=20=20=20
+     #define PATH_SEPARATOR     '\\'
+     #define PATH_SEPARATOR_STR "\\"
+    diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
+    index 3b0ee60..4ffff2b 100644
+    --- a/src/openvpn/openvpn.vcxproj
+    +++ b/src/openvpn/openvpn.vcxproj
+    @@ -78,7 +78,7 @@
+         </ClCompile>
+         <ResourceCompile />
+         <Link>
+    -      <AdditionalDependencies>legacy_stdio_definitions.lib;Ncrypt.lib;=
+libeay32.lib;ssleay32.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.l=
+ib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;%=
+(AdditionalDependencies)</AdditionalDependencies>
+    +      <AdditionalDependencies>legacy_stdio_definitions.lib;Ncrypt.lib;=
+libssl.lib;libcrypto.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.li=
+b;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;%(=
+AdditionalDependencies)</AdditionalDependencies>
+           <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(LZO_HOME)/li=
+b;$(PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDir=
+ectories>
+           <SubSystem>Console</SubSystem>
+         </Link>
+    @@ -91,7 +91,7 @@
+         </ClCompile>
+         <ResourceCompile />
+         <Link>
+    -      <AdditionalDependencies>legacy_stdio_definitions.lib;Ncrypt.lib;=
+libeay32.lib;ssleay32.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.l=
+ib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;%=
+(AdditionalDependencies)</AdditionalDependencies>
+    +      <AdditionalDependencies>legacy_stdio_definitions.lib;Ncrypt.lib;=
+libssl.lib;libcrypto.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.li=
+b;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;%(=
+AdditionalDependencies)</AdditionalDependencies>
+           <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(LZO_HOME)/li=
+b;$(PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDir=
+ectories>
+           <SubSystem>Console</SubSystem>
+         </Link>
+    @@ -104,7 +104,7 @@
+         </ClCompile>
+         <ResourceCompile />
+         <Link>
+    -      <AdditionalDependencies>legacy_stdio_definitions.lib;Ncrypt.lib;=
+libeay32.lib;ssleay32.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.l=
+ib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;%=
+(AdditionalDependencies)</AdditionalDependencies>
+    +      <AdditionalDependencies>legacy_stdio_definitions.lib;Ncrypt.lib;=
+libssl.lib;libcrypto.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.li=
+b;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;%(=
+AdditionalDependencies)</AdditionalDependencies>
+           <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(LZO_HOME)/li=
+b;$(PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDir=
+ectories>
+           <SubSystem>Console</SubSystem>
+         </Link>
+    @@ -117,7 +117,7 @@
+         </ClCompile>
+         <ResourceCompile />
+         <Link>
+    -      <AdditionalDependencies>legacy_stdio_definitions.lib;Ncrypt.lib;=
+libeay32.lib;ssleay32.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.l=
+ib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;%=
+(AdditionalDependencies)</AdditionalDependencies>
+    +      <AdditionalDependencies>legacy_stdio_definitions.lib;Ncrypt.lib;=
+libssl.lib;libcrypto.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.li=
+b;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;%(=
+AdditionalDependencies)</AdditionalDependencies>
+           <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(LZO_HOME)/li=
+b;$(PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDir=
+ectories>
+           <SubSystem>Console</SubSystem>
+         </Link>
+    --=20
+    2.7.4
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+    _______________________________________________
+    Openvpn-devel mailing list
+    Openvpn-devel@lists.sourceforge.net
+    https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+=20=20=20=20
 
-Signed-off-by: Lev Stipakov <lev@...515...>
----
+--B_3655297844_1571064579
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
 
- v3:
+MIILkQYJKoZIhvcNAQcCoIILgjCCC34CAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0B
+BwGgggl6MIIFWTCCBEGgAwIBAgIEO0oNLjANBgkqhkiG9w0BAQUFADA9MQswCQYDVQQGEwJz
+aTEbMBkGA1UEChMSc3RhdGUtaW5zdGl0dXRpb25zMREwDwYDVQQLEwhzaWdlbi1jYTAeFw0x
+NjAyMTkxNzU0NDFaFw0yMTAyMTkyMTM4MTVaMIGAMQswCQYDVQQGEwJTSTEbMBkGA1UEChMS
+c3RhdGUtaW5zdGl0dXRpb25zMREwDwYDVQQLEwhzaWdlbi1jYTEUMBIGA1UECxMLaW5kaXZp
+ZHVhbHMxKzATBgNVBAMTDFNpbW9uIFJvem1hbjAUBgNVBAUTDTIzNDU2Nzk1MTIwNDIwggEi
+MA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQD+LEVulmN6fPkadqe82V8M1xrQ52BYGDka
+xqVw/tEwalpKEiMR6DO8VfCpkjj1Ka5JEoU21Srm1MFg6Tkot9b8ykHAGEWGakBRBSgJGBBQ
+AqiO8knjtQuohXSAFeUWjLMfA3mOZG8rJbGrCyg39Fmm1jeezWYuB/7s2xrqK7Stc/GzIheq
+sYE0Pw1FhqtECA52JuzoItOX368d31tN/O1ynkH7F0TXy48GFncmq5Yid3d3QVOk1qQC68lo
+ILwSSkLA5xOV6mHz/XlAAb/jfNLfsIyxT1RO4+rPlOulTYVex/bfxlbKGXN4qfK/o84TFqXW
+1dbDUK7jS9PzMxthWpTfAgMBAAGjggIbMIICFzAOBgNVHQ8BAf8EBAMCBaAwSwYDVR0gBEQw
+QjA2BgsrBgEEAa9ZAgIDAzAnMCUGCCsGAQUFBwIBFhlodHRwOi8vd3d3LmNhLmdvdi5zaS9j
+cHMvMAgGBgQAizABAjAYBggrBgEFBQcBAwQMMAowCAYGBACORgEBMBoGA1UdEQQTMBGBD3Np
+bW9uQHJvem1hbi5zaTCB7gYDVR0fBIHmMIHjMFagVKBSpFAwTjELMAkGA1UEBhMCc2kxGzAZ
+BgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMIc2lnZW4tY2ExDzANBgNVBAMT
+BkNSTDQ1NTCBiKCBhaCBgoZXbGRhcDovL3g1MDAuZ292LnNpL291PXNpZ2VuLWNhLG89c3Rh
+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
 
-    Refine a bit misleading commit message. Before one might think that
- problem is in incorrect MSS value being set - it is not. The problem is in
- fragment calculation.
-
- v2:
-
-    Fix --disable-fragment build
-
- src/openvpn/forward.c |  3 +++
- src/openvpn/init.c    | 12 +++++++++++-
- src/openvpn/openvpn.h |  1 +
- src/openvpn/push.c    |  9 ++++++++-
- src/openvpn/ssl.c     | 19 ++++++++++++++++++-
- src/openvpn/ssl.h     | 13 ++++++++-----
- 6 files changed, 49 insertions(+), 8 deletions(-)
-
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 65f790f..84bb584 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -873,6 +873,9 @@ process_incoming_link_part1(struct context *c, struct link_socket_info *lsi, boo
-                 if (is_hard_reset(opcode, c->options.key_method))
-                 {
-                     c->c2.frame = c->c2.frame_initial;
-+#ifdef ENABLE_FRAGMENT
-+                    c->c2.frame_fragment = c->c2.frame_fragment_initial;
-+#endif
-                 }
- 
-                 interval_action(&c->c2.tmp_int);
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index d3785ca..37b832a 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2294,9 +2294,18 @@ do_deferred_options(struct context *c, const unsigned int found)
-         {
-             tls_poor_mans_ncp(&c->options, c->c2.tls_multi->remote_ciphername);
-         }
-+        struct frame *frame_fragment = NULL;
-+#ifdef ENABLE_FRAGMENT
-+        if (c->options.ce.fragment)
-+        {
-+            frame_fragment = &c->c2.frame_fragment;
-+        }
-+#endif
-+
-         /* Do not regenerate keys if server sends an extra push reply */
-         if (!session->key[KS_PRIMARY].crypto_options.key_ctx_bi.initialized
--            && !tls_session_update_crypto_params(session, &c->options, &c->c2.frame))
-+            && !tls_session_update_crypto_params(session, &c->options, &c->c2.frame,
-+                                                 frame_fragment))
-         {
-             msg(D_TLS_ERRORS, "OPTIONS ERROR: failed to import crypto options");
-             return false;
-@@ -3035,6 +3044,7 @@ do_init_frame(struct context *c)
-      */
-     c->c2.frame_fragment = c->c2.frame;
-     frame_subtract_extra(&c->c2.frame_fragment, &c->c2.frame_fragment_omit);
-+    c->c2.frame_fragment_initial = c->c2.frame_fragment;
- #endif
- 
- #if defined(ENABLE_FRAGMENT) && defined(ENABLE_OCC)
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index 7736183..ed7975c 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -269,6 +269,7 @@ struct context_2
-     /* Object to handle advanced MTU negotiation and datagram fragmentation */
-     struct fragment_master *fragment;
-     struct frame frame_fragment;
-+    struct frame frame_fragment_initial;
-     struct frame frame_fragment_omit;
- #endif
- 
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index dd5bd41..ba2fbe4 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -287,11 +287,18 @@ incoming_push_message(struct context *c, const struct buffer *buffer)
-     {
-         if (c->options.mode == MODE_SERVER)
-         {
-+            struct frame *frame_fragment = NULL;
-+#ifdef ENABLE_FRAGMENT
-+            if (c->options.ce.fragment)
-+            {
-+                frame_fragment = &c->c2.frame_fragment;
-+            }
-+#endif
-             struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
-             /* Do not regenerate keys if client send a second push request */
-             if (!session->key[KS_PRIMARY].crypto_options.key_ctx_bi.initialized
-                 && !tls_session_update_crypto_params(session, &c->options,
--                                                     &c->c2.frame))
-+                                                     &c->c2.frame, frame_fragment))
-             {
-                 msg(D_TLS_ERRORS, "TLS Error: initializing data channel failed");
-                 goto error;
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 9696e9b..7dcd962 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1962,7 +1962,8 @@ cleanup:
- 
- bool
- tls_session_update_crypto_params(struct tls_session *session,
--                                 struct options *options, struct frame *frame)
-+                                 struct options *options, struct frame *frame,
-+                                 struct frame *frame_fragment)
- {
-     if (!session->opt->server
-         && 0 != strcmp(options->ciphername, session->opt->config_ciphername)
-@@ -2006,6 +2007,22 @@ tls_session_update_crypto_params(struct tls_session *session,
-     frame_init_mssfix(frame, options);
-     frame_print(frame, D_MTU_INFO, "Data Channel MTU parms");
- 
-+    /*
-+     * mssfix uses data channel framing, which at this point contains
-+     * actual overhead. Fragmentation logic uses frame_fragment, which
-+     * still contains worst case overhead. Replace it with actual overhead
-+     * to prevent unneeded fragmentation.
-+     */
-+
-+    if (frame_fragment)
-+    {
-+        frame_remove_from_extra_frame(frame_fragment, crypto_max_overhead());
-+        crypto_adjust_frame_parameters(frame_fragment, &session->opt->key_type,
-+                                       options->use_iv, options->replay, packet_id_long_form);
-+        frame_set_mtu_dynamic(frame_fragment, options->ce.fragment, SET_MTU_UPPER_BOUND);
-+        frame_print(frame_fragment, D_MTU_INFO, "Fragmentation MTU parms");
-+    }
-+
-     return tls_session_generate_data_channel_keys(session);
- }
- 
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index 8066789..6672d43 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -475,15 +475,18 @@ void tls_update_remote_addr(struct tls_multi *multi,
-  * Update TLS session crypto parameters (cipher and auth) and derive data
-  * channel keys based on the supplied options.
-  *
-- * @param session       The TLS session to update.
-- * @param options       The options to use when updating session.
-- * @param frame         The frame options for this session (frame overhead is
-- *                      adjusted based on the selected cipher/auth).
-+ * @param session         The TLS session to update.
-+ * @param options         The options to use when updating session.
-+ * @param frame           The frame options for this session (frame overhead is
-+ *                        adjusted based on the selected cipher/auth).
-+ * @param frame_fragment  The fragment frame options.
-  *
-  * @return true if updating succeeded, false otherwise.
-  */
- bool tls_session_update_crypto_params(struct tls_session *session,
--                                      struct options *options, struct frame *frame);
-+                                      struct options *options,
-+                                      struct frame *frame,
-+                                      struct frame *frame_fragment);
- 
- /**
-  * "Poor man's NCP": Use peer cipher if it is an allowed (NCP) cipher.
--- 
-2.7.4
-
+--B_3655297844_1571064579--
 
