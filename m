@@ -1,14 +1,10 @@
-MIME-Version: 1.0
-References: <201907221844.x6MIiHtw009666@...2054...>
- <1563892487-12063-1-git-send-email-lstipakov@...277...>
- <20191030103148.GO40538@...1296...>
-In-Reply-To: <20191030103148.GO40538@...1296...>
 From: Lev Stipakov <lstipakov@...277...>
-Date: Wed, 30 Oct 2019 14:24:17 +0200
-Message-ID: <CAGyAFMUW+BBYGHfY8k5w=OQKy0_uBrUtBjoVuiMZwuJEXzE+ug@...278...>
-Content-Type: multipart/alternative; boundary="00000000000097261405961fd073"
-Subject: Re: [Openvpn-devel] [PATCH v2 release/2.4] Fix broken
- fragment/mssfix with NCP
+Date: Wed, 30 Oct 2019 14:44:59 +0200
+Message-Id: <1572439499-16276-1-git-send-email-lstipakov@...277...>
+In-Reply-To: <CAGyAFMUW+BBYGHfY8k5w=OQKy0_uBrUtBjoVuiMZwuJEXzE+ug@...278...>
+References: <CAGyAFMUW+BBYGHfY8k5w=OQKy0_uBrUtBjoVuiMZwuJEXzE+ug@...278...>
+Subject: [Openvpn-devel] [PATCH v3] Fix broken fragmentation logic when
+ using NCP
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,89 +13,206 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---00000000000097261405961fd073
-Content-Type: text/plain; charset="UTF-8"
+From: Lev Stipakov <lev@...515...>
 
-Hi,
+This is the 2.4 backport of master patch (commit d22ba6b).
 
+NCP negotiation replaces worst case crypto overhead
+with actual one in data channel frame. That frame
+params are used by mssfix. Fragment frame still contains
+worst case overhead.
 
-> with NCP:      MSS: 1460 -> 1203
-> --ncp-disable: MSS: 1284 -> 1211
->
-> ... and the very same numbers from master...
->
-
-
-> So, I'm wondering how to proceed here...
->
-
-As it turns out, the fix is correct but explanation is not quite clear.
-
-The problem is not in incorrect MSS value (it is correct), but
-inside openvpn's fragmentation logic, which decides
-"to fragment or not to fragment".
-
-Without this patch, fragmentation logic incorrectly uses max crypto
-overhead when calculating packet size. It exceeds fragment size and
-openvpn peforms fragmentation:
+Without this patch, fragmentation logic incorrectly uses
+max crypto overhead when calculating packet size. It exceeds
+fragment size and openvpn peforms fragmentation:
 
 > sudo tcpdump port 1194
-13:59:06.956394 IP server.fi.openvpn > nat2.panoulu.net.openvpn: UDP,
-length 652
-13:59:06.956489 IP server.fi.openvpn > nat2.panoulu.net.openvpn: UDP,
-length 648
+13:59:06.956394 IP server.fi.openvpn > nat2.panoulu.net.openvpn: UDP, length 652
+13:59:06.956489 IP server.fi.openvpn > nat2.panoulu.net.openvpn: UDP, length 648
 
-With this patch, an actual crypto overhead is used and no unnecessary
+This patch fixes fragmentation calculation by
+setting actual crypto overhead, and no unnecessary
 fragmentation is performed:
 
 > sudo tcpdump port 1194
-13:58:08.685915 IP server.fi.openvpn > nat2.panoulu.net.openvpn: UDP,
-length 1272
-13:58:08.686007 IP server.fi.openvpn > nat2.panoulu.net.openvpn: UDP,
-length 1272
+13:58:08.685915 IP server.fi.openvpn > nat2.panoulu.net.openvpn: UDP, length 1272
+13:58:08.686007 IP server.fi.openvpn > nat2.panoulu.net.openvpn: UDP, length 1272
 
-I will send v3 with a better explanation.
+Trac #1140
 
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+
+ v3:
+
+    Refine a bit misleading commit message. Before one might think that
+ problem is in incorrect MSS value being set - it is not. The problem is in
+ fragment calculation.
+
+ v2:
+
+    Fix --disable-fragment build
+
+ src/openvpn/forward.c |  3 +++
+ src/openvpn/init.c    | 12 +++++++++++-
+ src/openvpn/openvpn.h |  1 +
+ src/openvpn/push.c    |  9 ++++++++-
+ src/openvpn/ssl.c     | 19 ++++++++++++++++++-
+ src/openvpn/ssl.h     | 13 ++++++++-----
+ 6 files changed, 49 insertions(+), 8 deletions(-)
+
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 65f790f..84bb584 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -873,6 +873,9 @@ process_incoming_link_part1(struct context *c, struct link_socket_info *lsi, boo
+                 if (is_hard_reset(opcode, c->options.key_method))
+                 {
+                     c->c2.frame = c->c2.frame_initial;
++#ifdef ENABLE_FRAGMENT
++                    c->c2.frame_fragment = c->c2.frame_fragment_initial;
++#endif
+                 }
+ 
+                 interval_action(&c->c2.tmp_int);
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index d3785ca..37b832a 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2294,9 +2294,18 @@ do_deferred_options(struct context *c, const unsigned int found)
+         {
+             tls_poor_mans_ncp(&c->options, c->c2.tls_multi->remote_ciphername);
+         }
++        struct frame *frame_fragment = NULL;
++#ifdef ENABLE_FRAGMENT
++        if (c->options.ce.fragment)
++        {
++            frame_fragment = &c->c2.frame_fragment;
++        }
++#endif
++
+         /* Do not regenerate keys if server sends an extra push reply */
+         if (!session->key[KS_PRIMARY].crypto_options.key_ctx_bi.initialized
+-            && !tls_session_update_crypto_params(session, &c->options, &c->c2.frame))
++            && !tls_session_update_crypto_params(session, &c->options, &c->c2.frame,
++                                                 frame_fragment))
+         {
+             msg(D_TLS_ERRORS, "OPTIONS ERROR: failed to import crypto options");
+             return false;
+@@ -3035,6 +3044,7 @@ do_init_frame(struct context *c)
+      */
+     c->c2.frame_fragment = c->c2.frame;
+     frame_subtract_extra(&c->c2.frame_fragment, &c->c2.frame_fragment_omit);
++    c->c2.frame_fragment_initial = c->c2.frame_fragment;
+ #endif
+ 
+ #if defined(ENABLE_FRAGMENT) && defined(ENABLE_OCC)
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index 7736183..ed7975c 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -269,6 +269,7 @@ struct context_2
+     /* Object to handle advanced MTU negotiation and datagram fragmentation */
+     struct fragment_master *fragment;
+     struct frame frame_fragment;
++    struct frame frame_fragment_initial;
+     struct frame frame_fragment_omit;
+ #endif
+ 
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index dd5bd41..ba2fbe4 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -287,11 +287,18 @@ incoming_push_message(struct context *c, const struct buffer *buffer)
+     {
+         if (c->options.mode == MODE_SERVER)
+         {
++            struct frame *frame_fragment = NULL;
++#ifdef ENABLE_FRAGMENT
++            if (c->options.ce.fragment)
++            {
++                frame_fragment = &c->c2.frame_fragment;
++            }
++#endif
+             struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
+             /* Do not regenerate keys if client send a second push request */
+             if (!session->key[KS_PRIMARY].crypto_options.key_ctx_bi.initialized
+                 && !tls_session_update_crypto_params(session, &c->options,
+-                                                     &c->c2.frame))
++                                                     &c->c2.frame, frame_fragment))
+             {
+                 msg(D_TLS_ERRORS, "TLS Error: initializing data channel failed");
+                 goto error;
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 9696e9b..7dcd962 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1962,7 +1962,8 @@ cleanup:
+ 
+ bool
+ tls_session_update_crypto_params(struct tls_session *session,
+-                                 struct options *options, struct frame *frame)
++                                 struct options *options, struct frame *frame,
++                                 struct frame *frame_fragment)
+ {
+     if (!session->opt->server
+         && 0 != strcmp(options->ciphername, session->opt->config_ciphername)
+@@ -2006,6 +2007,22 @@ tls_session_update_crypto_params(struct tls_session *session,
+     frame_init_mssfix(frame, options);
+     frame_print(frame, D_MTU_INFO, "Data Channel MTU parms");
+ 
++    /*
++     * mssfix uses data channel framing, which at this point contains
++     * actual overhead. Fragmentation logic uses frame_fragment, which
++     * still contains worst case overhead. Replace it with actual overhead
++     * to prevent unneeded fragmentation.
++     */
++
++    if (frame_fragment)
++    {
++        frame_remove_from_extra_frame(frame_fragment, crypto_max_overhead());
++        crypto_adjust_frame_parameters(frame_fragment, &session->opt->key_type,
++                                       options->use_iv, options->replay, packet_id_long_form);
++        frame_set_mtu_dynamic(frame_fragment, options->ce.fragment, SET_MTU_UPPER_BOUND);
++        frame_print(frame_fragment, D_MTU_INFO, "Fragmentation MTU parms");
++    }
++
+     return tls_session_generate_data_channel_keys(session);
+ }
+ 
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index 8066789..6672d43 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -475,15 +475,18 @@ void tls_update_remote_addr(struct tls_multi *multi,
+  * Update TLS session crypto parameters (cipher and auth) and derive data
+  * channel keys based on the supplied options.
+  *
+- * @param session       The TLS session to update.
+- * @param options       The options to use when updating session.
+- * @param frame         The frame options for this session (frame overhead is
+- *                      adjusted based on the selected cipher/auth).
++ * @param session         The TLS session to update.
++ * @param options         The options to use when updating session.
++ * @param frame           The frame options for this session (frame overhead is
++ *                        adjusted based on the selected cipher/auth).
++ * @param frame_fragment  The fragment frame options.
+  *
+  * @return true if updating succeeded, false otherwise.
+  */
+ bool tls_session_update_crypto_params(struct tls_session *session,
+-                                      struct options *options, struct frame *frame);
++                                      struct options *options,
++                                      struct frame *frame,
++                                      struct frame *frame_fragment);
+ 
+ /**
+  * "Poor man's NCP": Use peer cipher if it is an allowed (NCP) cipher.
 -- 
--Lev
+2.7.4
 
---00000000000097261405961fd073
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div>Hi,</div><div class=3D"gmail_quote"><div>=C2=A0</div>=
-<blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-=
-left:1px solid rgb(204,204,204);padding-left:1ex">
-with NCP:=C2=A0 =C2=A0 =C2=A0 MSS: 1460 -&gt; 1203<br>
---ncp-disable: MSS: 1284 -&gt; 1211<br>
-<br>
-... and the very same numbers from master...<br></blockquote><div>=C2=A0</d=
-iv><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;bord=
-er-left:1px solid rgb(204,204,204);padding-left:1ex">
-So, I&#39;m wondering how to proceed here...<br></blockquote><div><br></div=
-><div>As it turns out, the fix is correct but explanation is not quite clea=
-r.</div><div><br></div><div>The problem is not in incorrect MSS value (it i=
-s correct), but</div><div>inside openvpn&#39;s fragmentation logic, which d=
-ecides</div><div>&quot;to fragment or not to fragment&quot;.</div><div><br>=
-</div><div>Without this patch, fragmentation logic incorrectly uses max cry=
-pto</div><div>overhead when calculating packet size. It exceeds fragment si=
-ze and</div><div>openvpn peforms fragmentation:</div><div><br></div><div>&g=
-t;=C2=A0sudo tcpdump port 1194</div><div>13:59:06.956394 IP server.fi.openv=
-pn &gt; nat2.panoulu.net.openvpn: UDP, length 652<br>13:59:06.956489 IP=20
-
-server.fi.openvpn &gt; nat2.panoulu.net.openvpn: UDP, length 648<br></div><=
-div><br></div><div>With this patch, an actual crypto overhead is used and n=
-o unnecessary</div><div>fragmentation is performed:</div><div><br></div><di=
-v>&gt;=C2=A0sudo tcpdump port 1194=C2=A0=C2=A0<br></div><div>13:58:08.68591=
-5 IP server.fi.openvpn &gt; nat2.panoulu.net.openvpn: UDP, length 1272<br>1=
-3:58:08.686007 IP=20
-
-server.fi.openvpn &gt; nat2.panoulu.net.openvpn: UDP, length 1272<br></div>=
-<div><br></div><div>I will send v3 with a better explanation.</div><div><br=
-></div></div>-- <br><div dir=3D"ltr">-Lev</div></div>
-
---00000000000097261405961fd073--
 
