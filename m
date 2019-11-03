@@ -1,9 +1,9 @@
-Date: Sat, 2 Nov 2019 21:32:52 +0100 (CET)
-Message-Id: <201911022032.xA2KWqrj096032@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1571315023-17044-1-git-send-email-lstipakov@...277...>
-References: <1571315023-17044-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: msvc: OpenSSL 1.1.x support
+From: Tom Yan <tom.ty89@...277...>
+Date: Sun,  3 Nov 2019 13:30:53 +0800
+Message-Id: <20191103053053.17996-1-tom.ty89@...277...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] networking/iproute2: support 31-bit ipv4
+ prefix (RFC 3021)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,30 +14,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+---
+ src/openvpn/networking_iproute2.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-(I have not done more than "see that there are no code changes involved"
-- if Simon and you say the build system changes are fine, I just believe so)
-
-commit 277844321a981c66b781b7ef10aaf4097b702eb8
-Author: Lev Stipakov
-Date:   Thu Oct 17 15:23:43 2019 +0300
-
-     msvc: OpenSSL 1.1.x support
-
-     Signed-off-by: Lev Stipakov <lstipakov@...277...>
-     Acked-by: Simon Rozman <simon@...2293...>
-     Message-Id: <1571315023-17044-1-git-send-email-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18948.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/networking_iproute2.c b/src/openvpn/networking_iproute2.c
+index 1ddeb5cf..4e2435c1 100644
+--- a/src/openvpn/networking_iproute2.c
++++ b/src/openvpn/networking_iproute2.c
+@@ -98,8 +98,10 @@ net_addr_v4_add(openvpn_net_ctx_t *ctx, const char *iface,
+     const char *addr_str = print_in_addr_t(*addr, 0, &ctx->gc);
+     const char *brd_str = print_in_addr_t(*broadcast, 0, &ctx->gc);
+ 
+-    argv_printf(&argv, "%s addr add dev %s %s/%d broadcast %s", iproute_path,
+-                iface, addr_str, prefixlen, brd_str);
++    argv_printf(&argv, "%s addr add dev %s %s/%d", iproute_path,
++                iface, addr_str, prefixlen);
++    if (prefixlen < 31)
++        argv_printf_cat(&argv, " broadcast %s", brd_str);
+     argv_msg(M_INFO, &argv);
+     openvpn_execve_check(&argv, ctx->es, S_FATAL, "Linux ip addr add failed");
+ 
+-- 
+2.23.0
 
 
