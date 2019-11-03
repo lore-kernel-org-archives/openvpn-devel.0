@@ -1,12 +1,13 @@
-Date: Sun, 3 Nov 2019 19:24:43 +0100
+Date: Sun, 3 Nov 2019 19:33:51 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20191103182443.GC40538@...1296...>
+Message-ID: <20191103183351.GD40538@...1296...>
 References: <20191103053148.18059-1-tom.ty89@...277...>
+ <20191103182443.GC40538@...1296...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="JVTRtevMO87SusWP"
+ protocol="application/pgp-signature"; boundary="gdEaXsHGJIWX/19R"
 Content-Disposition: inline
-In-Reply-To: <20191103053148.18059-1-tom.ty89@...277...>
+In-Reply-To: <20191103182443.GC40538@...1296...>
 Subject: Re: [Openvpn-devel] [PATCH] tun/iproute2: support 31-bit ipv4
  prefix (RFC 3021)
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,28 +21,42 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Tom Yan <tom.ty89@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---JVTRtevMO87SusWP
+--gdEaXsHGJIWX/19R
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Sun, Nov 03, 2019 at 01:31:48PM +0800, Tom Yan wrote:
->  src/openvpn/tun.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
+On Sun, Nov 03, 2019 at 07:24:43PM +0100, Gert Doering wrote:
+> I tend to NAK this, on a number of reasons - we support arbitrary
+> point-to-point links "since ever" if you do "topology p2p" (can be
+> out of the same /31, or just arbitrary addresses on both ends), so
+> I do not see why doing this in "topology subnet" would be beneficial.
 
-I tend to NAK this, on a number of reasons - we support arbitrary
-point-to-point links "since ever" if you do "topology p2p" (can be
-out of the same /31, or just arbitrary addresses on both ends), so
-I do not see why doing this in "topology subnet" would be beneficial.
+I do see where you're coming from - the man page talks about depreciating
+p2p, in which case you need to make sure topology subnet does /31s.
 
-OTOH, *if* you do it, it needs to be consistently, not just "linux/iproute"
-(on linux, "sitnl" is the new gold standard), and the commit message should
-explain a bit more about the "why do it this way" and "how do other=20
-platforms deal with it" (windows, *BSD, MacOS, etc.)
+It might certainly be a useful excercise to investigate our current
+ifconfig (etc) calls - in the 2.5 branch - and possibly get rid of all
+the "broadcast" settings, across all platforms that do not need them.
+
+Personally I've never understood why people are so keen on explicitly
+configuring broadcast addresses everywhere (like in the network config
+files, etc.) - the standard address can be computed and "just works"
+(and on a tun interface, there are no link-layer broadcasts anyway, even=20
+if we pretend it were differently).
+
+The code was that way when David and I inherited the project, so I can't
+explain *why* it is - but this might be the opportunity to kick out a bit
+of needless garbage.
+
+
+Out of curiosity: does the sitnl code path handle /31s?
 
 gert
+
+
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -52,22 +67,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---JVTRtevMO87SusWP
+--gdEaXsHGJIWX/19R
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJdvxtrAAoJEB2Cnv7KVigSI9AL/R+iXdnXBXT4l+quVtQPGcHB
-1B8rYoeKoOXCwvk79XWLsv9r0sZPH2o7z5bdKfaFHTN1EAT0X/DpF/aOQedDF4f5
-S6EDQC4Z3xEbKrhGpOkAa6JSBPWbK1QYXykp6+oKuxyT4L0EUH/W92m+XazqQQsV
-8F5V5kgbMhQ2olMXQhs8Z1BHohKwN046uGKZiVSvdH7byC4LlmsGQYVW8Vi/d2uX
-Brl6J0E6HTJdpfm5iqbH1kULmPYNptqVsqeFS5uHHGF7YCdFaLZ2okPPFJNR5FYC
-EoYNSug5Mc4Y300tRyeTCVzOU6SyKBrBRm4KrgLBns+keiS9XhO0Kv5a2+ejFPzG
-k8lcZke7GN7vHJEBmchd2NxmUW6RuTI9Wb6E04XPu34Pjf6MxSuVG6+8Fbm816nu
-8utqMWyfQAnN61e2bPs5KXkQNc6yPWqDrBEKwg1HnO/pbe2hvu/7rrrPwCn/FZpm
-FRI0s4SaBLA6cZNUQnWyTSj3oL1i0at7d6tji7gIqg==
-=gb0E
+iQGcBAEBAgAGBQJdvx2PAAoJEB2Cnv7KVigSJiYMAJyQkK4+JrDnox4vGW4S4Ejj
+pDQAwRTbirLXnma0o3qyq98nzpUATgoLvOXngp72iqD/HU0+vWmo8Cl1t6ka/Svs
+AjTUAQQgYd+OEFCyCGlIn6d7Nazhh0vRuSBoE6wcyaPqKUk1vW/UHGYks+ay3amA
+8P7smkiqYdc+XQWq/IyDFVAgIfbaU0hX/C9yF/ncCDCtsyzMIy+w5Qb7xZdSbvd1
+gSml8Q38lR7tC/J0sYPoqDDI2agdP1ieRxkZwZ1osud4gPJeg+f1mAoz1vsC8EF3
+O7OUNpr5SD+/SjWaCwIe/5Cn6J/LaYSk6oQvGimrApge//0svZXvVv6YzRPCKDbi
+3mqyCU1sjhr4DapLGXmowLNXS0bp69HiN9O5zoKeV6vGwToXG2bL/zGfr8nK2c0E
+ZiTjlRlQHvwYrZKVwFXfT3bD9USvrRbnKqmmX6TyZN/Y02+ALtYFh3PlgnFtuiYn
+32gZ1YdEyZXiB1lsp2SXJHkUXWZU6kUqZaNmjV9W6g==
+=zhdu
 -----END PGP SIGNATURE-----
 
---JVTRtevMO87SusWP--
+--gdEaXsHGJIWX/19R--
 
