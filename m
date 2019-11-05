@@ -1,16 +1,17 @@
+From: Tom Yan <tom.ty89@...277...>
+Date: Tue, 5 Nov 2019 03:08:36 +0000
+Message-ID: <BN7PR04MB52517BB2179BE30E03B775CAFD7E0@...2532...>
 References: <20191103053148.18059-1-tom.ty89@...277...>
  <20191103182443.GC40538@...1296...>
  <20191103183351.GD40538@...1296...>
  <CAGnHSEn0jaM3u9LCXxArhQkL9ddZQ9UROOZ8+PXPf+oAwTyswg@...278...>
- <20191103204613.GE40538@...1296...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <a991a966-039e-c171-7201-01b90a23d2b7@...1227...>
-Date: Mon, 4 Nov 2019 17:28:25 +0100
+ <20191103204613.GE40538@...1296...>,
+ <a991a966-039e-c171-7201-01b90a23d2b7@...1227...>
+In-Reply-To: <a991a966-039e-c171-7201-01b90a23d2b7@...1227...>
+Content-Language: en-US
+Content-Type: multipart/alternative;
+ boundary="_000_BN7PR04MB52517BB2179BE30E03B775CAFD7E0BN7PR04MB5251namp_"
 MIME-Version: 1.0
-In-Reply-To: <20191103204613.GE40538@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="DGSSWVlaEYYbtahHs70iBuiJHA1yT7qk8"
 Subject: Re: [Openvpn-devel] [PATCH] tun/iproute2: support 31-bit ipv4
  prefix (RFC 3021)
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,26 +22,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
+To: Gert Doering <gert@...1296...>, Arne Schwabe <arne@...1227...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---DGSSWVlaEYYbtahHs70iBuiJHA1yT7qk8
-Content-Type: multipart/mixed; boundary="dxEWPFKUOSo9YpQRnbJuTuVqJsvZwQPWo"
-
---dxEWPFKUOSo9YpQRnbJuTuVqJsvZwQPWo
-Content-Language: de-DE
-Content-Type: text/plain; charset="windows-1252"
+--_000_BN7PR04MB52517BB2179BE30E03B775CAFD7E0BN7PR04MB5251namp_
+Content-Type: text/plain; charset="Windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
- >> Yeah the removal of the p2p topology was one of the reasons. It's
+Yeah I was merely referring to the trivial warning of the ifconfig mismatch=
+. It's not exactly a problem but it just sort of made me aware of such thin=
+g as /31 subnet and noticed the bug on Linux. That's why I never opened an =
+issue on ics-openvpn.
+________________________________
+From: Arne Schwabe <arne@...1227...>
+Sent: Tuesday, November 5, 2019 12:28:25 AM
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net <openvpn-devel@...475...=
+t>
+Subject: Re: [Openvpn-devel] [PATCH] tun/iproute2: support 31-bit ipv4 pref=
+ix (RFC 3021)
+
+>> Yeah the removal of the p2p topology was one of the reasons. It's
 >> actually the fact that ics-openvpn doesn't really parse point-to-point
 >> ifconfig that made me aware of this.
->=20
+>
 > I wasn't aware of that, but since Arne is reading here, maybe he can
 > comment on it.  It's possible that the Android VPN API just does not
 > permit p2p mode, but wants a subnet.
->=20
+>
 > Arne, any idea if /31 works on Android?
 
 Yes. But Android is special here anyway. It always wants a subnet mask
@@ -52,29 +61,67 @@ and emulate other modes by adding routes to the tun interface.
 Arne
 
 
---dxEWPFKUOSo9YpQRnbJuTuVqJsvZwQPWo--
+--_000_BN7PR04MB52517BB2179BE30E03B775CAFD7E0BN7PR04MB5251namp_
+Content-Type: text/html; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
---DGSSWVlaEYYbtahHs70iBuiJHA1yT7qk8
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+<html>
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DWindows-1=
+252">
+<meta name=3D"Generator" content=3D"Microsoft Exchange Server">
+<!-- converted from text --><style><!-- .EmailQuote { margin-left: 1pt; pad=
+ding-left: 4pt; border-left: #800000 2px solid; } --></style>
+</head>
+<body>
+<div>
+<div dir=3D"auto" style=3D"direction:ltr; margin:0; padding:0; font-family:=
+sans-serif; font-size:11pt; color:black">
+Yeah I was merely referring to the trivial warning of the ifconfig mismatch=
+. It's not exactly a problem but it just sort of made me aware of such thin=
+g as /31 subnet and noticed the bug on Linux. That's why I never opened an =
+issue on ics-openvpn.</div>
+<hr tabindex=3D"-1" style=3D"display:inline-block; width:98%">
+<div id=3D"x_divRplyFwdMsg" dir=3D"ltr"><font face=3D"Calibri, sans-serif" =
+color=3D"#000000" style=3D"font-size:11pt"><b>From:</b> Arne Schwabe &lt;ar=
+ne@...1227...&gt;<br>
+<b>Sent:</b> Tuesday, November 5, 2019 12:28:25 AM<br>
+<b>To:</b> Gert Doering &lt;gert@...1296...&gt;<br>
+<b>Cc:</b> openvpn-devel@lists.sourceforge.net &lt;openvpn-devel@...1439...=
+ceforge.net&gt;<br>
+<b>Subject:</b> Re: [Openvpn-devel] [PATCH] tun/iproute2: support 31-bit ip=
+v4 prefix (RFC 3021)</font>
+<div>&nbsp;</div>
+</div>
+</div>
+<font size=3D"2"><span style=3D"font-size:11pt;">
+<div class=3D"PlainText">&gt;&gt; Yeah the removal of the p2p topology was =
+one of the reasons. It's<br>
+&gt;&gt; actually the fact that ics-openvpn doesn't really parse point-to-p=
+oint<br>
+&gt;&gt; ifconfig that made me aware of this.<br>
+&gt; <br>
+&gt; I wasn't aware of that, but since Arne is reading here, maybe he can<b=
+r>
+&gt; comment on it.&nbsp; It's possible that the Android VPN API just does =
+not<br>
+&gt; permit p2p mode, but wants a subnet.<br>
+&gt; <br>
+&gt; Arne, any idea if /31 works on Android?<br>
+<br>
+Yes. But Android is special here anyway. It always wants a subnet mask<br>
+but the mask can be also be 255.255.255.255. And you also don't have a<br>
+gateway address and Android also does not set a route to the tun<br>
+interface (On Android 4.4&#43;). So basically you always operate in p2p mod=
+e<br>
+and emulate other modes by adding routes to the tun interface.<br>
+<br>
+Arne<br>
+<br>
+</div>
+</span></font>
+</body>
+</html>
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl3AUaoACgkQFRhsZwKx
-RFRFtg//UktYhqtNeEEnQwesly4CfX3zoRIgrZVX40j7vN7ICl5/PCHt/6LUEaqt
-MoQag0T55XQ5fB40sfrExnhlIrk9MHiTtUqQEteoS9EWJMGRWUU+DkKTqhWksqKu
-ScZmT+TeTfea5UJLfScEY+oWBKzlE0knI2L6bcb2kwOnMcOj6cf8wGpFSfSs8PSP
-EzlCLDB0y473oSik9dkzTJOC+QBV1hMslixzbIbMpYwx+yb2E0ShhW6AUGJg4xVN
-emBzGWEmj/X7ie6T8mvEJMaxBUrcXg5Eewz+Vt0RB9J53sGEIlN9wk+tiUBO+V6Y
-4oxmu+79xorCBxdUdvNJqdVCN/X8SxoyF1Ar6y8ZRlKsc2MMh9jJGf/xyp88OmG8
-mQfm8N1Yp7+pTp/2YHO/sXwo4jvshPhqDl8Ma7Tdfnr9GHHlbyZMECVspoHBHwIG
-68ePW/440hIcnNyZb7x3B1J+5RxWwgxx/CdAI0a0B3jKGHZlgS5oF0lT049slkZ7
-xhU60G1tJ85GbhI9FwM6c0h+FOQJDyd3bPml0amz+hCuBhs6ApQC06f3DsI4gSnR
-Q9VC31tUOfg1ULNVj7vVo8XW18mtFCWFfB+u8aszPrqmP2MmNrGB0rVxuzHA2fZE
-+7OLWkf3yvcLKiFkGHKZgis74Gje89vsbWQlImhGpMi8qsQSC8s=
-=odfA
------END PGP SIGNATURE-----
-
---DGSSWVlaEYYbtahHs70iBuiJHA1yT7qk8--
+--_000_BN7PR04MB52517BB2179BE30E03B775CAFD7E0BN7PR04MB5251namp_--
 
