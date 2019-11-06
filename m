@@ -1,9 +1,14 @@
-Date: Wed, 6 Nov 2019 22:11:58 +0100 (CET)
-Message-Id: <201911062111.xA6LBwGQ010924@...2054...>
+Date: Wed, 6 Nov 2019 23:12:19 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20191009143422.9419-4-a@...2181...>
+Message-ID: <20191106221219.GO40538@...1296...>
 References: <20191009143422.9419-4-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: maddr: export VLAN ID from
+ <201911062111.xA6LBwGQ010924@...2054...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="+hZIELbchok2+JHy"
+Content-Disposition: inline
+In-Reply-To: <201911062111.xA6LBwGQ010924@...2054...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: maddr: export VLAN ID from
  client context to maddr object
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -13,57 +18,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+--+hZIELbchok2+JHy
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Stared at the code, ran client side tests, full set of server side tests,
-and compiled (+client tested) on FreeBSD 7.4 to give the "anonymous union 
-explosion" bits a good checking :-) (it does not explode anymore, thanks 
-for fixing that).
+Hi,
 
-Similar to 2/9, this patch does not actually change behaviour yet - it 
-adds the 2-byte vid to the hashed ethernet address for per-client learning,
-but as all callers set it to "0", there is no "vlan separation" effect
-yet (I know it's coming in a future patch, just pointing out why this 
-patch does not change visible behaviour yet).
+On Wed, Nov 06, 2019 at 10:11:58PM +0100, Gert Doering wrote:
+> As a side note: it seems that whoever did the IPv6 payload patches was
+> a bit sloppy (it was me, so I am allowed to say that).  MAC learning is=20
+> only done on IPv4 and ARP packets, but not on IPv6 packets - so I expect=
+=20
+> "ipv6 only mode on tap" to be a bit wacky...  this needs re-testing
+> before we can declare "ipv6-only works reliably".
 
-It shows up in the "MULTI: Learn" lines already, though
+I was wrong here.  This part is only for the extraction of the "inner"
+addresses in an tap/ethernet packet, which are then subsequently used
+for ENABLE_PF filtering.
 
-Nov  6 22:04:51 gentoo tap-udp-p2mp[11510]: freebsd-11-amd64/2001:608:0:814::f000:16 MULTI: Learn: 00:bd:b5:63:b5:04@...150... -> freebsd-11-amd64/2001:608:0:814::f000:16
+Since *that* only has IPv4 (because nobody reviewed and ACKed Antonio's
+"make PF support IPv6" patches yet) it makes sense that the code only
+extract IPv4 addresses.
 
-.. the "@0" bit after the MAC address is the PVID.
+Now, I see a slight merge conflict with the PF/IPv6 patch set... :-)
 
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-As a side note: it seems that whoever did the IPv6 payload patches was
-a bit sloppy (it was me, so I am allowed to say that).  MAC learning is 
-only done on IPv4 and ARP packets, but not on IPv6 packets - so I expect 
-"ipv6 only mode on tap" to be a bit wacky...  this needs re-testing
-before we can declare "ipv6-only works reliably".
+Gert Doering - Munich, Germany                             gert@...1296...
 
+--+hZIELbchok2+JHy
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Your patch has been applied to the master branch.
+-----BEGIN PGP SIGNATURE-----
 
-commit a2b7230712dbc8cfab85d5bd59605f58fc5fe5f8
-Author: Antonio Quartulli
-Date:   Wed Oct 9 16:34:16 2019 +0200
+iQGcBAEBAgAGBQJdw0VDAAoJEB2Cnv7KVigSTSUMAJRLIsSsGFBJfLIQ3Z+doWnl
+z78LTHxH1hY5hJSbSR/YcrdyuhOMrPg4i/suzIo6CPFK13krN96fVGpV0fLMxYi3
+qa9dJ6X+vL4rGpq9++vexgvRBvd3qP0Fb4Uvi/bikkFAxwkpHeLx9eZBFj3ULfy4
+a5r5wRRH3RAcj5dEzpJaeohXcxs+cclS2rUUSKe5Z1wOpvsE+e5hlFaDEYWTEBWC
+G6EU+GpQsoaBYvb7B7DI+P+0L9YQGhkrVrcbCOr25vY+HLQeXJO69GD2PIs50+lR
+KbPnemteVe9nkZwiP9Lqg0stVtUCxbLTj2sqhI0tFptYV0Db6oZYTuT2lSF38X2y
+qjD8bB188EvRXH98S33ndldvFvrw+soxTyI0l51D4iMl8Hmw8ZPh1iTHmjxO6XDK
+rIn+rtd4HnYYqyfw8X01j1SHR+0OdQx2+o+ztAsGTLTPSTHAgbFWZmidDp2X7TyQ
+n2YEJ4TF7DWrlSoxlzQWRPjRNm4Jx6TdrJ/TkT6YCg==
+=75uT
+-----END PGP SIGNATURE-----
 
-     maddr: export VLAN ID from client context to maddr object
-
-     Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20191009143422.9419-4-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18917.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+--+hZIELbchok2+JHy--
 
