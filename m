@@ -1,16 +1,18 @@
 MIME-Version: 1.0
-References: <20191103053148.18059-1-tom.ty89@...277...>
- <20191103182443.GC40538@...1296...>
- <20191103183351.GD40538@...1296...>
- <CAGnHSEn0jaM3u9LCXxArhQkL9ddZQ9UROOZ8+PXPf+oAwTyswg@...278...>
- <20191103204613.GE40538@...1296...>
- <a991a966-039e-c171-7201-01b90a23d2b7@...1227...>
-In-Reply-To: <a991a966-039e-c171-7201-01b90a23d2b7@...1227...>
-From: Tom Yan <tom.ty89@...277...>
-Date: Tue, 5 Nov 2019 11:41:20 +0800
-Message-ID: <CAGnHSEm+3Kos3Qe22nFkHLv+sWhrvq+mZXAhL=RgyDCTSh_v5w@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] tun/iproute2: support 31-bit ipv4
- prefix (RFC 3021)
+References: <6a1b6995-67c1-e30b-bdc1-af1d5485fda5@...515...>
+ <d34d5974-30ac-6949-9be4-7f4a55126564@...515...>
+ <bf866bdc-4be0-fea9-92d1-61d27ce7ecda@...277...>
+ <df929876-8c63-0934-02f6-4ac7186d986e@...515...>
+ <e4b61969-aac3-a5cd-6642-b65e3a9f0256@...277...>
+ <7d23f054-2ab4-d6f2-77b0-5cb76c2ec2df@...515...>
+ <AD1D828E-B77F-4D08-BB7E-722AE9545CA1@...2293...>
+ <6b2de5c1-99b7-406f-04d5-bb9449d120b9@...277...>
+ <1b342791-a3ba-9932-dc02-a616f86c3e17@...515...>
+In-Reply-To: <1b342791-a3ba-9932-dc02-a616f86c3e17@...515...>
+From: d tbsky <tbskyd@...277...>
+Date: Wed, 6 Nov 2019 12:49:33 +0800
+Message-ID: <CAC6SzHLVL4d-PVA6NBSHL4xyoo=4pVPrrAHZqKWTFkjxa3UEug@...278...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.4.8 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,39 +23,21 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hmm btw, not sure you are talking about the same thing, but at least
-my device the "proto kernel scope link" subnet route is added for the
-tun. While I can ping the "peer" out-of-the-box with /31 subnet and
-the subnet topology, with p2p topology and 255.255.255.255 mask, I
-need to add route in ics-openvpn for its peer before I can ping it.
-(The server is configured with topology and ifconfig corresponds to
-the client's in both tests.)
+after reading the thread, I think now it's safe to upgrae my windows 7
+ from openvpn 2.4.7 to 2.4.8. so I download the installer and click
+it.
 
-On Tue, 5 Nov 2019 at 01:01, Arne Schwabe <arne@...1227...> wrote:
->
->  >> Yeah the removal of the p2p topology was one of the reasons. It's
-> >> actually the fact that ics-openvpn doesn't really parse point-to-point
-> >> ifconfig that made me aware of this.
-> >
-> > I wasn't aware of that, but since Arne is reading here, maybe he can
-> > comment on it.  It's possible that the Android VPN API just does not
-> > permit p2p mode, but wants a subnet.
-> >
-> > Arne, any idea if /31 works on Android?
->
-> Yes. But Android is special here anyway. It always wants a subnet mask
-> but the mask can be also be 255.255.255.255. And you also don't have a
-> gateway address and Android also does not set a route to the tun
-> interface (On Android 4.4+). So basically you always operate in p2p mode
-> and emulate other modes by adding routes to the tun interface.
->
-> Arne
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+the installer complains about can not install tap drivers and I click
+ok to let it go. when I try to connect,  openvpn said the tap driver
+is in use and failed.
+I reboot and reinstall but still can not see tap device in my network.
+
+finally I uninstall  tap and openvpn then install again, this time
+everything is ok, I am lucky.
+so openvpn-gui 2.4.8 upgrade is not as smooth as previous versions.
+
+Regards,
+tbskyd
 
