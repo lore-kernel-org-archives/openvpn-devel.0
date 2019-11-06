@@ -1,10 +1,10 @@
-Date: Wed, 6 Nov 2019 20:42:15 +0100 (CET)
-Message-Id: <201911061942.xA6JgFka099725@...2054...>
+Date: Wed, 6 Nov 2019 21:41:25 +0100 (CET)
+Message-Id: <201911062041.xA6KfP8R010468@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1572439499-16276-1-git-send-email-lstipakov@...277...>
-References: <1572439499-16276-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix broken fragmentation logic
- when using NCP
+In-Reply-To: <20191009143422.9419-3-a@...2181...>
+References: <20191009143422.9419-3-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: VLAN: add basic VLAN tagging
+ support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,30 +15,37 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
+To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Thanks for clarifying what the actual problem is, so we have it nicely
-in the logs.  I have diff'ed this patch vs. d22ba6b2c551f, and the only
-difference is related to "use_iv" which got kicked out from master.
+Stared at the code (twice now), run t_client and t_server tests.
 
-So I'm mostly relying on the ACks from Arne and Steffan and not doing
-any review myself :-) - I have done a full client test, of course.
+This patch does not really *do* much yet, but it lays the groundwork
+for future work - the "broadcast only to clients in the same vlan"
+part is there, but it's always called with "0" (= all clients).  As
+far as I can see, the only notable behavioural change we have so far 
+is "if a client is assigned a pvid (!= the global pvid), it will not 
+be able to communicate with the TAP interface" (check in vlan.c, 
+vlan_process_outgoing_tun()), but client-to-client is still allowed,
+and there is no per-vlan MAC learning yet either.
 
-Your patch has been applied to the release/2.4 branch.
+(Most notably, it only adds options and code relevant for TAP mode)
 
-commit 3bd91cd0e68762b861c57cf37f144d8a11704e9d
-Author: Lev Stipakov
-Date:   Wed Oct 30 14:44:59 2019 +0200
+Your patch has been applied to the master branch.
 
-     Fix broken fragmentation logic when using NCP
+commit 99f28081477ca325a14b13c38abec2c9b619eb01
+Author: Antonio Quartulli
+Date:   Wed Oct 9 16:34:15 2019 +0200
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
+     VLAN: add basic VLAN tagging support
+
+     Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
+     Signed-off-by: Antonio Quartulli <a@...2181...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1572439499-16276-1-git-send-email-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18975.html
+     Message-Id: <20191009143422.9419-3-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18924.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
