@@ -1,18 +1,9 @@
-References: <20191009143422.9419-3-a@...2181...>
- <201911062041.xA6KfP8R010468@...2054...>
- <CAGyAFMWBd2GzuZdBfTfGwROPw-hEzqSMUCUY3vrWENeqd1A46w@...278...>
- <20191107122743.GQ40538@...1296...>
- <CAGyAFMU5VAWDPuR7V3dTMKBsDbn2vgH61sgn6O9dtZNi-OTebQ@...278...>
- <99D61A626FDA8A4B90A270669121BE10BDA46060@...2294...>
- <99D61A626FDA8A4B90A270669121BE10BDA461DD@...2294...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <b508ea7f-ccba-2159-a0df-e850437d5701@...2181...>
-Date: Thu, 7 Nov 2019 14:38:30 +0100
-MIME-Version: 1.0
-In-Reply-To: <99D61A626FDA8A4B90A270669121BE10BDA461DD@...2294...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: VLAN: add basic VLAN
- tagging support
+Date: Thu, 7 Nov 2019 15:50:06 +0100 (CET)
+Message-Id: <201911071450.xA7Eo6RX031314@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20191107132901.1280-1-simon@...2293...>
+References: <20191107132901.1280-1-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: msvc: Add vlan.c/h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,18 +14,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Simon Rozman <simon@...2293...>, 'Lev Stipakov' <lstipakov@...277...>, 'Gert Doering' <gert@...1296...>
-Cc: 'openvpn-devel' <openvpn-devel@lists.sourceforge.net>
+To: Simon Rozman <simon@...2293...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Thanks!
 
-On 07/11/2019 14:36, Simon Rozman wrote:
-> I revoke this “master.c” idea. It makes incremental compiling ridiculously slow. It might work for production builds, but definitely not for development.
+Your patch has been applied to the master branch.
 
-It also breaks scoping of variables/function. So, I am glad you found
-your own reason to reject that :-)
+commit 2b11e57c02b2d21e384a2fc860feeeeea1209f55
+Author: Simon Rozman
+Date:   Thu Nov 7 14:29:01 2019 +0100
+
+     msvc: Add vlan.c/h
+
+     Signed-off-by: Simon Rozman <simon@...2293...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <20191107132901.1280-1-simon@...2293...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19015.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
--- 
-Antonio Quartulli
+--
+kind regards,
+
+Gert Doering
+
 
