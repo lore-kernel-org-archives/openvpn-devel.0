@@ -1,12 +1,20 @@
+From: Simon Rozman <simon@...2293...>
+Date: Thu, 7 Nov 2019 13:36:23 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE10BDA461DD@...2294...>
+References: <20191009143422.9419-3-a@...2181...>
+ <201911062041.xA6KfP8R010468@...2054...>
+ <CAGyAFMWBd2GzuZdBfTfGwROPw-hEzqSMUCUY3vrWENeqd1A46w@...278...>
+ <20191107122743.GQ40538@...1296...>
+ <CAGyAFMU5VAWDPuR7V3dTMKBsDbn2vgH61sgn6O9dtZNi-OTebQ@...278...>
+ <99D61A626FDA8A4B90A270669121BE10BDA46060@...2294...>
+In-Reply-To: <99D61A626FDA8A4B90A270669121BE10BDA46060@...2294...>
+Content-Language: en-US
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
+ micalg=2.16.840.1.101.3.4.2.1;
+ boundary="----=_NextPart_000_0007_01D59578.B7698E20"
 MIME-Version: 1.0
-References: <20191107122743.GQ40538@...1296...>
- <20191107132901.1280-1-simon@...2293...>
-In-Reply-To: <20191107132901.1280-1-simon@...2293...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Thu, 7 Nov 2019 15:33:14 +0200
-Message-ID: <CAGyAFMVSMz_xkkosN+cfNLGpJ+m4ts=eYWjMpvqAJVqNLBScWQ@...278...>
-Content-Type: multipart/alternative; boundary="000000000000de502a0596c1b525"
-Subject: Re: [Openvpn-devel] [PATCH] msvc: Add vlan.c/h
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: VLAN: add basic VLAN
+ tagging support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,168 +23,331 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Simon Rozman <simon@...2293...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Simon Rozman <simon@...2293...>, 'Lev Stipakov' <lstipakov@...277...>, 'Gert Doering' <gert@...1296...>
+Cc: 'Antonio Quartulli' <a@...2181...>, 'openvpn-devel' <openvpn-devel@lists.sourceforge.net>
 
---000000000000de502a0596c1b525
-Content-Type: text/plain; charset="UTF-8"
+------=_NextPart_000_0007_01D59578.B7698E20
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_001_0008_01D59578.B7698E20"
 
-Acked-by: Lev Stipakov <lev@...515...>
-
-to 7. marrask. 2019 klo 15.30 Simon Rozman (simon@...2293...) kirjoitti:
-
-> This upgrades 99f28081477ca325a14b13c38abec2c9b619eb01 to support MSVC
-> building.
->
-> Signed-off-by: Simon Rozman <simon@...2293...>
-> ---
->  src/openvpn/openvpn.vcxproj         | 2 ++
->  src/openvpn/openvpn.vcxproj.filters | 6 ++++++
->  2 files changed, 8 insertions(+)
->
-> diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
-> index 85af466f..48e8e140 100644
-> --- a/src/openvpn/openvpn.vcxproj
-> +++ b/src/openvpn/openvpn.vcxproj
-> @@ -196,6 +196,7 @@
->      <ClCompile Include="status.c" />
->      <ClCompile Include="tls_crypt.c" />
->      <ClCompile Include="tun.c" />
-> +    <ClCompile Include="vlan.c" />
->      <ClCompile Include="win32.c" />
->    </ItemGroup>
->    <ItemGroup>
-> @@ -283,6 +284,7 @@
->      <ClInclude Include="syshead.h" />
->      <ClInclude Include="tls_crypt.h" />
->      <ClInclude Include="tun.h" />
-> +    <ClInclude Include="vlan.h" />
->      <ClInclude Include="win32.h" />
->    </ItemGroup>
->    <ItemGroup>
-> diff --git a/src/openvpn/openvpn.vcxproj.filters
-> b/src/openvpn/openvpn.vcxproj.filters
-> index e6068aff..653e892c 100644
-> --- a/src/openvpn/openvpn.vcxproj.filters
-> +++ b/src/openvpn/openvpn.vcxproj.filters
-> @@ -237,6 +237,9 @@
->      <ClCompile Include="auth_token.c">
->        <Filter>Source Files</Filter>
->      </ClCompile>
-> +    <ClCompile Include="vlan.c">
-> +      <Filter>Source Files</Filter>
-> +    </ClCompile>
->    </ItemGroup>
->    <ItemGroup>
->      <ClInclude Include="base64.h">
-> @@ -494,6 +497,9 @@
->      <ClInclude Include="auth_token.h">
->        <Filter>Header Files</Filter>
->      </ClInclude>
-> +    <ClInclude Include="vlan.h">
-> +      <Filter>Header Files</Filter>
-> +    </ClInclude>
->    </ItemGroup>
->    <ItemGroup>
->      <ResourceCompile Include="openvpn_win32_resources.rc">
-> --
-> 2.23.0.windows.1
->
->
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
-
-
--- 
--Lev
-
---000000000000de502a0596c1b525
-Content-Type: text/html; charset="UTF-8"
+------=_NextPart_001_0008_01D59578.B7698E20
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">Acked-by: Lev Stipakov &lt;<a href=3D"mailto:lev@...515...=
-">lev@...515...</a>&gt;</div><br><div class=3D"gmail_quote"><div dir=3D"ltr=
-" class=3D"gmail_attr">to 7. marrask. 2019 klo 15.30 Simon Rozman (<a href=
-=3D"mailto:simon@...2293..." target=3D"_blank">simon@...2293...</a>) kirjoi=
-tti:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px=
- 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">This upgrad=
-es 99f28081477ca325a14b13c38abec2c9b619eb01 to support MSVC<br>
-building.<br>
-<br>
-Signed-off-by: Simon Rozman &lt;<a href=3D"mailto:simon@...2293..." target=
-=3D"_blank">simon@...2293...</a>&gt;<br>
----<br>
-=C2=A0src/openvpn/openvpn.vcxproj=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0| 2 ++<b=
-r>
-=C2=A0src/openvpn/openvpn.vcxproj.filters | 6 ++++++<br>
-=C2=A02 files changed, 8 insertions(+)<br>
-<br>
-diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj<br>
-index 85af466f..48e8e140 100644<br>
---- a/src/openvpn/openvpn.vcxproj<br>
-+++ b/src/openvpn/openvpn.vcxproj<br>
-@@ -196,6 +196,7 @@<br>
-=C2=A0 =C2=A0 =C2=A0&lt;ClCompile Include=3D&quot;status.c&quot; /&gt;<br>
-=C2=A0 =C2=A0 =C2=A0&lt;ClCompile Include=3D&quot;tls_crypt.c&quot; /&gt;<b=
-r>
-=C2=A0 =C2=A0 =C2=A0&lt;ClCompile Include=3D&quot;tun.c&quot; /&gt;<br>
-+=C2=A0 =C2=A0 &lt;ClCompile Include=3D&quot;vlan.c&quot; /&gt;<br>
-=C2=A0 =C2=A0 =C2=A0&lt;ClCompile Include=3D&quot;win32.c&quot; /&gt;<br>
-=C2=A0 =C2=A0&lt;/ItemGroup&gt;<br>
-=C2=A0 =C2=A0&lt;ItemGroup&gt;<br>
-@@ -283,6 +284,7 @@<br>
-=C2=A0 =C2=A0 =C2=A0&lt;ClInclude Include=3D&quot;syshead.h&quot; /&gt;<br>
-=C2=A0 =C2=A0 =C2=A0&lt;ClInclude Include=3D&quot;tls_crypt.h&quot; /&gt;<b=
-r>
-=C2=A0 =C2=A0 =C2=A0&lt;ClInclude Include=3D&quot;tun.h&quot; /&gt;<br>
-+=C2=A0 =C2=A0 &lt;ClInclude Include=3D&quot;vlan.h&quot; /&gt;<br>
-=C2=A0 =C2=A0 =C2=A0&lt;ClInclude Include=3D&quot;win32.h&quot; /&gt;<br>
-=C2=A0 =C2=A0&lt;/ItemGroup&gt;<br>
-=C2=A0 =C2=A0&lt;ItemGroup&gt;<br>
-diff --git a/src/openvpn/openvpn.vcxproj.filters b/src/openvpn/openvpn.vcxp=
-roj.filters<br>
-index e6068aff..653e892c 100644<br>
---- a/src/openvpn/openvpn.vcxproj.filters<br>
-+++ b/src/openvpn/openvpn.vcxproj.filters<br>
-@@ -237,6 +237,9 @@<br>
-=C2=A0 =C2=A0 =C2=A0&lt;ClCompile Include=3D&quot;auth_token.c&quot;&gt;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0&lt;Filter&gt;Source Files&lt;/Filter&gt;<br>
-=C2=A0 =C2=A0 =C2=A0&lt;/ClCompile&gt;<br>
-+=C2=A0 =C2=A0 &lt;ClCompile Include=3D&quot;vlan.c&quot;&gt;<br>
-+=C2=A0 =C2=A0 =C2=A0 &lt;Filter&gt;Source Files&lt;/Filter&gt;<br>
-+=C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-=C2=A0 =C2=A0&lt;/ItemGroup&gt;<br>
-=C2=A0 =C2=A0&lt;ItemGroup&gt;<br>
-=C2=A0 =C2=A0 =C2=A0&lt;ClInclude Include=3D&quot;base64.h&quot;&gt;<br>
-@@ -494,6 +497,9 @@<br>
-=C2=A0 =C2=A0 =C2=A0&lt;ClInclude Include=3D&quot;auth_token.h&quot;&gt;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0&lt;Filter&gt;Header Files&lt;/Filter&gt;<br>
-=C2=A0 =C2=A0 =C2=A0&lt;/ClInclude&gt;<br>
-+=C2=A0 =C2=A0 &lt;ClInclude Include=3D&quot;vlan.h&quot;&gt;<br>
-+=C2=A0 =C2=A0 =C2=A0 &lt;Filter&gt;Header Files&lt;/Filter&gt;<br>
-+=C2=A0 =C2=A0 &lt;/ClInclude&gt;<br>
-=C2=A0 =C2=A0&lt;/ItemGroup&gt;<br>
-=C2=A0 =C2=A0&lt;ItemGroup&gt;<br>
-=C2=A0 =C2=A0 =C2=A0&lt;ResourceCompile Include=3D&quot;openvpn_win32_resou=
-rces.rc&quot;&gt;<br>
--- <br>
-2.23.0.windows.1<br>
-<br>
-<br>
-<br>
-_______________________________________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
-envpn-devel@lists.sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
-=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
-nfo/openvpn-devel</a><br>
-</blockquote></div><br clear=3D"all"><div><br></div>-- <br><div dir=3D"ltr"=
->-Lev</div>
+I revoke this =E2=80=9Cmaster.c=E2=80=9D idea. It makes incremental compili=
+ng ridiculously slow. It might work for production builds, but definitely n=
+ot for development.
 
---000000000000de502a0596c1b525--
+=20
+
+Best regards,
+
+Simon
+
+=20
+
+From: Simon Rozman [mailto:simon@...2293...]=20
+Sent: Thursday, November 7, 2019 2:06 PM
+To: 'Lev Stipakov' <lstipakov@...277...>; 'Gert Doering' <gert@...1296...>
+Cc: 'Antonio Quartulli' <a@...2181...>; 'openvpn-devel' <openvpn-devel@...1514...=
+s.sourceforge.net>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: VLAN: add basic VLAN taggi=
+ng support
+
+=20
+
+We could introduce a master.c file which would include:
+
+=20
+
+#include "argv.c"
+
+#include "auth_token.c"
+
+#include "base64.c"
+
+#include "block_dns.c"
+
+#include "buffer.c"
+
+.
+
+.
+
+.
+
+#include "status.c"
+
+#include "tls_crypt.c"
+
+#include "tun.c"
+
+#include "win32.c"
+
+=20
+
+And then have Makefile.ac and MSVC project files compile the master.c only.
+
+=20
+
+Best regards,
+
+Simon
+
+=20
+
+=20
+
+Besides this, we need to fix this whole MSVC mess - all other platforms
+are just done with "add new source file to the Makefile.ac" and done
+(including mingw builds), and then MSVC is broken again, and this will
+happen again and again.=20=20=20
+
+
+Is there no reasonable way to build these project files from Makefile.ac?
+
+=20
+
+I see no reasonable way. Selva, Simon - opinions?
+
+=20
+
+We could probably have a templatized project file and script which inserts =
+source files to there
+
+based on content of Makefile.ac, but I don't like it. I consider necessity =
+of modifying VS project
+
+a lesser evil.=20
+
+=20
+
+(you open it and it just works)
+
+=20
+
+-Lev
+
+
+------=_NextPart_001_0008_01D59578.B7698E20
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40"><head><meta http-equiv=3DContent-Type content=
+=3D"text/html; charset=3Dutf-8"><meta name=3DGenerator content=3D"Microsoft=
+ Word 15 (filtered medium)"><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:0 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman",serif;}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:#0563C1;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:#954F72;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal;
+	font-family:"Calibri",sans-serif;
+	color:#1F497D;}
+span.EmailStyle18
+	{mso-style-type:personal-reply;
+	font-family:"Calibri",sans-serif;
+	color:#1F497D;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-size:10.0pt;}
+@page WordSection1
+	{size:612.0pt 792.0pt;
+	margin:70.85pt 70.85pt 70.85pt 70.85pt;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]--></head><body lang=3DSL link=3D"#0563C1" v=
+link=3D"#954F72"><div class=3DWordSection1><p class=3DMsoNormal><a name=3D"=
+_MailEndCompose"><span lang=3DEN-GB style=3D'font-size:11.0pt;font-family:"=
+Calibri",sans-serif;color:#1F497D;mso-fareast-language:EN-US'>I revoke this=
+ =E2=80=9Cmaster.c=E2=80=9D idea. It makes incremental compiling ridiculous=
+ly slow. It might work for production builds, but definitely not for develo=
+pment.<o:p></o:p></span></a></p><p class=3DMsoNormal><span lang=3DEN-GB sty=
+le=3D'font-size:11.0pt;font-family:"Calibri",sans-serif;color:#1F497D;mso-f=
+areast-language:EN-US'><o:p>&nbsp;</o:p></span></p><div><p class=3DMsoNorma=
+l><span lang=3DEN-GB style=3D'font-size:11.0pt;font-family:"Calibri",sans-s=
+erif;color:#1F497D'>Best regards,<o:p></o:p></span></p><p class=3DMsoNormal=
+><span lang=3DEN-GB style=3D'font-size:11.0pt;font-family:"Calibri",sans-se=
+rif;color:#1F497D'>Simon<o:p></o:p></span></p></div><p class=3DMsoNormal><s=
+pan lang=3DEN-GB style=3D'font-size:11.0pt;font-family:"Calibri",sans-serif=
+;color:#1F497D;mso-fareast-language:EN-US'><o:p>&nbsp;</o:p></span></p><div=
+><div style=3D'border:none;border-top:solid #E1E1E1 1.0pt;padding:3.0pt 0cm=
+ 0cm 0cm'><p class=3DMsoNormal><b><span lang=3DEN-GB style=3D'font-size:11.=
+0pt;font-family:"Calibri",sans-serif'>From:</span></b><span lang=3DEN-GB st=
+yle=3D'font-size:11.0pt;font-family:"Calibri",sans-serif'> Simon Rozman [ma=
+ilto:simon@...2293...] <br><b>Sent:</b> Thursday, November 7, 2019 2:06 PM<=
+br><b>To:</b> 'Lev Stipakov' &lt;lstipakov@...277...&gt;; 'Gert Doering' &l=
+t;gert@...1296...&gt;<br><b>Cc:</b> 'Antonio Quartulli' &lt;a@...2181...&gt=
+;; 'openvpn-devel' &lt;openvpn-devel@lists.sourceforge.net&gt;<br><b>Subjec=
+t:</b> Re: [Openvpn-devel] [PATCH applied] Re: VLAN: add basic VLAN tagging=
+ support<o:p></o:p></span></p></div></div><p class=3DMsoNormal><span lang=
+=3DEN-GB><o:p>&nbsp;</o:p></span></p><p class=3DMsoNormal><span lang=3DEN-G=
+B style=3D'font-size:11.0pt;font-family:"Calibri",sans-serif;color:#1F497D;=
+mso-fareast-language:EN-US'>We could introduce a master.c file which would =
+include:<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB style=
+=3D'font-size:11.0pt;font-family:"Calibri",sans-serif;color:#1F497D;mso-far=
+east-language:EN-US'><o:p>&nbsp;</o:p></span></p><p class=3DMsoNormal><span=
+ lang=3DEN-GB style=3D'font-size:11.0pt;font-family:"Calibri",sans-serif;co=
+lor:#1F497D;mso-fareast-language:EN-US'>#include &quot;argv.c&quot;<o:p></o=
+:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D'font-size:11=
+.0pt;font-family:"Calibri",sans-serif;color:#1F497D;mso-fareast-language:EN=
+-US'>#include &quot;auth_token.c&quot;<o:p></o:p></span></p><p class=3DMsoN=
+ormal><span lang=3DEN-GB style=3D'font-size:11.0pt;font-family:"Calibri",sa=
+ns-serif;color:#1F497D;mso-fareast-language:EN-US'>#include &quot;base64.c&=
+quot;<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D=
+'font-size:11.0pt;font-family:"Calibri",sans-serif;color:#1F497D;mso-fareas=
+t-language:EN-US'>#include &quot;block_dns.c&quot;<o:p></o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-GB style=3D'font-size:11.0pt;font-family:=
+"Calibri",sans-serif;color:#1F497D;mso-fareast-language:EN-US'>#include &qu=
+ot;buffer.c&quot;<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN=
+-GB style=3D'font-size:11.0pt;font-family:"Calibri",sans-serif;color:#1F497=
+D;mso-fareast-language:EN-US'>.<o:p></o:p></span></p><p class=3DMsoNormal><=
+span lang=3DEN-GB style=3D'font-size:11.0pt;font-family:"Calibri",sans-seri=
+f;color:#1F497D;mso-fareast-language:EN-US'>.<o:p></o:p></span></p><p class=
+=3DMsoNormal><span lang=3DEN-GB style=3D'font-size:11.0pt;font-family:"Cali=
+bri",sans-serif;color:#1F497D;mso-fareast-language:EN-US'>.<o:p></o:p></spa=
+n></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D'font-size:11.0pt;fon=
+t-family:"Calibri",sans-serif;color:#1F497D;mso-fareast-language:EN-US'>#in=
+clude &quot;status.c&quot;<o:p></o:p></span></p><p class=3DMsoNormal><span =
+lang=3DEN-GB style=3D'font-size:11.0pt;font-family:"Calibri",sans-serif;col=
+or:#1F497D;mso-fareast-language:EN-US'>#include &quot;tls_crypt.c&quot;<o:p=
+></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D'font-siz=
+e:11.0pt;font-family:"Calibri",sans-serif;color:#1F497D;mso-fareast-languag=
+e:EN-US'>#include &quot;tun.c&quot;<o:p></o:p></span></p><p class=3DMsoNorm=
+al><span lang=3DEN-GB style=3D'font-size:11.0pt;font-family:"Calibri",sans-=
+serif;color:#1F497D;mso-fareast-language:EN-US'>#include &quot;win32.c&quot=
+;<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D'fon=
+t-size:11.0pt;font-family:"Calibri",sans-serif;color:#1F497D;mso-fareast-la=
+nguage:EN-US'><o:p>&nbsp;</o:p></span></p><p class=3DMsoNormal><span lang=
+=3DEN-GB style=3D'font-size:11.0pt;font-family:"Calibri",sans-serif;color:#=
+1F497D;mso-fareast-language:EN-US'>And then have Makefile.ac and MSVC proje=
+ct files compile the master.c only.<o:p></o:p></span></p><p class=3DMsoNorm=
+al><span lang=3DEN-GB style=3D'font-size:11.0pt;font-family:"Calibri",sans-=
+serif;color:#1F497D;mso-fareast-language:EN-US'><o:p>&nbsp;</o:p></span></p=
+><p class=3DMsoNormal><span lang=3DEN-GB style=3D'font-size:11.0pt;font-fam=
+ily:"Calibri",sans-serif;color:#1F497D'>Best regards,<o:p></o:p></span></p>=
+<p class=3DMsoNormal><span lang=3DEN-GB style=3D'font-size:11.0pt;font-fami=
+ly:"Calibri",sans-serif;color:#1F497D'>Simon<o:p></o:p></span></p><p class=
+=3DMsoNormal><span lang=3DEN-GB style=3D'font-size:11.0pt;font-family:"Cali=
+bri",sans-serif;color:#1F497D;mso-fareast-language:EN-US'><o:p>&nbsp;</o:p>=
+</span></p><div><div><div><p class=3DMsoNormal><span lang=3DEN-GB>&nbsp;<o:=
+p></o:p></span></p></div><blockquote style=3D'border:none;border-left:solid=
+ #CCCCCC 1.0pt;padding:0cm 0cm 0cm 6.0pt;margin-left:4.8pt;margin-top:5.0pt=
+;margin-right:0cm;margin-bottom:5.0pt'><p class=3DMsoNormal><span lang=3DEN=
+-GB>Besides this, we need to fix this whole MSVC mess - all other platforms=
+<br>are just done with &quot;add new source file to the Makefile.ac&quot; a=
+nd done<br>(including mingw builds), and then MSVC is broken again, and thi=
+s will<br>happen again and again.&nbsp; &nbsp;<o:p></o:p></span></p></block=
+quote><blockquote style=3D'border:none;border-left:solid #CCCCCC 1.0pt;padd=
+ing:0cm 0cm 0cm 6.0pt;margin-left:4.8pt;margin-top:5.0pt;margin-right:0cm;m=
+argin-bottom:5.0pt'><p class=3DMsoNormal><span lang=3DEN-GB><br>Is there no=
+ reasonable way to build these project files from Makefile.ac?<o:p></o:p></=
+span></p></blockquote><div><p class=3DMsoNormal><span lang=3DEN-GB><o:p>&nb=
+sp;</o:p></span></p></div><div><p class=3DMsoNormal><span lang=3DEN-GB>I se=
+e no reasonable way. Selva, Simon - opinions?<o:p></o:p></span></p></div><d=
+iv><p class=3DMsoNormal><span lang=3DEN-GB><o:p>&nbsp;</o:p></span></p></di=
+v><div><p class=3DMsoNormal><span lang=3DEN-GB>We could probably have a tem=
+platized project file and script which inserts source files to there<o:p></=
+o:p></span></p></div><div><p class=3DMsoNormal><span lang=3DEN-GB>based on =
+content of Makefile.ac, but I don't like it. I consider necessity of modify=
+ing VS project<o:p></o:p></span></p></div><div><p class=3DMsoNormal><span l=
+ang=3DEN-GB>a lesser evil.&nbsp;<o:p></o:p></span></p></div><div><p class=
+=3DMsoNormal><span lang=3DEN-GB><o:p>&nbsp;</o:p></span></p></div><div><p c=
+lass=3DMsoNormal><span lang=3DEN-GB>(you open it and it just works)<o:p></o=
+:p></span></p></div><div><p class=3DMsoNormal><span lang=3DEN-GB>&nbsp;<o:p=
+></o:p></span></p></div></div><div><p class=3DMsoNormal><span lang=3DEN-GB>=
+-Lev<o:p></o:p></span></p></div></div></div></body></html>=
+
+------=_NextPart_001_0008_01D59578.B7698E20--
+
+------=_NextPart_000_0007_01D59578.B7698E20
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+
+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
+
+------=_NextPart_000_0007_01D59578.B7698E20--
 
