@@ -1,10 +1,16 @@
-From: Simon Rozman <simon@...2293...>
-Date: Thu,  7 Nov 2019 14:29:01 +0100
-Message-Id: <20191107132901.1280-1-simon@...2293...>
-In-Reply-To: <20191107122743.GQ40538@...1296...>
-References: <20191107122743.GQ40538@...1296...>
+References: <20191009143422.9419-3-a@...2181...>
+ <201911062041.xA6KfP8R010468@...2054...>
+ <CAGyAFMWBd2GzuZdBfTfGwROPw-hEzqSMUCUY3vrWENeqd1A46w@...278...>
+ <20191107122743.GQ40538@...1296...>
+ <CAGyAFMU5VAWDPuR7V3dTMKBsDbn2vgH61sgn6O9dtZNi-OTebQ@...278...>
+From: tincanteksup <tincanteksup@...277...>
+Message-ID: <e2068c1e-739e-6cc7-06bc-f2c7d99dc39e@...277...>
+Date: Thu, 7 Nov 2019 13:32:23 +0000
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] msvc: Add vlan.c/h
+In-Reply-To: <CAGyAFMU5VAWDPuR7V3dTMKBsDbn2vgH61sgn6O9dtZNi-OTebQ@...278...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: VLAN: add basic VLAN
+ tagging support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,64 +19,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-This upgrades 99f28081477ca325a14b13c38abec2c9b619eb01 to support MSVC
-building.
+Hi,
 
-Signed-off-by: Simon Rozman <simon@...2293...>
----
- src/openvpn/openvpn.vcxproj         | 2 ++
- src/openvpn/openvpn.vcxproj.filters | 6 ++++++
- 2 files changed, 8 insertions(+)
+On 07/11/2019 12:42, Lev Stipakov wrote:
+> Hi,
+> 
+> 
+>> I'm a bit unhappy with that one, as it changes behaviour for all
+>> non-windows
+>> builds (including all the openssl build output even if it succeeds).
+>>
+> 
+> The only place it changes behavior is this
+> 
+>   install:
+>     - if [ ! -z "${CHOST}" ]; then unset CC; fi
+> -  - .travis/build-deps.sh > build-deps.log 2>&1 || (cat build-deps.log &&
+> exit 1)
+> +  - .travis/build-deps.sh
+> 
+> I don't see it as an issue to print output when building dependencies. The
+> reason why
+> it is done is that travis aborts build if there is no output for more than
+> 10 minutes.
+> 
 
-diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
-index 85af466f..48e8e140 100644
---- a/src/openvpn/openvpn.vcxproj
-+++ b/src/openvpn/openvpn.vcxproj
-@@ -196,6 +196,7 @@
-     <ClCompile Include="status.c" />
-     <ClCompile Include="tls_crypt.c" />
-     <ClCompile Include="tun.c" />
-+    <ClCompile Include="vlan.c" />
-     <ClCompile Include="win32.c" />
-   </ItemGroup>
-   <ItemGroup>
-@@ -283,6 +284,7 @@
-     <ClInclude Include="syshead.h" />
-     <ClInclude Include="tls_crypt.h" />
-     <ClInclude Include="tun.h" />
-+    <ClInclude Include="vlan.h" />
-     <ClInclude Include="win32.h" />
-   </ItemGroup>
-   <ItemGroup>
-diff --git a/src/openvpn/openvpn.vcxproj.filters b/src/openvpn/openvpn.vcxproj.filters
-index e6068aff..653e892c 100644
---- a/src/openvpn/openvpn.vcxproj.filters
-+++ b/src/openvpn/openvpn.vcxproj.filters
-@@ -237,6 +237,9 @@
-     <ClCompile Include="auth_token.c">
-       <Filter>Source Files</Filter>
-     </ClCompile>
-+    <ClCompile Include="vlan.c">
-+      <Filter>Source Files</Filter>
-+    </ClCompile>
-   </ItemGroup>
-   <ItemGroup>
-     <ClInclude Include="base64.h">
-@@ -494,6 +497,9 @@
-     <ClInclude Include="auth_token.h">
-       <Filter>Header Files</Filter>
-     </ClInclude>
-+    <ClInclude Include="vlan.h">
-+      <Filter>Header Files</Filter>
-+    </ClInclude>
-   </ItemGroup>
-   <ItemGroup>
-     <ResourceCompile Include="openvpn_win32_resources.rc">
--- 
-2.23.0.windows.1
-
+Can travis be instructed to wait longer ?
 
