@@ -1,7 +1,10 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Thu,  7 Nov 2019 19:45:22 +0200
-Message-Id: <1573148729-27339-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH v2 0/7] Wintun support
+Date: Thu,  7 Nov 2019 19:45:24 +0200
+Message-Id: <1573148729-27339-3-git-send-email-lstipakov@...277...>
+In-Reply-To: <1573148729-27339-1-git-send-email-lstipakov@...277...>
+References: <1573148729-27339-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH v2 2/7] wintun: add --windows-driver config
+ option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,82 +16,148 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-This set of patches adds support of wintun kernel driver
-(https://www.wintun.net) to OpenVPN Windows client and server.
+From: Lev Stipakov <lev@...515...>
 
-While wintun is in beta (currently used version is 0.7), it performs
-significantly faster comparison to tap-windows6.
+This allows to specify which tun driver openvpn should use,
+tap-windows6 (default) or wintun.
 
-Below are download bandwidth stats reported by iperf3 running on client:
+Note than wintun support will be added in follow-up patches.
 
- > iperf3 -c <server-vpn-ip> -t 60 
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/openvpn/init.c    |  7 +++++++
+ src/openvpn/options.c | 37 +++++++++++++++++++++++++++++++++++++
+ src/openvpn/options.h |  1 +
+ src/openvpn/tun.h     |  1 +
+ 4 files changed, 46 insertions(+)
 
-Server - community openvpn2 (2.4.4)
-
-  tap-windows6  - 396Mbit/s
-  wintun        - 677Mbit/s 
-
-Server - propietary openvpn3 with kernel acceleration (in development)
-
-  tap-windows6  - 386Mbit/s
-  wintun        - 840Mbit/s
-
-Client version used for tap-windows6 tests is 2.4.8.
-
-To use wintun driver instead of tap-window6, add "windows-driver wintun"
-to your VPN config file or openvpn.exe command line.
-
-Ready-made Windows client installer (signed by OpenVPN Inc)
-with wintun support could be found here: from http://staging.openvpn.net/openvpn2/.
-
-To build installer yourself, you need a patched version of
-openvpn-build, see https://github.com/OpenVPN/openvpn-build/pull/154.
-
-Changes from v1:
-
- - rebased on top of latest master (2b11e57)
-
-Lev Stipakov (7):
-  Visual Studio: upgrade project files to VS2019
-  wintun: add --windows-driver config option
-  wintun: implement opening wintun device
-  wintun: ring buffers based I/O
-  wintun: interactive service support
-  wintun: set adapter properties via interactive service
-  wintun: clear adapter settings on tun close
-
- include/openvpn-msg.h                       |  10 +
- src/compat/compat.vcxproj                   |  12 +-
- src/openvpn/Makefile.am                     |   4 +-
- src/openvpn/forward.c                       |  42 ++-
- src/openvpn/forward.h                       |  47 ++-
- src/openvpn/init.c                          |   7 +
- src/openvpn/mtcp.c                          |  28 +-
- src/openvpn/mudp.c                          |  14 +
- src/openvpn/openvpn.vcxproj                 |  16 +-
- src/openvpn/openvpn.vcxproj.filters         |   8 +-
- src/openvpn/options.c                       |  37 ++
- src/openvpn/options.h                       |   1 +
- src/openvpn/ring_buffer.c                   |  54 +++
- src/openvpn/ring_buffer.h                   |  79 +++++
- src/openvpn/route.c                         |   2 +-
- src/openvpn/route.h                         |   3 +-
- src/openvpn/syshead.h                       |   1 +
- src/openvpn/tun.c                           | 504 +++++++++++++++++++++++-----
- src/openvpn/tun.h                           | 139 +++++++-
- src/openvpn/win32.c                         |  95 ++++++
- src/openvpn/win32.h                         |   4 +
- src/openvpnmsica/openvpnmsica.vcxproj       |  14 +-
- src/openvpnserv/Makefile.am                 |   3 +-
- src/openvpnserv/interactive.c               | 141 +++++++-
- src/openvpnserv/openvpnserv.vcxproj         |  14 +-
- src/openvpnserv/openvpnserv.vcxproj.filters |   6 +
- src/tapctl/tapctl.vcxproj                   |  14 +-
- 27 files changed, 1160 insertions(+), 139 deletions(-)
- create mode 100644 src/openvpn/ring_buffer.c
- create mode 100644 src/openvpn/ring_buffer.h
-
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index ae7bd63..c6d4953 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1733,6 +1733,10 @@ do_init_tun(struct context *c)
+                             c->c2.es,
+                             &c->net_ctx);
+ 
++#ifdef _WIN32
++    c->c1.tuntap->wintun = c->options.wintun;
++#endif
++
+     init_tun_post(c->c1.tuntap,
+                   &c->c2.frame,
+                   &c->options.tuntap_options);
+@@ -1775,6 +1779,9 @@ do_open_tun(struct context *c)
+     /* store (hide) interactive service handle in tuntap_options */
+     c->c1.tuntap->options.msg_channel = c->options.msg_channel;
+     msg(D_ROUTE, "interactive service msg_channel=%u", (unsigned int) c->options.msg_channel);
++
++    c->c1.tuntap->wintun = c->options.wintun;
++
+ #endif
+ 
+     /* allocate route list structure */
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 1838a69..5c5033e 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -747,6 +747,9 @@ static const char usage_message[] =
+     "                       optional parameter controls the initial state of ex.\n"
+     "--show-net-up   : Show " PACKAGE_NAME "'s view of routing table and net adapter list\n"
+     "                  after TAP adapter is up and routes have been added.\n"
++    "--windows-driver   : Which tun driver to use?\n"
++    "                     tap-windows6 (default)\n"
++    "                     wintun\n"
+ #ifdef _WIN32
+     "--block-outside-dns   : Block DNS on other network adapters to prevent DNS leaks\n"
+ #endif
+@@ -851,6 +854,7 @@ init_options(struct options *o, const bool init_gc)
+     o->tuntap_options.dhcp_masq_offset = 0;     /* use network address as internal DHCP server address */
+     o->route_method = ROUTE_METHOD_ADAPTIVE;
+     o->block_outside_dns = false;
++    o->wintun = false;
+ #endif
+     o->vlan_accept = VLAN_ONLY_UNTAGGED_OR_PRIORITY;
+     o->vlan_pvid = 1;
+@@ -2994,6 +2998,12 @@ options_postprocess_mutate_invariant(struct options *options)
+         options->ifconfig_noexec = false;
+     }
+ 
++    /* for wintun kernel doesn't send DHCP requests, so use ipapi to set IP address and netmask */
++    if (options->wintun)
++    {
++        options->tuntap_options.ip_win32_type = IPW32_SET_IPAPI;
++    }
++
+     remap_redirect_gateway_flags(options);
+ #endif
+ 
+@@ -4039,6 +4049,26 @@ foreign_option(struct options *o, char *argv[], int len, struct env_set *es)
+     }
+ }
+ 
++#ifdef _WIN32
++bool
++parse_windows_driver(const char *str, const int msglevel)
++{
++    if (streq(str, "tap-windows6"))
++    {
++        return false;
++    }
++    else if (streq(str, "wintun"))
++    {
++        return true;
++    }
++    else
++    {
++        msg(msglevel, "--windows-driver must be tap-windows6 or wintun");
++        return false;
++    }
++}
++#endif
++
+ /*
+  * parse/print topology coding
+  */
+@@ -5281,6 +5311,13 @@ add_option(struct options *options,
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+         options->dev_type = p[1];
+     }
++#ifdef _WIN32
++    else if (streq(p[0], "windows-driver") && p[1] && !p[2])
++    {
++        VERIFY_PERMISSION(OPT_P_GENERAL);
++        options->wintun = parse_windows_driver(p[1], M_FATAL);
++    }
++#endif
+     else if (streq(p[0], "dev-node") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index ff7a5bb..0a24e5e 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -632,6 +632,7 @@ struct options
+     bool show_net_up;
+     int route_method;
+     bool block_outside_dns;
++    bool wintun;
+ #endif
+ 
+     bool use_peer_id;
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index 5a0a933..df935f6 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -175,6 +175,7 @@ struct tuntap
+      * ~0 if undefined */
+     DWORD adapter_index;
+ 
++    bool wintun; /* true if wintun is used instead of tap-windows6 */
+     int standby_iter;
+ #else  /* ifdef _WIN32 */
+     int fd; /* file descriptor for TUN/TAP dev */
 -- 
 2.7.4
 
