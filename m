@@ -1,9 +1,17 @@
+MIME-Version: 1.0
+References: <20191009143422.9419-3-a@...2181...>
+ <201911062041.xA6KfP8R010468@...2054...>
+ <CAGyAFMWBd2GzuZdBfTfGwROPw-hEzqSMUCUY3vrWENeqd1A46w@...278...>
+ <20191107122743.GQ40538@...1296...>
+ <CAGyAFMU5VAWDPuR7V3dTMKBsDbn2vgH61sgn6O9dtZNi-OTebQ@...278...>
+ <20191107125707.GR40538@...1296...>
+In-Reply-To: <20191107125707.GR40538@...1296...>
 From: Lev Stipakov <lstipakov@...277...>
-Date: Thu,  7 Nov 2019 23:29:34 +0200
-Message-Id: <1573162174-28461-1-git-send-email-lstipakov@...277...>
-In-Reply-To: <CAGyAFMXrwiOo2EwuNrR2_7reOThwpHBGW6Tzk8yYvJmdbb4t7w@...278...>
-References: <CAGyAFMXrwiOo2EwuNrR2_7reOThwpHBGW6Tzk8yYvJmdbb4t7w@...278...>
-Subject: [Openvpn-devel] [PATCH v2] travis: add Visual Studio build
+Date: Thu, 7 Nov 2019 23:45:14 +0200
+Message-ID: <CAGyAFMUWim7Dy0x7fRegPz9AXNzrL983mQv3Z16yoC0PJ6kP0Q@...278...>
+Content-Type: multipart/alternative; boundary="000000000000562b320596c8957c"
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: VLAN: add basic VLAN
+ tagging support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,105 +20,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+To: Gert Doering <gert@...1296...>
+Cc: Antonio Quartulli <a@...2181...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Lev Stipakov <lev@...515...>
+--000000000000562b320596c8957c
+Content-Type: text/plain; charset="UTF-8"
 
-Signed-off-by: Lev Stipakov <lev@...515...>
----
+Hi,
 
- v2; do not unconditionally print dependencies build output for non-Windows builds
+It's lots of text that is totally uninteresting if it succeeds, but that
+> you need to scroll over when looking for the reason why a build fails -
+> which is the reason why it is the way it is today.
+>
 
- .travis.yml               |  9 ++++++++-
- .travis/build-check.sh    |  5 +++++
- .travis/build-deps.sh     |  9 +++++++++
- .travis/run-build-deps.sh | 10 ++++++++++
- 4 files changed, 32 insertions(+), 1 deletion(-)
- create mode 100755 .travis/run-build-deps.sh
+I have sent v2 which doesn't change the behavior for non-Windows builds.
 
-diff --git a/.travis.yml b/.travis.yml
-index 2d07cdc..61be17c 100644
---- a/.travis.yml
-+++ b/.travis.yml
-@@ -24,6 +24,13 @@ env:
- 
- matrix:
-   include:
-+    - env:
-+      - SSLLIB="openssl"
-+      - OPENSSL_VERSION="1.1.1d"
-+      - P7Z="c:\Program Files\7-Zip\7z.exe"
-+      - CC="cl"
-+      os: windows
-+      compiler: cl
-     - env: SSLLIB="openssl" RUN_COVERITY="1"
-       os: linux
-       compiler: gcc
-@@ -89,7 +96,7 @@ cache:
- 
- install:
-   - if [ ! -z "${CHOST}" ]; then unset CC; fi
--  - .travis/build-deps.sh > build-deps.log 2>&1 || (cat build-deps.log && exit 1)
-+  - .travis/run-build-deps.sh
- 
- before_script:
-   - .travis/coverity.sh
-diff --git a/.travis/build-check.sh b/.travis/build-check.sh
-index 74f3ae1..d2d2e8a 100755
---- a/.travis/build-check.sh
-+++ b/.travis/build-check.sh
-@@ -1,6 +1,11 @@
- #!/bin/sh
- set -eux
- 
-+if [ "${TRAVIS_OS_NAME}" = "windows" ]; then
-+	PATH="/c/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/MSBuild/15.0/Bin/":$PATH
-+	MSBuild.exe openvpn.sln //p:Platform=x64 && exit 0
-+fi
-+
- if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
- 	export LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH:-}"
- fi
-diff --git a/.travis/build-deps.sh b/.travis/build-deps.sh
-index 391b35e..724ff30 100755
---- a/.travis/build-deps.sh
-+++ b/.travis/build-deps.sh
-@@ -1,6 +1,15 @@
- #!/bin/sh
- set -eux
- 
-+if [ "${TRAVIS_OS_NAME}" = "windows" ]; then
-+    choco install strawberryperl nasm
-+    cd ..
-+    git clone https://github.com/openvpn/openvpn-build.git
-+    cd openvpn-build
-+    PATH="/c/Strawberry/perl/bin:":$PATH MODE=DEPS msvc/build.bat
-+    exit 0
-+fi
-+
- # Set defaults
- PREFIX="${PREFIX:-${HOME}/opt}"
- 
-diff --git a/.travis/run-build-deps.sh b/.travis/run-build-deps.sh
-new file mode 100755
-index 0000000..b8eb41c
---- /dev/null
-+++ b/.travis/run-build-deps.sh
-@@ -0,0 +1,10 @@
-+#!/bin/sh
-+set -eux
-+
-+if [ "${TRAVIS_OS_NAME}" = "windows" ]; then
-+    # for windows we need to print output since openssl build
-+    # might take more than 10 minutes, which causes build abort
-+    .travis/build-deps.sh
-+else
-+    .travis/build-deps.sh > build-deps.log 2>&1 || (cat build-deps.log && exit 1)
-+fi
+If you volunteer to update MSVC every time we add or change a source file,
+> I'm happy to send you a HEADS UP notice.  But I am not doing it, and I will
+> not request it from any contributor who is not using windows.
+>
+
+All right, that would work for me. We don't add C files that often, I could
+take care
+of fixing Visual Studio build after getting a mail from travis / buildbot
+(when we'll have MSVC there).
+
+v2: https://patchwork.openvpn.net/patch/886/
+happy travis: https://travis-ci.org/lstipakov/openvpn/builds/608949725
+
 -- 
-2.7.4
+-Lev
 
+--000000000000562b320596c8957c
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div>Hi,</div><br><div class=3D"gmail_quote"><blockquote c=
+lass=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px soli=
+d rgb(204,204,204);padding-left:1ex">It&#39;s lots of text that is totally =
+uninteresting if it succeeds, but that<br>
+you need to scroll over when looking for the reason why a build fails -<br>
+which is the reason why it is the way it is today.<br></blockquote><div><br=
+></div><div>I have sent v2 which doesn&#39;t change the behavior for non-Wi=
+ndows builds.</div><div><br></div><blockquote class=3D"gmail_quote" style=
+=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding=
+-left:1ex">
+If you volunteer to update MSVC every time we add or change a source file,<=
+br>
+I&#39;m happy to send you a HEADS UP notice.=C2=A0 But I am not doing it, a=
+nd I will<br>
+not request it from any contributor who is not using windows.<br></blockquo=
+te><div><br></div><div>All right, that would work for me. We don&#39;t add =
+C files that often, I could take care</div><div>of fixing Visual Studio bui=
+ld after getting a mail from travis / buildbot (when we&#39;ll have MSVC th=
+ere).</div></div><div><br></div><div>v2:=C2=A0<a href=3D"https://patchwork.=
+openvpn.net/patch/886/">https://patchwork.openvpn.net/patch/886/</a></div><=
+div>happy travis:=C2=A0<a href=3D"https://travis-ci.org/lstipakov/openvpn/b=
+uilds/608949725">https://travis-ci.org/lstipakov/openvpn/builds/608949725</=
+a></div><div><br></div>-- <br><div dir=3D"ltr" class=3D"gmail_signature">-L=
+ev</div></div>
+
+--000000000000562b320596c8957c--
 
