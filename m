@@ -1,10 +1,13 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Thu,  7 Nov 2019 19:45:28 +0200
-Message-Id: <1573148729-27339-7-git-send-email-lstipakov@...277...>
-In-Reply-To: <1573148729-27339-1-git-send-email-lstipakov@...277...>
+MIME-Version: 1.0
 References: <1573148729-27339-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH v2 6/7] wintun: set adapter properties via
- interactive service
+ <1573148729-27339-2-git-send-email-lstipakov@...277...>
+In-Reply-To: <1573148729-27339-2-git-send-email-lstipakov@...277...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Thu, 7 Nov 2019 22:52:37 +0500
+Message-ID: <CAFHpkQEhR0w_BPbhAiudQO8AfN0yAdSx5cdtAXa1BB+vGqwsCg@...278...>
+Content-Type: multipart/alternative; boundary="0000000000006c23d00596c5559c"
+Subject: Re: [Openvpn-devel] [PATCH v2 1/7] Visual Studio: upgrade project
+ files to VS2019
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,246 +16,792 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Lev Stipakov <lev@...515...>
 
-From: Lev Stipakov <lev@...515...>
+--0000000000006c23d00596c5559c
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Since Wintun doesn't do DHCP, use interactive service
-calls to set up adapter properties.
+=D1=87=D1=82, 7 =D0=BD=D0=BE=D1=8F=D0=B1. 2019 =D0=B3. =D0=B2 22:49, Lev St=
+ipakov <lstipakov@...277...>:
 
-This also fixes bug in previously unused IPv4 code of
-do_address_service():
+> From: Lev Stipakov <lev@...515...>
+>
+> Signed-off-by: Lev Stipakov <lev@...515...>
+> ---
+>  src/compat/compat.vcxproj             | 12 ++++++------
+>  src/openvpn/openvpn.vcxproj           | 12 ++++++------
+>  src/openvpnmsica/openvpnmsica.vcxproj | 14 +++++++-------
+>  src/openvpnserv/openvpnserv.vcxproj   | 12 ++++++------
+>  src/tapctl/tapctl.vcxproj             | 14 +++++++-------
+>  5 files changed, 32 insertions(+), 32 deletions(-)
+>
+> diff --git a/src/compat/compat.vcxproj b/src/compat/compat.vcxproj
+> index 111dacd..e388008 100644
+> --- a/src/compat/compat.vcxproj
+> +++ b/src/compat/compat.vcxproj
+> @@ -22,30 +22,30 @@
+>      <ProjectGuid>{4B2E2719-E661-45D7-9203-F6F456B22F19}</ProjectGuid>
+>      <RootNamespace>compat</RootNamespace>
+>      <Keyword>Win32Proj</Keyword>
+> -
+> <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+> +    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+>    </PropertyGroup>
+>    <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+>    <PropertyGroup
+> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|Win32'"
+> Label=3D"Configuration">
+>      <ConfigurationType>StaticLibrary</ConfigurationType>
+>      <CharacterSet>MultiByte</CharacterSet>
+>      <WholeProgramOptimization>true</WholeProgramOptimization>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>    </PropertyGroup>
+>    <PropertyGroup
+> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|x64'"
+> Label=3D"Configuration">
+>      <ConfigurationType>StaticLibrary</ConfigurationType>
+>      <CharacterSet>MultiByte</CharacterSet>
+>      <WholeProgramOptimization>true</WholeProgramOptimization>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>
 
- - ipv4 address must be in network byte order
- - prefix length cannot be hardcoded /32 but
- must be calculated from netmask
 
-Signed-off-by: Lev Stipakov <lev@...515...>
----
- src/openvpn/route.c |  2 +-
- src/openvpn/route.h |  3 ++-
- src/openvpn/tun.c   | 77 +++++++++++++++++++++++++++++++++++++++++------------
- 3 files changed, 63 insertions(+), 19 deletions(-)
+does it limit target platform ?
+can we build for Vista ? XP ? 7 ? does this setting affect that ?
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 97e90e5..cc6d551 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -3019,7 +3019,7 @@ out:
-     return ret;
- }
- 
--static bool
-+bool
- do_route_ipv4_service(const bool add, const struct route_ipv4 *r, const struct tuntap *tt)
- {
-     DWORD if_index = windows_route_find_if_index(r, tt);
-diff --git a/src/openvpn/route.h b/src/openvpn/route.h
-index 2e68091..27b652c 100644
---- a/src/openvpn/route.h
-+++ b/src/openvpn/route.h
-@@ -321,7 +321,8 @@ void setenv_routes(struct env_set *es, const struct route_list *rl);
- 
- void setenv_routes_ipv6(struct env_set *es, const struct route_ipv6_list *rl6);
- 
--
-+bool do_route_ipv4_service(const bool add, const struct route_ipv4 *r,
-+                           const struct tuntap *tt);
- 
- bool is_special_addr(const char *addr_str);
- 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index ef1415c..c3ea4a8 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -109,8 +109,8 @@ do_address_service(const bool add, const short family, const struct tuntap *tt)
- 
-     if (addr.family == AF_INET)
-     {
--        addr.address.ipv4.s_addr = tt->local;
--        addr.prefix_len = 32;
-+        addr.address.ipv4.s_addr = htonl(tt->local);
-+        addr.prefix_len = netmask_to_netbits2(tt->adapter_netmask);
-     }
-     else
-     {
-@@ -139,13 +139,17 @@ out:
- }
- 
- static bool
--do_dns6_service(bool add, const struct tuntap *tt)
-+do_dns_service(bool add, const short family, const struct tuntap *tt)
- {
-     bool ret = false;
-     ack_message_t ack;
-     struct gc_arena gc = gc_new();
-     HANDLE pipe = tt->options.msg_channel;
--    int addr_len = add ? tt->options.dns6_len : 0;
-+    int len = family == AF_INET6 ? tt->options.dns6_len : tt->options.dns_len;
-+    int addr_len = add ? len : 0;
-+    char ip_proto_name[5];
-+
-+    strcpy(ip_proto_name, family == AF_INET6 ? "IPv6" : "IPv4");
- 
-     if (addr_len == 0 && add) /* no addresses to add */
-     {
-@@ -160,7 +164,7 @@ do_dns6_service(bool add, const struct tuntap *tt)
-         },
-         .iface = { .index = tt->adapter_index, .name = "" },
-         .domains = "",
--        .family = AF_INET6,
-+        .family = family,
-         .addr_len = addr_len
-     };
- 
-@@ -172,17 +176,24 @@ do_dns6_service(bool add, const struct tuntap *tt)
-     {
-         addr_len = _countof(dns.addr);
-         dns.addr_len = addr_len;
--        msg(M_WARN, "Number of IPv6 DNS addresses sent to service truncated to %d",
--            addr_len);
-+        msg(M_WARN, "Number of %s DNS addresses sent to service truncated to %d",
-+            ip_proto_name, addr_len);
-     }
- 
-     for (int i = 0; i < addr_len; ++i)
-     {
--        dns.addr[i].ipv6 = tt->options.dns6[i];
-+        if (family == AF_INET6)
-+        {
-+            dns.addr[i].ipv6 = tt->options.dns6[i];
-+        }
-+        else
-+        {
-+            dns.addr[i].ipv4.s_addr = htonl(tt->options.dns[i]);
-+        }
-     }
- 
--    msg(D_LOW, "%s IPv6 dns servers on '%s' (if_index = %d) using service",
--        (add ? "Setting" : "Deleting"), dns.iface.name, dns.iface.index);
-+    msg(D_LOW, "%s %s dns servers on '%s' (if_index = %d) using service",
-+        (add ? "Setting" : "Deleting"), ip_proto_name, dns.iface.name, dns.iface.index);
- 
-     if (!send_msg_iservice(pipe, &dns, sizeof(dns), &ack, "TUN"))
-     {
-@@ -191,13 +202,13 @@ do_dns6_service(bool add, const struct tuntap *tt)
- 
-     if (ack.error_number != NO_ERROR)
-     {
--        msg(M_WARN, "TUN: %s IPv6 dns failed using service: %s [status=%u if_name=%s]",
--            (add ? "adding" : "deleting"), strerror_win32(ack.error_number, &gc),
-+        msg(M_WARN, "TUN: %s %s dns failed using service: %s [status=%u if_name=%s]",
-+            (add ? "adding" : "deleting"), ip_proto_name, strerror_win32(ack.error_number, &gc),
-             ack.error_number, dns.iface.name);
-         goto out;
-     }
- 
--    msg(M_INFO, "IPv6 dns servers %s using service", (add ? "set" : "deleted"));
-+    msg(M_INFO, "%s dns servers %s using service", ip_proto_name, (add ? "set" : "deleted"));
-     ret = true;
- 
- out:
-@@ -830,7 +841,7 @@ init_tun_post(struct tuntap *tt,
-  * an extra call to "route add..."
-  * -> helper function to simplify code below
-  */
--void
-+static void
- add_route_connected_v6_net(struct tuntap *tt,
-                            const struct env_set *es)
- {
-@@ -862,6 +873,21 @@ delete_route_connected_v6_net(struct tuntap *tt,
- }
- #endif /* if defined(_WIN32) || defined(TARGET_DARWIN) || defined(TARGET_NETBSD) || defined(TARGET_OPENBSD) */
- 
-+#if defined(_WIN32)
-+void
-+do_route_ipv4_service_tun(bool add, const struct tuntap *tt)
-+{
-+    struct route_ipv4 r4;
-+    CLEAR(r4);
-+    r4.network = tt->local & tt->remote_netmask;
-+    r4.netmask = tt->remote_netmask;
-+    r4.gateway = tt->local;
-+    r4.metric = 0;                     /* connected route */
-+    r4.flags = RT_DEFINED | RT_METRIC_DEFINED;
-+    do_route_ipv4_service(add, &r4, tt);
-+}
-+#endif
-+
- #if defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY)  \
-     || defined(TARGET_NETBSD) || defined(TARGET_OPENBSD)
- /* we can't use true subnet mode on tun on all platforms, as that
-@@ -1018,7 +1044,7 @@ do_ifconfig_ipv6(struct tuntap *tt, const char *ifname, int tun_mtu,
-     else if (tt->options.msg_channel)
-     {
-         do_address_service(true, AF_INET6, tt);
--        do_dns6_service(true, tt);
-+        do_dns_service(true, AF_INET6, tt);
-     }
-     else
-     {
-@@ -1400,8 +1426,16 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-     {
-         ASSERT(ifname != NULL);
- 
--        switch (tt->options.ip_win32_type)
-+        if (tt->options.msg_channel && tt->wintun)
-+        {
-+            do_address_service(true, AF_INET, tt);
-+            do_route_ipv4_service_tun(true, tt);
-+            do_dns_service(true, AF_INET, tt);
-+        }
-+        else
-         {
-+            switch (tt->options.ip_win32_type)
-+            {
-             case IPW32_SET_MANUAL:
-                 msg(M_INFO,
-                     "******** NOTE:  Please manually set the IP/netmask of '%s' to %s/%s (if it is not already set)",
-@@ -1414,6 +1448,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-                                tt->adapter_netmask, NI_IP_NETMASK|NI_OPTIONS);
- 
-                 break;
-+            }
-         }
-     }
- 
-@@ -6140,6 +6175,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
-     }
- 
-     /* possibly use IP Helper API to set IP address on adapter */
-+    if (!tt->wintun)
-     {
-         const DWORD index = tt->adapter_index;
- 
-@@ -6350,7 +6386,7 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
-             do_address_service(false, AF_INET6, tt);
-             if (tt->options.dns6_len > 0)
-             {
--                do_dns6_service(false, tt);
-+                do_dns_service(false, AF_INET6, tt);
-             }
-         }
-         else
-@@ -6387,6 +6423,13 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
-         }
-     }
- #if 1
-+    if (tt->wintun && tt->options.msg_channel)
-+    {
-+        do_route_ipv4_service_tun(false, tt);
-+        do_address_service(false, AF_INET, tt);
-+        do_dns_service(false, AF_INET, tt);
-+    }
-+    else
-     if (tt->ipapi_context_defined)
-     {
-         DWORD status;
--- 
-2.7.4
 
+
+>    </PropertyGroup>
+>    <PropertyGroup
+> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|Win32'"
+> Label=3D"Configuration">
+>      <ConfigurationType>StaticLibrary</ConfigurationType>
+>      <CharacterSet>MultiByte</CharacterSet>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>    </PropertyGroup>
+>    <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug=
+|x64'"
+> Label=3D"Configuration">
+>      <ConfigurationType>StaticLibrary</ConfigurationType>
+>      <CharacterSet>MultiByte</CharacterSet>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>    </PropertyGroup>
+>    <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.props" />
+>    <ImportGroup Label=3D"ExtensionSettings">
+> @@ -115,4 +115,4 @@
+>    <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.targets" />
+>    <ImportGroup Label=3D"ExtensionTargets">
+>    </ImportGroup>
+> -</Project>
+> +</Project>
+> \ No newline at end of file
+> diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
+> index 4ffff2b..e77f026 100644
+> --- a/src/openvpn/openvpn.vcxproj
+> +++ b/src/openvpn/openvpn.vcxproj
+> @@ -22,30 +22,30 @@
+>      <ProjectGuid>{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}</ProjectGuid>
+>      <RootNamespace>openvpn</RootNamespace>
+>      <Keyword>Win32Proj</Keyword>
+> -
+> <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+> +    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+>    </PropertyGroup>
+>    <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+>    <PropertyGroup
+> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|Win32'"
+> Label=3D"Configuration">
+>      <ConfigurationType>Application</ConfigurationType>
+>      <WholeProgramOptimization>true</WholeProgramOptimization>
+>      <CharacterSet>Unicode</CharacterSet>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>    </PropertyGroup>
+>    <PropertyGroup
+> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|x64'"
+> Label=3D"Configuration">
+>      <ConfigurationType>Application</ConfigurationType>
+>      <WholeProgramOptimization>true</WholeProgramOptimization>
+>      <CharacterSet>Unicode</CharacterSet>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>    </PropertyGroup>
+>    <PropertyGroup
+> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|Win32'"
+> Label=3D"Configuration">
+>      <ConfigurationType>Application</ConfigurationType>
+>      <CharacterSet>Unicode</CharacterSet>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>    </PropertyGroup>
+>    <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug=
+|x64'"
+> Label=3D"Configuration">
+>      <ConfigurationType>Application</ConfigurationType>
+>      <CharacterSet>Unicode</CharacterSet>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>    </PropertyGroup>
+>    <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.props" />
+>    <ImportGroup Label=3D"ExtensionSettings">
+> @@ -301,4 +301,4 @@
+>    <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.targets" />
+>    <ImportGroup Label=3D"ExtensionTargets">
+>    </ImportGroup>
+> -</Project>
+> +</Project>
+> \ No newline at end of file
+> diff --git a/src/openvpnmsica/openvpnmsica.vcxproj
+> b/src/openvpnmsica/openvpnmsica.vcxproj
+> index 5f1d699..afa4fae 100644
+> --- a/src/openvpnmsica/openvpnmsica.vcxproj
+> +++ b/src/openvpnmsica/openvpnmsica.vcxproj
+> @@ -31,32 +31,32 @@
+>      <ProjectGuid>{D41AA9D6-B818-476E-992E-0E16EB86BEE2}</ProjectGuid>
+>      <Keyword>Win32Proj</Keyword>
+>      <RootNamespace>openvpnmsica</RootNamespace>
+> -
+> <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+> +    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+>    </PropertyGroup>
+>    <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+>    <PropertyGroup
+> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|ARM64'"
+> Label=3D"Configuration">
+>      <ConfigurationType>DynamicLibrary</ConfigurationType>
+>      <UseDebugLibraries>true</UseDebugLibraries>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>      <CharacterSet>Unicode</CharacterSet>
+>      <WindowsSDKDesktopARM64Support>true</WindowsSDKDesktopARM64Support>
+>    </PropertyGroup>
+>    <PropertyGroup
+> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|Win32'"
+> Label=3D"Configuration">
+>      <ConfigurationType>DynamicLibrary</ConfigurationType>
+>      <UseDebugLibraries>true</UseDebugLibraries>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>      <CharacterSet>Unicode</CharacterSet>
+>    </PropertyGroup>
+>    <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug=
+|x64'"
+> Label=3D"Configuration">
+>      <ConfigurationType>DynamicLibrary</ConfigurationType>
+>      <UseDebugLibraries>true</UseDebugLibraries>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>      <CharacterSet>Unicode</CharacterSet>
+>    </PropertyGroup>
+>    <PropertyGroup
+> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|ARM64'"
+> Label=3D"Configuration">
+>      <ConfigurationType>DynamicLibrary</ConfigurationType>
+>      <UseDebugLibraries>false</UseDebugLibraries>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>      <WholeProgramOptimization>true</WholeProgramOptimization>
+>      <CharacterSet>Unicode</CharacterSet>
+>      <WindowsSDKDesktopARM64Support>true</WindowsSDKDesktopARM64Support>
+> @@ -64,14 +64,14 @@
+>    <PropertyGroup
+> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|Win32'"
+> Label=3D"Configuration">
+>      <ConfigurationType>DynamicLibrary</ConfigurationType>
+>      <UseDebugLibraries>false</UseDebugLibraries>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>      <WholeProgramOptimization>true</WholeProgramOptimization>
+>      <CharacterSet>Unicode</CharacterSet>
+>    </PropertyGroup>
+>    <PropertyGroup
+> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|x64'"
+> Label=3D"Configuration">
+>      <ConfigurationType>DynamicLibrary</ConfigurationType>
+>      <UseDebugLibraries>false</UseDebugLibraries>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>      <WholeProgramOptimization>true</WholeProgramOptimization>
+>      <CharacterSet>Unicode</CharacterSet>
+>    </PropertyGroup>
+> diff --git a/src/openvpnserv/openvpnserv.vcxproj
+> b/src/openvpnserv/openvpnserv.vcxproj
+> index 7407757..7061b7b 100644
+> --- a/src/openvpnserv/openvpnserv.vcxproj
+> +++ b/src/openvpnserv/openvpnserv.vcxproj
+> @@ -22,30 +22,30 @@
+>      <ProjectGuid>{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}</ProjectGuid>
+>      <RootNamespace>openvpnserv</RootNamespace>
+>      <Keyword>Win32Proj</Keyword>
+> -
+> <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+> +    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+>    </PropertyGroup>
+>    <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+>    <PropertyGroup
+> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|Win32'"
+> Label=3D"Configuration">
+>      <ConfigurationType>Application</ConfigurationType>
+>      <CharacterSet>Unicode</CharacterSet>
+>      <WholeProgramOptimization>true</WholeProgramOptimization>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>    </PropertyGroup>
+>    <PropertyGroup
+> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|x64'"
+> Label=3D"Configuration">
+>      <ConfigurationType>Application</ConfigurationType>
+>      <CharacterSet>Unicode</CharacterSet>
+>      <WholeProgramOptimization>true</WholeProgramOptimization>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>    </PropertyGroup>
+>    <PropertyGroup
+> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|Win32'"
+> Label=3D"Configuration">
+>      <ConfigurationType>Application</ConfigurationType>
+>      <CharacterSet>Unicode</CharacterSet>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>    </PropertyGroup>
+>    <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug=
+|x64'"
+> Label=3D"Configuration">
+>      <ConfigurationType>Application</ConfigurationType>
+>      <CharacterSet>Unicode</CharacterSet>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>    </PropertyGroup>
+>    <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.props" />
+>    <ImportGroup Label=3D"ExtensionSettings">
+> @@ -139,4 +139,4 @@
+>    <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.targets" />
+>    <ImportGroup Label=3D"ExtensionTargets">
+>    </ImportGroup>
+> -</Project>
+> +</Project>
+> \ No newline at end of file
+> diff --git a/src/tapctl/tapctl.vcxproj b/src/tapctl/tapctl.vcxproj
+> index 5c1983b..1d593fc 100644
+> --- a/src/tapctl/tapctl.vcxproj
+> +++ b/src/tapctl/tapctl.vcxproj
+> @@ -31,32 +31,32 @@
+>      <ProjectGuid>{A06436E7-D576-490D-8BA0-0751D920334A}</ProjectGuid>
+>      <Keyword>Win32Proj</Keyword>
+>      <RootNamespace>tapctl</RootNamespace>
+> -
+> <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+> +    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+>    </PropertyGroup>
+>    <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+>    <PropertyGroup
+> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|ARM64'"
+> Label=3D"Configuration">
+>      <ConfigurationType>Application</ConfigurationType>
+>      <UseDebugLibraries>true</UseDebugLibraries>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>      <CharacterSet>Unicode</CharacterSet>
+>      <WindowsSDKDesktopARM64Support>true</WindowsSDKDesktopARM64Support>
+>    </PropertyGroup>
+>    <PropertyGroup
+> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|Win32'"
+> Label=3D"Configuration">
+>      <ConfigurationType>Application</ConfigurationType>
+>      <UseDebugLibraries>true</UseDebugLibraries>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>      <CharacterSet>Unicode</CharacterSet>
+>    </PropertyGroup>
+>    <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug=
+|x64'"
+> Label=3D"Configuration">
+>      <ConfigurationType>Application</ConfigurationType>
+>      <UseDebugLibraries>true</UseDebugLibraries>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>      <CharacterSet>Unicode</CharacterSet>
+>    </PropertyGroup>
+>    <PropertyGroup
+> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|ARM64'"
+> Label=3D"Configuration">
+>      <ConfigurationType>Application</ConfigurationType>
+>      <UseDebugLibraries>false</UseDebugLibraries>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>      <WholeProgramOptimization>true</WholeProgramOptimization>
+>      <CharacterSet>Unicode</CharacterSet>
+>      <WindowsSDKDesktopARM64Support>true</WindowsSDKDesktopARM64Support>
+> @@ -64,14 +64,14 @@
+>    <PropertyGroup
+> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|Win32'"
+> Label=3D"Configuration">
+>      <ConfigurationType>Application</ConfigurationType>
+>      <UseDebugLibraries>false</UseDebugLibraries>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>      <WholeProgramOptimization>true</WholeProgramOptimization>
+>      <CharacterSet>Unicode</CharacterSet>
+>    </PropertyGroup>
+>    <PropertyGroup
+> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|x64'"
+> Label=3D"Configuration">
+>      <ConfigurationType>Application</ConfigurationType>
+>      <UseDebugLibraries>false</UseDebugLibraries>
+> -    <PlatformToolset>v141</PlatformToolset>
+> +    <PlatformToolset>v142</PlatformToolset>
+>      <WholeProgramOptimization>true</WholeProgramOptimization>
+>      <CharacterSet>Unicode</CharacterSet>
+>    </PropertyGroup>
+> --
+> 2.7.4
+>
+>
+>
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
+
+--0000000000006c23d00596c5559c
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote">=
+<div dir=3D"ltr" class=3D"gmail_attr">=D1=87=D1=82, 7 =D0=BD=D0=BE=D1=8F=D0=
+=B1. 2019 =D0=B3. =D0=B2 22:49, Lev Stipakov &lt;<a href=3D"mailto:lstipako=
+v@...277...">lstipakov@...277...</a>&gt;:<br></div><blockquote class=3D"gma=
+il_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,2=
+04,204);padding-left:1ex">From: Lev Stipakov &lt;<a href=3D"mailto:lev@...1696...=
+15..." target=3D"_blank">lev@...515...</a>&gt;<br>
+<br>
+Signed-off-by: Lev Stipakov &lt;<a href=3D"mailto:lev@...515..." target=3D"=
+_blank">lev@...515...</a>&gt;<br>
+---<br>
+=C2=A0src/compat/compat.vcxproj=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0| 12 ++++++------<br>
+=C2=A0src/openvpn/openvpn.vcxproj=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0|=
+ 12 ++++++------<br>
+=C2=A0src/openvpnmsica/openvpnmsica.vcxproj | 14 +++++++-------<br>
+=C2=A0src/openvpnserv/openvpnserv.vcxproj=C2=A0 =C2=A0| 12 ++++++------<br>
+=C2=A0src/tapctl/tapctl.vcxproj=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0| 14 +++++++-------<br>
+=C2=A05 files changed, 32 insertions(+), 32 deletions(-)<br>
+<br>
+diff --git a/src/compat/compat.vcxproj b/src/compat/compat.vcxproj<br>
+index 111dacd..e388008 100644<br>
+--- a/src/compat/compat.vcxproj<br>
++++ b/src/compat/compat.vcxproj<br>
+@@ -22,30 +22,30 @@<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ProjectGuid&gt;{4B2E2719-E661-45D7-9203-F6F456B22F1=
+9}&lt;/ProjectGuid&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;RootNamespace&gt;compat&lt;/RootNamespace&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;Keyword&gt;Win32Proj&lt;/Keyword&gt;<br>
+-=C2=A0 =C2=A0 &lt;WindowsTargetPlatformVersion&gt;10.0.17134.0&lt;/Windows=
+TargetPlatformVersion&gt;<br>
++=C2=A0 =C2=A0 &lt;WindowsTargetPlatformVersion&gt;10.0&lt;/WindowsTargetPl=
+atformVersion&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;Import Project=3D&quot;$(VCTargetsPath)\Microsoft.Cpp.Defa=
+ult.props&quot; /&gt;<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Release|Win32&#39;&quot; Label=3D&quot;Configuration=
+&quot;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;StaticLibrary&lt;/Configuratio=
+nType&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;MultiByte&lt;/CharacterSet&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;WholeProgramOptimization&gt;true&lt;/WholeProgramOp=
+timization&gt;<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Release|x64&#39;&quot; Label=3D&quot;Configuration&q=
+uot;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;StaticLibrary&lt;/Configuratio=
+nType&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;MultiByte&lt;/CharacterSet&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;WholeProgramOptimization&gt;true&lt;/WholeProgramOp=
+timization&gt;<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br></blo=
+ckquote><div><br></div><div><br></div><div>does it limit target platform ?<=
+/div><div>can we build for Vista ? XP ? 7 ? does this setting affect that ?=
+<br></div><div><br></div><div>=C2=A0</div><blockquote class=3D"gmail_quote"=
+ style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);p=
+adding-left:1ex">
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Debug|Win32&#39;&quot; Label=3D&quot;Configuration&q=
+uot;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;StaticLibrary&lt;/Configuratio=
+nType&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;MultiByte&lt;/CharacterSet&gt;<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Debug|x64&#39;&quot; Label=3D&quot;Configuration&quo=
+t;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;StaticLibrary&lt;/Configuratio=
+nType&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;MultiByte&lt;/CharacterSet&gt;<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;Import Project=3D&quot;$(VCTargetsPath)\Microsoft.Cpp.prop=
+s&quot; /&gt;<br>
+=C2=A0 =C2=A0&lt;ImportGroup Label=3D&quot;ExtensionSettings&quot;&gt;<br>
+@@ -115,4 +115,4 @@<br>
+=C2=A0 =C2=A0&lt;Import Project=3D&quot;$(VCTargetsPath)\Microsoft.Cpp.targ=
+ets&quot; /&gt;<br>
+=C2=A0 =C2=A0&lt;ImportGroup Label=3D&quot;ExtensionTargets&quot;&gt;<br>
+=C2=A0 =C2=A0&lt;/ImportGroup&gt;<br>
+-&lt;/Project&gt;<br>
++&lt;/Project&gt;<br>
+\ No newline at end of file<br>
+diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj<br>
+index 4ffff2b..e77f026 100644<br>
+--- a/src/openvpn/openvpn.vcxproj<br>
++++ b/src/openvpn/openvpn.vcxproj<br>
+@@ -22,30 +22,30 @@<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ProjectGuid&gt;{29DF226E-4D4E-440F-ADAF-5829CFD4CA9=
+4}&lt;/ProjectGuid&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;RootNamespace&gt;openvpn&lt;/RootNamespace&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;Keyword&gt;Win32Proj&lt;/Keyword&gt;<br>
+-=C2=A0 =C2=A0 &lt;WindowsTargetPlatformVersion&gt;10.0.17134.0&lt;/Windows=
+TargetPlatformVersion&gt;<br>
++=C2=A0 =C2=A0 &lt;WindowsTargetPlatformVersion&gt;10.0&lt;/WindowsTargetPl=
+atformVersion&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;Import Project=3D&quot;$(VCTargetsPath)\Microsoft.Cpp.Defa=
+ult.props&quot; /&gt;<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Release|Win32&#39;&quot; Label=3D&quot;Configuration=
+&quot;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;Application&lt;/ConfigurationT=
+ype&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;WholeProgramOptimization&gt;true&lt;/WholeProgramOp=
+timization&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Release|x64&#39;&quot; Label=3D&quot;Configuration&q=
+uot;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;Application&lt;/ConfigurationT=
+ype&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;WholeProgramOptimization&gt;true&lt;/WholeProgramOp=
+timization&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Debug|Win32&#39;&quot; Label=3D&quot;Configuration&q=
+uot;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;Application&lt;/ConfigurationT=
+ype&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Debug|x64&#39;&quot; Label=3D&quot;Configuration&quo=
+t;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;Application&lt;/ConfigurationT=
+ype&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;Import Project=3D&quot;$(VCTargetsPath)\Microsoft.Cpp.prop=
+s&quot; /&gt;<br>
+=C2=A0 =C2=A0&lt;ImportGroup Label=3D&quot;ExtensionSettings&quot;&gt;<br>
+@@ -301,4 +301,4 @@<br>
+=C2=A0 =C2=A0&lt;Import Project=3D&quot;$(VCTargetsPath)\Microsoft.Cpp.targ=
+ets&quot; /&gt;<br>
+=C2=A0 =C2=A0&lt;ImportGroup Label=3D&quot;ExtensionTargets&quot;&gt;<br>
+=C2=A0 =C2=A0&lt;/ImportGroup&gt;<br>
+-&lt;/Project&gt;<br>
++&lt;/Project&gt;<br>
+\ No newline at end of file<br>
+diff --git a/src/openvpnmsica/openvpnmsica.vcxproj b/src/openvpnmsica/openv=
+pnmsica.vcxproj<br>
+index 5f1d699..afa4fae 100644<br>
+--- a/src/openvpnmsica/openvpnmsica.vcxproj<br>
++++ b/src/openvpnmsica/openvpnmsica.vcxproj<br>
+@@ -31,32 +31,32 @@<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ProjectGuid&gt;{D41AA9D6-B818-476E-992E-0E16EB86BEE=
+2}&lt;/ProjectGuid&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;Keyword&gt;Win32Proj&lt;/Keyword&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;RootNamespace&gt;openvpnmsica&lt;/RootNamespace&gt;=
+<br>
+-=C2=A0 =C2=A0 &lt;WindowsTargetPlatformVersion&gt;10.0.17134.0&lt;/Windows=
+TargetPlatformVersion&gt;<br>
++=C2=A0 =C2=A0 &lt;WindowsTargetPlatformVersion&gt;10.0&lt;/WindowsTargetPl=
+atformVersion&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;Import Project=3D&quot;$(VCTargetsPath)\Microsoft.Cpp.Defa=
+ult.props&quot; /&gt;<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Debug|ARM64&#39;&quot; Label=3D&quot;Configuration&q=
+uot;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;DynamicLibrary&lt;/Configurati=
+onType&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;UseDebugLibraries&gt;true&lt;/UseDebugLibraries&gt;=
+<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;WindowsSDKDesktopARM64Support&gt;true&lt;/WindowsSD=
+KDesktopARM64Support&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Debug|Win32&#39;&quot; Label=3D&quot;Configuration&q=
+uot;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;DynamicLibrary&lt;/Configurati=
+onType&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;UseDebugLibraries&gt;true&lt;/UseDebugLibraries&gt;=
+<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Debug|x64&#39;&quot; Label=3D&quot;Configuration&quo=
+t;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;DynamicLibrary&lt;/Configurati=
+onType&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;UseDebugLibraries&gt;true&lt;/UseDebugLibraries&gt;=
+<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Release|ARM64&#39;&quot; Label=3D&quot;Configuration=
+&quot;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;DynamicLibrary&lt;/Configurati=
+onType&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;UseDebugLibraries&gt;false&lt;/UseDebugLibraries&gt=
+;<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;WholeProgramOptimization&gt;true&lt;/WholeProgramOp=
+timization&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;WindowsSDKDesktopARM64Support&gt;true&lt;/WindowsSD=
+KDesktopARM64Support&gt;<br>
+@@ -64,14 +64,14 @@<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Release|Win32&#39;&quot; Label=3D&quot;Configuration=
+&quot;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;DynamicLibrary&lt;/Configurati=
+onType&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;UseDebugLibraries&gt;false&lt;/UseDebugLibraries&gt=
+;<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;WholeProgramOptimization&gt;true&lt;/WholeProgramOp=
+timization&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Release|x64&#39;&quot; Label=3D&quot;Configuration&q=
+uot;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;DynamicLibrary&lt;/Configurati=
+onType&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;UseDebugLibraries&gt;false&lt;/UseDebugLibraries&gt=
+;<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;WholeProgramOptimization&gt;true&lt;/WholeProgramOp=
+timization&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+diff --git a/src/openvpnserv/openvpnserv.vcxproj b/src/openvpnserv/openvpns=
+erv.vcxproj<br>
+index 7407757..7061b7b 100644<br>
+--- a/src/openvpnserv/openvpnserv.vcxproj<br>
++++ b/src/openvpnserv/openvpnserv.vcxproj<br>
+@@ -22,30 +22,30 @@<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ProjectGuid&gt;{9C91EE0B-817D-420A-A1E6-15A5A9D98BA=
+D}&lt;/ProjectGuid&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;RootNamespace&gt;openvpnserv&lt;/RootNamespace&gt;<=
+br>
+=C2=A0 =C2=A0 =C2=A0&lt;Keyword&gt;Win32Proj&lt;/Keyword&gt;<br>
+-=C2=A0 =C2=A0 &lt;WindowsTargetPlatformVersion&gt;10.0.17134.0&lt;/Windows=
+TargetPlatformVersion&gt;<br>
++=C2=A0 =C2=A0 &lt;WindowsTargetPlatformVersion&gt;10.0&lt;/WindowsTargetPl=
+atformVersion&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;Import Project=3D&quot;$(VCTargetsPath)\Microsoft.Cpp.Defa=
+ult.props&quot; /&gt;<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Release|Win32&#39;&quot; Label=3D&quot;Configuration=
+&quot;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;Application&lt;/ConfigurationT=
+ype&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;WholeProgramOptimization&gt;true&lt;/WholeProgramOp=
+timization&gt;<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Release|x64&#39;&quot; Label=3D&quot;Configuration&q=
+uot;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;Application&lt;/ConfigurationT=
+ype&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;WholeProgramOptimization&gt;true&lt;/WholeProgramOp=
+timization&gt;<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Debug|Win32&#39;&quot; Label=3D&quot;Configuration&q=
+uot;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;Application&lt;/ConfigurationT=
+ype&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Debug|x64&#39;&quot; Label=3D&quot;Configuration&quo=
+t;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;Application&lt;/ConfigurationT=
+ype&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;Import Project=3D&quot;$(VCTargetsPath)\Microsoft.Cpp.prop=
+s&quot; /&gt;<br>
+=C2=A0 =C2=A0&lt;ImportGroup Label=3D&quot;ExtensionSettings&quot;&gt;<br>
+@@ -139,4 +139,4 @@<br>
+=C2=A0 =C2=A0&lt;Import Project=3D&quot;$(VCTargetsPath)\Microsoft.Cpp.targ=
+ets&quot; /&gt;<br>
+=C2=A0 =C2=A0&lt;ImportGroup Label=3D&quot;ExtensionTargets&quot;&gt;<br>
+=C2=A0 =C2=A0&lt;/ImportGroup&gt;<br>
+-&lt;/Project&gt;<br>
++&lt;/Project&gt;<br>
+\ No newline at end of file<br>
+diff --git a/src/tapctl/tapctl.vcxproj b/src/tapctl/tapctl.vcxproj<br>
+index 5c1983b..1d593fc 100644<br>
+--- a/src/tapctl/tapctl.vcxproj<br>
++++ b/src/tapctl/tapctl.vcxproj<br>
+@@ -31,32 +31,32 @@<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ProjectGuid&gt;{A06436E7-D576-490D-8BA0-0751D920334=
+A}&lt;/ProjectGuid&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;Keyword&gt;Win32Proj&lt;/Keyword&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;RootNamespace&gt;tapctl&lt;/RootNamespace&gt;<br>
+-=C2=A0 =C2=A0 &lt;WindowsTargetPlatformVersion&gt;10.0.17134.0&lt;/Windows=
+TargetPlatformVersion&gt;<br>
++=C2=A0 =C2=A0 &lt;WindowsTargetPlatformVersion&gt;10.0&lt;/WindowsTargetPl=
+atformVersion&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;Import Project=3D&quot;$(VCTargetsPath)\Microsoft.Cpp.Defa=
+ult.props&quot; /&gt;<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Debug|ARM64&#39;&quot; Label=3D&quot;Configuration&q=
+uot;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;Application&lt;/ConfigurationT=
+ype&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;UseDebugLibraries&gt;true&lt;/UseDebugLibraries&gt;=
+<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;WindowsSDKDesktopARM64Support&gt;true&lt;/WindowsSD=
+KDesktopARM64Support&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Debug|Win32&#39;&quot; Label=3D&quot;Configuration&q=
+uot;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;Application&lt;/ConfigurationT=
+ype&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;UseDebugLibraries&gt;true&lt;/UseDebugLibraries&gt;=
+<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Debug|x64&#39;&quot; Label=3D&quot;Configuration&quo=
+t;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;Application&lt;/ConfigurationT=
+ype&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;UseDebugLibraries&gt;true&lt;/UseDebugLibraries&gt;=
+<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Release|ARM64&#39;&quot; Label=3D&quot;Configuration=
+&quot;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;Application&lt;/ConfigurationT=
+ype&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;UseDebugLibraries&gt;false&lt;/UseDebugLibraries&gt=
+;<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;WholeProgramOptimization&gt;true&lt;/WholeProgramOp=
+timization&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;WindowsSDKDesktopARM64Support&gt;true&lt;/WindowsSD=
+KDesktopARM64Support&gt;<br>
+@@ -64,14 +64,14 @@<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Release|Win32&#39;&quot; Label=3D&quot;Configuration=
+&quot;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;Application&lt;/ConfigurationT=
+ype&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;UseDebugLibraries&gt;false&lt;/UseDebugLibraries&gt=
+;<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;WholeProgramOptimization&gt;true&lt;/WholeProgramOp=
+timization&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+=C2=A0 =C2=A0&lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Release|x64&#39;&quot; Label=3D&quot;Configuration&q=
+uot;&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;ConfigurationType&gt;Application&lt;/ConfigurationT=
+ype&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;UseDebugLibraries&gt;false&lt;/UseDebugLibraries&gt=
+;<br>
+-=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v141&lt;/PlatformToolset&gt;<br>
++=C2=A0 =C2=A0 &lt;PlatformToolset&gt;v142&lt;/PlatformToolset&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;WholeProgramOptimization&gt;true&lt;/WholeProgramOp=
+timization&gt;<br>
+=C2=A0 =C2=A0 =C2=A0&lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;<br>
+=C2=A0 =C2=A0&lt;/PropertyGroup&gt;<br>
+-- <br>
+2.7.4<br>
+<br>
+<br>
+<br>
+_______________________________________________<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
+envpn-devel@lists.sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
+=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
+nfo/openvpn-devel</a><br>
+</blockquote></div></div>
+
+--0000000000006c23d00596c5559c--
 
