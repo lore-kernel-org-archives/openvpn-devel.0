@@ -1,10 +1,9 @@
-Date: Thu, 7 Nov 2019 21:00:22 +0100 (CET)
-Message-Id: <201911072000.xA7K0MfR035151@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20191009143422.9419-5-a@...2181...>
-References: <20191009143422.9419-5-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: VLAN: filter multicast and
- client-to-client unicast traffic
+From: Lev Stipakov <lstipakov@...277...>
+Date: Thu,  7 Nov 2019 23:29:34 +0200
+Message-Id: <1573162174-28461-1-git-send-email-lstipakov@...277...>
+In-Reply-To: <CAGyAFMXrwiOo2EwuNrR2_7reOThwpHBGW6Tzk8yYvJmdbb4t7w@...278...>
+References: <CAGyAFMXrwiOo2EwuNrR2_7reOThwpHBGW6Tzk8yYvJmdbb4t7w@...278...>
+Subject: [Openvpn-devel] [PATCH v2] travis: add Visual Studio build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,53 +14,103 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Acked-by: Gert Doering <gert@...1296...>
+From: Lev Stipakov <lev@...515...>
 
-Your patch has been applied to the master branch.
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
 
-Stared at the code, did quite a bit of testing, found interesting effects.
+ v2; do not unconditionally print dependencies build output for non-Windows builds
 
-What this patch does is "client-to-client isolation according to pvid"
-(so if you have clients with "vlan-pvid 200" in their ccd/ file, and
-other clients with "vlan-pvid 207", only those with the same ID can 
-talk to each other).  This is as desired.
+ .travis.yml               |  9 ++++++++-
+ .travis/build-check.sh    |  5 +++++
+ .travis/build-deps.sh     |  9 +++++++++
+ .travis/run-build-deps.sh | 10 ++++++++++
+ 4 files changed, 32 insertions(+), 1 deletion(-)
+ create mode 100755 .travis/run-build-deps.sh
 
-What it also does is completely break TAP-to-client communication if
-"--vlan-tagging" is enabled - broadcasts ("...incoming_tun()") are
-broadcasted everywhere, but unicast packets are never delivered as
-they are looked up with a dst PVID of "0" while the "...incoming_link()"
-part has learned then with the correct per-client pvid (defaulting 
-to "@1").  The necessary adjustments for this are coming in a later
-patch in the series, but it makes testing individual bits a bit
-more complex (I hacked multi.c to use a non-0 server pvid and that
-made tap<->client work again, so the basics are sound).
-
-If --vlan-tagging is disabled, all tests pass.  So this is not breaking
-existing functionality, just not adding all required new bits yet.
-
-(And it's not touching any non-TAP code paths anyway)
-
-
-commit 1c57ea76a256330314d53999bce3e09644b420f9
-Author: Antonio Quartulli
-Date:   Wed Oct 9 16:34:17 2019 +0200
-
-     VLAN: filter multicast and client-to-client unicast traffic
-
-     Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20191009143422.9419-5-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18922.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/.travis.yml b/.travis.yml
+index 2d07cdc..61be17c 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -24,6 +24,13 @@ env:
+ 
+ matrix:
+   include:
++    - env:
++      - SSLLIB="openssl"
++      - OPENSSL_VERSION="1.1.1d"
++      - P7Z="c:\Program Files\7-Zip\7z.exe"
++      - CC="cl"
++      os: windows
++      compiler: cl
+     - env: SSLLIB="openssl" RUN_COVERITY="1"
+       os: linux
+       compiler: gcc
+@@ -89,7 +96,7 @@ cache:
+ 
+ install:
+   - if [ ! -z "${CHOST}" ]; then unset CC; fi
+-  - .travis/build-deps.sh > build-deps.log 2>&1 || (cat build-deps.log && exit 1)
++  - .travis/run-build-deps.sh
+ 
+ before_script:
+   - .travis/coverity.sh
+diff --git a/.travis/build-check.sh b/.travis/build-check.sh
+index 74f3ae1..d2d2e8a 100755
+--- a/.travis/build-check.sh
++++ b/.travis/build-check.sh
+@@ -1,6 +1,11 @@
+ #!/bin/sh
+ set -eux
+ 
++if [ "${TRAVIS_OS_NAME}" = "windows" ]; then
++	PATH="/c/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/MSBuild/15.0/Bin/":$PATH
++	MSBuild.exe openvpn.sln //p:Platform=x64 && exit 0
++fi
++
+ if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+ 	export LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH:-}"
+ fi
+diff --git a/.travis/build-deps.sh b/.travis/build-deps.sh
+index 391b35e..724ff30 100755
+--- a/.travis/build-deps.sh
++++ b/.travis/build-deps.sh
+@@ -1,6 +1,15 @@
+ #!/bin/sh
+ set -eux
+ 
++if [ "${TRAVIS_OS_NAME}" = "windows" ]; then
++    choco install strawberryperl nasm
++    cd ..
++    git clone https://github.com/openvpn/openvpn-build.git
++    cd openvpn-build
++    PATH="/c/Strawberry/perl/bin:":$PATH MODE=DEPS msvc/build.bat
++    exit 0
++fi
++
+ # Set defaults
+ PREFIX="${PREFIX:-${HOME}/opt}"
+ 
+diff --git a/.travis/run-build-deps.sh b/.travis/run-build-deps.sh
+new file mode 100755
+index 0000000..b8eb41c
+--- /dev/null
++++ b/.travis/run-build-deps.sh
+@@ -0,0 +1,10 @@
++#!/bin/sh
++set -eux
++
++if [ "${TRAVIS_OS_NAME}" = "windows" ]; then
++    # for windows we need to print output since openssl build
++    # might take more than 10 minutes, which causes build abort
++    .travis/build-deps.sh
++else
++    .travis/build-deps.sh > build-deps.log 2>&1 || (cat build-deps.log && exit 1)
++fi
+-- 
+2.7.4
 
 
