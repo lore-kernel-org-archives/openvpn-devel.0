@@ -1,9 +1,9 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Thu,  7 Nov 2019 19:45:26 +0200
-Message-Id: <1573148729-27339-5-git-send-email-lstipakov@...277...>
+Date: Thu,  7 Nov 2019 19:45:27 +0200
+Message-Id: <1573148729-27339-6-git-send-email-lstipakov@...277...>
 In-Reply-To: <1573148729-27339-1-git-send-email-lstipakov@...277...>
 References: <1573148729-27339-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH v2 4/7] wintun: ring buffers based I/O
+Subject: [Openvpn-devel] [PATCH v2 5/7] wintun: interactive service support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,585 +19,170 @@ Cc: Lev Stipakov <lev@...515...>
 
 From: Lev Stipakov <lev@...515...>
 
-Implemented according to Wintun documentation
-and reference client code.
+Wintun requires ring buffers registration to be
+performed by privileged process. In order to use
+openvpn with wintun by non-Administrator, we
+need to use interactive service and shared memory
+to register buffers.
 
-Wintun uses ring buffers to communicate between
-kernel driver and user process. Client allocates
-send and receive ring buffers, creates events
-and passes it to kernel driver under LocalSystem
-privileges.
+Openvpn process creates memory mapping object and event
+for send and receive ring and passes handles to interactive
+service. There handles are duplicated and memory mapped
+object is mapped into the address space of service process.
+Then address of mapped view and event handle is passed to
+wintun kernel driver.
 
-When data is available for read, wintun modifies
-"tail" pointer of send ring and signals via event.
-User process reads data from "head" to "tail" and
-updates "head" pointer.
-
-When user process is ready to write, it writes
-to receive ring, updates "tail" pointer and signals
-to kernel via event.
-
-In openvpn code we add send ring's event to event loop.
-Before performing io wait, we compare "head" and "tail"
-pointers of send ring and if they're different, we skip
-io wait and perform read.
-
-This also adds ring buffers support to tcp and udp
-server code.
+After interactive service preformed registration,
+openvpn process maps memory mapped object into
+own address space. Thus mapped views in openvpn
+and service process represent the same memory region.
 
 Signed-off-by: Lev Stipakov <lev@...515...>
 ---
- src/openvpn/forward.c |  42 +++++++++++++++---
- src/openvpn/forward.h |  47 +++++++++++++++++++-
- src/openvpn/mtcp.c    |  28 +++++++++++-
- src/openvpn/mudp.c    |  14 ++++++
- src/openvpn/options.c |   4 +-
- src/openvpn/syshead.h |   1 +
- src/openvpn/tun.c     |  45 +++++++++++++++++++
- src/openvpn/tun.h     | 121 +++++++++++++++++++++++++++++++++++++++++++++++++-
- src/openvpn/win32.c   | 120 +++++++++++++++++++++++++++++++++++++++++++++++++
- src/openvpn/win32.h   |  47 ++++++++++++++++++++
- 10 files changed, 458 insertions(+), 11 deletions(-)
+ include/openvpn-msg.h                       |  10 ++
+ src/openvpn/Makefile.am                     |   2 +-
+ src/openvpn/openvpn.vcxproj                 |   2 +
+ src/openvpn/openvpn.vcxproj.filters         |   8 +-
+ src/openvpn/ring_buffer.c                   |  54 +++++++++++
+ src/openvpn/ring_buffer.h                   |  79 ++++++++++++++++
+ src/openvpn/tun.c                           |  89 +++++++++++++++---
+ src/openvpn/tun.h                           |   3 +
+ src/openvpn/win32.c                         |  25 -----
+ src/openvpn/win32.h                         |  43 ---------
+ src/openvpnserv/Makefile.am                 |   3 +-
+ src/openvpnserv/interactive.c               | 141 ++++++++++++++++++++++++++--
+ src/openvpnserv/openvpnserv.vcxproj         |   2 +
+ src/openvpnserv/openvpnserv.vcxproj.filters |   6 ++
+ 14 files changed, 375 insertions(+), 92 deletions(-)
+ create mode 100644 src/openvpn/ring_buffer.c
+ create mode 100644 src/openvpn/ring_buffer.h
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 8451706..0be8b6d 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1256,12 +1256,30 @@ read_incoming_tun(struct context *c)
-     perf_push(PERF_READ_IN_TUN);
+diff --git a/include/openvpn-msg.h b/include/openvpn-msg.h
+index 66177a2..3ed6206 100644
+--- a/include/openvpn-msg.h
++++ b/include/openvpn-msg.h
+@@ -39,6 +39,7 @@ typedef enum {
+     msg_del_block_dns,
+     msg_register_dns,
+     msg_enable_dhcp,
++    msg_register_ring_buffers
+ } message_type_t;
  
-     c->c2.buf = c->c2.buffers->read_tun_buf;
-+
- #ifdef _WIN32
--    read_tun_buffered(c->c1.tuntap, &c->c2.buf);
-+    if (c->c1.tuntap->wintun)
-+    {
-+        read_wintun(c->c1.tuntap, &c->c2.buf);
-+        if (c->c2.buf.len == -1)
-+        {
-+            register_signal(c, SIGHUP, "tun-abort");
-+            c->persist.restart_sleep_seconds = 1;
-+            msg(M_INFO, "Wintun read error, restarting");
-+            perf_pop();
-+            return;
-+        }
-+    }
-+    else
-+    {
-+        read_tun_buffered(c->c1.tuntap, &c->c2.buf);
- #else
--    ASSERT(buf_init(&c->c2.buf, FRAME_HEADROOM(&c->c2.frame)));
--    ASSERT(buf_safe(&c->c2.buf, MAX_RW_SIZE_TUN(&c->c2.frame)));
--    c->c2.buf.len = read_tun(c->c1.tuntap, BPTR(&c->c2.buf), MAX_RW_SIZE_TUN(&c->c2.frame));
-+        ASSERT(buf_init(&c->c2.buf, FRAME_HEADROOM(&c->c2.frame)));
-+        ASSERT(buf_safe(&c->c2.buf, MAX_RW_SIZE_TUN(&c->c2.frame)));
-+        c->c2.buf.len = read_tun(c->c1.tuntap, BPTR(&c->c2.buf), MAX_RW_SIZE_TUN(&c->c2.frame));
-+#endif
-+#ifdef _WIN32
-+    }
- #endif
+ typedef struct {
+@@ -117,4 +118,13 @@ typedef struct {
+     interface_t iface;
+ } enable_dhcp_message_t;
  
- #ifdef PACKET_TRUNCATION_CHECK
-@@ -2103,7 +2121,21 @@ io_wait_dowork(struct context *c, const unsigned int flags)
-      * Configure event wait based on socket, tuntap flags.
-      */
-     socket_set(c->c2.link_socket, c->c2.event_set, socket, (void *)&socket_shift, NULL);
--    tun_set(c->c1.tuntap, c->c2.event_set, tuntap, (void *)&tun_shift, NULL);
-+
-+#ifdef _WIN32
-+    if (c->c1.tuntap && c->c1.tuntap->wintun)
-+    {
-+        /* add ring buffer event */
-+        struct rw_handle rw = {.read = c->c1.tuntap->send_tail_moved };
-+        event_ctl(c->c2.event_set, &rw, EVENT_READ, (void *)&tun_shift);
-+    }
-+    else
-+    {
-+#endif
-+        tun_set(c->c1.tuntap, c->c2.event_set, tuntap, (void *)&tun_shift, NULL);
-+#ifdef _WIN32
-+    }
-+#endif
- 
- #ifdef ENABLE_MANAGEMENT
-     if (management)
-diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
-index 48202c0..6096fa8 100644
---- a/src/openvpn/forward.h
-+++ b/src/openvpn/forward.h
-@@ -375,6 +375,19 @@ p2p_iow_flags(const struct context *c)
-     {
-         flags |= IOW_TO_TUN;
-     }
-+#ifdef _WIN32
-+    {
-+        struct tuntap *tt = c->c1.tuntap;
-+        if (tt && tt->wintun)
-+        {
-+            if (tt->send_ring->head == tt->send_ring->tail)
-+            {
-+                /* nothing to read from tun -> remove tun read flag set by IOW_READ */
-+                flags &= ~IOW_READ_TUN;
-+            }
-+        }
-+    }
-+#endif
-     return flags;
- }
- 
-@@ -403,8 +416,38 @@ io_wait(struct context *c, const unsigned int flags)
-     }
-     else
-     {
--        /* slow path */
--        io_wait_dowork(c, flags);
-+#ifdef _WIN32
-+        bool skip_iowait = flags & IOW_TO_TUN;
-+        if (flags & IOW_READ_TUN)
-+        {
-+            /*
-+             * don't read from tun if we have pending write to link,
-+             * since every tun read overwrites to_link buffer filled
-+             * by previous tun read
-+             */
-+            skip_iowait = !(flags & IOW_TO_LINK);
-+        }
-+        if (c->c1.tuntap && c->c1.tuntap->wintun && skip_iowait)
-+        {
-+            unsigned int ret = 0;
-+            if (flags & IOW_TO_TUN)
-+            {
-+                ret |= TUN_WRITE;
-+            }
-+            if (flags & IOW_READ_TUN)
-+            {
-+                ret |= TUN_READ;
-+            }
-+            c->c2.event_set_status = ret;
-+        }
-+        else
-+        {
-+#endif
-+            /* slow path */
-+            io_wait_dowork(c, flags);
-+#ifdef _WIN32
-+        }
-+#endif
-     }
- }
- 
-diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index abe2059..9ac51c3 100644
---- a/src/openvpn/mtcp.c
-+++ b/src/openvpn/mtcp.c
-@@ -270,7 +270,33 @@ multi_tcp_wait(const struct context *c,
- {
-     int status;
-     socket_set_listen_persistent(c->c2.link_socket, mtcp->es, MTCP_SOCKET);
--    tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, &mtcp->tun_rwflags);
-+
-+#ifdef _WIN32
-+    if (c->c1.tuntap && c->c1.tuntap->wintun)
-+    {
-+        if (c->c1.tuntap->send_ring->head != c->c1.tuntap->send_ring->tail)
-+        {
-+            /* there is data in wintun ring buffer, read it immediately */
-+            mtcp->esr[0].arg = MTCP_TUN;
-+            mtcp->esr[0].rwflags = EVENT_READ;
-+            mtcp->n_esr = 1;
-+            return 1;
-+        }
-+        else
-+        {
-+            /* add ring buffer event */
-+            struct rw_handle rw = { .read = c->c1.tuntap->send_tail_moved };
-+            event_ctl(mtcp->es, &rw, EVENT_READ, MTCP_TUN);
-+        }
-+    }
-+    else
-+    {
-+#endif
-+        tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, &mtcp->tun_rwflags);
-+#ifdef _WIN32
-+    }
-+#endif
-+
- #ifdef ENABLE_MANAGEMENT
-     if (management)
-     {
-diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index b7f061a..7715063 100644
---- a/src/openvpn/mudp.c
-+++ b/src/openvpn/mudp.c
-@@ -279,6 +279,20 @@ p2mp_iow_flags(const struct multi_context *m)
-         flags |= IOW_READ;
-     }
- 
-+#ifdef _WIN32
-+    {
-+        struct tuntap* tt = m->top.c1.tuntap;
-+        if (tt && tt->wintun)
-+        {
-+            if (tt->send_ring->head == tt->send_ring->tail)
-+            {
-+                /* nothing to read from tun -> remove tun read flag set by IOW_READ */
-+                flags &= ~IOW_READ_TUN;
-+            }
-+        }
-+    }
-+#endif
-+
-     return flags;
- }
- 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 5c5033e..1891981 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2998,10 +2998,10 @@ options_postprocess_mutate_invariant(struct options *options)
-         options->ifconfig_noexec = false;
-     }
- 
--    /* for wintun kernel doesn't send DHCP requests, so use ipapi to set IP address and netmask */
-+    /* for wintun kernel doesn't send DHCP requests, so use netsh to set IP address and netmask */
-     if (options->wintun)
-     {
--        options->tuntap_options.ip_win32_type = IPW32_SET_IPAPI;
-+        options->tuntap_options.ip_win32_type = IPW32_SET_NETSH;
-     }
- 
-     remap_redirect_gateway_flags(options);
-diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index 899aa59..e9accb5 100644
---- a/src/openvpn/syshead.h
-+++ b/src/openvpn/syshead.h
-@@ -39,6 +39,7 @@
- #ifdef _WIN32
- #include <windows.h>
- #include <winsock2.h>
-+#include <tlhelp32.h>
- #define sleep(x) Sleep((x)*1000)
- #define random rand
- #define srandom srand
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 37bf065..b909b89 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -798,6 +798,18 @@ init_tun_post(struct tuntap *tt,
-     tt->rw_handle.read = tt->reads.overlapped.hEvent;
-     tt->rw_handle.write = tt->writes.overlapped.hEvent;
-     tt->adapter_index = TUN_ADAPTER_INDEX_INVALID;
-+
-+    tt->send_ring = malloc(sizeof(struct tun_ring));
-+    tt->receive_ring = malloc(sizeof(struct tun_ring));
-+    if ((tt->send_ring == NULL) || (tt->receive_ring == NULL))
-+    {
-+        msg(M_FATAL, "Cannot allocate memory for receive ring");
-+    }
-+    ZeroMemory(tt->send_ring, sizeof(struct tun_ring));
-+    ZeroMemory(tt->receive_ring, sizeof(struct tun_ring));
-+
-+    tt->send_tail_moved = CreateEvent(NULL, FALSE, FALSE, NULL);
-+    tt->receive_tail_moved = CreateEvent(NULL, FALSE, FALSE, NULL);
- #endif
- }
- 
-@@ -6207,6 +6219,30 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
-             tt->ipapi_context_defined = true;
-         }
-     }
-+
-+    if (tt->wintun)
-+    {
-+        if (tt->options.msg_channel)
-+        {
-+            /* TODO */
-+        }
-+        else
-+        {
-+            if (!impersonate_as_system())
-+            {
-+                msg(M_FATAL, "ERROR:  Failed to impersonate as SYSTEM, make sure process is running under privileged account");
-+            }
-+            if (!register_ring_buffers(tt->hand, tt->send_ring, tt->receive_ring, tt->send_tail_moved, tt->receive_tail_moved))
-+            {
-+                msg(M_FATAL, "ERROR:  Failed to register ring buffers: %lu", GetLastError());
-+            }
-+            if (!RevertToSelf())
-+            {
-+                msg(M_FATAL, "ERROR:  RevertToSelf error: %lu", GetLastError());
-+            }
-+        }
-+    }
-+
-     /*netcmd_semaphore_release ();*/
-     gc_free(&gc);
- }
-@@ -6345,6 +6381,15 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
-         free(tt->actual_name);
-     }
- 
-+    CloseHandle(tt->receive_tail_moved);
-+    CloseHandle(tt->send_tail_moved);
-+
-+    free(tt->receive_ring);
-+    free(tt->send_ring);
-+
-+    tt->receive_ring = NULL;
-+    tt->send_ring = NULL;
-+
-     clear_tuntap(tt);
-     free(tt);
-     gc_free(&gc);
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index 19cab7e..cbdcce4 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -183,6 +183,11 @@ struct tuntap
- 
-     bool wintun; /* true if wintun is used instead of tap-windows6 */
-     int standby_iter;
-+
-+    struct tun_ring *send_ring;
-+    struct tun_ring *receive_ring;
++typedef struct {
++    message_header_t header;
++    HANDLE device;
++    HANDLE send_ring_handle;
++    HANDLE receive_ring_handle;
 +    HANDLE send_tail_moved;
 +    HANDLE receive_tail_moved;
- #else  /* ifdef _WIN32 */
-     int fd; /* file descriptor for TUN/TAP dev */
- #endif
-@@ -479,10 +484,124 @@ read_tun_buffered(struct tuntap *tt, struct buffer *buf)
-     return tun_finalize(tt->hand, &tt->reads, buf);
- }
- 
-+static inline ULONG
-+wintun_ring_packet_align(ULONG size)
-+{
-+    return (size + (WINTUN_PACKET_ALIGN - 1)) & ~(WINTUN_PACKET_ALIGN - 1);
-+}
++} register_ring_buffers_message_t;
 +
-+static inline ULONG
-+wintun_ring_wrap(ULONG value)
-+{
-+    return value & (WINTUN_RING_CAPACITY - 1);
-+}
+ #endif /* ifndef OPENVPN_MSG_H_ */
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index a091ffc..d1bb99c 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -138,6 +138,6 @@ openvpn_LDADD = \
+ 	$(OPTIONAL_SYSTEMD_LIBS) \
+ 	$(OPTIONAL_DL_LIBS)
+ if WIN32
+-openvpn_SOURCES += openvpn_win32_resources.rc block_dns.c block_dns.h
++openvpn_SOURCES += openvpn_win32_resources.rc block_dns.c block_dns.h ring_buffer.c ring_buffer.h
+ openvpn_LDADD += -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwinmm -lfwpuclnt -lrpcrt4 -lncrypt -lsetupapi
+ endif
+diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
+index 9ffef9f..61e634e 100644
+--- a/src/openvpn/openvpn.vcxproj
++++ b/src/openvpn/openvpn.vcxproj
+@@ -181,6 +181,7 @@
+     <ClCompile Include="ps.c" />
+     <ClCompile Include="push.c" />
+     <ClCompile Include="reliable.c" />
++    <ClCompile Include="ring_buffer.c" />
+     <ClCompile Include="route.c" />
+     <ClCompile Include="run_command.c" />
+     <ClCompile Include="schedule.c" />
+@@ -264,6 +265,7 @@
+     <ClInclude Include="push.h" />
+     <ClInclude Include="pushlist.h" />
+     <ClInclude Include="reliable.h" />
++    <ClInclude Include="ring_buffer.h" />
+     <ClInclude Include="route.h" />
+     <ClInclude Include="run_command.h" />
+     <ClInclude Include="schedule.h" />
+diff --git a/src/openvpn/openvpn.vcxproj.filters b/src/openvpn/openvpn.vcxproj.filters
+index e6068af..8f1b9e0 100644
+--- a/src/openvpn/openvpn.vcxproj.filters
++++ b/src/openvpn/openvpn.vcxproj.filters
+@@ -237,6 +237,9 @@
+     <ClCompile Include="auth_token.c">
+       <Filter>Source Files</Filter>
+     </ClCompile>
++    <ClCompile Include="ring_buffer.c">
++      <Filter>Source Files</Filter>
++    </ClCompile>
+   </ItemGroup>
+   <ItemGroup>
+     <ClInclude Include="base64.h">
+@@ -494,10 +497,13 @@
+     <ClInclude Include="auth_token.h">
+       <Filter>Header Files</Filter>
+     </ClInclude>
++    <ClInclude Include="ring_buffer.h">
++      <Filter>Header Files</Filter>
++    </ClInclude>
+   </ItemGroup>
+   <ItemGroup>
+     <ResourceCompile Include="openvpn_win32_resources.rc">
+       <Filter>Resource Files</Filter>
+     </ResourceCompile>
+   </ItemGroup>
+-</Project>
+\ No newline at end of file
++</Project>
+diff --git a/src/openvpn/ring_buffer.c b/src/openvpn/ring_buffer.c
+new file mode 100644
+index 0000000..482e333
+--- /dev/null
++++ b/src/openvpn/ring_buffer.c
+@@ -0,0 +1,54 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2019 OpenVPN Inc <sales@...515...>
++ *                2019 Lev Stipakov <lev@...515...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
 +
-+static inline void
-+read_wintun(struct tuntap *tt, struct buffer* buf)
-+{
-+    struct tun_ring *ring = tt->send_ring;
-+    ULONG head = ring->head;
-+    ULONG tail = ring->tail;
-+    ULONG content_len;
-+    struct TUN_PACKET *packet;
-+    ULONG aligned_packet_size;
++#include "ring_buffer.h"
 +
-+    *buf = tt->reads.buf_init;
-+    buf->len = 0;
-+
-+    if ((head >= WINTUN_RING_CAPACITY) || (tail >= WINTUN_RING_CAPACITY))
-+    {
-+        msg(M_INFO, "Wintun: ring capacity exceeded");
-+        buf->len = -1;
-+        return;
-+    }
-+
-+    if (head == tail)
-+    {
-+        /* nothing to read */
-+        return;
-+    }
-+
-+    content_len = wintun_ring_wrap(tail - head);
-+    if (content_len < sizeof(struct TUN_PACKET_HEADER))
-+    {
-+        msg(M_INFO, "Wintun: incomplete packet header in send ring");
-+        buf->len = -1;
-+        return;
-+    }
-+
-+    packet = (struct TUN_PACKET *) &ring->data[head];
-+    if (packet->size > WINTUN_MAX_PACKET_SIZE)
-+    {
-+        msg(M_INFO, "Wintun: packet too big in send ring");
-+        buf->len = -1;
-+        return;
-+    }
-+
-+    aligned_packet_size = wintun_ring_packet_align(sizeof(struct TUN_PACKET_HEADER) + packet->size);
-+    if (aligned_packet_size > content_len)
-+    {
-+        msg(M_INFO, "Wintun: incomplete packet in send ring");
-+        buf->len = -1;
-+        return;
-+    }
-+
-+    buf_write(buf, packet->data, packet->size);
-+
-+    head = wintun_ring_wrap(head + aligned_packet_size);
-+    ring->head = head;
-+}
-+
-+static inline int
-+write_wintun(struct tuntap *tt, struct buffer *buf)
-+{
-+    struct tun_ring *ring = tt->receive_ring;
-+    ULONG head = ring->head;
-+    ULONG tail = ring->tail;
-+    ULONG aligned_packet_size;
-+    ULONG buf_space;
-+    struct TUN_PACKET *packet;
-+
-+    if ((head > WINTUN_RING_CAPACITY) || (tail >= WINTUN_RING_CAPACITY))
-+    {
-+        msg(M_INFO, "Wintun: head/tail value is over capacity");
-+        return -1;
-+    }
-+
-+    aligned_packet_size = wintun_ring_packet_align(sizeof(struct TUN_PACKET_HEADER) + BLEN(buf));
-+    buf_space = wintun_ring_wrap(head - tail - WINTUN_PACKET_ALIGN);
-+    if (aligned_packet_size > buf_space)
-+    {
-+        msg(M_INFO, "Wintun: ring is full");
-+        return 0;
-+    }
-+
-+    /* copy packet size and data into ring */
-+    packet = (struct TUN_PACKET* )&ring->data[tail];
-+    packet->size = BLEN(buf);
-+    memcpy(packet->data, BPTR(buf), BLEN(buf));
-+
-+    /* move ring tail */
-+    ring->tail = wintun_ring_wrap(tail + aligned_packet_size);
-+    if (ring->alertable != 0)
-+    {
-+        SetEvent(tt->receive_tail_moved);
-+    }
-+
-+    return BLEN(buf);
-+}
-+
- static inline int
- write_tun_buffered(struct tuntap *tt, struct buffer *buf)
- {
--    return tun_write_win32(tt, buf);
-+    if (tt->wintun)
-+    {
-+        return write_wintun(tt, buf);
-+    }
-+    else
-+    {
-+        return tun_write_win32(tt, buf);
-+    }
- }
- 
- #else  /* ifdef _WIN32 */
-diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index eb4c030..e9e0258 100644
---- a/src/openvpn/win32.c
-+++ b/src/openvpn/win32.c
-@@ -1493,4 +1493,124 @@ send_msg_iservice(HANDLE pipe, const void *data, size_t size,
-     return ret;
- }
- 
-+bool
-+impersonate_as_system()
-+{
-+    HANDLE thread_token, process_snapshot, winlogon_process, winlogon_token, duplicated_token;
-+    PROCESSENTRY32 entry;
-+    BOOL ret;
-+    DWORD pid = 0;
-+    TOKEN_PRIVILEGES privileges;
-+
-+    CLEAR(entry);
-+    CLEAR(privileges);
-+
-+    entry.dwSize = sizeof(PROCESSENTRY32);
-+
-+    privileges.PrivilegeCount = 1;
-+    privileges.Privileges->Attributes = SE_PRIVILEGE_ENABLED;
-+
-+    if (!LookupPrivilegeValue(NULL, SE_DEBUG_NAME, &privileges.Privileges[0].Luid))
-+    {
-+        return false;
-+    }
-+
-+    if (!ImpersonateSelf(SecurityImpersonation))
-+    {
-+        return false;
-+    }
-+
-+    if (!OpenThreadToken(GetCurrentThread(), TOKEN_ADJUST_PRIVILEGES, FALSE, &thread_token))
-+    {
-+        RevertToSelf();
-+        return false;
-+    }
-+    if (!AdjustTokenPrivileges(thread_token, FALSE, &privileges, sizeof(privileges), NULL, NULL))
-+    {
-+        CloseHandle(thread_token);
-+        RevertToSelf();
-+        return false;
-+    }
-+    CloseHandle(thread_token);
-+
-+    process_snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-+    if (process_snapshot == INVALID_HANDLE_VALUE)
-+    {
-+        RevertToSelf();
-+        return false;
-+    }
-+    for (ret = Process32First(process_snapshot, &entry); ret; ret = Process32Next(process_snapshot, &entry))
-+    {
-+        if (!_stricmp(entry.szExeFile, "winlogon.exe"))
-+        {
-+            pid = entry.th32ProcessID;
-+            break;
-+        }
-+    }
-+    CloseHandle(process_snapshot);
-+    if (!pid)
-+    {
-+        RevertToSelf();
-+        return false;
-+    }
-+
-+    winlogon_process = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pid);
-+    if (!winlogon_process)
-+    {
-+        RevertToSelf();
-+        return false;
-+    }
-+
-+    if (!OpenProcessToken(winlogon_process, TOKEN_IMPERSONATE | TOKEN_DUPLICATE, &winlogon_token))
-+    {
-+        CloseHandle(winlogon_process);
-+        RevertToSelf();
-+        return false;
-+    }
-+    CloseHandle(winlogon_process);
-+
-+    if (!DuplicateToken(winlogon_token, SecurityImpersonation, &duplicated_token))
-+    {
-+        CloseHandle(winlogon_token);
-+        RevertToSelf();
-+        return false;
-+    }
-+    CloseHandle(winlogon_token);
-+
-+    if (!SetThreadToken(NULL, duplicated_token))
-+    {
-+        CloseHandle(duplicated_token);
-+        RevertToSelf();
-+        return false;
-+    }
-+    CloseHandle(duplicated_token);
-+
-+    return true;
-+}
++#ifdef _WIN32
 +
 +bool
 +register_ring_buffers(HANDLE device,
-+                      struct tun_ring* send_ring,
-+                      struct tun_ring* receive_ring,
++                      struct tun_ring *send_ring,
++                      struct tun_ring *receive_ring,
 +                      HANDLE send_tail_moved,
 +                      HANDLE receive_tail_moved)
 +{
@@ -619,29 +204,55 @@ index eb4c030..e9e0258 100644
 +    return res == TRUE;
 +}
 +
- #endif /* ifdef _WIN32 */
-diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
-index 4814bbc..007c7d7 100644
---- a/src/openvpn/win32.h
-+++ b/src/openvpn/win32.h
-@@ -25,6 +25,8 @@
- #ifndef OPENVPN_WIN32_H
- #define OPENVPN_WIN32_H
- 
++#endif /* ifdef _WIN32 */
+\ No newline at end of file
+diff --git a/src/openvpn/ring_buffer.h b/src/openvpn/ring_buffer.h
+new file mode 100644
+index 0000000..9951cdf
+--- /dev/null
++++ b/src/openvpn/ring_buffer.h
+@@ -0,0 +1,79 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2019 OpenVPN Inc <sales@...515...>
++ *                2019 Lev Stipakov <lev@...515...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
++
++#ifdef _WIN32
++#ifndef OPENVPN_RING_BUFFER_H
++#define OPENVPN_RING_BUFFER_H
++
++#include <windows.h>
 +#include <winioctl.h>
 +
- #include "mtu.h"
- #include "openvpn-msg.h"
- #include "argv.h"
-@@ -323,5 +325,50 @@ bool send_msg_iservice(HANDLE pipe, const void *data, size_t size,
- int
- openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned int flags);
- 
-+#define WINTUN_RING_CAPACITY 0x800000
-+#define WINTUN_RING_TRAILING_BYTES 0x10000
-+#define WINTUN_RING_FRAMING_SIZE 12
-+#define WINTUN_MAX_PACKET_SIZE 0xffff
-+#define WINTUN_PACKET_ALIGN 4
++#include <stdint.h>
++#include <stdbool.h>
++
++#define WINTUN_RING_CAPACITY        0x800000
++#define WINTUN_RING_TRAILING_BYTES  0x10000
++#define WINTUN_RING_FRAMING_SIZE    12
++#define WINTUN_MAX_PACKET_SIZE      0xffff
++#define WINTUN_PACKET_ALIGN         4
++
++#define TUN_IOCTL_REGISTER_RINGS CTL_CODE(51820U, 0x970U, METHOD_BUFFERED, FILE_READ_DATA | FILE_WRITE_DATA)
 +
 +struct tun_ring
 +{
@@ -656,7 +267,7 @@ index 4814bbc..007c7d7 100644
 +    struct
 +    {
 +        ULONG ring_size;
-+        struct tun_ring *ring;
++        struct tun_ring* ring;
 +        HANDLE tail_moved;
 +    } send, receive;
 +};
@@ -672,18 +283,533 @@ index 4814bbc..007c7d7 100644
 +    UCHAR data[WINTUN_MAX_PACKET_SIZE];
 +};
 +
-+#define TUN_IOCTL_REGISTER_RINGS CTL_CODE(51820U, 0x970U, METHOD_BUFFERED, FILE_READ_DATA | FILE_WRITE_DATA)
-+
-+bool impersonate_as_system();
-+
 +bool register_ring_buffers(HANDLE device,
 +                           struct tun_ring *send_ring,
 +                           struct tun_ring *receive_ring,
 +                           HANDLE send_tail_moved,
 +                           HANDLE receive_tail_moved);
 +
++#endif /* ifndef OPENVPN_RING_BUFFER_H */
++#endif /* ifdef _WIN32 */
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index b909b89..ef1415c 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -799,17 +799,26 @@ init_tun_post(struct tuntap *tt,
+     tt->rw_handle.write = tt->writes.overlapped.hEvent;
+     tt->adapter_index = TUN_ADAPTER_INDEX_INVALID;
+ 
+-    tt->send_ring = malloc(sizeof(struct tun_ring));
+-    tt->receive_ring = malloc(sizeof(struct tun_ring));
+-    if ((tt->send_ring == NULL) || (tt->receive_ring == NULL))
++    if (tt->wintun)
+     {
+-        msg(M_FATAL, "Cannot allocate memory for receive ring");
+-    }
+-    ZeroMemory(tt->send_ring, sizeof(struct tun_ring));
+-    ZeroMemory(tt->receive_ring, sizeof(struct tun_ring));
++        tt->send_ring_handle = CreateFileMapping(INVALID_HANDLE_VALUE, NULL,
++                                                 PAGE_READWRITE, 0, sizeof(struct tun_ring), NULL);
++        tt->receive_ring_handle = CreateFileMapping(INVALID_HANDLE_VALUE, NULL,
++                                                    PAGE_READWRITE, 0, sizeof(struct tun_ring), NULL);
++
++        if ((tt->send_ring_handle == NULL) || (tt->receive_ring_handle == NULL))
++        {
++            msg(M_FATAL, "Cannot allocate memory for ring buffer");
++        }
++
++        tt->send_tail_moved = CreateEvent(NULL, FALSE, FALSE, NULL);
++        tt->receive_tail_moved = CreateEvent(NULL, FALSE, FALSE, NULL);
+ 
+-    tt->send_tail_moved = CreateEvent(NULL, FALSE, FALSE, NULL);
+-    tt->receive_tail_moved = CreateEvent(NULL, FALSE, FALSE, NULL);
++        if ((tt->send_tail_moved == NULL) || (tt->receive_tail_moved == NULL))
++        {
++            msg(M_FATAL, "Cannot create events for ring buffer");
++        }
++    }
+ #endif
+ }
+ 
+@@ -5628,6 +5637,44 @@ register_dns_service(const struct tuntap *tt)
+     gc_free(&gc);
+ }
+ 
++static void
++service_register_ring_buffers(const struct tuntap *tt)
++{
++    HANDLE msg_channel = tt->options.msg_channel;
++    ack_message_t ack;
++    struct gc_arena gc = gc_new();
++
++    register_ring_buffers_message_t msg = {
++        .header = {
++            msg_register_ring_buffers,
++            sizeof(register_ring_buffers_message_t),
++            0
++        },
++        .device = tt->hand,
++        .send_ring_handle = tt->send_ring_handle,
++        .receive_ring_handle = tt->receive_ring_handle,
++        .send_tail_moved = tt->send_tail_moved,
++        .receive_tail_moved = tt->receive_tail_moved
++    };
++
++    if (!send_msg_iservice(msg_channel, &msg, sizeof(msg), &ack, "Register ring buffers"))
++    {
++        gc_free(&gc);
++        return;
++    }
++    else if (ack.error_number != NO_ERROR)
++    {
++        msg(M_FATAL, "Register ring buffers failed using service: %s [status=0x%x]",
++            strerror_win32(ack.error_number, &gc), ack.error_number);
++    }
++    else
++    {
++        msg(M_INFO, "Ring buffers registered via service");
++    }
++
++    gc_free(&gc);
++}
++
+ void
+ fork_register_dns_action(struct tuntap *tt)
+ {
+@@ -6222,9 +6269,12 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+ 
+     if (tt->wintun)
+     {
++        tt->send_ring = (struct tun_ring *)MapViewOfFile(tt->send_ring_handle, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(struct tun_ring));
++        tt->receive_ring = (struct tun_ring *)MapViewOfFile(tt->receive_ring_handle, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(struct tun_ring));
++
+         if (tt->options.msg_channel)
+         {
+-            /* TODO */
++            service_register_ring_buffers(tt);
+         }
+         else
+         {
+@@ -6381,14 +6431,23 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+         free(tt->actual_name);
+     }
+ 
+-    CloseHandle(tt->receive_tail_moved);
+     CloseHandle(tt->send_tail_moved);
++    CloseHandle(tt->receive_tail_moved);
+ 
+-    free(tt->receive_ring);
+-    free(tt->send_ring);
++    if (tt->send_ring != NULL)
++    {
++        UnmapViewOfFile(tt->send_ring);
++        tt->send_ring = NULL;
++    }
++
++    if (tt->receive_ring != NULL)
++    {
++        UnmapViewOfFile(tt->receive_ring);
++        tt->receive_ring = NULL;
++    }
+ 
+-    tt->receive_ring = NULL;
+-    tt->send_ring = NULL;
++    CloseHandle(tt->send_ring_handle);
++    CloseHandle(tt->receive_ring_handle);
+ 
+     clear_tuntap(tt);
+     free(tt);
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index cbdcce4..2799129 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -39,6 +39,7 @@
+ #include "proto.h"
+ #include "misc.h"
+ #include "networking.h"
++#include "ring_buffer.h"
+ 
+ #ifdef _WIN32
+ #define WINTUN_COMPONENT_ID "wintun"
+@@ -184,6 +185,8 @@ struct tuntap
+     bool wintun; /* true if wintun is used instead of tap-windows6 */
+     int standby_iter;
+ 
++    HANDLE send_ring_handle;
++    HANDLE receive_ring_handle;
+     struct tun_ring *send_ring;
+     struct tun_ring *receive_ring;
+     HANDLE send_tail_moved;
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index e9e0258..b2f2a19 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -1588,29 +1588,4 @@ impersonate_as_system()
+     return true;
+ }
+ 
+-bool
+-register_ring_buffers(HANDLE device,
+-                      struct tun_ring* send_ring,
+-                      struct tun_ring* receive_ring,
+-                      HANDLE send_tail_moved,
+-                      HANDLE receive_tail_moved)
+-{
+-    struct tun_register_rings rr;
+-    BOOL res;
+-
+-    ZeroMemory(&rr, sizeof(rr));
+-
+-    rr.send.ring = send_ring;
+-    rr.send.ring_size = sizeof(send_ring->data);
+-    rr.send.tail_moved = send_tail_moved;
+-
+-    rr.receive.ring = receive_ring;
+-    rr.receive.ring_size = sizeof(receive_ring->data);
+-    rr.receive.tail_moved = receive_tail_moved;
+-
+-    res = DeviceIoControl(device, TUN_IOCTL_REGISTER_RINGS, &rr, sizeof(rr), NULL, 0, NULL, NULL);
+-
+-    return res == TRUE;
+-}
+-
+ #endif /* ifdef _WIN32 */
+diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
+index 007c7d7..4b508c5 100644
+--- a/src/openvpn/win32.h
++++ b/src/openvpn/win32.h
+@@ -325,50 +325,7 @@ bool send_msg_iservice(HANDLE pipe, const void *data, size_t size,
+ int
+ openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned int flags);
+ 
+-#define WINTUN_RING_CAPACITY 0x800000
+-#define WINTUN_RING_TRAILING_BYTES 0x10000
+-#define WINTUN_RING_FRAMING_SIZE 12
+-#define WINTUN_MAX_PACKET_SIZE 0xffff
+-#define WINTUN_PACKET_ALIGN 4
+-
+-struct tun_ring
+-{
+-    volatile ULONG head;
+-    volatile ULONG tail;
+-    volatile LONG alertable;
+-    UCHAR data[WINTUN_RING_CAPACITY + WINTUN_RING_TRAILING_BYTES + WINTUN_RING_FRAMING_SIZE];
+-};
+-
+-struct tun_register_rings
+-{
+-    struct
+-    {
+-        ULONG ring_size;
+-        struct tun_ring *ring;
+-        HANDLE tail_moved;
+-    } send, receive;
+-};
+-
+-struct TUN_PACKET_HEADER
+-{
+-    uint32_t size;
+-};
+-
+-struct TUN_PACKET
+-{
+-    uint32_t size;
+-    UCHAR data[WINTUN_MAX_PACKET_SIZE];
+-};
+-
+-#define TUN_IOCTL_REGISTER_RINGS CTL_CODE(51820U, 0x970U, METHOD_BUFFERED, FILE_READ_DATA | FILE_WRITE_DATA)
+-
+ bool impersonate_as_system();
+ 
+-bool register_ring_buffers(HANDLE device,
+-                           struct tun_ring *send_ring,
+-                           struct tun_ring *receive_ring,
+-                           HANDLE send_tail_moved,
+-                           HANDLE receive_tail_moved);
+-
  #endif /* ifndef OPENVPN_WIN32_H */
  #endif /* ifdef _WIN32 */
+diff --git a/src/openvpnserv/Makefile.am b/src/openvpnserv/Makefile.am
+index bc65070..f8d3319 100644
+--- a/src/openvpnserv/Makefile.am
++++ b/src/openvpnserv/Makefile.am
+@@ -36,4 +36,5 @@ openvpnserv_SOURCES = \
+ 	service.c service.h \
+ 	validate.c validate.h \
+ 	$(top_srcdir)/src/openvpn/block_dns.c $(top_srcdir)/src/openvpn/block_dns.h \
+-	openvpnserv_resources.rc
++	openvpnserv_resources.rc \
++	$(top_srcdir)/src/openvpn/ring_buffer.c $(top_srcdir)/src/openvpn/ring_buffer.h
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 623c3ff..6e72a14 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -43,13 +43,15 @@
+ #include "openvpn-msg.h"
+ #include "validate.h"
+ #include "block_dns.h"
++#include "ring_buffer.h"
+ 
+ #define IO_TIMEOUT  2000 /*ms*/
+ 
+-#define ERROR_OPENVPN_STARTUP  0x20000000
+-#define ERROR_STARTUP_DATA     0x20000001
+-#define ERROR_MESSAGE_DATA     0x20000002
+-#define ERROR_MESSAGE_TYPE     0x20000003
++#define ERROR_OPENVPN_STARTUP        0x20000000
++#define ERROR_STARTUP_DATA           0x20000001
++#define ERROR_MESSAGE_DATA           0x20000002
++#define ERROR_MESSAGE_TYPE           0x20000003
++#define ERROR_REGISTER_RING_BUFFERS  0x20000004
+ 
+ static SERVICE_STATUS_HANDLE service;
+ static SERVICE_STATUS status = { .dwServiceType = SERVICE_WIN32_SHARE_PROCESS };
+@@ -58,6 +60,7 @@ static settings_t settings;
+ static HANDLE rdns_semaphore = NULL;
+ #define RDNS_TIMEOUT 600  /* seconds to wait for the semaphore */
+ 
++#define TUN_IOCTL_REGISTER_RINGS CTL_CODE(51820U, 0x970U, METHOD_BUFFERED, FILE_READ_DATA | FILE_WRITE_DATA)
+ 
+ openvpn_service_t interactive_service = {
+     interactive,
+@@ -100,6 +103,14 @@ typedef struct {
+     int metric_v6;
+ } block_dns_data_t;
+ 
++typedef struct {
++    HANDLE send_ring_handle;
++    HANDLE receive_ring_handle;
++    HANDLE send_tail_moved;
++    HANDLE receive_tail_moved;
++    HANDLE device;
++} ring_buffer_handles_t;
++
+ 
+ static DWORD
+ AddListItem(list_item_t **pfirst, LPVOID data)
+@@ -154,6 +165,26 @@ CloseHandleEx(LPHANDLE handle)
+     return INVALID_HANDLE_VALUE;
+ }
+ 
++static HANDLE
++OvpnUnmapViewOfFile(LPHANDLE handle)
++{
++    if (handle && *handle && *handle != INVALID_HANDLE_VALUE)
++    {
++        UnmapViewOfFile(*handle);
++        *handle = INVALID_HANDLE_VALUE;
++    }
++    return INVALID_HANDLE_VALUE;
++}
++
++static void
++CloseRingBufferHandles(ring_buffer_handles_t *ring_buffer_handles)
++{
++    CloseHandleEx(&ring_buffer_handles->device);
++    CloseHandleEx(&ring_buffer_handles->receive_tail_moved);
++    CloseHandleEx(&ring_buffer_handles->send_tail_moved);
++    OvpnUnmapViewOfFile(&ring_buffer_handles->send_ring_handle);
++    OvpnUnmapViewOfFile(&ring_buffer_handles->receive_ring_handle);
++}
+ 
+ static HANDLE
+ InitOverlapped(LPOVERLAPPED overlapped)
+@@ -1198,8 +1229,95 @@ HandleEnableDHCPMessage(const enable_dhcp_message_t *dhcp)
+     return err;
+ }
+ 
++static DWORD
++OvpnDuplicateHandle(HANDLE ovpn_proc, HANDLE orig_handle, HANDLE* new_handle)
++{
++    DWORD err = ERROR_SUCCESS;
++
++    if (!DuplicateHandle(ovpn_proc, orig_handle, GetCurrentProcess(), new_handle, 0, FALSE, DUPLICATE_SAME_ACCESS))
++    {
++        err = GetLastError();
++        MsgToEventLog(M_SYSERR, TEXT("Could not duplicate handle"));
++        return err;
++    }
++
++    return err;
++}
++
++static DWORD
++DuplicateAndMapRing(HANDLE ovpn_proc, HANDLE orig_handle, HANDLE *new_handle, struct tun_ring **ring)
++{
++    DWORD err = ERROR_SUCCESS;
++
++    err = OvpnDuplicateHandle(ovpn_proc, orig_handle, new_handle);
++    if (err != ERROR_SUCCESS)
++    {
++        return err;
++    }
++    *ring = (struct tun_ring *)MapViewOfFile(*new_handle, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(struct tun_ring));
++    if (*ring == NULL)
++    {
++        err = GetLastError();
++        MsgToEventLog(M_SYSERR, TEXT("Could not map shared memory"));
++        return err;
++    }
++
++    return err;
++}
++
++static DWORD
++HandleRegisterRingBuffers(const register_ring_buffers_message_t *rrb, HANDLE ovpn_proc,
++                          ring_buffer_handles_t *ring_buffer_handles)
++{
++    DWORD err = 0;
++    struct tun_ring *send_ring;
++    struct tun_ring *receive_ring;
++
++    CloseRingBufferHandles(ring_buffer_handles);
++
++    err = OvpnDuplicateHandle(ovpn_proc, rrb->device, &ring_buffer_handles->device);
++    if (err != ERROR_SUCCESS)
++    {
++        return err;
++    }
++
++    err = DuplicateAndMapRing(ovpn_proc, rrb->send_ring_handle, &ring_buffer_handles->send_ring_handle, &send_ring);
++    if (err != ERROR_SUCCESS)
++    {
++        return err;
++    }
++
++    err = DuplicateAndMapRing(ovpn_proc, rrb->receive_ring_handle, &ring_buffer_handles->receive_ring_handle, &receive_ring);
++    if (err != ERROR_SUCCESS)
++    {
++        return err;
++    }
++
++    err = OvpnDuplicateHandle(ovpn_proc, rrb->send_tail_moved, &ring_buffer_handles->send_tail_moved);
++    if (err != ERROR_SUCCESS)
++    {
++        return err;
++    }
++
++    err = OvpnDuplicateHandle(ovpn_proc, rrb->receive_tail_moved, &ring_buffer_handles->receive_tail_moved);
++    if (err != ERROR_SUCCESS)
++    {
++        return err;
++    }
++
++    if (!register_ring_buffers(ring_buffer_handles->device, send_ring, receive_ring,
++                               ring_buffer_handles->send_tail_moved, ring_buffer_handles->receive_tail_moved))
++    {
++        MsgToEventLog(M_SYSERR, TEXT("Could not register ring buffers"));
++        err = ERROR_REGISTER_RING_BUFFERS;
++    }
++
++    return err;
++}
++
+ static VOID
+-HandleMessage(HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events, undo_lists_t *lists)
++HandleMessage(HANDLE pipe, HANDLE ovpn_proc, ring_buffer_handles_t *ring_buffer_handles,
++              DWORD bytes, DWORD count, LPHANDLE events, undo_lists_t *lists)
+ {
+     DWORD read;
+     union {
+@@ -1210,6 +1328,7 @@ HandleMessage(HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events, undo_lists
+         block_dns_message_t block_dns;
+         dns_cfg_message_t dns;
+         enable_dhcp_message_t dhcp;
++        register_ring_buffers_message_t rrb;
+     } msg;
+     ack_message_t ack = {
+         .header = {
+@@ -1277,6 +1396,13 @@ HandleMessage(HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events, undo_lists
+             }
+             break;
+ 
++        case msg_register_ring_buffers:
++            if (msg.header.size == sizeof(msg.rrb))
++            {
++                ack.error_number = HandleRegisterRingBuffers(&msg.rrb, ovpn_proc, ring_buffer_handles);
++            }
++            break;
++
+         default:
+             ack.error_number = ERROR_MESSAGE_TYPE;
+             MsgToEventLog(MSG_FLAGS_ERROR, TEXT("Unknown message type %d"), msg.header.type);
+@@ -1360,6 +1486,7 @@ RunOpenvpn(LPVOID p)
+     WCHAR *cmdline = NULL;
+     size_t cmdline_size;
+     undo_lists_t undo_lists;
++    ring_buffer_handles_t ring_buffer_handles;
+ 
+     SECURITY_ATTRIBUTES inheritable = {
+         .nLength = sizeof(inheritable),
+@@ -1380,6 +1507,7 @@ RunOpenvpn(LPVOID p)
+     ZeroMemory(&startup_info, sizeof(startup_info));
+     ZeroMemory(&undo_lists, sizeof(undo_lists));
+     ZeroMemory(&proc_info, sizeof(proc_info));
++    ZeroMemory(&ring_buffer_handles, sizeof(ring_buffer_handles));
+ 
+     if (!GetStartupData(pipe, &sud))
+     {
+@@ -1611,7 +1739,7 @@ RunOpenvpn(LPVOID p)
+             break;
+         }
+ 
+-        HandleMessage(ovpn_pipe, bytes, 1, &exit_event, &undo_lists);
++        HandleMessage(ovpn_pipe, proc_info.hProcess, &ring_buffer_handles, bytes, 1, &exit_event, &undo_lists);
+     }
+ 
+     WaitForSingleObject(proc_info.hProcess, IO_TIMEOUT);
+@@ -1638,6 +1766,7 @@ out:
+     free(cmdline);
+     DestroyEnvironmentBlock(user_env);
+     FreeStartupData(&sud);
++    CloseRingBufferHandles(&ring_buffer_handles);
+     CloseHandleEx(&proc_info.hProcess);
+     CloseHandleEx(&proc_info.hThread);
+     CloseHandleEx(&stdin_read);
+diff --git a/src/openvpnserv/openvpnserv.vcxproj b/src/openvpnserv/openvpnserv.vcxproj
+index 7061b7b..c5a34b8 100644
+--- a/src/openvpnserv/openvpnserv.vcxproj
++++ b/src/openvpnserv/openvpnserv.vcxproj
+@@ -115,6 +115,7 @@
+     </Link>
+   </ItemDefinitionGroup>
+   <ItemGroup>
++    <ClCompile Include="..\openvpn\ring_buffer.c" />
+     <ClCompile Include="automatic.c" />
+     <ClCompile Include="common.c" />
+     <ClCompile Include="interactive.c" />
+@@ -123,6 +124,7 @@
+     <ClCompile Include="..\openvpn\block_dns.c" />
+   </ItemGroup>
+   <ItemGroup>
++    <ClInclude Include="..\openvpn\ring_buffer.h" />
+     <ClInclude Include="service.h" />
+     <ClInclude Include="validate.h" />
+     <ClInclude Include="..\openvpn\block_dns.h" />
+diff --git a/src/openvpnserv/openvpnserv.vcxproj.filters b/src/openvpnserv/openvpnserv.vcxproj.filters
+index 3ce9bb2..3cb14ef 100644
+--- a/src/openvpnserv/openvpnserv.vcxproj.filters
++++ b/src/openvpnserv/openvpnserv.vcxproj.filters
+@@ -33,6 +33,9 @@
+     <ClCompile Include="..\openvpn\block_dns.c">
+       <Filter>Source Files</Filter>
+     </ClCompile>
++    <ClCompile Include="..\openvpn\ring_buffer.c">
++      <Filter>Source Files</Filter>
++    </ClCompile>
+   </ItemGroup>
+   <ItemGroup>
+     <ClInclude Include="service.h">
+@@ -44,6 +47,9 @@
+     <ClInclude Include="..\openvpn\block_dns.h">
+       <Filter>Header Files</Filter>
+     </ClInclude>
++    <ClInclude Include="..\openvpn\ring_buffer.h">
++      <Filter>Header Files</Filter>
++    </ClInclude>
+   </ItemGroup>
+   <ItemGroup>
+     <ResourceCompile Include="openvpnserv_resources.rc">
 -- 
 2.7.4
 
