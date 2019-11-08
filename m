@@ -1,12 +1,13 @@
+References: <1573148729-27339-1-git-send-email-lstipakov@...277...>
+ <1573148729-27339-3-git-send-email-lstipakov@...277...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <4b355202-a6b4-698f-2a15-1b72a5c5b11a@...1856...>
+Date: Fri, 8 Nov 2019 15:36:17 +0100
 MIME-Version: 1.0
-References: <CAFHpkQG4ZiJ0_cG6MRWGQdcajgsuByvu69Q7MfSJxM00FUe2iQ@...278...>
- <20191108090233.GB40538@...1296...>
-In-Reply-To: <20191108090233.GB40538@...1296...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Fri, 8 Nov 2019 14:25:30 +0500
-Message-ID: <CAFHpkQHBRjGHJ_=92YM1zBBH5YhumuCFitk5ONwhPLy=nDm6Hg@...278...>
-Content-Type: multipart/alternative; boundary="000000000000a536730596d25dcf"
-Subject: Re: [Openvpn-devel] using arm64 on travis ?
+In-Reply-To: <1573148729-27339-3-git-send-email-lstipakov@...277...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v2 2/7] wintun: add --windows-driver
+ config option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,93 +16,185 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
---000000000000a536730596d25dcf
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-=D0=BF=D1=82, 8 =D0=BD=D0=BE=D1=8F=D0=B1. 2019 =D0=B3. =D0=B2 14:02, Gert D=
-oering <gert@...1296...>:
+Thanks for looking into wintun support. Definitely feature-ack.
 
-> Hi,
->
-> On Fri, Nov 08, 2019 at 12:39:00PM +0500, ???????? ?????????????? wrote:
-> > https://docs.travis-ci.com/user/multi-cpu-architectures
-> >
-> > we can switch some builds to arm64. any suggestions ?
->
-> Sounds good.  Right now we only have i386 and amd64 builds (since my
-> SPARC machine is going away and my Pi3 slave is still not operational).
->
+On 07-11-2019 18:45, Lev Stipakov wrote:
+> From: Lev Stipakov <lev@...515...>
+> 
+> This allows to specify which tun driver openvpn should use,
+> tap-windows6 (default) or wintun.
+> 
+> Note than wintun support will be added in follow-up patches.
+> 
+> Signed-off-by: Lev Stipakov <lev@...515...>
+> ---
+>  src/openvpn/init.c    |  7 +++++++
+>  src/openvpn/options.c | 37 +++++++++++++++++++++++++++++++++++++
+>  src/openvpn/options.h |  1 +
+>  src/openvpn/tun.h     |  1 +
+>  4 files changed, 46 insertions(+)
 
-not as good as it could be :)
+Should there not be a manpage entry in this commit too?
 
-travis-ci uses the same cache key for amd64 and arm64 builds, so
-(currently) openssl build caches are messed up.
-but it is easy to resolve
+> 
+> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+> index ae7bd63..c6d4953 100644
+> --- a/src/openvpn/init.c
+> +++ b/src/openvpn/init.c
+> @@ -1733,6 +1733,10 @@ do_init_tun(struct context *c)
+>                              c->c2.es,
+>                              &c->net_ctx);
+>  
+> +#ifdef _WIN32
+> +    c->c1.tuntap->wintun = c->options.wintun;
+> +#endif
+> +
+>      init_tun_post(c->c1.tuntap,
+>                    &c->c2.frame,
+>                    &c->options.tuntap_options);
+> @@ -1775,6 +1779,9 @@ do_open_tun(struct context *c)
+>      /* store (hide) interactive service handle in tuntap_options */
+>      c->c1.tuntap->options.msg_channel = c->options.msg_channel;
+>      msg(D_ROUTE, "interactive service msg_channel=%u", (unsigned int) c->options.msg_channel);
+> +
+> +    c->c1.tuntap->wintun = c->options.wintun;
+> +
 
+Why do we have to set c->c2.tuntap->wintun in both do_init_tun and
+do_open_tun? Should one of them not suffice?
 
->
-> gert
->
-> --
-> "If was one thing all people took for granted, was conviction that if you
->  feed honest figures into a computer, honest figures come out. Never
-> doubted
->  it myself till I met a computer with a sense of humor."
->                              Robert A. Heinlein, The Moon is a Harsh
-> Mistress
->
-> Gert Doering - Munich, Germany
-> gert@...1296...
->
+>  #endif
+>  
+>      /* allocate route list structure */
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index 1838a69..5c5033e 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -747,6 +747,9 @@ static const char usage_message[] =
+>      "                       optional parameter controls the initial state of ex.\n"
+>      "--show-net-up   : Show " PACKAGE_NAME "'s view of routing table and net adapter list\n"
+>      "                  after TAP adapter is up and routes have been added.\n"
+> +    "--windows-driver   : Which tun driver to use?\n"
+> +    "                     tap-windows6 (default)\n"
+> +    "                     wintun\n"
+>  #ifdef _WIN32
 
---000000000000a536730596d25dcf
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Should this --windows-driver option not be inside the #ifdef _WIN32 ?
 
-<div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote">=
-<div dir=3D"ltr" class=3D"gmail_attr">=D0=BF=D1=82, 8 =D0=BD=D0=BE=D1=8F=D0=
-=B1. 2019 =D0=B3. =D0=B2 14:02, Gert Doering &lt;<a href=3D"mailto:gert@...493...=
-1296...">gert@...1296...</a>&gt;:<br></div><blockquote class=3D"gmail_quote=
-" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);=
-padding-left:1ex">Hi,<br>
-<br>
-On Fri, Nov 08, 2019 at 12:39:00PM +0500, ???????? ?????????????? wrote:<br>
-&gt; <a href=3D"https://docs.travis-ci.com/user/multi-cpu-architectures" re=
-l=3D"noreferrer" target=3D"_blank">https://docs.travis-ci.com/user/multi-cp=
-u-architectures</a><br>
-&gt; <br>
-&gt; we can switch some builds to arm64. any suggestions ?<br>
-<br>
-Sounds good.=C2=A0 Right now we only have i386 and amd64 builds (since my<b=
-r>
-SPARC machine is going away and my Pi3 slave is still not operational).<br>=
-</blockquote><div><br></div><div>not as good as it could be :)</div><div><b=
-r></div><div>travis-ci uses the same cache key for amd64 and arm64 builds, =
-so (currently) openssl build caches are messed up.</div><div>but it is easy=
- to resolve<br></div><div>=C2=A0</div><blockquote class=3D"gmail_quote" sty=
-le=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);paddi=
-ng-left:1ex">
-<br>
-gert<br>
-<br>
--- <br>
-&quot;If was one thing all people took for granted, was conviction that if =
-you <br>
-=C2=A0feed honest figures into a computer, honest figures come out. Never d=
-oubted <br>
-=C2=A0it myself till I met a computer with a sense of humor.&quot;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Robert A. Heinlein, The Moon is a Harsh Mist=
-ress<br>
-<br>
-Gert Doering - Munich, Germany=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<a href=3D"mailt=
-o:gert@...1296..." target=3D"_blank">gert@...1296...</a><br>
-</blockquote></div></div>
+>      "--block-outside-dns   : Block DNS on other network adapters to prevent DNS leaks\n"
+>  #endif
+> @@ -851,6 +854,7 @@ init_options(struct options *o, const bool init_gc)
+>      o->tuntap_options.dhcp_masq_offset = 0;     /* use network address as internal DHCP server address */
+>      o->route_method = ROUTE_METHOD_ADAPTIVE;
+>      o->block_outside_dns = false;
+> +    o->wintun = false;
+>  #endif
+>      o->vlan_accept = VLAN_ONLY_UNTAGGED_OR_PRIORITY;
+>      o->vlan_pvid = 1;
+> @@ -2994,6 +2998,12 @@ options_postprocess_mutate_invariant(struct options *options)
+>          options->ifconfig_noexec = false;
+>      }
+>  
+> +    /* for wintun kernel doesn't send DHCP requests, so use ipapi to set IP address and netmask */
+> +    if (options->wintun)
+> +    {
+> +        options->tuntap_options.ip_win32_type = IPW32_SET_IPAPI;
+> +    }
+> +
+>      remap_redirect_gateway_flags(options);
+>  #endif
+>  
+> @@ -4039,6 +4049,26 @@ foreign_option(struct options *o, char *argv[], int len, struct env_set *es)
+>      }
+>  }
+>  
+> +#ifdef _WIN32
+> +bool
+> +parse_windows_driver(const char *str, const int msglevel)
 
---000000000000a536730596d25dcf--
+I think this should be a static function. Also a short (doxygen) comment
+explaining what the return value means would be nice.
+
+> +{
+> +    if (streq(str, "tap-windows6"))
+> +    {
+> +        return false;
+> +    }
+> +    else if (streq(str, "wintun"))
+> +    {
+> +        return true;
+> +    }
+> +    else
+> +    {
+> +        msg(msglevel, "--windows-driver must be tap-windows6 or wintun");
+> +        return false;
+> +    }
+> +}
+> +#endif
+> +
+>  /*
+>   * parse/print topology coding
+>   */
+> @@ -5281,6 +5311,13 @@ add_option(struct options *options,
+>          VERIFY_PERMISSION(OPT_P_GENERAL);
+>          options->dev_type = p[1];
+>      }
+> +#ifdef _WIN32
+> +    else if (streq(p[0], "windows-driver") && p[1] && !p[2])
+> +    {
+> +        VERIFY_PERMISSION(OPT_P_GENERAL);
+> +        options->wintun = parse_windows_driver(p[1], M_FATAL);
+> +    }
+> +#endif
+>      else if (streq(p[0], "dev-node") && p[1] && !p[2])
+>      {
+>          VERIFY_PERMISSION(OPT_P_GENERAL);
+> diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+> index ff7a5bb..0a24e5e 100644
+> --- a/src/openvpn/options.h
+> +++ b/src/openvpn/options.h
+> @@ -632,6 +632,7 @@ struct options
+>      bool show_net_up;
+>      int route_method;
+>      bool block_outside_dns;
+> +    bool wintun;
+
+Did you consider using an enum instead? I think it would make the code
+easier to read. E.g. with
+
+    typedef enum { WINDRV_TAP6, WINDRV_WINTUN } windrv_t;
+
+in tun.h or so, we'd get
+
+    options->windrv = WINDRV_TAP6
+
+instead of
+
+    options->wintun = false.
+
+>  #endif
+>  
+>      bool use_peer_id;
+> diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+> index 5a0a933..df935f6 100644
+> --- a/src/openvpn/tun.h
+> +++ b/src/openvpn/tun.h
+> @@ -175,6 +175,7 @@ struct tuntap
+>       * ~0 if undefined */
+>      DWORD adapter_index;
+>  
+> +    bool wintun; /* true if wintun is used instead of tap-windows6 */
+>      int standby_iter;
+>  #else  /* ifdef _WIN32 */
+>      int fd; /* file descriptor for TUN/TAP dev */
+> 
+
+Thanks,
+-Steffan
 
