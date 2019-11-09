@@ -1,12 +1,9 @@
-References: <20191109120335.1552-1-arne@...1227...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <f1f2963d-7e21-b8e1-6607-65dbee09020b@...1856...>
-Date: Sat, 9 Nov 2019 17:07:51 +0100
+From: Antonio Quartulli <a@...2181...>
+Date: Sat,  9 Nov 2019 17:37:14 +0100
+Message-Id: <20191109163714.25506-1-a@...2181...>
 MIME-Version: 1.0
-In-Reply-To: <20191109120335.1552-1-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v6 1/2] Make tls_version_max return the
- actual maximum version
+Subject: [Openvpn-devel] [PATCH] socks: use the right function when printing
+ struct openvpn_sockaddr
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,129 +12,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-Hi,
+57623b4e introduced a print_sockaddr() call in socks.c to print an
+openvpn_sockaddr object.
 
-On 09-11-2019 13:03, Arne Schwabe wrote:
-> Before OpenSSL 1.1.1 there could be no mismatch between
-> compiled and actual OpenSSL version. With OpenSSL 1.1.1 we need
-> runtime detection to detect the actual best TLS version supported.
-> 
-> Allowing this runtime detection also allows removing some of the
-> TLS 1.3/OpenSSL 1.1.1 #ifdefs
-> 
-> Without this patch tls-min-version 1.3 or-highest will actually
-> downgrade to TLS 1.3 in the "compiled with 1.1.0 and linked against
-> 1.1.1" scenario.
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  src/openvpn/ssl.c         | 11 +++++------
->  src/openvpn/ssl_openssl.c | 31 ++++++++++++++++++++++++++++---
->  2 files changed, 33 insertions(+), 9 deletions(-)
-> 
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 4455ebb8..e708fc93 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -4194,12 +4194,11 @@ show_available_tls_ciphers(const char *cipher_list,
->  {
->      printf("Available TLS Ciphers, listed in order of preference:\n");
->  
-> -#if (ENABLE_CRYPTO_OPENSSL && OPENSSL_VERSION_NUMBER >= 0x1010100fL)
-> -    printf("\nFor TLS 1.3 and newer (--tls-ciphersuites):\n\n");
-> -    show_available_tls_ciphers_list(cipher_list_tls13, tls_cert_profile, true);
-> -#else
-> -    (void) cipher_list_tls13;  /* Avoid unused warning */
-> -#endif
-> +    if (tls_version_max() >= TLS_VER_1_3)
-> +    {
-> +        printf("\nFor TLS 1.3 and newer (--tls-ciphersuites):\n\n");
-> +        show_available_tls_ciphers_list(cipher_list_tls13, tls_cert_profile, true);
-> +    }
->  
->      printf("\nFor TLS 1.2 and older (--tls-cipher):\n\n");
->      show_available_tls_ciphers_list(cipher_list, tls_cert_profile, false);
-> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-> index 07916c3c..e07d6e74 100644
-> --- a/src/openvpn/ssl_openssl.c
-> +++ b/src/openvpn/ssl_openssl.c
-> @@ -215,7 +215,23 @@ int
->  tls_version_max(void)
->  {
->  #if defined(TLS1_3_VERSION)
-> +    /* If this is defined we can safely assume TLS 1.3 support */
->      return TLS_VER_1_3;
+However, this is not correct because print_sockaddr() expects a sockaddr
+object as argument instead of openvpn_sockaddr.
 
-This clause is no longer needed, right?
+This error did not lead to any issue because the two objects are very
+similar in regards to the data accessed by print_sockaddr().
 
-> +#elif OPENSSL_VERSION_NUMBER >= 0x10100000L
-> +    /*
-> +     * The library we are *linked* against is OpenSSL 1.1.1
+Fix this by replacing print_sockaddr() with print_openvpn_sockaddr().
 
-s/is/might be/ ?
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+ src/openvpn/socks.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> +     * and therefore supports TLS 1.3. This needs to be checked at runtime
-> +     * since we can be compiled against 1.1.0 and then the library can be
-> +     * upgraded to 1.1.1
-> +     */
-> +    if (OpenSSL_version_num() >= 0x1010100fL)
-> +    {
-> +        return TLS_VER_1_3;
-> +    }
-> +    else
-> +    {
-> +        return TLS_VER_1_2;
-> +    }
->  #elif defined(TLS1_2_VERSION) || defined(SSL_OP_NO_TLSv1_2)
->      return TLS_VER_1_2;
->  #elif defined(TLS1_1_VERSION) || defined(SSL_OP_NO_TLSv1_1)
-> @@ -241,12 +257,20 @@ openssl_tls_version(int ver)
->      {
->          return TLS1_2_VERSION;
->      }
-> -#if defined(TLS1_3_VERSION)
->      else if (ver == TLS_VER_1_3)
->      {
-> +        /*
-> +         * Supporting the library upgraded to TLS1.3 without recompile
-> +         * is enough to support here with a simple constant that the same
-> +         * as in the TLS 1.3, so spec it is very unlikely that OpenSSL
-> +         * will change this constant
-> +         */
-> +#ifndef TLS1_3_VERSION
-> +        return 0x0304;
-> +#else
+diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c
+index ad3a70b2..57f0cee2 100644
+--- a/src/openvpn/socks.c
++++ b/src/openvpn/socks.c
+@@ -416,7 +416,7 @@ recv_socks_reply(socket_descriptor_t sd,
+         memcpy(&addr->addr.in4.sin_port, buf + 8, sizeof(addr->addr.in4.sin_port));
+         struct gc_arena gc = gc_new();
+         msg(M_INFO, "SOCKS proxy wants us to send UDP to %s",
+-            print_sockaddr(addr, &gc));
++            print_openvpn_sockaddr(addr, &gc));
+         gc_free(&gc);
+     }
+ 
+-- 
+2.24.0
 
-Why not do this outside the function as
-
-  #ifndef TLS1_3_VERSION
-  #define TLS1_3_VERSION 0x0304
-  #endif
-
->          return TLS1_3_VERSION;
-> -    }
->  #endif
-> +    }
->      return 0;
->  }
->  
-> @@ -2015,7 +2039,8 @@ show_available_tls_ciphers_list(const char *cipher_list,
->  #if defined(TLS1_3_VERSION)
->      if (tls13)
->      {
-> -        SSL_CTX_set_min_proto_version(tls_ctx.ctx, TLS1_3_VERSION);
-> +        SSL_CTX_set_min_proto_version(tls_ctx.ctx,
-> +                                      openssl_tls_version(TLS_VER_1_3));
->          tls_ctx_restrict_ciphers_tls13(&tls_ctx, cipher_list);
->      }
->      else
-> 
-
-Otherwise looks good.
-
--Steffan
 
