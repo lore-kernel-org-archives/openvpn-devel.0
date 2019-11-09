@@ -1,10 +1,16 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Sat,  9 Nov 2019 16:13:06 +0100
-Message-Id: <20191109151306.18597-5-arne@...1227...>
-In-Reply-To: <20191109151306.18597-1-arne@...1227...>
-References: <20191109151306.18597-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v2 5/5] Implement forwarding client
- CR_RESPONSE messages to management
+From: Simon Rozman <simon@...2293...>
+Date: Sat, 9 Nov 2019 15:13:35 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE10BDA4BD82@...2294...>
+References: <1573148729-27339-1-git-send-email-lstipakov@...277...>
+ <1573148729-27339-8-git-send-email-lstipakov@...277...>
+In-Reply-To: <1573148729-27339-8-git-send-email-lstipakov@...277...>
+Content-Language: en-US
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
+ micalg=2.16.840.1.101.3.4.2.1;
+ boundary="----=_NextPart_000_0030_01D59718.A1B2DA40"
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] [PATCH v2 7/7] wintun: clear adapter settings
+ on tun close
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,190 +19,119 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lstipakov@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Cc: Lev Stipakov <lev@...515...>
 
-When signalling the client that it should do Challenge response
-without reconnecting (IV_SSO=crtext/INFOPRE=CR_TEXT), the server
-needs forward the response via the management console.
+------=_NextPart_000_0030_01D59718.A1B2DA40
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- doc/management-notes.txt | 26 +++++++++++++++++++++++++-
- src/openvpn/forward.c    |  4 ++++
- src/openvpn/manage.c     | 28 +++++++++++++++++++++++++++-
- src/openvpn/manage.h     |  4 ++++
- src/openvpn/push.c       | 21 +++++++++++++++++++++
- src/openvpn/push.h       |  2 ++
- 6 files changed, 83 insertions(+), 2 deletions(-)
+Hi,
 
-diff --git a/doc/management-notes.txt b/doc/management-notes.txt
-index 4b405a9b..6d29b0d6 100644
---- a/doc/management-notes.txt
-+++ b/doc/management-notes.txt
-@@ -971,7 +971,7 @@ The ">CLIENT:" notification is enabled by the --management-client-auth
- OpenVPN configuration directive that gives the management interface client
- the responsibility to authenticate OpenVPN clients after their client
- certificate has been verified.  CLIENT notifications may be multi-line, and
--the sequentiality of a given CLIENT notification, its associated environmental
-+the sequentially of a given CLIENT notification, its associated environmental
- variables, and the terminating ">CLIENT:ENV,END" line are guaranteed to be
- atomic.
- 
-@@ -1013,6 +1013,30 @@ CLIENT notification types:
- 
-     >CLIENT:ADDRESS,{CID},{ADDR},{PRI}
- 
-+(5) Single Sign On Based Challenge/Response
-+
-+   >CLIENT:CR_RESPONSE,{CID},{KID},{response_base64}
-+   >CLIENT:ENV,name1=val1
-+   >CLIENT:ENV,name2=val2
-+   >CLIENT:ENV,...
-+   >CLIENT:ENV,END
-+
-+   CR_RESPONSE notification. The >CR_RESPONSE fulfils the same purpose as the
-+   CRV1 response in the traditional challenge/response. See that section below for more
-+   details. Since this still uses the same cid as the original response, we do
-+   not use the username and opaque session data in this response.
-+
-+   It is important to note that OpenVPN2 merely passes the authentication information and
-+   does not do any further checks. (E.g. if a CR was issued before or if multiple CR responses
-+   were sent from the client).
-+
-+   This interface should be be sufficient for almost all challenge/response system that
-+   can be implemented with a single round and base64 encoding the response. Mechanisms that
-+   need multiple rounds or more complex answers should implement a different response type
-+   than CR_RESPONSE.
-+
-+
-+
- Variables:
- 
- CID --  Client ID, numerical ID for each connecting client, sequence = 0,1,2,...
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 0f735384..48c316c9 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -403,6 +403,10 @@ check_incoming_control_channel_dowork(struct context *c)
-             {
-                 server_pushed_info(c, &buf, 4);
-             }
-+            else if (buf_string_match_head_str(&buf, "CR_RESPONSE"))
-+            {
-+                receive_cr_response(c, &buf);
-+            }
-             else
-             {
-                 msg(D_PUSH_ERRORS, "WARNING: Received unknown control message: %s", BSTR(&buf));
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index c055f2ce..b3a4d5c8 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -2908,7 +2908,7 @@ management_notify_generic(struct management *man, const char *str)
- #ifdef MANAGEMENT_DEF_AUTH
- 
- static void
--man_output_peer_info_env(struct management *man, struct man_def_auth_context *mdac)
-+man_output_peer_info_env(struct management *man, const struct man_def_auth_context *mdac)
- {
-     char line[256];
-     if (man->persist.callback.get_peer_info)
-@@ -2958,6 +2958,32 @@ management_notify_client_needing_auth(struct management *management,
-     }
- }
- 
-+void
-+management_notify_client_cr_response(unsigned mda_key_id,
-+        const struct man_def_auth_context *mdac,
-+        const struct env_set *es,
-+        const char* response)
-+{
-+    struct gc_arena gc;
-+    if (management)
-+    {
-+        gc = gc_new();
-+
-+        struct buffer out = alloc_buf_gc(256, &gc);
-+        msg(M_CLIENT, ">CLIENT:CR_RESPONSE,%lu,%u,%s",
-+                mdac->cid, mda_key_id, response);
-+        man_output_extra_env(management, "CLIENT");
-+        if (management->connection.env_filter_level>0)
-+        {
-+            man_output_peer_info_env(management, mdac);
-+        }
-+        man_output_env(es, true, management->connection.env_filter_level, "CLIENT");
-+        management_notify_generic(management, BSTR(&out));
-+
-+        gc_free(&gc);
-+    }
-+}
-+
- void
- management_connection_established(struct management *management,
-                                   struct man_def_auth_context *mdac,
-diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index f570afc6..ff6b6737 100644
---- a/src/openvpn/manage.h
-+++ b/src/openvpn/manage.h
-@@ -432,6 +432,10 @@ void management_learn_addr(struct management *management,
-                            const struct mroute_addr *addr,
-                            const bool primary);
- 
-+void management_notify_client_cr_response(unsigned mda_key_id,
-+                                          const struct man_def_auth_context *mdac,
-+                                          const struct env_set *es,
-+                                          const char* response);
- #endif
- 
- char *management_query_pk_sig(struct management *man, const char *b64_data);
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 4b375ae3..c94076cb 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -210,6 +210,27 @@ server_pushed_info(struct context *c, const struct buffer *buffer,
-     msg(D_PUSH, "Info command was pushed by server ('%s')", m);
- }
- 
-+void
-+receive_cr_response(struct context *c, const struct buffer *buffer)
-+{
-+    struct buffer buf = *buffer;
-+    const char *m = "";
-+
-+    if (buf_advance(&buf, 11) && buf_read_u8(&buf) == ',' && BLEN(&buf))
-+    {
-+        m = BSTR(&buf);
-+    }
-+#ifdef MANAGEMENT_DEF_AUTH
-+    struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
-+    struct man_def_auth_context *mda = session->opt->mda_context;
-+    struct env_set *es = session->opt->es;
-+    int key_id = session->key[KS_PRIMARY].key_id;
-+
-+
-+    management_notify_client_cr_response(key_id, mda, es, m);
-+#endif
-+    msg(D_PUSH, "CR response was sent by client ('%s')", m);
-+}
- 
- #if P2MP_SERVER
- /**
-diff --git a/src/openvpn/push.h b/src/openvpn/push.h
-index f814f572..75ad330c 100644
---- a/src/openvpn/push.h
-+++ b/src/openvpn/push.h
-@@ -53,6 +53,8 @@ void server_pushed_signal(struct context *c, const struct buffer *buffer, const
- void server_pushed_info(struct context *c, const struct buffer *buffer,
-                         const int adv);
- 
-+void receive_cr_response(struct context *c, const struct buffer *buffer);
-+
- void incoming_push_message(struct context *c, const struct buffer *buffer);
- 
- #if P2MP_SERVER
--- 
-2.22.0
+> -----Original Message-----
+> From: Lev Stipakov [mailto:lstipakov@...277...]
+> Sent: Thursday, November 7, 2019 6:45 PM
+> To: openvpn-devel@lists.sourceforge.net
+> Cc: Lev Stipakov <lev@...515...>
+> Subject: [Openvpn-devel] [PATCH v2 7/7] wintun: clear adapter settings on
+tun
+> close
+> 
+>      }
+> +    else
+> +    if (tt->wintun)
+> +    {
+> +        netsh_delete_address_dns(tt, false, &gc);
+> +    }
+>  #endif
 
+    if (tt->wintun && tt->options.msg_channel)
+    {
+	...
+    }
+    else
+    if (tt->ipapi_context_defined)
+    {
+	...
+    }
+    else
+    if (tt->wintun)
+    {
+	...
+    }
+
+This construct got a bit convoluted.
+
+Otherwise, LGTM.
+
+Best regards,
+Simon
+
+
+------=_NextPart_000_0030_01D59718.A1B2DA40
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+
+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
+
+------=_NextPart_000_0030_01D59718.A1B2DA40--
 
