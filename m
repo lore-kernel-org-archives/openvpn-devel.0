@@ -1,9 +1,10 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Sat,  9 Nov 2019 14:04:54 +0200
-Message-Id: <1573301094-5346-1-git-send-email-lstipakov@...277...>
-In-Reply-To: <99D61A626FDA8A4B90A270669121BE10BDA4B8B9@...2294...>
-References: <99D61A626FDA8A4B90A270669121BE10BDA4B8B9@...2294...>
-Subject: [Openvpn-devel] [PATCH v3 4/7] wintun: ring buffers based I/O
+From: Arne Schwabe <arne@...1227...>
+Date: Sat,  9 Nov 2019 13:03:35 +0100
+Message-Id: <20191109120335.1552-2-arne@...1227...>
+In-Reply-To: <20191109120335.1552-1-arne@...1227...>
+References: <20191109120335.1552-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v6 2/2] Add support for OpenSSL TLS 1.3 when
+ using management-external-key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,669 +16,401 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
 
-From: Lev Stipakov <lev@...515...>
+For TLS 1.0 to 1.2 and OpenSSL 1.1.0 calls us and requires a PKCS1
+padded response. As TLS 1.3 mandates RSA-PSS padding support and also
+requires an TLS 1.3 implementation to support RSA-PSS for older TLS
+version, OpenSSL will query us to sign an already RSA-PSS padded
+string.
 
-Implemented according to Wintun documentation
-and reference client code.
+This patch adds an 'unpadded' and 'pkcs1' parameter to the
+management-external-key option to signal that the client is
+able to support pkcs1 as well as unpadded signature requests.
 
-Wintun uses ring buffers to communicate between
-kernel driver and user process. Client allocates
-send and receive ring buffers, creates events
-and passes it to kernel driver under LocalSystem
-privileges.
+Since clients that implement the management-external-key interface
+are usually rather tightly integrated solutions (OpenVPN Connect in the
+past, OpenVPN for Android), it is reasonable to expect that
+upgrading the OpenSSL library can be done together with
+management interface changes. Therefore we provide no backwards
+compatbility for mangement-interface clients not supporting
+OpenSSL 1.1.1.
 
-When data is available for read, wintun modifies
-"tail" pointer of send ring and signals via event.
-User process reads data from "head" to "tail" and
-updates "head" pointer.
+Using the management api client version instead might seem like the
+more logical way but since we only now that version very late,
+it would extra logic and complexity to deal with this asynchronous
+behaviour. Instead just give an error early if OpenSSL 1.1.1 and
+management-external-key without nopadding is detected.
 
-When user process is ready to write, it writes
-to receive ring, updates "tail" pointer and signals
-to kernel via event.
+The interface is prepared for signalling PCKS1 and RSA-PSS support
+instead of signalling unpadded support.
 
-In openvpn code we add send ring's event to event loop.
-Before performing io wait, we compare "head" and "tail"
-pointers of send ring and if they're different, we skip
-io wait and perform read.
+Patch v3: fix overlong lines and few other style patches. Note
+      two overlong lines concerning mbedtls are not fixed as they
+      are removed/shortend by the mbed tls patch to avoid conflicts
 
-This also adds ring buffers support to tcp and udp
-server code.
+Patch v4: Setting minimum TLS version proved to be not enough and
+      instead of implementing a whole compability layer we require
+      mangement-clients to implement the new feature when they want
+      to use OpenSSL 1.1.1
 
-Signed-off-by: Lev Stipakov <lev@...515...>
+      Add a padding=ALGORITHM argument to pk-sig to indicate the
+      algorithm. Drop adding PKCS1 ourselves.
+
+Patch v5: Send the right version of the patch
+
+Patch v6: Send version rebased on master
+
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
+ doc/management-notes.txt  | 13 +++++++++-
+ doc/openvpn.8             |  7 ++++--
+ src/openvpn/manage.c      | 20 ++++++++++++---
+ src/openvpn/manage.h      | 23 +++++++++++------
+ src/openvpn/options.c     | 36 +++++++++++++++++++++++++-
+ src/openvpn/ssl_mbedtls.c |  7 ++++--
+ src/openvpn/ssl_openssl.c | 53 +++++++++++++++++++++++++++++++--------
+ 7 files changed, 130 insertions(+), 29 deletions(-)
 
- v3:
-  - simplified convoluted #ifdefs
-  - replaced "greater than" with "greater or equal than"
-
- v2:
-  - rebased on top of master
-
- src/openvpn/forward.c |  32 ++++++++++++-
- src/openvpn/forward.h |  45 ++++++++++++++++++-
- src/openvpn/mtcp.c    |  26 ++++++++++-
- src/openvpn/mudp.c    |  14 ++++++
- src/openvpn/options.c |   4 +-
- src/openvpn/syshead.h |   1 +
- src/openvpn/tun.c     |  45 +++++++++++++++++++
- src/openvpn/tun.h     | 121 +++++++++++++++++++++++++++++++++++++++++++++++++-
- src/openvpn/win32.c   | 120 +++++++++++++++++++++++++++++++++++++++++++++++++
- src/openvpn/win32.h   |  47 ++++++++++++++++++++
- 10 files changed, 447 insertions(+), 8 deletions(-)
-
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 8451706..484975b 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1256,8 +1256,24 @@ read_incoming_tun(struct context *c)
-     perf_push(PERF_READ_IN_TUN);
+diff --git a/doc/management-notes.txt b/doc/management-notes.txt
+index 17645c1d..f685af28 100644
+--- a/doc/management-notes.txt
++++ b/doc/management-notes.txt
+@@ -816,6 +816,7 @@ actual private key. When the SSL protocol needs to perform a sign
+ operation, the data to be signed will be sent to the management interface
+ via a notification as follows:
  
-     c->c2.buf = c->c2.buffers->read_tun_buf;
++>PK_SIGN:[BASE64_DATA],[ALG] (if client announces support for management version > 2)
+ >PK_SIGN:[BASE64_DATA] (if client announces support for management version > 1)
+ >RSA_SIGN:[BASE64_DATA] (only older clients will be prompted like this)
+ 
+@@ -823,7 +824,7 @@ The management interface client should then create an appropriate signature of
+ the (decoded) BASE64_DATA using the private key and return the SSL signature as
+ follows:
+ 
+-pk-sig   (or rsa-sig)
++pk-sig (or rsa-sig)
+ [BASE64_SIG_LINE]
+ .
+ .
+@@ -833,6 +834,12 @@ END
+ Base 64 encoded output of RSA_private_encrypt for RSA or ECDSA_sign()
+ for EC using OpenSSL or mbedtls_pk_sign() using mbed TLS will provide a
+ correct signature.
++The rsa-sig interfaces expects PKCS1 padded signatures for RSA keys
++(RSA_PKCS1_PADDING). EC signatures are always unpadded.
 +
- #ifdef _WIN32
--    read_tun_buffered(c->c1.tuntap, &c->c2.buf);
-+    if (c->c1.tuntap->wintun)
-+    {
-+        read_wintun(c->c1.tuntap, &c->c2.buf);
-+        if (c->c2.buf.len == -1)
-+        {
-+            register_signal(c, SIGHUP, "tun-abort");
-+            c->persist.restart_sleep_seconds = 1;
-+            msg(M_INFO, "Wintun read error, restarting");
-+            perf_pop();
-+            return;
-+        }
-+    }
-+    else
-+    {
-+        read_tun_buffered(c->c1.tuntap, &c->c2.buf);
-+    }
- #else
-     ASSERT(buf_init(&c->c2.buf, FRAME_HEADROOM(&c->c2.frame)));
-     ASSERT(buf_safe(&c->c2.buf, MAX_RW_SIZE_TUN(&c->c2.frame)));
-@@ -2103,7 +2119,19 @@ io_wait_dowork(struct context *c, const unsigned int flags)
-      * Configure event wait based on socket, tuntap flags.
-      */
-     socket_set(c->c2.link_socket, c->c2.event_set, socket, (void *)&socket_shift, NULL);
--    tun_set(c->c1.tuntap, c->c2.event_set, tuntap, (void *)&tun_shift, NULL);
++The padding field is only present when pk-sig is used and
++currently the following values can be requested PCKS1 and NOPADDING for RSA
++certificates and NOPADDING for EC certificates.
+ 
+ This capability is intended to allow the use of arbitrary cryptographic
+ service providers with OpenVPN via the management interface.
+@@ -840,6 +847,10 @@ service providers with OpenVPN via the management interface.
+ New and updated clients are expected to use the version command to announce
+ a version > 1 and handle '>PK_SIGN' prompt and respond with 'pk-sig'.
+ 
++The older rsa-sig and pk-sig interfaces hav no capability to indidicate the
++requested padding algorithm. When the 'nopadding' using version >= 2 is required.
++To support TLS 1.3 with OpenSSL 1.1.1 supporting unpadded signatures is required.
 +
-+#ifdef _WIN32
-+    if (c->c1.tuntap && c->c1.tuntap->wintun)
-+    {
-+        /* add ring buffer event */
-+        struct rw_handle rw = {.read = c->c1.tuntap->send_tail_moved };
-+        event_ctl(c->c2.event_set, &rw, EVENT_READ, (void *)&tun_shift);
-+    }
-+    else
-+#endif
-+    {
-+        tun_set(c->c1.tuntap, c->c2.event_set, tuntap, (void *)&tun_shift, NULL);
-+    }
+ COMMAND -- certificate (OpenVPN 2.4 or higher)
+ ----------------------------------------------
+ Provides support for external storage of the certificate. Requires the
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index f58a3ccc..99e01252 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -2708,10 +2708,13 @@ Allow management interface to override
+ directives (client\-only).
+ .\"*********************************************************
+ .TP
+-.B \-\-management\-external\-key
++.B \-\-management\-external\-key [nopadding] [pkcs1]
+ Allows usage for external private key file instead of
+ .B \-\-key
+-option (client\-only).
++option (client\-only). The optional parameters nopadding and
++pkcs1 signal support for different padding algorithms. See
++doc/mangement-notes.txt for a complete description of this
++feature.
+ .\"*********************************************************
+ .TP
+ .B \-\-management\-external\-cert certificate\-hint
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 1d97c2b6..bcfff664 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -3641,18 +3641,30 @@ management_query_multiline_flatten(struct management *man,
  
- #ifdef ENABLE_MANAGEMENT
-     if (management)
-diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
-index 48202c0..b2c6152 100644
---- a/src/openvpn/forward.h
-+++ b/src/openvpn/forward.h
-@@ -375,6 +375,19 @@ p2p_iow_flags(const struct context *c)
-     {
-         flags |= IOW_TO_TUN;
-     }
-+#ifdef _WIN32
-+    {
-+        struct tuntap *tt = c->c1.tuntap;
-+        if (tt && tt->wintun)
-+        {
-+            if (tt->send_ring->head == tt->send_ring->tail)
-+            {
-+                /* nothing to read from tun -> remove tun read flag set by IOW_READ */
-+                flags &= ~IOW_READ_TUN;
-+            }
-+        }
-+    }
-+#endif
-     return flags;
- }
- 
-@@ -403,8 +416,36 @@ io_wait(struct context *c, const unsigned int flags)
-     }
-     else
-     {
--        /* slow path */
--        io_wait_dowork(c, flags);
-+#ifdef _WIN32
-+        bool skip_iowait = flags & IOW_TO_TUN;
-+        if (flags & IOW_READ_TUN)
-+        {
-+            /*
-+             * don't read from tun if we have pending write to link,
-+             * since every tun read overwrites to_link buffer filled
-+             * by previous tun read
-+             */
-+            skip_iowait = !(flags & IOW_TO_LINK);
-+        }
-+        if (c->c1.tuntap && c->c1.tuntap->wintun && skip_iowait)
-+        {
-+            unsigned int ret = 0;
-+            if (flags & IOW_TO_TUN)
-+            {
-+                ret |= TUN_WRITE;
-+            }
-+            if (flags & IOW_READ_TUN)
-+            {
-+                ret |= TUN_READ;
-+            }
-+            c->c2.event_set_status = ret;
-+        }
-+        else
-+#endif
-+        {
-+            /* slow path */
-+            io_wait_dowork(c, flags);
-+        }
-     }
- }
- 
-diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index abe2059..02e9016 100644
---- a/src/openvpn/mtcp.c
-+++ b/src/openvpn/mtcp.c
-@@ -270,7 +270,31 @@ multi_tcp_wait(const struct context *c,
+ char *
+ /* returns allocated base64 signature */
+-management_query_pk_sig(struct management *man,
+-                        const char *b64_data)
++management_query_pk_sig(struct management *man, const char *b64_data,
++                        const char *padding)
  {
-     int status;
-     socket_set_listen_persistent(c->c2.link_socket, mtcp->es, MTCP_SOCKET);
--    tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, &mtcp->tun_rwflags);
+     const char *prompt = "PK_SIGN";
+     const char *desc = "pk-sign";
++    struct buffer buf_data = alloc_buf(strlen(b64_data) + strlen(padding) + 20);
 +
-+#ifdef _WIN32
-+    if (c->c1.tuntap && c->c1.tuntap->wintun)
-+    {
-+        if (c->c1.tuntap->send_ring->head != c->c1.tuntap->send_ring->tail)
-+        {
-+            /* there is a data in wintun ring buffer, read it immediately */
-+            mtcp->esr[0].arg = MTCP_TUN;
-+            mtcp->esr[0].rwflags = EVENT_READ;
-+            mtcp->n_esr = 1;
-+            return 1;
-+        }
-+        else
-+        {
-+            /* add ring buffer event */
-+            struct rw_handle rw = { .read = c->c1.tuntap->send_tail_moved };
-+            event_ctl(mtcp->es, &rw, EVENT_READ, MTCP_TUN);
-+        }
-+    }
-+    else
-+#endif
-+    {
-+        tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, &mtcp->tun_rwflags);
-+    }
-+
- #ifdef ENABLE_MANAGEMENT
-     if (management)
+     if (man->connection.client_version <= 1)
      {
-diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index b7f061a..7715063 100644
---- a/src/openvpn/mudp.c
-+++ b/src/openvpn/mudp.c
-@@ -279,6 +279,20 @@ p2mp_iow_flags(const struct multi_context *m)
-         flags |= IOW_READ;
+         prompt = "RSA_SIGN";
+         desc = "rsa-sign";
      }
- 
-+#ifdef _WIN32
-+    {
-+        struct tuntap* tt = m->top.c1.tuntap;
-+        if (tt && tt->wintun)
-+        {
-+            if (tt->send_ring->head == tt->send_ring->tail)
-+            {
-+                /* nothing to read from tun -> remove tun read flag set by IOW_READ */
-+                flags &= ~IOW_READ_TUN;
-+            }
-+        }
-+    }
-+#endif
+-    return management_query_multiline_flatten(man, b64_data, prompt, desc,
+-                                              &man->connection.ext_key_state, &man->connection.ext_key_input);
 +
-     return flags;
++    buf_write(&buf_data, b64_data, (int) strlen(b64_data));
++    if (man->connection.client_version > 2)
++    {
++        buf_write(&buf_data, ",", (int) strlen(","));
++        buf_write(&buf_data, padding, (int) strlen(padding));
++    }
++    char* ret = management_query_multiline_flatten(man,
++            (char *)buf_bptr(&buf_data), prompt, desc,
++            &man->connection.ext_key_state, &man->connection.ext_key_input);
++    free_buf(&buf_data);
++    return ret;
  }
+ 
+ char *
+diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
+index d24abe09..4bfcfdbe 100644
+--- a/src/openvpn/manage.h
++++ b/src/openvpn/manage.h
+@@ -31,7 +31,7 @@
+ #include "socket.h"
+ #include "mroute.h"
+ 
+-#define MANAGEMENT_VERSION                      2
++#define MANAGEMENT_VERSION                      3
+ #define MANAGEMENT_N_PASSWORD_RETRIES           3
+ #define MANAGEMENT_LOG_HISTORY_INITIAL_SIZE   100
+ #define MANAGEMENT_ECHO_BUFFER_SIZE           100
+@@ -341,12 +341,18 @@ struct management *management_init(void);
+ #ifdef MANAGEMENT_PF
+ #define MF_CLIENT_PF         (1<<7)
+ #endif
+-#define MF_UNIX_SOCK       (1<<8)
+-#define MF_EXTERNAL_KEY    (1<<9)
+-#define MF_UP_DOWN          (1<<10)
+-#define MF_QUERY_REMOTE     (1<<11)
+-#define MF_QUERY_PROXY      (1<<12)
+-#define MF_EXTERNAL_CERT    (1<<13)
++#define MF_UNIX_SOCK                (1<<8)
++#define MF_EXTERNAL_KEY             (1<<9)
++#define MF_EXTERNAL_KEY_NOPADDING   (1<<10)
++#define MF_EXTERNAL_KEY_PKCS1PAD    (1<<11)
++#define MF_UP_DOWN                  (1<<12)
++#define MF_QUERY_REMOTE             (1<<13)
++#define MF_QUERY_PROXY              (1<<14)
++#define MF_EXTERNAL_CERT            (1<<15)
++
++#define MF_RSA_PKCS1_PADDING       1
++#define MF_RSA_NO_PADDING          2
++
+ 
+ bool management_open(struct management *man,
+                      const char *addr,
+@@ -430,7 +436,8 @@ void management_learn_addr(struct management *management,
+ 
+ #endif
+ 
+-char *management_query_pk_sig(struct management *man, const char *b64_data);
++char *management_query_pk_sig(struct management *man, const char *b64_data,
++                              const char* pading);
+ 
+ char *management_query_cert(struct management *man, const char *cert_name);
  
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index a70a822..0a40d2d 100644
+index d9e8257d..ec426410 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -2996,10 +2996,10 @@ options_postprocess_mutate_invariant(struct options *options)
-         options->ifconfig_noexec = false;
-     }
+@@ -2169,6 +2169,16 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
  
--    /* for wintun kernel doesn't send DHCP requests, so use ipapi to set IP address and netmask */
-+    /* for wintun kernel doesn't send DHCP requests, so use netsh to set IP address and netmask */
-     if (options->wintun)
+ #endif /* ifdef ENABLE_MANAGEMENT */
+ 
++#if  defined(ENABLE_MANAGEMENT)
++    if ((tls_version_max() >= TLS_VER_1_3) &&
++        (options->management_flags & MF_EXTERNAL_KEY) &&
++        !(options->management_flags & (MF_EXTERNAL_KEY_NOPADDING))
++        )
++    {
++        msg(M_ERR, "management-external-key with OpenSSL 1.1.1 requires "
++                   "the nopadding argument/support");
++    }
++#endif
+     /*
+      * Windows-specific options.
+      */
+@@ -5206,9 +5216,33 @@ add_option(struct options *options,
+         options->management_write_peer_info_file = p[1];
+     }
+ #ifdef ENABLE_MANAGEMENT
+-    else if (streq(p[0], "management-external-key") && !p[1])
++    else if (streq(p[0], "management-external-key"))
      {
--        options->tuntap_options.ip_win32_type = IPW32_SET_IPAPI;
-+        options->tuntap_options.ip_win32_type = IPW32_SET_NETSH;
-     }
- 
-     remap_redirect_gateway_flags(options);
-diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index 899aa59..e9accb5 100644
---- a/src/openvpn/syshead.h
-+++ b/src/openvpn/syshead.h
-@@ -39,6 +39,7 @@
- #ifdef _WIN32
- #include <windows.h>
- #include <winsock2.h>
-+#include <tlhelp32.h>
- #define sleep(x) Sleep((x)*1000)
- #define random rand
- #define srandom srand
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 37bf065..b909b89 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -798,6 +798,18 @@ init_tun_post(struct tuntap *tt,
-     tt->rw_handle.read = tt->reads.overlapped.hEvent;
-     tt->rw_handle.write = tt->writes.overlapped.hEvent;
-     tt->adapter_index = TUN_ADAPTER_INDEX_INVALID;
-+
-+    tt->send_ring = malloc(sizeof(struct tun_ring));
-+    tt->receive_ring = malloc(sizeof(struct tun_ring));
-+    if ((tt->send_ring == NULL) || (tt->receive_ring == NULL))
-+    {
-+        msg(M_FATAL, "Cannot allocate memory for receive ring");
-+    }
-+    ZeroMemory(tt->send_ring, sizeof(struct tun_ring));
-+    ZeroMemory(tt->receive_ring, sizeof(struct tun_ring));
-+
-+    tt->send_tail_moved = CreateEvent(NULL, FALSE, FALSE, NULL);
-+    tt->receive_tail_moved = CreateEvent(NULL, FALSE, FALSE, NULL);
- #endif
- }
- 
-@@ -6207,6 +6219,30 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
-             tt->ipapi_context_defined = true;
-         }
-     }
-+
-+    if (tt->wintun)
-+    {
-+        if (tt->options.msg_channel)
+         VERIFY_PERMISSION(OPT_P_GENERAL);
++        for (int j = 1; j < MAX_PARMS && p[j] != NULL; ++j)
 +        {
-+            /* TODO */
-+        }
-+        else
-+        {
-+            if (!impersonate_as_system())
++            if (streq(p[j], "nopadding"))
 +            {
-+                msg(M_FATAL, "ERROR:  Failed to impersonate as SYSTEM, make sure process is running under privileged account");
++                options->management_flags |= MF_EXTERNAL_KEY_NOPADDING;
 +            }
-+            if (!register_ring_buffers(tt->hand, tt->send_ring, tt->receive_ring, tt->send_tail_moved, tt->receive_tail_moved))
++            else if (p[1] && streq(p[1], "pkcs1"))
 +            {
-+                msg(M_FATAL, "ERROR:  Failed to register ring buffers: %lu", GetLastError());
++                options->management_flags |= MF_EXTERNAL_KEY_PKCS1PAD;
 +            }
-+            if (!RevertToSelf())
++            else
 +            {
-+                msg(M_FATAL, "ERROR:  RevertToSelf error: %lu", GetLastError());
++                msg(msglevel, "Unknown management-external-key flag: %s" , p[j]);
 +            }
 +        }
-+    }
-+
-     /*netcmd_semaphore_release ();*/
-     gc_free(&gc);
++        /*
++         * When no option is present, assume that only PKCS1
++         * padding is supported
++         */
++        if (! (options->management_flags &
++            (MF_EXTERNAL_KEY_NOPADDING | MF_EXTERNAL_KEY_PKCS1PAD)))
++        {
++            options->management_flags |= MF_EXTERNAL_KEY_PKCS1PAD;
++        }
+         options->management_flags |= MF_EXTERNAL_KEY;
+     }
+     else if (streq(p[0], "management-external-cert") && p[1] && !p[2])
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index a4197cba..d7ceb341 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -626,7 +626,6 @@ tls_ctx_use_external_signing_func(struct tls_root_ctx *ctx,
  }
-@@ -6345,6 +6381,15 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
-         free(tt->actual_name);
+ 
+ #ifdef ENABLE_MANAGEMENT
+-
+ /** Query the management interface for a signature, see external_sign_func. */
+ static bool
+ management_sign_func(void *sign_ctx, const void *src, size_t src_len,
+@@ -641,7 +640,11 @@ management_sign_func(void *sign_ctx, const void *src, size_t src_len,
+         goto cleanup;
      }
  
-+    CloseHandle(tt->receive_tail_moved);
-+    CloseHandle(tt->send_tail_moved);
-+
-+    free(tt->receive_ring);
-+    free(tt->send_ring);
-+
-+    tt->receive_ring = NULL;
-+    tt->send_ring = NULL;
-+
-     clear_tuntap(tt);
-     free(tt);
-     gc_free(&gc);
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index 19cab7e..2ca61a5 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -183,6 +183,11 @@ struct tuntap
- 
-     bool wintun; /* true if wintun is used instead of tap-windows6 */
-     int standby_iter;
-+
-+    struct tun_ring *send_ring;
-+    struct tun_ring *receive_ring;
-+    HANDLE send_tail_moved;
-+    HANDLE receive_tail_moved;
- #else  /* ifdef _WIN32 */
-     int fd; /* file descriptor for TUN/TAP dev */
- #endif
-@@ -479,10 +484,124 @@ read_tun_buffered(struct tuntap *tt, struct buffer *buf)
-     return tun_finalize(tt->hand, &tt->reads, buf);
+-    if (!(dst_b64 = management_query_pk_sig(management, src_b64)))
++    /*
++     * We only use PKCS1 signatures at the moment in mbed TLS,
++     * there the signature parameter is hardcoded
++     */
++    if (!(dst_b64 = management_query_pk_sig(management, src_b64, "PKCS1")))
+     {
+         goto cleanup;
+     }
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index e07d6e74..5722ca1a 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -222,7 +222,9 @@ tls_version_max(void)
+      * The library we are *linked* against is OpenSSL 1.1.1
+      * and therefore supports TLS 1.3. This needs to be checked at runtime
+      * since we can be compiled against 1.1.0 and then the library can be
+-     * upgraded to 1.1.1
++     * upgraded to 1.1.1.
++     * We only need need to this check for OpenSSL versions that can be
++     * upgraded to 1.1.1 without recompile (>= 1.1.0)
+      */
+     if (OpenSSL_version_num() >= 0x1010100fL)
+     {
+@@ -1125,24 +1127,46 @@ openvpn_extkey_rsa_finish(RSA *rsa)
+     return 1;
  }
  
-+static inline ULONG
-+wintun_ring_packet_align(ULONG size)
+-/* Pass the input hash in 'dgst' to management and get the signature back.
++/*
++ * Convert OpenSSL's constant to the strings used in the management
++ * interface query
++ */
++const char*
++get_sig_padding_name(const int padding)
 +{
-+    return (size + (WINTUN_PACKET_ALIGN - 1)) & ~(WINTUN_PACKET_ALIGN - 1);
++    switch(padding)
++    {
++        case RSA_PKCS1_PADDING:
++            return "PKCS1";
++        case RSA_NO_PADDING:
++            return "NOPADDING";
++        default:
++            return "UNKNOWN";
++    }
 +}
 +
-+static inline ULONG
-+wintun_ring_wrap(ULONG value)
-+{
-+    return value & (WINTUN_RING_CAPACITY - 1);
-+}
-+
-+static inline void
-+read_wintun(struct tuntap *tt, struct buffer* buf)
-+{
-+    struct tun_ring *ring = tt->send_ring;
-+    ULONG head = ring->head;
-+    ULONG tail = ring->tail;
-+    ULONG content_len;
-+    struct TUN_PACKET *packet;
-+    ULONG aligned_packet_size;
-+
-+    *buf = tt->reads.buf_init;
-+    buf->len = 0;
-+
-+    if ((head >= WINTUN_RING_CAPACITY) || (tail >= WINTUN_RING_CAPACITY))
-+    {
-+        msg(M_INFO, "Wintun: ring capacity exceeded");
-+        buf->len = -1;
-+        return;
-+    }
-+
-+    if (head == tail)
-+    {
-+        /* nothing to read */
-+        return;
-+    }
-+
-+    content_len = wintun_ring_wrap(tail - head);
-+    if (content_len < sizeof(struct TUN_PACKET_HEADER))
-+    {
-+        msg(M_INFO, "Wintun: incomplete packet header in send ring");
-+        buf->len = -1;
-+        return;
-+    }
-+
-+    packet = (struct TUN_PACKET *) &ring->data[head];
-+    if (packet->size > WINTUN_MAX_PACKET_SIZE)
-+    {
-+        msg(M_INFO, "Wintun: packet too big in send ring");
-+        buf->len = -1;
-+        return;
-+    }
-+
-+    aligned_packet_size = wintun_ring_packet_align(sizeof(struct TUN_PACKET_HEADER) + packet->size);
-+    if (aligned_packet_size > content_len)
-+    {
-+        msg(M_INFO, "Wintun: incomplete packet in send ring");
-+        buf->len = -1;
-+        return;
-+    }
-+
-+    buf_write(buf, packet->data, packet->size);
-+
-+    head = wintun_ring_wrap(head + aligned_packet_size);
-+    ring->head = head;
-+}
-+
-+static inline int
-+write_wintun(struct tuntap *tt, struct buffer *buf)
-+{
-+    struct tun_ring *ring = tt->receive_ring;
-+    ULONG head = ring->head;
-+    ULONG tail = ring->tail;
-+    ULONG aligned_packet_size;
-+    ULONG buf_space;
-+    struct TUN_PACKET *packet;
-+
-+    if ((head >= WINTUN_RING_CAPACITY) || (tail >= WINTUN_RING_CAPACITY))
-+    {
-+        msg(M_INFO, "Wintun: head/tail value is over capacity");
-+        return -1;
-+    }
-+
-+    aligned_packet_size = wintun_ring_packet_align(sizeof(struct TUN_PACKET_HEADER) + BLEN(buf));
-+    buf_space = wintun_ring_wrap(head - tail - WINTUN_PACKET_ALIGN);
-+    if (aligned_packet_size > buf_space)
-+    {
-+        msg(M_INFO, "Wintun: ring is full");
-+        return 0;
-+    }
-+
-+    /* copy packet size and data into ring */
-+    packet = (struct TUN_PACKET* )&ring->data[tail];
-+    packet->size = BLEN(buf);
-+    memcpy(packet->data, BPTR(buf), BLEN(buf));
-+
-+    /* move ring tail */
-+    ring->tail = wintun_ring_wrap(tail + aligned_packet_size);
-+    if (ring->alertable != 0)
-+    {
-+        SetEvent(tt->receive_tail_moved);
-+    }
-+
-+    return BLEN(buf);
-+}
-+
- static inline int
- write_tun_buffered(struct tuntap *tt, struct buffer *buf)
++/*
++ * Pass the input hash in 'dgst' to management and get the signature back.
+  * On input siglen contains the capacity of the buffer 'sig'.
+  * On return signature is in sig.
++ * pkcs1 controls if pkcs1 padding is required
+  * Return value is signature length or -1 on error.
+  */
+ static int
+ get_sig_from_man(const unsigned char *dgst, unsigned int dgstlen,
+-                 unsigned char *sig, unsigned int siglen)
++                 unsigned char *sig, unsigned int siglen,
++                 int padding)
  {
--    return tun_write_win32(tt, buf);
-+    if (tt->wintun)
-+    {
-+        return write_wintun(tt, buf);
-+    }
-+    else
-+    {
-+        return tun_write_win32(tt, buf);
-+    }
+     char *in_b64 = NULL;
+     char *out_b64 = NULL;
+     int len = -1;
+ 
+-    /* convert 'dgst' to base64 */
+-    if (management
+-        && openvpn_base64_encode(dgst, dgstlen, &in_b64) > 0)
++    int bencret = openvpn_base64_encode(dgst, dgstlen, &in_b64);
++
++    if (management && bencret > 0)
+     {
+-        out_b64 = management_query_pk_sig(management, in_b64);
++        out_b64 = management_query_pk_sig(management, in_b64,
++                                          get_sig_padding_name(padding));
+     }
+     if (out_b64)
+     {
+@@ -1156,18 +1180,19 @@ get_sig_from_man(const unsigned char *dgst, unsigned int dgstlen,
+ 
+ /* sign arbitrary data */
+ static int
+-rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding)
++rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa,
++             int padding)
+ {
+     unsigned int len = RSA_size(rsa);
+     int ret = -1;
+ 
+-    if (padding != RSA_PKCS1_PADDING)
++    if (padding != RSA_PKCS1_PADDING && padding != RSA_NO_PADDING)
+     {
+         RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE);
+         return -1;
+     }
+ 
+-    ret = get_sig_from_man(from, flen, to, len);
++    ret = get_sig_from_man(from, flen, to, len, padding);
+ 
+     return (ret == len) ? ret : -1;
  }
+@@ -1263,7 +1288,13 @@ ecdsa_sign(int type, const unsigned char *dgst, int dgstlen, unsigned char *sig,
+            unsigned int *siglen, const BIGNUM *kinv, const BIGNUM *r, EC_KEY *ec)
+ {
+     int capacity = ECDSA_size(ec);
+-    int len = get_sig_from_man(dgst, dgstlen, sig, capacity);
++    /*
++     * ECDSA does not seem to have proper constants for paddings since
++     * there are only signatures without padding at the moment, reuse
++     * RSA_NO_PADDING for now as it will trigger querying for "NOPADDING" in the
++     * management interface
++     */
++    int len = get_sig_from_man(dgst, dgstlen, sig, capacity, RSA_NO_PADDING);
  
- #else  /* ifdef _WIN32 */
-diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index eb4c030..e9e0258 100644
---- a/src/openvpn/win32.c
-+++ b/src/openvpn/win32.c
-@@ -1493,4 +1493,124 @@ send_msg_iservice(HANDLE pipe, const void *data, size_t size,
-     return ret;
- }
- 
-+bool
-+impersonate_as_system()
-+{
-+    HANDLE thread_token, process_snapshot, winlogon_process, winlogon_token, duplicated_token;
-+    PROCESSENTRY32 entry;
-+    BOOL ret;
-+    DWORD pid = 0;
-+    TOKEN_PRIVILEGES privileges;
-+
-+    CLEAR(entry);
-+    CLEAR(privileges);
-+
-+    entry.dwSize = sizeof(PROCESSENTRY32);
-+
-+    privileges.PrivilegeCount = 1;
-+    privileges.Privileges->Attributes = SE_PRIVILEGE_ENABLED;
-+
-+    if (!LookupPrivilegeValue(NULL, SE_DEBUG_NAME, &privileges.Privileges[0].Luid))
-+    {
-+        return false;
-+    }
-+
-+    if (!ImpersonateSelf(SecurityImpersonation))
-+    {
-+        return false;
-+    }
-+
-+    if (!OpenThreadToken(GetCurrentThread(), TOKEN_ADJUST_PRIVILEGES, FALSE, &thread_token))
-+    {
-+        RevertToSelf();
-+        return false;
-+    }
-+    if (!AdjustTokenPrivileges(thread_token, FALSE, &privileges, sizeof(privileges), NULL, NULL))
-+    {
-+        CloseHandle(thread_token);
-+        RevertToSelf();
-+        return false;
-+    }
-+    CloseHandle(thread_token);
-+
-+    process_snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-+    if (process_snapshot == INVALID_HANDLE_VALUE)
-+    {
-+        RevertToSelf();
-+        return false;
-+    }
-+    for (ret = Process32First(process_snapshot, &entry); ret; ret = Process32Next(process_snapshot, &entry))
-+    {
-+        if (!_stricmp(entry.szExeFile, "winlogon.exe"))
-+        {
-+            pid = entry.th32ProcessID;
-+            break;
-+        }
-+    }
-+    CloseHandle(process_snapshot);
-+    if (!pid)
-+    {
-+        RevertToSelf();
-+        return false;
-+    }
-+
-+    winlogon_process = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pid);
-+    if (!winlogon_process)
-+    {
-+        RevertToSelf();
-+        return false;
-+    }
-+
-+    if (!OpenProcessToken(winlogon_process, TOKEN_IMPERSONATE | TOKEN_DUPLICATE, &winlogon_token))
-+    {
-+        CloseHandle(winlogon_process);
-+        RevertToSelf();
-+        return false;
-+    }
-+    CloseHandle(winlogon_process);
-+
-+    if (!DuplicateToken(winlogon_token, SecurityImpersonation, &duplicated_token))
-+    {
-+        CloseHandle(winlogon_token);
-+        RevertToSelf();
-+        return false;
-+    }
-+    CloseHandle(winlogon_token);
-+
-+    if (!SetThreadToken(NULL, duplicated_token))
-+    {
-+        CloseHandle(duplicated_token);
-+        RevertToSelf();
-+        return false;
-+    }
-+    CloseHandle(duplicated_token);
-+
-+    return true;
-+}
-+
-+bool
-+register_ring_buffers(HANDLE device,
-+                      struct tun_ring* send_ring,
-+                      struct tun_ring* receive_ring,
-+                      HANDLE send_tail_moved,
-+                      HANDLE receive_tail_moved)
-+{
-+    struct tun_register_rings rr;
-+    BOOL res;
-+
-+    ZeroMemory(&rr, sizeof(rr));
-+
-+    rr.send.ring = send_ring;
-+    rr.send.ring_size = sizeof(send_ring->data);
-+    rr.send.tail_moved = send_tail_moved;
-+
-+    rr.receive.ring = receive_ring;
-+    rr.receive.ring_size = sizeof(receive_ring->data);
-+    rr.receive.tail_moved = receive_tail_moved;
-+
-+    res = DeviceIoControl(device, TUN_IOCTL_REGISTER_RINGS, &rr, sizeof(rr), NULL, 0, NULL, NULL);
-+
-+    return res == TRUE;
-+}
-+
- #endif /* ifdef _WIN32 */
-diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
-index 4814bbc..007c7d7 100644
---- a/src/openvpn/win32.h
-+++ b/src/openvpn/win32.h
-@@ -25,6 +25,8 @@
- #ifndef OPENVPN_WIN32_H
- #define OPENVPN_WIN32_H
- 
-+#include <winioctl.h>
-+
- #include "mtu.h"
- #include "openvpn-msg.h"
- #include "argv.h"
-@@ -323,5 +325,50 @@ bool send_msg_iservice(HANDLE pipe, const void *data, size_t size,
- int
- openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned int flags);
- 
-+#define WINTUN_RING_CAPACITY 0x800000
-+#define WINTUN_RING_TRAILING_BYTES 0x10000
-+#define WINTUN_RING_FRAMING_SIZE 12
-+#define WINTUN_MAX_PACKET_SIZE 0xffff
-+#define WINTUN_PACKET_ALIGN 4
-+
-+struct tun_ring
-+{
-+    volatile ULONG head;
-+    volatile ULONG tail;
-+    volatile LONG alertable;
-+    UCHAR data[WINTUN_RING_CAPACITY + WINTUN_RING_TRAILING_BYTES + WINTUN_RING_FRAMING_SIZE];
-+};
-+
-+struct tun_register_rings
-+{
-+    struct
-+    {
-+        ULONG ring_size;
-+        struct tun_ring *ring;
-+        HANDLE tail_moved;
-+    } send, receive;
-+};
-+
-+struct TUN_PACKET_HEADER
-+{
-+    uint32_t size;
-+};
-+
-+struct TUN_PACKET
-+{
-+    uint32_t size;
-+    UCHAR data[WINTUN_MAX_PACKET_SIZE];
-+};
-+
-+#define TUN_IOCTL_REGISTER_RINGS CTL_CODE(51820U, 0x970U, METHOD_BUFFERED, FILE_READ_DATA | FILE_WRITE_DATA)
-+
-+bool impersonate_as_system();
-+
-+bool register_ring_buffers(HANDLE device,
-+                           struct tun_ring *send_ring,
-+                           struct tun_ring *receive_ring,
-+                           HANDLE send_tail_moved,
-+                           HANDLE receive_tail_moved);
-+
- #endif /* ifndef OPENVPN_WIN32_H */
- #endif /* ifdef _WIN32 */
+     if (len > 0)
+     {
 -- 
-2.7.4
+2.22.0
 
 
