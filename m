@@ -1,10 +1,8 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Sat,  9 Nov 2019 16:13:05 +0100
-Message-Id: <20191109151306.18597-4-arne@...1227...>
-In-Reply-To: <20191109151306.18597-1-arne@...1227...>
-References: <20191109151306.18597-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v2 4/5] Implement sending SSO challenge to
- clients
+Date: Sat,  9 Nov 2019 16:13:02 +0100
+Message-Id: <20191109151306.18597-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v2 1/5] Implement parsing and sending INFO
+ and INFO_PRE control messages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,228 +15,93 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This implements sending AUTH_PENDING and INFO_PRE messages to clients
-that indicate that the clients should be continue authentication with
-a second factor. This can currently be out of band (openurl) or a normal
-challenge/response 2FA like TOTP (CR_TEXT).
+OpenVPN 3 implements these messages to send information during the
+authentication to the UI, implement these message also in OpenVPN 2.x
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- doc/management-notes.txt | 26 +++++++++++++++++++++++
- src/openvpn/manage.c     | 46 ++++++++++++++++++++++++++++++++++++++++
- src/openvpn/manage.h     |  3 +++
- src/openvpn/multi.c      | 19 +++++++++++++++++
- src/openvpn/push.c       | 24 +++++++++++++++++++++
- src/openvpn/push.h       |  2 ++
- 6 files changed, 120 insertions(+)
+ src/openvpn/forward.c |  8 ++++++++
+ src/openvpn/push.c    | 33 +++++++++++++++++++++++++++++++++
+ src/openvpn/push.h    |  3 +++
+ 3 files changed, 44 insertions(+)
 
-diff --git a/doc/management-notes.txt b/doc/management-notes.txt
-index e380ca2b..4b405a9b 100644
---- a/doc/management-notes.txt
-+++ b/doc/management-notes.txt
-@@ -592,6 +592,32 @@ interface to approve client connections.
- CID,KID -- client ID and Key ID.  See documentation for ">CLIENT:"
- notification for more info.
- 
-+COMMAND -- client-sso-auth  (OpenVPN 2.5 or higher)
-+----------------------------------------------------
-+
-+Instruct OpenVPN server to send AUTH_PENDING and INFO_PRE signal
-+a single sign on url to the client.
-+
-+    client-sso-auth {CID} {EXTRA}
-+
-+The server will send AUTH_PENDING and INFO_PRE,{EXTRA} to the client.
-+The client is expected to inform the user that authentication is pending and
-+display the extra information. For the SSO/SAML EXTRA would be OPEN_URL:url
-+and client should ask to the user to open the URL to continue.
-+
-+For the OpenVPN server this is stateless operation and needs to be
-+followed by a client-deny/client-auth[-nt] command (that is the result of the
-+out of band authentication).
-+
-+Before issuing a client-sso-auth to a client instead of a
-+client-auth/client-deny, the server should check the IV_SSO
-+environment variable if the method is support. The currently
-+defined method are crtext for challenge/response using text
-+(e.g. TOTP) and openurl for opening an URL in the client to
-+continue authentication. A client support both methods would set
-+
-+   setenv IV_SSO openurl,crtext
-+
- COMMAND -- client-deny  (OpenVPN 2.1 or higher)
- -----------------------------------------------
- 
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 8dada6f2..c055f2ce 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -105,6 +105,8 @@ man_help(void)
-     msg(M_CLIENT, "client-auth-nt CID KID : Authenticate client-id/key-id CID/KID");
-     msg(M_CLIENT, "client-deny CID KID R [CR] : Deny auth client-id/key-id CID/KID with log reason");
-     msg(M_CLIENT, "                             text R and optional client reason text CR");
-+    msg(M_CLIENT, "client-sso-auth CID MSG : Instruct OpenVPN to send AUTH_PENDING and INFO_PRE msg"
-+                  "                          to the client and wait for a final client-auth/client-deny");
-     msg(M_CLIENT, "client-kill CID [M]    : Kill client instance CID with message M (def=RESTART)");
-     msg(M_CLIENT, "env-filter [level]     : Set env-var filter level");
- #ifdef MANAGEMENT_PF
-@@ -1001,6 +1003,43 @@ parse_kid(const char *str, unsigned int *kid)
-     }
- }
- 
-+/**
-+ * Will send a notification to the client that succesful authentication
-+ * will require an additional step (web based SSO/2-factor auth/etc)
-+ *
-+ * @param man           The management interface struct
-+ * @param cid_str       The CID in string form
-+ * @param extra         The string to be send to the client containing
-+ *                      the information of the additional steps
-+ */
-+static void
-+man_client_sso_auth(struct management *man, const char *cid_str, const char *extra)
-+{
-+    unsigned long cid = 0;
-+    if (parse_cid(cid_str, &cid))
-+    {
-+        if (man->persist.callback.client_sso)
-+        {
-+            bool ret = (*man->persist.callback.client_sso)
-+                           (man->persist.callback.arg, cid, extra);
-+
-+            if (ret)
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 8451706b..0f735384 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -395,6 +395,14 @@ check_incoming_control_channel_dowork(struct context *c)
+             {
+                 server_pushed_signal(c, &buf, false, 4);
+             }
++            else if (buf_string_match_head_str(&buf, "INFO_PRE"))
 +            {
-+                msg(M_CLIENT, "SUCCESS: client-sso-auth command succeeded");
++                server_pushed_info(c, &buf, 8);
 +            }
-+            else
++            else if (buf_string_match_head_str(&buf, "INFO"))
 +            {
-+                msg(M_CLIENT, "SUCCESS: client-sso-auth command failed."
-+                              " Extra paramter might be too long");
++                server_pushed_info(c, &buf, 4);
 +            }
-+        }
-+        else
-+        {
-+            msg(M_CLIENT, "ERROR: The client-sso-auth command is not supported by the current daemon mode");
-+        }
-+    }
-+}
-+
- static void
- man_client_auth(struct management *man, const char *cid_str, const char *kid_str, const bool extra)
- {
-@@ -1541,6 +1580,13 @@ man_dispatch_command(struct management *man, struct status_output *so, const cha
-             man_client_auth(man, p[1], p[2], true);
-         }
-     }
-+    else if (streq(p[0], "client-sso-auth"))
-+    {
-+        if (man_need(man, p, 2, 0))
-+        {
-+            man_client_sso_auth(man, p[1], p[2]);
-+        }
-+    }
- #ifdef MANAGEMENT_PF
-     else if (streq(p[0], "client-pf"))
-     {
-diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index 8acc18bf..f570afc6 100644
---- a/src/openvpn/manage.h
-+++ b/src/openvpn/manage.h
-@@ -174,6 +174,9 @@ struct management_callback
-                          const char *reason,
-                          const char *client_reason,
-                          struct buffer_list *cc_config); /* ownership transferred */
-+    bool (*client_sso) (void *arg,
-+                        const unsigned long cid,
-+                        const char *url);
-     char *(*get_peer_info) (void *arg, const unsigned long cid);
- #endif
- #ifdef MANAGEMENT_PF
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index d594dd25..692fb62a 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -3288,6 +3288,24 @@ management_kill_by_cid(void *arg, const unsigned long cid, const char *kill_msg)
-     }
- }
- 
-+static bool
-+management_client_sso(void *arg,
-+        const unsigned long cid,
-+        const char *extra)
-+{
-+    struct multi_context *m = (struct multi_context *) arg;
-+    struct multi_instance *mi = lookup_by_cid(m, cid);
-+    if (mi)
-+    {
-+        /* sends INFO_PRE and AUTH_PENDING messages to client */
-+        bool ret = send_sso_messages(&mi->context, extra);
-+        multi_schedule_context_wakeup(m, mi);
-+        return ret;
-+    }
-+    return false;
-+}
-+
-+
- static bool
- management_client_auth(void *arg,
-                        const unsigned long cid,
-@@ -3395,6 +3413,7 @@ init_management_callback_multi(struct multi_context *m)
- #ifdef MANAGEMENT_DEF_AUTH
-         cb.kill_by_cid = management_kill_by_cid;
-         cb.client_auth = management_client_auth;
-+        cb.client_sso = management_client_sso;
-         cb.get_peer_info = management_get_peer_info;
- #endif
- #ifdef MANAGEMENT_PF
+             else
+             {
+                 msg(D_PUSH_ERRORS, "WARNING: Received unknown control message: %s", BSTR(&buf));
 diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index ee1cb980..4b375ae3 100644
+index 368b6920..ee1cb980 100644
 --- a/src/openvpn/push.c
 +++ b/src/openvpn/push.c
-@@ -268,6 +268,30 @@ send_auth_failed(struct context *c, const char *client_reason)
-     gc_free(&gc);
+@@ -178,6 +178,39 @@ server_pushed_signal(struct context *c, const struct buffer *buffer, const bool
+     }
  }
  
-+bool
-+send_sso_messages(struct context *c, const char* extra)
++void
++server_pushed_info(struct context *c, const struct buffer *buffer,
++                   const int adv)
 +{
-+    send_control_channel_string(c, "AUTH_PENDING", D_PUSH);
++    const char *m = "";
++    struct buffer buf = *buffer;
 +
-+    static const char info_pre[] = "INFO_PRE,";
-+
-+
-+    size_t len = strlen(extra)+1 + sizeof(info_pre);
-+    if (len > PUSH_BUNDLE_SIZE)
++    if (buf_advance(&buf, adv) && buf_read_u8(&buf) == ',' && BLEN(&buf))
 +    {
-+        return false;
++        m = BSTR(&buf);
 +    }
-+    struct gc_arena gc = gc_new();
 +
-+    struct buffer buf = alloc_buf_gc(len, &gc);
-+    buf_printf(&buf, info_pre);
-+    buf_printf(&buf, "%s", extra);
-+    send_control_channel_string(c, BSTR(&buf), D_PUSH);
++#ifdef ENABLE_MANAGEMENT
++    struct gc_arena gc;
++    if (management)
++    {
++        gc = gc_new();
 +
-+    gc_free(&gc);
-+    return true;
++        /*
++         * We use >INFOMSG here instead of plain >INFO since INFO is used to
++         * for management greeting and we don't want to confuse the client
++         */
++        struct buffer out = alloc_buf_gc(256, &gc);
++        buf_printf(&out, ">%s:%s", "INFOMSG", m);
++        management_notify_generic(management, BSTR(&out));
++
++        gc_free(&gc);
++    }
++    #endif
++    msg(D_PUSH, "Info command was pushed by server ('%s')", m);
 +}
 +
- /*
-  * Send restart message from server to client.
-  */
++
+ #if P2MP_SERVER
+ /**
+  * Add an option to the given push list by providing a format string.
 diff --git a/src/openvpn/push.h b/src/openvpn/push.h
-index 9cf8fb34..f814f572 100644
+index 070782dd..9cf8fb34 100644
 --- a/src/openvpn/push.h
 +++ b/src/openvpn/push.h
-@@ -70,6 +70,8 @@ void remove_iroutes_from_push_route_list(struct options *o);
+@@ -50,6 +50,9 @@ void receive_auth_failed(struct context *c, const struct buffer *buffer);
  
- void send_auth_failed(struct context *c, const char *client_reason);
+ void server_pushed_signal(struct context *c, const struct buffer *buffer, const bool restart, const int adv);
  
-+bool send_sso_messages(struct context *c, const char *url);
++void server_pushed_info(struct context *c, const struct buffer *buffer,
++                        const int adv);
 +
- void send_restart(struct context *c, const char *kill_msg);
+ void incoming_push_message(struct context *c, const struct buffer *buffer);
  
- /**
+ #if P2MP_SERVER
 -- 
 2.22.0
 
