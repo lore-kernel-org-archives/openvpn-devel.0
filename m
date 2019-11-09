@@ -1,10 +1,10 @@
-Date: Sat, 9 Nov 2019 10:29:13 +0100 (CET)
-Message-Id: <201911090929.xA99TDwU077636@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20191009143422.9419-7-a@...2181...>
-References: <20191009143422.9419-7-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: VLAN: implement support for
- forwarding only pre-tagged VLAN packets
+From: Antonio Quartulli <a@...2181...>
+Date: Sat,  9 Nov 2019 10:58:36 +0100
+Message-Id: <20191109095836.11190-1-a@...2181...>
+In-Reply-To: <20191108091044.11370-1-a@...2181...>
+References: <20191108091044.11370-1-a@...2181...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v3 8/9] VLAN: add documentation to manpage
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,76 +15,143 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>, Fabian Knittel <fabian.knittel@...1547...>
 
-Acked-by: Gert Doering <gert@...1296...>
+This patch adds documentation for all the VLAN related knobs.
 
-Stared at the code.  Ran a full set of t_client/t_server tests with
-disabled VLAN tagging (no change, no brokenness).
+Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
 
-With enabled VLAN tagging and using "untagged mode" it now correctly
-sorts out packets tap <-> client and client1 <-> client2 according
-to PVID - if PVIDs match, devices can talk and broadcasts are seen,
-and if they do not match, no communication happens.  Great.
+Changes from v1:
+- slight rewording of some sentences, as suggested by Arne
 
-One bug for the upcoming documentation: if there is *no* "vlan-pvid"
-setting in a ccd/ file, it will not use "1" but the "global vlan-pvid"
-setting.  Which, as we just agreed on, makes sense, just needs to be
-documented.
+Changes from v2:
+- slight rewording of some sentences, as suggested by Gert
 
+ doc/openvpn.8 | 100 +++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 99 insertions(+), 1 deletion(-)
 
-If enabling "tagging only" ("vlan-accept tagged") half the openvpn server
-config stops having a meaning - like "ifconfig" or "ifconfig-pool" - so
-you really want tap devices that are setup outside of OpenVPN or
-by means of a --up script (setting up dot1q subinterfaces, ifconfig,
-set up routes, etc.).  Just pointing this out for the sake of the 
-archives.
-
-For reference: this is what you'd do on Linux to set up VLAN subinterfaces
-(vlan 200 on tap9)
-
-  # modprobe 8021q
-  # ip link add link tap9 name tap9.200 type vlan id 200
-  # ip addr add 10.204.4.1/24 dev tap9.200
-  # ip addr add fd00:abcd:204:4::1/64 dev tap9.200
-  # ip link set up dev tap9.200
-
-
-(openvpn running on "--dev tap9")
-
-
-That said, tagged mode works nicely - client packets are sent to tap0
-with "vlan 207" visible in tcpdump, and linux "tap9.207" picks them
-up correctly and clients can talk.  Clients in a different VLAN show
-up with a different vlan tag, etc. - as one would expect.  If you want
-"clients in vlan 200" to talk to "clients in vlan 207", it needs to be
-done with linux routing between "tap9.200" and "tap9.207" - which I did
-test, and it also works as expected.
-
-Full set of t_server test passed with enabled vlan tagging (rearranging
-tap clients into different vlans and adding IP forwarding etc)
-
-
-Your patch has been applied to the master branch.
-
-commit e375a5ce555a66c8b6b2ac2869977e723a65982f
-Author: Antonio Quartulli
-Date:   Wed Oct 9 16:34:19 2019 +0200
-
-     VLAN: implement support for forwarding only pre-tagged VLAN packets
-
-     Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20191009143422.9419-7-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg18918.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 11daa92a..f58a3ccc 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -3440,7 +3440,8 @@ without needing to restart the server.
+ 
+ The following
+ options are legal in a client\-specific context:
+-.B \-\-push, \-\-push\-reset, \-\-push\-remove, \-\-iroute, \-\-ifconfig\-push,
++.B \-\-push, \-\-push\-reset, \-\-push\-remove, \-\-iroute,
++.B \-\-ifconfig\-push, \-\-vlan\-pvid
+ and
+ .B \-\-config.
+ .\"*********************************************************
+@@ -3908,6 +3909,103 @@ connection is torn down.
+ 
+ Not implemented on Windows.
+ .\"*********************************************************
++.TP
++.B \-\-vlan\-tagging
++Server-only option. Turns the OpenVPN server instance into a switch that
++understands VLAN\-tagging, based on IEEE 802.1Q.
++
++The server TAP device and each of the connecting clients is seen as a port of the
++switch. All client ports are in untagged mode and the server TAP device is
++VLAN-tagged, untagged or accepts both, depending on the
++.B \-\-vlan\-accept setting.
++
++Ethernet frames with a prepended 802.1Q tag are called "tagged". If the VLAN
++Identifier (VID) field in such a tag is non-zero, the frame is called
++"VLAN\-tagged". If the VID is zero, but the Priority Control Point (PCP) field
++is non\-zero, the frame is called "prio\-tagged". If there is no 802.1Q tag, the
++frame is "untagged".
++
++Using the
++.B \-\-vlan\-pvid v
++option once per client (see \-\-client\-config\-dir), each port can be associated
++with a certain VID. Packets
++can only be forwarded between ports having the same VID. Therefore, clients
++with differing VIDs are completely separated from one\-another, even if
++.B \-\-client\-to\-client
++is activated.
++
++The packet filtering takes place in the OpenVPN server. Clients should not
++have any VLAN tagging configuration applied.
++
++The
++.B \-\-vlan\-tagging
++option is off by default. While turned off, OpenVPN
++accepts any Ethernet frame and does not perform any special processing
++for VLAN\-tagged packets.
++
++The option can only be activated in
++.B \-\-dev tap mode.
++
++.\"*********************************************************
++.TP
++.B \-\-vlan\-accept all | tagged | untagged
++Configure the VLAN tagging policy for the server TAP device. The following modes
++are available:
++
++.B tagged
++\-\- Admit only VLAN\-tagged frames.
++Only VLAN\-tagged packets are accepted, while untagged or priority\-tagged
++packets are dropped when entering the server TAP device.
++
++.br
++.B untagged
++\-\- Admit only untagged and prio\-tagged frames.
++.br
++VLAN\-tagged packets are not accepted, while untagged or priority\-tagged
++packets entering the server TAP device are tagged with the value configured
++for the global
++.B \-\-vlan\-pvid
++setting.
++.br
++.B all
++(default) \-\- Admit all frames.
++.br
++All packets are admitted and then treated like untagged or tagged mode
++respectively.
++
++(Note: Some vendors refer to switch ports running in
++.B tagged
++mode as "trunk ports" and switch ports running in
++.B untagged
++mode as "access ports".)
++
++Packets forwarded from clients to the server are VLAN\-tagged
++with the originating client's PVID, unless the VID matches the
++global \-\-vlan\-pvid, in which case the tag is removed.
++
++If no PVID is configured for a given client (see \-\-vlan\-pvid) packets
++are tagged with 1 by default.
++.\"*********************************************************
++.TP
++.B \-\-vlan\-pvid v
++Specifies which VLAN identifier a "port" is associated with. Only valid when
++\fB\-\-vlan\-tagging\fR is speficied.
++
++In the client context, the setting specifies which VLAN ID a client is
++associated with. In the global context, the VLAN ID of the server TAP device is set.
++The latter only makes sense for
++.B \-\-vlan\-accept untagged
++and
++.B \-\-vlan\-accept all
++modes.
++
++Valid values for
++.B v
++go from 1 through to 4094. The global value defaults to 1. If no \-\-vlan\-pvid
++is specified in the client context, the global value is inherited.
++
++In some switch implementations, the PVID is also referred to as "Native VLAN".
++.\"*********************************************************
+ .SS Client Mode
+ Use client mode when connecting to an OpenVPN server
+ which has
+-- 
+2.24.0
 
 
