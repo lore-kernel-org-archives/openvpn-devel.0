@@ -1,16 +1,16 @@
 From: Simon Rozman <simon@...2293...>
-Date: Sat, 9 Nov 2019 11:52:12 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE10BDA4B9A4@...2294...>
+Date: Sat, 9 Nov 2019 12:04:05 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE10BDA4BA3E@...2294...>
 References: <1573148729-27339-1-git-send-email-lstipakov@...277...>
- <1573148729-27339-6-git-send-email-lstipakov@...277...>
-In-Reply-To: <1573148729-27339-6-git-send-email-lstipakov@...277...>
+ <1573148729-27339-7-git-send-email-lstipakov@...277...>
+In-Reply-To: <1573148729-27339-7-git-send-email-lstipakov@...277...>
 Content-Language: en-US
 Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
  micalg=2.16.840.1.101.3.4.2.1;
- boundary="----=_NextPart_000_0026_01D596FC.7FC01F40"
+ boundary="----=_NextPart_000_002B_01D596FE.29129180"
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH v2 5/7] wintun: interactive service
- support
+Subject: Re: [Openvpn-devel] [PATCH v2 6/7] wintun: set adapter properties
+ via interactive service
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,12 +22,42 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Lev Stipakov <lstipakov@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 Cc: Lev Stipakov <lev@...515...>
 
-------=_NextPart_000_0026_01D596FC.7FC01F40
+------=_NextPart_000_002B_01D596FE.29129180
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 
 Hi,
+
+> -----Original Message-----
+> From: Lev Stipakov [mailto:lstipakov@...277...]
+> Sent: Thursday, November 7, 2019 6:45 PM
+> To: openvpn-devel@lists.sourceforge.net
+> Cc: Lev Stipakov <lev@...515...>
+> Subject: [Openvpn-devel] [PATCH v2 6/7] wintun: set adapter properties via
+> interactive service
+> 
+>  static bool
+> -do_dns6_service(bool add, const struct tuntap *tt)
+> +do_dns_service(bool add, const short family, const struct tuntap *tt)
+>  {
+>      bool ret = false;
+>      ack_message_t ack;
+>      struct gc_arena gc = gc_new();
+>      HANDLE pipe = tt->options.msg_channel;
+> -    int addr_len = add ? tt->options.dns6_len : 0;
+> +    int len = family == AF_INET6 ? tt->options.dns6_len :
+tt->options.dns_len;
+> +    int addr_len = add ? len : 0;
+> +    char ip_proto_name[5];
+> +
+> +    strcpy(ip_proto_name, family == AF_INET6 ? "IPv6" : "IPv4");
+
+const char *ip_proto_name = family == AF_INET6 ? "IPv6" : "IPv4";
+
+... to avoid the strcpy().
+
+The rest LGTM, so...
 
 Acked-by: Simon Rozman <simon@...2293...>
 
@@ -37,7 +67,7 @@ Simon
 
 
 
-------=_NextPart_000_0026_01D596FC.7FC01F40
+------=_NextPart_000_002B_01D596FE.29129180
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -88,18 +118,18 @@ J1nlAZZNwcev00XWu5MF83BRMbfkThrdGCY22Qjd5He7MHEb0U+oBIvS+p9Vy4IcD0mIc2Y2i+X1
 7yNdSbkqEAstd11gZKt+TKKOImNfcGp0tVulDPGKtDGCAyEwggMdAgEBMEUwPTELMAkGA1UEBhMC
 c2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4w
 DQYJYIZIAWUDBAIBBQCgggGtMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkF
-MQ8XDTE5MTEwOTExNTIwOVowLwYJKoZIhvcNAQkEMSIEINj1AhupdGjH1RwPxB/Bw0CpylnMKyis
-hFlLCgnJbJvgMFQGCSsGAQQBgjcQBDFHMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRl
+MQ8XDTE5MTEwOTEyMDQwM1owLwYJKoZIhvcNAQkEMSIEIFhygRttUW1Y4ogVb1dd63BB0NbfAljK
+gyA+BxEyRXgfMFQGCSsGAQQBgjcQBDFHMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRl
 LWluc3RpdHV0aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4wVgYLKoZIhvcNAQkQAgsxR6BF
 MD0xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJzdGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsTCHNp
 Z2VuLWNhAgQ7Sg0uMIGTBgkqhkiG9w0BCQ8xgYUwgYIwCwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQB
 FjAKBggqhkiG9w0DBzALBglghkgBZQMEAQIwDgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFA
 MAsGCWCGSAFlAwQCATALBglghkgBZQMEAgMwCwYJYIZIAWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3
-DQEBAQUABIIBAGam2Q4u8qaXDxW5rfm8+PduNrRIAbjU2/g5vn55NaLTSOoIZfLDs07bZUJco377
-O5dbrvRBIyU/MnERCim6LCEZoiETSQPVHv1V9/d/004BeosbsGwlXqbV7yxeNg+xy8IGve3ESoec
-+rly2I3MAMV3O6llLYp9nT2WodBqBG7yHYwdRSdq3IMzs73Is3RM86tZzHXs08sG2emPqMlw35EJ
-fXoIvkxTlgwMV+U2kBu94Z4w6sHi1bbece5Hmw/FiCVVePdoKeZzbkgRFb5M+QXzfa4fI38EIAK/
-dnskSBFnjEmq31ajIYFpO8D1Fle2C6P8X8arjOoStmxQZPiur4oAAAAAAAA=
+DQEBAQUABIIBAKGZhmaTwqNMzVJTEdRKnkkVSfmqQFrQpESHc1gqIbszH+1lXzg4G6qFXDuymsRh
+BDTVu4rzbcl91THEW/Soiwx1TIb4WmQ+bgDQvVmW7+1renplAS5u426MjcsGUyPHmiFHn830y5OG
+zpGk+WCM8lzUQB/RgopQtJqC/t4pCyZMP33diT7MEm+Osd0lVb79lVmFm5KutoUioq0qS9uGXBCr
+tEuLOwu3GDlpEQGIf7nNfRmMznDhJI7Qa2UQ2LL4ZARl1V7jAqdm2XkpDGZMO0/E+jU7u2dE8mow
+qwZqCyHy2W9+8GyLdBfgON08cZaTUmeMdNxaq4A69kus9zx5pQsAAAAAAAA=
 
-------=_NextPart_000_0026_01D596FC.7FC01F40--
+------=_NextPart_000_002B_01D596FE.29129180--
 
