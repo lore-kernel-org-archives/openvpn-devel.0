@@ -1,10 +1,10 @@
-Date: Sun, 10 Nov 2019 11:48:25 +0100 (CET)
-Message-Id: <201911101048.xAAAmPDv098883@...2054...>
+Date: Sun, 10 Nov 2019 13:42:31 +0100 (CET)
+Message-Id: <201911101242.xAACgV6Z000397@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20191110100323.13206-1-a@...2181...>
-References: <20191110100323.13206-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: add -Wno-stringop-truncation to
- CFLAGS on linux
+In-Reply-To: <20191109174235.20511-1-steffan@...1856...>
+References: <20191109174235.20511-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Update sample configs to use
+ modern cipher, remove static key examples
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +15,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
+To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-While I'm not exactly happy suppressing warnings, this particular one
-is somewhat of an annoyance - the two cases where we cause warnings
-today are perfectly fine, and working around spurious compiler warnings
-is not what I want to spend our time on.   We can revisit this later.
+After a quick discussion in the group, we're all OK with kicking out
+static-key samples (only the samples, not the functionality yet) BUT 
+we can't do the AES-256-GCM thing in 2.4 due to "RHEL6 and Debian 8"
+support (no AES-GCM there).  So, master.
 
 Your patch has been applied to the master branch.
 
-commit 46d096074fd74e0d6c1d4756429215d22f2b3441
-Author: Antonio Quartulli
-Date:   Sun Nov 10 11:03:23 2019 +0100
+commit ac10391f48e4ecc5c6db541e47bc747955ef1c93
+Author: Steffan Karger
+Date:   Sat Nov 9 18:42:35 2019 +0100
 
-     add -Wno-stringop-truncation to CFLAGS on linux
+     Update sample configs to use modern cipher, remove static key examples
 
-     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Signed-off-by: Steffan Karger <steffan@...1856...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20191110100323.13206-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19085.html
+     Message-Id: <20191109174235.20511-1-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19081.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
