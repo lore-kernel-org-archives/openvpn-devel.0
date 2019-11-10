@@ -1,10 +1,10 @@
-Date: Sun, 10 Nov 2019 17:53:09 +0100 (CET)
-Message-Id: <201911101653.xAAGr9HG004011@...2054...>
+Date: Sun, 10 Nov 2019 17:53:58 +0100 (CET)
+Message-Id: <201911101653.xAAGrw84004068@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20191110133525.6069-1-a@...2181...>
-References: <20191110133525.6069-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: auth_token_kt: ensure key_type
- object is initialized
+In-Reply-To: <20191110133525.6069-2-a@...2181...>
+References: <20191110133525.6069-2-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: auth.c: make cast explicit in
+ the crypto API
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,19 +20,19 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master branch.
 
-(Resent with correct Acked-By:)
+(Resending with correct "Acked-by" line - I noticed after I sent the mail
+but before pushing, so I amended the commit and here's the right ID)
 
-commit 9d0b95c45130af2f91fa2195c483e2c7461c0f40
+commit 6c7b41c6536b221b1e2bc26a26ae6814a71d69e8
 Author: Antonio Quartulli
-Date:   Sun Nov 10 14:35:23 2019 +0100
+Date:   Sun Nov 10 14:35:24 2019 +0100
 
-     auth_token_kt: ensure key_type object is initialized
+     auth.c: make cast explicit in the crypto API
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
      Signed-off-by: Antonio Quartulli <a@...2181...>
      Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20191110133525.6069-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19092.html
+     Message-Id: <20191110133525.6069-2-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19093.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
