@@ -1,5 +1,5 @@
-Date: Sun, 10 Nov 2019 17:51:22 +0100 (CET)
-Message-Id: <201911101651.xAAGpMHe003916@...2054...>
+Date: Sun, 10 Nov 2019 17:52:50 +0100 (CET)
+Message-Id: <201911101652.xAAGqoKM004005@...2054...>
 From: Gert Doering <gert@...1296...>
 In-Reply-To: <20191110133525.6069-2-a@...2181...>
 References: <20191110133525.6069-2-a@...2181...>
@@ -20,14 +20,17 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master branch.
 
-commit 7122af670d58586d9806214c81d27c424b226730
+(Resending with correct "Acked-by" line - I noticed after I sent the mail
+but before pushing, so I amended the commit and here's the right ID)
+
+commit 6c7b41c6536b221b1e2bc26a26ae6814a71d69e8
 Author: Antonio Quartulli
 Date:   Sun Nov 10 14:35:24 2019 +0100
 
      auth.c: make cast explicit in the crypto API
 
      Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Gert Doering <gert@...1296...>
+     Acked-by: Arne Schwabe <arne@...1227...>
      Message-Id: <20191110133525.6069-2-a@...2181...>
      URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19093.html
      Signed-off-by: Gert Doering <gert@...1296...>
