@@ -1,13 +1,9 @@
-MIME-Version: 1.0
-References: <1573148729-27339-1-git-send-email-lstipakov@...277...>
- <1573148729-27339-5-git-send-email-lstipakov@...277...>
- <14e11aff-4107-3693-c0bc-e8f5538c007a@...1856...>
-In-Reply-To: <14e11aff-4107-3693-c0bc-e8f5538c007a@...1856...>
 From: Lev Stipakov <lstipakov@...277...>
-Date: Sun, 10 Nov 2019 14:48:29 +0200
-Message-ID: <CAGyAFMUhJ_nj8VzvXHN83TeSsKUT+xO91t42HeM7ewZ+Cih_oA@...278...>
-Content-Type: multipart/alternative; boundary="00000000000045623c0596fd6fad"
-Subject: Re: [Openvpn-devel] [PATCH v2 4/7] wintun: ring buffers based I/O
+Date: Sun, 10 Nov 2019 15:00:28 +0200
+Message-Id: <1573390828-779-1-git-send-email-lstipakov@...277...>
+In-Reply-To: <CAGyAFMUhJ_nj8VzvXHN83TeSsKUT+xO91t42HeM7ewZ+Cih_oA@...278...>
+References: <CAGyAFMUhJ_nj8VzvXHN83TeSsKUT+xO91t42HeM7ewZ+Cih_oA@...278...>
+Subject: [Openvpn-devel] [PATCH v4 4/7] wintun: ring buffers based I/O
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,246 +12,702 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
---00000000000045623c0596fd6fad
-Content-Type: text/plain; charset="UTF-8"
+From: Lev Stipakov <lev@...515...>
 
-Hi,
+Implemented according to Wintun documentation
+and reference client code.
 
-As a general remark: could you try to stick to the 80 char line length
-> limit?
->
+Wintun uses ring buffers to communicate between
+kernel driver and user process. Client allocates
+send and receive ring buffers, creates events
+and passes it to kernel driver under LocalSystem
+privileges.
 
-Ok.
+When data is available for read, wintun modifies
+"tail" pointer of send ring and signals via event.
+User process reads data from "head" to "tail" and
+updates "head" pointer.
 
+When user process is ready to write, it writes
+to receive ring, updates "tail" pointer and signals
+to kernel via event.
 
-> > +#ifdef _WIN32
-> > +    }
-> >  #endif
->
-> As Simon mentioned too, this code is getting more and more hard to read.
-> Can we maybe do this in some cleaner way? Maybe add some helper
-> function(s)?
->
+In openvpn code we add send ring's event to event loop.
+Before performing io wait, we compare "head" and "tail"
+pointers of send ring and if they're different, we skip
+io wait and perform read.
 
-Already fixed in v3.
+This also adds ring buffers support to tcp and udp
+server code.
 
-> +#ifdef _WIN32
-> > +    }
-> > +#endif
->
-> As above :)
->
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ v4:
+  - added helper function tuntap_ring_empty()
+  - refactored event handling, got rid of separate
+    event_ctl() call for wintun and send/receive_tail_moved
+    members
+  - added wintun_ prefix for ring buffer variables
+  - added a comment explaining the size of wintun-specific buffers
 
-Already fixed in v3.
+ v3:
+  - simplified convoluted #ifdefs
+  - replaced "greater than" with "greater or equal than"
 
+ v2;
+  - rebased on top of master
 
-> > +            if (tt->send_ring->head == tt->send_ring->tail)
-> > +            {
-> > +                /* nothing to read from tun -> remove tun read flag set
-> by IOW_READ */
-> > +                flags &= ~IOW_READ_TUN;
-> > +            }
-> > +        }
-> > +    }
-> > +#endif
->
-> Looks like this should be a helper function (with a good name that helps
-> understand what this does).
->
+ src/openvpn/forward.c |  25 +++++++++-
+ src/openvpn/forward.h |  38 +++++++++++++-
+ src/openvpn/mtcp.c    |  19 ++++++-
+ src/openvpn/mudp.c    |   7 ++-
+ src/openvpn/options.c |   4 +-
+ src/openvpn/syshead.h |   1 +
+ src/openvpn/tun.c     |  62 ++++++++++++++++++++++-
+ src/openvpn/tun.h     | 135 +++++++++++++++++++++++++++++++++++++++++++++++++-
+ src/openvpn/win32.c   | 120 ++++++++++++++++++++++++++++++++++++++++++++
+ src/openvpn/win32.h   |  51 +++++++++++++++++++
+ 10 files changed, 451 insertions(+), 11 deletions(-)
 
-
-Implemented helper function tuntap_ring_empty().
-
-> +            c->c2.event_set_status = ret;
->
-> This chunk is the same as the "fast path" check above. Looks like you
-> should re-arrange this code so you don't have to duplicate it.
->
-
-Not quite (already discussed verbally).
-
-> +#ifdef _WIN32
-> > +    if (c->c1.tuntap && c->c1.tuntap->wintun)
-> > +    {
-> > +        if (c->c1.tuntap->send_ring->head !=
-> c->c1.tuntap->send_ring->tail)
->
-> Looking this deep into the tuntap struct from another module looks like
-> a layering violation. Consider adding a helper function like
->
-
-Fixed with the helper from above (tuntap_ring_empty).
-
-> +        {
-> > +            /* add ring buffer event */
-> > +            struct rw_handle rw = { .read =
-> c->c1.tuntap->send_tail_moved };
-> > +            event_ctl(mtcp->es, &rw, EVENT_READ, MTCP_TUN);
-> > +        }
->
-> Can this not be done by tun_set() below? At first glance, if either
-> tun_event_handle() returns tt->send_tail_moved for wintun (instaed of
-> tt->rw_handle), of if tt->rw_handle would be set to send_tail_moved for
-> wintun. The latter might even allow you to get rid of
-> tt->send_tail_removed completely.
->
-
-Thanks for the idea.
-
-Indeed, I did some refactoring and reused rw_handle.read/write
-instead of send/receive_tail_moved. Also got rid of wintun-specific
-event_ctl calls - now it is handled in tun_set().
-
-
-> > +            if (tt->send_ring->head == tt->send_ring->tail)
->
-> This should use the same helper function as suggested above.
->
-
-Done.
-
-> +    struct tun_ring *send_ring;
-> > +    struct tun_ring *receive_ring;
-> > +    HANDLE send_tail_moved;
-> > +    HANDLE receive_tail_moved;
->
-> These are wintun-specific, right? Should we maybe clarify this by
-> prefixing them with wintun_ ?
->
-
-  *_tail_moved are gone, added "wintun_" prefix to *_ring.
-
-
-> > +#define WINTUN_RING_CAPACITY 0x800000
->
-> Can you explain why this is the right size? Document either in a
-> comment, or in the commit message.
->
-
-Those are from WG client, mentioned it in a comment.
-
--Steffan
-
-
-V4 is coming!
-
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 8451706..3dc04a4 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1256,8 +1256,24 @@ read_incoming_tun(struct context *c)
+     perf_push(PERF_READ_IN_TUN);
+ 
+     c->c2.buf = c->c2.buffers->read_tun_buf;
++
+ #ifdef _WIN32
+-    read_tun_buffered(c->c1.tuntap, &c->c2.buf);
++    if (c->c1.tuntap->wintun)
++    {
++        read_wintun(c->c1.tuntap, &c->c2.buf);
++        if (c->c2.buf.len == -1)
++        {
++            register_signal(c, SIGHUP, "tun-abort");
++            c->persist.restart_sleep_seconds = 1;
++            msg(M_INFO, "Wintun read error, restarting");
++            perf_pop();
++            return;
++        }
++    }
++    else
++    {
++        read_tun_buffered(c->c1.tuntap, &c->c2.buf);
++    }
+ #else
+     ASSERT(buf_init(&c->c2.buf, FRAME_HEADROOM(&c->c2.frame)));
+     ASSERT(buf_safe(&c->c2.buf, MAX_RW_SIZE_TUN(&c->c2.frame)));
+@@ -2099,6 +2115,13 @@ io_wait_dowork(struct context *c, const unsigned int flags)
+         tuntap |= EVENT_READ;
+     }
+ 
++#ifdef _WIN32
++    if (tuntap_is_wintun(c->c1.tuntap))
++    {
++        tuntap = EVENT_READ;
++    }
++#endif
++
+     /*
+      * Configure event wait based on socket, tuntap flags.
+      */
+diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
+index 48202c0..b711ff0 100644
+--- a/src/openvpn/forward.h
++++ b/src/openvpn/forward.h
+@@ -375,6 +375,12 @@ p2p_iow_flags(const struct context *c)
+     {
+         flags |= IOW_TO_TUN;
+     }
++#ifdef _WIN32
++    if (tuntap_ring_empty(c->c1.tuntap))
++    {
++        flags &= ~IOW_READ_TUN;
++    }
++#endif
+     return flags;
+ }
+ 
+@@ -403,8 +409,36 @@ io_wait(struct context *c, const unsigned int flags)
+     }
+     else
+     {
+-        /* slow path */
+-        io_wait_dowork(c, flags);
++#ifdef _WIN32
++        bool skip_iowait = flags & IOW_TO_TUN;
++        if (flags & IOW_READ_TUN)
++        {
++            /*
++             * don't read from tun if we have pending write to link,
++             * since every tun read overwrites to_link buffer filled
++             * by previous tun read
++             */
++            skip_iowait = !(flags & IOW_TO_LINK);
++        }
++        if (tuntap_is_wintun(c->c1.tuntap) && skip_iowait)
++        {
++            unsigned int ret = 0;
++            if (flags & IOW_TO_TUN)
++            {
++                ret |= TUN_WRITE;
++            }
++            if (flags & IOW_READ_TUN)
++            {
++                ret |= TUN_READ;
++            }
++            c->c2.event_set_status = ret;
++        }
++        else
++#endif
++        {
++            /* slow path */
++            io_wait_dowork(c, flags);
++        }
+     }
+ }
+ 
+diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
+index abe2059..30a13f7 100644
+--- a/src/openvpn/mtcp.c
++++ b/src/openvpn/mtcp.c
+@@ -269,8 +269,25 @@ multi_tcp_wait(const struct context *c,
+                struct multi_tcp *mtcp)
+ {
+     int status;
++    unsigned int *persistent = &mtcp->tun_rwflags;
+     socket_set_listen_persistent(c->c2.link_socket, mtcp->es, MTCP_SOCKET);
+-    tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, &mtcp->tun_rwflags);
++
++#ifdef _WIN32
++    if (tuntap_is_wintun(c->c1.tuntap))
++    {
++        if (!tuntap_ring_empty(c->c1.tuntap))
++        {
++            /* there is a data in wintun ring buffer, read it immediately */
++            mtcp->esr[0].arg = MTCP_TUN;
++            mtcp->esr[0].rwflags = EVENT_READ;
++            mtcp->n_esr = 1;
++            return 1;
++        }
++        persistent = NULL;
++    }
++#endif
++    tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, persistent);
++
+ #ifdef ENABLE_MANAGEMENT
+     if (management)
+     {
+diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
+index b7f061a..6a29ccc 100644
+--- a/src/openvpn/mudp.c
++++ b/src/openvpn/mudp.c
+@@ -278,7 +278,12 @@ p2mp_iow_flags(const struct multi_context *m)
+     {
+         flags |= IOW_READ;
+     }
+-
++#ifdef _WIN32
++    if (tuntap_ring_empty(m->top.c1.tuntap))
++    {
++        flags &= ~IOW_READ_TUN;
++    }
++#endif
+     return flags;
+ }
+ 
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index c282b58..9887443 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3005,10 +3005,10 @@ options_postprocess_mutate_invariant(struct options *options)
+         options->ifconfig_noexec = false;
+     }
+ 
+-    /* for wintun kernel doesn't send DHCP requests, so use ipapi to set IP address and netmask */
++    /* for wintun kernel doesn't send DHCP requests, so use netsh to set IP address and netmask */
+     if (options->wintun)
+     {
+-        options->tuntap_options.ip_win32_type = IPW32_SET_IPAPI;
++        options->tuntap_options.ip_win32_type = IPW32_SET_NETSH;
+     }
+ 
+     remap_redirect_gateway_flags(options);
+diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
+index 899aa59..e9accb5 100644
+--- a/src/openvpn/syshead.h
++++ b/src/openvpn/syshead.h
+@@ -39,6 +39,7 @@
+ #ifdef _WIN32
+ #include <windows.h>
+ #include <winsock2.h>
++#include <tlhelp32.h>
+ #define sleep(x) Sleep((x)*1000)
+ #define random rand
+ #define srandom srand
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 37bf065..6522c6b 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -795,9 +795,27 @@ init_tun_post(struct tuntap *tt,
+ #ifdef _WIN32
+     overlapped_io_init(&tt->reads, frame, FALSE, true);
+     overlapped_io_init(&tt->writes, frame, TRUE, true);
+-    tt->rw_handle.read = tt->reads.overlapped.hEvent;
+-    tt->rw_handle.write = tt->writes.overlapped.hEvent;
+     tt->adapter_index = TUN_ADAPTER_INDEX_INVALID;
++
++    if (tt->wintun)
++    {
++        tt->wintun_send_ring = malloc(sizeof(struct tun_ring));
++        tt->wintun_receive_ring = malloc(sizeof(struct tun_ring));
++        if ((tt->wintun_send_ring == NULL) || (tt->wintun_receive_ring == NULL))
++        {
++            msg(M_FATAL, "Cannot allocate memory for ring buffer");
++        }
++        ZeroMemory(tt->wintun_send_ring, sizeof(struct tun_ring));
++        ZeroMemory(tt->wintun_receive_ring, sizeof(struct tun_ring));
++
++        tt->rw_handle.read = CreateEvent(NULL, FALSE, FALSE, NULL);
++        tt->rw_handle.write = CreateEvent(NULL, FALSE, FALSE, NULL);
++    }
++    else
++    {
++        tt->rw_handle.read = tt->reads.overlapped.hEvent;
++        tt->rw_handle.write = tt->writes.overlapped.hEvent;
++    }
+ #endif
+ }
+ 
+@@ -6207,6 +6225,34 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+             tt->ipapi_context_defined = true;
+         }
+     }
++
++    if (tt->wintun)
++    {
++        if (tt->options.msg_channel)
++        {
++            /* TODO */
++        }
++        else
++        {
++            if (!impersonate_as_system())
++            {
++                msg(M_FATAL, "ERROR:  Failed to impersonate as SYSTEM, make sure process is running under privileged account");
++            }
++            if (!register_ring_buffers(tt->hand,
++                                       tt->wintun_send_ring,
++                                       tt->wintun_receive_ring,
++                                       tt->rw_handle.read,
++                                       tt->rw_handle.write))
++            {
++                msg(M_FATAL, "ERROR:  Failed to register ring buffers: %lu", GetLastError());
++            }
++            if (!RevertToSelf())
++            {
++                msg(M_FATAL, "ERROR:  RevertToSelf error: %lu", GetLastError());
++            }
++        }
++    }
++
+     /*netcmd_semaphore_release ();*/
+     gc_free(&gc);
+ }
+@@ -6345,6 +6391,18 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+         free(tt->actual_name);
+     }
+ 
++    if (tt->wintun)
++    {
++        CloseHandle(tt->rw_handle.read);
++        CloseHandle(tt->rw_handle.write);
++    }
++
++    free(tt->wintun_receive_ring);
++    free(tt->wintun_send_ring);
++
++    tt->wintun_receive_ring = NULL;
++    tt->wintun_send_ring = NULL;
++
+     clear_tuntap(tt);
+     free(tt);
+     gc_free(&gc);
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index 19cab7e..784bde1 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -183,6 +183,9 @@ struct tuntap
+ 
+     bool wintun; /* true if wintun is used instead of tap-windows6 */
+     int standby_iter;
++
++    struct tun_ring *wintun_send_ring;
++    struct tun_ring *wintun_receive_ring;
+ #else  /* ifdef _WIN32 */
+     int fd; /* file descriptor for TUN/TAP dev */
+ #endif
+@@ -212,6 +215,20 @@ tuntap_defined(const struct tuntap *tt)
+ #endif
+ }
+ 
++#ifdef _WIN32
++inline bool
++tuntap_is_wintun(struct tuntap *tt)
++{
++    return tt && tt->wintun;
++}
++
++inline bool
++tuntap_ring_empty(struct tuntap *tt)
++{
++    return tuntap_is_wintun(tt) && (tt->wintun_send_ring->head == tt->wintun_send_ring->tail);
++}
++#endif
++
+ /*
+  * Function prototypes
+  */
+@@ -479,10 +496,124 @@ read_tun_buffered(struct tuntap *tt, struct buffer *buf)
+     return tun_finalize(tt->hand, &tt->reads, buf);
+ }
+ 
++static inline ULONG
++wintun_ring_packet_align(ULONG size)
++{
++    return (size + (WINTUN_PACKET_ALIGN - 1)) & ~(WINTUN_PACKET_ALIGN - 1);
++}
++
++static inline ULONG
++wintun_ring_wrap(ULONG value)
++{
++    return value & (WINTUN_RING_CAPACITY - 1);
++}
++
++static inline void
++read_wintun(struct tuntap *tt, struct buffer* buf)
++{
++    struct tun_ring *ring = tt->wintun_send_ring;
++    ULONG head = ring->head;
++    ULONG tail = ring->tail;
++    ULONG content_len;
++    struct TUN_PACKET *packet;
++    ULONG aligned_packet_size;
++
++    *buf = tt->reads.buf_init;
++    buf->len = 0;
++
++    if ((head >= WINTUN_RING_CAPACITY) || (tail >= WINTUN_RING_CAPACITY))
++    {
++        msg(M_INFO, "Wintun: ring capacity exceeded");
++        buf->len = -1;
++        return;
++    }
++
++    if (head == tail)
++    {
++        /* nothing to read */
++        return;
++    }
++
++    content_len = wintun_ring_wrap(tail - head);
++    if (content_len < sizeof(struct TUN_PACKET_HEADER))
++    {
++        msg(M_INFO, "Wintun: incomplete packet header in send ring");
++        buf->len = -1;
++        return;
++    }
++
++    packet = (struct TUN_PACKET *) &ring->data[head];
++    if (packet->size > WINTUN_MAX_PACKET_SIZE)
++    {
++        msg(M_INFO, "Wintun: packet too big in send ring");
++        buf->len = -1;
++        return;
++    }
++
++    aligned_packet_size = wintun_ring_packet_align(sizeof(struct TUN_PACKET_HEADER) + packet->size);
++    if (aligned_packet_size > content_len)
++    {
++        msg(M_INFO, "Wintun: incomplete packet in send ring");
++        buf->len = -1;
++        return;
++    }
++
++    buf_write(buf, packet->data, packet->size);
++
++    head = wintun_ring_wrap(head + aligned_packet_size);
++    ring->head = head;
++}
++
++static inline int
++write_wintun(struct tuntap *tt, struct buffer *buf)
++{
++    struct tun_ring *ring = tt->wintun_receive_ring;
++    ULONG head = ring->head;
++    ULONG tail = ring->tail;
++    ULONG aligned_packet_size;
++    ULONG buf_space;
++    struct TUN_PACKET *packet;
++
++    if ((head >= WINTUN_RING_CAPACITY) || (tail >= WINTUN_RING_CAPACITY))
++    {
++        msg(M_INFO, "Wintun: head/tail value is over capacity");
++        return -1;
++    }
++
++    aligned_packet_size = wintun_ring_packet_align(sizeof(struct TUN_PACKET_HEADER) + BLEN(buf));
++    buf_space = wintun_ring_wrap(head - tail - WINTUN_PACKET_ALIGN);
++    if (aligned_packet_size > buf_space)
++    {
++        msg(M_INFO, "Wintun: ring is full");
++        return 0;
++    }
++
++    /* copy packet size and data into ring */
++    packet = (struct TUN_PACKET* )&ring->data[tail];
++    packet->size = BLEN(buf);
++    memcpy(packet->data, BPTR(buf), BLEN(buf));
++
++    /* move ring tail */
++    ring->tail = wintun_ring_wrap(tail + aligned_packet_size);
++    if (ring->alertable != 0)
++    {
++        SetEvent(tt->rw_handle.write);
++    }
++
++    return BLEN(buf);
++}
++
+ static inline int
+ write_tun_buffered(struct tuntap *tt, struct buffer *buf)
+ {
+-    return tun_write_win32(tt, buf);
++    if (tt->wintun)
++    {
++        return write_wintun(tt, buf);
++    }
++    else
++    {
++        return tun_write_win32(tt, buf);
++    }
+ }
+ 
+ #else  /* ifdef _WIN32 */
+@@ -545,7 +676,7 @@ tun_set(struct tuntap *tt,
+             }
+         }
+ #ifdef _WIN32
+-        if (rwflags & EVENT_READ)
++        if (!tt->wintun && (rwflags & EVENT_READ))
+         {
+             tun_read_queue(tt, 0);
+         }
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index eb4c030..e9e0258 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -1493,4 +1493,124 @@ send_msg_iservice(HANDLE pipe, const void *data, size_t size,
+     return ret;
+ }
+ 
++bool
++impersonate_as_system()
++{
++    HANDLE thread_token, process_snapshot, winlogon_process, winlogon_token, duplicated_token;
++    PROCESSENTRY32 entry;
++    BOOL ret;
++    DWORD pid = 0;
++    TOKEN_PRIVILEGES privileges;
++
++    CLEAR(entry);
++    CLEAR(privileges);
++
++    entry.dwSize = sizeof(PROCESSENTRY32);
++
++    privileges.PrivilegeCount = 1;
++    privileges.Privileges->Attributes = SE_PRIVILEGE_ENABLED;
++
++    if (!LookupPrivilegeValue(NULL, SE_DEBUG_NAME, &privileges.Privileges[0].Luid))
++    {
++        return false;
++    }
++
++    if (!ImpersonateSelf(SecurityImpersonation))
++    {
++        return false;
++    }
++
++    if (!OpenThreadToken(GetCurrentThread(), TOKEN_ADJUST_PRIVILEGES, FALSE, &thread_token))
++    {
++        RevertToSelf();
++        return false;
++    }
++    if (!AdjustTokenPrivileges(thread_token, FALSE, &privileges, sizeof(privileges), NULL, NULL))
++    {
++        CloseHandle(thread_token);
++        RevertToSelf();
++        return false;
++    }
++    CloseHandle(thread_token);
++
++    process_snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
++    if (process_snapshot == INVALID_HANDLE_VALUE)
++    {
++        RevertToSelf();
++        return false;
++    }
++    for (ret = Process32First(process_snapshot, &entry); ret; ret = Process32Next(process_snapshot, &entry))
++    {
++        if (!_stricmp(entry.szExeFile, "winlogon.exe"))
++        {
++            pid = entry.th32ProcessID;
++            break;
++        }
++    }
++    CloseHandle(process_snapshot);
++    if (!pid)
++    {
++        RevertToSelf();
++        return false;
++    }
++
++    winlogon_process = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pid);
++    if (!winlogon_process)
++    {
++        RevertToSelf();
++        return false;
++    }
++
++    if (!OpenProcessToken(winlogon_process, TOKEN_IMPERSONATE | TOKEN_DUPLICATE, &winlogon_token))
++    {
++        CloseHandle(winlogon_process);
++        RevertToSelf();
++        return false;
++    }
++    CloseHandle(winlogon_process);
++
++    if (!DuplicateToken(winlogon_token, SecurityImpersonation, &duplicated_token))
++    {
++        CloseHandle(winlogon_token);
++        RevertToSelf();
++        return false;
++    }
++    CloseHandle(winlogon_token);
++
++    if (!SetThreadToken(NULL, duplicated_token))
++    {
++        CloseHandle(duplicated_token);
++        RevertToSelf();
++        return false;
++    }
++    CloseHandle(duplicated_token);
++
++    return true;
++}
++
++bool
++register_ring_buffers(HANDLE device,
++                      struct tun_ring* send_ring,
++                      struct tun_ring* receive_ring,
++                      HANDLE send_tail_moved,
++                      HANDLE receive_tail_moved)
++{
++    struct tun_register_rings rr;
++    BOOL res;
++
++    ZeroMemory(&rr, sizeof(rr));
++
++    rr.send.ring = send_ring;
++    rr.send.ring_size = sizeof(send_ring->data);
++    rr.send.tail_moved = send_tail_moved;
++
++    rr.receive.ring = receive_ring;
++    rr.receive.ring_size = sizeof(receive_ring->data);
++    rr.receive.tail_moved = receive_tail_moved;
++
++    res = DeviceIoControl(device, TUN_IOCTL_REGISTER_RINGS, &rr, sizeof(rr), NULL, 0, NULL, NULL);
++
++    return res == TRUE;
++}
++
+ #endif /* ifdef _WIN32 */
+diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
+index 4814bbc..f6d45bd 100644
+--- a/src/openvpn/win32.h
++++ b/src/openvpn/win32.h
+@@ -25,6 +25,8 @@
+ #ifndef OPENVPN_WIN32_H
+ #define OPENVPN_WIN32_H
+ 
++#include <winioctl.h>
++
+ #include "mtu.h"
+ #include "openvpn-msg.h"
+ #include "argv.h"
+@@ -323,5 +325,54 @@ bool send_msg_iservice(HANDLE pipe, const void *data, size_t size,
+ int
+ openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned int flags);
+ 
++/*
++ * Values below are taken from Wireguard Windows client
++ * https://github.com/WireGuard/wireguard-go/blob/master/tun/wintun/ring_windows.go#L14
++ */
++#define WINTUN_RING_CAPACITY 0x800000
++#define WINTUN_RING_TRAILING_BYTES 0x10000
++#define WINTUN_RING_FRAMING_SIZE 12
++#define WINTUN_MAX_PACKET_SIZE 0xffff
++#define WINTUN_PACKET_ALIGN 4
++
++struct tun_ring
++{
++    volatile ULONG head;
++    volatile ULONG tail;
++    volatile LONG alertable;
++    UCHAR data[WINTUN_RING_CAPACITY + WINTUN_RING_TRAILING_BYTES + WINTUN_RING_FRAMING_SIZE];
++};
++
++struct tun_register_rings
++{
++    struct
++    {
++        ULONG ring_size;
++        struct tun_ring *ring;
++        HANDLE tail_moved;
++    } send, receive;
++};
++
++struct TUN_PACKET_HEADER
++{
++    uint32_t size;
++};
++
++struct TUN_PACKET
++{
++    uint32_t size;
++    UCHAR data[WINTUN_MAX_PACKET_SIZE];
++};
++
++#define TUN_IOCTL_REGISTER_RINGS CTL_CODE(51820U, 0x970U, METHOD_BUFFERED, FILE_READ_DATA | FILE_WRITE_DATA)
++
++bool impersonate_as_system();
++
++bool register_ring_buffers(HANDLE device,
++                           struct tun_ring *send_ring,
++                           struct tun_ring *receive_ring,
++                           HANDLE send_tail_moved,
++                           HANDLE receive_tail_moved);
++
+ #endif /* ifndef OPENVPN_WIN32_H */
+ #endif /* ifdef _WIN32 */
 -- 
--Lev
+2.7.4
 
---00000000000045623c0596fd6fad
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div dir=3D"ltr">Hi,=C2=A0<div><br></div></div><div class=
-=3D"gmail_quote"><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px =
-0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">As a gen=
-eral remark: could you try to stick to the 80 char line length<br>
-limit?<br></blockquote><div><br></div><div>Ok.=C2=A0</div><div>=C2=A0</div>=
-<blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-=
-left:1px solid rgb(204,204,204);padding-left:1ex">
-&gt; +#ifdef _WIN32<br>
-&gt; +=C2=A0 =C2=A0 }<br>
-&gt;=C2=A0 #endif<br>
-<br>
-As Simon mentioned too, this code is getting more and more hard to read.<br>
-Can we maybe do this in some cleaner way? Maybe add some helper function(s)=
-?<br></blockquote><div><br></div><div>Already fixed in v3.=C2=A0</div><div>=
-<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8=
-ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">&gt; +#ifdef _W=
-IN32<br>
-&gt; +=C2=A0 =C2=A0 }<br>
-&gt; +#endif<br>
-<br>
-As above :)<br></blockquote><div><br></div><div>Already fixed in v3.=C2=A0<=
-/div><div>=C2=A0<br></div><blockquote class=3D"gmail_quote" style=3D"margin=
-:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"=
->&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (tt-&gt;send_ring-&gt;h=
-ead =3D=3D tt-&gt;send_ring-&gt;tail)<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 /* nothing to=
- read from tun -&gt; remove tun read flag set by IOW_READ */<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 flags &amp;=
-=3D ~IOW_READ_TUN;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
-&gt; +=C2=A0 =C2=A0 }<br>
-&gt; +#endif<br>
-<br>
-Looks like this should be a helper function (with a good name that helps<br>
-understand what this does).<br></blockquote><div><br></div><div><br></div><=
-div>Implemented helper function=C2=A0tuntap_ring_empty().=C2=A0</div><div><=
-br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8e=
-x;border-left:1px solid rgb(204,204,204);padding-left:1ex">&gt; +=C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 c-&gt;c2.event_set_status =3D ret;<br>
-<br>
-This chunk is the same as the &quot;fast path&quot; check above. Looks like=
- you<br>
-should re-arrange this code so you don&#39;t have to duplicate it.<br></blo=
-ckquote><div><br></div><div>Not quite (already discussed verbally).=C2=A0</=
-div><div><br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0p=
-x 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">&gt; +=
-#ifdef _WIN32<br>
-&gt; +=C2=A0 =C2=A0 if (c-&gt;c1.tuntap &amp;&amp; c-&gt;c1.tuntap-&gt;wint=
-un)<br>
-&gt; +=C2=A0 =C2=A0 {<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (c-&gt;c1.tuntap-&gt;send_ring-&gt;hea=
-d !=3D c-&gt;c1.tuntap-&gt;send_ring-&gt;tail)<br>
-<br>
-Looking this deep into the tuntap struct from another module looks like<br>
-a layering violation. Consider adding a helper function like<br></blockquot=
-e><div><br></div><div>Fixed with the helper from above (tuntap_ring_empty).=
-</div><div><br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px =
-0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 /* add ring buffer event */=
-<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 struct rw_handle rw =3D { .=
-read =3D c-&gt;c1.tuntap-&gt;send_tail_moved };<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 event_ctl(mtcp-&gt;es, &amp=
-;rw, EVENT_READ, MTCP_TUN);<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
-<br>
-Can this not be done by tun_set() below? At first glance, if either<br>
-tun_event_handle() returns tt-&gt;send_tail_moved for wintun (instaed of<br>
-tt-&gt;rw_handle), of if tt-&gt;rw_handle would be set to send_tail_moved f=
-or<br>
-wintun. The latter might even allow you to get rid of<br>
-tt-&gt;send_tail_removed completely.<br></blockquote><div><br></div><div>Th=
-anks for the idea.</div><div><br></div><div>Indeed, I did some refactoring =
-and reused rw_handle.read/write</div><div>instead of send/receive_tail_move=
-d. Also got rid of wintun-specific</div><div>event_ctl calls - now it is ha=
-ndled in tun_set().<br></div><div>=C2=A0</div><blockquote class=3D"gmail_qu=
-ote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,20=
-4);padding-left:1ex">
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (tt-&gt;send_ring-&gt;he=
-ad =3D=3D tt-&gt;send_ring-&gt;tail)<br>
-<br>
-This should use the same helper function as suggested above.<br></blockquot=
-e><div><br></div><div>Done.=C2=A0</div><div><br></div><blockquote class=3D"=
-gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(20=
-4,204,204);padding-left:1ex">&gt; +=C2=A0 =C2=A0 struct tun_ring *send_ring=
-;<br>
-&gt; +=C2=A0 =C2=A0 struct tun_ring *receive_ring;<br>
-&gt; +=C2=A0 =C2=A0 HANDLE send_tail_moved;<br>
-&gt; +=C2=A0 =C2=A0 HANDLE receive_tail_moved;<br>
-<br>
-These are wintun-specific, right? Should we maybe clarify this by<br>
-prefixing them with wintun_ ?<br></blockquote><div><br></div><div>=C2=A0 *_=
-tail_moved are gone, added &quot;wintun_&quot; prefix to *_ring.=C2=A0</div=
-><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px=
- 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">&gt; +#=
-define WINTUN_RING_CAPACITY 0x800000<br>
-<br>
-Can you explain why this is the right size? Document either in a<br>
-comment, or in the commit message.<br></blockquote><div><br></div><div>Thos=
-e are from WG client, mentioned it in a comment.=C2=A0</div><div><br></div>=
-<blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-=
-left:1px solid rgb(204,204,204);padding-left:1ex">-Steffan</blockquote><div=
-><br></div><div>V4 is coming!</div><div>=C2=A0=C2=A0</div></div>-- <br><div=
- dir=3D"ltr" class=3D"gmail_signature">-Lev</div></div>
-
---00000000000045623c0596fd6fad--
 
