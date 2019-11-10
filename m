@@ -1,9 +1,13 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Sun, 10 Nov 2019 13:44:07 +0100
-Message-Id: <20191110124407.8734-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] get rid of 'broadcast' argument when
- configuring the tun device
+References: <1573148729-27339-1-git-send-email-lstipakov@...277...>
+ <1573148729-27339-5-git-send-email-lstipakov@...277...>
+ <14e11aff-4107-3693-c0bc-e8f5538c007a@...1856...>
+In-Reply-To: <14e11aff-4107-3693-c0bc-e8f5538c007a@...1856...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Sun, 10 Nov 2019 14:48:29 +0200
+Message-ID: <CAGyAFMUhJ_nj8VzvXHN83TeSsKUT+xO91t42HeM7ewZ+Cih_oA@...278...>
+Content-Type: multipart/alternative; boundary="00000000000045623c0596fd6fad"
+Subject: Re: [Openvpn-devel] [PATCH v2 4/7] wintun: ring buffers based I/O
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,360 +16,246 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-The broadcast argument is actually useless as every platform will figure
-it out and configure it on its own. We even realized that on linux, if
-you configure it wrong, nothing wrong will happen.
+--00000000000045623c0596fd6fad
+Content-Type: text/plain; charset="UTF-8"
 
-At this point, let's make the code cleaner and let's get rid of this
-useless argument at all.
+Hi,
 
-This patch just removed any occurrence of 'broadcast'.
+As a general remark: could you try to stick to the 80 char line length
+> limit?
+>
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
-
-Tested on our buildbot rig and did not explode.
+Ok.
 
 
- src/openvpn/networking.h                   |  4 +--
- src/openvpn/networking_iproute2.c          |  8 ++---
- src/openvpn/networking_sitnl.c             | 40 +++++++--------------
- src/openvpn/tun.c                          | 42 ++++------------------
- src/openvpn/tun.h                          |  1 -
- tests/unit_tests/openvpn/test_networking.c | 16 +++------
- 6 files changed, 27 insertions(+), 84 deletions(-)
+> > +#ifdef _WIN32
+> > +    }
+> >  #endif
+>
+> As Simon mentioned too, this code is getting more and more hard to read.
+> Can we maybe do this in some cleaner way? Maybe add some helper
+> function(s)?
+>
 
-diff --git a/src/openvpn/networking.h b/src/openvpn/networking.h
-index 4075ed73..5e6d898f 100644
---- a/src/openvpn/networking.h
-+++ b/src/openvpn/networking.h
-@@ -110,13 +110,11 @@ int net_iface_mtu_set(openvpn_net_ctx_t *ctx,
-  * @param iface     the interface where the address has to be added
-  * @param addr      the address to add
-  * @param prefixlen the prefix length of the network associated with the address
-- * @param broadcast the broadcast address to configure on the interface
-  *
-  * @return          0 on success, a negative error code otherwise
-  */
- int net_addr_v4_add(openvpn_net_ctx_t *ctx, const openvpn_net_iface_t *iface,
--                    const in_addr_t *addr, int prefixlen,
--                    const in_addr_t *broadcast);
-+                    const in_addr_t *addr, int prefixlen);
- 
- /**
-  * Add an IPv6 address to an interface
-diff --git a/src/openvpn/networking_iproute2.c b/src/openvpn/networking_iproute2.c
-index 1ddeb5cf..1db39fc7 100644
---- a/src/openvpn/networking_iproute2.c
-+++ b/src/openvpn/networking_iproute2.c
-@@ -90,16 +90,14 @@ net_iface_mtu_set(openvpn_net_ctx_t *ctx, const char *iface, uint32_t mtu)
- 
- int
- net_addr_v4_add(openvpn_net_ctx_t *ctx, const char *iface,
--                const in_addr_t *addr, int prefixlen,
--                const in_addr_t *broadcast)
-+                const in_addr_t *addr, int prefixlen)
- {
-     struct argv argv = argv_new();
- 
-     const char *addr_str = print_in_addr_t(*addr, 0, &ctx->gc);
--    const char *brd_str = print_in_addr_t(*broadcast, 0, &ctx->gc);
- 
--    argv_printf(&argv, "%s addr add dev %s %s/%d broadcast %s", iproute_path,
--                iface, addr_str, prefixlen, brd_str);
-+    argv_printf(&argv, "%s addr add dev %s %s/%d", iproute_path, iface,
-+                addr_str, prefixlen);
-     argv_msg(M_INFO, &argv);
-     openvpn_execve_check(&argv, ctx->es, S_FATAL, "Linux ip addr add failed");
- 
-diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
-index e5c48932..b93697e9 100644
---- a/src/openvpn/networking_sitnl.c
-+++ b/src/openvpn/networking_sitnl.c
-@@ -668,7 +668,7 @@ err:
- static int
- sitnl_addr_set(int cmd, uint32_t flags, int ifindex, sa_family_t af_family,
-                const inet_address_t *local, const inet_address_t *remote,
--               int prefixlen, const inet_address_t *broadcast)
-+               int prefixlen)
- {
-     struct sitnl_addr_req req;
-     uint32_t size;
-@@ -716,11 +716,6 @@ sitnl_addr_set(int cmd, uint32_t flags, int ifindex, sa_family_t af_family,
-         SITNL_ADDATTR(&req.n, sizeof(req), IFA_LOCAL, local, size);
-     }
- 
--    if (broadcast)
--    {
--        SITNL_ADDATTR(&req.n, sizeof(req), IFA_BROADCAST, broadcast, size);
--    }
--
-     ret = sitnl_send(&req.n, 0, 0, NULL, NULL);
-     if ((ret < 0) && (errno == EEXIST))
-     {
-@@ -762,7 +757,7 @@ sitnl_addr_ptp_add(sa_family_t af_family, const char *iface,
-     }
- 
-     return sitnl_addr_set(RTM_NEWADDR, NLM_F_CREATE | NLM_F_REPLACE, ifindex,
--                          af_family, local, remote, 0, NULL);
-+                          af_family, local, remote, 0);
- }
- 
- static int
-@@ -794,8 +789,7 @@ sitnl_addr_ptp_del(sa_family_t af_family, const char *iface,
-         return -ENOENT;
-     }
- 
--    return sitnl_addr_set(RTM_DELADDR, 0, ifindex, af_family, local, NULL, 0,
--                          NULL);
-+    return sitnl_addr_set(RTM_DELADDR, 0, ifindex, af_family, local, NULL, 0);
- }
- 
- static int
-@@ -874,8 +868,7 @@ err:
- 
- static int
- sitnl_addr_add(sa_family_t af_family, const char *iface,
--               const inet_address_t *addr, int prefixlen,
--               const inet_address_t *broadcast)
-+               const inet_address_t *addr, int prefixlen)
- {
-     int ifindex;
- 
-@@ -904,7 +897,7 @@ sitnl_addr_add(sa_family_t af_family, const char *iface,
-     }
- 
-     return sitnl_addr_set(RTM_NEWADDR, NLM_F_CREATE | NLM_F_REPLACE, ifindex,
--                          af_family, addr, NULL, prefixlen, broadcast);
-+                          af_family, addr, NULL, prefixlen);
- }
- 
- static int
-@@ -938,18 +931,15 @@ sitnl_addr_del(sa_family_t af_family, const char *iface, inet_address_t *addr,
-     }
- 
-     return sitnl_addr_set(RTM_DELADDR, 0, ifindex, af_family, addr, NULL,
--                          prefixlen, NULL);
-+                          prefixlen);
- }
- 
- int
- net_addr_v4_add(openvpn_net_ctx_t *ctx, const char *iface,
--                const in_addr_t *addr, int prefixlen,
--                const in_addr_t *broadcast)
-+                const in_addr_t *addr, int prefixlen)
- {
-     inet_address_t addr_v4 = { 0 };
--    inet_address_t brd_v4 = { 0 };
--    char buf1[INET_ADDRSTRLEN];
--    char buf2[INET_ADDRSTRLEN];
-+    char buf[INET_ADDRSTRLEN];
- 
-     if (!addr)
-     {
-@@ -958,16 +948,10 @@ net_addr_v4_add(openvpn_net_ctx_t *ctx, const char *iface,
- 
-     addr_v4.ipv4 = htonl(*addr);
- 
--    if (broadcast)
--    {
--        brd_v4.ipv4 = htonl(*broadcast);
--    }
--
--    msg(M_INFO, "%s: %s/%d brd %s dev %s", __func__,
--        inet_ntop(AF_INET, &addr_v4.ipv4, buf1, sizeof(buf1)), prefixlen,
--        inet_ntop(AF_INET, &brd_v4.ipv4, buf2, sizeof(buf2)), iface);
-+    msg(M_INFO, "%s: %s/%d dev %s", __func__,
-+        inet_ntop(AF_INET, &addr_v4.ipv4, buf, sizeof(buf)), prefixlen,iface);
- 
--    return sitnl_addr_add(AF_INET, iface, &addr_v4, prefixlen, &brd_v4);
-+    return sitnl_addr_add(AF_INET, iface, &addr_v4, prefixlen);
- }
- 
- int
-@@ -987,7 +971,7 @@ net_addr_v6_add(openvpn_net_ctx_t *ctx, const char *iface,
-     msg(M_INFO, "%s: %s/%d dev %s", __func__,
-         inet_ntop(AF_INET6, &addr_v6.ipv6, buf, sizeof(buf)), prefixlen, iface);
- 
--    return sitnl_addr_add(AF_INET6, iface, &addr_v6, prefixlen, NULL);
-+    return sitnl_addr_add(AF_INET6, iface, &addr_v6, prefixlen);
- }
- 
- int
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 37bf065b..599fd817 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -337,16 +337,6 @@ ifconfig_sanity_check(bool tun, in_addr_t addr, int topology)
-     gc_free(&gc);
- }
- 
--/*
-- * For TAP-style devices, generate a broadcast address.
-- */
--static in_addr_t
--generate_ifconfig_broadcast_addr(in_addr_t local,
--                                 in_addr_t netmask)
--{
--    return local | ~netmask;
--}
--
- /*
-  * Check that --local and --remote addresses do not
-  * clash with ifconfig addresses or subnet.
-@@ -598,9 +588,7 @@ do_ifconfig_setenv(const struct tuntap *tt, struct env_set *es)
-         }
-         else
-         {
--            const char *ifconfig_broadcast = print_in_addr_t(tt->broadcast, 0, &gc);
-             setenv_str(es, "ifconfig_netmask", ifconfig_remote_netmask);
--            setenv_str(es, "ifconfig_broadcast", ifconfig_broadcast);
-         }
-     }
- 
-@@ -727,14 +715,6 @@ init_tun(const char *dev,        /* --dev option */
-             }
-         }
- 
--        /*
--         * If TAP-style interface, generate broadcast address.
--         */
--        if (!tun)
--        {
--            tt->broadcast = generate_ifconfig_broadcast_addr(tt->local, tt->remote_netmask);
--        }
--
- #ifdef _WIN32
-         /*
-          * Make sure that both ifconfig addresses are part of the
-@@ -1052,7 +1032,6 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
- #if !defined(TARGET_LINUX)
-     const char *ifconfig_local = NULL;
-     const char *ifconfig_remote_netmask = NULL;
--    const char *ifconfig_broadcast = NULL;
-     struct argv argv = argv_new();
-     struct gc_arena gc = gc_new();
- 
-@@ -1061,14 +1040,6 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-      */
-     ifconfig_local = print_in_addr_t(tt->local, 0, &gc);
-     ifconfig_remote_netmask = print_in_addr_t(tt->remote_netmask, 0, &gc);
--
--    /*
--     * If TAP-style device, generate broadcast address.
--     */
--    if (!tun)
--    {
--        ifconfig_broadcast = print_in_addr_t(tt->broadcast, 0, &gc);
--    }
- #endif
- 
- #if defined(TARGET_LINUX)
-@@ -1093,8 +1064,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-     else
-     {
-         if (net_addr_v4_add(ctx, ifname, &tt->local,
--                            netmask_to_netbits2(tt->remote_netmask),
--                            &tt->remote_netmask) < 0)
-+                            netmask_to_netbits2(tt->remote_netmask)) < 0)
-         {
-             msg(M_FATAL, "Linux can't add IP to TAP interface %s", ifname);
-         }
-@@ -1153,7 +1123,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-     }
-     else
-     {
--        argv_printf(&argv, "%s %s %s netmask %s broadcast + up",
-+        argv_printf(&argv, "%s %s %s netmask %s up",
-                     IFCONFIG_PATH, ifname, ifconfig_local,
-                     ifconfig_remote_netmask);
-     }
-@@ -1205,9 +1175,9 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-     }
-     else
-     {
--        argv_printf(&argv, "%s %s %s netmask %s mtu %d broadcast %s link0",
-+        argv_printf(&argv, "%s %s %s netmask %s mtu %d link0",
-                     IFCONFIG_PATH, ifname, ifconfig_local,
--                    ifconfig_remote_netmask, tun_mtu, ifconfig_broadcast);
-+                    ifconfig_remote_netmask, tun_mtu);
-     }
-     argv_msg(M_INFO, &argv);
-     openvpn_execve_check(&argv, es, S_FATAL, "OpenBSD ifconfig failed");
-@@ -1247,9 +1217,9 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-          * so we don't need the "link0" extra parameter to specify we want to do
-          * tunneling at the ethernet level
-          */
--        argv_printf(&argv, "%s %s %s netmask %s mtu %d broadcast %s",
-+        argv_printf(&argv, "%s %s %s netmask %s mtu %d",
-                     IFCONFIG_PATH, ifname, ifconfig_local,
--                    ifconfig_remote_netmask, tun_mtu, ifconfig_broadcast);
-+                    ifconfig_remote_netmask, tun_mtu);
-     }
-     argv_msg(M_INFO, &argv);
-     openvpn_execve_check(&argv, es, S_FATAL, "NetBSD ifconfig failed");
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index 19cab7ea..66b75d93 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -158,7 +158,6 @@ struct tuntap
-     /* ifconfig parameters */
-     in_addr_t local;
-     in_addr_t remote_netmask;
--    in_addr_t broadcast;
- 
-     struct in6_addr local_ipv6;
-     struct in6_addr remote_ipv6;
-diff --git a/tests/unit_tests/openvpn/test_networking.c b/tests/unit_tests/openvpn/test_networking.c
-index 22d8babe..2d37d6e1 100644
---- a/tests/unit_tests/openvpn/test_networking.c
-+++ b/tests/unit_tests/openvpn/test_networking.c
-@@ -22,26 +22,20 @@ net__iface_mtu_set(int mtu)
- }
- 
- static int
--net__addr_v4_add(const char *addr_str, int prefixlen, const char *brd_str)
-+net__addr_v4_add(const char *addr_str, int prefixlen)
- {
--    in_addr_t addr, brd;
-+    in_addr_t addr;
-     int ret;
- 
-     ret = inet_pton(AF_INET, addr_str, &addr);
-     if (ret != 1)
-         return -1;
- 
--    ret = inet_pton(AF_INET, brd_str, &brd);
--    if (ret != 1)
--        return -1;
--
-     addr = ntohl(addr);
--    brd = ntohl(brd);
- 
--    printf("CMD: ip addr add %s/%d brd %s dev %s\n", addr_str, prefixlen,
--           brd_str, iface);
-+    printf("CMD: ip addr add %s/%d dev %s\n", addr_str, prefixlen, iface);
- 
--    return net_addr_v4_add(NULL, iface, &addr, prefixlen, &brd);
-+    return net_addr_v4_add(NULL, iface, &addr, prefixlen);
- }
- 
- static int
-@@ -198,7 +192,7 @@ main(int argc, char *argv[])
-         case 1:
-             return net__iface_mtu_set(1281);
-         case 2:
--            return net__addr_v4_add("10.255.255.1", 24, "10.255.255.255");
-+            return net__addr_v4_add("10.255.255.1", 24);
-         case 3:
-             return net__addr_v6_add("2001::1", 64);
-         case 4:
+Already fixed in v3.
+
+> +#ifdef _WIN32
+> > +    }
+> > +#endif
+>
+> As above :)
+>
+
+Already fixed in v3.
+
+
+> > +            if (tt->send_ring->head == tt->send_ring->tail)
+> > +            {
+> > +                /* nothing to read from tun -> remove tun read flag set
+> by IOW_READ */
+> > +                flags &= ~IOW_READ_TUN;
+> > +            }
+> > +        }
+> > +    }
+> > +#endif
+>
+> Looks like this should be a helper function (with a good name that helps
+> understand what this does).
+>
+
+
+Implemented helper function tuntap_ring_empty().
+
+> +            c->c2.event_set_status = ret;
+>
+> This chunk is the same as the "fast path" check above. Looks like you
+> should re-arrange this code so you don't have to duplicate it.
+>
+
+Not quite (already discussed verbally).
+
+> +#ifdef _WIN32
+> > +    if (c->c1.tuntap && c->c1.tuntap->wintun)
+> > +    {
+> > +        if (c->c1.tuntap->send_ring->head !=
+> c->c1.tuntap->send_ring->tail)
+>
+> Looking this deep into the tuntap struct from another module looks like
+> a layering violation. Consider adding a helper function like
+>
+
+Fixed with the helper from above (tuntap_ring_empty).
+
+> +        {
+> > +            /* add ring buffer event */
+> > +            struct rw_handle rw = { .read =
+> c->c1.tuntap->send_tail_moved };
+> > +            event_ctl(mtcp->es, &rw, EVENT_READ, MTCP_TUN);
+> > +        }
+>
+> Can this not be done by tun_set() below? At first glance, if either
+> tun_event_handle() returns tt->send_tail_moved for wintun (instaed of
+> tt->rw_handle), of if tt->rw_handle would be set to send_tail_moved for
+> wintun. The latter might even allow you to get rid of
+> tt->send_tail_removed completely.
+>
+
+Thanks for the idea.
+
+Indeed, I did some refactoring and reused rw_handle.read/write
+instead of send/receive_tail_moved. Also got rid of wintun-specific
+event_ctl calls - now it is handled in tun_set().
+
+
+> > +            if (tt->send_ring->head == tt->send_ring->tail)
+>
+> This should use the same helper function as suggested above.
+>
+
+Done.
+
+> +    struct tun_ring *send_ring;
+> > +    struct tun_ring *receive_ring;
+> > +    HANDLE send_tail_moved;
+> > +    HANDLE receive_tail_moved;
+>
+> These are wintun-specific, right? Should we maybe clarify this by
+> prefixing them with wintun_ ?
+>
+
+  *_tail_moved are gone, added "wintun_" prefix to *_ring.
+
+
+> > +#define WINTUN_RING_CAPACITY 0x800000
+>
+> Can you explain why this is the right size? Document either in a
+> comment, or in the commit message.
+>
+
+Those are from WG client, mentioned it in a comment.
+
+-Steffan
+
+
+V4 is coming!
+
 -- 
-2.24.0
+-Lev
 
+--00000000000045623c0596fd6fad
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div dir=3D"ltr">Hi,=C2=A0<div><br></div></div><div class=
+=3D"gmail_quote"><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px =
+0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">As a gen=
+eral remark: could you try to stick to the 80 char line length<br>
+limit?<br></blockquote><div><br></div><div>Ok.=C2=A0</div><div>=C2=A0</div>=
+<blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-=
+left:1px solid rgb(204,204,204);padding-left:1ex">
+&gt; +#ifdef _WIN32<br>
+&gt; +=C2=A0 =C2=A0 }<br>
+&gt;=C2=A0 #endif<br>
+<br>
+As Simon mentioned too, this code is getting more and more hard to read.<br>
+Can we maybe do this in some cleaner way? Maybe add some helper function(s)=
+?<br></blockquote><div><br></div><div>Already fixed in v3.=C2=A0</div><div>=
+<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8=
+ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">&gt; +#ifdef _W=
+IN32<br>
+&gt; +=C2=A0 =C2=A0 }<br>
+&gt; +#endif<br>
+<br>
+As above :)<br></blockquote><div><br></div><div>Already fixed in v3.=C2=A0<=
+/div><div>=C2=A0<br></div><blockquote class=3D"gmail_quote" style=3D"margin=
+:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"=
+>&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (tt-&gt;send_ring-&gt;h=
+ead =3D=3D tt-&gt;send_ring-&gt;tail)<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 /* nothing to=
+ read from tun -&gt; remove tun read flag set by IOW_READ */<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 flags &amp;=
+=3D ~IOW_READ_TUN;<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
+&gt; +=C2=A0 =C2=A0 }<br>
+&gt; +#endif<br>
+<br>
+Looks like this should be a helper function (with a good name that helps<br>
+understand what this does).<br></blockquote><div><br></div><div><br></div><=
+div>Implemented helper function=C2=A0tuntap_ring_empty().=C2=A0</div><div><=
+br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8e=
+x;border-left:1px solid rgb(204,204,204);padding-left:1ex">&gt; +=C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 c-&gt;c2.event_set_status =3D ret;<br>
+<br>
+This chunk is the same as the &quot;fast path&quot; check above. Looks like=
+ you<br>
+should re-arrange this code so you don&#39;t have to duplicate it.<br></blo=
+ckquote><div><br></div><div>Not quite (already discussed verbally).=C2=A0</=
+div><div><br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0p=
+x 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">&gt; +=
+#ifdef _WIN32<br>
+&gt; +=C2=A0 =C2=A0 if (c-&gt;c1.tuntap &amp;&amp; c-&gt;c1.tuntap-&gt;wint=
+un)<br>
+&gt; +=C2=A0 =C2=A0 {<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (c-&gt;c1.tuntap-&gt;send_ring-&gt;hea=
+d !=3D c-&gt;c1.tuntap-&gt;send_ring-&gt;tail)<br>
+<br>
+Looking this deep into the tuntap struct from another module looks like<br>
+a layering violation. Consider adding a helper function like<br></blockquot=
+e><div><br></div><div>Fixed with the helper from above (tuntap_ring_empty).=
+</div><div><br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px =
+0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
+&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 /* add ring buffer event */=
+<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 struct rw_handle rw =3D { .=
+read =3D c-&gt;c1.tuntap-&gt;send_tail_moved };<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 event_ctl(mtcp-&gt;es, &amp=
+;rw, EVENT_READ, MTCP_TUN);<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
+<br>
+Can this not be done by tun_set() below? At first glance, if either<br>
+tun_event_handle() returns tt-&gt;send_tail_moved for wintun (instaed of<br>
+tt-&gt;rw_handle), of if tt-&gt;rw_handle would be set to send_tail_moved f=
+or<br>
+wintun. The latter might even allow you to get rid of<br>
+tt-&gt;send_tail_removed completely.<br></blockquote><div><br></div><div>Th=
+anks for the idea.</div><div><br></div><div>Indeed, I did some refactoring =
+and reused rw_handle.read/write</div><div>instead of send/receive_tail_move=
+d. Also got rid of wintun-specific</div><div>event_ctl calls - now it is ha=
+ndled in tun_set().<br></div><div>=C2=A0</div><blockquote class=3D"gmail_qu=
+ote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,20=
+4);padding-left:1ex">
+&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (tt-&gt;send_ring-&gt;he=
+ad =3D=3D tt-&gt;send_ring-&gt;tail)<br>
+<br>
+This should use the same helper function as suggested above.<br></blockquot=
+e><div><br></div><div>Done.=C2=A0</div><div><br></div><blockquote class=3D"=
+gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(20=
+4,204,204);padding-left:1ex">&gt; +=C2=A0 =C2=A0 struct tun_ring *send_ring=
+;<br>
+&gt; +=C2=A0 =C2=A0 struct tun_ring *receive_ring;<br>
+&gt; +=C2=A0 =C2=A0 HANDLE send_tail_moved;<br>
+&gt; +=C2=A0 =C2=A0 HANDLE receive_tail_moved;<br>
+<br>
+These are wintun-specific, right? Should we maybe clarify this by<br>
+prefixing them with wintun_ ?<br></blockquote><div><br></div><div>=C2=A0 *_=
+tail_moved are gone, added &quot;wintun_&quot; prefix to *_ring.=C2=A0</div=
+><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px=
+ 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">&gt; +#=
+define WINTUN_RING_CAPACITY 0x800000<br>
+<br>
+Can you explain why this is the right size? Document either in a<br>
+comment, or in the commit message.<br></blockquote><div><br></div><div>Thos=
+e are from WG client, mentioned it in a comment.=C2=A0</div><div><br></div>=
+<blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-=
+left:1px solid rgb(204,204,204);padding-left:1ex">-Steffan</blockquote><div=
+><br></div><div>V4 is coming!</div><div>=C2=A0=C2=A0</div></div>-- <br><div=
+ dir=3D"ltr" class=3D"gmail_signature">-Lev</div></div>
+
+--00000000000045623c0596fd6fad--
 
