@@ -1,14 +1,15 @@
 References: <20191110133525.6069-1-a@...2181...>
+ <20191110133525.6069-2-a@...2181...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <bb7d7a21-bcdb-61fc-565a-df67410961e7@...1227...>
-Date: Sun, 10 Nov 2019 15:38:41 +0100
+Message-ID: <46a03430-b6ea-b39e-3824-fbd5a9e4b475@...1227...>
+Date: Sun, 10 Nov 2019 15:39:44 +0100
 MIME-Version: 1.0
-In-Reply-To: <20191110133525.6069-1-a@...2181...>
+In-Reply-To: <20191110133525.6069-2-a@...2181...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="KxLw3Dl3fSJlytRg3QW1KssJPiIZbndNr"
-Subject: Re: [Openvpn-devel] [PATCH 1/3] auth_token_kt: ensure key_type
- object is initialized
+ boundary="AMQ6sKpLQWyHBIkjic64si02e2vZoavou"
+Subject: Re: [Openvpn-devel] [PATCH 2/3] auth.c: make cast explicit in the
+ crypto API
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,72 +21,54 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---KxLw3Dl3fSJlytRg3QW1KssJPiIZbndNr
-Content-Type: multipart/mixed; boundary="Nq0pKOSex4dikDLyvYtaknDK6XlZIbbYv"
+--AMQ6sKpLQWyHBIkjic64si02e2vZoavou
+Content-Type: multipart/mixed; boundary="mgPnv6NCk8FLKL9yNKkssP6kSVT9pAbax"
 
---Nq0pKOSex4dikDLyvYtaknDK6XlZIbbYv
+--mgPnv6NCk8FLKL9yNKkssP6kSVT9pAbax
 Content-Language: de-DE
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
 Am 10.11.19 um 14:35 schrieb Antonio Quartulli:
-> Fixes the following warning:
+> mbedtls_md_get_size() returns unsigned char, while EVP_MD_size() returns
+> int. Results coming from both functions are normally in a uint8_t member
+> of the key_type struct, because it is known that 8bits are enough (also
+> for EVP_MD_size()).
 >=20
-> auth_token.c: In function 'auth_token_init_secret':
-> auth_token.c:47: warning: 'kt.cipher_length' is used uninitialized in thi=
-s function
-> auth_token.c:34: note: 'kt.cipher_length' was declared here
->=20
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> Signed-off-by: Antonio Quartulli <a@...2181...>
-> ---
->  src/openvpn/auth_token.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
-> index 1edc8069..6275299d 100644
-> --- a/src/openvpn/auth_token.c
-> +++ b/src/openvpn/auth_token.c
-> @@ -31,7 +31,7 @@ const char *auth_token_pem_name =3D "OpenVPN auth-token=
- server key";
->  static struct key_type
->  auth_token_kt(void)
->  {
-> -    struct key_type kt;
-> +    struct key_type kt =3D { 0 };
->      /* We do not encrypt our session tokens */
->      kt.cipher =3D NULL;
->      kt.digest =3D md_kt_get("SHA256");
+> This unexpected cast can, however, trigger unsolicited warnings.
+> Make the cast explicit by changing the return value of our crypto API.
 >=20
 
-Acked-by: Arne Schwabe <arne@...1227...>
+Not sure that this really needed but it also does not hurt, so
+
+Acked-By: Arne Schwabe <arne@...1227...>
 
 Arne
 
 
---Nq0pKOSex4dikDLyvYtaknDK6XlZIbbYv--
+--mgPnv6NCk8FLKL9yNKkssP6kSVT9pAbax--
 
---KxLw3Dl3fSJlytRg3QW1KssJPiIZbndNr
+--AMQ6sKpLQWyHBIkjic64si02e2vZoavou
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl3IIPIACgkQFRhsZwKx
-RFTQZw//WOJ7aqstmSEEujCVoqPTJWiqByYp8j9MGHLQ1jDZhEX2aJ78E4EsMUmS
-31Kdb7ivkCENwUjuCxrZ0r5X2e7TjTttVhzDWReP5dOuyyixi2B8k893xPi1aees
-Zuir12QRit+L66zojS3Nt3yt05equHUtzGYIatkIMI/n+ndPAHDtSRlF8/0luXai
-+c3Ckx9eJ4IzJD1Lbk0a+4zat0fw/UWjnEOtseG0h3SBHq8hn2PTnqcFx+Kk7/BE
-fXSl5vqpqz9c5SF7i3IdTTzvFqkCGB1EqOZqn5pAwtuyFlLj4AGtph4tx04JEC4Y
-/PtKcQisa0KJGIDQmmvFzFMy4YLyGPcxFyKlA+u4s1I+t+gTydlObj2x4XQc1cB4
-IIJMGyI0QzzVwfFhWoiaaNk4d7IHlKZXYEiTbqqH4mXwuGwSS9b2NVb6KlNizOX7
-PzmsMoI+6YfJCkLhSyUiX68BOzHLKhQssSNAEydEWPMCqtyZLQgy5zyos15uflyd
-+D11ZzDFHUjKJ/AIbhwrD38rQT6jjO0plD1obG2QReHiKyGZxlCSrla6qgckmdO/
-2lUYwWachb83ZGNVgq3mbrdqL+KqYSrYUX27+olJI3MQHKPTyqCx8tkp0kDuYqsg
-F4Pb0roktjGmq9xOgZ/68c0mh+T6Uizzhq7BdNUfUnYXyozoXLA=
-=st5M
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl3IITAACgkQFRhsZwKx
+RFSqBw//RQO96MzejoBqHF2Bm/2FnDgoxptoYKVCZ6jQt20uM6wxU9u0hhuh3sqA
+yyp57V8HB9q3NAOV2y3GEmWsrRvbPyc/YNyTCCgSFi50tiF0ZIynrLLBbgS8WAhK
+c4fMKYfte0RxT3ZjzBvC7uBHQyGte1U3ga2eN0kmba2za0BfAkjeI5mUb4p5I1bI
+ZRcHgTQWgSIOyx5+NjYEclHaKZIQSKuVhqkm+8+DYBXntkcI0RUT185Q3b8m60hd
+md4hidIN87GLQUff9zHN3kW2Ni44QXi3DbTDOynGPwQxeb7DoZ8Tgwo2tAvZ1sdN
+UKAKcpLZdsaW0uxSGADimllkIcjNVFg2xU61nRDzqgLrdnxtQBJyOdIredgYDXqT
+E82W7VQ9QVoVk9xp5qgrTSmGKlRzK4+CWfch5IfnDxImCkc5reNP+sYcuBHGDBmp
+xmDgbpa53VasPj36jNdRxTJEq7jVNpU+qQSd/7mz/SCi5pImg9WLO5g2wKhWb56Y
+DhvpNHpL5w+N5lNyw42a4GsikkNF+RvXQu+Eukp7jZUVFZgHarIqYDnELy0jz/+p
+Fsr7REYSoos4vZvm5QSwwUzoOT1HPAPJ/mYSLEMqGprKH1v+MpoX8fgHyeYKU82v
+XVv2JVntEkS91v6ccky9erQHVXsNlzb7mYf8Xxt/PcuGBQKhvCQ=
+=B5SR
 -----END PGP SIGNATURE-----
 
---KxLw3Dl3fSJlytRg3QW1KssJPiIZbndNr--
+--AMQ6sKpLQWyHBIkjic64si02e2vZoavou--
 
