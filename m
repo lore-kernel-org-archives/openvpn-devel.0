@@ -1,19 +1,9 @@
-Date: Sun, 10 Nov 2019 19:07:55 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20191110180755.GQ40538@...1296...>
-References: <20191103053148.18059-1-tom.ty89@...277...>
- <20191103182443.GC40538@...1296...>
- <20191103183351.GD40538@...1296...>
- <CAGnHSEn0jaM3u9LCXxArhQkL9ddZQ9UROOZ8+PXPf+oAwTyswg@...278...>
- <20191103204613.GE40538@...1296...>
- <CAGnHSE=LcwX6hxHM2sdpWRP6cKyQiuhtc4ZUG2H1rdu-CNHOqQ@...278...>
+From: Antonio Quartulli <a@...2181...>
+Date: Sun, 10 Nov 2019 20:56:22 +0100
+Message-Id: <20191110195622.28177-1-a@...2181...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="PpQJECQXld3rh+sr"
-Content-Disposition: inline
-In-Reply-To: <CAGnHSE=LcwX6hxHM2sdpWRP6cKyQiuhtc4ZUG2H1rdu-CNHOqQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] tun/iproute2: support 31-bit ipv4
- prefix (RFC 3021)
+Subject: [Openvpn-devel] [PATCH] travis: fix CFLAGS assignment error and add
+ -Werror only when compiling on Linux for Linux
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,54 +12,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Tom Yan <tom.ty89@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
---PpQJECQXld3rh+sr
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+CFLAGS may not resolve to anything and the build-check.sh script would
+just fail.
 
-Hi,
+Use proper substitution so that the script won't error out when CFLAGS
+is uninitialized.
 
-On Mon, Nov 04, 2019 at 05:10:12AM +0800, Tom Yan wrote:
-> So in master, when net_addr_v4_add is called in tun.c, which
-> net_addr_v4_add (networking_iproute2.c or networking_sitnl.c) is
-> actually used depends on how openvpn is built, right?
+At the same time ensure that such flag is set only when compiling *for*
+linux (we use linux to also compile *for* windows)
 
-Can you have a look at the current "master" branch?  Antonio has ripped
-out *all* broadcast setting - so this should now do /31s just fine?
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
 
-More radical than your approach, but "less old code" is better than
-"yet another special condition added" :-)
+Test on travis-ci with my personal openvpn repo:
+https://travis-ci.org/ordex/openvpn
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+ .travis/build-check.sh | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-Gert Doering - Munich, Germany                             gert@...1296...
+diff --git a/.travis/build-check.sh b/.travis/build-check.sh
+index 250bb454..c2a4904c 100755
+--- a/.travis/build-check.sh
++++ b/.travis/build-check.sh
+@@ -8,7 +8,6 @@ fi
+ 
+ if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+ 	export LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH:-}"
+-	export CFLAGS="${CFLAGS} -Werror"
+ fi
+ 
+ if [ "${TRAVIS_OS_NAME}" = "osx"   ]; then
+@@ -21,7 +20,10 @@ if [ -z ${CHOST+x} ]; then
+ 	./configure --with-crypto-library="${SSLLIB}" ${EXTRA_CONFIG:-} || (cat config.log && exit 1)
+ 	make -j$JOBS
+ 	src/openvpn/openvpn --version || true
+-	if [ "${TRAVIS_OS_NAME}" = "linux" ]; then ldd src/openvpn/openvpn; fi
++	if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
++		ldd src/openvpn/openvpn;
++		export CFLAGS="${CFLAGS:-} -Werror"
++	fi
+ 	if [ "${TRAVIS_OS_NAME}" = "osx" ]; then otool -L src/openvpn/openvpn; fi
+ 	make check
+ 	${EXTRA_SCRIPT:-}
+-- 
+2.24.0
 
---PpQJECQXld3rh+sr
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJdyFH6AAoJEB2Cnv7KVigSGfQL/iNXsOnVN5qZPRIIJ+pXefZe
-Ae1hJxT5knzJuAW2KUxHs31xDNft03ZopbSXlrwv07Xw1zD5v47THBBoxRHR3OTw
-jIBGoAiexzhpKi4gke8zs3nPmcpBHF+W13ArpV4r+B6iSPfoJ2noD5COKZOLsSQr
-kngEcSCFGS4mZYY5NDLKq8Rr290/4ve/10hqVprGyj4AsBvN76KIf+G37sBFgXLu
-OkMLl3xyy9YOXVJxrPfdSTixdQyollJca1VN9f7sMbY2KSdKl7ADSD2crNOFh7Lz
-zi7K2U/tKuTceR2cch46byOJAmK9qKNgRas1nJftnc8Uhya5Mi+mwaveQB15Bysa
-gge4nQLTrrfn+tcQu+PLzwsq5agjSQDb7WsrW6LFKISCo1DfV4SO7uayHgy+rOGt
-oTJdzxQCw5A6WGrzXa4uZ91VRNLRHkRR2VyRW90cJnPxFHkJY+tVxlYljpOBx2rF
-3DpzaIbDpHxS8kMu0asxQZWEYZ0fhfMRinomT+e7zg==
-=VUkO
------END PGP SIGNATURE-----
-
---PpQJECQXld3rh+sr--
 
