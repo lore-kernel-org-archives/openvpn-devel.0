@@ -1,7 +1,14 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Mon, 11 Nov 2019 13:50:25 +0200
-Message-Id: <20191111115025.1121-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH] msvc: fix various level2 warnings
+References: <20191110231018.30621-1-steffan@...1856...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <c297e78a-7e0a-dd6a-bc79-69fe297a8e67@...1227...>
+Date: Mon, 11 Nov 2019 14:12:04 +0100
+MIME-Version: 1.0
+In-Reply-To: <20191110231018.30621-1-steffan@...1856...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="QOWCNRZ7PRxDrusoEAaG8JSphGdv56k8p"
+Subject: Re: [Openvpn-devel] [PATCH] mbedtls: add RFC 5705 keying material
+ exporter support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,256 +17,91 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--QOWCNRZ7PRxDrusoEAaG8JSphGdv56k8p
+Content-Type: multipart/mixed; boundary="cRkuVf14rLOlsSXOGqKtO4oujtkF3KmOj"
+
+--cRkuVf14rLOlsSXOGqKtO4oujtkF3KmOj
+Content-Language: de-DE
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+Content-Transfer-Encoding: quoted-printable
 
-From: Lev Stipakov <lev@...515...>
+Am 11.11.19 um 00:10 schrieb Steffan Karger:
+> Since mbed TLS 2.18, mbed TLS can also implement RFC 5705. As a first
+> step towards using the keying material exporter as a method to generate
+> key material for the data channel, implement the
+> --keying-material-exporter function we already have for OpenSSL also for
+> mbed TLS builds.
+>=20
+> Implementing RFC 5705 for mbed TLS is a bit more cumbersome, because the
+> library itself only provides a callback that is called during connection
+> setup, which enables us to implement RFC 5705 ourselves. To protect
+> ourselves against mistakes, we immediately perform the required key
+> derivation to generate the exporterd keying material, and only cache the
+> derived key material until we can actually export it to the environment
+> (similar to the OpenSSL builds).
+>=20
+> To test this, I found it easiest to temporarily move the call to
+> key_state_export_keying_material outside the if statement, and use a
+> script that runs after connection setup (e.g. --ipchange) that prints
+> the environment. E.g.
+>=20
+>   #!/bin/sh
+>   env | sort
+>=20
+> This should show the same value for the exported_keying_material env
+> variable for both mbed TLS and OpenSSL builds. Of course you can also
+> use the code as-is, and write a plugin to verify the same thing.
+>=20
+> Signed-off-by: Steffan Karger <steffan@...1856...>
 
-This also sets warnings level to level2, which
-makes them manageable.
 
-Signed-off-by: Lev Stipakov <lev@...515...>
----
- src/compat/Debug.props       |  1 -
- src/openvpn/block_dns.c      |  3 ---
- src/openvpn/buffer.c         |  2 +-
- src/openvpn/crypto_openssl.c |  2 +-
- src/openvpn/init.c           |  2 +-
- src/openvpn/mtu.c            |  4 ++--
- src/openvpn/openvpn.vcxproj  | 20 ++++++++++----------
- src/openvpn/options.c        |  2 +-
- src/openvpn/route.c          |  2 +-
- src/openvpn/ssl_backend.h    |  2 +-
- src/openvpn/tun.c            |  4 ++--
- 11 files changed, 20 insertions(+), 24 deletions(-)
+If we do a v2 of the patch could we rename HAVE_EKM to something better
+like HAVE_EXPORT_KEYMATERIAL? EKM is a bit a too short for my taste.
 
-diff --git a/src/compat/Debug.props b/src/compat/Debug.props
-index e5e9f681..31bb9d91 100644
---- a/src/compat/Debug.props
-+++ b/src/compat/Debug.props
-@@ -15,7 +15,6 @@
-       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
--      <MinimalRebuild>true</MinimalRebuild>
-     </ClCompile>
-   </ItemDefinitionGroup>
-   <ItemGroup />
-diff --git a/src/openvpn/block_dns.c b/src/openvpn/block_dns.c
-index 889d6bb9..f4718fc2 100644
---- a/src/openvpn/block_dns.c
-+++ b/src/openvpn/block_dns.c
-@@ -109,9 +109,6 @@ DEFINE_GUID(
- 
- static WCHAR *FIREWALL_NAME = L"OpenVPN";
- 
--VOID NETIOAPI_API_
--InitializeIpInterfaceEntry(PMIB_IPINTERFACE_ROW Row);
--
- /*
-  * Default msg handler does nothing
-  */
-diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
-index 8575e295..b32bc8b2 100644
---- a/src/openvpn/buffer.c
-+++ b/src/openvpn/buffer.c
-@@ -474,7 +474,7 @@ x_gc_freespecial(struct gc_arena *a)
- }
- 
- void
--gc_addspecial(void *addr, void (free_function)(void *), struct gc_arena *a)
-+gc_addspecial(void *addr, void (*free_function)(void *), struct gc_arena *a)
- {
-     ASSERT(a);
-     struct gc_entry_special *e;
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 520e40ee..1057fd1d 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -313,7 +313,7 @@ show_available_ciphers(void)
-         }
-     }
- 
--    qsort(cipher_list, num_ciphers, sizeof(*cipher_list), cipher_name_cmp);
-+    qsort((void *)cipher_list, num_ciphers, sizeof(*cipher_list), cipher_name_cmp);
- 
-     for (i = 0; i < num_ciphers; i++)
-     {
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 0bdb0a9c..2120acaa 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1778,7 +1778,7 @@ do_open_tun(struct context *c)
- #ifdef _WIN32
-     /* store (hide) interactive service handle in tuntap_options */
-     c->c1.tuntap->options.msg_channel = c->options.msg_channel;
--    msg(D_ROUTE, "interactive service msg_channel=%u", (unsigned int) c->options.msg_channel);
-+    msg(D_ROUTE, "interactive service msg_channel=%llu", (unsigned long long) c->options.msg_channel);
- #endif
- 
-     /* allocate route list structure */
-diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
-index 04868cd6..8178ff06 100644
---- a/src/openvpn/mtu.c
-+++ b/src/openvpn/mtu.c
-@@ -175,7 +175,7 @@ set_mtu_discover_type(int sd, int mtu_type, sa_family_t proto_af)
- #if defined(HAVE_SETSOCKOPT) && defined(IP_MTU_DISCOVER)
-             case AF_INET:
-                 if (setsockopt
--                        (sd, IPPROTO_IP, IP_MTU_DISCOVER, &mtu_type, sizeof(mtu_type)))
-+                        (sd, IPPROTO_IP, IP_MTU_DISCOVER, (const char *)&mtu_type, sizeof(mtu_type)))
-                 {
-                     msg(M_ERR, "Error setting IP_MTU_DISCOVER type=%d on TCP/UDP socket",
-                         mtu_type);
-@@ -186,7 +186,7 @@ set_mtu_discover_type(int sd, int mtu_type, sa_family_t proto_af)
- #if defined(HAVE_SETSOCKOPT) && defined(IPV6_MTU_DISCOVER)
-             case AF_INET6:
-                 if (setsockopt
--                        (sd, IPPROTO_IPV6, IPV6_MTU_DISCOVER, &mtu_type, sizeof(mtu_type)))
-+                        (sd, IPPROTO_IPV6, IPV6_MTU_DISCOVER, (const char *)&mtu_type, sizeof(mtu_type)))
-                 {
-                     msg(M_ERR, "Error setting IPV6_MTU_DISCOVER type=%d on TCP6/UDP6 socket",
-                         mtu_type);
-diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
-index 7446d97d..ca13fbcb 100644
---- a/src/openvpn/openvpn.vcxproj
-+++ b/src/openvpn/openvpn.vcxproj
-@@ -28,23 +28,19 @@
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
-     <WholeProgramOptimization>true</WholeProgramOptimization>
--    <CharacterSet>Unicode</CharacterSet>
-     <PlatformToolset>v142</PlatformToolset>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
--    <WholeProgramOptimization>true</WholeProgramOptimization>
--    <CharacterSet>Unicode</CharacterSet>
-     <PlatformToolset>v142</PlatformToolset>
-+    <WholeProgramOptimization>true</WholeProgramOptimization>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
--    <CharacterSet>Unicode</CharacterSet>
-     <PlatformToolset>v142</PlatformToolset>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
--    <CharacterSet>Unicode</CharacterSet>
-     <PlatformToolset>v142</PlatformToolset>
-   </PropertyGroup>
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-@@ -74,7 +70,8 @@
-     <ClCompile>
-       <AdditionalIncludeDirectories>..\compat;$(TAP_WINDOWS_HOME)/include;$(OPENSSL_HOME)/include;$(LZO_HOME)/include;$(PKCS11H_HOME)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-       <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
--      <UndefinePreprocessorDefinitions>UNICODE;%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
-+      <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
-+      <WarningLevel>Level2</WarningLevel>
-     </ClCompile>
-     <ResourceCompile />
-     <Link>
-@@ -87,7 +84,8 @@
-     <ClCompile>
-       <AdditionalIncludeDirectories>..\compat;$(TAP_WINDOWS_HOME)/include;$(OPENSSL_HOME)/include;$(LZO_HOME)/include;$(PKCS11H_HOME)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-       <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
--      <UndefinePreprocessorDefinitions>UNICODE;%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
-+      <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
-+      <WarningLevel>Level2</WarningLevel>
-     </ClCompile>
-     <ResourceCompile />
-     <Link>
-@@ -100,7 +98,8 @@
-     <ClCompile>
-       <AdditionalIncludeDirectories>..\compat;$(TAP_WINDOWS_HOME)/include;$(OPENSSL_HOME)/include;$(LZO_HOME)/include;$(PKCS11H_HOME)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-       <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
--      <UndefinePreprocessorDefinitions>UNICODE;%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
-+      <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
-+      <WarningLevel>Level2</WarningLevel>
-     </ClCompile>
-     <ResourceCompile />
-     <Link>
-@@ -113,7 +112,8 @@
-     <ClCompile>
-       <AdditionalIncludeDirectories>..\compat;$(TAP_WINDOWS_HOME)/include;$(OPENSSL_HOME)/include;$(LZO_HOME)/include;$(PKCS11H_HOME)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-       <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
--      <UndefinePreprocessorDefinitions>UNICODE;%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
-+      <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
-+      <WarningLevel>Level2</WarningLevel>
-     </ClCompile>
-     <ResourceCompile />
-     <Link>
-@@ -303,4 +303,4 @@
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-   <ImportGroup Label="ExtensionTargets">
-   </ImportGroup>
--</Project>
-+</Project>
-\ No newline at end of file
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index c282b582..ea5e3279 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -7172,7 +7172,7 @@ add_option(struct options *options,
- #ifdef _WIN32
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-         HANDLE process = GetCurrentProcess();
--        HANDLE handle = (HANDLE) atoi(p[1]);
-+        HANDLE handle = (HANDLE) atoll(p[1]);
-         if (!DuplicateHandle(process, handle, process, &options->msg_channel, 0,
-                              FALSE, DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS))
-         {
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 97e90e56..2e2216c5 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -2825,7 +2825,7 @@ get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
-         DestinationAddress.Ipv6.sin6_addr = *dest;
-     }
- 
--    status = GetBestInterfaceEx( &DestinationAddress, &BestIfIndex );
-+    status = GetBestInterfaceEx((struct sockaddr *)&DestinationAddress, &BestIfIndex );
- 
-     if (status != NO_ERROR)
-     {
-diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
-index 1c244ece..a241a32e 100644
---- a/src/openvpn/ssl_backend.h
-+++ b/src/openvpn/ssl_backend.h
-@@ -529,7 +529,7 @@ void print_details(struct key_state_ssl *ks_ssl, const char *prefix);
- void
- show_available_tls_ciphers_list(const char *cipher_list,
-                                 const char *tls_cert_profile,
--                                bool tls13);
-+                                const bool tls13);
- 
- /*
-  * Show the available elliptic curves in the crypto library
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 37bf065b..ebfeee4e 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -4613,7 +4613,7 @@ static DWORD
- get_adapter_index_method_1(const char *guid)
- {
-     DWORD index;
--    ULONG aindex;
-+    ULONG aindex = 0;
-     wchar_t wbuf[256];
-     openvpn_swprintf(wbuf, SIZE(wbuf), L"\\DEVICE\\TCPIP_%S", guid);
-     if (GetAdapterIndex(wbuf, &aindex) != NO_ERROR)
-@@ -5868,7 +5868,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
-     /* get driver MTU */
-     if (!tt->wintun)
-     {
--        ULONG mtu;
-+        ULONG mtu = 0;
-         if (DeviceIoControl(tt->hand, TAP_WIN_IOCTL_GET_MTU,
-                             &mtu, sizeof(mtu),
-                             &mtu, sizeof(mtu), &len, NULL))
--- 
-2.17.1
 
+Otherwise it looks good to me. I cannot really test it because I
+currently do not have anything that uses export keymaterial.
+
+As background why we want/need this patch. We currently use a fixed PRF
+for determining the data channel key. While what we use (SHA1 +MD5 like
+TLS 1.0) is perfectly fine, it would nice to instead use a more modern
+approach. And using RFC 5705 for something like key-method 3 avoids
+reinventing the wheel.
+
+So from me point of view:
+
+Acked-By: Arne Schwabe <arne@...1227...>
+
+Arne
+
+
+
+--cRkuVf14rLOlsSXOGqKtO4oujtkF3KmOj--
+
+--QOWCNRZ7PRxDrusoEAaG8JSphGdv56k8p
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl3JXiUACgkQFRhsZwKx
+RFRmhg//fI16Qsj20QAH3+tGkOpflbtV3vqTVwSwUGCebqhnoNSapJHJ1qc6IyWB
+gfRjkUJHWzxccb4/egyEVHsZHOWMHt4wRxfeZQLO+KSHG8715JGUonTvf+KjS22C
+9bmcsMI+JVJhpmLj6DEm+5TXBfGYah/YciM5+WzCixPOCjxU3mVR/MIW2dTLwHWi
+4HIpncbxj8+9p/AzrkD/FeoCzlmTY8cPBGwRLOL/MqHaKMOq0lWc61taJQuVA4kE
+0oz5ww+rEFSoSrknQBQtkieg0LE2XZUNx62iv8TTcVk1LfDD2m0dn8o22s3ifO8e
+RxBDtY6m5hE3bQQQl2Y4KTM3WHuocKLcc3gWdM5IZm/y5Ugf4sAl/fg6a5DUge2+
+XkJzPTNjwRWt0Xs+YsYpqg0In7LyF8ZXBycpTj2aXjKHTZX/55SS/oZslr/vXsEB
+2zA9q/2i5p4NYy9n89XfmqeqsLQ0Qb59p1GY3aPzuNlMr0xNoT8QU/WzgdXbf5oq
+VEXKrjk7S+Ggj6bWpPVR9wDNRAj3PKzsHl+45acgw5m/ojWz858ia+v1R4LkYxB7
+Zk55OU1x4WQp1F7Q3ChyeWbN83RuwHBVcf5lY/JMobTiUdE7sjpTEQbKaU3LCYY/
+3s0nTT2+TIhz6A63WXrrvAItdpHTDIHRnK6HW5EHiR1LxauHlNE=
+=c1/2
+-----END PGP SIGNATURE-----
+
+--QOWCNRZ7PRxDrusoEAaG8JSphGdv56k8p--
 
