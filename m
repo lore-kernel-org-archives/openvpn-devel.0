@@ -1,27 +1,7 @@
-From: Simon Rozman <simon@...2293...>
-Date: Mon, 11 Nov 2019 09:22:59 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE10C9A6C154@...2294...>
-References: <6a1b6995-67c1-e30b-bdc1-af1d5485fda5@...515...>
- <d34d5974-30ac-6949-9be4-7f4a55126564@...515...>
- <bf866bdc-4be0-fea9-92d1-61d27ce7ecda@...277...>
- <df929876-8c63-0934-02f6-4ac7186d986e@...515...>
- <e4b61969-aac3-a5cd-6642-b65e3a9f0256@...277...>
- <7d23f054-2ab4-d6f2-77b0-5cb76c2ec2df@...515...>
- <AD1D828E-B77F-4D08-BB7E-722AE9545CA1@...2293...>
- <6b2de5c1-99b7-406f-04d5-bb9449d120b9@...277...>
- <1b342791-a3ba-9932-dc02-a616f86c3e17@...515...>
- <CAC6SzHLVL4d-PVA6NBSHL4xyoo=4pVPrrAHZqKWTFkjxa3UEug@...278...>
- <8i52hb.q0k274.rtj366-qmf@...2533...>
- <CAC6SzH+tWMmEC-n0s+p6ooukjBeqOifrD5uWF0B2gz7qe187Zw@...278...>
- <f4c7d7fc-f757-9f13-56fc-93a3145da4c4@...515...>
- <CAC6SzHKphejoK5ysyTTBEgWnSxaO36VVEZmSqh015A-vjci5uw@...278...>
-In-Reply-To: <CAC6SzHKphejoK5ysyTTBEgWnSxaO36VVEZmSqh015A-vjci5uw@...278...>
-Content-Language: en-US
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
- micalg=2.16.840.1.101.3.4.2.1;
- boundary="----=_NextPart_000_000E_01D59879.FC5B14F0"
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] OpenVPN 2.4.8 released
+From: Lev Stipakov <lstipakov@...277...>
+Date: Mon, 11 Nov 2019 13:50:25 +0200
+Message-Id: <20191111115025.1121-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] msvc: fix various level2 warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -30,148 +10,256 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d tbsky <tbskyd@...277...>, =?utf-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-------=_NextPart_000_000E_01D59879.FC5B14F0
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: 7bit
+From: Lev Stipakov <lev@...515...>
 
-Hi,
+This also sets warnings level to level2, which
+makes them manageable.
 
-> > Is your computer perhaps behind in Windows updates? My hunch is that
-> > Digicert's latest root certificate is not availabe in the Windows
-> > certificate store and this causes the failure.
-> >
-> > Samuli
->
->    thanks for the hint! but I don't know why uninstall/reinstall make
-> things work?
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/compat/Debug.props       |  1 -
+ src/openvpn/block_dns.c      |  3 ---
+ src/openvpn/buffer.c         |  2 +-
+ src/openvpn/crypto_openssl.c |  2 +-
+ src/openvpn/init.c           |  2 +-
+ src/openvpn/mtu.c            |  4 ++--
+ src/openvpn/openvpn.vcxproj  | 20 ++++++++++----------
+ src/openvpn/options.c        |  2 +-
+ src/openvpn/route.c          |  2 +-
+ src/openvpn/ssl_backend.h    |  2 +-
+ src/openvpn/tun.c            |  4 ++--
+ 11 files changed, 20 insertions(+), 24 deletions(-)
 
-Mind that this OpenVPN release also brings the TAP-Windows6 driver update - 
-first one after some years. That's why there were no issues upgrading the 
-OpenVPN in the past years.
+diff --git a/src/compat/Debug.props b/src/compat/Debug.props
+index e5e9f681..31bb9d91 100644
+--- a/src/compat/Debug.props
++++ b/src/compat/Debug.props
+@@ -15,7 +15,6 @@
+       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+-      <MinimalRebuild>true</MinimalRebuild>
+     </ClCompile>
+   </ItemDefinitionGroup>
+   <ItemGroup />
+diff --git a/src/openvpn/block_dns.c b/src/openvpn/block_dns.c
+index 889d6bb9..f4718fc2 100644
+--- a/src/openvpn/block_dns.c
++++ b/src/openvpn/block_dns.c
+@@ -109,9 +109,6 @@ DEFINE_GUID(
+ 
+ static WCHAR *FIREWALL_NAME = L"OpenVPN";
+ 
+-VOID NETIOAPI_API_
+-InitializeIpInterfaceEntry(PMIB_IPINTERFACE_ROW Row);
+-
+ /*
+  * Default msg handler does nothing
+  */
+diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
+index 8575e295..b32bc8b2 100644
+--- a/src/openvpn/buffer.c
++++ b/src/openvpn/buffer.c
+@@ -474,7 +474,7 @@ x_gc_freespecial(struct gc_arena *a)
+ }
+ 
+ void
+-gc_addspecial(void *addr, void (free_function)(void *), struct gc_arena *a)
++gc_addspecial(void *addr, void (*free_function)(void *), struct gc_arena *a)
+ {
+     ASSERT(a);
+     struct gc_entry_special *e;
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 520e40ee..1057fd1d 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -313,7 +313,7 @@ show_available_ciphers(void)
+         }
+     }
+ 
+-    qsort(cipher_list, num_ciphers, sizeof(*cipher_list), cipher_name_cmp);
++    qsort((void *)cipher_list, num_ciphers, sizeof(*cipher_list), cipher_name_cmp);
+ 
+     for (i = 0; i < num_ciphers; i++)
+     {
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 0bdb0a9c..2120acaa 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1778,7 +1778,7 @@ do_open_tun(struct context *c)
+ #ifdef _WIN32
+     /* store (hide) interactive service handle in tuntap_options */
+     c->c1.tuntap->options.msg_channel = c->options.msg_channel;
+-    msg(D_ROUTE, "interactive service msg_channel=%u", (unsigned int) c->options.msg_channel);
++    msg(D_ROUTE, "interactive service msg_channel=%llu", (unsigned long long) c->options.msg_channel);
+ #endif
+ 
+     /* allocate route list structure */
+diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
+index 04868cd6..8178ff06 100644
+--- a/src/openvpn/mtu.c
++++ b/src/openvpn/mtu.c
+@@ -175,7 +175,7 @@ set_mtu_discover_type(int sd, int mtu_type, sa_family_t proto_af)
+ #if defined(HAVE_SETSOCKOPT) && defined(IP_MTU_DISCOVER)
+             case AF_INET:
+                 if (setsockopt
+-                        (sd, IPPROTO_IP, IP_MTU_DISCOVER, &mtu_type, sizeof(mtu_type)))
++                        (sd, IPPROTO_IP, IP_MTU_DISCOVER, (const char *)&mtu_type, sizeof(mtu_type)))
+                 {
+                     msg(M_ERR, "Error setting IP_MTU_DISCOVER type=%d on TCP/UDP socket",
+                         mtu_type);
+@@ -186,7 +186,7 @@ set_mtu_discover_type(int sd, int mtu_type, sa_family_t proto_af)
+ #if defined(HAVE_SETSOCKOPT) && defined(IPV6_MTU_DISCOVER)
+             case AF_INET6:
+                 if (setsockopt
+-                        (sd, IPPROTO_IPV6, IPV6_MTU_DISCOVER, &mtu_type, sizeof(mtu_type)))
++                        (sd, IPPROTO_IPV6, IPV6_MTU_DISCOVER, (const char *)&mtu_type, sizeof(mtu_type)))
+                 {
+                     msg(M_ERR, "Error setting IPV6_MTU_DISCOVER type=%d on TCP6/UDP6 socket",
+                         mtu_type);
+diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
+index 7446d97d..ca13fbcb 100644
+--- a/src/openvpn/openvpn.vcxproj
++++ b/src/openvpn/openvpn.vcxproj
+@@ -28,23 +28,19 @@
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+-    <CharacterSet>Unicode</CharacterSet>
+     <PlatformToolset>v142</PlatformToolset>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+-    <WholeProgramOptimization>true</WholeProgramOptimization>
+-    <CharacterSet>Unicode</CharacterSet>
+     <PlatformToolset>v142</PlatformToolset>
++    <WholeProgramOptimization>true</WholeProgramOptimization>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+-    <CharacterSet>Unicode</CharacterSet>
+     <PlatformToolset>v142</PlatformToolset>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+-    <CharacterSet>Unicode</CharacterSet>
+     <PlatformToolset>v142</PlatformToolset>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+@@ -74,7 +70,8 @@
+     <ClCompile>
+       <AdditionalIncludeDirectories>..\compat;$(TAP_WINDOWS_HOME)/include;$(OPENSSL_HOME)/include;$(LZO_HOME)/include;$(PKCS11H_HOME)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+-      <UndefinePreprocessorDefinitions>UNICODE;%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
++      <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
++      <WarningLevel>Level2</WarningLevel>
+     </ClCompile>
+     <ResourceCompile />
+     <Link>
+@@ -87,7 +84,8 @@
+     <ClCompile>
+       <AdditionalIncludeDirectories>..\compat;$(TAP_WINDOWS_HOME)/include;$(OPENSSL_HOME)/include;$(LZO_HOME)/include;$(PKCS11H_HOME)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+-      <UndefinePreprocessorDefinitions>UNICODE;%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
++      <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
++      <WarningLevel>Level2</WarningLevel>
+     </ClCompile>
+     <ResourceCompile />
+     <Link>
+@@ -100,7 +98,8 @@
+     <ClCompile>
+       <AdditionalIncludeDirectories>..\compat;$(TAP_WINDOWS_HOME)/include;$(OPENSSL_HOME)/include;$(LZO_HOME)/include;$(PKCS11H_HOME)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+-      <UndefinePreprocessorDefinitions>UNICODE;%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
++      <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
++      <WarningLevel>Level2</WarningLevel>
+     </ClCompile>
+     <ResourceCompile />
+     <Link>
+@@ -113,7 +112,8 @@
+     <ClCompile>
+       <AdditionalIncludeDirectories>..\compat;$(TAP_WINDOWS_HOME)/include;$(OPENSSL_HOME)/include;$(LZO_HOME)/include;$(PKCS11H_HOME)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+-      <UndefinePreprocessorDefinitions>UNICODE;%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
++      <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
++      <WarningLevel>Level2</WarningLevel>
+     </ClCompile>
+     <ResourceCompile />
+     <Link>
+@@ -303,4 +303,4 @@
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+   <ImportGroup Label="ExtensionTargets">
+   </ImportGroup>
+-</Project>
++</Project>
+\ No newline at end of file
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index c282b582..ea5e3279 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -7172,7 +7172,7 @@ add_option(struct options *options,
+ #ifdef _WIN32
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+         HANDLE process = GetCurrentProcess();
+-        HANDLE handle = (HANDLE) atoi(p[1]);
++        HANDLE handle = (HANDLE) atoll(p[1]);
+         if (!DuplicateHandle(process, handle, process, &options->msg_channel, 0,
+                              FALSE, DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS))
+         {
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 97e90e56..2e2216c5 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -2825,7 +2825,7 @@ get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
+         DestinationAddress.Ipv6.sin6_addr = *dest;
+     }
+ 
+-    status = GetBestInterfaceEx( &DestinationAddress, &BestIfIndex );
++    status = GetBestInterfaceEx((struct sockaddr *)&DestinationAddress, &BestIfIndex );
+ 
+     if (status != NO_ERROR)
+     {
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index 1c244ece..a241a32e 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -529,7 +529,7 @@ void print_details(struct key_state_ssl *ks_ssl, const char *prefix);
+ void
+ show_available_tls_ciphers_list(const char *cipher_list,
+                                 const char *tls_cert_profile,
+-                                bool tls13);
++                                const bool tls13);
+ 
+ /*
+  * Show the available elliptic curves in the crypto library
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 37bf065b..ebfeee4e 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -4613,7 +4613,7 @@ static DWORD
+ get_adapter_index_method_1(const char *guid)
+ {
+     DWORD index;
+-    ULONG aindex;
++    ULONG aindex = 0;
+     wchar_t wbuf[256];
+     openvpn_swprintf(wbuf, SIZE(wbuf), L"\\DEVICE\\TCPIP_%S", guid);
+     if (GetAdapterIndex(wbuf, &aindex) != NO_ERROR)
+@@ -5868,7 +5868,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+     /* get driver MTU */
+     if (!tt->wintun)
+     {
+-        ULONG mtu;
++        ULONG mtu = 0;
+         if (DeviceIoControl(tt->hand, TAP_WIN_IOCTL_GET_MTU,
+                             &mtu, sizeof(mtu),
+                             &mtu, sizeof(mtu), &len, NULL))
+-- 
+2.17.1
 
-The TAP-Windows6 driver remains loaded when there are TAP adapters present. 
-Even if adapters are in the "disconnected" state. This makes upgrading the 
-driver a real challenge. I would suggest disabling all TAP adapters before 
-attempting the upgrade. Disabling the last of the TAP adapters will cause 
-Windows kernel to unload the TAP-Windows6, allowing its upgrade.
-
->   our windows 7 update is stay at 2019-8, which is not very far behind.
-> but we do security-only update to prevent telemetry, I don't know if
-> that make difference.
->   I will try again when windows update mess quiet down. December patch
-> is always good these years. hope it is the same this year.
-
-1. Windows 7 have issues with SHA-256 signatures. In general, it works. But, 
-for optimal experience you should install KB2921916 (not available via Windows 
-Update). Maybe that's the reason for driver signature verification failure 
-recorded in your log. Probably, this error is recorded in the log on all 
-Windows 7 computers without KB2921916.
-
-2. Mind that initial release of OpenVPN 2.4.8 is shipped using separate 
-installers for Windows 7/8/8.1/Server2008R2/Server2012R2 _and_ Windows 
-10/Server2016/Server2019. Please, make sure you are using the first one on 
-Windows 7. We do plan to unify the installers back to a single one in future 
-releases to avoid confusion.
-
-Regards,
-Simon
-
-------=_NextPart_000_000E_01D59879.FC5B14F0
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-
-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
-AwMwJzAlBggrBgEFBQcCARYZaHR0cDovL3d3dy5jYS5nb3Yuc2kvY3BzLzAIBgYEAIswAQIwGAYI
-KwYBBQUHAQMEDDAKMAgGBgQAjkYBATAaBgNVHREEEzARgQ9zaW1vbkByb3ptYW4uc2kwge4GA1Ud
-HwSB5jCB4zBWoFSgUqRQME4xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJzdGF0ZS1pbnN0aXR1dGlv
-bnMxETAPBgNVBAsTCHNpZ2VuLWNhMQ8wDQYDVQQDEwZDUkw0NTUwgYiggYWggYKGV2xkYXA6Ly94
-NTAwLmdvdi5zaS9vdT1zaWdlbi1jYSxvPXN0YXRlLWluc3RpdHV0aW9ucyxjPXNpP2NlcnRpZmlj
-YXRlUmV2b2NhdGlvbkxpc3Q/YmFzZYYnaHR0cDovL3d3dy5zaWdlbi1jYS5zaS9jcmwvc2lnZW4t
-Y2EuY3JsMCsGA1UdEAQkMCKADzIwMTYwMjE5MTc1NDQxWoEPMjAyMTAyMTkyMTM4MTVaMB8GA1Ud
-IwQYMBaAFHF7igYfMQVVq2ASd0cgHgOIGOyJMB0GA1UdDgQWBBS7/7AHyQYI0e8GOPmwTc1ZTNw5
-lzAJBgNVHRMEAjAAMBkGCSqGSIb2fQdBAAQMMAobBFY4LjEDAgOoMA0GCSqGSIb3DQEBBQUAA4IB
-AQBBUL4KG1Z1oBIIdKIZs9yJxnJg/LfEPVvzNH8+CCqegq0D6k48Doo72oVEiskjqggdbUGj30uA
-H8PjCD5kLGVoDwh5a2atQ3qQzaYA/lj2Js2f4fdXNn60vRp7XzbGsQdwYYecIrKzO5x6XVAIRb+T
-HZNjXL3VX6vOozwBQv/+dx1P9H/rMUn7d8ci7v4PeqShbWbWwi6ez19cZvSKSkz/lWf4tj8QbA0n
-WeUBlk3Bx6/TRda7kwXzcFExt+ROGt0YJjbZCN3kd7swcRvRT6gEi9L6n1XLghwPSYhzZjaL5fXv
-I11JuSoQCy13XWBkq35Moo4iY19wanS1W6UM8Yq0MIIF5TCCBE2gAwIBAgINAKZovVEAAAAAVx3Q
-6DANBgkqhkiG9w0BAQsFADBcMQswCQYDVQQGEwJTSTEcMBoGA1UEChMTUmVwdWJsaWthIFNsb3Zl
-bmlqYTEXMBUGA1UEYRMOVkFUU0ktMTc2NTk5NTcxFjAUBgNVBAMTDVNJLVRSVVNUIFJvb3QwHhcN
-MTYwNTI0MTE1ODI3WhcNMjEwNjI3MjIwMDAwWjA9MQswCQYDVQQGEwJzaTEbMBkGA1UEChMSc3Rh
-dGUtaW5zdGl0dXRpb25zMREwDwYDVQQLEwhzaWdlbi1jYTCCASIwDQYJKoZIhvcNAQEBBQADggEP
-ADCCAQoCggEBALDlZbLArGSW8ogbs+2e5ALGTyuIzi6KUYB1rxBb8ss4ZpuiDm00R5alkhGv9jVH
-onciDM4WiGKq00luGLwuRNi+xp7CGhmsQY78MAcC8sZq1FsjAO9BNNikc2PfIpIzhAGljfODXPq4
-1Ho13+z4bQ/gTO2tnDp9htalCJS+fXoRH/6FP1RaiGOHnKWxp07Nt0Rzr8+KSWsf483XSU1aKxfm
-XHazu3K5byfSm4kViN8QX3YhAWrHFTEK0ZxY+CgWBW3ZTtmh1wcgy0smiU2Ssqe6lujjWI8inAGW
-WsT3MU0LSbXheGHiVBgGu55UNH4MPuvutYAf3RaEHWg4Zmdz+JECAwEAAaOCAkMwggI/MBIGA1Ud
-EwEB/wQIMAYBAf8CAQAwDgYDVR0PAQH/BAQDAgEGMDoGA1UdIAQzMDEwLwYEVR0gADAnMCUGCCsG
-AQUFBwIBFhlodHRwOi8vd3d3LmNhLmdvdi5zaS9jcHMvMGkGCCsGAQUFBwEBBF0wWzA2BggrBgEF
-BQcwAoYqaHR0cDovL3d3dy5jYS5nb3Yuc2kvY3J0L3NpLXRydXN0LXJvb3QuY3J0MCEGCCsGAQUF
-BzABhhVodHRwOi8vb2NzcC5jYS5nb3Yuc2kwHQYDVR0OBBYEFHF7igYfMQVVq2ASd0cgHgOIGOyJ
-MIIBPAYDVR0fBIIBMzCCAS8wgbeggbSggbGGKmh0dHA6Ly93d3cuY2EuZ292LnNpL2NybC9zaS10
-cnVzdC1yb290LmNybIaBgmxkYXA6Ly94NTAwLmdvdi5zaS9jbj1TSS1UUlVTVCUyMFJvb3Qsb3Jn
-YW5pemF0aW9uSWRlbnRpZmllcj1WQVRTSS0xNzY1OTk1NyxvPVJlcHVibGlrYSUyMFNsb3Zlbmlq
-YSxjPVNJP2NlcnRpZmljYXRlUmV2b2NhdGlvbkxpc3Qwc6BxoG+kbTBrMQswCQYDVQQGEwJTSTEc
-MBoGA1UEChMTUmVwdWJsaWthIFNsb3ZlbmlqYTEXMBUGA1UEYRMOVkFUU0ktMTc2NTk5NTcxFjAU
-BgNVBAMTDVNJLVRSVVNUIFJvb3QxDTALBgNVBAMTBENSTDEwEwYDVR0jBAwwCoAITKPDaF4IAmMw
-DQYJKoZIhvcNAQELBQADggGBAHuvNSPhY4qcirWJkTwkqaOPqOSV06J/ZepFQfUEJ87TlrGjp4XR
-5FLktTAEY/7R4Sgeb2K8OWEl/Koc1BbH6+uyZYvfa+WnnJEWeWOmyPy/vooO7eZyOVvaORxurWOL
-CCVDW2wBkbtUoKZaUyzgP+ZPPGRV8GFlbZLCzGmArMGXJXe8t/XNiJDLehGqSWT49NYjyYQdIgI+
-qi9W+A6BSUQ9jsMdYJqKhXQcosfH51sc6gZVxTKMr3PsItsa8XFiNazECAAFr0ms7HB6zb8QvHRF
-eBGk/CLrW4VkZEBN/JtuyhvgktQ2BvuGtauEvHZQAYpMSh35D7pwtavRMpmhaAsQb4yPqhIMcztw
-RqsKPBhWoaFEVZ+Vn3wxap5h/oAhocifNzkWJTNWjxnoPM2eNz2uWFJsgsNhlwteUvnq7+bKTNte
-SKWKr6pI+GUsZhmCh5URpUnqUanp0Uie0MD9f3tiOLOp711sNb0xwi+VdDuDB37IddOIsfhPBood
-wpoFrTGCAyEwggMdAgEBMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0
-aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4wDQYJYIZIAWUDBAIBBQCgggGtMBgGCSqGSIb3
-DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE5MTExMTA5MjI1NlowLwYJKoZIhvcN
-AQkEMSIEIGaxQKoreayb7v7rnVbAc47u1cfokQV/VSQq9GM3q5txMFQGCSsGAQQBgjcQBDFHMEUw
-PTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMIc2ln
-ZW4tY2ECBDtKDS4wVgYLKoZIhvcNAQkQAgsxR6BFMD0xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJz
-dGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsTCHNpZ2VuLWNhAgQ7Sg0uMIGTBgkqhkiG9w0BCQ8x
-gYUwgYIwCwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQBFjAKBggqhkiG9w0DBzALBglghkgBZQMEAQIw
-DgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAsGCWCGSAFlAwQCATALBglghkgBZQMEAgMw
-CwYJYIZIAWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBANaRgWzPRtEsLI2CUTCEv1bg
-ewR+lAjoz3uEa7tLGKu1948a16mbObtYs1L05GXjIDI5NoXtQa1Qk8aJ5gYRPvjfzgNIQk+CKBTJ
-oMcFEn6Bg4I1FvPUeXL8aW2dAsDADfyFdi+PdRolHOjGnv65s65oV7uciagp78sb76882RLhKZ1+
-DwFvj0pMP/60OeeOVHZSmj+QwtMqh16i9s30kiWQ6xAVdyIcSDx9ZOkmad17u6mybazOzbNjxPVM
-4KZwozyxgzXftP6cfx6AMy9ObfQ+SMmQUFKPZxpJWbLt9iJufbRIZ6f8obdyotjNomookJZ9HuNy
-6AYNbRXvHuXNn6MAAAAAAAA=
-
-------=_NextPart_000_000E_01D59879.FC5B14F0--
 
