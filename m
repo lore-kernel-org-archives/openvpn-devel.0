@@ -1,10 +1,16 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Tue, 12 Nov 2019 16:44:00 +0200
-Message-Id: <20191112144400.1359-1-lstipakov@...277...>
-In-Reply-To: <99D61A626FDA8A4B90A270669121BE10BDA4BD82@...2294...>
-References: <99D61A626FDA8A4B90A270669121BE10BDA4BD82@...2294...>
-Subject: [Openvpn-devel] [PATCH v3 7/7] wintun: clear adapter settings on
- tun close
+References: <1573234655-905-1-git-send-email-lstipakov@...277...>
+ <201911091449.xA9Enpkt081718@...2054...>
+ <20191109150057.GJ40538@...1296...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <62099134-3d8e-a6d7-867b-b4756fb787da@...2080...>
+Date: Tue, 12 Nov 2019 19:39:42 +0100
+MIME-Version: 1.0
+In-Reply-To: <20191109150057.GJ40538@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="ZoUDjJpBKInrzC5fWUPttJGRJIzzQtrTA"
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: wintun: add
+ --windows-driver config option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,144 +19,100 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+To: Gert Doering <gert@...1296...>, Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Lev Stipakov <lev@...515...>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--ZoUDjJpBKInrzC5fWUPttJGRJIzzQtrTA
+Content-Type: multipart/mixed; boundary="j5f1BklvIS8SlIixsH2bzUfBd2O8Ki3i6";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: Gert Doering <gert@...1296...>, Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
+Message-ID: <62099134-3d8e-a6d7-867b-b4756fb787da@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: wintun: add --windows-driver
+ config option
+References: <1573234655-905-1-git-send-email-lstipakov@...277...>
+ <201911091449.xA9Enpkt081718@...2054...>
+ <20191109150057.GJ40538@...1296...>
+In-Reply-To: <20191109150057.GJ40538@...1296...>
 
-With tap-windows6 we clear adapter settings with DHCP,
-but since wintun doesn't do DHCP we do it with netsh.
+--j5f1BklvIS8SlIixsH2bzUfBd2O8Ki3i6
+Content-Language: en-US
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Lev Stipakov <lev@...515...>
----
+On 09/11/2019 16:00, Gert Doering wrote:
+> Hi,
+>=20
+> On Sat, Nov 09, 2019 at 03:49:51PM +0100, Gert Doering wrote:
+>>      wintun: add --windows-driver config option
+>>
+>>      Signed-off-by: Lev Stipakov <lev@...515...>
+>>      Acked-by: Simon Rozman <simon@...2293...>
+>=20
+> Ooops.  Misattributed the ACK, so this was really Steffan's ACK.
+>=20
+> I am not amending & re-pusing the commit.  This will call more confusion.
+>=20
+> Sorry.
 
- v3: 
-  - simplify convoluted "if" statement
+Wise choice.  However you can use another little git feature ... git notes
+<https://web.archive.org/web/20180121193320/http://git-scm.com/blog/2010/08=
+/25/notes.html>
+<https://git-scm.com/docs/git-notes>
 
- v2:
-  - rebase on top of master
+Git notes does not change the commitish, but are more weakly tied to commits
+and does not have the same "change traceability" as commits does.  So I
+recommend to PGP sign notes (which might need to be handled outside git) if=
+ it
+important to ensure the note is unchanged.  But a note can be
 
- src/openvpn/tun.c | 92 +++++++++++++++++++++++++++++------------------
- 1 file changed, 57 insertions(+), 35 deletions(-)
+AFAIK, it doesn't push or fetch notes by default, so that might need to be
+handled separately, using:
 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 8b16cd6a..a9036a6e 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -6388,6 +6388,50 @@ tun_show_debug(struct tuntap *tt)
-     }
- }
- 
-+static void
-+netsh_delete_address_dns(const struct tuntap *tt, bool ipv6, struct gc_arena *gc)
-+{
-+    const char* ifconfig_ip_local;
-+    struct argv argv = argv_new();
-+
-+    /* "store=active" is needed in Windows 8(.1) to delete the
-+     * address we added (pointed out by Cedric Tabary).
-+     */
-+
-+     /* netsh interface ipvX delete address \"%s\" %s */
-+    if (ipv6)
-+    {
-+        ifconfig_ip_local = print_in6_addr(tt->local_ipv6, 0, gc);
-+    }
-+    else
-+    {
-+        ifconfig_ip_local = print_in_addr_t(tt->local, 0, gc);
-+    }
-+    argv_printf(&argv,
-+                "%s%sc interface %s delete address %s %s store=active",
-+                get_win_sys_path(),
-+                NETSH_PATH_SUFFIX,
-+                ipv6 ? "ipv6" : "ipv4",
-+                tt->actual_name,
-+                ifconfig_ip_local);
-+
-+    netsh_command(&argv, 1, M_WARN);
-+
-+    /* delete ipvX dns servers if any were set */
-+    int len = ipv6 ? tt->options.dns6_len : tt->options.dns_len;
-+    if (len > 0)
-+    {
-+        argv_printf(&argv,
-+                    "%s%sc interface %s delete dns %s all",
-+                    get_win_sys_path(),
-+                    NETSH_PATH_SUFFIX,
-+                    ipv6 ? "ipv6" : "ipv4",
-+                    tt->actual_name);
-+        netsh_command(&argv, 1, M_WARN);
-+    }
-+    argv_reset(&argv);
-+}
-+
- void
- close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
- {
-@@ -6410,46 +6454,24 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
-         }
-         else
-         {
--            const char *ifconfig_ipv6_local;
--            struct argv argv = argv_new();
--
--            /* "store=active" is needed in Windows 8(.1) to delete the
--             * address we added (pointed out by Cedric Tabary).
--             */
--
--            /* netsh interface ipv6 delete address \"%s\" %s */
--            ifconfig_ipv6_local = print_in6_addr(tt->local_ipv6, 0,  &gc);
--            argv_printf(&argv,
--                        "%s%sc interface ipv6 delete address %s %s store=active",
--                        get_win_sys_path(),
--                        NETSH_PATH_SUFFIX,
--                        tt->actual_name,
--                        ifconfig_ipv6_local);
--
--            netsh_command(&argv, 1, M_WARN);
--
--            /* delete ipv6 dns servers if any were set */
--            if (tt->options.dns6_len > 0)
--            {
--                argv_printf(&argv,
--                            "%s%sc interface ipv6 delete dns %s all",
--                            get_win_sys_path(),
--                            NETSH_PATH_SUFFIX,
--                            tt->actual_name);
--                netsh_command(&argv, 1, M_WARN);
--            }
--            argv_reset(&argv);
-+            netsh_delete_address_dns(tt, true, &gc);
-         }
-     }
- #if 1
--    if (tt->wintun && tt->options.msg_channel)
-+    if (tt->wintun)
-     {
--        do_route_ipv4_service_tun(false, tt);
--        do_address_service(false, AF_INET, tt);
--        do_dns_service(false, AF_INET, tt);
-+        if (tt->options.msg_channel)
-+        {
-+            do_route_ipv4_service_tun(false, tt);
-+            do_address_service(false, AF_INET, tt);
-+            do_dns_service(false, AF_INET, tt);
-+        }
-+        else
-+        {
-+            netsh_delete_address_dns(tt, false, &gc);
-+        }
-     }
--    else
--    if (tt->ipapi_context_defined)
-+    else if (tt->ipapi_context_defined)
-     {
-         DWORD status;
-         if ((status = DeleteIPAddress(tt->ipapi_context)) != NO_ERROR)
--- 
-2.17.1
+    $ git push <remote> refs/notes/*
 
+To fetch remote notes:
+
+    $ git fetch <remote> refs/notes/*:refs/notes/*
+
+We already have a few notes in our repo for similar situations or clarifica=
+tions.
+
+
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
+
+
+
+--j5f1BklvIS8SlIixsH2bzUfBd2O8Ki3i6--
+
+--ZoUDjJpBKInrzC5fWUPttJGRJIzzQtrTA
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJdyvx0AAoJEIbPlEyWcf3yHbsP/AsTwD8sKujSq1IcB9C8BKMu
+NWzs9wkYimbJ/kjkDI4XawTDGPgtLCZJ/3U7+Hc8wAqqUuk6RPECNSj5qMxzVBdH
+rfvPgLK5zazup7TkEU3SGlzA07fXjpNgrx81JzPvddgTVYi8BVc8c1BH5Lc3clDJ
++neOe9mEkGUKsDGeTM+HE1mRP5t6gduO0J1iQnU3Jm5F2WM5L0b7jQlTxLbxgUos
+juLNo8sEIP1OQNKbL8EAswmSnDh4GmPcZAuUJjbI4GVcN6nssa9Uv+bq4jeKcXoW
+u9de9yWfaDzVqDEtYFROVeo1+idMRwF7PfOIeJTmuT1AMgTGhccUzRA3dgTGP4o4
+cVuS9+mLSOeRG49i47rtLqEUGcs8/m+AdKRIekjCJgxllhLIiVcsraZAErr3oGVq
+RQnsR9KvdNB633u3UrsdMV+J2toFfoLB6UXUHbvdrtrHiwBqagJDcO7txq+JBL3M
+cuB94WlitNMFtQ1ToXjDzw9QuRSsVjvIvVurPmsGegxWv30n9fxMVK5FysAuTXm9
+sDYBPjbsGpZvQNzwfZ6hsdsuk5n0LCFfvJjSDznVciPD6gqKW69q+jpPnmEr/Sk2
+ROzWJLWvCj2r+xyXuBR0jIteOyDqtRai1SdYQ5jyg6ZZfWHhsyHhuv1BfujaSj7y
+XbYMDoHJhrkKx/xRLdGZ
+=i3+o
+-----END PGP SIGNATURE-----
+
+--ZoUDjJpBKInrzC5fWUPttJGRJIzzQtrTA--
 
