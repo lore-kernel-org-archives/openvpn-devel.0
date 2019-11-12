@@ -1,21 +1,24 @@
-References: <20191103053148.18059-1-tom.ty89@...277...>
- <20191103182443.GC40538@...1296...>
- <20191103183351.GD40538@...1296...>
- <CAGnHSEn0jaM3u9LCXxArhQkL9ddZQ9UROOZ8+PXPf+oAwTyswg@...278...>
- <20191103204613.GE40538@...1296...>
- <CAGnHSE=LcwX6hxHM2sdpWRP6cKyQiuhtc4ZUG2H1rdu-CNHOqQ@...278...>
- <20191110180755.GQ40538@...1296...>
- <CAGnHSEkL5UY+q9p3j-UoOrBPcrhoNPyzSbEAMA4+x72jH46HGQ@...278...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <5dbf208f-3a4d-7732-e09b-36b1b2466a67@...1227...>
-Date: Mon, 11 Nov 2019 19:02:16 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAGnHSEkL5UY+q9p3j-UoOrBPcrhoNPyzSbEAMA4+x72jH46HGQ@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="iI96yWiXYyirXJl9kdWdXFPF56ZQrWEPU"
-Subject: Re: [Openvpn-devel] [PATCH] tun/iproute2: support 31-bit ipv4
- prefix (RFC 3021)
+References: <6a1b6995-67c1-e30b-bdc1-af1d5485fda5@...515...>
+ <d34d5974-30ac-6949-9be4-7f4a55126564@...515...>
+ <bf866bdc-4be0-fea9-92d1-61d27ce7ecda@...277...>
+ <df929876-8c63-0934-02f6-4ac7186d986e@...515...>
+ <e4b61969-aac3-a5cd-6642-b65e3a9f0256@...277...>
+ <7d23f054-2ab4-d6f2-77b0-5cb76c2ec2df@...515...>
+ <AD1D828E-B77F-4D08-BB7E-722AE9545CA1@...2293...>
+ <6b2de5c1-99b7-406f-04d5-bb9449d120b9@...277...>
+ <1b342791-a3ba-9932-dc02-a616f86c3e17@...515...>
+ <CAC6SzHLVL4d-PVA6NBSHL4xyoo=4pVPrrAHZqKWTFkjxa3UEug@...278...>
+ <8i52hb.q0k274.rtj366-qmf@...2533...>
+ <CAC6SzH+tWMmEC-n0s+p6ooukjBeqOifrD5uWF0B2gz7qe187Zw@...278...>
+ <f4c7d7fc-f757-9f13-56fc-93a3145da4c4@...515...>
+ <CAC6SzHKphejoK5ysyTTBEgWnSxaO36VVEZmSqh015A-vjci5uw@...278...>
+ <99D61A626FDA8A4B90A270669121BE10C9A6C154@...2294...>
+In-Reply-To: <99D61A626FDA8A4B90A270669121BE10C9A6C154@...2294...>
+From: d tbsky <tbskyd@...277...>
+Date: Tue, 12 Nov 2019 13:44:27 +0800
+Message-ID: <CAC6SzH+G-u+cAuDtu=fpn_SANMV=AiPUOjK2N8hp-C5q73hyhA@...278...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.4.8 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,64 +27,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Tom Yan <tom.ty89@...277...>, Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net, Antonio Quartulli <a@...2181...>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Simon Rozman <simon@...2293...>
+Cc: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---iI96yWiXYyirXJl9kdWdXFPF56ZQrWEPU
-Content-Type: multipart/mixed; boundary="6WFSiZz7YqAfJwF9CEUcbIe6d7zoejM3S"
+Simon Rozman <simon@...2293...>
+> The TAP-Windows6 driver remains loaded when there are TAP adapters present.
+> Even if adapters are in the "disconnected" state. This makes upgrading the
+> driver a real challenge. I would suggest disabling all TAP adapters before
+> attempting the upgrade. Disabling the last of the TAP adapters will cause
+> Windows kernel to unload the TAP-Windows6, allowing its upgrade.
 
---6WFSiZz7YqAfJwF9CEUcbIe6d7zoejM3S
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+     try to disable TAP Adapter and upgrade. there is no more error
+during installation. but when I try to connect it shows the tap device
+is in use. reboot is useless.
+if I uninstall tap-windows 9.21 first and then upgrade, everything
+works fine even without reboot.
 
-Am 11.11.19 um 16:12 schrieb Tom Yan:
-> Yes both iproute2 and sitnl works perfectly as expected. Will the fix
-> be backported to the 2.4 branch?
->=20
-> P.S. For the record, if the client is ics-openvpn with openvpn3,
-> somehow you need push route (either host or subnet will do) anyway.
+    we don't have KB2921916 installed and we use correct win7 installer.
 
-I am not aware of this issue. Could you go more into detail?
-
-> This is not necessary with ics-openvpn with openvpn2 or OpenVPN
-> Connect (AFAIK its core is openvpn3 as well, albeit different
-> snapshot). The problem/behaviour is not specific to /31 subnet though,
-> apparently. I guess the main route table is ignored/masked.
-
-ics-openvpn is a) OpenVPN master b) uses a completely different logic to
-handle network config (in OpenVPNService.java). So this patch does not
-affect ics-openvpn in any way.
-
-Arne
-
-
-
-
---6WFSiZz7YqAfJwF9CEUcbIe6d7zoejM3S--
-
---iI96yWiXYyirXJl9kdWdXFPF56ZQrWEPU
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl3JoigACgkQFRhsZwKx
-RFQCaw//cSIAUY1XiuprpgLlXPOAc+7ZiKUiGJ7LE/kq1fg8lG4fhbITfemnk2L/
-tSxvEqLANOkQq/KBOB9k/9YsrXj/xOLLRnrQSp31JZ0BN17GwYPjvWdcwR/C5Lpf
-Y5HnAaOAThOycJxwa4A0tC/R+S3ofaWD4eEBqkvskbTEbifKoi6+8//kgOWdRCE7
-1zvfKZcJa1eHCewne3akW23Mf5qjLBPMqGzDpS8xivGpCQuqdjcv/Te8w5Uj2M9c
-YKREJDDvn1kvz4ZUI8BW0Hy/0gNoX5pgHR1P6C5//j/demkD20GR8nL5dkA4tzFK
-x71cYXF+OBDr3tfRKUp4eR0PG/MpKf8ThL7lDAl7/c3D00wR00ZwvqfBt4AivUQb
-Yg1Rh81vdeWf/p+o0xIs/LZiZO3A9HId3e7NKoWAPy0NII67UPlnKAn/BANTD5kO
-RV4CMnijL8wTd9HjTvsuf84qspok2nuG/LWX/PUGsb+SZbAWixcfTfzM9ecd7aqb
-3OhD5Qf2h3AInWqA5ysDC8Z9d5kkfdGA+JxjtjtsTXyh+fdV/87183vk/VgtKvM2
-rQ2sFfvUucDkoNpaWQ+D6weMJrKlwgbTHuwKTYx3oXf34vk2bcZU4hlWXd9x3G8+
-UfZlnvi8sQypmPUTZEVOOsNkPnUVUmULCaZwy41825MOaVSx6io=
-=KINC
------END PGP SIGNATURE-----
-
---iI96yWiXYyirXJl9kdWdXFPF56ZQrWEPU--
+Regards,
+tbskyd
 
