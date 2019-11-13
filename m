@@ -1,12 +1,11 @@
-MIME-Version: 1.0
-References: <20191113085854.6016-1-tom.ty89@...277...>
- <CAGnHSEnZraNv72SvtfdiipptQ4ESHvOSBn87vJREdh6trCb7ng@...278...>
- <20191113091844.GA40538@...1296...>
-In-Reply-To: <20191113091844.GA40538@...1296...>
 From: Tom Yan <tom.ty89@...277...>
-Date: Wed, 13 Nov 2019 17:30:52 +0800
-Message-ID: <CAGnHSEm9S2bSYpU97tEDF6nrUNRxR0dFP6RU2=VbZgD2Htw85w@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix server directive for /31 subnet
+Date: Wed, 13 Nov 2019 18:06:59 +0800
+Message-Id: <20191113100702.6863-1-tom.ty89@...277...>
+In-Reply-To: <61c1b837-3f81-6783-5934-8128bb81881b@...2181...>
+References: <61c1b837-3f81-6783-5934-8128bb81881b@...2181...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v2 1/4] Avoid repeating code for tap and
+ tun+subnet in server directive
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,46 +14,147 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Wed, 13 Nov 2019 at 17:18, Gert Doering <gert@...1296...> wrote:
->
-> Hi,
->
-> It might be related to the way the windows tap6 driver always needs a
-> gateway address even in tun mode (and uses the last address from the
-> subnet for this).  There's very few typos in OpenVPN code regarding
-> *this* type of math, and way more "just funny platforms and old lore".
+It also avoids limitation (i.e. netbits <= 29) that does not apply to the subnet topology.
+---
+ src/openvpn/helper.c | 74 ++++++++++++++++----------------------------
+ 1 file changed, 27 insertions(+), 47 deletions(-)
 
-The reason I think it is a typo is because the pool start is network
-address + 2 (i.e. I think it's a copy-and-paste kind of typo). AFAIK,
-the gateway address issue is addressed in commit 4cc6a25 by using the
-pool start for that. (The commit message stated that using the address
-of the server does not work for Windows.)
+diff --git a/src/openvpn/helper.c b/src/openvpn/helper.c
+index ff9df506..470b9120 100644
+--- a/src/openvpn/helper.c
++++ b/src/openvpn/helper.c
+@@ -286,13 +286,13 @@ helper_client_server(struct options *o)
+                 print_netmask(IFCONFIG_POOL_MIN_NETBITS, &gc));
+         }
+ 
+-        if (dev == DEV_TYPE_TUN)
++        if (dev == DEV_TYPE_TUN && (topology == TOP_NET30 || topology == TOP_P2P))
+         {
+             int pool_end_reserve = 4;
+ 
+             if (netbits > 29)
+             {
+-                msg(M_USAGE, "--server directive when used with --dev tun must define a subnet of %s or lower",
++                msg(M_USAGE, "subnet must be %s or lower",
+                     print_netmask(29, &gc));
+             }
+ 
+@@ -304,66 +304,39 @@ helper_client_server(struct options *o)
+             o->mode = MODE_SERVER;
+             o->tls_server = true;
+ 
+-            if (topology == TOP_NET30 || topology == TOP_P2P)
++            o->ifconfig_local = print_in_addr_t(o->server_network + 1, 0, &o->gc);
++            o->ifconfig_remote_netmask = print_in_addr_t(o->server_network + 2, 0, &o->gc);
++
++            if (!(o->server_flags & SF_NOPOOL))
+             {
+-                o->ifconfig_local = print_in_addr_t(o->server_network + 1, 0, &o->gc);
+-                o->ifconfig_remote_netmask = print_in_addr_t(o->server_network + 2, 0, &o->gc);
+-
+-                if (!(o->server_flags & SF_NOPOOL))
+-                {
+-                    o->ifconfig_pool_defined = true;
+-                    o->ifconfig_pool_start = o->server_network + 4;
+-                    o->ifconfig_pool_end = (o->server_network | ~o->server_netmask) - pool_end_reserve;
+-                    ifconfig_pool_verify_range(M_USAGE, o->ifconfig_pool_start, o->ifconfig_pool_end);
+-                }
+-
+-                helper_add_route(o->server_network, o->server_netmask, o);
+-                if (o->enable_c2c)
+-                {
+-                    push_option(o, print_opt_route(o->server_network, o->server_netmask, &o->gc), M_USAGE);
+-                }
+-                else if (topology == TOP_NET30)
+-                {
+-                    push_option(o, print_opt_route(o->server_network + 1, 0, &o->gc), M_USAGE);
+-                }
++                o->ifconfig_pool_defined = true;
++                o->ifconfig_pool_start = o->server_network + 4;
++                o->ifconfig_pool_end = (o->server_network | ~o->server_netmask) - pool_end_reserve;
++                ifconfig_pool_verify_range(M_USAGE, o->ifconfig_pool_start, o->ifconfig_pool_end);
+             }
+-            else if (topology == TOP_SUBNET)
++
++            helper_add_route(o->server_network, o->server_netmask, o);
++            if (o->enable_c2c)
+             {
+-                o->ifconfig_local = print_in_addr_t(o->server_network + 1, 0, &o->gc);
+-                o->ifconfig_remote_netmask = print_in_addr_t(o->server_netmask, 0, &o->gc);
+-
+-                if (!(o->server_flags & SF_NOPOOL))
+-                {
+-                    o->ifconfig_pool_defined = true;
+-                    o->ifconfig_pool_start = o->server_network + 2;
+-                    o->ifconfig_pool_end = (o->server_network | ~o->server_netmask) - 2;
+-                    ifconfig_pool_verify_range(M_USAGE, o->ifconfig_pool_start, o->ifconfig_pool_end);
+-                }
+-                o->ifconfig_pool_netmask = o->server_netmask;
+-
+-                push_option(o, print_opt_route_gateway(o->server_network + 1, &o->gc), M_USAGE);
+-                if (!o->route_default_gateway)
+-                {
+-                    o->route_default_gateway = print_in_addr_t(o->server_network + 2, 0, &o->gc);
+-                }
++                push_option(o, print_opt_route(o->server_network, o->server_netmask, &o->gc), M_USAGE);
+             }
+-            else
++            else if (topology == TOP_NET30)
+             {
+-                ASSERT(0);
++                push_option(o, print_opt_route(o->server_network + 1, 0, &o->gc), M_USAGE);
+             }
+ 
+-            push_option(o, print_opt_topology(topology, &o->gc), M_USAGE);
+         }
+-        else if (dev == DEV_TYPE_TAP)
++        else if (dev == DEV_TYPE_TAP || (dev == DEV_TYPE_TUN && topology == TOP_SUBNET))
+         {
+             if (netbits > 30)
+             {
+-                msg(M_USAGE, "--server directive when used with --dev tap must define a subnet of %s or lower",
++                msg(M_USAGE, "subnet must be %s or lower",
+                     print_netmask(30, &gc));
+             }
+ 
+             o->mode = MODE_SERVER;
+             o->tls_server = true;
++
+             o->ifconfig_local = print_in_addr_t(o->server_network + 1, 0, &o->gc);
+             o->ifconfig_remote_netmask = print_in_addr_t(o->server_netmask, 0, &o->gc);
+ 
+@@ -371,18 +344,25 @@ helper_client_server(struct options *o)
+             {
+                 o->ifconfig_pool_defined = true;
+                 o->ifconfig_pool_start = o->server_network + 2;
+-                o->ifconfig_pool_end = (o->server_network | ~o->server_netmask) - 1;
++                o->ifconfig_pool_end = (o->server_network | ~o->server_netmask) - 2;
+                 ifconfig_pool_verify_range(M_USAGE, o->ifconfig_pool_start, o->ifconfig_pool_end);
+             }
+             o->ifconfig_pool_netmask = o->server_netmask;
+ 
+             push_option(o, print_opt_route_gateway(o->server_network + 1, &o->gc), M_USAGE);
++            if (dev == DEV_TYPE_TUN && !o->route_default_gateway)
++            {
++                o->route_default_gateway = print_in_addr_t(o->server_network + 2, 0, &o->gc);
++            }
+         }
+         else
+         {
+             ASSERT(0);
+         }
+ 
++        if (dev == DEV_TYPE_TUN)
++            push_option(o, print_opt_topology(topology, &o->gc), M_USAGE);
++
+         /* set push-ifconfig-constraint directive */
+         if ((dev == DEV_TYPE_TAP || topology == TOP_SUBNET))
+         {
+-- 
+2.24.0
 
-In any case, should I just keep it as-is just to be "conservative"?
-
-> Not sure.  This code has been rewritten a number of times over the
-> years, so maybe the assignment slipped outside of an if() block...
-
-Again, should I keep it as-is, or "try it and see"?
-
-> Things like this can (and should) all be fixed, but please do not lump
-> them together with a functional change in one big patch.
-
-No problem, I can split it and resend.
-
-
->
-> gert
-> --
-> "If was one thing all people took for granted, was conviction that if you
->  feed honest figures into a computer, honest figures come out. Never doubted
->  it myself till I met a computer with a sense of humor."
->                              Robert A. Heinlein, The Moon is a Harsh Mistress
->
-> Gert Doering - Munich, Germany                             gert@...1296...
 
