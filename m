@@ -1,17 +1,19 @@
-From: David Sommerseth <openvpn@...2080...>
-References: <1573234655-905-1-git-send-email-lstipakov@...277...>
- <201911091449.xA9Enpkt081718@...2054...>
- <20191109150057.GJ40538@...1296...>
- <62099134-3d8e-a6d7-867b-b4756fb787da@...2080...>
-Message-ID: <e580508b-ead6-9b2e-266e-623d9a193adb@...2080...>
-Date: Tue, 12 Nov 2019 20:09:00 +0100
 MIME-Version: 1.0
-In-Reply-To: <62099134-3d8e-a6d7-867b-b4756fb787da@...2080...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="C6PZMb0kHzt5cAnvXABSINX6gVYEtfX6y"
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: wintun: add
- --windows-driver config option
+References: <20191103053148.18059-1-tom.ty89@...277...>
+ <20191103182443.GC40538@...1296...>
+ <20191103183351.GD40538@...1296...>
+ <CAGnHSEn0jaM3u9LCXxArhQkL9ddZQ9UROOZ8+PXPf+oAwTyswg@...278...>
+ <20191103204613.GE40538@...1296...>
+ <CAGnHSE=LcwX6hxHM2sdpWRP6cKyQiuhtc4ZUG2H1rdu-CNHOqQ@...278...>
+ <20191110180755.GQ40538@...1296...>
+ <CAGnHSEkL5UY+q9p3j-UoOrBPcrhoNPyzSbEAMA4+x72jH46HGQ@...278...>
+ <5dbf208f-3a4d-7732-e09b-36b1b2466a67@...1227...>
+In-Reply-To: <5dbf208f-3a4d-7732-e09b-36b1b2466a67@...1227...>
+From: Tom Yan <tom.ty89@...277...>
+Date: Wed, 13 Nov 2019 11:35:40 +0800
+Message-ID: <CAGnHSEkoJbeUtOZVrNVvfEwtkWRMo=ZS6WH0VZpOR=BMNRsqGA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] tun/iproute2: support 31-bit ipv4
+ prefix (RFC 3021)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,99 +22,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net, Antonio Quartulli <a@...2181...>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---C6PZMb0kHzt5cAnvXABSINX6gVYEtfX6y
-Content-Type: multipart/mixed; boundary="21cc1q9gvDxJUMOtdbNUUvh3GrVUhp3St";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-To: Gert Doering <gert@...1296...>, Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <e580508b-ead6-9b2e-266e-623d9a193adb@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: wintun: add --windows-driver
- config option
-References: <1573234655-905-1-git-send-email-lstipakov@...277...>
- <201911091449.xA9Enpkt081718@...2054...>
- <20191109150057.GJ40538@...1296...>
- <62099134-3d8e-a6d7-867b-b4756fb787da@...2080...>
-In-Reply-To: <62099134-3d8e-a6d7-867b-b4756fb787da@...2080...>
+Details like...?
 
---21cc1q9gvDxJUMOtdbNUUvh3GrVUhp3St
-Content-Language: en-US
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+If you configure/push an IP with a subnet (i.e. non /32 prefix or
+255.255.255.255 subnet mask) to a client, a subnet route will be added
+to main route table (as show by `ip r`) by the kernel just like on
+Desktop Linux (at least that's what would happen on my device). When I
+use ics-openvpn without openvpn3 box checked or OpenVPN Connect, the
+route would be in effect so I don't need to push/configure one
+explicitly to the client for it to be able to reach the server (or
+vice versa) via the tunnel. But if I use ics-openvpn with the openvpn3
+box checked, apparently the route is not in effect (but still added),
+and therefore for it to be able to reach the server, I would need to
+push/configure a route explicitly.
 
-On 12/11/2019 19:39, David Sommerseth wrote:
-> On 09/11/2019 16:00, Gert Doering wrote:
->> Hi,
->>
->> On Sat, Nov 09, 2019 at 03:49:51PM +0100, Gert Doering wrote:
->>>      wintun: add --windows-driver config option
->>>
->>>      Signed-off-by: Lev Stipakov <lev@...515...>
->>>      Acked-by: Simon Rozman <simon@...2293...>
->>
->> Ooops.  Misattributed the ACK, so this was really Steffan's ACK.
->>
->> I am not amending & re-pusing the commit.  This will call more confusion.
->>
->> Sorry.
->=20
-> Wise choice.  However you can use another little git feature ... git notes
-> <https://web.archive.org/web/20180121193320/http://git-scm.com/blog/2010/=
-08/25/notes.html>
-> <https://git-scm.com/docs/git-notes>
->=20
-> Git notes does not change the commitish, but are more weakly tied to comm=
-its
-> and does not have the same "change traceability" as commits does.  So I
-> recommend to PGP sign notes (which might need to be handled outside git) =
-if it
-> important to ensure the note is unchanged.  But a note can be
-
-Okay, lets complete that sentence ...
-
-But a note can be removed without making it too obvious, so it's not a tota=
-lly
-secure extension to commit messages.  But it helps clarify things, especial=
-ly
-if the integrity of the note isn't critical.
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
-
-
-
---21cc1q9gvDxJUMOtdbNUUvh3GrVUhp3St--
-
---C6PZMb0kHzt5cAnvXABSINX6gVYEtfX6y
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJdywNMAAoJEIbPlEyWcf3yRUkP/1ceu+WOnjTA6imyf4/oJXMO
-IVPqavoxCbmGsEAtJXdhB1ikTez7zLXtg3dbR9cRiZuxlpzzParw1hv3RFZO7/8d
-eXTdZMkD1c9FhzoddVWm4TN2xbQmEm7LOSVRv02m2l182gkq+cKxz43LbKePe8y/
-Sql9BZB0jlojomGzARQSESk5WFF6Tk1dj6Ef5nxGaZSirpbkrV9AKJvMKCLuc2zC
-dCUUs6hX0losClthvlAMov98z6DvfGFLl7roW40QvZjPFgNRlOd+C1ElZwM2OSBM
-4muHT5ZV27om2O41bQKaRAjQVx6oijMvoju30fLHlb4hdZt3EiGWOLKC+w83lsLY
-5hSc118MfB94VUhzjf4PQ1NNu5Tt4Xbeows9hUojth8zPx89Uk+LE8WR4eKMIfCs
-6KS+qDRpq7RlsR89chsAGrRs5GlmsrsVDO18bML9vUOHSYSdPWfQ46+rmaKFP+ln
-SzgPyIHDsyUDXiBkuI8rHzRc5QridZdOVHoC1ZRf6GKLeky2kOhPuU/QNM0ksDuT
-xDgGe4y2x0QHwzGmjRMQ1C+BgSBH4/dT1L/yHq8D2fy57SoVE8sCo3AaJO+AaFrG
-phPU2LfHPvyH6NhPKXwGSoyu+mN5u4WqO6XRSBGYUhOWuzYNBXXYiqqAOg0Q4Jp1
-q+DN0B9mXuR4mi9je5xz
-=1tZ5
------END PGP SIGNATURE-----
-
---C6PZMb0kHzt5cAnvXABSINX6gVYEtfX6y--
+On Tue, 12 Nov 2019 at 02:02, Arne Schwabe <arne@...1227...> wrote:
+>
+> Am 11.11.19 um 16:12 schrieb Tom Yan:
+> > Yes both iproute2 and sitnl works perfectly as expected. Will the fix
+> > be backported to the 2.4 branch?
+> >
+> > P.S. For the record, if the client is ics-openvpn with openvpn3,
+> > somehow you need push route (either host or subnet will do) anyway.
+>
+> I am not aware of this issue. Could you go more into detail?
+>
+> > This is not necessary with ics-openvpn with openvpn2 or OpenVPN
+> > Connect (AFAIK its core is openvpn3 as well, albeit different
+> > snapshot). The problem/behaviour is not specific to /31 subnet though,
+> > apparently. I guess the main route table is ignored/masked.
+>
+> ics-openvpn is a) OpenVPN master b) uses a completely different logic to
+> handle network config (in OpenVPNService.java). So this patch does not
+> affect ics-openvpn in any way.
+>
+> Arne
+>
+>
+>
 
