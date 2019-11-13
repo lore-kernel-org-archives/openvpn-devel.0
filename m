@@ -1,19 +1,8 @@
-MIME-Version: 1.0
-References: <20191103053148.18059-1-tom.ty89@...277...>
- <20191103182443.GC40538@...1296...>
- <20191103183351.GD40538@...1296...>
- <CAGnHSEn0jaM3u9LCXxArhQkL9ddZQ9UROOZ8+PXPf+oAwTyswg@...278...>
- <20191103204613.GE40538@...1296...>
- <CAGnHSE=LcwX6hxHM2sdpWRP6cKyQiuhtc4ZUG2H1rdu-CNHOqQ@...278...>
- <20191110180755.GQ40538@...1296...>
- <CAGnHSEkL5UY+q9p3j-UoOrBPcrhoNPyzSbEAMA4+x72jH46HGQ@...278...>
- <5dbf208f-3a4d-7732-e09b-36b1b2466a67@...1227...>
-In-Reply-To: <5dbf208f-3a4d-7732-e09b-36b1b2466a67@...1227...>
 From: Tom Yan <tom.ty89@...277...>
-Date: Wed, 13 Nov 2019 11:35:40 +0800
-Message-ID: <CAGnHSEkoJbeUtOZVrNVvfEwtkWRMo=ZS6WH0VZpOR=BMNRsqGA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] tun/iproute2: support 31-bit ipv4
- prefix (RFC 3021)
+Date: Wed, 13 Nov 2019 16:58:54 +0800
+Message-Id: <20191113085854.6016-1-tom.ty89@...277...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Fix server directive for /31 subnet
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,47 +11,157 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net, Antonio Quartulli <a@...2181...>
+To: openvpn-devel@lists.sourceforge.net
 
-Details like...?
+As /31 subnet now works (as we stop setting broadcast address), the server directives can be fixed for it as well. Also stop repeating code for tap and tun + subnet.
+---
+ src/openvpn/helper.c | 90 ++++++++++++++++++--------------------------
+ 1 file changed, 37 insertions(+), 53 deletions(-)
 
-If you configure/push an IP with a subnet (i.e. non /32 prefix or
-255.255.255.255 subnet mask) to a client, a subnet route will be added
-to main route table (as show by `ip r`) by the kernel just like on
-Desktop Linux (at least that's what would happen on my device). When I
-use ics-openvpn without openvpn3 box checked or OpenVPN Connect, the
-route would be in effect so I don't need to push/configure one
-explicitly to the client for it to be able to reach the server (or
-vice versa) via the tunnel. But if I use ics-openvpn with the openvpn3
-box checked, apparently the route is not in effect (but still added),
-and therefore for it to be able to reach the server, I would need to
-push/configure a route explicitly.
+diff --git a/src/openvpn/helper.c b/src/openvpn/helper.c
+index ff9df506..608f886f 100644
+--- a/src/openvpn/helper.c
++++ b/src/openvpn/helper.c
+@@ -286,13 +286,13 @@ helper_client_server(struct options *o)
+                 print_netmask(IFCONFIG_POOL_MIN_NETBITS, &gc));
+         }
+ 
+-        if (dev == DEV_TYPE_TUN)
++        if (dev == DEV_TYPE_TUN && (topology == TOP_NET30 || topology == TOP_P2P))
+         {
+             int pool_end_reserve = 4;
+ 
+             if (netbits > 29)
+             {
+-                msg(M_USAGE, "--server directive when used with --dev tun must define a subnet of %s or lower",
++                msg(M_USAGE, "subnet must be %s or lower",
+                     print_netmask(29, &gc));
+             }
+ 
+@@ -304,85 +304,69 @@ helper_client_server(struct options *o)
+             o->mode = MODE_SERVER;
+             o->tls_server = true;
+ 
+-            if (topology == TOP_NET30 || topology == TOP_P2P)
++            o->ifconfig_local = print_in_addr_t(o->server_network + 1, 0, &o->gc);
++            o->ifconfig_remote_netmask = print_in_addr_t(o->server_network + 2, 0, &o->gc);
++
++            if (!(o->server_flags & SF_NOPOOL))
+             {
+-                o->ifconfig_local = print_in_addr_t(o->server_network + 1, 0, &o->gc);
+-                o->ifconfig_remote_netmask = print_in_addr_t(o->server_network + 2, 0, &o->gc);
+-
+-                if (!(o->server_flags & SF_NOPOOL))
+-                {
+-                    o->ifconfig_pool_defined = true;
+-                    o->ifconfig_pool_start = o->server_network + 4;
+-                    o->ifconfig_pool_end = (o->server_network | ~o->server_netmask) - pool_end_reserve;
+-                    ifconfig_pool_verify_range(M_USAGE, o->ifconfig_pool_start, o->ifconfig_pool_end);
+-                }
+-
+-                helper_add_route(o->server_network, o->server_netmask, o);
+-                if (o->enable_c2c)
+-                {
+-                    push_option(o, print_opt_route(o->server_network, o->server_netmask, &o->gc), M_USAGE);
+-                }
+-                else if (topology == TOP_NET30)
+-                {
+-                    push_option(o, print_opt_route(o->server_network + 1, 0, &o->gc), M_USAGE);
+-                }
++                o->ifconfig_pool_defined = true;
++                o->ifconfig_pool_start = o->server_network + 4;
++                o->ifconfig_pool_end = (o->server_network | ~o->server_netmask) - pool_end_reserve;
++                ifconfig_pool_verify_range(M_USAGE, o->ifconfig_pool_start, o->ifconfig_pool_end);
+             }
+-            else if (topology == TOP_SUBNET)
++
++            helper_add_route(o->server_network, o->server_netmask, o);
++            if (o->enable_c2c)
+             {
+-                o->ifconfig_local = print_in_addr_t(o->server_network + 1, 0, &o->gc);
+-                o->ifconfig_remote_netmask = print_in_addr_t(o->server_netmask, 0, &o->gc);
+-
+-                if (!(o->server_flags & SF_NOPOOL))
+-                {
+-                    o->ifconfig_pool_defined = true;
+-                    o->ifconfig_pool_start = o->server_network + 2;
+-                    o->ifconfig_pool_end = (o->server_network | ~o->server_netmask) - 2;
+-                    ifconfig_pool_verify_range(M_USAGE, o->ifconfig_pool_start, o->ifconfig_pool_end);
+-                }
+-                o->ifconfig_pool_netmask = o->server_netmask;
+-
+-                push_option(o, print_opt_route_gateway(o->server_network + 1, &o->gc), M_USAGE);
+-                if (!o->route_default_gateway)
+-                {
+-                    o->route_default_gateway = print_in_addr_t(o->server_network + 2, 0, &o->gc);
+-                }
++                push_option(o, print_opt_route(o->server_network, o->server_netmask, &o->gc), M_USAGE);
+             }
+-            else
++            else if (topology == TOP_NET30)
+             {
+-                ASSERT(0);
++                push_option(o, print_opt_route(o->server_network + 1, 0, &o->gc), M_USAGE);
+             }
+-
+-            push_option(o, print_opt_topology(topology, &o->gc), M_USAGE);
+         }
+-        else if (dev == DEV_TYPE_TAP)
++        else if (dev == DEV_TYPE_TAP || (dev == DEV_TYPE_TUN && topology == TOP_SUBNET))
+         {
+-            if (netbits > 30)
++            int ptp = 1;
++
++            if (netbits > 31)
+             {
+-                msg(M_USAGE, "--server directive when used with --dev tap must define a subnet of %s or lower",
+-                    print_netmask(30, &gc));
++                msg(M_USAGE, "subnet must be %s or lower",
++                    print_netmask(31, &gc));
+             }
+ 
++            if (netbits == 31)
++              ptp = 0;
++
+             o->mode = MODE_SERVER;
+             o->tls_server = true;
+-            o->ifconfig_local = print_in_addr_t(o->server_network + 1, 0, &o->gc);
++
++            o->ifconfig_local = print_in_addr_t(o->server_network + ptp, 0, &o->gc);
+             o->ifconfig_remote_netmask = print_in_addr_t(o->server_netmask, 0, &o->gc);
+ 
+             if (!(o->server_flags & SF_NOPOOL))
+             {
+                 o->ifconfig_pool_defined = true;
+-                o->ifconfig_pool_start = o->server_network + 2;
+-                o->ifconfig_pool_end = (o->server_network | ~o->server_netmask) - 1;
++                o->ifconfig_pool_start = o->server_network + ptp + 1;
++                o->ifconfig_pool_end = (o->server_network | ~o->server_netmask) - ptp;
+                 ifconfig_pool_verify_range(M_USAGE, o->ifconfig_pool_start, o->ifconfig_pool_end);
+             }
+             o->ifconfig_pool_netmask = o->server_netmask;
+ 
+-            push_option(o, print_opt_route_gateway(o->server_network + 1, &o->gc), M_USAGE);
++            push_option(o, print_opt_route_gateway(o->server_network + ptp, &o->gc), M_USAGE);
++            if (dev == DEV_TYPE_TUN && !o->route_default_gateway)
++            {
++                o->route_default_gateway = print_in_addr_t(o->server_network + ptp + 1, 0, &o->gc);
++            }
+         }
+         else
+         {
+             ASSERT(0);
+         }
+ 
++        if (dev == DEV_TYPE_TUN)
++            push_option(o, print_opt_topology(topology, &o->gc), M_USAGE);
++
+         /* set push-ifconfig-constraint directive */
+         if ((dev == DEV_TYPE_TAP || topology == TOP_SUBNET))
+         {
+-- 
+2.24.0
 
-On Tue, 12 Nov 2019 at 02:02, Arne Schwabe <arne@...1227...> wrote:
->
-> Am 11.11.19 um 16:12 schrieb Tom Yan:
-> > Yes both iproute2 and sitnl works perfectly as expected. Will the fix
-> > be backported to the 2.4 branch?
-> >
-> > P.S. For the record, if the client is ics-openvpn with openvpn3,
-> > somehow you need push route (either host or subnet will do) anyway.
->
-> I am not aware of this issue. Could you go more into detail?
->
-> > This is not necessary with ics-openvpn with openvpn2 or OpenVPN
-> > Connect (AFAIK its core is openvpn3 as well, albeit different
-> > snapshot). The problem/behaviour is not specific to /31 subnet though,
-> > apparently. I guess the main route table is ignored/masked.
->
-> ics-openvpn is a) OpenVPN master b) uses a completely different logic to
-> handle network config (in OpenVPNService.java). So this patch does not
-> affect ics-openvpn in any way.
->
-> Arne
->
->
->
 
