@@ -1,12 +1,11 @@
-References: <1573760407-20662-1-git-send-email-selva.nair@...277...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <108f5ba4-240b-5496-f37b-51ff2a6fb2fe@...2080...>
-Date: Thu, 14 Nov 2019 22:31:20 +0100
 MIME-Version: 1.0
-In-Reply-To: <1573760407-20662-1-git-send-email-selva.nair@...277...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="1oMOSnVwjtDf9guETjYGUS2I7nrTkNJAD"
+References: <1573760407-20662-1-git-send-email-selva.nair@...277...>
+ <108f5ba4-240b-5496-f37b-51ff2a6fb2fe@...2080...>
+In-Reply-To: <108f5ba4-240b-5496-f37b-51ff2a6fb2fe@...2080...>
+From: Selva Nair <selva.nair@...277...>
+Date: Thu, 14 Nov 2019 16:58:17 -0500
+Message-ID: <CAKuzo_he9FoT-iC-FZAW7qQH2vepY+XmOfsiL6uSH=7hW8ZvVQ@...278...>
+Content-Type: multipart/alternative; boundary="00000000000030aa33059755954d"
 Subject: Re: [Openvpn-devel] [PATCH] Fix ACL_CHECK_ADD_COMPILE_FLAGS to work
  with clang
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,145 +16,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <openvpn@...2080...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---1oMOSnVwjtDf9guETjYGUS2I7nrTkNJAD
-Content-Type: multipart/mixed; boundary="uNyzFkdYFJTodP7YVkxSxMyq572QckKOO";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
-Message-ID: <108f5ba4-240b-5496-f37b-51ff2a6fb2fe@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix ACL_CHECK_ADD_COMPILE_FLAGS to work
- with clang
-References: <1573760407-20662-1-git-send-email-selva.nair@...277...>
-In-Reply-To: <1573760407-20662-1-git-send-email-selva.nair@...277...>
+--00000000000030aa33059755954d
+Content-Type: text/plain; charset="UTF-8"
 
---uNyzFkdYFJTodP7YVkxSxMyq572QckKOO
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Hi David
 
-On 14/11/2019 20:40, selva.nair@...277... wrote:
-> From: Selva Nair <selva.nair@...277...>
->=20
-> Some compilers (e.g., clang) only issue a warning for
-> unsupported options unless additional flags such
-> as -Werror are used to convert the warning to an error.
->=20
-> Add support for extra flags in ACL_CHECK_ADD_COMPILE_FLAGS.
->=20
-> Note: a similar approach is used in AX_CHECK_COMPILE_FLAG
-> in autoconf archives.
-
-I'm glad I didn't spend more time on thinking about this earlier today, as =
-you
-have almost the same ideas as I had :)
-
-[...snip...]
->=20=20
-> +# Usage: ACL_CHECK_ADD_COMPILE_FLAGS(flag, [extra-flags])
-> +# Some compilers require extra flags to trigger an error on
-> +# unsupported options. E.g., clang requires -Werror.
->  AC_DEFUN([ACL_CHECK_ADD_COMPILE_FLAGS], [
->      old_cflags=3D"$CFLAGS"
-> -    CFLAGS=3D"$1 $CFLAGS"
-> -    AC_MSG_CHECKING([whether the compiler acceppts $1])
-> -    AC_COMPILE_IFELSE([AC_LANG_PROGRAM()], [AC_MSG_RESULT([yes])],
-> +    CFLAGS=3D"$2 $1 $CFLAGS"
-> +    AC_MSG_CHECKING([whether the compiler accepts $1])
-> +    AC_COMPILE_IFELSE([AC_LANG_PROGRAM()], [AC_MSG_RESULT([yes])]; CFLAG=
-S=3D"$1 $old_cflags",
+Thanks for the comments
 
 My idea was just to add -Werror right in the line above, and not extend the
-ACL_CHECK_ADD_COMPILE_FLAGS macro with another argument.
+> ACL_CHECK_ADD_COMPILE_FLAGS macro with another argument.
+>
 
-But I stopped when I realized that GCC has some quirks as well, as I needed=
- to
-ponder about this a bit.
-
-Clang is fairly consistent:
-
-* first with an unknown -Wno-* argument
-
-$ clang-6.0 -o test test.c -Wall -Wno-non-existing-flag
-warning: unknown warning option '-Wno-non-existing-flag'; did you mean
-      '-Wno-non-virtual-dtor'? [-Wunknown-warning-option]
-
-$ clang-6.0 -o test test.c -Wall -Wno-non-existing-flag  -Werror
-error: unknown warning option '-Wno-non-existing-flag'; did you mean
-      '-Wno-non-virtual-dtor'? [-Werror,-Wunknown-warning-option]
-
-* then with an unknown -W* argument (without the no- prefix)
-
-$ clang-6.0 -o test test.c -Wall -Wnon-existing-flag
-warning: unknown warning option '-Wnon-existing-flag'; did you mean
-      '-Wnon-virtual-dtor'? [-Wunknown-warning-option]
-
-$ clang-6.0 -o test test.c -Wall -Wnon-existing-flag  -Werror
-error: unknown warning option '-Wnon-existing-flag'; did you mean
-      '-Wnon-virtual-dtor'? [-Werror,-Wunknown-warning-option]
-
-This is consistent and I can live with this behavior, using -Werror to bail
-out on warnings.
-
-So lets running the same tests with GCC:
-
-* first with an unknown -Wno-* argument
-
-$ gcc -o test test.c -Wall -Wno-non-existing-flag
-(no error nor warning)
-
-$ gcc -o test test.c -Wall -Wno-non-existing-flag -Werror
-(no error nor warning)
-
-* then with an unknown -W* argument (without the no- prefix)
-
-$ gcc -o test test.c -Wall -Wnon-existing-flag
-gcc: error: unrecognized command line option =E2=80=98-Wnon-existing-flag=
-=E2=80=99
+I'm fine with that approach as well. Let me know if you want a v2.
 
 
-I think you said it pretty well in your mail:
+> I think you said it pretty well in your mail:
+>
+> > Darn compilers and darn -Werror
+>
+>
+> So your change does improve Clang ... I dunno what we will do with GCC.
+>
 
-> Darn compilers and darn -Werror
+It doesn't affect gcc as gcc does error (or ignore -- see below)
+unsupported options with or without -Werror. So I think we are okay. travis
+build on my fork confirms that:
+https://travis-ci.org/selvanair/openvpn/builds/612019849
 
+However, gcc does have quirky behaviour when it comes to options like
+-Wno-xx-yy. It just accepts them silently[*] with or without -Werror. That
+works fine for us, but it does generate an error about that unsupported
+option if any other error is encountered during the build.  As other errors
+are anyway a show-stopper, I think we can live with that.
 
-So your change does improve Clang ... I dunno what we will do with GCC.
+Selva
 
+[*] I think their reasoning is that -Wno-xx-yy can be thus used to suppress
+warnings added to newer versions without breaking builds with older ones.
+But clang doesn't share that view.
 
---=20
-kind regards,
+--00000000000030aa33059755954d
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-David Sommerseth
-OpenVPN Inc
+<div dir=3D"ltr"><div dir=3D"ltr">Hi David<br></div><div class=3D"gmail_quo=
+te"><br></div><div class=3D"gmail_quote">Thanks for the comments</div><div =
+class=3D"gmail_quote"><br></div><blockquote class=3D"gmail_quote" style=3D"=
+margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-lef=
+t:1ex"><div class=3D"gmail_quote">My idea was just to add -Werror right in =
+the line above, and not extend the<br>
+ACL_CHECK_ADD_COMPILE_FLAGS macro with another argument.</div></blockquote>=
+<div><br></div><div>I&#39;m fine with that approach as well. Let me know if=
+ you want a v2.<br></div><div> <br></div><div class=3D"gmail_quote"><blockq=
+uote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1p=
+x solid rgb(204,204,204);padding-left:1ex">
+<br>
+I think you said it pretty well in your mail:<br>
+<br>
+&gt; Darn compilers and darn -Werror<br>
+<br>
+<br>
+So your change does improve Clang ... I dunno what we will do with GCC.<br>=
+</blockquote><div><br></div><div>It doesn&#39;t affect gcc as gcc does erro=
+r (or ignore -- see below) unsupported options with or without -Werror. So =
+I think we are okay. travis build on my fork confirms that:</div><div><a hr=
+ef=3D"https://travis-ci.org/selvanair/openvpn/builds/612019849" rel=3D"nore=
+ferrer" target=3D"_blank">https://travis-ci.org/selvanair/openvpn/builds/61=
+2019849</a></div><div><br></div><div>However, gcc does have quirky behaviou=
+r when it comes to options like -Wno-xx-yy. It just accepts them silently[*=
+] with or without -Werror. That works fine for us, but it does generate an =
+error about that unsupported option if any other error is encountered durin=
+g the build.=C2=A0 As other errors are anyway a show-stopper, I think we ca=
+n live with that.</div><div><br></div><div>Selva</div><div><br></div><div>[=
+*] I think their reasoning is that -Wno-xx-yy can be thus used to suppress =
+warnings added to newer versions without breaking builds with older ones. B=
+ut clang doesn&#39;t share that view.<br></div></div></div>
 
-
-
---uNyzFkdYFJTodP7YVkxSxMyq572QckKOO--
-
---1oMOSnVwjtDf9guETjYGUS2I7nrTkNJAD
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJdzceoAAoJEIbPlEyWcf3yUQ4P/3fASneIQTxdrasx8NGt44T/
-w4Nfj0mGn3bg2Iy7nJ0UN4G2o8jKjaRNHueujC0ZNbOanjfK7MNv7pW9mME1rrVr
-s84p1coX8KqKB5wU63OUWYyolReYKjgoSQ8Wm+42Z4Rc5l6aQZUMzTP5JfS2rE8/
-TgneuAQj2wjksUSwFquX0+wWi/8s04Sb0KcdGBdLNBuUYpOFNXb9WWuQaN/NmLtt
-SjfzOmKUX3lhWpIU1to9cXRh9ZazQ/9jYN3x5o1B1tBX4BosFL13d2YdI/8Qi7kB
-XwqQb82usVNJQNpf+YjRO95dm5LY/0N00zXpIEZeHeZkeZS6F4c9EdGXXNJbK/Wx
-KSHdH2cGPmE1bcYfF6uB71qshq+6Ps6fyOM4mDh3ikDRI/fcR7ii9Pf+nj6mobhr
-2zHFtpJ9arnLa/Cvok/nlIqdgV1yLoZ5tZBTAjPVUdX+sMxmpNZhgct8bIhZsLot
-SnTb0VDHF6z7LEDcgd5XorMxlXUKkqPZKCY8cIubHs01tAd8dvIyps3Cxp55Njnd
-yZ5esrYbjqr9HDd6v0XuPmgcUwAUsGDtMxNrYGAGiNm/7ZZx5vEuIJiAfWkjUZd5
-0ZNnglNznTzB097nCEmTL2VjSWl2eFg375ss6PjKhmyOSFZ+Es0da+3e0zp0OIfo
-n2JeCHJFO4Et4PVVr7/s
-=Y6yK
------END PGP SIGNATURE-----
-
---1oMOSnVwjtDf9guETjYGUS2I7nrTkNJAD--
+--00000000000030aa33059755954d--
 
