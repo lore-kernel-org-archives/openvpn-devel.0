@@ -1,10 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Sun, 17 Nov 2019 19:12:43 +0100
-Message-Id: <20191117181243.28919-4-arne@...1227...>
+Date: Sun, 17 Nov 2019 19:12:41 +0100
+Message-Id: <20191117181243.28919-2-arne@...1227...>
 In-Reply-To: <20191117181243.28919-1-arne@...1227...>
 References: <20191117181243.28919-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 4/4] Normalise ncp-ciphers option and
- restrict it to 127 bytes
+Subject: [Openvpn-devel] [PATCH 2/4] Implement dynamic NCP negotiation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,286 +16,352 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-In scenarios of mbed TLS vs OpenSSL we already normalise the ciphers
-that are send via the wire protocol via OCC to not have a mismatch
-warning between server and client. This is done by
-translate_cipher_name_from_openvpn. The same applies also to the
-ncp-ciphers list. Specifying non normalised names in ncp-ciphers will
-cause negotation not to succeed if ciphers are not in the same form.
-Therefore we will normalise the ciphers in options_postmutate.
+Our current NCP version is flawed in the way that it can only indicate support for
+AES-256-GCM and AES-128-GCM. While configuring client and server with different
+ncp-cipher configuration directive works, the server will blindly push the first
+cipher of that list to the client if the client sends IV_NCP=2.
 
-The alternative and a lot less user friendly alternative would be to
-bail if on of the ciphers in ncp-ciphers is not in its normalised form.
+This patches introduces IV_CIPHER sent from the client to the server that
+contains the full list of cipers that the client is willing to support (*).
+The server will then pick the first ciphr of its own ncp-cipher list that
+the client indicates support for.
 
-Also restrict the ncp-ciphers list to 127. This is somewhat arbitrary
-but should prevent too large IV_CIPHER messages and problems sending
-those. The server will accept also large IV_CIPHER values from clients.
+We choose a textual representation of the ciphers instead of a binary sinc
+a binary would mean that we would need to have a central place to maintain
+a mapping between binary and the actual cipher name. Also the normal
+ncp-cipher list is quite short, so this should not be problem. It also provides
+the freedom to negioate new ciphers from SSL libraries without the need to
+upgrade OpenVPN/its binary cipher table.
+
+* the client/server will also accpt the cipher specifid in --cipher but eventually
+we want to get rid of --ciper. So this patch keeps a reasonable backwards
+compatbility (especially poor man's NCP) but does not encourage to use --cipher
+for negotiation in documentation or warning messages.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- doc/openvpn.8                       |  3 ++
- src/openvpn/options.c               | 14 +++++---
- src/openvpn/ssl_ncp.c               | 55 +++++++++++++++++++++++++----
- src/openvpn/ssl_ncp.h               | 19 ++++++++--
- tests/unit_tests/openvpn/test_ncp.c | 40 ++++++++++++++-------
- 5 files changed, 104 insertions(+), 27 deletions(-)
+ doc/openvpn.8            |  10 +++-
+ src/openvpn/init.c       |   1 -
+ src/openvpn/options.c    |   1 +
+ src/openvpn/push.c       |  32 +++++++----
+ src/openvpn/ssl.c        | 111 +++++++++++++++++++++++++++++++++++++--
+ src/openvpn/ssl.h        |  34 ++++++++++++
+ src/openvpn/ssl_common.h |   1 -
+ 7 files changed, 172 insertions(+), 18 deletions(-)
 
 diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 4f0df786..a71b1c14 100644
+index ae24b6c0..4f0df786 100644
 --- a/doc/openvpn.8
 +++ b/doc/openvpn.8
-@@ -4400,6 +4400,9 @@ AES\-256\-GCM:AES\-256\-CBC" set can either specify "\-\-cipher BF\-CBC" or
+@@ -3111,6 +3111,11 @@ IV_NCP=2 \-\- negotiable ciphers, client supports
+ pushed by the server, a value of 2 or greater indicates client
+ supports AES\-GCM\-128 and AES\-GCM\-256.
  
- Note, for using NCP with a OpenVPN 2.4 peer this list must include
- the AES\-256\-GCM and AES\-128\-GCM ciphers.
++IV_CIPHERS=<ncp\-ciphers> \-\- the client pushes the list of configured
++ciphers with the
++\.B -\-\ncp\-ciphers
++option to the server.
 +
-+This list is restricted to be 127 chars long after conversion to OpenVPN
-+ciphers.
+ IV_GUI_VER=<gui_id> <version> \-\- the UI version of a UI if one is
+ running, for example "de.blinkt.openvpn 0.5.47" for the
+ Android app.
+@@ -4368,7 +4373,8 @@ is a colon\-separated list of ciphers, and defaults to
+ 
+ For servers, the first cipher from
+ .B cipher_list
+-will be pushed to clients that support cipher negotiation.
++that is also supported by the client will be pushed to clients
++that support cipher negotiation.
+ 
+ Cipher negotiation is enabled in client\-server mode only.  I.e. if
+ .B \-\-mode
+@@ -4392,7 +4398,7 @@ NCP server (v2.4+) with "\-\-cipher BF\-CBC" and "\-\-ncp\-ciphers
+ AES\-256\-GCM:AES\-256\-CBC" set can either specify "\-\-cipher BF\-CBC" or
+ "\-\-cipher AES\-256\-CBC" and both will work.
+ 
+-Note, for using NCP with a OpenVPN 2.4 server this list must include
++Note, for using NCP with a OpenVPN 2.4 peer this list must include
+ the AES\-256\-GCM and AES\-128\-GCM ciphers.
  .\"*********************************************************
  .TP
- .B \-\-ncp\-disable
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 8f142311..5058b300 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2828,7 +2828,6 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
+     to.replay_time = options->replay_time;
+     to.tcp_mode = link_socket_proto_connection_oriented(options->ce.proto);
+     to.config_ciphername = c->c1.ciphername;
+-    to.config_authname = c->c1.authname;
+     to.config_ncp_ciphers = c->c1.ncp_ciphers;
+     to.ncp_enabled = options->ncp_enabled;
+     to.transition_window = options->transition_window;
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 9be5a826..fd069c75 100644
+index c282b582..9be5a826 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -2500,11 +2500,6 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-     }
- #endif /* P2MP_SERVER */
+@@ -45,6 +45,7 @@
+ #include "shaper.h"
+ #include "crypto.h"
+ #include "ssl.h"
++#include "ssl_ncp.h"
+ #include "options.h"
+ #include "misc.h"
+ #include "socket.h"
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 368b6920..1f1e1f0d 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -429,7 +429,7 @@ prepare_push_reply(struct context *c, struct gc_arena *gc,
+     prepare_auth_token_push_reply(tls_multi, gc, push_list);
  
--    if (options->ncp_enabled && !tls_check_ncp_cipher_list(options->ncp_ciphers))
--    {
--        msg(M_USAGE, "NCP cipher list contains unsupported ciphers.");
--    }
--
-     if (options->keysize)
-     {
-         msg(M_WARN, "WARNING: --keysize is DEPRECATED and will be removed in OpenVPN 2.6");
-@@ -3079,6 +3074,15 @@ options_postprocess_mutate(struct options *o)
- 
-     options_postprocess_mutate_invariant(o);
- 
+     /* Push cipher if client supports Negotiable Crypto Parameters */
+-    if (tls_peer_info_ncp_ver(peer_info) >= 2 && o->ncp_enabled)
 +    if (o->ncp_enabled)
-+    {
-+        o->ncp_ciphers = mutate_ncp_cipher_list(o->ncp_ciphers, &o->gc);
-+        if (o->ncp_ciphers == NULL)
-+        {
-+            msg(M_USAGE, "NCP cipher list contains unsupported ciphers or is too long.");
-+        }
-+    }
-+
-     if (o->remote_list && !o->connection_list)
      {
-         /*
-diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-index 029ac1d5..ee3c2cb7 100644
---- a/src/openvpn/ssl_ncp.c
-+++ b/src/openvpn/ssl_ncp.c
-@@ -91,27 +91,68 @@ tls_peer_supports_ncp(const char *peer_info)
-     }
- }
- 
--bool
--tls_check_ncp_cipher_list(const char *list)
-+char *
-+mutate_ncp_cipher_list(const char *list, struct gc_arena *gc)
- {
--    bool unsupported_cipher_found = false;
-+    bool error_found = false;
- 
--    ASSERT(list);
-+    struct buffer new_list  = alloc_buf(MAX_NCP_CIPHERS_LENGTH);
- 
-     char *const tmp_ciphers = string_alloc(list, NULL);
-     const char *token = strtok(tmp_ciphers, ":");
-     while (token)
-     {
--        if (!cipher_kt_get(translate_cipher_name_from_openvpn(token)))
-+        /* translate_cipher_name_from_openvpn also normalises the cipher name,
-+         * e.g. replacing AeS-128-gCm with AES-128-GCM
-+         */
-+        const char *cipher_name = translate_cipher_name_from_openvpn(token);
-+        const cipher_kt_t *ktc = cipher_kt_get(cipher_name);
-+        if (!ktc)
+         /* if we have already created our key, we cannot *change* our own
+          * cipher -> so log the fact and push the "what we have now" cipher
+@@ -445,17 +445,31 @@ prepare_push_reply(struct context *c, struct gc_arena *gc,
+         }
+         else
          {
-             msg(M_WARN, "Unsupported cipher in --ncp-ciphers: %s", token);
--            unsupported_cipher_found = true;
-+            error_found = true;
-+        }
-+        else
-+        {
-+            const char *ovpn_cipher_name =
-+                translate_cipher_name_to_openvpn(cipher_kt_name(ktc));
+-            /* Push the first cipher from --ncp-ciphers to the client.
+-             * TODO: actual negotiation, instead of server dictatorship. */
+-            char *push_cipher = string_alloc(o->ncp_ciphers, &o->gc);
+-            o->ciphername = strtok(push_cipher, ":");
++            /*
++             * Push the first cipher from --ncp-ciphers to the client that
++             * the client announces to be supporting.
++             */
++            char *push_cipher = ncp_get_best_cipher(o->ncp_ciphers, o->ciphername,
++                                                    peer_info,
++                                                    tls_multi->remote_ciphername,
++                                                    &o->gc);
 +
-+            if (buf_len(&new_list)> 0)
++            if (push_cipher)
 +            {
-+                /* The next if condition ensure there is always space for
-+                 * a :
-+                 */
-+                buf_puts(&new_list, ":");
-+            }
-+
-+            /* Ensure buffer has capacity for cipher name + : + \0 */
-+            if (!(buf_forward_capacity(&new_list) >
-+                  strlen(ovpn_cipher_name) + 2))
-+            {
-+                msg(M_WARN, "Length of --ncp-ciphers is over the"
-+                    "limit of 127 chars");
-+                error_found = true;
++                o->ciphername = push_cipher;
 +            }
 +            else
 +            {
-+                buf_puts(&new_list, ovpn_cipher_name);
++                char *peer_ciphers = tls_peer_ncp_list(peer_info);
++                msg(M_INFO, "PUSH: No common cipher between server and client."
++                    "Expect this connection not to work. "
++                    "Server ncp-ciphers: '%s', client supported ciphers '%s'",
++                    o->ncp_ciphers, peer_ciphers);
++                free(peer_ciphers);
 +            }
          }
-         token = strtok(NULL, ":");
+         push_option_fmt(gc, push_list, M_USAGE, "cipher %s", o->ciphername);
      }
+-    else if (o->ncp_enabled)
+-    {
+-        tls_poor_mans_ncp(o, tls_multi->remote_ciphername);
+-    }
+ 
+     return true;
+ }
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 6ca5c79a..61b29330 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1934,6 +1934,81 @@ tls_item_in_cipher_list(const char *item, const char *list)
+     return token != NULL;
+ }
+ 
++char *
++tls_peer_ncp_list(const char *peer_info)
++{
++    /* Check if the peer sends the IV_CIPHERS list */
++    const char *ncp_ciphers_start;
++    if (peer_info && (ncp_ciphers_start = strstr(peer_info, "IV_CIPHERS=")))
++    {
++        ncp_ciphers_start += strlen("IV_CIPHERS=");
++        const char *ncp_ciphers_end = strstr(ncp_ciphers_start, "\n");
++        if (!ncp_ciphers_end)
++        {
++            /* IV_CIPHERS is at end of the peer_info list and no '\n'
++             * follows */
++            ncp_ciphers_end = ncp_ciphers_start + strlen(ncp_ciphers_start);
++        }
 +
++        char *ncp_ciphers_peer = string_alloc(ncp_ciphers_start, NULL);
++        /* NULL terminate the copy at the right position */
++        ncp_ciphers_peer[ncp_ciphers_end - ncp_ciphers_start] = '\0';
++        return ncp_ciphers_peer;
 +
++    }
++    else if (tls_peer_info_ncp_ver(peer_info)>=2)
++    {
++        /* If the peer announces IV_NCP=2 then it supports the AES GCM
++         * ciphers */
++        return strdup("AES-256-GCM:AES-128-GCM");
++    }
++    else
++    {
++        return strdup("");
++    }
++}
++
++char *
++ncp_get_best_cipher(const char *server_list, const char *server_cipher,
++                    const char *peer_info,  const char *remote_cipher,
++                    struct gc_arena *gc)
++{
++    char *peer_ncp_list = tls_peer_ncp_list(peer_info);
++
++    char *tmp_ciphers = string_alloc(server_list, NULL);
++    char *tmp_ciphers_orig = tmp_ciphers;
++
++    const char *token = strsep(&tmp_ciphers, ":");
++    while (token)
++    {
++        if (tls_item_in_cipher_list(token, peer_ncp_list)
++            || streq(token, remote_cipher))
++        {
++            break;
++        }
++        token = strsep(&tmp_ciphers, ":");
++    }
++    /* We have not found a common cipher, as a last resort check if the
++     * server cipher can be used
++     */
++    if (token == NULL
++        && (tls_item_in_cipher_list(server_cipher, peer_ncp_list)
++            || streq(server_cipher, remote_cipher)))
++    {
++        token = server_cipher;
++    }
 +
 +    char *ret = NULL;
-+    if (!error_found && buf_len(&new_list) > 0)
++    if (token != NULL)
 +    {
-+        buf_null_terminate(&new_list);
-+        ret = string_alloc(buf_str(&new_list), gc);
++        ret = string_alloc(token, gc);
 +    }
-     free(tmp_ciphers);
-+    free_buf(&new_list);
- 
--    return 0 < strlen(list) && !unsupported_cipher_found;
++
++    free(tmp_ciphers_orig);
++    free(peer_ncp_list);
 +    return ret;
++}
++
+ void
+ tls_poor_mans_ncp(struct options *o, const char *remote_ciphername)
+ {
+@@ -2322,11 +2397,15 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+ 
+         /* support for Negotiable Crypto Parameters */
+         if (session->opt->ncp_enabled
+-            && (session->opt->mode == MODE_SERVER || session->opt->pull)
+-            && tls_item_in_cipher_list("AES-128-GCM", session->opt->config_ncp_ciphers)
+-            && tls_item_in_cipher_list("AES-256-GCM", session->opt->config_ncp_ciphers))
++            && (session->opt->mode == MODE_SERVER || session->opt->pull))
+         {
+-            buf_printf(&out, "IV_NCP=2\n");
++            if (tls_item_in_cipher_list("AES-128-GCM", session->opt->config_ncp_ciphers)
++                && tls_item_in_cipher_list("AES-256-GCM", session->opt->config_ncp_ciphers))
++            {
++
++                buf_printf(&out, "IV_NCP=2\n");
++            }
++            buf_printf(&out, "IV_CIPHERS=%s\n", session->opt->config_ncp_ciphers);
+         }
+ 
+         /* push compression status */
+@@ -2561,6 +2640,28 @@ error:
+     return false;
  }
- 
- bool
-diff --git a/src/openvpn/ssl_ncp.h b/src/openvpn/ssl_ncp.h
-index 82d008d8..62822e89 100644
---- a/src/openvpn/ssl_ncp.h
-+++ b/src/openvpn/ssl_ncp.h
-@@ -87,10 +87,17 @@ tls_peer_ncp_list(const char *peer_info);
-  * Check whether the ciphers in the supplied list are supported.
-  *
-  * @param list          Colon-separated list of ciphers
-+ * @parms gc            gc_arena to allocate the returned string
-  *
-- * @returns true iff all ciphers in list are supported.
-+ * @returns             colon separated string of normalised (via
-+ *                      translate_cipher_name_from_openvpn) and
-+ *                      zero terminated string iff all ciphers
-+ *                      in list are supported and the total length
-+ *                      is short than MAX_NCP_CIPHERS_LENGTH. NULL
-+ *                      otherwise.
-  */
--bool tls_check_ncp_cipher_list(const char *list);
-+char *
-+mutate_ncp_cipher_list(const char *list, struct gc_arena *gc);
- 
- /**
-  * Return true iff item is present in the colon-separated zero-terminated
-@@ -98,4 +105,12 @@ bool tls_check_ncp_cipher_list(const char *list);
-  */
- bool tls_item_in_cipher_list(const char *item, const char *list);
  
 +/**
-+ * The maximum length of a ncp-cipher string that is accepted.
-+ *
-+ * Since this list needs to be pushed as IV_CIPHERS, we are conservative
-+ * about its length.
++ * Returns whether the client supports NCP either by
++ * announcing IV_NCP>=2 or the IV_CIPHERS list
 + */
-+#define MAX_NCP_CIPHERS_LENGTH 127
++static bool
++tls_peer_supports_ncp(const char *peer_info)
++{
++    if (!peer_info)
++    {
++        return false;
++    }
++    else if (tls_peer_info_ncp_ver(peer_info) >= 2
++             || strstr(peer_info, "IV_CIPHERS="))
++    {
++        return true;
++    }
++    else
++    {
++        return false;
++    }
++}
 +
- #endif /* ifndef OPENVPN_SSL_NCP_H */
-diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn/test_ncp.c
-index e71f4825..7684eed4 100644
---- a/tests/unit_tests/openvpn/test_ncp.c
-+++ b/tests/unit_tests/openvpn/test_ncp.c
-@@ -47,10 +47,24 @@ const char *aes_ciphers = "AES-256-GCM:AES-128-GCM";
- static void
- test_check_ncp_ciphers_list(void **state)
+ static bool
+ key_method_2_read(struct buffer *buf, struct tls_multi *multi, struct tls_session *session)
  {
--    assert_true(tls_check_ncp_cipher_list(aes_ciphers));
--    assert_true(tls_check_ncp_cipher_list(bf_chacha));
--    assert_false(tls_check_ncp_cipher_list("vollbit"));
--    assert_false(tls_check_ncp_cipher_list("AES-256-GCM:vollbit"));
-+    struct gc_arena gc = gc_new();
-+
-+    assert_string_equal(mutate_ncp_cipher_list(aes_ciphers, &gc), aes_ciphers);
-+
-+    assert_string_equal(mutate_ncp_cipher_list(bf_chacha, &gc), bf_chacha);
-+
-+    assert_string_equal(mutate_ncp_cipher_list("BF-cbc:ChaCha20-Poly1305", &gc),
-+                        bf_chacha);
-+
-+
-+    assert_ptr_equal(mutate_ncp_cipher_list("vollbit", &gc), NULL);
-+    assert_ptr_equal(mutate_ncp_cipher_list("AES-256-GCM:vollbit", &gc), NULL);
-+    assert_ptr_equal(mutate_ncp_cipher_list("", &gc), NULL);
-+
-+    assert_ptr_equal(mutate_ncp_cipher_list(
-+                         "ChaCha20-Poly1305:ChaCha20-Poly1305:ChaCha20-Poly1305:"
-+                         "ChaCha20-Poly1305:ChaCha20-Poly1305:ChaCha20-Poly1305:"
-+                         "ChaCha20-Poly1305", &gc), NULL);
- }
+@@ -2633,7 +2734,7 @@ key_method_2_read(struct buffer *buf, struct tls_multi *multi, struct tls_sessio
+     multi->remote_ciphername =
+         options_string_extract_option(options, "cipher", NULL);
  
- static void
-@@ -64,7 +78,7 @@ test_extract_client_ciphers(void **state)
-     assert_string_equal(aes_ciphers,peer_list);
-     assert_true(tls_peer_supports_ncp(client_peer_info));
-     free(peer_list);
--                
+-    if (tls_peer_info_ncp_ver(multi->peer_info) < 2)
++    if (!tls_peer_supports_ncp(multi->peer_info))
+     {
+         /* Peer does not support NCP, but leave NCP enabled if the local and
+          * remote cipher do not match to attempt 'poor-man's NCP'.
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index a944ca3a..ad3b46d7 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -512,6 +512,40 @@ tls_get_peer_info(const struct tls_multi *multi)
+  */
+ int tls_peer_info_ncp_ver(const char *peer_info);
+ 
++/**
++ * Iterates through the ciphers in server_list and return the first
++ * cipher that is also supported by the peer according to the IV_NCP
++ * and IV_CIPHER values in peer_info.
++ *
++ * We also accept a cipher that is the remote cipher of the client for
++ * "Poor man's NCP": Use peer cipher if it is an allowed (NCP) cipher.
++ * Allows non-NCP peers to upgrade their cipher individually.
++ *
++ * Make sure to call tls_session_update_crypto_params() after calling this
++ * function.
++ *
++ * @param gc   gc arena that is ONLY used to allocate the returned string
++ *
++ * @returns NULL if no common cipher is available, otherwise the best common
++ * cipher
++ */
++char *
++ncp_get_best_cipher(const char *server_list, const char *server_cipher,
++                    const char *peer_info, const char *remote_cipher,
++                    struct gc_arena *gc);
 +
-     client_peer_info = "foo=bar\nIV_foo=y\nIV_NCP=2\nIV_CIPHERS=BF-CBC";
-     peer_list = tls_peer_ncp_list(client_peer_info);
-     assert_string_equal("BF-CBC", peer_list);
-@@ -101,8 +115,8 @@ test_poor_man(void **state)
-     struct gc_arena gc = gc_new();
-     char *best_cipher;
- 
--    const char *serverlist="CHACHA20_POLY1305:AES-128-GCM";
--    
-+    const char *serverlist = "CHACHA20_POLY1305:AES-128-GCM";
 +
-     best_cipher = ncp_get_best_cipher(serverlist, "BF-CBC",
-                                       "IV_YOLO=NO\nIV_BAR=7",
-                                       "BF-CBC", &gc);
-@@ -131,8 +145,8 @@ test_ncp_best(void **state)
-     struct gc_arena gc = gc_new();
-     char *best_cipher;
- 
--    const char *serverlist="CHACHA20_POLY1305:AES-128-GCM:AES-256-GCM";
--    
-+    const char *serverlist = "CHACHA20_POLY1305:AES-128-GCM:AES-256-GCM";
++/**
++ * Returns the support cipher list from the peer according to the IV_NCP
++ * and IV_CIPHER values in peer_info.
++ *
++ * @returns Either a string containing the ncp list that needs to be
++ * free()ed after use. If no information is available an empty string
++ * ("") is returned.
++ */
++char *
++tls_peer_ncp_list(const char *peer_info);
 +
-     best_cipher = ncp_get_best_cipher(serverlist, "BF-CBC",
-                                       "IV_YOLO=NO\nIV_NCP=2\nIV_BAR=7",
-                                       "BF-CBC", &gc);
-@@ -150,7 +164,7 @@ test_ncp_best(void **state)
-     best_cipher = ncp_get_best_cipher(serverlist, "BF-CBC",
-                                       "IV_CIPHERS=AES-128-GCM",
-                                       "AES-256-CBC", &gc);
--    
-+
+ /**
+  * Check whether the ciphers in the supplied list are supported.
+  *
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index fb82f610..998ea3c4 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -289,7 +289,6 @@ struct tls_options
+     bool tcp_mode;
  
-     assert_string_equal(best_cipher, "AES-128-GCM");
+     const char *config_ciphername;
+-    const char *config_authname;
+     const char *config_ncp_ciphers;
+     bool ncp_enabled;
  
-@@ -167,16 +181,16 @@ test_ncp_best(void **state)
- 
- 
- 
--
- const struct CMUnitTest ncp_tests[] = {
-     cmocka_unit_test(test_check_ncp_ciphers_list),
--    cmocka_unit_test(test_extract_client_ciphers),    
-+    cmocka_unit_test(test_extract_client_ciphers),
-     cmocka_unit_test(test_poor_man),
-     cmocka_unit_test(test_ncp_best)
- };
- 
- 
--int main(void)
-+int
-+main(void)
- {
-     return cmocka_run_group_tests(ncp_tests, NULL, NULL);
- }
 -- 
 2.22.0
 
