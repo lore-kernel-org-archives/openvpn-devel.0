@@ -1,7 +1,13 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Tue, 19 Nov 2019 21:09:51 +0200
-Message-Id: <20191119190951.87-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH 8/7] wintun: fix ringbuffer registration call
+References: <1573760407-20662-1-git-send-email-selva.nair@...277...>
+ <1574183023-6136-1-git-send-email-selva.nair@...277...>
+From: tincanteksup <tincanteksup@...277...>
+Message-ID: <fbc07d73-ebe0-76da-7bcd-65a61956c0e3@...277...>
+Date: Tue, 19 Nov 2019 19:33:03 +0000
+MIME-Version: 1.0
+In-Reply-To: <1574183023-6136-1-git-send-email-selva.nair@...277...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH v2] Fix ACL_CHECK_ADD_COMPILE_FLAGS to
+ work with clang
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,49 +16,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
 
-From: Lev Stipakov <lev@...515...>
+Typo below,
 
-As MS documentation says:
+On 19/11/2019 17:03, selva.nair@...277... wrote:
+> From: Selva Nair <selva.nair@...277...>
+> 
+> Some compilers (e.g., clang) only issue a warning for
+> unsupported options unless an additional flag such
+> as -Werror is used to convert the warning to an error.
+> 
+> The behaviour is unchanged when using gcc as it either
+> errors or ignores unknown options whether or not -Werror
+> is present.
+> 
+> Signed-off-by: Selva Nair <selva.nair@...277...>
+> ---
+> v2: Do not extend the macro to take an extra argument.
+> Instead, add -Werror while doing the test.
+> 
+> The commit message and comment changed to match this.
+> 
+>   configure.ac | 9 ++++++---
+>   1 file changed, 6 insertions(+), 3 deletions(-)
+> 
+> diff --git a/configure.ac b/configure.ac
+> index 807804e5..f4a947d2 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -1275,11 +1275,14 @@ if test "${enable_pkcs11}" = "yes"; then
+>   	)
+>   fi
+>   
+> +# When testing a compiler option, we add -Werror to force
+> +# an error when the option is unsupported. This is not
+> +# required for gcc, but come compilers such as clang needs it.
 
- > If lpOverlapped is NULL, lpBytesReturned cannot be NULL
 
-While on Windows 10 passing NULL works by accident,
-on Windows 7 it crashes.
+come compilers --> some compilers
 
-Reported-by: kitsune1
-Signed-off-by: Lev Stipakov <lev@...515...>
----
- src/openvpn/ring_buffer.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/src/openvpn/ring_buffer.c b/src/openvpn/ring_buffer.c
-index 482e3336..d384f497 100644
---- a/src/openvpn/ring_buffer.c
-+++ b/src/openvpn/ring_buffer.c
-@@ -35,6 +35,7 @@ register_ring_buffers(HANDLE device,
- {
-     struct tun_register_rings rr;
-     BOOL res;
-+    DWORD bytes_returned;
- 
-     ZeroMemory(&rr, sizeof(rr));
- 
-@@ -46,7 +47,8 @@ register_ring_buffers(HANDLE device,
-     rr.receive.ring_size = sizeof(receive_ring->data);
-     rr.receive.tail_moved = receive_tail_moved;
- 
--    res = DeviceIoControl(device, TUN_IOCTL_REGISTER_RINGS, &rr, sizeof(rr), NULL, 0, NULL, NULL);
-+    res = DeviceIoControl(device, TUN_IOCTL_REGISTER_RINGS, &rr, sizeof(rr),
-+        NULL, 0, &bytes_returned, NULL);
- 
-     return res == TRUE;
- }
--- 
-2.17.1
 
+
+>   AC_DEFUN([ACL_CHECK_ADD_COMPILE_FLAGS], [
+>       old_cflags="$CFLAGS"
+> -    CFLAGS="$1 $CFLAGS"
+> -    AC_MSG_CHECKING([whether the compiler acceppts $1])
+> -    AC_COMPILE_IFELSE([AC_LANG_PROGRAM()], [AC_MSG_RESULT([yes])],
+> +    CFLAGS="$1 -Werror $CFLAGS"
+> +    AC_MSG_CHECKING([whether the compiler accepts $1])
+> +    AC_COMPILE_IFELSE([AC_LANG_PROGRAM()], [AC_MSG_RESULT([yes])]; CFLAGS="$1 $old_cflags",
+>           [AC_MSG_RESULT([no]); CFLAGS="$old_cflags"])]
+>   )
+>   
+> 
 
