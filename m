@@ -1,13 +1,9 @@
-References: <1573760407-20662-1-git-send-email-selva.nair@...277...>
- <1574183023-6136-1-git-send-email-selva.nair@...277...>
-From: tincanteksup <tincanteksup@...277...>
-Message-ID: <fbc07d73-ebe0-76da-7bcd-65a61956c0e3@...277...>
-Date: Tue, 19 Nov 2019 19:33:03 +0000
 MIME-Version: 1.0
-In-Reply-To: <1574183023-6136-1-git-send-email-selva.nair@...277...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH v2] Fix ACL_CHECK_ADD_COMPILE_FLAGS to
- work with clang
+From: Fernando Mendez <fernando.brenda.34305@...277...>
+Date: Tue, 19 Nov 2019 12:37:47 -0800
+Message-ID: <CAF1KK+bGYQqgiwDDHDGHcMZ+2dX5oFFAN+h_=QHPr6WNqbUfYg@...278...>
+Content-Type: multipart/alternative; boundary="00000000000080c37d0597b909fa"
+Subject: [Openvpn-devel] (no subject)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,61 +12,17 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Typo below,
-
-On 19/11/2019 17:03, selva.nair@...277... wrote:
-> From: Selva Nair <selva.nair@...277...>
-> 
-> Some compilers (e.g., clang) only issue a warning for
-> unsupported options unless an additional flag such
-> as -Werror is used to convert the warning to an error.
-> 
-> The behaviour is unchanged when using gcc as it either
-> errors or ignores unknown options whether or not -Werror
-> is present.
-> 
-> Signed-off-by: Selva Nair <selva.nair@...277...>
-> ---
-> v2: Do not extend the macro to take an extra argument.
-> Instead, add -Werror while doing the test.
-> 
-> The commit message and comment changed to match this.
-> 
->   configure.ac | 9 ++++++---
->   1 file changed, 6 insertions(+), 3 deletions(-)
-> 
-> diff --git a/configure.ac b/configure.ac
-> index 807804e5..f4a947d2 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -1275,11 +1275,14 @@ if test "${enable_pkcs11}" = "yes"; then
->   	)
->   fi
->   
-> +# When testing a compiler option, we add -Werror to force
-> +# an error when the option is unsupported. This is not
-> +# required for gcc, but come compilers such as clang needs it.
-
-
-come compilers --> some compilers
+--00000000000080c37d0597b909fa
+Content-Type: text/plain; charset="UTF-8"
 
 
 
+--00000000000080c37d0597b909fa
+Content-Type: text/html; charset="UTF-8"
 
->   AC_DEFUN([ACL_CHECK_ADD_COMPILE_FLAGS], [
->       old_cflags="$CFLAGS"
-> -    CFLAGS="$1 $CFLAGS"
-> -    AC_MSG_CHECKING([whether the compiler acceppts $1])
-> -    AC_COMPILE_IFELSE([AC_LANG_PROGRAM()], [AC_MSG_RESULT([yes])],
-> +    CFLAGS="$1 -Werror $CFLAGS"
-> +    AC_MSG_CHECKING([whether the compiler accepts $1])
-> +    AC_COMPILE_IFELSE([AC_LANG_PROGRAM()], [AC_MSG_RESULT([yes])]; CFLAGS="$1 $old_cflags",
->           [AC_MSG_RESULT([no]); CFLAGS="$old_cflags"])]
->   )
->   
-> 
+
+
+--00000000000080c37d0597b909fa--
 
