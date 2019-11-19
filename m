@@ -1,15 +1,16 @@
 MIME-Version: 1.0
-References: <1573148729-27339-1-git-send-email-lstipakov@...277...>
- <1573148729-27339-4-git-send-email-lstipakov@...277...>
- <CAKuzo_g7kyhuoDNAC3dbg=HHZO4iSpR+zKQrd0Lpcn8cj9tH=Q@...278...>
- <CAGyAFMVdYrTgcA6kRawsVXjj48DXUqKw2Z0F7EpWQBOrTKrEFg@...278...>
-In-Reply-To: <CAGyAFMVdYrTgcA6kRawsVXjj48DXUqKw2Z0F7EpWQBOrTKrEFg@...278...>
+References: <CAGyAFMWXS9F3OzSchqGtizgBoj+7E5JTEnKrnCQqMiejTuHs4g@...278...>
+ <1573234655-905-1-git-send-email-lstipakov@...277...>
+ <CAKuzo_iQD0ehZHisNQyTN1LtcwEogAgdTOBouPrbBb5OPyg8uA@...278...>
+ <20191119073719.GK40538@...1296...>
+ <CAGyAFMXwPXRZ-963U0LP72F6RhEV7CzT0DXyzQWuPKhFHVG1Rw@...278...>
+In-Reply-To: <CAGyAFMXwPXRZ-963U0LP72F6RhEV7CzT0DXyzQWuPKhFHVG1Rw@...278...>
 From: Selva Nair <selva.nair@...277...>
-Date: Tue, 19 Nov 2019 10:27:06 -0500
-Message-ID: <CAKuzo_i0BouG604qJAO--qoX5TeTmYi_2CskF3FfqzOTO6dEWQ@...278...>
-Content-Type: multipart/alternative; boundary="0000000000008a151c0597b4b3cb"
-Subject: Re: [Openvpn-devel] [PATCH v2 3/7] wintun: implement opening wintun
- device
+Date: Tue, 19 Nov 2019 10:39:53 -0500
+Message-ID: <CAKuzo_jPhjaJ4QAOY6A=roBWwekB4oJup2L_ZpgVXnkfBWur=Q@...278...>
+Content-Type: multipart/alternative; boundary="0000000000002556c70597b4e1a7"
+Subject: Re: [Openvpn-devel] [PATCH v3] wintun: add --windows-driver config
+ option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,154 +20,143 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Lev Stipakov <lev@...515...>
+Cc: Gert Doering <gert@...1296...>, Lev Stipakov <lev@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---0000000000008a151c0597b4b3cb
+--0000000000002556c70597b4e1a7
 Content-Type: text/plain; charset="UTF-8"
 
 Hi,
 
-On Tue, Nov 19, 2019 at 3:50 AM Lev Stipakov <lstipakov@...277...> wrote:
+On Tue, Nov 19, 2019 at 3:29 AM Lev Stipakov <lstipakov@...277...> wrote:
 
-> Hi,
+> Hello,
 >
-> Doesn't this mean that  if --dev-node is specified, we'll open  tapwindows
->> adapter
->> with that name even if "--window-driver wintun" is specified? The open
->> may succeed
->> but subsequent wintun-specific processing will fail.
+> ti 19. marrask. 2019 klo 9.37 Gert Doering (gert@...1296...)
+> kirjoitti:
+>
+> > Looks like this will most likely break any dhcp-related options
+>> > in the client config.. Say "dhcp-option DNS xxx".
+>
+>
+> Oops, indeed. When I add those to client config, I got:
+>
+> > Options error: --dhcp-options requires --ip-win32 dynamic or adaptive
+>
+>
+>> We currently require ip_win32_type to be  adaptive or dynamic when such
+>> options are specified.
 >>
 >
-> --dev-node is not (yet) supported and open will fail (just re-tested).
+> That limitation has been presented since the very first commit in github:
 >
-
-I did a quick test and found the open to succeed with a misleading message
-that Wintun device opened (though it opened the tap device) and then fails
-on register ring buffers. I haven't applied all patches as yet, so not sure
-whether this is changed in later patches.
-
-If I'm not mistaken wintun device can be opened multiple times, so we'll
->> never get the
->> "All wintun adapters on this system...." error.
+>     if (options->tuntap_options.dhcp_options
+>         && options->tuntap_options.ip_win32_type != IPW32_SET_DHCP_MASQ
+>         && options->tuntap_options.ip_win32_type != IPW32_SET_ADAPTIVE)
+>     {
+>         msg(M_USAGE, "--dhcp-options requires --ip-win32 dynamic or
+> adaptive");
+>     }
+>
+> I commented it out and client-side --dhcp-options worked for me. Any ideas
+> why we have this code?
+>
+>
+>> > I think we should set this to adaptive here, and then handle it in tun.c
 >>
 >
-Well, we get it if wintun driver is not installed :) but yep, open will
-> succeed.
+> Actually, in follow-up commit I have changed IPAPI to NETSH - if I
+> remember correctly
+> I could not set up routing using former, although it works when done by
+> iserv.
 >
-
-Instead, open will succeed here and something else may fail later.
+> If we don't know why we have that check and we could apply dhcp options
+> from client config
+> without it, shouldn't we just get rid of it?
+>
+>
+>> >
+>> > Although there is no dhcp when wintun is used, we'll still support
+>> > dhcp-options such as DNS etc using netsh or service, right?
 >>
 >
-> Right after opening we register ring buffers, and that will fail (with a
-> friendly message):
+> That's correct. At the moment we use:
 >
-> ERROR:  Failed to register ring buffers: 1247
->
-> We should probably make it even more user friendly and write something
-> like "make sure wintun adapter is not in use".
+>  - netsh when running openvpn without interactive service
+>  - iserv, which itself uses both IPAPI (for setting up IP address and
+> routing) and netsh (for setting up DNS)
 >
 
-Apart from the error message, there is a larger issue especially when we
-use iservice. In that case, we have to preserve privilege separation and
-allowing a user to open a device handle in use by another has to be
-avoided. The service could keep a lock on devices it manages, but I have no
-idea how we are going to lock out devices opened by other means (say
-instances started by automatic service, or wireguard or some other third
-party product).
+The ip-win32 mess does need clenup but at least it would be nice to use the
+same API/method in iservice and the core. Can we figure out why IP helper
+API is not working for setting IP? Unfortunately there is no API for
+setting DNS (not that I know of) so there the use of netsh is unavoidable.
 
-Can we get the wintun folks to support exclusive open (say FILE_SHARE_READ
-= 0) or expose the internal count of number of open handles? That would
-also make it easier to fix this and provide better error messages.
-
-
-> Wireguard creates wintun adapter on demand (on connect) and openvpn during
-> installation and then
-> picks the first one found on connect. Maybe that logic could be more
-> clever to not to pick adapter which
-> is currently used by wireguard.
->
-> I haven't looked yet into running wireguard and openvpn side by side (or
-> multiple openvpn instances
-> with wintun), just tested that wg and openvpn could co-exist without
-> problems on the same machine.
->
-
-Hmm.. if multiple openvpn instances are not tested this is not ready for
-review yet, is it?
-
-Again, a quick test shows that, with multiple openvpn instances, it does
-open an already opened device and then fails while registering ring buffers.
+Anyway,  wintun + dhcp-option in client config is broken right now. Looks
+like it may work when dhcp-option is pushed (not tested) but there are
+cases where we do use it directly in the config.
 
 Selva
 
---0000000000008a151c0597b4b3cb
+--0000000000002556c70597b4e1a7
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <div dir=3D"ltr"><div>Hi,<br></div><br><div class=3D"gmail_quote"><div dir=
-=3D"ltr" class=3D"gmail_attr">On Tue, Nov 19, 2019 at 3:50 AM Lev Stipakov =
+=3D"ltr" class=3D"gmail_attr">On Tue, Nov 19, 2019 at 3:29 AM Lev Stipakov =
 &lt;<a href=3D"mailto:lstipakov@...277...">lstipakov@...277...</a>&gt; wrot=
 e:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0=
 .8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><div dir=3D"l=
-tr"><div dir=3D"ltr">Hi,</div><div dir=3D"ltr"><br></div><div class=3D"gmai=
-l_quote"><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8e=
-x;border-left:1px solid rgb(204,204,204);padding-left:1ex"><div dir=3D"ltr"=
-><div class=3D"gmail_quote"><div>Doesn&#39;t this mean that=C2=A0 if --dev-=
-node is specified, we&#39;ll open=C2=A0 tapwindows adapter</div><div>with t=
-hat name even if &quot;--window-driver wintun&quot; is specified? The open =
-may succeed</div><div>but subsequent wintun-specific processing will fail.<=
-/div></div></div></blockquote><div><br></div><div>--dev-node is not (yet) s=
-upported and open will fail (just re-tested).</div></div></div></blockquote=
-><div><br></div><div class=3D"gmail_quote">I did a quick test and found the=
- open to succeed with a misleading message that Wintun device opened (thoug=
-h it opened the tap device) and then fails on register ring buffers. I have=
-n&#39;t applied all patches as yet, so not sure whether this is changed in =
-later patches.<br></div><div class=3D"gmail_quote"><br><blockquote class=3D=
-"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(2=
-04,204,204);padding-left:1ex"><blockquote class=3D"gmail_quote" style=3D"ma=
-rgin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:=
-1ex"><div dir=3D"ltr"><div class=3D"gmail_quote"><div>If I&#39;m not mistak=
-en wintun device can be opened multiple times, so we&#39;ll never get the<b=
-r>&quot;All wintun adapters on this system....&quot; error.</div></div></di=
-v></blockquote></blockquote><div><br></div><blockquote class=3D"gmail_quote=
-" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);=
-padding-left:1ex"><div>Well, we get it if wintun driver is not installed :)=
- but yep, open will succeed.</div></blockquote><div><br></div><blockquote c=
-lass=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px soli=
-d rgb(204,204,204);padding-left:1ex"><blockquote class=3D"gmail_quote" styl=
-e=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);paddin=
-g-left:1ex"><div>Instead, open will succeed here and something else may fai=
-l later.</div></blockquote></blockquote><blockquote class=3D"gmail_quote" s=
+tr"><div dir=3D"ltr">Hello,<div><br></div></div><div class=3D"gmail_quote">=
+<div dir=3D"ltr" class=3D"gmail_attr">ti 19. marrask. 2019 klo 9.37 Gert Do=
+ering (<a href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...=
+</a>) kirjoitti:</div><div dir=3D"ltr" class=3D"gmail_attr"><br></div><bloc=
+kquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:=
+1px solid rgb(204,204,204);padding-left:1ex">
+&gt; Looks like this will most likely break any dhcp-related options<br>
+&gt; in the client config.. Say &quot;dhcp-option DNS xxx&quot;.</blockquot=
+e><div><br></div><div>Oops, indeed. When I add those to client config, I go=
+t:</div><div><br></div><div>&gt; Options error: --dhcp-options requires --i=
+p-win32 dynamic or adaptive</div><div>=C2=A0</div><blockquote class=3D"gmai=
+l_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,20=
+4,204);padding-left:1ex">We currently require=C2=A0ip_win32_type to be=C2=
+=A0 adaptive or dynamic when such options are specified.<br></blockquote><d=
+iv><br></div><div>That limitation has been presented since the very first c=
+ommit in github:</div><div><br></div><div>=C2=A0 =C2=A0 if (options-&gt;tun=
+tap_options.dhcp_options<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 &amp;&amp; options-=
+&gt;tuntap_options.ip_win32_type !=3D IPW32_SET_DHCP_MASQ<br>=C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 &amp;&amp; options-&gt;tuntap_options.ip_win32_type !=3D IPW3=
+2_SET_ADAPTIVE)<br>=C2=A0 =C2=A0 {<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(M_USA=
+GE, &quot;--dhcp-options requires --ip-win32 dynamic or adaptive&quot;);<br=
+>=C2=A0 =C2=A0 }<br></div><div><br></div><div>I commented it out and client=
+-side --dhcp-options worked for me. Any ideas why we have this code?</div><=
+div>=C2=A0<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0=
+px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
+&gt; I think we should set this to adaptive here, and then handle it in tun=
+.c<br></blockquote><div><br></div><div>Actually, in follow-up commit I have=
+ changed IPAPI to NETSH - if I remember correctly</div><div>I could not set=
+ up routing using former, although it works when done by iserv.</div><div><=
+br></div><div>If we don&#39;t know why we have that check and we could appl=
+y dhcp options from client config</div><div>without it, shouldn&#39;t we ju=
+st get rid of it?</div><div>=C2=A0</div><blockquote class=3D"gmail_quote" s=
 tyle=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);pad=
-ding-left:1ex"><div><br></div><div>Right after opening we register ring buf=
-fers, and that will fail (with a friendly message):</div><div><br></div><di=
-v>ERROR: =C2=A0Failed to register ring buffers: 1247</div><div><br></div><d=
-iv>We should probably make it even more user friendly and write something l=
-ike &quot;make sure wintun adapter is not in use&quot;.</div></blockquote><=
-/div><div><br></div><div>Apart from the error message, there is a larger is=
-sue especially when we use iservice. In that case, we have to preserve priv=
-ilege separation and allowing a user to open a device handle in use by anot=
-her has to be avoided. The service could keep a lock on devices it manages,=
- but I have no idea how we are going to lock out devices opened by other me=
-ans (say instances started by automatic service, or wireguard or some other=
- third party product).<br></div><div><br></div><div>Can we get the wintun f=
-olks to support exclusive open (say FILE_SHARE_READ =3D 0) or expose the in=
-ternal count of number of open handles? That would also make it easier to f=
-ix this and provide better error messages.<br></div><div><br></div><blockqu=
-ote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px=
- solid rgb(204,204,204);padding-left:1ex"><div dir=3D"ltr"><div class=3D"gm=
-ail_quote"><div><br></div><div>Wireguard creates wintun adapter on demand (=
-on connect) and openvpn during installation and then</div><div>picks the fi=
-rst=C2=A0one found on connect. Maybe that logic could be more clever to not=
- to pick adapter which</div><div>is currently used by wireguard.</div><div>=
-<br></div><div>I haven&#39;t looked yet into running wireguard and openvpn =
-side by side (or multiple openvpn instances</div><div>with wintun), just te=
-sted that wg and openvpn could co-exist without problems on the same machin=
-e.</div></div></div></blockquote><div><br></div><div>Hmm.. if multiple open=
-vpn instances are not tested this is not ready for review yet, is it?<br></=
-div><div><br></div><div>Again, a quick test shows that, with multiple openv=
-pn instances, it does open an already opened device and then fails while re=
-gistering ring buffers.</div><div><br></div><div>Selva<br></div></div></div>
+ding-left:1ex">
+&gt; <br>
+&gt; Although there is no dhcp when wintun is used, we&#39;ll still support=
+<br>
+&gt; dhcp-options such as DNS etc using netsh or service, right?<br></block=
+quote><div><br></div><div>That&#39;s correct. At the moment we use:</div><d=
+iv><br></div><div>=C2=A0- netsh when running openvpn without interactive se=
+rvice</div><div>=C2=A0- iserv, which itself uses both IPAPI (for setting up=
+ IP address and routing) and netsh (for setting up DNS)</div></div></div></=
+blockquote><div><br></div><div>The ip-win32 mess does need clenup but at le=
+ast it would be nice to use the same API/method in iservice and the core. C=
+an we figure out why IP helper API is not working for setting IP? Unfortuna=
+tely there is no API for setting DNS (not that I know of) so there the use =
+of netsh is unavoidable.<br></div></div><div class=3D"gmail_quote"><br></di=
+v><div class=3D"gmail_quote">Anyway,=C2=A0 wintun + dhcp-option in client c=
+onfig is broken right now. Looks like it may work when dhcp-option is pushe=
+d (not tested) but there are cases where we do use it directly in the confi=
+g.<br></div><div><br></div><div>Selva<br></div></div>
 
---0000000000008a151c0597b4b3cb--
+--0000000000002556c70597b4e1a7--
 
