@@ -1,7 +1,7 @@
-MIME-Version: 1.0
-References: <1573148729-27339-1-git-send-email-lstipakov@...277...>
- <1573148729-27339-4-git-send-email-lstipakov@...277...>
- <CAKuzo_g7kyhuoDNAC3dbg=HHZO4iSpR+zKQrd0Lpcn8cj9tH=Q@...278...>
+Date: Mon, 25 Nov 2019 20:39:51 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20191125193951.GV40538@...1296...>
+References: <CAKuzo_g7kyhuoDNAC3dbg=HHZO4iSpR+zKQrd0Lpcn8cj9tH=Q@...278...>
  <CAGyAFMVdYrTgcA6kRawsVXjj48DXUqKw2Z0F7EpWQBOrTKrEFg@...278...>
  <CAKuzo_i0BouG604qJAO--qoX5TeTmYi_2CskF3FfqzOTO6dEWQ@...278...>
  <CAGyAFMWeN-G7qf=MJfuuZK5M72VJ_03ahdAFsi6aLDcUT_me6g@...278...>
@@ -10,11 +10,12 @@ References: <1573148729-27339-1-git-send-email-lstipakov@...277...>
  <CAGyAFMWEc0c_GRiphD+=zikh2BkMckxD4rjZXrmQfmLUejAkgA@...278...>
  <CAKuzo_howdUtX86vj9kTYga=r8Ce0rbnrSiciqfCNtVVVeFwbw@...278...>
  <CAGyAFMWc=A=D_HRUpHJTXcPZSqxWKK44Hvd1ykAyb8JgQZD_2Q@...278...>
-In-Reply-To: <CAGyAFMWc=A=D_HRUpHJTXcPZSqxWKK44Hvd1ykAyb8JgQZD_2Q@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 25 Nov 2019 11:48:47 -0500
-Message-ID: <CAKuzo_iLChLmtbJbBZyD0WNxyUFr1cj-yBtWK-kETNRR8gwk_Q@...278...>
-Content-Type: multipart/alternative; boundary="0000000000009c7b5c05982e8af2"
+ <99D61A626FDA8A4B90A270669121BE10C9B08A55@...2294...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
+ micalg=sha-256; boundary="96Fzkco6h7mx3UO9"
+Content-Disposition: inline
+In-Reply-To: <99D61A626FDA8A4B90A270669121BE10C9B08A55@...2294...>
 Subject: Re: [Openvpn-devel] [PATCH v2 3/7] wintun: implement opening wintun
  device
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -25,107 +26,117 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Simon Rozman <simon@...2293...>
+Cc: Lev Stipakov <lstipakov@...277...>, Selva Nair <selva.nair@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---0000000000009c7b5c05982e8af2
-Content-Type: text/plain; charset="UTF-8"
-
-Hi
-
-On Mon, Nov 25, 2019 at 4:03 AM Lev Stipakov <lstipakov@...277...> wrote:
-
-> Hi,
->
-> (cc:ed to -devel)
->
->
->> I would vote for B and not the combination.
->>
->> With wintun there is no backwards compatibility requirements, so we could
->> use a cleaner, consistent and simpler approach (i.e B). Do not create any
->> adapter during installation and dynamically create a temporary adapter at
->> connection time.
->>
->
-> My main concern with creating tun adapter on demand is that it is far from
-> instant:
->
-> $ time ./tapctl.exe create --hwid wintun
-> {D9F56B7A-3054-4ADC-9457-61030F0B469D}
->
-> real    0m2,090s
->
-> I don't think we want to add it to connection time.
->
-
-No, we don't want that.
-
-I do realize what I wrote earlier was far from ideal. I had forgotten my
-travails two years back attempting to add dynamic tap adapter creation to
-OpnVPN....
-
-As an easy way for supporting multiple tunnels, can we treat success of
-open-device + ring-buffer-registration calls together as a successful open
-of the adapter, and move on to the next one when that fails? That would be
-very similar to what we do for tapwindows right now.
-
-To assist users, when we fail with no free adapters, we could add a feature
-to the GUI to add a new one using the RunAsAdmin shell-execute we already
-have support for. Will need an improved devcon/tapinstall that does not
-reset all adapters when a new one is added, except when unavoidable due to
-driver version change.
-
-Simon's suggestion of persistent adapters as required and kept disabled
-when not in use sounds interesting. As some providers do supply 100's of
-configs, I think we should refrain from creating one adapter per ovpn,
-though. They should be using multiple --remote lines in a single config,
-but, for that to work well, we need to improve --management-remote option
-to provide a friendly UI for remote selection.
-
-Selva
-
---0000000000009c7b5c05982e8af2
-Content-Type: text/html; charset="UTF-8"
+--96Fzkco6h7mx3UO9
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-<div dir=3D"ltr"><div>Hi<br></div><br><div class=3D"gmail_quote"><div dir=
-=3D"ltr" class=3D"gmail_attr">On Mon, Nov 25, 2019 at 4:03 AM Lev Stipakov =
-&lt;<a href=3D"mailto:lstipakov@...277..." target=3D"_blank">lstipakov@...1665...=
-77...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"ma=
-rgin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:=
-1ex"><div dir=3D"ltr"><div class=3D"gmail_quote"><div>Hi,</div><div><br></d=
-iv><div>(cc:ed to -devel)</div><div>=C2=A0</div><blockquote class=3D"gmail_=
-quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,=
-204);padding-left:1ex"><div dir=3D"ltr"><div class=3D"gmail_quote"><div>I w=
-ould vote for B and not the combination.<br></div><div><br></div><div>With =
-wintun there is no backwards compatibility requirements, so we could use a =
-cleaner, consistent and simpler approach (i.e B). Do not create any adapter=
- during installation and dynamically create a temporary adapter at connecti=
-on time.</div></div></div></blockquote><div><br></div><div>My main concern =
-with creating tun adapter on demand is that it is far from instant:</div><d=
-iv><br></div><div>$ time ./tapctl.exe create --hwid wintun<br>{D9F56B7A-305=
-4-4ADC-9457-61030F0B469D}<br><br>real =C2=A0 =C2=A00m2,090s<br></div><div><=
-br></div><div>I don&#39;t think we want to add it to connection time.</div>=
-</div></div></blockquote><div><br></div><div>No, we don&#39;t want that.<br=
-></div><div><br></div><div>I do realize what I wrote earlier was far from i=
-deal. I had forgotten my travails two years back attempting to add dynamic =
-tap adapter creation to OpnVPN....<br></div><div><br></div><div>As an easy =
-way for supporting multiple tunnels, can we treat success of open-device + =
-ring-buffer-registration calls together as a successful open of the adapter=
-, and move on to the next one when that fails? That would be very similar t=
-o what we do for tapwindows right now.</div><div><br></div><div>To assist u=
-sers, when we fail with no free adapters, we could add a feature to the GUI=
- to add a new one using the RunAsAdmin shell-execute we already have suppor=
-t for. Will need an improved devcon/tapinstall that does not reset all adap=
-ters when a new one is added, except when unavoidable due to driver version=
- change. <br></div><div><br></div><div>Simon&#39;s suggestion of persistent=
- adapters as required and kept disabled when not in use sounds interesting.=
- As some providers do supply 100&#39;s of configs, I think we should refrai=
-n from creating one adapter per ovpn, though. They should be using multiple=
- --remote lines in a single config, but, for that to work well, we need to =
-improve --management-remote option to provide a friendly UI for remote sele=
-ction.<br></div><div><br></div><div>Selva</div></div></div>
+Hi,
 
---0000000000009c7b5c05982e8af2--
+On Mon, Nov 25, 2019 at 09:44:19AM +0000, Simon Rozman wrote:
+> 1.	if adapter "My VPN Connection" doesn't exist, create it.
+> 2.	else enable it
+> 3.	use it
+> 4.	disable it
+
+> An annoyance here is, the adapters pile up over time. On multi-user=20
+> computers, OpenVPN GUI don't have a complete overview which one are=20
+> stale (no corresponding .ovpn file exist anymore) to clean them.=20
+
+I like the initial approach, but the "pile-up" is annoying.
+
+What about "do this for .ovpn configs that contain a --dev-node setting,
+and otherwise just try to enumerate 'OpenVPN Wintun 1', 'OpenVPN Wintun 2',
+... and create those as-needed?
+
+This should keep the numbers down...
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--96Fzkco6h7mx3UO9
+Content-Type: application/x-pkcs7-signature
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
+
+MIIOGgYJKoZIhvcNAQcCoIIOCzCCDgcCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0B
+BwGgggsfMIIF5jCCA86gAwIBAgIQapvhODv/K2ufAdXZuKdSVjANBgkqhkiG9w0BAQwFADCB
+hTELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMH
+U2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQxKzApBgNVBAMTIkNPTU9ETyBS
+U0EgQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkwHhcNMTMwMTEwMDAwMDAwWhcNMjgwMTA5MjM1
+OTU5WjCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4G
+A1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENP
+TU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwggEi
+MA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC+s55XrCh2dUAWxzgDmNPGGHYhUPMleQtM
+taDRfTpYPpynMS6n9jR22YRq2tA9NEjk6vW7rN/5sYFLIP1of3l0NKZ6fLWfF2VgJ5cijKYy
+/qlAckY1wgOkUMgzKlWlVJGyK+UlNEQ1/5ErCsHq9x9aU/x1KwTdF/LCrT03Rl/FwFrf1XTC
+wa2QZYL55AqLPikFlgqOtzk06kb2qvGlnHJvijjI03BOrNpo+kZGpcHsgyO1/u1OZTaOo8wv
+EU17VVeP1cHWse9tGKTDyUGg2hJZjrqck39UIm/nKbpDSZ0JsMoIw/JtOOg0JC56VzQgBo7i
+ctReTQE5LFLG3yQK+xS1AgMBAAGjggE8MIIBODAfBgNVHSMEGDAWgBS7r34CPfqm8TyEjq3u
+OJjs2TIy1DAdBgNVHQ4EFgQUgq9sjPjF/pZhfOgfPStxSF7Ei8AwDgYDVR0PAQH/BAQDAgGG
+MBIGA1UdEwEB/wQIMAYBAf8CAQAwEQYDVR0gBAowCDAGBgRVHSAAMEwGA1UdHwRFMEMwQaA/
+oD2GO2h0dHA6Ly9jcmwuY29tb2RvY2EuY29tL0NPTU9ET1JTQUNlcnRpZmljYXRpb25BdXRo
+b3JpdHkuY3JsMHEGCCsGAQUFBwEBBGUwYzA7BggrBgEFBQcwAoYvaHR0cDovL2NydC5jb21v
+ZG9jYS5jb20vQ09NT0RPUlNBQWRkVHJ1c3RDQS5jcnQwJAYIKwYBBQUHMAGGGGh0dHA6Ly9v
+Y3NwLmNvbW9kb2NhLmNvbTANBgkqhkiG9w0BAQwFAAOCAgEAeFyygSg0TzzuX1bOn5dW7I+i
+axf28/ZJCAbU2C81zd9A/tNx4+jsQgwRGiHjZrAYayZrrm78hOx7aEpkfNPQIHGG6Fvq3EzW
+f/Lvx7/hk6zSPwIal9v5IkDcZoFD7f3iT7PdkHJY9B51csvU50rxpEg1OyOT8fk2zvvPBuM4
+qQNqbGWlnhMpIMwpWZT89RY0wpJO+2V6eXEGGHsROs3njeP9DqqqAJaBa4wBeKOdGCWn1/Jp
+2oY6dyNmNppI4ZNMUH4Tam85S1j6E95u4+1Nuru84OrMIzqvISE2HN/56ebTOWlcrurffade
+2022O/tUU1gb4jfWCcyvB8czm12FgX/y/lRjmDbEA08QJNB2729Y+io1IYO3ztveBdvUCIYZ
+ojTq/OCR6MvnzS6X72HP0PRLRTiOSEmIDsS5N5w/8IW1Hva5hEFy6fDAfd9yI+O+IMMAj1Kc
+L/Zo9jzJ16HO5m60ttl1Enk8MQkz/W3JlHaeI5iKFn4UJu1/cP2YHXYPiWf2JyBzsLBrGk1I
+I+3yL8aorYew6CQvdVifC3HtwlSam9V1niiCfOBe2C12TdKGu05LWIA3ZkFcWJGaNXOZ6Ggy
+h/TqvXG5v7zmEVDNXFnHn9tFpMpOUvxhcsjycBtH0dZ0WrNw6gH+HF8TIhCnH3+zzWuDN0Rk
+6h9KVkfKehIwggUxMIIEGaADAgECAhBoKGrilYL+DkBaaHjtexKaMA0GCSqGSIb3DQEBCwUA
+MIGXMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQH
+EwdTYWxmb3JkMRowGAYDVQQKExFDT01PRE8gQ0EgTGltaXRlZDE9MDsGA1UEAxM0Q09NT0RP
+IFJTQSBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQTAeFw0xODA4
+MDYwMDAwMDBaFw0xOTA4MDYyMzU5NTlaMCQxIjAgBgkqhkiG9w0BCQEWE2dlcnRAZ3JlZW5p
+ZS5tdWMuZGUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC/rjWbYvcc/uWCRkcT
+MKbIJr4+mp2vJ7hS5iesOTfDb/BslZgSV9eK7k2QAVETO4w//HxmOzEWVSvoHHxE7blHw+QA
+cECqc+O23z6BSHWi2WUe71IfljudN/aViJ1NAYvJy7Wa+3jinfy5fl8yl74o5L0L0Y8TJPOy
+DZkCtzuGx6iG6ge0NC0wc+gzA0oXDmfPktmcE/YQhI+U+hoZHrKy/QyYXRHfi80wtdVJe6Zb
+b226rg1Q2qLSgJ+OAQPhvzIo7qMYM3dzHJeZSoAW12t7TvKg8WlmgiVXdTk1Cs/WcCA7GS4l
+V9NRAlznqgNHIQJHJe0jCqMxzOp9T7DgtZuxAgMBAAGjggHpMIIB5TAfBgNVHSMEGDAWgBSC
+r2yM+MX+lmF86B89K3FIXsSLwDAdBgNVHQ4EFgQU1XAEqUTyLyKp+6Tm4jnm5ioJ+dUwDgYD
+VR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwIAYDVR0lBBkwFwYIKwYBBQUHAwQGCysGAQQB
+sjEBAwUCMBEGCWCGSAGG+EIBAQQEAwIFIDBGBgNVHSAEPzA9MDsGDCsGAQQBsjEBAgEBATAr
+MCkGCCsGAQUFBwIBFh1odHRwczovL3NlY3VyZS5jb21vZG8ubmV0L0NQUzBaBgNVHR8EUzBR
+ME+gTaBLhklodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50
+aWNhdGlvbmFuZFNlY3VyZUVtYWlsQ0EuY3JsMIGLBggrBgEFBQcBAQR/MH0wVQYIKwYBBQUH
+MAKGSWh0dHA6Ly9jcnQuY29tb2RvY2EuY29tL0NPTU9ET1JTQUNsaWVudEF1dGhlbnRpY2F0
+aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYIKwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmNvbW9k
+b2NhLmNvbTAeBgNVHREEFzAVgRNnZXJ0QGdyZWVuaWUubXVjLmRlMA0GCSqGSIb3DQEBCwUA
+A4IBAQA/8e5BhoX7/1uR8xJIU9Bgr1kRHHYS0pwDwBb2qmVqwCVDj2wuV6YdN20xl3p23Fad
+3e/Hf1riXhma9wnQKon/qhDjgVEKUcbXINtYTeuaF8v6zgEyo0VQqiEMQDwCTrxfZqZejjiB
+0CO+TOtdTknb4EMYREHw+D8GZLa9/+6JyagLJLNUsganHfAl6d50iQMifqzyXSN0BFLXcdnp
+0+99Ulo6k1aiAy8+83tK6Ludd5DY94bFCIdFub6z6nuqQIeWML5LPatzakdMFZLy1L9a9ePq
+QEyhed3KH2jk23+2elJPGr/vs5ASGNtgBTbgM7n9aQR9xPAt0kLNwLI5byujMYICvzCCArsC
+AQEwgawwgZcxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAO
+BgNVBAcTB1NhbGZvcmQxGjAYBgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRD
+T01PRE8gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhBo
+KGrilYL+DkBaaHjtexKaMA0GCWCGSAFlAwQCAQUAoIHkMBgGCSqGSIb3DQEJAzELBgkqhkiG
+9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE5MTEyNTE5Mzk1MVowLwYJKoZIhvcNAQkEMSIEICu8
+AVdK8wezPPcFsTOb8GG+Qf7GuqEsX6setML4zKt6MHkGCSqGSIb3DQEJDzFsMGowCwYJYIZI
+AWUDBAEqMAsGCWCGSAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcN
+AwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIHMA0GCCqGSIb3DQMCAgEoMA0GCSqGSIb3
+DQEBAQUABIIBAHbVfZok3XWAo5MY9hbSZLKen2Uv2KFEhFrFDFXzNLOEwoq/3NW2O51+O1/F
+mcpK7IRbvPZXfIKChzd3rA+cETrC3Hh5xFtJNp9paOgz6cSMjVeStHAxrxMFHHCmqDf5qDEB
+qFpvSDYTM2o9I+EZ2X5fZLFl7k7jfqX1xulavcBd68FYI5BXFVeXGRMx1ahyUcKuUSql3Wd9
+ADTzHdsYnprCUgY35RkF6NfA6+j5hGMc9VUTEJ7XcqDYEqJJdyh7hV6UVVsM8GX4ukF+OMfv
+RUQVn6pCbDVDqThJ8BpTHM9p7XLyNJgQ1koqf9kiLwK+SmutRLhcZqQ+rlFwpxj6GGE=
+
+--96Fzkco6h7mx3UO9--
 
