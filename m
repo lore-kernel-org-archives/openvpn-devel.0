@@ -1,12 +1,14 @@
-References: <20191114102205.22429-1-juliusz@...2525...>
- <fb18ba3c-7ee6-46ba-04e0-5a9a14b955d0@...2080...>
-From: Juliusz Sosinowicz <juliusz@...2525...>
-Message-ID: <2fe81cc4-783c-41af-0423-d3ade1025940@...2525...>
-Date: Mon, 25 Nov 2019 20:29:31 +0100
+Date: Wed, 27 Nov 2019 13:43:38 +0000
+From: Laurent Fasnacht <l@...2534...>
+Reply-To: Laurent Fasnacht <l@...2534...>
+Message-ID: <20191127134258.9162-1-l@...2534...>
 MIME-Version: 1.0
-In-Reply-To: <fb18ba3c-7ee6-46ba-04e0-5a9a14b955d0@...2080...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Support for wolfSSL with OpenVPN v2.4.8
+Content-Type: multipart/signed; protocol="application/pgp-signature";
+ micalg=pgp-sha256;
+ boundary="---------------------3c8a33503b8801de3962a0dfaa5e805d";
+ charset=UTF-8
+Subject: [Openvpn-devel] [PATCH] Fix IPv6 configuration on Windows using
+ netsh
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,103 +17,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: David Sommerseth <openvpn@...2080...>, openvpn-devel@lists.sourceforge.net
-Cc: David Garske <david@...2525...>
+To: openvpn-devel@lists.sourceforge.net
 
-Hi David,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+-----------------------3c8a33503b8801de3962a0dfaa5e805d
+Cc: Laurent Fasnacht <l@...2534...>
+Date: Wed, 27 Nov 2019 14:42:58 +0100
+From: Laurent Fasnacht <l@...2534...>
+Message-Id: <20191127134258.9162-1-l@...2534...>
+Mime-Version: 1.0
+Subject: [PATCH] Fix IPv6 configuration on Windows using netsh
+To: openvpn-devel@lists.sourceforge.net
+X-Mailer: git-send-email 2.20.1
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-I apologize for the delayed response. I will rebase our OpenVPN work off 
-of the master branch this week in anticipation for a possible inclusion 
-in version 2.5.
+Apparently, `netsh interface ipv6 set address ...` defaults to using
+a subnet of /64, and therefore adds an onlink route of that size.
 
-Regarding your question "What kind of commitment will we see from the 
-WolfSSL organization?":
-We have a large customer driving the use of wolfSSL with OpenVPN. We've 
-done the initial porting and testing. We will update the port when 
-needed and continue to support this effort.
-We will also be making public marketing posts and annoucements for 
-OpenVPN support on our blog (https://www.wolfssl.com/blog/) and 
-subscribed mailing lists.
+When using a tun tunnel, the tap adapter only replies to neighbor
+discovery packets for fe80::8. This leads to the unfortunate situation
+where all the hosts in the /64 are not reachable.
 
-We understand your concern about the intrusiveness of this patch. The 
-majority of insertions occur in the configure and try to follow the 
-structure of how other cryptographic backends are compiled against. The 
-"Emulate XXXXX since these are defined as macros" additions are 
-unfortunately necessary as these functions are defined as macros in our 
-library. AC_CHECK_FUNCS will not check if the function exists behind a 
-macro. Defining these macros in the configure script allows for minimal 
-interference in the rest of OpenVPN code. The rest of the changes in the 
-patch are library inclusions as some things are defined in slightly 
-different locations than OpenSSL. The file <wolfssl/options.h> holds the 
-configure options for the wolfSSL library. It is necessary to include so 
-that the header files know what should be included and defined.
+This patch fixes that situation by specifying a /128 netmask, as the real
+route is added afterwards, via the gateway.
+---
+ src/openvpn/tun.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-I hope this email clears things up as to why some changes were necessary.
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 599fd817..8b054c80 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -982,15 +982,15 @@ do_ifconfig_ipv6(struct tuntap *tt, const char *ifnam=
+e, int tun_mtu,
+     else
+     {
+         /* example: netsh interface ipv6 set address interface=3D42
+-         *                  2001:608:8003::d store=3Dactive
++         *                  2001:608:8003::d/128 store=3Dactive
+          */
+         char iface[64];
+=20
+         openvpn_snprintf(iface, sizeof(iface), "interface=3D%lu",
+                          tt->adapter_index);
+-        argv_printf(&argv, "%s%sc interface ipv6 set address %s %s store=
+=3Dactive",
++        argv_printf(&argv, "%s%sc interface ipv6 set address %s %s/%d stor=
+e=3Dactive",
+                     get_win_sys_path(), NETSH_PATH_SUFFIX, iface,
+-                    ifconfig_ipv6_local);
++                    ifconfig_ipv6_local, 128);
+         netsh_command(&argv, 4, M_FATAL);
+         /* set ipv6 dns servers if any are specified */
+         netsh_set_dns6_servers(tt->options.dns6, tt->options.dns6_len, ifn=
+ame);
+--=20
+2.20.1
 
-Sincerely
-Juliusz
 
-On 14/11/2019 12:25, David Sommerseth wrote:
-> On 14/11/2019 11:22, Juliusz Sosinowicz wrote:
->> From: David Garske <david@...2525...>
->>
->> wolfSSL:
->>
->> Support added in: https://github.com/wolfSSL/wolfssl/pull/2503
->>
->> ```sh
->> git clone https://github.com/wolfSSL/wolfssl.git
->> cd wolfssl
->> ./autogen.sh
->> ./configure --enable-opensslall --enable-des3 --enable-crl --enable-certgen --enable-certext --enable-aesctr --enable-sessioncerts CFLAGS="-DWOLFSSL_DES_ECB -DHAVE_EX_DATA"
->> make
->> sudo make install
->> ```
->>
->> OpenVPN:
->>
->> ```sh
->> autoreconf -i -v -f
->> ./configure --with-crypto-library=wolfssl
->> make
->> make check
->> sudo make install
->> ```
-> NAK.
->
-> This patch adds a new feature to the 2.4 branch.  We don't really want to do
-> that, especially if the change is intrusive (13 files changed, 108 insertions
-> << that is intrusive).  WolfSSL support will at best see the light in the
-> coming 2.5 release (At the hackathon we aim for late 2020Q1 or 2020Q2)
->
-> In previous rounds we have asked a lot of questions; there has been no real
-> responses to those.  This has not even been touched in the relation to this patch.
->
-> One good thing I do see, is that it seems to try to use an OpenSSL support
-> layer in WolfSSL - which is good.  But then I wonder why we see additions like
-> this all over.
->
-> +#ifdef ENABLE_CRYPTO_WOLFSSL
-> +#include <wolfssl/options.h>
-> +#endif
->
-> In addition, the change in configure.ac with all the AC_DEFINE lines, tagged
-> with "Emulate XXXXX since these are defined as macros" is also making a lot of
-> mess.
->
-> And then comes the most critical point to all of this:  Who will maintain
-> WolfSSL support in OpenVPN once this has been applied?  What kind of
-> commitment will we see from the WolfSSL organization?
->
-> The OpenVPN developers community will have an IRC meeting next Thursday (Nov
-> 21 @ 20:00 CET, #openvpn-meeting on FreeNode [1]).  I strongly recommend you
-> to attend this meeting to follow up your request.
->
->
-> [1] You need to have your nick registered to join
->      <https://freenode.net/kb/answer/registration>
->
->
+-----------------------3c8a33503b8801de3962a0dfaa5e805d
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: ProtonMail
+
+wmgEARYIABAFAl3efYgJEAlUWB7fcm8FAAoJEAlUWB7fcm8FISABAK32tAqV
+BL6rDJUbP4gDOxZV7oukAIVHRj+WMkfJFxuRAP0YWqJCDnbM4rWkKwdE5QuA
+o8p54NLq2VdKhpS8ThwcBw==
+=HHlK
+-----END PGP SIGNATURE-----
+
+
+-----------------------3c8a33503b8801de3962a0dfaa5e805d--
+
 
