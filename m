@@ -1,10 +1,10 @@
-Date: Wed, 27 Nov 2019 20:49:50 +0100 (CET)
-Message-Id: <201911271949.xARJnoAQ072480@...2054...>
+Date: Wed, 27 Nov 2019 20:59:40 +0100 (CET)
+Message-Id: <201911271959.xARJxevS072682@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1574183023-6136-1-git-send-email-selva.nair@...277...>
-References: <1574183023-6136-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix ACL_CHECK_ADD_COMPILE_FLAGS
- to work with clang
+In-Reply-To: <20191110201718.31032-1-a@...2181...>
+References: <20191110201718.31032-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: travis: fix CFLAGS assignment
+ error and add -Werror only when compiling on Linux for Linux
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,25 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
+To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.  Thanks :-)
+Your patch has been applied to the master branch.
 
-I have fixed the "come compilers" typo on the fly.
+I have not done any sort of test, except "now pushing to master, which
+will make travis either explode or happy" :-) - as the patch does not
+touch anything but travis config, it's fairly save for the rest.
 
-Very lightly tested (Linux/gcc 8.3.0, and FreeBSD/clang 6.0.0).
+thanks,
 
-commit acc18e8842570e66ef12ffee591968777ed5be6a
-Author: Selva Nair
-Date:   Tue Nov 19 12:03:43 2019 -0500
+commit e0fbb584b8c4acba15feed7e30a778dde6389677
+Author: Antonio Quartulli
+Date:   Sun Nov 10 21:17:18 2019 +0100
 
-     Fix ACL_CHECK_ADD_COMPILE_FLAGS to work with clang
+     travis: fix CFLAGS assignment error and add -Werror only when compiling on Linux for Linux
 
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <1574183023-6136-1-git-send-email-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19170.html
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20191110201718.31032-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19109.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
