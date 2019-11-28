@@ -1,10 +1,7 @@
-Date: Wed, 27 Nov 2019 20:59:40 +0100 (CET)
-Message-Id: <201911271959.xARJxevS072682@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20191110201718.31032-1-a@...2181...>
-References: <20191110201718.31032-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: travis: fix CFLAGS assignment
- error and add -Werror only when compiling on Linux for Linux
+From: Lev Stipakov <lstipakov@...277...>
+Date: Thu, 28 Nov 2019 10:06:31 +0200
+Message-Id: <20191128080631.117-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] fix clang warning about missing braces
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,33 +12,47 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Your patch has been applied to the master branch.
+From: Lev Stipakov <lev@...515...>
 
-I have not done any sort of test, except "now pushing to master, which
-will make travis either explode or happy" :-) - as the patch does not
-touch anything but travis config, it's fairly save for the rest.
+A struct with subobjects should be initialized
+with double braces.
 
-thanks,
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/openvpn/crypto.c         | 2 +-
+ src/openvpn/crypto_mbedtls.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-commit e0fbb584b8c4acba15feed7e30a778dde6389677
-Author: Antonio Quartulli
-Date:   Sun Nov 10 21:17:18 2019 +0100
-
-     travis: fix CFLAGS assignment error and add -Werror only when compiling on Linux for Linux
-
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20191110201718.31032-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19109.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 65e789ed..731f5bad 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -1857,7 +1857,7 @@ void
+ write_pem_key_file(const char *filename, const char *pem_name)
+ {
+     struct gc_arena gc = gc_new();
+-    struct key server_key = { 0 };
++    struct key server_key = {{ 0 }};
+     struct buffer server_key_buf = clear_buf();
+     struct buffer server_key_pem = clear_buf();
+ 
+diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
+index 3e77fa9e..57ad85ad 100644
+--- a/src/openvpn/crypto_mbedtls.c
++++ b/src/openvpn/crypto_mbedtls.c
+@@ -304,7 +304,7 @@ mbedtls_ctr_drbg_context *
+ rand_ctx_get(void)
+ {
+     static mbedtls_entropy_context ec = {0};
+-    static mbedtls_ctr_drbg_context cd_ctx = {0};
++    static mbedtls_ctr_drbg_context cd_ctx = {{0}};
+     static bool rand_initialised = false;
+ 
+     if (!rand_initialised)
+-- 
+2.17.1
 
 
