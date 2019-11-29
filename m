@@ -1,16 +1,17 @@
-Date: Fri, 29 Nov 2019 11:52:07 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20191129105207.GU40538@...1296...>
 References: <20191128080631.117-1-lstipakov@...277...>
  <E1iaLck-0000Aj-5c@...2508...>
  <CAKuzo_jR6WYsM9QZhdyp8sW6avFGhDnFzx_dNN63JD4iiSmFag@...278...>
  <20191128194320.GM40538@...1296...>
  <2aa50cbc-cc17-81d5-ec9a-98fd5e8ba503@...2080...>
+ <20191129105207.GU40538@...1296...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <f9930229-0e7c-a03d-3050-dae11e59b2c6@...2080...>
+Date: Fri, 29 Nov 2019 12:25:13 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="CVv82Ujxifzgs+3E"
-Content-Disposition: inline
-In-Reply-To: <2aa50cbc-cc17-81d5-ec9a-98fd5e8ba503@...2080...>
+In-Reply-To: <20191129105207.GU40538@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="WP9KCVozbP0XU63c4dqR8gSkfWdhrdg5F"
 Subject: Re: [Openvpn-devel] [PATCH] fix clang warning about missing braces
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -20,50 +21,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn@...2080...>
-Cc: Gert Doering <gert@...1296...>, Selva Nair <selva.nair@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>
+Cc: Selva Nair <selva.nair@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---CVv82Ujxifzgs+3E
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--WP9KCVozbP0XU63c4dqR8gSkfWdhrdg5F
+Content-Type: multipart/mixed; boundary="YdiNQpUMsMXcICMqW6OdmVVj2Rw5dqui7";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: Gert Doering <gert@...1296...>
+Cc: Selva Nair <selva.nair@...277...>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Message-ID: <f9930229-0e7c-a03d-3050-dae11e59b2c6@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] fix clang warning about missing braces
+References: <20191128080631.117-1-lstipakov@...277...>
+ <E1iaLck-0000Aj-5c@...2508...>
+ <CAKuzo_jR6WYsM9QZhdyp8sW6avFGhDnFzx_dNN63JD4iiSmFag@...278...>
+ <20191128194320.GM40538@...1296...>
+ <2aa50cbc-cc17-81d5-ec9a-98fd5e8ba503@...2080...>
+ <20191129105207.GU40538@...1296...>
+In-Reply-To: <20191129105207.GU40538@...1296...>
+
+--YdiNQpUMsMXcICMqW6OdmVVj2Rw5dqui7
+Content-Language: en-US
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+On 29/11/2019 11:52, Gert Doering wrote:
+> Hi,
+>=20
+> On Fri, Nov 29, 2019 at 11:47:02AM +0100, David Sommerseth wrote:
+>> With GCC-4.3.8, I see this warning:
+>=20
+> This is about as old as you :-) - do we care about suppressing warnings
+> in old gcc versions that might suppress a *relevant* warning when
+> compiling with a current gcc version?
 
-On Fri, Nov 29, 2019 at 11:47:02AM +0100, David Sommerseth wrote:
-> With GCC-4.3.8, I see this warning:
+This is the default compiler on stock RHEL-7 ... which goes EOL August 2024.
 
-This is about as old as you :-) - do we care about suppressing warnings
-in old gcc versions that might suppress a *relevant* warning when
-compiling with a current gcc version?
 
-gert
 --=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+kind regards,
 
-Gert Doering - Munich, Germany                             gert@...1296...
+David Sommerseth
+OpenVPN Inc
 
---CVv82Ujxifzgs+3E
+
+
+--YdiNQpUMsMXcICMqW6OdmVVj2Rw5dqui7--
+
+--WP9KCVozbP0XU63c4dqR8gSkfWdhrdg5F
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQGcBAEBAgAGBQJd4PhWAAoJEB2Cnv7KVigSM6MMAIi7WOGUGlmpFLuKKg9nhEO+
-C/PlQ67YlOwsBpUn9Rm4rPMCG/T6dz5dGYmcWRaRfwWykHqKLq00mahMuh7kfyRw
-iZ/fgIbzdgmkN16av/RddI5EkPAU5QbCXL+pveyaY6CTuiq7L5zoxqTdTyFwPyuI
-9q8qm6HbIqBzcMUR/gRBb0ys2afn3qfyKiH/EsAMdhaOmIxHBBT4SYimjqCPxYi4
-V9uxPl43pEzClmHYSOkq2B8UNdrGGhXwnKGwDdFfnjJ2MJhIzq2LhcYmx7FZuS44
-3OFAYvdpBYtFWJT5P5vIaPguP5ciEB/P8br0SJhDNbCBeovajwL6j/Poir0dUs2j
-P7rPRWB4qgRDFedWu5ntc1Zzl5pT85wDpusPaMGFMsSvIuWm6lWY8OzkBlPO9IGP
-fKgJ0IN3uO2p1hD6UhKk40oCeLvxjuhwKV2XzsQMpkMy+bIYXheDpBaNoUUBOJAS
-kFtmC5dyQFoPfW4X8W1aI+P30BHpdHvBjmBwZePbMQ==
-=BxWI
+iQIcBAEBCgAGBQJd4QAZAAoJEIbPlEyWcf3yvz0QAIIlca/smnk9MlckHtRbzrTA
+mZ051mo25Fxo+G1dh//x/Hh7xarQ9S55QHLc7o/w3DUUdaCDhjOyacquoB4aFwha
+nUGudJoMlbJhpKrzLj5nELiS1ZoSP35bi2uXhm2nieMD4GnFuY4WrvBD0bGQ88wQ
+vLUYdTtMWYCwGd3PHa1Pgqq7z8OcH4A3KH9wpMVVINjycFH0e0QSBOxlTs2Wh4yz
+XpMwzO+Q6KI07y/yAdZ46nZQsUiltHB6ft8PnKTbaFtLVCjQpbfeml+rjtcm7DzC
+7ke+IMta/lBj3IzuT6Ul07zJnafEU0E2OVzq54CVD4uF0CxksVa6CgypXGoXpWBl
+5/yL9pL9cV/vayvhIkz0dL5sDf7b1x/T6X6HJaVPe7fqUgRNcbNCM/omWUCaKzZC
+EHsYUQ96HmrV5Gz4yjM9n5sRVu1KzOZZbvUJFMW45Nxf6RBuc/11cNLF1X7Pxx1y
+Z7cmT2gquij8yYYtgdvV3Q2p9wbfdeOqxA24K6EqMXszwBOqeWSloxRxFyVR0XZL
+e6Cb/MaRiaeNR8RrrTh41wNt812qb6+BbPtkXGruckWdn2qc5FgFxzfQ6+fUV0Mb
+aOuW1X61vR7/dVI+RUWxmGaXm0K1ck2jTK/jJckDIBU7BH5P61UjonGTIwUysWXO
+SNsQvNnlBNsKaaygEBt/
+=RAyU
 -----END PGP SIGNATURE-----
 
---CVv82Ujxifzgs+3E--
+--WP9KCVozbP0XU63c4dqR8gSkfWdhrdg5F--
 
