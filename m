@@ -1,9 +1,17 @@
-Date: Fri, 29 Nov 2019 11:50:50 +0100 (CET)
-Message-Id: <201911291050.xATAooDJ003464@...2054...>
+Date: Fri, 29 Nov 2019 11:52:07 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20191129104335.4518-1-lstipakov@...277...>
-References: <20191129104335.4518-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: travis: bump clang version
+Message-ID: <20191129105207.GU40538@...1296...>
+References: <20191128080631.117-1-lstipakov@...277...>
+ <E1iaLck-0000Aj-5c@...2508...>
+ <CAKuzo_jR6WYsM9QZhdyp8sW6avFGhDnFzx_dNN63JD4iiSmFag@...278...>
+ <20191128194320.GM40538@...1296...>
+ <2aa50cbc-cc17-81d5-ec9a-98fd5e8ba503@...2080...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="CVv82Ujxifzgs+3E"
+Content-Disposition: inline
+In-Reply-To: <2aa50cbc-cc17-81d5-ec9a-98fd5e8ba503@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] fix clang warning about missing braces
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,35 +20,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <openvpn@...2080...>
+Cc: Gert Doering <gert@...1296...>, Selva Nair <selva.nair@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Acked-by: Gert Doering <gert@...1296...>
+--CVv82Ujxifzgs+3E
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-This looks reasonable - we want to see warnings-as-errors with recent
-compilers.  Older compilers may warn all they want, but we can not 
-consider it an *error* or spend time on fixing them (in ugly ways).
+Hi,
 
-Your patch has been applied to the master branch.
+On Fri, Nov 29, 2019 at 11:47:02AM +0100, David Sommerseth wrote:
+> With GCC-4.3.8, I see this warning:
 
-commit 4a2c8dab5dffff7a09d794d9b2afc4bf710db2b9
-Author: Lev Stipakov
-Date:   Fri Nov 29 12:43:35 2019 +0200
+This is about as old as you :-) - do we care about suppressing warnings
+in old gcc versions that might suppress a *relevant* warning when
+compiling with a current gcc version?
 
-     travis: bump clang version
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20191129104335.4518-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19203.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Gert Doering - Munich, Germany                             gert@...1296...
 
+--CVv82Ujxifzgs+3E
+Content-Type: application/pgp-signature; name="signature.asc"
 
---
-kind regards,
+-----BEGIN PGP SIGNATURE-----
 
-Gert Doering
+iQGcBAEBAgAGBQJd4PhWAAoJEB2Cnv7KVigSM6MMAIi7WOGUGlmpFLuKKg9nhEO+
+C/PlQ67YlOwsBpUn9Rm4rPMCG/T6dz5dGYmcWRaRfwWykHqKLq00mahMuh7kfyRw
+iZ/fgIbzdgmkN16av/RddI5EkPAU5QbCXL+pveyaY6CTuiq7L5zoxqTdTyFwPyuI
+9q8qm6HbIqBzcMUR/gRBb0ys2afn3qfyKiH/EsAMdhaOmIxHBBT4SYimjqCPxYi4
+V9uxPl43pEzClmHYSOkq2B8UNdrGGhXwnKGwDdFfnjJ2MJhIzq2LhcYmx7FZuS44
+3OFAYvdpBYtFWJT5P5vIaPguP5ciEB/P8br0SJhDNbCBeovajwL6j/Poir0dUs2j
+P7rPRWB4qgRDFedWu5ntc1Zzl5pT85wDpusPaMGFMsSvIuWm6lWY8OzkBlPO9IGP
+fKgJ0IN3uO2p1hD6UhKk40oCeLvxjuhwKV2XzsQMpkMy+bIYXheDpBaNoUUBOJAS
+kFtmC5dyQFoPfW4X8W1aI+P30BHpdHvBjmBwZePbMQ==
+=BxWI
+-----END PGP SIGNATURE-----
 
+--CVv82Ujxifzgs+3E--
 
