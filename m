@@ -1,15 +1,16 @@
 References: <20191122143315.8564-1-arne@...1227...>
- <CAKuzo_hU7K-vaP7mcyu8kTkKQrg0rwacwxayi-qi69Ez81Vt=A@...278...>
+ <20191122143315.8564-2-arne@...1227...>
+ <CAKuzo_iqvxpOQ4Gdo6WpLxoXUTzR6tC3kW-2y0AP1hr35jo5tA@...278...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <ffe7f978-7123-d715-128e-c3a517029ee9@...1227...>
-Date: Wed, 4 Dec 2019 11:50:32 +0100
+Message-ID: <68a07c90-4506-2472-09ae-89d5f2c4aca5@...1227...>
+Date: Wed, 4 Dec 2019 12:08:09 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_hU7K-vaP7mcyu8kTkKQrg0rwacwxayi-qi69Ez81Vt=A@...278...>
+In-Reply-To: <CAKuzo_iqvxpOQ4Gdo6WpLxoXUTzR6tC3kW-2y0AP1hr35jo5tA@...278...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="gyzQYqHJkw0nrHCgAW6xelURLJwRH2oFn"
-Subject: Re: [Openvpn-devel] [PATCH v7 1/2] Make tls_version_max return the
- actual maximum version
+ boundary="HGbI0FI4DaC9ukNQzO6JyD41EWm0gWR6j"
+Subject: Re: [Openvpn-devel] [PATCH v7 2/2] Add support for OpenSSL TLS 1.3
+ when using management-external-key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,66 +20,61 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---gyzQYqHJkw0nrHCgAW6xelURLJwRH2oFn
-Content-Type: multipart/mixed; boundary="r69ULAfH1tIJRxokze0kNPx2k6fzLOwEP"
+--HGbI0FI4DaC9ukNQzO6JyD41EWm0gWR6j
+Content-Type: multipart/mixed; boundary="TWPQ6dJ4L6fX6FNvIOuDZzW5qRHp5LgID"
 
---r69ULAfH1tIJRxokze0kNPx2k6fzLOwEP
+--TWPQ6dJ4L6fX6FNvIOuDZzW5qRHp5LgID
 Content-Language: de-DE
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-Am 23.11.19 um 03:04 schrieb Selva Nair:
+Am 23.11.19 um 03:07 schrieb Selva Nair:
 > Hi,
 >=20
-> On Fri, Nov 22, 2019 at 9:34 AM Arne Schwabe <arne@...1227...
-> <mailto:arne@...1227...>> wrote:
+> Thanks for the updates.
 >=20
->     Before OpenSSL 1.1.1 there could be no mismatch between
->     compiled and actual OpenSSL version. With OpenSSL 1.1.1 we need
->     runtime detection to detect the actual best TLS version supported.
+> In spite of several nits below, I'm ACKing this.
 >=20
->     Allowing this runtime detection also allows removing some of the
->     TLS 1.3/OpenSSL 1.1.1 #ifdefs
+> All remarks are typos or grammar, important only for docs
+> and some comments. I suggest to handle these as a minor follow
+> up patch.=C2=A0
 >=20
->     Without this patch tls-min-version 1.3 or-highest will actually
->     downgrade to TLS 1.3=20
->=20
->=20
-> I think that should read "TLS 1.2" not "TLS 1.3"
+> I'm also ignoring most typos in commit message except a few that
+> could be corrected during merge to add clarity.
+>
 
-Yes, you are correct. @David, Gert, can you fix this one on the commit
-message or do you want a new version for that?
+Thanks again for all the patience with me. I added those corrections
+to a v8 to make Gert's/David's job easier.
 
 Arne
 
 
+--TWPQ6dJ4L6fX6FNvIOuDZzW5qRHp5LgID--
 
---r69ULAfH1tIJRxokze0kNPx2k6fzLOwEP--
-
---gyzQYqHJkw0nrHCgAW6xelURLJwRH2oFn
+--HGbI0FI4DaC9ukNQzO6JyD41EWm0gWR6j
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl3nj3kACgkQFRhsZwKx
-RFQbnA/+KEvRTQ3y1yb4hpEDtGKTiWUg3j0LWZ9EpniV+uG6E7ahuJBUJDeYnk5/
-0HmRMDN44SPGjFchRHE1DlGN8DL3l0jNxXA2p3Ep9q4HwA8ZjqrNYg4Z7ne6HuUB
-ZITKkZNzpM2quhX3Si9CxaFnaiJ19Tg79eONrhJ1zyRBcpvKEavF80ijwtM7hgvO
-7bv0S/tCWmz14ttc+iU/icDmSik9f62JSGJtdtk1p/pKePtjOHvqW0pk3KjO28DY
-7ZMUovIJgy0igDCp1v8CAMsZ1//U0LIv/eh2Z79Bs2plJ6gFH2X26t2cPcgJWJx8
-TbMdCuwIPDltSr+5MJh9rWHunrh4WcD8T91opw1eveveUw829dbNPpJXx7OvmLOn
-d6vKbOrIGY1OMHw9379kj2D4YGnmaUMeoRrJrEzia1Jg+YcicMaR1hb0wVod+zuJ
-kXBEh8YADa33CAHNmIqnKde5TMrjTgXvlRLR3ZFs9wWo+ScQvUsntpowgontC50T
-W12oeUYINVMEWFMnJhco+CUdiBKESbNdEGv3ucMM8/Ig1e3In8qQ3q84s8yGYEr0
-+F+1p7kHCRew7zdjzM7OqWLZMyLY0gw3wDcd3jQmUX4rqUAKpuyzn6gYviD3fsj8
-zl22iUNmgVRF4lWB0ydGTv4aa1TkLny6jqqVrDbMAictu9EOHlc=
-=J+Go
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl3nk5kACgkQFRhsZwKx
+RFRKBw/7BOdCLVr0LiMYx09k6/IELApUI9LVkJ8vVm3vlgapdStlmB06CRdlK/5K
+kV/GTbZ0M7sgbdTjJcMfUhKkjPhQii41OoJRXYUlQTkckTAK3i5W1v/ISteDVPNc
+WkDrXgcaCdDXcfPz9pChWnE9yu0IG33EetqnXYruMmwziHiN6GbfBjIRRwsq/VpH
+87BEWc19+WgZBJuuX2qAwoy0XczP0f78nugxbjcvj6elnZ00Ufc7NkLsqKQDeH4m
+x1qyQtnp2/QCzcFHJ8Bwndv9dgYmmaykOaFKIfF77Mz420I8PKBr7x11UCw67njn
+gFXPfX/SqTGR4sMhLk09lDl/eIdq2jsgxOHOC2wylxkYJ4WAllfn+S5s0xB7rkP2
+Yql2UBTOuUSqcgRA7W+mm7Vfe4RWEBtT3wzaeQ+3onUhs4Yt0Ze2yRbbdVafNzs1
+iF37/U2UZrIhIgLfjKBu2UlaQv2c3T7Nur+xMkSWHgw0bN8X28yDkGxNN84A34k6
+XyF8KuFmFXeu7YTYjrrCpyaRXIbY8FwF0dvR+FtSaWDoZra8Pp90Lu37tnmV9tPn
+2KL82DhsPtGqodxxuMECaa7qRXW/ZdKvussAY0xborGsNqi38WO7KukD8DSq7ODM
+pHw928S0dseOtlKIBtIGIn8l8LMuxQz/A3jyr56ZdHDNjH2GMwk=
+=PS7r
 -----END PGP SIGNATURE-----
 
---gyzQYqHJkw0nrHCgAW6xelURLJwRH2oFn--
+--HGbI0FI4DaC9ukNQzO6JyD41EWm0gWR6j--
 
