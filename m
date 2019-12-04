@@ -1,8 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Wed,  4 Dec 2019 12:09:38 +0100
-Message-Id: <20191204110938.6725-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Document tls-ciphersuites also in --help
- output
+Date: Wed, 4 Dec 2019 16:36:22 +0100 (CET)
+Message-Id: <201912041536.xB4FaM8c038616@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20191122143315.8564-1-arne@...1227...>
+References: <20191122143315.8564-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Make tls_version_max return the
+ actual maximum version
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,28 +15,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/options.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Your patch has been applied to the master branch.
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index aec4e01c..e41d3486 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -606,7 +606,8 @@ static const char usage_message[] =
-     "                  Windows Certificate System Store.\n"
- #endif
-     "--tls-cipher l  : A list l of allowable TLS ciphers separated by : (optional).\n"
--    "                : Use --show-tls to see a list of supported TLS ciphers.\n"
-+    "--tls-ciphersuites l: A list of allowed TLS 1.3 cipher suites seperated by : (optional)\n"
-+    "                : Use --show-tls to see a list of supported TLS ciphers (suites).\n"
-     "--tls-cert-profile p : Set the allowed certificate crypto algorithm profile\n"
-     "                  (default=legacy).\n"
-     "--tls-timeout n : Packet retransmit timeout on TLS control channel\n"
--- 
-2.24.0
+Thanks for the confirmation about that commit message change - it seemed
+to make sense, but to hear from the author is better :-) - changed on
+the fly, as requested.
+
+Lightly tested with OpenSSL 1.0.2o, OpenSSL 1.0.1l, OpenSSL 1.1.1d.
+
+*Not* tested with "compiled with 1.1.0, dynlinked to 1.1.1, does TLS 1.3" 
+because too lazy right now to set up things to properly verify that.
+
+commit 6328aef94a748bd9859ae5cd264b7e50fbb8a325
+Author: Arne Schwabe
+Date:   Fri Nov 22 15:33:14 2019 +0100
+
+     Make tls_version_max return the actual maximum version
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Selva Nair <selva.nair@...277...>
+     Message-Id: <20191122143315.8564-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19186.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
