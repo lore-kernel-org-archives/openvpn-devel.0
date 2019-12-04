@@ -1,15 +1,15 @@
-References: <20181121101019.1801-1-arne@...1227...>
- <20181121101019.1801-4-arne@...1227...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <9bacefd8-e8cf-b15d-0a29-b03b37c27186@...2181...>
-Date: Tue, 3 Dec 2019 15:29:20 +0100
+References: <20191122143315.8564-1-arne@...1227...>
+ <CAKuzo_hU7K-vaP7mcyu8kTkKQrg0rwacwxayi-qi69Ez81Vt=A@...278...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <ffe7f978-7123-d715-128e-c3a517029ee9@...1227...>
+Date: Wed, 4 Dec 2019 11:50:32 +0100
 MIME-Version: 1.0
-In-Reply-To: <20181121101019.1801-4-arne@...1227...>
+In-Reply-To: <CAKuzo_hU7K-vaP7mcyu8kTkKQrg0rwacwxayi-qi69Ez81Vt=A@...278...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="e3YTgJ7W5DWjWzbC05BIZeibCV3Qa4Beb"
-Subject: Re: [Openvpn-devel] [PATCH v4 03/13] client-connect: Move
- multi_client_connect_setenv into early_setup
+ boundary="gyzQYqHJkw0nrHCgAW6xelURLJwRH2oFn"
+Subject: Re: [Openvpn-devel] [PATCH v7 1/2] Make tls_version_max return the
+ actual maximum version
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,128 +18,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---e3YTgJ7W5DWjWzbC05BIZeibCV3Qa4Beb
-Content-Type: multipart/mixed; boundary="JzOhzXY2TUMkbwEGXXrabYj9Ae9qTjdvV"
+--gyzQYqHJkw0nrHCgAW6xelURLJwRH2oFn
+Content-Type: multipart/mixed; boundary="r69ULAfH1tIJRxokze0kNPx2k6fzLOwEP"
 
---JzOhzXY2TUMkbwEGXXrabYj9Ae9qTjdvV
-Content-Language: en-US
+--r69ULAfH1tIJRxokze0kNPx2k6fzLOwEP
+Content-Language: de-DE
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
-
-On 21/11/2018 11:10, Arne Schwabe wrote:
-> From: Fabian Knittel <fabian.knittel@...1547...>
+Am 23.11.19 um 03:04 schrieb Selva Nair:
+> Hi,
 >=20
-> This patch moves multi_client_connect_setenv into
-> multi_client_connect_early_setup and makes sure that every client-connect
-> handling function updates the virtual address selection.
+> On Fri, Nov 22, 2019 at 9:34 AM Arne Schwabe <arne@...1227...
+> <mailto:arne@...1227...>> wrote:
 >=20
-
-Can you elaborate a bit more please? IT sounds like this patch is fixing
-some inconsistent behaviour, but I Don't grasp what exactly.
-
-Can you please spend a few more words to describe what would not work
-now and how this patch is fixing it?
-
-> Background: This unifies how the client-connect handling functions work.
+>     Before OpenSSL 1.1.1 there could be no mismatch between
+>     compiled and actual OpenSSL version. With OpenSSL 1.1.1 we need
+>     runtime detection to detect the actual best TLS version supported.
 >=20
-> Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  src/openvpn/multi.c | 23 ++++++++++++++---------
->  1 file changed, 14 insertions(+), 9 deletions(-)
+>     Allowing this runtime detection also allows removing some of the
+>     TLS 1.3/OpenSSL 1.1.1 #ifdefs
 >=20
-> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-> index 8fc69a07..bc9fddce 100644
-> --- a/src/openvpn/multi.c
-> +++ b/src/openvpn/multi.c
-> @@ -2041,6 +2041,12 @@ multi_client_connect_early_setup(struct multi_cont=
-ext *m,
->=20=20
->      /* reset pool handle to null */
->      mi->vaddr_handle =3D -1;
-> +
-> +    /* do --client-connect setenvs */
-> +    multi_select_virtual_addr(m, mi);
-> +
-> +    multi_client_connect_setenv(m, mi);
-> +
->  }
->=20=20
->  /**
-> @@ -2086,6 +2092,13 @@ multi_client_connect_source_ccd(struct multi_conte=
-xt *m,
->                                    CLIENT_CONNECT_OPT_MASK,
->                                    option_types_found,
->                                    mi->context.c2.es);
-> +            /*
-> +             * Select a virtual address from either --ifconfig-push in
-> +             * --client-config-dir file or --ifconfig-pool.
-> +             */
-> +            multi_select_virtual_addr(m, mi);
-> +
-> +            multi_client_connect_setenv(m, mi);
->          }
->          gc_free(&gc);
->      }
-> @@ -2115,19 +2128,11 @@ multi_connection_established(struct multi_context=
- *m, struct multi_instance *mi)
->=20=20
->          multi_client_connect_source_ccd(m, mi, &option_types_found);
->=20=20
-> -        /*
-> -         * Select a virtual address from either --ifconfig-push in
-> -         * --client-config-dir file or --ifconfig-pool.
-> -         */
-> -        multi_select_virtual_addr(m, mi);
-> -
-> -        /* do --client-connect setenvs */
-> -        multi_client_connect_setenv(m, mi);
-> -
->          multi_client_connect_call_plugin_v1(m, mi, &option_types_found,
->                                              &cc_succeeded,
->                                              &cc_succeeded_count);
->=20=20
-> +
-
-random whiteline ?
-
->          multi_client_connect_call_plugin_v2(m, mi, &option_types_found,
->                                              &cc_succeeded,
->                                              &cc_succeeded_count);
+>     Without this patch tls-min-version 1.3 or-highest will actually
+>     downgrade to TLS 1.3=20
 >=20
+>=20
+> I think that should read "TLS 1.2" not "TLS 1.3"
 
---=20
-Antonio Quartulli
+Yes, you are correct. @David, Gert, can you fix this one on the commit
+message or do you want a new version for that?
+
+Arne
 
 
---JzOhzXY2TUMkbwEGXXrabYj9Ae9qTjdvV--
 
---e3YTgJ7W5DWjWzbC05BIZeibCV3Qa4Beb
+--r69ULAfH1tIJRxokze0kNPx2k6fzLOwEP--
+
+--gyzQYqHJkw0nrHCgAW6xelURLJwRH2oFn
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEEOj/Eejms5Fxtp0v4pNfqZUlHtXIFAl3mcUAACgkQpNfqZUlH
-tXKP5g/+JvDprewOBSLxHi/kPjL+JosQGhaHlrll/tXwIT4rG8wpM6qIjK80RhUT
-u/3hnpDa1fmGrKlh2GGkh7yc/dn9xdf6TVTkv4LNBxn3SKkRXRFLKctTfpjxOv6c
-mNYDUOfQPoLX6QpOUBHeLSKjFJxqfcJ8bnw3fyGbbowJPiyH/IfsYEND2vvMDqMd
-jlcKjxru0VauItJVVMUDvuvIddJN7vsEmFAIky8UV5M9EZ46/TCY9EST4jdzD1eQ
-MmM+gs6rZeOdOAKGJHKuvFSP7YuDbI9ly+X4bbVy9Ojn3rp+Uz9is/+xqG/blvcV
-/uK3CmbQ+jfO36bKYtv/PWxTwIQTyuVNAAgT5xlhj2bWtZ7v77oHW6r9OLsrZCB2
-vvjJedfoVGMpmSdyzyId62CFhWdlF9fB9ZnmWBoucv6UFGCzaMgXzSTw50zNS0hn
-xP5Ixa4ESHqc1NukBHJjqpn2ATUzW0fgYy0iJJv0pMUhNbZs0+kDcScJbV84CQ9W
-+DIsUTH2IZs46tGmVik2F7jJldnSmTGoMwh+/7lmaq94beCf9sEcCi3g+W2vBYn/
-XwfiuPPgaC0TXOVtAXzG9oMbAPAiMIqfAQEkGFAV2TeEaPq1sZlvvkyoZnfkk8/1
-q9bUhYZrwhWMQQbAdbtHNkyMvz0vkf1rbPB+59serUfcW449TmQ=
-=r4TF
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl3nj3kACgkQFRhsZwKx
+RFQbnA/+KEvRTQ3y1yb4hpEDtGKTiWUg3j0LWZ9EpniV+uG6E7ahuJBUJDeYnk5/
+0HmRMDN44SPGjFchRHE1DlGN8DL3l0jNxXA2p3Ep9q4HwA8ZjqrNYg4Z7ne6HuUB
+ZITKkZNzpM2quhX3Si9CxaFnaiJ19Tg79eONrhJ1zyRBcpvKEavF80ijwtM7hgvO
+7bv0S/tCWmz14ttc+iU/icDmSik9f62JSGJtdtk1p/pKePtjOHvqW0pk3KjO28DY
+7ZMUovIJgy0igDCp1v8CAMsZ1//U0LIv/eh2Z79Bs2plJ6gFH2X26t2cPcgJWJx8
+TbMdCuwIPDltSr+5MJh9rWHunrh4WcD8T91opw1eveveUw829dbNPpJXx7OvmLOn
+d6vKbOrIGY1OMHw9379kj2D4YGnmaUMeoRrJrEzia1Jg+YcicMaR1hb0wVod+zuJ
+kXBEh8YADa33CAHNmIqnKde5TMrjTgXvlRLR3ZFs9wWo+ScQvUsntpowgontC50T
+W12oeUYINVMEWFMnJhco+CUdiBKESbNdEGv3ucMM8/Ig1e3In8qQ3q84s8yGYEr0
++F+1p7kHCRew7zdjzM7OqWLZMyLY0gw3wDcd3jQmUX4rqUAKpuyzn6gYviD3fsj8
+zl22iUNmgVRF4lWB0ydGTv4aa1TkLny6jqqVrDbMAictu9EOHlc=
+=J+Go
 -----END PGP SIGNATURE-----
 
---e3YTgJ7W5DWjWzbC05BIZeibCV3Qa4Beb--
+--gyzQYqHJkw0nrHCgAW6xelURLJwRH2oFn--
 
