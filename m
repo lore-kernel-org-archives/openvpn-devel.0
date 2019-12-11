@@ -1,13 +1,14 @@
 From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
 References: <0118782c-d5eb-485d-eee6-73dfa7e6399b@...515...>
-Message-ID: <e0e9c2fb-611b-221c-48d6-9dc6fe82c6fa@...515...>
-Date: Thu, 5 Dec 2019 21:57:03 +0200
+Message-ID: <c6cd6743-6a8c-6ad1-dda0-e0a15f4d38c3@...515...>
+Date: Wed, 11 Dec 2019 13:32:48 +0200
 MIME-Version: 1.0
 In-Reply-To: <0118782c-d5eb-485d-eee6-73dfa7e6399b@...515...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="IxzNn1xv5PojwWrMSPSX6GmzRIzJXAyEt"
-Subject: [Openvpn-devel] Summary of the community meeting (5th December 2019)
+ boundary="WGrgQ3c661s0kBzXEzssPr0SHei3u1mbv"
+Subject: [Openvpn-devel] Summary of the community meeting (11th December
+ 2019)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,16 +20,16 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---IxzNn1xv5PojwWrMSPSX6GmzRIzJXAyEt
-Content-Type: multipart/mixed; boundary="FLS7CKVsJTaM9hWSZCo2St3v9DWNGn5Ow"
+--WGrgQ3c661s0kBzXEzssPr0SHei3u1mbv
+Content-Type: multipart/mixed; boundary="von7WKaGoiJG44n8ugjhXQ7fs8T6jagzZ"
 
---FLS7CKVsJTaM9hWSZCo2St3v9DWNGn5Ow
+--von7WKaGoiJG44n8ugjhXQ7fs8T6jagzZ
 Content-Type: multipart/mixed;
- boundary="------------E2B80E2D4DE7049504764B09"
+ boundary="------------BCE94CDE3B953FFBECA962BE"
 Content-Language: en-US
 
 This is a multi-part message in MIME format.
---------------E2B80E2D4DE7049504764B09
+--------------BCE94CDE3B953FFBECA962BE
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
@@ -41,12 +42,12 @@ Here's the summary of the IRC meeting.
 COMMUNITY MEETING
 
 Place: #openvpn-meeting on irc.freenode.net
-Date: Thursday 5th December 2019
-Time: 20:00 CET (19:00 UTC)
+Date: Wed 11th December 2019
+Time: 11:30 CET (10:30 UTC)
 
 Planned meeting topics for this meeting were here:
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2019-12-05>
+<https://community.openvpn.net/openvpn/wiki/Topics-2019-12-11>
 
 Your local meeting time is easy to check from services such as
 
@@ -54,219 +55,167 @@ Your local meeting time is easy to check from services such as
 
 SUMMARY
 
-cron2, dazo, mattock and Pippin participated in this meeting.
+dazo, lev, mattock and plaisthos participated in this meeting.
 
 ---
 
-Lev now has access to the Windows 10 ARM64 laptop. Mattock will have to
-do one more check to ensure that the VPN connection will remain alive at
-all times.
-
----
-
-Noted that HTTP to forums is broken. This may have something to do with
-the forum upgrade by ecrist:
-
-<https://forums.openvpn.net/viewtopic.php?f=3D20&t=3D29291>
-
----
-
-Reviewed and updated OpenVPN 2.5 status:
+Discussed status of OpenVPN 2.5:
 
 <https://community.openvpn.net/openvpn/wiki/StatusOfOpenvpn25>
 
-No updates on the OpenVPN 2.5 MSI installer (since the hackathon). As
-that starts to be the last remaining "must have" for the release we need
-to start poking rozmansi now.
+Added the "agreed upon in Trento hackathon" code freeze date (January
+31st 2020) to that page.
 
----
+Noted that even though wintun-enabled installers are available on the
+official download pages we have not really receive much feedback on
+them. The wintun patches has been ACKed for the most part, but patch 4/7
+will require special treatment. Mattock will ask rozmansi and selvanair
+to join next Thursday's meeting (19:00 UTC):
 
-Discussed tomorrow's mini-hackathon. Cron2 will be able to join in the
-afternoon. Mattock will take a stab at configuring the IRC bouncer
-(finally).
+<https://community.openvpn.net/openvpn/wiki/Topics-2019-12-19>
+
+Their review would be very valuable as they know Windows quite well.
 
 --
 
 Full chatlog attached
 
---------------E2B80E2D4DE7049504764B09
+--------------BCE94CDE3B953FFBECA962BE
 Content-Type: text/plain; charset=UTF-8;
- name="openvpn_irc_meeting_chatlog_2019-12-05.txt"
+ name="openvpn_irc_meeting_chatlog_2019-12-11.txt"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: attachment;
- filename="openvpn_irc_meeting_chatlog_2019-12-05.txt"
+ filename="openvpn_irc_meeting_chatlog_2019-12-11.txt"
 
-(21:00:50) mattock: hi
-(21:02:51) dazo: Hey!
-(21:04:58) mattock: anyone else?
-(21:07:19) dazo: hmm
-(21:08:01) cron2: ho
-(21:09:31) mattock: hi!
-(21:09:49) cron2: who broke http to forums.openvpn.net?
-(21:09:54) mattock: https://www.mail-archive.com/openvpn-devel@...1439...=
-ceforge.net/msg19196.html
-(21:09:56) vpnHelper: Title: [Openvpn-devel] Summary of the community mee=
-ting (27th November 2019) (at www.mail-archive.com)
-(21:09:59) mattock: lollis
-(21:10:02) mattock: sorry, wrong link
-(21:10:08) mattock: https://community.openvpn.net/openvpn/wiki/Topics-201=
-9-12-05
-(21:10:53) mattock: cron2: I did not know it even worked
-(21:11:05) cron2: I have monitoring on it, so it worked until a few days =
-ago
-(21:11:30) cron2: if it has a v6 address, all services need to work.  Oth=
-erwise user experience sucks if a poor user happens to have a v6-enabled =
-client
-(21:12:27) mattock: I have not touched forums in a long while
-(21:12:50) cron2: I think ecrist did updates a few days ago, including a =
-freebsd update... this might have caused firewall changes
-(21:12:59) mattock: yeah, sounds likely
-(21:13:21) Pippin_: Hi, see: https://forums.openvpn.net/viewtopic.php?f=3D=
-20&t=3D29291
-(21:13:33) vpnHelper: Title: Server Upgrades December 3, 2019 - OpenVPN S=
-upport Forum (at forums.openvpn.net)
-(21:13:48) cron2: takes me a while to get there... v6 is not working :)
-(21:15:03) cron2: anyway, posted there, let's see :)
-(21:16:28) mattock: so, what else shall we discuss today?
-(21:16:46) mattock: arm64 "seems stable" and lev has access
-(21:17:03) mattock: need to check one more thing to make sure it stays co=
-nnected
-(21:17:18) mattock: IRC bouncer is probably the next on my list
-(21:17:40) mattock: I fixed an email delivery issue to gmail from trac, r=
-elated to urlwatch
-(21:17:54) mattock: internal PR is pending
-(21:21:37) cron2: nice
-(21:21:46) mattock: anything anyone else wants to bring up?
-(21:21:50) mattock: tomorrow's mini-hackaton?
-(21:22:02) cron2: I have no particulars, except "moar ACKs and speedier d=
-iscussions needed"
-(21:22:17) cron2: my TODO list has argv and ipv6-only
-(21:22:31) dazo: Should we have a quick look at the status page?  https:/=
-/community.openvpn.net/openvpn/wiki/StatusOfOpenvpn25
-(21:22:32) vpnHelper: Title: StatusOfOpenvpn25 =E2=80=93 OpenVPN Communit=
+(12:32:30) mattock: hello
+(12:32:44) plaisthos: hello mattock1 and mattock2
+(12:33:39) mattock: I will kill one of my duplicates
+(12:33:48) mattock2 ha abbandonato la stanza (quit: Quit: IRC for Sailfis=
+h 0.9).
+(12:33:53) mattock: and there it goes
+(12:34:46) mattock: who do we have here today?
+(12:36:12) dazo: I'm here
+(12:36:24) dazo: cron2 announced on -devel he couldn't make it
+(12:37:45) dazo ha scelto come argomento: Next meeting 19/Dec/2019 at 20:=
+00 CET.  Agenda at https://community.openvpn.net/openvpn/wiki/Topics-2019=
+-12-19
+(12:38:02) mattock: ok
+(12:38:18) mattock: once the bouncer I'm working on now works I may notic=
+e such messages :)
+(12:38:22) mattock: so, topic
+(12:38:23) mattock: s
+(12:38:29) dazo: anyone heard from rozmanzi lately?
+(12:38:51) mattock: https://community.openvpn.net/openvpn/wiki/Topics-201=
+9-12-11
+(12:38:52) vpnHelper: Title: Topics-2019-12-11 =E2=80=93 OpenVPN Communit=
 y (at community.openvpn.net)
-(21:22:37) mattock: yes we probably should
-(21:22:40) cron2: but I've been down with flu (or a bad cold) the last we=
-ek so I didn't get much done :(
-(21:23:17) dazo: I know ordex has been discussing ipv6only testing with k=
-rzee internally ... krzee will help out testing and provide test env
-(21:23:42) cron2: nie
-(21:23:44) cron2: c
-(21:25:51) dazo: The "=E2=80=8Bauth-gen-token: Inform client why auth-tok=
-en was rejected" is replaced with plaisthos patches which should already =
-be merged (the auth-gen-token patches we fiddled with for some time)
-(21:26:18) dazo: struct argv overhaul is still in review .... can move th=
-e responsibility for that one over to me
-(21:26:42) dazo: (well, plaisthos volunteered to review it, but I'm follo=
-wing up the development of these patches now)
-(21:27:30) cron2: dazo: well, since you did the last round of fixes, some=
-one else can now do the review&ack&merge
-(21:27:37) dazo: yeah
-(21:27:41) cron2: has been sitting around too long, starts annoying me :)=
+(12:38:53) mattock: I have not
+(12:39:15) mattock: he is known to appear if his name is mentioned
+(12:40:33) mattock: so, 2.5?
+(12:41:36) mattock: https://community.openvpn.net/openvpn/wiki/StatusOfOp=
+envpn25
+(12:41:38) vpnHelper: Title: StatusOfOpenvpn25 =E2=80=93 OpenVPN Communit=
+y (at community.openvpn.net)
+(12:41:39) lev__: what is the code freeze date for 2.5 ?
+(12:41:53) mattock: we don't have that afaik
+(12:41:59) mattock: "Current tentative planning is "2.5 release on April =
+1st, 2020". "
+(12:42:05) mattock: that is 2.5.0
+(12:42:21) mattock: we may want to set a freeze date to get things moving=
 
-(21:28:04) cron2: dazo: was the 2fa patchset fully ACKed?
-(21:28:33) dazo: Need to double check the status of that=20
-(21:28:38) cron2: patchwork says "no ACK received on v2 of the patch set"=
+(12:42:38) dazo: We discussed it briefly in Trento, IIRC we wanted all co=
+de to be applied by end of January
+(12:42:50) ***lev__ looks for syzzer=20
+(12:43:11) dazo: then have stabilization process (rolling beta releases) =
+ until release time
+(12:44:18) lev__: we've added wintun-enabled client to download page and =
+made an announcement to -users and -devel, but haven't got much feedback
+(12:44:54) dazo: lev__: is everything you wanted merged in regards to win=
+tun?
+(12:44:58) mattock: I'll mention the January deadline on the planning pag=
+e
+(12:45:31) lev__: dazo: of course not :)
+(12:45:49) lev__: 3 out of 7 is merged
+(12:46:18) mattock: we may get more lucky with wintun testing during the =
+stabilization phase
+(12:46:21) lev__: 4 is most intrusive one, current version is v5
+(12:46:44) lev__: mattock1: but that requires it to be merged into master=
 
-(21:29:14) cron2: on v1, only one ACK on 3/5 ("implement support for sign=
-alling IV_SSO")
-(21:30:43) dazo: I dunno if there's been an updated set of patches sent t=
-o the ML ... I proposed to plaisthos to push out his stuff for review in =
-a git branch, and we'll take it quickly that way ... so the ML patches wi=
-ll just be a formality
-(21:31:29) cron2: well, what we have on the ML was sent Nov 09, and has n=
-o ACKs... so if the patch set is all good now, please re-send and ACK, so=
- I know :-)
-(21:31:41) cron2: https://patchwork.openvpn.net/project/openvpn2/list/?se=
-ries=3D581
-(21:31:43) vpnHelper: Title: OpenVPN 2 - Patchwork (at patchwork.openvpn.=
-net)
-(21:34:00) dazo: ahh, so the subject line I was watching changed ... that=
-'s why it missed it
-(21:34:12) dazo: subject line for the patch set
-(21:34:23) cron2: yeah, it lost its "0 introduction" mail
-(21:34:30) dazo: yeah
-(21:34:44) dazo: alright, I'll spend some time looking at those tomorrow
-(21:34:47) cron2: cool
-(21:35:16) cron2: I will have to go to a customer tomorrow morning (a job=
- I started in March now needs finishing for real...)
-(21:35:21) cron2: but I'll be around afternoon
-(21:35:33) dazo: sounds good
-(21:36:48) mattock: anything else?
-(21:37:40) cron2: days are too short, and flu sucks
-(21:37:57) dazo: got 2 kids with cold and fever here :/
-(21:38:03) cron2: ewww
-(21:38:08) ***cron2 sends over warm milk with honey
-(21:38:17) dazo: thx! :)
-(21:38:27) dazo: who will update the status page, btw?
-(21:38:47) ***cron2 looks
-(21:38:49) mattock: not me - I will focus on writing my elaborate meeting=
- summaries :D
-(21:39:15) dazo: community manager chilling out :-P
-(21:39:23) dazo: I can give it a stab
-(21:39:27) cron2: so, how's the MSI installers coming along? :)
-(21:39:40) mattock: cron2: asking me?
-(21:39:58) ***cron2 looks for anyone else to ask who works on installers =
-:))
-(21:40:12) mattock: I don't see rozmansi here :)
-(21:40:19) mattock: I have not heard of any updates
-(21:40:48) mattock: I'll keep my fingers of MSI as far as possible, until=
- time to actually build them is here
-(21:40:50) cron2: what was our release plan?  April 1?
-(21:40:57) mattock: around that time I believe
-(21:40:58) dazo: something like that
-(21:43:10) cron2: minor update done
-(21:43:47) mattock: thanks!
-(21:43:54) dazo: I think we aimed at having all coding done by mid/end of=
- January? So the beta releases can start rolling out ... or did I confuse=
- it?
-(21:44:39) cron2: not sure we agreed on a schedule for "how many betas in=
- which time scale", but yes, coding done end of January sounds like a ten=
-tative goal to miss :)
-(21:45:01) mattock: :)
-(21:45:34) dazo: hehe
-(21:46:56) mattock: so the MSI installers are starting to be last "must h=
-ave" that is not yet being reviewed
-(21:47:25) mattock: and I believe we decided that it would be ok to run t=
-he tap-windows6 NSI installer from within the OpenVPN 2.5 MSI=20
-(21:47:51) mattock: because support for driver installation in WiX toolse=
-t was retarded
-(21:48:01) mattock: or was it upgrading the driver, can't recall exactly
-(21:48:12) mattock: we need to start poking @rozmansi :D
-(21:48:16) cron2: yes :)
-(21:50:30) mattock: are we good, or is there something else to bring up?
-(21:50:36) cron2: I'm fine
-(21:50:52) mattock: I will take a stab at the IRC bouncer thing
-(21:51:02) mattock: that shall be my personal mini-hackathon
-(21:51:03) mattock: tomorrow
-(21:51:26) cron2: :)
-(21:51:47) dazo: cool! looking fwd to that mattock1! :)
-(21:52:18) mattock: yep!
-(21:52:23) mattock: so, we'll meet again tomorrow!
-(21:52:51) cron2: when shall we three meet again...
-(21:52:57) cron2: ... in thunder, lightning, or in rain...
-(21:53:17) mattock: I'm sure that is a quote from a song
+(12:46:44) mattock: while wintun installers are available on the download=
+ page "normal users" would just get the topmost release that opens up dir=
+ectly in their browsers
+(12:46:49) plaisthos: client connect is waiting
+(12:47:22) dazo: lev__: what are the risks of merging those patches to no=
+n-wintun users?
+(12:50:00) lev__: good question
+(12:51:01) lev__: while default option is tap-windows6 and users _should =
+not_ be affected unless they explicitly set --windows-driver wintun, I ha=
+ve changed certain code paths
+(12:52:21) lev__: I would say the goal of review is to make sure that ove=
+rall code quality hasn't been made (much) worse
+(12:54:29) lev__: but well, wintun bumps performance from 390 to 730 mbit=
+/s, so I would say that is a huge step forward for Windows users
+(12:55:43) dazo: I'm looking for a risk assessment, if we should consider=
+ applying the lazy-ack policy on these patches ... but then we need to ha=
+ve a better understanding of the risks associated with it
+(12:58:01) lev__: the follow-up patches (5-7, or most of them) have been =
+acked by Simon, they're mostly about interactive service
+(13:01:35) dazo: I've updated the status page a swell with a few more cor=
+rections etc
+(13:01:56) mattock: so the follow-up stuff could be merged?
+(13:02:53) dazo: well, patch 5-7 might depend on changes from 1-4 ;-)
+(13:03:44) lev__: 5-6 are acked (just checked)
+(13:04:47) lev__: I can ask Simon to have a look at 7/7 and ack it
+(13:04:59) lev__: (this is small one)
+(13:05:46) lev__: essentially we need 4/7, this is the "core" of that pat=
+chset
+(13:06:34) lev__: dazo: plaisthos feel free to review :)
+(13:07:07) mattock: what kind of testing would give us confidence in 4/7?=
 
---------------E2B80E2D4DE7049504764B09--
+(13:07:17) mattock: can we do some targeted testing?
+(13:07:19) dazo: lev__: I find it hard to have to come with a valuable re=
+view on a platform I have no development experience on
+(13:08:01) mattock: could we maybe coordinate a session with Selva and Si=
+mon about 4/7? Or ask them to join next week's meeting?
+(13:08:15) lev__: well, the code is not windows specific
+(13:08:16) dazo: that would definitely be much better
+(13:08:36) lev__: although used by windows
+(13:08:43) mattock: I can ask Selvan and Simon if they could join next we=
+ek, with the goal of reviewing 4/7
+(13:08:48) mattock: Selva :)
+(13:09:31) lev__: sure
+(13:09:37) dazo: lev__: wintun requires windows to start with .... so it =
+would require to understand that driver
+(13:09:59) dazo: mattock1: that sounds like a good idea; their review wil=
+l be much more valuable for all of us
+(13:10:16) mattock: ok, I'll do that
+(13:11:19) mattock: anything else on 2.5?
+(13:14:00) mattock: I'm itching to test my IRC bouncer (not on it yet)
+(13:23:48) mattock: I'm lazy-ACKing the statement that "this IRC meeting =
+is over"
+(13:23:52) mattock: writing the summary :)
+(13:23:59) dazo: sounds fine
 
---FLS7CKVsJTaM9hWSZCo2St3v9DWNGn5Ow--
+--------------BCE94CDE3B953FFBECA962BE--
 
---IxzNn1xv5PojwWrMSPSX6GmzRIzJXAyEt
+--von7WKaGoiJG44n8ugjhXQ7fs8T6jagzZ--
+
+--WGrgQ3c661s0kBzXEzssPr0SHei3u1mbv
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAl3pYQ8ACgkQKVhNn0CG
-RXg7eQgAltQAM1fCqtxQiS7S93D2jx1JHCDMZRuYnXof8kfKAkUbkEflUeg3dsgG
-I8WMP3l1tTvb7uJLK1/ktM5Z/thB2xHHQ1jetFCsXu9oB0jM3ingpmzBQ81hL57z
-qSPBKfotoFuO6hCkEkLrjph2lY8ELtjAdX20F34fcCcSMKjHGSB1YY5qnitZ3g/M
-sSZz0Nk4lf4OOFfct/7f8RLR0SC46yWDY4m8JbMebgKQKoyp18rHp8qW6H78vqgs
-dzrysTPWJMfGhiZYGLSLLd3EWW7BPA5ehYAhU7vE4AD1KSVQviQqbi6N6/9DRnCc
-AJn3rid4GhJH4qHuJ8PRhTK9iY8bTw==
-=5AA5
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAl3w0+AACgkQKVhNn0CG
+RXiwHQgAoMqIlWhBUNun0JWFRdU/kbwxVaWtDXLwavJrk6LF3vW8fjO0AAt5J43B
+6Z60EU4l4Jt5H/oBj8lQXKljqPm16NEJWHTzS0QYtrSjaZPVzit2gghHNHhzuA9O
+oxsXvE3ZLDgFr2mdoSN2BiFXGejBZfdoD0o4HF5ln448TFSGY9KL8AQ/iC87VvIb
+ckSmDAao6Pb7y+Xx7VHWd7vWj4MzGmXhcQ4I2eQfMj2UiFVp0eSLPP3d9PpxNioW
+efU7dbD6KGRo8oqjlfamDzrG6ox1HD7uYU1ULLWBihiVVhtz4x5j9jjGSHET12+M
+esnG4GhQ1RSY7/0HA6mSimf1507/GQ==
+=YqJ+
 -----END PGP SIGNATURE-----
 
---IxzNn1xv5PojwWrMSPSX6GmzRIzJXAyEt--
+--WGrgQ3c661s0kBzXEzssPr0SHei3u1mbv--
 
