@@ -1,14 +1,9 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-References: <0118782c-d5eb-485d-eee6-73dfa7e6399b@...515...>
-Message-ID: <c6cd6743-6a8c-6ad1-dda0-e0a15f4d38c3@...515...>
-Date: Wed, 11 Dec 2019 13:32:48 +0200
-MIME-Version: 1.0
-In-Reply-To: <0118782c-d5eb-485d-eee6-73dfa7e6399b@...515...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="WGrgQ3c661s0kBzXEzssPr0SHei3u1mbv"
-Subject: [Openvpn-devel] Summary of the community meeting (11th December
- 2019)
+From: Lev Stipakov <lstipakov@...277...>
+Date: Fri, 13 Dec 2019 21:16:34 +0200
+Message-Id: <20191213191634.250-1-lstipakov@...277...>
+In-Reply-To: <20191120144404.187-1-lstipakov@...277...>
+References: <20191120144404.187-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH v6] wintun: ring buffers based I/O
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,205 +12,747 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---WGrgQ3c661s0kBzXEzssPr0SHei3u1mbv
-Content-Type: multipart/mixed; boundary="von7WKaGoiJG44n8ugjhXQ7fs8T6jagzZ"
+From: Lev Stipakov <lev@...515...>
 
---von7WKaGoiJG44n8ugjhXQ7fs8T6jagzZ
-Content-Type: multipart/mixed;
- boundary="------------BCE94CDE3B953FFBECA962BE"
-Content-Language: en-US
+Implemented according to Wintun documentation
+and reference client code.
 
-This is a multi-part message in MIME format.
---------------BCE94CDE3B953FFBECA962BE
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Wintun uses ring buffers to communicate between
+kernel driver and user process. Client allocates
+send and receive ring buffers, creates events
+and passes it to kernel driver under LocalSystem
+privileges.
 
-Hi,
+When data is available for read, wintun modifies
+"tail" pointer of send ring and signals via event.
+User process reads data from "head" to "tail" and
+updates "head" pointer.
 
-Here's the summary of the IRC meeting.
+When user process is ready to write, it writes
+to receive ring, updates "tail" pointer and signals
+to kernel via event.
 
+In openvpn code we add send ring's event to event loop.
+Before performing io wait, we compare "head" and "tail"
+pointers of send ring and if they're different, we skip
+io wait and perform read.
+
+This also adds ring buffers support to tcp and udp
+server code.
+
+Signed-off-by: Lev Stipakov <lev@...515...>
 ---
+ v6:
+  - added a sanity check to write_wintun() to avoid 
+    writing malformed IPv4/6 packet, which causes
+    "ring buffer is out of capacity" error.
 
-COMMUNITY MEETING
+ v5:
+  - fix crash at ring buffer registration on Win7
+    (passing NULL to DeviceIOControl, reported by kitsune1)
 
-Place: #openvpn-meeting on irc.freenode.net
-Date: Wed 11th December 2019
-Time: 11:30 CET (10:30 UTC)
+ v4:
+  - added helper function tuntap_ring_empty()
+  - refactored event handling, got rid of separate
+    event_ctl() call for wintun and send/receive_tail_moved
+    members
+  - added wintun_ prefix for ring buffer variables
+  - added a comment explaining the size of wintun-specific buffers
 
-Planned meeting topics for this meeting were here:
+ v3:
+  - simplified convoluted #ifdefs
+  - replaced "greater than" with "greater or equal than"
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2019-12-11>
+ v2;
+  - rebased on top of master
 
-Your local meeting time is easy to check from services such as
+ src/openvpn/forward.c |  25 ++++++-
+ src/openvpn/forward.h |  38 +++++++++-
+ src/openvpn/mtcp.c    |  19 ++++-
+ src/openvpn/mudp.c    |   7 +-
+ src/openvpn/options.c |   4 +-
+ src/openvpn/syshead.h |   1 +
+ src/openvpn/tun.c     |  62 +++++++++++++++-
+ src/openvpn/tun.h     | 169 +++++++++++++++++++++++++++++++++++++++++-
+ src/openvpn/win32.c   | 122 ++++++++++++++++++++++++++++++
+ src/openvpn/win32.h   |  51 +++++++++++++
+ 10 files changed, 487 insertions(+), 11 deletions(-)
 
-<http://www.timeanddate.com/worldclock>
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 8451706b..3dc04a40 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1256,8 +1256,24 @@ read_incoming_tun(struct context *c)
+     perf_push(PERF_READ_IN_TUN);
+ 
+     c->c2.buf = c->c2.buffers->read_tun_buf;
++
+ #ifdef _WIN32
+-    read_tun_buffered(c->c1.tuntap, &c->c2.buf);
++    if (c->c1.tuntap->wintun)
++    {
++        read_wintun(c->c1.tuntap, &c->c2.buf);
++        if (c->c2.buf.len == -1)
++        {
++            register_signal(c, SIGHUP, "tun-abort");
++            c->persist.restart_sleep_seconds = 1;
++            msg(M_INFO, "Wintun read error, restarting");
++            perf_pop();
++            return;
++        }
++    }
++    else
++    {
++        read_tun_buffered(c->c1.tuntap, &c->c2.buf);
++    }
+ #else
+     ASSERT(buf_init(&c->c2.buf, FRAME_HEADROOM(&c->c2.frame)));
+     ASSERT(buf_safe(&c->c2.buf, MAX_RW_SIZE_TUN(&c->c2.frame)));
+@@ -2099,6 +2115,13 @@ io_wait_dowork(struct context *c, const unsigned int flags)
+         tuntap |= EVENT_READ;
+     }
+ 
++#ifdef _WIN32
++    if (tuntap_is_wintun(c->c1.tuntap))
++    {
++        tuntap = EVENT_READ;
++    }
++#endif
++
+     /*
+      * Configure event wait based on socket, tuntap flags.
+      */
+diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
+index 48202c07..b711ff00 100644
+--- a/src/openvpn/forward.h
++++ b/src/openvpn/forward.h
+@@ -375,6 +375,12 @@ p2p_iow_flags(const struct context *c)
+     {
+         flags |= IOW_TO_TUN;
+     }
++#ifdef _WIN32
++    if (tuntap_ring_empty(c->c1.tuntap))
++    {
++        flags &= ~IOW_READ_TUN;
++    }
++#endif
+     return flags;
+ }
+ 
+@@ -403,8 +409,36 @@ io_wait(struct context *c, const unsigned int flags)
+     }
+     else
+     {
+-        /* slow path */
+-        io_wait_dowork(c, flags);
++#ifdef _WIN32
++        bool skip_iowait = flags & IOW_TO_TUN;
++        if (flags & IOW_READ_TUN)
++        {
++            /*
++             * don't read from tun if we have pending write to link,
++             * since every tun read overwrites to_link buffer filled
++             * by previous tun read
++             */
++            skip_iowait = !(flags & IOW_TO_LINK);
++        }
++        if (tuntap_is_wintun(c->c1.tuntap) && skip_iowait)
++        {
++            unsigned int ret = 0;
++            if (flags & IOW_TO_TUN)
++            {
++                ret |= TUN_WRITE;
++            }
++            if (flags & IOW_READ_TUN)
++            {
++                ret |= TUN_READ;
++            }
++            c->c2.event_set_status = ret;
++        }
++        else
++#endif
++        {
++            /* slow path */
++            io_wait_dowork(c, flags);
++        }
+     }
+ }
+ 
+diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
+index abe20593..30a13f73 100644
+--- a/src/openvpn/mtcp.c
++++ b/src/openvpn/mtcp.c
+@@ -269,8 +269,25 @@ multi_tcp_wait(const struct context *c,
+                struct multi_tcp *mtcp)
+ {
+     int status;
++    unsigned int *persistent = &mtcp->tun_rwflags;
+     socket_set_listen_persistent(c->c2.link_socket, mtcp->es, MTCP_SOCKET);
+-    tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, &mtcp->tun_rwflags);
++
++#ifdef _WIN32
++    if (tuntap_is_wintun(c->c1.tuntap))
++    {
++        if (!tuntap_ring_empty(c->c1.tuntap))
++        {
++            /* there is a data in wintun ring buffer, read it immediately */
++            mtcp->esr[0].arg = MTCP_TUN;
++            mtcp->esr[0].rwflags = EVENT_READ;
++            mtcp->n_esr = 1;
++            return 1;
++        }
++        persistent = NULL;
++    }
++#endif
++    tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, persistent);
++
+ #ifdef ENABLE_MANAGEMENT
+     if (management)
+     {
+diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
+index b7f061a2..6a29ccc8 100644
+--- a/src/openvpn/mudp.c
++++ b/src/openvpn/mudp.c
+@@ -278,7 +278,12 @@ p2mp_iow_flags(const struct multi_context *m)
+     {
+         flags |= IOW_READ;
+     }
+-
++#ifdef _WIN32
++    if (tuntap_ring_empty(m->top.c1.tuntap))
++    {
++        flags &= ~IOW_READ_TUN;
++    }
++#endif
+     return flags;
+ }
+ 
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 49affc29..cebcbb07 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3016,10 +3016,10 @@ options_postprocess_mutate_invariant(struct options *options)
+         options->ifconfig_noexec = false;
+     }
+ 
+-    /* for wintun kernel doesn't send DHCP requests, so use ipapi to set IP address and netmask */
++    /* for wintun kernel doesn't send DHCP requests, so use netsh to set IP address and netmask */
+     if (options->wintun)
+     {
+-        options->tuntap_options.ip_win32_type = IPW32_SET_IPAPI;
++        options->tuntap_options.ip_win32_type = IPW32_SET_NETSH;
+     }
+ 
+     remap_redirect_gateway_flags(options);
+diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
+index 899aa59e..e9accb52 100644
+--- a/src/openvpn/syshead.h
++++ b/src/openvpn/syshead.h
+@@ -39,6 +39,7 @@
+ #ifdef _WIN32
+ #include <windows.h>
+ #include <winsock2.h>
++#include <tlhelp32.h>
+ #define sleep(x) Sleep((x)*1000)
+ #define random rand
+ #define srandom srand
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 599fd817..3f66b216 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -775,9 +775,27 @@ init_tun_post(struct tuntap *tt,
+ #ifdef _WIN32
+     overlapped_io_init(&tt->reads, frame, FALSE, true);
+     overlapped_io_init(&tt->writes, frame, TRUE, true);
+-    tt->rw_handle.read = tt->reads.overlapped.hEvent;
+-    tt->rw_handle.write = tt->writes.overlapped.hEvent;
+     tt->adapter_index = TUN_ADAPTER_INDEX_INVALID;
++
++    if (tt->wintun)
++    {
++        tt->wintun_send_ring = malloc(sizeof(struct tun_ring));
++        tt->wintun_receive_ring = malloc(sizeof(struct tun_ring));
++        if ((tt->wintun_send_ring == NULL) || (tt->wintun_receive_ring == NULL))
++        {
++            msg(M_FATAL, "Cannot allocate memory for ring buffer");
++        }
++        ZeroMemory(tt->wintun_send_ring, sizeof(struct tun_ring));
++        ZeroMemory(tt->wintun_receive_ring, sizeof(struct tun_ring));
++
++        tt->rw_handle.read = CreateEvent(NULL, FALSE, FALSE, NULL);
++        tt->rw_handle.write = CreateEvent(NULL, FALSE, FALSE, NULL);
++    }
++    else
++    {
++        tt->rw_handle.read = tt->reads.overlapped.hEvent;
++        tt->rw_handle.write = tt->writes.overlapped.hEvent;
++    }
+ #endif
+ }
+ 
+@@ -6177,6 +6195,34 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+             tt->ipapi_context_defined = true;
+         }
+     }
++
++    if (tt->wintun)
++    {
++        if (tt->options.msg_channel)
++        {
++            /* TODO */
++        }
++        else
++        {
++            if (!impersonate_as_system())
++            {
++                msg(M_FATAL, "ERROR:  Failed to impersonate as SYSTEM, make sure process is running under privileged account");
++            }
++            if (!register_ring_buffers(tt->hand,
++                                       tt->wintun_send_ring,
++                                       tt->wintun_receive_ring,
++                                       tt->rw_handle.read,
++                                       tt->rw_handle.write))
++            {
++                msg(M_FATAL, "ERROR:  Failed to register ring buffers: %lu", GetLastError());
++            }
++            if (!RevertToSelf())
++            {
++                msg(M_FATAL, "ERROR:  RevertToSelf error: %lu", GetLastError());
++            }
++        }
++    }
++
+     /*netcmd_semaphore_release ();*/
+     gc_free(&gc);
+ }
+@@ -6315,6 +6361,18 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+         free(tt->actual_name);
+     }
+ 
++    if (tt->wintun)
++    {
++        CloseHandle(tt->rw_handle.read);
++        CloseHandle(tt->rw_handle.write);
++    }
++
++    free(tt->wintun_receive_ring);
++    free(tt->wintun_send_ring);
++
++    tt->wintun_receive_ring = NULL;
++    tt->wintun_send_ring = NULL;
++
+     clear_tuntap(tt);
+     free(tt);
+     gc_free(&gc);
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index 66b75d93..10f687c5 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -182,6 +182,9 @@ struct tuntap
+ 
+     bool wintun; /* true if wintun is used instead of tap-windows6 */
+     int standby_iter;
++
++    struct tun_ring *wintun_send_ring;
++    struct tun_ring *wintun_receive_ring;
+ #else  /* ifdef _WIN32 */
+     int fd; /* file descriptor for TUN/TAP dev */
+ #endif
+@@ -211,6 +214,20 @@ tuntap_defined(const struct tuntap *tt)
+ #endif
+ }
+ 
++#ifdef _WIN32
++inline bool
++tuntap_is_wintun(struct tuntap *tt)
++{
++    return tt && tt->wintun;
++}
++
++inline bool
++tuntap_ring_empty(struct tuntap *tt)
++{
++    return tuntap_is_wintun(tt) && (tt->wintun_send_ring->head == tt->wintun_send_ring->tail);
++}
++#endif
++
+ /*
+  * Function prototypes
+  */
+@@ -478,10 +495,158 @@ read_tun_buffered(struct tuntap *tt, struct buffer *buf)
+     return tun_finalize(tt->hand, &tt->reads, buf);
+ }
+ 
++static inline ULONG
++wintun_ring_packet_align(ULONG size)
++{
++    return (size + (WINTUN_PACKET_ALIGN - 1)) & ~(WINTUN_PACKET_ALIGN - 1);
++}
++
++static inline ULONG
++wintun_ring_wrap(ULONG value)
++{
++    return value & (WINTUN_RING_CAPACITY - 1);
++}
++
++static inline void
++read_wintun(struct tuntap *tt, struct buffer* buf)
++{
++    struct tun_ring *ring = tt->wintun_send_ring;
++    ULONG head = ring->head;
++    ULONG tail = ring->tail;
++    ULONG content_len;
++    struct TUN_PACKET *packet;
++    ULONG aligned_packet_size;
++
++    *buf = tt->reads.buf_init;
++    buf->len = 0;
++
++    if ((head >= WINTUN_RING_CAPACITY) || (tail >= WINTUN_RING_CAPACITY))
++    {
++        msg(M_INFO, "Wintun: ring capacity exceeded");
++        buf->len = -1;
++        return;
++    }
++
++    if (head == tail)
++    {
++        /* nothing to read */
++        return;
++    }
++
++    content_len = wintun_ring_wrap(tail - head);
++    if (content_len < sizeof(struct TUN_PACKET_HEADER))
++    {
++        msg(M_INFO, "Wintun: incomplete packet header in send ring");
++        buf->len = -1;
++        return;
++    }
++
++    packet = (struct TUN_PACKET *) &ring->data[head];
++    if (packet->size > WINTUN_MAX_PACKET_SIZE)
++    {
++        msg(M_INFO, "Wintun: packet too big in send ring");
++        buf->len = -1;
++        return;
++    }
++
++    aligned_packet_size = wintun_ring_packet_align(sizeof(struct TUN_PACKET_HEADER) + packet->size);
++    if (aligned_packet_size > content_len)
++    {
++        msg(M_INFO, "Wintun: incomplete packet in send ring");
++        buf->len = -1;
++        return;
++    }
++
++    buf_write(buf, packet->data, packet->size);
++
++    head = wintun_ring_wrap(head + aligned_packet_size);
++    ring->head = head;
++}
++
++static inline bool
++is_ip_packet_valid(const struct buffer *buf)
++{
++    const struct openvpn_iphdr* ih = (const struct openvpn_iphdr *)BPTR(buf);
++
++    if (OPENVPN_IPH_GET_VER(ih->version_len) == 4)
++    {
++        if (BLEN(buf) < sizeof(struct openvpn_iphdr))
++        {
++            return false;
++        }
++    }
++    else if (OPENVPN_IPH_GET_VER(ih->version_len) == 6)
++    {
++        if (BLEN(buf) < sizeof(struct openvpn_ipv6hdr))
++        {
++            return false;
++        }
++    }
++    else
++    {
++        return false;
++    }
++
++    return true;
++}
++
++static inline int
++write_wintun(struct tuntap *tt, struct buffer *buf)
++{
++    struct tun_ring *ring = tt->wintun_receive_ring;
++    ULONG head = ring->head;
++    ULONG tail = ring->tail;
++    ULONG aligned_packet_size;
++    ULONG buf_space;
++    struct TUN_PACKET *packet;
++
++    /* wintun marks ring as corrupted (overcapacity) if it receives invalid IP packet */
++    if (!is_ip_packet_valid(buf))
++    {
++        msg(D_LOW, "write_wintun(): drop invalid IP packet");
++        return 0;
++    }
++
++    if ((head >= WINTUN_RING_CAPACITY) || (tail >= WINTUN_RING_CAPACITY))
++    {
++        msg(M_INFO, "write_wintun(): head/tail value is over capacity");
++        return -1;
++    }
++
++    aligned_packet_size = wintun_ring_packet_align(sizeof(struct TUN_PACKET_HEADER) + BLEN(buf));
++    buf_space = wintun_ring_wrap(head - tail - WINTUN_PACKET_ALIGN);
++    if (aligned_packet_size > buf_space)
++    {
++        msg(M_INFO, "write_wintun(): ring is full");
++        return 0;
++    }
++
++    /* copy packet size and data into ring */
++    packet = (struct TUN_PACKET* )&ring->data[tail];
++    packet->size = BLEN(buf);
++    memcpy(packet->data, BPTR(buf), BLEN(buf));
++
++    /* move ring tail */
++    ring->tail = wintun_ring_wrap(tail + aligned_packet_size);
++    if (ring->alertable != 0)
++    {
++        SetEvent(tt->rw_handle.write);
++    }
++
++    return BLEN(buf);
++}
++
+ static inline int
+ write_tun_buffered(struct tuntap *tt, struct buffer *buf)
+ {
+-    return tun_write_win32(tt, buf);
++    if (tt->wintun)
++    {
++        return write_wintun(tt, buf);
++    }
++    else
++    {
++        return tun_write_win32(tt, buf);
++    }
+ }
+ 
+ #else  /* ifdef _WIN32 */
+@@ -544,7 +709,7 @@ tun_set(struct tuntap *tt,
+             }
+         }
+ #ifdef _WIN32
+-        if (rwflags & EVENT_READ)
++        if (!tt->wintun && (rwflags & EVENT_READ))
+         {
+             tun_read_queue(tt, 0);
+         }
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index eb4c0307..5c168b3b 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -1493,4 +1493,126 @@ send_msg_iservice(HANDLE pipe, const void *data, size_t size,
+     return ret;
+ }
+ 
++bool
++impersonate_as_system()
++{
++    HANDLE thread_token, process_snapshot, winlogon_process, winlogon_token, duplicated_token;
++    PROCESSENTRY32 entry;
++    BOOL ret;
++    DWORD pid = 0;
++    TOKEN_PRIVILEGES privileges;
++
++    CLEAR(entry);
++    CLEAR(privileges);
++
++    entry.dwSize = sizeof(PROCESSENTRY32);
++
++    privileges.PrivilegeCount = 1;
++    privileges.Privileges->Attributes = SE_PRIVILEGE_ENABLED;
++
++    if (!LookupPrivilegeValue(NULL, SE_DEBUG_NAME, &privileges.Privileges[0].Luid))
++    {
++        return false;
++    }
++
++    if (!ImpersonateSelf(SecurityImpersonation))
++    {
++        return false;
++    }
++
++    if (!OpenThreadToken(GetCurrentThread(), TOKEN_ADJUST_PRIVILEGES, FALSE, &thread_token))
++    {
++        RevertToSelf();
++        return false;
++    }
++    if (!AdjustTokenPrivileges(thread_token, FALSE, &privileges, sizeof(privileges), NULL, NULL))
++    {
++        CloseHandle(thread_token);
++        RevertToSelf();
++        return false;
++    }
++    CloseHandle(thread_token);
++
++    process_snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
++    if (process_snapshot == INVALID_HANDLE_VALUE)
++    {
++        RevertToSelf();
++        return false;
++    }
++    for (ret = Process32First(process_snapshot, &entry); ret; ret = Process32Next(process_snapshot, &entry))
++    {
++        if (!_stricmp(entry.szExeFile, "winlogon.exe"))
++        {
++            pid = entry.th32ProcessID;
++            break;
++        }
++    }
++    CloseHandle(process_snapshot);
++    if (!pid)
++    {
++        RevertToSelf();
++        return false;
++    }
++
++    winlogon_process = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pid);
++    if (!winlogon_process)
++    {
++        RevertToSelf();
++        return false;
++    }
++
++    if (!OpenProcessToken(winlogon_process, TOKEN_IMPERSONATE | TOKEN_DUPLICATE, &winlogon_token))
++    {
++        CloseHandle(winlogon_process);
++        RevertToSelf();
++        return false;
++    }
++    CloseHandle(winlogon_process);
++
++    if (!DuplicateToken(winlogon_token, SecurityImpersonation, &duplicated_token))
++    {
++        CloseHandle(winlogon_token);
++        RevertToSelf();
++        return false;
++    }
++    CloseHandle(winlogon_token);
++
++    if (!SetThreadToken(NULL, duplicated_token))
++    {
++        CloseHandle(duplicated_token);
++        RevertToSelf();
++        return false;
++    }
++    CloseHandle(duplicated_token);
++
++    return true;
++}
++
++bool
++register_ring_buffers(HANDLE device,
++                      struct tun_ring* send_ring,
++                      struct tun_ring* receive_ring,
++                      HANDLE send_tail_moved,
++                      HANDLE receive_tail_moved)
++{
++    struct tun_register_rings rr;
++    BOOL res;
++    DWORD bytes_returned;
++
++    ZeroMemory(&rr, sizeof(rr));
++
++    rr.send.ring = send_ring;
++    rr.send.ring_size = sizeof(send_ring->data);
++    rr.send.tail_moved = send_tail_moved;
++
++    rr.receive.ring = receive_ring;
++    rr.receive.ring_size = sizeof(receive_ring->data);
++    rr.receive.tail_moved = receive_tail_moved;
++
++    res = DeviceIoControl(device, TUN_IOCTL_REGISTER_RINGS, &rr, sizeof(rr),
++                          NULL, 0, &bytes_returned, NULL);
++
++    return res == TRUE;
++}
++
+ #endif /* ifdef _WIN32 */
+diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
+index 4814bbc5..f6d45bdc 100644
+--- a/src/openvpn/win32.h
++++ b/src/openvpn/win32.h
+@@ -25,6 +25,8 @@
+ #ifndef OPENVPN_WIN32_H
+ #define OPENVPN_WIN32_H
+ 
++#include <winioctl.h>
++
+ #include "mtu.h"
+ #include "openvpn-msg.h"
+ #include "argv.h"
+@@ -323,5 +325,54 @@ bool send_msg_iservice(HANDLE pipe, const void *data, size_t size,
+ int
+ openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned int flags);
+ 
++/*
++ * Values below are taken from Wireguard Windows client
++ * https://github.com/WireGuard/wireguard-go/blob/master/tun/wintun/ring_windows.go#L14
++ */
++#define WINTUN_RING_CAPACITY 0x800000
++#define WINTUN_RING_TRAILING_BYTES 0x10000
++#define WINTUN_RING_FRAMING_SIZE 12
++#define WINTUN_MAX_PACKET_SIZE 0xffff
++#define WINTUN_PACKET_ALIGN 4
++
++struct tun_ring
++{
++    volatile ULONG head;
++    volatile ULONG tail;
++    volatile LONG alertable;
++    UCHAR data[WINTUN_RING_CAPACITY + WINTUN_RING_TRAILING_BYTES + WINTUN_RING_FRAMING_SIZE];
++};
++
++struct tun_register_rings
++{
++    struct
++    {
++        ULONG ring_size;
++        struct tun_ring *ring;
++        HANDLE tail_moved;
++    } send, receive;
++};
++
++struct TUN_PACKET_HEADER
++{
++    uint32_t size;
++};
++
++struct TUN_PACKET
++{
++    uint32_t size;
++    UCHAR data[WINTUN_MAX_PACKET_SIZE];
++};
++
++#define TUN_IOCTL_REGISTER_RINGS CTL_CODE(51820U, 0x970U, METHOD_BUFFERED, FILE_READ_DATA | FILE_WRITE_DATA)
++
++bool impersonate_as_system();
++
++bool register_ring_buffers(HANDLE device,
++                           struct tun_ring *send_ring,
++                           struct tun_ring *receive_ring,
++                           HANDLE send_tail_moved,
++                           HANDLE receive_tail_moved);
++
+ #endif /* ifndef OPENVPN_WIN32_H */
+ #endif /* ifdef _WIN32 */
+-- 
+2.17.1
 
-SUMMARY
-
-dazo, lev, mattock and plaisthos participated in this meeting.
-
----
-
-Discussed status of OpenVPN 2.5:
-
-<https://community.openvpn.net/openvpn/wiki/StatusOfOpenvpn25>
-
-Added the "agreed upon in Trento hackathon" code freeze date (January
-31st 2020) to that page.
-
-Noted that even though wintun-enabled installers are available on the
-official download pages we have not really receive much feedback on
-them. The wintun patches has been ACKed for the most part, but patch 4/7
-will require special treatment. Mattock will ask rozmansi and selvanair
-to join next Thursday's meeting (19:00 UTC):
-
-<https://community.openvpn.net/openvpn/wiki/Topics-2019-12-19>
-
-Their review would be very valuable as they know Windows quite well.
-
---
-
-Full chatlog attached
-
---------------BCE94CDE3B953FFBECA962BE
-Content-Type: text/plain; charset=UTF-8;
- name="openvpn_irc_meeting_chatlog_2019-12-11.txt"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: attachment;
- filename="openvpn_irc_meeting_chatlog_2019-12-11.txt"
-
-(12:32:30) mattock: hello
-(12:32:44) plaisthos: hello mattock1 and mattock2
-(12:33:39) mattock: I will kill one of my duplicates
-(12:33:48) mattock2 ha abbandonato la stanza (quit: Quit: IRC for Sailfis=
-h 0.9).
-(12:33:53) mattock: and there it goes
-(12:34:46) mattock: who do we have here today?
-(12:36:12) dazo: I'm here
-(12:36:24) dazo: cron2 announced on -devel he couldn't make it
-(12:37:45) dazo ha scelto come argomento: Next meeting 19/Dec/2019 at 20:=
-00 CET.  Agenda at https://community.openvpn.net/openvpn/wiki/Topics-2019=
--12-19
-(12:38:02) mattock: ok
-(12:38:18) mattock: once the bouncer I'm working on now works I may notic=
-e such messages :)
-(12:38:22) mattock: so, topic
-(12:38:23) mattock: s
-(12:38:29) dazo: anyone heard from rozmanzi lately?
-(12:38:51) mattock: https://community.openvpn.net/openvpn/wiki/Topics-201=
-9-12-11
-(12:38:52) vpnHelper: Title: Topics-2019-12-11 =E2=80=93 OpenVPN Communit=
-y (at community.openvpn.net)
-(12:38:53) mattock: I have not
-(12:39:15) mattock: he is known to appear if his name is mentioned
-(12:40:33) mattock: so, 2.5?
-(12:41:36) mattock: https://community.openvpn.net/openvpn/wiki/StatusOfOp=
-envpn25
-(12:41:38) vpnHelper: Title: StatusOfOpenvpn25 =E2=80=93 OpenVPN Communit=
-y (at community.openvpn.net)
-(12:41:39) lev__: what is the code freeze date for 2.5 ?
-(12:41:53) mattock: we don't have that afaik
-(12:41:59) mattock: "Current tentative planning is "2.5 release on April =
-1st, 2020". "
-(12:42:05) mattock: that is 2.5.0
-(12:42:21) mattock: we may want to set a freeze date to get things moving=
-
-(12:42:38) dazo: We discussed it briefly in Trento, IIRC we wanted all co=
-de to be applied by end of January
-(12:42:50) ***lev__ looks for syzzer=20
-(12:43:11) dazo: then have stabilization process (rolling beta releases) =
- until release time
-(12:44:18) lev__: we've added wintun-enabled client to download page and =
-made an announcement to -users and -devel, but haven't got much feedback
-(12:44:54) dazo: lev__: is everything you wanted merged in regards to win=
-tun?
-(12:44:58) mattock: I'll mention the January deadline on the planning pag=
-e
-(12:45:31) lev__: dazo: of course not :)
-(12:45:49) lev__: 3 out of 7 is merged
-(12:46:18) mattock: we may get more lucky with wintun testing during the =
-stabilization phase
-(12:46:21) lev__: 4 is most intrusive one, current version is v5
-(12:46:44) lev__: mattock1: but that requires it to be merged into master=
-
-(12:46:44) mattock: while wintun installers are available on the download=
- page "normal users" would just get the topmost release that opens up dir=
-ectly in their browsers
-(12:46:49) plaisthos: client connect is waiting
-(12:47:22) dazo: lev__: what are the risks of merging those patches to no=
-n-wintun users?
-(12:50:00) lev__: good question
-(12:51:01) lev__: while default option is tap-windows6 and users _should =
-not_ be affected unless they explicitly set --windows-driver wintun, I ha=
-ve changed certain code paths
-(12:52:21) lev__: I would say the goal of review is to make sure that ove=
-rall code quality hasn't been made (much) worse
-(12:54:29) lev__: but well, wintun bumps performance from 390 to 730 mbit=
-/s, so I would say that is a huge step forward for Windows users
-(12:55:43) dazo: I'm looking for a risk assessment, if we should consider=
- applying the lazy-ack policy on these patches ... but then we need to ha=
-ve a better understanding of the risks associated with it
-(12:58:01) lev__: the follow-up patches (5-7, or most of them) have been =
-acked by Simon, they're mostly about interactive service
-(13:01:35) dazo: I've updated the status page a swell with a few more cor=
-rections etc
-(13:01:56) mattock: so the follow-up stuff could be merged?
-(13:02:53) dazo: well, patch 5-7 might depend on changes from 1-4 ;-)
-(13:03:44) lev__: 5-6 are acked (just checked)
-(13:04:47) lev__: I can ask Simon to have a look at 7/7 and ack it
-(13:04:59) lev__: (this is small one)
-(13:05:46) lev__: essentially we need 4/7, this is the "core" of that pat=
-chset
-(13:06:34) lev__: dazo: plaisthos feel free to review :)
-(13:07:07) mattock: what kind of testing would give us confidence in 4/7?=
-
-(13:07:17) mattock: can we do some targeted testing?
-(13:07:19) dazo: lev__: I find it hard to have to come with a valuable re=
-view on a platform I have no development experience on
-(13:08:01) mattock: could we maybe coordinate a session with Selva and Si=
-mon about 4/7? Or ask them to join next week's meeting?
-(13:08:15) lev__: well, the code is not windows specific
-(13:08:16) dazo: that would definitely be much better
-(13:08:36) lev__: although used by windows
-(13:08:43) mattock: I can ask Selvan and Simon if they could join next we=
-ek, with the goal of reviewing 4/7
-(13:08:48) mattock: Selva :)
-(13:09:31) lev__: sure
-(13:09:37) dazo: lev__: wintun requires windows to start with .... so it =
-would require to understand that driver
-(13:09:59) dazo: mattock1: that sounds like a good idea; their review wil=
-l be much more valuable for all of us
-(13:10:16) mattock: ok, I'll do that
-(13:11:19) mattock: anything else on 2.5?
-(13:14:00) mattock: I'm itching to test my IRC bouncer (not on it yet)
-(13:23:48) mattock: I'm lazy-ACKing the statement that "this IRC meeting =
-is over"
-(13:23:52) mattock: writing the summary :)
-(13:23:59) dazo: sounds fine
-
---------------BCE94CDE3B953FFBECA962BE--
-
---von7WKaGoiJG44n8ugjhXQ7fs8T6jagzZ--
-
---WGrgQ3c661s0kBzXEzssPr0SHei3u1mbv
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAl3w0+AACgkQKVhNn0CG
-RXiwHQgAoMqIlWhBUNun0JWFRdU/kbwxVaWtDXLwavJrk6LF3vW8fjO0AAt5J43B
-6Z60EU4l4Jt5H/oBj8lQXKljqPm16NEJWHTzS0QYtrSjaZPVzit2gghHNHhzuA9O
-oxsXvE3ZLDgFr2mdoSN2BiFXGejBZfdoD0o4HF5ln448TFSGY9KL8AQ/iC87VvIb
-ckSmDAao6Pb7y+Xx7VHWd7vWj4MzGmXhcQ4I2eQfMj2UiFVp0eSLPP3d9PpxNioW
-efU7dbD6KGRo8oqjlfamDzrG6ox1HD7uYU1ULLWBihiVVhtz4x5j9jjGSHET12+M
-esnG4GhQ1RSY7/0HA6mSimf1507/GQ==
-=YqJ+
------END PGP SIGNATURE-----
-
---WGrgQ3c661s0kBzXEzssPr0SHei3u1mbv--
 
