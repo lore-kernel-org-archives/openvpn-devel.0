@@ -1,9 +1,9 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Fri, 13 Dec 2019 21:16:34 +0200
-Message-Id: <20191213191634.250-1-lstipakov@...277...>
-In-Reply-To: <20191120144404.187-1-lstipakov@...277...>
-References: <20191120144404.187-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH v6] wintun: ring buffers based I/O
+Date: Fri, 13 Dec 2019 21:19:01 +0200
+Message-Id: <20191213191901.300-1-lstipakov@...277...>
+In-Reply-To: <20191213191634.250-1-lstipakov@...277...>
+References: <20191213191634.250-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH v6 4/7] wintun: ring buffers based I/O
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
