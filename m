@@ -1,11 +1,13 @@
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <aae70cff-44a2-ed18-f0f8-0bbcc9b0d4c8@...2080...>
-Date: Mon, 16 Dec 2019 19:38:40 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="m37oOGIMoXJ2HRWDm7S7SPMlBQil8lq2q"
-Subject: [Openvpn-devel] OpenVPN 3 Linux client - v7 beta released
+References: <20191213191634.250-1-lstipakov@...277...>
+ <20191213191901.300-1-lstipakov@...277...>
+ <CAKuzo_jNn9NG-chJHx62H2CTiB64dCrq3S3_oW7oR8Tngf4F9w@...278...>
+In-Reply-To: <CAKuzo_jNn9NG-chJHx62H2CTiB64dCrq3S3_oW7oR8Tngf4F9w@...278...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Mon, 16 Dec 2019 22:00:48 +0200
+Message-ID: <CAGyAFMVReSwJsYAKo5S4pV4POV31g0roxz4P2Ajvr+8hoEYbeA@...278...>
+Content-Type: multipart/alternative; boundary="00000000000097f0a90599d7abb4"
+Subject: Re: [Openvpn-devel] [PATCH v6 4/7] wintun: ring buffers based I/O
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,248 +16,259 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, OpenVPN Users <Openvpn-users@lists.sourceforge.net>
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Lev Stipakov <lev@...515...>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---m37oOGIMoXJ2HRWDm7S7SPMlBQil8lq2q
-Content-Type: multipart/mixed; boundary="glioxitWURQIHZ5iPsTZQWCAgYTfNMtzk";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-To: "openvpn-devel@lists.sourceforge.net"
- <openvpn-devel@lists.sourceforge.net>,
- OpenVPN Users <Openvpn-users@lists.sourceforge.net>
-Message-ID: <aae70cff-44a2-ed18-f0f8-0bbcc9b0d4c8@...2080...>
-Subject: OpenVPN 3 Linux client - v7 beta released
-
---glioxitWURQIHZ5iPsTZQWCAgYTfNMtzk
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+--00000000000097f0a90599d7abb4
+Content-Type: text/plain; charset="UTF-8"
 
 Hi,
 
-The OpenVPN 3 Linux v7 beta release has finally arrived, overdue for
-several months.  This is available in our git repositories [0] and URLs for
-source tarballs are listed later in this e-mail.  We have pre-built
-binaries for the following Linux distributions:
+Thanks for looking into this. See my comments below.
 
-    * Fedora 29, 30, 31 and Rawhide  (via Fedora Copr, x86_64 + ppc64le)
-    * RHEL/CentOS 7 and 8            (via Fedora Copr, x86_64 + ppc64le)
-    * Debian 9 and 10 (amd64)
-    * Ubuntu 16.04, 18.04, 19.04 and 19.10 (amd64)
+TLDR:
+> (i) stealing SYSTEM access from winlogon.exe is not a good thing to do
+>
 
-See the "Quick-start for OpenVPN 3 Linux" section later in this mail
-for a pointer to documentation how to install this client.
+This doesn't happen for the majority of use cases - only when iservice is
+not used. We also
+elevate only for the single DeviceIOControl call.
 
-The highlights of this release includes:
+Below you mentioned psexec as a one of workarounds, but I think those will
+make user experience worse.
+Also consider the case when OpenVPN GUI is running as Administrator.
 
-  # Support for --verify-x509-name
-    The OpenVPN 3 Core library which this client builds on has been
-    extended to support this option.  The openvpn2 command line front-end
-    shipped in this client has been updated to also pass this option
-    further.
+(ii) with a small change we can support multiple tunnels and  provide better
+> diagnostics when there are no free wintun adapters -- but this could also
+> be a follow up patch.
+>
 
-  # New utility: openvpn3-as
-    This new utility can import a configuration profile directly from an
-    OpenVPN Access Server.  All which is needed is the URL to the Access
-    Server and the user credentials.
+This is already implemented by Simon on top of my patches - see
+https://github.com/rozmansi/openvpn/commits/wintun
 
-  # The output of openvpn3 sessions-list has been improved
-    The report this utility provides has been cleaned up a little and
-    now also reports which tun interfaces and session names the Core
-    library uses for each session.
+> -    /* for wintun kernel doesn't send DHCP requests, so use ipapi to set
+> IP address and netmask */
 
-  # Warning if compression is enabled on the tunnel
-    The OpenVPN 3 log entries will now contain a warning line if
-    compression has been enabled on the tunnel.  This goes further than to
-    only check the local configuration file, but also consider what the
-    server may push.  This means it will NOT give a compression warning
-    if the local client configuration contains compression arguments but
-    the server pushes compression settings disabling compression.
+> +    /* for wintun kernel doesn't send DHCP requests, so use netsh to set
+> IP address and netmask */
+> >      if (options->wintun)
+> >      {
+> > -        options->tuntap_options.ip_win32_type = IPW32_SET_IPAPI;
+> > +        options->tuntap_options.ip_win32_type = IPW32_SET_NETSH;
+>
+> This shouldn't be required. I would prefer to not use netsh
+> for tasks where API calls are available. We know IPAPI works
+> as we use it in the service.
+>
 
-  # The openvpn3-admin version command now supports the --service argument
-    which will query all the OpenVPN 3 D-Bus services and report the
-    running version of each service.  This is useful for debugging and to
-    see if the system is running the proper versions of all OpenVPN 3 Linux
-    services.
-=20=20=20=20
-  # The openvpn3-admin log-service command has been extended with
-    the --list-subscriptions argument.  This gives an admin (root user)
-    more information about which D-Bus services has requested the logger
-    service to attach/subscribe to log events.
-=20=20=20=20
-  # The OpenVPN 3 Python module has been extended with NetCfgManager
-    This gives a limited set of methods useful for debugging and simpler
-    management of the OpenVPN 3 Network Configuration service.=20
+I remember having some issues with IPAPI which got resolved when I switched
+to netsh.
 
-  # Error messages coming from the D-Bus infrastructure has been cleaned up
-    and not really helpful and quite technical references has been removed.
+However, I did some testing and I cannot reproduce IPAPI specific issues
+anymore. Too bad I didn't investigate
+it further back then. The problem I see now can also be reproduced also
+with netsh:
 
-  # D-Bus policy has been split up
-    Earlier releases had all policies for all OpenVPN 3 Linux D-Bus
-    services in a single file.  This making the policy management harder
-    than needed and splitting it up into separate policy files per service
-    made it simpler to understand the policies in use.
+ - connect with tap adapter
+ - kill openvpn process
+ - connect with wintun adapter
 
-  # Fixed a bug causing D-Bus services to exit while have been in use.
-    All the OpenVPN 3 Linux D-Bus services makes use of an idle-exit logic
-    which ensures the service is shut down if it has not been used for some
-    time.  Before this fix, the service could still exit if it had been
-    used for a shorter time interval than the idle-exit timer.  This was
-    incorrect and it will now also consider the time since the last
-    interaction with the service and not just if some D-Bus objects are
-    active and being managed by the service.
+IPAPI / netsh fails to set IP address, since it is already assigned to
+another adapter.
 
-  # Several other bugfixes
-    The stability has been improved a lot in several areas and error
-    situations are handled more gracefully than before, either by trying
-    a bit harder to complete the task at hand or to provide a bit more
-    user friendly error messages.
-
-OpenVPN 3 Linux is on track for prime-time production.  It will still come a
-some more beta releases, to iron out last missing features and other
-improvements.  But OpenVPN 3 Linux is essentially feature ready now.
-
-If you are using OpenVPN 3 Linux, please report back if there are issues you
-have or improvements you feel is important for the stable release.
-
-* Quick-start for OpenVPN 3 Linux
-See this community wiki page for information how to install and use
-OpenVPN 3 Linux: <https://community.openvpn.net/openvpn/wiki/OpenVPN3Linux>
+If this is OK, I would prefer to submit a separate patch which switches
+back to netsh. tun.c code
+has changed in follow-up patches (mostly here
+https://patchwork.openvpn.net/patch/918/), those patches
+are based on an assumption that wintun uses netsh.
 
 
-[0] <https://gitlab.com/openvpn/openvpn3-linux>
-    <https://github.com/OpenVPN/openvpn3-linux>
+> > +                msg(M_FATAL, "ERROR:  Failed to register ring buffers:
+> %lu", GetLastError());
+>
+> The correct error here is, very likely, the adapter is
+> already in use. To trigger that, why not do register_ring_buffers
+> soon after opening the device and on failure move on to the
+> next device (if any).
+>
+> That will also allow running multiple tunnels with no further changes
+> provided the user manually creates wintum adapters.
+>
+
+As mentioned before, this is already implemented by Simon:
+https://github.com/rozmansi/openvpn/commit/5bc09580e8771d8422feae4504fe2a74b7412fd1
 
 
----- Source tarballs ----------------------------------------------------
-* OpenVPN 3 Linux v7 beta
+> > +bool
 
-  <https://swupdate.openvpn.net/community/releases/openvpn3-linux-7_beta.ta=
-r.xz>
-  <https://swupdate.openvpn.net/community/releases/openvpn3-linux-7_beta.ta=
-r.xz.asc>
+> +impersonate_as_system()
+> > +{
+>
+> This is implemented by stealing the access token from
+> winlogon.exe. I don't think such tricks belong to OpenVPN.
+> It may also trip some anti-virus software.
+>
+> That said, probably there are no "legitimate" ways of getting
+> LOCAL SYSTEM rights on Windows without running a service.
+>
+> Why does wintun require SYSTEM for using it? If there is a
+> good reason for that, we should not let every admin
+> user bypass it.
+>
 
----- SHA 256 Checksums --------------------------------------------------
-eadde1b2f2f593dd5020086b53901c42fc5a4562ba105f2add3e4e2c71767c7f  openvpn3-=
-linux-7_beta.tar.xz
-765e1f8072fd32226d3f249669c02bf7a9ef2623129bd51f0a64cd63bfaac508  openvpn3-=
-linux-7_beta.tar.xz.asc
-
----- git references -----------------------------------------------------
-git tag: v7_beta
-git commit: 9478329ed017ba252b61b702d16a076b3adab678
-
----- Changes from v6 to v7 ----------------------------------------------
-David Sommerseth (72):
-      docs: Updated README file
-      python: Give better information when starting background VPN sessions
-      build: Ensure we really use the system liblz4 library
-      docs: Update the pre-built section in README
-      ovpn3cli: Fix misbehaving log --session-path
-      core: Update to latest OpenVPN 3 Core Library
-      tests: Adding unit-test framework
-      tests: Port a few simple unit tests
-      tests: Ported NetCfgChangeEvent unit test
-      tests: Ported StatusEvent selftest to unit test
-      tests: Ported LogEvent selftest to unit test
-      common/cmdargparser: Slight minor improvements
-      common: Make cmdargparser.hpp a separate compilation unit
-      client: Tackle better if NetCfgProxy object is lost
-      netcfg: Add version property to main service object
-      netcfg: Make proxy-netcfg a separate compilation unit
-      dbus/proxy: Ensure access denials exceptions are handled explicitly
-      log: Don't throw access denied exception during init
-      ovpn3cli/admin: Add --service argument to openvpn3-admin version
-      tests: Make Jenkins run unit tests and collect results
-      client: Expose session name via D-Bus
-      sessionmgr: Expose session name
-      ovpn3cli/session: Display session name
-      python: Add OpenVPN 3 version to Python constants
-      python: Add openvpn3-as - Access Server support utility
-      python/openvpn3-as: Fix trailing slashes in URLs
-      python/openvpn3-as: Extend with challenge/response auth support
-      tests: Fix failing unittest with --enable-debug-core-events
-      proxy: Add input validation on D-Bus paths
-      client: Proxy warning from Core when compression has been enabled
-      proxy: Provide method extracting proxy object path
-      client: Provide methods retrieving netcfg device path and name
-      client: Expose netcfg device path and name via D-Bus
-      sessionmgr: Expose NetCfg device path and name for VPN sessions
-      cli/session: Expose device name used by session in sessions-list
-      session/proxy: Fix memory leaks in GetConnectionStats()
-      sessionmgr: Add two new main manager methods
-      sessionmgr/proxy: Add proxy methods for interface lookups
-      ovpn3cli: Add argument helper for retrieving interface names
-      ovpn3cli/session: Add --interface option to some session commands
-      tests: Fix lookup unit-test with SUSE docker containers
-      log/proxy: Fix -Wcatch-value compiler warnings
-      core-ext: Replace hacky option string export
-      client: Fix incorrect processing of port override
-      netcfg: Fix inconsistent glib2 behaviour on Ubuntu
-      sessionmgr: Handle missing backend gracefully for device_name
-      tests: Add test program quering version property in services
-      Fix incorrect spelling of 'retrieving'
-      dbus/proxy: Strip "remote" part of GDBus errors
-      core: Update to latest OpenVPN 3 Core library
-      python: Add support for --verify-x509-name
-      proxy: Don't throw access denials in GetServiceVersion()
-      man: Update openvpn2
-      proxy: Fix incorrect error in DBusProxy::GetServiceVersion()
-      netcfg: Reorganize netcfg-changeevent.{cpp,hpp}
-      policy: Split up the D-Bus policy per service
-      proxy: Move the GDBus error message strip after AccessDenied check
-      dbus: Ensure the D-Bus connection still valid
-      sessionmgr/proxy: Verify session objects availability before calling =
-it
-      dbus/idlecheck: Consider last_operation when executing idle exit
-      tests: Add simple connect/disconnect stress test
-      dbus/signals: Add getter methods for interface and object path
-      dbus/proxy: Ensure we have a valid D-Bus connection before proxy calls
-      log: Add new admin method retrieving attached subscriptions
-      log/proxy: Add C++ method for accessing GetSubscriberLog
-      ovpn3cli/log-service: Add --list-subscriptions mode
-      ovpn3cli/session: Minor overhaul of sessions-list
-      sessionmgr: Grant access to the device_path in a session
-      python/SessionManager: Add Introspection() and GetObjectPath() methods
-      python: Add NetCfgChangeType constants
-      python/NetCfgManager: New openvpn3 module for the netcfg service
-      build: Clean up *~ files in a few forgotten places
-
--------------------------------------------------------------------------
+I'll defer it to Simon.
 
 
---=20
-kind regards,
+>
+> I would suggest to not elevate to system as the code will still
+> work in two important cases
+> (i) started by automatic service
+> (ii) started using interactive service (e.g., through the GUI)
+>
+> Those who really need to test OpenVPN with wintun from
+> command prompt can use diagnostic tools available to get
+> a cmd prompt as system (e.g., psexec). That also  makes
+> it explicit that SYSTEM privilege is required.
+>
+> In the longer run, we could provide a script to launch
+> openvpn.exe using the interactive service. Modifying the
+> automatic service to use interactive service for launching
+> looks easy to do as well. Then, all privileged operations could
+> be removed from openvpn core.
+>
 
-David Sommerseth
-OpenVPN Inc
+I think it is good not to break user experience and allow run openvpn as
+an administrator without iservice using wintun at the expense on elevation
+to system for single API call.
+
+In case we keep this function, please log such
+> errors. Here and several such cases below.
+>
+
+Sure.
 
 
---glioxitWURQIHZ5iPsTZQWCAgYTfNMtzk--
+-- 
+-Lev
 
---m37oOGIMoXJ2HRWDm7S7SPMlBQil8lq2q
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+--00000000000097f0a90599d7abb4
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+<div dir=3D"ltr"><div dir=3D"ltr">Hi,<div><br></div><div>Thanks for looking=
+ into this. See my comments=C2=A0below.</div><div><br></div></div><div clas=
+s=3D"gmail_quote"><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px=
+ 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
+TLDR:<br>
+(i) stealing SYSTEM access from winlogon.exe is not a good thing to do<br><=
+/blockquote><div><br></div><div>This doesn&#39;t happen for the majority of=
+ use cases - only when iservice is not used. We also</div><div>elevate only=
+ for the single DeviceIOControl call.</div><div><br></div><div>Below you me=
+ntioned psexec as a one of workarounds, but I think those will make user ex=
+perience worse.</div><div>Also consider the case when OpenVPN GUI is runnin=
+g as Administrator.</div><div><br></div><blockquote class=3D"gmail_quote" s=
+tyle=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);pad=
+ding-left:1ex">
+(ii) with a small change we can support multiple tunnels and=C2=A0 provide =
+better<br>
+diagnostics when there are no free wintun adapters -- but this could also<b=
+r>
+be a follow up patch.<br></blockquote><div><br></div><div>This is already i=
+mplemented by Simon on top of my patches - see=C2=A0<a href=3D"https://gith=
+ub.com/rozmansi/openvpn/commits/wintun" target=3D"_blank">https://github.co=
+m/rozmansi/openvpn/commits/wintun</a></div><div><br></div><blockquote class=
+=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rg=
+b(204,204,204);padding-left:1ex">&gt; -=C2=A0 =C2=A0 /* for wintun kernel d=
+oesn&#39;t send DHCP requests, so use ipapi to set IP address and netmask *=
+/</blockquote><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px=
+ 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
+&gt; +=C2=A0 =C2=A0 /* for wintun kernel doesn&#39;t send DHCP requests, so=
+ use netsh to set IP address and netmask */<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 if (options-&gt;wintun)<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 {<br>
+&gt; -=C2=A0 =C2=A0 =C2=A0 =C2=A0 options-&gt;tuntap_options.ip_win32_type =
+=3D IPW32_SET_IPAPI;<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 options-&gt;tuntap_options.ip_win32_type =
+=3D IPW32_SET_NETSH;<br>
+<br>
+This shouldn&#39;t be required. I would prefer to not use netsh<br>
+for tasks where API calls are available. We know IPAPI works<br>
+as we use it in the service.<br></blockquote><div><br></div><div>I remember=
+ having some issues with IPAPI which got resolved when I switched to netsh.=
+</div><div><br></div><div>However, I did some testing and I cannot reproduc=
+e IPAPI specific issues anymore. Too bad I didn&#39;t investigate</div><div=
+>it further back then.=C2=A0The problem I see now can also be reproduced al=
+so with netsh:</div><div><br></div><div>=C2=A0- connect with tap adapter</d=
+iv><div>=C2=A0- kill openvpn process</div><div>=C2=A0- connect with wintun =
+adapter</div><div><br></div><div>IPAPI / netsh fails to set IP address, sin=
+ce it is already assigned to another adapter.</div><div><br></div><div>If t=
+his is OK, I would prefer to submit a separate patch which switches back to=
+ netsh. tun.c code</div><div>has changed in follow-up patches (mostly here=
+=C2=A0<a href=3D"https://patchwork.openvpn.net/patch/918/" target=3D"_blank=
+">https://patchwork.openvpn.net/patch/918/</a>), those patches</div><div>ar=
+e based on an assumption that wintun uses netsh.=C2=A0</div><div>=C2=A0</di=
+v><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;borde=
+r-left:1px solid rgb(204,204,204);padding-left:1ex">
+&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(M_FATAL, =
+&quot;ERROR:=C2=A0 Failed to register ring buffers: %lu&quot;, GetLastError=
+());<br>
+<br>
+The correct error here is, very likely, the adapter is<br>
+already in use. To trigger that, why not do register_ring_buffers<br>
+soon after opening the device and on failure move on to the<br>
+next device (if any).<br>
+<br>
+That will also allow running multiple tunnels with no further changes<br>
+provided the user manually creates wintum adapters.<br></blockquote><div><b=
+r></div><div>As mentioned before, this is already implemented by Simon:=C2=
+=A0=C2=A0<a href=3D"https://github.com/rozmansi/openvpn/commit/5bc09580e877=
+1d8422feae4504fe2a74b7412fd1" target=3D"_blank">https://github.com/rozmansi=
+/openvpn/commit/5bc09580e8771d8422feae4504fe2a74b7412fd1</a></div><div>=C2=
+=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8e=
+x;border-left:1px solid rgb(204,204,204);padding-left:1ex">&gt; +bool</bloc=
+kquote><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;=
+border-left:1px solid rgb(204,204,204);padding-left:1ex">
+&gt; +impersonate_as_system()<br>
+&gt; +{<br>
+<br>
+This is implemented by stealing the access token from<br>
+winlogon.exe. I don&#39;t think such tricks belong to OpenVPN.<br>
+It may also trip some anti-virus software.<br>
+<br>
+That said, probably there are no &quot;legitimate&quot; ways of getting<br>
+LOCAL SYSTEM rights on Windows without running a service.<br>
+<br>
+Why does wintun require SYSTEM for using it? If there is a<br>
+good reason for that, we should not let every admin<br>
+user bypass it.<br></blockquote><div><br></div><div>I&#39;ll defer it to Si=
+mon.</div><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margi=
+n:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex=
+">
+<br>
+I would suggest to not elevate to system as the code will still<br>
+work in two important cases<br>
+(i) started by automatic service<br>
+(ii) started using interactive service (e.g., through the GUI)<br>
+<br>
+Those who really need to test OpenVPN with wintun from<br>
+command prompt can use diagnostic tools available to get<br>
+a cmd prompt as system (e.g., psexec). That also=C2=A0 makes<br>
+it explicit that SYSTEM privilege is required.<br>
+<br>
+In the longer run, we could provide a script to launch<br>
+openvpn.exe using the interactive service. Modifying the<br>
+automatic service to use interactive service for launching<br>
+looks easy to do as well. Then, all privileged operations could<br>
+be removed from openvpn core.<br></blockquote><div><br></div><div>I think i=
+t is good not to break user experience and allow run openvpn as</div><div>a=
+n administrator without iservice using wintun at the expense on elevation</=
+div><div>to system for single API call.</div><div><br></div><blockquote cla=
+ss=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid =
+rgb(204,204,204);padding-left:1ex">
+In case we keep this function, please log such<br>
+errors. Here and several such cases below.<br></blockquote><div><br></div><=
+div>Sure.</div><div>=C2=A0</div></div><div><br></div>-- <br><div dir=3D"ltr=
+">-Lev</div></div>
 
-iQIcBAEBCgAGBQJd988xAAoJEIbPlEyWcf3yfQwP/jaoAdfZbbrJ7T4mELBi11Cx
-yFrG4pMDabcqae3pZsyOFiyxi5RPkhTvarQjnU8z5QSlQD3gZg/BSda+vdq7GEt9
-TK+uqheIKJwGGuz7yQNBQ1foX+MT99gnVoO1zEz1PK7wQxZfA6P3figAckPhHufi
-gerOhgBeHokFmAzv2eUkBKWUIO8wIHk/O38uIagyBRkCZ/UlKm+FyRdUuAbmsanR
-cwP1Jw0lU8V2g0PuZHF0B55M2l70y1hGEKFla31ygSHDy9qTXVfy9W2wOIimsGLe
-XQw0O2aMr2Wtog4ZjeEcl40lLoKEJWwViM25yhZIZXertpR0PhQTw1J+b/r9eXsY
-TyePME0tUUy1uEoH5pJ5U/2DcivjAwKKHRuFg1cJnjQD4Ru+DAWM1uvoGvqtnQfr
-vOvv0ZxzcmvDlFdMUFsSzI4PtwF+NHMz05Ol749XCuokZUFRi1pUMayvN7WY0R3M
-+ATnpkc4Fqm3eaPJszhjcTHUKmik6Rtwp4AlIGYqh3x1fstOpRyDegLNopGatl5U
-AHt0IZvDDRLkRx/7XV5Pdtos/WO8QC98T8irYTgzqscpZsn8zzhd4H9hTVACR4BW
-ihy3jA5XtJcu0X28RwwPX1uiL3bVnAAsmzScrBtI/piQbgNu47VCQXD4CbiGZSuf
-0iSYED2c7CMLkUshJQMq
-=hQ8X
------END PGP SIGNATURE-----
-
---m37oOGIMoXJ2HRWDm7S7SPMlBQil8lq2q--
+--00000000000097f0a90599d7abb4--
 
