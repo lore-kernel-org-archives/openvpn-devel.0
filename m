@@ -1,6 +1,6 @@
 From: Simon Rozman <simon@...2293...>
-Date: Tue, 17 Dec 2019 11:09:24 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE10D05C6ECC@...2294...>
+Date: Tue, 17 Dec 2019 11:18:10 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE10D05C6F28@...2294...>
 References: <20191213191634.250-1-lstipakov@...277...>
  <20191213191901.300-1-lstipakov@...277...>
  <CAKuzo_jNn9NG-chJHx62H2CTiB64dCrq3S3_oW7oR8Tngf4F9w@...278...>
@@ -8,11 +8,12 @@ References: <20191213191634.250-1-lstipakov@...277...>
  <CAKuzo_hMws66xJsN69qa6WmgXNdrSKioHQrpE9VZ89-J2O7+KA@...278...>
  <162696E1-8F58-4B9A-A591-2622E3ADE746@...2293...>
  <CAKuzo_jFzECCsOk=OvrN0+S0dx4WmGOm7qL8L2sGYUTRd+qxXw@...278...>
-In-Reply-To: <CAKuzo_jFzECCsOk=OvrN0+S0dx4WmGOm7qL8L2sGYUTRd+qxXw@...278...>
+ <CAGyAFMUgY+dj0TD75dsKL1pQqPP4CRcEObijyCHB7wUbehpEtw@...278...>
+In-Reply-To: <CAGyAFMUgY+dj0TD75dsKL1pQqPP4CRcEObijyCHB7wUbehpEtw@...278...>
 Content-Language: en-US
 Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
  micalg=2.16.840.1.101.3.4.2.1;
- boundary="----=_NextPart_000_000A_01D5B4D2.D0DF88E0"
+ boundary="----=_NextPart_000_000E_01D5B4D4.0ACD70C0"
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] [PATCH v6 4/7] wintun: ring buffers based I/O
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,65 +24,214 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: Lev Stipakov <lstipakov@...277...>, Lev Stipakov <lev@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Lev Stipakov <lstipakov@...277...>, Selva Nair <selva.nair@...277...>
+Cc: Lev Stipakov <lev@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-------=_NextPart_000_000A_01D5B4D2.D0DF88E0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+------=_NextPart_000_000E_01D5B4D4.0ACD70C0
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_001_000F_01D5B4D4.0ACD70C0"
+
+------=_NextPart_001_000F_01D5B4D4.0ACD70C0
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: 7bit
 
 Hi,
 
-> > I am running OpenVPN on Windows using NSSM wrapper for years. I had a
-> brief discussion on the Hackathon with Samuli about integrating SCM
-> support directly into openvpn.exe (imagine --daemon for Windows):
-> >
-> > sc create OpenVPN$MyTunnel binpath=3D "C:\Program
-> > Files\OpenVPN\bin\openvpn" --daemon --config "C:\Program
-> > Files\OpenVPN\config\MyTunnel.ovpn" --log "C:\Program
-> > Files\OpenVPN\log\MyTunnel.log" start=3D auto depend=3D dhcp sc start
-> > OpenVPN$MyTunnel
-> >
-> > This would install openvpn.exe as a Windows service and run it as the
-> SYSTEM user =E2=80=94 no need for iservice, no need for SYSTEM token hack=
-. Other
-> than me, perhaps it could cover at least some of the users now running
-> openvpn.exe directly.
->=20
-> This is not the direction I want to see us moving towards. Instead I
-> want to see us daemonizing OpenVPN.exe as LOCAL SERVICE or a custom
-> service user and delegate privileged operations to a separate service
-> running as SYSTEM. And we already have the latter: interactive service.
-> So, not even admin rights is needed in openvpn.exe, let alone SYSTEM.
->=20
-> IMO, the right approach on Windows is to run a bare minimal code as a
-> service to get SYSTEM rights and the rest with limited privileges.
 
-Selva, those are two different use-cases. And none is "right" or "wrong". O=
-penVPN can or should have both. :)
 
-1. I need to run VPN tunnel as a persistent service - something that comes =
-up with computer (Group Policy Client service waits for about 30 seconds on=
- boot to get network access to AD server). And stays on all the time - any =
-user signed in or not. I connect computers with VPN.
+Lev, unfortunately, the openvpn.exe binary will still contain this hack's 
+machine code and might really rise some eyebrows with anti-virus software.
 
-2. You need an openvpn.exe (or introduce some openvpn-tui.exe) to be a comm=
-and line version of openvpn-gui.exe. Something to be run by a regular user =
-or a batch script in an unprivileged context. You connect users with VPN.
 
-If we implement both, we can obsolete SYSTEM token hack completely.
 
-I have been playing with Lev's patches for the past few days. Tested them, =
-debugged them, did some fixes. There are things to be desired like netsh=3D=
->ipcfg, remove or #ifdef the SYSTEM token hack... But those are design choi=
-ces we should pursue in the future. I believe patches are mature enough to =
-ack them. They should be merged into master to provide wider testing and ea=
-sier development progress.
+Before the final release the entire SYSTEM token hack should be removed from 
+the OpenVPN source.
+
+
+
+I think it's okay to make a note in README that "--windows-driver wintun" 
+works with iservice only. (Or, if user is responsible to run openvpn.exe as 
+SYSTEM user himself somehow.)
+
+
 
 Regards,
+
 Simon
 
-------=_NextPart_000_000A_01D5B4D2.D0DF88E0
+
+
+From: Lev Stipakov <lstipakov@...277...>
+Sent: Tuesday, December 17, 2019 10:35 AM
+To: Selva Nair <selva.nair@...277...>
+Cc: Simon Rozman <simon@...2293...>; Lev Stipakov <lev@...515...>; 
+openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Subject: Re: [Openvpn-devel] [PATCH v6 4/7] wintun: ring buffers based I/O
+
+
+
+How about compromise - let's add  "--enable-system-elevation" windows specific 
+option.
+
+
+
+ - When it is set, we print warning and elevate to SYSTEM for the single 
+DeviceIOControl call
+
+
+
+ - When it is not set and wintun is used, we run openvpn from command line via 
+iservice
+
+
+
+ - If service is missing, we print error "either use iservice 
+or --enable-system-elevation (experts only)"
+
+
+
+The ones who want to run openvpn from command line with wintun still could do 
+it via psexec and it is
+
+assumed that they know what they are doing. So why not make it simpler and add 
+a option
+
+"yes I know what I am doing and I am willing to take risks"? Also, it is safer 
+to use system privilege
+
+just for single call rather than run whole process with it.
+
+
+
+This also will make debugging / development easier.
+
+
+------=_NextPart_001_000F_01D5B4D4.0ACD70C0
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40"><head><meta http-equiv=3DContent-Type content=
+=3D"text/html; charset=3Dutf-8"><meta name=3DGenerator content=3D"Microsoft=
+ Word 15 (filtered medium)"><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri",sans-serif;}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+p.Code, li.Code, div.Code
+	{mso-style-name:Code;
+	margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Courier New";}
+p.msonormal0, li.msonormal0, div.msonormal0
+	{mso-style-name:msonormal;
+	mso-margin-top-alt:auto;
+	margin-right:0cm;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	font-size:11.0pt;
+	font-family:"Calibri",sans-serif;}
+span.EmailStyle19
+	{mso-style-type:personal-reply;
+	font-family:"Calibri",sans-serif;
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-family:"Calibri",sans-serif;
+	mso-fareast-language:EN-US;}
+@page WordSection1
+	{size:612.0pt 792.0pt;
+	margin:70.85pt 70.85pt 70.85pt 70.85pt;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]--></head><body lang=3DSL link=3Dblue vlink=
+=3Dpurple><div class=3DWordSection1><p class=3DMsoNormal><span lang=3DEN-GB=
+ style=3D'mso-fareast-language:EN-US'>Hi,<o:p></o:p></span></p><p class=3DM=
+soNormal><span lang=3DEN-GB style=3D'mso-fareast-language:EN-US'><o:p>&nbsp=
+;</o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D'mso-fare=
+ast-language:EN-US'>Lev, unfortunately, the openvpn.exe binary will still c=
+ontain this hack's machine code and might really rise some eyebrows with an=
+ti-virus software.<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DE=
+N-GB style=3D'mso-fareast-language:EN-US'><o:p>&nbsp;</o:p></span></p><p cl=
+ass=3DMsoNormal><span lang=3DEN-GB style=3D'mso-fareast-language:EN-US'>Bef=
+ore the final release the entire SYSTEM token hack should be removed from t=
+he OpenVPN source.<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DE=
+N-GB style=3D'mso-fareast-language:EN-US'><o:p>&nbsp;</o:p></span></p><p cl=
+ass=3DMsoNormal><span lang=3DEN-GB style=3D'mso-fareast-language:EN-US'>I t=
+hink it's okay to make a note in README that &quot;--windows-driver wintun&=
+quot; works with iservice only. (Or, if user is responsible to run openvpn.=
+exe as SYSTEM user himself somehow.)<o:p></o:p></span></p><p class=3DMsoNor=
+mal><span lang=3DEN-GB style=3D'mso-fareast-language:EN-US'><o:p>&nbsp;</o:=
+p></span></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D'mso-fareast-l=
+anguage:EN-US'>Regards,<o:p></o:p></span></p><p class=3DMsoNormal><span lan=
+g=3DEN-GB style=3D'mso-fareast-language:EN-US'>Simon<o:p></o:p></span></p><=
+p class=3DMsoNormal><span lang=3DEN-GB style=3D'mso-fareast-language:EN-US'=
+><o:p>&nbsp;</o:p></span></p><div style=3D'border:none;border-left:solid bl=
+ue 1.5pt;padding:0cm 0cm 0cm 4.0pt'><div><div style=3D'border:none;border-t=
+op:solid #E1E1E1 1.0pt;padding:3.0pt 0cm 0cm 0cm'><p class=3DMsoNormal><b><=
+span lang=3DEN-GB>From:</span></b><span lang=3DEN-GB> Lev Stipakov &lt;lsti=
+pakov@...277...&gt; <br><b>Sent:</b> Tuesday, December 17, 2019 10:35 AM<br=
+><b>To:</b> Selva Nair &lt;selva.nair@...277...&gt;<br><b>Cc:</b> Simon Roz=
+man &lt;simon@...2293...&gt;; Lev Stipakov &lt;lev@...515...&gt;; openvpn-d=
+evel &lt;openvpn-devel@lists.sourceforge.net&gt;<br><b>Subject:</b> Re: [Op=
+envpn-devel] [PATCH v6 4/7] wintun: ring buffers based I/O<o:p></o:p></span=
+></p></div></div><p class=3DMsoNormal><span lang=3DEN-GB><o:p>&nbsp;</o:p><=
+/span></p><div><p class=3DMsoNormal><span lang=3DEN-GB>How about compromise=
+ - let's add&nbsp; &quot;--enable-system-elevation&quot; windows specific o=
+ption.<o:p></o:p></span></p><div><p class=3DMsoNormal><span lang=3DEN-GB><o=
+:p>&nbsp;</o:p></span></p></div><div><p class=3DMsoNormal><span lang=3DEN-G=
+B>&nbsp;- When it is set, we print warning and elevate to SYSTEM for the si=
+ngle DeviceIOControl call<o:p></o:p></span></p></div><div><p class=3DMsoNor=
+mal><span lang=3DEN-GB><o:p>&nbsp;</o:p></span></p></div><div><p class=3DMs=
+oNormal><span lang=3DEN-GB>&nbsp;- When it is not set and wintun is used, w=
+e run openvpn from command line via iservice<o:p></o:p></span></p></div><di=
+v><p class=3DMsoNormal><span lang=3DEN-GB><o:p>&nbsp;</o:p></span></p></div=
+><div><p class=3DMsoNormal><span lang=3DEN-GB>&nbsp;- If service is missing=
+, we print error &quot;either use iservice or --enable-system-elevation (ex=
+perts only)&quot;<o:p></o:p></span></p></div><div><p class=3DMsoNormal><spa=
+n lang=3DEN-GB><o:p>&nbsp;</o:p></span></p></div><div><p class=3DMsoNormal>=
+<span lang=3DEN-GB>The ones who want to run openvpn from command line with =
+wintun still could do it via psexec and it is<o:p></o:p></span></p></div><d=
+iv><p class=3DMsoNormal><span lang=3DEN-GB>assumed that they know what they=
+ are doing. So why not make it simpler and add a option<o:p></o:p></span></=
+p></div><div><p class=3DMsoNormal><span lang=3DEN-GB>&quot;yes I know what =
+I am doing and I am willing to take risks&quot;? Also, it is safer to use s=
+ystem privilege<o:p></o:p></span></p></div><div><p class=3DMsoNormal><span =
+lang=3DEN-GB>just for single call rather than run whole process with it.<o:=
+p></o:p></span></p></div><div><p class=3DMsoNormal><span lang=3DEN-GB><o:p>=
+&nbsp;</o:p></span></p></div><div><p class=3DMsoNormal><span lang=3DEN-GB>T=
+his also will make debugging / development easier.<o:p></o:p></span></p></d=
+iv></div></div></div></body></html>=
+
+------=_NextPart_001_000F_01D5B4D4.0ACD70C0--
+
+------=_NextPart_000_000E_01D5B4D4.0ACD70C0
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -160,19 +310,19 @@ RqsKPBhWoaFEVZ+Vn3wxap5h/oAhocifNzkWJTNWjxnoPM2eNz2uWFJsgsNhlwteUvnq7+bKTNte
 SKWKr6pI+GUsZhmCh5URpUnqUanp0Uie0MD9f3tiOLOp711sNb0xwi+VdDuDB37IddOIsfhPBood
 wpoFrTGCAzswggM3AgEBMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0
 aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4wDQYJYIZIAWUDBAIBBQCgggHHMBgGCSqGSIb3
-DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE5MTIxNzExMDkyMVowLwYJKoZIhvcN
-AQkEMSIEIAcoTETLbKhFCsJSVs/hT0w2YfKP1b/4RgmPcpkXLUteMFQGCSsGAQQBgjcQBDFHMEUw
+DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE5MTIxNzExMTgwOFowLwYJKoZIhvcN
+AQkEMSIEIMIwlsx3Q/D0h3yIkH6PDr3iqBd+gZ8rz9fQzy2Z5M0MMFQGCSsGAQQBgjcQBDFHMEUw
 PTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMIc2ln
 ZW4tY2ECBDtKDS4wVgYLKoZIhvcNAQkQAgsxR6BFMD0xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJz
 dGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsTCHNpZ2VuLWNhAgQ7Sg0uMIGtBgkqhkiG9w0BCQ8x
 gZ8wgZwwCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQBKjALBglghkgBZQMEARYwCgYIKoZIhvcNAwcw
 CwYJYIZIAWUDBAECMA4GCCqGSIb3DQMCAgIAgDANBggqhkiG9w0DAgIBQDALBglghkgBZQMEAgEw
 CwYJKoZIhvcNAQEKMAsGCWCGSAFlAwQCAzALBglghkgBZQMEAgIwBwYFKw4DAhowDQYJKoZIhvcN
-AQEBBQAEggEAY/GyLL3DV0ufJx2art0FaHtpY1kZ8iRJYbKyyj3RsifvUgGC0DwBalAmf1kHzn5G
-ZW6ZI8CXuTKVnId9yJqyFzs0XBkohyqiszaGiudkYKxmRxc/toH/oVGFj3/aY4remx+sHiR/mQJr
-vcHgqzVWxSwPvZmPkZOO31rSwetcy6I33hiznzf5vM0fv6EXcqaLQRzOJM/DDvqVtIYgliTNYqut
-z5WrHJXvYP9Mv1EBuf4LN8RwmxU0vN9+McrdBb2HZYdf88QmGGwgRPFhHLzPPyXGl/Ddf6qq16wE
-z5QWrmKETWeD8cqrDb//4HCuln/1XP0GtkIJTyKqYVrbO3eIugAAAAAAAA==
+AQEBBQAEggEA11rWrt3oDoCVlCezNh6tnsWQApWMe1TFNHmX8aNRynACsj1Zr1bu/1bLHtbnA8Cn
+wy+xrgef8xyiQfWnx7Zjjpce75EQ3StVqtr9YnsN2Nf+GcA7QUKIFmsdX1zYQsW7Cf4FHJd7BdM0
+Vyyr7f3AsH7+Qnc3JCeESu9RqBAAdFPPbUCqDVdFzncR8j+X703uTyKyXzhRlI9ZDJb34lkhSG3o
+o+EeHkJ9ufgSJPdbXupHN8+/UxRpkEqMEsnM2uwF+e9sgyfIP8it4HRECkgzCtaO7aL9H0ewE1oc
+E2ThhJhy+7CWQszv/ffMj8Quwn0JPBdQVk09UuFYhK54ar4/FgAAAAAAAA==
 
-------=_NextPart_000_000A_01D5B4D2.D0DF88E0--
+------=_NextPart_000_000E_01D5B4D4.0ACD70C0--
 
