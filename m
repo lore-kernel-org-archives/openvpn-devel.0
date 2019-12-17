@@ -1,9 +1,10 @@
-Date: Tue, 17 Dec 2019 21:00:06 +0100 (CET)
-Message-Id: <201912172000.xBHK06EG095833@...2054...>
+Date: Tue, 17 Dec 2019 21:09:40 +0100 (CET)
+Message-Id: <201912172009.xBHK9eUR095973@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20191217124410.81-1-lstipakov@...277...>
-References: <20191217124410.81-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: wintun: ring buffers based I/O
+In-Reply-To: <20191217125041.207-1-lstipakov@...277...>
+References: <20191217125041.207-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: wintun: interactive service
+ support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,30 +20,26 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master branch.
 
-I have "forward-logged" Steffan's ACK on the v6 patch as the v8 is
-close enough, except for the "struct win_tun" change (which look 
-reasonable),  plus Simon's ACK.
+(An ACK on v2, an ACK on v5, this is v5 :-) ).
 
-What I do not like is code that uses malloc() and then calls ZeroMemory()
-right after.  calloc() exists.  Standard-based, less lines of code.
+Test built on Ubuntu 1604 (works), not actually tested anything.
 
-No reason to NAK this, but maybe this can be fixed in a followup patch
-(and put on our styleguide somewhere?)...
+Did a little bit of stare-at-code, which did not turn up anything 
+I need to complain about... introducing a new ring_buffer.c file for
+less lines of code than the ring_buffer.h header file has seems a bit
+excessive, but since this is shared code between openvpn and iservice,
+it makes sense.
 
-Compile-tested on Ubuntu 16.04 / mingw (which worked fine).  No own
-code review or any sort of testing done.
-
-commit d5fc4bd41616ee01816df873cb6b6567872a29e2
+commit da2e66ca74688094a3dcbf8e2ce0a3bc54478a53
 Author: Lev Stipakov
-Date:   Tue Dec 17 14:44:10 2019 +0200
+Date:   Tue Dec 17 14:50:41 2019 +0200
 
-     wintun: ring buffers based I/O
+     wintun: interactive service support
 
      Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
      Acked-by: Simon Rozman <simon@...2293...>
-     Message-Id: <20191217124410.81-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19243.html
+     Message-Id: <20191217125041.207-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19244.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
