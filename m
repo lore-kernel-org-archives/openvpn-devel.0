@@ -1,12 +1,11 @@
+From: Simon Rozman <simon@...2293...>
+Date: Wed, 18 Dec 2019 07:18:18 +0100
+Message-Id: <20191218061818.1504-1-simon@...2293...>
+In-Reply-To: <99D61A626FDA8A4B90A270669121BE10BDA4BA3E@...2294...>
+References: <99D61A626FDA8A4B90A270669121BE10BDA4BA3E@...2294...>
 MIME-Version: 1.0
-References: <99D61A626FDA8A4B90A270669121BE10BDA4BD82@...2294...>
- <20191112144400.1359-1-lstipakov@...277...>
-In-Reply-To: <20191112144400.1359-1-lstipakov@...277...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 17 Dec 2019 18:44:05 -0500
-Message-ID: <CAKuzo_jRGox=anW=OyTJdhBW9fcOMOfHnPT8V1-vWTy7xKPyZg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v3 7/7] wintun: clear adapter settings
- on tun close
+Subject: [Openvpn-devel] [PATCH v2] wintun: set adapter properties via
+ interactive service
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,157 +14,249 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Lev Stipakov <lev@...515...>
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>, Simon Rozman <simon@...2293...>
 
-Hi,
+From: Lev Stipakov <lev@...515...>
 
-Probably this is the only one in the series without an ACK.
+Since Wintun doesn't do DHCP, use interactive service
+calls to set up adapter properties.
 
-v2 was reviewed by Simon and suggested changes are in here.
-This looks good to me.
+This also fixes bug in previously unused IPv4 code of
+do_address_service():
 
-On Tue, Nov 12, 2019 at 9:44 AM Lev Stipakov <lstipakov@...277...> wrote:
->
-> From: Lev Stipakov <lev@...515...>
->
-> With tap-windows6 we clear adapter settings with DHCP,
-> but since wintun doesn't do DHCP we do it with netsh.
->
-> Signed-off-by: Lev Stipakov <lev@...515...>
-> ---
->
->  v3:
->   - simplify convoluted "if" statement
->
->  v2:
->   - rebase on top of master
->
->  src/openvpn/tun.c | 92 +++++++++++++++++++++++++++++------------------
->  1 file changed, 57 insertions(+), 35 deletions(-)
->
-> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-> index 8b16cd6a..a9036a6e 100644
-> --- a/src/openvpn/tun.c
-> +++ b/src/openvpn/tun.c
-> @@ -6388,6 +6388,50 @@ tun_show_debug(struct tuntap *tt)
->      }
->  }
->
-> +static void
-> +netsh_delete_address_dns(const struct tuntap *tt, bool ipv6, struct gc_arena *gc)
-> +{
-> +    const char* ifconfig_ip_local;
+ - ipv4 address must be in network byte order
+ - prefix length cannot be hardcoded /32 but
+ must be calculated from netmask
 
-A minor nit: char *foo is our recommended style, I think.
+Signed-off-by: Lev Stipakov <lev@...515...>
+Acked-by: Simon Rozman <simon@...2293...>
+---
+ src/openvpn/route.c |  2 +-
+ src/openvpn/route.h |  3 +-
+ src/openvpn/tun.c   | 75 +++++++++++++++++++++++++++++++++++----------
+ 3 files changed, 61 insertions(+), 19 deletions(-)
 
-> +    struct argv argv = argv_new();
-> +
-> +    /* "store=active" is needed in Windows 8(.1) to delete the
-> +     * address we added (pointed out by Cedric Tabary).
-> +     */
-> +
-> +     /* netsh interface ipvX delete address \"%s\" %s */
-> +    if (ipv6)
-> +    {
-> +        ifconfig_ip_local = print_in6_addr(tt->local_ipv6, 0, gc);
-> +    }
-> +    else
-> +    {
-> +        ifconfig_ip_local = print_in_addr_t(tt->local, 0, gc);
-> +    }
-> +    argv_printf(&argv,
-> +                "%s%sc interface %s delete address %s %s store=active",
-> +                get_win_sys_path(),
-> +                NETSH_PATH_SUFFIX,
-> +                ipv6 ? "ipv6" : "ipv4",
-> +                tt->actual_name,
-> +                ifconfig_ip_local);
-> +
-> +    netsh_command(&argv, 1, M_WARN);
-> +
-> +    /* delete ipvX dns servers if any were set */
-> +    int len = ipv6 ? tt->options.dns6_len : tt->options.dns_len;
-> +    if (len > 0)
-> +    {
-> +        argv_printf(&argv,
-> +                    "%s%sc interface %s delete dns %s all",
-> +                    get_win_sys_path(),
-> +                    NETSH_PATH_SUFFIX,
-> +                    ipv6 ? "ipv6" : "ipv4",
-> +                    tt->actual_name);
-> +        netsh_command(&argv, 1, M_WARN);
-> +    }
-> +    argv_reset(&argv);
-> +}
-> +
->  void
->  close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
->  {
-> @@ -6410,46 +6454,24 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
->          }
->          else
->          {
-> -            const char *ifconfig_ipv6_local;
-> -            struct argv argv = argv_new();
-> -
-> -            /* "store=active" is needed in Windows 8(.1) to delete the
-> -             * address we added (pointed out by Cedric Tabary).
-> -             */
-> -
-> -            /* netsh interface ipv6 delete address \"%s\" %s */
-> -            ifconfig_ipv6_local = print_in6_addr(tt->local_ipv6, 0,  &gc);
-> -            argv_printf(&argv,
-> -                        "%s%sc interface ipv6 delete address %s %s store=active",
-> -                        get_win_sys_path(),
-> -                        NETSH_PATH_SUFFIX,
-> -                        tt->actual_name,
-> -                        ifconfig_ipv6_local);
-> -
-> -            netsh_command(&argv, 1, M_WARN);
-> -
-> -            /* delete ipv6 dns servers if any were set */
-> -            if (tt->options.dns6_len > 0)
-> -            {
-> -                argv_printf(&argv,
-> -                            "%s%sc interface ipv6 delete dns %s all",
-> -                            get_win_sys_path(),
-> -                            NETSH_PATH_SUFFIX,
-> -                            tt->actual_name);
-> -                netsh_command(&argv, 1, M_WARN);
-> -            }
-> -            argv_reset(&argv);
-> +            netsh_delete_address_dns(tt, true, &gc);
->          }
->      }
->  #if 1
-> -    if (tt->wintun && tt->options.msg_channel)
-> +    if (tt->wintun)
->      {
-> -        do_route_ipv4_service_tun(false, tt);
-> -        do_address_service(false, AF_INET, tt);
-> -        do_dns_service(false, AF_INET, tt);
-> +        if (tt->options.msg_channel)
-> +        {
-> +            do_route_ipv4_service_tun(false, tt);
-> +            do_address_service(false, AF_INET, tt);
-> +            do_dns_service(false, AF_INET, tt);
-> +        }
-> +        else
-> +        {
-> +            netsh_delete_address_dns(tt, false, &gc);
-> +        }
->      }
-> -    else
-> -    if (tt->ipapi_context_defined)
-> +    else if (tt->ipapi_context_defined)
->      {
->          DWORD status;
->          if ((status = DeleteIPAddress(tt->ipapi_context)) != NO_ERROR)
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 97e90e56..cc6d5519 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -3019,7 +3019,7 @@ out:
+     return ret;
+ }
+ 
+-static bool
++bool
+ do_route_ipv4_service(const bool add, const struct route_ipv4 *r, const struct tuntap *tt)
+ {
+     DWORD if_index = windows_route_find_if_index(r, tt);
+diff --git a/src/openvpn/route.h b/src/openvpn/route.h
+index 2e68091c..27b652cd 100644
+--- a/src/openvpn/route.h
++++ b/src/openvpn/route.h
+@@ -321,7 +321,8 @@ void setenv_routes(struct env_set *es, const struct route_list *rl);
+ 
+ void setenv_routes_ipv6(struct env_set *es, const struct route_ipv6_list *rl6);
+ 
+-
++bool do_route_ipv4_service(const bool add, const struct route_ipv4 *r,
++                           const struct tuntap *tt);
+ 
+ bool is_special_addr(const char *addr_str);
+ 
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 77d84fb2..32f4f483 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -109,8 +109,8 @@ do_address_service(const bool add, const short family, const struct tuntap *tt)
+ 
+     if (addr.family == AF_INET)
+     {
+-        addr.address.ipv4.s_addr = tt->local;
+-        addr.prefix_len = 32;
++        addr.address.ipv4.s_addr = htonl(tt->local);
++        addr.prefix_len = netmask_to_netbits2(tt->adapter_netmask);
+     }
+     else
+     {
+@@ -139,13 +139,15 @@ out:
+ }
+ 
+ static bool
+-do_dns6_service(bool add, const struct tuntap *tt)
++do_dns_service(bool add, const short family, const struct tuntap *tt)
+ {
+     bool ret = false;
+     ack_message_t ack;
+     struct gc_arena gc = gc_new();
+     HANDLE pipe = tt->options.msg_channel;
+-    int addr_len = add ? tt->options.dns6_len : 0;
++    int len = family == AF_INET6 ? tt->options.dns6_len : tt->options.dns_len;
++    int addr_len = add ? len : 0;
++    const char *ip_proto_name = family == AF_INET6 ? "IPv6" : "IPv4";
+ 
+     if (addr_len == 0 && add) /* no addresses to add */
+     {
+@@ -160,7 +162,7 @@ do_dns6_service(bool add, const struct tuntap *tt)
+         },
+         .iface = { .index = tt->adapter_index, .name = "" },
+         .domains = "",
+-        .family = AF_INET6,
++        .family = family,
+         .addr_len = addr_len
+     };
+ 
+@@ -172,17 +174,24 @@ do_dns6_service(bool add, const struct tuntap *tt)
+     {
+         addr_len = _countof(dns.addr);
+         dns.addr_len = addr_len;
+-        msg(M_WARN, "Number of IPv6 DNS addresses sent to service truncated to %d",
+-            addr_len);
++        msg(M_WARN, "Number of %s DNS addresses sent to service truncated to %d",
++            ip_proto_name, addr_len);
+     }
+ 
+     for (int i = 0; i < addr_len; ++i)
+     {
+-        dns.addr[i].ipv6 = tt->options.dns6[i];
++        if (family == AF_INET6)
++        {
++            dns.addr[i].ipv6 = tt->options.dns6[i];
++        }
++        else
++        {
++            dns.addr[i].ipv4.s_addr = htonl(tt->options.dns[i]);
++        }
+     }
+ 
+-    msg(D_LOW, "%s IPv6 dns servers on '%s' (if_index = %d) using service",
+-        (add ? "Setting" : "Deleting"), dns.iface.name, dns.iface.index);
++    msg(D_LOW, "%s %s dns servers on '%s' (if_index = %d) using service",
++        (add ? "Setting" : "Deleting"), ip_proto_name, dns.iface.name, dns.iface.index);
+ 
+     if (!send_msg_iservice(pipe, &dns, sizeof(dns), &ack, "TUN"))
+     {
+@@ -191,13 +200,13 @@ do_dns6_service(bool add, const struct tuntap *tt)
+ 
+     if (ack.error_number != NO_ERROR)
+     {
+-        msg(M_WARN, "TUN: %s IPv6 dns failed using service: %s [status=%u if_name=%s]",
+-            (add ? "adding" : "deleting"), strerror_win32(ack.error_number, &gc),
++        msg(M_WARN, "TUN: %s %s dns failed using service: %s [status=%u if_name=%s]",
++            (add ? "adding" : "deleting"), ip_proto_name, strerror_win32(ack.error_number, &gc),
+             ack.error_number, dns.iface.name);
+         goto out;
+     }
+ 
+-    msg(M_INFO, "IPv6 dns servers %s using service", (add ? "set" : "deleted"));
++    msg(M_INFO, "%s dns servers %s using service", ip_proto_name, (add ? "set" : "deleted"));
+     ret = true;
+ 
+ out:
+@@ -819,7 +828,7 @@ init_tun_post(struct tuntap *tt,
+  * an extra call to "route add..."
+  * -> helper function to simplify code below
+  */
+-void
++static void
+ add_route_connected_v6_net(struct tuntap *tt,
+                            const struct env_set *es)
+ {
+@@ -851,6 +860,21 @@ delete_route_connected_v6_net(struct tuntap *tt,
+ }
+ #endif /* if defined(_WIN32) || defined(TARGET_DARWIN) || defined(TARGET_NETBSD) || defined(TARGET_OPENBSD) */
+ 
++#if defined(_WIN32)
++void
++do_route_ipv4_service_tun(bool add, const struct tuntap *tt)
++{
++    struct route_ipv4 r4;
++    CLEAR(r4);
++    r4.network = tt->local & tt->remote_netmask;
++    r4.netmask = tt->remote_netmask;
++    r4.gateway = tt->local;
++    r4.metric = 0;                     /* connected route */
++    r4.flags = RT_DEFINED | RT_METRIC_DEFINED;
++    do_route_ipv4_service(add, &r4, tt);
++}
++#endif
++
+ #if defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY)  \
+     || defined(TARGET_NETBSD) || defined(TARGET_OPENBSD)
+ /* we can't use true subnet mode on tun on all platforms, as that
+@@ -1007,7 +1031,7 @@ do_ifconfig_ipv6(struct tuntap *tt, const char *ifname, int tun_mtu,
+     else if (tt->options.msg_channel)
+     {
+         do_address_service(true, AF_INET6, tt);
+-        do_dns6_service(true, tt);
++        do_dns_service(true, AF_INET6, tt);
+     }
+     else
+     {
+@@ -1379,8 +1403,16 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
+     {
+         ASSERT(ifname != NULL);
+ 
+-        switch (tt->options.ip_win32_type)
++        if (tt->options.msg_channel && tt->wintun)
++        {
++            do_address_service(true, AF_INET, tt);
++            do_route_ipv4_service_tun(true, tt);
++            do_dns_service(true, AF_INET, tt);
++        }
++        else
+         {
++            switch (tt->options.ip_win32_type)
++            {
+             case IPW32_SET_MANUAL:
+                 msg(M_INFO,
+                     "******** NOTE:  Please manually set the IP/netmask of '%s' to %s/%s (if it is not already set)",
+@@ -1393,6 +1425,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
+                                tt->adapter_netmask, NI_IP_NETMASK|NI_OPTIONS);
+ 
+                 break;
++            }
+         }
+     }
+ 
+@@ -6119,6 +6152,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+     }
+ 
+     /* possibly use IP Helper API to set IP address on adapter */
++    if (!tt->wintun)
+     {
+         const DWORD index = tt->adapter_index;
+ 
+@@ -6341,7 +6375,7 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+             do_address_service(false, AF_INET6, tt);
+             if (tt->options.dns6_len > 0)
+             {
+-                do_dns6_service(false, tt);
++                do_dns_service(false, AF_INET6, tt);
+             }
+         }
+         else
+@@ -6378,6 +6412,13 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+         }
+     }
+ #if 1
++    if (tt->wintun && tt->options.msg_channel)
++    {
++        do_route_ipv4_service_tun(false, tt);
++        do_address_service(false, AF_INET, tt);
++        do_dns_service(false, AF_INET, tt);
++    }
++    else
+     if (tt->ipapi_context_defined)
+     {
+         DWORD status;
+-- 
+2.24.1.windows.2
 
-Acked by: selva.nair@...277...
+I have made my amends to the original Lev's patch I suggested back then.
 
-Selva
+Regards,
+Simon
 
