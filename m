@@ -1,9 +1,11 @@
 From: Simon Rozman <simon@...2293...>
-Date: Thu, 19 Dec 2019 23:39:11 +0100
-Message-Id: <20191219223917.1614-1-simon@...2293...>
+Date: Thu, 19 Dec 2019 23:39:13 +0100
+Message-Id: <20191219223917.1614-3-simon@...2293...>
+In-Reply-To: <20191219223917.1614-1-simon@...2293...>
+References: <20191219223917.1614-1-simon@...2293...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/7] tun.c: make Windows device lookup
- functions more general
+Subject: [Openvpn-devel] [PATCH 3/7] tun.c: make
+ wintun_register_ring_buffer() non-fatal on failures
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,124 +18,117 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Since the introduction of Wintun, not all network devices in Windows are
-TAP-Windows6. Rather than returning a simple true/false answer, a couple
-of functions were reworked to return a corresponding struct tap_reg *
-or NULL instead.
+Wintun allows multiple handles to be opened on it's NDIS device pipe.
+Just by succeeding to open the pipe does not warrant the adapter is
+unused.
 
-As it would make the code `tr = is_tap_win(...)` a bit awkward those
-functions (both static) were renamed to better reflect their nature.
+When iterating for available Wintun adapter, we will need to try
+registering ring buffers with each one to actually determine which one
+is used and which one is not.
+
+Therefore, a failure to register ring buffers should be detectable, but
+not M_FATAL.
 
 Signed-off-by: Simon Rozman <simon@...2293...>
 ---
- src/openvpn/tun.c | 39 ++++++++++++++++++++++-----------------
- 1 file changed, 22 insertions(+), 17 deletions(-)
+ src/openvpn/tun.c | 26 ++++++++++++++++++--------
+ 1 file changed, 18 insertions(+), 8 deletions(-)
 
 diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index ad497a71..053a8232 100644
+index 623ed37b..220dee87 100644
 --- a/src/openvpn/tun.c
 +++ b/src/openvpn/tun.c
-@@ -3976,10 +3976,10 @@ show_tap_win_adapters(int msglev, int warnlev)
+@@ -5647,11 +5647,12 @@ register_dns_service(const struct tuntap *tt)
+     gc_free(&gc);
  }
  
- /*
-- * Confirm that GUID is a TAP-Windows adapter.
-+ * Lookup a TAP-Windows or Wintun adapter by GUID.
-  */
--static bool
--is_tap_win(const char *guid, const struct tap_reg *tap_reg)
-+static const struct tap_reg *
-+get_tap_by_guid(const char *guid, const struct tap_reg *tap_reg)
+-static void
++static bool
+ service_register_ring_buffers(const struct tuntap *tt)
  {
-     const struct tap_reg *tr;
+     HANDLE msg_channel = tt->options.msg_channel;
+     ack_message_t ack;
++    bool ret = true;
+     struct gc_arena gc = gc_new();
  
-@@ -3987,11 +3987,11 @@ is_tap_win(const char *guid, const struct tap_reg *tap_reg)
+     register_ring_buffers_message_t msg = {
+@@ -5669,13 +5670,13 @@ service_register_ring_buffers(const struct tuntap *tt)
+ 
+     if (!send_msg_iservice(msg_channel, &msg, sizeof(msg), &ack, "Register ring buffers"))
      {
-         if (guid && !strcmp(tr->guid, guid))
-         {
--            return true;
-+            return tr;
-         }
+-        gc_free(&gc);
+-        return;
++        ret = false;
+     }
+     else if (ack.error_number != NO_ERROR)
+     {
+-        msg(M_FATAL, "Register ring buffers failed using service: %s [status=0x%x]",
++        msg(M_NONFATAL, "Register ring buffers failed using service: %s [status=0x%x]",
+             strerror_win32(ack.error_number, &gc), ack.error_number);
++        ret = false;
+     }
+     else
+     {
+@@ -5683,6 +5684,7 @@ service_register_ring_buffers(const struct tuntap *tt)
      }
  
--    return false;
-+    return NULL;
+     gc_free(&gc);
++    return ret;
  }
  
- static const char *
-@@ -4010,16 +4010,16 @@ guid_to_name(const char *guid, const struct panel_reg *panel_reg)
-     return NULL;
+ void
+@@ -5922,9 +5924,11 @@ tuntap_set_ip_addr(struct tuntap *tt,
+     gc_free(&gc);
  }
  
--static const char *
--name_to_guid(const char *name, const struct tap_reg *tap_reg, const struct panel_reg *panel_reg)
-+static const struct tap_reg *
-+get_tap_by_name(const char *name, const struct tap_reg *tap_reg, const struct panel_reg *panel_reg)
+-static void
++static bool
+ wintun_register_ring_buffer(struct tuntap *tt)
  {
-     const struct panel_reg *pr;
++    bool ret = true;
++
+     tt->wintun_send_ring = (struct tun_ring *)MapViewOfFile(tt->wintun_send_ring_handle,
+                                                             FILE_MAP_ALL_ACCESS,
+                                                             0,
+@@ -5939,7 +5943,7 @@ wintun_register_ring_buffer(struct tuntap *tt)
  
-     for (pr = panel_reg; pr != NULL; pr = pr->next)
+     if (tt->options.msg_channel)
      {
--        if (name && !strcmp(pr->name, name) && is_tap_win(pr->guid, tap_reg))
-+        if (name && !strcmp(pr->name, name))
+-        service_register_ring_buffers(tt);
++        ret = service_register_ring_buffers(tt);
+     }
+     else
+     {
+@@ -5953,13 +5957,16 @@ wintun_register_ring_buffer(struct tuntap *tt)
+             tt->rw_handle.read,
+             tt->rw_handle.write))
          {
--            return pr->guid;
-+            return get_tap_by_guid(pr->guid, tap_reg);
+-            msg(M_FATAL, "ERROR:  Failed to register ring buffers: %lu", GetLastError());
++            msg(M_NONFATAL, "Failed to register ring buffers: %lu", GetLastError());
++            ret = false;
+         }
+         if (!RevertToSelf())
+         {
+             msg(M_FATAL, "ERROR:  RevertToSelf error: %lu", GetLastError());
          }
      }
++
++    return ret;
+ }
  
-@@ -4116,6 +4116,7 @@ get_device_guid(const char *name,
- {
-     struct buffer ret = alloc_buf_gc(256, gc);
-     struct buffer actual = clear_buf();
-+    const struct tap_reg *tr;
+ static void
+@@ -6367,7 +6374,10 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
  
-     /* Make sure we have at least one TAP adapter */
-     if (!tap_reg)
-@@ -4131,7 +4132,8 @@ get_device_guid(const char *name,
-     }
- 
-     /* Check if GUID was explicitly specified as --dev-node parameter */
--    if (is_tap_win(name, tap_reg))
-+    tr = get_tap_by_guid(name, tap_reg);
-+    if (tr)
+     if (tt->wintun)
      {
-         const char *act = guid_to_name(name, panel_reg);
-         buf_printf(&ret, "%s", name);
-@@ -4148,11 +4150,11 @@ get_device_guid(const char *name,
- 
-     /* Lookup TAP adapter in network connections list */
-     {
--        const char *guid = name_to_guid(name, tap_reg, panel_reg);
--        if (guid)
-+        tr = get_tap_by_name(name, tap_reg, panel_reg);
-+        if (tr)
-         {
-             buf_printf(&actual, "%s", name);
--            buf_printf(&ret, "%s", guid);
-+            buf_printf(&ret, "%s", tr->guid);
-             return BSTR(&ret);
-         }
+-        wintun_register_ring_buffer(tt);
++        if (!wintun_register_ring_buffer(tt))
++        {
++            msg(M_FATAL, "Failed to register ring buffers");
++        }
      }
-@@ -4696,11 +4698,14 @@ get_adapter_index_flexible(const char *name)  /* actual name or GUID */
+     else
      {
-         const struct tap_reg *tap_reg = get_tap_reg(&gc);
-         const struct panel_reg *panel_reg = get_panel_reg(&gc);
--        const char *guid = name_to_guid(name, tap_reg, panel_reg);
--        index = get_adapter_index_method_1(guid);
--        if (index == TUN_ADAPTER_INDEX_INVALID)
-+        const struct tap_reg *tr = get_tap_by_name(name, tap_reg, panel_reg);
-+        if (tr)
-         {
--            index = get_adapter_index_method_2(guid);
-+            index = get_adapter_index_method_1(tr->guid);
-+            if (index == TUN_ADAPTER_INDEX_INVALID)
-+            {
-+                index = get_adapter_index_method_2(tr->guid);
-+            }
-         }
-     }
-     if (index == TUN_ADAPTER_INDEX_INVALID)
 -- 
 2.24.1.windows.2
 
