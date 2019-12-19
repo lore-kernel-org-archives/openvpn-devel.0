@@ -1,10 +1,8 @@
-Date: Wed, 18 Dec 2019 21:10:40 +0100 (CET)
-Message-Id: <201912182010.xBIKAevL014872@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20191112144400.1359-1-lstipakov@...277...>
-References: <20191112144400.1359-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: wintun: clear adapter settings
- on tun close
+From: Lev Stipakov <lstipakov@...277...>
+Date: Thu, 19 Dec 2019 13:18:21 +0200
+Message-Id: <20191219111821.313-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] tun.c: do not add/remove routes on tun
+ open/close
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,39 +13,95 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Your patch has been applied to the master branch.
+From: Lev Stipakov <lev@...515...>
 
-Fixed the "char *foo" comment Selva had on the fly.
+Commit 1c4a47f added route manipulation to open/close tun functions,
+which is not really needed:
 
-Test built on Ubuntu 1604/mingw.  No further tests.
+ - routes are added in check_add_routes(), triggered by timer
 
-Stared a bit at the code.  Not sure I like the way this overloads
-v4/v6 into the same function just to be able to share a bit of common
-code (at the expense of lots of conditionals which make the resulting
-function not easy to read, and a local variable "ifconfig_ip_local"
-which could be IPv4 or IPv6 now).  Antonio has just *separated*
-IPv4 and IPv6 ifconfig into two independent functions to make the code 
-more readable...
+ - routes are removed in delete_routes(), called by do_close_tun()
 
-commit ef9b34044ec354902cd24bbcee244c6a494b6c7c
-Author: Lev Stipakov
-Date:   Tue Nov 12 16:44:00 2019 +0200
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/openvpn/route.c |  2 +-
+ src/openvpn/route.h |  3 ---
+ src/openvpn/tun.c   | 17 -----------------
+ 3 files changed, 1 insertion(+), 21 deletions(-)
 
-     wintun: clear adapter settings on tun close
-
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Selva Nair <selva.nair@...277...>
-     Message-Id: <20191112144400.1359-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19124.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index cc6d5519..97e90e56 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -3019,7 +3019,7 @@ out:
+     return ret;
+ }
+ 
+-bool
++static bool
+ do_route_ipv4_service(const bool add, const struct route_ipv4 *r, const struct tuntap *tt)
+ {
+     DWORD if_index = windows_route_find_if_index(r, tt);
+diff --git a/src/openvpn/route.h b/src/openvpn/route.h
+index 27b652cd..7dd96091 100644
+--- a/src/openvpn/route.h
++++ b/src/openvpn/route.h
+@@ -321,9 +321,6 @@ void setenv_routes(struct env_set *es, const struct route_list *rl);
+ 
+ void setenv_routes_ipv6(struct env_set *es, const struct route_ipv6_list *rl6);
+ 
+-bool do_route_ipv4_service(const bool add, const struct route_ipv4 *r,
+-                           const struct tuntap *tt);
+-
+ bool is_special_addr(const char *addr_str);
+ 
+ void get_default_gateway(struct route_gateway_info *rgi,
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 8d87ac41..ad497a71 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -860,21 +860,6 @@ delete_route_connected_v6_net(struct tuntap *tt,
+ }
+ #endif /* if defined(_WIN32) || defined(TARGET_DARWIN) || defined(TARGET_NETBSD) || defined(TARGET_OPENBSD) */
+ 
+-#if defined(_WIN32)
+-void
+-do_route_ipv4_service_tun(bool add, const struct tuntap *tt)
+-{
+-    struct route_ipv4 r4;
+-    CLEAR(r4);
+-    r4.network = tt->local & tt->remote_netmask;
+-    r4.netmask = tt->remote_netmask;
+-    r4.gateway = tt->local;
+-    r4.metric = 0;                     /* connected route */
+-    r4.flags = RT_DEFINED | RT_METRIC_DEFINED;
+-    do_route_ipv4_service(add, &r4, tt);
+-}
+-#endif
+-
+ #if defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY)  \
+     || defined(TARGET_NETBSD) || defined(TARGET_OPENBSD)
+ /* we can't use true subnet mode on tun on all platforms, as that
+@@ -1406,7 +1391,6 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
+         if (tt->options.msg_channel && tt->wintun)
+         {
+             do_address_service(true, AF_INET, tt);
+-            do_route_ipv4_service_tun(true, tt);
+             do_dns_service(true, AF_INET, tt);
+         }
+         else
+@@ -6489,7 +6473,6 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+     {
+         if (tt->options.msg_channel)
+         {
+-            do_route_ipv4_service_tun(false, tt);
+             do_address_service(false, AF_INET, tt);
+             do_dns_service(false, AF_INET, tt);
+         }
+-- 
+2.17.1
 
 
