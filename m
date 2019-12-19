@@ -1,10 +1,11 @@
 From: Simon Rozman <simon@...2293...>
-Date: Thu, 19 Dec 2019 23:39:15 +0100
-Message-Id: <20191219223917.1614-5-simon@...2293...>
+Date: Thu, 19 Dec 2019 23:39:17 +0100
+Message-Id: <20191219223917.1614-7-simon@...2293...>
 In-Reply-To: <20191219223917.1614-1-simon@...2293...>
 References: <20191219223917.1614-1-simon@...2293...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 5/7] wintun: add support for --dev-node
+Subject: [Openvpn-devel] [PATCH 7/7] tun.c: reword the
+ at_least_one_tap_win() error
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,73 +20,22 @@ To: openvpn-devel@lists.sourceforge.net
 
 Signed-off-by: Simon Rozman <simon@...2293...>
 ---
- src/openvpn/tun.c | 38 ++++++++++++++++++++------------------
- 1 file changed, 20 insertions(+), 18 deletions(-)
+ src/openvpn/tun.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 9dc9b3a2..8508b9c0 100644
+index 8508b9c0..14ff0259 100644
 --- a/src/openvpn/tun.c
 +++ b/src/openvpn/tun.c
-@@ -6194,7 +6194,6 @@ static void
- tun_open_device(struct tuntap *tt, const char *dev_node, const char **device_guid)
+@@ -4031,7 +4031,7 @@ at_least_one_tap_win(const struct tap_reg *tap_reg)
  {
-     struct gc_arena gc = gc_new();
--    char tuntap_device_path[256];
-     const struct tap_reg* tap_reg = get_tap_reg(&gc);
-     const struct panel_reg* panel_reg = get_panel_reg(&gc);
-     const struct device_instance_id_interface* device_instance_id_interface = get_device_instance_id_interface(&gc);
-@@ -6207,31 +6206,34 @@ tun_open_device(struct tuntap *tt, const char *dev_node, const char **device_gui
-      */
-     if (dev_node)
+     if (!tap_reg)
      {
-+        bool is_picked_device_wintun = false;
-+
-         /* Get the device GUID for the device specified with --dev-node. */
--        *device_guid = get_device_guid(dev_node, actual_buffer, sizeof(actual_buffer), NULL, tap_reg, panel_reg, &gc);
-+        *device_guid = get_device_guid(dev_node, actual_buffer, sizeof(actual_buffer), &is_picked_device_wintun, tap_reg, panel_reg, &gc);
- 
-         if (!*device_guid)
-         {
--            msg(M_FATAL, "TAP-Windows adapter '%s' not found", dev_node);
-+            msg(M_FATAL, "Adapter '%s' not found", dev_node);
-         }
- 
--        /* Open Windows TAP-Windows adapter */
--        openvpn_snprintf(tuntap_device_path, sizeof(tuntap_device_path), "%s%s%s",
--                         USERMODEDEVICEDIR,
--                         *device_guid,
--                         TAP_WIN_SUFFIX);
--
--        tt->hand = CreateFile(tuntap_device_path,
--                              GENERIC_READ | GENERIC_WRITE,
--                              0,                /* was: FILE_SHARE_READ */
--                              0,
--                              OPEN_EXISTING,
--                              FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED,
--                              0);
-+        if (tt->wintun)
-+        {
-+            if (!is_picked_device_wintun)
-+            {
-+                msg(M_FATAL, "Adapter '%s' is TAP-Windows, Wintun expected", dev_node);
-+            }
-+        }
-+        else
-+        {
-+            if (is_picked_device_wintun)
-+            {
-+                msg(M_FATAL, "Adapter '%s' is Wintun, TAP-Windows expected", dev_node);
-+            }
-+        }
- 
--        if (tt->hand == INVALID_HANDLE_VALUE)
-+        if (!tun_try_open_device(tt, *device_guid, device_instance_id_interface))
-         {
--            msg(M_ERR, "CreateFile failed on TAP device: %s", tuntap_device_path);
-+            msg(M_FATAL, "Failed to open %s adapter: %s", tt->wintun ? "Wintun" : "TAP-Windows", dev_node);
-         }
+-        msg(M_FATAL, "There are no TAP-Windows adapters on this system.  You should be able to create a TAP-Windows adapter by going to Start -> All Programs -> TAP-Windows -> Utilities -> Add a new TAP-Windows virtual ethernet adapter.");
++        msg(M_FATAL, "There are no TAP-Windows nor Wintun adapters on this system.  You should be able to create an adapter by using tapctl.exe utility.");
      }
-     else
+ }
+ 
 -- 
 2.24.1.windows.2
 
