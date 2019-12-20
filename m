@@ -1,11 +1,11 @@
 From: Simon Rozman <simon@...2293...>
-Date: Fri, 20 Dec 2019 17:11:16 +0100
-Message-Id: <20191220161117.1434-6-simon@...2293...>
-In-Reply-To: <CAGyAFMWrp0L3hJeJSPhE619hOLZVXkJWvm3oOCRdq=NqMXiKzw@...278...>
-References: <CAGyAFMWrp0L3hJeJSPhE619hOLZVXkJWvm3oOCRdq=NqMXiKzw@...278...>
+Date: Fri, 20 Dec 2019 17:11:17 +0100
+Message-Id: <20191220161117.1434-7-simon@...2293...>
+In-Reply-To: <CAGyAFMU9t+mUtuzmVeXLz5MO+xMZ3-1fJAQUdMDSCtoViSam6g@...278...>
+References: <CAGyAFMU9t+mUtuzmVeXLz5MO+xMZ3-1fJAQUdMDSCtoViSam6g@...278...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 6/7] wintun: stop sending TAP-Windows6
- ioctls to NDIS device
+Subject: [Openvpn-devel] [PATCH v2 7/7] tun.c: reword the
+ at_least_one_tap_win() error
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,39 +18,24 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Wintun doesn't have its own I/O device. Rather, it taps on existing
-Windows-provided NDIS device. Sending TAP-Windows6 IOCTL requests to it
-is risky, as TAP-Windows6 is using one of the well-known device types
-(FILE_DEVICE_UNKNOWN) with function IDs as 1, 2, 3 etc. raising a chance
-of collision as NDIS might react to one of these IOCTLs.
-
 Signed-off-by: Simon Rozman <simon@...2293...>
 ---
- src/openvpn/tun.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ src/openvpn/tun.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 18f06bb6..6762402c 100644
+index 6762402c..4e16f989 100644
 --- a/src/openvpn/tun.c
 +++ b/src/openvpn/tun.c
-@@ -6412,7 +6412,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
- const char *
- tap_win_getinfo(const struct tuntap *tt, struct gc_arena *gc)
+@@ -4031,7 +4031,7 @@ at_least_one_tap_win(const struct tap_reg *tap_reg)
  {
--    if (tt && tt->hand != NULL)
-+    if (tuntap_defined(tt) && !tt->wintun)
+     if (!tap_reg)
      {
-         struct buffer out = alloc_buf_gc(256, gc);
-         DWORD len;
-@@ -6430,7 +6430,7 @@ tap_win_getinfo(const struct tuntap *tt, struct gc_arena *gc)
- void
- tun_show_debug(struct tuntap *tt)
- {
--    if (tt && tt->hand != NULL)
-+    if (tuntap_defined(tt) && !tt->wintun)
-     {
-         struct buffer out = alloc_buf(1024);
-         DWORD len;
+-        msg(M_FATAL, "There are no TAP-Windows adapters on this system.  You should be able to create a TAP-Windows adapter by going to Start -> All Programs -> TAP-Windows -> Utilities -> Add a new TAP-Windows virtual ethernet adapter.");
++        msg(M_FATAL, "There are no TAP-Windows nor Wintun adapters on this system.  You should be able to create an adapter by using tapctl.exe utility.");
+     }
+ }
+ 
 -- 
 2.24.1.windows.2
 
