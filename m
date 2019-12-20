@@ -1,11 +1,10 @@
 From: Simon Rozman <simon@...2293...>
-Date: Fri, 20 Dec 2019 17:11:13 +0100
-Message-Id: <20191220161117.1434-3-simon@...2293...>
-In-Reply-To: <CAGyAFMVVTo6t-OML6UJvmEifp_UJULZfb4n3Leobq9eFK7XJyA@...278...>
-References: <CAGyAFMVVTo6t-OML6UJvmEifp_UJULZfb4n3Leobq9eFK7XJyA@...278...>
+Date: Fri, 20 Dec 2019 17:11:15 +0100
+Message-Id: <20191220161117.1434-5-simon@...2293...>
+In-Reply-To: <CAGyAFMXWyKbYTPLDDd3vedDDuFY+GqNu1V=RqGvY_JhevVJBzQ@...278...>
+References: <CAGyAFMXWyKbYTPLDDd3vedDDuFY+GqNu1V=RqGvY_JhevVJBzQ@...278...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 3/7] tun.c: make
- wintun_register_ring_buffer() non-fatal on failures
+Subject: [Openvpn-devel] [PATCH v2 5/7] wintun: add support for --dev-node
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,117 +17,75 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Wintun allows multiple handles to be opened on it's NDIS device pipe.
-Just by succeeding to open the pipe does not warrant the adapter is
-unused.
-
-When iterating for available Wintun adapter, we will need to try
-registering ring buffers with each one to actually determine which one
-is used and which one is not.
-
-Therefore, a failure to register ring buffers should be detectable, but
-not M_FATAL.
-
 Signed-off-by: Simon Rozman <simon@...2293...>
 ---
- src/openvpn/tun.c | 26 ++++++++++++++++++--------
- 1 file changed, 18 insertions(+), 8 deletions(-)
+ src/openvpn/tun.c | 38 ++++++++++++++++++++------------------
+ 1 file changed, 20 insertions(+), 18 deletions(-)
 
 diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index f90f201d..c6bbbd41 100644
+index f56682ef..18f06bb6 100644
 --- a/src/openvpn/tun.c
 +++ b/src/openvpn/tun.c
-@@ -5647,11 +5647,12 @@ register_dns_service(const struct tuntap *tt)
-     gc_free(&gc);
- }
- 
--static void
-+static bool
- service_register_ring_buffers(const struct tuntap *tt)
+@@ -6196,7 +6196,6 @@ static void
+ tun_open_device(struct tuntap *tt, const char *dev_node, const char **device_guid)
  {
-     HANDLE msg_channel = tt->options.msg_channel;
-     ack_message_t ack;
-+    bool ret = true;
      struct gc_arena gc = gc_new();
- 
-     register_ring_buffers_message_t msg = {
-@@ -5669,13 +5670,13 @@ service_register_ring_buffers(const struct tuntap *tt)
- 
-     if (!send_msg_iservice(msg_channel, &msg, sizeof(msg), &ack, "Register ring buffers"))
+-    char tuntap_device_path[256];
+     const struct tap_reg* tap_reg = get_tap_reg(&gc);
+     const struct panel_reg* panel_reg = get_panel_reg(&gc);
+     const struct device_instance_id_interface* device_instance_id_interface = get_device_instance_id_interface(&gc);
+@@ -6209,31 +6208,34 @@ tun_open_device(struct tuntap *tt, const char *dev_node, const char **device_gui
+      */
+     if (dev_node)
      {
--        gc_free(&gc);
--        return;
-+        ret = false;
-     }
-     else if (ack.error_number != NO_ERROR)
-     {
--        msg(M_FATAL, "Register ring buffers failed using service: %s [status=0x%x]",
-+        msg(M_NONFATAL, "Register ring buffers failed using service: %s [status=0x%x]",
-             strerror_win32(ack.error_number, &gc), ack.error_number);
-+        ret = false;
-     }
-     else
-     {
-@@ -5683,6 +5684,7 @@ service_register_ring_buffers(const struct tuntap *tt)
-     }
- 
-     gc_free(&gc);
-+    return ret;
- }
- 
- void
-@@ -5922,9 +5924,11 @@ tuntap_set_ip_addr(struct tuntap *tt,
-     gc_free(&gc);
- }
- 
--static void
-+static bool
- wintun_register_ring_buffer(struct tuntap *tt)
- {
-+    bool ret = true;
++        bool is_picked_device_wintun = false;
 +
-     tt->wintun_send_ring = (struct tun_ring *)MapViewOfFile(tt->wintun_send_ring_handle,
-                                                             FILE_MAP_ALL_ACCESS,
-                                                             0,
-@@ -5939,7 +5943,7 @@ wintun_register_ring_buffer(struct tuntap *tt)
+         /* Get the device GUID for the device specified with --dev-node. */
+-        *device_guid = get_device_guid(dev_node, actual_buffer, sizeof(actual_buffer), NULL, tap_reg, panel_reg, &gc);
++        *device_guid = get_device_guid(dev_node, actual_buffer, sizeof(actual_buffer), &is_picked_device_wintun, tap_reg, panel_reg, &gc);
  
-     if (tt->options.msg_channel)
-     {
--        service_register_ring_buffers(tt);
-+        ret = service_register_ring_buffers(tt);
-     }
-     else
-     {
-@@ -5953,13 +5957,16 @@ wintun_register_ring_buffer(struct tuntap *tt)
-             tt->rw_handle.read,
-             tt->rw_handle.write))
+         if (!*device_guid)
          {
--            msg(M_FATAL, "ERROR:  Failed to register ring buffers: %lu", GetLastError());
-+            msg(M_NONFATAL, "Failed to register ring buffers: %lu", GetLastError());
-+            ret = false;
+-            msg(M_FATAL, "TAP-Windows adapter '%s' not found", dev_node);
++            msg(M_FATAL, "Adapter '%s' not found", dev_node);
          }
-         if (!RevertToSelf())
-         {
-             msg(M_FATAL, "ERROR:  RevertToSelf error: %lu", GetLastError());
-         }
-     }
-+
-+    return ret;
- }
  
- static void
-@@ -6367,7 +6374,10 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
- 
-     if (tt->wintun)
-     {
--        wintun_register_ring_buffer(tt);
-+        if (!wintun_register_ring_buffer(tt))
+-        /* Open Windows TAP-Windows adapter */
+-        openvpn_snprintf(tuntap_device_path, sizeof(tuntap_device_path), "%s%s%s",
+-                         USERMODEDEVICEDIR,
+-                         *device_guid,
+-                         TAP_WIN_SUFFIX);
+-
+-        tt->hand = CreateFile(tuntap_device_path,
+-                              GENERIC_READ | GENERIC_WRITE,
+-                              0,                /* was: FILE_SHARE_READ */
+-                              0,
+-                              OPEN_EXISTING,
+-                              FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED,
+-                              0);
++        if (tt->wintun)
 +        {
-+            msg(M_FATAL, "Failed to register ring buffers");
++            if (!is_picked_device_wintun)
++            {
++                msg(M_FATAL, "Adapter '%s' is TAP-Windows, Wintun expected. If you want to use this device, remove --windows-driver wintun.", dev_node);
++            }
 +        }
++        else
++        {
++            if (is_picked_device_wintun)
++            {
++                msg(M_FATAL, "Adapter '%s' is Wintun, TAP-Windows expected. If you want to use this device, add --windows-driver wintun.", dev_node);
++            }
++        }
+ 
+-        if (tt->hand == INVALID_HANDLE_VALUE)
++        if (!tun_try_open_device(tt, *device_guid, device_instance_id_interface))
+         {
+-            msg(M_ERR, "CreateFile failed on TAP device: %s", tuntap_device_path);
++            msg(M_FATAL, "Failed to open %s adapter: %s", tt->wintun ? "Wintun" : "TAP-Windows", dev_node);
+         }
      }
      else
-     {
 -- 
 2.24.1.windows.2
 
