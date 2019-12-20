@@ -1,13 +1,13 @@
 MIME-Version: 1.0
 References: <20191219223917.1614-1-simon@...2293...>
- <20191219223917.1614-4-simon@...2293...>
-In-Reply-To: <20191219223917.1614-4-simon@...2293...>
+ <20191219223917.1614-6-simon@...2293...>
+In-Reply-To: <20191219223917.1614-6-simon@...2293...>
 From: Lev Stipakov <lstipakov@...277...>
-Date: Fri, 20 Dec 2019 13:43:08 +0200
-Message-ID: <CAGyAFMUQqDSR7UwaofiGGhL9vhHKE6YzNw+CObyEahsyBdw7-A@...278...>
-Content-Type: multipart/alternative; boundary="0000000000002a03bd059a212f37"
-Subject: Re: [Openvpn-devel] [PATCH 4/7] wintun: register ring buffers when
- iterating adapters
+Date: Fri, 20 Dec 2019 13:56:18 +0200
+Message-ID: <CAGyAFMWrp0L3hJeJSPhE619hOLZVXkJWvm3oOCRdq=NqMXiKzw@...278...>
+Content-Type: multipart/alternative; boundary="000000000000364c05059a215e44"
+Subject: Re: [Openvpn-devel] [PATCH 6/7] wintun: stop sending TAP-Windows6
+ ioctls to NDIS device
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,56 +19,62 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Simon Rozman <simon@...2293...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---0000000000002a03bd059a212f37
+--000000000000364c05059a215e44
 Content-Type: text/plain; charset="UTF-8"
 
 Hi,
 
-Compiled and tested, works as expected. One thing:
-
-
-> +            if (tun_try_open_device(tt, *device_guid,
-> device_instance_id_interface))
->              {
->                  break;
->              }
+@@ -688,7 +688,10 @@ x_check_status(int status,
+>          }
+>  #elif defined(_WIN32)
+>          /* get possible driver error from TAP-Windows driver */
+> -        extended_msg = tap_win_getinfo(tt, &gc);
+> +        if (!tt->wintun)
+> +        {
+> +            extended_msg = tap_win_getinfo(tt, &gc);
+> +        }
 >
 
-We leak tt->hand here if we don't break - in the next loop iteration we
-overwrite tt->hand
-and previous value left unclosed.
 
-Maybe add
+What if we make error.c device type agnostic and move that check into
+tun.c, tap_win_getinfo():
 
-    CloseHandle(tt->hand)
-    tt->hand = NULL;
+    const char *
+    tap_win_getinfo(const struct tuntap *tt, struct gc_arena *gc)
+    {
+        if (tuntap_defined(tt) && !tuntap_is_wintun(tt))
+            {
+                /* get debug log from tap-windows6 */
 
-after "if" statement and before "next" label ?
-
--- 
 -Lev
 
---0000000000002a03bd059a212f37
+--000000000000364c05059a215e44
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div>Hi,</div><div><br></div><div>Compiled and tested, wor=
-ks as expected. One thing:</div><div class=3D"gmail_quote"><div>=C2=A0</div=
-><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border=
--left:1px solid rgb(204,204,204);padding-left:1ex">
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (tun_try_open_device(tt, *dev=
-ice_guid, device_instance_id_interface))<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0break;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br></blockquote><div><br>=
-</div><div class=3D"gmail_quote"><div>We leak tt-&gt;hand here if we don&#3=
-9;t break - in the next loop iteration we overwrite tt-&gt;hand</div><div>a=
-nd previous value left unclosed.=C2=A0</div></div><div><br></div><div>Maybe=
- add=C2=A0</div><div><br></div><div>=C2=A0 =C2=A0 CloseHandle(tt-&gt;hand)<=
-/div><div>=C2=A0 =C2=A0 tt-&gt;hand =3D NULL;=C2=A0</div><div><br></div><di=
-v>after &quot;if&quot; statement and before &quot;next&quot; label ?</div><=
-div>=C2=A0</div></div>-- <br><div dir=3D"ltr" class=3D"gmail_signature">-Le=
-v</div></div>
+<div dir=3D"ltr"><div dir=3D"ltr">Hi,<div><br></div></div><div class=3D"gma=
+il_quote"><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8=
+ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">@@ -688,7 +688,=
+10 @@ x_check_status(int status,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
+=C2=A0#elif defined(_WIN32)<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0/* get possible driver error from TAP-Win=
+dows driver */<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 extended_msg =3D tap_win_getinfo(tt, &amp;gc);=
+<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!tt-&gt;wintun)<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 extended_msg =3D tap_win_getinfo=
+(tt, &amp;gc);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br></blockquote><div><br></div><div><br></di=
+v><div>What if we make error.c device type agnostic and move that check int=
+o tun.c, tap_win_getinfo():</div><div><br></div><div>=C2=A0 =C2=A0 const ch=
+ar *<br>=C2=A0 =C2=A0 tap_win_getinfo(const struct tuntap *tt, struct gc_ar=
+ena *gc)<br>=C2=A0 =C2=A0 {<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (tuntap_defin=
+ed(tt) &amp;&amp; !tuntap_is_wintun(tt))<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 {<br></div><div>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 /* get debug log from tap-windows6 */</div><div><br></div><div>-Lev=
+</div></div></div>
 
---0000000000002a03bd059a212f37--
+--000000000000364c05059a215e44--
 
