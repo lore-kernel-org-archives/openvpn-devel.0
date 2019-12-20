@@ -1,13 +1,14 @@
-MIME-Version: 1.0
+Date: Fri, 20 Dec 2019 14:49:19 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20191220134919.GL74723@...1296...>
 References: <20191219223917.1614-1-simon@...2293...>
- <20191219223917.1614-7-simon@...2293...>
-In-Reply-To: <20191219223917.1614-7-simon@...2293...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Fri, 20 Dec 2019 14:06:07 +0200
-Message-ID: <CAGyAFMU9t+mUtuzmVeXLz5MO+xMZ3-1fJAQUdMDSCtoViSam6g@...278...>
-Content-Type: multipart/alternative; boundary="0000000000005106cb059a21817c"
-Subject: Re: [Openvpn-devel] [PATCH 7/7] tun.c: reword the
- at_least_one_tap_win() error
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="lG9v85r552aFjg4G"
+Content-Disposition: inline
+In-Reply-To: <20191219223917.1614-1-simon@...2293...>
+Subject: Re: [Openvpn-devel] [PATCH 1/7] tun.c: make Windows device lookup
+ functions more general
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,105 +18,58 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Simon Rozman <simon@...2293...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel@lists.sourceforge.net
 
---0000000000005106cb059a21817c
-Content-Type: text/plain; charset="UTF-8"
-
-Makes sense, since we now support both tap-windows and wintun.
-
-Acked-by: Lev Stipakov <lstipakov@...277...>
-
-pe 20. jouluk. 2019 klo 0.40 Simon Rozman (simon@...2293...) kirjoitti:
-
-> Signed-off-by: Simon Rozman <simon@...2293...>
-> ---
->  src/openvpn/tun.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-> index 8508b9c0..14ff0259 100644
-> --- a/src/openvpn/tun.c
-> +++ b/src/openvpn/tun.c
-> @@ -4031,7 +4031,7 @@ at_least_one_tap_win(const struct tap_reg *tap_reg)
->  {
->      if (!tap_reg)
->      {
-> -        msg(M_FATAL, "There are no TAP-Windows adapters on this system.
-> You should be able to create a TAP-Windows adapter by going to Start -> All
-> Programs -> TAP-Windows -> Utilities -> Add a new TAP-Windows virtual
-> ethernet adapter.");
-> +        msg(M_FATAL, "There are no TAP-Windows nor Wintun adapters on
-> this system.  You should be able to create an adapter by using tapctl.exe
-> utility.");
->      }
->  }
->
-> --
-> 2.24.1.windows.2
->
->
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
-
-
--- 
--Lev
-
---0000000000005106cb059a21817c
-Content-Type: text/html; charset="UTF-8"
+--lG9v85r552aFjg4G
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-<div dir=3D"ltr">Makes sense, since we now support both tap-windows and win=
-tun.<div><br></div><div>Acked-by: Lev Stipakov &lt;<a href=3D"mailto:lstipa=
-kov@...277...">lstipakov@...277...</a>&gt;</div></div><br><div class=3D"gma=
-il_quote"><div dir=3D"ltr" class=3D"gmail_attr">pe 20. jouluk. 2019 klo 0.4=
-0 Simon Rozman (<a href=3D"mailto:simon@...2293...">simon@...2293...</a>) k=
-irjoitti:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0p=
-x 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">Signed=
--off-by: Simon Rozman &lt;<a href=3D"mailto:simon@...2293..." target=3D"_bl=
-ank">simon@...2293...</a>&gt;<br>
----<br>
-=C2=A0src/openvpn/tun.c | 2 +-<br>
-=C2=A01 file changed, 1 insertion(+), 1 deletion(-)<br>
-<br>
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c<br>
-index 8508b9c0..14ff0259 100644<br>
---- a/src/openvpn/tun.c<br>
-+++ b/src/openvpn/tun.c<br>
-@@ -4031,7 +4031,7 @@ at_least_one_tap_win(const struct tap_reg *tap_reg)<b=
-r>
-=C2=A0{<br>
-=C2=A0 =C2=A0 =C2=A0if (!tap_reg)<br>
-=C2=A0 =C2=A0 =C2=A0{<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(M_FATAL, &quot;There are no TAP-Windows ad=
-apters on this system.=C2=A0 You should be able to create a TAP-Windows ada=
-pter by going to Start -&gt; All Programs -&gt; TAP-Windows -&gt; Utilities=
- -&gt; Add a new TAP-Windows virtual ethernet adapter.&quot;);<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(M_FATAL, &quot;There are no TAP-Windows no=
-r Wintun adapters on this system.=C2=A0 You should be able to create an ada=
-pter by using tapctl.exe utility.&quot;);<br>
-=C2=A0 =C2=A0 =C2=A0}<br>
-=C2=A0}<br>
-<br>
--- <br>
-2.24.1.windows.2<br>
-<br>
-<br>
-<br>
-_______________________________________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
-envpn-devel@lists.sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
-=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
-nfo/openvpn-devel</a><br>
-</blockquote></div><br clear=3D"all"><div><br></div>-- <br><div dir=3D"ltr"=
- class=3D"gmail_signature">-Lev</div>
+Hi,
 
---0000000000005106cb059a21817c--
+On Thu, Dec 19, 2019 at 11:39:11PM +0100, Simon Rozman wrote:
+> Since the introduction of Wintun, not all network devices in Windows are
+> TAP-Windows6. Rather than returning a simple true/false answer, a couple
+> of functions were reworked to return a corresponding struct tap_reg *
+> or NULL instead.
+>=20
+> As it would make the code `tr =3D is_tap_win(...)` a bit awkward those
+> functions (both static) were renamed to better reflect their nature.
+
+For the sake of the archives:  Simon and Lev discussed these patches
+on IRC today, came up with proposed changes, and Simon will send a new
+"v2" series of all of them - so even if they have an ACK, I won't
+apply them just yet.
+
+Just to avoid confusion.
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--lG9v85r552aFjg4G
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJd/NFfAAoJEB2Cnv7KVigStPwL/jV7le+i7183bSBaS9dO6WbA
+YFkrq242IMlOo6RdQoHgSXlkpbjNMfJ4iXAzmYX0j/rMUfIqb4v8afT2MmPir6xB
+h3eg9Xxdghe8jhvNlPbIxwm7DiZfUzbM62mrrQ6TS8ih4PEcOIcCDB3IkY7g5SuJ
+OUDQUXffehq+ykcQZ72WGkpa+X4bO0fgFyfq7TW5lNaaw3FbPKdLKkYYFsf0qUtI
+XoWLxhCT8c+EIeD2WLG10cJqzzWNa9HdGVgYfzTvZShv205xOJXAVJadvHHxDUnO
+FPmxOnEHfREbzGogMval/PiEk2eBbnt4FeiLMDG9MzBBAMNXDChbNbn9ItCPP8Qu
+SJLOAoyF1nCg6U/RMhc835+SrLK/WDNQiAZT1fYgizRcS4f/GA00uGYoQuVsiVjS
+MTQrIvyDZ1JM6ccZqKXn8YJ3mZhtW9wP30jAqABdBwrlZdRQ89N4ItvxIKg5ySuf
+Y4YciclpK+2/4C9qojZrQx4HmPh2o98lYYx3y05Xfg==
+=JiUy
+-----END PGP SIGNATURE-----
+
+--lG9v85r552aFjg4G--
 
