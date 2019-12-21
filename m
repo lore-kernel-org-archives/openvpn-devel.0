@@ -1,13 +1,13 @@
 MIME-Version: 1.0
-References: <CAGyAFMXWyKbYTPLDDd3vedDDuFY+GqNu1V=RqGvY_JhevVJBzQ@...278...>
- <20191220161117.1434-5-simon@...2293...>
-In-Reply-To: <20191220161117.1434-5-simon@...2293...>
+References: <CAGyAFMWrp0L3hJeJSPhE619hOLZVXkJWvm3oOCRdq=NqMXiKzw@...278...>
+ <20191220161117.1434-6-simon@...2293...>
+In-Reply-To: <20191220161117.1434-6-simon@...2293...>
 From: Lev Stipakov <lstipakov@...277...>
-Date: Sat, 21 Dec 2019 13:05:44 +0200
-Message-ID: <CAGyAFMUieKzMkgCe4FwBLeWYw6GopJ8b_MipqACtYFiCqOMJnQ@...278...>
-Content-Type: multipart/alternative; boundary="00000000000050083c059a34c758"
-Subject: Re: [Openvpn-devel] [PATCH v2 5/7] wintun: add support for
- --dev-node
+Date: Sat, 21 Dec 2019 13:31:24 +0200
+Message-ID: <CAGyAFMXMkCf=qoYopK0N=FrWxVvBQ4RKKKQ2y+dUnhwpjh=LPQ@...278...>
+Content-Type: multipart/alternative; boundary="0000000000001ebab6059a35238e"
+Subject: Re: [Openvpn-devel] [PATCH v2 6/7] wintun: stop sending
+ TAP-Windows6 ioctls to NDIS device
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,245 +19,67 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Simon Rozman <simon@...2293...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---00000000000050083c059a34c758
+--0000000000001ebab6059a35238e
 Content-Type: text/plain; charset="UTF-8"
 
-Compared with v1 - the difference is more helpful error message.
+Hi,
 
-Compiled, tested.
+Sorry for not mentioning it earlier.
 
-Acked-by: Lev Stipakov <lstipakov@...277...>
+There is already check in forward.c:
 
-pe 20. jouluk. 2019 klo 18.14 Simon Rozman (simon@...2293...) kirjoitti:
+    if (tuntap_defined(c->c1.tuntap))
+    {
+        tun_show_debug(c->c1.tuntap);
+    }
 
-> Signed-off-by: Simon Rozman <simon@...2293...>
-> ---
->  src/openvpn/tun.c | 38 ++++++++++++++++++++------------------
->  1 file changed, 20 insertions(+), 18 deletions(-)
->
-> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-> index f56682ef..18f06bb6 100644
-> --- a/src/openvpn/tun.c
-> +++ b/src/openvpn/tun.c
-> @@ -6196,7 +6196,6 @@ static void
->  tun_open_device(struct tuntap *tt, const char *dev_node, const char
-> **device_guid)
->  {
->      struct gc_arena gc = gc_new();
-> -    char tuntap_device_path[256];
->      const struct tap_reg* tap_reg = get_tap_reg(&gc);
->      const struct panel_reg* panel_reg = get_panel_reg(&gc);
->      const struct device_instance_id_interface*
-> device_instance_id_interface = get_device_instance_id_interface(&gc);
-> @@ -6209,31 +6208,34 @@ tun_open_device(struct tuntap *tt, const char
-> *dev_node, const char **device_gui
->       */
->      if (dev_node)
->      {
-> +        bool is_picked_device_wintun = false;
-> +
->          /* Get the device GUID for the device specified with --dev-node.
-> */
-> -        *device_guid = get_device_guid(dev_node, actual_buffer,
-> sizeof(actual_buffer), NULL, tap_reg, panel_reg, &gc);
-> +        *device_guid = get_device_guid(dev_node, actual_buffer,
-> sizeof(actual_buffer), &is_picked_device_wintun, tap_reg, panel_reg, &gc);
->
->          if (!*device_guid)
->          {
-> -            msg(M_FATAL, "TAP-Windows adapter '%s' not found", dev_node);
-> +            msg(M_FATAL, "Adapter '%s' not found", dev_node);
->          }
->
-> -        /* Open Windows TAP-Windows adapter */
-> -        openvpn_snprintf(tuntap_device_path, sizeof(tuntap_device_path),
-> "%s%s%s",
-> -                         USERMODEDEVICEDIR,
-> -                         *device_guid,
-> -                         TAP_WIN_SUFFIX);
-> -
-> -        tt->hand = CreateFile(tuntap_device_path,
-> -                              GENERIC_READ | GENERIC_WRITE,
-> -                              0,                /* was: FILE_SHARE_READ */
-> -                              0,
-> -                              OPEN_EXISTING,
-> -                              FILE_ATTRIBUTE_SYSTEM |
-> FILE_FLAG_OVERLAPPED,
-> -                              0);
-> +        if (tt->wintun)
-> +        {
-> +            if (!is_picked_device_wintun)
-> +            {
-> +                msg(M_FATAL, "Adapter '%s' is TAP-Windows, Wintun
-> expected. If you want to use this device, remove --windows-driver wintun.",
-> dev_node);
-> +            }
-> +        }
-> +        else
-> +        {
-> +            if (is_picked_device_wintun)
-> +            {
-> +                msg(M_FATAL, "Adapter '%s' is Wintun, TAP-Windows
-> expected. If you want to use this device, add --windows-driver wintun.",
-> dev_node);
-> +            }
-> +        }
->
-> -        if (tt->hand == INVALID_HANDLE_VALUE)
-> +        if (!tun_try_open_device(tt, *device_guid,
-> device_instance_id_interface))
->          {
-> -            msg(M_ERR, "CreateFile failed on TAP device: %s",
-> tuntap_device_path);
-> +            msg(M_FATAL, "Failed to open %s adapter: %s", tt->wintun ?
-> "Wintun" : "TAP-Windows", dev_node);
->          }
->      }
->      else
-> --
-> 2.24.1.windows.2
->
->
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+Same goes for tap_win_getinfo in sig.c:
 
+    if (tuntap_defined(c->c1.tuntap))
+    {
+        status_printf(so, "TAP-WIN32 driver status,\"%s\"",
+                      tap_win_getinfo(c->c1.tuntap, &gc));
+    }
+
+There is one place where that check is missing, error.c:
+
+    #elif defined(_WIN32)
+        /* get possible driver error from TAP-Windows driver */
+        extended_msg = tap_win_getinfo(tt, &gc);
+    #endif
+
+There is no need to call tuntap_defined() twice, so either
+we remove it from calling code or from tun_* methods.
+For the sake of consistency I propose to add it to error.c
+and remove from tun_* methods, which would just check for !tt->wintun.
 
 -- 
 -Lev
 
---00000000000050083c059a34c758
+--0000000000001ebab6059a35238e
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">Compared with v1 - the difference is more helpful error me=
-ssage.<div><br></div><div>Compiled, tested.</div><div><br></div><div>Acked-=
-by: Lev Stipakov &lt;<a href=3D"mailto:lstipakov@...277...">lstipakov@...1664...=
-7...</a>&gt;</div></div><br><div class=3D"gmail_quote"><div dir=3D"ltr" cla=
-ss=3D"gmail_attr">pe 20. jouluk. 2019 klo 18.14 Simon Rozman (<a href=3D"ma=
-ilto:simon@...2293...">simon@...2293...</a>) kirjoitti:<br></div><blockquot=
-e class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px s=
-olid rgb(204,204,204);padding-left:1ex">Signed-off-by: Simon Rozman &lt;<a =
-href=3D"mailto:simon@...2293..." target=3D"_blank">simon@...2293...</a>&gt;=
-<br>
----<br>
-=C2=A0src/openvpn/tun.c | 38 ++++++++++++++++++++------------------<br>
-=C2=A01 file changed, 20 insertions(+), 18 deletions(-)<br>
-<br>
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c<br>
-index f56682ef..18f06bb6 100644<br>
---- a/src/openvpn/tun.c<br>
-+++ b/src/openvpn/tun.c<br>
-@@ -6196,7 +6196,6 @@ static void<br>
-=C2=A0tun_open_device(struct tuntap *tt, const char *dev_node, const char *=
-*device_guid)<br>
-=C2=A0{<br>
-=C2=A0 =C2=A0 =C2=A0struct gc_arena gc =3D gc_new();<br>
--=C2=A0 =C2=A0 char tuntap_device_path[256];<br>
-=C2=A0 =C2=A0 =C2=A0const struct tap_reg* tap_reg =3D get_tap_reg(&amp;gc);=
-<br>
-=C2=A0 =C2=A0 =C2=A0const struct panel_reg* panel_reg =3D get_panel_reg(&am=
-p;gc);<br>
-=C2=A0 =C2=A0 =C2=A0const struct device_instance_id_interface* device_insta=
-nce_id_interface =3D get_device_instance_id_interface(&amp;gc);<br>
-@@ -6209,31 +6208,34 @@ tun_open_device(struct tuntap *tt, const char *dev_=
-node, const char **device_gui<br>
-=C2=A0 =C2=A0 =C2=A0 */<br>
-=C2=A0 =C2=A0 =C2=A0if (dev_node)<br>
-=C2=A0 =C2=A0 =C2=A0{<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 bool is_picked_device_wintun =3D false;<br>
-+<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0/* Get the device GUID for the device spe=
-cified with --dev-node. */<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 *device_guid =3D get_device_guid(dev_node, act=
-ual_buffer, sizeof(actual_buffer), NULL, tap_reg, panel_reg, &amp;gc);<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 *device_guid =3D get_device_guid(dev_node, act=
-ual_buffer, sizeof(actual_buffer), &amp;is_picked_device_wintun, tap_reg, p=
-anel_reg, &amp;gc);<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0if (!*device_guid)<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(M_FATAL, &quot;TAP-Windows a=
-dapter &#39;%s&#39; not found&quot;, dev_node);<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(M_FATAL, &quot;Adapter &#39;=
-%s&#39; not found&quot;, dev_node);<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
-<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 /* Open Windows TAP-Windows adapter */<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 openvpn_snprintf(tuntap_device_path, sizeof(tu=
-ntap_device_path), &quot;%s%s%s&quot;,<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0USERMODEDEVICEDIR,<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0*device_guid,<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0TAP_WIN_SUFFIX);<br>
--<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 tt-&gt;hand =3D CreateFile(tuntap_device_path,=
-<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 GENERIC_READ | GENERIC_WRITE,<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 0,=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 /* was: FILE_SHARE_READ */<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 0,<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 OPEN_EXISTING,<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPE=
-D,<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 0);<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (tt-&gt;wintun)<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!is_picked_device_wintun)<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(M_FATAL, &quot=
-;Adapter &#39;%s&#39; is TAP-Windows, Wintun expected. If you want to use t=
-his device, remove --windows-driver wintun.&quot;, dev_node);<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 else<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (is_picked_device_wintun)<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(M_FATAL, &quot=
-;Adapter &#39;%s&#39; is Wintun, TAP-Windows expected. If you want to use t=
-his device, add --windows-driver wintun.&quot;, dev_node);<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
-<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (tt-&gt;hand =3D=3D INVALID_HANDLE_VALUE)<b=
-r>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!tun_try_open_device(tt, *device_guid, dev=
-ice_instance_id_interface))<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(M_ERR, &quot;CreateFile fail=
-ed on TAP device: %s&quot;, tuntap_device_path);<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(M_FATAL, &quot;Failed to ope=
-n %s adapter: %s&quot;, tt-&gt;wintun ? &quot;Wintun&quot; : &quot;TAP-Wind=
-ows&quot;, dev_node);<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
-=C2=A0 =C2=A0 =C2=A0}<br>
-=C2=A0 =C2=A0 =C2=A0else<br>
--- <br>
-2.24.1.windows.2<br>
-<br>
-<br>
-<br>
-_______________________________________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
-envpn-devel@lists.sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
-=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
-nfo/openvpn-devel</a><br>
-</blockquote></div><br clear=3D"all"><div><br></div>-- <br><div dir=3D"ltr"=
- class=3D"gmail_signature">-Lev</div>
+<div dir=3D"ltr"><div dir=3D"ltr">Hi,<div><br></div><div>Sorry for not ment=
+ioning it=C2=A0earlier.</div><div><br></div><div>There is already check in =
+forward.c:</div><div><br></div><div>=C2=A0 =C2=A0 if (tuntap_defined(c-&gt;=
+c1.tuntap))<br>=C2=A0 =C2=A0 {<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 tun_show_debu=
+g(c-&gt;c1.tuntap);<br>=C2=A0 =C2=A0 }<br></div><div><br></div><div>Same go=
+es for tap_win_getinfo in sig.c:</div><div><br></div><div>=C2=A0 =C2=A0 if =
+(tuntap_defined(c-&gt;c1.tuntap))<br>=C2=A0 =C2=A0 {<br>=C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 status_printf(so, &quot;TAP-WIN32 driver status,\&quot;%s\&quot;=
+&quot;,<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 tap_win_getinfo(c-&gt;c1.tuntap, &amp;gc));<br>=C2=A0 =C2=A0 =
+}<br></div><div><br></div><div>There is one place where that check is missi=
+ng, error.c:</div><div><br></div><div>=C2=A0 =C2=A0 #elif defined(_WIN32)<b=
+r>=C2=A0 =C2=A0 =C2=A0 =C2=A0 /* get possible driver error from TAP-Windows=
+ driver */<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 extended_msg =3D tap_win_getinfo(=
+tt, &amp;gc);<br>=C2=A0 =C2=A0 #endif<br></div><div><br></div><div>There is=
+ no need to call tuntap_defined() twice, so either=C2=A0</div><div>we remov=
+e it from calling code or from tun_* methods.</div><div>For the sake of con=
+sistency I propose to add it to error.c</div><div>and remove from tun_* met=
+hods, which would just check for=C2=A0!tt-&gt;wintun.</div><div><br></div><=
+/div>-- <br><div dir=3D"ltr" class=3D"gmail_signature">-Lev</div></div>
 
---00000000000050083c059a34c758--
+--0000000000001ebab6059a35238e--
 
