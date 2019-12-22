@@ -1,10 +1,10 @@
-Date: Sun, 22 Dec 2019 20:05:49 +0100 (CET)
-Message-Id: <201912221905.xBMJ5n8H088231@...2054...>
+Date: Sun, 22 Dec 2019 20:09:30 +0100 (CET)
+Message-Id: <201912221909.xBMJ9U6X088292@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20191220161117.1434-3-simon@...2293...>
-References: <20191220161117.1434-3-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH applied] Re: tun.c: make
- wintun_register_ring_buffer() non-fatal on failures
+In-Reply-To: <20191220193805.34-1-simon@...2293...>
+References: <20191220193805.34-1-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: wintun: register ring buffers
+ when iterating adapters
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,18 +20,21 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master branch.
 
-Compile-tested on Ubuntu1604, stared a bit at the code.
+Compile tested on Ubuntu 1604/mingw.  Lightly stared at the code.  
 
-commit 9a8966c2cbe796a51aa971e83850a2de8f4531ec
+Explanation makes sense (but I have not looked hard enough to see if
+it actually does what it says :) ).
+
+commit c1a555585c90aa26390ef2f50cadd479b47541f2
 Author: Simon Rozman
-Date:   Fri Dec 20 17:11:13 2019 +0100
+Date:   Fri Dec 20 20:38:05 2019 +0100
 
-     tun.c: make wintun_register_ring_buffer() non-fatal on failures
+     wintun: register ring buffers when iterating adapters
 
      Signed-off-by: Simon Rozman <simon@...2293...>
      Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20191220161117.1434-3-simon@...2293...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19283.html
+     Message-Id: <20191220193805.34-1-simon@...2293...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19288.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
