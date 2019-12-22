@@ -1,10 +1,10 @@
-Date: Sun, 22 Dec 2019 20:00:47 +0100 (CET)
-Message-Id: <201912221900.xBMJ0lIl088107@...2054...>
+Date: Sun, 22 Dec 2019 20:05:49 +0100 (CET)
+Message-Id: <201912221905.xBMJ5n8H088231@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20191220161117.1434-2-simon@...2293...>
-References: <20191220161117.1434-2-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH applied] Re: tun.c: upgrade
- get_device_guid() to return the Windows driver type
+In-Reply-To: <20191220161117.1434-3-simon@...2293...>
+References: <20191220161117.1434-3-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: tun.c: make
+ wintun_register_ring_buffer() non-fatal on failures
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,22 +20,18 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master branch.
 
-Compile tested on Ubuntu 1604 and stared at code.
+Compile-tested on Ubuntu1604, stared a bit at the code.
 
-As a side note: the granularity of this one is a bit too fine-grained 
-for my taste - it changes the function, but none of the callers make
-use of it, so it's somewhat of a no-op and hard to test.
-
-commit 9db385f2d179bbc578112e7526b51d424a62aac5
+commit 9a8966c2cbe796a51aa971e83850a2de8f4531ec
 Author: Simon Rozman
-Date:   Fri Dec 20 17:11:12 2019 +0100
+Date:   Fri Dec 20 17:11:13 2019 +0100
 
-     tun.c: upgrade get_device_guid() to return the Windows driver type
+     tun.c: make wintun_register_ring_buffer() non-fatal on failures
 
      Signed-off-by: Simon Rozman <simon@...2293...>
      Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20191220161117.1434-2-simon@...2293...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19277.html
+     Message-Id: <20191220161117.1434-3-simon@...2293...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19283.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
