@@ -1,13 +1,15 @@
+Date: Sun, 22 Dec 2019 19:33:08 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20191222183308.GP74723@...1296...>
+References: <961fb2b3-ca10-1549-3ec8-a408e0072e2f@...515...>
+ <CAFdgGSB4qc1KsfQB+67oub+P2J7pMPb6W6d6jZzgZzsB7m_0Og@...278...>
 MIME-Version: 1.0
-References: <CAGyAFMU9t+mUtuzmVeXLz5MO+xMZ3-1fJAQUdMDSCtoViSam6g@...278...>
- <20191220161117.1434-7-simon@...2293...>
-In-Reply-To: <20191220161117.1434-7-simon@...2293...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Sat, 21 Dec 2019 13:33:44 +0200
-Message-ID: <CAGyAFMXKSR4NSNmU8BzvJ8y=m=2W2i-EYyu-_pGGYC_XAFA2DA@...278...>
-Content-Type: multipart/alternative; boundary="0000000000007307d9059a352b7e"
-Subject: Re: [Openvpn-devel] [PATCH v2 7/7] tun.c: reword the
- at_least_one_tap_win() error
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="jTlsQtO0VwrbBARu"
+Content-Disposition: inline
+In-Reply-To: <CAFdgGSB4qc1KsfQB+67oub+P2J7pMPb6W6d6jZzgZzsB7m_0Og@...278...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] Removing --disable-server
+ option from OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,108 +18,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Simon Rozman <simon@...2293...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Yevgeny Kosarzhevsky <phaoost@...277...>
+Cc: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
 
---0000000000007307d9059a352b7e
-Content-Type: text/plain; charset="UTF-8"
-
-No changed from v1.
-
-Compiled on MSVC.
-
-Acked-by: Lev Stipakov <lstipakov@...277...>
-
-pe 20. jouluk. 2019 klo 18.15 Simon Rozman (simon@...2293...) kirjoitti:
-
-> Signed-off-by: Simon Rozman <simon@...2293...>
-> ---
->  src/openvpn/tun.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-> index 6762402c..4e16f989 100644
-> --- a/src/openvpn/tun.c
-> +++ b/src/openvpn/tun.c
-> @@ -4031,7 +4031,7 @@ at_least_one_tap_win(const struct tap_reg *tap_reg)
->  {
->      if (!tap_reg)
->      {
-> -        msg(M_FATAL, "There are no TAP-Windows adapters on this system.
-> You should be able to create a TAP-Windows adapter by going to Start -> All
-> Programs -> TAP-Windows -> Utilities -> Add a new TAP-Windows virtual
-> ethernet adapter.");
-> +        msg(M_FATAL, "There are no TAP-Windows nor Wintun adapters on
-> this system.  You should be able to create an adapter by using tapctl.exe
-> utility.");
->      }
->  }
->
-> --
-> 2.24.1.windows.2
->
->
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
-
-
--- 
--Lev
-
---0000000000007307d9059a352b7e
-Content-Type: text/html; charset="UTF-8"
+--jTlsQtO0VwrbBARu
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-<div dir=3D"ltr">No changed from v1.<div><br></div><div>Compiled on MSVC.<b=
-r><div><br></div><div>Acked-by: Lev Stipakov &lt;<a href=3D"mailto:lstipako=
-v@...277...">lstipakov@...277...</a>&gt;</div></div></div><br><div class=3D=
-"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">pe 20. jouluk. 2019 klo=
- 18.15 Simon Rozman (<a href=3D"mailto:simon@...2293...">simon@...2293...</=
-a>) kirjoitti:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0=
-px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">S=
-igned-off-by: Simon Rozman &lt;<a href=3D"mailto:simon@...2293..." target=
-=3D"_blank">simon@...2293...</a>&gt;<br>
----<br>
-=C2=A0src/openvpn/tun.c | 2 +-<br>
-=C2=A01 file changed, 1 insertion(+), 1 deletion(-)<br>
-<br>
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c<br>
-index 6762402c..4e16f989 100644<br>
---- a/src/openvpn/tun.c<br>
-+++ b/src/openvpn/tun.c<br>
-@@ -4031,7 +4031,7 @@ at_least_one_tap_win(const struct tap_reg *tap_reg)<b=
-r>
-=C2=A0{<br>
-=C2=A0 =C2=A0 =C2=A0if (!tap_reg)<br>
-=C2=A0 =C2=A0 =C2=A0{<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(M_FATAL, &quot;There are no TAP-Windows ad=
-apters on this system.=C2=A0 You should be able to create a TAP-Windows ada=
-pter by going to Start -&gt; All Programs -&gt; TAP-Windows -&gt; Utilities=
- -&gt; Add a new TAP-Windows virtual ethernet adapter.&quot;);<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(M_FATAL, &quot;There are no TAP-Windows no=
-r Wintun adapters on this system.=C2=A0 You should be able to create an ada=
-pter by using tapctl.exe utility.&quot;);<br>
-=C2=A0 =C2=A0 =C2=A0}<br>
-=C2=A0}<br>
-<br>
--- <br>
-2.24.1.windows.2<br>
-<br>
-<br>
-<br>
-_______________________________________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
-envpn-devel@lists.sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
-=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
-nfo/openvpn-devel</a><br>
-</blockquote></div><br clear=3D"all"><div><br></div>-- <br><div dir=3D"ltr"=
- class=3D"gmail_signature">-Lev</div>
+Hi,
 
---0000000000007307d9059a352b7e--
+On Sun, Dec 22, 2019 at 08:36:00PM +0300, Yevgeny Kosarzhevsky wrote:
+> On Wed, 18 Sep 2019 at 13:39, Samuli Sepp=E4nen <samuli@...515...> wrote:
+> >
+> > We are considering removing the --disable-server option from OpenVPN in=
+ 2.5.
+> >
+> > Do you use (and need) it, or know of somebody using (and needing) it?
+>=20
+> I would say this is very useful option that is used to build many
+> customized clients. It's sad to know you are going to remove it.
+
+Are you *using* it?
+
+We have not heard from anyone yet who says "I use this, for this-and-that
+reason".
+
+Not even the embedded distributions (where space is a real premium) are
+using it.
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--jTlsQtO0VwrbBARu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJd/7bjAAoJEB2Cnv7KVigSoE4L/2IFDu9oVnuu5P0YEqcAkPib
+V6+8rQT6HLRoWpfoMs/QFrTpxftfSdbIuYxtKq1tiWXQAIlSL73Un0zjyepaYSgT
+vLeqoSYGN6ApuIggrVKvQy+GGSx3ycz+GkcbMkydGk/6XiX1HUq4/hbgM2rS0MiR
+KSER9NZ0PGF6db6MPSIVVXFDVP4GGJJOBoj0BhthhkP497IkW7OJrTcYpkOQhbJR
+NJEAiOgGi21C5Ea/yO1jL0Ku4VPyGwlBJzjheDLSVlg80qNDDNlX8RZv9ADsG7KW
+0iuoT2PMBcIdXEufPZICfTzLZjCq6+B0ZHM3hV6xmnmEuwI2RhFnK7Bqoxd4/Xx9
+z+tsQzQ8/WBsHUs7VIgVtONIar6mH0AHFkZcOcuw5JdT2q0S3IvUlY1neIIEEDAT
+kSMl2bfKtX/QFqWNyhgEl8RuZCG/eTKP0I4HiLD7FfzbWA7+hDrnmPLSYGoYsNeq
+AWeeob4H53e/tkXM3N0AJmwBvVNAIVw7IsUh2tFlfA==
+=Cq8n
+-----END PGP SIGNATURE-----
+
+--jTlsQtO0VwrbBARu--
 
