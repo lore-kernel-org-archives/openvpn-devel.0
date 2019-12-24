@@ -1,10 +1,17 @@
-Date: Sun, 22 Dec 2019 20:15:40 +0100 (CET)
-Message-Id: <201912221915.xBMJFejQ088502@...2054...>
+Date: Tue, 24 Dec 2019 09:35:53 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20191220161117.1434-7-simon@...2293...>
-References: <20191220161117.1434-7-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH applied] Re: tun.c: reword the
- at_least_one_tap_win() error
+Message-ID: <20191224083553.GD74723@...1296...>
+References: <961fb2b3-ca10-1549-3ec8-a408e0072e2f@...515...>
+ <CAFdgGSB4qc1KsfQB+67oub+P2J7pMPb6W6d6jZzgZzsB7m_0Og@...278...>
+ <20191222183308.GP74723@...1296...>
+ <CAFdgGSD5EzgzOqRCDaaBe45qUvqV-NmcKU3ZVmwOdBnw4MUSbg@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="QVzQgM+zdZ3YWXqn"
+Content-Disposition: inline
+In-Reply-To: <CAFdgGSD5EzgzOqRCDaaBe45qUvqV-NmcKU3ZVmwOdBnw4MUSbg@...278...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] Removing --disable-server
+ option from OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,32 +20,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Simon Rozman <simon@...2293...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Yevgeny Kosarzhevsky <phaoost@...277...>
+Cc: Gert Doering <gert@...1296...>, Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
 
-Your patch has been applied to the master branch.
+--QVzQgM+zdZ3YWXqn
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-"Not even compile tested" :-) - but it has enough quotes and the new
-msg() obviously makes sense.
+Hi,
 
-commit eebce22bd18254fd14a1e6dc048b8bac26bef0e2
-Author: Simon Rozman
-Date:   Fri Dec 20 17:11:17 2019 +0100
+On Tue, Dec 24, 2019 at 10:27:07AM +0300, Yevgeny Kosarzhevsky wrote:
+> > > > We are considering removing the --disable-server option from OpenVP=
+N in 2.5.
+[..]
+> Yes I am using it to build some patched versions as well as no-replay
+> and no-iv options to build plain tunnels.
 
-     tun.c: reword the at_least_one_tap_win() error
+But why?  For size reasons?
 
-     Signed-off-by: Simon Rozman <simon@...2293...>
-     Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20191220161117.1434-7-simon@...2293...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19278.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+On the developer side, this option adds quite a bit of extra maintenance
+effort (because quite often, a new patch works nice with default option
+but breaks compilation with --disable-server), so there needs to be a
+really good reason to keep the option.
 
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
---
-kind regards,
+Gert Doering - Munich, Germany                             gert@...1296...
 
-Gert Doering
+--QVzQgM+zdZ3YWXqn
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJeAc3oAAoJEB2Cnv7KVigSBYYMAJry15oGNpcdssFjNwFHK94O
+fmOwsmxRF7R6Vdq6GCRXi4rLSO+B5bIVBv1B7k+UnHm82df9+vJDkmQuIT2VReuQ
+TvK1H/1R+CuiQN8J1wlBzwV6oQgAIQ66GfjSV6DZIpBPXj/t01szDXpMNngvmZbo
+daxSzNnqIfX081pCLQwOqpiZqF3Oq+PhwlgebEwhnP++a5OcmAIkouL9BpLCm4DS
+DlbgpeioIT1Hxp8PcFDAIXPi1RjzcZOVGk2+K2WLwzb5ZNLOnjUTT/+3OYk7elJl
+qJVZHpLl6GaU7dOsPSxi4ujvMQx56zYfAZiSJxhUy1o3Lb+34S9En4qoLBoIIWGU
+Aa+Gw4FSU0onVWum2OaW8+ZBag+kXob8XU0ItZkZs7lDGZy75czLO/ahHwnobqbk
+T/tKhklQQhKy0GdO0EEKEggPBH4kNzRIl/0ZD1MGbsrRgSSLCMVcXvg2XQAtkOOq
+6c9jgWxnUIZq6peBIY+Hc9ExIo9uCZH1m9OHFdjr3w==
+=zITn
+-----END PGP SIGNATURE-----
+
+--QVzQgM+zdZ3YWXqn--
 
