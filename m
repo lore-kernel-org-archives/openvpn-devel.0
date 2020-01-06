@@ -1,13 +1,11 @@
-Date: Mon, 6 Jan 2020 09:55:30 +0100
-From: Christian Hesse <list@...1798...>
-Message-ID: <20200106095530.1820a5cc@...1799...>
-In-Reply-To: <BN7PR04MB5251B27BE1C62779CA7B4876FD3C0@...2532...>
-References: <20200106080426.40701-1-list@...1798...>
- <BN7PR04MB5251B27BE1C62779CA7B4876FD3C0@...2532...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <1d06b859-f531-5314-499a-11c70bb6363a@...515...>
+Date: Mon, 6 Jan 2020 12:23:52 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/ZYIIWpTTaklsQVjz=joROr7";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-Subject: Re: [Openvpn-devel] [PATCH 1/1] configure.ac: replace set with env
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="2fhjy0vpEfd95CMfwNQ9TKMwRMBB5cudc"
+Subject: [Openvpn-devel] Community meetings in January 2020
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,39 +14,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Tom Yan <tom.ty89@...277...>
-Cc: OpenVPN Development <openvpn-devel@lists.sourceforge.net>, Christian Hesse <mail@...1798...>
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Sig_/ZYIIWpTTaklsQVjz=joROr7
-Content-Type: text/plain; charset="US-ASCII"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--2fhjy0vpEfd95CMfwNQ9TKMwRMBB5cudc
+Content-Type: multipart/mixed; boundary="XENORCio2UMfFwTJC79culvWfbyazxEhL"
+
+--XENORCio2UMfFwTJC79culvWfbyazxEhL
+Content-Language: en-US
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-Tom Yan <tom.ty89@...277...> on Mon, 2020/01/06 08:48:
-> How about printenv (without grep)?
+Hi,
 
-The variables are not known in advance. This needs to match all variables
-starting with "enable_" and "with_".
---=20
-main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
-"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
-+];)
-putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
+Our community meetings will alternate between Wed 11:30 CET and Thu
+20:00 CET.
 
---Sig_/ZYIIWpTTaklsQVjz=joROr7
-Content-Type: application/pgp-signature
+Next meetings have been scheduled to
+
+- Wed 8th  January 11:30 CET
+- Thu 16th January 20:00 CET
+- Wed 22nd January 11:30 CET
+- Thu 30th January 20:00 CET
+
+The place is #openvpn-meeting IRC channel at Freenode. Meeting agendas
+and summaries are in here:
+
+<https://community.openvpn.net/openvpn/wiki/IrcMeetings>
+
+Samuli
+
+
+
+
+
+
+
+--XENORCio2UMfFwTJC79culvWfbyazxEhL--
+
+--2fhjy0vpEfd95CMfwNQ9TKMwRMBB5cudc
+Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAl4S9gIACgkQiUUh18yA
-9HaGUAf/XZr03fiMu6TCx2LinVuDcd/yOzJ/t+dBmBezckNxd/kVeXkyTi5hsvR/
-hJI8FYeC/kGZcqZUtx5e9OeMW255/+P9FX5I6jzhXmHKVWLJucTb7L143Qlvb5n8
-Lp62LhGNYMCcmqn0tophcgPYmAymuKFYZADwSMHFykGSWiT7aEMadLLcr260ZJqV
-lPTWesFVoCze9UPv3ynWP0DmvNpexrfVQbhpnvIkezGRKBz7qFgEgvS+GyaRw9Fu
-Z18XmXXH6p8lHbAQOuxGPqSMbyf7r22n0mzDqu1eXr2+4V+QAlO1xypZgx2i7ktz
-rLhPJMQOrRMFYV43SixQEvAgdLeWJw==
-=3W4b
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAl4TCrkACgkQKVhNn0CG
+RXguuAf+Lt8AMERjRpjVGW+WB/RhomoXwntIxdhHAolF9ZvlPa7ufebQGWeAlii5
+LEe8I+nG9wNs7UGro1QNVPgRvznEITm55ZjjzcUd8c8wRe2kDkAP4SEHJWrQ4EgQ
+CbXRjpnLAJMk+XOQgW/9mRioq0V4RDhWYX514oIpEHB7M7mGckqef+Jxv54/+lV5
++fwE7BM2CMK2YXZJ/+rnbkb3gJWSpiKScsgniQRs9g1Vb4YOuzmGbuVAl50+O8xx
+MkteOXZrhrP5NZBvKZbcIgjBQYuvmLOMuCoe0q7IYFQlcZ/QSdAa4yyry9LlBfS2
+8Q8ZVzH8han87BWRJyuQhkmyeN0ldA==
+=hp4j
 -----END PGP SIGNATURE-----
 
---Sig_/ZYIIWpTTaklsQVjz=joROr7--
+--2fhjy0vpEfd95CMfwNQ9TKMwRMBB5cudc--
 
