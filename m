@@ -1,14 +1,9 @@
 From: Simon Rozman <simon@...2293...>
-Date: Thu, 16 Jan 2020 13:19:47 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE10D064BDE6@...2294...>
-References: <20191219132953.375-1-lstipakov@...277...>
-In-Reply-To: <20191219132953.375-1-lstipakov@...277...>
-Content-Language: en-US
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
- micalg=SHA1; boundary="----=_NextPart_000_0007_01D5CC78.010256D0"
+Date: Thu, 16 Jan 2020 15:19:00 +0100
+Message-Id: <20200116141900.1524-1-simon@...2293...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] options.c: do not force route delay
- when not using DHCP
+Subject: [Openvpn-devel] [PATCH] wintun: refactor code to use enum driver
+ type
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,188 +12,478 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Cc: Lev Stipakov <lev@...515...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-------=_NextPart_000_0007_01D5CC78.010256D0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Signed-off-by: Simon Rozman <simon@...2293...>
+---
+ src/openvpn/forward.c |   4 +-
+ src/openvpn/init.c    |   2 +-
+ src/openvpn/options.c |  16 +++----
+ src/openvpn/options.h |   2 +-
+ src/openvpn/tun.c     | 108 ++++++++++++++++++++----------------------
+ src/openvpn/tun.h     |  16 +++++--
+ 6 files changed, 75 insertions(+), 73 deletions(-)
 
-Code looks reasonable. Tested it.
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 6b823613..ea10f0bf 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1258,7 +1258,7 @@ read_incoming_tun(struct context *c)
+     c->c2.buf = c->c2.buffers->read_tun_buf;
+ 
+ #ifdef _WIN32
+-    if (c->c1.tuntap->wintun)
++    if (c->c1.tuntap->windows_driver == WINDOWS_DRIVER_WINTUN)
+     {
+         read_wintun(c->c1.tuntap, &c->c2.buf);
+         if (c->c2.buf.len == -1)
+@@ -1274,7 +1274,7 @@ read_incoming_tun(struct context *c)
+     {
+         read_tun_buffered(c->c1.tuntap, &c->c2.buf);
+     }
+-#else
++#else  /* ifdef _WIN32 */
+     ASSERT(buf_init(&c->c2.buf, FRAME_HEADROOM(&c->c2.frame)));
+     ASSERT(buf_safe(&c->c2.buf, MAX_RW_SIZE_TUN(&c->c2.frame)));
+     c->c2.buf.len = read_tun(c->c1.tuntap, BPTR(&c->c2.buf), MAX_RW_SIZE_TUN(&c->c2.frame));
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 0bdb0a9c..ec444f47 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1734,7 +1734,7 @@ do_init_tun(struct context *c)
+                             &c->net_ctx);
+ 
+ #ifdef _WIN32
+-    c->c1.tuntap->wintun = c->options.wintun;
++    c->c1.tuntap->windows_driver = c->options.windows_driver;
+ #endif
+ 
+     init_tun_post(c->c1.tuntap,
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index a6f40e10..709ba4bb 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -854,7 +854,7 @@ init_options(struct options *o, const bool init_gc)
+     o->tuntap_options.dhcp_masq_offset = 0;     /* use network address as internal DHCP server address */
+     o->route_method = ROUTE_METHOD_ADAPTIVE;
+     o->block_outside_dns = false;
+-    o->wintun = false;
++    o->windows_driver = WINDOWS_DRIVER_TAP_WINDOWS6;
+ #endif
+     o->vlan_accept = VLAN_ALL;
+     o->vlan_pvid = 1;
+@@ -3002,7 +3002,7 @@ options_postprocess_mutate_invariant(struct options *options)
+ 
+ #ifdef _WIN32
+     /* when using wintun, kernel doesn't send DHCP requests, so use netsh to set IP address and netmask */
+-    if (options->wintun)
++    if (options->windows_driver == WINDOWS_DRIVER_WINTUN)
+     {
+         options->tuntap_options.ip_win32_type = IPW32_SET_NETSH;
+     }
+@@ -4076,23 +4076,23 @@ foreign_option(struct options *o, char *argv[], int len, struct env_set *es)
+  *
+  * @param str       value of --windows-driver option
+  * @param msglevel  msglevel to report parsing error
+- * @return bool     true if --windows-driver is wintun, false otherwise
++ * @return enum windows_driver_type  driver type, WINDOWS_DRIVER_UNSPECIFIED on unknown --windows-driver value
+  */
+-static bool
++static enum windows_driver_type
+ parse_windows_driver(const char *str, const int msglevel)
+ {
+     if (streq(str, "tap-windows6"))
+     {
+-        return false;
++        return WINDOWS_DRIVER_TAP_WINDOWS6;
+     }
+     else if (streq(str, "wintun"))
+     {
+-        return true;
++        return WINDOWS_DRIVER_WINTUN;
+     }
+     else
+     {
+         msg(msglevel, "--windows-driver must be tap-windows6 or wintun");
+-        return false;
++        return WINDOWS_DRIVER_UNSPECIFIED;
+     }
+ }
+ #endif
+@@ -5367,7 +5367,7 @@ add_option(struct options *options,
+     else if (streq(p[0], "windows-driver") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+-        options->wintun = parse_windows_driver(p[1], M_FATAL);
++        options->windows_driver = parse_windows_driver(p[1], M_FATAL);
+     }
+ #endif
+     else if (streq(p[0], "dev-node") && p[1] && !p[2])
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 7fd2c00f..84d05f26 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -634,7 +634,7 @@ struct options
+     bool show_net_up;
+     int route_method;
+     bool block_outside_dns;
+-    bool wintun;
++    enum windows_driver_type windows_driver;
+ #endif
+ 
+     bool use_peer_id;
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 32a3f756..af09e676 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -786,7 +786,7 @@ init_tun_post(struct tuntap *tt,
+     overlapped_io_init(&tt->writes, frame, TRUE, true);
+     tt->adapter_index = TUN_ADAPTER_INDEX_INVALID;
+ 
+-    if (tt->wintun)
++    if (tt->windows_driver == WINDOWS_DRIVER_WINTUN)
+     {
+         tt->wintun_send_ring_handle = CreateFileMapping(INVALID_HANDLE_VALUE, NULL,
+                                                         PAGE_READWRITE,
+@@ -1388,7 +1388,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
+     {
+         ASSERT(ifname != NULL);
+ 
+-        if (tt->options.msg_channel && tt->wintun)
++        if (tt->options.msg_channel && tt->windows_driver == WINDOWS_DRIVER_WINTUN)
+         {
+             do_address_service(true, AF_INET, tt);
+             do_dns_service(true, AF_INET, tt);
+@@ -3253,6 +3253,22 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+ 
+ #elif defined(_WIN32)
+ 
++static const char *
++print_windows_driver(enum windows_driver_type windows_driver)
++{
++    switch (windows_driver)
++    {
++        case WINDOWS_DRIVER_TAP_WINDOWS6:
++            return "tap-windows6";
++
++        case WINDOWS_DRIVER_WINTUN:
++            return "wintun";
++
++        default:
++            return "unspecified";
++    }
++}
++
+ int
+ tun_read_queue(struct tuntap *tt, int maxsize)
+ {
+@@ -3676,14 +3692,16 @@ get_tap_reg(struct gc_arena *gc)
+ 
+                 if (status == ERROR_SUCCESS && data_type == REG_SZ)
+                 {
+-                    if (!strcmp(component_id, TAP_WIN_COMPONENT_ID) ||
+-                        !strcmp(component_id, "root\\" TAP_WIN_COMPONENT_ID) ||
+-                        !strcmp(component_id, WINTUN_COMPONENT_ID))
++                    enum windows_driver_type windows_driver = WINDOWS_DRIVER_UNSPECIFIED;
++
++                    if ((windows_driver = WINDOWS_DRIVER_TAP_WINDOWS6, !strcmp(component_id, TAP_WIN_COMPONENT_ID))
++                        || (windows_driver = WINDOWS_DRIVER_TAP_WINDOWS6, !strcmp(component_id, "root\\" TAP_WIN_COMPONENT_ID))
++                        || (windows_driver = WINDOWS_DRIVER_WINTUN, !strcmp(component_id, WINTUN_COMPONENT_ID)))
+                     {
+                         struct tap_reg *reg;
+                         ALLOC_OBJ_CLEAR_GC(reg, struct tap_reg, gc);
+                         reg->guid = string_alloc(net_cfg_instance_id, gc);
+-                        reg->wintun = !strcmp(component_id, WINTUN_COMPONENT_ID);
++                        reg->windows_driver = windows_driver;
+ 
+                         /* link into return list */
+                         if (!first)
+@@ -3926,7 +3944,7 @@ show_tap_win_adapters(int msglev, int warnlev)
+         {
+             if (!strcmp(tr->guid, pr->guid))
+             {
+-                msg(msglev, "'%s' %s %s", pr->name, tr->guid, tr->wintun ? "wintun" : "tap-windows6");
++                msg(msglev, "'%s' %s %s", pr->name, tr->guid, print_windows_driver(tr->windows_driver));
+                 ++links;
+             }
+         }
+@@ -4045,7 +4063,7 @@ get_unspecified_device_guid(const int device_number,
+                             int actual_name_size,
+                             const struct tap_reg *tap_reg_src,
+                             const struct panel_reg *panel_reg_src,
+-                            bool *wintun,
++                            enum windows_driver_type *windows_driver,
+                             struct gc_arena *gc)
+ {
+     const struct tap_reg *tap_reg = tap_reg_src;
+@@ -4095,9 +4113,9 @@ get_unspecified_device_guid(const int device_number,
+     /* Save GUID for return value */
+     ret = alloc_buf_gc(256, gc);
+     buf_printf(&ret, "%s", tap_reg->guid);
+-    if (wintun != NULL)
++    if (windows_driver != NULL)
+     {
+-        *wintun = tap_reg->wintun;
++        *windows_driver = tap_reg->windows_driver;
+     }
+     return BSTR(&ret);
+ }
+@@ -4110,7 +4128,7 @@ static const char *
+ get_device_guid(const char *name,
+                 char *actual_name,
+                 int actual_name_size,
+-                bool *wintun,
++                enum windows_driver_type *windows_driver,
+                 const struct tap_reg *tap_reg,
+                 const struct panel_reg *panel_reg,
+                 struct gc_arena *gc)
+@@ -4146,9 +4164,9 @@ get_device_guid(const char *name,
+         {
+             buf_printf(&actual, "%s", name);
+         }
+-        if (wintun)
++        if (windows_driver)
+         {
+-            *wintun = tr->wintun;
++            *windows_driver = tr->windows_driver;
+         }
+         return BSTR(&ret);
+     }
+@@ -4159,9 +4177,9 @@ get_device_guid(const char *name,
+         if (tr)
+         {
+             buf_printf(&actual, "%s", name);
+-            if (wintun)
++            if (windows_driver)
+             {
+-                *wintun = tr->wintun;
++                *windows_driver = tr->windows_driver;
+             }
+             buf_printf(&ret, "%s", tr->guid);
+             return BSTR(&ret);
+@@ -6135,7 +6153,7 @@ tun_try_open_device(struct tuntap *tt, const char *device_guid, const struct dev
+     const char *path = NULL;
+     char tuntap_device_path[256];
+ 
+-    if (tt->wintun)
++    if (tt->windows_driver == WINDOWS_DRIVER_WINTUN)
+     {
+         const struct device_instance_id_interface *dev_if;
+ 
+@@ -6172,11 +6190,11 @@ tun_try_open_device(struct tuntap *tt, const char *device_guid, const struct dev
+                    0);
+     if (tt->hand == INVALID_HANDLE_VALUE)
+     {
+-        msg(D_TUNTAP_INFO, "CreateFile failed on %s device: %s", tt->wintun ? "Wintun" : "TAP-Windows", path);
++        msg(D_TUNTAP_INFO, "CreateFile failed on %s device: %s", print_windows_driver(tt->windows_driver), path);
+         return false;
+     }
+ 
+-    if (tt->wintun)
++    if (tt->windows_driver == WINDOWS_DRIVER_WINTUN)
+     {
+         /* Wintun adapter may be considered "open" after ring buffers are successfuly registered. */
+         if (!wintun_register_ring_buffer(tt))
+@@ -6207,34 +6225,24 @@ tun_open_device(struct tuntap *tt, const char *dev_node, const char **device_gui
+      */
+     if (dev_node)
+     {
+-        bool is_picked_device_wintun = false;
++        enum windows_driver_type windows_driver = WINDOWS_DRIVER_UNSPECIFIED;
+ 
+         /* Get the device GUID for the device specified with --dev-node. */
+-        *device_guid = get_device_guid(dev_node, actual_buffer, sizeof(actual_buffer), &is_picked_device_wintun, tap_reg, panel_reg, &gc);
++        *device_guid = get_device_guid(dev_node, actual_buffer, sizeof(actual_buffer), &windows_driver, tap_reg, panel_reg, &gc);
+ 
+         if (!*device_guid)
+         {
+             msg(M_FATAL, "Adapter '%s' not found", dev_node);
+         }
+ 
+-        if (tt->wintun)
+-        {
+-            if (!is_picked_device_wintun)
+-            {
+-                msg(M_FATAL, "Adapter '%s' is TAP-Windows, Wintun expected. If you want to use this device, remove --windows-driver wintun.", dev_node);
+-            }
+-        }
+-        else
++        if (tt->windows_driver != windows_driver)
+         {
+-            if (is_picked_device_wintun)
+-            {
+-                msg(M_FATAL, "Adapter '%s' is Wintun, TAP-Windows expected. If you want to use this device, add --windows-driver wintun.", dev_node);
+-            }
++            msg(M_FATAL, "Adapter '%s' is using %s driver, %s expected. If you want to use this device, adjust --windows-driver.", dev_node, print_windows_driver(windows_driver), print_windows_driver(tt->windows_driver));
+         }
+ 
+         if (!tun_try_open_device(tt, *device_guid, device_instance_id_interface))
+         {
+-            msg(M_FATAL, "Failed to open %s adapter: %s", tt->wintun ? "Wintun" : "TAP-Windows", dev_node);
++            msg(M_FATAL, "Failed to open %s adapter: %s", print_windows_driver(tt->windows_driver), dev_node);
+         }
+     }
+     else
+@@ -6244,35 +6252,23 @@ tun_open_device(struct tuntap *tt, const char *dev_node, const char **device_gui
+         /* Try opening all TAP devices until we find one available */
+         while (true)
+         {
+-            bool is_picked_device_wintun = false;
++            enum windows_driver_type windows_driver = WINDOWS_DRIVER_UNSPECIFIED;
+             *device_guid = get_unspecified_device_guid(device_number,
+                                                        actual_buffer,
+                                                        sizeof(actual_buffer),
+                                                        tap_reg,
+                                                        panel_reg,
+-                                                       &is_picked_device_wintun,
++                                                       &windows_driver,
+                                                        &gc);
+ 
+             if (!*device_guid)
+             {
+-                msg(M_FATAL, "All %s adapters on this system are currently in use.", tt->wintun ? "wintun" : "TAP - Windows");
++                msg(M_FATAL, "All %s adapters on this system are currently in use.", print_windows_driver(tt->windows_driver));
+             }
+ 
+-            if (tt->wintun)
+-            {
+-                if (!is_picked_device_wintun)
+-                {
+-                    /* wintun driver specified but picked adapter is not wintun, proceed to next one */
+-                    goto next;
+-                }
+-            }
+-            else
++            if (tt->windows_driver != windows_driver)
+             {
+-                if (is_picked_device_wintun)
+-                {
+-                    /* tap-windows6 driver specified but picked adapter is wintun, proceed to next one */
+-                    goto next;
+-                }
++                goto next;
+             }
+ 
+             if (tun_try_open_device(tt, *device_guid, device_instance_id_interface))
+@@ -6289,7 +6285,7 @@ tun_open_device(struct tuntap *tt, const char *dev_node, const char **device_gui
+      * GUID using the registry */
+     tt->actual_name = string_alloc(actual_buffer, NULL);
+ 
+-    msg(M_INFO, "%s device [%s] opened", tt->wintun ? "Wintun" : "TAP-WIN32", tt->actual_name);
++    msg(M_INFO, "%s device [%s] opened", print_windows_driver(tt->windows_driver), tt->actual_name);
+     tt->adapter_index = get_adapter_index(*device_guid);
+ 
+     gc_free(&gc);
+@@ -6400,7 +6396,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+ 
+     tun_open_device(tt, dev_node, &device_guid);
+ 
+-    if (!tt->wintun)
++    if (tt->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6)
+     {
+         tuntap_post_open(tt, device_guid);
+     }
+@@ -6411,7 +6407,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+ const char *
+ tap_win_getinfo(const struct tuntap *tt, struct gc_arena *gc)
+ {
+-    if (!tt->wintun)
++    if (tt->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6)
+     {
+         struct buffer out = alloc_buf_gc(256, gc);
+         DWORD len;
+@@ -6429,7 +6425,7 @@ tap_win_getinfo(const struct tuntap *tt, struct gc_arena *gc)
+ void
+ tun_show_debug(struct tuntap *tt)
+ {
+-    if (!tt->wintun)
++    if (tt->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6)
+     {
+         struct buffer out = alloc_buf(1024);
+         DWORD len;
+@@ -6514,7 +6510,7 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+         }
+     }
+ #if 1
+-    if (tt->wintun)
++    if (tt->windows_driver == WINDOWS_DRIVER_WINTUN)
+     {
+         if (tt->options.msg_channel)
+         {
+@@ -6570,7 +6566,7 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+         free(tt->actual_name);
+     }
+ 
+-    if (tt->wintun)
++    if (tt->windows_driver == WINDOWS_DRIVER_WINTUN)
+     {
+         CloseHandle(tt->rw_handle.read);
+         CloseHandle(tt->rw_handle.write);
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index b0b80d1a..97d28f45 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -43,6 +43,12 @@
+ 
+ #ifdef _WIN32
+ #define WINTUN_COMPONENT_ID "wintun"
++
++enum windows_driver_type {
++    WINDOWS_DRIVER_UNSPECIFIED,
++    WINDOWS_DRIVER_TAP_WINDOWS6,
++    WINDOWS_DRIVER_WINTUN
++};
+ #endif
+ 
+ #if defined(_WIN32) || defined(TARGET_ANDROID)
+@@ -181,7 +187,7 @@ struct tuntap
+      * ~0 if undefined */
+     DWORD adapter_index;
+ 
+-    bool wintun; /* true if wintun is used instead of tap-windows6 */
++    enum windows_driver_type windows_driver;
+     int standby_iter;
+ 
+     HANDLE wintun_send_ring_handle;
+@@ -221,7 +227,7 @@ tuntap_defined(const struct tuntap *tt)
+ inline bool
+ tuntap_is_wintun(struct tuntap *tt)
+ {
+-    return tt && tt->wintun;
++    return tt && tt->windows_driver == WINDOWS_DRIVER_WINTUN;
+ }
+ 
+ inline bool
+@@ -365,7 +371,7 @@ route_order(void)
+ struct tap_reg
+ {
+     const char *guid;
+-    bool wintun;
++    enum windows_driver_type windows_driver;
+     struct tap_reg *next;
+ };
+ 
+@@ -642,7 +648,7 @@ write_wintun(struct tuntap *tt, struct buffer *buf)
+ static inline int
+ write_tun_buffered(struct tuntap *tt, struct buffer *buf)
+ {
+-    if (tt->wintun)
++    if (tt->windows_driver == WINDOWS_DRIVER_WINTUN)
+     {
+         return write_wintun(tt, buf);
+     }
+@@ -712,7 +718,7 @@ tun_set(struct tuntap *tt,
+             }
+         }
+ #ifdef _WIN32
+-        if (!tt->wintun && (rwflags & EVENT_READ))
++        if (tt->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6 && (rwflags & EVENT_READ))
+         {
+             tun_read_queue(tt, 0);
+         }
+-- 
+2.24.1.windows.2
 
-Acked-by: Simon Rozman <simon@...2293...>
-
-Best regards,
-Simon
-
-> -----Original Message-----
-> From: Lev Stipakov <lstipakov@...277...>
-> Sent: Thursday, December 19, 2019 2:30 PM
-> To: openvpn-devel@lists.sourceforge.net
-> Cc: Lev Stipakov <lev@...515...>
-> Subject: [Openvpn-devel] [PATCH] options.c: do not force route delay
-> when not using DHCP
-> 
-> From: Lev Stipakov <lev@...515...>
-> 
-> Route delay may be only necessary when we perform DHCP handshake. When
-> we use IPAPI / netsh / manual, no delay needed.
-> 
-> Signed-off-by: Lev Stipakov <lev@...515...>
-> ---
->  src/openvpn/options.c | 19 +++++++++++--------
->  1 file changed, 11 insertions(+), 8 deletions(-)
-> 
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c index
-> cebcbb07..a6f40e10 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -3001,9 +3001,18 @@ options_postprocess_mutate_invariant(struct
-> options *options)
->      }
-> 
->  #ifdef _WIN32
-> +    /* when using wintun, kernel doesn't send DHCP requests, so use
-> netsh to set IP address and netmask */
-> +    if (options->wintun)
-> +    {
-> +        options->tuntap_options.ip_win32_type = IPW32_SET_NETSH;
-> +    }
-> +
->      if ((dev == DEV_TYPE_TUN || dev == DEV_TYPE_TAP) && !options-
-> >route_delay_defined)
->      {
-> -        if (options->mode == MODE_POINT_TO_POINT)
-> +        /* delay may only be necessary when we perform DHCP handshake
-> */
-> +        const bool dhcp = (options->tuntap_options.ip_win32_type ==
-> IPW32_SET_DHCP_MASQ)
-> +                          || (options->tuntap_options.ip_win32_type ==
-> IPW32_SET_ADAPTIVE);
-> +        if ((options->mode == MODE_POINT_TO_POINT) && dhcp)
->          {
->              options->route_delay_defined = true;
->              options->route_delay = 5; /* Vista sometimes has a race
-> without this */ @@ -3016,14 +3025,8 @@
-> options_postprocess_mutate_invariant(struct options *options)
->          options->ifconfig_noexec = false;
->      }
-> 
-> -    /* for wintun kernel doesn't send DHCP requests, so use netsh to
-> set IP address and netmask */
-> -    if (options->wintun)
-> -    {
-> -        options->tuntap_options.ip_win32_type = IPW32_SET_NETSH;
-> -    }
-> -
->      remap_redirect_gateway_flags(options);
-> -#endif
-> +#endif /* ifdef _WIN32 */
-> 
->  #if P2MP_SERVER
->      /*
-> --
-> 2.17.1
-> 
-> 
-> 
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
-------=_NextPart_000_0007_01D5CC78.010256D0
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-
-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
-MjQxMTU4MjdaFw0yMTA2MjcyMjAwMDBaMD0xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJzdGF0ZS1p
-bnN0aXR1dGlvbnMxETAPBgNVBAsTCHNpZ2VuLWNhMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB
-CgKCAQEAsOVlssCsZJbyiBuz7Z7kAsZPK4jOLopRgHWvEFvyyzhmm6IObTRHlqWSEa/2NUeidyIM
-zhaIYqrTSW4YvC5E2L7GnsIaGaxBjvwwBwLyxmrUWyMA70E02KRzY98ikjOEAaWN84Nc+rjUejXf
-7PhtD+BM7a2cOn2G1qUIlL59ehEf/oU/VFqIY4ecpbGnTs23RHOvz4pJax/jzddJTVorF+ZcdrO7
-crlvJ9KbiRWI3xBfdiEBascVMQrRnFj4KBYFbdlO2aHXByDLSyaJTZKyp7qW6ONYjyKcAZZaxPcx
-TQtJteF4YeJUGAa7nlQ0fgw+6+61gB/dFoQdaDhmZ3P4kQIDAQABo4ICQzCCAj8wEgYDVR0TAQH/
-BAgwBgEB/wIBADAOBgNVHQ8BAf8EBAMCAQYwOgYDVR0gBDMwMTAvBgRVHSAAMCcwJQYIKwYBBQUH
-AgEWGWh0dHA6Ly93d3cuY2EuZ292LnNpL2Nwcy8waQYIKwYBBQUHAQEEXTBbMDYGCCsGAQUFBzAC
-hipodHRwOi8vd3d3LmNhLmdvdi5zaS9jcnQvc2ktdHJ1c3Qtcm9vdC5jcnQwIQYIKwYBBQUHMAGG
-FWh0dHA6Ly9vY3NwLmNhLmdvdi5zaTAdBgNVHQ4EFgQUcXuKBh8xBVWrYBJ3RyAeA4gY7IkwggE8
-BgNVHR8EggEzMIIBLzCBt6CBtKCBsYYqaHR0cDovL3d3dy5jYS5nb3Yuc2kvY3JsL3NpLXRydXN0
-LXJvb3QuY3JshoGCbGRhcDovL3g1MDAuZ292LnNpL2NuPVNJLVRSVVNUJTIwUm9vdCxvcmdhbml6
-YXRpb25JZGVudGlmaWVyPVZBVFNJLTE3NjU5OTU3LG89UmVwdWJsaWthJTIwU2xvdmVuaWphLGM9
-U0k/Y2VydGlmaWNhdGVSZXZvY2F0aW9uTGlzdDBzoHGgb6RtMGsxCzAJBgNVBAYTAlNJMRwwGgYD
-VQQKExNSZXB1Ymxpa2EgU2xvdmVuaWphMRcwFQYDVQRhEw5WQVRTSS0xNzY1OTk1NzEWMBQGA1UE
-AxMNU0ktVFJVU1QgUm9vdDENMAsGA1UEAxMEQ1JMMTATBgNVHSMEDDAKgAhMo8NoXggCYzANBgkq
-hkiG9w0BAQsFAAOCAYEAe681I+FjipyKtYmRPCSpo4+o5JXTon9l6kVB9QQnztOWsaOnhdHkUuS1
-MARj/tHhKB5vYrw5YSX8qhzUFsfr67Jli99r5aeckRZ5Y6bI/L++ig7t5nI5W9o5HG6tY4sIJUNb
-bAGRu1SgplpTLOA/5k88ZFXwYWVtksLMaYCswZcld7y39c2IkMt6EapJZPj01iPJhB0iAj6qL1b4
-DoFJRD2Owx1gmoqFdByix8fnWxzqBlXFMoyvc+wi2xrxcWI1rMQIAAWvSazscHrNvxC8dEV4EaT8
-IutbhWRkQE38m27KG+CS1DYG+4a1q4S8dlABikxKHfkPunC1q9EymaFoCxBvjI+qEgxzO3BGqwo8
-GFahoURVn5WffDFqnmH+gCGhyJ83ORYlM1aPGeg8zZ43Pa5YUmyCw2GXC15S+erv5spM215IpYqv
-qkj4ZSxmGYKHlRGlSepRqenRSJ7QwP1/e2I4s6nvXWw1vTHCL5V0O4MHfsh104ix+E8Gih3CmgWt
-MYIDETCCAw0CAQEwRTA9MQswCQYDVQQGEwJzaTEbMBkGA1UEChMSc3RhdGUtaW5zdGl0dXRpb25z
-MREwDwYDVQQLEwhzaWdlbi1jYQIEO0oNLjAJBgUrDgMCGgUAoIIBoTAYBgkqhkiG9w0BCQMxCwYJ
-KoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMDAxMTYxMzE5NDZaMCMGCSqGSIb3DQEJBDEWBBQs
-zuI09q2AjUOfBkdj0+eSitUIyzBUBgkrBgEEAYI3EAQxRzBFMD0xCzAJBgNVBAYTAnNpMRswGQYD
-VQQKExJzdGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsTCHNpZ2VuLWNhAgQ7Sg0uMFYGCyqGSIb3
-DQEJEAILMUegRTA9MQswCQYDVQQGEwJzaTEbMBkGA1UEChMSc3RhdGUtaW5zdGl0dXRpb25zMREw
-DwYDVQQLEwhzaWdlbi1jYQIEO0oNLjCBkwYJKoZIhvcNAQkPMYGFMIGCMAsGCWCGSAFlAwQBKjAL
-BglghkgBZQMEARYwCgYIKoZIhvcNAwcwCwYJYIZIAWUDBAECMA4GCCqGSIb3DQMCAgIAgDANBggq
-hkiG9w0DAgIBQDALBglghkgBZQMEAgEwCwYJYIZIAWUDBAIDMAsGCWCGSAFlAwQCAjAHBgUrDgMC
-GjANBgkqhkiG9w0BAQEFAASCAQCn8SxbV5tELYjaeVFuhP9R6CZKGqzt9WSHMukvMDLd9MY0fqdm
-8gtXcXpTgg6MP2EDxkMeWYjE2OdBnUrSKSQ3+pnunP97Oa7Lmc7axy+XjXCk1djd+kMYS4kXgBrr
-LQWLoeb2W+8mYmzOIMZ3dJKa9OgFAM0X/ms/3Uki1aW7brGTMgAyGPCoZePsBxhNPJ2ZexpR43lM
-wo4lAAydVWUkV35Bdwuuu6NMS9hYDEkfJqYBne0Ev5j1fmiLmKXY+tzg7KDWs7lN40uEptgVaZ8G
-pVa+I6li5JkfhLVS5Qo/LHsdpuj7WcR9+xZvJd/DQxOxf/9Az6DxpyrCMkXPFlBfAAAAAAAA
-
-------=_NextPart_000_0007_01D5CC78.010256D0--
 
