@@ -1,9 +1,13 @@
-From: Simon Rozman <simon@...2293...>
-Date: Thu, 16 Jan 2020 15:19:00 +0100
-Message-Id: <20200116141900.1524-1-simon@...2293...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+References: <1d06b859-f531-5314-499a-11c70bb6363a@...515...>
+Message-ID: <52df2da3-eaf7-5364-510a-f7781d62ea9f@...515...>
+Date: Thu, 16 Jan 2020 21:40:36 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] wintun: refactor code to use enum driver
- type
+In-Reply-To: <1d06b859-f531-5314-499a-11c70bb6363a@...515...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="piRfKihByW82wFecvAexZCXOfj9Z8RKep"
+Subject: [Openvpn-devel] Summary of the community meeting (16th January 2020)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,478 +16,223 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Signed-off-by: Simon Rozman <simon@...2293...>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--piRfKihByW82wFecvAexZCXOfj9Z8RKep
+Content-Type: multipart/mixed; boundary="y9Bp4jvrxDEbVZxPxNbiR6wKaLoZgjL03"
+
+--y9Bp4jvrxDEbVZxPxNbiR6wKaLoZgjL03
+Content-Type: multipart/mixed;
+ boundary="------------66FB6008BC01BFBF584CE64D"
+Content-Language: en-US
+
+This is a multi-part message in MIME format.
+--------------66FB6008BC01BFBF584CE64D
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+Here's the summary of the IRC meeting.
+
 ---
- src/openvpn/forward.c |   4 +-
- src/openvpn/init.c    |   2 +-
- src/openvpn/options.c |  16 +++----
- src/openvpn/options.h |   2 +-
- src/openvpn/tun.c     | 108 ++++++++++++++++++++----------------------
- src/openvpn/tun.h     |  16 +++++--
- 6 files changed, 75 insertions(+), 73 deletions(-)
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 6b823613..ea10f0bf 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1258,7 +1258,7 @@ read_incoming_tun(struct context *c)
-     c->c2.buf = c->c2.buffers->read_tun_buf;
- 
- #ifdef _WIN32
--    if (c->c1.tuntap->wintun)
-+    if (c->c1.tuntap->windows_driver == WINDOWS_DRIVER_WINTUN)
-     {
-         read_wintun(c->c1.tuntap, &c->c2.buf);
-         if (c->c2.buf.len == -1)
-@@ -1274,7 +1274,7 @@ read_incoming_tun(struct context *c)
-     {
-         read_tun_buffered(c->c1.tuntap, &c->c2.buf);
-     }
--#else
-+#else  /* ifdef _WIN32 */
-     ASSERT(buf_init(&c->c2.buf, FRAME_HEADROOM(&c->c2.frame)));
-     ASSERT(buf_safe(&c->c2.buf, MAX_RW_SIZE_TUN(&c->c2.frame)));
-     c->c2.buf.len = read_tun(c->c1.tuntap, BPTR(&c->c2.buf), MAX_RW_SIZE_TUN(&c->c2.frame));
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 0bdb0a9c..ec444f47 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1734,7 +1734,7 @@ do_init_tun(struct context *c)
-                             &c->net_ctx);
- 
- #ifdef _WIN32
--    c->c1.tuntap->wintun = c->options.wintun;
-+    c->c1.tuntap->windows_driver = c->options.windows_driver;
- #endif
- 
-     init_tun_post(c->c1.tuntap,
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index a6f40e10..709ba4bb 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -854,7 +854,7 @@ init_options(struct options *o, const bool init_gc)
-     o->tuntap_options.dhcp_masq_offset = 0;     /* use network address as internal DHCP server address */
-     o->route_method = ROUTE_METHOD_ADAPTIVE;
-     o->block_outside_dns = false;
--    o->wintun = false;
-+    o->windows_driver = WINDOWS_DRIVER_TAP_WINDOWS6;
- #endif
-     o->vlan_accept = VLAN_ALL;
-     o->vlan_pvid = 1;
-@@ -3002,7 +3002,7 @@ options_postprocess_mutate_invariant(struct options *options)
- 
- #ifdef _WIN32
-     /* when using wintun, kernel doesn't send DHCP requests, so use netsh to set IP address and netmask */
--    if (options->wintun)
-+    if (options->windows_driver == WINDOWS_DRIVER_WINTUN)
-     {
-         options->tuntap_options.ip_win32_type = IPW32_SET_NETSH;
-     }
-@@ -4076,23 +4076,23 @@ foreign_option(struct options *o, char *argv[], int len, struct env_set *es)
-  *
-  * @param str       value of --windows-driver option
-  * @param msglevel  msglevel to report parsing error
-- * @return bool     true if --windows-driver is wintun, false otherwise
-+ * @return enum windows_driver_type  driver type, WINDOWS_DRIVER_UNSPECIFIED on unknown --windows-driver value
-  */
--static bool
-+static enum windows_driver_type
- parse_windows_driver(const char *str, const int msglevel)
- {
-     if (streq(str, "tap-windows6"))
-     {
--        return false;
-+        return WINDOWS_DRIVER_TAP_WINDOWS6;
-     }
-     else if (streq(str, "wintun"))
-     {
--        return true;
-+        return WINDOWS_DRIVER_WINTUN;
-     }
-     else
-     {
-         msg(msglevel, "--windows-driver must be tap-windows6 or wintun");
--        return false;
-+        return WINDOWS_DRIVER_UNSPECIFIED;
-     }
- }
- #endif
-@@ -5367,7 +5367,7 @@ add_option(struct options *options,
-     else if (streq(p[0], "windows-driver") && p[1] && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_GENERAL);
--        options->wintun = parse_windows_driver(p[1], M_FATAL);
-+        options->windows_driver = parse_windows_driver(p[1], M_FATAL);
-     }
- #endif
-     else if (streq(p[0], "dev-node") && p[1] && !p[2])
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 7fd2c00f..84d05f26 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -634,7 +634,7 @@ struct options
-     bool show_net_up;
-     int route_method;
-     bool block_outside_dns;
--    bool wintun;
-+    enum windows_driver_type windows_driver;
- #endif
- 
-     bool use_peer_id;
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 32a3f756..af09e676 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -786,7 +786,7 @@ init_tun_post(struct tuntap *tt,
-     overlapped_io_init(&tt->writes, frame, TRUE, true);
-     tt->adapter_index = TUN_ADAPTER_INDEX_INVALID;
- 
--    if (tt->wintun)
-+    if (tt->windows_driver == WINDOWS_DRIVER_WINTUN)
-     {
-         tt->wintun_send_ring_handle = CreateFileMapping(INVALID_HANDLE_VALUE, NULL,
-                                                         PAGE_READWRITE,
-@@ -1388,7 +1388,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-     {
-         ASSERT(ifname != NULL);
- 
--        if (tt->options.msg_channel && tt->wintun)
-+        if (tt->options.msg_channel && tt->windows_driver == WINDOWS_DRIVER_WINTUN)
-         {
-             do_address_service(true, AF_INET, tt);
-             do_dns_service(true, AF_INET, tt);
-@@ -3253,6 +3253,22 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
- 
- #elif defined(_WIN32)
- 
-+static const char *
-+print_windows_driver(enum windows_driver_type windows_driver)
-+{
-+    switch (windows_driver)
-+    {
-+        case WINDOWS_DRIVER_TAP_WINDOWS6:
-+            return "tap-windows6";
-+
-+        case WINDOWS_DRIVER_WINTUN:
-+            return "wintun";
-+
-+        default:
-+            return "unspecified";
-+    }
-+}
-+
- int
- tun_read_queue(struct tuntap *tt, int maxsize)
- {
-@@ -3676,14 +3692,16 @@ get_tap_reg(struct gc_arena *gc)
- 
-                 if (status == ERROR_SUCCESS && data_type == REG_SZ)
-                 {
--                    if (!strcmp(component_id, TAP_WIN_COMPONENT_ID) ||
--                        !strcmp(component_id, "root\\" TAP_WIN_COMPONENT_ID) ||
--                        !strcmp(component_id, WINTUN_COMPONENT_ID))
-+                    enum windows_driver_type windows_driver = WINDOWS_DRIVER_UNSPECIFIED;
-+
-+                    if ((windows_driver = WINDOWS_DRIVER_TAP_WINDOWS6, !strcmp(component_id, TAP_WIN_COMPONENT_ID))
-+                        || (windows_driver = WINDOWS_DRIVER_TAP_WINDOWS6, !strcmp(component_id, "root\\" TAP_WIN_COMPONENT_ID))
-+                        || (windows_driver = WINDOWS_DRIVER_WINTUN, !strcmp(component_id, WINTUN_COMPONENT_ID)))
-                     {
-                         struct tap_reg *reg;
-                         ALLOC_OBJ_CLEAR_GC(reg, struct tap_reg, gc);
-                         reg->guid = string_alloc(net_cfg_instance_id, gc);
--                        reg->wintun = !strcmp(component_id, WINTUN_COMPONENT_ID);
-+                        reg->windows_driver = windows_driver;
- 
-                         /* link into return list */
-                         if (!first)
-@@ -3926,7 +3944,7 @@ show_tap_win_adapters(int msglev, int warnlev)
-         {
-             if (!strcmp(tr->guid, pr->guid))
-             {
--                msg(msglev, "'%s' %s %s", pr->name, tr->guid, tr->wintun ? "wintun" : "tap-windows6");
-+                msg(msglev, "'%s' %s %s", pr->name, tr->guid, print_windows_driver(tr->windows_driver));
-                 ++links;
-             }
-         }
-@@ -4045,7 +4063,7 @@ get_unspecified_device_guid(const int device_number,
-                             int actual_name_size,
-                             const struct tap_reg *tap_reg_src,
-                             const struct panel_reg *panel_reg_src,
--                            bool *wintun,
-+                            enum windows_driver_type *windows_driver,
-                             struct gc_arena *gc)
- {
-     const struct tap_reg *tap_reg = tap_reg_src;
-@@ -4095,9 +4113,9 @@ get_unspecified_device_guid(const int device_number,
-     /* Save GUID for return value */
-     ret = alloc_buf_gc(256, gc);
-     buf_printf(&ret, "%s", tap_reg->guid);
--    if (wintun != NULL)
-+    if (windows_driver != NULL)
-     {
--        *wintun = tap_reg->wintun;
-+        *windows_driver = tap_reg->windows_driver;
-     }
-     return BSTR(&ret);
- }
-@@ -4110,7 +4128,7 @@ static const char *
- get_device_guid(const char *name,
-                 char *actual_name,
-                 int actual_name_size,
--                bool *wintun,
-+                enum windows_driver_type *windows_driver,
-                 const struct tap_reg *tap_reg,
-                 const struct panel_reg *panel_reg,
-                 struct gc_arena *gc)
-@@ -4146,9 +4164,9 @@ get_device_guid(const char *name,
-         {
-             buf_printf(&actual, "%s", name);
-         }
--        if (wintun)
-+        if (windows_driver)
-         {
--            *wintun = tr->wintun;
-+            *windows_driver = tr->windows_driver;
-         }
-         return BSTR(&ret);
-     }
-@@ -4159,9 +4177,9 @@ get_device_guid(const char *name,
-         if (tr)
-         {
-             buf_printf(&actual, "%s", name);
--            if (wintun)
-+            if (windows_driver)
-             {
--                *wintun = tr->wintun;
-+                *windows_driver = tr->windows_driver;
-             }
-             buf_printf(&ret, "%s", tr->guid);
-             return BSTR(&ret);
-@@ -6135,7 +6153,7 @@ tun_try_open_device(struct tuntap *tt, const char *device_guid, const struct dev
-     const char *path = NULL;
-     char tuntap_device_path[256];
- 
--    if (tt->wintun)
-+    if (tt->windows_driver == WINDOWS_DRIVER_WINTUN)
-     {
-         const struct device_instance_id_interface *dev_if;
- 
-@@ -6172,11 +6190,11 @@ tun_try_open_device(struct tuntap *tt, const char *device_guid, const struct dev
-                    0);
-     if (tt->hand == INVALID_HANDLE_VALUE)
-     {
--        msg(D_TUNTAP_INFO, "CreateFile failed on %s device: %s", tt->wintun ? "Wintun" : "TAP-Windows", path);
-+        msg(D_TUNTAP_INFO, "CreateFile failed on %s device: %s", print_windows_driver(tt->windows_driver), path);
-         return false;
-     }
- 
--    if (tt->wintun)
-+    if (tt->windows_driver == WINDOWS_DRIVER_WINTUN)
-     {
-         /* Wintun adapter may be considered "open" after ring buffers are successfuly registered. */
-         if (!wintun_register_ring_buffer(tt))
-@@ -6207,34 +6225,24 @@ tun_open_device(struct tuntap *tt, const char *dev_node, const char **device_gui
-      */
-     if (dev_node)
-     {
--        bool is_picked_device_wintun = false;
-+        enum windows_driver_type windows_driver = WINDOWS_DRIVER_UNSPECIFIED;
- 
-         /* Get the device GUID for the device specified with --dev-node. */
--        *device_guid = get_device_guid(dev_node, actual_buffer, sizeof(actual_buffer), &is_picked_device_wintun, tap_reg, panel_reg, &gc);
-+        *device_guid = get_device_guid(dev_node, actual_buffer, sizeof(actual_buffer), &windows_driver, tap_reg, panel_reg, &gc);
- 
-         if (!*device_guid)
-         {
-             msg(M_FATAL, "Adapter '%s' not found", dev_node);
-         }
- 
--        if (tt->wintun)
--        {
--            if (!is_picked_device_wintun)
--            {
--                msg(M_FATAL, "Adapter '%s' is TAP-Windows, Wintun expected. If you want to use this device, remove --windows-driver wintun.", dev_node);
--            }
--        }
--        else
-+        if (tt->windows_driver != windows_driver)
-         {
--            if (is_picked_device_wintun)
--            {
--                msg(M_FATAL, "Adapter '%s' is Wintun, TAP-Windows expected. If you want to use this device, add --windows-driver wintun.", dev_node);
--            }
-+            msg(M_FATAL, "Adapter '%s' is using %s driver, %s expected. If you want to use this device, adjust --windows-driver.", dev_node, print_windows_driver(windows_driver), print_windows_driver(tt->windows_driver));
-         }
- 
-         if (!tun_try_open_device(tt, *device_guid, device_instance_id_interface))
-         {
--            msg(M_FATAL, "Failed to open %s adapter: %s", tt->wintun ? "Wintun" : "TAP-Windows", dev_node);
-+            msg(M_FATAL, "Failed to open %s adapter: %s", print_windows_driver(tt->windows_driver), dev_node);
-         }
-     }
-     else
-@@ -6244,35 +6252,23 @@ tun_open_device(struct tuntap *tt, const char *dev_node, const char **device_gui
-         /* Try opening all TAP devices until we find one available */
-         while (true)
-         {
--            bool is_picked_device_wintun = false;
-+            enum windows_driver_type windows_driver = WINDOWS_DRIVER_UNSPECIFIED;
-             *device_guid = get_unspecified_device_guid(device_number,
-                                                        actual_buffer,
-                                                        sizeof(actual_buffer),
-                                                        tap_reg,
-                                                        panel_reg,
--                                                       &is_picked_device_wintun,
-+                                                       &windows_driver,
-                                                        &gc);
- 
-             if (!*device_guid)
-             {
--                msg(M_FATAL, "All %s adapters on this system are currently in use.", tt->wintun ? "wintun" : "TAP - Windows");
-+                msg(M_FATAL, "All %s adapters on this system are currently in use.", print_windows_driver(tt->windows_driver));
-             }
- 
--            if (tt->wintun)
--            {
--                if (!is_picked_device_wintun)
--                {
--                    /* wintun driver specified but picked adapter is not wintun, proceed to next one */
--                    goto next;
--                }
--            }
--            else
-+            if (tt->windows_driver != windows_driver)
-             {
--                if (is_picked_device_wintun)
--                {
--                    /* tap-windows6 driver specified but picked adapter is wintun, proceed to next one */
--                    goto next;
--                }
-+                goto next;
-             }
- 
-             if (tun_try_open_device(tt, *device_guid, device_instance_id_interface))
-@@ -6289,7 +6285,7 @@ tun_open_device(struct tuntap *tt, const char *dev_node, const char **device_gui
-      * GUID using the registry */
-     tt->actual_name = string_alloc(actual_buffer, NULL);
- 
--    msg(M_INFO, "%s device [%s] opened", tt->wintun ? "Wintun" : "TAP-WIN32", tt->actual_name);
-+    msg(M_INFO, "%s device [%s] opened", print_windows_driver(tt->windows_driver), tt->actual_name);
-     tt->adapter_index = get_adapter_index(*device_guid);
- 
-     gc_free(&gc);
-@@ -6400,7 +6396,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
- 
-     tun_open_device(tt, dev_node, &device_guid);
- 
--    if (!tt->wintun)
-+    if (tt->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6)
-     {
-         tuntap_post_open(tt, device_guid);
-     }
-@@ -6411,7 +6407,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
- const char *
- tap_win_getinfo(const struct tuntap *tt, struct gc_arena *gc)
- {
--    if (!tt->wintun)
-+    if (tt->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6)
-     {
-         struct buffer out = alloc_buf_gc(256, gc);
-         DWORD len;
-@@ -6429,7 +6425,7 @@ tap_win_getinfo(const struct tuntap *tt, struct gc_arena *gc)
- void
- tun_show_debug(struct tuntap *tt)
- {
--    if (!tt->wintun)
-+    if (tt->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6)
-     {
-         struct buffer out = alloc_buf(1024);
-         DWORD len;
-@@ -6514,7 +6510,7 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
-         }
-     }
- #if 1
--    if (tt->wintun)
-+    if (tt->windows_driver == WINDOWS_DRIVER_WINTUN)
-     {
-         if (tt->options.msg_channel)
-         {
-@@ -6570,7 +6566,7 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
-         free(tt->actual_name);
-     }
- 
--    if (tt->wintun)
-+    if (tt->windows_driver == WINDOWS_DRIVER_WINTUN)
-     {
-         CloseHandle(tt->rw_handle.read);
-         CloseHandle(tt->rw_handle.write);
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index b0b80d1a..97d28f45 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -43,6 +43,12 @@
- 
- #ifdef _WIN32
- #define WINTUN_COMPONENT_ID "wintun"
-+
-+enum windows_driver_type {
-+    WINDOWS_DRIVER_UNSPECIFIED,
-+    WINDOWS_DRIVER_TAP_WINDOWS6,
-+    WINDOWS_DRIVER_WINTUN
-+};
- #endif
- 
- #if defined(_WIN32) || defined(TARGET_ANDROID)
-@@ -181,7 +187,7 @@ struct tuntap
-      * ~0 if undefined */
-     DWORD adapter_index;
- 
--    bool wintun; /* true if wintun is used instead of tap-windows6 */
-+    enum windows_driver_type windows_driver;
-     int standby_iter;
- 
-     HANDLE wintun_send_ring_handle;
-@@ -221,7 +227,7 @@ tuntap_defined(const struct tuntap *tt)
- inline bool
- tuntap_is_wintun(struct tuntap *tt)
- {
--    return tt && tt->wintun;
-+    return tt && tt->windows_driver == WINDOWS_DRIVER_WINTUN;
- }
- 
- inline bool
-@@ -365,7 +371,7 @@ route_order(void)
- struct tap_reg
- {
-     const char *guid;
--    bool wintun;
-+    enum windows_driver_type windows_driver;
-     struct tap_reg *next;
- };
- 
-@@ -642,7 +648,7 @@ write_wintun(struct tuntap *tt, struct buffer *buf)
- static inline int
- write_tun_buffered(struct tuntap *tt, struct buffer *buf)
- {
--    if (tt->wintun)
-+    if (tt->windows_driver == WINDOWS_DRIVER_WINTUN)
-     {
-         return write_wintun(tt, buf);
-     }
-@@ -712,7 +718,7 @@ tun_set(struct tuntap *tt,
-             }
-         }
- #ifdef _WIN32
--        if (!tt->wintun && (rwflags & EVENT_READ))
-+        if (tt->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6 && (rwflags & EVENT_READ))
-         {
-             tun_read_queue(tt, 0);
-         }
--- 
-2.24.1.windows.2
+COMMUNITY MEETING
 
+Place: #openvpn-meeting on irc.freenode.net
+Date: Thu 16th January 2020
+Time: 20:00 CET (19:00 UTC)
+
+Planned meeting topics for this meeting were here:
+
+<https://community.openvpn.net/openvpn/wiki/Topics-2020-01-16>
+
+Your local meeting time is easy to check from services such as
+
+<http://www.timeanddate.com/worldclock>
+
+SUMMARY
+
+cron2, dazo, lev and mattock participated in this meeting.
+
+---
+
+Discussed status of OpenVPN 2.5 and tomorrow's mini-hackathon:
+
+<https://community.openvpn.net/openvpn/wiki/StatusOfOpenvpn25>
+
+Agreed that we should have easy-rsa 3 in the OpenVPN 2.5 Windows MSI
+installers. We probably had made this decision earlier as well.
+
+Lev and rozmansi have been working on the wintun patches. Lev will
+review the latest of rozmansi's patches tomorrow.
+
+Mattock has a new buildslave that he will configure to build Windows
+installers with openvpn-build in tomorrow's hackathon. Buildmaster will
+need some restarts in the process. Later Debian/Ubuntu package building
+can be added to buildbot as well.
+
+Cron2 will merge what has already been ACKed tomorrow and will do some
+other stuff as well.
+
+Dazo has lots of deadlines at the moment but will do his best to
+allocate time for the mini-hackathon.
+
+Noted that two of plaisthos' patchsets require review: "2FA thing" and
+async-cc. Also noted that the struct argv stuff could be reviewed by anyone.
+
+--
+
+Full chatlog attached
+
+--------------66FB6008BC01BFBF584CE64D
+Content-Type: text/plain; charset=UTF-8;
+ name="openvpn_irc_meeting_chatlog_2020-01-16.txt"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="openvpn_irc_meeting_chatlog_2020-01-16.txt"
+
+(20:59:29) lev__: hello
+(21:00:09) dazo: hey!
+(21:00:18) mattock: hello!
+(21:01:46) lev__: guten aben
+(21:02:03) lev__: *d
+(21:02:20) mattock: anyone else here?
+(21:03:15) dazo: hmm
+(21:03:26) cron2: oh, meeting time
+(21:03:31) mattock: yep!
+(21:03:49) cron2: *and* people here :)
+(21:04:04) mattock: https://community.openvpn.net/openvpn/wiki/Topics-202=
+0-01-16
+(21:04:06) vpnHelper: Title: Topics-2020-01-16 =E2=80=93 OpenVPN Communit=
+y (at community.openvpn.net)
+(21:04:13) mattock: anything to add to the topic list?
+(21:04:20) mattock: #1 is probably enough though :D
+(21:05:20) lev__: me and Simon are reviewing each other's wintun patches,=
+ mostly prettifying code
+(21:06:04) mattock: I've setup a new buildslave which will soon start bui=
+lding stuff with openvpn-build
+(21:06:48) mattock: it won't build any of the normal stuff, just run open=
+vpn-build on each commit
+(21:07:08) mattock: should be fairly straightforward
+(21:07:10) cron2: nice
+(21:07:33) lev__: speaking of 2.5, shall we switch to easyrsa3 in new msi=
+ installer?
+(21:07:34) mattock: I'd _like_ to also automate creation of Debian/Ubuntu=
+ packages but that is slightly more involved
+(21:07:50) mattock: lev: that would probably make sense
+(21:07:57) mattock: not sure if we actually decided to do that or not
+(21:08:53) mattock: also, as the MSI installer is still work in progress =
+(afaik) there's little point in adding easy-rsa 2 to it
+(21:09:01) mattock: why not just go directly to easy-rsa 3 that is
+(21:09:48) cron2: lev__: I've seen ACKs, will go merge tomorrow
+(21:10:39) dazo ha scelto come argomento: Next meeting 22/Jan/2020 at 11:=
+30 CET.  Agenda at https://community.openvpn.net/openvpn/wiki/Topics-2020=
+-01-22
+(21:11:39) dazo: I think the easyrsa3 move was depending on some easyrsa-=
+2 support ... so you could use existing easyrsa-2 or upgrade it to easyrs=
+a-3
+(21:11:51) dazo: ecrist should know, I think
+(21:12:18) dazo: if that's already resolved (agreed, fixed, whatever), th=
+en all is fine to ship easyrsa 3
+(21:12:29) cron2: I would say "ship easyrsa-3 and have a note in the READ=
+ME displayed at install time what to do when you have easyrsa 2 in active=
+ use"
+(21:12:40) mattock: +1
+(21:12:49) cron2: or better, make it a seamless replacement :)
+(21:13:04) dazo: yeah, I think they were working the seamless approach :)=
+
+(21:16:54) mattock: ok, easy-rsa done
+(21:17:15) mattock: more on 2.5 that needs coordination/updates?
+(21:18:08) cron2: "get work done" :)
+(21:18:32) mattock: :D
+(21:18:39) dazo: :)
+(21:18:54) mattock: speaking of which
+(21:18:58) mattock: tomorrow's mini-hackathon
+(21:19:05) cron2: yes!#
+(21:19:05) mattock: who will join? what shall we do there?
+(21:19:23) cron2: I'll merge what is ACKed and have a look at other stuff=
+
+(21:19:51) mattock: I will try to get openvpn-build running via buildbot
+(21:21:19) cron2: dazo?
+(21:21:21) dazo: Core team is pretty much loaded these days (lots of rele=
+ases we're involved in + preparations for a bigger launch of a new servic=
+e) ... but I'll try to see what we can manage.  ordex is also pretty much=
+ tied up with the kernel module work, so I don't want him to loose that f=
+ocus anytime soon (where openvpn 2.x support is planned too)
+(21:21:44) lev__: I'll review latest patch(es) from rozmansi
+(21:23:04) dazo: I have a couple of releases I'll try to complete today, =
+then I have more time for stuff tomorrow ... but due to unexpected things=
+ I'm involved in on the personal side, I soon need to schedule sleep in m=
+y calendar too :-/
+(21:24:15) dazo: and everything I'm involved in now needs to be done and =
+signed off between end of January and mid-February
+(21:24:48) cron2: that very much sounds like "postpone code-freeze to end=
+ of february"
+(21:25:22) cron2: can we make things happen until then?  We need time fro=
+m ordex, plaisthos, dazo who all got sucked into corp... :)
+(21:26:48) cron2: (an open source project is what is, and if life or paid=
+ work gets in the way, this is what it is.  It is good when people *know*=
+ why "people are not active", so we can adjust)
+(21:26:53) dazo: I believe plaisthos would have some time to do some comm=
+unity stuff, ordex I really want to have a chance to get the kernel modul=
+e moving forward ... and I'll do my best.  Right now there's only one pat=
+ch-set from plaisthos missing review, I believe
+(21:27:14) cron2: two, the 2FA thing and the async-cc set
+(21:27:45) dazo: the async-cc has had some internal discussions, iirc ...=
+ awaiting a few clarifications or patch updates
+(21:28:18) cron2: if it's all done and just need to hit the list, perfect=
+ :-) (but then, it should eventually do exactly this ;-) )
+(21:28:37) dazo: I think we can manage, if not end of January at least be=
+ginning of February .... I'm not too keen on loosing the pressure on Open=
+VPN 2.5 just because of corp side things.  But not having a hard expectat=
+ion helps a bit on the mental side of things
+(21:29:27) cron2: good :)
+(21:29:28) dazo: There's also the struct argv stuff ... but that anyone c=
+an review
+(21:29:43) cron2: plaisthos wanted that, but you kept him busy
+(21:29:58) cron2: (and I offered to review, and my datacenter move kept m=
+e busy...)
+(21:30:01) dazo: hehe ... yeah
+(21:30:03) cron2: always someone to blame
+(21:30:19) dazo: unfortunately=20
+(21:30:33) cron2: see !blame next door :)
+(21:30:42) dazo: hehehe
+(21:32:21) mattock: ok, blaming done, what next :D
+(21:34:50) mattock: anything or just get some sleep so that tomorrow's mi=
+ni-hackathon becomes overwhelmingly successful?
+(21:35:08) cron2: sleep sounds great
+(21:35:20) mattock: all agree?
+(21:36:29) cron2: all asleep already :)
+(21:36:58) dazo: hehe
+(21:37:01) mattock: excellent! then they will have more energy tomorrow! =
+:D
+(21:37:10) mattock: ok, if there's nothing else I'm ready to send the sum=
+mary
+(21:37:22) dazo: need to get two releases out the door first ... *then* s=
+leep :)
+
+--------------66FB6008BC01BFBF584CE64D--
+
+--y9Bp4jvrxDEbVZxPxNbiR6wKaLoZgjL03--
+
+--piRfKihByW82wFecvAexZCXOfj9Z8RKep
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAl4gvDQACgkQKVhNn0CG
+RXj4MggAkFmomRfBw0tXhy7yzBWhD784+yYmZTOAOyNvxEbWix+1bLpzm4nOzwOQ
+3qq+39FNik60HNGeUibWG+yBRVGMG9QZGW5JhgeLPqZgiOWKtIii0ejJ5PRWJVTN
+0T1LyG5gfIleOKeMM+riaiqXLhp7IFO5SMtm9SlnyaqjkiGOaxHP6Ia/CXmBMrnS
+axTB8NDIE+Y815JT1u+ix/GqM2oMjMjQ/oBGxB+v9Q1MAvwkIMQcP9nIkI8V+QzJ
+Qi67pbgGLGIsZOrtW7V5s5ubsc+JGSKiBG47l9Bx+AcfE85cud5u90jIdaIp1SyL
+vYFjy94+rupFxTsPfNo40K5p16ZYYQ==
+=3hHU
+-----END PGP SIGNATURE-----
+
+--piRfKihByW82wFecvAexZCXOfj9Z8RKep--
 
