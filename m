@@ -1,13 +1,14 @@
-Date: Sun, 19 Jan 2020 16:51:08 +0100
+Date: Sun, 19 Jan 2020 16:58:47 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20200119155108.GG1431@...1296...>
+Message-ID: <20200119155847.GH1431@...1296...>
 References: <20191004171246.26343-1-davids@...515...>
  <20191004171246.26343-2-davids@...515...>
+ <20200119155108.GG1431@...1296...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="Thv7PGoFpDPJ7Oar"
+ protocol="application/pgp-signature"; boundary="xNm6VWMD3PcA105u"
 Content-Disposition: inline
-In-Reply-To: <20191004171246.26343-2-davids@...515...>
+In-Reply-To: <20200119155108.GG1431@...1296...>
 Subject: Re: [Openvpn-devel] [PATCH 1/4] re-implement argv_printf_*()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -20,35 +21,25 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: David Sommerseth <davids@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---Thv7PGoFpDPJ7Oar
+--xNm6VWMD3PcA105u
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Oct 04, 2019 at 07:12:43PM +0200, David Sommerseth wrote:
-> From: Heiko Hund <heiko.hund@...1489...>
+On Sun, Jan 19, 2020 at 04:51:08PM +0100, Gert Doering wrote:
+> David, shall I just amend the patch, or do you want to resend a v3?
 >=20
-> The previous implementation had the problem that it was not fully
-> compatible with printf() and could only detect % format directives
-> following a space character (0x20).
+> (The other 3 of the set should be fine, as they do not touch tun.c)
 
-Events have overtaken this one.
-
-Namely, tun.c has been changed in many places due to the windows
-refactoring / wintun work by Lev and Simon, so this patch does not
-apply "as is" anymore.
-
-The changes to tun.c are trivial ("%s%sc" --> "%s%s"), but according to
-custom, I do not do code changes while applying - at least not without
-asking :-)
-
-David, shall I just amend the patch, or do you want to resend a v3?
-
-(The other 3 of the set should be fine, as they do not touch tun.c)
+Not exactly correct, 2/4 renames all argv_reset() calls to argv_free(),
+so that *might* need adjustment for tun.c as well.  But these are=20
+similarily trivial, and if not done completely, will result in link
+failures (so, easy enough, provided I compile on all platforms).
 
 gert
+
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -59,22 +50,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---Thv7PGoFpDPJ7Oar
+--xNm6VWMD3PcA105u
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJeJHrrAAoJEB2Cnv7KVigSPwQMAKxP4OAvH2B974jnf/esc8WX
-rZy82dUwvjC5N1kLHLF4hr9Juz+nuvLc/7efCNjS4fC18a+tjG0uISkpnHk+Nqj/
-Quv9O95HcGJTR3A0YHiViAdwgCnfqcsMVG2wCpuJPTkHb1fdxUSlduq1atql+bnr
-oLLUAPniPist9fjJ4wsaol7K6uOPMpQk6WiLgWuoo5tavnpPhJ0DrRBNyMZUnxwa
-GVv4AbYh2RIfbItI7y2QMPv+f9Mx6JXb15UNn02DuOySgG86g0dOPwzF5gKX+6n3
-Kubj8WgHqcKvUCAIkzz3FM79z/bOHevEbXL6P5hMqNByran5hdEyvjpEk8DfBOEY
-3p6YQsRe9uccDmCpHnOsXUwZ1iljNILnbPhGw4TZDEzS/niPu+1YJhfYhMg5Ydne
-Y5XCMX0ssMFXNfkM2T1ddP07Zci3HmYDmodCovAU1PguTe7jEWVck/ygaS2mwD0q
-RiJCdA7SrXOEBwzNpwuRvvETL3soC++gthetrG0GcA==
-=KyU1
+iQGcBAEBAgAGBQJeJHy3AAoJEB2Cnv7KVigS1koL/2a4WwGtTxQyS/4xLkK/o+Ct
+FIvrHmVzKTScqdZwF4fMsVxlexfRbTJCJhkL5K8VlCXdkT2owmJsspTB4DYIp2oA
+heVmvmB8t7WmgURj1dzniyXqd93nDg48nMWJ9UXMCi2PzbD6Tlkhkky13HWy4r+C
+OKpUO6fiEshu8meyrCThjeB3UQCuS0tGQQ9QDNQwpDiHuN11/g0EFXa1XxflO8mw
+mm8h1p3uxaLv3NUq9m4p6DgLPSN9OWxPM5k+xAlpLGE3nzq3AZg6LExajshX55o7
+O/pyxZS/PZ39uw4t/KMvKMnDHUzoGPMKUYr1Y3hsp7sJpq/xFLeIkaAz6EGoS8XS
+qUFqhRyOGVfKpiLIOsresFfgxIVgD23fVAVG8cB+VMk3+FFHa+oay7Il4UYtfE1v
+O36DgxdvJ/U0qu6svJO1slblgWkViWCPSKBb+kCzZUBxAsXmQYsBholRGlP66Wii
+Ol+XtaXAYExHF7J1veRhq1w1sZe/EqjRIUCCCzymXA==
+=rQ7+
 -----END PGP SIGNATURE-----
 
---Thv7PGoFpDPJ7Oar--
+--xNm6VWMD3PcA105u--
 
