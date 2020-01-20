@@ -1,10 +1,7 @@
-Date: Sun, 19 Jan 2020 18:21:27 +0100 (CET)
-Message-Id: <202001191721.00JHLRv3090211@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20191110231018.30621-1-steffan@...1856...>
-References: <20191110231018.30621-1-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: mbedtls: add RFC 5705 keying
- material exporter support
+From: Lev Stipakov <lstipakov@...277...>
+Date: Mon, 20 Jan 2020 10:28:41 +0200
+Message-Id: <20200120082841.633-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] msvc: add missing include directory
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,38 +12,60 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Your patch has been applied to the master branch.
+From: Lev Stipakov <lev@...515...>
 
-I ran test builds on FreeBSD/mbedtls 2.16.3 (t_client test) and 
-Gentoo/mbedtls 2.12.0 (t_server test), which pass.  No tests were 
-done with the crypto material exporter - have no test rig for it
-(but I wouldn't mind some easy to set up scripts to *do* test it...)
+Commit ab27c9f added inclusion of openssl header
+but didn't add include directory to msvc project file.
 
-Of course my mbedtls versions are all too old to provide the needed
-functionality in the first place, so I suspect "#if HAVE_EKM" takes
-care of me not seeing any effects... but see my other mail on what
-happens if I upgrade the Gentoo to 2.19.1... *bang* :-)
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/openvpnserv/openvpnserv.vcxproj | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-
-commit ab27c9f77b7cd10d530b3c6380465322969a9d21
-Author: Steffan Karger
-Date:   Mon Nov 11 00:10:18 2019 +0100
-
-     mbedtls: add RFC 5705 keying material exporter support
-
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20191110231018.30621-1-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19111.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpnserv/openvpnserv.vcxproj b/src/openvpnserv/openvpnserv.vcxproj
+index c5a34b87..f2eb805f 100644
+--- a/src/openvpnserv/openvpnserv.vcxproj
++++ b/src/openvpnserv/openvpnserv.vcxproj
+@@ -72,7 +72,7 @@
+   </PropertyGroup>
+   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+     <ClCompile>
+-      <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
++      <AdditionalIncludeDirectories>..\openvpn;..\compat;$(OPENSSL_HOME)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+     </ClCompile>
+     <ResourceCompile />
+@@ -83,7 +83,7 @@
+   </ItemDefinitionGroup>
+   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+     <ClCompile>
+-      <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
++      <AdditionalIncludeDirectories>..\openvpn;..\compat;$(OPENSSL_HOME)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+     </ClCompile>
+     <ResourceCompile />
+@@ -94,7 +94,7 @@
+   </ItemDefinitionGroup>
+   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+     <ClCompile>
+-      <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
++      <AdditionalIncludeDirectories>..\openvpn;..\compat;$(OPENSSL_HOME)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+     </ClCompile>
+     <ResourceCompile />
+@@ -105,7 +105,7 @@
+   </ItemDefinitionGroup>
+   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+     <ClCompile>
+-      <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
++      <AdditionalIncludeDirectories>..\openvpn;..\compat;$(OPENSSL_HOME)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+     </ClCompile>
+     <ResourceCompile />
+-- 
+2.17.1
 
 
