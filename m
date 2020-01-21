@@ -1,10 +1,8 @@
-Date: Mon, 20 Jan 2020 20:19:06 +0100 (CET)
-Message-Id: <202001201919.00KJJ6oE022117@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <E1itVts-0007ZG-NO@...2479...>
-References: <E1itVts-0007ZG-NO@...2479...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Move keying material exporter
- check from syshead.h to configure.ac
+From: Lev Stipakov <lstipakov@...277...>
+Date: Tue, 21 Jan 2020 10:08:28 +0200
+Message-Id: <20200121080828.1310-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] configure.ac: simplify AC_CHECK_FUNCS
+ statements
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,34 +13,64 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan.karger@...2507...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Your patch has been applied to the master branch.
+From: Lev Stipakov <lev@...515...>
 
-(This time, I did actually test an mingw build :-) - plus Linux+OpenSSL
-and FreeBSD+mbedtls 2.16.  Gentoo 2.19 is still not fixed Distro-Upstream)
+AC_CHECK_FUNCS checks availability of each function
+in argument list and defines HAVE_function macro.
+AC_CHECK_FUNC takes single function as an argument and
+doesn't automatically define any macros.
 
-As a side note, the message-id: below is what I received the mail
-with, which does not look like "it was sent with that" - but Lev referenced
-this message-ID, so that's what the archives have...
+When we check for availability of a single function and
+define own macro, it is enough to use AC_CHECK_FUNC.
 
-commit 5defbba4787ce2713ac3abc99e1b140731b761d6
-Author: Steffan Karger
-Date:   Mon Jan 20 12:55:18 2020 +0100
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ configure.ac | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-     Move keying material exporter check from syshead.h to configure.ac
-
-     Signed-off-by: Steffan Karger <steffan.karger@...2507...>
-     Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <E1itVts-0007ZG-NO@...2479...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19328.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/configure.ac b/configure.ac
+index 98fd39ce..3c057295 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -906,17 +906,17 @@ if test "${with_crypto_library}" = "openssl"; then
+ 	fi
+ 
+ 	have_crypto_aead_modes="yes"
+-	AC_CHECK_FUNCS(
++	AC_CHECK_FUNC(
+ 		[EVP_aes_256_gcm],
+ 		,
+-		[have_crypto_aead_modes="no"; break]
++		[have_crypto_aead_modes="no"]
+ 	)
+ 
+ 	have_export_keying_material="yes"
+-	AC_CHECK_FUNCS(
++	AC_CHECK_FUNC(
+ 		[SSL_export_keying_material],
+ 		,
+-		[have_export_keying_material="no"; break]
++		[have_export_keying_material="no"]
+ 	)
+ 
+ 	AC_CHECK_FUNCS(
+@@ -1018,10 +1018,10 @@ elif test "${with_crypto_library}" = "mbedtls"; then
+ 	)
+ 
+ 	have_export_keying_material="yes"
+-	AC_CHECK_FUNCS(
++	AC_CHECK_FUNC(
+ 		[mbedtls_ssl_conf_export_keys_ext_cb],
+ 		,
+-		[have_export_keying_material="no"; break]
++		[have_export_keying_material="no"]
+ 	)
+ 
+ 	CFLAGS="${saved_CFLAGS}"
+-- 
+2.17.1
 
 
