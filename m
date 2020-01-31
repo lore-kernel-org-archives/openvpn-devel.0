@@ -1,11 +1,9 @@
-MIME-Version: 1.0
+From: selva.nair@...277...
+Date: Fri, 31 Jan 2020 11:32:00 -0500
+Message-Id: <1580488320-10224-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1580388208-26594-1-git-send-email-selva.nair@...277...>
 References: <1580388208-26594-1-git-send-email-selva.nair@...277...>
- <CAGyAFMX6+K_7jzPqnubjJ7oyYR5udq37ZpcR7GDVVfxFV8t_NA@...278...>
-In-Reply-To: <CAGyAFMX6+K_7jzPqnubjJ7oyYR5udq37ZpcR7GDVVfxFV8t_NA@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Fri, 31 Jan 2020 08:42:50 -0500
-Message-ID: <CAKuzo_gzQj-02zfGssPV6kJwv24GBVYEYVY6EW0NvEmP04eJpQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Swap the order of checks for validating
+Subject: [Openvpn-devel] [PATCH v2] Swap the order of checks for validating
  interactive service user
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -15,52 +13,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+From: Selva Nair <selva.nair@...277...>
 
-On Fri, Jan 31, 2020 at 5:29 AM Lev Stipakov <lstipakov@...277...> wrote:
->
-> Hi,
->
->> +    if (!ValidateOptions(pipe, sud.directory, sud.options)
->> +        && !IsAuthorizedUser(ovpn_user->User.Sid, imp_token, settings.ovpn_admin_group)
->>      {
->
->
-> Closing parenthesis is missing:
+Check the config file location and command line options first
+and membership in OpenVPNAdministrators group after that as
+the latter could be a slow process for active directory users.
 
-That is embarrassing.. I went through the motions of compile testing it without
-updating the source tree in openvpnbuild. Yikes..
+When connection to domain controllers is poor or unavailable, checking
+the group membership is slow and causes timeouts in the GUI (Trac
+1051). However, in cases where the config is in the global directory,
+no group membership check should be required. The re-ordering here
+avoids the redundant check in such cases.
 
->
-> >C:\Users\lev\Projects\openvpn\src\openvpnserv\interactive.c(1586,5): error C2143: syntax error: missing ')' before '{'
->
-> Also it is probably just me, but took me a while to figure out what that code is doing and why.
->
-> Could you slightly improve the comment above lines you touch
-> ("Check user is authorized or options are white-listed") and mention something like
-> "Non-authorized users are allowed to use only white-listed options and
-> have config only in global openvpn config directory"?
+In addition to this, its also proposed to improve the timeout handling
+in the GUI, but this change is still useful as it should completely
+eliminate the timeout issue for many users.
 
-Will do.
+Also see: https://github.com/OpenVPN/openvpn-gui/issues/332
 
->
-> When I started to debug it, I realized that I have to be authorized user when config
-> is in my current user's directory (C:\Users\lev\OpenVPN\config) and not in "global" config
-> directory ("C:\Program Files\OpenVPN\config"). Is this by design?
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
 
-Yes, that is by design. As iservice allows the users to do some actions that
-normally require admin privilege, a limited user is only allowed to use some
-whitelisted options or a config installed by an admin in the global config
-directory. They are not allowed to run arbitrary configs
-that they can edit. Unless an admin explicitly gives them permission to do
-so --- checked by membership in "OpenVPNAdministrators" group. Users
-who have admin privilege (even if not enabled in the token by UAC) are
-considered authorized.
+v2: Add missing closing parenthesis and improve the comment
+above the edited chunk.
 
-Selva
+ src/openvpnserv/interactive.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 6e72a14..ff5b08b 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -1580,9 +1580,15 @@ RunOpenvpn(LPVOID p)
+         goto out;
+     }
+ 
+-    /* Check user is authorized or options are white-listed */
+-    if (!IsAuthorizedUser(ovpn_user->User.Sid, imp_token, settings.ovpn_admin_group)
+-        && !ValidateOptions(pipe, sud.directory, sud.options))
++    /*
++     * Only authorized users are allowed to use any command line options or
++     * have the config file in locations other than the global config directory.
++     *
++     * Check options are white-listed and config is in the global directory
++     * OR user is authorized to run any config.
++     */
++    if (!ValidateOptions(pipe, sud.directory, sud.options)
++        && !IsAuthorizedUser(ovpn_user->User.Sid, imp_token, settings.ovpn_admin_group))
+     {
+         goto out;
+     }
+-- 
+2.1.4
+
 
