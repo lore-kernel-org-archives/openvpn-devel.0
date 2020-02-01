@@ -1,8 +1,11 @@
-From: chipitsine@...277...
-Date: Sat,  1 Feb 2020 18:50:26 +0500
-Message-Id: <20200201135026.18074-1-chipitsine@...277...>
+References: <CAFHpkQFTJQ_6s7Ux4G6TMye_mk+kb3P=FmOqMJYMSLBsBfXatA@...278...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <60df855b-8821-a22f-5255-a39c0be3c8d4@...1856...>
+Date: Sat, 1 Feb 2020 19:35:50 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] travis-ci: add arm64, s390x builds.
+In-Reply-To: <CAFHpkQFTJQ_6s7Ux4G6TMye_mk+kb3P=FmOqMJYMSLBsBfXatA@...278...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] linux arm64 tests fail
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,212 +18,47 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Ilya Shipitsin <chipitsine@...277...>
+Hi,
 
-as described on https://docs.travis-ci.com/user/multi-cpu-architectures travis-ci
-now supports amd64, ppcle, arm64, s390 architectures. Add arm64 and s390x.
+On 01-02-2020 13:43, Илья Шипицин wrote:
+> https://travis-ci.org/chipitsine/openvpn/jobs/644745481?utm_medium=notification&utm_source=github_status
+> 
+> it indicates "ERROR" when running tests, however tests are ok after all.
+> 
+> [ RUN ] tls_crypt_v2_wrap_too_long_metadata
+> 
+> ERROR: could not crypt: insufficient space in dst
+> 
+> [ OK ] tls_crypt_v2_wrap_too_long_metadata
+> 
+> [ RUN ] tls_crypt_v2_wrap_unwrap_wrong_key
+> 
+> [ OK ] tls_crypt_v2_wrap_unwrap_wrong_key
+> 
+> [ RUN ] tls_crypt_v2_wrap_unwrap_dst_too_small
+> 
+> [ OK ] tls_crypt_v2_wrap_unwrap_dst_too_small
+> 
+> [ RUN ] test_tls_crypt_v2_write_server_key_file
+> 
+> [ OK ] test_tls_crypt_v2_write_server_key_file
+> 
+> [ RUN ] test_tls_crypt_v2_write_client_key_file
+> 
+> [ OK ] test_tls_crypt_v2_write_client_key_file
+> 
+> [==========] 14 test(s) run.
+> 
+> [ PASSED ] 14 test(s).
+> 
+> PASS: tls_crypt_testdriver
 
-travis-ci images were upgraded to bionic.
+This is expected behaviour. And unrelated to arm64. Just check the amd64
+build, exact same message.
 
-"sudo" is deprecated, let us remove it, also "matrix" is deprecated in favour of "jobs".
+We test the "too much input data" case here, which prints an error.
+Looks odd, I admit. But printing warnings/errors even in tests helps
+speed up diagnosis.
 
-LD_LIBRARY_PATH was replaced by using "rpath" in LDFLAGS, which is more elegant way of linking.
-
-also, dependencies were upgraded to the latest versions.
-
-travis_wait was added for long openssl builds.
-
-cmocka was added to linux and osx builds.
----
-
-v2 rebased against proper commit
-
- .travis.yml               | 42 +++++++++++++++++++++------------------
- .travis/build-check.sh    | 10 +---------
- .travis/build-deps.sh     | 10 ++++++----
- .travis/run-build-deps.sh | 10 ----------
- 4 files changed, 30 insertions(+), 42 deletions(-)
- delete mode 100755 .travis/run-build-deps.sh
-
-diff --git a/.travis.yml b/.travis.yml
-index 40296d87..9f9db954 100644
---- a/.travis.yml
-+++ b/.travis.yml
-@@ -1,5 +1,4 @@
--sudo: required
--dist: xenial
-+dist: bionic
- 
- os: linux
- 
-@@ -11,18 +10,18 @@ env:
-     - PREFIX="${HOME}/opt"
-     - TAP_WINDOWS_VERSION=9.23.3
-     - LZO_VERSION=2.10
--    - PKCS11_HELPER_VERSION=1.25.1
--    - MBEDTLS_VERSION=2.16.1
-+    - PKCS11_HELPER_VERSION=1.26
-+    - MBEDTLS_VERSION=2.16.4
-     - MBEDTLS_CFLAGS="-I${PREFIX}/include"
-     - MBEDTLS_LIBS="-L${PREFIX}/lib -lmbedtls -lmbedx509 -lmbedcrypto"
--    - OPENSSL_VERSION=1.0.2s
-+    - OPENSSL_VERSION=1.0.2u
-     - OPENSSL_CFLAGS="-I${PREFIX}/include"
-     - OPENSSL_LIBS="-L${PREFIX}/lib -lssl -lcrypto"
-     # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
-     #   via the "travis encrypt" command using the project repo's public key
-     - secure: "l9mSnEW4LJqjxftH5i1NdDaYfGmQB1mPXnSB3DXnsjzkCWZ+yJLfBemfQ0tx/wS7chBYxqUaUIMT0hw4zJVp/LANFJo2vfh//ymTS6h0uApRY1ofg9Pp1BFcV1laG6/u8pwSZ2EBy/GhCd3DS436oE8sYBRaFM9FU62L/oeQBfJ7r4ID/0eB1b8bqlbD4paty9MHui2P8EZJwR+KAD84prtfpZOcrSMxPh9OUhJxzxUvvVoP4s4+lZ5Kgg1bBQ3yzKGDqe8VOgK2BWCEuezqhMMc8oeKmAe7CUkoz5gsGYH++k3I9XzP9Z4xeJKoQnC/82qi4xkJmlaOxdionej9bHIcjfRt7D8j1J0U+wOj4p8VrDy7yHaxuN2fi0K5MGa/CaXQSrkna8dePniCng+xQ2MY/zxuRX2gA6xPNLUyQLU9LqIug7wj4z84Hk9iWib4L20MoPjeEo+vAUNq8FtjOPxMuHNpv4iGGx6kgJm7RXl5vC5hxfK6MprrnYe2U5Mcd8jpzagKBaKHL3zV2FxX9k0jRO9Mccz7M2WnaV0MQ6zcngzTN4+s0kCjhfGKd2F2ANT2Gkhj3Me36eNHfuE0dBbvYCMh4b3Mgd7b/OuXwQWdJ8PjJ1WHXjSOw5sHw1suaV6cEO2Meyz5j1tOkyOi0M9QF+LFenQ9vLH4sBCww8U="
- 
--matrix:
-+jobs:
-   include:
-     - env:
-       - SSLLIB="openssl"
-@@ -37,11 +36,21 @@ matrix:
-     - env: SSLLIB="openssl" OPENSSL_VERSION="1.0.1u"
-       os: linux
-       compiler: gcc
--    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1c"
-+    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1d"
-       os: linux
-+      arch: amd64
-       compiler: gcc
--    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1c" LABEL="linux-ppc64le"
--      os: linux-ppc64le
-+    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1d"
-+      os: linux
-+      arch: ppc64le
-+      compiler: gcc
-+    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1d"
-+      os: linux
-+      arch: arm64
-+      compiler: gcc
-+    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1d"
-+      os: linux
-+      arch: s390x
-       compiler: gcc
-     - env: SSLLIB="openssl" EXTRA_CONFIG="--enable-iproute2"
-       os: linux
-@@ -49,7 +58,7 @@ matrix:
-     - env: SSLLIB="openssl" CFLAGS="-fsanitize=address" CC=clang-9
-       os: linux
-       compiler: clang
--    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1c" CC=clang-9
-+    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1d" CC=clang-9
-       os: linux
-       compiler: clang
-     - env: SSLLIB="mbedtls"
-@@ -67,7 +76,7 @@ matrix:
-     - env: SSLLIB="openssl" CHOST=x86_64-w64-mingw32 OPENSSL_VERSION="1.0.1u"
-       os: linux
-       compiler: ": Win64 build only"
--    - env: SSLLIB="openssl" CHOST=x86_64-w64-mingw32 OPENSSL_VERSION="1.1.1c"
-+    - env: SSLLIB="openssl" CHOST=x86_64-w64-mingw32 OPENSSL_VERSION="1.1.1d"
-       os: linux
-       compiler: ": Win64 build only"
-     - env: SSLLIB="openssl" CHOST=i686-w64-mingw32
-@@ -82,15 +91,11 @@ matrix:
- 
- addons:
-   apt:
--    sources:
--      - ubuntu-toolchain-r-test
--      - sourceline: 'deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-9 main'
--        key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
-     update: true
--    packages: [ liblzo2-dev, libpam0g-dev, liblz4-dev, linux-libc-dev, man2html, mingw-w64 ]
-+    packages: [ liblzo2-dev, libpam0g-dev, liblz4-dev, linux-libc-dev, man2html, mingw-w64, clang-9, libcmocka-dev ]
-   homebrew:
-     update: true
--    packages: [ lzo ]
-+    packages: [ lzo, lz4, cmocka ]
- 
- cache:
-   directories:
-@@ -99,9 +104,8 @@ cache:
-   - ${HOME}/Library/Caches/Homebrew
- 
- install:
--  - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$TRAVIS_CPU_ARCH" != "ppc64le" ]; then sudo apt-get install clang-9; fi
-   - if [ ! -z "${CHOST}" ]; then unset CC; fi
--  - .travis/run-build-deps.sh
-+  - travis_wait 30 .travis/build-deps.sh > build-deps.log 2>&1 || (cat build-deps.log && exit 1)
- 
- before_script:
-   - .travis/coverity.sh
-diff --git a/.travis/build-check.sh b/.travis/build-check.sh
-index f794704c..4e1b7243 100755
---- a/.travis/build-check.sh
-+++ b/.travis/build-check.sh
-@@ -6,14 +6,6 @@ if [ "${TRAVIS_OS_NAME}" = "windows" ]; then
- 	MSBuild.exe openvpn.sln //p:Platform=x64 && exit 0
- fi
- 
--if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
--	export LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH:-}"
--fi
--
--if [ "${TRAVIS_OS_NAME}" = "osx"   ]; then
--	export DYLD_LIBRARY_PATH="${PREFIX}/lib:${DYLD_LIBRARY_PATH:-}"
--fi
--
- autoreconf -vi
- 
- if [ -z ${CHOST+x} ]; then
-@@ -21,7 +13,7 @@ if [ -z ${CHOST+x} ]; then
- 		export EXTRA_CONFIG="${EXTRA_CONFIG:-} --enable-werror"
- 	fi
- 	./configure --with-crypto-library="${SSLLIB}" ${EXTRA_CONFIG:-} || (cat config.log && exit 1)
--	make -j$JOBS
-+	make LDFLAGS="-Wl,-rpath,${PREFIX}/lib" -j$JOBS
- 	src/openvpn/openvpn --version || true
- 	if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
- 		ldd src/openvpn/openvpn;
-diff --git a/.travis/build-deps.sh b/.travis/build-deps.sh
-index 4c5cb05e..0c8d69b8 100755
---- a/.travis/build-deps.sh
-+++ b/.travis/build-deps.sh
-@@ -44,17 +44,19 @@ build_lzo () {
- }
- 
- download_pkcs11_helper () {
--    if [ ! -f "pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2" ]; then
-+    if [ ! -f "pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.gz" ]; then
-         wget -P download-cache/ \
--            "https://github.com/OpenSC/pkcs11-helper/releases/download/pkcs11-helper-${PKCS11_HELPER_VERSION}/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2"
-+            "https://github.com/OpenSC/pkcs11-helper/archive/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.gz"
-     fi
- }
- 
- build_pkcs11_helper () {
-     if [ "$(cat ${PREFIX}/.pkcs11_helper-version)" != "${PKCS11_HELPER_VERSION}" ]; then
--        tar jxf download-cache/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2
-+        tar xf download-cache/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.gz
-         (
--            cd "pkcs11-helper-${PKCS11_HELPER_VERSION}"
-+            cd "pkcs11-helper-pkcs11-helper-${PKCS11_HELPER_VERSION}"
-+
-+            autoreconf -iv
- 
-             ./configure --host=${CHOST} --program-prefix='' --libdir=${PREFIX}/lib \
-                  --prefix=${PREFIX} --build=x86_64-pc-linux-gnu \
-diff --git a/.travis/run-build-deps.sh b/.travis/run-build-deps.sh
-deleted file mode 100755
-index b8eb41c5..00000000
---- a/.travis/run-build-deps.sh
-+++ /dev/null
-@@ -1,10 +0,0 @@
--#!/bin/sh
--set -eux
--
--if [ "${TRAVIS_OS_NAME}" = "windows" ]; then
--    # for windows we need to print output since openssl build
--    # might take more than 10 minutes, which causes build abort
--    .travis/build-deps.sh
--else
--    .travis/build-deps.sh > build-deps.log 2>&1 || (cat build-deps.log && exit 1)
--fi
--- 
-2.24.1
-
+-Steffan
 
