@@ -1,8 +1,8 @@
 From: chipitsine@...277...
-Date: Sat,  1 Feb 2020 18:36:30 +0500
-Message-Id: <20200201133630.17331-1-chipitsine@...277...>
+Date: Sat,  1 Feb 2020 18:50:26 +0500
+Message-Id: <20200201135026.18074-1-chipitsine@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] travis-ci: add arm64, s390x builds.
+Subject: [Openvpn-devel] [PATCH v2] travis-ci: add arm64, s390x builds.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,6 +20,8 @@ From: Ilya Shipitsin <chipitsine@...277...>
 as described on https://docs.travis-ci.com/user/multi-cpu-architectures travis-ci
 now supports amd64, ppcle, arm64, s390 architectures. Add arm64 and s390x.
 
+travis-ci images were upgraded to bionic.
+
 "sudo" is deprecated, let us remove it, also "matrix" is deprecated in favour of "jobs".
 
 LD_LIBRARY_PATH was replaced by using "rpath" in LDFLAGS, which is more elegant way of linking.
@@ -28,17 +30,20 @@ also, dependencies were upgraded to the latest versions.
 
 travis_wait was added for long openssl builds.
 
-https://docs.travis-ci.com/user/multi-cpu-architectures
+cmocka was added to linux and osx builds.
 ---
- .travis.yml               | 24 ++++++++++--------------
+
+v2 rebased against proper commit
+
+ .travis.yml               | 42 +++++++++++++++++++++------------------
  .travis/build-check.sh    | 10 +---------
  .travis/build-deps.sh     | 10 ++++++----
  .travis/run-build-deps.sh | 10 ----------
- 4 files changed, 17 insertions(+), 37 deletions(-)
+ 4 files changed, 30 insertions(+), 42 deletions(-)
  delete mode 100755 .travis/run-build-deps.sh
 
 diff --git a/.travis.yml b/.travis.yml
-index 057fbb91..9f9db954 100644
+index 40296d87..9f9db954 100644
 --- a/.travis.yml
 +++ b/.travis.yml
 @@ -1,5 +1,4 @@
@@ -48,20 +53,21 @@ index 057fbb91..9f9db954 100644
  
  os: linux
  
-@@ -10,9 +9,9 @@ env:
-     - JOBS=3
+@@ -11,18 +10,18 @@ env:
      - PREFIX="${HOME}/opt"
      - TAP_WINDOWS_VERSION=9.23.3
--    - LZO_VERSION=2.11
+     - LZO_VERSION=2.10
 -    - PKCS11_HELPER_VERSION=1.25.1
 -    - MBEDTLS_VERSION=2.16.1
-+    - LZO_VERSION=2.10
 +    - PKCS11_HELPER_VERSION=1.26
 +    - MBEDTLS_VERSION=2.16.4
      - MBEDTLS_CFLAGS="-I${PREFIX}/include"
      - MBEDTLS_LIBS="-L${PREFIX}/lib -lmbedtls -lmbedx509 -lmbedcrypto"
-     - OPENSSL_VERSION=1.0.2u
-@@ -22,7 +21,7 @@ env:
+-    - OPENSSL_VERSION=1.0.2s
++    - OPENSSL_VERSION=1.0.2u
+     - OPENSSL_CFLAGS="-I${PREFIX}/include"
+     - OPENSSL_LIBS="-L${PREFIX}/lib -lssl -lcrypto"
+     # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
      #   via the "travis encrypt" command using the project repo's public key
      - secure: "l9mSnEW4LJqjxftH5i1NdDaYfGmQB1mPXnSB3DXnsjzkCWZ+yJLfBemfQ0tx/wS7chBYxqUaUIMT0hw4zJVp/LANFJo2vfh//ymTS6h0uApRY1ofg9Pp1BFcV1laG6/u8pwSZ2EBy/GhCd3DS436oE8sYBRaFM9FU62L/oeQBfJ7r4ID/0eB1b8bqlbD4paty9MHui2P8EZJwR+KAD84prtfpZOcrSMxPh9OUhJxzxUvvVoP4s4+lZ5Kgg1bBQ3yzKGDqe8VOgK2BWCEuezqhMMc8oeKmAe7CUkoz5gsGYH++k3I9XzP9Z4xeJKoQnC/82qi4xkJmlaOxdionej9bHIcjfRt7D8j1J0U+wOj4p8VrDy7yHaxuN2fi0K5MGa/CaXQSrkna8dePniCng+xQ2MY/zxuRX2gA6xPNLUyQLU9LqIug7wj4z84Hk9iWib4L20MoPjeEo+vAUNq8FtjOPxMuHNpv4iGGx6kgJm7RXl5vC5hxfK6MprrnYe2U5Mcd8jpzagKBaKHL3zV2FxX9k0jRO9Mccz7M2WnaV0MQ6zcngzTN4+s0kCjhfGKd2F2ANT2Gkhj3Me36eNHfuE0dBbvYCMh4b3Mgd7b/OuXwQWdJ8PjJ1WHXjSOw5sHw1suaV6cEO2Meyz5j1tOkyOi0M9QF+LFenQ9vLH4sBCww8U="
  
@@ -70,22 +76,50 @@ index 057fbb91..9f9db954 100644
    include:
      - env:
        - SSLLIB="openssl"
-@@ -39,12 +38,13 @@ matrix:
+@@ -37,11 +36,21 @@ matrix:
+     - env: SSLLIB="openssl" OPENSSL_VERSION="1.0.1u"
+       os: linux
        compiler: gcc
-     - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1d"
+-    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1c"
++    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1d"
        os: linux
 +      arch: amd64
        compiler: gcc
-     - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1d"
-       os: linux
-       arch: ppc64le
-       compiler: gcc
--    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1d" 
+-    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1c" LABEL="linux-ppc64le"
+-      os: linux-ppc64le
 +    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1d"
-       os: linux
-       arch: arm64
++      os: linux
++      arch: ppc64le
++      compiler: gcc
++    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1d"
++      os: linux
++      arch: arm64
++      compiler: gcc
++    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1d"
++      os: linux
++      arch: s390x
        compiler: gcc
-@@ -91,15 +91,11 @@ matrix:
+     - env: SSLLIB="openssl" EXTRA_CONFIG="--enable-iproute2"
+       os: linux
+@@ -49,7 +58,7 @@ matrix:
+     - env: SSLLIB="openssl" CFLAGS="-fsanitize=address" CC=clang-9
+       os: linux
+       compiler: clang
+-    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1c" CC=clang-9
++    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1d" CC=clang-9
+       os: linux
+       compiler: clang
+     - env: SSLLIB="mbedtls"
+@@ -67,7 +76,7 @@ matrix:
+     - env: SSLLIB="openssl" CHOST=x86_64-w64-mingw32 OPENSSL_VERSION="1.0.1u"
+       os: linux
+       compiler: ": Win64 build only"
+-    - env: SSLLIB="openssl" CHOST=x86_64-w64-mingw32 OPENSSL_VERSION="1.1.1c"
++    - env: SSLLIB="openssl" CHOST=x86_64-w64-mingw32 OPENSSL_VERSION="1.1.1d"
+       os: linux
+       compiler: ": Win64 build only"
+     - env: SSLLIB="openssl" CHOST=i686-w64-mingw32
+@@ -82,15 +91,11 @@ matrix:
  
  addons:
    apt:
@@ -94,7 +128,7 @@ index 057fbb91..9f9db954 100644
 -      - sourceline: 'deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-9 main'
 -        key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
      update: true
--    packages: [ liblzo2-dev, libpam0g-dev, liblz4-dev, linux-libc-dev, man2html, mingw-w64, clang-9 ]
+-    packages: [ liblzo2-dev, libpam0g-dev, liblz4-dev, linux-libc-dev, man2html, mingw-w64 ]
 +    packages: [ liblzo2-dev, libpam0g-dev, liblz4-dev, linux-libc-dev, man2html, mingw-w64, clang-9, libcmocka-dev ]
    homebrew:
      update: true
@@ -103,9 +137,11 @@ index 057fbb91..9f9db954 100644
  
  cache:
    directories:
-@@ -109,7 +105,7 @@ cache:
+@@ -99,9 +104,8 @@ cache:
+   - ${HOME}/Library/Caches/Homebrew
  
  install:
+-  - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$TRAVIS_CPU_ARCH" != "ppc64le" ]; then sudo apt-get install clang-9; fi
    - if [ ! -z "${CHOST}" ]; then unset CC; fi
 -  - .travis/run-build-deps.sh
 +  - travis_wait 30 .travis/build-deps.sh > build-deps.log 2>&1 || (cat build-deps.log && exit 1)
