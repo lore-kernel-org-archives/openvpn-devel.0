@@ -1,10 +1,9 @@
-From: selva.nair@...277...
-Date: Fri, 31 Jan 2020 11:32:00 -0500
-Message-Id: <1580488320-10224-1-git-send-email-selva.nair@...277...>
-In-Reply-To: <1580388208-26594-1-git-send-email-selva.nair@...277...>
-References: <1580388208-26594-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH v2] Swap the order of checks for validating
- interactive service user
+MIME-Version: 1.0
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Sat, 1 Feb 2020 17:43:12 +0500
+Message-ID: <CAFHpkQFTJQ_6s7Ux4G6TMye_mk+kb3P=FmOqMJYMSLBsBfXatA@...278...>
+Content-Type: multipart/alternative; boundary="00000000000021052a059d83098a"
+Subject: [Openvpn-devel] linux arm64 tests fail
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,61 +12,100 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Selva Nair <selva.nair@...277...>
+--00000000000021052a059d83098a
+Content-Type: text/plain; charset="UTF-8"
 
-Check the config file location and command line options first
-and membership in OpenVPNAdministrators group after that as
-the latter could be a slow process for active directory users.
+Hello,
 
-When connection to domain controllers is poor or unavailable, checking
-the group membership is slow and causes timeouts in the GUI (Trac
-1051). However, in cases where the config is in the global directory,
-no group membership check should be required. The re-ordering here
-avoids the redundant check in such cases.
+https://travis-ci.org/chipitsine/openvpn/jobs/644745481?utm_medium=notification&utm_source=github_status
 
-In addition to this, its also proposed to improve the timeout handling
-in the GUI, but this change is still useful as it should completely
-eliminate the timeout issue for many users.
+it indicates "ERROR" when running tests, however tests are ok after all.
 
-Also see: https://github.com/OpenVPN/openvpn-gui/issues/332
+[ RUN      ] tls_crypt_v2_wrap_too_long_metadata
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
+ERROR: could not crypt: insufficient space in dst
 
-v2: Add missing closing parenthesis and improve the comment
-above the edited chunk.
+[       OK ] tls_crypt_v2_wrap_too_long_metadata
 
- src/openvpnserv/interactive.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+[ RUN      ] tls_crypt_v2_wrap_unwrap_wrong_key
 
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index 6e72a14..ff5b08b 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -1580,9 +1580,15 @@ RunOpenvpn(LPVOID p)
-         goto out;
-     }
- 
--    /* Check user is authorized or options are white-listed */
--    if (!IsAuthorizedUser(ovpn_user->User.Sid, imp_token, settings.ovpn_admin_group)
--        && !ValidateOptions(pipe, sud.directory, sud.options))
-+    /*
-+     * Only authorized users are allowed to use any command line options or
-+     * have the config file in locations other than the global config directory.
-+     *
-+     * Check options are white-listed and config is in the global directory
-+     * OR user is authorized to run any config.
-+     */
-+    if (!ValidateOptions(pipe, sud.directory, sud.options)
-+        && !IsAuthorizedUser(ovpn_user->User.Sid, imp_token, settings.ovpn_admin_group))
-     {
-         goto out;
-     }
--- 
-2.1.4
+[       OK ] tls_crypt_v2_wrap_unwrap_wrong_key
 
+[ RUN      ] tls_crypt_v2_wrap_unwrap_dst_too_small
+
+[       OK ] tls_crypt_v2_wrap_unwrap_dst_too_small
+
+[ RUN      ] test_tls_crypt_v2_write_server_key_file
+
+[       OK ] test_tls_crypt_v2_write_server_key_file
+
+[ RUN      ] test_tls_crypt_v2_write_client_key_file
+
+[       OK ] test_tls_crypt_v2_write_client_key_file
+
+[==========] 14 test(s) run.
+
+[  PASSED  ] 14 test(s).
+
+PASS: tls_crypt_testdriver
+
+
+
+Cheers,
+
+Ilya Shipitcin
+
+--00000000000021052a059d83098a
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div>Hello,</div><div><br></div><div><a href=3D"https://tr=
+avis-ci.org/chipitsine/openvpn/jobs/644745481?utm_medium=3Dnotification&amp=
+;utm_source=3Dgithub_status">https://travis-ci.org/chipitsine/openvpn/jobs/=
+644745481?utm_medium=3Dnotification&amp;utm_source=3Dgithub_status</a></div=
+><div><br></div><div>it indicates &quot;ERROR&quot; when running tests, how=
+ever tests are ok after all.</div><div><br></div><div><pre id=3D"gmail-log"=
+ class=3D"gmail-ansi gmail-log-body-content"><div class=3D"gmail-log-line">=
+<span id=3D"gmail-106-39">[ RUN      ] tls_crypt_v2_wrap_too_long_metadata<=
+/span></div></pre><pre id=3D"gmail-log" class=3D"gmail-ansi gmail-log-body-=
+content"><div class=3D"gmail-log-line gmail-highlight"><span id=3D"gmail-10=
+6-40">ERROR: could not crypt: insufficient space in dst</span></div></pre><=
+pre id=3D"gmail-log" class=3D"gmail-ansi gmail-log-body-content"><div class=
+=3D"gmail-log-line"><span id=3D"gmail-106-41">[      </span><span id=3D"gma=
+il-107-0"> OK ] tls_crypt_v2_wrap_too_long_metadata</span></div></pre><pre =
+id=3D"gmail-log" class=3D"gmail-ansi gmail-log-body-content"><div class=3D"=
+gmail-log-line"><span id=3D"gmail-107-1">[ RUN      ] tls_crypt_v2_wrap_unw=
+rap_wrong_key</span></div></pre><pre id=3D"gmail-log" class=3D"gmail-ansi g=
+mail-log-body-content"><div class=3D"gmail-log-line"><span id=3D"gmail-107-=
+2">[       OK ] tls_crypt_v2_wrap_unwrap_wrong_key</span></div></pre><pre i=
+d=3D"gmail-log" class=3D"gmail-ansi gmail-log-body-content"><div class=3D"g=
+mail-log-line"><span id=3D"gmail-107-3">[ RUN      ] tls_crypt_v2_wrap_unwr=
+ap_dst_too_small</span></div></pre><pre id=3D"gmail-log" class=3D"gmail-ans=
+i gmail-log-body-content"><div class=3D"gmail-log-line"><span id=3D"gmail-1=
+07-4">[       OK ] tls_crypt_v2_wrap_unwrap_dst_too_small</span></div></pre=
+><pre id=3D"gmail-log" class=3D"gmail-ansi gmail-log-body-content"><div cla=
+ss=3D"gmail-log-line"><span id=3D"gmail-107-5">[ RUN      ] test_tls_crypt_=
+v2_write_server_key_file</span></div></pre><pre id=3D"gmail-log" class=3D"g=
+mail-ansi gmail-log-body-content"><div class=3D"gmail-log-line"><span id=3D=
+"gmail-107-6">[       OK ] test_tls_crypt_v2_write_server_key_file</span></=
+div></pre><pre id=3D"gmail-log" class=3D"gmail-ansi gmail-log-body-content"=
+><div class=3D"gmail-log-line"><span id=3D"gmail-107-7">[ RUN      ] test_t=
+ls_crypt_v2_write_client_key_file</span></div></pre><pre id=3D"gmail-log" c=
+lass=3D"gmail-ansi gmail-log-body-content"><div class=3D"gmail-log-line"><s=
+pan id=3D"gmail-107-8">[       OK ] test_tls_crypt_v2_write_client_key_file=
+</span></div></pre><pre id=3D"gmail-log" class=3D"gmail-ansi gmail-log-body=
+-content"><div class=3D"gmail-log-line"><span id=3D"gmail-107-9">[=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D] 14 test(s) run.</span></div></pre><pre id=3D"gmail-l=
+og" class=3D"gmail-ansi gmail-log-body-content"><div class=3D"gmail-log-lin=
+e"><span id=3D"gmail-107-10">[  PASSED  ] 14 test(s).</span></div></pre><pr=
+e id=3D"gmail-log" class=3D"gmail-ansi gmail-log-body-content"><span id=3D"=
+gmail-107-11">PASS: tls_crypt_testdriver<br><br><br><br></span></pre><pre i=
+d=3D"gmail-log" class=3D"gmail-ansi gmail-log-body-content"><span id=3D"gma=
+il-107-11">Cheers,<br></span></pre><pre id=3D"gmail-log" class=3D"gmail-ans=
+i gmail-log-body-content"><span id=3D"gmail-107-11">Ilya Shipitcin<br></spa=
+n></pre></div></div>
+
+--00000000000021052a059d83098a--
 
