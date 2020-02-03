@@ -1,11 +1,16 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <de2ff642-df3f-c0a9-c6b0-10584555a4ac@...515...>
-Date: Mon, 3 Feb 2020 11:12:01 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="PJ1q7WjFBhM7PPtBO7nYMazYzPAUEmTa9"
-Subject: [Openvpn-devel] Community meetings in February 2020
+References: <20200201135026.18074-1-chipitsine@...277...>
+ <CAGyAFMX4hOKL1up6q9N6MLCzQYwVpVgnhd8CcgL7RucLPbWwgw@...278...>
+ <CAFHpkQFszr8+iAmVy8P1D7b9WHuKATRnBtzU-x0vrrXdLAgNAA@...278...>
+ <CAFHpkQEObnPX7duk8n2wmmCW9F_fj1RrPxKQX1HYarkLsedfNw@...278...>
+ <CAFHpkQHd87Cjg2TbCSCygN4aonGNSas_02LjyC0+WjWYBkb_VQ@...278...>
+ <E1iyYO4-0000Ho-MB@...2508...>
+In-Reply-To: <E1iyYO4-0000Ho-MB@...2508...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Mon, 3 Feb 2020 14:59:54 +0500
+Message-ID: <CAFHpkQHXELdZ8gi8jrzH64NA57ozBFS+Ey9eDU6eAN-qBZwHJw@...278...>
+Content-Type: multipart/alternative; boundary="000000000000de0ce5059da8fca1"
+Subject: Re: [Openvpn-devel] [PATCH v2] travis-ci: add arm64, s390x builds.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,62 +19,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Steffan Karger <steffan.karger@...2507...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---PJ1q7WjFBhM7PPtBO7nYMazYzPAUEmTa9
-Content-Type: multipart/mixed; boundary="plCEX6YHasicVnccyHvS4rn6XrEdGqaZT"
-
---plCEX6YHasicVnccyHvS4rn6XrEdGqaZT
-Content-Language: en-US
-Content-Type: text/plain; charset="windows-1252"
+--000000000000de0ce5059da8fca1
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+=D0=BF=D0=BD, 3 =D1=84=D0=B5=D0=B2=D1=80. 2020 =D0=B3. =D0=B2 14:51, Steffa=
+n Karger <steffan.karger@...2507...>:
 
-Our community meetings will alternate between Wed 11:30 CET and Thu
-20:00 CET.
+> On 03-02-2020 09:04, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=
+=86=D0=B8=D0=BD wrote:
+> > also, ARM64 builds are flaky. maybe we should add them as allow_failure=
+s.
+>
+> What is flaky about the ARM64 builds? Is it our build? Is it the travis
+> infra?
+>
 
-Next meetings have been scheduled to
+in travis-ci terms "our" failure means "build failed", travis-ci infra
+means "build errored"
 
-- Wed 5th  February 11:30 CET
-- Thu 13th February 20:00 CET
-- Wed 19th February 11:30 CET
-- Thu 27th February 20:00 CET
-
-The place is #openvpn-meeting IRC channel at Freenode. Meeting agendas
-and summaries are in here:
-
-<https://community.openvpn.net/openvpn/wiki/IrcMeetings>
-
-Samuli
-
+they run arm64 on linaro cloud, it fails (sometimes) on infra level (I
+guess cloud is overloaded or like that). I did not seen yet tests failure
 
 
+>
+> -Steffan
+>
+>
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
 
+--000000000000de0ce5059da8fca1
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+<div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote">=
+<div dir=3D"ltr" class=3D"gmail_attr">=D0=BF=D0=BD, 3 =D1=84=D0=B5=D0=B2=D1=
+=80. 2020 =D0=B3. =D0=B2 14:51, Steffan Karger &lt;<a href=3D"mailto:steffa=
+n.karger@...2507...">steffan.karger@...2507...</a>&gt;:<br></div><blockquot=
+e class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px s=
+olid rgb(204,204,204);padding-left:1ex">On 03-02-2020 09:04, =D0=98=D0=BB=
+=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD wrote:<br>
+&gt; also, ARM64 builds are flaky. maybe we should add them as allow_failur=
+es.<br>
+<br>
+What is flaky about the ARM64 builds? Is it our build? Is it the travis<br>
+infra?<br></blockquote><div><br></div><div>in travis-ci terms &quot;our&quo=
+t; failure means &quot;build failed&quot;, travis-ci infra means &quot;buil=
+d errored&quot;</div><div><br></div><div>they run arm64 on linaro cloud, it=
+ fails (sometimes) on infra level (I guess cloud is overloaded or like that=
+). I did not seen yet tests failure<br></div><div>=C2=A0</div><blockquote c=
+lass=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px soli=
+d rgb(204,204,204);padding-left:1ex">
+<br>
+-Steffan<br>
+<br>
+<br>
+_______________________________________________<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
+envpn-devel@lists.sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
+=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
+nfo/openvpn-devel</a><br>
+</blockquote></div></div>
 
-
-
-
---plCEX6YHasicVnccyHvS4rn6XrEdGqaZT--
-
---PJ1q7WjFBhM7PPtBO7nYMazYzPAUEmTa9
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAl434+EACgkQKVhNn0CG
-RXhQpAf/ccowGzsZztw/FG59406H/bvewyg2H8QbRnESJBcG3PrwNIhe4FdpdKLP
-0U6OpuWo0FELZOOjYesRGdHntoQSqByEjikickLxBTVcVBVrj6F1Dc+ZjAXuHLDm
-Pj3quTRSEqWUsJHTGcx++FrJV9Muqvm133hITm4PKwlx3X+QoRScPRJZNeQVeSdp
-8IdzkJo3335IG89B9o2Nftfaho/WCxpdMFjhJp+feR9UZBxEM2wMj9us1WbqC1if
-+oyZPDEGgPoDGVKKYHYNwdywglBBJUQ1IrY1rE/hGofenOVi5wEpmZoGMeYm1rqg
-0NyxrxQE44rI432bt08CiwugerSThw==
-=dgZq
------END PGP SIGNATURE-----
-
---PJ1q7WjFBhM7PPtBO7nYMazYzPAUEmTa9--
+--000000000000de0ce5059da8fca1--
 
