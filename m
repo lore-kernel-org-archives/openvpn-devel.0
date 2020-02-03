@@ -1,14 +1,11 @@
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <de2ff642-df3f-c0a9-c6b0-10584555a4ac@...515...>
+Date: Mon, 3 Feb 2020 11:12:01 +0200
 MIME-Version: 1.0
-References: <1580388208-26594-1-git-send-email-selva.nair@...277...>
- <1580488320-10224-1-git-send-email-selva.nair@...277...>
- <CAGyAFMVO_CUsL_-Wuws4tLnnQWvZCfra0c_=djUzg4XoqtNJcA@...278...>
-In-Reply-To: <CAGyAFMVO_CUsL_-Wuws4tLnnQWvZCfra0c_=djUzg4XoqtNJcA@...278...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Mon, 3 Feb 2020 10:49:37 +0200
-Message-ID: <CAGyAFMUovaKR+2UTZXmuBOm8NktYhU0oCa9d6a4ZhZrspmeVew@...278...>
-Content-Type: multipart/alternative; boundary="000000000000785330059da80137"
-Subject: Re: [Openvpn-devel] [PATCH v2] Swap the order of checks for
- validating interactive service user
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="PJ1q7WjFBhM7PPtBO7nYMazYzPAUEmTa9"
+Subject: [Openvpn-devel] Community meetings in February 2020
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,78 +14,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---000000000000785330059da80137
-Content-Type: text/plain; charset="UTF-8"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--PJ1q7WjFBhM7PPtBO7nYMazYzPAUEmTa9
+Content-Type: multipart/mixed; boundary="plCEX6YHasicVnccyHvS4rn6XrEdGqaZT"
 
-I am sorry, I have to retract my ACK.
-
-When ValidateOptions is called first and config is non located in global
-directory (Program Files),
-service replies to gui via pipe with error message:
-
-0x20000001
-You have specified a config file location (client.xxx.ovpn relative to
-C:\Users\lev\OpenVPN\config\client.xxx) that requires admin approval. This
-error may be avoided by adding your account to the "OpenVPN Administrators"
-group
-(null)
-
-This message is incorrect, since account is in admin group, we just haven't
-checked that yet. When following check verifies that user indeed belongs to
-the admin group, service runs openvpn and connection got established. By
-some reasons, above error message is not read on the gui side. However, by
-adding small delay to service code or a breakpoint, message reaches gui,
-which displays an error.
-
-While under normal circumstances it works, I believe it just works by
-accident (error message is not read on gui side without delay on service
-side). We need to move sending error message out of ValidateOptions.
-
-
-ma 3. helmik. 2020 klo 10.23 Lev Stipakov (lstipakov@...277...) kirjoitti:
-
-> Built and tested, works as specified.
->
-> Acked-by: Lev Stipakov <lstipakov@...277...>
->
-
-
--- 
--Lev
-
---000000000000785330059da80137
-Content-Type: text/html; charset="UTF-8"
+--plCEX6YHasicVnccyHvS4rn6XrEdGqaZT
+Content-Language: en-US
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div dir=3D"ltr"><div>I am sorry, I have to retract my ACK=
-.</div><div><br></div><div>When ValidateOptions is called first and config =
-is non located in global directory (Program Files),</div><div>service repli=
-es to gui via pipe with error message:</div><div><br></div><div>0x20000001<=
-br>You have specified a config file location (client.xxx.ovpn relative to C=
-:\Users\lev\OpenVPN\config\client.xxx) that requires admin approval. This e=
-rror may be avoided by adding your account to the &quot;OpenVPN Administrat=
-ors&quot; group<br>(null)<br></div><div><br></div><div>This message is inco=
-rrect, since account is in admin group, we just haven&#39;t checked that ye=
-t. When following check verifies that user indeed belongs to the admin grou=
-p, service runs openvpn and connection got established. By some reasons, ab=
-ove error message is not read on the gui side. However, by adding small del=
-ay to service code or a breakpoint, message reaches gui, which displays an =
-error.</div><div><br></div><div>While under normal circumstances it works, =
-I believe=C2=A0it just works by accident (error message is not read on gui =
-side without delay on service side). We need to move sending error message =
-out of ValidateOptions.</div><div><br></div></div><br><div class=3D"gmail_q=
-uote"><div dir=3D"ltr" class=3D"gmail_attr">ma 3. helmik. 2020 klo 10.23 Le=
-v Stipakov (<a href=3D"mailto:lstipakov@...277...">lstipakov@...277...</a>)=
- kirjoitti:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px =
-0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><div=
- dir=3D"ltr"><div dir=3D"ltr">Built and tested, works as specified.<div><br=
-></div><div>Acked-by: Lev Stipakov &lt;<a href=3D"mailto:lstipakov@...1663...=
-." target=3D"_blank">lstipakov@...277...</a>&gt;</div></div></div>
-</blockquote></div><br clear=3D"all"><div><br></div>-- <br><div dir=3D"ltr"=
- class=3D"gmail_signature">-Lev</div></div>
+Hi,
 
---000000000000785330059da80137--
+Our community meetings will alternate between Wed 11:30 CET and Thu
+20:00 CET.
+
+Next meetings have been scheduled to
+
+- Wed 5th  February 11:30 CET
+- Thu 13th February 20:00 CET
+- Wed 19th February 11:30 CET
+- Thu 27th February 20:00 CET
+
+The place is #openvpn-meeting IRC channel at Freenode. Meeting agendas
+and summaries are in here:
+
+<https://community.openvpn.net/openvpn/wiki/IrcMeetings>
+
+Samuli
+
+
+
+
+
+
+
+
+
+--plCEX6YHasicVnccyHvS4rn6XrEdGqaZT--
+
+--PJ1q7WjFBhM7PPtBO7nYMazYzPAUEmTa9
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAl434+EACgkQKVhNn0CG
+RXhQpAf/ccowGzsZztw/FG59406H/bvewyg2H8QbRnESJBcG3PrwNIhe4FdpdKLP
+0U6OpuWo0FELZOOjYesRGdHntoQSqByEjikickLxBTVcVBVrj6F1Dc+ZjAXuHLDm
+Pj3quTRSEqWUsJHTGcx++FrJV9Muqvm133hITm4PKwlx3X+QoRScPRJZNeQVeSdp
+8IdzkJo3335IG89B9o2Nftfaho/WCxpdMFjhJp+feR9UZBxEM2wMj9us1WbqC1if
++oyZPDEGgPoDGVKKYHYNwdywglBBJUQ1IrY1rE/hGofenOVi5wEpmZoGMeYm1rqg
+0NyxrxQE44rI432bt08CiwugerSThw==
+=dgZq
+-----END PGP SIGNATURE-----
+
+--PJ1q7WjFBhM7PPtBO7nYMazYzPAUEmTa9--
 
