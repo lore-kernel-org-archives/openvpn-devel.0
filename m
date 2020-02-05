@@ -1,13 +1,12 @@
-Resent-Message-ID: <20200205133027.GN1431@...1296...>
-Resent-To: openvpn-devel@lists.sourceforge.net
-Date: Wed, 5 Feb 2020 14:18:28 +0100
+Date: Wed, 5 Feb 2020 15:40:03 +0100
 From: Domagoj Pensa <domagoj@...2540...>
-Message-ID: <20200205131828.GA16251@...2540...>
+Message-ID: <20200205144003.GA17265@...2540...>
 References: <20200205124615.15758-1-domagoj@...2540...>
  <20200205124615.15758-3-domagoj@...2540...>
  <20200205130511.GM1431@...1296...>
+ <20200205131828.GA16251@...2540...>
 MIME-Version: 1.0
-In-Reply-To: <20200205130511.GM1431@...1296...>
+In-Reply-To: <20200205131828.GA16251@...2540...>
 Subject: Re: [Openvpn-devel] [PATCH 2/2] Fix linking issues on MinGW
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -20,7 +19,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-To: Gert Doering <gert@...1296...>
+To: openvpn-devel@lists.sourceforge.net
 
 Hi!
 
@@ -68,5 +67,4 @@ Thread model: win32
 gcc version 8.3-win32 20190406 (GCC)
 
 Domagoj
-
 
