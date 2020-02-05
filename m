@@ -1,10 +1,10 @@
 From: Domagoj Pensa <domagoj@...2540...>
-Message-ID: <20200205124615.15758-2-domagoj@...2540...>
-Date: Wed,  5 Feb 2020 13:46:14 +0100
+Message-ID: <20200205124615.15758-3-domagoj@...2540...>
+Date: Wed,  5 Feb 2020 13:46:15 +0100
 In-Reply-To: <20200205124615.15758-1-domagoj@...2540...>
 References: <20200205124615.15758-1-domagoj@...2540...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/2] Skip DNS address validation
+Subject: [Openvpn-devel] [PATCH 2/2] Fix linking issues on MinGW
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,46 +17,35 @@ Content-Type: text/plain; charset="utf8"
 Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-When adding IPv4 DNS servers without interactive service use
-"validate=3Dno", on Windows 7 and higher, to skip time consuming automatic
-address validation, that is on by default.
-
-Fix uses adapted code from commit 786e06a
+MinGW linking fails for several files due to a missing "static"
+declaration in functions tuntap_is_wintun() and tuntap_ring_empty().
 
 Signed-off-by: Domagoj Pensa <domagoj@...2540...>
 ---
- src/openvpn/tun.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ src/openvpn/tun.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index af09e676..9f369f74 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -5216,6 +5216,7 @@ netsh_ifconfig_options(const char *type,
-     struct gc_arena gc =3D gc_new();
-     struct argv argv =3D argv_new();
-     bool delete_first =3D false;
-+    bool is_dns =3D !strcmp(type, "dns");
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index 97d28f45..327d7927 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -224,13 +224,13 @@ tuntap_defined(const struct tuntap *tt)
+ }
 =20
-     /* first check if we should delete existing DNS/WINS settings from TAP=
- interface */
-     if (test_first)
-@@ -5259,6 +5260,14 @@ netsh_ifconfig_options(const char *type,
-                             type,
-                             flex_name,
-                             print_in_addr_t(addr_list[i], 0, &gc));
-+
-+                /* disable slow address validation on Windows 7 and higher=
- */
-+                /* only for DNS */
-+                if (is_dns && win32_version_info() >=3D WIN_7)
-+                {
-+                    argv_printf_cat(&argv, "%s", "validate=3Dno");
-+                }
-+
-                 netsh_command(&argv, 2, M_FATAL);
+ #ifdef _WIN32
+-inline bool
++static inline bool
+ tuntap_is_wintun(struct tuntap *tt)
+ {
+     return tt && tt->windows_driver =3D=3D WINDOWS_DRIVER_WINTUN;
+ }
 =20
-                 ++count;
+-inline bool
++static inline bool
+ tuntap_ring_empty(struct tuntap *tt)
+ {
+     return tuntap_is_wintun(tt) && (tt->wintun_send_ring->head =3D=3D tt->=
+wintun_send_ring->tail);
 --=20
 2.25.0
 
