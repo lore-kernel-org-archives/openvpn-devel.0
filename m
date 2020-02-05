@@ -1,13 +1,12 @@
-Date: Wed, 5 Feb 2020 15:40:03 +0100
-From: Domagoj Pensa <domagoj@...2540...>
-Message-ID: <20200205144003.GA17265@...2540...>
-References: <20200205124615.15758-1-domagoj@...2540...>
- <20200205124615.15758-3-domagoj@...2540...>
- <20200205130511.GM1431@...1296...>
- <20200205131828.GA16251@...2540...>
 MIME-Version: 1.0
-In-Reply-To: <20200205131828.GA16251@...2540...>
-Subject: Re: [Openvpn-devel] [PATCH 2/2] Fix linking issues on MinGW
+References: <20200205124615.15758-1-domagoj@...2540...>
+ <20200205124615.15758-2-domagoj@...2540...>
+In-Reply-To: <20200205124615.15758-2-domagoj@...2540...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Wed, 5 Feb 2020 17:27:28 +0200
+Message-ID: <CAGyAFMU_L4d2KuzefFRLRiZ=j6_qJKPtmE9hk_p1Qf2Xqk9i+g@...278...>
+Content-Type: multipart/alternative; boundary="0000000000000702bf059dd5ccdc"
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Skip DNS address validation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,55 +15,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+To: Domagoj Pensa <domagoj@...2540...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi!
+--0000000000000702bf059dd5ccdc
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, Feb 05, 2020 at 02:05:11PM +0100, Gert Doering wrote:
-> Hi,
-> 
-> On Wed, Feb 05, 2020 at 01:46:15PM +0100, Domagoj Pensa wrote:
-> > MinGW linking fails for several files due to a missing "static"
-> > declaration in functions tuntap_is_wintun() and tuntap_ring_empty().
-> 
-> It does not fail for us.  So what MinGW version on what OS are you using
-> to exhibit this error?
+Hi,
 
-I've mentioned that in first mail:
+Built and tested with msvc, works as expected - "validate=no" is added to
+netsh command line.
 
-I'm using Ubuntu 19.04 with mingw-w64 from official repository (version 
-6.0.0-3) and for build process script generic/build from openvpn-build 
-repository.
+There is a similar commit in Simon's repo (not yet sent to ml) :
+https://github.com/rozmansi/openvpn/commit/6b746cb0bf72a75e9963cc1a037c18cfb856702a
 
-I've also included linker output same mail:
 
-/usr/bin/x86_64-w64-mingw32-ld: forward.o:forward.c:(.text+0x5fec): 
-undefined reference to `tuntap_is_wintun'
-/usr/bin/x86_64-w64-mingw32-ld: mtcp.o:mtcp.c:(.text+0x8a4): undefined reference to `tuntap_is_wintun'
-/usr/bin/x86_64-w64-mingw32-ld: mtcp.o:mtcp.c:(.text+0x1362): undefined reference to `tuntap_is_wintun'
-/usr/bin/x86_64-w64-mingw32-ld: mtcp.o:mtcp.c:(.text+0x1379): undefined reference to `tuntap_ring_empty'
-/usr/bin/x86_64-w64-mingw32-ld: mudp.o:mudp.c:(.text+0x536): undefined reference to `tuntap_is_wintun'
-/usr/bin/x86_64-w64-mingw32-ld: mudp.o:mudp.c:(.text+0xf53): undefined reference to `tuntap_ring_empty'
-/usr/bin/x86_64-w64-mingw32-ld: openvpn.o:openvpn.c:(.text+0x1b6): undefined reference to `tuntap_ring_empty'
-/usr/bin/x86_64-w64-mingw32-ld: openvpn.o:openvpn.c:(.text+0x261): undefined reference to `tuntap_is_wintun'
-collect2: error: ld returned 1 exit status
+I haven't noticed any slowness on my machine, but since fix has been
+implemented separately
+by two persons and there is similar code for ipv6, I am ok with that.
 
-Here are versions for some tools from that package:
+Acked-by: Lev Stipakov <lstipakov@...277...>
 
-$ /usr/bin/x86_64-w64-mingw32-ld -v
-GNU ld (GNU Binutils) 2.32
+--0000000000000702bf059dd5ccdc
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-$ x86_64-w64-mingw32-gcc -v
-Using built-in specs.
-COLLECT_GCC=x86_64-w64-mingw32-gcc
-COLLECT_LTO_WRAPPER=/usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/lto-wrapper
-Target: x86_64-w64-mingw32
-Configured with: ../../src/configure --build=x86_64-linux-gnu --prefix=/usr --includedir='/usr/include' --mandir='/usr/share/man' --infodir='/usr/share/info' --sysconfdir=/etc --localstatedir=/var --disable-silent-rules --libdir='/usr/lib/x86_64-linux-gnu' --libexecdir='/usr/lib/x86_64-linux-gnu' --disable-maintainer-mode --disable-dependency-tracking --prefix=/usr --enable-shared --enable-static --disable-multilib --with-system-zlib --libexecdir=/usr/lib --without-included-gettext --libdir=/usr/lib --enable-libstdcxx-time=yes --with-tune=generic --with-headers=/usr/x86_64-w64-mingw32/include --enable-version-specific-runtime-libs --enable-fully-dynamic-string --enable-libgomp --enable-languages=c,c++,fortran,objc,obj-c++,ada --enable-lto --with-plugin-ld --enable-threads=win32 --program-suffix=-win32 --program-prefix=x86_64-w64-mingw32- --target=x86_64-w64-mingw32 --with-as=/usr/bin/x86_64-w64-mingw32-as --with-ld=/usr/bin/x86_64-w64-mingw32-ld --enable-libatomic
-Thread model: win32
-gcc version 8.3-win32 20190406 (GCC)
+<div dir=3D"ltr"><div dir=3D"ltr">Hi,<div><br></div><div>Built and tested w=
+ith msvc, works as expected - &quot;validate=3Dno&quot; is added to netsh c=
+ommand line.</div><div><br></div><div>There is a similar commit in Simon&#3=
+9;s repo (not yet sent to ml) :=C2=A0<a href=3D"https://github.com/rozmansi=
+/openvpn/commit/6b746cb0bf72a75e9963cc1a037c18cfb856702a">https://github.co=
+m/rozmansi/openvpn/commit/6b746cb0bf72a75e9963cc1a037c18cfb856702a</a>=C2=
+=A0=C2=A0</div><div><br></div><div>I haven&#39;t noticed any slowness on my=
+ machine, but since fix has been implemented separately</div><div>by two pe=
+rsons and there is similar code for ipv6, I am ok with that.</div><div><br>=
+</div><div>Acked-by: Lev Stipakov &lt;<a href=3D"mailto:lstipakov@...277...=
+">lstipakov@...277...</a>&gt;</div></div></div>
 
-Domagoj
+--0000000000000702bf059dd5ccdc--
 
