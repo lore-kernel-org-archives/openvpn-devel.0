@@ -1,9 +1,11 @@
-Date: Wed, 5 Feb 2020 21:13:02 +0100 (CET)
-Message-Id: <202002052013.015KD2fY030171@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200205124615.15758-3-domagoj@...2540...>
-References: <20200205124615.15758-3-domagoj@...2540...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix linking issues on MinGW
+MIME-Version: 1.0
+References: <20200205175944.432-1-simon@...2293...>
+In-Reply-To: <20200205175944.432-1-simon@...2293...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Wed, 5 Feb 2020 22:15:49 +0200
+Message-ID: <CAGyAFMWdqELgpQMcdbodRsyEi=rxW0WfpobxVY-SphzG_KVaDQ@...278...>
+Content-Type: multipart/alternative; boundary="00000000000047bf1d059dd9d3cc"
+Subject: Re: [Openvpn-devel] [PATCH] tun.c: uncrustify
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,33 +14,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Domagoj Pensa <domagoj@...2540...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Simon Rozman <simon@...2293...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Your patch has been applied to the master branch.
+--00000000000047bf1d059dd9d3cc
+Content-Type: text/plain; charset="UTF-8"
 
-I have slightly modified the commit message to explain the underlying
-issue better ("if compiled without -O2").  No change code-wise to your
-patch.  Makes sense :-)
+I trust uncrustify to do the right thing :)
 
-commit 5822e52c6b0f86f9e4de946f9fb1374c6fad95f1
-Author: Domagoj Pensa
-Date:   Wed Feb 5 13:46:15 2020 +0100
+Compiled, smoke-tested.
 
-     Fix linking issues on MinGW
+Note to committer: this patch should be applied before
+https://patchwork.openvpn.net/patch/978/ (wintun: upgrade error message in
+case of ring registration failure).
 
-     Signed-off-by: Domagoj Pensa <domagoj@...2540...>
-     Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20200205124615.15758-3-domagoj@...2540...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19356.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Acked-by: Lev Stipakov <lstipakov@...277...>
 
+--00000000000047bf1d059dd9d3cc
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
---
-kind regards,
+<div dir=3D"ltr"><div dir=3D"ltr">I trust uncrustify to do the right=C2=A0t=
+hing :)<div><br></div><div>Compiled, smoke-tested.</div><div><br></div><div=
+>Note to committer: this patch should be applied before=C2=A0<a href=3D"htt=
+ps://patchwork.openvpn.net/patch/978/" target=3D"_blank">https://patchwork.=
+openvpn.net/patch/978/</a>=C2=A0(wintun: upgrade error message in case of r=
+ing registration failure).</div><div><br></div><div>Acked-by: Lev Stipakov =
+&lt;<a href=3D"mailto:lstipakov@...277...">lstipakov@...277...</a>&gt;</div=
+></div>
+</div>
 
-Gert Doering
-
+--00000000000047bf1d059dd9d3cc--
 
