@@ -1,12 +1,12 @@
 MIME-Version: 1.0
-References: <20200205183841.1118-1-simon@...2293...>
-In-Reply-To: <20200205183841.1118-1-simon@...2293...>
+References: <20200205175556.1877-1-simon@...2293...>
+In-Reply-To: <20200205175556.1877-1-simon@...2293...>
 From: Lev Stipakov <lstipakov@...277...>
-Date: Wed, 5 Feb 2020 21:37:57 +0200
-Message-ID: <CAGyAFMX=RosZ7mddKEwwRgLTqF3uXL5qdaGQUE3tt_Z7Qm6o0Q@...278...>
-Content-Type: multipart/alternative; boundary="000000000000ddfa9d059dd94b2e"
-Subject: Re: [Openvpn-devel] [PATCH] wintun: upgrade error message in case
- of ring registration failure
+Date: Wed, 5 Feb 2020 22:03:26 +0200
+Message-ID: <CAGyAFMULu3HxG06riepiMUwY-+_89UZF-VJv4D7GMA7BQ8m-Hg@...278...>
+Content-Type: multipart/alternative; boundary="000000000000f92fd4059dd9a6a4"
+Subject: Re: [Openvpn-devel] [PATCH] tun.c: refactor driver detection and
+ make it case-insensitive
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,49 +18,25 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Simon Rozman <simon@...2293...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---000000000000ddfa9d059dd94b2e
+--000000000000f92fd4059dd9a6a4
 Content-Type: text/plain; charset="UTF-8"
 
 Hi,
 
--            msg(M_NONFATAL, "Failed to register ring buffers: %lu",
-> GetLastError());
->
-<skip>
+Indeed, looks much easier to read.
 
-> +            switch (GetLastError())
->
-<skip>
+Compiled, tested.
 
-> +                default:
-> +                    msg(M_NONFATAL | M_ERRNO, "Failed to register ring
-> buffers");
->
+Acked-by: Lev Stipakov <lstipakov@...277...>
 
-I think it would make sense to print the error code / error message (with
-strerror_win32) in the "default" case.
-
---000000000000ddfa9d059dd94b2e
+--000000000000f92fd4059dd9a6a4
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr">Hi,<div><br></div></div>=
-<div class=3D"gmail_quote"><blockquote class=3D"gmail_quote" style=3D"margi=
-n:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex=
-">-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(M_NONFATAL, &quot;Failed t=
-o register ring buffers: %lu&quot;, GetLastError());<br>
-</blockquote><div>&lt;skip&gt;=C2=A0</div><blockquote class=3D"gmail_quote"=
- style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);p=
-adding-left:1ex">+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 switch (GetLast=
-Error())<br></blockquote><div>&lt;skip&gt;=C2=A0</div><blockquote class=3D"=
-gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(20=
-4,204,204);padding-left:1ex">+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 default:<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(=
-M_NONFATAL | M_ERRNO, &quot;Failed to register ring buffers&quot;);<br></bl=
-ockquote><div><br></div><div>I think it would make sense to print the error=
- code / error message (with strerror_win32) in the &quot;default&quot; case=
-.</div></div></div></div>
+<div dir=3D"ltr"><div dir=3D"ltr">Hi,<div><br></div><div>Indeed, looks much=
+ easier to read.</div><div><br></div><div>Compiled, tested.</div><div><br><=
+/div><div>Acked-by: Lev Stipakov &lt;<a href=3D"mailto:lstipakov@...277..."=
+>lstipakov@...277...</a>&gt;</div></div></div>
 
---000000000000ddfa9d059dd94b2e--
+--000000000000f92fd4059dd9a6a4--
 
