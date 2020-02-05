@@ -1,15 +1,12 @@
-Date: Wed, 5 Feb 2020 16:40:13 +0100
-From: Domagoj Pensa <domagoj@...2540...>
-Message-ID: <20200205154013.GA9536@...2540...>
-References: <20200205124615.15758-1-domagoj@...2540...>
- <20200205124615.15758-3-domagoj@...2540...>
- <20200205130511.GM1431@...1296...>
- <20200205131828.GA16251@...2540...>
- <CAKuzo_h2XNEm+UnGEvcoF5g2rwDdsTMTjtA-p0uHdsMu7HGP2w@...278...>
- <CAKuzo_i3-3xXYP+f+GAJKtDVOajD5iE+vg9fa2XrHUbg1PFzSg@...278...>
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_i3-3xXYP+f+GAJKtDVOajD5iE+vg9fa2XrHUbg1PFzSg@...278...>
-Subject: Re: [Openvpn-devel] Fwd:  [PATCH 2/2] Fix linking issues on MinGW
+References: <20200205124615.15758-1-domagoj@...2540...>
+ <20200205124615.15758-2-domagoj@...2540...>
+ <CAGyAFMU_L4d2KuzefFRLRiZ=j6_qJKPtmE9hk_p1Qf2Xqk9i+g@...278...>
+In-Reply-To: <CAGyAFMU_L4d2KuzefFRLRiZ=j6_qJKPtmE9hk_p1Qf2Xqk9i+g@...278...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 5 Feb 2020 10:47:20 -0500
+Message-ID: <CAKuzo_i2MDomrwoF4TxsdrtjCVVsOi7xu0YB_no3=Nf8YOUCLA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Skip DNS address validation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,43 +15,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lstipakov@...277...>
+Cc: Domagoj Pensa <domagoj@...2540...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Wed, Feb 05, 2020 at 10:28:38AM -0500, Selva Nair wrote:
-> Are you building without optimization? Please try using the latest
-> openvpn-build (or just add -O2 to complier options).
+On Wed, Feb 5, 2020 at 10:28 AM Lev Stipakov <lstipakov@...277...> wrote:
+>
+> Hi,
+>
+> Built and tested with msvc, works as expected - "validate=no" is added to netsh command line.
+>
+> There is a similar commit in Simon's repo (not yet sent to ml) : https://github.com/rozmansi/openvpn/commit/6b746cb0bf72a75e9963cc1a037c18cfb856702a
+>
+> I haven't noticed any slowness on my machine, but since fix has been implemented separately
+> by two persons and there is similar code for ipv6, I am ok with that.
 
-Yes, that was it!
+>
+> Acked-by: Lev Stipakov <lstipakov@...277...>
 
-When Lev said that he doesn't have problems with build, I've noticed that he 
-is using script build-complete from windows-nsis.
+We explicitly added validate=no for IPv6 in
+commit 786e06ade9f5dfad8ac360499187fa8e536d15cb
+for the same reason as in this patch. The ipv4 DNS code belongs to an
+era when this
+option was not available.
 
-I didn't want installer build, just binaries, so I followed  instructions 
-from README and generic/README and thus I used generic/build.
+ACK from me too.
 
-But that doesn't include -O2 and I get mentioned error when linking.
 
-In windows-nsis/build-complete there are additional flags "-O2 -flto" and 
-that's why Lev doesn't have issues and we are using same tools and OS 
-versions.
+Selva
 
-Those additional flags where added by Lev in commit 3eb61bb in 
-openvpn-build.
-
-Problem solved, now I know for the future.
-
-But still it would be nice to somehow "fix" this for others, by either 
-updating READMEs, adding -O2 to generic/build script or apply patch I've 
-sent that helped me and links with optimization off.
-
-Maybe doing all that won't be bad.
-
-Thank you all!
-
-Domagoj
+>
+> Acked-by: Lev Stipakov <lstipakov@...277...>
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
