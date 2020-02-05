@@ -1,8 +1,11 @@
-From: Simon Rozman <simon@...2293...>
-Date: Wed,  5 Feb 2020 19:49:22 +0100
-Message-Id: <20200205184922.883-1-simon@...2293...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] wintun: check for conflicting options
+References: <20200205184922.883-1-simon@...2293...>
+In-Reply-To: <20200205184922.883-1-simon@...2293...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Wed, 5 Feb 2020 21:23:14 +0200
+Message-ID: <CAGyAFMVw7bQ4cdRiEcRv8SuyP9b=nXdrS0qWo3p57DU4BMyhXw@...278...>
+Content-Type: multipart/alternative; boundary="0000000000003d8b73059dd917e2"
+Subject: Re: [Openvpn-devel] [PATCH] wintun: check for conflicting options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,53 +14,22 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Simon Rozman <simon@...2293...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-`--windows-driver wintun` requires `--dev tun`. This is now checked and
-documented.
+--0000000000003d8b73059dd917e2
+Content-Type: text/plain; charset="UTF-8"
 
-Signed-off-by: Simon Rozman <simon@...2293...>
----
- doc/openvpn.8         | 4 ++++
- src/openvpn/options.c | 7 ++++++-
- 2 files changed, 10 insertions(+), 1 deletion(-)
+Makes sense.
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 8feb3b9c..e2227a47 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -6257,6 +6257,10 @@ Specifies which tun driver to use. Values are
- (default) and
- .B wintun.
- This is Windows-only option.
-+"wintun" requires
-+.B \-\-dev tun
-+and the OpenVPN process to run elevated, or be invoked using
-+the Interactive Service.
- .\"*********************************************************
- .TP
- .B \-\-dhcp\-renew
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index c459b260..101cca38 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2204,7 +2204,12 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-     {
-         msg(M_USAGE, "--dhcp-options requires --ip-win32 dynamic or adaptive");
-     }
--#endif
-+
-+    if (options->windows_driver == WINDOWS_DRIVER_WINTUN && dev != DEV_TYPE_TUN)
-+    {
-+        msg(M_USAGE, "--windows-driver wintun requires --dev tun");
-+    }
-+#endif /* ifdef _WIN32 */
- 
-     /*
-      * Check that protocol options make sense.
--- 
-2.24.1.windows.2
+Compiled, tested.
 
+Acked-by: Lev Stipakov <lstipakov@...277...>
+
+--0000000000003d8b73059dd917e2
+Content-Type: text/html; charset="UTF-8"
+
+<div dir="ltr"><div dir="ltr">Makes sense.<div><br></div><div>Compiled, tested.</div><div><br></div><div>Acked-by: Lev Stipakov &lt;<a href="mailto:lstipakov@...277...">lstipakov@...277...</a>&gt;</div></div></div>
+
+--0000000000003d8b73059dd917e2--
 
