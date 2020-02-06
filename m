@@ -1,9 +1,9 @@
 From: David Sommerseth <davids@...515...>
-Date: Thu,  6 Feb 2020 14:21:00 +0100
-Message-Id: <20200206132103.15977-2-davids@...515...>
+Date: Thu,  6 Feb 2020 14:21:01 +0100
+Message-Id: <20200206132103.15977-3-davids@...515...>
 In-Reply-To: <20200206132103.15977-1-davids@...515...>
 References: <20200206132103.15977-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH 1/4] re-implement argv_printf_*()
+Subject: [Openvpn-devel] [PATCH 2/4] argv: do fewer memory re-allocations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,657 +18,852 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Heiko Hund <heiko.hund@...1489...>
 
-The previous implementation had the problem that it was not fully
-compatible with printf() and could only detect % format directives
-following a space character (0x20).
+Prevent the re-allocations of memory when the internal argv grows
+beyond 2 and 4 arguments by initially allocating argv to hold up to
+7 (+ trailing NULL) pointers.
 
-It modifies the format string and inserts marks to separate groups
-before passing it to the regular printf in libc. The marks are
-later used to separate the output string into individual command
-line arguments.
-
-The choice of 0x1D as the argument delimiter is based on the
-assumption that no "regular" string passed to argv_printf_*() will
-ever have to contain that byte (and the fact that it actually is
-the ASCII "group separator" control character, which fits its
-purpose).
-
-This commit has been updated by David Sommerseth based on Arne
-Schwabe and his own feedback on the mailing list.
+While at it rename argv_reset to argv_free to actually express
+what's going on. Redo the argv_reset functionality so that it can
+be used to actually reset the argv without re-allocation.
 
 Signed-off-by: Heiko Hund <heiko.hund@...1489...>
 Signed-off-by: David Sommerseth <davids@...515...>
-
 ---
-v2 - Improved comments, to make it even clearer what is going on
-   - Switched to C99 variable declaration, closer to where used
-   - Swapped out adjust_power_of_2() length calculation in
-     argv_printf_arglist() to len+1, which should be good enough.
----
- src/openvpn/argv.c                   | 289 +++++++++++++--------------
- src/openvpn/argv.h                   |   4 +-
- src/openvpn/route.c                  |   8 +-
- src/openvpn/tun.c                    |  24 +--
- tests/unit_tests/openvpn/test_argv.c |  58 +++++-
- 5 files changed, 206 insertions(+), 177 deletions(-)
+ src/openvpn/argv.c                   | 81 ++++++++++++++--------------
+ src/openvpn/argv.h                   |  2 +-
+ src/openvpn/console_systemd.c        |  2 +-
+ src/openvpn/init.c                   | 15 ++----
+ src/openvpn/lladdr.c                 |  2 +-
+ src/openvpn/multi.c                  | 10 ++--
+ src/openvpn/networking_iproute2.c    | 23 ++++----
+ src/openvpn/options.c                |  2 +-
+ src/openvpn/plugin.c                 |  2 +-
+ src/openvpn/route.c                  |  8 +--
+ src/openvpn/socket.c                 |  4 +-
+ src/openvpn/ssl_verify.c             |  6 +--
+ src/openvpn/tls_crypt.c              |  2 +-
+ src/openvpn/tun.c                    | 38 ++++++-------
+ tests/unit_tests/openvpn/test_argv.c | 43 ++++++++++-----
+ 15 files changed, 124 insertions(+), 116 deletions(-)
 
 diff --git a/src/openvpn/argv.c b/src/openvpn/argv.c
-index 9100a196..fcf61ec5 100644
+index fcf61ec5..4f7aa4e5 100644
 --- a/src/openvpn/argv.c
 +++ b/src/openvpn/argv.c
-@@ -105,16 +105,15 @@ static struct argv
- argv_clone(const struct argv *a, const size_t headroom)
- {
-     struct argv r;
--    size_t i;
--
-     argv_init(&r);
--    for (i = 0; i < headroom; ++i)
-+
-+    for (size_t i = 0; i < headroom; ++i)
-     {
-         argv_append(&r, NULL);
-     }
-     if (a)
-     {
--        for (i = 0; i < a->argc; ++i)
-+        for (size_t i = 0; i < a->argc; ++i)
-         {
-             argv_append(&r, string_alloc(a->argv[i], NULL));
-         }
-@@ -131,64 +130,6 @@ argv_insert_head(const struct argv *a, const char *head)
-     return r;
- }
+@@ -40,34 +40,6 @@
+ #include "env_set.h"
+ #include "options.h"
  
--static char *
--argv_term(const char **f)
+-static void
+-argv_init(struct argv *a)
 -{
--    const char *p = *f;
--    const char *term = NULL;
--    size_t termlen = 0;
--
--    if (*p == '\0')
--    {
--        return NULL;
--    }
--
--    while (true)
--    {
--        const int c = *p;
--        if (c == '\0')
--        {
--            break;
--        }
--        if (term)
--        {
--            if (!isspace(c))
--            {
--                ++termlen;
--            }
--            else
--            {
--                break;
--            }
--        }
--        else
--        {
--            if (!isspace(c))
--            {
--                term = p;
--                termlen = 1;
--            }
--        }
--        ++p;
--    }
--    *f = p;
--
--    if (term)
--    {
--        char *ret;
--        ASSERT(termlen > 0);
--        ret = malloc(termlen + 1);
--        check_malloc_return(ret);
--        memcpy(ret, term, termlen);
--        ret[termlen] = '\0';
--        return ret;
--    }
--    else
--    {
--        return NULL;
--    }
+-    a->capacity = 0;
+-    a->argc = 0;
+-    a->argv = NULL;
 -}
 -
+-struct argv
+-argv_new(void)
+-{
+-    struct argv ret;
+-    argv_init(&ret);
+-    return ret;
+-}
+-
+-void
+-argv_reset(struct argv *a)
+-{
+-    size_t i;
+-    for (i = 0; i < a->argc; ++i)
+-    {
+-        free(a->argv[i]);
+-    }
+-    free(a->argv);
+-    argv_init(a);
+-}
+-
+ static void
+ argv_extend(struct argv *a, const size_t newcap)
+ {
+@@ -86,6 +58,46 @@ argv_extend(struct argv *a, const size_t newcap)
+     }
+ }
+ 
++static void
++argv_init(struct argv *a)
++{
++    a->capacity = 0;
++    a->argc = 0;
++    a->argv = NULL;
++    argv_extend(a, 8);
++}
++
++struct argv
++argv_new(void)
++{
++    struct argv ret;
++    argv_init(&ret);
++    return ret;
++}
++
++void
++argv_free(struct argv *a)
++{
++    size_t i;
++    for (i = 0; i < a->argc; ++i)
++    {
++        free(a->argv[i]);
++    }
++    free(a->argv);
++}
++
++static void
++argv_reset(struct argv *a)
++{
++    size_t i;
++    for (i = 0; i < a->argc; ++i)
++    {
++        free(a->argv[i]);
++        a->argv[i] = NULL;
++    }
++    a->argc = 0;
++}
++
+ static void
+ argv_grow(struct argv *a, const size_t add)
+ {
+@@ -133,14 +145,7 @@ argv_insert_head(const struct argv *a, const char *head)
  const char *
  argv_str(const struct argv *a, struct gc_arena *gc, const unsigned int flags)
  {
-@@ -218,132 +159,170 @@ argv_msg_prefix(const int msglev, const struct argv *a, const char *prefix)
-     gc_free(&gc);
- }
- 
--static void
-+
-+/*
-+ * argv_prep_format - prepare argv format string for further processing
-+ *
-+ * Individual argument must be separated by space. Ignores leading and trailing spaces.
-+ * Consecutive spaces count as one. Returns prepared format string, with space replaced
-+ * by delim and adds the number of arguments to the count parameter.
-+ */
-+static char *
-+argv_prep_format(const char *format, const char delim, size_t *count, struct gc_arena *gc)
-+{
-+    if (format == NULL)
-+    {
-+        return NULL;
-+    }
-+
-+    bool in_token = false;
-+    char *f = gc_malloc(strlen(format) + 1, true, gc);
-+    for (int i = 0, j = 0; i < strlen(format); i++)
-+    {
-+        if (format[i] == ' ')
-+        {
-+            in_token = false;
-+            continue;
-+        }
-+
-+        if (!in_token)
-+        {
-+            (*count)++;
-+
-+            /*
-+             * We don't add any delimiter to the output string if
-+             * the string is empty; the resulting format string
-+             * will never start with a delimiter.
-+             */
-+            if (j > 0)  /* Has anything been written to the output string? */
-+            {
-+                f[j++] = delim;
-+            }
-+        }
-+
-+        f[j++] = format[i];
-+        in_token = true;
-+    }
-+
-+    return f;
-+}
-+
-+/*
-+ * argv_printf_arglist - create a struct argv from a format string
-+ *
-+ * Instead of parsing the format string ourselves place delimiters via argv_prep_format()
-+ * before we let libc's printf() do the parsing. Then split the resulting string at the
-+ * injected delimiters.
-+ */
-+static bool
- argv_printf_arglist(struct argv *a, const char *format, va_list arglist)
- {
--    char *term;
--    const char *f = format;
-+    struct gc_arena gc = gc_new();
-+    const char delim = 0x1D;  /* ASCII Group Separator (GS) */
-+    bool res = false;
- 
-     argv_extend(a, 1); /* ensure trailing NULL */
- 
--    while ((term = argv_term(&f)) != NULL)
-+    /*
-+     * Prepare a format string which will be used by vsnprintf() later on.
-+     *
-+     * This means all space separators in the input format string will be
-+     * replaced by the GS (0x1D), so we can split this up again after the
-+     * the vsnprintf() call into individual arguments again which will be
-+     * saved in the struct argv.
-+     *
-+     */
-+    size_t argc = a->argc;
-+    char *f = argv_prep_format(format, delim, &argc, &gc);
-+    if (f == NULL)
-     {
--        if (term[0] == '%')
--        {
--            if (!strcmp(term, "%s"))
--            {
--                char *s = va_arg(arglist, char *);
--                if (!s)
--                {
--                    s = "";
--                }
--                argv_append(a, string_alloc(s, NULL));
--            }
--            else if (!strcmp(term, "%d"))
--            {
--                char numstr[64];
--                openvpn_snprintf(numstr, sizeof(numstr), "%d", va_arg(arglist, int));
--                argv_append(a, string_alloc(numstr, NULL));
--            }
--            else if (!strcmp(term, "%u"))
--            {
--                char numstr[64];
--                openvpn_snprintf(numstr, sizeof(numstr), "%u", va_arg(arglist, unsigned int));
--                argv_append(a, string_alloc(numstr, NULL));
--            }
--            else if (!strcmp(term, "%lu"))
--            {
--                char numstr[64];
--                openvpn_snprintf(numstr, sizeof(numstr), "%lu",
--                                 va_arg(arglist, unsigned long));
--                argv_append(a, string_alloc(numstr, NULL));
--            }
--            else if (!strcmp(term, "%s/%d"))
--            {
--                char numstr[64];
--                char *s = va_arg(arglist, char *);
--
--                if (!s)
--                {
--                    s = "";
--                }
-+        goto out;
-+    }
- 
--                openvpn_snprintf(numstr, sizeof(numstr), "%d", va_arg(arglist, int));
-+    /* determine minimum buffer size */
-+    va_list tmplist;
-+    va_copy(tmplist, arglist);
-+    int len = vsnprintf(NULL, 0, f, tmplist);
-+    va_end(tmplist);
-+    if (len < 0)
-+    {
-+        goto out;
-+    }
- 
--                {
--                    const size_t len = strlen(s) + strlen(numstr) + 2;
--                    char *combined = (char *) malloc(len);
--                    check_malloc_return(combined);
-+    /*
-+     *  Do the actual vsnprintf() operation, which expands the format
-+     *  string with the provided arguments.
-+     */
-+    size_t size = len + 1;
-+    char *buf = gc_malloc(size, false, &gc);
-+    len = vsnprintf(buf, size, f, arglist);
-+    if (len < 0 || len >= size)
-+    {
-+        goto out;
-+    }
- 
--                    strcpy(combined, s);
--                    strcat(combined, "/");
--                    strcat(combined, numstr);
--                    argv_append(a, combined);
--                }
--            }
--            else if (!strcmp(term, "%s%sc"))
--            {
--                char *s1 = va_arg(arglist, char *);
--                char *s2 = va_arg(arglist, char *);
--                char *combined;
-+    /*
-+     * Split the string at the GS (0x1D) delimiters and put each elemen
-+     * into the struct argv being returned to the caller.
-+     */
-+    char *end = strchr(buf, delim);
-+    while (end)
-+    {
-+        *end = '\0';
-+        argv_append(a, string_alloc(buf, NULL));
-+        buf = end + 1;
-+        end = strchr(buf, delim);
-+    }
-+    argv_append(a, string_alloc(buf, NULL));
- 
--                if (!s1)
--                {
--                    s1 = "";
--                }
--                if (!s2)
--                {
--                    s2 = "";
--                }
--                combined = (char *) malloc(strlen(s1) + strlen(s2) + 1);
--                check_malloc_return(combined);
--                strcpy(combined, s1);
--                strcat(combined, s2);
--                argv_append(a, combined);
--            }
--            else
--            {
--                ASSERT(0);
--            }
--            free(term);
--        }
--        else
--        {
--            argv_append(a, term);
--        }
-+    if (a->argc != argc)
-+    {
-+        /* Someone snuck in a GS (0x1D), fail gracefully */
-+        argv_reset(a);
-+        argv_extend(a, 1); /* ensure trailing NULL */
-+        goto out;
-     }
-+    res = true;
-+
-+out:
-+    gc_free(&gc);
-+    return res;
- }
- 
--void
-+
-+
-+bool
- argv_printf(struct argv *a, const char *format, ...)
- {
-     va_list arglist;
--    argv_reset(a);
-     va_start(arglist, format);
--    argv_printf_arglist(a, format, arglist);
-+
-+    argv_reset(a);
-+    bool res = argv_printf_arglist(a, format, arglist);
-     va_end(arglist);
-+    return res;
- }
- 
--void
-+bool
- argv_printf_cat(struct argv *a, const char *format, ...)
- {
-     va_list arglist;
-     va_start(arglist, format);
--    argv_printf_arglist(a, format, arglist);
-+
-+    bool res = argv_printf_arglist(a, format, arglist);
-     va_end(arglist);
-+    return res;
+-    if (a->argv)
+-    {
+-        return print_argv((const char **)a->argv, gc, flags);
+-    }
+-    else
+-    {
+-        return "";
+-    }
++    return print_argv((const char **)a->argv, gc, flags);
  }
  
  void
+@@ -221,8 +226,6 @@ argv_printf_arglist(struct argv *a, const char *format, va_list arglist)
+     const char delim = 0x1D;  /* ASCII Group Separator (GS) */
+     bool res = false;
+ 
+-    argv_extend(a, 1); /* ensure trailing NULL */
+-
+     /*
+      * Prepare a format string which will be used by vsnprintf() later on.
+      *
+@@ -279,7 +282,6 @@ argv_printf_arglist(struct argv *a, const char *format, va_list arglist)
+     {
+         /* Someone snuck in a GS (0x1D), fail gracefully */
+         argv_reset(a);
+-        argv_extend(a, 1); /* ensure trailing NULL */
+         goto out;
+     }
+     res = true;
+@@ -318,7 +320,6 @@ void
  argv_parse_cmd(struct argv *a, const char *s)
  {
--    int nparms;
--    char *parms[MAX_PARMS + 1];
--    struct gc_arena gc = gc_new();
--
      argv_reset(a);
-     argv_extend(a, 1); /* ensure trailing NULL */
+-    argv_extend(a, 1); /* ensure trailing NULL */
  
--    nparms = parse_line(s, parms, MAX_PARMS, "SCRIPT-ARGV", 0, D_ARGV_PARSE_CMD, &gc);
-+    struct gc_arena gc = gc_new();
-+    char *parms[MAX_PARMS + 1] = { 0 };
-+    int nparms = parse_line(s, parms, MAX_PARMS, "SCRIPT-ARGV", 0, D_ARGV_PARSE_CMD, &gc);
-     if (nparms)
-     {
-         int i;
+     struct gc_arena gc = gc_new();
+     char *parms[MAX_PARMS + 1] = { 0 };
 diff --git a/src/openvpn/argv.h b/src/openvpn/argv.h
-index 9d9f3873..b9105a43 100644
+index b9105a43..989cd297 100644
 --- a/src/openvpn/argv.h
 +++ b/src/openvpn/argv.h
-@@ -52,7 +52,7 @@ void argv_msg_prefix(const int msglev, const struct argv *a, const char *prefix)
+@@ -40,7 +40,7 @@ struct argv {
  
- void argv_parse_cmd(struct argv *a, const char *s);
+ struct argv argv_new(void);
  
--void argv_printf(struct argv *a, const char *format, ...)
-+bool argv_printf(struct argv *a, const char *format, ...)
- #ifdef __GNUC__
- #if __USE_MINGW_ANSI_STDIO
- __attribute__ ((format(gnu_printf, 2, 3)))
-@@ -62,7 +62,7 @@ __attribute__ ((format(__printf__, 2, 3)))
+-void argv_reset(struct argv *a);
++void argv_free(struct argv *a);
+ 
+ const char *argv_str(const struct argv *a, struct gc_arena *gc, const unsigned int flags);
+ 
+diff --git a/src/openvpn/console_systemd.c b/src/openvpn/console_systemd.c
+index 8d9e825b..c7cf1ada 100644
+--- a/src/openvpn/console_systemd.c
++++ b/src/openvpn/console_systemd.c
+@@ -85,7 +85,7 @@ get_console_input_systemd(const char *prompt, const bool echo, char *input, cons
+     }
+     close(std_out);
+ 
+-    argv_reset(&argv);
++    argv_free(&argv);
+ 
+     return ret;
+ }
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 04207b61..db7d1216 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -164,7 +164,7 @@ run_up_down(const char *command,
+             msg(M_FATAL, "ERROR: up/down plugin call failed");
+         }
+ 
+-        argv_reset(&argv);
++        argv_free(&argv);
+     }
+ 
+     if (command)
+@@ -177,7 +177,7 @@ run_up_down(const char *command,
+                         ifconfig_local, ifconfig_remote, context);
+         argv_msg(M_INFO, &argv);
+         openvpn_run_script(&argv, es, S_FATAL, "--up/--down");
+-        argv_reset(&argv);
++        argv_free(&argv);
+     }
+ 
+     gc_free(&gc);
+@@ -845,15 +845,6 @@ init_static(void)
+     return false;
  #endif
- ;
  
--void argv_printf_cat(struct argv *a, const char *format, ...)
-+bool argv_printf_cat(struct argv *a, const char *format, ...)
- #ifdef __GNUC__
- #if __USE_MINGW_ANSI_STDIO
- __attribute__ ((format(gnu_printf, 2, 3)))
+-#ifdef ARGV_TEST
+-    {
+-        void argv_test(void);
+-
+-        argv_test();
+-        return false;
+-    }
+-#endif
+-
+ #ifdef PRNG_TEST
+     {
+         struct gc_arena gc = gc_new();
+@@ -1696,7 +1687,7 @@ do_route(const struct options *options,
+         setenv_str(es, "script_type", "route-up");
+         argv_parse_cmd(&argv, options->route_script);
+         openvpn_run_script(&argv, es, 0, "--route-up");
+-        argv_reset(&argv);
++        argv_free(&argv);
+     }
+ 
+ #ifdef _WIN32
+diff --git a/src/openvpn/lladdr.c b/src/openvpn/lladdr.c
+index e6b26fc9..22857eb7 100644
+--- a/src/openvpn/lladdr.c
++++ b/src/openvpn/lladdr.c
+@@ -69,6 +69,6 @@ set_lladdr(const char *ifname, const char *lladdr,
+         msg(M_INFO, "TUN/TAP link layer address set to %s", lladdr);
+     }
+ 
+-    argv_reset(&argv);
++    argv_free(&argv);
+     return r;
+ }
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index d594dd25..279cab23 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -139,7 +139,7 @@ learn_address_script(const struct multi_context *m,
+             msg(M_WARN, "WARNING: learn-address plugin call failed");
+             ret = false;
+         }
+-        argv_reset(&argv);
++        argv_free(&argv);
+     }
+ 
+     if (m->top.options.learn_address_script)
+@@ -156,7 +156,7 @@ learn_address_script(const struct multi_context *m,
+         {
+             ret = false;
+         }
+-        argv_reset(&argv);
++        argv_free(&argv);
+     }
+ 
+     gc_free(&gc);
+@@ -592,7 +592,7 @@ multi_client_disconnect_script(struct multi_instance *mi)
+             setenv_str(mi->context.c2.es, "script_type", "client-disconnect");
+             argv_parse_cmd(&argv, mi->context.options.client_disconnect_script);
+             openvpn_run_script(&argv, mi->context.c2.es, 0, "--client-disconnect");
+-            argv_reset(&argv);
++            argv_free(&argv);
+         }
+ #ifdef MANAGEMENT_DEF_AUTH
+         if (management)
+@@ -1907,7 +1907,7 @@ multi_connection_established(struct multi_context *m, struct multi_instance *mi)
+             }
+ 
+ script_depr_failed:
+-            argv_reset(&argv);
++            argv_free(&argv);
+         }
+ 
+         /* V2 callback, use a plugin_return struct for passing back return info */
+@@ -1970,7 +1970,7 @@ script_depr_failed:
+             }
+ 
+ script_failed:
+-            argv_reset(&argv);
++            argv_free(&argv);
+         }
+ 
+         /*
+diff --git a/src/openvpn/networking_iproute2.c b/src/openvpn/networking_iproute2.c
+index 1db39fc7..0f9e899a 100644
+--- a/src/openvpn/networking_iproute2.c
++++ b/src/openvpn/networking_iproute2.c
+@@ -28,6 +28,7 @@
+ 
+ #include "syshead.h"
+ 
++#include "argv.h"
+ #include "networking.h"
+ #include "misc.h"
+ #include "openvpn.h"
+@@ -70,7 +71,7 @@ net_iface_up(openvpn_net_ctx_t *ctx, const char *iface, bool up)
+     argv_msg(M_INFO, &argv);
+     openvpn_execve_check(&argv, ctx->es, S_FATAL, "Linux ip link set failed");
+ 
+-    argv_reset(&argv);
++    argv_free(&argv);
+ 
+     return 0;
+ }
+@@ -101,7 +102,7 @@ net_addr_v4_add(openvpn_net_ctx_t *ctx, const char *iface,
+     argv_msg(M_INFO, &argv);
+     openvpn_execve_check(&argv, ctx->es, S_FATAL, "Linux ip addr add failed");
+ 
+-    argv_reset(&argv);
++    argv_free(&argv);
+ 
+     return 0;
+ }
+@@ -119,7 +120,7 @@ net_addr_v6_add(openvpn_net_ctx_t *ctx, const char *iface,
+     openvpn_execve_check(&argv, ctx->es, S_FATAL,
+                          "Linux ip -6 addr add failed");
+ 
+-    argv_reset(&argv);
++    argv_free(&argv);
+ 
+     return 0;
+ }
+@@ -137,7 +138,7 @@ net_addr_v4_del(openvpn_net_ctx_t *ctx, const char *iface,
+     argv_msg(M_INFO, &argv);
+     openvpn_execve_check(&argv, ctx->es, 0, "Linux ip addr del failed");
+ 
+-    argv_reset(&argv);
++    argv_free(&argv);
+ 
+     return 0;
+ }
+@@ -154,7 +155,7 @@ net_addr_v6_del(openvpn_net_ctx_t *ctx, const char *iface,
+     argv_msg(M_INFO, &argv);
+     openvpn_execve_check(&argv, ctx->es, 0, "Linux ip -6 addr del failed");
+ 
+-    argv_reset(&argv);
++    argv_free(&argv);
+ 
+     return 0;
+ }
+@@ -172,7 +173,7 @@ net_addr_ptp_v4_add(openvpn_net_ctx_t *ctx, const char *iface,
+     argv_msg(M_INFO, &argv);
+     openvpn_execve_check(&argv, ctx->es, S_FATAL, "Linux ip addr add failed");
+ 
+-    argv_reset(&argv);
++    argv_free(&argv);
+ 
+     return 0;
+ }
+@@ -190,7 +191,7 @@ net_addr_ptp_v4_del(openvpn_net_ctx_t *ctx, const char *iface,
+     argv_msg(M_INFO, &argv);
+     openvpn_execve_check(&argv, ctx->es, 0, "Linux ip addr del failed");
+ 
+-    argv_reset(&argv);
++    argv_free(&argv);
+ 
+     return 0;
+ }
+@@ -221,7 +222,7 @@ net_route_v4_add(openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen,
+     argv_msg(D_ROUTE, &argv);
+     openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route add command failed");
+ 
+-    argv_reset(&argv);
++    argv_free(&argv);
+ 
+     return 0;
+ }
+@@ -250,7 +251,7 @@ net_route_v6_add(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
+     argv_msg(D_ROUTE, &argv);
+     openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route -6 add command failed");
+ 
+-    argv_reset(&argv);
++    argv_free(&argv);
+ 
+     return 0;
+ }
+@@ -271,7 +272,7 @@ net_route_v4_del(openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen,
+     argv_msg(D_ROUTE, &argv);
+     openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route delete command failed");
+ 
+-    argv_reset(&argv);
++    argv_free(&argv);
+ 
+     return 0;
+ }
+@@ -300,7 +301,7 @@ net_route_v6_del(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
+     argv_msg(D_ROUTE, &argv);
+     openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route -6 del command failed");
+ 
+-    argv_reset(&argv);
++    argv_free(&argv);
+ 
+     return 0;
+ }
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index c459b260..6c0e52e6 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3349,7 +3349,7 @@ check_cmd_access(const char *command, const char *opt, const char *chroot)
+         return_code = true;
+     }
+ 
+-    argv_reset(&argv);
++    argv_free(&argv);
+ 
+     return return_code;
+ }
+diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
+index b9708342..dba9d335 100644
+--- a/src/openvpn/plugin.c
++++ b/src/openvpn/plugin.c
+@@ -586,7 +586,7 @@ plugin_call_item(const struct plugin *p,
+                 p->so_pathname);
+         }
+ 
+-        argv_reset(&a);
++        argv_free(&a);
+         gc_free(&gc);
+     }
+     return status;
 diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 97e90e56..8c0cbb1d 100644
+index 8c0cbb1d..e0f8d201 100644
 --- a/src/openvpn/route.c
 +++ b/src/openvpn/route.c
-@@ -1621,7 +1621,7 @@ add_route(struct route_ipv4 *r,
- #elif defined (_WIN32)
+@@ -1822,7 +1822,7 @@ done:
      {
-         DWORD ai = TUN_ADAPTER_INDEX_INVALID;
--        argv_printf(&argv, "%s%sc ADD %s MASK %s %s",
-+        argv_printf(&argv, "%s%s ADD %s MASK %s %s",
-                     get_win_sys_path(),
-                     WIN_ROUTE_PATH_SUFFIX,
-                     network,
-@@ -1984,7 +1984,7 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
-         device = buf_bptr(&out);
- 
-         /* netsh interface ipv6 add route 2001:db8::/32 MyTunDevice */
--        argv_printf(&argv, "%s%sc interface ipv6 add route %s/%d %s",
-+        argv_printf(&argv, "%s%s interface ipv6 add route %s/%d %s",
-                     get_win_sys_path(),
-                     NETSH_PATH_SUFFIX,
-                     network,
-@@ -2194,7 +2194,7 @@ delete_route(struct route_ipv4 *r,
+         r->flags &= ~RT_ADDED;
      }
- #elif defined (_WIN32)
+-    argv_reset(&argv);
++    argv_free(&argv);
+     gc_free(&gc);
+     /* release resources potentially allocated during route setup */
+     net_ctx_reset(ctx);
+@@ -2128,7 +2128,7 @@ done:
+     {
+         r6->flags &= ~RT_ADDED;
+     }
+-    argv_reset(&argv);
++    argv_free(&argv);
+     gc_free(&gc);
+     /* release resources potentially allocated during route setup */
+     net_ctx_reset(ctx);
+@@ -2322,7 +2322,7 @@ delete_route(struct route_ipv4 *r,
  
--    argv_printf(&argv, "%s%sc DELETE %s MASK %s %s",
-+    argv_printf(&argv, "%s%s DELETE %s MASK %s %s",
-                 get_win_sys_path(),
-                 WIN_ROUTE_PATH_SUFFIX,
-                 network,
-@@ -2428,7 +2428,7 @@ delete_route_ipv6(const struct route_ipv6 *r6, const struct tuntap *tt,
-         device = buf_bptr(&out);
+ done:
+     r->flags &= ~RT_ADDED;
+-    argv_reset(&argv);
++    argv_free(&argv);
+     gc_free(&gc);
+     /* release resources potentially allocated during route cleanup */
+     net_ctx_reset(ctx);
+@@ -2550,7 +2550,7 @@ delete_route_ipv6(const struct route_ipv6 *r6, const struct tuntap *tt,
+     msg(M_FATAL, "Sorry, but I don't know how to do 'route ipv6' commands on this operating system.  Try putting your routes in a --route-down script");
+ #endif /* if defined(TARGET_LINUX) */
  
-         /* netsh interface ipv6 delete route 2001:db8::/32 MyTunDevice */
--        argv_printf(&argv, "%s%sc interface ipv6 delete route %s/%d %s",
-+        argv_printf(&argv, "%s%s interface ipv6 delete route %s/%d %s",
-                     get_win_sys_path(),
-                     NETSH_PATH_SUFFIX,
-                     network,
+-    argv_reset(&argv);
++    argv_free(&argv);
+     gc_free(&gc);
+     /* release resources potentially allocated during route cleanup */
+     net_ctx_reset(ctx);
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 983ed38a..f2fb54da 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -2471,7 +2471,7 @@ link_socket_connection_initiated(const struct buffer *buf,
+         {
+             msg(M_WARN, "WARNING: ipchange plugin call failed");
+         }
+-        argv_reset(&argv);
++        argv_free(&argv);
+     }
+ 
+     /* Process --ipchange option */
+@@ -2481,7 +2481,7 @@ link_socket_connection_initiated(const struct buffer *buf,
+         setenv_str(es, "script_type", "ipchange");
+         ipchange_fmt(true, &argv, info, &gc);
+         openvpn_run_script(&argv, es, 0, "--ipchange");
+-        argv_reset(&argv);
++        argv_free(&argv);
+     }
+ 
+     gc_free(&gc);
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 65188d23..da0966c5 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -488,7 +488,7 @@ verify_cert_call_plugin(const struct plugin_list *plugins, struct env_set *es,
+ 
+         ret = plugin_call_ssl(plugins, OPENVPN_PLUGIN_TLS_VERIFY, &argv, NULL, es, cert_depth, cert);
+ 
+-        argv_reset(&argv);
++        argv_free(&argv);
+ 
+         if (ret == OPENVPN_PLUGIN_FUNC_SUCCESS)
+         {
+@@ -581,7 +581,7 @@ verify_cert_call_command(const char *verify_command, struct env_set *es,
+ 
+ cleanup:
+     gc_free(&gc);
+-    argv_reset(&argv);
++    argv_free(&argv);
+ 
+     if (ret)
+     {
+@@ -1129,7 +1129,7 @@ done:
+         platform_unlink(tmp_file);
+     }
+ 
+-    argv_reset(&argv);
++    argv_free(&argv);
+     gc_free(&gc);
+     return ret;
+ }
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index e8889e93..37df2ce7 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -544,7 +544,7 @@ tls_crypt_v2_verify_metadata(const struct tls_wrap_ctx *ctx,
+ 
+     ret = openvpn_run_script(&argv, es, 0, "--tls-crypt-v2-verify");
+ 
+-    argv_reset(&argv);
++    argv_free(&argv);
+     env_set_destroy(es);
+ 
+     if (!platform_unlink(tmp_file))
 diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index af09e676..99693016 100644
+index 99693016..aa131b25 100644
 --- a/src/openvpn/tun.c
 +++ b/src/openvpn/tun.c
-@@ -1027,7 +1027,7 @@ do_ifconfig_ipv6(struct tuntap *tt, const char *ifname, int tun_mtu,
+@@ -1046,7 +1046,7 @@ do_ifconfig_ipv6(struct tuntap *tt, const char *ifname, int tun_mtu,
  
-         openvpn_snprintf(iface, sizeof(iface), "interface=%lu",
-                          tt->adapter_index);
--        argv_printf(&argv, "%s%sc interface ipv6 set address %s %s store=active",
-+        argv_printf(&argv, "%s%s interface ipv6 set address %s %s store=active",
-                     get_win_sys_path(), NETSH_PATH_SUFFIX, iface,
-                     ifconfig_ipv6_local);
-         netsh_command(&argv, 4, M_FATAL);
-@@ -5064,14 +5064,14 @@ ipconfig_register_dns(const struct env_set *es)
-     msg(D_TUNTAP_INFO, "Start ipconfig commands for register-dns...");
-     netcmd_semaphore_lock();
+ #if !defined(TARGET_LINUX)
+     gc_free(&gc);
+-    argv_reset(&argv);
++    argv_free(&argv);
+ #endif
+ }
  
--    argv_printf(&argv, "%s%sc /flushdns",
-+    argv_printf(&argv, "%s%s /flushdns",
+@@ -1419,7 +1419,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
+ 
+ #if !defined(TARGET_LINUX)
+     gc_free(&gc);
+-    argv_reset(&argv);
++    argv_free(&argv);
+ #endif
+ }
+ 
+@@ -1999,7 +1999,7 @@ undo_ifconfig_ipv4(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+     argv_msg(M_INFO, &argv);
+     openvpn_execve_check(&argv, NULL, 0, "Generic ip addr del failed");
+ 
+-    argv_reset(&argv);
++    argv_free(&argv);
+ #endif /* ifdef TARGET_LINUX */
+ }
+ 
+@@ -2023,7 +2023,7 @@ undo_ifconfig_ipv6(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+     argv_msg(M_INFO, &argv);
+     openvpn_execve_check(&argv, NULL, 0, "Linux ip -6 addr del failed");
+ 
+-    argv_reset(&argv);
++    argv_free(&argv);
+     gc_free(&gc);
+ #endif /* ifdef TARGET_LINUX */
+ }
+@@ -2316,7 +2316,7 @@ solaris_close_tun(struct tuntap *tt)
+                      IFCONFIG_PATH, tt->actual_name );
+         argv_msg(M_INFO, &argv);
+         openvpn_execve_check(&argv, NULL, 0, "Solaris ifconfig inet6 unplumb failed");
+-        argv_reset(&argv);
++        argv_free(&argv);
+     }
+ 
+     if (tt->ip_fd >= 0)
+@@ -2401,7 +2401,7 @@ solaris_error_close(struct tuntap *tt, const struct env_set *es,
+     openvpn_execve_check(&argv, es, 0, "Solaris ifconfig unplumb failed");
+     close_tun(tt, NULL);
+     msg(M_FATAL, "Solaris ifconfig failed");
+-    argv_reset(&argv);
++    argv_free(&argv);
+ }
+ 
+ int
+@@ -2489,7 +2489,7 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+     openvpn_execve_check(&argv, NULL, 0, "OpenBSD 'destroy tun interface' failed (non-critical)");
+ 
+     free(tt);
+-    argv_reset(&argv);
++    argv_free(&argv);
+ }
+ 
+ int
+@@ -2575,7 +2575,7 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+     openvpn_execve_check(&argv, NULL, 0, "NetBSD 'destroy tun interface' failed (non-critical)");
+ 
+     free(tt);
+-    argv_reset(&argv);
++    argv_free(&argv);
+ }
+ 
+ static inline int
+@@ -2716,7 +2716,7 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+                          "FreeBSD 'destroy tun interface' failed (non-critical)");
+ 
+     free(tt);
+-    argv_reset(&argv);
++    argv_free(&argv);
+ }
+ 
+ int
+@@ -3081,7 +3081,7 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+ 
+     close_tun_generic(tt);
+     free(tt);
+-    argv_reset(&argv);
++    argv_free(&argv);
+     gc_free(&gc);
+ }
+ 
+@@ -3185,7 +3185,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+         env_set_add( es, "ODMDIR=/etc/objrepos" );
+         openvpn_execve_check(&argv, es, S_FATAL, "AIX 'create tun interface' failed");
+         env_set_destroy(es);
+-        argv_reset(&argv);
++        argv_free(&argv);
+     }
+     else
+     {
+@@ -3236,7 +3236,7 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+ 
+     free(tt);
+     env_set_destroy(es);
+-    argv_reset(&argv);
++    argv_free(&argv);
+ }
+ 
+ int
+@@ -5069,14 +5069,14 @@ ipconfig_register_dns(const struct env_set *es)
+                 WIN_IPCONFIG_PATH_SUFFIX);
+     argv_msg(D_TUNTAP_INFO, &argv);
+     openvpn_execve_check(&argv, es, 0, err);
+-    argv_reset(&argv);
++    argv_free(&argv);
+ 
+     argv_printf(&argv, "%s%s /registerdns",
                  get_win_sys_path(),
                  WIN_IPCONFIG_PATH_SUFFIX);
      argv_msg(D_TUNTAP_INFO, &argv);
      openvpn_execve_check(&argv, es, 0, err);
-     argv_reset(&argv);
+-    argv_reset(&argv);
++    argv_free(&argv);
  
--    argv_printf(&argv, "%s%sc /registerdns",
-+    argv_printf(&argv, "%s%s /registerdns",
-                 get_win_sys_path(),
-                 WIN_IPCONFIG_PATH_SUFFIX);
-     argv_msg(D_TUNTAP_INFO, &argv);
-@@ -5185,8 +5185,8 @@ netsh_set_dns6_servers(const struct in6_addr *addr_list,
-     for (int i = 0; i < addr_len; ++i)
-     {
-         const char *fmt = (i == 0) ?
--                          "%s%sc interface ipv6 set dns %s static %s"
--                          : "%s%sc interface ipv6 add dns %s %s";
-+                          "%s%s interface ipv6 set dns %s static %s"
-+                          : "%s%s interface ipv6 add dns %s %s";
-         argv_printf(&argv, fmt, get_win_sys_path(),
-                     NETSH_PATH_SUFFIX, flex_name,
-                     print_in6_addr(addr_list[i], 0, &gc));
-@@ -5233,7 +5233,7 @@ netsh_ifconfig_options(const char *type,
-     /* delete existing DNS/WINS settings from TAP interface */
-     if (delete_first)
-     {
--        argv_printf(&argv, "%s%sc interface ip delete %s %s all",
-+        argv_printf(&argv, "%s%s interface ip delete %s %s all",
-                     get_win_sys_path(),
-                     NETSH_PATH_SUFFIX,
-                     type,
-@@ -5250,8 +5250,8 @@ netsh_ifconfig_options(const char *type,
-             if (delete_first || !test_first || !ip_addr_member_of(addr_list[i], current))
-             {
-                 const char *fmt = count ?
--                                  "%s%sc interface ip add %s %s %s"
--                                  : "%s%sc interface ip set %s %s static %s";
-+                                  "%s%s interface ip add %s %s %s"
-+                                  : "%s%s interface ip set %s %s static %s";
- 
-                 argv_printf(&argv, fmt,
-                             get_win_sys_path(),
-@@ -5327,7 +5327,7 @@ netsh_ifconfig(const struct tuntap_options *to,
-         else
-         {
-             /* example: netsh interface ip set address my-tap static 10.3.0.1 255.255.255.0 */
--            argv_printf(&argv, "%s%sc interface ip set address %s static %s %s",
-+            argv_printf(&argv, "%s%s interface ip set address %s static %s %s",
-                         get_win_sys_path(),
-                         NETSH_PATH_SUFFIX,
-                         flex_name,
-@@ -5375,7 +5375,7 @@ netsh_enable_dhcp(const char *actual_name)
- 
-     /* example: netsh interface ip set address my-tap dhcp */
-     argv_printf(&argv,
--                "%s%sc interface ip set address %s dhcp",
-+                "%s%s interface ip set address %s dhcp",
-                 get_win_sys_path(),
-                 NETSH_PATH_SUFFIX,
-                 actual_name);
-@@ -6460,7 +6460,7 @@ netsh_delete_address_dns(const struct tuntap *tt, bool ipv6, struct gc_arena *gc
-         ifconfig_ip_local = print_in_addr_t(tt->local, 0, gc);
+     netcmd_semaphore_release();
+     msg(D_TUNTAP_INFO, "End ipconfig commands for register-dns...");
+@@ -5201,7 +5201,7 @@ netsh_set_dns6_servers(const struct in6_addr *addr_list,
+         netsh_command(&argv, 1, (i==0) ? M_FATAL : M_NONFATAL);
      }
-     argv_printf(&argv,
--                "%s%sc interface %s delete address %s %s store=active",
-+                "%s%s interface %s delete address %s %s store=active",
-                 get_win_sys_path(),
-                 NETSH_PATH_SUFFIX,
-                 ipv6 ? "ipv6" : "ipv4",
-@@ -6474,7 +6474,7 @@ netsh_delete_address_dns(const struct tuntap *tt, bool ipv6, struct gc_arena *gc
-     if (len > 0)
-     {
-         argv_printf(&argv,
--                    "%s%sc interface %s delete dns %s all",
-+                    "%s%s interface %s delete dns %s all",
-                     get_win_sys_path(),
-                     NETSH_PATH_SUFFIX,
-                     ipv6 ? "ipv6" : "ipv4",
+ 
+-    argv_reset(&argv);
++    argv_free(&argv);
+     gc_free(&gc);
+ }
+ 
+@@ -5273,7 +5273,7 @@ netsh_ifconfig_options(const char *type,
+         }
+     }
+ 
+-    argv_reset(&argv);
++    argv_free(&argv);
+     gc_free(&gc);
+ }
+ 
+@@ -5364,7 +5364,7 @@ netsh_ifconfig(const struct tuntap_options *to,
+                                BOOL_CAST(flags & NI_TEST_FIRST));
+     }
+ 
+-    argv_reset(&argv);
++    argv_free(&argv);
+     gc_free(&gc);
+ }
+ 
+@@ -5382,7 +5382,7 @@ netsh_enable_dhcp(const char *actual_name)
+ 
+     netsh_command(&argv, 4, M_FATAL);
+ 
+-    argv_reset(&argv);
++    argv_free(&argv);
+ }
+ 
+ /* Enable dhcp on tap adapter using iservice */
+@@ -6481,7 +6481,7 @@ netsh_delete_address_dns(const struct tuntap *tt, bool ipv6, struct gc_arena *gc
+                     tt->actual_name);
+         netsh_command(&argv, 1, M_WARN);
+     }
+-    argv_reset(&argv);
++    argv_free(&argv);
+ }
+ 
+ void
 diff --git a/tests/unit_tests/openvpn/test_argv.c b/tests/unit_tests/openvpn/test_argv.c
-index 0fdd3f0a..9b72ad04 100644
+index 9b72ad04..fde0ba45 100644
 --- a/tests/unit_tests/openvpn/test_argv.c
 +++ b/tests/unit_tests/openvpn/test_argv.c
-@@ -9,6 +9,7 @@
- #include <setjmp.h>
- #include <cmocka.h>
- #include <assert.h>
-+#include <stdbool.h>
+@@ -39,7 +39,7 @@ argv_printf__multiple_spaces_in_format__parsed_as_one(void **state)
+     argv_printf(&a, "    %s     %s  %d   ", PATH1, PATH2, 42);
+     assert_int_equal(a.argc, 3);
  
- #include "argv.h"
- #include "buffer.h"
-@@ -53,23 +54,69 @@ argv_printf_cat__multiple_spaces_in_format__parsed_as_one(void **state)
-     argv_reset(&a);
+-    argv_reset(&a);
++    argv_free(&a);
  }
  
-+static void
-+argv_printf__embedded_format_directive__replaced_in_output(void **state)
-+{
-+    struct argv a = argv_new();
-+
-+    argv_printf(&a, "<p1:%s>", PATH1);
-+    assert_int_equal(a.argc, 1);
-+    assert_string_equal(a.argv[0], "<p1:" PATH1 ">");
-+
-+    argv_reset(&a);
-+}
-+
-+static void
-+argv_printf__group_sep_in_arg__fail_no_ouput(void **state)
-+{
-+    struct argv a = argv_new();
-+
-+    assert_false(argv_printf(&a, "tool --do %s", "this\035--harmful"));
-+    assert_int_equal(a.argc, 0);
-+
-+    argv_reset(&a);
-+}
-+
  static void
- argv_printf__combined_path_with_spaces__argc_correct(void **state)
- {
-     struct argv a = argv_new();
+@@ -51,7 +51,7 @@ argv_printf_cat__multiple_spaces_in_format__parsed_as_one(void **state)
+     argv_printf_cat(&a, " %s  %s", PATH2, PARAM1);
+     assert_int_equal(a.argc, 3);
  
--    argv_printf(&a, "%s%sc", PATH1, PATH2);
-+    argv_printf(&a, "%s%s", PATH1, PATH2);
+-    argv_reset(&a);
++    argv_free(&a);
+ }
+ 
+ static void
+@@ -63,7 +63,7 @@ argv_printf__embedded_format_directive__replaced_in_output(void **state)
      assert_int_equal(a.argc, 1);
+     assert_string_equal(a.argv[0], "<p1:" PATH1 ">");
  
--    argv_printf(&a, "%s%sc %d", PATH1, PATH2, 42);
-+    argv_printf(&a, "%s%s %d", PATH1, PATH2, 42);
-     assert_int_equal(a.argc, 2);
+-    argv_reset(&a);
++    argv_free(&a);
+ }
  
--    argv_printf(&a, "foo %s%sc %s x y", PATH2, PATH1, "foo");
-+    argv_printf(&a, "foo %s%s %s x y", PATH2, PATH1, "foo");
+ static void
+@@ -74,7 +74,7 @@ argv_printf__group_sep_in_arg__fail_no_ouput(void **state)
+     assert_false(argv_printf(&a, "tool --do %s", "this\035--harmful"));
+     assert_int_equal(a.argc, 0);
+ 
+-    argv_reset(&a);
++    argv_free(&a);
+ }
+ 
+ static void
+@@ -91,7 +91,7 @@ argv_printf__combined_path_with_spaces__argc_correct(void **state)
+     argv_printf(&a, "foo %s%s %s x y", PATH2, PATH1, "foo");
      assert_int_equal(a.argc, 5);
  
-     argv_reset(&a);
+-    argv_reset(&a);
++    argv_free(&a);
  }
  
-+static void
-+argv_printf__empty_parameter__argc_correct(void **state)
-+{
-+    struct argv a = argv_new();
-+
-+    argv_printf(&a, "%s", "");
-+    assert_int_equal(a.argc, 1);
-+
-+    argv_printf(&a, "%s %s", PATH1, "");
-+    assert_int_equal(a.argc, 2);
-+
-+    argv_printf(&a, "%s %s %s", PATH1, "", PARAM1);
-+    assert_int_equal(a.argc, 3);
-+
-+    argv_printf(&a, "%s %s %s %s", PATH1, "", "", PARAM1);
-+    assert_int_equal(a.argc, 4);
-+
-+    argv_printf(&a, "%s %s", "", PARAM1);
-+    assert_int_equal(a.argc, 2);
-+
-+    argv_reset(&a);
+ static void
+@@ -114,7 +114,7 @@ argv_printf__empty_parameter__argc_correct(void **state)
+     argv_printf(&a, "%s %s", "", PARAM1);
+     assert_int_equal(a.argc, 2);
+ 
+-    argv_reset(&a);
++    argv_free(&a);
+ }
+ 
+ static void
+@@ -125,7 +125,7 @@ argv_parse_cmd__command_string__argc_correct(void **state)
+     argv_parse_cmd(&a, SCRIPT_CMD);
+     assert_int_equal(a.argc, 3);
+ 
+-    argv_reset(&a);
++    argv_free(&a);
+ }
+ 
+ static void
+@@ -137,7 +137,7 @@ argv_parse_cmd__command_and_extra_options__argc_correct(void **state)
+     argv_printf_cat(&a, "bar baz %d %s", 42, PATH1);
+     assert_int_equal(a.argc, 7);
+ 
+-    argv_reset(&a);
++    argv_free(&a);
+ }
+ 
+ static void
+@@ -150,7 +150,21 @@ argv_printf_cat__used_twice__argc_correct(void **state)
+     argv_printf_cat(&a, "foo");
+     assert_int_equal(a.argc, 5);
+ 
+-    argv_reset(&a);
++    argv_free(&a);
 +}
 +
- static void
- argv_parse_cmd__command_string__argc_correct(void **state)
- {
-@@ -113,7 +160,7 @@ argv_str__multiple_argv__correct_output(void **state)
-     struct gc_arena gc = gc_new();
-     const char *output;
++static void
++argv_str__empty_argv__empty_output(void **state)
++{
++    struct argv a = argv_new();
++    struct gc_arena gc = gc_new();
++    const char *output;
++
++    output = argv_str(&a, &gc, PA_BRACKET);
++    assert_string_equal(output, "");
++
++    argv_free(&a);
++    gc_free(&gc);
+ }
  
--    argv_printf(&a, "%s%sc", PATH1, PATH2);
-+    argv_printf(&a, "%s%s", PATH1, PATH2);
-     argv_printf_cat(&a, "%s", PARAM1);
-     argv_printf_cat(&a, "%s", PARAM2);
-     argv_printf_cat(&a, "%d", -1);
-@@ -172,7 +219,10 @@ main(void)
-     const struct CMUnitTest tests[] = {
-         cmocka_unit_test(argv_printf__multiple_spaces_in_format__parsed_as_one),
-         cmocka_unit_test(argv_printf_cat__multiple_spaces_in_format__parsed_as_one),
-+        cmocka_unit_test(argv_printf__embedded_format_directive__replaced_in_output),
-+        cmocka_unit_test(argv_printf__group_sep_in_arg__fail_no_ouput),
-         cmocka_unit_test(argv_printf__combined_path_with_spaces__argc_correct),
-+        cmocka_unit_test(argv_printf__empty_parameter__argc_correct),
+ static void
+@@ -170,7 +184,7 @@ argv_str__multiple_argv__correct_output(void **state)
+     assert_string_equal(output, "[" PATH1 PATH2 "] [" PARAM1 "] [" PARAM2 "]"
+ 				" [-1] [4294967295] [1]");
+ 
+-    argv_reset(&a);
++    argv_free(&a);
+     gc_free(&gc);
+ }
+ 
+@@ -183,9 +197,9 @@ argv_insert_head__empty_argv__head_only(void **state)
+     b = argv_insert_head(&a, PATH1);
+     assert_int_equal(b.argc, 1);
+     assert_string_equal(b.argv[0], PATH1);
+-    argv_reset(&b);
++    argv_free(&b);
+ 
+-    argv_reset(&a);
++    argv_free(&a);
+ }
+ 
+ static void
+@@ -208,9 +222,9 @@ argv_insert_head__non_empty_argv__head_added(void **state)
+             assert_string_equal(b.argv[i], a.argv[i - 1]);
+         }
+     }
+-    argv_reset(&b);
++    argv_free(&b);
+ 
+-    argv_reset(&a);
++    argv_free(&a);
+ }
+ 
+ int
+@@ -226,6 +240,7 @@ main(void)
          cmocka_unit_test(argv_parse_cmd__command_string__argc_correct),
          cmocka_unit_test(argv_parse_cmd__command_and_extra_options__argc_correct),
          cmocka_unit_test(argv_printf_cat__used_twice__argc_correct),
++        cmocka_unit_test(argv_str__empty_argv__empty_output),
+         cmocka_unit_test(argv_str__multiple_argv__correct_output),
+         cmocka_unit_test(argv_insert_head__non_empty_argv__head_added),
+     };
 -- 
 2.17.1
 
