@@ -1,11 +1,15 @@
+Date: Sun, 9 Feb 2020 10:50:39 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20200209095039.GY1431@...1296...>
 References: <20200207174818.21050-1-juliusz@...2525...>
  <20200208084558.GV1431@...1296...>
-From: Juliusz Sosinowicz <juliusz@...2525...>
-Message-ID: <23330b19-35b6-7e4e-2f2e-9c3c1626f53d@...2525...>
-Date: Sun, 9 Feb 2020 10:18:34 +0100
+ <23330b19-35b6-7e4e-2f2e-9c3c1626f53d@...2525...>
+ <fb9901f1-d304-ca31-cd9c-23712f320bd3@...2181...>
 MIME-Version: 1.0
-In-Reply-To: <20200208084558.GV1431@...1296...>
-Content-Language: en-US
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="pcjGMRtmGLNVN1Bo"
+Content-Disposition: inline
+In-Reply-To: <fb9901f1-d304-ca31-cd9c-23712f320bd3@...2181...>
 Subject: Re: [Openvpn-devel] [PATCH] Support for wolfSSL with OpenVPN master
  branch
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,50 +20,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: Juliusz Sosinowicz <juliusz@...2525...>, Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-Hi Gert,
+--pcjGMRtmGLNVN1Bo
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-thank you for your comments. My intention was not to add a second cipher 
-line in the sample config file. I added "cipher AES-256-CBC" to an 
-earlier version of OpenVPN when there was no cipher specified in the 
-loopback-client and loopback-server files. After rebasing my commit onto 
-master I didn't notice the double cipher lines in the config files. I 
-will remove this in my next patch as wolfSSL does support GCM mode but 
-not yet in the compatibility layer.
+Hi,
 
-I will add GCM support to our compatibility layer and send an updated 
-signed-off patch with a better commit message explaining what is 
-happening in the patch.
+On Sun, Feb 09, 2020 at 10:44:48AM +0100, Antonio Quartulli wrote:
+> if wolfssl support is being introduced by means of the openssl
+> compatibility layer, why do people need to configure OpenVPN with
+> "./configure --with-crypto-library=3Dwolfssl", rather than just using
+> openssl and specifying a different path for headers/libraries?
+>=20
+> Isn't the compat layer in wolfssl operating as a drop-in replacement for
+> openssl?
 
-Thanks
-Juliusz
+This question has been asked before and answered :-) - most of the
+compat functions seem to be implemented as macros, which our configure
+will not find.  So, configure needs to explicitely define what is there
+and what not.
 
-On 08/02/2020 09:45, Gert Doering wrote:
-> Hi Juliusz,
->
-> please send patches out of a git tree, coming from a git commit with
-> "git commit -s", and having a somewhat relevant commit message.
->
-> Besides this, please do not
->
->> --- a/sample/sample-config-files/loopback-client
->> +++ b/sample/sample-config-files/loopback-client
->> @@ -25,3 +25,4 @@ tls-auth sample-keys/ta.key 1
->>   cipher AES-256-GCM
->>   ping 1
->>   inactive 120 10000000
->> +cipher AES-256-CBC
-> ... modify the sample config files (and *if* you do, do not just add
-> a second cipher line, which will confuse users quite a bit).
->
-> If WolfSSL does not support GCM, this needs to be documented, but our
-> sample config files contain the recommended cipher for the existing
-> crypto systems, and this is (and will continue to be for the time)
-> GCM - faster, and lower overhead.
->
-> gert
+I do not like the extra include very much, but that seems to be hard=20
+to avoid with the current WolfSSL header file setup.
+
+gert
+
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--pcjGMRtmGLNVN1Bo
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJeP9XvAAoJEB2Cnv7KVigS1b0L/i6fogjskrhKHtszQ2H3tLab
+8NP/KZ0Epi1rkXiQ4l3ild3BNmzl65DeOjJ0Nw706AWGDsGzVS0IjTio0eCnli2y
+pvOP3Ma/nPHaX0plRSEmXbvQQ5tBE6JYFxLnLXUa59q5EZFe06exDfu/LcQp9fqd
+MyuNcGyG5t22i2RACR34sfYtmN+fSYMwgx6akRPTd+zOmMrLV4bLvZpjpFmGR2y+
++ENlqKTrW9ALTkPCj3mt/1wIQx/MlqE1NQX+GJhnNm3FxJGz1kQwcJEPr+QrzVNG
+3cRQ78IcV5IXiSoJloziX7aJSd0x82CpZbNF4L/w5pO52zpuOSrqRwE9+ATd9qbu
+VG1OAnA0mJ/Q0wZ2lcK33qs5MGuIzetE0phl4tsjXeshofpJx/JoWBM+QBgpVWU+
+GQfC/Vb1FVrcGZXMBno/cpLVkdXcaE4bSvsCS7QV3FCqWPwWJ+ODPbtljhISos8A
+U+R5B/S7Jlm4T4co76pE9+Fk8nYBHITYNlHxmXGQ7Q==
+=OF4L
+-----END PGP SIGNATURE-----
+
+--pcjGMRtmGLNVN1Bo--
 
