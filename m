@@ -1,10 +1,13 @@
-From: selva.nair@...277...
-Date: Sun,  9 Feb 2020 23:33:20 -0500
-Message-Id: <1581309200-27870-1-git-send-email-selva.nair@...277...>
-In-Reply-To: <1580488320-10224-1-git-send-email-selva.nair@...277...>
+MIME-Version: 1.0
 References: <1580488320-10224-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH v3] Swap the order of checks for validating
- interactive service user
+ <1581309200-27870-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1581309200-27870-1-git-send-email-selva.nair@...277...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Mon, 10 Feb 2020 10:49:13 +0200
+Message-ID: <CAGyAFMWNR7gJrh5szv13cJHO-BSqY8MNYmU8JXcnFwia=CZQgg@...278...>
+Content-Type: multipart/alternative; boundary="000000000000214ba9059e34d182"
+Subject: Re: [Openvpn-devel] [PATCH v3] Swap the order of checks for
+ validating interactive service user
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,133 +16,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Selva <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Selva Nair <selva.nair@...277...>
+--000000000000214ba9059e34d182
+Content-Type: text/plain; charset="UTF-8"
 
-Check the config file location and command line options first
-and membership in OpenVPNAdministrators group after that as
-the latter could be a slow process for active directory users.
+Built with MSVC and tested, works as described - membership
+check is performed only if options validation fails. Also error message
+is sent only when user is not authorized (this got broken in v2).
 
-When connection to domain controllers is poor or unavailable, checking
-the group membership is slow and causes timeouts in the GUI (Trac
-1051). However, in cases where the config is in the global directory,
-no group membership check should be required. The re-ordering here
-avoids the redundant check in such cases.
+Acked-by: Lev Stipakov <lstipakov@...277...>
 
-In addition to this, its also proposed to improve the timeout handling
-in the GUI, but this change is still useful as it should completely
-eliminate the timeout issue for many users.
+--000000000000214ba9059e34d182
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-v3: Do not send error message to the client pipe from ValidateOptions().
-Instead save the error and send it on only if user authorization also
-fails. The error buffer size is increased to 512 wide chars as these
-messages could get long in some cases and may get truncated otherwise.
+<div dir=3D"ltr"><div>Built with MSVC and=C2=A0tested, works as described -=
+ membership</div><div>check is performed only if options validation fails. =
+Also error message</div><div>is sent only when user is not authorized (this=
+ got broken in v2).</div><div><br></div><div>Acked-by: Lev Stipakov &lt;<a =
+href=3D"mailto:lstipakov@...277...">lstipakov@...277...</a>&gt;</div></div>
 
-Also see: https://github.com/OpenVPN/openvpn-gui/issues/332
-
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
-v2: Add missing closing parenthesis and improve the comment
-above the edited chunk.
-
- src/openvpnserv/interactive.c | 33 +++++++++++++++++++--------------
- 1 file changed, 19 insertions(+), 14 deletions(-)
-
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index 6e72a14..710f9c7 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -389,14 +389,13 @@ ReturnOpenvpnOutput(HANDLE pipe, HANDLE ovpn_output, DWORD count, LPHANDLE event
- /*
-  * Validate options against a white list. Also check the config_file is
-  * inside the config_dir. The white list is defined in validate.c
-- * Returns true on success
-+ * Returns true on success, false on error with reason set in errmsg.
-  */
- static BOOL
--ValidateOptions(HANDLE pipe, const WCHAR *workdir, const WCHAR *options)
-+ValidateOptions(HANDLE pipe, const WCHAR *workdir, const WCHAR *options, WCHAR *errmsg, DWORD capacity)
- {
-     WCHAR **argv;
-     int argc;
--    WCHAR buf[256];
-     BOOL ret = FALSE;
-     int i;
-     const WCHAR *msg1 = L"You have specified a config file location (%s relative to %s)"
-@@ -411,8 +410,9 @@ ValidateOptions(HANDLE pipe, const WCHAR *workdir, const WCHAR *options)
- 
-     if (!argv)
-     {
--        ReturnLastError(pipe, L"CommandLineToArgvW");
--        ReturnError(pipe, ERROR_STARTUP_DATA, L"Cannot validate options", 1, &exit_event);
-+        openvpn_swprintf(errmsg, capacity,
-+	                 L"Cannot validate options: CommandLineToArgvW failed with error = 0x%08x",
-+	                 GetLastError());
-         goto out;
-     }
- 
-@@ -432,9 +432,8 @@ ValidateOptions(HANDLE pipe, const WCHAR *workdir, const WCHAR *options)
- 
-         if (!CheckOption(workdir, 2, argv_tmp, &settings))
-         {
--            openvpn_swprintf(buf, _countof(buf), msg1, argv[0], workdir,
-+            openvpn_swprintf(errmsg, capacity, msg1, argv[0], workdir,
-                              settings.ovpn_admin_group);
--            ReturnError(pipe, ERROR_STARTUP_DATA, buf, 1, &exit_event);
-         }
-         goto out;
-     }
-@@ -450,15 +449,13 @@ ValidateOptions(HANDLE pipe, const WCHAR *workdir, const WCHAR *options)
-         {
-             if (wcscmp(L"--config", argv[i]) == 0 && argc-i > 1)
-             {
--                openvpn_swprintf(buf, _countof(buf), msg1, argv[i+1], workdir,
-+                openvpn_swprintf(errmsg, capacity, msg1, argv[i+1], workdir,
-                                  settings.ovpn_admin_group);
--                ReturnError(pipe, ERROR_STARTUP_DATA, buf, 1, &exit_event);
-             }
-             else
-             {
--                openvpn_swprintf(buf, _countof(buf), msg2, argv[i],
-+                openvpn_swprintf(errmsg, capacity, msg2, argv[i],
-                                  settings.ovpn_admin_group);
--                ReturnError(pipe, ERROR_STARTUP_DATA, buf, 1, &exit_event);
-             }
-             goto out;
-         }
-@@ -1487,6 +1484,7 @@ RunOpenvpn(LPVOID p)
-     size_t cmdline_size;
-     undo_lists_t undo_lists;
-     ring_buffer_handles_t ring_buffer_handles;
-+    WCHAR errmsg[512] = L"";
- 
-     SECURITY_ATTRIBUTES inheritable = {
-         .nLength = sizeof(inheritable),
-@@ -1580,10 +1578,17 @@ RunOpenvpn(LPVOID p)
-         goto out;
-     }
- 
--    /* Check user is authorized or options are white-listed */
--    if (!IsAuthorizedUser(ovpn_user->User.Sid, imp_token, settings.ovpn_admin_group)
--        && !ValidateOptions(pipe, sud.directory, sud.options))
-+    /*
-+     * Only authorized users are allowed to use any command line options or
-+     * have the config file in locations other than the global config directory.
-+     *
-+     * Check options are white-listed and config is in the global directory
-+     * OR user is authorized to run any config.
-+     */
-+    if (!ValidateOptions(pipe, sud.directory, sud.options, errmsg, _countof(errmsg))
-+        && !IsAuthorizedUser(ovpn_user->User.Sid, imp_token, settings.ovpn_admin_group))
-     {
-+        ReturnError(pipe, ERROR_STARTUP_DATA, errmsg, 1, &exit_event);
-         goto out;
-     }
- 
--- 
-2.1.4
-
+--000000000000214ba9059e34d182--
 
