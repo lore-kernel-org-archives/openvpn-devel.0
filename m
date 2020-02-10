@@ -1,12 +1,9 @@
-MIME-Version: 1.0
-References: <1580488320-10224-1-git-send-email-selva.nair@...277...>
- <1581309200-27870-1-git-send-email-selva.nair@...277...>
+Date: Mon, 10 Feb 2020 11:16:05 +0100 (CET)
+Message-Id: <202002101016.01AAG55s019517@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <1581309200-27870-1-git-send-email-selva.nair@...277...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Mon, 10 Feb 2020 10:49:13 +0200
-Message-ID: <CAGyAFMWNR7gJrh5szv13cJHO-BSqY8MNYmU8JXcnFwia=CZQgg@...278...>
-Content-Type: multipart/alternative; boundary="000000000000214ba9059e34d182"
-Subject: Re: [Openvpn-devel] [PATCH v3] Swap the order of checks for
+References: <1581309200-27870-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Swap the order of checks for
  validating interactive service user
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -16,27 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---000000000000214ba9059e34d182
-Content-Type: text/plain; charset="UTF-8"
+Your patch has been applied to the master branch.
 
-Built with MSVC and tested, works as described - membership
-check is performed only if options validation fails. Also error message
-is sent only when user is not authorized (this got broken in v2).
+I have not tested this in any way, but since Lev has reviewed & tested 
+v2 (and found a bug) and reviewed & tested v3, I do not think I would
+add much value anyway.
 
-Acked-by: Lev Stipakov <lstipakov@...277...>
+commit c6cc66a13568dd1078bfbeb763998c1b9e2a2999
+Author: Selva Nair
+Date:   Sun Feb 9 23:33:20 2020 -0500
 
---000000000000214ba9059e34d182
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+     Swap the order of checks for validating interactive service user
 
-<div dir=3D"ltr"><div>Built with MSVC and=C2=A0tested, works as described -=
- membership</div><div>check is performed only if options validation fails. =
-Also error message</div><div>is sent only when user is not authorized (this=
- got broken in v2).</div><div><br></div><div>Acked-by: Lev Stipakov &lt;<a =
-href=3D"mailto:lstipakov@...277...">lstipakov@...277...</a>&gt;</div></div>
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <1581309200-27870-1-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19388.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
---000000000000214ba9059e34d182--
+
+--
+kind regards,
+
+Gert Doering
+
 
