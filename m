@@ -1,10 +1,11 @@
 From: selva.nair@...277...
-Date: Mon, 10 Feb 2020 13:35:41 -0500
-Message-Id: <1581359742-30511-1-git-send-email-selva.nair@...277...>
-In-Reply-To: <1522729843-28878-1-git-send-email-selva.nair@...277...>
+Date: Mon, 10 Feb 2020 13:35:42 -0500
+Message-Id: <1581359742-30511-2-git-send-email-selva.nair@...277...>
+In-Reply-To: <1581359742-30511-1-git-send-email-selva.nair@...277...>
 References: <1522729843-28878-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH 1/2 v3] Skip expired certificates in Windows
- certificate store
+ <1581359742-30511-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH 2/2 v3] Allow unicode search string in
+ --cryptoapicert option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,106 +20,64 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-Have the cryptoapicert option find the first matching certificate
-in store that is valid at the present time. Currently the first
-found item, even if expired, is returned.
-
-This makes it possible to update certifiates in store without having
-to delete old ones. As a side effect, if only expired certificates are
-found, the connection fails.
-
-Also remove some unnecessary casts.
-
-Tested on Windows 10.
-Trac #966
+Currently when the certificate is specified as "SUBJ:foo", the
+string foo is assumed to be ascii. Change that and interpret
+it as utf-8, convert to a wide string, and flag it as unicode
+in CertFindCertifcateInStore().
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
-v3: nudging again with a rebase to master
+v3: nudging again, with a rebase to master
 
- src/openvpn/cryptoapi.c | 41 +++++++++++++++++++++++++++++------------
- 1 file changed, 29 insertions(+), 12 deletions(-)
+ src/openvpn/cryptoapi.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
 diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
-index 2f2eee7..3b70c33 100644
+index 3b70c33..acae96f 100644
 --- a/src/openvpn/cryptoapi.c
 +++ b/src/openvpn/cryptoapi.c
-@@ -739,27 +739,30 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
-      * SUBJ:<certificate substring to match>
-      * THUMB:<certificate thumbprint hex value>, e.g.
-      *     THUMB:f6 49 24 41 01 b4 fb 44 0c ce f4 36 ae d0 c4 c9 df 7a b6 28
-+     * The first matching certificate that has not expired is returned.
-      */
-     const CERT_CONTEXT *rv = NULL;
-+    DWORD find_type;
-+    const void *find_param;
-+    unsigned char hash[255];
-+    CRYPT_HASH_BLOB blob = {.cbData = 0, .pbData = hash};
+@@ -51,6 +51,7 @@
+ 
+ #include "buffer.h"
+ #include "openssl_compat.h"
++#include "win32.h"
+ 
+ /* MinGW w32api 3.17 is still incomplete when it comes to CryptoAPI while
+  * MinGW32-w64 defines all macros used. This is a hack around that problem.
+@@ -746,12 +747,13 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
+     const void *find_param;
+     unsigned char hash[255];
+     CRYPT_HASH_BLOB blob = {.cbData = 0, .pbData = hash};
++    struct gc_arena gc = gc_new();
  
      if (!strncmp(cert_prop, "SUBJ:", 5))
      {
          /* skip the tag */
--        cert_prop += 5;
--        rv = CertFindCertificateInStore(cert_store, X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
--                                        0, CERT_FIND_SUBJECT_STR_A, cert_prop, NULL);
--
-+        find_param = cert_prop + 5;
-+        find_type = CERT_FIND_SUBJECT_STR_A;
+-        find_param = cert_prop + 5;
+-        find_type = CERT_FIND_SUBJECT_STR_A;
++        find_param = wide_string(cert_prop + 5, &gc);
++        find_type = CERT_FIND_SUBJECT_STR_W;
      }
      else if (!strncmp(cert_prop, "THUMB:", 6))
      {
--        unsigned char hash[255];
--        char *p;
-+        const char *p;
-         int i, x = 0;
--        CRYPT_HASH_BLOB blob;
-+        find_type = CERT_FIND_HASH;
-+        find_param = &blob;
- 
-         /* skip the tag */
-         cert_prop += 6;
--        for (p = (char *) cert_prop, i = 0; *p && i < sizeof(hash); i++)
-+        for (p = cert_prop, i = 0; *p && i < sizeof(hash); i++)
-         {
-             if (*p >= '0' && *p <= '9')
-             {
-@@ -775,7 +778,8 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
-             }
+@@ -779,7 +781,7 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
              if (!*++p)  /* unexpected end of string */
              {
--                break;
-+                msg(M_WARN, "WARNING: cryptoapicert: error parsing <THUMB:%s>.", cert_prop);
-+                return NULL;
+                 msg(M_WARN, "WARNING: cryptoapicert: error parsing <THUMB:%s>.", cert_prop);
+-                return NULL;
++                goto out;
              }
              if (*p >= '0' && *p <= '9')
              {
-@@ -796,10 +800,23 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
-             }
-         }
-         blob.cbData = i;
--        blob.pbData = (unsigned char *) &hash;
-+    }
-+    while(true)
-+    {
-+        int validity = 1;
-+        /* this frees previous rv, if not NULL */
-         rv = CertFindCertificateInStore(cert_store, X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
--                                        0, CERT_FIND_HASH, &blob, NULL);
--
-+                                        0, find_type, find_param, rv);
-+        if (rv)
-+        {
-+            validity = CertVerifyTimeValidity(NULL, rv->pCertInfo);
-+        }
-+        if (!rv || validity == 0)
-+        {
-+            break;
-+        }
-+        msg(M_WARN, "WARNING: cryptoapicert: ignoring certificate in store %s.",
-+            validity < 0 ? "not yet valid" : "that has expired");
+@@ -819,6 +821,8 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
+             validity < 0 ? "not yet valid" : "that has expired");
      }
  
++out:
++    gc_free(&gc);
      return rv;
+ }
+ 
 -- 
 2.1.4
 
