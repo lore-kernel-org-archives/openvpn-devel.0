@@ -1,16 +1,10 @@
-References: <20200207174818.21050-1-juliusz@...2525...>
- <20200208084558.GV1431@...1296...>
- <23330b19-35b6-7e4e-2f2e-9c3c1626f53d@...2525...>
- <fb9901f1-d304-ca31-cd9c-23712f320bd3@...2181...>
- <20200209095039.GY1431@...1296...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <6bcc2555-feb9-aff5-ccdb-b2d1f8d1295b@...2181...>
-Date: Sun, 9 Feb 2020 10:51:21 +0100
-MIME-Version: 1.0
-In-Reply-To: <20200209095039.GY1431@...1296...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Support for wolfSSL with OpenVPN master
- branch
+From: selva.nair@...277...
+Date: Sun,  9 Feb 2020 23:33:20 -0500
+Message-Id: <1581309200-27870-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1580488320-10224-1-git-send-email-selva.nair@...277...>
+References: <1580488320-10224-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH v3] Swap the order of checks for validating
+ interactive service user
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,38 +13,133 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: Juliusz Sosinowicz <juliusz@...2525...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+From: Selva Nair <selva.nair@...277...>
 
-On 09/02/2020 10:50, Gert Doering wrote:
-> Hi,
-> 
-> On Sun, Feb 09, 2020 at 10:44:48AM +0100, Antonio Quartulli wrote:
->> if wolfssl support is being introduced by means of the openssl
->> compatibility layer, why do people need to configure OpenVPN with
->> "./configure --with-crypto-library=wolfssl", rather than just using
->> openssl and specifying a different path for headers/libraries?
->>
->> Isn't the compat layer in wolfssl operating as a drop-in replacement for
->> openssl?
-> 
-> This question has been asked before and answered :-) - most of the
-> compat functions seem to be implemented as macros, which our configure
-> will not find.  So, configure needs to explicitely define what is there
-> and what not.
-> 
-> I do not like the extra include very much, but that seems to be hard 
-> to avoid with the current WolfSSL header file setup.
-> 
+Check the config file location and command line options first
+and membership in OpenVPNAdministrators group after that as
+the latter could be a slow process for active directory users.
 
-ouch, thanks for the reminder :-)
+When connection to domain controllers is poor or unavailable, checking
+the group membership is slow and causes timeouts in the GUI (Trac
+1051). However, in cases where the config is in the global directory,
+no group membership check should be required. The re-ordering here
+avoids the redundant check in such cases.
 
+In addition to this, its also proposed to improve the timeout handling
+in the GUI, but this change is still useful as it should completely
+eliminate the timeout issue for many users.
 
+v3: Do not send error message to the client pipe from ValidateOptions().
+Instead save the error and send it on only if user authorization also
+fails. The error buffer size is increased to 512 wide chars as these
+messages could get long in some cases and may get truncated otherwise.
 
+Also see: https://github.com/OpenVPN/openvpn-gui/issues/332
+
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+v2: Add missing closing parenthesis and improve the comment
+above the edited chunk.
+
+ src/openvpnserv/interactive.c | 33 +++++++++++++++++++--------------
+ 1 file changed, 19 insertions(+), 14 deletions(-)
+
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 6e72a14..710f9c7 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -389,14 +389,13 @@ ReturnOpenvpnOutput(HANDLE pipe, HANDLE ovpn_output, DWORD count, LPHANDLE event
+ /*
+  * Validate options against a white list. Also check the config_file is
+  * inside the config_dir. The white list is defined in validate.c
+- * Returns true on success
++ * Returns true on success, false on error with reason set in errmsg.
+  */
+ static BOOL
+-ValidateOptions(HANDLE pipe, const WCHAR *workdir, const WCHAR *options)
++ValidateOptions(HANDLE pipe, const WCHAR *workdir, const WCHAR *options, WCHAR *errmsg, DWORD capacity)
+ {
+     WCHAR **argv;
+     int argc;
+-    WCHAR buf[256];
+     BOOL ret = FALSE;
+     int i;
+     const WCHAR *msg1 = L"You have specified a config file location (%s relative to %s)"
+@@ -411,8 +410,9 @@ ValidateOptions(HANDLE pipe, const WCHAR *workdir, const WCHAR *options)
+ 
+     if (!argv)
+     {
+-        ReturnLastError(pipe, L"CommandLineToArgvW");
+-        ReturnError(pipe, ERROR_STARTUP_DATA, L"Cannot validate options", 1, &exit_event);
++        openvpn_swprintf(errmsg, capacity,
++	                 L"Cannot validate options: CommandLineToArgvW failed with error = 0x%08x",
++	                 GetLastError());
+         goto out;
+     }
+ 
+@@ -432,9 +432,8 @@ ValidateOptions(HANDLE pipe, const WCHAR *workdir, const WCHAR *options)
+ 
+         if (!CheckOption(workdir, 2, argv_tmp, &settings))
+         {
+-            openvpn_swprintf(buf, _countof(buf), msg1, argv[0], workdir,
++            openvpn_swprintf(errmsg, capacity, msg1, argv[0], workdir,
+                              settings.ovpn_admin_group);
+-            ReturnError(pipe, ERROR_STARTUP_DATA, buf, 1, &exit_event);
+         }
+         goto out;
+     }
+@@ -450,15 +449,13 @@ ValidateOptions(HANDLE pipe, const WCHAR *workdir, const WCHAR *options)
+         {
+             if (wcscmp(L"--config", argv[i]) == 0 && argc-i > 1)
+             {
+-                openvpn_swprintf(buf, _countof(buf), msg1, argv[i+1], workdir,
++                openvpn_swprintf(errmsg, capacity, msg1, argv[i+1], workdir,
+                                  settings.ovpn_admin_group);
+-                ReturnError(pipe, ERROR_STARTUP_DATA, buf, 1, &exit_event);
+             }
+             else
+             {
+-                openvpn_swprintf(buf, _countof(buf), msg2, argv[i],
++                openvpn_swprintf(errmsg, capacity, msg2, argv[i],
+                                  settings.ovpn_admin_group);
+-                ReturnError(pipe, ERROR_STARTUP_DATA, buf, 1, &exit_event);
+             }
+             goto out;
+         }
+@@ -1487,6 +1484,7 @@ RunOpenvpn(LPVOID p)
+     size_t cmdline_size;
+     undo_lists_t undo_lists;
+     ring_buffer_handles_t ring_buffer_handles;
++    WCHAR errmsg[512] = L"";
+ 
+     SECURITY_ATTRIBUTES inheritable = {
+         .nLength = sizeof(inheritable),
+@@ -1580,10 +1578,17 @@ RunOpenvpn(LPVOID p)
+         goto out;
+     }
+ 
+-    /* Check user is authorized or options are white-listed */
+-    if (!IsAuthorizedUser(ovpn_user->User.Sid, imp_token, settings.ovpn_admin_group)
+-        && !ValidateOptions(pipe, sud.directory, sud.options))
++    /*
++     * Only authorized users are allowed to use any command line options or
++     * have the config file in locations other than the global config directory.
++     *
++     * Check options are white-listed and config is in the global directory
++     * OR user is authorized to run any config.
++     */
++    if (!ValidateOptions(pipe, sud.directory, sud.options, errmsg, _countof(errmsg))
++        && !IsAuthorizedUser(ovpn_user->User.Sid, imp_token, settings.ovpn_admin_group))
+     {
++        ReturnError(pipe, ERROR_STARTUP_DATA, errmsg, 1, &exit_event);
+         goto out;
+     }
+ 
 -- 
-Antonio Quartulli
+2.1.4
+
 
