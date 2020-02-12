@@ -1,15 +1,15 @@
 References: <20200206132103.15977-1-davids@...515...>
- <20200206132103.15977-4-davids@...515...>
+ <20200206132103.15977-5-davids@...515...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <3d08526c-3abc-7f2f-cded-a17b3c8dd757@...1227...>
-Date: Wed, 12 Feb 2020 13:44:37 +0100
+Message-ID: <69788449-6c1f-911e-af79-1287b450cd52@...1227...>
+Date: Wed, 12 Feb 2020 13:45:11 +0100
 MIME-Version: 1.0
-In-Reply-To: <20200206132103.15977-4-davids@...515...>
+In-Reply-To: <20200206132103.15977-5-davids@...515...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="3WsCGit2PGMEjOWkXQyaCZk1mhsEyrTA1"
-Subject: Re: [Openvpn-devel] [PATCH 3/4] Add gc_arena to struct argv to save
- allocations
+ boundary="JqJlCDHVaLgZVaktyxZ7Kdmz4FqYPLzZC"
+Subject: Re: [Openvpn-devel] [PATCH 4/4] Documented all the argv related
+ code with minor refactoring
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,55 +21,50 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: David Sommerseth <davids@...515...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---3WsCGit2PGMEjOWkXQyaCZk1mhsEyrTA1
-Content-Type: multipart/mixed; boundary="nUXTsXK8GPiPDx2MQZ9YNbWZ8WVwq6lLQ"
+--JqJlCDHVaLgZVaktyxZ7Kdmz4FqYPLzZC
+Content-Type: multipart/mixed; boundary="6QBMJiyR1ZZMULBZgHQ2pQfuffst3Fly3"
 
---nUXTsXK8GPiPDx2MQZ9YNbWZ8WVwq6lLQ
+--6QBMJiyR1ZZMULBZgHQ2pQfuffst3Fly3
 Content-Language: de-DE
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
 Am 06.02.20 um 14:21 schrieb David Sommerseth:
-> From: Heiko Hund <heiko.hund@...1489...>
+> Added doxygen comments for all the functions in argv.c.
 >=20
-> With the private gc_arena we do not have to allocate the strings
-> found during parsing again, since we know the arena they are
-> allocated in is valid as long as the argv vector is.
+> There are some slight refactoring, renaming a few variables to make
+> their use case more obvious and ensure lines do not break our 80-chars
+> per line coding style limit.
 >=20
-> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
 > Signed-off-by: David Sommerseth <davids@...515...>
 
 Acked-By: Arne Schwabe <arne@...1227...>
-
-I don't feel it is really necessary but it is slight improvement and
-this been too many revisions already, so get it in.
+more doxygen is always good!
 
 
+--6QBMJiyR1ZZMULBZgHQ2pQfuffst3Fly3--
 
-
---nUXTsXK8GPiPDx2MQZ9YNbWZ8WVwq6lLQ--
-
---3WsCGit2PGMEjOWkXQyaCZk1mhsEyrTA1
+--JqJlCDHVaLgZVaktyxZ7Kdmz4FqYPLzZC
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl5D8zUACgkQFRhsZwKx
-RFSAlg//W+p8qEh4grs23WVtu3l90eWVNxgPKkZO6Zrcn5kdnsrXwIbdpiofqEb2
-rEHVHkNsZQEH5j9BM7mWsEiciMsGpl7MQlcwPYEES+SP20CeevXBZyl5zOdSGQz1
-oiQWl5EL3fhWNCYMA+YQCAR2Q9fn/w9Bc5YPYrJGzKGn/oMtunIKzarIzHktkS5u
-Cg2Zma004ZQcwNGtkKLnvXlogY1U3pNhXp0x3Jm9jBLFXo3DRW+GimGawH2KvPvN
-cLQ+rl7ac+Xh1rmfn4tCjqp9hGiV/9kUY2It+G8Ppe53wLBlv/pP8nnVcEtJ0hW7
-wkB9LcJVj5ps6iNOx8vy/oDv47S2QZOIE7e98G61CNrI042ca8GlDV6bLg6+EGPh
-tNz9TX0lx4cj30Jq8zkM4eRRQjhFw5lVBjTsJeR3kx16P5b42HSRS9uBCZCprRT9
-xNQ6sd3hIZZ3y/u5JLm2sy39tV1d84skJzcxcu61pbkeVkyabBxXniuIt4/HbyLd
-ONZvDSDdigG6SThzJteUYOkcWk89WkcAkBnOGjL88ovsTCrk0zKvpDHKVUrFtguP
-duXWwJHNtm7+Zz+aGua2yHVyliiaqUj++b/SU9kQcuCsppnZCwzcgaj8/5K+lCU4
-rl1OeCityrq+IbdxUNKuR4WDwujv7VeCTvXlIuq1zQumnuvlbSc=
-=MO62
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl5D81cACgkQFRhsZwKx
+RFQGEw/9EMDcRKcwNzF6iwlIUqwZX5W1WiX1ZP1Hq1KmdulWGCupwjqDWlvSNsUY
+MXS18yBFPtbRrMmYBxy1MtzFO1Mna5YYQzA4q0BOE3RBW+5bpAF3TgTKFcSL7Dw3
+cAzsJkAz1sRgVroUldat7+ufXDiwP0BY0Mx5pWVPxRxCZWXaDDbtgICnyNutiqaJ
+E8qTeak4gRH2kowubXH1LaaDXusrkcdPZKrIz3wJZIDqXRWxoNEjmQ1gfl/j7tFq
+c8wxaZRdS3wlUoFbGLBYjrVmqncc5rfgNQ0y5BIdN68sed1bySjSf3GCfK31dmnL
+PrU0qS0hRyVGmP1dZ4ZK1OqqhG01XeqA6tUJB6U26sTzMcqfmq7q94+Wz4jD3BV2
+LeHwBc7GXKSGeZP0AkDYXLcN1bHKi6YR+uQYbROBJzJJbJ4zsjG50ArU2M4eoNnx
+9S1MMtM8xLmFXD+5+v/bqLkH2hcjuMtWCGw5jgUNt4Kiypbd3OqkprRHTxjPZ1A9
+NHm+gSpvXkf1VNxospJIQkRQi4/MD8T5zM7Ks4X+53kgv0XF4fh6GIyRi/9EGyNH
+TOzqErh9JLzU2yBpva0QoMQZ2ENtH8RyMy9TH82CKxw1TrW9aLevhrek4bXxkZrU
+zjcVLToRXzcekWV85kaAPvwfMeVyNA8tmztZLSJvvbQeOjLa8UU=
+=PxYq
 -----END PGP SIGNATURE-----
 
---3WsCGit2PGMEjOWkXQyaCZk1mhsEyrTA1--
+--JqJlCDHVaLgZVaktyxZ7Kdmz4FqYPLzZC--
 
