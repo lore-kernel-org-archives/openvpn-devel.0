@@ -1,13 +1,10 @@
-References: <NaAsPRnb2g-raEjxjv15C_odADru2NIyXCs5wvZO609b_-4IqW2Do2sVbBull-FE9myUOZ7lNV6gdAx7MGugGUOBbdYOFO8AsoFHu35BIs8=@protonmail.com>
- <64a78361-8b16-a924-99f4-fec954a78412@...1227...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <125e5f6a-ff0c-7442-225b-91875774e22f@...2080...>
-Date: Wed, 12 Feb 2020 16:01:26 +0100
-MIME-Version: 1.0
-In-Reply-To: <64a78361-8b16-a924-99f4-fec954a78412@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] openssl: alternative names support for
- --verify-x509-name CN checks
+From: selva.nair@...277...
+Date: Wed, 12 Feb 2020 10:06:06 -0500
+Message-Id: <1581519967-16950-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1581359742-30511-1-git-send-email-selva.nair@...277...>
+References: <1581359742-30511-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH v4 1/2] Skip expired certificates in Windows
+ certificate store
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,28 +15,121 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>, Mateusz Markowicz <poniekad@...2282...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-On 12/02/2020 15:39, Arne Schwabe wrote:
->> +bool
->> +x509v3_is_host_in_alternative_names(mbedtls_x509_crt *cert, const char
->> *host, bool *has_alt_names)
->> +{
->> +    msg(M_WARN, "Missing support for subject alternative names in
->> mbedtls.");
+From: Selva Nair <selva.nair@...277...>
 
-I'm not happy about this at all.  This should be possible to achieve with
-mbed TLS as well:
-<https://tls.mbed.org/api/structmbedtls__x509__crt.html#a1f148e8fb52e03e2604e716386a07df4>
+Have the cryptoapicert option find the first matching certificate
+in store that is valid at the present time. Currently the first
+found item, even if expired, is returned.
 
-One starting point for this can probably found here:
-<https://tls.mbed.org/api/group__x509__module.html#ga033567483649030f7f859db4f4cb7e14>
+This makes it possible to update certifiates in store without having
+to delete old ones. As a side effect, if only expired certificates are
+found, the connection fails.
 
+Also remove some unnecessary casts.
 
+Tested on Windows 10.
+Trac #966
+
+v4: Handle the case when an unknown certificate specification is passed
+to find_certificate_in_store().
+
+Note: Warnings printed from find_certificate_in_store() could show up
+multiple times as its called for each certificate store. This could
+be improved in a future patch.
+
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/cryptoapi.c | 46 ++++++++++++++++++++++++++++++++++------------
+ 1 file changed, 34 insertions(+), 12 deletions(-)
+
+diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
+index 2f2eee7..b9f1328 100644
+--- a/src/openvpn/cryptoapi.c
++++ b/src/openvpn/cryptoapi.c
+@@ -739,27 +739,30 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
+      * SUBJ:<certificate substring to match>
+      * THUMB:<certificate thumbprint hex value>, e.g.
+      *     THUMB:f6 49 24 41 01 b4 fb 44 0c ce f4 36 ae d0 c4 c9 df 7a b6 28
++     * The first matching certificate that has not expired is returned.
+      */
+     const CERT_CONTEXT *rv = NULL;
++    DWORD find_type;
++    const void *find_param;
++    unsigned char hash[255];
++    CRYPT_HASH_BLOB blob = {.cbData = 0, .pbData = hash};
+ 
+     if (!strncmp(cert_prop, "SUBJ:", 5))
+     {
+         /* skip the tag */
+-        cert_prop += 5;
+-        rv = CertFindCertificateInStore(cert_store, X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
+-                                        0, CERT_FIND_SUBJECT_STR_A, cert_prop, NULL);
+-
++        find_param = cert_prop + 5;
++        find_type = CERT_FIND_SUBJECT_STR_A;
+     }
+     else if (!strncmp(cert_prop, "THUMB:", 6))
+     {
+-        unsigned char hash[255];
+-        char *p;
++        const char *p;
+         int i, x = 0;
+-        CRYPT_HASH_BLOB blob;
++        find_type = CERT_FIND_HASH;
++        find_param = &blob;
+ 
+         /* skip the tag */
+         cert_prop += 6;
+-        for (p = (char *) cert_prop, i = 0; *p && i < sizeof(hash); i++)
++        for (p = cert_prop, i = 0; *p && i < sizeof(hash); i++)
+         {
+             if (*p >= '0' && *p <= '9')
+             {
+@@ -775,7 +778,8 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
+             }
+             if (!*++p)  /* unexpected end of string */
+             {
+-                break;
++                msg(M_WARN, "WARNING: cryptoapicert: error parsing <THUMB:%s>.", cert_prop);
++                return NULL;
+             }
+             if (*p >= '0' && *p <= '9')
+             {
+@@ -796,10 +800,28 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
+             }
+         }
+         blob.cbData = i;
+-        blob.pbData = (unsigned char *) &hash;
+-        rv = CertFindCertificateInStore(cert_store, X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
+-                                        0, CERT_FIND_HASH, &blob, NULL);
++    }
++    else {
++        msg(M_WARN, "WARNING: cryptoapicert: unsupported certificate specification <%s>", cert_prop);
++        return NULL;
++    }
+ 
++    while(true)
++    {
++        int validity = 1;
++        /* this frees previous rv, if not NULL */
++        rv = CertFindCertificateInStore(cert_store, X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
++                                        0, find_type, find_param, rv);
++        if (rv)
++        {
++            validity = CertVerifyTimeValidity(NULL, rv->pCertInfo);
++        }
++        if (!rv || validity == 0)
++        {
++            break;
++        }
++        msg(M_WARN, "WARNING: cryptoapicert: ignoring certificate in store %s.",
++            validity < 0 ? "not yet valid" : "that has expired");
+     }
+ 
+     return rv;
 -- 
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
+2.1.4
 
 
