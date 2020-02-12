@@ -1,14 +1,15 @@
 References: <20200206132103.15977-1-davids@...515...>
- <20200206132103.15977-2-davids@...515...>
+ <20200206132103.15977-4-davids@...515...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <0711bc60-8187-c96a-d7d8-e3ec6ec29c89@...1227...>
-Date: Wed, 12 Feb 2020 12:40:47 +0100
+Message-ID: <3d08526c-3abc-7f2f-cded-a17b3c8dd757@...1227...>
+Date: Wed, 12 Feb 2020 13:44:37 +0100
 MIME-Version: 1.0
-In-Reply-To: <20200206132103.15977-2-davids@...515...>
+In-Reply-To: <20200206132103.15977-4-davids@...515...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="qZq0RGtpsg0MS975OaMsDHR9oySaxMANv"
-Subject: Re: [Openvpn-devel] [PATCH 1/4] re-implement argv_printf_*()
+ boundary="3WsCGit2PGMEjOWkXQyaCZk1mhsEyrTA1"
+Subject: Re: [Openvpn-devel] [PATCH 3/4] Add gc_arena to struct argv to save
+ allocations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,10 +21,10 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: David Sommerseth <davids@...515...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---qZq0RGtpsg0MS975OaMsDHR9oySaxMANv
-Content-Type: multipart/mixed; boundary="r7ZCN7Sx18ENqtDMllrQSoZ8haQgVHtpA"
+--3WsCGit2PGMEjOWkXQyaCZk1mhsEyrTA1
+Content-Type: multipart/mixed; boundary="nUXTsXK8GPiPDx2MQZ9YNbWZ8WVwq6lLQ"
 
---r7ZCN7Sx18ENqtDMllrQSoZ8haQgVHtpA
+--nUXTsXK8GPiPDx2MQZ9YNbWZ8WVwq6lLQ
 Content-Language: de-DE
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
@@ -31,51 +32,44 @@ Content-Transfer-Encoding: quoted-printable
 Am 06.02.20 um 14:21 schrieb David Sommerseth:
 > From: Heiko Hund <heiko.hund@...1489...>
 >=20
-> The previous implementation had the problem that it was not fully
-> compatible with printf() and could only detect % format directives
-> following a space character (0x20).
+> With the private gc_arena we do not have to allocate the strings
+> found during parsing again, since we know the arena they are
+> allocated in is valid as long as the argv vector is.
 >=20
-> It modifies the format string and inserts marks to separate groups
-> before passing it to the regular printf in libc. The marks are
-> later used to separate the output string into individual command
-> line arguments.
->=20
-> The choice of 0x1D as the argument delimiter is based on the
-> assumption that no "regular" string passed to argv_printf_*() will
-> ever have to contain that byte (and the fact that it actually is
-> the ASCII "group separator" control character, which fits its
-> purpose).
->=20
-> This commit has been updated by David Sommerseth based on Arne
-> Schwabe and his own feedback on the mailing list.
->=20
+> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+> Signed-off-by: David Sommerseth <davids@...515...>
 
 Acked-By: Arne Schwabe <arne@...1227...>
 
+I don't feel it is really necessary but it is slight improvement and
+this been too many revisions already, so get it in.
 
---r7ZCN7Sx18ENqtDMllrQSoZ8haQgVHtpA--
 
---qZq0RGtpsg0MS975OaMsDHR9oySaxMANv
+
+
+--nUXTsXK8GPiPDx2MQZ9YNbWZ8WVwq6lLQ--
+
+--3WsCGit2PGMEjOWkXQyaCZk1mhsEyrTA1
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl5D5EAACgkQFRhsZwKx
-RFSJCA/+ORF383GoCxW+FiuJEN65qA5+iQ6cAjOSLPvOeaGtcEyoPz0ik8i8VSRf
-EHZzPz+ExNTu7gFsxBL9+pdcN9PflmnwNGSNIAQSXdM2/KGREsW4xxZrcp7QWHpu
-rSqkoyg06xhTluwzBILFv1AEtL09/I8kfWts4v//PKzbSpV4QN2jXpt034K+AJt8
-swBq6ZcgyeYUBZNsTk0Ov3DR2xef4Xz9cF41Fqa8d1aRzpd7oFdXLY6GpZhP16cB
-3BPEcNcCgjYd3IdsKwt3Kwp3jSTd9kGr2y+b38FcXtp4QojoKy+/U+n4/FSdBgBc
-HyYcDS4LNjBXmgcX5d6PqjOK1GurNghXd4GNvKfpT/ho2Sg3p9kURRQnIWZWivvw
-myWPb/GjrM/sQ6LeJxch9saKnHqyUxBEvDHcPVHutkLiqeM015XHktcHy1x1lIN6
-wwH/T3M4Z/bixU4Vs7X06Iuk7DQlvq4qUCovaoftzB+cKnpABng98gAY/J0QoJjO
-wTxT2gjoubh3OZSgb7+xG+Tdtoy7HQgMlPNZFF/73zXlgPhx5+wD1UMmajLawgOQ
-AbCbec5lHF13vP1xYn4r3XpU6OEMyOoFlH9Jp+h3g2Nd8x24gZCrh2Oi6I2VaFV8
-lCnTlmE+nlRjZ20EVXyaosk3YvRWAOxKPjM00pYklA5ri1jRCMs=
-=ZMJ4
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl5D8zUACgkQFRhsZwKx
+RFSAlg//W+p8qEh4grs23WVtu3l90eWVNxgPKkZO6Zrcn5kdnsrXwIbdpiofqEb2
+rEHVHkNsZQEH5j9BM7mWsEiciMsGpl7MQlcwPYEES+SP20CeevXBZyl5zOdSGQz1
+oiQWl5EL3fhWNCYMA+YQCAR2Q9fn/w9Bc5YPYrJGzKGn/oMtunIKzarIzHktkS5u
+Cg2Zma004ZQcwNGtkKLnvXlogY1U3pNhXp0x3Jm9jBLFXo3DRW+GimGawH2KvPvN
+cLQ+rl7ac+Xh1rmfn4tCjqp9hGiV/9kUY2It+G8Ppe53wLBlv/pP8nnVcEtJ0hW7
+wkB9LcJVj5ps6iNOx8vy/oDv47S2QZOIE7e98G61CNrI042ca8GlDV6bLg6+EGPh
+tNz9TX0lx4cj30Jq8zkM4eRRQjhFw5lVBjTsJeR3kx16P5b42HSRS9uBCZCprRT9
+xNQ6sd3hIZZ3y/u5JLm2sy39tV1d84skJzcxcu61pbkeVkyabBxXniuIt4/HbyLd
+ONZvDSDdigG6SThzJteUYOkcWk89WkcAkBnOGjL88ovsTCrk0zKvpDHKVUrFtguP
+duXWwJHNtm7+Zz+aGua2yHVyliiaqUj++b/SU9kQcuCsppnZCwzcgaj8/5K+lCU4
+rl1OeCityrq+IbdxUNKuR4WDwujv7VeCTvXlIuq1zQumnuvlbSc=
+=MO62
 -----END PGP SIGNATURE-----
 
---qZq0RGtpsg0MS975OaMsDHR9oySaxMANv--
+--3WsCGit2PGMEjOWkXQyaCZk1mhsEyrTA1--
 
