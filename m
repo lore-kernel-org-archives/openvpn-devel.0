@@ -1,14 +1,20 @@
+References: <20171205121952.13008-1-EngyCZ@...277...>
+ <CAKuzo_g6YTkx+-3i=TEFn9b2yPjx9rBweTz=4H7uuOT8VokEdg@...278...>
+ <CAHODtZSTyD8NOc8cVNaGaZ9z+HZrKK-+L6h_t0gqhAh3pJMk+w@...278...>
+ <CAHODtZQRb48Aa8AsxXoSnUUSLE27u-EjCOWavFJj7nwZqPYd7w@...278...>
+ <CAKuzo_g8KXGKN-A-egEonQEFpkro5wb5OigDbycg0j_Ae=5Tow@...278...>
+ <CAHODtZThxjAUb-sZ4bA1Y238hPeK=zKGcSbU9d3nib+8rt0YMg@...278...>
+ <CAKuzo_gb4Sdqa3WLb=34kdwqvz507mKeyVyfhKvY6RassZz7Mg@...278...>
 From: Arne Schwabe <arne@...1227...>
-References: <20191117181243.28919-1-arne@...1227...>
- <20191117181243.28919-4-arne@...1227...>
- <CAGyAFMWAkAFSYcoG=WTs6atyQAbx=v71rU6ZO1y=bV-2rt0n_w@...278...>
-Message-ID: <8820628a-f647-3f35-fea0-b1756edeaeb2@...1227...>
-Date: Thu, 13 Feb 2020 15:14:54 +0100
+Message-ID: <47ebda81-a785-2512-e0f7-2b9179eade2e@...1227...>
+Date: Thu, 13 Feb 2020 15:53:04 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAGyAFMWAkAFSYcoG=WTs6atyQAbx=v71rU6ZO1y=bV-2rt0n_w@...278...>
-Content-Language: de-DE
-Subject: Re: [Openvpn-devel] [PATCH 4/4] Normalise ncp-ciphers option and
- restrict it to 127 bytes
+In-Reply-To: <CAKuzo_gb4Sdqa3WLb=34kdwqvz507mKeyVyfhKvY6RassZz7Mg@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="EJwiSRxxSyN8OfTXvHy1m8kXu1MpLcHkA"
+Subject: Re: [Openvpn-devel] [PATCH] Add a warning for disabled DHCP media
+ sense on Window
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,93 +23,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Selva Nair <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--EJwiSRxxSyN8OfTXvHy1m8kXu1MpLcHkA
+Content-Type: multipart/mixed; boundary="fta3W8rLHEgRk8wckhREmDrhXeScS8A88"
+
+--fta3W8rLHEgRk8wckhREmDrhXeScS8A88
+Content-Language: de-DE
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lstipakov@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Transfer-Encoding: quoted-printable
 
-Am 13.02.20 um 13:34 schrieb Lev Stipakov:
+Am 14.03.18 um 17:17 schrieb Selva Nair:
 > Hi,
-> 
-> su 17. marrask. 2019 klo 20.13 Arne Schwabe (arne@...1227...
-> <mailto:arne@...1227...>) kirjoitti:
->>
->> -        if (!cipher_kt_get(translate_cipher_name_from_openvpn(token)))
->> +        /* translate_cipher_name_from_openvpn also normalises the
-> cipher name,
->> +         * e.g. replacing AeS-128-gCm with AES-128-GCM
->> +         */
-> 
-> I think this comment is a bit misleading -
->  translate_cipher_name_from_openvpn()
-> translates openvpn cipher name (value in --ncp-ciphers) to crypto
-> library cipher name,
-> for example from "aES-256-GCM" to "idaes_256_GCM" which contradicts the
-> comment.
-> 
+>=20
+> On Wed, Mar 14, 2018 at 3:32 AM, Ji=C5=99=C3=AD Engelthaler <engycz@...1664...=
+7...> wrote:
+>> Hi.
+>>   You right. Disabled dhcp media sense can be set as global for all
+>> interfaces or in adapter specific setting if it supports it (TAP supports
+>> it).
+>> But for must users is the global settings hidden deep in the system and =
+for
+>> me it took several months to find the cause of my problems. Interface
+>> specific settings can be cleared by uninstalling and reinstalling OpenVP=
+N.
+>=20
+> Well, Windows ships with media sense enabled, isn't it? So if its
+> disabled, either the user did that or some third party application did
+> it for some reason. Without knowing those unknowables, we can't even
+> decide whether to suggest the user to enable it back or not.
+>=20
+> Whereas, using --dhcp-renew (or making it the default) looks much
+> simpler and something in our control. Anyone knows why it shouldn't be
+> the default?  I don't see how it could hurt except that openvpn needs
+> to fork to run --dhcp-renew when the parent process is waiting for the
+> the interface to get the address. But that's not a big deal on a
+> Windows client.
 
-Will update the comment.
-
-> Maybe we could factor this code out into separate
-> normalize_cipher_name() function, which
-> 
->  - translates (possibly non-normalized) openvpn cipher name into
-> cryptolib cipher name
->  - translates crypto cipher name back to openvpn cipher name, this time
-> normalized
-
-
-Hm, it would be only used here and make error handling more complicated,
-so I think we should just stick with the two functions.
-
->> +        if (!ktc)
->>          {
->>              msg(M_WARN, "Unsupported cipher in --ncp-ciphers: %s",
-> token);
->> -            unsupported_cipher_found = true;
->> +            error_found = true;
-> 
-> It seems that mutate_ncp_cipher_list() returns NULL if error_found is
-> true. Maybe we could goto
-> out of the loop? The label could be added before free() calls.
-
-Yes. But I found that less user friendly. The approach here will give
-you an error for every unsupported cipher. Otherwise you get only an
-error for the first unsupported cipher.
-
-
->> +            if (buf_len(&new_list)> 0)
->> +            {
->> +                /* The next if condition ensure there is always space for
->> +                 * a :
->> +                 */
->> +                buf_puts(&new_list, ":");
->> +            }
->> +
->> +            /* Ensure buffer has capacity for cipher name + : + \0 */
->> +            if (!(buf_forward_capacity(&new_list) >
->> +                  strlen(ovpn_cipher_name) + 2))
-> 
-> This doesn't handle the case when buffer capacity is just enough
-> to fit the last cipher - for that it is enough to fit cipher name and \0.
-> Could we move
-> 
->   >          token = strtok(NULL, ":");
-> 
-> here and do something like
-> 
->   /* for the last cipher, token is NULL, enough to fit cipher and \0 */
->   strlen(ovpn_cipher_name) + (token ? 2 : 1);
-> 
->> +            {
->> +                msg(M_WARN, "Length of --ncp-ciphers is over the"
->> +                    "limit of 127 chars");
->> +                error_found = true;
-
-
-I don't think this worth fixing. If you are close or at the 127 char
-limit then your cipher list is too long anyway. That we might bail out
-at 126 char is acceptable. I rather prefer the simple code here.
-
+This on of the old patches that are still pending. It seems that the
+original submitter never replied. This is still something we want to
+merge or should we just "close" due to timeout? I am not too familiar
+with the DHCP problem to have a good opinion on that.
 
 Arne
+
+
+--fta3W8rLHEgRk8wckhREmDrhXeScS8A88--
+
+--EJwiSRxxSyN8OfTXvHy1m8kXu1MpLcHkA
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl5FYtAACgkQFRhsZwKx
+RFT/9Q//U5UVh6+Qc+lAw5lmuROleG0iiyakNaO5dD44JxQUkKP9uTUbpoXiNVR2
+Hmjvj6p/zNQz1XnJ6eH/7SSY6AtdrI0eW7jTr/84XmVQAf9C/RySA+RWBuSOBol1
+PpyMu+3ADc8TFEQ0f2RxSnBpG2oDYmQFyqqpu0+QiJ8Y0FwBbAtrVi/7tAOhASTq
+n9Qj4HdC15TN16E3TJkEUtj0TzNA5gdauvgKepfTeGqnFD1Ko5ib8ZjdQ47LjOvo
+GNYvoIwV2vmW5DhZct/5WQtlwjQTgWWtfC/xQoBJBGpvelvk8X5TUwesh9T0Z2JN
+h9yjUi9Kz3iQBtThinHDtmfSUvLHO/crR9BedgULFQX9VgPCrao2R24x6tfXkXOl
+q7NHwCyX2EEv8NayssNhlsxABaQukyvJ08dyVmpBtB+XMCSeDWC9+tpZef2V+Th5
+KRsOryO73nFDF4MxMVmQlctkii1Vv3PTqq92uK5Bq9PTiFXx1+Xjeax+q61jnv1X
+R/Jxuk7jZd4jkPaVxXZ3m5pPPQqS2XrQBKIhxZMPqMlylzczbcJ3yn+O/cESb+Mo
+mUxQk/FC7o9tRKhr+g521uM/rKkfpXPFBOuQogZ7Jw+JS5YJLUm+5Rkkv6kal+0I
+zjHIjdEqMCwu1E76DZMIqioHOUNM+lixXcaKa9rf70fwZVqWhNk=
+=Zp9w
+-----END PGP SIGNATURE-----
+
+--EJwiSRxxSyN8OfTXvHy1m8kXu1MpLcHkA--
 
