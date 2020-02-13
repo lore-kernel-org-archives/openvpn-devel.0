@@ -1,14 +1,10 @@
-MIME-Version: 1.0
-References: <1581359742-30511-1-git-send-email-selva.nair@...277...>
- <1581519967-16950-1-git-send-email-selva.nair@...277...>
- <1581519967-16950-2-git-send-email-selva.nair@...277...>
-In-Reply-To: <1581519967-16950-2-git-send-email-selva.nair@...277...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Thu, 13 Feb 2020 20:44:03 +0200
-Message-ID: <CAGyAFMXxVoQYjvgpdJEKw0K1M7QJito+34xAqzkFNWjwx2ueog@...278...>
-Content-Type: multipart/alternative; boundary="000000000000c2e180059e797908"
-Subject: Re: [Openvpn-devel] [PATCH v4 2/2] Allow unicode search string in
- --cryptoapicert option
+Date: Thu, 13 Feb 2020 20:21:54 +0100 (CET)
+Message-Id: <202002131921.01DJLsx4090060@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20200121080828.1310-1-lstipakov@...277...>
+References: <20200121080828.1310-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: configure.ac: simplify
+ AC_CHECK_FUNCS statements
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,27 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---000000000000c2e180059e797908
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Your patch has been applied to the master branch.
 
-Build and tested on Windows 10 - a cert with non-ASCII chars (=C3=A4=C3=A4=
-=C3=A4) got
-picked.
+Very lighty tested with FreeBSD and Linux builds with mbedtls/openssl
+"it builds and tests" (no idea if it produces the right result for 
+the relevant library versions).
 
-Acked-by: Lev Stipakov <lstipakov@...277...>
+commit 91d84530d7eb24718b99478ebac6ba40b0615b28
+Author: Lev Stipakov
+Date:   Tue Jan 21 10:08:28 2020 +0200
 
---000000000000c2e180059e797908
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+     configure.ac: simplify AC_CHECK_FUNCS statements
 
-<div dir=3D"ltr"><div dir=3D"ltr">Build and tested on Windows 10 - a cert w=
-ith non-ASCII chars (=C3=A4=C3=A4=C3=A4) got picked.=C2=A0=C2=A0<br></div><=
-div><br></div>Acked-by: Lev Stipakov &lt;<a href=3D"mailto:lstipakov@...1482...=
-...">lstipakov@...277...</a>&gt;</div>
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20200121080828.1310-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19333.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
---000000000000c2e180059e797908--
+
+--
+kind regards,
+
+Gert Doering
+
 
