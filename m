@@ -1,14 +1,8 @@
-References: <20200121080828.1310-1-lstipakov@...277...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <fc9ba1ee-19c8-e5ab-c903-37d8debcc8b5@...1227...>
-Date: Thu, 13 Feb 2020 10:36:34 +0100
-MIME-Version: 1.0
-In-Reply-To: <20200121080828.1310-1-lstipakov@...277...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="TypkpSLA7iFnQUxvMrToHmotsL116Y3LR"
-Subject: Re: [Openvpn-devel] [PATCH] configure.ac: simplify AC_CHECK_FUNCS
- statements
+From: Lev Stipakov <lstipakov@...277...>
+Date: Thu, 13 Feb 2020 11:55:39 +0200
+Message-Id: <20200213095539.11157-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] cryptoapi.c: fix run-time check failure in
+ msvc debugger
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,58 +11,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 Cc: Lev Stipakov <lev@...515...>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---TypkpSLA7iFnQUxvMrToHmotsL116Y3LR
-Content-Type: multipart/mixed; boundary="HflO9BVqhfjnR0cu9EjoOmwAPkKNEr4CW"
+From: Lev Stipakov <lev@...515...>
 
---HflO9BVqhfjnR0cu9EjoOmwAPkKNEr4CW
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+When using certificate without RSA_PKCS1_PSS_PADDING padding,
+"saltlen" is passed unitialized to priv_enc_CNG(), which causes
 
-Am 21.01.20 um 09:08 schrieb Lev Stipakov:
-> From: Lev Stipakov <lev@...515...>
->=20
-> AC_CHECK_FUNCS checks availability of each function
-> in argument list and defines HAVE_function macro.
-> AC_CHECK_FUNC takes single function as an argument and
-> doesn't automatically define any macros.
->=20
-> When we check for availability of a single function and
-> define own macro, it is enough to use AC_CHECK_FUNC.
+ > Run-Time Check Failure #3 - The variable 'saltlen' is being used without being initialized.
 
-Looks good to me
+in VS debugger.
 
-Acked-by: Arne Schwabe <arne@...1227...>
+Initialize saltlen (and other variable for the sake of consistence) to zero
+to avoid above failure.
 
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/openvpn/cryptoapi.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
+diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
+index 1bf74fcd..30eba7b2 100644
+--- a/src/openvpn/cryptoapi.c
++++ b/src/openvpn/cryptoapi.c
+@@ -882,9 +882,9 @@ pkey_rsa_sign(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen,
+     EVP_MD *md = NULL;
+     const wchar_t *alg = NULL;
+ 
+-    int padding;
+-    int hashlen;
+-    int saltlen;
++    int padding = 0;
++    int hashlen = 0;
++    int saltlen = 0;
+ 
+     pkey = EVP_PKEY_CTX_get0_pkey(ctx);
+     if (pkey)
+-- 
+2.17.1
 
---HflO9BVqhfjnR0cu9EjoOmwAPkKNEr4CW--
-
---TypkpSLA7iFnQUxvMrToHmotsL116Y3LR
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl5FGKIACgkQFRhsZwKx
-RFQI3Q//QmIUsmBw4gPX+VjEjAV0gTELbcnJbCgdUnloI975TvCAjSq6xVmGbw/W
-rXGynSiuLi8HTWxcALnv7vNxWMckxw28XPHIE8YjtiJ6QDLWS5ZrJNSYd3mJY6TT
-iVbvjTu/Dzy5KOTVXaXdXWf1CN1S30d3GrxGROHDORi5uXz03MezxxG4wIcjgcgK
-TyPEzkfSuBkWvphrS7ZUu2pHbeK7oNnqLFPbO3XHXnJfbzfmPsYTQFbh8SR/mVYT
-bbHUSYpZDWKmQFgw97Y5w9nj9FsPMUcqK19exjWya1PXR3HPYr/nuJzi5BnWF5LQ
-IKg/UbOibYgAhAX6i1DVuyt79ih52zKj/0b1UEvkfzE4H2rszXpaf4brzd3BL/BC
-ZrFRwyp+gUo5eT/MmzZg7owK8hiAQtRARoIQ2IFv9xCowK6BXpf52O8kRfgIj/et
-YG7PlngxtodxsRAACc+fm/8HwaON/F08DzhrMFSWdr6KR2XsOVz50DOvnV72/LwR
-6Fsk8JOxlmjg8+bYQVzdSFQv+a4HnZH6aZ1WAe/gnRe03iYM69DkQZP7lAcO1d/k
-uDU0zkdb1HBlqzo9f6EDkPiR8sWrQbuWdVwFUhhKlI4LqE9R9YpApjuCcznlyw6Q
-z5D6KemBlGdWQA+M8vRUZjoFXPzDdkC/TrSKsQ/hZt4ruJ5lfv4=
-=ldxS
------END PGP SIGNATURE-----
-
---TypkpSLA7iFnQUxvMrToHmotsL116Y3LR--
 
