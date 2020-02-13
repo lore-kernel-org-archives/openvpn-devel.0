@@ -1,10 +1,10 @@
-Date: Thu, 13 Feb 2020 20:54:10 +0100 (CET)
-Message-Id: <202002131954.01DJsA4a090638@...2054...>
+Date: Thu, 13 Feb 2020 20:54:18 +0100 (CET)
+Message-Id: <202002131954.01DJsIrb090643@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1581519967-16950-2-git-send-email-selva.nair@...277...>
-References: <1581519967-16950-2-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Allow unicode search string in
- --cryptoapicert option
+In-Reply-To: <1581519967-16950-1-git-send-email-selva.nair@...277...>
+References: <1581519967-16950-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Skip expired certificates in
+ Windows certificate store
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,18 +20,19 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master branch.
 
-Same as for ther other patch, no review, just MinGW test build (passes).
+Haven't done any real testing, just test build on MinGW (to have "the
+other build environment").  Passes :-)
 
-commit aa6affe6df811db11577847366a569def0a3e314
+commit 7b63984d51a2582ba2d406e46a7debb11df7f478
 Author: Selva Nair
-Date:   Wed Feb 12 10:06:07 2020 -0500
+Date:   Wed Feb 12 10:06:06 2020 -0500
 
-     Allow unicode search string in --cryptoapicert option
+     Skip expired certificates in Windows certificate store
 
      Signed-off-by: Selva Nair <selva.nair@...277...>
      Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <1581519967-16950-2-git-send-email-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19405.html
+     Message-Id: <1581519967-16950-1-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19404.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
