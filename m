@@ -1,14 +1,12 @@
+MIME-Version: 1.0
 References: <20191117181243.28919-3-arne@...1227...>
  <20200213135126.9131-1-arne@...1227...>
  <CAGyAFMUUqvVoioxidB0utxQUQ+YsbgNUO+Zhj9SHkvNNH1q+qQ@...278...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <c54791fe-3697-5591-52dd-ea589f565bd4@...1227...>
-Date: Fri, 14 Feb 2020 15:35:23 +0100
-MIME-Version: 1.0
-In-Reply-To: <CAGyAFMUUqvVoioxidB0utxQUQ+YsbgNUO+Zhj9SHkvNNH1q+qQ@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="FIqXD1gN495Mwpg7z7PNsN2zJqceqEfUD"
+ <c54791fe-3697-5591-52dd-ea589f565bd4@...1227...>
+In-Reply-To: <c54791fe-3697-5591-52dd-ea589f565bd4@...1227...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Fri, 14 Feb 2020 16:49:27 +0200
+Message-ID: <CAGyAFMW9z82hVTbDwooQoOyNuW55sYiWvRB+-BQ5ZexgSEKi1A@...278...>
 Subject: Re: [Openvpn-devel] [PATCH v2 3/5] Move NCP related function into a
  seperate file and add unit tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,69 +17,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---FIqXD1gN495Mwpg7z7PNsN2zJqceqEfUD
-Content-Type: multipart/mixed; boundary="xFBye2b1z1HYL5UeNtClfpgc3sgtErbrn"
+I found this discussion
 
---xFBye2b1z1HYL5UeNtClfpgc3sgtErbrn
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+https://sourceforge.net/p/openvpn/mailman/message/34405489/
 
-Am 14.02.20 um 14:08 schrieb Lev Stipakov:
-> Hi,
->=20
-> <skip>
->=20
-> I was planning to send a separate patch, but since you=C2=A0moved
-> this code, maybe you could fix it here.
->=20
->> +bool
->> +tls_item_in_cipher_list(const char *item, const char *list)
->> +{
->> + =C2=A0 =C2=A0char *tmp_ciphers =3D string_alloc(list, NULL);
->> + =C2=A0 =C2=A0char *tmp_ciphers_orig =3D tmp_ciphers;
->=20
-> This is redundant. strtok() manipulates string, but doesn't modify pointe=
-r,
-> unlike strsep. So it should be safe to to call
->=20
+and wonder if we should replace strdup with string_alloc("AES-256-GCM").
 
-This patch is just moving code that it does not touch. The original code
-is from Steffan. If we fix it, that should go into a different patch I
-think.
+If the result of strdup is NULL because of OOM, then following is NULL
 
-But yes you are correct. But the compiler will optimise that away I think :)
+    char *peer_ncp_list = tls_peer_ncp_list(peer_info);
 
-Arne
+and it is passed to
+
+    const char *token = strtok(tmp_ciphers, ":");
+
+and then behavior depends on the previous state of strtok.
+
+string_alloc(), on the other hand, calls check_malloc_return(), which
+prints "out of memory" and exits program.
 
 
---xFBye2b1z1HYL5UeNtClfpgc3sgtErbrn--
+pe 14. helmik. 2020 klo 16.35 Arne Schwabe (arne@...1227...) kirjoitti:
+>
+> Am 14.02.20 um 14:08 schrieb Lev Stipakov:
+> > Hi,
+> >
+> > <skip>
+> >
+> > I was planning to send a separate patch, but since you moved
+> > this code, maybe you could fix it here.
+> >
+> >> +bool
+> >> +tls_item_in_cipher_list(const char *item, const char *list)
+> >> +{
+> >> +    char *tmp_ciphers = string_alloc(list, NULL);
+> >> +    char *tmp_ciphers_orig = tmp_ciphers;
+> >
+> > This is redundant. strtok() manipulates string, but doesn't modify pointer,
+> > unlike strsep. So it should be safe to to call
+> >
+>
+> This patch is just moving code that it does not touch. The original code
+> is from Steffan. If we fix it, that should go into a different patch I
+> think.
+>
+> But yes you are correct. But the compiler will optimise that away I think :)
+>
+> Arne
+>
 
---FIqXD1gN495Mwpg7z7PNsN2zJqceqEfUD
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl5GsCsACgkQFRhsZwKx
-RFSUZw//bljBCMmyxgeid4LkrKj7i01si8VuPgZd+T1x4FKPyuzFxl+kXkLsUzDF
-JcTqgJeZI7LMdditRxQRxRYgebBNt1nc2joKBEXicZmjo5eB6VP3rHYfTh8JmWGz
-5SOSgZTyM74D8FVVptYvkYLeL6IUCAQt0rWEKyIklgpZNAgRp33dt6oNhtOc4dPk
-SI85wxGtry0yydSijzVU90qfDPe2QZTok78AdlMTvvJqNVy/l5yyEnsxipIbFB/L
-x4nPn0Win+bLR3Zo1vbJWYAoX9o2lwHWTzCPx8MARKAkI+31NR07ITMahhJFzI3R
-zVaPtE3sYG/bTCCWATTNm0ZDD9ZYfHyQ6ujGG7YVJkwUzHRRPMR7iFACFRAbqt7H
-xXuILvjBamApakQMkMisB8z/31hIfw67EPQVWVpVT59gSrB0Vr6uPss7WKTnOykH
-h1ZQ6aE4OmC7NHNeiJ0Wmgr+Hs8V9CmGiYiXrKvEDMqKusMkwGf2dOfgBCHctnLI
-djks0ibSeKVZQtlqSGCnDeyr7Fvo60O82p1oFF4gQwj4quT3X0ZdxDW1XE6Paa2G
-IMx/jHUBo4Gv7hFpjHBbwMBK/KtS0hTxWZ68khD0e5ipciZzewcKvYM2nOtjnqgu
-N2Isj402ht3uFGTKyq8yOTdF4Ubj+nj6gghMZFIDAQ5xUT6k0Y4=
-=cMEX
------END PGP SIGNATURE-----
-
---FIqXD1gN495Mwpg7z7PNsN2zJqceqEfUD--
+-- 
+-Lev
 
