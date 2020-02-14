@@ -1,14 +1,13 @@
-Message-ID: <1581683898.3296.4.camel@...2316...>
-From: James Bottomley <James.Bottomley@...2316...>
-Date: Fri, 14 Feb 2020 07:38:18 -0500
-In-Reply-To: <778643d1-7f14-a31b-949a-8aab94473e64@...1227...>
-References: <1518302884.3072.1.camel@...2316...>
- <1518303011.3072.4.camel@...2316...>
- <778643d1-7f14-a31b-949a-8aab94473e64@...1227...>
-Content-Type: multipart/signed; micalg="pgp-sha256";
- protocol="application/pgp-signature"; boundary="=-nJVYAuDpfXHerozhJiN7"
-Mime-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH v4 2/2] Add unit tests for engine keys
+MIME-Version: 1.0
+References: <20191117181243.28919-3-arne@...1227...>
+ <20200213135126.9131-1-arne@...1227...>
+In-Reply-To: <20200213135126.9131-1-arne@...1227...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Fri, 14 Feb 2020 15:08:10 +0200
+Message-ID: <CAGyAFMUUqvVoioxidB0utxQUQ+YsbgNUO+Zhj9SHkvNNH1q+qQ@...278...>
+Content-Type: multipart/alternative; boundary="000000000000713bec059e88e6cd"
+Subject: Re: [Openvpn-devel] [PATCH v2 3/5] Move NCP related function into a
+ seperate file and add unit tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,101 +16,115 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---=-nJVYAuDpfXHerozhJiN7
+--000000000000713bec059e88e6cd
 Content-Type: text/plain; charset="UTF-8"
+
+Hi,
+
+<skip>
+
+I was planning to send a separate patch, but since you moved
+this code, maybe you could fix it here.
+
+> +bool
+> +tls_item_in_cipher_list(const char *item, const char *list)
+> +{
+> +    char *tmp_ciphers = string_alloc(list, NULL);
+> +    char *tmp_ciphers_orig = tmp_ciphers;
+
+This is redundant. strtok() manipulates string, but doesn't modify pointer,
+unlike strsep. So it should be safe to to call
+
+ > free(tmp_ciphers)
+
+instead of
+
+> +    free(tmp_ciphers_orig);
+
+Same case as here:
+https://sourceforge.net/p/openvpn/mailman/message/35421870/
+
+Also could you apply following diff, which makes sure that
+ssl_ncp.[ch] are displayed under correct Source/Headers folder in MSVC?
+
+diff --git a/src/openvpn/openvpn.vcxproj.filters
+b/src/openvpn/openvpn.vcxproj.filters
+index 41e62d14..80eb52b3 100644
+--- a/src/openvpn/openvpn.vcxproj.filters
++++ b/src/openvpn/openvpn.vcxproj.filters
+@@ -243,6 +243,9 @@
+     <ClCompile Include="ring_buffer.c">
+       <Filter>Source Files</Filter>
+     </ClCompile>
++    <ClCompile Include="ssl_ncp.c">
++      <Filter>Source Files</Filter>
++    </ClCompile>
+   </ItemGroup>
+   <ItemGroup>
+     <ClInclude Include="base64.h">
+@@ -506,10 +509,13 @@
+     <ClInclude Include="ring_buffer.h">
+       <Filter>Header Files</Filter>
+     </ClInclude>
++    <ClInclude Include="ssl_ncp.h">
++      <Filter>Header Files</Filter>
++    </ClInclude>
+   </ItemGroup>
+   <ItemGroup>
+     <ResourceCompile Include="openvpn_win32_resources.rc">
+       <Filter>Resource Files</Filter>
+     </ResourceCompile>
+   </ItemGroup>
+-</Project>
++</Project>
+\ No newline at end of file
+
+Other than that, looks good.
+
+--000000000000713bec059e88e6cd
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2020-02-13 at 19:18 +0100, Arne Schwabe wrote:
-> Am 10.02.18 um 23:50 schrieb James Bottomley:
-> > Testing engines is problematic, so one of the prerequisites built
-> > for the tests is a simple openssl engine that reads a non-standard
-> > PEM guarded key.  The test is simply can we run a client/server
-> > configuration with the usual sample key replaced by an engine key.
-> > The trivial engine prints out some operations and we check for
-> > these in the log to make sure the engine was used to load the key
-> > and that it correctly got the password.
->=20
-> This tests the openssl engine functionality in a sensible way. But I
-> think it is not fully ready to be commited. To get it working I
-> needed to do following changes on my Mac:
+<div dir=3D"ltr">Hi,<br><div><br><div>&lt;skip&gt;</div><div><br></div><div=
+>I was planning to send a separate patch, but since you=C2=A0moved<br></div=
+><div><div>this code, maybe you could fix it here.</div></div><div><br>&gt;=
+ +bool<br>&gt; +tls_item_in_cipher_list(const char *item, const char *list)=
+<br>&gt; +{<br>&gt; + =C2=A0 =C2=A0char *tmp_ciphers =3D string_alloc(list,=
+ NULL);<br>&gt; + =C2=A0 =C2=A0char *tmp_ciphers_orig =3D tmp_ciphers;</div=
+><div><br></div><div>This is redundant. strtok() manipulates string, but do=
+esn&#39;t modify pointer,</div><div>unlike strsep. So it should be safe to =
+to call</div><div><br></div><div>=C2=A0&gt; free(tmp_ciphers)</div><div><br=
+></div><div>instead of=C2=A0</div><div><br>&gt; + =C2=A0 =C2=A0free(tmp_cip=
+hers_orig);</div><div><br></div><div>Same case as here:=C2=A0<a href=3D"htt=
+ps://sourceforge.net/p/openvpn/mailman/message/35421870/">https://sourcefor=
+ge.net/p/openvpn/mailman/message/35421870/</a></div><div><br></div><div>Als=
+o could you apply following diff, which makes sure that</div><div>ssl_ncp.[=
+ch] are displayed under correct Source/Headers folder in MSVC?</div><div><b=
+r></div><div>diff --git a/src/openvpn/openvpn.vcxproj.filters b/src/openvpn=
+/openvpn.vcxproj.filters<br>index 41e62d14..80eb52b3 100644<br>--- a/src/op=
+envpn/openvpn.vcxproj.filters<br>+++ b/src/openvpn/openvpn.vcxproj.filters<=
+br>@@ -243,6 +243,9 @@<br>=C2=A0 =C2=A0 =C2=A0&lt;ClCompile Include=3D&quot=
+;ring_buffer.c&quot;&gt;<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0&lt;Filter&gt;Source=
+ Files&lt;/Filter&gt;<br>=C2=A0 =C2=A0 =C2=A0&lt;/ClCompile&gt;<br>+ =C2=A0=
+ =C2=A0&lt;ClCompile Include=3D&quot;ssl_ncp.c&quot;&gt;<br>+ =C2=A0 =C2=A0=
+ =C2=A0&lt;Filter&gt;Source Files&lt;/Filter&gt;<br>+ =C2=A0 =C2=A0&lt;/ClC=
+ompile&gt;<br>=C2=A0 =C2=A0&lt;/ItemGroup&gt;<br>=C2=A0 =C2=A0&lt;ItemGroup=
+&gt;<br>=C2=A0 =C2=A0 =C2=A0&lt;ClInclude Include=3D&quot;base64.h&quot;&gt=
+;<br>@@ -506,10 +509,13 @@<br>=C2=A0 =C2=A0 =C2=A0&lt;ClInclude Include=3D&=
+quot;ring_buffer.h&quot;&gt;<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0&lt;Filter&gt;He=
+ader Files&lt;/Filter&gt;<br>=C2=A0 =C2=A0 =C2=A0&lt;/ClInclude&gt;<br>+ =
+=C2=A0 =C2=A0&lt;ClInclude Include=3D&quot;ssl_ncp.h&quot;&gt;<br>+ =C2=A0 =
+=C2=A0 =C2=A0&lt;Filter&gt;Header Files&lt;/Filter&gt;<br>+ =C2=A0 =C2=A0&l=
+t;/ClInclude&gt;<br>=C2=A0 =C2=A0&lt;/ItemGroup&gt;<br>=C2=A0 =C2=A0&lt;Ite=
+mGroup&gt;<br>=C2=A0 =C2=A0 =C2=A0&lt;ResourceCompile Include=3D&quot;openv=
+pn_win32_resources.rc&quot;&gt;<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0&lt;Filter&gt=
+;Resource Files&lt;/Filter&gt;<br>=C2=A0 =C2=A0 =C2=A0&lt;/ResourceCompile&=
+gt;<br>=C2=A0 =C2=A0&lt;/ItemGroup&gt;<br>-&lt;/Project&gt;<br>+&lt;/Projec=
+t&gt;<br>\ No newline at end of file<br><br></div><div>Other than that, loo=
+ks good.</div><div><br></div></div></div>
 
-That could be ... I only have a linux box to try this out on.
-
-> commit afa697cec15b4e54e720efe9de39c9b20b13c5c8 (HEAD ->
-> review/enginekeys)
-> Author: Arne Schwabe <arne@...1227...>
-> Date:   Thu Feb 13 18:13:34 2020 +0100
->=20
->     foo
->=20
-> diff --git a/tests/unit_tests/engine-key/Makefile.am
-> b/tests/unit_tests/engine-key/Makefile.am
-> index 73921965..6d7fc9c5 100644
-> --- a/tests/unit_tests/engine-key/Makefile.am
-> +++ b/tests/unit_tests/engine-key/Makefile.am
-> @@ -10,4 +10,6 @@ TESTS_ENVIRONMENT =3D srcdir=3D"$(abs_srcdir)"; \
->  TESTS =3D check_engine_keys.sh
->=20
->  libtestengine_la_SOURCES =3D libtestengine.c
-> -libtestengine_la_LDFLAGS =3D -rpath /lib -avoid-version
-> +libtestengine_la_LDFLAGS =3D @TEST_LDFLAGS@  -rpath /lib
-> +libtestengine_la_CFLAGS  =3D @TEST_CFLAGS@ -I$(openvpn_srcdir)
-> -I$(compat_srcdir)
-> +
-> diff --git a/tests/unit_tests/engine-key/libtestengine.c
-> b/tests/unit_tests/engine-key/libtestengine.c
-> index fa7f5de1..46ec1e33 100644
-> --- a/tests/unit_tests/engine-key/libtestengine.c
-> +++ b/tests/unit_tests/engine-key/libtestengine.c
-> @@ -30,7 +30,6 @@ static EVP_PKEY *engine_load_key(ENGINE *e, const
-> char
-> *key_id,
->         PKCS8_PRIV_KEY_INFO *p8inf;
->         UI *ui;
->         char auth[256];
-> -       int len;
-
-the variable is certainly unused and can go.
-
->         fprintf(stderr, "ENGINE: engine_load_key called\n");
->=20
-> diff --git a/tests/unit_tests/engine-key/openssl.cnf
-> b/tests/unit_tests/engine-key/openssl.cnf
-> index 53200c46..e9513a92 100644
-> --- a/tests/unit_tests/engine-key/openssl.cnf
-> +++ b/tests/unit_tests/engine-key/openssl.cnf
-> @@ -9,4 +9,4 @@ engines         =3D engines_section
->  testengine     =3D testengine_section
->=20
->  [testengine_section]
-> -dynamic_path   =3D $ENV::srcdir/.libs/libtestengine.so
-> +dynamic_path   =3D $ENV::srcdir/.libs/libtestengine.dylib
-
-This can't really be done though: the .dylib extension won't work on
-Linux because shared objects are .so files.
-
-There is a way to generate and use .so files on a MAC as well,
-according to the openssl people (half the mac engines seem to have a
-.so extension and the other half a .dylib one), I'll see if I can
-figure out what it is.
-
-James
-
---=-nJVYAuDpfXHerozhJiN7
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABMIAB0WIQTnYEDbdso9F2cI+arnQslM7pishQUCXkaUugAKCRDnQslM7pis
-hTCIAQDrzxG8WrL7WrNB6zFOHOA9HmFXl0SPGAFSy3gq1rU6twEAv77ZPQY2ltC+
-Kc/CsyFL2YJWEWEENx0YGPKDp5EHE2k=
-=ndpu
------END PGP SIGNATURE-----
-
---=-nJVYAuDpfXHerozhJiN7--
-
+--000000000000713bec059e88e6cd--
 
