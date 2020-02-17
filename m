@@ -1,12 +1,10 @@
-MIME-Version: 1.0
-References: <20200217144339.3273-1-arne@...1227...>
- <20200217144339.3273-6-arne@...1227...>
-In-Reply-To: <20200217144339.3273-6-arne@...1227...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Mon, 17 Feb 2020 17:26:04 +0200
-Message-ID: <CAGyAFMVrC0TWn4S2eG1qdWyZO9C2SPPfivT83Z19AA-ASU_==A@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v4 5/5] Normalise ncp-ciphers option and
- restrict it to 127 bytes
+Date: Mon, 17 Feb 2020 19:33:40 +0100 (CET)
+Message-Id: <202002171833.01HIXeaO073378@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20200217144339.3273-2-arne@...1227...>
+References: <20200217144339.3273-2-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Only announce IV_NCP=2 when we
+ are willing to support these ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,14 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Stared at the code, built and tested on MSVC and Ubuntu 18.
-Cipher "chacha20-POLY1305" correctly translated into "CHACHA20-POLY1305".
-Also (updated) unit tests passed.
+Your patch has been applied to the master branch.
 
-Acked-by: Lev Stipakov <lstipakov@...277...>
+(Have stared at the patch a bit and gave it a t_client test run, did
+not explicitly test the case without the required ciphers)
+
+commit 868b200c3aef6ee5acfdf679770832018ebc7b70
+Author: Arne Schwabe
+Date:   Mon Feb 17 15:43:35 2020 +0100
+
+     Only announce IV_NCP=2 when we are willing to support these ciphers
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <20200217144339.3273-2-arne@...1227...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20200217144339.3273-2-arne@...1227...
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
