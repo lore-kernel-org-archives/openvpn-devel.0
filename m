@@ -1,11 +1,12 @@
-References: <20200217092009.238-1-lstipakov@...277...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <8e6a9a66-f123-007a-981f-a514dc78fbed@...1227...>
-Date: Mon, 17 Feb 2020 10:55:02 +0100
 MIME-Version: 1.0
-In-Reply-To: <20200217092009.238-1-lstipakov@...277...>
-Content-Language: de-DE
-Subject: Re: [Openvpn-devel] [PATCH] ssl.c: remove unneeded local variable
+References: <38693ff6-f6d2-33a3-889c-96ee85ddb86c@...1856...>
+ <20200213104551.25165-1-arne@...1227...>
+In-Reply-To: <20200213104551.25165-1-arne@...1227...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Mon, 17 Feb 2020 11:58:33 +0200
+Message-ID: <CAGyAFMW4oSH_QANrGRdGzq6y3bfQHROOXnf8dKa2m4gRRuMCrg@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v2 1/4] Only announce IV_NCP=2 when we
+ are willing to support these ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,23 +15,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Lev Stipakov <lstipakov@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Am 17.02.20 um 10:20 schrieb Lev Stipakov:
-> From: Lev Stipakov <lev@...515...>
-> 
-> Remove unneeded _orig variable, which stores
-> pointer to tokenized string. Unlike strsep(), strtok()
-> doesn't modify pointer itself, only string, so it is safe
-> to call free() on that pointer.
-> 
+Hi,
 
-Can we just wait with style patches like that that create conflicts with
- a large patchset like my NCP patchset until those larger patches are
-handled?
+Since --ncp-ciphers are non-negotiable, why do we need
+to store it in context_1 at all? Cannot we use the value
+from struct options?
 
-Arne
+This can be removed
+> +    c->c1.ncp_ciphers = c->options.ncp_ciphers;
+
+This
+> +    to.config_ncp_ciphers = c->c1.ncp_ciphers;
+
+can be changed to
+> +    to.config_ncp_ciphers = options->ncp_ciphers
+
+Those are not needed:
+> +    dest->c1.ncp_ciphers = src->c1.ncp_ciphers;
+<skip>
+> +    const char *ncp_ciphers;    /**< NCP Ciphers */
+
+-Lev
 
