@@ -1,13 +1,10 @@
-References: <20200217115522.20068-1-arne@...1227...>
- <20200217115522.20068-2-arne@...1227...>
- <CAGyAFMXWV6nk5EBnnaQQC=zds2ZCyqLewo8kw23_To1NXJDGZw@...278...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <bceeedf8-0bd8-bd7a-6de0-f81f9e10f375@...1227...>
-Date: Mon, 17 Feb 2020 14:52:59 +0100
-MIME-Version: 1.0
-In-Reply-To: <CAGyAFMXWV6nk5EBnnaQQC=zds2ZCyqLewo8kw23_To1NXJDGZw@...278...>
-Content-Language: de-DE
-Subject: Re: [Openvpn-devel] [PATCH v3 2/5] Implement dynamic NCP negotiation
+Date: Mon, 17 Feb 2020 15:43:35 +0100
+Message-Id: <20200217144339.3273-2-arne@...1227...>
+In-Reply-To: <20200217144339.3273-1-arne@...1227...>
+References: <20200217144339.3273-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v4 1/5] Only announce IV_NCP=2 when we are
+ willing to support these ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,45 +13,78 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Lev Stipakov <lstipakov@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Am 17.02.20 um 14:42 schrieb Lev Stipakov:
-> Hi,
-> 
-> Tested with Windows server and Linux client, negotiation works.
-> 
-> A few nit-picks, which could be fixed with follow-up patch:
-> 
->> + * @param gc   gc arena that is ONLY used to allocate the returned string
-> 
-> This is not true, since it is also used inside tls_peer_ncp_list()
-> to generate temp string containing client pushed ciphers.
-> 
->> +ncp_get_best_cipher(const char *server_list, const char *server_cipher,
->> +                    const char *peer_info,  const char *remote_cipher,
->> +                    struct gc_arena *gc)
->> +{
->> +    const char *peer_ncp_list = tls_peer_ncp_list(peer_info, gc);
-> 
-> That gc has lifetime of VPN tunnel and is used here to allocate
-> a temp string which is needed only in this function.
+We currently always announce IV_NCP=2 when we support these ciphers even
+when we do not accept them. This lead to a server pushing a AES-GCM-128
+cipher to clients and the client then rejecting it.
 
-I sent a patch to fix those as 6/5.
+Patch V2:  Remove unecessary restoring of ncp_ciphers
+Patch V3:  Do not add ncp_ciphers in context
 
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ doc/openvpn.8            | 2 ++
+ src/openvpn/init.c       | 1 +
+ src/openvpn/ssl.c        | 4 +++-
+ src/openvpn/ssl_common.h | 1 +
+ 4 files changed, 7 insertions(+), 1 deletion(-)
 
-> 
->> -    const char *config_authname;
-> 
-> This doesn't seem to be related to NCP negotiation.
-
-The first version of NCP was intended to later also allow to negiate
-authname aswell as cipher, so saving the config_authname would have been
-required but this was never implemented and Steffan and I discussed this
-during the last Hackathon and we concluded that we don't want dynamic
---auth as part of NCPv2 as well, so NCPv2 removes this leftover code.
-
-Arne
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 8feb3b9c..b8f2f042 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -4398,6 +4398,8 @@ NCP server (v2.4+) with "\-\-cipher BF\-CBC" and "\-\-ncp\-ciphers
+ AES\-256\-GCM:AES\-256\-CBC" set can either specify "\-\-cipher BF\-CBC" or
+ "\-\-cipher AES\-256\-CBC" and both will work.
+ 
++Note, for using NCP with a OpenVPN 2.4 server this list must include
++the AES\-256\-GCM and AES\-128\-GCM ciphers.
+ .\"*********************************************************
+ .TP
+ .B \-\-ncp\-disable
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 04207b61..5c2f801a 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2827,6 +2827,7 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
+     to.tcp_mode = link_socket_proto_connection_oriented(options->ce.proto);
+     to.config_ciphername = c->c1.ciphername;
+     to.config_authname = c->c1.authname;
++    to.config_ncp_ciphers = options->ncp_ciphers;
+     to.ncp_enabled = options->ncp_enabled;
+     to.transition_window = options->transition_window;
+     to.handshake_window = options->handshake_window;
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index e708fc93..b8351737 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2322,7 +2322,9 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+ 
+         /* support for Negotiable Crypto Parameters */
+         if (session->opt->ncp_enabled
+-            && (session->opt->mode == MODE_SERVER || session->opt->pull))
++            && (session->opt->mode == MODE_SERVER || session->opt->pull)
++            && tls_item_in_cipher_list("AES-128-GCM", session->opt->config_ncp_ciphers)
++            && tls_item_in_cipher_list("AES-256-GCM", session->opt->config_ncp_ciphers))
+         {
+             buf_printf(&out, "IV_NCP=2\n");
+         }
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 8dd08862..fb82f610 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -290,6 +290,7 @@ struct tls_options
+ 
+     const char *config_ciphername;
+     const char *config_authname;
++    const char *config_ncp_ciphers;
+     bool ncp_enabled;
+ 
+     bool tls_crypt_v2;
+-- 
+2.25.0
 
 
