@@ -1,7 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Thu, 20 Feb 2020 19:19:45 +0100
-Message-Id: <20200220181951.7603-1-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH applied] re-implement argv_printf_*()
+Date: Thu, 20 Feb 2020 19:19:51 +0100
+Message-Id: <20200220181951.7603-7-davids@...515...>
+In-Reply-To: <20200220181951.7603-1-davids@...515...>
+References: <20200220181951.7603-1-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Fix possible access of
+ uninitialized pipe handles
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,24 +15,24 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net, Heiko Hund <heiko.hund@...1489...>
+To: openvpn-devel@lists.sourceforge.net, Selva Nair <selva.nair@...277...>
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA512
 
 Your patch has been applied to the master branch
 
-commit 4ed7bf7f94a8cecbc2430d8025a2b8a46f94e429
-Author: Heiko Hund
-Date:   Thu Feb 6 14:21:00 2020 +0100
+commit 32723d29b2775d63d3fe329d017e7a08e0cdcb72
+Author: Selva Nair
+Date:   Wed Feb 19 20:56:43 2020 -0500
 
-     re-implement argv_printf_*()
+     Fix possible access of uninitialized pipe handles
 
-     Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <1582163803-3342-1-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19480.html
      Signed-off-by: David Sommerseth <davids@...515...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20200206132103.15977-2-davids@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19380.html
 
 
 - --
@@ -40,18 +43,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJeTqgvAAoJEIbPlEyWcf3yydQQAKcm4yux1TlCBPXt7PUmM26a
-RYbEy2FxeGTwHGVidHgP79H1XH1W06Pu0i24KeE6FzRYpilBSW3DJ4zm5MJMByKM
-iiXYHItsyUCQdJaQJrYleBwSp9LQ6bYWRLQ6Lu5IMrcVwnnxReGFVI7fkDfNE+d2
-u1jAyDGw5XWnsaT+Aycc5GmaDujB2nlcX4dlyJW9UUK6tFkelhVS2pXF47ABSzRl
-7o4IPa7tFuVQIV0yTrqQW6LcQa3vSgLusWr5MQPJWbdccfpX0l4iySjTH1c1o7ii
-qNqDzGsnnf0rq9xO4McN4j/PTFZfKFBVr3nwtwCd1c5EJ1RtkwWEuI3llaipG7ZJ
-7jc1o4PiQdawxCLWKlbWgQcscAcQbDJQYSfKOFZVYnDn2P8SvWfcZ8EkIS3nKjMs
-CV2zx5emb+5+u+TnSkeAPPgY4xMsKXGbfJHssbf1xu163Bw3Yf2fteUxmeWjwLMv
-N8iqQlVHHQolqvKg7ChFOK1ZqhTvFkmcSX1ZLPGs4ADGbrDZOvQXPrjqUGf0loBR
-m8xW/4QrG99LVxBxQ/20vfGWtVaQ7ohxVS9qm4/YKcmV+cBxGcCX+V1SGsJTvWCO
-KeG9ngTmUdPjuQ3v6QxreG2Ha3DuvpSkw5nHOoPFK+/Mlmi+g2u1GDvu1nTBRaEV
-k1FYYjJ/0kyfnKV3EUV5
-=1hgh
+iQIcBAEBCgAGBQJeTsejAAoJEIbPlEyWcf3ysT0QALdZe2FV06fMaBp4oljUr2AZ
+H/bViP11W21UpcyiHDAGR2YsjOf+Uzrg7z5S/eEmAdIk6TdymsOlEwLkxOwog9qd
+ve5EQp2Zpwnnugz5YPdAsnXt5BY6FwfEA3roeU20s4O+dnovuHxmquDmZr8MosXD
+b2Zj+OTaQbKlggqtpc7J0uaVWirV3EPK9sE86VGHBp43di2DzA+OlJBawrzqOJj8
+9XTC5VPgncFsfQ5IxwnlaW0JkFJxQAceTEstGbkzPaf17o4uot7eW7xmeiA7z8A5
+MAxJj8gM0sTgQx20hn0il9tqn9k6UazRLyQ+KIZpK4yeRyZRNRXiR9VhjozmVu5T
+y36IwDhghoLnJGHwcpLoys0ZLEP43RLhZRZ2ez6/8A/06+NsFMWkUmJnlaPmGuOP
+iJqFoQBixnyWxWbnN5vuYGeem5x9CBF0WS7gk6wyP36yzmFAgbie0NgbC25sXE7L
+0iJ5ZMzuKFcrik3NosNeqr6wl4yVeTXmRDxGoCaImBo1UD3GIo7z/j3+mnSl6HpC
+qaEpYrxrXxH6oV518QZLC5NWR4JtlEalXml46KnH8vaKETR2+1Qh/thCEfprkxC+
+D3SsPsGfuMHjRr7wyuBczpdrOlUMRlkO4D2RfBdPPhtr4W5jlWS/1KughzXiFsSm
+ITg12xX4ms+SQ1Sf5XXf
+=IIso
 -----END PGP SIGNATURE-----
 
