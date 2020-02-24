@@ -1,14 +1,10 @@
-References: <E1j0kkZ-00080K-9z@...2508...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <ca6440c5-a542-e52a-57fe-bb80cc88d818@...1227...>
-Date: Fri, 21 Feb 2020 14:01:06 +0100
+References: <88cfd76e-a163-28a0-d4f4-d23c41f902d7@...2542...>
+From: Radu Hociung <radu.ovpndev@...2542...>
+Message-ID: <43700754-2df3-3090-7808-39fc9c081b97@...2542...>
+Date: Mon, 24 Feb 2020 14:24:59 -0500
 MIME-Version: 1.0
-In-Reply-To: <E1j0kkZ-00080K-9z@...2508...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="LrCretg46dWLGmzcWq4cfvs2CUsBdN4If"
-Subject: Re: [Openvpn-devel] [PATCH] Support for wolfSSL with OpenVPN master
- branch
+In-Reply-To: <88cfd76e-a163-28a0-d4f4-d23c41f902d7@...2542...>
+Subject: [Openvpn-devel] MTU auto-discovery
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,59 +13,88 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Juliusz Sosinowicz <juliusz@...2525...>, Antonio Quartulli <a@...2181...>, Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---LrCretg46dWLGmzcWq4cfvs2CUsBdN4If
-Content-Type: multipart/mixed; boundary="WQLWLEEaiQG9XTTAVOEZwlWKTA9gHyaKH"
+Hello,
 
---WQLWLEEaiQG9XTTAVOEZwlWKTA9gHyaKH
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+I would like to gauge interest in including my upcoming MTU patch into
+the 2.5 release, and also to notify you that I am working on this patch,
+to avoid effort duplication, if any.
 
-Am 09.02.20 um 12:08 schrieb Juliusz Sosinowicz:
-> Hi Antonio,
->=20
-> Gert is correct, our compatibility layer is a set of functions in
-> wolfSSL which emulate the OpenSSL API. These functions are then macro
-> defined to have the same names as the OpenSSL functions. The configure
-> script needs to know where the wolfSSL headers are and that it should
-> link against the wolfSSL binary, not OpenSSL. This is the reason for the
-> configure script changes.
+Description of the "MTU auto-negotiation" patch:
 
-But OpenSSL also its opensslconf.h header and does not force you to
-important into each file it uses. I find that argument very weak. If it
-is something that is essential for your compat layer then you should
-probably include it in the top of each compatibility header.
+	MTU settings will be fully auto-negotiated between server and
+	client, making most if not all related options unnecessary,
+	such as --tun-mtu, --link-mtu, --mssfix, --fragment, etc.
+	Interoperation with old (pre-patch) servers and clients will be
+	guaranteed by design and tested with the included test suite.
 
-Arne
+Summary of operation:
+	Peers will use the P_CONTROL_HARD_RESET_* messages to do Path
+	MTU discovery, and configure their own send/receive buffers
+	accordingly. The "reliable" layer's ability to ACK packets it
+        can receive, including repeated packets, is leveraged.
+	The algorithm will re-send one or more HARD_RESET_* messsages,
+	padded to a larger size, after the initial reset packet is
+	acked by the remote, in order to discover the largest packet
+	the remote can receive (and thus ack). Regular TLS handshake
+	will start after one padded HARD_RESET message is acked, with
+	frame buffer parameters set appropriately.
 
+	After the connection is established, Path MTU will be monitored
+	with a new PING message over the TLS channel, configurable with
+	an option like "--ping-pmtud <number>" that will complement or
+	replace the regular "--ping" which is sent over the data
+	channel. Each peer will adjust the max size of packet
+	transmitted over the link when/if the reliable --ping-pmtud
+	indicates the path MTU has decreased.
 
---WQLWLEEaiQG9XTTAVOEZwlWKTA9gHyaKH--
+	The TUN interface MTU setting will be adjusted dynamically
+	as a result of link PMTUD results, if possible.
 
---LrCretg46dWLGmzcWq4cfvs2CUsBdN4If
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+	The patch will generate ICMP messages "fragmentation needed"
+	on the TUN interface to handle the case where interface MTU
+	cannot be changed, and also the client-to-client communication
+	case where a client with a larger link-mtu sends traffic to a
+	client with a smaller link-mtu (as described in RFC1191)
 
------BEGIN PGP SIGNATURE-----
+	The user-facing configuration like --link-mtu etc, are
+	deprecated, and only indicate ceiling values, while the PMTUD
+	algo will set buffers to smaller sizes if needed. In the future,
+	these options should be completely ignored, and/or obsoleted.
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl5P1JIACgkQFRhsZwKx
-RFToVA/+MIQBhV/iDPZaL2Bdowr5w3qkAucO3SOJpNva5MyzwoNOSephZR8iG2sa
-nVlBF+aZeT74UfGD59xCTJU0uWDeSCr+N1wHjoxTGCss8DTBbWGqHPgFrCLetiKz
-PCb/cgTpzQwO75xWDdZNCPPRhMDC/gluEltLa1wJN6E+KzvlriUls0Dun9860Bvo
-4LemomXxSfS+vV8xs0PfJpsVoGvxpDJ7VoLKW1M3gl3mStYOrQ5T/B416DZttktP
-RR6BtgfXF19WZEnB1QeTtkaeSZOxByZi85aTpE8FQNdfkwYvC9fcvkHWAFAVJycT
-76NfmTTdMEc0LTzrTlVnXodKua7CfD5cAq4jFBytAg4nrcKXwF2zrk+Qh2cy3Cbf
-PygnGQsou9LQbsUSvdfxtCQ5ZpKn6zfjGndyfj0bgZjPuIaYy+mV0M3h7dk/WOfR
-ayNR9TpMURaQcBV1HsaDDA2RB0SZf0H3jFHU9HbG186L8ucjyZwXZg1kUrc+Mk/L
-M/ycaub0QyZDSg7C0kGfunSMH2Lo4O8KvCFPG0+D23twhxjxtkZgkgvLdoAvKKSU
-uk+1OdlkBcV5L7m9rr7k+rYCS+vq/xzJJTx0nyV4zTt//Z8CzPKlUduP3YnCwGiq
-3Z6h/M0IfJjvoyqUQHU3hEGXmk90vxbBicIAM8ZRK6Ubo75UYZQ=
-=dZxv
------END PGP SIGNATURE-----
+Testing:
+	The patch will include a comprehensive test suite that can be
+	run (unattended) to verify inter-operation with other versions
+	of ovpn, and with various combinations of settings like cipher,
+	compression, link MTU, etc. The test suite requires two hosts
+	(server and client), with root capability, as to vary the link's
+	MTU configuration. The host running the test suite runs
+	the server side of the test, and it starts a client with the
+	appropriate configuration on the other host, via ssh. It
+	requires both test host to have access to a shared filesystem,
+	and installed older versions of ovpn in addition to the patched
+	version.
 
---LrCretg46dWLGmzcWq4cfvs2CUsBdN4If--
+I am developing this patch on the 2.3 branch, as that is what I use for
+my networking needs, but the files I am touching have not changed in
+incompatible ways on the master. At the moment, the "Great
+Reformatting" commit is the biggest stumbling block to rebasing this
+patch to the master.
+
+Also, I don't have the resources to test it on anything other than
+Linux, but I am hoping that the existing continuous integration magic
+will help overcome this limitation.
+
+At the moment, I expect it will take another two weeks until the patch
+is ready to be released on 2.3
+
+Any comments or offers to assist with testing are welcome. Specifically,
+how does this patch fit in with the release plans for 2.5 or 2.6+?
+
+Thank you
+Radu Hociung.
+
 
