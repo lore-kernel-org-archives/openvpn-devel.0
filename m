@@ -1,10 +1,13 @@
-MIME-Version: 1.0
 References: <88cfd76e-a163-28a0-d4f4-d23c41f902d7@...2542...>
  <43700754-2df3-3090-7808-39fc9c081b97@...2542...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <1572a9d6-1664-019e-4eb6-e1566ef650e2@...1227...>
+Date: Tue, 25 Feb 2020 11:28:54 +0100
+MIME-Version: 1.0
 In-Reply-To: <43700754-2df3-3090-7808-39fc9c081b97@...2542...>
-From: Derek Zimmer <derek@...2095...>
-Date: Mon, 24 Feb 2020 13:33:44 -0600
-Message-ID: <CAJY0qZLBtpQz0=PzsCkuMyaCG=7vR9wqxSo9F+93YakgpJXKgw@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="3NOyciWuSmjpfCvaYgDnjX5nBucSd9dUk"
 Subject: Re: [Openvpn-devel] MTU auto-discovery
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -14,108 +17,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
 To: Radu Hociung <radu.ovpndev@...2542...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-I'm thinking that this feature would need to be able to be toggled
-on/off, because it will be noisy on networks that are trying to
-circumvent censorship systems, making for easy discovery of openvpn
-tunnels in Egypt / China / India / etc.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--3NOyciWuSmjpfCvaYgDnjX5nBucSd9dUk
+Content-Type: multipart/mixed; boundary="8Yp0j7PJw8LRPCVKa58dqYgiURTdPzoaN"
 
-It does look like a significant improvement for normal uses of OpenVPN, though.
+--8Yp0j7PJw8LRPCVKa58dqYgiURTdPzoaN
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-Derek Zimmer
-Chief Executive Officer
-Open Source Technology Improvement Fund
-
-On Mon, Feb 24, 2020 at 1:26 PM Radu Hociung <radu.ovpndev@...2542...> wrote:
->
-> Hello,
->
-> I would like to gauge interest in including my upcoming MTU patch into
-> the 2.5 release, and also to notify you that I am working on this patch,
-> to avoid effort duplication, if any.
->
-> Description of the "MTU auto-negotiation" patch:
->
->         MTU settings will be fully auto-negotiated between server and
->         client, making most if not all related options unnecessary,
->         such as --tun-mtu, --link-mtu, --mssfix, --fragment, etc.
->         Interoperation with old (pre-patch) servers and clients will be
->         guaranteed by design and tested with the included test suite.
->
-> Summary of operation:
->         Peers will use the P_CONTROL_HARD_RESET_* messages to do Path
->         MTU discovery, and configure their own send/receive buffers
->         accordingly. The "reliable" layer's ability to ACK packets it
->         can receive, including repeated packets, is leveraged.
->         The algorithm will re-send one or more HARD_RESET_* messsages,
->         padded to a larger size, after the initial reset packet is
->         acked by the remote, in order to discover the largest packet
->         the remote can receive (and thus ack). Regular TLS handshake
->         will start after one padded HARD_RESET message is acked, with
->         frame buffer parameters set appropriately.
->
->         After the connection is established, Path MTU will be monitored
->         with a new PING message over the TLS channel, configurable with
->         an option like "--ping-pmtud <number>" that will complement or
->         replace the regular "--ping" which is sent over the data
->         channel. Each peer will adjust the max size of packet
->         transmitted over the link when/if the reliable --ping-pmtud
->         indicates the path MTU has decreased.
->
->         The TUN interface MTU setting will be adjusted dynamically
->         as a result of link PMTUD results, if possible.
->
->         The patch will generate ICMP messages "fragmentation needed"
->         on the TUN interface to handle the case where interface MTU
->         cannot be changed, and also the client-to-client communication
->         case where a client with a larger link-mtu sends traffic to a
->         client with a smaller link-mtu (as described in RFC1191)
->
->         The user-facing configuration like --link-mtu etc, are
->         deprecated, and only indicate ceiling values, while the PMTUD
->         algo will set buffers to smaller sizes if needed. In the future,
->         these options should be completely ignored, and/or obsoleted.
->
-> Testing:
->         The patch will include a comprehensive test suite that can be
->         run (unattended) to verify inter-operation with other versions
->         of ovpn, and with various combinations of settings like cipher,
->         compression, link MTU, etc. The test suite requires two hosts
->         (server and client), with root capability, as to vary the link's
->         MTU configuration. The host running the test suite runs
->         the server side of the test, and it starts a client with the
->         appropriate configuration on the other host, via ssh. It
->         requires both test host to have access to a shared filesystem,
->         and installed older versions of ovpn in addition to the patched
->         version.
->
 > I am developing this patch on the 2.3 branch, as that is what I use for
 > my networking needs, but the files I am touching have not changed in
 > incompatible ways on the master. At the moment, the "Great
 > Reformatting" commit is the biggest stumbling block to rebasing this
 > patch to the master.
->
+>=20
 > Also, I don't have the resources to test it on anything other than
 > Linux, but I am hoping that the existing continuous integration magic
 > will help overcome this limitation.
->
+>=20
 > At the moment, I expect it will take another two weeks until the patch
 > is ready to be released on 2.3
->
+>=20
 > Any comments or offers to assist with testing are welcome. Specifically,
 > how does this patch fit in with the release plans for 2.5 or 2.6+?
->
-> Thank you
-> Radu Hociung.
->
->
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+
+The idea sounds good. Whether it can be integrated in 2.5 or not depends
+on the patch quality, how intrusive it is and some other factors. We
+will need to see the patch before we can make a decision on that.
+
+Arne
+
+
+--8Yp0j7PJw8LRPCVKa58dqYgiURTdPzoaN--
+
+--3NOyciWuSmjpfCvaYgDnjX5nBucSd9dUk
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl5U9uYACgkQFRhsZwKx
+RFTmvg//RuqegGGpRc4a+/2O6WofNGpdwa42l4KEqTUVmljkF8CnMtikKXEV9Rz/
+cYWD5fhnecebf1BEniVtnA9XrXn/ZDct2sf2X4NE/2beIppotycIElRkQRFIxzO3
+WTJiLg6tpE20Fcpzso0fdqC0FgRk/2Lv/0uziYVW0CSZsxc99lXjlf3yCRW0Ynko
+eXUvLfln6qzosiMHroRR2GJY5+LnOh0ZCH+zVFsqRyAXo0wK/wOwuEsrLy59/L29
+bWuyL73I5XYe1SSZC490i3Fny0YiVlTrTktikSzoRmktlPoUOpMFKK8bWOgObJMM
+nJN9bTkstOTsQpVbTR+elcedUCiWP7lRHXKa3ozZsDqpdeecTuM2E5mtZjg1J3w9
+yy3kjtnZfqMSMQ5NnLO+bcB30gfmZcXVfo0T/BHHJGnbxWeC+MsVXSIqDl7amPpF
+/H+mm+UsEPEzBwOUvJK9DOaRErc3TvbXAAo4Rzbm8nI73Vuru2W1dREAq8Sify+G
+5B8z4fWoRArORAeJjj6QWO/0/bB2snjbZPI0Vua+MTEJkqI8/FuHnJ6bOTkvoTaj
+x/2ZBhR9aWxxDvwbQRN1dXXkRqklxmc+03Ibx4qecDYBdf/94mlLQ+YBJriMsYWu
+Ap4mx+F6fqtTFRPzXc9S846RADVPYVfsWgHhI4GIcL1RILJ8JiA=
+=F2Bt
+-----END PGP SIGNATURE-----
+
+--3NOyciWuSmjpfCvaYgDnjX5nBucSd9dUk--
 
