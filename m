@@ -1,12 +1,14 @@
-References: <20191021113506.30377-1-santtu.lakkala@...2530...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <9b825a8b-b40f-273c-a7fc-36086edbf22c@...1856...>
-Date: Thu, 27 Feb 2020 16:03:24 +0100
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+References: <de2ff642-df3f-c0a9-c6b0-10584555a4ac@...515...>
+Message-ID: <32148dd2-d344-366c-7310-d984bdd0f2dd@...515...>
+Date: Thu, 27 Feb 2020 21:41:20 +0200
 MIME-Version: 1.0
-In-Reply-To: <20191021113506.30377-1-santtu.lakkala@...2530...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Fix OpenSSL private key passphrase
- notices
+In-Reply-To: <de2ff642-df3f-c0a9-c6b0-10584555a4ac@...515...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="7mB0ucBEpx8kI7sa59aPOD6IfEBuKWUAb"
+Subject: [Openvpn-devel] Summary of the community meetings (27th February
+ 2020)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,65 +17,208 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--7mB0ucBEpx8kI7sa59aPOD6IfEBuKWUAb
+Content-Type: multipart/mixed; boundary="CfmGXrleipQhtcE3PDcu75k4H6SseRWr0"
+
+--CfmGXrleipQhtcE3PDcu75k4H6SseRWr0
+Content-Type: multipart/mixed;
+ boundary="------------01F93DD16A997F3F4D6F3B7D"
+Content-Language: en-US
+
+This is a multi-part message in MIME format.
+--------------01F93DD16A997F3F4D6F3B7D
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-On 21-10-2019 13:35, Santtu Lakkala wrote:
-> Clear error stack on successful certificate loading in
-> tls_ctx_load_cert_file_and_copy() and handle errors also for
-> PEM_read_bio_PrivateKey() call in tls_ctx_load_priv_file().
-> 
-> Due to certificate loading possibly leaking non-fatal errors on OpenSSL
-> error stack, and some slight oversights in error handling, the
-> 
->> PASSWORD:Verification Failed: 'Private Key'
-> 
-> line was never produced on the management channel for PEM formatted keys.
-> 
-> Signed-off-by: Santtu Lakkala <santtu.lakkala@...2530...>
-> ---
->  src/openvpn/ssl_openssl.c | 11 +++++------
->  1 file changed, 5 insertions(+), 6 deletions(-)
-> 
-> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-> index 07916c3c..74c8fa65 100644
-> --- a/src/openvpn/ssl_openssl.c
-> +++ b/src/openvpn/ssl_openssl.c
-> @@ -921,6 +921,10 @@ end:
->              crypto_msg(M_FATAL, "Cannot load certificate file %s", cert_file);
->          }
->      }
-> +    else
-> +    {
-> +        crypto_print_openssl_errors(M_DEBUG);
-> +    }
->  
->      if (in != NULL)
->      {
-> @@ -963,12 +967,7 @@ tls_ctx_load_priv_file(struct tls_root_ctx *ctx, const char *priv_key_file,
->      pkey = PEM_read_bio_PrivateKey(in, NULL,
->                                     SSL_CTX_get_default_passwd_cb(ctx->ctx),
->                                     SSL_CTX_get_default_passwd_cb_userdata(ctx->ctx));
-> -    if (!pkey)
-> -    {
-> -        goto end;
-> -    }
-> -
-> -    if (!SSL_CTX_use_PrivateKey(ssl_ctx, pkey))
-> +    if (!pkey || !SSL_CTX_use_PrivateKey(ssl_ctx, pkey))
->      {
->  #ifdef ENABLE_MANAGEMENT
->          if (management && (ERR_GET_REASON(ERR_peek_error()) == EVP_R_BAD_DECRYPT))
-> 
+Here's the summary of the IRC meeting.
 
-Thanks, and apologies for the late repsonse. This patch does was it
-says, and looks good to me. I think this one should go into both master
-and release/2.4.
+---
 
-Acked-by: Steffan Karger <steffan@...1856...>
+COMMUNITY MEETING
 
--Steffan
+Place: #openvpn-meeting on irc.freenode.net
+Date: Thu 27th February 2020
+Time: 20:00 CET (19:00 UTC)
+
+Planned meeting topics for this meeting were here:
+
+<https://community.openvpn.net/openvpn/wiki/Topics-2020-02-27>
+
+Your local meeting time is easy to check from services such as
+
+<http://www.timeanddate.com/worldclock>
+
+SUMMARY
+
+cron2, dazo, lev and mattock participated in this meeting.
+
+---
+
+Discussed OpenVPN 2.5 status.
+
+Noted that we're reaching a point where MSI installer is becoming "the"
+blocker for 2.5. Everyone would like to drop NSIS in favor of MSI, if
+possible. Mattock sent email to rozmansi asking about MSI status.
+
+On top of that we have "asymmetric compression support" and "async
+client-connect" and some isolated patches which lack ACKs or need work.
+
+Selvanair volunteered to backport some of the patches from "master" to
+"release/2.5". This was ok for everyone.
+
+--
+
+Decided to remove the =E2=80=8B--disable-server compile-time option from Op=
+enVPN
+2.5. We asked about doing that on our mailing lists and only one person
+was against it, and the arguments were not particularly compelling.
+
+---
+
+Full chatlog attached
+
+--------------01F93DD16A997F3F4D6F3B7D
+Content-Type: text/plain; charset=UTF-8;
+ name="openvpn_irc_meeting_chatlog_2020-02-27.txt"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="openvpn_irc_meeting_chatlog_2020-02-27.txt"
+
+KDIxOjAwOjIwKSBtYXR0b2NrOiBnb29kIGV2ZW5pbmcKKDIxOjAwOjUxKSBtYXR0b2NrOiBo
+dHRwczovL2NvbW11bml0eS5vcGVudnBuLm5ldC9vcGVudnBuL3dpa2kvVG9waWNzLTIwMjAt
+MDItMjcKKDIxOjAyOjI0KSBsZXZfXzogaGVsbG8KKDIxOjAyOjQ0KSBtYXR0b2NrOiBoaSEK
+KDIxOjA0OjAwKSBkYXpvOiBIZXkhCigyMTowNDowNykgZGF6bzogXG8vIEkgcmVtZW1iZXJl
+ZCB0b2RheSEKKDIxOjA0OjE4KSBtYXR0b2NrOiBnb29kCigyMTowNDoyMCkgbWF0dG9jazog
+OikKKDIxOjA1OjQ5KSBtYXR0b2NrOiBjcm9uMiBzYWlkIGhlJ2QgYmUgYSBiaXQgbGF0ZQoo
+MjE6MDg6MDYpIG1hdHRvY2s6IEkgc2VlIOKAi3JlbW92aW5nIC0tZGlzYWJsZS1zZXJ2ZXIg
+CigyMTowODoyOCkgbWF0dG9jazogaXMgdGhhdCBmb3IgMi41IGFzIHdlbGw/CigyMTowOTox
+NCkgZGF6bzogVGhhdCdzIGEgLi9jb25maWd1cmUgb3B0aW9uIC4uLiBzbyBJIHRoaW5rIHRo
+YXQncyByZWFzb25hYmxlIGZvciAyLjUKKDIxOjEwOjE4KSBtYXR0b2NrOiB3aGVyZSBhcmUg
+d2UgYXQgMi41LXZpc2UgaW4gZ2VuZXJhbD8KKDIxOjEyOjA3KSBkYXpvOiBJJ3ZlIHRyaWVk
+IHRvIHVwZGF0ZSB0aGlzIHN0YXR1cyBwYWdlIC4uLiBodHRwczovL2NvbW11bml0eS5vcGVu
+dnBuLm5ldC9vcGVudnBuL3dpa2kvU3RhdHVzT2ZPcGVudnBuMjUKKDIxOjEyOjMzKSBsZXZf
+XzogbWF0dG9jazogaW4gd2hhdCBzdGF0ZSBtc2kgaW5zdGFsbGVyIGlzPwooMjE6MTM6MDAp
+IG1hdHRvY2s6IGl0IGlzIGluIHRoZSBzYW1lIHN0YXRlIGFzIHJvem1hbnNpIGxlZnQgaXQK
+KDIxOjEzOjA3KSBsZXZfXzogaXQgaXMgbWFya2VkIGFzICJkb25lIiwgYnV0IEkgZG9uJ3Qg
+dGhpbmsgdGhpcyBpcyB0aGUgY2FzZQooMjE6MTM6MjcpIG1hdHRvY2s6IGRlZmluaXRlbHkg
+bm90ICJkb25lIiBpbiB0aGUgc2Vuc2UgdGhhdCBJIHdvdWxkIGtub3cgd2hhdCB0byBkbyB3
+aGVuIHRoZSByZWxlYXNlIGNvbWVzCigyMToxMzozMSkgbWF0dG9jazogSSB3aWxsIGVtYWls
+IHJvem1hbnNpIG5vdwooMjE6MTQ6NTkpIGRhem86IFdlIGhhdmUgIlB1cmdlIE5TSVMgaW5z
+dGFsbGVycyIgaW4gInRvZG8iLCAiTVNJIHRlc3RpbmciIGluIHdvcmsgbmVlZGVkIC4uLiBh
+bmQgIk1TSSBwYWNrYWdpbmciIGluIGRvbmUgLi4uIGFsbW9zdCBsaWtlIGEgU2NocsO2ZGlu
+Z2VycyBjYXQgZXhwZXJpbWVudCAuLi4gd2UgbWlnaHQga25vdyB3aGVuIHdlIGRvIHRoZSBy
+ZWxlYXNlIDotUAooMjE6MTU6MTMpIG1hdHRvY2s6IHNlbnQgZW1haWwgdG8gcm96bWFuc2kK
+KDIxOjE1OjIyKSBtYXR0b2NrOiBoZSBrbm93cyB0aGUgYW5zd2VyCigyMToxNTo0MSkgbWF0
+dG9jazogdGhlcmUgd2VyZSBjb21wbGljYXRpb25zIHdpdGggV2lYIHRvb2xraXRzIGRyaXZl
+ciBpbnN0YWxsYXRpb24gdGhpbmcKKDIxOjE2OjAyKSBtYXR0b2NrOiBjYW4ndCByZWNhbGwg
+dGhlIGV4YWN0IGRldGFpbHMgc2luY2UgaGFja2F0aG9uIGlzIGFscmVhZHkgbW9udGhzIGF3
+YXlzCigyMToxNjozMykgKioqY3JvbjIgaXMgaGVyZQooMjE6MTc6MzMpIGRhem86IG90aGVy
+IHRoYW4gdGhhdCAuLi4uIGluIHRoZSAibXVzdCBoYXZlIiBzZWN0aW9uLCBpdCdzIG5vdCBt
+dWNoIGxlZnQgLi4uLiAiYXN5bW1ldHJpYyBjb21wcmVzc2lvbiBzdXBwb3J0IiBhbmQgImFz
+eW5jIGNsaWVudC1jb25uZWN0IiBpcyB0aGUga2V5IG1haW4gdGFza3MgbGVmdCAuLi4gcGx1
+cyB3ZSBoYXZlIGEgZmV3IG1vcmUgQUNLcyBvbiB0aGUgbWFpbGluZyBsaXN0IHdoaWNoIG5l
+ZWRzIHRvIGJlIHByb2Nlc3NlZAooMjE6MTc6NDIpIG1hdHRvY2s6IGhpIGNyb24yIQooMjE6
+MTg6MDEpIGNyb24yOiBJJ20gb24gdmFjYXRpb24sIGJ1dCB3aWxsIGJlIGJhY2sgaG9tZSBv
+biBTYXR1cmRheS4gIFNvLCB0aGVyZSBpcyBob3BlIGZvciB0aGVzZSBsb25lbHkgQUNLcyA6
+KQooMjE6MTg6NDMpIGRhem86IEknbGwgc2VlIHdoYXQgSSBjYW4gbWFuYWdlIHRvbW9ycm93
+IHRvbyAuLi4gc2VsdmEgYWxzbyB3YW50ZWQgYSBmZXcgb2YgdGhlIG1hc3RlciBwYXRjaGVz
+IHRvIHJlbGVhc2UvMi40LCB3aGljaCBpcyBhIHJlYXNvbmFibGUgcmVxdWVzdCAtIGp1c3Qg
+aGF2ZW4ndCBoYWQgZW5vdWdoIHRpbWUgdG8gdGFja2xlIHRoZW0geWV0CigyMToxOToyOSkg
+Y3JvbjI6IHllcy4gSSBicm91Z2h0IHRoaXMgdXAgZm9yIG9uZSBvZiB0aGUgcGF0Y2hlcyBy
+ZWxhdGVkIHRvIGlzZXJ2aWNlLCBhbmQgaGUgdm9sdW50ZWVyZWQgdG8gcmViYXNlIGFuZCBz
+ZW5kIGEgMi40IHZlcnNpb24gLSB3aGljaCBtYWtlcyBsb3RzIG9mIHNlbnNlLCBJIGp1c3Qg
+aGFkIG5vIHRpbWUgZWl0aGVyCigyMToyMDoyNCkgZGF6bzogb24gYSBub3QgcmVsYXRlZCBu
+b3RlIC4uLiBtYXR0b2NrLCBjYW4gd2UgcGxlYXNlICBnZXQgcmlkIG9mIHRoZSBjZiBkZG9z
+IHJlZGlyZWN0IHRoaW5nIGJ5IG5vdz8gIFRoaXMgaXMgaG93IG15IFVSTCB0byB0aGUgc3Rh
+dHVzIHBhZ2UgbG9va3MgbGlrZSBub3c6IGh0dHBzOi8vY29tbXVuaXR5Lm9wZW52cG4ubmV0
+L29wZW52cG4vd2lraS9TdGF0dXNPZk9wZW52cG4yNT9fX2NmX2NobF9qc2NobF90a19fPTMy
+YWE2YWU3Mzg0NjA2YzYyNjFlMTA4MWJlZWRiZjlhM2I4YzZjMjMtMTU4MjgzMDcwOS0wLUFS
+dlN4aDhBNE5oUlkzN2Y2WVIwNnBMdTh0OTM2ZHRhRVU0bkNfOVQ4NEdYc0kxUnJZb2s2eEc5
+d0lDOHUtNm1haVIzeDduWUpPUkFLMk5zSGJ1S0steFlwYm12VFRsT3hmLXZ2emFSV2YwLW9v
+UnpzSWJ2VmtUcEgyQUhESUM2bFRGWW9hWi0xMW1GMDh0TmhtRXQtCigyMToyMDoyNCkgZGF6
+bzogeThXWTZjU0xVQ3dLdkJ3LW94a1dxYnRrOWNEbWNVTHZRTEZPOEE4cmlSZ3ZnWGZNT1Jx
+TWloc3h4T3hCdVU0OWN1b283VTdxYllEdU9CclR0SWhSbUJuMy1hUVQ1UjhuUnE1ZzR2RHRn
+dlBmRVBvUURDUWVNWEVaM0Y0LWYxQUltODY2Y2ZvUG53a1JzN0ZnOS1nWG5kUkJrU1YwdWRS
+aFd2WHFvazhVeDNsY3cKKDIxOjIwOjM3KSBjcm9uMjogZXd3dwooMjE6MjA6MzcpIG1hdHRv
+Y2s6IG9oIHllcywgSSB3aWxsIGFzayBhbmRyZXcKKDIxOjIwOjQ0KSBtYXR0b2NrOiBpdCBo
+aXQgbWUgbGlrZSAxMCBtaW51dGVzIGFnbwooMjE6MjA6NDUpIGNyb24yOiBoYXZlbid0IG5v
+dGljZWQsIGJ1dCBsb29raW5nIGF0IG15IGJyb3dzZXIsIGluZGVlZAooMjE6MjE6MTYpIG1h
+dHRvY2s6IGRvbmUKKDIxOjIxOjUxKSBkYXpvOiAoYW5kIHRoZSBvdGhlciBkYXkgLi4uIHRo
+ZXNlICJzaG91bGRuJ3QgdGFrZSBtb3JlIHRoYW4gNSBzZWNvbmRzIiB0b29rIG92ZXIgMiBt
+aW51dGVzIC4uLiApCigyMToyMzoxNCkgZGF6bzogc29ycnkgZm9yIHRoZSBkZS1yYWlsCigy
+MToyMzozMCkgZGF6bzogYW55dGhpbmcgZWxzZSBvbiB0aGUgMi41IHJlbGVhc2U/CigyMToy
+NDozNykgbWF0dG9jazogbm90IGZyb20gbXkgZW5kCigyMToyNToxMSkgY3JvbjI6IG5vdCBm
+cm9tIG15IGVuZCwgdGhlIGxhc3Qgd2Vla3MgaGF2ZSBiZWVuIHRvbyBidXN5CigyMToyNTo0
+MSkgbWF0dG9jazogaW4gYW55IGNhc2Ugd2UgbmVlZCBNU0kgc29vbgooMjE6MjU6NTYpIGRh
+em86IHllcyA6KQooMjE6MjY6MTEpIG1hdHRvY2s6IGl0IHdvdWxkIGJlIGEgc2hhbWUgdG8g
+aGF2ZSB0byBjb250aW51ZSB3aXRoIE5TSVMgd2l0aCBzbyBtdWNoIGVmZm9ydCBnb25lIGlu
+dG8gTVNJLi4uCigyMToyNjoxOSkgZGF6bzogeWVhaAooMjE6MjY6MTkpIGNyb24yOiB5ZXMg
+OikKKDIxOjI2OjI2KSBkYXpvOiBzbyAuLi4gdG9waWMgIzI/CigyMToyNjozNSkgbWF0dG9j
+azogeWVzCigyMToyNjozNikgbWF0dG9jazogUmVtb3ZhbCBvZiDigIstLWRpc2FibGUtc2Vy
+dmVyIGNvbXBpbGUtdGltZSBvcHRpb24gCigyMToyNjo1OCkgY3JvbjI6IHdlJ3ZlIGJyb3Vn
+aHQgdGhpcyB1cCBvbiB0aGUgbGlzdCwgYW5kICpvbmUqIHBlcnNvbiBhcmd1ZWQgaW4gZmF2
+b3VyIG9mIHRoaXMgb3B0aW9uLCBidXQgSSBkaWQgbm90IGZpbmQgaXQgZXhhY3RseSBjb21w
+ZWxsaW5nCigyMToyNzoyNikgZGF6bzogeWVhaCAuLi4gSSBzdHVtYmxlZCB1cG9uIHRoaXMg
+bWFpbCB0aHJlYWQgYWdhaW4gdGhlIG90aGVyIGRheSAuLi4gYW5kIEkgdGhvdWdodCwgZ2l2
+ZW4gdGhlIGZhaXJseSBsb3cgcmVzcG9uc2UgcmF0ZSAuLi4gSSB0aGluayB3ZSBjYW4ga2lj
+ayBpdCBvdXQ7IEkgZG9uJ3QgdGhpbmsgYW55b25lIHJlYWxseSBuZWVkcyBpdAooMjE6Mjc6
+NTQpIGNyb24yOiB0aGlzCigyMToyNzo1NSkgZGF6bzogSSBhZ3JlZSB3aXRoIGNyb24yLCB0
+aGUgb25lIHBlcnNvbiBhcHBlYXJpbmcgZGlkbid0IHByb3ZpZGUgYW55IHNvbGlkIGFyZ3Vt
+ZW50cyB3aHkgd2UgbmVlZCB0byBtYWludGFpbiB0aGF0CigyMToyODo1NSkgZGF6bzogKHRo
+ZSBtYWlsIHdhcyBzZW50IFNlcHQgMTgsIDIwMTkgLi4uIHdpdGggdGhpcyBvbmUgcmVzcG9u
+c2UgRGVjIDIyKQooMjE6MzE6MzcpIG1hdHRvY2s6IHNvIC0tZGlzYWJsZS1zZXJ2ZXIgc2hh
+bGwgZ28gaW4gMi41PwooMjE6MzE6NTEpIGNyb24yOiB5ZXMKKDIxOjMyOjIyKSBtYXR0b2Nr
+OiBndXQKKDIxOjMyOjMwKSBtYXR0b2NrOiBhbnl0aGluZyBlbHNlIG9uIDIuNSBvciBvdGhl
+ciB0b3BpY3M/CigyMTozMjo0NykgY3JvbjI6IG5vIHJldmlldyBmb3IgbWUgdG9kYXkKKDIx
+OjMyOjUwKSBjcm9uMjogdG9vIHRpcmVkCigyMTozMzowNCkgbWF0dG9jazogbGF0ZSBldmVu
+aW5nIGlzIHByb2JhYmx5IG5vdCB0aGUgYmVzdCB0aW1lIHRvIHJldmlldyBhbnl0aGluZyBh
+bnl3YXlzCigyMTozMzoyMykgbWF0dG9jazogYXJlIHdlIGdvb2QgZm9yIHRvZGF5PwooMjE6
+MzQ6MTEpIGRhem86IFByb2JhYmx5IC4uLiBJJ2xsIGdpdmUgdGhlIC0tZGlzYWJsZS1zZXJ2
+ZXIgcGF0Y2ggYSBzdGFiIG5vdyAuLi4gYW5kIHN1Z2dlc3QgYSBwYXRjaCB2ZXJ5IHF1aWNr
+bHkKKDIxOjM0OjIyKSBtYXR0b2NrOiBncmVhdCEKKDIxOjM1OjAwKSBtYXR0b2NrOiBJJ20g
+cHJldHR5IG11Y2ggZG9uZSB3aXRoIHN1bW1hcnkgc28gcGVvcGxlIHBsZWFzZSBzcGVhayB1
+cCBub3cgaWYgbmVlZGVkIDopCigyMTozNjoxMCkgbWF0dG9jazogZGF6bzogSSdkIG5lZWQg
+dG8gdGhlIHBhc3N3b3JkIGZvciBteSBzaGlueSBuZXcgc2VjdXJpdHlAb3BlbnZwbi5uZXQg
+a2V5IAooMjE6MzY6MjEpIG1hdHRvY2s6IEkgYmVsaWV2ZSBJIGNvbXBsaWVkIHdpdGggeW91
+ciByZXF1aXJlbWVudHMgOikKKDIxOjM2OjIzKSBkYXpvOiBtYXR0b2NrOiBJIHRob3VnaHQg
+SSBoYWQgc2VudCB5b3UgdGhhdAooMjE6MzY6MjcpIG1hdHRvY2s6IGhtbQooMjE6MzY6MzQp
+IG1hdHRvY2s6IG9rLCBsZXQgbWUgZG91YmxlLWNoZWNrCigyMTozNzozNCkgbWF0dG9jazog
+Y2FuJ3QgZmluZCBpdCAtIGNhcmUgdG8gcmVzZW5kPwooMjE6Mzc6NDUpIG1hdHRvY2s6IGl0
+IHNlZW1zIGxpa2UgcmFja3NwYWNlIGxvc3Qgc29tZSBlbWFpbHMgZm9yIHNvbWUgcGVvcGxl
+IHJlY2VudGx5CigyMTozODoxMSkgZGF6bzogc3VyZSwgSSdsbCBkbyB0aGF0IC4uLiBvaCB3
+YWl0IC4uLiB5b3UgaGFkIGEgbmV3IGtleT8gIE1heWJlIEkgd2FudGVkIHRvIGNvbmZpcm0g
+dGhhdAooMjE6Mzg6MzUpIG1hdHRvY2s6IHlvdSBzZW50IG1lIHRoZSBrZXkgYnV0IHdpdGhv
+dXQgYSBwYXNzd29yZAooMjE6Mzg6NDcpIGRhem86IG9oLCBkdWggLi4uIHJpZ2h0CigyMToz
+OTowMCkgZGF6bzogSSdsbCByZXNlbnQgdGhlIGtleSB0aGVuCigyMTozOTowMykgbWF0dG9j
+azogdGhhbmtzIQooMjE6Mzk6MTUpIG1hdHRvY2s6IG1lZXRpbmcgY29uY2x1ZGVkIHRoZW4K
+KDIxOjM5OjE3KSBtYXR0b2NrOiA6KQooMjE6Mzk6MjQpIGNyb24yOiBnb29kIG5pZ2h0IDop
+CigyMTozOTo0MSkgZGF6bzogZyduaWdodAo=
+
+--------------01F93DD16A997F3F4D6F3B7D--
+
+--CfmGXrleipQhtcE3PDcu75k4H6SseRWr0--
+
+--7mB0ucBEpx8kI7sa59aPOD6IfEBuKWUAb
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAl5YG2AACgkQKVhNn0CG
+RXgZDQf+OtwXGjF4ZeakRy0kgG7iVjh5ZrKruMikeIkM5LCYH8JraFY2QnD9rrID
+P0JY83hVhZGZJ0RuSrDBlViB2rwLWL4yroRH1QYVRPG9ZqWmTOdG8c5jhVeIHYN+
+T4JVKvT3Ex0WJNVnzEgFuF6gpBXIU0VMlBtgNBjfZXHl0FdbQfTp6ltecCxa5nmp
+Hbf0ADXi7pbi7CH9rDUYW7rB8OXnWO/PP62GGeV4e7Iuq6f/6iznoBmbGPc1VVyh
+9E+DCAP7+KdoVLdieNC6THcSfz0EFSDK40m3pvk9xdxFBanX2vjKPJVKqP5O6y7Z
+FWlnOGAv274+Py78VctpKWbySo/O+A==
+=1zLX
+-----END PGP SIGNATURE-----
+
+--7mB0ucBEpx8kI7sa59aPOD6IfEBuKWUAb--
 
