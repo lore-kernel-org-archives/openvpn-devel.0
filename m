@@ -1,10 +1,10 @@
-Date: Sun, 8 Mar 2020 20:29:31 +0100 (CET)
-Message-Id: <202003081929.028JTVjj064605@...2054...>
+Date: Sun, 8 Mar 2020 20:38:18 +0100 (CET)
+Message-Id: <202003081938.028JcIEV064813@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200229123515.9745-1-lstipakov@...277...>
-References: <20200229123515.9745-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: interactive.c: remove unused
- function
+In-Reply-To: <20200205175556.1877-1-simon@...2293...>
+References: <20200205175556.1877-1-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: tun.c: refactor driver
+ detection and make it case-insensitive
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +15,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
+To: Simon Rozman <simon@...2293...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master branch.
 
-(For whatever reason, the list never delivered the original mail to me - 
-so I pulled it out of patchwork, and did a quick review that "yes, this
-should be what Selva has ACKed" :-) - patch makes sense, and the list
-archives *do* have it... - test compiled on mingw)
+And, indeed, thanks for that :-) - I do remember complaining about the
+old code - technically correct but very hard to read.  The new code is
+much easier to read (and should do the same, except for the case 
+insensitivity).
 
-commit 30be55d270c187104b3abaff407ad14f6ea11be2
-Author: Lev Stipakov
-Date:   Sat Feb 29 14:35:15 2020 +0200
+Test compiled on Ubuntu 16.04 / MinGW.
 
-     interactive.c: remove unused function
+commit 0b8714f627b2d740be7f8ff6f42cd276030e6d67
+Author: Simon Rozman
+Date:   Wed Feb 5 18:55:56 2020 +0100
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: <selva.nair@...277...>
-     Acked-by: Selva Nair <selva.nair@...277...>
-     Message-Id: <20200229123515.9745-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19508.html
+     tun.c: refactor driver detection and make it case-insensitive
+
+     Signed-off-by: Simon Rozman <simon@...2293...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <20200205175556.1877-1-simon@...2293...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19365.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
