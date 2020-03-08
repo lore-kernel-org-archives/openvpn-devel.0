@@ -1,9 +1,10 @@
-Date: Sun, 8 Mar 2020 20:42:54 +0100 (CET)
-Message-Id: <202003081942.028Jgsks064914@...2054...>
+Date: Sun, 8 Mar 2020 20:55:37 +0100 (CET)
+Message-Id: <202003081955.028Jtb7k065172@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200205175944.432-1-simon@...2293...>
-References: <20200205175944.432-1-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH applied] Re: tun.c: uncrustify
+In-Reply-To: <20200205184922.883-1-simon@...2293...>
+References: <20200205184922.883-1-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: wintun: check for conflicting
+ options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,24 +20,18 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master branch.
 
-Thanks.  Verified with "git show -w" that it's indeed only whitespace
-changes (without -w, the changes appear big, with -w, you see that it's
-really just a few new line wraps, and /* after ifdef */ stuff)
+Indeed, check makes sense :-) - compile tested on Ubuntu 16 / MinGW.
 
-The "#endif /* 1 */" bit makes me question myself, though, whether this
-code could need a bit more cleanup... why have an #if 1 in the first
-place?  Looks like a leftover from the first WINTUN patches... :-)
-
-commit 9497b802cf4c41c3da3ac9a41f29d86788143818
+commit 05ce4563fbea51a2653a6aa1ee51154ae6b7c6a0
 Author: Simon Rozman
-Date:   Wed Feb 5 18:59:44 2020 +0100
+Date:   Wed Feb 5 19:49:22 2020 +0100
 
-     tun.c: uncrustify
+     wintun: check for conflicting options
 
      Signed-off-by: Simon Rozman <simon@...2293...>
      Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20200205175944.432-1-simon@...2293...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19366.html
+     Message-Id: <20200205184922.883-1-simon@...2293...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19368.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
