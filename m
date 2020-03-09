@@ -1,11 +1,11 @@
 From: Simon Rozman <simon@...2293...>
-Date: Mon,  9 Mar 2020 14:17:23 +0100
-Message-Id: <20200309131728.380-7-simon@...2293...>
+Date: Mon,  9 Mar 2020 14:17:21 +0100
+Message-Id: <20200309131728.380-5-simon@...2293...>
 In-Reply-To: <20200309131728.380-1-simon@...2293...>
 References: <20200309131728.380-1-simon@...2293...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 07/12] openvpnmsica,
- tapctl: "interface" => "adapter"
+Subject: [Openvpn-devel] [PATCH 05/12] openvpnmsica: Revise MSI custom
+ actions interop
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,1840 +18,2739 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Interface is not equal to adapter. A quote from Microsoft documentation:
+Sequence scripts in temporary files has been discontinued in favor of
+much simpler sequence strings passed to individual custom actions.
 
-> There is a one-to-one correspondence between the interfaces and
-> adapters on a given computer. An interface is an IP-level abstraction,
-> whereas an adapter is a datalink-level abstraction.
-
-As tapctl and openvpnmsica are all about managing network adapters on
-Windows computers, the terminology has been updated.
+Pros: no temporary files; less code
+Cons: the evaluation phase must make a complete plan what to perform in
+each deferred custom action
 
 Signed-off-by: Simon Rozman <simon@...2293...>
 ---
- src/openvpnmsica/openvpnmsica.c | 366 ++++++++++++++++----------------
- src/openvpnmsica/openvpnmsica.h |  13 +-
- src/tapctl/main.c               | 150 ++++++-------
- src/tapctl/tap.c                | 182 ++++++++--------
- src/tapctl/tap.h                |  82 +++----
- src/tapctl/tapctl_resources.rc  |   4 +-
- 6 files changed, 399 insertions(+), 398 deletions(-)
+ src/openvpnmsica/Makefile.am                  |    4 +-
+ src/openvpnmsica/msica_arg.c                  |  139 +++
+ src/openvpnmsica/msica_arg.h                  |  112 ++
+ src/openvpnmsica/msica_op.c                   | 1043 -----------------
+ src/openvpnmsica/msica_op.h                   |  430 -------
+ src/openvpnmsica/openvpnmsica.c               |  713 ++++++-----
+ src/openvpnmsica/openvpnmsica.vcxproj         |    4 +-
+ src/openvpnmsica/openvpnmsica.vcxproj.filters |    4 +-
+ src/tapctl/basic.h                            |   19 +-
+ src/tapctl/tap.c                              |    1 +
+ 10 files changed, 678 insertions(+), 1791 deletions(-)
+ create mode 100644 src/openvpnmsica/msica_arg.c
+ create mode 100644 src/openvpnmsica/msica_arg.h
+ delete mode 100644 src/openvpnmsica/msica_op.c
+ delete mode 100644 src/openvpnmsica/msica_op.h
 
+diff --git a/src/openvpnmsica/Makefile.am b/src/openvpnmsica/Makefile.am
+index db8502b8..9d18854a 100644
+--- a/src/openvpnmsica/Makefile.am
++++ b/src/openvpnmsica/Makefile.am
+@@ -2,7 +2,7 @@
+ #  openvpnmsica -- Custom Action DLL to provide OpenVPN-specific support to MSI packages
+ #
+ #  Copyright (C) 2002-2018 OpenVPN Inc <sales@...515...>
+-#  Copyright (C) 2018-2019 Simon Rozman <simon@...2293...>
++#  Copyright (C) 2018-2020 Simon Rozman <simon@...2293...>
+ #
+ #  This program is free software; you can redistribute it and/or modify
+ #  it under the terms of the GNU General Public License version 2
+@@ -48,7 +48,7 @@ endif
+ libopenvpnmsica_la_SOURCES = \
+ 	dllmain.c \
+ 	msiex.c msiex.h \
+-	msica_op.c msica_op.h \
++	msica_arg.c msica_arg.h \
+ 	openvpnmsica.c openvpnmsica.h \
+ 	$(top_srcdir)/src/tapctl/basic.h \
+ 	$(top_srcdir)/src/tapctl/error.c $(top_srcdir)/src/tapctl/error.h \
+diff --git a/src/openvpnmsica/msica_arg.c b/src/openvpnmsica/msica_arg.c
+new file mode 100644
+index 00000000..0014537a
+--- /dev/null
++++ b/src/openvpnmsica/msica_arg.c
+@@ -0,0 +1,139 @@
++/*
++ *  openvpnmsica -- Custom Action DLL to provide OpenVPN-specific support to MSI packages
++ *                  https://community.openvpn.net/openvpn/wiki/OpenVPNMSICA
++ *
++ *  Copyright (C) 2018-2020 Simon Rozman <simon@...2293...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
++
++#ifdef HAVE_CONFIG_H
++#include <config.h>
++#elif defined(_MSC_VER)
++#include <config-msvc.h>
++#endif
++
++#include "msica_arg.h"
++#include "../tapctl/error.h"
++#include "../tapctl/tap.h"
++
++#include <windows.h>
++#include <malloc.h>
++
++
++void
++msica_arg_seq_init(_Inout_ struct msica_arg_seq *seq)
++{
++    seq->head = NULL;
++    seq->tail = NULL;
++}
++
++
++void
++msica_arg_seq_free(_Inout_ struct msica_arg_seq *seq)
++{
++    while (seq->head)
++    {
++        struct msica_arg *p = seq->head;
++        seq->head = seq->head->next;
++        free(p);
++    }
++    seq->tail = NULL;
++}
++
++
++void
++msica_arg_seq_add_head(
++    _Inout_ struct msica_arg_seq *seq,
++    _In_z_ LPCTSTR argument)
++{
++    size_t argument_size = (_tcslen(argument) + 1) * sizeof(TCHAR);
++    struct msica_arg *p = malloc(sizeof(struct msica_arg) + argument_size);
++    if (p == NULL)
++    {
++        msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, sizeof(struct msica_arg) + argument_size);
++    }
++    memcpy(p->val, argument, argument_size);
++    p->next = seq->head;
++    seq->head = p;
++    if (seq->tail == NULL)
++    {
++        seq->tail = p;
++    }
++}
++
++
++void
++msica_arg_seq_add_tail(
++    _Inout_ struct msica_arg_seq *seq,
++    _Inout_ LPCTSTR argument)
++{
++    size_t argument_size = (_tcslen(argument) + 1) * sizeof(TCHAR);
++    struct msica_arg *p = malloc(sizeof(struct msica_arg) + argument_size);
++    if (p == NULL)
++    {
++        msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, sizeof(struct msica_arg) + argument_size);
++    }
++    memcpy(p->val, argument, argument_size);
++    p->next = NULL;
++    *(seq->tail ? &seq->tail->next : &seq->head) = p;
++    seq->tail = p;
++}
++
++
++LPTSTR
++msica_arg_seq_join(_In_ const struct msica_arg_seq *seq)
++{
++    /* Count required space. */
++    size_t size = 2 /*x + zero-terminator*/;
++    for (struct msica_arg *p = seq->head; p != NULL; p = p->next)
++    {
++        size += _tcslen(p->val) + 1 /*space delimiter|zero-terminator*/;
++    }
++    size *= sizeof(TCHAR);
++
++    /* Allocate. */
++    LPTSTR str = malloc(size);
++    if (str == NULL)
++    {
++        msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, size);
++        return NULL;
++    }
++
++#ifdef _MSC_VER
++#pragma warning(push)
++#pragma warning(disable: 4996) /* Using unsafe string functions: The space in s and termination of p->val has been implicitly verified at the beginning of this function. */
++#endif
++
++    /* Dummy argv[0] (i.e. executable name), for CommandLineToArgvW to work correctly when parsing this string. */
++    _tcscpy(str, TEXT("x"));
++
++    /* Join. */
++    LPTSTR s = str + 1 /*x*/;
++    for (struct msica_arg *p = seq->head; p != NULL; p = p->next)
++    {
++        /* Convert zero-terminator into space delimiter. */
++        s[0] = TEXT(' ');
++        s++;
++        /* Append argument. */
++        _tcscpy(s, p->val);
++        s += _tcslen(p->val);
++    }
++
++#ifdef _MSC_VER
++#pragma warning(pop)
++#endif
++
++    return str;
++}
+diff --git a/src/openvpnmsica/msica_arg.h b/src/openvpnmsica/msica_arg.h
+new file mode 100644
+index 00000000..d2158e0f
+--- /dev/null
++++ b/src/openvpnmsica/msica_arg.h
+@@ -0,0 +1,112 @@
++/*
++ *  openvpnmsica -- Custom Action DLL to provide OpenVPN-specific support to MSI packages
++ *                  https://community.openvpn.net/openvpn/wiki/OpenVPNMSICA
++ *
++ *  Copyright (C) 2018-2020 Simon Rozman <simon@...2293...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
++
++#ifndef MSICA_ARG_H
++#define MSICA_ARG_H
++
++#include <windows.h>
++#include <tchar.h>
++#include "../tapctl/basic.h"
++
++
++#ifdef _MSC_VER
++#pragma warning(push)
++#pragma warning(disable: 4200) /* Using zero-sized arrays in struct/union. */
++#endif
++
++
++/**
++ * Argument list
++ */
++struct msica_arg
++{
++    struct msica_arg *next; /** Pointer to the next argument in the sequence */
++    TCHAR val[];            /** Zero terminated argument string */
++};
++
++
++/**
++ * Argument sequence
++ */
++struct msica_arg_seq
++{
++    struct msica_arg *head; /** Pointer to the first argument in the sequence */
++    struct msica_arg *tail; /** Pointer to the last argument in the sequence */
++};
++
++
++/**
++ * Initializes argument sequence
++ *
++ * @param seq           Pointer to uninitialized argument sequence
++ */
++void
++msica_arg_seq_init(_Inout_ struct msica_arg_seq *seq);
++
++
++/**
++ * Frees argument sequence
++ *
++ * @param seq           Pointer to the argument sequence
++ */
++void
++msica_arg_seq_free(_Inout_ struct msica_arg_seq *seq);
++
++
++/**
++ * Inserts argument to the beginning of the argument sequence
++ *
++ * @param seq           Pointer to the argument sequence
++ *
++ * @param argument      Zero-terminated argument string to insert.
++ */
++void
++msica_arg_seq_add_head(
++    _Inout_ struct msica_arg_seq *seq,
++    _In_z_ LPCTSTR argument);
++
++
++/**
++ * Appends argument to the end of the argument sequence
++ *
++ * @param seq           Pointer to the argument sequence
++ *
++ * @param argument      Zero-terminated argument string to append.
++ */
++void
++msica_arg_seq_add_tail(
++    _Inout_ struct msica_arg_seq *seq,
++    _Inout_ LPCTSTR argument);
++
++/**
++ * Join arguments of the argument sequence into a space delimited string
++ *
++ * @param seq           Pointer to the argument sequence
++ *
++ * @return Joined argument string. Must be released with free() after use.
++ */
++LPTSTR
++msica_arg_seq_join(_In_ const struct msica_arg_seq *seq);
++
++#ifdef _MSC_VER
++#pragma warning(pop)
++#endif
++
++#endif /* ifndef MSICA_ARG_H */
+diff --git a/src/openvpnmsica/msica_op.c b/src/openvpnmsica/msica_op.c
+deleted file mode 100644
+index 63aa6c83..00000000
+--- a/src/openvpnmsica/msica_op.c
++++ /dev/null
+@@ -1,1043 +0,0 @@
+-/*
+- *  openvpnmsica -- Custom Action DLL to provide OpenVPN-specific support to MSI packages
+- *                  https://community.openvpn.net/openvpn/wiki/OpenVPNMSICA
+- *
+- *  Copyright (C) 2018 Simon Rozman <simon@...2293...>
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License along
+- *  with this program; if not, write to the Free Software Foundation, Inc.,
+- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+- */
+-
+-#ifdef HAVE_CONFIG_H
+-#include <config.h>
+-#elif defined(_MSC_VER)
+-#include <config-msvc.h>
+-#endif
+-
+-#include "msica_op.h"
+-#include "../tapctl/error.h"
+-#include "../tapctl/tap.h"
+-
+-#include <windows.h>
+-#include <malloc.h>
+-#include <msiquery.h>
+-#include <objbase.h>
+-
+-#ifdef _MSC_VER
+-#pragma comment(lib, "msi.lib")
+-#pragma comment(lib, "ole32.lib")
+-#endif
+-
+-
+-/**
+- * Operation data persist header
+- */
+-struct msica_op_hdr
+-{
+-    enum msica_op_type type;  /** Action type */
+-    int ticks;                /** Number of ticks on the progress indicator this operation represents */
+-    DWORD size_data;          /** Size of the operation data (DWORD to better align with Win32 API) */
+-};
+-
+-
+-void
+-msica_op_seq_init(_Inout_ struct msica_op_seq *seq)
+-{
+-    seq->head = NULL;
+-    seq->tail = NULL;
+-}
+-
+-
+-void
+-msica_op_seq_free(_Inout_ struct msica_op_seq *seq)
+-{
+-    while (seq->head)
+-    {
+-        struct msica_op *op = seq->head;
+-        seq->head = seq->head->next;
+-        free(op);
+-    }
+-    seq->tail = NULL;
+-}
+-
+-
+-struct msica_op *
+-msica_op_create_bool(
+-    _In_ enum msica_op_type type,
+-    _In_ int ticks,
+-    _In_opt_ struct msica_op *next,
+-    _In_ bool value)
+-{
+-    if (MSICA_OP_TYPE_DATA(type) != 0x1)
+-    {
+-        msg(M_NONFATAL, "%s: Operation data type not bool (%x)", __FUNCTION__, MSICA_OP_TYPE_DATA(type));
+-        return NULL;
+-    }
+-
+-    /* Create and fill operation struct. */
+-    struct msica_op_bool *op = (struct msica_op_bool *)malloc(sizeof(struct msica_op_bool));
+-    if (op == NULL)
+-    {
+-        msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, sizeof(struct msica_op_bool));
+-        return NULL;
+-    }
+-
+-    op->base.type  = type;
+-    op->base.ticks = ticks;
+-    op->base.next  = next;
+-    op->value      = value;
+-
+-    return &op->base;
+-}
+-
+-
+-struct msica_op *
+-msica_op_create_string(
+-    _In_ enum msica_op_type type,
+-    _In_ int ticks,
+-    _In_opt_ struct msica_op *next,
+-    _In_z_ LPCTSTR value)
+-{
+-    if (MSICA_OP_TYPE_DATA(type) != 0x2)
+-    {
+-        msg(M_NONFATAL, "%s: Operation data type not string (%x)", __FUNCTION__, MSICA_OP_TYPE_DATA(type));
+-        return NULL;
+-    }
+-
+-    /* Create and fill operation struct. */
+-    size_t value_size = (_tcslen(value) + 1) * sizeof(TCHAR);
+-    struct msica_op_string *op = (struct msica_op_string *)malloc(sizeof(struct msica_op_string) + value_size);
+-    if (op == NULL)
+-    {
+-        msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, sizeof(struct msica_op_string) + value_size);
+-        return NULL;
+-    }
+-
+-    op->base.type  = type;
+-    op->base.ticks = ticks;
+-    op->base.next  = next;
+-    memcpy(op->value, value, value_size);
+-
+-    return &op->base;
+-}
+-
+-
+-struct msica_op *
+-msica_op_create_multistring_va(
+-    _In_ enum msica_op_type type,
+-    _In_ int ticks,
+-    _In_opt_ struct msica_op *next,
+-    _In_ va_list arglist)
+-{
+-    if (MSICA_OP_TYPE_DATA(type) != 0x3)
+-    {
+-        msg(M_NONFATAL, "%s: Operation data type not multi-string (%x)", __FUNCTION__, MSICA_OP_TYPE_DATA(type));
+-        return NULL;
+-    }
+-
+-    /* Calculate required space first. */
+-    LPCTSTR str;
+-    size_t value_size = 1;
+-    for (va_list a = arglist; (str = va_arg(a, LPCTSTR)) != NULL; value_size += _tcslen(str) + 1)
+-    {
+-    }
+-    value_size *= sizeof(TCHAR);
+-
+-    /* Create and fill operation struct. */
+-    struct msica_op_multistring *op = (struct msica_op_multistring *)malloc(sizeof(struct msica_op_multistring) + value_size);
+-    if (op == NULL)
+-    {
+-        msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, sizeof(struct msica_op_multistring) + value_size);
+-        return NULL;
+-    }
+-
+-    op->base.type  = type;
+-    op->base.ticks = ticks;
+-    op->base.next  = next;
+-    LPTSTR value = op->value;
+-    for (va_list a = arglist; (str = va_arg(a, LPCTSTR)) != NULL;)
+-    {
+-        size_t size = _tcslen(str) + 1;
+-        memcpy(value, str, size*sizeof(TCHAR));
+-        value += size;
+-    }
+-    value[0] = 0;
+-
+-    return &op->base;
+-}
+-
+-
+-struct msica_op *
+-msica_op_create_guid(
+-    _In_ enum msica_op_type type,
+-    _In_ int ticks,
+-    _In_opt_ struct msica_op *next,
+-    _In_ const GUID *value)
+-{
+-    if (MSICA_OP_TYPE_DATA(type) != 0x4)
+-    {
+-        msg(M_NONFATAL, "%s: Operation data type not GUID (%x)", __FUNCTION__, MSICA_OP_TYPE_DATA(type));
+-        return NULL;
+-    }
+-
+-    /* Create and fill operation struct. */
+-    struct msica_op_guid *op = (struct msica_op_guid *)malloc(sizeof(struct msica_op_guid));
+-    if (op == NULL)
+-    {
+-        msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, sizeof(struct msica_op_guid));
+-        return NULL;
+-    }
+-
+-    op->base.type  = type;
+-    op->base.ticks = ticks;
+-    op->base.next  = next;
+-    memcpy(&op->value, value, sizeof(GUID));
+-
+-    return &op->base;
+-}
+-
+-
+-struct msica_op *
+-msica_op_create_guid_string(
+-    _In_ enum msica_op_type type,
+-    _In_ int ticks,
+-    _In_opt_ struct msica_op *next,
+-    _In_ const GUID *value_guid,
+-    _In_z_ LPCTSTR value_str)
+-{
+-    if (MSICA_OP_TYPE_DATA(type) != 0x5)
+-    {
+-        msg(M_NONFATAL, "%s: Operation data type not GUID-string (%x)", __FUNCTION__, MSICA_OP_TYPE_DATA(type));
+-        return NULL;
+-    }
+-
+-    /* Create and fill operation struct. */
+-    size_t value_str_size = (_tcslen(value_str) + 1) * sizeof(TCHAR);
+-    struct msica_op_guid_string *op = (struct msica_op_guid_string *)malloc(sizeof(struct msica_op_guid_string) + value_str_size);
+-    if (op == NULL)
+-    {
+-        msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, sizeof(struct msica_op_guid_string) + value_str_size);
+-        return NULL;
+-    }
+-
+-    op->base.type  = type;
+-    op->base.ticks = ticks;
+-    op->base.next  = next;
+-    memcpy(&op->value_guid, value_guid, sizeof(GUID));
+-    memcpy(op->value_str, value_str, value_str_size);
+-
+-    return &op->base;
+-}
+-
+-
+-void
+-msica_op_seq_add_head(
+-    _Inout_ struct msica_op_seq *seq,
+-    _Inout_ struct msica_op *operation)
+-{
+-    if (seq == NULL || operation == NULL)
+-    {
+-        return;
+-    }
+-
+-    /* Insert list in the head. */
+-    struct msica_op *op;
+-    for (op = operation; op->next; op = op->next)
+-    {
+-    }
+-    op->next = seq->head;
+-
+-    /* Update head (and tail). */
+-    seq->head = operation;
+-    if (seq->tail == NULL)
+-    {
+-        seq->tail = op;
+-    }
+-}
+-
+-
+-void
+-msica_op_seq_add_tail(
+-    _Inout_ struct msica_op_seq *seq,
+-    _Inout_ struct msica_op *operation)
+-{
+-    if (seq == NULL || operation == NULL)
+-    {
+-        return;
+-    }
+-
+-    /* Append list to the tail. */
+-    struct msica_op *op;
+-    for (op = operation; op->next; op = op->next)
+-    {
+-    }
+-    if (seq->tail)
+-    {
+-        seq->tail->next = operation;
+-    }
+-    else
+-    {
+-        seq->head = operation;
+-    }
+-    seq->tail = op;
+-}
+-
+-
+-DWORD
+-msica_op_seq_save(
+-    _In_ const struct msica_op_seq *seq,
+-    _In_ HANDLE hFile)
+-{
+-    DWORD dwWritten;
+-    for (const struct msica_op *op = seq->head; op; op = op->next)
+-    {
+-        struct msica_op_hdr hdr;
+-        hdr.type  = op->type;
+-        hdr.ticks = op->ticks;
+-
+-        /* Calculate size of data. */
+-        switch (MSICA_OP_TYPE_DATA(op->type))
+-        {
+-            case 0x1: /* msica_op_bool */
+-                hdr.size_data = sizeof(struct msica_op_bool) - sizeof(struct msica_op);
+-                break;
+-
+-            case 0x2: /* msica_op_string */
+-                hdr.size_data =
+-                    sizeof(struct msica_op_string) - sizeof(struct msica_op)
+-                    +(DWORD)(_tcslen(((struct msica_op_string *)op)->value) + 1) * sizeof(TCHAR);
+-                break;
+-
+-            case 0x3: /* msica_op_multistring */
+-            {
+-                LPCTSTR str;
+-                for (str = ((struct msica_op_multistring *)op)->value; str[0]; str += _tcslen(str) + 1)
+-                {
+-                }
+-                hdr.size_data =
+-                    sizeof(struct msica_op_multistring) - sizeof(struct msica_op)
+-                    +(DWORD)(str + 1 - ((struct msica_op_multistring *)op)->value) * sizeof(TCHAR);
+-                break;
+-            }
+-
+-            case 0x4: /* msica_op_guid */
+-                hdr.size_data = sizeof(struct msica_op_guid) - sizeof(struct msica_op);
+-                break;
+-
+-            case 0x5: /* msica_op_guid_string */
+-                hdr.size_data =
+-                    sizeof(struct msica_op_guid_string) - sizeof(struct msica_op)
+-                    +(DWORD)(_tcslen(((struct msica_op_guid_string *)op)->value_str) + 1) * sizeof(TCHAR);
+-                break;
+-
+-            default:
+-                msg(M_NONFATAL, "%s: Unknown operation data type (%x)", __FUNCTION__, MSICA_OP_TYPE_DATA(op->type));
+-                return ERROR_BAD_ARGUMENTS;
+-        }
+-
+-        if (!WriteFile(hFile, &hdr, sizeof(struct msica_op_hdr), &dwWritten, NULL)
+-            || !WriteFile(hFile, op + 1, hdr.size_data, &dwWritten, NULL))
+-        {
+-            DWORD dwResult = GetLastError();
+-            msg(M_NONFATAL | M_ERRNO, "%s: WriteFile failed", __FUNCTION__);
+-            return dwResult;
+-        }
+-    }
+-
+-    return ERROR_SUCCESS;
+-}
+-
+-
+-DWORD
+-msica_op_seq_load(
+-    _Inout_ struct msica_op_seq *seq,
+-    _In_ HANDLE hFile)
+-{
+-    DWORD dwRead;
+-
+-    if (seq == NULL)
+-    {
+-        return ERROR_BAD_ARGUMENTS;
+-    }
+-
+-    seq->head = seq->tail = NULL;
+-
+-    for (;;)
+-    {
+-        struct msica_op_hdr hdr;
+-        if (!ReadFile(hFile, &hdr, sizeof(struct msica_op_hdr), &dwRead, NULL))
+-        {
+-            DWORD dwResult = GetLastError();
+-            msg(M_NONFATAL | M_ERRNO, "%s: ReadFile failed", __FUNCTION__);
+-            return dwResult;
+-        }
+-        else if (dwRead == 0)
+-        {
+-            /* EOF */
+-            return ERROR_SUCCESS;
+-        }
+-        else if (dwRead < sizeof(struct msica_op_hdr))
+-        {
+-            msg(M_NONFATAL, "%s: Incomplete ReadFile", __FUNCTION__);
+-            return ERROR_INVALID_DATA;
+-        }
+-
+-        struct msica_op *op = (struct msica_op *)malloc(sizeof(struct msica_op) + hdr.size_data);
+-        if (op == NULL)
+-        {
+-            msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, sizeof(struct msica_op) + hdr.size_data);
+-            return ERROR_OUTOFMEMORY;
+-        }
+-
+-        op->type  = hdr.type;
+-        op->ticks = hdr.ticks;
+-        op->next  = NULL;
+-
+-        if (!ReadFile(hFile, op + 1, hdr.size_data, &dwRead, NULL))
+-        {
+-            DWORD dwResult = GetLastError();
+-            msg(M_NONFATAL | M_ERRNO, "%s: ReadFile failed", __FUNCTION__);
+-            free(op);
+-            return dwResult;
+-        }
+-        else if (dwRead < hdr.size_data)
+-        {
+-            msg(M_NONFATAL, "%s: Incomplete ReadFile", __FUNCTION__);
+-            return ERROR_INVALID_DATA;
+-        }
+-
+-        msica_op_seq_add_tail(seq, op);
+-    }
+-}
+-
+-
+-static DWORD
+-msica_op_tap_interface_create_exec(
+-    _Inout_ const struct msica_op_string *op,
+-    _Inout_ struct msica_session *session)
+-{
+-    if (op == NULL || session == NULL)
+-    {
+-        return ERROR_BAD_ARGUMENTS;
+-    }
+-
+-    {
+-        /* Report the name of the interface to installer. */
+-        MSIHANDLE hRecord = MsiCreateRecord(3);
+-        MsiRecordSetString(hRecord, 1, TEXT("Creating TAP interface"));
+-        MsiRecordSetString(hRecord, 2, op->value);
+-        int iResult = MsiProcessMessage(session->hInstall, INSTALLMESSAGE_ACTIONDATA, hRecord);
+-        MsiCloseHandle(hRecord);
+-        if (iResult == IDCANCEL)
+-        {
+-            return ERROR_INSTALL_USEREXIT;
+-        }
+-    }
+-
+-    /* Get all available network interfaces. */
+-    struct tap_interface_node *pInterfaceList = NULL;
+-    DWORD dwResult = tap_list_interfaces(NULL, NULL, &pInterfaceList, TRUE);
+-    if (dwResult == ERROR_SUCCESS)
+-    {
+-        /* Does interface exist? */
+-        for (struct tap_interface_node *pInterfaceOther = pInterfaceList;; pInterfaceOther = pInterfaceOther->pNext)
+-        {
+-            if (pInterfaceOther == NULL)
+-            {
+-                /* No interface with a same name found. Create one. */
+-                BOOL bRebootRequired = FALSE;
+-                GUID guidInterface;
+-                dwResult = tap_create_interface(NULL, NULL, NULL, &bRebootRequired, &guidInterface);
+-                if (dwResult == ERROR_SUCCESS)
+-                {
+-                    /* Set interface name. */
+-                    dwResult = tap_set_interface_name(&guidInterface, op->value);
+-                    if (dwResult == ERROR_SUCCESS)
+-                    {
+-                        if (session->rollback_enabled)
+-                        {
+-                            /* Order rollback action to delete it. */
+-                            msica_op_seq_add_head(
+-                                &session->seq_cleanup[MSICA_CLEANUP_ACTION_ROLLBACK],
+-                                msica_op_create_guid(
+-                                    msica_op_tap_interface_delete_by_guid,
+-                                    0,
+-                                    NULL,
+-                                    &guidInterface));
+-                        }
+-                    }
+-                    else
+-                    {
+-                        tap_delete_interface(NULL, &guidInterface, &bRebootRequired);
+-                    }
+-
+-                    if (bRebootRequired)
+-                    {
+-                        MsiSetMode(session->hInstall, MSIRUNMODE_REBOOTATEND, TRUE);
+-                    }
+-                }
+-                break;
+-            }
+-            else if (_tcsicmp(op->value, pInterfaceOther->szName) == 0)
+-            {
+-                /* Interface with a same name found. */
+-                for (LPCTSTR hwid = pInterfaceOther->szzHardwareIDs;; hwid += _tcslen(hwid) + 1)
+-                {
+-                    if (hwid[0] == 0)
+-                    {
+-                        /* This is not a TAP interface. */
+-                        msg(M_NONFATAL, "%s: Interface with name \"%" PRIsLPTSTR "\" already exists", __FUNCTION__, pInterfaceOther->szName);
+-                        dwResult = ERROR_ALREADY_EXISTS;
+-                        break;
+-                    }
+-                    else if (
+-                        _tcsicmp(hwid, TEXT(TAP_WIN_COMPONENT_ID)) == 0
+-                        || _tcsicmp(hwid, TEXT("root\\") TEXT(TAP_WIN_COMPONENT_ID)) == 0)
+-                    {
+-                        /* This is a TAP interface. We already got what we wanted! */
+-                        dwResult = ERROR_SUCCESS;
+-                        break;
+-                    }
+-                }
+-                break;
+-            }
+-        }
+-
+-        tap_free_interface_list(pInterfaceList);
+-    }
+-
+-    return dwResult;
+-}
+-
+-
+-static DWORD
+-msica_op_tap_interface_delete(
+-    _In_ struct tap_interface_node *pInterfaceList,
+-    _In_ struct tap_interface_node *pInterface,
+-    _Inout_ struct msica_session *session)
+-{
+-    if (pInterfaceList == NULL || pInterface == NULL || session == NULL)
+-    {
+-        return ERROR_BAD_ARGUMENTS;
+-    }
+-
+-    DWORD dwResult;
+-
+-    /* Delete the interface. */
+-    BOOL bRebootRequired = FALSE;
+-    dwResult = tap_delete_interface(NULL, &pInterface->guid, &bRebootRequired);
+-    if (bRebootRequired)
+-    {
+-        MsiSetMode(session->hInstall, MSIRUNMODE_REBOOTATEND, TRUE);
+-    }
+-
+-    if (session->rollback_enabled)
+-    {
+-        /*
+-         * Schedule rollback action to create the interface back. Though it won't be exactly the same interface again.
+-         *
+-         * The previous version of this function did:
+-         * - Execution Pass:       rename the interface to some temporary name
+-         * - Commit/Rollback Pass: delete the interface / rename the interface back to original name
+-         *
+-         * However, the WiX Toolset's Diffx extension to install and remove drivers removed the TAP driver between the
+-         * execution and commit passes. TAP driver removal makes all TAP interfaces unavailable and our CA couldn't find
+-         * the interface to delete any more.
+-         *
+-         * While the system where OpenVPN was uninstalled didn't have any TAP interfaces any more as expected behaviour,
+-         * the problem appears after reinstalling the OpenVPN. Some residue TAP interface registry keys remain on the
+-         * system, causing the TAP interface to reappear as "Ethernet NN" interface next time the TAP driver is
+-         * installed. This causes TAP interfaces to accumulate over cyclic install-uninstall-install...
+-         *
+-         * Therefore, it is better to remove the TAP interfaces before the TAP driver is removed, and reinstall the TAP
+-         * interface back should the rollback be required. I wonder if the WiX Diffx extension supports execute/commit/
+-         * rollback feature of MSI in the first place.
+-         */
+-        msica_op_seq_add_head(
+-            &session->seq_cleanup[MSICA_CLEANUP_ACTION_ROLLBACK],
+-            msica_op_create_string(
+-                msica_op_tap_interface_create,
+-                0,
+-                NULL,
+-                pInterface->szName));
+-    }
+-
+-    return dwResult;
+-}
+-
+-
+-static DWORD
+-msica_op_tap_interface_delete_by_name_exec(
+-    _Inout_ const struct msica_op_string *op,
+-    _Inout_ struct msica_session *session)
+-{
+-    if (op == NULL || session == NULL)
+-    {
+-        return ERROR_BAD_ARGUMENTS;
+-    }
+-
+-    {
+-        /* Report the name of the interface to installer. */
+-        MSIHANDLE hRecord = MsiCreateRecord(3);
+-        MsiRecordSetString(hRecord, 1, TEXT("Deleting interface"));
+-        MsiRecordSetString(hRecord, 2, op->value);
+-        int iResult = MsiProcessMessage(session->hInstall, INSTALLMESSAGE_ACTIONDATA, hRecord);
+-        MsiCloseHandle(hRecord);
+-        if (iResult == IDCANCEL)
+-        {
+-            return ERROR_INSTALL_USEREXIT;
+-        }
+-    }
+-
+-    /* Get available TUN/TAP interfaces. */
+-    struct tap_interface_node *pInterfaceList = NULL;
+-    DWORD dwResult = tap_list_interfaces(NULL, NULL, &pInterfaceList, FALSE);
+-    if (dwResult == ERROR_SUCCESS)
+-    {
+-        /* Does interface exist? */
+-        for (struct tap_interface_node *pInterface = pInterfaceList;; pInterface = pInterface->pNext)
+-        {
+-            if (pInterface == NULL)
+-            {
+-                /* Interface not found. We already got what we wanted! */
+-                dwResult = ERROR_SUCCESS;
+-                break;
+-            }
+-            else if (_tcsicmp(op->value, pInterface->szName) == 0)
+-            {
+-                /* Interface found. */
+-                dwResult = msica_op_tap_interface_delete(
+-                    pInterfaceList,
+-                    pInterface,
+-                    session);
+-                break;
+-            }
+-        }
+-
+-        tap_free_interface_list(pInterfaceList);
+-    }
+-
+-    return dwResult;
+-}
+-
+-
+-static DWORD
+-msica_op_tap_interface_delete_by_guid_exec(
+-    _Inout_ const struct msica_op_guid *op,
+-    _Inout_ struct msica_session *session)
+-{
+-    if (op == NULL || session == NULL)
+-    {
+-        return ERROR_BAD_ARGUMENTS;
+-    }
+-
+-    {
+-        /* Report the GUID of the interface to installer. */
+-        MSIHANDLE hRecord = MsiCreateRecord(3);
+-        LPOLESTR szInterfaceId = NULL;
+-        StringFromIID((REFIID)&op->value, &szInterfaceId);
+-        MsiRecordSetString(hRecord, 1, TEXT("Deleting interface"));
+-        MsiRecordSetString(hRecord, 2, szInterfaceId);
+-        int iResult = MsiProcessMessage(session->hInstall, INSTALLMESSAGE_ACTIONDATA, hRecord);
+-        CoTaskMemFree(szInterfaceId);
+-        MsiCloseHandle(hRecord);
+-        if (iResult == IDCANCEL)
+-        {
+-            return ERROR_INSTALL_USEREXIT;
+-        }
+-    }
+-
+-    /* Get all available interfaces. */
+-    struct tap_interface_node *pInterfaceList = NULL;
+-    DWORD dwResult = tap_list_interfaces(NULL, NULL, &pInterfaceList, TRUE);
+-    if (dwResult == ERROR_SUCCESS)
+-    {
+-        /* Does interface exist? */
+-        for (struct tap_interface_node *pInterface = pInterfaceList;; pInterface = pInterface->pNext)
+-        {
+-            if (pInterface == NULL)
+-            {
+-                /* Interface not found. We already got what we wanted! */
+-                dwResult = ERROR_SUCCESS;
+-                break;
+-            }
+-            else if (memcmp(&op->value, &pInterface->guid, sizeof(GUID)) == 0)
+-            {
+-                /* Interface found. */
+-                dwResult = msica_op_tap_interface_delete(
+-                    pInterfaceList,
+-                    pInterface,
+-                    session);
+-                break;
+-            }
+-        }
+-
+-        tap_free_interface_list(pInterfaceList);
+-    }
+-
+-    return dwResult;
+-}
+-
+-
+-static DWORD
+-msica_op_tap_interface_set_name_exec(
+-    _Inout_ const struct msica_op_guid_string *op,
+-    _Inout_ struct msica_session *session)
+-{
+-    if (op == NULL || session == NULL)
+-    {
+-        return ERROR_BAD_ARGUMENTS;
+-    }
+-
+-    {
+-        /* Report the GUID of the interface to installer. */
+-        MSIHANDLE hRecord = MsiCreateRecord(3);
+-        LPOLESTR szInterfaceId = NULL;
+-        StringFromIID((REFIID)&op->value_guid, &szInterfaceId);
+-        MsiRecordSetString(hRecord, 1, TEXT("Setting interface name"));
+-        MsiRecordSetString(hRecord, 2, szInterfaceId);
+-        MsiRecordSetString(hRecord, 3, op->value_str);
+-        int iResult = MsiProcessMessage(session->hInstall, INSTALLMESSAGE_ACTIONDATA, hRecord);
+-        CoTaskMemFree(szInterfaceId);
+-        MsiCloseHandle(hRecord);
+-        if (iResult == IDCANCEL)
+-        {
+-            return ERROR_INSTALL_USEREXIT;
+-        }
+-    }
+-
+-    /* Get all available network interfaces. */
+-    struct tap_interface_node *pInterfaceList = NULL;
+-    DWORD dwResult = tap_list_interfaces(NULL, NULL, &pInterfaceList, TRUE);
+-    if (dwResult == ERROR_SUCCESS)
+-    {
+-        /* Does interface exist? */
+-        for (struct tap_interface_node *pInterface = pInterfaceList;; pInterface = pInterface->pNext)
+-        {
+-            if (pInterface == NULL)
+-            {
+-                /* Interface not found. */
+-                LPOLESTR szInterfaceId = NULL;
+-                StringFromIID((REFIID)&op->value_guid, &szInterfaceId);
+-                msg(M_NONFATAL, "%s: %" PRIsLPOLESTR " interface not found", __FUNCTION__, szInterfaceId);
+-                CoTaskMemFree(szInterfaceId);
+-                dwResult = ERROR_FILE_NOT_FOUND;
+-                break;
+-            }
+-            else if (memcmp(&op->value_guid, &pInterface->guid, sizeof(GUID)) == 0)
+-            {
+-                /* Interface found. */
+-                for (struct tap_interface_node *pInterfaceOther = pInterfaceList;; pInterfaceOther = pInterfaceOther->pNext)
+-                {
+-                    if (pInterfaceOther == NULL)
+-                    {
+-                        /* No other interface with a same name found. All clear to rename the interface. */
+-                        dwResult = tap_set_interface_name(&pInterface->guid, op->value_str);
+-                        if (dwResult == ERROR_SUCCESS)
+-                        {
+-                            if (session->rollback_enabled)
+-                            {
+-                                /* Order rollback action to rename it back. */
+-                                msica_op_seq_add_head(
+-                                    &session->seq_cleanup[MSICA_CLEANUP_ACTION_ROLLBACK],
+-                                    msica_op_create_guid_string(
+-                                        msica_op_tap_interface_set_name,
+-                                        0,
+-                                        NULL,
+-                                        &pInterface->guid,
+-                                        pInterface->szName));
+-                            }
+-                        }
+-                        break;
+-                    }
+-                    else if (_tcsicmp(op->value_str, pInterfaceOther->szName) == 0)
+-                    {
+-                        /* Interface with a same name found. Duplicate interface names are not allowed. */
+-                        msg(M_NONFATAL, "%s: Interface with name \"%" PRIsLPTSTR "\" already exists", __FUNCTION__, pInterfaceOther->szName);
+-                        dwResult = ERROR_ALREADY_EXISTS;
+-                        break;
+-                    }
+-                }
+-                break;
+-            }
+-        }
+-
+-        tap_free_interface_list(pInterfaceList);
+-    }
+-
+-    return dwResult;
+-}
+-
+-
+-static DWORD
+-msica_op_file_delete_exec(
+-    _Inout_ const struct msica_op_string *op,
+-    _Inout_ struct msica_session *session)
+-{
+-    if (op == NULL || session == NULL)
+-    {
+-        return ERROR_BAD_ARGUMENTS;
+-    }
+-
+-    {
+-        /* Report the name of the file to installer. */
+-        MSIHANDLE hRecord = MsiCreateRecord(3);
+-        MsiRecordSetString(hRecord, 1, TEXT("Deleting file"));
+-        MsiRecordSetString(hRecord, 2, op->value);
+-        int iResult = MsiProcessMessage(session->hInstall, INSTALLMESSAGE_ACTIONDATA, hRecord);
+-        MsiCloseHandle(hRecord);
+-        if (iResult == IDCANCEL)
+-        {
+-            return ERROR_INSTALL_USEREXIT;
+-        }
+-    }
+-
+-    DWORD dwResult;
+-
+-    if (session->rollback_enabled)
+-    {
+-        size_t sizeNameBackupLenZ = _tcslen(op->value) + 7 /*" (orig "*/ + 10 /*maximum int*/ + 1 /*")"*/ + 1 /*terminator*/;
+-        LPTSTR szNameBackup = (LPTSTR)malloc(sizeNameBackupLenZ * sizeof(TCHAR));
+-        if (szNameBackup == NULL)
+-        {
+-            msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, sizeNameBackupLenZ * sizeof(TCHAR));
+-            return ERROR_OUTOFMEMORY;
+-        }
+-
+-        int count = 0;
+-
+-        do
+-        {
+-            /* Rename the file to make a backup. */
+-            _stprintf_s(
+-                szNameBackup, sizeNameBackupLenZ,
+-                TEXT("%s (orig %i)"),
+-                op->value,
+-                ++count);
+-            dwResult = MoveFile(op->value, szNameBackup) ? ERROR_SUCCESS : GetLastError();
+-        } while (dwResult == ERROR_ALREADY_EXISTS);
+-
+-        if (dwResult == ERROR_SUCCESS)
+-        {
+-            /* Schedule rollback action to restore from backup. */
+-            msica_op_seq_add_head(
+-                &session->seq_cleanup[MSICA_CLEANUP_ACTION_ROLLBACK],
+-                msica_op_create_multistring(
+-                    msica_op_file_move,
+-                    0,
+-                    NULL,
+-                    szNameBackup,
+-                    op->value,
+-                    NULL));
+-
+-            /* Schedule commit action to delete the backup. */
+-            msica_op_seq_add_tail(
+-                &session->seq_cleanup[MSICA_CLEANUP_ACTION_COMMIT],
+-                msica_op_create_string(
+-                    msica_op_file_delete,
+-                    0,
+-                    NULL,
+-                    szNameBackup));
+-        }
+-        else if (dwResult == ERROR_FILE_NOT_FOUND) /* File does not exist: We already got what we wanted! */
+-        {
+-            dwResult = ERROR_SUCCESS;
+-        }
+-        else
+-        {
+-            msg(M_NONFATAL | M_ERRNO, "%s: MoveFile(\"%" PRIsLPTSTR "\", \"%" PRIsLPTSTR "\") failed", __FUNCTION__, op->value, szNameBackup);
+-        }
+-
+-        free(szNameBackup);
+-    }
+-    else
+-    {
+-        /* Delete the file. */
+-        dwResult = DeleteFile(op->value) ? ERROR_SUCCESS : GetLastError();
+-        if (dwResult == ERROR_FILE_NOT_FOUND) /* File does not exist: We already got what we wanted! */
+-        {
+-            dwResult = ERROR_SUCCESS;
+-        }
+-        else if (dwResult != ERROR_SUCCESS)
+-        {
+-            msg(M_NONFATAL | M_ERRNO, "%s: DeleteFile(\"%" PRIsLPTSTR "\") failed", __FUNCTION__, op->value);
+-        }
+-    }
+-
+-    return dwResult;
+-}
+-
+-
+-static DWORD
+-msica_op_file_move_exec(
+-    _Inout_ const struct msica_op_multistring *op,
+-    _Inout_ struct msica_session *session)
+-{
+-    if (op == NULL || session == NULL)
+-    {
+-        return ERROR_BAD_ARGUMENTS;
+-    }
+-
+-    /* Get source filename. */
+-    LPCTSTR szNameSrc = op->value;
+-    if (szNameSrc[0] == 0)
+-    {
+-        return ERROR_BAD_ARGUMENTS;
+-    }
+-
+-    /* Get destination filename. */
+-    LPCTSTR szNameDst = szNameSrc + _tcslen(szNameSrc) + 1;
+-    if (szNameDst[0] == 0)
+-    {
+-        return ERROR_BAD_ARGUMENTS;
+-    }
+-
+-    {
+-        /* Report the name of the files to installer. */
+-        MSIHANDLE hRecord = MsiCreateRecord(3);
+-        MsiRecordSetString(hRecord, 1, TEXT("Moving file"));
+-        MsiRecordSetString(hRecord, 2, szNameSrc);
+-        MsiRecordSetString(hRecord, 3, szNameDst);
+-        int iResult = MsiProcessMessage(session->hInstall, INSTALLMESSAGE_ACTIONDATA, hRecord);
+-        MsiCloseHandle(hRecord);
+-        if (iResult == IDCANCEL)
+-        {
+-            return ERROR_INSTALL_USEREXIT;
+-        }
+-    }
+-
+-    DWORD dwResult = MoveFile(szNameSrc, szNameDst) ? ERROR_SUCCESS : GetLastError();
+-    if (dwResult == ERROR_SUCCESS)
+-    {
+-        if (session->rollback_enabled)
+-        {
+-            /* Order rollback action to move it back. */
+-            msica_op_seq_add_head(
+-                &session->seq_cleanup[MSICA_CLEANUP_ACTION_ROLLBACK],
+-                msica_op_create_multistring(
+-                    msica_op_file_move,
+-                    0,
+-                    NULL,
+-                    szNameDst,
+-                    szNameSrc,
+-                    NULL));
+-        }
+-    }
+-    else
+-    {
+-        msg(M_NONFATAL | M_ERRNO, "%s: MoveFile(\"%" PRIsLPTSTR "\", \"%" PRIsLPTSTR "\") failed", __FUNCTION__, szNameSrc, szNameDst);
+-    }
+-
+-    return dwResult;
+-}
+-
+-
+-void
+-openvpnmsica_session_init(
+-    _Inout_ struct msica_session *session,
+-    _In_ MSIHANDLE hInstall,
+-    _In_ bool continue_on_error,
+-    _In_ bool rollback_enabled)
+-{
+-    session->hInstall          = hInstall;
+-    session->continue_on_error = continue_on_error;
+-    session->rollback_enabled  = rollback_enabled;
+-    for (size_t i = 0; i < MSICA_CLEANUP_ACTION_COUNT; i++)
+-    {
+-        msica_op_seq_init(&session->seq_cleanup[i]);
+-    }
+-}
+-
+-
+-DWORD
+-msica_op_seq_process(
+-    _Inout_ const struct msica_op_seq *seq,
+-    _Inout_ struct msica_session *session)
+-{
+-    DWORD dwResult;
+-
+-    if (seq == NULL || session == NULL)
+-    {
+-        return ERROR_BAD_ARGUMENTS;
+-    }
+-
+-    /* Tell the installer to use explicit progress messages. */
+-    MSIHANDLE hRecordProg = MsiCreateRecord(3);
+-    MsiRecordSetInteger(hRecordProg, 1, 1);
+-    MsiRecordSetInteger(hRecordProg, 2, 1);
+-    MsiRecordSetInteger(hRecordProg, 3, 0);
+-    MsiProcessMessage(session->hInstall, INSTALLMESSAGE_PROGRESS, hRecordProg);
+-
+-    /* Prepare hRecordProg for progress messages. */
+-    MsiRecordSetInteger(hRecordProg, 1, 2);
+-    MsiRecordSetInteger(hRecordProg, 3, 0);
+-
+-    for (const struct msica_op *op = seq->head; op; op = op->next)
+-    {
+-        switch (op->type)
+-        {
+-            case msica_op_rollback_enable:
+-                session->rollback_enabled = ((const struct msica_op_bool *)op)->value;
+-                dwResult = ERROR_SUCCESS;
+-                break;
+-
+-            case msica_op_tap_interface_create:
+-                dwResult = msica_op_tap_interface_create_exec((const struct msica_op_string *)op, session);
+-                break;
+-
+-            case msica_op_tap_interface_delete_by_name:
+-                dwResult = msica_op_tap_interface_delete_by_name_exec((const struct msica_op_string *)op, session);
+-                break;
+-
+-            case msica_op_tap_interface_delete_by_guid:
+-                dwResult = msica_op_tap_interface_delete_by_guid_exec((const struct msica_op_guid *)op, session);
+-                break;
+-
+-            case msica_op_tap_interface_set_name:
+-                dwResult = msica_op_tap_interface_set_name_exec((const struct msica_op_guid_string *)op, session);
+-                break;
+-
+-            case msica_op_file_delete:
+-                dwResult = msica_op_file_delete_exec((const struct msica_op_string *)op, session);
+-                break;
+-
+-            case msica_op_file_move:
+-                dwResult = msica_op_file_move_exec((const struct msica_op_multistring *)op, session);
+-                break;
+-
+-            default:
+-                msg(M_NONFATAL, "%s: Unknown operation type (%x)", __FUNCTION__, op->type);
+-                dwResult = ERROR_FILE_NOT_FOUND;
+-        }
+-
+-        if (!session->continue_on_error && dwResult != ERROR_SUCCESS)
+-        {
+-            /* Operation failed. It should have sent error message to Installer. Therefore, just quit here. */
+-            goto cleanup_hRecordProg;
+-        }
+-
+-        /* Report progress and check for user cancellation. */
+-        MsiRecordSetInteger(hRecordProg, 2, op->ticks);
+-        if (MsiProcessMessage(session->hInstall, INSTALLMESSAGE_PROGRESS, hRecordProg) == IDCANCEL)
+-        {
+-            dwResult = ERROR_INSTALL_USEREXIT;
+-            goto cleanup_hRecordProg;
+-        }
+-    }
+-
+-    dwResult = ERROR_SUCCESS;
+-
+-cleanup_hRecordProg:
+-    MsiCloseHandle(hRecordProg);
+-    return dwResult;
+-}
+diff --git a/src/openvpnmsica/msica_op.h b/src/openvpnmsica/msica_op.h
+deleted file mode 100644
+index eaf7596c..00000000
+--- a/src/openvpnmsica/msica_op.h
++++ /dev/null
+@@ -1,430 +0,0 @@
+-/*
+- *  openvpnmsica -- Custom Action DLL to provide OpenVPN-specific support to MSI packages
+- *                  https://community.openvpn.net/openvpn/wiki/OpenVPNMSICA
+- *
+- *  Copyright (C) 2018 Simon Rozman <simon@...2293...>
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License along
+- *  with this program; if not, write to the Free Software Foundation, Inc.,
+- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+- */
+-
+-#ifndef MSICA_OP_H
+-#define MSICA_OP_H
+-
+-#include <windows.h>
+-#include <msi.h>
+-#include <stdarg.h>
+-#include <stdbool.h>
+-#include <tchar.h>
+-#include "../tapctl/basic.h"
+-
+-#ifdef _MSC_VER
+-#pragma warning(push)
+-#pragma warning(disable: 4200) /* Using zero-sized arrays in struct/union. */
+-#endif
+-
+-
+-/**
+- * Operation type macros
+- */
+-#define MSICA_MAKE_OP_TYPE(op, data)  (((op)<<4)|((data)&0xf))
+-#define MSICA_OP_TYPE_OP(type)        ((unsigned int)(type)>>4)
+-#define MSICA_OP_TYPE_DATA(type)      ((unsigned int)(type)&0xf)
+-
+-
+-/**
+- * Operation types
+- */
+-enum msica_op_type
+-{
+-    msica_op_rollback_enable              = MSICA_MAKE_OP_TYPE(0x1, 0x1),  /** Enable/disable rollback  | msica_op_bool */
+-    msica_op_tap_interface_create         = MSICA_MAKE_OP_TYPE(0x2, 0x2),  /** Create TAP/TUN interface | msica_op_string */
+-    msica_op_tap_interface_delete_by_name = MSICA_MAKE_OP_TYPE(0x3, 0x2),  /** Delete TAP/TUN interface | msica_op_string */
+-    msica_op_tap_interface_delete_by_guid = MSICA_MAKE_OP_TYPE(0x3, 0x4),  /** Delete TAP/TUN interface | msica_op_guid */
+-    msica_op_tap_interface_set_name       = MSICA_MAKE_OP_TYPE(0x4, 0x5),  /** Rename TAP/TUN interface | msica_op_guid_string */
+-    msica_op_file_delete                  = MSICA_MAKE_OP_TYPE(0x5, 0x2),  /** Delete file              | msica_op_string */
+-    msica_op_file_move                    = MSICA_MAKE_OP_TYPE(0x6, 0x3),  /** Move file                | msica_op_multistring (min 2 strings) */
+-};
+-
+-
+-/**
+- * Operation data
+- */
+-struct msica_op
+-{
+-    enum msica_op_type type;  /** Operation type */
+-    int ticks;                /** Number of ticks on the progress indicator this operation represents */
+-    struct msica_op *next;    /** Pointer to the next operation in the sequence */
+-};
+-
+-
+-/**
+- * Operation sequence
+- */
+-struct msica_op_seq
+-{
+-    struct msica_op *head;    /** Pointer to the first operation in the sequence */
+-    struct msica_op *tail;    /** Pointer to the last operation in the sequence */
+-};
+-
+-
+-/**
+- * Initializes operation sequence
+- *
+- * @param seq           Pointer to uninitialized operation sequence
+- */
+-void
+-msica_op_seq_init(_Inout_ struct msica_op_seq *seq);
+-
+-
+-/**
+- * Frees operation sequence
+- *
+- * @param seq           Pointer to operation sequence
+- */
+-void
+-msica_op_seq_free(_Inout_ struct msica_op_seq *seq);
+-
+-
+-/**
+- * Operation data (bool, 0x1)
+- */
+-struct msica_op_bool
+-{
+-    struct msica_op base;     /** Common operation data */
+-    bool value;               /** Operation data boolean value */
+-};
+-
+-
+-/**
+- * Allocates and fills a new msica_op_bool operation
+- *
+- * @param type          Operation type
+- *
+- * @param ticks         Number of ticks on the progress indicator this operation represents
+- *
+- * @param next          Pointer to the next operation in the sequence
+- *
+- * @param value         Boolean value
+- *
+- * @return              A new msica_op_bool operation. Must be added to a sequence list or
+- *                      released using free() after use. The function returns a pointer to
+- *                      msica_op to reduce type-casting in code.
+- */
+-struct msica_op *
+-msica_op_create_bool(
+-    _In_ enum msica_op_type type,
+-    _In_ int ticks,
+-    _In_opt_ struct msica_op *next,
+-    _In_ bool value);
+-
+-
+-/**
+- * Operation data (string, 0x2)
+- */
+-struct msica_op_string
+-{
+-    struct msica_op base;     /** Common operation data */
+-    TCHAR value[];            /** Operation data string - the string must always be zero terminated. */
+-};
+-
+-
+-/**
+- * Allocates and fills a new msica_op_string operation
+- *
+- * @param type          Operation type
+- *
+- * @param ticks         Number of ticks on the progress indicator this operation represents
+- *
+- * @param next          Pointer to the next operation in the sequence
+- *
+- * @param value         String value
+- *
+- * @return              A new msica_op_string operation. Must be added to a sequence list or
+- *                      released using free() after use. The function returns a pointer to
+- *                      msica_op to reduce type-casting in code.
+- */
+-struct msica_op *
+-msica_op_create_string(
+-    _In_ enum msica_op_type type,
+-    _In_ int ticks,
+-    _In_opt_ struct msica_op *next,
+-    _In_z_ LPCTSTR value);
+-
+-
+-/**
+- * Operation data (multi-string, 0x3)
+- */
+-struct msica_op_multistring
+-{
+-    struct msica_op base;     /** Common operation data */
+-    TCHAR value[];            /** Operation data strings - each string must always be zero terminated. The last string must be double terminated. */
+-};
+-
+-
+-/**
+- * Allocates and fills a new msica_op_multistring operation
+- *
+- * @param type          Operation type
+- *
+- * @param ticks         Number of ticks on the progress indicator this operation represents
+- *
+- * @param next          Pointer to the next operation in the sequence
+- *
+- * @param arglist       List of non-empty strings. The last string must be NULL.
+- *
+- * @return              A new msica_op_string operation. Must be added to a sequence list or
+- *                      released using free() after use. The function returns a pointer to
+- *                      msica_op to reduce type-casting in code.
+- */
+-struct msica_op *
+-msica_op_create_multistring_va(
+-    _In_ enum msica_op_type type,
+-    _In_ int ticks,
+-    _In_opt_ struct msica_op *next,
+-    _In_ va_list arglist);
+-
+-
+-/**
+- * Operation data (GUID, 0x4)
+- */
+-struct msica_op_guid
+-{
+-    struct msica_op base;     /** Common operation data */
+-    GUID value;               /** Operation data GUID */
+-};
+-
+-
+-/**
+- * Allocates and fills a new msica_op_guid operation
+- *
+- * @param type          Operation type
+- *
+- * @param ticks         Number of ticks on the progress indicator this operation represents
+- *
+- * @param next          Pointer to the next operation in the sequence
+- *
+- * @param value         Pointer to GUID value
+- *
+- * @return              A new msica_op_guid operation. Must be added to a sequence list or
+- *                      released using free() after use. The function returns a pointer to
+- *                      msica_op to reduce type-casting in code.
+- */
+-struct msica_op *
+-msica_op_create_guid(
+-    _In_ enum msica_op_type type,
+-    _In_ int ticks,
+-    _In_opt_ struct msica_op *next,
+-    _In_ const GUID *value);
+-
+-
+-/**
+- * Operation data (guid-string, 0x5)
+- */
+-struct msica_op_guid_string
+-{
+-    struct msica_op base;     /** Common operation data */
+-    GUID value_guid;          /** Operation data GUID */
+-    TCHAR value_str[];        /** Operation data string - the string must always be zero terminated. */
+-};
+-
+-
+-/**
+- * Allocates and fills a new msica_op_guid_string operation
+- *
+- * @param type          Operation type
+- *
+- * @param ticks         Number of ticks on the progress indicator this operation represents
+- *
+- * @param next          Pointer to the next operation in the sequence
+- *
+- * @param value_guid    Pointer to GUID value
+- *
+- * @param value_str     String value
+- *
+- * @return              A new msica_op_guid_string operation. Must be added to a sequence
+- *                      list or released using free() after use. The function returns a
+- *                      pointer to msica_op to reduce type-casting in code.
+- */
+-struct msica_op *
+-msica_op_create_guid_string(
+-    _In_ enum msica_op_type type,
+-    _In_ int ticks,
+-    _In_opt_ struct msica_op *next,
+-    _In_ const GUID *value_guid,
+-    _In_z_ LPCTSTR value_str);
+-
+-
+-/**
+- * Allocates and fills a new msica_op_multistring operation. Strings must be non-empty. The
+- * last string passed as the input parameter must be NULL.
+- *
+- * @param type          Operation type
+- *
+- * @param ticks         Number of ticks on the progress indicator this operation represents
+- *
+- * @param next          Pointer to the next operation in the sequence
+- *
+- * @return              A new msica_op_string operation. Must be added to a sequence list or
+- *                      released using free() after use. The function returns a pointer to
+- *                      msica_op to reduce type-casting in code.
+- */
+-static inline struct msica_op *
+-msica_op_create_multistring(
+-    _In_ enum msica_op_type type,
+-    _In_ int ticks,
+-    _In_opt_ struct msica_op *next,
+-    ...)
+-{
+-    va_list arglist;
+-    va_start(arglist, next);
+-    struct msica_op *op = msica_op_create_multistring_va(type, ticks, next, arglist);
+-    va_end(arglist);
+-    return op;
+-}
+-
+-
+-/**
+- * Is operation sequence empty
+- *
+- * @param seq           Pointer to operation sequence
+- *
+- * @return true if empty; false otherwise
+- */
+-static inline bool
+-msica_op_seq_is_empty(_In_ const struct msica_op_seq *seq)
+-{
+-    return seq->head != NULL;
+-}
+-
+-
+-/**
+- * Inserts operation(s) to the beginning of the operation sequence
+- *
+- * @param seq           Pointer to operation sequence
+- *
+- * @param operation     Pointer to the operation to insert. All operations in the list are
+- *                      added until the list is terminated with msica_op.next field set to
+- *                      NULL. Operations must be allocated using malloc().
+- */
+-void
+-msica_op_seq_add_head(
+-    _Inout_ struct msica_op_seq *seq,
+-    _Inout_ struct msica_op *operation);
+-
+-
+-/**
+- * Appends operation(s) to the end of the operation sequence
+- *
+- * @param seq           Pointer to operation sequence
+- *
+- * @param operation     Pointer to the operation to append. All operations in the list are
+- *                      added until the list is terminated with msica_op.next field set to
+- *                      NULL. Operations must be allocated using malloc().
+- */
+-void
+-msica_op_seq_add_tail(
+-    _Inout_ struct msica_op_seq *seq,
+-    _Inout_ struct msica_op *operation);
+-
+-
+-/**
+- * Saves the operation sequence to the file
+- *
+- * @param seq           Pointer to operation sequence
+- *
+- * @param hFile         Handle of the file opened with GENERIC_WRITE access
+- *
+- * @return ERROR_SUCCESS on success; An error code otherwise
+- */
+-DWORD
+-msica_op_seq_save(
+-    _In_ const struct msica_op_seq *seq,
+-    _In_ HANDLE hFile);
+-
+-
+-/**
+- * Loads the operation sequence from the file
+- *
+- * @param seq           Pointer to uninitialized or empty operation sequence
+- *
+- * @param hFile         Handle of the file opened with GENERIC_READ access
+- *
+- * @return ERROR_SUCCESS on success; An error code otherwise
+- */
+-DWORD
+-msica_op_seq_load(
+-    _Inout_ struct msica_op_seq *seq,
+-    _In_ HANDLE hFile);
+-
+-
+-/**
+- * Execution session constants
+- */
+-#define MSICA_CLEANUP_ACTION_COMMIT   0
+-#define MSICA_CLEANUP_ACTION_ROLLBACK 1
+-#define MSICA_CLEANUP_ACTION_COUNT    2
+-
+-
+-/**
+- * Execution session
+- */
+-struct msica_session
+-{
+-    MSIHANDLE hInstall;           /** Installer handle */
+-    bool continue_on_error;       /** Continue execution on operation error? */
+-    bool rollback_enabled;        /** Is rollback enabled? */
+-    struct msica_op_seq seq_cleanup[MSICA_CLEANUP_ACTION_COUNT]; /** Commit/Rollback action operation sequence */
+-};
+-
+-
+-/**
+- * Initializes execution session
+- *
+- * @param session       Pointer to an uninitialized execution session
+- *
+- * @param hInstall      Installer handle
+- *
+- * @param continue_on_error  Continue execution on operation error?
+- *
+- * @param rollback_enabled  Is rollback enabled?
+- */
+-void
+-openvpnmsica_session_init(
+-    _Inout_ struct msica_session *session,
+-    _In_ MSIHANDLE hInstall,
+-    _In_ bool continue_on_error,
+-    _In_ bool rollback_enabled);
+-
+-
+-/**
+- * Executes all operations in sequence
+- *
+- * @param seq           Pointer to operation sequence
+- *
+- * @param session       MSI session. The execution updates its members, most notably
+- *                      rollback_enabled and fills cleanup sequences with commit/rollback
+- *                      operations.
+- *
+- * @return ERROR_SUCCESS on success; An error code otherwise
+- */
+-DWORD
+-msica_op_seq_process(
+-    _Inout_ const struct msica_op_seq *seq,
+-    _Inout_ struct msica_session *session);
+-
+-#ifdef _MSC_VER
+-#pragma warning(pop)
+-#endif
+-
+-#endif /* ifndef MSICA_OP_H */
 diff --git a/src/openvpnmsica/openvpnmsica.c b/src/openvpnmsica/openvpnmsica.c
-index 749dce56..1438d3f7 100644
+index e1f0b77d..4c186b13 100644
 --- a/src/openvpnmsica/openvpnmsica.c
 +++ b/src/openvpnmsica/openvpnmsica.c
-@@ -57,7 +57,7 @@
-  * Local constants
-  */
+@@ -26,7 +26,7 @@
+ #include <winsock2.h> /* Must be included _before_ <windows.h> */
  
--#define MSICA_INTERFACE_TICK_SIZE (16*1024) /** Amount of tick space to reserve for one TAP/TUN interface creation/deletition. */
-+#define MSICA_ADAPTER_TICK_SIZE (16*1024) /** Amount of tick space to reserve for one TAP/TUN adapter creation/deletition. */
+ #include "openvpnmsica.h"
+-#include "msica_op.h"
++#include "msica_arg.h"
+ #include "msiex.h"
+ 
+ #include "../tapctl/basic.h"
+@@ -61,100 +61,32 @@
  
  
  /**
-@@ -272,7 +272,7 @@ FindSystemInfo(_In_ MSIHANDLE hInstall)
- 
- 
- UINT __stdcall
--FindTAPInterfaces(_In_ MSIHANDLE hInstall)
-+FindTAPAdapters(_In_ MSIHANDLE hInstall)
+- * Cleanup actions
+- */
+-static const struct {
+-    LPCTSTR szName;               /** Name of the cleanup action. This name is appended to the deferred custom action name (e.g. "InstallTAPInterfaces" >> "InstallTAPInterfacesCommit"). */
+-    TCHAR szSuffix[3];            /** Two-character suffix to append to the cleanup operation sequence filename */
+-} openvpnmsica_cleanup_action_seqs[MSICA_CLEANUP_ACTION_COUNT] =
+-{
+-    { TEXT("Commit"  ), TEXT("cm") }, /* MSICA_CLEANUP_ACTION_COMMIT   */
+-    { TEXT("Rollback"), TEXT("rb") }, /* MSICA_CLEANUP_ACTION_ROLLBACK */
+-};
+-
+-
+-/**
+- * Creates a new sequence file in the current user's temporary folder and sets MSI property
+- * to its absolute path.
++ * Joins an argument sequence and sets it to the MSI property.
+  *
+  * @param hInstall      Handle to the installation provided to the DLL custom action
+  *
+- * @param szProperty    MSI property name to set to the absolute path of the sequence file.
++ * @param szProperty    MSI property name to set to the joined argument sequence.
+  *
+- * @param szFilename    String of minimum MAXPATH+1 characters where the zero-terminated
+- *                      file absolute path is stored.
++ * @param seq           The argument sequence.
+  *
+  * @return ERROR_SUCCESS on success; An error code otherwise
+  */
+-static DWORD
+-openvpnmsica_setup_sequence_filename(
++static UINT
++openvpnmsica_setup_sequence(
+     _In_ MSIHANDLE hInstall,
+     _In_z_ LPCTSTR szProperty,
+-    _Out_z_cap_(MAXPATH + 1) LPTSTR szFilename)
++    _In_ struct msica_arg_seq *seq)
  {
- #ifdef _MSC_VER
- #pragma comment(linker, DLLEXP_EXPORT)
-@@ -285,15 +285,15 @@ FindTAPInterfaces(_In_ MSIHANDLE hInstall)
+-    DWORD dwResult;
+-
+-    if (szFilename == NULL)
+-    {
+-        return ERROR_BAD_ARGUMENTS;
+-    }
+-
+-    /* Generate a random filename in the temporary folder. */
+-    if (GetTempPath(MAX_PATH + 1, szFilename) == 0)
+-    {
+-        dwResult = GetLastError();
+-        msg(M_NONFATAL | M_ERRNO, "%s: GetTempPath failed", __FUNCTION__);
+-        return dwResult;
+-    }
+-    if (GetTempFileName(szFilename, szProperty, 0, szFilename) == 0)
+-    {
+-        dwResult = GetLastError();
+-        msg(M_NONFATAL | M_ERRNO, "%s: GetTempFileName failed", __FUNCTION__);
+-        return dwResult;
+-    }
+-
+-    /* Store sequence filename to property for deferred custom action. */
+-    dwResult = MsiSetProperty(hInstall, szProperty, szFilename);
+-    if (dwResult != ERROR_SUCCESS)
++    UINT uiResult;
++    LPTSTR szSequence = msica_arg_seq_join(seq);
++    uiResult = MsiSetProperty(hInstall, szProperty, szSequence);
++    free(szSequence);
++    if (uiResult != ERROR_SUCCESS)
+     {
+-        SetLastError(dwResult); /* MSDN does not mention MsiSetProperty() to set GetLastError(). But we do have an error code. Set last error manually. */
++        SetLastError(uiResult); /* MSDN does not mention MsiSetProperty() to set GetLastError(). But we do have an error code. Set last error manually. */
+         msg(M_NONFATAL | M_ERRNO, "%s: MsiSetProperty(\"%" PRIsLPTSTR "\") failed", __FUNCTION__, szProperty);
+-        return dwResult;
+-    }
+-
+-    /* Generate and store cleanup operation sequence filenames to properties. */
+-    LPTSTR szExtension = PathFindExtension(szFilename);
+-    TCHAR szFilenameEx[MAX_PATH + 1 /*dash*/ + 2 /*suffix*/ + 1 /*terminator*/];
+-    size_t len_property_name = _tcslen(szProperty);
+-    for (size_t i = 0; i < MSICA_CLEANUP_ACTION_COUNT; i++)
+-    {
+-        size_t len_action_name_z = _tcslen(openvpnmsica_cleanup_action_seqs[i].szName) + 1;
+-        TCHAR *szPropertyEx = (TCHAR *)malloc((len_property_name + len_action_name_z) * sizeof(TCHAR));
+-        if (szPropertyEx == NULL)
+-        {
+-            msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, (len_property_name + len_action_name_z) * sizeof(TCHAR));
+-            return ERROR_OUTOFMEMORY;
+-        }
+-
+-        memcpy(szPropertyEx, szProperty, len_property_name * sizeof(TCHAR));
+-        memcpy(szPropertyEx + len_property_name, openvpnmsica_cleanup_action_seqs[i].szName, len_action_name_z * sizeof(TCHAR));
+-        _stprintf_s(
+-            szFilenameEx, _countof(szFilenameEx),
+-            TEXT("%.*s-%.2s%s"),
+-            (int)(szExtension - szFilename), szFilename,
+-            openvpnmsica_cleanup_action_seqs[i].szSuffix,
+-            szExtension);
+-        dwResult = MsiSetProperty(hInstall, szPropertyEx, szFilenameEx);
+-        if (dwResult != ERROR_SUCCESS)
+-        {
+-            SetLastError(dwResult); /* MSDN does not mention MsiSetProperty() to set GetLastError(). But we do have an error code. Set last error manually. */
+-            msg(M_NONFATAL | M_ERRNO, "%s: MsiSetProperty(\"%" PRIsLPTSTR "\") failed", __FUNCTION__, szPropertyEx);
+-            free(szPropertyEx);
+-            return dwResult;
+-        }
+-        free(szPropertyEx);
++        return uiResult;
+     }
+-
+     return ERROR_SUCCESS;
+ }
+ 
+@@ -613,6 +545,179 @@ cleanup_CoInitialize:
+ }
+ 
+ 
++/**
++ * Schedules interface creation.
++ *
++ * When the rollback is enabled, the interface deletition is scheduled on rollback.
++ *
++ * @param seq           The argument sequence to pass to InstallTAPInterfaces custom action
++ *
++ * @param seqRollback   The argument sequence to pass to InstallTAPInterfacesRollback custom
++ *                      action. NULL when rollback is disabled.
++ *
++ * @param szDisplayName  Interface display name.
++ *
++ * @param iTicks        Pointer to an integer that represents amount of work (on progress
++ *                      indicator) the InstallTAPInterfaces will take. This function increments it
++ *                      by MSICA_INTERFACE_TICK_SIZE for each interface to create.
++ *
++ * @return ERROR_SUCCESS on success; An error code otherwise
++ */
++static DWORD
++openvpnmsica_schedule_interface_create(_Inout_ struct msica_arg_seq *seq, _Inout_opt_ struct msica_arg_seq *seqRollback, _In_z_ LPCTSTR szDisplayName, _Inout_ int *iTicks)
++{
++    /* Get all available network interfaces. */
++    struct tap_interface_node *pInterfaceList = NULL;
++    DWORD dwResult = tap_list_interfaces(NULL, NULL, &pInterfaceList, TRUE);
++    if (dwResult != ERROR_SUCCESS)
++    {
++        return dwResult;
++    }
++
++    /* Does interface exist? */
++    for (struct tap_interface_node *pInterfaceOther = pInterfaceList;; pInterfaceOther = pInterfaceOther->pNext)
++    {
++        if (pInterfaceOther == NULL)
++        {
++            /* No interface with a same name found. */
++            TCHAR szArgument[10 /*create=""|deleteN=""*/ + MAX_PATH /*szDisplayName*/ + 1 /*terminator*/];
++
++            /* InstallTAPInterfaces will create the interface. */
++            _stprintf_s(
++                szArgument, _countof(szArgument),
++                TEXT("create=\"%.*s\""),
++                MAX_PATH, szDisplayName);
++            msica_arg_seq_add_tail(seq, szArgument);
++
++            if (seqRollback)
++            {
++                /* InstallTAPInterfacesRollback will delete the interface. */
++                _stprintf_s(
++                    szArgument, _countof(szArgument),
++                    TEXT("deleteN=\"%.*s\""),
++                    MAX_PATH, szDisplayName);
++                msica_arg_seq_add_head(seqRollback, szArgument);
++            }
++
++            *iTicks += MSICA_INTERFACE_TICK_SIZE;
++            break;
++        }
++        else if (_tcsicmp(szDisplayName, pInterfaceOther->szName) == 0)
++        {
++            /* Interface with a same name found. */
++            for (LPCTSTR hwid = pInterfaceOther->szzHardwareIDs;; hwid += _tcslen(hwid) + 1)
++            {
++                if (hwid[0] == 0)
++                {
++                    /* This is not a TAP interface. */
++                    msg(M_NONFATAL, "%s: Interface with name \"%" PRIsLPTSTR "\" already exists", __FUNCTION__, pInterfaceOther->szName);
++                    dwResult = ERROR_ALREADY_EXISTS;
++                    goto cleanup_pInterfaceList;
++                }
++                else if (
++                    _tcsicmp(hwid, TEXT(TAP_WIN_COMPONENT_ID)) == 0
++                    || _tcsicmp(hwid, TEXT("root\\") TEXT(TAP_WIN_COMPONENT_ID)) == 0)
++                {
++                    /* This is a TAP-Windows6 interface. We already have what we want! */
++                    break;
++                }
++            }
++            break; /* Interface names are unique. There should be no other interface with this name. */
++        }
++    }
++
++cleanup_pInterfaceList:
++    tap_free_interface_list(pInterfaceList);
++    return dwResult;
++}
++
++
++/**
++ * Schedules interface deletion.
++ *
++ * When the rollback is enabled, the interface deletition is scheduled as: disable in
++ * UninstallTAPInterfaces, enable on rollback, delete on commit.
++ *
++ * When rollback is disabled, the interface deletition is scheduled as delete in
++ * UninstallTAPInterfaces.
++ *
++ * @param seq           The argument sequence to pass to UninstallTAPInterfaces custom action
++ *
++ * @param seqCommit     The argument sequence to pass to UninstallTAPInterfacesCommit custom
++ *                      action. NULL when rollback is disabled.
++ *
++ * @param seqRollback   The argument sequence to pass to UninstallTAPInterfacesRollback custom
++ *                      action. NULL when rollback is disabled.
++ *
++ * @param szDisplayName  Interface display name.
++ *
++ * @param iTicks        Pointer to an integer that represents amount of work (on progress
++ *                      indicator) the UninstallTAPInterfaces will take. This function increments
++ *                      it by MSICA_INTERFACE_TICK_SIZE for each interface to delete.
++ *
++ * @return ERROR_SUCCESS on success; An error code otherwise
++ */
++static DWORD
++openvpnmsica_schedule_interface_delete(_Inout_ struct msica_arg_seq *seq, _Inout_opt_ struct msica_arg_seq *seqCommit, _Inout_opt_ struct msica_arg_seq *seqRollback, _In_z_ LPCTSTR szDisplayName, _Inout_ int *iTicks)
++{
++    /* Get available TUN/TAP interfaces. */
++    struct tap_interface_node *pInterfaceList = NULL;
++    DWORD dwResult = tap_list_interfaces(NULL, NULL, &pInterfaceList, FALSE);
++    if (dwResult != ERROR_SUCCESS)
++    {
++        return dwResult;
++    }
++
++    /* Does interface exist? */
++    for (struct tap_interface_node *pInterface = pInterfaceList; pInterface != NULL; pInterface = pInterface->pNext)
++    {
++        if (_tcsicmp(szDisplayName, pInterface->szName) == 0)
++        {
++            /* Interface found. */
++            TCHAR szArgument[8 /*disable=|enable=|delete=*/ + 38 /*{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}*/ + 1 /*terminator*/];
++            if (seqCommit && seqRollback)
++            {
++                /* UninstallTAPInterfaces will disable the interface. */
++                _stprintf_s(
++                    szArgument, _countof(szArgument),
++                    TEXT("disable=") TEXT(PRIXGUID),
++                    PRIGUID_PARAM(pInterface->guid));
++                msica_arg_seq_add_tail(seq, szArgument);
++
++                /* UninstallTAPInterfacesRollback will re-enable the interface. */
++                _stprintf_s(
++                    szArgument, _countof(szArgument),
++                    TEXT("enable=") TEXT(PRIXGUID),
++                    PRIGUID_PARAM(pInterface->guid));
++                msica_arg_seq_add_head(seqRollback, szArgument);
++
++                /* UninstallTAPInterfacesCommit will delete the interface. */
++                _stprintf_s(
++                    szArgument, _countof(szArgument),
++                    TEXT("delete=") TEXT(PRIXGUID),
++                    PRIGUID_PARAM(pInterface->guid));
++                msica_arg_seq_add_tail(seqCommit, szArgument);
++            }
++            else
++            {
++                /* UninstallTAPInterfaces will delete the interface. */
++                _stprintf_s(
++                    szArgument, _countof(szArgument),
++                    TEXT("delete=") TEXT(PRIXGUID),
++                    PRIGUID_PARAM(pInterface->guid));
++                msica_arg_seq_add_tail(seq, szArgument);
++            }
++
++            iTicks += MSICA_INTERFACE_TICK_SIZE;
++            break; /* Interface names are unique. There should be no other interface with this name. */
++        }
++    }
++
++    tap_free_interface_list(pInterfaceList);
++    return dwResult;
++}
++
++
+ UINT __stdcall
+ EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall)
+ {
+@@ -627,43 +732,30 @@ EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall)
  
      OPENVPNMSICA_SAVE_MSI_SESSION(hInstall);
  
--    /* Get all TUN/TAP network interfaces. */
--    struct tap_interface_node *pInterfaceList = NULL;
--    uiResult = tap_list_interfaces(NULL, NULL, &pInterfaceList, FALSE);
-+    /* Get all TUN/TAP network adapters. */
-+    struct tap_adapter_node *pAdapterList = NULL;
-+    uiResult = tap_list_adapters(NULL, NULL, &pAdapterList, FALSE);
+-    /* List of deferred custom actions EvaluateTAPInterfaces prepares operation sequence for. */
+-    static const LPCTSTR szActionNames[] =
+-    {
+-        TEXT("InstallTAPInterfaces"),
+-        TEXT("UninstallTAPInterfaces"),
+-    };
+-    struct msica_op_seq exec_seq[_countof(szActionNames)];
+-    for (size_t i = 0; i < _countof(szActionNames); i++)
+-    {
+-        msica_op_seq_init(&exec_seq[i]);
+-    }
+-
+-    {
+-        /* Check and store the rollback enabled state. */
+-        TCHAR szValue[128];
+-        DWORD dwLength = _countof(szValue);
+-        bool enable_rollback = MsiGetProperty(hInstall, TEXT("RollbackDisabled"), szValue, &dwLength) == ERROR_SUCCESS ?
+-                               _ttoi(szValue) || _totlower(szValue[0]) == TEXT('y') ? false : true :
+-                               true;
+-        for (size_t i = 0; i < _countof(szActionNames); i++)
+-        {
+-            msica_op_seq_add_tail(
+-                &exec_seq[i],
+-                msica_op_create_bool(
+-                    msica_op_rollback_enable,
+-                    0,
+-                    NULL,
+-                    enable_rollback));
+-        }
+-    }
++    struct msica_arg_seq
++        seqInstallTAPInterfaces,
++        seqInstallTAPInterfacesCommit,
++        seqInstallTAPInterfacesRollback,
++        seqUninstallTAPInterfaces,
++        seqUninstallTAPInterfacesCommit,
++        seqUninstallTAPInterfacesRollback;
++    msica_arg_seq_init(&seqInstallTAPInterfaces);
++    msica_arg_seq_init(&seqInstallTAPInterfacesCommit);
++    msica_arg_seq_init(&seqInstallTAPInterfacesRollback);
++    msica_arg_seq_init(&seqUninstallTAPInterfaces);
++    msica_arg_seq_init(&seqUninstallTAPInterfacesCommit);
++    msica_arg_seq_init(&seqUninstallTAPInterfacesRollback);
++
++    /* Check rollback state. */
++    bool bRollbackEnabled = MsiEvaluateCondition(hInstall, TEXT("RollbackDisabled")) != MSICONDITION_TRUE;
+ 
+     /* Open MSI database. */
+     MSIHANDLE hDatabase = MsiGetActiveDatabase(hInstall);
+     if (hDatabase == 0)
+     {
+         msg(M_NONFATAL, "%s: MsiGetActiveDatabase failed", __FUNCTION__);
+-        uiResult = ERROR_INVALID_HANDLE; goto cleanup_exec_seq;
++        uiResult = ERROR_INVALID_HANDLE;
++        goto cleanup_exec_seq;
+     }
+ 
+     /* Check if TAPInterface table exists. If it doesn't exist, there's nothing to do. */
+@@ -758,6 +850,8 @@ EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall)
+ 
+         if (iAction > INSTALLSTATE_BROKEN)
+         {
++            int iTicks = 0;
++
+             if (iAction >= INSTALLSTATE_LOCAL)
+             {
+                 /* Read and evaluate interface condition (`Condition` is field #3). */
+@@ -793,29 +887,35 @@ EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall)
+                 free(szValue);
+ 
+                 /* Component is or should be installed. Schedule interface creation. */
+-                msica_op_seq_add_tail(
+-                    &exec_seq[0],
+-                    msica_op_create_string(
+-                        msica_op_tap_interface_create,
+-                        MSICA_INTERFACE_TICK_SIZE,
+-                        NULL,
+-                        szDisplayNameEx));
++                if (openvpnmsica_schedule_interface_create(
++                        &seqInstallTAPInterfaces,
++                        bRollbackEnabled ? &seqInstallTAPInterfacesRollback : NULL,
++                        szDisplayNameEx,
++                        &iTicks) != ERROR_SUCCESS)
++                {
++                    uiResult = ERROR_INSTALL_FAILED;
++                    goto cleanup_szDisplayName;
++                }
+             }
+             else
+             {
+-                /* Component is installed, but should be degraded to advertised/removed. Schedule interface deletition. */
+-                msica_op_seq_add_tail(
+-                    &exec_seq[1],
+-                    msica_op_create_string(
+-                        msica_op_tap_interface_delete_by_name,
+-                        MSICA_INTERFACE_TICK_SIZE,
+-                        NULL,
+-                        szDisplayNameEx));
++                /* Component is installed, but should be degraded to advertised/removed. Schedule interface deletition.
++                 *
++                 * Note: On interface removal (product is being uninstalled), we tolerate dwResult error.
++                 * Better a partial uninstallation than no uninstallation at all.
++                 */
++                openvpnmsica_schedule_interface_delete(
++                    &seqUninstallTAPInterfaces,
++                    bRollbackEnabled ? &seqUninstallTAPInterfacesCommit : NULL,
++                    bRollbackEnabled ? &seqUninstallTAPInterfacesRollback : NULL,
++                    szDisplayNameEx,
++                    &iTicks);
+             }
+ 
+-            /* The amount of tick space to add for each interface to progress indicator. */
++            /* Arrange the amount of tick space to add to the progress indicator.
++             * Do this within the loop to poll for user cancellation. */
+             MsiRecordSetInteger(hRecordProg, 1, 3 /* OP3 = Add ticks to the expected total number of progress of the progress bar */);
+-            MsiRecordSetInteger(hRecordProg, 2, MSICA_INTERFACE_TICK_SIZE);
++            MsiRecordSetInteger(hRecordProg, 2, iTicks);
+             if (MsiProcessMessage(hInstall, INSTALLMESSAGE_PROGRESS, hRecordProg) == IDCANCEL)
+             {
+                 uiResult = ERROR_INSTALL_USEREXIT;
+@@ -833,59 +933,19 @@ cleanup_hRecord:
+         }
+     }
+ 
+-    /*
+-     * Write sequence files.
+-     * The InstallTAPInterfaces and UninstallTAPInterfaces are deferred custom actions, thus all this information
+-     * will be unavailable to them. Therefore save all required operations and their info to sequence files.
+-     */
+-    TCHAR szSeqFilename[_countof(szActionNames)][MAX_PATH + 1];
+-    for (size_t i = 0; i < _countof(szActionNames); i++)
++    /* Store deferred custom action parameters. */
++    if ((uiResult = openvpnmsica_setup_sequence(hInstall, TEXT("InstallTAPInterfaces"          ), &seqInstallTAPInterfaces          )) != ERROR_SUCCESS
++        || (uiResult = openvpnmsica_setup_sequence(hInstall, TEXT("InstallTAPInterfacesCommit"    ), &seqInstallTAPInterfacesCommit    )) != ERROR_SUCCESS
++        || (uiResult = openvpnmsica_setup_sequence(hInstall, TEXT("InstallTAPInterfacesRollback"  ), &seqInstallTAPInterfacesRollback  )) != ERROR_SUCCESS
++        || (uiResult = openvpnmsica_setup_sequence(hInstall, TEXT("UninstallTAPInterfaces"        ), &seqUninstallTAPInterfaces        )) != ERROR_SUCCESS
++        || (uiResult = openvpnmsica_setup_sequence(hInstall, TEXT("UninstallTAPInterfacesCommit"  ), &seqUninstallTAPInterfacesCommit  )) != ERROR_SUCCESS
++        || (uiResult = openvpnmsica_setup_sequence(hInstall, TEXT("UninstallTAPInterfacesRollback"), &seqUninstallTAPInterfacesRollback)) != ERROR_SUCCESS)
+     {
+-        szSeqFilename[i][0] = 0;
+-    }
+-    for (size_t i = 0; i < _countof(szActionNames); i++)
+-    {
+-        uiResult = openvpnmsica_setup_sequence_filename(hInstall, szActionNames[i], szSeqFilename[i]);
+-        if (uiResult != ERROR_SUCCESS)
+-        {
+-            goto cleanup_szSeqFilename;
+-        }
+-        HANDLE hSeqFile = CreateFile(
+-            szSeqFilename[i],
+-            GENERIC_WRITE,
+-            FILE_SHARE_READ,
+-            NULL,
+-            CREATE_ALWAYS,
+-            FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN,
+-            NULL);
+-        if (hSeqFile == INVALID_HANDLE_VALUE)
+-        {
+-            uiResult = GetLastError();
+-            msg(M_NONFATAL | M_ERRNO, "%s: CreateFile(\"%.*" PRIsLPTSTR "\") failed", __FUNCTION__, _countof(szSeqFilename[i]), szSeqFilename[i]);
+-            goto cleanup_szSeqFilename;
+-        }
+-        uiResult = msica_op_seq_save(&exec_seq[i], hSeqFile);
+-        CloseHandle(hSeqFile);
+-        if (uiResult != ERROR_SUCCESS)
+-        {
+-            goto cleanup_szSeqFilename;
+-        }
++        goto cleanup_hRecordProg;
+     }
+ 
+     uiResult = ERROR_SUCCESS;
+ 
+-cleanup_szSeqFilename:
+-    if (uiResult != ERROR_SUCCESS)
+-    {
+-        /* Clean-up sequence files. */
+-        for (size_t i = _countof(szActionNames); i--; )
+-        {
+-            if (szSeqFilename[i][0])
+-            {
+-                DeleteFile(szSeqFilename[i]);
+-            }
+-        }
+-    }
+ cleanup_hRecordProg:
+     MsiCloseHandle(hRecordProg);
+ cleanup_hViewST_close:
+@@ -895,10 +955,12 @@ cleanup_hViewST:
+ cleanup_hDatabase:
+     MsiCloseHandle(hDatabase);
+ cleanup_exec_seq:
+-    for (size_t i = 0; i < _countof(szActionNames); i++)
+-    {
+-        msica_op_seq_free(&exec_seq[i]);
+-    }
++    msica_arg_seq_free(&seqInstallTAPInterfaces);
++    msica_arg_seq_free(&seqInstallTAPInterfacesCommit);
++    msica_arg_seq_free(&seqInstallTAPInterfacesRollback);
++    msica_arg_seq_free(&seqUninstallTAPInterfaces);
++    msica_arg_seq_free(&seqUninstallTAPInterfacesCommit);
++    msica_arg_seq_free(&seqUninstallTAPInterfacesRollback);
+     if (bIsCoInitialized)
+     {
+         CoUninitialize();
+@@ -907,6 +969,27 @@ cleanup_exec_seq:
+ }
+ 
+ 
++/**
++ * Parses string encoded GUID.
++ *
++ * @param szArg         Zero terminated string where the GUID string starts
++ *
++ * @param guid          Pointer to GUID that receives parsed value
++ *
++ * @return TRUE on success; FALSE otherwise
++ */
++static BOOL
++openvpnmsica_parse_guid(_In_z_ LPCWSTR szArg, _Out_ GUID *guid)
++{
++    if (swscanf_s(szArg, _L(PRIXGUID), PRIGUID_PARAM_REF(*guid)) != 11)
++    {
++        msg(M_NONFATAL | M_ERRNO, "%s: swscanf_s(\"%ls\") failed", __FUNCTION__, szArg);
++        return FALSE;
++    }
++    return TRUE;
++}
++
++
+ UINT __stdcall
+ ProcessDeferredAction(_In_ MSIHANDLE hInstall)
+ {
+@@ -923,158 +1006,172 @@ ProcessDeferredAction(_In_ MSIHANDLE hInstall)
+ 
+     BOOL bIsCleanup = MsiGetMode(hInstall, MSIRUNMODE_COMMIT) || MsiGetMode(hInstall, MSIRUNMODE_ROLLBACK);
+ 
+-    /* Get sequence filename and open the file. */
+-    LPTSTR szSeqFilename = NULL;
+-    uiResult = msi_get_string(hInstall, TEXT("CustomActionData"), &szSeqFilename);
++    /* Get sequence arguments. Always Unicode as CommandLineToArgvW() is available as Unicode-only. */
++    LPWSTR szSequence = NULL;
++    uiResult = msi_get_string(hInstall, L"CustomActionData", &szSequence);
      if (uiResult != ERROR_SUCCESS)
      {
          goto cleanup_CoInitialize;
      }
- 
--    /* Get IPv4/v6 info for all network interfaces. Actually, we're interested in link status only: up/down? */
-+    /* Get IPv4/v6 info for all network adapters. Actually, we're interested in link status only: up/down? */
-     PIP_ADAPTER_ADDRESSES pAdapterAdresses = NULL;
-     ULONG ulAdapterAdressesSize = 16*1024;
-     for (size_t iteration = 0; iteration < 2; iteration++)
-@@ -302,7 +302,7 @@ FindTAPInterfaces(_In_ MSIHANDLE hInstall)
-         if (pAdapterAdresses == NULL)
+-    struct msica_op_seq seq = { .head = NULL, .tail = NULL };
++    int nArgs;
++    LPWSTR *szArg = CommandLineToArgvW(szSequence, &nArgs);
++    if (szArg == NULL)
+     {
+-        HANDLE hSeqFile = CreateFile(
+-            szSeqFilename,
+-            GENERIC_READ,
+-            FILE_SHARE_READ,
+-            NULL,
+-            OPEN_EXISTING,
+-            FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN,
+-            NULL);
+-        if (hSeqFile == INVALID_HANDLE_VALUE)
++        uiResult = GetLastError();
++        msg(M_NONFATAL | M_ERRNO, "%s: CommandLineToArgvW(\"%ls\") failed", __FUNCTION__, szSequence);
++        goto cleanup_szSequence;
++    }
++
++    /* Tell the installer to use explicit progress messages. */
++    MSIHANDLE hRecordProg = MsiCreateRecord(3);
++    MsiRecordSetInteger(hRecordProg, 1, 1);
++    MsiRecordSetInteger(hRecordProg, 2, 1);
++    MsiRecordSetInteger(hRecordProg, 3, 0);
++    MsiProcessMessage(hInstall, INSTALLMESSAGE_PROGRESS, hRecordProg);
++
++    /* Prepare hRecordProg for progress messages. */
++    MsiRecordSetInteger(hRecordProg, 1, 2);
++    MsiRecordSetInteger(hRecordProg, 3, 0);
++
++    BOOL bRebootRequired = FALSE;
++
++    for (int i = 1 /*CommandLineToArgvW injects msiexec.exe as szArg[0]*/; i < nArgs; ++i)
++    {
++        DWORD dwResult = ERROR_SUCCESS;
++
++        if (wcsncmp(szArg[i], L"create=", 7) == 0)
          {
-             msg(M_NONFATAL, "%s: malloc(%u) failed", __FUNCTION__, ulAdapterAdressesSize);
--            uiResult = ERROR_OUTOFMEMORY; goto cleanup_tap_list_interfaces;
-+            uiResult = ERROR_OUTOFMEMORY; goto cleanup_tap_list_adapters;
-         }
+-            uiResult = GetLastError();
+-            if (uiResult == ERROR_FILE_NOT_FOUND && bIsCleanup)
++            /* Create an interface with a given name. */
++            LPCWSTR szName = szArg[i] + 7;
++
+             {
+-                /*
+-                 * Sequence file not found and this is rollback/commit action. Either of the following scenarios are possible:
+-                 * - The delayed action failed to save the rollback/commit sequence to file. The delayed action performed cleanup itself. No further operation is required.
+-                 * - Somebody removed the rollback/commit file between delayed action and rollback/commit action. No further operation is possible.
+-                 */
+-                uiResult = ERROR_SUCCESS;
+-                goto cleanup_szSeqFilename;
++                /* Report the name of the interface to installer. */
++                MSIHANDLE hRecord = MsiCreateRecord(3);
++                MsiRecordSetString(hRecord, 1, TEXT("Creating interface"));
++                MsiRecordSetString(hRecord, 2, szName);
++                int iResult = MsiProcessMessage(hInstall, INSTALLMESSAGE_ACTIONDATA, hRecord);
++                MsiCloseHandle(hRecord);
++                if (iResult == IDCANCEL)
++                {
++                    uiResult = ERROR_INSTALL_USEREXIT;
++                    goto cleanup;
++                }
+             }
+-            msg(M_NONFATAL | M_ERRNO, "%s: CreateFile(\"%" PRIsLPTSTR "\") failed", __FUNCTION__, szSeqFilename);
+-            goto cleanup_szSeqFilename;
+-        }
  
-         ULONG ulResult = GetAdaptersAddresses(
-@@ -322,101 +322,101 @@ FindTAPInterfaces(_In_ MSIHANDLE hInstall)
-         {
-             SetLastError(ulResult); /* MSDN does not mention GetAdaptersAddresses() to set GetLastError(). But we do have an error code. Set last error manually. */
-             msg(M_NONFATAL | M_ERRNO, "%s: GetAdaptersAddresses() failed", __FUNCTION__);
--            uiResult = ulResult; goto cleanup_tap_list_interfaces;
-+            uiResult = ulResult; goto cleanup_tap_list_adapters;
+-        /* Load sequence. */
+-        uiResult = msica_op_seq_load(&seq, hSeqFile);
+-        CloseHandle(hSeqFile);
+-        if (uiResult != ERROR_SUCCESS)
+-        {
+-            goto cleanup_seq;
++            GUID guidInterface;
++            dwResult = tap_create_interface(NULL, NULL, NULL, &bRebootRequired, &guidInterface);
++            if (dwResult == ERROR_SUCCESS)
++            {
++                /* Set interface name. */
++                dwResult = tap_set_interface_name(&guidInterface, szName);
++                if (dwResult != ERROR_SUCCESS)
++                {
++                    tap_delete_interface(NULL, &guidInterface, &bRebootRequired);
++                }
++            }
          }
+-    }
+-
+-    /* Prepare session context. */
+-    struct msica_session session;
+-    openvpnmsica_session_init(
+-        &session,
+-        hInstall,
+-        bIsCleanup, /* In case of commit/rollback, continue sequence on error, to do as much cleanup as possible. */
+-        false);
+-
+-    /* Execute sequence. */
+-    uiResult = msica_op_seq_process(&seq, &session);
+-    if (!bIsCleanup)
+-    {
+-        /*
+-         * Save cleanup scripts of delayed action regardless of action's execution status.
+-         * Rollback action MUST be scheduled in InstallExecuteSequence before this action! Otherwise cleanup won't be performed in case this action execution failed.
+-         */
+-        DWORD dwResultEx; /* Don't overwrite uiResult. */
+-        LPCTSTR szExtension = PathFindExtension(szSeqFilename);
+-        TCHAR szFilenameEx[MAX_PATH + 1 /*dash*/ + 2 /*suffix*/ + 1 /*terminator*/];
+-        for (size_t i = 0; i < MSICA_CLEANUP_ACTION_COUNT; i++)
++        else if (wcsncmp(szArg[i], L"deleteN=", 8) == 0)
+         {
+-            _stprintf_s(
+-                szFilenameEx, _countof(szFilenameEx),
+-                TEXT("%.*s-%.2s%s"),
+-                (int)(szExtension - szSeqFilename), szSeqFilename,
+-                openvpnmsica_cleanup_action_seqs[i].szSuffix,
+-                szExtension);
+-
+-            /* After commit, delete rollback file. After rollback, delete commit file. */
+-            msica_op_seq_add_tail(
+-                &session.seq_cleanup[MSICA_CLEANUP_ACTION_COUNT - 1 - i],
+-                msica_op_create_string(
+-                    msica_op_file_delete,
+-                    0,
+-                    NULL,
+-                    szFilenameEx));
++            /* Delete the interface by name. */
++            LPCWSTR szName = szArg[i] + 8;
++
++            {
++                /* Report the name of the interface to installer. */
++                MSIHANDLE hRecord = MsiCreateRecord(3);
++                MsiRecordSetString(hRecord, 1, TEXT("Deleting interface"));
++                MsiRecordSetString(hRecord, 2, szName);
++                int iResult = MsiProcessMessage(hInstall, INSTALLMESSAGE_ACTIONDATA, hRecord);
++                MsiCloseHandle(hRecord);
++                if (iResult == IDCANCEL)
++                {
++                    uiResult = ERROR_INSTALL_USEREXIT;
++                    goto cleanup;
++                }
++            }
++
++            /* Get available TUN/TAP interfaces. */
++            struct tap_interface_node *pInterfaceList = NULL;
++            dwResult = tap_list_interfaces(NULL, NULL, &pInterfaceList, FALSE);
++            if (dwResult == ERROR_SUCCESS)
++            {
++                /* Does the interface exist? */
++                for (struct tap_interface_node *pInterface = pInterfaceList; pInterface != NULL; pInterface = pInterface->pNext)
++                {
++                    if (_tcsicmp(szName, pInterface->szName) == 0)
++                    {
++                        /* Interface found. */
++                        dwResult = tap_delete_interface(NULL, &pInterface->guid, &bRebootRequired);
++                        break;
++                    }
++                }
++
++                tap_free_interface_list(pInterfaceList);
++            }
+         }
+-        for (size_t i = 0; i < MSICA_CLEANUP_ACTION_COUNT; i++)
++        else if (wcsncmp(szArg[i], L"delete=", 7) == 0)
+         {
+-            _stprintf_s(
+-                szFilenameEx, _countof(szFilenameEx),
+-                TEXT("%.*s-%.2s%s"),
+-                (int)(szExtension - szSeqFilename), szSeqFilename,
+-                openvpnmsica_cleanup_action_seqs[i].szSuffix,
+-                szExtension);
+-
+-            /* Save the cleanup sequence file. */
+-            HANDLE hSeqFile = CreateFile(
+-                szFilenameEx,
+-                GENERIC_WRITE,
+-                FILE_SHARE_READ,
+-                NULL,
+-                CREATE_ALWAYS,
+-                FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN,
+-                NULL);
+-            if (hSeqFile == INVALID_HANDLE_VALUE)
++            /* Delete the interface by GUID. */
++            GUID guid;
++            if (!openvpnmsica_parse_guid(szArg[i] + 7, &guid))
+             {
+-                dwResultEx = GetLastError();
+-                msg(M_NONFATAL | M_ERRNO, "%s: CreateFile(\"%.*" PRIsLPTSTR "\") failed", __FUNCTION__, _countof(szFilenameEx), szFilenameEx);
+-                goto cleanup_session;
++                goto invalid_argument;
+             }
+-            dwResultEx = msica_op_seq_save(&session.seq_cleanup[i], hSeqFile);
+-            CloseHandle(hSeqFile);
+-            if (dwResultEx != ERROR_SUCCESS)
++            dwResult = tap_delete_interface(NULL, &guid, &bRebootRequired);
++        }
++        else if (wcsncmp(szArg[i], L"enable=", 7) == 0)
++        {
++            /* Enable the interface. */
++            GUID guid;
++            if (!openvpnmsica_parse_guid(szArg[i] + 7, &guid))
+             {
+-                goto cleanup_session;
++                goto invalid_argument;
+             }
++            dwResult = tap_enable_interface(NULL, &guid, TRUE, &bRebootRequired);
+         }
+-
+-cleanup_session:
+-        if (dwResultEx != ERROR_SUCCESS)
++        else if (wcsncmp(szArg[i], L"disable=", 8) == 0)
+         {
+-            /* The commit and/or rollback scripts were not written to file successfully. Perform the cleanup immediately. */
+-            struct msica_session session_cleanup;
+-            openvpnmsica_session_init(
+-                &session_cleanup,
+-                hInstall,
+-                true,
+-                false);
+-            msica_op_seq_process(&session.seq_cleanup[MSICA_CLEANUP_ACTION_ROLLBACK], &session_cleanup);
+-
+-            szExtension = PathFindExtension(szSeqFilename);
+-            for (size_t i = 0; i < MSICA_CLEANUP_ACTION_COUNT; i++)
++            /* Disable the interface. */
++            GUID guid;
++            if (!openvpnmsica_parse_guid(szArg[i] + 8, &guid))
+             {
+-                _stprintf_s(
+-                    szFilenameEx, _countof(szFilenameEx),
+-                    TEXT("%.*s-%.2s%s"),
+-                    (int)(szExtension - szSeqFilename), szSeqFilename,
+-                    openvpnmsica_cleanup_action_seqs[i].szSuffix,
+-                    szExtension);
+-                DeleteFile(szFilenameEx);
++                goto invalid_argument;
+             }
++            dwResult = tap_enable_interface(NULL, &guid, FALSE, &bRebootRequired);
+         }
+-    }
+-    else
+-    {
+-        /* No cleanup after cleanup support. */
+-        uiResult = ERROR_SUCCESS;
++        else
++        {
++            goto invalid_argument;
++        }
++
++        if (dwResult != ERROR_SUCCESS && !bIsCleanup /* Ignore errors in case of commit/rollback to do as much work as possible. */)
++        {
++            uiResult = ERROR_INSTALL_FAILURE;
++            goto cleanup;
++        }
++
++        /* Report progress and check for user cancellation. */
++        MsiRecordSetInteger(hRecordProg, 2, MSICA_INTERFACE_TICK_SIZE);
++        if (MsiProcessMessage(hInstall, INSTALLMESSAGE_PROGRESS, hRecordProg) == IDCANCEL)
++        {
++            dwResult = ERROR_INSTALL_USEREXIT;
++            goto cleanup;
++        }
++
++        continue;
++
++invalid_argument:
++        msg(M_NONFATAL, "%s: Ignoring invalid argument: %ls", __FUNCTION__, szArg[i]);
      }
  
--    if (pInterfaceList != NULL)
-+    if (pAdapterList != NULL)
+-    for (size_t i = MSICA_CLEANUP_ACTION_COUNT; i--; )
++cleanup:
++    if (bRebootRequired)
      {
--        /* Count interfaces. */
--        size_t interface_count = 0;
--        for (struct tap_interface_node *pInterface = pInterfaceList; pInterface; pInterface = pInterface->pNext)
-+        /* Count adapters. */
-+        size_t adapter_count = 0;
-+        for (struct tap_adapter_node *pAdapter = pAdapterList; pAdapter; pAdapter = pAdapter->pNext)
-         {
--            interface_count++;
-+            adapter_count++;
-         }
- 
--        /* Prepare semicolon delimited list of TAP interface ID(s) and active TAP interface ID(s). */
-+        /* Prepare semicolon delimited list of TAP adapter ID(s) and active TAP adapter ID(s). */
-         LPTSTR
--            szTAPInterfaces     = (LPTSTR)malloc(interface_count * (38 /*GUID*/ + 1 /*separator/terminator*/) * sizeof(TCHAR)),
--            szTAPInterfacesTail = szTAPInterfaces;
--        if (szTAPInterfaces == NULL)
-+            szTAPAdapters     = (LPTSTR)malloc(adapter_count * (38 /*GUID*/ + 1 /*separator/terminator*/) * sizeof(TCHAR)),
-+            szTAPAdaptersTail = szTAPAdapters;
-+        if (szTAPAdapters == NULL)
-         {
--            msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, interface_count * (38 /*GUID*/ + 1 /*separator/terminator*/) * sizeof(TCHAR));
-+            msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, adapter_count * (38 /*GUID*/ + 1 /*separator/terminator*/) * sizeof(TCHAR));
-             uiResult = ERROR_OUTOFMEMORY; goto cleanup_pAdapterAdresses;
-         }
- 
-         LPTSTR
--            szTAPInterfacesActive     = (LPTSTR)malloc(interface_count * (38 /*GUID*/ + 1 /*separator/terminator*/) * sizeof(TCHAR)),
--            szTAPInterfacesActiveTail = szTAPInterfacesActive;
--        if (szTAPInterfacesActive == NULL)
-+            szTAPAdaptersActive     = (LPTSTR)malloc(adapter_count * (38 /*GUID*/ + 1 /*separator/terminator*/) * sizeof(TCHAR)),
-+            szTAPAdaptersActiveTail = szTAPAdaptersActive;
-+        if (szTAPAdaptersActive == NULL)
-         {
--            msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, interface_count * (38 /*GUID*/ + 1 /*separator/terminator*/) * sizeof(TCHAR));
--            uiResult = ERROR_OUTOFMEMORY; goto cleanup_szTAPInterfaces;
-+            msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, adapter_count * (38 /*GUID*/ + 1 /*separator/terminator*/) * sizeof(TCHAR));
-+            uiResult = ERROR_OUTOFMEMORY; goto cleanup_szTAPAdapters;
-         }
- 
--        for (struct tap_interface_node *pInterface = pInterfaceList; pInterface; pInterface = pInterface->pNext)
-+        for (struct tap_adapter_node *pAdapter = pAdapterList; pAdapter; pAdapter = pAdapter->pNext)
-         {
--            /* Convert interface GUID to UTF-16 string. (LPOLESTR defaults to LPWSTR) */
--            LPOLESTR szInterfaceId = NULL;
--            StringFromIID((REFIID)&pInterface->guid, &szInterfaceId);
-+            /* Convert adapter GUID to UTF-16 string. (LPOLESTR defaults to LPWSTR) */
-+            LPOLESTR szAdapterId = NULL;
-+            StringFromIID((REFIID)&pAdapter->guid, &szAdapterId);
- 
--            /* Append to the list of TAP interface ID(s). */
--            if (szTAPInterfaces < szTAPInterfacesTail)
-+            /* Append to the list of TAP adapter ID(s). */
-+            if (szTAPAdapters < szTAPAdaptersTail)
-             {
--                *(szTAPInterfacesTail++) = TEXT(';');
-+                *(szTAPAdaptersTail++) = TEXT(';');
-             }
--            memcpy(szTAPInterfacesTail, szInterfaceId, 38 * sizeof(TCHAR));
--            szTAPInterfacesTail += 38;
-+            memcpy(szTAPAdaptersTail, szAdapterId, 38 * sizeof(TCHAR));
-+            szTAPAdaptersTail += 38;
- 
--            /* If this interface is active (connected), add it to the list of active TAP interface ID(s). */
-+            /* If this adapter is active (connected), add it to the list of active TAP adapter ID(s). */
-             for (PIP_ADAPTER_ADDRESSES p = pAdapterAdresses; p; p = p->Next)
-             {
-                 OLECHAR szId[38 /*GUID*/ + 1 /*terminator*/];
-                 GUID guid;
-                 if (MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, p->AdapterName, -1, szId, _countof(szId)) > 0
-                     && SUCCEEDED(IIDFromString(szId, &guid))
--                    && memcmp(&guid, &pInterface->guid, sizeof(GUID)) == 0)
-+                    && memcmp(&guid, &pAdapter->guid, sizeof(GUID)) == 0)
-                 {
-                     if (p->OperStatus == IfOperStatusUp)
-                     {
--                        /* This TAP interface is active (connected). */
--                        if (szTAPInterfacesActive < szTAPInterfacesActiveTail)
-+                        /* This TAP adapter is active (connected). */
-+                        if (szTAPAdaptersActive < szTAPAdaptersActiveTail)
-                         {
--                            *(szTAPInterfacesActiveTail++) = TEXT(';');
-+                            *(szTAPAdaptersActiveTail++) = TEXT(';');
-                         }
--                        memcpy(szTAPInterfacesActiveTail, szInterfaceId, 38 * sizeof(TCHAR));
--                        szTAPInterfacesActiveTail += 38;
-+                        memcpy(szTAPAdaptersActiveTail, szAdapterId, 38 * sizeof(TCHAR));
-+                        szTAPAdaptersActiveTail += 38;
-                     }
-                     break;
-                 }
-             }
--            CoTaskMemFree(szInterfaceId);
-+            CoTaskMemFree(szAdapterId);
-         }
--        szTAPInterfacesTail      [0] = 0;
--        szTAPInterfacesActiveTail[0] = 0;
-+        szTAPAdaptersTail      [0] = 0;
-+        szTAPAdaptersActiveTail[0] = 0;
- 
--        /* Set Installer TAPINTERFACES property. */
--        uiResult = MsiSetProperty(hInstall, TEXT("TAPINTERFACES"), szTAPInterfaces);
-+        /* Set Installer TAPADAPTERS property. */
-+        uiResult = MsiSetProperty(hInstall, TEXT("TAPADAPTERS"), szTAPAdapters);
-         if (uiResult != ERROR_SUCCESS)
-         {
-             SetLastError(uiResult); /* MSDN does not mention MsiSetProperty() to set GetLastError(). But we do have an error code. Set last error manually. */
--            msg(M_NONFATAL | M_ERRNO, "%s: MsiSetProperty(\"TAPINTERFACES\") failed", __FUNCTION__);
--            goto cleanup_szTAPInterfacesActive;
-+            msg(M_NONFATAL | M_ERRNO, "%s: MsiSetProperty(\"TAPADAPTERS\") failed", __FUNCTION__);
-+            goto cleanup_szTAPAdaptersActive;
-         }
- 
--        /* Set Installer ACTIVETAPINTERFACES property. */
--        uiResult = MsiSetProperty(hInstall, TEXT("ACTIVETAPINTERFACES"), szTAPInterfacesActive);
-+        /* Set Installer ACTIVETAPADAPTERS property. */
-+        uiResult = MsiSetProperty(hInstall, TEXT("ACTIVETAPADAPTERS"), szTAPAdaptersActive);
-         if (uiResult != ERROR_SUCCESS)
-         {
-             SetLastError(uiResult); /* MSDN does not mention MsiSetProperty() to set GetLastError(). But we do have an error code. Set last error manually. */
--            msg(M_NONFATAL | M_ERRNO, "%s: MsiSetProperty(\"ACTIVETAPINTERFACES\") failed", __FUNCTION__);
--            goto cleanup_szTAPInterfacesActive;
-+            msg(M_NONFATAL | M_ERRNO, "%s: MsiSetProperty(\"ACTIVETAPADAPTERS\") failed", __FUNCTION__);
-+            goto cleanup_szTAPAdaptersActive;
-         }
- 
--cleanup_szTAPInterfacesActive:
--        free(szTAPInterfacesActive);
--cleanup_szTAPInterfaces:
--        free(szTAPInterfaces);
-+cleanup_szTAPAdaptersActive:
-+        free(szTAPAdaptersActive);
-+cleanup_szTAPAdapters:
-+        free(szTAPAdapters);
+-        msica_op_seq_free(&session.seq_cleanup[i]);
++        MsiSetMode(hInstall, MSIRUNMODE_REBOOTATEND, TRUE);
      }
-     else
-     {
-@@ -425,8 +425,8 @@ cleanup_szTAPInterfaces:
- 
- cleanup_pAdapterAdresses:
-     free(pAdapterAdresses);
--cleanup_tap_list_interfaces:
--    tap_free_interface_list(pInterfaceList);
-+cleanup_tap_list_adapters:
-+    tap_free_adapter_list(pAdapterList);
+-    DeleteFile(szSeqFilename);
+-cleanup_seq:
+-    msica_op_seq_free(&seq);
+-cleanup_szSeqFilename:
+-    free(szSeqFilename);
++    MsiCloseHandle(hRecordProg);
++    LocalFree(szArg);
++cleanup_szSequence:
++    free(szSequence);
  cleanup_CoInitialize:
      if (bIsCoInitialized)
      {
-@@ -546,47 +546,47 @@ cleanup_CoInitialize:
+diff --git a/src/openvpnmsica/openvpnmsica.vcxproj b/src/openvpnmsica/openvpnmsica.vcxproj
+index afa4faec..4b429806 100644
+--- a/src/openvpnmsica/openvpnmsica.vcxproj
++++ b/src/openvpnmsica/openvpnmsica.vcxproj
+@@ -116,7 +116,7 @@
+     <ClCompile Include="..\tapctl\tap.c" />
+     <ClCompile Include="dllmain.c" />
+     <ClCompile Include="msiex.c" />
+-    <ClCompile Include="msica_op.c" />
++    <ClCompile Include="msica_arg.c" />
+     <ClCompile Include="openvpnmsica.c" />
+   </ItemGroup>
+   <ItemGroup>
+@@ -124,7 +124,7 @@
+     <ClInclude Include="..\tapctl\error.h" />
+     <ClInclude Include="..\tapctl\tap.h" />
+     <ClInclude Include="msiex.h" />
+-    <ClInclude Include="msica_op.h" />
++    <ClInclude Include="msica_arg.h" />
+     <ClInclude Include="openvpnmsica.h" />
+   </ItemGroup>
+   <ItemGroup>
+diff --git a/src/openvpnmsica/openvpnmsica.vcxproj.filters b/src/openvpnmsica/openvpnmsica.vcxproj.filters
+index d0b6dcf0..cb050f97 100644
+--- a/src/openvpnmsica/openvpnmsica.vcxproj.filters
++++ b/src/openvpnmsica/openvpnmsica.vcxproj.filters
+@@ -27,7 +27,7 @@
+     <ClCompile Include="openvpnmsica.c">
+       <Filter>Source Files</Filter>
+     </ClCompile>
+-    <ClCompile Include="msica_op.c">
++    <ClCompile Include="msica_arg.c">
+       <Filter>Source Files</Filter>
+     </ClCompile>
+     <ClCompile Include="..\tapctl\tap.c">
+@@ -41,7 +41,7 @@
+     <ClInclude Include="msiex.h">
+       <Filter>Header Files</Filter>
+     </ClInclude>
+-    <ClInclude Include="msica_op.h">
++    <ClInclude Include="msica_arg.h">
+       <Filter>Header Files</Filter>
+     </ClInclude>
+     <ClInclude Include="..\tapctl\tap.h">
+diff --git a/src/tapctl/basic.h b/src/tapctl/basic.h
+index bfbcc30d..a0a88511 100644
+--- a/src/tapctl/basic.h
++++ b/src/tapctl/basic.h
+@@ -23,12 +23,20 @@
+ #define BASIC_H
  
- 
- /**
-- * Schedules interface creation.
-+ * Schedules adapter creation.
-  *
-- * When the rollback is enabled, the interface deletition is scheduled on rollback.
-+ * When the rollback is enabled, the adapter deletition is scheduled on rollback.
-  *
-- * @param seq           The argument sequence to pass to InstallTAPInterfaces custom action
-+ * @param seq           The argument sequence to pass to InstallTAPAdapters custom action
-  *
-- * @param seqRollback   The argument sequence to pass to InstallTAPInterfacesRollback custom
-+ * @param seqRollback   The argument sequence to pass to InstallTAPAdaptersRollback custom
-  *                      action. NULL when rollback is disabled.
-  *
-- * @param szDisplayName  Interface display name.
-+ * @param szDisplayName  Adapter display name.
-  *
-  * @param iTicks        Pointer to an integer that represents amount of work (on progress
-- *                      indicator) the InstallTAPInterfaces will take. This function increments it
-- *                      by MSICA_INTERFACE_TICK_SIZE for each interface to create.
-+ *                      indicator) the InstallTAPAdapters will take. This function increments it
-+ *                      by MSICA_ADAPTER_TICK_SIZE for each adapter to create.
-  *
-  * @return ERROR_SUCCESS on success; An error code otherwise
-  */
- static DWORD
--schedule_interface_create(
-+schedule_adapter_create(
-     _Inout_ struct msica_arg_seq *seq,
-     _Inout_opt_ struct msica_arg_seq *seqRollback,
-     _In_z_ LPCTSTR szDisplayName,
-     _Inout_ int *iTicks)
- {
--    /* Get all available network interfaces. */
--    struct tap_interface_node *pInterfaceList = NULL;
--    DWORD dwResult = tap_list_interfaces(NULL, NULL, &pInterfaceList, TRUE);
-+    /* Get all available network adapters. */
-+    struct tap_adapter_node *pAdapterList = NULL;
-+    DWORD dwResult = tap_list_adapters(NULL, NULL, &pAdapterList, TRUE);
-     if (dwResult != ERROR_SUCCESS)
-     {
-         return dwResult;
-     }
- 
--    /* Does interface exist? */
--    for (struct tap_interface_node *pInterfaceOther = pInterfaceList;; pInterfaceOther = pInterfaceOther->pNext)
-+    /* Does adapter exist? */
-+    for (struct tap_adapter_node *pAdapterOther = pAdapterList;; pAdapterOther = pAdapterOther->pNext)
-     {
--        if (pInterfaceOther == NULL)
-+        if (pAdapterOther == NULL)
-         {
--            /* No interface with a same name found. */
-+            /* No adapter with a same name found. */
-             TCHAR szArgument[10 /*create=""|deleteN=""*/ + MAX_PATH /*szDisplayName*/ + 1 /*terminator*/];
- 
--            /* InstallTAPInterfaces will create the interface. */
-+            /* InstallTAPAdapters will create the adapter. */
-             _stprintf_s(
-                 szArgument, _countof(szArgument),
-                 TEXT("create=\"%.*s\""),
-@@ -595,7 +595,7 @@ schedule_interface_create(
- 
-             if (seqRollback)
-             {
--                /* InstallTAPInterfacesRollback will delete the interface. */
-+                /* InstallTAPAdaptersRollback will delete the adapter. */
-                 _stprintf_s(
-                     szArgument, _countof(szArgument),
-                     TEXT("deleteN=\"%.*s\""),
-@@ -603,132 +603,132 @@ schedule_interface_create(
-                 msica_arg_seq_add_head(seqRollback, szArgument);
-             }
- 
--            *iTicks += MSICA_INTERFACE_TICK_SIZE;
-+            *iTicks += MSICA_ADAPTER_TICK_SIZE;
-             break;
-         }
--        else if (_tcsicmp(szDisplayName, pInterfaceOther->szName) == 0)
-+        else if (_tcsicmp(szDisplayName, pAdapterOther->szName) == 0)
-         {
--            /* Interface with a same name found. */
--            for (LPCTSTR hwid = pInterfaceOther->szzHardwareIDs;; hwid += _tcslen(hwid) + 1)
-+            /* Adapter with a same name found. */
-+            for (LPCTSTR hwid = pAdapterOther->szzHardwareIDs;; hwid += _tcslen(hwid) + 1)
-             {
-                 if (hwid[0] == 0)
-                 {
--                    /* This is not a TAP interface. */
--                    msg(M_NONFATAL, "%s: Interface with name \"%" PRIsLPTSTR "\" already exists", __FUNCTION__, pInterfaceOther->szName);
-+                    /* This is not a TAP adapter. */
-+                    msg(M_NONFATAL, "%s: Adapter with name \"%" PRIsLPTSTR "\" already exists", __FUNCTION__, pAdapterOther->szName);
-                     dwResult = ERROR_ALREADY_EXISTS;
--                    goto cleanup_pInterfaceList;
-+                    goto cleanup_pAdapterList;
-                 }
-                 else if (
-                     _tcsicmp(hwid, TEXT(TAP_WIN_COMPONENT_ID)) == 0
-                     || _tcsicmp(hwid, TEXT("root\\") TEXT(TAP_WIN_COMPONENT_ID)) == 0)
-                 {
--                    /* This is a TAP-Windows6 interface. We already have what we want! */
-+                    /* This is a TAP-Windows6 adapter. We already have what we want! */
-                     break;
-                 }
-             }
--            break; /* Interface names are unique. There should be no other interface with this name. */
-+            break; /* Adapter names are unique. There should be no other adapter with this name. */
-         }
-     }
- 
--cleanup_pInterfaceList:
--    tap_free_interface_list(pInterfaceList);
-+cleanup_pAdapterList:
-+    tap_free_adapter_list(pAdapterList);
-     return dwResult;
- }
- 
- 
- /**
-- * Schedules interface deletion.
-+ * Schedules adapter deletion.
-  *
-- * When the rollback is enabled, the interface deletition is scheduled as: disable in
-- * UninstallTAPInterfaces, enable on rollback, delete on commit.
-+ * When the rollback is enabled, the adapter deletition is scheduled as: disable in
-+ * UninstallTAPAdapters, enable on rollback, delete on commit.
-  *
-- * When rollback is disabled, the interface deletition is scheduled as delete in
-- * UninstallTAPInterfaces.
-+ * When rollback is disabled, the adapter deletition is scheduled as delete in
-+ * UninstallTAPAdapters.
-  *
-- * @param seq           The argument sequence to pass to UninstallTAPInterfaces custom action
-+ * @param seq           The argument sequence to pass to UninstallTAPAdapters custom action
-  *
-- * @param seqCommit     The argument sequence to pass to UninstallTAPInterfacesCommit custom
-+ * @param seqCommit     The argument sequence to pass to UninstallTAPAdaptersCommit custom
-  *                      action. NULL when rollback is disabled.
-  *
-- * @param seqRollback   The argument sequence to pass to UninstallTAPInterfacesRollback custom
-+ * @param seqRollback   The argument sequence to pass to UninstallTAPAdaptersRollback custom
-  *                      action. NULL when rollback is disabled.
-  *
-- * @param szDisplayName  Interface display name.
-+ * @param szDisplayName  Adapter display name.
-  *
-  * @param iTicks        Pointer to an integer that represents amount of work (on progress
-- *                      indicator) the UninstallTAPInterfaces will take. This function increments
-- *                      it by MSICA_INTERFACE_TICK_SIZE for each interface to delete.
-+ *                      indicator) the UninstallTAPAdapters will take. This function increments
-+ *                      it by MSICA_ADAPTER_TICK_SIZE for each adapter to delete.
-  *
-  * @return ERROR_SUCCESS on success; An error code otherwise
-  */
- static DWORD
--schedule_interface_delete(
-+schedule_adapter_delete(
-     _Inout_ struct msica_arg_seq *seq,
-     _Inout_opt_ struct msica_arg_seq *seqCommit,
-     _Inout_opt_ struct msica_arg_seq *seqRollback,
-     _In_z_ LPCTSTR szDisplayName,
-     _Inout_ int *iTicks)
- {
--    /* Get available TUN/TAP interfaces. */
--    struct tap_interface_node *pInterfaceList = NULL;
--    DWORD dwResult = tap_list_interfaces(NULL, NULL, &pInterfaceList, FALSE);
-+    /* Get available TUN/TAP adapters. */
-+    struct tap_adapter_node *pAdapterList = NULL;
-+    DWORD dwResult = tap_list_adapters(NULL, NULL, &pAdapterList, FALSE);
-     if (dwResult != ERROR_SUCCESS)
-     {
-         return dwResult;
-     }
- 
--    /* Does interface exist? */
--    for (struct tap_interface_node *pInterface = pInterfaceList; pInterface != NULL; pInterface = pInterface->pNext)
-+    /* Does adapter exist? */
-+    for (struct tap_adapter_node *pAdapter = pAdapterList; pAdapter != NULL; pAdapter = pAdapter->pNext)
-     {
--        if (_tcsicmp(szDisplayName, pInterface->szName) == 0)
-+        if (_tcsicmp(szDisplayName, pAdapter->szName) == 0)
-         {
--            /* Interface found. */
-+            /* Adapter found. */
-             TCHAR szArgument[8 /*disable=|enable=|delete=*/ + 38 /*{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}*/ + 1 /*terminator*/];
-             if (seqCommit && seqRollback)
-             {
--                /* UninstallTAPInterfaces will disable the interface. */
-+                /* UninstallTAPAdapters will disable the adapter. */
-                 _stprintf_s(
-                     szArgument, _countof(szArgument),
-                     TEXT("disable=") TEXT(PRIXGUID),
--                    PRIGUID_PARAM(pInterface->guid));
-+                    PRIGUID_PARAM(pAdapter->guid));
-                 msica_arg_seq_add_tail(seq, szArgument);
- 
--                /* UninstallTAPInterfacesRollback will re-enable the interface. */
-+                /* UninstallTAPAdaptersRollback will re-enable the adapter. */
-                 _stprintf_s(
-                     szArgument, _countof(szArgument),
-                     TEXT("enable=") TEXT(PRIXGUID),
--                    PRIGUID_PARAM(pInterface->guid));
-+                    PRIGUID_PARAM(pAdapter->guid));
-                 msica_arg_seq_add_head(seqRollback, szArgument);
- 
--                /* UninstallTAPInterfacesCommit will delete the interface. */
-+                /* UninstallTAPAdaptersCommit will delete the adapter. */
-                 _stprintf_s(
-                     szArgument, _countof(szArgument),
-                     TEXT("delete=") TEXT(PRIXGUID),
--                    PRIGUID_PARAM(pInterface->guid));
-+                    PRIGUID_PARAM(pAdapter->guid));
-                 msica_arg_seq_add_tail(seqCommit, szArgument);
-             }
-             else
-             {
--                /* UninstallTAPInterfaces will delete the interface. */
-+                /* UninstallTAPAdapters will delete the adapter. */
-                 _stprintf_s(
-                     szArgument, _countof(szArgument),
-                     TEXT("delete=") TEXT(PRIXGUID),
--                    PRIGUID_PARAM(pInterface->guid));
-+                    PRIGUID_PARAM(pAdapter->guid));
-                 msica_arg_seq_add_tail(seq, szArgument);
-             }
- 
--            iTicks += MSICA_INTERFACE_TICK_SIZE;
--            break; /* Interface names are unique. There should be no other interface with this name. */
-+            iTicks += MSICA_ADAPTER_TICK_SIZE;
-+            break; /* Adapter names are unique. There should be no other adapter with this name. */
-         }
-     }
- 
--    tap_free_interface_list(pInterfaceList);
-+    tap_free_adapter_list(pAdapterList);
-     return dwResult;
- }
- 
- 
- UINT __stdcall
--EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall)
-+EvaluateTAPAdapters(_In_ MSIHANDLE hInstall)
- {
- #ifdef _MSC_VER
- #pragma comment(linker, DLLEXP_EXPORT)
-@@ -742,18 +742,18 @@ EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall)
-     OPENVPNMSICA_SAVE_MSI_SESSION(hInstall);
- 
-     struct msica_arg_seq
--        seqInstallTAPInterfaces,
--        seqInstallTAPInterfacesCommit,
--        seqInstallTAPInterfacesRollback,
--        seqUninstallTAPInterfaces,
--        seqUninstallTAPInterfacesCommit,
--        seqUninstallTAPInterfacesRollback;
--    msica_arg_seq_init(&seqInstallTAPInterfaces);
--    msica_arg_seq_init(&seqInstallTAPInterfacesCommit);
--    msica_arg_seq_init(&seqInstallTAPInterfacesRollback);
--    msica_arg_seq_init(&seqUninstallTAPInterfaces);
--    msica_arg_seq_init(&seqUninstallTAPInterfacesCommit);
--    msica_arg_seq_init(&seqUninstallTAPInterfacesRollback);
-+        seqInstallTAPAdapters,
-+        seqInstallTAPAdaptersCommit,
-+        seqInstallTAPAdaptersRollback,
-+        seqUninstallTAPAdapters,
-+        seqUninstallTAPAdaptersCommit,
-+        seqUninstallTAPAdaptersRollback;
-+    msica_arg_seq_init(&seqInstallTAPAdapters);
-+    msica_arg_seq_init(&seqInstallTAPAdaptersCommit);
-+    msica_arg_seq_init(&seqInstallTAPAdaptersRollback);
-+    msica_arg_seq_init(&seqUninstallTAPAdapters);
-+    msica_arg_seq_init(&seqUninstallTAPAdaptersCommit);
-+    msica_arg_seq_init(&seqUninstallTAPAdaptersRollback);
- 
-     /* Check rollback state. */
-     bool bRollbackEnabled = MsiEvaluateCondition(hInstall, TEXT("RollbackDisabled")) != MSICONDITION_TRUE;
-@@ -767,8 +767,8 @@ EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall)
-         goto cleanup_exec_seq;
-     }
- 
--    /* Check if TAPInterface table exists. If it doesn't exist, there's nothing to do. */
--    switch (MsiDatabaseIsTablePersistent(hDatabase, TEXT("TAPInterface")))
-+    /* Check if TAPAdapter table exists. If it doesn't exist, there's nothing to do. */
-+    switch (MsiDatabaseIsTablePersistent(hDatabase, TEXT("TAPAdapter")))
-     {
-         case MSICONDITION_FALSE:
-         case MSICONDITION_TRUE: break;
-@@ -778,9 +778,9 @@ EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall)
-             goto cleanup_hDatabase;
-     }
- 
--    /* Prepare a query to get a list/view of interfaces. */
-+    /* Prepare a query to get a list/view of adapters. */
-     MSIHANDLE hViewST = 0;
--    LPCTSTR szQuery = TEXT("SELECT `Interface`,`DisplayName`,`Condition`,`Component_` FROM `TAPInterface`");
-+    LPCTSTR szQuery = TEXT("SELECT `Adapter`,`DisplayName`,`Condition`,`Component_` FROM `TAPAdapter`");
-     uiResult = MsiDatabaseOpenView(hDatabase, szQuery, &hViewST);
-     if (uiResult != ERROR_SUCCESS)
-     {
-@@ -826,7 +826,7 @@ EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall)
- 
-         INSTALLSTATE iInstalled, iAction;
-         {
--            /* Read interface component ID (`Component_` is field #4). */
-+            /* Read adapter component ID (`Component_` is field #4). */
-             LPTSTR szValue = NULL;
-             uiResult = msi_get_record_string(hRecord, 4, &szValue);
-             if (uiResult != ERROR_SUCCESS)
-@@ -846,7 +846,7 @@ EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall)
-             free(szValue);
-         }
- 
--        /* Get interface display name (`DisplayName` is field #2). */
-+        /* Get adapter display name (`DisplayName` is field #2). */
-         LPTSTR szDisplayName = NULL;
-         uiResult = msi_format_field(hInstall, hRecord, 2, &szDisplayName);
-         if (uiResult != ERROR_SUCCESS)
-@@ -863,7 +863,7 @@ EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall)
- 
-             if (iAction >= INSTALLSTATE_LOCAL)
-             {
--                /* Read and evaluate interface condition (`Condition` is field #3). */
-+                /* Read and evaluate adapter condition (`Condition` is field #3). */
-                 LPTSTR szValue = NULL;
-                 uiResult = msi_get_record_string(hRecord, 3, &szValue);
-                 if (uiResult != ERROR_SUCCESS)
-@@ -895,10 +895,10 @@ EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall)
+ #ifdef _UNICODE
+-#define PRIsLPTSTR "ls"
+-#define PRIsLPOLESTR  "ls"
++#define PRIsLPTSTR      "ls"
++#define PRIsLPOLESTR    "ls"
+ #else
+-#define PRIsLPTSTR "s"
+-#define PRIsLPOLESTR  "ls"
++#define PRIsLPTSTR      "s"
++#define PRIsLPOLESTR    "ls"
  #endif
-                 free(szValue);
++#define PRIXGUID        "{%08lX-%04hX-%04hX-%02hhX%02hhX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX}"
++#define PRIGUID_PARAM(g) \
++    (g).Data1, (g).Data2, (g).Data3, (g).Data4[0], (g).Data4[1], (g).Data4[2], (g).Data4[3], (g).Data4[4], (g).Data4[5], (g).Data4[6], (g).Data4[7]
++#define PRIGUID_PARAM_REF(g) \
++    &(g).Data1, &(g).Data2, &(g).Data3, &(g).Data4[0], &(g).Data4[1], &(g).Data4[2], &(g).Data4[3], &(g).Data4[4], &(g).Data4[5], &(g).Data4[6], &(g).Data4[7]
++
++#define __L(q)          L ## q
++#define _L(q)           __L(q)
  
--                /* Component is or should be installed. Schedule interface creation. */
--                if (schedule_interface_create(
--                        &seqInstallTAPInterfaces,
--                        bRollbackEnabled ? &seqInstallTAPInterfacesRollback : NULL,
-+                /* Component is or should be installed. Schedule adapter creation. */
-+                if (schedule_adapter_create(
-+                        &seqInstallTAPAdapters,
-+                        bRollbackEnabled ? &seqInstallTAPAdaptersRollback : NULL,
-                         szDisplayNameEx,
-                         &iTicks) != ERROR_SUCCESS)
-                 {
-@@ -908,15 +908,15 @@ EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall)
-             }
-             else
-             {
--                /* Component is installed, but should be degraded to advertised/removed. Schedule interface deletition.
-+                /* Component is installed, but should be degraded to advertised/removed. Schedule adapter deletition.
-                  *
--                 * Note: On interface removal (product is being uninstalled), we tolerate dwResult error.
-+                 * Note: On adapter removal (product is being uninstalled), we tolerate dwResult error.
-                  * Better a partial uninstallation than no uninstallation at all.
-                  */
--                schedule_interface_delete(
--                    &seqUninstallTAPInterfaces,
--                    bRollbackEnabled ? &seqUninstallTAPInterfacesCommit : NULL,
--                    bRollbackEnabled ? &seqUninstallTAPInterfacesRollback : NULL,
-+                schedule_adapter_delete(
-+                    &seqUninstallTAPAdapters,
-+                    bRollbackEnabled ? &seqUninstallTAPAdaptersCommit : NULL,
-+                    bRollbackEnabled ? &seqUninstallTAPAdaptersRollback : NULL,
-                     szDisplayNameEx,
-                     &iTicks);
-             }
-@@ -943,12 +943,12 @@ cleanup_hRecord:
-     }
- 
-     /* Store deferred custom action parameters. */
--    if ((uiResult = setup_sequence(hInstall, TEXT("InstallTAPInterfaces"          ), &seqInstallTAPInterfaces          )) != ERROR_SUCCESS
--        || (uiResult = setup_sequence(hInstall, TEXT("InstallTAPInterfacesCommit"    ), &seqInstallTAPInterfacesCommit    )) != ERROR_SUCCESS
--        || (uiResult = setup_sequence(hInstall, TEXT("InstallTAPInterfacesRollback"  ), &seqInstallTAPInterfacesRollback  )) != ERROR_SUCCESS
--        || (uiResult = setup_sequence(hInstall, TEXT("UninstallTAPInterfaces"        ), &seqUninstallTAPInterfaces        )) != ERROR_SUCCESS
--        || (uiResult = setup_sequence(hInstall, TEXT("UninstallTAPInterfacesCommit"  ), &seqUninstallTAPInterfacesCommit  )) != ERROR_SUCCESS
--        || (uiResult = setup_sequence(hInstall, TEXT("UninstallTAPInterfacesRollback"), &seqUninstallTAPInterfacesRollback)) != ERROR_SUCCESS)
-+    if ((uiResult = setup_sequence(hInstall, TEXT("InstallTAPAdapters"          ), &seqInstallTAPAdapters          )) != ERROR_SUCCESS
-+        || (uiResult = setup_sequence(hInstall, TEXT("InstallTAPAdaptersCommit"    ), &seqInstallTAPAdaptersCommit    )) != ERROR_SUCCESS
-+        || (uiResult = setup_sequence(hInstall, TEXT("InstallTAPAdaptersRollback"  ), &seqInstallTAPAdaptersRollback  )) != ERROR_SUCCESS
-+        || (uiResult = setup_sequence(hInstall, TEXT("UninstallTAPAdapters"        ), &seqUninstallTAPAdapters        )) != ERROR_SUCCESS
-+        || (uiResult = setup_sequence(hInstall, TEXT("UninstallTAPAdaptersCommit"  ), &seqUninstallTAPAdaptersCommit  )) != ERROR_SUCCESS
-+        || (uiResult = setup_sequence(hInstall, TEXT("UninstallTAPAdaptersRollback"), &seqUninstallTAPAdaptersRollback)) != ERROR_SUCCESS)
-     {
-         goto cleanup_hRecordProg;
-     }
-@@ -964,12 +964,12 @@ cleanup_hViewST:
- cleanup_hDatabase:
-     MsiCloseHandle(hDatabase);
- cleanup_exec_seq:
--    msica_arg_seq_free(&seqInstallTAPInterfaces);
--    msica_arg_seq_free(&seqInstallTAPInterfacesCommit);
--    msica_arg_seq_free(&seqInstallTAPInterfacesRollback);
--    msica_arg_seq_free(&seqUninstallTAPInterfaces);
--    msica_arg_seq_free(&seqUninstallTAPInterfacesCommit);
--    msica_arg_seq_free(&seqUninstallTAPInterfacesRollback);
-+    msica_arg_seq_free(&seqInstallTAPAdapters);
-+    msica_arg_seq_free(&seqInstallTAPAdaptersCommit);
-+    msica_arg_seq_free(&seqInstallTAPAdaptersRollback);
-+    msica_arg_seq_free(&seqUninstallTAPAdapters);
-+    msica_arg_seq_free(&seqUninstallTAPAdaptersCommit);
-+    msica_arg_seq_free(&seqUninstallTAPAdaptersRollback);
-     if (bIsCoInitialized)
-     {
-         CoUninitialize();
-@@ -1052,13 +1052,13 @@ ProcessDeferredAction(_In_ MSIHANDLE hInstall)
- 
-         if (wcsncmp(szArg[i], L"create=", 7) == 0)
-         {
--            /* Create an interface with a given name. */
-+            /* Create an adapter with a given name. */
-             LPCWSTR szName = szArg[i] + 7;
- 
-             {
--                /* Report the name of the interface to installer. */
-+                /* Report the name of the adapter to installer. */
-                 MSIHANDLE hRecord = MsiCreateRecord(3);
--                MsiRecordSetString(hRecord, 1, TEXT("Creating interface"));
-+                MsiRecordSetString(hRecord, 1, TEXT("Creating adapter"));
-                 MsiRecordSetString(hRecord, 2, szName);
-                 int iResult = MsiProcessMessage(hInstall, INSTALLMESSAGE_ACTIONDATA, hRecord);
-                 MsiCloseHandle(hRecord);
-@@ -1069,27 +1069,27 @@ ProcessDeferredAction(_In_ MSIHANDLE hInstall)
-                 }
-             }
- 
--            GUID guidInterface;
--            dwResult = tap_create_interface(NULL, NULL, NULL, &bRebootRequired, &guidInterface);
-+            GUID guidAdapter;
-+            dwResult = tap_create_adapter(NULL, NULL, NULL, &bRebootRequired, &guidAdapter);
-             if (dwResult == ERROR_SUCCESS)
-             {
--                /* Set interface name. */
--                dwResult = tap_set_interface_name(&guidInterface, szName);
-+                /* Set adapter name. */
-+                dwResult = tap_set_adapter_name(&guidAdapter, szName);
-                 if (dwResult != ERROR_SUCCESS)
-                 {
--                    tap_delete_interface(NULL, &guidInterface, &bRebootRequired);
-+                    tap_delete_adapter(NULL, &guidAdapter, &bRebootRequired);
-                 }
-             }
-         }
-         else if (wcsncmp(szArg[i], L"deleteN=", 8) == 0)
-         {
--            /* Delete the interface by name. */
-+            /* Delete the adapter by name. */
-             LPCWSTR szName = szArg[i] + 8;
- 
-             {
--                /* Report the name of the interface to installer. */
-+                /* Report the name of the adapter to installer. */
-                 MSIHANDLE hRecord = MsiCreateRecord(3);
--                MsiRecordSetString(hRecord, 1, TEXT("Deleting interface"));
-+                MsiRecordSetString(hRecord, 1, TEXT("Deleting adapter"));
-                 MsiRecordSetString(hRecord, 2, szName);
-                 int iResult = MsiProcessMessage(hInstall, INSTALLMESSAGE_ACTIONDATA, hRecord);
-                 MsiCloseHandle(hRecord);
-@@ -1100,54 +1100,54 @@ ProcessDeferredAction(_In_ MSIHANDLE hInstall)
-                 }
-             }
- 
--            /* Get available TUN/TAP interfaces. */
--            struct tap_interface_node *pInterfaceList = NULL;
--            dwResult = tap_list_interfaces(NULL, NULL, &pInterfaceList, FALSE);
-+            /* Get available TUN/TAP adapters. */
-+            struct tap_adapter_node *pAdapterList = NULL;
-+            dwResult = tap_list_adapters(NULL, NULL, &pAdapterList, FALSE);
-             if (dwResult == ERROR_SUCCESS)
-             {
--                /* Does the interface exist? */
--                for (struct tap_interface_node *pInterface = pInterfaceList; pInterface != NULL; pInterface = pInterface->pNext)
-+                /* Does the adapter exist? */
-+                for (struct tap_adapter_node *pAdapter = pAdapterList; pAdapter != NULL; pAdapter = pAdapter->pNext)
-                 {
--                    if (_tcsicmp(szName, pInterface->szName) == 0)
-+                    if (_tcsicmp(szName, pAdapter->szName) == 0)
-                     {
--                        /* Interface found. */
--                        dwResult = tap_delete_interface(NULL, &pInterface->guid, &bRebootRequired);
-+                        /* Adapter found. */
-+                        dwResult = tap_delete_adapter(NULL, &pAdapter->guid, &bRebootRequired);
-                         break;
-                     }
-                 }
- 
--                tap_free_interface_list(pInterfaceList);
-+                tap_free_adapter_list(pAdapterList);
-             }
-         }
-         else if (wcsncmp(szArg[i], L"delete=", 7) == 0)
-         {
--            /* Delete the interface by GUID. */
-+            /* Delete the adapter by GUID. */
-             GUID guid;
-             if (!parse_guid(szArg[i] + 7, &guid))
-             {
-                 goto invalid_argument;
-             }
--            dwResult = tap_delete_interface(NULL, &guid, &bRebootRequired);
-+            dwResult = tap_delete_adapter(NULL, &guid, &bRebootRequired);
-         }
-         else if (wcsncmp(szArg[i], L"enable=", 7) == 0)
-         {
--            /* Enable the interface. */
-+            /* Enable the adapter. */
-             GUID guid;
-             if (!parse_guid(szArg[i] + 7, &guid))
-             {
-                 goto invalid_argument;
-             }
--            dwResult = tap_enable_interface(NULL, &guid, TRUE, &bRebootRequired);
-+            dwResult = tap_enable_adapter(NULL, &guid, TRUE, &bRebootRequired);
-         }
-         else if (wcsncmp(szArg[i], L"disable=", 8) == 0)
-         {
--            /* Disable the interface. */
-+            /* Disable the adapter. */
-             GUID guid;
-             if (!parse_guid(szArg[i] + 8, &guid))
-             {
-                 goto invalid_argument;
-             }
--            dwResult = tap_enable_interface(NULL, &guid, FALSE, &bRebootRequired);
-+            dwResult = tap_enable_adapter(NULL, &guid, FALSE, &bRebootRequired);
-         }
-         else
-         {
-@@ -1161,7 +1161,7 @@ ProcessDeferredAction(_In_ MSIHANDLE hInstall)
-         }
- 
-         /* Report progress and check for user cancellation. */
--        MsiRecordSetInteger(hRecordProg, 2, MSICA_INTERFACE_TICK_SIZE);
-+        MsiRecordSetInteger(hRecordProg, 2, MSICA_ADAPTER_TICK_SIZE);
-         if (MsiProcessMessage(hInstall, INSTALLMESSAGE_PROGRESS, hRecordProg) == IDCANCEL)
-         {
-             dwResult = ERROR_INSTALL_USEREXIT;
-diff --git a/src/openvpnmsica/openvpnmsica.h b/src/openvpnmsica/openvpnmsica.h
-index 1486c043..14fb78a2 100644
---- a/src/openvpnmsica/openvpnmsica.h
-+++ b/src/openvpnmsica/openvpnmsica.h
-@@ -90,8 +90,9 @@ FindSystemInfo(_In_ MSIHANDLE hInstall);
- 
- 
- /**
-- * Find existing TAP interfaces and set TAPINTERFACES property with semicolon delimited list
-- * of installed TAP interface GUIDs.
-+ * Find existing TAP adapters and set TAPADAPTERS and ACTIVETAPADAPTERS properties with
-+ * semicolon delimited list of all installed TAP adapter GUIDs and active adapter GUIDs
-+ * respectively.
-  *
-  * @param hInstall      Handle to the installation provided to the DLL custom action
-  *
-@@ -99,7 +100,7 @@ FindSystemInfo(_In_ MSIHANDLE hInstall);
-  *         See: https://msdn.microsoft.com/en-us/library/windows/desktop/aa368072.aspx
-  */
- DLLEXP_DECL UINT __stdcall
--FindTAPInterfaces(_In_ MSIHANDLE hInstall);
-+FindTAPAdapters(_In_ MSIHANDLE hInstall);
- 
- 
- /**
-@@ -128,8 +129,8 @@ StartOpenVPNGUI(_In_ MSIHANDLE hInstall);
- 
- 
- /**
-- * Evaluate the TAPInterface table of the MSI package database and prepare a list of TAP
-- * interfaces to install/remove.
-+ * Evaluate the TAPAdapter table of the MSI package database and prepare a list of TAP
-+ * adapters to install/remove.
-  *
-  * @param hInstall      Handle to the installation provided to the DLL custom action
-  *
-@@ -137,7 +138,7 @@ StartOpenVPNGUI(_In_ MSIHANDLE hInstall);
-  *         See: https://msdn.microsoft.com/en-us/library/windows/desktop/aa368072.aspx
-  */
- DLLEXP_DECL UINT __stdcall
--EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall);
-+EvaluateTAPAdapters(_In_ MSIHANDLE hInstall);
- 
- 
- /**
-diff --git a/src/tapctl/main.c b/src/tapctl/main.c
-index bf215862..1cc86424 100644
---- a/src/tapctl/main.c
-+++ b/src/tapctl/main.c
-@@ -1,5 +1,5 @@
- /*
-- *  tapctl -- Utility to manipulate TUN/TAP interfaces on Windows
-+ *  tapctl -- Utility to manipulate TUN/TAP adapters on Windows
-  *            https://community.openvpn.net/openvpn/wiki/Tapctl
-  *
-  *  Copyright (C) 2002-2018 OpenVPN Inc <sales@...515...>
-@@ -57,9 +57,9 @@ static const TCHAR usage_message[] =
-     TEXT("\n")
-     TEXT("Commands:\n")
-     TEXT("\n")
--    TEXT("create     Create a new TUN/TAP interface\n")
--    TEXT("list       List TUN/TAP interfaces\n")
--    TEXT("delete     Delete specified network interface\n")
-+    TEXT("create     Create a new TUN/TAP adapter\n")
-+    TEXT("list       List TUN/TAP adapters\n")
-+    TEXT("delete     Delete specified network adapter\n")
-     TEXT("help       Display this text\n")
-     TEXT("\n")
-     TEXT("Hint: Use \"tapctl help <command>\" to display help for particular command.\n")
-@@ -68,7 +68,7 @@ static const TCHAR usage_message[] =
- static const TCHAR usage_message_create[] =
-     TEXT("%s\n")
-     TEXT("\n")
--    TEXT("Creates a new TUN/TAP interface\n")
-+    TEXT("Creates a new TUN/TAP adapter\n")
-     TEXT("\n")
-     TEXT("Usage:\n")
-     TEXT("\n")
-@@ -76,23 +76,23 @@ static const TCHAR usage_message_create[] =
-     TEXT("\n")
-     TEXT("Options:\n")
-     TEXT("\n")
--    TEXT("--name <name>  Set TUN/TAP interface name. Should the interface with given name\n")
-+    TEXT("--name <name>  Set TUN/TAP adapter name. Should the adapter with given name    \n")
-     TEXT("               already exist, an error is returned. If this option is not      \n")
--    TEXT("               specified, a default interface name is chosen by Windows.       \n")
-+    TEXT("               specified, a default adapter name is chosen by Windows.         \n")
-     TEXT("               Note: This name can also be specified as OpenVPN's --dev-node   \n")
-     TEXT("               option.                                                         \n")
--    TEXT("--hwid <hwid>  Interface hardware id. Default value is root\\tap0901, which    \n")
-+    TEXT("--hwid <hwid>  Adapter hardware id. Default value is root\\tap0901, which      \n")
-     TEXT("               describes tap-windows6 driver. To work with wintun driver,      \n")
-     TEXT("               specify 'wintun'.                                               \n")
-     TEXT("Output:\n")
-     TEXT("\n")
--    TEXT("This command prints newly created TUN/TAP interface's GUID to stdout.          \n")
-+    TEXT("This command prints newly created TUN/TAP adapter's GUID to stdout.          \n")
- ;
- 
- static const TCHAR usage_message_list[] =
-     TEXT("%s\n")
-     TEXT("\n")
--    TEXT("Lists TUN/TAP interfaces\n")
-+    TEXT("Lists TUN/TAP adapters\n")
-     TEXT("\n")
-     TEXT("Usage:\n")
-     TEXT("\n")
-@@ -100,22 +100,22 @@ static const TCHAR usage_message_list[] =
-     TEXT("\n")
-     TEXT("Options:\n")
-     TEXT("\n")
--    TEXT("--hwid <hwid>  Interface hardware id. Default value is root\\tap0901, which    \n")
-+    TEXT("--hwid <hwid>  Adapter hardware id. Default value is root\\tap0901, which      \n")
-     TEXT("               describes tap-windows6 driver. To work with wintun driver,      \n")
-     TEXT("               specify 'wintun'.                                               \n")
-     TEXT("Output:\n")
-     TEXT("\n")
--    TEXT("This command prints all TUN/TAP interfaces to stdout.                          \n")
-+    TEXT("This command prints all TUN/TAP adapters to stdout.                          \n")
- ;
- 
- static const TCHAR usage_message_delete[] =
-     TEXT("%s\n")
-     TEXT("\n")
--    TEXT("Deletes the specified network interface\n")
-+    TEXT("Deletes the specified network adapter\n")
-     TEXT("\n")
-     TEXT("Usage:\n")
-     TEXT("\n")
--    TEXT("tapctl delete <interface GUID | interface name>\n")
-+    TEXT("tapctl delete <adapter GUID | adapter name>\n")
- ;
- 
- 
-@@ -197,75 +197,75 @@ _tmain(int argc, LPCTSTR argv[])
-             }
-         }
- 
--        /* Create TUN/TAP interface. */
--        GUID guidInterface;
--        LPOLESTR szInterfaceId = NULL;
--        DWORD dwResult = tap_create_interface(
-+        /* Create TUN/TAP adapter. */
-+        GUID guidAdapter;
-+        LPOLESTR szAdapterId = NULL;
-+        DWORD dwResult = tap_create_adapter(
-             NULL,
-             TEXT("Virtual Ethernet"),
-             szHwId,
-             &bRebootRequired,
--            &guidInterface);
-+            &guidAdapter);
-         if (dwResult != ERROR_SUCCESS)
-         {
--            _ftprintf(stderr, TEXT("Creating TUN/TAP interface failed (error 0x%x).\n"), dwResult);
-+            _ftprintf(stderr, TEXT("Creating TUN/TAP adapter failed (error 0x%x).\n"), dwResult);
-             iResult = 1; goto quit;
-         }
- 
-         if (szName)
-         {
--            /* Get the list of all available interfaces. */
--            struct tap_interface_node *pInterfaceList = NULL;
--            dwResult = tap_list_interfaces(NULL, szHwId, &pInterfaceList, TRUE);
-+            /* Get the list of all available adapters. */
-+            struct tap_adapter_node *pAdapterList = NULL;
-+            dwResult = tap_list_adapters(NULL, szHwId, &pAdapterList, TRUE);
-             if (dwResult != ERROR_SUCCESS)
-             {
--                _ftprintf(stderr, TEXT("Enumerating interfaces failed (error 0x%x).\n"), dwResult);
--                iResult = 1; goto create_delete_interface;
-+                _ftprintf(stderr, TEXT("Enumerating adapters failed (error 0x%x).\n"), dwResult);
-+                iResult = 1; goto create_delete_adapter;
-             }
- 
-             /* Check for duplicates. */
--            for (struct tap_interface_node *pInterface = pInterfaceList; pInterface; pInterface = pInterface->pNext)
-+            for (struct tap_adapter_node *pAdapter = pAdapterList; pAdapter; pAdapter = pAdapter->pNext)
-             {
--                if (_tcsicmp(szName, pInterface->szName) == 0)
-+                if (_tcsicmp(szName, pAdapter->szName) == 0)
-                 {
--                    StringFromIID((REFIID)&pInterface->guid, &szInterfaceId);
--                    _ftprintf(stderr, TEXT("Interface \"%s\" already exists (GUID %") TEXT(PRIsLPOLESTR) TEXT(").\n"), pInterface->szName, szInterfaceId);
--                    CoTaskMemFree(szInterfaceId);
--                    iResult = 1; goto create_cleanup_pInterfaceList;
-+                    StringFromIID((REFIID)&pAdapter->guid, &szAdapterId);
-+                    _ftprintf(stderr, TEXT("Adapter \"%s\" already exists (GUID %") TEXT(PRIsLPOLESTR) TEXT(").\n"), pAdapter->szName, szAdapterId);
-+                    CoTaskMemFree(szAdapterId);
-+                    iResult = 1; goto create_cleanup_pAdapterList;
-                 }
-             }
- 
--            /* Rename the interface. */
--            dwResult = tap_set_interface_name(&guidInterface, szName);
-+            /* Rename the adapter. */
-+            dwResult = tap_set_adapter_name(&guidAdapter, szName);
-             if (dwResult != ERROR_SUCCESS)
-             {
--                StringFromIID((REFIID)&guidInterface, &szInterfaceId);
--                _ftprintf(stderr, TEXT("Renaming TUN/TAP interface %") TEXT(PRIsLPOLESTR) TEXT(" to \"%s\" failed (error 0x%x).\n"), szInterfaceId, szName, dwResult);
--                CoTaskMemFree(szInterfaceId);
-+                StringFromIID((REFIID)&guidAdapter, &szAdapterId);
-+                _ftprintf(stderr, TEXT("Renaming TUN/TAP adapter %") TEXT(PRIsLPOLESTR) TEXT(" to \"%s\" failed (error 0x%x).\n"), szAdapterId, szName, dwResult);
-+                CoTaskMemFree(szAdapterId);
-                 iResult = 1; goto quit;
-             }
- 
-             iResult = 0;
- 
--create_cleanup_pInterfaceList:
--            tap_free_interface_list(pInterfaceList);
-+create_cleanup_pAdapterList:
-+            tap_free_adapter_list(pAdapterList);
-             if (iResult)
-             {
--                goto create_delete_interface;
-+                goto create_delete_adapter;
-             }
-         }
- 
--        /* Output interface GUID. */
--        StringFromIID((REFIID)&guidInterface, &szInterfaceId);
--        _ftprintf(stdout, TEXT("%") TEXT(PRIsLPOLESTR) TEXT("\n"), szInterfaceId);
--        CoTaskMemFree(szInterfaceId);
-+        /* Output adapter GUID. */
-+        StringFromIID((REFIID)&guidAdapter, &szAdapterId);
-+        _ftprintf(stdout, TEXT("%") TEXT(PRIsLPOLESTR) TEXT("\n"), szAdapterId);
-+        CoTaskMemFree(szAdapterId);
- 
-         iResult = 0; goto quit;
- 
--create_delete_interface:
--        tap_delete_interface(
-+create_delete_adapter:
-+        tap_delete_adapter(
-             NULL,
--            &guidInterface,
-+            &guidAdapter,
-             &bRebootRequired);
-         iResult = 1; goto quit;
-     }
-@@ -286,78 +286,78 @@ create_delete_interface:
-             }
-         }
- 
--        /* Output list of TUN/TAP interfaces. */
--        struct tap_interface_node *pInterfaceList = NULL;
--        DWORD dwResult = tap_list_interfaces(NULL, szHwId, &pInterfaceList, FALSE);
-+        /* Output list of TUN/TAP adapters. */
-+        struct tap_adapter_node *pAdapterList = NULL;
-+        DWORD dwResult = tap_list_adapters(NULL, szHwId, &pAdapterList, FALSE);
-         if (dwResult != ERROR_SUCCESS)
-         {
--            _ftprintf(stderr, TEXT("Enumerating TUN/TAP interfaces failed (error 0x%x).\n"), dwResult);
-+            _ftprintf(stderr, TEXT("Enumerating TUN/TAP adapters failed (error 0x%x).\n"), dwResult);
-             iResult = 1; goto quit;
-         }
- 
--        for (struct tap_interface_node *pInterface = pInterfaceList; pInterface; pInterface = pInterface->pNext)
-+        for (struct tap_adapter_node *pAdapter = pAdapterList; pAdapter; pAdapter = pAdapter->pNext)
-         {
--            LPOLESTR szInterfaceId = NULL;
--            StringFromIID((REFIID)&pInterface->guid, &szInterfaceId);
--            _ftprintf(stdout, TEXT("%") TEXT(PRIsLPOLESTR) TEXT("\t%") TEXT(PRIsLPTSTR) TEXT("\n"), szInterfaceId, pInterface->szName);
--            CoTaskMemFree(szInterfaceId);
-+            LPOLESTR szAdapterId = NULL;
-+            StringFromIID((REFIID)&pAdapter->guid, &szAdapterId);
-+            _ftprintf(stdout, TEXT("%") TEXT(PRIsLPOLESTR) TEXT("\t%") TEXT(PRIsLPTSTR) TEXT("\n"), szAdapterId, pAdapter->szName);
-+            CoTaskMemFree(szAdapterId);
-         }
- 
-         iResult = 0;
--        tap_free_interface_list(pInterfaceList);
-+        tap_free_adapter_list(pAdapterList);
-     }
-     else if (_tcsicmp(argv[1], TEXT("delete")) == 0)
-     {
-         if (argc < 3)
-         {
--            _ftprintf(stderr, TEXT("Missing interface GUID or name. Please, use \"tapctl help delete\" for usage info.\n"));
-+            _ftprintf(stderr, TEXT("Missing adapter GUID or name. Please, use \"tapctl help delete\" for usage info.\n"));
-             return 1;
-         }
- 
--        GUID guidInterface;
--        if (FAILED(IIDFromString(argv[2], (LPIID)&guidInterface)))
-+        GUID guidAdapter;
-+        if (FAILED(IIDFromString(argv[2], (LPIID)&guidAdapter)))
-         {
--            /* The argument failed to covert to GUID. Treat it as the interface name. */
--            struct tap_interface_node *pInterfaceList = NULL;
--            DWORD dwResult = tap_list_interfaces(NULL, NULL, &pInterfaceList, FALSE);
-+            /* The argument failed to covert to GUID. Treat it as the adapter name. */
-+            struct tap_adapter_node *pAdapterList = NULL;
-+            DWORD dwResult = tap_list_adapters(NULL, NULL, &pAdapterList, FALSE);
-             if (dwResult != ERROR_SUCCESS)
-             {
--                _ftprintf(stderr, TEXT("Enumerating TUN/TAP interfaces failed (error 0x%x).\n"), dwResult);
-+                _ftprintf(stderr, TEXT("Enumerating TUN/TAP adapters failed (error 0x%x).\n"), dwResult);
-                 iResult = 1; goto quit;
-             }
- 
--            for (struct tap_interface_node *pInterface = pInterfaceList;; pInterface = pInterface->pNext)
-+            for (struct tap_adapter_node *pAdapter = pAdapterList;; pAdapter = pAdapter->pNext)
-             {
--                if (pInterface == NULL)
-+                if (pAdapter == NULL)
-                 {
--                    _ftprintf(stderr, TEXT("\"%s\" interface not found.\n"), argv[2]);
--                    iResult = 1; goto delete_cleanup_pInterfaceList;
-+                    _ftprintf(stderr, TEXT("\"%s\" adapter not found.\n"), argv[2]);
-+                    iResult = 1; goto delete_cleanup_pAdapterList;
-                 }
--                else if (_tcsicmp(argv[2], pInterface->szName) == 0)
-+                else if (_tcsicmp(argv[2], pAdapter->szName) == 0)
-                 {
--                    memcpy(&guidInterface, &pInterface->guid, sizeof(GUID));
-+                    memcpy(&guidAdapter, &pAdapter->guid, sizeof(GUID));
-                     break;
-                 }
-             }
- 
-             iResult = 0;
- 
--delete_cleanup_pInterfaceList:
--            tap_free_interface_list(pInterfaceList);
-+delete_cleanup_pAdapterList:
-+            tap_free_adapter_list(pAdapterList);
-             if (iResult)
-             {
-                 goto quit;
-             }
-         }
- 
--        /* Delete the network interface. */
--        DWORD dwResult = tap_delete_interface(
-+        /* Delete the network adapter. */
-+        DWORD dwResult = tap_delete_adapter(
-             NULL,
--            &guidInterface,
-+            &guidAdapter,
-             &bRebootRequired);
-         if (dwResult != ERROR_SUCCESS)
-         {
--            _ftprintf(stderr, TEXT("Deleting interface \"%s\" failed (error 0x%x).\n"), argv[2], dwResult);
-+            _ftprintf(stderr, TEXT("Deleting adapter \"%s\" failed (error 0x%x).\n"), argv[2], dwResult);
-             iResult = 1; goto quit;
-         }
- 
+ #ifndef _In_
+ #define _In_
+@@ -42,6 +50,9 @@
+ #ifndef _Inout_
+ #define _Inout_
+ #endif
++#ifndef _Inout_opt_
++#define _Inout_opt_
++#endif
+ #ifndef _Out_
+ #define _Out_
+ #endif
 diff --git a/src/tapctl/tap.c b/src/tapctl/tap.c
-index d4631679..d718d43e 100644
+index 576f6740..d4631679 100644
 --- a/src/tapctl/tap.c
 +++ b/src/tapctl/tap.c
-@@ -1,5 +1,5 @@
- /*
-- *  tapctl -- Utility to manipulate TUN/TAP interfaces on Windows
-+ *  tapctl -- Utility to manipulate TUN/TAP adapters on Windows
-  *            https://community.openvpn.net/openvpn/wiki/Tapctl
-  *
-  *  Copyright (C) 2018-2020 Simon Rozman <simon@...2293...>
-@@ -44,8 +44,8 @@ const static GUID GUID_DEVCLASS_NET = { 0x4d36e972L, 0xe325, 0x11ce, { 0xbf, 0xc
+@@ -31,6 +31,7 @@
+ #include <cfgmgr32.h>
+ #include <objbase.h>
+ #include <setupapi.h>
++#include <stdio.h>
+ #include <tchar.h>
  
- const static TCHAR szzDefaultHardwareIDs[] = TEXT("root\\") TEXT(TAP_WIN_COMPONENT_ID) TEXT("\0");
- 
--const static TCHAR szInterfaceRegKeyPathTemplate[] = TEXT("SYSTEM\\CurrentControlSet\\Control\\Network\\%") TEXT(PRIsLPOLESTR) TEXT("\\%") TEXT(PRIsLPOLESTR) TEXT("\\Connection");
--#define INTERFACE_REGKEY_PATH_MAX (_countof(TEXT("SYSTEM\\CurrentControlSet\\Control\\Network\\")) - 1 + 38 + _countof(TEXT("\\")) - 1 + 38 + _countof(TEXT("\\Connection")))
-+const static TCHAR szAdapterRegKeyPathTemplate[] = TEXT("SYSTEM\\CurrentControlSet\\Control\\Network\\%") TEXT(PRIsLPOLESTR) TEXT("\\%") TEXT(PRIsLPOLESTR) TEXT("\\Connection");
-+#define ADAPTER_REGKEY_PATH_MAX (_countof(TEXT("SYSTEM\\CurrentControlSet\\Control\\Network\\")) - 1 + 38 + _countof(TEXT("\\")) - 1 + 38 + _countof(TEXT("\\Connection")))
- 
- 
- /**
-@@ -60,7 +60,7 @@ const static TCHAR szInterfaceRegKeyPathTemplate[] = TEXT("SYSTEM\\CurrentContro
-  * @param pbRebootRequired  A pointer to a BOOL flag. If the device requires a system restart,
-  *                      this flag is set to TRUE. Otherwise, the flag is left unmodified. This
-  *                      allows the flag to be globally initialized to FALSE and reused for multiple
-- *                      interface manipulations.
-+ *                      adapter manipulations.
-  *
-  * @return ERROR_SUCCESS on success; Win32 error code otherwise
-  **/
-@@ -82,7 +82,7 @@ typedef DWORD (*devop_func_t)(
-  * @param pbRebootRequired  A pointer to a BOOL flag. If the device requires a system restart,
-  *                      this flag is set to TRUE. Otherwise, the flag is left unmodified. This
-  *                      allows the flag to be globally initialized to FALSE and reused for multiple
-- *                      interface manipulations.
-+ *                      adapter manipulations.
-  *
-  * @return ERROR_SUCCESS on success; Win32 error code otherwise
-  **/
-@@ -129,7 +129,7 @@ check_reboot(
-  * @param pbRebootRequired  A pointer to a BOOL flag. If the device requires a system restart,
-  *                      this flag is set to TRUE. Otherwise, the flag is left unmodified. This
-  *                      allows the flag to be globally initialized to FALSE and reused for multiple
-- *                      interface manipulations.
-+ *                      adapter manipulations.
-  *
-  * @return ERROR_SUCCESS on success; Win32 error code otherwise
-  **/
-@@ -193,7 +193,7 @@ delete_device(
-  * @param pbRebootRequired  A pointer to a BOOL flag. If the device requires a system restart,
-  *                      this flag is set to TRUE. Otherwise, the flag is left unmodified. This
-  *                      allows the flag to be globally initialized to FALSE and reused for multiple
-- *                      interface manipulations.
-+ *                      adapter manipulations.
-  *
-  * @return ERROR_SUCCESS on success; Win32 error code otherwise
-  **/
-@@ -257,7 +257,7 @@ change_device_state(
-  * @param pbRebootRequired  A pointer to a BOOL flag. If the device requires a system restart,
-  *                      this flag is set to TRUE. Otherwise, the flag is left unmodified. This
-  *                      allows the flag to be globally initialized to FALSE and reused for multiple
-- *                      interface manipulations.
-+ *                      adapter manipulations.
-  *
-  * @return ERROR_SUCCESS on success; Win32 error code otherwise
-  **/
-@@ -283,7 +283,7 @@ enable_device(
-  * @param pbRebootRequired  A pointer to a BOOL flag. If the device requires a system restart,
-  *                      this flag is set to TRUE. Otherwise, the flag is left unmodified. This
-  *                      allows the flag to be globally initialized to FALSE and reused for multiple
-- *                      interface manipulations.
-+ *                      adapter manipulations.
-  *
-  * @return ERROR_SUCCESS on success; Win32 error code otherwise
-  **/
-@@ -444,7 +444,7 @@ get_reg_string(
- 
- 
- /**
-- * Returns network interface ID.
-+ * Returns network adapter ID.
-  *
-  * @param hDeviceInfoSet  A handle to a device information set that contains a device
-  *                      information element that represents the device.
-@@ -457,20 +457,20 @@ get_reg_string(
-  *                      attempts to read NetCfgInstanceId value from registry. A 1sec sleep
-  *                      is inserted between retry attempts.
-  *
-- * @param pguidInterface  A pointer to GUID that receives network interface ID.
-+ * @param pguidAdapter  A pointer to GUID that receives network adapter ID.
-  *
-  * @return ERROR_SUCCESS on success; Win32 error code otherwise
-  **/
- static DWORD
--get_net_interface_guid(
-+get_net_adapter_guid(
-     _In_ HDEVINFO hDeviceInfoSet,
-     _In_ PSP_DEVINFO_DATA pDeviceInfoData,
-     _In_ int iNumAttempts,
--    _Out_ LPGUID pguidInterface)
-+    _Out_ LPGUID pguidAdapter)
- {
-     DWORD dwResult = ERROR_BAD_ARGUMENTS;
- 
--    if (pguidInterface == NULL || iNumAttempts < 1)
-+    if (pguidAdapter == NULL || iNumAttempts < 1)
-     {
-         return ERROR_BAD_ARGUMENTS;
-     }
-@@ -519,7 +519,7 @@ get_net_interface_guid(
-             break;
-         }
- 
--        dwResult = SUCCEEDED(CLSIDFromString(szCfgGuidString, (LPCLSID)pguidInterface)) ? ERROR_SUCCESS : ERROR_INVALID_DATA;
-+        dwResult = SUCCEEDED(CLSIDFromString(szCfgGuidString, (LPCLSID)pguidAdapter)) ? ERROR_SUCCESS : ERROR_INVALID_DATA;
-         free(szCfgGuidString);
-         break;
-     }
-@@ -647,17 +647,17 @@ _tcszlen(_In_ LPCTSTR str)
- 
- 
- DWORD
--tap_create_interface(
-+tap_create_adapter(
-     _In_opt_ HWND hwndParent,
-     _In_opt_ LPCTSTR szDeviceDescription,
-     _In_opt_ LPCTSTR szHwId,
-     _Inout_ LPBOOL pbRebootRequired,
--    _Out_ LPGUID pguidInterface)
-+    _Out_ LPGUID pguidAdapter)
- {
-     DWORD dwResult;
- 
-     if (pbRebootRequired == NULL
--        || pguidInterface == NULL)
-+        || pguidAdapter == NULL)
-     {
-         return ERROR_BAD_ARGUMENTS;
-     }
-@@ -876,7 +876,7 @@ tap_create_interface(
-         msg(M_WARN | M_ERRNO, "%s: SetupDiCallClassInstaller(DIF_REGISTER_COINSTALLERS) failed", __FUNCTION__);
-     }
- 
--    /* Install interfaces if any. */
-+    /* Install adapters if any. */
-     if (!SetupDiCallClassInstaller(
-             DIF_INSTALLINTERFACES,
-             hDevInfoList,
-@@ -900,13 +900,13 @@ tap_create_interface(
-     /* Check if a system reboot is required. (Ignore errors) */
-     check_reboot(hDevInfoList, &devinfo_data, pbRebootRequired);
- 
--    /* Get network interface ID from registry. Retry for max 30sec. */
--    dwResult = get_net_interface_guid(hDevInfoList, &devinfo_data, 30, pguidInterface);
-+    /* Get network adapter ID from registry. Retry for max 30sec. */
-+    dwResult = get_net_adapter_guid(hDevInfoList, &devinfo_data, 30, pguidAdapter);
- 
- cleanup_remove_device:
-     if (dwResult != ERROR_SUCCESS)
-     {
--        /* The interface was installed. But, the interface ID was unobtainable. Clean-up. */
-+        /* The adapter was installed. But, the adapter ID was unobtainable. Clean-up. */
-         SP_REMOVEDEVICE_PARAMS removedevice_params =
-         {
-             .ClassInstallHeader =
-@@ -958,35 +958,35 @@ cleanup_hDevInfoList:
- 
- 
- /**
-- * Performs a given task on an interface.
-+ * Performs a given task on an adapter.
-  *
-- * @param hwndParent    A handle to the top-level window to use for any user interface that is
-+ * @param hwndParent    A handle to the top-level window to use for any user adapter that is
-  *                      related to non-device-specific actions (such as a select-device dialog
-  *                      box that uses the global class driver list). This handle is optional
-  *                      and can be NULL. If a specific top-level window is not required, set
-  *                      hwndParent to NULL.
-  *
-- * @param pguidInterface  A pointer to GUID that contains network interface ID.
-+ * @param pguidAdapter  A pointer to GUID that contains network adapter ID.
-  *
-- * @param funcOperation  A pointer for the function to perform specific task on the interface.
-+ * @param funcOperation  A pointer for the function to perform specific task on the adapter.
-  *
-  * @param pbRebootRequired  A pointer to a BOOL flag. If the device requires a system restart,
-  *                      this flag is set to TRUE. Otherwise, the flag is left unmodified. This
-  *                      allows the flag to be globally initialized to FALSE and reused for multiple
-- *                      interface manipulations.
-+ *                      adapter manipulations.
-  *
-  * @return ERROR_SUCCESS on success; Win32 error code otherwise
-  **/
- static DWORD
--execute_on_first_interface(
-+execute_on_first_adapter(
-     _In_opt_ HWND hwndParent,
--    _In_ LPCGUID pguidInterface,
-+    _In_ LPCGUID pguidAdapter,
-     _In_ devop_func_t funcOperation,
-     _Inout_ LPBOOL pbRebootRequired)
- {
-     DWORD dwResult;
- 
--    if (pguidInterface == NULL)
-+    if (pguidAdapter == NULL)
-     {
-         return ERROR_BAD_ARGUMENTS;
-     }
-@@ -1028,10 +1028,10 @@ execute_on_first_interface(
-         {
-             if (GetLastError() == ERROR_NO_MORE_ITEMS)
-             {
--                LPOLESTR szInterfaceId = NULL;
--                StringFromIID((REFIID)pguidInterface, &szInterfaceId);
--                msg(M_NONFATAL, "%s: Interface %" PRIsLPOLESTR " not found", __FUNCTION__, szInterfaceId);
--                CoTaskMemFree(szInterfaceId);
-+                LPOLESTR szAdapterId = NULL;
-+                StringFromIID((REFIID)pguidAdapter, &szAdapterId);
-+                msg(M_NONFATAL, "%s: Adapter %" PRIsLPOLESTR " not found", __FUNCTION__, szAdapterId);
-+                CoTaskMemFree(szAdapterId);
-                 dwResult = ERROR_FILE_NOT_FOUND;
-                 goto cleanup_hDevInfoList;
-             }
-@@ -1043,9 +1043,9 @@ execute_on_first_interface(
-             }
-         }
- 
--        /* Get interface GUID. */
--        GUID guidInterface;
--        dwResult = get_net_interface_guid(hDevInfoList, &devinfo_data, 1, &guidInterface);
-+        /* Get adapter GUID. */
-+        GUID guidAdapter;
-+        dwResult = get_net_adapter_guid(hDevInfoList, &devinfo_data, 1, &guidAdapter);
-         if (dwResult != ERROR_SUCCESS)
-         {
-             /* Something is wrong with this device. Skip it. */
-@@ -1053,7 +1053,7 @@ execute_on_first_interface(
-         }
- 
-         /* Compare GUIDs. */
--        if (memcmp(pguidInterface, &guidInterface, sizeof(GUID)) == 0)
-+        if (memcmp(pguidAdapter, &guidAdapter, sizeof(GUID)) == 0)
-         {
-             dwResult = funcOperation(hDevInfoList, &devinfo_data, pbRebootRequired);
-             break;
-@@ -1067,34 +1067,34 @@ cleanup_hDevInfoList:
- 
- 
- DWORD
--tap_delete_interface(
-+tap_delete_adapter(
-     _In_opt_ HWND hwndParent,
--    _In_ LPCGUID pguidInterface,
-+    _In_ LPCGUID pguidAdapter,
-     _Inout_ LPBOOL pbRebootRequired)
- {
--    return execute_on_first_interface(hwndParent, pguidInterface, delete_device, pbRebootRequired);
-+    return execute_on_first_adapter(hwndParent, pguidAdapter, delete_device, pbRebootRequired);
- }
- 
- 
- DWORD
--tap_enable_interface(
-+tap_enable_adapter(
-     _In_opt_ HWND hwndParent,
--    _In_ LPCGUID pguidInterface,
-+    _In_ LPCGUID pguidAdapter,
-     _In_ BOOL bEnable,
-     _Inout_ LPBOOL pbRebootRequired)
- {
--    return execute_on_first_interface(hwndParent, pguidInterface, bEnable ? enable_device : disable_device, pbRebootRequired);
-+    return execute_on_first_adapter(hwndParent, pguidAdapter, bEnable ? enable_device : disable_device, pbRebootRequired);
- }
- 
- 
- DWORD
--tap_set_interface_name(
--    _In_ LPCGUID pguidInterface,
-+tap_set_adapter_name(
-+    _In_ LPCGUID pguidAdapter,
-     _In_ LPCTSTR szName)
- {
-     DWORD dwResult;
- 
--    if (pguidInterface == NULL || szName == NULL)
-+    if (pguidAdapter == NULL || szName == NULL)
-     {
-         return ERROR_BAD_ARGUMENTS;
-     }
-@@ -1103,19 +1103,19 @@ tap_set_interface_name(
-     LPOLESTR szDevClassNetId = NULL;
-     StringFromIID((REFIID)&GUID_DEVCLASS_NET, &szDevClassNetId);
- 
--    /* Get the interface GUID as string. */
--    LPOLESTR szInterfaceId = NULL;
--    StringFromIID((REFIID)pguidInterface, &szInterfaceId);
-+    /* Get the adapter GUID as string. */
-+    LPOLESTR szAdapterId = NULL;
-+    StringFromIID((REFIID)pguidAdapter, &szAdapterId);
- 
-     /* Render registry key path. */
--    TCHAR szRegKey[INTERFACE_REGKEY_PATH_MAX];
-+    TCHAR szRegKey[ADAPTER_REGKEY_PATH_MAX];
-     _stprintf_s(
-         szRegKey, _countof(szRegKey),
--        szInterfaceRegKeyPathTemplate,
-+        szAdapterRegKeyPathTemplate,
-         szDevClassNetId,
--        szInterfaceId);
-+        szAdapterId);
- 
--    /* Open network interface registry key. */
-+    /* Open network adapter registry key. */
-     HKEY hKey = NULL;
-     dwResult = RegOpenKeyEx(
-         HKEY_LOCAL_MACHINE,
-@@ -1127,10 +1127,10 @@ tap_set_interface_name(
-     {
-         SetLastError(dwResult); /* MSDN does not mention RegOpenKeyEx() to set GetLastError(). But we do have an error code. Set last error manually. */
-         msg(M_NONFATAL | M_ERRNO, "%s: RegOpenKeyEx(HKLM, \"%" PRIsLPTSTR "\") failed", __FUNCTION__, szRegKey);
--        goto cleanup_szInterfaceId;
-+        goto cleanup_szAdapterId;
-     }
- 
--    /* Set the interface name. */
-+    /* Set the adapter name. */
-     size_t sizeName = ((_tcslen(szName) + 1) * sizeof(TCHAR));
- #ifdef _WIN64
-     if (sizeName > DWORD_MAX)
-@@ -1156,23 +1156,23 @@ tap_set_interface_name(
- 
- cleanup_hKey:
-     RegCloseKey(hKey);
--cleanup_szInterfaceId:
--    CoTaskMemFree(szInterfaceId);
-+cleanup_szAdapterId:
-+    CoTaskMemFree(szAdapterId);
-     CoTaskMemFree(szDevClassNetId);
-     return dwResult;
- }
- 
- 
- DWORD
--tap_list_interfaces(
-+tap_list_adapters(
-     _In_opt_ HWND hwndParent,
-     _In_opt_ LPCTSTR szHwId,
--    _Out_ struct tap_interface_node **ppInterface,
-+    _Out_ struct tap_adapter_node **ppAdapter,
-     _In_ BOOL bAll)
- {
-     DWORD dwResult;
- 
--    if (ppInterface == NULL)
-+    if (ppAdapter == NULL)
-     {
-         return ERROR_BAD_ARGUMENTS;
-     }
-@@ -1212,8 +1212,8 @@ tap_list_interfaces(
-     StringFromIID((REFIID)&GUID_DEVCLASS_NET, &szDevClassNetId);
- 
-     /* Iterate. */
--    *ppInterface = NULL;
--    struct tap_interface_node *pInterfaceTail = NULL;
-+    *ppAdapter = NULL;
-+    struct tap_adapter_node *pAdapterTail = NULL;
-     for (DWORD dwIndex = 0;; dwIndex++)
-     {
-         /* Get the device from the list. */
-@@ -1284,28 +1284,28 @@ tap_list_interfaces(
-             goto cleanup_szzDeviceHardwareIDs;
-         }
- 
--        /* Get interface GUID. */
--        GUID guidInterface;
--        dwResult = get_net_interface_guid(hDevInfoList, &devinfo_data, 1, &guidInterface);
-+        /* Get adapter GUID. */
-+        GUID guidAdapter;
-+        dwResult = get_net_adapter_guid(hDevInfoList, &devinfo_data, 1, &guidAdapter);
-         if (dwResult != ERROR_SUCCESS)
-         {
-             /* Something is wrong with this device. Skip it. */
-             goto cleanup_szzDeviceHardwareIDs;
-         }
- 
--        /* Get the interface GUID as string. */
--        LPOLESTR szInterfaceId = NULL;
--        StringFromIID((REFIID)&guidInterface, &szInterfaceId);
-+        /* Get the adapter GUID as string. */
-+        LPOLESTR szAdapterId = NULL;
-+        StringFromIID((REFIID)&guidAdapter, &szAdapterId);
- 
-         /* Render registry key path. */
--        TCHAR szRegKey[INTERFACE_REGKEY_PATH_MAX];
-+        TCHAR szRegKey[ADAPTER_REGKEY_PATH_MAX];
-         _stprintf_s(
-             szRegKey, _countof(szRegKey),
--            szInterfaceRegKeyPathTemplate,
-+            szAdapterRegKeyPathTemplate,
-             szDevClassNetId,
--            szInterfaceId);
-+            szAdapterId);
- 
--        /* Open network interface registry key. */
-+        /* Open network adapter registry key. */
-         HKEY hKey = NULL;
-         dwResult = RegOpenKeyEx(
-             HKEY_LOCAL_MACHINE,
-@@ -1317,10 +1317,10 @@ tap_list_interfaces(
-         {
-             SetLastError(dwResult); /* MSDN does not mention RegOpenKeyEx() to set GetLastError(). But we do have an error code. Set last error manually. */
-             msg(M_WARN | M_ERRNO, "%s: RegOpenKeyEx(HKLM, \"%" PRIsLPTSTR "\") failed", __FUNCTION__, szRegKey);
--            goto cleanup_szInterfaceId;
-+            goto cleanup_szAdapterId;
-         }
- 
--        /* Read interface name. */
-+        /* Read adapter name. */
-         LPTSTR szName = NULL;
-         dwResult = get_reg_string(
-             hKey,
-@@ -1329,42 +1329,42 @@ tap_list_interfaces(
-         if (dwResult != ERROR_SUCCESS)
-         {
-             SetLastError(dwResult);
--            msg(M_WARN | M_ERRNO, "%s: Cannot determine %" PRIsLPOLESTR " interface name", __FUNCTION__, szInterfaceId);
-+            msg(M_WARN | M_ERRNO, "%s: Cannot determine %" PRIsLPOLESTR " adapter name", __FUNCTION__, szAdapterId);
-             goto cleanup_hKey;
-         }
- 
-         /* Append to the list. */
-         size_t hwid_size = (_tcszlen(szzDeviceHardwareIDs) + 1) * sizeof(TCHAR);
-         size_t name_size = (_tcslen(szName) + 1) * sizeof(TCHAR);
--        struct tap_interface_node *node = (struct tap_interface_node *)malloc(sizeof(struct tap_interface_node) + hwid_size + name_size);
-+        struct tap_adapter_node *node = (struct tap_adapter_node *)malloc(sizeof(struct tap_adapter_node) + hwid_size + name_size);
-         if (node == NULL)
-         {
--            msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, sizeof(struct tap_interface_node) + hwid_size + name_size);
-+            msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, sizeof(struct tap_adapter_node) + hwid_size + name_size);
-             dwResult = ERROR_OUTOFMEMORY; goto cleanup_szName;
-         }
- 
--        memcpy(&node->guid, &guidInterface, sizeof(GUID));
-+        memcpy(&node->guid, &guidAdapter, sizeof(GUID));
-         node->szzHardwareIDs = (LPTSTR)(node + 1);
-         memcpy(node->szzHardwareIDs, szzDeviceHardwareIDs, hwid_size);
-         node->szName = (LPTSTR)((LPBYTE)node->szzHardwareIDs + hwid_size);
-         memcpy(node->szName, szName, name_size);
-         node->pNext = NULL;
--        if (pInterfaceTail)
-+        if (pAdapterTail)
-         {
--            pInterfaceTail->pNext = node;
--            pInterfaceTail = node;
-+            pAdapterTail->pNext = node;
-+            pAdapterTail = node;
-         }
-         else
-         {
--            *ppInterface = pInterfaceTail = node;
-+            *ppAdapter = pAdapterTail = node;
-         }
- 
- cleanup_szName:
-         free(szName);
- cleanup_hKey:
-         RegCloseKey(hKey);
--cleanup_szInterfaceId:
--        CoTaskMemFree(szInterfaceId);
-+cleanup_szAdapterId:
-+        CoTaskMemFree(szAdapterId);
- cleanup_szzDeviceHardwareIDs:
-         free(szzDeviceHardwareIDs);
-     }
-@@ -1379,16 +1379,16 @@ cleanup_hDevInfoList:
- 
- 
- void
--tap_free_interface_list(
--    _In_ struct tap_interface_node *pInterfaceList)
-+tap_free_adapter_list(
-+    _In_ struct tap_adapter_node *pAdapterList)
- {
-     /* Iterate over all nodes of the list. */
--    while (pInterfaceList)
-+    while (pAdapterList)
-     {
--        struct tap_interface_node *node = pInterfaceList;
--        pInterfaceList = pInterfaceList->pNext;
-+        struct tap_adapter_node *node = pAdapterList;
-+        pAdapterList = pAdapterList->pNext;
- 
--        /* Free the interface node. */
-+        /* Free the adapter node. */
-         free(node);
-     }
- }
-diff --git a/src/tapctl/tap.h b/src/tapctl/tap.h
-index 4c2d73ba..aec44ec8 100644
---- a/src/tapctl/tap.h
-+++ b/src/tapctl/tap.h
-@@ -1,5 +1,5 @@
- /*
-- *  tapctl -- Utility to manipulate TUN/TAP interfaces on Windows
-+ *  tapctl -- Utility to manipulate TUN/TAP adapters on Windows
-  *            https://community.openvpn.net/openvpn/wiki/Tapctl
-  *
-  *  Copyright (C) 2018-2020 Simon Rozman <simon@...2293...>
-@@ -26,9 +26,9 @@
- 
- 
- /**
-- * Creates a TUN/TAP interface.
-+ * Creates a TUN/TAP adapter.
-  *
-- * @param hwndParent    A handle to the top-level window to use for any user interface that is
-+ * @param hwndParent    A handle to the top-level window to use for any user adapter that is
-  *                      related to non-device-specific actions (such as a select-device dialog
-  *                      box that uses the global class driver list). This handle is optional
-  *                      and can be NULL. If a specific top-level window is not required, set
-@@ -44,106 +44,106 @@
-  * @param pbRebootRequired  A pointer to a BOOL flag. If the device requires a system restart,
-  *                      this flag is set to TRUE. Otherwise, the flag is left unmodified. This
-  *                      allows the flag to be globally initialized to FALSE and reused for multiple
-- *                      interface manipulations.
-+ *                      adapter manipulations.
-  *
-- * @param pguidInterface  A pointer to GUID that receives network interface ID.
-+ * @param pguidAdapter  A pointer to GUID that receives network adapter ID.
-  *
-  * @return ERROR_SUCCESS on success; Win32 error code otherwise
-  **/
- DWORD
--tap_create_interface(
-+tap_create_adapter(
-     _In_opt_ HWND hwndParent,
-     _In_opt_ LPCTSTR szDeviceDescription,
-     _In_opt_ LPCTSTR szHwId,
-     _Inout_ LPBOOL pbRebootRequired,
--    _Out_ LPGUID pguidInterface);
-+    _Out_ LPGUID pguidAdapter);
- 
- 
- /**
-- * Deletes an interface.
-+ * Deletes an adapter.
-  *
-- * @param hwndParent    A handle to the top-level window to use for any user interface that is
-+ * @param hwndParent    A handle to the top-level window to use for any user adapter that is
-  *                      related to non-device-specific actions (such as a select-device dialog
-  *                      box that uses the global class driver list). This handle is optional
-  *                      and can be NULL. If a specific top-level window is not required, set
-  *                      hwndParent to NULL.
-  *
-- * @param pguidInterface  A pointer to GUID that contains network interface ID.
-+ * @param pguidAdapter  A pointer to GUID that contains network adapter ID.
-  *
-  * @param pbRebootRequired  A pointer to a BOOL flag. If the device requires a system restart,
-  *                      this flag is set to TRUE. Otherwise, the flag is left unmodified. This
-  *                      allows the flag to be globally initialized to FALSE and reused for multiple
-- *                      interface manipulations.
-+ *                      adapter manipulations.
-  *
-  * @return ERROR_SUCCESS on success; Win32 error code otherwise
-  **/
- DWORD
--tap_delete_interface(
-+tap_delete_adapter(
-     _In_opt_ HWND hwndParent,
--    _In_ LPCGUID pguidInterface,
-+    _In_ LPCGUID pguidAdapter,
-     _Inout_ LPBOOL pbRebootRequired);
- 
- 
- /**
-- * Enables or disables an interface.
-+ * Enables or disables an adapter.
-  *
-- * @param hwndParent    A handle to the top-level window to use for any user interface that is
-+ * @param hwndParent    A handle to the top-level window to use for any user adapter that is
-  *                      related to non-device-specific actions (such as a select-device dialog
-  *                      box that uses the global class driver list). This handle is optional
-  *                      and can be NULL. If a specific top-level window is not required, set
-  *                      hwndParent to NULL.
-  *
-- * @param pguidInterface  A pointer to GUID that contains network interface ID.
-+ * @param pguidAdapter  A pointer to GUID that contains network adapter ID.
-  *
-  * @param bEnable       TRUE to enable; FALSE to disable
-  *
-  * @param pbRebootRequired  A pointer to a BOOL flag. If the device requires a system restart,
-  *                      this flag is set to TRUE. Otherwise, the flag is left unmodified. This
-  *                      allows the flag to be globally initialized to FALSE and reused for multiple
-- *                      interface manipulations.
-+ *                      adapter manipulations.
-  *
-  * @return ERROR_SUCCESS on success; Win32 error code otherwise
-  **/
- DWORD
--tap_enable_interface(
-+tap_enable_adapter(
-     _In_opt_ HWND hwndParent,
--    _In_ LPCGUID pguidInterface,
-+    _In_ LPCGUID pguidAdapter,
-     _In_ BOOL bEnable,
-     _Inout_ LPBOOL pbRebootRequired);
- 
- 
- /**
-- * Sets interface name.
-+ * Sets adapter name.
-  *
-- * @param pguidInterface  A pointer to GUID that contains network interface ID.
-+ * @param pguidAdapter  A pointer to GUID that contains network adapter ID.
-  *
-- * @param szName        New interface name - must be unique
-+ * @param szName        New adapter name - must be unique
-  *
-  * @return ERROR_SUCCESS on success; Win32 error code otherwise
-  **/
- DWORD
--tap_set_interface_name(
--    _In_ LPCGUID pguidInterface,
-+tap_set_adapter_name(
-+    _In_ LPCGUID pguidAdapter,
-     _In_ LPCTSTR szName);
- 
- 
- /**
-- * Network interface list node
-+ * Network adapter list node
-  */
--struct tap_interface_node
-+struct tap_adapter_node
- {
--    GUID guid;             /** Interface GUID */
-+    GUID guid;             /** Adapter GUID */
-     LPTSTR szzHardwareIDs; /** Device hardware ID(s) */
--    LPTSTR szName;         /** Interface name */
-+    LPTSTR szName;         /** Adapter name */
- 
--    struct tap_interface_node *pNext; /** Pointer to next interface */
-+    struct tap_adapter_node *pNext; /** Pointer to next adapter */
- };
- 
- 
- /**
-- * Creates a list of available network interfaces.
-+ * Creates a list of available network adapters.
-  *
-- * @param hwndParent    A handle to the top-level window to use for any user interface that is
-+ * @param hwndParent    A handle to the top-level window to use for any user adapter that is
-  *                      related to non-device-specific actions (such as a select-device dialog
-  *                      box that uses the global class driver list). This handle is optional
-  *                      and can be NULL. If a specific top-level window is not required, set
-@@ -153,30 +153,30 @@ struct tap_interface_node
-  *                      of the device. This pointer is optional and can be NULL. Default value
-  *                      is root\tap0901.
-  *
-- * @param ppInterfaceList  A pointer to the list to receive pointer to the first interface in
-+ * @param ppAdapterList  A pointer to the list to receive pointer to the first adapter in
-  *                      the list. After the list is no longer required, free it using
-- *                      tap_free_interface_list().
-+ *                      tap_free_adapter_list().
-  *
-- * @param bAll          When TRUE, all network interfaces found are added to the list. When
-- *                      FALSE, only TUN/TAP interfaces found are added.
-+ * @param bAll          When TRUE, all network adapters found are added to the list. When
-+ *                      FALSE, only TUN/TAP adapters found are added.
-  *
-  * @return ERROR_SUCCESS on success; Win32 error code otherwise
-  */
- DWORD
--tap_list_interfaces(
-+tap_list_adapters(
-     _In_opt_ HWND hwndParent,
-     _In_opt_ LPCTSTR szHwId,
--    _Out_ struct tap_interface_node **ppInterfaceList,
-+    _Out_ struct tap_adapter_node **ppAdapterList,
-     _In_ BOOL bAll);
- 
- 
- /**
-- * Frees a list of network interfaces.
-+ * Frees a list of network adapters.
-  *
-- * @param pInterfaceList  A pointer to the first interface in the list to free.
-+ * @param pAdapterList  A pointer to the first adapter in the list to free.
-  */
- void
--tap_free_interface_list(
--    _In_ struct tap_interface_node *pInterfaceList);
-+tap_free_adapter_list(
-+    _In_ struct tap_adapter_node *pAdapterList);
- 
- #endif /* ifndef TAP_H */
-diff --git a/src/tapctl/tapctl_resources.rc b/src/tapctl/tapctl_resources.rc
-index f6f3cb75..2b3ff238 100644
---- a/src/tapctl/tapctl_resources.rc
-+++ b/src/tapctl/tapctl_resources.rc
-@@ -1,5 +1,5 @@
- /*
-- *  tapctl -- Utility to manipulate TUN/TAP interfaces on Windows
-+ *  tapctl -- Utility to manipulate TUN/TAP adapters on Windows
-  *
-  *  Copyright (C) 2018 Simon Rozman <simon@...2293...>
-  *
-@@ -46,7 +46,7 @@ BEGIN
-         BLOCK "040904b0"
-         BEGIN
-             VALUE "CompanyName", "The OpenVPN Project"
--            VALUE "FileDescription", "Utility to manipulate TUN/TAP interfaces on Windows"
-+            VALUE "FileDescription", "Utility to manipulate TUN/TAP adapters on Windows"
-             VALUE "FileVersion", PACKAGE_VERSION ".0"
-             VALUE "InternalName", "OpenVPN"
-             VALUE "LegalCopyright", "Copyright © The OpenVPN Project"
+ #ifdef _MSC_VER
 -- 
 2.24.1.windows.2
 
