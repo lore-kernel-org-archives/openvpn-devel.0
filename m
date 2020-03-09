@@ -1,10 +1,11 @@
 From: Simon Rozman <simon@...2293...>
-Date: Mon,  9 Mar 2020 14:17:19 +0100
-Message-Id: <20200309131728.380-3-simon@...2293...>
+Date: Mon,  9 Mar 2020 14:17:18 +0100
+Message-Id: <20200309131728.380-2-simon@...2293...>
 In-Reply-To: <20200309131728.380-1-simon@...2293...>
 References: <20200309131728.380-1-simon@...2293...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 03/12] tapctl: Update documentation
+Subject: [Openvpn-devel] [PATCH 02/12] openvpnmsica: Fix
+ TAPInterface.DisplayName field interpretation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,108 +18,58 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+The DisplayName field type is Filename in the MSI database. This means
+it must be authored as "8.3" filename, or "8.3|long filename".
+
+This issue does not appear until interface names grow longer than 8
+characters, or contain characters invalid in 8.3 filename notation.
+
 Signed-off-by: Simon Rozman <simon@...2293...>
 ---
- src/tapctl/tap.c | 17 ++++++++---------
- src/tapctl/tap.h | 18 +++++++++---------
- 2 files changed, 17 insertions(+), 18 deletions(-)
+ src/openvpnmsica/openvpnmsica.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/src/tapctl/tap.c b/src/tapctl/tap.c
-index 464ce725..b8249919 100644
---- a/src/tapctl/tap.c
-+++ b/src/tapctl/tap.c
+diff --git a/src/openvpnmsica/openvpnmsica.c b/src/openvpnmsica/openvpnmsica.c
+index 4236330a..e1f0b77d 100644
+--- a/src/openvpnmsica/openvpnmsica.c
++++ b/src/openvpnmsica/openvpnmsica.c
 @@ -2,7 +2,7 @@
-  *  tapctl -- Utility to manipulate TUN/TAP interfaces on Windows
-  *            https://community.openvpn.net/openvpn/wiki/Tapctl
+  *  openvpnmsica -- Custom Action DLL to provide OpenVPN-specific support to MSI packages
+  *                  https://community.openvpn.net/openvpn/wiki/OpenVPNMSICA
   *
 - *  Copyright (C) 2018 Simon Rozman <simon@...2293...>
 + *  Copyright (C) 2018-2020 Simon Rozman <simon@...2293...>
   *
   *  This program is free software; you can redistribute it and/or modify
   *  it under the terms of the GNU General Public License version 2
-@@ -51,15 +51,15 @@ const static TCHAR szInterfaceRegKeyPathTemplate[] = TEXT("SYSTEM\\CurrentContro
-  * Checks device install parameters if a system reboot is required.
-  *
-  * @param hDeviceInfoSet  A handle to a device information set that contains a device
-- *                      information element that represents the device for which to
-+ *                      information element that represents the device.
-  *
-  * @param pDeviceInfoData  A pointer to an SP_DEVINFO_DATA structure that specifies the
-  *                      device information element in hDeviceInfoSet.
-  *
-- * @param pbRebootRequired  A pointer to a BOOL flag. If the interface installation requires
-- *                      a system restart, this flag is set to TRUE. Otherwise, the flag is
-- *                      left unmodified. This allows the flag to be globally initialized to
-- *                      FALSE and reused for multiple interface installations.
-+ * @param pbRebootRequired  A pointer to a BOOL flag. If the device requires a system restart,
-+ *                      this flag is set to TRUE. Otherwise, the flag is left unmodified. This
-+ *                      allows the flag to be globally initialized to FALSE and reused for multiple
-+ *                      interface manipulations.
-  *
-  * @return ERROR_SUCCESS on success; Win32 error code otherwise
-  **/
-@@ -244,7 +244,7 @@ get_reg_string(
-  * Returns network interface ID.
-  *
-  * @param hDeviceInfoSet  A handle to a device information set that contains a device
-- *                      information element that represents the device for which to
-+ *                      information element that represents the device.
-  *
-  * @param pDeviceInfoData  A pointer to an SP_DEVINFO_DATA structure that specifies the
-  *                      device information element in hDeviceInfoSet.
-@@ -330,8 +330,7 @@ get_net_interface_guid(
-  * Returns a specified Plug and Play device property.
-  *
-  * @param hDeviceInfoSet  A handle to a device information set that contains a device
-- *                      information element that represents the device for which to
-- *                      retrieve a Plug and Play property.
-+ *                      information element that represents the device.
-  *
-  * @param pDeviceInfoData  A pointer to an SP_DEVINFO_DATA structure that specifies the
-  *                      device information element in hDeviceInfoSet.
-diff --git a/src/tapctl/tap.h b/src/tapctl/tap.h
-index f74a39df..ca66e5da 100644
---- a/src/tapctl/tap.h
-+++ b/src/tapctl/tap.h
-@@ -2,7 +2,7 @@
-  *  tapctl -- Utility to manipulate TUN/TAP interfaces on Windows
-  *            https://community.openvpn.net/openvpn/wiki/Tapctl
-  *
-- *  Copyright (C) 2018 Simon Rozman <simon@...2293...>
-+ *  Copyright (C) 2018-2020 Simon Rozman <simon@...2293...>
-  *
-  *  This program is free software; you can redistribute it and/or modify
-  *  it under the terms of the GNU General Public License version 2
-@@ -41,10 +41,10 @@
-  *                      of the device. This pointer is optional and can be NULL. Default value
-  *                      is root\tap0901.
-  *
-- * @param pbRebootRequired  A pointer to a BOOL flag. If the interface installation requires
-- *                      a system restart, this flag is set to TRUE. Otherwise, the flag is
-- *                      left unmodified. This allows the flag to be globally initialized to
-- *                      FALSE and reused for multiple interface installations.
-+ * @param pbRebootRequired  A pointer to a BOOL flag. If the device requires a system restart,
-+ *                      this flag is set to TRUE. Otherwise, the flag is left unmodified. This
-+ *                      allows the flag to be globally initialized to FALSE and reused for multiple
-+ *                      interface manipulations.
-  *
-  * @param pguidInterface  A pointer to GUID that receives network interface ID.
-  *
-@@ -70,10 +70,10 @@ tap_create_interface(
-  *
-  * @param pguidInterface  A pointer to GUID that contains network interface ID.
-  *
-- * @param pbRebootRequired  A pointer to a BOOL flag. If the interface installation requires
-- *                      a system restart, this flag is set to TRUE. Otherwise, the flag is
-- *                      left unmodified. This allows the flag to be globally initialized to
-- *                      FALSE and reused for multiple interface installations.
-+ * @param pbRebootRequired  A pointer to a BOOL flag. If the device requires a system restart,
-+ *                      this flag is set to TRUE. Otherwise, the flag is left unmodified. This
-+ *                      allows the flag to be globally initialized to FALSE and reused for multiple
-+ *                      interface manipulations.
-  *
-  * @return ERROR_SUCCESS on success; Win32 error code otherwise
-  **/
+@@ -752,6 +752,9 @@ EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall)
+         {
+             goto cleanup_hRecord;
+         }
++        /* `DisplayName` field type is [Filename](https://docs.microsoft.com/en-us/windows/win32/msi/filename), which is either "8.3|long name" or "8.3". */
++        LPTSTR szDisplayNameEx = _tcschr(szDisplayName, TEXT('|'));
++        szDisplayNameEx = szDisplayNameEx != NULL ? szDisplayNameEx + 1 : szDisplayName;
+ 
+         if (iAction > INSTALLSTATE_BROKEN)
+         {
+@@ -796,7 +799,7 @@ EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall)
+                         msica_op_tap_interface_create,
+                         MSICA_INTERFACE_TICK_SIZE,
+                         NULL,
+-                        szDisplayName));
++                        szDisplayNameEx));
+             }
+             else
+             {
+@@ -807,7 +810,7 @@ EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall)
+                         msica_op_tap_interface_delete_by_name,
+                         MSICA_INTERFACE_TICK_SIZE,
+                         NULL,
+-                        szDisplayName));
++                        szDisplayNameEx));
+             }
+ 
+             /* The amount of tick space to add for each interface to progress indicator. */
 -- 
 2.24.1.windows.2
 
