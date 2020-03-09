@@ -1,11 +1,11 @@
 From: Simon Rozman <simon@...2293...>
-Date: Mon,  9 Mar 2020 14:17:20 +0100
-Message-Id: <20200309131728.380-4-simon@...2293...>
+Date: Mon,  9 Mar 2020 14:17:25 +0100
+Message-Id: <20200309131728.380-9-simon@...2293...>
 In-Reply-To: <20200309131728.380-1-simon@...2293...>
 References: <20200309131728.380-1-simon@...2293...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 04/12] tapctl: Add functions for
- enabling/disabling adapters
+Subject: [Openvpn-devel] [PATCH 09/12] openvpnmsica: Extend to support
+ arbitrary HWID network adapters
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,377 +20,227 @@ To: openvpn-devel@lists.sourceforge.net
 
 Signed-off-by: Simon Rozman <simon@...2293...>
 ---
- src/tapctl/tap.c | 287 ++++++++++++++++++++++++++++++++++++++++-------
- src/tapctl/tap.h |  28 +++++
- 2 files changed, 275 insertions(+), 40 deletions(-)
+ src/openvpnmsica/openvpnmsica.c | 73 ++++++++++++++++++++++-----------
+ 1 file changed, 49 insertions(+), 24 deletions(-)
 
-diff --git a/src/tapctl/tap.c b/src/tapctl/tap.c
-index b8249919..576f6740 100644
---- a/src/tapctl/tap.c
-+++ b/src/tapctl/tap.c
-@@ -47,6 +47,28 @@ const static TCHAR szInterfaceRegKeyPathTemplate[] = TEXT("SYSTEM\\CurrentContro
- #define INTERFACE_REGKEY_PATH_MAX (_countof(TEXT("SYSTEM\\CurrentControlSet\\Control\\Network\\")) - 1 + 38 + _countof(TEXT("\\")) - 1 + 38 + _countof(TEXT("\\Connection")))
- 
- 
-+/**
-+ * Function that performs a specific task on a device
-+ *
-+ * @param hDeviceInfoSet  A handle to a device information set that contains a device
-+ *                      information element that represents the device.
-+ *
-+ * @param pDeviceInfoData  A pointer to an SP_DEVINFO_DATA structure that specifies the
-+ *                      device information element in hDeviceInfoSet.
-+ *
-+ * @param pbRebootRequired  A pointer to a BOOL flag. If the device requires a system restart,
-+ *                      this flag is set to TRUE. Otherwise, the flag is left unmodified. This
-+ *                      allows the flag to be globally initialized to FALSE and reused for multiple
-+ *                      interface manipulations.
-+ *
-+ * @return ERROR_SUCCESS on success; Win32 error code otherwise
-+ **/
-+typedef DWORD (*devop_func_t)(
-+    _In_ HDEVINFO hDeviceInfoSet,
-+    _In_ PSP_DEVINFO_DATA pDeviceInfoData,
-+    _Inout_ LPBOOL pbRebootRequired);
-+
-+
- /**
-  * Checks device install parameters if a system reboot is required.
+diff --git a/src/openvpnmsica/openvpnmsica.c b/src/openvpnmsica/openvpnmsica.c
+index 4223b680..cfbda8da 100644
+--- a/src/openvpnmsica/openvpnmsica.c
++++ b/src/openvpnmsica/openvpnmsica.c
+@@ -555,7 +555,9 @@ cleanup_CoInitialize:
+  * @param seqRollback   The argument sequence to pass to InstallTUNTAPAdaptersRollback custom
+  *                      action. NULL when rollback is disabled.
   *
-@@ -94,6 +116,186 @@ check_reboot(
- }
- 
- 
-+/**
-+ * Deletes the device.
+- * @param szDisplayName  Adapter display name.
++ * @param szDisplayName  Adapter display name
 + *
-+ * @param hDeviceInfoSet  A handle to a device information set that contains a device
-+ *                      information element that represents the device.
-+ *
-+ * @param pDeviceInfoData  A pointer to an SP_DEVINFO_DATA structure that specifies the
-+ *                      device information element in hDeviceInfoSet.
-+ *
-+ * @param pbRebootRequired  A pointer to a BOOL flag. If the device requires a system restart,
-+ *                      this flag is set to TRUE. Otherwise, the flag is left unmodified. This
-+ *                      allows the flag to be globally initialized to FALSE and reused for multiple
-+ *                      interface manipulations.
-+ *
-+ * @return ERROR_SUCCESS on success; Win32 error code otherwise
-+ **/
-+static DWORD
-+delete_device(
-+    _In_ HDEVINFO hDeviceInfoSet,
-+    _In_ PSP_DEVINFO_DATA pDeviceInfoData,
-+    _Inout_ LPBOOL pbRebootRequired)
-+{
-+    SP_REMOVEDEVICE_PARAMS params =
-+    {
-+        .ClassInstallHeader =
-+        {
-+            .cbSize = sizeof(SP_CLASSINSTALL_HEADER),
-+            .InstallFunction = DIF_REMOVE,
-+        },
-+        .Scope = DI_REMOVEDEVICE_GLOBAL,
-+        .HwProfile = 0,
-+    };
-+
-+    /* Set class installer parameters for DIF_REMOVE. */
-+    if (!SetupDiSetClassInstallParams(
-+            hDeviceInfoSet,
-+            pDeviceInfoData,
-+            &params.ClassInstallHeader,
-+            sizeof(SP_REMOVEDEVICE_PARAMS)))
-+    {
-+        DWORD dwResult = GetLastError();
-+        msg(M_NONFATAL | M_ERRNO, "%s: SetupDiSetClassInstallParams failed", __FUNCTION__);
-+        return dwResult;
-+    }
-+
-+    /* Call appropriate class installer. */
-+    if (!SetupDiCallClassInstaller(
-+            DIF_REMOVE,
-+            hDeviceInfoSet,
-+            pDeviceInfoData))
-+    {
-+        DWORD dwResult = GetLastError();
-+        msg(M_NONFATAL | M_ERRNO, "%s: SetupDiCallClassInstaller(DIF_REMOVE) failed", __FUNCTION__);
-+        return dwResult;
-+    }
-+
-+    /* Check if a system reboot is required. */
-+    check_reboot(hDeviceInfoSet, pDeviceInfoData, pbRebootRequired);
-+    return ERROR_SUCCESS;
-+}
-+
-+
-+/**
-+ * Changes the device state.
-+ *
-+ * @param hDeviceInfoSet  A handle to a device information set that contains a device
-+ *                      information element that represents the device.
-+ *
-+ * @param pDeviceInfoData  A pointer to an SP_DEVINFO_DATA structure that specifies the
-+ *                      device information element in hDeviceInfoSet.
-+ *
-+ * @param bEnable       TRUE to enable the device; FALSE to disable.
-+ *
-+ * @param pbRebootRequired  A pointer to a BOOL flag. If the device requires a system restart,
-+ *                      this flag is set to TRUE. Otherwise, the flag is left unmodified. This
-+ *                      allows the flag to be globally initialized to FALSE and reused for multiple
-+ *                      interface manipulations.
-+ *
-+ * @return ERROR_SUCCESS on success; Win32 error code otherwise
-+ **/
-+static DWORD
-+change_device_state(
-+    _In_ HDEVINFO hDeviceInfoSet,
-+    _In_ PSP_DEVINFO_DATA pDeviceInfoData,
-+    _In_ BOOL bEnable,
-+    _Inout_ LPBOOL pbRebootRequired)
-+{
-+    SP_PROPCHANGE_PARAMS params =
-+    {
-+        .ClassInstallHeader =
-+        {
-+            .cbSize = sizeof(SP_CLASSINSTALL_HEADER),
-+            .InstallFunction = DIF_PROPERTYCHANGE,
-+        },
-+        .StateChange = bEnable ? DICS_ENABLE : DICS_DISABLE,
-+        .Scope = DICS_FLAG_GLOBAL,
-+        .HwProfile = 0,
-+    };
-+
-+    /* Set class installer parameters for DIF_PROPERTYCHANGE. */
-+    if (!SetupDiSetClassInstallParams(
-+            hDeviceInfoSet,
-+            pDeviceInfoData,
-+            &params.ClassInstallHeader,
-+            sizeof(SP_PROPCHANGE_PARAMS)))
-+    {
-+        DWORD dwResult = GetLastError();
-+        msg(M_NONFATAL | M_ERRNO, "%s: SetupDiSetClassInstallParams failed", __FUNCTION__);
-+        return dwResult;
-+    }
-+
-+    /* Call appropriate class installer. */
-+    if (!SetupDiCallClassInstaller(
-+            DIF_PROPERTYCHANGE,
-+            hDeviceInfoSet,
-+            pDeviceInfoData))
-+    {
-+        DWORD dwResult = GetLastError();
-+        msg(M_NONFATAL | M_ERRNO, "%s: SetupDiCallClassInstaller(DIF_PROPERTYCHANGE) failed", __FUNCTION__);
-+        return dwResult;
-+    }
-+
-+    /* Check if a system reboot is required. */
-+    check_reboot(hDeviceInfoSet, pDeviceInfoData, pbRebootRequired);
-+    return ERROR_SUCCESS;
-+}
-+
-+
-+/**
-+ * Enables the device.
-+ *
-+ * @param hDeviceInfoSet  A handle to a device information set that contains a device
-+ *                      information element that represents the device.
-+ *
-+ * @param pDeviceInfoData  A pointer to an SP_DEVINFO_DATA structure that specifies the
-+ *                      device information element in hDeviceInfoSet.
-+ *
-+ * @param pbRebootRequired  A pointer to a BOOL flag. If the device requires a system restart,
-+ *                      this flag is set to TRUE. Otherwise, the flag is left unmodified. This
-+ *                      allows the flag to be globally initialized to FALSE and reused for multiple
-+ *                      interface manipulations.
-+ *
-+ * @return ERROR_SUCCESS on success; Win32 error code otherwise
-+ **/
-+static DWORD
-+enable_device(
-+    _In_ HDEVINFO hDeviceInfoSet,
-+    _In_ PSP_DEVINFO_DATA pDeviceInfoData,
-+    _Inout_ LPBOOL pbRebootRequired)
-+{
-+    return change_device_state(hDeviceInfoSet, pDeviceInfoData, TRUE, pbRebootRequired);
-+}
-+
-+
-+/**
-+ * Disables the device.
-+ *
-+ * @param hDeviceInfoSet  A handle to a device information set that contains a device
-+ *                      information element that represents the device.
-+ *
-+ * @param pDeviceInfoData  A pointer to an SP_DEVINFO_DATA structure that specifies the
-+ *                      device information element in hDeviceInfoSet.
-+ *
-+ * @param pbRebootRequired  A pointer to a BOOL flag. If the device requires a system restart,
-+ *                      this flag is set to TRUE. Otherwise, the flag is left unmodified. This
-+ *                      allows the flag to be globally initialized to FALSE and reused for multiple
-+ *                      interface manipulations.
-+ *
-+ * @return ERROR_SUCCESS on success; Win32 error code otherwise
-+ **/
-+static DWORD
-+disable_device(
-+    _In_ HDEVINFO hDeviceInfoSet,
-+    _In_ PSP_DEVINFO_DATA pDeviceInfoData,
-+    _Inout_ LPBOOL pbRebootRequired)
-+{
-+    return change_device_state(hDeviceInfoSet, pDeviceInfoData, FALSE, pbRebootRequired);
-+}
-+
-+
- /**
-  * Reads string value from registry key.
++ * @param szHardwareId  Adapter hardware ID
   *
-@@ -754,10 +956,31 @@ cleanup_hDevInfoList:
- }
- 
- 
--DWORD
--tap_delete_interface(
-+/**
-+ * Performs a given task on an interface.
-+ *
-+ * @param hwndParent    A handle to the top-level window to use for any user interface that is
-+ *                      related to non-device-specific actions (such as a select-device dialog
-+ *                      box that uses the global class driver list). This handle is optional
-+ *                      and can be NULL. If a specific top-level window is not required, set
-+ *                      hwndParent to NULL.
-+ *
-+ * @param pguidInterface  A pointer to GUID that contains network interface ID.
-+ *
-+ * @param funcOperation  A pointer for the function to perform specific task on the interface.
-+ *
-+ * @param pbRebootRequired  A pointer to a BOOL flag. If the device requires a system restart,
-+ *                      this flag is set to TRUE. Otherwise, the flag is left unmodified. This
-+ *                      allows the flag to be globally initialized to FALSE and reused for multiple
-+ *                      interface manipulations.
-+ *
-+ * @return ERROR_SUCCESS on success; Win32 error code otherwise
-+ **/
-+static DWORD
-+execute_on_first_interface(
-     _In_opt_ HWND hwndParent,
-     _In_ LPCGUID pguidInterface,
-+    _In_ devop_func_t funcOperation,
-     _Inout_ LPBOOL pbRebootRequired)
+  * @param iTicks        Pointer to an integer that represents amount of work (on progress
+  *                      indicator) the InstallTUNTAPAdapters will take. This function increments it
+@@ -568,6 +570,7 @@ schedule_adapter_create(
+     _Inout_ struct msica_arg_seq *seq,
+     _Inout_opt_ struct msica_arg_seq *seqRollback,
+     _In_z_ LPCTSTR szDisplayName,
++    _In_z_ LPCTSTR szHardwareId,
+     _Inout_ int *iTicks)
  {
-     DWORD dwResult;
-@@ -831,44 +1054,7 @@ tap_delete_interface(
-         /* Compare GUIDs. */
-         if (memcmp(pguidInterface, &guidInterface, sizeof(GUID)) == 0)
+     /* Get all available network adapters. */
+@@ -584,13 +587,14 @@ schedule_adapter_create(
+         if (pAdapterOther == NULL)
          {
--            /* Remove the device. */
--            SP_REMOVEDEVICE_PARAMS removedevice_params =
--            {
--                .ClassInstallHeader =
--                {
--                    .cbSize = sizeof(SP_CLASSINSTALL_HEADER),
--                    .InstallFunction = DIF_REMOVE,
--                },
--                .Scope = DI_REMOVEDEVICE_GLOBAL,
--                .HwProfile = 0,
--            };
--
--            /* Set class installer parameters for DIF_REMOVE. */
--            if (!SetupDiSetClassInstallParams(
--                    hDevInfoList,
--                    &devinfo_data,
--                    &removedevice_params.ClassInstallHeader,
--                    sizeof(SP_REMOVEDEVICE_PARAMS)))
--            {
--                dwResult = GetLastError();
--                msg(M_NONFATAL, "%s: SetupDiSetClassInstallParams failed", __FUNCTION__);
--                goto cleanup_hDevInfoList;
--            }
--
--            /* Call appropriate class installer. */
--            if (!SetupDiCallClassInstaller(
--                    DIF_REMOVE,
--                    hDevInfoList,
--                    &devinfo_data))
--            {
--                dwResult = GetLastError();
--                msg(M_NONFATAL, "%s: SetupDiCallClassInstaller(DIF_REMOVE) failed", __FUNCTION__);
--                goto cleanup_hDevInfoList;
--            }
--
--            /* Check if a system reboot is required. */
--            check_reboot(hDevInfoList, &devinfo_data, pbRebootRequired);
--            dwResult = ERROR_SUCCESS;
-+            dwResult = funcOperation(hDevInfoList, &devinfo_data, pbRebootRequired);
-             break;
-         }
-     }
-@@ -879,6 +1065,27 @@ cleanup_hDevInfoList:
- }
+             /* No adapter with a same name found. */
+-            TCHAR szArgument[10 /*create=""|deleteN=""*/ + MAX_PATH /*szDisplayName*/ + 1 /*terminator*/];
++            TCHAR szArgument[10 /*create=""|deleteN=""*/ + MAX_PATH /*szDisplayName*/ + 1 /*|*/ + MAX_PATH /*szHardwareId*/ + 1 /*terminator*/];
  
+             /* InstallTUNTAPAdapters will create the adapter. */
+             _stprintf_s(
+                 szArgument, _countof(szArgument),
+-                TEXT("create=\"%.*s\""),
+-                MAX_PATH, szDisplayName);
++                TEXT("create=\"%.*s|%.*s\""),
++                MAX_PATH, szDisplayName,
++                MAX_PATH, szHardwareId);
+             msica_arg_seq_add_tail(seq, szArgument);
  
-+DWORD
-+tap_delete_interface(
-+    _In_opt_ HWND hwndParent,
-+    _In_ LPCGUID pguidInterface,
-+    _Inout_ LPBOOL pbRebootRequired)
-+{
-+    return execute_on_first_interface(hwndParent, pguidInterface, delete_device, pbRebootRequired);
-+}
-+
-+
-+DWORD
-+tap_enable_interface(
-+    _In_opt_ HWND hwndParent,
-+    _In_ LPCGUID pguidInterface,
-+    _In_ BOOL bEnable,
-+    _Inout_ LPBOOL pbRebootRequired)
-+{
-+    return execute_on_first_interface(hwndParent, pguidInterface, bEnable ? enable_device : disable_device, pbRebootRequired);
-+}
-+
-+
- DWORD
- tap_set_interface_name(
-     _In_ LPCGUID pguidInterface,
-diff --git a/src/tapctl/tap.h b/src/tapctl/tap.h
-index ca66e5da..4c2d73ba 100644
---- a/src/tapctl/tap.h
-+++ b/src/tapctl/tap.h
-@@ -84,6 +84,34 @@ tap_delete_interface(
-     _Inout_ LPBOOL pbRebootRequired);
- 
- 
-+/**
-+ * Enables or disables an interface.
-+ *
-+ * @param hwndParent    A handle to the top-level window to use for any user interface that is
-+ *                      related to non-device-specific actions (such as a select-device dialog
-+ *                      box that uses the global class driver list). This handle is optional
-+ *                      and can be NULL. If a specific top-level window is not required, set
-+ *                      hwndParent to NULL.
-+ *
-+ * @param pguidInterface  A pointer to GUID that contains network interface ID.
-+ *
-+ * @param bEnable       TRUE to enable; FALSE to disable
-+ *
-+ * @param pbRebootRequired  A pointer to a BOOL flag. If the device requires a system restart,
-+ *                      this flag is set to TRUE. Otherwise, the flag is left unmodified. This
-+ *                      allows the flag to be globally initialized to FALSE and reused for multiple
-+ *                      interface manipulations.
-+ *
-+ * @return ERROR_SUCCESS on success; Win32 error code otherwise
-+ **/
-+DWORD
-+tap_enable_interface(
-+    _In_opt_ HWND hwndParent,
-+    _In_ LPCGUID pguidInterface,
-+    _In_ BOOL bEnable,
-+    _Inout_ LPBOOL pbRebootRequired);
-+
-+
- /**
-  * Sets interface name.
+             if (seqRollback)
+@@ -613,16 +617,14 @@ schedule_adapter_create(
+             {
+                 if (hwid[0] == 0)
+                 {
+-                    /* This is not a TAP adapter. */
++                    /* This adapter has a different hardware ID. */
+                     msg(M_NONFATAL, "%s: Adapter with name \"%" PRIsLPTSTR "\" already exists", __FUNCTION__, pAdapterOther->szName);
+                     dwResult = ERROR_ALREADY_EXISTS;
+                     goto cleanup_pAdapterList;
+                 }
+-                else if (
+-                    _tcsicmp(hwid, TEXT(TAP_WIN_COMPONENT_ID)) == 0
+-                    || _tcsicmp(hwid, TEXT("root\\") TEXT(TAP_WIN_COMPONENT_ID)) == 0)
++                else if (_tcsicmp(hwid, szHardwareId) == 0)
+                 {
+-                    /* This is a TAP-Windows6 adapter. We already have what we want! */
++                    /* This is an adapter with the requested hardware ID. We already have what we want! */
+                     break;
+                 }
+             }
+@@ -653,7 +655,9 @@ cleanup_pAdapterList:
+  * @param seqRollback   The argument sequence to pass to UninstallTUNTAPAdaptersRollback custom
+  *                      action. NULL when rollback is disabled.
   *
+- * @param szDisplayName  Adapter display name.
++ * @param szDisplayName  Adapter display name
++ *
++ * @param szHardwareId  Adapter hardware ID
+  *
+  * @param iTicks        Pointer to an integer that represents amount of work (on progress
+  *                      indicator) the UninstallTUNTAPAdapters will take. This function increments
+@@ -667,11 +671,12 @@ schedule_adapter_delete(
+     _Inout_opt_ struct msica_arg_seq *seqCommit,
+     _Inout_opt_ struct msica_arg_seq *seqRollback,
+     _In_z_ LPCTSTR szDisplayName,
++    _In_z_ LPCTSTR szHardwareId,
+     _Inout_ int *iTicks)
+ {
+-    /* Get available TUN/TAP adapters. */
++    /* Get available adapters with given hardware ID. */
+     struct tap_adapter_node *pAdapterList = NULL;
+-    DWORD dwResult = tap_list_adapters(NULL, NULL, &pAdapterList, FALSE);
++    DWORD dwResult = tap_list_adapters(NULL, szHardwareId, &pAdapterList, FALSE);
+     if (dwResult != ERROR_SUCCESS)
+     {
+         return dwResult;
+@@ -780,7 +785,7 @@ EvaluateTUNTAPAdapters(_In_ MSIHANDLE hInstall)
+ 
+     /* Prepare a query to get a list/view of adapters. */
+     MSIHANDLE hViewST = 0;
+-    LPCTSTR szQuery = TEXT("SELECT `Adapter`,`DisplayName`,`Condition`,`Component_` FROM `TUNTAPAdapter`");
++    LPCTSTR szQuery = TEXT("SELECT `Adapter`,`DisplayName`,`Condition`,`Component_`,`HardwareId` FROM `TUNTAPAdapter`");
+     uiResult = MsiDatabaseOpenView(hDatabase, szQuery, &hViewST);
+     if (uiResult != ERROR_SUCCESS)
+     {
+@@ -857,6 +862,14 @@ EvaluateTUNTAPAdapters(_In_ MSIHANDLE hInstall)
+         LPTSTR szDisplayNameEx = _tcschr(szDisplayName, TEXT('|'));
+         szDisplayNameEx = szDisplayNameEx != NULL ? szDisplayNameEx + 1 : szDisplayName;
+ 
++        /* Get adapter hardware ID (`HardwareId` is field #5). */
++        LPTSTR szHardwareId = NULL;
++        uiResult = msi_get_record_string(hRecord, 5, &szHardwareId);
++        if (uiResult != ERROR_SUCCESS)
++        {
++            goto cleanup_szDisplayName;
++        }
++
+         if (iAction > INSTALLSTATE_BROKEN)
+         {
+             int iTicks = 0;
+@@ -868,7 +881,7 @@ EvaluateTUNTAPAdapters(_In_ MSIHANDLE hInstall)
+                 uiResult = msi_get_record_string(hRecord, 3, &szValue);
+                 if (uiResult != ERROR_SUCCESS)
+                 {
+-                    goto cleanup_szDisplayName;
++                    goto cleanup_szHardwareId;
+                 }
+ #ifdef __GNUC__
+ /*
+@@ -882,13 +895,13 @@ EvaluateTUNTAPAdapters(_In_ MSIHANDLE hInstall)
+                 {
+                     case MSICONDITION_FALSE:
+                         free(szValue);
+-                        goto cleanup_szDisplayName;
++                        goto cleanup_szHardwareId;
+ 
+                     case MSICONDITION_ERROR:
+                         uiResult = ERROR_INVALID_FIELD;
+                         msg(M_NONFATAL | M_ERRNO, "%s: MsiEvaluateCondition(\"%" PRIsLPTSTR "\") failed", __FUNCTION__, szValue);
+                         free(szValue);
+-                        goto cleanup_szDisplayName;
++                        goto cleanup_szHardwareId;
+                 }
+ #ifdef __GNUC__
+ #pragma GCC diagnostic pop
+@@ -900,10 +913,11 @@ EvaluateTUNTAPAdapters(_In_ MSIHANDLE hInstall)
+                         &seqInstall,
+                         bRollbackEnabled ? &seqInstallRollback : NULL,
+                         szDisplayNameEx,
++                        szHardwareId,
+                         &iTicks) != ERROR_SUCCESS)
+                 {
+                     uiResult = ERROR_INSTALL_FAILED;
+-                    goto cleanup_szDisplayName;
++                    goto cleanup_szHardwareId;
+                 }
+             }
+             else
+@@ -918,6 +932,7 @@ EvaluateTUNTAPAdapters(_In_ MSIHANDLE hInstall)
+                     bRollbackEnabled ? &seqUninstallCommit : NULL,
+                     bRollbackEnabled ? &seqUninstallRollback : NULL,
+                     szDisplayNameEx,
++                    szHardwareId,
+                     &iTicks);
+             }
+ 
+@@ -928,10 +943,12 @@ EvaluateTUNTAPAdapters(_In_ MSIHANDLE hInstall)
+             if (MsiProcessMessage(hInstall, INSTALLMESSAGE_PROGRESS, hRecordProg) == IDCANCEL)
+             {
+                 uiResult = ERROR_INSTALL_USEREXIT;
+-                goto cleanup_szDisplayName;
++                goto cleanup_szHardwareId;
+             }
+         }
+ 
++cleanup_szHardwareId:
++        free(szHardwareId);
+ cleanup_szDisplayName:
+         free(szDisplayName);
+ cleanup_hRecord:
+@@ -1052,14 +1069,22 @@ ProcessDeferredAction(_In_ MSIHANDLE hInstall)
+ 
+         if (wcsncmp(szArg[i], L"create=", 7) == 0)
+         {
+-            /* Create an adapter with a given name. */
+-            LPCWSTR szName = szArg[i] + 7;
++            /* Create an adapter with a given name and hardware ID. */
++            LPWSTR szName = szArg[i] + 7;
++            LPWSTR szHardwareId = wcschr(szName, L'|');
++            if (szHardwareId == NULL)
++            {
++                goto invalid_argument;
++            }
++            szHardwareId[0] = 0;
++            ++szHardwareId;
+ 
+             {
+                 /* Report the name of the adapter to installer. */
+-                MSIHANDLE hRecord = MsiCreateRecord(3);
++                MSIHANDLE hRecord = MsiCreateRecord(4);
+                 MsiRecordSetString(hRecord, 1, TEXT("Creating adapter"));
+                 MsiRecordSetString(hRecord, 2, szName);
++                MsiRecordSetString(hRecord, 3, szHardwareId);
+                 int iResult = MsiProcessMessage(hInstall, INSTALLMESSAGE_ACTIONDATA, hRecord);
+                 MsiCloseHandle(hRecord);
+                 if (iResult == IDCANCEL)
+@@ -1070,7 +1095,7 @@ ProcessDeferredAction(_In_ MSIHANDLE hInstall)
+             }
+ 
+             GUID guidAdapter;
+-            dwResult = tap_create_adapter(NULL, NULL, NULL, &bRebootRequired, &guidAdapter);
++            dwResult = tap_create_adapter(NULL, NULL, szHardwareId, &bRebootRequired, &guidAdapter);
+             if (dwResult == ERROR_SUCCESS)
+             {
+                 /* Set adapter name. */
+@@ -1100,9 +1125,9 @@ ProcessDeferredAction(_In_ MSIHANDLE hInstall)
+                 }
+             }
+ 
+-            /* Get available TUN/TAP adapters. */
++            /* Get all available adapters. */
+             struct tap_adapter_node *pAdapterList = NULL;
+-            dwResult = tap_list_adapters(NULL, NULL, &pAdapterList, FALSE);
++            dwResult = tap_list_adapters(NULL, NULL, &pAdapterList, TRUE);
+             if (dwResult == ERROR_SUCCESS)
+             {
+                 /* Does the adapter exist? */
 -- 
 2.24.1.windows.2
 
