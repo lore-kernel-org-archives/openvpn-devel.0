@@ -1,11 +1,9 @@
 From: Simon Rozman <simon@...2293...>
-Date: Mon,  9 Mar 2020 14:17:22 +0100
-Message-Id: <20200309131728.380-6-simon@...2293...>
-In-Reply-To: <20200309131728.380-1-simon@...2293...>
-References: <20200309131728.380-1-simon@...2293...>
+Date: Mon,  9 Mar 2020 14:17:17 +0100
+Message-Id: <20200309131728.380-1-simon@...2293...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 06/12] openvpnmsica: Simplify static
- function names
+Subject: [Openvpn-devel] [PATCH 01/12] openvpnmsica: Remove required Windows
+ driver certification detection
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,217 +16,185 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+The MSI packages are switching to TAP-Windows6 and Wintun MSM modules to
+install the TAP/TUN driver. The MSM modules have built-in Windows
+version detection already.
+
+This commit is now-dead-code clean up with uncrustification.
+
 Signed-off-by: Simon Rozman <simon@...2293...>
 ---
- src/openvpnmsica/openvpnmsica.c | 63 +++++++++++++++++++--------------
- 1 file changed, 37 insertions(+), 26 deletions(-)
+ src/openvpnmsica/openvpnmsica.c | 129 +-------------------------------
+ 1 file changed, 3 insertions(+), 126 deletions(-)
 
 diff --git a/src/openvpnmsica/openvpnmsica.c b/src/openvpnmsica/openvpnmsica.c
-index 4c186b13..749dce56 100644
+index 16381ea1..4236330a 100644
 --- a/src/openvpnmsica/openvpnmsica.c
 +++ b/src/openvpnmsica/openvpnmsica.c
-@@ -72,7 +72,7 @@
-  * @return ERROR_SUCCESS on success; An error code otherwise
-  */
- static UINT
--openvpnmsica_setup_sequence(
-+setup_sequence(
-     _In_ MSIHANDLE hInstall,
-     _In_z_ LPCTSTR szProperty,
-     _In_ struct msica_arg_seq *seq)
-@@ -101,7 +101,7 @@ openvpnmsica_setup_sequence(
-  *                        title.
-  */
- static void
--_openvpnmsica_debug_popup(_In_z_ LPCTSTR szFunctionName)
-+_debug_popup(_In_z_ LPCTSTR szFunctionName)
- {
-     TCHAR szTitle[0x100], szMessage[0x100+MAX_PATH], szProcessPath[MAX_PATH];
- 
-@@ -129,9 +129,9 @@ _openvpnmsica_debug_popup(_In_z_ LPCTSTR szFunctionName)
-     MessageBox(NULL, szMessage, szTitle, MB_OK);
- }
- 
--#define openvpnmsica_debug_popup(f) _openvpnmsica_debug_popup(f)
-+#define debug_popup(f) _debug_popup(f)
- #else  /* ifdef _DEBUG */
--#define openvpnmsica_debug_popup(f)
-+#define debug_popup(f)
+@@ -203,128 +203,6 @@ _openvpnmsica_debug_popup(_In_z_ LPCTSTR szFunctionName)
  #endif /* ifdef _DEBUG */
  
  
-@@ -146,7 +146,7 @@ _openvpnmsica_debug_popup(_In_z_ LPCTSTR szFunctionName)
-  *         See: https://msdn.microsoft.com/en-us/library/windows/desktop/aa368072.aspx
-  */
- static UINT
--openvpnmsica_set_openvpnserv_state(_In_ MSIHANDLE hInstall)
-+set_openvpnserv_state(_In_ MSIHANDLE hInstall)
- {
-     UINT uiResult;
- 
-@@ -255,13 +255,13 @@ FindSystemInfo(_In_ MSIHANDLE hInstall)
- #pragma comment(linker, DLLEXP_EXPORT)
- #endif
- 
--    openvpnmsica_debug_popup(TEXT(__FUNCTION__));
-+    debug_popup(TEXT(__FUNCTION__));
- 
-     BOOL bIsCoInitialized = SUCCEEDED(CoInitialize(NULL));
+-/**
+- * Detects Windows version and sets DRIVERCERTIFICATION property to "", "whql", or "attsgn"
+- * accordingly.
+- *
+- * @param hInstall      Handle to the installation provided to the DLL custom action
+- *
+- * @return ERROR_SUCCESS on success; An error code otherwise
+- *         See: https://msdn.microsoft.com/en-us/library/windows/desktop/aa368072.aspx
+- */
+-static UINT
+-openvpnmsica_set_driver_certification(_In_ MSIHANDLE hInstall)
+-{
+-    UINT uiResult;
+-
+-    /* Get Windows version. */
+-#ifdef _MSC_VER
+-#pragma warning(push)
+-#pragma warning(disable: 4996) /* 'GetVersionExW': was declared deprecated. */
+-#endif
+-    OSVERSIONINFOEX ver_info = { .dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX) };
+-    if (!GetVersionEx((LPOSVERSIONINFO)&ver_info))
+-    {
+-        uiResult = GetLastError();
+-        msg(M_NONFATAL | M_ERRNO, "%s: GetVersionEx() failed", __FUNCTION__);
+-        return uiResult;
+-    }
+-#ifdef _MSC_VER
+-#pragma warning(pop)
+-#endif
+-
+-    /* The Windows version is usually spoofed, check using RtlGetVersion(). */
+-    TCHAR szDllPath[0x1000];
+-    ExpandEnvironmentStrings(TEXT("%SystemRoot%\\System32\\ntdll.dll"), szDllPath,
+-#ifdef UNICODE
+-                             _countof(szDllPath)
+-#else
+-                             _countof(szDllPath) - 1
+-#endif
+-                             );
+-    HMODULE hNtDllModule = LoadLibrary(szDllPath);
+-    if (hNtDllModule)
+-    {
+-        typedef NTSTATUS (WINAPI* fnRtlGetVersion)(PRTL_OSVERSIONINFOW);
+-        fnRtlGetVersion RtlGetVersion = (fnRtlGetVersion)GetProcAddress(hNtDllModule, "RtlGetVersion");
+-        if (RtlGetVersion)
+-        {
+-            RTL_OSVERSIONINFOW rtl_ver_info = { .dwOSVersionInfoSize = sizeof(RTL_OSVERSIONINFOW) };
+-            if (RtlGetVersion(&rtl_ver_info) == 0)
+-            {
+-                if (
+-                    rtl_ver_info.dwMajorVersion >  ver_info.dwMajorVersion
+-                    || rtl_ver_info.dwMajorVersion == ver_info.dwMajorVersion && rtl_ver_info.dwMinorVersion >  ver_info.dwMinorVersion
+-                    || rtl_ver_info.dwMajorVersion == ver_info.dwMajorVersion && rtl_ver_info.dwMinorVersion == ver_info.dwMinorVersion && rtl_ver_info.dwBuildNumber > ver_info.dwBuildNumber)
+-                {
+-                    /* We got RtlGetVersion() and it reported newer version than GetVersionEx(). */
+-                    ver_info.dwMajorVersion = rtl_ver_info.dwMajorVersion;
+-                    ver_info.dwMinorVersion = rtl_ver_info.dwMinorVersion;
+-                    ver_info.dwBuildNumber  = rtl_ver_info.dwBuildNumber;
+-                    ver_info.dwPlatformId   = rtl_ver_info.dwPlatformId;
+-                }
+-            }
+-        }
+-
+-        FreeLibrary(hNtDllModule);
+-    }
+-
+-    /* We don't trust RtlGetVersion() either. Check the version resource of kernel32.dll. */
+-    ExpandEnvironmentStrings(TEXT("%SystemRoot%\\System32\\kernel32.dll"), szDllPath,
+-#ifdef UNICODE
+-                             _countof(szDllPath)
+-#else
+-                             _countof(szDllPath) - 1
+-#endif
+-                             );
+-
+-    DWORD dwHandle;
+-    DWORD dwVerInfoSize = GetFileVersionInfoSize(szDllPath, &dwHandle);
+-    if (dwVerInfoSize)
+-    {
+-        LPVOID pVersionInfo = malloc(dwVerInfoSize);
+-        if (pVersionInfo)
+-        {
+-            /* Read version info. */
+-            if (GetFileVersionInfo(szDllPath, dwHandle, dwVerInfoSize, pVersionInfo))
+-            {
+-                /* Get the value for the root block. */
+-                UINT uiSize = 0;
+-                VS_FIXEDFILEINFO *pVSFixedFileInfo = NULL;
+-                if (VerQueryValue(pVersionInfo, TEXT("\\"), &pVSFixedFileInfo, &uiSize) && uiSize && pVSFixedFileInfo)
+-                {
+-                    if (HIWORD(pVSFixedFileInfo->dwProductVersionMS) >  ver_info.dwMajorVersion
+-                        || HIWORD(pVSFixedFileInfo->dwProductVersionMS) == ver_info.dwMajorVersion && LOWORD(pVSFixedFileInfo->dwProductVersionMS) >  ver_info.dwMinorVersion
+-                        || HIWORD(pVSFixedFileInfo->dwProductVersionMS) == ver_info.dwMajorVersion && LOWORD(pVSFixedFileInfo->dwProductVersionMS) == ver_info.dwMinorVersion && HIWORD(pVSFixedFileInfo->dwProductVersionLS) > ver_info.dwBuildNumber)
+-                    {
+-                        /* We got kernel32.dll version and it is newer. */
+-                        ver_info.dwMajorVersion = HIWORD(pVSFixedFileInfo->dwProductVersionMS);
+-                        ver_info.dwMinorVersion = LOWORD(pVSFixedFileInfo->dwProductVersionMS);
+-                        ver_info.dwBuildNumber  = HIWORD(pVSFixedFileInfo->dwProductVersionLS);
+-                    }
+-                }
+-            }
+-
+-            free(pVersionInfo);
+-        }
+-        else
+-        {
+-            msg(M_NONFATAL, "%s: malloc(%u) failed", __FUNCTION__, dwVerInfoSize);
+-        }
+-    }
+-
+-    uiResult = MsiSetProperty(hInstall, TEXT("DRIVERCERTIFICATION"), ver_info.dwMajorVersion >= 10 ? ver_info.wProductType > VER_NT_WORKSTATION ? TEXT("whql") : TEXT("attsgn") : TEXT(""));
+-    if (uiResult != ERROR_SUCCESS)
+-    {
+-        SetLastError(uiResult); /* MSDN does not mention MsiSetProperty() to set GetLastError(). But we do have an error code. Set last error manually. */
+-        msg(M_NONFATAL | M_ERRNO, "%s: MsiSetProperty(\"DRIVERCERTIFICATION\") failed", __FUNCTION__);
+-        return uiResult;
+-    }
+-
+-    return ERROR_SUCCESS;
+-}
+-
+-
+ /**
+  * Detects if the OpenVPNService service is in use (running or paused) and sets
+  * OPENVPNSERVICE to the service process PID, or its path if it is set to
+@@ -451,7 +329,6 @@ FindSystemInfo(_In_ MSIHANDLE hInstall)
  
      OPENVPNMSICA_SAVE_MSI_SESSION(hInstall);
  
--    openvpnmsica_set_openvpnserv_state(hInstall);
-+    set_openvpnserv_state(hInstall);
+-    openvpnmsica_set_driver_certification(hInstall);
+     openvpnmsica_set_openvpnserv_state(hInstall);
  
      if (bIsCoInitialized)
-     {
-@@ -278,7 +278,7 @@ FindTAPInterfaces(_In_ MSIHANDLE hInstall)
- #pragma comment(linker, DLLEXP_EXPORT)
- #endif
- 
--    openvpnmsica_debug_popup(TEXT(__FUNCTION__));
-+    debug_popup(TEXT(__FUNCTION__));
- 
-     UINT uiResult;
-     BOOL bIsCoInitialized = SUCCEEDED(CoInitialize(NULL));
-@@ -444,7 +444,7 @@ CloseOpenVPNGUI(_In_ MSIHANDLE hInstall)
- #endif
-     UNREFERENCED_PARAMETER(hInstall); /* This CA is does not interact with MSI session (report errors, access properties, tables, etc.). */
- 
--    openvpnmsica_debug_popup(TEXT(__FUNCTION__));
-+    debug_popup(TEXT(__FUNCTION__));
- 
-     /* Find OpenVPN GUI window. */
-     HWND hWnd = FindWindow(TEXT("OpenVPN-GUI"), NULL);
-@@ -466,7 +466,7 @@ StartOpenVPNGUI(_In_ MSIHANDLE hInstall)
- #pragma comment(linker, DLLEXP_EXPORT)
- #endif
- 
--    openvpnmsica_debug_popup(TEXT(__FUNCTION__));
-+    debug_popup(TEXT(__FUNCTION__));
- 
-     UINT uiResult;
-     BOOL bIsCoInitialized = SUCCEEDED(CoInitialize(NULL));
-@@ -564,7 +564,11 @@ cleanup_CoInitialize:
-  * @return ERROR_SUCCESS on success; An error code otherwise
-  */
- static DWORD
--openvpnmsica_schedule_interface_create(_Inout_ struct msica_arg_seq *seq, _Inout_opt_ struct msica_arg_seq *seqRollback, _In_z_ LPCTSTR szDisplayName, _Inout_ int *iTicks)
-+schedule_interface_create(
-+    _Inout_ struct msica_arg_seq *seq,
-+    _Inout_opt_ struct msica_arg_seq *seqRollback,
-+    _In_z_ LPCTSTR szDisplayName,
-+    _Inout_ int *iTicks)
- {
-     /* Get all available network interfaces. */
-     struct tap_interface_node *pInterfaceList = NULL;
-@@ -658,7 +662,12 @@ cleanup_pInterfaceList:
-  * @return ERROR_SUCCESS on success; An error code otherwise
-  */
- static DWORD
--openvpnmsica_schedule_interface_delete(_Inout_ struct msica_arg_seq *seq, _Inout_opt_ struct msica_arg_seq *seqCommit, _Inout_opt_ struct msica_arg_seq *seqRollback, _In_z_ LPCTSTR szDisplayName, _Inout_ int *iTicks)
-+schedule_interface_delete(
-+    _Inout_ struct msica_arg_seq *seq,
-+    _Inout_opt_ struct msica_arg_seq *seqCommit,
-+    _Inout_opt_ struct msica_arg_seq *seqRollback,
-+    _In_z_ LPCTSTR szDisplayName,
-+    _Inout_ int *iTicks)
- {
-     /* Get available TUN/TAP interfaces. */
-     struct tap_interface_node *pInterfaceList = NULL;
-@@ -725,7 +734,7 @@ EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall)
- #pragma comment(linker, DLLEXP_EXPORT)
- #endif
- 
--    openvpnmsica_debug_popup(TEXT(__FUNCTION__));
-+    debug_popup(TEXT(__FUNCTION__));
- 
-     UINT uiResult;
-     BOOL bIsCoInitialized = SUCCEEDED(CoInitialize(NULL));
-@@ -887,7 +896,7 @@ EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall)
-                 free(szValue);
- 
-                 /* Component is or should be installed. Schedule interface creation. */
--                if (openvpnmsica_schedule_interface_create(
-+                if (schedule_interface_create(
-                         &seqInstallTAPInterfaces,
-                         bRollbackEnabled ? &seqInstallTAPInterfacesRollback : NULL,
-                         szDisplayNameEx,
-@@ -904,7 +913,7 @@ EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall)
-                  * Note: On interface removal (product is being uninstalled), we tolerate dwResult error.
-                  * Better a partial uninstallation than no uninstallation at all.
-                  */
--                openvpnmsica_schedule_interface_delete(
-+                schedule_interface_delete(
-                     &seqUninstallTAPInterfaces,
-                     bRollbackEnabled ? &seqUninstallTAPInterfacesCommit : NULL,
-                     bRollbackEnabled ? &seqUninstallTAPInterfacesRollback : NULL,
-@@ -934,12 +943,12 @@ cleanup_hRecord:
+@@ -829,7 +706,7 @@ EvaluateTAPInterfaces(_In_ MSIHANDLE hInstall)
+         goto cleanup_hViewST_close;
      }
  
-     /* Store deferred custom action parameters. */
--    if ((uiResult = openvpnmsica_setup_sequence(hInstall, TEXT("InstallTAPInterfaces"          ), &seqInstallTAPInterfaces          )) != ERROR_SUCCESS
--        || (uiResult = openvpnmsica_setup_sequence(hInstall, TEXT("InstallTAPInterfacesCommit"    ), &seqInstallTAPInterfacesCommit    )) != ERROR_SUCCESS
--        || (uiResult = openvpnmsica_setup_sequence(hInstall, TEXT("InstallTAPInterfacesRollback"  ), &seqInstallTAPInterfacesRollback  )) != ERROR_SUCCESS
--        || (uiResult = openvpnmsica_setup_sequence(hInstall, TEXT("UninstallTAPInterfaces"        ), &seqUninstallTAPInterfaces        )) != ERROR_SUCCESS
--        || (uiResult = openvpnmsica_setup_sequence(hInstall, TEXT("UninstallTAPInterfacesCommit"  ), &seqUninstallTAPInterfacesCommit  )) != ERROR_SUCCESS
--        || (uiResult = openvpnmsica_setup_sequence(hInstall, TEXT("UninstallTAPInterfacesRollback"), &seqUninstallTAPInterfacesRollback)) != ERROR_SUCCESS)
-+    if ((uiResult = setup_sequence(hInstall, TEXT("InstallTAPInterfaces"          ), &seqInstallTAPInterfaces          )) != ERROR_SUCCESS
-+        || (uiResult = setup_sequence(hInstall, TEXT("InstallTAPInterfacesCommit"    ), &seqInstallTAPInterfacesCommit    )) != ERROR_SUCCESS
-+        || (uiResult = setup_sequence(hInstall, TEXT("InstallTAPInterfacesRollback"  ), &seqInstallTAPInterfacesRollback  )) != ERROR_SUCCESS
-+        || (uiResult = setup_sequence(hInstall, TEXT("UninstallTAPInterfaces"        ), &seqUninstallTAPInterfaces        )) != ERROR_SUCCESS
-+        || (uiResult = setup_sequence(hInstall, TEXT("UninstallTAPInterfacesCommit"  ), &seqUninstallTAPInterfacesCommit  )) != ERROR_SUCCESS
-+        || (uiResult = setup_sequence(hInstall, TEXT("UninstallTAPInterfacesRollback"), &seqUninstallTAPInterfacesRollback)) != ERROR_SUCCESS)
+-    for (;;)
++    for (;; )
      {
-         goto cleanup_hRecordProg;
+         /* Fetch one record from the view. */
+         MSIHANDLE hRecord = 0;
+@@ -998,7 +875,7 @@ cleanup_szSeqFilename:
+     if (uiResult != ERROR_SUCCESS)
+     {
+         /* Clean-up sequence files. */
+-        for (size_t i = _countof(szActionNames); i--;)
++        for (size_t i = _countof(szActionNames); i--; )
+         {
+             if (szSeqFilename[i][0])
+             {
+@@ -1186,7 +1063,7 @@ cleanup_session:
+         uiResult = ERROR_SUCCESS;
      }
-@@ -979,7 +988,9 @@ cleanup_exec_seq:
-  * @return TRUE on success; FALSE otherwise
-  */
- static BOOL
--openvpnmsica_parse_guid(_In_z_ LPCWSTR szArg, _Out_ GUID *guid)
-+parse_guid(
-+    _In_z_ LPCWSTR szArg,
-+    _Out_ GUID *guid)
- {
-     if (swscanf_s(szArg, _L(PRIXGUID), PRIGUID_PARAM_REF(*guid)) != 11)
+ 
+-    for (size_t i = MSICA_CLEANUP_ACTION_COUNT; i--;)
++    for (size_t i = MSICA_CLEANUP_ACTION_COUNT; i--; )
      {
-@@ -997,7 +1008,7 @@ ProcessDeferredAction(_In_ MSIHANDLE hInstall)
- #pragma comment(linker, DLLEXP_EXPORT)
- #endif
- 
--    openvpnmsica_debug_popup(TEXT(__FUNCTION__));
-+    debug_popup(TEXT(__FUNCTION__));
- 
-     UINT uiResult;
-     BOOL bIsCoInitialized = SUCCEEDED(CoInitialize(NULL));
-@@ -1112,7 +1123,7 @@ ProcessDeferredAction(_In_ MSIHANDLE hInstall)
-         {
-             /* Delete the interface by GUID. */
-             GUID guid;
--            if (!openvpnmsica_parse_guid(szArg[i] + 7, &guid))
-+            if (!parse_guid(szArg[i] + 7, &guid))
-             {
-                 goto invalid_argument;
-             }
-@@ -1122,7 +1133,7 @@ ProcessDeferredAction(_In_ MSIHANDLE hInstall)
-         {
-             /* Enable the interface. */
-             GUID guid;
--            if (!openvpnmsica_parse_guid(szArg[i] + 7, &guid))
-+            if (!parse_guid(szArg[i] + 7, &guid))
-             {
-                 goto invalid_argument;
-             }
-@@ -1132,7 +1143,7 @@ ProcessDeferredAction(_In_ MSIHANDLE hInstall)
-         {
-             /* Disable the interface. */
-             GUID guid;
--            if (!openvpnmsica_parse_guid(szArg[i] + 8, &guid))
-+            if (!parse_guid(szArg[i] + 8, &guid))
-             {
-                 goto invalid_argument;
-             }
+         msica_op_seq_free(&session.seq_cleanup[i]);
+     }
 -- 
 2.24.1.windows.2
 
