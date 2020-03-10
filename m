@@ -1,11 +1,8 @@
 From: Simon Rozman <simon@...2293...>
-Date: Tue, 10 Mar 2020 10:48:22 +0100
-Message-Id: <20200310094822.588-2-simon@...2293...>
-In-Reply-To: <20200310094822.588-1-simon@...2293...>
-References: <20200310094822.588-1-simon@...2293...>
+Date: Tue, 10 Mar 2020 10:48:21 +0100
+Message-Id: <20200310094822.588-1-simon@...2293...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/2] tun.c: revise the IPv4 ifconfig flow on
- Windows
+Subject: [Openvpn-devel] [PATCH 1/2] tun.c: reorder IPv6 ifconfig on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,209 +15,120 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-When provisioning IP configuration, we shall not ask what kind of
-adapter this is. Rather, we should ask what method of provisioning we
-are configured to use.
+The IPv6 interface network route should be setup as soon as possible
+after the interface address is set. Actually, all routes should be added
+before DNS servers are configured. This would allow Windows to validate
+DNS servers properly instead of shutting the validation off.
 
-It is options.c's job to rule out invalid combinations.
-
-- do_ifconfig_ipv4(): unify the workflow with its IPv6 counterpart
-  No need to distinguish Wintun and TAP-Windows6 here. This also fixes
-  an issue with --windows-driver wintun overriding --ip-win32 manual,
-  the later being perfectly fine choice for Wintun too.
-
-- open_tun() & tuntap_post_open(): unify Wintun and TAP-Windows6
-  workflow. This allows allows --ip-win32 ipapi now.
-
-- close_tun() the cleanup has been revised to match the ifconfig
-  workflow in reverse.
+The cleanup order has been changed to match reverse order of ifconfig.
+An additional check was added to skip the cleanup when --ip-win32 is set
+to manual.
 
 Signed-off-by: Simon Rozman <simon@...2293...>
 ---
- src/openvpn/tun.c | 127 ++++++++++++++++++++++++----------------------
- 1 file changed, 65 insertions(+), 62 deletions(-)
+ src/openvpn/tun.c | 51 +++++++++++++++++++++++++----------------------
+ 1 file changed, 27 insertions(+), 24 deletions(-)
 
 diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 42193d97..f7224093 100644
+index 1f848d24..42193d97 100644
 --- a/src/openvpn/tun.c
 +++ b/src/openvpn/tun.c
-@@ -1381,34 +1381,29 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-         env_set_destroy(aix_es);
-     }
- #elif defined (_WIN32)
--    {
--        ASSERT(ifname != NULL);
--
--        if (tt->options.msg_channel && tt->windows_driver == WINDOWS_DRIVER_WINTUN)
--        {
--            do_address_service(true, AF_INET, tt);
--            do_dns_service(true, AF_INET, tt);
--        }
--        else
--        {
--            switch (tt->options.ip_win32_type)
--            {
--                case IPW32_SET_MANUAL:
--                    msg(M_INFO,
--                        "******** NOTE:  Please manually set the IP/netmask of '%s' to %s/%s (if it is not already set)",
--                        ifname, ifconfig_local,
--                        print_in_addr_t(tt->adapter_netmask, 0, &gc));
--                    break;
-+    ASSERT(ifname != NULL);
- 
--                case IPW32_SET_NETSH:
--                    netsh_ifconfig(&tt->options, ifname, tt->local,
--                                   tt->adapter_netmask, NI_IP_NETMASK|NI_OPTIONS);
--
--                    break;
--            }
--        }
-+    if (tt->options.ip_win32_type == IPW32_SET_MANUAL)
-+    {
-+        msg(M_INFO,
-+            "******** NOTE:  Please manually set the IP/netmask of '%s' to %s/%s (if it is not already set)",
-+            ifname, ifconfig_local,
-+            print_in_addr_t(tt->adapter_netmask, 0, &gc));
-+    }
-+    else if (tt->options.ip_win32_type == IPW32_SET_DHCP_MASQ || tt->options.ip_win32_type == IPW32_SET_ADAPTIVE)
-+    {
-+        /* Let the DHCP configure the interface. */
-+    }
-+    else if (tt->options.msg_channel)
-+    {
-+        do_address_service(true, AF_INET, tt);
-+        do_dns_service(true, AF_INET, tt);
-+    }
-+    else if (tt->options.ip_win32_type == IPW32_SET_NETSH)
-+    {
-+        netsh_ifconfig(&tt->options, ifname, tt->local,
-+                       tt->adapter_netmask, NI_IP_NETMASK|NI_OPTIONS);
-     }
--
- #else  /* if defined(TARGET_LINUX) */
-     msg(M_FATAL, "Sorry, but I don't know how to do 'ifconfig' commands on this operating system.  You should ifconfig your TUN/TAP device manually or use an --up script.");
- #endif /* if defined(TARGET_LINUX) */
-@@ -6357,36 +6352,39 @@ tuntap_post_open(struct tuntap *tt, const char *device_guid)
-     bool dhcp_masq = false;
-     bool dhcp_masq_post = false;
- 
--    /* get driver version info */
--    tuntap_get_version_info(tt);
-+    if (tt->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6)
-+    {
-+        /* get driver version info */
-+        tuntap_get_version_info(tt);
- 
--    /* get driver MTU */
--    tuntap_get_mtu(tt);
-+        /* get driver MTU */
-+        tuntap_get_mtu(tt);
- 
--    /*
--     * Preliminaries for setting TAP-Windows adapter TCP/IP
--     * properties via --ip-win32 dynamic or --ip-win32 adaptive.
--     */
--    if (tt->did_ifconfig_setup)
--    {
--        tuntap_set_ip_props(tt, &dhcp_masq, &dhcp_masq_post);
--    }
-+        /*
-+         * Preliminaries for setting TAP-Windows adapter TCP/IP
-+         * properties via --ip-win32 dynamic or --ip-win32 adaptive.
-+         */
-+        if (tt->did_ifconfig_setup)
-+        {
-+            tuntap_set_ip_props(tt, &dhcp_masq, &dhcp_masq_post);
-+        }
- 
--    /* set point-to-point mode if TUN device */
--    if (tt->type == DEV_TYPE_TUN)
--    {
--        tuntap_set_ptp(tt);
--    }
-+        /* set point-to-point mode if TUN device */
-+        if (tt->type == DEV_TYPE_TUN)
-+        {
-+            tuntap_set_ptp(tt);
-+        }
- 
--    /* should we tell the TAP-Windows driver to masquerade as a DHCP server as a means
--     * of setting the adapter address? */
--    if (dhcp_masq)
--    {
--        tuntap_dhcp_mask(tt, device_guid);
--    }
-+        /* should we tell the TAP-Windows driver to masquerade as a DHCP server as a means
-+         * of setting the adapter address? */
-+        if (dhcp_masq)
-+        {
-+            tuntap_dhcp_mask(tt, device_guid);
-+        }
- 
--    /* set driver media status to 'connected' */
--    tuntap_set_connected(tt);
-+        /* set driver media status to 'connected' */
-+        tuntap_set_connected(tt);
-+    }
- 
-     /* possibly use IP Helper API to set IP address on adapter */
-     tuntap_set_ip_addr(tt, device_guid, dhcp_masq_post);
-@@ -6413,10 +6411,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
- 
-     tun_open_device(tt, dev_node, &device_guid);
- 
--    if (tt->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6)
--    {
--        tuntap_post_open(tt, device_guid);
--    }
-+    tuntap_post_open(tt, device_guid);
- 
-     /*netcmd_semaphore_release ();*/
- }
-@@ -6533,20 +6528,29 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
-             netsh_delete_address_dns(tt, true, &gc);
-         }
-     }
--#if 1
--    if (tt->windows_driver == WINDOWS_DRIVER_WINTUN)
-+
-+    if (tt->did_ifconfig_setup)
+@@ -1016,6 +1016,7 @@ do_ifconfig_ipv6(struct tuntap *tt, const char *ifname, int tun_mtu,
+     else if (tt->options.msg_channel)
      {
+         do_address_service(true, AF_INET6, tt);
++        add_route_connected_v6_net(tt, es);
+         do_dns_service(true, AF_INET6, tt);
+     }
+     else
+@@ -1031,15 +1032,10 @@ do_ifconfig_ipv6(struct tuntap *tt, const char *ifname, int tun_mtu,
+                     get_win_sys_path(), NETSH_PATH_SUFFIX, iface,
+                     ifconfig_ipv6_local);
+         netsh_command(&argv, 4, M_FATAL);
++        add_route_connected_v6_net(tt, es);
+         /* set ipv6 dns servers if any are specified */
+         netsh_set_dns6_servers(tt->options.dns6, tt->options.dns6_len, ifname);
+     }
+-
+-    /* explicit route needed */
+-    if (tt->options.ip_win32_type != IPW32_SET_MANUAL)
+-    {
+-        add_route_connected_v6_net(tt, es);
+-    }
+ #else /* platforms we have no IPv6 code for */
+     msg(M_FATAL, "Sorry, but I don't know how to do IPv6 'ifconfig' commands on this operating system.  You should ifconfig your TUN/TAP device manually or use an --up script.");
+ #endif /* outer "if defined(TARGET_xxx)" conditional */
+@@ -6467,6 +6463,24 @@ netsh_delete_address_dns(const struct tuntap *tt, bool ipv6, struct gc_arena *gc
+     const char *ifconfig_ip_local;
+     struct argv argv = argv_new();
+ 
++    /* delete ipvX dns servers if any were set */
++    int len = ipv6 ? tt->options.dns6_len : tt->options.dns_len;
++    if (len > 0)
++    {
++        argv_printf(&argv,
++                    "%s%s interface %s delete dns %s all",
++                    get_win_sys_path(),
++                    NETSH_PATH_SUFFIX,
++                    ipv6 ? "ipv6" : "ipv4",
++                    tt->actual_name);
++        netsh_command(&argv, 1, M_WARN);
++    }
++
++    if (ipv6)
++    {
++        delete_route_connected_v6_net(tt, NULL);
++    }
++
+     /* "store=active" is needed in Windows 8(.1) to delete the
+      * address we added (pointed out by Cedric Tabary).
+      */
+@@ -6487,21 +6501,8 @@ netsh_delete_address_dns(const struct tuntap *tt, bool ipv6, struct gc_arena *gc
+                 ipv6 ? "ipv6" : "ipv4",
+                 tt->actual_name,
+                 ifconfig_ip_local);
+-
+     netsh_command(&argv, 1, M_WARN);
+ 
+-    /* delete ipvX dns servers if any were set */
+-    int len = ipv6 ? tt->options.dns6_len : tt->options.dns_len;
+-    if (len > 0)
+-    {
+-        argv_printf(&argv,
+-                    "%s%s interface %s delete dns %s all",
+-                    get_win_sys_path(),
+-                    NETSH_PATH_SUFFIX,
+-                    ipv6 ? "ipv6" : "ipv4",
+-                    tt->actual_name);
+-        netsh_command(&argv, 1, M_WARN);
+-    }
+     argv_free(&argv);
+ }
+ 
+@@ -6514,16 +6515,18 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+ 
+     if (tt->did_ifconfig_ipv6_setup)
+     {
+-        /* remove route pointing to interface */
+-        delete_route_connected_v6_net(tt, NULL);
+-
 -        if (tt->options.msg_channel)
 +        if (tt->options.ip_win32_type == IPW32_SET_MANUAL)
 +        {
 +            /* We didn't do ifconfig. */
 +        }
-+        else if (tt->options.ip_win32_type == IPW32_SET_DHCP_MASQ || tt->options.ip_win32_type == IPW32_SET_ADAPTIVE)
-+        {
-+            /* We don't have to clean the configuration with DHCP. */
-+        }
 +        else if (tt->options.msg_channel)
          {
--            do_address_service(false, AF_INET, tt);
-             do_dns_service(false, AF_INET, tt);
-+            do_address_service(false, AF_INET, tt);
+-            do_address_service(false, AF_INET6, tt);
+             if (tt->options.dns6_len > 0)
+             {
+                 do_dns_service(false, AF_INET6, tt);
+             }
++            delete_route_connected_v6_net(tt, NULL);
++            do_address_service(false, AF_INET6, tt);
          }
--        else
-+        else if (tt->options.ip_win32_type == IPW32_SET_NETSH)
+         else
          {
-             netsh_delete_address_dns(tt, false, &gc);
-         }
-     }
--    else if (tt->ipapi_context_defined)
-+
-+    if (tt->ipapi_context_defined)
-     {
-         DWORD status;
-         if ((status = DeleteIPAddress(tt->ipapi_context)) != NO_ERROR)
-@@ -6557,7 +6561,6 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
-                 strerror_win32(status, &gc));
-         }
-     }
--#endif /* if 1 */
- 
-     dhcp_release(tt);
- 
 -- 
 2.24.1.windows.2
 
