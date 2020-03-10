@@ -1,10 +1,11 @@
-Date: Tue, 10 Mar 2020 09:39:14 +0100 (CET)
-Message-Id: <202003100839.02A8dEA8016390@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200205183841.1118-1-simon@...2293...>
-References: <20200205183841.1118-1-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH applied] Re: wintun: upgrade error message
- in case of ring registration failure
+From: Simon Rozman <simon@...2293...>
+Date: Tue, 10 Mar 2020 10:48:22 +0100
+Message-Id: <20200310094822.588-2-simon@...2293...>
+In-Reply-To: <20200310094822.588-1-simon@...2293...>
+References: <20200310094822.588-1-simon@...2293...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH 2/2] tun.c: revise the IPv4 ifconfig flow on
+ Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,29 +16,212 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Simon Rozman <simon@...2293...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+When provisioning IP configuration, we shall not ask what kind of
+adapter this is. Rather, we should ask what method of provisioning we
+are configured to use.
 
-"If Lev says so" :-) - code looks reasonable, test compiles fine (MinGW).
+It is options.c's job to rule out invalid combinations.
 
-commit 089fbe653c3a8efd6dac8cc84448ccbe1d3aa887
-Author: Simon Rozman
-Date:   Wed Feb 5 19:38:41 2020 +0100
+- do_ifconfig_ipv4(): unify the workflow with its IPv6 counterpart
+  No need to distinguish Wintun and TAP-Windows6 here. This also fixes
+  an issue with --windows-driver wintun overriding --ip-win32 manual,
+  the later being perfectly fine choice for Wintun too.
 
-     wintun: upgrade error message in case of ring registration failure
+- open_tun() & tuntap_post_open(): unify Wintun and TAP-Windows6
+  workflow. This allows allows --ip-win32 ipapi now.
 
-     Signed-off-by: Simon Rozman <simon@...2293...>
-     Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20200205183841.1118-1-simon@...2293...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19367.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+- close_tun() the cleanup has been revised to match the ifconfig
+  workflow in reverse.
 
+Signed-off-by: Simon Rozman <simon@...2293...>
+---
+ src/openvpn/tun.c | 127 ++++++++++++++++++++++++----------------------
+ 1 file changed, 65 insertions(+), 62 deletions(-)
 
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 42193d97..f7224093 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -1381,34 +1381,29 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
+         env_set_destroy(aix_es);
+     }
+ #elif defined (_WIN32)
+-    {
+-        ASSERT(ifname != NULL);
+-
+-        if (tt->options.msg_channel && tt->windows_driver == WINDOWS_DRIVER_WINTUN)
+-        {
+-            do_address_service(true, AF_INET, tt);
+-            do_dns_service(true, AF_INET, tt);
+-        }
+-        else
+-        {
+-            switch (tt->options.ip_win32_type)
+-            {
+-                case IPW32_SET_MANUAL:
+-                    msg(M_INFO,
+-                        "******** NOTE:  Please manually set the IP/netmask of '%s' to %s/%s (if it is not already set)",
+-                        ifname, ifconfig_local,
+-                        print_in_addr_t(tt->adapter_netmask, 0, &gc));
+-                    break;
++    ASSERT(ifname != NULL);
+ 
+-                case IPW32_SET_NETSH:
+-                    netsh_ifconfig(&tt->options, ifname, tt->local,
+-                                   tt->adapter_netmask, NI_IP_NETMASK|NI_OPTIONS);
+-
+-                    break;
+-            }
+-        }
++    if (tt->options.ip_win32_type == IPW32_SET_MANUAL)
++    {
++        msg(M_INFO,
++            "******** NOTE:  Please manually set the IP/netmask of '%s' to %s/%s (if it is not already set)",
++            ifname, ifconfig_local,
++            print_in_addr_t(tt->adapter_netmask, 0, &gc));
++    }
++    else if (tt->options.ip_win32_type == IPW32_SET_DHCP_MASQ || tt->options.ip_win32_type == IPW32_SET_ADAPTIVE)
++    {
++        /* Let the DHCP configure the interface. */
++    }
++    else if (tt->options.msg_channel)
++    {
++        do_address_service(true, AF_INET, tt);
++        do_dns_service(true, AF_INET, tt);
++    }
++    else if (tt->options.ip_win32_type == IPW32_SET_NETSH)
++    {
++        netsh_ifconfig(&tt->options, ifname, tt->local,
++                       tt->adapter_netmask, NI_IP_NETMASK|NI_OPTIONS);
+     }
+-
+ #else  /* if defined(TARGET_LINUX) */
+     msg(M_FATAL, "Sorry, but I don't know how to do 'ifconfig' commands on this operating system.  You should ifconfig your TUN/TAP device manually or use an --up script.");
+ #endif /* if defined(TARGET_LINUX) */
+@@ -6357,36 +6352,39 @@ tuntap_post_open(struct tuntap *tt, const char *device_guid)
+     bool dhcp_masq = false;
+     bool dhcp_masq_post = false;
+ 
+-    /* get driver version info */
+-    tuntap_get_version_info(tt);
++    if (tt->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6)
++    {
++        /* get driver version info */
++        tuntap_get_version_info(tt);
+ 
+-    /* get driver MTU */
+-    tuntap_get_mtu(tt);
++        /* get driver MTU */
++        tuntap_get_mtu(tt);
+ 
+-    /*
+-     * Preliminaries for setting TAP-Windows adapter TCP/IP
+-     * properties via --ip-win32 dynamic or --ip-win32 adaptive.
+-     */
+-    if (tt->did_ifconfig_setup)
+-    {
+-        tuntap_set_ip_props(tt, &dhcp_masq, &dhcp_masq_post);
+-    }
++        /*
++         * Preliminaries for setting TAP-Windows adapter TCP/IP
++         * properties via --ip-win32 dynamic or --ip-win32 adaptive.
++         */
++        if (tt->did_ifconfig_setup)
++        {
++            tuntap_set_ip_props(tt, &dhcp_masq, &dhcp_masq_post);
++        }
+ 
+-    /* set point-to-point mode if TUN device */
+-    if (tt->type == DEV_TYPE_TUN)
+-    {
+-        tuntap_set_ptp(tt);
+-    }
++        /* set point-to-point mode if TUN device */
++        if (tt->type == DEV_TYPE_TUN)
++        {
++            tuntap_set_ptp(tt);
++        }
+ 
+-    /* should we tell the TAP-Windows driver to masquerade as a DHCP server as a means
+-     * of setting the adapter address? */
+-    if (dhcp_masq)
+-    {
+-        tuntap_dhcp_mask(tt, device_guid);
+-    }
++        /* should we tell the TAP-Windows driver to masquerade as a DHCP server as a means
++         * of setting the adapter address? */
++        if (dhcp_masq)
++        {
++            tuntap_dhcp_mask(tt, device_guid);
++        }
+ 
+-    /* set driver media status to 'connected' */
+-    tuntap_set_connected(tt);
++        /* set driver media status to 'connected' */
++        tuntap_set_connected(tt);
++    }
+ 
+     /* possibly use IP Helper API to set IP address on adapter */
+     tuntap_set_ip_addr(tt, device_guid, dhcp_masq_post);
+@@ -6413,10 +6411,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+ 
+     tun_open_device(tt, dev_node, &device_guid);
+ 
+-    if (tt->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6)
+-    {
+-        tuntap_post_open(tt, device_guid);
+-    }
++    tuntap_post_open(tt, device_guid);
+ 
+     /*netcmd_semaphore_release ();*/
+ }
+@@ -6533,20 +6528,29 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+             netsh_delete_address_dns(tt, true, &gc);
+         }
+     }
+-#if 1
+-    if (tt->windows_driver == WINDOWS_DRIVER_WINTUN)
++
++    if (tt->did_ifconfig_setup)
+     {
+-        if (tt->options.msg_channel)
++        if (tt->options.ip_win32_type == IPW32_SET_MANUAL)
++        {
++            /* We didn't do ifconfig. */
++        }
++        else if (tt->options.ip_win32_type == IPW32_SET_DHCP_MASQ || tt->options.ip_win32_type == IPW32_SET_ADAPTIVE)
++        {
++            /* We don't have to clean the configuration with DHCP. */
++        }
++        else if (tt->options.msg_channel)
+         {
+-            do_address_service(false, AF_INET, tt);
+             do_dns_service(false, AF_INET, tt);
++            do_address_service(false, AF_INET, tt);
+         }
+-        else
++        else if (tt->options.ip_win32_type == IPW32_SET_NETSH)
+         {
+             netsh_delete_address_dns(tt, false, &gc);
+         }
+     }
+-    else if (tt->ipapi_context_defined)
++
++    if (tt->ipapi_context_defined)
+     {
+         DWORD status;
+         if ((status = DeleteIPAddress(tt->ipapi_context)) != NO_ERROR)
+@@ -6557,7 +6561,6 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+                 strerror_win32(status, &gc));
+         }
+     }
+-#endif /* if 1 */
+ 
+     dhcp_release(tt);
+ 
+-- 
+2.24.1.windows.2
 
 
