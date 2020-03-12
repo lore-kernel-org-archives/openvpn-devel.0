@@ -1,10 +1,7 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Thu, 12 Mar 2020 12:36:54 +0100
-Message-Id: <20200312113654.16184-1-arne@...1227...>
-In-Reply-To: <20200309135133.GA1431@...1296...>
-References: <20200309135133.GA1431@...1296...>
-Subject: [Openvpn-devel] [PATCH v6 5/5] Normalise ncp-ciphers option and
- restrict it to 127 bytes
+From: Lev Stipakov <lstipakov@...277...>
+Date: Thu, 12 Mar 2020 08:08:29 +0200
+Message-Id: <20200312060829.19468-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] tun.c: fix "use after free" error
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,298 +13,92 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-In scenarios of mbed TLS vs OpenSSL we already normalise the ciphers
-that are send via the wire protocol via OCC to not have a mismatch
-warning between server and client. This is done by
-translate_cipher_name_from_openvpn. The same applies also to the
-ncp-ciphers list. Specifying non normalised names in ncp-ciphers will
-cause negotation not to succeed if ciphers are not in the same form.
-Therefore we will normalise the ciphers in options_postmutate.
+From: Lev Stipakov <lev@...515...>
 
-The alternative and a lot less user friendly alternative would be to
-bail if on of the ciphers in ncp-ciphers is not in its normalised form.
+Commit 509c45f has factored out code blocks of open_tun()
+into separate functions and introduced "use after free" bug:
 
-Also restrict the ncp-ciphers list to 127. This is somewhat arbitrary
-but should prevent too large IV_CIPHER messages and problems sending
-those. The server will accept also large IV_CIPHER values from clients.
+Variable "device_guid" is allocated inside tun_open_device()
+function and used outside of it. Allocation happens with
+local gc_arena, which is freed at the end of tun_open_device(),
+making futher access to "device_guid" invalid.
 
-Patch V2: Correct comment about normalising ciphers
-Patch V3: Correct #ifdef statement
-Patch V5: Fix tests with OpenSSL 1.0.2 and libraries missing Chacha
-Patch V6: Fix unit tests for mbed tls, which recognises ChaCha20-Poly1305
-          only when used with all uppercase, fix missing space in message
+Fix by ensuring that gc_arena scope covers all access to "device_guid".
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
+Signed-off-by: Lev Stipakov <lev@...515...>
 ---
- doc/openvpn.8                       |  3 ++
- src/openvpn/options.c               | 14 ++++---
- src/openvpn/ssl_ncp.c               | 57 +++++++++++++++++++++++++----
- src/openvpn/ssl_ncp.h               | 19 +++++++++-
- tests/unit_tests/openvpn/test_ncp.c | 54 +++++++++++++++++++++++----
- 5 files changed, 125 insertions(+), 22 deletions(-)
+ src/openvpn/tun.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 864f94e8..c5b16981 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -4406,6 +4406,9 @@ AES\-256\-GCM:AES\-256\-CBC" set can either specify "\-\-cipher BF\-CBC" or
- 
- Note, for using NCP with a OpenVPN 2.4 peer this list must include
- the AES\-256\-GCM and AES\-128\-GCM ciphers.
-+
-+This list is restricted to be 127 chars long after conversion to OpenVPN
-+ciphers.
- .\"*********************************************************
- .TP
- .B \-\-ncp\-disable
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index e79a1215..5127f653 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2516,11 +2516,6 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-     }
- #endif /* P2MP_SERVER */
- 
--    if (options->ncp_enabled && !tls_check_ncp_cipher_list(options->ncp_ciphers))
--    {
--        msg(M_USAGE, "NCP cipher list contains unsupported ciphers.");
--    }
--
-     if (options->keysize)
-     {
-         msg(M_WARN, "WARNING: --keysize is DEPRECATED and will be removed in OpenVPN 2.6");
-@@ -3098,6 +3093,15 @@ options_postprocess_mutate(struct options *o)
- 
-     options_postprocess_mutate_invariant(o);
- 
-+    if (o->ncp_enabled)
-+    {
-+        o->ncp_ciphers = mutate_ncp_cipher_list(o->ncp_ciphers, &o->gc);
-+        if (o->ncp_ciphers == NULL)
-+        {
-+            msg(M_USAGE, "NCP cipher list contains unsupported ciphers or is too long.");
-+        }
-+    }
-+
-     if (o->remote_list && !o->connection_list)
-     {
-         /*
-diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-index d884e2b5..9ed6ff5f 100644
---- a/src/openvpn/ssl_ncp.c
-+++ b/src/openvpn/ssl_ncp.c
-@@ -91,27 +91,70 @@ tls_peer_supports_ncp(const char *peer_info)
-     }
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 42193d97..c976055e 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -6226,12 +6226,11 @@ tun_try_open_device(struct tuntap *tt, const char *device_guid, const struct dev
  }
  
--bool
--tls_check_ncp_cipher_list(const char *list)
-+char *
-+mutate_ncp_cipher_list(const char *list, struct gc_arena *gc)
+ static void
+-tun_open_device(struct tuntap *tt, const char *dev_node, const char **device_guid)
++tun_open_device(struct tuntap *tt, const char *dev_node, const char **device_guid, struct gc_arena *gc)
  {
--    bool unsupported_cipher_found = false;
-+    bool error_found = false;
+-    struct gc_arena gc = gc_new();
+-    const struct tap_reg *tap_reg = get_tap_reg(&gc);
+-    const struct panel_reg *panel_reg = get_panel_reg(&gc);
+-    const struct device_instance_id_interface *device_instance_id_interface = get_device_instance_id_interface(&gc);
++    const struct tap_reg *tap_reg = get_tap_reg(gc);
++    const struct panel_reg *panel_reg = get_panel_reg(gc);
++    const struct device_instance_id_interface *device_instance_id_interface = get_device_instance_id_interface(gc);
+     char actual_buffer[256];
  
--    ASSERT(list);
-+    struct buffer new_list  = alloc_buf(MAX_NCP_CIPHERS_LENGTH);
+     at_least_one_tap_win(tap_reg);
+@@ -6244,7 +6243,7 @@ tun_open_device(struct tuntap *tt, const char *dev_node, const char **device_gui
+         enum windows_driver_type windows_driver = WINDOWS_DRIVER_UNSPECIFIED;
  
-     char *const tmp_ciphers = string_alloc(list, NULL);
-     const char *token = strtok(tmp_ciphers, ":");
-     while (token)
-     {
--        if (!cipher_kt_get(translate_cipher_name_from_openvpn(token)))
-+        /*
-+         * Going through a roundtrip by using translate_cipher_name_from_openvpn
-+         * and translate_cipher_name_to_openvpn also normalises the cipher name,
-+         * e.g. replacing AeS-128-gCm with AES-128-GCM
-+         */
-+        const char *cipher_name = translate_cipher_name_from_openvpn(token);
-+        const cipher_kt_t *ktc = cipher_kt_get(cipher_name);
-+        if (!ktc)
+         /* Get the device GUID for the device specified with --dev-node. */
+-        *device_guid = get_device_guid(dev_node, actual_buffer, sizeof(actual_buffer), &windows_driver, tap_reg, panel_reg, &gc);
++        *device_guid = get_device_guid(dev_node, actual_buffer, sizeof(actual_buffer), &windows_driver, tap_reg, panel_reg, gc);
+ 
+         if (!*device_guid)
          {
-             msg(M_WARN, "Unsupported cipher in --ncp-ciphers: %s", token);
--            unsupported_cipher_found = true;
-+            error_found = true;
-+        }
-+        else
-+        {
-+            const char *ovpn_cipher_name =
-+                translate_cipher_name_to_openvpn(cipher_kt_name(ktc));
-+
-+            if (buf_len(&new_list)> 0)
-+            {
-+                /* The next if condition ensure there is always space for
-+                 * a :
-+                 */
-+                buf_puts(&new_list, ":");
-+            }
-+
-+            /* Ensure buffer has capacity for cipher name + : + \0 */
-+            if (!(buf_forward_capacity(&new_list) >
-+                  strlen(ovpn_cipher_name) + 2))
-+            {
-+                msg(M_WARN, "Length of --ncp-ciphers is over the "
-+                    "limit of 127 chars");
-+                error_found = true;
-+            }
-+            else
-+            {
-+                buf_puts(&new_list, ovpn_cipher_name);
-+            }
-         }
-         token = strtok(NULL, ":");
-     }
-+
-+
-+
-+    char *ret = NULL;
-+    if (!error_found && buf_len(&new_list) > 0)
-+    {
-+        buf_null_terminate(&new_list);
-+        ret = string_alloc(buf_str(&new_list), gc);
-+    }
-     free(tmp_ciphers);
-+    free_buf(&new_list);
+@@ -6276,7 +6275,7 @@ tun_open_device(struct tuntap *tt, const char *dev_node, const char **device_gui
+                                                        tap_reg,
+                                                        panel_reg,
+                                                        &windows_driver,
+-                                                       &gc);
++                                                       gc);
  
--    return 0 < strlen(list) && !unsupported_cipher_found;
-+    return ret;
- }
+             if (!*device_guid)
+             {
+@@ -6304,8 +6303,6 @@ next:
  
- bool
-diff --git a/src/openvpn/ssl_ncp.h b/src/openvpn/ssl_ncp.h
-index 1257b2b6..d00c222d 100644
---- a/src/openvpn/ssl_ncp.h
-+++ b/src/openvpn/ssl_ncp.h
-@@ -87,10 +87,17 @@ tls_peer_ncp_list(const char *peer_info, struct gc_arena *gc);
-  * Check whether the ciphers in the supplied list are supported.
-  *
-  * @param list          Colon-separated list of ciphers
-+ * @parms gc            gc_arena to allocate the returned string
-  *
-- * @returns true iff all ciphers in list are supported.
-+ * @returns             colon separated string of normalised (via
-+ *                      translate_cipher_name_from_openvpn) and
-+ *                      zero terminated string iff all ciphers
-+ *                      in list are supported and the total length
-+ *                      is short than MAX_NCP_CIPHERS_LENGTH. NULL
-+ *                      otherwise.
-  */
--bool tls_check_ncp_cipher_list(const char *list);
-+char *
-+mutate_ncp_cipher_list(const char *list, struct gc_arena *gc);
- 
- /**
-  * Return true iff item is present in the colon-separated zero-terminated
-@@ -98,4 +105,12 @@ bool tls_check_ncp_cipher_list(const char *list);
-  */
- bool tls_item_in_cipher_list(const char *item, const char *list);
- 
-+/**
-+ * The maximum length of a ncp-cipher string that is accepted.
-+ *
-+ * Since this list needs to be pushed as IV_CIPHERS, we are conservative
-+ * about its length.
-+ */
-+#define MAX_NCP_CIPHERS_LENGTH 127
-+
- #endif /* ifndef OPENVPN_SSL_NCP_H */
-diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn/test_ncp.c
-index 3fc886c5..f8d03b35 100644
---- a/tests/unit_tests/openvpn/test_ncp.c
-+++ b/tests/unit_tests/openvpn/test_ncp.c
-@@ -47,12 +47,50 @@ const char *aes_ciphers = "AES-256-GCM:AES-128-GCM";
- static void
- test_check_ncp_ciphers_list(void **state)
- {
-+    struct gc_arena gc = gc_new();
-     bool have_chacha = cipher_kt_get("CHACHA20-POLY1305");
- 
--    assert_true(tls_check_ncp_cipher_list(aes_ciphers));
--    assert_true(have_chacha == tls_check_ncp_cipher_list(bf_chacha));
--    assert_false(tls_check_ncp_cipher_list("vollbit"));
--    assert_false(tls_check_ncp_cipher_list("AES-256-GCM:vollbit"));
-+
-+
-+    assert_string_equal(mutate_ncp_cipher_list(aes_ciphers, &gc), aes_ciphers);
-+
-+    if (have_chacha)
-+    {
-+        assert_string_equal(mutate_ncp_cipher_list(bf_chacha, &gc), bf_chacha);
-+        assert_string_equal(mutate_ncp_cipher_list("BF-CBC:CHACHA20-POLY1305", &gc),
-+                            bf_chacha);
-+    }
-+    else
-+    {
-+        assert_ptr_equal(mutate_ncp_cipher_list(bf_chacha, &gc), NULL);
-+    }
-+
-+    /* For testing that with OpenSSL 1.1.0+ that also accepts ciphers in
-+       a different spelling the normalised cipher output is the same */
-+    bool have_chacha_mixed_case = cipher_kt_get("ChaCha20-Poly1305");
-+    if (have_chacha_mixed_case)
-+    {
-+      assert_string_equal(mutate_ncp_cipher_list("BF-CBC:ChaCha20-Poly1305", &gc),
-+			  bf_chacha);
-+    }
-+
-+    assert_ptr_equal(mutate_ncp_cipher_list("vollbit", &gc), NULL);
-+    assert_ptr_equal(mutate_ncp_cipher_list("AES-256-GCM:vollbit", &gc), NULL);
-+    assert_ptr_equal(mutate_ncp_cipher_list("", &gc), NULL);
-+
-+    assert_ptr_equal(mutate_ncp_cipher_list(
-+                         "ChaCha20-Poly1305:ChaCha20-Poly1305:ChaCha20-Poly1305:"
-+                         "ChaCha20-Poly1305:ChaCha20-Poly1305:ChaCha20-Poly1305:"
-+                         "ChaCha20-Poly1305", &gc), NULL);
-+
-+#ifdef ENABLE_CRYPTO_OPENSSL
-+    assert_string_equal(mutate_ncp_cipher_list("id-aes128-GCM:id-aes256-GCM",
-+                                               &gc), "AES-128-GCM:AES-256-GCM");
-+#else
-+    assert_string_equal(mutate_ncp_cipher_list("BLOWFISH-CBC",
-+                                               &gc), "BF-CBC");
-+#endif
-+    gc_free(&gc);
- }
- 
- static void
-@@ -100,7 +138,7 @@ test_poor_man(void **state)
-     struct gc_arena gc = gc_new();
-     char *best_cipher;
- 
--    const char *serverlist="CHACHA20_POLY1305:AES-128-GCM";
-+    const char *serverlist = "CHACHA20_POLY1305:AES-128-GCM";
- 
-     best_cipher = ncp_get_best_cipher(serverlist, "BF-CBC",
-                                       "IV_YOLO=NO\nIV_BAR=7",
-@@ -130,7 +168,7 @@ test_ncp_best(void **state)
-     struct gc_arena gc = gc_new();
-     char *best_cipher;
- 
--    const char *serverlist="CHACHA20_POLY1305:AES-128-GCM:AES-256-GCM";
-+    const char *serverlist = "CHACHA20_POLY1305:AES-128-GCM:AES-256-GCM";
- 
-     best_cipher = ncp_get_best_cipher(serverlist, "BF-CBC",
-                                       "IV_YOLO=NO\nIV_NCP=2\nIV_BAR=7",
-@@ -166,7 +204,6 @@ test_ncp_best(void **state)
- 
- 
- 
+     msg(M_INFO, "%s device [%s] opened", print_windows_driver(tt->windows_driver), tt->actual_name);
+     tt->adapter_index = get_adapter_index(*device_guid);
 -
- const struct CMUnitTest ncp_tests[] = {
-     cmocka_unit_test(test_check_ncp_ciphers_list),
-     cmocka_unit_test(test_extract_client_ciphers),
-@@ -175,7 +212,8 @@ const struct CMUnitTest ncp_tests[] = {
- };
+-    gc_free(&gc);
+ }
  
+ static void
+@@ -6411,13 +6408,16 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+         msg(M_FATAL|M_NOPREFIX, "Unknown virtual device type: '%s'", dev);
+     }
  
--int main(void)
-+int
-+main(void)
- {
- #if defined(ENABLE_CRYPTO_OPENSSL)
-     OpenSSL_add_all_algorithms();
+-    tun_open_device(tt, dev_node, &device_guid);
++    struct gc_arena gc = gc_new(); /* used also for device_guid allocation */
++    tun_open_device(tt, dev_node, &device_guid, &gc);
+ 
+     if (tt->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6)
+     {
+         tuntap_post_open(tt, device_guid);
+     }
+ 
++    gc_free(&gc);
++
+     /*netcmd_semaphore_release ();*/
+ }
+ 
 -- 
-2.25.0
+2.17.1
 
 
