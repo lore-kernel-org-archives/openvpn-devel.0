@@ -1,7 +1,9 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Thu, 12 Mar 2020 04:01:35 +0200
-Message-Id: <20200312020135.20510-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH] Fix building with --enable-async-push in
+Date: Thu, 12 Mar 2020 05:03:23 +0200
+Message-Id: <20200312030323.19293-1-lstipakov@...277...>
+In-Reply-To: <20200312020135.20510-1-lstipakov@...277...>
+References: <20200312020135.20510-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH v2] Fix building with --enable-async-push in
  FreeBSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -16,31 +18,41 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
 This option can be used in FreedBSD with devel/libinotify
-installed, however it requires linkage with -linotify.
+installed.
+
+Detect presence of libinotify and link with its _LIBS variable.
 
 Trac #1256
 
 Signed-off-by: Lev Stipakov <lstipakov@...277...>
 ---
- configure.ac            | 4 ++++
+ 
+ v2: use PKG_CHECK_MODULES instead of hardcoded -linotify
+
+ configure.ac            | 9 +++++++++
  src/openvpn/Makefile.am | 3 ++-
- 2 files changed, 6 insertions(+), 1 deletion(-)
+ 2 files changed, 11 insertions(+), 1 deletion(-)
 
 diff --git a/configure.ac b/configure.ac
-index a47ef3e7..d3a4158a 100644
+index a47ef3e7..085e7b69 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1344,6 +1344,9 @@ if test "${enable_async_push}" = "yes"; then
+@@ -1344,6 +1344,14 @@ if test "${enable_async_push}" = "yes"; then
  		AC_DEFINE([ENABLE_ASYNC_PUSH], [1], [Enable async push]),
  		AC_MSG_ERROR([inotify.h not found.])
  	)
 +	case "$host" in
-+		*-*-freebsd*) OPTIONAL_INOTIFY_LIBS="-linotify";;
++		*-*-freebsd*)
++			PKG_CHECK_MODULES(
++				[OPTIONAL_INOTIFY],
++				[libinotify]
++			)
++		;;
 +	esac
  fi
  
  CONFIGURE_DEFINES="`set | grep '^enable_.*=' ; set | grep '^with_.*='`"
-@@ -1370,6 +1373,7 @@ AC_SUBST([OPTIONAL_LZ4_LIBS])
+@@ -1370,6 +1378,7 @@ AC_SUBST([OPTIONAL_LZ4_LIBS])
  AC_SUBST([OPTIONAL_SYSTEMD_LIBS])
  AC_SUBST([OPTIONAL_PKCS11_HELPER_CFLAGS])
  AC_SUBST([OPTIONAL_PKCS11_HELPER_LIBS])
