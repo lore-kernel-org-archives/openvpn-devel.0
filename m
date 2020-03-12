@@ -1,11 +1,8 @@
-MIME-Version: 1.0
-References: <20200310094822.588-1-simon@...2293...>
-In-Reply-To: <20200310094822.588-1-simon@...2293...>
 From: Lev Stipakov <lstipakov@...277...>
-Date: Thu, 12 Mar 2020 10:02:49 +0200
-Message-ID: <CAGyAFMXN=ai=yXGY7UvyQFqXXkMpkpcRvck+2nJ8chw2J69UEg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 1/2] tun.c: reorder IPv6 ifconfig on
- Windows
+Date: Thu, 12 Mar 2020 04:01:35 +0200
+Message-Id: <20200312020135.20510-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] Fix building with --enable-async-push in
+ FreeBSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,17 +11,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Simon Rozman <simon@...2293...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+This option can be used in FreedBSD with devel/libinotify
+installed, however it requires linkage with -linotify.
 
-Explanation makes sense and code does what is says -
-adds address/route/dns and removes in reverse direction.
+Trac #1256
 
-Compiled and smoke-tested with MSVC.
+Signed-off-by: Lev Stipakov <lstipakov@...277...>
+---
+ configure.ac            | 4 ++++
+ src/openvpn/Makefile.am | 3 ++-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
-Acked-by: Lev Stipakov <lstipakov@...277...>
+diff --git a/configure.ac b/configure.ac
+index a47ef3e7..d3a4158a 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1344,6 +1344,9 @@ if test "${enable_async_push}" = "yes"; then
+ 		AC_DEFINE([ENABLE_ASYNC_PUSH], [1], [Enable async push]),
+ 		AC_MSG_ERROR([inotify.h not found.])
+ 	)
++	case "$host" in
++		*-*-freebsd*) OPTIONAL_INOTIFY_LIBS="-linotify";;
++	esac
+ fi
+ 
+ CONFIGURE_DEFINES="`set | grep '^enable_.*=' ; set | grep '^with_.*='`"
+@@ -1370,6 +1373,7 @@ AC_SUBST([OPTIONAL_LZ4_LIBS])
+ AC_SUBST([OPTIONAL_SYSTEMD_LIBS])
+ AC_SUBST([OPTIONAL_PKCS11_HELPER_CFLAGS])
+ AC_SUBST([OPTIONAL_PKCS11_HELPER_LIBS])
++AC_SUBST([OPTIONAL_INOTIFY_LIBS])
+ 
+ AC_SUBST([PLUGIN_AUTH_PAM_CFLAGS])
+ AC_SUBST([PLUGIN_AUTH_PAM_LIBS])
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index 2ea47cda..b924014d 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -137,7 +137,8 @@ openvpn_LDADD = \
+ 	$(OPTIONAL_CRYPTO_LIBS) \
+ 	$(OPTIONAL_SELINUX_LIBS) \
+ 	$(OPTIONAL_SYSTEMD_LIBS) \
+-	$(OPTIONAL_DL_LIBS)
++	$(OPTIONAL_DL_LIBS) \
++	$(OPTIONAL_INOTIFY_LIBS)
+ if WIN32
+ openvpn_SOURCES += openvpn_win32_resources.rc block_dns.c block_dns.h ring_buffer.c ring_buffer.h
+ openvpn_LDADD += -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwinmm -lfwpuclnt -lrpcrt4 -lncrypt -lsetupapi
+-- 
+2.17.1
+
 
