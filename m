@@ -1,14 +1,17 @@
 From: Simon Rozman <simon@...2293...>
-Date: Fri, 13 Mar 2020 02:26:01 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE10D08227C9@...2294...>
-References: <20200312060829.19468-1-lstipakov@...277...>
-In-Reply-To: <20200312060829.19468-1-lstipakov@...277...>
+Date: Fri, 13 Mar 2020 02:47:39 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE10D082286F@...2294...>
+References: <20200310094822.588-1-simon@...2293...>
+ <20200310094822.588-2-simon@...2293...>
+ <CAGyAFMX-vanP-DQbige7GjhV7oHdez_aX09i6W6BEbng57tQag@...278...>
+In-Reply-To: <CAGyAFMX-vanP-DQbige7GjhV7oHdez_aX09i6W6BEbng57tQag@...278...>
 Content-Language: en-US
 Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
  micalg=2.16.840.1.101.3.4.2.1;
- boundary="----=_NextPart_000_0000_01D5F8E7.1D6F1290"
+ boundary="----=_NextPart_000_0005_01D5F8EA.233FD800"
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] tun.c: fix "use after free" error
+Subject: Re: [Openvpn-devel] [PATCH 2/2] tun.c: revise the IPv4 ifconfig
+ flow on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,137 +20,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Cc: Lev Stipakov <lev@...515...>
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-------=_NextPart_000_0000_01D5F8E7.1D6F1290
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+------=_NextPart_000_0005_01D5F8EA.233FD800
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-Nice catch, Lev. The patch indeed fixes an UAC.
+Hi,
 
-Compiled and tested it with MSVC.
+> A few questions:
+>=20
+> >   This also fixes an issue with --windows-driver wintun overriding
+> >  --ip-win32 manual, the later being perfectly fine choice for Wintun
+> too.
+>=20
+> We do still have code which forces netsh for wintun:
+>=20
+>     if (options->windows_driver =3D=3D WINDOWS_DRIVER_WINTUN)
+>     {
+>         options->tuntap_options.ip_win32_type =3D IPW32_SET_NETSH;
+>     }
+>=20
+> Shouldn't we update options.c and ensure that only allowed ip_win32 for
+> wintun are manual, netsh and ipapi?
 
-Acked-by: Simon Rozman <simon@...2293...>
+True. I'm sure I got this in the original commit back then. Found it... Whe=
+n rebasing onto the current master, it conflicted and I dropped that change=
+ rather than fixing it. Wrong choice, sorry.
 
-Regards, Simon
+> > - open_tun() & tuntap_post_open(): unify Wintun and TAP-Windows6
+> workflow.
+>=20
+> With that change, we flush ARP cache also for wintun. Is this needed?=C2=
+=B8
 
-> -----Original Message-----
-> From: Lev Stipakov <lstipakov@...277...>
-> Sent: Thursday, March 12, 2020 7:08 AM
-> To: openvpn-devel@lists.sourceforge.net
-> Cc: Lev Stipakov <lev@...515...>
-> Subject: [Openvpn-devel] [PATCH] tun.c: fix "use after free" error
-> 
-> From: Lev Stipakov <lev@...515...>
-> 
-> Commit 509c45f has factored out code blocks of open_tun() into separate
-> functions and introduced "use after free" bug:
-> 
-> Variable "device_guid" is allocated inside tun_open_device() function
-> and used outside of it. Allocation happens with local gc_arena, which is
-> freed at the end of tun_open_device(), making futher access to
-> "device_guid" invalid.
-> 
-> Fix by ensuring that gc_arena scope covers all access to "device_guid".
-> 
-> Signed-off-by: Lev Stipakov <lev@...515...>
-> ---
->  src/openvpn/tun.c | 20 ++++++++++----------
->  1 file changed, 10 insertions(+), 10 deletions(-)
-> 
-> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c index
-> 42193d97..c976055e 100644
-> --- a/src/openvpn/tun.c
-> +++ b/src/openvpn/tun.c
-> @@ -6226,12 +6226,11 @@ tun_try_open_device(struct tuntap *tt, const
-> char *device_guid, const struct dev  }
-> 
->  static void
-> -tun_open_device(struct tuntap *tt, const char *dev_node, const char
-> **device_guid)
-> +tun_open_device(struct tuntap *tt, const char *dev_node, const char
-> +**device_guid, struct gc_arena *gc)
->  {
-> -    struct gc_arena gc = gc_new();
-> -    const struct tap_reg *tap_reg = get_tap_reg(&gc);
-> -    const struct panel_reg *panel_reg = get_panel_reg(&gc);
-> -    const struct device_instance_id_interface
-> *device_instance_id_interface = get_device_instance_id_interface(&gc);
-> +    const struct tap_reg *tap_reg = get_tap_reg(gc);
-> +    const struct panel_reg *panel_reg = get_panel_reg(gc);
-> +    const struct device_instance_id_interface
-> + *device_instance_id_interface = get_device_instance_id_interface(gc);
->      char actual_buffer[256];
-> 
->      at_least_one_tap_win(tap_reg);
-> @@ -6244,7 +6243,7 @@ tun_open_device(struct tuntap *tt, const char
-> *dev_node, const char **device_gui
->          enum windows_driver_type windows_driver =
-> WINDOWS_DRIVER_UNSPECIFIED;
-> 
->          /* Get the device GUID for the device specified with --dev-
-> node. */
-> -        *device_guid = get_device_guid(dev_node, actual_buffer,
-> sizeof(actual_buffer), &windows_driver, tap_reg, panel_reg, &gc);
-> +        *device_guid = get_device_guid(dev_node, actual_buffer,
-> + sizeof(actual_buffer), &windows_driver, tap_reg, panel_reg, gc);
-> 
->          if (!*device_guid)
->          {
-> @@ -6276,7 +6275,7 @@ tun_open_device(struct tuntap *tt, const char
-> *dev_node, const char **device_gui
->                                                         tap_reg,
->                                                         panel_reg,
->                                                         &windows_driver,
-> -                                                       &gc);
-> +                                                       gc);
-> 
->              if (!*device_guid)
->              {
-> @@ -6304,8 +6303,6 @@ next:
-> 
->      msg(M_INFO, "%s device [%s] opened", print_windows_driver(tt-
-> >windows_driver), tt->actual_name);
->      tt->adapter_index = get_adapter_index(*device_guid);
-> -
-> -    gc_free(&gc);
->  }
-> 
->  static void
-> @@ -6411,13 +6408,16 @@ open_tun(const char *dev, const char *dev_type,
-> const char *dev_node, struct tun
->          msg(M_FATAL|M_NOPREFIX, "Unknown virtual device type: '%s'",
-> dev);
->      }
-> 
-> -    tun_open_device(tt, dev_node, &device_guid);
-> +    struct gc_arena gc = gc_new(); /* used also for device_guid
-> allocation */
-> +    tun_open_device(tt, dev_node, &device_guid, &gc);
-> 
->      if (tt->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6)
->      {
->          tuntap_post_open(tt, device_guid);
->      }
-> 
-> +    gc_free(&gc);
-> +
->      /*netcmd_semaphore_release ();*/
->  }
-> 
-> --
-> 2.17.1
-> 
-> 
-> 
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+Nope, FlushIpNetTable() is definitely not needed on wintun adapters. I shal=
+l modify the ARP-flushing condition to include "&& tt->windows_driver =3D=
+=3D WINDOWS_DRIVER_TAP_WINDOWS6" and update the commit message.
 
-------=_NextPart_000_0000_01D5F8E7.1D6F1290
+> Also, while testing this I found (and fixed) a bug
+> (https://patchwork.openvpn.net/patch/1039/),
+> I think that fix should go first - your patch exposes bug (prints
+> device_guid value) for wintun case.
+
+I agree. Your patch should be applied first.
+
+Regards,
+Simon
+
+------=_NextPart_000_0005_01D5F8EA.233FD800
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -226,19 +148,19 @@ RqsKPBhWoaFEVZ+Vn3wxap5h/oAhocifNzkWJTNWjxnoPM2eNz2uWFJsgsNhlwteUvnq7+bKTNte
 SKWKr6pI+GUsZhmCh5URpUnqUanp0Uie0MD9f3tiOLOp711sNb0xwi+VdDuDB37IddOIsfhPBood
 wpoFrTGCAyEwggMdAgEBMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0
 aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4wDQYJYIZIAWUDBAIBBQCgggGtMBgGCSqGSIb3
-DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIwMDMxMzAyMjU1OVowLwYJKoZIhvcN
-AQkEMSIEIIkyoqQYctaR4MgqRkdjUVLBVsk7hSeDkYDbamPBuHYDMFQGCSsGAQQBgjcQBDFHMEUw
+DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIwMDMxMzAyNDczN1owLwYJKoZIhvcN
+AQkEMSIEIAiZMRrsfLHYDQJAIR8B5BVW93gwF/3RGx9chk7sG5uKMFQGCSsGAQQBgjcQBDFHMEUw
 PTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMIc2ln
 ZW4tY2ECBDtKDS4wVgYLKoZIhvcNAQkQAgsxR6BFMD0xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJz
 dGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsTCHNpZ2VuLWNhAgQ7Sg0uMIGTBgkqhkiG9w0BCQ8x
 gYUwgYIwCwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQBFjAKBggqhkiG9w0DBzALBglghkgBZQMEAQIw
 DgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAsGCWCGSAFlAwQCATALBglghkgBZQMEAgMw
-CwYJYIZIAWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBAJZtMUB6/+/utvGaSaU3Y1f3
-CvXxFunkQQ4lYFrHJx1WVIiDqBkvFk69yFuTL/PMXuYeP/S9XdBd7DFaTZ8kZtx36RJ6LE6BojSp
-RwqU8VuZcccqG60aXPSmzkfVJ5gBTqsNjpJgpTWYf3N4G2tfQT02PSyPf4adh/2ntIkDWrBisVfY
-g2fzs1ncPsuBlCExDRyKTOSPt44QRE5ecbtET3NAXFH7QPFtov8gRFRTaKzrt69bxY9QDry54v6N
-yuCvfpcCPZSK/yI2O3wcwRXjiUyqxf14mxkJbc4dRNIkj+U5cOQ5/G9W8bOfwRY/I9bJJAPxOvcN
-1TKdlUeaAEATtcUAAAAAAAA=
+CwYJYIZIAWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBAK0UnMM7lQDZnyo9z76eokmv
+yJw7Jw8U19ICX/8eB0bDgOsHLbKDC2xwIuK3JLa0NPVsDPh2DRJm4pLTmRsPbvvHKrPv8urinF9o
+ymfsba+BIpYWm6Klad6LkBti4KDJ7oqfWnZ+PbQycrutP8rbEsgFMf/Dj8+KLemATgngRRrZEYhA
+hSaUmhD6kzEFrD1vfz7wF4eh4cu6XbOyN4J+5pDd9ZfovnaSmvUUwF/6401JD7sDz56rCB/eGlh0
+2A8Avwb2hGXF+MeavY9pAGvUcnSxomo8+OIk6VO+jsQypmQjM1onoHqJFcR/tA0E525snXpGXbB+
+Nu/h6t/CEjb7hfMAAAAAAAA=
 
-------=_NextPart_000_0000_01D5F8E7.1D6F1290--
+------=_NextPart_000_0005_01D5F8EA.233FD800--
 
