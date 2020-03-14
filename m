@@ -1,11 +1,10 @@
-From: Simon Rozman <simon@...2293...>
-Date: Sat, 14 Mar 2020 13:58:01 +0100
-Message-Id: <20200314125801.1031-1-simon@...2293...>
-In-Reply-To: <20200314124428.GE1431@...1296...>
-References: <20200314124428.GE1431@...1296...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 2/2] tun.c: revise the IPv4 ifconfig flow
- on Windows
+From: Lev Stipakov <lstipakov@...277...>
+Date: Sat, 14 Mar 2020 02:59:57 +0200
+Message-Id: <20200314005957.20411-1-lstipakov@...277...>
+In-Reply-To: <20200314123531.GD1431@...1296...>
+References: <20200314123531.GD1431@...1296...>
+Subject: [Openvpn-devel] [PATCH v3] Fix building with --enable-async-push in
+ FreeBSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,237 +17,91 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-When provisioning IP configuration, we shall not ask what kind of
-adapter this is. Rather, we should ask what method of provisioning we
-are configured to use.
+This option can be used in FreedBSD with devel/libinotify
+installed.
 
-It is options.c's job to rule out invalid combinations.
+Detect presence of libinotify with pkgconf and use its word
+to compile and link.
 
-- do_ifconfig_ipv4(): unify the workflow with its IPv6 counterpart
-  No need to distinguish Wintun and TAP-Windows6 here. This also fixes
-  an issue with --windows-driver wintun overriding --ip-win32 manual,
-  the later being perfectly fine choice for Wintun too.
-
-- open_tun(), tuntap_post_open(), tuntap_set_ip_addr(): unify Wintun and
-  TAP-Windows6 workflow. This allows allows --ip-win32 ipapi now.
-
-- close_tun() the cleanup has been revised to match the ifconfig
-  workflow in reverse.
-
-Signed-off-by: Simon Rozman <simon@...2293...>
+Signed-off-by: Lev Stipakov <lstipakov@...277...>
 ---
- src/openvpn/options.c |   5 +-
- src/openvpn/tun.c     | 130 ++++++++++++++++++++++--------------------
- 2 files changed, 70 insertions(+), 65 deletions(-)
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index e79a1215..f1fc91e9 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3007,8 +3007,9 @@ options_postprocess_mutate_invariant(struct options *options)
-     }
+ v3: use _CFLAGS from pkgconf to get include dir
+
+ v2: use _LIBS from pkgcong instead of hardcoded -linotify
  
- #ifdef _WIN32
--    /* when using wintun, kernel doesn't send DHCP requests, so use netsh to set IP address and netmask */
--    if (options->windows_driver == WINDOWS_DRIVER_WINTUN)
-+    /* when using wintun, kernel doesn't send DHCP requests, so don't use it */
-+    if (options->windows_driver == WINDOWS_DRIVER_WINTUN
-+        && (options->tuntap_options.ip_win32_type == IPW32_SET_DHCP_MASQ || options->tuntap_options.ip_win32_type == IPW32_SET_ADAPTIVE))
-     {
-         options->tuntap_options.ip_win32_type = IPW32_SET_NETSH;
-     }
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 42193d97..1afa7f07 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -1381,34 +1381,29 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-         env_set_destroy(aix_es);
-     }
- #elif defined (_WIN32)
--    {
--        ASSERT(ifname != NULL);
--
--        if (tt->options.msg_channel && tt->windows_driver == WINDOWS_DRIVER_WINTUN)
--        {
--            do_address_service(true, AF_INET, tt);
--            do_dns_service(true, AF_INET, tt);
--        }
--        else
--        {
--            switch (tt->options.ip_win32_type)
--            {
--                case IPW32_SET_MANUAL:
--                    msg(M_INFO,
--                        "******** NOTE:  Please manually set the IP/netmask of '%s' to %s/%s (if it is not already set)",
--                        ifname, ifconfig_local,
--                        print_in_addr_t(tt->adapter_netmask, 0, &gc));
--                    break;
-+    ASSERT(ifname != NULL);
+
+ configure.ac            | 26 +++++++++++++++++++++-----
+ src/openvpn/Makefile.am |  4 +++-
+ 2 files changed, 24 insertions(+), 6 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index a47ef3e7..4a86089b 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1339,11 +1339,25 @@ if test "${enable_plugin_auth_pam}" = "yes"; then
+ fi
  
--                case IPW32_SET_NETSH:
--                    netsh_ifconfig(&tt->options, ifname, tt->local,
--                                   tt->adapter_netmask, NI_IP_NETMASK|NI_OPTIONS);
--
--                    break;
--            }
--        }
-+    if (tt->options.ip_win32_type == IPW32_SET_MANUAL)
-+    {
-+        msg(M_INFO,
-+            "******** NOTE:  Please manually set the IP/netmask of '%s' to %s/%s (if it is not already set)",
-+            ifname, ifconfig_local,
-+            print_in_addr_t(tt->adapter_netmask, 0, &gc));
-+    }
-+    else if (tt->options.ip_win32_type == IPW32_SET_DHCP_MASQ || tt->options.ip_win32_type == IPW32_SET_ADAPTIVE)
-+    {
-+        /* Let the DHCP configure the interface. */
-+    }
-+    else if (tt->options.msg_channel)
-+    {
-+        do_address_service(true, AF_INET, tt);
-+        do_dns_service(true, AF_INET, tt);
-+    }
-+    else if (tt->options.ip_win32_type == IPW32_SET_NETSH)
-+    {
-+        netsh_ifconfig(&tt->options, ifname, tt->local,
-+                       tt->adapter_netmask, NI_IP_NETMASK|NI_OPTIONS);
-     }
--
- #else  /* if defined(TARGET_LINUX) */
-     msg(M_FATAL, "Sorry, but I don't know how to do 'ifconfig' commands on this operating system.  You should ifconfig your TUN/TAP device manually or use an --up script.");
- #endif /* if defined(TARGET_LINUX) */
-@@ -5821,7 +5816,8 @@ tuntap_set_ip_addr(struct tuntap *tt,
-     const DWORD index = tt->adapter_index;
+ if test "${enable_async_push}" = "yes"; then
+-	AC_CHECK_HEADERS(
+-		[sys/inotify.h],
+-		AC_DEFINE([ENABLE_ASYNC_PUSH], [1], [Enable async push]),
+-		AC_MSG_ERROR([inotify.h not found.])
+-	)
++	case "$host" in
++		*-*-freebsd*)
++			PKG_CHECK_MODULES(
++				[OPTIONAL_INOTIFY],
++				[libinotify],
++				[
++					AC_DEFINE([HAVE_SYS_INOTIFY_H]),
++					AC_DEFINE([ENABLE_ASYNC_PUSH], [1], [Enable async push])
++				],
++			)
++		;;
++		*)
++			AC_CHECK_HEADERS(
++				[sys/inotify.h],
++				AC_DEFINE([ENABLE_ASYNC_PUSH], [1], [Enable async push]),
++				AC_MSG_ERROR([inotify.h not found.])
++			)
++		;;
++	esac
+ fi
  
-     /* flush arp cache */
--    if (index != TUN_ADAPTER_INDEX_INVALID)
-+    if (tt->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6
-+        && index != TUN_ADAPTER_INDEX_INVALID)
-     {
-         DWORD status = -1;
+ CONFIGURE_DEFINES="`set | grep '^enable_.*=' ; set | grep '^with_.*='`"
+@@ -1370,6 +1384,8 @@ AC_SUBST([OPTIONAL_LZ4_LIBS])
+ AC_SUBST([OPTIONAL_SYSTEMD_LIBS])
+ AC_SUBST([OPTIONAL_PKCS11_HELPER_CFLAGS])
+ AC_SUBST([OPTIONAL_PKCS11_HELPER_LIBS])
++AC_SUBST([OPTIONAL_INOTIFY_CFLAGS])
++AC_SUBST([OPTIONAL_INOTIFY_LIBS])
  
-@@ -6357,36 +6353,39 @@ tuntap_post_open(struct tuntap *tt, const char *device_guid)
-     bool dhcp_masq = false;
-     bool dhcp_masq_post = false;
+ AC_SUBST([PLUGIN_AUTH_PAM_CFLAGS])
+ AC_SUBST([PLUGIN_AUTH_PAM_LIBS])
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index 2ea47cda..f0e0ad23 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -28,6 +28,7 @@ AM_CFLAGS = \
+ 	$(OPTIONAL_LZO_CFLAGS) \
+ 	$(OPTIONAL_LZ4_CFLAGS) \
+ 	$(OPTIONAL_PKCS11_HELPER_CFLAGS) \
++	$(OPTIONAL_INOTIFY_CFLAGS) \
+ 	-DPLUGIN_LIBDIR=\"${plugindir}\"
  
--    /* get driver version info */
--    tuntap_get_version_info(tt);
-+    if (tt->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6)
-+    {
-+        /* get driver version info */
-+        tuntap_get_version_info(tt);
- 
--    /* get driver MTU */
--    tuntap_get_mtu(tt);
-+        /* get driver MTU */
-+        tuntap_get_mtu(tt);
- 
--    /*
--     * Preliminaries for setting TAP-Windows adapter TCP/IP
--     * properties via --ip-win32 dynamic or --ip-win32 adaptive.
--     */
--    if (tt->did_ifconfig_setup)
--    {
--        tuntap_set_ip_props(tt, &dhcp_masq, &dhcp_masq_post);
--    }
-+        /*
-+         * Preliminaries for setting TAP-Windows adapter TCP/IP
-+         * properties via --ip-win32 dynamic or --ip-win32 adaptive.
-+         */
-+        if (tt->did_ifconfig_setup)
-+        {
-+            tuntap_set_ip_props(tt, &dhcp_masq, &dhcp_masq_post);
-+        }
- 
--    /* set point-to-point mode if TUN device */
--    if (tt->type == DEV_TYPE_TUN)
--    {
--        tuntap_set_ptp(tt);
--    }
-+        /* set point-to-point mode if TUN device */
-+        if (tt->type == DEV_TYPE_TUN)
-+        {
-+            tuntap_set_ptp(tt);
-+        }
- 
--    /* should we tell the TAP-Windows driver to masquerade as a DHCP server as a means
--     * of setting the adapter address? */
--    if (dhcp_masq)
--    {
--        tuntap_dhcp_mask(tt, device_guid);
--    }
-+        /* should we tell the TAP-Windows driver to masquerade as a DHCP server as a means
-+         * of setting the adapter address? */
-+        if (dhcp_masq)
-+        {
-+            tuntap_dhcp_mask(tt, device_guid);
-+        }
- 
--    /* set driver media status to 'connected' */
--    tuntap_set_connected(tt);
-+        /* set driver media status to 'connected' */
-+        tuntap_set_connected(tt);
-+    }
- 
-     /* possibly use IP Helper API to set IP address on adapter */
-     tuntap_set_ip_addr(tt, device_guid, dhcp_masq_post);
-@@ -6413,10 +6412,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
- 
-     tun_open_device(tt, dev_node, &device_guid);
- 
--    if (tt->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6)
--    {
--        tuntap_post_open(tt, device_guid);
--    }
-+    tuntap_post_open(tt, device_guid);
- 
-     /*netcmd_semaphore_release ();*/
- }
-@@ -6533,20 +6529,29 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
-             netsh_delete_address_dns(tt, true, &gc);
-         }
-     }
--#if 1
--    if (tt->windows_driver == WINDOWS_DRIVER_WINTUN)
-+
-+    if (tt->did_ifconfig_setup)
-     {
--        if (tt->options.msg_channel)
-+        if (tt->options.ip_win32_type == IPW32_SET_MANUAL)
-+        {
-+            /* We didn't do ifconfig. */
-+        }
-+        else if (tt->options.ip_win32_type == IPW32_SET_DHCP_MASQ || tt->options.ip_win32_type == IPW32_SET_ADAPTIVE)
-+        {
-+            /* We don't have to clean the configuration with DHCP. */
-+        }
-+        else if (tt->options.msg_channel)
-         {
--            do_address_service(false, AF_INET, tt);
-             do_dns_service(false, AF_INET, tt);
-+            do_address_service(false, AF_INET, tt);
-         }
--        else
-+        else if (tt->options.ip_win32_type == IPW32_SET_NETSH)
-         {
-             netsh_delete_address_dns(tt, false, &gc);
-         }
-     }
--    else if (tt->ipapi_context_defined)
-+
-+    if (tt->ipapi_context_defined)
-     {
-         DWORD status;
-         if ((status = DeleteIPAddress(tt->ipapi_context)) != NO_ERROR)
-@@ -6557,7 +6562,6 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
-                 strerror_win32(status, &gc));
-         }
-     }
--#endif /* if 1 */
- 
-     dhcp_release(tt);
- 
+ if WIN32
+@@ -137,7 +138,8 @@ openvpn_LDADD = \
+ 	$(OPTIONAL_CRYPTO_LIBS) \
+ 	$(OPTIONAL_SELINUX_LIBS) \
+ 	$(OPTIONAL_SYSTEMD_LIBS) \
+-	$(OPTIONAL_DL_LIBS)
++	$(OPTIONAL_DL_LIBS) \
++	$(OPTIONAL_INOTIFY_LIBS)
+ if WIN32
+ openvpn_SOURCES += openvpn_win32_resources.rc block_dns.c block_dns.h ring_buffer.c ring_buffer.h
+ openvpn_LDADD += -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwinmm -lfwpuclnt -lrpcrt4 -lncrypt -lsetupapi
 -- 
-2.24.1.windows.2
+2.17.1
 
 
