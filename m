@@ -1,10 +1,15 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Sat, 14 Mar 2020 02:59:57 +0200
-Message-Id: <20200314005957.20411-1-lstipakov@...277...>
-In-Reply-To: <20200314123531.GD1431@...1296...>
+Date: Sun, 15 Mar 2020 10:23:31 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20200315092331.GF1431@...1296...>
 References: <20200314123531.GD1431@...1296...>
-Subject: [Openvpn-devel] [PATCH v3] Fix building with --enable-async-push in
- FreeBSD
+ <20200314005957.20411-1-lstipakov@...277...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="P0uLJ1D0dtZMuM2h"
+Content-Disposition: inline
+In-Reply-To: <20200314005957.20411-1-lstipakov@...277...>
+Subject: Re: [Openvpn-devel] [PATCH v3] Fix building with
+ --enable-async-push in FreeBSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,95 +18,83 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This option can be used in FreedBSD with devel/libinotify
-installed.
+--P0uLJ1D0dtZMuM2h
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Detect presence of libinotify with pkgconf and use its word
-to compile and link.
+Hi,
 
-Signed-off-by: Lev Stipakov <lstipakov@...277...>
----
+On Sat, Mar 14, 2020 at 02:59:57AM +0200, Lev Stipakov wrote:
+> This option can be used in FreedBSD with devel/libinotify
+> installed.
+>=20
+> Detect presence of libinotify with pkgconf and use its word
+> to compile and link.
+>=20
+> Signed-off-by: Lev Stipakov <lstipakov@...277...>
+> ---
+>=20
+>  v3: use _CFLAGS from pkgconf to get include dir
+>=20
+>  v2: use _LIBS from pkgcong instead of hardcoded -linotify
 
- v3: use _CFLAGS from pkgconf to get include dir
+We're getting close :-) - but something is still funny.  In the output,
+I now have...
 
- v2: use _LIBS from pkgcong instead of hardcoded -linotify
- 
+checking for OPTIONAL_INOTIFY... yes
+../openvpn/configure: ,: not found
+checking for CMOCKA... yes
 
- configure.ac            | 26 +++++++++++++++++++++-----
- src/openvpn/Makefile.am |  4 +++-
- 2 files changed, 24 insertions(+), 6 deletions(-)
 
-diff --git a/configure.ac b/configure.ac
-index a47ef3e7..4a86089b 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1339,11 +1339,25 @@ if test "${enable_plugin_auth_pam}" = "yes"; then
- fi
- 
- if test "${enable_async_push}" = "yes"; then
--	AC_CHECK_HEADERS(
--		[sys/inotify.h],
--		AC_DEFINE([ENABLE_ASYNC_PUSH], [1], [Enable async push]),
--		AC_MSG_ERROR([inotify.h not found.])
--	)
-+	case "$host" in
-+		*-*-freebsd*)
-+			PKG_CHECK_MODULES(
-+				[OPTIONAL_INOTIFY],
-+				[libinotify],
-+				[
-+					AC_DEFINE([HAVE_SYS_INOTIFY_H]),
-+					AC_DEFINE([ENABLE_ASYNC_PUSH], [1], [Enable async push])
-+				],
-+			)
-+		;;
-+		*)
-+			AC_CHECK_HEADERS(
-+				[sys/inotify.h],
-+				AC_DEFINE([ENABLE_ASYNC_PUSH], [1], [Enable async push]),
-+				AC_MSG_ERROR([inotify.h not found.])
-+			)
-+		;;
-+	esac
- fi
- 
- CONFIGURE_DEFINES="`set | grep '^enable_.*=' ; set | grep '^with_.*='`"
-@@ -1370,6 +1384,8 @@ AC_SUBST([OPTIONAL_LZ4_LIBS])
- AC_SUBST([OPTIONAL_SYSTEMD_LIBS])
- AC_SUBST([OPTIONAL_PKCS11_HELPER_CFLAGS])
- AC_SUBST([OPTIONAL_PKCS11_HELPER_LIBS])
-+AC_SUBST([OPTIONAL_INOTIFY_CFLAGS])
-+AC_SUBST([OPTIONAL_INOTIFY_LIBS])
- 
- AC_SUBST([PLUGIN_AUTH_PAM_CFLAGS])
- AC_SUBST([PLUGIN_AUTH_PAM_LIBS])
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index 2ea47cda..f0e0ad23 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -28,6 +28,7 @@ AM_CFLAGS = \
- 	$(OPTIONAL_LZO_CFLAGS) \
- 	$(OPTIONAL_LZ4_CFLAGS) \
- 	$(OPTIONAL_PKCS11_HELPER_CFLAGS) \
-+	$(OPTIONAL_INOTIFY_CFLAGS) \
- 	-DPLUGIN_LIBDIR=\"${plugindir}\"
- 
- if WIN32
-@@ -137,7 +138,8 @@ openvpn_LDADD = \
- 	$(OPTIONAL_CRYPTO_LIBS) \
- 	$(OPTIONAL_SELINUX_LIBS) \
- 	$(OPTIONAL_SYSTEMD_LIBS) \
--	$(OPTIONAL_DL_LIBS)
-+	$(OPTIONAL_DL_LIBS) \
-+	$(OPTIONAL_INOTIFY_LIBS)
- if WIN32
- openvpn_SOURCES += openvpn_win32_resources.rc block_dns.c block_dns.h ring_buffer.c ring_buffer.h
- openvpn_LDADD += -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwinmm -lfwpuclnt -lrpcrt4 -lncrypt -lsetupapi
--- 
-2.17.1
+... which is caused by these lines in configure:
 
+------- snip ----------
+                                        $as_echo "#define HAVE_SYS_INOTIFY_=
+H 1" >>confdefs.h
+,
+
+$as_echo "#define ENABLE_ASYNC_PUSH 1" >>confdefs.h
+------- snip ----------
+
+so yes, there's a single line with a "," on it...  autoconf 2.69_3
+
+
+It compiles and links fine, with inotify, but I think we should do a v4
+and get rid of the Comma.
+
+thanks,
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--P0uLJ1D0dtZMuM2h
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJebfQSAAoJEB2Cnv7KVigSgcYL/3LjSTn6bGU7Osfsh/2aCDot
+UkCVTc8sHrIU3mN6fiLBUiMs91/8m36aOUCFiA4UMq7qX9Gf2WOw7AyKtZH+B7oM
+QOLMMrJegCEnxsgSD8/gMJKQsOPH/lki00dXNk7qwHDorMkeNWdk5oCSs2MVzw5s
+zCT071Pd99Xf862Dgj7amwjd9vd9Ezny+pOdLpWTv9SqjMG5kpQ+MyCUmDpH4dli
+gqAEwoyblu/qLPBZu3bTidVSsyWhcWlsvdU3Qk7MhShOXb+4FRzNbCPvBRQRhp71
+IwMo9BYzU+v4CynT5vjf+lFde4w/fgKrh2EwUVeiH8cpRWPCgK08nHm1jWSDHhwl
+whgTHwss51K5EPS1pBsjEQ2rxRQpeAHAL3/AxjE9aAqRqj7H3qoEveb+7Jq7it/0
+pEKzipettuvlRpGxrI4yyeRqy4L9t48Q7AZoenQ1TnZeQVGina56PgA+aCIV15rp
+3etnNpsTgAftGVxNP/X5sMUlv1jmX/fOQxXv5Wy70w==
+=uS9n
+-----END PGP SIGNATURE-----
+
+--P0uLJ1D0dtZMuM2h--
 
