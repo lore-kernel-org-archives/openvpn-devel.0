@@ -1,12 +1,10 @@
-MIME-Version: 1.0
-References: <20200314124428.GE1431@...1296...>
- <20200314125801.1031-1-simon@...2293...>
-In-Reply-To: <20200314125801.1031-1-simon@...2293...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Sun, 15 Mar 2020 22:42:49 +0200
-Message-ID: <CAGyAFMWBgDvukaBadC+B3Hx1G9q_8S7tRMrYOigXVnhcZrGd-A@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v2 2/2] tun.c: revise the IPv4 ifconfig
- flow on Windows
+Date: Sun, 15 Mar 2020 22:16:28 +0100 (CET)
+Message-Id: <202003152116.02FLGSo4037377@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20200314052906.28095-1-lstipakov@...277...>
+References: <20200314052906.28095-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix building with
+ --enable-async-push in FreeBSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,21 +13,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Simon Rozman <simon@...2293...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Acked-by: Gert Doering <gert@...1296...>
 
-Checked that diff between v1 and v2 is only what was mentioned in review:
+Your patch has been applied to the master branch.  
 
- - ip_win32 is set to netsh only for wintun and only if existing value
-is dhcp_mask or adaptive
+Tested on FreeBSD 11.3 with libinotify installed and 12.0 without (fails
+if called with "--enable-async-patch", works nicely otherwise).  From
+"staring at patch" I assume no changes for other platforms, so I did not
+test there.
 
- - flushing arp cache is skipped for wintun
+Re-sending with a new commit ID - I noticed, after sending out the mail,
+that the "Trac: ###" got lost from v4.  So I re-added, and this is the
+right commit ID now.
 
-Tested various combinations, works as expected.
+commit e1eb630df1b3ef5df88afd51003fbec40e5d6d67
+Author: Lev Stipakov
+Date:   Sat Mar 14 07:29:06 2020 +0200
 
-Acked-by: Lev Stipakov <lstipakov@...277...>
+     Fix building with --enable-async-push in FreeBSD
+
+     Signed-off-by: Lev Stipakov <lstipakov@...277...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20200314052906.28095-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20200314052906.28095-1-lstipakov@...277...
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
