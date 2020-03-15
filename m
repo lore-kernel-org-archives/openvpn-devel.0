@@ -1,5 +1,5 @@
-Date: Sun, 15 Mar 2020 22:16:28 +0100 (CET)
-Message-Id: <202003152116.02FLGSo4037377@...2054...>
+Date: Sun, 15 Mar 2020 22:14:08 +0100 (CET)
+Message-Id: <202003152114.02FLE8NB037315@...2054...>
 From: Gert Doering <gert@...1296...>
 In-Reply-To: <20200314052906.28095-1-lstipakov@...277...>
 References: <20200314052906.28095-1-lstipakov@...277...>
@@ -27,11 +27,7 @@ if called with "--enable-async-patch", works nicely otherwise).  From
 "staring at patch" I assume no changes for other platforms, so I did not
 test there.
 
-Re-sending with a new commit ID - I noticed, after sending out the mail,
-that the "Trac: ###" got lost from v4.  So I re-added, and this is the
-right commit ID now.
-
-commit e1eb630df1b3ef5df88afd51003fbec40e5d6d67
+commit f31b344177eded16279ef8c0caebcd4864b206b6
 Author: Lev Stipakov
 Date:   Sat Mar 14 07:29:06 2020 +0200
 
