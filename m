@@ -1,10 +1,11 @@
-Date: Sun, 15 Mar 2020 22:14:08 +0100 (CET)
-Message-Id: <202003152114.02FLE8NB037315@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200314052906.28095-1-lstipakov@...277...>
-References: <20200314052906.28095-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix building with
- --enable-async-push in FreeBSD
+Date: Mon, 16 Mar 2020 08:35:24 +0100
+From: Domagoj Pensa <domagoj@...2540...>
+Message-ID: <20200316073524.GA5990@...2540...>
+References: <20200205124615.15758-2-domagoj@...2540...>
+ <202003131917.02DJHFUZ080335@...2054...>
+MIME-Version: 1.0
+In-Reply-To: <202003131917.02DJHFUZ080335@...2054...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Skip DNS address validation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,36 +14,21 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lstipakov@...277...>
+Content-Disposition: inline
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+On Fri, Mar 13, 2020 at 08:17:15PM +0100, Gert Doering wrote:
+> Your patch has been applied to the master branch.
+> 
+> Sorry for the delay, it's been a very busy month.
+> 
 
-Your patch has been applied to the master branch.  
+No problem at all.
+Thank you for applying patch! :)
 
-Tested on FreeBSD 11.3 with libinotify installed and 12.0 without (fails
-if called with "--enable-async-patch", works nicely otherwise).  From
-"staring at patch" I assume no changes for other platforms, so I did not
-test there.
-
-commit f31b344177eded16279ef8c0caebcd4864b206b6
-Author: Lev Stipakov
-Date:   Sat Mar 14 07:29:06 2020 +0200
-
-     Fix building with --enable-async-push in FreeBSD
-
-     Signed-off-by: Lev Stipakov <lstipakov@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200314052906.28095-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20200314052906.28095-1-lstipakov@...277...
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+Regards,
+Domagoj
 
