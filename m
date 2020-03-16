@@ -1,15 +1,12 @@
-Date: Mon, 16 Mar 2020 09:04:50 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200316080450.GA50857@...1296...>
-References: <20200314052906.28095-1-lstipakov@...277...>
- <202003152116.02FLGSo4037377@...2054...>
+References: <20200313130133.19045-1-samuli@...515...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <285d114f-89b4-992d-f8b1-5cec175994ca@...2080...>
+Date: Mon, 16 Mar 2020 13:37:53 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="wac7ysb48OaltWcw"
-Content-Disposition: inline
-In-Reply-To: <202003152116.02FLGSo4037377@...2054...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Fix building with
- --enable-async-push in FreeBSD
+In-Reply-To: <20200313130133.19045-1-samuli@...515...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] Document some limitations of
+ --auth-user-pass
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,91 +15,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: samuli@...515..., openvpn-devel@lists.sourceforge.net
 
---wac7ysb48OaltWcw
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+On 13/03/2020 14:01, samuli@...515... wrote:
+> From: Samuli Seppänen <samuli@...515...>
+> 
+> URL: https://community.openvpn.net/openvpn/ticket/757
+> Signed-off-by: Samuli Seppänen <samuli@...515...>
+> ---
+>  doc/openvpn.8 | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/doc/openvpn.8 b/doc/openvpn.8
+> index 864f94e8..9e54890e 100644
+> --- a/doc/openvpn.8
+> +++ b/doc/openvpn.8
+> @@ -4127,6 +4127,12 @@ The server configuration must specify an
+>  .B \-\-auth\-user\-pass\-verify
+>  script to verify the username/password provided by
+>  the client.
+> +
+> +Note that OpenVPN GUI on Windows does not prompt for the
+> +password if the file contains only the username. However,
+> +OpenVPN versions from 2.4 up bundle OpenVPN GUI version 11
+> +which is able to cache usernames and passwords internally.
+> +
 
-Hi,
+Could we rephrase this, to not live in the past.  This will go into master and
+probably also release/2.4.  I also doubt anyone using man pages on 2.3 would
+even read this.  If there are Windows users on 2.3, there are no excuse not to
+upgrade - unless it's an enterprise deployment, where end users most likely
+would not even care (they should anyway complain to their IT department
+regardless, for using outdated security software).
 
-and yet another mail for this patch - Lev asked for this to be merged
-to release/2.4 as well, which I've done.  Context is unchanged, so
-it merges nicely.  Tested on FreeBSD 11.3, works.
+I would just rephrase it to say:
 
-commit 8484f37a62ce4f1b8efe7644c6ddb28819c4f8ae (HEAD -> release/2.4)
+  OpenVPN GUI v11 and newer uses its own internal username/password storage
+  independent of the --auth-user-pass file provided.  The file argument is
+  ignored on such installations.
 
-gert
+(or something like that)
 
-On Sun, Mar 15, 2020 at 10:16:28PM +0100, Gert Doering wrote:
-> Acked-by: Gert Doering <gert@...1296...>
->=20
-> Your patch has been applied to the master branch.=20=20
->=20
-> Tested on FreeBSD 11.3 with libinotify installed and 12.0 without (fails
-> if called with "--enable-async-patch", works nicely otherwise).  From
-> "staring at patch" I assume no changes for other platforms, so I did not
-> test there.
->=20
-> Re-sending with a new commit ID - I noticed, after sending out the mail,
-> that the "Trac: ###" got lost from v4.  So I re-added, and this is the
-> right commit ID now.
->=20
-> commit e1eb630df1b3ef5df88afd51003fbec40e5d6d67
-> Author: Lev Stipakov
-> Date:   Sat Mar 14 07:29:06 2020 +0200
->=20
->      Fix building with --enable-async-push in FreeBSD
->=20
->      Signed-off-by: Lev Stipakov <lstipakov@...277...>
->      Acked-by: Gert Doering <gert@...1296...>
->      Message-Id: <20200314052906.28095-1-lstipakov@...277...>
->      URL: https://www.mail-archive.com/search?l=3Dmid&q=3D20200314052906.=
-28095-1-lstipakov@...277...
->      Signed-off-by: Gert Doering <gert@...1296...>
->=20
->=20
-> --
-> kind regards,
->=20
-> Gert Doering
->=20
->=20
->=20
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->=20
+-- 
+kind regards,
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+David Sommerseth
+OpenVPN Inc
 
-Gert Doering - Munich, Germany                             gert@...1296...
-
---wac7ysb48OaltWcw
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJebzMhAAoJEB2Cnv7KVigSDQQL/3CjCcSq0Q4i8AnOYbODeHCt
-L+Ow/Ntk47bENJqOt2uNkn/jutsNqB9bE3m+LctPTbvv65fDQopFgnNYMhqUcoaF
-YzCEj1mDvb8Df6ykg07Ln98EFtffG0KYvKQOLWZMZpXMe3rTo2xdqgShSDT29QZf
-bAYIMHFZtXLQEBPwXgUMTyb97/fgYLCWyq2/88SrZVh272schsjBTvK6LPBvJvBG
-Xguk6zlIl1ZHQnaUi9ioGLsmw1B0urOZKE92KgkCygyyqqO6S1Sk8+Nvx0D6bFBA
-ScaGwGHe5BY5i7YKxN4jxnOEh9yc7l6jP5m6ncMUjA8TPtBGMwbA5tYjCiKa5D7u
-Ne5dW+Um1IOr7kvEmSF6PERIPhXPVqwK0yzS/3kG541KNYo5vUY0xuJaUV26vhJD
-iSSYkI3BBB0DUIf+tXZIid377xibDlfWa5m8Ah0aYW7oHXcgsCLAE2mCDeuasfTT
-nf8KrF5S/mOxYiQUxwCfI0xo/tyfxxgR9PCOI4Xy7A==
-=mvbQ
------END PGP SIGNATURE-----
-
---wac7ysb48OaltWcw--
 
