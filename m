@@ -1,17 +1,13 @@
-Date: Tue, 17 Mar 2020 11:25:00 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200317102500.GP1431@...1296...>
-References: <20200313130133.19045-1-samuli@...515...>
- <285d114f-89b4-992d-f8b1-5cec175994ca@...2080...>
- <CAKuzo_gDkHGy0j78hH33zeXKnsi=7NF8PvFNJQQpq7kf2-=Gbg@...278...>
- <31ca48e1-deb8-7122-6f77-051b08e1b563@...2080...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+References: <f9786676-a7ad-8b0d-708a-ff724d27376c@...515...>
+Message-ID: <cb41ea63-c009-e3a6-677d-e1a7847c400e@...515...>
+Date: Wed, 18 Mar 2020 12:50:45 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="c5s4KQzYKKhDo6IA"
-Content-Disposition: inline
-In-Reply-To: <31ca48e1-deb8-7122-6f77-051b08e1b563@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Document some limitations of
- --auth-user-pass
+In-Reply-To: <f9786676-a7ad-8b0d-708a-ff724d27376c@...515...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="2CVVINTmlnEjwcPpKrCTCBa3wjnU9JYX3"
+Subject: [Openvpn-devel] Summary of the community meeting (18th March 2020)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,81 +16,129 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn@...2080...>
-Cc: Selva Nair <selva.nair@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---c5s4KQzYKKhDo6IA
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--2CVVINTmlnEjwcPpKrCTCBa3wjnU9JYX3
+Content-Type: multipart/mixed; boundary="Bxsg7fwTXaMZPWQUeDhrnj4ZJWn1mRycz"
+
+--Bxsg7fwTXaMZPWQUeDhrnj4ZJWn1mRycz
+Content-Type: multipart/mixed;
+ boundary="------------DCCE0A04A7D92065FA85DD65"
+Content-Language: en-US
+
+This is a multi-part message in MIME format.
+--------------DCCE0A04A7D92065FA85DD65
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
 Hi,
 
-On Tue, Mar 17, 2020 at 11:06:53AM +0100, David Sommerseth wrote:
-> On 16/03/2020 14:48, Selva Nair wrote:
-> [...snip...]
-> >> I would just rephrase it to say:
-> >>
-> >>   OpenVPN GUI v11 and newer uses its own internal username/password st=
-orage
-> >>   independent of the --auth-user-pass file provided.  The file argumen=
-t is
-> >>   ignored on such installations.
-> >=20
-> > I wish it behaved  like that. Unfortunately the file argument is not
-> > ignored in such cases. If the file has only username, openvpn.exe
-> > reads it from the file and then fails to prompt for password as there
-> > is no console available.
->=20
-> Ouch ... that is a pointless misbehavior.  Lets try to fix that.
+Here's the summary of the IRC meeting.
 
-Have you recovered from your latest adventures in "password query code
-in OpenVPN" already? :-)
+---
 
-Not sure if the management commands permit the "we have a username but
-no password" flow today... Arne, Selva?
+COMMUNITY MEETING
 
-But yes, this needs to be either a clear error, or "work correctly"
+Place: #openvpn-meeting on irc.freenode.net
+Date: Wed 18th March 2020
+Time: 11:30 CET (12:30 UTC)
 
-> > I propose to change this behaviour to: if --management-query-passwords
-> > is set (which the GUI does), ignore the file given in auth-user-pass
-> > and prompt both username and password from management. I think its
-> > only logical for a later option (in this case the one set by the GUI)
-> > to override a previous one. Anyway we do already ignore it if the file
-> > is "stdin".
->=20
-> Agreed!
+Planned meeting topics for this meeting were here:
 
-No, as this will break working configs *if* both username + password=20
-are in the file (did we ever merge the "inline auth-user-pass" patch?).
+<https://community.openvpn.net/openvpn/wiki/Topics-2020-03-18>
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Your local meeting time is easy to check from services such as
 
-Gert Doering - Munich, Germany                             gert@...1296...
+<http://www.timeanddate.com/worldclock>
 
---c5s4KQzYKKhDo6IA
+SUMMARY
+
+cron2 and mattock participated in this meeting.
+
+---
+
+Mattock is on vacation this week so not much will happen at his end. He
+will resume the MSI review/testing work next week.
+
+Cron2 has done some patch merging but there is more to be done.
+
+Agreed that the current Covid-19 situation which forces $kids to stay at
+home is not optimal for productivity.
+
+---
+
+Full chatlog attached
+
+
+--------------DCCE0A04A7D92065FA85DD65
+Content-Type: text/plain; charset=UTF-8;
+ name="openvpn_irc_meeting_chatlog_2020-03-18.txt"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="openvpn_irc_meeting_chatlog_2020-03-18.txt"
+
+(12:30:29) cron2: so
+(12:30:32) cron2: good morning
+(12:31:39) mattock: hello!
+(12:33:24) cron2: so how's family life in .fi?
+(12:33:44) cron2: .de is strange, but not too bad yet...
+(12:37:10) mattock: everything is closed soon
+(12:37:17) mattock: cabin fever is building up
+(12:37:50) mattock: I mean, who would not love to spend 24/7 with one's $=
+wife and $child(s)? :)
+(12:37:52) cron2: $kid[1] is screaming at her mother right now... "someth=
+ing about correcting homeworks"... *sigh*
+(12:38:33) mattock: maybe one hour walk every day would be a good practic=
+e
+(12:38:41) cron2: now, if I had a) time (=3D no work to be done), and b) =
+could actually go out and do something (museum, climbing gym, ...) I migh=
+t enjoy having "no school for 5 weeks".  But mostly locked down...?
+(12:38:57) mattock: yep
+(12:39:43) mattock: anyone else here btw? dazo, plaisthos, lev, ordex, sy=
+zzer?
+(12:39:58) mattock: oh, I probably forgot to mention, but I'm technically=
+ on vacation this week
+(12:40:15) mattock: back to "normal" next week
+(12:40:35) mattock: e.g. reviewing and testing rozmansi's MSI work
+(12:41:04) cron2: indeed, lev__, rozmansi, dazo, plaisthos... *look aroun=
+d* *wave* *jump up and down*
+(12:41:26) mattock: mentioned on #openvpn-devel
+(12:43:25) mattock: seems silent
+(12:43:37) mattock: shall we just skip this week and try again next week?=
+
+(12:44:19) cron2: you could do some reporting for the minutes ("I have no=
+t done anything, I had vacation! and kids!"), then I do some reporting ("=
+I have not done much, some patches merged, more to do! kids!") and then w=
+e're done :-)
+(12:44:48) mattock: ok, sounds good
+(12:45:40) mattock: let's conclude the meeting, I'm already crafting the =
+summary :)
+(12:46:17) cron2: enjoy your vacation, with wife and kids all at home :-)=
+
+(12:46:21) cron2: (sorry)
+(12:46:31) mattock: :D
+
+--------------DCCE0A04A7D92065FA85DD65--
+
+--Bxsg7fwTXaMZPWQUeDhrnj4ZJWn1mRycz--
+
+--2CVVINTmlnEjwcPpKrCTCBa3wjnU9JYX3
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJecKV7AAoJEB2Cnv7KVigSCPML/3i7FbZZeS7M7SSRND+/nm6f
-fzAM3Ktav95+FpsSSajn8UHCqyYAfM0z+ZXsOhg7CsGhjuiQwu92Y0lLQzY1EGMs
-bFnwg22jTBzr3rQ5cC+BQpP/NR3Lwbo3luaOwwpcDgzSa9ylIc/Zdk6Am0jkGJzS
-z6U6r1pAh9WOv7+esju6SPPcQ5+jsqFTK8LBFHjplVKtL/xVlNHiSotB5hQsT6EG
-cHg2fxzlUtiwPs48LtNduBDAWc4IwiNpYdbNjiw+N5IUmWcSX/g08EpXAz0Rr1u/
-jjLs8QU04ExCgxZUEYkN1x02lbkMN1yxorXZzKH5IoZy0zrLtW96xcu2XT0cXVK7
-OujhTGC1hgNYGXXp4lX9dlox4upHiC+9zCbXTW1h4Z1dr7PV7sC1RAF6a7BEl0KP
-dYNK35JEbziUg532Su9q5fN1ew6MDS7iV6vuOeHLd2lytgNfxyJd0LVz7JjFsjKo
-K2gOtq1Na8cHjm9dfZ873PWbyEeNzFJg993OKwRv1Q==
-=mY/3
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAl5x/QUACgkQKVhNn0CG
+RXiDjQgAmqdpXk9TPCJLLcNaCFObGxdWhcc0lg8jUB/9ulNdHCTCEG+mXBPf10wf
+mS/vYUhissy+D9ZCFZbGeA5/BCuL/9FiPVOdzJq5UjouLad0Mi7ReCrnUclheOnJ
+Rkyg2xELTcSv5I9aR8KmZeqivyUgp7+pu04RH6ZkBqoGBSUPDo27FcTaCLVpJ1mN
+PqCsBSTtxXDCW0FHHGZiPxPdR9nj8tfBCeqHOj+zl0Ov7tLjXHQnL2NjHsNg1qBU
+haw6QY0nYVnniAd5YGashMwQ5swAlAJ6vNXULuAPwZRQ4KqcD7i+hdis1yOAfhJm
+rUpw1n3merwCuzyFxxoys6+MrsUNPg==
+=/kci
 -----END PGP SIGNATURE-----
 
---c5s4KQzYKKhDo6IA--
+--2CVVINTmlnEjwcPpKrCTCBa3wjnU9JYX3--
 
