@@ -1,13 +1,8 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-References: <f9786676-a7ad-8b0d-708a-ff724d27376c@...515...>
-Message-ID: <cb41ea63-c009-e3a6-677d-e1a7847c400e@...515...>
-Date: Wed, 18 Mar 2020 12:50:45 +0200
+From: chipitsine@...277...
+Date: Sun, 22 Mar 2020 17:35:21 +0500
+Message-Id: <20200322123521.17710-1-chipitsine@...277...>
 MIME-Version: 1.0
-In-Reply-To: <f9786676-a7ad-8b0d-708a-ff724d27376c@...515...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="2CVVINTmlnEjwcPpKrCTCBa3wjnU9JYX3"
-Subject: [Openvpn-devel] Summary of the community meeting (18th March 2020)
+Subject: [Openvpn-devel] [PATCH v3] travis-ci: add arm64, s390x builds.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,129 +11,275 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---2CVVINTmlnEjwcPpKrCTCBa3wjnU9JYX3
-Content-Type: multipart/mixed; boundary="Bxsg7fwTXaMZPWQUeDhrnj4ZJWn1mRycz"
+From: Ilya Shipitsin <chipitsine@...277...>
 
---Bxsg7fwTXaMZPWQUeDhrnj4ZJWn1mRycz
-Content-Type: multipart/mixed;
- boundary="------------DCCE0A04A7D92065FA85DD65"
-Content-Language: en-US
+as described on https://docs.travis-ci.com/user/multi-cpu-architectures travis-ci
+now supports amd64, ppcle, arm64, s390 architectures. Add arm64 and s390x.
 
-This is a multi-part message in MIME format.
---------------DCCE0A04A7D92065FA85DD65
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+travis-ci images were upgraded to bionic.
 
-Hi,
+"sudo" is deprecated, let us remove it, also "matrix" is deprecated in favour of "jobs".
 
-Here's the summary of the IRC meeting.
+LD_LIBRARY_PATH was replaced by using "rpath" in LDFLAGS, which is more elegant way of linking.
 
+also, dependencies were upgraded to the latest versions.
+
+travis_wait was added for long openssl builds.
+
+cmocka was added to linux and osx builds.
 ---
+v3 resolved travis_wait output redirection issue, now it works as expected. I had to specify "names" for jobs,
+without names travis puts secure variable as job name
 
-COMMUNITY MEETING
-
-Place: #openvpn-meeting on irc.freenode.net
-Date: Wed 18th March 2020
-Time: 11:30 CET (12:30 UTC)
-
-Planned meeting topics for this meeting were here:
-
-<https://community.openvpn.net/openvpn/wiki/Topics-2020-03-18>
-
-Your local meeting time is easy to check from services such as
-
-<http://www.timeanddate.com/worldclock>
-
-SUMMARY
-
-cron2 and mattock participated in this meeting.
-
----
-
-Mattock is on vacation this week so not much will happen at his end. He
-will resume the MSI review/testing work next week.
-
-Cron2 has done some patch merging but there is more to be done.
-
-Agreed that the current Covid-19 situation which forces $kids to stay at
-home is not optimal for productivity.
-
----
-
-Full chatlog attached
+v2 rebased against proper commit
 
 
---------------DCCE0A04A7D92065FA85DD65
-Content-Type: text/plain; charset=UTF-8;
- name="openvpn_irc_meeting_chatlog_2020-03-18.txt"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: attachment;
- filename="openvpn_irc_meeting_chatlog_2020-03-18.txt"
+ .travis.yml               | 87 +++++++++++++++++++++++++--------------
+ .travis/build-check.sh    | 10 +----
+ .travis/build-deps.sh     | 10 +++--
+ .travis/run-build-deps.sh | 10 -----
+ 4 files changed, 62 insertions(+), 55 deletions(-)
+ delete mode 100755 .travis/run-build-deps.sh
 
-(12:30:29) cron2: so
-(12:30:32) cron2: good morning
-(12:31:39) mattock: hello!
-(12:33:24) cron2: so how's family life in .fi?
-(12:33:44) cron2: .de is strange, but not too bad yet...
-(12:37:10) mattock: everything is closed soon
-(12:37:17) mattock: cabin fever is building up
-(12:37:50) mattock: I mean, who would not love to spend 24/7 with one's $=
-wife and $child(s)? :)
-(12:37:52) cron2: $kid[1] is screaming at her mother right now... "someth=
-ing about correcting homeworks"... *sigh*
-(12:38:33) mattock: maybe one hour walk every day would be a good practic=
-e
-(12:38:41) cron2: now, if I had a) time (=3D no work to be done), and b) =
-could actually go out and do something (museum, climbing gym, ...) I migh=
-t enjoy having "no school for 5 weeks".  But mostly locked down...?
-(12:38:57) mattock: yep
-(12:39:43) mattock: anyone else here btw? dazo, plaisthos, lev, ordex, sy=
-zzer?
-(12:39:58) mattock: oh, I probably forgot to mention, but I'm technically=
- on vacation this week
-(12:40:15) mattock: back to "normal" next week
-(12:40:35) mattock: e.g. reviewing and testing rozmansi's MSI work
-(12:41:04) cron2: indeed, lev__, rozmansi, dazo, plaisthos... *look aroun=
-d* *wave* *jump up and down*
-(12:41:26) mattock: mentioned on #openvpn-devel
-(12:43:25) mattock: seems silent
-(12:43:37) mattock: shall we just skip this week and try again next week?=
+diff --git a/.travis.yml b/.travis.yml
+index 40296d87..925d09ea 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -1,5 +1,4 @@
+-sudo: required
+-dist: xenial
++dist: bionic
+ 
+ os: linux
+ 
+@@ -11,86 +10,111 @@ env:
+     - PREFIX="${HOME}/opt"
+     - TAP_WINDOWS_VERSION=9.23.3
+     - LZO_VERSION=2.10
+-    - PKCS11_HELPER_VERSION=1.25.1
+-    - MBEDTLS_VERSION=2.16.1
++    - PKCS11_HELPER_VERSION=1.26
++    - MBEDTLS_VERSION=2.16.4
+     - MBEDTLS_CFLAGS="-I${PREFIX}/include"
+     - MBEDTLS_LIBS="-L${PREFIX}/lib -lmbedtls -lmbedx509 -lmbedcrypto"
+-    - OPENSSL_VERSION=1.0.2s
++    - OPENSSL_VERSION=1.0.2u
+     - OPENSSL_CFLAGS="-I${PREFIX}/include"
+     - OPENSSL_LIBS="-L${PREFIX}/lib -lssl -lcrypto"
+     # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+     #   via the "travis encrypt" command using the project repo's public key
+     - secure: "l9mSnEW4LJqjxftH5i1NdDaYfGmQB1mPXnSB3DXnsjzkCWZ+yJLfBemfQ0tx/wS7chBYxqUaUIMT0hw4zJVp/LANFJo2vfh//ymTS6h0uApRY1ofg9Pp1BFcV1laG6/u8pwSZ2EBy/GhCd3DS436oE8sYBRaFM9FU62L/oeQBfJ7r4ID/0eB1b8bqlbD4paty9MHui2P8EZJwR+KAD84prtfpZOcrSMxPh9OUhJxzxUvvVoP4s4+lZ5Kgg1bBQ3yzKGDqe8VOgK2BWCEuezqhMMc8oeKmAe7CUkoz5gsGYH++k3I9XzP9Z4xeJKoQnC/82qi4xkJmlaOxdionej9bHIcjfRt7D8j1J0U+wOj4p8VrDy7yHaxuN2fi0K5MGa/CaXQSrkna8dePniCng+xQ2MY/zxuRX2gA6xPNLUyQLU9LqIug7wj4z84Hk9iWib4L20MoPjeEo+vAUNq8FtjOPxMuHNpv4iGGx6kgJm7RXl5vC5hxfK6MprrnYe2U5Mcd8jpzagKBaKHL3zV2FxX9k0jRO9Mccz7M2WnaV0MQ6zcngzTN4+s0kCjhfGKd2F2ANT2Gkhj3Me36eNHfuE0dBbvYCMh4b3Mgd7b/OuXwQWdJ8PjJ1WHXjSOw5sHw1suaV6cEO2Meyz5j1tOkyOi0M9QF+LFenQ9vLH4sBCww8U="
+ 
+-matrix:
++jobs:
+   include:
+-    - env:
++    - name: cl
++      env:
+       - SSLLIB="openssl"
+       - OPENSSL_VERSION="1.1.1d"
+       - P7Z="c:\Program Files\7-Zip\7z.exe"
+       - CC="cl"
+       os: windows
+       compiler: cl
+-    - env: SSLLIB="openssl" RUN_COVERITY="1"
++    - name: Coverity scan
++      env: SSLLIB="openssl" RUN_COVERITY="1"
+       os: linux
+       compiler: gcc
+-    - env: SSLLIB="openssl" OPENSSL_VERSION="1.0.1u"
++    - name: gcc | openssl-1.0.1u
++      env: SSLLIB="openssl" OPENSSL_VERSION="1.0.1u"
+       os: linux
+       compiler: gcc
+-    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1c"
++    - name: gcc | openssl-1.1.1d
++      env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1d"
+       os: linux
++      arch: amd64
+       compiler: gcc
+-    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1c" LABEL="linux-ppc64le"
+-      os: linux-ppc64le
++    - name: gcc | openssl-1.1.1d
++      env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1d"
++      os: linux
++      arch: ppc64le
++      compiler: gcc
++    - name: gcc | openssl-1.1.1d
++      env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1d"
++      os: linux
++      arch: arm64
++      compiler: gcc
++    - name: gcc | openssl-1.1.1d
++      env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1d"
++      os: linux
++      arch: s390x
+       compiler: gcc
+-    - env: SSLLIB="openssl" EXTRA_CONFIG="--enable-iproute2"
++    - name: gcc | openssl-1.0.2u | iproute2
++      env: SSLLIB="openssl" EXTRA_CONFIG="--enable-iproute2"
+       os: linux
+       compiler: gcc
+-    - env: SSLLIB="openssl" CFLAGS="-fsanitize=address" CC=clang-9
++    - name: clang+asan | openssl-1.0.2u
++      env: SSLLIB="openssl" CFLAGS="-fsanitize=address" CC=clang-9
+       os: linux
+       compiler: clang
+-    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1c" CC=clang-9
++    - name: clang | openssl-1.1.1d
++      env: SSLLIB="openssl" OPENSSL_VERSION="1.1.1d" CC=clang-9
+       os: linux
+       compiler: clang
+-    - env: SSLLIB="mbedtls"
++    - name: gcc | mbedtls
++      env: SSLLIB="mbedtls"
+       os: linux
+       compiler: gcc
+-    - env: SSLLIB="mbedtls" CFLAGS="-fsanitize=address" CC=clang-9
++    - name: clang+asan | mbedtls
++      env: SSLLIB="mbedtls" CFLAGS="-fsanitize=address" CC=clang-9
+       os: linux
+       compiler: clang
+-    - env: SSLLIB="openssl"
++    - name: clang | openssl-1.0.2u
++      env: SSLLIB="openssl"
+       os: osx
+       compiler: clang
+-    - env: SSLLIB="mbedtls"
++    - name: clang | mbedtls
++      env: SSLLIB="mbedtls"
+       os: osx
+       compiler: clang
+-    - env: SSLLIB="openssl" CHOST=x86_64-w64-mingw32 OPENSSL_VERSION="1.0.1u"
++    - name: mingw64 | openssl-1.0.1u
++      env: SSLLIB="openssl" CHOST=x86_64-w64-mingw32 OPENSSL_VERSION="1.0.1u"
+       os: linux
+       compiler: ": Win64 build only"
+-    - env: SSLLIB="openssl" CHOST=x86_64-w64-mingw32 OPENSSL_VERSION="1.1.1c"
++    - name: mingw64 | openssl-1.1.1d
++      env: SSLLIB="openssl" CHOST=x86_64-w64-mingw32 OPENSSL_VERSION="1.1.1d"
+       os: linux
+       compiler: ": Win64 build only"
+-    - env: SSLLIB="openssl" CHOST=i686-w64-mingw32
++    - name: mingw32 | openssl-1.0.2u
++      env: SSLLIB="openssl" CHOST=i686-w64-mingw32
+       os: linux
+       compiler: ": Win32 build only"
+-    - env: SSLLIB="openssl" EXTRA_CONFIG="--disable-lzo" EXTRA_SCRIPT="make distcheck" CC=clang-9
++    - name: clang | openssl-1.0.2u | disable-lzo | distcheck
++      env: SSLLIB="openssl" EXTRA_CONFIG="--disable-lzo" EXTRA_SCRIPT="make distcheck" CC=clang-9
+       os: linux
+       compiler: clang
+-    - env: SSLLIB="openssl" EXTRA_CONFIG="--enable-small" CC=clang-9
++    - name: clang | openssl-1.0.2u | enable-small
++      env: SSLLIB="openssl" EXTRA_CONFIG="--enable-small" CC=clang-9
+       os: linux
+       compiler: clang
+ 
+ addons:
+   apt:
+-    sources:
+-      - ubuntu-toolchain-r-test
+-      - sourceline: 'deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-9 main'
+-        key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+     update: true
+-    packages: [ liblzo2-dev, libpam0g-dev, liblz4-dev, linux-libc-dev, man2html, mingw-w64 ]
++    packages: [ liblzo2-dev, libpam0g-dev, liblz4-dev, linux-libc-dev, man2html, mingw-w64, clang-9, libcmocka-dev ]
+   homebrew:
+     update: true
+-    packages: [ lzo ]
++    packages: [ lzo, lz4, cmocka ]
+ 
+ cache:
+   directories:
+@@ -99,9 +123,8 @@ cache:
+   - ${HOME}/Library/Caches/Homebrew
+ 
+ install:
+-  - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$TRAVIS_CPU_ARCH" != "ppc64le" ]; then sudo apt-get install clang-9; fi
+   - if [ ! -z "${CHOST}" ]; then unset CC; fi
+-  - .travis/run-build-deps.sh
++  - travis_wait 30 bash -c '.travis/build-deps.sh > build-deps.log 2>&1' || (cat build-deps.log && exit 1)
+ 
+ before_script:
+   - .travis/coverity.sh
+diff --git a/.travis/build-check.sh b/.travis/build-check.sh
+index f794704c..4e1b7243 100755
+--- a/.travis/build-check.sh
++++ b/.travis/build-check.sh
+@@ -6,14 +6,6 @@ if [ "${TRAVIS_OS_NAME}" = "windows" ]; then
+ 	MSBuild.exe openvpn.sln //p:Platform=x64 && exit 0
+ fi
+ 
+-if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+-	export LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH:-}"
+-fi
+-
+-if [ "${TRAVIS_OS_NAME}" = "osx"   ]; then
+-	export DYLD_LIBRARY_PATH="${PREFIX}/lib:${DYLD_LIBRARY_PATH:-}"
+-fi
+-
+ autoreconf -vi
+ 
+ if [ -z ${CHOST+x} ]; then
+@@ -21,7 +13,7 @@ if [ -z ${CHOST+x} ]; then
+ 		export EXTRA_CONFIG="${EXTRA_CONFIG:-} --enable-werror"
+ 	fi
+ 	./configure --with-crypto-library="${SSLLIB}" ${EXTRA_CONFIG:-} || (cat config.log && exit 1)
+-	make -j$JOBS
++	make LDFLAGS="-Wl,-rpath,${PREFIX}/lib" -j$JOBS
+ 	src/openvpn/openvpn --version || true
+ 	if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+ 		ldd src/openvpn/openvpn;
+diff --git a/.travis/build-deps.sh b/.travis/build-deps.sh
+index 4c5cb05e..0c8d69b8 100755
+--- a/.travis/build-deps.sh
++++ b/.travis/build-deps.sh
+@@ -44,17 +44,19 @@ build_lzo () {
+ }
+ 
+ download_pkcs11_helper () {
+-    if [ ! -f "pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2" ]; then
++    if [ ! -f "pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.gz" ]; then
+         wget -P download-cache/ \
+-            "https://github.com/OpenSC/pkcs11-helper/releases/download/pkcs11-helper-${PKCS11_HELPER_VERSION}/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2"
++            "https://github.com/OpenSC/pkcs11-helper/archive/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.gz"
+     fi
+ }
+ 
+ build_pkcs11_helper () {
+     if [ "$(cat ${PREFIX}/.pkcs11_helper-version)" != "${PKCS11_HELPER_VERSION}" ]; then
+-        tar jxf download-cache/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2
++        tar xf download-cache/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.gz
+         (
+-            cd "pkcs11-helper-${PKCS11_HELPER_VERSION}"
++            cd "pkcs11-helper-pkcs11-helper-${PKCS11_HELPER_VERSION}"
++
++            autoreconf -iv
+ 
+             ./configure --host=${CHOST} --program-prefix='' --libdir=${PREFIX}/lib \
+                  --prefix=${PREFIX} --build=x86_64-pc-linux-gnu \
+diff --git a/.travis/run-build-deps.sh b/.travis/run-build-deps.sh
+deleted file mode 100755
+index b8eb41c5..00000000
+--- a/.travis/run-build-deps.sh
++++ /dev/null
+@@ -1,10 +0,0 @@
+-#!/bin/sh
+-set -eux
+-
+-if [ "${TRAVIS_OS_NAME}" = "windows" ]; then
+-    # for windows we need to print output since openssl build
+-    # might take more than 10 minutes, which causes build abort
+-    .travis/build-deps.sh
+-else
+-    .travis/build-deps.sh > build-deps.log 2>&1 || (cat build-deps.log && exit 1)
+-fi
+-- 
+2.25.1
 
-(12:44:19) cron2: you could do some reporting for the minutes ("I have no=
-t done anything, I had vacation! and kids!"), then I do some reporting ("=
-I have not done much, some patches merged, more to do! kids!") and then w=
-e're done :-)
-(12:44:48) mattock: ok, sounds good
-(12:45:40) mattock: let's conclude the meeting, I'm already crafting the =
-summary :)
-(12:46:17) cron2: enjoy your vacation, with wife and kids all at home :-)=
-
-(12:46:21) cron2: (sorry)
-(12:46:31) mattock: :D
-
---------------DCCE0A04A7D92065FA85DD65--
-
---Bxsg7fwTXaMZPWQUeDhrnj4ZJWn1mRycz--
-
---2CVVINTmlnEjwcPpKrCTCBa3wjnU9JYX3
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAl5x/QUACgkQKVhNn0CG
-RXiDjQgAmqdpXk9TPCJLLcNaCFObGxdWhcc0lg8jUB/9ulNdHCTCEG+mXBPf10wf
-mS/vYUhissy+D9ZCFZbGeA5/BCuL/9FiPVOdzJq5UjouLad0Mi7ReCrnUclheOnJ
-Rkyg2xELTcSv5I9aR8KmZeqivyUgp7+pu04RH6ZkBqoGBSUPDo27FcTaCLVpJ1mN
-PqCsBSTtxXDCW0FHHGZiPxPdR9nj8tfBCeqHOj+zl0Ov7tLjXHQnL2NjHsNg1qBU
-haw6QY0nYVnniAd5YGashMwQ5swAlAJ6vNXULuAPwZRQ4KqcD7i+hdis1yOAfhJm
-rUpw1n3merwCuzyFxxoys6+MrsUNPg==
-=/kci
------END PGP SIGNATURE-----
-
---2CVVINTmlnEjwcPpKrCTCBa3wjnU9JYX3--
 
