@@ -1,10 +1,12 @@
-Date: Mon, 23 Mar 2020 11:21:28 +0100 (CET)
-Message-Id: <202003231021.02NALSH6099617@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200309131728.380-4-simon@...2293...>
-References: <20200309131728.380-4-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH applied] Re: tapctl: Add functions for
- enabling/disabling adapters
+MIME-Version: 1.0
+References: <20200309131728.380-1-simon@...2293...>
+ <20200309131728.380-5-simon@...2293...>
+In-Reply-To: <20200309131728.380-5-simon@...2293...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Mon, 23 Mar 2020 15:58:35 +0200
+Message-ID: <CAGyAFMWrygn49PaC_u54cqYCcqt5FeMGAR4s0TdCwW0bUQfCBQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 05/12] openvpnmsica: Revise MSI custom
+ actions interop
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,31 +15,23 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
 To: Simon Rozman <simon@...2293...>
-Cc: openvpn-devel@lists.sourceforge.net
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Your patch has been applied to the master branch.
+Hi,
 
-Test built on MinGW.  No further review.
+I must say I am not super familiar with this component nor MSI in general.
 
-commit d15bc3ad1be515ed83baf87d025845c9ab8ccc57
-Author: Simon Rozman
-Date:   Mon Mar 9 14:17:20 2020 +0100
+Stared at the code, compiled with MSVC and tested some exported
+functions with rundll32.
 
-     tapctl: Add functions for enabling/disabling adapters
+This has removed lots of code, so it makes sense, assuming that all
+required functionality is still in place.
 
-     Signed-off-by: Simon Rozman <simon@...2293...>
-     Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20200309131728.380-4-simon@...2293...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19525.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+It would be nice to have unit tests for msica_arg_* functions -
+they're doing dangerous low-level stuff.
 
-
---
-kind regards,
-
-Gert Doering
-
+Acked-by: Lev Stipakov <lstipakov@...277...>
 
