@@ -1,12 +1,14 @@
-References: <20200323171156.295122f1@...1661...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <276a2e33-fa92-0b23-1572-27596052ab33@...1227...>
-Date: Tue, 24 Mar 2020 11:21:56 +0100
+References: <20200323171156.295122f1@...1661...>
+ <CAFHpkQFbK8138bC8q0k8bC47yGWOJdhdE2OS2Obb8aqhiu9g=Q@...278...>
+ <20200323181926.145d0bd0@...1661...>
+Message-ID: <80470347-3b76-6c64-290c-b495d8ce7e25@...1227...>
+Date: Tue, 24 Mar 2020 11:38:46 +0100
 MIME-Version: 1.0
-In-Reply-To: <20200323171156.295122f1@...1661...>
+In-Reply-To: <20200323181926.145d0bd0@...1661...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="VsUwSQn3OK93VihFXTAHdXqRI4Ezdo8U3"
+ boundary="xi64yXYL7hBnNK2J0RgJ2N13NU8z3We27"
 Subject: Re: [Openvpn-devel] Possible memory alignment Problem in 2.4 ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -19,59 +21,64 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Michael Kress <lists@...1660...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---VsUwSQn3OK93VihFXTAHdXqRI4Ezdo8U3
-Content-Type: multipart/mixed; boundary="NJ3isGcik8X0cmnNFQqiOO6ucu2CCXsil"
+--xi64yXYL7hBnNK2J0RgJ2N13NU8z3We27
+Content-Type: multipart/mixed; boundary="ekFO6Ww3TGP8TEzi5oOlngbbrYbeePJnx"
 
---NJ3isGcik8X0cmnNFQqiOO6ucu2CCXsil
+--ekFO6Ww3TGP8TEzi5oOlngbbrYbeePJnx
 Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-Am 23.03.20 um 17:11 schrieb Michael Kress:
-> Hello list,
+Am 23.03.20 um 18:19 schrieb Michael Kress:
+> Hi,
 >=20
-> There seems to be some kind of alignment problem in OpenVPN 2.4
-> versions on ARMv4 based machines (32 bit), especially when lzo=20
-> compression kicks in.
+> Unfortunatelly it seems, we are stuck to LZO for now, because it has
+> been configured in the clients, which run 2.3. Most of these clients are
+> offline most of the time, so reconfiguring or upgrading all of them
+> before updating the server will become difficult.=20
+>=20
+> You are completely right: One reason for upgrading to OpenVPN 2.4 is
+> indeed this feature. Another reason is, that Client and Server can
+> negotiate to use AES instead of Blowfish :-)
+>=20
 
-LZO is known to miscompile with gcc 10 and requires -fno-strict-aliasing
-to compile. and also in my OpenVPN for Android app I have to compile lzo
-with -O1 instead -O2 since it otherwise segfaults on armv7a. Android
-uses LLVM/clang to compile so the broken behaviour is present also on
-other compilers. I never investigated which optimisation flag does break
-in clang/llvm/armv7a.
+You can use client-connect to disable compression for newer clients.
+Example here: http://plai.de/android/peerid.py
 
-But bottom line is that you probably are running in a similar and I
-would advise to compile lzo with less optimisation.
+I would suggest stub-v2 instead lz4 however since that effectively
+disables compression completely (voracle).
+
+AS also takes this approach. Maybe we should make that default in newer
+versions.
 
 Arne
 
+P.S.: Sorry double copy, forgot to add CC to list in first email.
 
 
+--ekFO6Ww3TGP8TEzi5oOlngbbrYbeePJnx--
 
---NJ3isGcik8X0cmnNFQqiOO6ucu2CCXsil--
-
---VsUwSQn3OK93VihFXTAHdXqRI4Ezdo8U3
+--xi64yXYL7hBnNK2J0RgJ2N13NU8z3We27
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl5530UACgkQFRhsZwKx
-RFTuig//dQSzvv+9IypVHuRQtbxQnDwYlr2/lQUL3Dj0XejbxEtUUrZmY3dHZn78
-18RVEPvZxx8IAtYUuaFUJNBzUxLaUYGbXTZLOhV/cPY4FChVrYYn0X6E+8X+yRv6
-YNCXO5nyEOEwDu7sbxYCoC3lr5Tv/V/bK1OC3jNDhHZ15p/1R+YZznRGJS1JTjS/
-jx6IhZmkLd0OGfz6NHRdlEXmAsTyq0MH6xOm+dNOTVhYBpXLqqi73bvz1aEy+T2L
-8qZNJZGE/Jn34ekkLg5YiTgQZrVTgWvU0bAAO8XJLIo9NtwYWf4SO1p9zH6AaE5z
-fIhmpqEQSv8S874vpY+7nFZsgSAH63L6JIUmZncIHXrYulTJJQFQFbkJpQsCHAJZ
-Ygamc/BmmJ/PWW58g5kVRWVIo8MoHCSNkUiMgCoMR7xZ0yciafqpHpN8e645tgsr
-r7zPhyjmzG5zBtWOm0ML2Y2EucknjM/vtwG+hVnx+zqObuAHsq4XO4nUj98ijg+p
-SIEGo1gXPMGEZGMhrYtaP3Tvu+GeEK2dLSfcdevUczqqWhNSNDWSVrbCoC5olSQL
-Jyl745wKXXrbUKP6mLnKhiu0TgM0JyfYa3p1pokuyjIAMwCXRLirZZ6imoh7GDha
-asOfTWCWTwrCtL+vSzGG/KHkchfpRvLFxDNZjTqGpoZJESNMgeY=
-=QDAa
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl554zYACgkQFRhsZwKx
+RFQGAhAAlrW1zK4X11M1LnnueqPlVxVLlEp86x2BMeardDRA44a7iFI7dLVZstxx
+vkMcljRAa9hiuZ/ULg7QK3GI3BONxsiE5cFg3vdgj6HWaPWI0GtJt+9tOgoRizzP
+akIv0rrkNSEysRLRG8hLJpDcJC0sccREquujaPG85lgpiUGB4MCsT1aj9THhw9NB
+wjfM1xgCGuXct7W1qOiws1EqT7vhcFVeI8vjncrzo2oqkvOZ/9FqnQlNnHwh6mCG
+N47USR/UgdFu3Sm0dvq43nWfW1+ztcNKRLaRrJCIDaPD+KzCEK+9gHJnUwVbiAfI
+Ns9gQROGeqqDLHdYJVb67QxEjmFGeyB3o17EhhHgaJLfnbN9/r84h/Fd5OwxkMwg
+WZbBbAE77pmZDtXjkRyf3drfv4+qphoRyrd5psvfROTjbtlHgjEBsw8tIvffk0Yx
+Sc6yLr9d0XGXI05BCzvR8RRWcRKiOZRJYzVbAudhbXiCLe9OOV3RT5VmH1FTXp0x
+CZ1nXGUapL+brZ6WLvHCYB55Y6jdLB3oXkkBP26KAAFrY2NOCIG99YLGAGM/oVl6
+JmlgySMpLwsJvns528emdzfHgkIx6hmWQtyKp02XtjQdzsoDw/W2enscuoYy8rL8
+2P/o5jtO5/t54ftPAgk9SrbvRC0cdY+wVboRiDzFXvzJDW/NZek=
+=Tgps
 -----END PGP SIGNATURE-----
 
---VsUwSQn3OK93VihFXTAHdXqRI4Ezdo8U3--
+--xi64yXYL7hBnNK2J0RgJ2N13NU8z3We27--
 
