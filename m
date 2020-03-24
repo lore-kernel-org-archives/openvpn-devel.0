@@ -1,15 +1,11 @@
+Date: Tue, 24 Mar 2020 18:02:29 +0100
+From: Michael Kress <lists@...1660...>
+Message-ID: <20200324143702.21f24651@...1265...>
+In-Reply-To: <276a2e33-fa92-0b23-1572-27596052ab33@...1227...>
+References: <20200323171156.295122f1@...1661...>
+ <276a2e33-fa92-0b23-1572-27596052ab33@...1227...>
 MIME-Version: 1.0
-References: <20200322123521.17710-1-chipitsine@...277...>
- <CAGyAFMVjM1-zzeWgrKOSm9UrKh6Tn4DO143H2jvj5Z9NbhSWow@...278...>
- <CAFHpkQEbuoQVwv0Mf_=E4hAY92V+KdTD8JrxQyBPz+2c-CVB2A@...278...>
- <CAGyAFMVqPb+g+h2HOnsoFmrAJG5BDV3aVZT928B=1VRiNd8OMA@...278...>
- <CAFHpkQFATcqnFQvN0DMgPsYf-T+=0YLdAq36AA=P9Kew-8KaxA@...278...>
-In-Reply-To: <CAFHpkQFATcqnFQvN0DMgPsYf-T+=0YLdAq36AA=P9Kew-8KaxA@...278...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Tue, 24 Mar 2020 21:55:06 +0500
-Message-ID: <CAFHpkQF=kBZWS3wmUSrfC6xtSXMngEynBYr3wQRsZXeOX21Z+w@...278...>
-Content-Type: multipart/alternative; boundary="000000000000cf9f8605a19c9d4b"
-Subject: Re: [Openvpn-devel] [PATCH v3] travis-ci: add arm64, s390x builds.
+Subject: Re: [Openvpn-devel] Possible memory alignment Problem in 2.4 ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,71 +14,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
---000000000000cf9f8605a19c9d4b
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Am Tue, 24 Mar 2020 11:21:56 +0100
+schrieb Arne Schwabe <arne@...1227...>:
 
-sometimes, arm64 build fails
+> Am 23.03.20 um 17:11 schrieb Michael Kress:
+> > Hello list,
+> > 
+> > There seems to be some kind of alignment problem in OpenVPN 2.4
+> > versions on ARMv4 based machines (32 bit), especially when lzo 
+> > compression kicks in.
+> 
+> LZO is known to miscompile with gcc 10 and requires
+> -fno-strict-aliasing to compile. and also in my OpenVPN for Android
+> app I have to compile lzo with -O1 instead -O2 since it otherwise
+> segfaults on armv7a. Android uses LLVM/clang to compile so the broken
+> behaviour is present also on other compilers. I never investigated
+> which optimisation flag does break in clang/llvm/armv7a.
+ 
+The alignment errors happen in OpenVPN code, not in LZO code. 
+We have to use the (ancient) gcc 4.0.0. After upgrading OpenVPN from
+2.3 to 2.4 we did not even upgrade LZO from 2.0.6, but linked
+statically to the old compiled lib. I doubt that the compiler itself
+changes anything here.
 
-https://travis-ci.org/github/OpenVPN/openvpn/jobs/666389482?utm_medium=3Dno=
-tification&utm_source=3Dgithub_status
+> But bottom line is that you probably are running in a similar and I
+> would advise to compile lzo with less optimisation.
 
+Thanks for the suggestion! 
 
-if that will become often, we will mark it as "allowed failures"
+Anyways I recompiled LZO without any optimazations and then OpenVPN
+2.4.8. Unfortunatelly this changed nothing.
 
+A few questions:
+----------------
+1) Do you run automated tests of the OpenVPN code on any build server? 
 
+2) If that is the case, is there any test with a version, where 
+   -DVERIFY_ALIGNMENT is enabled?
 
-thanks to everyone, we have cmocka tests back!
+3) If that is also the case, can you see any ERRORS regarding the
+   alignment in the logs?
 
-=D0=B2=D1=82, 24 =D0=BC=D0=B0=D1=80. 2020 =D0=B3. =D0=B2 14:04, =D0=98=D0=
-=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...1665...=
-77...>:
+The problem is, that we do not have any power over the clients. It
+might well be, that there are even OpenVPN 2.2 clients out there.
 
-> I guess nobody yet reported that issue.
->
-> Maybe, I'll report.
->
-> =D0=B2=D1=82, 24 =D0=BC=D0=B0=D1=80. 2020 =D0=B3. =D0=B2 14:03, Lev Stipa=
-kov <lstipakov@...277...>:
->
->> Yes, I agree that with name is looks much better.
->>
->> I wonder why displaying arch requires you to be logged in.
->>
->
-
---000000000000cf9f8605a19c9d4b
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div>sometimes, arm64 build fails</div><div><br></div><div=
-><a href=3D"https://travis-ci.org/github/OpenVPN/openvpn/jobs/666389482?utm=
-_medium=3Dnotification&amp;utm_source=3Dgithub_status">https://travis-ci.or=
-g/github/OpenVPN/openvpn/jobs/666389482?utm_medium=3Dnotification&amp;utm_s=
-ource=3Dgithub_status</a></div><div><br></div><div><br></div><div>if that w=
-ill become often, we will mark it as &quot;allowed failures&quot;</div><div=
-><br></div><div><br></div><div><br></div><div>thanks to everyone, we have c=
-mocka tests back!<br></div></div><br><div class=3D"gmail_quote"><div dir=3D=
-"ltr" class=3D"gmail_attr">=D0=B2=D1=82, 24 =D0=BC=D0=B0=D1=80. 2020 =D0=B3=
-. =D0=B2 14:04, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=
-=B8=D0=BD &lt;<a href=3D"mailto:chipitsine@...277...">chipitsine@...277...<=
-/a>&gt;:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px=
- 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><div di=
-r=3D"ltr"><div>I guess nobody yet reported that issue.</div><div><br></div>=
-<div>Maybe, I&#39;ll report.<br></div></div><br><div class=3D"gmail_quote">=
-<div dir=3D"ltr" class=3D"gmail_attr">=D0=B2=D1=82, 24 =D0=BC=D0=B0=D1=80. =
-2020 =D0=B3. =D0=B2 14:03, Lev Stipakov &lt;<a href=3D"mailto:lstipakov@...493...=
-277..." target=3D"_blank">lstipakov@...277...</a>&gt;:<br></div><blockquote=
- class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px so=
-lid rgb(204,204,204);padding-left:1ex"><div dir=3D"ltr"><div dir=3D"ltr">Ye=
-s, I agree that with name is looks=C2=A0much=C2=A0better.<div><br></div><di=
-v>I wonder why displaying arch requires you to be logged in.</div></div></d=
-iv>
-</blockquote></div>
-</blockquote></div>
-
---000000000000cf9f8605a19c9d4b--
+-- 
+Servus
+  Michael
 
