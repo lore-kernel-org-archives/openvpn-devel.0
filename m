@@ -1,12 +1,11 @@
 MIME-Version: 1.0
-References: <20200309131728.380-1-simon@...2293...>
- <20200309131728.380-11-simon@...2293...>
-In-Reply-To: <20200309131728.380-11-simon@...2293...>
+References: <20200310104022.431-1-simon@...2293...>
+In-Reply-To: <20200310104022.431-1-simon@...2293...>
 From: Lev Stipakov <lstipakov@...277...>
-Date: Tue, 24 Mar 2020 14:07:35 +0200
-Message-ID: <CAGyAFMVAebWYLKohd5LFLC9Z11rxjqbys8jSd3CQun0ogSjWjg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 11/12] openvpnmsica: Merge
- FindTUNTAPAdapters into FindSystemInfo
+Date: Tue, 24 Mar 2020 14:37:04 +0200
+Message-ID: <CAGyAFMVdVJLo8yYqddHnCAwg3wJe7d9VvGOX3WNkffc3K_gtiQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v2 12/12] tapctl: Support multiple
+ hardware IDs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,16 +21,10 @@ Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-Compiled with msvc, smoke-tested with rundll32.
+Compiled with msvc and smoke-tested, "tapctl list" returns all
+relevant adapters.
 
-One thing:
+This also resolves my concert from 10/12, so I'll ack that, too.
 
-> +    set_openvpnserv_state(hInstall);
-> +    find_adapters(
-> +        hInstall,
-> +        TEXT("root\\") TEXT(TAP_WIN_COMPONENT_ID),
-> +        TEXT("TAPWINDOWS6ADAPTERS"),
-> +        TEXT("ACTIVETAPWINDOWS6ADAPTERS"));
-
-Both methods return error codes which we ignore.
+Acked-by: Lev Stipakov <lstipakov@...277...>
 
