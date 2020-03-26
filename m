@@ -1,9 +1,10 @@
-From: Paolo Cerrito <wardragon78@...277...>
-Date: Thu, 26 Mar 2020 09:47:04 +0100
-Message-Id: <20200326084704.45458-1-wardragon78@...277...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] [PATCH V3] - changed remote lenght and
- refactored get_env
+From: Arne Schwabe <arne@...1227...>
+Date: Thu, 26 Mar 2020 18:23:31 +0100
+Message-Id: <20200326172332.2356-2-arne@...1227...>
+In-Reply-To: <20200326172332.2356-1-arne@...1227...>
+References: <20200326172332.2356-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH 2/3] [Auth-token] Fix session id in env
+ missing first byte
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,52 +17,27 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-1) I put remote lenght to 51, as it have to hold ipv6/ipv4 ip address
-plus string terminator.
-
-2) As asked, i refactor the call to get_env, so now first of all there
-   is a one call to get_env to get the ipv6 address, if is not set, and
-   only in this case,  we recall get_env for ipv4.
+sizeof for a constant string return the size including the null byte.
+For copying the session id this meant that we do not copy the first
+byte. This made the session id reported to the external authenticator
+one byte shorter than it was indented to be.
 ---
- .gitignore                      | 1 +
- src/plugins/auth-pam/auth-pam.c | 8 ++++++--
- 2 files changed, 7 insertions(+), 2 deletions(-)
+ src/openvpn/auth_token.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/.gitignore b/.gitignore
-index 0d68ec4b..3977882f 100644
---- a/.gitignore
-+++ b/.gitignore
-@@ -72,3 +72,4 @@ nbproject
- test-driver
- compile
- stamp-h2
-+outgoing/*
-diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
-index 9d8dfb95..b55a2ecd 100644
---- a/src/plugins/auth-pam/auth-pam.c
-+++ b/src/plugins/auth-pam/auth-pam.c
-@@ -115,7 +115,7 @@ struct user_pass {
-     char password[128];
-     char common_name[128];
-     char response[128];
--    char remote[128];
-+    char remote[51]; //51 as ipv6 form n:n:n:n:n:n:d.d.d.d/mask and terminator+1
+diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
+index 6275299d..585679dc 100644
+--- a/src/openvpn/auth_token.c
++++ b/src/openvpn/auth_token.c
+@@ -121,7 +121,7 @@ add_session_token_env(struct tls_session *session, struct tls_multi *multi,
+      */
  
-     const struct name_value_list *name_value_list;
- };
-@@ -518,7 +518,11 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
-         const char *username = get_env("username", envp);
-         const char *password = get_env("password", envp);
-         const char *common_name = get_env("common_name", envp) ? get_env("common_name", envp) : "";
--        const char *remote = get_env("untrusted_ip", envp) ? get_env("untrusted_ip", envp) : get_env("untrusted_ip6", envp);
-+        const char *remote = get_env("untrusted_ip6", envp);
-+       
-+	if (remote == NULL){ 
-+		remote = get_env("untrusted_ip", envp); //try to take ipv4 if not set ipv6
-+	}
+     char session_id[AUTH_TOKEN_SESSION_ID_LEN*2] = {0};
+-    memcpy(session_id, session_id_source + sizeof(SESSION_ID_PREFIX),
++    memcpy(session_id, session_id_source + strlen(SESSION_ID_PREFIX),
+            AUTH_TOKEN_SESSION_ID_LEN*8/6);
  
-         if (username && strlen(username) > 0 && password)
-         {
+     setenv_str(session->opt->es, "session_id", session_id);
 -- 
 2.26.0
 
