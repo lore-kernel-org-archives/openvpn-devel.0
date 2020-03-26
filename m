@@ -1,8 +1,8 @@
 From: Paolo Cerrito <wardragon78@...277...>
-Date: Thu, 26 Mar 2020 09:50:45 +0100
-Message-Id: <20200326085045.46465-1-wardragon78@...277...>
+Date: Thu, 26 Mar 2020 09:47:04 +0100
+Message-Id: <20200326084704.45458-1-wardragon78@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] PATCH V3 - changed remote lenght and
+Subject: [Openvpn-devel] [PATCH] [PATCH V3] - changed remote lenght and
  refactored get_env
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -16,6 +16,12 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+1) I put remote lenght to 51, as it have to hold ipv6/ipv4 ip address
+plus string terminator.
+
+2) As asked, i refactor the call to get_env, so now first of all there
+   is a one call to get_env to get the ipv6 address, if is not set, and
+   only in this case,  we recall get_env for ipv4.
 ---
  .gitignore                      | 1 +
  src/plugins/auth-pam/auth-pam.c | 8 ++++++--
