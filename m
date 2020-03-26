@@ -1,10 +1,8 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu, 26 Mar 2020 18:23:31 +0100
-Message-Id: <20200326172332.2356-2-arne@...1227...>
-In-Reply-To: <20200326172332.2356-1-arne@...1227...>
-References: <20200326172332.2356-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 2/3] [Auth-token] Fix session id in env
- missing first byte
+Date: Thu, 26 Mar 2020 18:23:30 +0100
+Message-Id: <20200326172332.2356-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH 1/3] [Auth-token] Fix session id and initial
+ timestamp not begin preserved
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,27 +15,28 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-sizeof for a constant string return the size including the null byte.
-For copying the session id this meant that we do not copy the first
-byte. This made the session id reported to the external authenticator
-one byte shorter than it was indented to be.
+In the initial state of checking whether an auth-token has been
+validated, the check check if multi->auth_token is already set and
+only then sets the value. This defeats the purpose and lead to always
+a new auth-token with new session id and lifetime being generated when
+the server restarts or the client reconnect to another server.
 ---
- src/openvpn/auth_token.c | 2 +-
+ src/openvpn/ssl_verify.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
-index 6275299d..585679dc 100644
---- a/src/openvpn/auth_token.c
-+++ b/src/openvpn/auth_token.c
-@@ -121,7 +121,7 @@ add_session_token_env(struct tls_session *session, struct tls_multi *multi,
-      */
- 
-     char session_id[AUTH_TOKEN_SESSION_ID_LEN*2] = {0};
--    memcpy(session_id, session_id_source + sizeof(SESSION_ID_PREFIX),
-+    memcpy(session_id, session_id_source + strlen(SESSION_ID_PREFIX),
-            AUTH_TOKEN_SESSION_ID_LEN*8/6);
- 
-     setenv_str(session->opt->es, "session_id", session_id);
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index da0966c5..226daf3d 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -1381,7 +1381,7 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+              * to store the auth-token in multi->auth_token, so
+              * the initial timestamp and session id can be extracted from it
+              */
+-            if (multi->auth_token && (multi->auth_token_state_flags & AUTH_TOKEN_HMAC_OK)
++            if ((multi->auth_token_state_flags & AUTH_TOKEN_HMAC_OK)
+                 && !(multi->auth_token_state_flags & AUTH_TOKEN_EXPIRED))
+             {
+                 multi->auth_token = strdup(up->password);
 -- 
 2.26.0
 
