@@ -1,12 +1,15 @@
-From: Spencer Maxfield <smaxfield@...2543...>
-Date: Fri, 27 Mar 2020 14:34:00 +0000
-Message-ID: <DM5PR07MB345158E6CCCD9515786D5B54A9CC0@...2549...>
-References: <20200313165913.12682-1-lstipakov@...277...>
- <CAGyAFMUdS01fUFPqg5-vB9i-S7S8L--xqeAd_Pb_xD4hM86g=Q@...278...>
-In-Reply-To: <CAGyAFMUdS01fUFPqg5-vB9i-S7S8L--xqeAd_Pb_xD4hM86g=Q@...278...>
-Content-Language: en-US
+References: <20200309135133.GA1431@...1296...>
+ <20200312113654.16184-1-arne@...1227...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <536e526e-30c0-c1a1-aff6-1681a9210d7a@...2080...>
+Date: Fri, 27 Mar 2020 16:19:35 +0100
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] Fix broken async push with NCP is used
+In-Reply-To: <20200312113654.16184-1-arne@...1227...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="6VAoLyfGtOGCNwkRCuPVF8Pk5WaJsflnX"
+Subject: Re: [Openvpn-devel] [PATCH v6 5/5] Normalise ncp-ciphers option and
+ restrict it to 127 bytes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,161 +18,97 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Lev Stipakov <lstipakov@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Cc: Lev Stipakov <lev@...515...>
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-SXMgaXQgcG9zc2libGUgdG8gZ2V0IGFuIGVzdGltYXRlIG9uIGEgdGltZWxpbmUgZm9yIHRoaXMg
-Zml4IGJlaW5nIHJlbGVhc2VkPyBEdW8gaGFzIGEgZmV3IGN1c3RvbWVycyB0aGF0IGhhdmUgYmVl
-biBpbXBhY3RlZCBieSB0aGlzIGFuZCwgd2hpbGUgd2UgaGF2ZSBwcm92aWRlZCB0aGVtIHdpdGgg
-d29ya2Fyb3VuZHMgaW4gdGhlIG1lYW50aW1lLCB0aGV5IGFyZSBhc2tpbmcgZm9yIHVwZGF0ZXMg
-b24gd2hlbiB0aGlzIHdpbGwgYmUgZml4ZWQuIEkgYWxzbyBleHBlY3QgbW9yZSBjdXN0b21lcnMg
-d2lsbCBiZSBpbXBhY3RlZCBhcyB0aW1lIGdvZXMgb24gYXMgbWFueSBhcmUgaW5zdGFsbGluZyBP
-cGVuVlBOIGZyb20gYSBwYWNrYWdlIHJlcG9zaXRvcnkgd2hlcmUgdGhlIE9wZW5WUE4gcGFja2Fn
-ZSBhdmFpbGFibGUgdGhlcmUgd2FzIGJ1aWx0IHdpdGggLS1lbmFibGUtYXN5bmMtcHVzaCAoZS5n
-LiBSSEVMIDggZnJvbSBFUEVMKS4gU2luY2UgTkNQIGlzIG9uIGJ5IGRlZmF1bHQsIHRoaXMgaXMg
-ZXNzZW50aWFsbHkgcmVzdWx0aW5nIGluIGJyb2tlbiBiZWhhdmlvciBvdXQtb2YtdGhlLWJveCBm
-b3IgYW55b25lIGluc3RhbGxpbmcgT3BlblZQTiAyLjQgZnJvbSBhIHBhY2thZ2UgcmVwbyBhbmQg
-dXNpbmcgYSBwbHVnaW4gdGhhdCBkb2VzIGEgZGVmZXJyZWQgYXV0aGVudGljYXRpb24uIA0KDQpU
-aGFua3MhDQoNClNwZW5jZXINCg0K77u/T24gMy8xMy8yMCwgNToyMiBQTSwgIkxldiBTdGlwYWtv
-diIgPGxzdGlwYWtvdkAuLi4yNzcuLi4+IHdyb3RlOg0KDQogICAgSSBmb3Jnb3QgdG8gYWRkIHRy
-YWMgdGlja2V0IHRvIHRoZSBjb21taXQgbWVzc2FnZSwgc28gbWF5YmUgQGNyb24yDQogICAgY291
-bGQgZG8gaXQsIGFzc3VtaW5nIHYyIHdvbid0IGJlIG5lZWRlZC4NCiAgICANCiAgICBUcmFjIHRp
-Y2tldCB3aXRoIChsb3RzIG9mKSBjb250ZXh0Og0KICAgIGh0dHBzOi8vY29tbXVuaXR5Lm9wZW52
-cG4ubmV0L29wZW52cG4vdGlja2V0LzEyNTkNCiAgICANCiAgICBwZSAxMy4gbWFhbGlzay4gMjAy
-MCBrbG8gMTguNTkgTGV2IFN0aXBha292IChsc3RpcGFrb3ZALi4uMjc3Li4uKSBraXJqb2l0dGk6
-DQogICAgPg0KICAgID4gRnJvbTogTGV2IFN0aXBha292IDxsZXZALi4uNTE1Li4uPg0KICAgID4N
-CiAgICA+IFdpdGggTkNQIGFuZCBkZWZlcnJlZCBhdXRoLCB3ZSBwZXJmb3JtIGNpcGhlciBuZWdv
-dGlhdGlvbiBhbmQNCiAgICA+IGdlbmVyYXRlIGRhdGEgY2hhbm5lbCBrZXlzIG9uIGluY29taW5n
-IHB1c2ggcmVxdWVzdCwgYXNzdW1pbmcgdGhhdCBhdXRoDQogICAgPiBzdWNjZWVkZWQuIFdpdGgg
-YXN5bmMgcHVzaCwgd2hlbiBhdXRoIHN1Y2NlZWRzIGluIGJldHdlZW4gcHVzaCByZXF1ZXN0cywN
-CiAgICA+IHdlIHNlbmQgcHVzaCByZXBseSBpbW1lZGlhdGVseS4NCiAgICA+DQogICAgPiBUaGUg
-Y29kZSB3aGljaCBnZW5lcmF0ZXMgZGF0YSBjaGFubmVsIGtleXMgaXMgb25seSBjYWxsZWQgb24g
-aGFuZGxpbmcgaW5jb21pbmcNCiAgICA+IHB1c2ggcmVxdWVzdHMgKGluY29taW5nX3B1c2hfbWVz
-c2FnZSkuIEl0IG1pZ2h0IG5vdCBiZSBjYWxsZWQgd2l0aCBOQ1AsDQogICAgPiBkZWZlcnJlZCBh
-dXRoIGFuZCBhc3luYyBwdXNoIGJlY2F1c2Ugb24gaW5jb21pbmcgcHVzaCByZXF1ZXN0IGF1dGgg
-bWlnaHQgbm90DQogICAgPiBiZSBjb21wbGV0ZSB5ZXQuIFdoZW4gYXV0aCBpcyBjb21wbGV0ZSBp
-biBiZXR3ZWVuIHB1c2ggcmVxdWVzdHMsIHB1c2ggcmVwbHkNCiAgICA+IGlzIHNlbnQgYW5kIGl0
-IGlzIGFzc3VtZWQgdGhhdCBjb25uZWN0aW9uIGlzIGVzdGFibGlzaGVkLiBIb3dldmVyLCBzaW5j
-ZSBkYXRhIGNoYW5uZWwga2V5cw0KICAgID4gYXJlIG5vdCBnZW5lcmF0ZWQgb24gdGhlIHNlcnZl
-ciBzaWRlLCBjb25uZWN0aW9uIGRvZXNuJ3Qgd29yay4NCiAgICA+DQogICAgPiBGaXggYnkgZ2Vu
-ZXJhdGluZyBkYXRhIGNoYW5uZWwga2V5cyB3aGVuIGFzeW5jIHB1c2ggaXMgdHJpZ2dlcmVkLg0K
-ICAgID4NCiAgICA+IFJlcG9ydGVkLWJ5OiBzbWF4ZmllbGRALi4uMjU0My4uLg0KICAgID4gU2ln
-bmVkLW9mZi1ieTogTGV2IFN0aXBha292IDxsZXZALi4uNTE1Li4uPg0KICAgID4gLS0tDQogICAg
-PiAgc3JjL29wZW52cG4vaW5pdC5jICB8ICA2ICsrLS0tLQ0KICAgID4gIHNyYy9vcGVudnBuL211
-bHRpLmMgfCAyNCArKysrKysrKysrKysrKysrKysrKysrKy0NCiAgICA+ICBzcmMvb3BlbnZwbi9w
-dXNoLmMgIHwgIDYgKystLS0tDQogICAgPiAgc3JjL29wZW52cG4vc3NsLmMgICB8ICA2ICsrKysr
-Kw0KICAgID4gIHNyYy9vcGVudnBuL3NzbC5oICAgfCAgNSArKystLQ0KICAgID4gIDUgZmlsZXMg
-Y2hhbmdlZCwgMzYgaW5zZXJ0aW9ucygrKSwgMTEgZGVsZXRpb25zKC0pDQogICAgPg0KICAgID4g
-ZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL2luaXQuYyBiL3NyYy9vcGVudnBuL2luaXQuYw0KICAg
-ID4gaW5kZXggODI0YjY2NjcuLmIzMDk2ZGM4IDEwMDY0NA0KICAgID4gLS0tIGEvc3JjL29wZW52
-cG4vaW5pdC5jDQogICAgPiArKysgYi9zcmMvb3BlbnZwbi9pbml0LmMNCiAgICA+IEBAIC0yMzQz
-LDEwICsyMzQzLDggQEAgZG9fZGVmZXJyZWRfb3B0aW9ucyhzdHJ1Y3QgY29udGV4dCAqYywgY29u
-c3QgdW5zaWduZWQgaW50IGZvdW5kKQ0KICAgID4gICAgICAgICAgfQ0KICAgID4gICNlbmRpZg0K
-ICAgID4NCiAgICA+IC0gICAgICAgIC8qIERvIG5vdCByZWdlbmVyYXRlIGtleXMgaWYgc2VydmVy
-IHNlbmRzIGFuIGV4dHJhIHB1c2ggcmVwbHkgKi8NCiAgICA+IC0gICAgICAgIGlmICghc2Vzc2lv
-bi0+a2V5W0tTX1BSSU1BUlldLmNyeXB0b19vcHRpb25zLmtleV9jdHhfYmkuaW5pdGlhbGl6ZWQN
-CiAgICA+IC0gICAgICAgICAgICAmJiAhdGxzX3Nlc3Npb25fdXBkYXRlX2NyeXB0b19wYXJhbXMo
-c2Vzc2lvbiwgJmMtPm9wdGlvbnMsICZjLT5jMi5mcmFtZSwNCiAgICA+IC0gICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZnJhbWVfZnJhZ21lbnQpKQ0KICAg
-ID4gKyAgICAgICAgaWYgKCF0bHNfc2Vzc2lvbl91cGRhdGVfY3J5cHRvX3BhcmFtcyhzZXNzaW9u
-LCAmYy0+b3B0aW9ucywgJmMtPmMyLmZyYW1lLA0KICAgID4gKyAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICBmcmFtZV9mcmFnbWVudCkpDQogICAgPiAgICAgICAg
-ICB7DQogICAgPiAgICAgICAgICAgICAgbXNnKERfVExTX0VSUk9SUywgIk9QVElPTlMgRVJST1I6
-IGZhaWxlZCB0byBpbXBvcnQgY3J5cHRvIG9wdGlvbnMiKTsNCiAgICA+ICAgICAgICAgICAgICBy
-ZXR1cm4gZmFsc2U7DQogICAgPiBkaWZmIC0tZ2l0IGEvc3JjL29wZW52cG4vbXVsdGkuYyBiL3Ny
-Yy9vcGVudnBuL211bHRpLmMNCiAgICA+IGluZGV4IGRhMGFlZWJhLi5iNDJiY2VjOSAxMDA2NDQN
-CiAgICA+IC0tLSBhL3NyYy9vcGVudnBuL211bHRpLmMNCiAgICA+ICsrKyBiL3NyYy9vcGVudnBu
-L211bHRpLmMNCiAgICA+IEBAIC0yMTM3LDggKzIxMzcsMzAgQEAgbXVsdGlfcHJvY2Vzc19maWxl
-X2Nsb3NlZChzdHJ1Y3QgbXVsdGlfY29udGV4dCAqbSwgY29uc3QgdW5zaWduZWQgaW50IG1wcF9m
-bGFncykNCiAgICA+ICAgICAgICAgIHsNCiAgICA+ICAgICAgICAgICAgICBpZiAobWkpDQogICAg
-PiAgICAgICAgICAgICAgew0KICAgID4gLSAgICAgICAgICAgICAgICAvKiBjb250aW51ZSBhdXRo
-ZW50aWNhdGlvbiBhbmQgc2VuZCBwdXNoX3JlcGx5ICovDQogICAgPiArICAgICAgICAgICAgICAg
-IC8qIGNvbnRpbnVlIGF1dGhlbnRpY2F0aW9uLCBwZXJmb3JtIE5DUCBuZWdvdGlhdGlvbiBhbmQg
-c2VuZCBwdXNoX3JlcGx5ICovDQogICAgPiAgICAgICAgICAgICAgICAgIG11bHRpX3Byb2Nlc3Nf
-cG9zdChtLCBtaSwgbXBwX2ZsYWdzKTsNCiAgICA+ICsNCiAgICA+ICsgICAgICAgICAgICAgICAg
-LyogV2l0aCBOQ1AgYW5kIGRlZmVycmVkIGF1dGhlbnRpY2F0aW9uLCB3ZSBwZXJmb3JtIGNpcGhl
-ciBuZWdvdGlhdGlvbiBhbmQNCiAgICA+ICsgICAgICAgICAgICAgICAgICogZGF0YSBjaGFubmVs
-IGtleXMgZ2VuZXJhdGlvbiBvbiBpbmNvbWluZyBwdXNoIHJlcXVlc3QsIGFzc3VtaW5nIHRoYXQg
-YXV0aA0KICAgID4gKyAgICAgICAgICAgICAgICAgKiBzdWNjZWVkZWQuIFdoZW4gYXV0aCBzdWNj
-ZWVkcyBpbiBiZXR3ZWVuIHB1c2ggcmVxdWVzdHMgYW5kIGFzeW5jIHB1c2ggaXMgdXNlZCwNCiAg
-ICA+ICsgICAgICAgICAgICAgICAgICogd2Ugc2VuZCBwdXNoIHJlcGx5IGltbWVkaWF0ZWx5LiBB
-Ym92ZSBtdWx0aV9wcm9jZXNzX3Bvc3QoKSBjYWxsIHBlcmZvcm1zDQogICAgPiArICAgICAgICAg
-ICAgICAgICAqIE5DUCBuZWdvdGlhdGlvbiBhbmQgaGVyZSB3ZSBkbyBrZXlzIGdlbmVyYXRpb24u
-ICovDQogICAgPiArDQogICAgPiArICAgICAgICAgICAgICAgIHN0cnVjdCBjb250ZXh0ICpjID0g
-Jm1pLT5jb250ZXh0Ow0KICAgID4gKyAgICAgICAgICAgICAgICBzdHJ1Y3QgZnJhbWUgKmZyYW1l
-X2ZyYWdtZW50ID0gTlVMTDsNCiAgICA+ICsjaWZkZWYgRU5BQkxFX0ZSQUdNRU5UDQogICAgPiAr
-ICAgICAgICAgICAgICAgIGlmIChjLT5vcHRpb25zLmNlLmZyYWdtZW50KQ0KICAgID4gKyAgICAg
-ICAgICAgICAgICB7DQogICAgPiArICAgICAgICAgICAgICAgICAgICBmcmFtZV9mcmFnbWVudCA9
-ICZjLT5jMi5mcmFtZV9mcmFnbWVudDsNCiAgICA+ICsgICAgICAgICAgICAgICAgfQ0KICAgID4g
-KyNlbmRpZg0KICAgID4gKyAgICAgICAgICAgICAgICBzdHJ1Y3QgdGxzX3Nlc3Npb24gKnNlc3Np
-b24gPSAmYy0+YzIudGxzX211bHRpLT5zZXNzaW9uW1RNX0FDVElWRV07DQogICAgPiArICAgICAg
-ICAgICAgICAgIGlmICghdGxzX3Nlc3Npb25fdXBkYXRlX2NyeXB0b19wYXJhbXMoc2Vzc2lvbiwg
-JmMtPm9wdGlvbnMsDQogICAgPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgJmMtPmMyLmZyYW1lLCBmcmFtZV9mcmFnbWVudCkpDQogICAgPiAr
-ICAgICAgICAgICAgICAgIHsNCiAgICA+ICsgICAgICAgICAgICAgICAgICAgIG1zZyhEX1RMU19F
-UlJPUlMsICJUTFMgRXJyb3I6IGluaXRpYWxpemluZyBkYXRhIGNoYW5uZWwgZmFpbGVkIik7DQog
-ICAgPiArICAgICAgICAgICAgICAgICAgICByZWdpc3Rlcl9zaWduYWwoYywgU0lHVVNSMSwgImlu
-aXQtZGF0YS1jaGFubmVsLWZhaWxlZCIpOw0KICAgID4gKyAgICAgICAgICAgICAgICB9DQogICAg
-PiAgICAgICAgICAgICAgfQ0KICAgID4gICAgICAgICAgICAgIGVsc2UNCiAgICA+ICAgICAgICAg
-ICAgICB7DQogICAgPiBkaWZmIC0tZ2l0IGEvc3JjL29wZW52cG4vcHVzaC5jIGIvc3JjL29wZW52
-cG4vcHVzaC5jDQogICAgPiBpbmRleCA3MWYyMmU5NC4uYWVmMDBkMzQgMTAwNjQ0DQogICAgPiAt
-LS0gYS9zcmMvb3BlbnZwbi9wdXNoLmMNCiAgICA+ICsrKyBiL3NyYy9vcGVudnBuL3B1c2guYw0K
-ICAgID4gQEAgLTI5OCwxMCArMjk4LDggQEAgaW5jb21pbmdfcHVzaF9tZXNzYWdlKHN0cnVjdCBj
-b250ZXh0ICpjLCBjb25zdCBzdHJ1Y3QgYnVmZmVyICpidWZmZXIpDQogICAgPiAgICAgICAgICAg
-ICAgfQ0KICAgID4gICNlbmRpZg0KICAgID4gICAgICAgICAgICAgIHN0cnVjdCB0bHNfc2Vzc2lv
-biAqc2Vzc2lvbiA9ICZjLT5jMi50bHNfbXVsdGktPnNlc3Npb25bVE1fQUNUSVZFXTsNCiAgICA+
-IC0gICAgICAgICAgICAvKiBEbyBub3QgcmVnZW5lcmF0ZSBrZXlzIGlmIGNsaWVudCBzZW5kIGEg
-c2Vjb25kIHB1c2ggcmVxdWVzdCAqLw0KICAgID4gLSAgICAgICAgICAgIGlmICghc2Vzc2lvbi0+
-a2V5W0tTX1BSSU1BUlldLmNyeXB0b19vcHRpb25zLmtleV9jdHhfYmkuaW5pdGlhbGl6ZWQNCiAg
-ICA+IC0gICAgICAgICAgICAgICAgJiYgIXRsc19zZXNzaW9uX3VwZGF0ZV9jcnlwdG9fcGFyYW1z
-KHNlc3Npb24sICZjLT5vcHRpb25zLA0KICAgID4gLSAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgJmMtPmMyLmZyYW1lLCBmcmFtZV9mcmFnbWVudCkp
-DQogICAgPiArICAgICAgICAgICAgaWYgKCF0bHNfc2Vzc2lvbl91cGRhdGVfY3J5cHRvX3BhcmFt
-cyhzZXNzaW9uLCAmYy0+b3B0aW9ucywNCiAgICA+ICsgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICZjLT5jMi5mcmFtZSwgZnJhbWVfZnJhZ21lbnQpKQ0K
-ICAgID4gICAgICAgICAgICAgIHsNCiAgICA+ICAgICAgICAgICAgICAgICAgbXNnKERfVExTX0VS
-Uk9SUywgIlRMUyBFcnJvcjogaW5pdGlhbGl6aW5nIGRhdGEgY2hhbm5lbCBmYWlsZWQiKTsNCiAg
-ICA+ICAgICAgICAgICAgICAgICAgZ290byBlcnJvcjsNCiAgICA+IGRpZmYgLS1naXQgYS9zcmMv
-b3BlbnZwbi9zc2wuYyBiL3NyYy9vcGVudnBuL3NzbC5jDQogICAgPiBpbmRleCBlMjEyNzlmMS4u
-NTZkMDU3NmEgMTAwNjQ0DQogICAgPiAtLS0gYS9zcmMvb3BlbnZwbi9zc2wuYw0KICAgID4gKysr
-IGIvc3JjL29wZW52cG4vc3NsLmMNCiAgICA+IEBAIC0xOTU2LDYgKzE5NTYsMTIgQEAgdGxzX3Nl
-c3Npb25fdXBkYXRlX2NyeXB0b19wYXJhbXMoc3RydWN0IHRsc19zZXNzaW9uICpzZXNzaW9uLA0K
-ICAgID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN0cnVjdCBvcHRpb25zICpv
-cHRpb25zLCBzdHJ1Y3QgZnJhbWUgKmZyYW1lLA0KICAgID4gICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgIHN0cnVjdCBmcmFtZSAqZnJhbWVfZnJhZ21lbnQpDQogICAgPiAgew0KICAg
-ID4gKyAgICBpZiAoc2Vzc2lvbi0+a2V5W0tTX1BSSU1BUlldLmNyeXB0b19vcHRpb25zLmtleV9j
-dHhfYmkuaW5pdGlhbGl6ZWQpDQogICAgPiArICAgIHsNCiAgICA+ICsgICAgICAgIC8qIGtleXMg
-YWxyZWFkeSBnZW5lcmF0ZWQsIG5vdGhpbmcgdG8gZG8gKi8NCiAgICA+ICsgICAgICAgIHJldHVy
-biB0cnVlOw0KICAgID4gKyAgICB9DQogICAgPiArDQogICAgPiAgICAgIGlmICghc2Vzc2lvbi0+
-b3B0LT5zZXJ2ZXINCiAgICA+ICAgICAgICAgICYmIDAgIT0gc3RyY21wKG9wdGlvbnMtPmNpcGhl
-cm5hbWUsIHNlc3Npb24tPm9wdC0+Y29uZmlnX2NpcGhlcm5hbWUpDQogICAgPiAgICAgICAgICAm
-JiAhdGxzX2l0ZW1faW5fY2lwaGVyX2xpc3Qob3B0aW9ucy0+Y2lwaGVybmFtZSwgb3B0aW9ucy0+
-bmNwX2NpcGhlcnMpKQ0KICAgID4gZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL3NzbC5oIGIvc3Jj
-L29wZW52cG4vc3NsLmgNCiAgICA+IGluZGV4IDM0NDlkOTFlLi5mMGE4ZWY1NCAxMDA2NDQNCiAg
-ICA+IC0tLSBhL3NyYy9vcGVudnBuL3NzbC5oDQogICAgPiArKysgYi9zcmMvb3BlbnZwbi9zc2wu
-aA0KICAgID4gQEAgLTQ3NCw3ICs0NzQsOCBAQCB2b2lkIHRsc191cGRhdGVfcmVtb3RlX2FkZHIo
-c3RydWN0IHRsc19tdWx0aSAqbXVsdGksDQogICAgPg0KICAgID4gIC8qKg0KICAgID4gICAqIFVw
-ZGF0ZSBUTFMgc2Vzc2lvbiBjcnlwdG8gcGFyYW1ldGVycyAoY2lwaGVyIGFuZCBhdXRoKSBhbmQg
-ZGVyaXZlIGRhdGENCiAgICA+IC0gKiBjaGFubmVsIGtleXMgYmFzZWQgb24gdGhlIHN1cHBsaWVk
-IG9wdGlvbnMuDQogICAgPiArICogY2hhbm5lbCBrZXlzIGJhc2VkIG9uIHRoZSBzdXBwbGllZCBv
-cHRpb25zLiBEb2VzIG5vdGhpbmcgaWYga2V5cyBhcmUgYWxyZWFkeQ0KICAgID4gKyAqIGdlbmVy
-YXRlZC4NCiAgICA+ICAgKg0KICAgID4gICAqIEBwYXJhbSBzZXNzaW9uICAgICAgICAgVGhlIFRM
-UyBzZXNzaW9uIHRvIHVwZGF0ZS4NCiAgICA+ICAgKiBAcGFyYW0gb3B0aW9ucyAgICAgICAgIFRo
-ZSBvcHRpb25zIHRvIHVzZSB3aGVuIHVwZGF0aW5nIHNlc3Npb24uDQogICAgPiBAQCAtNDgyLDcg
-KzQ4Myw3IEBAIHZvaWQgdGxzX3VwZGF0ZV9yZW1vdGVfYWRkcihzdHJ1Y3QgdGxzX211bHRpICpt
-dWx0aSwNCiAgICA+ICAgKiAgICAgICAgICAgICAgICAgICAgICAgIGFkanVzdGVkIGJhc2VkIG9u
-IHRoZSBzZWxlY3RlZCBjaXBoZXIvYXV0aCkuDQogICAgPiAgICogQHBhcmFtIGZyYW1lX2ZyYWdt
-ZW50ICBUaGUgZnJhZ21lbnQgZnJhbWUgb3B0aW9ucy4NCiAgICA+ICAgKg0KICAgID4gLSAqIEBy
-ZXR1cm4gdHJ1ZSBpZiB1cGRhdGluZyBzdWNjZWVkZWQsIGZhbHNlIG90aGVyd2lzZS4NCiAgICA+
-ICsgKiBAcmV0dXJuIHRydWUgaWYgdXBkYXRpbmcgc3VjY2VlZGVkIG9yIGtleXMgYXJlIGFscmVh
-ZHkgZ2VuZXJhdGVkLCBmYWxzZSBvdGhlcndpc2UuDQogICAgPiAgICovDQogICAgPiAgYm9vbCB0
-bHNfc2Vzc2lvbl91cGRhdGVfY3J5cHRvX3BhcmFtcyhzdHJ1Y3QgdGxzX3Nlc3Npb24gKnNlc3Np
-b24sDQogICAgPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzdHJ1Y3Qg
-b3B0aW9ucyAqb3B0aW9ucywNCiAgICA+IC0tDQogICAgPiAyLjE3LjENCiAgICA+DQogICAgDQog
-ICAgDQogICAgLS0gDQogICAgLUxldg0KICAgIA0KICAgIA0KICAgIF9fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQogICAgT3BlbnZwbi1kZXZlbCBtYWlsaW5n
-IGxpc3QNCiAgICBPcGVudnBuLWRldmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldA0KICAgIGh0dHBz
-Oi8vbGlzdHMuc291cmNlZm9yZ2UubmV0L2xpc3RzL2xpc3RpbmZvL29wZW52cG4tZGV2ZWwNCiAg
-ICANCg==
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--6VAoLyfGtOGCNwkRCuPVF8Pk5WaJsflnX
+Content-Type: multipart/mixed; boundary="vQqElskgbqfy07XsRpNhB2KITnaJnVM4R";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <536e526e-30c0-c1a1-aff6-1681a9210d7a@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH v6 5/5] Normalise ncp-ciphers option and
+ restrict it to 127 bytes
+References: <20200309135133.GA1431@...1296...>
+ <20200312113654.16184-1-arne@...1227...>
+In-Reply-To: <20200312113654.16184-1-arne@...1227...>
+
+--vQqElskgbqfy07XsRpNhB2KITnaJnVM4R
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+On 12/03/2020 12:36, Arne Schwabe wrote:
+> In scenarios of mbed TLS vs OpenSSL we already normalise the ciphers
+> that are send via the wire protocol via OCC to not have a mismatch
+> warning between server and client. This is done by
+> translate_cipher_name_from_openvpn. The same applies also to the
+> ncp-ciphers list. Specifying non normalised names in ncp-ciphers will
+> cause negotation not to succeed if ciphers are not in the same form.
+> Therefore we will normalise the ciphers in options_postmutate.
+>=20
+> The alternative and a lot less user friendly alternative would be to
+> bail if on of the ciphers in ncp-ciphers is not in its normalised form.
+>=20
+> Also restrict the ncp-ciphers list to 127. This is somewhat arbitrary
+> but should prevent too large IV_CIPHER messages and problems sending
+> those. The server will accept also large IV_CIPHER values from clients.
+>=20
+> Patch V2: Correct comment about normalising ciphers
+> Patch V3: Correct #ifdef statement
+> Patch V5: Fix tests with OpenSSL 1.0.2 and libraries missing Chacha
+> Patch V6: Fix unit tests for mbed tls, which recognises ChaCha20-Poly1305
+>           only when used with all uppercase, fix missing space in message
+>=20
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> ---
+>  doc/openvpn.8                       |  3 ++
+>  src/openvpn/options.c               | 14 ++++---
+>  src/openvpn/ssl_ncp.c               | 57 +++++++++++++++++++++++++----
+>  src/openvpn/ssl_ncp.h               | 19 +++++++++-
+>  tests/unit_tests/openvpn/test_ncp.c | 54 +++++++++++++++++++++++----
+>  5 files changed, 125 insertions(+), 22 deletions(-)
+>=20
+
+I've only done quick code review and built it on RHEL7 not finding any issu=
+es.
+ Code looks reasonable, so I don't see any reason to hold this back any mor=
+e.
+
+Acked-by: David Sommerseth <davids@...515...>
+
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
+
+
+
+--vQqElskgbqfy07XsRpNhB2KITnaJnVM4R--
+
+--6VAoLyfGtOGCNwkRCuPVF8Pk5WaJsflnX
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJefhmIAAoJEIbPlEyWcf3ykzYQAKblitrhhCTUv7YHgfqomAla
+KrkVelyOmFoKncBnrbXdTxN9uS5uma4lUeflz0bGTBP085ncm7ogKTiOzt9X/kEm
+YzmfL+K1BZmby+uzQnXUktli/1k9hOjmF6VXk8o7dFYbRjgCDG/4Ckug1aKKYufC
+yyk5wcgpF/8uRnDuzJWHfhVpwpzsmrzWb+665Cmn3jSsEoSI7cQQgG1+rhVsitMx
+flkMvA6cwBtorsBNyBzvnIGFyj7wTs2aA/PPfp/wOxbGAJuJJhhaZvh+hOY/RtEH
+32DLpqGsMMnDXGVzcTP9HvSpaD61htxYAGNZrepMLv0cmvrZR6MHfjKGa8v1N16Z
+5lLopB18tiayWfMuSS3VNJxEO0JZrE1uMw0uAe656pqgQTccdTQoqx8RsVt9pVVg
+AMNKMydrSm2+AJq4dUhuSgUDM/naiACmzllLvNw+u3VC8ESr/XeR21tLTRnVx0d0
+8DXXTZMeYuqlxAvk4G2Rv8beQS+eW7a0O9lqRnfMg+H9+emYE4E5WYpFxebsNon/
+tDzEnJkgxMAW9KD49SIdq9OqBO2AhpoYUFIi0dSOxCBWH+FUeZ0NZNl6cWx5BKJl
+h3PjK9xE7Sq2RfhKlECYP/JsPny6DAN4UY9o4dtlY/nOldDNemCBK0a+pEgav00p
+0qmkf/aHyTYFnLjy5WW7
+=CWno
+-----END PGP SIGNATURE-----
+
+--6VAoLyfGtOGCNwkRCuPVF8Pk5WaJsflnX--
+
