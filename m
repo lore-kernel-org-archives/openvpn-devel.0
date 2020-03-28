@@ -1,14 +1,14 @@
-References: <20191109151306.18597-1-arne@...1227...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <fe900dd6-ea47-af72-d055-f741d0214f1f@...2080...>
-Date: Fri, 27 Mar 2020 16:31:25 +0100
+Date: Sat, 28 Mar 2020 12:33:27 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20200328113327.GO1431@...1296...>
+References: <20191116102835.22883-1-arne@...1227...>
+ <2ce5e07d-ac3d-4034-c2e1-56a00cb332bc@...2080...>
 MIME-Version: 1.0
-In-Reply-To: <20191109151306.18597-1-arne@...1227...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="gcwFXpznsbMxvXEUWMwUm1FIYvE3eypM9"
-Subject: Re: [Openvpn-devel] [PATCH v2 1/5] Implement parsing and sending
- INFO and INFO_PRE control messages
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="WZgDvI3PL8w3LDGC"
+Content-Disposition: inline
+In-Reply-To: <2ce5e07d-ac3d-4034-c2e1-56a00cb332bc@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] Reformat all source files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,139 +17,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <openvpn@...2080...>
+Cc: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---gcwFXpznsbMxvXEUWMwUm1FIYvE3eypM9
-Content-Type: multipart/mixed; boundary="1xLyC3bFeDKY4HXQhggnBY9aH2YhqY1VB";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <fe900dd6-ea47-af72-d055-f741d0214f1f@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH v2 1/5] Implement parsing and sending INFO
- and INFO_PRE control messages
-References: <20191109151306.18597-1-arne@...1227...>
-In-Reply-To: <20191109151306.18597-1-arne@...1227...>
-
---1xLyC3bFeDKY4HXQhggnBY9aH2YhqY1VB
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
+--WZgDvI3PL8w3LDGC
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 09/11/2019 16:13, Arne Schwabe wrote:
-> OpenVPN 3 implements these messages to send information during the
-> authentication to the UI, implement these message also in OpenVPN 2.x
+Hi,
+
+On Fri, Mar 27, 2020 at 04:24:00PM +0100, David Sommerseth wrote:
+> On 16/11/2019 11:28, Arne Schwabe wrote:
+> > Over time some patches slipped in that were not 100% complient to uncru=
+stify
+> > This rerun fixes those issues
+[..]
+> Only done quick code review and RHEL-7 build.  Changes looks reasonable a=
+nd is
+> by far closer to what I would expect our coding style to look like.
 >=20
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  src/openvpn/forward.c |  8 ++++++++
->  src/openvpn/push.c    | 33 +++++++++++++++++++++++++++++++++
->  src/openvpn/push.h    |  3 +++
->  3 files changed, 44 insertions(+)
->=20
-> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-> index 8451706b..0f735384 100644
-> --- a/src/openvpn/forward.c
-> +++ b/src/openvpn/forward.c
-> @@ -395,6 +395,14 @@ check_incoming_control_channel_dowork(struct context=
- *c)
->              {
->                  server_pushed_signal(c, &buf, false, 4);
->              }
-> +            else if (buf_string_match_head_str(&buf, "INFO_PRE"))
-> +            {
-> +                server_pushed_info(c, &buf, 8);
-> +            }
-> +            else if (buf_string_match_head_str(&buf, "INFO"))
-> +            {
-> +                server_pushed_info(c, &buf, 4);
-> +            }
->              else
->              {
->                  msg(D_PUSH_ERRORS, "WARNING: Received unknown control me=
-ssage: %s", BSTR(&buf));
-> diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-> index 368b6920..ee1cb980 100644
-> --- a/src/openvpn/push.c
-> +++ b/src/openvpn/push.c
-> @@ -178,6 +178,39 @@ server_pushed_signal(struct context *c, const struct=
- buffer *buffer, const bool
->      }
->  }
->=20=20
-> +void
-> +server_pushed_info(struct context *c, const struct buffer *buffer,
-> +                   const int adv)
-> +{
-> +    const char *m =3D "";
-> +    struct buffer buf =3D *buffer;
-> +
-> +    if (buf_advance(&buf, adv) && buf_read_u8(&buf) =3D=3D ',' && BLEN(&=
-buf))
-> +    {
-> +        m =3D BSTR(&buf);
-> +    }
-> +
-> +#ifdef ENABLE_MANAGEMENT
-> +    struct gc_arena gc;
-> +    if (management)
-> +    {
-> +        gc =3D gc_new();
-> +
-> +        /*
-> +         * We use >INFOMSG here instead of plain >INFO since INFO is use=
-d to
-> +         * for management greeting and we don't want to confuse the clie=
-nt
-> +         */
-> +        struct buffer out =3D alloc_buf_gc(256, &gc);
-> +        buf_printf(&out, ">%s:%s", "INFOMSG", m);
-> +        management_notify_generic(management, BSTR(&out));
-> +
-> +        gc_free(&gc);
-> +    }
-> +    #endif
+> Acked-By: David Sommerseth <davids@...515...>
 
-The indent of this #endif is wrong.  Wouldn't harm with an "/*
-ENABLE_MANAGEMENT */" comment as well.  This could be fixed at merge time.
+... but it does not apply to current git master...?
 
-Otherwise, this looks good.
+Applying: Reformat all source files
+error: patch failed: src/openvpn/tun.c:3418
+error: src/openvpn/tun.c: patch does not apply
+Patch failed at 0001 Reformat all source files
 
-Acked-By: David Sommerseth <davids@...515...>
-
+gert
 
 --=20
-kind regards,
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-David Sommerseth
-OpenVPN Inc
+Gert Doering - Munich, Germany                             gert@...1296...
 
-
-
---1xLyC3bFeDKY4HXQhggnBY9aH2YhqY1VB--
-
---gcwFXpznsbMxvXEUWMwUm1FIYvE3eypM9
+--WZgDvI3PL8w3LDGC
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJefhxNAAoJEIbPlEyWcf3y2EsQAJoKQSi3bzewt3B+B/ZYXZ4R
-BZTDuev6v9kbVpoe6M/F6QT6KfUsg0EeBlZHtwZ4EE540xZvFnf4h4tTutDMN+RB
-969sLdujl5ak0VgKLcO5EHAZwi6/cbacd9bv/C7TLbXrNprzGO9ykWx3xBVxM4UJ
-6av+dylVZvp1oX44tMYFJlIA2bCT/z3POM8N/tyz+yqrmcIxRThpMeI9L5PQb0nl
-gRiqtkqw4JjE06OfUzm3OQt0SZA1OF9vrHha1WXlSRILUo4V14LETM11eHc93JaM
-9+CLsIH4OpuP6xE2tESHVAwWtAgmVznxwSc9ceX8GrsKJnUDALbI1BMwa4yUmibz
-8RDv1jKyjnSj/EBKQ+B3fJ6bNClMT9NJC8j9mBJyYwZWNPMNeZDfak/TX5659p4p
-nsjcjiFsFe3AUoe2hvpJ8u4zmhJQGsmrSe7jTSfEiiB1APo0h4AymAWHO5jz/v/3
-LqN1bS9dux06upJJ9Sgkelac8LBH+JoN4jS0o0mkD/nyWdiL5n3EhMqn6q9/O19L
-egFVylnDuo6JvY+77G4Cun3e7kwyyGpRgmkA8Gfv0EhbwTrggsH14WrMUvLjKI9c
-hHqTTr15Z5AT99JRb6oRBOifzew2rap2DT2HXKNnoN8kMIB7P6gUZhgP6uvp2k/1
-XrovO/aF3hamOKSLDPaS
-=v1wq
+iQGcBAEBAgAGBQJefzYGAAoJEB2Cnv7KVigS62IL+gJjJ5hrBnuhzshax+uhQu0L
+vqfuweA0d3k3pHYT9FtF9vLlpPTc76YgSNqGd8+UIxrDf1jb096lqm5++aeuuIBV
+oSRbWls8zXBXlnuOJq5vNY5HupdK7JWDyQ1v16ylu94C0Db8ABexmSd8k9v91Xw1
+gurJ8uvyf2TSCycoe1Mi09cxcb71WYy3XRKx3NijKrNESqWH0Dj3GQUXYDF3uTze
+6I2TnesAc/Gf7eTM9+Ji9+HsgNlwLACJojfPFZB2lLHlahJ+MbMDCDuISTlWjxab
+BNaUCk86bVq6KYOgu5eqr7DSCRyX3/w4Oft6G+TZWXk6R37mQldGt6iy6gYN0EvQ
+8/ixmJGQGH07dHmqZr+MgNbwXhnR8aPlBgULUKXB31P+YqCYV8F7v5Y3ByccwIdo
+hEkC/W6KYrILeHQMpwW4WG7QUF8Tk+UT8Nb8nnn0Q/fyJIvlbM+KeKoTETKV00OJ
+L2BDyjC/66o4/sQc26k67+BqFGLGHRl+lwpLkOe6zA==
+=ZRRo
 -----END PGP SIGNATURE-----
 
---gcwFXpznsbMxvXEUWMwUm1FIYvE3eypM9--
+--WZgDvI3PL8w3LDGC--
 
