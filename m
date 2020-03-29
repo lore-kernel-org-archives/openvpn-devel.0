@@ -1,8 +1,10 @@
 From: selva.nair@...277...
-Date: Sun, 29 Mar 2020 16:32:49 -0400
-Message-Id: <1585513970-32658-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH 1/2] Move querying username/password from
- management to a function
+Date: Sun, 29 Mar 2020 16:32:50 -0400
+Message-Id: <1585513970-32658-2-git-send-email-selva.nair@...277...>
+In-Reply-To: <1585513970-32658-1-git-send-email-selva.nair@...277...>
+References: <1585513970-32658-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH 2/2] When auth-user-pass file has no
+ password, query the management
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,88 +19,94 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-This helps the next patch. No functionality changes, only
-refactoring.
+If only username is found in the file, redirect the auth-user-pass
+query to the management on Windows if (i) management-query-passwords
+is enabled and (ii) stdout is redirected to a log file. These
+restrictions avoid regressive behaviour: those running from the
+command line will continue to get the prompt on the console
+and if both username and password are in the file those will
+continue to get used.
+
+Note that the management will prompt for both username and password
+ignoring the username read from the file. As the GUI saves the
+username, this is a one-time inconvenience.
+
+Currently, the password is queried on the console (or systemd)
+in such cases. This is not sensible on windows if log file is
+redirected (prompt goes to the log file), or the console
+is not available as happens when the GUI is in use.
+
+Trac # 757
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- src/openvpn/misc.c | 54 ++++++++++++++++++++++++++++++++++--------------------
- 1 file changed, 34 insertions(+), 20 deletions(-)
+ src/openvpn/error.c |  9 +++++++++
+ src/openvpn/error.h |  3 +++
+ src/openvpn/misc.c  | 17 +++++++++++++++++
+ 3 files changed, 29 insertions(+)
 
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index 1931149..0d5ac30 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -116,6 +116,38 @@ hostname_randomize(const char *hostname, struct gc_arena *gc)
- #undef n_rnd_bytes
+diff --git a/src/openvpn/error.c b/src/openvpn/error.c
+index ad4f0ef..8ce6873 100644
+--- a/src/openvpn/error.c
++++ b/src/openvpn/error.c
+@@ -190,6 +190,15 @@ errors_to_stderr(void)
  }
  
-+#ifdef ENABLE_MANAGEMENT
-+/* Get username/password from the management interface */
-+static bool
-+auth_user_pass_mgmt(struct user_pass *up, const char *prefix, const unsigned int flags,
-+                    const char *auth_challenge)
-+{
-+    const char *sc = NULL;
-+
-+    if (flags & GET_USER_PASS_PREVIOUS_CREDS_FAILED)
-+    {
-+        management_auth_failure(management, prefix, "previous auth credentials failed");
-+    }
-+
-+    if (auth_challenge && (flags & GET_USER_PASS_STATIC_CHALLENGE))
-+    {
-+        sc = auth_challenge;
-+    }
-+    if (!management_query_user_pass(management, up, prefix, flags, sc))
-+    {
-+        if ((flags & GET_USER_PASS_NOFATAL) != 0)
-+        {
-+            return false;
-+        }
-+        else
-+        {
-+            msg(M_FATAL, "ERROR: could not read %s username/password/ok/string from management interface", prefix);
-+        }
-+    }
-+    return true;
-+}
-+#endif
-+
  /*
-  * Get and store a username/password
++ * Return true if stdout is redirected to log file
++ */
++bool
++is_stdout_redirected(void)
++{
++    return std_redir;
++}
++
++/*
+  * Return a file to print messages to before syslog is opened.
   */
-@@ -149,28 +181,10 @@ get_user_pass_cr(struct user_pass *up,
-             && (!from_authfile && (flags & GET_USER_PASS_MANAGEMENT))
-             && management_query_user_pass_enabled(management))
-         {
--            const char *sc = NULL;
-             response_from_stdin = false;
--
--            if (flags & GET_USER_PASS_PREVIOUS_CREDS_FAILED)
-+            if (!auth_user_pass_mgmt(up, prefix, flags, auth_challenge))
+ FILE *
+diff --git a/src/openvpn/error.h b/src/openvpn/error.h
+index eaedf17..5078f6a 100644
+--- a/src/openvpn/error.h
++++ b/src/openvpn/error.h
+@@ -398,6 +398,9 @@ nonfatal(const unsigned int err)
+     return err & M_FATAL ? (err ^ M_FATAL) | M_NONFATAL : err;
+ }
+ 
++/** Return true if stdout is redirected to log file */
++bool is_stdout_redirected(void);
++
+ #include "errlevel.h"
+ 
+ #endif /* ifndef ERROR_H */
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index 0d5ac30..02afd98 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -261,6 +261,23 @@ get_user_pass_cr(struct user_pass *up,
              {
--                management_auth_failure(management, prefix, "previous auth credentials failed");
--            }
--
--            if (auth_challenge && (flags & GET_USER_PASS_STATIC_CHALLENGE))
--            {
--                sc = auth_challenge;
--            }
--            if (!management_query_user_pass(management, up, prefix, flags, sc))
--            {
--                if ((flags & GET_USER_PASS_NOFATAL) != 0)
--                {
--                    return false;
--                }
--                else
--                {
--                    msg(M_FATAL, "ERROR: could not read %s username/password/ok/string from management interface", prefix);
--                }
-+                return false;
+                 strncpy(up->password, password_buf, USER_PASS_LEN);
              }
-         }
-         else
++            /* The auth-file does not have the password: if we are on Windows
++             * and stdout has been redirected to log file, try to get both username
++             * and password from the management.
++             * Otherwise set to read password from console.
++             */
++#if defined(ENABLE_MANAGEMENT) && defined(_WIN32)
++            else if (is_stdout_redirected()
++                     && management
++                     && (flags & GET_USER_PASS_MANAGEMENT)
++                     && management_query_user_pass_enabled(management))
++            {
++                if (!auth_user_pass_mgmt(up, prefix, flags, auth_challenge))
++                {
++                    return false;
++                }
++            }
++#endif
+             else
+             {
+                 password_from_stdin = 1;
 -- 
 2.1.4
 
