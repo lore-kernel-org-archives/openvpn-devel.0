@@ -1,15 +1,19 @@
-References: <20191116102835.22883-1-arne@...1227...>
- <2ce5e07d-ac3d-4034-c2e1-56a00cb332bc@...2080...>
- <20200328113327.GO1431@...1296...>
+References: <961fb2b3-ca10-1549-3ec8-a408e0072e2f@...515...>
+ <CAFdgGSB4qc1KsfQB+67oub+P2J7pMPb6W6d6jZzgZzsB7m_0Og@...278...>
+ <20191222183308.GP74723@...1296...>
+ <CAFdgGSD5EzgzOqRCDaaBe45qUvqV-NmcKU3ZVmwOdBnw4MUSbg@...278...>
+ <20191224083553.GD74723@...1296...>
+ <ca5fdf6f-b731-7fed-70d3-90154bc40616@...2542...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <172c2cf6-c27e-4b53-7867-83a01fb16b60@...2080...>
-Date: Sun, 29 Mar 2020 23:54:36 +0200
+Message-ID: <03be009a-553e-abe9-6a0a-8a230e7e956a@...2080...>
+Date: Mon, 30 Mar 2020 00:13:17 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200328113327.GO1431@...1296...>
+In-Reply-To: <ca5fdf6f-b731-7fed-70d3-90154bc40616@...2542...>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="l89nJe8zlhxGzkqDIfsVBxUA6jzOBu7C4"
-Subject: Re: [Openvpn-devel] [PATCH] Reformat all source files
+ boundary="BjBiPapBvO5Sz1FjI9KwUaV6PfyMe1OwM"
+Subject: Re: [Openvpn-devel] [Openvpn-users] Removing --disable-server
+ option from OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,73 +22,85 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: Radu Hociung <radu.ovpndev@...2542...>, openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---l89nJe8zlhxGzkqDIfsVBxUA6jzOBu7C4
-Content-Type: multipart/mixed; boundary="I21nTQfjvKQKovYYwG9SWFDkwG1nLnEer";
+--BjBiPapBvO5Sz1FjI9KwUaV6PfyMe1OwM
+Content-Type: multipart/mixed; boundary="PdkqbiJK0vyJVACgVHDl3E8xJyOvYBv7t";
  protected-headers="v1"
 From: David Sommerseth <openvpn@...2080...>
-To: Gert Doering <gert@...1296...>
-Cc: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <172c2cf6-c27e-4b53-7867-83a01fb16b60@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Reformat all source files
-References: <20191116102835.22883-1-arne@...1227...>
- <2ce5e07d-ac3d-4034-c2e1-56a00cb332bc@...2080...>
- <20200328113327.GO1431@...1296...>
-In-Reply-To: <20200328113327.GO1431@...1296...>
+To: Radu Hociung <radu.ovpndev@...2542...>,
+ openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+Message-ID: <03be009a-553e-abe9-6a0a-8a230e7e956a@...2080...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] Removing --disable-server option
+ from OpenVPN
+References: <961fb2b3-ca10-1549-3ec8-a408e0072e2f@...515...>
+ <CAFdgGSB4qc1KsfQB+67oub+P2J7pMPb6W6d6jZzgZzsB7m_0Og@...278...>
+ <20191222183308.GP74723@...1296...>
+ <CAFdgGSD5EzgzOqRCDaaBe45qUvqV-NmcKU3ZVmwOdBnw4MUSbg@...278...>
+ <20191224083553.GD74723@...1296...>
+ <ca5fdf6f-b731-7fed-70d3-90154bc40616@...2542...>
+In-Reply-To: <ca5fdf6f-b731-7fed-70d3-90154bc40616@...2542...>
 
---I21nTQfjvKQKovYYwG9SWFDkwG1nLnEer
+--PdkqbiJK0vyJVACgVHDl3E8xJyOvYBv7t
 Content-Language: en-US
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 28/03/2020 12:33, Gert Doering wrote:
-> Hi,
+On 28/02/2020 20:18, Radu Hociung wrote:
+> I would recommend that rather than removing the useful bit of
+> documentation that is P2MP_SERVER, the developers consider:
 >=20
-> On Fri, Mar 27, 2020 at 04:24:00PM +0100, David Sommerseth wrote:
->> On 16/11/2019 11:28, Arne Schwabe wrote:
->>> Over time some patches slipped in that were not 100% complient to uncru=
-stify
->>> This rerun fixes those issues
-> [..]
->> Only done quick code review and RHEL-7 build.  Changes looks reasonable =
-and is
->> by far closer to what I would expect our coding style to look like.
->>
->> Acked-By: David Sommerseth <davids@...515...>
+> 1. Restructure the source tree to split the src/openvpn code into
+>    src/{common,client,server}
 >=20
-> ... but it does not apply to current git master...?
+> 2. Remove the configure --disable-server option, but add Makefile rules
+>    to build separate client, server and combined binaries, while
+>    also enabling distro maintainers to package openvpn-server and
+>    openvpn-client separately, from the same tarball. The combined
+>    binary can be used to build drop-in replacement packages.
 >=20
-> Applying: Reformat all source files
-> error: patch failed: src/openvpn/tun.c:3418
-> error: src/openvpn/tun.c: patch does not apply
-> Patch failed at 0001 Reformat all source files
+> 3. Improve the test suite to verify the inter-operability of the
+>    3 binaries.
+>=20
+> 4. Separate the manpage into a server and a client edition.
 
-Ahh, sorry ... I did the reviews based on Arne's github tree [1], so I could
-compile test them.  And I trust him enough to not do any stupid stunts in h=
-is
-tree.  His icsopenvpn branch has all of the stuff I've reviewed; that branch
-rebased against our latest master without any hickups.
+I've not had the capacity to go through your detailed mail too closely.  Bu=
+t I
+consider these 4 points to be a reasonable TL;DR version.
 
-Unfortunately git apply is (rightfully) super picky about conflicts.
+Yes, this all sounds lovely.  But I wonder who will have time to work on su=
+ch
+work?  This work will require quite some efforts to avoid duplicating too m=
+uch
+of what already exists in options.c and openvpn.c; which would be the start=
+ing
+point for such a task.
 
-Not sure now what would be the best approach forward. Picking the commit
-contents from a rebased icsopenvpn branch would be one way (I can provide
-commitish references I reviewed, if needed).  Another approach is for Arne =
-to
-resend rebased patches to ML.
+In addition, such a change has a big possibility to break a lot of existing
+configurations via package upgrades - as in this case the unified openvpn w=
+ill
+no longer exists but be split into two different binaries.
 
-As we have several patch series lingering in our mail queue, we should look=
- at
-alternatives pulling in patches which would go smoother and allow a better
-flexibility for all of us (submitter, reviewer and committer) while keeping
-the review and commit process decentralized.  But that's a longer discussion
-we need to take in a different place than this thread.
+To be honest, I think it makes more sense to put efforts into the OpenVPN 3
+code base, which already is ready for such a split.  On top of getting such=
+ a
+split in place, you would get a higher performance as the OpenVPN 3 code is
+more efficient than OpenVPN 2.x.  But OpenVPN 3 does not support all the use
+cases OpenVPN 2.x does.
 
+I hate to be so pessimistic, but I doubt any of the current core OpeVPN
+community developers will have capacity to get such a job done in the near
+future.  We already struggle to get the current open patches for review
+processed, in addition to get OpenVPN 2.5 ready.  More people helping out
+reviewing patches thoroughly would certainly help us move forward.
 
-[1] <https://github.com/schwabe/openvpn>
+Btw, in regards to the man page.  On my plate, in time for the 2.5 release,=
+ I
+will redo the formatting of the man page from ?roff format to some .rst fil=
+es
+(and parse that to ?roff format during packaging).  This is just the first
+step to get the man page in an easier editable format than what it is today.
 
 
 --=20
@@ -95,9 +111,9 @@ OpenVPN Inc
 
 
 
---I21nTQfjvKQKovYYwG9SWFDkwG1nLnEer--
+--PdkqbiJK0vyJVACgVHDl3E8xJyOvYBv7t--
 
---l89nJe8zlhxGzkqDIfsVBxUA6jzOBu7C4
+--BjBiPapBvO5Sz1FjI9KwUaV6PfyMe1OwM
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -105,20 +121,20 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJegRklAAoJEIbPlEyWcf3y6XAP/R0AU7p7mC3fGIoOBkaJp9Ol
-TZqr5gz2JuQdZUIHYmzitvuBtI4Trtafv9TlgaiGFXktNmcFi+bAytvmnLxkvXx7
-9+TdgUTDavqmhgDOskImskikKU/1P5h38zE2KOeLkH1fOSwqoxjSFgupOxBWoqZz
-HjZfTyMJTftCdAoRf1vw+h8U57MPVnumJleaYFERXgpD7tZ0JxUsVATBEhlyfdGL
-Jxd41zTvcLyLWMdjV35Xb3q/mkLQTIhSRn4Yj/9tikS1Gn6jvPhtGklDCmcO40F/
-C3KBJgM2pcJtZQm8gghD0L88t8RtFssIlznGSy86QouAz1qfXCtbAhVYXQqozJsM
-u8q3ZdlzLnALmEG+q2HZ4O0uUMnymJq8J0w47E4gSnYM0r2ac2U/n+YXuda5we8W
-Yuondr4tNnqfoiz3E4fDdhdPdyVayA0WnutId8yOJOZ7XrictQUIgsQtyk/HkRGB
-UIFFB3t6y8mG5urF6ZLT65o+ghhf77WyGP8m2VfRD07U2TzEcl3AfX9p3EA5mTeZ
-7/KPrdpSjb2vUFqILqql4Unk0iFZiPSnbF1TC8lm0wkbhB2Y+LfaaWBb3LmTiV0w
-hUGEugMBRBazGs41ZiumRGypEyG7ZIOhHgazF6hK4fOsmOL2E+q1+AdOl92KSJPl
-FQClDd1LKCpG5cohBRXs
-=TwaB
+iQIcBAEBCgAGBQJegR19AAoJEIbPlEyWcf3yIGgQAK0JFJ1arrLFprG9W+bqBi4z
+PRnXGDVuhoKpn8zWWidUwDN0HsuXg2Jn3pnC73mzd0QehceJAHtFn2RIny4SK8JI
+zKDpaDN8gMjqUkxD8qhuAHqc6tbpURIhhmFjz/kM2PcTUHSodw+Qyuh/k9a/KT5W
+c4bhjIdbH8dO8USTQFuUjCvnw1G8tD6lSwWWfdECjLz9xQpVKMnxyNt213PZZjFx
+QU2nHznKmRJVS/Pnq4jr3ob552QsuItMxtAYy1/6s4NJk7Gumn8at9y1mA1by2nz
+C9wESVlE3LRfo9zqVKMvCPpzYZpO+C2LHJQB1wyvhUFMKDGRc2eLVozds633V/3T
+b3vra9K1y7ZiwNDPa60m8i4Jk0bPzpoFsQriimcGxEqgqEr+xo17W2CL3FLvLb2D
+8ZGcrlrmIvq9Sur603D5J1ZuARyi4E9sJCtz+Gu3BAYiMQpgiFpIxueAkL/oBc0B
+tE5Wv6Nq4Pun0Imd/8vWzNgCmQypgmPxJCzwn/4jP7xVL0SNZo6pMaQdMhcVQx2B
+rdVMTaMZ+zfwfK35s0iRFJxdY4E2yb4VkbXP2gevyaJD6VgHsfI/mHsPwkTXFe3K
+f0O0Dueg/Cyi96W0TEi7DvVd7p/SjpYC+aJBIinR9EwuD/DlU5Me2mJHU9IEOpTA
+lzUlLTEaRFhuQ23qVgiQ
+=jB9t
 -----END PGP SIGNATURE-----
 
---l89nJe8zlhxGzkqDIfsVBxUA6jzOBu7C4--
+--BjBiPapBvO5Sz1FjI9KwUaV6PfyMe1OwM--
 
