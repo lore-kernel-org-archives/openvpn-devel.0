@@ -1,15 +1,9 @@
-References: <20191116102835.22883-1-arne@...1227...>
- <2ce5e07d-ac3d-4034-c2e1-56a00cb332bc@...2080...>
- <20200328113327.GO1431@...1296...>
- <172c2cf6-c27e-4b53-7867-83a01fb16b60@...2080...>
- <20200330055501.GT1431@...1296...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <958dec70-30ca-6583-5ddf-641c9d8ac739@...2181...>
-Date: Mon, 30 Mar 2020 09:11:07 +0200
+From: Paolo Cerrito <wardragon78@...277...>
+Date: Mon, 30 Mar 2020 14:44:28 +0200
+Message-Id: <20200330124427.764219-1-wardragon78@...277...>
 MIME-Version: 1.0
-In-Reply-To: <20200330055501.GT1431@...1296...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Reformat all source files
+Subject: [Openvpn-devel] [Openvpn-Devel] [PATCH v4] Insert client connection
+ data into PAM environment
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,62 +12,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>, David Sommerseth <openvpn@...2080...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Paolo Cerrito <paolo.cerrito@...2517...>
 
-Hi,
+From: Paolo Cerrito <paolo.cerrito@...2517...>
 
-On 30/03/2020 07:55, Gert Doering wrote:
->> Not sure now what would be the best approach forward. Picking the commit
->> contents from a rebased icsopenvpn branch would be one way (I can provide
->> commitish references I reviewed, if needed).  Another approach is for Arne to
->> resend rebased patches to ML.
-> 
-> Well, our current defined process is "we review, test and merge *exactly*
-> what is on the list".
-> 
-> So, ACKing list patches based on "some other tree" is doubtful at best
-> (for initial review and discussion, fine, but for the final ACK?), and
-> "have something on the list and then merge something else" is also
-> clearly violating the "everything must be transparent, and no code changes
-> compared to what is archived in a public archive".
-> 
+1) changed again remote lenght, we have to consider only the lenght op
+   ipv6 address into form nnnn:nnnn:nnnn:nnnn:nnnn:ddd.ddd.ddd.ddd not
+   the mask, so we have max lenght of 45 plus terminator.
 
-I totally agree with Gert here.
+2) refactored calls to get_env, now we make one call to take ipv6
+address, the if it's NULL, we try to get ipv4 address.
 
-> 
-> We can change this, of course, but even then it needs to be fairly 
-> transparent what was exactly was ACKed and merged (and what, if anything,
-> was changed between ACK and merge).
-> 
+---
+ src/plugins/auth-pam/auth-pam.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-IMHO we should not change the process - git repos can go, while emails
-remains in archives so it's possible to see the whole flow later in the
-future.
-
-IMHO the best course of action would be:
-1. David reviewing the git branch
-2. David privatelly talking to Arne and eventually saying "all patches
-look good! I consider them ready for merging"
-3. Arne sends the rebased patches to the mailing list
-4. David checks that the patches are still the same he reviewed
-5. David ACKs the patches on the mailing list in a public way.
-
-I think this process would allow us to be super transparent and would
-allow everybody to chime in until the very last minute.
-
-The other upside is that point 1 and 2 can be repeated as much as needed
-until David is satisfied, without spamming the ml.
-
-
-my 2 cents.
-
-Cheers,
-
-
-
+diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
+index b55a2ecd..ae0d495a 100644
+--- a/src/plugins/auth-pam/auth-pam.c
++++ b/src/plugins/auth-pam/auth-pam.c
+@@ -115,7 +115,7 @@ struct user_pass {
+     char password[128];
+     char common_name[128];
+     char response[128];
+-    char remote[51]; //51 as ipv6 form n:n:n:n:n:n:d.d.d.d/mask and terminator+1
++    char remote[46]; //46 as ipv6 form n:n:n:n:n:n:d.d.d.d and + terminator \0
+ 
+     const struct name_value_list *name_value_list;
+ };
 -- 
-Antonio Quartulli
+2.26.0
+
 
