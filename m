@@ -1,10 +1,11 @@
 From: selva.nair@...277...
-Date: Mon, 30 Mar 2020 14:05:26 -0400
-Message-Id: <1585591527-23734-1-git-send-email-selva.nair@...277...>
-In-Reply-To: <1585513970-32658-2-git-send-email-selva.nair@...277...>
+Date: Mon, 30 Mar 2020 14:05:27 -0400
+Message-Id: <1585591527-23734-2-git-send-email-selva.nair@...277...>
+In-Reply-To: <1585591527-23734-1-git-send-email-selva.nair@...277...>
 References: <1585513970-32658-2-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH v2 1/2] Move querying username/password from
- management to a function
+ <1585591527-23734-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH v2 2/2] When auth-user-pass file has no
+ password, query the management
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,90 +20,61 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-This helps the next patch. No functionality changes, only
-refactoring.
+When only username is found in the file, redirect the auth-user-pass
+query to the management if management-query-passwords is enabled.
+Otherwise the user is prompted on console, if available, as before.
+
+This changes the behaviour for those who run from the command line,
+with --management-query-passwords, but still expect the prompt
+on the console.
+
+Note that the management will prompt for both username and password
+ignoring the username read from the file. As most GUIs can save the
+the username, this is a one-time inconvenience.
+
+Currently, the password is queried on the console (or systemd)
+in such cases. This is not sensible when console is not available
+(windows GUI, tunnelblick etc.) or when the log is redirected
+to a file on Windows (for some reason prompt goes to the log file).
+
+Trac # 757
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
-No changes from v1
 
- src/openvpn/misc.c | 54 ++++++++++++++++++++++++++++++++++--------------------
- 1 file changed, 34 insertions(+), 20 deletions(-)
+v2: Following discussions with Jonathan and Gert, removed the dependence
+on stdout redirection and applied to all platforms.
+
+ src/openvpn/misc.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
 diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index 1931149..0d5ac30 100644
+index 0d5ac30..546cd71 100644
 --- a/src/openvpn/misc.c
 +++ b/src/openvpn/misc.c
-@@ -116,6 +116,38 @@ hostname_randomize(const char *hostname, struct gc_arena *gc)
- #undef n_rnd_bytes
- }
- 
-+#ifdef ENABLE_MANAGEMENT
-+/* Get username/password from the management interface */
-+static bool
-+auth_user_pass_mgmt(struct user_pass *up, const char *prefix, const unsigned int flags,
-+                    const char *auth_challenge)
-+{
-+    const char *sc = NULL;
-+
-+    if (flags & GET_USER_PASS_PREVIOUS_CREDS_FAILED)
-+    {
-+        management_auth_failure(management, prefix, "previous auth credentials failed");
-+    }
-+
-+    if (auth_challenge && (flags & GET_USER_PASS_STATIC_CHALLENGE))
-+    {
-+        sc = auth_challenge;
-+    }
-+    if (!management_query_user_pass(management, up, prefix, flags, sc))
-+    {
-+        if ((flags & GET_USER_PASS_NOFATAL) != 0)
-+        {
-+            return false;
-+        }
-+        else
-+        {
-+            msg(M_FATAL, "ERROR: could not read %s username/password/ok/string from management interface", prefix);
-+        }
-+    }
-+    return true;
-+}
-+#endif
-+
- /*
-  * Get and store a username/password
-  */
-@@ -149,28 +181,10 @@ get_user_pass_cr(struct user_pass *up,
-             && (!from_authfile && (flags & GET_USER_PASS_MANAGEMENT))
-             && management_query_user_pass_enabled(management))
-         {
--            const char *sc = NULL;
-             response_from_stdin = false;
--
--            if (flags & GET_USER_PASS_PREVIOUS_CREDS_FAILED)
-+            if (!auth_user_pass_mgmt(up, prefix, flags, auth_challenge))
+@@ -261,6 +261,22 @@ get_user_pass_cr(struct user_pass *up,
              {
--                management_auth_failure(management, prefix, "previous auth credentials failed");
--            }
--
--            if (auth_challenge && (flags & GET_USER_PASS_STATIC_CHALLENGE))
--            {
--                sc = auth_challenge;
--            }
--            if (!management_query_user_pass(management, up, prefix, flags, sc))
--            {
--                if ((flags & GET_USER_PASS_NOFATAL) != 0)
--                {
--                    return false;
--                }
--                else
--                {
--                    msg(M_FATAL, "ERROR: could not read %s username/password/ok/string from management interface", prefix);
--                }
-+                return false;
+                 strncpy(up->password, password_buf, USER_PASS_LEN);
              }
-         }
-         else
++            /* The auth-file does not have the password: get both username
++             * and password from the management if possible.
++             * Otherwise set to read password from console.
++             */
++#if defined(ENABLE_MANAGEMENT)
++            else if (management
++                     && (flags & GET_USER_PASS_MANAGEMENT)
++                     && management_query_user_pass_enabled(management))
++            {
++                msg(D_LOW, "No password found in %s authfile '%s'. Querying the management", prefix, auth_file);
++                if (!auth_user_pass_mgmt(up, prefix, flags, auth_challenge))
++                {
++                    return false;
++                }
++            }
++#endif
+             else
+             {
+                 password_from_stdin = 1;
 -- 
 2.1.4
 
