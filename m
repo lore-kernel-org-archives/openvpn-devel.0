@@ -1,17 +1,15 @@
-Date: Mon, 30 Mar 2020 08:07:54 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200330060754.GU1431@...1296...>
-References: <1585513970-32658-1-git-send-email-selva.nair@...277...>
- <1585513970-32658-2-git-send-email-selva.nair@...277...>
- <CAEsd45RgM7Uh55jKS=Sqz_Wy+0r_j649WvE1w6ki7V4oMjt+UQ@...278...>
- <CAKuzo_hp5ojMrr0KmnHVR335uJ58QTveuqC5C9Brqv-SUq_nTA@...278...>
+References: <20191116102835.22883-1-arne@...1227...>
+ <2ce5e07d-ac3d-4034-c2e1-56a00cb332bc@...2080...>
+ <20200328113327.GO1431@...1296...>
+ <172c2cf6-c27e-4b53-7867-83a01fb16b60@...2080...>
+ <20200330055501.GT1431@...1296...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <958dec70-30ca-6583-5ddf-641c9d8ac739@...2181...>
+Date: Mon, 30 Mar 2020 09:11:07 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="nxYNCXDYxq7LsJhQ"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_hp5ojMrr0KmnHVR335uJ58QTveuqC5C9Brqv-SUq_nTA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 2/2] When auth-user-pass file has no
- password, query the management
+In-Reply-To: <20200330055501.GT1431@...1296...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] Reformat all source files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,69 +18,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: "Jonathan K. Bullard" <jkbullard@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---nxYNCXDYxq7LsJhQ
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>, David Sommerseth <openvpn@...2080...>
+Cc: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Sun, Mar 29, 2020 at 07:58:15PM -0400, Selva Nair wrote:
-> Yes, that's right. However, that logic wont be proper on OS-X, would it?
-> Command line users who use --log can still see password
-> prompt on /dev/tty. We'll be breaking that behaviour.
->=20
-> I considered checking for env vars like IV_UI_VER set by the UI
-> client, but that's not readily accessible from auth_user_pass_cr()
-> call. Alternatives like checking whether /dev/tty can be opened and/or
-> systemd is available didn't appeal to me. If at all, that would have
-> to be a separate patch.
+On 30/03/2020 07:55, Gert Doering wrote:
+>> Not sure now what would be the best approach forward. Picking the commit
+>> contents from a rebased icsopenvpn branch would be one way (I can provide
+>> commitish references I reviewed, if needed).  Another approach is for Arne to
+>> resend rebased patches to ML.
+> 
+> Well, our current defined process is "we review, test and merge *exactly*
+> what is on the list".
+> 
+> So, ACKing list patches based on "some other tree" is doubtful at best
+> (for initial review and discussion, fine, but for the final ACK?), and
+> "have something on the list and then merge something else" is also
+> clearly violating the "everything must be transparent, and no code changes
+> compared to what is archived in a public archive".
+> 
 
-Not sure if the case "there is an active management client, and=20
---management-query-passwords is set, but we *could* ask on /dev/tty"=20
-is really worth considering.
+I totally agree with Gert here.
 
-(There might be cases where the management interface is not used
-for password prompting, in which case /dev/tty is the way to go).
+> 
+> We can change this, of course, but even then it needs to be fairly 
+> transparent what was exactly was ACKed and merged (and what, if anything,
+> was changed between ACK and merge).
+> 
 
-Not sure I'd worry too much about systemd here - as far as I understand,
-this is somewhat orthogonal to "management interface".  So if run from
-systemd, and querying via systemd, you have no management client=20
-connected.
+IMHO we should not change the process - git repos can go, while emails
+remains in archives so it's possible to see the whole flow later in the
+future.
 
-Am I making sense?  It's monday morning, halfway through my first cup
-of tea :-)
+IMHO the best course of action would be:
+1. David reviewing the git branch
+2. David privatelly talking to Arne and eventually saying "all patches
+look good! I consider them ready for merging"
+3. Arne sends the rebased patches to the mailing list
+4. David checks that the patches are still the same he reviewed
+5. David ACKs the patches on the mailing list in a public way.
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+I think this process would allow us to be super transparent and would
+allow everybody to chime in until the very last minute.
 
-Gert Doering - Munich, Germany                             gert@...1296...
+The other upside is that point 1 and 2 can be repeated as much as needed
+until David is satisfied, without spamming the ml.
 
---nxYNCXDYxq7LsJhQ
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+my 2 cents.
 
-iQGcBAEBAgAGBQJegYy5AAoJEB2Cnv7KVigSTl4L/1gf+zun161PoHAdTn8qC1ZS
-uwVpsHka/Ms2ryy7ZLSkZlF8/LHRTNyiUu9emzW33Mod3+iWOB/Y02UQ6j2zjLnc
-ntU4HJGamsIjgwt1shLM6ygL4ZLiczbvghb98EJyxP+kjePrjdF4t8zuI0I/apJD
-596BfMrvfb+ae+xR+35DNJ02AaPpvFSMr6CfvUybjympnZllLTKifxjFDot5OrN/
-imWkscdjYXyt9B+xGlFSLeovxl+C4wxhQdhCwpK3Tgu/Fw4Giy9DMhWeX2AIlUxf
-V2LXCzLXC6u0dibKdnyi5J3+S3yQUFGPkYJtS18nLx8xaUuCw1eYeumZCN+sLBfU
-bsJ31Cc57ryjaYh4rWXPEQPWWzOtC1jbLHnUJWhUmUu+Zd3ipnYRieOV09Pqbvw6
-fAiQ8RYRhMfumQxvMOepHDkrjSoRxX5IbIk5MOEhQ9wQaGaFwl+v8kQ7Rpm3ytWT
-aEWJmnuOdoK9euh+Jk5b10wPvVq22ftkPGJyiihtWQ==
-=glTB
------END PGP SIGNATURE-----
+Cheers,
 
---nxYNCXDYxq7LsJhQ--
+
+
+-- 
+Antonio Quartulli
 
