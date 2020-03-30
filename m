@@ -1,14 +1,16 @@
+Date: Mon, 30 Mar 2020 07:55:01 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20200330055501.GT1431@...1296...>
+References: <20191116102835.22883-1-arne@...1227...>
+ <2ce5e07d-ac3d-4034-c2e1-56a00cb332bc@...2080...>
+ <20200328113327.GO1431@...1296...>
+ <172c2cf6-c27e-4b53-7867-83a01fb16b60@...2080...>
 MIME-Version: 1.0
-References: <1585513970-32658-1-git-send-email-selva.nair@...277...>
- <1585513970-32658-2-git-send-email-selva.nair@...277...>
- <CAEsd45RgM7Uh55jKS=Sqz_Wy+0r_j649WvE1w6ki7V4oMjt+UQ@...278...>
- <CAKuzo_hp5ojMrr0KmnHVR335uJ58QTveuqC5C9Brqv-SUq_nTA@...278...>
-In-Reply-To: <CAKuzo_hp5ojMrr0KmnHVR335uJ58QTveuqC5C9Brqv-SUq_nTA@...278...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Mon, 30 Mar 2020 01:22:18 -0400
-Message-ID: <CAEsd45SL-U7a7QJfLZXy5Z74iqSqC8V+cvCWL_gAD2hVcJGd1g@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 2/2] When auth-user-pass file has no
- password, query the management
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="Kqu4dxz3gYjPH61T"
+Content-Disposition: inline
+In-Reply-To: <172c2cf6-c27e-4b53-7867-83a01fb16b60@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] Reformat all source files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,54 +19,83 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: David Sommerseth <openvpn@...2080...>
+Cc: Gert Doering <gert@...1296...>, Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+
+--Kqu4dxz3gYjPH61T
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On Sun, Mar 29, 2020 at 7:58 PM Selva Nair <selva.nair@...277...> wrote:
->
-> Hi,
->
-> On Sun, Mar 29, 2020 at 7:13 PM Jonathan K. Bullard <jkbullard@...277...> wrote:
-<snip>
-> > On a Mac using Tunnelblick (which uses the management interface with
-> > management-query-passwords enabled), if the auth-user-pass file
-> > contains only the password (and a LF), then the following occurs:
-> >
-> >      neither stdin nor stderr are a tty device and you have neither a
-> > controlling tty nor systemd - can't ask for 'Enter Auth Password:'.
-> > If you used --daemon, you need to use --askpass to make
-> > passphrase-protected keys work, and you can not use --auth-nocache.
-> >      Exiting due to fatal error
->
-> In those cases it looks obviously wrong to use auth-file with username
-> only, and I would consider that a user error. The purpose of
-> my patch was to handle only some naive usages where the user
-> expects the console prompt to get automatically directed to the GUI.
-> Indeed, that does happen (from user's POV) for all cases except user-pass
-> with only username in a file.
->
-> But I agree, we should do something like this for other GUIs such as
-> tunnelblick too.
->
-> >
-> > Note: Tunnelblick uses the "--log" option to redirect output to a
-> > file. I am assuming that's what is meant by "stdout is redirected to a
-> > log file".
->
-> Yes, that's right. However, that logic wont be proper on OS-X, would it?
-> Command line users who use --log can still see password
-> prompt on /dev/tty. We'll be breaking that behaviour.
+On Sun, Mar 29, 2020 at 11:54:36PM +0200, David Sommerseth wrote:
+> > Applying: Reformat all source files
+> > error: patch failed: src/openvpn/tun.c:3418
+> > error: src/openvpn/tun.c: patch does not apply
+> > Patch failed at 0001 Reformat all source files
+>=20
+> Ahh, sorry ... I did the reviews based on Arne's github tree [1], so I co=
+uld
+> compile test them.  And I trust him enough to not do any stupid stunts in=
+ his
+> tree.  His icsopenvpn branch has all of the stuff I've reviewed; that bra=
+nch
+> rebased against our latest master without any hickups.
+>=20
+> Unfortunately git apply is (rightfully) super picky about conflicts.
+>=20
+> Not sure now what would be the best approach forward. Picking the commit
+> contents from a rebased icsopenvpn branch would be one way (I can provide
+> commitish references I reviewed, if needed).  Another approach is for Arn=
+e to
+> resend rebased patches to ML.
 
-If the OS X command line user was using --management-query-passwords
-(as Tunnelblick does), they wouldn't see the password prompt on
-/dev/tty, would they? Your patch checks for that, so wouldn't you only
-need to change
-     && defined(_WIN32)
-to something like
-     && (defined(_WIN32) || TARGET_OSX)
- (and add OS X to the comment at the start of the patch).
+Well, our current defined process is "we review, test and merge *exactly*
+what is on the list".
+
+So, ACKing list patches based on "some other tree" is doubtful at best
+(for initial review and discussion, fine, but for the final ACK?), and
+"have something on the list and then merge something else" is also
+clearly violating the "everything must be transparent, and no code changes
+compared to what is archived in a public archive".
+
+
+We can change this, of course, but even then it needs to be fairly=20
+transparent what was exactly was ACKed and merged (and what, if anything,
+was changed between ACK and merge).
+
+It would make my life easier to be able to do minor code changes on
+the fly, or do larger adjustments like for the argv<->tun.c adjustments,
+but we need to be very clear that we change the process.
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--Kqu4dxz3gYjPH61T
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJegYm0AAoJEB2Cnv7KVigSW9UL/iO5UJDIsngC8yP7pcNB+IYt
+8NEg/Q7X32zYzwGTrkjjjqAsamJbZ9fxF5ZIM1sq+ouYGW3hiaQbOzIYBB0w0dXt
+rK1Lpz9umTF2JH6IoYXouHdhbgmmFU1sbjQlCY+Vu+kskvN7Zvwle8+gl/U6unsV
+JmVeuv8L2NQadvXz03Pm7/RK/IcqbFM3wvYMlcdRlv5uanucsgMH1qFpxJxT34N+
+QHi5nZgVmC/YVNxAcpS+o9EtWscqnZZTdEQNKsW7GBYBC7JSkP3Uqwu+vrwbEr4l
+FsPHpDKQYrXvxP+Hdx4k2w1Q0GaomPlrtzIS1YaSK/1satq/GuzfANnLuxDPgjgY
+jx8tZTq2kYa7ybky9RAgfoRR+LHFLQ8J5hIJd1Z36ZgP1mp1ZMkVD0X5h130V1wI
+5yNfW7FoXf4+/kXAcnNepOGP0DmCTcg8fAxbooubZ+1NZI14UGr2E2DKQU72TMNm
+CP9ITk8lUcEiA8ZACg8KiKSHBy83XWH9pEQJwSb9nA==
+=j3Yx
+-----END PGP SIGNATURE-----
+
+--Kqu4dxz3gYjPH61T--
 
