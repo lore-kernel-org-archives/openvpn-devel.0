@@ -1,16 +1,17 @@
-Date: Mon, 30 Mar 2020 07:55:01 +0200
+Date: Mon, 30 Mar 2020 08:07:54 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20200330055501.GT1431@...1296...>
-References: <20191116102835.22883-1-arne@...1227...>
- <2ce5e07d-ac3d-4034-c2e1-56a00cb332bc@...2080...>
- <20200328113327.GO1431@...1296...>
- <172c2cf6-c27e-4b53-7867-83a01fb16b60@...2080...>
+Message-ID: <20200330060754.GU1431@...1296...>
+References: <1585513970-32658-1-git-send-email-selva.nair@...277...>
+ <1585513970-32658-2-git-send-email-selva.nair@...277...>
+ <CAEsd45RgM7Uh55jKS=Sqz_Wy+0r_j649WvE1w6ki7V4oMjt+UQ@...278...>
+ <CAKuzo_hp5ojMrr0KmnHVR335uJ58QTveuqC5C9Brqv-SUq_nTA@...278...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="Kqu4dxz3gYjPH61T"
+ protocol="application/pgp-signature"; boundary="nxYNCXDYxq7LsJhQ"
 Content-Disposition: inline
-In-Reply-To: <172c2cf6-c27e-4b53-7867-83a01fb16b60@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Reformat all source files
+In-Reply-To: <CAKuzo_hp5ojMrr0KmnHVR335uJ58QTveuqC5C9Brqv-SUq_nTA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 2/2] When auth-user-pass file has no
+ password, query the management
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,55 +20,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn@...2080...>
-Cc: Gert Doering <gert@...1296...>, Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: "Jonathan K. Bullard" <jkbullard@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Kqu4dxz3gYjPH61T
+--nxYNCXDYxq7LsJhQ
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Sun, Mar 29, 2020 at 11:54:36PM +0200, David Sommerseth wrote:
-> > Applying: Reformat all source files
-> > error: patch failed: src/openvpn/tun.c:3418
-> > error: src/openvpn/tun.c: patch does not apply
-> > Patch failed at 0001 Reformat all source files
+On Sun, Mar 29, 2020 at 07:58:15PM -0400, Selva Nair wrote:
+> Yes, that's right. However, that logic wont be proper on OS-X, would it?
+> Command line users who use --log can still see password
+> prompt on /dev/tty. We'll be breaking that behaviour.
 >=20
-> Ahh, sorry ... I did the reviews based on Arne's github tree [1], so I co=
-uld
-> compile test them.  And I trust him enough to not do any stupid stunts in=
- his
-> tree.  His icsopenvpn branch has all of the stuff I've reviewed; that bra=
-nch
-> rebased against our latest master without any hickups.
->=20
-> Unfortunately git apply is (rightfully) super picky about conflicts.
->=20
-> Not sure now what would be the best approach forward. Picking the commit
-> contents from a rebased icsopenvpn branch would be one way (I can provide
-> commitish references I reviewed, if needed).  Another approach is for Arn=
-e to
-> resend rebased patches to ML.
+> I considered checking for env vars like IV_UI_VER set by the UI
+> client, but that's not readily accessible from auth_user_pass_cr()
+> call. Alternatives like checking whether /dev/tty can be opened and/or
+> systemd is available didn't appeal to me. If at all, that would have
+> to be a separate patch.
 
-Well, our current defined process is "we review, test and merge *exactly*
-what is on the list".
+Not sure if the case "there is an active management client, and=20
+--management-query-passwords is set, but we *could* ask on /dev/tty"=20
+is really worth considering.
 
-So, ACKing list patches based on "some other tree" is doubtful at best
-(for initial review and discussion, fine, but for the final ACK?), and
-"have something on the list and then merge something else" is also
-clearly violating the "everything must be transparent, and no code changes
-compared to what is archived in a public archive".
+(There might be cases where the management interface is not used
+for password prompting, in which case /dev/tty is the way to go).
 
+Not sure I'd worry too much about systemd here - as far as I understand,
+this is somewhat orthogonal to "management interface".  So if run from
+systemd, and querying via systemd, you have no management client=20
+connected.
 
-We can change this, of course, but even then it needs to be fairly=20
-transparent what was exactly was ACKed and merged (and what, if anything,
-was changed between ACK and merge).
-
-It would make my life easier to be able to do minor code changes on
-the fly, or do larger adjustments like for the argv<->tun.c adjustments,
-but we need to be very clear that we change the process.
+Am I making sense?  It's monday morning, halfway through my first cup
+of tea :-)
 
 gert
 --=20
@@ -80,22 +67,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---Kqu4dxz3gYjPH61T
+--nxYNCXDYxq7LsJhQ
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJegYm0AAoJEB2Cnv7KVigSW9UL/iO5UJDIsngC8yP7pcNB+IYt
-8NEg/Q7X32zYzwGTrkjjjqAsamJbZ9fxF5ZIM1sq+ouYGW3hiaQbOzIYBB0w0dXt
-rK1Lpz9umTF2JH6IoYXouHdhbgmmFU1sbjQlCY+Vu+kskvN7Zvwle8+gl/U6unsV
-JmVeuv8L2NQadvXz03Pm7/RK/IcqbFM3wvYMlcdRlv5uanucsgMH1qFpxJxT34N+
-QHi5nZgVmC/YVNxAcpS+o9EtWscqnZZTdEQNKsW7GBYBC7JSkP3Uqwu+vrwbEr4l
-FsPHpDKQYrXvxP+Hdx4k2w1Q0GaomPlrtzIS1YaSK/1satq/GuzfANnLuxDPgjgY
-jx8tZTq2kYa7ybky9RAgfoRR+LHFLQ8J5hIJd1Z36ZgP1mp1ZMkVD0X5h130V1wI
-5yNfW7FoXf4+/kXAcnNepOGP0DmCTcg8fAxbooubZ+1NZI14UGr2E2DKQU72TMNm
-CP9ITk8lUcEiA8ZACg8KiKSHBy83XWH9pEQJwSb9nA==
-=j3Yx
+iQGcBAEBAgAGBQJegYy5AAoJEB2Cnv7KVigSTl4L/1gf+zun161PoHAdTn8qC1ZS
+uwVpsHka/Ms2ryy7ZLSkZlF8/LHRTNyiUu9emzW33Mod3+iWOB/Y02UQ6j2zjLnc
+ntU4HJGamsIjgwt1shLM6ygL4ZLiczbvghb98EJyxP+kjePrjdF4t8zuI0I/apJD
+596BfMrvfb+ae+xR+35DNJ02AaPpvFSMr6CfvUybjympnZllLTKifxjFDot5OrN/
+imWkscdjYXyt9B+xGlFSLeovxl+C4wxhQdhCwpK3Tgu/Fw4Giy9DMhWeX2AIlUxf
+V2LXCzLXC6u0dibKdnyi5J3+S3yQUFGPkYJtS18nLx8xaUuCw1eYeumZCN+sLBfU
+bsJ31Cc57ryjaYh4rWXPEQPWWzOtC1jbLHnUJWhUmUu+Zd3ipnYRieOV09Pqbvw6
+fAiQ8RYRhMfumQxvMOepHDkrjSoRxX5IbIk5MOEhQ9wQaGaFwl+v8kQ7Rpm3ytWT
+aEWJmnuOdoK9euh+Jk5b10wPvVq22ftkPGJyiihtWQ==
+=glTB
 -----END PGP SIGNATURE-----
 
---Kqu4dxz3gYjPH61T--
+--nxYNCXDYxq7LsJhQ--
 
