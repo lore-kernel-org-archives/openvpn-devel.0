@@ -1,10 +1,16 @@
-From: Tom van Leeuwen <tom.van.leeuwen@...2499...>
-Date: Tue, 31 Mar 2020 09:14:37 +0200
-Message-Id: <20200331071437.12708-1-tom.van.leeuwen@...2499...>
-In-Reply-To: <660664bc-d745-0786-6857-a08b722af6ba@...2181...>
-References: <660664bc-d745-0786-6857-a08b722af6ba@...2181...>
+References: <20200330125719.766763-1-wardragon78@...277...>
+ <CAKuzo_gCZ_GMf6m88xnR-BeDh9umtj+CVemrKA+d-phKnDJwBA@...278...>
+ <44f9ff30-920a-6d0a-6f77-7de6111c04dc@...277...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <1f5fa79f-ad65-0a99-3d91-c7f86f522b2d@...1227...>
+Date: Tue, 31 Mar 2020 11:23:17 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] mbedTLS: Make sure TLS session survives move
+In-Reply-To: <44f9ff30-920a-6d0a-6f77-7de6111c04dc@...277...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="7Pqu9qAfo1WAADS9UwCxZM1i9tUO1b1Mo"
+Subject: Re: [Openvpn-devel] [PATCH] [PATCH v5 1/1] Insert client connection
+ data into PAM environment
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,206 +19,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Paolo <wardragon78@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--7Pqu9qAfo1WAADS9UwCxZM1i9tUO1b1Mo
+Content-Type: multipart/mixed; boundary="S6yS54MwJKq5qXOvfpHhfgDyEQj1auLJp"
+
+--S6yS54MwJKq5qXOvfpHhfgDyEQj1auLJp
+Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Tom van Leeuwen <tom.van.leeuwen@...2545...>
+Content-Transfer-Encoding: quoted-printable
 
-From: Tom van Leeuwen <tom.van.leeuwen@...2545...>
+Am 31.03.20 um 09:34 schrieb Paolo:
+> So,
+> as you asked, now a make the complete patch from diff from master and my
+> branch, making the change to remote lenght.
+>=20
 
-When a client disconnects from a server compiled with mbedTLS, the server
-cannot process the PUSH_REQUEST from a new connection with the same client
-IP and port number. This is the case when the client binds to a static port.
+Your patch got mangled very badly for me:
 
-This behavior is initiated by move_session(), which copies the content of the
-tls_session to a new session and re-initializes the old session once the new
-session is authenticated.
-This tls_session contains, among other things, an mbedtls_ssl_config and 
-bio_ctx structure. However, the mbedtls context has internal pointers to the
-mbedtls_ssl_config and bio_ctx. When the session is moved, these internal
-pointers point to the reinitialized session and as a result all received
-packets that are stored in the bio_ctx of the moved session can never be read
-by the mbedtls session. The PUSH_REQUEST is therefore never seen by the server.
+>     -=C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=
+=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82  || send_string(context-&gt;foregrou=
+nd_fd,
+>       common_name) =3D=3D -1)<br>
+>       +=C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=
+=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82  || send_string(context-&gt;foregrou=
+nd_fd,
+>       common_name) =3D=3D -1<br>
+>       +=C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=
+=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82  || send_string(context-&gt;foregrou=
+nd_fd, remote)
 
-Since there is no public method to update these internal pointers, this
-patch dynamically allocates the mbedtls_ssl_config and bio_ctx and stores
-the pointers to those structures in the tls_session instead.
+Can you try to resend it with git send email or even as an attachment
+that does not get reformatted would help.
 
-Trac #880
+Arne
 
-Signed-off-by: Tom van Leeuwen <tom.van.leeuwen@...2545...>
 
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index 0f0b035b..4f194ad7 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -1036,21 +1036,22 @@ key_state_ssl_init(struct key_state_ssl *ks_ssl,
-     CLEAR(*ks_ssl);
- 
-     /* Initialise SSL config */
--    mbedtls_ssl_config_init(&ks_ssl->ssl_config);
--    mbedtls_ssl_config_defaults(&ks_ssl->ssl_config, ssl_ctx->endpoint,
-+    ALLOC_OBJ_CLEAR(ks_ssl->ssl_config, mbedtls_ssl_config);
-+    mbedtls_ssl_config_init(ks_ssl->ssl_config);
-+    mbedtls_ssl_config_defaults(ks_ssl->ssl_config, ssl_ctx->endpoint,
-                                 MBEDTLS_SSL_TRANSPORT_STREAM, MBEDTLS_SSL_PRESET_DEFAULT);
- #ifdef MBEDTLS_DEBUG_C
-     mbedtls_debug_set_threshold(3);
- #endif
--    mbedtls_ssl_conf_dbg(&ks_ssl->ssl_config, my_debug, NULL);
--    mbedtls_ssl_conf_rng(&ks_ssl->ssl_config, mbedtls_ctr_drbg_random,
-+    mbedtls_ssl_conf_dbg(ks_ssl->ssl_config, my_debug, NULL);
-+    mbedtls_ssl_conf_rng(ks_ssl->ssl_config, mbedtls_ctr_drbg_random,
-                          rand_ctx_get());
- 
--    mbedtls_ssl_conf_cert_profile(&ks_ssl->ssl_config, &ssl_ctx->cert_profile);
-+    mbedtls_ssl_conf_cert_profile(ks_ssl->ssl_config, &ssl_ctx->cert_profile);
- 
-     if (ssl_ctx->allowed_ciphers)
-     {
--        mbedtls_ssl_conf_ciphersuites(&ks_ssl->ssl_config, ssl_ctx->allowed_ciphers);
-+        mbedtls_ssl_conf_ciphersuites(ks_ssl->ssl_config, ssl_ctx->allowed_ciphers);
-     }
- 
-     /* Disable record splitting (for now).  OpenVPN assumes records are sent
-@@ -1058,35 +1059,35 @@ key_state_ssl_init(struct key_state_ssl *ks_ssl,
-      * testing.  Since OpenVPN is not susceptible to BEAST, we can just
-      * disable record splitting as a quick fix. */
- #if defined(MBEDTLS_SSL_CBC_RECORD_SPLITTING)
--    mbedtls_ssl_conf_cbc_record_splitting(&ks_ssl->ssl_config,
-+    mbedtls_ssl_conf_cbc_record_splitting(ks_ssl->ssl_config,
-                                           MBEDTLS_SSL_CBC_RECORD_SPLITTING_DISABLED);
- #endif /* MBEDTLS_SSL_CBC_RECORD_SPLITTING */
- 
-     /* Initialise authentication information */
-     if (is_server)
-     {
--        mbed_ok(mbedtls_ssl_conf_dh_param_ctx(&ks_ssl->ssl_config,
-+        mbed_ok(mbedtls_ssl_conf_dh_param_ctx(ks_ssl->ssl_config,
-                                               ssl_ctx->dhm_ctx));
-     }
- 
--    mbed_ok(mbedtls_ssl_conf_own_cert(&ks_ssl->ssl_config, ssl_ctx->crt_chain,
-+    mbed_ok(mbedtls_ssl_conf_own_cert(ks_ssl->ssl_config, ssl_ctx->crt_chain,
-                                       ssl_ctx->priv_key));
- 
-     /* Initialise SSL verification */
- #if P2MP_SERVER
-     if (session->opt->ssl_flags & SSLF_CLIENT_CERT_OPTIONAL)
-     {
--        mbedtls_ssl_conf_authmode(&ks_ssl->ssl_config, MBEDTLS_SSL_VERIFY_OPTIONAL);
-+        mbedtls_ssl_conf_authmode(ks_ssl->ssl_config, MBEDTLS_SSL_VERIFY_OPTIONAL);
-     }
-     else if (!(session->opt->ssl_flags & SSLF_CLIENT_CERT_NOT_REQUIRED))
- #endif
-     {
--        mbedtls_ssl_conf_authmode(&ks_ssl->ssl_config, MBEDTLS_SSL_VERIFY_REQUIRED);
-+        mbedtls_ssl_conf_authmode(ks_ssl->ssl_config, MBEDTLS_SSL_VERIFY_REQUIRED);
-     }
--    mbedtls_ssl_conf_verify(&ks_ssl->ssl_config, verify_callback, session);
-+    mbedtls_ssl_conf_verify(ks_ssl->ssl_config, verify_callback, session);
- 
-     /* TODO: mbed TLS does not currently support sending the CA chain to the client */
--    mbedtls_ssl_conf_ca_chain(&ks_ssl->ssl_config, ssl_ctx->ca_chain, ssl_ctx->crl);
-+    mbedtls_ssl_conf_ca_chain(ks_ssl->ssl_config, ssl_ctx->ca_chain, ssl_ctx->crl);
- 
-     /* Initialize minimum TLS version */
-     {
-@@ -1103,7 +1104,7 @@ key_state_ssl_init(struct key_state_ssl *ks_ssl,
-             tls_version_to_major_minor(tls_version_min, &major, &minor);
-         }
- 
--        mbedtls_ssl_conf_min_version(&ks_ssl->ssl_config, major, minor);
-+        mbedtls_ssl_conf_min_version(ks_ssl->ssl_config, major, minor);
-     }
- 
-     /* Initialize maximum TLS version */
-@@ -1116,7 +1117,7 @@ key_state_ssl_init(struct key_state_ssl *ks_ssl,
-         {
-             int major, minor;
-             tls_version_to_major_minor(tls_version_max, &major, &minor);
--            mbedtls_ssl_conf_max_version(&ks_ssl->ssl_config, major, minor);
-+            mbedtls_ssl_conf_max_version(ks_ssl->ssl_config, major, minor);
-         }
-     }
- 
-@@ -1124,7 +1125,7 @@ key_state_ssl_init(struct key_state_ssl *ks_ssl,
-     /* Initialize keying material exporter */
-     if (session->opt->ekm_size)
-     {
--        mbedtls_ssl_conf_export_keys_ext_cb(&ks_ssl->ssl_config,
-+        mbedtls_ssl_conf_export_keys_ext_cb(ks_ssl->ssl_config,
-                 mbedtls_ssl_export_keys_cb, session);
-     }
- #endif
-@@ -1132,11 +1133,11 @@ key_state_ssl_init(struct key_state_ssl *ks_ssl,
-     /* Initialise SSL context */
-     ALLOC_OBJ_CLEAR(ks_ssl->ctx, mbedtls_ssl_context);
-     mbedtls_ssl_init(ks_ssl->ctx);
--    mbedtls_ssl_setup(ks_ssl->ctx, &ks_ssl->ssl_config);
-+    mbedtls_ssl_setup(ks_ssl->ctx, ks_ssl->ssl_config);
- 
-     /* Initialise BIOs */
--    CLEAR(ks_ssl->bio_ctx);
--    mbedtls_ssl_set_bio(ks_ssl->ctx, &ks_ssl->bio_ctx, ssl_bio_write,
-+    ALLOC_OBJ_CLEAR(ks_ssl->bio_ctx, bio_ctx);
-+    mbedtls_ssl_set_bio(ks_ssl->ctx, ks_ssl->bio_ctx, ssl_bio_write,
-                         ssl_bio_read, NULL);
- }
- 
-@@ -1152,9 +1153,17 @@ key_state_ssl_free(struct key_state_ssl *ks_ssl)
-             mbedtls_ssl_free(ks_ssl->ctx);
-             free(ks_ssl->ctx);
-         }
--        mbedtls_ssl_config_free(&ks_ssl->ssl_config);
--        buf_free_entries(&ks_ssl->bio_ctx.in);
--        buf_free_entries(&ks_ssl->bio_ctx.out);
-+        if (ks_ssl->ssl_config)
-+        {
-+            mbedtls_ssl_config_free(ks_ssl->ssl_config);
-+            free(ks_ssl->ssl_config);
-+        }
-+        if (ks_ssl->bio_ctx)
-+        {
-+            buf_free_entries(&ks_ssl->bio_ctx->in);
-+            buf_free_entries(&ks_ssl->bio_ctx->out);
-+            free(ks_ssl->bio_ctx);
-+        }
-         CLEAR(*ks_ssl);
-     }
- }
-@@ -1249,7 +1258,7 @@ key_state_read_ciphertext(struct key_state_ssl *ks, struct buffer *buf,
-         len = maxlen;
-     }
- 
--    retval = endless_buf_read(&ks->bio_ctx.out, BPTR(buf), len);
-+    retval = endless_buf_read(&ks->bio_ctx->out, BPTR(buf), len);
- 
-     /* Error during read, check for retry error */
-     if (retval < 0)
-@@ -1294,7 +1303,7 @@ key_state_write_ciphertext(struct key_state_ssl *ks, struct buffer *buf)
-         return 0;
-     }
- 
--    retval = endless_buf_write(&ks->bio_ctx.in, BPTR(buf), buf->len);
-+    retval = endless_buf_write(&ks->bio_ctx->in, BPTR(buf), buf->len);
- 
-     if (retval < 0)
-     {
-diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h
-index c1c676dc..92381f1a 100644
---- a/src/openvpn/ssl_mbedtls.h
-+++ b/src/openvpn/ssl_mbedtls.h
-@@ -109,9 +109,9 @@ struct tls_root_ctx {
- };
- 
- struct key_state_ssl {
--    mbedtls_ssl_config ssl_config;      /**< mbedTLS global ssl config */
-+    mbedtls_ssl_config *ssl_config;     /**< mbedTLS global ssl config */
-     mbedtls_ssl_context *ctx;           /**< mbedTLS connection context */
--    bio_ctx bio_ctx;
-+    bio_ctx *bio_ctx;
- 
-     /** Keying material exporter cache (RFC 5705). */
-     uint8_t *exported_key_material;
+--S6yS54MwJKq5qXOvfpHhfgDyEQj1auLJp--
+
+--7Pqu9qAfo1WAADS9UwCxZM1i9tUO1b1Mo
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl6DDAYACgkQFRhsZwKx
+RFRBbxAAqSPZo2VGDvQ6MwRBfavqX9VF/UXcFxgK6nOoud1T6hHaNs9tZEQjYp0T
+Ia4k+a1PPSMwRrJjm2Iui8/S38UjicW2dMKUATmcADzJ19nwNh/6tj545iEN29U4
+w6rq2twzSwHg/b4DPqQjpltvgV34f0aGH4+tW0pJJzu9X9/NIRVN5k/z9I2b4joA
+4aNI1issoWi/8DCGVlcPA0FCAsctAEtVpe2RHIJaR4BwVX+vieKBBISpiW7RV+rd
+NVRfbuCkoe2m1zn9QbHHJejyV7d0JwydNvZgCRhuozjhiTt6sxmUFJD2irrZe8lL
+4j69Jfpr5iQWgtYfebJQGGQadia9cswCyJr7R6BHLOM3HrWZYuniErb3JZdk5HP2
+pAKcuo82nAbiV2z4Du+isD9/fxXmgPtler6TUUdK0VyoVZAs4Ijrl7S1mHs/wJb6
+23fbl6VGW7+JfbMupnX3DrTOHLfHezpRH9wKMjzD85h480nek+GAh6MCBaCNn+vY
+Y5GB1lYbDJmtWEKcCdCyJwNIEkstN1X35AiWVRP+19PT5GRJNUNCkgaiKaszFZyu
+inxoEk7uHl6YE/VHLOb3reDG9K8GqvY7cgcIKUuuhpfLzh2ZxVZo9Lb71HwN3Gaf
+rzyLeOXL6xFjp+W1+AfI0fheC2Il6Ms5V00fTy6n0PLu5u20pV8=
+=a24q
+-----END PGP SIGNATURE-----
+
+--7Pqu9qAfo1WAADS9UwCxZM1i9tUO1b1Mo--
 
