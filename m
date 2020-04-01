@@ -1,13 +1,9 @@
-References: <20200325122624.3142017-1-wgh@...2548...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <cf0a98e8-24e2-5f79-8d9e-8bcfd551ddb3@...1227...>
-Date: Wed, 1 Apr 2020 13:31:59 +0200
-MIME-Version: 1.0
+Date: Wed, 1 Apr 2020 13:44:36 +0200 (CEST)
+Message-Id: <202004011144.031BiaB3087629@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20200325122624.3142017-1-wgh@...2548...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="1JgTQ0UuR44eUlZqqZJgQKcnxiYbqJVha"
-Subject: Re: [Openvpn-devel] [PATCH] docs: Add reference to
+References: <20200325122624.3142017-1-wgh@...2548...>
+Subject: [Openvpn-devel] [PATCH applied] Re: docs: Add reference to
  X509_LOOKUP_hash_dir(3)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -17,57 +13,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: wgh@...2548..., openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---1JgTQ0UuR44eUlZqqZJgQKcnxiYbqJVha
-Content-Type: multipart/mixed; boundary="llCMYTDpbZ5BM4wo53YXXiVN9vlgIL6e4"
-
---llCMYTDpbZ5BM4wo53YXXiVN9vlgIL6e4
-Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: WGH <wgh@...2548...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 25.03.20 um 13:26 schrieb wgh@...2548...:
-> From: WGH <wgh@...2548...>
->=20
-> This is probably the best description of the rather confusing
-> capath directory structure OpenSSL manual has to offer.
->
+Your patch has been applied to the master and release/2.4 branch 
+(documentation update is always welcome, if applicable, in 2.4.x).
 
-The change makes sense. Although we normally prefer real names for
-contributers, these change is small enough and doc only, so it is
-okay without one.
+commit a2a2132c46dfcac057cb8c50df5d27005e9e40e5 (master)
+commit 33395693d32ca1f7cbaf7fba17d855d891bf0f53 (release/2.4)
+Author: WGH
+Date:   Wed Mar 25 15:26:24 2020 +0300
 
-The change makes sense and pointing the user to that description is an
-improvement.
+     docs: Add reference to X509_LOOKUP_hash_dir(3)
 
-Acked-By: Arne Schwabe <arne@...1227...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20200325122624.3142017-1-wgh@...2548...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19615.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
---llCMYTDpbZ5BM4wo53YXXiVN9vlgIL6e4--
+--
+kind regards,
 
---1JgTQ0UuR44eUlZqqZJgQKcnxiYbqJVha
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Gert Doering
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl6Ee68ACgkQFRhsZwKx
-RFTFVg/+O9MIFWf2MVhahMqqA/l0Gmesqya+h4EWcI5OqXFS0p7BBg/HBRg43uey
-2HRY4Lt3Ahe/f+99nRoUn/NrEv68L1UoW/xNvCP8Vkg7Qj3z1T7qEHi5VQDFoalf
-IHuE4qx2MiPTo3S5OFJzh7rP2yZTclCKY/Psc+bOT9NNVnQsParxjSscETq3kE5X
-nJ6oG26ASkRDlm96qgGoKC/Uctl+FomL2vcyofQQq8uqCvpF5g4kEaNApFLF3YPr
-znd4fIbDT8/UoiEQ2YExWVrQ89rXIurur++9l95Nm1XiYUuJHGWOlCUYNi2TwT8x
-P2Km8ukEI4fqoqXwoujaT19n/HaJHoHy/v5BaDrlZI7KrK/VLzZQOK+6xoRR2D/H
-pd+9Iq2EirwErZG221I3S7YYIuB4yfi8fp0zGtAdXkwobCC6uzjjZC6RalrrwFta
-sKq3OBcKr32kfdmcyMERUq6J7FAAMzMtUKTpZeamTeqfslb5LTexVBF7ISpNFXMF
-HV1cBJj12Kn1yJHeM59scYT7Ci2DtQaPR20bgfQAk0JUSGag8+MWJxSYQnviEVl8
-2HNwegX9WoejI7yhL1sGlevkI7IDE3chPhovod+Ror8v5ZpuGp8mr7rUn2YsV70u
-hE1wCdt5QoiK+GvRB4VpjLbc4Y1MzIzpZDz8HLgLccda2bRtovo=
-=2ZVI
------END PGP SIGNATURE-----
-
---1JgTQ0UuR44eUlZqqZJgQKcnxiYbqJVha--
 
