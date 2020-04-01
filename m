@@ -1,10 +1,10 @@
-Date: Wed, 1 Apr 2020 13:44:36 +0200 (CEST)
-Message-Id: <202004011144.031BiaB3087629@...2054...>
+Date: Wed, 1 Apr 2020 13:35:40 +0200 (CEST)
+Message-Id: <202004011135.031BZeiE087486@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200325122624.3142017-1-wgh@...2548...>
-References: <20200325122624.3142017-1-wgh@...2548...>
-Subject: [Openvpn-devel] [PATCH applied] Re: docs: Add reference to
- X509_LOOKUP_hash_dir(3)
+In-Reply-To: <20200310104022.431-1-simon@...2293...>
+References: <20200310104022.431-1-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: tapctl: Support multiple
+ hardware IDs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,22 +15,24 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: WGH <wgh@...2548...>
+To: Simon Rozman <simon@...2293...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.4 branch 
-(documentation update is always welcome, if applicable, in 2.4.x).
+Your patch has been applied to the master branch.
 
-commit a2a2132c46dfcac057cb8c50df5d27005e9e40e5 (master)
-commit 33395693d32ca1f7cbaf7fba17d855d891bf0f53 (release/2.4)
-Author: WGH
-Date:   Wed Mar 25 15:26:24 2020 +0300
+Feature-ACK, definitely useful.  Test compiled on MinGW, trusting Lev 
+on the actual code test :-)
 
-     docs: Add reference to X509_LOOKUP_hash_dir(3)
+commit e8106537c3c64fbd316f0e79a75d0c65c4bf33b5
+Author: Simon Rozman
+Date:   Tue Mar 10 11:40:22 2020 +0100
 
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20200325122624.3142017-1-wgh@...2548...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19615.html
+     tapctl: Support multiple hardware IDs
+
+     Signed-off-by: Simon Rozman <simon@...2293...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <20200310104022.431-1-simon@...2293...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19542.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
