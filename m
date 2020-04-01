@@ -1,13 +1,9 @@
-Date: Wed, 1 Apr 2020 21:32:58 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200401193258.GY1431@...1296...>
-References: <20191111115025.1121-1-lstipakov@...277...>
+From: wgh@...2548...
+Date: Thu,  2 Apr 2020 00:50:52 +0300
+Message-Id: <20200401215052.3489613-1-wgh@...2548...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="p0VvXOh+Vh0d4WRz"
-Content-Disposition: inline
-In-Reply-To: <20191111115025.1121-1-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] msvc: fix various level2 warnings
+Subject: [Openvpn-devel] [PATCH] OpenSSL: Fix --crl-verify not loading
+ multiple CRLs in one file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,61 +12,100 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Maxim Plotnikov <wgh@...2548...>
 
---p0VvXOh+Vh0d4WRz
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: Maxim Plotnikov <wgh@...2548...>
 
-Hi,
+Lack of this led people accepting multiple CAs to use capath,
+which already supports multiple CRLs. But capath mode itself
+is somewhat ugly: you have to create new file/symlink every time
+CRL is updated, and there's no good way to clean them up without
+restarting OpenVPN, since any gap in the sequence would cause it
+to lose sync[1].
 
-On Mon, Nov 11, 2019 at 01:50:25PM +0200, Lev Stipakov wrote:
-> From: Lev Stipakov <lev@...515...>
->=20
-> This also sets warnings level to level2, which
-> makes them manageable.
+mbedtls crypto backends already loads multiple CRLs as is, so
+it doesn't need this fix.
 
-Speaking about lingering patches... much has changed in the windows
-drivering and bulding world, and I'm not sure the patch is applicable
-to the "windows build" files.  It also does not apply to tun.c anymore.
+The patch also includes some logging changes which I think are useful.
 
-Can you rebase and resend (... or just resend those parts that are still
-needed...)?
+If you wish to test the patch, here is prepared configuration
+files: https://wgh.torlan.ru/openvpn-crl-fix-ca.tar.gz.
+The client_ca2_revoked.ovpn config uses a revoked certificate
+issued by the second CA, and is accepted by unpatched server,
+but rightfully rejected with this patch (or when using mbedtls backend).
 
-Will do more timely review next round.
+[1] https://community.openvpn.net/openvpn/ticket/623#comment:7
+---
+ src/openvpn/ssl_openssl.c | 41 +++++++++++++++++++++++++++------------
+ 1 file changed, 29 insertions(+), 12 deletions(-)
 
-thanks,
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 3f0031ff..a5502a5b 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -1038,7 +1038,7 @@ void
+ backend_tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx, const char *crl_file,
+                            const char *crl_inline)
+ {
+-    X509_CRL *crl = NULL;
++    int i = 0;
+     BIO *in = NULL;
+ 
+     X509_STORE *store = SSL_CTX_get_cert_store(ssl_ctx->ctx);
+@@ -1079,21 +1079,38 @@ backend_tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx, const char *crl_file,
+         goto end;
+     }
+ 
+-    crl = PEM_read_bio_X509_CRL(in, NULL, NULL, NULL);
+-    if (crl == NULL)
+-    {
+-        msg(M_WARN, "CRL: cannot read CRL from file %s", crl_file);
+-        goto end;
+-    }
++    for (i = 0;; i++) {
++        X509_CRL *crl = PEM_read_bio_X509_CRL(in, NULL, NULL, NULL);
++        if (crl == NULL)
++        {
++            unsigned long err = ERR_get_error();
++            char buf[256];
++
++            if (ERR_GET_REASON(err) == PEM_R_NO_START_LINE && i > 0) {
++                // PEM_R_NO_START_LINE can be considered equivalent to EOF.
++                //
++                // A file without any CRLs should still be considered an error,
++                // though. Hence i > 0.
++                goto end;
++            }
+ 
+-    if (!X509_STORE_add_crl(store, crl))
+-    {
+-        msg(M_WARN, "CRL: cannot add %s to store", crl_file);
+-        goto end;
++            ERR_error_string_n(err, buf, sizeof(buf));
++
++            msg(M_WARN, "CRL: cannot read CRL from file %s: %s", crl_file, buf);
++            goto end;
++        }
++
++        if (!X509_STORE_add_crl(store, crl))
++        {
++            msg(M_WARN, "CRL: cannot add %s to store", crl_file);
++            X509_CRL_free(crl);
++            goto end;
++        }
++        X509_CRL_free(crl);
+     }
+ 
+ end:
+-    X509_CRL_free(crl);
++    msg(M_INFO, "CRL: loaded %d CRLs from file %s", i, crl_file);
+     BIO_free(in);
+ }
+ 
+-- 
+2.24.1
 
-gert
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---p0VvXOh+Vh0d4WRz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJehOxqAAoJEB2Cnv7KVigSKzML/0ImjRpKX0RFquEzjRMxZ+75
-aBhXm8UKoBdnnqNhMh6Yjc9fXY18QNFGDeuGhFxCRF+ZmGf5UH/EmKtfhLDKLw4Z
-Bd334m2O/A1ZhpRsSrbIVdQ+Jqoy3QSEu/KELSpkLnNdsvFra0Bkih2+kBTBgX6R
-C9ix2HD2C5zbRWx6wzY8l57ftntJoHk4IN8GvYJuZ/Zw6s1spoBkzSxDl/bsMHjF
-j4BfgB9n2CVDG4m/TulS6LqL55ylFExMFAzC3tuQ6wR6EyP3W3i+m1BokXN0Sno8
-HXLkvRyguP0y4GWXvFtfgzqdE35cTLRegNRYVKtfxu6i5P2lGI4mfMMnCpAW/kpM
-r7qbCBtHg3zdAfBAGM7141IrpK1psJfN/dFdUK1LJGs98mxoPtRUqB3MgC/xAaJ9
-tpDVE7a7oBeQjSEwE5nWhVlobsYTlsGshQG8M50yKi0aLHRCe58ZZqT8Y5X14JHN
-iYG26FzYOMJ5RoS5cw9M+uGwWZ9YLd2aeIVuMUEEMQ==
-=dSiD
------END PGP SIGNATURE-----
-
---p0VvXOh+Vh0d4WRz--
 
