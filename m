@@ -1,10 +1,7 @@
-Date: Wed, 1 Apr 2020 14:07:33 +0200 (CEST)
-Message-Id: <202004011207.031C7XDg088851@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200331071437.12708-1-tom.van.leeuwen@...2499...>
-References: <20200331071437.12708-1-tom.van.leeuwen@...2499...>
-Subject: [Openvpn-devel] [PATCH applied] Re: mbedTLS: Make sure TLS session
- survives move
+From: Arne Schwabe <arne@...1227...>
+Date: Wed,  1 Apr 2020 14:40:19 +0200
+Message-Id: <20200401124019.10529-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Fetch OpenSSL versions via source/old links
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,33 +12,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Tom van Leeuwen <tom.van.leeuwen@...2545...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.4 branch (bugfix).
+New versions are already available as source/old but old version at
+some point disappear from the normal download path. Use the source/old
+path for all OpenSSL versions to avoid this problem.
 
-Cherrypicking to release/2.4 caused merge conflicts due to slightly
-different *context* in two places (EKM patch in master), but these were
-easily fixed because very obvious.  I've tested the resulting 2.4 on
-linux with mbedtls 2.19.1 and it works correctly (compiles + t_client).
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ .travis/build-deps.sh | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-commit a59e0754afd37a606d96cf24cea771ace3467289 (master)
-commit 0efbd8e98eb7adfbf7ee6591941be0ff3c406d57 (release/2.4)
-Author: Tom van LeeuwenS
-Date:   Tue Mar 31 09:14:37 2020 +0200
-
-     mbedTLS: Make sure TLS session survives move
-
-     Signed-off-by: Tom van Leeuwen <tom.van.leeuwen@...2545...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20200331071437.12708-1-tom.van.leeuwen@...2499...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19661.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/.travis/build-deps.sh b/.travis/build-deps.sh
+index 0c8d69b8..e8a1f101 100755
+--- a/.travis/build-deps.sh
++++ b/.travis/build-deps.sh
+@@ -90,9 +90,11 @@ build_mbedtls () {
+ }
+ 
+ download_openssl () {
++    
+     if [ ! -f "download-cache/openssl-${OPENSSL_VERSION}.tar.gz" ]; then
++        MAJOR=`echo $OPENSSL_VERSION | sed -e 's/\([0-9.]*\).*/\1/'`
+         wget -P download-cache/ \
+-            "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz"
++             "https://www.openssl.org/source/old/${MAJOR}/openssl-${OPENSSL_VERSION}.tar.gz"
+     fi
+ }
+ 
+-- 
+2.26.0
 
 
