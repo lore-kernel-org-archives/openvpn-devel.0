@@ -1,16 +1,11 @@
-References: <20200330125719.766763-1-wardragon78@...277...>
- <CAKuzo_gCZ_GMf6m88xnR-BeDh9umtj+CVemrKA+d-phKnDJwBA@...278...>
- <44f9ff30-920a-6d0a-6f77-7de6111c04dc@...277...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <1f5fa79f-ad65-0a99-3d91-c7f86f522b2d@...1227...>
-Date: Tue, 31 Mar 2020 11:23:17 +0200
-MIME-Version: 1.0
-In-Reply-To: <44f9ff30-920a-6d0a-6f77-7de6111c04dc@...277...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="7Pqu9qAfo1WAADS9UwCxZM1i9tUO1b1Mo"
-Subject: Re: [Openvpn-devel] [PATCH] [PATCH v5 1/1] Insert client connection
- data into PAM environment
+Date: Wed,  1 Apr 2020 12:21:59 +0200
+Message-Id: <20200401102159.29157-2-arne@...1227...>
+In-Reply-To: <20200401102159.29157-1-arne@...1227...>
+References: <20200328040858.16505-1-arne@...1227...>
+ <20200401102159.29157-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH 3/3] Implement tls-groups option to specify
+ eliptic curves/groups
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,66 +14,528 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Paolo <wardragon78@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---7Pqu9qAfo1WAADS9UwCxZM1i9tUO1b1Mo
-Content-Type: multipart/mixed; boundary="S6yS54MwJKq5qXOvfpHhfgDyEQj1auLJp"
-
---S6yS54MwJKq5qXOvfpHhfgDyEQj1auLJp
-Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Am 31.03.20 um 09:34 schrieb Paolo:
-> So,
-> as you asked, now a make the complete patch from diff from master and my
-> branch, making the change to remote lenght.
->=20
+OpenSSL 1.1+ by default only allows signatures and key exchange from the
+default list of X25519:secp256r1:X448:secp521r1:secp384r1. Since in
+TLS1.3 key exchange is independent from the signature/key of the
+certificates, allowing all groups per default is not a sensible choice
+anymore and the shorter lister is reasonable.
 
-Your patch got mangled very badly for me:
+However, when using certificates with exotic curves the signatures of
+this certificates will no longer be accepted. This option allows to
+modify the list for these corner cases.
 
->     -=C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=
-=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82  || send_string(context-&gt;foregrou=
-nd_fd,
->       common_name) =3D=3D -1)<br>
->       +=C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=
-=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82  || send_string(context-&gt;foregrou=
-nd_fd,
->       common_name) =3D=3D -1<br>
->       +=C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=
-=82 =C3=82 =C3=82 =C3=82 =C3=82 =C3=82  || send_string(context-&gt;foregrou=
-nd_fd, remote)
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ README.ec                    |   7 +--
+ doc/openvpn.8                |  37 +++++++++++--
+ src/openvpn/openssl_compat.h |   4 ++
+ src/openvpn/options.c        |  10 +++-
+ src/openvpn/options.h        |   1 +
+ src/openvpn/ssl.c            |   6 +++
+ src/openvpn/ssl_backend.h    |  10 ++++
+ src/openvpn/ssl_mbedtls.c    |  47 ++++++++++++++++
+ src/openvpn/ssl_mbedtls.h    |   1 +
+ src/openvpn/ssl_openssl.c    | 101 +++++++++++++++++++++++++++--------
+ 10 files changed, 194 insertions(+), 30 deletions(-)
 
-Can you try to resend it with git send email or even as an attachment
-that does not get reformatted would help.
+diff --git a/README.ec b/README.ec
+index 32938017..2f830972 100644
+--- a/README.ec
++++ b/README.ec
+@@ -12,14 +12,15 @@ OpenVPN 2.4.0 and newer automatically initialize ECDH parameters. When ECDSA is
+ used for authentication, the curve used for the server certificate will be used
+ for ECDH too. When autodetection fails (e.g. when using RSA certificates)
+ OpenVPN lets the crypto library decide if possible, or falls back to the
+-secp384r1 curve.
++secp384r1 curve. The list of groups/curves that the crypto library will choose
++from can be set with the --tls-groups <grouplist> configuration.
+ 
+ An administrator can force an OpenVPN/OpenSSL server to use a specific curve
+ using the --ecdh-curve <curvename> option with one of the curves listed as
+-available by the --show-curves option. Clients will use the same curve as
++available by the --show-groups option. Clients will use the same curve as
+ selected by the server.
+ 
+-Note that not all curves listed by --show-curves are available for use with TLS;
++Note that not all curves listed by --show-groups are available for use with TLS;
+ in that case connecting will fail with a 'no shared cipher' TLS error.
+ 
+ Authentication (ECDSA)
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index c5b16981..4897fbdb 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -5084,11 +5084,11 @@ simply supplied to the crypto library.  Please see the OpenSSL and/or mbed TLS
+ documentation for details on the cipher list interpretation.
+ 
+ For OpenSSL, the
+-.B \-\-tls-cipher
++.B \-\-tls\-cipher
+ is used for TLS 1.2 and below. For TLS 1.3 and up, the
+ .B \-\-tls\-ciphersuites
+ setting is used. mbed TLS has no TLS 1.3 support yet and only the
+-.B \-\-tls-cipher
++.B \-\-tls\-cipher
+ setting is used.
+ 
+ Use
+@@ -5096,6 +5096,8 @@ Use
+ to see a list of TLS ciphers supported by your crypto library.
+ 
+ Warning!
++.B \-\-tls\-groups
++,
+ .B \-\-tls\-cipher
+ and
+ .B \-\-tls\-ciphersuites
+@@ -5111,6 +5113,33 @@ OpenSSL.
+ The default for \-\-tls\-ciphersuites is to use the crypto library's default.
+ .\"*********************************************************
+ .TP
++.B \-\-tls\-groups l
++A list
++.B l
++of allowable groups/curves in order of preference.
++
++Set the allowed elictipic curves/groups for the TLS session.
++These groups are  allowed to be used in signatures and key exchange.
++
++mbed TLS currently allows all known curves per default.
++
++OpenSSL 1.1+ restricts the list per default to
++"X25519:secp256r1:X448:secp521r1:secp384r1".
++
++If you use certificates that use non-standard curves, you
++might need to add them here. If you do not force the ecdh curve
++by using
++.B \-\-ecdh\-curve
++, the groups for ecdh will also be picked from this list.
++
++OpenVPN maps the curve name secp256r1 to prime256v1 to allow
++specifying the tls-groups option for mbed TLS and OpenSSL.
++
++Warning: this option not only affects eliptic curve certificates
++but also the key exchange in TLS 1.3 and using this option improperly
++will disable TLS 1.3.
++.\"*********************************************************
++.TP
+ .B \-\-tls\-cert\-profile profile
+ Set the allowed cryptographic algorithms for certificates according to
+ .B profile\fN.
+@@ -5876,8 +5905,10 @@ engines supported by the OpenSSL library.
+ .TP
+ .B \-\-show\-curves
+ (Standalone)
+-Show all available elliptic curves to use with the
++Show all available elliptic groups/curves to use with the
+ .B \-\-ecdh\-curve
++and
++.B \-\-tls\-groups
+ option.
+ .\"*********************************************************
+ .SS Generating key material:
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index 4ac8f24d..352e79f9 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -807,4 +807,8 @@ SSL_CTX_set_max_proto_version(SSL_CTX *ctx, long tls_ver_max)
+ }
+ #endif /* SSL_CTX_set_max_proto_version */
+ 
++#ifndef SSL_CTX_set1_groups
++#define SSL_CTX_set1_groups SSL_CTX_set1_curves
++#endif
++
+ #endif /* OPENSSL_COMPAT_H_ */
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 5127f653..88f4051e 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -7894,7 +7894,7 @@ add_option(struct options *options,
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+         options->show_tls_ciphers = true;
+     }
+-    else if (streq(p[0], "show-curves") && !p[1])
++    else if ((streq(p[0], "show-curves") || streq(p[0], "show-groups")) && !p[1])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+         options->show_curves = true;
+@@ -7902,6 +7902,9 @@ add_option(struct options *options,
+     else if (streq(p[0], "ecdh-curve") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
++        msg(M_WARN, "Consider setting groups/curves in preference with "
++            "tls-groups instead of forcing a specific curve with "
++            "ecdh-curve.");
+         options->ecdh_curve = p[1];
+     }
+     else if (streq(p[0], "tls-server") && !p[1])
+@@ -8090,6 +8093,11 @@ add_option(struct options *options,
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+         options->cipher_list_tls13 = p[1];
+     }
++    else if (streq(p[0], "tls-groups") && p[1] && !p[2])
++    {
++        VERIFY_PERMISSION(OPT_P_GENERAL);
++        options->tls_groups = p[1];
++    }
+     else if (streq(p[0], "crl-verify") && p[1] && ((p[2] && streq(p[2], "dir"))
+                                                    || (p[2] && streq(p[1], INLINE_FILE_TAG) ) || !p[2]) && !p[3])
+     {
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 2f1f6faf..3732a3a5 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -537,6 +537,7 @@ struct options
+     const char *pkcs12_file;
+     const char *cipher_list;
+     const char *cipher_list_tls13;
++    const char *tls_groups;
+     const char *tls_cert_profile;
+     const char *ecdh_curve;
+     const char *tls_verify;
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index e21279f1..8bd1c86a 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -630,6 +630,12 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx)
+     tls_ctx_restrict_ciphers(new_ctx, options->cipher_list);
+     tls_ctx_restrict_ciphers_tls13(new_ctx, options->cipher_list_tls13);
+ 
++    /* Set the allow groups/curves for TLS if we want to override them */
++    if (options->tls_groups)
++    {
++        tls_ctx_set_tls_groups(new_ctx, options->tls_groups);
++    }
++
+     if (!tls_ctx_set_options(new_ctx, options->ssl_flags))
+     {
+         goto err;
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index 1c244ece..d95e8320 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -198,6 +198,16 @@ void tls_ctx_restrict_ciphers_tls13(struct tls_root_ctx *ctx, const char *cipher
+  */
+ void tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile);
+ 
++/**
++ * Set the allowed (eliptic curve) group allowed for signatures and
++ * key exchange.
++ *
++ * @param ctx       TLS context to restrict, must be valid.
++ * @param groups    List of groups that will be allowed, in priority,
++ *                  separated by :
++ */
++void tls_ctx_set_tls_groups(struct tls_root_ctx *ctx, const char *groups);
++
+ /**
+  * Check our certificate notBefore and notAfter fields, and warn if the cert is
+  * either not yet valid or has expired.  Note that this is a non-fatal error,
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index 0e17e734..9ce68275 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -176,6 +176,11 @@ tls_ctx_free(struct tls_root_ctx *ctx)
+             free(ctx->allowed_ciphers);
+         }
+ 
++        if (ctx->groups)
++        {
++            free(ctx->groups);
++        }
++
+         CLEAR(*ctx);
+ 
+         ctx->initialised = false;
+@@ -342,6 +347,43 @@ tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
+     }
+ }
+ 
++void
++tls_ctx_set_tls_groups(struct tls_root_ctx *ctx, const char *groups)
++{
++    ASSERT(NULL != ctx);
++
++    /* Get number of groups */
++    int groups_count = get_num_elements(groups, ':');
++
++    /* Allocate an array for them */
++    ALLOC_ARRAY_CLEAR(ctx->groups, mbedtls_ecp_group_id, groups_count + 1)
++
++    /* Parse allowed ciphers, getting IDs */
++    int i = 0;
++    char *tmp_groups_orig = string_alloc(groups, NULL);
++    char *tmp_groups = tmp_groups_orig;
++
++    const char *token = strsep(&tmp_groups, ":");
++    while (token)
++    {
++        const mbedtls_ecp_curve_info *ci =
++            mbedtls_ecp_curve_info_from_name(token);
++        if (ci == NULL)
++        {
++            msg(M_WARN, "Warning unknown curve/group specified: %s", token);
++        }
++        else
++        {
++            ctx->groups[i] = ci->grp_id;
++            i++;
++        }
++        token = strsep(&tmp_groups, ":");
++    }
++    ctx->groups[i] = MBEDTLS_ECP_DP_NONE;
++    free(tmp_groups_orig);
++}
++
++
+ void
+ tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
+ {
+@@ -1042,6 +1084,11 @@ key_state_ssl_init(struct key_state_ssl *ks_ssl,
+         mbedtls_ssl_conf_ciphersuites(&ks_ssl->ssl_config, ssl_ctx->allowed_ciphers);
+     }
+ 
++    if (ssl_ctx->groups)
++    {
++        mbedtls_ssl_conf_curves(&ks_ssl->ssl_config, ssl_ctx->groups);
++    }
++
+     /* Disable record splitting (for now).  OpenVPN assumes records are sent
+      * unfragmented, and changing that will require thorough review and
+      * testing.  Since OpenVPN is not susceptible to BEAST, we can just
+diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h
+index c1c676dc..d8c366e7 100644
+--- a/src/openvpn/ssl_mbedtls.h
++++ b/src/openvpn/ssl_mbedtls.h
+@@ -105,6 +105,7 @@ struct tls_root_ctx {
+ #endif
+     struct external_context external_key; /**< External key context */
+     int *allowed_ciphers;       /**< List of allowed ciphers for this connection */
++    mbedtls_ecp_group_id *groups;                /**< List of allowed groups for this connection */
+     mbedtls_x509_crt_profile cert_profile; /**< Allowed certificate types */
+ };
+ 
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 4b5ca214..8c04986c 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -557,6 +557,59 @@ tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
+ #endif /* ifdef HAVE_SSL_CTX_SET_SECURITY_LEVEL */
+ }
+ 
++void
++tls_ctx_set_tls_groups(struct tls_root_ctx *ctx, const char *groups)
++{
++    ASSERT(ctx);
++    /* This method could be as easy as
++     *  SSL_CTX_set1_groups_list(ctx->ctx, groups)
++     * but OpenSSL does not like the name secp256r1 for prime256v1
++     * and as this is one of the more important curve to have
++     * the same name for OpenSSL and mbedTLS, we do this dance
++     */
++
++    int groups_count = get_num_elements(groups, ':');
++
++    int *glist;
++    /* Allocate an array for them */
++    ALLOC_ARRAY_CLEAR(glist, int, groups_count);
++
++    /* Parse allowed ciphers, getting IDs */
++    int glistlen = 0;
++    char *tmp_groups_orig = string_alloc(groups, NULL);
++    char *tmp_groups = tmp_groups_orig;
++
++    const char *token = strsep(&tmp_groups, ":");
++    while (token)
++    {
++        if (streq(token, "secp256r1"))
++        {
++            token = "prime256v1";
++        }
++        int nid = OBJ_sn2nid(token);
++
++        if (nid == 0)
++        {
++            msg(M_WARN, "Warning unknown curve/group specified: %s", token);
++        }
++        else
++        {
++            glist[glistlen] = nid;
++            glistlen++;
++        }
++        token = strsep(&tmp_groups, ":");
++    }
++    free(tmp_groups_orig);
++
++    if (!SSL_CTX_set1_groups(ctx->ctx, glist, glistlen))
++    {
++        crypto_msg(M_FATAL, "Failed to set allowed TLS group list: %s",
++                   groups);
++    }
++
++    free(glist);
++}
++
+ void
+ tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
+ {
+@@ -577,7 +630,7 @@ tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
+ 
+     if (cert == NULL)
+     {
+-        goto cleanup; /* Nothing to check if there is no certificate */
++        goto cleanup;     /* Nothing to check if there is no certificate */
+     }
+ 
+     ret = X509_cmp_time(X509_get0_notBefore(cert), NULL);
+@@ -890,7 +943,7 @@ tls_ctx_add_extra_certs(struct tls_root_ctx *ctx, BIO *bio)
+     for (;; )
+     {
+         cert = NULL;
+-        if (!PEM_read_bio_X509(bio, &cert, NULL, NULL)) /* takes ownership of cert */
++        if (!PEM_read_bio_X509(bio, &cert, NULL, NULL))     /* takes ownership of cert */
+         {
+             break;
+         }
+@@ -1144,7 +1197,7 @@ openvpn_extkey_rsa_finish(RSA *rsa)
+  * interface query
+  */
+ const char *
+-get_rsa_padding_name (const int padding)
++get_rsa_padding_name(const int padding)
+ {
+     switch (padding)
+     {
+@@ -1161,14 +1214,14 @@ get_rsa_padding_name (const int padding)
+ 
+ /**
+  * Pass the input hash in 'dgst' to management and get the signature back.
+-  *
+- * @param dgst		hash to be signed
+- * @param dgstlen	len of data in dgst
+- * @param sig 		On successful return signature is in sig.
+- * @param siglen	length of buffer sig
+- * @param algorithm	padding/hashing algorithm for the signature
+  *
+- * @return 		signature length or -1 on error.
++ * @param dgst          hash to be signed
++ * @param dgstlen       len of data in dgst
++ * @param sig           On successful return signature is in sig.
++ * @param siglen        length of buffer sig
++ * @param algorithm     padding/hashing algorithm for the signature
++ *
++ * @return              signature length or -1 on error.
+  */
+ static int
+ get_sig_from_man(const unsigned char *dgst, unsigned int dgstlen,
+@@ -1210,7 +1263,7 @@ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa,
+         return -1;
+     }
+ 
+-    ret = get_sig_from_man(from, flen, to, len, get_rsa_padding_name (padding));
++    ret = get_sig_from_man(from, flen, to, len, get_rsa_padding_name(padding));
+ 
+     return (ret == len) ? ret : -1;
+ }
+@@ -1266,7 +1319,7 @@ tls_ctx_use_external_rsa_key(struct tls_root_ctx *ctx, EVP_PKEY *pkey)
+         goto err;
+     }
+ 
+-    RSA_free(rsa); /* doesn't necessarily free, just decrements refcount */
++    RSA_free(rsa);     /* doesn't necessarily free, just decrements refcount */
+     return 1;
+ 
+ err:
+@@ -1285,7 +1338,7 @@ err:
+ }
+ 
+ #if ((OPENSSL_VERSION_NUMBER > 0x10100000L && !defined(LIBRESSL_VERSION_NUMBER)) \
+-     || LIBRESSL_VERSION_NUMBER > 0x2090000fL) \
++    || LIBRESSL_VERSION_NUMBER > 0x2090000fL) \
+     && !defined(OPENSSL_NO_EC)
+ 
+ /* called when EC_KEY is destroyed */
+@@ -1394,11 +1447,11 @@ tls_ctx_use_external_ec_key(struct tls_root_ctx *ctx, EVP_PKEY *pkey)
+ 
+     if (!SSL_CTX_use_PrivateKey(ctx->ctx, privkey))
+     {
+-        ec = NULL; /* avoid double freeing it below */
++        ec = NULL;     /* avoid double freeing it below */
+         goto err;
+     }
+ 
+-    EVP_PKEY_free(privkey); /* this will down ref privkey and ec */
++    EVP_PKEY_free(privkey);     /* this will down ref privkey and ec */
+     return 1;
+ 
+ err:
+@@ -1436,7 +1489,7 @@ tls_ctx_use_management_external_key(struct tls_root_ctx *ctx)
+ 
+     /* get the public key */
+     EVP_PKEY *pkey = X509_get0_pubkey(cert);
+-    ASSERT(pkey); /* NULL before SSL_CTX_use_certificate() is called */
++    ASSERT(pkey);     /* NULL before SSL_CTX_use_certificate() is called */
+ 
+     if (EVP_PKEY_id(pkey) == EVP_PKEY_RSA)
+     {
+@@ -1446,7 +1499,7 @@ tls_ctx_use_management_external_key(struct tls_root_ctx *ctx)
+         }
+     }
+ #if ((OPENSSL_VERSION_NUMBER > 0x10100000L && !defined(LIBRESSL_VERSION_NUMBER)) \
+-     || LIBRESSL_VERSION_NUMBER > 0x2090000fL) \
++    || LIBRESSL_VERSION_NUMBER > 0x2090000fL) \
+     && !defined(OPENSSL_NO_EC)
+     else if (EVP_PKEY_id(pkey) == EVP_PKEY_EC)
+     {
+@@ -1690,7 +1743,7 @@ tls_ctx_load_extra_certs(struct tls_root_ctx *ctx, const char *extra_certs_file,
+ static FILE *biofp;                            /* GLOBAL */
+ static bool biofp_toggle;                      /* GLOBAL */
+ static time_t biofp_last_open;                 /* GLOBAL */
+-static const int biofp_reopen_interval = 600;  /* GLOBAL */
++static const int biofp_reopen_interval = 600;     /* GLOBAL */
+ 
+ static void
+ close_biofp(void)
+@@ -1806,9 +1859,9 @@ bio_write(BIO *bio, const uint8_t *data, int size, const char *desc)
+ static void
+ bio_write_post(const int status, struct buffer *buf)
+ {
+-    if (status == 1) /* success status return from bio_write? */
++    if (status == 1)     /* success status return from bio_write? */
+     {
+-        memset(BPTR(buf), 0, BLEN(buf));  /* erase data just written */
++        memset(BPTR(buf), 0, BLEN(buf));     /* erase data just written */
+         buf->len = 0;
+     }
+ }
+@@ -2106,8 +2159,8 @@ show_available_tls_ciphers_list(const char *cipher_list,
+         crypto_msg(M_FATAL, "Cannot create SSL object");
+     }
+ 
+-#if (OPENSSL_VERSION_NUMBER < 0x1010000fL) || \
+-    (defined(LIBRESSL_VERSION_NUMBER) && LIBRESSL_VERSION_NUMBER <= 0x2090000fL)
++#if (OPENSSL_VERSION_NUMBER < 0x1010000fL)    \
++    || (defined(LIBRESSL_VERSION_NUMBER) && LIBRESSL_VERSION_NUMBER <= 0x2090000fL)
+     STACK_OF(SSL_CIPHER) *sk = SSL_get_ciphers(ssl);
+ #else
+     STACK_OF(SSL_CIPHER) *sk = SSL_get1_supported_ciphers(ssl);
+@@ -2159,7 +2212,9 @@ show_available_curves(void)
+     ALLOC_ARRAY(curves, EC_builtin_curve, crv_len);
+     if (EC_get_builtin_curves(curves, crv_len))
+     {
+-        printf("Available Elliptic curves:\n");
++        printf("Consider using openssl ecparam -list_curves as\n"
++               "alternative to running this command to this command.");
++        printf("\nAvailable Elliptic curves/groups:\n");
+         for (n = 0; n < crv_len; n++)
+         {
+             const char *sname;
+-- 
+2.26.0
 
-Arne
-
-
---S6yS54MwJKq5qXOvfpHhfgDyEQj1auLJp--
-
---7Pqu9qAfo1WAADS9UwCxZM1i9tUO1b1Mo
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl6DDAYACgkQFRhsZwKx
-RFRBbxAAqSPZo2VGDvQ6MwRBfavqX9VF/UXcFxgK6nOoud1T6hHaNs9tZEQjYp0T
-Ia4k+a1PPSMwRrJjm2Iui8/S38UjicW2dMKUATmcADzJ19nwNh/6tj545iEN29U4
-w6rq2twzSwHg/b4DPqQjpltvgV34f0aGH4+tW0pJJzu9X9/NIRVN5k/z9I2b4joA
-4aNI1issoWi/8DCGVlcPA0FCAsctAEtVpe2RHIJaR4BwVX+vieKBBISpiW7RV+rd
-NVRfbuCkoe2m1zn9QbHHJejyV7d0JwydNvZgCRhuozjhiTt6sxmUFJD2irrZe8lL
-4j69Jfpr5iQWgtYfebJQGGQadia9cswCyJr7R6BHLOM3HrWZYuniErb3JZdk5HP2
-pAKcuo82nAbiV2z4Du+isD9/fxXmgPtler6TUUdK0VyoVZAs4Ijrl7S1mHs/wJb6
-23fbl6VGW7+JfbMupnX3DrTOHLfHezpRH9wKMjzD85h480nek+GAh6MCBaCNn+vY
-Y5GB1lYbDJmtWEKcCdCyJwNIEkstN1X35AiWVRP+19PT5GRJNUNCkgaiKaszFZyu
-inxoEk7uHl6YE/VHLOb3reDG9K8GqvY7cgcIKUuuhpfLzh2ZxVZo9Lb71HwN3Gaf
-rzyLeOXL6xFjp+W1+AfI0fheC2Il6Ms5V00fTy6n0PLu5u20pV8=
-=a24q
------END PGP SIGNATURE-----
-
---7Pqu9qAfo1WAADS9UwCxZM1i9tUO1b1Mo--
 
