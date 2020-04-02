@@ -1,16 +1,13 @@
-References: <20200401215052.3489613-1-wgh@...2548...>
- <79cc0c02-63cf-d668-e71b-1e4343228567@...1227...>
- <1de06e6d-72a0-97d0-b9aa-0be2ab716677@...2548...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <bd48b82f-1baa-aec8-7f6a-d3f3853dfc9f@...1227...>
-Date: Thu, 2 Apr 2020 16:25:13 +0200
 MIME-Version: 1.0
-In-Reply-To: <1de06e6d-72a0-97d0-b9aa-0be2ab716677@...2548...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="MRwMWaSSyTRMkhVhT3QBoq0K5gszoijRU"
-Subject: Re: [Openvpn-devel] [PATCH] OpenSSL: Fix --crl-verify not loading
- multiple CRLs in one file
+References: <1585513970-32658-2-git-send-email-selva.nair@...277...>
+ <1585591527-23734-1-git-send-email-selva.nair@...277...>
+ <1585591527-23734-2-git-send-email-selva.nair@...277...>
+In-Reply-To: <1585591527-23734-2-git-send-email-selva.nair@...277...>
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Thu, 2 Apr 2020 12:55:41 -0400
+Message-ID: <CAEsd45TURv8WK_OQ-7OOy8EHXtVpGhD9+vH0_iPVMS9NOAdKeA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v2 2/2] When auth-user-pass file has no
+ password, query the management
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,128 +16,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: WGH <wgh@...2548...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---MRwMWaSSyTRMkhVhT3QBoq0K5gszoijRU
-Content-Type: multipart/mixed; boundary="RNVerBtBAsHlnu4wWwAIE6XxtHZiaMBqz"
+Hi,
 
---RNVerBtBAsHlnu4wWwAIE6XxtHZiaMBqz
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+On Mon, Mar 30, 2020 at 2:06 PM <selva.nair@...277...> wrote:
+>
+> From: Selva Nair <selva.nair@...277...>
+>
+> When only username is found in the file, redirect the auth-user-pass
+> query to the management if management-query-passwords is enabled.
+> Otherwise the user is prompted on console, if available, as before.
+>
+> This changes the behaviour for those who run from the command line,
+> with --management-query-passwords, but still expect the prompt
+> on the console.
+>
+> Note that the management will prompt for both username and password
+> ignoring the username read from the file. As most GUIs can save the
+> the username, this is a one-time inconvenience.
+>
+> Currently, the password is queried on the console (or systemd)
+> in such cases. This is not sensible when console is not available
+> (windows GUI, tunnelblick etc.) or when the log is redirected
+> to a file on Windows (for some reason prompt goes to the log file).
+>
+> Trac # 757
+>
+> Signed-off-by: Selva Nair <selva.nair@...277...>
+> ---
+>
+> v2: Following discussions with Jonathan and Gert, removed the dependence
+> on stdout redirection and applied to all platforms.
+>
+>  src/openvpn/misc.c | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+>
+> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+> index 0d5ac30..546cd71 100644
+> --- a/src/openvpn/misc.c
+> +++ b/src/openvpn/misc.c
+> @@ -261,6 +261,22 @@ get_user_pass_cr(struct user_pass *up,
+>              {
+>                  strncpy(up->password, password_buf, USER_PASS_LEN);
+>              }
+> +            /* The auth-file does not have the password: get both username
+> +             * and password from the management if possible.
+> +             * Otherwise set to read password from console.
+> +             */
+> +#if defined(ENABLE_MANAGEMENT)
+> +            else if (management
+> +                     && (flags & GET_USER_PASS_MANAGEMENT)
+> +                     && management_query_user_pass_enabled(management))
+> +            {
+> +                msg(D_LOW, "No password found in %s authfile '%s'. Querying the management", prefix, auth_file);
+> +                if (!auth_user_pass_mgmt(up, prefix, flags, auth_challenge))
+> +                {
+> +                    return false;
+> +                }
+> +            }
+> +#endif
+>              else
+>              {
+>                  password_from_stdin = 1;
 
+Works for Tunnelblick, thanks!
 
->> Feature-ACK but some changes to the code required.
-> Thank you for the feedback! How should I send a new patch version? As a r=
-eply (with [PATCH v2]) to this thread, or as an independent message? I'm ne=
-w to contributing patches through e-mail.
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 X509_CRL *crl =3D PEM_read_=
-bio_X509_CRL(in, NULL, NULL, NULL);
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (crl =3D=3D NULL)
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 {
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 uns=
-igned long err =3D ERR_get_error();
->>
->> I think we should use ERR_peek_error here, so we do not drop the error
->> message if the error is something else.
->=20
-> backend_tls_ctx_reload_crl doesn't return an error (as it's void), and it=
-s caller never checks OpenSSL error stack. So as this function is, I think =
-it should handle all errors itself, and leave the error stack clear.
+One minor point: in all four places, plus in the email subject, "the
+management" should be changed to "the management interface".
 
-Yes. But your patch throws that error code away. If there an error that
-is not PEM_R_NO_START_LINE it will be silenty discarded. That is my
-problem with using ERR_get_error there.
+"Management interface" is the term that is used on the man page.
 
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
->>> +
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (!X509_STORE_add_crl(sto=
-re, crl))
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 {
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 msg=
-(M_WARN, "CRL: cannot add %s to store", crl_file);
->>
->> Same here.
->=20
-> I can do this, but at the same time I'd like to note that output
+Best regards,
 
-Yeah. I think I my comment about ERR_get vs ERR_peek was a bit
-misleading. I wanted to say that you should only consume error there if
-it is the header error.
-
-> becomes worse:
->=20
-> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:04:24 2020 Diffie-Hellman initializ=
-ed with 2048 bit key
-> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:04:24 2020 OpenSSL: error:0909006C:=
-PEM routines:get_name:no start line
-> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:04:24 2020 OpenSSL: error:0908F066:=
-PEM routines:get_header_and_data:bad end line
-> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:04:24 2020 CRL: cannot read CRL fro=
-m file combined_crl.pem
-> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:04:24 2020 CRL: loaded 1 CRLs from =
-file combined_crl.pem
-> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:04:24 2020 Failed to extract curve =
-from certificate (UNDEF), using secp384r1 instead
->=20
-> The first error comes god knows where from, and the second error is
-> actually related to CRL (I corrupted the END X509 CRL line on purpose).
-> It's hard to figure out what the errors printed by crypto_msg are
-> actually related to.
-
-That is a very recent regression. It should not have been there. See
-this (not yet commited) fix: https://patchwork.openvpn.net/patch/1071/
-
-After reviewing your patch and writing that fix, I also realised how
-similar the two pieces of code are. You can probably almost copy and
-paste the (new) tls_ctx_add_extra_certs to the crl loading function.
-
-
-> Compare with how it was in current edition of the patch:
->=20
-> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:07:13 2020 Diffie-Hellman initializ=
-ed with 2048 bit key
-> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:07:13 2020 OpenSSL: error:0909006C:=
-PEM routines:get_name:no start line
-> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:07:13 2020 CRL: cannot read CRL fro=
-m file combined_crl.pem: error:0908F066:PEM routines:get_header_and_data:ba=
-d end line
-> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:07:13 2020 CRL: loaded 1 CRLs from =
-file combined_crl.pem
->=20
-
-
-Yeah but *always* having a scary error that translates to "No more crls
-found in the file" is not very user friendly since most people will not
-understand that this is to be expected.
-
-Arne
-
-
---RNVerBtBAsHlnu4wWwAIE6XxtHZiaMBqz--
-
---MRwMWaSSyTRMkhVhT3QBoq0K5gszoijRU
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl6F9ckACgkQFRhsZwKx
-RFRdbg//Qj1jehRHndCx2KSuQWUnBDI2MPDwWD4aUL2wzUQFml2/R+gq+gs+mqJ7
-MdPUhcAdLnoZHcPqC1bcEMkiuFRlavC45MSQrmWQ/6m81HvMSSdWUsSh1yk+ezB3
-V29fdLVH4B/eOKvcx7yH1yBNc68YFAQd4WHzfe1KRCAco1mlUk/KzQn6jLuTEQmB
-FghEC0LK/fehuV3E7+dNJZIzvYCSpRgr9/Ou4SWKLNQPBItjEcrLZAHCsXdpnkRB
-3mvxbskdsbZcGaOnd8cmmu7H15SPBbBamrlBU60l+StZ7Wt1pBASOtWAzYsfWh0Q
-kpjN76RzBedHonwkv1B35K6LerSz2QJ0LXOwNg4bVFubZBCMYdRra8M+pzJUg2zq
-eDrYO0zdmue/5RNOdnGDHLAiRZqUJwnK7wNK30Vi7ZkHxAQ+k8DEQd4TfBXhsMCb
-5m2Jxw/By9Saz/lXLqW7cwArUQ+5OR0i3oae1zfT44BAqIJHzDqhLfdzC5q4JGZX
-FWewAbFVIHMFfay1HuoSNb2fdzA9fMJZcEIzgQeLSmyBKHGeCjBdD2Tmjs/cIuCz
-/mZ/mBXC96h9vY118O49vWBlcsIxyxcHRfNgiNH0MkY0ICE90eHx3S4Yv6wgwMwx
-M8VAIcamS9ZCekYAcLXcm2kxgBbo5LXe97mCXR2dK92zz9A4HwU=
-=ipL/
------END PGP SIGNATURE-----
-
---MRwMWaSSyTRMkhVhT3QBoq0K5gszoijRU--
+Jon Bullard
 
