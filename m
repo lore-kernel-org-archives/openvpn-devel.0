@@ -1,7 +1,7 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu,  2 Apr 2020 10:07:14 +0200
-Message-Id: <20200402080714.26678-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Fix OpenSSL error stack handling of
+Date: Thu,  2 Apr 2020 10:18:29 +0200
+Message-Id: <20200402081829.28362-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v2] Fix OpenSSL error stack handling of
  tls_ctx_add_extra_certs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -24,13 +24,15 @@ real error on other errors and also the no start line error if no
 certificate can be found at all and it is required (--extra-certs
 config option)
 
+Patch V2: fix optional flag was flipped betwen --cert and --extra-certs
+
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
  src/openvpn/ssl_openssl.c | 24 ++++++++++++++++++------
  1 file changed, 18 insertions(+), 6 deletions(-)
 
 diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 3f0031ff..ed5d2faf 100644
+index 3f0031ff..ef5dfc52 100644
 --- a/src/openvpn/ssl_openssl.c
 +++ b/src/openvpn/ssl_openssl.c
 @@ -881,24 +881,36 @@ tls_ctx_load_cryptoapi(struct tls_root_ctx *ctx, const char *cryptoapi_cert)
@@ -79,7 +81,7 @@ index 3f0031ff..ed5d2faf 100644
      if (ret)
      {
 -        tls_ctx_add_extra_certs(ctx, in);
-+        tls_ctx_add_extra_certs(ctx, in, false);
++        tls_ctx_add_extra_certs(ctx, in, true);
      }
  
  end:
@@ -88,7 +90,7 @@ index 3f0031ff..ed5d2faf 100644
      else
      {
 -        tls_ctx_add_extra_certs(ctx, in);
-+        tls_ctx_add_extra_certs(ctx, in, true);
++        tls_ctx_add_extra_certs(ctx, in, false);
      }
  
      BIO_free(in);
