@@ -1,14 +1,13 @@
-From: Antonio Quartulli <a@...2181...>
-References: <20200402081829.28362-1-arne@...1227...>
- <20200402103821.10347-1-arne@...1227...>
- <3e15acf9-30a4-1b1d-581a-7366e4b58c45@...2181...>
-Message-ID: <597dfec9-32d8-3d3d-f2d5-88aa13fba22a@...2181...>
-Date: Thu, 2 Apr 2020 15:21:10 +0200
+References: <20200401215052.3489613-1-wgh@...2548...>
+ <79cc0c02-63cf-d668-e71b-1e4343228567@...1227...>
+From: WGH <wgh@...2548...>
+Message-ID: <1de06e6d-72a0-97d0-b9aa-0be2ab716677@...2548...>
+Date: Thu, 2 Apr 2020 17:09:58 +0300
 MIME-Version: 1.0
-In-Reply-To: <3e15acf9-30a4-1b1d-581a-7366e4b58c45@...2181...>
+In-Reply-To: <79cc0c02-63cf-d668-e71b-1e4343228567@...1227...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v3] Fix OpenSSL error stack handling of
- tls_ctx_add_extra_certs
+Subject: Re: [Openvpn-devel] [PATCH] OpenSSL: Fix --crl-verify not loading
+ multiple CRLs in one file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,61 +16,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
-
-On 02/04/2020 15:15, Antonio Quartulli wrote:
-> Hi,
-> 
-> On 02/04/2020 12:38, Arne Schwabe wrote:
->> Commit f67efa94 exposed that tls_ctx_add_extra_certs will always leave
->> an error of PEM_R_NO_START_LINE on the stack that will printed the next
->> time that the error is printed.
->>
->> Fix this by discarding this error. Also clean up the logic to report
->> real error on other errors and also the no start line error if no
->> certificate can be found at all and it is required (--extra-certs
->> config option)
->>
->> Patch V2: fix optional flag was flipped betwen --cert and --extra-certs
->> Patch V3: Make logic more easy to follow, no functional changes
->>
->> Signed-off-by: Arne Schwabe <arne@...1227...>
->> ---
->>  src/openvpn/ssl_openssl.c | 30 +++++++++++++++++++++---------
->>  1 file changed, 21 insertions(+), 9 deletions(-)
->>
->> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
->> index 3f0031ff..1731474d 100644
->> --- a/src/openvpn/ssl_openssl.c
->> +++ b/src/openvpn/ssl_openssl.c
->> @@ -881,24 +881,36 @@ tls_ctx_load_cryptoapi(struct tls_root_ctx *ctx, const char *cryptoapi_cert)
->>  #endif /* ENABLE_CRYPTOAPI */
->>  
->>  static void
->> -tls_ctx_add_extra_certs(struct tls_root_ctx *ctx, BIO *bio)
->> +tls_ctx_add_extra_certs(struct tls_root_ctx *ctx, BIO *bio, bool optional)
->>  {
->>      X509 *cert;
->> -    for (;; )
->> +    while (true)
->>      {
->>          cert = NULL;
->> -        if (!PEM_read_bio_X509(bio, &cert, NULL, NULL)) /* takes ownership of cert */
->> -        {
->> -            break;
->> -        }
->> -        if (!cert)
->> +        if (!PEM_read_bio_X509(bio, &cert, NULL, NULL))
->>          {
->> +            /*  Error indicates that no certificate is found in the buffer.
-
-there is also a typ0 in the line above: certificateS -> certificate.
-
-
--- 
-Antonio Quartulli
-
+T24gNC8yLzIwIDE6MjggQU0sIEFybmUgU2Nod2FiZSB3cm90ZToKPiBBbSAwMS4wNC4yMCB1bSAy
+Mzo1MCBzY2hyaWViIHdnaEAuLi4yNTQ4Li4uOgo+PiBGcm9tOiBNYXhpbSBQbG90bmlrb3YgPHdn
+aEAuLi4yNTQ4Li4uPgo+Pgo+PiBMYWNrIG9mIHRoaXMgbGVkIHBlb3BsZSBhY2NlcHRpbmcgbXVs
+dGlwbGUgQ0FzIHRvIHVzZSBjYXBhdGgsCj4+IHdoaWNoIGFscmVhZHkgc3VwcG9ydHMgbXVsdGlw
+bGUgQ1JMcy4gQnV0IGNhcGF0aCBtb2RlIGl0c2VsZgo+PiBpcyBzb21ld2hhdCB1Z2x5OiB5b3Ug
+aGF2ZSB0byBjcmVhdGUgbmV3IGZpbGUvc3ltbGluayBldmVyeSB0aW1lCj4+IENSTCBpcyB1cGRh
+dGVkLCBhbmQgdGhlcmUncyBubyBnb29kIHdheSB0byBjbGVhbiB0aGVtIHVwIHdpdGhvdXQKPj4g
+cmVzdGFydGluZyBPcGVuVlBOLCBzaW5jZSBhbnkgZ2FwIGluIHRoZSBzZXF1ZW5jZSB3b3VsZCBj
+YXVzZSBpdAo+PiB0byBsb3NlIHN5bmNbMV0uCj4+Cj4+IG1iZWR0bHMgY3J5cHRvIGJhY2tlbmRz
+IGFscmVhZHkgbG9hZHMgbXVsdGlwbGUgQ1JMcyBhcyBpcywgc28KPj4gaXQgZG9lc24ndCBuZWVk
+IHRoaXMgZml4Lgo+Pgo+PiBUaGUgcGF0Y2ggYWxzbyBpbmNsdWRlcyBzb21lIGxvZ2dpbmcgY2hh
+bmdlcyB3aGljaCBJIHRoaW5rIGFyZSB1c2VmdWwuCj4KPiBGZWF0dXJlLUFDSyBidXQgc29tZSBj
+aGFuZ2VzIHRvIHRoZSBjb2RlIHJlcXVpcmVkLgpUaGFuayB5b3UgZm9yIHRoZSBmZWVkYmFjayEg
+SG93IHNob3VsZCBJIHNlbmQgYSBuZXcgcGF0Y2ggdmVyc2lvbj8gQXMgYSByZXBseSAod2l0aCBb
+UEFUQ0ggdjJdKSB0byB0aGlzIHRocmVhZCwgb3IgYXMgYW4gaW5kZXBlbmRlbnQgbWVzc2FnZT8g
+SSdtIG5ldyB0byBjb250cmlidXRpbmcgcGF0Y2hlcyB0aHJvdWdoIGUtbWFpbC4KPj4gK8KgwqDC
+oMKgwqDCoMKgIFg1MDlfQ1JMICpjcmwgPSBQRU1fcmVhZF9iaW9fWDUwOV9DUkwoaW4sIE5VTEws
+IE5VTEwsIE5VTEwpOwo+PiArwqDCoMKgwqDCoMKgwqAgaWYgKGNybCA9PSBOVUxMKQo+PiArwqDC
+oMKgwqDCoMKgwqAgewo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB1bnNpZ25lZCBsb25nIGVy
+ciA9IEVSUl9nZXRfZXJyb3IoKTsKPgo+IEkgdGhpbmsgd2Ugc2hvdWxkIHVzZSBFUlJfcGVla19l
+cnJvciBoZXJlLCBzbyB3ZSBkbyBub3QgZHJvcCB0aGUgZXJyb3IKPiBtZXNzYWdlIGlmIHRoZSBl
+cnJvciBpcyBzb21ldGhpbmcgZWxzZS4KCmJhY2tlbmRfdGxzX2N0eF9yZWxvYWRfY3JsIGRvZXNu
+J3QgcmV0dXJuIGFuIGVycm9yIChhcyBpdCdzIHZvaWQpLCBhbmQgaXRzIGNhbGxlciBuZXZlciBj
+aGVja3MgT3BlblNTTCBlcnJvciBzdGFjay4gU28gYXMgdGhpcyBmdW5jdGlvbiBpcywgSSB0aGlu
+ayBpdCBzaG91bGQgaGFuZGxlIGFsbCBlcnJvcnMgaXRzZWxmLCBhbmQgbGVhdmUgdGhlIGVycm9y
+IHN0YWNrIGNsZWFyLgoKT2YgY291cnNlLCBpdCB3b3VsZCBtYWtlIHNlbnNlIHRvIHJlZmFjdG9y
+IHRoaXMgcGFydCwgYnV0IHRoYXQgd291bGQgYmUgYSBkaWZmZXJlbnQgcGF0Y2guCgo+PiArwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGdvdG8gZW5kOwo+PiArwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCB9Cj4+IMKgCj4+IC3CoMKgwqAgaWYgKCFYNTA5X1NUT1JFX2FkZF9jcmwoc3RvcmUs
+IGNybCkpCj4+IC3CoMKgwqAgewo+PiAtwqDCoMKgwqDCoMKgwqAgbXNnKE1fV0FSTiwgIkNSTDog
+Y2Fubm90IGFkZCAlcyB0byBzdG9yZSIsIGNybF9maWxlKTsKPj4gLcKgwqDCoMKgwqDCoMKgIGdv
+dG8gZW5kOwo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBFUlJfZXJyb3Jfc3RyaW5nX24oZXJy
+LCBidWYsIHNpemVvZihidWYpKTsKPj4gKwo+Cj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG1z
+ZyhNX1dBUk4sICJDUkw6IGNhbm5vdCByZWFkIENSTCBmcm9tIGZpbGUgJXM6ICVzIiwgY3JsX2Zp
+bGUsIGJ1Zik7Cj4KPiBVc2UgY3J5cHRvX21zZyB0aGF0IGhhbmRsZXMgdGhlIG9wZW5zc2wgZXJy
+b3Igc3RhY2sgcHJpbnRpbmcuCj4KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZ290byBlbmQ7
+Cj4+ICvCoMKgwqDCoMKgwqDCoCB9Cj4+ICsKPj4gK8KgwqDCoMKgwqDCoMKgIGlmICghWDUwOV9T
+VE9SRV9hZGRfY3JsKHN0b3JlLCBjcmwpKQo+PiArwqDCoMKgwqDCoMKgwqAgewo+PiArwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCBtc2coTV9XQVJOLCAiQ1JMOiBjYW5ub3QgYWRkICVzIHRvIHN0b3Jl
+IiwgY3JsX2ZpbGUpOwo+Cj4gU2FtZSBoZXJlLgoKSSBjYW4gZG8gdGhpcywgYnV0IGF0IHRoZSBz
+YW1lIHRpbWUgSSdkIGxpa2UgdG8gbm90ZSB0aGF0IG91dHB1dApiZWNvbWVzIHdvcnNlOgoKwqDC
+oMKgIFRodSBBcHLCoCAyIDE3OjA0OjI0IDIwMjAgRGlmZmllLUhlbGxtYW4gaW5pdGlhbGl6ZWQg
+d2l0aCAyMDQ4IGJpdCBrZXkKwqDCoMKgIFRodSBBcHLCoCAyIDE3OjA0OjI0IDIwMjAgT3BlblNT
+TDogZXJyb3I6MDkwOTAwNkM6UEVNIHJvdXRpbmVzOmdldF9uYW1lOm5vIHN0YXJ0IGxpbmUKwqDC
+oMKgIFRodSBBcHLCoCAyIDE3OjA0OjI0IDIwMjAgT3BlblNTTDogZXJyb3I6MDkwOEYwNjY6UEVN
+IHJvdXRpbmVzOmdldF9oZWFkZXJfYW5kX2RhdGE6YmFkIGVuZCBsaW5lCsKgwqDCoCBUaHUgQXBy
+wqAgMiAxNzowNDoyNCAyMDIwIENSTDogY2Fubm90IHJlYWQgQ1JMIGZyb20gZmlsZSBjb21iaW5l
+ZF9jcmwucGVtCsKgwqDCoCBUaHUgQXBywqAgMiAxNzowNDoyNCAyMDIwIENSTDogbG9hZGVkIDEg
+Q1JMcyBmcm9tIGZpbGUgY29tYmluZWRfY3JsLnBlbQrCoMKgwqAgVGh1IEFwcsKgIDIgMTc6MDQ6
+MjQgMjAyMCBGYWlsZWQgdG8gZXh0cmFjdCBjdXJ2ZSBmcm9tIGNlcnRpZmljYXRlIChVTkRFRiks
+IHVzaW5nIHNlY3AzODRyMSBpbnN0ZWFkCgpUaGUgZmlyc3QgZXJyb3IgY29tZXMgZ29kIGtub3dz
+IHdoZXJlIGZyb20sIGFuZCB0aGUgc2Vjb25kIGVycm9yIGlzCmFjdHVhbGx5IHJlbGF0ZWQgdG8g
+Q1JMIChJIGNvcnJ1cHRlZCB0aGUgRU5EIFg1MDkgQ1JMIGxpbmUgb24gcHVycG9zZSkuCkl0J3Mg
+aGFyZCB0byBmaWd1cmUgb3V0IHdoYXQgdGhlIGVycm9ycyBwcmludGVkIGJ5IGNyeXB0b19tc2cg
+YXJlCmFjdHVhbGx5IHJlbGF0ZWQgdG8uCgpDb21wYXJlIHdpdGggaG93IGl0IHdhcyBpbiBjdXJy
+ZW50IGVkaXRpb24gb2YgdGhlIHBhdGNoOgoKwqDCoMKgIFRodSBBcHLCoCAyIDE3OjA3OjEzIDIw
+MjAgRGlmZmllLUhlbGxtYW4gaW5pdGlhbGl6ZWQgd2l0aCAyMDQ4IGJpdCBrZXkKwqDCoMKgIFRo
+dSBBcHLCoCAyIDE3OjA3OjEzIDIwMjAgT3BlblNTTDogZXJyb3I6MDkwOTAwNkM6UEVNIHJvdXRp
+bmVzOmdldF9uYW1lOm5vIHN0YXJ0IGxpbmUKwqDCoMKgIFRodSBBcHLCoCAyIDE3OjA3OjEzIDIw
+MjAgQ1JMOiBjYW5ub3QgcmVhZCBDUkwgZnJvbSBmaWxlIGNvbWJpbmVkX2NybC5wZW06IGVycm9y
+OjA5MDhGMDY2OlBFTSByb3V0aW5lczpnZXRfaGVhZGVyX2FuZF9kYXRhOmJhZCBlbmQgbGluZQrC
+oMKgwqAgVGh1IEFwcsKgIDIgMTc6MDc6MTMgMjAyMCBDUkw6IGxvYWRlZCAxIENSTHMgZnJvbSBm
+aWxlIGNvbWJpbmVkX2NybC5wZW0KCg==
