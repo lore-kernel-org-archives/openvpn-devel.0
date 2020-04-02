@@ -1,11 +1,7 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <6a623f26-a30c-eb91-204b-8f938cad2994@...515...>
-Date: Thu, 2 Apr 2020 10:11:16 +0300
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="lfPJmHdbGuTLFi8jsYlxsAFciCEIyCex6"
-Subject: [Openvpn-devel] Community meetings in April 2020
+From: Arne Schwabe <arne@...1227...>
+Date: Thu,  2 Apr 2020 10:01:02 +0200
+Message-Id: <20200402080102.26019-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Fetch OpenSSL versions via source/old links
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,57 +10,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---lfPJmHdbGuTLFi8jsYlxsAFciCEIyCex6
-Content-Type: multipart/mixed; boundary="79HrlvDBGGUjv76CDZeg9mrjhy2e1sF8c"
+New versions are already available as source/old but old version at
+some point disappear from the normal download path. Use the source/old
+path for all OpenSSL versions to avoid this problem.
 
---79HrlvDBGGUjv76CDZeg9mrjhy2e1sF8c
-Content-Language: en-US
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ .travis/build-deps.sh | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Hi,
+diff --git a/.travis/build-deps.sh b/.travis/build-deps.sh
+index 0c8d69b8..e8a1f101 100755
+--- a/.travis/build-deps.sh
++++ b/.travis/build-deps.sh
+@@ -90,9 +90,11 @@ build_mbedtls () {
+ }
+ 
+ download_openssl () {
++    
+     if [ ! -f "download-cache/openssl-${OPENSSL_VERSION}.tar.gz" ]; then
++        MAJOR=`echo $OPENSSL_VERSION | sed -e 's/\([0-9.]*\).*/\1/'`
+         wget -P download-cache/ \
+-            "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz"
++             "https://www.openssl.org/source/old/${MAJOR}/openssl-${OPENSSL_VERSION}.tar.gz"
+     fi
+ }
+ 
+-- 
+2.26.0
 
-Our community meetings will alternate between Wed 11:30 CET and Thu
-20:00 CET.
-
-Next meetings have been scheduled to
-
-- Thu 9th April 20:00 CET
-- Wed 15th April 11:30 CET
-- Thu 23rd April 20:00 CET
-- Wed 29th April 11:30 CET
-
-The place is #openvpn-meeting IRC channel at Freenode. Meeting agendas
-and summaries are in here:
-
-<https://community.openvpn.net/openvpn/wiki/IrcMeetings>
-
-Samuli
-
-
-
-
---79HrlvDBGGUjv76CDZeg9mrjhy2e1sF8c--
-
---lfPJmHdbGuTLFi8jsYlxsAFciCEIyCex6
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAl6FkBQACgkQKVhNn0CG
-RXj/oAf/eOYRquAR4RVfBP5bJeugLBTkr6aFXx8CLiPRaZPc/xIlqw07VHYWwfo6
-xbkWO8buazlaEXF6vRkPSstYNlUyjircV6bwubQN/sErI9pjIqvCrotr/Byy080l
-b0TsJXqSyW2RwJxTT3bUx40/SN0X1JJEKZwixdyOppDKH3ZHuWXoSAjASR2Z9g6u
-cDIfOzv8Jn0boTQawuJME7uE6Z6T9Xq+3PzHX404E2A3+iUaO2xtEoKP1spiQsBx
-ymDdNiX8SyxabsR3ruhJwA6JPmAulEhoTC6z+eiskLPGYmMG1RUue0+84Y5qvlGD
-9n2dWPhzUUr5JsXgkRLlfBJXKypU3g==
-=M7F1
------END PGP SIGNATURE-----
-
---lfPJmHdbGuTLFi8jsYlxsAFciCEIyCex6--
 
