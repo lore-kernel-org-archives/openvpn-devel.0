@@ -1,11 +1,14 @@
 References: <20200401215052.3489613-1-wgh@...2548...>
  <79cc0c02-63cf-d668-e71b-1e4343228567@...1227...>
-From: WGH <wgh@...2548...>
-Message-ID: <1de06e6d-72a0-97d0-b9aa-0be2ab716677@...2548...>
-Date: Thu, 2 Apr 2020 17:09:58 +0300
+ <1de06e6d-72a0-97d0-b9aa-0be2ab716677@...2548...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <bd48b82f-1baa-aec8-7f6a-d3f3853dfc9f@...1227...>
+Date: Thu, 2 Apr 2020 16:25:13 +0200
 MIME-Version: 1.0
-In-Reply-To: <79cc0c02-63cf-d668-e71b-1e4343228567@...1227...>
-Content-Language: en-US
+In-Reply-To: <1de06e6d-72a0-97d0-b9aa-0be2ab716677@...2548...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="MRwMWaSSyTRMkhVhT3QBoq0K5gszoijRU"
 Subject: Re: [Openvpn-devel] [PATCH] OpenSSL: Fix --crl-verify not loading
  multiple CRLs in one file
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,70 +19,128 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: WGH <wgh@...2548...>, openvpn-devel@lists.sourceforge.net
 
-T24gNC8yLzIwIDE6MjggQU0sIEFybmUgU2Nod2FiZSB3cm90ZToKPiBBbSAwMS4wNC4yMCB1bSAy
-Mzo1MCBzY2hyaWViIHdnaEAuLi4yNTQ4Li4uOgo+PiBGcm9tOiBNYXhpbSBQbG90bmlrb3YgPHdn
-aEAuLi4yNTQ4Li4uPgo+Pgo+PiBMYWNrIG9mIHRoaXMgbGVkIHBlb3BsZSBhY2NlcHRpbmcgbXVs
-dGlwbGUgQ0FzIHRvIHVzZSBjYXBhdGgsCj4+IHdoaWNoIGFscmVhZHkgc3VwcG9ydHMgbXVsdGlw
-bGUgQ1JMcy4gQnV0IGNhcGF0aCBtb2RlIGl0c2VsZgo+PiBpcyBzb21ld2hhdCB1Z2x5OiB5b3Ug
-aGF2ZSB0byBjcmVhdGUgbmV3IGZpbGUvc3ltbGluayBldmVyeSB0aW1lCj4+IENSTCBpcyB1cGRh
-dGVkLCBhbmQgdGhlcmUncyBubyBnb29kIHdheSB0byBjbGVhbiB0aGVtIHVwIHdpdGhvdXQKPj4g
-cmVzdGFydGluZyBPcGVuVlBOLCBzaW5jZSBhbnkgZ2FwIGluIHRoZSBzZXF1ZW5jZSB3b3VsZCBj
-YXVzZSBpdAo+PiB0byBsb3NlIHN5bmNbMV0uCj4+Cj4+IG1iZWR0bHMgY3J5cHRvIGJhY2tlbmRz
-IGFscmVhZHkgbG9hZHMgbXVsdGlwbGUgQ1JMcyBhcyBpcywgc28KPj4gaXQgZG9lc24ndCBuZWVk
-IHRoaXMgZml4Lgo+Pgo+PiBUaGUgcGF0Y2ggYWxzbyBpbmNsdWRlcyBzb21lIGxvZ2dpbmcgY2hh
-bmdlcyB3aGljaCBJIHRoaW5rIGFyZSB1c2VmdWwuCj4KPiBGZWF0dXJlLUFDSyBidXQgc29tZSBj
-aGFuZ2VzIHRvIHRoZSBjb2RlIHJlcXVpcmVkLgpUaGFuayB5b3UgZm9yIHRoZSBmZWVkYmFjayEg
-SG93IHNob3VsZCBJIHNlbmQgYSBuZXcgcGF0Y2ggdmVyc2lvbj8gQXMgYSByZXBseSAod2l0aCBb
-UEFUQ0ggdjJdKSB0byB0aGlzIHRocmVhZCwgb3IgYXMgYW4gaW5kZXBlbmRlbnQgbWVzc2FnZT8g
-SSdtIG5ldyB0byBjb250cmlidXRpbmcgcGF0Y2hlcyB0aHJvdWdoIGUtbWFpbC4KPj4gK8KgwqDC
-oMKgwqDCoMKgIFg1MDlfQ1JMICpjcmwgPSBQRU1fcmVhZF9iaW9fWDUwOV9DUkwoaW4sIE5VTEws
-IE5VTEwsIE5VTEwpOwo+PiArwqDCoMKgwqDCoMKgwqAgaWYgKGNybCA9PSBOVUxMKQo+PiArwqDC
-oMKgwqDCoMKgwqAgewo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB1bnNpZ25lZCBsb25nIGVy
-ciA9IEVSUl9nZXRfZXJyb3IoKTsKPgo+IEkgdGhpbmsgd2Ugc2hvdWxkIHVzZSBFUlJfcGVla19l
-cnJvciBoZXJlLCBzbyB3ZSBkbyBub3QgZHJvcCB0aGUgZXJyb3IKPiBtZXNzYWdlIGlmIHRoZSBl
-cnJvciBpcyBzb21ldGhpbmcgZWxzZS4KCmJhY2tlbmRfdGxzX2N0eF9yZWxvYWRfY3JsIGRvZXNu
-J3QgcmV0dXJuIGFuIGVycm9yIChhcyBpdCdzIHZvaWQpLCBhbmQgaXRzIGNhbGxlciBuZXZlciBj
-aGVja3MgT3BlblNTTCBlcnJvciBzdGFjay4gU28gYXMgdGhpcyBmdW5jdGlvbiBpcywgSSB0aGlu
-ayBpdCBzaG91bGQgaGFuZGxlIGFsbCBlcnJvcnMgaXRzZWxmLCBhbmQgbGVhdmUgdGhlIGVycm9y
-IHN0YWNrIGNsZWFyLgoKT2YgY291cnNlLCBpdCB3b3VsZCBtYWtlIHNlbnNlIHRvIHJlZmFjdG9y
-IHRoaXMgcGFydCwgYnV0IHRoYXQgd291bGQgYmUgYSBkaWZmZXJlbnQgcGF0Y2guCgo+PiArwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGdvdG8gZW5kOwo+PiArwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCB9Cj4+IMKgCj4+IC3CoMKgwqAgaWYgKCFYNTA5X1NUT1JFX2FkZF9jcmwoc3RvcmUs
-IGNybCkpCj4+IC3CoMKgwqAgewo+PiAtwqDCoMKgwqDCoMKgwqAgbXNnKE1fV0FSTiwgIkNSTDog
-Y2Fubm90IGFkZCAlcyB0byBzdG9yZSIsIGNybF9maWxlKTsKPj4gLcKgwqDCoMKgwqDCoMKgIGdv
-dG8gZW5kOwo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBFUlJfZXJyb3Jfc3RyaW5nX24oZXJy
-LCBidWYsIHNpemVvZihidWYpKTsKPj4gKwo+Cj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG1z
-ZyhNX1dBUk4sICJDUkw6IGNhbm5vdCByZWFkIENSTCBmcm9tIGZpbGUgJXM6ICVzIiwgY3JsX2Zp
-bGUsIGJ1Zik7Cj4KPiBVc2UgY3J5cHRvX21zZyB0aGF0IGhhbmRsZXMgdGhlIG9wZW5zc2wgZXJy
-b3Igc3RhY2sgcHJpbnRpbmcuCj4KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZ290byBlbmQ7
-Cj4+ICvCoMKgwqDCoMKgwqDCoCB9Cj4+ICsKPj4gK8KgwqDCoMKgwqDCoMKgIGlmICghWDUwOV9T
-VE9SRV9hZGRfY3JsKHN0b3JlLCBjcmwpKQo+PiArwqDCoMKgwqDCoMKgwqAgewo+PiArwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoCBtc2coTV9XQVJOLCAiQ1JMOiBjYW5ub3QgYWRkICVzIHRvIHN0b3Jl
-IiwgY3JsX2ZpbGUpOwo+Cj4gU2FtZSBoZXJlLgoKSSBjYW4gZG8gdGhpcywgYnV0IGF0IHRoZSBz
-YW1lIHRpbWUgSSdkIGxpa2UgdG8gbm90ZSB0aGF0IG91dHB1dApiZWNvbWVzIHdvcnNlOgoKwqDC
-oMKgIFRodSBBcHLCoCAyIDE3OjA0OjI0IDIwMjAgRGlmZmllLUhlbGxtYW4gaW5pdGlhbGl6ZWQg
-d2l0aCAyMDQ4IGJpdCBrZXkKwqDCoMKgIFRodSBBcHLCoCAyIDE3OjA0OjI0IDIwMjAgT3BlblNT
-TDogZXJyb3I6MDkwOTAwNkM6UEVNIHJvdXRpbmVzOmdldF9uYW1lOm5vIHN0YXJ0IGxpbmUKwqDC
-oMKgIFRodSBBcHLCoCAyIDE3OjA0OjI0IDIwMjAgT3BlblNTTDogZXJyb3I6MDkwOEYwNjY6UEVN
-IHJvdXRpbmVzOmdldF9oZWFkZXJfYW5kX2RhdGE6YmFkIGVuZCBsaW5lCsKgwqDCoCBUaHUgQXBy
-wqAgMiAxNzowNDoyNCAyMDIwIENSTDogY2Fubm90IHJlYWQgQ1JMIGZyb20gZmlsZSBjb21iaW5l
-ZF9jcmwucGVtCsKgwqDCoCBUaHUgQXBywqAgMiAxNzowNDoyNCAyMDIwIENSTDogbG9hZGVkIDEg
-Q1JMcyBmcm9tIGZpbGUgY29tYmluZWRfY3JsLnBlbQrCoMKgwqAgVGh1IEFwcsKgIDIgMTc6MDQ6
-MjQgMjAyMCBGYWlsZWQgdG8gZXh0cmFjdCBjdXJ2ZSBmcm9tIGNlcnRpZmljYXRlIChVTkRFRiks
-IHVzaW5nIHNlY3AzODRyMSBpbnN0ZWFkCgpUaGUgZmlyc3QgZXJyb3IgY29tZXMgZ29kIGtub3dz
-IHdoZXJlIGZyb20sIGFuZCB0aGUgc2Vjb25kIGVycm9yIGlzCmFjdHVhbGx5IHJlbGF0ZWQgdG8g
-Q1JMIChJIGNvcnJ1cHRlZCB0aGUgRU5EIFg1MDkgQ1JMIGxpbmUgb24gcHVycG9zZSkuCkl0J3Mg
-aGFyZCB0byBmaWd1cmUgb3V0IHdoYXQgdGhlIGVycm9ycyBwcmludGVkIGJ5IGNyeXB0b19tc2cg
-YXJlCmFjdHVhbGx5IHJlbGF0ZWQgdG8uCgpDb21wYXJlIHdpdGggaG93IGl0IHdhcyBpbiBjdXJy
-ZW50IGVkaXRpb24gb2YgdGhlIHBhdGNoOgoKwqDCoMKgIFRodSBBcHLCoCAyIDE3OjA3OjEzIDIw
-MjAgRGlmZmllLUhlbGxtYW4gaW5pdGlhbGl6ZWQgd2l0aCAyMDQ4IGJpdCBrZXkKwqDCoMKgIFRo
-dSBBcHLCoCAyIDE3OjA3OjEzIDIwMjAgT3BlblNTTDogZXJyb3I6MDkwOTAwNkM6UEVNIHJvdXRp
-bmVzOmdldF9uYW1lOm5vIHN0YXJ0IGxpbmUKwqDCoMKgIFRodSBBcHLCoCAyIDE3OjA3OjEzIDIw
-MjAgQ1JMOiBjYW5ub3QgcmVhZCBDUkwgZnJvbSBmaWxlIGNvbWJpbmVkX2NybC5wZW06IGVycm9y
-OjA5MDhGMDY2OlBFTSByb3V0aW5lczpnZXRfaGVhZGVyX2FuZF9kYXRhOmJhZCBlbmQgbGluZQrC
-oMKgwqAgVGh1IEFwcsKgIDIgMTc6MDc6MTMgMjAyMCBDUkw6IGxvYWRlZCAxIENSTHMgZnJvbSBm
-aWxlIGNvbWJpbmVkX2NybC5wZW0KCg==
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--MRwMWaSSyTRMkhVhT3QBoq0K5gszoijRU
+Content-Type: multipart/mixed; boundary="RNVerBtBAsHlnu4wWwAIE6XxtHZiaMBqz"
+
+--RNVerBtBAsHlnu4wWwAIE6XxtHZiaMBqz
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+
+>> Feature-ACK but some changes to the code required.
+> Thank you for the feedback! How should I send a new patch version? As a r=
+eply (with [PATCH v2]) to this thread, or as an independent message? I'm ne=
+w to contributing patches through e-mail.
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 X509_CRL *crl =3D PEM_read_=
+bio_X509_CRL(in, NULL, NULL, NULL);
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (crl =3D=3D NULL)
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 {
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 uns=
+igned long err =3D ERR_get_error();
+>>
+>> I think we should use ERR_peek_error here, so we do not drop the error
+>> message if the error is something else.
+>=20
+> backend_tls_ctx_reload_crl doesn't return an error (as it's void), and it=
+s caller never checks OpenSSL error stack. So as this function is, I think =
+it should handle all errors itself, and leave the error stack clear.
+
+Yes. But your patch throws that error code away. If there an error that
+is not PEM_R_NO_START_LINE it will be silenty discarded. That is my
+problem with using ERR_get_error there.
+
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
+>>> +
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (!X509_STORE_add_crl(sto=
+re, crl))
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 {
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 msg=
+(M_WARN, "CRL: cannot add %s to store", crl_file);
+>>
+>> Same here.
+>=20
+> I can do this, but at the same time I'd like to note that output
+
+Yeah. I think I my comment about ERR_get vs ERR_peek was a bit
+misleading. I wanted to say that you should only consume error there if
+it is the header error.
+
+> becomes worse:
+>=20
+> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:04:24 2020 Diffie-Hellman initializ=
+ed with 2048 bit key
+> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:04:24 2020 OpenSSL: error:0909006C:=
+PEM routines:get_name:no start line
+> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:04:24 2020 OpenSSL: error:0908F066:=
+PEM routines:get_header_and_data:bad end line
+> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:04:24 2020 CRL: cannot read CRL fro=
+m file combined_crl.pem
+> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:04:24 2020 CRL: loaded 1 CRLs from =
+file combined_crl.pem
+> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:04:24 2020 Failed to extract curve =
+from certificate (UNDEF), using secp384r1 instead
+>=20
+> The first error comes god knows where from, and the second error is
+> actually related to CRL (I corrupted the END X509 CRL line on purpose).
+> It's hard to figure out what the errors printed by crypto_msg are
+> actually related to.
+
+That is a very recent regression. It should not have been there. See
+this (not yet commited) fix: https://patchwork.openvpn.net/patch/1071/
+
+After reviewing your patch and writing that fix, I also realised how
+similar the two pieces of code are. You can probably almost copy and
+paste the (new) tls_ctx_add_extra_certs to the crl loading function.
+
+
+> Compare with how it was in current edition of the patch:
+>=20
+> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:07:13 2020 Diffie-Hellman initializ=
+ed with 2048 bit key
+> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:07:13 2020 OpenSSL: error:0909006C:=
+PEM routines:get_name:no start line
+> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:07:13 2020 CRL: cannot read CRL fro=
+m file combined_crl.pem: error:0908F066:PEM routines:get_header_and_data:ba=
+d end line
+> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:07:13 2020 CRL: loaded 1 CRLs from =
+file combined_crl.pem
+>=20
+
+
+Yeah but *always* having a scary error that translates to "No more crls
+found in the file" is not very user friendly since most people will not
+understand that this is to be expected.
+
+Arne
+
+
+--RNVerBtBAsHlnu4wWwAIE6XxtHZiaMBqz--
+
+--MRwMWaSSyTRMkhVhT3QBoq0K5gszoijRU
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl6F9ckACgkQFRhsZwKx
+RFRdbg//Qj1jehRHndCx2KSuQWUnBDI2MPDwWD4aUL2wzUQFml2/R+gq+gs+mqJ7
+MdPUhcAdLnoZHcPqC1bcEMkiuFRlavC45MSQrmWQ/6m81HvMSSdWUsSh1yk+ezB3
+V29fdLVH4B/eOKvcx7yH1yBNc68YFAQd4WHzfe1KRCAco1mlUk/KzQn6jLuTEQmB
+FghEC0LK/fehuV3E7+dNJZIzvYCSpRgr9/Ou4SWKLNQPBItjEcrLZAHCsXdpnkRB
+3mvxbskdsbZcGaOnd8cmmu7H15SPBbBamrlBU60l+StZ7Wt1pBASOtWAzYsfWh0Q
+kpjN76RzBedHonwkv1B35K6LerSz2QJ0LXOwNg4bVFubZBCMYdRra8M+pzJUg2zq
+eDrYO0zdmue/5RNOdnGDHLAiRZqUJwnK7wNK30Vi7ZkHxAQ+k8DEQd4TfBXhsMCb
+5m2Jxw/By9Saz/lXLqW7cwArUQ+5OR0i3oae1zfT44BAqIJHzDqhLfdzC5q4JGZX
+FWewAbFVIHMFfay1HuoSNb2fdzA9fMJZcEIzgQeLSmyBKHGeCjBdD2Tmjs/cIuCz
+/mZ/mBXC96h9vY118O49vWBlcsIxyxcHRfNgiNH0MkY0ICE90eHx3S4Yv6wgwMwx
+M8VAIcamS9ZCekYAcLXcm2kxgBbo5LXe97mCXR2dK92zz9A4HwU=
+=ipL/
+-----END PGP SIGNATURE-----
+
+--MRwMWaSSyTRMkhVhT3QBoq0K5gszoijRU--
+
