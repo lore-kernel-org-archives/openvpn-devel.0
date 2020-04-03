@@ -1,10 +1,10 @@
-Date: Thu, 2 Apr 2020 20:55:58 +0200 (CEST)
-Message-Id: <202004021855.032Itw2g021841@...2054...>
+Date: Fri, 3 Apr 2020 10:12:37 +0200 (CEST)
+Message-Id: <202004030812.0338CbQX034518@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200402103821.10347-1-arne@...1227...>
-References: <20200402103821.10347-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix OpenSSL error stack
- handling of tls_ctx_add_extra_certs
+In-Reply-To: <1585591527-23734-1-git-send-email-selva.nair@...277...>
+References: <1585591527-23734-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Move querying username/password
+ from management to a function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +15,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.4 branch (bugfix).
+Your patch has been applied to the master branch.
 
-Looked at code and IRC discussion, makes all sense to me.  Tested a 
-2.4 client build on linux and freebsd, mbedtls and openssl (build + 
-t_client), just for extra sanity checking.
+Stared-at-code, test compiled on linux and MinGW.  Really just moving
+code, though "git show --colour-moved=zebra" does not really want to
+show it.
 
-commit 3608d890583549dbdbefc40ed41bf617fa518aa1 (master)
-commit 15bc476f80e66cee8e2bfba96879ef32e01380b5 (release/2.4)
-Author: Arne Schwabe
-Date:   Thu Apr 2 12:38:21 2020 +0200
+I've tried to apply it to release/2.4 (as it's a prerequisite for 
+the next patch, which I consider a bugfix) but there are massive
+merge conflicts due to #ifdef ENABLE_CLIENT_CR and #ifdef ENABLE_CRYPTO
+still present.  So if you could send a backport of both 1v2 + 2v2 to
+2.4 (possibly as a joint patch?), as soon as both are merged, that would 
+be appreciated.
 
-     Fix OpenSSL error stack handling of tls_ctx_add_extra_certs
+Acked-by: Gert Doering <gert@...1296...>
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20200402103821.10347-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19685.html
+commit 8e5d30cf47da63040114c00eab838bbb1c520781 (master)
+Author: Selva Nair
+Date:   Mon Mar 30 14:05:26 2020 -0400
+
+     Move querying username/password from management to a function
+
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1585591527-23734-1-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19656.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
