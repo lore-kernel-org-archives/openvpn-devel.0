@@ -1,10 +1,16 @@
-From: selva.nair@...277...
-Date: Fri,  3 Apr 2020 21:17:43 -0400
-Message-Id: <1585963064-10311-1-git-send-email-selva.nair@...277...>
-In-Reply-To: <1585591527-23734-1-git-send-email-selva.nair@...277...>
+Date: Sun, 5 Apr 2020 10:25:56 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20200405082556.GN1431@...1296...>
 References: <1585591527-23734-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH for-2.4 1/2] Move querying username/password
- from management interface to a function
+ <1585963064-10311-1-git-send-email-selva.nair@...277...>
+ <1585963064-10311-2-git-send-email-selva.nair@...277...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="DPQvABvJ16HvCXZu"
+Content-Disposition: inline
+In-Reply-To: <1585963064-10311-2-git-send-email-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 2/2] When auth-user-pass file has no
+ password query the management interface (if available).
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,105 +19,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: selva.nair@...277...
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+--DPQvABvJ16HvCXZu
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-This helps the next patch. No functionality changes, only
-refactoring.
+HI,
 
-Same as commit 461e566fb274d6f7647dc3aa81c02e4fbf362a23 in master
-except for additional ifdef ENABLE_CLIENT_CR
+On Fri, Apr 03, 2020 at 09:17:44PM -0400, selva.nair@...277... wrote:
+> From: Selva Nair <selva.nair@...277...>
+>=20
+> When only username is found in the file, redirect the auth-user-pass
+> query to the management interface if management-query-passwords is
+> enabled.  Otherwise the user is prompted on console, if available,
+> as before.
+[..]
+> ---
+> This may be cherry-picked from 57578310992d1fbe8eff97049087c5308089acb5
+> in master without conflicts.
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- src/openvpn/misc.c | 61 ++++++++++++++++++++++++++++++++++--------------------
- 1 file changed, 39 insertions(+), 22 deletions(-)
+And this is what I've done.  So we have:
 
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index f44c65f..2b0d10c 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -880,6 +880,43 @@ absolute_pathname(const char *pathname)
-     }
- }
- 
-+#ifdef ENABLE_MANAGEMENT
-+
-+/* Get username/password from the management interface */
-+static bool
-+auth_user_pass_mgmt(struct user_pass *up, const char *prefix, const unsigned int flags,
-+                    const char *auth_challenge)
-+{
-+    const char *sc = NULL;
-+
-+    if (flags & GET_USER_PASS_PREVIOUS_CREDS_FAILED)
-+    {
-+        management_auth_failure(management, prefix, "previous auth credentials failed");
-+    }
-+
-+#ifdef ENABLE_CLIENT_CR
-+    if (auth_challenge && (flags & GET_USER_PASS_STATIC_CHALLENGE))
-+    {
-+        sc = auth_challenge;
-+    }
-+#endif
-+
-+    if (!management_query_user_pass(management, up, prefix, flags, sc))
-+    {
-+        if ((flags & GET_USER_PASS_NOFATAL) != 0)
-+        {
-+            return false;
-+        }
-+        else
-+        {
-+            msg(M_FATAL, "ERROR: could not read %s username/password/ok/string from management interface", prefix);
-+        }
-+    }
-+    return true;
-+}
-+
-+#endif /* ifdef ENABLE_MANAGEMENT */
-+
- /*
-  * Get and store a username/password
-  */
-@@ -913,30 +950,10 @@ get_user_pass_cr(struct user_pass *up,
-             && (!from_authfile && (flags & GET_USER_PASS_MANAGEMENT))
-             && management_query_user_pass_enabled(management))
-         {
--            const char *sc = NULL;
-             response_from_stdin = false;
--
--            if (flags & GET_USER_PASS_PREVIOUS_CREDS_FAILED)
--            {
--                management_auth_failure(management, prefix, "previous auth credentials failed");
--            }
--
--#ifdef ENABLE_CLIENT_CR
--            if (auth_challenge && (flags & GET_USER_PASS_STATIC_CHALLENGE))
-+            if (!auth_user_pass_mgmt(up, prefix, flags, auth_challenge))
-             {
--                sc = auth_challenge;
--            }
--#endif
--            if (!management_query_user_pass(management, up, prefix, flags, sc))
--            {
--                if ((flags & GET_USER_PASS_NOFATAL) != 0)
--                {
--                    return false;
--                }
--                else
--                {
--                    msg(M_FATAL, "ERROR: could not read %s username/password/ok/string from management interface", prefix);
--                }
-+                return false;
-             }
-         }
-         else
--- 
-2.1.4
+Acked-by: Gert Doering <gert@...1296...>
 
+commit 2fe84732d19243df6c7713c185998507419155cd (HEAD -> release/2.4)
+Author: Selva Nair <selva.nair@...277...>
+Date:   Mon Mar 30 14:05:27 2020 -0400
+
+    When auth-user-pass file has no password query the management interface
+    (if available).
+
+    Signed-off-by: Selva Nair <selva.nair@...277...>
+    Acked-by: Gert Doering <gert@...1296...>
+    Message-Id: <1585591527-23734-2-git-send-email-selva.nair@...277...>
+    URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/m=
+sg19655.html
+    Signed-off-by: Gert Doering <gert@...1296...>
+    (cherry picked from commit 57578310992d1fbe8eff97049087c5308089acb5)
+
+
+quick test build on MinGW and Linux just to ensure I didn't break
+anything unexpected due to "different context in 2.4, some variables
+not available" etc, but no :-)
+
+thanks,
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--DPQvABvJ16HvCXZu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJeiZYUAAoJEB2Cnv7KVigSMZwMAJgmsSjdwf9h3lNF2CVetulm
+fUn/F9Rlwpdj1cUQSwl56vUzeVadiH2Q94nOm2X097wKFTGR2wKufmlck9OV2CIv
+Xes/S3mmgOOMYjRU2qiPeC3M/gRHGg4iOaewFCvYnRTMmq/MZh+plgt/+OP6hjRi
+//9Vn/XekV31tM6a6FRjYWW61Tp2C99iNnEAXj0eOYh8majngu8Q0DJc6XKOQ/vg
+yswij+9iP/2KbkKmPTJgFwuhNtDKlLvPa+FFO87RqY7kSuljXDCHiktpgPPwD16V
+jYhy0sAvKKeOTKaIvFoXLZovEQcnGg7hoAJKcHl8CgAALqyso4nrDnnbT9d1ooCB
+DmkqZMIbZj6RuVKeptD9nV9+b5zUfcTg20fQQ1PnSL5oqwr7SYYNHOW2mb96i8HP
+qhb0EWJCuLdd4GeguDztWQreeWD26YbnVxFHYb5mqJ8QeP9vKuloLYdbobG43+sE
+a9M8ddXZJUiyRCD8c8w4lGrndAqdNKHl7bl0jgLZRg==
+=qv3z
+-----END PGP SIGNATURE-----
+
+--DPQvABvJ16HvCXZu--
 
