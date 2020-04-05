@@ -1,14 +1,15 @@
-Date: Sun, 5 Apr 2020 10:25:56 +0200
+Date: Sun, 5 Apr 2020 10:31:21 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20200405082556.GN1431@...1296...>
+Message-ID: <20200405083121.GO1431@...1296...>
 References: <1585591527-23734-1-git-send-email-selva.nair@...277...>
  <1585963064-10311-1-git-send-email-selva.nair@...277...>
  <1585963064-10311-2-git-send-email-selva.nair@...277...>
+ <20200405082556.GN1431@...1296...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="DPQvABvJ16HvCXZu"
+ protocol="application/pgp-signature"; boundary="coI8Uo1OCn5IOJ+M"
 Content-Disposition: inline
-In-Reply-To: <1585963064-10311-2-git-send-email-selva.nair@...277...>
+In-Reply-To: <20200405082556.GN1431@...1296...>
 Subject: Re: [Openvpn-devel] [PATCH 2/2] When auth-user-pass file has no
  password query the management interface (if available).
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,52 +23,44 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: selva.nair@...277...
 Cc: openvpn-devel@lists.sourceforge.net
 
---DPQvABvJ16HvCXZu
+--coI8Uo1OCn5IOJ+M
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-HI,
+Hi,
 
-On Fri, Apr 03, 2020 at 09:17:44PM -0400, selva.nair@...277... wrote:
-> From: Selva Nair <selva.nair@...277...>
+On Sun, Apr 05, 2020 at 10:25:56AM +0200, Gert Doering wrote:
+> On Fri, Apr 03, 2020 at 09:17:44PM -0400, selva.nair@...277... wrote:
+> > From: Selva Nair <selva.nair@...277...>
+> >=20
+> > When only username is found in the file, redirect the auth-user-pass
+> > query to the management interface if management-query-passwords is
+> > enabled.  Otherwise the user is prompted on console, if available,
+> > as before.
+> [..]
+> > ---
+> > This may be cherry-picked from 57578310992d1fbe8eff97049087c5308089acb5
+> > in master without conflicts.
 >=20
-> When only username is found in the file, redirect the auth-user-pass
-> query to the management interface if management-query-passwords is
-> enabled.  Otherwise the user is prompted on console, if available,
-> as before.
-[..]
-> ---
-> This may be cherry-picked from 57578310992d1fbe8eff97049087c5308089acb5
-> in master without conflicts.
+> And this is what I've done.  So we have:
+>=20
+> Acked-by: Gert Doering <gert@...1296...>
+>=20
+> commit 2fe84732d19243df6c7713c185998507419155cd (HEAD -> release/2.4)
+> Author: Selva Nair <selva.nair@...277...>
+> Date:   Mon Mar 30 14:05:27 2020 -0400
 
-And this is what I've done.  So we have:
+Shouldn't do early sunday morning merges - one of the main points of
+asking for a 2.4-specific commit was "Changes.rst", which needs to be
+updated to document changed behaviour...  which I had forgotten again.
 
-Acked-by: Gert Doering <gert@...1296...>
-
-commit 2fe84732d19243df6c7713c185998507419155cd (HEAD -> release/2.4)
-Author: Selva Nair <selva.nair@...277...>
-Date:   Mon Mar 30 14:05:27 2020 -0400
-
-    When auth-user-pass file has no password query the management interface
-    (if available).
-
-    Signed-off-by: Selva Nair <selva.nair@...277...>
-    Acked-by: Gert Doering <gert@...1296...>
-    Message-Id: <1585591527-23734-2-git-send-email-selva.nair@...277...>
-    URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/m=
-sg19655.html
-    Signed-off-by: Gert Doering <gert@...1296...>
-    (cherry picked from commit 57578310992d1fbe8eff97049087c5308089acb5)
-
-
-quick test build on MinGW and Linux just to ensure I didn't break
-anything unexpected due to "different context in 2.4, some variables
-not available" etc, but no :-)
-
-thanks,
+I'll do this on the "prepare for 2.4.9 release" commit now, but would
+really prefer to have it in the commit that contains the actual change
+(if feasible).
 
 gert
+
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -78,22 +71,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---DPQvABvJ16HvCXZu
+--coI8Uo1OCn5IOJ+M
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJeiZYUAAoJEB2Cnv7KVigSMZwMAJgmsSjdwf9h3lNF2CVetulm
-fUn/F9Rlwpdj1cUQSwl56vUzeVadiH2Q94nOm2X097wKFTGR2wKufmlck9OV2CIv
-Xes/S3mmgOOMYjRU2qiPeC3M/gRHGg4iOaewFCvYnRTMmq/MZh+plgt/+OP6hjRi
-//9Vn/XekV31tM6a6FRjYWW61Tp2C99iNnEAXj0eOYh8majngu8Q0DJc6XKOQ/vg
-yswij+9iP/2KbkKmPTJgFwuhNtDKlLvPa+FFO87RqY7kSuljXDCHiktpgPPwD16V
-jYhy0sAvKKeOTKaIvFoXLZovEQcnGg7hoAJKcHl8CgAALqyso4nrDnnbT9d1ooCB
-DmkqZMIbZj6RuVKeptD9nV9+b5zUfcTg20fQQ1PnSL5oqwr7SYYNHOW2mb96i8HP
-qhb0EWJCuLdd4GeguDztWQreeWD26YbnVxFHYb5mqJ8QeP9vKuloLYdbobG43+sE
-a9M8ddXZJUiyRCD8c8w4lGrndAqdNKHl7bl0jgLZRg==
-=qv3z
+iQGcBAEBAgAGBQJeiZdYAAoJEB2Cnv7KVigSrpQL/AhJzpu+wHi92H2gG3buP8Z5
+hoQTguVW2c5S7IxiPk45ZyctQi3sEl4QqRjWsVS+PrZLN9JDRX2HHCR8UfjPmNCC
+865dbD00PULoFicd5GPeQasamCxArFCFVUiZwWOxyjb0GsU+ca3vVu1Ze/pgMPlm
+yxs7afM+d9wLTUKYV69WCux3Rd0rrn7pwzV8UZ3pQYr+luZTZiipXNXWMBbURfIm
+g88cqFuh2Xhm47d8I9erVAhNvXQHTbnDdq35C70wctJqM8ekQnZeispsjFo3A5h/
+iuP48C30KN96hsHah7M3XkD6iZiHldfQ2CWUBXn6Fc7ZdzDe006RZ45Du9tHWNRF
+9SXX8DwFdcVeTSabDlFqOWOg9uA1PXY37C0uGBuhp+eMdaaNWymDfSDBm4jDYjv2
+z3oI4BO1h8pPefcJMBanm5aRzBXPfDdnb8jFWN1SIEVEPYGn48W+Je/SyzlVyV03
+5b6SIZVvRr42BnYQ1Nj6XKQP2zMiLP6PfLcbyRa4Nw==
+=9if+
 -----END PGP SIGNATURE-----
 
---DPQvABvJ16HvCXZu--
+--coI8Uo1OCn5IOJ+M--
 
