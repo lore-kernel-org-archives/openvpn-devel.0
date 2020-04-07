@@ -1,17 +1,10 @@
-References: <20200401215052.3489613-1-wgh@...2548...>
- <79cc0c02-63cf-d668-e71b-1e4343228567@...1227...>
- <1de06e6d-72a0-97d0-b9aa-0be2ab716677@...2548...>
- <bd48b82f-1baa-aec8-7f6a-d3f3853dfc9f@...1227...>
- <45d7ba54-8107-6481-9ccd-0bbed27fcad0@...2548...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <517c16b8-b552-8728-2e73-5f7bcc149953@...1227...>
-Date: Tue, 7 Apr 2020 07:40:52 +0200
+From: wgh@...2548...
+Date: Tue,  7 Apr 2020 20:44:36 +0300
+Message-Id: <20200407174436.238933-1-wgh@...2548...>
+In-Reply-To: <517c16b8-b552-8728-2e73-5f7bcc149953@...1227...>
+References: <517c16b8-b552-8728-2e73-5f7bcc149953@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <45d7ba54-8107-6481-9ccd-0bbed27fcad0@...2548...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="fDxgWFVaY8OW4rsb4AIIISob21ijFDtCC"
-Subject: Re: [Openvpn-devel] [PATCH] OpenSSL: Fix --crl-verify not loading
+Subject: [Openvpn-devel] [PATCH v2] OpenSSL: Fix --crl-verify not loading
  multiple CRLs in one file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -21,105 +14,99 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: WGH <wgh@...2548...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---fDxgWFVaY8OW4rsb4AIIISob21ijFDtCC
-Content-Type: multipart/mixed; boundary="fHcDDVA8nzoTsF7XD1w3F0Par1pNVVYbK"
-
---fHcDDVA8nzoTsF7XD1w3F0Par1pNVVYbK
-Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Maxim Plotnikov <wgh@...2548...>
 
-Am 07.04.20 um 03:28 schrieb WGH:
-> I think there has been some misunderstanding about the error handling in =
-my patch.
->=20
-> On 4/2/20 5:25 PM, Arne Schwabe wrote:
->>> backend_tls_ctx_reload_crl doesn't return an error (as it's void), and =
-its caller never checks OpenSSL error stack. So as this function is, I thin=
-k it should handle all errors itself, and leave the error stack clear.
->> Yes. But your patch throws that error code away. If there an error that
->> is not PEM_R_NO_START_LINE it will be silenty discarded. That is my
->> problem with using ERR_get_error there.
-> Please look again: the patch doesn't throw it away, it's printed with ERR=
-_error_string_n/msg combo.
->>> Compare with how it was in current edition of the patch:
->>>
->>> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:07:13 2020 Diffie-Hellman initial=
-ized with 2048 bit key
->>> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:07:13 2020 OpenSSL: error:0909006=
-C:PEM routines:get_name:no start line
->>> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:07:13 2020 CRL: cannot read CRL f=
-rom file combined_crl.pem: error:0908F066:PEM routines:get_header_and_data:=
-bad end line
->>> =C2=A0=C2=A0=C2=A0 Thu Apr=C2=A0 2 17:07:13 2020 CRL: loaded 1 CRLs fro=
-m file combined_crl.pem
->>>
->> Yeah but *always* having a scary error that translates to "No more crls
->> found in the file" is not very user friendly since most people will not
->> understand that this is to be expected.
->=20
-> Perhaps you glanced over and didn't notice that it says "bad _end_ line"?=
- Here I simulated a corrupt file, causing this error, to highlight the diff=
-erence in how errors are printed by crypto_msg and by my ad-hoc code. My co=
-de does a better job at indicating that the error comes from the CRL file, =
-where messages printed by crypto_msg may blend with other bogus errors and =
-warnings, like it happened with that bogus warning you fixed in the aforeme=
-ntioned patch.
->=20
+From: Maxim Plotnikov <wgh@...2548...>
 
-Yeah sorry, the formatting of the patch made me believe the control flow
-was different from what it really is. But this bogus error message was a
-one off mistake in OpenVPN. In general printing an error before the
-message isn't a big problem.
+Lack of this led people accepting multiple CAs to use capath,
+which already supports multiple CRLs. But capath mode itself
+is somewhat ugly: you have to create new file/symlink every time
+CRL is updated, and there's no good way to clean them up without
+restarting OpenVPN, since any gap in the sequence would cause it
+to lose sync[1].
 
+mbedtls crypto backend already loads multiple CRLs as is, so
+it doesn't need this fix.
 
-> Also, my patch doesn't print "no start line" error unless there were no v=
-alid CRLs inside the specified file. Printing a scary error in the latter c=
-ase is IMHO justfified: file is either empty due to some administrative mis=
-take (e.g. buggy updating scripts) or corrupt.
->=20
-> I do not insist on leaving my logging in place, though, and will replace =
-it with crypto_msg as you suggested. After all, crypto_msg is used all over=
- the place, and making its errors more understandable is something out of s=
-cope of this patch.
->=20
+The patch also includes some logging changes which I think are useful.
 
-I feel consistency in code is important. And crypto_msg will also print
-the whole error stack instead of just the last message (which probably
-does not matter in this case). Since crypto_msg is used all over the
-place, its printing should be improved instead of having different error
-message handling/printing all over the place. For your one-off patch it
-might seem superior but for maintaining the code it is not.
+If you wish to test the patch, here is prepared configuration
+files: https://wgh.torlan.ru/openvpn-crl-fix-ca.tar.gz.
+The client_ca2_revoked.ovpn config uses a revoked certificate
+issued by the second CA, and is accepted by unpatched server,
+but rightfully rejected with this patch (or when using mbedtls backend).
 
-Arne
+[1] https://community.openvpn.net/openvpn/ticket/623#comment:7
+---
+ src/openvpn/ssl_openssl.c | 40 +++++++++++++++++++++++++++------------
+ 1 file changed, 28 insertions(+), 12 deletions(-)
 
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 15959a90..dd818175 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -1050,7 +1050,6 @@ void
+ backend_tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx, const char *crl_file,
+                            const char *crl_inline)
+ {
+-    X509_CRL *crl = NULL;
+     BIO *in = NULL;
+ 
+     X509_STORE *store = SSL_CTX_get_cert_store(ssl_ctx->ctx);
+@@ -1091,21 +1090,38 @@ backend_tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx, const char *crl_file,
+         goto end;
+     }
+ 
+-    crl = PEM_read_bio_X509_CRL(in, NULL, NULL, NULL);
+-    if (crl == NULL)
++    int num_crls_loaded = 0;
++    while (true)
+     {
+-        msg(M_WARN, "CRL: cannot read CRL from file %s", crl_file);
+-        goto end;
+-    }
++        X509_CRL *crl = PEM_read_bio_X509_CRL(in, NULL, NULL, NULL);
++        if (crl == NULL)
++        {
++            /*
++             * PEM_R_NO_START_LINE can be considered equivalent to EOF.
++            */
++            bool eof = ERR_GET_REASON(ERR_peek_error()) == PEM_R_NO_START_LINE;
++            /* but warn if no CRLs have been loaded */
++            if (num_crls_loaded > 0 && eof) {
++                /* remove that error from error stack */
++                (void)ERR_get_error();
++                break;
++            }
+ 
+-    if (!X509_STORE_add_crl(store, crl))
+-    {
+-        msg(M_WARN, "CRL: cannot add %s to store", crl_file);
+-        goto end;
+-    }
++            crypto_msg(M_WARN, "CRL: cannot read CRL from file %s", crl_file);
++            break;
++        }
+ 
++        if (!X509_STORE_add_crl(store, crl))
++        {
++            X509_CRL_free(crl);
++            crypto_msg(M_WARN, "CRL: cannot add %s to store", crl_file);
++            break;
++        }
++        X509_CRL_free(crl);
++        num_crls_loaded++;
++    }
++    msg(M_INFO, "CRL: loaded %d CRLs from file %s", num_crls_loaded, crl_file);
+ end:
+-    X509_CRL_free(crl);
+     BIO_free(in);
+ }
+ 
+-- 
+2.24.1
 
---fHcDDVA8nzoTsF7XD1w3F0Par1pNVVYbK--
-
---fDxgWFVaY8OW4rsb4AIIISob21ijFDtCC
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl6MEmQACgkQFRhsZwKx
-RFQRvQ//Y90Ym8RXxnKcLMEbACP6TMRhEvHx4cvQSZNbB0xIxv7NWa5jubnddDlA
-EDcieTlfFDLYeip1uqbepI+rGkEHhCGSueI+3FqRrXSnjWDFgdoKp8CScH4LVfdG
-UGI4jHqihGW6B8pKKi1zvHl7s1CwO9bfL/Hw5w52KLK6apzpw8E6mumZoFuU36Ul
-sBYfhDWm3wBVu2HyMkQt6FPJbEmBg69nG4CUaa5IotKPG2nHPp/kCY7F6MSyXRyW
-mQs6qTGUDs2tqs1R7F6HSBjLVN5o1MLc/lrGAwulcY3awJhn9GrB43QXOnvhxoW1
-OIQJqisamS1/m1kij44wXQgDtf1huIKljKzWURphPPPWUGcOduIEuitUQD7l5NMP
-5lf6PDkRDcD+1f8UFNzU0J1LoBgUFoMJMTCjjLf9uAxBik95pdCyv/FxFaTLlAcN
-IJrtC9ldTeQ4m2dxARdiP0xB/jPWDdKCt4zMfn4yltG5TYol6OmkU9AF5yI/VdO9
-2DuZvh2odxFBlCrd89pvazyMIWQDza0OoV6ohu14v/J6WGmtnPksb/+2FtxRUYlS
-ZNurD8Ot5eJK4qnqOBvYg3LegxKM7oW5U1Rce+6pI4IVpknfagimuTuejCrF+qNH
-OhQgnaMmgDxVVE63QvMpicLBJKQ3ZrHC5+iiGN7tC8nmbuzB1cs=
-=x5g2
------END PGP SIGNATURE-----
-
---fDxgWFVaY8OW4rsb4AIIISob21ijFDtCC--
 
