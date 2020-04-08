@@ -1,10 +1,14 @@
-From: =?UTF-8?Q?Bruno_Tr=c3=a9guier?= <bruno-sourceforge@...2553...>
-Message-ID: <f98cdb16-55ce-b4e6-13de-163c5f352cdf@...2553...>
-Date: Wed, 8 Apr 2020 13:23:17 +0200
+References: <f98cdb16-55ce-b4e6-13de-163c5f352cdf@...2553...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <9adbbf1d-0f9f-ef78-a7fc-2d54974d12a5@...1227...>
+Date: Wed, 8 Apr 2020 23:37:29 +0200
 MIME-Version: 1.0
-Content-Language: fr
-Subject: [Openvpn-devel] Openvpn3: hardware address of connecting client not
- being reported on Linux ?
+In-Reply-To: <f98cdb16-55ce-b4e6-13de-163c5f352cdf@...2553...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="sBSajNN9qo1e2yJJmTZILx7BvoYFvHkBk"
+Subject: Re: [Openvpn-devel] Openvpn3: hardware address of connecting client
+ not being reported on Linux ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,62 +17,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?Q?Bruno_Tr=c3=a9guier?= <bruno-sourceforge@...2553...>, openvpn-devel@lists.sourceforge.net
 
-Hello there,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--sBSajNN9qo1e2yJJmTZILx7BvoYFvHkBk
+Content-Type: multipart/mixed; boundary="m0e489mwa0fNqx9sLvmxFytOG86x9cvzR"
 
-I've been a long time user of openvpn. Until now I used openvpn 2 as a
-client, on my Linux box, and I wanted to switch to openvpn 3, but I've
-got a problem with the reported peer info.
-
-More specifically, I'd like the MAC address of the connecting interface
-on my client, to be reported to the server.
-
-The relevant source code portion is located in the following file:
-
-openvpn3-core/openvpn/client/cliopt.hpp
-
-And the lines of code are those ones:
-
-      // MAC address
-      if (pcc.pushPeerInfo())
-        {
-          std::string hwaddr = get_hwaddr();
-          if (!config.hw_addr_override.empty())
-            pi->emplace_back("IV_HWADDR", config.hw_addr_override);
-          else if (!hwaddr.empty())
-            pi->emplace_back("IV_HWADDR", hwaddr);
-          pi->emplace_back ("IV_SSL", get_ssl_library_version());
-
-          if (!config.platform_version.empty())
-            pi->emplace_back("IV_PLAT_VER", config.platform_version);
-        }
+--m0e489mwa0fNqx9sLvmxFytOG86x9cvzR
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
 
-"setenv PUSH_PEER_INFO" is of course defined in my config file. What I
-can see on my server is that, for example, IV_SSL is reported, but
-IV_PLAT_VER is not (probably because it is empty, but I don't care for
-this one), and IV_HWADDR isn't either, which annoys me a little more.
-The only reason why it wouldn't be reported seems to be that it cannot
-be determined by the call to "get_hwaddr()"...
+> But it seems that on a Linux platform, the different #if, #elif and
+> #endif statements lead to a situation where almost all code is excluded
+> from compilation, and an empty string is returned at the end of the
+> function. So in short, nothing seems to be done on the Linux side, and
+> so the whole thing simply cannot work.
+>=20
+> Is my assumption right ? Any clues regarding this ?
 
-This function is itself defined in the following file:
+Yes. Mac address reporting on Linux has never been implemented. If you
+look at hwaddr.hpp you see that there is no code for Linux.
 
-openvpn3-core/openvpn/netconf/hwaddr.hpp
+IV_PLAT_VER needs to set by the UI, same as IV_GUI_VER. The UI can also
+override the mac address that is being. This for example done on android
+as implementation for the MAC address.
 
-But it seems that on a Linux platform, the different #if, #elif and
-#endif statements lead to a situation where almost all code is excluded
-from compilation, and an empty string is returned at the end of the
-function. So in short, nothing seems to be done on the Linux side, and
-so the whole thing simply cannot work.
+Arne
 
-Is my assumption right ? Any clues regarding this ?
 
-Thank very much in advance.
+--m0e489mwa0fNqx9sLvmxFytOG86x9cvzR--
 
-Regards,
+--sBSajNN9qo1e2yJJmTZILx7BvoYFvHkBk
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-Bruno
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl6ORBkACgkQFRhsZwKx
+RFQRTQ//ZtVuk/sIY0GnXPaqfAKPuE1RaZBsmLZTGBEHTv2g1oyfGSwLiEX8vhGm
+wIal58o5IuDRPEPERABRDgNxF+vJTKdZ6h4SFWG89ef0oy5YN8lYBJttGNjy84gh
+KTx1/qurjBQ0YAEMp9dv9nMNxWb1rC5WjetxfUMARWy1CtXW/9MbjNqnUXjWC/gR
+/K9i2ZtAmtr3Zs9+sHHnd5lqEM+HHUtpSI4cD/I1w4Mdvt8QjBPBI7wx8GknWcxE
+Liu+FLTz4ehmgSn1aZm7TFCbaJ4wgAM5TtYk6xlkgAVN3Nh2c5T4QYtahiaBkiaZ
+G+bXtDRfyqSQ9c6ir6G3NGivVZDOMyb+4AEe8yBB3sHTf8L5P7hGguNih3k/Ic3i
+rcXmbd7AndQw4FoVGtUV9d6T7r37XfsjpTfFesu/lZ8w2sUx/N2nn2+sH9KYB+qo
+8lBqwdoIUYV3UluhpU+Ck34e+2G3r20SJRjb4N9rG8ZqQBQnxB0FkSnfn9+q/Srt
+kBitnnDeFytzwG79xcB/R2SV+oW5TWDBqqvJiWWqf6nSF0wQeMGohi/j4/siL0bf
+CnRNg9Ca6cy9CDeMGZQ4Fy7hGtQVALGE2UmGE/saGBo+6Po+Fguzrh4tGpAwjcwM
+8BDqetN6UR/GHwJTsRcomYD4CtkzmdvZyKCVTo9tn/yQ7NZJFPg=
+=m5dL
+-----END PGP SIGNATURE-----
+
+--sBSajNN9qo1e2yJJmTZILx7BvoYFvHkBk--
 
