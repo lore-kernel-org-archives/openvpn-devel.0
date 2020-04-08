@@ -1,15 +1,10 @@
-References: <517c16b8-b552-8728-2e73-5f7bcc149953@...1227...>
- <20200407174436.238933-1-wgh@...2548...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <23efbb49-96eb-bb79-faea-34c20291cd66@...1227...>
-Date: Wed, 8 Apr 2020 00:38:45 +0200
+From: =?UTF-8?Q?Bruno_Tr=c3=a9guier?= <bruno-sourceforge@...2553...>
+Message-ID: <f98cdb16-55ce-b4e6-13de-163c5f352cdf@...2553...>
+Date: Wed, 8 Apr 2020 13:23:17 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200407174436.238933-1-wgh@...2548...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="aZwMkzRF0bWq8om8hpjqhd3BIdyOsV9TS"
-Subject: Re: [Openvpn-devel] [PATCH v2] OpenSSL: Fix --crl-verify not
- loading multiple CRLs in one file
+Content-Language: fr
+Subject: [Openvpn-devel] Openvpn3: hardware address of connecting client not
+ being reported on Linux ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,89 +13,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: wgh@...2548..., openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---aZwMkzRF0bWq8om8hpjqhd3BIdyOsV9TS
-Content-Type: multipart/mixed; boundary="B4fReekdBErdkUmvLkY79kW1YOoRpv8o1"
+Hello there,
 
---B4fReekdBErdkUmvLkY79kW1YOoRpv8o1
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+I've been a long time user of openvpn. Until now I used openvpn 2 as a
+client, on my Linux box, and I wanted to switch to openvpn 3, but I've
+got a problem with the reported peer info.
 
-Am 07.04.20 um 19:44 schrieb wgh@...2548...:
-> From: Maxim Plotnikov <wgh@...2548...>
->=20
-> Lack of this led people accepting multiple CAs to use capath,
-> which already supports multiple CRLs. But capath mode itself
-> is somewhat ugly: you have to create new file/symlink every time
-> CRL is updated, and there's no good way to clean them up without
-> restarting OpenVPN, since any gap in the sequence would cause it
-> to lose sync[1].
->=20
+More specifically, I'd like the MAC address of the connecting interface
+on my client, to be reported to the server.
 
+The relevant source code portion is located in the following file:
 
->=20=20
-> -    crl =3D PEM_read_bio_X509_CRL(in, NULL, NULL, NULL);
-> -    if (crl =3D=3D NULL)
-> +    int num_crls_loaded =3D 0;
-> +    while (true)
->      {
-> -        msg(M_WARN, "CRL: cannot read CRL from file %s", crl_file);
-> -        goto end;
-> -    }
-> +        X509_CRL *crl =3D PEM_read_bio_X509_CRL(in, NULL, NULL, NULL);
-> +        if (crl =3D=3D NULL)
-> +        {
-> +            /*
-> +             * PEM_R_NO_START_LINE can be considered equivalent to EOF.
-> +            */
+openvpn3-core/openvpn/client/cliopt.hpp
 
-Minor whitespace problem.
+And the lines of code are those ones:
 
-> +            bool eof =3D ERR_GET_REASON(ERR_peek_error()) =3D=3D PEM_R_N=
-O_START_LINE;
-> +            /* but warn if no CRLs have been loaded */
-> +            if (num_crls_loaded > 0 && eof) {
-> +                /* remove that error from error stack */
-> +                (void)ERR_get_error();
-> +                break;
-> +            }
+      // MAC address
+      if (pcc.pushPeerInfo())
+        {
+          std::string hwaddr = get_hwaddr();
+          if (!config.hw_addr_override.empty())
+            pi->emplace_back("IV_HWADDR", config.hw_addr_override);
+          else if (!hwaddr.empty())
+            pi->emplace_back("IV_HWADDR", hwaddr);
+          pi->emplace_back ("IV_SSL", get_ssl_library_version());
 
-Minor style problem. { should be on the next line.
-
-Acked-By: Arne Schwabe <arne@...1227...>
-
-I leave it to Gert/David if they want a rev3 or fix the minor
-style/whitespace problems on commit.
-
-Arne
+          if (!config.platform_version.empty())
+            pi->emplace_back("IV_PLAT_VER", config.platform_version);
+        }
 
 
---B4fReekdBErdkUmvLkY79kW1YOoRpv8o1--
+"setenv PUSH_PEER_INFO" is of course defined in my config file. What I
+can see on my server is that, for example, IV_SSL is reported, but
+IV_PLAT_VER is not (probably because it is empty, but I don't care for
+this one), and IV_HWADDR isn't either, which annoys me a little more.
+The only reason why it wouldn't be reported seems to be that it cannot
+be determined by the call to "get_hwaddr()"...
 
---aZwMkzRF0bWq8om8hpjqhd3BIdyOsV9TS
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+This function is itself defined in the following file:
 
------BEGIN PGP SIGNATURE-----
+openvpn3-core/openvpn/netconf/hwaddr.hpp
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl6NAPYACgkQFRhsZwKx
-RFRf5hAAsUM1wAohIMlJFijmvJ6t7bokyoytohUjKzj+3ndIaWkoRjRAiJhq+ZQU
-wJzoZTl3QrZOn7GFyV0Qi7M+pHvecW6nsPWRdfPTh9aEtv4RfeeN7PtJTfKmKS/f
-qbNRzHIAe16Hc1Gm1Ect1S1sn0mQl+ci0wLSVmp51gfHTSleNdHTxtkrv5mJ+u5F
-yn4x1GXibOBs9iUNSlex3RrT81HtqSIJnTvi5DRaTfOiZN/cR/Q+zMTTb19ZVU2E
-KekMzfzL5lcziV3M1Jh4SGBA2ysH7o3u2+rVfV2xQ106fBUyYAbaSR6CGs0qKbbB
-Uw5YXDn5/FMqG1RPWSUv4Js03YVzSSy9yJyxJEqYa9DrBUikm38r0R307HsVERT2
-9LwjjNOs5gADIzJjUo/ceYjnmpMsmTR8ZPI+wFWpXwRnCTj9EqIXzV+eXGyL8bpm
-pn3Ook3Xl7J/XG+vhBaM0HxQWvFM95ad2z1dL9j/bip5PSo84s2rYO/CBqKyjKHw
-0E5Jh9Ish/D7NkeVUyysIbx5Kfs5L8UGssLaPj1AMR108ZjzM6v/tLGqC77RpJHo
-FRs6WILPdLzaUOBWECM3BYrDNOTJb6iOvA2HMZDJPVjw01cM9m51jsqQfYb5O5nw
-WfqqTpJN7rUY0g0SVq73AvULhFxkIiJZmwyl5D3kekPIhOBpbhA=
-=430o
------END PGP SIGNATURE-----
+But it seems that on a Linux platform, the different #if, #elif and
+#endif statements lead to a situation where almost all code is excluded
+from compilation, and an empty string is returned at the end of the
+function. So in short, nothing seems to be done on the Linux side, and
+so the whole thing simply cannot work.
 
---aZwMkzRF0bWq8om8hpjqhd3BIdyOsV9TS--
+Is my assumption right ? Any clues regarding this ?
+
+Thank very much in advance.
+
+Regards,
+
+Bruno
 
