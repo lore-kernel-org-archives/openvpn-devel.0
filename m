@@ -1,10 +1,7 @@
-Date: Fri, 10 Apr 2020 22:25:21 +0200 (CEST)
-Message-Id: <202004102025.03AKPLZV014277@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200407174436.238933-1-wgh@...2548...>
-References: <20200407174436.238933-1-wgh@...2548...>
-Subject: [Openvpn-devel] [PATCH applied] Re: OpenSSL: Fix --crl-verify not
- loading multiple CRLs in one file
+From: Lev Stipakov <lstipakov@...277...>
+Date: Mon, 13 Apr 2020 18:56:50 +0300
+Message-Id: <20200413155650.114-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] Fix illegal client float
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +12,54 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Maxim Plotnikov <wgh@...2548...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Your patch has been applied to the master and release/2.4 branch
-(sort-of bugfix / featurette with very localized impact).
+From: Lev Stipakov <lev@...515...>
 
-Did a very basic compile/client side test, no CRLs involved.  Code change
-looks reasonable and similar to what Arne did with the CAs just recently.
+There is a time frame between allocating peer-id and initializing data
+channel key, which is performed on receiving push request.
 
-commit 05229fb5923f43a502bf0ca731d9ba3106c259e8 (master)
-commit ed925c0a8d3e6aa8bc26de8c0e7ed79a47e5c7d6 (release/2.4)
-Author: Maxim Plotnikov
-Date:   Tue Apr 7 20:44:36 2020 +0300
+If a "rogue" data channel packet arrives during that time frame from
+another address and  with same peer-id, this would cause client to float
+to that new address. This is because:
 
-     OpenSSL: Fix --crl-verify not loading multiple CRLs in one file
+ - tls_pre_decrypt() sets buffer length to zero if
+   data channel key has not been initialized, which leads to
 
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20200407174436.238933-1-wgh@...2548...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19710.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+ - openvpn_decrypt() returns true if buffer length is zero,
+which leads to
 
+ - process_incoming_link_part1() returns true, which
+calls multi_process_float(), which commits float
 
---
-kind regards,
+Note that problem doesn't happen when data channel key
+is initialized, since in this case openvpn_decrypt() returns false.
 
-Gert Doering
+Fix illegal float by adding buffer length check before calling
+multi_process_float().
+
+This should fix Trac #1272.
+
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/openvpn/multi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index da0aeeba..58892a87 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -2555,7 +2555,7 @@ multi_process_incoming_link(struct multi_context *m, struct multi_instance *inst
+             orig_buf = c->c2.buf.data;
+             if (process_incoming_link_part1(c, lsi, floated))
+             {
+-                if (floated)
++                if (floated && c->c2.buf.len > 0)
+                 {
+                     multi_process_float(m, m->pending);
+                 }
+-- 
+2.17.1
 
 
