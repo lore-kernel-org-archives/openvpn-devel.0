@@ -1,13 +1,7 @@
-References: <20200413155650.114-1-lstipakov@...277...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <b6450eb9-93db-63b9-7e13-4cacbcad39c9@...1227...>
-Date: Tue, 14 Apr 2020 19:37:22 +0200
-MIME-Version: 1.0
-In-Reply-To: <20200413155650.114-1-lstipakov@...277...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="WSTNqFxQZ7iX8mKgOD7W7ZAI7jRJbWWS6"
-Subject: Re: [Openvpn-devel] [PATCH] Fix illegal client float
+From: Juliusz Sosinowicz <juliusz@...2525...>
+Date: Tue, 14 Apr 2020 20:52:14 +0200
+Message-Id: <20200414185214.1863-1-juliusz@...2525...>
+Subject: [Openvpn-devel] [PATCH] Support for wolfSSL in OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,94 +10,187 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---WSTNqFxQZ7iX8mKgOD7W7ZAI7jRJbWWS6
-Content-Type: multipart/mixed; boundary="4BzBJR275ckqLuq75YswIo3ANyCgPjOEg"
-
---4BzBJR275ckqLuq75YswIo3ANyCgPjOEg
-Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Am 13.04.20 um 17:56 schrieb Lev Stipakov:
-> From: Lev Stipakov <lev@...515...>
->=20
-> There is a time frame between allocating peer-id and initializing data
-> channel key, which is performed on receiving push request.
->=20
-> If a "rogue" data channel packet arrives during that time frame from
-> another address and  with same peer-id, this would cause client to float
-> to that new address. This is because:
->=20
->  - tls_pre_decrypt() sets buffer length to zero if
->    data channel key has not been initialized, which leads to
->=20
->  - openvpn_decrypt() returns true if buffer length is zero,
-> which leads to
->=20
->  - process_incoming_link_part1() returns true, which
-> calls multi_process_float(), which commits float
->=20
-> Note that problem doesn't happen when data channel key
-> is initialized, since in this case openvpn_decrypt() returns false.
->=20
-> Fix illegal float by adding buffer length check before calling
-> multi_process_float().
->=20
-> This should fix Trac #1272.
->=20
-> Signed-off-by: Lev Stipakov <lev@...515...>
-> ---
->  src/openvpn/multi.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-> index da0aeeba..58892a87 100644
-> --- a/src/openvpn/multi.c
-> +++ b/src/openvpn/multi.c
-> @@ -2555,7 +2555,7 @@ multi_process_incoming_link(struct multi_context *m=
-, struct multi_instance *inst
->              orig_buf =3D c->c2.buf.data;
->              if (process_incoming_link_part1(c, lsi, floated))
->              {
-> -                if (floated)
-> +                if (floated && c->c2.buf.len > 0)
->                  {
->                      multi_process_float(m, m->pending);
->                  }
->=20
+This patch adds support for wolfSSL in OpenVPN. Support is added by using wolfSSL's OpenSSL compatibility layer. Function calls are left unchanged and instead the OpenSSL includes point to wolfSSL headers and OpenVPN is linked against the wolfSSL library.
 
-I think the commit is right but should we add a comment here saying that
-len >0 is required to have valid decrypted packet?
+As requested by OpenVPN maintainers, this patch does not include wolfssl/options.h on its own. By defining the macro EXTERNAL_OPTS_OPENVPN in the configure script wolfSSL will include wolfssl/options.h on its own (change added in https://github.com/wolfSSL/wolfssl/pull/2825). The patch adds an option '--disable-wolfssl-options-h' in case the user would like to supply their own settings file for wolfSSL.
 
-Arne
+wolfSSL:
+Support added in: https://github.com/wolfSSL/wolfssl/pull/2503
+```
+git clone https://github.com/wolfSSL/wolfssl.git
+cd wolfssl
+./autogen.sh
+./configure --enable-openvpn
+make
+sudo make install
+```
 
+OpenVPN:
+```
+autoreconf -i -v -f
+./configure --with-crypto-library=wolfssl
+make
+make check
+sudo make install
+```
 
---4BzBJR275ckqLuq75YswIo3ANyCgPjOEg--
+Signed-off-by: Juliusz Sosinowicz <juliusz@...2525...>
+---
+ configure.ac            | 91 ++++++++++++++++++++++++++++++++++++++++-
+ src/openvpn/crypto.c    |  2 +-
+ src/openvpn/cryptoapi.c |  4 ++
+ 3 files changed, 94 insertions(+), 3 deletions(-)
 
---WSTNqFxQZ7iX8mKgOD7W7ZAI7jRJbWWS6
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+diff --git a/configure.ac b/configure.ac
+index fcec7389..53ad3181 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -276,16 +276,23 @@ AC_ARG_WITH(
+ 
+ AC_ARG_WITH(
+ 	[crypto-library],
+-	[AS_HELP_STRING([--with-crypto-library=library], [build with the given crypto library, TYPE=openssl|mbedtls @<:@default=openssl@:>@])],
++	[AS_HELP_STRING([--with-crypto-library=library], [build with the given crypto library, TYPE=openssl|mbedtls|wolfssl @<:@default=openssl@:>@])],
+ 	[
+ 		case "${withval}" in
+-			openssl|mbedtls) ;;
++			openssl|mbedtls|wolfssl) ;;
+ 			*) AC_MSG_ERROR([bad value ${withval} for --with-crypto-library]) ;;
+ 		esac
+ 	],
+ 	[with_crypto_library="openssl"]
+ )
+ 
++AC_ARG_ENABLE(
++	[wolfssl-options-h],
++	[AS_HELP_STRING([--disable-wolfssl-options-h], [Disable including options.h in wolfSSL @<:@default=yes@:>@])],
++	,
++	[enable_wolfssl_options_h="yes"]
++)
++
+ AC_ARG_VAR([PLUGINDIR], [Path of plug-in directory @<:@default=LIBDIR/openvpn/plugins@:>@])
+ if test -n "${PLUGINDIR}"; then
+ 	plugindir="${PLUGINDIR}"
+@@ -1029,6 +1036,86 @@ elif test "${with_crypto_library}" = "mbedtls"; then
+ 	AC_DEFINE([ENABLE_CRYPTO_MBEDTLS], [1], [Use mbed TLS library])
+ 	CRYPTO_CFLAGS="${MBEDTLS_CFLAGS}"
+ 	CRYPTO_LIBS="${MBEDTLS_LIBS}"
++
++elif test "${with_crypto_library}" = "wolfssl"; then
++	AC_ARG_VAR([WOLFSSL_CFLAGS], [C compiler flags for wolfssl])
++	AC_ARG_VAR([WOLFSSL_LIBS], [linker flags for wolfssl])
++	AC_ARG_VAR([WOLFSSL_DIR], [Path to the wolfssl directory @<:@default=/usr/local/include/wolfssl@:>@])
++	if test -n "${WOLFSSL_DIR}"; then
++		wolfssldir="${WOLFSSL_DIR}"
++	else
++		wolfssldir="/usr/local/include/wolfssl"
++	fi
++
++	saved_CFLAGS="${CFLAGS}"
++	saved_LIBS="${LIBS}"
++
++	if test -z "${WOLFSSL_CFLAGS}" -a -z "${WOLFSSL_LIBS}"; then
++		# if the user did not explicitly specify flags, try to autodetect
++		LIBS="${LIBS} -lwolfssl -lm -pthread"
++		AC_CHECK_LIB(
++			[wolfssl],
++			[wolfSSL_Init],
++			[],
++			[AC_MSG_ERROR([Could not link wolfSSL library.])]
++		)
++		AC_CHECK_HEADER([wolfssl/options.h],,[AC_MSG_ERROR([wolfSSL header wolfssl/options.h not found!])])
++	fi
++
++	AC_DEFINE([HAVE_HMAC_CTX_NEW], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_HMAC_CTX_FREE], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_HMAC_CTX_RESET], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_EVP_MD_CTX_NEW], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_EVP_MD_CTX_FREE], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_EVP_MD_CTX_RESET], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_OPENSSL_VERSION], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_SSL_CTX_GET_DEFAULT_PASSWD_CB], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_SSL_CTX_GET_DEFAULT_PASSWD_CB_USERDATA], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_SSL_CTX_SET_SECURITY_LEVEL], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_X509_GET0_PUBKEY], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_X509_STORE_GET0_OBJECTS], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_X509_OBJECT_FREE], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_X509_OBJECT_GET_TYPE], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_EVP_PKEY_ID], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_EVP_PKEY_GET0_RSA], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_EVP_PKEY_GET0_DSA], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_EVP_PKEY_GET0_EC_KEY], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_SET_FLAGS], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_BITS], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_GET0_KEY], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_SET0_KEY], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_DSA_GET0_PQG], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_DSA_BITS], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_METH_NEW], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_METH_FREE], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_METH_SET_PUB_ENC], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_METH_SET_PUB_DEC], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_METH_SET_PRIV_ENC], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_METH_SET_PRIV_DEC], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_METH_SET_INIT], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_METH_SET_SIGN], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_METH_SET_FINISH], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_METH_SET0_APP_DATA], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_METH_GET0_APP_DATA], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_EC_GROUP_ORDER_BITS], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	
++	have_crypto_aead_modes="yes"
++	have_crypto="yes"
++    
++	if test "${enable_wolfssl_options_h}" = "yes"; then
++		AC_DEFINE([EXTERNAL_OPTS_OPENVPN], [1], [Include options.h from wolfSSL library])
++	else
++		AC_DEFINE([WOLFSSL_USER_SETTINGS], [1], [Use custom user_settings.h file for wolfSSL library])
++	fi
++	
++	WOLFSSL_CFLAGS="${WOLFSSL_CFLAGS} -I${wolfssldir}"
++	CFLAGS="${WOLFSSL_CFLAGS} ${CFLAGS}"
++	LIBS="${WOLFSSL_LIBS} ${LIBS}"
++	
++	AC_DEFINE([ENABLE_CRYPTO_WOLFSSL], [1], [Use wolfSSL crypto library])
++	AC_DEFINE([ENABLE_CRYPTO_OPENSSL], [1], [Use wolfSSL openssl compatibility layer])
++	CRYPTO_CFLAGS="${WOLFSSL_CFLAGS}"
++	CRYPTO_LIBS="${WOLFSSL_LIBS}"
+ else
+ 	AC_MSG_ERROR([Invalid crypto library: ${with_crypto_library}])
+ fi
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 453cb20a..73da5fa7 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -428,7 +428,7 @@ openvpn_decrypt_aead(struct buffer *buf, struct buffer work,
+     tag_ptr = BPTR(buf);
+     ASSERT(buf_advance(buf, tag_size));
+     dmsg(D_PACKET_CONTENT, "DECRYPT MAC: %s", format_hex(tag_ptr, tag_size, 0, &gc));
+-#if defined(ENABLE_CRYPTO_OPENSSL) && OPENSSL_VERSION_NUMBER < 0x10001040L
++#if (defined(ENABLE_CRYPTO_OPENSSL) && OPENSSL_VERSION_NUMBER < 0x10001040L) || defined(ENABLE_CRYPTO_WOLFSSL)
+     /* OpenSSL <= 1.0.1c bug requires set tag before processing ciphertext */
+     if (!EVP_CIPHER_CTX_ctrl(ctx->cipher, EVP_CTRL_GCM_SET_TAG, tag_size, tag_ptr))
+     {
+diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
+index 30eba7b2..a82c52ad 100644
+--- a/src/openvpn/cryptoapi.c
++++ b/src/openvpn/cryptoapi.c
+@@ -39,6 +39,10 @@
+ 
+ #ifdef ENABLE_CRYPTOAPI
+ 
++#ifdef ENABLE_CRYPTO_WOLFSSL
++#error wolfSSL does not support CryptoAPI
++#endif
++
+ #include <openssl/ssl.h>
+ #include <openssl/evp.h>
+ #include <openssl/err.h>
+-- 
+2.17.1
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl6V9NIACgkQFRhsZwKx
-RFSDWhAAiKWsxTWCdoym+1ExgYow4hG46ZQ7BYN+QA5nwxVKqtose5wnGpff6CQG
-JYzBxCizYvSN4W84Nk/KmlmGTwOvor4UzdvAwoZrPtzpQgSH+py6mg9WHswWCIhP
-Z2kHJ1W0HeBu/icepVk+KbOEqqOoT2IBZmxJZsRCzlcZEeiodGyio3SVlNYSNsWV
-0qgyjLm+bq+i/aBVyc5U+AfynUA4higKOllXJOeuE9ayyD2TzZ2hQNHydWkKwA0U
-31OmnVRgqUPWGnTXNAgGMjVBzaU4m/U5jk9hpHUU6Dl0dcxPb6dyxHIGNne0vFWT
-q48P6xmxeYpzpLqnoX6m0yVGTVxwlZYalrJsrmSShw92f61ov/g8T1n38u+BReMH
-HtZ21y9Zzt5GApI6FDm8iBWQI/x9mfdDxxbDT3nKIQkp5KfgE7AHF2n/bTEkjmdx
-Ujd0+t3P/pwMwcxASPKmlDjVufZinTRgqdHLI8uhWIpC2uZztpzkunvQeuz+qdk2
-/gmiLDlz1LMZrblMNMRDY7a5ibKQnQquAoksnhA6KYIkvPbJVzkhWrh6WNbDN9Se
-Q0tjyerFrHv7GrpCcegk5MFp5R/4bjDckMeQWEE/zp/3jBIlYJQx24yf5IeQvt/+
-vlESIF1r/fHouvbWsgLR4RmEqqZKh8hFtpzUZmYeBxnNI46Rb+M=
-=9KiU
------END PGP SIGNATURE-----
-
---WSTNqFxQZ7iX8mKgOD7W7ZAI7jRJbWWS6--
 
