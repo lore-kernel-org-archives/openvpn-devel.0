@@ -1,11 +1,13 @@
-References: <20200313165913.12682-1-lstipakov@...277...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <184a134b-2d7c-d175-ea9b-059048b66618@...1227...>
-Date: Wed, 15 Apr 2020 21:24:56 +0200
+References: <20200414185214.1863-1-juliusz@...2525...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <3f3962c3-7458-af60-f703-3ddad76d136c@...2080...>
+Date: Wed, 15 Apr 2020 22:58:21 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200313165913.12682-1-lstipakov@...277...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH] Fix broken async push with NCP is used
+In-Reply-To: <20200414185214.1863-1-juliusz@...2525...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="9Qdvekzey5HW6bJIliFYVi4uyQstRX3GB"
+Subject: Re: [Openvpn-devel] [PATCH] Support for wolfSSL in OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,98 +16,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+To: openvpn-devel@lists.sourceforge.net
 
-Am 13.03.20 um 17:59 schrieb Lev Stipakov:
-> From: Lev Stipakov <lev@...515...>
-> 
-> With NCP and deferred auth, we perform cipher negotiation and
-> generate data channel keys on incoming push request, assuming that auth
-> succeeded. With async push, when auth succeeds in between push requests,
-> we send push reply immediately.
-> 
-> The code which generates data channel keys is only called on handling incoming
-> push requests (incoming_push_message). It might not be called with NCP,
-> deferred auth and async push because on incoming push request auth might not
-> be complete yet. When auth is complete in between push requests, push reply
-> is sent and it is assumed that connection is established. However, since data channel keys
-> are not generated on the server side, connection doesn't work.
-> 
-> Fix by generating data channel keys when async push is triggered.
-> 
-> Reported-by: smaxfield@...2543...
-> Signed-off-by: Lev Stipakov <lev@...515...>
-> ---
->  src/openvpn/init.c  |  6 ++----
->  src/openvpn/multi.c | 24 +++++++++++++++++++++++-
->  src/openvpn/push.c  |  6 ++----
->  src/openvpn/ssl.c   |  6 ++++++
->  src/openvpn/ssl.h   |  5 +++--
->  5 files changed, 36 insertions(+), 11 deletions(-)
-> 
-> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index 824b6667..b3096dc8 100644
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -2343,10 +2343,8 @@ do_deferred_options(struct context *c, const unsigned int found)
->          }
->  #endif
->  
-> -        /* Do not regenerate keys if server sends an extra push reply */
-> -        if (!session->key[KS_PRIMARY].crypto_options.key_ctx_bi.initialized
-> -            && !tls_session_update_crypto_params(session, &c->options, &c->c2.frame,
-> -                                                 frame_fragment))
-> +        if (!tls_session_update_crypto_params(session, &c->options, &c->c2.frame,
-> +                                              frame_fragment))
->          {
->              msg(D_TLS_ERRORS, "OPTIONS ERROR: failed to import crypto options");
->              return false;
-> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-> index da0aeeba..b42bcec9 100644
-> --- a/src/openvpn/multi.c
-> +++ b/src/openvpn/multi.c
-> @@ -2137,8 +2137,30 @@ multi_process_file_closed(struct multi_context *m, const unsigned int mpp_flags)
->          {
->              if (mi)
->              {
-> -                /* continue authentication and send push_reply */
-> +                /* continue authentication, perform NCP negotiation and send push_reply */
->                  multi_process_post(m, mi, mpp_flags);
-> +
-> +                /* With NCP and deferred authentication, we perform cipher negotiation and
-> +                 * data channel keys generation on incoming push request, assuming that auth
-> +                 * succeeded. When auth succeeds in between push requests and async push is used,
-> +                 * we send push reply immediately. Above multi_process_post() call performs
-> +                 * NCP negotiation and here we do keys generation. */
-> +
-> +                struct context *c = &mi->context;
-> +                struct frame *frame_fragment = NULL;
-> +#ifdef ENABLE_FRAGMENT
-> +                if (c->options.ce.fragment)
-> +                {
-> +                    frame_fragment = &c->c2.frame_fragment;
-> +                }
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--9Qdvekzey5HW6bJIliFYVi4uyQstRX3GB
+Content-Type: multipart/mixed; boundary="WyWmsO1rGm2auCHka3BOx8vvuPZFFzU6Q";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <3f3962c3-7458-af60-f703-3ddad76d136c@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] Support for wolfSSL in OpenVPN
+References: <20200414185214.1863-1-juliusz@...2525...>
+In-Reply-To: <20200414185214.1863-1-juliusz@...2525...>
+
+--WyWmsO1rGm2auCHka3BOx8vvuPZFFzU6Q
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+On 14/04/2020 20:52, Juliusz Sosinowicz wrote:
+> diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
+> index 30eba7b2..a82c52ad 100644
+> --- a/src/openvpn/cryptoapi.c
+> +++ b/src/openvpn/cryptoapi.c
+> @@ -39,6 +39,10 @@
+>=20=20
+>  #ifdef ENABLE_CRYPTOAPI
+>=20=20
+> +#ifdef ENABLE_CRYPTO_WOLFSSL
+> +#error wolfSSL does not support CryptoAPI
 > +#endif
-> +                struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
-> +                if (!tls_session_update_crypto_params(session, &c->options,
-> +                                                      &c->c2.frame, frame_fragment))
-> +                {
-> +                    msg(D_TLS_ERRORS, "TLS Error: initializing data channel failed");
-> +                    register_signal(c, SIGUSR1, "init-data-channel-failed");
-> +                }
+> +
 
-I am not happy to see this code fragment being copied here and having
-the same code now three times almost identical.
+Except of the documentation effect, wouldn't it be better to handle that in
+syshead.h instead?
 
-This is the point where we should put it into its own fuction.
+In syshead.h, I see this:
+----------------------------------
+#if defined(_WIN32) && defined(ENABLE_CRYPTO_OPENSSL)
+#define ENABLE_CRYPTOAPI
+#endif
+----------------------------------
+
+This is the only place I could find defining this macro.  So extending it w=
+ith
+&& !defined(ENABLE_CRYPTO_WOLFSSL) would eliminate the need to worry about =
+the
+ENABLE_CRYPTOAPI elsewhere.
+
+Has this patch been tested against Windows builds with WolfSSL enabled, like
+via mingw?
+
+
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
 
 
 
-Otherwise the code looks good.
-So
+--WyWmsO1rGm2auCHka3BOx8vvuPZFFzU6Q--
 
-Semi-Acked-By: Arne Schwabe <arne@...1227...>
+--9Qdvekzey5HW6bJIliFYVi4uyQstRX3GB
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJel3VtAAoJEIbPlEyWcf3ylkgP/RIJNm0C/M3HGeWQ75RP2Spb
+vJoCN1D2jzXM/miSMoxx76kyRZJLJYT4d6GgRwJyDh2GwD8AL0GDfLyzlLNtoGxF
+R7Zn/2BbJAUnG9RPaVcZN1sWCGX1Jo8Oal59UWYTjjRG78GolNWUE5lU9oj5jqX4
+3eRhMqF5c33xdNhcgJAX3Vf3qr1wx7/3rUfLfu3WiPTnNU6uMxQkkPB214+TociU
+j8sAwMrbnW/cTdS0d6wl+UdcQuVl6rWfzYKeQdoQZK66QpreGXYzjMPjPywCekmB
+XCoMNcsbKTMRkI7vDX6SP2GIx4MxXni0xDfrIQJb346ZNjA6d9Iej6un2hqCeKiX
+2TKfJ6PR++p1wXaCOVjiOobfVp8ILQcoNWXc5L7q8wZ8hl+lNolSRxV9N5EO6HfW
+D+SvPDIrOa5t4PGyjgAqD6tELtzCjP91+lJhm7O1bUMyNKnGW/q48hiFuiKZWlmw
+0Ry40m1hF7IT1STGkz5Zbf4pfUFyJVOCglKiT5zr8VTe1vlf/91SiJa7smf/6djo
+ttACU55OfG2EUBS3s0vkzQSpkhNKu1G5kD4pLYEmNUdoJ0N14u8l6BfBnej6Fnpq
+LJrVe1H5QyhU8sgIDeFYfLWExWP03xF2JPyMH0pGqE6itRltKELG/g7l24GRZLYb
+v+BV8pmSWR5lvLcs8qPe
+=fJtx
+-----END PGP SIGNATURE-----
+
+--9Qdvekzey5HW6bJIliFYVi4uyQstRX3GB--
 
