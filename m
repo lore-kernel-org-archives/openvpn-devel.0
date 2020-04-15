@@ -1,14 +1,11 @@
-Date: Wed, 15 Apr 2020 21:22:03 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200415192203.GO1431@...1296...>
-References: <20200313130133.19045-1-samuli@...515...>
+References: <20200313165913.12682-1-lstipakov@...277...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <184a134b-2d7c-d175-ea9b-059048b66618@...1227...>
+Date: Wed, 15 Apr 2020 21:24:56 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="USf1PyUzamLyyBMw"
-Content-Disposition: inline
-In-Reply-To: <20200313130133.19045-1-samuli@...515...>
-Subject: Re: [Openvpn-devel] [PATCH] Document some limitations of
- --auth-user-pass
+In-Reply-To: <20200313165913.12682-1-lstipakov@...277...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH] Fix broken async push with NCP is used
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,58 +14,98 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: samuli@...515...
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
---USf1PyUzamLyyBMw
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-Hi,
-
-On Fri, Mar 13, 2020 at 03:01:33PM +0200, samuli@...515... wrote:
-> From: Samuli Sepp=E4nen <samuli@...515...>
->=20
-> URL: https://community.openvpn.net/openvpn/ticket/757
-> Signed-off-by: Samuli Sepp=E4nen <samuli@...515...>
+Am 13.03.20 um 17:59 schrieb Lev Stipakov:
+> From: Lev Stipakov <lev@...515...>
+> 
+> With NCP and deferred auth, we perform cipher negotiation and
+> generate data channel keys on incoming push request, assuming that auth
+> succeeded. With async push, when auth succeeds in between push requests,
+> we send push reply immediately.
+> 
+> The code which generates data channel keys is only called on handling incoming
+> push requests (incoming_push_message). It might not be called with NCP,
+> deferred auth and async push because on incoming push request auth might not
+> be complete yet. When auth is complete in between push requests, push reply
+> is sent and it is assumed that connection is established. However, since data channel keys
+> are not generated on the server side, connection doesn't work.
+> 
+> Fix by generating data channel keys when async push is triggered.
+> 
+> Reported-by: smaxfield@...2543...
+> Signed-off-by: Lev Stipakov <lev@...515...>
 > ---
+>  src/openvpn/init.c  |  6 ++----
+>  src/openvpn/multi.c | 24 +++++++++++++++++++++++-
+>  src/openvpn/push.c  |  6 ++----
+>  src/openvpn/ssl.c   |  6 ++++++
+>  src/openvpn/ssl.h   |  5 +++--
+>  5 files changed, 36 insertions(+), 11 deletions(-)
+> 
+> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+> index 824b6667..b3096dc8 100644
+> --- a/src/openvpn/init.c
+> +++ b/src/openvpn/init.c
+> @@ -2343,10 +2343,8 @@ do_deferred_options(struct context *c, const unsigned int found)
+>          }
+>  #endif
+>  
+> -        /* Do not regenerate keys if server sends an extra push reply */
+> -        if (!session->key[KS_PRIMARY].crypto_options.key_ctx_bi.initialized
+> -            && !tls_session_update_crypto_params(session, &c->options, &c->c2.frame,
+> -                                                 frame_fragment))
+> +        if (!tls_session_update_crypto_params(session, &c->options, &c->c2.frame,
+> +                                              frame_fragment))
+>          {
+>              msg(D_TLS_ERRORS, "OPTIONS ERROR: failed to import crypto options");
+>              return false;
+> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+> index da0aeeba..b42bcec9 100644
+> --- a/src/openvpn/multi.c
+> +++ b/src/openvpn/multi.c
+> @@ -2137,8 +2137,30 @@ multi_process_file_closed(struct multi_context *m, const unsigned int mpp_flags)
+>          {
+>              if (mi)
+>              {
+> -                /* continue authentication and send push_reply */
+> +                /* continue authentication, perform NCP negotiation and send push_reply */
+>                  multi_process_post(m, mi, mpp_flags);
+> +
+> +                /* With NCP and deferred authentication, we perform cipher negotiation and
+> +                 * data channel keys generation on incoming push request, assuming that auth
+> +                 * succeeded. When auth succeeds in between push requests and async push is used,
+> +                 * we send push reply immediately. Above multi_process_post() call performs
+> +                 * NCP negotiation and here we do keys generation. */
+> +
+> +                struct context *c = &mi->context;
+> +                struct frame *frame_fragment = NULL;
+> +#ifdef ENABLE_FRAGMENT
+> +                if (c->options.ce.fragment)
+> +                {
+> +                    frame_fragment = &c->c2.frame_fragment;
+> +                }
+> +#endif
+> +                struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
+> +                if (!tls_session_update_crypto_params(session, &c->options,
+> +                                                      &c->c2.frame, frame_fragment))
+> +                {
+> +                    msg(D_TLS_ERRORS, "TLS Error: initializing data channel failed");
+> +                    register_signal(c, SIGUSR1, "init-data-channel-failed");
+> +                }
 
-I'm going to mark that patch in patchwork as "changes requested",
-given that Selva changed the issue towards "if this happens,=20
-we'll just ignore the stored username and ask management for both=20
-user+password".
+I am not happy to see this code fragment being copied here and having
+the same code now three times almost identical.
 
-Not sure if we still need a documentation patch, but if we want one,
-it will have to be different text :)
+This is the point where we should put it into its own fuction.
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
 
-Gert Doering - Munich, Germany                             gert@...1296...
 
---USf1PyUzamLyyBMw
-Content-Type: application/pgp-signature; name="signature.asc"
+Otherwise the code looks good.
+So
 
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJel17aAAoJEB2Cnv7KVigSoPQMAIkSW1IE84V5pzlL2RCZ704m
-PcsK8DCgtFw8zl+oLR6fZbKAmjHHc9qTdXgVmTbb6VEsty1r/HHdFeTnA7htCZ4p
-l+ZWNboYXNEdce070YTwifj8HwXIEdX4X3D2o6SrozSPtaM2nxcVvvkfZp4k52Bd
-lcrg/MdmIJsQhOih1RpmTzbNg8DZgl32xK2nPg/Qkv0pVGYRh3aFy3CsvNyjYZ0S
-QlofIqyXk13vLRTOE2pyaWQMmTCVkPCK0ubIoIVJ10BUz7v/SEV2qJ9M9n7O/wdO
-Ir+uiTuOnCyghYIdWlXd9lA86DccW1aEoYdjkuh5oSDBWkfOZ85jsuXbuI8p6VTk
-02tzyJApDsEsjfnNnHqjT1E371GmYaGPPzvpPO8WYs1XOYozB3yNqfB1cuV2piPw
-lZWE57hmtBvFor9+364MUZlE6PopPU26c7aHQa9SSNfpBK+iLTAIIjyMXuLtNKBk
-3HkLkvdR9al38YuP5BxjVm+5v/ZR9+2eeAiy0DpiCQ==
-=AlVb
------END PGP SIGNATURE-----
-
---USf1PyUzamLyyBMw--
+Semi-Acked-By: Arne Schwabe <arne@...1227...>
 
