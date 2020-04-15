@@ -1,10 +1,13 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Wed, 15 Apr 2020 10:30:17 +0300
-Message-Id: <20200415073017.22839-1-lstipakov@...277...>
-In-Reply-To: <b6450eb9-93db-63b9-7e13-4cacbcad39c9@...1227...>
-References: <b6450eb9-93db-63b9-7e13-4cacbcad39c9@...1227...>
+References: <20200414185214.1863-1-juliusz@...2525...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <c33a84b3-b10a-a8c2-d46a-3ee2d296f7f1@...1227...>
+Date: Wed, 15 Apr 2020 11:31:36 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Fix illegal client float
+In-Reply-To: <20200414185214.1863-1-juliusz@...2525...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="8NTwB9VSReKbXwDcEsVkof4u9b5xOVrR5"
+Subject: Re: [Openvpn-devel] [PATCH] Support for wolfSSL in OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,59 +16,86 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Juliusz Sosinowicz <juliusz@...2525...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--8NTwB9VSReKbXwDcEsVkof4u9b5xOVrR5
+Content-Type: multipart/mixed; boundary="RQeEfbUrb4xuhy7bKAlOSxSF3J8ykCp8W"
+
+--RQeEfbUrb4xuhy7bKAlOSxSF3J8ykCp8W
+Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+Content-Transfer-Encoding: quoted-printable
 
-From: Lev Stipakov <lev@...515...>
+Am 14.04.20 um 20:52 schrieb Juliusz Sosinowicz:
+> This patch adds support for wolfSSL in OpenVPN. Support is added by using=
+ wolfSSL's OpenSSL compatibility layer. Function calls are left unchanged a=
+nd instead the OpenSSL includes point to wolfSSL headers and OpenVPN is lin=
+ked against the wolfSSL library.
+>=20
+> As requested by OpenVPN maintainers, this patch does not include wolfssl/=
+options.h on its own. By defining the macro EXTERNAL_OPTS_OPENVPN in the co=
+nfigure script wolfSSL will include wolfssl/options.h on its own (change ad=
+ded in https://github.com/wolfSSL/wolfssl/pull/2825). The patch adds an opt=
+ion '--disable-wolfssl-options-h' in case the user would like to supply the=
+ir own settings file for wolfSSL.
+>=20
 
-There is a time frame between allocating peer-id and initializing data
-channel key, which is performed on receiving push request.
+Thanks the patch is lot less intrusive then the last version. We will
+have to discuss in our meeting under what condition we want to include
+the patch. We might add a note or statement that the WolfSSL support in
+OpenVPN is mainly developed and tested by WolfSSL itself or something
+along these lines.
 
-If a "rogue" data channel packet arrives during that time frame from
-another address and  with same peer-id, this would cause client to float
-to that new address. This is because:
+> diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+> index 453cb20a..73da5fa7 100644
+> --- a/src/openvpn/crypto.c
+> +++ b/src/openvpn/crypto.c
+> @@ -428,7 +428,7 @@ openvpn_decrypt_aead(struct buffer *buf, struct buffe=
+r work,
+>      tag_ptr =3D BPTR(buf);
+>      ASSERT(buf_advance(buf, tag_size));
+>      dmsg(D_PACKET_CONTENT, "DECRYPT MAC: %s", format_hex(tag_ptr, tag_si=
+ze, 0, &gc));
+> -#if defined(ENABLE_CRYPTO_OPENSSL) && OPENSSL_VERSION_NUMBER < 0x1000104=
+0L
+> +#if (defined(ENABLE_CRYPTO_OPENSSL) && OPENSSL_VERSION_NUMBER < 0x100010=
+40L) || defined(ENABLE_CRYPTO_WOLFSSL)
+>      /* OpenSSL <=3D 1.0.1c bug requires set tag before processing cipher=
+text */
+>      if (!EVP_CIPHER_CTX_ctrl(ctx->cipher, EVP_CTRL_GCM_SET_TAG, tag_size=
+, tag_ptr))
+>      {
 
- - tls_pre_decrypt() sets packet length to zero if
-   data channel key has not been initialized, which leads to
+Are you sure that WolfSSL requires a workaround for old OpenSSL version
+before 1.0.1d?
 
- - openvpn_decrypt() returns true if packet length is zero,
-which leads to
+Arne
 
- - process_incoming_link_part1() returns true, which
-calls multi_process_float(), which commits float
 
-Note that problem doesn't happen when data channel key
-is initialized, since in this case openvpn_decrypt() returns false.
+--RQeEfbUrb4xuhy7bKAlOSxSF3J8ykCp8W--
 
-Fix illegal float by adding buffer length check before calling
-multi_process_float().
+--8NTwB9VSReKbXwDcEsVkof4u9b5xOVrR5
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-This should fix Trac #1272.
+-----BEGIN PGP SIGNATURE-----
 
-Signed-off-by: Lev Stipakov <lev@...515...>
----
- v2: add comment explaning why nonzero check needed
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl6W1HgACgkQFRhsZwKx
+RFRMEBAAokl5ISuceV7S+bomLzia3naz1E+PR+jAzfFMcq2AbsgInpc5/qJ0FoJQ
+2bDw64ApJYA0LOYW+1JneaJCjZlagamR5AVw9Syuvc05jfcYw42TTr86yUUJCNYB
+AIMJeAYftMaCZTULcLrKw9HN53vyYDzuSfkVs3EWshHxYkMEDUVB7dUr2dRZpAql
+x0ngX5mh4VV2w3qZK0cOqaqefst4oiJR458QiyqyOsQYfTSq1lOZ4CxHxLBqUshD
+8rD7hZZqz1OEMH6Eo02Ik/d0S6U0FndTJyznFTs9c2LQUEppnO0Aj1zAPvDEZLmN
+JxEvZ/LY4+6hw9tz9dzigRs2rNwcWqn+t08aT33Nx/r9y7JemeQsOdWBQLFpql/2
+GsoRD0HiP4eOL+ZgOe0rJhcPqLcpk/ynZlJ9rgFwd9RW5hVPEClceA+deqsl59wf
+OxgQ1OcWcTjJW/6wP5V7fpzwM8VRjUTJYw99J3aSP5CEIAJR+DOyS69Q2+xi8zc4
+uhcgEO+zH5j82T1UYZ7QLgWurRSGhAUNUnKhnYsORH40H3iOHS5/V8MplxP4i00z
+37EicEE34axQ5Y1OglvYAvkBw3d/J4A1mKnDxdpR+wFD+Y/XKTRtNqvfl3oOjp00
+Mx1Sq4yUSBqy4zLRowTw1goQ+4hEOqnd5k0E/qOPSl+/8TpbRPg=
+=JP+M
+-----END PGP SIGNATURE-----
 
- src/openvpn/multi.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index da0aeeba..37d2a6f2 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -2555,7 +2555,8 @@ multi_process_incoming_link(struct multi_context *m, struct multi_instance *inst
-             orig_buf = c->c2.buf.data;
-             if (process_incoming_link_part1(c, lsi, floated))
-             {
--                if (floated)
-+                /* nonzero length means that we have a valid, decrypted packed */
-+                if (floated && c->c2.buf.len > 0)
-                 {
-                     multi_process_float(m, m->pending);
-                 }
--- 
-2.24.1 (Apple Git-126)
-
+--8NTwB9VSReKbXwDcEsVkof4u9b5xOVrR5--
 
