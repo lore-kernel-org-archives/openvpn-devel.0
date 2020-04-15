@@ -1,13 +1,12 @@
-References: <20200328040858.16505-1-arne@...1227...>
- <20200401102159.29157-1-arne@...1227...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <8e4f27a6-5046-379a-8a50-56db0627c9be@...2181...>
-Date: Wed, 15 Apr 2020 14:05:45 +0200
+Date: Wed, 15 Apr 2020 11:52:50 -0400
+From: Nathan Stratton Treadway <nathanst@...1517...>
+Message-ID: <20200415155250.GH32337@...1518...>
+References: <6a623f26-a30c-eb91-204b-8f938cad2994@...515...>
+ <19931d36-6546-75cf-5428-66b235462cd5@...515...>
 MIME-Version: 1.0
-In-Reply-To: <20200401102159.29157-1-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH 2/3] Refactor counting number of element
- in a : delimited list into function
+In-Reply-To: <19931d36-6546-75cf-5428-66b235462cd5@...515...>
+Subject: Re: [Openvpn-devel] Summary of the community meeting (15th April
+ 2020) -- Win installer version checks
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,133 +15,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi,
-
-On 01/04/2020 12:21, Arne Schwabe wrote:
+On Wed, Apr 15, 2020 at 13:38:37 +0300, Samuli Sepp=E4nen wrote:
+>=20
+> Here's the summary of the IRC meeting.
+>=20
 > ---
->  src/openvpn/misc.c        | 18 ++++++++++++++++++
->  src/openvpn/misc.h        | 13 +++++++++++++
->  src/openvpn/ssl_mbedtls.c | 15 ++-------------
->  3 files changed, 33 insertions(+), 13 deletions(-)
-> 
-> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-> index 1931149b..b375451f 100644
-> --- a/src/openvpn/misc.c
-> +++ b/src/openvpn/misc.c
-> @@ -735,4 +735,22 @@ output_peer_info_env(struct env_set *es, const char *peer_info)
->      }
->  }
->  
-> +int get_num_elements(const char* string, char delimiter)
-> +{
-> +  int string_len = strlen(string);
-> +
-> +  ASSERT(0 != string_len);
-> +
-> +  int element_count = 1;
-> +  /* Get number of ciphers */
-> +  for (int i = 0; i < string_len; i++)
-> +    {
-> +      if (string[i] == delimiter)
-> +        {
-> +          element_count++;
-> +        }
-> +    }
+>=20
+> COMMUNITY MEETING
+>=20
+> Place: #openvpn-meeting on irc.freenode.net
+> Date: Wed 15th April 2020
+> Time: 11:30 CEST (09:30 UTC)
+>=20
+[...]
+>=20
+> Mattock will check if it would be possible to give unique identifiers to
+> Windows 7 and Windows 10 flavors of tap-windows6. This would prevent
+> situations where an existing, cached Windows 7 driver is preferred over
+> a Windows 10 (attestation signed) version, hence causing driver
+> installation failures.
+>=20
+> Mattock will also check if we could, with a reasonable effort, provide
+> users with an easy way to clean up old tap-windows6 drivers in the NSIS
+> installer. The process is already known and can be done with external
+> scripts, but integration / reimplementation in NSIS is missing.
 
-while copying this code you are breaking the indentation. note that 2
-blanks before the curly brackets. that's nt supposed to be there.
+Just wanted to be sure that the separate-but-related step of having the
+Windows installer verify the Windows version at install time is also on
+the list for investigation. =20
 
+In our particular case, at least, if the Win7 installer had refused to
+proceed when executed under Win10, the situation with TAP driver
+mismatch would have been avoided completely.  If it's possible to do,
+that seems a preferable outcome, even if the steps mentioned above also
+make it much easier to recover from the mismatch situation after the
+fact.
 
-> +
-> +  return element_count;
-> +}
->  #endif /* P2MP_SERVER */
-> diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
-> index 991b7df2..0655b7fe 100644
-> --- a/src/openvpn/misc.h
-> +++ b/src/openvpn/misc.h
-> @@ -175,4 +175,17 @@ void output_peer_info_env(struct env_set *es, const char *peer_info);
->  
->  #endif /* P2MP_SERVER */
->  
-> +/**
-> + * Counts the number of delimiter in a string and returns
-> + * their number +1. 
+(Of course, even better from a user standpoint would be a single unified
+OpenVPN Windows installer which automatically installs the
+correctly-signed drivers for the current system -- but I assume that
+approach has already been investigated/considered earlier in the
+development of the Windows installer....)
 
-I'd rephrase this sentence as:
+Thanks.
 
-Returns the occurrences of 'delimiter' in 'string' +1.
-
-> This is typically used to find out the
-> + * number elements in a cipher string or similar that is separated by : like
-> + *
-> + *   X25519:secp256r1:X448:secp512r1:secp384r1:brainpoolP384r1
-> + *
-> + * @param string        the string to work on
-> + * @param delimiter     the delimiter to count, typically ':'
-> + * @return              number of delimiter found + 1
-
-      I'd change to "occurrences of 'delimiter' +1"
-
-> + */
-> +int
-> +get_num_elements(const char* string, char delimiter);
->  #endif /* ifndef MISC_H */
-> diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-> index 0f0b035b..0e17e734 100644
-> --- a/src/openvpn/ssl_mbedtls.c
-> +++ b/src/openvpn/ssl_mbedtls.c
-> @@ -289,33 +289,22 @@ void
->  tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
->  {
->      char *tmp_ciphers, *tmp_ciphers_orig, *token;
-> -    int i, cipher_count;
-> -    int ciphers_len;
->  
->      if (NULL == ciphers)
->      {
->          return; /* Nothing to do */
-> -
->      }
-> -    ciphers_len = strlen(ciphers);
->  
->      ASSERT(NULL != ctx);
-> -    ASSERT(0 != ciphers_len);
->  
->      /* Get number of ciphers */
-> -    for (i = 0, cipher_count = 1; i < ciphers_len; i++)
-> -    {
-> -        if (ciphers[i] == ':')
-> -        {
-> -            cipher_count++;
-> -        }
-> -    }
-> +    int cipher_count = get_num_elements(ciphers, ':');
->  
->      /* Allocate an array for them */
->      ALLOC_ARRAY_CLEAR(ctx->allowed_ciphers, int, cipher_count+1)
->  
->      /* Parse allowed ciphers, getting IDs */
-> -    i = 0;
-> +    int i = 0;
->      tmp_ciphers_orig = tmp_ciphers = string_alloc(ciphers, NULL);
->  
->      token = strtok(tmp_ciphers, ":");
-> 
-
-Other than my little nitpicks above, the patch looks good.
-However, I have a question.
-
-Since you are refactoring this code and this is going to master/2.5, why
-not reimplementing the get_num_elements() function using strtok() ?
+					Nathan
 
 
-Regards,
 
--- 
-Antonio Quartulli
+----------------------------------------------------------------------------
+Nathan Stratton Treadway  -  nathanst@...1517...  -  Mid-Atlantic region
+Ray Ontko & Co.  -  Software consulting services  -   http://www.ontko.com/
+ GPG Key: http://www.ontko.com/~nathanst/gpg_key.txt   ID: 1023D/ECFB6239
+ Key fingerprint =3D 6AD8 485E 20B9 5C71 231C  0C32 15F3 ADCD ECFB 6239
 
