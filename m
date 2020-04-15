@@ -1,16 +1,13 @@
-Date: Wed, 15 Apr 2020 17:58:41 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200415155841.GI1431@...1296...>
-References: <6a623f26-a30c-eb91-204b-8f938cad2994@...515...>
- <19931d36-6546-75cf-5428-66b235462cd5@...515...>
- <20200415155250.GH32337@...1518...>
+References: <b6450eb9-93db-63b9-7e13-4cacbcad39c9@...1227...>
+ <20200415073017.22839-1-lstipakov@...277...>
+ <1ed2462d-36bc-1393-a59f-133ba5788063@...1227...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <744f7da6-263a-957b-1e38-a40addc9bc9b@...2181...>
+Date: Wed, 15 Apr 2020 18:45:00 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="mNseXQyS8ZYhN/HW"
-Content-Disposition: inline
-In-Reply-To: <20200415155250.GH32337@...1518...>
-Subject: Re: [Openvpn-devel] Summary of the community meeting (15th April
- 2020) -- Win installer version checks
+In-Reply-To: <1ed2462d-36bc-1393-a59f-133ba5788063@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v2] Fix illegal client float
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,20 +16,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Nathan Stratton Treadway <nathanst@...1517...>
-Cc: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---mNseXQyS8ZYhN/HW
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
 Hi,
 
-On Wed, Apr 15, 2020 at 11:52:50AM -0400, Nathan Stratton Treadway wrote:
-> (Of course, even better from a user standpoint would be a single unified
-> OpenVPN Windows installer which automatically installs the
-> correctly-signed drivers for the current system -- but I assume that
-> approach has already been investigated/considered earlier in the
-> development of the Windows installer....)
---mNseXQyS8ZYhN/HW--
+On 15/04/2020 11:32, Arne Schwabe wrote:
+> Am 15.04.20 um 09:30 schrieb Lev Stipakov:
+>> From: Lev Stipakov <lev@...515...>
+>>
+>> There is a time frame between allocating peer-id and initializing data
+>> channel key, which is performed on receiving push request.
+>>
+>> If a "rogue" data channel packet arrives during that time frame from
+>> another address and  with same peer-id, this would cause client to float
+>> to that new address. This is because:
+>>
+>>  - tls_pre_decrypt() sets packet length to zero if
+>>    data channel key has not been initialized, which leads to
+>>
+>>  - openvpn_decrypt() returns true if packet length is zero,
+>> which leads to
+>>
+>>  - process_incoming_link_part1() returns true, which
+>> calls multi_process_float(), which commits float
+>>
+>> Note that problem doesn't happen when data channel key
+>> is initialized, since in this case openvpn_decrypt() returns false.
+>>
+>> Fix illegal float by adding buffer length check before calling
+>> multi_process_float().
+>>
+>> This should fix Trac #1272.
+>>
+>> Signed-off-by: Lev Stipakov <lev@...515...>
+>> ---
+>>  v2: add comment explaning why nonzero check needed
+>>
+>>  src/openvpn/multi.c | 3 ++-
+>>  1 file changed, 2 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+>> index da0aeeba..37d2a6f2 100644
+>> --- a/src/openvpn/multi.c
+>> +++ b/src/openvpn/multi.c
+>> @@ -2555,7 +2555,8 @@ multi_process_incoming_link(struct multi_context *m, struct multi_instance *inst
+>>              orig_buf = c->c2.buf.data;
+>>              if (process_incoming_link_part1(c, lsi, floated))
+>>              {
+>> -                if (floated)
+>> +                /* nonzero length means that we have a valid, decrypted packed */
+>> +                if (floated && c->c2.buf.len > 0)
+>>                  {
+>>                      multi_process_float(m, m->pending);
+>>                  }
+>>
+> Thanks!
+> 
+> Acked-By: Arne Schwabe <arne@...1227...>
+
+just went through the entire flow with Lev and David and this all makes
+a lot of sense now. Couldn't come up with a better fix for this issue.
+
+
+Acked-by: Antonio Quartulli <antonio@...515...>
+
+
+
+-- 
+Antonio Quartulli
+
