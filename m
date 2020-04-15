@@ -1,17 +1,14 @@
-Date: Wed, 15 Apr 2020 21:12:26 +0200
+Date: Wed, 15 Apr 2020 21:22:03 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20200415191226.GN1431@...1296...>
-References: <1581519967-16950-1-git-send-email-selva.nair@...277...>
- <202002131954.01DJsIrb090643@...2054...>
- <20200415175828.GK1431@...1296...>
- <CAKuzo_gXcXxbKuQ-7GK54H6GBvOYCd0xrF2g0ry9=DZ5MUtsQA@...278...>
+Message-ID: <20200415192203.GO1431@...1296...>
+References: <20200313130133.19045-1-samuli@...515...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="BcdBrJ7VxrpNMUFN"
+ protocol="application/pgp-signature"; boundary="USf1PyUzamLyyBMw"
 Content-Disposition: inline
-In-Reply-To: <CAKuzo_gXcXxbKuQ-7GK54H6GBvOYCd0xrF2g0ry9=DZ5MUtsQA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Skip expired certificates
- in Windows certificate store
+In-Reply-To: <20200313130133.19045-1-samuli@...515...>
+Subject: Re: [Openvpn-devel] [PATCH] Document some limitations of
+ --auth-user-pass
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,45 +17,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: samuli@...515...
+Cc: openvpn-devel@lists.sourceforge.net
 
---BcdBrJ7VxrpNMUFN
-Content-Type: text/plain; charset="us-ascii"
+--USf1PyUzamLyyBMw
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Wed, Apr 15, 2020 at 02:22:15PM -0400, Selva Nair wrote:
-> > is this one and aa6affe6df811db11577847366a569def0a3e314 also material
-> > for release/2.4?  So "feature" or "bug" category?
+On Fri, Mar 13, 2020 at 03:01:33PM +0200, samuli@...515... wrote:
+> From: Samuli Sepp=E4nen <samuli@...515...>
 >=20
-> Yes it would be good to get this one and aa6affe into 2.4. This one
-> will cherry-pick with a minor conflict in cryptoapicert.c, easily
-> resolved. aa6affe should cherry-pick with no issues.
+> URL: https://community.openvpn.net/openvpn/ticket/757
+> Signed-off-by: Samuli Sepp=E4nen <samuli@...515...>
+> ---
 
-That conflict was trivial indeed.  I fixed an occurrance of "else {"
-while at it (whitespace only).
+I'm going to mark that patch in patchwork as "changes requested",
+given that Selva changed the issue towards "if this happens,=20
+we'll just ignore the stored username and ask management for both=20
+user+password".
 
-Test built on Ubuntu/MinGW, not actually tested the resulting binary.
-
-Cursory review of the code also does not reveal anything unexpected.
-
-
-commit 5f8a9df1eea33c2d6fc267e5e3683449954c986b (HEAD -> release/2.4)
-Author: Selva Nair <selva.nair@...277...>
-Date:   Wed Feb 12 10:06:07 2020 -0500
-
-    Allow unicode search string in --cryptoapicert option
-    (cherry picked from commit aa6affe6df811db11577847366a569def0a3e314)
-
-commit 4658b3b6f6008eea1819ea26a46fd46df87b1030
-Author: Selva Nair <selva.nair@...277...>
-Date:   Wed Feb 12 10:06:06 2020 -0500
-
-    Skip expired certificates in Windows certificate store
-    (cherry picked from commit 7b63984d51a2582ba2d406e46a7debb11df7f478)
+Not sure if we still need a documentation patch, but if we want one,
+it will have to be different text :)
 
 gert
 --=20
@@ -71,22 +53,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---BcdBrJ7VxrpNMUFN
+--USf1PyUzamLyyBMw
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJel1yZAAoJEB2Cnv7KVigSdPwL/0HRunsJ5/DW2Da367rjNZBO
-FCpGf5zjiWlmCw0Q6J5YYl/5P80UwFupd5QPFydur3fa+klBbHk9MEiDPEioOIUP
-AME6o8FZnQqbo6NvaxYYbTxcVDDwpvcNxBPpq5M8gkm/G2XCibepbmJrMpnKnDUg
-v/gGJSXPjivcXgSN+K+EqLA+Pqmbvrc+nbhmEsLUXS/qCjetz2bbOKjpJ1J3i2SV
-L+rGLfWB4GSliLTTcWQLo/kGWuPi/dhxMtGbe8Gn/9RyYmeDmS6bhWurZPnuO9AU
-r5I37sLcm3oKMC72ap9p4ophcTwcrc5HhFkMVtO6Xzj0qyEWoZWNDkd15A7FOcYc
-zEC8McmezauD6Vo0NJn+v5Tloo+TD2vWGwqNSaUuadVfVih0+5LyFICo/rwXRQw5
-A/7XJX0uxz5GtMbhn1KFWFKXpqMqL0TMdKG6XkOXSZT4kt4+YFJJXsf3eUv9mOtZ
-pwpoBZpXyxeqEFK6sUTiXPP9C9Fx1N52ti7wOHnPtQ==
-=FsWX
+iQGcBAEBAgAGBQJel17aAAoJEB2Cnv7KVigSoPQMAIkSW1IE84V5pzlL2RCZ704m
+PcsK8DCgtFw8zl+oLR6fZbKAmjHHc9qTdXgVmTbb6VEsty1r/HHdFeTnA7htCZ4p
+l+ZWNboYXNEdce070YTwifj8HwXIEdX4X3D2o6SrozSPtaM2nxcVvvkfZp4k52Bd
+lcrg/MdmIJsQhOih1RpmTzbNg8DZgl32xK2nPg/Qkv0pVGYRh3aFy3CsvNyjYZ0S
+QlofIqyXk13vLRTOE2pyaWQMmTCVkPCK0ubIoIVJ10BUz7v/SEV2qJ9M9n7O/wdO
+Ir+uiTuOnCyghYIdWlXd9lA86DccW1aEoYdjkuh5oSDBWkfOZ85jsuXbuI8p6VTk
+02tzyJApDsEsjfnNnHqjT1E371GmYaGPPzvpPO8WYs1XOYozB3yNqfB1cuV2piPw
+lZWE57hmtBvFor9+364MUZlE6PopPU26c7aHQa9SSNfpBK+iLTAIIjyMXuLtNKBk
+3HkLkvdR9al38YuP5BxjVm+5v/ZR9+2eeAiy0DpiCQ==
+=AlVb
 -----END PGP SIGNATURE-----
 
---BcdBrJ7VxrpNMUFN--
+--USf1PyUzamLyyBMw--
 
