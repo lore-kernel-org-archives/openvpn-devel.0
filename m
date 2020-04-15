@@ -1,16 +1,13 @@
-References: <20191109151306.18597-1-arne@...1227...>
- <20191109151306.18597-4-arne@...1227...>
- <904629c3-4bd4-a31e-30c7-70f100b26473@...2080...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <5276b25b-5d47-54ec-69a7-514057f5b2de@...1227...>
-Date: Wed, 15 Apr 2020 13:48:42 +0200
+References: <20200328040858.16505-1-arne@...1227...>
+ <20200401102159.29157-1-arne@...1227...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <8e4f27a6-5046-379a-8a50-56db0627c9be@...2181...>
+Date: Wed, 15 Apr 2020 14:05:45 +0200
 MIME-Version: 1.0
-In-Reply-To: <904629c3-4bd4-a31e-30c7-70f100b26473@...2080...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="VNd0YyP8QlU2VYpfB7in5DrNRXKgp3dgK"
-Subject: Re: [Openvpn-devel] [PATCH v2 4/5] Implement sending SSO challenge
- to clients
+In-Reply-To: <20200401102159.29157-1-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH 2/3] Refactor counting number of element
+ in a : delimited list into function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,78 +16,133 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn@...2080...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---VNd0YyP8QlU2VYpfB7in5DrNRXKgp3dgK
-Content-Type: multipart/mixed; boundary="reZrHKUUQZX1rT58tEkdnYynFySm1s24N"
+Hi,
 
---reZrHKUUQZX1rT58tEkdnYynFySm1s24N
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+On 01/04/2020 12:21, Arne Schwabe wrote:
+> ---
+>  src/openvpn/misc.c        | 18 ++++++++++++++++++
+>  src/openvpn/misc.h        | 13 +++++++++++++
+>  src/openvpn/ssl_mbedtls.c | 15 ++-------------
+>  3 files changed, 33 insertions(+), 13 deletions(-)
+> 
+> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+> index 1931149b..b375451f 100644
+> --- a/src/openvpn/misc.c
+> +++ b/src/openvpn/misc.c
+> @@ -735,4 +735,22 @@ output_peer_info_env(struct env_set *es, const char *peer_info)
+>      }
+>  }
+>  
+> +int get_num_elements(const char* string, char delimiter)
+> +{
+> +  int string_len = strlen(string);
+> +
+> +  ASSERT(0 != string_len);
+> +
+> +  int element_count = 1;
+> +  /* Get number of ciphers */
+> +  for (int i = 0; i < string_len; i++)
+> +    {
+> +      if (string[i] == delimiter)
+> +        {
+> +          element_count++;
+> +        }
+> +    }
 
-Am 27.03.20 um 22:09 schrieb David Sommerseth:
-> On 09/11/2019 16:13, Arne Schwabe wrote:
->> This implements sending AUTH_PENDING and INFO_PRE messages to clients
->> that indicate that the clients should be continue authentication with
->> a second factor. This can currently be out of band (openurl) or a normal
->> challenge/response 2FA like TOTP (CR_TEXT).
->>
->> Signed-off-by: Arne Schwabe <arne@...1227...>
->> ---
->>  doc/management-notes.txt | 26 +++++++++++++++++++++++
->>  src/openvpn/manage.c     | 46 ++++++++++++++++++++++++++++++++++++++++
->>  src/openvpn/manage.h     |  3 +++
->>  src/openvpn/multi.c      | 19 +++++++++++++++++
->>  src/openvpn/push.c       | 24 +++++++++++++++++++++
->>  src/openvpn/push.h       |  2 ++
->>  6 files changed, 120 insertions(+)
->=20
-> Code and management notes looks reasonable.  But again, it would be good =
-to
-> have a way to test this properly to avoid regressions later on.  Since th=
-is is
-> also a more advanced authentication method, having good test methods is e=
-ven
-> more critical.
-
-Writing a complete framework to test management interface on the server
-side is something that would a huge undertaking for this simple patch.
-
-I think Access Server is basically the only software that I am aware of
-that really uses the server side management interface.
-
-So basically having this requirement right now of writing a testing
-suite to get this into OpenVPN will mean that we will effectively fork
-OpenVPN for AS.
-
-Arne
+while copying this code you are breaking the indentation. note that 2
+blanks before the curly brackets. that's nt supposed to be there.
 
 
---reZrHKUUQZX1rT58tEkdnYynFySm1s24N--
+> +
+> +  return element_count;
+> +}
+>  #endif /* P2MP_SERVER */
+> diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
+> index 991b7df2..0655b7fe 100644
+> --- a/src/openvpn/misc.h
+> +++ b/src/openvpn/misc.h
+> @@ -175,4 +175,17 @@ void output_peer_info_env(struct env_set *es, const char *peer_info);
+>  
+>  #endif /* P2MP_SERVER */
+>  
+> +/**
+> + * Counts the number of delimiter in a string and returns
+> + * their number +1. 
 
---VNd0YyP8QlU2VYpfB7in5DrNRXKgp3dgK
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+I'd rephrase this sentence as:
 
------BEGIN PGP SIGNATURE-----
+Returns the occurrences of 'delimiter' in 'string' +1.
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl6W9JsACgkQFRhsZwKx
-RFQPyg/9Ekb5gdTG8N1sWgKtk1gELCR6Y+9JpdOka+mU+1/JCVKf1BoM4CCvlMq3
-zF+VLAlBwEuRXpGjsAtpNCn0MOuNSWujddpUyEdiTCfJddxZoEkkCwcFICC0NL5R
-wHhTzwiVWvFFn18/21AkqJlg8svRaaxuuksBQcynK9c6/coC7K4EGwSmKJ4CAqi4
-9EihUsK1hjlrb7twUODbPA+7Aq8ycEvPZL5NCuaa81gqAszPOgQt7Iz3g8DQpDeE
-cxp0BQBxDx/z6syqYF/IbQnm7yhWMFSQ0kS+j5tm9ac8GodOsLhrodlbfMpUpTaM
-T2AVfT3NQIE00JNoXpGKViREakHt/fY6Eo0jChpXlC9bV0vus7VIHW+yXqCtqASl
-SbGIACBzbstMUUQ9rJI4d2lWKltMsC0jgQvWyFo4886Or8FONz7EaZScCBaphY3l
-F7CVFxJRLuaRzHcijBJMz/R0UqFt9LVu4onXC9pcA6IwnuoHG7X1N0J8ovQN63rz
-5L+G22wUG7+w4yVQWBmpBIwe/qu0rhL6F67HA7/LbjmqudDjNKWTwXA74ri1OxyV
-7wltrE9d1k24wmvdbwZJD0hFeQLLbvPMI0PgpzIO8T3N2Z6jM+xuKjLS6+1mGMy9
-KFbp9vECt4yeNkxm7W+dq36nUh/Kk60ldk++t5m82X1unTDBSaA=
-=uTLN
------END PGP SIGNATURE-----
+> This is typically used to find out the
+> + * number elements in a cipher string or similar that is separated by : like
+> + *
+> + *   X25519:secp256r1:X448:secp512r1:secp384r1:brainpoolP384r1
+> + *
+> + * @param string        the string to work on
+> + * @param delimiter     the delimiter to count, typically ':'
+> + * @return              number of delimiter found + 1
 
---VNd0YyP8QlU2VYpfB7in5DrNRXKgp3dgK--
+      I'd change to "occurrences of 'delimiter' +1"
+
+> + */
+> +int
+> +get_num_elements(const char* string, char delimiter);
+>  #endif /* ifndef MISC_H */
+> diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+> index 0f0b035b..0e17e734 100644
+> --- a/src/openvpn/ssl_mbedtls.c
+> +++ b/src/openvpn/ssl_mbedtls.c
+> @@ -289,33 +289,22 @@ void
+>  tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+>  {
+>      char *tmp_ciphers, *tmp_ciphers_orig, *token;
+> -    int i, cipher_count;
+> -    int ciphers_len;
+>  
+>      if (NULL == ciphers)
+>      {
+>          return; /* Nothing to do */
+> -
+>      }
+> -    ciphers_len = strlen(ciphers);
+>  
+>      ASSERT(NULL != ctx);
+> -    ASSERT(0 != ciphers_len);
+>  
+>      /* Get number of ciphers */
+> -    for (i = 0, cipher_count = 1; i < ciphers_len; i++)
+> -    {
+> -        if (ciphers[i] == ':')
+> -        {
+> -            cipher_count++;
+> -        }
+> -    }
+> +    int cipher_count = get_num_elements(ciphers, ':');
+>  
+>      /* Allocate an array for them */
+>      ALLOC_ARRAY_CLEAR(ctx->allowed_ciphers, int, cipher_count+1)
+>  
+>      /* Parse allowed ciphers, getting IDs */
+> -    i = 0;
+> +    int i = 0;
+>      tmp_ciphers_orig = tmp_ciphers = string_alloc(ciphers, NULL);
+>  
+>      token = strtok(tmp_ciphers, ":");
+> 
+
+Other than my little nitpicks above, the patch looks good.
+However, I have a question.
+
+Since you are refactoring this code and this is going to master/2.5, why
+not reimplementing the get_num_elements() function using strtok() ?
+
+
+Regards,
+
+-- 
+Antonio Quartulli
 
