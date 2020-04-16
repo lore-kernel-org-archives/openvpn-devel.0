@@ -1,16 +1,14 @@
-References: <20200328040858.16505-1-arne@...1227...>
- <20200401102159.29157-1-arne@...1227...>
- <8e4f27a6-5046-379a-8a50-56db0627c9be@...2181...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <4cf61bd5-3942-858a-6312-8932fb555326@...1227...>
-Date: Thu, 16 Apr 2020 16:46:14 +0200
+References: <20200414185214.1863-1-juliusz@...2525...>
+ <c33a84b3-b10a-a8c2-d46a-3ee2d296f7f1@...1227...>
+ <8b1d14d6-9ca4-46f3-b038-0fbc5af568ff@...2525...>
+ <e63c8973-e8f2-bdd2-8925-a89df7ad4339@...1227...>
+From: Juliusz Sosinowicz <juliusz@...2525...>
+Message-ID: <f0e08905-cdd4-cdd6-ce1c-ff86ee0d6f3e@...2525...>
+Date: Thu, 16 Apr 2020 17:04:09 +0200
 MIME-Version: 1.0
-In-Reply-To: <8e4f27a6-5046-379a-8a50-56db0627c9be@...2181...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="zY1TUfbcqpGkuzRfzcQqa7TWDadj1hWu0"
-Subject: Re: [Openvpn-devel] [PATCH 2/3] Refactor counting number of element
- in a : delimited list into function
+In-Reply-To: <e63c8973-e8f2-bdd2-8925-a89df7ad4339@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] Support for wolfSSL in OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,64 +17,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---zY1TUfbcqpGkuzRfzcQqa7TWDadj1hWu0
-Content-Type: multipart/mixed; boundary="El2sQVfr5weUV0lE1InGDUhPkVYjdqPqU"
+The Readme looks good. Just one suggestion.
 
---El2sQVfr5weUV0lE1InGDUhPkVYjdqPqU
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-
-
+On 16/04/2020 13:11, Arne Schwabe wrote:
+> Am 16.04.20 um 12:42 schrieb Juliusz Sosinowicz:
+>> Hi Arne,
 >>
->=20
-> Other than my little nitpicks above, the patch looks good.
-> However, I have a question.
->=20
-> Since you are refactoring this code and this is going to master/2.5, why
-> not reimplementing the get_num_elements() function using strtok() ?
+>> On 15/04/2020 11:31, Arne Schwabe wrote:
+>>> Am 14.04.20 um 20:52 schrieb Juliusz Sosinowicz:
+>>>> This patch adds support for wolfSSL in OpenVPN. Support is added by
+>>>> using wolfSSL's OpenSSL compatibility layer. Function calls are left
+>>>> unchanged and instead the OpenSSL includes point to wolfSSL headers
+>>>> and OpenVPN is linked against the wolfSSL library.
+>>>>
+>>>> As requested by OpenVPN maintainers, this patch does not include
+>>>> wolfssl/options.h on its own. By defining the macro
+>>>> EXTERNAL_OPTS_OPENVPN in the configure script wolfSSL will include
+>>>> wolfssl/options.h on its own (change added in
+>>>> https://github.com/wolfSSL/wolfssl/pull/2825). The patch adds an
+>>>> option '--disable-wolfssl-options-h' in case the user would like to
+>>>> supply their own settings file for wolfSSL.
+>>>>
+>>> Thanks the patch is lot less intrusive then the last version. We will
+>>> have to discuss in our meeting under what condition we want to include
+>>> the patch. We might add a note or statement that the WolfSSL support in
+>>> OpenVPN is mainly developed and tested by WolfSSL itself or something
+>>> along these lines.
+>> This is understandable since we will be maintaining wolfSSL within OpenVPN.
 >
+> Could you take a look if this is an acceptable text for a README.wolfssl?
+>
+> Support for WolfSSL is implemented and maintained by WolfSSL Inc. The
+> support is implemented using WolfSSL's compatiblity layer. The WolfSSL
+> support in OpenVPN receives very limited testing/support from the
+> OpenVPN community itself.
+>
+> If bugs in OpenVPN when using WolfSSL are encountered, the user should
+> try to also compile OpenVPN with OpenSSL to determinate if these are
+> bugs in the WolfSSL TLS implemenation or OpenVPN itself.
+>
+> To Build and Install,
+>
+> 	./configure --with-crypto-library=wolfssl
+> 	make
+> 	make install
 
-strsep/strok have the disadvantage of modifying the passed string,
-requring copying the string. strok in addition breaks on recursive calls.
+I would add here:
 
-Also the for loop is very to understand and from playing with godbolt
-(https://godbolt.org/z/RVtjVL) it looks that the compilers will
-optimise/vectorise this function so using C string function will
-probably be even slower. So the simple and easy to understand function
-is the best choice here IMHO.
+The wolfSSL library will include the installed options.h file by 
+default. To include a custom user_settings.h file for wolfSSL,
 
-Will send a V2 with the formatting/description fixed.
+./configure --with-crypto-library=wolfssl --disable-wolfssl-options-h
+make
+make install
 
-Arne
-
-
---El2sQVfr5weUV0lE1InGDUhPkVYjdqPqU--
-
---zY1TUfbcqpGkuzRfzcQqa7TWDadj1hWu0
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl6Yb7YACgkQFRhsZwKx
-RFQeaxAAm9NlBDSxCEOHhrZROwI8Hmw6V3/D3QEHvtz/eUlARZO8WoRbPwJvaHy+
-/eong3jM1vU2CqLPprcGaerDHsM9Rg3AiGZCxlTGdkwfAcTTSiVZPbYElXL+KqEw
-cUJt8qwZyTPGwTw+3bV8QGh+JSUcITkvyzbWBHEUCopCcdAYuKG1UPqeBmRo07Mp
-cac9Lvgkb/3pfbWbBOiMoa/dkR6q3kLdqAkww+JXnk28EjdjQs/WtRdldlMgbu/P
-3GmLvVNbWskVi0/bcKEtG/KZSTR4CIlAvPGpQ/ova1q8OoLBrXpuAjehJ3InziEJ
-yzYN1aForzEh6L/83VEo5OlCl2jJJalmBEKwdmaEf2I1SJb5I9lV8QCfCSHjUvG5
-qtijcdnDOdZhtBHhhqe1YK1DFwjmQGVbePQKSvuQpqMp/tpeT/LvI65ezXCw07QJ
-0gLy4EIIRDflOd2hdhWAEq4MGieDT58h3Blm/6nmL5a17IhuRnmZHiU/wI9zROzY
-RB4uDFUKV38iZ+QDljIs2+BsDb39sRkF+GtZc4UYBHkLEtIWxUHwNo+rrMN6HYms
-uo2vITKQwUEER9hLCUw7IsW9mkG0IJEvmkkMag9Gyy88wssSG2q8fwg4RkFoomXy
-G3JXvx0f7aADZBOsKMqDwMJuXV9TB3pX5538mIHfqQbF21N8CCU=
-=SjTT
------END PGP SIGNATURE-----
-
---zY1TUfbcqpGkuzRfzcQqa7TWDadj1hWu0--
+>
+> *************************************************************************
+> Due to limitations in the wolfSSL TLS library or its compability layer, the
+> following features are missing
+>
+>   * blowfish support (BF-CBC), you must use something like
+>     cipher AES-128-CBC to avoid trying to use BF-CBC
+>   * Windows CryptoAPI support
+>
 
