@@ -1,8 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu, 16 Apr 2020 13:39:28 +0200
-Message-Id: <20200416113930.15192-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v2 1/3] Use crypto library functions for
- const time memcmp when possible
+Date: Thu, 16 Apr 2020 13:39:29 +0200
+Message-Id: <20200416113930.15192-2-arne@...1227...>
+In-Reply-To: <20200416113930.15192-1-arne@...1227...>
+References: <20200416113930.15192-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v2 2/3] Minor style change to improve code
+ style
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,82 +17,79 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+These are small manual changes that are done to improve the code
+style and also make the result of uncrustify better without mixing
+manual changes/automatic changes into a single commit.
+
+- Make prototype and function identical for gc_addspecial. Also fixes
+  uncrustify misparsing the embedded function pointer decleration
+- Disallow uncrustify to reformat link_socket_init_phase1, which it
+  messes up
+- Format the the parameters of a call of  mbedtls_ssl_tls_prf to
+  be more inline with the rest of our function calls with multiple
+  arguments
+
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/crypto.h         | 16 +---------------
- src/openvpn/crypto_mbedtls.c | 19 +++++++++++++++++++
- src/openvpn/crypto_openssl.c |  5 +++++
- 3 files changed, 25 insertions(+), 15 deletions(-)
+ src/openvpn/buffer.c      | 2 +-
+ src/openvpn/socket.h      | 4 +++-
+ src/openvpn/ssl_mbedtls.c | 8 ++++----
+ 3 files changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
-index 18a86ceb..dadf0a90 100644
---- a/src/openvpn/crypto.h
-+++ b/src/openvpn/crypto.h
-@@ -528,21 +528,7 @@ void crypto_read_openvpn_key(const struct key_type *key_type,
-  * As memcmp(), but constant-time.
-  * Returns 0 when data is equal, non-zero otherwise.
+diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
+index 8575e295..b32bc8b2 100644
+--- a/src/openvpn/buffer.c
++++ b/src/openvpn/buffer.c
+@@ -474,7 +474,7 @@ x_gc_freespecial(struct gc_arena *a)
+ }
+ 
+ void
+-gc_addspecial(void *addr, void (free_function)(void *), struct gc_arena *a)
++gc_addspecial(void *addr, void (*free_function)(void *), struct gc_arena *a)
+ {
+     ASSERT(a);
+     struct gc_entry_special *e;
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index e95547d1..38e5138d 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -296,7 +296,8 @@ int openvpn_connect(socket_descriptor_t sd,
+ /*
+  * Initialize link_socket object.
   */
--static inline int
--memcmp_constant_time(const void *a, const void *b, size_t size)
--{
--    const uint8_t *a1 = a;
--    const uint8_t *b1 = b;
--    int ret = 0;
--    size_t i;
 -
--    for (i = 0; i < size; i++)
--    {
--        ret |= *a1++ ^ *b1++;
--    }
--
--    return ret;
--}
-+int memcmp_constant_time(const void *a, const void *b, size_t size);
++/* *INDENT-OFF* uncrustify misparses this function declarion because of
++ * embedded #if/#endif tell it to skip this section */
+ void
+ link_socket_init_phase1(struct link_socket *sock,
+                         const char *local_host,
+@@ -327,6 +328,7 @@ link_socket_init_phase1(struct link_socket *sock,
+                         int mark,
+                         struct event_timeout *server_poll_timeout,
+                         unsigned int sockflags);
++/* Reenable uncrustify *INDENT-ON* */
  
- static inline bool
- key_ctx_bi_defined(const struct key_ctx_bi *key)
-diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index 3e77fa9e..35072b73 100644
---- a/src/openvpn/crypto_mbedtls.c
-+++ b/src/openvpn/crypto_mbedtls.c
-@@ -972,4 +972,23 @@ hmac_ctx_final(mbedtls_md_context_t *ctx, uint8_t *dst)
-     ASSERT(0 == mbedtls_md_hmac_finish(ctx, dst));
- }
+ void link_socket_init_phase2(struct link_socket *sock,
+                              const struct frame *frame,
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index 4f194ad7..d585111b 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -209,10 +209,10 @@ int mbedtls_ssl_export_keys_cb(void *p_expkey, const unsigned char *ms,
+     memcpy(client_server_random + 32, server_random, 32);
  
-+int
-+memcmp_constant_time(const void *a, const void *b, size_t size)
-+{
-+    /* mbed TLS has a no const time memcmp function that it exposes
-+     * via its APIs like OpenSSL does with CRYPTO_memcmp
-+     * Adapt the function that mbedtls itself uses in
-+     * mbedtls_safer_memcmp as it considers that to be safe */
-+    volatile const unsigned char *A = (volatile const unsigned char *) a;
-+    volatile const unsigned char *B = (volatile const unsigned char *) b;
-+    volatile unsigned char diff = 0;
-+
-+    for (size_t i = 0; i < size; i++)
-+    {
-+        unsigned char x = A[i], y = B[i];
-+        diff |= x ^ y;
-+    }
-+
-+    return diff;
-+}
- #endif /* ENABLE_CRYPTO_MBEDTLS */
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index a81dcfd8..9e7ea0ff 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -1066,4 +1066,9 @@ hmac_ctx_final(HMAC_CTX *ctx, uint8_t *dst)
-     HMAC_Final(ctx, dst, &in_hmac_len);
- }
+     const size_t ms_len = sizeof(ks_ssl->ctx->session->master);
+-    int ret = mbedtls_ssl_tls_prf(
+-            tls_prf_type, ms, ms_len, session->opt->ekm_label,
+-            client_server_random, sizeof(client_server_random),
+-            ks_ssl->exported_key_material, session->opt->ekm_size);
++    int ret = mbedtls_ssl_tls_prf(tls_prf_type, ms, ms_len,
++                                  session->opt->ekm_label, client_server_random,
++                                  sizeof(client_server_random), ks_ssl->exported_key_material,
++                                  session->opt->ekm_size);
  
-+int
-+memcmp_constant_time(const void *a, const void *b, size_t size)
-+{
-+    return CRYPTO_memcmp(a, b, size);
-+}
- #endif /* ENABLE_CRYPTO_OPENSSL */
+     if (!mbed_ok(ret))
+     {
 -- 
 2.26.0
 
