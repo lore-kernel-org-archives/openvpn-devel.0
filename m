@@ -1,10 +1,10 @@
 References: <20200414185214.1863-1-juliusz@...2525...>
- <20200415094851.GE1431@...1296...>
+ <c33a84b3-b10a-a8c2-d46a-3ee2d296f7f1@...1227...>
 From: Juliusz Sosinowicz <juliusz@...2525...>
-Message-ID: <ca421473-263a-099e-2e1a-77f53330fe5b@...2525...>
-Date: Thu, 16 Apr 2020 12:49:02 +0200
+Message-ID: <8b1d14d6-9ca4-46f3-b038-0fbc5af568ff@...2525...>
+Date: Thu, 16 Apr 2020 12:42:15 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200415094851.GE1431@...1296...>
+In-Reply-To: <c33a84b3-b10a-a8c2-d46a-3ee2d296f7f1@...1227...>
 Content-Language: en-US
 Subject: Re: [Openvpn-devel] [PATCH] Support for wolfSSL in OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,60 +15,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi Gert,
+Hi Arne,
 
-thanks for the suggestion. I will change this in the next patch after 
-looking into the issue that Arne brought up.
-
-On 15/04/2020 11:48, Gert Doering wrote:
-> Hi,
->
-> as Arne said, this is much better.
->
-> On Tue, Apr 14, 2020 at 08:52:14PM +0200, Juliusz Sosinowicz wrote:
+On 15/04/2020 11:31, Arne Schwabe wrote:
+> Am 14.04.20 um 20:52 schrieb Juliusz Sosinowicz:
 >> This patch adds support for wolfSSL in OpenVPN. Support is added by using wolfSSL's OpenSSL compatibility layer. Function calls are left unchanged and instead the OpenSSL includes point to wolfSSL headers and OpenVPN is linked against the wolfSSL library.
-> [..]
+>>
+>> As requested by OpenVPN maintainers, this patch does not include wolfssl/options.h on its own. By defining the macro EXTERNAL_OPTS_OPENVPN in the configure script wolfSSL will include wolfssl/options.h on its own (change added in https://github.com/wolfSSL/wolfssl/pull/2825). The patch adds an option '--disable-wolfssl-options-h' in case the user would like to supply their own settings file for wolfSSL.
+>>
+> Thanks the patch is lot less intrusive then the last version. We will
+> have to discuss in our meeting under what condition we want to include
+> the patch. We might add a note or statement that the WolfSSL support in
+> OpenVPN is mainly developed and tested by WolfSSL itself or something
+> along these lines.
+This is understandable since we will be maintaining wolfSSL within OpenVPN.
+>> diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+>> index 453cb20a..73da5fa7 100644
+>> --- a/src/openvpn/crypto.c
+>> +++ b/src/openvpn/crypto.c
+>> @@ -428,7 +428,7 @@ openvpn_decrypt_aead(struct buffer *buf, struct buffer work,
+>>       tag_ptr = BPTR(buf);
+>>       ASSERT(buf_advance(buf, tag_size));
+>>       dmsg(D_PACKET_CONTENT, "DECRYPT MAC: %s", format_hex(tag_ptr, tag_size, 0, &gc));
+>> -#if defined(ENABLE_CRYPTO_OPENSSL) && OPENSSL_VERSION_NUMBER < 0x10001040L
+>> +#if (defined(ENABLE_CRYPTO_OPENSSL) && OPENSSL_VERSION_NUMBER < 0x10001040L) || defined(ENABLE_CRYPTO_WOLFSSL)
+>>       /* OpenSSL <= 1.0.1c bug requires set tag before processing ciphertext */
+>>       if (!EVP_CIPHER_CTX_ctrl(ctx->cipher, EVP_CTRL_GCM_SET_TAG, tag_size, tag_ptr))
+>>       {
+> Are you sure that WolfSSL requires a workaround for old OpenSSL version
+> before 1.0.1d?
+wolfSSL is built around one-shot APIs as oppose to OpenSSL's stream 
+APIs. The reason for using this workaround is that the authentication 
+tag is checked in the Update call not the Final call. I'll look into 
+fixing this issue.
+> Arne
 >
-> There is one thing, though:
->
->> index 30eba7b2..a82c52ad 100644
->> --- a/src/openvpn/cryptoapi.c
->> +++ b/src/openvpn/cryptoapi.c
->> @@ -39,6 +39,10 @@
->>   
->>   #ifdef ENABLE_CRYPTOAPI
->>   
->> +#ifdef ENABLE_CRYPTO_WOLFSSL
->> +#error wolfSSL does not support CryptoAPI
->> +#endif
->> +
-> I do not like this very much.  It will, effectively, break win32 builds
-> with WolfSSL - and add yet another #ifdef to our .c files.
->
-> ENABLE_CRYPTOAPI is defined in syshead.h
->
-> #if defined(_WIN32) && defined(ENABLE_CRYPTO) && defined(ENABLE_CRYPTO_OPENSSL)
-> #define ENABLE_CRYPTOAPI
-> #endif
->
-> ... could you investigate whether it would be sufficient to just
-> conditionalize this on WolfSSL, like this?
->
-> #if defined(_WIN32) && defined(ENABLE_CRYPTO) && \
-> 	defined(ENABLE_CRYPTO_OPENSSL) && !defined(ENABLE_CRYPTO_WOLFSSL)
-> #define ENABLE_CRYPTOAPI
-> #endif
->
-> so you can have WolfSSL-linked binaries for Windows, just without
-> CryptoAPI support (as with mbedtls)...
->
-> gert
->
-Sincerely
+Thanks!
 Juliusz
 
