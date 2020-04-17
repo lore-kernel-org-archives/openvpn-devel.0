@@ -1,12 +1,11 @@
-Date: Fri, 17 Apr 2020 23:41:09 +0200
-From: Christian Hesse <list@...1798...>
-Message-ID: <20200417234109.313f09d8@...1799...>
-In-Reply-To: <CAEsd45Q+GvZf3du9FYCaLiPeupN88UTv3BjE1dzPKsJO2hzFjQ@...278...>
+MIME-Version: 1.0
 References: <0a607581-4179-a97b-1e8b-e19dd6bd85bd@...515...>
  <CAEsd45Q+GvZf3du9FYCaLiPeupN88UTv3BjE1dzPKsJO2hzFjQ@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/u6uGVR7A=NEUUabmJk.X5dZ";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+ <20200417213506.GI1431@...1296...>
+In-Reply-To: <20200417213506.GI1431@...1296...>
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Fri, 17 Apr 2020 18:41:50 -0400
+Message-ID: <CAEsd45Tym2Rs=v0RyQY57wWvNd0N=BXVLgRus5hoDYZRY+W4Fw@...278...>
 Subject: Re: [Openvpn-devel] OpenVPN 2.4.9 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -16,54 +15,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "Jonathan K. Bullard" <jkbullard@...277...>
-Cc: Samuli =?UTF-8?B?U2VwcMOkbmVu?= <samuli@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---Sig_/u6uGVR7A=NEUUabmJk.X5dZ
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-"Jonathan K. Bullard" <jkbullard@...277...> on Fri, 2020/04/17 17:16:
->  IHi,
->=20
-> On Fri, Apr 17, 2020 at 8:47 AM Samuli Sepp=C3=A4nen <samuli@...515...> w=
-rote:
-> >
-> > The OpenVPN community project team is proud to release OpenVPN 2.4.9. It
-> > can be downloaded from here:
-> >
-> > <https://openvpn.net/community-downloads/>=20=20
->=20
-> I'm having trouble verifying 2.4.9.tar.gz with GPG. I'm pretty
-> clueless about gpg, but I think it may not have been signed with the
-> correct key.
+Hi,
 
-The key is still correct, but it has new subkeys. Try to refresh the key fr=
-om
-a keyserver:
+On Fri, Apr 17, 2020 at 5:35 PM Gert Doering <gert@...1296...> wrote:
+>
+> ... the new subkeys are just a few weeks old, so we need to publish
+> a new key bundle with the new subkeys.
 
-$ gpg --refresh-keys F554A3687412CFFEBDEFE0A312F5F7B42F2B01E7
---=20
-main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
-"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
-+];)
-putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
+So until a new security-keys-2020.asc (or whatever you will call it)
+is published on the OpenVPN website, I can't verify the download?
 
---Sig_/u6uGVR7A=NEUUabmJk.X5dZ
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+Of course, if the download was compromised, the website probably was,
+so any key published on it is, too.
 
------BEGIN PGP SIGNATURE-----
+Sigh.
 
-iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAl6aInUACgkQiUUh18yA
-9Haq4wgAgcBz9ktRGDsq1LD1Wj2XWPMbvfmtP4npRKm2PN/s9FLsHRjB2d1tL8z6
-+Lm1Kxo7vOaC0hG6G1WA3hVasWyycQr/Vz63ado8tkUW/bRg+GbdlSyBzhPJGAO1
-sXIcG4uyk9j3TaWrodwdiVnRkN41sUAm85N/LinX9J6DHZcx2EDawT/SEv0s+PWD
-KAuqPOYaXP5WcTNNYpTT5UtRj9uosQ78c/AjETujIYcg3Ky0/AgT7PrExzlIgDcp
-sXRBC6xp3oY/SVu1PHyG72r8CJTezZQp09jmfb2QlW3JjqLTzEORiCYzDQ3jprxb
-1yVS75hC2xOmW/wnOSuXoT5LSSUvxg==
-=o0RS
------END PGP SIGNATURE-----
+Thanks for the info, though, Gert.
 
---Sig_/u6uGVR7A=NEUUabmJk.X5dZ--
+Jon Bullard
 
