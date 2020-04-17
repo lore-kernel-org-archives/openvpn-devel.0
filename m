@@ -1,16 +1,10 @@
-Date: Fri, 17 Apr 2020 17:36:05 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200417153605.GD1431@...1296...>
-References: <20200416113930.15192-1-arne@...1227...>
- <20200417085159.GC1431@...1296...>
- <4a4c73df-6771-8862-2ae0-274a98ee2158@...2181...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="/bcALokiWR3y46GP"
-Content-Disposition: inline
-In-Reply-To: <4a4c73df-6771-8862-2ae0-274a98ee2158@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v2 1/3] Use crypto library functions for
- const time memcmp when possible
+References: <0a607581-4179-a97b-1e8b-e19dd6bd85bd@...515...>
+In-Reply-To: <0a607581-4179-a97b-1e8b-e19dd6bd85bd@...515...>
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Fri, 17 Apr 2020 17:16:56 -0400
+Message-ID: <CAEsd45Q+GvZf3du9FYCaLiPeupN88UTv3BjE1dzPKsJO2hzFjQ@...278...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.4.9 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,78 +13,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: Gert Doering <gert@...1296...>, Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
-
---/bcALokiWR3y46GP
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+ IHi,
 
-On Fri, Apr 17, 2020 at 03:42:49PM +0200, Antonio Quartulli wrote:
-> >> -static inline int
-> >> -memcmp_constant_time(const void *a, const void *b, size_t size)
-> >> -{
-> >=20
-> > Not sure I understand the motivation for this change.  "Just so uncrust=
-ify
-> > stops trying to change this" is not really strong.
->=20
-> well, sometimes to adhere to the codestyle, you have to re-arrange code :)
+On Fri, Apr 17, 2020 at 8:47 AM Samuli Sepp=C3=A4nen <samuli@...515...> wro=
+te:
+>
+> The OpenVPN community project team is proud to release OpenVPN 2.4.9. It
+> can be downloaded from here:
+>
+> <https://openvpn.net/community-downloads/>
 
-"rearrange" and "rewrite in a not easy to understand way" (which looks
-a bit overthought to me, TBH - unlike "secure memzero" I cannot see an
-obvious reason why all that volatile would be relevant).
+I'm having trouble verifying 2.4.9.tar.gz with GPG. I'm pretty
+clueless about gpg, but I think it may not have been signed with the
+correct key.
 
-> On top of that, this is basically allowing us to re-use an existing
-> openssl API when possible.
+When I try to verify the signature:
 
-True, but if that turns out to be a code complication and reduces
-efficiency, I'm not convinced it's the right way to spend our cycles.
+$ gpg -v --verify openvpn-2.4.9.tar.gz.asc openvpn-2.4.9.tar.gz
+gpg: Signature made Fri Apr 17 07:18:44 2020 EDT
+gpg:                using RSA key 333D46306CF9D9F1F630DB8D96AEC408005D6BB4
+gpg: Can't check signature: No public key
 
-> > Also, keeping the "inline" part would be good...  this is in the per-pa=
-cket
-> > path.
->=20
-> I am not sure it would work in this case, because the function is
-> defined in a .c file now - it's not inlineable anymore outside of the
-> mbedtls code.....
+But I have the Security Mailing List GPG key (downloaded 2019-10-31)
+and used it to verify earlier downloads [1]. I downloaded a fresh copy
+of the key, but it is identical to my old one. I tried re-importing:
 
-This is why I'm not exactly happy with the change.
+$ gpg --import security-key-2019.asc
+gpg: key 12F5F7B42F2B01E7: "OpenVPN - Security Mailing List
+<security@...515...>" not changed
+gpg: Total number processed: 1
+gpg:              unchanged: 1
 
-We could do it "openvpn style" all in header files, or we could just
-leave the function alone.
+Which I interpret as "the identical key was already loaded".
 
-gert
+$ gpg --list-public-keys --keyid-format LONG
+pub   rsa4096/12F5F7B42F2B01E7 2017-02-09 [SC] [expires: 2027-02-07]
+      F554A3687412CFFEBDEFE0A312F5F7B42F2B01E7
+uid [ unknown] OpenVPN - Security Mailing List <security@...515...>
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+This is with gpg (GnuPG) 2.2.3, libgcrypt 1.8.1
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Any suggestions?
 
---/bcALokiWR3y46GP
-Content-Type: application/pgp-signature; name="signature.asc"
+Jon Bullard
 
------BEGIN PGP SIGNATURE-----
+[1] 2.4.8 verifies OK (although the key has now expired):
 
-iQGcBAEBAgAGBQJemczkAAoJEB2Cnv7KVigSRGsL/0VXkyjSIxM5bSexKoNIqWSe
-Oi5gzWTxoXgLJw6vQVYzJTT1/oFr9ttEaEnVONBFIonGcv3zAOU/RR5iljftsHr1
-3MKsAqtNq5RWe3hH2bZUrEDqqZ4ISRBDKyauCjvuyt4wgYjMCkLn0tA6HbZQ6dvG
-zWrjpIE5CKME/v0stxWaWx/YNCSpp/IRsZUyV1WoaEP0kmFoH/p1Om6MBYgzevWx
-xMZl8MKsll7aNcR1MHvcTTSVnaLriedHMYBN9jqyuPuwOIUpUCD9pUIsz2Aldp4k
-cESy4sViMAJm9VItbINAvnfXQ0MXdv+j+sTqv+NJJLr542aACcGnFjk7h9BCHvsZ
-JqYnTsnekR94onGA9pLxXdqcbAyI/Un0Qqav3UZ/CKPJgceZdBgJGkrZphX4QQ4k
-/rVJzDh2cHC6HPPzsZgHxWM7OpNvzqGogIpqFLgU1rA1/qSxOueI836oyoDcSxYG
-aIL4hPCRgQbm2SMk0CQMtkNFtYPpZZV00E13zfB2WA==
-=RZ3z
------END PGP SIGNATURE-----
-
---/bcALokiWR3y46GP--
+$ gpg --verify openvpn-2.4.8.tar.gz.asc  openvpn-2.4.8.tar.gz
+gpg: Signature made Wed Oct 30 08:49:58 2019 EDT
+gpg:                using RSA key 82175D35AA8D0E8BDE5F4F9E5DC351805ACFEAC6
+gpg: Good signature from "OpenVPN - Security Mailing List
+<security@...515...>" [unknown]
+gpg: Note: This key has expired!
+Primary key fingerprint: F554 A368 7412 CFFE BDEF  E0A3 12F5 F7B4 2F2B 01E7
+     Subkey fingerprint: 8217 5D35 AA8D 0E8B DE5F  4F9E 5DC3 5180 5ACF EAC6
 
