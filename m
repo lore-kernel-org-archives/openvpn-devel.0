@@ -1,9 +1,13 @@
-MIME-Version: 1.0
+Date: Fri, 17 Apr 2020 23:35:06 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20200417213506.GI1431@...1296...>
 References: <0a607581-4179-a97b-1e8b-e19dd6bd85bd@...515...>
-In-Reply-To: <0a607581-4179-a97b-1e8b-e19dd6bd85bd@...515...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Fri, 17 Apr 2020 17:16:56 -0400
-Message-ID: <CAEsd45Q+GvZf3du9FYCaLiPeupN88UTv3BjE1dzPKsJO2hzFjQ@...278...>
+ <CAEsd45Q+GvZf3du9FYCaLiPeupN88UTv3BjE1dzPKsJO2hzFjQ@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="RIQnQgS+cNEhgDa4"
+Content-Disposition: inline
+In-Reply-To: <CAEsd45Q+GvZf3du9FYCaLiPeupN88UTv3BjE1dzPKsJO2hzFjQ@...278...>
 Subject: Re: [Openvpn-devel] OpenVPN 2.4.9 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -13,63 +17,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+To: "Jonathan K. Bullard" <jkbullard@...277...>
+Cc: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--RIQnQgS+cNEhgDa4
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
- IHi,
+Hi,
 
-On Fri, Apr 17, 2020 at 8:47 AM Samuli Sepp=C3=A4nen <samuli@...515...> wro=
-te:
->
-> The OpenVPN community project team is proud to release OpenVPN 2.4.9. It
-> can be downloaded from here:
->
-> <https://openvpn.net/community-downloads/>
+On Fri, Apr 17, 2020 at 05:16:56PM -0400, Jonathan K. Bullard wrote:
+> On Fri, Apr 17, 2020 at 8:47 AM Samuli Sepp=E4nen <samuli@...515...> wrot=
+e:
+> >
+> > The OpenVPN community project team is proud to release OpenVPN 2.4.9. It
+> > can be downloaded from here:
+> >
+> > <https://openvpn.net/community-downloads/>
+>=20
+> I'm having trouble verifying 2.4.9.tar.gz with GPG. I'm pretty
+> clueless about gpg, but I think it may not have been signed with the
+> correct key.
 
-I'm having trouble verifying 2.4.9.tar.gz with GPG. I'm pretty
-clueless about gpg, but I think it may not have been signed with the
-correct key.
+It's a new subkey, and gpg is pretty retarded about importing new
+subkeys to an existing key - as in: it will just not do anything.
 
-When I try to verify the signature:
+So for me (to import a new private key when subkeys rotate) I need
+to totally remove the key from the keyring, and then re-add it to
+get the new subkey.
 
-$ gpg -v --verify openvpn-2.4.9.tar.gz.asc openvpn-2.4.9.tar.gz
-gpg: Signature made Fri Apr 17 07:18:44 2020 EDT
-gpg:                using RSA key 333D46306CF9D9F1F630DB8D96AEC408005D6BB4
-gpg: Can't check signature: No public key
+That said...
 
-But I have the Security Mailing List GPG key (downloaded 2019-10-31)
-and used it to verify earlier downloads [1]. I downloaded a fresh copy
-of the key, but it is identical to my old one. I tried re-importing:
+> $ gpg --import security-key-2019.asc
 
-$ gpg --import security-key-2019.asc
-gpg: key 12F5F7B42F2B01E7: "OpenVPN - Security Mailing List
-<security@...515...>" not changed
-gpg: Total number processed: 1
-gpg:              unchanged: 1
+... the new subkeys are just a few weeks old, so we need to publish
+a new key bundle with the new subkeys.
 
-Which I interpret as "the identical key was already loaded".
+Samuli...?
 
-$ gpg --list-public-keys --keyid-format LONG
-pub   rsa4096/12F5F7B42F2B01E7 2017-02-09 [SC] [expires: 2027-02-07]
-      F554A3687412CFFEBDEFE0A312F5F7B42F2B01E7
-uid [ unknown] OpenVPN - Security Mailing List <security@...515...>
+(And people wonder why nobody is using PGP crypto)
 
-This is with gpg (GnuPG) 2.2.3, libgcrypt 1.8.1
+gert
 
-Any suggestions?
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-Jon Bullard
+Gert Doering - Munich, Germany                             gert@...1296...
 
-[1] 2.4.8 verifies OK (although the key has now expired):
+--RIQnQgS+cNEhgDa4
+Content-Type: application/pgp-signature; name="signature.asc"
 
-$ gpg --verify openvpn-2.4.8.tar.gz.asc  openvpn-2.4.8.tar.gz
-gpg: Signature made Wed Oct 30 08:49:58 2019 EDT
-gpg:                using RSA key 82175D35AA8D0E8BDE5F4F9E5DC351805ACFEAC6
-gpg: Good signature from "OpenVPN - Security Mailing List
-<security@...515...>" [unknown]
-gpg: Note: This key has expired!
-Primary key fingerprint: F554 A368 7412 CFFE BDEF  E0A3 12F5 F7B4 2F2B 01E7
-     Subkey fingerprint: 8217 5D35 AA8D 0E8B DE5F  4F9E 5DC3 5180 5ACF EAC6
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJemiEJAAoJEB2Cnv7KVigSrRsL/08upMRokxQ0X8IWFseiw+fB
+MSaFFLyVzhz/3cHJU26/LIm5SUeroasQbRlsp22YSm0ETUoSH9+Qdh0/jVokx3nW
+zg3gu9+rxXV3BJk1usTtXdO0dmt6lTHfVfel9zJPDKfNVYF/B0z5sENntN1jlmwC
+4L1Ed08yzTRGbCJ2BvjkoMge/0f+RVsInKuOxz2NuWO90EtPUkuh3Zd3u6/Y90+A
+XF4TmvJJRzXBYLBiZdEGFu8DjXlhE5ORRerEnD+tqRlWnHENCrpRUqJmm9jR+nru
+mf3J7ReaRbayQQtLvqJI5yDohx96BJ6eTkWnfLbBDNziScqJYrhA9lho1pmllPuj
+Ob1uQSYwU23MkdDorgxGUfYzGN4k18jIygU6KsxJbJI43JcOYzDj5XQsWfqNN2gX
+/wSSjZi7pTkJu/8TEI2mTKc8vEAKtpq0BKIDh/nq2BKD3EEBDIryL3EcyzYR7rey
+cJzjXZ3NequSJlUZPP724wYw01HLyCuv3bgeTuYkPw==
+=IlAl
+-----END PGP SIGNATURE-----
+
+--RIQnQgS+cNEhgDa4--
 
