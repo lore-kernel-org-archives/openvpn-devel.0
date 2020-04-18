@@ -1,14 +1,13 @@
+References: <4f3b6d5e-5354-558d-2e58-c8f588fbd18f@...2181...>
+ <20200416152619.5465-1-arne@...1227...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <cdcd26cb-27e2-6e34-b3d1-633cea946cd9@...2181...>
+Date: Sat, 18 Apr 2020 23:11:18 +0200
 MIME-Version: 1.0
-References: <0a607581-4179-a97b-1e8b-e19dd6bd85bd@...515...>
- <CAEsd45Q+GvZf3du9FYCaLiPeupN88UTv3BjE1dzPKsJO2hzFjQ@...278...>
- <20200417213506.GI1431@...1296...>
- <CAEsd45Tym2Rs=v0RyQY57wWvNd0N=BXVLgRus5hoDYZRY+W4Fw@...278...>
- <be159f15-8a60-08c0-b091-019262e0f360@...2181...>
-In-Reply-To: <be159f15-8a60-08c0-b091-019262e0f360@...2181...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Sat, 18 Apr 2020 10:37:42 -0400
-Message-ID: <CAEsd45Tr0MOjMzen12NO7gRVvk9tO6dH1-MLoNvfRwG0EOOHzg@...278...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.4.9 released
+In-Reply-To: <20200416152619.5465-1-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v2 2/3] Refactor counting number of
+ element in a : delimited list into function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,37 +16,137 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Fri, Apr 17, 2020 at 9:22 PM Antonio Quartulli <a@...2181...> wrote:
->
-> Hi,
->
-> On 18/04/2020 00:41, Jonathan K. Bullard wrote:
-> > Hi,
-> >
-> > On Fri, Apr 17, 2020 at 5:35 PM Gert Doering <gert@...1296...> wrote:
-> >>
-> >> ... the new subkeys are just a few weeks old, so we need to publish
-> >> a new key bundle with the new subkeys.
-> >
-> > So until a new security-keys-2020.asc (or whatever you will call it)
-> > is published on the OpenVPN website, I can't verify the download?
-> >
-> > Of course, if the download was compromised, the website probably was,
-> > so any key published on it is, too.
-> >
-> > Sigh.
->
-> If the updated key was pushed to the keyserver (it should), you can
-> delete and re-fetch it from the keyserver directly.
+On 16/04/2020 17:26, Arne Schwabe wrote:
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 
-That worked, thanks,
+Patch looks good and does what it says.
 
-Jon Bullard
+I tested the parser to make sure it still parses the ciphers as
+expected, and it does:
+
+./openvpn --tls-cipher
+TLS-RSA-PSK-WITH-CHACHA20-POLY1305-SHA256:TLS-RSA-PSK-WITH-AES-256-GCM-SHA384:TLS-RSA-PSK-WITH-AES-256-CBC-SHA384
+--show-tls
+Available TLS Ciphers, listed in order of preference:
+
+For TLS 1.2 and older (--tls-cipher):
+
+TLS-RSA-PSK-WITH-CHACHA20-POLY1305-SHA256
+TLS-RSA-PSK-WITH-AES-256-GCM-SHA384
+TLS-RSA-PSK-WITH-AES-256-CBC-SHA384
+
+So all good imho.
+
+Acked-by: Antonio Quartulli <antonio@...515...>
+
+Regards,
+
+
+> ---
+>  src/openvpn/misc.c        | 19 +++++++++++++++++++
+>  src/openvpn/misc.h        | 14 ++++++++++++++
+>  src/openvpn/ssl_mbedtls.c | 15 ++-------------
+>  3 files changed, 35 insertions(+), 13 deletions(-)
+> 
+> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+> index 1c17948c..a768f88d 100644
+> --- a/src/openvpn/misc.c
+> +++ b/src/openvpn/misc.c
+> @@ -765,4 +765,23 @@ output_peer_info_env(struct env_set *es, const char *peer_info)
+>      }
+>  }
+>  
+> +int
+> +get_num_elements(const char *string, char delimiter)
+> +{
+> +    int string_len = strlen(string);
+> +
+> +    ASSERT(0 != string_len);
+> +
+> +    int element_count = 1;
+> +    /* Get number of ciphers */
+> +    for (int i = 0; i < string_len; i++)
+> +    {
+> +        if (string[i] == delimiter)
+> +        {
+> +            element_count++;
+> +        }
+> +    }
+> +
+> +    return element_count;
+> +}
+>  #endif /* P2MP_SERVER */
+> diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
+> index 991b7df2..2605c6d2 100644
+> --- a/src/openvpn/misc.h
+> +++ b/src/openvpn/misc.h
+> @@ -175,4 +175,18 @@ void output_peer_info_env(struct env_set *es, const char *peer_info);
+>  
+>  #endif /* P2MP_SERVER */
+>  
+> +/**
+> + * Returns the occurrences of 'delimiter' in a string +1
+> + * This is typically used to find out the number elements in a
+> + * cipher string or similar that is separated by : like
+> + *
+> + *   X25519:secp256r1:X448:secp512r1:secp384r1:brainpoolP384r1
+> + *
+> + * @param string        the string to work on
+> + * @param delimiter     the delimiter to count, typically ':'
+> + * @return              occrrences of delimiter + 1
+> + */
+> +int
+> +get_num_elements(const char *string, char delimiter);
+> +
+>  #endif /* ifndef MISC_H */
+> diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+> index 4f194ad7..51669278 100644
+> --- a/src/openvpn/ssl_mbedtls.c
+> +++ b/src/openvpn/ssl_mbedtls.c
+> @@ -289,33 +289,22 @@ void
+>  tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+>  {
+>      char *tmp_ciphers, *tmp_ciphers_orig, *token;
+> -    int i, cipher_count;
+> -    int ciphers_len;
+>  
+>      if (NULL == ciphers)
+>      {
+>          return; /* Nothing to do */
+> -
+>      }
+> -    ciphers_len = strlen(ciphers);
+>  
+>      ASSERT(NULL != ctx);
+> -    ASSERT(0 != ciphers_len);
+>  
+>      /* Get number of ciphers */
+> -    for (i = 0, cipher_count = 1; i < ciphers_len; i++)
+> -    {
+> -        if (ciphers[i] == ':')
+> -        {
+> -            cipher_count++;
+> -        }
+> -    }
+> +    int cipher_count = get_num_elements(ciphers, ':');
+>  
+>      /* Allocate an array for them */
+>      ALLOC_ARRAY_CLEAR(ctx->allowed_ciphers, int, cipher_count+1)
+>  
+>      /* Parse allowed ciphers, getting IDs */
+> -    i = 0;
+> +    int i = 0;
+>      tmp_ciphers_orig = tmp_ciphers = string_alloc(ciphers, NULL);
+>  
+>      token = strtok(tmp_ciphers, ":");
+> 
+
+-- 
+Antonio Quartulli
 
