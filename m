@@ -1,9 +1,14 @@
+References: <0a607581-4179-a97b-1e8b-e19dd6bd85bd@...515...>
+ <CAEsd45Q+GvZf3du9FYCaLiPeupN88UTv3BjE1dzPKsJO2hzFjQ@...278...>
+ <20200417213506.GI1431@...1296...>
+ <CAEsd45Tym2Rs=v0RyQY57wWvNd0N=BXVLgRus5hoDYZRY+W4Fw@...278...>
 From: Antonio Quartulli <a@...2181...>
-Date: Sat, 18 Apr 2020 03:18:49 +0200
-Message-Id: <20200418011849.382-1-a@...2181...>
+Message-ID: <be159f15-8a60-08c0-b091-019262e0f360@...2181...>
+Date: Sat, 18 Apr 2020 03:22:25 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] sitnl: fix failure reporting by keeping
- error negative
+In-Reply-To: <CAEsd45Tym2Rs=v0RyQY57wWvNd0N=BXVLgRus5hoDYZRY+W4Fw@...278...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] OpenVPN 2.4.9 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,47 +17,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>, Richard Bonhomme <tincanteksup@...277...>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: "Jonathan K. Bullard" <jkbullard@...277...>, Gert Doering <gert@...1296...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-The err->errno value reported by netlink is already negative.
+Hi,
 
-Prepending ierr->errno with '-' when forwarding it to
-the caller results in a positive value and thus not
-detected as error.
+On 18/04/2020 00:41, Jonathan K. Bullard wrote:
+> Hi,
+> 
+> On Fri, Apr 17, 2020 at 5:35 PM Gert Doering <gert@...1296...> wrote:
+>>
+>> ... the new subkeys are just a few weeks old, so we need to publish
+>> a new key bundle with the new subkeys.
+> 
+> So until a new security-keys-2020.asc (or whatever you will call it)
+> is published on the OpenVPN website, I can't verify the download?
+> 
+> Of course, if the download was compromised, the website probably was,
+> so any key published on it is, too.
+> 
+> Sigh.
 
-Fix error handling in sitnl by not negating the sign of
-the value returned by sitnl_send() in case of generic error.
+If the updated key was pushed to the keyserver (it should), you can
+delete and re-fetch it from the keyserver directly.
 
-While at it, print the errno in decimal form along with
-its string represenation.
+Regards,
 
-Reported-by: Richard Bonhomme <tincanteksup@...277...>
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
- src/openvpn/networking_sitnl.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
-index b93697e9..7adcb64c 100644
---- a/src/openvpn/networking_sitnl.c
-+++ b/src/openvpn/networking_sitnl.c
-@@ -365,9 +365,9 @@ sitnl_send(struct nlmsghdr *payload, pid_t peer, unsigned int groups,
-                     }
-                     else
-                     {
--                        msg(M_WARN, "%s: rtnl: generic error: %s",
--                            __func__, strerror(-err->error));
--                        ret = -err->error;
-+                        msg(M_WARN, "%s: rtnl: generic error (%d): %s",
-+                            __func__, err->error, strerror(-err->error));
-+                        ret = err->error;
-                     }
-                 }
-                 goto out;
 -- 
-2.26.1
-
+Antonio Quartulli
 
