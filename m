@@ -1,14 +1,9 @@
-References: <0a607581-4179-a97b-1e8b-e19dd6bd85bd@...515...>
- <CAEsd45Q+GvZf3du9FYCaLiPeupN88UTv3BjE1dzPKsJO2hzFjQ@...278...>
- <20200417213506.GI1431@...1296...>
- <CAEsd45Tym2Rs=v0RyQY57wWvNd0N=BXVLgRus5hoDYZRY+W4Fw@...278...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <be159f15-8a60-08c0-b091-019262e0f360@...2181...>
-Date: Sat, 18 Apr 2020 03:22:25 +0200
+Date: Sat, 18 Apr 2020 03:31:23 +0200
+Message-Id: <20200418013123.22551-1-a@...2181...>
 MIME-Version: 1.0
-In-Reply-To: <CAEsd45Tym2Rs=v0RyQY57wWvNd0N=BXVLgRus5hoDYZRY+W4Fw@...278...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] OpenVPN 2.4.9 released
+Subject: [Openvpn-devel] [PATCH] sitnl: fix TUN/TAP confusion in error
+ messages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,34 +12,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: "Jonathan K. Bullard" <jkbullard@...277...>, Gert Doering <gert@...1296...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-Hi,
+The is_tun_p2p() function can return false for both TAP or TUN
+interfaces (under certain conditions), therefore we should not
+assume any TUN/TAP type when printing related messages.
 
-On 18/04/2020 00:41, Jonathan K. Bullard wrote:
-> Hi,
-> 
-> On Fri, Apr 17, 2020 at 5:35 PM Gert Doering <gert@...1296...> wrote:
->>
->> ... the new subkeys are just a few weeks old, so we need to publish
->> a new key bundle with the new subkeys.
-> 
-> So until a new security-keys-2020.asc (or whatever you will call it)
-> is published on the OpenVPN website, I can't verify the download?
-> 
-> Of course, if the download was compromised, the website probably was,
-> so any key published on it is, too.
-> 
-> Sigh.
+Remove reference to TUN/TAP when printing messages under conditions
+based on is_tun_p2p().
 
-If the updated key was pushed to the keyserver (it should), you can
-delete and re-fetch it from the keyserver directly.
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+ src/openvpn/tun.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Regards,
-
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 79d92ea6..8e692977 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -1093,7 +1093,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
+         if (net_addr_ptp_v4_add(ctx, ifname, &tt->local,
+                                 &tt->remote_netmask) < 0)
+         {
+-            msg(M_FATAL, "Linux can't add IP to TUN interface %s", ifname);
++            msg(M_FATAL, "Linux can't add IP to interface %s", ifname);
+         }
+     }
+     else
+@@ -1101,7 +1101,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
+         if (net_addr_v4_add(ctx, ifname, &tt->local,
+                             netmask_to_netbits2(tt->remote_netmask)) < 0)
+         {
+-            msg(M_FATAL, "Linux can't add IP to TAP interface %s", ifname);
++            msg(M_FATAL, "Linux can't add IP to interface %s", ifname);
+         }
+     }
+ #elif defined(TARGET_ANDROID)
+@@ -1970,7 +1970,7 @@ undo_ifconfig_ipv4(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+         if (net_addr_ptp_v4_del(ctx, tt->actual_name, &tt->local,
+                                 &tt->remote_netmask) < 0)
+         {
+-            msg(M_WARN, "Linux can't del IP from TUN iface %s",
++            msg(M_WARN, "Linux can't del IP from iface %s",
+                 tt->actual_name);
+         }
+     }
+@@ -1978,7 +1978,7 @@ undo_ifconfig_ipv4(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+     {
+         if (net_addr_v4_del(ctx, tt->actual_name, &tt->local, netbits) < 0)
+         {
+-            msg(M_WARN, "Linux can't del IP from TAP iface %s",
++            msg(M_WARN, "Linux can't del IP from iface %s",
+                 tt->actual_name);
+         }
+     }
 -- 
-Antonio Quartulli
+2.26.1
+
 
