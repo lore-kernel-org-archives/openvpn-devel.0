@@ -1,10 +1,17 @@
-Date: Sun, 19 Apr 2020 11:57:46 +0200 (CEST)
-Message-Id: <202004190957.03J9vk0e007523@...2054...>
+Date: Sun, 19 Apr 2020 12:03:25 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200418013123.22551-1-a@...2181...>
-References: <20200418013123.22551-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: sitnl: fix TUN/TAP confusion in
- error messages
+Message-ID: <20200419100325.GZ1431@...1296...>
+References: <0a607581-4179-a97b-1e8b-e19dd6bd85bd@...515...>
+ <CAEsd45Q+GvZf3du9FYCaLiPeupN88UTv3BjE1dzPKsJO2hzFjQ@...278...>
+ <20200417213506.GI1431@...1296...>
+ <CAEsd45Tym2Rs=v0RyQY57wWvNd0N=BXVLgRus5hoDYZRY+W4Fw@...278...>
+ <67d10ca6fb99ba7d75ff0b65f84cb76f.squirrel@...2260...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="P6FkfbahCsDDKxle"
+Content-Disposition: inline
+In-Reply-To: <67d10ca6fb99ba7d75ff0b65f84cb76f.squirrel@...2260...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.4.9 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,36 +20,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Simon Matter <simon.matter@...2249...>
+Cc: "Jonathan K. Bullard" <jkbullard@...277...>, Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Acked-by: Gert Doering <gert@...1296...>
+--P6FkfbahCsDDKxle
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Yeah, "is_tun_p2p()" has always been misleading...  one could argue
-for "can't add IP to *p2p* interface..." vs "*network* interface" (or
-something like that), but then, it's not really adding that much extra 
-value.  Out it goes.
+Hi,
 
-Your patch has been applied to the master branch.
+On Sat, Apr 18, 2020 at 02:30:46PM +0200, Simon Matter wrote:
+> A long time ago I was asking them to also show MD5/SHAXXX checksums so I
+> can easily verify the downloads. My request was turned down for reasons I
+> still don't understand. At least it could give us some peace of mind when
+> downloading OpenVPN and the PGP stuff doesn't work or is not used by the
+> person downloading it.
 
-commit b9ff398884aa4576f2d9f75f2e2b54cd9688d122
-Author: Antonio Quartulli
-Date:   Sat Apr 18 03:31:23 2020 +0200
+True... Samuli, are you listening?  Adding SHA256s to the release
+announcement might not be so hard to integrate into your process, and
+help in case GPG acts up again.
 
-     sitnl: fix TUN/TAP confusion in error messages
+(Mostly because "the mail on the list is signed, the other openvpn
+developers see it, and if someone tries to play games, we'll notice")
 
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200418013123.22551-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19775.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
 
---
-kind regards,
+--P6FkfbahCsDDKxle
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Gert Doering
+-----BEGIN PGP SIGNATURE-----
 
+iQGcBAEBAgAGBQJenCHsAAoJEB2Cnv7KVigSEu4MAIxB/v4yhOWQuTTQxNjtgqJK
+vsbAbsL/d85IBlQYJZ3POEDpL3C9Q3HxpVqLo+CXOfMJpniV8rUglWSCX8n3hMy4
+5EVRC89aDEnc9Uma5x0S9g/YL07XBL7NkO37P+7BE+o+id3gRGRZaCOVgzy3O3tz
+9Ghks6ogNSlJ0uu+jJWFAhTalPRwD0NqMU70NlKnAfi3lp7UpkgQoJnQ5ep4/aXr
+HSNU0foCY1j2o7zyRGbAHk/3bkzrBqD+LrpjiqEac9k317+OvpAR58xQVLH1GuDl
+12i+ISkBovyPPi1DLoqRRW9QHalyzvY+STsy3tovQsypxevr1yBHOtDyJJmn9iYw
+CuJNS9o9g+jL2mLOaVKbn8KUGXFg36iUtDuyX5C5lqXg0S5HR4/GOgLoIw1f8dGF
+TOOG0eegqEYEUBbQB8n9UOeUKLwZcQjEucbZmFTsgJv24CQJXoUQnJglrRhpj8i1
+2Kgfttxir/SRagrVvOID3HHCtjfJx3XZnBNwxSE4Eg==
+=MCOY
+-----END PGP SIGNATURE-----
+
+--P6FkfbahCsDDKxle--
 
