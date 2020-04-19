@@ -1,10 +1,10 @@
-Date: Sun, 19 Apr 2020 12:03:34 +0200 (CEST)
-Message-Id: <202004191003.03JA3Y6n007885@...2054...>
+Date: Sun, 19 Apr 2020 12:07:17 +0200 (CEST)
+Message-Id: <202004191007.03JA7HSF008004@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200418094350.26349-1-a@...2181...>
-References: <20200418094350.26349-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: sitnl: fix ignoring EEXIST when
- sending a netlink command
+In-Reply-To: <20200416134925.8848-1-a@...2181...>
+References: <20200416134925.8848-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: t_net.sh: use dummy interface
+ instead of tun
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,20 +20,18 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Proper error handling is hard, we should just always crash with ASSERT() :-)
-
 Your patch has been applied to the master branch.
 
-commit db3d737ba3ef9d83c5ceffa2f653d0ee4a8abb54
+commit d8225e98f23d1f133b914bd63c90c8113c713fc7
 Author: Antonio Quartulli
-Date:   Sat Apr 18 11:43:50 2020 +0200
+Date:   Thu Apr 16 15:49:25 2020 +0200
 
-     sitnl: fix ignoring EEXIST when sending a netlink command
+     t_net.sh: use dummy interface instead of tun
 
      Signed-off-by: Antonio Quartulli <a@...2181...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200418094350.26349-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19777.html
+     Message-Id: <20200416134925.8848-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19751.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
