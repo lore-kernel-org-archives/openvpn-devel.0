@@ -1,10 +1,10 @@
-Date: Sun, 19 Apr 2020 12:07:17 +0200 (CEST)
-Message-Id: <202004191007.03JA7HSF008004@...2054...>
+Date: Sun, 19 Apr 2020 12:15:07 +0200 (CEST)
+Message-Id: <202004191015.03JAF7jJ008519@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200416134925.8848-1-a@...2181...>
-References: <20200416134925.8848-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: t_net.sh: use dummy interface
- instead of tun
+In-Reply-To: <20200416152619.5465-1-arne@...1227...>
+References: <20200416152619.5465-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Refactor counting number of
+ element in a : delimited list into function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,23 +15,23 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
-
-Acked-by: Gert Doering <gert@...1296...>
 
 Your patch has been applied to the master branch.
 
-commit d8225e98f23d1f133b914bd63c90c8113c713fc7
-Author: Antonio Quartulli
-Date:   Thu Apr 16 15:49:25 2020 +0200
+Nothing to add to Antonio's review :)
 
-     t_net.sh: use dummy interface instead of tun
+commit c577facffb09046da90c52f3ed1af5bdf7b25888
+Author: Arne Schwabe
+Date:   Thu Apr 16 17:26:18 2020 +0200
 
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200416134925.8848-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19751.html
+     Refactor counting number of element in a : delimited list into function
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20200416152619.5465-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19757.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
