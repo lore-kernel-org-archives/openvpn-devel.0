@@ -1,8 +1,10 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Mon, 20 Apr 2020 12:21:02 +0200
-Message-Id: <20200420102102.20981-1-a@...2181...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] remove bogus file check on --genkey argument
+Date: Mon, 20 Apr 2020 12:30:55 +0200 (CEST)
+Message-Id: <202004201030.03KAUtCd038987@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20200420102102.20981-1-a@...2181...>
+References: <20200420102102.20981-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: remove bogus file check on
+ --genkey argument
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,38 +15,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-When invoking openvpn as standalone with the --genkey
-argument, options_postprocess() is not called at all
-because do_genkey() takes over the execution earlier.
+Acked-by: Gert Doering <gert@...1296...>
 
-For this reason, checking the --genkey argument in
-options_postprocess_filechecks() is a no-op.
+"If you say so" :-)  (haven't looked more closely than "it compiles
+and does not introduce/modify possibly dangerous code paths").
 
-Geti rid of the bogus check altogether.
+Your patch has been applied to the master branch.
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
- src/openvpn/options.c | 3 ---
- 1 file changed, 3 deletions(-)
+commit c40679fbb051228f6c5108adaa9f6fc6929b1e0f (master)
+Author: Antonio Quartulli
+Date:   Mon Apr 20 12:21:02 2020 +0200
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 63dc53c3..a8394c6c 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3420,9 +3420,6 @@ options_postprocess_filechecks(struct options *options)
-                                   "--tls-crypt-v2");
-     }
- 
--    errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
--                              options->genkey_filename, R_OK,
--                              "--genkey");
-     errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
-                               options->shared_secret_file, R_OK, "--secret");
- 
--- 
-2.26.1
+     remove bogus file check on --genkey argument
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20200420102102.20981-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19795.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
