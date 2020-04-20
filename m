@@ -1,21 +1,18 @@
-Date: Sun, 19 Apr 2020 17:46:14 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200419154614.GC1431@...1296...>
-References: <20200416113930.15192-1-arne@...1227...>
- <20200416113930.15192-3-arne@...1227...>
- <5e764697-b61e-7115-7e3c-fcc7bf0407e7@...2181...>
- <20200419102725.GA1431@...1296...>
- <33b3339e-f90c-e35d-5921-f937fb07acd8@...2181...>
+References: <0a607581-4179-a97b-1e8b-e19dd6bd85bd@...515...>
+ <CAEsd45Q+GvZf3du9FYCaLiPeupN88UTv3BjE1dzPKsJO2hzFjQ@...278...>
+ <20200417213506.GI1431@...1296...>
+ <CAEsd45Tym2Rs=v0RyQY57wWvNd0N=BXVLgRus5hoDYZRY+W4Fw@...278...>
+ <67d10ca6fb99ba7d75ff0b65f84cb76f.squirrel@...2260...>
+ <20200419100325.GZ1431@...1296...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <87a61aa5-bba1-637d-2169-4f9aa74d5044@...515...>
+Date: Mon, 20 Apr 2020 09:13:10 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="Lf5N93S3uGY/b6lN"
-Content-Disposition: inline
-In-Reply-To: <33b3339e-f90c-e35d-5921-f937fb07acd8@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v2 3/3] After the last big formatting
- patch a number of changes have been commited that do not conform with our
- style/uncrustify config. This has lead to the problem that running
- uncrustify on before sending PR some of the changes made by uncrustify need
- to be backed out again.
+In-Reply-To: <20200419100325.GZ1431@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="8hYuueVNPWvq9Xn1d9VqBticGrX97VFyd"
+Subject: Re: [Openvpn-devel] OpenVPN 2.4.9 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,62 +21,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, Simon Matter <simon.matter@...2249...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Lf5N93S3uGY/b6lN
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--8hYuueVNPWvq9Xn1d9VqBticGrX97VFyd
+Content-Type: multipart/mixed; boundary="Sq0XGDCSFilzjKD87yz71iVAVS7pyn32R"
+
+--Sq0XGDCSFilzjKD87yz71iVAVS7pyn32R
+Content-Language: en-US
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
 Hi,
 
-On Sun, Apr 19, 2020 at 02:22:37PM +0200, Antonio Quartulli wrote:
-> >>> -    char* ret =3D management_query_multiline_flatten(man,
-> >>> -            (char *)buf_bptr(&buf_data), prompt, desc,
-> >>> -            &man->connection.ext_key_state, &man->connection.ext_key=
-_input);
-> >>> +    char *ret =3D management_query_multiline_flatten(man,
-> >>> +                                                   (char *)buf_bptr(=
-&buf_data), prompt, desc,
+Il 19/04/20 13:03, Gert Doering ha scritto:
+> Hi,
 >=20
-> fully agreed. but in this case uncrustify is just fixing the alignment -
-> moving the arguments above would not make uncrustify unhappy because all
-> rules would still be respected.
+> On Sat, Apr 18, 2020 at 02:30:46PM +0200, Simon Matter wrote:
+>> A long time ago I was asking them to also show MD5/SHAXXX checksums so I
+>> can easily verify the downloads. My request was turned down for reasons I
+>> still don't understand. At least it could give us some peace of mind when
+>> downloading OpenVPN and the PGP stuff doesn't work or is not used by the
+>> person downloading it.
+>=20
+> True... Samuli, are you listening?  Adding SHA256s to the release
+> announcement might not be so hard to integrate into your process, and
+> help in case GPG acts up again.
 
-I think uncrustify would promptly move them down again... line length
-rule.
+> (Mostly because "the mail on the list is signed, the other openvpn
+> developers see it, and if someone tries to play games, we'll notice")
 
-Of course it's worth a try...  we're at a good point for refactoring
-and code cleanup.
+Having SHA256 sum in the _release announcement_ is good, because it
+can't be forged easily. But I would also have have it on the download
+page. I just need to ask our webmaster to add that field. If the website
+is tampered then we still have the release announcement to refer to.
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+On a related note: I think we should consider stopping the distribution
+of the security list's public key from our webservers and just instruct
+people to fetch the key from the keyservers and refresh it if they have
+trouble.
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Meaning: I don't see the extra value distributing the key from our
+webserver gives anyone. But please correct me if I'm missing something.
 
---Lf5N93S3uGY/b6lN
+>=20
+> gert
+>=20
+>=20
+>=20
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>=20
+
+
+
+--Sq0XGDCSFilzjKD87yz71iVAVS7pyn32R--
+
+--8hYuueVNPWvq9Xn1d9VqBticGrX97VFyd
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJenHJFAAoJEB2Cnv7KVigSKT8L/jvo5V7EiYBvlzqU9suIO32Q
-MrtXRwAsos41Hjncr+r/rcZtBnhUVW147xLaoxFtGrDx1yGugPD0BTMaTEFi6n0T
-P0KePXi386okoBaX603x93UVT2gIFQOMxK8tC/LJ02fq7Pd1xf7h+hjJw8r/q7VD
-fMmPK4l6KlbpVs3iue6e0h3AzGng5vT8e1NvxKN6Y7booBgdKuOSHWhpAbqUMGA9
-jtGlOJmEVWa+L7kmOL8SwSO8yDaEzCcK0QJRS/MCQQ4G2GPdtLgZvaJkw3FhcvsZ
-WwAfD2RIXJJOtEDk6feljAQXUHAK2mDQVl78+zSO2eld/vsGS9jDnk93IZiW40GX
-hxi0c+/8oc+ftRtPriCDCXhEyUsQiOI9I/QNAGQCtrDifvVxLHNInm/ymexV1VnM
-eFRSRMhuhKnO4h2uR8rFbJUFYPd0yfqzmpayE6HWRnM0QnZwlaILUR9X/CbqH9dO
-V56DVRuvISleVd3LOoC6f9e7QB9A3fs/0mbqdwBmxg==
-=tdK7
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAl6dPXYACgkQKVhNn0CG
+RXhkkwf7BW6XNgZYeG5J+Y4RXhdjW34iIQ4vhTV88neClO6bD6e7IOrqCqnlvLiw
+OGcNBVKdb80R1YN4R6Yq4xEia0ZJ+rdizktsY+uqNFHUKViNB7OVCyln1nxKYIXb
+euQJHTe6iHpTK8IfNK/TLoOQaTVSma/+pxNSfL1eLuZSfyC9UjcH8yJoci42tCHB
+BrRzxfF5NkMjaZ0idc3aJ+4GL3knDoFfe1q2c+oLhjaLamXslygJmS57I42A9qRU
+lPfM3ZSX6Pk94XNcH0JgMNsf8sNaTju1+whHMD5ciEXX5VfaxVWnwd1U8/AWSoVO
+NETpZ6OMuMK3Hrf3kYjFt44jLgH2Yw==
+=yXrB
 -----END PGP SIGNATURE-----
 
---Lf5N93S3uGY/b6lN--
+--8hYuueVNPWvq9Xn1d9VqBticGrX97VFyd--
 
