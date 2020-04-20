@@ -1,10 +1,14 @@
+References: <20191127134258.9162-1-l@...2534...>
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 20 Apr 2020 14:06:02 +0200
-Message-Id: <20200420120602.15711-1-arne@...1227...>
-In-Reply-To: <20200406130001.6860-1-arne@...1227...>
-References: <20200406130001.6860-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v2] Do not write extra 0 byte for --gen-key
- with auth-token/tls-crypt-v2
+Message-ID: <d21e5944-44c9-9fd0-ab77-b47c65c93663@...1227...>
+Date: Mon, 20 Apr 2020 14:28:28 +0200
+MIME-Version: 1.0
+In-Reply-To: <20191127134258.9162-1-l@...2534...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="f74F9Jk1ZBRJa6iqDCW7kSWIwHh8wud4R"
+Subject: Re: [Openvpn-devel] [PATCH] Fix IPv6 configuration on Windows using
+ netsh
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,124 +17,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Laurent Fasnacht <l@...2534...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--f74F9Jk1ZBRJa6iqDCW7kSWIwHh8wud4R
+Content-Type: multipart/mixed; boundary="EWheMi76rX6C5UXRaMnYVy4hnW66n7x36"
+
+--EWheMi76rX6C5UXRaMnYVy4hnW66n7x36
+Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-Change crypto_pem_encode to not put a nul-terminated terminated
-string into the buffer. This was  useful for printf but should
-not be written into the file.
+Am 27.11.19 um 14:43 schrieb Laurent Fasnacht:
+> Apparently, `netsh interface ipv6 set address ...` defaults to using
+> a subnet of /64, and therefore adds an onlink route of that size.
+>=20
+> When using a tun tunnel, the tap adapter only replies to neighbor
+> discovery packets for fe80::8. This leads to the unfortunate situation
+> where all the hosts in the /64 are not reachable.
+>=20
+> This patch fixes that situation by specifying a /128 netmask, as the real
+> route is added afterwards, via the gateway.
+> ---
+>  src/openvpn/tun.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+> index 599fd817..8b054c80 100644
+> --- a/src/openvpn/tun.c
+> +++ b/src/openvpn/tun.c
+> @@ -982,15 +982,15 @@ do_ifconfig_ipv6(struct tuntap *tt, const char *ifn=
+ame, int tun_mtu,
+>      else
+>      {
+>          /* example: netsh interface ipv6 set address interface=3D42
+> -         *                  2001:608:8003::d store=3Dactive
+> +         *                  2001:608:8003::d/128 store=3Dactive
+>           */
+>          char iface[64];
+>=20=20
+>          openvpn_snprintf(iface, sizeof(iface), "interface=3D%lu",
+>                           tt->adapter_index);
+> -        argv_printf(&argv, "%s%sc interface ipv6 set address %s %s store=
+=3Dactive",
+> +        argv_printf(&argv, "%s%sc interface ipv6 set address %s %s/%d st=
+ore=3Dactive",
+>                      get_win_sys_path(), NETSH_PATH_SUFFIX, iface,
+> -                    ifconfig_ipv6_local);
+> +                    ifconfig_ipv6_local, 128);
+>          netsh_command(&argv, 4, M_FATAL);
+>          /* set ipv6 dns servers if any are specified */
+>          netsh_set_dns6_servers(tt->options.dns6, tt->options.dns6_len, i=
+fname);
 
-Instead do not assume that the buffer is null terminated and
-print only the number of bytes in the buffer. Also fix a
-similar case in printing static key where the 0 byte was
-never added to the buffer
+Instead changing the implicit /64 to an explicit /128, wouldn't it be
+better to use the correct tt->netbits_ipv6 like on other platforms?
 
-Patch V2: make pem_encode behave more like other similar functions in OpenVPN
-          and do not null terminate.
+Arne
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/crypto.c                      | 4 ++--
- src/openvpn/crypto_mbedtls.c              | 4 +++-
- src/openvpn/crypto_openssl.c              | 3 +--
- src/openvpn/tls_crypt.c                   | 2 +-
- tests/unit_tests/openvpn/test_tls_crypt.c | 6 ++++--
- 5 files changed, 11 insertions(+), 8 deletions(-)
 
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index 1678cba8..b05262e1 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -1478,7 +1478,7 @@ write_key_file(const int nkeys, const char *filename)
-     /* write key file to stdout if no filename given */
-     if (!filename || strcmp(filename, "")==0)
-     {
--        printf("%s\n", BPTR(&out));
-+        printf("%.*s\n", BLEN(&out), BPTR(&out));
-     }
-     /* write key file, now formatted in out, to file */
-     else if (!buffer_write_file(filename, &out))
-@@ -1887,7 +1887,7 @@ write_pem_key_file(const char *filename, const char *pem_name)
- 
-     if (!filename || strcmp(filename, "")==0)
-     {
--        printf("%s\n", BPTR(&server_key_pem));
-+        printf("%.*s", BLEN(&server_key_pem), BPTR(&server_key_pem));
-     }
-     else if (!buffer_write_file(filename, &server_key_pem))
-     {
-diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index 3e77fa9e..14a528af 100644
---- a/src/openvpn/crypto_mbedtls.c
-+++ b/src/openvpn/crypto_mbedtls.c
-@@ -239,10 +239,12 @@ crypto_pem_encode(const char *name, struct buffer *dst,
-         return false;
-     }
- 
-+    /* We set the size buf to out_len-1 to NOT include the 0 byte that
-+     * mbedtls_pem_write_buffer in its length calculation */
-     *dst = alloc_buf_gc(out_len, gc);
-     if (!mbed_ok(mbedtls_pem_write_buffer(header, footer, BPTR(src), BLEN(src),
-                                           BPTR(dst), BCAP(dst), &out_len))
--        || !buf_inc_len(dst, out_len))
-+        || !buf_inc_len(dst, out_len-1))
-     {
-         CLEAR(*dst);
-         return false;
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index a81dcfd8..4fa65ba8 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -400,9 +400,8 @@ crypto_pem_encode(const char *name, struct buffer *dst,
-     BUF_MEM *bptr;
-     BIO_get_mem_ptr(bio, &bptr);
- 
--    *dst = alloc_buf_gc(bptr->length + 1, gc);
-+    *dst = alloc_buf_gc(bptr->length, gc);
-     ASSERT(buf_write(dst, bptr->data, bptr->length));
--    buf_null_terminate(dst);
- 
-     ret = true;
- cleanup:
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index e9f9cc2a..3018c18e 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -702,7 +702,7 @@ tls_crypt_v2_write_client_key_file(const char *filename,
- 
-     if (!filename || streq(filename, ""))
-     {
--        printf("%s\n", BPTR(&client_key_pem));
-+        printf("%.*s\n", BLEN(&client_key_pem), BPTR(&client_key_pem));
-         client_filename = INLINE_FILE_TAG;
-         client_inline = (const char *)BPTR(&client_key_pem);
-     }
-diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c
-index b9e3a7a6..54fc917d 100644
---- a/tests/unit_tests/openvpn/test_tls_crypt.c
-+++ b/tests/unit_tests/openvpn/test_tls_crypt.c
-@@ -512,7 +512,8 @@ test_tls_crypt_v2_write_server_key_file(void **state) {
-     const char *filename = "testfilename.key";
- 
-     expect_string(__wrap_buffer_write_file, filename, filename);
--    expect_string(__wrap_buffer_write_file, pem, test_server_key);
-+    expect_memory(__wrap_buffer_write_file, pem, test_server_key,
-+                  strlen(test_server_key));
-     will_return(__wrap_buffer_write_file, true);
- 
-     tls_crypt_v2_write_server_key_file(filename);
-@@ -524,7 +525,8 @@ test_tls_crypt_v2_write_client_key_file(void **state) {
- 
-     /* Test writing the client key */
-     expect_string(__wrap_buffer_write_file, filename, filename);
--    expect_string(__wrap_buffer_write_file, pem, test_client_key);
-+    expect_memory(__wrap_buffer_write_file, pem, test_client_key,
-+                  strlen(test_client_key));
-     will_return(__wrap_buffer_write_file, true);
- 
-     /* Key generation re-reads the created file as a sanity check */
--- 
-2.26.0
 
+--EWheMi76rX6C5UXRaMnYVy4hnW66n7x36--
+
+--f74F9Jk1ZBRJa6iqDCW7kSWIwHh8wud4R
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl6dlWwACgkQFRhsZwKx
+RFQgahAAhq25i7vlgm2epjLmeou0uuJ7SHrgVxrD4BUThDKpOtRIHEMymCXcuA3t
+cgxO8NR1aFLkajza7vJ9in6KU5MnUpPUBezMiPmPg1vbt/neS282L+CJxdaqReIx
+gxx3CZ0C94ZPAx7Gwp2qdqYDol+Kdqf9I1FjKNSA1wo+/yT0Aswl6kZHNdI68VN3
+nUd0Lbb8qT8TcN83JaPX7zRdcu6xHNFrJNdH7PPR8YuhvLwkKB+i8wtA22X/PK5F
+mz2jwt5xeZeOWAr62oZCZi8EWdHxt+BSCatsGjH81r7s0AaW65Jhm3yQy149gQC5
+TYBQkj+KDGxD6HSaayttecYUzgAD3HRHqKG5VMQsEDzmlOe67EVHhN8JkrjHMqRi
+zX5M1rEkFrlBH2A2exmcNNHol02Infgb40hewnOk7DRUdQ3+QoaGzQD/+i6vYBFA
+lhoA62lvSqNGmIhd3UJaVjyvUF6z0x2fvojIy9YxDPRd3dn9uPRU7+rTopy/ILFy
+/4KcYTqc4xe0d8Tax55oBje+bARvj3VbY+Q0pQ420612CVGUwqe9guU4vLFH7xNt
+/KA2h+GwaiH77Qtv34H8nE82Z2eXUNFa75Y8Ql811rHmB3qEYIGRFQX8YUz9K6Eq
+w1WWTqE72PXzMZKnbAz23WOZ8SbfdfzL5SWWvkDssbm/Gmcn1sk=
+=RsMj
+-----END PGP SIGNATURE-----
+
+--f74F9Jk1ZBRJa6iqDCW7kSWIwHh8wud4R--
 
