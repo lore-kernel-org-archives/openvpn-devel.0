@@ -1,13 +1,15 @@
-Date: Wed, 22 Apr 2020 10:21:52 +0200
-From: Christian Hesse <list@...1798...>
-Message-ID: <20200422102152.273bd40d@...1799...>
-In-Reply-To: <20200421185953.GC1431@...1296...>
+Date: Wed, 22 Apr 2020 10:31:38 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20200422083138.GD1431@...1296...>
 References: <2b5fbffa-6b18-2226-5b29-7c6be670413b@...1800...>
  <20200421183735.GB1431@...1296...>
  <20200421185953.GC1431@...1296...>
+ <20200422102152.273bd40d@...1799...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Tw96ooEgEM.c+J5FbqSn3AV";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="8wRZ/4jaTLrvx324"
+Content-Disposition: inline
+In-Reply-To: <20200422102152.273bd40d@...1799...>
 Subject: Re: [Openvpn-devel] [Openvpn-users] new openssl = new OpenVPN
  release ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,55 +20,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: mike tancsa <mike@...1800...>, openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+To: Christian Hesse <list@...1798...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
---Sig_/Tw96ooEgEM.c+J5FbqSn3AV
-Content-Type: text/plain; charset="UTF-8"
+--8wRZ/4jaTLrvx324
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Gert Doering <gert@...1296...> on Tue, 2020/04/21 20:59:
-> Hi,
->=20
-> On Tue, Apr 21, 2020 at 08:37:35PM +0200, Gert Doering wrote:
-> > On Tue, Apr 21, 2020 at 02:15:43PM -0400, mike tancsa wrote:=20=20
-> > > =C2=A0=C2=A0=C2=A0 Will the sec issue with OpenSSL force a new releas=
-e of OpenVPN ?
-> > >=20
-> > > https://www.openssl.org/news/secadv/20200421.txt=20=20
->=20
-> So, speaking to myself again :-) - I've looked at the advisory, and
-> it talks about "Server or client applications that call the=20
-> SSL_check_chain() function".
->=20
-> Which we don't, I just grepped through our source tree.
->=20
-> So, unless I misunderstand something about OpenSSL intricacies, I think
-> we're safe - no new installers needed, and OpenVPN is not in risk.
+Hi,
 
-Are you sure that openvpn code does not call any openssl function that calls
-SSL_check_chain() then? Did not check, but I guess that's possible.
+On Wed, Apr 22, 2020 at 10:21:52AM +0200, Christian Hesse wrote:
+> > So, speaking to myself again :-) - I've looked at the advisory, and
+> > it talks about "Server or client applications that call the=20
+> > SSL_check_chain() function".
+>=20
+> Are you sure that openvpn code does not call any openssl function that ca=
+lls
+> SSL_check_chain() then? Did not check, but I guess that's possible.
+
+This is one of the OpenSSL intricacies I wouldn't know.
+
+OTOH, I would expect the advisory then to be worded as "a TLS 1.3=20
+handshake might crash" not "... applications that call ...=20
+SSL_check_chain()", which sounds very specific to me.
+
+gert
+
+
 --=20
-main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
-"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
-+];)
-putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
---Sig_/Tw96ooEgEM.c+J5FbqSn3AV
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--8wRZ/4jaTLrvx324
+Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAl6f/qAACgkQiUUh18yA
-9Hb/hQgAgZbNcFD12nilHGHI9cyIcheQDa3OTJJ4LTxe7Q7uA7iBaV1TjSLo1wPW
-WcQ1QxoLvPeVNhQVArxW4aWWzOt0a5EwxoLQKl0xDdD3TblFhlPWdVaOaAM87+pU
-6g0J7Ol3iPQdx/5aO1YzymCNtRkZAaxZz66n4TrS/8zHy8InrBIQelE1lfCoXoGi
-GX/27qGVxuv4VCr7wkosEVbhxCQu3C2qMVUxyojysatPWQq/tHFOOsgSVpvoD6JZ
-iLr1/64TIdFO1B6qlZd5oQof2UD1QhJngR7bq0Gn4P6YHl9h4BEAZt0pXh6KKO6V
-HxbIQ6e8KS4cUwq/ZHrjjIQDz3NUIQ==
-=KlXO
+iQGcBAEBAgAGBQJeoADpAAoJEB2Cnv7KVigSBDoL/R0Xjlp61TjpDj4HctDA9Vot
+Zji6JHAgH8YQ2B0dwBawC1ssubPNJe75oQOeYa9L4nqS6tIrppfl82OLEwo7H3dJ
+HC5kxLPZ0wPbm+IqJ04uPH4MvOV4JXOax1eSpbkLLVjEV9RZXnXjTgepveJ0xWri
+8O93LjoKFnUcfHqPa3NLmkx5VVYuqJVmtyDBL6knKIgOuj420jKnpsU4aQLOn9sA
+oJGxje9Nt9FwNW2Tp/2lYhRVhmEq14PyrjT1wu8Ef8zFil+iUcLENYNT3HE/a1QM
+78kF8PP0Ybo/zJ4AO1E5lYFHf3lC+/V7GzWrfHNc4I12STK7EZNo0ekv0FB1IhXk
+zZ/ui5NT9AvVxMx831XzU6wfVQCAH/vbEmkOeRLRVyIb8Kep76ySX/qdfSRYYxdn
+scG/pGpd1jEcKPgQfUJePbUILd7Qvsf728YOIR/FTcvX8FOsNIJecXISsDGA8dJ/
+COk37z2bmvle7MBFDuf5orx9rrM3lWMGk2qqtPRDeg==
+=bn0b
 -----END PGP SIGNATURE-----
 
---Sig_/Tw96ooEgEM.c+J5FbqSn3AV--
+--8wRZ/4jaTLrvx324--
 
