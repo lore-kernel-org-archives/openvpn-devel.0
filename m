@@ -1,10 +1,12 @@
-Date: Wed, 22 Apr 2020 12:04:26 +0200 (CEST)
-Message-Id: <202004221004.03MA4QH7080809@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200421101122.24284-1-arne@...1227...>
-References: <20200421101122.24284-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix tls_ctx_client/server_new
- leaving error on OpenSSL error stack
+MIME-Version: 1.0
+References: <1532486093-24793-1-git-send-email-selva.nair@...277...>
+ <201808071901.w77J1bEd015348@...2054...>
+In-Reply-To: <201808071901.w77J1bEd015348@...2054...>
+From: Selva Nair <selva.nair@...277...>
+Date: Thu, 23 Apr 2020 10:02:10 -0400
+Message-ID: <CAKuzo_iwqCQ-hQo=uc1_NTa845HBWEAMr98QvVzULQFuLN3SYw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Parse static challenge
+ response in auth-pam plugin
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,37 +15,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Acked-by: Gert Doering <gert@...1296...>
+Hi,
 
-"Explanation and Code make sense, Debian testing confirmed it fixes
-the problem observed" (which was a user error in the end, but led to an 
-unexpected error in openvpn).
+On Tue, Aug 7, 2018 at 3:01 PM Gert Doering <gert@...1296...> wrote:
+>
+> Your patch has been applied to the master branch.
+>
+> (I'm a bit undecided about release/2.4 - this is in "new feature!" land,
+> and all the challenge stuff is "master" territory.  OTOH, it's not openvpn
+> main code, and the code is sane enough - so if folks think it should be
+> in release/2.4, tell me)
+>
+> commit 7369d01bf360bcfa02f26c05b86dde5496d120f6 (master)
 
-Basic client test run with openssl 1.1.1 on Linux/Gentoo.
+I failed to respond to this that time.
 
-Your patch has been applied to the master and release/2.4 branch.
+Although this is a new feature, I too think its safe and useful to
+include this in 2.4.
+If we do, we'll need this one (commit
+7369d01bf360bcfa02f26c05b86dde5496d120f6) and the followup one
+7a8109023f4c345fe12f23421c5fa7e88e1ea85b
 
-commit 75aa88af774abaa168bf72e43e1dbb57be14c044 (master)
-commit 125654bfa6f99a251b581522182e85748dd8043a (release/2.4)
-Author: Arne Schwabe
-Date:   Tue Apr 21 12:11:22 2020 +0200
+Both should cherry-pick without conflicts.
 
-     Fix tls_ctx_client/server_new leaving error on OpenSSL error stack
+See also Trac #1275 https://community.openvpn.net/openvpn/ticket/1275
 
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200421101122.24284-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19802.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Thanks,
 
-
---
-kind regards,
-
-Gert Doering
-
+Selva
 
