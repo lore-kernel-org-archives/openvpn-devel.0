@@ -1,19 +1,10 @@
-References: <20200416113930.15192-1-arne@...1227...>
- <20200417085159.GC1431@...1296...>
- <4a4c73df-6771-8862-2ae0-274a98ee2158@...2181...>
- <20200417153605.GD1431@...1296...>
- <fbf3eaef-26d1-c81b-a456-c1be7d71b4f9@...1856...>
- <20200426093431.GX1431@...1296...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <094fe6d0-c6f5-e8e8-56ed-b7a18567634d@...1227...>
-Date: Mon, 27 Apr 2020 00:38:32 +0200
-MIME-Version: 1.0
-In-Reply-To: <20200426093431.GX1431@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="NHfFU2gJYTaY5KY1EmWgtdUJfvvAc4rvM"
-Subject: Re: [Openvpn-devel] [PATCH v2 1/3] Use crypto library functions for
- const time memcmp when possible
+Date: Mon, 27 Apr 2020 03:26:27 +0200
+Message-Id: <20200427012627.27568-1-arne@...1227...>
+In-Reply-To: <1183acb8-7045-88b1-216b-652a4b6ac0fc@...1856...>
+References: <1183acb8-7045-88b1-216b-652a4b6ac0fc@...1856...>
+Subject: [Openvpn-devel] [PATCH v3] Do not write extra 0 byte for --gen-key
+ with auth-token/tls-crypt-v2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,88 +13,175 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---NHfFU2gJYTaY5KY1EmWgtdUJfvvAc4rvM
-Content-Type: multipart/mixed; boundary="SPtqwVdhpYpm5yTJo0oeIlQjIyJzRWrWd"
+Change crypto_pem_encode to not put a nul-terminated terminated
+string into the buffer. This was  useful for printf but should
+not be written into the file.
 
---SPtqwVdhpYpm5yTJo0oeIlQjIyJzRWrWd
-Content-Language: en-GB
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Instead do not assume that the buffer is null terminated and
+print only the number of bytes in the buffer. Also fix a
+similar case in printing static key where the 0 byte was
+never added to the buffer
 
-Am 26.04.20 um 11:34 schrieb Gert Doering:
-> Hi,
->=20
-> On Sun, Apr 26, 2020 at 11:25:49AM +0200, Steffan Karger wrote:
->>>> well, sometimes to adhere to the codestyle, you have to re-arrange cod=
-e :)
->>>
->>> "rearrange" and "rewrite in a not easy to understand way" (which looks
->>> a bit overthought to me, TBH - unlike "secure memzero" I cannot see an
->>> obvious reason why all that volatile would be relevant).
->>
->> This secure memcmp is relevant to avoid timing side channels in e.g.
->> authentication tag compare. Think about the HMAC in our tls-auth/crypt
->> and the HMAC of (non-AEAD) data channel packets.
->=20
-> I do understand why it has to be constant *time*, in regards to "do the
-> compared buffers differ or not".
->=20
-> I do not see how all this "volatile" and "copy from pointer to variables
-> to other stuff" handwaving is going to make any difference wrt constant
-> time comparison.
->=20
-> And it hurts my eyes.
+Patch V2: make pem_encode behave more like other similar functions in OpenVPN
+          and do not null terminate.
 
-Yeah the goal is basically do what the crypto library is doing. And if
-you play with godbolt. So we don't need to go down this path of having
-to come up with our own version.
+Patch V3: also make the mbed TLS variant of pem_decode behave like other
+          similar functions in OpeNVPN and accept a not null-terminated
+          buffer.
 
-And if you care about speed then we should definitively go for OpenSSL's
-memcmp function. Since it is implemented in assembler it does not try to
-breaks the compiler compilation optimisation with volatile that might
-trigger more memory loads than necessary but can be a small fast
-constant time function.
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/crypto.c                      |  4 ++--
+ src/openvpn/crypto_mbedtls.c              | 28 +++++++++++++++++------
+ src/openvpn/crypto_openssl.c              |  3 +--
+ src/openvpn/tls_crypt.c                   |  2 +-
+ tests/unit_tests/openvpn/test_tls_crypt.c |  6 +++--
+ 5 files changed, 29 insertions(+), 14 deletions(-)
 
-If you play a bit with godbolt.org (https://godbolt.org/z/gXgcC9) you
-will see that the code that is generated from our current version is not
-yet optimised to non constant versions but especially the clang compiler
-is getting close. It completely optimises away the function for compile
-strings (main2 just becomes return 95), builds a version optimised for
-one fixed string and vectorises the generic version. So I am not sure if
-these variants still have their constant with modern processes and
-speculative execution.
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 1678cba8..b05262e1 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -1478,7 +1478,7 @@ write_key_file(const int nkeys, const char *filename)
+     /* write key file to stdout if no filename given */
+     if (!filename || strcmp(filename, "")==0)
+     {
+-        printf("%s\n", BPTR(&out));
++        printf("%.*s\n", BLEN(&out), BPTR(&out));
+     }
+     /* write key file, now formatted in out, to file */
+     else if (!buffer_write_file(filename, &out))
+@@ -1887,7 +1887,7 @@ write_pem_key_file(const char *filename, const char *pem_name)
+ 
+     if (!filename || strcmp(filename, "")==0)
+     {
+-        printf("%s\n", BPTR(&server_key_pem));
++        printf("%.*s", BLEN(&server_key_pem), BPTR(&server_key_pem));
+     }
+     else if (!buffer_write_file(filename, &server_key_pem))
+     {
+diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
+index 3e77fa9e..9529b319 100644
+--- a/src/openvpn/crypto_mbedtls.c
++++ b/src/openvpn/crypto_mbedtls.c
+@@ -239,10 +239,12 @@ crypto_pem_encode(const char *name, struct buffer *dst,
+         return false;
+     }
+ 
++    /* We set the size buf to out_len-1 to NOT include the 0 byte that
++     * mbedtls_pem_write_buffer in its length calculation */
+     *dst = alloc_buf_gc(out_len, gc);
+     if (!mbed_ok(mbedtls_pem_write_buffer(header, footer, BPTR(src), BLEN(src),
+                                           BPTR(dst), BCAP(dst), &out_len))
+-        || !buf_inc_len(dst, out_len))
++        || !buf_inc_len(dst, out_len-1))
+     {
+         CLEAR(*dst);
+         return false;
+@@ -259,11 +261,6 @@ crypto_pem_decode(const char *name, struct buffer *dst,
+     char header[1000+1] = { 0 };
+     char footer[1000+1] = { 0 };
+ 
+-    if (*(BLAST(src)) != '\0')
+-    {
+-        msg(M_WARN, "PEM decode error: source buffer not null-terminated");
+-        return false;
+-    }
+     if (!openvpn_snprintf(header, sizeof(header), "-----BEGIN %s-----", name))
+     {
+         return false;
+@@ -273,9 +270,25 @@ crypto_pem_decode(const char *name, struct buffer *dst,
+         return false;
+     }
+ 
++    /* mbed TLS requires the src to be null-terminated */
++    struct gc_arena gc = gc_new();
++    struct buffer input;
++
++    if (*(BLAST(src)) == '\0')
++    {
++        input = *src;
++    }
++    else
++    {
++        /* allocate a new buffer to avoid modifying the src buffer */
++        input = alloc_buf_gc(BLEN(src) + 1, &gc);
++        buf_copy(&input, src);
++        buf_null_terminate(&input);
++    }
++
+     size_t use_len = 0;
+     mbedtls_pem_context ctx = { 0 };
+-    bool ret = mbed_ok(mbedtls_pem_read_buffer(&ctx, header, footer, BPTR(src),
++    bool ret = mbed_ok(mbedtls_pem_read_buffer(&ctx, header, footer, BPTR(&input),
+                                                NULL, 0, &use_len));
+     if (ret && !buf_write(dst, ctx.buf, ctx.buflen))
+     {
+@@ -284,6 +297,7 @@ crypto_pem_decode(const char *name, struct buffer *dst,
+     }
+ 
+     mbedtls_pem_free(&ctx);
++    gc_free(&gc);
+     return ret;
+ }
+ 
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index a81dcfd8..4fa65ba8 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -400,9 +400,8 @@ crypto_pem_encode(const char *name, struct buffer *dst,
+     BUF_MEM *bptr;
+     BIO_get_mem_ptr(bio, &bptr);
+ 
+-    *dst = alloc_buf_gc(bptr->length + 1, gc);
++    *dst = alloc_buf_gc(bptr->length, gc);
+     ASSERT(buf_write(dst, bptr->data, bptr->length));
+-    buf_null_terminate(dst);
+ 
+     ret = true;
+ cleanup:
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index e9f9cc2a..3018c18e 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -702,7 +702,7 @@ tls_crypt_v2_write_client_key_file(const char *filename,
+ 
+     if (!filename || streq(filename, ""))
+     {
+-        printf("%s\n", BPTR(&client_key_pem));
++        printf("%.*s\n", BLEN(&client_key_pem), BPTR(&client_key_pem));
+         client_filename = INLINE_FILE_TAG;
+         client_inline = (const char *)BPTR(&client_key_pem);
+     }
+diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c
+index 366b48d5..f4b1f860 100644
+--- a/tests/unit_tests/openvpn/test_tls_crypt.c
++++ b/tests/unit_tests/openvpn/test_tls_crypt.c
+@@ -530,7 +530,8 @@ test_tls_crypt_v2_write_server_key_file(void **state) {
+     const char *filename = "testfilename.key";
+ 
+     expect_string(__wrap_buffer_write_file, filename, filename);
+-    expect_string(__wrap_buffer_write_file, pem, test_server_key);
++    expect_memory(__wrap_buffer_write_file, pem, test_server_key,
++                  strlen(test_server_key));
+     will_return(__wrap_buffer_write_file, true);
+ 
+     tls_crypt_v2_write_server_key_file(filename);
+@@ -542,7 +543,8 @@ test_tls_crypt_v2_write_client_key_file(void **state) {
+ 
+     /* Test writing the client key */
+     expect_string(__wrap_buffer_write_file, filename, filename);
+-    expect_string(__wrap_buffer_write_file, pem, test_client_key);
++    expect_memory(__wrap_buffer_write_file, pem, test_client_key,
++                  strlen(test_client_key));
+     will_return(__wrap_buffer_write_file, true);
+ 
+     /* Key generation re-reads the created file as a sanity check */
+-- 
+2.26.0
 
-Arne
-
-
-
---SPtqwVdhpYpm5yTJo0oeIlQjIyJzRWrWd--
-
---NHfFU2gJYTaY5KY1EmWgtdUJfvvAc4rvM
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl6mDWgACgkQFRhsZwKx
-RFTM8xAAn6VsuccTQLNIPE63lh0DJjkdMamCTjjivRaaNYKYomHs6HhCBocl7i8G
-EbmS3cP7cN634Dxd12xAeUp6rhmDMuWcNFnn/PS3tOgKBvlw9CPt+joMUAuV1f/y
-8RQ5GkzaMny6Ona4NLTJtbpDScSpm+ktwVlZJD4wtZq+Gw23qxn31JisMYuVU3dJ
-TPtcZiX+l+8KjUqpUnUmR5rmVRiDOBfHx06vRHpsB/VdhC4CzM89nc7RSx1SGqia
-VZU7BwtwjI9wZxd/PmyQJZWKgav9++VRPOWSkINRqJoRor54i77U5gUCOCypy0+q
-+HWG8GFNjCQLARaW2egvd/ZMD4xGBV0PVgguIHhGuSCp0mFtjLVb7SbELJYUQBTJ
-Xup0Z+iDwvV2B24KJAXq46lPcPnsBj0G80WNbdgwY4dzqm2uR47cj0EJ0916phkr
-Ss5BdfRmA6OvyAVSt3sgWko8NqrDGHm2J//uB4vPIbVallzHQrt5OJeGZK0J2M3U
-pKJBxjiF7ngs0514ULP2xDBJ6kK5rcaWT+YeLMAAv3aT1xqdgvTRDJPts93YQtxS
-wy3xWGGS6P6+ZqFE4JEI2DKiJR9Pv36cqSZV9bEPweETKAyX1a5saX3DrDWU40Pi
-fEdlWf5glCL5c+8cm770WuEj83iG3qJ5Q0/5t6UPpB69tsJ++eU=
-=lvct
------END PGP SIGNATURE-----
-
---NHfFU2gJYTaY5KY1EmWgtdUJfvvAc4rvM--
 
