@@ -1,10 +1,14 @@
+References: <20181007150413.1455-1-a@...2181...>
+ <20200422092607.16050-1-a@...2181...>
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 27 Apr 2020 03:26:27 +0200
-Message-Id: <20200427012627.27568-1-arne@...1227...>
-In-Reply-To: <1183acb8-7045-88b1-216b-652a4b6ac0fc@...1856...>
-References: <1183acb8-7045-88b1-216b-652a4b6ac0fc@...1856...>
-Subject: [Openvpn-devel] [PATCH v3] Do not write extra 0 byte for --gen-key
- with auth-token/tls-crypt-v2
+Message-ID: <b79cb4c4-b846-d07e-52ff-db9f3b2773ba@...1227...>
+Date: Mon, 27 Apr 2020 03:57:53 +0200
+MIME-Version: 1.0
+In-Reply-To: <20200422092607.16050-1-a@...2181...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="0nSfmXqGGYuIZrnn3VHBEsDZzSWxU6WD9"
+Subject: Re: [Openvpn-devel] [PATCH v9] convert *_inline attributes to bool
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,175 +17,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--0nSfmXqGGYuIZrnn3VHBEsDZzSWxU6WD9
+Content-Type: multipart/mixed; boundary="SSXheI3EGq4ctIcD1ExOL2rSxqehWBP2V"
+
+--SSXheI3EGq4ctIcD1ExOL2rSxqehWBP2V
+Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-Change crypto_pem_encode to not put a nul-terminated terminated
-string into the buffer. This was  useful for printf but should
-not be written into the file.
+Am 22.04.20 um 11:26 schrieb Antonio Quartulli:
+> Carrying around the INLINE_TAG is not really efficient,
+> because it requires a strcmp() to be performed every
+> time we want to understand if the data is stored inline
+> or not.
+>=20
+> Convert all the *_inline attributes to bool to make the
+> logic easier and checks more efficient.
+>=20
 
-Instead do not assume that the buffer is null terminated and
-print only the number of bytes in the buffer. Also fix a
-similar case in printing static key where the 0 byte was
-never added to the buffer
+Look through it. It is only a minor improvement but Antonio has been
+persistent enough and spend enough time to make 9 versions of this so I
+took the time to look through it:
 
-Patch V2: make pem_encode behave more like other similar functions in OpenVPN
-          and do not null terminate.
+Acked-By: Arne Schwabe <arne@...2555...>
 
-Patch V3: also make the mbed TLS variant of pem_decode behave like other
-          similar functions in OpeNVPN and accept a not null-terminated
-          buffer.
+The patch is not uncrustify clean at the moment. So uncrustify should be
+run on commit or we need a v10 of this patch.
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/crypto.c                      |  4 ++--
- src/openvpn/crypto_mbedtls.c              | 28 +++++++++++++++++------
- src/openvpn/crypto_openssl.c              |  3 +--
- src/openvpn/tls_crypt.c                   |  2 +-
- tests/unit_tests/openvpn/test_tls_crypt.c |  6 +++--
- 5 files changed, 29 insertions(+), 14 deletions(-)
+The patch does not apply cleanly anymore: The test_tls_crypt.c part
+should be now.
 
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index 1678cba8..b05262e1 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -1478,7 +1478,7 @@ write_key_file(const int nkeys, const char *filename)
-     /* write key file to stdout if no filename given */
-     if (!filename || strcmp(filename, "")==0)
-     {
--        printf("%s\n", BPTR(&out));
-+        printf("%.*s\n", BLEN(&out), BPTR(&out));
-     }
-     /* write key file, now formatted in out, to file */
-     else if (!buffer_write_file(filename, &out))
-@@ -1887,7 +1887,7 @@ write_pem_key_file(const char *filename, const char *pem_name)
- 
-     if (!filename || strcmp(filename, "")==0)
-     {
--        printf("%s\n", BPTR(&server_key_pem));
-+        printf("%.*s", BLEN(&server_key_pem), BPTR(&server_key_pem));
-     }
-     else if (!buffer_write_file(filename, &server_key_pem))
-     {
-diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index 3e77fa9e..9529b319 100644
---- a/src/openvpn/crypto_mbedtls.c
-+++ b/src/openvpn/crypto_mbedtls.c
-@@ -239,10 +239,12 @@ crypto_pem_encode(const char *name, struct buffer *dst,
-         return false;
-     }
- 
-+    /* We set the size buf to out_len-1 to NOT include the 0 byte that
-+     * mbedtls_pem_write_buffer in its length calculation */
-     *dst = alloc_buf_gc(out_len, gc);
-     if (!mbed_ok(mbedtls_pem_write_buffer(header, footer, BPTR(src), BLEN(src),
-                                           BPTR(dst), BCAP(dst), &out_len))
--        || !buf_inc_len(dst, out_len))
-+        || !buf_inc_len(dst, out_len-1))
-     {
-         CLEAR(*dst);
-         return false;
-@@ -259,11 +261,6 @@ crypto_pem_decode(const char *name, struct buffer *dst,
-     char header[1000+1] = { 0 };
-     char footer[1000+1] = { 0 };
- 
--    if (*(BLAST(src)) != '\0')
--    {
--        msg(M_WARN, "PEM decode error: source buffer not null-terminated");
--        return false;
--    }
-     if (!openvpn_snprintf(header, sizeof(header), "-----BEGIN %s-----", name))
-     {
-         return false;
-@@ -273,9 +270,25 @@ crypto_pem_decode(const char *name, struct buffer *dst,
-         return false;
-     }
- 
-+    /* mbed TLS requires the src to be null-terminated */
-+    struct gc_arena gc = gc_new();
-+    struct buffer input;
-+
-+    if (*(BLAST(src)) == '\0')
-+    {
-+        input = *src;
-+    }
-+    else
-+    {
-+        /* allocate a new buffer to avoid modifying the src buffer */
-+        input = alloc_buf_gc(BLEN(src) + 1, &gc);
-+        buf_copy(&input, src);
-+        buf_null_terminate(&input);
-+    }
-+
-     size_t use_len = 0;
-     mbedtls_pem_context ctx = { 0 };
--    bool ret = mbed_ok(mbedtls_pem_read_buffer(&ctx, header, footer, BPTR(src),
-+    bool ret = mbed_ok(mbedtls_pem_read_buffer(&ctx, header, footer, BPTR(&input),
-                                                NULL, 0, &use_len));
-     if (ret && !buf_write(dst, ctx.buf, ctx.buflen))
-     {
-@@ -284,6 +297,7 @@ crypto_pem_decode(const char *name, struct buffer *dst,
-     }
- 
-     mbedtls_pem_free(&ctx);
-+    gc_free(&gc);
-     return ret;
- }
- 
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index a81dcfd8..4fa65ba8 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -400,9 +400,8 @@ crypto_pem_encode(const char *name, struct buffer *dst,
-     BUF_MEM *bptr;
-     BIO_get_mem_ptr(bio, &bptr);
- 
--    *dst = alloc_buf_gc(bptr->length + 1, gc);
-+    *dst = alloc_buf_gc(bptr->length, gc);
-     ASSERT(buf_write(dst, bptr->data, bptr->length));
--    buf_null_terminate(dst);
- 
-     ret = true;
- cleanup:
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index e9f9cc2a..3018c18e 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -702,7 +702,7 @@ tls_crypt_v2_write_client_key_file(const char *filename,
- 
-     if (!filename || streq(filename, ""))
-     {
--        printf("%s\n", BPTR(&client_key_pem));
-+        printf("%.*s\n", BLEN(&client_key_pem), BPTR(&client_key_pem));
-         client_filename = INLINE_FILE_TAG;
-         client_inline = (const char *)BPTR(&client_key_pem);
-     }
-diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c
-index 366b48d5..f4b1f860 100644
 --- a/tests/unit_tests/openvpn/test_tls_crypt.c
 +++ b/tests/unit_tests/openvpn/test_tls_crypt.c
-@@ -530,7 +530,8 @@ test_tls_crypt_v2_write_server_key_file(void **state) {
-     const char *filename = "testfilename.key";
- 
-     expect_string(__wrap_buffer_write_file, filename, filename);
--    expect_string(__wrap_buffer_write_file, pem, test_server_key);
-+    expect_memory(__wrap_buffer_write_file, pem, test_server_key,
-+                  strlen(test_server_key));
-     will_return(__wrap_buffer_write_file, true);
- 
-     tls_crypt_v2_write_server_key_file(filename);
-@@ -542,7 +543,8 @@ test_tls_crypt_v2_write_client_key_file(void **state) {
- 
-     /* Test writing the client key */
-     expect_string(__wrap_buffer_write_file, filename, filename);
--    expect_string(__wrap_buffer_write_file, pem, test_client_key);
-+    expect_memory(__wrap_buffer_write_file, pem, test_client_key,
-+                  strlen(test_client_key));
-     will_return(__wrap_buffer_write_file, true);
- 
-     /* Key generation re-reads the created file as a sanity check */
--- 
-2.26.0
+@@ -549,8 +549,7 @@ test_tls_crypt_v2_write_client_key_file(void **state) {
+     expect_string(__wrap_buffer_read_from_file, filename, filename);
+     will_return(__wrap_buffer_read_from_file, test_client_key);
 
+-    tls_crypt_v2_write_client_key_file(filename, NULL, INLINE_FILE_TAG,
+-                                      test_server_key);
++  tls_crypt_v2_write_client_key_file(filename, NULL, test_server_key,
+true);
+ }
+
+ static void
+@@ -567,8 +566,7 @@
+test_tls_crypt_v2_write_client_key_file_metadata(void **state) {
+     expect_string(__wrap_buffer_read_from_file, filename, filename);
+     will_return(__wrap_buffer_read_from_file, test_client_key_metadata);
+
+-    tls_crypt_v2_write_client_key_file(filename, b64metadata,
+INLINE_FILE_TAG,
+-                                       test_server_key);
++    tls_crypt_v2_write_client_key_file(filename, NULL, test_server_key,
+true);
+ }
+
+
+
+
+--SSXheI3EGq4ctIcD1ExOL2rSxqehWBP2V--
+
+--0nSfmXqGGYuIZrnn3VHBEsDZzSWxU6WD9
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl6mPCEACgkQFRhsZwKx
+RFRmDQ//cVPcdct8VTZl2ToHAoTp90BjrnX/y8E4UkdtI6EVJPkgF9MttpGT7uB7
+1UA5q7zZZd4nz4zpB5Fklamqdv7KdNlNPO8osZmvggSBMgietg4rDslNAWU9DkzA
+KXOBcEXs3lKh6kvAsTdQuDEX4Qi7BMvBMexWM33QblfX6bOOfBN2vi/cR1FrZD99
+YL+enW6R99VUP1JDv+jg5jafN41aeNuI2CmZPBtaDWojT3aPX0jTHR6n4COcV0ZL
+R6+1Psw5/18Hyct1KZt6u6NhlvoMnzIiTQBRI+8JKjV+ITKOqNxVxEr3aloEVcMJ
+AveQTg+/VOSTb2N/DP3N+o8eabid3ProcF/PwnYwH/tKiHrPFCGqVi7lHHxJRW85
+DHyOMSWRbppqclcSU4NZTsPmUQbVTac7NwfrJrl36cc0FE0bDGgNWUeoy1a9mnoJ
+j6E+8C2X75TMKGp/dKU41RjPzDci9GpN/my84uLJLzHQFD+Sttu6QhBBDEZX0Kxg
+4FUFnbb/IZyVtGNA78F49cIUk4IdJU1V9FpaoDHc79QB7Qmi5raJJqOlPbYwEcq3
+oUy9OA83trunyuKCysnPadAdv10u4LEEcWuRgiq71/vBU4HwizKOOyalgt57a2S2
+aNFbAchgAODz1I336WJPZDWV209gYS3AzzU8kDhL8OQxYWpq+GQ=
+=ZYn/
+-----END PGP SIGNATURE-----
+
+--0nSfmXqGGYuIZrnn3VHBEsDZzSWxU6WD9--
 
