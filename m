@@ -1,13 +1,11 @@
-References: <CAFHpkQEvQkC0NokWG-16x-R_zq9qG=2MyO2JV8m1nvNUhwU3Vw@...278...>
- <0de39489-f2a8-514e-763f-c037ba2afbcb@...515...>
- <CAFHpkQELzeh5AQYXmQeNMP-9CXPjdGc=BM1qVbOCtH5QByO4iA@...278...>
 From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <6fadf6ae-bfd9-27ad-6ac6-63f23dcda34b@...515...>
-Date: Tue, 5 May 2020 12:12:35 +0300
+Message-ID: <9d879a78-47c9-5be5-5798-98e07bc25c89@...515...>
+Date: Wed, 6 May 2020 09:59:57 +0300
 MIME-Version: 1.0
-In-Reply-To: <CAFHpkQELzeh5AQYXmQeNMP-9CXPjdGc=BM1qVbOCtH5QByO4iA@...278...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] is anybody running tests on Fedora ?
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="EH1fB3uS5YnNB6wkbtGb2uP3YVydQVGU0"
+Subject: [Openvpn-devel] Community meetings in May 2020
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,77 +14,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Il 04/05/20 15:14, Илья Шипицин ha scritto:
-> 
-> 
-> пн, 4 мая 2020 г. в 16:41, Samuli Seppänen <samuli@...515...
-> <mailto:samuli@...515...>>:
-> 
->     Hi,
-> 
->     We do have a Fedora 30 buildslave and run fping tests there. It also
->     seems to run t_client IPv6 ping tests.
-> 
-> 
-> can you please run the following
-> 
-> 
-> dnf whatprovides fping6
-> 
-> ?
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--EH1fB3uS5YnNB6wkbtGb2uP3YVydQVGU0
+Content-Type: multipart/mixed; boundary="sONTnJDihaJHPfF3GfC5TkkPHl9i3BUZ1"
 
-On Fedora 30 as well as 31:
+--sONTnJDihaJHPfF3GfC5TkkPHl9i3BUZ1
+Content-Language: en-US
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-$ dnf whatprovides fping6
-Error: No Matches found
+Hi,
 
+Our community meetings will alternate between Wed 11:30 CET and Thu
+20:00 CET.
 
-$ dnf whatprovides fping
-fping-4.2-1.fc30.x86_64 : Scriptable, parallelized ping-like utility
-Repo        : @System
-Matched from:
-Provide    : fping = 4.2-1.fc30
+Next meetings have been scheduled to
 
-fping-4.2-1.fc30.x86_64 : Scriptable, parallelized ping-like utility
-Repo        : fedora
-Matched from:
-Provide    : fping = 4.2-1.fc30
+- Thu 7th May 20:00 CET
+- Wed 13th May 11:30 CET
+- Thu 21st May 20:00 CET
+- Wed 27th May 11:30 CET
+
+The place is #openvpn-meeting IRC channel at Freenode. Meeting agendas
+and summaries are in here:
+
+<https://community.openvpn.net/openvpn/wiki/IrcMeetings>
+
+Samuli
 
 
 
 
->  
-> 
-> 
->     Samuli
-> 
->     Il 03/05/20 23:02, Илья Шипицин ha scritto:
->     > Hello,
->     >
->     >
->     > t_client.sh requires "fping6" binary, which is not available on
->     Fedora.
->     > on Fedora "fping" is capable of running ipv6 pings.
->     >
->     >
->     > shall we adopt test ?
->     >
->     >
->     > Cheers,
->     > Ilya Shipitcin
->     >
->     >
->     > _______________________________________________
->     > Openvpn-devel mailing list
->     > Openvpn-devel@lists.sourceforge.net
->     <mailto:Openvpn-devel@lists.sourceforge.net>
->     > https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->     >
-> 
 
+
+--sONTnJDihaJHPfF3GfC5TkkPHl9i3BUZ1--
+
+--EH1fB3uS5YnNB6wkbtGb2uP3YVydQVGU0
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAl6yYG0ACgkQKVhNn0CG
+RXgURgf/ZS4//tpPSQ8DZZUHnNhcCUDVH1EMyLSI7c0T6mJvGZ5paqBCHSdP/0O7
+ltwhmAueUROop4gSX34MJETYtHIL814rWlpMOBGUXLlv09vZEAH14DtfgUZGEjJL
+n0FnWmNDSPcJScga5i8sHVANLNxS919YLeGUA8/nEORv1lJ//xU6ZRmGLm6IkqNY
+YIVwGEp3dU7EMVycOIj003JCdd2Dnr6+oLBrnyboqoLgchCCr7+f7JldaRlrNMRx
+UKNs/tl65WJE8FydwA23o6e6evvSVKih/jmGlbms/l0G1pkeda+D23PScqxW3MCc
+yU0q96IL3d5cH3GkxPvdAPNKbrJYig==
+=aTJw
+-----END PGP SIGNATURE-----
+
+--EH1fB3uS5YnNB6wkbtGb2uP3YVydQVGU0--
 
