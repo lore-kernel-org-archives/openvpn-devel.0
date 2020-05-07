@@ -1,10 +1,10 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Thu,  7 May 2020 15:36:54 +0200
-Message-Id: <20200507133654.15365-1-a@...2181...>
-In-Reply-To: <69990cda-fe76-3cf6-e0fd-f94baffe203b@...2181...>
-References: <69990cda-fe76-3cf6-e0fd-f94baffe203b@...2181...>
+Date: Thu,  7 May 2020 15:59:09 +0200
+Message-Id: <20200507135909.21227-1-a@...2181...>
+In-Reply-To: <20200507133654.15365-1-a@...2181...>
+References: <20200507133654.15365-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v10] convert *_inline attributes to bool
+Subject: [Openvpn-devel] [PATCH v11] convert *_inline attributes to bool
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -28,6 +28,11 @@ logic easier and checks more efficient.
 
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
+
+Changes from v10:
+- adapt test_tls_crypt.c to new inline'd logic for real this time
+- run uncrustify-0.69.0 for real
+
 
 Changes from v9:
 - rebased on top of latest master
@@ -97,7 +102,6 @@ Changes from v1:
   is now not invoked at all in case of inline data
 
 
-
  src/openvpn/auth_token.c                   |   2 +-
  src/openvpn/auth_token.h                   |   2 +-
  src/openvpn/crypto.c                       |  47 +--
@@ -117,9 +121,9 @@ Changes from v1:
  src/openvpn/ssl_mbedtls.c                  |  61 ++--
  src/openvpn/ssl_openssl.c                  |  85 +++---
  src/openvpn/tls_crypt.c                    |   8 +-
- src/openvpn/tls_crypt.h                    |  43 +--
+ src/openvpn/tls_crypt.h                    |  39 +--
  tests/unit_tests/openvpn/test_auth_token.c |   6 +-
- tests/unit_tests/openvpn/test_tls_crypt.c  |   3 +-
+ tests/unit_tests/openvpn/test_tls_crypt.c  |   7 +-
  22 files changed, 402 insertions(+), 333 deletions(-)
 
 diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
@@ -331,7 +335,7 @@ index dadf0a90..999f643e 100644
 +
  #endif /* CRYPTO_H */
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index b3096dc8..3cb73fd4 100644
+index b3096dc8..10aad9f4 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
 @@ -1108,7 +1108,7 @@ do_genkey(const struct options *options)
@@ -349,7 +353,7 @@ index b3096dc8..3cb73fd4 100644
                             options->ce.tls_crypt_file,
 -                           options->ce.tls_crypt_inline, options->tls_server);
 +                           options->ce.tls_crypt_file_inline,
-+			   options->tls_server);
++                           options->tls_server);
      }
  
      /* tls-crypt with client-specific keys (--tls-crypt-v2) */
@@ -405,7 +409,7 @@ index 2605c6d2..a3095c1f 100644
  /* prepend a random prefix to hostname */
  const char *hostname_randomize(const char *hostname, struct gc_arena *gc);
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index a8394c6c..7dd0b729 100644
+index a8394c6c..b83b504e 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
 @@ -2932,10 +2932,10 @@ options_postprocess_mutate_ce(struct options *o, struct connection_entry *ce)
@@ -530,7 +534,7 @@ index a8394c6c..7dd0b729 100644
 +                                     options->ca_path, R_OK, "--capath");
 +
 +    errs |= check_file_access_inline(options->cert_file_inline, CHKACC_FILE,
-+                                         options->cert_file, R_OK, "--cert");
++                                     options->cert_file, R_OK, "--cert");
 +
 +    errs |= check_file_access_inline(options->extra_certs_file, CHKACC_FILE,
 +                                     options->extra_certs_file, R_OK,
@@ -597,9 +601,9 @@ index a8394c6c..7dd0b729 100644
 +                                         ce->tls_crypt_file, R_OK,
 +                                         "--tls-crypt");
 +        errs |= check_file_access_inline(ce->tls_crypt_v2_file_inline,
-+					 CHKACC_FILE|CHKACC_PRIVATE,
-+					 ce->tls_crypt_v2_file, R_OK,
-+					 "--tls-crypt-v2");
++                                         CHKACC_FILE|CHKACC_PRIVATE,
++                                         ce->tls_crypt_v2_file, R_OK,
++                                         "--tls-crypt-v2");
 +    }
 +
 +    errs |= check_file_access_inline(options->shared_secret_file_inline,
@@ -1555,7 +1559,7 @@ index 605c659e..27fe7c57 100644
              msg(M_WARN, "CRL: cannot parse inline CRL");
              goto err;
 diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 555cbbdf..6ebb90b4 100644
+index 555cbbdf..56a84d44 100644
 --- a/src/openvpn/ssl_openssl.c
 +++ b/src/openvpn/ssl_openssl.c
 @@ -620,17 +620,16 @@ cleanup:
@@ -1717,7 +1721,7 @@ index 555cbbdf..6ebb90b4 100644
  
 -            crypto_msg(M_WARN, "CRL: cannot read CRL from file %s", crl_file);
 +            crypto_msg(M_WARN, "CRL: cannot read CRL from file %s",
-+		       print_key_filename(crl_file, crl_inline));
++                       print_key_filename(crl_file, crl_inline));
              break;
          }
  
@@ -1726,7 +1730,7 @@ index 555cbbdf..6ebb90b4 100644
              X509_CRL_free(crl);
 -            crypto_msg(M_WARN, "CRL: cannot add %s to store", crl_file);
 +            crypto_msg(M_WARN, "CRL: cannot add %s to store",
-+		       print_key_filename(crl_file, crl_inline));
++                       print_key_filename(crl_file, crl_inline));
              break;
          }
          X509_CRL_free(crl);
@@ -1816,7 +1820,7 @@ index 555cbbdf..6ebb90b4 100644
      else
      {
 diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index e9f9cc2a..16424215 100644
+index e9f9cc2a..484d4d46 100644
 --- a/src/openvpn/tls_crypt.c
 +++ b/src/openvpn/tls_crypt.c
 @@ -79,7 +79,7 @@ tls_crypt_buf_overhead(void)
@@ -1851,12 +1855,12 @@ index e9f9cc2a..16424215 100644
                                     const char *b64_metadata,
                                     const char *server_key_file,
 -                                   const char *server_key_inline)
-+				   bool server_key_inline)
++                                   bool server_key_inline)
  {
      struct gc_arena gc = gc_new();
      struct key_ctx server_key = { 0 };
 diff --git a/src/openvpn/tls_crypt.h b/src/openvpn/tls_crypt.h
-index 43bf8122..5e065007 100644
+index 43bf8122..2e127f2f 100644
 --- a/src/openvpn/tls_crypt.h
 +++ b/src/openvpn/tls_crypt.h
 @@ -108,14 +108,14 @@
@@ -1889,7 +1893,7 @@ index 43bf8122..5e065007 100644
 + *                      key_inline is true.
 + * @param key_inline    True if key_file contains an inline key, False
 + *                      otherwise.
-+
++ *
   */
  void tls_crypt_v2_init_server_key(struct key_ctx *key_ctx, bool encrypt,
 -                                  const char *key_file, const char *key_inline);
@@ -1909,10 +1913,9 @@ index 43bf8122..5e065007 100644
 + *                          otherwise.
   */
  void tls_crypt_v2_init_client_key(struct key_ctx_bi *key,
--                                  struct buffer *wrapped_key_buf,
+                                   struct buffer *wrapped_key_buf,
 -                                  const char *key_file,
 -                                  const char *key_inline);
-+				  struct buffer *wrapped_key_buf,
 +                                  const char *key_file, bool key_inline);
  
  /**
@@ -1931,11 +1934,10 @@ index 43bf8122..5e065007 100644
 + *                          otherwise.
   */
  void tls_crypt_v2_write_client_key_file(const char *filename,
--                                        const char *b64_metadata,
+                                         const char *b64_metadata,
 -                                        const char *key_file,
 -                                        const char *key_inline);
-+					const char *b64_metadata,
-+					const char *key_file, bool key_inline);
++                                        const char *key_file, bool key_inline);
  
  /** @} */
  
@@ -1968,7 +1970,7 @@ index 6b30dfbd..dbde8631 100644
  }
  
 diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c
-index 8406d89d..2dc30bfe 100644
+index 8406d89d..2a146f84 100644
 --- a/tests/unit_tests/openvpn/test_tls_crypt.c
 +++ b/tests/unit_tests/openvpn/test_tls_crypt.c
 @@ -568,8 +568,7 @@ test_tls_crypt_v2_write_client_key_file(void **state)
@@ -1981,6 +1983,17 @@ index 8406d89d..2dc30bfe 100644
  }
  
  static void
+@@ -587,8 +586,8 @@ test_tls_crypt_v2_write_client_key_file_metadata(void **state)
+     expect_string(__wrap_buffer_read_from_file, filename, filename);
+     will_return(__wrap_buffer_read_from_file, test_client_key_metadata);
+ 
+-    tls_crypt_v2_write_client_key_file(filename, b64metadata, INLINE_FILE_TAG,
+-                                       test_server_key);
++    tls_crypt_v2_write_client_key_file(filename, b64metadata, test_server_key,
++                                       true);
+ }
+ 
+ int
 -- 
 2.26.2
 
