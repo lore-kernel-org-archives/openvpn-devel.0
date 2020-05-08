@@ -1,9 +1,12 @@
-From: David Sommerseth <davids@...515...>
-Date: Fri,  8 May 2020 13:44:11 +0200
-Message-Id: <20200508114411.15762-1-davids@...515...>
+References: <20200508114243.15532-1-davids@...515...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <784cbc0e-b1f9-eb91-1a2b-3c3f95758a97@...2181...>
+Date: Fri, 8 May 2020 22:56:09 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/2] options: Restore --tls-crypt-v2 inline
- file capability
+In-Reply-To: <20200508114243.15532-1-davids@...515...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH 1/2] options: Fix failing inline
+ tls-auth/crypt with persist-key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,57 +15,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: David Sommerseth <davids@...515...>, openvpn-devel@lists.sourceforge.net
 
-Commit cb2e9218f2bc73f re-factored the internal file handling, but
-somehow overlooked the --tls-crypt-v2 option processing.  It was no
-longer possible to load a configuration file with this key file inlined.
+Hi,
 
-There where two issues here.  First was that the OPT_P_INLINE flag was
-not set, so the option parser rejected --tls-crypt-v2 as inline capable.
+On 08/05/2020 13:42, David Sommerseth wrote:
+> A configuration file using --persist-key and with inlined --tls-auth or
+> --tls-crypt files was failing in check_file_access().  The file argument
+> to check_file_access() contained the key file and not the file name.
+> 
+> This was because check_file_access_inline() which calls
+> check_file_access() if the file is not inlined was told the file was not
+> an inline file.
+> 
+> The reason the check_file_access_inline() was misled was due to a prior
+> option_postprocess_mutate() call puts these key files into a connection
+> block entry in option_postprocess_mutate_ce().  OpenVPN was modified a
+> long while ago to always use connection blocks in the option structure
+> for simplicity.  So the "root" key files would be transferred into a
+> connection entry in this method.
+> 
+> When --persist-key is used, option_postprocess_mutate_ce() will load the
+> key file and "convert" the option into an inline option.  But in
+> commit cb2e9218f2bc73fa2 this logic had lost the "inline indicator".  The
+> result was that the connection entry had the key file content stored in
+> the object but was "tagged" as a normal file (name) not an inline file.
+> 
+> Signed-off-by: David Sommerseth <davids@...515...>
 
-Second issue was that the 'streq(p[1], INLINE_FILE_TAG)' check makes no
-longer sense, as at this point p[1] contains the file contents.  Instead
-use the is_inline flag.
+Thanks for fixing my bugs :-)
+Unfortunately the code has changed a bit since the issue of v1 until
+v11...so these nasty errors sneaked in.
 
-Signed-off-by: David Sommerseth <davids@...515...>
----
- src/openvpn/options.c | 12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index a37106ce..56c9e411 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -8324,22 +8324,16 @@ add_option(struct options *options,
-     }
-     else if (streq(p[0], "tls-crypt-v2") && p[1] && !p[3])
-     {
--        VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);
-+        VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION|OPT_P_INLINE);
-         if (permission_mask & OPT_P_GENERAL)
-         {
--            if (streq(p[1], INLINE_FILE_TAG) && p[2])
--            {
--                options->tls_crypt_v2_file_inline = p[2];
--            }
-             options->tls_crypt_v2_file = p[1];
-+            options->tls_crypt_v2_file_inline = is_inline;
-         }
-         else if (permission_mask & OPT_P_CONNECTION)
-         {
--            if (streq(p[1], INLINE_FILE_TAG) && p[2])
--            {
--                options->ce.tls_crypt_v2_file_inline = p[2];
--            }
-             options->ce.tls_crypt_v2_file = p[1];
-+            options->ce.tls_crypt_v2_file_inline = is_inline;
-         }
-     }
-     else if (streq(p[0], "tls-crypt-v2-verify") && p[1] && !p[2])
+Acked-by: Antonio Quartulli <a@...2181...>
+
+
 -- 
-2.26.0
-
+Antonio Quartulli
 
