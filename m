@@ -1,12 +1,9 @@
-References: <20200508114411.15762-1-davids@...515...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <9f285a71-23ad-7256-11b9-9a48d6971760@...2181...>
-Date: Fri, 8 May 2020 22:59:23 +0200
+Date: Fri,  8 May 2020 23:14:34 +0200
+Message-Id: <20200508211434.27545-1-a@...2181...>
 MIME-Version: 1.0
-In-Reply-To: <20200508114411.15762-1-davids@...515...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH 2/2] options: Restore --tls-crypt-v2
- inline file capability
+Subject: [Openvpn-devel] [PATCH] options: fix inlining auth-gen-token-secret
+ file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,41 +12,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: David Sommerseth <davids@...515...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-Hi,
+With commit ("convert *_inline attributes to bool") the logic for
+signaling when a certain option is inline has been changed.
+Due to an overlook, the auth-gen-token-secret was not converted, thus
+making it impossible to be inlined.
 
-On 08/05/2020 13:44, David Sommerseth wrote:
-> Commit cb2e9218f2bc73f re-factored the internal file handling, but
-> somehow overlooked the --tls-crypt-v2 option processing.  It was no
-> longer possible to load a configuration file with this key file inlined.
-> 
+Fix parsing logic and allow auth-gen-token-secret to be inlined as well.
 
-maybe tls-crypt-v2 was not yet merged when my patch was conceived?
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+ src/openvpn/options.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
-> There where two issues here.  First was that the OPT_P_INLINE flag was
-> not set, so the option parser rejected --tls-crypt-v2 as inline capable.
-> 
-> Second issue was that the 'streq(p[1], INLINE_FILE_TAG)' check makes no
-> longer sense, as at this point p[1] contains the file contents.  Instead
-> use the is_inline flag.
-> 
-> Signed-off-by: David Sommerseth <davids@...515...>
-
-Thanks a lot for fixing this too.
-
-The change makes sense and just converts tls-crypt-v2 to the same
-pattern as the other "inlineable" options.
-
-I wonder if we should add unit-tests or t_client.sh test cases with
-inlined files too.
-
-
-Acked-by: Antonio Quartulli <a@...2181...>
-
-
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 56c9e411..2d2089e3 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -6981,16 +6981,12 @@ add_option(struct options *options,
+         }
+ 
+     }
+-    else if (streq(p[0], "auth-gen-token-secret") && p[1] && (!p[2]
+-                                                              || (p[2] && streq(p[1], INLINE_FILE_TAG))))
++    else if (streq(p[0], "auth-gen-token-secret") && p[1] && !p[2])
+     {
+-        VERIFY_PERMISSION(OPT_P_GENERAL);
++        VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_INLINE);
+         options->auth_token_secret_file = p[1];
++        options->auth_token_secret_file_inline = is_inline;
+ 
+-        if (streq(p[1], INLINE_FILE_TAG) && p[2])
+-        {
+-            options->auth_token_secret_file_inline = p[2];
+-        }
+     }
+     else if (streq(p[0], "client-connect") && p[1])
+     {
 -- 
-Antonio Quartulli
+2.26.2
+
 
