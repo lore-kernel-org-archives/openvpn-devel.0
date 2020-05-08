@@ -1,11 +1,10 @@
-References: <20200508212356.18522-1-a@...2181...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <44e59dab-49dc-a27d-d6b9-139ad2e1d377@...2181...>
-Date: Fri, 8 May 2020 23:25:30 +0200
-MIME-Version: 1.0
-In-Reply-To: <20200508212356.18522-1-a@...2181...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] get rid of TAG_FILE_INLINE constant
+Date: Fri, 8 May 2020 23:52:15 +0200 (CEST)
+Message-Id: <202005082152.048LqFcx073537@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20200508114243.15532-1-davids@...515...>
+References: <20200508114243.15532-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: options: Fix failing inline
+ tls-auth/crypt with persist-key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,69 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: David Sommerseth <davids@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-I managed to totally revert the name of the constant in the commit
-subject and commit message..
+Your patch has been applied to the master branch.
 
-may somebody fix this upon merge? :-)
+Have not done any testing, but the code change looks very reasonable
+and exactly like it would fix the bug :-)
 
-It should be: INLINE_FILE_TAG
+commit e8e410fdc6fb91451d8119b129bac7be00ff81df
+Author: David Sommerseth
+Date:   Fri May 8 13:42:43 2020 +0200
 
-Cheers,
+     options: Fix failing inline tls-auth/crypt with persist-key
 
-On 08/05/2020 23:23, Antonio Quartulli wrote:
-> Now that the whole inline logic has been converted to using bool flags,
-> the TAG_FILE_INLINE constant is not useful anymore.
-> 
-> Get rid of the constant as it's now unused and to prevent any future
-> developer from mistakenly use it again.
-> 
-> Signed-off-by: Antonio Quartulli <a@...2181...>
-> ---
-> 
-> to be applied after all other fixes, as they remove the few last usages
-> of this constant.
-> 
-> 
->  src/openvpn/common.h | 6 ------
->  src/openvpn/crypto.c | 2 +-
->  2 files changed, 1 insertion(+), 7 deletions(-)
-> 
-> diff --git a/src/openvpn/common.h b/src/openvpn/common.h
-> index 4e6f4809..623b3e0d 100644
-> --- a/src/openvpn/common.h
-> +++ b/src/openvpn/common.h
-> @@ -88,12 +88,6 @@ typedef unsigned long ptr_type;
->   */
->  #define PUSH_REQUEST_INTERVAL 5
->  
-> -/*
-> - * A sort of pseudo-filename for data provided inline within
-> - * the configuration file.
-> - */
-> -#define INLINE_FILE_TAG "[[INLINE]]"
-> -
->  /*
->   * Script security warning
->   */
-> diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-> index 672aa14a..f1a52d8c 100644
-> --- a/src/openvpn/crypto.c
-> +++ b/src/openvpn/crypto.c
-> @@ -1189,7 +1189,7 @@ print_key_filename(const char *str, bool is_inline)
->  {
->      if (is_inline)
->      {
-> -        return INLINE_FILE_TAG;
-> +        return "[[INLINE]]";
->      }
->  
->      return np(str);
-> 
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20200508114243.15532-1-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19858.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
--- 
-Antonio Quartulli
+
+--
+kind regards,
+
+Gert Doering
+
 
