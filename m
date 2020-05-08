@@ -1,12 +1,12 @@
-References: <20200508114243.15532-1-davids@...515...>
+References: <20200508114411.15762-1-davids@...515...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <784cbc0e-b1f9-eb91-1a2b-3c3f95758a97@...2181...>
-Date: Fri, 8 May 2020 22:56:09 +0200
+Message-ID: <9f285a71-23ad-7256-11b9-9a48d6971760@...2181...>
+Date: Fri, 8 May 2020 22:59:23 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200508114243.15532-1-davids@...515...>
+In-Reply-To: <20200508114411.15762-1-davids@...515...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH 1/2] options: Fix failing inline
- tls-auth/crypt with persist-key
+Subject: Re: [Openvpn-devel] [PATCH 2/2] options: Restore --tls-crypt-v2
+ inline file capability
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,33 +21,30 @@ To: David Sommerseth <davids@...515...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On 08/05/2020 13:42, David Sommerseth wrote:
-> A configuration file using --persist-key and with inlined --tls-auth or
-> --tls-crypt files was failing in check_file_access().  The file argument
-> to check_file_access() contained the key file and not the file name.
+On 08/05/2020 13:44, David Sommerseth wrote:
+> Commit cb2e9218f2bc73f re-factored the internal file handling, but
+> somehow overlooked the --tls-crypt-v2 option processing.  It was no
+> longer possible to load a configuration file with this key file inlined.
 > 
-> This was because check_file_access_inline() which calls
-> check_file_access() if the file is not inlined was told the file was not
-> an inline file.
+
+maybe tls-crypt-v2 was not yet merged when my patch was conceived?
+
+> There where two issues here.  First was that the OPT_P_INLINE flag was
+> not set, so the option parser rejected --tls-crypt-v2 as inline capable.
 > 
-> The reason the check_file_access_inline() was misled was due to a prior
-> option_postprocess_mutate() call puts these key files into a connection
-> block entry in option_postprocess_mutate_ce().  OpenVPN was modified a
-> long while ago to always use connection blocks in the option structure
-> for simplicity.  So the "root" key files would be transferred into a
-> connection entry in this method.
-> 
-> When --persist-key is used, option_postprocess_mutate_ce() will load the
-> key file and "convert" the option into an inline option.  But in
-> commit cb2e9218f2bc73fa2 this logic had lost the "inline indicator".  The
-> result was that the connection entry had the key file content stored in
-> the object but was "tagged" as a normal file (name) not an inline file.
+> Second issue was that the 'streq(p[1], INLINE_FILE_TAG)' check makes no
+> longer sense, as at this point p[1] contains the file contents.  Instead
+> use the is_inline flag.
 > 
 > Signed-off-by: David Sommerseth <davids@...515...>
 
-Thanks for fixing my bugs :-)
-Unfortunately the code has changed a bit since the issue of v1 until
-v11...so these nasty errors sneaked in.
+Thanks a lot for fixing this too.
+
+The change makes sense and just converts tls-crypt-v2 to the same
+pattern as the other "inlineable" options.
+
+I wonder if we should add unit-tests or t_client.sh test cases with
+inlined files too.
 
 
 Acked-by: Antonio Quartulli <a@...2181...>
