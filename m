@@ -1,9 +1,8 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Fri,  8 May 2020 23:14:34 +0200
-Message-Id: <20200508211434.27545-1-a@...2181...>
+Date: Fri,  8 May 2020 23:23:56 +0200
+Message-Id: <20200508212356.18522-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] options: fix inlining auth-gen-token-secret
- file
+Subject: [Openvpn-devel] [PATCH] get rid of TAG_FILE_INLINE constant
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,42 +16,53 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <a@...2181...>
 
-With commit ("convert *_inline attributes to bool") the logic for
-signaling when a certain option is inline has been changed.
-Due to an overlook, the auth-gen-token-secret was not converted, thus
-making it impossible to be inlined.
+Now that the whole inline logic has been converted to using bool flags,
+the TAG_FILE_INLINE constant is not useful anymore.
 
-Fix parsing logic and allow auth-gen-token-secret to be inlined as well.
+Get rid of the constant as it's now unused and to prevent any future
+developer from mistakenly use it again.
 
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- src/openvpn/options.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 56c9e411..2d2089e3 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -6981,16 +6981,12 @@ add_option(struct options *options,
-         }
+to be applied after all other fixes, as they remove the few last usages
+of this constant.
+
+
+ src/openvpn/common.h | 6 ------
+ src/openvpn/crypto.c | 2 +-
+ 2 files changed, 1 insertion(+), 7 deletions(-)
+
+diff --git a/src/openvpn/common.h b/src/openvpn/common.h
+index 4e6f4809..623b3e0d 100644
+--- a/src/openvpn/common.h
++++ b/src/openvpn/common.h
+@@ -88,12 +88,6 @@ typedef unsigned long ptr_type;
+  */
+ #define PUSH_REQUEST_INTERVAL 5
  
-     }
--    else if (streq(p[0], "auth-gen-token-secret") && p[1] && (!p[2]
--                                                              || (p[2] && streq(p[1], INLINE_FILE_TAG))))
-+    else if (streq(p[0], "auth-gen-token-secret") && p[1] && !p[2])
+-/*
+- * A sort of pseudo-filename for data provided inline within
+- * the configuration file.
+- */
+-#define INLINE_FILE_TAG "[[INLINE]]"
+-
+ /*
+  * Script security warning
+  */
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 672aa14a..f1a52d8c 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -1189,7 +1189,7 @@ print_key_filename(const char *str, bool is_inline)
+ {
+     if (is_inline)
      {
--        VERIFY_PERMISSION(OPT_P_GENERAL);
-+        VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_INLINE);
-         options->auth_token_secret_file = p[1];
-+        options->auth_token_secret_file_inline = is_inline;
+-        return INLINE_FILE_TAG;
++        return "[[INLINE]]";
+     }
  
--        if (streq(p[1], INLINE_FILE_TAG) && p[2])
--        {
--            options->auth_token_secret_file_inline = p[2];
--        }
-     }
-     else if (streq(p[0], "client-connect") && p[1])
-     {
+     return np(str);
 -- 
 2.26.2
 
