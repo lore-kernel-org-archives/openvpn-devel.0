@@ -1,10 +1,10 @@
-Date: Mon, 11 May 2020 14:33:06 +0200 (CEST)
-Message-Id: <202005111233.04BCX6as036195@...2054...>
+Date: Mon, 11 May 2020 14:38:29 +0200 (CEST)
+Message-Id: <202005111238.04BCcTVY036337@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200510140017.16837-1-a@...2181...>
-References: <20200510140017.16837-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: tls-crypt-v2: fix testing of
- inline key
+In-Reply-To: <20200508212356.18522-1-a@...2181...>
+References: <20200508212356.18522-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: get rid of TAG_FILE_INLINE
+ constant
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,33 +18,24 @@ Content-Transfer-Encoding: 8bit
 To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+Your patch has been applied to the master branch.  I have dutifully 
+fixed the "INLINE_FILE_TAG" confusion in the commit message :-)
 
-David beat me with the ACK - I had just advanced through my daily interrupt
-load enough to be able to reproduce the problem ("testing the patch next!")
-when the ACK arrived.  Thanks anyway :-))
+Lightly compile-tested.  Buildbot can do more testing (but this is one
+of the patches that would break compilation anywhere, so "trivially
+correct).
 
-JFTR, after having created a tls-crypt-v2 server-key (in /tmp/s.key)
-
-  $ ./openvpn --tls-crypt-v2 /tmp/s.key --genkey tls-crypt-v2-client
-
-this command ("print to stdout") fails without the patch at hand, while
-it nicely works with the patch.  So, functionality confirmed.
-
-We need some sort of test framework for the tls-crypt(-v2) and/or inline
-blob handling.
-
-
-commit d7e26a34319495e39b8e23a5717304d28a417c30
+commit 27ad978fd6721f05f0c484a1bdbf775b0ab36ab2
 Author: Antonio Quartulli
-Date:   Sun May 10 16:00:17 2020 +0200
+Date:   Fri May 8 23:23:56 2020 +0200
 
-     tls-crypt-v2: fix testing of inline key
+     get rid of INLINE_FILE_TAG constant
 
      Signed-off-by: Antonio Quartulli <a@...2181...>
      Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20200510140017.16837-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19870.html
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20200508212356.18522-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19863.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
