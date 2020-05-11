@@ -1,10 +1,10 @@
-Date: Mon, 11 May 2020 14:38:29 +0200 (CEST)
-Message-Id: <202005111238.04BCcTVY036337@...2054...>
+Date: Mon, 11 May 2020 21:00:27 +0200 (CEST)
+Message-Id: <202005111900.04BJ0R1S041296@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200508212356.18522-1-a@...2181...>
-References: <20200508212356.18522-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: get rid of TAG_FILE_INLINE
- constant
+In-Reply-To: <20200326172332.2356-2-arne@...1227...>
+References: <20200326172332.2356-2-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix session id in env missing
+ first byte
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.  I have dutifully 
-fixed the "INLINE_FILE_TAG" confusion in the commit message :-)
+Your patch has been applied to the master branch.
 
-Lightly compile-tested.  Buildbot can do more testing (but this is one
-of the patches that would break compilation anywhere, so "trivially
-correct).
+Haven't actually tested this in any server setup - but "this is your code,
+if you say this is the way it needs to be, it is, the explanation makes 
+sense and the code change matches".  An all other occurences use strlen()
+as well... So,
 
-commit 27ad978fd6721f05f0c484a1bdbf775b0ab36ab2
-Author: Antonio Quartulli
-Date:   Fri May 8 23:23:56 2020 +0200
+Acked-by: Gert Doering <gert@...1296...>
 
-     get rid of INLINE_FILE_TAG constant
+commit 42fe3e8175822a4cf2c85cc4ce3fdffd41d74455
+Author: Arne Schwabe
+Date:   Thu Mar 26 18:23:31 2020 +0100
 
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: David Sommerseth <davids@...515...>
+     Fix session id in env missing first byte
+
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200508212356.18522-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19863.html
+     Message-Id: <20200326172332.2356-2-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19622.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
