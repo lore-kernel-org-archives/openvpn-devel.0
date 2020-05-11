@@ -1,8 +1,10 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Sun, 10 May 2020 16:00:17 +0200
-Message-Id: <20200510140017.16837-1-a@...2181...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] tls-crypt-v2: fix testing of inline key
+Date: Mon, 11 May 2020 09:14:36 +0200 (CEST)
+Message-Id: <202005110714.04B7EaBB031930@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20200508211434.27545-1-a@...2181...>
+References: <20200508211434.27545-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: options: fix inlining
+ auth-gen-token-secret file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,54 +15,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-The inline logic was recently changed by commit
-("convert *_inline attributes to bool"), however the code testing a
-newly created tls-crypt-v2 client key was not adapted.
+Your patch has been applied to the master branch.
 
-Adapt tls-crypt-v2 test routine by properly signaling when the passed
-key is inlined or not.
+I have just done a compile test.  Code change looks good.
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
- src/openvpn/tls_crypt.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+commit 416162c5b66055da24e6e7b8acde4e7bb8f67522
+Author: Antonio Quartulli
+Date:   Fri May 8 23:14:34 2020 +0200
 
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index 484d4d46..a3894d66 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -697,14 +697,14 @@ tls_crypt_v2_write_client_key_file(const char *filename,
-         goto cleanup;
-     }
- 
--    const char *client_filename = filename;
--    const char *client_inline = NULL;
-+    const char *client_file = filename;
-+    bool client_inline = false;
- 
-     if (!filename || streq(filename, ""))
-     {
-         printf("%s\n", BPTR(&client_key_pem));
--        client_filename = INLINE_FILE_TAG;
--        client_inline = (const char *)BPTR(&client_key_pem);
-+        client_file = (const char *)BPTR(&client_key_pem);
-+        client_inline = true;
-     }
-     else if (!buffer_write_file(filename, &client_key_pem))
-     {
-@@ -717,7 +717,7 @@ tls_crypt_v2_write_client_key_file(const char *filename,
-     struct buffer test_wrapped_client_key;
-     msg(D_GENKEY, "Testing client-side key loading...");
-     tls_crypt_v2_init_client_key(&test_client_key, &test_wrapped_client_key,
--                                 client_filename, client_inline);
-+                                 client_file, client_inline);
-     free_key_ctx_bi(&test_client_key);
- 
-     /* Sanity check: unwrap and load client key (as "server") */
--- 
-2.26.2
+     options: fix inlining auth-gen-token-secret file
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: David Sommerseth <davids@...515...>
+     Message-Id: <20200508211434.27545-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19862.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
