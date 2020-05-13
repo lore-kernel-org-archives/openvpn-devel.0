@@ -1,14 +1,12 @@
-Date: Wed, 13 May 2020 18:36:19 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200513163619.GH1431@...1296...>
+MIME-Version: 1.0
 References: <1521522224-18829-1-git-send-email-selva.nair@...277...>
  <1521522224-18829-2-git-send-email-selva.nair@...277...>
  <CAKuzo_iZtshFKPdFBwnLHP2Z9_rdKRsZ_jLxPiVyhkNq9xu1iw@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="YqVjBi0tQ7r7wVWr"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_iZtshFKPdFBwnLHP2Z9_rdKRsZ_jLxPiVyhkNq9xu1iw@...278...>
+ <20200513163619.GH1431@...1296...>
+In-Reply-To: <20200513163619.GH1431@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 13 May 2020 13:44:59 -0400
+Message-ID: <CAKuzo_gNp+3UDB_48d9vR43SnivSLk8ytsZtaKqLQO4uJOyTQA@...278...>
 Subject: Re: [Openvpn-devel] [PATCH 2/2] Allow repeated cycles through
  remotes when management-query-remote is in use
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,60 +17,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---YqVjBi0tQ7r7wVWr
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
 Hi,
 
-On Sun, Jun 09, 2019 at 03:33:55PM -0400, Selva Nair wrote:
-> Ref: https://patchwork.openvpn.net/project/openvpn2/list/?series=3D201
->=20
-> These patches were meant to help implement choosing the remote through
-> the GUI. I may not find time for that but the patches by themselves
-> are still relevant.
->=20
-> If there is some interest I'll rebase to master.
+On Wed, May 13, 2020 at 12:36 PM Gert Doering <gert@...1296...> wrote:
+>
+> Hi,
+>
+> On Sun, Jun 09, 2019 at 03:33:55PM -0400, Selva Nair wrote:
+> > Ref: https://patchwork.openvpn.net/project/openvpn2/list/?series=201
+> >
+> > These patches were meant to help implement choosing the remote through
+> > the GUI. I may not find time for that but the patches by themselves
+> > are still relevant.
+> >
+> > If there is some interest I'll rebase to master.
+>
+> I'm working my way through the patch queue these days, and now I'm
+> at this one :-)
+>
+> Can you elaborate a bit how this would work, and how much work on the
+> GUI side would be needed?  (And, yes, a rebased patch :) ).
 
-I'm working my way through the patch queue these days, and now I'm
-at this one :-)
+From what I can recall...
 
-Can you elaborate a bit how this would work, and how much work on the=20
-GUI side would be needed?  (And, yes, a rebased patch :) ).
+Two points to note:
 
-gert
+(i) With multiple remotes, openvpn exits if no successful connection
+could be made after two cycles through all remotes (undocumented?) .
+(ii) When --management-query-remote is used, the core presents one
+remote at a time and the user has to make a choice to skip, accept or
+replace without knowing which remotes are available.
 
+Now, for a user-friendly implementation of selecting the remote from a
+GUI dialog, the plan is to silently cycle through all remotes, make a
+list and then allow the user to make a selection from the list. This
+will be aided by having a safe way to cycle through all remotes
+multiple times without the core exiting --- arguably, one cycle is
+enough to make a list and the list building is complete when the
+second cycle starts. But it would be much easier to do this without
+having to worry about the core exiting unexpectedly. The GUI knows how
+to restart or terminate the core exit if need be.
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+The behaviour is unchanged if management-query-remote is not in use.
 
-Gert Doering - Munich, Germany                             gert@...1296...
+The patch also changes the way failed connections are counted: skipped
+remotes should not be counted as failed as that count is used in the
+back-off logic.
 
---YqVjBi0tQ7r7wVWr
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJevCICAAoJEB2Cnv7KVigSUlkL/0333ZM7U8XuCpN0jNV28FFa
-Fw6gFxjsl6KFY7bxgtnx+GAPP+8nkPiuvy7w20cMZ3DrzuL9fJ0aJe7INv5c2HVd
-FQ49JQuYx/NLDvpPohUMC3IvdH5nJK5vzTPdIXTWz+8rbh3oypzQfEE3e6AzPRFf
-SQlq4EReQBAqJdLXy11CLaaYxvgT7MTzFXm+Q61JHVRtfBjVfJ+S0qivqDixUtiI
-INIrJCeZKS1dIGKUMQvx4B30ANIrw80N8HTsKBvsOPlCRMH97IXxK/NBKvtwiHcZ
-gss98sfw342PRq6xH9x41SljSYLNX1Tlu4xyGrIeOinVZ4lOBJUMe5WxvrdVg0B2
-AbGWBRULNy1/SouBfrZ1xpmg4vIHfmy0P666eG3dNNO6FztnEE3Soq7Bx62rFN+4
-3Dqi6VdID0+M/BeBKBlWI/0HgW3MzR7NYc5ES6gBDLUICZqkdF4KCih+2/jNh7YB
-xoKOTIb4DY2Naegw6GrFVs+dTMYGl7CeX2JGT2eeog==
-=KVSH
------END PGP SIGNATURE-----
-
---YqVjBi0tQ7r7wVWr--
+Selva
 
