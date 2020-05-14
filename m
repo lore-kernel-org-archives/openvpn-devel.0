@@ -1,14 +1,12 @@
 MIME-Version: 1.0
-References: <1521522224-18829-1-git-send-email-selva.nair@...277...>
- <1521522224-18829-2-git-send-email-selva.nair@...277...>
- <CAKuzo_iZtshFKPdFBwnLHP2Z9_rdKRsZ_jLxPiVyhkNq9xu1iw@...278...>
- <20200513163619.GH1431@...1296...>
-In-Reply-To: <20200513163619.GH1431@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 13 May 2020 13:44:59 -0400
-Message-ID: <CAKuzo_gNp+3UDB_48d9vR43SnivSLk8ytsZtaKqLQO4uJOyTQA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 2/2] Allow repeated cycles through
- remotes when management-query-remote is in use
+References: <dc5c81c1-7529-07a9-2e53-750fec37ed56@...1856...>
+ <20200217120340.20995-1-arne@...1227...>
+In-Reply-To: <20200217120340.20995-1-arne@...1227...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Thu, 14 May 2020 16:35:54 +0300
+Message-ID: <CAGyAFMWHY=TuhkmDTC0XNAtskmjufU6SFA-HrSs6np4Rvctvcg@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v4] Make compression asymmetric by
+ default and add warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,56 +16,60 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+Content-Transfer-Encoding: quoted-printable
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Wed, May 13, 2020 at 12:36 PM Gert Doering <gert@...1296...> wrote:
->
-> Hi,
->
-> On Sun, Jun 09, 2019 at 03:33:55PM -0400, Selva Nair wrote:
-> > Ref: https://patchwork.openvpn.net/project/openvpn2/list/?series=201
-> >
-> > These patches were meant to help implement choosing the remote through
-> > the GUI. I may not find time for that but the patches by themselves
-> > are still relevant.
-> >
-> > If there is some interest I'll rebase to master.
->
-> I'm working my way through the patch queue these days, and now I'm
-> at this one :-)
->
-> Can you elaborate a bit how this would work, and how much work on the
-> GUI side would be needed?  (And, yes, a rebased patch :) ).
+> Warning for comp-lzo/compress are not generated in the post option check
+> (options_postprocess_mutate) since these warnings should also be shown
+> on pushed options. Moving the showing the warning showing for
 
-From what I can recall...
+Typo in the last sentence.
 
-Two points to note:
+If I want to use compression and specify algorithm, I got confusing warning=
+s:
 
-(i) With multiple remotes, openvpn exits if no successful connection
-could be made after two cycles through all remotes (undocumented?) .
-(ii) When --management-query-remote is used, the core presents one
-remote at a time and the user has to make a choice to skip, accept or
-replace without knowing which remotes are available.
+=E2=9E=9C  openvpn git:(master) =E2=9C=97 sudo src/openvpn/openvpn --config=
+ ~/lev.ovpn
+--compress lz4-v2 --allow-compression yes
+Thu May 14 16:16:26 2020 WARNING:  Compression enabled, Compression
+has been used in the past to break encryption. Enabling decompression
+of received packet only. Sent packets are not compressed.
+Thu May 14 16:16:26 2020 WARNING: Compression enabled, Compression has
+beenused in the past to break encryption. Allowing compression allows
+attacks that break encryption. Using '--allow-compression yes' is
+strongly discouraged for common usage. See --compress in the manual
+page for more information
+Thu May 14 16:16:26 2020 OpenVPN 2.5_git
+[git:master/6001784afd89c4e9+] x86_64-apple-darwin19.4.0 [SSL
+(OpenSSL)] [LZO] [LZ4] [MH/RECVDA] [AEAD] built on May 14 2020
 
-Now, for a user-friendly implementation of selecting the remote from a
-GUI dialog, the plan is to silently cycle through all remotes, make a
-list and then allow the user to make a selection from the list. This
-will be aided by having a safe way to cycle through all remotes
-multiple times without the core exiting --- arguably, one cycle is
-enough to make a list and the list building is complete when the
-second cycle starts. But it would be much easier to do this without
-having to worry about the core exiting unexpectedly. The GUI knows how
-to restart or terminate the core exit if need be.
+1) The first warning is wrong, since I explicitly allowed compression.
+Also it has unneeded whitespace in the beginning.
 
-The behaviour is unchanged if management-query-remote is not in use.
+2) The second warning is missing whitespace ("beenused").
 
-The patch also changes the way failed connections are counted: skipped
-remotes should not be counted as failed as that count is used in the
-back-off logic.
+>           The logic of warnings etc in options.c has not been changed
+>           since adding all the code to mutate_options would a lot more
+>           and more complicated code and after discussion we decided that
+>           it is okay as is.
 
-Selva
+Cannot we set some bit flags in options processing, like
+
+COMP_WARN_GENERIC  1 << 0 // Compression enabled, Compression has been
+used in the past to break encryption.
+COMP_WARN_ASYNC  1 << 1 // Enabling decompression of received packet
+only. Sent packets are not compressed.
+COMP_WARN_ALLOWED_YES  1 << 2 // Using '--allow-compression yes' is
+strongly discouraged for common usage. See --compress in the manual
+page for more information
+
+and handle them in options postprocessing -  excluding
+COMP_ENABLED_WARN_ASYNC if COMP_ENABLED_WARN_YES is set and printing
+the message?
+
+--=20
+-Lev
 
