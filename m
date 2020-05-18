@@ -1,18 +1,16 @@
-References: <1521522224-18829-1-git-send-email-selva.nair@...277...>
- <1521522224-18829-2-git-send-email-selva.nair@...277...>
- <CAKuzo_iZtshFKPdFBwnLHP2Z9_rdKRsZ_jLxPiVyhkNq9xu1iw@...278...>
- <20200513163619.GH1431@...1296...>
- <CAKuzo_gNp+3UDB_48d9vR43SnivSLk8ytsZtaKqLQO4uJOyTQA@...278...>
+References: <20191109151306.18597-1-arne@...1227...>
+ <20191109151306.18597-5-arne@...1227...>
+ <6609920b-5fb5-ce31-14fd-ef4743921d42@...2080...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <f25d5098-01a4-137f-f4d8-f812ce432130@...1227...>
-Date: Mon, 18 May 2020 12:20:56 +0200
+Message-ID: <e4f846d1-b920-ae08-f9b1-2024c9164d99@...1227...>
+Date: Mon, 18 May 2020 16:15:55 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_gNp+3UDB_48d9vR43SnivSLk8ytsZtaKqLQO4uJOyTQA@...278...>
+In-Reply-To: <6609920b-5fb5-ce31-14fd-ef4743921d42@...2080...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="DtKGnT4zbWJoj4kpKo13FcNeInN61jvAf"
-Subject: Re: [Openvpn-devel] [PATCH 2/2] Allow repeated cycles through
- remotes when management-query-remote is in use
+ boundary="MiReC3Fj0gdCEwSSsvPQDzCjb4L6QksP0"
+Subject: Re: [Openvpn-devel] [PATCH v2 5/5] Implement forwarding client
+ CR_RESPONSE messages to management
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,98 +19,94 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>, Gert Doering <gert@...1296...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: David Sommerseth <openvpn@...2080...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---DtKGnT4zbWJoj4kpKo13FcNeInN61jvAf
-Content-Type: multipart/mixed; boundary="xUqOMYVtHxlm937PnHInL6xJmOLMIUZ7Y"
+--MiReC3Fj0gdCEwSSsvPQDzCjb4L6QksP0
+Content-Type: multipart/mixed; boundary="eKmytytKR9IXBKqMl3EENkwd3JVNFcaud"
 
---xUqOMYVtHxlm937PnHInL6xJmOLMIUZ7Y
+--eKmytytKR9IXBKqMl3EENkwd3JVNFcaud
 Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-Am 13.05.20 um 19:44 schrieb Selva Nair:
-> Hi,
 >=20
-> On Wed, May 13, 2020 at 12:36 PM Gert Doering <gert@...1296...> wrote:
->>
->> Hi,
->>
->> On Sun, Jun 09, 2019 at 03:33:55PM -0400, Selva Nair wrote:
->>> Ref: https://patchwork.openvpn.net/project/openvpn2/list/?series=3D201
->>>
->>> These patches were meant to help implement choosing the remote through
->>> the GUI. I may not find time for that but the patches by themselves
->>> are still relevant.
->>>
->>> If there is some interest I'll rebase to master.
->>
->> I'm working my way through the patch queue these days, and now I'm
->> at this one :-)
->>
->> Can you elaborate a bit how this would work, and how much work on the
->> GUI side would be needed?  (And, yes, a rebased patch :) ).
->=20
-> From what I can recall...
->=20
-> Two points to note:
->=20
-> (i) With multiple remotes, openvpn exits if no successful connection
-> could be made after two cycles through all remotes (undocumented?) .
-> (ii) When --management-query-remote is used, the core presents one
-> remote at a time and the user has to make a choice to skip, accept or
-> replace without knowing which remotes are available.
->=20
-> Now, for a user-friendly implementation of selecting the remote from a
-> GUI dialog, the plan is to silently cycle through all remotes, make a
-> list and then allow the user to make a selection from the list. This
-> will be aided by having a safe way to cycle through all remotes
-> multiple times without the core exiting --- arguably, one cycle is
-> enough to make a list and the list building is complete when the
-> second cycle starts. But it would be much easier to do this without
-> having to worry about the core exiting unexpectedly. The GUI knows how
-> to restart or terminate the core exit if need be.
->=20
-> The behaviour is unchanged if management-query-remote is not in use.
+> This will accept an empty CR_RESPONSE from the client.  Could that be an
+> acceptable reply from the client?  My initial thought is: When the server
+> sends a challenge to the client, it should have a "meaningful" response. =
+ I
+> struggle to see where an empty response would be meaningful.
 
+Enter your second TOTP to gain additional privileges. User jsut presses
+enter and you then only get bare minimum VPN access.
 
-I do not like this change. If you want to list all remotes adding an
-option to the management interface that list all remotes is a better
-idea than to piggyback on skipping and implmenenting this as hack to
-list them all. Something like like-remotes.
+>=20
+> And by "meaningful" I mean in the broadest interpretation.  Invalid
+> authentication response, invalid data (not base64 encoded, etc) is meanin=
+gful.
+>=20
+> I'm also wondering if it would make sense to validate the base64 response=
+ as well.
+>=20
+>=20
+> To summarize all patches:
+>=20
+> - They all look reasonable and fine, but there are a few things to improv=
+e.
+>=20
+> - We should avoid the SSO terminology in the implementation; it can be us=
+ed
+>   for a much broader authentication scope than just SSO.  Patch 2/5 also =
+needs
+>   to be revisited, despite the ACK I've already given.
+>=20
+> - Documentation could be a bit better.
+>=20
+> - It would be nice to have a really simple test "module" for the server s=
+ide,
+>   which would just give challenges like "How much is X + Y?" where X and =
+Y are
+>   random numbers (1-10) and doesn't really need to account for multiple
+>   clients at the same time.  But I do realize the management interface ca=
+n be
+>   annoying to work with from simple scripting tools.
 
-Also I want skip to count a failure since a UI might have some knowlege
-that certain remotes cannot work and skipping therefore should also
-count as "have tried this remote".
+I would rather give an example using connect/auth scripts and then a
+script hook that can be called on receiving the CR_RESPONSE message. But
+I want to wait until the deferred client connect patches are in before
+doing that as they might touch the same code.
+
+Implement a small e.g. python based management interface might also be
+possible but it would be an example that does a lot more than just that
+because you a bit more to have a something working with the management
+interface
 
 Arne
 
 
---xUqOMYVtHxlm937PnHInL6xJmOLMIUZ7Y--
+--eKmytytKR9IXBKqMl3EENkwd3JVNFcaud--
 
---DtKGnT4zbWJoj4kpKo13FcNeInN61jvAf
+--MiReC3Fj0gdCEwSSsvPQDzCjb4L6QksP0
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl7CYYkACgkQFRhsZwKx
-RFTeOhAAs9RfTDxkRcSyhmdGTKWjUWN8QaN2ZDjZFYLXJEE4s5AtV/egF5auVBfm
-8jONWrW9i1q5BZHhFaMAxbfUWKYuDSdYQsRdoOspmrvG8GLVB4/Yfjhau8p8WUh6
-aTFdAgWdIyZAqlSn/bvMsPha1lcsMOg1c+HNQ+sueQpSROvwNrWrTgpgtMKcDafy
-KUdr3g+nPfb6/YI+8reudl6SNbAp/J/E6pMeawUqK4U41JpkMla7XkHUjPHGVsrZ
-aHDvHMb3LMkj2eeNv8uCg9kF4PccW1RSHVuW4Ioivb7hsjtdD1BfhNtxe2nXPxWS
-27QQ24ExFe928YsD3k9kMfw6uZjRg+H+Hv2lurfKCnyqPmeLZgOp0Ow1VN+Jk5iL
-cX39WANduWkEChnHKe7HryK96t3MTPHJ0KRTMvcDhXjvF0dxTSMSAekaKA2xqWpi
-PpOelwz0wO1S2YJVq4FBi5cRcFpFP+O3xc0B0gRikvYZjBFFFylGkUkd44fx+rx3
-gKWaf3GnFDNqdEvwbEHZCnbuWVPZcC06tY3Dm/gDiikr1rPjsCcKWrYQ3f/ydlac
-C8wztcgS+uV/Wb5YCPZFChanL+nEgsiUSfhpfQmIo8ec6Rs6VmmgPeUCkZvT89iQ
-QYc5+dwvnTh1bDusgE95hZeAVFdHNgqs0bA+2iyaZ/sDK3FQvhY=
-=4rW0
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl7CmJsACgkQFRhsZwKx
+RFSLeA//T3b7MW5JRXiCTXEn7s852gtylLxGPukGLPaPeyWtvLObT6RQrSnmcprO
+wtnh+JTDEFzdRNvQsS8vi7mj0HJetL+UFPAIDzIr/OYV8WXHuRI4muSjW1Uep6vM
+UchE4PzuCcpPhb4eMxG7GvnlZ+3EJGJglYHMGCzGs/jv+iT8OKpOZBQj9/UkYk0Y
+ZXxzZkyvSyHHhr/O4tHKHXasqC5jJHunBPAh3nyHn8qO9l7N1Zk8KR9mF6m8BDmC
+18wSYc/WYMHhPAb+aDwtz7Q3k1FtGXdjDZdzDK6+gyYB/KX6zef7Wrz2pew0tyfY
+83hYUnQVPdUYs01PXTUez5LzYuPwnQgIMIWZiC4j1XkqDbvM3xZs/YTEW+N6XbKs
+1VUcqn4lkxljnkJDyeokGDSAL9zdzG7ttCpW0s9xUe4JAuoWh77a6e16W0TelWZk
+lTM1dGFtxSYBFo9Jdg4pcRi/y4GU8FzDwRboGro5tzxyjXEpbYb6AIEMT/TOKFEB
+j40cHjVBKLJGXvHbEbLkJoQftjiVwV/SLNI033ho67iKL9048RIFVcv5RFuYlXj3
+BqP4DIb7S9bMpI3qfBlJUAkxfb51jlgZJzLvNZ3NxIn08iv2lL6b5KUZEKkm+/YK
+cqS7UPJkzNjOZHTMRPYPcU4cE3JYwfK0cxxJMzPqLgk4BZlGbCo=
+=g+Mi
 -----END PGP SIGNATURE-----
 
---DtKGnT4zbWJoj4kpKo13FcNeInN61jvAf--
+--MiReC3Fj0gdCEwSSsvPQDzCjb4L6QksP0--
 
