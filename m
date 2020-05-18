@@ -1,16 +1,14 @@
-References: <20191109151306.18597-1-arne@...1227...>
- <20191109151306.18597-5-arne@...1227...>
- <6609920b-5fb5-ce31-14fd-ef4743921d42@...2080...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <e4f846d1-b920-ae08-f9b1-2024c9164d99@...1227...>
-Date: Mon, 18 May 2020 16:15:55 +0200
 MIME-Version: 1.0
-In-Reply-To: <6609920b-5fb5-ce31-14fd-ef4743921d42@...2080...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="MiReC3Fj0gdCEwSSsvPQDzCjb4L6QksP0"
-Subject: Re: [Openvpn-devel] [PATCH v2 5/5] Implement forwarding client
- CR_RESPONSE messages to management
+References: <CALVjyqoi3ZkOn2p+2i=xBS_pNHKbym0eReWCWHAg9+-ULwtEgQ@...278...>
+ <CALVjyqo5NNddn3E+cV_eAySc1VzYeLXPvvKUykOusaZF9LhjxQ@...278...>
+ <20200515204626.GO1431@...1296...>
+In-Reply-To: <20200515204626.GO1431@...1296...>
+From: Shreyas Heranjal <mailshreyas@...277...>
+Date: Mon, 18 May 2020 08:36:53 -0700
+Message-ID: <CALVjyqrmhf8UVc0rwf+cfUC76s3qs6oge+=n4s37XJ8vxZQHNA@...278...>
+Content-Type: multipart/alternative; boundary="000000000000cc8c2f05a5edf0b7"
+Subject: Re: [Openvpn-devel] deferred client-connect -
+ https://patchwork.openvpn.net/patch/607/
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,94 +17,121 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn@...2080...>, openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---MiReC3Fj0gdCEwSSsvPQDzCjb4L6QksP0
-Content-Type: multipart/mixed; boundary="eKmytytKR9IXBKqMl3EENkwd3JVNFcaud"
+--000000000000cc8c2f05a5edf0b7
+Content-Type: text/plain; charset="UTF-8"
 
---eKmytytKR9IXBKqMl3EENkwd3JVNFcaud
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
+Hi Gert,
+
+Thanks for the response.
+Also, I was wondering if there was any sample code for using
+the OPENVPN_PLUGIN_CLIENT_CONNECT_V2 plugin to influence the ifconfig-push
+on the clients. I want to assign client IP addresses to the connecting
+clients based on some logic in the plugin.
+
+I went through the code and looks like the config needs to be returned as
+part of the plugin_return struct. Is that correct? Is this the way to do it?
+
+Thanks,
+S
+
+On Fri, May 15, 2020 at 1:46 PM Gert Doering <gert@...1296...> wrote:
+
+> Hi,
+>
+> On Fri, May 15, 2020 at 12:40:08PM -0700, Shreyas Heranjal wrote:
+> > > I want to use client-connect plugin to assign IP addresses to the
+> clients,
+> > > and I want to do it asynchronously through my IPAM service. I was going
+> > > through the openvpn-devel forum and found this patch.
+> > > https://patchwork.openvpn.net/patch/607/
+> > >
+> > > Is this patch safe to use? Any reason why this was not included in the
+> > > latest version of Openvpn?
+>
+> It's being worked on.  The patchset is fairly large and has not been
+> reviewed fully (and initial review turned up the wish for some
+> restructuring).
+>
+> gert
+>
+>
+> --
+> "If was one thing all people took for granted, was conviction that if you
+>  feed honest figures into a computer, honest figures come out. Never
+> doubted
+>  it myself till I met a computer with a sense of humor."
+>                              Robert A. Heinlein, The Moon is a Harsh
+> Mistress
+>
+> Gert Doering - Munich, Germany
+> gert@...1296...
+>
+
+--000000000000cc8c2f05a5edf0b7
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
->=20
-> This will accept an empty CR_RESPONSE from the client.  Could that be an
-> acceptable reply from the client?  My initial thought is: When the server
-> sends a challenge to the client, it should have a "meaningful" response. =
- I
-> struggle to see where an empty response would be meaningful.
+<div dir=3D"ltr"><div class=3D"gmail_default" style=3D"font-family:tahoma,s=
+ans-serif;font-size:small">Hi Gert,</div><div class=3D"gmail_default" style=
+=3D"font-family:tahoma,sans-serif;font-size:small"><br></div><div class=3D"=
+gmail_default" style=3D"font-family:tahoma,sans-serif;font-size:small">Than=
+ks for the response.</div><div class=3D"gmail_default" style=3D"font-family=
+:tahoma,sans-serif;font-size:small">Also, I was wondering if there was any =
+sample code for using the=C2=A0OPENVPN_PLUGIN_CLIENT_CONNECT_V2 plugin to i=
+nfluence the ifconfig-push on the clients. I want to assign client IP addre=
+sses to the connecting clients based on some logic in the plugin.</div><div=
+ class=3D"gmail_default" style=3D"font-family:tahoma,sans-serif;font-size:s=
+mall"><br></div><div class=3D"gmail_default" style=3D"font-family:tahoma,sa=
+ns-serif;font-size:small">I went through the code and looks like the config=
+ needs to be returned as part of the plugin_return struct. Is that correct?=
+ Is this the way to do it?</div><div class=3D"gmail_default" style=3D"font-=
+family:tahoma,sans-serif;font-size:small"><br></div><div class=3D"gmail_def=
+ault" style=3D"font-family:tahoma,sans-serif;font-size:small">Thanks,</div>=
+<div class=3D"gmail_default" style=3D"font-family:tahoma,sans-serif;font-si=
+ze:small">S=C2=A0=C2=A0</div></div><br><div class=3D"gmail_quote"><div dir=
+=3D"ltr" class=3D"gmail_attr">On Fri, May 15, 2020 at 1:46 PM Gert Doering =
+&lt;<a href=3D"mailto:gert@...1296...">gert@...1296...</a>&gt; wrote:<br></=
+div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;bor=
+der-left:1px solid rgb(204,204,204);padding-left:1ex">Hi,<br>
+<br>
+On Fri, May 15, 2020 at 12:40:08PM -0700, Shreyas Heranjal wrote:<br>
+&gt; &gt; I want to use client-connect plugin to assign IP addresses to the=
+ clients,<br>
+&gt; &gt; and I want to do it asynchronously through my IPAM service. I was=
+ going<br>
+&gt; &gt; through the openvpn-devel forum and found this patch.<br>
+&gt; &gt; <a href=3D"https://patchwork.openvpn.net/patch/607/" rel=3D"noref=
+errer" target=3D"_blank">https://patchwork.openvpn.net/patch/607/</a><br>
+&gt; &gt;<br>
+&gt; &gt; Is this patch safe to use? Any reason why this was not included i=
+n the<br>
+&gt; &gt; latest version of Openvpn?<br>
+<br>
+It&#39;s being worked on.=C2=A0 The patchset is fairly large and has not be=
+en<br>
+reviewed fully (and initial review turned up the wish for some<br>
+restructuring).<br>
+<br>
+gert<br>
+<br>
+<br>
+-- <br>
+&quot;If was one thing all people took for granted, was conviction that if =
+you <br>
+=C2=A0feed honest figures into a computer, honest figures come out. Never d=
+oubted <br>
+=C2=A0it myself till I met a computer with a sense of humor.&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Robert A. Heinlein, The Moon is a Harsh Mist=
+ress<br>
+<br>
+Gert Doering - Munich, Germany=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<a href=3D"mailt=
+o:gert@...1296..." target=3D"_blank">gert@...1296...</a><br>
+</blockquote></div>
 
-Enter your second TOTP to gain additional privileges. User jsut presses
-enter and you then only get bare minimum VPN access.
-
->=20
-> And by "meaningful" I mean in the broadest interpretation.  Invalid
-> authentication response, invalid data (not base64 encoded, etc) is meanin=
-gful.
->=20
-> I'm also wondering if it would make sense to validate the base64 response=
- as well.
->=20
->=20
-> To summarize all patches:
->=20
-> - They all look reasonable and fine, but there are a few things to improv=
-e.
->=20
-> - We should avoid the SSO terminology in the implementation; it can be us=
-ed
->   for a much broader authentication scope than just SSO.  Patch 2/5 also =
-needs
->   to be revisited, despite the ACK I've already given.
->=20
-> - Documentation could be a bit better.
->=20
-> - It would be nice to have a really simple test "module" for the server s=
-ide,
->   which would just give challenges like "How much is X + Y?" where X and =
-Y are
->   random numbers (1-10) and doesn't really need to account for multiple
->   clients at the same time.  But I do realize the management interface ca=
-n be
->   annoying to work with from simple scripting tools.
-
-I would rather give an example using connect/auth scripts and then a
-script hook that can be called on receiving the CR_RESPONSE message. But
-I want to wait until the deferred client connect patches are in before
-doing that as they might touch the same code.
-
-Implement a small e.g. python based management interface might also be
-possible but it would be an example that does a lot more than just that
-because you a bit more to have a something working with the management
-interface
-
-Arne
-
-
---eKmytytKR9IXBKqMl3EENkwd3JVNFcaud--
-
---MiReC3Fj0gdCEwSSsvPQDzCjb4L6QksP0
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl7CmJsACgkQFRhsZwKx
-RFSLeA//T3b7MW5JRXiCTXEn7s852gtylLxGPukGLPaPeyWtvLObT6RQrSnmcprO
-wtnh+JTDEFzdRNvQsS8vi7mj0HJetL+UFPAIDzIr/OYV8WXHuRI4muSjW1Uep6vM
-UchE4PzuCcpPhb4eMxG7GvnlZ+3EJGJglYHMGCzGs/jv+iT8OKpOZBQj9/UkYk0Y
-ZXxzZkyvSyHHhr/O4tHKHXasqC5jJHunBPAh3nyHn8qO9l7N1Zk8KR9mF6m8BDmC
-18wSYc/WYMHhPAb+aDwtz7Q3k1FtGXdjDZdzDK6+gyYB/KX6zef7Wrz2pew0tyfY
-83hYUnQVPdUYs01PXTUez5LzYuPwnQgIMIWZiC4j1XkqDbvM3xZs/YTEW+N6XbKs
-1VUcqn4lkxljnkJDyeokGDSAL9zdzG7ttCpW0s9xUe4JAuoWh77a6e16W0TelWZk
-lTM1dGFtxSYBFo9Jdg4pcRi/y4GU8FzDwRboGro5tzxyjXEpbYb6AIEMT/TOKFEB
-j40cHjVBKLJGXvHbEbLkJoQftjiVwV/SLNI033ho67iKL9048RIFVcv5RFuYlXj3
-BqP4DIb7S9bMpI3qfBlJUAkxfb51jlgZJzLvNZ3NxIn08iv2lL6b5KUZEKkm+/YK
-cqS7UPJkzNjOZHTMRPYPcU4cE3JYwfK0cxxJMzPqLgk4BZlGbCo=
-=g+Mi
------END PGP SIGNATURE-----
-
---MiReC3Fj0gdCEwSSsvPQDzCjb4L6QksP0--
+--000000000000cc8c2f05a5edf0b7--
 
