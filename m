@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Wed, 20 May 2020 00:00:02 +0200
-Message-Id: <20200519220004.25136-4-arne@...1227...>
+Date: Wed, 20 May 2020 00:00:04 +0200
+Message-Id: <20200519220004.25136-6-arne@...1227...>
 In-Reply-To: <20200519220004.25136-1-arne@...1227...>
 References: <20200519220004.25136-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v3 3/5] Implement sending response to
- challenge via CR_RESPONSE
+Subject: [Openvpn-devel] [PATCH v3 5/5] Implement forwarding client
+ CR_RESPONSE messages to management
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,186 +17,191 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-When a client announces its support to support text based
-challenge/response via IV_SSO=crtext,the client needs to also
-be able to reply to that response.
-
-This adds the "cr-response" management function to be able to
-do this. The answer should be base64 encoded.
+When signalling the client that it should do Challenge response
+without reconnecting (IV_SSO=crtext/INFOPRE=CR_TEXT), the server
+needs forward the response via the management console.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- doc/management-notes.txt | 14 ++++++++++++++
- src/openvpn/init.c       | 39 +++++++++++++++++++++++++++++++++++++++
- src/openvpn/manage.c     | 39 ++++++++++++++++++++++++++++++++++++++-
- src/openvpn/manage.h     |  1 +
- 4 files changed, 92 insertions(+), 1 deletion(-)
+ doc/management-notes.txt | 30 +++++++++++++++++++++++++++++-
+ src/openvpn/forward.c    |  4 ++++
+ src/openvpn/manage.c     | 28 +++++++++++++++++++++++++++-
+ src/openvpn/manage.h     |  5 +++++
+ src/openvpn/push.c       | 22 ++++++++++++++++++++++
+ src/openvpn/push.h       |  2 ++
+ 6 files changed, 89 insertions(+), 2 deletions(-)
 
 diff --git a/doc/management-notes.txt b/doc/management-notes.txt
-index e54e1082..a7ae84e3 100644
+index ce32b85f..5cfbb70a 100644
 --- a/doc/management-notes.txt
 +++ b/doc/management-notes.txt
-@@ -806,6 +806,20 @@ To accept connecting to the host and port directly, use this command:
+@@ -1052,7 +1052,7 @@ The ">CLIENT:" notification is enabled by the --management-client-auth
+ OpenVPN configuration directive that gives the management interface client
+ the responsibility to authenticate OpenVPN clients after their client
+ certificate has been verified.  CLIENT notifications may be multi-line, and
+-the sequentiality of a given CLIENT notification, its associated environmental
++the sequentially of a given CLIENT notification, its associated environmental
+ variables, and the terminating ">CLIENT:ENV,END" line are guaranteed to be
+ atomic.
  
-   proxy NONE
+@@ -1094,6 +1094,34 @@ CLIENT notification types:
  
-+COMMAND -- cr-response (OpenVPN 2.5 or higher)
-+-------------------------------------------------
-+Provides support for sending responses a challenge/response
-+query via INFOMSG,CR_TEXT. The response should be base64 encoded:
-+
-+  cr-response SGFsbG8gV2VsdCE=
-+
-+The document is intended to be used after the client received a
-+CR_TEXT challenge (see send-pending-auth section). The answer is
-+the answer to the challenge and depends on the challenge itself
-+for a TOTP challenge this would the number encoded as base64 or
-+just a string for a challenge like what "day is it today?".
-+
-+
- COMMAND -- pk-sig (OpenVPN 2.5 or higher, management version > 1)
- COMMAND -- rsa-sig (OpenVPN 2.3 or higher, management version <= 1)
- -----------------------------------------------------------------
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 70cd493a..2c8db68d 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -291,6 +291,44 @@ ce_management_query_proxy(struct context *c)
-     return ret;
- }
+     >CLIENT:ADDRESS,{CID},{ADDR},{PRI}
  
-+/**
-+ * This method sends a custom control channel message
-+ *
-+ * This will write the control message
-+ *
-+ *  command parm1,parm2,..
-+ *  .
-+ * to the control channel.
-+ *
-+ * @param arg           The context struct
-+ * @param command       The command being sent
-+ * @param parameters    the parameters to the command
-+ * @return              if sending was successful
-+ */
-+static bool
-+management_callback_send_cc_message(void *arg,
-+                                    const char *command,
-+                                    const char *parameters)
-+{
-+    struct context *c = (struct context *) arg;
-+    size_t len = strlen(command) + 1 + sizeof(parameters) + 1;
-+    if (len > PUSH_BUNDLE_SIZE)
-+    {
-+        return false;
-+    }
++(5) Text based challenge/Response
 +
-+    struct gc_arena gc = gc_new();
-+    struct buffer buf = alloc_buf_gc(len, &gc);
-+    ASSERT(buf_printf(&buf, "%s", command));
-+    if (parameters)
-+    {
-+        ASSERT(buf_printf(&buf, ",%s", parameters));
-+    }
-+    bool status = send_control_channel_string(c, BSTR(&buf), D_PUSH);
++   >CLIENT:CR_RESPONSE,{CID},{KID},{response_base64}
++   >CLIENT:ENV,name1=val1
++   >CLIENT:ENV,name2=val2
++   >CLIENT:ENV,...
++   >CLIENT:ENV,END
 +
-+    gc_free(&gc);
-+    return status;
-+}
++   Using the cr-response command on the client side will trigger this
++   message on the server side.
++
++   CR_RESPONSE notification. The >CR_RESPONSE fulfils the same purpose as the
++   CRV1 response in the traditional challenge/response. See that section
++   below for more details. Since this still uses the same cid as the original
++   response, we do not use the username and opaque session data in this
++   response but only contains the actual response.
++
++   It is important to note that OpenVPN2 merely passes the authentication
++   information and does not do any further checks. (E.g. if a CR was issued
++   before or if multiple CR responses were sent from the client or if
++   data has a valid base64 encoding)
++
++   This interface should be be sufficient for almost all challenge/response
++   system that can be implemented with a single round and base64 encoding the
++   response. Mechanisms that need multiple rounds or more complex answers
++   should implement a different response type than CR_RESPONSE.
++
++
+ Variables:
  
- static bool
- management_callback_remote_cmd(void *arg, const char **p)
-@@ -3973,6 +4011,7 @@ init_management_callback_p2p(struct context *c)
-         cb.show_net = management_show_net_callback;
-         cb.proxy_cmd = management_callback_proxy_cmd;
-         cb.remote_cmd = management_callback_remote_cmd;
-+        cb.send_cc_message = management_callback_send_cc_message;
- #ifdef TARGET_ANDROID
-         cb.network_change = management_callback_network_change;
- #endif
+ CID --  Client ID, numerical ID for each connecting client, sequence = 0,1,2,...
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 3b088f87..885cf126 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -403,6 +403,10 @@ check_incoming_control_channel_dowork(struct context *c)
+             {
+                 server_pushed_info(c, &buf, 4);
+             }
++            else if (buf_string_match_head_str(&buf, "CR_RESPONSE"))
++            {
++                receive_cr_response(c, &buf);
++            }
+             else
+             {
+                 msg(D_PUSH_ERRORS, "WARNING: Received unknown control message: %s", BSTR(&buf));
 diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 195941ca..a72c7678 100644
+index 3ebe72ec..898cb3b3 100644
 --- a/src/openvpn/manage.c
 +++ b/src/openvpn/manage.c
-@@ -75,6 +75,7 @@ man_help(void)
-     msg(M_CLIENT, "auth-retry t           : Auth failure retry mode (none,interact,nointeract).");
-     msg(M_CLIENT, "bytecount n            : Show bytes in/out, update every n secs (0=off).");
-     msg(M_CLIENT, "echo [on|off] [N|all]  : Like log, but only show messages in echo buffer.");
-+    msg(M_CLIENT, "cr-response response   : Send a challenge response answer via CR_RESPONSE to server");
-     msg(M_CLIENT, "exit|quit              : Close management session.");
-     msg(M_CLIENT, "forget-passwords       : Forget passwords entered so far.");
-     msg(M_CLIENT, "help                   : Print this message.");
-@@ -779,6 +780,27 @@ man_net(struct management *man)
-     }
- }
- 
-+static void
-+man_send_cc_message(struct management *man, const char *message, const char *parameters)
-+{
-+    if (man->persist.callback.send_cc_message)
-+    {
-+        const bool status = (*man->persist.callback.send_cc_message)
-+                                (man->persist.callback.arg, message, parameters);
-+        if (status)
-+        {
-+            msg(M_CLIENT, "SUCCESS: command succeeded");
-+        }
-+        else
-+        {
-+            msg(M_CLIENT, "ERROR: command failed");
-+        }
-+    }
-+    else
-+    {
-+        msg(M_CLIENT, "ERROR: This command is not supported by the current daemon mode");
-+    }
-+}
- #ifdef ENABLE_PKCS11
+@@ -2908,7 +2908,7 @@ management_notify_generic(struct management *man, const char *str)
+ #ifdef MANAGEMENT_DEF_AUTH
  
  static void
-@@ -1144,7 +1166,15 @@ man_load_stats(struct management *man)
+-man_output_peer_info_env(struct management *man, struct man_def_auth_context *mdac)
++man_output_peer_info_env(struct management *man, const struct man_def_auth_context *mdac)
+ {
+     char line[256];
+     if (man->persist.callback.get_peer_info)
+@@ -2958,6 +2958,32 @@ management_notify_client_needing_auth(struct management *management,
+     }
  }
  
- #define MN_AT_LEAST (1<<0)
--
-+/**
-+ * Checks if the correct number of arguments to a management command are present
-+ * and otherwise prints an error and returns false.
-+ *
-+ * @param p         pointer to the parameter array
-+ * @param n         number of arguments required
-+ * @param flags     if MN_AT_LEAST require at least n parameters and not exactly n
-+ * @return          Return whether p has n (or at least n) parameters
-+ */
- static bool
- man_need(struct management *man, const char **p, const int n, unsigned int flags)
- {
-@@ -1460,6 +1490,13 @@ man_dispatch_command(struct management *man, struct status_output *so, const cha
-             man_query_need_str(man, p[1], p[2]);
-         }
-     }
-+    else if (streq(p[0], "cr-response"))
++void
++management_notify_client_cr_response(unsigned mda_key_id,
++                                     const struct man_def_auth_context *mdac,
++                                     const struct env_set *es,
++                                     const char *response)
++{
++    struct gc_arena gc;
++    if (management)
 +    {
-+        if (man_need(man, p, 1, 0))
++        gc = gc_new();
++
++        struct buffer out = alloc_buf_gc(256, &gc);
++        msg(M_CLIENT, ">CLIENT:CR_RESPONSE,%lu,%u,%s",
++            mdac->cid, mda_key_id, response);
++        man_output_extra_env(management, "CLIENT");
++        if (management->connection.env_filter_level>0)
 +        {
-+            man_send_cc_message(man, "CR_RESPONSE", p[1]);
++            man_output_peer_info_env(management, mdac);
 +        }
++        man_output_env(es, true, management->connection.env_filter_level, "CLIENT");
++        management_notify_generic(management, BSTR(&out));
++
++        gc_free(&gc);
 +    }
-     else if (streq(p[0], "net"))
-     {
-         man_net(man);
++}
++
+ void
+ management_connection_established(struct management *management,
+                                   struct man_def_auth_context *mdac,
 diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index 6f5f34c1..e1dabceb 100644
+index e28b11d1..8c824ca7 100644
 --- a/src/openvpn/manage.h
 +++ b/src/openvpn/manage.h
-@@ -164,6 +164,7 @@ struct management_callback
-     int (*kill_by_addr) (void *arg, const in_addr_t addr, const int port);
-     void (*delete_event) (void *arg, event_t event);
-     int (*n_clients) (void *arg);
-+    bool (*send_cc_message) (void *arg, const char *message, const char *parameter);
- #ifdef MANAGEMENT_DEF_AUTH
-     bool (*kill_by_cid)(void *arg, const unsigned long cid, const char *kill_msg);
-     bool (*client_auth) (void *arg,
+@@ -434,6 +434,11 @@ void management_learn_addr(struct management *management,
+                            const struct mroute_addr *addr,
+                            const bool primary);
+ 
++void management_notify_client_cr_response(unsigned mda_key_id,
++                                          const struct man_def_auth_context *mdac,
++                                          const struct env_set *es,
++                                          const char *response);
++
+ #endif
+ 
+ char *management_query_pk_sig(struct management *man, const char *b64_data,
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index a5fa87d8..26460490 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -209,6 +209,28 @@ server_pushed_info(struct context *c, const struct buffer *buffer,
+     msg(D_PUSH, "Info command was pushed by server ('%s')", m);
+ }
+ 
++void
++receive_cr_response(struct context *c, const struct buffer *buffer)
++{
++    struct buffer buf = *buffer;
++    const char *m = "";
++
++    if (buf_advance(&buf, 11) && buf_read_u8(&buf) == ',' && BLEN(&buf))
++    {
++        m = BSTR(&buf);
++    }
++#ifdef MANAGEMENT_DEF_AUTH
++    struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
++    struct man_def_auth_context *mda = session->opt->mda_context;
++    struct env_set *es = session->opt->es;
++    int key_id = session->key[KS_PRIMARY].key_id;
++
++
++    management_notify_client_cr_response(key_id, mda, es, m);
++#endif
++    msg(D_PUSH, "CR response was sent by client ('%s')", m);
++}
++
+ /**
+  * Add an option to the given push list by providing a format string.
+  *
+diff --git a/src/openvpn/push.h b/src/openvpn/push.h
+index 42ab100d..2faf19a6 100644
+--- a/src/openvpn/push.h
++++ b/src/openvpn/push.h
+@@ -53,6 +53,8 @@ void server_pushed_signal(struct context *c, const struct buffer *buffer, const
+ void server_pushed_info(struct context *c, const struct buffer *buffer,
+                         const int adv);
+ 
++void receive_cr_response(struct context *c, const struct buffer *buffer);
++
+ void incoming_push_message(struct context *c, const struct buffer *buffer);
+ 
+ void clone_push_list(struct options *o);
 -- 
 2.26.0
 
