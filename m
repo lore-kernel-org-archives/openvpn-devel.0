@@ -1,8 +1,14 @@
-From: Jeremy Evans <code@...2557...>
-Date: Wed, 20 May 2020 11:34:04 -0700
-Message-Id: <20200520183404.54822-1-code@...2557...>
+Date: Wed, 20 May 2020 21:33:44 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20200520193344.GQ1431@...1296...>
+References: <20200520183404.54822-1-code@...2557...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Switch assertion failure to returning false
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="weQJQHBTbgja3yMa"
+Content-Disposition: inline
+In-Reply-To: <20200520183404.54822-1-code@...2557...>
+Subject: Re: [Openvpn-devel] [PATCH] Switch assertion failure to returning
+ false
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,138 +17,91 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+To: Jeremy Evans <code@...2557...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--weQJQHBTbgja3yMa
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
 
-This assertion failure can be hit in production, which causes the
-openvpn server process to stop and all clients to be disconnected.
-Bug #1270 has been filed for this issue on Trac by another user
-who has experienced the issue, and this patch attempts to address it.
+Hi,
 
-Tracing callers, it appears that some callers check ks->authenticated
-before calling, but others do not.  It may be possible to add the check
-for the callers that do not check, but this seems to be a simpler
-solution.
+On Wed, May 20, 2020 at 11:34:04AM -0700, Jeremy Evans wrote:
+> To give some background, we hit this assertion failure, with the
+> following log output:
 
-To give some background, we hit this assertion failure, with the
-following log output:
+This should not happen, asserting out in "normal server use" is bad.=20=20
 
-```
-Tue May 19 15:57:05 2020 username/73.135.141.11:1194 PUSH: Received control=
- message: 'PUSH_REQUEST'
-Tue May 19 15:57:05 2020 username/73.135.141.11:1194 SENT CONTROL [username=
-]: 'PUSH_REPLY,redirect-gateway def1,comp-lzo,persist-key,persist-tun,route=
--gateway 10.28.47.1,topology subnet,ping 10,ping-restart 120,ifconfig 10.28=
-.47.38 255.255.255.0,peer-id 89' (status=3D1)
-Tue May 19 15:57:05 2020 username/73.135.141.11:1194 Assertion failed at /p=
-ath/to/openvpn-2.4.7/src/openvpn/ssl.c:1944 (ks->authenticated)
-Tue May 19 15:57:05 2020 username/73.135.141.11:1194 Exiting due to fatal e=
-rror
-Tue May 19 15:57:05 2020 username/73.135.141.11:1194 Closing TUN/TAP interf=
-ace
-```
+(Neither should it ever reach that point without ks->authenticated being=20
+true)
 
-using the following OpenVPN server configuration:
+> Tue May 19 15:57:05 2020 username/73.135.141.11:1194 Assertion failed at =
+/path/to/openvpn-2.4.7/src/openvpn/ssl.c:1944 (ks->authenticated)
 
-```
-port 1194
-proto udp
-dev-type tun
-ca ca.crt
-cert server.crt
-key server.key
-dh dh.pem
-topology subnet
-push "redirect-gateway def1"
-push "comp-lzo"
-push "persist-key"
-push "persist-tun"
-keepalive 10 120
-comp-lzo
-user nobody
-group nobody
-persist-key
-persist-tun
-cd /home/openvpn/server
-chroot /var/empty
-daemon
-verb 3
-crl-verify crl.pem
-tls-auth ta.key 0
-cipher AES-256-CBC
-tls-version-min 1.2
-tls-cipher ECDHE-RSA-AES256-GCM-SHA384
-ncp-disable
-mute-replay-warnings
-script-security 3
-auth-user-pass-verify "ldap-auth/ldap-auth" via-env
-auth-user-pass-optional
-```
+Is this with true 2.4.7, or is this something more recent?
 
-and the following command line options:
+> @@ -1930,7 +1930,10 @@ tls_session_generate_data_channel_keys(struct tls_=
+session *session)
+>                                            &ks->session_id_remote : &sess=
+ion->session_id;
+>=20=20
+> -    ASSERT(ks->authenticated);
+> +    if (!ks->authenticated) {
+> +        msg(D_TLS_ERRORS, "TLS Error: key_state not authenticated");
+> +        goto cleanup;
+> +    }
+>=20=20
+>      ks->crypto_options.flags =3D session->opt->crypto_flags;
+>      if (!generate_key_expansion(&ks->crypto_options.key_ctx_bi,
 
-```
---config openvpn.conf --dev tun1 --local 206.131.72.52 \
---log-append openvpn.log --status openvpn-status.log \
---server 10.28.47.0 255.255.255.0
-```
+I'm not sure if that code is correct, though - it will erase key
+material (in cleanup) without actually having generated a session
+key.  So "bad things might happen later".
 
-The failed assertion is inside the function
-`tls_session_generate_data_channel_keys`, which is called 3 other places
-in `ssl.c.`:
+But I leave that to Steffan or Arne who understands these intricacies
+better than I do.
 
-* `key_method_2_write`: checks for `ks->authenticated` before calling
+(Just confirmed, the ASSERT() is still like this in master)
 
-* `key_method_2_read`: appears to run in client mode but not in server
-  mode
 
-* `tls_session_update_crypto_params`: runs in server mode and does not
-  check before calling
+Trying to understand the somewhat twisted maze how ks->authenticated
+is set to true/false leads me to more questions...
 
-That leads me to believe the problem caller is
-`tls_session_update_crypto_params`. There.s three callers of
-`tls_session_update_crypto_params`:.
+ - are plugins or auth scripts involved on your side?
+ - can you reproduce this, or was this a once-in-a-lifetime crash?
 
-* `incoming_push_message` (`push.c`): Probably this caller, since the
-  server pushes configuration to clients, and the log shows the
-  assertion failure right after the push reply.
+(reproduceable is better, of course :-) - as this could be a plugin
+or script authentication interfering with changes brought by NCP...)
 
-* `multi_process_file_closed` (`multi.c`): Not this caller.  NCP is
-  disabled in config, and async push was not enabled when compiling.
+gert
 
-* `do_deferred_options` (`init.c`): Not this caller.  The server
-  configuration doesn't pull.
-
-Changing the assertion to returning false appears to be the simplest
-fix.  Another approach would be changing callers to check
-`ks->authenticated` before calling, either
-`tls_session_update_crypto_params` or `incoming_push_message`.
-
-Signed-off-by: Jeremy Evans <code@...2557...>
----
- src/openvpn/ssl.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index c2e9a4f3..c8b3a959 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1930,7 +1930,10 @@ tls_session_generate_data_channel_keys(struct tls_se=
-ssion *session)
-     const struct session_id *server_sid =3D !session->opt->server ?
-                                           &ks->session_id_remote : &sessio=
-n->session_id;
-=20
--    ASSERT(ks->authenticated);
-+    if (!ks->authenticated) {
-+        msg(D_TLS_ERRORS, "TLS Error: key_state not authenticated");
-+        goto cleanup;
-+    }
-=20
-     ks->crypto_options.flags =3D session->opt->crypto_flags;
-     if (!generate_key_expansion(&ks->crypto_options.key_ctx_bi,
 --=20
-2.26.2
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--weQJQHBTbgja3yMa
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJexYYXAAoJEB2Cnv7KVigS1M0L/1hdczv1N224Tsno8xR9tOUf
+U7uciDByDAH1qHfCcZ2w1RlDKnp8KbezsGnGyDV77ZxioTe5uUCCMCvfqHGDXB5q
+FoNMsj2EuKYqgwJWGFUzQNBzvxhBYZzw+evgpMRC7WNLnJpPB6bZZPL20gRhP82Y
+NH6zqEhj/9bv/Q12Yz9GyBAAoghzahPCDmZqOJ361BXpIAKc5+Z/y/UtAvJgrjN7
+QZ93fZE9ynjSblm5SsPNgjsD293RtLKlJeHQcBs7TYjl07QkJrCdwdMxqcIT6y8g
+QB7KD0xGXjkLGNrM2aApDavIOoTg6QAlMAreWTj2WgE2cTdtoQOKwPb9Vdy3WlIr
+NAibQtV0bFFzFjwDY5Q5DRE4DBhNHHAwYsAJFsI5jADTnn8uqom1TdG+PbkoPCMk
+uwaCPgSY8hOE077fTZjQRYk7dXadLuGM/DvuRsEMHbqFp9Qph2qXLjVzMEhukUhy
+68NU6tgum/edoF7IrqCWNvtOTPSrIfgWRyDPpQYmfA==
+=J9SP
+-----END PGP SIGNATURE-----
+
+--weQJQHBTbgja3yMa--
 
