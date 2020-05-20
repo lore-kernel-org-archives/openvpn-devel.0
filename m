@@ -1,16 +1,8 @@
-Date: Wed, 20 May 2020 07:28:22 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200520052822.GD1431@...1296...>
-References: <20191109151306.18597-1-arne@...1227...>
- <20191109151306.18597-5-arne@...1227...>
- <6609920b-5fb5-ce31-14fd-ef4743921d42@...2080...>
- <e4f846d1-b920-ae08-f9b1-2024c9164d99@...1227...>
+From: Jeremy Evans <code@...2557...>
+Date: Wed, 20 May 2020 11:34:04 -0700
+Message-Id: <20200520183404.54822-1-code@...2557...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="ROahZPZStIPlZxrz"
-Content-Disposition: inline
-In-Reply-To: <e4f846d1-b920-ae08-f9b1-2024c9164d99@...1227...>
-Subject: Re: [Openvpn-devel] SSO patchset / testing server side mgmt if
+Subject: [Openvpn-devel] [PATCH] Switch assertion failure to returning false
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,58 +11,138 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: David Sommerseth <openvpn@...2080...>, openvpn-devel@lists.sourceforge.net
-
---ROahZPZStIPlZxrz
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+This assertion failure can be hit in production, which causes the
+openvpn server process to stop and all clients to be disconnected.
+Bug #1270 has been filed for this issue on Trac by another user
+who has experienced the issue, and this patch attempts to address it.
 
-On Mon, May 18, 2020 at 04:15:55PM +0200, Arne Schwabe wrote:
-> Implement a small e.g. python based management interface might also be
-> possible but it would be an example that does a lot more than just that
-> because you a bit more to have a something working with the management
-> interface
+Tracing callers, it appears that some callers check ks->authenticated
+before calling, but others do not.  It may be possible to add the check
+for the callers that do not check, but this seems to be a simpler
+solution.
 
-It would be extremely cool to have something simple to drive the
-management interface on the "test server" side.  There's so many code
-paths related to management that we currently do not test in an=20
-automated way, or hardly at all.
+To give some background, we hit this assertion failure, with the
+following log output:
 
-(Of course it would have to be perl, not python :-) - seriously: as long
-as it works and is readable, whoever implements something gets to choose,
-just don't expect me to maintain anything pythonish)
+```
+Tue May 19 15:57:05 2020 username/73.135.141.11:1194 PUSH: Received control=
+ message: 'PUSH_REQUEST'
+Tue May 19 15:57:05 2020 username/73.135.141.11:1194 SENT CONTROL [username=
+]: 'PUSH_REPLY,redirect-gateway def1,comp-lzo,persist-key,persist-tun,route=
+-gateway 10.28.47.1,topology subnet,ping 10,ping-restart 120,ifconfig 10.28=
+.47.38 255.255.255.0,peer-id 89' (status=3D1)
+Tue May 19 15:57:05 2020 username/73.135.141.11:1194 Assertion failed at /p=
+ath/to/openvpn-2.4.7/src/openvpn/ssl.c:1944 (ks->authenticated)
+Tue May 19 15:57:05 2020 username/73.135.141.11:1194 Exiting due to fatal e=
+rror
+Tue May 19 15:57:05 2020 username/73.135.141.11:1194 Closing TUN/TAP interf=
+ace
+```
 
-gert
+using the following OpenVPN server configuration:
+
+```
+port 1194
+proto udp
+dev-type tun
+ca ca.crt
+cert server.crt
+key server.key
+dh dh.pem
+topology subnet
+push "redirect-gateway def1"
+push "comp-lzo"
+push "persist-key"
+push "persist-tun"
+keepalive 10 120
+comp-lzo
+user nobody
+group nobody
+persist-key
+persist-tun
+cd /home/openvpn/server
+chroot /var/empty
+daemon
+verb 3
+crl-verify crl.pem
+tls-auth ta.key 0
+cipher AES-256-CBC
+tls-version-min 1.2
+tls-cipher ECDHE-RSA-AES256-GCM-SHA384
+ncp-disable
+mute-replay-warnings
+script-security 3
+auth-user-pass-verify "ldap-auth/ldap-auth" via-env
+auth-user-pass-optional
+```
+
+and the following command line options:
+
+```
+--config openvpn.conf --dev tun1 --local 206.131.72.52 \
+--log-append openvpn.log --status openvpn-status.log \
+--server 10.28.47.0 255.255.255.0
+```
+
+The failed assertion is inside the function
+`tls_session_generate_data_channel_keys`, which is called 3 other places
+in `ssl.c.`:
+
+* `key_method_2_write`: checks for `ks->authenticated` before calling
+
+* `key_method_2_read`: appears to run in client mode but not in server
+  mode
+
+* `tls_session_update_crypto_params`: runs in server mode and does not
+  check before calling
+
+That leads me to believe the problem caller is
+`tls_session_update_crypto_params`. There.s three callers of
+`tls_session_update_crypto_params`:.
+
+* `incoming_push_message` (`push.c`): Probably this caller, since the
+  server pushes configuration to clients, and the log shows the
+  assertion failure right after the push reply.
+
+* `multi_process_file_closed` (`multi.c`): Not this caller.  NCP is
+  disabled in config, and async push was not enabled when compiling.
+
+* `do_deferred_options` (`init.c`): Not this caller.  The server
+  configuration doesn't pull.
+
+Changing the assertion to returning false appears to be the simplest
+fix.  Another approach would be changing callers to check
+`ks->authenticated` before calling, either
+`tls_session_update_crypto_params` or `incoming_push_message`.
+
+Signed-off-by: Jeremy Evans <code@...2557...>
+---
+ src/openvpn/ssl.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index c2e9a4f3..c8b3a959 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1930,7 +1930,10 @@ tls_session_generate_data_channel_keys(struct tls_se=
+ssion *session)
+     const struct session_id *server_sid =3D !session->opt->server ?
+                                           &ks->session_id_remote : &sessio=
+n->session_id;
+=20
+-    ASSERT(ks->authenticated);
++    if (!ks->authenticated) {
++        msg(D_TLS_ERRORS, "TLS Error: key_state not authenticated");
++        goto cleanup;
++    }
+=20
+     ks->crypto_options.flags =3D session->opt->crypto_flags;
+     if (!generate_key_expansion(&ks->crypto_options.key_ctx_bi,
 --=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+2.26.2
 
-Gert Doering - Munich, Germany                             gert@...1296...
-
---ROahZPZStIPlZxrz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJexL/2AAoJEB2Cnv7KVigSLjQMAIIyDtM4MrlvmMRPncB+BlMi
-rIpAx3cezzXXrBDFsL/o7P7dH0JZzOJHucEKD1HL7VVxSGFkMwEGudqrHEFwVdXg
-y+FWrUccXC+ln8NQSnUep2wpjIAdaqTynk1L6pPQAaaKQbuOQzJ1EaKt90aGpfsb
-cg9Zge0eqBZQbJxvMR6Lq9nwjYmE0KvaMmH1PKVjqvrmzG/v2uH5gk1gC7GL1SI4
-K6UTnbermjmZpLEMuZ3bTzyvxNEohRxigY8FbY5Gjj02f7uub7to9Whv2Z43wlbZ
-8QzrumeLZgx8IDIFkeqG5x1ZxBQl0seRRLAG7CFmQy0HnT6YemALlzZvbxD8Sz6m
-XTJWqjW45q71GyeYfjM5hMza2Afhl/LeQ6oWTrC5cCBO/vuceIaVQ2ByfRG7CuVQ
-Ah4gnTZ0YxiGzIWS+S9ltxDQQKwwaX8ZrtzOybhm0mkyPqhIqyFdZqMhikmy958s
-TUIW6RvovRRuL9nyOOpoQ4XxCK1xiTQvbWPVZw/DEQ==
-=957a
------END PGP SIGNATURE-----
-
---ROahZPZStIPlZxrz--
 
