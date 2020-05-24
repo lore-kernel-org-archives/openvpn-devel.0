@@ -1,8 +1,11 @@
 From: James Bottomley <James.Bottomley@...2316...>
-Date: Sun, 24 May 2020 13:33:20 -0700
-Message-Id: <20200524203322.15885-1-James.Bottomley@...2316...>
+Date: Sun, 24 May 2020 13:33:21 -0700
+Message-Id: <20200524203322.15885-2-James.Bottomley@...2316...>
+In-Reply-To: <20200524203322.15885-1-James.Bottomley@...2316...>
+References: <20200524203322.15885-1-James.Bottomley@...2316...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v5 0/2] add engine keys
+Subject: [Openvpn-devel] [PATCH v5 1/2] openssl: add engine method for
+ loading the key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,58 +18,142 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This update tries to cope with the fact that the test engine
-dynamic extension is different on macos (.dylib) and linux (.so)
-by dynamically building the openssl.cnf file with the correct one
+As well as doing crypto acceleration, engines can also be used to load
+key files.  If the engine is set, and the private key loading fails
+for bio methods, this patch makes openvpn try to get the engine to
+load the key.  If that succeeds, we end up using an engine based key.
+This can be used with the openssl tpm engines to make openvpn use a
+TPM wrapped key file.
 
-Note: I don't have any MacOS machines to test this on, so I only know
-it works on Linux if someone with a Mac could check, I'd be grateful.
-
----
-
-Engine keys are an openssl concept for a key file which can only be
-understood by an engine (usually because it's been wrapped by the
-engine itself).  We use this for TPM engine keys, so you can either
-generate them within your TPM or wrap them from existing private keys.
- Once wrapped, the keys will only function in the TPM that generated
-them, so it means the VPN keys are tied to the physical platform, which
-is very useful.  Engine keys have to be loaded via a specific callback,
-so use this as a fallback in openvpn if an engine is specified and if
-the PEM read of the private key fails.
-
-Adding a unit test for this type of key proved particularly
-problematic: there's apparently no simple engine you can use to check
-the functionality, so after a bit of googling, I just wrote one as part
-of the test.  You can see that the unit test converts an existing key
-to engine format (which is simply changing the PEM guards), tries to
-start openvpn with the key and verifies that the engine methods are
-called and the password correctly retrieved.  To make the test simple,
-it relies on openssl detecting a mismatch between the certificate and
-the key after the key has been loaded rather than going on to bring up
-an openvpn loop, but I think that's sufficient to test out the engine
-patch fully.
+Signed-off-by: James Bottomley <James.Bottomley@...2316...>
 
 ---
 
-James Bottomley (2):
-  openssl: add engine method for loading the key
-  Add unit tests for engine keys
+v2: add better configuration guarding
 
- configure.ac                                  |   5 +
- src/openvpn/crypto_openssl.c                  |  57 ++++++++++
- src/openvpn/crypto_openssl.h                  |  12 +++
- src/openvpn/ssl_openssl.c                     |   5 +
- tests/unit_tests/Makefile.am                  |   3 +
- tests/unit_tests/engine-key/Makefile.am       |  24 +++++
- .../engine-key/check_engine_keys.sh           |  30 ++++++
- tests/unit_tests/engine-key/libtestengine.c   | 101 ++++++++++++++++++
- tests/unit_tests/engine-key/openssl.cnf.in    |  12 +++
- 9 files changed, 249 insertions(+)
- create mode 100644 tests/unit_tests/engine-key/Makefile.am
- create mode 100755 tests/unit_tests/engine-key/check_engine_keys.sh
- create mode 100644 tests/unit_tests/engine-key/libtestengine.c
- create mode 100644 tests/unit_tests/engine-key/openssl.cnf.in
+v4: - use crypto_msg() instead of raw openssl prints
+    - remove ENGINE_init/finish().  Openvpn already initializes the engine
+      so doing a second initialization is wrong.
+    - don't clear the openssl errors from the BIO_read failure just in
+      case they might be useful.
+    - ad ui.h include for openssl 1.1 build failure
 
+v5: add engine init
+---
+ src/openvpn/crypto_openssl.c | 56 ++++++++++++++++++++++++++++++++++++
+ src/openvpn/crypto_openssl.h | 12 ++++++++
+ src/openvpn/ssl_openssl.c    |  5 ++++
+ 3 files changed, 73 insertions(+)
+
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index a5b2c45a..a7569623 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -63,6 +63,7 @@
+ #endif
+ 
+ #if HAVE_OPENSSL_ENGINE
++#include <openssl/ui.h>
+ #include <openssl/engine.h>
+ 
+ static bool engine_initialized = false; /* GLOBAL */
+@@ -1070,4 +1071,59 @@ memcmp_constant_time(const void *a, const void *b, size_t size)
+ {
+     return CRYPTO_memcmp(a, b, size);
+ }
++
++#if HAVE_OPENSSL_ENGINE
++static int
++ui_reader(UI *ui, UI_STRING *uis)
++{
++    SSL_CTX *ctx = UI_get0_user_data(ui);
++
++    if (UI_get_string_type(uis) == UIT_PROMPT) {
++        pem_password_cb *cb = SSL_CTX_get_default_passwd_cb(ctx);
++        void *d = SSL_CTX_get_default_passwd_cb_userdata(ctx);
++        char password[64];
++
++        cb(password, sizeof(password), 0, d);
++        UI_set_result(ui, uis, password);
++
++        return 1;
++    }
++    return 0;
++}
++#endif
++
++EVP_PKEY *
++engine_load_key(const char *file, SSL_CTX *ctx)
++{
++#if HAVE_OPENSSL_ENGINE
++    UI_METHOD *ui;
++    EVP_PKEY *pkey;
++
++    if (!engine_persist)
++        return NULL;
++
++    /* this will print out the error from BIO_read */
++    crypto_msg(M_INFO, "PEM_read_bio failed, now trying engine method to load private key");
++
++    ui = UI_create_method("openvpn");
++    if (!ui) {
++	crypto_msg(M_FATAL, "Engine UI creation failed");
++        return NULL;
++    }
++
++    UI_method_set_reader(ui, ui_reader);
++
++    ENGINE_init(engine_persist);
++    pkey = ENGINE_load_private_key(engine_persist, file, ui, ctx);
++    ENGINE_finish(engine_persist);
++    if (!pkey)
++	crypto_msg(M_FATAL, "Engine could not load key file");
++ out:
++    UI_destroy_method(ui);
++    return pkey;
++#else
++    return NULL;
++#endif
++}
++
+ #endif /* ENABLE_CRYPTO_OPENSSL */
+diff --git a/src/openvpn/crypto_openssl.h b/src/openvpn/crypto_openssl.h
+index 64754480..7449fbd3 100644
+--- a/src/openvpn/crypto_openssl.h
++++ b/src/openvpn/crypto_openssl.h
+@@ -107,4 +107,16 @@ cipher_kt_var_key_size(const cipher_kt_t *cipher)
+     return EVP_CIPHER_flags(cipher) & EVP_CIPH_VARIABLE_LENGTH;
+ }
+ 
++/**
++ * Load a key file from an engine
++ *
++ * @param file	The engine file to load
++ * @param ui	The UI method for the password prompt
++ * @param data	The data to pass to the UI method
++ *
++ * @return	The private key if successful or NULL if not
++ */
++EVP_PKEY *
++engine_load_key(const char *file, SSL_CTX *ctx);
++
+ #endif /* CRYPTO_OPENSSL_H_ */
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 06c836da..a489053b 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -1020,6 +1020,11 @@ tls_ctx_load_priv_file(struct tls_root_ctx *ctx, const char *priv_key_file,
+     pkey = PEM_read_bio_PrivateKey(in, NULL,
+                                    SSL_CTX_get_default_passwd_cb(ctx->ctx),
+                                    SSL_CTX_get_default_passwd_cb_userdata(ctx->ctx));
++    if (!pkey)
++    {
++        pkey = engine_load_key(priv_key_file, ctx->ctx);
++    }
++
+     if (!pkey || !SSL_CTX_use_PrivateKey(ssl_ctx, pkey))
+     {
+ #ifdef ENABLE_MANAGEMENT
 -- 
 2.26.2
 
