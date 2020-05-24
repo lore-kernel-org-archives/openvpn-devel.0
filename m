@@ -1,12 +1,8 @@
-Date: Wed, 20 May 2020 14:31:04 -0700
-From: Jeremy Evans <code@...2557...>
-Message-ID: <20200520213104.GS23489@...2558...>
-References: <20200520183404.54822-1-code@...2557...>
- <20200520193344.GQ1431@...1296...>
+From: James Bottomley <James.Bottomley@...2316...>
+Date: Sun, 24 May 2020 13:15:50 -0700
+Message-Id: <20200524201552.15321-1-James.Bottomley@...2316...>
 MIME-Version: 1.0
-In-Reply-To: <20200520193344.GQ1431@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Switch assertion failure to returning
- false
+Subject: [Openvpn-devel] [PATCH v5 0/2] add engine keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,81 +11,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On 05/20 09:33, Gert Doering wrote:
-> Hi,
-> 
-> On Wed, May 20, 2020 at 11:34:04AM -0700, Jeremy Evans wrote:
-> > To give some background, we hit this assertion failure, with the
-> > following log output:
-> 
-> This should not happen, asserting out in "normal server use" is bad.  
-> 
-> (Neither should it ever reach that point without ks->authenticated being 
-> true)
-> 
-> > Tue May 19 15:57:05 2020 username/73.135.141.11:1194 Assertion failed at /path/to/openvpn-2.4.7/src/openvpn/ssl.c:1944 (ks->authenticated)
-> 
-> Is this with true 2.4.7, or is this something more recent?
+This update tries to cope with the fact that the test engine
+dynamic extension is different on macos (.dylib) and linux (.so)
+by dynamically building the openssl.cnf file with the correct one
 
-This failure was with 2.4.7, but the first time it happened we were
-running 2.4.4 (see below)
- 
-> > @@ -1930,7 +1930,10 @@ tls_session_generate_data_channel_keys(struct tls_session *session)
-> >                                            &ks->session_id_remote : &session->session_id;
-> >  
-> > -    ASSERT(ks->authenticated);
-> > +    if (!ks->authenticated) {
-> > +        msg(D_TLS_ERRORS, "TLS Error: key_state not authenticated");
-> > +        goto cleanup;
-> > +    }
-> >  
-> >      ks->crypto_options.flags = session->opt->crypto_flags;
-> >      if (!generate_key_expansion(&ks->crypto_options.key_ctx_bi,
-> 
-> I'm not sure if that code is correct, though - it will erase key
-> material (in cleanup) without actually having generated a session
-> key.  So "bad things might happen later".
- 
-The same behavior would happen if generate_key_expansion fails a few
-lines below, so my assumption was it was safe to do so.  However, that's
-just an assumption and not even an educated guess.
+Note: I don't have any MacOS machines to test this on, so I only know
+it works on Linux if someone with a Mac could check, I'd be grateful.
 
-> But I leave that to Steffan or Arne who understands these intricacies
-> better than I do.
-> 
-> (Just confirmed, the ASSERT() is still like this in master)
-> 
-> 
-> Trying to understand the somewhat twisted maze how ks->authenticated
-> is set to true/false leads me to more questions...
-> 
->  - are plugins or auth scripts involved on your side?
->  - can you reproduce this, or was this a once-in-a-lifetime crash?
+---
 
-There is a program to implement multifactor authentication as mentioned
-in the config (`auth-user-pass-verify "ldap-auth/ldap-auth" via-env`)
+Engine keys are an openssl concept for a key file which can only be
+understood by an engine (usually because it's been wrapped by the
+engine itself).  We use this for TPM engine keys, so you can either
+generate them within your TPM or wrap them from existing private keys.
+ Once wrapped, the keys will only function in the TPM that generated
+them, so it means the VPN keys are tied to the physical platform, which
+is very useful.  Engine keys have to be loaded via a specific callback,
+so use this as a fallback in openvpn if an engine is specified and if
+the PEM read of the private key fails.
 
-This is a statically compiled C program that exits 0 on successful
-multifactor authentication and 1 on unsuccessful authentication.
+Adding a unit test for this type of key proved particularly
+problematic: there's apparently no simple engine you can use to check
+the functionality, so after a bit of googling, I just wrote one as part
+of the test.  You can see that the unit test converts an existing key
+to engine format (which is simply changing the PEM guards), tries to
+start openvpn with the key and verifies that the engine methods are
+called and the password correctly retrieved.  To make the test simple,
+it relies on openssl detecting a mismatch between the certificate and
+the key after the key has been loaded rather than going on to bring up
+an openvpn loop, but I think that's sufficient to test out the engine
+patch fully.
 
-> (reproduceable is better, of course :-) - as this could be a plugin
-> or script authentication interfering with changes brought by NCP...)
+---
 
-It's reproducible in the sense that it has happened to us multiple
-times.  This is actually the fourth time it has happened.  Previous
-times were 2018-04-16 (2.4.4), 2019-09-25 (2.4.7), and 2020-05-13
-(2.4.7). Bug #1270 says it also affects 2.4.8.  I haven't tried 2.4.9
-yet, but I plan to upgrade the server to use it next month.
+James Bottomley (2):
+  openssl: add engine method for loading the key
+  Add unit tests for engine keys
 
-It's not reproducible in the sense that I know how to trigger it,
-though.
+ configure.ac                                  |   5 +
+ src/openvpn/crypto_openssl.c                  |  57 ++++++++++
+ src/openvpn/crypto_openssl.h                  |  12 +++
+ src/openvpn/ssl_openssl.c                     |   5 +
+ tests/unit_tests/Makefile.am                  |   3 +
+ tests/unit_tests/engine-key/Makefile.am       |  24 +++++
+ .../engine-key/check_engine_keys.sh           |  30 ++++++
+ tests/unit_tests/engine-key/libtestengine.c   | 101 ++++++++++++++++++
+ tests/unit_tests/engine-key/openssl.cnf.in    |  12 +++
+ 9 files changed, 249 insertions(+)
+ create mode 100644 tests/unit_tests/engine-key/Makefile.am
+ create mode 100755 tests/unit_tests/engine-key/check_engine_keys.sh
+ create mode 100644 tests/unit_tests/engine-key/libtestengine.c
+ create mode 100644 tests/unit_tests/engine-key/openssl.cnf.in
 
-Thanks,
-Jeremy
+-- 
+2.26.2
+
 
