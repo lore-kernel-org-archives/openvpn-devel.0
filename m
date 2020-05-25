@@ -1,15 +1,14 @@
-Date: Mon, 25 May 2020 16:50:45 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200525145045.GG1431@...1296...>
+Message-ID: <1590418289.4938.11.camel@...2316...>
+From: James Bottomley <James.Bottomley@...2316...>
+Date: Mon, 25 May 2020 07:51:29 -0700
+In-Reply-To: <1c51551c-0038-9577-ceb5-7f5fd298e088@...1227...>
 References: <20200524203322.15885-1-James.Bottomley@...2316...>
  <20200524203322.15885-3-James.Bottomley@...2316...>
  <20200525060415.GY1431@...1296...>
- <1590417371.4938.6.camel@...2316...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="HsGRB+GJ0ovZxbNN"
-Content-Disposition: inline
-In-Reply-To: <1590417371.4938.6.camel@...2316...>
+ <1c51551c-0038-9577-ceb5-7f5fd298e088@...1227...>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+ protocol="application/pgp-signature"; boundary="=-1UxNtpNJIbvpT+1tdbVY"
+Mime-Version: 1.0
 Subject: Re: [Openvpn-devel] [PATCH v5 2/2] Add unit tests for engine keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -19,74 +18,109 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: James Bottomley <James.Bottomley@...2317...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>, Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---HsGRB+GJ0ovZxbNN
-Content-Type: text/plain; charset="us-ascii"
+--=-1UxNtpNJIbvpT+1tdbVY
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
-
-On Mon, May 25, 2020 at 07:36:11AM -0700, James Bottomley wrote:
+On Mon, 2020-05-25 at 14:52 +0200, Arne Schwabe wrote:
+> Am 25.05.20 um 08:04 schrieb Gert Doering:
+> > Hi,
+> >=20
+> > I see the granularity of your patch set as "not right":
+> >=20
+> > On Sun, May 24, 2020 at 01:33:22PM -0700, James Bottomley wrote:
+> > > Testing engines is problematic, so one of the prerequisites built
+> > > for the tests is a simple openssl engine that reads a non-
+> > > standard PEM guarded key.  The test is simply can we run a
+> > > client/server configuration with the usual sample key replaced by
+> > > an engine key. The trivial engine prints out some operations and
+> > > we check for these in the log to make sure the engine was used to
+> > > load the key and that it correctly got the password.
+> >=20
+> > This patch says "add unit tests", but it contains changes to
+> > configure.ac and OpenVPN code
+> >=20
 > > >  configure.ac                                  |   5 +
 > > >  src/openvpn/crypto_openssl.c                  |   1 +
 > >=20
 > > These two hunks should go to the first patch.
+> >=20
+> > Every patch should be fully testable on its own - so if I apply
+> > only the first hunk, I should be able to use and test engine keys,
+> > without having to apply the "add a unit test" patch set.
+> >=20
+> > > diff --git a/src/openvpn/crypto_openssl.c
+> > > b/src/openvpn/crypto_openssl.c
+> > > index a7569623..34637ebf 100644
+> > > --- a/src/openvpn/crypto_openssl.c
+> > > +++ b/src/openvpn/crypto_openssl.c
+> > > @@ -92,6 +92,7 @@ setup_engine(const char *engine)
+> > >  {
+> > >      ENGINE *e =3D NULL;
+> > >=20=20
+> > > +    OPENSSL_config(NULL);
+> > >      ENGINE_load_builtin_engines();
+> > >=20=20
+> > >      if (engine)
+> >=20
+> > For that change, I wonder what side effects it might have on
+> > existing
+> > setups.  Arne, can you help?  Is this "safe"?
+> >=20
 >=20
-> The configure.ac one adds the test Makefile ... it can't move.  The
-> other pieces figure out what the dynamic extension is, which is only
-> used by the test, so I think everything in the configure.ac change is
-> in the right place.
+> For OpenSSL 1.1 this is actually a NACK since it is depreacted API
+> and we want to wrap those into ifdefs to be able to remove them when
+> we drop support for older version.
 
-Yeah, I misread the part about
+OK ... it's replacement is a simple
 
-+AM_CONDITIONAL([OPENSSL_ENGINE], [test "${have_openssl_engine}" =3D "yes"])
+OPENSSL_init_crypto(OPENSSL_INIT_LOAD_CONFIG, NULL);
 
-and assumed it's needed for the #ifdef in the openvpn code.
+which is easy to #ifdef around.
 
-> The second is a bit more problematic:  Right at the moment openvpn is
-> blind to local openssl configuration files.  To make the test work, it
-> needs to be able to add an engine, which requires a local file, so it's
-> only function is to enable the test, but it does add to openvpn
-> capabilities, I suppose.
+> For OpenSSL 1.1 this is a deprecated function to contrary to other
+> depreacted function like OpenSSL_init() not a noop.
+>=20
+> But this command even though it does not have a return value or
+> reports erro, can still put errors on the error stack.
+>=20
+> Reading the general openssl.cnf at engine_setup also feels a bit like
+> the wrong place but since this code is only executed when --engine is
+> present in the config and we will remove that OPENSSL_config in the
+> future anyway (with the ifdef) it a low risk to put it here instead
+> of a more proper place, so I am fine to do here.
 
-I think it should go to the first patch - so "all changes to openvpn
-behaviour" are caused by this patch, and the test patch will only add
-testing, not change behaviour.
+So if the desire is to make openvpn fully consistent with regard to
+local configuration files, the statement should be in crypto_lib_init()
+rather than conditioning the behaviour on setting the engines
+parameter.  I can certainly do that, as a separate patch, but it would
+have a slightly wider blast radius.
 
-On the actual patch itself, I do not understand enough of the engine
-stuff to fully ACK it.  Arne or Steffan understand OpenSSL better.
+> As a side note, engines are deprecated in OpenSSL 3.0.0 and are
+> replaced by providers. But that will probably take a long time until
+> that is really depreacted and removed, so adding/fixing this for now
+> is okay.
 
-gert
+Heh, yes, we're all waiting to see how that works out.
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+James
 
-Gert Doering - Munich, Germany                             gert@...1296...
-
---HsGRB+GJ0ovZxbNN
+--=-1UxNtpNJIbvpT+1tdbVY
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJey9tFAAoJEB2Cnv7KVigSoY8MAKcETIkIHgsq3EHu1GnA17dP
-pbJ/4kT6P9O2x3Fc0a5gTYsCEpVkK4CzGVqRLy9ZpsyFcGnO7NirzbJFfggVOuDZ
-uN7sUZE+bwYJfXpD4t7PGO7R+GulR6WLjS/Ds/sKK3q/1RMD1AjJXlnldrgXeBN8
-nfWdQgAGC6dKQ429HSD7bp8r1ZnnElUR/Xyqrc92jlT2a43a8uG6qx7wKsGWmfZ3
-cP4SrQ+hTzZ6TxlcZLyq6OHcyyxZ+IGezIjaM4ylTApSl4I0PFDAWyXVDdcK0J7K
-zTJa1j9cVSvcuIU5k12uSkr6MhI+WpFXQ/w3JCIJdfBNS7CUlL//KI5QR1sOC3tF
-m2i47UO8JjHnrK75n2HNbyoNJfNs2M4XryqDzopFkHX9/kqyygxwidGEqyKR5rgP
-A/VKRcF1mo1DXkV5qhzlWDt0b0N3W6exSWL/SjYV/CokRz1eRuSZeoTsRuw463gp
-GAmOXQZTWe2pkxkEBkA3po2a/rD6j5yKLI7xkaiwWA==
-=5DEk
+iHUEABMIAB0WIQTnYEDbdso9F2cI+arnQslM7pishQUCXsvbcgAKCRDnQslM7pis
+hRaGAQCfpR/oOS6+fFuktqOVrwgDBpR8FFV5ge2z9kT+te6JgQEA4cT28Iwh9QYg
+OmZAZzKGRHciGpMRdWODR5GI9aXgbS8=
+=r3KZ
 -----END PGP SIGNATURE-----
 
---HsGRB+GJ0ovZxbNN--
+--=-1UxNtpNJIbvpT+1tdbVY--
+
 
