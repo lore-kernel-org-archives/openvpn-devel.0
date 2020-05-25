@@ -1,10 +1,14 @@
-From: James Bottomley <James.Bottomley@...2316...>
-Date: Sun, 24 May 2020 13:33:22 -0700
-Message-Id: <20200524203322.15885-3-James.Bottomley@...2316...>
-In-Reply-To: <20200524203322.15885-1-James.Bottomley@...2316...>
+Date: Mon, 25 May 2020 08:04:15 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20200525060415.GY1431@...1296...>
 References: <20200524203322.15885-1-James.Bottomley@...2316...>
+ <20200524203322.15885-3-James.Bottomley@...2316...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v5 2/2] Add unit tests for engine keys
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="ncBgPXMfjU2hwCiX"
+Content-Disposition: inline
+In-Reply-To: <20200524203322.15885-3-James.Bottomley@...2316...>
+Subject: Re: [Openvpn-devel] [PATCH v5 2/2] Add unit tests for engine keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,277 +17,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: James Bottomley <James.Bottomley@...2317...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Testing engines is problematic, so one of the prerequisites built for
-the tests is a simple openssl engine that reads a non-standard PEM
-guarded key.  The test is simply can we run a client/server
-configuration with the usual sample key replaced by an engine key.
-The trivial engine prints out some operations and we check for these
-in the log to make sure the engine was used to load the key and that
-it correctly got the password.
+--ncBgPXMfjU2hwCiX
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Signed-off-by: James Bottomley <James.Bottomley@...2316...>
+Hi,
 
----
-v5: do not hard code dynamic library extension into openssl.cnf (MacOS)
-v4: add OPENSSL_config(NULL) so debian checks will work
-v3: added this patch
----
- configure.ac                                  |   5 +
- src/openvpn/crypto_openssl.c                  |   1 +
- tests/unit_tests/Makefile.am                  |   3 +
- tests/unit_tests/engine-key/Makefile.am       |  24 +++++
- .../engine-key/check_engine_keys.sh           |  30 ++++++
- tests/unit_tests/engine-key/libtestengine.c   | 101 ++++++++++++++++++
- tests/unit_tests/engine-key/openssl.cnf.in    |  12 +++
- 7 files changed, 176 insertions(+)
- create mode 100644 tests/unit_tests/engine-key/Makefile.am
- create mode 100755 tests/unit_tests/engine-key/check_engine_keys.sh
- create mode 100644 tests/unit_tests/engine-key/libtestengine.c
- create mode 100644 tests/unit_tests/engine-key/openssl.cnf.in
+I see the granularity of your patch set as "not right":
 
-diff --git a/configure.ac b/configure.ac
-index 273a8d1b..92d4eeba 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1387,6 +1387,10 @@ AM_CONDITIONAL([GIT_CHECKOUT], [test "${GIT_CHECKOUT}" = "yes"])
- AM_CONDITIONAL([ENABLE_PLUGIN_AUTH_PAM], [test "${enable_plugin_auth_pam}" = "yes"])
- AM_CONDITIONAL([ENABLE_PLUGIN_DOWN_ROOT], [test "${enable_plugin_down_root}" = "yes"])
- AM_CONDITIONAL([HAVE_LD_WRAP_SUPPORT], [test "${have_ld_wrap_support}" = "yes"])
-+AM_CONDITIONAL([OPENSSL_ENGINE], [test "${have_openssl_engine}" = "yes"])
-+
-+shrext=$shrext_cmds
-+AC_SUBST([shrext])
- 
- sampledir="\$(docdir)/sample"
- AC_SUBST([plugindir])
-@@ -1448,6 +1452,7 @@ AC_CONFIG_FILES([
-         tests/unit_tests/openvpn/Makefile
-         tests/unit_tests/plugins/Makefile
-         tests/unit_tests/plugins/auth-pam/Makefile
-+	tests/unit_tests/engine-key/Makefile
- 	sample/Makefile
- ])
- AC_CONFIG_FILES([tests/t_client.sh], [chmod +x tests/t_client.sh])
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index a7569623..34637ebf 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -92,6 +92,7 @@ setup_engine(const char *engine)
- {
-     ENGINE *e = NULL;
- 
-+    OPENSSL_config(NULL);
-     ENGINE_load_builtin_engines();
- 
-     if (engine)
-diff --git a/tests/unit_tests/Makefile.am b/tests/unit_tests/Makefile.am
-index 33fefaac..f27cd90f 100644
---- a/tests/unit_tests/Makefile.am
-+++ b/tests/unit_tests/Makefile.am
-@@ -2,4 +2,7 @@ AUTOMAKE_OPTIONS = foreign
- 
- if ENABLE_UNITTESTS
- SUBDIRS = example_test openvpn plugins
-+if OPENSSL_ENGINE
-+SUBDIRS += engine-key
-+endif
- endif
-diff --git a/tests/unit_tests/engine-key/Makefile.am b/tests/unit_tests/engine-key/Makefile.am
-new file mode 100644
-index 00000000..05f56bfd
---- /dev/null
-+++ b/tests/unit_tests/engine-key/Makefile.am
-@@ -0,0 +1,24 @@
-+AUTOMAKE_OPTIONS = foreign
-+
-+check_LTLIBRARIES = libtestengine.la
-+conffiles = openssl.cnf
-+
-+TESTS_ENVIRONMENT = srcdir="$(abs_srcdir)"; \
-+	builddir="$(abs_builddir)"; \
-+	top_builddir="$(top_builddir)"; \
-+	top_srcdir="$(top_srcdir)"; \
-+	export srcdir builddir top_builddir top_srcdir;
-+
-+TESTS = check_engine_keys.sh
-+check_engine_keys.sh: $(conffiles)
-+
-+clean-local:
-+	rm -f $(conffiles)
-+
-+$(builddir)/%.cnf: $(srcdir)/%.cnf.in
-+	sed 's/SHREXT/@shrext@/' < $< > $@
-+
-+libtestengine_la_SOURCES = libtestengine.c
-+libtestengine_la_LDFLAGS = @TEST_LDFLAGS@ -rpath /lib -avoid-version -module -shared -export-dynamic
-+libtestengine_la_CFLAGS = @TEST_CFLAGS@ -I$(openvpn_srcdir) -I$(compat_srcdir)
-+
-diff --git a/tests/unit_tests/engine-key/check_engine_keys.sh b/tests/unit_tests/engine-key/check_engine_keys.sh
-new file mode 100755
-index 00000000..e0c9d7b0
---- /dev/null
-+++ b/tests/unit_tests/engine-key/check_engine_keys.sh
-@@ -0,0 +1,30 @@
-+#!/bin/sh
-+
-+OPENSSL_CONF="${builddir}/openssl.cnf"
-+export OPENSSL_CONF
-+
-+password='AT3S4PASSWD'
-+
-+key="${builddir}/client.key"
-+pwdfile="${builddir}/passwd"
-+
-+# create an engine key for us
-+sed 's/PRIVATE KEY/TEST ENGINE KEY/' < ${top_srcdir}/sample/sample-keys/client.key > ${key}
-+echo "$password" > $pwdfile
-+
-+# note here we've induced a mismatch in the client key and the server
-+# cert which openvpn should report and die.  Check that it does.  Note
-+# also that this mismatch depends on openssl not openvpn, so it is
-+# somewhat fragile
-+${top_builddir}/src/openvpn/openvpn --cd ${top_srcdir}/sample --config sample-config-files/loopback-server --engine testengine --key ${key} --askpass $pwdfile > log.txt 2>&1
-+
-+# first off check we died because of a key mismatch.  If this doesn't
-+# pass, suspect openssl of returning different messages and update the
-+# test accordingly
-+grep -q 'X509_check_private_key:key values mismatch' log.txt || { echo "Key mismatch not detected"; exit 1; }
-+
-+# now look for the engine prints (these are under our control)
-+grep -q 'ENGINE: engine_init called' log.txt || { echo "Engine initialization not detected"; exit 1; }
-+grep -q 'ENGINE: engine_load_key called' log.txt || { echo "Key was not loaded from engine"; exit 1; }
-+grep -q "ENGINE: engine_load_key got password ${password}" log.txt || { echo "Key password was not retrieved by the engine"; exit 1; }
-+exit 0
-diff --git a/tests/unit_tests/engine-key/libtestengine.c b/tests/unit_tests/engine-key/libtestengine.c
-new file mode 100644
-index 00000000..46ec1e33
---- /dev/null
-+++ b/tests/unit_tests/engine-key/libtestengine.c
-@@ -0,0 +1,101 @@
-+#include <string.h>
-+#include <openssl/engine.h>
-+#include <openssl/evp.h>
-+#include <openssl/pem.h>
-+
-+static char *engine_id = "testengine";
-+static char *engine_name = "Engine for testing openvpn engine key support";
-+
-+static int is_initialized = 0;
-+
-+static int engine_init(ENGINE *e)
-+{
-+	is_initialized = 1;
-+	fprintf(stderr, "ENGINE: engine_init called\n");
-+	return 1;
-+}
-+
-+static int engine_finish(ENGINE *e)
-+{
-+	fprintf(stderr, "ENGINE: engine_finsh called\n");
-+	is_initialized = 0;
-+	return 1;
-+}
-+
-+static EVP_PKEY *engine_load_key(ENGINE *e, const char *key_id,
-+				 UI_METHOD *ui_method, void *cb_data)
-+{
-+	BIO *b;
-+	EVP_PKEY *pkey;
-+	PKCS8_PRIV_KEY_INFO *p8inf;
-+	UI *ui;
-+	char auth[256];
-+
-+	fprintf(stderr, "ENGINE: engine_load_key called\n");
-+
-+	if (!is_initialized) {
-+		fprintf(stderr, "Load Key called without correct initialization\n");
-+		return NULL;
-+	}
-+	b = BIO_new_file(key_id, "r");
-+	if (!b) {
-+		fprintf(stderr, "File %s does not exist or cannot be read\n", key_id);
-+		return 0;
-+	}
-+	/* Basically read an EVP_PKEY private key file with different
-+	 * PEM guards --- we are a test engine */
-+	p8inf = PEM_ASN1_read_bio((d2i_of_void *)d2i_PKCS8_PRIV_KEY_INFO,
-+				 "TEST ENGINE KEY", b,
-+				 NULL, NULL, NULL);
-+	BIO_free(b);
-+	if (!p8inf) {
-+		fprintf(stderr, "Failed to read engine private key\n");
-+		return NULL;
-+	}
-+	pkey = EVP_PKCS82PKEY(p8inf);
-+
-+	/* now we have a private key, pretend it had a password
-+	 * this verifies the password makes it through openvpn OK */
-+	ui = UI_new();
-+
-+	if (ui_method)
-+		UI_set_method(ui, ui_method);
-+
-+	UI_add_user_data(ui, cb_data);
-+
-+	if (UI_add_input_string(ui, "enter test engine key",
-+				UI_INPUT_FLAG_DEFAULT_PWD,
-+				auth, 0, sizeof(auth)) == 0) {
-+		fprintf(stderr, "UI_add_input_string failed\n");
-+		goto out;
-+	}
-+
-+	if (UI_process(ui)) {
-+		fprintf(stderr, "UI_process failed\n");
-+		goto out;
-+	}
-+
-+	fprintf(stderr, "ENGINE: engine_load_key got password %s\n", auth);
-+
-+ out:
-+	UI_free(ui);
-+
-+	return pkey;
-+}
-+
-+
-+static int engine_bind_fn(ENGINE *e, const char *id)
-+{
-+	if (id && strcmp(id, engine_id) != 0)
-+		return 0;
-+	if (!ENGINE_set_id(e, engine_id) ||
-+	    !ENGINE_set_name(e, engine_name) ||
-+	    !ENGINE_set_init_function(e, engine_init) ||
-+	    !ENGINE_set_finish_function(e, engine_finish) ||
-+	    !ENGINE_set_load_privkey_function(e, engine_load_key))
-+		return 0;
-+	return 1;
-+}
-+
-+IMPLEMENT_DYNAMIC_CHECK_FN()
-+IMPLEMENT_DYNAMIC_BIND_FN(engine_bind_fn)
-diff --git a/tests/unit_tests/engine-key/openssl.cnf.in b/tests/unit_tests/engine-key/openssl.cnf.in
-new file mode 100644
-index 00000000..93edd483
---- /dev/null
-+++ b/tests/unit_tests/engine-key/openssl.cnf.in
-@@ -0,0 +1,12 @@
-+HOME		= .
-+openssl_conf	= openssl_init
-+
-+[req]
-+[openssl_init]
-+engines		= engines_section
-+
-+[engines_section]
-+testengine	= testengine_section
-+
-+[testengine_section]
-+dynamic_path	= $ENV::srcdir/.libs/libtestengineSHREXT
--- 
-2.26.2
+On Sun, May 24, 2020 at 01:33:22PM -0700, James Bottomley wrote:
+> Testing engines is problematic, so one of the prerequisites built for
+> the tests is a simple openssl engine that reads a non-standard PEM
+> guarded key.  The test is simply can we run a client/server
+> configuration with the usual sample key replaced by an engine key.
+> The trivial engine prints out some operations and we check for these
+> in the log to make sure the engine was used to load the key and that
+> it correctly got the password.
 
+This patch says "add unit tests", but it contains changes to configure.ac
+and OpenVPN code
+
+>  configure.ac                                  |   5 +
+>  src/openvpn/crypto_openssl.c                  |   1 +
+
+These two hunks should go to the first patch.
+
+Every patch should be fully testable on its own - so if I apply only
+the first hunk, I should be able to use and test engine keys, without
+having to apply the "add a unit test" patch set.
+
+> diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+> index a7569623..34637ebf 100644
+> --- a/src/openvpn/crypto_openssl.c
+> +++ b/src/openvpn/crypto_openssl.c
+> @@ -92,6 +92,7 @@ setup_engine(const char *engine)
+>  {
+>      ENGINE *e =3D NULL;
+>=20=20
+> +    OPENSSL_config(NULL);
+>      ENGINE_load_builtin_engines();
+>=20=20
+>      if (engine)
+
+For that change, I wonder what side effects it might have on existing
+setups.  Arne, can you help?  Is this "safe"?
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--ncBgPXMfjU2hwCiX
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJey1/fAAoJEB2Cnv7KVigS2coMAJ4V/ezKs0L69YN0/DDrl799
+XpolZwpH8TiRQJPmZDSV4qnkkO2Sk6Mn1970e6RlzIlm5hLbu6iTLlpf0MvZ7XsW
+21G1r+mQgKQgObqeDLBeby8kP81TXU4k6e2ADzvNNHYow5dmKOKvfe0kZ09BgpYo
+UeSVBn43x+rNJYzC+u+hU2DjUw1iMMjBFy91iR2K8B3eBBM4HlTM7AWRb1ySx/0w
+klswAgkSJJoZ1O0kbN2sphi8SDDjR0AALHDfNf1lhEv0Og2UvRar5+WDrtR/qMsL
+ZJKLL4dnUhy/5bOatNv1UGFEBJMcOuw96ht3VG2NaGBqi4NOGIHVe9FhYgMFlIXo
+vnXwGPYrQSNGLw498L9SPwtPqC6JgnpKftXDRjSnh1CUMy3yEk1oHD41B2fUX970
+crRIhFSVmEc4D4MiVtcIlV8o5541srZ2xpQGuzUWPjzzyMStxjZ1M/sOlqNgPJLZ
+jVcYrPjQAFdFLyjIDrI98keceh/NSxXzzDBPnHXjbQ==
+=xVob
+-----END PGP SIGNATURE-----
+
+--ncBgPXMfjU2hwCiX--
 
