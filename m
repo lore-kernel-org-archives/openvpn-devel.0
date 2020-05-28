@@ -1,11 +1,8 @@
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <cfd28619-9250-d563-2e17-b2686f11e4c0@...2080...>
-Date: Thu, 28 May 2020 16:55:20 +0200
+From: James Bottomley <James.Bottomley@...2316...>
+Date: Thu, 28 May 2020 15:59:17 -0700
+Message-Id: <20200528225920.6983-1-James.Bottomley@...2316...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="SZglT4unQnjXhvxrv0Rw5x5rK19xsVmkh"
-Subject: [Openvpn-devel] man page overhaul project
+Subject: [Openvpn-devel] [PATCH v6 0/3] add support for engine keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,111 +11,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---SZglT4unQnjXhvxrv0Rw5x5rK19xsVmkh
-Content-Type: multipart/mixed; boundary="TyXTeG2a99YIbrvqq1ZQ0TD1lPjkrZgwH";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-To: "openvpn-devel@lists.sourceforge.net"
- <openvpn-devel@lists.sourceforge.net>
-Message-ID: <cfd28619-9250-d563-2e17-b2686f11e4c0@...2080...>
-Subject: man page overhaul project
-
---TyXTeG2a99YIbrvqq1ZQ0TD1lPjkrZgwH
-Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
+This update exposes the new configuration file addition to the openssl
+initialization as a separate patch.  This means that the behaviour of
+pontentially reading from a configuration file is global rather than
+contingent on the engine parameter being present and thus is now fully
+consistent.  I've added this as a separate patch, since it's a
+separate feature.
 
-Hi,
+---
 
-For the OpenVPN 2.5 we decided to do an overhaul to the man page.  The first
-step in this project has been completed, converting the man page into an .r=
-st
-based text file instead - which hopefully will be much easier to edit for m=
-ore
-people.  This .rst file will then be converted to proper man and html files
-when we produce the source tarballs during releases.
+Engine keys are an openssl concept for a key file which can only be
+understood by an engine (usually because it's been wrapped by the
+engine itself).  We use this for TPM engine keys, so you can either
+generate them within your TPM or wrap them from existing private keys.
+ Once wrapped, the keys will only function in the TPM that generated
+them, so it means the VPN keys are tied to the physical platform, which
+is very useful.  Engine keys have to be loaded via a specific callback,
+so use this as a fallback in openvpn if an engine is specified and if
+the PEM read of the private key fails.
 
-You can all follow the work in my own git repository where I'm pulling
-together various changes before they are sent to the mailing list for proper
-vetting and ACKs.
+Adding a unit test for this type of key proved particularly
+problematic: there's apparently no simple engine you can use to check
+the functionality, so after a bit of googling, I just wrote one as part
+of the test.  You can see that the unit test converts an existing key
+to engine format (which is simply changing the PEM guards), tries to
+start openvpn with the key and verifies that the engine methods are
+called and the password correctly retrieved.  To make the test simple,
+it relies on openssl detecting a mismatch between the certificate and
+the key after the key has been loaded rather than going on to bring up
+an openvpn loop, but I think that's sufficient to test out the engine
+patch fully.
 
-The repository can be found here: https://gitlab.com/dazo/openvpn/
-And the git branch is dev/man-reformatting
+---
 
-Feel free to submit patches or gitlab pull-requests or gitlab issues as you
-see it fits with suggestions for improving the man page.
+James Bottomley (3):
+  openssl: add engine method for loading the key
+  crypto_openssl: add initialization to pick up local configuration
+  Add unit tests for engine keys
 
-If you are new to the .rst formatting, I would recommend you to pay close
-attention to how things are done in the current openvpn.8.rst [0] file, as
-well as the .rst markup docs [1, 2]
+ configure.ac                                  |   5 +
+ src/openvpn/crypto_openssl.c                  |  61 +++++++++++
+ src/openvpn/crypto_openssl.h                  |  12 +++
+ src/openvpn/ssl_openssl.c                     |   5 +
+ tests/unit_tests/Makefile.am                  |   3 +
+ tests/unit_tests/engine-key/Makefile.am       |  24 +++++
+ .../engine-key/check_engine_keys.sh           |  30 ++++++
+ tests/unit_tests/engine-key/libtestengine.c   | 101 ++++++++++++++++++
+ tests/unit_tests/engine-key/openssl.cnf.in    |  12 +++
+ 9 files changed, 253 insertions(+)
+ create mode 100644 tests/unit_tests/engine-key/Makefile.am
+ create mode 100755 tests/unit_tests/engine-key/check_engine_keys.sh
+ create mode 100644 tests/unit_tests/engine-key/libtestengine.c
+ create mode 100644 tests/unit_tests/engine-key/openssl.cnf.in
 
-[0]
-<https://gitlab.com/dazo/openvpn/-/blob/dev/man-reformatting/doc/openvpn.8.=
-rst>
-[1] Quickstart: <https://docutils.sourceforge.io/docs/user/rst/quickstart.h=
-tml
->
-[2] .rst spec:
-<https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html>
+-- 
+2.26.2
 
-Also, even though both gitlab and github does automatic "html rendering",
-there might be some artifacts in the rendered result.  We will try to make =
-it
-look as nice as possible everywhere, but the rst2man output will be the main
-target which will trump most rendering conflicts.  If it doesn't render well
-as a text based man page, it is not good enough.
-
-For the OpenVPN 2.5 release we will also keep everything in a single man pa=
-ge.
- For future releases we might reconsider the organization of the man page. =
- So
-any discussions which might appear regarding to split this file up will be
-postponed until after the v2.5 release.
-
-Other than that, I think we can be our best efforts to make this file even
-easier to read and not the least, more up-to-date.  This man page is getting
-closer to 20 years old or so, so a clean-up of older and less useful
-information for this day and age is welcome.
-
-Looking forward to hear back from you, whenever you have some input how to
-make the man page better.
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
-
-
-
---TyXTeG2a99YIbrvqq1ZQ0TD1lPjkrZgwH--
-
---SZglT4unQnjXhvxrv0Rw5x5rK19xsVmkh
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJez9DdAAoJEIbPlEyWcf3yCQcP/jvFPJkUciiV3aCBi2CFTsvQ
-6dwHdMifAdK4BKi8+Qgjd4cIr+RxF2y1OxecktxcRLS9kCcs3E/BK/qtfSqYdlAl
-63ozp0KJElaMUClgyD8WvIALBiw2SwdStwU+ZDL/qIFOhcCOxSdJAug2fmwk/bo4
-WPqdR146vf563u2bPxu0NOJS7x7Ue64pVmjMz0G5Q/utSprEja/mgtGm3JMzhCmm
-rCCaiZVRZLrqLEIx3CWUbcjBYuxTdx0WSVjdoPjcDkyVGAUqf6AooARBmw0NY4lB
-PaHiIzioD7KuTqXUHvy6kG9PhG1OEspk/rbj5F1G/jwzgZh+XTyRHxhSKNhFtJRQ
-Suw7WVhN18cT/0oZxjka7Qzjwj1Bw48oVbA73x8cBVPhdEcnYkN3k1pn/N9MYHmm
-fy7Pb37J3XNsZYWkF6o6nvwD01ahUZlhmnZ4BS2X3htS1U7uP9/wGxVZhRSzvms2
-/Z+YEomcsaaly6ysS4PcyGsF9+4SmO9Hm5W4dgC5HThq4w19clesNGBtoGsDFK6V
-acmhos5Jp9gJB0Z/eFSHQZk8tqvMuP10Vm8HcOJxdAWILpgvQjxmHBnpsLsKRk/Y
-9PqeL0zflH+wvmwS23nHQFQW5ilXL/aWco5Vfh1moCkIOLhPxlQ/SDAQTt18W/ME
-wYSiBgUXXdSMTDfY06dC
-=CmBj
------END PGP SIGNATURE-----
-
---SZglT4unQnjXhvxrv0Rw5x5rK19xsVmkh--
 
