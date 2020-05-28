@@ -1,8 +1,8 @@
-Message-ID: <1590709611.3515.22.camel@...2316...>
-From: James Bottomley <James.Bottomley@...2316...>
-Date: Thu, 28 May 2020 16:46:51 -0700
-Mime-Version: 1.0
-Subject: [Openvpn-devel] [BUG] test_ncp.c failing
+From: Arne Schwabe <arne@...1227...>
+Date: Fri, 29 May 2020 01:54:23 +0200
+Message-Id: <20200528235423.27416-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Add .git-blame-ignore-revs with reformat
+ commits
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,40 +11,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-I'm getting this failure of test_ncp.c
+This allows git blame to ignore reformatting changes and instead
+shows the previous commit that changed the line.
 
-[ RUN      ] test_check_ncp_ciphers_list
-[  ERROR   ] --- 0x7d67e8 != 0
-[   LINE   ] --- test_ncp.c:65: error: Failure!
-[  FAILED  ] test_check_ncp_ciphers_list
+To avoid manually building the list of commits this commit
+adds a file with a list of reformatting commits. I might have
+missed a few but this should be a good start. To use the file
+use:
 
-I'm building under openssl-1.1.0i
+   git blame --ignore-revs-file=.git-blame-ignore-revs file
 
-The problem seems to be openssl uses a mixed case name for the cipher
-and EVP_CIPHER_name() is case sensitive.  Applying the patch below
-fixes this for openssl and gets make check to pass all tests, but I
-rather wonder why this isn't part of cipher_kt_name() to prevent this
-type of problem?
+or to automatically always use the file
 
-James
+   git config blame.ignoreRevsFile .git-blame-ignore-revs
 
+Naming the file .git-blame-ignore-revs is a convention.
+
+Some more details in this random blog post:
+
+https://www.moxio.com/blog/43/ignoring-bulk-change-commits-with-git-blame
+
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
+ .git-blame-ignore-revs                        | 29 +++++++++++++++++++
+ .../managent-demo/management-demo-server.py   |  0
+ contrib/ovpnkeys.py                           |  0
+ 3 files changed, 29 insertions(+)
+ create mode 100644 .git-blame-ignore-revs
+ create mode 100644 contrib/managent-demo/management-demo-server.py
+ create mode 100644 contrib/ovpnkeys.py
 
-diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn/test_ncp.c
-index 19432410..f58fa2ea 100644
---- a/tests/unit_tests/openvpn/test_ncp.c
-+++ b/tests/unit_tests/openvpn/test_ncp.c
-@@ -48,7 +48,7 @@ static void
- test_check_ncp_ciphers_list(void **state)
- {
-     struct gc_arena gc = gc_new();
--    bool have_chacha = cipher_kt_get("CHACHA20-POLY1305");
-+    bool have_chacha = cipher_kt_get(translate_cipher_name_from_openvpn("CHACHA20-POLY1305"));
- 
- 
- 
+diff --git a/.git-blame-ignore-revs b/.git-blame-ignore-revs
+new file mode 100644
+index 00000000..3cc811cf
+--- /dev/null
++++ b/.git-blame-ignore-revs
+@@ -0,0 +1,29 @@
++# Uncrustify the tests/unit_tests/ part of our tree. 
++da1574ef7826d73f01e120cbd1ba40ce39a305b7
++
++# Another round of uncrustify code cleanup.
++9cf7b4925a54d93fbea1cadcf3dc0e11f3ce358f
++
++# networking_sitnl.c: uncrustify file
++2c45d268ca65c522fbabb7c4dab5e721296b4623
++
++# Uncrustify tapctl and openvpnmsica
++6280d3d5536174934ee22d3840457d61896e0e3a
++# tun.c: uncrustify
++baef44fc8769bbd99f4d699ce9f63180c29a5455
++
++# networking_sitnl.c: uncrustify file
++2c45d268ca65c522fbabb7c4dab5e721296b4623
++
++# uncrustify openvpn sources
++f57431cdc88f22fa4d7962946f0d3187fe058539
++
++# More broadly enforce Allman style and braces-around-conditionals
++4cd4899e8e80efae03c584a760fd107251735723
++
++# Merge 'reformatting' branch into master
++1f004b2f06e987d73e48f7fd7b96b0b248274f58
++
++# The Great Reformatting - first phase
++81d882d5302b8b647202a6893b57dfdc61fd6df2
++
+diff --git a/contrib/managent-demo/management-demo-server.py b/contrib/managent-demo/management-demo-server.py
+new file mode 100644
+index 00000000..e69de29b
+diff --git a/contrib/ovpnkeys.py b/contrib/ovpnkeys.py
+new file mode 100644
+index 00000000..e69de29b
+-- 
+2.26.0
+
 
