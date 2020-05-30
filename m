@@ -1,10 +1,10 @@
-Date: Sat, 30 May 2020 10:25:43 +0200 (CEST)
-Message-Id: <202005300825.04U8PhV1056797@...2054...>
+Date: Sat, 30 May 2020 20:28:40 +0200 (CEST)
+Message-Id: <202005301828.04UISeIU065165@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200530000600.1680-2-a@...2181...>
-References: <20200530000600.1680-2-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: pool: prevent IPv6 pools to be
- larger than 2^16 addresses
+In-Reply-To: <20200520183404.54822-1-code@...2557...>
+References: <20200520183404.54822-1-code@...2557...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Switch assertion failure to
+ returning false
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +15,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
+To: Jeremy Evans <code@...2557...>
 Cc: openvpn-devel@lists.sourceforge.net
-
-Acked-by: Gert Doering <gert@...1296...>
-
-This was an oversight by me, when initially implementing this - the
-intention was always "cap the IPv6 pool size at 2^16", not "let it
-grow until 2^31 and then cap to 2^16 thereafter".  It did no harm, 
-as the IPv6 pool was always limited by IPv4 pool size (which is capped
-to 2^16) - but with the "there can can be an IPv6-only pool now" 
-work, this could lead to interesting malloc() explosions.
 
 Your patch has been applied to the master and release/2.4 branch (bugfix).
 
-commit 81d66a1f14d4be3282dd648ecc2049658e3a65ed (master)
-commit fc0297143494e0a0f08564d90dbb210669d0abf5 (release/2.4)
-Author: Antonio Quartulli
-Date:   Sat May 30 02:05:54 2020 +0200
+Thanks.  I do hope Steffan finds time to track down the root cause of 
+this - from your log, it smells like a timing issue if multiple clients 
+connect in quick succession and multiple instances of the plugin are
+called.  Making "something" not finish initializing before the first 
+client sends his PUSH_REQUEST.  Or so.
 
-     pool: prevent IPv6 pools to be larger than 2^16 addresses
+commit 984bd1e1601e4b9562dbc88b02a8db60b884286f (master)
+commit 098edbb1f5a2e1360fd6a4ae0642b63bec12e992 (release/2.4)
+Author: Jeremy Evans
+Date:   Wed May 20 11:34:04 2020 -0700
 
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200530000600.1680-2-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19945.html
+     Switch assertion failure to returning false
+
+     Signed-off-by: Jeremy Evans <code@...2557...>
+     Acked-by: Steffan Karger <steffan.karger@...2507...>
+     Message-Id: <20200520183404.54822-1-code@...2557...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19914.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
