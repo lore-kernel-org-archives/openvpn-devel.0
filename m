@@ -1,15 +1,13 @@
-From: Arne Schwabe <arne@...1227...>
-References: <20200328040858.16505-1-arne@...1227...>
- <20200604221628.31562-1-arne@...1227...>
-Message-ID: <62a26ce3-47f8-df09-dc6a-429662a99580@...1227...>
-Date: Fri, 5 Jun 2020 01:21:10 +0200
-MIME-Version: 1.0
-In-Reply-To: <20200604221628.31562-1-arne@...1227...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="ucm3MzfLqFToz0fAPaaypH6xkWvSCtMA6"
-Subject: Re: [Openvpn-devel] [PATCH v3 3/3] Implement tls-groups option to
- specify eliptic curves/groups
+Message-ID: <1591313693.4288.22.camel@...2316...>
+From: James Bottomley <James.Bottomley@...2316...>
+Date: Thu, 04 Jun 2020 16:34:53 -0700
+In-Reply-To: <8aea6171-f862-ca03-dbce-fc03da38d3b2@...1227...>
+References: <1590709611.3515.22.camel@...2316...>
+ <8aea6171-f862-ca03-dbce-fc03da38d3b2@...1227...>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+ protocol="application/pgp-signature"; boundary="=-Xncx1vv3bh930ZE9m9BG"
+Mime-Version: 1.0
+Subject: Re: [Openvpn-devel] [BUG] test_ncp.c failing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,50 +16,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---ucm3MzfLqFToz0fAPaaypH6xkWvSCtMA6
-Content-Type: multipart/mixed; boundary="HKxgyDAYUgxp5hRdbIwS5vCimQLotrmgg"
-
---HKxgyDAYUgxp5hRdbIwS5vCimQLotrmgg
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
+--=-Xncx1vv3bh930ZE9m9BG
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Am 05.06.20 um 00:16 schrieb Arne Schwabe:
+On Fri, 2020-06-05 at 00:37 +0200, Arne Schwabe wrote:
+> Am 29.05.20 um 01:46 schrieb James Bottomley:
+> > I'm getting this failure of test_ncp.c
+> >=20
+> > [ RUN      ] test_check_ncp_ciphers_list
+> > [  ERROR   ] --- 0x7d67e8 !=3D 0
+> > [   LINE   ] --- test_ncp.c:65: error: Failure!
+> > [  FAILED  ] test_check_ncp_ciphers_list
+> >=20
+> > I'm building under openssl-1.1.0i
+> >=20
+> > The problem seems to be openssl uses a mixed case name for the
+> > cipher and EVP_CIPHER_name() is case sensitive.  Applying the patch
+> > below fixes this for openssl and gets make check to pass all tests,
+> > but I rather wonder why this isn't part of cipher_kt_name() to
+> > prevent this type of problem?
+>=20
+> Without double checking if I remember correctly OpenSSL 1.1.0 is a
+> corner case in this regard. OpenSSL 1.1.1 accepts mixed and non mixed
+> case.
 
+It was fixed by:
 
-Ignore this one, I made the patch, tested it, fixed it and forgot to
-copy it before sending it to the mailling list.
+commit fc196a5eb97dc3a5465c37a6761428ddd81b023d
+Author: Pauli <paul.dale@...2299...>
+Date:   Tue Sep 4 07:35:45 2018 +1000
 
-Arne
+    Make OBJ_NAME case insensitive.
+=20=20=20=20
+    Reviewed-by: Richard Levitte <levitte@...2559...>
+    (Merged from https://github.com/openssl/openssl/pull/7089)
 
+So yes, all of 1.1.1 has this fix.
 
+James
 
---HKxgyDAYUgxp5hRdbIwS5vCimQLotrmgg--
+> I want to fix this oddity in a proper way and write at least a small
+> unit test to ensure that always end up with the same cipher on the
+> wire protocol (in IV_CIPHERS and in the options string).
+>=20
+> Arne
+>=20
 
---ucm3MzfLqFToz0fAPaaypH6xkWvSCtMA6
+--=-Xncx1vv3bh930ZE9m9BG
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl7ZgeYACgkQFRhsZwKx
-RFQHGA/8Dm5nL9ephUHBzhkIMJmtkk/bPuVBbIIY17jQuZawUnet3p0vU9FNRWFH
-PAFX2rc97No6VCMX3iSQdy9VI3I7CS0jWVSP73moUDUXQC+FXkfRSx/gOm02hv0G
-p2kRpiCkLciFIJlRcrSDuvICueKulp58jVLXD/rzrqNXOhMZtk5sVStgw2sbmZUA
-zGhKM+kbPX47LTsL3PjtVsot4t5ZKBH8mDEr3Qf6E9q4OeKLCBGcbCAkfUnZ/i7r
-EaE0QNruiBefUsVWQNb/QiAuiI/M0ARh6EEa4d4wHIILDZWZhMq7EaiNbTBLSZsS
-bYWq9CLEVjUi963jHM/pWH2eFIIYmjhM8qlMGgdi4poIgBzg8hDGzC7rup7lsfxF
-+br68vjnl42HN3O4MRc5mzFHwyCkxG+4x/y0exb8bUPtDvSQvVTD4E2PiCmBozK2
-TtgDyfrIlM5vv9L0Vo0RXsmSh4ZNAAF95swPqQnIcT3XANgGa4YsOW52ASIE+h4G
-xO1ordc2paGn78tjWPt7cf8UvWtnPEcnpvf73La9pGMJAb5Wx+k2gQecmBFj3Uyv
-2c5H6oxQQ0NrFcXN/3gHU6XrO9RfqrvrnXkfYXuYFGxufguvkTqwByRq8+1mT15o
-Q4RwwwfFfFbs8DCd4SjdTqOXIKW3eLH/bcEOJVCpK0qLHiONO88=
-=cqB2
+iHUEABMIAB0WIQTnYEDbdso9F2cI+arnQslM7pishQUCXtmFHQAKCRDnQslM7pis
+ha5jAP9yCkbq+aQlrNVEml80n6b1l8dNNoM1vH3Cwb6FApC8VQEAxtK5GlgUGth2
+iNFr6FJT09vVzhLh8QuCCx5IJBDsUy0=
+=DYIy
 -----END PGP SIGNATURE-----
 
---ucm3MzfLqFToz0fAPaaypH6xkWvSCtMA6--
+--=-Xncx1vv3bh930ZE9m9BG--
+
 
