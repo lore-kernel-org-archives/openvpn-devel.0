@@ -1,15 +1,14 @@
+Message-ID: <1591374528.4728.53.camel@...2316...>
+From: James Bottomley <James.Bottomley@...2316...>
+Date: Fri, 05 Jun 2020 09:28:48 -0700
+In-Reply-To: <31d467d4-59da-08b2-166b-13f62a59b82f@...1227...>
 References: <20200528225920.6983-1-James.Bottomley@...2316...>
- <20200528225920.6983-3-James.Bottomley@...2316...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <9db81c43-f73e-723f-5013-1841f6a03d64@...1227...>
-Date: Fri, 5 Jun 2020 13:41:00 +0200
-MIME-Version: 1.0
-In-Reply-To: <20200528225920.6983-3-James.Bottomley@...2316...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="KKM3masLWrK8Iv8k64b2Ctpo4qvik2NKx"
-Subject: Re: [Openvpn-devel] [PATCH v6 2/3] crypto_openssl: add
- initialization to pick up local configuration
+ <20200528225920.6983-4-James.Bottomley@...2316...>
+ <31d467d4-59da-08b2-166b-13f62a59b82f@...1227...>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+ protocol="application/pgp-signature"; boundary="=-0KDXUHY0ibb18EGd5Bs6"
+Mime-Version: 1.0
+Subject: Re: [Openvpn-devel] [PATCH v6 3/3] Add unit tests for engine keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,61 +17,85 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: James Bottomley <James.Bottomley@...2316...>, openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---KKM3masLWrK8Iv8k64b2Ctpo4qvik2NKx
-Content-Type: multipart/mixed; boundary="9RYFjD5HZaWaOWgtaRCsCmpsOdQBdOvho"
-
---9RYFjD5HZaWaOWgtaRCsCmpsOdQBdOvho
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
+--=-0KDXUHY0ibb18EGd5Bs6
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Am 29.05.20 um 00:59 schrieb James Bottomley:
-> The test programme for the new openssl engine code requires overriding
-                   ^^^
-Unrelated to this commit but I wondered about this spelling and it seems
-that the British programme spelling usually is a TV programme while
-program is used in computer context. AE just uses program for both.
+On Fri, 2020-06-05 at 13:31 +0200, Arne Schwabe wrote:
+[...]
+> Somehow this turns into a autoconf/automake nightmare:
 
-> the system default configuration file to point to the location of the
-> test engine.  Add an initialization stanza that makes this behaviour
-> universal, so now anyone running openvpn configured with openssl can
-> specify their own configuration file with the OPENSSL_CONF environment
-> variable.
+Heh, got to say autoconf is a bit of a nightmare for its more esoteric
+features because the docs usually don't cover them and you end up
+having to take the opinion of the internet, which is somewhat, er,
+diverse.
 
-Acked-By: Arne Schwabe <arne@...1227...>
+> [testengine_section]
+> dynamic_path	=3D $ENV::srcdir/.libs/libtestengine`test .odule =3D
+> .yes SHREXTSHREXT echo .so || echo .dylib`
+>=20
+> is what I end up in the openssl.cnf
+>=20
+> The generated Makefile already has:
+>=20
+> $(builddir)/%.cnf: $(srcdir)/%.cnf.in
+>  	sed 's/SHREXT/`test .$module =3D .yes && echo .so || echo
+> .dylib`/' < $<
+> > $@
 
-I also tested that with a configuration file with an invalid statement
-this does not abort OpenVPN (the bug we had a few weeks ago)
+Hm, so SHREXT is dynamic on MAC platforms.  If I replace the single
+quote with double, that should allow the shell expansion.
 
-Arne
+> Maybe instead of using that use magic useing two different section
+> like testengineso and testenginedylib and then makeing the engine
+> name in the script dynamic?
 
+I'll investigate, but openssl has a fairly tight binding between the
+name of the dynamic object and the name of the engine.  It's very
+difficult (but not I perhaps impossible) to have an engine name
+different from the DSO name.
 
---9RYFjD5HZaWaOWgtaRCsCmpsOdQBdOvho--
+> Also for some reason the makefile still builds it now as .so instead
+> of .dylib
 
---KKM3masLWrK8Iv8k64b2Ctpo4qvik2NKx
+That's likely a libtool flag issue.  If you update this in Makefile.am:
+
+libtestengine_la_LDFLAGS =3D -rpath /lib -avoid-version -module -shared -ex=
+port-dynamic
+
+does it build a .dylib?
+
+>  and if I manually put the  full path in the openssl.cnf the
+> test works:
+>=20
+> dynamic_path	=3D
+> /Users/arne/oss/openvpn-ossl/tests/unit_tests/engine-
+> key/.libs/libtestengine.so
+>=20
+> Any idea? I can also help to get this mess resolve but maybe you have
+> a quick idea what is wrong.
+
+My money would be on the idea that environment specifiers in openssl
+conf files are only supported on UNIX.  I'll get it to do a full path
+substitution on build to fix this.
+
+James
+
+--=-0KDXUHY0ibb18EGd5Bs6
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl7aL0wACgkQFRhsZwKx
-RFRizg/+KWDbOxmqgSkJREBWHNZMzxyj6OjNixbm38FJYqArksOymVZDV1WpmSJT
-rWJjYyq+Q9qVXbb76KR77Z2sdbqr7rn3FdlaGCdR33n2rRvxZw/K2bV5kfnjrrhR
-s4szQMK5LESkhC7o4L7iGLxtWHckTz6HMQ92IjdhmWCr7tA4GJihFoNzss6KlV5S
-UNcMnlVbu8f7shKxYiTxB16clTjg9zSMDn0brJyfnwHkTEIAHj9H+A4RtRBUUkFH
-dWBXOcVt1gSHxg+5vWX15X+sj5Fr6C2V/5k7PpFNRzcRflJNPjpHLjVWWWhX/tgA
-W1GTRxURspQ6PTOonhB2FxL+tbnGpbIgmVt6EM+p3vS/C1It8D9gWDYjgYWeLApB
-pMpvUNKgE1PKlJVA75pVGq6GyRyd4vP0jlFbaimfJb6nPiDfwhAPfrt1xo18jHOa
-YwUc9TfwwvJ6x2RGC3EKf0wzgETORk8YzMzNgHH+jE0ieCR+u4kd4EnIDUWGAsWl
-JVtdkFMqpM8RDcyalbse1hqt8FiFD1dlAHhrG2eRb1VZAHuH3x93YrZt/Wmanl1Y
-f3TNkoYyXwN+IweSku77eJ2jk6+HVe6jVf9Ep812PW4pY5vIv5K5YAJRo761JhlY
-N+0KpGTcymnhu9V3BTlFBgHphkc0WkQc/5iQbou61Fon0k4nCe8=
-=LWgP
+iHUEABMIAB0WIQTnYEDbdso9F2cI+arnQslM7pishQUCXtpywAAKCRDnQslM7pis
+hcfEAP9KiGOGd5U6inN3F9ybwa0vL0pUj32vy7GarnyWZq5gkAEAvME0LPaWLSxM
+znoawN5Q0NVjqTZD8d9Ix2DTCt7MDHw=
+=gLHW
 -----END PGP SIGNATURE-----
 
---KKM3masLWrK8Iv8k64b2Ctpo4qvik2NKx--
+--=-0KDXUHY0ibb18EGd5Bs6--
+
 
