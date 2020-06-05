@@ -1,15 +1,15 @@
 References: <20200528225920.6983-1-James.Bottomley@...2316...>
- <20200528225920.6983-2-James.Bottomley@...2316...>
+ <20200528225920.6983-3-James.Bottomley@...2316...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <27402071-0dd8-2e54-d7f0-2538859ed6e7@...1227...>
-Date: Fri, 5 Jun 2020 13:35:44 +0200
+Message-ID: <9db81c43-f73e-723f-5013-1841f6a03d64@...1227...>
+Date: Fri, 5 Jun 2020 13:41:00 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200528225920.6983-2-James.Bottomley@...2316...>
+In-Reply-To: <20200528225920.6983-3-James.Bottomley@...2316...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="swYlP37xHMfijTkn9gixyCQXkIxfGkbBo"
-Subject: Re: [Openvpn-devel] [PATCH v6 1/3] openssl: add engine method for
- loading the key
+ boundary="KKM3masLWrK8Iv8k64b2Ctpo4qvik2NKx"
+Subject: Re: [Openvpn-devel] [PATCH v6 2/3] crypto_openssl: add
+ initialization to pick up local configuration
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,56 +21,58 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: James Bottomley <James.Bottomley@...2316...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---swYlP37xHMfijTkn9gixyCQXkIxfGkbBo
-Content-Type: multipart/mixed; boundary="2uLXLu5OzDSKSKbjQ9EWi3VXoA4pPlBU0"
+--KKM3masLWrK8Iv8k64b2Ctpo4qvik2NKx
+Content-Type: multipart/mixed; boundary="9RYFjD5HZaWaOWgtaRCsCmpsOdQBdOvho"
 
---2uLXLu5OzDSKSKbjQ9EWi3VXoA4pPlBU0
+--9RYFjD5HZaWaOWgtaRCsCmpsOdQBdOvho
 Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
 Am 29.05.20 um 00:59 schrieb James Bottomley:
-> As well as doing crypto acceleration, engines can also be used to load
-> key files.  If the engine is set, and the private key loading fails
-> for bio methods, this patch makes openvpn try to get the engine to
-> load the key.  If that succeeds, we end up using an engine based key.
-> This can be used with the openssl tpm engines to make openvpn use a
-> TPM wrapped key file.
->=20
+> The test programme for the new openssl engine code requires overriding
+                   ^^^
+Unrelated to this commit but I wondered about this spelling and it seems
+that the British programme spelling usually is a TV programme while
+program is used in computer context. AE just uses program for both.
 
+> the system default configuration file to point to the location of the
+> test engine.  Add an initialization stanza that makes this behaviour
+> universal, so now anyone running openvpn configured with openssl can
+> specify their own configuration file with the OPENSSL_CONF environment
+> variable.
 
 Acked-By: Arne Schwabe <arne@...1227...>
 
-This looks good now.
+I also tested that with a configuration file with an invalid statement
+this does not abort OpenVPN (the bug we had a few weeks ago)
 
 Arne
 
 
+--9RYFjD5HZaWaOWgtaRCsCmpsOdQBdOvho--
 
-
---2uLXLu5OzDSKSKbjQ9EWi3VXoA4pPlBU0--
-
---swYlP37xHMfijTkn9gixyCQXkIxfGkbBo
+--KKM3masLWrK8Iv8k64b2Ctpo4qvik2NKx
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl7aLhAACgkQFRhsZwKx
-RFS7whAAja2YBl0jUG/pikkBJBzuwSLXINnBXh/VzNSqauZ61YuiCDTiXieL7ZvM
-aipkEVp3dZ+vnCrEnHtxfYIFNPgH3PKZx5/Yl5801PXODTNjMa8cv9Id7nCVtXH+
-xkoD+KZet+Obt9SSwL++yntZNbsTA+cN5ljPkchE9ERXATRCxafTwykiQecVbpkC
-JaTm25jl0CH5Qn4JF7XEQ3uVxR4LyjfLLcHLXLpKqMXflCrKHpIjRbl/Tp6b5ik8
-FWCSWibt9uKueDI6JAb9iKtj8nWeenUION1f3INUuxy3YvXcSdjiyNcZkaqCRJm6
-DkcuW5xKCdn9njSSlzenpOjpASrGclAdIl+p5dSvUtf0yh0J7YbSDnJP2VKFPZw+
-nWJjqZnpj6HwIaZlFtU96fg7r1ZOKOFxHYul7zYR+pEqnhBcyMOIdZsGI4+Erczx
-1bpIhs9wa1Lo12WtofqdA++JjIy1zJiNhG8h27/IQcq/jC95XfdUeuODMPJ41anQ
-YlmJ/I7qp0rBwECUMwCFUQDxHq1pUKeVfqMVMtX1xw5Z646PQ+jqnionb9ZjaCTN
-P9jss6YBGQK2yaykV/1vLKp8Gfzk6Rn+SYbKllpTvoxdRkuXosh4TOnBKgHNGkhL
-SQttrFsYdVSVk+zEWuSkDq+JmUMimR4E6jcJqa4KZirbhdi3ZIw=
-=d6XV
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl7aL0wACgkQFRhsZwKx
+RFRizg/+KWDbOxmqgSkJREBWHNZMzxyj6OjNixbm38FJYqArksOymVZDV1WpmSJT
+rWJjYyq+Q9qVXbb76KR77Z2sdbqr7rn3FdlaGCdR33n2rRvxZw/K2bV5kfnjrrhR
+s4szQMK5LESkhC7o4L7iGLxtWHckTz6HMQ92IjdhmWCr7tA4GJihFoNzss6KlV5S
+UNcMnlVbu8f7shKxYiTxB16clTjg9zSMDn0brJyfnwHkTEIAHj9H+A4RtRBUUkFH
+dWBXOcVt1gSHxg+5vWX15X+sj5Fr6C2V/5k7PpFNRzcRflJNPjpHLjVWWWhX/tgA
+W1GTRxURspQ6PTOonhB2FxL+tbnGpbIgmVt6EM+p3vS/C1It8D9gWDYjgYWeLApB
+pMpvUNKgE1PKlJVA75pVGq6GyRyd4vP0jlFbaimfJb6nPiDfwhAPfrt1xo18jHOa
+YwUc9TfwwvJ6x2RGC3EKf0wzgETORk8YzMzNgHH+jE0ieCR+u4kd4EnIDUWGAsWl
+JVtdkFMqpM8RDcyalbse1hqt8FiFD1dlAHhrG2eRb1VZAHuH3x93YrZt/Wmanl1Y
+f3TNkoYyXwN+IweSku77eJ2jk6+HVe6jVf9Ep812PW4pY5vIv5K5YAJRo761JhlY
+N+0KpGTcymnhu9V3BTlFBgHphkc0WkQc/5iQbou61Fon0k4nCe8=
+=LWgP
 -----END PGP SIGNATURE-----
 
---swYlP37xHMfijTkn9gixyCQXkIxfGkbBo--
+--KKM3masLWrK8Iv8k64b2Ctpo4qvik2NKx--
 
