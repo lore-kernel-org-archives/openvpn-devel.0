@@ -1,8 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri,  5 Jun 2020 13:25:17 +0200
-Message-Id: <20200605112519.22714-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 1/3] Make cipher_kt_name always return
- normalised cipher name
+Date: Fri,  5 Jun 2020 13:25:18 +0200
+Message-Id: <20200605112519.22714-2-arne@...1227...>
+In-Reply-To: <20200605112519.22714-1-arne@...1227...>
+References: <20200605112519.22714-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH 2/3] Make cipher_kt_get also accept OpenVPN
+ config cipher name
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,129 +17,91 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The mbed TLS variant of the call already returned the normalised
-name while the OpenSSL variant did not. On top of that, all calls but
-one to cipher_kt_name were translate_cipher_name_to_openvpn. This commit
-moves the call of translate_cipher_name_to_openvpn into cipher_kt_name
-or avoids calling it twice in the case of mbed TLS.
-
-The one case that did not translate_cipher_name_to_openvpn is an
-internal ssl_openssl.c method that should call EVP_CIPHER_name anyway.
-
-Also simplify cipher_name_cmp function that is only used by
-openvpn --show-ciphers with the modified cipher_kt_name
-function.
+Basically calls to cipher_kt_get were calling
+translate_cipher_name_from_openvpn. The only two exception were the
+(broken) unit test and tls-crypt that uses cipher_kt_get("AES-256-CTR")
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/crypto.c         |  4 ++--
- src/openvpn/crypto_backend.h |  2 ++
- src/openvpn/crypto_openssl.c | 13 +++++--------
- src/openvpn/options.c        |  3 +--
- src/openvpn/ssl_ncp.c        |  3 +--
- 5 files changed, 11 insertions(+), 14 deletions(-)
+ src/openvpn/crypto.c         | 2 +-
+ src/openvpn/crypto_backend.h | 3 ++-
+ src/openvpn/crypto_mbedtls.c | 1 +
+ src/openvpn/crypto_openssl.c | 1 +
+ src/openvpn/ssl_ncp.c        | 8 ++++----
+ 5 files changed, 9 insertions(+), 6 deletions(-)
 
 diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index 2388027c..ba1fc095 100644
+index ba1fc095..1ce98184 100644
 --- a/src/openvpn/crypto.c
 +++ b/src/openvpn/crypto.c
-@@ -847,7 +847,7 @@ init_key_ctx(struct key_ctx *ctx, const struct key *key,
-         cipher_ctx_init(ctx->cipher, key->cipher, kt->cipher_length,
-                         kt->cipher, enc);
- 
--        const char *ciphername = translate_cipher_name_to_openvpn(cipher_kt_name(kt->cipher));
-+        const char *ciphername = cipher_kt_name(kt->cipher);
-         msg(D_HANDSHAKE, "%s: Cipher '%s' initialized with %d bit key",
-             prefix,
-             ciphername,
-@@ -1810,7 +1810,7 @@ print_cipher(const cipher_kt_t *cipher)
-                                " by default" : "";
- 
-     printf("%s  (%d bit key%s, ",
--           translate_cipher_name_to_openvpn(cipher_kt_name(cipher)),
-+           cipher_kt_name(cipher),
-            cipher_kt_key_size(cipher) * 8, var_key_size);
- 
-     if (cipher_kt_block_size(cipher) == 1)
+@@ -763,7 +763,7 @@ init_key_type(struct key_type *kt, const char *ciphername,
+     CLEAR(*kt);
+     if (strcmp(ciphername, "none") != 0)
+     {
+-        kt->cipher = cipher_kt_get(translate_cipher_name_from_openvpn(ciphername));
++        kt->cipher = cipher_kt_get(ciphername);
+         if (!kt->cipher)
+         {
+             msg(M_FATAL, "Cipher %s not supported", ciphername);
 diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
-index 1d206a8c..d46cb63f 100644
+index d46cb63f..85cb084a 100644
 --- a/src/openvpn/crypto_backend.h
 +++ b/src/openvpn/crypto_backend.h
-@@ -237,6 +237,8 @@ const cipher_kt_t *cipher_kt_get(const char *ciphername);
+@@ -227,7 +227,8 @@ void cipher_des_encrypt_ecb(const unsigned char key[DES_KEY_LENGTH],
+  * initialise encryption/decryption.
+  *
+  * @param ciphername    Name of the cipher to retrieve parameters for (e.g.
+- *                      \c AES-128-CBC).
++ *                      \c AES-128-CBC). Will be translated to the library name
++ *                      from the openvpn config name if needed.
+  *
+  * @return              A statically allocated structure containing parameters
+  *                      for the given cipher, or NULL if no matching parameters
+diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
+index c8dcddc8..bb752557 100644
+--- a/src/openvpn/crypto_mbedtls.c
++++ b/src/openvpn/crypto_mbedtls.c
+@@ -465,6 +465,7 @@ cipher_kt_get(const char *ciphername)
  
- /**
-  * Retrieve a string describing the cipher (e.g. \c AES-128-CBC).
-+ * The returned name is normalised to the OpenVPN config name in case the
-+ * name differs from the name used by the crypto library.
-  *
-  * @param cipher_kt     Static cipher parameters
-  *
+     ASSERT(ciphername);
+ 
++    ciphername = translate_cipher_name_from_openvpn(ciphername);
+     cipher = mbedtls_cipher_info_from_string(ciphername);
+ 
+     if (NULL == cipher)
 diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index a5b2c45a..13ab4859 100644
+index 13ab4859..bbaa5742 100644
 --- a/src/openvpn/crypto_openssl.c
 +++ b/src/openvpn/crypto_openssl.c
-@@ -266,12 +266,7 @@ cipher_name_cmp(const void *a, const void *b)
-     const EVP_CIPHER *const *cipher_a = a;
-     const EVP_CIPHER *const *cipher_b = b;
+@@ -580,6 +580,7 @@ cipher_kt_get(const char *ciphername)
  
--    const char *cipher_name_a =
--        translate_cipher_name_to_openvpn(EVP_CIPHER_name(*cipher_a));
--    const char *cipher_name_b =
--        translate_cipher_name_to_openvpn(EVP_CIPHER_name(*cipher_b));
--
--    return strcmp(cipher_name_a, cipher_name_b);
-+    return strcmp(cipher_kt_name(*cipher_a), cipher_kt_name(*cipher_b));
- }
+     ASSERT(ciphername);
  
- void
-@@ -613,7 +608,9 @@ cipher_kt_name(const EVP_CIPHER *cipher_kt)
-     {
-         return "[null-cipher]";
-     }
--    return EVP_CIPHER_name(cipher_kt);
-+
-+    const char *name = EVP_CIPHER_name(cipher_kt);
-+    return translate_cipher_name_to_openvpn(name);
- }
++    ciphername = translate_cipher_name_from_openvpn(ciphername);
+     cipher = EVP_get_cipherbyname(ciphername);
  
- int
-@@ -644,7 +641,7 @@ cipher_kt_block_size(const EVP_CIPHER *cipher)
- 
-     int block_size = EVP_CIPHER_block_size(cipher);
- 
--    orig_name = cipher_kt_name(cipher);
-+    orig_name = EVP_CIPHER_name(cipher);
-     if (!orig_name)
-     {
-         goto cleanup;
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index d1e68a51..ec912d34 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3779,8 +3779,7 @@ options_string(const struct options *o,
-         init_key_type(&kt, o->ciphername, o->authname, o->keysize, true,
-                       false);
- 
--        buf_printf(&out, ",cipher %s",
--                   translate_cipher_name_to_openvpn(cipher_kt_name(kt.cipher)));
-+        buf_printf(&out, ",cipher %s", cipher_kt_name(kt.cipher));
-         buf_printf(&out, ",auth %s", md_kt_name(kt.digest));
-         buf_printf(&out, ",keysize %d", kt.cipher_length * 8);
-         if (o->shared_secret_file)
+     if (NULL == cipher)
 diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-index 9ed6ff5f..042b0ce0 100644
+index 042b0ce0..ea1dc960 100644
 --- a/src/openvpn/ssl_ncp.c
 +++ b/src/openvpn/ssl_ncp.c
-@@ -116,8 +116,7 @@ mutate_ncp_cipher_list(const char *list, struct gc_arena *gc)
-         }
-         else
+@@ -103,12 +103,12 @@ mutate_ncp_cipher_list(const char *list, struct gc_arena *gc)
+     while (token)
+     {
+         /*
+-         * Going through a roundtrip by using translate_cipher_name_from_openvpn
+-         * and translate_cipher_name_to_openvpn also normalises the cipher name,
++         * Going through a roundtrip by using cipher_kt_get/cipher_kt_name
++         * (and translate_cipher_name_from_openvpn/
++         * translate_cipher_name_to_openvpn) also normalises the cipher name,
+          * e.g. replacing AeS-128-gCm with AES-128-GCM
+          */
+-        const char *cipher_name = translate_cipher_name_from_openvpn(token);
+-        const cipher_kt_t *ktc = cipher_kt_get(cipher_name);
++        const cipher_kt_t *ktc = cipher_kt_get(token);
+         if (!ktc)
          {
--            const char *ovpn_cipher_name =
--                translate_cipher_name_to_openvpn(cipher_kt_name(ktc));
-+            const char *ovpn_cipher_name = cipher_kt_name(ktc);
- 
-             if (buf_len(&new_list)> 0)
-             {
+             msg(M_WARN, "Unsupported cipher in --ncp-ciphers: %s", token);
 -- 
 2.26.0
 
