@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri,  5 Jun 2020 01:53:38 +0200
-Message-Id: <20200604235338.11728-1-arne@...1227...>
-In-Reply-To: <20200528235423.27416-1-arne@...1227...>
-References: <20200528235423.27416-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v2] Add .git-blame-ignore-revs with reformat
- commits
+Date: Fri,  5 Jun 2020 13:25:19 +0200
+Message-Id: <20200605112519.22714-3-arne@...1227...>
+In-Reply-To: <20200605112519.22714-1-arne@...1227...>
+References: <20200605112519.22714-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH 3/3] Add unit test for cipher name
+ translations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,90 +17,98 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This allows git blame to ignore reformatting changes and instead
-to show the previous commit that changed the line.
-
-To avoid manually building the list of commits this commit
-adds a file with a list of reformatting commits. I might have
-missed a few but this should be a good start. To use the file
-use:
-
-   git blame --ignore-revs-file=.git-blame-ignore-revs file
-
-or to automatically always use the file
-
-   git config blame.ignoreRevsFile .git-blame-ignore-revs
-
-Naming the file .git-blame-ignore-revs is a convention.
-
-Some more details in this random blog post:
-
-https://www.moxio.com/blog/43/ignoring-bulk-change-commits-with-git-blame
-
-Patch V2: Remove merge commit of the great formatting, add small
-          reminder how to use the feature at the top of the file
+The unit test duplicates some part of the test for
+the ncp-cipher list but that is not a bad thing.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- .git-blame-ignore-revs                        | 39 +++++++++++++++++++
- .../managent-demo/management-demo-server.py   |  0
- contrib/ovpnkeys.py                           |  0
- 3 files changed, 39 insertions(+)
- create mode 100644 .git-blame-ignore-revs
- create mode 100644 contrib/managent-demo/management-demo-server.py
- create mode 100644 contrib/ovpnkeys.py
+ tests/unit_tests/openvpn/test_crypto.c | 68 ++++++++++++++++++++++++++
+ 1 file changed, 68 insertions(+)
 
-diff --git a/.git-blame-ignore-revs b/.git-blame-ignore-revs
-new file mode 100644
-index 00000000..6d9b374f
---- /dev/null
-+++ b/.git-blame-ignore-revs
-@@ -0,0 +1,39 @@
-+# This FILE allows git blame to ignore reformatting changes and instead
-+# shows the previous commit that changed the line.
-+#
-+# To avoid manually building the list of commits this commit
-+# adds a file with a list of reformatting commits. TO use:
-+#
-+#   git blame --ignore-revs-file=.git-blame-ignore-revs file
-+#
-+# or to automatically always use the file
-+#
-+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
+index fdf814de..ea9b99b2 100644
+--- a/tests/unit_tests/openvpn/test_crypto.c
++++ b/tests/unit_tests/openvpn/test_crypto.c
+@@ -69,11 +69,79 @@ crypto_pem_encode_decode_loopback(void **state)
+     gc_free(&gc);
+ }
+ 
++static void
++test_translate_cipher(const char *ciphername, const char *openvpn_name)
++{
++    const cipher_kt_t *cipher = cipher_kt_get(ciphername);
++
++    /* Empty cipher is fine */
++    if (!cipher)
++    {
++        return;
++    }
++
++    const char *kt_name = cipher_kt_name(cipher);
++
++    assert_string_equal(kt_name, openvpn_name);
++}
++
++static void
++test_cipher_names(const char *ciphername, const char *openvpn_name)
++{
++    struct gc_arena gc = gc_new();
++    /* Go through some variants, if the cipher library accepts these, they
++     * should be normalised to the openvpn name */
++    char *upper = string_alloc(ciphername, &gc);
++    char *lower = string_alloc(ciphername, &gc);
++    char *random_case = string_alloc(ciphername, &gc);
++
++    for (int i = 0; i < strlen(ciphername); i++)
++    {
++        upper[i] = toupper(ciphername[i]);
++        lower[i] = tolower(ciphername[i]);
++        if (rand() & 0x1)
++        {
++            random_case[i] = upper[i];
++        }
++        else
++        {
++            random_case[i] = lower[i];
++        }
++    }
++
++    if (!openvpn_name)
++    {
++        openvpn_name = upper;
++    }
++
++    test_translate_cipher(upper, openvpn_name);
++    test_translate_cipher(lower, openvpn_name);
++    test_translate_cipher(random_case, openvpn_name);
++    test_translate_cipher(ciphername, openvpn_name);
 +
 +
-+# Uncrustify the tests/unit_tests/ part of our tree.
-+da1574ef7826d73f01e120cbd1ba40ce39a305b7
++    gc_free(&gc);
++}
 +
-+# Another round of uncrustify code cleanup.
-+9cf7b4925a54d93fbea1cadcf3dc0e11f3ce358f
++static void
++crypto_translate_cipher_names(void **state)
++{
++    /* Test that a number of ciphers to see that they turn out correctly */
++    test_cipher_names("BF-CBC", NULL);
++    test_cipher_names("BLOWFISH-CBC", "BF-CBC");
++    test_cipher_names("Chacha20-Poly1305", NULL);
++    test_cipher_names("AES-128-GCM", NULL);
++    test_cipher_names("AES-128-CBC", NULL);
++    test_cipher_names("CAMELLIA-128-CFB128", "CAMELLIA-128-CFB");
++    test_cipher_names("id-aes256-GCM", "AES-256-GCM");
++}
 +
-+# networking_sitnl.c: uncrustify file
-+2c45d268ca65c522fbabb7c4dab5e721296b4623
-+
-+# Uncrustify tapctl and openvpnmsica
-+6280d3d5536174934ee22d3840457d61896e0e3a
-+
-+# tun.c: uncrustify
-+baef44fc8769bbd99f4d699ce9f63180c29a5455
-+
-+# networking_sitnl.c: uncrustify file
-+2c45d268ca65c522fbabb7c4dab5e721296b4623
-+
-+# uncrustify openvpn sources
-+f57431cdc88f22fa4d7962946f0d3187fe058539
-+
-+# More broadly enforce Allman style and braces-around-conditionals
-+4cd4899e8e80efae03c584a760fd107251735723
-+
-+# The Great Reformatting - first phase
-+81d882d5302b8b647202a6893b57dfdc61fd6df2
-diff --git a/contrib/managent-demo/management-demo-server.py b/contrib/managent-demo/management-demo-server.py
-new file mode 100644
-index 00000000..e69de29b
-diff --git a/contrib/ovpnkeys.py b/contrib/ovpnkeys.py
-new file mode 100644
-index 00000000..e69de29b
+ int
+ main(void)
+ {
+     const struct CMUnitTest tests[] = {
+         cmocka_unit_test(crypto_pem_encode_decode_loopback),
++        cmocka_unit_test(crypto_translate_cipher_names),
+     };
+ 
+ #if defined(ENABLE_CRYPTO_OPENSSL)
 -- 
 2.26.0
 
