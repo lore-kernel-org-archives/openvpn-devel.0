@@ -1,15 +1,22 @@
-Date: Sat, 6 Jun 2020 17:26:43 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200606152643.GA1431@...1296...>
-References: <20200530000600.1680-1-a@...2181...>
- <20200530000600.1680-5-a@...2181...>
+References: <20200528225920.6983-1-James.Bottomley@...2316...>
+ <20200528225920.6983-4-James.Bottomley@...2316...>
+ <31d467d4-59da-08b2-166b-13f62a59b82f@...1227...>
+ <1591374528.4728.53.camel@...2316...>
+ <1591377595.4728.67.camel@...2316...>
+ <47ddb948-d12f-6372-1ca9-34b70dee3f25@...1227...>
+ <20200606084110.GY1431@...1296...>
+ <fe88bc2f-948d-d0c1-8969-b81ccfe1dba2@...1227...>
+ <20200606112817.GZ1431@...1296...>
+ <1591456971.3589.12.camel@...2316...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <348ac979-6c70-abba-e6d0-66e125391434@...1227...>
+Date: Sat, 6 Jun 2020 18:20:43 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="fTRfx/eO6wEPA8kv"
-Content-Disposition: inline
-In-Reply-To: <20200530000600.1680-5-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v4 4/7] pool: add support for
- ifconfig-pool-persist with IPv6 only
+In-Reply-To: <1591456971.3589.12.camel@...2316...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="ycTahZ2KhEKhPBVGEknvUG89eqIjqUCTv"
+Subject: Re: [Openvpn-devel] [PATCH v6 3/3] Add unit tests for engine keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,91 +25,161 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net, Antonio Quartulli <antonio@...515...>
+To: James Bottomley <James.Bottomley@...2316...>, Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---fTRfx/eO6wEPA8kv
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--ycTahZ2KhEKhPBVGEknvUG89eqIjqUCTv
+Content-Type: multipart/mixed; boundary="OHNH8t9EAgm5rSG5a4iUg06SoooRT5yAA"
+
+--OHNH8t9EAgm5rSG5a4iUg06SoooRT5yAA
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-HI,
-
-On Sat, May 30, 2020 at 02:05:57AM +0200, Antonio Quartulli wrote:
-> From: Antonio Quartulli <antonio@...515...>
+Am 06.06.20 um 17:22 schrieb James Bottomley:
+> On Sat, 2020-06-06 at 13:28 +0200, Gert Doering wrote:
+>> Hi,
+>>
+>> On Sat, Jun 06, 2020 at 12:43:10PM +0200, Arne Schwabe wrote:
+>>>> Naive question - can we not just use a .so on Mac?  Like,
+>>>> consistent, build .so, request .so from openssl.cnf?
+>>>
+>>> I thought I tested that and it didn't work but I tested it again
+>>> and that also works.
+>>
+>> Then let's just do that, and simplifiy the test stuff :-)
+>>
+>> (Building a "production quality" OpenSSL engine would need to do what
+>> the platform wants, but for "this is really just to test the OpenVPN
+>> code", I think "less autoconf hoops is better")
 >=20
-> Without altering the pool logic, this patch enables using
-> a persistent IP pool also when the server is configured
-> with IPv6 only.
+> Well, I am intellectually curious since I maintain the TPM engine for
+> openssl.  But Macs don't have TPMs so no-one is ever going to complain
+> ...
 >=20
-> Trac: #208
-> Signed-off-by: Antonio Quartulli <antonio@...515...>
+> The only remaining problem is the lack of environment variable support
+> in MAC openssl which I'll fix by using the absolute path.  If it works
+> I think below is the replacement patch.
+>=20
 
-NAK, as discussed on IRC, because this breaks (surprisingly) persistent
-pools for IPv4-only pools.
+Looks more like one step forward, two back:
+openssl.cnf absolute path looks good:
 
-(An ipp.txt entry of just "CN,IPv4" will not pass the 3rd buf_parse()
-call, and thus be ignored as "malformed" - so pool assignments are lost
-at every server restart)
+dynamic_path	=3D
+/Users/arne/oss/openvpn-ossl/tests/unit_tests/engine-key/.libs/libtestengin=
+e.so
 
-The rest of the code looks good, and it seems to work correctly on the
-t_server setup.
-
-
-While at it, one cosmetic change:
-
-> @@ -459,23 +525,26 @@ ifconfig_pool_list(const struct ifconfig_pool *pool=
-, struct status_output *out)
->          for (i =3D 0; i < pool_size; ++i)
->          {
->              const struct ifconfig_pool_entry *e =3D &pool->list[i];
-> +            struct in6_addr ip6;
-> +            in_addr_t ip;
-
-I find these two declarations a bit awkward - they are "in a block",
-but it's not "the block where they are needed"... the old code had
-on-the-fly declarations
-
-> -                const in_addr_t ip =3D ifconfig_pool_handle_to_ip_base(p=
-ool, i);
-...
-> -                    struct in6_addr ip6 =3D ifconfig_pool_handle_to_ipv6=
-_base(pool, i);
-
-which, I assume, you removed due to line length considerations?
+But now it has .so there. Alos the .libs directory now has neither .so
+nor .dylib
 
 
-This is not a reason for NAKing, though.  Just something I found surprising.
+engine-key% find .
+.
+./libtestengine_la-libtestengine.o
+./Makefile
+./libtestengine.la
+./libtestengine_la-libtestengine.lo
+./openssl.cnf
+./log.txt
+./.deps
+./.deps/libtestengine_la-libtestengine.Plo
+./.libs
+./.libs/libtestengine_la-libtestengine.o
+./.libs/libtestengine.la
+./.libs/libtestengine.a
+./passwd
+./client.key
 
-thanks :)
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+(This is an out of tree build so only generated files here)
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Make log:
 
---fTRfx/eO6wEPA8kv
+make check
+[...]
+Making check in engine-key
+Makefile:451: .deps/libtestengine_la-libtestengine.Plo: No such file or
+directory
+/Applications/Xcode.app/Contents/Developer/usr/bin/make  libtestengine.la
+/bin/sh ../../../libtool  --tag=3DCC   --mode=3Dcompile clang
+-DHAVE_CONFIG_H -I.
+-I../../../../openvpn-git/tests/unit_tests/engine-key -I../../..
+-I../../../include    -I/usr/local/opt/openssl@...2560.../include
+-I../../../../openvpn-git/include
+-I/usr/local/Cellar/cmocka/1.1.5/include -I -I -Wall
+-Wno-unused-parameter -Wno-unused-function -O2 -g -Wall -std=3Dc99 -MT
+libtestengine_la-libtestengine.lo -MD -MP -MF
+.deps/libtestengine_la-libtestengine.Tpo -c -o
+libtestengine_la-libtestengine.lo `test -f 'libtestengine.c' || echo
+'../../../../openvpn-git/tests/unit_tests/engine-key/'`libtestengine.c
+libtool: compile:  clang -DHAVE_CONFIG_H -I.
+-I../../../../openvpn-git/tests/unit_tests/engine-key -I../../..
+-I../../../include -I/usr/local/opt/openssl@...2560.../include
+-I../../../../openvpn-git/include
+-I/usr/local/Cellar/cmocka/1.1.5/include -I -I -Wall
+-Wno-unused-parameter -Wno-unused-function -O2 -g -Wall -std=3Dc99 -MT
+libtestengine_la-libtestengine.lo -MD -MP -MF
+.deps/libtestengine_la-libtestengine.Tpo -c
+../../../../openvpn-git/tests/unit_tests/engine-key/libtestengine.c
+-fno-common -DPIC -o .libs/libtestengine_la-libtestengine.o
+libtool: compile:  clang -DHAVE_CONFIG_H -I.
+-I../../../../openvpn-git/tests/unit_tests/engine-key -I../../..
+-I../../../include -I/usr/local/opt/openssl@...2560.../include
+-I../../../../openvpn-git/include
+-I/usr/local/Cellar/cmocka/1.1.5/include -I -I -Wall
+-Wno-unused-parameter -Wno-unused-function -O2 -g -Wall -std=3Dc99 -MT
+libtestengine_la-libtestengine.lo -MD -MP -MF
+.deps/libtestengine_la-libtestengine.Tpo -c
+../../../../openvpn-git/tests/unit_tests/engine-key/libtestengine.c -o
+libtestengine_la-libtestengine.o >/dev/null 2>&1
+mv -f .deps/libtestengine_la-libtestengine.Tpo
+.deps/libtestengine_la-libtestengine.Plo
+/bin/sh ../../../libtool  --tag=3DCC   --mode=3Dlink clang
+-I/usr/local/opt/openssl@...2560.../include   -I../../../../openvpn-git/inc=
+lude
+-I/usr/local/Cellar/cmocka/1.1.5/include -I -I -Wall
+-Wno-unused-parameter -Wno-unused-function -O2 -g -Wall -std=3Dc99
+-L/usr/local/opt/openssl@...2560.../lib -lcrypto -lssl
+-L/usr/local/Cellar/cmocka/1.1.5/lib -lcmocka -avoid-version -module
+-shared -export-dynamic  -o libtestengine.la
+libtestengine_la-libtestengine.lo  -lresolv
+libtool: link: ar cru .libs/libtestengine.a
+.libs/libtestengine_la-libtestengine.o
+libtool: link: ranlib .libs/libtestengine.a
+libtool: link: ( cd ".libs" && rm -f "libtestengine.la" && ln -s
+"../libtestengine.la" "libtestengine.la" )
+/Applications/Xcode.app/Contents/Developer/usr/bin/make  check-TESTS
+sed
+"s|SHREXT|.so|;s|ABSBUILDDIR|/Users/arne/oss/openvpn-ossl/tests/unit_tests/=
+engine-key|"
+< ../../../../openvpn-git/tests/unit_tests/engine-key/openssl.cnf.in >
+openssl.cnf
+
+
+--OHNH8t9EAgm5rSG5a4iUg06SoooRT5yAA--
+
+--ycTahZ2KhEKhPBVGEknvUG89eqIjqUCTv
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJe27WyAAoJEB2Cnv7KVigS3fIL/jPCs/sRPVkfknBpgbXdREVK
-JYs/CpMC5Q4oOE/RPkt7gKXx/ofwv3CmDAOjVXifnvqOW2JDQnKGuz4fDt2UcA6L
-IQJ5zdDfz4rqK1wkVDA0R6Crnzkha4D9KxXw2pvY4MZJpEa3ccPwcQB5OV4QB6YD
-G5KuizA+bgNtKFFhvgGyWIjjfg7TbJ2kEsLOrUkRqvbiTCE/Yj1q9bGIUUeebMjw
-YF4HFnIdD3LTqLpDF0CxsHevRyUN7QQ5BqvAbCMl/uYvXzEVXZ3kh0HsrazirPhA
-0BZIee+gbf1KykUxVZhyhbMAuMOcxNXZ9FTD320HdLpWXz+cDPIK7Fi+An7poDxM
-v5EkeYybMUwz14aNhruWmpe/8lOQPhFq/ilUFhjCJtQM+shr2WPMDZqPKbe5hrZa
-QWqq6DKsdpWTnPWM+iKJxcXz+Pe6D45qNdiZcTKGHptP82h0jcQpYgkCCnJhVvdA
-b+BzK8vrX4T2nMAUQZ0mzzvkywPx1/EHcyhoQ2AFqg==
-=axID
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl7bwlsACgkQFRhsZwKx
+RFTJ8Q//TcDZyXfbGqUjG60hIPRAqjQ2ZMFQ/4I6FMoBM6cCQ/qAWyH9OAaB3PUl
+EFJpjhPTRm4m5EGmU9pdnHbhziqcnFZk13TCBbJ0ISUDdTb2j+Q0VgFeLPJL/1SZ
+9wIbTdBrLI9nlr2mDcKpgMrjljgdPXRf3djyCqAWbwDmSBPZUnCtRerlXJn1zzhw
+qibtCIPB2LEUUaFryl1ohnlKXqPBdzY+IIMu3/Smc5Q6fNCi21uGZZ+fnpCpIQ29
+VPJUssChbdK7hbestzB7jbMYMNIvQ9jA6zdiuxGP95ygxo5jD2xrLrk+PT4Ba41q
+ZdfRmmeomEJq2kA04VMIXEsHguwPN/8JkS8ZZVN/yeDjDQQN9t85Lx8YINLiqeOA
+kvc78KzChGUXOGEu1Gm3lrKb6uLnOl8V5wd372madcvJsw7AihcZmF7lW3TUXz9s
+T9suPYzlKCeaa2i45ufCeQV0oGxZFMXIf34pbabG8vTlv9r4F9RnCYntU0egCDKF
+mJWaLRgbxSc1staUuc4Dr6154dj9yda0s5RHrfVpRPzZd/S0lt7Ubsh5YP01IyVk
+SoQIWQheA4x6xpORHZX2J56B1d7skwYkgeWb3gGu8W38wZ3f3+FEU5jdiQgsV2h6
+XcKhxeTNytRZgDQ0AxDo+nC1v5pz1EeEkBvwV3W4vz7btbkpvRE=
+=FcD5
 -----END PGP SIGNATURE-----
 
---fTRfx/eO6wEPA8kv--
+--ycTahZ2KhEKhPBVGEknvUG89eqIjqUCTv--
 
