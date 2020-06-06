@@ -1,17 +1,18 @@
-Date: Sat, 6 Jun 2020 10:41:10 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200606084110.GY1431@...1296...>
 References: <20200528225920.6983-1-James.Bottomley@...2316...>
  <20200528225920.6983-4-James.Bottomley@...2316...>
  <31d467d4-59da-08b2-166b-13f62a59b82f@...1227...>
  <1591374528.4728.53.camel@...2316...>
  <1591377595.4728.67.camel@...2316...>
  <47ddb948-d12f-6372-1ca9-34b70dee3f25@...1227...>
+ <20200606084110.GY1431@...1296...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <fe88bc2f-948d-d0c1-8969-b81ccfe1dba2@...1227...>
+Date: Sat, 6 Jun 2020 12:43:10 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="UdFih+Jx4cOX0lAR"
-Content-Disposition: inline
-In-Reply-To: <47ddb948-d12f-6372-1ca9-34b70dee3f25@...1227...>
+In-Reply-To: <20200606084110.GY1431@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="WnSxCqhtydIYA0eNEWLqoMWuF0FL0Dc2l"
 Subject: Re: [Openvpn-devel] [PATCH v6 3/3] Add unit tests for engine keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -21,59 +22,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
+To: Gert Doering <gert@...1296...>
 Cc: James Bottomley <James.Bottomley@...2317...>, openvpn-devel@lists.sourceforge.net
 
---UdFih+Jx4cOX0lAR
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--WnSxCqhtydIYA0eNEWLqoMWuF0FL0Dc2l
+Content-Type: multipart/mixed; boundary="cL0GykQch8ZznFYUiW7mPvlULsQlGgnE6"
+
+--cL0GykQch8ZznFYUiW7mPvlULsQlGgnE6
+Content-Language: en-GB
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
-
-On Sat, Jun 06, 2020 at 12:48:36AM +0200, Arne Schwabe wrote:
-> > So if this works, with the eval above and full path substitution in the
-> > openssl.cnf.in I think I might have a solution.
+Am 06.06.20 um 10:41 schrieb Gert Doering:
+> Hi,
 >=20
-> Unfortunately not. Still creates the .so file.  If everything fails we
-> might just do a if mac then cp from .so to .dylib as part of the test
-> run. It is ugly but might be better than to wait forever on this patch.
+> On Sat, Jun 06, 2020 at 12:48:36AM +0200, Arne Schwabe wrote:
+>>> So if this works, with the eval above and full path substitution in the
+>>> openssl.cnf.in I think I might have a solution.
+>>
+>> Unfortunately not. Still creates the .so file.  If everything fails we
+>> might just do a if mac then cp from .so to .dylib as part of the test
+>> run. It is ugly but might be better than to wait forever on this patch.
+>=20
+> Naive question - can we not just use a .so on Mac?  Like, consistent,
+> build .so, request .so from openssl.cnf?
+>=20
+> (Haven't dug into shlib weirdness on MacOS yet.  But if you want, I can
+> tell stories about shlib on AIX.  Which will make you ask for lots of=20
+> alcoholic beverages so you can forget again...)
 
-Naive question - can we not just use a .so on Mac?  Like, consistent,
-build .so, request .so from openssl.cnf?
+I thought I tested that and it didn't work but I tested it again and
+that also works.
 
-(Haven't dug into shlib weirdness on MacOS yet.  But if you want, I can
-tell stories about shlib on AIX.  Which will make you ask for lots of=20
-alcoholic beverages so you can forget again...)
+Arne
 
-gert
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+--cL0GykQch8ZznFYUiW7mPvlULsQlGgnE6--
 
-Gert Doering - Munich, Germany                             gert@...1296...
-
---UdFih+Jx4cOX0lAR
+--WnSxCqhtydIYA0eNEWLqoMWuF0FL0Dc2l
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJe21amAAoJEB2Cnv7KVigSA0wMAIiwDXOGMNNZBicALZNLE2+T
-yJCsZiuISv+j9p6whxoYG+LG0HPt5LBF9Fxo0GNXNUl+s9MFK1o1jzomnfoiQPdb
-Qv9ZJQkDq+6IvM5SIcLlug+H3AKJompo2ikqtS2xHH/MigZdtu2FIWG4+gSpyl07
-nDHE9qQmm9caXZbU8LnaeDdNq5qZD8Z0RtGp5HRU1EtJOgr/g3GdIGtWyt/HiYJb
-FuJBYXCRLJnU4L7P2zzLmlhKlfBkILEK5UxE9kM9d0SXwTL7gUg4snTAd+Xq+5D5
-evDl3ijYDtohS0BWuCUiVh7QFOH/tOPdCPlzTJlZj4nP/p7khHJm3nWgMXGoDTpX
-LcJBrN0+ev6U3bAzoFIiIsByABTweo/tAa9duMXl/U36Tv0HT2xcQOJIKOBHF9NM
-7c0d5ltB24a4ShL71xTl1ocdzzpFdEMoLQ0OpI+eVp+3juTlwdSR//KPNu+dEL8I
-NDmpWShpJyrE2NioMsa6Ax8DQ168wcgYqP2gATRh+A==
-=ym/q
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl7bcz4ACgkQFRhsZwKx
+RFTcthAAsax6enc4qCBszscUKxiLzEtGyqXt2F/qoyRkBjUkqS+NL+9vGjEFv9iR
+e6zUKeOaWSb6EyeGvr7Qy1Vo47SejDGl/vj+ToYI+cRvKYLTB0/dtXoQo8Ip1gML
+vJaNlNcstL0sCJwqq/aG7SEU8ySjeJjr1j1kl+Pi+A7dsGI9/I/DPL7sa+EcZOH4
+rEJjg2IMlTVWbFYROIJovb9byIN5RBUqDa4QK5WWQidm/Vm7s+4zmkzEc5ZYSb1p
+ZG5JjaL7IsOsQdeCuPbvq6dzzwomLLy5GzhPIYyyKf5eX+SIe/aDjr/JHeKgaQVh
+0Zk0ux9LkLEQkPxgvf264oHEAklGP1SrGWzanXuZ/rL4uGCYard1SWe5cWnn4qCD
+bOJ7DKGnatk7D8i9yQXUXUPbr/UY8oX/rgAwJjJRkrDoO10TK3YCv9SU+3B4M4tX
+kkRsKxuFl56wmcTZ9HqL1k1WVgbhHe4qGLZvoNB16MVOmFcleAiRvzOjcbqwFv9q
+VT+EvLs0g+PxksU4Ys6nFLsFkYpMwiaqFukRvFYbOKwlqPGf4D9ur4oA0rFthEqb
+8JeYY8JAaAOldqqotQQF/YHqHWo61dzkTGvdyE15v6QOQvJ23nuTWpJe4NgTga3E
+0vx1Yli2xfHtBx+GzBtB/GbN5IEiEjamWFzHNmcRdHisu5LR0NE=
+=q+A9
 -----END PGP SIGNATURE-----
 
---UdFih+Jx4cOX0lAR--
+--WnSxCqhtydIYA0eNEWLqoMWuF0FL0Dc2l--
 
