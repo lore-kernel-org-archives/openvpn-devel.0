@@ -1,20 +1,10 @@
-Date: Sat, 6 Jun 2020 13:28:17 +0200
+Date: Sat, 6 Jun 2020 16:11:39 +0200 (CEST)
+Message-Id: <202006061411.056EBdEo023105@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20200606112817.GZ1431@...1296...>
-References: <20200528225920.6983-1-James.Bottomley@...2316...>
- <20200528225920.6983-4-James.Bottomley@...2316...>
- <31d467d4-59da-08b2-166b-13f62a59b82f@...1227...>
- <1591374528.4728.53.camel@...2316...>
- <1591377595.4728.67.camel@...2316...>
- <47ddb948-d12f-6372-1ca9-34b70dee3f25@...1227...>
- <20200606084110.GY1431@...1296...>
- <fe88bc2f-948d-d0c1-8969-b81ccfe1dba2@...1227...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="Le3yVhSw7EsY9a+i"
-Content-Disposition: inline
-In-Reply-To: <fe88bc2f-948d-d0c1-8969-b81ccfe1dba2@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v6 3/3] Add unit tests for engine keys
+In-Reply-To: <20200601200624.14765-1-a@...2181...>
+References: <20200601200624.14765-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: pool: allow to configure an
+ IPv6-only ifconfig-pool
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,57 +13,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Antonio Quartulli <antonio@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---Le3yVhSw7EsY9a+i
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Acked-by: Gert Doering <gert@...1296...>
 
-Hi,
+Reviewed again ("stare at code").   Most of the changes are really
+"straightforward", as soon as done :-) - make all the IPv4 stuff in
+the pool handling conditional, make IPv6 "stand on its own", plus
+fiddling with minimum sizes (if both protocols are "on", the more
+limited pool limits the size of the other protocol).
 
-On Sat, Jun 06, 2020 at 12:43:10PM +0200, Arne Schwabe wrote:
-> > Naive question - can we not just use a .so on Mac?  Like, consistent,
-> > build .so, request .so from openssl.cnf?
->=20
-> I thought I tested that and it didn't work but I tested it again and
-> that also works.
+There still is *one* "pool" structure, but its IPv4 and IPv6 parts
+are now fully independent, except for the common size limitation -
+and that is fine, as there is currently no logic to tell openvpn
+"oh, this client only gets a v4 pool address", or "and v6 comes from
+that *other* pool".  Maybe some day, but that's a different patchset.
 
-Then let's just do that, and simplifiy the test stuff :-)
+One thing we actually might spend some more thought on is this one:
 
-(Building a "production quality" OpenSSL engine would need to do what
-the platform wants, but for "this is really just to test the OpenVPN code",
-I think "less autoconf hoops is better")
+        pool->ipv6.size = ipv6_netbits > 112
+                          ? (1 << (128 - ipv6_netbits)) - base
+                          : IFCONFIG_POOL_MAX;
 
-gert
+which, I think, will not do the right thing for
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+  ifconfig-ipv6-pool 2001:db8::f000/112
 
-Gert Doering - Munich, Germany                             gert@...1296...
+(it will come up with "65536", but the actual max size should be
+4096, ::f000 to :ffff) - so it should be ">= 112" there.
 
---Le3yVhSw7EsY9a+i
-Content-Type: application/pgp-signature; name="signature.asc"
+But... even for a larger pool, if the base address is sufficiently silly,
+this will still not do what we intended to - 2001:db8::ffff:f000/96 will 
+still overrun after 4096 clients, not having space for IFCONFIG_POOL_MAX.
 
------BEGIN PGP SIGNATURE-----
+Since this is no worse than today for silly configs, and better than
+today for /113.../128, it makes sense to merge as it is, but we need
+to revisit this.
 
-iQGcBAEBAgAGBQJe233RAAoJEB2Cnv7KVigS/TsL/35VzLhHFRl76XT3t7/XHgjk
-wuE8l1jtjb9RhinUO3MZHE/zvnkyZgXzs/M43wK2T+5JNot5MRA8tekdyMxe90H2
-7aES9Fzb3WYQ7vLVT9GV4MOktP6wXQ4OKDBUvAgnd+S1yfKuj+NCYsT9pCsXtXvs
-FPdtVaqYjoNkdXIliJ31MopHRrIpgPi3ZgvSO2mEQLfSTfx8Vnkt6a2c60+qjwiR
-wifHqNIgxLD0Zq0DFKpXvxuQ6N3hKdIf1aAwff6tBNSY0IzrEk5/AeYV769cRF9k
-mA1uBh19IdyRLVBYmeIatIpVqq5cdFF6CSsoRV6D6SmYNE5Vi0ZVaihwTnyQ52to
-vCPh7mGSN2xugDm3+vLM3fFx+ees0iEGpaKDRE5gnCkQi2ntpVeDoe8WuZKUXk3N
-RpSBcPvKakwDo+FumiiqD9Wl4IJcu5BqDgt8OBQATqRRCeVoqMAJfkQ5flvZI0gh
-77klnQbh3zI+hAU8asTxf2kJC5vOzvPYZKbPYjIw4w==
-=Tykr
------END PGP SIGNATURE-----
+(Note: when I say "overrun", it's not a "the pool structure will overrun
+and OpenVPN will segfault" overrun, it's just "we hand out pool addresses
+that are not part of the specified subnet" - which OpenVPN has always done,
+if the pool was specified in a silly-enough way, but Antonio and I decided 
+to fix this now by reducing the pool size according to the base address,
+so the last address handed out is always "$net:ffff" - with the correct 
+number of "f", of course)
 
---Le3yVhSw7EsY9a+i--
+
+Tested on the t_server setup with "no pools at all" (-> crash in v4) 
+and "only v6 pool".  
+
+Passed t_client tests, of course, but since no client-related code paths 
+are touched, this was just extra double-checking.
+
+Your patch has been applied to the master branch.
+
+commit 452113155e791fdf6091de0422391ff62bda2ac9
+Author: Antonio Quartulli
+Date:   Mon Jun 1 22:06:24 2020 +0200
+
+     pool: allow to configure an IPv6-only ifconfig-pool
+
+     Signed-off-by: Antonio Quartulli <antonio@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20200601200624.14765-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19957.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
