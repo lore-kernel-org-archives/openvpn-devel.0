@@ -1,15 +1,13 @@
-Date: Sun, 7 Jun 2020 13:25:01 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200607112501.GG1431@...1296...>
-References: <20200530000600.1680-1-a@...2181...>
- <20200530000600.1680-7-a@...2181...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="2vzBza942yILgeht"
-Content-Disposition: inline
-In-Reply-To: <20200530000600.1680-7-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v4 6/7] options: enable IPv4 redirection
- logic only if really required
+Message-ID: <1591567858.4011.15.camel@...2316...>
+From: James Bottomley <James.Bottomley@...2316...>
+Date: Sun, 07 Jun 2020 15:10:58 -0700
+In-Reply-To: <20200607111138.GA50189@...1296...>
+References: <20200528225920.6983-1-James.Bottomley@...2316...>
+ <20200528225920.6983-3-James.Bottomley@...2316...>
+ <20200607111138.GA50189@...1296...>
+Mime-Version: 1.0
+Subject: Re: [Openvpn-devel] [PATCH v6 2/3] crypto_openssl: add
+ initialization to pick up local configuration
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,80 +16,83 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net, Antonio Quartulli <antonio@...515...>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---2vzBza942yILgeht
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+On Sun, 2020-06-07 at 13:11 +0200, Gert Doering wrote:
+> Hi,
+> 
+> > diff --git a/src/openvpn/crypto_openssl.c
+> > b/src/openvpn/crypto_openssl.c
+> > index 4ac77fde..fd57edd2 100644
+> > --- a/src/openvpn/crypto_openssl.c
+> > +++ b/src/openvpn/crypto_openssl.c
+> > @@ -149,6 +149,11 @@ crypto_init_lib_engine(const char
+> > *engine_name)
+> >  void
+> >  crypto_init_lib(void)
+> >  {
+> > +#if (OPENSSL_VERSION_NUMBER >= 0x10100000L)
+> > +    OPENSSL_init_crypto(OPENSSL_INIT_LOAD_CONFIG, NULL);
+> > +#else
+> > +    OPENSSL_config(NULL);
+> > +#endif
+> 
+> This is failing on some of the Travis builds, with the error message
+> 
+> 1191 crypto_openssl.c: In function `crypto_init_lib':
+> 1192 crypto_openssl.c:155:5: error: implicit declaration of function
+> `OPENSSL_config'; did you mean `OPENSSL_init'? [-Werror=implicit-
+> function-declaration]
+> 1193     OPENSSL_config(NULL);
+> 1194     ^~~~~~~~~~~~~~
+> 
+> https://travis-ci.org/github/OpenVPN/openvpn/builds/695633823
+> 
+> From what I can see, this is for the builds with "openssl 1.0.1u" and
+> "openssl 1.0.2u" on Bionic.
+> 
+> 
+> I'm not sure if we intend to support these versions, but this needs
+> to be fixed - either the code needs to be adjusted or the travis
+> build matrix (for master).
 
-Hi,
+Sorry about that.  Best guess is it's missing an include for
+openssl/conf.h.  You don't need that today because pretty much every
+other openssl header includes it, but that may not always have been so.
 
-On Sat, May 30, 2020 at 02:05:59AM +0200, Antonio Quartulli wrote:
-> From: Antonio Quartulli <antonio@...515...>
->=20
-> If no IPv4 redirection flag is set, do not enable the IPv4
-> redirection logic at all so that it won't bother adding any
-> useless IPv4 route.
->=20
-> Trac: #208
-> Signed-off-by: Antonio Quartulli <antonio@...515...>
+Does the below patch fix it?  If it does, it should probably be folded
+into the other patch.  It should be safe because openssl/conf.h has
+existed for every version of openssl you support.
 
-I can see why we want this - I tried to connect to a "v6-only-in-tunnel"
-server over v4, specifying "redirect-gateway !ipv4 ipv6", and it tried
-to install a v4 /32 redirect route...
+James
 
-Sun Jun  7 13:20:43 2020 net_route_v4_add: 199.102.77.82/32 via 193.149.48.=
-190 dev [NULL] table 0 metric -1
+---8>8>8><8<8<8---
+From: James Bottomley <James.Bottomley@...2316...>
+Subject: [PATCH] crypto_openssl: add include for openssl/conf.h
 
-... which is harmless, but "unnecesary fumbling" is not desirable.
+Fix build failure on older versions of openssl.
 
+Signed-off-by: James Bottomley <James.Bottomley@...2316...>
+---
+ src/openvpn/crypto_openssl.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-The reason why I'm a bit unhappy about applying it is that it will
-change behaviour for the "redirect-private" case, and that might break
-people's setups.  For "redirect-gateway" or "redirect-gateway def1" (etc),
-it will not change anything.
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index fd57edd2..94b6d85b 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -43,6 +43,7 @@
+ #include "crypto_backend.h"
+ #include "openssl_compat.h"
+ 
++#include <openssl/conf.h>
+ #include <openssl/des.h>
+ #include <openssl/err.h>
+ #include <openssl/evp.h>
+-- 
+2.26.2
 
-Can we make this conditional in a way that does not break "redirect-private=
-"?
-
-(I used to use "redirect-private" to handle overlapping IPv4 routes without
-actually redirecting the whole gateway - think "VPN server is on 192.0.2.1
-and you want to push 'route 192.0.2.0/24'".  IPv6 handles this automaticall=
-y,
-but v4 needs "redirect-private" for that to work)
-
-thanks :)
-
-gert
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---2vzBza942yILgeht
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJe3M6MAAoJEB2Cnv7KVigSUtoL/3TgSQNN7Uar03NnB8S58Fpq
-1/tY8rv1If0+z/HbQ9j+L13wU3QD9l/FfTTOZ7KuO4D+HbHrwaHMtdlmrbQcwrrx
-xPcnv6/AauTW4r48EHa/49VoRPAjjpxw4BuM2yVVazG0wgcanZ+QlKPAsahSKhvU
-xBKI/unIhx+F4//oAqsPuO2+bax4o0OekA44ktF0qVM5FDHdLIpu62St/1ZauTAs
-D5jNdr+4VZCl0db1QELB2tBgaJjTcmnnRILgJOdQItpx5vZWnCyhbe/wOoMUmU4h
-e8wCCn7Jgd5MOSwSHD5lCtC0wt1yuhSWE+nYfo5gC6LXTHZP2L7YYqiYRvGmKNsH
-EY7Z2GMTgGuhSgX60CASL8oggle4LLkRWwRMl392nZD+R1BKHptkJnTrPmFtz3j/
-Lg3LB+sSKTEmwYPePLAF8VsIWM3efaEtmsHtmLNU3Egmroqdr1E3OfPdCpYLLKX2
-e5jZaJ65y4NZZuS656BHxk6DYiDsb7xJqSbjXYDR2w==
-=RFEZ
------END PGP SIGNATURE-----
-
---2vzBza942yILgeht--
 
