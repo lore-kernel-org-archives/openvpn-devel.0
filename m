@@ -1,16 +1,11 @@
-Date: Mon, 8 Jun 2020 16:16:20 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200608141620.GI1431@...1296...>
-References: <20200530000600.1680-1-a@...2181...>
- <20200530000600.1680-7-a@...2181...>
- <20200607112501.GG1431@...1296...>
+From: Antonio Quartulli <a@...2181...>
+Date: Mon,  8 Jun 2020 17:32:39 +0200
+Message-Id: <20200608153239.2260-1-a@...2181...>
+In-Reply-To: <20200608141620.GI1431@...1296...>
+References: <20200608141620.GI1431@...1296...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="eOvQw5NAV+INVs2h"
-Content-Disposition: inline
-In-Reply-To: <20200607112501.GG1431@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH v4 6/7] options: enable IPv4 redirection
- logic only if really required
+Subject: [Openvpn-devel] [PATCH v5] options: enable IPv4 redirection logic
+ only if really required
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,77 +14,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: Antonio Quartulli <antonio@...515...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <antonio@...515...>
 
---eOvQw5NAV+INVs2h
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: Antonio Quartulli <antonio@...515...>
 
-Hi,
+If no IPv4 redirection flag is set, do not enable the IPv4
+redirection logic at all so that it won't bother adding any
+useless IPv4 route.
 
-On Sun, Jun 07, 2020 at 01:25:01PM +0200, Gert Doering wrote:
-> Can we make this conditional in a way that does not break "redirect-priva=
-te"?
+Trac: #208
+Signed-off-by: Antonio Quartulli <antonio@...515...>
 
-A very simple patch would be
+---
+Changes from v4:
+- add warning about undefined behaviour when specifying
+  redirect-gateway/private at the same time
+- fix behaviour of redirect-private
 
-        if (streq(p[0], "redirect-gateway"))
-        {
-            options->routes->flags |=3D RG_REROUTE_GW;
-        }
-+       if (streq(p[0], "redirect-private"))
-+       {
-+           options->routes->flags |=3D RG_ENABLE;
-+       }
+Changes from v3:
+- move error message modification to previous patch
 
-and then take your patch as-is ("redirect-gateway with no options" would
-set RG_REROUTE_GW, which, if not cleared by !ipv4, would set RG_ENABLE
-later on, while "redirect-private" sets the RG_ENABLE itself).
+Changes from v2:
+- patchset rebased on top of pre-ipv6-only patchset
+---
+ src/openvpn/options.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-Alternatively, set RG_ENABLE at the top (always), and clear it for "!ipv4"
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 7556e7ee..018f6f18 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -6542,6 +6542,18 @@ add_option(struct options *options,
+         int j;
+         VERIFY_PERMISSION(OPT_P_ROUTE);
+         rol_check_alloc(options);
++
++        if (options->routes->flags & RG_ENABLE)
++        {
++            msg(M_WARN,
++                "WARNING: You have specified redirect-gateway and "
++                "redirect-private at the same time (or the same option "
++                "multiple times). This is not well supported and may lead to "
++                "unexpected results");
++        }
++
++        options->routes->flags |= RG_ENABLE;
++
+         if (streq(p[0], "redirect-gateway"))
+         {
+             options->routes->flags |= RG_REROUTE_GW;
+@@ -6579,7 +6591,7 @@ add_option(struct options *options,
+             }
+             else if (streq(p[j], "!ipv4"))
+             {
+-                options->routes->flags &= ~RG_REROUTE_GW;
++                options->routes->flags &= ~(RG_REROUTE_GW | RG_ENABLE);
+             }
+             else
+             {
+@@ -6591,7 +6603,6 @@ add_option(struct options *options,
+         /* we need this here to handle pushed --redirect-gateway */
+         remap_redirect_gateway_flags(options);
+ #endif
+-        options->routes->flags |= RG_ENABLE;
+     }
+     else if (streq(p[0], "block-ipv6") && !p[1])
+     {
+-- 
+2.27.0
 
-            else if (streq(p[j], "!ipv4"))
-            {
-                options->routes->flags &=3D ~(RG_REROUTE_GW|RG_ENABLE);
-            }
-
-... this should do the same thing, with less code convolutions.
-
-Configs that have *both* "redirect-private" and "redirect-gateway !ipv4 ipv=
-6"
-would still be broken.  But I'm not sure such a config is well-defined
-in the first place.
-
-gert
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---eOvQw5NAV+INVs2h
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJe3kgzAAoJEB2Cnv7KVigS7dQL/1HYRBs0NTSk6BFFR6nacnVs
-7vfBF7gM4EyBVMuFoce2geBI9/5UsHIYdMSMN038ZQwoCNGda2syX3YvggwOiRvi
-omhmyA9o74NUTqrga+fgwvhL3atDZepFK6D8R+er2uATddIJTsi2TslpxKT0c8bW
-kxaFffRcGHk0HXf2HHM5ewWMXUNz19c3TsJvpwjbjWMlVeWHupIV90UlbiWEPybH
-anlXimQAzhCBiHuIIFi29IITLIYNmTOjZ+iuPTFllHnR/kXmQ3Wb6rT9K9BOfdYO
-Vdv4wmUeMf9wQqZ+pZ2kKG4KNrFixPpSQ8awDlDh0CUTI8X7Mjlh/UTTstY5zg3F
-jcxN3iaDCzBeUXYCCDkn/CHlH5lK9rqIl3QnN5rEMF31eOmQex9A0RTHXUjQMiXd
-+8sTP+O9AfVHoWOrJb130XJKVZVZn236Gd/tMPEdatXiAceiVApUmhNLcosbWhmf
-QuCCKzR31nw/lHIsJc3mVwKM8bjkrPmQiKeB4RelJA==
-=f/RV
------END PGP SIGNATURE-----
-
---eOvQw5NAV+INVs2h--
 
