@@ -1,10 +1,11 @@
-Date: Tue, 9 Jun 2020 16:09:20 +0200 (CEST)
-Message-Id: <202006091409.059E9Kqi008264@...2054...>
+Date: Tue, 9 Jun 2020 19:55:03 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200609080229.2564-1-gert@...1296...>
-References: <20200609080229.2564-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Simplify pool size handling,
- fix possible array overrun on pool reading.
+Message-ID: <20200609175503.GU1431@...1296...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="KznFLIaq3GcgvPrz"
+Content-Disposition: inline
+Subject: [Openvpn-devel] async plugin-auth-pam
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,36 +14,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master branch.
+--KznFLIaq3GcgvPrz
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-I have amended most whitespace as requested, and removed the 
-"pool-> size = 0" initialization (not needed, indeed).
+Hi,
 
-I have left the brackets on the pool size calculation as they were -
-uncrustify says "that is also ok", and I find visibly grouping the 
-different parts of the formula helps understanding what it does.
+I ran into a problem at a customer installation recently, where=20
+plugin-auth-pam was blocking for some extended time (~30 seconds?)
+due to pam_radius not receiving answers due to problems in the backend.
 
-commit e7c0cd996f35965172c5def9531b6ab9ca10c389
-Author: Gert Doering
-Date:   Tue Jun 9 10:02:29 2020 +0200
+Now, maybe I should use radiusplugin in the first place, but since=20
+the pam_radius setup on this machine is shared between sshd and OpenVPN,
+I actually *like* using plugin-auth-pam -> pam_radius ("test one service,
+know that radius very likely works for both").
 
-     Simplify pool size handling, fix possible array overrun on pool reading.
+That said, I'm considering modifying the plugin-auth-pam plugin to
+add async authentication - which is supposedly not so hard=20
+("sample-plugins/defer/simple.c").
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20200609080229.2564-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20006.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Has one of you already done this, and just forgot to send in patches? :-)
+
+Any particular caveats?
+
+thanks,
+
+gert
 
 
---
-kind regards,
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-Gert Doering
+Gert Doering - Munich, Germany                             gert@...1296...
 
+--KznFLIaq3GcgvPrz
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJe38z2AAoJEB2Cnv7KVigS3isL/2FztXKqMoV1WuyEyAMvc610
+nbhWaU3XqmMj8y351quJv+6USL4VxKT6VoBG5xDfrexYQ7t7o4TviVunjEyljkh0
+hs1I+kb/xsLsI7pkepR/x9QbWzTHfG1RyfHG8Zxq+wc5/nT12GfxhYW50IEQ/4Gi
+Qbvhn8qFxcFtA0/opoMPY06z4TtdoMzTVbM8kujIf4fnqtYcmOr7cpm4fMEO2Ciw
+Hz4e0s1g89SClnqd3PgI3QikjCDoijGw4tRoFYtRLgX3JD7wjpoKvYhe7isKEAo+
+R3ZMAMLwpAQFmUtV09IAtVHqZY397n1VxfuoLxHN9ejKc3XYTvw4QLqHlHu8JQlt
+Mz/DW9Zdiii5Kk5I4ePwSMWEFCLcXnoL9P4QM+WE5c1ZhuJbXGBfoeAOlyOKLUJb
+dimabtDYbIF7c0BwznW2KrmydsrOh1I8PfG+CChSn6ROyEnUq8H7/qQao3b2cNFt
+24tRfkNvr4ru4EbiNNyj+f+6Kay/+3K8rgebxZxDHg==
+=0Q1k
+-----END PGP SIGNATURE-----
+
+--KznFLIaq3GcgvPrz--
 
