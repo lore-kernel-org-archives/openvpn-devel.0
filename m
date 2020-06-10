@@ -1,14 +1,10 @@
-Date: Wed, 10 Jun 2020 15:02:54 +0200
+Date: Wed, 10 Jun 2020 18:01:44 +0200 (CEST)
+Message-Id: <202006101601.05AG1i8K031513@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20200610130254.GZ1431@...1296...>
-References: <20180725195040.27560-1-kkane@...2393...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="aXPeqnC4ASnowlfh"
-Content-Disposition: inline
-In-Reply-To: <20180725195040.27560-1-kkane@...2393...>
-Subject: Re: [Openvpn-devel] [PATCH v2] [openvpn-build] Install/uninstall
- dialer DLL as part of Windows installer operation
+In-Reply-To: <20200421154612.14140-1-cschenk@...2502...>
+References: <20200421154612.14140-1-cschenk@...2502...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Set the correct mtu on windows
+ based systems
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,58 +13,106 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Kevin Kane <kkane@...2393...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Christopher Schenk <cschenk@...2502...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---aXPeqnC4ASnowlfh
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Acked-by: Gert Doering <gert@...1296...>
 
-Hi,
+Selva has ACKed the version sent in April 2019, and it should have been
+merged then and there - we (I) let it rot, tun.c got changed quite a bit
+for wintun support, now we have a new patch.  Thanks!  (And thanks for
+the repeated reminders, this is necessary at times)
 
-On Wed, Jul 25, 2018 at 07:51:03PM +0000, Kevin Kane via Openvpn-devel wrot=
-e:
-> Signed-off-by: Kevin Kane <kkane@...2393...>
-> ---
->  windows-nsis/openvpn.nsi | 4 ++++
->  1 file changed, 4 insertions(+)
+I have compared both patches.  They differ in context, of course (*),
+but the actual changes introduced by this patch are the same - so, I
+think I can take the ACK from Selva for the new patch as well.
 
-I'm trying to clean up "dangling" OpenVPN stuff while in the run-down to
-2.5 code freeze.
 
-Came across your patchset to make OpenVPN a proper "dial-on demand" VPN
-(if I remember right).
+(*) one of the context differences is the iservice message types - we
+have grown "msg_register_ring_buffers" in the meantime.  So to get this
+patch into 2.4 would be somewhat complicated, to ensure no iservice
+breakage.  But since 2.5 is really close now, I find that acceptable.
 
-Was this ever finished into something mergeable?
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+I have also reviewed this patch (so, two ACKs, one from Selva and one
+from me) - code looks good.
 
-Gert Doering - Munich, Germany                             gert@...1296...
+The "SitePrefixLength = 0" call confused me a bit, but this is correct
+according to (long URL):
+  https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-setipinterfaceentry
 
---aXPeqnC4ASnowlfh
-Content-Type: application/pgp-signature; name="signature.asc"
+I have tested this on Win10:
 
------BEGIN PGP SIGNATURE-----
+ - config with no "tun-mtu" and iservice -> interface MTU = 1500, good
+ - config with "tun-mtu 1330" and iservice -> interface MTU = 1330, good
+ - config with no "tun-mtu" and priv. gui -> interface MTU = 1500, good
+ - config with "tun-mtu 1330" and priv. gui -> interface MTU = 1330, good
 
-iQGcBAEBAgAGBQJe4Nn9AAoJEB2Cnv7KVigSlPUL/RVVg1pagsO0j8mHX0XVW02v
-IAoRTK9XqQOW16HrMV6sOfoKW/ncuRJWQXsnIll23nfucsDcRqsbj81D5J94OJhC
-nXD/Cgj7LZw5Me8nMiPIxfTujGNxA+Y9RbHycchQ+ARIvvlHNV/6Dy0vg5TfIXTv
-289o1YmjIS03hmG/zRGxLOb7itZVd3868JaNazO9HAcRxrBSQHNqsL1Df+3QFToU
-+h+1A0Z8b0mQIjCioyzQesalKtpUtSxuT0Y1E1SYGl7K2tvxfWDBv+DTSlNpgYeF
-PMzrgJISPjlHjkqxYN8Nva2FlBqoYY8R39CAC2keSIVQVwv8PiVl0MJ/x61bGETB
-tZxPkyBVccJflum+PlsMn+mA7oNOZH8JrcPwWwdBomclz3VsdmwoXmtPs9yMe/5m
-Lxh1TwXfgo0bZ70Ev1xniZpK7NcC1nEs+zGQdGNeLz7OQxRI19X78Djqt/3/IhFK
-jJqKQGhglx6RIVyt0l9cxadh77F+rJNQ7pNtJTGfjw==
-=XRQY
------END PGP SIGNATURE-----
+because I sometimes test things before I question myself whether this is
+a useful thing to test:
+ - config with "tun-mtu 1200" and priv. gui -> 
+     *succeeds* for IPv4
+     *fails* for IPv6
+     "TUN: setting IPv6 mtu using service failed: Falscher Parameter.
+      [status=87 if_index=8]
 
---aXPeqnC4ASnowlfh--
+   (which is Windows telling me that "the IETF says that the mininum MTU
+    for IPv6 is 1280, so go away and complain to them!" - technically
+    correct, though slightly confusing)
+
+
+Just for reference: "ipconfig /all" does not show the MTU, you need to
+call "netsh interface ipv4/ipv6 show subinterfaces".
+
+
+Remarks:
+
+  - if using the iservice, openvpn will log
+      "IPv<x> MTU set to 1330 on interface 8 using service"
+    if using the gui in privileged mode, it will log
+      "Successfully set IPv<x> mtu on interface 8"
+
+    --> I think it would be good to use the same message here, and 
+    include the numeric value in both cases, like
+
+      "IPv<x> MTU set to 1330 on interface 8 using SetIpInterfaceEntry()"
+
+    or so.  Can you send a followup patch?  It will be expedited!
+
+  - shall we do "if MTU < 1280, log a notice and do not attempt to set
+    IPv6 MTU"?  Or "just log the notice, in case windows will accept
+    it nonetheless"?
+
+    if (mtu<1280)
+    {
+      msg(M_INFO, "NOTE: IPv6 interface MTU < 1280 conflicts with IETF standards and might not work");
+    }
+
+
+Your patch has been applied to the master branch.
+
+Thanks for your patience.
+
+
+commit 0213f80ed72ad8b6bb43db3bbd72a66ec2e12fcd
+Author: Christopher Schenk
+Date:   Tue Apr 21 17:46:12 2020 +0200
+
+     Set the correct mtu on windows based systems
+
+     Signed-off-by: Christopher Schenk <cschenk@...2502...>
+     Acked-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20200421154612.14140-1-cschenk@...2502...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19803.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
