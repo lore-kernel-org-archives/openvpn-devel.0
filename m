@@ -1,9 +1,8 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Wed, 10 Jun 2020 10:45:49 +0200
-Message-Id: <20200610084549.4028-1-a@...2181...>
+Date: Wed, 10 Jun 2020 11:01:00 +0200
+Message-Id: <20200610090100.29738-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] multi: skip IPv4 logic in
- multi_select_virtual_addr() if no pool is configured
+Subject: [Openvpn-devel] [PATCH] pool: remove useless 'options.h' include
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,97 +16,28 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <a@...2181...>, Gert Doering <gert@...1296...>
 
-When no IPv4 pool is configured (but we have an IPv6 pool
-only), the multi_select_virtual_addr() function will spit
-a warning when allocating an address for a new client.
-This happens because the code will check for some IPv4
-bits and will see that they are missing.
-
-However, these bits are not really important, because in
-this use case we don't want to configure any IPv4 address
-at all.
-
-For this reason it is safe to wrap this entire logic in
-an if-block that just does not execute when no IPv4 pool
-is configured.
-
-This avoids the warning and will also avoid any other
-hidden side effect.
+Commit 6a8cd033 ("pool: add support for ifconfig-pool-persist with IPv6
+only") has accidentally introduced an include for 'options.h', which
+revealed to not be useful at all. Remove it.
 
 Reported-by: Gert Doering <gert@...1296...>
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- src/openvpn/multi.c | 50 ++++++++++++++++++++++++---------------------
- 1 file changed, 27 insertions(+), 23 deletions(-)
+ src/openvpn/pool.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 2fbbe9ec..99472f14 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -1504,36 +1504,40 @@ multi_select_virtual_addr(struct multi_context *m, struct multi_instance *mi)
-                   ? print_in6_addr( remote_ipv6, 0, &gc )
-                   : "(Not enabled)") );
+diff --git a/src/openvpn/pool.c b/src/openvpn/pool.c
+index 68fa4782..370f6af7 100644
+--- a/src/openvpn/pool.c
++++ b/src/openvpn/pool.c
+@@ -34,7 +34,6 @@
+ #include "error.h"
+ #include "socket.h"
+ #include "otime.h"
+-#include "options.h"
  
--            /* set push_ifconfig_remote_netmask from pool ifconfig address(es) */
--            mi->context.c2.push_ifconfig_local = remote;
--            if (tunnel_type == DEV_TYPE_TAP || (tunnel_type == DEV_TYPE_TUN && tunnel_topology == TOP_SUBNET))
-+            if (mi->context.options.ifconfig_pool_defined)
-             {
--                mi->context.c2.push_ifconfig_remote_netmask = mi->context.options.ifconfig_pool_netmask;
--                if (!mi->context.c2.push_ifconfig_remote_netmask)
-+                /* set push_ifconfig_remote_netmask from pool ifconfig address(es) */
-+                mi->context.c2.push_ifconfig_local = remote;
-+                if (tunnel_type == DEV_TYPE_TAP || (tunnel_type == DEV_TYPE_TUN && tunnel_topology == TOP_SUBNET))
-                 {
--                    mi->context.c2.push_ifconfig_remote_netmask = mi->context.c1.tuntap->remote_netmask;
-+                    mi->context.c2.push_ifconfig_remote_netmask = mi->context.options.ifconfig_pool_netmask;
-+                    if (!mi->context.c2.push_ifconfig_remote_netmask)
-+                    {
-+                        mi->context.c2.push_ifconfig_remote_netmask = mi->context.c1.tuntap->remote_netmask;
-+                    }
-                 }
--            }
--            else if (tunnel_type == DEV_TYPE_TUN)
--            {
--                if (tunnel_topology == TOP_P2P)
-+                else if (tunnel_type == DEV_TYPE_TUN)
-                 {
--                    mi->context.c2.push_ifconfig_remote_netmask = mi->context.c1.tuntap->local;
-+                    if (tunnel_topology == TOP_P2P)
-+                    {
-+                        mi->context.c2.push_ifconfig_remote_netmask = mi->context.c1.tuntap->local;
-+                    }
-+                    else if (tunnel_topology == TOP_NET30)
-+                    {
-+                        mi->context.c2.push_ifconfig_remote_netmask = local;
-+                    }
-                 }
--                else if (tunnel_topology == TOP_NET30)
-+
-+                if (mi->context.c2.push_ifconfig_remote_netmask)
-                 {
--                    mi->context.c2.push_ifconfig_remote_netmask = local;
-+                    mi->context.c2.push_ifconfig_defined = true;
-+                }
-+                else
-+                {
-+                    msg(D_MULTI_ERRORS,
-+                        "MULTI: no --ifconfig-pool netmask parameter is available to push to %s",
-+                        multi_instance_string(mi, false, &gc));
-                 }
--            }
--
--            if (mi->context.c2.push_ifconfig_remote_netmask)
--            {
--                mi->context.c2.push_ifconfig_defined = true;
--            }
--            else
--            {
--                msg(D_MULTI_ERRORS, "MULTI: no --ifconfig-pool netmask parameter is available to push to %s",
--                    multi_instance_string(mi, false, &gc));
-             }
+ #include "memdbg.h"
  
-             if (mi->context.options.ifconfig_ipv6_pool_defined)
 -- 
 2.27.0
 
