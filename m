@@ -1,10 +1,10 @@
-Date: Wed, 10 Jun 2020 11:23:59 +0200 (CEST)
-Message-Id: <202006100923.05A9Nxlc025822@...2054...>
+Date: Wed, 10 Jun 2020 12:36:23 +0200 (CEST)
+Message-Id: <202006101036.05AAaNEg026888@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200610090100.29738-1-a@...2181...>
-References: <20200610090100.29738-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: pool: remove useless
- 'options.h' include
+In-Reply-To: <20200610084549.4028-1-a@...2181...>
+References: <20200610084549.4028-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: multi: skip IPv4 logic in
+ multi_select_virtual_addr() if no pool is configured
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,20 +20,25 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-"trivial and obviously correct"
+The patch is quite trivial - if seen with "git show -w" :-) - it basically
+just encapsulates the whole "the pool has returned something, how does
+it need to be wrapped for pushing out?" into "is there an IPv4 pool at all?".
+
+Tested on the t_server setup - warnings are gone, and ccd/ifconfig-push still
+works (which it should, on no-v4-pool or no-pool-at-all setups).
 
 Your patch has been applied to the master branch.
 
-commit 28e395856c897b6f2dea441dbe5eb4a151d75b85
+commit 9002885bd8a10d9375dc4f0baf2df05395c86f1a
 Author: Antonio Quartulli
-Date:   Wed Jun 10 11:01:00 2020 +0200
+Date:   Wed Jun 10 10:45:49 2020 +0200
 
-     pool: remove useless 'options.h' include
+     multi: skip IPv4 logic in multi_select_virtual_addr() if no pool is configured
 
      Signed-off-by: Antonio Quartulli <a@...2181...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200610090100.29738-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20011.html
+     Message-Id: <20200610084549.4028-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20012.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
