@@ -1,11 +1,9 @@
-Date: Tue, 9 Jun 2020 19:55:03 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200609175503.GU1431@...1296...>
+From: Antonio Quartulli <a@...2181...>
+Date: Wed, 10 Jun 2020 10:45:49 +0200
+Message-Id: <20200610084549.4028-1-a@...2181...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="KznFLIaq3GcgvPrz"
-Content-Disposition: inline
-Subject: [Openvpn-devel] async plugin-auth-pam
+Subject: [Openvpn-devel] [PATCH] multi: skip IPv4 logic in
+ multi_select_virtual_addr() if no pool is configured
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,63 +12,103 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>, Gert Doering <gert@...1296...>
 
---KznFLIaq3GcgvPrz
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+When no IPv4 pool is configured (but we have an IPv6 pool
+only), the multi_select_virtual_addr() function will spit
+a warning when allocating an address for a new client.
+This happens because the code will check for some IPv4
+bits and will see that they are missing.
 
-Hi,
+However, these bits are not really important, because in
+this use case we don't want to configure any IPv4 address
+at all.
 
-I ran into a problem at a customer installation recently, where=20
-plugin-auth-pam was blocking for some extended time (~30 seconds?)
-due to pam_radius not receiving answers due to problems in the backend.
+For this reason it is safe to wrap this entire logic in
+an if-block that just does not execute when no IPv4 pool
+is configured.
 
-Now, maybe I should use radiusplugin in the first place, but since=20
-the pam_radius setup on this machine is shared between sshd and OpenVPN,
-I actually *like* using plugin-auth-pam -> pam_radius ("test one service,
-know that radius very likely works for both").
+This avoids the warning and will also avoid any other
+hidden side effect.
 
-That said, I'm considering modifying the plugin-auth-pam plugin to
-add async authentication - which is supposedly not so hard=20
-("sample-plugins/defer/simple.c").
+Reported-by: Gert Doering <gert@...1296...>
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+ src/openvpn/multi.c | 50 ++++++++++++++++++++++++---------------------
+ 1 file changed, 27 insertions(+), 23 deletions(-)
 
-Has one of you already done this, and just forgot to send in patches? :-)
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 2fbbe9ec..99472f14 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -1504,36 +1504,40 @@ multi_select_virtual_addr(struct multi_context *m, struct multi_instance *mi)
+                   ? print_in6_addr( remote_ipv6, 0, &gc )
+                   : "(Not enabled)") );
+ 
+-            /* set push_ifconfig_remote_netmask from pool ifconfig address(es) */
+-            mi->context.c2.push_ifconfig_local = remote;
+-            if (tunnel_type == DEV_TYPE_TAP || (tunnel_type == DEV_TYPE_TUN && tunnel_topology == TOP_SUBNET))
++            if (mi->context.options.ifconfig_pool_defined)
+             {
+-                mi->context.c2.push_ifconfig_remote_netmask = mi->context.options.ifconfig_pool_netmask;
+-                if (!mi->context.c2.push_ifconfig_remote_netmask)
++                /* set push_ifconfig_remote_netmask from pool ifconfig address(es) */
++                mi->context.c2.push_ifconfig_local = remote;
++                if (tunnel_type == DEV_TYPE_TAP || (tunnel_type == DEV_TYPE_TUN && tunnel_topology == TOP_SUBNET))
+                 {
+-                    mi->context.c2.push_ifconfig_remote_netmask = mi->context.c1.tuntap->remote_netmask;
++                    mi->context.c2.push_ifconfig_remote_netmask = mi->context.options.ifconfig_pool_netmask;
++                    if (!mi->context.c2.push_ifconfig_remote_netmask)
++                    {
++                        mi->context.c2.push_ifconfig_remote_netmask = mi->context.c1.tuntap->remote_netmask;
++                    }
+                 }
+-            }
+-            else if (tunnel_type == DEV_TYPE_TUN)
+-            {
+-                if (tunnel_topology == TOP_P2P)
++                else if (tunnel_type == DEV_TYPE_TUN)
+                 {
+-                    mi->context.c2.push_ifconfig_remote_netmask = mi->context.c1.tuntap->local;
++                    if (tunnel_topology == TOP_P2P)
++                    {
++                        mi->context.c2.push_ifconfig_remote_netmask = mi->context.c1.tuntap->local;
++                    }
++                    else if (tunnel_topology == TOP_NET30)
++                    {
++                        mi->context.c2.push_ifconfig_remote_netmask = local;
++                    }
+                 }
+-                else if (tunnel_topology == TOP_NET30)
++
++                if (mi->context.c2.push_ifconfig_remote_netmask)
+                 {
+-                    mi->context.c2.push_ifconfig_remote_netmask = local;
++                    mi->context.c2.push_ifconfig_defined = true;
++                }
++                else
++                {
++                    msg(D_MULTI_ERRORS,
++                        "MULTI: no --ifconfig-pool netmask parameter is available to push to %s",
++                        multi_instance_string(mi, false, &gc));
+                 }
+-            }
+-
+-            if (mi->context.c2.push_ifconfig_remote_netmask)
+-            {
+-                mi->context.c2.push_ifconfig_defined = true;
+-            }
+-            else
+-            {
+-                msg(D_MULTI_ERRORS, "MULTI: no --ifconfig-pool netmask parameter is available to push to %s",
+-                    multi_instance_string(mi, false, &gc));
+             }
+ 
+             if (mi->context.options.ifconfig_ipv6_pool_defined)
+-- 
+2.27.0
 
-Any particular caveats?
-
-thanks,
-
-gert
-
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---KznFLIaq3GcgvPrz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJe38z2AAoJEB2Cnv7KVigS3isL/2FztXKqMoV1WuyEyAMvc610
-nbhWaU3XqmMj8y351quJv+6USL4VxKT6VoBG5xDfrexYQ7t7o4TviVunjEyljkh0
-hs1I+kb/xsLsI7pkepR/x9QbWzTHfG1RyfHG8Zxq+wc5/nT12GfxhYW50IEQ/4Gi
-Qbvhn8qFxcFtA0/opoMPY06z4TtdoMzTVbM8kujIf4fnqtYcmOr7cpm4fMEO2Ciw
-Hz4e0s1g89SClnqd3PgI3QikjCDoijGw4tRoFYtRLgX3JD7wjpoKvYhe7isKEAo+
-R3ZMAMLwpAQFmUtV09IAtVHqZY397n1VxfuoLxHN9ejKc3XYTvw4QLqHlHu8JQlt
-Mz/DW9Zdiii5Kk5I4ePwSMWEFCLcXnoL9P4QM+WE5c1ZhuJbXGBfoeAOlyOKLUJb
-dimabtDYbIF7c0BwznW2KrmydsrOh1I8PfG+CChSn6ROyEnUq8H7/qQao3b2cNFt
-24tRfkNvr4ru4EbiNNyj+f+6Kay/+3K8rgebxZxDHg==
-=0Q1k
------END PGP SIGNATURE-----
-
---KznFLIaq3GcgvPrz--
 
