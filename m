@@ -1,8 +1,10 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Wed, 10 Jun 2020 11:01:00 +0200
-Message-Id: <20200610090100.29738-1-a@...2181...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] pool: remove useless 'options.h' include
+Date: Wed, 10 Jun 2020 11:23:59 +0200 (CEST)
+Message-Id: <202006100923.05A9Nxlc025822@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20200610090100.29738-1-a@...2181...>
+References: <20200610090100.29738-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: pool: remove useless
+ 'options.h' include
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,32 +15,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>, Gert Doering <gert@...1296...>
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Commit 6a8cd033 ("pool: add support for ifconfig-pool-persist with IPv6
-only") has accidentally introduced an include for 'options.h', which
-revealed to not be useful at all. Remove it.
+Acked-by: Gert Doering <gert@...1296...>
 
-Reported-by: Gert Doering <gert@...1296...>
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
- src/openvpn/pool.c | 1 -
- 1 file changed, 1 deletion(-)
+"trivial and obviously correct"
 
-diff --git a/src/openvpn/pool.c b/src/openvpn/pool.c
-index 68fa4782..370f6af7 100644
---- a/src/openvpn/pool.c
-+++ b/src/openvpn/pool.c
-@@ -34,7 +34,6 @@
- #include "error.h"
- #include "socket.h"
- #include "otime.h"
--#include "options.h"
- 
- #include "memdbg.h"
- 
--- 
-2.27.0
+Your patch has been applied to the master branch.
+
+commit 28e395856c897b6f2dea441dbe5eb4a151d75b85
+Author: Antonio Quartulli
+Date:   Wed Jun 10 11:01:00 2020 +0200
+
+     pool: remove useless 'options.h' include
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20200610090100.29738-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20011.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
