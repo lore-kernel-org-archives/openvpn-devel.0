@@ -1,10 +1,13 @@
-MIME-Version: 1.0
+Date: Fri, 12 Jun 2020 20:27:33 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20200612182733.GN1431@...1296...>
 References: <20200609175503.GU1431@...1296...>
-In-Reply-To: <20200609175503.GU1431@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Fri, 12 Jun 2020 14:22:01 -0400
-Message-ID: <CAKuzo_hOf8oLo7vD9OYDvVkSzAd7R5iKhcayDX4W5Q9ExHcVYQ@...278...>
-Content-Type: multipart/alternative; boundary="00000000000041a74e05a7e728c2"
+ <CAKuzo_hOf8oLo7vD9OYDvVkSzAd7R5iKhcayDX4W5Q9ExHcVYQ@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="qOJWHLx/t6Wq3h1B"
+Content-Disposition: inline
+In-Reply-To: <CAKuzo_hOf8oLo7vD9OYDvVkSzAd7R5iKhcayDX4W5Q9ExHcVYQ@...278...>
 Subject: Re: [Openvpn-devel] async plugin-auth-pam
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -14,94 +17,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Selva Nair <selva.nair@...277...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---00000000000041a74e05a7e728c2
-Content-Type: text/plain; charset="UTF-8"
-
-On Tue, Jun 9, 2020 at 1:55 PM Gert Doering <gert@...1296...> wrote:
-
-> Hi,
->
-> I ran into a problem at a customer installation recently, where
-> plugin-auth-pam was blocking for some extended time (~30 seconds?)
-> due to pam_radius not receiving answers due to problems in the backend.
->
-> Now, maybe I should use radiusplugin in the first place, but since
-> the pam_radius setup on this machine is shared between sshd and OpenVPN,
-> I actually *like* using plugin-auth-pam -> pam_radius ("test one service,
-> know that radius very likely works for both").
->
-> That said, I'm considering modifying the plugin-auth-pam plugin to
-> add async authentication - which is supposedly not so hard
-> ("sample-plugins/defer/simple.c").
->
-> Has one of you already done this, and just forgot to send in patches? :-)
->
-> Any particular caveats?
->
-
-I do not have a patch, but had briefly considered this while looking into
-handling "dynamic challenge" through the plugin.
-
-Just deferring an authentication is easy but the server will still stall if
-another client comes in during that deferred period as pam auth is handled
-by a single process. The plugin forks leaving a child running as root, and
-talks to it via a scoket. The latter does the pam authentication. As pam
-runs within that process, it will still be waiting for the authentication
-to complete in a blocking call to pam_authenticate(). I felt it will take
-considerable effort to make it handle pam auth asynchronously.
-
-Things may be easier if modules that take long to verify the credentials,
-return something like PAM_INCOMPLETE, so that it can be called back later.
-But that is beyond our control, and I'm not familiar with async support
-within PAM or in PAM modules.
-
-Selva
-
---00000000000041a74e05a7e728c2
-Content-Type: text/html; charset="UTF-8"
+--qOJWHLx/t6Wq3h1B
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-<div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote">=
-<div dir=3D"ltr" class=3D"gmail_attr">On Tue, Jun 9, 2020 at 1:55 PM Gert D=
-oering &lt;<a href=3D"mailto:gert@...1296...">gert@...1296...</a>&gt; wrote=
-:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.=
-8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">Hi,<br>
-<br>
-I ran into a problem at a customer installation recently, where <br>
-plugin-auth-pam was blocking for some extended time (~30 seconds?)<br>
-due to pam_radius not receiving answers due to problems in the backend.<br>
-<br>
-Now, maybe I should use radiusplugin in the first place, but since <br>
-the pam_radius setup on this machine is shared between sshd and OpenVPN,<br>
-I actually *like* using plugin-auth-pam -&gt; pam_radius (&quot;test one se=
-rvice,<br>
-know that radius very likely works for both&quot;).<br>
-<br>
-That said, I&#39;m considering modifying the plugin-auth-pam plugin to<br>
-add async authentication - which is supposedly not so hard <br>
-(&quot;sample-plugins/defer/simple.c&quot;).<br>
-<br>
-Has one of you already done this, and just forgot to send in patches? :-)<b=
-r>
-<br>
-Any particular caveats?<br></blockquote><div><br></div><div>I do not have a=
- patch, but had briefly considered this while looking into handling &quot;d=
-ynamic challenge&quot; through the plugin.<br><br></div><div>Just deferring=
- an authentication is easy but the server will still stall if another clien=
-t comes in during that deferred period as pam auth is handled by a single p=
-rocess. The plugin forks leaving a child running as root, and talks to it v=
-ia a scoket. The latter does the pam authentication. As pam runs within tha=
-t process, it will still=C2=A0be waiting for the authentication to complete=
- in a blocking call to pam_authenticate(). I felt it will take considerable=
- effort to make it handle pam auth asynchronously.</div><div><br></div><div=
->Things may be easier if modules that take long to verify the credentials, =
-return something like PAM_INCOMPLETE, so that it can be called back later. =
-But that is beyond our control, and I&#39;m not familiar with async support=
- within PAM or in PAM modules.</div><div><br></div><div>Selva</div></div></=
-div>
+Hi,
 
---00000000000041a74e05a7e728c2--
+On Fri, Jun 12, 2020 at 02:22:01PM -0400, Selva Nair wrote:
+> I do not have a patch, but had briefly considered this while looking into
+> handling "dynamic challenge" through the plugin.
+>=20
+> Just deferring an authentication is easy but the server will still stall =
+if
+> another client comes in during that deferred period as pam auth is handled
+> by a single process. The plugin forks leaving a child running as root, and
+> talks to it via a scoket. The latter does the pam authentication. As pam
+> runs within that process, it will still be waiting for the authentication
+> to complete in a blocking call to pam_authenticate(). I felt it will take
+> considerable effort to make it handle pam auth asynchronously.
+
+My idea was:
+
+ - send the auth request to the "pam child", including the control file name
+ - pam child returns "I'll do this asynchronously"
+ - pam child forks
+    - grandchild does the (blocking) PAM stuff, and writes to auth control
+      file when done
+
+that way, there should not be any blocking.
+
+(Some care needs to be done inside the grandchild so that there is no
+shared PAM state or whatever - so anything that happens at "init" now
+might have to be moved to "after grandchild fork()")
+
+> Things may be easier if modules that take long to verify the credentials,
+> return something like PAM_INCOMPLETE, so that it can be called back later.
+> But that is beyond our control, and I'm not familiar with async support
+> within PAM or in PAM modules.
+
+I don't really want to trust "3rd parties" here...  well, I could try
+to figure out FreeBSD's pam_radius and make that one asynchronous, but
+PAM is full of interesting surprises - so "do it in our plugin" sounds
+easier.
+
+gert
+
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--qOJWHLx/t6Wq3h1B
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJe48kUAAoJEB2Cnv7KVigSPFUMAIcBrZui2t0ha+b7vfJGY3XG
+prtdi5QuyCGGQucomcAO4I7YST+DkIQwvd5ffHn2teie/a2JqKSJWx5cFtvc5zMK
+LIafu70NqbV4SBaI8KsrrF187AAv/pOjbfoKQq05PynmARZZEJMGy07SIC09nGFp
+Ivmh0FK8LVU0VrxgQnFD+A87ESZg1qpfPHXb7gqugzfh7FYgg+LDADIVyeNxDhTP
+2aCYQyzqWktlGJgLCenLrkBzwWIS0xKS4R5ovwCLM5Ms4fKCRGBI6yMfHSSswk6R
+gXKMXWq1mfyO+8SGILTRwDWtSNmUzowMNPaQlpKYsyzf2gh6VOmHTtElOPM6euku
+iyrshlzK3K1F8lAxttN9to6o/1qHygC9Xth9t6KKPU5+46K98PYZzOpaQqcS3MoP
+Oa9wsfR2p5D7g029k38MpErrXZztQwNoAIn4CYjuSvkf6VmVV5Fyfrwd6ArhDrab
+eUZr62B6cYdHFKeAtaR+K0Oqs3mPNlLj+8NYc56JWg==
+=neYC
+-----END PGP SIGNATURE-----
+
+--qOJWHLx/t6Wq3h1B--
 
