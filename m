@@ -1,10 +1,13 @@
-Date: Fri, 12 Jun 2020 08:53:09 +0200 (CEST)
-Message-Id: <202006120653.05C6r9JC075230@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200519220004.25136-4-arne@...1227...>
-References: <20200519220004.25136-4-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Implement sending response to
- challenge via CR_RESPONSE
+Message-ID: <1591973347.7235.3.camel@...2316...>
+From: James Bottomley <James.Bottomley@...2316...>
+Date: Fri, 12 Jun 2020 07:49:07 -0700
+In-Reply-To: <20200612062333.GM1431@...1296...>
+References: <1590709611.3515.22.camel@...2316...>
+ <20200612062333.GM1431@...1296...>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+ protocol="application/pgp-signature"; boundary="=-J6ehxjdB/ZEjob73Bce1"
+Mime-Version: 1.0
+Subject: Re: [Openvpn-devel] [BUG] test_ncp.c failing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,36 +16,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+--=-J6ehxjdB/ZEjob73Bce1
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-doc/management-notes.txt has been re-quoted as requested.
+On Fri, 2020-06-12 at 08:23 +0200, Gert Doering wrote:
+> Hi,
+>=20
+> On Thu, May 28, 2020 at 04:46:51PM -0700, James Bottomley wrote:
+> > diff --git a/tests/unit_tests/openvpn/test_ncp.c
+> > b/tests/unit_tests/openvpn/test_ncp.c
+> > index 19432410..f58fa2ea 100644
+> > --- a/tests/unit_tests/openvpn/test_ncp.c
+> > +++ b/tests/unit_tests/openvpn/test_ncp.c
+> > @@ -48,7 +48,7 @@ static void
+> >  test_check_ncp_ciphers_list(void **state)
+> >  {
+> >      struct gc_arena gc =3D gc_new();
+> > -    bool have_chacha =3D cipher_kt_get("CHACHA20-POLY1305");
+> > +    bool have_chacha =3D
+> > cipher_kt_get(translate_cipher_name_from_openvpn("CHACHA20-
+> > POLY1305"));
+>=20
+> Am I right in assuming that this patch is no longer needed with the
+> two cipher_kt_ translation patches I merged yesterday?
 
-(I have only done basic compile / t_client tests on this series, which
-will not really excercise any of the new code bits - but at least makes
-sure that nothing breaks there.  We need something in the test framework
-that actually uses the management interface on both ends to test this...)
+Yes, make check now passes on openSUSE_Leap_15.1
 
-commit adb9bb918de6ceda1ab027aa02942e8c4efc3183
-Author: Arne Schwabe
-Date:   Wed May 20 00:00:02 2020 +0200
+James
 
-     Implement sending response to challenge via CR_RESPONSE
+--=-J6ehxjdB/ZEjob73Bce1
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20200519220004.25136-4-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19907.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+-----BEGIN PGP SIGNATURE-----
 
+iHUEABMIAB0WIQTnYEDbdso9F2cI+arnQslM7pishQUCXuOV4wAKCRDnQslM7pis
+hfrgAQCBmuQKLDBM7egQFhhDbaR9N5wYjD2JDfWfcXhGgOj2jAEA4PjGlSC4loNy
+Y5teTVfMZXbaw5meHejVZtv/lJO0DuA=
+=vbEi
+-----END PGP SIGNATURE-----
 
---
-kind regards,
-
-Gert Doering
+--=-J6ehxjdB/ZEjob73Bce1--
 
 
