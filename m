@@ -1,13 +1,11 @@
-Message-ID: <1591973347.7235.3.camel@...2316...>
-From: James Bottomley <James.Bottomley@...2316...>
-Date: Fri, 12 Jun 2020 07:49:07 -0700
-In-Reply-To: <20200612062333.GM1431@...1296...>
-References: <1590709611.3515.22.camel@...2316...>
- <20200612062333.GM1431@...1296...>
-Content-Type: multipart/signed; micalg="pgp-sha256";
- protocol="application/pgp-signature"; boundary="=-J6ehxjdB/ZEjob73Bce1"
-Mime-Version: 1.0
-Subject: Re: [Openvpn-devel] [BUG] test_ncp.c failing
+MIME-Version: 1.0
+References: <20200609175503.GU1431@...1296...>
+In-Reply-To: <20200609175503.GU1431@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 12 Jun 2020 14:22:01 -0400
+Message-ID: <CAKuzo_hOf8oLo7vD9OYDvVkSzAd7R5iKhcayDX4W5Q9ExHcVYQ@...278...>
+Content-Type: multipart/alternative; boundary="00000000000041a74e05a7e728c2"
+Subject: Re: [Openvpn-devel] async plugin-auth-pam
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,50 +15,93 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---=-J6ehxjdB/ZEjob73Bce1
+--00000000000041a74e05a7e728c2
 Content-Type: text/plain; charset="UTF-8"
+
+On Tue, Jun 9, 2020 at 1:55 PM Gert Doering <gert@...1296...> wrote:
+
+> Hi,
+>
+> I ran into a problem at a customer installation recently, where
+> plugin-auth-pam was blocking for some extended time (~30 seconds?)
+> due to pam_radius not receiving answers due to problems in the backend.
+>
+> Now, maybe I should use radiusplugin in the first place, but since
+> the pam_radius setup on this machine is shared between sshd and OpenVPN,
+> I actually *like* using plugin-auth-pam -> pam_radius ("test one service,
+> know that radius very likely works for both").
+>
+> That said, I'm considering modifying the plugin-auth-pam plugin to
+> add async authentication - which is supposedly not so hard
+> ("sample-plugins/defer/simple.c").
+>
+> Has one of you already done this, and just forgot to send in patches? :-)
+>
+> Any particular caveats?
+>
+
+I do not have a patch, but had briefly considered this while looking into
+handling "dynamic challenge" through the plugin.
+
+Just deferring an authentication is easy but the server will still stall if
+another client comes in during that deferred period as pam auth is handled
+by a single process. The plugin forks leaving a child running as root, and
+talks to it via a scoket. The latter does the pam authentication. As pam
+runs within that process, it will still be waiting for the authentication
+to complete in a blocking call to pam_authenticate(). I felt it will take
+considerable effort to make it handle pam auth asynchronously.
+
+Things may be easier if modules that take long to verify the credentials,
+return something like PAM_INCOMPLETE, so that it can be called back later.
+But that is beyond our control, and I'm not familiar with async support
+within PAM or in PAM modules.
+
+Selva
+
+--00000000000041a74e05a7e728c2
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, 2020-06-12 at 08:23 +0200, Gert Doering wrote:
-> Hi,
->=20
-> On Thu, May 28, 2020 at 04:46:51PM -0700, James Bottomley wrote:
-> > diff --git a/tests/unit_tests/openvpn/test_ncp.c
-> > b/tests/unit_tests/openvpn/test_ncp.c
-> > index 19432410..f58fa2ea 100644
-> > --- a/tests/unit_tests/openvpn/test_ncp.c
-> > +++ b/tests/unit_tests/openvpn/test_ncp.c
-> > @@ -48,7 +48,7 @@ static void
-> >  test_check_ncp_ciphers_list(void **state)
-> >  {
-> >      struct gc_arena gc =3D gc_new();
-> > -    bool have_chacha =3D cipher_kt_get("CHACHA20-POLY1305");
-> > +    bool have_chacha =3D
-> > cipher_kt_get(translate_cipher_name_from_openvpn("CHACHA20-
-> > POLY1305"));
->=20
-> Am I right in assuming that this patch is no longer needed with the
-> two cipher_kt_ translation patches I merged yesterday?
+<div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote">=
+<div dir=3D"ltr" class=3D"gmail_attr">On Tue, Jun 9, 2020 at 1:55 PM Gert D=
+oering &lt;<a href=3D"mailto:gert@...1296...">gert@...1296...</a>&gt; wrote=
+:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.=
+8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">Hi,<br>
+<br>
+I ran into a problem at a customer installation recently, where <br>
+plugin-auth-pam was blocking for some extended time (~30 seconds?)<br>
+due to pam_radius not receiving answers due to problems in the backend.<br>
+<br>
+Now, maybe I should use radiusplugin in the first place, but since <br>
+the pam_radius setup on this machine is shared between sshd and OpenVPN,<br>
+I actually *like* using plugin-auth-pam -&gt; pam_radius (&quot;test one se=
+rvice,<br>
+know that radius very likely works for both&quot;).<br>
+<br>
+That said, I&#39;m considering modifying the plugin-auth-pam plugin to<br>
+add async authentication - which is supposedly not so hard <br>
+(&quot;sample-plugins/defer/simple.c&quot;).<br>
+<br>
+Has one of you already done this, and just forgot to send in patches? :-)<b=
+r>
+<br>
+Any particular caveats?<br></blockquote><div><br></div><div>I do not have a=
+ patch, but had briefly considered this while looking into handling &quot;d=
+ynamic challenge&quot; through the plugin.<br><br></div><div>Just deferring=
+ an authentication is easy but the server will still stall if another clien=
+t comes in during that deferred period as pam auth is handled by a single p=
+rocess. The plugin forks leaving a child running as root, and talks to it v=
+ia a scoket. The latter does the pam authentication. As pam runs within tha=
+t process, it will still=C2=A0be waiting for the authentication to complete=
+ in a blocking call to pam_authenticate(). I felt it will take considerable=
+ effort to make it handle pam auth asynchronously.</div><div><br></div><div=
+>Things may be easier if modules that take long to verify the credentials, =
+return something like PAM_INCOMPLETE, so that it can be called back later. =
+But that is beyond our control, and I&#39;m not familiar with async support=
+ within PAM or in PAM modules.</div><div><br></div><div>Selva</div></div></=
+div>
 
-Yes, make check now passes on openSUSE_Leap_15.1
-
-James
-
---=-J6ehxjdB/ZEjob73Bce1
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABMIAB0WIQTnYEDbdso9F2cI+arnQslM7pishQUCXuOV4wAKCRDnQslM7pis
-hfrgAQCBmuQKLDBM7egQFhhDbaR9N5wYjD2JDfWfcXhGgOj2jAEA4PjGlSC4loNy
-Y5teTVfMZXbaw5meHejVZtv/lJO0DuA=
-=vbEi
------END PGP SIGNATURE-----
-
---=-J6ehxjdB/ZEjob73Bce1--
-
+--00000000000041a74e05a7e728c2--
 
