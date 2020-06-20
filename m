@@ -1,8 +1,13 @@
+Date: Sat, 20 Jun 2020 18:27:12 +0200
 From: Gert Doering <gert@...1296...>
-Date: Sat, 20 Jun 2020 18:22:06 +0200
-Message-Id: <20200620162206.13956-1-gert@...1296...>
+Message-ID: <20200620162712.GK1431@...1296...>
+References: <20200620162206.13956-1-gert@...1296...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Add deferred authentication support to
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="jTe4wBx5NKohz9hV"
+Content-Disposition: inline
+In-Reply-To: <20200620162206.13956-1-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Add deferred authentication support to
  plugin-auth-pam
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -12,172 +17,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-If OpenVPN signals deferred authentication support (by setting the
-internal environment variable "auth_control_file"), do not wait
-for PAM stack to finish.  Instead, the privileged PAM process
-returns RESPONSE_DEFER via the control socket, which gets turned
-into OPENVPN_PLUGIN_FUNC_DEFERRED towards openvpn.
+--jTe4wBx5NKohz9hV
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-The PAM process will then fork() and handle all the PAM auth in the
-new process, signalling success/failure back by means of the
-auth_control_file (forking twice, to simplify wait() handling).
+Hi,
 
-With the extra fork(), multiple deferred authentications can run at
-the same time - otherwise the first one would block the next auth
-call (because the child would not be ready again to read from the
-control socket).
+On Sat, Jun 20, 2020 at 06:22:06PM +0200, Gert Doering wrote:
+> If OpenVPN signals deferred authentication support (by setting the
+> internal environment variable "auth_control_file"), do not wait
+> for PAM stack to finish.  Instead, the privileged PAM process
+> returns RESPONSE_DEFER via the control socket, which gets turned
+> into OPENVPN_PLUGIN_FUNC_DEFERRED towards openvpn.
+[..]
+> Lightly tested on Linux.
 
-Lightly tested on Linux.
+This is sort of a "v1" of this patch, knowing well that it needs some
+more polishing regarding logging etc. - but it would be good to have=20
+some feedback if I'm overlooking something crucial here.
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/plugins/auth-pam/auth-pam.c | 88 ++++++++++++++++++++++++++++++++-
- 1 file changed, 86 insertions(+), 2 deletions(-)
+"It seems to work, though" - as in "I've built a pam stack with=20
+pam_auth_radius talking to a non-existing radius server, which will
+always add 15 seconds of delay - and with this patch, two clients can
+authenticate concurrently, TLS handshakes do work while a client is
+authenticating, and pings for client A do not stop while client B is
+connecting".  And, no zombie processes.
 
-diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
-index 9a11876d..777957fa 100644
---- a/src/plugins/auth-pam/auth-pam.c
-+++ b/src/plugins/auth-pam/auth-pam.c
-@@ -62,6 +62,7 @@
- #define RESPONSE_INIT_FAILED      11
- #define RESPONSE_VERIFY_SUCCEEDED 12
- #define RESPONSE_VERIFY_FAILED    13
-+#define RESPONSE_DEFER            14
- 
- /* Pointers to functions exported from openvpn */
- static plugin_log_t plugin_log = NULL;
-@@ -524,12 +525,21 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
-         const char *password = get_env("password", envp);
-         const char *common_name = get_env("common_name", envp) ? get_env("common_name", envp) : "";
- 
-+        /* get auth_control_file filename from envp string array*/
-+        const char *auth_control_file = get_env("auth_control_file", envp);
-+        if ( auth_control_file == NULL )
-+        {
-+            auth_control_file = "";
-+        }
-+        plugin_log(PLOG_NOTE, MODULE, "deferred auth '%s'", auth_control_file);
-+
-         if (username && strlen(username) > 0 && password)
-         {
-             if (send_control(context->foreground_fd, COMMAND_VERIFY) == -1
-                 || send_string(context->foreground_fd, username) == -1
-                 || send_string(context->foreground_fd, password) == -1
--                || send_string(context->foreground_fd, common_name) == -1)
-+                || send_string(context->foreground_fd, common_name) == -1
-+                || send_string(context->foreground_fd, auth_control_file) == -1)
-             {
-                 plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "Error sending auth info to background process");
-             }
-@@ -540,6 +550,11 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
-                 {
-                     return OPENVPN_PLUGIN_FUNC_SUCCESS;
-                 }
-+                if (status == RESPONSE_DEFER)
-+                {
-+                    plugin_log(PLOG_NOTE, MODULE, "deferred authentication active");
-+                    return OPENVPN_PLUGIN_FUNC_DEFERRED;
-+                }
-                 if (status == -1)
-                 {
-                     plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "Error receiving auth confirmation from background process");
-@@ -789,6 +804,7 @@ static void
- pam_server(int fd, const char *service, int verb, const struct name_value_list *name_value_list)
- {
-     struct user_pass up;
-+    char ac_file_name[PATH_MAX];
-     int command;
- #ifdef USE_PAM_DLOPEN
-     static const char pam_so[] = "libpam.so";
-@@ -847,7 +863,8 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
-             case COMMAND_VERIFY:
-                 if (recv_string(fd, up.username, sizeof(up.username)) == -1
-                     || recv_string(fd, up.password, sizeof(up.password)) == -1
--                    || recv_string(fd, up.common_name, sizeof(up.common_name)) == -1)
-+                    || recv_string(fd, up.common_name, sizeof(up.common_name)) == -1
-+                    || recv_string(fd, ac_file_name, sizeof(ac_file_name)) == -1)
-                 {
-                     plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "BACKGROUND: read error on command channel: code=%d, exiting",
-                             command);
-@@ -867,6 +884,73 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
-                 /* If password is of the form SCRV1:base64:base64 split it up */
-                 split_scrv1_password(&up);
- 
-+                /* client wants deferred auth
-+                 * TODO: put this into its own function
-+                 */
-+                if ( strlen(ac_file_name) > 0 )
-+                {
-+                    if (send_control(fd, RESPONSE_DEFER) == -1)
-+                    {
-+                        plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "BACKGROUND: write error on response socket [4]");
-+                        goto done;
-+                    }
-+
-+                    /* double forking so we do not need to wait() for
-+                     * async auth kids
-+                     */
-+                    pid_t p1 = fork();
-+
-+                    if ( p1 < 0 )
-+                    {
-+                        plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "BACKGROUND: fork(1) failed");
-+                        goto done;
-+                    }
-+                    if ( p1 != 0 )                         /* parent */
-+                    {
-+                        waitpid(p1, NULL, 0);
-+                        /* plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: fork(1), parent=%d, waitpid(%d) done, loop on", (int) getpid(), (int) p1 ); */
-+                        break;
-+                    }
-+
-+                    /* child */
-+                    pid_t p2 = fork();
-+
-+                    if ( p2 < 0 )
-+                    {
-+                        plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "BACKGROUND: fork(2) failed");
-+                        goto done;
-+                    }
-+
-+                    if ( p2 != 0 )                        /* parent-child */
-+                    {
-+                        /* plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: fork(2), mid=%d, exiting", (int) getpid() ); */
-+                        exit(0);
-+                    }
-+
-+                    /* grandchild */
-+                    plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: deferred auth handler, pid=%d", (int) getpid() );
-+
-+                    /* simple: do PAM, write status byte to file, done */
-+                    int ac_fd = open( ac_file_name, O_WRONLY );
-+                    if ( ac_fd < 0 )
-+                    {
-+                        plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "cannot open '%s' for writing", ac_file_name );
-+                        exit(1);
-+                    }
-+                    int pam_success = pam_auth(service, &up);
-+
-+                    if ( write( ac_fd, pam_success? "1": "0", 1 ) != 1 )
-+                    {
-+                        plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "cannot write to '%s'", ac_file_name );
-+                    }
-+                    close(ac_fd);
-+                    plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: deferred auth finished" );
-+                    exit(0);
-+                }
-+
-+                /* non-deferred auth: wait for pam result and send
-+                 * result back via control socketpair
-+                 */
-                 if (pam_auth(service, &up)) /* Succeeded */
-                 {
-                     if (send_control(fd, RESPONSE_VERIFY_SUCCEEDED) == -1)
--- 
-2.26.2
+I have not tested this in anger, like "100 clients connecting at the
+same time" or "let it run for two weeks with 1000 clients connecting
+and disconnecting all the time".
 
+=20
+It goes on top of the patch that adds plugin_log() logging to auth-pam.c
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--jTe4wBx5NKohz9hV
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJe7jjgAAoJEB2Cnv7KVigSKrAL/1FDfy0Ih2m15Kc6Oqe6Vghd
+1LyMSJ6IhKVilLq/2bIKVnAuAjpQnyVTLKbhjvo0Ii3Wp1qytQYYrbHS0636uj9q
+a5Bm2TZ0bhmuixexpsaMeQmZIl+cBA4eyT4750ccZoUoqBYjOCj6ibawocXpQXrG
+W5HdqtKu/rFJP1t2zT4Xw0pKhVlv2o0xCQDQC7o2p9gt0GiSr7M8R8IVaHkjpJct
+L2wCBWatUHdJtlLv3Kh2Cn+zcNOoJFTP4NsHdGq87XbQp59ekfmWtYSvfR8B6jPk
+4jhxg/txoie+ulfPQA5mdgRirOgT2ANMoV4+76rJVryNLmAj9dBNXkRUf1d0/gFb
+qwjN4Tg/FM7k5j1AeFDuyqIy+pXtK81mQw5g+TBhWOxYxyjIF4mCokAoDOpxLvPp
++tuK9TEpENWq82dvWDHRqz52oX99kXhymaJdtuQpTTCagZRyJ5yKRt7vNh1z/JPY
+Q0BlrDUHiqtzprWzqk7gyaMvKhaXSRNLeWtZ+uNRtg==
+=TIGD
+-----END PGP SIGNATURE-----
+
+--jTe4wBx5NKohz9hV--
 
