@@ -1,10 +1,10 @@
-Date: Sat, 20 Jun 2020 22:55:42 +0200 (CEST)
-Message-Id: <202006202055.05KKtgPq015247@...2054...>
+Date: Sat, 20 Jun 2020 22:59:24 +0200 (CEST)
+Message-Id: <202006202059.05KKxOIu016112@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200620172303.15010-1-gert@...1296...>
-References: <20200620172303.15010-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Change timestamps in file-based
- logging to ISO 8601 time format.
+In-Reply-To: <20200620180532.15738-1-gert@...1296...>
+References: <20200620180532.15738-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Depreciation warning for
+ --topology net30 on servers with IPv4 pools.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,19 +20,16 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Patch has been applied to the master branch.
 
-I have corrected the commit message (yes, --machine-readable-output) and
-the "*tm" whitespacing.
-
-commit ff063b6f19e035da56fbf49c891e6376543b391d
+commit 02a0332084f0dc08e39067cc6fd68abb77a03c47
 Author: Gert Doering
-Date:   Sat Jun 20 19:23:03 2020 +0200
+Date:   Sat Jun 20 20:05:32 2020 +0200
 
-     Change timestamps in file-based logging to ISO 8601 time format.
+     Depreciation warning for --topology net30 on servers with IPv4 pools.
 
      Signed-off-by: Gert Doering <gert@...1296...>
      Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20200620172303.15010-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20040.html
+     Message-Id: <20200620180532.15738-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20041.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
