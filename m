@@ -1,15 +1,17 @@
-MIME-Version: 1.0
 References: <523527018.2514117.1583041035054.ref@...2084...>
  <523527018.2514117.1583041035054@...2084...>
  <20200301071521.GI1431@...1296...>
  <CAKuzo_j=P8vZvkOL4Rgh1icLJiu0a-r4yQGrD1GSACrn14G9QQ@...278...>
  <f4b83fe0-cbe1-eed3-ff9b-4aaaea5a12b1@...1147...>
  <20200621111403.GP1431@...1296...>
- <CAKuzo_h2oTaNK7A3+3MJ6GSfApr9L9vXYFtzELH8SaaNzqFWuQ@...278...>
-In-Reply-To: <CAKuzo_h2oTaNK7A3+3MJ6GSfApr9L9vXYFtzELH8SaaNzqFWuQ@...278...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Sun, 21 Jun 2020 12:23:55 -0400
-Message-ID: <CAEsd45TRKrn945bvQu11fxiUR1ORfcmWvqaQ3tBiPeiW-=UHgg@...278...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <8f263a80-903e-ecfc-b87a-a29a897f1326@...2080...>
+Date: Sun, 21 Jun 2020 22:57:16 +0200
+MIME-Version: 1.0
+In-Reply-To: <20200621111403.GP1431@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="9KAOE0NsC6aOMHOcXEVVDtjHO3tv65m94"
 Subject: Re: [Openvpn-devel] [Openvpn-users] Multiple DNS search suffixes on
  Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,112 +22,135 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+To: Gert Doering <gert@...1296...>, Jan Just Keijser <janjust@...1147...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--9KAOE0NsC6aOMHOcXEVVDtjHO3tv65m94
+Content-Type: multipart/mixed; boundary="FSpe0R3tGxlmRoGkBSTa7f8lXCkU9LKhG";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: Gert Doering <gert@...1296...>, Jan Just Keijser <janjust@...1147...>
+Cc: "openvpn-devel@lists.sourceforge.net"
+ <openvpn-devel@lists.sourceforge.net>
+Message-ID: <8f263a80-903e-ecfc-b87a-a29a897f1326@...2080...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] Multiple DNS search suffixes on
+ Windows
+References: <523527018.2514117.1583041035054.ref@...2084...>
+ <523527018.2514117.1583041035054@...2084...>
+ <20200301071521.GI1431@...1296...>
+ <CAKuzo_j=P8vZvkOL4Rgh1icLJiu0a-r4yQGrD1GSACrn14G9QQ@...278...>
+ <f4b83fe0-cbe1-eed3-ff9b-4aaaea5a12b1@...1147...>
+ <20200621111403.GP1431@...1296...>
+In-Reply-To: <20200621111403.GP1431@...1296...>
+
+--FSpe0R3tGxlmRoGkBSTa7f8lXCkU9LKhG
+Content-Language: en-US
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-To: Selva Nair <selva.nair@...277...>
-Cc: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
-
-On Sun, Jun 21, 2020 at 11:15 AM Selva Nair <selva.nair@...277...> wrote:
->
+On 21/06/2020 13:14, Gert Doering wrote:
 > Hi,
->
-> On Sun, Jun 21, 2020 at 7:14 AM Gert Doering <gert@...1296...> wrote:
-> >
-> > Hi,
-> >
-> > going through OpenVPN threads that went stale - I think this is
-> > actually a nice addition (read: other people have already asked
-> > me if this can be done).
-> >
-> > On Thu, Mar 05, 2020 at 01:53:12PM +0100, Jan Just Keijser wrote:
-> > > So, for what it's worth, I've dusted off the patch again and rebased =
+>=20
+> going through OpenVPN threads that went stale - I think this is=20
+> actually a nice addition (read: other people have already asked=20
+> me if this can be done).
+>=20
+> On Thu, Mar 05, 2020 at 01:53:12PM +0100, Jan Just Keijser wrote:
+>> So, for what it's worth, I've dusted off the patch again and rebased it=
+=20
+>> to the current openvpn master tree. See attached. Note that I did only=20
+>> rudimentary testing, as I don't use Windows 10 a lot and I was testing=20
+>> using a mingw cross-compile only. In wireshark I *do* see that the=20
+>> correct DHCP offer is sent to the tap-win adapter.
+>>
+>> Also note that I implemented multiple search domains by separating them=
+=20
+>> using semi-colons, e.g.
+>>
+>>  =A0=A0 --dhcp-option SEARCH example.com;example.org;example.nl;example.=
+de
+>>
+>> etc as that was easier to implement
+>=20
+> The patch looks okay-ish on quick reading.
+
+Feature-ACK from my side as well.  But there are a few things we need to lo=
+ok
+more into.
+
+[...snip...]
+> More interesting is the question "which option to use" - it should
+> be synchronized between openvpn platform handlers.  So if systemd-networkd
+> uses "SEARCH-DOMAIN" it would make sense to use that for windows
+> as well.
+
+Nit-pick, systemd-resolved is the target service in this case though.  But =
 it
-> > > to the current openvpn master tree. See attached. Note that I did only
-> > > rudimentary testing, as I don't use Windows 10 a lot and I was testing
-> > > using a mingw cross-compile only. In wireshark I *do* see that the
-> > > correct DHCP offer is sent to the tap-win adapter.
-> > >
-> > > Also note that I implemented multiple search domains by separating th=
-em
-> > > using semi-colons, e.g.
-> > >
-> > >     --dhcp-option SEARCH example.com;example.org;example.nl;example.de
-> > >
-> > > etc as that was easier to implement
-> >
-> > The patch looks okay-ish on quick reading.
->
-> Feature wise yes, but some improvements needed..
->
-> I do not like that option format
->
-> "example.com; example.org" with quotes will parse right and fail later
-> on because of the space, for example. And, we support multiple
-> statements of dhcp options like DNS, so this is counter-intuitive.
-> It's only a little more work to support a more forgiving format.
->
-> >
-> > > Also note that I did not fully implement the RFC3397 encoding of the
-> > > search list, as that requires one to merge domain names that occur mo=
-re
-> > > than once - that would have made the code far more complicated.
-> >
-> > Indeed.  I haven't looked at what other DHCP implementations do, but
-> > "correct" encoding definitely sounds like quite a bit of extra code just
-> > to save a few bytes on the wire - might come handy if you have many
-> > subdomains of a long internal DNS domain, though, but this can be
-> > added "if needed".
->
-> Same as my thoughts, the encoding part could be kept simple as in here
-> and possibly improved later. But option format is hard to change or
-> deprecate.
+is related to systemd-networkd.
 
-I agree.
+But I agree, we should synchronize this a bit.  IIRC, there might already be
+somewhat partial support for this in OpenVPN Connect clients as well, which
+might also be used in Access Server.  I would also expect the OpenVPN Cloud
+service to facilitate such a feature.  I have recently been working on
+systemd-resolved support in OpenVPN 3 Linux as well, and reached out earlier
+this week to Jonathan (update-systemd-resolved maintainer) to see if we can
+join forces better and standardize on a common understanding of the DHCP op=
+tions.
+
+I would also like to at least consider pulling update-systemd-resolved (or a
+similar approach) into our OpenVPN distribution, as an alternative to the
+rather hacky pull-resolv-conf scripts we're shipping.
+
+I quickly spoke with Arne late on Friday about it as well, and we might also
+want to consider some IV flags from client to server as well, to flag suppo=
+rt
+for features like split-dns (which at least systemd-resolved can provide).
+
+> Does anyone know about commercial VPN providers basing their clients
+> on OpenVPN?
+
+I will clarify with our folks internally how this will influence OpenVPN
+Cloud.  I can't imagine many other commercial VPNs depending on such a
+feature, this is more typically a business feature than a consumer VPN
+feature.  There might be a few ones implementing or needing such a feature,
+but if they don't appear here and raise there concerns here, I don't think =
+we
+should spend time on them.
 
 
-> > More interesting is the question "which option to use" - it should
-> > be synchronized between openvpn platform handlers.  So if systemd-netwo=
-rkd
-> > uses "SEARCH-DOMAIN" it would make sense to use that for windows
-> > as well.
->
-> I think we need both --- the current one retained as the connection
-> specific suffix which would be just one entry and then this search
-> list. As we allow multiple entries for DOMAIN right now, a user
-> friendly approach would be to continue doing so but internally treat
-> all but the first as a part of --dhcp-option DOMAIN-SEARCH. We could
-> also deprecate the use of multiple entries in the dhcp-option DOMAIN
-> keyword.
+--=20
+kind regards,
 
-The man page says to use "DOMAIN" to set the"domain suffix", but there
-is no documented way to specify the computer's domain. The man page
-doesn't indicate that multiple --dhcp-option DOMAIN options are
-allowed, but it specifically states that multiple DNS and WINS are
-allowed (for example, "Repeat this option to set secondary DNS server
-addresses").
+David Sommerseth
+OpenVPN Inc
 
-(Note that bad formatting on the online version of the man page [1]
-makes it hard to see that "DOMAIN" is allowed at all, since it is
-merged into the prior paragraph. Also note that the opening paragraph
-for the --dhcp-option section of the man page implies it is only for
-Windows tap adaptors, which hasn't been true for at least 11 years!)
 
-For many years, Tunnelblick has
- 1. Accepted multiple SEARCH-DOMAIN or DOMAIN-SEARCH entries to set
-the search domains, which is in keeping with the way multiple DNS and
-WINS entries are interpreted.
- 2. Ignored all but the last "--dhcp-option DOMAIN=E2=80=A6" entry in $fore=
-ign_option_X.
- 3. Used that last entry to set the computer's domain.
- 4. Under certain conditions, prepended the search domains with that last e=
-ntry.
 
-Best regards,
+--FSpe0R3tGxlmRoGkBSTa7f8lXCkU9LKhG--
 
-Jon Bullard
+--9KAOE0NsC6aOMHOcXEVVDtjHO3tv65m94
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-[1] https://openvpn.net/community-resources/reference-manual-for-openvpn-2-=
-4/#
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJe78myAAoJEIbPlEyWcf3y5UUQALb73mfgGhpot+7VKhpE7cGB
++cCVIV0YjVQ0s8zF9Ke5AW/OigK6/Coma8j9zcOvFG/1+TJSzba/ZEf6w+9Jxy4L
+B09AgyDcs+whN4xtNWdLkIlQVX6XczNteEndrVEeTvbIs/nJWK07zXgG/ZrICOnM
+3NMSlrADwblmnEFiwKq2w50iHvnlk7+ubLwYLyMrBBT+zBFU6daeueC7Jquy33Ty
+h+I2me8pzUXexUarp3XsPIyZBeITJ71xzhkrgibbeTbTYOCt7OfK9EPPlTf2UMi2
+oiT5IfCpTBVF4mEVILVBy6V43Nil1SIx4ojP3pzPEf66b02VQMQ1Q86GMgFKJ7H9
+X2UzFkd3H3tzIyv5R+HkY5/86ajhLPSurwja1Ida0Ympn0fm0w7ejAeZoOm3BOuf
+Wkzkbqlxc71ouYgbxWSfrYjSDYr82RbiySOHi9tzgvkE30H9O98nuxVzYUfz9PIL
+B6vflAW1EprmF7FwC3/a1Fwre17p5QyQtQEzS8gnaJNa+blMvNZoeJrSL20bQgeS
+xuPqT54ph26tENMZA67EQLuGF34TDJWXOQZ6Nen9i2RnnpDC+g13mxBlos1rG3pJ
+LG+0/3ReiV0b4uQV44FhiKnsTiBd0WkeOCP97Dd8vggeGYIXIVktypRtoI+f6XFk
+ORy0ZpSJr+T7WAmMRrGi
+=R+TU
+-----END PGP SIGNATURE-----
+
+--9KAOE0NsC6aOMHOcXEVVDtjHO3tv65m94--
 
