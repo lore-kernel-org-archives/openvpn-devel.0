@@ -1,14 +1,18 @@
-Date: Sun, 21 Jun 2020 10:53:15 +0200
+Date: Sun, 21 Jun 2020 13:14:03 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20200621085315.GN1431@...1296...>
-References: <20200528225920.6983-1-James.Bottomley@...2316...>
- <20200528225920.6983-4-James.Bottomley@...2316...>
+Message-ID: <20200621111403.GP1431@...1296...>
+References: <523527018.2514117.1583041035054.ref@...2084...>
+ <523527018.2514117.1583041035054@...2084...>
+ <20200301071521.GI1431@...1296...>
+ <CAKuzo_j=P8vZvkOL4Rgh1icLJiu0a-r4yQGrD1GSACrn14G9QQ@...278...>
+ <f4b83fe0-cbe1-eed3-ff9b-4aaaea5a12b1@...1147...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="LXS2t7ZUR2/oZAZn"
+ protocol="application/pgp-signature"; boundary="cf7TutYJHw72Sphq"
 Content-Disposition: inline
-In-Reply-To: <20200528225920.6983-4-James.Bottomley@...2316...>
-Subject: Re: [Openvpn-devel] [PATCH v6 3/3] Add unit tests for engine keys
+In-Reply-To: <f4b83fe0-cbe1-eed3-ff9b-4aaaea5a12b1@...1147...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] Multiple DNS search suffixes on
+ Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,42 +21,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: James Bottomley <James.Bottomley@...2317...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Jan Just Keijser <janjust@...1147...>
+Cc: Selva Nair <selva.nair@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---LXS2t7ZUR2/oZAZn
-Content-Type: text/plain; charset="us-ascii"
+--cf7TutYJHw72Sphq
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Thu, May 28, 2020 at 03:59:20PM -0700, James Bottomley wrote:
-> Testing engines is problematic, so one of the prerequisites built for
-> the tests is a simple openssl engine that reads a non-standard PEM
-> guarded key.  The test is simply can we run a client/server
-> configuration with the usual sample key replaced by an engine key.
-> The trivial engine prints out some operations and we check for these
-> in the log to make sure the engine was used to load the key and that
-> it correctly got the password.
+going through OpenVPN threads that went stale - I think this is=20
+actually a nice addition (read: other people have already asked=20
+me if this can be done).
+
+On Thu, Mar 05, 2020 at 01:53:12PM +0100, Jan Just Keijser wrote:
+> So, for what it's worth, I've dusted off the patch again and rebased it=20
+> to the current openvpn master tree. See attached. Note that I did only=20
+> rudimentary testing, as I don't use Windows 10 a lot and I was testing=20
+> using a mingw cross-compile only. In wireshark I *do* see that the=20
+> correct DHCP offer is sent to the tap-win adapter.
 >=20
-> Signed-off-by: James Bottomley <James.Bottomley@...2316...>
+> Also note that I implemented multiple search domains by separating them=20
+> using semi-colons, e.g.
 >=20
-> ---
-> v5: do not hard code dynamic library extension into openssl.cnf (MacOS)
-> v4: add OPENSSL_config(NULL) so debian checks will work
-> v3: added this patch
-> ---
+>  =A0=A0 --dhcp-option SEARCH example.com;example.org;example.nl;example.de
+>=20
+> etc as that was easier to implement
 
-So, how can we continue with this one?  The engine key code is in, the
-unit test code not.
+The patch looks okay-ish on quick reading.
 
-Arne, James, can we converge on something here?
+> Also note that I did not fully implement the RFC3397 encoding of the=20
+> search list, as that requires one to merge domain names that occur more=20
+> than once - that would have made the code far more complicated.
 
-I would like something "as simple as possible", aka "little configure magic"
-- if that means "MacOS engine is built and loaded as .so and not .dynlib,
-but the test passes" I would prefer it over "more configure.ac magic" -
-but if this is what it takes, I'm fine as well.
+Indeed.  I haven't looked at what other DHCP implementations do, but
+"correct" encoding definitly sounds like quite a bit of extra code just
+to save a few bytes on the wire - might come handy if you have many
+subdomains of a long internal DNS domain, though, but this can be=20
+added "if needed".
+
+
+More interesting is the question "which option to use" - it should
+be synchronized between openvpn platform handlers.  So if systemd-networkd
+uses "SEARCH-DOMAIN" it would make sense to use that for windows
+as well.
+
+Is there an option in Tunnelblick to set MacOS DNS and search list?  If
+yes, what option do they use?
+
+Does anyone know about commercial VPN providers basing their clients
+on OpenVPN?
 
 gert
 --=20
@@ -65,22 +84,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---LXS2t7ZUR2/oZAZn
+--cf7TutYJHw72Sphq
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJe7x/7AAoJEB2Cnv7KVigSa7gL/AqR9X6H+e46VRLseYkfYr6G
-lTX2fxMSmpJz84xZS0KzUEPS/lx/sObzpi2UTjlVV23P2E0RF45VfBSvZf0NfShw
-tORjFUSO1jV9UcwseBWH3+zj4Y9Sae9kEmC8yB7PaF4cvq7utcQkN0ZRXHKpvJXv
-O2PJ3XD3rvwrVLWcms+3p4iPKmQOf3tEQ8GOkXdTXeX+dB2xtBPttddeiYKllIU+
-B5tacnFi+3gi3z+DQkLu0KOGnbVpv5drlUUYWx85dqG5d7u0hEuikOYvd6rAX8Kw
-ps/vvXNJrDdA4FnXHcBZ/sOWbNCr59eQaEz6nValtGVkghfw3iTKu58jtFU2sTub
-CJqw2fyYLqNQggq8hhKYl399hhnXBWKeFTksS8oggpKSRtgBFC4yxVmi82TEJCxX
-XV0aIAFaPkYadJDl4wLeQ52vP/MvwwL/rIKVZrV3MireQoF5cDSthPeHQUIzReBN
-iM3qYNDIl1i8yqkNpzSQcWt+AXVYwhcNoFU+3oq9iw==
-=JrhA
+iQGcBAEBAgAGBQJe70D6AAoJEB2Cnv7KVigSHtIL/AoJ9FSOfxVxACZI3fJBsVJ7
+shDd9AB2iQMqnW4/U6Y0GqAMJhY7yqab9IPFkSSMxMT9E60BXfJUv4uTdqIeYGX6
+CcuXk+cDuNuKUJlaxhA9+9uXQwmvpipgGTgguIKffPzF691VSOb+gZR4MnwPcSWN
+9wp6zAxnloB7qNLWmVC66q3mVtqMf5W7oEFHh1aK2ndMcUnLBllNRmvxXPyoloLN
+tT52fmNi9CY6FNbHfdW3yGjFEOGb4L1PakK1USB2QSyMqqqvjV22n/F62xSDG6KF
+VFzLzYNAur5/OjPaCbTLsVucdek9JwOQ3DKefHnISvTEwf1PGy0D/s2ZriAycs4w
+gaqci0QEXt9rrSepLmNbmpIlaMFsd16Rd6dYdWvu9x958KmcUljZUKxgu1Xqymd6
+CCURx3rQ3WTTDsCfx6vTEH4tczACzAVaMLStrv79l7pNSGZvB7YPRf5Kw/Ma1WQN
++xne9rFXHM3uQ9mJ9B/ufHg+TxGXpa8ypI6xL+tF2w==
+=7x5+
 -----END PGP SIGNATURE-----
 
---LXS2t7ZUR2/oZAZn--
+--cf7TutYJHw72Sphq--
 
