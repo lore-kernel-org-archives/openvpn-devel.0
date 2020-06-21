@@ -1,19 +1,11 @@
-References: <523527018.2514117.1583041035054.ref@...2084...>
- <523527018.2514117.1583041035054@...2084...>
- <20200301071521.GI1431@...1296...>
- <CAKuzo_j=P8vZvkOL4Rgh1icLJiu0a-r4yQGrD1GSACrn14G9QQ@...278...>
- <f4b83fe0-cbe1-eed3-ff9b-4aaaea5a12b1@...1147...>
- <20200621111403.GP1431@...1296...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <8f263a80-903e-ecfc-b87a-a29a897f1326@...2080...>
-Date: Sun, 21 Jun 2020 22:57:16 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200621111403.GP1431@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="9KAOE0NsC6aOMHOcXEVVDtjHO3tv65m94"
-Subject: Re: [Openvpn-devel] [Openvpn-users] Multiple DNS search suffixes on
- Windows
+References: <20200620162206.13956-1-gert@...1296...>
+In-Reply-To: <20200620162206.13956-1-gert@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sun, 21 Jun 2020 18:23:15 -0400
+Message-ID: <CAKuzo_g0eLCFXHgP=g47Q2j3mbY09+VKMXbZeJSEZV3z+Dy-KA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Add deferred authentication support to
+ plugin-auth-pam
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,135 +14,205 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, Jan Just Keijser <janjust@...1147...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---9KAOE0NsC6aOMHOcXEVVDtjHO3tv65m94
-Content-Type: multipart/mixed; boundary="FSpe0R3tGxlmRoGkBSTa7f8lXCkU9LKhG";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-To: Gert Doering <gert@...1296...>, Jan Just Keijser <janjust@...1147...>
-Cc: "openvpn-devel@lists.sourceforge.net"
- <openvpn-devel@lists.sourceforge.net>
-Message-ID: <8f263a80-903e-ecfc-b87a-a29a897f1326@...2080...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] Multiple DNS search suffixes on
- Windows
-References: <523527018.2514117.1583041035054.ref@...2084...>
- <523527018.2514117.1583041035054@...2084...>
- <20200301071521.GI1431@...1296...>
- <CAKuzo_j=P8vZvkOL4Rgh1icLJiu0a-r4yQGrD1GSACrn14G9QQ@...278...>
- <f4b83fe0-cbe1-eed3-ff9b-4aaaea5a12b1@...1147...>
- <20200621111403.GP1431@...1296...>
-In-Reply-To: <20200621111403.GP1431@...1296...>
+Hi,
 
---FSpe0R3tGxlmRoGkBSTa7f8lXCkU9LKhG
-Content-Language: en-US
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+On Sat, Jun 20, 2020 at 12:23 PM Gert Doering <gert@...1296...> wrote:
+>
+> If OpenVPN signals deferred authentication support (by setting the
+> internal environment variable "auth_control_file"), do not wait
+> for PAM stack to finish.  Instead, the privileged PAM process
+> returns RESPONSE_DEFER via the control socket, which gets turned
+> into OPENVPN_PLUGIN_FUNC_DEFERRED towards openvpn.
+>
+> The PAM process will then fork() and handle all the PAM auth in the
+> new process, signalling success/failure back by means of the
+> auth_control_file (forking twice, to simplify wait() handling).
+>
+> With the extra fork(), multiple deferred authentications can run at
+> the same time - otherwise the first one would block the next auth
+> call (because the child would not be ready again to read from the
+> control socket).
 
-On 21/06/2020 13:14, Gert Doering wrote:
-> Hi,
->=20
-> going through OpenVPN threads that went stale - I think this is=20
-> actually a nice addition (read: other people have already asked=20
-> me if this can be done).
->=20
-> On Thu, Mar 05, 2020 at 01:53:12PM +0100, Jan Just Keijser wrote:
->> So, for what it's worth, I've dusted off the patch again and rebased it=
-=20
->> to the current openvpn master tree. See attached. Note that I did only=20
->> rudimentary testing, as I don't use Windows 10 a lot and I was testing=20
->> using a mingw cross-compile only. In wireshark I *do* see that the=20
->> correct DHCP offer is sent to the tap-win adapter.
->>
->> Also note that I implemented multiple search domains by separating them=
-=20
->> using semi-colons, e.g.
->>
->>  =A0=A0 --dhcp-option SEARCH example.com;example.org;example.nl;example.=
-de
->>
->> etc as that was easier to implement
->=20
-> The patch looks okay-ish on quick reading.
+I have no doubt this will work, but can we avoid the double fork? Instead,
+we could set a handler for SIGCHLD and reap all child pids there using
+a non blocking waitpid(-1, NULL, WNOHANG). Will have to also check for
+EINTR and retry in recv_control() and possibly recv_string().
 
-Feature-ACK from my side as well.  But there are a few things we need to lo=
-ok
-more into.
+Fork is probably not expensive, but two of them per auth event look
+excessive and not very elegant, somehow.
 
-[...snip...]
-> More interesting is the question "which option to use" - it should
-> be synchronized between openvpn platform handlers.  So if systemd-networkd
-> uses "SEARCH-DOMAIN" it would make sense to use that for windows
-> as well.
+>
+> Lightly tested on Linux.
+>
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>  src/plugins/auth-pam/auth-pam.c | 88 ++++++++++++++++++++++++++++++++-
+>  1 file changed, 86 insertions(+), 2 deletions(-)
+>
+> diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
+> index 9a11876d..777957fa 100644
+> --- a/src/plugins/auth-pam/auth-pam.c
+> +++ b/src/plugins/auth-pam/auth-pam.c
+> @@ -62,6 +62,7 @@
+>  #define RESPONSE_INIT_FAILED      11
+>  #define RESPONSE_VERIFY_SUCCEEDED 12
+>  #define RESPONSE_VERIFY_FAILED    13
+> +#define RESPONSE_DEFER            14
+>
+>  /* Pointers to functions exported from openvpn */
+>  static plugin_log_t plugin_log = NULL;
+> @@ -524,12 +525,21 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
+>          const char *password = get_env("password", envp);
+>          const char *common_name = get_env("common_name", envp) ? get_env("common_name", envp) : "";
+>
+> +        /* get auth_control_file filename from envp string array*/
+> +        const char *auth_control_file = get_env("auth_control_file", envp);
+> +        if ( auth_control_file == NULL )
+> +        {
+> +            auth_control_file = "";
+> +        }
+> +        plugin_log(PLOG_NOTE, MODULE, "deferred auth '%s'", auth_control_file);
+> +
+>          if (username && strlen(username) > 0 && password)
+>          {
+>              if (send_control(context->foreground_fd, COMMAND_VERIFY) == -1
+>                  || send_string(context->foreground_fd, username) == -1
+>                  || send_string(context->foreground_fd, password) == -1
+> -                || send_string(context->foreground_fd, common_name) == -1)
+> +                || send_string(context->foreground_fd, common_name) == -1
+> +                || send_string(context->foreground_fd, auth_control_file) == -1)
+>              {
+>                  plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "Error sending auth info to background process");
+>              }
+> @@ -540,6 +550,11 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
+>                  {
+>                      return OPENVPN_PLUGIN_FUNC_SUCCESS;
+>                  }
+> +                if (status == RESPONSE_DEFER)
+> +                {
+> +                    plugin_log(PLOG_NOTE, MODULE, "deferred authentication active");
+> +                    return OPENVPN_PLUGIN_FUNC_DEFERRED;
+> +                }
+>                  if (status == -1)
+>                  {
+>                      plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "Error receiving auth confirmation from background process");
+> @@ -789,6 +804,7 @@ static void
+>  pam_server(int fd, const char *service, int verb, const struct name_value_list *name_value_list)
+>  {
+>      struct user_pass up;
+> +    char ac_file_name[PATH_MAX];
+>      int command;
+>  #ifdef USE_PAM_DLOPEN
+>      static const char pam_so[] = "libpam.so";
+> @@ -847,7 +863,8 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
+>              case COMMAND_VERIFY:
+>                  if (recv_string(fd, up.username, sizeof(up.username)) == -1
+>                      || recv_string(fd, up.password, sizeof(up.password)) == -1
+> -                    || recv_string(fd, up.common_name, sizeof(up.common_name)) == -1)
+> +                    || recv_string(fd, up.common_name, sizeof(up.common_name)) == -1
+> +                    || recv_string(fd, ac_file_name, sizeof(ac_file_name)) == -1)
+>                  {
+>                      plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "BACKGROUND: read error on command channel: code=%d, exiting",
+>                              command);
+> @@ -867,6 +884,73 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
+>                  /* If password is of the form SCRV1:base64:base64 split it up */
+>                  split_scrv1_password(&up);
+>
+> +                /* client wants deferred auth
+> +                 * TODO: put this into its own function
+> +                 */
 
-Nit-pick, systemd-resolved is the target service in this case though.  But =
-it
-is related to systemd-networkd.
+TODOs seldom get attended to, it's now or never :)
 
-But I agree, we should synchronize this a bit.  IIRC, there might already be
-somewhat partial support for this in OpenVPN Connect clients as well, which
-might also be used in Access Server.  I would also expect the OpenVPN Cloud
-service to facilitate such a feature.  I have recently been working on
-systemd-resolved support in OpenVPN 3 Linux as well, and reached out earlier
-this week to Jonathan (update-systemd-resolved maintainer) to see if we can
-join forces better and standardize on a common understanding of the DHCP op=
-tions.
+> +                if ( strlen(ac_file_name) > 0 )
+> +                {
+> +                    if (send_control(fd, RESPONSE_DEFER) == -1)
+> +                    {
+> +                        plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "BACKGROUND: write error on response socket [4]");
+> +                        goto done;
+> +                    }
+> +
+> +                    /* double forking so we do not need to wait() for
+> +                     * async auth kids
+> +                     */
+> +                    pid_t p1 = fork();
+> +
+> +                    if ( p1 < 0 )
+> +                    {
+> +                        plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "BACKGROUND: fork(1) failed");
+> +                        goto done;
+> +                    }
+> +                    if ( p1 != 0 )                         /* parent */
+> +                    {
+> +                        waitpid(p1, NULL, 0);
+> +                        /* plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: fork(1), parent=%d, waitpid(%d) done, loop on", (int) getpid(), (int) p1 ); */
+> +                        break;
+> +                    }
+> +
+> +                    /* child */
+> +                    pid_t p2 = fork();
+> +
+> +                    if ( p2 < 0 )
+> +                    {
+> +                        plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "BACKGROUND: fork(2) failed");
+> +                        goto done;
+> +                    }
+> +
+> +                    if ( p2 != 0 )                        /* parent-child */
+> +                    {
+> +                        /* plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: fork(2), mid=%d, exiting", (int) getpid() ); */
+> +                        exit(0);
+> +                    }
+> +
+> +                    /* grandchild */
+> +                    plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: deferred auth handler, pid=%d", (int) getpid() );
 
-I would also like to at least consider pulling update-systemd-resolved (or a
-similar approach) into our OpenVPN distribution, as an alternative to the
-rather hacky pull-resolv-conf scripts we're shipping.
+I think the scoket in the parent could be closed here. The child
+doesn't need it.
 
-I quickly spoke with Arne late on Friday about it as well, and we might also
-want to consider some IV flags from client to server as well, to flag suppo=
-rt
-for features like split-dns (which at least systemd-resolved can provide).
+> +
+> +                    /* simple: do PAM, write status byte to file, done */
+> +                    int ac_fd = open( ac_file_name, O_WRONLY );
+> +                    if ( ac_fd < 0 )
+> +                    {
+> +                        plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "cannot open '%s' for writing", ac_file_name );
+> +                        exit(1);
+> +                    }
+> +                    int pam_success = pam_auth(service, &up);
+> +
+> +                    if ( write( ac_fd, pam_success? "1": "0", 1 ) != 1 )
+> +                    {
+> +                        plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "cannot write to '%s'", ac_file_name );
+> +                    }
+> +                    close(ac_fd);
+> +                    plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: deferred auth finished" );
+> +                    exit(0);
+> +                }
+> +
+> +                /* non-deferred auth: wait for pam result and send
+> +                 * result back via control socketpair
+> +                 */
+>                  if (pam_auth(service, &up)) /* Succeeded */
+>                  {
+>                      if (send_control(fd, RESPONSE_VERIFY_SUCCEEDED) == -1)
+> --
+> 2.26.2
 
-> Does anyone know about commercial VPN providers basing their clients
-> on OpenVPN?
+Looks good otherwise.
 
-I will clarify with our folks internally how this will influence OpenVPN
-Cloud.  I can't imagine many other commercial VPNs depending on such a
-feature, this is more typically a business feature than a consumer VPN
-feature.  There might be a few ones implementing or needing such a feature,
-but if they don't appear here and raise there concerns here, I don't think =
-we
-should spend time on them.
+As auth_control_file is always generated by the core built with
+PLUGIN_DEF_AUTH, the patch appears to make deferred auth the default
+with this plugin. So PLUGIN_DEF_AUTH takes a new meaning now.
 
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
+Not a fault of this patch, but I noticed that the auth_control_file is
+removed only during the next auth cycle for the same client, or while
+restarting the client, not promptly after an auth success or failure.
 
 
-
---FSpe0R3tGxlmRoGkBSTa7f8lXCkU9LKhG--
-
---9KAOE0NsC6aOMHOcXEVVDtjHO3tv65m94
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJe78myAAoJEIbPlEyWcf3y5UUQALb73mfgGhpot+7VKhpE7cGB
-+cCVIV0YjVQ0s8zF9Ke5AW/OigK6/Coma8j9zcOvFG/1+TJSzba/ZEf6w+9Jxy4L
-B09AgyDcs+whN4xtNWdLkIlQVX6XczNteEndrVEeTvbIs/nJWK07zXgG/ZrICOnM
-3NMSlrADwblmnEFiwKq2w50iHvnlk7+ubLwYLyMrBBT+zBFU6daeueC7Jquy33Ty
-h+I2me8pzUXexUarp3XsPIyZBeITJ71xzhkrgibbeTbTYOCt7OfK9EPPlTf2UMi2
-oiT5IfCpTBVF4mEVILVBy6V43Nil1SIx4ojP3pzPEf66b02VQMQ1Q86GMgFKJ7H9
-X2UzFkd3H3tzIyv5R+HkY5/86ajhLPSurwja1Ida0Ympn0fm0w7ejAeZoOm3BOuf
-Wkzkbqlxc71ouYgbxWSfrYjSDYr82RbiySOHi9tzgvkE30H9O98nuxVzYUfz9PIL
-B6vflAW1EprmF7FwC3/a1Fwre17p5QyQtQEzS8gnaJNa+blMvNZoeJrSL20bQgeS
-xuPqT54ph26tENMZA67EQLuGF34TDJWXOQZ6Nen9i2RnnpDC+g13mxBlos1rG3pJ
-LG+0/3ReiV0b4uQV44FhiKnsTiBd0WkeOCP97Dd8vggeGYIXIVktypRtoI+f6XFk
-ORy0ZpSJr+T7WAmMRrGi
-=R+TU
------END PGP SIGNATURE-----
-
---9KAOE0NsC6aOMHOcXEVVDtjHO3tv65m94--
+Selva
 
