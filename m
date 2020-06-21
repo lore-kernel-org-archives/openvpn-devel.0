@@ -1,14 +1,16 @@
-Message-ID: <1592752234.3694.3.camel@...2316...>
-From: James Bottomley <James.Bottomley@...2316...>
-Date: Sun, 21 Jun 2020 08:10:34 -0700
-In-Reply-To: <20200621085315.GN1431@...1296...>
-References: <20200528225920.6983-1-James.Bottomley@...2316...>
- <20200528225920.6983-4-James.Bottomley@...2316...>
- <20200621085315.GN1431@...1296...>
-Content-Type: multipart/signed; micalg="pgp-sha256";
- protocol="application/pgp-signature"; boundary="=-OfO7TActBHwRpwOFhUW6"
-Mime-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH v6 3/3] Add unit tests for engine keys
+MIME-Version: 1.0
+References: <523527018.2514117.1583041035054.ref@...2084...>
+ <523527018.2514117.1583041035054@...2084...>
+ <20200301071521.GI1431@...1296...>
+ <CAKuzo_j=P8vZvkOL4Rgh1icLJiu0a-r4yQGrD1GSACrn14G9QQ@...278...>
+ <f4b83fe0-cbe1-eed3-ff9b-4aaaea5a12b1@...1147...>
+ <20200621111403.GP1431@...1296...>
+In-Reply-To: <20200621111403.GP1431@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sun, 21 Jun 2020 11:14:51 -0400
+Message-ID: <CAKuzo_h2oTaNK7A3+3MJ6GSfApr9L9vXYFtzELH8SaaNzqFWuQ@...278...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] Multiple DNS search suffixes on
+ Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,73 +19,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---=-OfO7TActBHwRpwOFhUW6
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: Jan Just Keijser <janjust@...1147...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Sun, 2020-06-21 at 10:53 +0200, Gert Doering wrote:
+Hi,
+
+On Sun, Jun 21, 2020 at 7:14 AM Gert Doering <gert@...1296...> wrote:
+>
 > Hi,
->=20
-> On Thu, May 28, 2020 at 03:59:20PM -0700, James Bottomley wrote:
-> > Testing engines is problematic, so one of the prerequisites built
-> > for the tests is a simple openssl engine that reads a non-standard
-> > PEM guarded key.  The test is simply can we run a client/server
-> > configuration with the usual sample key replaced by an engine key.
-> > The trivial engine prints out some operations and we check for
-> > these in the log to make sure the engine was used to load the key
-> > and that it correctly got the password.
-> >=20
-> > Signed-off-by: James Bottomley <James.Bottomley@...2376...
-> > om>
-> >=20
-> > ---
-> > v5: do not hard code dynamic library extension into openssl.cnf
-> > (MacOS)
-> > v4: add OPENSSL_config(NULL) so debian checks will work
-> > v3: added this patch
-> > ---
->=20
-> So, how can we continue with this one?  The engine key code is in,
-> the unit test code not.
->=20
-> Arne, James, can we converge on something here?
+>
+> going through OpenVPN threads that went stale - I think this is
+> actually a nice addition (read: other people have already asked
+> me if this can be done).
+>
+> On Thu, Mar 05, 2020 at 01:53:12PM +0100, Jan Just Keijser wrote:
+> > So, for what it's worth, I've dusted off the patch again and rebased it
+> > to the current openvpn master tree. See attached. Note that I did only
+> > rudimentary testing, as I don't use Windows 10 a lot and I was testing
+> > using a mingw cross-compile only. In wireshark I *do* see that the
+> > correct DHCP offer is sent to the tap-win adapter.
+> >
+> > Also note that I implemented multiple search domains by separating them
+> > using semi-colons, e.g.
+> >
+> >     --dhcp-option SEARCH example.com;example.org;example.nl;example.de
+> >
+> > etc as that was easier to implement
+>
+> The patch looks okay-ish on quick reading.
 
-Could someone just test the proposed updated v6 patch on a Mac?
+Feature wise yes, but some improvements needed..
 
-https://sourceforge.net/p/openvpn/mailman/message/37031113/
+I do not like that option format
 
-  If it works then we have something that functions on both platforms
-and we don't need to worry about windows until someone runs unit tests
-there.
+"example.com; example.org" with quotes will parse right and fail later
+on because of the space, for example. And, we support multiple
+statements of dhcp options like DNS, so this is counter-intuitive.
+It's only a little more work to support a more forgiving format.
 
-> I would like something "as simple as possible", aka "little configure
-> magic" - if that means "MacOS engine is built and loaded as .so and
-> not .dynlib, but the test passes" I would prefer it over "more
-> configure.ac magic"
-> -
-> but if this is what it takes, I'm fine as well.
+>
+> > Also note that I did not fully implement the RFC3397 encoding of the
+> > search list, as that requires one to merge domain names that occur more
+> > than once - that would have made the code far more complicated.
+>
+> Indeed.  I haven't looked at what other DHCP implementations do, but
+> "correct" encoding definitely sounds like quite a bit of extra code just
+> to save a few bytes on the wire - might come handy if you have many
+> subdomains of a long internal DNS domain, though, but this can be
+> added "if needed".
 
-Right, that's what the patch in the url does: uses .so on both mac and
-linux.
+Same as my thoughts, the encoding part could be kept simple as in here
+and possibly improved later. But option format is hard to change or
+deprecate.
 
-James
+>
+>
+> More interesting is the question "which option to use" - it should
+> be synchronized between openvpn platform handlers.  So if systemd-networkd
+> uses "SEARCH-DOMAIN" it would make sense to use that for windows
+> as well.
 
---=-OfO7TActBHwRpwOFhUW6
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
+I think we need both --- the current one retained as the connection
+specific suffix which would be just one entry and then this search
+list. As we allow multiple entries for DOMAIN right now, a user
+friendly approach would be to continue doing so but internally treat
+all but the first as a part of --dhcp-option DOMAIN-SEARCH. We could
+also deprecate the use of multiple entries in the dhcp-option DOMAIN
+keyword.
 
------BEGIN PGP SIGNATURE-----
-
-iHUEABMIAB0WIQTnYEDbdso9F2cI+arnQslM7pishQUCXu94agAKCRDnQslM7pis
-hR4sAQC/2oczjN0tzlmzYjfP+/zK4w+oeCAOQutNs2mtG6JvvQD/UOq+CUeCzZVu
-4TEA1b/GRlurQWrNqrWIP+XBTmgpliM=
-=FmOi
------END PGP SIGNATURE-----
-
---=-OfO7TActBHwRpwOFhUW6--
-
+Selva
 
