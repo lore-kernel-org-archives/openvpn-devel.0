@@ -1,7 +1,6 @@
-Message-ID: <1592850496.3719.16.camel@...2316...>
-From: James Bottomley <James.Bottomley@...2316...>
-Date: Mon, 22 Jun 2020 11:28:16 -0700
-In-Reply-To: <20200622172815.GY1431@...1296...>
+Date: Mon, 22 Jun 2020 20:40:15 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20200622184015.GZ1431@...1296...>
 References: <20200528225920.6983-1-James.Bottomley@...2316...>
  <20200528225920.6983-4-James.Bottomley@...2316...>
  <20200621085315.GN1431@...1296...>
@@ -9,9 +8,12 @@ References: <20200528225920.6983-1-James.Bottomley@...2316...>
  <20200622162326.GX1431@...1296...>
  <1592845604.3719.11.camel@...2316...>
  <20200622172815.GY1431@...1296...>
-Content-Type: multipart/signed; micalg="pgp-sha256";
- protocol="application/pgp-signature"; boundary="=-k6HI6XkT+MYyMHxp2ODt"
-Mime-Version: 1.0
+ <1592850496.3719.16.camel@...2316...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="GQns980g72gHFMRT"
+Content-Disposition: inline
+In-Reply-To: <1592850496.3719.16.camel@...2316...>
 Subject: Re: [Openvpn-devel] [PATCH v6 3/3] Add unit tests for engine keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -21,115 +23,83 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: James Bottomley <James.Bottomley@...2317...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
---=-k6HI6XkT+MYyMHxp2ODt
-Content-Type: text/plain; charset="UTF-8"
+--GQns980g72gHFMRT
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On Mon, 2020-06-22 at 19:28 +0200, Gert Doering wrote:
-> Hi,
->=20
-> On Mon, Jun 22, 2020 at 10:06:44AM -0700, James Bottomley wrote:
-> > > [..]
-> > > > Right, that's what the patch in the url does: uses .so on both
-> > > > mac
-> > > > and linux.
-> > >=20
-> > > I got all confused with your "v6" patch and your "v7" patch,
-> > > which
-> > > did other things, and but did not have a "v6" in the history :-)
-> > >=20
-> > > *This* patch definitely looks like it's doing the right thing on
-> > > MacOS.
-> >=20
-> > Great, thanks ... I'll rewrap it and submit as a separate patch
-> > email
-> > with cover letter.
->=20
-> I was about to just merge what I have, but it exploded on me on
-> FreeBSD
-> now - and I can't really figure out why (yet)...
->=20
-> libtool: link: (cd ".libs" && rm -f "libtestengine.so.0" && ln -s
-> "libtestengine.so.0.0.0" "libtestengine.so.0")
-> libtool: link: (cd ".libs" && rm -f "libtestengine.so" && ln -s
-> "libtestengine.so.0.0.0" "libtestengine.so")
-> libtool: link: ar cru .libs/libtestengine.a  libtestengine_la-
-> libtestengine.o
-> libtool: link: ranlib .libs/libtestengine.a
-> libtool: link: ( cd ".libs" && rm -f "libtestengine.la" && ln -s
-> "../libtestengine.la" "libtestengine.la" )
-> make  check-TESTS
-> make[5]: don't know how to make openssl.cnf. Stop
->=20
-> make[5]: stopped in /home/gert/src/openvpn-maint/test-build-master-
-> fbsd/tests/unit_tests/engine-key
->=20
->=20
-> it seems as if there is an implicit rule "somewhere" that Linux make
-> has
-> and FreeBSD make not how to build openssl.cnf from
-> $(srcdir)/openssl.cnf.in
-> - on Linux, when I remove "openssl.cnf" from the target dir and re-
-> run
-> "make check", I get
->=20
-> make[5]: Entering directory '/rhome/gert/src/openvpn-maint/test-
-> build-master-ossl111/tests/unit_tests/engine-key'
-> sed "s|ABSBUILDDIR|/rhome/gert/src/openvpn-maint/test-build-master-
-> ossl111/tests/unit_tests/engine-key|" <
-> ../../../../openvpn/tests/unit_tests/engine-key/openssl.cnf.in >
-> openssl.cnf
-> PASS: check_engine_keys.sh
->=20
->=20
-> Ah.  If I run "gmake check", it also passes on FreeBSD...
->=20
-> gmake[5]: Entering directory '/home/gert/src/openvpn-maint/test-
-> build-master-fbsd/tests/unit_tests/engine-key'
-> sed "s|ABSBUILDDIR|/home/gert/src/openvpn-maint/test-build-master-
-> fbsd/tests/unit_tests/engine-key|" <
-> ../../../../openvpn/tests/unit_tests/engine-key/openssl.cnf.in >
-> openssl.cnf
-> PASS: check_engine_keys.sh
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> 1 test passed
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->=20
-> ... so the engine part *itself* is fine, just the "openssl.cnf from
-> .in" doesn't work with BSD make...
->=20
->=20
-> We need a v7 (or v8?) :-(
+Hi,
 
-That will be my fault.  I assumed automake always ran with gnu make, so
-the .cnf rule is in gnu make syntax at the bottom of (Makefile.am):
+On Mon, Jun 22, 2020 at 11:28:16AM -0700, James Bottomley wrote:
+> That will be my fault.  I assumed automake always ran with gnu make,=20
 
-$(builddir)/%.cnf: $(srcdir)/%.cnf.in
+No :-)   (and let's not start a gnu make vs bsd make vs. cmake vs. ant
+discussion now :-) ).
+
+Specifically, we run automake on linux systems before doing release
+tarballs, so the target host doesn't even *need* automake installed -
+but if you want, automake runs just fine on BSD, producing "standard
+makefiles" that work fine with BSD make.
+
+> so the .cnf rule is in gnu make syntax at the bottom of (Makefile.am):
+>=20
+> $(builddir)/%.cnf: $(srcdir)/%.cnf.in
+> 	sed "s|ABSBUILDDIR|$(abs_builddir)|" < $< > $@
+>=20
+>=20
+> If I just spell everything out and don't use the percent wildcard, it
+> should work even on legacy make.
+
+Ah, there it is :) - I think "non-GNU" make doesn't handle these in
+combination with paths.
+
+"man make" on FreeBSD says:
+
+     The $@ and $< variables are more or less universally portable, as is t=
+he
+     $(MAKE) variable.  Basic use of suffix rules (for files only in the
+     current directory, not trying to chain transformations together, etc.)=
+ is
+     also reasonably portable.
+
+so
+
+$(builddir)/openvpn.cnf: $(srcdir)/openvpn.cnf.in
 	sed "s|ABSBUILDDIR|$(abs_builddir)|" < $< > $@
 
+should work.
 
-If I just spell everything out and don't use the percent wildcard, it
-should work even on legacy make.
+gert
 
-James
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
 
---=-k6HI6XkT+MYyMHxp2ODt
+--GQns980g72gHFMRT
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABMIAB0WIQTnYEDbdso9F2cI+arnQslM7pishQUCXvD4QAAKCRDnQslM7pis
-hfj8AQCRNZjnHZSf4yI80bY1Zu8pW9Vpg/6GRxOVRvW0r/BT7wEA+MfOi2bGZnMf
-58ZIz3fKpjiWNoziLrq8Iwqi5o6nFas=
-=S1O8
+iQGcBAEBAgAGBQJe8PsPAAoJEB2Cnv7KVigSzrwL/iVSv1grbP30K6PI18aKdrZK
+lJR9ab4g+hJGjvgTcoUP2/JQ9R/j+bQ0U9Ljb8tRPtxHg02PgjQ9prpFMie9EJ3J
+Ju9TghUfx27qvyoRRTE32f7EH6NZDlV5nrEBOjIWihexiehg4bcnusCpFKn7cYkM
+xbU1Se04nTEnf3R7PUb51klqIIv6w83uvKudv6d8pD8rpRuDEB7tM4u1E9dkbm1z
+m2ZGHDmKO2VoNp3vjB/p6dHE9t0p4rwwCjjblsk4XWkDFaS86ctV1Mv0Fv0a/nNj
+C4VJAh/Bbb2QBlNGaJtpI9vf7lBX2tdk+Q+5y+7DMD4LWdEh7KIHtZEop56+HMZI
+Zh0no83HoHYHmvNEQUdvwt1WiahWvyBRoIr3aP/q/kuwhit2l5veuDqOwT1SjlmG
+FEbX7E4VckEcRTCWKjFtpuImOWZW8Rwy4NNXZ6+XL16UsYPajRy+Xvj8ZTKKieSo
+03azfPwA7/GppyQ76QHc+W3fPAqZr1tnFmsfE1Q70Q==
+=1Ru4
 -----END PGP SIGNATURE-----
 
---=-k6HI6XkT+MYyMHxp2ODt--
-
+--GQns980g72gHFMRT--
 
