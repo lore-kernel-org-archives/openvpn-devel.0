@@ -1,14 +1,15 @@
 References: <20200622113022.23047-1-davids@...515...>
- <CAKuzo_g7QxVL90ikT57H6b4+St2c860us6S3cN_6jbfeHujpzw@...278...>
- <KaDpCcpCdasGfEfmL5ufUPrkbzHJvrlWcm4PCOeWQdCdr8EyRm9Qhtyz6diBZqMpx2S9ipbt7h3xqIvvbOuuv7MVQbsO4EP2fn7_Z8jflg0=@protonmail.com>
+ <0c62f389-39dc-b896-ec89-c864a1076089@...1227...>
+ <f79b3d70-13bc-4dab-4a7c-826eb10318c9@...2080...>
+ <b5dec3fb-a1fd-3705-a69b-e5e19e7356c9@...1856...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <ba42f79b-36fc-dd3d-3455-4f08c2557f93@...2080...>
-Date: Mon, 22 Jun 2020 19:53:37 +0200
+Message-ID: <f291df77-2362-23f1-61ea-d0a1bee52ed6@...2080...>
+Date: Mon, 22 Jun 2020 19:59:41 +0200
 MIME-Version: 1.0
-In-Reply-To: <KaDpCcpCdasGfEfmL5ufUPrkbzHJvrlWcm4PCOeWQdCdr8EyRm9Qhtyz6diBZqMpx2S9ipbt7h3xqIvvbOuuv7MVQbsO4EP2fn7_Z8jflg0=@protonmail.com>
+In-Reply-To: <b5dec3fb-a1fd-3705-a69b-e5e19e7356c9@...1856...>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="3TjohsBAq2RM09bV7i2flGl4Y8IZPj6yh"
+ boundary="L0Zct5uBipOyPqAuqgl5BstfVyeByisg0"
 Subject: Re: [Openvpn-devel] [PATCH] systemd: Change the default cipher to
  AES-256-GCM for server configs
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,190 +20,113 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?B?QW5kcsOp?= <pippin1st+devel@...2282...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---3TjohsBAq2RM09bV7i2flGl4Y8IZPj6yh
-Content-Type: multipart/mixed; boundary="fUuDatRGgjN5qNVRRRp2gMGMKCtECOPbY";
+--L0Zct5uBipOyPqAuqgl5BstfVyeByisg0
+Content-Type: multipart/mixed; boundary="lJajwTiB0MsE3LzFPkKTdBniaUL8yUQqD";
  protected-headers="v1"
 From: David Sommerseth <openvpn@...2080...>
-To: =?UTF-8?B?QW5kcsOp?= <pippin1st+devel@...2282...>,
- "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Message-ID: <ba42f79b-36fc-dd3d-3455-4f08c2557f93@...2080...>
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <f291df77-2362-23f1-61ea-d0a1bee52ed6@...2080...>
 Subject: Re: [Openvpn-devel] [PATCH] systemd: Change the default cipher to
  AES-256-GCM for server configs
 References: <20200622113022.23047-1-davids@...515...>
- <CAKuzo_g7QxVL90ikT57H6b4+St2c860us6S3cN_6jbfeHujpzw@...278...>
- <KaDpCcpCdasGfEfmL5ufUPrkbzHJvrlWcm4PCOeWQdCdr8EyRm9Qhtyz6diBZqMpx2S9ipbt7h3xqIvvbOuuv7MVQbsO4EP2fn7_Z8jflg0=@protonmail.com>
-In-Reply-To: <KaDpCcpCdasGfEfmL5ufUPrkbzHJvrlWcm4PCOeWQdCdr8EyRm9Qhtyz6diBZqMpx2S9ipbt7h3xqIvvbOuuv7MVQbsO4EP2fn7_Z8jflg0=@protonmail.com>
+ <0c62f389-39dc-b896-ec89-c864a1076089@...1227...>
+ <f79b3d70-13bc-4dab-4a7c-826eb10318c9@...2080...>
+ <b5dec3fb-a1fd-3705-a69b-e5e19e7356c9@...1856...>
+In-Reply-To: <b5dec3fb-a1fd-3705-a69b-e5e19e7356c9@...1856...>
 
---fUuDatRGgjN5qNVRRRp2gMGMKCtECOPbY
+--lJajwTiB0MsE3LzFPkKTdBniaUL8yUQqD
 Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 22/06/2020 19:20, Andr=C3=A9 via Openvpn-devel wrote:
+On 22/06/2020 14:43, Steffan Karger wrote:
 > Hi,
 >=20
->=20
-> Sent with ProtonMail Secure Email.
->=20
-> =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original =
-Message =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
-> On Monday 22 June 2020 18:58, Selva Nair <selva.nair@...277...> wrote:
->=20
->> On Mon, Jun 22, 2020 at 7:31 AM David Sommerseth davids@...515... wrote:
+> On 22-06-2020 14:29, David Sommerseth wrote:
+>> On 22/06/2020 14:21, Arne Schwabe wrote:
+>>>
+>>>>  PrivateTmp=3Dtrue
+>>>>  WorkingDirectory=3D/etc/openvpn/server
+>>>> -ExecStart=3D@...2235...@/openvpn --status %t/openvpn-server/status-%i.lo=
+g --status-version 2 --suppress-timestamps --config %i.conf
+>>>> +ExecStart=3D@...2235...@/openvpn --status %t/openvpn-server/status-%i.lo=
+g --status-version 2 --suppress-timestamps --cipher AES-256-GCM --ncp-ciphe=
+rs AES-256-GCM:AES-128-GCM:AES-256-CBC:AES-128-CBC:BF-CBC --config %i.conf
+>>>>  CapabilityBoundingSet=3DCAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVI=
+CE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE CAP_AU=
+DIT_WRITE
+>>>>  LimitNPROC=3D10
+>>>>  DeviceAllow=3D/dev/null rw
+>>>>
+>>>
+>>> NACK.
+>>>
+>>> Setting ncp-cipher to include BF-CBC by default allows BF-CBC in configs
+>>> that did not allow it before. Basically any config that had something
+>>> other than cipher BF-CBC and no ncp-ciphers in it will now allow clients
+>>> with BF-CBC to connect. I don't want force users to set ncp-cipher to a
+>>> sane value since the systemd unit file doesn't.
 >>
->>> This change makes the server use AES-256-GCM instead of BF-CBC as the
->>> default cipher for the VPN tunnel when starting OpenVPN via systemd
->>> and the openvpn-server@...1685... unit file.
->>> To avoid breaking existing running configurations defaulting to BF-CBC,
->>> the Negotiable Crypto Parameters (NCP) list contains the BF-CBC in
->>> addition to AES-CBC. This makes it possible to migrate existing older
->>> client configurations one-by-one to use at least AES-CBC unless the
->>> client is updated to v2.4 or newer (which defaults to upgrade to
->>> AES-GCM automatically)
->>> This has been tested in Fedora 27 (released November 2017) with no
->>> reported issues. By making this default for all Linux distributions
->>> with systemd shipping with the unit files we provide, we gradually
->>> expand setups using this possibility. As we gather experience from
->>> this change, we can further move these changes into the defaults of
->>> the OpenVPN binary itself with time.
->>>
->>> Signed-off-by: David Sommerseth davids@...515...
->>>
->>> ---------------------------------------------------
->>>
->>> Changes.rst | 15 +++++++++++++++
->>> distro/systemd/openvpn-server@...2221... | 2 +-
->>> 2 files changed, 16 insertions(+), 1 deletion(-)
->>> diff --git a/Changes.rst b/Changes.rst
->>> index 00dd6ed8..e76d3c73 100644
->>> --- a/Changes.rst
->>> +++ b/Changes.rst
->>> @@ -14,6 +14,21 @@ ChaCha20-Poly1305 cipher support
->>> channel.
->>> +User-visible Changes
->>> +--------------------
->>> +New default cipher for systemd based Linux distributions
->>>
->>> -   For Linux distributions with systemd which packages the systemd uni=
-t files
->>> -   from the OpenVPN project, the default cipher is now changed to AES-=
-256-GCM,
->>> -   with BF-CBC as a fallback through the NCP feature. This change has =
-been
->>> -   tested successfully since the Fedora 27 release (released November =
-2017).
->>> -
->>> -   WARNING This MAY break configurations where the client uses
->>> -                  ``--disable-occ`` feature where the ``--cipher`` has
->>>
->>>
->>> -                  not been explicitly configured on both client and
->>>
->>>
->>> -                  server side.  It is recommended to remove the ``--di=
-sable-occ``
->>>
->>>
->>> -                  option *or* explicitly add ``--cipher AES-256-GCM`` =
-on the
->>>
->>>
->>> -                  client side if ``--disable-occ`` is strictly needed.
->>>
->>>
->>> -
->>>
->>> Overview of changes in 2.4
->>>
->>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D
->>>
->>> diff --git a/distro/systemd/openvpn-server@...2221... b/distro/systemd/=
-openvpn-server@...2221...
->>> index d1cc72cb..f3545ff5 100644
->>> --- a/distro/systemd/openvpn-server@...2221...
->>> +++ b/distro/systemd/openvpn-server@...2221...
->>> @@ -10,7 +10,7 @@ Documentation=3Dhttps://community.openvpn.net/openvpn=
-/wiki/HOWTO
->>> Type=3Dnotify
->>> PrivateTmp=3Dtrue
->>> WorkingDirectory=3D/etc/openvpn/server
->>> -ExecStart=3D@...2235...@/openvpn --status %t/openvpn-server/status-%i.log=
- --status-version 2 --suppress-timestamps --config %i.conf
->>> +ExecStart=3D@...2235...@/openvpn --status %t/openvpn-server/status-%i.log=
- --status-version 2 --suppress-timestamps --cipher AES-256-GCM --ncp-cipher=
-s AES-256-GCM:AES-128-GCM:AES-256-CBC:AES-128-CBC:BF-CBC --config %i.conf
+>> That will break existing configs on the next upgrade.  Do we want do do =
+that?
 >>
->> This is why I keep my openvpn servers out of systemd's view -- it
->> keeps deciding what's good for us. I want to run my configs as is.
->>
->> Selva
->>
->> Openvpn-devel mailing list
->> Openvpn-devel@lists.sourceforge.net
->> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>> I'm fine with removing BF-CBC, but it is scheduled for removal in OpenVP=
+N 2.6.
 >=20
-> Sorry for the noise in advance but I agree.
-> No idea how to keep it out of systemd's view :) but I change the line to
-> -ExecStart=3D@...2235...@/openvpn --status %t/openvpn-server/status-%i.log -=
--status-version 2 --suppress-timestamps --config %i.conf
-> +ExecStart=3D@...2235...@/openvpn --config %i.conf
-> and do everything in %i.conf
-> No unexpected configuration behaviour that way like missing timestamps in=
- log.
+> I think Arne has a very good point that it's kinda weird to "degrade"
+> the NCP defaults.
+>=20
+> Making AES-256-GCM the default cipher for TLS-based connections (GCM
+> won't work with static key configs) does not imply *removing* BF-CBC
+> support. Maybe these should be the steps:
+>=20
+> 2.4: Use to AES-256-GCM when available (basically what NCP did)
+> 2.5: Switch to AES-256-GCM as the default cipher (but allow overriding)
+> 2.6: Remove support for small block ciphers all together
+>=20
+> Yes, this will probably break some (less secure) setups and make some
+> people angry. But at some point people need to move on. We've been
+> throwing warnings at them for a while now.
 
-The --suppress-timestamps is actually the _only_ option there which cannot =
-be
-overridden.  By not having it there, a lot of users would be annoyed by
-duplicated timestamps in their logs when they don't use log files directly.
-But I can agree, having a way to override this option could be beneficial f=
-or
-some users.
+Yes, I agree that Arne got a point.  But I'm not completely convinced break=
+ing
+configs in OpenVPN 2.5 without a prior note that it will stop working.  Our
+warning only screams "you shouldn't use ciphers with block sizes < 128 bits=
+",
+it doesn't say "this will stop working in a future release".
 
-There might be many reasons why to use separate log files, but on a busy
-server it may actually slow openvpn down a little bit (it is still single
-threaded and logging happens in the same thread as key negotiations and VPN
-network traffic) - especially if file write caches fills up and the fprint()
-calls are blocked until file system has synced up.
+OpenVPN 2.4.9 gives this warning:
 
-By default, all logging is easily accessible via 'journalctl -u
-openvpn-server@...2562...', where you can do all sorts of filtering (like
---since today or --since yesterday ... and you can pipe it through grep if =
-you
-want).  The journal also has built in log rotation plus it ensures your file
-system will never go completely full (unless you've explicitly disabled that
-feature).  Plus it contains a lot more meta-data to use for filtering and
-debugging than most other logging systems on Linux these days (try journalc=
-tl
--o json-pretty); we don't make use of those features in openvpn 2.x though.
+    WARNING: INSECURE cipher with block size less than 128 bit (64 bit).  T=
+his
+    allows attacks like SWEET32.  Mitigate by using a --cipher with a larger
+    block size (e.g. AES-256-CBC).
 
-If you do have a syslog daemon running, all logging will normally also go to
-the syslog files as well (where rsyslog and syslog-ng allows you to filter =
-out
-log events from specific servivces to a separate log file, if that's a
-requirement).  Most distros also ship with preconfigured log rotation tools,
-or the syslog service has that included into the service.
+The community has been informed it will stop working in 2.6, not before this
+release.
 
-By using the journal or syslog will _not_ block openvpn when it does log
-operations.
+This must be documented properly and log warnings updated to indicate
+short-term workarounds.
 
-I can understand if you feel I have this "I know better" attitude here.  I
-really don't intend that, but I also do not understand this resistance of n=
-ew
-tools which can really make your life simpler - if you just care enough to
-learn these new tools.  Neither systemd nor the journal are new tools these=
- days.
+I could be willing to consider breaking configs for ciphers in a later 2.5.x
+release as long as users are properly warned *when* it will stop working - =
+and
+that users gets a real chance to fix configs before we do break their confi=
+gs
+- where a workaround approach could be considered and available from v2.5.0
+(on the other hand, if they change their configs, they should swap ciphers
+instead of applying a workaround for a dying cipher - but for some it might=
+ be
+a bit more complicated to do such a swap).
 
-On the other hand ... this resistance to embrace new tools might also expla=
-in
-better why some users are still clinging to BF-CBC - *not* saying they are =
-the
-same persons ... but, as Steffan said in regards to BF-CBC, we need to move=
- on
-... also on the tooling around openvpn.
+We need to find a good middle-way for OpenVPN 2.5, where we clearly signal
+"weak ciphers will be removed" and when we will do that.  While also moving
+forward and break as few configs as possible and not make configs weaker th=
+an
+before.
 
 
 --=20
@@ -213,9 +137,9 @@ OpenVPN Inc
 
 
 
---fUuDatRGgjN5qNVRRRp2gMGMKCtECOPbY--
+--lJajwTiB0MsE3LzFPkKTdBniaUL8yUQqD--
 
---3TjohsBAq2RM09bV7i2flGl4Y8IZPj6yh
+--L0Zct5uBipOyPqAuqgl5BstfVyeByisg0
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -223,20 +147,20 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJe8PAhAAoJEIbPlEyWcf3yNy0P/iKHO+7lazS5WMarM2LeAeOV
-RAraRfBg+a3/BTInH52emja2CBkog5xmkSoU/WRBu/tFN3cP3wXufybKPHDghnYQ
-H+xPobgRZyeTCBMd6uLl4t1uLMTFr69e5a48zOmiNO4bVBhT+KTQcPI4PCZ249dv
-JLhyMVjbFDvaBBF+9OGwsg/dA2vu9KqCUXBqExk4asLZ64egM6XtgNOtFiAiJ9zt
-kzpN2K3vPc+fQyGXJj2ejfdM1SVa61iTXfZD0szg1Zs6eFgpTTmd6aE6KjNvSQhz
-qgHbYfKs5DSHma8ZIpMGxJmXU0Um9JKlHk1sR2NsvuYdILq99KzLZnsHL4PzMEk8
-NUTFCTkQqCEmIL1aqE8uhYCaYOCJcr06e/xbwBG5l6I1V24w01NZtXo0m4NMiGPy
-+uinNRNCgcDOMMrxiTAsyBBfTWy4S4bZaZDE0BbRLT46NhHRYpVbFJ/m8Cn3nQyH
-+U/csoyZ19J5FTUzOnOUZjacr+IyAe0i+SXIQ6g2tzXBLA+QO4i0103gaHT09pch
-gNSmSFhycvPdoj1xP9h6ZIZTZ+qUpNXgu6H2HHdMUXHHFo8mEJU8icOhsKIX0Lp/
-zyWuc2/sPC0l6f7sNXHIGR4riUxe6d6mWU5EuKaKG8CwNH/jMeXqZncJZQeJF/0F
-i2ZCpU6pyEP1y8bnygQ7
-=F5qV
+iQIcBAEBCgAGBQJe8PGNAAoJEIbPlEyWcf3yhQsQAIz6I5t5i0ba1nBAz+SIPfZc
+EpRZqNx8UqIu2VjmB0Qn1n1IoU5Ax3G7Hta4yhOv1fjfWnF18WX0dc86j/uPEBUK
+J7Nrr4IQITHX4ZAouoVv3j1Cdf4CJu2RhX9ORmNXUFXYSa8dXN1h4Rv6Aqou0g51
+tM7ZyfoTaSXXVqaT7aVYQQpSrDblqw42cBUEDxYNfdRukSqConpvxqJEr3fwc2l2
+MDh82Fvh1fLnf2CWUQ2etiOGr3rZGadget9i0bxE04i0Dee5H8WCQKNNSI8hz6bm
+2eJu8o7Ims1Ynbt7g+prDAN3Za3gFxVZ47CfuP9nNbNZhs6lZtClIcvl04iYExrj
+9EoJSQjSXJvFiFz6I+rmzCJHkIcLoefZrwHixrJA+X1xliG1V92S0LotKKJQ5Vl5
+F0syv93hpWPr6tWdN0yXhOQSTtVMICA9zjCJV3Z7CJRVu5fYaNG17Ui/fdCni/kh
+Hy7MRXq588VlA5G+cEhC3kdvFv4dKruNZdVz6/FPX5Cp5yNvPygZZkWs+CsbJsQK
+4Ibb96lF5c0R7aGrljiiLSe3Qrbu+wrtxpwoBGza1+mrmrhWojBTE0Y+BlqqKgXd
+mseEumeKv95nLl5IH1ZJRpe7xgbxNmd/ea46UXxCWBTmxaSa1mXM8mqCp39KrXmy
+LqbiL23w95gdoY51rqRq
+=N70d
 -----END PGP SIGNATURE-----
 
---3TjohsBAq2RM09bV7i2flGl4Y8IZPj6yh--
+--L0Zct5uBipOyPqAuqgl5BstfVyeByisg0--
 
