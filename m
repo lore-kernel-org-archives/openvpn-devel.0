@@ -1,10 +1,15 @@
-Date: Mon, 22 Jun 2020 07:55:58 +0200 (CEST)
-Message-Id: <202006220555.05M5twkB058585@...2054...>
+Date: Mon, 22 Jun 2020 08:15:39 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200620143940.11704-1-gert@...1296...>
-References: <20200620143940.11704-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Convert plugin/auth-pam.c from
- stderr logging to plugin_log().
+Message-ID: <20200622061539.GU1431@...1296...>
+References: <20200620162206.13956-1-gert@...1296...>
+ <CAKuzo_g0eLCFXHgP=g47Q2j3mbY09+VKMXbZeJSEZV3z+Dy-KA@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="UowF3cYNzpFiYy+J"
+Content-Disposition: inline
+In-Reply-To: <CAKuzo_g0eLCFXHgP=g47Q2j3mbY09+VKMXbZeJSEZV3z+Dy-KA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Add deferred authentication support to
+ plugin-auth-pam
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,32 +18,154 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Patch has been applied to the master branch.
+--UowF3cYNzpFiYy+J
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-As this is neither a bugfix nor "long-term compat" (nor prerequisite for
-either), not applied to release/2.4 
+Good morning,
 
-commit 933b4ab808891805232f599507fded916b284a43
-Author: Gert Doering
-Date:   Sat Jun 20 16:39:40 2020 +0200
+and thanks for the quick review :-)
 
-     Convert plugin/auth-pam.c from stderr logging to plugin_log().
+On Sun, Jun 21, 2020 at 06:23:15PM -0400, Selva Nair wrote:
+> On Sat, Jun 20, 2020 at 12:23 PM Gert Doering <gert@...1296...> wrote:
+> > If OpenVPN signals deferred authentication support (by setting the
+> > internal environment variable "auth_control_file"), do not wait
+> > for PAM stack to finish.  Instead, the privileged PAM process
+> > returns RESPONSE_DEFER via the control socket, which gets turned
+> > into OPENVPN_PLUGIN_FUNC_DEFERRED towards openvpn.
+> >
+> > The PAM process will then fork() and handle all the PAM auth in the
+> > new process, signalling success/failure back by means of the
+> > auth_control_file (forking twice, to simplify wait() handling).
+> >
+> > With the extra fork(), multiple deferred authentications can run at
+> > the same time - otherwise the first one would block the next auth
+> > call (because the child would not be ready again to read from the
+> > control socket).
+>=20
+> I have no doubt this will work, but can we avoid the double fork? Instead,
+> we could set a handler for SIGCHLD and reap all child pids there using
+> a non blocking waitpid(-1, NULL, WNOHANG). Will have to also check for
+> EINTR and retry in recv_control() and possibly recv_string().
+>=20
+> Fork is probably not expensive, but two of them per auth event look
+> excessive and not very elegant, somehow.
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Selva Nair <selva.nair@...277...>
-     Message-Id: <20200620143940.11704-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20037.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+I have started with signal handlers, and then decided that this will
+lead to more complications (EINTR) and possibly someone in the PAM stack
+will also might fork(), so we need to reset signal handlers in the=20
+child, and then I found it all much more complicated than I liked...
+
+fork() isn't as costly anymore as it used to be "in old unix legends" :-)
+(it does have a cost, for setting up new memory mappings for COW, which
+can get large if the memory footprint is large) - and I find the code
+much simpler and much more straightforward, as in "everything related
+to deferred auth happens *here*"...
 
 
---
-kind regards,
+[..]
+> >                  split_scrv1_password(&up);
+> >
+> > +                /* client wants deferred auth
+> > +                 * TODO: put this into its own function
+> > +                 */
+>=20
+> TODOs seldom get attended to, it's now or never :)
 
-Gert Doering
+Right.  v2 is coming :-) - I wanted some quick initial feedback on whether
+something here is a truly bad idea or if I had overlooked something=20
+crucial.
 
+(In the meantime, the code has gotten some more excercise - I've let a
+client connect in a loop, with "connect", "die with --inactive 30",
+"be restarted from script", while another client was connected all the
+time and pinging the server - and no zombies and no ping loss so far,
+over ~30 hours)
+
+[..]
+> > +                    {
+> > +                        /* plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: =
+fork(2), mid=3D%d, exiting", (int) getpid() ); */
+> > +                        exit(0);
+> > +                    }
+> > +
+> > +                    /* grandchild */
+> > +                    plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: deferre=
+d auth handler, pid=3D%d", (int) getpid() );
+>=20
+> I think the scoket in the parent could be closed here. The child
+> doesn't need it.
+
+I had this initially, and then the socket got messed up - but that might
+have been some other bug in the early code.  I'll re-add and re-test.
+
+[..]
+> As auth_control_file is always generated by the core built with
+> PLUGIN_DEF_AUTH, the patch appears to make deferred auth the default
+> with this plugin. So PLUGIN_DEF_AUTH takes a new meaning now.
+
+Yes.  I plan on adding a new (internal) environment variable to control
+this, like
+
+  setenv deferred-auth-pam 1
+
+or the like.  So the default would be "synchronous, as it is now", and
+you get deferred if "auth_control_file *and* deferred-auth-pam are set"
+(or we could do it the other way round, "no-deferred-auth-pam"?).
+
+
+> Not a fault of this patch, but I noticed that the auth_control_file is
+> removed only during the next auth cycle for the same client, or while
+> restarting the client, not promptly after an auth success or failure.
+
+Indeed
+
+gentoo ~/t_server/tun-udp-p2mp-global-authpam # ls -l /tmp/*acf*
+-rw------- 1 root root 0 Jun 22 08:14 /tmp/openvpn_acf_6d4bb9bdca44e9516801=
+5833e2ff3273.tmp
+-rw------- 1 root root 1 Jun 22 08:13 /tmp/openvpn_acf_7055788f18a55f221abf=
+8f9b10751dde.tmp
+gentoo ~/t_server/tun-udp-p2mp-global-authpam # ls -l /tmp/*acf*
+-rw------- 1 root root 1 Jun 22 08:14 /tmp/openvpn_acf_6d4bb9bdca44e9516801=
+5833e2ff3273.tmp
+
+(that's the client-in-a-loop)
+
+
+Not related to this patch, but it might be worth a look on whether this
+can be easily fixed.
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--UowF3cYNzpFiYy+J
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJe8EyKAAoJEB2Cnv7KVigS56EMAKldAL3lqIUW7wzqhWNpRz9I
+IfNhLg9cmwHnEjGtbim4Lkoq+4UUw0GbC/jIiMqJjMBK7a1VMUOJBonVIK0s5O3l
+hrJQn2uSwdyAVdvTYE/gpWEJ2+UZimCa2z2PdbEQDoqbs8UuzeGtKjqAakbeR0cC
+SmjG4go1OYs2tHnM4jpyOBvcsxh8ytDjDUyvanZlbZPHA6ePestT9gZW1+zT4p88
+7vURJMwohoze9Ft/4tkiJIqoFuCjdOFQX9Omk51J+lpbxWYQxdnStZqltBze6uc0
+Ow1jVYjyppUQr2r3hW4g7F8Ni28+/BRsoDpjF6se7x6anjBd4Oz9FY8eSJiKTFJu
+T/VOBvMAoe8qEwfJYbLiOxqZLDb1RGimeN8m+iHntJUCmit+pQtvIzUtZ8G7h6Zn
+RzrweEj8IdffySjE6Nw98ucOmNKv2LpyZYc1WF5Jk1YoFsys7PrLPRtdUfZJh9Ir
+LdRYx3LDjJFwmJj3349Eg76bXyOGelLnT9n5kQ9RPw==
+=nvOj
+-----END PGP SIGNATURE-----
+
+--UowF3cYNzpFiYy+J--
 
