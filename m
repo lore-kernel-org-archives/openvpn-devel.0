@@ -1,8 +1,13 @@
-From: David Sommerseth <davids@...515...>
-Date: Mon, 22 Jun 2020 13:30:22 +0200
-Message-Id: <20200622113022.23047-1-davids@...515...>
+References: <20200622113022.23047-1-davids@...515...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <0c62f389-39dc-b896-ec89-c864a1076089@...1227...>
+Date: Mon, 22 Jun 2020 14:21:50 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] systemd: Change the default cipher to
+In-Reply-To: <20200622113022.23047-1-davids@...515...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="aiaA9qTCxwCKdtz33uIQtegvQuoGM9nyk"
+Subject: Re: [Openvpn-devel] [PATCH] systemd: Change the default cipher to
  AES-256-GCM for server configs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -12,74 +17,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: David Sommerseth <davids@...515...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--aiaA9qTCxwCKdtz33uIQtegvQuoGM9nyk
+Content-Type: multipart/mixed; boundary="6BJCC8267quqOLI7XvSnygPp0enz1kx1l"
+
+--6BJCC8267quqOLI7XvSnygPp0enz1kx1l
+Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-This change makes the server use AES-256-GCM instead of BF-CBC as the
-default cipher for the VPN tunnel when starting OpenVPN via systemd
-and the openvpn-server@...1685... unit file.
 
-To avoid breaking existing running configurations defaulting to BF-CBC,
-the Negotiable Crypto Parameters (NCP) list contains the BF-CBC in
-addition to AES-CBC.  This makes it possible to migrate existing older
-client configurations one-by-one to use at least AES-CBC unless the
-client is updated to v2.4 or newer (which defaults to upgrade to
-AES-GCM automatically)
+>  PrivateTmp=3Dtrue
+>  WorkingDirectory=3D/etc/openvpn/server
+> -ExecStart=3D@...2235...@/openvpn --status %t/openvpn-server/status-%i.log -=
+-status-version 2 --suppress-timestamps --config %i.conf
+> +ExecStart=3D@...2235...@/openvpn --status %t/openvpn-server/status-%i.log -=
+-status-version 2 --suppress-timestamps --cipher AES-256-GCM --ncp-ciphers =
+AES-256-GCM:AES-128-GCM:AES-256-CBC:AES-128-CBC:BF-CBC --config %i.conf
+>  CapabilityBoundingSet=3DCAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE =
+CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE CAP_AUDIT=
+_WRITE
+>  LimitNPROC=3D10
+>  DeviceAllow=3D/dev/null rw
+>=20
 
-This has been tested in Fedora 27 (released November 2017) with no
-reported issues.  By making this default for all Linux distributions
-with systemd shipping with the unit files we provide, we gradually
-expand setups using this possibility.  As we gather experience from
-this change, we can further move these changes into the defaults of
-the OpenVPN binary itself with time.
+NACK.
 
-Signed-off-by: David Sommerseth <davids@...515...>
----
- Changes.rst                               | 15 +++++++++++++++
- distro/systemd/openvpn-server@...2221... |  2 +-
- 2 files changed, 16 insertions(+), 1 deletion(-)
+Setting ncp-cipher to include BF-CBC by default allows BF-CBC in configs
+that did not allow it before. Basically any config that had something
+other than cipher BF-CBC and no ncp-ciphers in it will now allow clients
+with BF-CBC to connect. I don't want force users to set ncp-cipher to a
+sane value since the systemd unit file doesn't.
 
-diff --git a/Changes.rst b/Changes.rst
-index 00dd6ed8..e76d3c73 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -14,6 +14,21 @@ ChaCha20-Poly1305 cipher support
-     channel.
- 
- 
-+User-visible Changes
-+--------------------
-+New default cipher for systemd based Linux distributions
-+    For Linux distributions with systemd which packages the systemd unit files
-+    from the OpenVPN project, the default cipher is now changed to AES-256-GCM,
-+    with BF-CBC as a fallback through the NCP feature.  This change has been
-+    tested successfully since the Fedora 27 release (released November 2017).
-+
-+    *WARNING*   This MAY break configurations where the client uses
-+                ``--disable-occ`` feature where the ``--cipher`` has
-+                not been explicitly configured on both client and
-+                server side.  It is recommended to remove the ``--disable-occ``
-+                option *or* explicitly add ``--cipher AES-256-GCM`` on the
-+                client side if ``--disable-occ`` is strictly needed.
-+
- Overview of changes in 2.4
- ==========================
- 
-diff --git a/distro/systemd/openvpn-server@...2221... b/distro/systemd/openvpn-server@...2221...
-index d1cc72cb..f3545ff5 100644
---- a/distro/systemd/openvpn-server@...2221...
-+++ b/distro/systemd/openvpn-server@...2221...
-@@ -10,7 +10,7 @@ Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
- Type=notify
- PrivateTmp=true
- WorkingDirectory=/etc/openvpn/server
--ExecStart=@sbindir@/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
-+ExecStart=@sbindir@/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --cipher AES-256-GCM --ncp-ciphers AES-256-GCM:AES-128-GCM:AES-256-CBC:AES-128-CBC:BF-CBC --config %i.conf
- CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE CAP_AUDIT_WRITE
- LimitNPROC=10
- DeviceAllow=/dev/null rw
--- 
-2.26.0
+Arne
 
+
+--6BJCC8267quqOLI7XvSnygPp0enz1kx1l--
+
+--aiaA9qTCxwCKdtz33uIQtegvQuoGM9nyk
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl7wol4ACgkQFRhsZwKx
+RFSYzQ//eeY393Q2pzkJAL5PziADM9wBtzRroGDQSfDr5Mln5VATZvKl6X7R7x8U
+5sIjYmUSpLs734c1croLJixeuEs4t+FIbNH+8BQjDNSI/Oqc4mcRQT8H+iYlDaxV
+wkVsIlMLU7aMiIewl9w6H4HFPg39sqyWcCfYt3B7c+FanknIk/3GRkDwqf5eD6qf
+aPQrOw1Q5hnvEz/Qij1Gglb7Xh4sMK3LxmiWcQeosC8Yr9Ci2zWeNNVK6w43bQ5m
+LarZBNnSriv91cvRFyYR8mtC80LBxV6kVTqzVRJBLyhW9Mn5CnWWf+JbOgAK/Nox
+cv720zSrL0Sl9P+2tAbzdvCGg4Ur0eP5FlUwtewDf/F0Vf71l31zGEKxALE+2o7J
+F/zlimHsD9Av4BEBq/tosMFeSJc2xnQfEJvxMMdeUh2VeJNKXBsG/n1pBSopAckh
+oBmqzT4lqWMddKcfPgjK4WIp0BXNu4/Hk3PeTbNJhNJbCJm/xDZCKa/441KN0kuq
+MDkoU1NGqeR64zEIP//KTNMtreH8OZKg9umVzvusNS5Vs/D2NvifjVWetpsd7S/E
+t+Coc6BDTQbkrl0RMFEMiGgm4E/ssGTJXR+IoIcS9efsfo094baz9FucLgqt4y85
+B1DBN03axhFbWaaoUmJSVLMojsbEq1BKmTPfossSri9xtm6MXu8=
+=aiB9
+-----END PGP SIGNATURE-----
+
+--aiaA9qTCxwCKdtz33uIQtegvQuoGM9nyk--
 
