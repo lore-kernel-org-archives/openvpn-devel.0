@@ -1,11 +1,16 @@
-MIME-Version: 1.0
-References: <20200622113022.23047-1-davids@...515...>
-In-Reply-To: <20200622113022.23047-1-davids@...515...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 22 Jun 2020 12:58:21 -0400
-Message-ID: <CAKuzo_g7QxVL90ikT57H6b4+St2c860us6S3cN_6jbfeHujpzw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] systemd: Change the default cipher to
- AES-256-GCM for server configs
+Message-ID: <1592845604.3719.11.camel@...2316...>
+From: James Bottomley <James.Bottomley@...2316...>
+Date: Mon, 22 Jun 2020 10:06:44 -0700
+In-Reply-To: <20200622162326.GX1431@...1296...>
+References: <20200528225920.6983-1-James.Bottomley@...2316...>
+ <20200528225920.6983-4-James.Bottomley@...2316...>
+ <20200621085315.GN1431@...1296...>
+ <1592752234.3694.3.camel@...2316...>
+ <20200622162326.GX1431@...1296...>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+ protocol="application/pgp-signature"; boundary="=-2wQ3LPZVo81oAu3VL663"
+Mime-Version: 1.0
+Subject: Re: [Openvpn-devel] [PATCH v6 3/3] Add unit tests for engine keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,76 +19,100 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--=-2wQ3LPZVo81oAu3VL663
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jun 22, 2020 at 7:31 AM David Sommerseth <davids@...515...> wrote:
->
-> This change makes the server use AES-256-GCM instead of BF-CBC as the
-> default cipher for the VPN tunnel when starting OpenVPN via systemd
-> and the openvpn-server@...1685... unit file.
->
-> To avoid breaking existing running configurations defaulting to BF-CBC,
-> the Negotiable Crypto Parameters (NCP) list contains the BF-CBC in
-> addition to AES-CBC.  This makes it possible to migrate existing older
-> client configurations one-by-one to use at least AES-CBC unless the
-> client is updated to v2.4 or newer (which defaults to upgrade to
-> AES-GCM automatically)
->
-> This has been tested in Fedora 27 (released November 2017) with no
-> reported issues.  By making this default for all Linux distributions
-> with systemd shipping with the unit files we provide, we gradually
-> expand setups using this possibility.  As we gather experience from
-> this change, we can further move these changes into the defaults of
-> the OpenVPN binary itself with time.
->
-> Signed-off-by: David Sommerseth <davids@...515...>
-> ---
->  Changes.rst                               | 15 +++++++++++++++
->  distro/systemd/openvpn-server@...2221... |  2 +-
->  2 files changed, 16 insertions(+), 1 deletion(-)
->
-> diff --git a/Changes.rst b/Changes.rst
-> index 00dd6ed8..e76d3c73 100644
-> --- a/Changes.rst
-> +++ b/Changes.rst
-> @@ -14,6 +14,21 @@ ChaCha20-Poly1305 cipher support
->      channel.
->
->
-> +User-visible Changes
-> +--------------------
-> +New default cipher for systemd based Linux distributions
-> +    For Linux distributions with systemd which packages the systemd unit files
-> +    from the OpenVPN project, the default cipher is now changed to AES-256-GCM,
-> +    with BF-CBC as a fallback through the NCP feature.  This change has been
-> +    tested successfully since the Fedora 27 release (released November 2017).
-> +
-> +    *WARNING*   This MAY break configurations where the client uses
-> +                ``--disable-occ`` feature where the ``--cipher`` has
-> +                not been explicitly configured on both client and
-> +                server side.  It is recommended to remove the ``--disable-occ``
-> +                option *or* explicitly add ``--cipher AES-256-GCM`` on the
-> +                client side if ``--disable-occ`` is strictly needed.
-> +
->  Overview of changes in 2.4
->  ==========================
->
-> diff --git a/distro/systemd/openvpn-server@...2221... b/distro/systemd/openvpn-server@...2221...
-> index d1cc72cb..f3545ff5 100644
-> --- a/distro/systemd/openvpn-server@...2221...
-> +++ b/distro/systemd/openvpn-server@...2221...
-> @@ -10,7 +10,7 @@ Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
->  Type=notify
->  PrivateTmp=true
->  WorkingDirectory=/etc/openvpn/server
-> -ExecStart=@sbindir@/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
-> +ExecStart=@sbindir@/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --cipher AES-256-GCM --ncp-ciphers AES-256-GCM:AES-128-GCM:AES-256-CBC:AES-128-CBC:BF-CBC --config %i.conf
+On Mon, 2020-06-22 at 18:23 +0200, Gert Doering wrote:
+> Hi,
+>=20
+> On Sun, Jun 21, 2020 at 08:10:34AM -0700, James Bottomley wrote:
+> > > Arne, James, can we converge on something here?
+> >=20
+> > Could someone just test the proposed updated v6 patch on a Mac?
+> >=20
+> > https://sourceforge.net/p/openvpn/mailman/message/37031113/
+>=20
+> Took Arne and me half a day ("the macos build slave did not have
+> cmocka, and it went downhill from there") but I can now confirm that
+> it works and passes the tests.
+>=20
+> This is on a Mojave MacMini with "brew" openssl 1.1.1c and your patch
+> "v6":
+>=20
+> Making check in engine-key
+> /Applications/Xcode.app/Contents/Developer/usr/bin/make  libtestengin
+> e.la
+> ...
+> /bin/sh ../../../libtool  --tag=3DCC   --mode=3Dlink gcc -I/usr/local/Cel
+> lar/openssl@...2560.../1.1.1c/include   -I../../../../openvpn.git/include
+> -I/usr/local/Cellar/cmocka/1.1.5/include -I -I -Wall -Wno-unused-
+> parameter -Wno-unused-function -g -O2 -std=3Dc99 -L/usr/local/Cellar/op
+> enssl@...2560.../1.1.1c/lib -lcrypto -lssl   -
+> L/usr/local/Cellar/cmocka/1.1.5/lib -lcmocka -rpath /lib -shrext
+> .so  -o libtestengine.la  libtestengine_la-libtestengine.lo  -
+> lresolv=20
+> libtool: link: gcc -dynamiclib -Wl,-undefined -Wl,dynamic_lookup -o
+> .libs/libtestengine.0.so  .libs/libtestengine_la-libtestengine.o   -L
+> /usr/local/Cellar/openssl@...2560.../1.1.1c/lib -lcrypto -lssl
+> -L/usr/local/Cellar/cmocka/1.1.5/lib -lcmocka -lresolv  -g -O2   -
+> install_name  /lib/libtestengine.0.so -compatibility_version 1
+> -current_version 1.0 -Wl,-single_module
+> libtool: link: (cd ".libs" && rm -f "libtestengine.so" && ln -s
+> "libtestengine.0.so" "libtestengine.so")
+> libtool: link: ar cru .libs/libtestengine.a  libtestengine_la-
+> libtestengine.o
+> libtool: link: ranlib .libs/libtestengine.a
+> libtool: link: ( cd ".libs" && rm -f "libtestengine.la" && ln -s
+> "../libtestengine.la" "libtestengine.la" )
+> /Applications/Xcode.app/Contents/Developer/usr/bin/make  check-TESTS
+> sed "s|ABSBUILDDIR|/Users/gert/openvpn-build-
+> mojave/tests/unit_tests/engine-key|" <
+> ../../../../openvpn.git/tests/unit_tests/engine-key/openssl.cnf.in >
+> openssl.cnf
+> PASS: check_engine_keys.sh
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> 1 test passed
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>=20
+> (I'm not sure where it is actually *calling* the
+> "check_engine_keys.sh",
+> but it says "test passed!" and I see ".so" up there)
 
-This is why I keep my openvpn servers out of systemd's view -- it
-keeps deciding what's good for us. I want to run my configs as is.
+Yes, it's using the standard test runner, so if it says PASS/FAIL:
+<script> it definitely called <script>
 
-Selva
+> [..]
+> > Right, that's what the patch in the url does: uses .so on both mac
+> > and linux.
+>=20
+> I got all confused with your "v6" patch and your "v7" patch, which
+> did other things, and but did not have a "v6" in the history :-)
+>=20
+> *This* patch definitely looks like it's doing the right thing on
+> MacOS.
+
+Great, thanks ... I'll rewrap it and submit as a separate patch email
+with cover letter.
+
+James
+
+--=-2wQ3LPZVo81oAu3VL663
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABMIAB0WIQTnYEDbdso9F2cI+arnQslM7pishQUCXvDlJAAKCRDnQslM7pis
+hTv6APsFFfYxXXqCMl0hGoVJq9fMHP5LxrmlyVAiDhPtwkzzpQEAmp1M6fJSOmMo
+a+nXBlizCoL8enevm6urauPVODZxHkk=
+=80+A
+-----END PGP SIGNATURE-----
+
+--=-2wQ3LPZVo81oAu3VL663--
+
 
