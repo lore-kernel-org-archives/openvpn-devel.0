@@ -3,11 +3,12 @@ References: <20200622232319.8143-2-James.Bottomley@...2316...>
  <202006230628.05N6Sa3g001325@...2054...>
  <20200623072123.GA2034@...1296...>
  <1592917531.4768.4.camel@...2316...>
-In-Reply-To: <1592917531.4768.4.camel@...2316...>
+ <CAFHpkQF5tz91P_UJxMuNCRDUYodw8QPV8=h8mmkSTHOUH5AdfA@...278...>
+In-Reply-To: <CAFHpkQF5tz91P_UJxMuNCRDUYodw8QPV8=h8mmkSTHOUH5AdfA@...278...>
 From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Tue, 23 Jun 2020 21:42:51 +0500
-Message-ID: <CAFHpkQF5tz91P_UJxMuNCRDUYodw8QPV8=h8mmkSTHOUH5AdfA@...278...>
-Content-Type: multipart/alternative; boundary="00000000000084c25d05a8c30d8e"
+Date: Tue, 23 Jun 2020 21:43:35 +0500
+Message-ID: <CAFHpkQH-yGFBJ=-Eaz5XCSaUcD-=S00y=MvPs6Vmr5nE_PcTRg@...278...>
+Content-Type: multipart/alternative; boundary="0000000000002a2ce505a8c310bd"
 Subject: Re: [Openvpn-devel] [PATCH applied] Re: Add unit tests for engine
  keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,126 +22,140 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: James Bottomley <James.Bottomley@...2317...>
 Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---00000000000084c25d05a8c30d8e
+--0000000000002a2ce505a8c310bd
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-apparently, it fails for some build on travis
-https://travis-ci.org/github/OpenVPN/openvpn/jobs/701158156
+as far as I understand, openssl-1.0.2 does not support engines ?
 
-=D0=B2=D1=82, 23 =D0=B8=D1=8E=D0=BD. 2020 =D0=B3. =D0=B2 18:07, James Botto=
-mley <
-James.Bottomley@...2317...>:
+=D0=B2=D1=82, 23 =D0=B8=D1=8E=D0=BD. 2020 =D0=B3. =D0=B2 21:42, =D0=98=D0=
+=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...1665...=
+77...>:
 
-> On Tue, 2020-06-23 at 09:21 +0200, Gert Doering wrote:
-> > Hi,
-> >
-> > On Tue, Jun 23, 2020 at 08:28:36AM +0200, Gert Doering wrote:
-> > > Acked-by: Gert Doering <gert@...1296...>
-> > >
-> > > Tested on :
-> > >  - MacOS Mojave with OpenSSL 1.1.1c (brew) and out-of-tree build,
-> > > works.
-> > >  - Linux with mbedtls (does not try engine tests, good :-) )
-> > >  - Linux with OpenSSL 1.1.1, works
-> > >  - FreeBSD 11.3 with OpenSSL 1.0.2s -> v6 fails, v6 works \o/
-> > >
-> > > Conferred with Arne, we agreed on "this is good enough, and who
-> > > wants
-> > > something more sophisticated is welcome to send more patches".
-> >
-> > Oh well.  We do need another round - Travis tells me that "make
-> > distcheck"
-> > is failing.  Which hints at "autoconf is not told what to pack in the
-> > tarball"
-> >
-> > https://travis-ci.org/github/OpenVPN/openvpn/jobs/701158155
-> > ...
-> > make[6]: Entering directory
-> > '/home/travis/build/OpenVPN/openvpn/openvpn-
-> > 2.5_git/_build/sub/tests/unit_tests/engine-key'
-> > 3672make[6]: *** No rule to make target
-> > '../../../../../tests/unit_tests/engine-key/openssl.cnf.in', needed
-> > by 'openssl.cnf'.  Stop.
-> > 3673make[6]: Leaving directory
-> > '/home/travis/build/OpenVPN/openvpn/openvpn-
-> > 2.5_git/_build/sub/tests/unit_tests/engine-key'
-> > 3674
-> >
-> > (so now the source file is missing)
-> >
-> > Please... :-)
+> apparently, it fails for some build on travis
+> https://travis-ci.org/github/OpenVPN/openvpn/jobs/701158156
 >
-> Sorry about that ... it's missing files from EXTRA_DIST ... plus I
-> don't usually use make dist, so I never remember to run make distcheck.
->  It passes after this
+> =D0=B2=D1=82, 23 =D0=B8=D1=8E=D0=BD. 2020 =D0=B3. =D0=B2 18:07, James Bot=
+tomley <
+> James.Bottomley@...2317...>:
 >
-> ---8>8>8><8<8<8---
->
-> From: James Bottomley <James.Bottomley@...2316...>
-> Subject: [PATCH] Fix make distcheck for new engine key unit test
->
-> Add config precursor and script to extra dist and make sure
-> built and test leftover files are cleaned up afterwards.
->
-> Signed-off-by: James Bottomley <James.Bottomley@...2316...>
-> ---
->  tests/unit_tests/engine-key/Makefile.am | 10 ++++++++--
->  1 file changed, 8 insertions(+), 2 deletions(-)
->
-> diff --git a/tests/unit_tests/engine-key/Makefile.am
-> b/tests/unit_tests/engine-key/Makefile.am
-> index 95e7d868..0bfdfcd4 100644
-> --- a/tests/unit_tests/engine-key/Makefile.am
-> +++ b/tests/unit_tests/engine-key/Makefile.am
-> @@ -2,6 +2,9 @@ AUTOMAKE_OPTIONS =3D foreign
->
->  check_LTLIBRARIES =3D libtestengine.la
->  conffiles =3D openssl.cnf
-> +EXTRA_DIST =3D \
-> +       openssl.cnf.in \
-> +       check_engine_keys.sh
->
->  TESTS_ENVIRONMENT =3D srcdir=3D"$(abs_srcdir)"; \
->         builddir=3D"$(abs_builddir)"; \
-> @@ -12,8 +15,11 @@ TESTS_ENVIRONMENT =3D srcdir=3D"$(abs_srcdir)"; \
->  TESTS =3D check_engine_keys.sh
->  check_engine_keys.sh: $(conffiles)
->
-> -clean-local:
-> -       rm -f $(conffiles)
-> +CLEANFILES =3D \
-> +       client.key \
-> +       passwd \
-> +       log.txt \
-> +       $(conffiles)
->
->  $(builddir)/openssl.cnf: $(srcdir)/openssl.cnf.in
->         sed "s|ABSBUILDDIR|$(abs_builddir)|" < $< > $@
-> --
-> 2.26.2
->
->
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>> On Tue, 2020-06-23 at 09:21 +0200, Gert Doering wrote:
+>> > Hi,
+>> >
+>> > On Tue, Jun 23, 2020 at 08:28:36AM +0200, Gert Doering wrote:
+>> > > Acked-by: Gert Doering <gert@...1296...>
+>> > >
+>> > > Tested on :
+>> > >  - MacOS Mojave with OpenSSL 1.1.1c (brew) and out-of-tree build,
+>> > > works.
+>> > >  - Linux with mbedtls (does not try engine tests, good :-) )
+>> > >  - Linux with OpenSSL 1.1.1, works
+>> > >  - FreeBSD 11.3 with OpenSSL 1.0.2s -> v6 fails, v6 works \o/
+>> > >
+>> > > Conferred with Arne, we agreed on "this is good enough, and who
+>> > > wants
+>> > > something more sophisticated is welcome to send more patches".
+>> >
+>> > Oh well.  We do need another round - Travis tells me that "make
+>> > distcheck"
+>> > is failing.  Which hints at "autoconf is not told what to pack in the
+>> > tarball"
+>> >
+>> > https://travis-ci.org/github/OpenVPN/openvpn/jobs/701158155
+>> > ...
+>> > make[6]: Entering directory
+>> > '/home/travis/build/OpenVPN/openvpn/openvpn-
+>> > 2.5_git/_build/sub/tests/unit_tests/engine-key'
+>> > 3672make[6]: *** No rule to make target
+>> > '../../../../../tests/unit_tests/engine-key/openssl.cnf.in', needed
+>> > by 'openssl.cnf'.  Stop.
+>> > 3673make[6]: Leaving directory
+>> > '/home/travis/build/OpenVPN/openvpn/openvpn-
+>> > 2.5_git/_build/sub/tests/unit_tests/engine-key'
+>> > 3674
+>> >
+>> > (so now the source file is missing)
+>> >
+>> > Please... :-)
+>>
+>> Sorry about that ... it's missing files from EXTRA_DIST ... plus I
+>> don't usually use make dist, so I never remember to run make distcheck.
+>>  It passes after this
+>>
+>> ---8>8>8><8<8<8---
+>>
+>> From: James Bottomley <James.Bottomley@...2316...>
+>> Subject: [PATCH] Fix make distcheck for new engine key unit test
+>>
+>> Add config precursor and script to extra dist and make sure
+>> built and test leftover files are cleaned up afterwards.
+>>
+>> Signed-off-by: James Bottomley <James.Bottomley@...2316...>
+>> ---
+>>  tests/unit_tests/engine-key/Makefile.am | 10 ++++++++--
+>>  1 file changed, 8 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/tests/unit_tests/engine-key/Makefile.am
+>> b/tests/unit_tests/engine-key/Makefile.am
+>> index 95e7d868..0bfdfcd4 100644
+>> --- a/tests/unit_tests/engine-key/Makefile.am
+>> +++ b/tests/unit_tests/engine-key/Makefile.am
+>> @@ -2,6 +2,9 @@ AUTOMAKE_OPTIONS =3D foreign
+>>
+>>  check_LTLIBRARIES =3D libtestengine.la
+>>  conffiles =3D openssl.cnf
+>> +EXTRA_DIST =3D \
+>> +       openssl.cnf.in \
+>> +       check_engine_keys.sh
+>>
+>>  TESTS_ENVIRONMENT =3D srcdir=3D"$(abs_srcdir)"; \
+>>         builddir=3D"$(abs_builddir)"; \
+>> @@ -12,8 +15,11 @@ TESTS_ENVIRONMENT =3D srcdir=3D"$(abs_srcdir)"; \
+>>  TESTS =3D check_engine_keys.sh
+>>  check_engine_keys.sh: $(conffiles)
+>>
+>> -clean-local:
+>> -       rm -f $(conffiles)
+>> +CLEANFILES =3D \
+>> +       client.key \
+>> +       passwd \
+>> +       log.txt \
+>> +       $(conffiles)
+>>
+>>  $(builddir)/openssl.cnf: $(srcdir)/openssl.cnf.in
+>>         sed "s|ABSBUILDDIR|$(abs_builddir)|" < $< > $@
+>> --
+>> 2.26.2
+>>
+>>
+>>
+>> _______________________________________________
+>> Openvpn-devel mailing list
+>> Openvpn-devel@lists.sourceforge.net
+>> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>>
 >
 
---00000000000084c25d05a8c30d8e
+--0000000000002a2ce505a8c310bd
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div>apparently, it fails for some build on travis</div><d=
-iv><a href=3D"https://travis-ci.org/github/OpenVPN/openvpn/jobs/701158156">=
-https://travis-ci.org/github/OpenVPN/openvpn/jobs/701158156</a></div></div>=
-<br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">=D0=B2=
-=D1=82, 23 =D0=B8=D1=8E=D0=BD. 2020 =D0=B3. =D0=B2 18:07, James Bottomley &=
-lt;<a href=3D"mailto:James.Bottomley@...2317...">James.Bottomley@...2317...=
-</a>&gt;:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0p=
-x 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">On Tue=
-, 2020-06-23 at 09:21 +0200, Gert Doering wrote:<br>
+<div dir=3D"ltr">as far as I understand, openssl-1.0.2 does not support eng=
+ines ?<br></div><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gm=
+ail_attr">=D0=B2=D1=82, 23 =D0=B8=D1=8E=D0=BD. 2020 =D0=B3. =D0=B2 21:42, =
+=D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD &lt;<a =
+href=3D"mailto:chipitsine@...277...">chipitsine@...277...</a>&gt;:<br></div=
+><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border=
+-left:1px solid rgb(204,204,204);padding-left:1ex"><div dir=3D"ltr"><div>ap=
+parently, it fails for some build on travis</div><div><a href=3D"https://tr=
+avis-ci.org/github/OpenVPN/openvpn/jobs/701158156" target=3D"_blank">https:=
+//travis-ci.org/github/OpenVPN/openvpn/jobs/701158156</a></div></div><br><d=
+iv class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">=D0=B2=D1=82=
+, 23 =D0=B8=D1=8E=D0=BD. 2020 =D0=B3. =D0=B2 18:07, James Bottomley &lt;<a =
+href=3D"mailto:James.Bottomley@...2317..." target=3D"_blank">James.Bottomle=
+y@...2317...</a>&gt;:<br></div><blockquote class=3D"gmail_quote" style=3D"m=
+argin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left=
+:1ex">On Tue, 2020-06-23 at 09:21 +0200, Gert Doering wrote:<br>
 &gt; Hi,<br>
 &gt; <br>
 &gt; On Tue, Jun 23, 2020 at 08:28:36AM +0200, Gert Doering wrote:<br>
@@ -256,6 +271,7 @@ envpn-devel@lists.sourceforge.net</a><br>
 =3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
 nfo/openvpn-devel</a><br>
 </blockquote></div>
+</blockquote></div>
 
---00000000000084c25d05a8c30d8e--
+--0000000000002a2ce505a8c310bd--
 
