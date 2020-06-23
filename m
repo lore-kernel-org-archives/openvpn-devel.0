@@ -1,6 +1,7 @@
-Date: Tue, 23 Jun 2020 21:26:27 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200623192627.GA11911@...1296...>
+Message-ID: <1592940762.4768.52.camel@...2316...>
+From: James Bottomley <James.Bottomley@...2316...>
+Date: Tue, 23 Jun 2020 12:32:42 -0700
+In-Reply-To: <20200623192627.GA11911@...1296...>
 References: <20200622232319.8143-2-James.Bottomley@...2316...>
  <202006230628.05N6Sa3g001325@...2054...>
  <20200623072123.GA2034@...1296...>
@@ -10,11 +11,10 @@ References: <20200622232319.8143-2-James.Bottomley@...2316...>
  <1592936237.4768.43.camel@...2316...>
  <CAFHpkQGQgQm2cEA1kw1JpRkf4Ldu4kT=y-YXF-6cLTXbEx_zDQ@...278...>
  <20200623184733.GK1431@...1296...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="fUYQa+Pmc3FrFX/N"
-Content-Disposition: inline
-In-Reply-To: <20200623184733.GK1431@...1296...>
+ <20200623192627.GA11911@...1296...>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+ protocol="application/pgp-signature"; boundary="=-E7qSaFaDq3HSc8zLdR2j"
+Mime-Version: 1.0
 Subject: Re: [Openvpn-devel] [PATCH applied] Re: Add unit tests for engine
  keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -25,64 +25,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ???????? ?????????????? <chipitsine@...277...>
-Cc: James Bottomley <James.Bottomley@...2317...>, Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>, ???????? ?????????????? <chipitsine@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---fUYQa+Pmc3FrFX/N
-Content-Type: text/plain; charset="us-ascii"
+--=-E7qSaFaDq3HSc8zLdR2j
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
-
-On Tue, Jun 23, 2020 at 08:47:33PM +0200, Gert Doering wrote:
-> On Tue, Jun 23, 2020 at 11:36:49PM +0500, ???????? ?????????????? wrote:
-> > Also, I think we should out log.txt in case of failure.
+On Tue, 2020-06-23 at 21:26 +0200, Gert Doering wrote:
+> Hi,
 >=20
-> Indeed, this would help.
+> On Tue, Jun 23, 2020 at 08:47:33PM +0200, Gert Doering wrote:
+> > On Tue, Jun 23, 2020 at 11:36:49PM +0500, ???????? ??????????????
+> > wrote:
+> > > Also, I think we should out log.txt in case of failure.
+> >=20
+> > Indeed, this would help.
+>=20
+> Yep.
+>=20
+> The "make distcheck" travis instance is now happy, but the "1.0.2u +=20
+> enable-small" instance is still unhappy.
+>=20
+> James, are you triggering on specific openvpn messages?  "--enable-
+> small"
+> changes these (trimming some warnings and help texts).  Can you test
+> with
+> "configure --enable-small", please?
+>=20
+> https://travis-ci.org/github/OpenVPN/openvpn/builds/701385033?utm_med
+> ium=3Dnotification&utm_source=3Demail
 
-Yep.
+Yes, that's it.  The problem is the message output by openssl is
 
-The "make distcheck" travis instance is now happy, but the "1.0.2u +=20
-enable-small" instance is still unhappy.
+2020-06-23 19:28:46 OpenSSL: error:0B080074:lib(11):func(128):reason(116)
 
-James, are you triggering on specific openvpn messages?  "--enable-small"
-changes these (trimming some warnings and help texts).  Can you test with
-"configure --enable-small", please?
+Instead of:
 
-https://travis-ci.org/github/OpenVPN/openvpn/builds/701385033?utm_medium=3D=
-notification&utm_source=3Demail
+2020-06-23 12:30:43 OpenSSL: error:0B080074:x509 certificate routines:X509_=
+check_private_key:key values mismatch
 
+I think I can make the grep work with the former.
 
-gert
+James
 
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---fUYQa+Pmc3FrFX/N
+--=-E7qSaFaDq3HSc8zLdR2j
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJe8ldjAAoJEB2Cnv7KVigSv0cL/j7cpeWsCuQGRDOn2zqUTm0e
-nx2ukP4W9aYGDmj19tkGqEXc6Icvc2rfgbW196unyIEoDHi+0pp54wHiur3pUHcg
-vBD9XNNY5bVdIOSAfnQXt+pgjSba8n1Cs7X5Wvc4PuZKJ/3jcSQmbiDqAcf0fHlN
-xzYtM/liaMDRyVYgZRrLzGPCVFKyaQ+n+92dJw5ORVU3l8PoJ3nfkXVmxxBkoAr+
-tWw4E5lDVn+7kOzKTbajVDVT0CwvBjUFubCXiKPvuTObjDk6olabexHWTMNUZrIT
-doVIw9BxJpzFj+roV0SaNsUKx9HQPp3BJrDeQWl6DAzECXjxA8MK4OAMt+Yu3ZLH
-ogdfx8E2tE+m/3dScDYHRkHUrpA7QmVlzs+bbVYh2YcPEm5EENtaEpYOQCXsBexx
-iOmMjG6UZ2sYiVFLDnfXqA+lYyfneTuUvkFJ+drZpRo3mW8fs/lX5i8HfEpn1vrF
-6dMor7CLTt4hPD1hxzcqXKdZqh+Dehhq5iaCV8WQmg==
-=BdH8
+iHUEABMIAB0WIQTnYEDbdso9F2cI+arnQslM7pishQUCXvJY2gAKCRDnQslM7pis
+hVnhAP9gvu6i4ph/GoDOCptFNF1xK+32toDQribEl40CgudVzgEAma9XPDOnaK7b
+0pqY6Rn5gZA6OzvFaf5TdgrZ7rSDgJw=
+=z0I3
 -----END PGP SIGNATURE-----
 
---fUYQa+Pmc3FrFX/N--
+--=-E7qSaFaDq3HSc8zLdR2j--
+
 
