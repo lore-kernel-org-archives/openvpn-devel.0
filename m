@@ -1,18 +1,16 @@
-References: <523527018.2514117.1583041035054.ref@...2084...>
- <523527018.2514117.1583041035054@...2084...>
- <20200301071521.GI1431@...1296...>
- <CAKuzo_j=P8vZvkOL4Rgh1icLJiu0a-r4yQGrD1GSACrn14G9QQ@...278...>
- <f4b83fe0-cbe1-eed3-ff9b-4aaaea5a12b1@...1147...>
- <20200621111403.GP1431@...1296...>
- <CAKuzo_h2oTaNK7A3+3MJ6GSfApr9L9vXYFtzELH8SaaNzqFWuQ@...278...>
-From: Jan Just Keijser <janjust@...1147...>
-Message-ID: <f664dcaf-7224-1b17-c953-584557f2ac56@...1147...>
-Date: Tue, 23 Jun 2020 09:22:12 +0200
+References: <20200622113022.23047-1-davids@...515...>
+ <CAKuzo_g7QxVL90ikT57H6b4+St2c860us6S3cN_6jbfeHujpzw@...278...>
+ <a1cfd42d-e371-187a-55c2-f14a3a986b34@...1823...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <4562876f-45c1-d3bb-f725-52e9b78600de@...1227...>
+Date: Tue, 23 Jun 2020 10:34:47 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_h2oTaNK7A3+3MJ6GSfApr9L9vXYFtzELH8SaaNzqFWuQ@...278...>
-Content-Language: nl-NL
-Subject: Re: [Openvpn-devel] [Openvpn-users] Multiple DNS search suffixes on
- Windows
+In-Reply-To: <a1cfd42d-e371-187a-55c2-f14a3a986b34@...1823...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="pujO7MPzXk9QxjSpzi8wnVpyzOycnftJp"
+Subject: Re: [Openvpn-devel] [PATCH] systemd: Change the default cipher to
+ AES-256-GCM for server configs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,93 +19,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>, Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Dmitry Melekhov <dm@...1823...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--pujO7MPzXk9QxjSpzi8wnVpyzOycnftJp
+Content-Type: multipart/mixed; boundary="8k2kxHWkB0mIzrFzG47slih6Pb0Q20tns"
 
-On 21/06/20 17:14, Selva Nair wrote:
-> On Sun, Jun 21, 2020 at 7:14 AM Gert Doering <gert@...1296...> wrote:
->>
->> going through OpenVPN threads that went stale - I think this is
->> actually a nice addition (read: other people have already asked
->> me if this can be done).
->>
->> On Thu, Mar 05, 2020 at 01:53:12PM +0100, Jan Just Keijser wrote:
->>> So, for what it's worth, I've dusted off the patch again and rebased it
->>> to the current openvpn master tree. See attached. Note that I did only
->>> rudimentary testing, as I don't use Windows 10 a lot and I was testing
->>> using a mingw cross-compile only. In wireshark I *do* see that the
->>> correct DHCP offer is sent to the tap-win adapter.
->>>
->>> Also note that I implemented multiple search domains by separating them
->>> using semi-colons, e.g.
->>>
->>>      --dhcp-option SEARCH example.com;example.org;example.nl;example.de
->>>
->>> etc as that was easier to implement
->> The patch looks okay-ish on quick reading.
-> Feature wise yes, but some improvements needed..
+--8k2kxHWkB0mIzrFzG47slih6Pb0Q20tns
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+Am 23.06.20 um 06:16 schrieb Dmitry Melekhov:
+> 22.06.2020 20:58, Selva Nair =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
+>> +*WARNING*=C2=A0=C2=A0=C2=A0 This MAY break configurations where the cli=
+ent uses
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 ``--disable-occ`` feature where the ``--cipher`` has
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 not been explicitly configured on both client and
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 server side.=C2=A0 It is recommended to remove the
+>> ``--disable-occ``
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 option*or*=C2=A0 explicitly add ``--cipher AES-256-GC=
+M``
+>> on the
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 client side if ``--disable-occ`` is strictly needed.
+>=20
+> Well, may be it is possible to add support for setting cipher in ccd
+>=20
+> as it was possible before 2.4.9 using patch from here
+>=20
+> https://community.openvpn.net/openvpn/ticket/845
 >
-> I do not like that option format
->
-> "example.com; example.org" with quotes will parse right and fail later
-> on because of the space, for example. And, we support multiple
-> statements of dhcp options like DNS, so this is counter-intuitive.
-> It's only a little more work to support a more forgiving format.
-actually, the patch will be a bit more invasive if we add that; parsing 
-DNS/WINS etc is already there and it parses an option into an IP/IPv6 
-address. changing the dns-search option to an array of strings will 
-require more work. I did look into that initially but decided not to do 
-it as the patch would be lengthier.
 
-Note that "multiple domain" option is also not support, really. The 
-domain is stored in the tuntap_options struct as
+I get that this might have been needed in 2.4.x with the first version
+of NCP. But the NCP negoiation in 2.5.x should handle all use cases.
 
-  90     const char *domain;      /* DOMAIN (15) */
+Help me understand why --cipher in ccd should be needed?
 
-so it's "last option wins"  ; the fact that some platforms abuse this 
-option to actually set multiple search domains is a different matter.
-
->>> Also note that I did not fully implement the RFC3397 encoding of the
->>> search list, as that requires one to merge domain names that occur more
->>> than once - that would have made the code far more complicated.
->> Indeed.  I haven't looked at what other DHCP implementations do, but
->> "correct" encoding definitely sounds like quite a bit of extra code just
->> to save a few bytes on the wire - might come handy if you have many
->> subdomains of a long internal DNS domain, though, but this can be
->> added "if needed".
-> Same as my thoughts, the encoding part could be kept simple as in here
-> and possibly improved later. But option format is hard to change or
-> deprecate.
->
->>
->> More interesting is the question "which option to use" - it should
->> be synchronized between openvpn platform handlers.  So if systemd-networkd
->> uses "SEARCH-DOMAIN" it would make sense to use that for windows
->> as well.
-> I think we need both --- the current one retained as the connection
-> specific suffix which would be just one entry and then this search
-> list. As we allow multiple entries for DOMAIN right now, a user
-> friendly approach would be to continue doing so but internally treat
-> all but the first as a part of --dhcp-option DOMAIN-SEARCH. We could
-> also deprecate the use of multiple entries in the dhcp-option DOMAIN
-> keyword.
->
-See above: like I said, multiple DOMAIN entries do not seem to be supported.
-
-So what option do we want?
-
---dhcp-option SEARCH
---dhcp-option DOMAIN-SEARCH
---dhcp-option SEARCH-DOMAIN
-
-all?
-
-JJK
+Arne
 
 
+--8k2kxHWkB0mIzrFzG47slih6Pb0Q20tns--
 
+--pujO7MPzXk9QxjSpzi8wnVpyzOycnftJp
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl7xvqgACgkQFRhsZwKx
+RFSqXhAAphoBzmj3X45EP5ehufrhD5zeXs6+UezXXWduAkAV+aZC9KmMxHy73fq7
+21n0qy1p2yHqZvq7p0UjVJWiopaRX1B5Pm5RQNCaCfYxrkDrsXQPTEaPzoQh6s9q
++T/ApAOH0F/HNyCXdO4+z6jZsNLqVfDMeutrK34dM77n7IQIhDie1L7CVkl3N+Bz
+2oBtDsCS25m8Iyft6T1br3CDAE2DgxQfrbBG6JI4Vudgi7ZrW0Nuplis4NuTD4CD
+XAzuMW4UgjtdtNoJuIC9mVlSAu4JdEyIykof478BAlrwOrXb+19jhoB+v/Archp0
+Cbe2mHNs8TaZOVwado4/wzGgmmgIcZ8LCvqW/fyB8PyJr1nHj+h5B4b9OxQukLzv
+sdbRkyTngW7aPJvXe1LyQ5Nvkqs2hakEalp6UyDQ0rHZLuFT9HHclbt3z4HkbiQs
+/qWZrkYB0kRmwu6wn6CbFnRDdg7tgBm08IU21HdY6U1Yo7Pv0FYcyJSPHtuKZsk1
+RVgV2N+PRAJ4N50uDyWT/LmTobeToWDejSHwHaop91vxx4BzjK88+FUToZBztR95
+f1r3AXWGnC6mcSVoLgPo69QIhD/RY36lzjEZEhUFTGOphrQSJEEQIUkc/QS9U3Wb
+hD5SsZVGuibe/BYnDvL8DUvm37kUV6u8ml/gSfTXtdqsG0Hl1IM=
+=QVqF
+-----END PGP SIGNATURE-----
+
+--pujO7MPzXk9QxjSpzi8wnVpyzOycnftJp--
 
