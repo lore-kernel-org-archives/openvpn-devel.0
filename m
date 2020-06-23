@@ -1,9 +1,21 @@
-Date: Tue, 23 Jun 2020 20:46:42 +0200 (CEST)
-Message-Id: <202006231846.05NIkgiS011355@...2054...>
+Date: Tue, 23 Jun 2020 20:47:33 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1592917531.4768.4.camel@...2316...>
-References: <1592917531.4768.4.camel@...2316...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add unit tests for engine keys
+Message-ID: <20200623184733.GK1431@...1296...>
+References: <20200622232319.8143-2-James.Bottomley@...2316...>
+ <202006230628.05N6Sa3g001325@...2054...>
+ <20200623072123.GA2034@...1296...>
+ <1592917531.4768.4.camel@...2316...>
+ <CAFHpkQF5tz91P_UJxMuNCRDUYodw8QPV8=h8mmkSTHOUH5AdfA@...278...>
+ <CAFHpkQH-yGFBJ=-Eaz5XCSaUcD-=S00y=MvPs6Vmr5nE_PcTRg@...278...>
+ <1592936237.4768.43.camel@...2316...>
+ <CAFHpkQGQgQm2cEA1kw1JpRkf4Ldu4kT=y-YXF-6cLTXbEx_zDQ@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="VMX9iwWs3M8PZliy"
+Content-Disposition: inline
+In-Reply-To: <CAFHpkQGQgQm2cEA1kw1JpRkf4Ldu4kT=y-YXF-6cLTXbEx_zDQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Add unit tests for engine
+ keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,36 +24,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: James Bottomley <James.Bottomley@...2316...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: ???????? ?????????????? <chipitsine@...277...>
+Cc: James Bottomley <James.Bottomley@...2317...>, Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Acked-by: Gert Doering <gert@...1296...>
+--VMX9iwWs3M8PZliy
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Looks reasonable, explanation is reasonable, and it passes "make distcheck"
-(only tested on Linux, but there should not be a difference here).
+Hi,
 
-Your patch has been applied to the master branch.
+On Tue, Jun 23, 2020 at 11:36:49PM +0500, ???????? ?????????????? wrote:
+> Also, I think we should out log.txt in case of failure.
 
-Thanks.
+Indeed, this would help.
 
-commit 21e3e9fc34128d37bd612def2acca29a5a18de77 (HEAD -> master)
-Author: James Bottomley <James.Bottomley@...2316...>
-Date:   Tue Jun 23 06:05:31 2020 -0700
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-    Fix make distcheck for new engine key unit test
-    
-    Signed-off-by: James Bottomley <James.Bottomley@...2316...>
-    Acked-by: Gert Doering <gert@...1296...>
-    Message-Id: <1592917531.4768.4.camel@...2316...>
-    URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20088.html
-    Signed-off-by: Gert Doering <gert@...1296...>
+Gert Doering - Munich, Germany                             gert@...1296...
 
+--VMX9iwWs3M8PZliy
+Content-Type: application/pgp-signature; name="signature.asc"
 
---
-kind regards,
+-----BEGIN PGP SIGNATURE-----
 
-Gert Doering
+iQGcBAEBAgAGBQJe8k5EAAoJEB2Cnv7KVigSiE8L/0L5j5uXxsOhqY/T/aowC8Lp
+uZ2GWIGtC0pxJs5b1RR5/j4a8TBQ/fv7uOdY2r4Pa/kHJ8OLaV8lXZUPSDNRhuQY
+n/C+xc0orgDKficNuzfJkLxrJiPWu0jX1dDJE5A3BbtiE8dlPRbuilZiLpNFsmQY
+ZfJ5+6qoZnG1i5gYsOuFsKhO6wt2Q1LNuCDjn0qPS25TGd/YcabJc5fVWOzzoNwc
+umi2slgFwfvKLwn5XQuXQx5e58rAI8P7WrQLrjF+B/teF1rItGeBfeUs4RKB/0Xk
+8vQJbvv5+x6JltBupjw+hs7ctf+X+jD+l7P1z8MsFTLG0ogQgVPvKZkq3xXrVlaL
+k13QzMLAOjOZzN7NOXIeahY5dAb543iXpBorxyVBq4UN+wzOXSDBg3q2ueRq4t7m
+67vUKllFK9v46A6zoQ7c0FbpVugm2dV8Awjo7fPhaqsORYl0W2ekgYVZKmc/J/kI
++G8rVgXj5CRVH6bUH7lASL94TGlvJpIL/tpm8ksVbQ==
+=Yp8o
+-----END PGP SIGNATURE-----
 
+--VMX9iwWs3M8PZliy--
 
