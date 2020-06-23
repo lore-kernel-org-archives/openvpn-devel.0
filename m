@@ -1,15 +1,18 @@
-Date: Tue, 23 Jun 2020 09:21:23 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200623072123.GA2034@...1296...>
-References: <20200622232319.8143-2-James.Bottomley@...2316...>
- <202006230628.05N6Sa3g001325@...2054...>
+References: <523527018.2514117.1583041035054.ref@...2084...>
+ <523527018.2514117.1583041035054@...2084...>
+ <20200301071521.GI1431@...1296...>
+ <CAKuzo_j=P8vZvkOL4Rgh1icLJiu0a-r4yQGrD1GSACrn14G9QQ@...278...>
+ <f4b83fe0-cbe1-eed3-ff9b-4aaaea5a12b1@...1147...>
+ <20200621111403.GP1431@...1296...>
+ <CAKuzo_h2oTaNK7A3+3MJ6GSfApr9L9vXYFtzELH8SaaNzqFWuQ@...278...>
+From: Jan Just Keijser <janjust@...1147...>
+Message-ID: <f664dcaf-7224-1b17-c953-584557f2ac56@...1147...>
+Date: Tue, 23 Jun 2020 09:22:12 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="huq684BweRXVnRxX"
-Content-Disposition: inline
-In-Reply-To: <202006230628.05N6Sa3g001325@...2054...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Add unit tests for engine
- keys
+In-Reply-To: <CAKuzo_h2oTaNK7A3+3MJ6GSfApr9L9vXYFtzELH8SaaNzqFWuQ@...278...>
+Content-Language: nl-NL
+Subject: Re: [Openvpn-devel] [Openvpn-users] Multiple DNS search suffixes on
+ Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,74 +21,93 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: James Bottomley <James.Bottomley@...2317...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---huq684BweRXVnRxX
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+To: Selva Nair <selva.nair@...277...>, Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Tue, Jun 23, 2020 at 08:28:36AM +0200, Gert Doering wrote:
-> Acked-by: Gert Doering <gert@...1296...>
->=20
-> Tested on :
->  - MacOS Mojave with OpenSSL 1.1.1c (brew) and out-of-tree build, works.
->  - Linux with mbedtls (does not try engine tests, good :-) )
->  - Linux with OpenSSL 1.1.1, works
->  - FreeBSD 11.3 with OpenSSL 1.0.2s -> v6 fails, v6 works \o/
->=20
-> Conferred with Arne, we agreed on "this is good enough, and who wants=20
-> something more sophisticated is welcome to send more patches".
+On 21/06/20 17:14, Selva Nair wrote:
+> On Sun, Jun 21, 2020 at 7:14 AM Gert Doering <gert@...1296...> wrote:
+>>
+>> going through OpenVPN threads that went stale - I think this is
+>> actually a nice addition (read: other people have already asked
+>> me if this can be done).
+>>
+>> On Thu, Mar 05, 2020 at 01:53:12PM +0100, Jan Just Keijser wrote:
+>>> So, for what it's worth, I've dusted off the patch again and rebased it
+>>> to the current openvpn master tree. See attached. Note that I did only
+>>> rudimentary testing, as I don't use Windows 10 a lot and I was testing
+>>> using a mingw cross-compile only. In wireshark I *do* see that the
+>>> correct DHCP offer is sent to the tap-win adapter.
+>>>
+>>> Also note that I implemented multiple search domains by separating them
+>>> using semi-colons, e.g.
+>>>
+>>>      --dhcp-option SEARCH example.com;example.org;example.nl;example.de
+>>>
+>>> etc as that was easier to implement
+>> The patch looks okay-ish on quick reading.
+> Feature wise yes, but some improvements needed..
+>
+> I do not like that option format
+>
+> "example.com; example.org" with quotes will parse right and fail later
+> on because of the space, for example. And, we support multiple
+> statements of dhcp options like DNS, so this is counter-intuitive.
+> It's only a little more work to support a more forgiving format.
+actually, the patch will be a bit more invasive if we add that; parsing 
+DNS/WINS etc is already there and it parses an option into an IP/IPv6 
+address. changing the dns-search option to an array of strings will 
+require more work. I did look into that initially but decided not to do 
+it as the patch would be lengthier.
 
-Oh well.  We do need another round - Travis tells me that "make distcheck"
-is failing.  Which hints at "autoconf is not told what to pack in the
-tarball"
+Note that "multiple domain" option is also not support, really. The 
+domain is stored in the tuntap_options struct as
 
-https://travis-ci.org/github/OpenVPN/openvpn/jobs/701158155
-...
-make[6]: Entering directory '/home/travis/build/OpenVPN/openvpn/openvpn-2.5=
-_git/_build/sub/tests/unit_tests/engine-key'
-3672make[6]: *** No rule to make target '../../../../../tests/unit_tests/en=
-gine-key/openssl.cnf.in', needed by 'openssl.cnf'.  Stop.
-3673make[6]: Leaving directory '/home/travis/build/OpenVPN/openvpn/openvpn-=
-2.5_git/_build/sub/tests/unit_tests/engine-key'
-3674
+  90     const char *domain;      /* DOMAIN (15) */
 
-(so now the source file is missing)
+so it's "last option wins"  ; the fact that some platforms abuse this 
+option to actually set multiple search domains is a different matter.
 
-Please... :-9
+>>> Also note that I did not fully implement the RFC3397 encoding of the
+>>> search list, as that requires one to merge domain names that occur more
+>>> than once - that would have made the code far more complicated.
+>> Indeed.  I haven't looked at what other DHCP implementations do, but
+>> "correct" encoding definitely sounds like quite a bit of extra code just
+>> to save a few bytes on the wire - might come handy if you have many
+>> subdomains of a long internal DNS domain, though, but this can be
+>> added "if needed".
+> Same as my thoughts, the encoding part could be kept simple as in here
+> and possibly improved later. But option format is hard to change or
+> deprecate.
+>
+>>
+>> More interesting is the question "which option to use" - it should
+>> be synchronized between openvpn platform handlers.  So if systemd-networkd
+>> uses "SEARCH-DOMAIN" it would make sense to use that for windows
+>> as well.
+> I think we need both --- the current one retained as the connection
+> specific suffix which would be just one entry and then this search
+> list. As we allow multiple entries for DOMAIN right now, a user
+> friendly approach would be to continue doing so but internally treat
+> all but the first as a part of --dhcp-option DOMAIN-SEARCH. We could
+> also deprecate the use of multiple entries in the dhcp-option DOMAIN
+> keyword.
+>
+See above: like I said, multiple DOMAIN entries do not seem to be supported.
 
-gert
+So what option do we want?
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+--dhcp-option SEARCH
+--dhcp-option DOMAIN-SEARCH
+--dhcp-option SEARCH-DOMAIN
 
-Gert Doering - Munich, Germany                             gert@...1296...
+all?
 
---huq684BweRXVnRxX
-Content-Type: application/pgp-signature; name="signature.asc"
+JJK
 
------BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJe8a1zAAoJEB2Cnv7KVigSmHAL+wTNS2nBQ5mLmQrUEBjLvWxu
-ls4OG4n/6a2qvpj16NTXcKYR98nCn0v1QEBz4htENEoZXyf8By36Uh1v+WM8lp7E
-y5nVOvI3P4YYJdABTwABu3TQ2HrQHGDUBPM0Aqf6AFHTvuGCJEBcsSbMwGUw7oBs
-tF0+7anz14zDT/VTe9yv1HzKUjFVC7skVlTq7ZzICs939pmupmI9XHeSZ0MhUNJb
-bT250BHiUdN5tlx3fca6LvPzpmUeVXG3U67rW9CgcoPsLSPo/jwa70j762NMLkEK
-wccl558c0ZIKSw/cBqCbzjWcJpJrSqwcnOb+VyKkM+TwdkO6nxbQIA4hoOP3QLrt
-nAL4FpHc2pyOJjJcMUQI7EjKwgsAIyHhEHylSZoFP7eBbpJewf8zYzJtwJ5khxAH
-5JKLejwJWqTUkH5//L9J/8SAT7bEEemh/Vnv9hu0N0Kze6+z0v/jpNpE2gqTqVHP
-my0GC/uLTsBBmDCKS95w+tDtlbAYfRM41JJIkgZlBg==
-=Ggev
------END PGP SIGNATURE-----
 
---huq684BweRXVnRxX--
 
