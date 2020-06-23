@@ -1,6 +1,6 @@
-Date: Tue, 23 Jun 2020 20:47:33 +0200
+Date: Tue, 23 Jun 2020 21:26:27 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20200623184733.GK1431@...1296...>
+Message-ID: <20200623192627.GA11911@...1296...>
 References: <20200622232319.8143-2-James.Bottomley@...2316...>
  <202006230628.05N6Sa3g001325@...2054...>
  <20200623072123.GA2034@...1296...>
@@ -9,11 +9,12 @@ References: <20200622232319.8143-2-James.Bottomley@...2316...>
  <CAFHpkQH-yGFBJ=-Eaz5XCSaUcD-=S00y=MvPs6Vmr5nE_PcTRg@...278...>
  <1592936237.4768.43.camel@...2316...>
  <CAFHpkQGQgQm2cEA1kw1JpRkf4Ldu4kT=y-YXF-6cLTXbEx_zDQ@...278...>
+ <20200623184733.GK1431@...1296...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="VMX9iwWs3M8PZliy"
+ protocol="application/pgp-signature"; boundary="fUYQa+Pmc3FrFX/N"
 Content-Disposition: inline
-In-Reply-To: <CAFHpkQGQgQm2cEA1kw1JpRkf4Ldu4kT=y-YXF-6cLTXbEx_zDQ@...278...>
+In-Reply-To: <20200623184733.GK1431@...1296...>
 Subject: Re: [Openvpn-devel] [PATCH applied] Re: Add unit tests for engine
  keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -27,19 +28,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: ???????? ?????????????? <chipitsine@...277...>
 Cc: James Bottomley <James.Bottomley@...2317...>, Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---VMX9iwWs3M8PZliy
+--fUYQa+Pmc3FrFX/N
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Tue, Jun 23, 2020 at 11:36:49PM +0500, ???????? ?????????????? wrote:
-> Also, I think we should out log.txt in case of failure.
+On Tue, Jun 23, 2020 at 08:47:33PM +0200, Gert Doering wrote:
+> On Tue, Jun 23, 2020 at 11:36:49PM +0500, ???????? ?????????????? wrote:
+> > Also, I think we should out log.txt in case of failure.
+>=20
+> Indeed, this would help.
 
-Indeed, this would help.
+Yep.
+
+The "make distcheck" travis instance is now happy, but the "1.0.2u +=20
+enable-small" instance is still unhappy.
+
+James, are you triggering on specific openvpn messages?  "--enable-small"
+changes these (trimming some warnings and help texts).  Can you test with
+"configure --enable-small", please?
+
+https://travis-ci.org/github/OpenVPN/openvpn/builds/701385033?utm_medium=3D=
+notification&utm_source=3Demail
+
 
 gert
+
+
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -50,22 +67,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---VMX9iwWs3M8PZliy
+--fUYQa+Pmc3FrFX/N
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJe8k5EAAoJEB2Cnv7KVigSiE8L/0L5j5uXxsOhqY/T/aowC8Lp
-uZ2GWIGtC0pxJs5b1RR5/j4a8TBQ/fv7uOdY2r4Pa/kHJ8OLaV8lXZUPSDNRhuQY
-n/C+xc0orgDKficNuzfJkLxrJiPWu0jX1dDJE5A3BbtiE8dlPRbuilZiLpNFsmQY
-ZfJ5+6qoZnG1i5gYsOuFsKhO6wt2Q1LNuCDjn0qPS25TGd/YcabJc5fVWOzzoNwc
-umi2slgFwfvKLwn5XQuXQx5e58rAI8P7WrQLrjF+B/teF1rItGeBfeUs4RKB/0Xk
-8vQJbvv5+x6JltBupjw+hs7ctf+X+jD+l7P1z8MsFTLG0ogQgVPvKZkq3xXrVlaL
-k13QzMLAOjOZzN7NOXIeahY5dAb543iXpBorxyVBq4UN+wzOXSDBg3q2ueRq4t7m
-67vUKllFK9v46A6zoQ7c0FbpVugm2dV8Awjo7fPhaqsORYl0W2ekgYVZKmc/J/kI
-+G8rVgXj5CRVH6bUH7lASL94TGlvJpIL/tpm8ksVbQ==
-=Yp8o
+iQGcBAEBAgAGBQJe8ldjAAoJEB2Cnv7KVigSv0cL/j7cpeWsCuQGRDOn2zqUTm0e
+nx2ukP4W9aYGDmj19tkGqEXc6Icvc2rfgbW196unyIEoDHi+0pp54wHiur3pUHcg
+vBD9XNNY5bVdIOSAfnQXt+pgjSba8n1Cs7X5Wvc4PuZKJ/3jcSQmbiDqAcf0fHlN
+xzYtM/liaMDRyVYgZRrLzGPCVFKyaQ+n+92dJw5ORVU3l8PoJ3nfkXVmxxBkoAr+
+tWw4E5lDVn+7kOzKTbajVDVT0CwvBjUFubCXiKPvuTObjDk6olabexHWTMNUZrIT
+doVIw9BxJpzFj+roV0SaNsUKx9HQPp3BJrDeQWl6DAzECXjxA8MK4OAMt+Yu3ZLH
+ogdfx8E2tE+m/3dScDYHRkHUrpA7QmVlzs+bbVYh2YcPEm5EENtaEpYOQCXsBexx
+iOmMjG6UZ2sYiVFLDnfXqA+lYyfneTuUvkFJ+drZpRo3mW8fs/lX5i8HfEpn1vrF
+6dMor7CLTt4hPD1hxzcqXKdZqh+Dehhq5iaCV8WQmg==
+=BdH8
 -----END PGP SIGNATURE-----
 
---VMX9iwWs3M8PZliy--
+--fUYQa+Pmc3FrFX/N--
 
