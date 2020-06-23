@@ -1,23 +1,18 @@
-Date: Tue, 23 Jun 2020 21:37:02 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200623193702.GL1431@...1296...>
-References: <202006230628.05N6Sa3g001325@...2054...>
- <20200623072123.GA2034@...1296...>
- <1592917531.4768.4.camel@...2316...>
- <CAFHpkQF5tz91P_UJxMuNCRDUYodw8QPV8=h8mmkSTHOUH5AdfA@...278...>
- <CAFHpkQH-yGFBJ=-Eaz5XCSaUcD-=S00y=MvPs6Vmr5nE_PcTRg@...278...>
- <1592936237.4768.43.camel@...2316...>
- <CAFHpkQGQgQm2cEA1kw1JpRkf4Ldu4kT=y-YXF-6cLTXbEx_zDQ@...278...>
- <20200623184733.GK1431@...1296...>
- <20200623192627.GA11911@...1296...>
- <1592940762.4768.52.camel@...2316...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="Og54tBb3+PNfNUUV"
-Content-Disposition: inline
-In-Reply-To: <1592940762.4768.52.camel@...2316...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Add unit tests for engine
- keys
+References: <523527018.2514117.1583041035054.ref@...2084...>
+ <523527018.2514117.1583041035054@...2084...>
+ <20200301071521.GI1431@...1296...>
+ <CAKuzo_j=P8vZvkOL4Rgh1icLJiu0a-r4yQGrD1GSACrn14G9QQ@...278...>
+ <f4b83fe0-cbe1-eed3-ff9b-4aaaea5a12b1@...1147...>
+ <20200621111403.GP1431@...1296...>
+ <CAKuzo_h2oTaNK7A3+3MJ6GSfApr9L9vXYFtzELH8SaaNzqFWuQ@...278...>
+ <f664dcaf-7224-1b17-c953-584557f2ac56@...1147...>
+In-Reply-To: <f664dcaf-7224-1b17-c953-584557f2ac56@...1147...>
+From: Selva Nair <selva.nair@...277...>
+Date: Tue, 23 Jun 2020 15:53:52 -0400
+Message-ID: <CAKuzo_iFf2iuOLg4LpXrz42MG1GggvdrcWKJrcDT6j38tQjrUw@...278...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] Multiple DNS search suffixes on
+ Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -26,71 +21,114 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: James Bottomley <James.Bottomley@...2317...>
-Cc: Gert Doering <gert@...1296...>, ???????? ?????????????? <chipitsine@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---Og54tBb3+PNfNUUV
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Jan Just Keijser <janjust@...1147...>
+Cc: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Tue, Jun 23, 2020 at 12:32:42PM -0700, James Bottomley wrote:
-> > James, are you triggering on specific openvpn messages?  "--enable-
-> > small"
-> > changes these (trimming some warnings and help texts).  Can you test
-> > with
-> > "configure --enable-small", please?
-> >=20
-> > https://travis-ci.org/github/OpenVPN/openvpn/builds/701385033?utm_med
-> > ium=3Dnotification&utm_source=3Demail
->=20
-> Yes, that's it.  The problem is the message output by openssl is
->=20
-> 2020-06-23 19:28:46 OpenSSL: error:0B080074:lib(11):func(128):reason(116)
->=20
-> Instead of:
->=20
-> 2020-06-23 12:30:43 OpenSSL: error:0B080074:x509 certificate routines:X50=
-9_check_private_key:key values mismatch
+On Tue, Jun 23, 2020 at 3:22 AM Jan Just Keijser <janjust@...1147...> wrote:
+>
+> Hi,
+>
+> On 21/06/20 17:14, Selva Nair wrote:
+> > On Sun, Jun 21, 2020 at 7:14 AM Gert Doering <gert@...1296...> wrote:
+> >>
+> >> going through OpenVPN threads that went stale - I think this is
+> >> actually a nice addition (read: other people have already asked
+> >> me if this can be done).
+> >>
+> >> On Thu, Mar 05, 2020 at 01:53:12PM +0100, Jan Just Keijser wrote:
+> >>> So, for what it's worth, I've dusted off the patch again and rebased it
+> >>> to the current openvpn master tree. See attached. Note that I did only
+> >>> rudimentary testing, as I don't use Windows 10 a lot and I was testing
+> >>> using a mingw cross-compile only. In wireshark I *do* see that the
+> >>> correct DHCP offer is sent to the tap-win adapter.
+> >>>
+> >>> Also note that I implemented multiple search domains by separating them
+> >>> using semi-colons, e.g.
+> >>>
+> >>>      --dhcp-option SEARCH example.com;example.org;example.nl;example.de
+> >>>
+> >>> etc as that was easier to implement
+> >> The patch looks okay-ish on quick reading.
+> > Feature wise yes, but some improvements needed..
+> >
+> > I do not like that option format
+> >
+> > "example.com; example.org" with quotes will parse right and fail later
+> > on because of the space, for example. And, we support multiple
+> > statements of dhcp options like DNS, so this is counter-intuitive.
+> > It's only a little more work to support a more forgiving format.
+> actually, the patch will be a bit more invasive if we add that; parsing
+> DNS/WINS etc is already there and it parses an option into an IP/IPv6
+> address. changing the dns-search option to an array of strings will
+> require more work. I did look into that initially but decided not to do
+> it as the patch would be lengthier.
+>
+> Note that "multiple domain" option is also not support, really. The
+> domain is stored in the tuntap_options struct as
+>
+>   90     const char *domain;      /* DOMAIN (15) */
 
-Indeed :-)
+Windows is probably the only platform where these options are "natively"
+supported through DHCP, and indeed DOMAIN (option 15) has to  be a
+single domain. Android also seem to treat them internally. However, we
+export these as foreign_option in all other platforms, and do export anything
+that looks like "dhcp-option name value" with repetitions allowed. That said, I
+don't mind breaking scripts that use and misuse these...
 
-> I think I can make the grep work with the former.
+Anyway my point about multiple values was about DNS and WINS where
+it's allowed, and we parse them one entry at a time. I believe
+this option (search list) also should use the same format instead of
+inventing yet another format.
 
-Please do not forget to output log.txt when it fails - it eases diagnosing
-remote failures where we do not have easy access to "file system things"=20
-(like travis or buildbot).
+Yes, it may need a bit "more work" to support one domain at a time, but that's
+no excuse not to use a sensible format. Concatenation of strings read one at a
+time with a delimiter added doesn't look that hard either.
 
-gert
+>
+> so it's "last option wins"  ; the fact that some platforms abuse this
+> option to actually set multiple search domains is a different matter.
+>
+> >>> Also note that I did not fully implement the RFC3397 encoding of the
+> >>> search list, as that requires one to merge domain names that occur more
+> >>> than once - that would have made the code far more complicated.
+> >> Indeed.  I haven't looked at what other DHCP implementations do, but
+> >> "correct" encoding definitely sounds like quite a bit of extra code just
+> >> to save a few bytes on the wire - might come handy if you have many
+> >> subdomains of a long internal DNS domain, though, but this can be
+> >> added "if needed".
+> > Same as my thoughts, the encoding part could be kept simple as in here
+> > and possibly improved later. But option format is hard to change or
+> > deprecate.
+> >
+> >>
+> >> More interesting is the question "which option to use" - it should
+> >> be synchronized between openvpn platform handlers.  So if systemd-networkd
+> >> uses "SEARCH-DOMAIN" it would make sense to use that for windows
+> >> as well.
+> > I think we need both --- the current one retained as the connection
+> > specific suffix which would be just one entry and then this search
+> > list. As we allow multiple entries for DOMAIN right now, a user
+> > friendly approach would be to continue doing so but internally treat
+> > all but the first as a part of --dhcp-option DOMAIN-SEARCH. We could
+> > also deprecate the use of multiple entries in the dhcp-option DOMAIN
+> > keyword.
+> >
+> See above: like I said, multiple DOMAIN entries do not seem to be supported.
+>
+> So what option do we want?
+>
+> --dhcp-option SEARCH
+> --dhcp-option DOMAIN-SEARCH
+> --dhcp-option SEARCH-DOMAIN
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+RFC 3397 calls it "Domain Search" so it has to be DOMAIN-SEARCH, in my
+view.  Platform scripts accepting other forms in foreign_option is up
+to them. We don't have to officially support that.
 
-Gert Doering - Munich, Germany                             gert@...1296...
 
---Og54tBb3+PNfNUUV
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJe8lndAAoJEB2Cnv7KVigSyjAL/05w0peJcd0Eh8dbsk4yWpBI
-O9nEVe5/AFDgdlTInL9Ib6Y9VbS+BPQTwCkxHovjd2FgTyomfGSwA4/+yWqvOLoa
-0fHVCg9GDeJs4GBtbRl9TWQ7GlqofaeWmX1t6ucdA0NgIyIp8exjvynyUs00ABJn
-NdDJKAwL6oYCcLSopCKQMGLsp1BbnxHOlwDI3OxImnSHbqsFWmeG8A9K04S3c4wB
-hlX/xLPLwSn1DsnPXUXIEvecE7UljH8ifiE2dRs4RXXFYm0OttVk5OC2To3U/g/G
-oryTrN6hI2FQuh4rx28CI4a97mJzQ6Q7ybl8lmJsDRrDEkw/GuruMH2wcKI/VCaK
-G7l8vjw9MDzQIE8/ygck0pPvXBSfNM1HrST3tPUpi/CXJ8UVayMIxpNm3BqbcLf6
-iHkBIWV8pav3JVhrtHfAEBG8Zr4pS1EUQuni6ym+hIcfiZxGHQLB5iHnipJ2/aZr
-DbcmtYzYZwJ5mPDPhiPP+MOKLALNhOtKNeAIiW8kFw==
-=UDYv
------END PGP SIGNATURE-----
-
---Og54tBb3+PNfNUUV--
+Selva
 
