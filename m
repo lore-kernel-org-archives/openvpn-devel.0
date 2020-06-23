@@ -1,19 +1,13 @@
-Date: Tue, 23 Jun 2020 11:31:49 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200623093149.GF1431@...1296...>
-References: <20200622113022.23047-1-davids@...515...>
- <CAKuzo_g7QxVL90ikT57H6b4+St2c860us6S3cN_6jbfeHujpzw@...278...>
- <a1cfd42d-e371-187a-55c2-f14a3a986b34@...1823...>
- <4562876f-45c1-d3bb-f725-52e9b78600de@...1227...>
- <20200623090252.GE1431@...1296...>
- <4f03e378-f327-21a6-9f11-fe06a42052b6@...1823...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="/aLBiNvUVU0lvNCt"
-Content-Disposition: inline
-In-Reply-To: <4f03e378-f327-21a6-9f11-fe06a42052b6@...1823...>
-Subject: Re: [Openvpn-devel] [PATCH] systemd: Change the default cipher to
- AES-256-GCM for server configs
+Message-ID: <1592917531.4768.4.camel@...2316...>
+From: James Bottomley <James.Bottomley@...2316...>
+Date: Tue, 23 Jun 2020 06:05:31 -0700
+In-Reply-To: <20200623072123.GA2034@...1296...>
+References: <20200622232319.8143-2-James.Bottomley@...2316...>
+ <202006230628.05N6Sa3g001325@...2054...>
+ <20200623072123.GA2034@...1296...>
+Mime-Version: 1.0
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Add unit tests for engine
+ keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,54 +16,96 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Dmitry Melekhov <dm@...1823...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---/aLBiNvUVU0lvNCt
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+On Tue, 2020-06-23 at 09:21 +0200, Gert Doering wrote:
+> Hi,
+> 
+> On Tue, Jun 23, 2020 at 08:28:36AM +0200, Gert Doering wrote:
+> > Acked-by: Gert Doering <gert@...1296...>
+> > 
+> > Tested on :
+> >  - MacOS Mojave with OpenSSL 1.1.1c (brew) and out-of-tree build,
+> > works.
+> >  - Linux with mbedtls (does not try engine tests, good :-) )
+> >  - Linux with OpenSSL 1.1.1, works
+> >  - FreeBSD 11.3 with OpenSSL 1.0.2s -> v6 fails, v6 works \o/
+> > 
+> > Conferred with Arne, we agreed on "this is good enough, and who
+> > wants 
+> > something more sophisticated is welcome to send more patches".
+> 
+> Oh well.  We do need another round - Travis tells me that "make
+> distcheck"
+> is failing.  Which hints at "autoconf is not told what to pack in the
+> tarball"
+> 
+> https://travis-ci.org/github/OpenVPN/openvpn/jobs/701158155
+> ...
+> make[6]: Entering directory
+> '/home/travis/build/OpenVPN/openvpn/openvpn-
+> 2.5_git/_build/sub/tests/unit_tests/engine-key'
+> 3672make[6]: *** No rule to make target
+> '../../../../../tests/unit_tests/engine-key/openssl.cnf.in', needed
+> by 'openssl.cnf'.  Stop.
+> 3673make[6]: Leaving directory
+> '/home/travis/build/OpenVPN/openvpn/openvpn-
+> 2.5_git/_build/sub/tests/unit_tests/engine-key'
+> 3674
+> 
+> (so now the source file is missing)
+> 
+> Please... :-)
 
-Hi,
+Sorry about that ... it's missing files from EXTRA_DIST ... plus I
+don't usually use make dist, so I never remember to run make distcheck.
+ It passes after this
 
-On Tue, Jun 23, 2020 at 01:12:42PM +0400, Dmitry Melekhov wrote:
-> 23.06.2020 13:02, Gert Doering ??????????:
-> > That patch is from Steffan, and review has been sitting in my lap for
-> > way too long.  Need to see if it still applies.
->=20
-> Unfortunately it is not compatible with 2.4.9, because of introduced=20
-> change...
+---8>8>8><8<8<8---
 
-Depending on how intrusive that patch is, it won't go into 2.4.9 anyway
-but into git master (to be 2.5.0 "some time this summer").
+From: James Bottomley <James.Bottomley@...2316...>
+Subject: [PATCH] Fix make distcheck for new engine key unit test
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Add config precursor and script to extra dist and make sure
+built and test leftover files are cleaned up afterwards.
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Signed-off-by: James Bottomley <James.Bottomley@...2316...>
+---
+ tests/unit_tests/engine-key/Makefile.am | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---/aLBiNvUVU0lvNCt
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/tests/unit_tests/engine-key/Makefile.am b/tests/unit_tests/engine-key/Makefile.am
+index 95e7d868..0bfdfcd4 100644
+--- a/tests/unit_tests/engine-key/Makefile.am
++++ b/tests/unit_tests/engine-key/Makefile.am
+@@ -2,6 +2,9 @@ AUTOMAKE_OPTIONS = foreign
+ 
+ check_LTLIBRARIES = libtestengine.la
+ conffiles = openssl.cnf
++EXTRA_DIST = \
++	openssl.cnf.in \
++	check_engine_keys.sh
+ 
+ TESTS_ENVIRONMENT = srcdir="$(abs_srcdir)"; \
+ 	builddir="$(abs_builddir)"; \
+@@ -12,8 +15,11 @@ TESTS_ENVIRONMENT = srcdir="$(abs_srcdir)"; \
+ TESTS = check_engine_keys.sh
+ check_engine_keys.sh: $(conffiles)
+ 
+-clean-local:
+-	rm -f $(conffiles)
++CLEANFILES = \
++	client.key \
++	passwd \
++	log.txt \
++	$(conffiles)
+ 
+ $(builddir)/openssl.cnf: $(srcdir)/openssl.cnf.in
+ 	sed "s|ABSBUILDDIR|$(abs_builddir)|" < $< > $@
+-- 
+2.26.2
 
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJe8cwEAAoJEB2Cnv7KVigSI5ML/35OR9SsJPldz1WA3dACyXxg
-eJRte46I9Xkv1QkdwZ7A2+p8pb8WyMihviWAXeahjq4sCKsYG/Ln36N8a8XBitUd
-3HeU7zOhBHjtZwxFCQ3J2II45wjd2ieQv0qLUt/z3MdsoM8PEgYrh2mBGbUwuz/p
-yxLZNXFjYEDrdco2VSU0us9nGdDRbmclKTNmebd6FJ3bv73ZwlEx5qbA81tbatkL
-PBmjk2QWmwGB/nGxfQejfm09ldRnM4dHcAnNNrdB9p/uTVE7mPTwlnrpVmKf/cMT
-OrxeWkuFUik2WmRF3Ry3O7oVKygPI+67faC30VQmGltqhlU3D8HqwzfZ+BcsNHdm
-4WyXYy+0kmgMEZDd9n1jvQUQBV1NulFVQBb0cVNfpvHSF5PULPwP9GEAByygGuZy
-NhSeeO+zs7iNAWtFdKXntz5aEBIRtYYbh7IurP1ajf9HKL3CGt5EaFUH5OU5kXYr
-8O31wQbEgFGDtJxazKUNtnDjWbEu27nLIrMgE4qcnA==
-=Q1sS
------END PGP SIGNATURE-----
-
---/aLBiNvUVU0lvNCt--
 
