@@ -1,13 +1,11 @@
-References: <20200604221628.31562-1-arne@...1227...>
- <20200622140236.15238-1-arne@...1227...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <257fde53-0bc8-f1e6-4fb9-a90e070df880@...2181...>
-Date: Tue, 23 Jun 2020 11:21:19 +0200
+From: Gert Doering <gert@...1296...>
+Date: Tue, 23 Jun 2020 11:28:48 +0200
+Message-Id: <20200623092848.21214-1-gert@...1296...>
+In-Reply-To: <20200620162206.13956-1-gert@...1296...>
+References: <20200620162206.13956-1-gert@...1296...>
 MIME-Version: 1.0
-In-Reply-To: <20200622140236.15238-1-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v4 3/3] Implement tls-groups option to
- specify eliptic curves/groups
+Subject: [Openvpn-devel] [PATCH v2] Add deferred authentication support to
+ plugin-auth-pam
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,149 +14,225 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+If OpenVPN signals deferred authentication support (by setting
+the internal environment variables "auth_control_file" and
+"deferred_auth_pam"), do not wait for PAM stack to finish.  Instead,
+the privileged PAM process returns RESPONSE_DEFER via the control
+socket, which gets turned into OPENVPN_PLUGIN_FUNC_DEFERRED towards
+openvpn.
 
-On 22/06/2020 16:02, Arne Schwabe wrote:
+The PAM process will then fork() and handle all the PAM auth in
+the new process, signalling success/failure back by means of the
+auth_control_file (forking twice, to simplify wait() handling).
 
-[CUT]
+With the extra fork(), multiple deferred authentications can run at
+the same time - otherwise the first one would block the next auth
+call (because the child would not be ready again to read from the
+control socket).
 
-> @@ -343,6 +348,42 @@ tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
->      }
->  }
->  
-> +void
-> +tls_ctx_set_tls_groups(struct tls_root_ctx *ctx, const char *groups)
-> +{
-> +    ASSERT(ctx);
-> +    struct gc_arena gc = gc_new();
-> +
-> +    /* Get number of groups and allocate an array in ctx */
-> +    int groups_count = get_num_elements(groups, ':');
-> +    ALLOC_ARRAY_CLEAR(ctx->groups, mbedtls_ecp_group_id, groups_count + 1)
-> +
-> +    /* Parse allowed ciphers, getting IDs */
-> +    int i = 0;
-> +    char *tmp_groups = string_alloc(groups, &gc);
-> +
-> +    const char *token;
-> +    while ((token = strsep(&tmp_groups, ":")))
-> +    {
-> +        const mbedtls_ecp_curve_info *ci =
-> +            mbedtls_ecp_curve_info_from_name(token);
-> +        if (!ci)
-> +        {
-> +            msg(M_WARN, "Warning unknown curve/group specified: %s", token);
-> +        }
-> +        else
-> +        {
-> +            ctx->groups[i] = ci->grp_id;
-> +            i++;
-> +        }
-> +        token = strsep(&tmp_groups, ":");
+Lightly tested on Linux.
 
-The line above should be removed, otherwise end up doing strsep() twice
-in a row.
+Signed-off-by: Gert Doering <gert@...1296...>
 
+--
+v2:
+  - only do deferred auth if "deferred_auth_pam" is set (env)
+  - put deferred auth logic into do_deferred_pam_auth()
+  - line-wrap lines where needed
+  - close "background end" of socketpair in deferred auth process
+  - remove leftover /* plugin_log() */ lines from initial testing
+  - tested over a few hundred "15s delayed" authentication cycles
+---
+ src/plugins/auth-pam/auth-pam.c | 124 +++++++++++++++++++++++++++++++-
+ 1 file changed, 122 insertions(+), 2 deletions(-)
 
-> +    }
-> +    ctx->groups[i] = MBEDTLS_ECP_DP_NONE;
-> +
-> +    gc_free(&gc);
-> +}
-> +
-> +
->  void
->  tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
->  {
-> @@ -1043,6 +1084,11 @@ key_state_ssl_init(struct key_state_ssl *ks_ssl,
->          mbedtls_ssl_conf_ciphersuites(ks_ssl->ssl_config, ssl_ctx->allowed_ciphers);
->      }
->  
-> +    if (ssl_ctx->groups)
-> +    {
-> +        mbedtls_ssl_conf_curves(ks_ssl->ssl_config, ssl_ctx->groups);
-> +    }
-> +
->      /* Disable record splitting (for now).  OpenVPN assumes records are sent
->       * unfragmented, and changing that will require thorough review and
->       * testing.  Since OpenVPN is not susceptible to BEAST, we can just
-> diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h
-> index 92381f1a..0525134f 100644
-> --- a/src/openvpn/ssl_mbedtls.h
-> +++ b/src/openvpn/ssl_mbedtls.h
-> @@ -105,6 +105,7 @@ struct tls_root_ctx {
->  #endif
->      struct external_context external_key; /**< External key context */
->      int *allowed_ciphers;       /**< List of allowed ciphers for this connection */
-> +    mbedtls_ecp_group_id *groups;     /**< List of allowed groups for this connection */
->      mbedtls_x509_crt_profile cert_profile; /**< Allowed certificate types */
->  };
->  
-> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-> index a489053b..da7d252a 100644
-> --- a/src/openvpn/ssl_openssl.c
-> +++ b/src/openvpn/ssl_openssl.c
-> @@ -565,6 +565,57 @@ tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
->  #endif /* ifdef HAVE_SSL_CTX_SET_SECURITY_LEVEL */
->  }
->  
-> +void
-> +tls_ctx_set_tls_groups(struct tls_root_ctx *ctx, const char *groups)
-> +{
-> +    ASSERT(ctx);
-> +    struct gc_arena gc = gc_new();
-> +    /* This method could be as easy as
-> +     *  SSL_CTX_set1_groups_list(ctx->ctx, groups)
-> +     * but OpenSSL does not like the name secp256r1 for prime256v1
-> +     * This is one of the important curves.
-> +     * To support the same name for OpenSSL and mbedTLS, we do
-> +     * this dance.
-> +     */
-> +
-> +    int groups_count = get_num_elements(groups, ':');
-> +
-> +    int *glist;
-> +    /* Allocate an array for them */
-> +    ALLOC_ARRAY_CLEAR_GC(glist, int, groups_count, &gc);
-> +
-> +    /* Parse allowed ciphers, getting IDs */
-> +    int glistlen = 0;
-> +    char *tmp_groups = string_alloc(groups, &gc);
-> +
-> +    const char *token;
-> +    while ((token = strsep(&tmp_groups, ":")))
-> +    {
-> +        if (streq(token, "secp256r1"))
-> +        {
-> +            token = "prime256v1";
-> +        }
-> +        int nid = OBJ_sn2nid(token);
-> +
-> +        if (nid == 0)
-
-From a style perspective, I think it looks better to add an empty line
-*before* "int nid =..." and remove the one after.
-
-This way we also follow the same pattern:
-
-x = a();
-if (x ..)
-{
-}
-
-as other parts of the code.
-
-
-
-
-The rest looks good to me.
-
-Regards,
-
+diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
+index 9a11876d..2a75e5f0 100644
+--- a/src/plugins/auth-pam/auth-pam.c
++++ b/src/plugins/auth-pam/auth-pam.c
+@@ -62,6 +62,7 @@
+ #define RESPONSE_INIT_FAILED      11
+ #define RESPONSE_VERIFY_SUCCEEDED 12
+ #define RESPONSE_VERIFY_FAILED    13
++#define RESPONSE_DEFER            14
+ 
+ /* Pointers to functions exported from openvpn */
+ static plugin_log_t plugin_log = NULL;
+@@ -524,12 +525,31 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
+         const char *password = get_env("password", envp);
+         const char *common_name = get_env("common_name", envp) ? get_env("common_name", envp) : "";
+ 
++        /* should we do deferred auth?
++         *  yes, if there is "auth_control_file" and "deferred_auth_pam" env
++         */
++        const char *auth_control_file = get_env("auth_control_file", envp);
++        const char *deferred_auth_pam = get_env("deferred_auth_pam", envp);
++        if ( auth_control_file != NULL && deferred_auth_pam != NULL)
++        {
++            if (DEBUG(context->verb))
++            {
++                plugin_log(PLOG_NOTE, MODULE, "do deferred auth '%s'",
++                           auth_control_file);
++            }
++        }
++        else
++        {
++            auth_control_file = "";
++        }
++
+         if (username && strlen(username) > 0 && password)
+         {
+             if (send_control(context->foreground_fd, COMMAND_VERIFY) == -1
+                 || send_string(context->foreground_fd, username) == -1
+                 || send_string(context->foreground_fd, password) == -1
+-                || send_string(context->foreground_fd, common_name) == -1)
++                || send_string(context->foreground_fd, common_name) == -1
++                || send_string(context->foreground_fd, auth_control_file) == -1)
+             {
+                 plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "Error sending auth info to background process");
+             }
+@@ -540,6 +560,14 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
+                 {
+                     return OPENVPN_PLUGIN_FUNC_SUCCESS;
+                 }
++                if (status == RESPONSE_DEFER)
++                {
++                    if (DEBUG(context->verb))
++                    {
++                        plugin_log(PLOG_NOTE, MODULE, "deferred authentication");
++                    }
++                    return OPENVPN_PLUGIN_FUNC_DEFERRED;
++                }
+                 if (status == -1)
+                 {
+                     plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "Error receiving auth confirmation from background process");
+@@ -782,6 +810,80 @@ pam_auth(const char *service, const struct user_pass *up)
+     return ret;
+ }
+ 
++/*
++ * deferred auth handler
++ *   - fork() (twice, to avoid the need for async wait / SIGCHLD handling)
++ *   - query PAM stack via pam_auth()
++ *   - send response back to OpenVPN via "ac_file_name"
++ *
++ * parent process returns "0" for "fork() and wait() succeeded",
++ *                        "-1" for "something went wrong, abort program"
++ */
++
++static int
++do_deferred_pam_auth(int fd, const char *ac_file_name,
++                     const char *service, const struct user_pass *up)
++{
++    if (send_control(fd, RESPONSE_DEFER) == -1)
++    {
++        plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "BACKGROUND: write error on response socket [4]");
++        return -1;
++    }
++
++    /* double forking so we do not need to wait() for async auth kids */
++    pid_t p1 = fork();
++
++    if ( p1 < 0 )
++    {
++        plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "BACKGROUND: fork(1) failed");
++        return -1;
++    }
++    if ( p1 != 0 )                         /* parent */
++    {
++        waitpid(p1, NULL, 0);
++        return 0;                          /* parent's job succeeded */
++    }
++
++    /* child */
++    close(fd);                              /* socketpair no longer needed */
++
++    pid_t p2 = fork();
++    if ( p2 < 0 )
++    {
++        plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "BACKGROUND: fork(2) failed");
++        exit(1);
++    }
++
++    if ( p2 != 0 )                          /* new parent: exit right away */
++    {
++        exit(0);
++    }
++
++    /* grandchild */
++    plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: deferred auth for '%s', pid=%d",
++               up->username, (int) getpid() );
++
++    /* the rest is very simple: do PAM, write status byte to file, done */
++    int ac_fd = open( ac_file_name, O_WRONLY );
++    if ( ac_fd < 0 )
++    {
++        plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "cannot open '%s' for writing",
++                   ac_file_name );
++        exit(1);
++    }
++    int pam_success = pam_auth(service, up);
++
++    if ( write( ac_fd, pam_success? "1": "0", 1 ) != 1 )
++    {
++        plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "cannot write to '%s'",
++                   ac_file_name );
++    }
++    close(ac_fd);
++    plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: %s: deferred auth: PAM %s",
++               up->username, pam_success? "succeeded": "rejected" );
++    exit(0);
++}
++
+ /*
+  * Background process -- runs with privilege.
+  */
+@@ -789,6 +891,7 @@ static void
+ pam_server(int fd, const char *service, int verb, const struct name_value_list *name_value_list)
+ {
+     struct user_pass up;
++    char ac_file_name[PATH_MAX];
+     int command;
+ #ifdef USE_PAM_DLOPEN
+     static const char pam_so[] = "libpam.so";
+@@ -847,7 +950,8 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
+             case COMMAND_VERIFY:
+                 if (recv_string(fd, up.username, sizeof(up.username)) == -1
+                     || recv_string(fd, up.password, sizeof(up.password)) == -1
+-                    || recv_string(fd, up.common_name, sizeof(up.common_name)) == -1)
++                    || recv_string(fd, up.common_name, sizeof(up.common_name)) == -1
++                    || recv_string(fd, ac_file_name, sizeof(ac_file_name)) == -1)
+                 {
+                     plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "BACKGROUND: read error on command channel: code=%d, exiting",
+                             command);
+@@ -867,6 +971,22 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
+                 /* If password is of the form SCRV1:base64:base64 split it up */
+                 split_scrv1_password(&up);
+ 
++                /* client wants deferred auth
++                 */
++                if ( strlen(ac_file_name) > 0 )
++                {
++                    if (do_deferred_pam_auth(fd, ac_file_name,
++                                             service, &up) < 0)
++                    {
++                        goto done;
++                    }
++                    break;
++                }
++
++
++                /* non-deferred auth: wait for pam result and send
++                 * result back via control socketpair
++                 */
+                 if (pam_auth(service, &up)) /* Succeeded */
+                 {
+                     if (send_control(fd, RESPONSE_VERIFY_SUCCEEDED) == -1)
 -- 
-Antonio Quartulli
+2.26.2
+
 
