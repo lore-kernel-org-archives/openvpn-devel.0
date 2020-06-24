@@ -1,13 +1,13 @@
-From: David Sommerseth <openvpn@...2080...>
-References: <20200624180741.426-1-davids@...515...>
-Message-ID: <1aeaae81-2bf9-72a7-72fe-c5b06a0d1cb5@...2080...>
-Date: Wed, 24 Jun 2020 20:47:34 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200624180741.426-1-davids@...515...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="eqLayJx3rAAxC7fto9WkzSv1i5YaKzTrX"
-Subject: Re: [Openvpn-devel] [PATCH 00/11] man-page overhaul project
+References: <cde19afd-b6cb-3b99-b346-1cfcdcebbbe2@...515...>
+ <c31ed4c7-5451-cca7-1ba2-6a7a0eeecb59@...515...>
+In-Reply-To: <c31ed4c7-5451-cca7-1ba2-6a7a0eeecb59@...515...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Thu, 25 Jun 2020 00:52:30 +0500
+Message-ID: <CAFHpkQHRHV5h6LyWxM73-dLcHLvxUFBnpPMNuMtU2R13a+kyJA@...278...>
+Content-Type: multipart/alternative; boundary="000000000000a2d3e805a8d9d1b7"
+Subject: Re: [Openvpn-devel] Summary of the community meeting (24th June
+ 2020)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,104 +16,275 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---eqLayJx3rAAxC7fto9WkzSv1i5YaKzTrX
-Content-Type: multipart/mixed; boundary="KFO8LocK9vkUD1Jm6Mq4AJ9GpmVS3xmZP";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <1aeaae81-2bf9-72a7-72fe-c5b06a0d1cb5@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH 00/11] man-page overhaul project
-References: <20200624180741.426-1-davids@...515...>
-In-Reply-To: <20200624180741.426-1-davids@...515...>
-
---KFO8LocK9vkUD1Jm6Mq4AJ9GpmVS3xmZP
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
+--000000000000a2d3e805a8d9d1b7
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 24/06/2020 20:07, David Sommerseth wrote:
+there's quite an interesting patchset
+https://patchwork.openvpn.net/project/openvpn2/list/?series=3D230
+is it scheduled for 2.5 release ?
+
+or I've missed something and all patches are scheduled for 2.5 ?
+
+=D1=81=D1=80, 24 =D0=B8=D1=8E=D0=BD. 2020 =D0=B3. =D0=B2 16:11, Samuli Sepp=
+=C3=A4nen <samuli@...515...>:
+
 > Hi,
->=20
-> This is the first real review round of the man-page overhaul project.
-> Since the n/groff based openvpn.8 format is fairly cumbersome to edit,
-> we agreed at the 2019 Hackathon in Trento to move the man page into
-> something more editing and management friendly.
->=20
-> This set of patches converts the openvpn.8 file into the
-> ReStructuredText format (.rst) which can easily be converted into both
-> man and html files using python-docutils.  The advantage of this format
-> is that it is easy to edit in any plain text editors and displays
-> reasonably well in any terminals.  And it will be easier to review
-> patches man page updates sent to the mailing list.
->=20
-> To avoid everyone building the OpenVPN source tarball to have the full
-> python stack available, the doc/Makefile.am file has been adopted to
-> generate the man and html files when we create the source tarball
-> we distribute in releases.  Only users only pulling down the source
-> directly from git will need to have python-docutils available.
->=20
-> As I worked my way through the man page, there were several things
-> which was less good.  Lots of options where misplaced in not related
-> sections, a few options where documented several places.  And lots
-> of the sections overlapped quite a bit.  From patch 5/11 splits
-> the whole man page into several smaller files; one file per section.
-> This is all tied into a single man-page/html file when running the
-> rst2man/rst2html tools.  The following patches just cleans up and
-> moves some options into more suitable sections.
->=20
->=20
-> I will continue to update my own git branch containing this work as
-> review comments come in until this is merged into master.  You can
-> find it here:
->=20
->   https://gitlab.com/dazo/openvpn/-/tree/dev/man-reformatting/doc
->=20
+>
+> Here's the summary of the IRC meeting.
+>
+> ---
+>
+> COMMUNITY MEETING
+>
+> Place: #openvpn-meeting on irc.freenode.net
+> Date: Wed 24th June 2020
+> Time: 11:30 CEST (9:30 UTC)
+>
+> Planned meeting topics for this meeting were here:
+>
+> <https://community.openvpn.net/openvpn/wiki/Topics-2020-06-24>
+>
+> Your local meeting time is easy to check from services such as
+>
+> <http://www.timeanddate.com/worldclock>
+>
+> SUMMARY
+>
+> cron2, dazo, lev, mattock, plaisthos and uip participated in this meeting.
+>
+> ---
+>
+> Talked about the status of OpenVPN 2.5:
+>
+> <https://community.openvpn.net/openvpn/wiki/StatusOfOpenvpn25>
+>
+> Ordex promised to have a look at the async-cc patches this week.
+> Plaisthos, dazo and cron2 will follow-up on the review comments to get
+> them resolved quickly.
+>
+> OpenVPN 2.5 MSI looks surprisingly good. Mattock was able to produce
+> tap-windows6 MSM ("merge module") which he then used to produce OpenVPN
+> 2.5-based MSI installer. The only significant challenge is adding
+> code-signing support to openvpn-build/generic.
+>
+> Automating MSI builds also seems easier than expected, given that the
+> existing openvpn-build buildslave can perform the actual build and push
+> the artifacts to the Windows packager, which can then build and push the
+> results to build.openvpn.net.
+>
+> Code-vise 2.5-alpha1 is in a good shape, mainly missing
+>
+> - compression
+> - async cc
+> - VRF (which is quite trivial)
+>
+> The auth-token fixes are corner-cases and it was agreed that that can be
+> resolved between 2.5-alpha1 and 2.5-beta1.
+>
+> ---
+>
+> Talked about moving 2.3 into "oldstable" support mode. Previously we had
+> agreed to do that when 2.3.19 was released. However, 2.3.18 was released
+> a long while ago and there's nothing queued for 2.3.19. So it was
+> decided to move 2.3 to "oldstable" now instead of later.
+>
+> ---
+>
+> Talked about starting the deprecation of "--ncp-disable". The idea is
+> that --ncp-disable has been mostly a debug feature and as we move
+> forward and want to be able to manage VPN security more from server
+> side, we want to abandon the possibility to ignore NCP.
+>
+> This is tied with deprecation of --cipher for everything except p2p:
+>
+>
+> https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20062=
+.html
+>
+> Uip will bring these topics up with syzzer a.s.a.p.
+>
+> ---
+>
+> Talked about OpenVPN 2.6. There are several things that are 2.6 material:
+>
+> - Kernel acceleration module (client-side only beta ~next week)
+> - Work related to "making DNS handling nice"
+>
+> It is possible that we'd also need to postpone the --ncp-disable and
+> --cipher changes.
+>
+> However, it was agreed that doing a "quick" 2.6 release in, say, early
+> 2021 is doable. It was also agreed that supporting both 2.5 and 2.6 as
+> "stable" for a while would be acceptable, as the changes would be mostly
+> in OpenVPN and the same release and automation tooling could be used for
+> both.
+>
+> ---
+>
+> Talked about our use of IV_*. Agreed that rather than having tons of
+> IV_FOO=3D1 options IV_PROTO should be considered a wire-protocol-only
+> 64-bit mask field and IV_FEAT would be a new 64-bit mask field
+> indicating which features the local side supports.
+>
+> OpenVPN will need to handle a remote side not providing IV_FEAT.
+> Default behaviour when this field is missing must be documented.
+> IV_FEAT should be sent by OpenVPN 2.6 and newer. This approach allows
+> easier deprecation of features as well.
+>
+> --
+>
+> Full chatlog attached
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
 
-So sf.net mailing list is grumpy at me for sending a large mail, patch 5/11=
- is
-currently waiting to be unlocked by the list admin.  In the mean time, here=
-'s
-the patch:
+--000000000000a2d3e805a8d9d1b7
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-<https://gitlab.com/dazo/openvpn/-/commit/6eef9d3b1989166542805644cbc74baa9=
-6c72a80.patch>
+<div dir=3D"ltr"><div>there&#39;s quite an interesting patchset <a href=3D"=
+https://patchwork.openvpn.net/project/openvpn2/list/?series=3D230">https://=
+patchwork.openvpn.net/project/openvpn2/list/?series=3D230</a></div><div>is =
+it scheduled for 2.5 release ?</div><div><br></div><div>or I&#39;ve missed =
+something and all patches are scheduled for 2.5 ?<br></div></div><br><div c=
+lass=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">=D1=81=D1=80, 24=
+ =D0=B8=D1=8E=D0=BD. 2020 =D0=B3. =D0=B2 16:11, Samuli Sepp=C3=A4nen &lt;<a=
+ href=3D"mailto:samuli@...515...">samuli@...515...</a>&gt;:<br></div><block=
+quote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1=
+px solid rgb(204,204,204);padding-left:1ex">Hi,<br>
+<br>
+Here&#39;s the summary of the IRC meeting.<br>
+<br>
+---<br>
+<br>
+COMMUNITY MEETING<br>
+<br>
+Place: #openvpn-meeting on <a href=3D"http://irc.freenode.net" rel=3D"noref=
+errer" target=3D"_blank">irc.freenode.net</a><br>
+Date: Wed 24th June 2020<br>
+Time: 11:30 CEST (9:30 UTC)<br>
+<br>
+Planned meeting topics for this meeting were here:<br>
+<br>
+&lt;<a href=3D"https://community.openvpn.net/openvpn/wiki/Topics-2020-06-24=
+" rel=3D"noreferrer" target=3D"_blank">https://community.openvpn.net/openvp=
+n/wiki/Topics-2020-06-24</a>&gt;<br>
+<br>
+Your local meeting time is easy to check from services such as<br>
+<br>
+&lt;<a href=3D"http://www.timeanddate.com/worldclock" rel=3D"noreferrer" ta=
+rget=3D"_blank">http://www.timeanddate.com/worldclock</a>&gt;<br>
+<br>
+SUMMARY<br>
+<br>
+cron2, dazo, lev, mattock, plaisthos and uip participated in this meeting.<=
+br>
+<br>
+---<br>
+<br>
+Talked about the status of OpenVPN 2.5:<br>
+<br>
+&lt;<a href=3D"https://community.openvpn.net/openvpn/wiki/StatusOfOpenvpn25=
+" rel=3D"noreferrer" target=3D"_blank">https://community.openvpn.net/openvp=
+n/wiki/StatusOfOpenvpn25</a>&gt;<br>
+<br>
+Ordex promised to have a look at the async-cc patches this week.<br>
+Plaisthos, dazo and cron2 will follow-up on the review comments to get<br>
+them resolved quickly.<br>
+<br>
+OpenVPN 2.5 MSI looks surprisingly good. Mattock was able to produce<br>
+tap-windows6 MSM (&quot;merge module&quot;) which he then used to produce O=
+penVPN<br>
+2.5-based MSI installer. The only significant challenge is adding<br>
+code-signing support to openvpn-build/generic.<br>
+<br>
+Automating MSI builds also seems easier than expected, given that the<br>
+existing openvpn-build buildslave can perform the actual build and push<br>
+the artifacts to the Windows packager, which can then build and push the<br>
+results to <a href=3D"http://build.openvpn.net" rel=3D"noreferrer" target=
+=3D"_blank">build.openvpn.net</a>.<br>
+<br>
+Code-vise 2.5-alpha1 is in a good shape, mainly missing<br>
+<br>
+- compression<br>
+- async cc<br>
+- VRF (which is quite trivial)<br>
+<br>
+The auth-token fixes are corner-cases and it was agreed that that can be<br>
+resolved between 2.5-alpha1 and 2.5-beta1.<br>
+<br>
+---<br>
+<br>
+Talked about moving 2.3 into &quot;oldstable&quot; support mode. Previously=
+ we had<br>
+agreed to do that when 2.3.19 was released. However, 2.3.18 was released<br>
+a long while ago and there&#39;s nothing queued for 2.3.19. So it was<br>
+decided to move 2.3 to &quot;oldstable&quot; now instead of later.<br>
+<br>
+---<br>
+<br>
+Talked about starting the deprecation of &quot;--ncp-disable&quot;. The ide=
+a is<br>
+that --ncp-disable has been mostly a debug feature and as we move<br>
+forward and want to be able to manage VPN security more from server<br>
+side, we want to abandon the possibility to ignore NCP.<br>
+<br>
+This is tied with deprecation of --cipher for everything except p2p:<br>
+<br>
+<a href=3D"https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net=
+/msg20062.html" rel=3D"noreferrer" target=3D"_blank">https://www.mail-archi=
+ve.com/openvpn-devel@lists.sourceforge.net/msg20062.html</a><br>
+<br>
+Uip will bring these topics up with syzzer a.s.a.p.<br>
+<br>
+---<br>
+<br>
+Talked about OpenVPN 2.6. There are several things that are 2.6 material:<b=
+r>
+<br>
+- Kernel acceleration module (client-side only beta ~next week)<br>
+- Work related to &quot;making DNS handling nice&quot;<br>
+<br>
+It is possible that we&#39;d also need to postpone the --ncp-disable and<br>
+--cipher changes.<br>
+<br>
+However, it was agreed that doing a &quot;quick&quot; 2.6 release in, say, =
+early<br>
+2021 is doable. It was also agreed that supporting both 2.5 and 2.6 as<br>
+&quot;stable&quot; for a while would be acceptable, as the changes would be=
+ mostly<br>
+in OpenVPN and the same release and automation tooling could be used for<br>
+both.<br>
+<br>
+---<br>
+<br>
+Talked about our use of IV_*. Agreed that rather than having tons of<br>
+IV_FOO=3D1 options IV_PROTO should be considered a wire-protocol-only<br>
+64-bit mask field and IV_FEAT would be a new 64-bit mask field<br>
+indicating which features the local side supports.<br>
+<br>
+OpenVPN will need to handle a remote side not providing IV_FEAT.<br>
+Default behaviour when this field is missing must be documented.<br>
+IV_FEAT should be sent by OpenVPN 2.6 and newer. This approach allows<br>
+easier deprecation of features as well.<br>
+<br>
+--<br>
+<br>
+Full chatlog attached<br>
+_______________________________________________<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
+envpn-devel@lists.sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
+=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
+nfo/openvpn-devel</a><br>
+</blockquote></div>
 
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
-
-
-
---KFO8LocK9vkUD1Jm6Mq4AJ9GpmVS3xmZP--
-
---eqLayJx3rAAxC7fto9WkzSv1i5YaKzTrX
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJe85/GAAoJEIbPlEyWcf3yEjsP/jw6CCk/0sWK9CPyMX6DGYfP
-K3FNfDoqMHsQQnMnD6uVIBlNmpGb3ye5TYVPIzBacPM0F6l78pgcCjgQZ/XhNeI0
-1PRWUE4JCwDRos3ybaNsX+VRWlkrdKiTYmrwX/pz4aDcxT8UnjDsODzJo64058Nt
-72iWdMJ56oSGaIKOX2lT7RZniAC9CYrkvh5U9QcaPnkm0fTADol28BoP4Fd/aru6
-ZBFSwo3G0OpwubIWJeAolgCbtzdv62QWWqvWGNeIkmzqghSTgMjPXF5etR277NmM
-Wk18b1p/+8Dvh4cbC5hWTi6J/lHDaNMem3x1he6LC0tl75rKtxa+uF4H2q80fH4n
-zhAuX/Bxe7Plv0+cYxPnU/w4o/bqQX08rvjC8eYK9GDjodtFichtAqZh6Z6X4qiQ
-f1Zemfmt42a+MIScepWNVmmRrHVhqc17564s+IsFW9XBSK1I2z0dHd19wv5QDjDq
-+DVtdS0LxDkZ9Eyatz3/FmZ/OF1WNVxpce3I1dY6lnSslPtZbNIMR7souv3d6Ju/
-ucwyu1klkyhvRZLjQnPKc1xZM4vDCXUBvr+yMs3cby5RRacUVGftPVQXgqW/p5Uj
-8BeH8KpjifOw4qBMAuOg188JkK/FogPAGUP+RfRTqPP3TIYxttUDltfTWBojeGto
-tKqklO06p/U7qdYSv9iF
-=wX9S
------END PGP SIGNATURE-----
-
---eqLayJx3rAAxC7fto9WkzSv1i5YaKzTrX--
+--000000000000a2d3e805a8d9d1b7--
 
