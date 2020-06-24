@@ -1,11 +1,11 @@
 From: David Sommerseth <davids@...515...>
-Date: Wed, 24 Jun 2020 20:07:39 +0200
-Message-Id: <20200624180741.426-10-davids@...515...>
+Date: Wed, 24 Jun 2020 20:07:40 +0200
+Message-Id: <20200624180741.426-11-davids@...515...>
 In-Reply-To: <20200624180741.426-1-davids@...515...>
 References: <20200624180741.426-1-davids@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 09/11] doc/man: Move some options from link
- to advanced section
+Subject: [Openvpn-devel] [PATCH 10/11] doc/man: Moved --reneg-* options to
+ its own section
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,141 +18,148 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Moved --persist-local-ip, --persist-remote-ip, --rcvbuf, --sndbuf
-and --shaper from the link options section to the advanced section.
-
-The rationale is that these options are not common to use and is for
-more advanced use cases where special tweaking is required.
+The options related to renegotiation of the data channel encryption key
+is not really a link option.  As the renegotiation is encryption
+related but doesn't really fit into the generic, tls or pkcs11 sections,
+add it into its own section.
 
 Signed-off-by: David Sommerseth <davids@...515...>
 ---
- doc/man-sections/advanced-options.rst | 40 +++++++++++++++++++++++++++
- doc/man-sections/link-options.rst     | 40 ---------------------------
- 2 files changed, 40 insertions(+), 40 deletions(-)
+ doc/man-sections/encryption-options.rst |  1 +
+ doc/man-sections/link-options.rst       | 47 ----------------------
+ doc/man-sections/renegotiation.rst      | 53 +++++++++++++++++++++++++
+ 3 files changed, 54 insertions(+), 47 deletions(-)
+ create mode 100644 doc/man-sections/renegotiation.rst
 
-diff --git a/doc/man-sections/advanced-options.rst b/doc/man-sections/advanced-options.rst
-index 9e59677d..262e568c 100644
---- a/doc/man-sections/advanced-options.rst
-+++ b/doc/man-sections/advanced-options.rst
-@@ -34,6 +34,14 @@ used when debugging or testing out special usage scenarios.
- --bcast-buffers n
-   Allocate ``n`` buffers for broadcast datagrams (default :code:`256`).
+diff --git a/doc/man-sections/encryption-options.rst b/doc/man-sections/encryption-options.rst
+index 5e99c52f..42c80eb8 100644
+--- a/doc/man-sections/encryption-options.rst
++++ b/doc/man-sections/encryption-options.rst
+@@ -130,6 +130,7 @@ Generating key material
+        access to this file will be to generate auth tokens that the OpenVPN
+        server will accept as valid.
  
-+--persist-local-ip
-+  Preserve initially resolved local IP address and port number across
-+  ``SIGUSR1`` or ``--ping-restart`` restarts.
-+
-+--persist-remote-ip
-+  Preserve most recently authenticated remote IP address and port number
-+  across :code:`SIGUSR1` or ``--ping-restart`` restarts.
-+
- --prng args
-   *(Advanced)* Change the PRNG (Pseudo-random number generator) parameters
- 
-@@ -51,6 +59,38 @@ used when debugging or testing out special usage scenarios.
-   RAND\_bytes function instead for all of OpenVPN's pseudo-random number
-   needs.
- 
-+--rcvbuf size
-+  Set the TCP/UDP socket receive buffer size. Defaults to operation system
-+  default.
-+
-+--shaper n
-+  Limit bandwidth of outgoing tunnel data to ``n`` bytes per second on the
-+  TCP/UDP port. Note that this will only work if mode is set to
-+  :code:`p2p`.  If you want to limit the bandwidth in both directions, use
-+  this option on both peers.
-+
-+  OpenVPN uses the following algorithm to implement traffic shaping: Given
-+  a shaper rate of ``n`` bytes per second, after a datagram write of ``b``
-+  bytes is queued on the TCP/UDP port, wait a minimum of ``(b / n)``
-+  seconds before queuing the next write.
-+
-+  It should be noted that OpenVPN supports multiple tunnels between the
-+  same two peers, allowing you to construct full-speed and reduced
-+  bandwidth tunnels at the same time, routing low-priority data such as
-+  off-site backups over the reduced bandwidth tunnel, and other data over
-+  the full-speed tunnel.
-+
-+  Also note that for low bandwidth tunnels (under 1000 bytes per second),
-+  you should probably use lower MTU values as well (see above), otherwise
-+  the packet latency will grow so large as to trigger timeouts in the TLS
-+  layer and TCP connections running over the tunnel.
-+
-+  OpenVPN allows ``n`` to be between 100 bytes/sec and 100 Mbytes/sec.
-+
-+--sndbuf size
-+  Set the TCP/UDP socket send buffer size. Defaults to operation system
-+  default.
-+
- --tcp-queue-limit n
-   Maximum number of output packets queued before TCP (default :code:`64`).
++.. include:: renegotiation.rst
+ .. include:: tls-options.rst
+ .. include:: pkcs11-options.rst
  
 diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-options.rst
-index ca719c75..5f75c5f3 100644
+index 5f75c5f3..43e33176 100644
 --- a/doc/man-sections/link-options.rst
 +++ b/doc/man-sections/link-options.rst
-@@ -173,14 +173,6 @@ the local and the remote host.
- --passtos
-   Set the TOS field of the tunnel packet to what the payload's TOS is.
- 
----persist-local-ip
--  Preserve initially resolved local IP address and port number across
--  ``SIGUSR1`` or ``--ping-restart`` restarts.
--
----persist-remote-ip
--  Preserve most recently authenticated remote IP address and port number
--  across :code:`SIGUSR1` or ``--ping-restart`` restarts.
--
- --ping n
-   Ping remote over the TCP/UDP control channel if no packets have been
-   sent for at least ``n`` seconds (specify ``--ping`` on both peers to
-@@ -292,10 +284,6 @@ the local and the remote host.
+@@ -284,53 +284,6 @@ the local and the remote host.
    and has been used since version 2.0-beta17. Previous versions used port
    5000 as the default.
  
----rcvbuf size
--  Set the TCP/UDP socket receive buffer size. Defaults to operation system
--  default.
+---reneg-bytes n
+-  Renegotiate data channel key after ``n`` bytes sent or received
+-  (disabled by default with an exception, see below). OpenVPN allows the
+-  lifetime of a key to be expressed as a number of bytes
+-  encrypted/decrypted, a number of packets, or a number of seconds. A key
+-  renegotiation will be forced if any of these three criteria are met by
+-  either peer.
 -
- --reneg-bytes n
-   Renegotiate data channel key after ``n`` bytes sent or received
-   (disabled by default with an exception, see below). OpenVPN allows the
-@@ -439,34 +427,6 @@ the local and the remote host.
-   default) and you are using either ``--secret`` (shared-secret key mode)
-   or TLS mode with ``--tls-auth``.
- 
----shaper n
--  Limit bandwidth of outgoing tunnel data to ``n`` bytes per second on the
--  TCP/UDP port. Note that this will only work if mode is set to
--  :code:`p2p`.  If you want to limit the bandwidth in both directions, use
--  this option on both peers.
+-  If using ciphers with cipher block sizes less than 128-bits,
+-  ``--reneg-bytes`` is set to 64MB by default, unless it is explicitly
+-  disabled by setting the value to :code:`0`, but this is
+-  **HIGHLY DISCOURAGED** as this is designed to add some protection against
+-  the SWEET32 attack vector. For more information see the ``--cipher``
+-  option.
 -
--  OpenVPN uses the following algorithm to implement traffic shaping: Given
--  a shaper rate of ``n`` bytes per second, after a datagram write of ``b``
--  bytes is queued on the TCP/UDP port, wait a minimum of ``(b / n)``
--  seconds before queuing the next write.
+---reneg-pkts n
+-  Renegotiate data channel key after **n** packets sent and received
+-  (disabled by default).
 -
--  It should be noted that OpenVPN supports multiple tunnels between the
--  same two peers, allowing you to construct full-speed and reduced
--  bandwidth tunnels at the same time, routing low-priority data such as
--  off-site backups over the reduced bandwidth tunnel, and other data over
--  the full-speed tunnel.
+---reneg-sec args
+-  Renegotiate data channel key after at most ``max`` seconds
+-  (default :code:`3600`) and at least ``min`` seconds (default is 90% of
+-  ``max`` for servers, and equal to ``max`` for clients).
+-  ::
 -
--  Also note that for low bandwidth tunnels (under 1000 bytes per second),
--  you should probably use lower MTU values as well (see above), otherwise
--  the packet latency will grow so large as to trigger timeouts in the TLS
--  layer and TCP connections running over the tunnel.
+-     reneg-sec max [min]
 -
--  OpenVPN allows ``n`` to be between 100 bytes/sec and 100 Mbytes/sec.
+-  The effective ``--reneg-sec`` value used is per session
+-  pseudo-uniform-randomized between ``min`` and ``max``.
 -
----sndbuf size
--  Set the TCP/UDP socket send buffer size. Defaults to operation system
--  default.
+-  With the default value of :code:`3600` this results in an effective per
+-  session value in the range of :code:`3240`..:code:`3600` seconds for
+-  servers, or just 3600 for clients.
 -
- --socket-flags flags
-   Apply the given flags to the OpenVPN transport socket. Currently, only
-   :code:`TCP_NODELAY` is supported.
+-  When using dual-factor authentication, note that this default value may
+-  cause the end user to be challenged to reauthorize once per hour.
+-
+-  Also, keep in mind that this option can be used on both the client and
+-  server, and whichever uses the lower value will be the one to trigger
+-  the renegotiation. A common mistake is to set ``--reneg-sec`` to a
+-  higher value on either the client or server, while the other side of the
+-  connection is still using the default value of :code:`3600` seconds,
+-  meaning that the renegotiation will still occur once per :code:`3600`
+-  seconds. The solution is to increase --reneg-sec on both the client and
+-  server, or set it to :code:`0` on one side of the connection (to
+-  disable), and to your chosen value on the other side.
+-
+ --rport port
+   Set TCP/UDP port number or name used by the ``--remote`` option. The
+   port can also be set directly using the ``--remote`` option.
+diff --git a/doc/man-sections/renegotiation.rst b/doc/man-sections/renegotiation.rst
+new file mode 100644
+index 00000000..aaede4eb
+--- /dev/null
++++ b/doc/man-sections/renegotiation.rst
+@@ -0,0 +1,53 @@
++Data Channel Renegotiation
++--------------------------
++
++When running OpenVPN in client/server mode, the data channel will use a
++separate ephemeral encryption key which is rotated at regular intervals.
++
++--reneg-bytes n
++  Renegotiate data channel key after ``n`` bytes sent or received
++  (disabled by default with an exception, see below). OpenVPN allows the
++  lifetime of a key to be expressed as a number of bytes
++  encrypted/decrypted, a number of packets, or a number of seconds. A key
++  renegotiation will be forced if any of these three criteria are met by
++  either peer.
++
++  If using ciphers with cipher block sizes less than 128-bits,
++  ``--reneg-bytes`` is set to 64MB by default, unless it is explicitly
++  disabled by setting the value to :code:`0`, but this is
++  **HIGHLY DISCOURAGED** as this is designed to add some protection against
++  the SWEET32 attack vector. For more information see the ``--cipher``
++  option.
++
++--reneg-pkts n
++  Renegotiate data channel key after **n** packets sent and received
++  (disabled by default).
++
++--reneg-sec args
++  Renegotiate data channel key after at most ``max`` seconds
++  (default :code:`3600`) and at least ``min`` seconds (default is 90% of
++  ``max`` for servers, and equal to ``max`` for clients).
++  ::
++
++     reneg-sec max [min]
++
++  The effective ``--reneg-sec`` value used is per session
++  pseudo-uniform-randomized between ``min`` and ``max``.
++
++  With the default value of :code:`3600` this results in an effective per
++  session value in the range of :code:`3240`..:code:`3600` seconds for
++  servers, or just 3600 for clients.
++
++  When using dual-factor authentication, note that this default value may
++  cause the end user to be challenged to reauthorize once per hour.
++
++  Also, keep in mind that this option can be used on both the client and
++  server, and whichever uses the lower value will be the one to trigger
++  the renegotiation. A common mistake is to set ``--reneg-sec`` to a
++  higher value on either the client or server, while the other side of the
++  connection is still using the default value of :code:`3600` seconds,
++  meaning that the renegotiation will still occur once per :code:`3600`
++  seconds. The solution is to increase --reneg-sec on both the client and
++  server, or set it to :code:`0` on one side of the connection (to
++  disable), and to your chosen value on the other side.
++
 -- 
 2.26.0
 
