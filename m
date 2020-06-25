@@ -1,14 +1,9 @@
-From: Antonio Quartulli <a@...2181...>
-References: <20200604221628.31562-1-arne@...1227...>
- <20200622140236.15238-1-arne@...1227...>
- <257fde53-0bc8-f1e6-4fb9-a90e070df880@...2181...>
-Message-ID: <abe7e3ad-c178-5b6f-a424-258fb6a766a7@...2181...>
-Date: Thu, 25 Jun 2020 08:13:07 +0200
-MIME-Version: 1.0
-In-Reply-To: <257fde53-0bc8-f1e6-4fb9-a90e070df880@...2181...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v4 3/3] Implement tls-groups option to
- specify eliptic curves/groups
+From: Lev Stipakov <lstipakov@...277...>
+Date: Thu, 25 Jun 2020 11:37:45 +0300
+Message-Id: <20200625083745.211-1-lstipakov@...277...>
+In-Reply-To: <20200401193258.GY1431@...1296...>
+References: <20200401193258.GY1431@...1296...>
+Subject: [Openvpn-devel] [PATCH v2] msvc: fix various level2 warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,164 +12,253 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Hi,
+From: Lev Stipakov <lev@...515...>
 
-on my GitLab CI build test, the compilation failed with the following
-message, while compiling against openssl-1.1:
+Also set warnings level to level2 and
+enable "treat warnings as errors" flag.
 
- /usr/bin/ld: ssl_openssl.o: in function `tls_ctx_set_tls_groups':
-/builds/ordex986/openvpn/src/openvpn/ssl_openssl.c:611: undefined
-reference to `SSL_CTX_set1_groups'
-collect2: error: ld returned 1 exit status
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/compat/Debug.props       |  1 -
+ src/openvpn/block_dns.c      |  3 ---
+ src/openvpn/crypto_openssl.c |  2 +-
+ src/openvpn/init.c           |  2 +-
+ src/openvpn/mtu.c            |  4 ++--
+ src/openvpn/openvpn.vcxproj  | 26 +++++++++++++++++---------
+ src/openvpn/options.c        |  2 +-
+ src/openvpn/route.c          |  2 +-
+ src/openvpn/ssl_backend.h    |  2 +-
+ src/openvpn/tun.c            |  5 +++--
+ 10 files changed, 27 insertions(+), 22 deletions(-)
 
-
-Any clue?
-
-On 23/06/2020 11:21, Antonio Quartulli wrote:
-> Hi,
-> 
-> On 22/06/2020 16:02, Arne Schwabe wrote:
-> 
-> [CUT]
-> 
->> @@ -343,6 +348,42 @@ tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
->>      }
->>  }
->>  
->> +void
->> +tls_ctx_set_tls_groups(struct tls_root_ctx *ctx, const char *groups)
->> +{
->> +    ASSERT(ctx);
->> +    struct gc_arena gc = gc_new();
->> +
->> +    /* Get number of groups and allocate an array in ctx */
->> +    int groups_count = get_num_elements(groups, ':');
->> +    ALLOC_ARRAY_CLEAR(ctx->groups, mbedtls_ecp_group_id, groups_count + 1)
->> +
->> +    /* Parse allowed ciphers, getting IDs */
->> +    int i = 0;
->> +    char *tmp_groups = string_alloc(groups, &gc);
->> +
->> +    const char *token;
->> +    while ((token = strsep(&tmp_groups, ":")))
->> +    {
->> +        const mbedtls_ecp_curve_info *ci =
->> +            mbedtls_ecp_curve_info_from_name(token);
->> +        if (!ci)
->> +        {
->> +            msg(M_WARN, "Warning unknown curve/group specified: %s", token);
->> +        }
->> +        else
->> +        {
->> +            ctx->groups[i] = ci->grp_id;
->> +            i++;
->> +        }
->> +        token = strsep(&tmp_groups, ":");
-> 
-> The line above should be removed, otherwise end up doing strsep() twice
-> in a row.
-> 
-> 
->> +    }
->> +    ctx->groups[i] = MBEDTLS_ECP_DP_NONE;
->> +
->> +    gc_free(&gc);
->> +}
->> +
->> +
->>  void
->>  tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
->>  {
->> @@ -1043,6 +1084,11 @@ key_state_ssl_init(struct key_state_ssl *ks_ssl,
->>          mbedtls_ssl_conf_ciphersuites(ks_ssl->ssl_config, ssl_ctx->allowed_ciphers);
->>      }
->>  
->> +    if (ssl_ctx->groups)
->> +    {
->> +        mbedtls_ssl_conf_curves(ks_ssl->ssl_config, ssl_ctx->groups);
->> +    }
->> +
->>      /* Disable record splitting (for now).  OpenVPN assumes records are sent
->>       * unfragmented, and changing that will require thorough review and
->>       * testing.  Since OpenVPN is not susceptible to BEAST, we can just
->> diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h
->> index 92381f1a..0525134f 100644
->> --- a/src/openvpn/ssl_mbedtls.h
->> +++ b/src/openvpn/ssl_mbedtls.h
->> @@ -105,6 +105,7 @@ struct tls_root_ctx {
->>  #endif
->>      struct external_context external_key; /**< External key context */
->>      int *allowed_ciphers;       /**< List of allowed ciphers for this connection */
->> +    mbedtls_ecp_group_id *groups;     /**< List of allowed groups for this connection */
->>      mbedtls_x509_crt_profile cert_profile; /**< Allowed certificate types */
->>  };
->>  
->> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
->> index a489053b..da7d252a 100644
->> --- a/src/openvpn/ssl_openssl.c
->> +++ b/src/openvpn/ssl_openssl.c
->> @@ -565,6 +565,57 @@ tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
->>  #endif /* ifdef HAVE_SSL_CTX_SET_SECURITY_LEVEL */
->>  }
->>  
->> +void
->> +tls_ctx_set_tls_groups(struct tls_root_ctx *ctx, const char *groups)
->> +{
->> +    ASSERT(ctx);
->> +    struct gc_arena gc = gc_new();
->> +    /* This method could be as easy as
->> +     *  SSL_CTX_set1_groups_list(ctx->ctx, groups)
->> +     * but OpenSSL does not like the name secp256r1 for prime256v1
->> +     * This is one of the important curves.
->> +     * To support the same name for OpenSSL and mbedTLS, we do
->> +     * this dance.
->> +     */
->> +
->> +    int groups_count = get_num_elements(groups, ':');
->> +
->> +    int *glist;
->> +    /* Allocate an array for them */
->> +    ALLOC_ARRAY_CLEAR_GC(glist, int, groups_count, &gc);
->> +
->> +    /* Parse allowed ciphers, getting IDs */
->> +    int glistlen = 0;
->> +    char *tmp_groups = string_alloc(groups, &gc);
->> +
->> +    const char *token;
->> +    while ((token = strsep(&tmp_groups, ":")))
->> +    {
->> +        if (streq(token, "secp256r1"))
->> +        {
->> +            token = "prime256v1";
->> +        }
->> +        int nid = OBJ_sn2nid(token);
->> +
->> +        if (nid == 0)
-> 
-> From a style perspective, I think it looks better to add an empty line
-> *before* "int nid =..." and remove the one after.
-> 
-> This way we also follow the same pattern:
-> 
-> x = a();
-> if (x ..)
-> {
-> }
-> 
-> as other parts of the code.
-> 
-> 
-> 
-> 
-> The rest looks good to me.
-> 
-> Regards,
-> 
-
+diff --git a/src/compat/Debug.props b/src/compat/Debug.props
+index e5e9f681..31bb9d91 100644
+--- a/src/compat/Debug.props
++++ b/src/compat/Debug.props
+@@ -15,7 +15,6 @@
+       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+-      <MinimalRebuild>true</MinimalRebuild>
+     </ClCompile>
+   </ItemDefinitionGroup>
+   <ItemGroup />
+diff --git a/src/openvpn/block_dns.c b/src/openvpn/block_dns.c
+index 889d6bb9..f4718fc2 100644
+--- a/src/openvpn/block_dns.c
++++ b/src/openvpn/block_dns.c
+@@ -109,9 +109,6 @@ DEFINE_GUID(
+ 
+ static WCHAR *FIREWALL_NAME = L"OpenVPN";
+ 
+-VOID NETIOAPI_API_
+-InitializeIpInterfaceEntry(PMIB_IPINTERFACE_ROW Row);
+-
+ /*
+  * Default msg handler does nothing
+  */
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 2027d8dc..8805e25e 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -315,7 +315,7 @@ show_available_ciphers(void)
+         }
+     }
+ 
+-    qsort(cipher_list, num_ciphers, sizeof(*cipher_list), cipher_name_cmp);
++    qsort((void *)cipher_list, num_ciphers, sizeof(*cipher_list), cipher_name_cmp);
+ 
+     for (i = 0; i < num_ciphers; i++)
+     {
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 2c8db68d..107bb4c9 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1812,7 +1812,7 @@ do_open_tun(struct context *c)
+ #ifdef _WIN32
+     /* store (hide) interactive service handle in tuntap_options */
+     c->c1.tuntap->options.msg_channel = c->options.msg_channel;
+-    msg(D_ROUTE, "interactive service msg_channel=%u", (unsigned int) c->options.msg_channel);
++    msg(D_ROUTE, "interactive service msg_channel=%u", (unsigned long long) c->options.msg_channel);
+ #endif
+ 
+     /* allocate route list structure */
+diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
+index 04868cd6..8178ff06 100644
+--- a/src/openvpn/mtu.c
++++ b/src/openvpn/mtu.c
+@@ -175,7 +175,7 @@ set_mtu_discover_type(int sd, int mtu_type, sa_family_t proto_af)
+ #if defined(HAVE_SETSOCKOPT) && defined(IP_MTU_DISCOVER)
+             case AF_INET:
+                 if (setsockopt
+-                        (sd, IPPROTO_IP, IP_MTU_DISCOVER, &mtu_type, sizeof(mtu_type)))
++                        (sd, IPPROTO_IP, IP_MTU_DISCOVER, (const char *)&mtu_type, sizeof(mtu_type)))
+                 {
+                     msg(M_ERR, "Error setting IP_MTU_DISCOVER type=%d on TCP/UDP socket",
+                         mtu_type);
+@@ -186,7 +186,7 @@ set_mtu_discover_type(int sd, int mtu_type, sa_family_t proto_af)
+ #if defined(HAVE_SETSOCKOPT) && defined(IPV6_MTU_DISCOVER)
+             case AF_INET6:
+                 if (setsockopt
+-                        (sd, IPPROTO_IPV6, IPV6_MTU_DISCOVER, &mtu_type, sizeof(mtu_type)))
++                        (sd, IPPROTO_IPV6, IPV6_MTU_DISCOVER, (const char *)&mtu_type, sizeof(mtu_type)))
+                 {
+                     msg(M_ERR, "Error setting IPV6_MTU_DISCOVER type=%d on TCP6/UDP6 socket",
+                         mtu_type);
+diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
+index 53ac5482..c34733ea 100644
+--- a/src/openvpn/openvpn.vcxproj
++++ b/src/openvpn/openvpn.vcxproj
+@@ -28,23 +28,23 @@
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+-    <CharacterSet>Unicode</CharacterSet>
++    <CharacterSet>NotSet</CharacterSet>
+     <PlatformToolset>v142</PlatformToolset>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+-    <CharacterSet>Unicode</CharacterSet>
++    <CharacterSet>NotSet</CharacterSet>
+     <PlatformToolset>v142</PlatformToolset>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+-    <CharacterSet>Unicode</CharacterSet>
++    <CharacterSet>NotSet</CharacterSet>
+     <PlatformToolset>v142</PlatformToolset>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+-    <CharacterSet>Unicode</CharacterSet>
++    <CharacterSet>NotSet</CharacterSet>
+     <PlatformToolset>v142</PlatformToolset>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+@@ -74,7 +74,9 @@
+     <ClCompile>
+       <AdditionalIncludeDirectories>..\compat;$(TAP_WINDOWS_HOME)/include;$(OPENSSL_HOME)/include;$(LZO_HOME)/include;$(PKCS11H_HOME)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+-      <UndefinePreprocessorDefinitions>UNICODE;%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
++      <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
++      <WarningLevel>Level2</WarningLevel>
++      <TreatWarningAsError>true</TreatWarningAsError>
+     </ClCompile>
+     <ResourceCompile />
+     <Link>
+@@ -87,7 +89,9 @@
+     <ClCompile>
+       <AdditionalIncludeDirectories>..\compat;$(TAP_WINDOWS_HOME)/include;$(OPENSSL_HOME)/include;$(LZO_HOME)/include;$(PKCS11H_HOME)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+-      <UndefinePreprocessorDefinitions>UNICODE;%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
++      <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
++      <WarningLevel>Level2</WarningLevel>
++      <TreatWarningAsError>true</TreatWarningAsError>
+     </ClCompile>
+     <ResourceCompile />
+     <Link>
+@@ -100,7 +104,9 @@
+     <ClCompile>
+       <AdditionalIncludeDirectories>..\compat;$(TAP_WINDOWS_HOME)/include;$(OPENSSL_HOME)/include;$(LZO_HOME)/include;$(PKCS11H_HOME)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+-      <UndefinePreprocessorDefinitions>UNICODE;%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
++      <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
++      <WarningLevel>Level2</WarningLevel>
++      <TreatWarningAsError>true</TreatWarningAsError>
+     </ClCompile>
+     <ResourceCompile />
+     <Link>
+@@ -113,7 +119,9 @@
+     <ClCompile>
+       <AdditionalIncludeDirectories>..\compat;$(TAP_WINDOWS_HOME)/include;$(OPENSSL_HOME)/include;$(LZO_HOME)/include;$(PKCS11H_HOME)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+-      <UndefinePreprocessorDefinitions>UNICODE;%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
++      <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
++      <WarningLevel>Level2</WarningLevel>
++      <TreatWarningAsError>true</TreatWarningAsError>
+     </ClCompile>
+     <ResourceCompile />
+     <Link>
+@@ -307,4 +315,4 @@
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+   <ImportGroup Label="ExtensionTargets">
+   </ImportGroup>
+-</Project>
++</Project>
+\ No newline at end of file
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 16f9da6a..3484f7d4 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -7276,7 +7276,7 @@ add_option(struct options *options,
+ #ifdef _WIN32
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+         HANDLE process = GetCurrentProcess();
+-        HANDLE handle = (HANDLE) atoi(p[1]);
++        HANDLE handle = (HANDLE) atoll(p[1]);
+         if (!DuplicateHandle(process, handle, process, &options->msg_channel, 0,
+                              FALSE, DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS))
+         {
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 9ff36359..b57da5dd 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -2833,7 +2833,7 @@ get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
+         DestinationAddress.Ipv6.sin6_addr = *dest;
+     }
+ 
+-    status = GetBestInterfaceEx( &DestinationAddress, &BestIfIndex );
++    status = GetBestInterfaceEx( (struct sockaddr *)&DestinationAddress, &BestIfIndex );
+ 
+     if (status != NO_ERROR)
+     {
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index a1770bd4..5e1055b6 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -534,7 +534,7 @@ void print_details(struct key_state_ssl *ks_ssl, const char *prefix);
+ void
+ show_available_tls_ciphers_list(const char *cipher_list,
+                                 const char *tls_cert_profile,
+-                                bool tls13);
++                                const bool tls13);
+ 
+ /*
+  * Show the available elliptic curves in the crypto library
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 0e6dfe72..d5ca3ce3 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -233,10 +233,11 @@ do_set_mtu_service(const struct tuntap *tt, const short family, const int mtu)
+             sizeof(set_mtu_message_t),
+             0
+         },
+-        .iface = {.index = tt->adapter_index,.name = tt->actual_name },
++        .iface = {.index = tt->adapter_index},
+         .mtu = mtu,
+         .family = family
+     };
++    strncpynt(mtu_msg.iface.name, tt->actual_name, sizeof(mtu_msg.iface.name));
+ 
+     if (!send_msg_iservice(pipe, &mtu_msg, sizeof(mtu_msg), &ack, "Set_mtu"))
+     {
+@@ -889,7 +890,7 @@ add_route_connected_v6_net(struct tuntap *tt,
+ }
+ 
+ void
+-delete_route_connected_v6_net(struct tuntap *tt,
++delete_route_connected_v6_net(const struct tuntap *tt,
+                               const struct env_set *es)
+ {
+     struct route_ipv6 r6;
 -- 
-Antonio Quartulli
+2.17.1
+
 
