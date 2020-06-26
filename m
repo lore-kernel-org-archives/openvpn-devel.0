@@ -1,15 +1,14 @@
-References: <20200626142947.12776-1-tincanteksup@...277...>
- <edef7a28-bbd5-3db5-3229-0d3a525bb577@...277...>
+References: <20200626133254.11795-1-tincanteksup@...277...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <9a59f49f-32c7-ec41-1318-7e20008b7e8b@...2080...>
-Date: Fri, 26 Jun 2020 16:45:24 +0200
+Message-ID: <d797a9ab-6438-f1b1-16f2-4911e491c523@...2080...>
+Date: Fri, 26 Jun 2020 16:49:05 +0200
 MIME-Version: 1.0
-In-Reply-To: <edef7a28-bbd5-3db5-3229-0d3a525bb577@...277...>
+In-Reply-To: <20200626133254.11795-1-tincanteksup@...277...>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="Hbb0ci1UptmxcgqjFKAsy1b3EOD5XkK4h"
+ boundary="RUFL5gCvszQt1QPLZYyvW7pENt7eOi5wd"
 Subject: Re: [Openvpn-devel] [PATCH] New man page corrections -
- encryption-options.rst
+ advanced-options.rst
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,69 +17,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: tincanteksup <tincanteksup@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net, tincanteksup <tincanteksup@...277...>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---Hbb0ci1UptmxcgqjFKAsy1b3EOD5XkK4h
-Content-Type: multipart/mixed; boundary="XKmCZze63JkrdjNd71mH5d1V0xEjjXOrf";
+--RUFL5gCvszQt1QPLZYyvW7pENt7eOi5wd
+Content-Type: multipart/mixed; boundary="YgYSMso72S8Wr0QQRbUZmuqA5vi4ZTYPL";
  protected-headers="v1"
 From: David Sommerseth <openvpn@...2080...>
-To: tincanteksup <tincanteksup@...277...>,
- "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Message-ID: <9a59f49f-32c7-ec41-1318-7e20008b7e8b@...2080...>
+To: openvpn-devel@lists.sourceforge.net, tincanteksup <tincanteksup@...277...>
+Message-ID: <d797a9ab-6438-f1b1-16f2-4911e491c523@...2080...>
 Subject: Re: [Openvpn-devel] [PATCH] New man page corrections -
- encryption-options.rst
-References: <20200626142947.12776-1-tincanteksup@...277...>
- <edef7a28-bbd5-3db5-3229-0d3a525bb577@...277...>
-In-Reply-To: <edef7a28-bbd5-3db5-3229-0d3a525bb577@...277...>
+ advanced-options.rst
+References: <20200626133254.11795-1-tincanteksup@...277...>
+In-Reply-To: <20200626133254.11795-1-tincanteksup@...277...>
 
---XKmCZze63JkrdjNd71mH5d1V0xEjjXOrf
+--YgYSMso72S8Wr0QQRbUZmuqA5vi4ZTYPL
 Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 26/06/2020 16:34, tincanteksup wrote:
-> Comment inline:
+On 26/06/2020 15:32, Richard Bonhomme wrote:
+> Signed-off-by: Richard Bonhomme <tincanteksup@...277...>
+> ---
+>  doc/man-sections/advanced-options.rst | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 >=20
-> On 26/06/2020 15:29, Richard Bonhomme wrote:
->> Signed-off-by: Richard Bonhomme <tincanteksup@...277...>
->> ---
->> =C2=A0 doc/man-sections/encryption-options.rst | 8 ++++----
->> =C2=A0 1 file changed, 4 insertions(+), 4 deletions(-)
->>
->> diff --git a/doc/man-sections/encryption-options.rst
->> b/doc/man-sections/encryption-options.rst
->> index 42c80eb8..076b5fd3 100644
->> --- a/doc/man-sections/encryption-options.rst
->> +++ b/doc/man-sections/encryption-options.rst
->> @@ -86,5 +86,5 @@ Generating key material
->> =C2=A0 =C2=A0=C2=A0=C2=A0 * Generating *TLS Crypt v2 Server key*
->> -=C2=A0=C2=A0=C2=A0 Generate a ``--tls-crypt-v2`` key tp be used by an O=
-penVPN server.
->> +=C2=A0=C2=A0=C2=A0 Generate a ``--tls-crypt-v2`` key to be used by an O=
-penVPN server.
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 The key is stored in ``keyfile``.
->> =C2=A0 @@ -127,7 +127,7 @@ Generating key material
->> =C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 *Note:*
->> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 This file should be kept secret to=
- the server as anyone that
->> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 access to this file will be to gen=
-erate auth tokens that the OpenVPN
->> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 server will accept as valid.
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 This file should be kept secret to=
- the server as anyone that has
->=20
-> I don't know if this is correct or if it should read:
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 This file should be kept secret from=
- the server ..
+> diff --git a/doc/man-sections/advanced-options.rst b/doc/man-sections/adv=
+anced-options.rst
+> index 262e568c..dbf7799c 100644
+> --- a/doc/man-sections/advanced-options.rst
+> +++ b/doc/man-sections/advanced-options.rst
+> @@ -61,5 +61,5 @@ used when debugging or testing out special usage scenar=
+ios.
+>=20=20
+>  --rcvbuf size
+> -  Set the TCP/UDP socket receive buffer size. Defaults to operation syst=
+em
+> +  Set the TCP/UDP socket receive buffer size. Defaults to operating syst=
+em
+>    default.
+>=20=20
+> @@ -89,5 +89,5 @@ used when debugging or testing out special usage scenar=
+ios.
+>=20=20
+>  --sndbuf size
+> -  Set the TCP/UDP socket send buffer size. Defaults to operation system
+> +  Set the TCP/UDP socket send buffer size. Defaults to operating system
+>    default.
 
-It wouldn't make sense to keep a (shared) private key used for encryption
-"secret from the server"; that would make it a bit difficult to use :)
+Thanks again!
 
-I think what was meant was:
-
-   "This file should be kept secret *on* the server ..."
-
+I've squashed this change into your previous grammar/typo fix commit.
 
 --=20
 kind regards,
@@ -90,9 +77,9 @@ OpenVPN Inc
 
 
 
---XKmCZze63JkrdjNd71mH5d1V0xEjjXOrf--
+--YgYSMso72S8Wr0QQRbUZmuqA5vi4ZTYPL--
 
---Hbb0ci1UptmxcgqjFKAsy1b3EOD5XkK4h
+--RUFL5gCvszQt1QPLZYyvW7pENt7eOi5wd
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -100,20 +87,20 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJe9goEAAoJEIbPlEyWcf3yHtkP/0mKIAPyKhYeiGybJ/CjIhyn
-Hj1tbp1FnxMJykcpsWf70mwmzZQS+1DDYNolRsz1+CRjesLMmdRCqV9NYRI17yl6
-f5XQQkztk4mDGIonfjlaoG0zAvtmLGMJIpK6XbmIVAhWZ6oZbplNbtLPwVTC1Ace
-J6KJF+WCebPjExwJ895dqOjmBLC9X5xkZNTfHIvoVp/OwmGDIkvywzznW0YuouDQ
-8/6DHdDZS9IFW14XoYNOtfTUWRNyxrhuIZltrQOCJ4wqgOC8XoKEpqcT++V6FqHu
-fk6+5JRYop8Qql5BM2Y+4vw0/VPy3bt3zUhiMtNU52uSLJda1kYQBBhqdyUmsrU5
-NhEM9zZqJT8jLGKH37kORXCX4lLFypyodaYWoXrizfsXcSlXJ1QYf5TGAoplQLy5
-9FB+Sysm1LSiHQ0lTattPqwizaH4oC7GqaKyicRP6UPEB95leU9P/sT0oHAcfKTd
-5b0nClqsA0RWIL98gBGieB3t6TPHtspNsrK6rQy7uRa8kFmodxxgRpwppKxSJlBF
-33Pk/r4Hs5xCYTL9+JhpWKSM+ZfGUFiIR9AzhWRcFiSFgdpJNqSsi/b9qyzs7/mP
-3axR8bns0PIjBKi5LbQS8MiL0G8BMjIUbyhoIvjDZ1dTmxmbaQlcSNpkzvlMs4Li
-Vlbo4cI8WFBYTHKpxQ+s
-=pwTC
+iQIcBAEBCgAGBQJe9grhAAoJEIbPlEyWcf3yyL0QAIdj+k0Emz6Y+MHOLO+pwcdr
+boEOkGmRA3g5wXGXDfSVmalyNSVqbcY7rl5XjYVrXD3dgjMcjtB5XFP8IPRfqGWT
+QFJy2gDLY770bOIupmOqwjUPGmCq/FesMB91vnRyKF9SdZ1An/LF2I9TbSq5FYLa
+a5qpnQhdhhFfHY+qjr3XMqorT51AQSyF10b9Q7tWrifAV5q05BjWD+uav2vI1U9l
+IXgzDIGpf1hA0ckUEXkjnEudLMX7dmjoG2rs+PwkxR7pDJI9jQ6HjF3UnD8nsiGg
+MnTC8oYiZCESanlz9DO4lYACkPJtrD1O4YKp7NY29YIYLUN4gElLG2LofslcJVqC
+79vJv99B5NbvUmiEc+Ppb/+w7LjLyYgwhDuDYcMIuUGPJZX93K7uZb2MsYkpG9eM
+//DnLb4rYYXbBK3XkSBJrOuEouQ24V/dMpiwEMqCe5T99WVvOiIi/WKn4NktqiKl
+Qb421OU97QnSkse0upKg5zXtgwDsayNFCsUQ9B+bGRkb4seVQCjW8wKpxlFb6B3W
+YHxRDkiWskvm1pksZb4g4Ik8+KqpIk1+32wcxUBU/kr2mQG914ORwOsA0rJyMlvf
+H2MXHsBWdXjs9KIvteDM+cNm85lg8jdRfCD+iXqq/bsRPt8zN9qyUYwHYurC1l/C
+qyEzM4uM4PDFkWkGH8g3
+=FVKE
 -----END PGP SIGNATURE-----
 
---Hbb0ci1UptmxcgqjFKAsy1b3EOD5XkK4h--
+--RUFL5gCvszQt1QPLZYyvW7pENt7eOi5wd--
 
