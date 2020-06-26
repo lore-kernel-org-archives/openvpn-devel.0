@@ -1,14 +1,18 @@
-Date: Fri, 26 Jun 2020 11:54:32 +0200
+Date: Fri, 26 Jun 2020 11:55:39 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20200626095432.GB1431@...1296...>
-References: <CAGyAFMXj7Ei4ALL_zg91=YJ15qM7eS2MzS-wP3nd-KwECmb0FA@...278...>
- <20200625103139.365-1-lstipakov@...277...>
+Message-ID: <20200626095539.GC1431@...1296...>
+References: <dc5c81c1-7529-07a9-2e53-750fec37ed56@...1856...>
+ <20200217120340.20995-1-arne@...1227...>
+ <CAGyAFMWHY=TuhkmDTC0XNAtskmjufU6SFA-HrSs6np4Rvctvcg@...278...>
+ <f6c1bf53-c8fd-c708-ac85-8b666da362ef@...1227...>
+ <CAGyAFMU3RC3om1E+u-pDFicgP+Dz2bU1DyMVOB7poOy3kcvqew@...278...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="oRUJHtSneeYikQVH"
+ protocol="application/pgp-signature"; boundary="WKLB71pnT6JwbICC"
 Content-Disposition: inline
-In-Reply-To: <20200625103139.365-1-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH v3] msvc: fix various level2 warnings
+In-Reply-To: <CAGyAFMU3RC3om1E+u-pDFicgP+Dz2bU1DyMVOB7poOy3kcvqew@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v4] Make compression asymmetric by
+ default and add warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,39 +22,20 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
+Cc: Arne Schwabe <arne@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---oRUJHtSneeYikQVH
+--WKLB71pnT6JwbICC
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Thu, Jun 25, 2020 at 01:31:39PM +0300, Lev Stipakov wrote:
->              case AF_INET:
->                  if (setsockopt
-> -                        (sd, IPPROTO_IP, IP_MTU_DISCOVER, &mtu_type, siz=
-eof(mtu_type)))
-> +                        (sd, IPPROTO_IP, IP_MTU_DISCOVER, (const char *)=
-&mtu_type, sizeof(mtu_type)))
+On Fri, Jun 26, 2020 at 12:51:34PM +0300, Lev Stipakov wrote:
+> Semi-acked-by: Lev-Stipakov <lstipakov@...277...>
 
-If windows really needs a cast here, please cast to (void *).
-
-Windows can then cast to "const char *" under the hood - which should be
-warning free.  But for all other platforms, casting to "const char *" is
-not a good change (other parts of socket.c use "void *" already today).
-
-If you are touching the lines anway, please add sensible line wrapping,=20
-like:
-
-            case AF_INET:
-                if (setsockopt(sd, IPPROTO_IP, IP_MTU_DISCOVER,=20
-                               (void *) &mtu_type, sizeof(mtu_ type)))
-
-and not this very weird style with wrapping after the function name.
-
-(Whatever uncrustify might have been thinking, it's ugly)
+Is that an "ACKed if Gert changes the text of the message as suggested"
+(which is a typo, so okay-ish), or "Arne should send a new version"?
 
 gert
 --=20
@@ -63,22 +48,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---oRUJHtSneeYikQVH
+--WKLB71pnT6JwbICC
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJe9cXYAAoJEB2Cnv7KVigSSA8L/RfZj8iYsGUMBYfhTjxU2hFb
-Z8+G94bPfqTMXYKZFSEmSD65ELpceqSlKiUGOzJmFWkiVYm719VSMfhaOEzP5vfP
-QdvUL8hHu/6MS+rz0f6a32j2DOl8qgLIO6aMvLfl52MOk12zePxOnWRhDV3jqSbs
-5NWOl0RBGtp6161DoIMbCh0Rz07CQLijGk/9/l6IOMD0pxi8hby9pGkqABiE9naD
-EfiH08V2DQ1hOnKsAGhIC8qmhXiu7DRKf2zlmmjVDXdlQzWJgm7FQVDHiw9xqbOK
-A8PTeN7sHoku1WTRNi8FWtNMFTs7m8FgD3xU1qKvJ3/NldH9Q2GF0SEczfaAGmtr
-exeuctWRte9WbfDrdE+U6CqNHN4Ko7VSenKEIkg64IZwSPfsleOL259pmQQU9u9Z
-KJB1NQlax1bt2sYHCB6ezNRoL286ZzQOx1ENci+Xnnb/nycdGS4aFZDkXzMGqKw9
-oAHYZXXEgdIU9NDlFG2YpNdXHZ0AmXyfmB6+2zEuEg==
-=X/40
+iQGcBAEBAgAGBQJe9cYbAAoJEB2Cnv7KVigScoMMAKb8158Mr8z4O7sVQ5tbB9aH
+XZiOpx55m55izdOJWqrpvLKWFa7TCQ0UuVybHe/+ZlXCZZVMbEsdeM01iSJI7j+J
+RrJhvsaEzsLiNb8Ed80CESlp7kVKoLGAZHHNZBk33rMJPH9/e3f/rFay2b8O6Gyj
+4Me6RFq7Bq8kOtzPoA3HxwuookHg9QwM5Dp9s9Pvx3hPTaGLjV1zrFks2UvRpE7u
+blOEGsjSdbhTurk3FArd2xCmILDaBO8Gt56uJUMUDaH/9JhCoecpp3gSJn4/xv3K
+yStHUpwevBxQHbI0eeICr15jM9eBIqucRMdjqGJfGmsOACPRXbnfxIqK38LwPblB
+CnEVcZnUCUbMkgAdObq/yCTuMJD1hHDlzG+5vf1Fjl3Bkrqo9Dmu/fdtyLv9zjNA
+vUrPgZj2GmRDjZseZD39kEu+ne262hYH28sgOhZRxj4X/YZe9HYiKiwflpCxwf/k
+mWrPA8Uk6ku9nGSUVWFhoZZ6zr4zWP6OE67xSuaSoA==
+=pnMO
 -----END PGP SIGNATURE-----
 
---oRUJHtSneeYikQVH--
+--WKLB71pnT6JwbICC--
 
