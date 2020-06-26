@@ -1,14 +1,14 @@
+Date: Fri, 26 Jun 2020 11:54:32 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20200626095432.GB1431@...1296...>
+References: <CAGyAFMXj7Ei4ALL_zg91=YJ15qM7eS2MzS-wP3nd-KwECmb0FA@...278...>
+ <20200625103139.365-1-lstipakov@...277...>
 MIME-Version: 1.0
-References: <dc5c81c1-7529-07a9-2e53-750fec37ed56@...1856...>
- <20200217120340.20995-1-arne@...1227...>
- <CAGyAFMWHY=TuhkmDTC0XNAtskmjufU6SFA-HrSs6np4Rvctvcg@...278...>
- <f6c1bf53-c8fd-c708-ac85-8b666da362ef@...1227...>
-In-Reply-To: <f6c1bf53-c8fd-c708-ac85-8b666da362ef@...1227...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Fri, 26 Jun 2020 12:51:34 +0300
-Message-ID: <CAGyAFMU3RC3om1E+u-pDFicgP+Dz2bU1DyMVOB7poOy3kcvqew@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v4] Make compression asymmetric by
- default and add warnings
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="oRUJHtSneeYikQVH"
+Content-Disposition: inline
+In-Reply-To: <20200625103139.365-1-lstipakov@...277...>
+Subject: Re: [Openvpn-devel] [PATCH v3] msvc: fix various level2 warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,40 +17,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
+
+--oRUJHtSneeYikQVH
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-Apologize for delay.
+On Thu, Jun 25, 2020 at 01:31:39PM +0300, Lev Stipakov wrote:
+>              case AF_INET:
+>                  if (setsockopt
+> -                        (sd, IPPROTO_IP, IP_MTU_DISCOVER, &mtu_type, siz=
+eof(mtu_type)))
+> +                        (sd, IPPROTO_IP, IP_MTU_DISCOVER, (const char *)=
+&mtu_type, sizeof(mtu_type)))
 
-I tested with various combinations of flags and code works as expected.
+If windows really needs a cast here, please cast to (void *).
 
-Let's reword messages as you proposed:
+Windows can then cast to "const char *" under the hood - which should be
+warning free.  But for all other platforms, casting to "const char *" is
+not a good change (other parts of socket.c use "void *" already today).
 
-> We reword the message a bit so that two messages are not that bad if both
-> are shown:
->
-> WARNING: Compression for receiving enabled, Compression
-> has been used in the past to break encryption. Sent packet are not compress unless "allow-compression yes" is also set.
+If you are touching the lines anway, please add sensible line wrapping,=20
+like:
 
-A small typo:
+            case AF_INET:
+                if (setsockopt(sd, IPPROTO_IP, IP_MTU_DISCOVER,=20
+                               (void *) &mtu_type, sizeof(mtu_ type)))
 
-.. Sent packets are not compressed ...
+and not this very weird style with wrapping after the function name.
 
->
->
-> WARNING: Compression for sending and receiving enabled, Compression has
-> been used in the past to break encryption. Allowing compression allows
-> attacks that break encryption. Using '--allow-compression yes' is
-> strongly discouraged for common usage. See --compress in the manual
-> page for more information
+(Whatever uncrustify might have been thinking, it's ugly)
 
-Semi-acked-by: Lev-Stipakov <lstipakov@...277...>
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
 
--- 
--Lev
+--oRUJHtSneeYikQVH
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJe9cXYAAoJEB2Cnv7KVigSSA8L/RfZj8iYsGUMBYfhTjxU2hFb
+Z8+G94bPfqTMXYKZFSEmSD65ELpceqSlKiUGOzJmFWkiVYm719VSMfhaOEzP5vfP
+QdvUL8hHu/6MS+rz0f6a32j2DOl8qgLIO6aMvLfl52MOk12zePxOnWRhDV3jqSbs
+5NWOl0RBGtp6161DoIMbCh0Rz07CQLijGk/9/l6IOMD0pxi8hby9pGkqABiE9naD
+EfiH08V2DQ1hOnKsAGhIC8qmhXiu7DRKf2zlmmjVDXdlQzWJgm7FQVDHiw9xqbOK
+A8PTeN7sHoku1WTRNi8FWtNMFTs7m8FgD3xU1qKvJ3/NldH9Q2GF0SEczfaAGmtr
+exeuctWRte9WbfDrdE+U6CqNHN4Ko7VSenKEIkg64IZwSPfsleOL259pmQQU9u9Z
+KJB1NQlax1bt2sYHCB6ezNRoL286ZzQOx1ENci+Xnnb/nycdGS4aFZDkXzMGqKw9
+oAHYZXXEgdIU9NDlFG2YpNdXHZ0AmXyfmB6+2zEuEg==
+=X/40
+-----END PGP SIGNATURE-----
+
+--oRUJHtSneeYikQVH--
 
