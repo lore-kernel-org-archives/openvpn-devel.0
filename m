@@ -1,8 +1,8 @@
 From: Richard Bonhomme <tincanteksup@...277...>
-Date: Fri, 26 Jun 2020 14:32:54 +0100
-Message-Id: <20200626133254.11795-1-tincanteksup@...277...>
+Date: Fri, 26 Jun 2020 15:29:47 +0100
+Message-Id: <20200626142947.12776-1-tincanteksup@...277...>
 Subject: [Openvpn-devel] [PATCH] New man page corrections -
- advanced-options.rst
+ encryption-options.rst
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,27 +17,31 @@ To: openvpn-devel@lists.sourceforge.net
 
 Signed-off-by: Richard Bonhomme <tincanteksup@...277...>
 ---
- doc/man-sections/advanced-options.rst | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ doc/man-sections/encryption-options.rst | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/doc/man-sections/advanced-options.rst b/doc/man-sections/advanced-options.rst
-index 262e568c..dbf7799c 100644
---- a/doc/man-sections/advanced-options.rst
-+++ b/doc/man-sections/advanced-options.rst
-@@ -61,5 +61,5 @@ used when debugging or testing out special usage scenarios.
+diff --git a/doc/man-sections/encryption-options.rst b/doc/man-sections/encryption-options.rst
+index 42c80eb8..076b5fd3 100644
+--- a/doc/man-sections/encryption-options.rst
++++ b/doc/man-sections/encryption-options.rst
+@@ -86,5 +86,5 @@ Generating key material
  
- --rcvbuf size
--  Set the TCP/UDP socket receive buffer size. Defaults to operation system
-+  Set the TCP/UDP socket receive buffer size. Defaults to operating system
-   default.
+   * Generating *TLS Crypt v2 Server key*
+-    Generate a ``--tls-crypt-v2`` key tp be used by an OpenVPN server.
++    Generate a ``--tls-crypt-v2`` key to be used by an OpenVPN server.
+     The key is stored in ``keyfile``.
  
-@@ -89,5 +89,5 @@ used when debugging or testing out special usage scenarios.
+@@ -127,7 +127,7 @@ Generating key material
  
- --sndbuf size
--  Set the TCP/UDP socket send buffer size. Defaults to operation system
-+  Set the TCP/UDP socket send buffer size. Defaults to operating system
-   default.
+     *Note:*
+-       This file should be kept secret to the server as anyone that
+-       access to this file will be to generate auth tokens that the OpenVPN
+-       server will accept as valid.
++       This file should be kept secret to the server as anyone that has
++       access to this file will be able to generate auth tokens that the
++       OpenVPN server will accept as valid.
  
+ .. include:: renegotiation.rst
 -- 
 2.17.1
 
