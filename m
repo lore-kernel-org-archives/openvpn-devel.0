@@ -1,13 +1,13 @@
 References: <20200626142947.12776-1-tincanteksup@...277...>
  <edef7a28-bbd5-3db5-3229-0d3a525bb577@...277...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <f4ac5551-a5ad-4a1a-bd3f-e8c7e9f37cd3@...1227...>
-Date: Fri, 26 Jun 2020 16:41:04 +0200
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <9a59f49f-32c7-ec41-1318-7e20008b7e8b@...2080...>
+Date: Fri, 26 Jun 2020 16:45:24 +0200
 MIME-Version: 1.0
 In-Reply-To: <edef7a28-bbd5-3db5-3229-0d3a525bb577@...277...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
+Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="3RR9XN29u8EfgSd4R9TefeAJDV4i1KYXT"
+ boundary="Hbb0ci1UptmxcgqjFKAsy1b3EOD5XkK4h"
 Subject: Re: [Openvpn-devel] [PATCH] New man page corrections -
  encryption-options.rst
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,15 +21,25 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: tincanteksup <tincanteksup@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---3RR9XN29u8EfgSd4R9TefeAJDV4i1KYXT
-Content-Type: multipart/mixed; boundary="E9WwbfRUFrmlJjkLrPUB7uyIlWpAomuF2"
+--Hbb0ci1UptmxcgqjFKAsy1b3EOD5XkK4h
+Content-Type: multipart/mixed; boundary="XKmCZze63JkrdjNd71mH5d1V0xEjjXOrf";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: tincanteksup <tincanteksup@...277...>,
+ "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Message-ID: <9a59f49f-32c7-ec41-1318-7e20008b7e8b@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] New man page corrections -
+ encryption-options.rst
+References: <20200626142947.12776-1-tincanteksup@...277...>
+ <edef7a28-bbd5-3db5-3229-0d3a525bb577@...277...>
+In-Reply-To: <edef7a28-bbd5-3db5-3229-0d3a525bb577@...277...>
 
---E9WwbfRUFrmlJjkLrPUB7uyIlWpAomuF2
-Content-Language: en-GB
+--XKmCZze63JkrdjNd71mH5d1V0xEjjXOrf
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-Am 26.06.20 um 16:34 schrieb tincanteksup:
+On 26/06/2020 16:34, tincanteksup wrote:
 > Comment inline:
 >=20
 > On 26/06/2020 15:29, Richard Bonhomme wrote:
@@ -55,8 +65,7 @@ penVPN server.
 >> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 This file should be kept secret to=
  the server as anyone that
 >> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 access to this file will be to gen=
-erate auth tokens that the
->> OpenVPN
+erate auth tokens that the OpenVPN
 >> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 server will accept as valid.
 >> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 This file should be kept secret to=
  the server as anyone that has
@@ -65,49 +74,46 @@ erate auth tokens that the
 > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 This file should be kept secret from=
  the server ..
 
-No, it is correct but maybe not correct English. Basically I wanted to
-say that the file should be only kept on the server and not anywhere
-else like a private server key.
+It wouldn't make sense to keep a (shared) private key used for encryption
+"secret from the server"; that would make it a bit difficult to use :)
 
->=20
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 access to this file will be able t=
-o generate auth tokens that the
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 OpenVPN server will accept as vali=
-d.
->> =C2=A0 =C2=A0 .. include:: renegotiation.rst
->>
->=20
->=20
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+I think what was meant was:
+
+   "This file should be kept secret *on* the server ..."
+
+
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
 
 
 
---E9WwbfRUFrmlJjkLrPUB7uyIlWpAomuF2--
+--XKmCZze63JkrdjNd71mH5d1V0xEjjXOrf--
 
---3RR9XN29u8EfgSd4R9TefeAJDV4i1KYXT
+--Hbb0ci1UptmxcgqjFKAsy1b3EOD5XkK4h
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl72CQAACgkQFRhsZwKx
-RFS8GA//cxwMKKvVMZ3z22Jccz294CwzWBtFr+ccrb8EsX1jE47gbUt/lyn9Q1jG
-nPsSUEALWNA8gd3xiC/OdvNiY472d4gZK6Cy1SGV251renE/rMSdf8XrnAdTjyB5
-S9TDU6kNjQJm5VSufz0OiGhn/ZvkRSJZ98PfQ9cQO8mYHLfPhtJT5Xp12qRuWPEs
-2kIaMckWYPt/6qgSfYjd4Ab5fbDarI61ujVIbkYehc9C6lBAkA4EBoGF/Kpr2SjC
-00FVUj4gltaUXzZUtAXQ8CTmcz9yUa3/eY5lKVkZuSQNOlr9UDWxADxACKOtBY2h
-+lu4bz5d0BVCRKnHTZoOGUvqkQn2uRQ9yfk9m0pvW334CnvBNlt9AR7+6+6gJnmk
-toHo6+Q4L6+yMvAA/6h8e0aTdem1QJ/4dD/yC32WkM8D58Sbj+cMCuzPxBmFG1EN
-eV4J4RWsQ3gHRr+cFbFUXmDjHVd5xW++KPO8fZKPvdfz1N8luCBmCjqM0yOXKwGn
-ikMZr2Pi586QURns1iuVNnkPi0mnr1J+wTFWINzB3sh1k5cy2MoQjAfBkyWlU6AJ
-vNWwCxQzEycJ1lLzv0R2bGpDUQSgZbDLZhf55UgCjEnVldqGJ2EazqwklNMbtHa3
-6OX9zUz5aTOTOKr5nZhc32M9k6OaEb9Ltv8H9ApjOZ00gaNOszM=
-=j1za
+iQIcBAEBCgAGBQJe9goEAAoJEIbPlEyWcf3yHtkP/0mKIAPyKhYeiGybJ/CjIhyn
+Hj1tbp1FnxMJykcpsWf70mwmzZQS+1DDYNolRsz1+CRjesLMmdRCqV9NYRI17yl6
+f5XQQkztk4mDGIonfjlaoG0zAvtmLGMJIpK6XbmIVAhWZ6oZbplNbtLPwVTC1Ace
+J6KJF+WCebPjExwJ895dqOjmBLC9X5xkZNTfHIvoVp/OwmGDIkvywzznW0YuouDQ
+8/6DHdDZS9IFW14XoYNOtfTUWRNyxrhuIZltrQOCJ4wqgOC8XoKEpqcT++V6FqHu
+fk6+5JRYop8Qql5BM2Y+4vw0/VPy3bt3zUhiMtNU52uSLJda1kYQBBhqdyUmsrU5
+NhEM9zZqJT8jLGKH37kORXCX4lLFypyodaYWoXrizfsXcSlXJ1QYf5TGAoplQLy5
+9FB+Sysm1LSiHQ0lTattPqwizaH4oC7GqaKyicRP6UPEB95leU9P/sT0oHAcfKTd
+5b0nClqsA0RWIL98gBGieB3t6TPHtspNsrK6rQy7uRa8kFmodxxgRpwppKxSJlBF
+33Pk/r4Hs5xCYTL9+JhpWKSM+ZfGUFiIR9AzhWRcFiSFgdpJNqSsi/b9qyzs7/mP
+3axR8bns0PIjBKi5LbQS8MiL0G8BMjIUbyhoIvjDZ1dTmxmbaQlcSNpkzvlMs4Li
+Vlbo4cI8WFBYTHKpxQ+s
+=pwTC
 -----END PGP SIGNATURE-----
 
---3RR9XN29u8EfgSd4R9TefeAJDV4i1KYXT--
+--Hbb0ci1UptmxcgqjFKAsy1b3EOD5XkK4h--
 
