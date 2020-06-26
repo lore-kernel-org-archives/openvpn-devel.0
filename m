@@ -1,14 +1,9 @@
-References: <20200626133254.11795-1-tincanteksup@...277...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <d797a9ab-6438-f1b1-16f2-4911e491c523@...2080...>
-Date: Fri, 26 Jun 2020 16:49:05 +0200
-MIME-Version: 1.0
-In-Reply-To: <20200626133254.11795-1-tincanteksup@...277...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="RUFL5gCvszQt1QPLZYyvW7pENt7eOi5wd"
-Subject: Re: [Openvpn-devel] [PATCH] New man page corrections -
- advanced-options.rst
+From: Maximilian Wilhelm <max@...1047...>
+Date: Fri, 26 Jun 2020 20:49:44 +0200
+Message-Id: <1593197385-30618-2-git-send-email-max@...1047...>
+In-Reply-To: <1593197385-30618-1-git-send-email-max@...1047...>
+References: <1593197385-30618-1-git-send-email-max@...1047...>
+Subject: [Openvpn-devel] [PATCH 1/2] Add --bind-dev option.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,90 +12,139 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net, tincanteksup <tincanteksup@...277...>
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---RUFL5gCvszQt1QPLZYyvW7pENt7eOi5wd
-Content-Type: multipart/mixed; boundary="YgYSMso72S8Wr0QQRbUZmuqA5vi4ZTYPL";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-To: openvpn-devel@lists.sourceforge.net, tincanteksup <tincanteksup@...277...>
-Message-ID: <d797a9ab-6438-f1b1-16f2-4911e491c523@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] New man page corrections -
- advanced-options.rst
-References: <20200626133254.11795-1-tincanteksup@...277...>
-In-Reply-To: <20200626133254.11795-1-tincanteksup@...277...>
-
---YgYSMso72S8Wr0QQRbUZmuqA5vi4ZTYPL
-Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Maximilian Wilhelm <max@...1047...>, Maximilian Wilhelm <max@...2564...>
 
-On 26/06/2020 15:32, Richard Bonhomme wrote:
-> Signed-off-by: Richard Bonhomme <tincanteksup@...277...>
-> ---
->  doc/man-sections/advanced-options.rst | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->=20
-> diff --git a/doc/man-sections/advanced-options.rst b/doc/man-sections/adv=
-anced-options.rst
-> index 262e568c..dbf7799c 100644
-> --- a/doc/man-sections/advanced-options.rst
-> +++ b/doc/man-sections/advanced-options.rst
-> @@ -61,5 +61,5 @@ used when debugging or testing out special usage scenar=
-ios.
->=20=20
->  --rcvbuf size
-> -  Set the TCP/UDP socket receive buffer size. Defaults to operation syst=
-em
-> +  Set the TCP/UDP socket receive buffer size. Defaults to operating syst=
-em
->    default.
->=20=20
-> @@ -89,5 +89,5 @@ used when debugging or testing out special usage scenar=
-ios.
->=20=20
->  --sndbuf size
-> -  Set the TCP/UDP socket send buffer size. Defaults to operation system
-> +  Set the TCP/UDP socket send buffer size. Defaults to operating system
->    default.
+  This options allows the user to specify a network device the OpenVPN process
+  should use when making a connection or binding to an address. This translates
+  in setting the SO_BINDTODEVICE option to the corresponding socket (on Linux).
 
-Thanks again!
+  When for example using VRFs on Linux [0] this allows making connections using
+  the non-default VRF and having the tun/tap interface in the default VRF.
 
-I've squashed this change into your previous grammar/typo fix commit.
+  Thanks to David Ahern (Cumulus Networks) for insights on this.
 
---=20
-kind regards,
+  [0] https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/networking/vrf.txt
 
-David Sommerseth
-OpenVPN Inc
+Signed-off-by: Maximilian Wilhelm <max@...2564...>
+---
+ src/openvpn/init.c    |  1 +
+ src/openvpn/options.c | 10 ++++++++++
+ src/openvpn/options.h |  1 +
+ src/openvpn/socket.c  | 10 ++++++++++
+ src/openvpn/socket.h  |  2 ++
+ 5 files changed, 24 insertions(+)
 
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 2af25c1..dd1747f 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -3445,6 +3445,7 @@ do_init_socket_1(struct context *c, const int mode)
+                             c->options.rcvbuf,
+                             c->options.sndbuf,
+                             c->options.mark,
++                            c->options.bind_dev,
+                             &c->c2.server_poll_interval,
+                             sockflags);
+ }
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 3484f7d..6b36269 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -294,6 +294,9 @@ static const char usage_message[] =
+ #if defined(TARGET_LINUX) && HAVE_DECL_SO_MARK
+     "--mark value    : Mark encrypted packets being sent with value. The mark value\n"
+     "                  can be matched in policy routing and packetfilter rules.\n"
++    "--bind-dev dev  : Bind to the given device when making connection to a peer or\n"
++    "                  listening for connections. This allows sending encrypted packets\n"
++    "                  via a VRF present on the system.\n"
+ #endif
+     "--txqueuelen n  : Set the tun/tap TX queue length to n (Linux only).\n"
+ #ifdef ENABLE_MEMSTATS
+@@ -6064,6 +6067,13 @@ add_option(struct options *options,
+             }
+         }
+     }
++#ifdef TARGET_LINUX
++    else if (streq (p[0], "bind-dev") && p[1])
++    {
++        VERIFY_PERMISSION (OPT_P_SOCKFLAGS);
++        options->bind_dev = p[1];
++    }
++#endif
+     else if (streq(p[0], "txqueuelen") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 375a4fc..c83a46a 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -352,6 +352,7 @@ struct options
+ 
+     /* mark value */
+     int mark;
++    char *bind_dev;
+ 
+     /* socket flags */
+     unsigned int sockflags;
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index f2fb54d..fd92d52 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -1138,6 +1138,14 @@ create_socket(struct link_socket *sock, struct addrinfo *addr)
+     /* set socket to --mark packets with given value */
+     socket_set_mark(sock->sd, sock->mark);
+ 
++#if defined(TARGET_LINUX)
++    if (sock->bind_dev)
++    {
++        msg (M_INFO, "Using bind-dev %s", sock->bind_dev);
++        setsockopt (sock->sd, SOL_SOCKET, SO_BINDTODEVICE, sock->bind_dev, strlen (sock->bind_dev) + 1);
++    }
++#endif
++
+     bind_local(sock, addr->ai_family);
+ }
+ 
+@@ -1880,6 +1888,7 @@ link_socket_init_phase1(struct link_socket *sock,
+                         int rcvbuf,
+                         int sndbuf,
+                         int mark,
++                        const char *bind_dev,
+                         struct event_timeout *server_poll_timeout,
+                         unsigned int sockflags)
+ {
+@@ -1906,6 +1915,7 @@ link_socket_init_phase1(struct link_socket *sock,
+ 
+     sock->sockflags = sockflags;
+     sock->mark = mark;
++    sock->bind_dev = bind_dev;
+ 
+     sock->info.proto = proto;
+     sock->info.af = af;
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index 38e5138..8db9e8b 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -212,6 +212,7 @@ struct link_socket
+ #define SF_GETADDRINFO_DGRAM (1<<4)
+     unsigned int sockflags;
+     int mark;
++    const char *bind_dev;
+ 
+     /* for stream sockets */
+     struct stream_buf stream_buf;
+@@ -326,6 +327,7 @@ link_socket_init_phase1(struct link_socket *sock,
+                         int rcvbuf,
+                         int sndbuf,
+                         int mark,
++                        const char *bind_dev,
+                         struct event_timeout *server_poll_timeout,
+                         unsigned int sockflags);
+ /* Reenable uncrustify *INDENT-ON* */
+-- 
+2.1.4
 
-
---YgYSMso72S8Wr0QQRbUZmuqA5vi4ZTYPL--
-
---RUFL5gCvszQt1QPLZYyvW7pENt7eOi5wd
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJe9grhAAoJEIbPlEyWcf3yyL0QAIdj+k0Emz6Y+MHOLO+pwcdr
-boEOkGmRA3g5wXGXDfSVmalyNSVqbcY7rl5XjYVrXD3dgjMcjtB5XFP8IPRfqGWT
-QFJy2gDLY770bOIupmOqwjUPGmCq/FesMB91vnRyKF9SdZ1An/LF2I9TbSq5FYLa
-a5qpnQhdhhFfHY+qjr3XMqorT51AQSyF10b9Q7tWrifAV5q05BjWD+uav2vI1U9l
-IXgzDIGpf1hA0ckUEXkjnEudLMX7dmjoG2rs+PwkxR7pDJI9jQ6HjF3UnD8nsiGg
-MnTC8oYiZCESanlz9DO4lYACkPJtrD1O4YKp7NY29YIYLUN4gElLG2LofslcJVqC
-79vJv99B5NbvUmiEc+Ppb/+w7LjLyYgwhDuDYcMIuUGPJZX93K7uZb2MsYkpG9eM
-//DnLb4rYYXbBK3XkSBJrOuEouQ24V/dMpiwEMqCe5T99WVvOiIi/WKn4NktqiKl
-Qb421OU97QnSkse0upKg5zXtgwDsayNFCsUQ9B+bGRkb4seVQCjW8wKpxlFb6B3W
-YHxRDkiWskvm1pksZb4g4Ik8+KqpIk1+32wcxUBU/kr2mQG914ORwOsA0rJyMlvf
-H2MXHsBWdXjs9KIvteDM+cNm85lg8jdRfCD+iXqq/bsRPt8zN9qyUYwHYurC1l/C
-qyEzM4uM4PDFkWkGH8g3
-=FVKE
------END PGP SIGNATURE-----
-
---RUFL5gCvszQt1QPLZYyvW7pENt7eOi5wd--
 
