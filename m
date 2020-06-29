@@ -1,9 +1,10 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon, 29 Jun 2020 20:04:05 +0200
-Message-Id: <20200629180405.17671-1-gert@...1296...>
+From: Christopher Schenk <cschenk@...2502...>
+Date: Mon, 29 Jun 2020 21:09:29 +0200
+Message-Id: <20200629190930.1360-1-cschenk@...2502...>
+In-Reply-To: <202006101601.05AG1i8K031513@...2054...>
+References: <202006101601.05AG1i8K031513@...2054...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Linux: do not change --txqueuelen OS
- default if not configured.
+Subject: [Openvpn-devel] [PATCH 1/2] Unified success messages for setting mtu
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,41 +17,33 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Remove default setting of "set txqueuelen to 100".  This default dates
-back to the "pre git" times (before 2005) and might have been beneficial
-back then - nowadays, the Linux default is 500, and thus reducing(!)
-txqueuelen by-default can cause TX packet drops on the tun interface,
-and that's bad for throughput.
-
-This is a similar change to commit f0b64e5dc (remove setting of the
-socket send/receive buffers by default) - similar vintage of the
-existing code, similar motivation.
-
-Note: buffer length can be checked with "ip link show" (qlen NNN)
-
-See also:
-  https://ivanvari.com/solving-openvpn-poor-throughput-and-packet-loss/
-
-Signed-off-by: Gert Doering <gert@...1296...>
 ---
- src/openvpn/options.c | 3 ---
- 1 file changed, 3 deletions(-)
+ src/openvpn/tun.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index c21ef56d..a40efd68 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -840,9 +840,6 @@ init_options(struct options *o, const bool init_gc)
- #ifdef ENABLE_FEATURE_TUN_PERSIST
-     o->persist_mode = 1;
- #endif
--#ifdef TARGET_LINUX
--    o->tuntap_options.txqueuelen = 100;
--#endif
- #ifdef _WIN32
- #if 0
-     o->tuntap_options.ip_win32_type = IPW32_SET_ADAPTIVE;
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 18cdf38d..3ef79b2f 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -251,7 +251,7 @@ do_set_mtu_service(const struct tuntap *tt, const short family, const int mtu)
+     }
+     else
+     {
+-        msg(M_INFO, "%s MTU set to %d on interface %d using service", family_name, mtu, mtu_msg.iface.index);
++        msg(M_INFO, "%s MTU set to %d on interface %d using SetIpInterfaceEntry()", family_name, mtu, mtu_msg.iface.index);
+         ret = true;
+     }
+ 
+@@ -5516,7 +5516,7 @@ windows_set_mtu(const int iface_index, const short family,
+     }
+     else
+     {
+-        msg(M_INFO, "Successfully set %s mtu on interface %d", family_name, iface_index);
++        msg(M_INFO, "%s MTU set to %d on interface %d using SetIpInterfaceEntry()", family_name, mtu, iface_index);
+     }
+ }
+ 
 -- 
-2.26.2
+2.21.0.windows.1
 
 
