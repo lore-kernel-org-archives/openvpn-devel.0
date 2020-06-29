@@ -1,9 +1,9 @@
 From: Gert Doering <gert@...1296...>
-Date: Mon, 29 Jun 2020 19:51:09 +0200
-Message-Id: <20200629175109.94276-1-gert@...1296...>
+Date: Mon, 29 Jun 2020 20:04:05 +0200
+Message-Id: <20200629180405.17671-1-gert@...1296...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix 'engine' unit test on FreeBSD
- (specifically 'not GNU make')
+Subject: [Openvpn-devel] [PATCH] Linux: do not change --txqueuelen OS
+ default if not configured.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,31 +16,41 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The rules to generate $(builddir)/openssl.cnf from $(srcdir)/openssl.cnf.in
-only worked for GNU Make.  BSD make needs the rules more explicit, and
-the target must not have a directory specification (fixes commit 542c69c37).
+Remove default setting of "set txqueuelen to 100".  This default dates
+back to the "pre git" times (before 2005) and might have been beneficial
+back then - nowadays, the Linux default is 500, and thus reducing(!)
+txqueuelen by-default can cause TX packet drops on the tun interface,
+and that's bad for throughput.
+
+This is a similar change to commit f0b64e5dc (remove setting of the
+socket send/receive buffers by default) - similar vintage of the
+existing code, similar motivation.
+
+Note: buffer length can be checked with "ip link show" (qlen NNN)
+
+See also:
+  https://ivanvari.com/solving-openvpn-poor-throughput-and-packet-loss/
 
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
- tests/unit_tests/engine-key/Makefile.am | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ src/openvpn/options.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/tests/unit_tests/engine-key/Makefile.am b/tests/unit_tests/engine-key/Makefile.am
-index 0bfdfcd4..24622251 100644
---- a/tests/unit_tests/engine-key/Makefile.am
-+++ b/tests/unit_tests/engine-key/Makefile.am
-@@ -21,8 +21,8 @@ CLEANFILES = \
- 	log.txt \
- 	$(conffiles)
- 
--$(builddir)/openssl.cnf: $(srcdir)/openssl.cnf.in
--	sed "s|ABSBUILDDIR|$(abs_builddir)|" < $< > $@
-+openssl.cnf: $(srcdir)/openssl.cnf.in
-+	sed "s|ABSBUILDDIR|$(abs_builddir)|" < $(srcdir)/openssl.cnf.in > $@
- 
- libtestengine_la_SOURCES = libtestengine.c
- libtestengine_la_LDFLAGS = @TEST_LDFLAGS@ -rpath /lib -shrext .so
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index c21ef56d..a40efd68 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -840,9 +840,6 @@ init_options(struct options *o, const bool init_gc)
+ #ifdef ENABLE_FEATURE_TUN_PERSIST
+     o->persist_mode = 1;
+ #endif
+-#ifdef TARGET_LINUX
+-    o->tuntap_options.txqueuelen = 100;
+-#endif
+ #ifdef _WIN32
+ #if 0
+     o->tuntap_options.ip_win32_type = IPW32_SET_ADAPTIVE;
 -- 
-2.27.0
+2.26.2
 
 
