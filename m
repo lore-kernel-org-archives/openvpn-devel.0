@@ -1,6 +1,3 @@
-Date: Tue, 30 Jun 2020 16:11:03 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200630141103.GY1431@...1296...>
 References: <523527018.2514117.1583041035054@...2084...>
  <20200301071521.GI1431@...1296...>
  <CAKuzo_j=P8vZvkOL4Rgh1icLJiu0a-r4yQGrD1GSACrn14G9QQ@...278...>
@@ -11,11 +8,15 @@ References: <523527018.2514117.1583041035054@...2084...>
  <CAKuzo_iFf2iuOLg4LpXrz42MG1GggvdrcWKJrcDT6j38tQjrUw@...278...>
  <20200624102804.GM1431@...1296...>
  <50ad64e7-b75c-e40b-5d5e-9e89e90db45d@...1147...>
+ <20200630141103.GY1431@...1296...>
+From: Jan Just Keijser <janjust@...1147...>
+Message-ID: <67f23584-07bd-7f0a-de1d-6ac285342e46@...1147...>
+Date: Tue, 30 Jun 2020 16:15:58 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="CK8FEzgnN8ZM1cfW"
-Content-Disposition: inline
-In-Reply-To: <50ad64e7-b75c-e40b-5d5e-9e89e90db45d@...1147...>
+In-Reply-To: <20200630141103.GY1431@...1296...>
+Content-Type: multipart/alternative;
+ boundary="------------6FCBEF9D16625321F6DD870B"
+Content-Language: nl-NL
 Subject: Re: [Openvpn-devel] [Openvpn-users] Multiple DNS search suffixes on
  Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -26,62 +27,117 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jan Just Keijser <janjust@...1147...>
-Cc: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---CK8FEzgnN8ZM1cfW
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+This is a multi-part message in MIME format.
+--------------6FCBEF9D16625321F6DD870B
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi,
+hi,
+
+On 30/06/20 16:11, Gert Doering wrote:
+> Hi,
+>
+> On Tue, Jun 30, 2020 at 04:07:52PM +0200, Jan Just Keijser wrote:
+>> @@ -5697,6 +5740,11 @@ build_dhcp_options_string(struct buffer *buf, const struct tuntap_options *o)
+>>       write_dhcp_u32_array(buf, 42, (uint32_t *)o->ntp, o->ntp_len, &error);
+>>       write_dhcp_u32_array(buf, 45, (uint32_t *)o->nbdd, o->nbdd_len, &error);
+>>   
+>> +    for (int i=0; i < o->domain_search_list_len; i++)
+>> +    {
+>> +        write_dhcp_search_str(buf, 119, o->domain_search_list[i], &error);
+>> +    }
+> I assume that this won't work.  In the DHCP answer, it must be a single
+> option with the concatenated list, not multiple answers with a single
+> domain name each.
+>
+> gert
+>
+see https://tools.ietf.org/html/rfc3397
+
+"
+
+    In the above diagram, Searchstring is a string specifying the
+    searchlist.  If the length of the searchlist exceeds the maximum
+    permissible within a single option (255 octets), then multiple
+    options MAY be used, as described in "Encoding Long Options in the
+    Dynamic Host Configuration Protocol (DHCPv4)" [RFC3396 <https://tools.ietf.org/html/rfc3396>].
+
+"
+
+
+so you MAY use this option multiple times - and wireshark groks it fine. I don't have a Windows 10
+client to test it against, however, so I am hoping that someone (Selva?) can do that for me.
+
+cheers,
+
+JJK
+
+
+--------------6FCBEF9D16625321F6DD870B
+Content-Type: text/html; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;
+      charset=windows-1252">
+  </head>
+  <body text="#000000" bgcolor="#FFFFFF">
+    <div class="moz-cite-prefix">hi,<br>
+      <br>
+      On 30/06/20 16:11, Gert Doering wrote:<br>
+    </div>
+    <blockquote type="cite"
+      cite="mid:20200630141103.GY1431@...1296...">
+      <pre wrap="">Hi,
 
 On Tue, Jun 30, 2020 at 04:07:52PM +0200, Jan Just Keijser wrote:
-> @@ -5697,6 +5740,11 @@ build_dhcp_options_string(struct buffer *buf, cons=
-t struct tuntap_options *o)
->      write_dhcp_u32_array(buf, 42, (uint32_t *)o->ntp, o->ntp_len, &error=
-);
->      write_dhcp_u32_array(buf, 45, (uint32_t *)o->nbdd, o->nbdd_len, &err=
-or);
->=20=20
-> +    for (int i=3D0; i < o->domain_search_list_len; i++)
-> +    {
-> +        write_dhcp_search_str(buf, 119, o->domain_search_list[i], &error=
-);
-> +    }
-
-I assume that this won't work.  In the DHCP answer, it must be a single=20
-option with the concatenated list, not multiple answers with a single=20
+</pre>
+      <blockquote type="cite">
+        <pre wrap="">@@ -5697,6 +5740,11 @@ build_dhcp_options_string(struct buffer *buf, const struct tuntap_options *o)
+     write_dhcp_u32_array(buf, 42, (uint32_t *)o-&gt;ntp, o-&gt;ntp_len, &amp;error);
+     write_dhcp_u32_array(buf, 45, (uint32_t *)o-&gt;nbdd, o-&gt;nbdd_len, &amp;error);
+ 
++    for (int i=0; i &lt; o-&gt;domain_search_list_len; i++)
++    {
++        write_dhcp_search_str(buf, 119, o-&gt;domain_search_list[i], &amp;error);
++    }
+</pre>
+      </blockquote>
+      <pre wrap="">
+I assume that this won't work.  In the DHCP answer, it must be a single 
+option with the concatenated list, not multiple answers with a single 
 domain name each.
 
 gert
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+</pre>
+    </blockquote>
+    see <a class="moz-txt-link-freetext" href="https://tools.ietf.org/html/rfc3397">https://tools.ietf.org/html/rfc3397</a><br>
+    <br>
+    "<br>
+    <pre class="newpage">   In the above diagram, Searchstring is a string specifying the
+   searchlist.  If the length of the searchlist exceeds the maximum
+   permissible within a single option (255 octets), then multiple
+   options MAY be used, as described in "Encoding Long Options in the
+   Dynamic Host Configuration Protocol (DHCPv4)" [<a href="https://tools.ietf.org/html/rfc3396" title="&quot;Encoding Long Options in the Dynamic Host Configuration Protocol (DHCPv4)&quot;">RFC3396</a>].
 
-Gert Doering - Munich, Germany                             gert@...1296...
+"
 
---CK8FEzgnN8ZM1cfW
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+so you MAY use this option multiple times - and wireshark groks it fine. I don't have a Windows 10 
+client to test it against, however, so I am hoping that someone (Selva?) can do that for me.
 
-iQGcBAEBAgAGBQJe+0f2AAoJEB2Cnv7KVigSPawL/i3kjdrVTcXJ6jnCFoWrXyPA
-SJkqESr2xAMcUKyrMX/JOuVN4Mu3x+iLYfdMZPStschjdI8wghkni1GHsrDj2LqS
-+M8WhG9kxEMJrwF1w49+rs2yxaqBkMRuoLUyfcXUYGMwCtGWtwfpIp9nTMTubXQW
-AWO4wxjWMIxeckbxAXBBS57ZQ8OvbCjt5jOfHjLZ1jQsY/ePm9Vd3Eer2vbqcaU6
-rOPfQiWafGx4UCb4shdglQB/EXXO87k0HkGapP2NCBAK0po/v5jZCGClnvg+hRsZ
-uW30sIEJh28EoI5x+vWLd1NQ8Dfx91fSW0VXYgFUnaspLQWn9ZEuESf1+g7XGJsq
-2bmXoXFo/V8/88E/vJIepJVI0rH1qX1JEmlWoaLq9eDC0vcDhSXh48kSDlAkDyz6
-ZX/KvLg49y36a7QYz01V3eIymT4ifRFlsD4R6fgQUH2oVN1Ht0IkMd5XBLOaFsB0
-6Ntbsz0OcP6XzgAGUJE5kpc1GLoVZvcNgkDLsimyzA==
-=zHgT
------END PGP SIGNATURE-----
+cheers,
 
---CK8FEzgnN8ZM1cfW--
+JJK
+
+</pre>
+  </body>
+</html>
+
+--------------6FCBEF9D16625321F6DD870B--
 
