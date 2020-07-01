@@ -1,10 +1,11 @@
-Date: Wed, 1 Jul 2020 16:59:46 +0200 (CEST)
-Message-Id: <202007011459.061Exkox037942@...2054...>
+Date: Wed, 1 Jul 2020 17:01:03 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200629175109.94276-1-gert@...1296...>
-References: <20200629175109.94276-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix 'engine' unit test on
- FreeBSD (specifically 'not GNU make')
+Message-ID: <20200701150103.GD1431@...1296...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="q4NW1l+XkLAVal4L"
+Content-Disposition: inline
+Subject: [Openvpn-devel] users of --single-session?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,29 +14,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
-Patch has been applied to the master branch.
+--q4NW1l+XkLAVal4L
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-commit 8a168a9ac82c197725091f67fb5812d4b64050d8
-Author: Gert Doering
-Date:   Mon Jun 29 19:51:09 2020 +0200
+Hi,
 
-     Fix 'engine' unit test on FreeBSD (specifically 'not GNU make')
+is one of you using the openvpn option "--single-session"?
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: James Bottomley <James.Bottomley@...2316...>
-     Message-Id: <20200629175109.94276-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20159.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+If yes, what for?
 
+(This is one of the weird ones that brings quite a bit of extra state
+checking, and hard-to-test special-case code - so we want to get rid=20
+of it)
 
---
-kind regards,
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-Gert Doering
+Gert Doering - Munich, Germany                             gert@...1296...
 
+--q4NW1l+XkLAVal4L
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJe/KUuAAoJEB2Cnv7KVigS4WUL/j/QN4gNg0Znh2GtCF48koRC
+SnQDpswr7BYfgzRiKs7pbDYbQ5SgASp5U2M4hJXCzAkMVZUKYHr48TThaFZSLGp+
+p+g7h6B8Kdr5UyhMId8KkWXuwLilh3aZP6bsClmkiwjvCcZRYy/d3RIo/hGRhVLM
+Kt6yiDD4ITt2xxUQgCKTrf1lD9QvUGEMj9renOwMRmUUiHXUTSiDq+9RggbshhkI
+s14j8cPwgvbTwlmeYpJ5rq12dJdPG967eXE96yYr3GM/A073aAcn86nO6CTO3DiU
+Db8Vgj3yALMX3wi4ISUQGX/VpLbUmiD249SX9gsmf83slA7V7+B0W7znLrOhQUot
+h9MrF6jBQYrSlUIe/XqgjzpYZJDqcf7KusjR9MXQwAGLIcChSBWHCF4bZsxG+UDV
+GNY9cxkyc55fclGdqQjB2d6IVBoGTGzl103OXfKbk2nlE6NTnjEWrpZNGbDMTbSX
+iBAMA0RD6hHBDu5EYFcrUOVGTsdHI39Do9P79lbV7w==
+=55Zv
+-----END PGP SIGNATURE-----
+
+--q4NW1l+XkLAVal4L--
 
