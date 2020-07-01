@@ -1,8 +1,8 @@
-From: Richard Bonhomme <tincanteksup@...277...>
-Date: Wed,  1 Jul 2020 02:10:18 +0100
-Message-Id: <20200701011018.31364-1-tincanteksup@...277...>
-Subject: [Openvpn-devel] [Patch] New man page corrections -
- windows-options.rst
+From: Arne Schwabe <arne@...1227...>
+Date: Wed,  1 Jul 2020 14:22:39 +0200
+Message-Id: <20200701122239.6924-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Remove parameter config from
+ multi_client_connect_mda
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,34 +15,41 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Signed-off-by: Richard Bonhomme <tincanteksup@...277...>
----
- doc/man-sections/windows-options.rst | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+config is always used as mi->cc_config and we pass mi,
+so directly use mi->cc_config
 
-diff --git a/doc/man-sections/windows-options.rst b/doc/man-sections/windows-options.rst
-index 5ae7116c..72424d6b 100644
---- a/doc/man-sections/windows-options.rst
-+++ b/doc/man-sections/windows-options.rst
-@@ -231,7 +231,7 @@ Windows-Specific Options
-   directive is not specified, OpenVPN will use the SystemRoot environment
-   variable.
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/multi.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 95b16744..19261c37 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -1722,11 +1722,10 @@ multi_client_connect_post_plugin(struct multi_context *m,
+ static void
+ multi_client_connect_mda(struct multi_context *m,
+                          struct multi_instance *mi,
+-                         const struct buffer_list *config,
+                          unsigned int option_permissions_mask,
+                          unsigned int *option_types_found)
+ {
+-    if (config)
++    if (mi->cc_config)
+     {
+         struct buffer_entry *be;
  
--  This option have changed behaviour in OpenVPN 2.3. Earlier you had to
-+  This option has changed behaviour since OpenVPN 2.3. Earlier you had to
-   define ``--win-sys env`` to use the SystemRoot environment variable,
-   otherwise it defaulted to :code:`C:\\WINDOWS`. It is not needed to use
-   the ``env`` keyword any more, and it will just be ignored. A warning is
-@@ -239,7 +239,7 @@ Windows-Specific Options
- 
- --windows-driver drv
-   Specifies which tun driver to use. Values are :code:`tap-windows6`
--  (default) and :code:`wintun`.  This is Windows-only option.
-+  (default) and :code:`wintun`.  This is a Windows-only option.
-   :code:`wintun`" requires ``--dev tun`` and the OpenVPN process to run
-   elevated, or be invoked using the Interactive Service.
- 
+@@ -1986,7 +1985,7 @@ script_failed:
+ #ifdef MANAGEMENT_DEF_AUTH
+         if (cc_succeeded && mi->cc_config)
+         {
+-            multi_client_connect_mda(m, mi, mi->cc_config, option_permissions_mask, &option_types_found);
++            multi_client_connect_mda(m, mi, option_permissions_mask, &option_types_found);
+             ++cc_succeeded_count;
+         }
+ #endif
 -- 
-2.17.1
+2.26.2
 
 
