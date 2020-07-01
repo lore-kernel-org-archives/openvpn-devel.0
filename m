@@ -1,9 +1,10 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Wed,  1 Jul 2020 16:05:17 +0200
-Message-Id: <20200701140517.11176-1-a@...2181...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] multi.c: use mi->cc_config instead of
- config variable
+Date: Wed, 1 Jul 2020 16:33:19 +0200 (CEST)
+Message-Id: <202007011433.061EXJMZ033636@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20200701140517.11176-1-a@...2181...>
+References: <20200701140517.11176-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: multi.c: use mi->cc_config
+ instead of config variable
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,34 +15,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Commit ("Remove parameter config from multi_client_connect_mda") has
-removed the config variable in favour of mi->cc_config, however one
-occurence was not changed.
+Acked-by: Gert Doering <gert@...1296...>
 
-Fix it now by properly using mi->cc_config.
+Test compiled.  Stared at code.  Grumbled.  Ran a small t_server test
+("just to be sure").
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
- src/openvpn/multi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Your patch has been applied to the master branch.
 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 19261c37..0e9e0db3 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -1729,7 +1729,7 @@ multi_client_connect_mda(struct multi_context *m,
-     {
-         struct buffer_entry *be;
- 
--        for (be = config->head; be != NULL; be = be->next)
-+        for (be = mi->cc_config->head; be != NULL; be = be->next)
-         {
-             const char *opt = BSTR(&be->buf);
-             options_string_import(&mi->context.options,
--- 
-2.27.0
+commit 712f2629c8406c017931a082cd996b439b5dfdc9
+Author: Antonio Quartulli
+Date:   Wed Jul 1 16:05:17 2020 +0200
+
+     multi.c: use mi->cc_config instead of config variable
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20200701140517.11176-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20180.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
