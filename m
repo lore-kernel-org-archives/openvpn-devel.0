@@ -1,8 +1,8 @@
 From: Richard Bonhomme <tincanteksup@...277...>
-Date: Wed,  1 Jul 2020 23:28:11 +0100
-Message-Id: <20200701222811.14900-1-tincanteksup@...277...>
+Date: Wed,  1 Jul 2020 23:40:31 +0100
+Message-Id: <20200701224031.15113-1-tincanteksup@...277...>
 Subject: [Openvpn-devel] [Patch] New man page corrections -
- client-options.rst
+ protocol-options.rst
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,56 +17,62 @@ To: openvpn-devel@lists.sourceforge.net
 
 Signed-off-by: Richard Bonhomme <tincanteksup@...277...>
 ---
- doc/man-sections/client-options.rst | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+ doc/man-sections/protocol-options.rst | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-options.rst
-index 966ede1e..c5aa58c9 100644
---- a/doc/man-sections/client-options.rst
-+++ b/doc/man-sections/client-options.rst
-@@ -26,9 +26,9 @@ configuration.
-   pass over this token as the password instead of the password the user
-   provided. The authentication token can only be reset by a full reconnect
-   where the server can push new options to the client. The password the
--  user entered is never preserved once an authentication token have been
--  set. If the OpenVPN server side rejects the authentication token, the
--  client will receive an ``AUTH_FAIL`` and disconnect.
-+  user entered is never preserved once an authentication token has been
-+  set. If the OpenVPN server side rejects the authentication token then
-+  the client will receive an ``AUTH_FAIL`` and disconnect.
+diff --git a/doc/man-sections/protocol-options.rst b/doc/man-sections/protocol-options.rst
+index 5bc072af..a5a1253a 100644
+--- a/doc/man-sections/protocol-options.rst
++++ b/doc/man-sections/protocol-options.rst
+@@ -1,7 +1,7 @@
+ Protocol options
+ ----------------
+-Options in this section affects features available in the OpenVPN wire
+-protocol.  Many of these options also defines the encryption options
++Options in this section affect features available in the OpenVPN wire
++protocol.  Many of these options also define the encryption options
+ of the data channel in the OpenVPN wire protocol.  These options must be
+ configured in a compatible way between both the local and remote side.
  
-   The purpose of this is to enable two factor authentication methods, such
-   as HOTP or TOTP, to be used without needing to retrieve a new OTP code
-@@ -130,7 +130,7 @@ configuration.
-   Set ``--verb 6`` for debugging info showing the transformation of
-   src/dest addresses in packets.
+@@ -9,15 +9,15 @@ configured in a compatible way between both the local and remote side.
+   Authenticate data channel packets and (if enabled) ``tls-auth`` control
+   channel packets with HMAC using message digest algorithm ``alg``. (The
+   default is ``SHA1`` ). HMAC is a commonly used message authentication
+-  algorithm (MAC) that uses a data string, a secure hash algorithm, and a
+-  key, to produce a digital signature.
++  algorithm (MAC) that uses a data string, a secure hash algorithm and a
++  key to produce a digital signature.
  
----connect-retry args
-+--connect-retry n
-   Wait ``n`` seconds between connection attempts (default :code:`5`).
-   Repeated reconnection attempts are slowed down after 5 retries per
-   remote by doubling the wait time after each unsuccessful attempt. An
-@@ -139,7 +139,7 @@ configuration.
+   The OpenVPN data channel protocol uses encrypt-then-mac (i.e. first
+-  encrypt a packet, then HMAC the resulting ciphertext), which prevents
++  encrypt a packet then HMAC the resulting ciphertext), which prevents
+   padding oracle attacks.
  
- --connect-retry-max n
-   ``n`` specifies the number of times each ``--remote`` or
--  ``<connection>`` entry is tried. Specifying ``n`` as one would try each
-+  ``<connection>`` entry is tried. Specifying ``n`` as ``1`` would try each
-   entry exactly once. A successful connection resets the counter.
-   (default *unlimited*).
+-  If an AEAD cipher mode (e.g. GCM) is chosen, the specified ``--auth``
+-  algorithm is ignored for the data channel, and the authentication method
++  If an AEAD cipher mode (e.g. GCM) is chosen then the specified ``--auth``
++  algorithm is ignored for the data channel and the authentication method
+   of the AEAD cipher is used instead. Note that ``alg`` still specifies
+   the digest used for ``tls-auth``.
  
-@@ -331,9 +331,8 @@ configuration.
+@@ -55,7 +55,7 @@ configured in a compatible way between both the local and remote side.
  
- --server-poll-timeout n
-   When connecting to a remote server do not wait for more than ``n``
--  seconds waiting for a response before trying the next server. The
--  default value is 120s. This timeout includes proxy and TCP connect
--  timeouts.
-+  seconds for a response before trying the next server. The default value
-+  is 120s. This timeout includes proxy and TCP connect timeouts.
+ --compress algorithm
+   **DEPRECATED** Enable a compression algorithm.  Compression is generally
+-  not recommended.  VPN tunnels which uses compression are suspectible to
++  not recommended.  VPN tunnels which use compression are susceptible to
+   the VORALCE attack vector.
  
- --static-challenge args
-   Enable static challenge/response protocol
+   The ``algorithm`` parameter may be :code:`lzo`, :code:`lz4`, or empty.
+@@ -161,7 +161,7 @@ configured in a compatible way between both the local and remote side.
+   either specify ``--cipher BF-CBC`` or ``--cipher AES-256-CBC`` and both
+   will work.
+ 
+-  Note, for using NCP with a OpenVPN 2.4 peer this list must include the
++  Note for using NCP with an OpenVPN 2.4 peer: This list must include the
+   :code:`AES-256-GCM` and :code:`AES-128-GCM` ciphers.
+ 
+   This list is restricted to be 127 chars long after conversion to OpenVPN
 -- 
 2.17.1
 
