@@ -1,11 +1,9 @@
-References: <20200701122239.6924-1-arne@...1227...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <dee5fe07-aa6d-c59f-4f25-7a617e8a2dfc@...2181...>
-Date: Wed, 1 Jul 2020 15:07:56 +0200
-MIME-Version: 1.0
+Date: Wed, 1 Jul 2020 15:27:06 +0200 (CEST)
+Message-Id: <202007011327.061DR60R032428@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20200701122239.6924-1-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Remove parameter config from
+References: <20200701122239.6924-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove parameter config from
  multi_client_connect_mda
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -15,22 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Your patch has been applied to the master branch.
 
-On 01/07/2020 14:22, Arne Schwabe wrote:
-> config is always used as mi->cc_config and we pass mi,
-> so directly use mi->cc_config
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
+(Haven't done any testing, but patch looks "obviously correct" and Antonio
+beat me to ACKing it anyway :) )
 
-Acked-by: Antonio Quartulli <a@...2181...>
+commit 9f0a7dcc7fa21228dbd40d976aaee5a90ac48299
+Author: Arne Schwabe
+Date:   Wed Jul 1 14:22:39 2020 +0200
+
+     Remove parameter config from multi_client_connect_mda
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20200701122239.6924-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20177.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
+--
+kind regards,
 
--- 
-Antonio Quartulli
+Gert Doering
+
 
