@@ -1,10 +1,11 @@
-Date: Thu, 2 Jul 2020 15:31:59 +0200 (CEST)
-Message-Id: <202007021331.062DVxoP058567@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200702125224.13516-1-arne@...1227...>
-References: <20200702125224.13516-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove push_reply_deferred
- variable
+MIME-Version: 1.0
+References: <20200701011018.31364-1-tincanteksup@...277...>
+In-Reply-To: <20200701011018.31364-1-tincanteksup@...277...>
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Thu, 2 Jul 2020 09:41:23 -0400
+Message-ID: <CAEsd45QTnQqWOgDv0u_v2640YSok+2W_zXJ7dgn061eR8Aov9A@...278...>
+Subject: Re: [Openvpn-devel] [Patch] New man page corrections -
+ windows-options.rst
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,31 +14,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Richard Bonhomme <tincanteksup@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Your patch has been applied to the master branch.
+Improves English diction and/or grammar of man page.
 
-(I *have* test-compiled this one)
+Acked-by: Jonathan K. Bullard <jkbullard@...277...>
 
-commit 182a2fdd91c5d7a0f6e051182e833f2c7f460cb3
-Author: Arne Schwabe
-Date:   Thu Jul 2 14:52:24 2020 +0200
-
-     Remove push_reply_deferred variable
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20200702125224.13516-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20186.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+On Tue, Jun 30, 2020 at 9:11 PM Richard Bonhomme <tincanteksup@...277...> wrote:
+>
+> Signed-off-by: Richard Bonhomme <tincanteksup@...277...>
+> ---
+>  doc/man-sections/windows-options.rst | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/doc/man-sections/windows-options.rst b/doc/man-sections/windows-options.rst
+> index 5ae7116c..72424d6b 100644
+> --- a/doc/man-sections/windows-options.rst
+> +++ b/doc/man-sections/windows-options.rst
+> @@ -231,7 +231,7 @@ Windows-Specific Options
+>    directive is not specified, OpenVPN will use the SystemRoot environment
+>    variable.
+>
+> -  This option have changed behaviour in OpenVPN 2.3. Earlier you had to
+> +  This option has changed behaviour since OpenVPN 2.3. Earlier you had to
+>    define ``--win-sys env`` to use the SystemRoot environment variable,
+>    otherwise it defaulted to :code:`C:\\WINDOWS`. It is not needed to use
+>    the ``env`` keyword any more, and it will just be ignored. A warning is
+> @@ -239,7 +239,7 @@ Windows-Specific Options
+>
+>  --windows-driver drv
+>    Specifies which tun driver to use. Values are :code:`tap-windows6`
+> -  (default) and :code:`wintun`.  This is Windows-only option.
+> +  (default) and :code:`wintun`.  This is a Windows-only option.
+>    :code:`wintun`" requires ``--dev tun`` and the OpenVPN process to run
+>    elevated, or be invoked using the Interactive Service.
+>
+> --
+> 2.17.1
+>
+>
+>
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
