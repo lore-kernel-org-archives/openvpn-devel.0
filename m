@@ -1,11 +1,11 @@
 From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <810d1bcb-1a97-4fbf-aaf6-b05e524a643d@...515...>
-Date: Thu, 2 Jul 2020 21:33:24 +0300
+Message-ID: <f8932a9a-4ab2-a830-0b8b-cb684bc5ce77@...515...>
+Date: Thu, 2 Jul 2020 22:08:45 +0300
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="iPnPL4Wh3QynrTlWj1kPF8P7l7EAOyD0U"
-Subject: [Openvpn-devel] OpenVPN 2.5 MSI installers for Windows available
+ boundary="n19tV5b8fOx9e7he80ztUE9CKiIYazSJZ"
+Subject: [Openvpn-devel] Community meetings in July 2020
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,62 +17,61 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---iPnPL4Wh3QynrTlWj1kPF8P7l7EAOyD0U
-Content-Type: multipart/mixed; boundary="3V1uPTkRP3GBp3Qpt2GsR4g37T6S6kBLc"
+--n19tV5b8fOx9e7he80ztUE9CKiIYazSJZ
+Content-Type: multipart/mixed; boundary="Ix30MJM1fb24e2KO2Nz0Wo7ibTDEpPfll"
 
---3V1uPTkRP3GBp3Qpt2GsR4g37T6S6kBLc
+--Ix30MJM1fb24e2KO2Nz0Wo7ibTDEpPfll
 Content-Language: en-US
-Content-Type: text/plain; charset="iso-8859-15"
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-For anyone who is interested: here are MSI installers for OpenVPN 2.5:
+Our community meetings will alternate between Wed 11:30 CET and Thu
+20:00 CET.
 
-<https://build.openvpn.net/downloads/temp/msi>
+Next meetings have been scheduled to
 
+- Thu 2nd June 20:00 CET (forgot to send the invite)
+- Wed 8th July 11:30 CET
+- Thu 16th June 20:00 CET
+- Wed 22nd June 11:30 CET
+- Thu 30th June 20:00 CET
 
-They have been lightly tested and "seem to work" on Windows 7, Windows
-10 and Windows Server 2016. Windows 10 on ARM64 fails driver in
-installation, but we're looking into it.
+The place is #openvpn-meeting IRC channel at Freenode. Meeting agendas
+and summaries are in here:
 
-OpenVPN comes with a number of big and small changes. Probably the most
-authoritative list is the "Must have" section here:
-
-<https://community.openvpn.net/openvpn/wiki/StatusOfOpenvpn25>
-
-The MSI installers bundle both tap-windows6 and wintun[1] drivers. If
-you want to try out wintun add
-
-  windows-driver wintun
-
-to you config file. As the name implies wintun will only work in tun mode.
-
-If you encounter any issues with the installer please let us know!
+<https://community.openvpn.net/openvpn/wiki/IrcMeetings>
 
 Samuli
 
-[1] <https://www.wintun.net/>
 
 
---3V1uPTkRP3GBp3Qpt2GsR4g37T6S6kBLc--
 
---iPnPL4Wh3QynrTlWj1kPF8P7l7EAOyD0U
+
+
+
+
+
+
+--Ix30MJM1fb24e2KO2Nz0Wo7ibTDEpPfll--
+
+--n19tV5b8fOx9e7he80ztUE9CKiIYazSJZ
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAl7+KHQACgkQKVhNn0CG
-RXjSgQgAlH1eq1jYnLUWLgzCl+MxjljGsYy2Aa+avhNUuL6GGj3zmaHzPN2Mnzbu
-emuP4F4QSHHuNMP2T9dYV+t23XpOd+bl4QYEq5E/gKw79nQj6GjPUAF5ZdG+lq1W
-hrJTYv6CwzzN8GwHSIwQJiGFBCkfgx9/4Eql0sjnBZd5LVptIvClA7g995pTm+ha
-c2IiCxpbwG2hH65DzYPEZK7PyK52Vb4IgAwVl3Ngva1DoQucL1G34fuh2sVqjyFk
-IbP5HbavhLpOMFvJ9QCu3m4e3g71ECNky7RFZ0oh5LT8aFOFRUKPnREC/oJGHyGs
-38a0j9KVq5vb2wTN7EXHl/aiT3qwIw==
-=O4jk
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAl7+ML0ACgkQKVhNn0CG
+RXjOzQf/aPu+1B3XQLf1pBlalrHkN/IOX6OzNHHjYOQaopEOitO15JU4S5zxNLW7
+7cUIdQ/A6BQ65ZaM+d2dfZmYFVErMO5l5iDxhJ9mu14x1ZX9GHukv6bt/T8sZ/dS
+qllbvC73CfbODVD6M2urpz7aY+x+kfTbsjxxb6NAPxXMrF1byD2a8fIVilnGTyM0
+YoHcnuwALtOOgxlCBUxbl9/sE74jDonuPergyB60n5CiANBFvrXrHPRsHJ3ZCopG
+jIOZ2WI75U66Hs2UhMfZOk5HnFzffRjiN4LLpgzZZ4/c3S/dYuWaLihL6h7Cys71
+1QhvhLNMlLEDeNpBGsCvJOYWrA3Lqg==
+=Ys4/
 -----END PGP SIGNATURE-----
 
---iPnPL4Wh3QynrTlWj1kPF8P7l7EAOyD0U--
+--n19tV5b8fOx9e7he80ztUE9CKiIYazSJZ--
 
