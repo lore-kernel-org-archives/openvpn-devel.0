@@ -1,8 +1,10 @@
-From: Richard Bonhomme <tincanteksup@...277...>
-Date: Thu,  2 Jul 2020 14:25:49 +0100
-Message-Id: <20200702132549.25554-1-tincanteksup@...277...>
-Subject: [Openvpn-devel] [Patch] New man page corrections -
- vpn-network-options.rst
+Date: Thu, 2 Jul 2020 15:31:59 +0200 (CEST)
+Message-Id: <202007021331.062DVxoP058567@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20200702125224.13516-1-arne@...1227...>
+References: <20200702125224.13516-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove push_reply_deferred
+ variable
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,36 +15,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Signed-off-by: Richard Bonhomme <tincanteksup@...277...>
----
- doc/man-sections/vpn-network-options.rst | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Your patch has been applied to the master branch.
 
-diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections/vpn-network-options.rst
-index d75cf540..894df367 100644
---- a/doc/man-sections/vpn-network-options.rst
-+++ b/doc/man-sections/vpn-network-options.rst
-@@ -91,7 +91,7 @@ routing.
- --dhcp-option args
-   Set additional network settings via DHCP.  On Windows, this is parsed by
-   the ``tap-windows6`` or ``wintun`` driver.  On other platforms these
--  options can be picked up by a ``--up`` script or plug-in if it has been
-+  options can be picked up by an ``--up`` script or plug-in if it has been
-   pushed by the OpenVPN server.  The option will then be saved in the
-   client's environment before the ``--up`` script is called, under the name
-   :code:`foreign_option_{n}`.
-@@ -475,7 +475,7 @@ routing.
- 
-   The MTU (Maximum Transmission Units) is the maximum datagram size in
-   bytes that can be sent unfragmented over a particular network path.
--  OpenVPN requires that packets on the control or data channels be sent
-+  OpenVPN requires that packets on the control and data channels be sent
-   unfragmented.
- 
-   MTU problems often manifest themselves as connections which hang during
--- 
-2.17.1
+(I *have* test-compiled this one)
+
+commit 182a2fdd91c5d7a0f6e051182e833f2c7f460cb3
+Author: Arne Schwabe
+Date:   Thu Jul 2 14:52:24 2020 +0200
+
+     Remove push_reply_deferred variable
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <20200702125224.13516-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20186.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
