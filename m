@@ -1,8 +1,7 @@
-From: Richard Bonhomme <tincanteksup@...277...>
-Date: Wed,  1 Jul 2020 23:40:31 +0100
-Message-Id: <20200701224031.15113-1-tincanteksup@...277...>
-Subject: [Openvpn-devel] [Patch] New man page corrections -
- protocol-options.rst
+From: Arne Schwabe <arne@...1227...>
+Date: Thu,  2 Jul 2020 14:52:24 +0200
+Message-Id: <20200702125224.13516-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Remove push_reply_deferred variable
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,65 +14,74 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Signed-off-by: Richard Bonhomme <tincanteksup@...277...>
----
- doc/man-sections/protocol-options.rst | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+The variable has no useful function (anymore?).
 
-diff --git a/doc/man-sections/protocol-options.rst b/doc/man-sections/protocol-options.rst
-index 5bc072af..a5a1253a 100644
---- a/doc/man-sections/protocol-options.rst
-+++ b/doc/man-sections/protocol-options.rst
-@@ -1,7 +1,7 @@
- Protocol options
- ----------------
--Options in this section affects features available in the OpenVPN wire
--protocol.  Many of these options also defines the encryption options
-+Options in this section affect features available in the OpenVPN wire
-+protocol.  Many of these options also define the encryption options
- of the data channel in the OpenVPN wire protocol.  These options must be
- configured in a compatible way between both the local and remote side.
+There is only one place where this variable was checked
+
+    else if (!c->c2.push_reply_deferred && c->c2.context_auth == CAS_SUCCEEDED)
+
+This condition also depends on context_auth == CAS_SUCCEEDED but the only
+code path that sets context_auth = CAS_SUCCEEDED also sets
+push_reply_deferred = false;
+
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/multi.c   | 7 -------
+ src/openvpn/openvpn.h | 1 -
+ src/openvpn/push.c    | 2 +-
+ 3 files changed, 1 insertion(+), 9 deletions(-)
+
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 95b16744..138701a9 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -828,8 +828,6 @@ multi_create_instance(struct multi_context *m, const struct mroute_addr *real)
+     mi->did_cid_hash = true;
+ #endif
  
-@@ -9,15 +9,15 @@ configured in a compatible way between both the local and remote side.
-   Authenticate data channel packets and (if enabled) ``tls-auth`` control
-   channel packets with HMAC using message digest algorithm ``alg``. (The
-   default is ``SHA1`` ). HMAC is a commonly used message authentication
--  algorithm (MAC) that uses a data string, a secure hash algorithm, and a
--  key, to produce a digital signature.
-+  algorithm (MAC) that uses a data string, a secure hash algorithm and a
-+  key to produce a digital signature.
+-    mi->context.c2.push_reply_deferred = true;
+-
+ #ifdef ENABLE_ASYNC_PUSH
+     mi->context.c2.push_request_received = false;
+     mi->inotify_watch = -1;
+@@ -2109,11 +2107,6 @@ script_failed:
  
-   The OpenVPN data channel protocol uses encrypt-then-mac (i.e. first
--  encrypt a packet, then HMAC the resulting ciphertext), which prevents
-+  encrypt a packet then HMAC the resulting ciphertext), which prevents
-   padding oracle attacks.
+         gc_free(&gc);
+     }
+-
+-    /*
+-     * Reply now to client's PUSH_REQUEST query
+-     */
+-    mi->context.c2.push_reply_deferred = false;
+ }
  
--  If an AEAD cipher mode (e.g. GCM) is chosen, the specified ``--auth``
--  algorithm is ignored for the data channel, and the authentication method
-+  If an AEAD cipher mode (e.g. GCM) is chosen then the specified ``--auth``
-+  algorithm is ignored for the data channel and the authentication method
-   of the AEAD cipher is used instead. Note that ``alg`` still specifies
-   the digest used for ``tls-auth``.
+ #ifdef ENABLE_ASYNC_PUSH
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index 1afc3a92..4609af3e 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -432,7 +432,6 @@ struct context_2
+ #if P2MP
  
-@@ -55,7 +55,7 @@ configured in a compatible way between both the local and remote side.
+     /* --ifconfig endpoints to be pushed to client */
+-    bool push_reply_deferred;
+ #ifdef ENABLE_ASYNC_PUSH
+     bool push_request_received;
+ #endif
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 369cd6a4..56d652a3 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -803,7 +803,7 @@ process_incoming_push_request(struct context *c)
+         send_auth_failed(c, client_reason);
+         ret = PUSH_MSG_AUTH_FAILURE;
+     }
+-    else if (!c->c2.push_reply_deferred && c->c2.context_auth == CAS_SUCCEEDED)
++    else if (c->c2.context_auth == CAS_SUCCEEDED)
+     {
+         time_t now;
  
- --compress algorithm
-   **DEPRECATED** Enable a compression algorithm.  Compression is generally
--  not recommended.  VPN tunnels which uses compression are suspectible to
-+  not recommended.  VPN tunnels which use compression are susceptible to
-   the VORALCE attack vector.
- 
-   The ``algorithm`` parameter may be :code:`lzo`, :code:`lz4`, or empty.
-@@ -161,7 +161,7 @@ configured in a compatible way between both the local and remote side.
-   either specify ``--cipher BF-CBC`` or ``--cipher AES-256-CBC`` and both
-   will work.
- 
--  Note, for using NCP with a OpenVPN 2.4 peer this list must include the
-+  Note for using NCP with an OpenVPN 2.4 peer: This list must include the
-   :code:`AES-256-GCM` and :code:`AES-128-GCM` ciphers.
- 
-   This list is restricted to be 127 chars long after conversion to OpenVPN
 -- 
-2.17.1
+2.26.2
 
 
