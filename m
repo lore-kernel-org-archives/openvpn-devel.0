@@ -1,26 +1,11 @@
-References: <523527018.2514117.1583041035054@...2084...>
- <20200301071521.GI1431@...1296...>
- <CAKuzo_j=P8vZvkOL4Rgh1icLJiu0a-r4yQGrD1GSACrn14G9QQ@...278...>
- <f4b83fe0-cbe1-eed3-ff9b-4aaaea5a12b1@...1147...>
- <20200621111403.GP1431@...1296...>
- <CAKuzo_h2oTaNK7A3+3MJ6GSfApr9L9vXYFtzELH8SaaNzqFWuQ@...278...>
- <f664dcaf-7224-1b17-c953-584557f2ac56@...1147...>
- <CAKuzo_iFf2iuOLg4LpXrz42MG1GggvdrcWKJrcDT6j38tQjrUw@...278...>
- <20200624102804.GM1431@...1296...>
- <50ad64e7-b75c-e40b-5d5e-9e89e90db45d@...1147...>
- <20200630141103.GY1431@...1296...>
- <67f23584-07bd-7f0a-de1d-6ac285342e46@...1147...>
- <885f8b43-cd49-a88e-4a69-4913c0636e56@...2080...>
- <56e393a1-0838-9888-d178-96df4e9c277f@...1147...>
- <6cc72b95-3f72-f974-258e-c0b0e5efa28a@...1227...>
-From: Jan Just Keijser <janjust@...1147...>
-Message-ID: <f32f50cd-6dc2-44a1-27bb-14dc6d60ac52@...1147...>
-Date: Fri, 3 Jul 2020 11:57:55 +0200
 MIME-Version: 1.0
-In-Reply-To: <6cc72b95-3f72-f974-258e-c0b0e5efa28a@...1227...>
-Content-Language: nl-NL
-Subject: Re: [Openvpn-devel] [Openvpn-users] Multiple DNS search suffixes on
- Windows
+References: <c4628c37-0c3b-a402-ee9d-68ee7062e1f3@...2080...>
+In-Reply-To: <c4628c37-0c3b-a402-ee9d-68ee7062e1f3@...2080...>
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Fri, 3 Jul 2020 06:47:03 -0400
+Message-ID: <CAEsd45QSuFgHU7WD2+W7HgckRSiPMmPOHvQnVWdmCkteCPY1Qw@...278...>
+Subject: Re: [Openvpn-devel] [RFC] Challenges with OpenVPN and configuring
+ DNS
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -29,60 +14,105 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format="flowed"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: Arne Schwabe <arne@...1227...>, David Sommerseth <openvpn@...2080...>, Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: David Sommerseth <openvpn@...2080...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, Jonathan Wright <jon@...2563...>, Arne Schwabe <arne@...515...>
 
-Hi,
+Hi. There's a lot here and I haven't digested all of it, but have a
+couple of comments about macOS and Tunnelblick, below.
 
-On 03/07/20 11:18, Arne Schwabe wrote:
->>> The main purpose of that RFC is to ensure we handle DNS and
->>> --dhcp-options
->>> consistently across all OpenVPN implementations we care about, and
->>> that we
->>> document this properly.
->>>
->> I see one as an implementation issue (can we specify a particular DHCP
->> option more than once) and one as an OpenVPN protocol issue.
->> I fully agree that it's time to think about and overhaul the DNS
->> settings for OpenVPN but I also believe that further abusing the option
->> 'dhcp-option' is not the best way forward.=A0 The option 'dhcp-option'
->> only really applies to the Windows tap-win adapter as that is the only
->> adapter where you can use DHCP to add/change settings.
-> This not even remotely true anymore. Basically all platforms will accept
-> the dhcp-options for modifying the DNS settings.
->
->> AFAIK even the
->> new win-tun adapter does not use DHCP for this. Hence the term 'dhcp-'
->> is moot.
-> Yes. Of course we can specify nicer sounding names for these options and
-> that also break all kind of backwards compatibility for little gain or
-> we document that the dhcp- prefix in these options is for historic reason=
-s.
+On Tue, Jun 23, 2020 at 6:57 PM David Sommerseth
+<openvpn@...2080...> wrote:
 >
 >
-I should have worded it more carefully, but Jonathan beat me to it:
+> Hi,
+>
+> Arne and I have discussed the challenge of DNS configuration and we have =
+paid
+> attention to a recent discussion here on the mailing list as well [1].  We
+> have tried to consider various platforms and have a few proposals for uni=
+fying
+> and documenting DNS configuration as much as possible.
+>
+> [1]
+> <https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg1951=
+2.html>
+>     Message-Id: <f4b83fe0-cbe1-eed3-ff9b-4aaaea5a12b1@...1147...>
+>
+>
+> DNS configuration has become fairly advanced in the later OS releases,
+> compared to the traditional "send all requests to this DNS server" we're
+> all very well used to.
+>
+> Scenarios we have considered:
+>
+>  * Exclusive DNS resolver
+>    All DNS lookup requests should go to a specified DNS server regardless
+>    of the host configuration prior to the VPN connection.
+>
+>  * Split-DNS
+>    Only selected "route domains" should use the provided DNS server
+>
+>  * Windows has it's own DOMAIN setting which may impact how it handles
+>    DNS and NetBios configurations
+>
+>  * Some platforms differentiates between "search domains" (which is the
+>    typical 'search' option in /etc/resolv.conf)  and "route domains" (whi=
+ch
+>    domains should use a specific DNS resolver)
 
-On 03/07/20 11:30, Jonathan K. Bullard wrote:
- > If you mean the term 'dhcp' should not be used in the name of the
- > option, I agree. Perhaps something like "interface-option" would be
- > better.
- >
- > But the _option_ isn't only for Windows tap-win adaptor. The option's
- > arguments are passed to scripts via $foreign_option_* environment
- > variables (on macOS, at least, and I think on most or all platforms).
- > And the Tunnelblick scripts use them to modify network settings, sort
- > of as if they came from DHCP, but not actually using DHCP.
+Tunnelblick implements "search domains" by setting a list of macOS
+"SearchDomains". It isn't well documented, but as I understand it, a
+name that doesn't resolve is suffixed with the first "search domain"
+in the list and the result is looked up. If that doesn't resolve, the
+name is suffixed with the next "search domain" in the list, and the
+process is repeated. Is that what "the typical 'search' option in
+/etc/resolv.conf" does?
+
+Currently Tunnelblick on macOS does not implement "route domains" =E2=80=94
+but they are "on my list".
 
 
-I fully understand that most of those options are supported (or should I=20
-say, '(ab)used' ) by the other platforms but what I meant was that the=20
-name 'dhcp-option' is totally misleading as it has nothing to do with=20
-DHCP *except* when using the tap-win adapter.
+<snip>
+> For platform implementations we have considered the following:
+>
+> * macOS
+>   Tunnelblick uses external scripts which are well tested and seems to
+>   work fine.  Will it make sense to implement native DNS configuration
+>   support into OpenVPN on macOS?  This might mean we need to link OpenVPN
+>   against some Objective-C code to communicate directly with the network
+>   configuration APIs.  It could also be possible to implement this as an
+>   external plug-in, which extends OpenVPN's current behavior.
 
-Thus, if we want an overhaul of this, let's do it right and change the=20
-name of this option.
+Building support for macOS network changes into OpenVPN would be a
+challenge to maintain.
 
-JJK
+The combination of
+
+ * Supporting Apple's annual release of a new version of macOS which
+often changes the way changes to the network setup are done (probably
+four times in the past ten years); and
+
+ * Apple's terrible or nonexistent documentation; and
+
+ * Supporting multiple versions of macOS that each use a different mechanism
+
+means there's a lot of work to do. (I know, because I'm doing it : )
+
+That said, it would be cleaner/nicer to implement it within OpenVPN or
+as a plug-in, instead of having it happen in the "up", "down", and
+"reconnect" scripts. I can't commit to being involved in working on
+that, though I might provide comments or advice occasionally.
+
+(As an aside, Apple tends to throw away stuff that works in favor of
+new, shiny stuff and they do that all the time. They've been pushing
+developers to use Swift, not Objective-C for a while now. Tunnelblick
+has stuck with Objective-C, but it isn't clear how long Apple will
+keep supporting it.  Even so, I agree that code for macOS is
+integrated into OpenVPN, the code should be written in Objective-C.)
+
+Best regards,
+
+Jon
 
