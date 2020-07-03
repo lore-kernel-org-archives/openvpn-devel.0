@@ -1,15 +1,7 @@
-Date: Fri, 3 Jul 2020 20:50:41 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200703185041.GS1431@...1296...>
-References: <20200626082743.15397-1-gert@...1296...>
- <d98b6023-4f57-0a8a-5b97-ed35eda8aa3c@...2181...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="Kp9cd2o9uS61xHTK"
-Content-Disposition: inline
-In-Reply-To: <d98b6023-4f57-0a8a-5b97-ed35eda8aa3c@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] t_client.sh: correctly report all
- failed instances in summary
+From: Lev Stipakov <lstipakov@...277...>
+Date: Fri,  3 Jul 2020 22:20:29 +0300
+Message-Id: <20200703192029.306-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] tap.c: fix adapter renaming
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,60 +10,137 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
---Kp9cd2o9uS61xHTK
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: Lev Stipakov <lev@...515...>
 
-Hi,
+Turns out that renaming adapter by setting registry
+key doesn't really work - while new adapter name is shown
+in control panel etc, when one tries to change adapter properties
+(like set DNS) with netsh call - it fails:
 
-On Fri, Jul 03, 2020 at 07:11:04PM +0200, Antonio Quartulli wrote:
-> On 26/06/2020 10:27, Gert Doering wrote:
-> > t_client.sh reports a summary at the end:
-> >=20
-> >   Test sets succeeded: none.
-> >   Test sets failed: 1 2 3 4 5.
-[..]
-> I can't easily come up with a t_client instance that verifies this
-> failure, but I trust Gert to have done so after having spotted the issue.
+Fri Mar 13 09:05:36 2020 us=569311 Setting IPv4 dns servers on 'OpenVPN Wintun' (if_index = 14) using service
+Fri Mar 13 09:05:37 2020 us=118028 TUN: adding IPv4 dns failed using service: Funktio ei kelpaa.   [status=1 if_name=OpenVPN Wintun]
 
-Actually I was wondering why my failed tests did not show up in the
-summary in some cases :-) - so I had the perfect test case up front.
+This renames adapter with netsh command, like:
 
-(How to reproduce is easy: just run one of the test VPN instances
-manually before starting t_client.sh - it will fail all/most of the
-test due to "these addresse must not ping before we start openvpn!")
+    netsh interface set interface name="Local Area Connection 2" newname="OpenVPN Wintun"
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Above functionality is used by tapctl.exe and openvpnsica.dll (during installation).
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/tapctl/tap.c | 74 +++++++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 57 insertions(+), 17 deletions(-)
 
---Kp9cd2o9uS61xHTK
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/src/tapctl/tap.c b/src/tapctl/tap.c
+index 8ece3fb9..c129c079 100644
+--- a/src/tapctl/tap.c
++++ b/src/tapctl/tap.c
+@@ -1099,6 +1099,43 @@ tap_enable_adapter(
+     return execute_on_first_adapter(hwndParent, pguidAdapter, bEnable ? enable_device : disable_device, pbRebootRequired);
+ }
+ 
++// stripped version of ExecCommand in interactive.c
++static DWORD
++ExecCommand(const WCHAR* cmdline)
++{
++    DWORD exit_code;
++    STARTUPINFOW si;
++    PROCESS_INFORMATION pi;
++    DWORD proc_flags = CREATE_NO_WINDOW | CREATE_UNICODE_ENVIRONMENT;
++    WCHAR* cmdline_dup = NULL;
++
++    ZeroMemory(&si, sizeof(si));
++    ZeroMemory(&pi, sizeof(pi));
++
++    si.cb = sizeof(si);
++
++    /* CreateProcess needs a modifiable cmdline: make a copy */
++    cmdline_dup = _wcsdup(cmdline);
++    if (cmdline_dup && CreateProcessW(NULL, cmdline_dup, NULL, NULL, FALSE,
++        proc_flags, NULL, NULL, &si, &pi))
++    {
++        WaitForSingleObject(pi.hProcess, INFINITE);
++        if (!GetExitCodeProcess(pi.hProcess, &exit_code))
++        {
++            exit_code = GetLastError();
++        }
++
++        CloseHandle(pi.hProcess);
++        CloseHandle(pi.hThread);
++    }
++    else
++    {
++        exit_code = GetLastError();
++    }
++
++    free(cmdline_dup);
++    return exit_code;
++}
+ 
+ DWORD
+ tap_set_adapter_name(
+@@ -1134,7 +1171,7 @@ tap_set_adapter_name(
+         HKEY_LOCAL_MACHINE,
+         szRegKey,
+         0,
+-        KEY_SET_VALUE,
++        KEY_QUERY_VALUE,
+         &hKey);
+     if (dwResult != ERROR_SUCCESS)
+     {
+@@ -1143,27 +1180,30 @@ tap_set_adapter_name(
+         goto cleanup_szAdapterId;
+     }
+ 
+-    /* Set the adapter name. */
+-    size_t sizeName = ((_tcslen(szName) + 1) * sizeof(TCHAR));
+-#ifdef _WIN64
+-    if (sizeName > DWORD_MAX)
++    LPTSTR szOldName = NULL;
++    dwResult = get_reg_string(hKey, TEXT("Name"), &szOldName);
++    if (dwResult != ERROR_SUCCESS)
+     {
+-        dwResult = ERROR_BAD_ARGUMENTS;
+-        msg(M_NONFATAL, "%s: string too big (size %u).", __FUNCTION__, sizeName);
++        SetLastError(dwResult);
++        msg(M_NONFATAL | M_ERRNO, "%s: Error reading adapter name", __FUNCTION__);
+         goto cleanup_hKey;
+     }
+-#endif
+-    dwResult = RegSetKeyValue(
+-        hKey,
+-        NULL,
+-        TEXT("Name"),
+-        REG_SZ,
+-        szName,
+-        (DWORD)sizeName);
++
++    // rename adapter via netsh call
++    const TCHAR* szFmt = _T("netsh interface set interface name=\"%s\" newname=\"%s\"");
++    size_t ncmdline = _tcslen(szFmt) + _tcslen(szOldName) + _tcslen(szName) + 1;
++    WCHAR* szCmdLine = malloc(ncmdline * sizeof(TCHAR));
++    _stprintf_s(szCmdLine, ncmdline, szFmt, szOldName, szName);
++
++    free(szOldName);
++
++    dwResult = ExecCommand(szCmdLine);
++    free(szCmdLine);
++
+     if (dwResult != ERROR_SUCCESS)
+     {
+-        SetLastError(dwResult); /* MSDN does not mention RegSetKeyValue() to set GetLastError(). But we do have an error code. Set last error manually. */
+-        msg(M_NONFATAL | M_ERRNO, "%s: RegSetKeyValue(\"Name\") failed", __FUNCTION__);
++        SetLastError(dwResult);
++        msg(M_NONFATAL | M_ERRNO, "%s: Error renaming adapter", __FUNCTION__);
+         goto cleanup_hKey;
+     }
+ 
+-- 
+2.17.1
 
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJe/34BAAoJEB2Cnv7KVigSkEML/20fLgyvbqqxqUdRIrlT0cec
-imii6+Rt2NpTuls/P+1/5QOSYFi35z6MccoCXK/liHKsLRso+5XpWpOYDgEhhWZL
-5u8Hk9XSux35HXl0sYKW/aNU1xcyZmfWHdtyIepg+A+GVbMx4Bd4HjM5rUMQ6Ll3
-DxW+/H3dPRS/e+Ya9yXBuRv5kzypvGCOBPIVRuu+wRzQHshAFV1LDImGNgi9zz0p
-jl7POJjvjoaxEOlPMOBcry4CffffzHFjHfK3+rKm+a3B5drmrMostnXaseVvwTEX
-r8gQ/ACmuJIbtxzGKqjWdhsZzuA10G/NJjbfrxAfA2CQ+2EXxaS5b46ZZLHZhM93
-iGyuoeqYz6wXxP+OJhItzAaHnvRvh+Z8hn03ozl4OfXW6sSckiaMJveQvlCmHHEZ
-+KCPr5Sht/sqxEKueWWoxQDydPDv0icca9P1uTMTyq9pDqaj6vK3Fc1hOXfuWiFE
-Qvqx5yUcbuz8pbOUYqJdZ+MckKUDcwcveD8k6QSfpA==
-=+GhV
------END PGP SIGNATURE-----
-
---Kp9cd2o9uS61xHTK--
 
