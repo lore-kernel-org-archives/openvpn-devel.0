@@ -1,10 +1,12 @@
-Date: Fri, 3 Jul 2020 19:02:01 +0200 (CEST)
-Message-Id: <202007031702.063H21GC081133@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200703095506.28559-1-arne@...1227...>
-References: <20200703095506.28559-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove did_open_context,
- defined and connection_established_flag
+References: <20200626082743.15397-1-gert@...1296...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <d98b6023-4f57-0a8a-5b97-ed35eda8aa3c@...2181...>
+Date: Fri, 3 Jul 2020 19:11:04 +0200
+MIME-Version: 1.0
+In-Reply-To: <20200626082743.15397-1-gert@...1296...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] t_client.sh: correctly report all
+ failed instances in summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,33 +15,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-Ran a full server side test (with p2p and p2mp instances), and everything
-*I* test still works (client-connect script, plugin-auth-pam with 
-async-auth, *failed* plugin-auth-pam).
+Hi,
 
-Your patch has been applied to the master branch.
+On 26/06/2020 10:27, Gert Doering wrote:
+> t_client.sh reports a summary at the end:
+> 
+>   Test sets succeeded: none.
+>   Test sets failed: 1 2 3 4 5.
+> 
+> for tests that are skipped due to the pre-test ping check ("vpn target
+> IP must not ping before VPN ist started") the script forgot to add
+> the instance number to the summary line.  Fixed.
+> 
+> Signed-off-by: Gert Doering <gert@...1296...>
 
-commit c252dcc073155567c1982611ec6f065342909287
-Author: Arne Schwabe
-Date:   Fri Jul 3 11:55:06 2020 +0200
+Simple enough and pretty clear. This is the only FAIL case where we set
+the exit code, print a message, but don't append the test to the
+SUMMARY_FAIL.
 
-     Remove did_open_context, defined and connection_established_flag
+This is fixed now.
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20200703095506.28559-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20200.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+I can't easily come up with a t_client instance that verifies this
+failure, but I trust Gert to have done so after having spotted the issue.
+
+Acked-by: Antonio Quartulli <a@...2181...>
 
 
---
-kind regards,
 
-Gert Doering
-
+-- 
+Antonio Quartulli
 
