@@ -1,10 +1,11 @@
-Date: Fri, 3 Jul 2020 23:51:01 +0200 (CEST)
-Message-Id: <202007032151.063Lp18F084823@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200626082743.15397-1-gert@...1296...>
-References: <20200626082743.15397-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: t_client.sh: correctly report
- all failed instances in summary
+From: Simon Rozman <simon@...2293...>
+Date: Mon, 6 Jul 2020 08:41:44 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE10D0DDA98F@...2294...>
+References: <20200703192029.306-1-lstipakov@...277...>
+In-Reply-To: <20200703192029.306-1-lstipakov@...277...>
+Content-Language: en-US
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] [PATCH] tap.c: fix adapter renaming
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,29 +14,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+To: Lev Stipakov <lstipakov@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Cc: Lev Stipakov <lev@...515...>
 
-Patch has been applied to the master branch.
+Hi,
 
-commit ec33bae311e7f3549b05de4a4c92fa7bc7144d29
-Author: Gert Doering
-Date:   Fri Jun 26 10:27:43 2020 +0200
+> +// stripped version of ExecCommand in interactive.c static DWORD
 
-     t_client.sh: correctly report all failed instances in summary
+C++ style comment.
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20200626082743.15397-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20130.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+> +    // rename adapter via netsh call
 
+C++ style comment.
 
---
-kind regards,
+> +    const TCHAR* szFmt =3D _T("netsh interface set interface name=3D\"%s=
+\"
+> newname=3D\"%s\"");
+> +    size_t ncmdline =3D _tcslen(szFmt) + _tcslen(szOldName) +
+> _tcslen(szName) + 1;
+> +    WCHAR* szCmdLine =3D malloc(ncmdline * sizeof(TCHAR));
+> +    _stprintf_s(szCmdLine, ncmdline, szFmt, szOldName, szName);
 
-Gert Doering
+For the record:
+1. `netsh interface set interface` does not accept adapter index. Therefore=
+, the interface to rename must be selected by name. I'd prefer more explici=
+t selection like adapter GUID or interface index, but selecting by name see=
+ms the only way here. Interface indexes are a thing of the TCP/IP, so it ki=
+nd of makes sense lower layers are not operating with them. Ack.
 
+2. I've tested `netsh interface set interface` to ignore case when selectin=
+g adapter. Ack.
+
+3. I've tested `netsh interface set interface` to work when renaming adapte=
+r back to the original name. Ack.
+
+Reviewed the code, compiled, debugged, tested.
+
+Acked-by: Simon Rozman <simon@...2293...>
+
+Regards,
+Simon
 
