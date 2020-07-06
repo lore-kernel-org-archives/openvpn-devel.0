@@ -1,8 +1,7 @@
-Date: Mon, 6 Jul 2020 18:15:32 +0200
+Date: Mon, 6 Jul 2020 18:18:08 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20200706161532.GH1431@...1296...>
-References: <CAKuzo_j=P8vZvkOL4Rgh1icLJiu0a-r4yQGrD1GSACrn14G9QQ@...278...>
- <f4b83fe0-cbe1-eed3-ff9b-4aaaea5a12b1@...1147...>
+Message-ID: <20200706161808.GI1431@...1296...>
+References: <f4b83fe0-cbe1-eed3-ff9b-4aaaea5a12b1@...1147...>
  <20200621111403.GP1431@...1296...>
  <CAKuzo_h2oTaNK7A3+3MJ6GSfApr9L9vXYFtzELH8SaaNzqFWuQ@...278...>
  <f664dcaf-7224-1b17-c953-584557f2ac56@...1147...>
@@ -11,11 +10,12 @@ References: <CAKuzo_j=P8vZvkOL4Rgh1icLJiu0a-r4yQGrD1GSACrn14G9QQ@...278...>
  <50ad64e7-b75c-e40b-5d5e-9e89e90db45d@...1147...>
  <20200630141103.GY1431@...1296...>
  <67f23584-07bd-7f0a-de1d-6ac285342e46@...1147...>
+ <885f8b43-cd49-a88e-4a69-4913c0636e56@...2080...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="G7SfBfHzTWG0aRm3"
+ protocol="application/pgp-signature"; boundary="8hSxo1h+EBUf47rB"
 Content-Disposition: inline
-In-Reply-To: <67f23584-07bd-7f0a-de1d-6ac285342e46@...1147...>
+In-Reply-To: <885f8b43-cd49-a88e-4a69-4913c0636e56@...2080...>
 Subject: Re: [Openvpn-devel] [Openvpn-users] Multiple DNS search suffixes on
  Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -26,71 +26,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jan Just Keijser <janjust@...1147...>
-Cc: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: David Sommerseth <openvpn@...2080...>
+Cc: Jan Just Keijser <janjust@...1147...>, Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---G7SfBfHzTWG0aRm3
+--8hSxo1h+EBUf47rB
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Tue, Jun 30, 2020 at 04:15:58PM +0200, Jan Just Keijser wrote:
-> On 30/06/20 16:11, Gert Doering wrote:
-> > On Tue, Jun 30, 2020 at 04:07:52PM +0200, Jan Just Keijser wrote:
-> >> @@ -5697,6 +5740,11 @@ build_dhcp_options_string(struct buffer *buf, c=
-onst struct tuntap_options *o)
-> >>       write_dhcp_u32_array(buf, 42, (uint32_t *)o->ntp, o->ntp_len, &e=
-rror);
-> >>       write_dhcp_u32_array(buf, 45, (uint32_t *)o->nbdd, o->nbdd_len, =
-&error);
-> >>=20=20=20
-> >> +    for (int i=3D0; i < o->domain_search_list_len; i++)
-> >> +    {
-> >> +        write_dhcp_search_str(buf, 119, o->domain_search_list[i], &er=
-ror);
-> >> +    }
-> > I assume that this won't work.  In the DHCP answer, it must be a single
-> > option with the concatenated list, not multiple answers with a single
-> > domain name each.
->
-> see https://tools.ietf.org/html/rfc3397
->=20
-> "
->=20
->     In the above diagram, Searchstring is a string specifying the
->     searchlist.  If the length of the searchlist exceeds the maximum
->     permissible within a single option (255 octets), then multiple
->     options MAY be used, as described in "Encoding Long Options in the
->     Dynamic Host Configuration Protocol (DHCPv4)" [RFC3396 <https://tools=
-.ietf.org/html/rfc3396>].
->=20
-> "
-> so you MAY use this option multiple times - and wireshark groks it fine. =
-I don't have a Windows 10
-> client to test it against, however, so I am hoping that someone (Selva?) =
-can do that for me.
+On Thu, Jul 02, 2020 at 11:04:41PM +0200, David Sommerseth wrote:
+> Can we please see this discussion also in context of this mail thread, wh=
+ich
+> tries to look a broader at this challenge?
 
-I did test, and my initial suspicion was correct - Windows accepts the
-option, but only one of them.
+There's two things here - a small and useful featurette which can go
+into 2.5, and the broader negotiation / option rehaul work for 2.6.
 
-I am pushing
+> The main purpose of that RFC is to ensure we handle DNS and --dhcp-options
+> consistently across all OpenVPN implementations we care about, and that we
+> document this properly.
 
-  dhcp-option DOMAIN-SEARCH v6.de,dhcp-option DOMAIN-SEARCH leo.org,dhcp-op=
-tion DOMAIN-SEARCH ov.greenie.net,dhcp-option DOMAIN-SEARCH nekosoft.de
-
-(because these are domains that have more interesting hostnames in than
-just "www" and "mail", so I can see if "v4only.v6.de" is found, or=20
-"dict.leo.org")
-
-and "ipconfig /all" only shows the "nekosoft.de" one.
-
-This one works(!), so generally, Win10 accepts this DHCP option - but
-it seems to want "all domains in one".
-
-
-Can you send a v3?
+As far as I understand, jjk's patch is in line with what Tunnelblick
+already does on MAC, and does not conflict with the larger plan.
 
 gert
 
@@ -104,22 +63,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---G7SfBfHzTWG0aRm3
+--8hSxo1h+EBUf47rB
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJfA04jAAoJEB2Cnv7KVigSOZEL/3G7NU7mmb5slk5XlnyQVW9d
-Ai3voPVgoII9EAyBarPhrHLniiTpXiQJeUilwX8WsqcBlhJD03UOfkr939Dg0e0W
-TyyGO/sARWdv+A8rY8MPZQoFRuIFd4bz4a4fBjKcCFjlov9VAJouPd720+hBzHaZ
-hA5GGywQ3CItS/7SZ5mnOsmR1lZDm5G1XFs5ceuYLqSvtfhiH2sm/ZmvmWwvfQmm
-+WD1A4FdTiWnuTkMOBe3s6q8XHIp37xsRBRpq4YbfkK0APiOpCFGo5o+f+3xubNJ
-y1n4sbs5FxyhewcTRWgAtTyAbt7QRelxf0yoIDcRsH8p+xLrQQzIh5aFU1v/vx7k
-o4wJCz5Qg4p/gEOcAg/KDB3JwAMoKXFPgtPFx5ArTnp7fYGLadHFnLaJ6wPioYzS
-Ah8J2Msy+pWBn0UN7l0fD4cNkCAQ9GXr4lVu/H3+pH3vhIWLSbeTo77wIxUG+C2z
-DL4YOTtkzJYaEmuxig4+dpElMIpq39vd1d3+innrKg==
-=m9FB
+iQGcBAEBAgAGBQJfA06/AAoJEB2Cnv7KVigS1KwL/iW6pbBDkQ3sfqJ8HIOaI1C/
+9xqP4RcNRBh4Bplqd59FNnypnz9RdT3ABjp3zapXWJyTdfQJYlD4lqUhKky/bfLo
+uxSH85BMmedw3jFlsgRK+hRjC8EtV8v03BifwjcsIGSG/IKpsC+J+lWlt34WdrSG
+s0W6UhwWYrKbokasFCtd3gtqpM9KJ9ctn5VC2Tm19XMFvs5cf131pygvCmDuv8NN
+IpFE3tjbmFje6wkWD3kYnTC/Si+enfOR97Og/vWugD5ZTLJaMqLNk3DcbNVVlFbN
+9ZYkjYbYjoArk3VccCrtaGM5VSRGDz7WpO2hS1jNsiygysBtKkaUafuLWtm66pwt
+TJZYkGUwkH8su7mrH3HpV8Rp/PqXMSJPmDwvd2zdymaNFU2eIwZSIWr3Squh0Ha1
+LSA526zeDPWrnlqBRdwHTq72c+o7Mp6Zb9FCZjHOVpix5Op/viawGguUEYKFRjPP
+r4920qy+tv8xz5M87U1uTREi0WHsJ5BfyM7zH8+Qyw==
+=rjRP
 -----END PGP SIGNATURE-----
 
---G7SfBfHzTWG0aRm3--
+--8hSxo1h+EBUf47rB--
 
