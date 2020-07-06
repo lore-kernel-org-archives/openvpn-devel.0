@@ -1,11 +1,9 @@
-From: Simon Rozman <simon@...2293...>
-Date: Mon, 6 Jul 2020 08:41:44 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE10D0DDA98F@...2294...>
-References: <20200703192029.306-1-lstipakov@...277...>
+Date: Mon, 6 Jul 2020 13:18:26 +0200 (CEST)
+Message-Id: <202007061118.066BIQai042927@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20200703192029.306-1-lstipakov@...277...>
-Content-Language: en-US
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] tap.c: fix adapter renaming
+References: <20200703192029.306-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: tap.c: fix adapter renaming
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,46 +12,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: Lev Stipakov <lstipakov@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Cc: Lev Stipakov <lev@...515...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Your patch has been applied to the master branch.
 
-> +// stripped version of ExecCommand in interactive.c static DWORD
+I have changed the // comments to /* C */ style and word-wrapped the
+commit message a bit.
 
-C++ style comment.
+I have not actually tested a .msi install, but I have test-compiled it
+(at least) (unbuntu 18 / mingw) and that worked fine.
 
-> +    // rename adapter via netsh call
+commit 5b313a3565558cd1da4723c3950df227f941cf62
+Author: Lev Stipakov
+Date:   Fri Jul 3 22:20:29 2020 +0300
 
-C++ style comment.
+     tap.c: fix adapter renaming
 
-> +    const TCHAR* szFmt =3D _T("netsh interface set interface name=3D\"%s=
-\"
-> newname=3D\"%s\"");
-> +    size_t ncmdline =3D _tcslen(szFmt) + _tcslen(szOldName) +
-> _tcslen(szName) + 1;
-> +    WCHAR* szCmdLine =3D malloc(ncmdline * sizeof(TCHAR));
-> +    _stprintf_s(szCmdLine, ncmdline, szFmt, szOldName, szName);
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Simon Rozman <simon@...2293...>
+     Message-Id: <20200703192029.306-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20207.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-For the record:
-1. `netsh interface set interface` does not accept adapter index. Therefore=
-, the interface to rename must be selected by name. I'd prefer more explici=
-t selection like adapter GUID or interface index, but selecting by name see=
-ms the only way here. Interface indexes are a thing of the TCP/IP, so it ki=
-nd of makes sense lower layers are not operating with them. Ack.
 
-2. I've tested `netsh interface set interface` to ignore case when selectin=
-g adapter. Ack.
+--
+kind regards,
 
-3. I've tested `netsh interface set interface` to work when renaming adapte=
-r back to the original name. Ack.
+Gert Doering
 
-Reviewed the code, compiled, debugged, tested.
-
-Acked-by: Simon Rozman <simon@...2293...>
-
-Regards,
-Simon
 
