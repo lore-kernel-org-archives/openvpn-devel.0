@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue,  7 Jul 2020 14:16:14 +0200
-Message-Id: <20200707121615.15736-4-arne@...1227...>
+Date: Tue,  7 Jul 2020 14:16:15 +0200
+Message-Id: <20200707121615.15736-5-arne@...1227...>
 In-Reply-To: <20200707121615.15736-1-arne@...1227...>
 References: <20200707121615.15736-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 2/3] Cleanup: Remove unused code of old poor
- man's NCP.
+Subject: [Openvpn-devel] [PATCH 3/3] Make key_state->authenticated more
+ state machine like
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,73 +17,141 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Ever since the NCPv2 the ncp_get_best_cipher uses the global
-options->ncp_enabled option and ignore the tls_session->ncp_enabled
-option.
+This order the states from unauthenticated to authenticated and also
+changes the comparison for KS_AUTH_FALSE from != to >
 
-The server side's poor man's NCP is implemented as seeing the list
-of supported ciphers from the peer as just one cipher so this special
-handling for poor man's NCP of the older NCP here is not needed anymore.
-
-Theoretically we can now get rid of tls_session->ncp_enabled but doing
-so requires more refactoring since options is not available in the
-methods that still use it. And when we remove ncp-disable the variable
-will be removed anyway.
-
-Also document the remaining usage of tls_poor_mans_ncp better.
+Also remove a now obsolete comment and two obsolete ifdefs. While
+keeping the ifdef in ssl_verify would save a few bytes of code,
+this is too minor to justify keeping the ifdef
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/init.c |  2 ++
- src/openvpn/ssl.c  | 15 +--------------
- 2 files changed, 3 insertions(+), 14 deletions(-)
+ src/openvpn/ssl.c        |  6 +++---
+ src/openvpn/ssl_common.h |  7 ++-----
+ src/openvpn/ssl_verify.c | 15 ++++-----------
+ 3 files changed, 9 insertions(+), 19 deletions(-)
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 91b919d5..e9c01629 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2376,6 +2376,8 @@ do_deferred_options(struct context *c, const unsigned int found)
-         }
-         else if (c->options.ncp_enabled)
-         {
-+            /* If the server did not push a --cipher, we will switch to the
-+             * remote cipher if it is in our ncp-ciphers list */
-             tls_poor_mans_ncp(&c->options, c->c2.tls_multi->remote_ciphername);
-         }
-         struct frame *frame_fragment = NULL;
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 9df7552d..71565dd3 100644
+index 71565dd3..c73b51c3 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -2463,8 +2463,7 @@ key_method_2_write(struct buffer *buf, struct tls_session *session)
-      * generation is postponed until after the pull/push, so we can process pushed
-      * cipher directives.
+@@ -2465,7 +2465,7 @@ key_method_2_write(struct buffer *buf, struct tls_session *session)
       */
--    if (session->opt->server && !(session->opt->ncp_enabled
--                                  && session->opt->mode == MODE_SERVER && ks->key_id <= 0))
-+    if (session->opt->server && !(session->opt->mode == MODE_SERVER && ks->key_id <= 0))
+     if (session->opt->server && !(session->opt->mode == MODE_SERVER && ks->key_id <= 0))
      {
-         if (ks->authenticated != KS_AUTH_FALSE)
+-        if (ks->authenticated != KS_AUTH_FALSE)
++        if (ks->authenticated > KS_AUTH_FALSE)
          {
-@@ -2616,18 +2615,6 @@ key_method_2_read(struct buffer *buf, struct tls_multi *multi, struct tls_sessio
-     multi->remote_ciphername =
-         options_string_extract_option(options, "cipher", NULL);
+             if (!tls_session_generate_data_channel_keys(session))
+             {
+@@ -2646,7 +2646,7 @@ key_method_2_read(struct buffer *buf, struct tls_multi *multi, struct tls_sessio
+     secure_memzero(up, sizeof(*up));
  
--    if (!tls_peer_supports_ncp(multi->peer_info))
--    {
--        /* Peer does not support NCP, but leave NCP enabled if the local and
--         * remote cipher do not match to attempt 'poor-man's NCP'.
--         */
--        if (multi->remote_ciphername == NULL
--            || 0 == strcmp(multi->remote_ciphername, multi->opt.config_ciphername))
--        {
--            session->opt->ncp_enabled = false;
--        }
--    }
--
-     if (tls_session_user_pass_enabled(session))
+     /* Perform final authentication checks */
+-    if (ks->authenticated != KS_AUTH_FALSE)
++    if (ks->authenticated > KS_AUTH_FALSE)
      {
-         /* Perform username/password authentication */
+         verify_final_auth_checks(multi, session);
+     }
+@@ -2671,7 +2671,7 @@ key_method_2_read(struct buffer *buf, struct tls_multi *multi, struct tls_sessio
+      * Call OPENVPN_PLUGIN_TLS_FINAL plugin if defined, for final
+      * veto opportunity over authentication decision.
+      */
+-    if ((ks->authenticated != KS_AUTH_FALSE)
++    if ((ks->authenticated > KS_AUTH_FALSE)
+         && plugin_defined(session->opt->plugins, OPENVPN_PLUGIN_TLS_FINAL))
+     {
+         key_state_export_keying_material(&ks->ks_ssl, session);
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index fdf589b5..7d841ffb 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -129,8 +129,8 @@ struct key_source2 {
+ 
+ enum ks_auth_state {
+   KS_AUTH_FALSE,
+-  KS_AUTH_TRUE,
+-  KS_AUTH_DEFERRED
++  KS_AUTH_DEFERRED,
++  KS_AUTH_TRUE
+ };
+ 
+ /**
+@@ -194,8 +194,6 @@ struct key_state
+     enum ks_auth_state authenticated;
+     time_t auth_deferred_expire;
+ 
+-#ifdef ENABLE_DEF_AUTH
+-    /* If auth_deferred is true, authentication is being deferred */
+ #ifdef MANAGEMENT_DEF_AUTH
+     unsigned int mda_key_id;
+     unsigned int mda_status;
+@@ -205,7 +203,6 @@ struct key_state
+     time_t acf_last_mod;
+     char *auth_control_file;
+ #endif
+-#endif
+ };
+ 
+ /** Control channel wrapping (--tls-auth/--tls-crypt) context */
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index e28f1f3a..6996d430 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -950,7 +950,7 @@ tls_authentication_status(struct tls_multi *multi, const int latency)
+             if (DECRYPT_KEY_ENABLED(multi, ks))
+             {
+                 active = true;
+-                if (ks->authenticated != KS_AUTH_FALSE)
++                if (ks->authenticated > KS_AUTH_FALSE)
+                 {
+ #ifdef ENABLE_DEF_AUTH
+                     unsigned int s1 = ACF_DISABLED;
+@@ -1414,17 +1414,10 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+              */
+             send_push_reply_auth_token(multi);
+         }
+-#ifdef ENABLE_DEF_AUTH
+         msg(D_HANDSHAKE, "TLS: Username/Password authentication %s for username '%s' %s",
+             (ks->authenticated == KS_AUTH_DEFERRED) ? "deferred" : "succeeded",
+             up->username,
+             (session->opt->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME) ? "[CN SET]" : "");
+-#else
+-        msg(D_HANDSHAKE, "TLS: Username/Password authentication %s for username '%s' %s",
+-            "succeeded",
+-            up->username,
+-            (session->opt->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME) ? "[CN SET]" : "");
+-#endif
+     }
+     else
+     {
+@@ -1445,7 +1438,7 @@ verify_final_auth_checks(struct tls_multi *multi, struct tls_session *session)
+     }
+ 
+     /* Don't allow the CN to change once it's been locked */
+-    if (ks->authenticated != KS_AUTH_FALSE && multi->locked_cn)
++    if (ks->authenticated > KS_AUTH_FALSE && multi->locked_cn)
+     {
+         const char *cn = session->common_name;
+         if (cn && strcmp(cn, multi->locked_cn))
+@@ -1461,7 +1454,7 @@ verify_final_auth_checks(struct tls_multi *multi, struct tls_session *session)
+     }
+ 
+     /* Don't allow the cert hashes to change once they have been locked */
+-    if (ks->authenticated != KS_AUTH_FALSE && multi->locked_cert_hash_set)
++    if (ks->authenticated > KS_AUTH_FALSE && multi->locked_cert_hash_set)
+     {
+         const struct cert_hash_set *chs = session->cert_hash_set;
+         if (chs && !cert_hash_compare(chs, multi->locked_cert_hash_set))
+@@ -1475,7 +1468,7 @@ verify_final_auth_checks(struct tls_multi *multi, struct tls_session *session)
+     }
+ 
+     /* verify --client-config-dir based authentication */
+-    if (ks->authenticated != KS_AUTH_FALSE && session->opt->client_config_dir_exclusive)
++    if (ks->authenticated > KS_AUTH_FALSE && session->opt->client_config_dir_exclusive)
+     {
+         struct gc_arena gc = gc_new();
+ 
 -- 
 2.26.2
 
