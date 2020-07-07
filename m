@@ -1,10 +1,10 @@
-Date: Tue, 7 Jul 2020 11:54:09 +0200 (CEST)
-Message-Id: <202007070954.0679s9Q5063076@...2054...>
+Date: Tue, 7 Jul 2020 14:05:44 +0200 (CEST)
+Message-Id: <202007071205.067C5ie9064884@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200707084220.45753-1-gert@...1296...>
-References: <20200707084220.45753-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove --writepid file on
- program exit.
+In-Reply-To: <20200706163516.11390-2-arne@...1227...>
+References: <20200706163516.11390-2-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: merge key_state->authenticated
+ and key_state->auth_deferred
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,23 +15,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master branch.
+I merged this somewhat by accident, so apologies for the confusion - I am
+*not* ignoring Antonio's and Steffan's comments for improvement of this 
+patch, but I had my trees mixed up from testing, and it got pushed out
+with the "writepid" patch of today by accident.
 
-Tab has been expanded to pacify the whitespace dragon.
+So:
 
-commit 008ec688d06101c0307e6d17a0239b134355dca4
-Author: Gert Doering
-Date:   Tue Jul 7 10:42:20 2020 +0200
+Acked-by: Gert Doering <gert@...1296...>
 
-     Remove --writepid file on program exit.
+Stared-at-code (looks very reasonable), ran through the t_server test suite
+which does "normal" and "async auth" (15s delay in plugin-auth-pam) and
+it passes all tests.
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20200707084220.45753-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20224.html
+Your patch has been applied to the master branch.
+
+commit a5e6f2d217309969a835f21b73b4dc0fbc70c4aa
+Author: Arne Schwabe
+Date:   Mon Jul 6 18:35:16 2020 +0200
+
+     merge key_state->authenticated and key_state->auth_deferred
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20200706163516.11390-2-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20216.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
