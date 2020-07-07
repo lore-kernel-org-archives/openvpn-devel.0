@@ -1,10 +1,10 @@
-Date: Tue, 7 Jul 2020 21:46:59 +0200 (CEST)
-Message-Id: <202007071946.067JkxsZ070952@...2054...>
+Date: Tue, 7 Jul 2020 21:51:09 +0200 (CEST)
+Message-Id: <202007071951.067Jp9Ef071078@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200707121615.15736-3-arne@...1227...>
-References: <20200707121615.15736-3-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Simplify
- multi_connection_established.
+In-Reply-To: <E1jsoYQ-0007AZ-BF@...2487...>
+References: <E1jsoYQ-0007AZ-BF@...2487...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Make openvpn --version exit
+ with exit code 0
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,23 +15,23 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Steffan Karger <steffan.karger@...2507...>
 Cc: openvpn-devel@lists.sourceforge.net
+
+Simple and to the point :-) - much more commit message than code change.
 
 Your patch has been applied to the master branch.
 
-Commit message amended as ordered by the whitespace dragon.
+commit 96ae327add16f06ac8bc28cfbf9ba0abfcc7129c
+Author: Steffan Karger
+Date:   Tue Jul 7 16:26:21 2020 +0200
 
-commit 05ffefcca997708e1f146bed6f5dba9b9f5b1e90
-Author: Arne Schwabe
-Date:   Tue Jul 7 14:16:13 2020 +0200
+     Make openvpn --version exit with exit code 0
 
-     Simplify multi_connection_established.
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Signed-off-by: Steffan Karger <steffan.karger@...2507...>
      Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20200707121615.15736-3-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20231.html
+     Message-Id: <E1jsoYQ-0007AZ-BF@...2487...>
+     URL: https://www.mail-archive.com/search?l=mid&q=E1jsoYQ-0007AZ-BF@...2487...
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
