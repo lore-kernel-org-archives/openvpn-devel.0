@@ -1,14 +1,15 @@
+Date: Wed, 8 Jul 2020 18:15:25 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20200708161525.GW1431@...1296...>
 References: <20200707121615.15736-1-arne@...1227...>
  <20200707121615.15736-4-arne@...1227...>
- <E1jt72j-0005K4-BF@...2487...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <9a266f84-70c4-6e54-3af4-96982d16709d@...1227...>
-Date: Wed, 8 Jul 2020 15:31:25 +0200
+ <20200708111510.GV1431@...1296...>
+ <4c73c51d-6828-57d0-ad24-78b86ecea07d@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <E1jt72j-0005K4-BF@...2487...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="wp1XyzWmXXfL6URhGFRZ5nHruC0ZqBYWj"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="IuQ57q5v8zJEy11C"
+Content-Disposition: inline
+In-Reply-To: <4c73c51d-6828-57d0-ad24-78b86ecea07d@...1227...>
 Subject: Re: [Openvpn-devel] [PATCH 2/3] Cleanup: Remove unused code of old
  poor man's NCP.
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,55 +20,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan.karger@...2507...>, openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---wp1XyzWmXXfL6URhGFRZ5nHruC0ZqBYWj
-Content-Type: multipart/mixed; boundary="LZux6dsqO7SET85DAOjN5vKUVMiEKCEPp"
-
---LZux6dsqO7SET85DAOjN5vKUVMiEKCEPp
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
+--IuQ57q5v8zJEy11C
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Am 08.07.20 um 12:10 schrieb Steffan Karger:
-> Hi,
->=20
-> As discusses in #openvpn-devel on IRC, this patch breaks interop with
-> clients that don't pull, but that will be restored in a follow-up
-> refactoring (before 2.5 rc1). I can live with that, but I think this
-> should be mentioned in the commit message.
+Hi,
 
-I can fix that by reordering the commits but I will that this moves
-generation of keys for this corner case.
+On Wed, Jul 08, 2020 at 03:15:49PM +0200, Arne Schwabe wrote:
+> +++ b/src/openvpn/ssl.c
+> @@ -1986,6 +1986,12 @@ tls_session_update_crypto_params(struct
+> tls_session *session,
+>              options->keysize =3D 0;
+>          }
+>      }
+> +    else
+> +    {
+> +      /* Very hacky workaround and quick fix for our calculation
+> +       * not correct to avoid a regression */
+> +        return tls_session_generate_data_channel_keys(session);
+> +    }
 
-Arne
+Just for the record: that nasty hack made the server happy again.
+
+start client jobs...
+23...
+Test sets succeeded: 1 1a 1b 1d 2 2a 2b 2c 2d 3 4 5 6 8 8a 9.
+Test sets failed: none.
+24...
+Test sets succeeded: 1 1a 1b 1c 1d 1e 2 2a 2b 2c 2d 2e 3 4 4a 5 6 8 8a 9.
+Test sets failed: none.
+master...
+Test sets succeeded: 1 1a 1b 1c 1d 1e 2 2a 2b 2c 2d 2e 3 4 5 6 7 7a 8 8a 9 =
+2f 4b.
+Test sets failed: none.
 
 
+So we decided to go "with the hack for now" and clean up the mine field
+arounding frame size stuff afterwards.
 
---LZux6dsqO7SET85DAOjN5vKUVMiEKCEPp--
+Patch set incoming tomorrow.
 
---wp1XyzWmXXfL6URhGFRZ5nHruC0ZqBYWj
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--IuQ57q5v8zJEy11C
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl8Fyq0ACgkQFRhsZwKx
-RFQH2g/9FuGVw0uS9KwycV4KxrwWp+zFs68Hpr8nPkCxoWKVCj8dBOOlQTegq+tc
-O93guD4UuoD47tnss9A5lXXyFgK+1K8BUAkkdS1MPir8G9gabTxtNw/veIH3rqBv
-tCWeVy50e75xTr/kEmbFQcwtOpDS2K2YTZ+A/ZlDCYC8o8ug4v6U4Bms03HY1qTs
-0lgTeiRS2CKMH8LrDePIPu1M4ojum6k53tgjQRhw4oZwHOMRMDcObay1v0faqoOD
-t5ay6KQVR1/oOsjFsl8kwrzD0q/jjy5gs7lxtjzfXmfyP6KwpjjakXcNs9vINCCX
-Xq5jX+AJAs4FWFYoL//gt7F8GG9zZViQZVafROGANVf7WoBQJVixWWKC0HvnRnXb
-kiWbX5ynOFXSAFH8RWbg+yku0+eROrNBkgNCRPy6tsjQErAqfyShZ7dDmcYUXVjE
-CGmgZGChmn1g8h7ClngSv+ojQDFQuPBDwkpyno38utuiAgq7bJ/yuZm7XXCpc4Qw
-5M3x2s7DGFMLkazNhfm06+wz83kHIXDs0t2HFkMsOTUG67OWKb3zc7q7T7CquhyD
-x8IvdygZNXQqgMFsIOL+eQx4LjLQow4BBPDI/T6/eSydedQry2XkRnD5XMPMBDg4
-v/MsZDltoSOWaRufncUEt0+Kawd3uKlsuxi6J6Cy5d7c3kndv6U=
-=0RGv
+iQGcBAEBAgAGBQJfBfEdAAoJEB2Cnv7KVigSbfUL/1xtSfWhzEm+KoPfY1k7Ttmy
+10LXdJJzt7PMkDBSFb1ZBkxvCTneIPncvT7RWywqGcmG9KkZI+ZjGTSirbQOjX+y
+Vucr23YL2sxYGp+mBEDkgmAX+dPDjuZZeGeNrhXjHZnM4+41dy/XnodGx5/vRbph
+ufzPZyYmMmXMQaOP+X/IePPDs0ytwFb2a6PxjcSMclgTlLxVQYpiCVdTfGd3qpFh
+5Q1JHO7Q5ZS68WWwNcw11+p92iPTwHXSCPUCiTfWxMZZ47WZfRAhDOQN7o5VbKhz
+2n1kHnA1tM5R4xfBB6jUY1F+YkKXwEWNgPnuDMZrvGRxkmSycD++KoXDfdSAeZDD
+bg66PCnm5/yXBgx39mCxMkGBpyX4UubGcRuVFrM06d8TrcUxRjfz46UDqhpKXVEN
+kTfmpYef2VOW4WVR3K0Ed8c/1Oas7V/BM8wMQOsQDA5FuuaJaO+vW88jUkLjbFWl
+HmPWy6NLdUlr98Y5JCQweBPnRC9oA+CKTU2rqvsvdQ==
+=PRiF
 -----END PGP SIGNATURE-----
 
---wp1XyzWmXXfL6URhGFRZ5nHruC0ZqBYWj--
+--IuQ57q5v8zJEy11C--
 
