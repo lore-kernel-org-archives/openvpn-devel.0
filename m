@@ -1,23 +1,13 @@
-Date: Wed, 8 Jul 2020 10:24:28 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200708082428.GT1431@...1296...>
-References: <20200621111403.GP1431@...1296...>
- <CAKuzo_h2oTaNK7A3+3MJ6GSfApr9L9vXYFtzELH8SaaNzqFWuQ@...278...>
- <f664dcaf-7224-1b17-c953-584557f2ac56@...1147...>
- <CAKuzo_iFf2iuOLg4LpXrz42MG1GggvdrcWKJrcDT6j38tQjrUw@...278...>
- <20200624102804.GM1431@...1296...>
- <50ad64e7-b75c-e40b-5d5e-9e89e90db45d@...1147...>
- <20200630141103.GY1431@...1296...>
- <67f23584-07bd-7f0a-de1d-6ac285342e46@...1147...>
- <20200706161532.GH1431@...1296...>
- <e5be8b49-0689-eb96-b294-f5b50388a67b@...1147...>
+References: <20200707121615.15736-5-arne@...1227...>
+ <20200708071750.13213-1-arne@...1227...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <98085f93-4ea2-9ab6-d9bf-507cff360b4a@...2181...>
+Date: Wed, 8 Jul 2020 11:54:29 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="bcyNnEp43zD4gI3N"
-Content-Disposition: inline
-In-Reply-To: <e5be8b49-0689-eb96-b294-f5b50388a67b@...1147...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] Multiple DNS search suffixes on
- Windows
+In-Reply-To: <20200708071750.13213-1-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v2] Make key_state->authenticated more
+ state machine like
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -26,151 +16,236 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jan Just Keijser <janjust@...1147...>
-Cc: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---bcyNnEp43zD4gI3N
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Tue, Jul 07, 2020 at 06:14:25PM +0200, Jan Just Keijser wrote:
-> > This one works(!), so generally, Win10 accepts this DHCP option - but
-> > it seems to want "all domains in one".
-> >
-> > Can you send a v3?
-> >
-> not sure if all went well , but here's V3.
+On 08/07/2020 09:17, Arne Schwabe wrote:
+> This order the states from unauthenticated to authenticated and also
+> changes the comparison for KS_AUTH_FALSE from != to >
+> 
+> It also add comments and documents part using the state machine
+> better.
+> 
+> Remove a now obsolete comment and two obsolete ifdefs. While
+> keeping the ifdef in ssl_verify would save a few bytes of code,
+> this is too minor to justify keeping the ifdef
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> ---
+>  src/openvpn/multi.c      | 12 +++++++++---
+>  src/openvpn/ssl.c        |  7 ++++---
+>  src/openvpn/ssl_common.h | 14 ++++++++------
+>  src/openvpn/ssl_verify.c | 18 +++++++-----------
+>  4 files changed, 28 insertions(+), 23 deletions(-)
+> 
+> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+> index f1ced9b7..f1332c8d 100644
+> --- a/src/openvpn/multi.c
+> +++ b/src/openvpn/multi.c
+> @@ -2352,12 +2352,12 @@ multi_process_post(struct multi_context *m, struct multi_instance *mi, const uns
+>      if (!IS_SIG(&mi->context) && ((flags & MPP_PRE_SELECT) || ((flags & MPP_CONDITIONAL_PRE_SELECT) && !ANY_OUT(&mi->context))))
+>      {
+>  #if defined(ENABLE_ASYNC_PUSH) && defined(ENABLE_DEF_AUTH)
+> -        bool was_authenticated = false;
+> +        bool was_unauthenticated = true;
+>          struct key_state *ks = NULL;
+>          if (mi->context.c2.tls_multi)
+>          {
+>              ks = &mi->context.c2.tls_multi->session[TM_ACTIVE].key[KS_PRIMARY];
+> -            was_authenticated = ks->authenticated;
+> +            was_unauthenticated = (ks->authenticated == KS_AUTH_FALSE);
+>          }
+>  #endif
+>  
+> @@ -2366,7 +2366,13 @@ multi_process_post(struct multi_context *m, struct multi_instance *mi, const uns
+>          pre_select(&mi->context);
+>  
+>  #if defined(ENABLE_ASYNC_PUSH) && defined(ENABLE_DEF_AUTH)
+> -        if (ks && ks->auth_control_file && ks->auth_deferred && !was_authenticated)
+> +        /*
+> +         * if we see the state transition from unauthenticated to deferred
+> +         * and a auth_control_file, we assume it got just added and add
+> +         * inotify watch to that file
+> +         */
+> +        if (ks && ks->auth_control_file && was_unauthenticated
+> +            && (ks->authenticated == KS_AUTH_DEFERRED))
+>          {
+>              /* watch acf file */
+>              long watch_descriptor = inotify_add_watch(m->top.c2.inotify_fd, ks->auth_control_file, IN_CLOSE_WRITE | IN_ONESHOT);
+> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+> index 71565dd3..94fb0c5b 100644
+> --- a/src/openvpn/ssl.c
+> +++ b/src/openvpn/ssl.c
+> @@ -2465,7 +2465,7 @@ key_method_2_write(struct buffer *buf, struct tls_session *session)
+>       */
+>      if (session->opt->server && !(session->opt->mode == MODE_SERVER && ks->key_id <= 0))
+>      {
+> -        if (ks->authenticated != KS_AUTH_FALSE)
+> +        if (ks->authenticated > KS_AUTH_FALSE)
+>          {
+>              if (!tls_session_generate_data_channel_keys(session))
+>              {
+> @@ -2646,7 +2646,7 @@ key_method_2_read(struct buffer *buf, struct tls_multi *multi, struct tls_sessio
+>      secure_memzero(up, sizeof(*up));
+>  
+>      /* Perform final authentication checks */
+> -    if (ks->authenticated != KS_AUTH_FALSE)
+> +    if (ks->authenticated > KS_AUTH_FALSE)
+>      {
+>          verify_final_auth_checks(multi, session);
+>      }
+> @@ -2671,7 +2671,7 @@ key_method_2_read(struct buffer *buf, struct tls_multi *multi, struct tls_sessio
+>       * Call OPENVPN_PLUGIN_TLS_FINAL plugin if defined, for final
+>       * veto opportunity over authentication decision.
+>       */
+> -    if ((ks->authenticated != KS_AUTH_FALSE)
+> +    if ((ks->authenticated > KS_AUTH_FALSE)
+>          && plugin_defined(session->opt->plugins, OPENVPN_PLUGIN_TLS_FINAL))
+>      {
+>          key_state_export_keying_material(&ks->ks_ssl, session);
+> @@ -2702,6 +2702,7 @@ key_method_2_read(struct buffer *buf, struct tls_multi *multi, struct tls_sessio
+>      return true;
+>  
+>  error:
+> +    ks->authenticated = KS_AUTH_FALSE;
+>      secure_memzero(ks->key_src, sizeof(*ks->key_src));
+>      if (up)
+>      {
+> diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+> index fdf589b5..91e55c7a 100644
+> --- a/src/openvpn/ssl_common.h
+> +++ b/src/openvpn/ssl_common.h
+> @@ -128,9 +128,14 @@ struct key_source2 {
+>  };
+>  
 
-Unfortunately not, that one seems to be based on your V1 patch, so=20
-we have "remove 'SEARCH', add 'DOMAIN-SEARCH'" hunks...
+I suggest adding a comment on top of this enum declaration. I'd suggest
+something like this:
 
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index e59b22b..85f1d8a 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -726,7 +726,7 @@ static const char usage_message[] =3D
->      "                    which allow multiple addresses,\n"
->      "                    --dhcp-option must be repeated.\n"
->      "                    DOMAIN name : Set DNS suffix\n"
-> -    "                    SEARCH name : Set DNS domain search list\n"
-> +    "                    DOMAIN-SEARCH entry : Add entry to DNS domain s=
-earch list\n"
+/*
+ * The following enum represents the status of the key-state object
+ * during its life-cycle. Based on the step taken by the server code,
+ * the status will move forward by one (or more) values. This allows
+ * us to make more flexible status checks by using the ">" or "<"
+ * operator
+ */
 
-This is ok for me to have a look, but to actually merge I need something
-that applies "as it is" on top of master...
+>  enum ks_auth_state {
+> -  KS_AUTH_FALSE,
+> -  KS_AUTH_TRUE,
+> -  KS_AUTH_DEFERRED
+> +  KS_AUTH_FALSE,              /**< Key state is not authenticated  */
+> +  KS_AUTH_DEFERRED,           /**< Key state authentication is being deferred,
+> +                                * by async auth */
+> +  KS_AUTH_TRUE                /**< Key state is authenticated. TLS and user/pass
+> +                                * succeeded. This include AUTH_PENDING/OOB
+> +                                * authentication as those hold the
+> +                                * connection artifically in KS_AUTH_DEFERRED
+> +                                */
+>  };
+>  
+>  /**
+> @@ -194,8 +199,6 @@ struct key_state
+>      enum ks_auth_state authenticated;
+>      time_t auth_deferred_expire;
+>  
+> -#ifdef ENABLE_DEF_AUTH
+> -    /* If auth_deferred is true, authentication is being deferred */
+>  #ifdef MANAGEMENT_DEF_AUTH
+>      unsigned int mda_key_id;
+>      unsigned int mda_status;
+> @@ -205,7 +208,6 @@ struct key_state
+>      time_t acf_last_mod;
+>      char *auth_control_file;
+>  #endif
+> -#endif
+>  };
+>  
+>  /** Control channel wrapping (--tls-auth/--tls-crypt) context */
+> diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+> index e28f1f3a..990fba99 100644
+> --- a/src/openvpn/ssl_verify.c
+> +++ b/src/openvpn/ssl_verify.c
+> @@ -950,7 +950,7 @@ tls_authentication_status(struct tls_multi *multi, const int latency)
+>              if (DECRYPT_KEY_ENABLED(multi, ks))
+>              {
+>                  active = true;
+> -                if (ks->authenticated != KS_AUTH_FALSE)
+> +                if (ks->authenticated > KS_AUTH_FALSE)
+>                  {
+>  #ifdef ENABLE_DEF_AUTH
+>                      unsigned int s1 = ACF_DISABLED;
+> @@ -1249,6 +1249,9 @@ verify_user_pass_management(struct tls_session *session,
+>  
+>  /*
+>   * Main username/password verification entry point
+> + *
+> + * Will set session->ks[KS_PRIMARY].authenticated according to
+> + * result of the username/password verifcation
+>   */
+>  void
+>  verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+> @@ -1414,17 +1417,10 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+>               */
+>              send_push_reply_auth_token(multi);
+>          }
+> -#ifdef ENABLE_DEF_AUTH
+>          msg(D_HANDSHAKE, "TLS: Username/Password authentication %s for username '%s' %s",
+>              (ks->authenticated == KS_AUTH_DEFERRED) ? "deferred" : "succeeded",
+>              up->username,
+>              (session->opt->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME) ? "[CN SET]" : "");
+> -#else
+> -        msg(D_HANDSHAKE, "TLS: Username/Password authentication %s for username '%s' %s",
+> -            "succeeded",
+> -            up->username,
+> -            (session->opt->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME) ? "[CN SET]" : "");
+> -#endif
+>      }
+>      else
+>      {
+> @@ -1445,7 +1441,7 @@ verify_final_auth_checks(struct tls_multi *multi, struct tls_session *session)
+>      }
+>  
+>      /* Don't allow the CN to change once it's been locked */
+> -    if (ks->authenticated != KS_AUTH_FALSE && multi->locked_cn)
+> +    if (ks->authenticated > KS_AUTH_FALSE && multi->locked_cn)
+>      {
+>          const char *cn = session->common_name;
+>          if (cn && strcmp(cn, multi->locked_cn))
+> @@ -1461,7 +1457,7 @@ verify_final_auth_checks(struct tls_multi *multi, struct tls_session *session)
+>      }
+>  
+>      /* Don't allow the cert hashes to change once they have been locked */
+> -    if (ks->authenticated != KS_AUTH_FALSE && multi->locked_cert_hash_set)
+> +    if (ks->authenticated > KS_AUTH_FALSE && multi->locked_cert_hash_set)
+>      {
+>          const struct cert_hash_set *chs = session->cert_hash_set;
+>          if (chs && !cert_hash_compare(chs, multi->locked_cert_hash_set))
+> @@ -1475,7 +1471,7 @@ verify_final_auth_checks(struct tls_multi *multi, struct tls_session *session)
+>      }
+>  
+>      /* verify --client-config-dir based authentication */
+> -    if (ks->authenticated != KS_AUTH_FALSE && session->opt->client_config_dir_exclusive)
+> +    if (ks->authenticated > KS_AUTH_FALSE && session->opt->client_config_dir_exclusive)
+>      {
+>          struct gc_arena gc = gc_new();
+>  
+> 
 
-> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-> index eed9ae6..60a149c 100644
-> --- a/src/openvpn/tun.c
-> +++ b/src/openvpn/tun.c
-> @@ -5567,46 +5567,70 @@ write_dhcp_str(struct buffer *buf, const int type=
-, const char *str, bool *error)
->      buf_write(buf, str, len);
->  }
->=20=20
-> +/*
-> + * RFC3397 states that multiple searchdomains are encoded as follows:
-> + *  - at start the length of the entire option is given
-> + *  - each subdomain is preceded by its length
-> + *  - each searchdomain is separated by a NUL character
-> + * e.g. if you want "openvpn.net" and "duckduckgo.com" then you end up w=
-ith
-> + *  0x13  0x7 openvpn 0x3 net 0x00 0x0A duckduckgo 0x3 com 0x00
-> + */
+The rest looks good!
 
-Richard commented on IRC that the "0x13" does not seem to be right here
-- adding up all of it (1+7+1+3+1+1+10+1+3+1 =3D 29).  Can you double-check?
+I don't have a super strong opinion about that comment I proposed, but I
+think it can help to better understand how the state enum is used and
+how to modify it in the future.
 
-It's just a comment, but if that is wrong, it's not helpful in trying to
-understand the code.
+I'd prefer to have it, but in any case:
 
->  static void
-> -write_dhcp_search_str(struct buffer *buf, const int type, const char *st=
-r, bool *error)
-> +write_dhcp_search_str(struct buffer *buf, const int type, const char * c=
-onst *str_array,
-> +                      int array_len, bool *error)
->  {
-> -    const char  *ptr =3D str, *dotptr =3D str;
-> -    int          i, j;
-> +    char         tmp_buf[256];
-> +    int          i;
-> +    int          len =3D 0;
-> +
-> +    for (i=3D0; i < array_len; i++)
-> +    {
-> +        const char  *ptr =3D str_array[i], *dotptr =3D str_array[i];
-> +        int          j, k;
-> +
-> +        msg(M_INFO, "Processing '%s'", ptr);
-> +
-> +        if (strlen(ptr) + len + 1 > sizeof(tmp_buf))
-> +        {
-> +            *error =3D true;
-> +            msg(M_WARN, "write_dhcp_search_str: temp buffer overflow bui=
-lding DHCP options");
-> +            return;
-> +        }
-> +        /* Loop over all subdomains separated by a dot and replace the d=
-ot
-> +           with the length of the subdomain */
-> +        while ((dotptr =3D strchr(ptr, '.')) !=3D NULL)
-> +        {=20=20=20
-> +            j =3D dotptr - ptr;
-> +            tmp_buf[len++] =3D j;
-> +            for (k=3D0; k < j; k++) tmp_buf[len++] =3D ptr[k];
-> +            ptr =3D dotptr + 1;
-> +        }=20=20=20
-> +
-> +        /* Now do the remainder after the last dot */
-> +        j =3D strlen(ptr);
-> +        tmp_buf[len++] =3D j;
-> +        for (k=3D0; k < j; k++) tmp_buf[len++] =3D ptr[k];
-
-This should work.  It might be possible to do this with slightly less
-code with strsep()  (which will give you nicely null-terminated chunks,
-including "the remainder", but will require a writeable copy of the string).
-
-It's overflow safe, so "good enough".
-
-The restriction to max. 10 search domains sounds reasonable to me - since
-the total string is limited, and we do not implement multiple options
-(*and* windows 10 is, by observation, ignoring more than one anyway) this
-is "good enough for all reasonable deployments".
+Acked-by: Antonio Quartulli <a@...2181...>
 
 
-Can I have a v4, please? :-)
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---bcyNnEp43zD4gI3N
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJfBYK8AAoJEB2Cnv7KVigSTKsL/RhMfWJIIkp5jXnZIDL1/lQM
-UWfUTIw1BDlR6hD0Lgp1MJjM9Zb//gy49RtGFUynDNx55r1aJH/T5x71kbfyXlkD
-Q5bUMH+sFbeEoXCDWPfHG016JRyWxZD+DiwhrkLYedIImNHx+gn0z+5RYbE0uGRT
-ACDn2eTCUeBrhQGC1Oa8EA52AEOUQP31adspS+VDs4b/VJg9smB5Yo3IUSStGasE
-dPSzLBmsoFMCUZUhObQIsnTUufOZ1dNbCzOfB1XUud+KCfQpay11qhg7+LrY/M90
-/Vd6ewIEZcuSg5iOt8Ikw/rkHxQIhJiQZG72hdnCHOU50XcdnSwx89kHTCjoJ0BY
-QGdBLPYYwFOTrJGi5eN1sM4YPTyJaBN0BOwUOkTmfecI+4fUzCp37ujs5iCxndwI
-fru3mMngNx/Q1PTgYY4+JkNDHd15wPJrFLINliNARYdVQ6TJt1aSrQi3dOLjrgy3
-r/xcjBIXInlvJcpw1sZKFZlbR/jJTU5BUkXUtApVhA==
-=tCd/
------END PGP SIGNATURE-----
-
---bcyNnEp43zD4gI3N--
+-- 
+Antonio Quartulli
 
