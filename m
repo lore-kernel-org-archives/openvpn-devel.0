@@ -1,10 +1,10 @@
-Date: Thu, 9 Jul 2020 17:52:01 +0200 (CEST)
-Message-Id: <202007091552.069Fq1mb010309@...2054...>
+Date: Thu, 9 Jul 2020 18:40:34 +0200 (CEST)
+Message-Id: <202007091640.069GeYQA013095@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200709101603.11941-1-arne@...1227...>
-References: <20200709101603.11941-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Deprecate ncp-disable and add
- improved ncp to Changes.rst
+In-Reply-To: <20200709101603.11941-2-arne@...1227...>
+References: <20200709101603.11941-2-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Make key_state->authenticated
+ more state machine like
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,29 +18,25 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
-
-Taken the review by Antonio and the subsequent discussion on IRC on 
-"where should the message go?" - we leave it where it is, because all the
-other DEPRECATED OPTIONS warnings are done the same way (except keysize).
-
-Typos fixed, message wrapped slightly differently to avoid line wrap.
-
-Not checked in any significant way (besides "make" compile test, just to be
-sure I didn't break anything).
-
 Your patch has been applied to the master branch.
 
-commit 2b09c1405fdfffe15b2b444b15cce7820263a048
-Author: Arne Schwabe
-Date:   Thu Jul 9 12:15:56 2020 +0200
+I have fixed the typos tincanteksup noticed plus one of my own, and 
+tested this on the t_server testbed (tcp, udp, normal auth, async-auth
+plugin).  Happy server, with 2.3, 2.4 and git master client.
 
-     Deprecate ncp-disable and add improved ncp to Changes.rst
+While it already got an ACK, a good and thorough beating is always good 
+for this stuff :-) 
+
+commit 5608041c7b343fbcd2d3317a8a49f43cb168a390
+Author: Arne Schwabe
+Date:   Thu Jul 9 12:15:57 2020 +0200
+
+     Make key_state->authenticated more state machine like
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200709101603.11941-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20257.html
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20200709101603.11941-2-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20258.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
