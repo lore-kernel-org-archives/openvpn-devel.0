@@ -1,9 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu,  9 Jul 2020 12:16:02 +0200
-Message-Id: <20200709101603.11941-7-arne@...1227...>
+Date: Thu,  9 Jul 2020 12:15:58 +0200
+Message-Id: <20200709101603.11941-3-arne@...1227...>
 In-Reply-To: <20200709101603.11941-1-arne@...1227...>
 References: <20200709101603.11941-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 7/8] Removed unused definition
+Subject: [Openvpn-devel] [PATCH 3/8] Extract process_incoming_push_reply
+ from process_incoming_push_msg
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,45 +17,154 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+This is a small refactoring to make both function more readable. It also
+eliminates the ret variable in process_incoming_push_msg that now serves
+no purpose anymore.
+
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/ssl.c | 5 +++--
- src/openvpn/ssl.h | 7 -------
- 2 files changed, 3 insertions(+), 9 deletions(-)
+ src/openvpn/push.c | 113 +++++++++++++++++++++++++--------------------
+ 1 file changed, 64 insertions(+), 49 deletions(-)
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 668bcbd9..4ee4c245 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1988,8 +1988,9 @@ tls_session_update_crypto_params(struct tls_session *session,
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 56d652a3..d74323db 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -855,6 +855,63 @@ push_update_digest(md_ctx_t *ctx, struct buffer *buf, const struct options *opt)
      }
-     else
+ }
+ 
++static int
++process_incoming_push_reply(struct context *c,
++                            unsigned int permission_mask,
++                            const unsigned int *option_types_found,
++                            struct buffer *buf)
++{
++    int ret = PUSH_MSG_ERROR;
++    const uint8_t ch = buf_read_u8(buf);
++    if (ch == ',')
++    {
++        struct buffer buf_orig = (*buf);
++        if (!c->c2.pulled_options_digest_init_done)
++        {
++            c->c2.pulled_options_state = md_ctx_new();
++            md_ctx_init(c->c2.pulled_options_state, md_kt_get("SHA256"));
++            c->c2.pulled_options_digest_init_done = true;
++        }
++        if (!c->c2.did_pre_pull_restore)
++        {
++            pre_pull_restore(&c->options, &c->c2.gc);
++            c->c2.did_pre_pull_restore = true;
++        }
++        if (apply_push_options(&c->options,
++                               buf,
++                               permission_mask,
++                               option_types_found,
++                               c->c2.es))
++        {
++            push_update_digest(c->c2.pulled_options_state, &buf_orig,
++                               &c->options);
++            switch (c->options.push_continuation)
++            {
++                case 0:
++                case 1:
++                    md_ctx_final(c->c2.pulled_options_state,
++                                 c->c2.pulled_options_digest.digest);
++                    md_ctx_cleanup(c->c2.pulled_options_state);
++                    md_ctx_free(c->c2.pulled_options_state);
++                    c->c2.pulled_options_state = NULL;
++                    c->c2.pulled_options_digest_init_done = false;
++                    ret = PUSH_MSG_REPLY;
++                    break;
++
++                case 2:
++                    ret = PUSH_MSG_CONTINUATION;
++                    break;
++            }
++        }
++    }
++    else if (ch == '\0')
++    {
++        ret = PUSH_MSG_REPLY;
++    }
++    /* show_settings (&c->options); */
++    return ret;
++}
++
+ int
+ process_incoming_push_msg(struct context *c,
+                           const struct buffer *buffer,
+@@ -862,64 +919,22 @@ process_incoming_push_msg(struct context *c,
+                           unsigned int permission_mask,
+                           unsigned int *option_types_found)
+ {
+-    int ret = PUSH_MSG_ERROR;
+     struct buffer buf = *buffer;
+ 
+     if (buf_string_compare_advance(&buf, "PUSH_REQUEST"))
      {
--      /* Very hacky workaround and quick fix for our calculation
--       * not correct to avoid a regression */
-+      /* Very hacky workaround and quick fix for frame calculation
-+       * different when adjusting frame size when the original and new cipher
-+       * are identical to avoid a regression with client without NCP */
-         return tls_session_generate_data_channel_keys(session);
+-        ret = process_incoming_push_request(c);
++        return process_incoming_push_request(c);
      }
- 
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index 2f6f7657..58a9b0d4 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -89,13 +89,6 @@
- #define TLS_MULTI_HORIZON 2     /* call tls_multi_process frequently for n seconds after
-                                  * every packet sent/received action */
- 
--/*
-- * The SSL/TLS worker thread will wait at most this many seconds for the
-- * interprocess communication pipe to the main thread to be ready to accept
-- * writes.
-- */
--#define TLS_MULTI_THREAD_SEND_TIMEOUT 5
+     else if (honor_received_options
+              && buf_string_compare_advance(&buf, "PUSH_REPLY"))
+     {
+-        const uint8_t ch = buf_read_u8(&buf);
+-        if (ch == ',')
+-        {
+-            struct buffer buf_orig = buf;
+-            if (!c->c2.pulled_options_digest_init_done)
+-            {
+-                c->c2.pulled_options_state = md_ctx_new();
+-                md_ctx_init(c->c2.pulled_options_state, md_kt_get("SHA256"));
+-                c->c2.pulled_options_digest_init_done = true;
+-            }
+-            if (!c->c2.did_pre_pull_restore)
+-            {
+-                pre_pull_restore(&c->options, &c->c2.gc);
+-                c->c2.did_pre_pull_restore = true;
+-            }
+-            if (apply_push_options(&c->options,
+-                                   &buf,
+-                                   permission_mask,
+-                                   option_types_found,
+-                                   c->c2.es))
+-            {
+-                push_update_digest(c->c2.pulled_options_state, &buf_orig,
+-                                   &c->options);
+-                switch (c->options.push_continuation)
+-                {
+-                    case 0:
+-                    case 1:
+-                        md_ctx_final(c->c2.pulled_options_state, c->c2.pulled_options_digest.digest);
+-                        md_ctx_cleanup(c->c2.pulled_options_state);
+-                        md_ctx_free(c->c2.pulled_options_state);
+-                        c->c2.pulled_options_state = NULL;
+-                        c->c2.pulled_options_digest_init_done = false;
+-                        ret = PUSH_MSG_REPLY;
+-                        break;
 -
- /* Interval that tls_multi_process should call tls_authentication_status */
- #define TLS_MULTI_AUTH_STATUS_INTERVAL 10
+-                    case 2:
+-                        ret = PUSH_MSG_CONTINUATION;
+-                        break;
+-                }
+-            }
+-        }
+-        else if (ch == '\0')
+-        {
+-            ret = PUSH_MSG_REPLY;
+-        }
+-        /* show_settings (&c->options); */
++        return process_incoming_push_reply(c, permission_mask,
++                                           option_types_found, &buf);
++    }
++    else
++    {
++        return PUSH_MSG_ERROR;
+     }
+-    return ret;
+ }
+ 
  
 -- 
 2.26.2
