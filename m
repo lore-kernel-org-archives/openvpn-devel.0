@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu,  9 Jul 2020 12:15:58 +0200
-Message-Id: <20200709101603.11941-3-arne@...1227...>
+Date: Thu,  9 Jul 2020 12:16:00 +0200
+Message-Id: <20200709101603.11941-5-arne@...1227...>
 In-Reply-To: <20200709101603.11941-1-arne@...1227...>
 References: <20200709101603.11941-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 3/8] Extract process_incoming_push_reply
- from process_incoming_push_msg
+Subject: [Openvpn-devel] [PATCH 5/8] Generate data channel keys after
+ connect options have been parsed
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,155 +17,162 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is a small refactoring to make both function more readable. It also
-eliminates the ret variable in process_incoming_push_msg that now serves
-no purpose anymore.
+The simplify the control flow, it makes more sense to generate the
+data keys when all the prerequisites for generating the data channel
+keys (ncp cipher selection etc) are met instead of delaying it to the
+next incoming PUSH_REQUEST message.
+
+This also eliminates the need for the hack introduced by commit
+3b06b57d9 to generate the data channel keys on the async file close
+event.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/push.c | 113 +++++++++++++++++++++++++--------------------
- 1 file changed, 64 insertions(+), 49 deletions(-)
+ src/openvpn/multi.c | 54 ++++++++++++++++++++++++++-------------------
+ src/openvpn/push.c  | 27 ++++-------------------
+ 2 files changed, 35 insertions(+), 46 deletions(-)
 
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 56d652a3..d74323db 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -855,6 +855,63 @@ push_update_digest(md_ctx_t *ctx, struct buffer *buf, const struct options *opt)
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index f04c4c90..810e489a 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -1843,6 +1843,30 @@ multi_client_set_protocol_options(struct context *c)
      }
  }
  
-+static int
-+process_incoming_push_reply(struct context *c,
-+                            unsigned int permission_mask,
-+                            const unsigned int *option_types_found,
-+                            struct buffer *buf)
++/**
++ * Generates the data channel keys
++ */
++static bool
++multi_client_generate_tls_keys(struct context *c)
 +{
-+    int ret = PUSH_MSG_ERROR;
-+    const uint8_t ch = buf_read_u8(buf);
-+    if (ch == ',')
++    struct frame *frame_fragment = NULL;
++#ifdef ENABLE_FRAGMENT
++    if (c->options.ce.fragment)
 +    {
-+        struct buffer buf_orig = (*buf);
-+        if (!c->c2.pulled_options_digest_init_done)
-+        {
-+            c->c2.pulled_options_state = md_ctx_new();
-+            md_ctx_init(c->c2.pulled_options_state, md_kt_get("SHA256"));
-+            c->c2.pulled_options_digest_init_done = true;
-+        }
-+        if (!c->c2.did_pre_pull_restore)
-+        {
-+            pre_pull_restore(&c->options, &c->c2.gc);
-+            c->c2.did_pre_pull_restore = true;
-+        }
-+        if (apply_push_options(&c->options,
-+                               buf,
-+                               permission_mask,
-+                               option_types_found,
-+                               c->c2.es))
-+        {
-+            push_update_digest(c->c2.pulled_options_state, &buf_orig,
-+                               &c->options);
-+            switch (c->options.push_continuation)
-+            {
-+                case 0:
-+                case 1:
-+                    md_ctx_final(c->c2.pulled_options_state,
-+                                 c->c2.pulled_options_digest.digest);
-+                    md_ctx_cleanup(c->c2.pulled_options_state);
-+                    md_ctx_free(c->c2.pulled_options_state);
-+                    c->c2.pulled_options_state = NULL;
-+                    c->c2.pulled_options_digest_init_done = false;
-+                    ret = PUSH_MSG_REPLY;
-+                    break;
++        frame_fragment = &c->c2.frame_fragment;
++    }
++#endif
++    struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
++    if (!tls_session_update_crypto_params(session, &c->options,
++                                          &c->c2.frame, frame_fragment))
++    {
++        msg(D_TLS_ERRORS, "TLS Error: initializing data channel failed");
++        register_signal(c, SIGUSR1, "process-push-msg-failed");
++        return false;
++    }
 +
-+                case 2:
-+                    ret = PUSH_MSG_CONTINUATION;
-+                    break;
-+            }
-+        }
-+    }
-+    else if (ch == '\0')
-+    {
-+        ret = PUSH_MSG_REPLY;
-+    }
-+    /* show_settings (&c->options); */
-+    return ret;
++    return true;
 +}
+ 
+ /*
+  * Called as soon as the SSL/TLS connection authenticates.
+@@ -2149,7 +2173,13 @@ script_failed:
+         /* authentication complete, calculate dynamic client specific options */
+         multi_client_set_protocol_options(&mi->context);
+ 
+-        /* send push reply if ready*/
++        /* Generate data channel keys */
++        if (!multi_client_generate_tls_keys(&mi->context))
++        {
++            mi->context.c2.context_auth = CAS_FAILED;
++        }
 +
- int
- process_incoming_push_msg(struct context *c,
-                           const struct buffer *buffer,
-@@ -862,64 +919,22 @@ process_incoming_push_msg(struct context *c,
-                           unsigned int permission_mask,
-                           unsigned int *option_types_found)
++        /* send push reply if ready */
+         if (mi->context.c2.push_request_received)
+         {
+             process_incoming_push_request(&mi->context);
+@@ -2205,28 +2235,6 @@ multi_process_file_closed(struct multi_context *m, const unsigned int mpp_flags)
+             {
+                 /* continue authentication, perform NCP negotiation and send push_reply */
+                 multi_process_post(m, mi, mpp_flags);
+-
+-                /* With NCP and deferred authentication, we perform cipher negotiation and
+-                 * data channel keys generation on incoming push request, assuming that auth
+-                 * succeeded. When auth succeeds in between push requests and async push is used,
+-                 * we send push reply immediately. Above multi_process_post() call performs
+-                 * NCP negotiation and here we do keys generation. */
+-
+-                struct context *c = &mi->context;
+-                struct frame *frame_fragment = NULL;
+-#ifdef ENABLE_FRAGMENT
+-                if (c->options.ce.fragment)
+-                {
+-                    frame_fragment = &c->c2.frame_fragment;
+-                }
+-#endif
+-                struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
+-                if (!tls_session_update_crypto_params(session, &c->options,
+-                                                      &c->c2.frame, frame_fragment))
+-                {
+-                    msg(D_TLS_ERRORS, "TLS Error: initializing data channel failed");
+-                    register_signal(c, SIGUSR1, "init-data-channel-failed");
+-                }
+             }
+             else
+             {
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 92a28a14..5bc4328c 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -359,30 +359,11 @@ incoming_push_message(struct context *c, const struct buffer *buffer)
+         }
+         event_timeout_clear(&c->c2.push_request_interval);
+     }
+-    else if (status == PUSH_MSG_REQUEST)
+-    {
+-        if (c->options.mode == MODE_SERVER)
+-        {
+-            struct frame *frame_fragment = NULL;
+-#ifdef ENABLE_FRAGMENT
+-            if (c->options.ce.fragment)
+-            {
+-                frame_fragment = &c->c2.frame_fragment;
+-            }
+-#endif
+-            struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
+-            if (!tls_session_update_crypto_params(session, &c->options,
+-                                                  &c->c2.frame, frame_fragment))
+-            {
+-                msg(D_TLS_ERRORS, "TLS Error: initializing data channel failed");
+-                goto error;
+-            }
+-        }
+-    }
+ 
+     goto cleanup;
++
+ error:
+-    register_signal(c, SIGUSR1, "process-push-msg-failed");
++  register_signal(c, SIGUSR1, "process-push-msg-failed");
+ cleanup:
+     gc_free(&gc);
+ }
+@@ -748,7 +729,6 @@ process_incoming_push_request(struct context *c)
  {
--    int ret = PUSH_MSG_ERROR;
-     struct buffer buf = *buffer;
+     int ret = PUSH_MSG_ERROR;
+ 
+-    c->c2.push_request_received = true;
+     if (tls_authentication_status(c->c2.tls_multi, 0) == TLS_AUTHENTICATION_FAILED || c->c2.context_auth == CAS_FAILED)
+     {
+         const char *client_reason = tls_client_reason(c->c2.tls_multi);
+@@ -810,7 +790,7 @@ push_update_digest(md_ctx_t *ctx, struct buffer *buf, const struct options *opt)
+ static int
+ process_incoming_push_reply(struct context *c,
+                             unsigned int permission_mask,
+-                            const unsigned int *option_types_found,
++                            unsigned int *option_types_found,
+                             struct buffer *buf)
+ {
+     int ret = PUSH_MSG_ERROR;
+@@ -875,6 +855,7 @@ process_incoming_push_msg(struct context *c,
  
      if (buf_string_compare_advance(&buf, "PUSH_REQUEST"))
      {
--        ret = process_incoming_push_request(c);
-+        return process_incoming_push_request(c);
++        c->c2.push_request_received = true;
+         return process_incoming_push_request(c);
      }
      else if (honor_received_options
-              && buf_string_compare_advance(&buf, "PUSH_REPLY"))
-     {
--        const uint8_t ch = buf_read_u8(&buf);
--        if (ch == ',')
--        {
--            struct buffer buf_orig = buf;
--            if (!c->c2.pulled_options_digest_init_done)
--            {
--                c->c2.pulled_options_state = md_ctx_new();
--                md_ctx_init(c->c2.pulled_options_state, md_kt_get("SHA256"));
--                c->c2.pulled_options_digest_init_done = true;
--            }
--            if (!c->c2.did_pre_pull_restore)
--            {
--                pre_pull_restore(&c->options, &c->c2.gc);
--                c->c2.did_pre_pull_restore = true;
--            }
--            if (apply_push_options(&c->options,
--                                   &buf,
--                                   permission_mask,
--                                   option_types_found,
--                                   c->c2.es))
--            {
--                push_update_digest(c->c2.pulled_options_state, &buf_orig,
--                                   &c->options);
--                switch (c->options.push_continuation)
--                {
--                    case 0:
--                    case 1:
--                        md_ctx_final(c->c2.pulled_options_state, c->c2.pulled_options_digest.digest);
--                        md_ctx_cleanup(c->c2.pulled_options_state);
--                        md_ctx_free(c->c2.pulled_options_state);
--                        c->c2.pulled_options_state = NULL;
--                        c->c2.pulled_options_digest_init_done = false;
--                        ret = PUSH_MSG_REPLY;
--                        break;
--
--                    case 2:
--                        ret = PUSH_MSG_CONTINUATION;
--                        break;
--                }
--            }
--        }
--        else if (ch == '\0')
--        {
--            ret = PUSH_MSG_REPLY;
--        }
--        /* show_settings (&c->options); */
-+        return process_incoming_push_reply(c, permission_mask,
-+                                           option_types_found, &buf);
-+    }
-+    else
-+    {
-+        return PUSH_MSG_ERROR;
-     }
--    return ret;
- }
- 
- 
 -- 
 2.26.2
 
