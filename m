@@ -1,10 +1,15 @@
-Date: Thu, 9 Jul 2020 19:00:54 +0200 (CEST)
-Message-Id: <202007091700.069H0s5j021702@...2054...>
+Date: Thu, 9 Jul 2020 20:35:02 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200709101603.11941-3-arne@...1227...>
-References: <20200709101603.11941-3-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Extract
- process_incoming_push_reply from process_incoming_push_msg
+Message-ID: <20200709183502.GC1431@...1296...>
+References: <20200709101603.11941-1-arne@...1227...>
+ <20200709101603.11941-4-arne@...1227...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="bNHXGDLlhej9H5lU"
+Content-Disposition: inline
+In-Reply-To: <20200709101603.11941-4-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH 4/8] Move protocol option negotiation
+ from push_prepare to new function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,42 +18,72 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+--bNHXGDLlhej9H5lU
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-After some discussion on IRC regarding the "const" bit it was decided
-to not *add* it to the function call, but to *remove* it from the
-function definition of process_incoming_push_msg()  (which would
-otherwise be done in the 5/8 patch of this series).  
+Hi,
 
-With that changed the code compiles without warnings.  
+On Thu, Jul 09, 2020 at 12:15:59PM +0200, Arne Schwabe wrote:
+> This clean ups the code and removes the surprising side effects
+> of preparing a push reply to also select protocol options.
+>=20
+> We also remember if we have seen a push request without async
+> push. This improves reaction time if deferred auth is involved
+> like managment interface deferred auth.  The other benefit is
+> removing a number of ifdefs.
+>=20
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 
-Stared a bit at "git show -w --color-moved=zebra" and the change seems 
-to make sense :-)
+I have tested this on the server side test torture program, and it=20
+reproduceably fails async-auth (with NCP, if that is relevant)
 
-Tested with local t_client tests on Linux and FreeBSD - haven't done 
-a full server test, because "it's client side code".
+Jul  9 20:24:55 gentoo tun-udp-p2mp-global-authpam[9557]: cron2-freebsd-tc-=
+amd64/2001:608:0:814::f000:21 Key [AF_INET6]2001:608:0:814::f000:21:28650 [=
+0] not initialized (yet), dropping packet.
 
-commit 5e78bf66fa97818e0587ab1504cf7ecfd73df944
-Author: Arne Schwabe
-Date:   Thu Jul 9 12:15:58 2020 +0200
-
-     Extract process_incoming_push_reply from process_incoming_push_msg
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20200709101603.11941-3-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20254.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+All other tests succeed.
 
 
---
-kind regards,
+Applying 5/8 on top of this makes the async auth test succeed again
+(and normal connections as well, from a quick glance - the full test
+is still running).
 
-Gert Doering
+Let's discuss tomorrow how to proceed here.
 
+gert
+
+
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--bNHXGDLlhej9H5lU
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJfB2NWAAoJEB2Cnv7KVigSC4cL/jicch5AshER+B43nImK5jnn
+2XVVncPlEx7N7Dw6SprnXOrQqixegMIeUSWVJDIh0y41HiWpffOQR1n3Q76xleQO
+CdVKbeK1vJhMkBTo3k8TO+Q66iZK1e2u5zw/R91wNxCzHv8LmmHOCjO+QNQYZD/l
+0//g3uf1yf2+lfTr025c54+MqH/VWQE9l9+UHWVRYRFSuePyyrtDn1vSr0HeMLTL
+Heg2+qT2P7CFhC/4A7roQgZXcf2YceDi1fqcVw2TqvkffhjnY+zJa/zHygX1ARH/
+/IRO6BMppHr8OJCeU2d+Pb5qDtzCLKI8B8jfAWI0jwWH/YoUmhd8Q/t1MkZjxSKU
+R6zymJHsBTlnsBZPynC9MTT7DHffHxfilXRwmEbJSeRjpOJIqLn8eKpZnl1xGBhH
+Spoy5oG3iIYctF3LRTo56yehZeRx+t/I1J+91BOQChtzuohZmEM4W96cCjvds1oX
+LSx8XEDfsljqkdct0g+bZh086uklvCiYbU8zCCjDaA==
+=N1qk
+-----END PGP SIGNATURE-----
+
+--bNHXGDLlhej9H5lU--
 
