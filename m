@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu,  9 Jul 2020 12:16:00 +0200
-Message-Id: <20200709101603.11941-5-arne@...1227...>
+Date: Thu,  9 Jul 2020 12:15:59 +0200
+Message-Id: <20200709101603.11941-4-arne@...1227...>
 In-Reply-To: <20200709101603.11941-1-arne@...1227...>
 References: <20200709101603.11941-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 5/8] Generate data channel keys after
- connect options have been parsed
+Subject: [Openvpn-devel] [PATCH 4/8] Move protocol option negotiation from
+ push_prepare to new function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,162 +17,270 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The simplify the control flow, it makes more sense to generate the
-data keys when all the prerequisites for generating the data channel
-keys (ncp cipher selection etc) are met instead of delaying it to the
-next incoming PUSH_REQUEST message.
+This clean ups the code and removes the surprising side effects
+of preparing a push reply to also select protocol options.
 
-This also eliminates the need for the hack introduced by commit
-3b06b57d9 to generate the data channel keys on the async file close
-event.
+We also remember if we have seen a push request without async
+push. This improves reaction time if deferred auth is involved
+like managment interface deferred auth.  The other benefit is
+removing a number of ifdefs.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/multi.c | 54 ++++++++++++++++++++++++++-------------------
- src/openvpn/push.c  | 27 ++++-------------------
- 2 files changed, 35 insertions(+), 46 deletions(-)
+ src/openvpn/forward.c |  4 +--
+ src/openvpn/multi.c   | 81 ++++++++++++++++++++++++++++++++++++++++---
+ src/openvpn/openvpn.h |  2 --
+ src/openvpn/push.c    | 66 +++++------------------------------
+ 4 files changed, 88 insertions(+), 65 deletions(-)
 
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 885cf126..5c4370a8 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1123,8 +1123,8 @@ process_incoming_link_part1(struct context *c, struct link_socket_info *lsi, boo
+         }
+ 
+         /*
+-         * Drop non-TLS packet if client-connect script/plugin has not
+-         * yet succeeded.
++         * Drop non-TLS packet if client-connect script/plugin and cipher selection
++         * has not yet succeeded.
+          */
+         if (c->c2.context_auth != CAS_SUCCEEDED)
+         {
 diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index f04c4c90..810e489a 100644
+index f1332c8d..f04c4c90 100644
 --- a/src/openvpn/multi.c
 +++ b/src/openvpn/multi.c
-@@ -1843,6 +1843,30 @@ multi_client_set_protocol_options(struct context *c)
-     }
+@@ -824,8 +824,8 @@ multi_create_instance(struct multi_context *m, const struct mroute_addr *real)
+     mi->did_cid_hash = true;
+ #endif
+ 
+-#ifdef ENABLE_ASYNC_PUSH
+     mi->context.c2.push_request_received = false;
++#ifdef ENABLE_ASYNC_PUSH
+     mi->inotify_watch = -1;
+ #endif
+ 
+@@ -1772,6 +1772,78 @@ multi_client_connect_setenv(struct multi_context *m,
+     gc_free(&gc);
  }
  
 +/**
-+ * Generates the data channel keys
++ * Calculates the options that depend on the client capabilities
++ * based on local options and available peer info
++ * - choosen cipher
++ * - peer id
 + */
-+static bool
-+multi_client_generate_tls_keys(struct context *c)
++static void
++multi_client_set_protocol_options(struct context *c)
 +{
-+    struct frame *frame_fragment = NULL;
-+#ifdef ENABLE_FRAGMENT
-+    if (c->options.ce.fragment)
++
++    const char *optstr = NULL;
++    struct tls_multi *tls_multi = c->c2.tls_multi;
++    const char *const peer_info = tls_multi->peer_info;
++    struct options *o = &c->options;
++
++    /* Send peer-id if client supports it */
++    optstr = peer_info ? strstr(peer_info, "IV_PROTO=") : NULL;
++    if (optstr)
 +    {
-+        frame_fragment = &c->c2.frame_fragment;
-+    }
-+#endif
-+    struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
-+    if (!tls_session_update_crypto_params(session, &c->options,
-+                                          &c->c2.frame, frame_fragment))
-+    {
-+        msg(D_TLS_ERRORS, "TLS Error: initializing data channel failed");
-+        register_signal(c, SIGUSR1, "process-push-msg-failed");
-+        return false;
++        int proto = 0;
++        int r = sscanf(optstr, "IV_PROTO=%d", &proto);
++        if ((r == 1) && (proto >= 2))
++        {
++            tls_multi->use_peer_id = true;
++        }
 +    }
 +
-+    return true;
++    /* Select cipher if client supports Negotiable Crypto Parameters */
++    if (o->ncp_enabled)
++    {
++        /* if we have already created our key, we cannot *change* our own
++         * cipher -> so log the fact and push the "what we have now" cipher
++         * (so the client is always told what we expect it to use)
++         */
++        const struct tls_session *session = &tls_multi->session[TM_ACTIVE];
++        if (session->key[KS_PRIMARY].crypto_options.key_ctx_bi.initialized)
++        {
++            msg( M_INFO, "PUSH: client wants to negotiate cipher (NCP), but "
++                 "server has already generated data channel keys, "
++                 "re-sending previously negotiated cipher '%s'",
++                 o->ciphername );
++        }
++        else
++        {
++            /*
++             * Push the first cipher from --ncp-ciphers to the client that
++             * the client announces to be supporting.
++             */
++            char *push_cipher = ncp_get_best_cipher(o->ncp_ciphers, o->ciphername,
++                                                    peer_info,
++                                                    tls_multi->remote_ciphername,
++                                                    &o->gc);
++
++            if (push_cipher)
++            {
++                o->ciphername = push_cipher;
++            }
++            else
++            {
++                struct gc_arena gc = gc_new();
++                const char *peer_ciphers = tls_peer_ncp_list(peer_info, &gc);
++                msg(M_INFO, "PUSH: No common cipher between server and client."
++                    "Expect this connection not to work. "
++                    "Server ncp-ciphers: '%s', client supported ciphers '%s'",
++                    o->ncp_ciphers, peer_ciphers);
++                gc_free(&gc);
++            }
++        }
++    }
 +}
- 
++
++
  /*
   * Called as soon as the SSL/TLS connection authenticates.
-@@ -2149,7 +2173,13 @@ script_failed:
-         /* authentication complete, calculate dynamic client specific options */
-         multi_client_set_protocol_options(&mi->context);
+  *
+@@ -2074,13 +2146,14 @@ script_failed:
+         /* set context-level authentication flag */
+         mi->context.c2.context_auth = CAS_SUCCEEDED;
  
--        /* send push reply if ready*/
-+        /* Generate data channel keys */
-+        if (!multi_client_generate_tls_keys(&mi->context))
-+        {
-+            mi->context.c2.context_auth = CAS_FAILED;
-+        }
+-#ifdef ENABLE_ASYNC_PUSH
+-        /* authentication complete, send push reply */
++        /* authentication complete, calculate dynamic client specific options */
++        multi_client_set_protocol_options(&mi->context);
 +
-+        /* send push reply if ready */
++        /* send push reply if ready*/
          if (mi->context.c2.push_request_received)
          {
              process_incoming_push_request(&mi->context);
-@@ -2205,28 +2235,6 @@ multi_process_file_closed(struct multi_context *m, const unsigned int mpp_flags)
-             {
-                 /* continue authentication, perform NCP negotiation and send push_reply */
-                 multi_process_post(m, mi, mpp_flags);
--
--                /* With NCP and deferred authentication, we perform cipher negotiation and
--                 * data channel keys generation on incoming push request, assuming that auth
--                 * succeeded. When auth succeeds in between push requests and async push is used,
--                 * we send push reply immediately. Above multi_process_post() call performs
--                 * NCP negotiation and here we do keys generation. */
--
--                struct context *c = &mi->context;
--                struct frame *frame_fragment = NULL;
--#ifdef ENABLE_FRAGMENT
--                if (c->options.ce.fragment)
--                {
--                    frame_fragment = &c->c2.frame_fragment;
--                }
+         }
 -#endif
--                struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
--                if (!tls_session_update_crypto_params(session, &c->options,
--                                                      &c->c2.frame, frame_fragment))
--                {
--                    msg(D_TLS_ERRORS, "TLS Error: initializing data channel failed");
--                    register_signal(c, SIGUSR1, "init-data-channel-failed");
--                }
-             }
-             else
-             {
+     }
+     else
+     {
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index 4609af3e..a1308852 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -432,9 +432,7 @@ struct context_2
+ #if P2MP
+ 
+     /* --ifconfig endpoints to be pushed to client */
+-#ifdef ENABLE_ASYNC_PUSH
+     bool push_request_received;
+-#endif
+     bool push_ifconfig_defined;
+     time_t sent_push_reply_expiry;
+     in_addr_t push_ifconfig_local;
 diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 92a28a14..5bc4328c 100644
+index d74323db..92a28a14 100644
 --- a/src/openvpn/push.c
 +++ b/src/openvpn/push.c
-@@ -359,30 +359,11 @@ incoming_push_message(struct context *c, const struct buffer *buffer)
-         }
-         event_timeout_clear(&c->c2.push_request_interval);
+@@ -437,7 +437,7 @@ prepare_auth_token_push_reply(struct tls_multi *tls_multi, struct gc_arena *gc,
+ }
+ 
+ /**
+- * Prepare push options, based on local options and available peer info.
++ * Prepare push options, based on local options
+  *
+  * @param context       context structure storing data for VPN tunnel
+  * @param gc            gc arena for allocating push options
+@@ -449,9 +449,7 @@ bool
+ prepare_push_reply(struct context *c, struct gc_arena *gc,
+                    struct push_list *push_list)
+ {
+-    const char *optstr = NULL;
+     struct tls_multi *tls_multi = c->c2.tls_multi;
+-    const char *const peer_info = tls_multi->peer_info;
+     struct options *o = &c->options;
+ 
+     /* ipv6 */
+@@ -480,18 +478,10 @@ prepare_push_reply(struct context *c, struct gc_arena *gc,
+                                         0, gc));
      }
--    else if (status == PUSH_MSG_REQUEST)
--    {
--        if (c->options.mode == MODE_SERVER)
+ 
+-    /* Send peer-id if client supports it */
+-    optstr = peer_info ? strstr(peer_info, "IV_PROTO=") : NULL;
+-    if (optstr)
++    if (tls_multi->use_peer_id)
+     {
+-        int proto = 0;
+-        int r = sscanf(optstr, "IV_PROTO=%d", &proto);
+-        if ((r == 1) && (proto >= 2))
 -        {
--            struct frame *frame_fragment = NULL;
--#ifdef ENABLE_FRAGMENT
--            if (c->options.ce.fragment)
+-            push_option_fmt(gc, push_list, M_USAGE, "peer-id %d",
+-                            tls_multi->peer_id);
+-            tls_multi->use_peer_id = true;
+-        }
++        push_option_fmt(gc, push_list, M_USAGE, "peer-id %d",
++                        tls_multi->peer_id);
+     }
+     /*
+      * If server uses --auth-gen-token and we have an auth token
+@@ -499,47 +489,11 @@ prepare_push_reply(struct context *c, struct gc_arena *gc,
+      */
+     prepare_auth_token_push_reply(tls_multi, gc, push_list);
+ 
+-    /* Push cipher if client supports Negotiable Crypto Parameters */
+-    if (o->ncp_enabled)
+-    {
+-        /* if we have already created our key, we cannot *change* our own
+-         * cipher -> so log the fact and push the "what we have now" cipher
+-         * (so the client is always told what we expect it to use)
+-         */
+-        const struct tls_session *session = &tls_multi->session[TM_ACTIVE];
+-        if (session->key[KS_PRIMARY].crypto_options.key_ctx_bi.initialized)
+-        {
+-            msg( M_INFO, "PUSH: client wants to negotiate cipher (NCP), but "
+-                 "server has already generated data channel keys, "
+-                 "re-sending previously negotiated cipher '%s'",
+-                 o->ciphername );
+-        }
+-        else
+-        {
+-            /*
+-             * Push the first cipher from --ncp-ciphers to the client that
+-             * the client announces to be supporting.
+-             */
+-            char *push_cipher = ncp_get_best_cipher(o->ncp_ciphers, o->ciphername,
+-                                                    peer_info,
+-                                                    tls_multi->remote_ciphername,
+-                                                    &o->gc);
+-
+-            if (push_cipher)
 -            {
--                frame_fragment = &c->c2.frame_fragment;
+-                o->ciphername = push_cipher;
 -            }
--#endif
--            struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
--            if (!tls_session_update_crypto_params(session, &c->options,
--                                                  &c->c2.frame, frame_fragment))
+-            else
 -            {
--                msg(D_TLS_ERRORS, "TLS Error: initializing data channel failed");
--                goto error;
+-                const char *peer_ciphers = tls_peer_ncp_list(peer_info, gc);
+-                msg(M_INFO, "PUSH: No common cipher between server and client."
+-                    "Expect this connection not to work. "
+-                    "Server ncp-ciphers: '%s', client supported ciphers '%s'",
+-                    o->ncp_ciphers, peer_ciphers);
 -            }
 -        }
+-        push_option_fmt(gc, push_list, M_USAGE, "cipher %s", o->ciphername);
 -    }
++    /*
++     * Push the selected cipher, at this point the cipher has been
++     * already negioated and been fixed
++     */
++    push_option_fmt(gc, push_list, M_USAGE, "cipher %s", o->ciphername);
  
-     goto cleanup;
-+
- error:
--    register_signal(c, SIGUSR1, "process-push-msg-failed");
-+  register_signal(c, SIGUSR1, "process-push-msg-failed");
- cleanup:
-     gc_free(&gc);
+     return true;
  }
-@@ -748,7 +729,6 @@ process_incoming_push_request(struct context *c)
+@@ -794,9 +748,7 @@ process_incoming_push_request(struct context *c)
  {
      int ret = PUSH_MSG_ERROR;
  
--    c->c2.push_request_received = true;
+-#ifdef ENABLE_ASYNC_PUSH
+     c->c2.push_request_received = true;
+-#endif
      if (tls_authentication_status(c->c2.tls_multi, 0) == TLS_AUTHENTICATION_FAILED || c->c2.context_auth == CAS_FAILED)
      {
          const char *client_reason = tls_client_reason(c->c2.tls_multi);
-@@ -810,7 +790,7 @@ push_update_digest(md_ctx_t *ctx, struct buffer *buf, const struct options *opt)
- static int
- process_incoming_push_reply(struct context *c,
-                             unsigned int permission_mask,
--                            const unsigned int *option_types_found,
-+                            unsigned int *option_types_found,
-                             struct buffer *buf)
- {
-     int ret = PUSH_MSG_ERROR;
-@@ -875,6 +855,7 @@ process_incoming_push_msg(struct context *c,
- 
-     if (buf_string_compare_advance(&buf, "PUSH_REQUEST"))
-     {
-+        c->c2.push_request_received = true;
-         return process_incoming_push_request(c);
-     }
-     else if (honor_received_options
 -- 
 2.26.2
 
