@@ -1,5 +1,5 @@
-Date: Fri, 10 Jul 2020 17:22:49 +0200 (CEST)
-Message-Id: <202007101522.06AFMnBQ043401@...2054...>
+Date: Fri, 10 Jul 2020 17:24:51 +0200 (CEST)
+Message-Id: <202007101524.06AFOpF8043423@...2054...>
 From: Gert Doering <gert@...1296...>
 In-Reply-To: <20200709101603.11941-4-arne@...1227...>
 References: <20200709101603.11941-4-arne@...1227...>
@@ -18,19 +18,10 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+*sigh* the commit ID in the previous mail was wrong, it was "before I
+changed the commit message".  Here's the correct one.  Sorry.
 
-Your patch has been applied to the master branch.
-
-I have stared at the code, Antonio has stared at the code, and
-it makes sense.  The test server says "but it breaks async auth",
-so I've amended the commit message with a big fat NOTE that says 
-"this breaks async auth, but we'll fix it next commit".
-
-I have not tested async-push (it might be broken as well), but
-we'll see to that next week when Lev is back.
-
-commit 6344ea1218583d84baa986e6747e0c023d747245
+commit 4f378ddb9932973965bb4931e85c991ddd86f7f0
 Author: Arne Schwabe
 Date:   Thu Jul 9 12:15:59 2020 +0200
 
