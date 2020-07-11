@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Sat, 11 Jul 2020 11:36:48 +0200
-Message-Id: <20200711093655.23686-7-arne@...1227...>
+Date: Sat, 11 Jul 2020 11:36:45 +0200
+Message-Id: <20200711093655.23686-4-arne@...1227...>
 In-Reply-To: <20200711093655.23686-1-arne@...1227...>
 References: <20200711093655.23686-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v5 07/14] client-connect: Change cas_context
- from int to enum
+Subject: [Openvpn-devel] [PATCH v5 04/14] client-connect: Move
+ multi_client_connect_setenv into early_setup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,90 +17,71 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This deviates from Fabian's original patch that relied on the now
-removed connection_established bool as pointer being NULL or non NULL as
-implicit third state and makeing connection_established as a substate of
-(cas_context == CAS_PENDING)
+From: Fabian Knittel <fabian.knittel@...1547...>
 
+This patch moves multi_client_connect_setenv into
+multi_client_connect_early_setup and makes sure that every client-connect
+handling function updates the virtual address selection.
+
+Background: This unifies how the client-connect handling functions work.
+
+Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
 Signed-off-by: Arne Schwabe <arne@...1227...>
 
-Patch V5: extend cas_context with two new states instead adding an
-          extra mini state machine.
+Patch V5: Rebase on master
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/multi.c   |  2 +-
- src/openvpn/multi.h   |  1 +
- src/openvpn/openvpn.h | 24 +++++++++++++++++-------
- 3 files changed, 19 insertions(+), 8 deletions(-)
+ src/openvpn/multi.c | 22 +++++++++++++---------
+ 1 file changed, 13 insertions(+), 9 deletions(-)
 
 diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 83848fdc..f9b8af80 100644
+index 35e0bd10..539ebfc0 100644
 --- a/src/openvpn/multi.c
 +++ b/src/openvpn/multi.c
-@@ -2163,7 +2163,7 @@ multi_client_connect_early_setup(struct multi_context *m,
-  * Try to source a dynamic config file from the
-  * --client-config-dir directory.
-  */
--enum client_connect_return
-+static enum client_connect_return
- multi_client_connect_source_ccd(struct multi_context *m,
-                                 struct multi_instance *mi,
-                                 unsigned int *option_types_found)
-diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-index 4fb4d0b6..1d30dcc6 100644
---- a/src/openvpn/multi.h
-+++ b/src/openvpn/multi.h
-@@ -62,6 +62,7 @@ struct deferred_signal_schedule_entry
-     struct timeval wakeup;
- };
+@@ -2150,6 +2150,12 @@ multi_client_connect_early_setup(struct multi_context *m,
  
+     /* reset pool handle to null */
+     mi->vaddr_handle = -1;
 +
++    /* do --client-connect setenvs */
++    multi_select_virtual_addr(m, mi);
++
++    multi_client_connect_setenv(m, mi);
++
+ }
+ 
  /**
-  * Server-mode state structure for one single VPN tunnel.
-  *
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index a1308852..7c469b01 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -210,6 +210,21 @@ struct context_1
- #endif
- };
- 
+@@ -2195,6 +2201,13 @@ multi_client_connect_source_ccd(struct multi_context *m,
+                                   CLIENT_CONNECT_OPT_MASK,
+                                   option_types_found,
+                                   mi->context.c2.es);
++            /*
++             * Select a virtual address from either --ifconfig-push in
++             * --client-config-dir file or --ifconfig-pool.
++             */
++            multi_select_virtual_addr(m, mi);
 +
-+/* client authentication state, CAS_SUCCEEDED must be 0 since
-+ * non multi code path still checks this variable but does not initialise it
-+ * so the code depends on zero initialisation */
-+enum client_connect_status {
-+    CAS_SUCCEEDED=0,
-+    CAS_PENDING,
-+    CAS_FAILED,
-+    CAS_PARTIAL,        /**< Variant of CAS_FAILED: at least one
-+                         * client-connect script/plugin succeeded
-+                         * while a later one in the chain failed
-+                         * (we still need cleanup compared to FAILED)
-+                         */
-+};
-+
- /**
-  * Level 2 %context containing state that is reset on both \c SIGHUP and
-  * \c SIGUSR1 restarts.
-@@ -444,13 +459,8 @@ struct context_2
-     int push_ifconfig_ipv6_netbits;
-     struct in6_addr push_ifconfig_ipv6_remote;
++            multi_client_connect_setenv(m, mi);
+         }
+         gc_free(&gc);
+     }
+@@ -2236,15 +2249,6 @@ multi_connection_established(struct multi_context *m, struct multi_instance *mi)
  
--    /* client authentication state, CAS_SUCCEEDED must be 0 */
--#define CAS_SUCCEEDED 0
--#define CAS_PENDING   1
--#define CAS_FAILED    2
--#define CAS_PARTIAL   3  /* at least one client-connect script/plugin
--                          * succeeded while a later one in the chain failed */
--    int context_auth;
-+
-+    enum client_connect_status context_auth;
+     multi_client_connect_source_ccd(m, mi, &option_types_found);
  
-     struct event_timeout push_request_interval;
-     int n_sent_push_requests;
+-    /*
+-     * Select a virtual address from either --ifconfig-push in
+-     * --client-config-dir file or --ifconfig-pool.
+-     */
+-    multi_select_virtual_addr(m, mi);
+-
+-    /* do --client-connect setenvs */
+-    multi_client_connect_setenv(m, mi);
+-
+     multi_client_connect_call_plugin_v1(m, mi, &option_types_found,
+                                         &cc_succeeded,
+                                         &cc_succeeded_count);
 -- 
 2.26.2
 
