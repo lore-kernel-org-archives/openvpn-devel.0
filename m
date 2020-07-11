@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Sat, 11 Jul 2020 11:36:44 +0200
-Message-Id: <20200711093655.23686-3-arne@...1227...>
+Date: Sat, 11 Jul 2020 11:36:51 +0200
+Message-Id: <20200711093655.23686-10-arne@...1227...>
 In-Reply-To: <20200711093655.23686-1-arne@...1227...>
 References: <20200711093655.23686-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v5 03/14] client-connect: Refactor
- multi_client_connect_source_ccd
+Subject: [Openvpn-devel] [PATCH v5 10/14] client-connect: Move adding
+ inotify watch into its own function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,84 +17,75 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Fabian Knittel <fabian.knittel@...1547...>
-
-Refactor multi_client_connect_source_ccd(), so that options_server_import() (or
-the success path in general) is only entered in one place within the function.
-
-Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
-
-Patch V5: Simplify the logic even further to make more easy to understand.
+This make the code a bit better readable and also prepares resuing
+the function for client-connect return files
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/multi.c | 43 +++++++++++++++++++++----------------------
- 1 file changed, 21 insertions(+), 22 deletions(-)
+ src/openvpn/multi.c | 43 ++++++++++++++++++++++++++++---------------
+ 1 file changed, 28 insertions(+), 15 deletions(-)
 
 diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 3c4ceeb5..35e0bd10 100644
+index 271d09d8..dafc85f1 100644
 --- a/src/openvpn/multi.c
 +++ b/src/openvpn/multi.c
-@@ -2164,15 +2164,30 @@ multi_client_connect_source_ccd(struct multi_context *m,
-     if (mi->context.options.client_config_dir)
-     {
-         struct gc_arena gc = gc_new();
--        const char *ccd_file;
-+        const char *ccd_file = NULL;
-+
-+        const char *ccd_client = platform_gen_path(mi->context.options.client_config_dir,
-+                                                   tls_common_name(mi->context.c2.tls_multi,
-+                                                                   false),
-+                                                   &gc);
-+
-+        const char *ccd_default = platform_gen_path(mi->context.options.client_config_dir,
-+                                                    CCD_DEFAULT,
-+                                                    &gc);
- 
--        ccd_file = platform_gen_path(mi->context.options.client_config_dir,
--                                     tls_common_name(mi->context.c2.tls_multi,
--                                                     false),
--                                     &gc);
- 
-         /* try common-name file */
--        if (platform_test_file(ccd_file))
-+        if (platform_test_file(ccd_client))
-+        {
-+            ccd_file = ccd_client;
-+        }
-+        /* try default file */
-+        else if (platform_test_file(ccd_default))
-+        {
-+            ccd_file = ccd_default;
-+        }
-+
-+        if (ccd_file)
-         {
-             options_server_import(&mi->context.options,
-                                   ccd_file,
-@@ -2181,22 +2196,6 @@ multi_client_connect_source_ccd(struct multi_context *m,
-                                   option_types_found,
-                                   mi->context.c2.es);
-         }
--        else /* try default file */
--        {
--            ccd_file = platform_gen_path(mi->context.options.client_config_dir,
--                                         CCD_DEFAULT,
--                                         &gc);
--
--            if (platform_test_file(ccd_file))
--            {
--                options_server_import(&mi->context.options,
--                                      ccd_file,
--                                      D_IMPORT_ERRORS|M_OPTERR,
--                                      CLIENT_CONNECT_OPT_MASK,
--                                      option_types_found,
--                                      mi->context.c2.es);
--            }
--        }
-         gc_free(&gc);
-     }
+@@ -2828,6 +2828,32 @@ multi_schedule_context_wakeup(struct multi_context *m, struct multi_instance *mi
+                        compute_wakeup_sigma(&mi->context.c2.timeval));
  }
+ 
++#if defined(ENABLE_ASYNC_PUSH) && defined(ENABLE_DEF_AUTH)
++static void
++add_inotify_file_watch(struct multi_context *m, struct multi_instance *mi,
++                       int inotify_fd, const char *file)
++{
++    /* watch acf file */
++    long watch_descriptor = inotify_add_watch(inotify_fd, file,
++                                              IN_CLOSE_WRITE | IN_ONESHOT);
++    if (watch_descriptor >= 0)
++    {
++        if (mi->inotify_watch != -1)
++        {
++            hash_remove(m->inotify_watchers,
++                        (void *) (unsigned long)mi->inotify_watch);
++        }
++        hash_add(m->inotify_watchers, (const uintptr_t *)watch_descriptor,
++                 mi, true);
++        mi->inotify_watch = watch_descriptor;
++    }
++    else
++    {
++        msg(M_NONFATAL | M_ERRNO, "MULTI: inotify_add_watch error");
++    }
++}
++#endif /* if defined(ENABLE_ASYNC_PUSH) && defined(ENABLE_DEF_AUTH) */
++
+ /*
+  * Figure instance-specific timers, convert
+  * earliest to absolute time in mi->wakeup,
+@@ -2865,21 +2891,8 @@ multi_process_post(struct multi_context *m, struct multi_instance *mi, const uns
+         if (ks && ks->auth_control_file && was_unauthenticated
+             && (ks->authenticated == KS_AUTH_DEFERRED))
+         {
+-            /* watch acf file */
+-            long watch_descriptor = inotify_add_watch(m->top.c2.inotify_fd, ks->auth_control_file, IN_CLOSE_WRITE | IN_ONESHOT);
+-            if (watch_descriptor >= 0)
+-            {
+-                if (mi->inotify_watch != -1)
+-                {
+-                    hash_remove(m->inotify_watchers, (void *) (unsigned long)mi->inotify_watch);
+-                }
+-                hash_add(m->inotify_watchers, (const uintptr_t *)watch_descriptor, mi, true);
+-                mi->inotify_watch = watch_descriptor;
+-            }
+-            else
+-            {
+-                msg(M_NONFATAL | M_ERRNO, "MULTI: inotify_add_watch error");
+-            }
++            add_inotify_file_watch(m, mi, m->top.c2.inotify_fd,
++                                   ks->auth_control_file);
+         }
+ #endif
+ 
 -- 
 2.26.2
 
