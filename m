@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Sat, 11 Jul 2020 11:36:52 +0200
-Message-Id: <20200711093655.23686-11-arne@...1227...>
+Date: Sat, 11 Jul 2020 11:36:48 +0200
+Message-Id: <20200711093655.23686-7-arne@...1227...>
 In-Reply-To: <20200711093655.23686-1-arne@...1227...>
 References: <20200711093655.23686-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v5 11/14] client-connect: Use inotify for
- the deferred client-connect status file
+Subject: [Openvpn-devel] [PATCH v5 07/14] client-connect: Change cas_context
+ from int to enum
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,49 +17,90 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-As we never do client-connect and authentication at the same time
-it is safe to reuse the existing fields for client-connect return
-status file
+This deviates from Fabian's original patch that relied on the now
+removed connection_established bool as pointer being NULL or non NULL as
+implicit third state and makeing connection_established as a substate of
+(cas_context == CAS_PENDING)
+
+Signed-off-by: Arne Schwabe <arne@...1227...>
+
+Patch V5: extend cas_context with two new states instead adding an
+          extra mini state machine.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/multi.c | 16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+ src/openvpn/multi.c   |  2 +-
+ src/openvpn/multi.h   |  1 +
+ src/openvpn/openvpn.h | 24 +++++++++++++++++-------
+ 3 files changed, 19 insertions(+), 8 deletions(-)
 
 diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index dafc85f1..09a25a58 100644
+index 83848fdc..f9b8af80 100644
 --- a/src/openvpn/multi.c
 +++ b/src/openvpn/multi.c
-@@ -2618,8 +2618,10 @@ multi_connection_established(struct multi_context *m, struct multi_instance *mi)
- 
- #ifdef ENABLE_ASYNC_PUSH
- /*
-- * Called when inotify event is fired, which happens when acf file is closed or deleted.
-- * Continues authentication and sends push_reply.
-+ * Called when inotify event is fired, which happens when acf
-+ * or connect-status file is closed or deleted.
-+ * Continues authentication and sends push_reply
-+ * (or be deferred again by client-connect)
+@@ -2163,7 +2163,7 @@ multi_client_connect_early_setup(struct multi_context *m,
+  * Try to source a dynamic config file from the
+  * --client-config-dir directory.
   */
- void
- multi_process_file_closed(struct multi_context *m, const unsigned int mpp_flags)
-@@ -2905,7 +2907,15 @@ multi_process_post(struct multi_context *m, struct multi_instance *mi, const uns
-             {
-                 multi_connection_established(m, mi);
-             }
--
-+#if defined(ENABLE_ASYNC_PUSH) && defined(ENABLE_DEF_AUTH)
-+            if (is_cas_pending(mi->context.c2.context_auth)
-+                && mi->client_connect_defer_state.deferred_ret_file)
-+            {
-+                add_inotify_file_watch(m, mi, m->top.c2.inotify_fd,
-+                                       mi->client_connect_defer_state.
-+                                       deferred_ret_file);
-+            }
-+#endif
-             /* tell scheduler to wake us up at some point in the future */
-             multi_schedule_context_wakeup(m, mi);
-         }
+-enum client_connect_return
++static enum client_connect_return
+ multi_client_connect_source_ccd(struct multi_context *m,
+                                 struct multi_instance *mi,
+                                 unsigned int *option_types_found)
+diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
+index 4fb4d0b6..1d30dcc6 100644
+--- a/src/openvpn/multi.h
++++ b/src/openvpn/multi.h
+@@ -62,6 +62,7 @@ struct deferred_signal_schedule_entry
+     struct timeval wakeup;
+ };
+ 
++
+ /**
+  * Server-mode state structure for one single VPN tunnel.
+  *
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index a1308852..7c469b01 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -210,6 +210,21 @@ struct context_1
+ #endif
+ };
+ 
++
++/* client authentication state, CAS_SUCCEEDED must be 0 since
++ * non multi code path still checks this variable but does not initialise it
++ * so the code depends on zero initialisation */
++enum client_connect_status {
++    CAS_SUCCEEDED=0,
++    CAS_PENDING,
++    CAS_FAILED,
++    CAS_PARTIAL,        /**< Variant of CAS_FAILED: at least one
++                         * client-connect script/plugin succeeded
++                         * while a later one in the chain failed
++                         * (we still need cleanup compared to FAILED)
++                         */
++};
++
+ /**
+  * Level 2 %context containing state that is reset on both \c SIGHUP and
+  * \c SIGUSR1 restarts.
+@@ -444,13 +459,8 @@ struct context_2
+     int push_ifconfig_ipv6_netbits;
+     struct in6_addr push_ifconfig_ipv6_remote;
+ 
+-    /* client authentication state, CAS_SUCCEEDED must be 0 */
+-#define CAS_SUCCEEDED 0
+-#define CAS_PENDING   1
+-#define CAS_FAILED    2
+-#define CAS_PARTIAL   3  /* at least one client-connect script/plugin
+-                          * succeeded while a later one in the chain failed */
+-    int context_auth;
++
++    enum client_connect_status context_auth;
+ 
+     struct event_timeout push_request_interval;
+     int n_sent_push_requests;
 -- 
 2.26.2
 
