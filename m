@@ -1,19 +1,16 @@
-References: <20200622113022.23047-1-davids@...515...>
- <CAKuzo_g7QxVL90ikT57H6b4+St2c860us6S3cN_6jbfeHujpzw@...278...>
- <a1cfd42d-e371-187a-55c2-f14a3a986b34@...1823...>
- <4562876f-45c1-d3bb-f725-52e9b78600de@...1227...>
- <20200623090252.GE1431@...1296...>
- <4f03e378-f327-21a6-9f11-fe06a42052b6@...1823...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <518ceb3d-e060-f777-f19f-4998b8d27170@...1227...>
-Date: Sun, 12 Jul 2020 02:05:25 +0200
+Date: Sun, 12 Jul 2020 09:50:26 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20200712075026.GI1431@...1296...>
+References: <20200711093655.23686-1-arne@...1227...>
+ <202007111648.06BGmZ2N073942@...2054...>
+ <591d5259-e8d7-a2e0-e3bd-cd9db28e3df8@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <4f03e378-f327-21a6-9f11-fe06a42052b6@...1823...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="rc6YRgulzg3WTxevLfxmH4CrXv8EJb2Tv"
-Subject: Re: [Openvpn-devel] [PATCH] systemd: Change the default cipher to
- AES-256-GCM for server configs
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="VremfEz/oqFumKTK"
+Content-Disposition: inline
+In-Reply-To: <591d5259-e8d7-a2e0-e3bd-cd9db28e3df8@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Allow changing fallback
+ cipher from ccd files/client-connect
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,58 +19,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Dmitry Melekhov <dm@...1823...>, Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---rc6YRgulzg3WTxevLfxmH4CrXv8EJb2Tv
-Content-Type: multipart/mixed; boundary="DQqRqKmMnPpD7YiZoVpsDeCe2uf6NtEgt"
-
---DQqRqKmMnPpD7YiZoVpsDeCe2uf6NtEgt
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
+--VremfEz/oqFumKTK
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Am 23.06.20 um 11:12 schrieb Dmitry Melekhov:
-> 23.06.2020 13:02, Gert Doering =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
->>
->>
->> That patch is from Steffan, and review has been sitting in my lap for
->> way too long.=C2=A0 Need to see if it still applies.
->>
+Hi,
+
+On Sun, Jul 12, 2020 at 01:28:56AM +0200, Arne Schwabe wrote:
+> > With the patch *and* forcing NCP on the server side by only allowing=20
+> > CAMELLIA-128-CBC:
+> >
+> >   $ cat ccd/freebsd-74-amd64
+> >   ncp-ciphers CAMELLIA-128-CBC
+> >   cipher CAMELLIA-128-CBC
+> >
+> > it will actually do that:
+[..]
 >=20
-> Unfortunately it is not compatible with 2.4.9, because of introduced
-> change...
+> cipher only sets the fallback cipher if we find no common cipher. All
+> ciphers in ncp-ciphers are still preferred to cipher. So to have the
+> server pick the --cipher from the either general config or ccd config,
+> none of the cipher in ncp-ciphers may be supported by the peer (so not
+> in ncp-ciphers/ncp-ciphers and not as --cipher)
 
-Can you test with current openvpn master if that works for you? That has
-now allows you set the --cipher in ccd/connect-client scripts.
+More details on the scenario:
 
-Arne
+The client here is a stock 2.4 client, with "nothing" in the config -=20
+so it sends IV_NCP=3D1, but no cipher list, and OCC cipher is "bf-cbc".
+
+In ccd/, if I have *just* "ncp-ciphers CAMELLIA-128-CBC", it will actually
+fallback to "bf-cbc".  Which matches your description: no common ciphers
+(IV_NCP=3D1 =3D AES-128-GCM:AES-256-GCM) -> fallback cipher (bf-cbc).
 
 
---DQqRqKmMnPpD7YiZoVpsDeCe2uf6NtEgt--
+So, shorter: you're right :-) - and if we want to force a cipher for a
+NCP-capable client, it needs "cipher" *and* "ncp-ciphers" in ccd/, because
+otherwise NCP will just override our config.
 
---rc6YRgulzg3WTxevLfxmH4CrXv8EJb2Tv
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--VremfEz/oqFumKTK
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl8KU8YACgkQFRhsZwKx
-RFQS/g/+OYBRzR0vdu03Bx996CSbIKaEWD+XbedvKEUoDkRKz8FNh6+RAHgQg+Tv
-eWvmg4y62J2MLohG8lFTj+yHS3GZFEbVPddnKaJ8eJpcxRVAvIgZ2Q2iZRUDJpGl
-oRhSAS0weYkjqxIcX8/NzW0hBHMPRV+ZBfFL0iAyBJGOyR/QN+QaeiKpzlV4USeC
-0oPSuVX17IXZI3EosASoF5+gNU03j4vM7nZ89K3FLm0WRBPAOlpZ2bjCi1+Fx4l+
-aAyxwlQ73JDvSxkEJjNEMe8RM64EFYyF0KIPs2svNV0zZNZK2OFpP2OfsXgjn9fs
-4UPr9tBgoqWtYSsNSq2Xj2btDCsp17ESnSl9XtjRiswfepAz6BtOVvPuKuP8u2nq
-gF/KCydIJDLvNNGZW/Ea1oR69DmcsVijqCUJSEuZ5kXfOfTUbSqE43CFrwvKh7cG
-JWLOIsZ58jOw92z7MMb9xOHiuBLn/6J3kZbbfN3jvH4PsuEsh5Ixv9VcK0t+/bqp
-zjtFc/3oEsvp9wPDHHqtxkDwwJJG1ClJWmsrrBYYqSSu0a76BXvru+8b2eHciuW9
-D8WbIcT1kHfoyoqdaTPO9lqADZx6ZvgNNafnPzzMujkdF2M4hU30CQzhUkugRKzi
-ESRKHVxhAznu+oXixfS8tptH4Z/J7jdguvMbXX4DOyZya8u+lrg=
-=B9Xx
+iQGcBAEBAgAGBQJfCsDBAAoJEB2Cnv7KVigSTMkL/iPFWe0lgygInSsxwXYPOW6m
+6Xkf78V3TZ5d9eMxqCmwYvjj/Tiaq12XrN61JSVkeOU5On5nNfO7vj2R/eGHdKjm
+5j1tbN1jIAiE85iFyP75k9HsufZvufYBvOxG4dwfzWBarKTZ4D09NRHn47WQ/EGN
+U3UVE8wLQbAq+cwyq3Mw0XDr2yI1eChR6LPAu03tJYM4Qtz1StUdSfkmeIiVVPcN
+KXGT4Isev6eqhk64cAn4OuIpte89MpWuvq/iKlFTQCg7+2IpRyRR/fOUYogEm8q5
+X5VuZ5Ln1vqRQqZqyuVZJ01wc1ji7YVM4f85cbo6ML+jfU7n2f3irZtC2dCFuurK
+c3VPpHcG5INgT9pGLucvyTUomxZS26FjeCkBOoSI+DiXLcELDge5UyUs2qbruMIU
+HEKJ5pz2cHbEcxethKjx+GODpTSJeDMUDTTQU8ZurWET4YANdOo1/Y9QxCr289OM
+D+UAmap2LKaKsv00oSYAEsbxlUobbYvGtXy8HhIASA==
+=GFEc
 -----END PGP SIGNATURE-----
 
---rc6YRgulzg3WTxevLfxmH4CrXv8EJb2Tv--
+--VremfEz/oqFumKTK--
 
