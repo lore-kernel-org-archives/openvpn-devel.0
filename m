@@ -1,3 +1,4 @@
+From: dm <dm@...1823...>
 References: <20200622113022.23047-1-davids@...515...>
  <CAKuzo_g7QxVL90ikT57H6b4+St2c860us6S3cN_6jbfeHujpzw@...278...>
  <a1cfd42d-e371-187a-55c2-f14a3a986b34@...1823...>
@@ -5,11 +6,11 @@ References: <20200622113022.23047-1-davids@...515...>
  <20200623090252.GE1431@...1296...>
  <4f03e378-f327-21a6-9f11-fe06a42052b6@...1823...>
  <518ceb3d-e060-f777-f19f-4998b8d27170@...1227...>
-From: Dmitry Melekhov <dm@...1823...>
-Message-ID: <3f6159de-c513-78d5-194c-989a8611c291@...1823...>
-Date: Mon, 13 Jul 2020 09:36:45 +0400
+ <3f6159de-c513-78d5-194c-989a8611c291@...1823...>
+Message-ID: <bfe83365-35a7-efb8-b243-0aa3178e6e6f@...1823...>
+Date: Mon, 13 Jul 2020 10:07:38 +0400
 MIME-Version: 1.0
-In-Reply-To: <518ceb3d-e060-f777-f19f-4998b8d27170@...1227...>
+In-Reply-To: <3f6159de-c513-78d5-194c-989a8611c291@...1823...>
 Content-Language: en-US
 Subject: Re: [Openvpn-devel] [PATCH] systemd: Change the default cipher to
  AES-256-GCM for server configs
@@ -26,104 +27,160 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>, Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-12.07.2020 04:05, Arne Schwabe пишет:
-> Am 23.06.20 um 11:12 schrieb Dmitry Melekhov:
->> 23.06.2020 13:02, Gert Doering пишет:
->>>
->>> That patch is from Steffan, and review has been sitting in my lap for
->>> way too long.  Need to see if it still applies.
->>>
->> Unfortunately it is not compatible with 2.4.9, because of introduced
->> change...
-> Can you test with current openvpn master if that works for you? That has
-> now allows you set the --cipher in ccd/connect-client scripts.
+13.07.2020 09:36, Dmitry Melekhov пишет:
+> 12.07.2020 04:05, Arne Schwabe пишет:
+>> Am 23.06.20 um 11:12 schrieb Dmitry Melekhov:
+>>> 23.06.2020 13:02, Gert Doering пишет:
+>>>>
+>>>> That patch is from Steffan, and review has been sitting in my lap for
+>>>> way too long.  Need to see if it still applies.
+>>>>
+>>> Unfortunately it is not compatible with 2.4.9, because of introduced
+>>> change...
+>> Can you test with current openvpn master if that works for you? That has
+>> now allows you set the --cipher in ccd/connect-client scripts.
+>>
+>> Arne
+>>
+> Hello!
 >
-> Arne
+> Compiled master from git, installed on server copy with Ubuntu 18.04.
 >
-Hello!
+> Compiled  the same master with enable-small on my Ubuntu 20.04 desktop.
+>
+> Added ncp-disable to config.
+>
+> If cipher is different from default on client and there is no cipher 
+> in ccd for client - connection fails.
+>
+> If I add specific cipher to client, i.e. ciphers match- everything is 
+> fine.
+>
+>
+> So, looks like it works, but unfortunately, there is problem:
+>
+>
+> Then I compiled openvpn-2.3.18 on Centos 6.
+>
+> It connects if it is compiled by just  using configure.
+>
+> But if I compile 2.3.18 with enable-small, then 2.5 server dies, 
+> always, even if there is no cipher in ccd and ciphers match.
+>
+> On client side:
+>
+> ./openvpn belkam.ovpn
+> Mon Jul 13 09:33:17 2020 OpenVPN 2.3.18 x86_64-unknown-linux-gnu [SSL 
+> (OpenSSL)] [LZO] [EPOLL] [MH] [IPv6] built on Jul 13 2020
+> Mon Jul 13 09:33:17 2020 library versions: OpenSSL 1.0.1e-fips 11 Feb 
+> 2013, LZO 2.03
+> Enter Auth Username:dm
+> Enter Auth Password:
+> Mon Jul 13 09:33:20 2020 WARNING: No server certificate verification 
+> method has been enabled.  See http://openvpn.net/howto.html#mitm for 
+> more info.
+> Mon Jul 13 09:33:20 2020 WARNING: file '/home/dm/openvpn/dm.key' is 
+> group or others accessible
+> Mon Jul 13 09:33:20 2020 Socket Buffers: R=[87380->87380] 
+> S=[16384->16384]
+> Mon Jul 13 09:33:20 2020 Attempting to establish TCP connection with 
+> [AF_INET]192.168.222.2:1194 [nonblock]
+> Mon Jul 13 09:33:21 2020 TCP connection established with 
+> [AF_INET]192.168.222.2:1194
+> Mon Jul 13 09:33:21 2020 TCPv4_CLIENT link local: [undef]
+> Mon Jul 13 09:33:21 2020 TCPv4_CLIENT link remote: 
+> [AF_INET]192.168.222.2:1194
+> Mon Jul 13 09:33:21 2020 TLS: Initial packet from 
+> [AF_INET]192.168.222.2:1194, sid=7c5295f5 d243c13b
+> Mon Jul 13 09:33:21 2020 WARNING: this configuration may cache 
+> passwords in memory -- use the auth-nocache option to prevent this
+> Mon Jul 13 09:33:21 2020 VERIFY OK: depth=1, C=RU, ST=Udm, L=Izhevsk, 
+> O=Belkam, OU=UIT, CN=vpn.belkam.com, emailAddress=support@...1823...
+> Mon Jul 13 09:33:21 2020 VERIFY OK: depth=0, C=RU, ST=Udm, L=Izhevsk, 
+> O=Belkam, OU=UIT, CN=ovpn1, emailAddress=support@...1823...
+> Mon Jul 13 09:33:22 2020 Data Channel Encrypt: Cipher 'AES-256-CBC' 
+> initialized with 256 bit key
+> Mon Jul 13 09:33:22 2020 Data Channel Encrypt: Using 160 bit message 
+> hash 'SHA1' for HMAC authentication
+> Mon Jul 13 09:33:22 2020 Data Channel Decrypt: Cipher 'AES-256-CBC' 
+> initialized with 256 bit key
+> Mon Jul 13 09:33:22 2020 Data Channel Decrypt: Using 160 bit message 
+> hash 'SHA1' for HMAC authentication
+> Mon Jul 13 09:33:22 2020 Control Channel: TLSv1.2, cipher TLSv1/SSLv3 
+> ECDHE-RSA-AES256-GCM-SHA384, 1024 bit RSA
+> Mon Jul 13 09:33:22 2020 [ovpn1] Peer Connection Initiated with 
+> [AF_INET]192.168.222.2:1194
+> Mon Jul 13 09:33:22 2020 Connection reset, restarting [0]
+> Mon Jul 13 09:33:22 2020 SIGUSR1[soft,connection-reset] received, 
+> process restarting
+> Mon Jul 13 09:33:22 2020 Restart pause, 5 second(s)
+>
+> On server side:
+>
+> Jul 13 09:33:22 ovpn1 systemd[1]: openvpn@...2567...: Main process 
+> exited, code=killed, status=11/SEGV
+> Jul 13 09:33:22 ovpn1 systemd[1]: openvpn@...2567...: Killing 
+> process 9231 (openvpn) with signal SIGKILL.
+> Jul 13 09:33:22 ovpn1 systemd[1]: openvpn@...2567...: Failed with 
+> result 'signal'.
+>
+>
+> Servers just dies...
 
-Compiled master from git, installed on server copy with Ubuntu 18.04.
 
-Compiled  the same master with enable-small on my Ubuntu 20.04 desktop.
-
-Added ncp-disable to config.
-
-If cipher is different from default on client and there is no cipher in 
-ccd for client - connection fails.
-
-If I add specific cipher to client, i.e. ciphers match- everything is fine.
+Forgot to add info from server console, last messages  are:
 
 
-So, looks like it works, but unfortunately, there is problem:
+2020-07-13 10:04:41 us=435946 10.1.1.17:53148 WARNING: 'version' is used 
+inconsistently, local='version V4', remote='version V0 UNDEF'
+2020-07-13 10:04:41 us=435976 10.1.1.17:53148 WARNING: 'dev-type' is 
+present in local config but missing in remote config, local='dev-type tun'
+2020-07-13 10:04:41 us=436004 10.1.1.17:53148 WARNING: 'link-mtu' is 
+present in local config but missing in remote config, local='link-mtu 1560'
+2020-07-13 10:04:41 us=436029 10.1.1.17:53148 WARNING: 'tun-mtu' is 
+present in local config but missing in remote config, local='tun-mtu 1500'
+2020-07-13 10:04:41 us=436054 10.1.1.17:53148 WARNING: 'comp-lzo' is 
+present in local config but missing in remote config, local='comp-lzo'
+2020-07-13 10:04:41 us=436078 10.1.1.17:53148 WARNING: 'cipher' is 
+present in local config but missing in remote config, local='cipher 
+AES-256-CBC'
+2020-07-13 10:04:41 us=436104 10.1.1.17:53148 WARNING: 'auth' is present 
+in local config but missing in remote config, local='auth SHA1'
+2020-07-13 10:04:41 us=436127 10.1.1.17:53148 WARNING: 'keysize' is 
+present in local config but missing in remote config, local='keysize 256'
+2020-07-13 10:04:41 us=436152 10.1.1.17:53148 WARNING: 'tls-client' is 
+present in local config but missing in remote config, local='tls-client'
+2020-07-13 10:04:41 us=436327 10.1.1.17:53148 TCPv4_SERVER WRITE [268] 
+to [AF_INET]10.1.1.17:53148: P_CONTROL_V1 kid=0 [ 4 ] pid=5 DATA len=242
+2020-07-13 10:04:41 us=460634 10.1.1.17:53148 TCPv4_SERVER READ [22] 
+from [AF_INET]10.1.1.17:53148: P_ACK_V1 kid=0 [ 5 ]
+2020-07-13 10:04:41 us=460719 10.1.1.17:53148 Control Channel: TLSv1.2, 
+cipher TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384, 1024 bit RSA
+2020-07-13 10:04:41 us=460770 10.1.1.17:53148 [dm] Peer Connection 
+Initiated with [AF_INET]10.1.1.17:53148
+2020-07-13 10:04:41 us=460894 dm/10.1.1.17:53148 OPTIONS IMPORT: reading 
+client specific options from: ccd/dm
+2020-07-13 10:04:41 us=463521 dm/10.1.1.17:53148 OPTIONS IMPORT: reading 
+client specific options from: 
+/tmp/openvpn_cc_593ba3a3a328173c613df936795e0647.tmp
+2020-07-13 10:04:41 us=463769 dm/10.1.1.17:53148 MULTI: Learn: 
+192.168.43.74 -> dm/10.1.1.17:53148
+2020-07-13 10:04:41 us=463813 dm/10.1.1.17:53148 MULTI: primary virtual 
+IP for dm/10.1.1.17:53148: 192.168.43.74
+Ошибка сегментирования
 
 
-Then I compiled openvpn-2.3.18 on Centos 6.
+root@...2568...:/etc/openvpn/ccd# cat dm
+ifconfig-push 192.168.43.74 255.255.255.0
 
-It connects if it is compiled by just  using configure.
-
-But if I compile 2.3.18 with enable-small, then 2.5 server dies, always, 
-even if there is no cipher in ccd and ciphers match.
-
-On client side:
-
-./openvpn belkam.ovpn
-Mon Jul 13 09:33:17 2020 OpenVPN 2.3.18 x86_64-unknown-linux-gnu [SSL 
-(OpenSSL)] [LZO] [EPOLL] [MH] [IPv6] built on Jul 13 2020
-Mon Jul 13 09:33:17 2020 library versions: OpenSSL 1.0.1e-fips 11 Feb 
-2013, LZO 2.03
-Enter Auth Username:dm
-Enter Auth Password:
-Mon Jul 13 09:33:20 2020 WARNING: No server certificate verification 
-method has been enabled.  See http://openvpn.net/howto.html#mitm for 
-more info.
-Mon Jul 13 09:33:20 2020 WARNING: file '/home/dm/openvpn/dm.key' is 
-group or others accessible
-Mon Jul 13 09:33:20 2020 Socket Buffers: R=[87380->87380] S=[16384->16384]
-Mon Jul 13 09:33:20 2020 Attempting to establish TCP connection with 
-[AF_INET]192.168.222.2:1194 [nonblock]
-Mon Jul 13 09:33:21 2020 TCP connection established with 
-[AF_INET]192.168.222.2:1194
-Mon Jul 13 09:33:21 2020 TCPv4_CLIENT link local: [undef]
-Mon Jul 13 09:33:21 2020 TCPv4_CLIENT link remote: 
-[AF_INET]192.168.222.2:1194
-Mon Jul 13 09:33:21 2020 TLS: Initial packet from 
-[AF_INET]192.168.222.2:1194, sid=7c5295f5 d243c13b
-Mon Jul 13 09:33:21 2020 WARNING: this configuration may cache passwords 
-in memory -- use the auth-nocache option to prevent this
-Mon Jul 13 09:33:21 2020 VERIFY OK: depth=1, C=RU, ST=Udm, L=Izhevsk, 
-O=Belkam, OU=UIT, CN=vpn.belkam.com, emailAddress=support@...1823...
-Mon Jul 13 09:33:21 2020 VERIFY OK: depth=0, C=RU, ST=Udm, L=Izhevsk, 
-O=Belkam, OU=UIT, CN=ovpn1, emailAddress=support@...1823...
-Mon Jul 13 09:33:22 2020 Data Channel Encrypt: Cipher 'AES-256-CBC' 
-initialized with 256 bit key
-Mon Jul 13 09:33:22 2020 Data Channel Encrypt: Using 160 bit message 
-hash 'SHA1' for HMAC authentication
-Mon Jul 13 09:33:22 2020 Data Channel Decrypt: Cipher 'AES-256-CBC' 
-initialized with 256 bit key
-Mon Jul 13 09:33:22 2020 Data Channel Decrypt: Using 160 bit message 
-hash 'SHA1' for HMAC authentication
-Mon Jul 13 09:33:22 2020 Control Channel: TLSv1.2, cipher TLSv1/SSLv3 
-ECDHE-RSA-AES256-GCM-SHA384, 1024 bit RSA
-Mon Jul 13 09:33:22 2020 [ovpn1] Peer Connection Initiated with 
-[AF_INET]192.168.222.2:1194
-Mon Jul 13 09:33:22 2020 Connection reset, restarting [0]
-Mon Jul 13 09:33:22 2020 SIGUSR1[soft,connection-reset] received, 
-process restarting
-Mon Jul 13 09:33:22 2020 Restart pause, 5 second(s)
-
-On server side:
-
-Jul 13 09:33:22 ovpn1 systemd[1]: openvpn@...2567...: Main process 
-exited, code=killed, status=11/SEGV
-Jul 13 09:33:22 ovpn1 systemd[1]: openvpn@...2567...: Killing 
-process 9231 (openvpn) with signal SIGKILL.
-Jul 13 09:33:22 ovpn1 systemd[1]: openvpn@...2567...: Failed with 
-result 'signal'.
+root@...2568...:/etc/openvpn/ccd#
 
 
-Servers just dies...
 
-Thank you!
-
+>
+> Thank you!
+>
+>
+btw
 
 
