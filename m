@@ -1,9 +1,14 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon, 13 Jul 2020 11:32:52 +0200
-Message-Id: <20200713093252.30916-1-gert@...1296...>
+References: <20200713093252.30916-1-gert@...1296...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <b1673f4a-9b64-c8b2-6342-0717d21e8e97@...1227...>
+Date: Mon, 13 Jul 2020 11:40:08 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Handle connecting clients without NCP or
- OCC without crashing.
+In-Reply-To: <20200713093252.30916-1-gert@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="UWb2nvHMDA6wUzaN4l7iHV8pGgiqtEbEf"
+Subject: Re: [Openvpn-devel] [PATCH v2] Handle connecting clients without
+ NCP or OCC without crashing.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,74 +17,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--UWb2nvHMDA6wUzaN4l7iHV8pGgiqtEbEf
+Content-Type: multipart/mixed; boundary="CQ2nONzcCTUAeBh4FS01LcKLWGn8WCHhi"
+
+--CQ2nONzcCTUAeBh4FS01LcKLWGn8WCHhi
+Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Gert Doering <gert@...1296...>
+Content-Transfer-Encoding: quoted-printable
 
-ssl_ncp.c:ncp_get_best_cipher() would crash if a client connects without
-NCP (or with a NCP cipher list that does not contain the first NCP cipher
-in the server list) due to a NULL pointer strcmp().
+Am 13.07.20 um 11:32 schrieb Gert Doering:
+> ssl_ncp.c:ncp_get_best_cipher() would crash if a client connects without
+> NCP (or with a NCP cipher list that does not contain the first NCP cipher
+> in the server list) due to a NULL pointer strcmp().
+>=20
+> Work around / fix by just assigning an empty string to remote_cipher here
+> ("not NULL but will never match either").
+>=20
+> Add new warning message in multi.c for the "we do not know what the
+> client can do" case (no NCP and non-helpful OCC), rewrapped the existing
+> message to keep line lenght limit.                       tpyo
 
-Work around / fix by just assigning an empty string to remote_cipher here
-("not NULL but will never match either").
+Acked-By: Arne Schwabe <arne@...1227...>
 
-Add new warning message in multi.c for the "we do not know what the
-client can do" case (no NCP and non-helpful OCC), rewrapped the existing
-message to keep line lenght limit.
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/openvpn/multi.c   | 17 +++++++++++++----
- src/openvpn/ssl_ncp.c |  6 ++++++
- 2 files changed, 19 insertions(+), 4 deletions(-)
+--CQ2nONzcCTUAeBh4FS01LcKLWGn8WCHhi--
 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index a2af071a..c2ffcb9d 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -1833,10 +1833,19 @@ multi_client_set_protocol_options(struct context *c)
-             {
-                 struct gc_arena gc = gc_new();
-                 const char *peer_ciphers = tls_peer_ncp_list(peer_info, &gc);
--                msg(M_INFO, "PUSH: No common cipher between server and client."
--                    "Expect this connection not to work. "
--                    "Server ncp-ciphers: '%s', client supported ciphers '%s'",
--                    o->ncp_ciphers, peer_ciphers);
-+                if (strlen(peer_ciphers) > 0)
-+                {
-+                    msg(M_INFO, "PUSH: No common cipher between server and "
-+                        "client. Expect this connection not to work. Server "
-+                        "ncp-ciphers: '%s', client supported ciphers '%s'",
-+                        o->ncp_ciphers, peer_ciphers);
-+                }
-+                else
-+                {
-+                    msg(M_INFO, "No NCP data received from peer, falling back "
-+                        "to --cipher '%s'. Peer reports in OCC --cipher '%s'",
-+                        o->ciphername, np(tls_multi->remote_ciphername));
-+                }
-                 gc_free(&gc);
-             }
-         }
-diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-index ea1dc960..fe7f5855 100644
---- a/src/openvpn/ssl_ncp.c
-+++ b/src/openvpn/ssl_ncp.c
-@@ -225,6 +225,12 @@ ncp_get_best_cipher(const char *server_list, const char *server_cipher,
- 
-     const char *peer_ncp_list = tls_peer_ncp_list(peer_info, &gc_tmp);
- 
-+    /* non-NCP client without OCC?  "assume nothing" */
-+    if (remote_cipher == NULL )
-+    {
-+        remote_cipher = "";
-+    }
-+
-     char *tmp_ciphers = string_alloc(server_list, &gc_tmp);
- 
-     const char *token = strsep(&tmp_ciphers, ":");
--- 
-2.26.2
+--UWb2nvHMDA6wUzaN4l7iHV8pGgiqtEbEf
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl8MK/gACgkQFRhsZwKx
+RFQOPA/+NFjT14cAvtT1EYVseqG3rJch+PgjTtSSFASSRW0/O+ZvkRYJFx7v/WUv
+VKU9M3poF62MzZHafFMQMc8NQkT+l4eowIsGOUfhQlvc08qLXhq7N7+QXh3StxeL
+k477PT5I5hLYAggmEEkS5p979AEdkVbz0f8+QoUJlsbvUS8pGMJu7XKEuleTHfzh
+CAYz0oC06XPFFogqiW4NVKXvZZ+5MVC7KZHymQkRVkHu0GJHCfXyCON7uSYXdLXb
+MUvM8DetutOOV5BAK5u3BJFuLUripvrHPZVI487lzVFKlaRF1C33oVqSgukUwTf3
+AIbT8jKfN4laeVyDKyiBe2nqQ6lVk7CofNwRoDhvG9bEYFDB+UxdMPujpyrknz7C
+oemzfsg1BLzx+l4Z9rraBGnYVTVJ84zm+3H5ZzGx93zp4vbbFaqrVdYxETOir69I
+my9U6A1WlJeDaDDN0CLdjMU/4Rg3UhKT3Bj1I6RO/iWwugeiZ77MGhT2pC4p3sia
+5dhm3xFfFSq8zdU83Jc4pSVvCrjmS1u1OaWSVRL9iGEqSTvbdhbqnlmii7HpUavX
+LwgJdR8DOOHIO56bF2/7ppX1VueFAmHaM0yYKfrfJodA7HXIIvFZLbW5wFaybvGw
+LD+lTbOrEhkwDbqxO9l7EXqQtKuXr5hjBOFIxjdBw8D60ACdHK4=
+=OkL4
+-----END PGP SIGNATURE-----
+
+--UWb2nvHMDA6wUzaN4l7iHV8pGgiqtEbEf--
 
