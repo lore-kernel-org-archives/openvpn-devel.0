@@ -1,9 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 13 Jul 2020 11:46:46 +0200
-Message-Id: <20200713094646.13929-3-arne@...1227...>
+Date: Mon, 13 Jul 2020 11:46:45 +0200
+Message-Id: <20200713094646.13929-2-arne@...1227...>
 In-Reply-To: <20200713094646.13929-1-arne@...1227...>
 References: <20200713094646.13929-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 3/3] Remove key-method 1
+Subject: [Openvpn-devel] [PATCH 2/3 v5] Implement tls-groups option to
+ specify eliptic curves/groups
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,518 +17,401 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+By default OpenSSL 1.1+ only allows signatures and ecdh/ecdhx from the
+default list of X25519:secp256r1:X448:secp521r1:secp384r1. In
+TLS1.3 key exchange is independent from the signature/key of the
+certificates, so allowing all groups per default is not a sensible
+choice anymore and instead a shorter list is reasonable.
+
+However, when using certificates with exotic curves that are not on
+the group list, the signatures of these certificates will no longer
+be accepted.
+
+The tls-groups  option allows to modify the group list to account
+for these corner cases.
+
+Patch V2: Uses local gc_arena instead of malloc/free, reword commit
+          message. Fix other typos/clarify messages
+
+Patch V3: Style fixes, adjust code to changes from mbed tls session
+          fix
+
+Patch V5: Fix compilation with OpenSSL 1.0.2
+
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- doc/doxygen/doc_control_processor.h |   6 +-
- doc/doxygen/doc_key_generation.h    |   6 +-
- doc/doxygen/doc_protocol_overview.h |   2 +-
- src/openvpn/forward.c               |   2 +-
- src/openvpn/helper.c                |   5 -
- src/openvpn/init.c                  |   1 -
- src/openvpn/options.c               |  37 +-----
- src/openvpn/options.h               |   4 -
- src/openvpn/ssl.c                   | 180 +++-------------------------
- src/openvpn/ssl.h                   |   6 +-
- src/openvpn/ssl_common.h            |   1 -
- 11 files changed, 23 insertions(+), 227 deletions(-)
+ README.ec                    |  7 +++--
+ configure.ac                 |  1 +
+ doc/openvpn.8                | 33 +++++++++++++++++++++-
+ src/openvpn/openssl_compat.h |  6 ++++
+ src/openvpn/options.c        | 10 ++++++-
+ src/openvpn/options.h        |  1 +
+ src/openvpn/ssl.c            |  6 ++++
+ src/openvpn/ssl_backend.h    | 10 +++++++
+ src/openvpn/ssl_mbedtls.c    | 46 ++++++++++++++++++++++++++++++
+ src/openvpn/ssl_mbedtls.h    |  1 +
+ src/openvpn/ssl_openssl.c    | 55 +++++++++++++++++++++++++++++++++++-
+ 11 files changed, 170 insertions(+), 6 deletions(-)
 
-diff --git a/doc/doxygen/doc_control_processor.h b/doc/doxygen/doc_control_processor.h
-index f87324cc..1bbf2d2d 100644
---- a/doc/doxygen/doc_control_processor.h
-+++ b/doc/doxygen/doc_control_processor.h
-@@ -175,11 +175,7 @@
-  *    appropriate messages to be sent.
-  *
-  * @par Functions which control data channel key generation
-- *  - Key method 1 key exchange functions:
-- *     - \c key_method_1_write(), generates and processes key material to
-- *       be sent to the remote OpenVPN peer.
-- *     - \c key_method_1_read(), processes key material received from the
-- *       remote OpenVPN peer.
-+ *  - Key method 1 key exchange functions were removed from OpenVPN 2.5
-  *  - Key method 2 key exchange functions:
-  *     - \c key_method_2_write(), generates and processes key material to
-  *       be sent to the remote OpenVPN peer.
-diff --git a/doc/doxygen/doc_key_generation.h b/doc/doxygen/doc_key_generation.h
-index efe61155..4bb9c708 100644
---- a/doc/doxygen/doc_key_generation.h
-+++ b/doc/doxygen/doc_key_generation.h
-@@ -131,11 +131,7 @@ S_ACTIVE                                                            S_ACTIVE
-  * control_processor Control Channel Processor module's\endlink \c
-  * tls_process() function and control the %key generation and exchange
-  * process as follows:
-- * - %Key method 1:
-- *   - \c key_method_1_write(): generate random material locally, and load
-- *     as "sending" keys.
-- *   - \c key_method_1_read(): read random material received from remote
-- *     peer, and load as "receiving" keys.
-+ * - %Key method 1 has been removed in OpenVPN 2.5
-  * - %Key method 2:
-  *   - \c key_method_2_write(): generate random material locally, and if
-  *     in server mode generate %key expansion.
-diff --git a/doc/doxygen/doc_protocol_overview.h b/doc/doxygen/doc_protocol_overview.h
-index 3f48b18a..08212223 100644
---- a/doc/doxygen/doc_protocol_overview.h
-+++ b/doc/doxygen/doc_protocol_overview.h
-@@ -150,7 +150,7 @@
-  *
-  * @subsection network_protocol_control_plaintext Structure of plaintext control channel messages
-  *
-- *  - %Key method 1:
-+ *  - %Key method 1 (support removed in OpenVPN 2.5):
-  *     - Cipher %key length in bytes (1 byte).
-  *     - Cipher %key (n bytes).
-  *     - HMAC %key length in bytes (1 byte).
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 5c4370a8..34124b6f 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1100,7 +1100,7 @@ process_incoming_link_part1(struct context *c, struct link_socket_info *lsi, boo
-                                 floated, &ad_start))
-             {
-                 /* Restore pre-NCP frame parameters */
--                if (is_hard_reset(opcode, c->options.key_method))
-+                if (is_hard_reset(opcode, KEY_METHOD_2))
-                 {
-                     c->c2.frame = c->c2.frame_initial;
- #ifdef ENABLE_FRAGMENT
-diff --git a/src/openvpn/helper.c b/src/openvpn/helper.c
-index 6e9cc63c..a1d03070 100644
---- a/src/openvpn/helper.c
-+++ b/src/openvpn/helper.c
-@@ -490,11 +490,6 @@ helper_client_server(struct options *o)
-      */
-     if (o->client)
-     {
--        if (o->key_method != 2)
--        {
--            msg(M_USAGE, "--client requires --key-method 2");
--        }
--
-         o->pull = true;
-         o->tls_client = true;
-     }
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index e9c01629..b96d1471 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2852,7 +2852,6 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
-     to.ssl_ctx = c->c1.ks.ssl_ctx;
-     to.key_type = c->c1.ks.key_type;
-     to.server = options->tls_server;
--    to.key_method = options->key_method;
-     to.replay = options->replay;
-     to.replay_window = options->replay_window;
-     to.replay_time = options->replay_time;
+diff --git a/README.ec b/README.ec
+index 32938017..61f23b2e 100644
+--- a/README.ec
++++ b/README.ec
+@@ -12,14 +12,15 @@ OpenVPN 2.4.0 and newer automatically initialize ECDH parameters. When ECDSA is
+ used for authentication, the curve used for the server certificate will be used
+ for ECDH too. When autodetection fails (e.g. when using RSA certificates)
+ OpenVPN lets the crypto library decide if possible, or falls back to the
+-secp384r1 curve.
++secp384r1 curve. The list of groups/curves that the crypto library will choose
++from can be set with the --tls-groups <grouplist> option.
+ 
+ An administrator can force an OpenVPN/OpenSSL server to use a specific curve
+ using the --ecdh-curve <curvename> option with one of the curves listed as
+-available by the --show-curves option. Clients will use the same curve as
++available by the --show-groups option. Clients will use the same curve as
+ selected by the server.
+ 
+-Note that not all curves listed by --show-curves are available for use with TLS;
++Note that not all curves listed by --show-groups are available for use with TLS;
+ in that case connecting will fail with a 'no shared cipher' TLS error.
+ 
+ Authentication (ECDSA)
+diff --git a/configure.ac b/configure.ac
+index 8194d8c2..64dad878 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -924,6 +924,7 @@ if test "${with_crypto_library}" = "openssl"; then
+ 			OpenSSL_version \
+ 			SSL_CTX_get_default_passwd_cb \
+ 			SSL_CTX_get_default_passwd_cb_userdata \
++			SSL_CTX_set1_groups \
+ 			SSL_CTX_set_security_level \
+ 			X509_get0_notBefore \
+ 			X509_get0_notAfter \
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 03ae5ac5..d66bc892 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -5135,6 +5135,8 @@ Use
+ to see a list of TLS ciphers supported by your crypto library.
+ 
+ Warning!
++.B \-\-tls\-groups
++,
+ .B \-\-tls\-cipher
+ and
+ .B \-\-tls\-ciphersuites
+@@ -5150,6 +5152,33 @@ OpenSSL.
+ The default for \-\-tls\-ciphersuites is to use the crypto library's default.
+ .\"*********************************************************
+ .TP
++.B \-\-tls\-groups l
++A list
++.B l
++of allowable groups/curves in order of preference.
++
++Set the allowed elictipic curves/groups for the TLS session.
++These groups are  allowed to be used in signatures and key exchange.
++
++mbed TLS currently allows all known curves per default.
++
++OpenSSL 1.1+ restricts the list per default to
++"X25519:secp256r1:X448:secp521r1:secp384r1".
++
++If you use certificates that use non-standard curves, you
++might need to add them here. If you do not force the ecdh curve
++by using
++.B \-\-ecdh\-curve
++, the groups for ecdh will also be picked from this list.
++
++OpenVPN maps the curve name secp256r1 to prime256v1 to allow
++specifying the same tls-groups option for mbed TLS and OpenSSL.
++
++Warning: this option not only affects eliptic curve certificates
++but also the key exchange in TLS 1.3 and using this option improperly
++will disable TLS 1.3.
++.\"*********************************************************
++.TP
+ .B \-\-tls\-cert\-profile profile
+ Set the allowed cryptographic algorithms for certificates according to
+ .B profile\fN.
+@@ -5915,8 +5944,10 @@ engines supported by the OpenSSL library.
+ .TP
+ .B \-\-show\-curves
+ (Standalone)
+-Show all available elliptic curves to use with the
++Show all available elliptic groups/curves to use with the
+ .B \-\-ecdh\-curve
++and
++.B \-\-tls\-groups
+ option.
+ .\"*********************************************************
+ .SS Generating key material:
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index d35251fb..eb6c9c90 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -183,6 +183,12 @@ SSL_CTX_get_default_passwd_cb(SSL_CTX *ctx)
+ }
+ #endif
+ 
++/* This function is implemented as macro, so the configure check for the
++ * function may fail, so we check for both variants here */
++#if !defined(HAVE_SSL_CTX_SET1_GROUPS) && !defined(SSL_CTX_set1_groups)
++#define SSL_CTX_set1_groups SSL_CTX_set1_curves
++#endif
++
+ #if !defined(HAVE_X509_GET0_PUBKEY)
+ /**
+  * Get the public key from a X509 certificate
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 345e0b29..e667ca21 100644
+index bf2760e1..345e0b29 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -886,7 +886,6 @@ init_options(struct options *o, const bool init_gc)
- #ifdef ENABLE_PREDICTION_RESISTANCE
-     o->use_prediction_resistance = false;
- #endif
--    o->key_method = 2;
-     o->tls_timeout = 2;
-     o->renegotiate_bytes = -1;
-     o->renegotiate_seconds = 3600;
-@@ -1709,7 +1708,6 @@ show_settings(const struct options *o)
- 
-     SHOW_BOOL(tls_server);
-     SHOW_BOOL(tls_client);
--    SHOW_INT(key_method);
-     SHOW_STR(ca_file);
-     SHOW_STR(ca_path);
-     SHOW_STR(dh_file);
-@@ -2370,10 +2368,6 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-         {
-             msg(M_USAGE, "--ccd-exclusive must be used with --client-config-dir");
-         }
--        if (options->key_method != 2)
--        {
--            msg(M_USAGE, "--mode server requires --key-method 2");
--        }
-         if (options->auth_token_generate && !options->renegotiate_seconds)
-         {
-             msg(M_USAGE, "--auth-gen-token needs a non-infinite "
-@@ -2540,13 +2534,6 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-             "may accept clients which do not present a certificate");
-     }
- 
--    if (options->key_method == 1)
--    {
--        msg(M_WARN, "WARNING: --key-method 1 is deprecated and will be removed "
--            "in OpenVPN 2.5.  By default --key-method 2 will be used if not set "
--            "in the configuration file, which is the recommended approach.");
--    }
--
-     const int tls_version_max =
-         (options->ssl_flags >> SSLF_TLS_VERSION_MAX_SHIFT)
-         & SSLF_TLS_VERSION_MAX_MASK;
-@@ -2788,7 +2775,6 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-         MUST_BE_UNDEF(push_peer_info);
-         MUST_BE_UNDEF(tls_exit);
-         MUST_BE_UNDEF(crl_file);
--        MUST_BE_UNDEF(key_method);
-         MUST_BE_UNDEF(ns_cert_type);
-         MUST_BE_UNDEF(remote_cert_ku[0]);
-         MUST_BE_UNDEF(remote_cert_eku);
-@@ -3817,10 +3803,9 @@ options_string(const struct options *o,
-              * tls-auth/tls-crypt does not match.  Removing tls-auth here would
-              * break stuff, so leaving that in place. */
- 
--            if (o->key_method > 1)
--            {
--                buf_printf(&out, ",key-method %d", o->key_method);
--            }
-+
-+
-+            buf_printf(&out, ",key-method %d", 2);
-         }
- 
-         if (remote)
-@@ -8459,22 +8444,6 @@ add_option(struct options *options,
+@@ -8040,7 +8040,7 @@ add_option(struct options *options,
          VERIFY_PERMISSION(OPT_P_GENERAL);
-         options->tls_crypt_v2_verify_script = p[1];
+         options->show_tls_ciphers = true;
      }
--    else if (streq(p[0], "key-method") && p[1] && !p[2])
--    {
--        int key_method;
--
--        VERIFY_PERMISSION(OPT_P_GENERAL);
--        key_method = atoi(p[1]);
--        if (key_method < KEY_METHOD_MIN || key_method > KEY_METHOD_MAX)
--        {
--            msg(msglevel, "key_method parameter (%d) must be >= %d and <= %d",
--                key_method,
--                KEY_METHOD_MIN,
--                KEY_METHOD_MAX);
--            goto err;
--        }
--        options->key_method = key_method;
--    }
-     else if (streq(p[0], "x509-track") && p[1] && !p[2])
+-    else if (streq(p[0], "show-curves") && !p[1])
++    else if ((streq(p[0], "show-curves") || streq(p[0], "show-groups")) && !p[1])
      {
          VERIFY_PERMISSION(OPT_P_GENERAL);
+         options->show_curves = true;
+@@ -8048,6 +8048,9 @@ add_option(struct options *options,
+     else if (streq(p[0], "ecdh-curve") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
++        msg(M_WARN, "Consider setting groups/curves preference with "
++            "tls-groups instead of forcing a specific curve with "
++            "ecdh-curve.");
+         options->ecdh_curve = p[1];
+     }
+     else if (streq(p[0], "tls-server") && !p[1])
+@@ -8218,6 +8221,11 @@ add_option(struct options *options,
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+         options->cipher_list_tls13 = p[1];
+     }
++    else if (streq(p[0], "tls-groups") && p[1] && !p[2])
++    {
++        VERIFY_PERMISSION(OPT_P_GENERAL);
++        options->tls_groups = p[1];
++    }
+     else if (streq(p[0], "crl-verify") && p[1] && ((p[2] && streq(p[2], "dir"))
+                                                    || !p[2]))
+     {
 diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 1b038c91..3546bab3 100644
+index c37006d3..1b038c91 100644
 --- a/src/openvpn/options.h
 +++ b/src/openvpn/options.h
-@@ -572,10 +572,6 @@ struct options
- #ifdef ENABLE_CRYPTOAPI
-     const char *cryptoapi_cert;
- #endif
--
--    /* data channel key exchange method */
--    int key_method;
--
-     /* Per-packet timeout on control channel */
-     int tls_timeout;
- 
+@@ -542,6 +542,7 @@ struct options
+     bool pkcs12_file_inline;
+     const char *cipher_list;
+     const char *cipher_list_tls13;
++    const char *tls_groups;
+     const char *tls_cert_profile;
+     const char *ecdh_curve;
+     const char *tls_verify;
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 00b97352..35c70d71 100644
+index 04d78a81..00b97352 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -1097,23 +1097,14 @@ tls_session_init(struct tls_multi *multi, struct tls_session *session)
-     }
+@@ -630,6 +630,12 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx)
+     tls_ctx_restrict_ciphers(new_ctx, options->cipher_list);
+     tls_ctx_restrict_ciphers_tls13(new_ctx, options->cipher_list_tls13);
  
-     /* Are we a TLS server or client? */
--    ASSERT(session->opt->key_method >= 1);
--    if (session->opt->key_method == 1)
-+    if (session->opt->server)
++    /* Set the allow groups/curves for TLS if we want to override them */
++    if (options->tls_groups)
++    {
++        tls_ctx_set_tls_groups(new_ctx, options->tls_groups);
++    }
++
+     if (!tls_ctx_set_options(new_ctx, options->ssl_flags))
      {
--        session->initial_opcode = session->opt->server ?
--                                  P_CONTROL_HARD_RESET_SERVER_V1 : P_CONTROL_HARD_RESET_CLIENT_V1;
-+        session->initial_opcode = P_CONTROL_HARD_RESET_SERVER_V2;
-     }
--    else /* session->opt->key_method >= 2 */
-+    else
-     {
--        if (session->opt->server)
--        {
--            session->initial_opcode = P_CONTROL_HARD_RESET_SERVER_V2;
--        }
--        else
--        {
--            session->initial_opcode = session->opt->tls_crypt_v2 ?
--                                      P_CONTROL_HARD_RESET_CLIENT_V3 : P_CONTROL_HARD_RESET_CLIENT_V2;
--        }
-+        session->initial_opcode = session->opt->tls_crypt_v2 ?
-+                                  P_CONTROL_HARD_RESET_CLIENT_V3 : P_CONTROL_HARD_RESET_CLIENT_V2;
-     }
+         goto err;
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index a1770bd4..75692797 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -198,6 +198,16 @@ void tls_ctx_restrict_ciphers_tls13(struct tls_root_ctx *ctx, const char *cipher
+  */
+ void tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile);
  
-     /* Initialize control channel authentication parameters */
-@@ -2225,52 +2216,6 @@ read_string_alloc(struct buffer *buf)
-     return str;
++/**
++ * Set the allowed (eliptic curve) group allowed for signatures and
++ * key exchange.
++ *
++ * @param ctx       TLS context to restrict, must be valid.
++ * @param groups    List of groups that will be allowed, in priority,
++ *                  separated by :
++ */
++void tls_ctx_set_tls_groups(struct tls_root_ctx *ctx, const char *groups);
++
+ /**
+  * Check our certificate notBefore and notAfter fields, and warn if the cert is
+  * either not yet valid or has expired.  Note that this is a non-fatal error,
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index f518f593..d74318f9 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -176,6 +176,11 @@ tls_ctx_free(struct tls_root_ctx *ctx)
+             free(ctx->allowed_ciphers);
+         }
+ 
++        if (ctx->groups)
++        {
++            free(ctx->groups);
++        }
++
+         CLEAR(*ctx);
+ 
+         ctx->initialised = false;
+@@ -343,6 +348,42 @@ tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
+     }
  }
  
--/*
-- * Handle the reading and writing of key data to and from
-- * the TLS control channel (cleartext).
-- */
--
--static bool
--key_method_1_write(struct buffer *buf, struct tls_session *session)
--{
--    struct key key;
--    struct key_state *ks = &session->key[KS_PRIMARY];      /* primary key */
--
--    ASSERT(session->opt->key_method == 1);
--    ASSERT(buf_init(buf, 0));
--
--    generate_key_random(&key, &session->opt->key_type);
--    if (!check_key(&key, &session->opt->key_type))
--    {
--        msg(D_TLS_ERRORS, "TLS Error: Bad encrypting key generated");
--        return false;
--    }
--
--    if (!write_key(&key, &session->opt->key_type, buf))
--    {
--        msg(D_TLS_ERRORS, "TLS Error: write_key failed");
--        return false;
--    }
--
--    init_key_ctx(&ks->crypto_options.key_ctx_bi.encrypt, &key,
--                 &session->opt->key_type, OPENVPN_OP_ENCRYPT,
--                 "Data Channel Encrypt");
--    secure_memzero(&key, sizeof(key));
--
--    /* send local options string */
--    {
--        const char *local_options = local_options_string(session);
--        const int optlen = strlen(local_options) + 1;
--        if (!buf_write(buf, local_options, optlen))
--        {
--            msg(D_TLS_ERRORS, "TLS Error: KM1 write options failed");
--            return false;
--        }
--    }
--
--    return true;
--}
--
- static bool
- push_peer_info(struct buffer *buf, struct tls_session *session)
++void
++tls_ctx_set_tls_groups(struct tls_root_ctx *ctx, const char *groups)
++{
++    ASSERT(ctx);
++    struct gc_arena gc = gc_new();
++
++    /* Get number of groups and allocate an array in ctx */
++    int groups_count = get_num_elements(groups, ':');
++    ALLOC_ARRAY_CLEAR(ctx->groups, mbedtls_ecp_group_id, groups_count + 1)
++
++    /* Parse allowed ciphers, getting IDs */
++    int i = 0;
++    char *tmp_groups = string_alloc(groups, &gc);
++
++    const char *token;
++    while ((token = strsep(&tmp_groups, ":")))
++    {
++        const mbedtls_ecp_curve_info *ci =
++            mbedtls_ecp_curve_info_from_name(token);
++        if (!ci)
++        {
++            msg(M_WARN, "Warning unknown curve/group specified: %s", token);
++        }
++        else
++        {
++            ctx->groups[i] = ci->grp_id;
++            i++;
++        }
++        token = strsep(&tmp_groups, ":");
++    }
++    ctx->groups[i] = MBEDTLS_ECP_DP_NONE;
++
++    gc_free(&gc);
++}
++
++
+ void
+ tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
  {
-@@ -2394,7 +2339,6 @@ key_method_2_write(struct buffer *buf, struct tls_session *session)
- {
-     struct key_state *ks = &session->key[KS_PRIMARY];      /* primary key */
- 
--    ASSERT(session->opt->key_method == 2);
-     ASSERT(buf_init(buf, 0));
- 
-     /* write a uint32 0 */
-@@ -2404,7 +2348,7 @@ key_method_2_write(struct buffer *buf, struct tls_session *session)
+@@ -1043,6 +1084,11 @@ key_state_ssl_init(struct key_state_ssl *ks_ssl,
+         mbedtls_ssl_conf_ciphersuites(ks_ssl->ssl_config, ssl_ctx->allowed_ciphers);
      }
  
-     /* write key_method + flags */
--    if (!buf_write_u8(buf, (session->opt->key_method & KEY_METHOD_MASK)))
-+    if (!buf_write_u8(buf, (KEY_METHOD_2 & KEY_METHOD_MASK)))
-     {
-         goto error;
-     }
-@@ -2506,73 +2450,11 @@ error:
-     return false;
- }
- 
--static bool
--key_method_1_read(struct buffer *buf, struct tls_session *session)
--{
--    int status;
--    struct key key;
--    struct key_state *ks = &session->key[KS_PRIMARY];      /* primary key */
--
--    ASSERT(session->opt->key_method == 1);
--
--    if (!session->verified)
--    {
--        msg(D_TLS_ERRORS,
--            "TLS Error: Certificate verification failed (key-method 1)");
--        goto error;
--    }
--
--    status = read_key(&key, &session->opt->key_type, buf);
--    if (status != 1)
--    {
--        msg(D_TLS_ERRORS,
--            "TLS Error: Error reading data channel key from plaintext buffer");
--        goto error;
--    }
--
--    if (!check_key(&key, &session->opt->key_type))
--    {
--        msg(D_TLS_ERRORS, "TLS Error: Bad decrypting key received from peer");
--        goto error;
--    }
--
--    if (buf->len < 1)
--    {
--        msg(D_TLS_ERRORS, "TLS Error: Missing options string");
--        goto error;
--    }
--
--#ifdef ENABLE_OCC
--    /* compare received remote options string
--     * with our locally computed options string */
--    if (!session->opt->disable_occ
--        && !options_cmp_equal_safe((char *) BPTR(buf), session->opt->remote_options, buf->len))
--    {
--        options_warning_safe((char *) BPTR(buf), session->opt->remote_options, buf->len);
--    }
--#endif
--
--    buf_clear(buf);
--
--    init_key_ctx(&ks->crypto_options.key_ctx_bi.decrypt, &key,
--                 &session->opt->key_type, OPENVPN_OP_DECRYPT,
--                 "Data Channel Decrypt");
--    secure_memzero(&key, sizeof(key));
--    ks->authenticated = KS_AUTH_TRUE;
--    return true;
--
--error:
--    buf_clear(buf);
--    secure_memzero(&key, sizeof(key));
--    return false;
--}
--
- static bool
- key_method_2_read(struct buffer *buf, struct tls_multi *multi, struct tls_session *session)
- {
-     struct key_state *ks = &session->key[KS_PRIMARY];      /* primary key */
- 
--    int key_method_flags;
-     bool username_status, password_status;
- 
-     struct gc_arena gc = gc_new();
-@@ -2582,8 +2464,6 @@ key_method_2_read(struct buffer *buf, struct tls_multi *multi, struct tls_sessio
-     /* allocate temporary objects */
-     ALLOC_ARRAY_CLEAR_GC(options, char, TLS_OPTIONS_LEN, &gc);
- 
--    ASSERT(session->opt->key_method == 2);
--
-     /* discard leading uint32 */
-     if (!buf_advance(buf, 4))
-     {
-@@ -2593,7 +2473,7 @@ key_method_2_read(struct buffer *buf, struct tls_multi *multi, struct tls_sessio
-     }
- 
-     /* get key method */
--    key_method_flags = buf_read_u8(buf);
-+    int key_method_flags = buf_read_u8(buf);
-     if ((key_method_flags & KEY_METHOD_MASK) != 2)
-     {
-         msg(D_TLS_ERRORS,
-@@ -3003,23 +2883,9 @@ tls_process(struct tls_multi *multi,
-         if (!buf->len && ((ks->state == S_START && !session->opt->server)
-                           || (ks->state == S_GOT_KEY && session->opt->server)))
-         {
--            if (session->opt->key_method == 1)
-+            if (!key_method_2_write(buf, session))
-             {
--                if (!key_method_1_write(buf, session))
--                {
--                    goto error;
--                }
--            }
--            else if (session->opt->key_method == 2)
--            {
--                if (!key_method_2_write(buf, session))
--                {
--                    goto error;
--                }
--            }
--            else
--            {
--                ASSERT(0);
-+                goto error;
-             }
- 
-             state_change = true;
-@@ -3033,23 +2899,9 @@ tls_process(struct tls_multi *multi,
-             && ((ks->state == S_SENT_KEY && !session->opt->server)
-                 || (ks->state == S_START && session->opt->server)))
-         {
--            if (session->opt->key_method == 1)
--            {
--                if (!key_method_1_read(buf, session))
--                {
--                    goto error;
--                }
--            }
--            else if (session->opt->key_method == 2)
--            {
--                if (!key_method_2_read(buf, multi, session))
--                {
--                    goto error;
--                }
--            }
--            else
-+            if (!key_method_2_read(buf, multi, session))
-             {
--                ASSERT(0);
-+                goto error;
-             }
- 
-             state_change = true;
-@@ -3547,11 +3399,10 @@ tls_pre_decrypt(struct tls_multi *multi,
-                 struct tls_session *session = &multi->session[TM_ACTIVE];
-                 struct key_state *ks = &session->key[KS_PRIMARY];
- 
--                if (!is_hard_reset(op, multi->opt.key_method))
-+                if (!is_hard_reset(op, KEY_METHOD_2))
-                 {
-                     msg(D_TLS_ERRORS, "TLS ERROR: initial packet local/remote key_method mismatch, local key_method=%d, op=%s",
--                        multi->opt.key_method,
--                        packet_opcode_name(op));
-+                        KEY_METHOD_2, packet_opcode_name(op));
-                     goto error;
-                 }
- 
-@@ -3614,11 +3465,10 @@ tls_pre_decrypt(struct tls_multi *multi,
-                     goto error;
-                 }
- 
--                if (!is_hard_reset(op, multi->opt.key_method))
-+                if (!is_hard_reset(op, KEY_METHOD_2))
-                 {
-                     msg(D_TLS_ERRORS, "TLS ERROR: new session local/remote key_method mismatch, local key_method=%d, op=%s",
--                        multi->opt.key_method,
--                        packet_opcode_name(op));
-+                        KEY_METHOD_2, packet_opcode_name(op));
-                     goto error;
-                 }
- 
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index 86fb6853..3fcc3654 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -109,11 +109,7 @@
- /* Default field in X509 to be username */
- #define X509_USERNAME_FIELD_DEFAULT "CN"
- 
--/*
-- * Range of key exchange methods
-- */
--#define KEY_METHOD_MIN 1
--#define KEY_METHOD_MAX 2
-+#define KEY_METHOD_2  2
- 
- /* key method taken from lower 4 bits */
- #define KEY_METHOD_MASK 0x0F
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index e0b3ee56..d904c31f 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -262,7 +262,6 @@ struct tls_options
++    if (ssl_ctx->groups)
++    {
++        mbedtls_ssl_conf_curves(ks_ssl->ssl_config, ssl_ctx->groups);
++    }
++
+     /* Disable record splitting (for now).  OpenVPN assumes records are sent
+      * unfragmented, and changing that will require thorough review and
+      * testing.  Since OpenVPN is not susceptible to BEAST, we can just
+diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h
+index 92381f1a..0525134f 100644
+--- a/src/openvpn/ssl_mbedtls.h
++++ b/src/openvpn/ssl_mbedtls.h
+@@ -105,6 +105,7 @@ struct tls_root_ctx {
  #endif
+     struct external_context external_key; /**< External key context */
+     int *allowed_ciphers;       /**< List of allowed ciphers for this connection */
++    mbedtls_ecp_group_id *groups;     /**< List of allowed groups for this connection */
+     mbedtls_x509_crt_profile cert_profile; /**< Allowed certificate types */
+ };
  
-     /* from command line */
--    int key_method;
-     bool replay;
-     bool single_session;
- #ifdef ENABLE_OCC
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index abb47645..b94a3cc9 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -565,6 +565,57 @@ tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
+ #endif /* ifdef HAVE_SSL_CTX_SET_SECURITY_LEVEL */
+ }
+ 
++void
++tls_ctx_set_tls_groups(struct tls_root_ctx *ctx, const char *groups)
++{
++    ASSERT(ctx);
++    struct gc_arena gc = gc_new();
++    /* This method could be as easy as
++     *  SSL_CTX_set1_groups_list(ctx->ctx, groups)
++     * but OpenSSL does not like the name secp256r1 for prime256v1
++     * This is one of the important curves.
++     * To support the same name for OpenSSL and mbedTLS, we do
++     * this dance.
++     */
++
++    int groups_count = get_num_elements(groups, ':');
++
++    int *glist;
++    /* Allocate an array for them */
++    ALLOC_ARRAY_CLEAR_GC(glist, int, groups_count, &gc);
++
++    /* Parse allowed ciphers, getting IDs */
++    int glistlen = 0;
++    char *tmp_groups = string_alloc(groups, &gc);
++
++    const char *token;
++    while ((token = strsep(&tmp_groups, ":")))
++    {
++        if (streq(token, "secp256r1"))
++        {
++            token = "prime256v1";
++        }
++        int nid = OBJ_sn2nid(token);
++
++        if (nid == 0)
++        {
++            msg(M_WARN, "Warning unknown curve/group specified: %s", token);
++        }
++        else
++        {
++            glist[glistlen] = nid;
++            glistlen++;
++        }
++    }
++
++    if (!SSL_CTX_set1_groups(ctx->ctx, glist, glistlen))
++    {
++        crypto_msg(M_FATAL, "Failed to set allowed TLS group list: %s",
++                   groups);
++    }
++    gc_free(&gc);
++}
++
+ void
+ tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
+ {
+@@ -2161,6 +2212,8 @@ show_available_tls_ciphers_list(const char *cipher_list,
+ void
+ show_available_curves(void)
+ {
++    printf("Consider using openssl 'ecparam -list_curves' as\n"
++           "alternative to running this command.\n");
+ #ifndef OPENSSL_NO_EC
+     EC_builtin_curve *curves = NULL;
+     size_t crv_len = 0;
+@@ -2170,7 +2223,7 @@ show_available_curves(void)
+     ALLOC_ARRAY(curves, EC_builtin_curve, crv_len);
+     if (EC_get_builtin_curves(curves, crv_len))
+     {
+-        printf("Available Elliptic curves:\n");
++        printf("\nAvailable Elliptic curves/groups:\n");
+         for (n = 0; n < crv_len; n++)
+         {
+             const char *sname;
 -- 
 2.26.2
 
