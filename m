@@ -1,16 +1,20 @@
-References: <20200711093655.23686-1-arne@...1227...>
- <20200711093655.23686-13-arne@...1227...>
- <20200713154047.GF1431@...1296...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <ce539842-b9d1-5cb1-eb56-f4a85533bbac@...1227...>
-Date: Mon, 13 Jul 2020 18:08:04 +0200
-MIME-Version: 1.0
-In-Reply-To: <20200713154047.GF1431@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="rBfS74NT3sHMHgHSziHi3t8WIZjUbuXor"
-Subject: Re: [Openvpn-devel] [PATCH v5 13/14] client-connect: Implement
- deferred connect support for plugin API v2
+Mime-Version: 1.0 (1.0)
+From: Marvin Adeff <volleynbike@...277...>
+In-Reply-To: <20200713143426.GC1431@...1296...>
+Date: Mon, 13 Jul 2020 10:31:05 -0700
+Message-Id: <7B6AB61C-782B-4CE4-BC1D-F28CA763E318@...277...>
+References: <4562876f-45c1-d3bb-f725-52e9b78600de@...1227...>
+ <20200623090252.GE1431@...1296...>
+ <4f03e378-f327-21a6-9f11-fe06a42052b6@...1823...>
+ <518ceb3d-e060-f777-f19f-4998b8d27170@...1227...>
+ <3f6159de-c513-78d5-194c-989a8611c291@...1823...>
+ <20200713061023.GK1431@...1296...> <20200713063303.GM1431@...1296...>
+ <20200713065828.GN1431@...1296...>
+ <9b4e2c49-8ef4-efb6-0b04-c273b077dc70@...1227...>
+ <6B6A4240-A4F4-4388-BD1D-ABF049535351@...277...>
+ <20200713143426.GC1431@...1296...>
+Subject: Re: [Openvpn-devel] compatibility of 2.3 server with git master
+ client
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,70 +23,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---rBfS74NT3sHMHgHSziHi3t8WIZjUbuXor
-Content-Type: multipart/mixed; boundary="oaGE7vZAwkK9FOsBUmvVvZLPfO7KWYnvy"
+Thank you I will try this.=20
 
---oaGE7vZAwkK9FOsBUmvVvZLPfO7KWYnvy
-Content-Language: en-GB
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Marvin=20
 
-Am 13.07.20 um 17:40 schrieb Gert Doering:
+Sent from my iPhone
+
+> On Jul 13, 2020, at 7:34 AM, Gert Doering <gert@...1296...> wrote:
+>=20
 > Hi,
 >=20
-> On Sat, Jul 11, 2020 at 11:36:54AM +0200, Arne Schwabe wrote:
->> The V2 API is simpler than the V1 API since there is no passing of
->> data via files. This also means that with the current API the V2 API
->> cannot support async notify via files. Adding a file just for async
->> notify seems very hacky and when needed we should implement a better
->> option when async is needed for the plugin V2 API.
+>> On Mon, Jul 13, 2020 at 07:23:59AM -0700, Marvin Adeff wrote:
+>> I???m wondering if the opposite of this scenario has been tested, where =
+the server is running 2.3.18 (on Linux) and a client running 2.5 (on Window=
+s) tries to connect?
 >=20
-> I'm not sure I understand a word of this.
+> It should work, but this is a "should".  It's hard enough to test all
+> possible combinations of clients and features against git master, so we
+> do not normally test current clients against out-of-service releases
+> on the server.
 >=20
-> If we want async cc, we should do it in the V2 API - and since v2 plugin
-> async auth works just fine (with file), I wonder why it is hard for=20
-> async cc?  Because we cannot pass back the returned config data?
-
-Not async cc. That works fine. But async notification via file notify
-does not work without a file being involved.
-
-v1 API returns config and status via files.
-
-v2 returns status as return value (OPENVPN_PLUGIN_FUNC_SUCCESS,
-OPENVPN_PLUGIN_FUNC_DEFERRED...) and the config file via memory in
-plugin_return. So no file involved and no way to use inotify
-
-
-Arne
-
-
---oaGE7vZAwkK9FOsBUmvVvZLPfO7KWYnvy--
-
---rBfS74NT3sHMHgHSziHi3t8WIZjUbuXor
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl8MhuQACgkQFRhsZwKx
-RFTYdhAAlrJ/LCNRuvCSTC4r9nwCWXTmUJXFfSfiVa6TCD5bOv5KWbBBcsiyHy17
-lrRUCU9zsc8hhMOCIHF27x6PzJnDN2hQq3kUr5Xfj9rgwUZ0bRL4AVxcTe3UTgFh
-n0jt9B9pYtCARGpUnycV0J08M+tYElz1ZALnD3kCXyP/OatewcfNWUqMpfcqy4Wd
-0kkXOskJmDNKaM1AeLxZSk22mycUhztF2+qMJHcrmzW0s6vPjNfgH2mxQd3PZb8/
-ff/e188wcJrKWqTG8eLp2FRxyDoUBRXujLtZJdkCOWOyCYra268TdQcH/2CIKMDN
-88x5MzY3giy3w1ikO/XEcMKTRZwqxHnjcXxMpkxw9xylZC/fgn4wvvS/+c8oWcMh
-DKR6JPb0v6Y9EvPyYiZcB0BMzLuJw0M6BtoXrBASyT9MJcWTwpoBexPOqtyRhnaJ
-dvxjcCb2MlZakijM57nSVYNp9rrcS1/VnrPjEn+FPIVovZm83ZBuMXMd77YsDBm2
-OAm8LhBuJ9OKZlpMBnnxK9Wal/nxH6ADuv1OAm1Ev6HGZYSij1rq5Vk6mc04yiHp
-xC2fowNATmAWXT/YfhPkTlV8iyHlcrLNcOD0cDo+cBYEwyp4fDeC2tcnpYS6wSzh
-YxfAh94J8T9Zs9izRsJOlr3pd50BvAtOyOo0eC85zUXgT1PWCXQ=
-=54+w
------END PGP SIGNATURE-----
-
---rBfS74NT3sHMHgHSziHi3t8WIZjUbuXor--
+> On the other hand we do not purposely break client-server protocol,=20
+> so it *should* work.  It's just not regularily tested.
+>=20
+> If you test, and it breaks, please show client and server logs so we can
+> fix it :-)
+>=20
+>=20
+>> I know, I know, we should upgrade.  Unfortunately in this case OpenVPN s=
+erver is running on an appliance that cannot be upgraded past Linux 2.6, an=
+d I don???t think 2.4.x can run on Linux 2.6.=20
+>=20
+> You do not want to have an appliance that is running an ancient linux
+> version connected to the Internet either...
+>=20
+> But besides that, compiling OpenVPN 2.4 should be no big problem - it is
+> not very demanding regarding system environment or OpenSSL version.
+>=20
+> For OpenVPN 2.5 (git master) you'll need an update openssl library - but
+> this is also not hard, you can compile it and install it to a non-default
+> place ("/usr/local/openssl-1.1.1") and point OpenVPN's configure script
+> at it.
+>=20
+> One of my test clients is FreeBSD 7.4, which stopped receiving updates
+> in 2013 - but with a local openssl installation, it works fine, with
+> git master  (this is sort of a "are we using fancy features that break
+> older unixes now?" lithmus test, not something you want exposed on the
+> Internet, or something I'd recommend).
+> --=20
+> "If was one thing all people took for granted, was conviction that if you=
+=20
+> feed honest figures into a computer, honest figures come out. Never doubt=
+ed=20
+> it myself till I met a computer with a sense of humor."
+>                             Robert A. Heinlein, The Moon is a Harsh Mistr=
+ess
+>=20
+> Gert Doering - Munich, Germany                             gert@...1296...
 
