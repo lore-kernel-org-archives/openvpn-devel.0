@@ -1,13 +1,12 @@
 References: <20200711093655.23686-1-arne@...1227...>
- <20200711093655.23686-7-arne@...1227...>
 From: tincanteksup <tincanteksup@...277...>
-Message-ID: <46e053ee-c985-0c11-c03f-3e805c7fc79f@...277...>
-Date: Mon, 13 Jul 2020 13:26:37 +0100
+Message-ID: <2ef4d637-8b73-dd83-5f1b-be4a6b82d8cb@...277...>
+Date: Mon, 13 Jul 2020 13:30:11 +0100
 MIME-Version: 1.0
-In-Reply-To: <20200711093655.23686-7-arne@...1227...>
+In-Reply-To: <20200711093655.23686-1-arne@...1227...>
 Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH v5 07/14] client-connect: Change
- cas_context from int to enum
+Subject: Re: [Openvpn-devel] [PATCH v5 01/14] Allow changing fallback cipher
+ from ccd files/client-connect
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,96 +19,63 @@ Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-1x typo
+grammar:
 
 On 11/07/2020 10:36, Arne Schwabe wrote:
-> This deviates from Fabian's original patch that relied on the now
-> removed connection_established bool as pointer being NULL or non NULL as
-> implicit third state and makeing connection_established as a substate of
+> This allows to control the fallback cipher that is used when the
+> client/server do have any common cipher on a per client basis.
 
-makeing -> making
+client/server do not have any common cipher
 
 
-> (cas_context == CAS_PENDING)
 > 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
+> The patch is similar to Steffan's
+> [PATCH v4] Allow changing cipher from a ccd file.
 > 
-> Patch V5: extend cas_context with two new states instead adding an
->            extra mini state machine.
+> Steffan's old patch also moves the cipher negotiation to
+> multi_established_connection() which I independently discovered and
+> implemented in
+
+implemented in:
+
+(otherwise it looks like you forgot "in what" - That is if my 
+interpretation is correct)
+
+> 
+> Extract process_incoming_push_reply from process_incoming_push_msg
+> (#FIXME add commitsh when commited to master)
 > 
 > Signed-off-by: Arne Schwabe <arne@...1227...>
 > ---
->   src/openvpn/multi.c   |  2 +-
->   src/openvpn/multi.h   |  1 +
->   src/openvpn/openvpn.h | 24 +++++++++++++++++-------
->   3 files changed, 19 insertions(+), 8 deletions(-)
+>   src/openvpn/options.c | 2 +-
+>   src/openvpn/options.h | 2 +-
+>   2 files changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-> index 83848fdc..f9b8af80 100644
-> --- a/src/openvpn/multi.c
-> +++ b/src/openvpn/multi.c
-> @@ -2163,7 +2163,7 @@ multi_client_connect_early_setup(struct multi_context *m,
->    * Try to source a dynamic config file from the
->    * --client-config-dir directory.
->    */
-> -enum client_connect_return
-> +static enum client_connect_return
->   multi_client_connect_source_ccd(struct multi_context *m,
->                                   struct multi_instance *mi,
->                                   unsigned int *option_types_found)
-> diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-> index 4fb4d0b6..1d30dcc6 100644
-> --- a/src/openvpn/multi.h
-> +++ b/src/openvpn/multi.h
-> @@ -62,6 +62,7 @@ struct deferred_signal_schedule_entry
->       struct timeval wakeup;
->   };
->   
-> +
->   /**
->    * Server-mode state structure for one single VPN tunnel.
->    *
-> diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-> index a1308852..7c469b01 100644
-> --- a/src/openvpn/openvpn.h
-> +++ b/src/openvpn/openvpn.h
-> @@ -210,6 +210,21 @@ struct context_1
->   #endif
->   };
->   
-> +
-> +/* client authentication state, CAS_SUCCEEDED must be 0 since
-> + * non multi code path still checks this variable but does not initialise it
-> + * so the code depends on zero initialisation */
-> +enum client_connect_status {
-> +    CAS_SUCCEEDED=0,
-> +    CAS_PENDING,
-> +    CAS_FAILED,
-> +    CAS_PARTIAL,        /**< Variant of CAS_FAILED: at least one
-> +                         * client-connect script/plugin succeeded
-> +                         * while a later one in the chain failed
-> +                         * (we still need cleanup compared to FAILED)
-> +                         */
-> +};
-> +
->   /**
->    * Level 2 %context containing state that is reset on both \c SIGHUP and
->    * \c SIGUSR1 restarts.
-> @@ -444,13 +459,8 @@ struct context_2
->       int push_ifconfig_ipv6_netbits;
->       struct in6_addr push_ifconfig_ipv6_remote;
->   
-> -    /* client authentication state, CAS_SUCCEEDED must be 0 */
-> -#define CAS_SUCCEEDED 0
-> -#define CAS_PENDING   1
-> -#define CAS_FAILED    2
-> -#define CAS_PARTIAL   3  /* at least one client-connect script/plugin
-> -                          * succeeded while a later one in the chain failed */
-> -    int context_auth;
-> +
-> +    enum client_connect_status context_auth;
->   
->       struct event_timeout push_request_interval;
->       int n_sent_push_requests;
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index b93fd4fe..bf2760e1 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -7892,7 +7892,7 @@ add_option(struct options *options,
+>       }
+>       else if (streq(p[0], "cipher") && p[1] && !p[2])
+>       {
+> -        VERIFY_PERMISSION(OPT_P_NCP);
+> +        VERIFY_PERMISSION(OPT_P_NCP|OPT_P_INSTANCE);
+>           options->ciphername = p[1];
+>       }
+>       else if (streq(p[0], "ncp-ciphers") && p[1] && !p[2])
+> diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+> index c83a46aa..c37006d3 100644
+> --- a/src/openvpn/options.h
+> +++ b/src/openvpn/options.h
+> @@ -677,7 +677,7 @@ struct options
+>   #define OPT_P_MTU             (1<<14) /* TODO */
+>   #define OPT_P_NICE            (1<<15)
+>   #define OPT_P_PUSH            (1<<16)
+> -#define OPT_P_INSTANCE        (1<<17)
+> +#define OPT_P_INSTANCE        (1<<17) /**< allowed in ccd, client-connect etc*/
+>   #define OPT_P_CONFIG          (1<<18)
+>   #define OPT_P_EXPLICIT_NOTIFY (1<<19)
+>   #define OPT_P_ECHO            (1<<20)
 > 
 
