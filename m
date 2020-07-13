@@ -1,25 +1,15 @@
-References: <20200622113022.23047-1-davids@...515...>
- <CAKuzo_g7QxVL90ikT57H6b4+St2c860us6S3cN_6jbfeHujpzw@...278...>
- <a1cfd42d-e371-187a-55c2-f14a3a986b34@...1823...>
- <4562876f-45c1-d3bb-f725-52e9b78600de@...1227...>
- <20200623090252.GE1431@...1296...>
- <4f03e378-f327-21a6-9f11-fe06a42052b6@...1823...>
- <518ceb3d-e060-f777-f19f-4998b8d27170@...1227...>
- <3f6159de-c513-78d5-194c-989a8611c291@...1823...>
- <20200713061023.GK1431@...1296...> <20200713063303.GM1431@...1296...>
- <20200713065828.GN1431@...1296...>
- <9b4e2c49-8ef4-efb6-0b04-c273b077dc70@...1227...>
- <6B6A4240-A4F4-4388-BD1D-ABF049535351@...277...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <0a4643f0-2594-b6c8-0a31-2d525b2290dc@...1227...>
-Date: Mon, 13 Jul 2020 16:36:52 +0200
+Date: Mon, 13 Jul 2020 16:42:50 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20200713144250.GD1431@...1296...>
+References: <20200711093655.23686-1-arne@...1227...>
+ <20200711093655.23686-8-arne@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <6B6A4240-A4F4-4388-BD1D-ABF049535351@...277...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="DQzzribDA7SOv50pWfaCMu8AHKVN3mly6"
-Subject: Re: [Openvpn-devel] git master crashes on connect of 2.3 client
- with --enable-small
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="dFjFFAA9rl99soCh"
+Content-Disposition: inline
+In-Reply-To: <20200711093655.23686-8-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH v5 08/14] client-connect: Add
+ CC_RET_DEFERRED and cope with deferred client-connect
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -28,56 +18,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Marvin Adeff <volleynbike@...277...>, openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---DQzzribDA7SOv50pWfaCMu8AHKVN3mly6
-Content-Type: multipart/mixed; boundary="RP0peZvPAG1z8pytoXUwljUkP0vDPj0H6"
-
---RP0peZvPAG1z8pytoXUwljUkP0vDPj0H6
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
+--dFjFFAA9rl99soCh
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Am 13.07.20 um 16:23 schrieb Marvin Adeff:
-> I=E2=80=99m wondering if the opposite of this scenario has been tested, w=
-here the server is running 2.3.18 (on Linux) and a client running 2.5 (on W=
-indows) tries to connect?
+Hi,
+
+On Sat, Jul 11, 2020 at 11:36:49AM +0200, Arne Schwabe wrote:
+> From: Fabian Knittel <fabian.knittel@...1547...>
 >=20
-> I know, I know, we should upgrade.  Unfortunately in this case OpenVPN se=
-rver is running on an appliance that cannot be upgraded past Linux 2.6, and=
- I don=E2=80=99t think 2.4.x can run on Linux 2.6.=20
+> This patch moves the state, that was previously tracked within the
+> multi_connection_established() function, into struct client_connect_state=
+.  The
+> multi_connection_established() function can now be exited and re-entered =
+as
+> many times as necessary - without losing the client-connect handling stat=
+e.
+[..]
 
-It should still work. We just test these combination less often since
-2.3 is very old. However, if you still BF-CBC, this will probably stop
-working in OpenVPN 2.6.
+Server side test succeeded...
 
-Arne
+23...
+Test sets succeeded: none.
+Test sets failed: 1 1a 1b 1d 2 2a 2b 2c 2d 3 4 5 6 8 8a 9.
+24...
+Test sets succeeded: 1 1a 1b 1c 1d 1e 2 2a 2b 2c 2d 2e 3 4 4a 5 6 8 8a 9.
+Test sets failed: none.
+master...
+Test sets succeeded: 1 1a 1b 1c 1d 1e 2 2a 2b 2c 2d 2e 3 4 5 6 7 7a 8 8a 9 =
+2f 4b.
+Test sets failed: none.
 
 
---RP0peZvPAG1z8pytoXUwljUkP0vDPj0H6--
+Didn't look too closely at the patch yet.
 
---DQzzribDA7SOv50pWfaCMu8AHKVN3mly6
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--dFjFFAA9rl99soCh
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl8McYQACgkQFRhsZwKx
-RFSPrBAAmR3QpPTgh4xKemKu9H4CGtPx+j031RkRdRH/ZtaC9kqeXsXNOgDnOzSJ
-PjsGkptKcB0rwgpt12RDddkbQ9WnXHvy3FjlS4VFrXNjpcQSbfhyV0s13OtKmbCn
-h86QO2Z+OAwm/RrPKJtkHuwTKJUF1yQP5fNx8ZOUwVrmZFmmC0ieo9ME0ABDGn/6
-ZxKLup7eoIolXAHsIEgRHTo8TbMqkdi3P3Nal5AF9HQdshJ8tuNsyis54XLb32T8
-pbULNvFgBxxlZNzy3kcv6/TbeOsYkOabMBKK/DfvVM+aronGnVyWP2r6R5FnCH3s
-zTJlzksUdy0Q+AWxMg+iFfbUNzEqvqaOCmLadY4TEyQoGz+eDzXG0BdggLcH0GqC
-FnCV3ZtfQ20HMfR32FTiVY9V5+7n8EQkLzmJf1YiYPRz7xIJb+DbV0otKQQY2zKb
-/qKcOEqywKHw8QGvPu4TuHbMn1adwvL0rAXBxDtUrJhAGar8JwRdaAmDokG+KMad
-rdQw1xhD4fUAGtj7uq72a/VVUxKjrVt994owwPs3YaIrQu2vSp1LJfVNzDTHmDJr
-xfXrEJCvlQ43hRZdYYj7R5xao0FkhgKvQQvRquewJmF+l0OSfhxf4taVqUgrHFEY
-6v/HXgLJ8Be3UgIqdElPAgC7Z7AoubWwHcdOYhOrrNJwnFhsgJ8=
-=g+PL
+iQGcBAEBAgAGBQJfDHLpAAoJEB2Cnv7KVigSx7ML/jy5MgL39HzVedtLS9zlNuCT
+vtMqn8HHwYnOPXHYrfozj8RY5nHfroDHOGLRnEeTBqbbEhvw8ao2Dmgc9YIGBECI
+n3Q63o8e74DuGYdiC1SW9krnc8yMlHsWc0YKT7p6CkJLGkKJzZ3/mECdCSX5vBU5
+lEnEHy3WGKs0fOWKXs67ydiMhc8vZqP2kjS3sMODEvOs62KxJGVXSSFuweKIJz1f
+g/IDEAvlrG0DbjRwP8iiTLf9Or788M2K5biWGJk81yztFa29Ok2mkW/rTJlkAPYi
+pCp6DtkHCPubPBC+t33PYq3mMRmJxcQKfW8Ibeue0UN8HUgxbB/PYWjkai3in1hH
+u2PdyF+oR2y63vPl8cV3W8g/xNTGOpFGjKstW1xNgfe5RinpZn3OrD9mFU6T23yK
+XsvKFodZ9SpO39spTpv3UTLGiyK8XWhxuPf3WN8c2Q3LjaQqKIyynTC9n9Ze0WP8
+27npTQMWE2XX0vOtgFnW9w+TJW4R4mGchxMVZBiCJQ==
+=2cOU
 -----END PGP SIGNATURE-----
 
---DQzzribDA7SOv50pWfaCMu8AHKVN3mly6--
+--dFjFFAA9rl99soCh--
 
