@@ -1,14 +1,8 @@
-References: <20200713093252.30916-1-gert@...1296...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <b1673f4a-9b64-c8b2-6342-0717d21e8e97@...1227...>
-Date: Mon, 13 Jul 2020 11:40:08 +0200
-MIME-Version: 1.0
-In-Reply-To: <20200713093252.30916-1-gert@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="UWb2nvHMDA6wUzaN4l7iHV8pGgiqtEbEf"
-Subject: Re: [Openvpn-devel] [PATCH v2] Handle connecting clients without
- NCP or OCC without crashing.
+Date: Mon, 13 Jul 2020 11:44:44 +0200
+Message-Id: <20200713094444.13466-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Indicate that a client is in pull mode in
+ IV_PROTO
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,55 +11,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---UWb2nvHMDA6wUzaN4l7iHV8pGgiqtEbEf
-Content-Type: multipart/mixed; boundary="CQ2nONzcCTUAeBh4FS01LcKLWGn8WCHhi"
-
---CQ2nONzcCTUAeBh4FS01LcKLWGn8WCHhi
-Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Am 13.07.20 um 11:32 schrieb Gert Doering:
-> ssl_ncp.c:ncp_get_best_cipher() would crash if a client connects without
-> NCP (or with a NCP cipher list that does not contain the first NCP cipher
-> in the server list) due to a NULL pointer strcmp().
->=20
-> Work around / fix by just assigning an empty string to remote_cipher here
-> ("not NULL but will never match either").
->=20
-> Add new warning message in multi.c for the "we do not know what the
-> client can do" case (no NCP and non-helpful OCC), rewrapped the existing
-> message to keep line lenght limit.                       tpyo
+This allows us to skip waiting for the first PUSH_REQUEST message from
+the client to send the response.
 
-Acked-By: Arne Schwabe <arne@...1227...>
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/multi.c | 12 ++++++++++--
+ src/openvpn/ssl.c   | 15 +++++++++++++--
+ src/openvpn/ssl.h   |  7 +++++++
+ 3 files changed, 30 insertions(+), 4 deletions(-)
 
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index a2af071a..71a4af88 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -1793,10 +1793,18 @@ multi_client_set_protocol_options(struct context *c)
+     {
+         int proto = 0;
+         int r = sscanf(optstr, "IV_PROTO=%d", &proto);
+-        if ((r == 1) && (proto >= 2))
++        if (r == 1)
+         {
+-            tls_multi->use_peer_id = true;
++            if (proto >= 2)
++            {
++                tls_multi->use_peer_id = true;
++            }
++            if (proto & IV_PROTO_REQUEST_PUSH)
++            {
++                c->c2.push_request_received = true;
++            }
+         }
++
+     }
+ 
+     /* Select cipher if client supports Negotiable Crypto Parameters */
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 54a23011..04d78a81 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2299,8 +2299,19 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+         buf_printf(&out, "IV_PLAT=win\n");
+ #endif
+ 
+-        /* support for P_DATA_V2 */
+-        buf_printf(&out, "IV_PROTO=2\n");
++        /* support for P_DATA_V2*/
++        int iv_proto = IV_PROTO_DATA_V2;
++
++        /* support for receiving push_reply before sending
++         * push request, also signal that the client wants
++         * to get push-reply messages without without requiring a round
++         * trip for a push request message*/
++        if(session->opt->pull)
++        {
++            iv_proto |= IV_PROTO_REQUEST_PUSH;
++        }
++
++        buf_printf(&out, "IV_PROTO=%d\n", iv_proto);
+ 
+         /* support for Negotiable Crypto Parameters */
+         if (session->opt->ncp_enabled
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index 58a9b0d4..86fb6853 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -99,6 +99,13 @@
+ /* Maximum length of OCC options string passed as part of auth handshake */
+ #define TLS_OPTIONS_LEN 512
+ 
++/* Definitions of the bits in the IV_PROTO bitfield */
++#define IV_PROTO_DATA_V2        (1<<1)  /**< Support P_DATA_V2 */
++#define IV_PROTO_REQUEST_PUSH   (1<<2)  /**< Assume client will send a push
++                                          * request and server does not need
++                                          * to wait for a push-request to send
++                                          * a push-reply */
++
+ /* Default field in X509 to be username */
+ #define X509_USERNAME_FIELD_DEFAULT "CN"
+ 
+-- 
+2.26.2
 
---CQ2nONzcCTUAeBh4FS01LcKLWGn8WCHhi--
-
---UWb2nvHMDA6wUzaN4l7iHV8pGgiqtEbEf
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl8MK/gACgkQFRhsZwKx
-RFQOPA/+NFjT14cAvtT1EYVseqG3rJch+PgjTtSSFASSRW0/O+ZvkRYJFx7v/WUv
-VKU9M3poF62MzZHafFMQMc8NQkT+l4eowIsGOUfhQlvc08qLXhq7N7+QXh3StxeL
-k477PT5I5hLYAggmEEkS5p979AEdkVbz0f8+QoUJlsbvUS8pGMJu7XKEuleTHfzh
-CAYz0oC06XPFFogqiW4NVKXvZZ+5MVC7KZHymQkRVkHu0GJHCfXyCON7uSYXdLXb
-MUvM8DetutOOV5BAK5u3BJFuLUripvrHPZVI487lzVFKlaRF1C33oVqSgukUwTf3
-AIbT8jKfN4laeVyDKyiBe2nqQ6lVk7CofNwRoDhvG9bEYFDB+UxdMPujpyrknz7C
-oemzfsg1BLzx+l4Z9rraBGnYVTVJ84zm+3H5ZzGx93zp4vbbFaqrVdYxETOir69I
-my9U6A1WlJeDaDDN0CLdjMU/4Rg3UhKT3Bj1I6RO/iWwugeiZ77MGhT2pC4p3sia
-5dhm3xFfFSq8zdU83Jc4pSVvCrjmS1u1OaWSVRL9iGEqSTvbdhbqnlmii7HpUavX
-LwgJdR8DOOHIO56bF2/7ppX1VueFAmHaM0yYKfrfJodA7HXIIvFZLbW5wFaybvGw
-LD+lTbOrEhkwDbqxO9l7EXqQtKuXr5hjBOFIxjdBw8D60ACdHK4=
-=OkL4
------END PGP SIGNATURE-----
-
---UWb2nvHMDA6wUzaN4l7iHV8pGgiqtEbEf--
 
