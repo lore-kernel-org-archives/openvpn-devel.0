@@ -1,13 +1,15 @@
+Date: Mon, 13 Jul 2020 15:23:21 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20200713132321.GA1431@...1296...>
 References: <20200711093655.23686-1-arne@...1227...>
- <20200711093655.23686-10-arne@...1227...>
-From: tincanteksup <tincanteksup@...277...>
-Message-ID: <dcf564a2-6b2b-e841-71bf-51b07fb77a99@...277...>
-Date: Mon, 13 Jul 2020 14:16:02 +0100
+ <20200711093655.23686-6-arne@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <20200711093655.23686-10-arne@...1227...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH v5 10/14] client-connect: Move adding
- inotify watch into its own function
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="EjiLnlbgNAuYg6jo"
+Content-Disposition: inline
+In-Reply-To: <20200711093655.23686-6-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH v5 06/14] client-connect: Refactor
+ client-connect handling to calling a bunch of hooks in a loop
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,90 +18,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
+--EjiLnlbgNAuYg6jo
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 11/07/2020 10:36, Arne Schwabe wrote:
-> This make the code a bit better readable and also prepares resuing
+Hi,
 
-resuing -> reusing
-
-(Don't ask me why this is not re-using, which is how I would probably 
-spell it and my teacher would laugh at me)
-
-Grammar:
-This make the code more readable
-
-
-> the function for client-connect return files
-> 
+On Sat, Jul 11, 2020 at 11:36:47AM +0200, Arne Schwabe wrote:
+> From: Fabian Knittel <fabian.knittel@...1547...>
+>=20
+> This patch changes the calling of the client-connect functions into an ar=
+ray
+> of hooks and a block of code that calls them in a loop.
+>=20
+> Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
 > Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->   src/openvpn/multi.c | 43 ++++++++++++++++++++++++++++---------------
->   1 file changed, 28 insertions(+), 15 deletions(-)
-> 
-> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-> index 271d09d8..dafc85f1 100644
-> --- a/src/openvpn/multi.c
-> +++ b/src/openvpn/multi.c
-> @@ -2828,6 +2828,32 @@ multi_schedule_context_wakeup(struct multi_context *m, struct multi_instance *mi
->                          compute_wakeup_sigma(&mi->context.c2.timeval));
->   }
->   
-> +#if defined(ENABLE_ASYNC_PUSH) && defined(ENABLE_DEF_AUTH)
-> +static void
-> +add_inotify_file_watch(struct multi_context *m, struct multi_instance *mi,
-> +                       int inotify_fd, const char *file)
-> +{
-> +    /* watch acf file */
-> +    long watch_descriptor = inotify_add_watch(inotify_fd, file,
-> +                                              IN_CLOSE_WRITE | IN_ONESHOT);
-> +    if (watch_descriptor >= 0)
-> +    {
-> +        if (mi->inotify_watch != -1)
-> +        {
-> +            hash_remove(m->inotify_watchers,
-> +                        (void *) (unsigned long)mi->inotify_watch);
-> +        }
-> +        hash_add(m->inotify_watchers, (const uintptr_t *)watch_descriptor,
-> +                 mi, true);
-> +        mi->inotify_watch = watch_descriptor;
-> +    }
-> +    else
-> +    {
-> +        msg(M_NONFATAL | M_ERRNO, "MULTI: inotify_add_watch error");
-> +    }
-> +}
-> +#endif /* if defined(ENABLE_ASYNC_PUSH) && defined(ENABLE_DEF_AUTH) */
-> +
->   /*
->    * Figure instance-specific timers, convert
->    * earliest to absolute time in mi->wakeup,
-> @@ -2865,21 +2891,8 @@ multi_process_post(struct multi_context *m, struct multi_instance *mi, const uns
->           if (ks && ks->auth_control_file && was_unauthenticated
->               && (ks->authenticated == KS_AUTH_DEFERRED))
->           {
-> -            /* watch acf file */
-> -            long watch_descriptor = inotify_add_watch(m->top.c2.inotify_fd, ks->auth_control_file, IN_CLOSE_WRITE | IN_ONESHOT);
-> -            if (watch_descriptor >= 0)
-> -            {
-> -                if (mi->inotify_watch != -1)
-> -                {
-> -                    hash_remove(m->inotify_watchers, (void *) (unsigned long)mi->inotify_watch);
-> -                }
-> -                hash_add(m->inotify_watchers, (const uintptr_t *)watch_descriptor, mi, true);
-> -                mi->inotify_watch = watch_descriptor;
-> -            }
-> -            else
-> -            {
-> -                msg(M_NONFATAL | M_ERRNO, "MULTI: inotify_add_watch error");
-> -            }
-> +            add_inotify_file_watch(m, mi, m->top.c2.inotify_fd,
-> +                                   ks->auth_control_file);
->           }
->   #endif
->   
-> 
+
+23...
+Test sets succeeded: 1 1a 1b 1d 2 2a 2b 2c 2d 3 4 5 6 8 8a 9.
+Test sets failed: none.
+24...
+Test sets succeeded: 1 1a 1b 1c 1d 1e 2 2a 2b 2c 2d 2e 3 4 4a 5 6 8 8a 9.
+Test sets failed: none.
+master...
+Test sets succeeded: 1 1a 1b 1c 1d 1e 2 2a 2b 2c 2d 2e 3 4 5 6 7 7a 8 8a 9 =
+2f 4b.
+Test sets failed: none.
+
+
+I dot not test all variants yet, though, so this is not a sufficient
+test to say "everything works".
+
+Generally speaking the patch looks quite reasonable.
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--EjiLnlbgNAuYg6jo
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJfDGBIAAoJEB2Cnv7KVigS6XIL/RLC3e/1TgiuCaRICdbPhK6q
+J0ChRlEFY0o6NNxB1YkaR4VHpPyp5GRxv6hecm0S0rx1i/NuptLHUgP6ki9N/rdY
+xjREFc11jzmqIah1HdjZi6UUxNOifkYd0OPjsKxLsHcPTuR9NzQH1v9fjRn0+5q3
+xTWxDDT+YO1ZfRLEa4/7O01X88/fIBt+OUPI9+tvR1CY3/ov5/GKd5M2Spc/5xB+
+Zbrl5q+0fh5qhIZKmyYIPB+jPX9+xlvnQM3ZyForBvYqACFHWuPI7KaQujPQgVPU
+jbTSTthXzp/za21Wj2jh30k9H1Yy6uqRS0MjG7WiRSL9KQuYOKxWKQ4XQvUqXOCi
+VXV/WXUPRnbq1owIV69ggolY57K315dkTf7zNAaHlXKTnBEUWJ8bu8MQKrKYdhGD
+Hr+bfdSih8nM9D+wN86W+rci/SxD8iqRi25EPOYCpXZUA9ATLTPXRt23Q4tN5Qyi
+69D1mFYrQNPFJUZXPXGemKH/c/q/maKX1iqTkMXBrA==
+=dGnP
+-----END PGP SIGNATURE-----
+
+--EjiLnlbgNAuYg6jo--
 
