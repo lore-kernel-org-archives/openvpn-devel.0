@@ -1,15 +1,13 @@
-Date: Mon, 13 Jul 2020 15:23:21 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200713132321.GA1431@...1296...>
 References: <20200711093655.23686-1-arne@...1227...>
- <20200711093655.23686-6-arne@...1227...>
+ <20200711093655.23686-12-arne@...1227...>
+From: tincanteksup <tincanteksup@...277...>
+Message-ID: <4360963c-d8b3-397a-a778-18f44b50240f@...277...>
+Date: Mon, 13 Jul 2020 14:28:05 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="EjiLnlbgNAuYg6jo"
-Content-Disposition: inline
-In-Reply-To: <20200711093655.23686-6-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v5 06/14] client-connect: Refactor
- client-connect handling to calling a bunch of hooks in a loop
+In-Reply-To: <20200711093655.23686-12-arne@...1227...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH v5 12/14] client-connect: Add deferred
+ support to the client-connect plugin v1 handler
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,70 +16,245 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
---EjiLnlbgNAuYg6jo
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+2x gram
 
-Hi,
-
-On Sat, Jul 11, 2020 at 11:36:47AM +0200, Arne Schwabe wrote:
+On 11/07/2020 10:36, Arne Schwabe wrote:
 > From: Fabian Knittel <fabian.knittel@...1547...>
->=20
-> This patch changes the calling of the client-connect functions into an ar=
-ray
-> of hooks and a block of code that calls them in a loop.
->=20
+> 
+> Uses the infrastructure provided and used in the previous patch to provide
+> deferral support to the v1 client-connect plugin handler as well.
+> 
 > Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
+> 
+> PATCH V3: Modify the API to also (optionally) call the plugin on a deferred
+> call. This allows the plugin authors to be more flexible and make the V1 API
+> more similar to the V2 API.
+> 
 > Signed-off-by: Arne Schwabe <arne@...1227...>
+> ---
+>   include/openvpn-plugin.h.in | 29 +++++------
+>   src/openvpn/multi.c         | 97 ++++++++++++++++++++++++++++---------
+>   src/openvpn/plugin.c        |  3 ++
+>   3 files changed, 93 insertions(+), 36 deletions(-)
+> 
+> diff --git a/include/openvpn-plugin.h.in b/include/openvpn-plugin.h.in
+> index 103844f7..99aa1678 100644
+> --- a/include/openvpn-plugin.h.in
+> +++ b/include/openvpn-plugin.h.in
+> @@ -116,20 +116,21 @@ extern "C" {
+>    * FUNC: openvpn_plugin_client_destructor_v1 (top-level "generic" client)
+>    * FUNC: openvpn_plugin_close_v1
+>    */
+> -#define OPENVPN_PLUGIN_UP                    0
+> -#define OPENVPN_PLUGIN_DOWN                  1
+> -#define OPENVPN_PLUGIN_ROUTE_UP              2
+> -#define OPENVPN_PLUGIN_IPCHANGE              3
+> -#define OPENVPN_PLUGIN_TLS_VERIFY            4
+> -#define OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY 5
+> -#define OPENVPN_PLUGIN_CLIENT_CONNECT        6
+> -#define OPENVPN_PLUGIN_CLIENT_DISCONNECT     7
+> -#define OPENVPN_PLUGIN_LEARN_ADDRESS         8
+> -#define OPENVPN_PLUGIN_CLIENT_CONNECT_V2     9
+> -#define OPENVPN_PLUGIN_TLS_FINAL             10
+> -#define OPENVPN_PLUGIN_ENABLE_PF             11
+> -#define OPENVPN_PLUGIN_ROUTE_PREDOWN         12
+> -#define OPENVPN_PLUGIN_N                     13
+> +#define OPENVPN_PLUGIN_UP                        0
+> +#define OPENVPN_PLUGIN_DOWN                      1
+> +#define OPENVPN_PLUGIN_ROUTE_UP                  2
+> +#define OPENVPN_PLUGIN_IPCHANGE                  3
+> +#define OPENVPN_PLUGIN_TLS_VERIFY                4
+> +#define OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY     5
+> +#define OPENVPN_PLUGIN_CLIENT_CONNECT            6
+> +#define OPENVPN_PLUGIN_CLIENT_DISCONNECT         7
+> +#define OPENVPN_PLUGIN_LEARN_ADDRESS             8
+> +#define OPENVPN_PLUGIN_CLIENT_CONNECT_V2         9
+> +#define OPENVPN_PLUGIN_TLS_FINAL                10
+> +#define OPENVPN_PLUGIN_ENABLE_PF                11
+> +#define OPENVPN_PLUGIN_ROUTE_PREDOWN            12
+> +#define OPENVPN_PLUGIN_CLIENT_CONNECT_DEFER     13
+> +#define OPENVPN_PLUGIN_N                        14
+>   
+>   /*
+>    * Build a mask out of a set of plug-in types.
+> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+> index 09a25a58..08eb44ba 100644
+> --- a/src/openvpn/multi.c
+> +++ b/src/openvpn/multi.c
+> @@ -2008,56 +2008,109 @@ ccs_gen_config_file(struct multi_instance *mi)
+>   static enum client_connect_return
+>   multi_client_connect_call_plugin_v1(struct multi_context *m,
+>                                       struct multi_instance *mi,
+> -                                    unsigned int *option_types_found)
+> +                                    unsigned int *option_types_found,
+> +                                    bool deferred)
+>   {
+>       enum client_connect_return ret = CC_RET_SKIPPED;
+>   #ifdef ENABLE_PLUGIN
+>       ASSERT(m);
+>       ASSERT(mi);
+>       ASSERT(option_types_found);
+> +    struct client_connect_defer_state *ccs = &(mi->client_connect_defer_state);
+>   
+>       /* deprecated callback, use a file for passing back return info */
+>       if (plugin_defined(mi->context.plugins, OPENVPN_PLUGIN_CLIENT_CONNECT))
+>       {
+>           struct argv argv = argv_new();
+> -        struct gc_arena gc = gc_new();
+> -        const char *dc_file =
+> -            platform_create_temp_file(mi->context.options.tmp_dir, "cc", &gc);
+> +        int call;
+>   
+> -        if (!dc_file)
+> +        if (!deferred)
+>           {
+> -            ret = CC_RET_FAILED;
+> -            goto cleanup;
+> +            call = OPENVPN_PLUGIN_CLIENT_CONNECT;
+> +            if (!ccs_gen_config_file(mi)
+> +                || !ccs_gen_deferred_ret_file(mi))
+> +            {
+> +                ret = CC_RET_FAILED;
+> +                goto cleanup;
+> +            }
+> +        }
+> +        else
+> +        {
+> +            call = OPENVPN_PLUGIN_CLIENT_CONNECT_DEFER;
+> +            /* the initial call should have created these files */
+> +            ASSERT(ccs->config_file);
+> +            ASSERT(ccs->deferred_ret_file);
+>           }
+>   
+> -        argv_printf(&argv, "%s", dc_file);
+> -        if (plugin_call(mi->context.plugins, OPENVPN_PLUGIN_CLIENT_CONNECT,
+> -                        &argv, NULL, mi->context.c2.es)
+> -            != OPENVPN_PLUGIN_FUNC_SUCCESS)
+> +        argv_printf(&argv, "%s", ccs->config_file);
+> +        int plug_ret = plugin_call(mi->context.plugins, call,
+> +                                   &argv, NULL, mi->context.c2.es);
+> +        if (plug_ret == OPENVPN_PLUGIN_FUNC_SUCCESS)
+>           {
+> -            msg(M_WARN, "WARNING: client-connect plugin call failed");
+> -            ret = CC_RET_FAILED;
+> +            multi_client_connect_post(m, mi, ccs->config_file,
+> +                                      option_types_found);
+> +            ret = CC_RET_SUCCEEDED;
+> +        }
+> +        else if (plug_ret == OPENVPN_PLUGIN_FUNC_DEFERRED)
+> +        {
+> +            ret = CC_RET_DEFERRED;
+> +            /**
+> +             * Contrary to the plugin v2 API, we do not demand a working
+> +             * deferred plugin as all return can be handled by the files
+> +             * and plugin_call return success if a plugin is not defined
+> +             */
 
-23...
-Test sets succeeded: 1 1a 1b 1d 2 2a 2b 2c 2d 3 4 5 6 8 8a 9.
-Test sets failed: none.
-24...
-Test sets succeeded: 1 1a 1b 1c 1d 1e 2 2a 2b 2c 2d 2e 3 4 4a 5 6 8 8a 9.
-Test sets failed: none.
-master...
-Test sets succeeded: 1 1a 1b 1c 1d 1e 2 2a 2b 2c 2d 2e 3 4 5 6 7 7a 8 8a 9 =
-2f 4b.
-Test sets failed: none.
+Just a nudge to consider rewording this:
+
+deferred plugin because all returns can be handled by the files,
+and plugin_calls return success if a plugin is not defined.
 
 
-I dot not test all variants yet, though, so this is not a sufficient
-test to say "everything works".
+>           }
+>           else
+>           {
+> -            multi_client_connect_post(m, mi, dc_file, option_types_found);
+> -            ret = CC_RET_SUCCEEDED;
+> +            msg(M_WARN, "WARNING: client-connect plugin call failed");
+> +            ret = CC_RET_FAILED;
+>           }
+>   
+> -        if (!platform_unlink(dc_file))
+> +
+> +        /**
+> +         * plugin api v1 client connect async feature has both plugin and
+> +         * file return status, so in case that the file has a code that
 
-Generally speaking the patch looks quite reasonable.
+Either:
+so in case the file has
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+or
+so in cases where the file has
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Probably the second.
 
---EjiLnlbgNAuYg6jo
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJfDGBIAAoJEB2Cnv7KVigS6XIL/RLC3e/1TgiuCaRICdbPhK6q
-J0ChRlEFY0o6NNxB1YkaR4VHpPyp5GRxv6hecm0S0rx1i/NuptLHUgP6ki9N/rdY
-xjREFc11jzmqIah1HdjZi6UUxNOifkYd0OPjsKxLsHcPTuR9NzQH1v9fjRn0+5q3
-xTWxDDT+YO1ZfRLEa4/7O01X88/fIBt+OUPI9+tvR1CY3/ov5/GKd5M2Spc/5xB+
-Zbrl5q+0fh5qhIZKmyYIPB+jPX9+xlvnQM3ZyForBvYqACFHWuPI7KaQujPQgVPU
-jbTSTthXzp/za21Wj2jh30k9H1Yy6uqRS0MjG7WiRSL9KQuYOKxWKQ4XQvUqXOCi
-VXV/WXUPRnbq1owIV69ggolY57K315dkTf7zNAaHlXKTnBEUWJ8bu8MQKrKYdhGD
-Hr+bfdSih8nM9D+wN86W+rci/SxD8iqRi25EPOYCpXZUA9ATLTPXRt23Q4tN5Qyi
-69D1mFYrQNPFJUZXPXGemKH/c/q/maKX1iqTkMXBrA==
-=dGnP
------END PGP SIGNATURE-----
-
---EjiLnlbgNAuYg6jo--
+> +         * demands override, we override our return code
+> +         */
+> +        int file_ret = ccs_test_deferred_ret_file(mi);
+> +
+> +        if (file_ret == CC_RET_FAILED)
+>           {
+> -            msg(D_MULTI_ERRORS, "MULTI: problem deleting temporary file: %s",
+> -                dc_file);
+> +            ret = CC_RET_FAILED;
+> +        }
+> +        else if (ret == CC_RET_SUCCEEDED && file_ret == CC_RET_DEFERRED)
+> +        {
+> +            ret = CC_RET_DEFERRED;
+>           }
+> -
+>   cleanup:
+>           argv_free(&argv);
+> -        gc_free(&gc);
+> +
+> +        if (ret != CC_RET_DEFERRED)
+> +        {
+> +            ccs_delete_config_file(mi);
+> +            ccs_delete_deferred_ret_file(mi);
+> +        }
+>       }
+>   #endif /* ifdef ENABLE_PLUGIN */
+>       return ret;
+>   }
+>   
+> +static enum client_connect_return
+> +multi_client_connect_call_plugin_v1_initial(struct multi_context *m,
+> +                                            struct multi_instance *mi,
+> +                                            unsigned int *option_types_found)
+> +{
+> +    return multi_client_connect_call_plugin_v1(m,mi, option_types_found, false);
+> +}
+> +
+> +static enum client_connect_return
+> +multi_client_connect_call_plugin_v1_deferred(struct multi_context *m,
+> +                                             struct multi_instance *mi,
+> +                                             unsigned int *option_types_found)
+> +{
+> +    return multi_client_connect_call_plugin_v1(m,mi, option_types_found, true);
+> +}
+> +
+>   static enum client_connect_return
+>   multi_client_connect_call_plugin_v2(struct multi_context *m,
+>                                       struct multi_instance *mi,
+> @@ -2442,8 +2495,8 @@ static const struct client_connect_handlers client_connect_handlers[] = {
+>           .deferred = multi_client_connect_fail
+>       },
+>       {
+> -        .main = multi_client_connect_call_plugin_v1,
+> -        .deferred = multi_client_connect_fail
+> +        .main = multi_client_connect_call_plugin_v1_initial,
+> +        .deferred = multi_client_connect_call_plugin_v1_deferred,
+>       },
+>       {
+>           .main = multi_client_connect_call_plugin_v2,
+> diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
+> index 4de1d6b7..ea18592f 100644
+> --- a/src/openvpn/plugin.c
+> +++ b/src/openvpn/plugin.c
+> @@ -104,6 +104,9 @@ plugin_type_name(const int type)
+>           case OPENVPN_PLUGIN_CLIENT_CONNECT_V2:
+>               return "PLUGIN_CLIENT_CONNECT";
+>   
+> +        case OPENVPN_PLUGIN_CLIENT_CONNECT_DEFER:
+> +            return "PLUGIN_CLIENT_CONNECT";
+> +
+>           case OPENVPN_PLUGIN_CLIENT_DISCONNECT:
+>               return "PLUGIN_CLIENT_DISCONNECT";
+>   
+> 
 
