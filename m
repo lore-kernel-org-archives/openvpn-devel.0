@@ -1,23 +1,16 @@
-References: <20200622113022.23047-1-davids@...515...>
- <CAKuzo_g7QxVL90ikT57H6b4+St2c860us6S3cN_6jbfeHujpzw@...278...>
- <a1cfd42d-e371-187a-55c2-f14a3a986b34@...1823...>
- <4562876f-45c1-d3bb-f725-52e9b78600de@...1227...>
- <20200623090252.GE1431@...1296...>
- <4f03e378-f327-21a6-9f11-fe06a42052b6@...1823...>
- <518ceb3d-e060-f777-f19f-4998b8d27170@...1227...>
- <3f6159de-c513-78d5-194c-989a8611c291@...1823...>
- <20200713061023.GK1431@...1296...> <20200713063303.GM1431@...1296...>
- <20200713065828.GN1431@...1296...>
- <9b4e2c49-8ef4-efb6-0b04-c273b077dc70@...1227...>
- <6B6A4240-A4F4-4388-BD1D-ABF049535351@...277...>
-From: Dmitry Melekhov <dm@...1823...>
-Message-ID: <0c86162e-8094-8764-14f7-ca3fec4f1e0a@...1823...>
-Date: Mon, 13 Jul 2020 20:06:06 +0400
+References: <20200711093655.23686-1-arne@...1227...>
+ <20200711093655.23686-13-arne@...1227...>
+ <20200713154047.GF1431@...1296...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <ce539842-b9d1-5cb1-eb56-f4a85533bbac@...1227...>
+Date: Mon, 13 Jul 2020 18:08:04 +0200
 MIME-Version: 1.0
-In-Reply-To: <6B6A4240-A4F4-4388-BD1D-ABF049535351@...277...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] git master crashes on connect of 2.3 client
- with --enable-small
+In-Reply-To: <20200713154047.GF1431@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="rBfS74NT3sHMHgHSziHi3t8WIZjUbuXor"
+Subject: Re: [Openvpn-devel] [PATCH v5 13/14] client-connect: Implement
+ deferred connect support for plugin API v2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -26,22 +19,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--rBfS74NT3sHMHgHSziHi3t8WIZjUbuXor
+Content-Type: multipart/mixed; boundary="oaGE7vZAwkK9FOsBUmvVvZLPfO7KWYnvy"
+
+--oaGE7vZAwkK9FOsBUmvVvZLPfO7KWYnvy
+Content-Language: en-GB
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+Am 13.07.20 um 17:40 schrieb Gert Doering:
+> Hi,
+>=20
+> On Sat, Jul 11, 2020 at 11:36:54AM +0200, Arne Schwabe wrote:
+>> The V2 API is simpler than the V1 API since there is no passing of
+>> data via files. This also means that with the current API the V2 API
+>> cannot support async notify via files. Adding a file just for async
+>> notify seems very hacky and when needed we should implement a better
+>> option when async is needed for the plugin V2 API.
+>=20
+> I'm not sure I understand a word of this.
+>=20
+> If we want async cc, we should do it in the V2 API - and since v2 plugin
+> async auth works just fine (with file), I wonder why it is hard for=20
+> async cc?  Because we cannot pass back the returned config data?
+
+Not async cc. That works fine. But async notification via file notify
+does not work without a file being involved.
+
+v1 API returns config and status via files.
+
+v2 returns status as return value (OPENVPN_PLUGIN_FUNC_SUCCESS,
+OPENVPN_PLUGIN_FUNC_DEFERRED...) and the config file via memory in
+plugin_return. So no file involved and no way to use inotify
 
 
-13.07.2020 18:23, Marvin Adeff пишет:
-> I’m wondering if the opposite of this scenario has been tested, where the server is running 2.3.18 (on Linux) and a client running 2.5 (on Windows) tries to connect?
+Arne
 
 
-No, I did not tried this, because we run 2.4.9 on servers now.
+--oaGE7vZAwkK9FOsBUmvVvZLPfO7KWYnvy--
 
->
-> I know, I know, we should upgrade.  Unfortunately in this case OpenVPN server is running on an appliance that cannot be upgraded past Linux 2.6, and I don’t think 2.4.x can run on Linux 2.6.
->
->
-Well, if you have running server you can easily test :-)
+--rBfS74NT3sHMHgHSziHi3t8WIZjUbuXor
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl8MhuQACgkQFRhsZwKx
+RFTYdhAAlrJ/LCNRuvCSTC4r9nwCWXTmUJXFfSfiVa6TCD5bOv5KWbBBcsiyHy17
+lrRUCU9zsc8hhMOCIHF27x6PzJnDN2hQq3kUr5Xfj9rgwUZ0bRL4AVxcTe3UTgFh
+n0jt9B9pYtCARGpUnycV0J08M+tYElz1ZALnD3kCXyP/OatewcfNWUqMpfcqy4Wd
+0kkXOskJmDNKaM1AeLxZSk22mycUhztF2+qMJHcrmzW0s6vPjNfgH2mxQd3PZb8/
+ff/e188wcJrKWqTG8eLp2FRxyDoUBRXujLtZJdkCOWOyCYra268TdQcH/2CIKMDN
+88x5MzY3giy3w1ikO/XEcMKTRZwqxHnjcXxMpkxw9xylZC/fgn4wvvS/+c8oWcMh
+DKR6JPb0v6Y9EvPyYiZcB0BMzLuJw0M6BtoXrBASyT9MJcWTwpoBexPOqtyRhnaJ
+dvxjcCb2MlZakijM57nSVYNp9rrcS1/VnrPjEn+FPIVovZm83ZBuMXMd77YsDBm2
+OAm8LhBuJ9OKZlpMBnnxK9Wal/nxH6ADuv1OAm1Ev6HGZYSij1rq5Vk6mc04yiHp
+xC2fowNATmAWXT/YfhPkTlV8iyHlcrLNcOD0cDo+cBYEwyp4fDeC2tcnpYS6wSzh
+YxfAh94J8T9Zs9izRsJOlr3pd50BvAtOyOo0eC85zUXgT1PWCXQ=
+=54+w
+-----END PGP SIGNATURE-----
+
+--rBfS74NT3sHMHgHSziHi3t8WIZjUbuXor--
 
