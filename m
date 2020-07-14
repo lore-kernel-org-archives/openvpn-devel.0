@@ -1,13 +1,13 @@
 References: <20200711093655.23686-1-arne@...1227...>
- <20200711093655.23686-6-arne@...1227...>
+ <20200711093655.23686-7-arne@...1227...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <872b8e78-e392-a7f7-ca32-b73c6de2ddf0@...2181...>
-Date: Tue, 14 Jul 2020 11:55:39 +0200
+Message-ID: <b664c8cc-7126-48eb-fcc8-55097eab4ae1@...2181...>
+Date: Tue, 14 Jul 2020 13:58:37 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200711093655.23686-6-arne@...1227...>
+In-Reply-To: <20200711093655.23686-7-arne@...1227...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v5 06/14] client-connect: Refactor
- client-connect handling to calling a bunch of hooks in a loop
+Subject: Re: [Openvpn-devel] [PATCH v5 07/14] client-connect: Change
+ cas_context from int to enum
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,116 +17,111 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
 On 11/07/2020 11:36, Arne Schwabe wrote:
-> From: Fabian Knittel <fabian.knittel@...1547...>
+> This deviates from Fabian's original patch that relied on the now
+> removed connection_established bool as pointer being NULL or non NULL as
+> implicit third state and makeing connection_established as a substate of
+> (cas_context == CAS_PENDING)
 > 
-> This patch changes the calling of the client-connect functions into an array
-> of hooks and a block of code that calls them in a loop.
-> 
-> Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
 > Signed-off-by: Arne Schwabe <arne@...1227...>
 > 
-> Patch V5: Rebase on master.
+> Patch V5: extend cas_context with two new states instead adding an
+>           extra mini state machine.
 > 
 > Signed-off-by: Arne Schwabe <arne@...1227...>
 > ---
->  src/openvpn/multi.c | 43 +++++++++++++++++--------------------------
->  1 file changed, 17 insertions(+), 26 deletions(-)
+>  src/openvpn/multi.c   |  2 +-
+>  src/openvpn/multi.h   |  1 +
+>  src/openvpn/openvpn.h | 24 +++++++++++++++++-------
+>  3 files changed, 19 insertions(+), 8 deletions(-)
 > 
 > diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-> index 9bb52ef7..83848fdc 100644
+> index 83848fdc..f9b8af80 100644
 > --- a/src/openvpn/multi.c
 > +++ b/src/openvpn/multi.c
-> @@ -2241,6 +2241,10 @@ cc_check_return(int *cc_succeeded_count,
->      }
->  }
+> @@ -2163,7 +2163,7 @@ multi_client_connect_early_setup(struct multi_context *m,
+>   * Try to source a dynamic config file from the
+>   * --client-config-dir directory.
+>   */
+> -enum client_connect_return
+> +static enum client_connect_return
+
+I don't think this change belongs to this patch .... ?
+
+>  multi_client_connect_source_ccd(struct multi_context *m,
+>                                  struct multi_instance *mi,
+>                                  unsigned int *option_types_found)
+> diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
+> index 4fb4d0b6..1d30dcc6 100644
+> --- a/src/openvpn/multi.h
+> +++ b/src/openvpn/multi.h
+> @@ -62,6 +62,7 @@ struct deferred_signal_schedule_entry
+>      struct timeval wakeup;
+>  };
 >  
-> +typedef enum client_connect_return (*multi_client_connect_handler)
-> +    (struct multi_context *m, struct multi_instance *mi,
-> +     unsigned int *option_types_found);
 > +
-
-how about something like this:
-
-2519 typedef enum client_connect_return
-2520 (*multi_client_connect_handler)(struct multi_context *m,
-2521                                 struct multi_instance *mi,
-2522                                 unsigned int *option_types_found);
-2523
-
-I find it easier to read (just my opinion)
-
-
->  /*
->   * Called as soon as the SSL/TLS connection is authenticated.
+>  /**
+>   * Server-mode state structure for one single VPN tunnel.
 >   *
-> @@ -2268,7 +2272,17 @@ multi_connection_established(struct multi_context *m, struct multi_instance *mi)
->      {
->          return;
->      }
-> -    unsigned int option_types_found = 0;
+> diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+> index a1308852..7c469b01 100644
+> --- a/src/openvpn/openvpn.h
+> +++ b/src/openvpn/openvpn.h
+> @@ -210,6 +210,21 @@ struct context_1
+>  #endif
+>  };
+>  
 > +
-> +        multi_client_connect_handler handlers[] = {
-> +            multi_client_connect_source_ccd,
-> +            multi_client_connect_call_plugin_v1,
-> +            multi_client_connect_call_plugin_v2,
-> +            multi_client_connect_call_script,
-> +            multi_client_connect_mda,
-> +            NULL
-> +        };
+> +/* client authentication state, CAS_SUCCEEDED must be 0 since
+> + * non multi code path still checks this variable but does not initialise it
+> + * so the code depends on zero initialisation */
+> +enum client_connect_status {
+> +    CAS_SUCCEEDED=0,
+
+Please add spaces around '='
+
+> +    CAS_PENDING,
+> +    CAS_FAILED,
+> +    CAS_PARTIAL,        /**< Variant of CAS_FAILED: at least one
+> +                         * client-connect script/plugin succeeded
+> +                         * while a later one in the chain failed
+> +                         * (we still need cleanup compared to FAILED)
+> +                         */
+> +};
 > +
-> +        unsigned int option_types_found = 0;
-
-something is wrong in the indentation of the chunk above: too many spaces.
-
+>  /**
+>   * Level 2 %context containing state that is reset on both \c SIGHUP and
+>   * \c SIGUSR1 restarts.
+> @@ -444,13 +459,8 @@ struct context_2
+>      int push_ifconfig_ipv6_netbits;
+>      struct in6_addr push_ifconfig_ipv6_remote;
 >  
->      int cc_succeeded = true; /* client connect script status */
->      int cc_succeeded_count = 0;
-> @@ -2276,32 +2290,9 @@ multi_connection_established(struct multi_context *m, struct multi_instance *mi)
+> -    /* client authentication state, CAS_SUCCEEDED must be 0 */
+> -#define CAS_SUCCEEDED 0
+> -#define CAS_PENDING   1
+> -#define CAS_FAILED    2
+> -#define CAS_PARTIAL   3  /* at least one client-connect script/plugin
+> -                          * succeeded while a later one in the chain failed */
+> -    int context_auth;
+> +
+> +    enum client_connect_status context_auth;
 >  
->      multi_client_connect_early_setup(m, mi);
->  
-> -    ret = multi_client_connect_source_ccd(m, mi, &option_types_found);
-> -    cc_succeeded = cc_check_return(&cc_succeeded_count, ret);
-> -
-> -    if (cc_succeeded)
-> -    {
-> -        ret = multi_client_connect_call_plugin_v1(m, mi, &option_types_found);
-> -        cc_succeeded = cc_check_return(&cc_succeeded_count, ret);
-> -    }
-> -
-> -    if (cc_succeeded)
-> -    {
-> -        ret = multi_client_connect_call_plugin_v2(m, mi, &option_types_found);
-> -        cc_succeeded = cc_check_return(&cc_succeeded_count, ret);
-> -    }
-> -
-> -
-> -    if (cc_succeeded)
-> +    for (int i = 0; cc_succeeded && handlers[i]; i++)
->      {
-> -        ret = multi_client_connect_call_script(m, mi, &option_types_found);
-> -        cc_succeeded = cc_check_return(&cc_succeeded_count, ret);
-> -    }
-> -
-> -    if (cc_succeeded)
-> -    {
-> -
-> -        ret = multi_client_connect_mda(m, mi, &option_types_found);
-> +        ret = handlers[i](m, mi, &option_types_found);
->          cc_succeeded = cc_check_return(&cc_succeeded_count, ret);
->      }
->  
+>      struct event_timeout push_request_interval;
+>      int n_sent_push_requests;
 > 
 
 
-Except for the indentation issue, the rest looks good. This patch simply
-makes the handlers invocation more generic and part of a loop.
+The rest looks good and makes sense. Using enum is always better as the
+compiler (and the reader) has extra information about how a variable can
+be used.
+
+I believe the first chunk with the +static should be moved somewhere
+else...but other than that and the missing-spaces comment:
 
 Acked-by: Antonio Quartulli <antonio@...515...>
 
