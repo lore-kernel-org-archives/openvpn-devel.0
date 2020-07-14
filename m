@@ -1,10 +1,13 @@
-Date: Tue, 14 Jul 2020 10:49:47 +0200 (CEST)
-Message-Id: <202007140849.06E8nlUJ043552@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200711093655.23686-2-arne@...1227...>
-References: <20200711093655.23686-2-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: client-connect: Split
- multi_connection_established into separate functions
+References: <20200711093655.23686-1-arne@...1227...>
+ <20200711093655.23686-3-arne@...1227...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <632a9e27-a1d8-5ea2-baca-534c396aeed9@...2181...>
+Date: Tue, 14 Jul 2020 10:51:18 +0200
+MIME-Version: 1.0
+In-Reply-To: <20200711093655.23686-3-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v5 03/14] client-connect: Refactor
+ multi_client_connect_source_ccd
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,35 +16,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Fabian Knittel <fabian.knittel@...1547...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+Hi,
 
-I have fixed typo and grammar in the commit message as requested, and
-re-wrapped the commit message a bit.
+On 11/07/2020 11:36, Arne Schwabe wrote:
+> From: Fabian Knittel <fabian.knittel@...1547...>
+> 
+> Refactor multi_client_connect_source_ccd(), so that options_server_import() (or
+> the success path in general) is only entered in one place within the function.
+> 
+> Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
+> 
+> Patch V5: Simplify the logic even further to make more easy to understand.
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> ---
 
-Tested yesterday with a "full t_client and t_server" test with no issues.
+Shouldn't this patch also bear Fabian's signature?
 
-commit 0c8c50ca93392e1d0534ac35637899e0017863b9
-Author: Fabian Knittel
-Date:   Sat Jul 11 11:36:43 2020 +0200
+Anyway, other than the stylistic point made by Gert this patch looks
+good. It's mostly creating a new interface without really introducing
+any radical change.
 
-     client-connect: Split multi_connection_established into separate functions
-
-     Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20200711093655.23686-2-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20289.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Acked-by: Antonio Quartulli <antonio@...515...>
 
 
---
-kind regards,
-
-Gert Doering
-
+-- 
+Antonio Quartulli
 
