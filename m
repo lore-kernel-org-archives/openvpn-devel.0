@@ -1,11 +1,10 @@
-Date: Tue, 14 Jul 2020 14:55:19 +0200 (CEST)
-Message-Id: <202007141255.06ECtJw8046870@...2054...>
+Date: Tue, 14 Jul 2020 15:26:57 +0200 (CEST)
+Message-Id: <202007141326.06EDQvT6047364@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <c404dd17-e0db-ce61-0d79-864a5736f2d0@...1147...>
-References: <c404dd17-e0db-ce61-0d79-864a5736f2d0@...1147...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Added support for DHCP option
- 119 (dns search suffix list) for Windows. As of Windows 10 1809 Windows
- finally supports this so it makes sense to add support to OpenVPN as well.
+In-Reply-To: <20200711093655.23686-3-arne@...1227...>
+References: <20200711093655.23686-3-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: client-connect: Refactor
+ multi_client_connect_source_ccd
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,33 +15,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Jan Just Keijser <jan.just.keijser@...277...>
+To: Fabian Knittel <fabian.knittel@...1547...>
 Cc: openvpn-devel@lists.sourceforge.net
-
-Acked-by: Gert Doering <gert@...1296...>
-
-Yay :-)
-
-(I have reviewed it once again, and tested on my Win10 VM, and it still works!)
 
 Your patch has been applied to the master branch.
 
-I have reformatted and extended the commit message to give more details
-on what you did and what it can and can not do.
+Tested on the server side framework (though I still do not have a ccd/DEFAULT
+file set up...) - it's not breaking anything unexpected, and the change "should"
+not break DEFAULT.
 
-commit 78359a0478da64e18d49b13ea2e09def2b89f4a6
-Author: Jan Just Keijser
-Date:   Tue Jul 14 11:39:10 2020 +0200
+Rewrapped as discussed on the list (... I have the itch to go through all the
+source and rewrap all these "long assignments and the function arguments
+line up in the last 20 characters of each line"... but that's a different
+patch)
 
-     Added support for DHCP option 119 (dns search suffix list) for Windows. 
+commit 62a840e2ab3096ded56971a1fa789fe22896ba35
+Author: Fabian Knittel
+Date:   Sat Jul 11 11:36:44 2020 +0200
 
-     As of Windows 10 1809 Windows finally supports this so it makes sense 
-     to add support to OpenVPN as well.
+     client-connect: Refactor multi_client_connect_source_ccd
 
-     Signed-off-by: Jan Just Keijser <jan.just.keijser@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <c404dd17-e0db-ce61-0d79-864a5736f2d0@...1147...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20349.html
+     Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20200711093655.23686-3-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20287.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
