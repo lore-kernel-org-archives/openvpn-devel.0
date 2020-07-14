@@ -1,14 +1,13 @@
-References: <20200713094646.13929-1-arne@...1227...>
- <E1jvG3I-0001GB-W6@...2479...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <daf22a1f-dca1-0460-9a1d-c322b8837ad2@...1227...>
-Date: Tue, 14 Jul 2020 10:34:11 +0200
+References: <20200711093655.23686-1-arne@...1227...>
+ <20200711093655.23686-2-arne@...1227...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <08bd22b6-8fc4-fa8b-f5f7-b7b3a8100a15@...2181...>
+Date: Tue, 14 Jul 2020 10:36:08 +0200
 MIME-Version: 1.0
-In-Reply-To: <E1jvG3I-0001GB-W6@...2479...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="EITA1yH366lJD5MYJDYPFv7nZob0lrTvm"
-Subject: Re: [Openvpn-devel] [PATCH 1/3] Drop support for OpenSSL 1.0.1
+In-Reply-To: <20200711093655.23686-2-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v5 02/14] client-connect: Split
+ multi_connection_established into separate functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,56 +16,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan.karger@...2507...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---EITA1yH366lJD5MYJDYPFv7nZob0lrTvm
-Content-Type: multipart/mixed; boundary="cdfbG4cEOBCFp2BBlm00zL9UI0iapvi3k"
+Hi,
 
---cdfbG4cEOBCFp2BBlm00zL9UI0iapvi3k
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+On 11/07/2020 11:36, Arne Schwabe wrote:
+> From: Fabian Knittel <fabian.knittel@...1547...>
+> 
+> This patch splits up the multi_connection_established() function.  Each new
+> helper function does a specific job.  Functions that do a similar job receive a
+> similar calling interface.
+> 
+> The patch tries not to reindent code, so that the real changes are as clearly
+> visible as possible.  (A follow-up patch will only do indentation changes.)
+> 
+> Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
+> 
+> PATCH v3: Since the code has changed enough from the time the original patch
+> to the current master, the splitting has been redone from the current code.
+> Also some style and minor code changes have been added doing this patch.
+> This elimininates and the big reformatting done before eliminates the follow
+> up patch with indentation changes.
+> 
+> The original patch already replaces some instances of option_permission_mask
+> with CLIENT_CONNECT_OPT_MASK. The V3 version does this more consistenly.
+> 
+> Patch v4: Move config -> mi->cc_config into its own commit
+> 
+> Patch v5: Clean up some minor issues, add one missing check on
+> temporary file deletion, rebase on latest master.
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+
+Thanks for taking care of my concerns.
+
+The patch looks good and does what it says. Unfortunately the code
+itself is already pretty convoluted, so this refactoring patch looks
+convoluted as well...but after looking through it the change is minimal.
 
 
->=20
-> Also, there's some export_keying_material and "security level" related
-> #ifdefs that look liek they can go now. Just git grep for "0x10001" and
-> "1\.0\.1" in the code and you'll see.
-
-I missed that, will update the patch accordingly.
-
-> Finally, did you check openssl_compat.h to see of we can get rid of some
-> of the compat functions now?
-
-Yes. And it is only the one I removed in this patch (EVP_PKEY_id) :(
-
-Arne
+Acked-by: Antonio Quartulli <antonio@...515...>
 
 
---cdfbG4cEOBCFp2BBlm00zL9UI0iapvi3k--
-
---EITA1yH366lJD5MYJDYPFv7nZob0lrTvm
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl8NbgMACgkQFRhsZwKx
-RFS5Yw/+MJmWd3G0uuJDKRP/pA7XMHS9OeScfXKDXClA+G/oKZrS3mjt94sFHaEP
-DVkh3X7lLHZXI6xxEBvgC5Y38hhIhxToXVapJxVfv4EtDulWcrQG4hGV6TN83IMG
-1x6sKYHDVqdO1RWkP3NsgsJPCGi1ZIkmR16SFqWafX0Ez+HcYyOH1fc5ad5ZstTV
-VdpYTDEiDN0YG1wM3nrgiKF7Y+RB7ha3z7hfPzCY/5RPkXYemURStcDOS9Pgq7vd
-ig8BXvT71ektQG5xYpz4H6ujYrQU0zyUZE28P2nx6BTxtzksmb2hGnSC96RGwyKc
-bA1kdi8FoVI7OfXkolggqPxzm76sO2R0Dxr4ooh4f7XfPFNLjFf4hHXXBXRLjqX4
-K0rw7nkE8mu3A4PcdWBrJd6FkulZixyBt4ivRXZ85D4Jrq8N8+qVMMovmnwpAcU+
-T9uyINXSaqkDxeh3hC93nt9NWTLE0fVUyE/1dsW+Cbn79O7tFw0MddiDTwNE/7k6
-cjZ/PoLaF3aJVq+utHKhsJbQzoy3jgE9JS6HjQpG9hB36+5smEoodl9khIUM/H1h
-Urlc1O8JMCkAZ4RHaXYjI50L+latuVM3dq0WwwwT/MMQ6QmTRYVGszTw1kSJlKWa
-Jm1C604jn8F0BVMM2owdv07Ve/Rejq3sSEVA/rfaD7pJUmHRocQ=
-=hQlb
------END PGP SIGNATURE-----
-
---EITA1yH366lJD5MYJDYPFv7nZob0lrTvm--
+-- 
+Antonio Quartulli
 
