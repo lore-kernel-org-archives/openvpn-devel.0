@@ -1,11 +1,11 @@
 From: David Sommerseth <davids@...515...>
-Date: Thu, 16 Jul 2020 00:30:04 +0200
-Message-Id: <20200715223013.11726-8-davids@...515...>
+Date: Thu, 16 Jul 2020 00:30:05 +0200
+Message-Id: <20200715223013.11726-9-davids@...515...>
 In-Reply-To: <20200715223013.11726-1-davids@...515...>
 References: <20200715223013.11726-1-davids@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 07/16] doc/man: Move --dhcp-option from
- client to vpn-network section
+Subject: [Openvpn-devel] [PATCH 08/16] doc/man: Mark compression options as
+ deprecated
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,176 +18,65 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Even though the --dhcp-option is only useful in a client context, it is
-more related to configuration of the VPN network interface and the
-related settings.
+Due to the VORACLE attack vector, compression in general is deprecated.
+Make this clear in the man page.
+
+Also remove an incorrect statement claiming --compress lzo is compatible
+with --comp-lzo.  It is not, as --compress lzo uses a different
+compression framing than --comp-lzo.
 
 Signed-off-by: David Sommerseth <davids@...515...>
 ---
- doc/man-sections/client-options.rst      | 69 ------------------------
- doc/man-sections/vpn-network-options.rst | 69 ++++++++++++++++++++++++
- 2 files changed, 69 insertions(+), 69 deletions(-)
+ doc/man-sections/protocol-options.rst | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
-diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-options.rst
-index d6f9e6aa..966ede1e 100644
---- a/doc/man-sections/client-options.rst
-+++ b/doc/man-sections/client-options.rst
-@@ -146,75 +146,6 @@ configuration.
- --connect-timeout n
-   See ``--server-poll-timeout``.
+diff --git a/doc/man-sections/protocol-options.rst b/doc/man-sections/protocol-options.rst
+index 37e55eb7..5bc072af 100644
+--- a/doc/man-sections/protocol-options.rst
++++ b/doc/man-sections/protocol-options.rst
+@@ -54,13 +54,13 @@ configured in a compatible way between both the local and remote side.
+   Set ``alg`` to :code:`none` to disable encryption.
  
----dhcp-option args
--  Set additional network settings via DHCP.  On Windows, this is parsed by
--  the ``tap-windows6`` or ``wintun`` driver.  On other platforms these
--  options can be picked up by a ``--up`` script or plug-in if it has been
--  pushed by the OpenVPN server.  The option will then be saved in the
--  client's environment before the ``--up`` script is called, under the name
--  :code:`foreign_option_{n}`.
--
--  Valid syntax:
--  ::
--
--     dhcp-options type [parm]
--
--  :code:`DOMAIN` ``name``
--        Set Connection-specific DNS Suffix to :code:`name`.
--
--  :code:`DNS` ``address``
--        Set primary domain name server IPv4 or IPv6 address.
--        Repeat this option to set secondary DNS server addresses.
--
--        Note: DNS IPv6 servers are currently set using netsh (the existing
--        DHCP code can only do IPv4 DHCP, and that protocol only permits
--        IPv4 addresses anywhere). The option will be put into the
--        environment, so an ``--up`` script could act upon it if needed.
--
--  :code:`WINS` ``address``
--        Set primary WINS server address (NetBIOS over TCP/IP Name Server).
--        Repeat this option to set secondary WINS server addresses.
--
--  :code:`NBDD` ``address``
--        Set primary NBDD server address (NetBIOS over TCP/IP Datagram
--        Distribution Server). Repeat this option to set secondary NBDD
--        server addresses.
--
--  :code:`NTP` ``address``
--        Set primary NTP server address (Network Time Protocol).
--        Repeat this option to set secondary NTP server addresses.
--
--  :code:`NBT` ``type``
--        Set NetBIOS over TCP/IP Node type. Possible options:
--
--        :code:`1`
--              b-node (broadcasts)
--
--        :code:`2`
--              p-node (point-to-point name queries to a WINS server)
--
--        :code:`4`
--              m-node (broadcast then query name server)
--
--        :code:`8`
--              h-node (query name server, then broadcast).
--
--  :code:`NBS` ``scope-id``
--        Set NetBIOS over TCP/IP Scope. A NetBIOS Scope ID provides an
--        extended naming service for the NetBIOS over TCP/IP (Known as NBT)
--        module. The primary purpose of a NetBIOS scope ID is to isolate
--        NetBIOS traffic on a single network to only those nodes with the
--        same NetBIOS scope ID. The NetBIOS scope ID is a character string
--        that is appended to the NetBIOS name. The NetBIOS scope ID on two
--        hosts must match, or the two hosts will not be able to communicate.
--        The NetBIOS Scope ID also allows computers to use the same computer
--        name, as they have different scope IDs. The Scope ID becomes a part
--        of the NetBIOS name, making the name unique. (This description of
--        NetBIOS scopes courtesy of NeonSurge@...1311...)
--
--  :code:`DISABLE-NBT`
--        Disable Netbios-over-TCP/IP.
--
- --explicit-exit-notify n
-   In UDP client mode or point-to-point mode, send server/peer an exit
-   notification if tunnel is restarted or OpenVPN process is exited. In
-diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections/vpn-network-options.rst
-index fc18676e..d75cf540 100644
---- a/doc/man-sections/vpn-network-options.rst
-+++ b/doc/man-sections/vpn-network-options.rst
-@@ -88,6 +88,75 @@ routing.
-   the TUN/TAP device used with ``--dev`` does not begin with :code:`tun`
-   or :code:`tap`.
+ --compress algorithm
+-  Enable a compression algorithm.
++  **DEPRECATED** Enable a compression algorithm.  Compression is generally
++  not recommended.  VPN tunnels which uses compression are suspectible to
++  the VORALCE attack vector.
  
-+--dhcp-option args
-+  Set additional network settings via DHCP.  On Windows, this is parsed by
-+  the ``tap-windows6`` or ``wintun`` driver.  On other platforms these
-+  options can be picked up by a ``--up`` script or plug-in if it has been
-+  pushed by the OpenVPN server.  The option will then be saved in the
-+  client's environment before the ``--up`` script is called, under the name
-+  :code:`foreign_option_{n}`.
-+
-+  Valid syntax:
-+  ::
-+
-+     dhcp-options type [parm]
-+
-+  :code:`DOMAIN` ``name``
-+        Set Connection-specific DNS Suffix to :code:`name`.
-+
-+  :code:`DNS` ``address``
-+        Set primary domain name server IPv4 or IPv6 address.
-+        Repeat this option to set secondary DNS server addresses.
-+
-+        Note: DNS IPv6 servers are currently set using netsh (the existing
-+        DHCP code can only do IPv4 DHCP, and that protocol only permits
-+        IPv4 addresses anywhere). The option will be put into the
-+        environment, so an ``--up`` script could act upon it if needed.
-+
-+  :code:`WINS` ``address``
-+        Set primary WINS server address (NetBIOS over TCP/IP Name Server).
-+        Repeat this option to set secondary WINS server addresses.
-+
-+  :code:`NBDD` ``address``
-+        Set primary NBDD server address (NetBIOS over TCP/IP Datagram
-+        Distribution Server). Repeat this option to set secondary NBDD
-+        server addresses.
-+
-+  :code:`NTP` ``address``
-+        Set primary NTP server address (Network Time Protocol).
-+        Repeat this option to set secondary NTP server addresses.
-+
-+  :code:`NBT` ``type``
-+        Set NetBIOS over TCP/IP Node type. Possible options:
-+
-+        :code:`1`
-+              b-node (broadcasts)
-+
-+        :code:`2`
-+              p-node (point-to-point name queries to a WINS server)
-+
-+        :code:`4`
-+              m-node (broadcast then query name server)
-+
-+        :code:`8`
-+              h-node (query name server, then broadcast).
-+
-+  :code:`NBS` ``scope-id``
-+        Set NetBIOS over TCP/IP Scope. A NetBIOS Scope ID provides an
-+        extended naming service for the NetBIOS over TCP/IP (Known as NBT)
-+        module. The primary purpose of a NetBIOS scope ID is to isolate
-+        NetBIOS traffic on a single network to only those nodes with the
-+        same NetBIOS scope ID. The NetBIOS scope ID is a character string
-+        that is appended to the NetBIOS name. The NetBIOS scope ID on two
-+        hosts must match, or the two hosts will not be able to communicate.
-+        The NetBIOS Scope ID also allows computers to use the same computer
-+        name, as they have different scope IDs. The Scope ID becomes a part
-+        of the NetBIOS name, making the name unique. (This description of
-+        NetBIOS scopes courtesy of NeonSurge@...1311...)
-+
-+  :code:`DISABLE-NBT`
-+        Disable Netbios-over-TCP/IP.
-+
- --ifconfig args
-   Set TUN/TAP adapter parameters. It requires the *IP address* of the local
-   VPN endpoint. For TUN devices in point-to-point mode, the next argument
+   The ``algorithm`` parameter may be :code:`lzo`, :code:`lz4`, or empty.
+   LZO and LZ4 are different compression algorithms, with LZ4 generally
+-  offering the best performance with least CPU usage. For backwards
+-  compatibility with OpenVPN versions before v2.4, use :code:`lzo` (which
+-  is identical to the older option ``--comp-lzo yes``).
++  offering the best performance with least CPU usage.
+ 
+   If the ``algorithm`` parameter is empty, compression will be turned off,
+   but the packet framing for compression will still be enabled, allowing a
+@@ -77,8 +77,9 @@ configured in a compatible way between both the local and remote side.
+   *not* enable compression.
+ 
+ --comp-lzo mode
+-  *DEPRECATED* This option will be removed in a future OpenVPN release.
+-  Use the newer ``--compress`` instead.
++  **DEPRECATED** Enable LZO compression algorithm.  Compression is
++  generally not recommended.  VPN tunnels which uses compression are
++  suspectible to the VORALCE attack vector.
+ 
+   Use LZO compression -- may add up to 1 byte per packet for incompressible
+   data. ``mode`` may be :code:`yes`, :code:`no`, or :code:`adaptive`
+@@ -104,9 +105,9 @@ configured in a compatible way between both the local and remote side.
+   link, the second sets the client side.
+ 
+ --comp-noadapt
+-  When used in conjunction with ``--comp-lzo``, this option will disable
+-  OpenVPN's adaptive compression algorithm. Normally, adaptive compression
+-  is enabled with ``--comp-lzo``.
++  **DEPRECATED** When used in conjunction with ``--comp-lzo``, this option
++  will disable OpenVPN's adaptive compression algorithm. Normally, adaptive
++  compression is enabled with ``--comp-lzo``.
+ 
+   Adaptive compression tries to optimize the case where you have
+   compression enabled, but you are sending predominantly incompressible
 -- 
 2.26.0
 
