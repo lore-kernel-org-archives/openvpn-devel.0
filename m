@@ -1,11 +1,11 @@
 From: David Sommerseth <davids@...515...>
-Date: Thu, 16 Jul 2020 00:30:10 +0200
-Message-Id: <20200715223013.11726-14-davids@...515...>
+Date: Thu, 16 Jul 2020 00:30:13 +0200
+Message-Id: <20200715223013.11726-17-davids@...515...>
 In-Reply-To: <20200715223013.11726-1-davids@...515...>
 References: <20200715223013.11726-1-davids@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 13/16] doc/man: Adopt compression
- documentation
+Subject: [Openvpn-devel] [PATCH 16/16] doc/man: Minor improvements to the
+ plug-in section
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,93 +18,46 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Commit c67e93b25208be2 updated the man page in reagrds to new
-compression options and improving existing compression options.  This
-adopts those changes into the .rst format.
+Make the valid syntax clearer and apply proper styling of few
+reference strings.
 
 Signed-off-by: David Sommerseth <davids@...515...>
 ---
- doc/man-sections/protocol-options.rst | 52 ++++++++++++++++++++++-----
- 1 file changed, 43 insertions(+), 9 deletions(-)
+ doc/man-sections/plugin-options.rst | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/doc/man-sections/protocol-options.rst b/doc/man-sections/protocol-options.rst
-index a5a1253a..d7bcbb98 100644
---- a/doc/man-sections/protocol-options.rst
-+++ b/doc/man-sections/protocol-options.rst
-@@ -5,6 +5,31 @@ protocol.  Many of these options also define the encryption options
- of the data channel in the OpenVPN wire protocol.  These options must be
- configured in a compatible way between both the local and remote side.
+diff --git a/doc/man-sections/plugin-options.rst b/doc/man-sections/plugin-options.rst
+index 20b74edd..1beccd3d 100644
+--- a/doc/man-sections/plugin-options.rst
++++ b/doc/man-sections/plugin-options.rst
+@@ -5,7 +5,15 @@ OpenVPN can be extended by loading external plug-in modules at runtime.  These
+ plug-ins must be prebuilt and adhere to the OpenVPN Plug-In API.
  
-+--allow-compression mode
-+  As described in the ``--compress`` option, compression is a potentially
-+  dangerous option.  This option allows controlling the behaviour of
-+  OpenVPN when compression is used and allowed.
+ --plugin args
+-  Loads a given plug-in module.  The ``module-name`` needs to be the first
++  Loads an OpenVPN plug-in module.
 +
-+  Valid syntaxes:
++  Valid syntax:
 +  ::
 +
-+      allow-compression
-+      allow-compression mode
++     plugin module-name
++     plugin module-name "arguments"
 +
-+  The ``mode`` argument can be one of the following values:
-+
-+  :code:`asym`  (default)
-+      OpenVPN will only *decompress downlink packets* but *not compress
-+      uplink packets*.  This also allows migrating to disable compression
-+      when changing both server and client configurations to remove
-+      compression at the same time is not a feasible option.
-+
-+  :code:`no`
-+      OpenVPN will refuse any non-stub compression.
-+
-+  :code:`yes`
-+      OpenVPN will send and receive compressed packets.
-+
- --auth alg
-   Authenticate data channel packets and (if enabled) ``tls-auth`` control
-   channel packets with HMAC using message digest algorithm ``alg``. (The
-@@ -58,23 +83,32 @@ configured in a compatible way between both the local and remote side.
-   not recommended.  VPN tunnels which use compression are susceptible to
-   the VORALCE attack vector.
++  The ``module-name`` needs to be the first
+   argument, indicating the plug-in to load.  The second argument is an
+   optional init string which will be passed directly to the plug-in.
+   If the init consists of multiple arguments it must be enclosed in
+@@ -26,8 +34,8 @@ plug-ins must be prebuilt and adhere to the OpenVPN Plug-In API.
+      /usr/lib/my/plug.so  /usr/lib/my/plug.so
  
--  The ``algorithm`` parameter may be :code:`lzo`, :code:`lz4`, or empty.
-+  The ``algorithm`` parameter may be :code:`lzo`, :code:`lz4`,
-+  :code:`lz4-v2`, :code:`stub`, :code:`stub-v2` or empty.
-   LZO and LZ4 are different compression algorithms, with LZ4 generally
-   offering the best performance with least CPU usage.
  
--  If the ``algorithm`` parameter is empty, compression will be turned off,
--  but the packet framing for compression will still be enabled, allowing a
--  different setting to be pushed later.
-+  The :code:`lz4-v2` and :code:`stub-v2` variants implement a better
-+  framing that does not add overhead when packets cannot be compressed. All
-+  other variants always add one extra framing byte compared to no
-+  compression framing.
-+
-+  If the ``algorithm`` parameter is :code:`stub`, :code:`stub-v2` or empty,
-+  compression will be turned off, but the packet framing for compression
-+  will still be enabled, allowing a different setting to be pushed later.
-+  Additionally, :code:`stub` and :code:`stub-v2` wil disable announcing
-+  ``lzo`` and ``lz4`` compression support via *IV_* variables to the
-+  server.
+-  DEFAULT\_DIR is replaced by the default plug-in directory, which is
+-  configured at the build time of OpenVPN. CWD is the current directory
++  ``DEFAULT_DIR`` is replaced by the default plug-in directory, which is
++  configured at the build time of OpenVPN. ``CWD`` is the current directory
+   where OpenVPN was started or the directory OpenVPN have switched into
+   via the ``--cd`` option before the ``--plugin`` option.
  
-   ***Security Considerations***
- 
-   Compression and encryption is a tricky combination. If an attacker knows
--  or is able to control (parts of) the plaintext of packets that contain
-+  or is able to control (parts of) the plain-text of packets that contain
-   secrets, the attacker might be able to extract the secret if compression
--  is enabled. See e.g. the CRIME and BREACH attacks on TLS which also
--  leverage compression to break encryption. If you are not entirely sure
--  that the above does not apply to your traffic, you are advised to
--  *not* enable compression.
-+  is enabled. See e.g. the *CRIME* and *BREACH* attacks on TLS and
-+  *VORACLE* on VPNs which also leverage to break encryption. If you are not
-+  entirely sure that the above does not apply to your traffic, you are
-+  advised to *not* enable compression.
- 
- --comp-lzo mode
-   **DEPRECATED** Enable LZO compression algorithm.  Compression is
 -- 
 2.26.0
 
