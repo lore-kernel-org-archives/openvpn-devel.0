@@ -1,8 +1,11 @@
 From: David Sommerseth <davids@...515...>
-Date: Thu, 16 Jul 2020 00:29:57 +0200
-Message-Id: <20200715223013.11726-1-davids@...515...>
+Date: Thu, 16 Jul 2020 00:30:00 +0200
+Message-Id: <20200715223013.11726-4-davids@...515...>
+In-Reply-To: <20200715223013.11726-1-davids@...515...>
+References: <20200715223013.11726-1-davids@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 00/16] man-page overhaul project
+Subject: [Openvpn-devel] [PATCH 03/16] doc/man: Move <connection> profiles
+ section
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,111 +18,184 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+The <connection> profile documentation has been enlisted in between all
+the other OpenVPN options.  As <connection> is not strictly an option by
+itself but a grouping mechanism, move it into its own section in the man
+page.  This also makes the HTML rendering look much nicer and better
+structured.
 
-The time has come to send this pile of patches to the mailing list,
-which incorporates many improvements by Richard Bonhomme (Thanks a lot!).
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ doc/openvpn.8.rst | 149 ++++++++++++++++++++++++----------------------
+ 1 file changed, 78 insertions(+), 71 deletions(-)
 
-I do however fear that patch 5/16 and possibly patch 1/16 and 2/16 will
-be rejected by the sourceforge mailman instance as they might exceed some
-mailing list limts.  The other patches are below 30KiB and should arrive
-fine on the mailing list.
-
-  Patch 1/16: <https://gitlab.com/dazo/openvpn/-/commit/32e72c9fc9ce329293a6007347e2b7a3e3e297ac.patch>
-  Patch 2/16: <https://gitlab.com/dazo/openvpn/-/commit/69085b6fd378ffcf5f26836c0e8b53e6fc3ae900.patch>
-  Patch 5/16: <https://gitlab.com/dazo/openvpn/-/commit/c4d2d70c204f4cbda398387df5672d02f874ae8a.patch>
-
-All patches are available from here:
-  <https://gitlab.com/dazo/openvpn/-/commits/dev/man-reformatting>
-
-If it makes sense to squash some or all of these changes into a single
-commit, I have no issues with that.
-
-
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
-
-
-David Sommerseth (14):
-  doc/man: Add an .rst formatted version of the man page
-  doc/man: Replace old man page with generated man page
-  doc/man: Move <connection> profiles section
-  doc/man: Remove unsupported options in OpenVPN 2.5
-  doc/man: Split up and reorganize main man page
-  doc/man: Move --bind from generic to link section
-  doc/man: Move --dhcp-option from client to vpn-network section
-  doc/man: Mark compression options as deprecated
-  doc/man: Move some options from link to advanced section
-  doc/man: Moved --reneg-* options to its own section
-  doc/man: Cleaned up the examples
-  doc/man: Adopt compression documentation
-  doc/man: Fix a few typos and improve style usage
-  doc/man: Minor improvements to the plug-in section
-
-Richard Bonhomme (2):
-  doc/man: Misc grammar and typo fixes
-  doc/man: Update --txqueuelen default setting (Now OS default)
-
- .gitignore                               |    1 +
- INSTALL                                  |    3 +-
- configure.ac                             |   15 +-
- doc/Makefile.am                          |   56 +-
- doc/README.man                           |   23 +
- doc/man-sections/advanced-options.rst    |  107 +
- doc/man-sections/client-options.rst      |  354 +
- doc/man-sections/connection-profiles.rst |   75 +
- doc/man-sections/encryption-options.rst  |  136 +
- doc/man-sections/examples.rst            |  241 +
- doc/man-sections/generic-options.rst     |  436 ++
- doc/man-sections/inline-files.rst        |   25 +
- doc/man-sections/link-options.rst        |  410 ++
- doc/man-sections/log-options.rst         |   74 +
- doc/man-sections/management-options.rst  |  136 +
- doc/man-sections/network-config.rst      |    9 +
- doc/man-sections/pkcs11-options.rst      |   81 +
- doc/man-sections/plugin-options.rst      |   60 +
- doc/man-sections/protocol-options.rst    |  262 +
- doc/man-sections/proxy-options.rst       |   66 +
- doc/man-sections/renegotiation.rst       |   53 +
- doc/man-sections/script-options.rst      |  807 +++
- doc/man-sections/server-options.rst      |  769 +++
- doc/man-sections/signals.rst             |   30 +
- doc/man-sections/tls-options.rst         |  643 ++
- doc/man-sections/unsupported-options.rst |   33 +
- doc/man-sections/vpn-network-options.rst |  531 ++
- doc/man-sections/windows-options.rst     |  245 +
- doc/openvpn.8                            | 7659 ----------------------
- doc/openvpn.8.rst                        |  169 +
- 30 files changed, 5835 insertions(+), 7674 deletions(-)
- create mode 100644 doc/README.man
- create mode 100644 doc/man-sections/advanced-options.rst
- create mode 100644 doc/man-sections/client-options.rst
- create mode 100644 doc/man-sections/connection-profiles.rst
- create mode 100644 doc/man-sections/encryption-options.rst
- create mode 100644 doc/man-sections/examples.rst
- create mode 100644 doc/man-sections/generic-options.rst
- create mode 100644 doc/man-sections/inline-files.rst
- create mode 100644 doc/man-sections/link-options.rst
- create mode 100644 doc/man-sections/log-options.rst
- create mode 100644 doc/man-sections/management-options.rst
- create mode 100644 doc/man-sections/network-config.rst
- create mode 100644 doc/man-sections/pkcs11-options.rst
- create mode 100644 doc/man-sections/plugin-options.rst
- create mode 100644 doc/man-sections/protocol-options.rst
- create mode 100644 doc/man-sections/proxy-options.rst
- create mode 100644 doc/man-sections/renegotiation.rst
- create mode 100644 doc/man-sections/script-options.rst
- create mode 100644 doc/man-sections/server-options.rst
- create mode 100644 doc/man-sections/signals.rst
- create mode 100644 doc/man-sections/tls-options.rst
- create mode 100644 doc/man-sections/unsupported-options.rst
- create mode 100644 doc/man-sections/vpn-network-options.rst
- create mode 100644 doc/man-sections/windows-options.rst
- delete mode 100644 doc/openvpn.8
- create mode 100644 doc/openvpn.8.rst
-
+diff --git a/doc/openvpn.8.rst b/doc/openvpn.8.rst
+index 4627a7d3..fc3ecdb8 100644
+--- a/doc/openvpn.8.rst
++++ b/doc/openvpn.8.rst
+@@ -204,77 +204,6 @@ Tunnel Options:
+   prevent DNS caching. For example, "foo.bar.gov" would be modified to
+   "<random-chars>.foo.bar.gov".
+ 
+-``<connection>``
+-  Define a client connection profile. Client connection profiles are
+-  groups of OpenVPN options that describe how to connect to a given
+-  OpenVPN server. Client connection profiles are specified within an
+-  OpenVPN configuration file, and each profile is bracketed by
+-  ``<connection>`` and ``</connection>``.
+-
+-  An OpenVPN client will try each connection profile sequentially until it
+-  achieves a successful connection.
+-
+-  ``--remote-random`` can be used to initially "scramble" the connection
+-  list.
+-
+-  Here is an example of connection profile usage:
+-  ::
+-
+-     client
+-     dev tun
+-
+-     <connection>
+-     remote 198.19.34.56 1194 udp
+-     </connection>
+-
+-     <connection>
+-     remote 198.19.34.56 443 tcp
+-     </connection>
+-
+-     <connection>
+-     remote 198.19.34.56 443 tcp
+-     http-proxy 192.168.0.8 8080
+-     </connection>
+-
+-     <connection>
+-     remote 198.19.36.99 443 tcp
+-     http-proxy 192.168.0.8 8080
+-     </connection>
+-
+-     persist-key
+-     persist-tun
+-     pkcs12 client.p12
+-     remote-cert-tls server
+-     verb 3
+-
+-  First we try to connect to a server at 198.19.34.56:1194 using UDP. If
+-  that fails, we then try to connect to 198.19.34.56:443 using TCP. If
+-  that also fails, then try connecting through an HTTP proxy at
+-  192.168.0.8:8080 to 198.19.34.56:443 using TCP. Finally, try to connect
+-  through the same proxy to a server at 198.19.36.99:443 using TCP.
+-
+-  The following OpenVPN options may be used inside of a ``<connection>``
+-  block:
+-
+-  ``bind``, ``connect-retry``, ``connect-retry-max``, ``connect-timeout``,
+-  ``explicit-exit-notify``, ``float``, ``fragment``, ``http-proxy``,
+-  ``http-proxy-option``, ``key-direction``, ``link-mtu``, ``local``,
+-  ``lport``, ``mssfix``, ``mtu-disc``, ``nobind``, ``port``, ``proto``,
+-  ``remote``, ``rport``, ``socks-proxy``, ``tls-auth``, ``tls-crypt``,
+-  ``tun-mtu and``, ``tun-mtu-extra``.
+-
+-  A defaulting mechanism exists for specifying options to apply to all
+-  ``<connection>`` profiles. If any of the above options (with the
+-  exception of ``remote`` ) appear outside of a ``<connection>`` block,
+-  but in a configuration file which has one or more ``<connection>``
+-  blocks, the option setting will be used as a default for
+-  ``<connection>`` blocks which follow it in the configuration file.
+-
+-  For example, suppose the ``nobind`` option were placed in the sample
+-  configuration file above, near the top of the file, before the first
+-  ``<connection>`` block. The effect would be as if ``nobind`` were
+-  declared in all ``<connection>`` blocks below it.
+-
+ --proto-force p
+   When iterating through connection profiles, only consider profiles using
+   protocol ``p`` (:code:`tcp` \| :code:`udp`).
+@@ -5400,6 +5329,84 @@ instances.
+ 
+ 
+ 
++CONNECTION PROFILES
++===================
++
++Client configuration files may contain multiple remote servers which
++it will attempt to connect against.  But there are some configuration
++options which are related to specific ``--remote`` options.  For these
++use cases, connection profiles is the solution.
++
++By enacpulating the ``--remote`` option and related options within
++``<connection>`` and ``</connection>``, these options are handled as a
++group.
++
++An OpenVPN client will try each connection profile sequentially until it
++achieves a successful connection.
++
++``--remote-random`` can be used to initially "scramble" the connection
++list.
++
++Here is an example of connection profile usage:
++::
++
++   client
++   dev tun
++
++   <connection>
++   remote 198.19.34.56 1194 udp
++   </connection>
++
++   <connection>
++   remote 198.19.34.56 443 tcp
++   </connection>
++
++   <connection>
++   remote 198.19.34.56 443 tcp
++   http-proxy 192.168.0.8 8080
++   </connection>
++
++   <connection>
++   remote 198.19.36.99 443 tcp
++   http-proxy 192.168.0.8 8080
++   </connection>
++
++   persist-key
++   persist-tun
++   pkcs12 client.p12
++   remote-cert-tls server
++   verb 3
++
++First we try to connect to a server at 198.19.34.56:1194 using UDP. If
++that fails, we then try to connect to 198.19.34.56:443 using TCP. If
++that also fails, then try connecting through an HTTP proxy at
++192.168.0.8:8080 to 198.19.34.56:443 using TCP. Finally, try to connect
++through the same proxy to a server at 198.19.36.99:443 using TCP.
++
++The following OpenVPN options may be used inside of a ``<connection>``
++block:
++
++``bind``, ``connect-retry``, ``connect-retry-max``, ``connect-timeout``,
++``explicit-exit-notify``, ``float``, ``fragment``, ``http-proxy``,
++``http-proxy-option``, ``key-direction``, ``link-mtu``, ``local``,
++``lport``, ``mssfix``, ``mtu-disc``, ``nobind``, ``port``, ``proto``,
++``remote``, ``rport``, ``socks-proxy``, ``tls-auth``, ``tls-crypt``,
++``tun-mtu and``, ``tun-mtu-extra``.
++
++A defaulting mechanism exists for specifying options to apply to all
++``<connection>`` profiles. If any of the above options (with the
++exception of ``remote`` ) appear outside of a ``<connection>`` block,
++but in a configuration file which has one or more ``<connection>``
++blocks, the option setting will be used as a default for
++``<connection>`` blocks which follow it in the configuration file.
++
++For example, suppose the ``nobind`` option were placed in the sample
++configuration file above, near the top of the file, before the first
++``<connection>`` block. The effect would be as if ``nobind`` were
++declared in all ``<connection>`` blocks below it.
++
++
++
+ INLINE FILE SUPPORT
+ ===================
+ 
 -- 
 2.26.0
 
