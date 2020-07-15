@@ -1,12 +1,10 @@
-References: <20200715141425.26293-1-arne@...1227...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <2f1bb384-a9be-1d10-ad15-ae689d7190f3@...2181...>
-Date: Wed, 15 Jul 2020 16:17:33 +0200
-MIME-Version: 1.0
+Date: Wed, 15 Jul 2020 16:33:18 +0200 (CEST)
+Message-Id: <202007151433.06FEXInq069816@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20200715141425.26293-1-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] reformat multi_client_generate_tls_keys
- according to uncrustify
+References: <20200715141425.26293-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: reformat
+ multi_client_generate_tls_keys according to uncrustify
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,20 +13,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Your patch has been applied to the master branch.
 
-On 15/07/2020 16:14, Arne Schwabe wrote:
-> The refactor accidently used a wrong code style template and
-> ended up using 2 instead of 4 as indent.
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
+commit 90ed0fd2df37441dd6fc368ece006e4dd49093e9
+Author: Arne Schwabe
+Date:   Wed Jul 15 16:14:25 2020 +0200
 
-Acked-by: Antonio Quartulli <a@...2181...>
+     reformat multi_client_generate_tls_keys according to uncrustify
 
--- 
-Antonio Quartulli
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Antonio Quartulli <a@...2181...>
+     Message-Id: <20200715141425.26293-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20371.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
