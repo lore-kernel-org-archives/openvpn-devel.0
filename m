@@ -1,13 +1,10 @@
-References: <20200715141600.26610-1-arne@...1227...>
- <b84824b5-7a98-db7f-78c1-cac25853fb28@...2181...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <f4d95335-42f8-48a5-167d-e921950fc0c5@...1227...>
-Date: Wed, 15 Jul 2020 19:40:28 +0200
-MIME-Version: 1.0
-In-Reply-To: <b84824b5-7a98-db7f-78c1-cac25853fb28@...2181...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH v6 8/14] client-connect: Add
- CC_RET_DEFERRED and cope with deferred client-connect
+Date: Wed, 15 Jul 2020 19:54:11 +0200 (CEST)
+Message-Id: <202007151754.06FHsBYk072650@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20200715090105.22296-1-gert@...1296...>
+References: <20200715090105.22296-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add deferred authentication
+ support to plugin-auth-pam
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,80 +13,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 15.07.2020 um 16:59 schrieb Antonio Quartulli:
-> Hi,
->
-> On 15/07/2020 16:16, Arne Schwabe wrote:
-> [CUT]
->
->> -    multi_client_connect_early_setup(m, mi);
->> +    handler = &client_connect_handlers[defer_state->cur_handler_index];
->>  
->> -    for (int i = 0; cc_succeeded && handlers[i]; i++)
->> +    while (cc_succeeded && handler->main != NULL)
->>      {
->> -        ret = handlers[i](m, mi, &option_types_found);
->> -        cc_succeeded = cc_check_return(&cc_succeeded_count, ret);
->> +        enum client_connect_return ret;
->> +        if (from_deferred)
->> +        {
->> +            ret = handler->deferred(m, mi, &(defer_state->option_types_found));
->> +            from_deferred = false;
->> +        }
->> +        else
->> +        {
->> +            ret = handler->main(m, mi, &(defer_state->option_types_found));
->> +        }
->> +
->> +        if (ret == CC_RET_SUCCEEDED)
->> +        {
->> +            /*
->> +             * Remember that we already had at least one handler
->> +             * returning a result should go to into deferred state
->> +             */
->> +            mi->context.c2.context_auth = CAS_PENDING_DEFERRED_PARTIAL;
->> +        }
->> +        else if (ret == CC_RET_SKIPPED)
->> +        {
->> +            /*
->> +             * Move on with the next handler without modifying any
->> +             * other state
->> +             */
->> +        }
->> +        else if (ret == CC_RET_DEFERRED)
->> +        {
->> +            /*
->> +             * we already set client_connect_status to DEFERRED_RESULT or
->> +             * DEFERRED_NO_RESULT and increased index. We just return
->> +             * from the function as having client_connect_status
->> +             */
->> +            return;
->> +        }
->> +        else if (ret == CC_RET_FAILED)
->> +        {
->> +            /*
->> +             * One handler failed. We abort the chain and set the final
->> +             * result to failed
->> +             */
->> +            cc_succeeded = false;
->> +        }
->> +        else
->> +        {
->> +            ASSERT(0);
->> +        }
->> +
->> +        handler = &client_connect_handlers[defer_state->cur_handler_index];
->> +        (defer_state->cur_handler_index)++;
-> shouldn't these 2 lines above be inverted?
-> (these parenthesis....)
+Patch has been applied to the master branch.
 
-Yeah :(
+(Changes.rst hunk and "all other clients" adjusted appropriately)
+
+commit c83b197a72a6f909a4ddcded027469f0da5d4a24
+Author: Gert Doering
+Date:   Wed Jul 15 11:01:05 2020 +0200
+
+     Add deferred authentication support to plugin-auth-pam
+
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Selva Nair <selva.nair@...277...>
+     Message-Id: <20200715090105.22296-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20361.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-Arne
+--
+kind regards,
+
+Gert Doering
 
 
