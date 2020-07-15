@@ -1,10 +1,8 @@
-Date: Wed, 15 Jul 2020 15:48:59 +0200 (CEST)
-Message-Id: <202007151348.06FDmx2o069080@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200711093655.23686-10-arne@...1227...>
-References: <20200711093655.23686-10-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: client-connect: Move adding
- inotify watch into its own function
+From: Arne Schwabe <arne@...1227...>
+Date: Wed, 15 Jul 2020 16:14:25 +0200
+Message-Id: <20200715141425.26293-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] reformat multi_client_generate_tls_keys
+ according to uncrustify
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,33 +13,55 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+The refactor accidently used a wrong code style template and
+ended up using 2 instead of 4 as indent.
 
-(I have merged this out of sequence while we still haggle about
-the least ugly way for 08 :-) - it's really "just moving this
-code parts", but due to the reformatting and variable renaming
-git can't see it.  Compared manually.  Also applied the typo
-and grammar changes from tincantech to the commit message)
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/multi.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-commit 708d1694c7878c6c538c4ab0961eaaa36c007fd0
-Author: Arne Schwabe
-Date:   Sat Jul 11 11:36:51 2020 +0200
-
-     client-connect: Move adding inotify watch into its own function
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20200711093655.23686-10-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20284.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 4cf42440..97b7df16 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -2003,23 +2003,23 @@ cleanup:
+ static bool
+ multi_client_generate_tls_keys(struct context *c)
+ {
+-  struct frame *frame_fragment = NULL;
++    struct frame *frame_fragment = NULL;
+ #ifdef ENABLE_FRAGMENT
+-  if (c->options.ce.fragment)
++    if (c->options.ce.fragment)
+     {
+-      frame_fragment = &c->c2.frame_fragment;
++        frame_fragment = &c->c2.frame_fragment;
+     }
+ #endif
+-  struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
+-  if (!tls_session_update_crypto_params(session, &c->options,
+-                                        &c->c2.frame, frame_fragment))
++    struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
++    if (!tls_session_update_crypto_params(session, &c->options,
++                                          &c->c2.frame, frame_fragment))
+     {
+-      msg(D_TLS_ERRORS, "TLS Error: initializing data channel failed");
+-      register_signal(c, SIGUSR1, "process-push-msg-failed");
+-      return false;
++        msg(D_TLS_ERRORS, "TLS Error: initializing data channel failed");
++        register_signal(c, SIGUSR1, "process-push-msg-failed");
++        return false;
+     }
+ 
+-  return true;
++    return true;
+ }
+ 
+ static void
+-- 
+2.26.2
 
 
