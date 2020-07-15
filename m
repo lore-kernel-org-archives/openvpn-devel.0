@@ -1,11 +1,10 @@
-Date: Wed, 15 Jul 2020 12:49:13 +0200
+Date: Wed, 15 Jul 2020 13:25:55 +0200 (CEST)
+Message-Id: <202007151125.06FBPt7r066657@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20200715104913.GN1431@...1296...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="tzXjgrVXQ8jLP8+f"
-Content-Disposition: inline
-Subject: [Openvpn-devel] collecting info about openvpn plugins
+In-Reply-To: <20200711093655.23686-4-arne@...1227...>
+References: <20200711093655.23686-4-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: client-connect: Move
+ multi_client_connect_setenv into early_setup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,71 +13,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Fabian Knittel <fabian.knittel@...1547...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---tzXjgrVXQ8jLP8+f
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Acked-by: Gert Doering <gert@...1296...>
 
-Hi,
+Your patch has been applied to the master branch.
 
-my test rig today is not testing "client-connect" plugins yet, but
-it better should do so (while Arne is busy rebuilding all that stuff).
+It has been stared-at, and tested on the server side test rig.
 
-Before I start writing something basic - does anyone of you happen to
-use an existing plugin that provides client-connect functionality
-(as in "create per-user configs on the server")?
+We've had quite a bit of discussion about this on IRC, and the conclusion is
+"multiple calls to these functions might be needed in some situations"
+(like, when a ccd/ file sets up a virtual address and a plugin or script
+wants to act on the assigned IP address, by means of $ENV{ifconfig_pool_local}
+etc.) - we might want to make it more clever ("if nothing changes, do not
+free/reallocate stuff all the time"), or at least join them all in one place
+with a clear comment
 
-While at it - what plugins *do* exist, and where are they to be found?
+13:10 <@cron2> moving this to multi_client_connect_early_setup() seems wrong
+13:10 <@cron2> we should move it to the very end, after all "bring in new 
+               config" bits have been concluded
+13:11 <@plaisthos> this might want to have a connect script act on the assigned ip
+13:11 <@plaisthos> like dynamic routing etc
+13:11 <@plaisthos> and if you move it to the end then you loose the environment 
+                   variable with the assigned IP
+13:12 <@cron2> in that case, you actually need to really call it after every 
+               single "could alter config" call
+13:12 <@cron2> and before the first
+13:12 <@plaisthos> technically you don't need it before the first
+13:12 <@plaisthos> because the first is ccd
+13:12 <@plaisthos> that does not evaluate env
+13:12 <@cron2> true
+13:13 <@plaisthos> but for consistency and the later refactoring it is better 
+                   to do it anyway I guess
+13:14 <@cron2> okay.  I think 04/ can go in, then, but after the change to 
+               "just walk the table of handlers" I'd move all calls to both 
+               multi_select_virtual_addr() and multi_client_connect_setenv() 
+               into this loop - so we know "it's evalued after each handler, 
+               because further handles might need the environment" - and then 
+               we can kick it from early_setup() again
+13:14 <@cron2> the stuff is all reentrant, so 04/ is not the most elegant, but 
+               it is not doing harm
 
-I know about
 
- - src/plugins/auth-pam - in our source tree
- - src/plugins/down-root - in our source tree
- - sample/sample-plugins/{defer,keying-material-exporter-demo,log,simple}
-                         - in our source tree
+commit 380a142a6b397e615ef809a94c5e6be7fcddad06
+Author: Fabian Knittel
+Date:   Sat Jul 11 11:36:45 2020 +0200
 
- - radiusplugin  - do auth + config from raidius
-    - this has been forked a few times, and I'm not sure which fork is
-      the best-maintained and least-buggy versions - feedback welcome
+     client-connect: Move multi_client_connect_setenv into early_setup
 
- - Eurephia - David's "flexible OpenVPN authentication plug-in"
-    - http://www.eurephia.net/
-    (from a quick glance, this also only does "auth", not "client-connect")
+     Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20200711093655.23686-4-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20288.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-Please provide feedback if you know about other plugins (or details about
-radiusplugin) - so it's available in the list archive, and maybe I can=20
-compile this into a proper Wiki page as well.
+--
+kind regards,
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Gert Doering
 
-Gert Doering - Munich, Germany                             gert@...1296...
-
---tzXjgrVXQ8jLP8+f
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJfDt8pAAoJEB2Cnv7KVigSY+0L/1xkeVx6183g4AoOAW4EahZA
-KawANyLVjLwylqkFOXmJZB6iEDA/XnFIcZtgrjjvcur2lruGM6fJvCCOXwZ2yr72
-A5NOo5jCUmUcLAKmUb93dgmdUCRhA9KcXUPeUOLfb/ZaT64eDQVb9N0yQUYYqIIX
-oaFOIxbq1VrLGJIQbE9jhxSrA9xuLkE7+jsaTarepnexV4pR9YUNngNXgNauuZR8
-ykEA/9YPdBgTyFjwWOGFFxYy2TDm0nxHszpdD4eD0N9ZA7xWDKfnzNUX1c7X197F
-0WkGqajUP5lYDduaCiKVFBHDAwG2TZN3M3dzLBuY8Dvz0KaJfZUGAG9l4fjWX53x
-Ez9uNe8H0xfubOePHByHlPcXiUVYEVHdsnPaSqWaGdSVjzectQbiZcYPbbGU0cFy
-BEWnR2QLrBZB8MQqvww6ExhKSov8lS/Hnpi8S1Mluf8wq3ahBOk/i1EVN9wRCYea
-BJFuiproKSiUR55szpMwFC7pQowyNprnpWmDZmt9kg==
-=2yYK
------END PGP SIGNATURE-----
-
---tzXjgrVXQ8jLP8+f--
 
