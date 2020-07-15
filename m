@@ -1,12 +1,12 @@
+Date: Wed, 15 Jul 2020 14:21:39 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20200715122139.GP1431@...1296...>
 References: <20200715113132.22754-1-gert@...1296...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <3fe215e5-f747-34bf-9268-b70a3a54bc00@...1227...>
-Date: Wed, 15 Jul 2020 14:00:28 +0200
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="5L959PrSMZFrcmRe"
+Content-Disposition: inline
 In-Reply-To: <20200715113132.22754-1-gert@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="2Lsmsex1Htz1FP7P8f6JAdAWjSfnNhG2B"
 Subject: Re: [Openvpn-devel] [PATCH] Fix environment variables for
  p2mp-assigned IPv6 addresses.
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,52 +17,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---2Lsmsex1Htz1FP7P8f6JAdAWjSfnNhG2B
-Content-Type: multipart/mixed; boundary="jSMZH3mddWXyZgv8fi9Ls2aZbNcSPug5I"
-
---jSMZH3mddWXyZgv8fi9Ls2aZbNcSPug5I
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
+--5L959PrSMZFrcmRe
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Am 15.07.20 um 13:31 schrieb Gert Doering:
+Hi,
+
+On Wed, Jul 15, 2020 at 01:31:32PM +0200, Gert Doering wrote:
 > commit a8f8b926718 introduces $ENV{ifconfig_pool_local_ip6} and
 > $ENV{ifconfig_pool_remote_ip6}, but instead of properly setting them,
 > the code overwrites the IPv4 variables, $ENV{ifconfig_pool_remote}
 > and $ENV{ifconfig_pool_local}.
 >=20
 > Trivial fix.
->
+>=20
+> Signed-off-by: Gert Doering <gert@...1296...>
 
-Acked-By: Arne Schwabe <arne@...1227...>
+And while the fix looks trivially right, it isn't... setenv_in6_addr()
+calls setenv_sockaddr() which does
 
+	openvpn_snprintf(name_buf, sizeof(name_buf), "%s_ip6", name_prefix);
+	getnameinfo(&addr->addr.sa, sizeof(struct sockaddr_in6),
+		    buf, sizeof(buf), NULL, 0, NI_NUMERICHOST);
 
---jSMZH3mddWXyZgv8fi9Ls2aZbNcSPug5I--
+so with the patch, I end up with
 
---2Lsmsex1Htz1FP7P8f6JAdAWjSfnNhG2B
+ifconfig_pool_local_ip6_ip6=3Dfd00:abcd:204:5::1
+ifconfig_pool_remote_ip6_ip6=3Dfd00:abcd:204:5::2
+
+seems the original code is not easy to understand, but correct.
+
+So, NACK.
+
+Taking "talking to myself" to new levels :-)
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--5L959PrSMZFrcmRe
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl8O79wACgkQFRhsZwKx
-RFS4bhAAlgLP14G9qzSp1N/v58jh24rHfzrbO0jIjob/1zvTSatMp/7uEivBXvgG
-hBwQWAZ0c11Dby71kdDPgpU2OGBk0iD4xpAy0X75jJ1lt72uKWTdzjCpd4xuHN5u
-jGRiuyIuJi4ytiSPV108FuX192Dm9x8hAC2Oxi4nxmSfVKx+95RXj+0jrPqzDwpO
-YL8WCW1cjccjZ7bkE5PERYy/lps6tMbC+GTlhM5eecRDQXrhV7mrp+nj/6KjEez9
-nm8cvJ7rKYTQwAF9+djZeetR0uGSo0KSJlPc0OW89OxV1EvoSdK29XojB5c6iPQf
-Q9OFohwk3dyZUObbG7PGC/jXkYEh9t+Lqpv4A2hrsUOPnYCc/ATrqmPEM0hJg79z
-fpg3umtVvmJ/1Xx6h3xZ66DSHMVgMJGk5bBZCqZnIPHZEWlQGhApvtGNFb3OXfc2
-q9gWJqoD5+tkyM4JK2vdiXlhY7t2rDVLGuG6Hvh6vFotH6EhsaoUu0S17YtRipWP
-1iqG2YGFV+uridCdLna1SY+7l/sqB+9rRlBC0LDjgRrV6DhoOFmyEUSd1lc+dxIA
-NP1bkxzzclbmvFZ1gJqwOpmUW66mR51CA8AGiiH6nIyzGwwhba3u5xzUVcSn6toJ
-qrhaVowluIv6N+vL9G1M/hrRs0AZeT93Mw68Fv3LMoqZAmGHfSM=
-=hvjz
+iQGcBAEBAgAGBQJfDvTTAAoJEB2Cnv7KVigSB+cL/iyrgDwBq0QC1/a2a3WXegge
+DhWfRyhZNEwAknDINcQ/IQYzJtROUNxECQIXP2bVfNydE00BbJ7nzDBrMs727o0o
+2UDIG9qcJ2PsWCgMHEQRUkJDKUfKO9aAsCf5J+DwyyHECs3SF+fiNHiSJXj2jn9E
+XgAvK6NEWIWSspDn0duu7Yzrjbl1nzGMw2n6fkVp+SHzi4oVBJRFFq1lymWaA0w9
+zfE8pBfnG56yQNFlJh8fDPVrS01mJuG+LEXLA72nQn3WKHxihDY2QpxwxgQpXT7Q
+sldi8OMMf/FmRLgbyrAPNcQWLY57u3NBQrQ2vCxt0Igc9p0Jaj1GTLf7ZvbU6Lnq
+BaCAMxEisPBp005SfrShh/ylwrqrXhO+tLtwgVLmh3ViJd9fO24M2Oagt+2jEriE
+qNtDDHaHm4kddVXD5Ntc0834BaTqVhEbQV/J6+8CO3fhm0sYN+mYiuC5F2jaHBLY
+2gwbMoehVs1N5NQ/hkdMEikmjFxYW279WvI3OcmkKw==
+=m4Ue
 -----END PGP SIGNATURE-----
 
---2Lsmsex1Htz1FP7P8f6JAdAWjSfnNhG2B--
+--5L959PrSMZFrcmRe--
 
