@@ -1,15 +1,10 @@
-Date: Thu, 16 Jul 2020 19:34:58 +0200
+Date: Thu, 16 Jul 2020 20:06:26 +0200 (CEST)
+Message-Id: <202007161806.06GI6QKV093624@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20200716173458.GF1431@...1296...>
-References: <20200716134315.17742-1-arne@...1227...>
- <20200716134315.17742-3-arne@...1227...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="vhC2VfIu4iQddoqq"
-Content-Disposition: inline
-In-Reply-To: <20200716134315.17742-3-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v7 3/6] client-connect: Use inotify for
- the deferred client-connect status file
+In-Reply-To: <20200711093655.23686-6-arne@...1227...>
+References: <20200711093655.23686-6-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: client-connect: Refactor
+ client-connect handling to calling a bunch of hooks in a loop
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,54 +13,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Fabian Knittel <fabian.knittel@...1547...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---vhC2VfIu4iQddoqq
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Your patch has been applied to the master branch.
 
-Hi,
+I have *not* reformatted the multi_client_connect_handler block - this is 
+stuff that goes away in 08/14 again, so reformatting now is doubly futile.
 
-On Thu, Jul 16, 2020 at 03:43:12PM +0200, Arne Schwabe wrote:
-> As we never do client-connect and authentication at the same time
-> it is safe to reuse the existing fields for client-connect return
-> status file
+(Speaking of patch granularity: the combination of 05+06+08 is causing 
+three times work for something which is basically one change - as the result 
+of 05 goes away in 06, and 06 gets rewritten in 08 again.  This makes 
+review and testing significantly more work than just doing the change)
 
-I don't have anything with inotify prepared right now, so I can't
-really test this (it compiles *without* #define ENABLE_ASYNC_PUSH,
-this I can already attest).
+commit 07a69fd2ca934c0521b0ee25f72e7f2385279a71
+Author: Fabian Knittel
+Date:   Sat Jul 11 11:36:47 2020 +0200
 
-It would be good to have Lev test this very thoroughly...
+     client-connect: Refactor client-connect handling to calling a bunch of hooks in a loop
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+     Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Antonio Quartulli <a@...2181...>
+     Message-Id: <20200711093655.23686-6-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20293.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Gert Doering - Munich, Germany                             gert@...1296...
 
---vhC2VfIu4iQddoqq
-Content-Type: application/pgp-signature; name="signature.asc"
+--
+kind regards,
 
------BEGIN PGP SIGNATURE-----
+Gert Doering
 
-iQGcBAEBAgAGBQJfEI/CAAoJEB2Cnv7KVigS+4wMAIDHfBDG2WMnNH/hQclIHf0z
-PcGuvUSr5ERsd+R63TCjLAUX85J5Cj1Bk430ifakdecLpqtxpl4xzk66PHerDGQQ
-YAIzMCGl/LbY6KOv3bpGtbW5Aaqj2eoVfDAZhRIlFAttsXnNg4BOoWRIV1GFqoPW
-uBlZh8x+J3TzltOjgxus9+BUuL2BJg2P6sbw8jvstI+7QbSgcFzGeqFiY9L592SM
-rUuY6GdtErRVe7lmgeUCXuVi7LV6jPaDVWZoyx4vr8LIZUvYgOWX2AedeAxpyjD5
-xCQBLTEB7UteNVj9IFZiXe4By8rKkQ1atLznLlKN3U+nJIpw6kj+IN0wcylJFF2c
-ieHzXOkhn2teHN322OnuwUDkyMBa5oTLXNPCK3lFkDJMU21qcwtqzxS7sr3wCi/S
-MDdpL1bh1dIRXhyt/XFv+i43JNMrCuP+EmX6z69iV8F8RG7IUrYidS4l2jOY7+0y
-73uMFf7OFQdpU6yfoCTJnKxClmQ+NPFEsA1fmru27A==
-=bMJv
------END PGP SIGNATURE-----
-
---vhC2VfIu4iQddoqq--
 
