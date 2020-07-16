@@ -1,15 +1,15 @@
-Date: Thu, 16 Jul 2020 22:42:43 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200716204243.GI1431@...1296...>
-References: <20200716134315.17742-1-arne@...1227...>
- <20200716134315.17742-5-arne@...1227...>
+References: <20200711093655.23686-1-arne@...1227...>
+ <20200711093655.23686-14-arne@...1227...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <51d2684f-0fd1-8cde-bb7d-0240914af6dd@...2080...>
+Date: Thu, 16 Jul 2020 23:04:09 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="bGmPrD/DuIqV6f11"
-Content-Disposition: inline
-In-Reply-To: <20200716134315.17742-5-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v7 5/6] client-connect: Implement
- deferred connect support for plugin API v2
+In-Reply-To: <20200711093655.23686-14-arne@...1227...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="Bo3eB0k6qp2rVZ0jfDM7m2E2BHrg8e05o"
+Subject: Re: [Openvpn-devel] [PATCH v5 14/14] client-connect: Add
+ documentation for the deferred client connect feature
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,69 +18,120 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
---bGmPrD/DuIqV6f11
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--Bo3eB0k6qp2rVZ0jfDM7m2E2BHrg8e05o
+Content-Type: multipart/mixed; boundary="ZNwLiF6xxc3TdIsZjkXfLimlN15mEsNvr";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <51d2684f-0fd1-8cde-bb7d-0240914af6dd@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH v5 14/14] client-connect: Add
+ documentation for the deferred client connect feature
+References: <20200711093655.23686-1-arne@...1227...>
+ <20200711093655.23686-14-arne@...1227...>
+In-Reply-To: <20200711093655.23686-14-arne@...1227...>
+
+--ZNwLiF6xxc3TdIsZjkXfLimlN15mEsNvr
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
 
-On Thu, Jul 16, 2020 at 03:43:14PM +0200, Arne Schwabe wrote:
-> The V2 API is simpler than the V1 API since there is no passing of
-> data via files. This also means that with the current API the V2 API
-> cannot support async notify via files. Adding a file just for async
-> notify seems very hacky and when needed we should implement a better
-> option when async is needed for the plugin V2 API.
+So I'm looking into migrating this text over to the new .rst format ... and=
+ I
+have a question ...
 
-Test reports... not actually *using* the API yet, just confirming
-that nothing else broke.
+On 11/07/2020 11:36, Arne Schwabe wrote:
+> diff --git a/doc/openvpn.8 b/doc/openvpn.8
+> index 03ae5ac5..7a0080bf 100644
+> --- a/doc/openvpn.8
+> +++ b/doc/openvpn.8
+> @@ -3422,6 +3422,13 @@ is significant.  If
+>  .B script
+>  returns a non\-zero error status, it will cause the client
+>  to be disconnected.
+> +
+> +If a
+> +.B \-\-client\-connect cmd
+> +wants to defer the generating of the configuration the script, should
+> +use the client_connect_deferred_file and client_connect_config_file
+> +environment variables and write status accordingly into these files
+> +(See the environment section below for more details).
+>  .\"*********************************************************
+>  .TP
+>  .B \-\-client\-disconnect cmd
+> @@ -3505,12 +3512,18 @@ This directory will be used by in the following c=
+ases:
+>=20=20
+>  *
+>  .B \-\-client\-connect
+> -scripts to dynamically generate client\-specific
+> -configuration files.
+> +scripts and
+> +.B OPENVPN_PLUGIN_CLIENT_CONNECT
+> +plugin hook
+> +to dynamically generate client\-specific configuration files
+> +and return success/failure via client_connect_deferred_file
+> +when using deferred client connect method
+>=20=20
+>  *
+>  .B OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY
+> -plugin hook to return success/failure via auth_control_file
+> +and
+> +
+> +plugin hook to return success/failure via auth_control_file/
+>  when using deferred auth method
 
-22...
-Test sets succeeded: 1 2 3 4 6 8.
-Test sets failed: none.
-23.small...
-Test sets succeeded: 1 2 3 4.
-Test sets failed: none.
-23...
-Test sets succeeded: 1 1a 1b 1d 2 2a 2b 2c 2d 3 4 5 6 8 8a 9.
-Test sets failed: none.
-24...
-Test sets succeeded: 1 1a 1b 1c 1d 1e 2 2a 2b 2c 2d 2e 3 4 4a 5 6 8 8a 9.
-Test sets failed: none.
-master...
-Test sets succeeded: 1 1a 1b 1c 1d 1e 2 2a 2b 2c 2d 2e 3 4 5 5x 6 7 7x 8 8a=
- 9 2f 4b.
-Test sets failed: none.
+This part is oddly rendered, and it seems it lacks something ...
+
+      * OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY and
+
+        plugin  hook  to  return  success/failure via
+auth_control_file/client_connect_deferred_file
+        when using deferred auth method
+
+
+Is this what you intended to say?
+
+      * OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY plugin hook and
+        --client-connect scripts to return success/failure via
+        auth_control_file/client_connect_deferred_file when using
+        deferred auth method
 
 --=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+kind regards,
 
-Gert Doering - Munich, Germany                             gert@...1296...
+David Sommerseth
+OpenVPN Inc
 
---bGmPrD/DuIqV6f11
+
+
+--ZNwLiF6xxc3TdIsZjkXfLimlN15mEsNvr--
+
+--Bo3eB0k6qp2rVZ0jfDM7m2E2BHrg8e05o
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQGcBAEBAgAGBQJfELvDAAoJEB2Cnv7KVigSjwcL/RByOmnVoFzRISe83k9EXHgL
-4/X2mo0yb39/KCanhkLWdNT1iW55QCeYiAR02wrUfrgl2PH3/YIH382MYvYP/p62
-DFrHDerxE1SfpL8pUPCh8xUz5E9xMxRllTW5XoRcHgryc2Hb+957h6QHOSD7Qbl6
-PDytnKBMisymhVbkW7oshKV7/hFvUF2bQBesge2UAS52SsS4Oenk+kNnCUrIHoRR
-dr1CFYtCjqTUZiPZdif/RvVQwdYKn9RVLTqePxaNNYR+27+Rgc5/SyaONg/zDFKG
-RFKvtLu6W1bIUjg2PVnlbdxD7vD705QakkyGKHp/XfYJTemMaRb82z7v+rJqTUmL
-5xkeVNMlRJpOKuqTFavBWB0v7NIp4O6CjfC9/+oq82YGm1sWlonr+c0K6lyBTIm/
-vAq8Zu4QD6y1GK8WiIDfdTID6Fbn8sksHMqlRQ9JyWyBLbrXEMW1lmWuyIhviuKP
-vv/kDxoWpGUWAZzvkox1jfKE74kfZ0tr5r1AqaDskQ==
-=1EHw
+iQIcBAEBCgAGBQJfEMDKAAoJEIbPlEyWcf3ykXMP/A8dy89jDLhqbXVDEPfZKQWX
+rEjlpMi7387FVPE2hvl34GvzMQu86ZzECDd6oYsTulnqGjuHzvRch4mvJvE1rXk+
+ge8UYhQhcWu1+0pnEfhcWqzhJiau+INkTQwaV7FrA+pIFa98f8/+xLpAGahTfC6T
++mrpgq9+jBhQpdFw0A1Lp3dllO1uDMzIw4tVqTevVPDNKYw9vLxb/DPmqiad0ICh
+hRqTdAdkQuWn+eGJzjol1qgZ7tqipt9nxkuM+kqSAfj46BArgfUjmijg+70uptLX
+wtJRpytsoA8w7Gg1oD9Xi9x/Dt2vfl5I+njh2w2og1rGjAHQVy1xUp6BDrAl+QyC
+DgSAAKYB73ygKHuU1yGFGdA8wgVsdWSQV0Xb9/Ndt3EysfHfh0Bq0TMbEoeFjdlo
+O42ntCLO1XGAxC9meM4ZmnlSEiUypXs2zGJUnCPVdt1zimtuzBHiIv0hTqgMR087
+LzNPaQVEYGxJ7R5ClbWiFWwqPDp42DX8LuSH6UpnMyTsT+322mllI2ZP2vO5l607
+ZKRhkpdZKuVhIrJSdErV55hHyPMtg80iEPkwd4PkT+bMxTMGc6hReTFGgZUXw8O0
++cuX2norY4wFUpTNC7WyXQqsyQVmIIHWB0dmABTSdPYjxiJrKRPzW8Gk2qWXWDXE
+N/IN7KFiTdYkctNTPJ0M
+=TDPT
 -----END PGP SIGNATURE-----
 
---bGmPrD/DuIqV6f11--
+--Bo3eB0k6qp2rVZ0jfDM7m2E2BHrg8e05o--
 
