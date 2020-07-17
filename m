@@ -1,15 +1,10 @@
-From: David Sommerseth <openvpn@...2080...>
-References: <20200717150526.124733-1-matthias.andree@...68...>
- <4e8ebfb9-ee76-f7e1-0771-8e8bdb605b5f@...2080...>
-Message-ID: <d999eaf5-41f1-d7e8-074f-5e788daa6175@...2080...>
-Date: Fri, 17 Jul 2020 18:38:42 +0200
-MIME-Version: 1.0
-In-Reply-To: <4e8ebfb9-ee76-f7e1-0771-8e8bdb605b5f@...2080...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="98vQWtt78uhxTYRAao5s5MWBeoepKNxCW"
-Subject: Re: [Openvpn-devel] [PATCH 2/2] Permit make dist* targets without
- py*-docutils
+Date: Fri, 17 Jul 2020 18:49:54 +0200 (CEST)
+Message-Id: <202007171649.06HGnsxa014536@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20200716134315.17742-1-arne@...1227...>
+References: <20200716134315.17742-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: client-connect: Add
+ CC_RET_DEFERRED and cope with deferred client-connect
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,108 +13,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Matthias Andree <matthias.andree@...68...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---98vQWtt78uhxTYRAao5s5MWBeoepKNxCW
-Content-Type: multipart/mixed; boundary="vYj52LXY6X5b2nTfOLo1io5JrHklrohdm";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-To: Matthias Andree <matthias.andree@...68...>,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <d999eaf5-41f1-d7e8-074f-5e788daa6175@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH 2/2] Permit make dist* targets without
- py*-docutils
-References: <20200717150526.124733-1-matthias.andree@...68...>
- <4e8ebfb9-ee76-f7e1-0771-8e8bdb605b5f@...2080...>
-In-Reply-To: <4e8ebfb9-ee76-f7e1-0771-8e8bdb605b5f@...2080...>
-
---vYj52LXY6X5b2nTfOLo1io5JrHklrohdm
-Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 17/07/2020 17:36, David Sommerseth wrote:
-> On 17/07/2020 17:05, Matthias Andree wrote:
->> Signed-off-by: Matthias Andree <matthias.andree@...68...>
->> ---
->>  doc/Makefile.am | 5 +++--
->>  1 file changed, 3 insertions(+), 2 deletions(-)
->>
->> diff --git a/doc/Makefile.am b/doc/Makefile.am
->> index add92198..80cb2cb8 100644
->> --- a/doc/Makefile.am
->> +++ b/doc/Makefile.am
->> @@ -59,8 +59,9 @@ else
->>  endif
->>
->>  if HAVE_PYDOCUTILS
->> -dist_noinst_DATA +=3D openvpn.8
->> -dist_html_DATA =3D openvpn.8.html
->> +nodist_noinst_DATA =3D openvpn.8
->> +nodist_html_DATA =3D openvpn.8.html
->> +EXTRA_DIST =3D openvpn.8 $(nodist_html_DATA)
->>
->>  # Failsafe - do not delete these files unless we can recreate them
->>  CLEANFILES =3D \
->=20
->=20
-> Thanks!  This fixes the 'make distdir', which should also fix the 'make c=
-heck'
-> issues Gert found [1].
->=20
-> Acked-By: David Sommerseth <davids@...515...>
->=20
->=20
-> [1] Message-Id: 20200717131607.GS1431@...1296...
->=20
-> <https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg2043=
-6.html>
-So I'm just retracting the Acked-By ... as this isn't needed.
+Your patch has been applied to the master branch.
 
-We were just confused by some failing tests on one of the buildslaves and
-realised to late it failed with 'make dist' - not 'make check'.  And then t=
-his
-change makes things worse by not distributing generated man/html files if
-py-docutils is not present.
+Tested on the test rig, stared-at-code by antonio, and commit-message-adjusted
+by me :-) (a few "defferred" and integrating the new call convention).
 
-All the 'make dist*' targets _should_ fail if py-docutils is not present and
-the doc/openvpn.8 and doc/openvpn.8.html files are missing.  Running 'make
-check' should not fail in any if these cases.
+Pushed, then went out to write a plugin to excercise this a bit more... and
+lo and behold, breakage!
+
+If I run a server that has *both* a plugin with the connect handler configured 
+(which succeeds) and a client-connect script (which fails), it will sort of "stare 
+into nothingness".
+
+With only the client-connect script configured, I get:
+
+2020-07-17 18:35:10 us=536817 ... WARNING: Failed running command (--client-connect): external program exited with error status: 10
+2020-07-17 18:35:11 us=751714 ... PUSH: Received control message: 'PUSH_REQUEST'
+2020-07-17 18:35:11 us=751860 ... SENT CONTROL [cron2-freebsd-tc-amd64]: 'AUTH_FAILED' (status=1)
+
+"all good"
+
+with both configured, I get:
+
+2020-07-17 18:32:34 us=478215 PLUGIN_CALL: POST /root/t_server/tun-udp-p2mp-112-mask/sample-client-connect.so/PLUGIN_CLIENT_CONNECT status=0
+2020-07-17 18:32:34 us=478331 OPTIONS IMPORT: reading client specific options from: /tmp/openvpn_cc_36b55f67d059a540483662f8e736189.tmp
+2020-07-17 18:32:34 us=478562 PLUGIN sample-cc: OPENVPN_PLUGIN_CLIENT_CONNECT_V2
+2020-07-17 18:32:34 us=478670 PLUGIN_CALL: POST /root/t_server/tun-udp-p2mp-112-mask/sample-client-connect.so/PLUGIN_CLIENT_CONNECT status=0
+2020-07-17 18:32:34 us=490057 WARNING: Failed running command (--client-connect): external program exited with error status: 10
+2020-07-17 18:32:35 us=618131 ... PUSH: Received control message: 'PUSH_REQUEST'
+2020-07-17 18:32:40 us=801869 ... PUSH: Received control message: 'PUSH_REQUEST'
+2020-07-17 18:32:45 us=948480 ... PUSH: Received control message: 'PUSH_REQUEST'
+2020-07-17 18:32:50 us=990555 ... PUSH: Received control message: 'PUSH_REQUEST'
+2020-07-17 18:32:56 us=51592 ... PUSH: Received control message: 'PUSH_REQUEST'
+2020-07-17 18:33:01 us=311645 ... PUSH: Received control message: 'PUSH_REQUEST'
+2020-07-17 18:33:06 us=612242 ... PUSH: Received control message: 'PUSH_REQUEST'
+2020-07-17 18:33:11 us=811682 ... PUSH: Received control message: 'PUSH_REQUEST'
+2020-07-17 18:33:17 us=11695 ... PUSH: Received control message: 'PUSH_REQUEST'
+2020-07-17 18:33:22 us=151679 ... PUSH: Received control message: 'PUSH_REQUEST'
+2020-07-17 18:33:27 us=311636 ... PUSH: Received control message: 'PUSH_REQUEST'
+2020-07-17 18:33:32 us=351693 ... PUSH: Received control message: 'PUSH_REQUEST'
+2020-07-17 18:33:47 us=513879 MULTI: multi_create_instance called
+2020-07-17 18:33:47 us=514020 194.97.140.21:51169 Re-using SSL/TLS context
+
+(client retrying after timeout)
 
 
---=20
+Now, if I make the *plugin* fail, it works as requested...
+
+2020-07-17 18:47:21 us=372780 PLUGIN sample-cc: env has UV_WANT_CC_FAIL=10 -> fail
+2020-07-17 18:47:21 us=372800 PLUGIN_CALL: POST /root/t_server/tun-udp-p2mp-112-mask/sample-client-connect.so/PLUGIN_CLIENT_CONNECT status=1
+2020-07-17 18:47:21 us=372812 PLUGIN_CALL: plugin function PLUGIN_CLIENT_CONNECT failed with status 1: /root/t_server/tun-udp-p2mp-112-mask/sample-client-connect.so
+2020-07-17 18:47:21 us=372824 WARNING: client-connect plugin call failed
+2020-07-17 18:47:22 us=479574 ... PUSH: Received control message: 'PUSH_REQUEST'
+2020-07-17 18:47:22 us=479634 ... Delayed exit in 5 seconds
+2020-07-17 18:47:22 us=479661 ... SENT CONTROL [cron2-freebsd-tc-amd64]: 'AUTH_FAILED' (status=1)
+
+- so it seems something in the chain of things is not good if "more than one" 
+is there.
+
+
+commit dfb40edc4acae5f17b0062ecb13ad1fa760ed529
+Author: Arne Schwabe
+Date:   Thu Jul 16 15:43:10 2020 +0200
+
+     client-connect: Add CC_RET_DEFERRED and cope with deferred client-connect
+
+     Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20200716134315.17742-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20395.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
 kind regards,
 
-David Sommerseth
-OpenVPN Inc
+Gert Doering
 
-
-
---vYj52LXY6X5b2nTfOLo1io5JrHklrohdm--
-
---98vQWtt78uhxTYRAao5s5MWBeoepKNxCW
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJfEdQTAAoJEIbPlEyWcf3ydEkP/RnjAmGm2t38ty+3cACWsta7
-tOI6M2bA4mhCBLgN4AlEt/C4j0i+vo38NypILNFqR6xc6MfyFHQfpeRwCUcgU5LM
-BQlx8hSpf2gg17plyKRcXM8d98y4pA2NVCao5t+APAm6d/fxOZ8gOqKrqFrfnlqF
-ONju4RLInSX37FXIXwCXH3d/cUfbbH03fsxYtxaE/x+nFktEacxX2to5nVzTnv/W
-XbqNf37ke+BzbAVWKkgKtwrq2RPy+CgFPqhdLfV1ieH0Ydv33H5OuCuxF3c35mQR
-JvsxmR+aacMDUplp8Sur0pfbMZAlES1S7HpeMYhz03Ij+ths61uVjpOYUJjF3L/r
-ZVimRA0QLP1fkvK23HO7E3ahwR56vLkAEvodCf6BwAO7oAm2SPaCAUBrz2OKVuGq
-KbsUJZiJUt2fl3qQYhpPist/jbUOZ7e1KnA4gqi4rDI+Wnfw7IEk+kznmq+OJzhV
-FN/nRqnvMsmkzH80E+goCRlMSAQKun69BffhWu0JhaOqnqY74pvgFDLJ3bQ8pOP/
-NsWHA8QJhsAExyqGYWHz4ERUqGwzYimkyTVJ/3MU27f7Jx/VSY07696fGyQWLjxX
-gsMsgskF2GT1/LaVY8unYGp9/JfVEsZXjhFRcAwv/qaQIinGFZHXaaQcDIV3cv+i
-XzVWhD/OrApf31rU4ti6
-=U0YT
------END PGP SIGNATURE-----
-
---98vQWtt78uhxTYRAao5s5MWBeoepKNxCW--
 
