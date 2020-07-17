@@ -1,10 +1,10 @@
-Date: Fri, 17 Jul 2020 09:52:04 +0200 (CEST)
-Message-Id: <202007170752.06H7q4N4006267@...2054...>
+Date: Fri, 17 Jul 2020 10:02:49 +0200 (CEST)
+Message-Id: <202007170802.06H82n5d006538@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200716225338.611-2-davids@...515...>
-References: <20200716225338.611-2-davids@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: doc/man: Add an .rst formatted
- version of the man page
+In-Reply-To: <20200716225338.611-3-davids@...515...>
+References: <20200716225338.611-3-davids@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: doc/man: Replace old man page
+ with generated man page
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,42 +20,41 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-I have not really "reviewed" this (this would require a full side-by-
-side reading of old and new manpage, and nobody ever reads the 
-openvpn manpage from top to bottom...) - but I've skimmed through
-it, and it made me laugh... :-)  ("OpenVPN ... lightweight footprint").
+I have not tested the actual docutils / openvpn.8 generation (Samuli will 
+complain loudly if tarball making doesn't work anymore, so that *will* 
+see testing).  Generally it looks sane.
 
-File sizes are similar, and there is no obvious "mistakes" in the rst
-(like, duplications, or random garbage).
+This condition looks a bit fishy, though...
 
--rw-r--r--  1 gert  users  243522 Jun 26 14:33 openvpn.8
--rw-r--r--  1 gert  users  225588 Jul 17 09:29 openvpn.8.rst
+ +AM_CONDITIONAL([HAVE_PYDOCUTILS], [test "${RST2MAN}" -a "${RST2HTML}"])
 
-$ wc -w openvpn.8 openvpn.8.rst
-   35162 openvpn.8
-   31700 openvpn.8.rst
+not sure what that will do in a POSIX shell.
+
+Maybe this shouldn't be conditional either
+
+ +if HAVE_PYDOCUTILS
+  dist_noinst_DATA += openvpn.8
+
+because it will lead to "tarballs randomly contain openvpn.8 or not, 
+depending on whether docutils are around" - "make dist" should behave
+consistently, and if there are no docutils, I think it should fail, not
+silently leave out files.
 
 
-There are (at least) two whitespace errors, where an alt-space (0xA0)
-shows up at the end of a line, after a ^A character.  I have not changed
-these, because it gets split into individual files anyway, and then
-I have to re-do it.
+URL pointed to SF again due to patch size.
 
 Your patch has been applied to the master branch.
 
-For the URL reference, I had to switch to the sourceforge archive as 
-mail-archive.org does not accept such big mails.
-
-commit d47b928d4e0501acdf1e449ad59951a19dd154a2
+commit 51f2e4b0a4e09382dbc1b10b6a8b08febc8d293f
 Author: David Sommerseth
-Date:   Fri Jul 17 00:53:31 2020 +0200
+Date:   Fri Jul 17 00:53:32 2020 +0200
 
-     doc/man: Add an .rst formatted version of the man page
+     doc/man: Replace old man page with generated man page
 
      Signed-off-by: David Sommerseth <davids@...515...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200716225338.611-2-davids@...515...>
-     URL: https://sourceforge.net/p/openvpn/mailman/message/37063370/
+     Message-Id: <20200716225338.611-3-davids@...515...>
+     URL: https://sourceforge.net/p/openvpn/mailman/message/37063373/
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
