@@ -1,11 +1,11 @@
 From: Matthias Andree <matthias.andree@...68...>
-Date: Fri, 17 Jul 2020 19:18:18 +0200
-Message-Id: <20200717171818.230371-1-matthias.andree@...68...>
-In-Reply-To: <20200717170948.227787-1-matthias.andree@...68...>
-References: <20200717170948.227787-1-matthias.andree@...68...>
+Date: Fri, 17 Jul 2020 19:19:18 +0200
+Message-Id: <20200717171918.230727-1-matthias.andree@...68...>
+In-Reply-To: <20200717170942.227701-1-matthias.andree@...68...>
+References: <20200717170942.227701-1-matthias.andree@...68...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix stack buffer overruns in NEXTADDR()
- macro:
+Subject: [Openvpn-devel] [PATCH] Merge Makefile.am's AUTOMAKE_OPTIONS into
+ configure.ac's AM_INIT_AUTOMAKE.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,31 +19,46 @@ Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 Cc: Matthias Andree <matthias.andree@...68...>
 
-copy first, then round up the length when adding padding
-to the advance.
-
-Found by: GCC 9.3.0 (FreeBSD)
+Else one location overwrites options from the other.
 
 Signed-off-by: Matthias Andree <matthias.andree@...68...>
 ---
- src/openvpn/route.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Makefile.am  | 3 ---
+ configure.ac | 4 +++-
+ 2 files changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index b57da5dd..24563ed6 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -3436,7 +3436,7 @@ struct rtmsg {
- #else  /* if defined(TARGET_SOLARIS) */
- #define NEXTADDR(w, u) \
-     if (rtm_addrs & (w)) { \
--        l =3D ROUNDUP( ((struct sockaddr *)&(u))->sa_len); memmove(cp, &(u=
-), l); cp +=3D l; \
-+        l =3D ((struct sockaddr *)&(u))->sa_len; memmove(cp, &(u), l); cp =
-+=3D ROUNDUP(l); \
-     }
+diff --git a/Makefile.am b/Makefile.am
+index 439120e4..d1c10fc5 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -23,9 +23,6 @@
+ #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ #
 
- #define ADVANCE(x, n) (x +=3D ROUNDUP((n)->sa_len))
+-# This option prevents autoreconf from overriding our COPYING and
+-# INSTALL targets:
+-AUTOMAKE_OPTIONS =3D foreign 1.9
+ ACLOCAL_AMFLAGS =3D -I m4
+
+ MAINTAINERCLEANFILES =3D \
+diff --git a/configure.ac b/configure.ac
+index 45148892..8ed83bc2 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -54,7 +54,9 @@ m4_define([serial_tests], [
+                 awk '{split ($NF,a,"."); if (a[1] =3D=3D 1 && a[2] >=3D 12=
+) { print "serial-tests" }}'
+     ])
+ ])
+-AM_INIT_AUTOMAKE(foreign serial_tests) dnl NB: Do not [quote] this paramet=
+er.
++# This foreign option prevents autoreconf from overriding our COPYING and
++# INSTALL targets:
++AM_INIT_AUTOMAKE(foreign serial_tests 1.9) dnl NB: Do not [quote] this par=
+ameter.
+ AC_CANONICAL_HOST
+ AC_USE_SYSTEM_EXTENSIONS
+
 --
 2.25.4
 
