@@ -1,9 +1,9 @@
 From: Matthias Andree <matthias.andree@...68...>
-Date: Fri, 17 Jul 2020 19:09:42 +0200
-Message-Id: <20200717170942.227701-1-matthias.andree@...68...>
+Date: Fri, 17 Jul 2020 19:09:48 +0200
+Message-Id: <20200717170948.227787-1-matthias.andree@...68...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Merge Makefile.am's AUTOMAKE_OPTIONS into
- configure.ac's AM_INIT_AUTOMAKE.
+Subject: [Openvpn-devel] [PATCH] Fix stack buffer overruns in NEXTADDR()
+ macro:
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,52 +17,40 @@ Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 Cc: Matthias Andree <matthias.andree@...68...>
 
-Else one location overwrites options from the other.
+copy first, then round up the length when adding padding
+to the advance.
+
+Found by: GCC 9.3.0 (FreeBSD)
 
 Signed-off-by: Matthias Andree <matthias.andree@...68...>
 ---
- Makefile.am  | 3 ---
- configure.ac | 6 +++++-
- 2 files changed, 5 insertions(+), 4 deletions(-)
+ src/openvpn/route.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/Makefile.am b/Makefile.am
-index 439120e4..d1c10fc5 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -23,9 +23,6 @@
- #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- #
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index b57da5dd..7f760e9d 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -3436,7 +3436,7 @@ struct rtmsg {
+ #else  /* if defined(TARGET_SOLARIS) */
+ #define NEXTADDR(w, u) \
+     if (rtm_addrs & (w)) { \
+-        l =3D ROUNDUP( ((struct sockaddr *)&(u))->sa_len); memmove(cp, &(u=
+), l); cp +=3D l; \
++        l =3D ((struct sockaddr *)&(u))->sa_len; memmove(cp, &(u), l); cp =
++=3D ROUNDUP(l); \
+     }
 
--# This option prevents autoreconf from overriding our COPYING and
--# INSTALL targets:
--AUTOMAKE_OPTIONS =3D foreign 1.9
- ACLOCAL_AMFLAGS =3D -I m4
-
- MAINTAINERCLEANFILES =3D \
-diff --git a/configure.ac b/configure.ac
-index 45148892..717b374a 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -54,10 +54,14 @@ m4_define([serial_tests], [
-                 awk '{split ($NF,a,"."); if (a[1] =3D=3D 1 && a[2] >=3D 12=
-) { print "serial-tests" }}'
-     ])
- ])
--AM_INIT_AUTOMAKE(foreign serial_tests) dnl NB: Do not [quote] this paramet=
-er.
-+# This foreign option prevents autoreconf from overriding our COPYING and
-+# INSTALL targets:
-+AM_INIT_AUTOMAKE(foreign serial_tests 1.9) dnl NB: Do not [quote] this par=
-ameter.
- AC_CANONICAL_HOST
- AC_USE_SYSTEM_EXTENSIONS
-
-+LT_INIT()
-+
- AC_ARG_ENABLE(
- 	[lzo],
- 	[AS_HELP_STRING([--disable-lzo], [disable LZO compression support @<:@def=
-ault=3Dyes@:>@])],
+ #define ADVANCE(x, n) (x +=3D ROUNDUP((n)->sa_len))
+@@ -3727,6 +3727,7 @@ get_default_gateway_ipv6(struct route_ipv6_gateway_in=
+fo *rgi6,
+         msg(M_WARN, "GDG6: socket #1 failed");
+         goto done;
+     }
++    errno =3D 0;
+     if (write(sockfd, (char *)&m_rtmsg, l) < 0)
+     {
+         msg(M_WARN, "GDG6: problem writing to routing socket");
 --
 2.25.4
 
