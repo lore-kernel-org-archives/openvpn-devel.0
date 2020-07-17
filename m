@@ -1,10 +1,15 @@
-Date: Fri, 17 Jul 2020 10:02:49 +0200 (CEST)
-Message-Id: <202007170802.06H82n5d006538@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200716225338.611-3-davids@...515...>
-References: <20200716225338.611-3-davids@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: doc/man: Replace old man page
- with generated man page
+References: <20200713094646.13929-1-arne@...1227...>
+ <20200713094646.13929-3-arne@...1227...>
+ <E1jviV7-0003vf-2C@...2479...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <c10b352c-47db-7d5b-28a6-86ee95b47887@...1227...>
+Date: Fri, 17 Jul 2020 10:14:38 +0200
+MIME-Version: 1.0
+In-Reply-To: <E1jviV7-0003vf-2C@...2479...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="KAt5lzCP5yopWpEU0Ar6qDaDBbJjYUmUt"
+Subject: Re: [Openvpn-devel] [PATCH 3/3] Remove key-method 1
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,54 +18,135 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Steffan Karger <steffan.karger@...2507...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--KAt5lzCP5yopWpEU0Ar6qDaDBbJjYUmUt
+Content-Type: multipart/mixed; boundary="YDbi9c8W7JBQ8gUBTtcFp1KhPr1T0kM67"
+
+--YDbi9c8W7JBQ8gUBTtcFp1KhPr1T0kM67
+Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-Acked-by: Gert Doering <gert@...1296...>
+Am 15.07.20 um 16:34 schrieb Steffan Karger:
+> Hi
+>=20
+> On 13-07-2020 11:46, Arne Schwabe wrote:
+>> @@ -1100,7 +1100,7 @@ process_incoming_link_part1(struct context *c, str=
+uct link_socket_info *lsi, boo
+>>                                  floated, &ad_start))
+>>              {
+>>                  /* Restore pre-NCP frame parameters */
+>> -                if (is_hard_reset(opcode, c->options.key_method))
+>> +                if (is_hard_reset(opcode, KEY_METHOD_2))
+>>                  {
+>=20
+> Can't we just remove the key_method parameter from is_hard_reset()?
 
-I have not tested the actual docutils / openvpn.8 generation (Samuli will 
-complain loudly if tarball making doesn't work anymore, so that *will* 
-see testing).  Generally it looks sane.
+Some code still checks if it is a general hard reset or if it is a v2
+hard reset. I agree that we can do more cleanup in this area but that
+would make more code changes. Should we pull that into this change?
 
-This condition looks a bit fishy, though...
+>> @@ -3817,10 +3803,9 @@ options_string(const struct options *o,
+>>               * tls-auth/tls-crypt does not match.  Removing tls-auth he=
+re would
+>>               * break stuff, so leaving that in place. */
+>>=20=20
+>> -            if (o->key_method > 1)
+>> -            {
+>> -                buf_printf(&out, ",key-method %d", o->key_method);
+>> -            }
+>> +
+>> +
+>> +            buf_printf(&out, ",key-method %d", 2);
+>=20
+> This could do with one less newline.
+>=20
+>> @@ -2404,7 +2348,7 @@ key_method_2_write(struct buffer *buf, struct tls_=
+session *session)
+>>      }
+>>=20=20
+>>      /* write key_method + flags */
+>> -    if (!buf_write_u8(buf, (session->opt->key_method & KEY_METHOD_MASK)=
+))
+>> +    if (!buf_write_u8(buf, (KEY_METHOD_2 & KEY_METHOD_MASK)))
+>>      {
+>>          goto error;
+>>      }
+>=20
+> The masking looks a bit silly now. Maybe replace with a static_assert()
+> if you want to be sure that no "wrong" bits are set?
 
- +AM_CONDITIONAL([HAVE_PYDOCUTILS], [test "${RST2MAN}" -a "${RST2HTML}"])
+Yeah I think the mask is silly here. I will just remove it.
 
-not sure what that will do in a POSIX shell.
+>=20
+>>  static bool
+>>  key_method_2_read(struct buffer *buf, struct tls_multi *multi, struct t=
+ls_session *session)
+>>  {
+>>      struct key_state *ks =3D &session->key[KS_PRIMARY];      /* primary=
+ key */
+>>=20=20
+>> -    int key_method_flags;
+>>      bool username_status, password_status;
+>>=20=20
+>>      struct gc_arena gc =3D gc_new();
+>> @@ -2582,8 +2464,6 @@ key_method_2_read(struct buffer *buf, struct tls_m=
+ulti *multi, struct tls_sessio
+>>      /* allocate temporary objects */
+>>      ALLOC_ARRAY_CLEAR_GC(options, char, TLS_OPTIONS_LEN, &gc);
+>>=20=20
+>> -    ASSERT(session->opt->key_method =3D=3D 2);
+>> -
+>>      /* discard leading uint32 */
+>>      if (!buf_advance(buf, 4))
+>>      {
+>> @@ -2593,7 +2473,7 @@ key_method_2_read(struct buffer *buf, struct tls_m=
+ulti *multi, struct tls_sessio
+>>      }
+>>=20=20
+>>      /* get key method */
+>> -    key_method_flags =3D buf_read_u8(buf);
+>> +    int key_method_flags =3D buf_read_u8(buf);
+>=20
+> This variable declaration is now *after* a "goto error" jump. Currently
+> not harmful, because the variable isn't used after the error label, but
+> static analyzers might complain about "jump past initialization".
+>=20
+> Otherwise this looks good based on stare-at-code. Didn't have time to
+> test yet.
 
-Maybe this shouldn't be conditional either
+Clang/gcc will already complain/error out if you actually jump past
+initialisation. So I think we are good here. Static analyzer are
+hopefully not that broken.
 
- +if HAVE_PYDOCUTILS
-  dist_noinst_DATA += openvpn.8
-
-because it will lead to "tarballs randomly contain openvpn.8 or not, 
-depending on whether docutils are around" - "make dist" should behave
-consistently, and if there are no docutils, I think it should fail, not
-silently leave out files.
+Arne
 
 
-URL pointed to SF again due to patch size.
+--YDbi9c8W7JBQ8gUBTtcFp1KhPr1T0kM67--
 
-Your patch has been applied to the master branch.
+--KAt5lzCP5yopWpEU0Ar6qDaDBbJjYUmUt
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-commit 51f2e4b0a4e09382dbc1b10b6a8b08febc8d293f
-Author: David Sommerseth
-Date:   Fri Jul 17 00:53:32 2020 +0200
+-----BEGIN PGP SIGNATURE-----
 
-     doc/man: Replace old man page with generated man page
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl8RXe4ACgkQFRhsZwKx
+RFRfbhAAqqIj7T3PXX0pShAXbbvnPtldyXDZGMhYe7X06/tG+v9M/0x0hHWts5Ug
+rGSt2Fip9FYJlAAZ+mSHJeRFsehjISj8tlHX3Rj4MGBM4UTP2/WT1iMXjfP1P0LO
+vCDgEt9PZnYw1iqTSrG58Qd3Wa0vv0uwg1w/Ia0yHtEklsvK1QFTrVUATjQ5/9Po
+P5RyUSA3mtHLdmRb1PQbkSK9pHtvf8/ZuqKWYZwhRXLqVv0TSvTLsOJ648zaJbcb
+FgaM2eHTItd5DC9OXv3G5DUeJlzTzdxVzj/B/tq0tmPuOznVMAcNiJfNL1HZ3UNF
+oB3zoEq3lTZihkckYMYVgj/JNaFqiND8W79qu05Zf0Zl5QNBG5jAmwl+usuwGbeR
+UZwXEJIh4Bw3W2Vgla3/tHz4DiOkzmr/8BVUlOkoucFUfX4/HJpwGYJe6CNRWKKx
+HMIOvv2NFbdZKcEw524aABVZNThCk225+aw8G2HaqU9Z0SUMpdh2FkewrgGGexk3
+QyH4jc7FcS/akZQrLtt7uLGd9f0CgVK+6NNwTnhmN6t9DTKygtCqoj2p2GvoPdM8
+SnKHXgbCoTvtpD2PF8bq7WjSYzQxmacFWfAfWSmXahF5KtJo4KGf2/IkWxVAptu8
+7m0PVZdzrRQrExezVJxGlAQ/0h0TY4pItmKuVSJaMSvHbQwtBuk=
+=/2+L
+-----END PGP SIGNATURE-----
 
-     Signed-off-by: David Sommerseth <davids@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200716225338.611-3-davids@...515...>
-     URL: https://sourceforge.net/p/openvpn/mailman/message/37063373/
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+--KAt5lzCP5yopWpEU0Ar6qDaDBbJjYUmUt--
 
