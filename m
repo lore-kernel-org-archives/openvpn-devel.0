@@ -1,13 +1,12 @@
-References: <20200716134315.17742-1-arne@...1227...>
- <20200716134315.17742-2-arne@...1227...>
+References: <20200717134739.21168-1-arne@...1227...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <d944d13a-3464-aee4-ceaf-5f03a59f6400@...2181...>
-Date: Fri, 17 Jul 2020 16:00:21 +0200
+Message-ID: <91133de6-a715-576e-dada-81544c8390f4@...2181...>
+Date: Fri, 17 Jul 2020 16:02:47 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200716134315.17742-2-arne@...1227...>
+In-Reply-To: <20200717134739.21168-1-arne@...1227...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v7 2/6] client-connect: Add deferred
- support to the client-connect script handler
+Subject: Re: [Openvpn-devel] [PATCH 1/9] Indicate that a client is in pull
+ mode in IV_PROTO
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,92 +19,99 @@ Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
+Hi,
 
-
-On 16/07/2020 15:43, Arne Schwabe wrote:
-> From: Fabian Knittel <fabian.knittel@...1547...>
+On 17/07/2020 15:47, Arne Schwabe wrote:
+> This allows us to skip waiting for the first PUSH_REQUEST message from
+> the client to send the response.
 > 
-> This patch introduces the concept of a return value file for the client-connect
-> handlers. (This is very similar to the auth value file used during deferred
-> authentication.)  The file name is stored in the client_connect_state struct.
-> 
-> In addition, the patch also allows the storage of the client config file name
-> in struct client_connect_state.
-> 
-> Both changes are used by the client-connect script handler to support deferred
-> client-connection handling.  The deferred return value file (deferred_ret_file)
-> is passed to the actual script via the environment.  If the script succeeds and
-> writes the value for deferral into the deferred_ret_file, the handler knows to
-> indicate deferral.  Later on, the deferred handler checks whether the value of
-> the deferred_ret_file has been updated to success or failure.
-> 
-> Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
 > Signed-off-by: Arne Schwabe <arne@...1227...>
 > ---
->  src/openvpn/multi.c | 226 +++++++++++++++++++++++++++++++++++++++++---
->  src/openvpn/multi.h |  12 +++
->  2 files changed, 225 insertions(+), 13 deletions(-)
+>  src/openvpn/multi.c | 12 ++++++++++--
+>  src/openvpn/ssl.c   | 15 +++++++++++++--
+>  src/openvpn/ssl.h   |  7 +++++++
+>  3 files changed, 30 insertions(+), 4 deletions(-)
 > 
 > diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-> index 9128798d..e26daeea 100644
+> index 0095c871..88ba9db2 100644
 > --- a/src/openvpn/multi.c
 > +++ b/src/openvpn/multi.c
-> @@ -1854,6 +1854,168 @@ multi_client_set_protocol_options(struct context *c)
->      }
->  }
->  
-> +/**
-> + * Delete the temporary file for the return value of client connect
-> + * It also removes it from it from client_connect_defer_state and
-> + * environment
-> + */
-> +static void
-> +ccs_delete_deferred_ret_file(struct multi_instance *mi)
-> +{
-> +    struct client_connect_defer_state *ccs = &(mi->client_connect_defer_state);
-> +    if (ccs->deferred_ret_file)
-> +    {
-> +        setenv_del(mi->context.c2.es, "client_connect_deferred_file");
-> +        if (!platform_unlink(ccs->deferred_ret_file))
-> +        {
-> +            msg(D_MULTI_ERRORS, "MULTI: problem deleting temporary file: %s",
-> +                ccs->deferred_ret_file);
-> +        }
-> +        free(ccs->deferred_ret_file);
-> +        ccs->deferred_ret_file = NULL;
-> +    }
-
-As discussed on IRC, previous patches (already applied) changed the
-style of many of our functions from:
+> @@ -1795,10 +1795,18 @@ multi_client_set_protocol_options(struct context *c)
+>      {
+>          int proto = 0;
+>          int r = sscanf(optstr, "IV_PROTO=%d", &proto);
+> -        if ((r == 1) && (proto >= 2))
+> +        if (r == 1)
+>          {
+> -            tls_multi->use_peer_id = true;
+> +            if (proto >= 2)
 
 
-if (x)
-{
- do something
-}
-
-
-
-to:
-
-
-
-if (!x)
-{
-  return
-}
-
-
-Now this patch is unfortunately introducing a set of functions all
-implemented using the old pattern.
-
-I suggest them to be converted before we merge this patch.
-
-I don't really have other comments about this patch, therefore it may go
-in once we get the code style right.
-
+I thought it was agreed (but I may be wrong) to substitute this check
+with a bitwise AND, since this variable is now treated as a bitfield.
 
 Regards,
+
+
+
+
+> +            {
+> +                tls_multi->use_peer_id = true;
+> +            }
+> +            if (proto & IV_PROTO_REQUEST_PUSH)
+> +            {
+> +                c->c2.push_request_received = true;
+> +            }
+>          }
+> +
+>      }
+>  
+>      /* Select cipher if client supports Negotiable Crypto Parameters */
+> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+> index 54a23011..04d78a81 100644
+> --- a/src/openvpn/ssl.c
+> +++ b/src/openvpn/ssl.c
+> @@ -2299,8 +2299,19 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+>          buf_printf(&out, "IV_PLAT=win\n");
+>  #endif
+>  
+> -        /* support for P_DATA_V2 */
+> -        buf_printf(&out, "IV_PROTO=2\n");
+> +        /* support for P_DATA_V2*/
+> +        int iv_proto = IV_PROTO_DATA_V2;
+> +
+> +        /* support for receiving push_reply before sending
+> +         * push request, also signal that the client wants
+> +         * to get push-reply messages without without requiring a round
+> +         * trip for a push request message*/
+> +        if(session->opt->pull)
+> +        {
+> +            iv_proto |= IV_PROTO_REQUEST_PUSH;
+> +        }
+> +
+> +        buf_printf(&out, "IV_PROTO=%d\n", iv_proto);
+>  
+>          /* support for Negotiable Crypto Parameters */
+>          if (session->opt->ncp_enabled
+> diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+> index 58a9b0d4..86fb6853 100644
+> --- a/src/openvpn/ssl.h
+> +++ b/src/openvpn/ssl.h
+> @@ -99,6 +99,13 @@
+>  /* Maximum length of OCC options string passed as part of auth handshake */
+>  #define TLS_OPTIONS_LEN 512
+>  
+> +/* Definitions of the bits in the IV_PROTO bitfield */
+> +#define IV_PROTO_DATA_V2        (1<<1)  /**< Support P_DATA_V2 */
+> +#define IV_PROTO_REQUEST_PUSH   (1<<2)  /**< Assume client will send a push
+> +                                          * request and server does not need
+> +                                          * to wait for a push-request to send
+> +                                          * a push-reply */
+> +
+>  /* Default field in X509 to be username */
+>  #define X509_USERNAME_FIELD_DEFAULT "CN"
+>  
+> 
 
 -- 
 Antonio Quartulli
