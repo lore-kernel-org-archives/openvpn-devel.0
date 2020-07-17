@@ -1,14 +1,15 @@
-Date: Fri, 17 Jul 2020 21:14:51 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200717191451.GY1431@...1296...>
-References: <20200717190801.17780-1-gert@...1296...>
+References: <20200717170942.227701-1-matthias.andree@...68...>
+ <20200717171918.230727-1-matthias.andree@...68...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <36fd1330-3715-e5d4-bed0-8d80c40732c0@...2080...>
+Date: Fri, 17 Jul 2020 22:15:21 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="A8aU907vivKaQy23"
-Content-Disposition: inline
-In-Reply-To: <20200717190801.17780-1-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Add demo plugin that excercises
- "CLIENT_CONNECT" and "CLIENT_CONNECT_V2" paths
+In-Reply-To: <20200717171918.230727-1-matthias.andree@...68...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="uBerFmJW76yfhaAzsYVC8O2pqOvxrFqtr"
+Subject: Re: [Openvpn-devel] [PATCH] Merge Makefile.am's AUTOMAKE_OPTIONS
+ into configure.ac's AM_INIT_AUTOMAKE.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,64 +18,111 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Matthias Andree <matthias.andree@...68...>, openvpn-devel@lists.sourceforge.net
 
---A8aU907vivKaQy23
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--uBerFmJW76yfhaAzsYVC8O2pqOvxrFqtr
+Content-Type: multipart/mixed; boundary="N3BE6Z30Yq0OoPgSvHeNdEhOe0yZKlOr8";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: Matthias Andree <matthias.andree@...68...>,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <36fd1330-3715-e5d4-bed0-8d80c40732c0@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] Merge Makefile.am's AUTOMAKE_OPTIONS into
+ configure.ac's AM_INIT_AUTOMAKE.
+References: <20200717170942.227701-1-matthias.andree@...68...>
+ <20200717171918.230727-1-matthias.andree@...68...>
+In-Reply-To: <20200717171918.230727-1-matthias.andree@...68...>
+
+--N3BE6Z30Yq0OoPgSvHeNdEhOe0yZKlOr8
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
-
-On Fri, Jul 17, 2020 at 09:08:01PM +0200, Gert Doering wrote:
-> This is a new "samples" plugin which does not do many useful things,
-> besides
->  - show how a plugin is programmed
->  - how the various messages get dispatched
->  - how to pass back information from a client-connect/v2 plugin
->  - how to do async-cc plugins  [not yet implemented]
+On 17/07/2020 19:19, Matthias Andree wrote:
+> Else one location overwrites options from the other.
 >=20
-> the operation of the plugin is controlled by UV_WANT_* environment variab=
-les
-> controlled by the client ("--setenv UV_WANT_CC_FAIL 1 --push-peer-info"),
-> to "fail CLIENT_CONNECT" or "use async-cc for CLIENT_CONNECT_V2" or
-> "send 'disable' back from ...") - which is useful for automated testing
-> of server success/defer/fail code paths for the CLIENT_CONNECT_* function=
-s.
+> Signed-off-by: Matthias Andree <matthias.andree@...68...>
+> ---
+>  Makefile.am  | 3 ---
+>  configure.ac | 4 +++-
+>  2 files changed, 3 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/Makefile.am b/Makefile.am
+> index 439120e4..d1c10fc5 100644
+> --- a/Makefile.am
+> +++ b/Makefile.am
+> @@ -23,9 +23,6 @@
+>  #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+>  #
+>=20
+> -# This option prevents autoreconf from overriding our COPYING and
+> -# INSTALL targets:
+> -AUTOMAKE_OPTIONS =3D foreign 1.9
+>  ACLOCAL_AMFLAGS =3D -I m4
+>=20
+>  MAINTAINERCLEANFILES =3D \
+> diff --git a/configure.ac b/configure.ac
+> index 45148892..8ed83bc2 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -54,7 +54,9 @@ m4_define([serial_tests], [
+>                  awk '{split ($NF,a,"."); if (a[1] =3D=3D 1 && a[2] >=3D =
+12) { print "serial-tests" }}'
+>      ])
+>  ])
+> -AM_INIT_AUTOMAKE(foreign serial_tests) dnl NB: Do not [quote] this param=
+eter.
+> +# This foreign option prevents autoreconf from overriding our COPYING and
+> +# INSTALL targets:
+> +AM_INIT_AUTOMAKE(foreign serial_tests 1.9) dnl NB: Do not [quote] this p=
+arameter.
+>  AC_CANONICAL_HOST
+>  AC_USE_SYSTEM_EXTENSIONS
+>=20
 
-This is not yet finished - all the async/deferred versions are not there
-yet, and I think it wants a "Makefile" to be built properly :-)
+Acked-By: David Sommerseth <davids@...515...>
 
-It is working nicely though and has already uncovered bugs in current
-master.  So, out there for people that want to play with it.
+This works better than the previous attempt, this also passes 'make distche=
+ck'.
 
-gert
+I see this patch does not have the subdir-objects flag in the automake
+options; which seems to be the reason why it failed on my RHEL-7 box last
+round.  I'll try to see if I can better understand why.
+
+
 --=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+kind regards,
 
-Gert Doering - Munich, Germany                             gert@...1296...
+David Sommerseth
+OpenVPN Inc
 
---A8aU907vivKaQy23
+
+
+--N3BE6Z30Yq0OoPgSvHeNdEhOe0yZKlOr8--
+
+--uBerFmJW76yfhaAzsYVC8O2pqOvxrFqtr
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQGcBAEBAgAGBQJfEfiqAAoJEB2Cnv7KVigS5KcMALFxoWaka5mH1BKnPTsQOnSn
-QWu/dpKcCh0eztpsr81BTIm7gR+OzUdgBbjDyM7pdgzS+p/SaG5rjbnJDy6XDW0Q
-p1aYoXMPZYR1ZNH8c6R8evIjrvmOsiKHQFz3nn8qoWfZu8pWYUAtlH8V7ZdKotQw
-yYMtYi7jZ3TdpZqHsToSne0xDhQv6pnXh1jVOcNOrFkfn69GvyVkBMmGHuY4q2Dk
-DFj7i8KFaY6jT01azC6UlhDa/BDMRD+GouCoxolWZfUTQk35OLCOQmcjCAF3n9Bx
-z9ZyIz/VLz5JCgmye7ZkYOBLXBDFqBMPsMURYm2xXhp6A04J+TG0liM3pLuueApy
-qbfVgvKfGDRZB3SOlakHg9hVS0ODmBn2yM81T5Y5MGXiTe23aMPqSuui5fOPrzAV
-O8Ius82UzXMhP4Q0mkBrmta1ByPHI8WA8I8y7oftLz4uDBxwGNy1ZPQVkhEukLsW
-N7nnp/n3bNRf928s9DHiYH8fBClQ/jeN4UZHelP9fQ==
-=IhqD
+iQIcBAEBCgAGBQJfEgbZAAoJEIbPlEyWcf3yPwoQALfwcFcnSuHZvQMEUX8Y4JYZ
+siVa9/0BRldAbDReD3fQBPdI4eE2fRm3TuZbom5Z1ITur1vPjhCWvrHXHX98iVwW
+MnGk9olv5HdQ/R3iJ40DT02Crs/Kww4igqcLwILU46txE6eBHIcdI9csbilSskTA
+a+6E3s/nOKV5d4rA7ueB9Z2KG6vVjUgiYS58RUBaiilG5Yyb3INKu+brGU4TYlRf
+ei3dh+qFeO8OVv73jli20l4he3X8ScCIuN1oXr0w7zifSHD2lEQAQpl7CkVt+u6W
+szwTZ7Vo+e5H/b/Qxhva3hPrgvMOAA8nozsmVGPn0+fOX9hPNTqVc7Ky1AZKQrLy
+TOhztOkMS8VKnbCvcT3Cu4aQZQJSQ+ugzay93kv/CxEbZaUP8Rlxek4btyxXc7Sk
+NVyWBb65Ogs+00xfnne1J2b4wm/IIRP18ukyNzwyND0T1+g7wlz9a6tbN+72w12R
+zeiDe87MtgQwo/tZO29zKplpxGFZrxsKi5/TaoTMy9PNBY10wK4S+y5MBvRfnniS
+XI8zT95CNoSndsOfjGndb0gwZkbLzNjFE3ITtE4G2YQry/m4QLX07dZepZ54cYBB
+QdNvY16BYuoCEFpz5mcmviBieHLvfBuhidHODIfw/PniS2R7xImhUoasPIsc0J03
+8tejMkekWORSY7MIq3xc
+=jFrB
 -----END PGP SIGNATURE-----
 
---A8aU907vivKaQy23--
+--uBerFmJW76yfhaAzsYVC8O2pqOvxrFqtr--
 
