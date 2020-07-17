@@ -1,9 +1,9 @@
 From: Matthias Andree <matthias.andree@...68...>
-Date: Fri, 17 Jul 2020 17:05:10 +0200
-Message-Id: <20200717150510.124442-1-matthias.andree@...68...>
+Date: Fri, 17 Jul 2020 17:05:26 +0200
+Message-Id: <20200717150526.124733-1-matthias.andree@...68...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/2] Automake options: add subdir-objects,
- and clean up
+Subject: [Openvpn-devel] [PATCH 2/2] Permit make dist* targets without
+ py*-docutils
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,38 +19,25 @@ Cc: Matthias Andree <matthias.andree@...68...>
 
 Signed-off-by: Matthias Andree <matthias.andree@...68...>
 ---
- Makefile.am  | 1 -
- configure.ac | 2 +-
- 2 files changed, 1 insertion(+), 2 deletions(-)
+ doc/Makefile.am | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/Makefile.am b/Makefile.am
-index 439120e4..e4125447 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -25,7 +25,6 @@
+diff --git a/doc/Makefile.am b/doc/Makefile.am
+index add92198..80cb2cb8 100644
+--- a/doc/Makefile.am
++++ b/doc/Makefile.am
+@@ -59,8 +59,9 @@ else
+ endif
 
- # This option prevents autoreconf from overriding our COPYING and
- # INSTALL targets:
--AUTOMAKE_OPTIONS =3D foreign 1.9
- ACLOCAL_AMFLAGS =3D -I m4
+ if HAVE_PYDOCUTILS
+-dist_noinst_DATA +=3D openvpn.8
+-dist_html_DATA =3D openvpn.8.html
++nodist_noinst_DATA =3D openvpn.8
++nodist_html_DATA =3D openvpn.8.html
++EXTRA_DIST =3D openvpn.8 $(nodist_html_DATA)
 
- MAINTAINERCLEANFILES =3D \
-diff --git a/configure.ac b/configure.ac
-index 45148892..9d6510ca 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -54,7 +54,7 @@ m4_define([serial_tests], [
-                 awk '{split ($NF,a,"."); if (a[1] =3D=3D 1 && a[2] >=3D 12=
-) { print "serial-tests" }}'
-     ])
- ])
--AM_INIT_AUTOMAKE(foreign serial_tests) dnl NB: Do not [quote] this paramet=
-er.
-+AM_INIT_AUTOMAKE(foreign serial_tests subdir-objects 1.9) dnl NB: Do not [=
-quote] this parameter.
- AC_CANONICAL_HOST
- AC_USE_SYSTEM_EXTENSIONS
-
+ # Failsafe - do not delete these files unless we can recreate them
+ CLEANFILES =3D \
 --
 2.25.4
 
