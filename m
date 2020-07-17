@@ -1,8 +1,11 @@
-From: David Sommerseth <davids@...515...>
-Date: Fri, 17 Jul 2020 19:15:44 +0200
-Message-Id: <20200717171544.21632-1-davids@...515...>
+From: Matthias Andree <matthias.andree@...68...>
+Date: Fri, 17 Jul 2020 19:18:18 +0200
+Message-Id: <20200717171818.230371-1-matthias.andree@...68...>
+In-Reply-To: <20200717170948.227787-1-matthias.andree@...68...>
+References: <20200717170948.227787-1-matthias.andree@...68...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Remove --no-iv
+Subject: [Openvpn-devel] [PATCH] Fix stack buffer overruns in NEXTADDR()
+ macro:
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,77 +15,36 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
+Cc: Matthias Andree <matthias.andree@...68...>
 
-This finializes the depreacation started in OpenVPN 2.4, where --no-iv
-was made into a NOOP option.
+copy first, then round up the length when adding padding
+to the advance.
 
-Signed-off-by: David Sommerseth <davids@...515...>
+Found by: GCC 9.3.0 (FreeBSD)
+
+Signed-off-by: Matthias Andree <matthias.andree@...68...>
 ---
- Changes.rst                              | 3 +++
- doc/man-sections/server-options.rst      | 2 +-
- doc/man-sections/unsupported-options.rst | 2 +-
- src/openvpn/options.c                    | 5 -----
- 4 files changed, 5 insertions(+), 7 deletions(-)
+ src/openvpn/route.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Changes.rst b/Changes.rst
-index e279d360..7d4fdec6 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -39,6 +39,9 @@ https://community.openvpn.net/openvpn/wiki/DeprecatedOptions
-     adds a security weakness.  This was also highlighted during the
-     `OpenVPN 2.4 security audit <https://community.openvpn.net/openvpn/wiki/QuarkslabAndCryptographyEngineerAudits#OVPN-03-3:Insecureconfigurationoptions:--no-replay>`_.
- 
-+- ``no-iv`` has been removed
-+  This option was made into a NOOP option with OpenVPN 2.4.  This has now
-+  been completely removed.
- 
- Overview of changes in 2.4
- ==========================
-diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-options.rst
-index 2381f5c8..75d174ea 100644
---- a/doc/man-sections/server-options.rst
-+++ b/doc/man-sections/server-options.rst
-@@ -399,7 +399,7 @@ fast hardware. SSL/TLS authentication must be used in this mode.
-   ``link-mtu``, ``tun-mtu``, ``proto``, ``ifconfig``,
-   ``comp-lzo``, ``fragment``, ``keydir``, ``cipher``,
-   ``auth``, ``keysize``, ``secret``,
--  ``no-iv``, ``tls-auth``, ``key-method``, ``tls-server``
-+  ``tls-auth``, ``key-method``, ``tls-server``
-   and ``tls-client``.
- 
-   This option requires that ``--disable-occ`` NOT be used.
-diff --git a/doc/man-sections/unsupported-options.rst b/doc/man-sections/unsupported-options.rst
-index 8aff5dd9..05ba3ca2 100644
---- a/doc/man-sections/unsupported-options.rst
-+++ b/doc/man-sections/unsupported-options.rst
-@@ -19,7 +19,7 @@ longer supported
- 
- --no-iv
-   Removed in OpenVPN 2.5.  This option should not be used as it weakens the
--  VPN tunnel security.
-+  VPN tunnel security.  This has been a NOOP option since OpenVPN 2.4.
- 
- --no-replay
-   Removed in OpenVPN 2.5.  This option should not be used as it weakens the
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index e1658472..0f0b37d1 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -7985,11 +7985,6 @@ add_option(struct options *options,
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-         options->mute_replay_warnings = true;
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index b57da5dd..24563ed6 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -3436,7 +3436,7 @@ struct rtmsg {
+ #else  /* if defined(TARGET_SOLARIS) */
+ #define NEXTADDR(w, u) \
+     if (rtm_addrs & (w)) { \
+-        l =3D ROUNDUP( ((struct sockaddr *)&(u))->sa_len); memmove(cp, &(u=
+), l); cp +=3D l; \
++        l =3D ((struct sockaddr *)&(u))->sa_len; memmove(cp, &(u), l); cp =
++=3D ROUNDUP(l); \
      }
--    else if (streq(p[0], "no-iv") && !p[1])
--    {
--        msg(msglevel,
--            "--no-iv is no longer supported. Remove it from client and server configs.");
--    }
-     else if (streq(p[0], "replay-persist") && p[1] && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_GENERAL);
--- 
-2.26.0
+
+ #define ADVANCE(x, n) (x +=3D ROUNDUP((n)->sa_len))
+--
+2.25.4
 
 
