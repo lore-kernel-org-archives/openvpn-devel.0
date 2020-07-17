@@ -1,9 +1,10 @@
-From: David Sommerseth <davids@...515...>
-Date: Fri, 17 Jul 2020 13:01:36 +0200
-Message-Id: <20200717110136.11579-1-davids@...515...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] doc/man: Add misssing renegotiation.rst to
- Makefile.am
+Date: Fri, 17 Jul 2020 13:06:57 +0200 (CEST)
+Message-Id: <202007171106.06HB6v0X009588@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20200717110136.11579-1-davids@...515...>
+References: <20200717110136.11579-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: doc/man: Add misssing
+ renegotiation.rst to Makefile.am
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,34 +15,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <davids@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This file did not get added to Makefile.am by a mistake during the
-man-page overhaul, and the issue this causes is not easily spotted.
+Acked-by: Gert Doering <gert@...1296...>
 
-If a consumer of a tarball (created with 'make dist' from the git
-tree) tries runs 'make clean' and 'make dist' plus have
-python-docutils installed from such a tarball, it will explode and
-complain about this missing file.
+Your patch has been applied to the master branch.
 
-Signed-off-by: David Sommerseth <davids@...515...>
----
- doc/Makefile.am | 1 +
- 1 file changed, 1 insertion(+)
+commit ee6830c34818bf4dc30cf7f0959ea0c9246bab8d
+Author: David Sommerseth
+Date:   Fri Jul 17 13:01:36 2020 +0200
 
-diff --git a/doc/Makefile.am b/doc/Makefile.am
-index a1ac02f6..add92198 100644
---- a/doc/Makefile.am
-+++ b/doc/Makefile.am
-@@ -31,6 +31,7 @@ dist_doc_DATA = \
- 	man-sections/plugin-options.rst \
- 	man-sections/protocol-options.rst \
- 	man-sections/proxy-options.rst \
-+	man-sections/renegotiation.rst \
- 	man-sections/signals.rst \
- 	man-sections/script-options.rst \
- 	man-sections/server-options.rst \
--- 
-2.26.0
+     doc/man: Add misssing renegotiation.rst to Makefile.am
+
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20200717110136.11579-1-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20431.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
