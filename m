@@ -1,5 +1,5 @@
-Date: Fri, 17 Jul 2020 11:47:16 +0200 (CEST)
-Message-Id: <202007170947.06H9lG5B008229@...2054...>
+Date: Fri, 17 Jul 2020 11:48:54 +0200 (CEST)
+Message-Id: <202007170948.06H9msLC008246@...2054...>
 From: Gert Doering <gert@...1296...>
 In-Reply-To: <20200716225338.611-7-davids@...515...>
 References: <20200716225338.611-7-davids@...515...>
@@ -17,6 +17,13 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: David Sommerseth <davids@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
+
+(oops, sent this one too quickly - resending)
+
+Acked-by: Gert Doering <gert@...1296...>
+
+I have seen these changes before (in the compression patch), they make
+sense, so of course we want to have them in .rst as well.
 
 Your patch has been applied to the master branch.
 
