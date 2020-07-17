@@ -1,11 +1,12 @@
-From: Matthias Andree <matthias.andree@...68...>
-Date: Fri, 17 Jul 2020 19:19:18 +0200
-Message-Id: <20200717171918.230727-1-matthias.andree@...68...>
-In-Reply-To: <20200717170942.227701-1-matthias.andree@...68...>
 References: <20200717170942.227701-1-matthias.andree@...68...>
+From: Matthias Andree <matthias.andree@...68...>
+Message-ID: <b71ffeb6-9d40-b580-ed42-75ba162c3eb4@...68...>
+Date: Fri, 17 Jul 2020 19:21:48 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Merge Makefile.am's AUTOMAKE_OPTIONS into
- configure.ac's AM_INIT_AUTOMAKE.
+In-Reply-To: <20200717170942.227701-1-matthias.andree@...68...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] Merge Makefile.am's AUTOMAKE_OPTIONS
+ into configure.ac's AM_INIT_AUTOMAKE.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,52 +15,14 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Matthias Andree <matthias.andree@...68...>
 
-Else one location overwrites options from the other.
+Am 17.07.20 um 19:09 schrieb Matthias Andree:
+> +LT_INIT()
+> +
 
-Signed-off-by: Matthias Andree <matthias.andree@...68...>
----
- Makefile.am  | 3 ---
- configure.ac | 4 +++-
- 2 files changed, 3 insertions(+), 4 deletions(-)
-
-diff --git a/Makefile.am b/Makefile.am
-index 439120e4..d1c10fc5 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -23,9 +23,6 @@
- #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- #
-
--# This option prevents autoreconf from overriding our COPYING and
--# INSTALL targets:
--AUTOMAKE_OPTIONS =3D foreign 1.9
- ACLOCAL_AMFLAGS =3D -I m4
-
- MAINTAINERCLEANFILES =3D \
-diff --git a/configure.ac b/configure.ac
-index 45148892..8ed83bc2 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -54,7 +54,9 @@ m4_define([serial_tests], [
-                 awk '{split ($NF,a,"."); if (a[1] =3D=3D 1 && a[2] >=3D 12=
-) { print "serial-tests" }}'
-     ])
- ])
--AM_INIT_AUTOMAKE(foreign serial_tests) dnl NB: Do not [quote] this paramet=
-er.
-+# This foreign option prevents autoreconf from overriding our COPYING and
-+# INSTALL targets:
-+AM_INIT_AUTOMAKE(foreign serial_tests 1.9) dnl NB: Do not [quote] this par=
-ameter.
- AC_CANONICAL_HOST
- AC_USE_SYSTEM_EXTENSIONS
-
---
-2.25.4
+This guy escaped, so NAK on the first version of the patch.
 
 
