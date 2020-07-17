@@ -1,15 +1,11 @@
-References: <20200716225338.611-3-davids@...515...>
- <202007170802.06H82n5d006538@...2054...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <44e29beb-a441-97c0-bf66-1e2071e1296f@...2080...>
-Date: Fri, 17 Jul 2020 12:04:30 +0200
+From: David Sommerseth <davids@...515...>
+Date: Fri, 17 Jul 2020 12:54:53 +0200
+Message-Id: <20200717105453.10718-1-davids@...515...>
+In-Reply-To: <20200716225338.611-9-davids@...515...>
+References: <20200716225338.611-9-davids@...515...>
 MIME-Version: 1.0
-In-Reply-To: <202007170802.06H82n5d006538@...2054...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="agkaWE6qqzmgYOqLfftF9ZDS1f6TYuvt7"
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: doc/man: Replace old man
- page with generated man page
+Subject: [Openvpn-devel] [PATCH] doc/man: Documentation for --bind-dev /
+ VRFs on Linux
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,121 +14,145 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---agkaWE6qqzmgYOqLfftF9ZDS1f6TYuvt7
-Content-Type: multipart/mixed; boundary="TKTCRoEBWEJNQsWla70m8iBgQID4vHLk2";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <44e29beb-a441-97c0-bf66-1e2071e1296f@...2080...>
-Subject: Re: [PATCH applied] Re: doc/man: Replace old man page with generated
- man page
-References: <20200716225338.611-3-davids@...515...>
- <202007170802.06H82n5d006538@...2054...>
-In-Reply-To: <202007170802.06H82n5d006538@...2054...>
-
---TKTCRoEBWEJNQsWla70m8iBgQID4vHLk2
-Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-On 17/07/2020 10:02, Gert Doering wrote:
-> Acked-by: Gert Doering <gert@...1296...>
->=20
-> I have not tested the actual docutils / openvpn.8 generation (Samuli will=
-=20
-> complain loudly if tarball making doesn't work anymore, so that *will*=20
-> see testing).  Generally it looks sane.
->=20
-> This condition looks a bit fishy, though...
->=20
->  +AM_CONDITIONAL([HAVE_PYDOCUTILS], [test "${RST2MAN}" -a "${RST2HTML}"])
->=20
-> not sure what that will do in a POSIX shell.
+Signed-off-by: Maximilian Wilhelm <max@...2564...>
+Signed-off-by: David Sommerseth <davids@...515...>
 
-Hmm ... whoops.  That should probably have been
+---
 
-    test -n "${RST2MAN}" -a -n "${RST2HTML}"
+v2 - Added missing entry into Makefile.am
+---
+ doc/Makefile.am                               |  1 +
+ doc/man-sections/network-config.rst           |  1 +
+ .../virtual-routing-and-forwarding.rst        | 78 +++++++++++++++++++
+ doc/man-sections/vpn-network-options.rst      |  4 +
+ 4 files changed, 84 insertions(+)
+ create mode 100644 doc/man-sections/virtual-routing-and-forwarding.rst
 
-Not sure how that passed during my own tests.  I tested it on a various of
-boxes, but I only have Linux distros easily available.
+diff --git a/doc/Makefile.am b/doc/Makefile.am
+index ca3ba9de..a1ac02f6 100644
+--- a/doc/Makefile.am
++++ b/doc/Makefile.am
+@@ -36,6 +36,7 @@ dist_doc_DATA = \
+ 	man-sections/server-options.rst \
+ 	man-sections/tls-options.rst \
+ 	man-sections/unsupported-options.rst \
++	man-sections/virtual-routing-and-forwarding.rst \
+ 	man-sections/vpn-network-options.rst \
+ 	man-sections/windows-options.rst
+ 
+diff --git a/doc/man-sections/network-config.rst b/doc/man-sections/network-config.rst
+index 12a6e960..04b30aa3 100644
+--- a/doc/man-sections/network-config.rst
++++ b/doc/man-sections/network-config.rst
+@@ -7,3 +7,4 @@ network adapter* (tun/tap device).
+ 
+ .. include:: link-options.rst
+ .. include:: vpn-network-options.rst
++.. include:: virtual-routing-and-forwarding.rst
+diff --git a/doc/man-sections/virtual-routing-and-forwarding.rst b/doc/man-sections/virtual-routing-and-forwarding.rst
+new file mode 100644
+index 00000000..28c13eee
+--- /dev/null
++++ b/doc/man-sections/virtual-routing-and-forwarding.rst
+@@ -0,0 +1,78 @@
++Virtual Routing and Forwarding
++------------------------------
++
++Options in this section relates to configuration of virtual routing and
++forwarding in combination with the underlying operating system.
++
++As of today this is only supported on Linux, a kernel >= 4.9 is
++recommended.
++
++This could come in handy when for example the external network should be
++only used as a means to connect to some VPN endpoints and all regular
++traffic should only be routed through any tunnel(s).  This could be
++achieved by setting up a VRF and configuring the interface connected to
++the external network to be part of the VRF. The examples below will cover
++this setup.
++
++Another option would be to put the tun/tap interface into a VRF. This could
++be done by an up-script which uses the :code:`ip link set` command shown
++below.
++
++
++VRF setup with iproute2
++```````````````````````
++
++Create VRF :code:`vrf_external` and map it to routing table :code:`1023`
++::
++
++      ip link add vrf_external type vrf table 1023
++
++Move :code:`eth0` into :code:`vrf_external`
++::
++
++      ip link set master vrf_external dev eth0
++
++Any prefixes configured on :code:`eth0` will be moved from the :code`main`
++routing table into routing table `1023`
++
++
++VRF setup with ifupdown
++```````````````````````
++
++For Debian based Distributions :code:`ifupdown2` provides an almost drop-in
++replacement for :code:`ifupdown` including VRFs and other features.
++A configuration for an interface :code:`eth0` being part of VRF
++code:`vrf_external` could look like this:
++::
++
++      auto eth0
++      iface eth0
++          address 192.0.2.42/24
++          address 2001:db8:08:15::42/64
++          gateway 192.0.2.1
++          gateway 2001:db8:08:15::1
++          vrf vrf_external
++
++      auto vrf_external
++      iface vrf_external
++          vrf-table 1023
++
++
++OpenVPN configuration
++`````````````````````
++The OpenVPN configuration needs to contain this line:
++::
++
++      bind-dev vrf_external
++
++
++Further reading
++```````````````
++
++Wikipedia has nice page one VRFs: https://en.wikipedia.org/wiki/Virtual_routing_and_forwarding
++
++This talk from the Network Track of FrOSCon 2018 provides an overview about
++advanced layer 2 and layer 3 features of Linux
++
++  - Slides: https://www.slideshare.net/BarbarossaTM/l2l3-fr-fortgeschrittene-helle-und-dunkle-magie-im-linuxnetzwerkstack
++  - Video (german): https://media.ccc.de/v/froscon2018-2247-l2\_l3\_fur\_fortgeschrittene\_-\_helle\_und\_dunkle\_magie\_im\_linux-netzwerkstack
+diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections/vpn-network-options.rst
+index 78c00674..7100c1ae 100644
+--- a/doc/man-sections/vpn-network-options.rst
++++ b/doc/man-sections/vpn-network-options.rst
+@@ -5,6 +5,10 @@ Options in this section relates to configuration of the virtual tun/tap
+ network interface, including setting the VPN IP address and network
+ routing.
+ 
++--bind-dev device
++  (Linux only) Set ``device`` to bind the server socket to a
++  `Virtual Routing and Forwarding`_ device
++
+ --block-ipv6
+   On the client, instead of sending IPv6 packets over the VPN tunnel, all
+   IPv6 packets are answered with an ICMPv6 no route host message. On the
+-- 
+2.26.0
 
-> Maybe this shouldn't be conditional either
->=20
->  +if HAVE_PYDOCUTILS
->   dist_noinst_DATA +=3D openvpn.8
->=20
-> because it will lead to "tarballs randomly contain openvpn.8 or not,=20
-> depending on whether docutils are around" - "make dist" should behave
-> consistently, and if there are no docutils, I think it should fail, not
-> silently leave out files.
-
-The intention is that the tarball contains prebuilt openvpn.8 and openvpn.h=
-tml
-files, which is generated by "make {dist,distcheck}".  If these files exist=
-s,
-they will not be rebuilt unless explicitly removed.  So most users building
-from the source tarball should not notice any difference from prioer OpenVPN
-releases.  This is what the additional dist-hook rule in doc/Makefile.am do=
-es;
-this is run right before the copied source tree is put into a tarball.
-
-The challenge is that it must be a conditional to actually pass ./configure=
- -
-even when built from source tarballs.  Otherwise python-docutils will be a
-build dependency.  We discussed this at the Trento Hackathon and you where
-skeptic to require a Python stack to be installed to build OpenVPN (as that
-stack is not a common system dependency in the non-Linux world).  So we agr=
-eed
-we will ship pre-built man/html files in the source tarballs.
-
-However, to do the "make {dist,distcheck}" from the *git repo*,
-python-docutils need to be a mandatory dependency - because we don't check =
-in
-the prebuilt openvpn.8 and openvpn.html files into the git repo.
-
-This logic could probably contains some flaws and can be further improved, =
-but
-I figured we need to get this tested on a broader set of use cases and
-OS/distros to better see which annoyances which hits us.
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
-
-
-
---TKTCRoEBWEJNQsWla70m8iBgQID4vHLk2--
-
---agkaWE6qqzmgYOqLfftF9ZDS1f6TYuvt7
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJfEXezAAoJEIbPlEyWcf3yUPkP/0I70hLH5pqAYeZOAocYnmDU
-8/A2eZUxXqKU6m3xFEXi2gy65i+jsgONxaDm0jfmr8TFmzsdeHA4adqb2T0aY3XD
-UZ8R3wHYpmBxZJfOiTho46qZF0Zvi9Ic09zSMDZcOJP2f+RPm2Rdbc/J1wpOJHuL
-+RclZkmeQ5b44kYo/GPnKP8JbFgx/o9Ekxg1E3yH4ocRyCo7QQ+P1v1TozWSGv/R
-KVwG8JlYnQDVTBZ9wMswn3NgiDMbEniBVkpBmYnjCJnvT2z9ZFsN8ulT1/BJNKod
-75vehmjVxqbBvhF8s+gSsl9AyU8275FYHJPW8ucel8NNFyZVRrqmea6jNt476v64
-U+DABrPEtQxff5SfBWsDi6s13PMOUo52hY6YNHYt0EWv7yFQRWPTjGK/HvxB6D8o
-GjBjx7w4yxHIpboMEghQgBdnQgvNJE/+HzcL+i+7yBVRRqCiCOnNZb8k/zsAyto2
-C21/v6yRNb2eNY9E1EXnuv+SKU2sDIDGjeyDeK19dFfhb60lTNP2i0KRSn8gDn4o
-E1Oy0P9KM9uXZYj+bG8Z1Vnoy1vmamvKO3cAH6bzT8IDUWUlbCLqqfTQtBqazDdb
-59B6svNsFw2JwPgXkXad8c9fUSoUB/o7yTr3Stapf5fOen9ZZ6WQ5kl1CTUgdy3n
-da3f0h/OzwLXgACS3y3c
-=CPJ3
------END PGP SIGNATURE-----
-
---agkaWE6qqzmgYOqLfftF9ZDS1f6TYuvt7--
 
