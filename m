@@ -1,10 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri, 17 Jul 2020 15:47:33 +0200
-Message-Id: <20200717134739.21168-3-arne@...1227...>
+Date: Fri, 17 Jul 2020 15:47:38 +0200
+Message-Id: <20200717134739.21168-8-arne@...1227...>
 In-Reply-To: <20200717134739.21168-1-arne@...1227...>
 References: <20200717134739.21168-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 3/9] Require AEAD support in the crypto
- library
+Subject: [Openvpn-devel] [PATCH 8/9] Rename ncp-ciphers to data-ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,310 +16,188 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-All supported crypto libraries have AEAD support and with our
-ncp/de facto default cipher AES-256-GCM we do not want to support
-the obscure corner case of a library with disabled AEAD.
+The change in name signals that data-ciphers is the preferred way to
+configure data channel (and not --cipher). The data prefix is chosen
+to avoid ambiguity and make it distinct from tls-cipher for the TLS
+ciphers.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- configure.ac                 |  7 ++-----
- src/openvpn/crypto.c         | 11 -----------
- src/openvpn/crypto_mbedtls.c | 14 --------------
- src/openvpn/crypto_openssl.c | 16 ----------------
- src/openvpn/crypto_openssl.h |  4 ----
- src/openvpn/options.c        |  6 ------
- 6 files changed, 2 insertions(+), 56 deletions(-)
+ Changes.rst                            | 13 ++++++++++---
+ doc/man-sections/protocol-options.rst  | 11 +++++++----
+ doc/man-sections/server-options.rst    |  4 ++--
+ sample/sample-config-files/client.conf |  2 +-
+ src/openvpn/multi.c                    |  4 ++--
+ src/openvpn/options.c                  |  5 +++--
+ src/openvpn/ssl_ncp.c                  |  4 ++--
+ 7 files changed, 27 insertions(+), 16 deletions(-)
 
-diff --git a/configure.ac b/configure.ac
-index d9ad80b1..a8535b70 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -905,11 +905,10 @@ if test "${with_crypto_library}" = "openssl"; then
- 		AC_DEFINE([HAVE_OPENSSL_ENGINE], [1], [OpenSSL engine support available])
- 	fi
+diff --git a/Changes.rst b/Changes.rst
+index 6e283270..2158c8e7 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -14,12 +14,19 @@ ChaCha20-Poly1305 cipher support
+     channel.
  
--	have_crypto_aead_modes="yes"
- 	AC_CHECK_FUNC(
- 		[EVP_aes_256_gcm],
- 		,
--		[have_crypto_aead_modes="no"]
-+		[AC_MSG_ERROR([OpenSSL check for AES-256-GCM support failed])]
- 	)
+ Improved Data channel cipher negotiation
++    The option ``ncp-ciphers`` has been renamed to ``data-ciphers``.
++    The old name is still accepted. The change in name signals that
++    ``data-ciphers`` is the preferred way to configure data channel
++    ciphers and the data prefix is chosen to avoid the ambiguity that
++    exists with ``--cipher`` for the data cipher and ``tls-cipher``
++    for the TLS ciphers.
++
+     OpenVPN clients will now signal all supported ciphers from the
+-    ``ncp-ciphers`` option to the server via ``IV_CIPHERS``. OpenVPN
+-    servers will select the first common cipher from the ``ncp-ciphers``
++    ``data-ciphers`` option to the server via ``IV_CIPHERS``. OpenVPN
++    servers will select the first common cipher from the ``data-ciphers``
+     list instead of blindly pushing the first cipher of the list. This
+     allows to use a configuration like
+-    ``ncp-ciphers ChaCha20-Poly1305:AES-256-GCM`` on the server that
++    ``data-ciphers ChaCha20-Poly1305:AES-256-GCM`` on the server that
+     prefers ChaCha20-Poly1305 but uses it only if the client supports it.
  
-     # All supported OpenSSL version (>= 1.0.2)
-@@ -1003,14 +1002,13 @@ elif test "${with_crypto_library}" = "mbedtls"; then
- 		[AC_MSG_ERROR([mbed TLS 2.y.z required])]
- 	)
+ Asynchronous (deferred) authentication support for auth-pam plugin.
+diff --git a/doc/man-sections/protocol-options.rst b/doc/man-sections/protocol-options.rst
+index 923d2da0..051f1d32 100644
+--- a/doc/man-sections/protocol-options.rst
++++ b/doc/man-sections/protocol-options.rst
+@@ -62,7 +62,7 @@ configured in a compatible way between both the local and remote side.
+   The default is :code:`BF-CBC`, an abbreviation for Blowfish in Cipher
+   Block Chaining mode. When cipher negotiation (NCP) is allowed,
+   OpenVPN 2.4 and newer on both client and server side will automatically
+-  upgrade to :code:`AES-256-GCM`.  See ``--ncp-ciphers`` and
++  upgrade to :code:`AES-256-GCM`.  See ``--data-ciphers`` and
+   ``--ncp-disable`` for more details on NCP.
  
--	have_crypto_aead_modes="yes"
- 	AC_CHECK_FUNCS(
- 		[ \
- 			mbedtls_cipher_write_tag \
- 			mbedtls_cipher_check_tag \
- 		],
- 		,
--		[have_crypto_aead_modes="no"; break]
-+		[AC_MSG_ERROR([mbed TLS check for AEAD support failed])]
- 	)
+   Using :code:`BF-CBC` is no longer recommended, because of its 64-bit
+@@ -169,7 +169,7 @@ configured in a compatible way between both the local and remote side.
+   non-standard key lengths, and a larger key may offer no real guarantee
+   of greater security, or may even reduce security.
  
- 	have_export_keying_material="yes"
-@@ -1225,7 +1223,6 @@ test "${enable_pf}" = "yes" && AC_DEFINE([ENABLE_PF], [1], [Enable internal pack
- test "${enable_strict_options}" = "yes" && AC_DEFINE([ENABLE_STRICT_OPTIONS_CHECK], [1], [Enable strict options check between peers])
+---ncp-ciphers cipher-list
++--data-ciphers cipher-list
+   Restrict the allowed ciphers to be negotiated to the ciphers in
+   ``cipher-list``. ``cipher-list`` is a colon-separated list of ciphers,
+   and defaults to :code:`AES-256-GCM:AES-128-GCM`.
+@@ -189,9 +189,9 @@ configured in a compatible way between both the local and remote side.
+   Additionally, to allow for more smooth transition, if NCP is enabled,
+   OpenVPN will inherit the cipher of the peer if that cipher is different
+   from the local ``--cipher`` setting, but the peer cipher is one of the
+-  ciphers specified in ``--ncp-ciphers``. E.g. a non-NCP client (<=v2.3,
++  ciphers specified in ``--data-ciphers``. E.g. a non-NCP client (<=v2.3,
+   or with --ncp-disabled set) connecting to a NCP server (v2.4+) with
+-  ``--cipher BF-CBC`` and ``--ncp-ciphers AES-256-GCM:AES-256-CBC`` set can
++  ``--cipher BF-CBC`` and ``--data-ciphers AES-256-GCM:AES-256-CBC`` set can
+   either specify ``--cipher BF-CBC`` or ``--cipher AES-256-CBC`` and both
+   will work.
  
- test "${enable_crypto_ofb_cfb}" = "yes" && AC_DEFINE([ENABLE_OFB_CFB_MODE], [1], [Enable OFB and CFB cipher modes])
--test "${have_crypto_aead_modes}" = "yes" && AC_DEFINE([HAVE_AEAD_CIPHER_MODES], [1], [Use crypto library])
- if test "${have_export_keying_material}" = "yes"; then
- 	AC_DEFINE(
- 		[HAVE_EXPORT_KEYING_MATERIAL], [1],
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index bbf47ef7..e92a0dc1 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -64,7 +64,6 @@ static void
- openvpn_encrypt_aead(struct buffer *buf, struct buffer work,
-                      struct crypto_options *opt)
- {
--#ifdef HAVE_AEAD_CIPHER_MODES
-     struct gc_arena gc;
-     int outlen = 0;
-     const struct key_ctx *ctx = &opt->key_ctx_bi.encrypt;
-@@ -152,9 +151,6 @@ err:
-     buf->len = 0;
-     gc_free(&gc);
-     return;
--#else /* HAVE_AEAD_CIPHER_MODES */
--    ASSERT(0);
--#endif /* ifdef HAVE_AEAD_CIPHER_MODES */
- }
+@@ -201,6 +201,9 @@ configured in a compatible way between both the local and remote side.
+   This list is restricted to be 127 chars long after conversion to OpenVPN
+   ciphers.
  
- static void
-@@ -361,7 +357,6 @@ openvpn_decrypt_aead(struct buffer *buf, struct buffer work,
-                      struct crypto_options *opt, const struct frame *frame,
-                      const uint8_t *ad_start)
- {
--#ifdef HAVE_AEAD_CIPHER_MODES
-     static const char error_prefix[] = "AEAD Decrypt error";
-     struct packet_id_net pin = { 0 };
-     const struct key_ctx *ctx = &opt->key_ctx_bi.decrypt;
-@@ -482,10 +477,6 @@ error_exit:
-     buf->len = 0;
-     gc_free(&gc);
-     return false;
--#else /* HAVE_AEAD_CIPHER_MODES */
--    ASSERT(0);
--    return false;
--#endif /* ifdef HAVE_AEAD_CIPHER_MODES */
- }
++  This option was called ``ncp-ciphers`` in OpenVPN 2.4 but has been renamed
++  to ``data-ciphers`` in OpenVPN 2.5 to more accurately reflect its meaning.
++
+ --ncp-disable
+   Disable "Negotiable Crypto Parameters". This completely disables cipher
+   negotiation.
+diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-options.rst
+index c24aec0b..74ad5e18 100644
+--- a/doc/man-sections/server-options.rst
++++ b/doc/man-sections/server-options.rst
+@@ -473,8 +473,8 @@ fast hardware. SSL/TLS authentication must be used in this mode.
+         *AES-GCM-128* and *AES-GCM-256*.
  
- /*
-@@ -1104,7 +1095,6 @@ test_crypto(struct crypto_options *co, struct frame *frame)
-     /* init work */
-     ASSERT(buf_init(&work, FRAME_HEADROOM(frame)));
+   :code:`IV_CIPHERS=<ncp-ciphers>`
+-        The client pushes the list of configured ciphers with the
+-        ``--ciphers`` option to the server.
++        The client announces the list of supported ciphers configured with the
++        ``--data-ciphers`` option to the server.
  
--#ifdef HAVE_AEAD_CIPHER_MODES
-     /* init implicit IV */
-     {
-         const cipher_kt_t *cipher =
-@@ -1126,7 +1116,6 @@ test_crypto(struct crypto_options *co, struct frame *frame)
-             co->key_ctx_bi.decrypt.implicit_iv_len = impl_iv_len;
-         }
-     }
--#endif /* ifdef HAVE_AEAD_CIPHER_MODES */
+   :code:`IV_GUI_VER=<gui_id> <version>`
+         The UI version of a UI if one is running, for example
+diff --git a/sample/sample-config-files/client.conf b/sample/sample-config-files/client.conf
+index 7f2f30a3..47ca4099 100644
+--- a/sample/sample-config-files/client.conf
++++ b/sample/sample-config-files/client.conf
+@@ -112,7 +112,7 @@ tls-auth ta.key 1
+ # then you must also specify it here.
+ # Note that v2.4 client/server will automatically
+ # negotiate AES-256-GCM in TLS mode.
+-# See also the ncp-cipher option in the manpage
++# See also the data-ciphers option in the manpage
+ cipher AES-256-CBC
  
-     msg(M_INFO, "Entering " PACKAGE_NAME " crypto self-test mode.");
-     for (i = 1; i <= TUN_MTU_SIZE(frame); ++i)
-diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index bb752557..19a87eb4 100644
---- a/src/openvpn/crypto_mbedtls.c
-+++ b/src/openvpn/crypto_mbedtls.c
-@@ -530,12 +530,10 @@ cipher_kt_block_size(const mbedtls_cipher_info_t *cipher_kt)
- int
- cipher_kt_tag_size(const mbedtls_cipher_info_t *cipher_kt)
- {
--#ifdef HAVE_AEAD_CIPHER_MODES
-     if (cipher_kt && cipher_kt_mode_aead(cipher_kt))
-     {
-         return OPENVPN_AEAD_TAG_LENGTH;
-     }
--#endif
-     return 0;
- }
- 
-@@ -632,7 +630,6 @@ cipher_ctx_iv_length(const mbedtls_cipher_context_t *ctx)
- int
- cipher_ctx_get_tag(cipher_ctx_t *ctx, uint8_t *tag, int tag_len)
- {
--#ifdef HAVE_AEAD_CIPHER_MODES
-     if (tag_len > SIZE_MAX)
-     {
-         return 0;
-@@ -644,9 +641,6 @@ cipher_ctx_get_tag(cipher_ctx_t *ctx, uint8_t *tag, int tag_len)
-     }
- 
-     return 1;
--#else  /* ifdef HAVE_AEAD_CIPHER_MODES */
--    ASSERT(0);
--#endif /* HAVE_AEAD_CIPHER_MODES */
- }
- 
- int
-@@ -688,7 +682,6 @@ cipher_ctx_reset(mbedtls_cipher_context_t *ctx, const uint8_t *iv_buf)
- int
- cipher_ctx_update_ad(cipher_ctx_t *ctx, const uint8_t *src, int src_len)
- {
--#ifdef HAVE_AEAD_CIPHER_MODES
-     if (src_len > SIZE_MAX)
-     {
-         return 0;
-@@ -700,9 +693,6 @@ cipher_ctx_update_ad(cipher_ctx_t *ctx, const uint8_t *src, int src_len)
-     }
- 
-     return 1;
--#else  /* ifdef HAVE_AEAD_CIPHER_MODES */
--    ASSERT(0);
--#endif /* HAVE_AEAD_CIPHER_MODES */
- }
- 
- int
-@@ -741,7 +731,6 @@ int
- cipher_ctx_final_check_tag(mbedtls_cipher_context_t *ctx, uint8_t *dst,
-                            int *dst_len, uint8_t *tag, size_t tag_len)
- {
--#ifdef HAVE_AEAD_CIPHER_MODES
-     size_t olen = 0;
- 
-     if (MBEDTLS_DECRYPT != ctx->operation)
-@@ -773,9 +762,6 @@ cipher_ctx_final_check_tag(mbedtls_cipher_context_t *ctx, uint8_t *dst,
-     }
- 
-     return 1;
--#else  /* ifdef HAVE_AEAD_CIPHER_MODES */
--    ASSERT(0);
--#endif /* HAVE_AEAD_CIPHER_MODES */
- }
- 
- void
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 161a189e..30c705b9 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -301,9 +301,7 @@ show_available_ciphers(void)
- #ifdef ENABLE_OFB_CFB_MODE
-                        || cipher_kt_mode_ofb_cfb(cipher)
- #endif
--#ifdef HAVE_AEAD_CIPHER_MODES
-                        || cipher_kt_mode_aead(cipher)
--#endif
-                        ))
+ # Enable compression on the VPN link.
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 88ba9db2..d2549bca 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -1827,7 +1827,7 @@ multi_client_set_protocol_options(struct context *c)
+         else
          {
-             cipher_list[num_ciphers++] = cipher;
-@@ -732,7 +730,6 @@ cipher_kt_mode_ofb_cfb(const cipher_kt_t *cipher)
- bool
- cipher_kt_mode_aead(const cipher_kt_t *cipher)
- {
--#ifdef HAVE_AEAD_CIPHER_MODES
-     if (cipher)
-     {
-         switch (EVP_CIPHER_nid(cipher))
-@@ -746,7 +743,6 @@ cipher_kt_mode_aead(const cipher_kt_t *cipher)
-                 return true;
-         }
-     }
--#endif
- 
-     return false;
- }
-@@ -806,11 +802,7 @@ cipher_ctx_iv_length(const EVP_CIPHER_CTX *ctx)
- int
- cipher_ctx_get_tag(EVP_CIPHER_CTX *ctx, uint8_t *tag_buf, int tag_size)
- {
--#ifdef HAVE_AEAD_CIPHER_MODES
-     return EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, tag_size, tag_buf);
--#else
--    ASSERT(0);
--#endif
- }
- 
- int
-@@ -841,16 +833,12 @@ cipher_ctx_reset(EVP_CIPHER_CTX *ctx, const uint8_t *iv_buf)
- int
- cipher_ctx_update_ad(EVP_CIPHER_CTX *ctx, const uint8_t *src, int src_len)
- {
--#ifdef HAVE_AEAD_CIPHER_MODES
-     int len;
-     if (!EVP_CipherUpdate(ctx, NULL, &len, src, src_len))
-     {
-         crypto_msg(M_FATAL, "%s: EVP_CipherUpdate() failed", __func__);
-     }
-     return 1;
--#else  /* ifdef HAVE_AEAD_CIPHER_MODES */
--    ASSERT(0);
--#endif
- }
- 
- int
-@@ -874,7 +862,6 @@ int
- cipher_ctx_final_check_tag(EVP_CIPHER_CTX *ctx, uint8_t *dst, int *dst_len,
-                            uint8_t *tag, size_t tag_len)
- {
--#ifdef HAVE_AEAD_CIPHER_MODES
-     ASSERT(tag_len < SIZE_MAX);
-     if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, tag_len, tag))
-     {
-@@ -882,9 +869,6 @@ cipher_ctx_final_check_tag(EVP_CIPHER_CTX *ctx, uint8_t *dst, int *dst_len,
-     }
- 
-     return cipher_ctx_final(ctx, dst, dst_len);
--#else  /* ifdef HAVE_AEAD_CIPHER_MODES */
--    ASSERT(0);
--#endif
- }
- 
- void
-diff --git a/src/openvpn/crypto_openssl.h b/src/openvpn/crypto_openssl.h
-index 4694ee08..e6f8f537 100644
---- a/src/openvpn/crypto_openssl.h
-+++ b/src/openvpn/crypto_openssl.h
-@@ -61,13 +61,9 @@ typedef HMAC_CTX hmac_ctx_t;
- /** Cipher is in CFB mode */
- #define OPENVPN_MODE_CFB        EVP_CIPH_CFB_MODE
- 
--#ifdef HAVE_AEAD_CIPHER_MODES
--
- /** Cipher is in GCM mode */
- #define OPENVPN_MODE_GCM        EVP_CIPH_GCM_MODE
- 
--#endif /* HAVE_AEAD_CIPHER_MODES */
--
- /** Cipher should encrypt */
- #define OPENVPN_OP_ENCRYPT      1
- 
+             /*
+-             * Push the first cipher from --ncp-ciphers to the client that
++             * Push the first cipher from --data-ciphers to the client that
+              * the client announces to be supporting.
+              */
+             char *push_cipher = ncp_get_best_cipher(o->ncp_ciphers, o->ciphername,
+@@ -1847,7 +1847,7 @@ multi_client_set_protocol_options(struct context *c)
+                 {
+                     msg(M_INFO, "PUSH: No common cipher between server and "
+                         "client. Expect this connection not to work. Server "
+-                        "ncp-ciphers: '%s', client supported ciphers '%s'",
++                        "data-ciphers: '%s', client supported ciphers '%s'",
+                         o->ncp_ciphers, peer_ciphers);
+                 }
+                 else
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index a20b27c9..a35d91e7 100644
+index 31e33ae3..896abcde 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -104,9 +104,7 @@ const char title_string[] =
-     " [MH/RECVDA]"
- #endif
- #endif
--#ifdef HAVE_AEAD_CIPHER_MODES
-     " [AEAD]"
--#endif
-     " built on " __DATE__
- ;
- 
-@@ -871,11 +869,7 @@ init_options(struct options *o, const bool init_gc)
-     o->scheduled_exit_interval = 5;
- #endif
-     o->ciphername = "BF-CBC";
--#ifdef HAVE_AEAD_CIPHER_MODES /* IV_NCP=2 requires GCM support */
-     o->ncp_enabled = true;
--#else
--    o->ncp_enabled = false;
--#endif
-     o->ncp_ciphers = "AES-256-GCM:AES-128-GCM";
-     o->authname = "SHA1";
-     o->prng_hash = "SHA1";
+@@ -536,7 +536,7 @@ static const char usage_message[] =
+     "--cipher alg    : Encrypt packets with cipher algorithm alg\n"
+     "                  (default=%s).\n"
+     "                  Set alg=none to disable encryption.\n"
+-    "--ncp-ciphers list : List of ciphers that are allowed to be negotiated.\n"
++    "--data-ciphers list : List of ciphers that are allowed to be negotiated.\n"
+     "--ncp-disable   : (DEPRECATED) Disable cipher negotiation.\n"
+     "--prng alg [nsl] : For PRNG, use digest algorithm alg, and\n"
+     "                   nonce_secret_len=nsl.  Set alg=none to disable PRNG.\n"
+@@ -7866,7 +7866,8 @@ add_option(struct options *options,
+         VERIFY_PERMISSION(OPT_P_NCP|OPT_P_INSTANCE);
+         options->ciphername = p[1];
+     }
+-    else if (streq(p[0], "ncp-ciphers") && p[1] && !p[2])
++    else if ((streq(p[0], "data-ciphers") || streq(p[0], "ncp-ciphers"))
++            && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_INSTANCE);
+         options->ncp_ciphers = p[1];
+diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
+index e057a40b..6760884e 100644
+--- a/src/openvpn/ssl_ncp.c
++++ b/src/openvpn/ssl_ncp.c
+@@ -111,7 +111,7 @@ mutate_ncp_cipher_list(const char *list, struct gc_arena *gc)
+         const cipher_kt_t *ktc = cipher_kt_get(token);
+         if (!ktc)
+         {
+-            msg(M_WARN, "Unsupported cipher in --ncp-ciphers: %s", token);
++            msg(M_WARN, "Unsupported cipher in --data-ciphers: %s", token);
+             error_found = true;
+         }
+         else
+@@ -130,7 +130,7 @@ mutate_ncp_cipher_list(const char *list, struct gc_arena *gc)
+             if (!(buf_forward_capacity(&new_list) >
+                   strlen(ovpn_cipher_name) + 2))
+             {
+-                msg(M_WARN, "Length of --ncp-ciphers is over the "
++                msg(M_WARN, "Length of --data-ciphers is over the "
+                     "limit of 127 chars");
+                 error_found = true;
+             }
 -- 
 2.26.2
 
