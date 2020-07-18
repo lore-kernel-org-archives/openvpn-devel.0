@@ -1,10 +1,9 @@
-Date: Sat, 18 Jul 2020 09:41:46 +0200 (CEST)
-Message-Id: <202007180741.06I7fk9c028482@...2054...>
+Date: Sat, 18 Jul 2020 11:00:28 +0200 (CEST)
+Message-Id: <202007180900.06I90Sbw040928@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200717212820.8998-1-a@...2181...>
-References: <20200717212820.8998-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: options: don't leak inline'd
- key material in logfile
+In-Reply-To: <20200717171544.21632-1-davids@...515...>
+References: <20200717171544.21632-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove --no-iv
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,34 +14,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
+To: David Sommerseth <davids@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Stared-at-code (clever macro!) and tested :-) - now I see
+I have taken this one out of sequence (it is intended to
+go after the --no-replay patch), because *this* one is simple,
+and the other one is quite a bit above my pay grade - plus
+it modifies stuff that Arne is working on (the frame adjustment
+stuff), so that needs much more careful scrutiny.
 
-2020-07-18 09:39:52 us=800872   ca_file = '[INLINE]'
-2020-07-18 09:39:52 us=800880   cert_file = '[INLINE]'
-2020-07-18 09:39:52 us=800886   priv_key_file = '[INLINE]'
+The patch itself is conflict-free, but the patch context in 
+Changes.rst and doc/man-sections/server-options.rst is different.
 
-what used to be actual file content.
+Your patch has been applied to the master branch.
 
-Thanks for the quick fix!
+commit 4b4b34da9811da9e6912c89cd68be3cfe1684a97
+Author: David Sommerseth
+Date:   Fri Jul 17 19:15:44 2020 +0200
 
-Your patch has been applied to the master branch (while a bugfix,
-the offending code is not in 2.4, so no fix needed there).
+     Remove --no-iv
 
-commit 19fab1f6cf71715f84d09d6a8b49698b0ae42cd1
-Author: Antonio Quartulli
-Date:   Fri Jul 17 23:28:20 2020 +0200
-
-     options: don't leak inline'd key material in logfile
-
-     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Signed-off-by: David Sommerseth <davids@...515...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200717212820.8998-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20472.html
+     Message-Id: <20200717171544.21632-1-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20460.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
