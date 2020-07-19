@@ -1,12 +1,9 @@
-References: <20200719173436.16431-1-arne@...1227...>
- <20200719173436.16431-2-arne@...1227...>
-From: tincanteksup <tincanteksup@...277...>
-Message-ID: <cb524db0-ec40-c378-355b-145be02e9530@...277...>
-Date: Sun, 19 Jul 2020 20:39:22 +0100
-MIME-Version: 1.0
+Date: Sun, 19 Jul 2020 22:05:54 +0200 (CEST)
+Message-Id: <202007192005.06JK5s9N070266@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20200719173436.16431-2-arne@...1227...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH v8 2/5] client-connect: Add deferred
+References: <20200719173436.16431-2-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: client-connect: Add deferred
  support to the client-connect script handler
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -16,358 +13,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Fabian Knittel <fabian.knittel@...1547...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-4x typo
+Acked-by: Gert Doering <gert@...1296...>
 
-On 19/07/2020 18:34, Arne Schwabe wrote:
-> From: Fabian Knittel <fabian.knittel@...1547...>
-> 
-> This patch introduces the concept of a return value file for the client-connect
-> handlers. (This is very similar to the auth value file used during deferred
-> authentication.)  The file name is stored in the client_connect_state struct.
-> 
-> In addition, the patch also allows the storage of the client config file name
-> in struct client_connect_state.
-> 
-> Both changes are used by the client-connect script handler to support deferred
-> client-connection handling.  The deferred return value file (deferred_ret_file)
-> is passed to the actual script via the environment.  If the script succeeds and
-> writes the value for deferral into the deferred_ret_file, the handler knows to
-> indicate deferral.  Later on, the deferred handler checks whether the value of
-> the deferred_ret_file has been updated to success or failure.
-> 
-> Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->   src/openvpn/multi.c | 229 +++++++++++++++++++++++++++++++++++++++++---
->   src/openvpn/multi.h |  12 +++
->   2 files changed, 228 insertions(+), 13 deletions(-)
-> 
-> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-> index aab15cf7..165a3209 100644
-> --- a/src/openvpn/multi.c
-> +++ b/src/openvpn/multi.c
-> @@ -1851,6 +1851,171 @@ multi_client_set_protocol_options(struct context *c)
->       }
->   }
->   
-> +/**
-> + * Delete the temporary file for the return value of client connect
-> + * It also removes it from it from client_connect_defer_state and
-> + * environment
-> + */
-> +static void
-> +ccs_delete_deferred_ret_file(struct multi_instance *mi)
-> +{
-> +    struct client_connect_defer_state *ccs = &(mi->client_connect_defer_state);
-> +    if (!ccs->deferred_ret_file)
-> +    {
-> +        return;
-> +    }
-> +
-> +    setenv_del(mi->context.c2.es, "client_connect_deferred_file");
-> +    if (!platform_unlink(ccs->deferred_ret_file))
-> +    {
-> +        msg(D_MULTI_ERRORS, "MULTI: problem deleting temporary file: %s",
-> +            ccs->deferred_ret_file);
-> +    }
-> +    free(ccs->deferred_ret_file);
-> +    ccs->deferred_ret_file = NULL;
-> +}
-> +
-> +/**
-> + * Create a temporary file for the return value of client connect
-> + * and puts it into the client_connect_defer_state and environment
-> + * as "client_connect_deferred_file"
-> + *
-> + * @return boolean value if creation was successfull
+Tested on the server rig, with a client-connect script which can do deferred
+("echo 2 >$client_connect_deferred_file") if requested, and will then succeed,
+fail, or "disable".  For "succeed" and "disable", this is all clear from the
+server logs, but for "fail", you see the instance do nothing while the background
+process is busy, and then it will start running DISCONNECT handlers...:
 
-successfull -> successful
+Jul 19 21:55:29 gentoo ... PUSH: Received control message: 'PUSH_REQUEST'
+Jul 19 21:55:44 gentoo last message buffered 3 times
+Jul 19 21:55:44 gentoo ... OPTIONS IMPORT: reading client specific options from: /tmp/openvpn_cc_268321913a8c50ce50deccf46ef6817a.tmp
+Jul 19 21:55:44 gentoo ... sample-cc: OPENVPN_PLUGIN_CLIENT_DISCONNECT
+Jul 19 21:55:44 gentoo ... PLUGIN_CALL: POST /root/t_server/tun-udp-p2mp-112-mask/sample-client-connect.so/PLUGIN_CLIENT_DISCONNECT status=0
+
+the fact that it's reading the "client specific options" even in case of 
+failure is clear form the source (but I decided that it won't do harm, so 
+"leave it in") but the fact that it's not logging the failure is not good - so 
+I think we need to differenciate CC_RET_SUCCEEDED vs. CC_RET_FAILED in the 
+"if (ret != CC_RET_DEFERRED)" clause in in multi_client_connect_script_deferred().
+
+Since this is logging, and basic functionality works, I think this can go in 
+a followup patch.
 
 
-> + */
-> +static bool
-> +ccs_gen_deferred_ret_file(struct multi_instance *mi)
-> +{
-> +    struct client_connect_defer_state *ccs = &(mi->client_connect_defer_state);
-> +    struct gc_arena gc = gc_new();
-> +    const char *fn;
-> +
-> +    /* Delete file if it already exists */
-> +    ccs_delete_deferred_ret_file(mi);
-> +
-> +    fn = platform_create_temp_file(mi->context.options.tmp_dir, "ccr", &gc);
-> +    if (!fn)
-> +    {
-> +        gc_free(&gc);
-> +        return false;
-> +    }
-> +    ccs->deferred_ret_file = string_alloc(fn, NULL);
-> +
-> +    setenv_str(mi->context.c2.es, "client_connect_deferred_file",
-> +               ccs->deferred_ret_file);
-> +
-> +    gc_free(&gc);
-> +    return true;
-> +}
-> +
-> +/**
-> + * Tests whether the deferred return value file exists and returns the
-> + * contained return value.
-> + *
-> + * @return CC_RET_SKIPPED if the file does not exist or is empty.
-> + *         CC_RET_DEFERRED, CC_RET_SUCCEEDED or CC_RET_FAILED depending on
-> + *         the value stored in the file.
-> + */
-> +static enum client_connect_return
-> +ccs_test_deferred_ret_file(struct multi_instance *mi)
-> +{
-> +    struct client_connect_defer_state *ccs = &(mi->client_connect_defer_state);
-> +    FILE *fp = fopen(ccs->deferred_ret_file, "r");
-> +    if (!fp)
-> +    {
-> +        return CC_RET_SKIPPED;
-> +    }
-> +
-> +    enum client_connect_return ret = CC_RET_SKIPPED;
-> +    const int c = fgetc(fp);
-> +    switch (c)
-> +    {
-> +        case '0':
-> +            ret = CC_RET_FAILED;
-> +            break;
-> +
-> +        case '1':
-> +            ret = CC_RET_SUCCEEDED;
-> +            break;
-> +
-> +        case '2':
-> +            ret = CC_RET_DEFERRED;
-> +            break;
-> +
-> +        case EOF:
-> +            if (feof(fp))
-> +            {
-> +                ret = CC_RET_SKIPPED;
-> +                break;
-> +            }
-> +
-> +        /* Not EOF, but other error fall through to error state */
-> +        default:
-> +            /* We received an unknown/unexpected value.  Assume failure. */
-> +            msg(M_WARN, "WARNING: Unknown/unexcepted value in deferred"
+Quite a few typos and grammar corrections from Richard integrated 
+(originally to v5 09/14).
 
-unexcepted -> unexpected or unaccepted
+Antonio had a few "parenthesis not needed" comments on that one, but after
+discussion on IRC the result was "might be, but it's more explicit this way
+which address is taken".
+
+Your patch has been applied to the master branch.
+
+commit 529b1ab288de569bff946e7b6f8f6f8817f15163
+Author: Fabian Knittel
+Date:   Sun Jul 19 19:34:33 2020 +0200
+
+     client-connect: Add deferred support to the client-connect script handler
+
+     Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20200719173436.16431-2-arne@...1227...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20200719173436.16431-2-arne@...1227...
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-> +                "client-connect resultfile");
-> +            ret = CC_RET_FAILED;
-> +    }
-> +    fclose(fp);
-> +
-> +    return ret;
-> +}
-> +
-> +/**
-> + * Deletes the temporary file for the config directives of the  client connect
-> + * script and removes it into the client_connect_defer_state and environment
-> + *
-> + */
-> +static void
-> +ccs_delete_config_file(struct multi_instance *mi)
-> +{
-> +    struct client_connect_defer_state *ccs = &(mi->client_connect_defer_state);
-> +    if (ccs->config_file)
-> +    {
-> +        setenv_del(mi->context.c2.es, "client_connect_config_file");
-> +        if (!platform_unlink(ccs->config_file))
-> +        {
-> +            msg(D_MULTI_ERRORS, "MULTI: problem deleting temporary file: %s",
-> +                ccs->config_file);
-> +        }
-> +        free(ccs->config_file);
-> +        ccs->config_file = NULL;
-> +    }
-> +}
-> +
-> +/**
-> + * Create a temporary file for the config directives of the  client connect
-> + * script and puts it into the client_connect_defer_state and environment
-> + * as "client_connect_config_file"
-> + *
-> + * @return boolean value if creation was successfull
+--
+kind regards,
 
-successfull -> successful
+Gert Doering
 
-
-> + */
-> +static bool
-> +ccs_gen_config_file(struct multi_instance *mi)
-> +{
-> +    struct client_connect_defer_state *ccs = &(mi->client_connect_defer_state);
-> +    struct gc_arena gc = gc_new();
-> +    const char *fn;
-> +
-> +    if (ccs->config_file)
-> +    {
-> +        ccs_delete_config_file(mi);
-> +    }
-> +
-> +    fn = platform_create_temp_file(mi->context.options.tmp_dir, "cc", &gc);
-> +    if (!fn)
-> +    {
-> +        gc_free(&gc);
-> +        return false;
-> +    }
-> +    ccs->config_file = string_alloc(fn, NULL);
-> +
-> +    setenv_str(mi->context.c2.es, "client_connect_config_file",
-> +               ccs->config_file);
-> +
-> +    gc_free(&gc);
-> +    return true;
-> +}
-> +
->   static enum client_connect_return
->   multi_client_connect_call_plugin_v1(struct multi_context *m,
->                                       struct multi_instance *mi,
-> @@ -1951,7 +2116,39 @@ multi_client_connect_call_plugin_v2(struct multi_context *m,
->       return ret;
->   }
->   
-> +static enum client_connect_return
-> +multi_client_connect_script_deferred(struct multi_context *m,
-> +                                     struct multi_instance *mi,
-> +                                     unsigned int *option_types_found)
-> +{
-> +    ASSERT(mi);
-> +    ASSERT(option_types_found);
-> +    struct client_connect_defer_state *ccs = &(mi->client_connect_defer_state);
-> +    enum client_connect_return ret = CC_RET_SKIPPED;
-> +
-> +    ret = ccs_test_deferred_ret_file(mi);
->   
-> +    if (ret == CC_RET_SKIPPED)
-> +    {
-> +        /*
-> +         * Skipped and deferred are equivalent in this context.
-> +         * skipped means that the called program has not yet
-> +         * written a return status implicitly needing more time
-> +         * while deferred is the explicit notification that it
-> +         * needs more time
-> +         */
-> +        ret = CC_RET_DEFERRED;
-> +    }
-> +
-> +    if (ret != CC_RET_DEFERRED)
-> +    {
-> +        ccs_delete_deferred_ret_file(mi);
-> +        multi_client_connect_post(m, mi, ccs->config_file,
-> +                                  option_types_found);
-> +        ccs_delete_config_file(mi);
-> +    }
-> +    return ret;
-> +}
->   
->   /**
->    * Runs the --client-connect script if one is defined.
-> @@ -1964,48 +2161,54 @@ multi_client_connect_call_script(struct multi_context *m,
->   {
->       if (deferred)
->       {
-> -        return CC_RET_FAILED;
-> +        return multi_client_connect_script_deferred(m, mi, option_types_found);
->       }
->       ASSERT(m);
->       ASSERT(mi);
->   
->       enum client_connect_return ret = CC_RET_SKIPPED;
-> +    struct client_connect_defer_state *ccs = &(mi->client_connect_defer_state);
->   
->       if (mi->context.options.client_connect_script)
->       {
->           struct argv argv = argv_new();
->           struct gc_arena gc = gc_new();
-> -        const char *dc_file = NULL;
->   
->           setenv_str(mi->context.c2.es, "script_type", "client-connect");
->   
-> -        dc_file = platform_create_temp_file(mi->context.options.tmp_dir,
-> -                                            "cc", &gc);
-> -        if (!dc_file)
-> +        if (!ccs_gen_config_file(mi)
-> +            || !ccs_gen_deferred_ret_file(mi))
->           {
->               ret = CC_RET_FAILED;
->               goto cleanup;
->           }
->   
->           argv_parse_cmd(&argv, mi->context.options.client_connect_script);
-> -        argv_printf_cat(&argv, "%s", dc_file);
-> +        argv_printf_cat(&argv, "%s", ccs->config_file);
->   
->           if (openvpn_run_script(&argv, mi->context.c2.es, 0, "--client-connect"))
->           {
-> -            multi_client_connect_post(m, mi, dc_file, option_types_found);
-> -            ret = CC_RET_SUCCEEDED;
-> +            if (ccs_test_deferred_ret_file(mi) == CC_RET_DEFERRED)
-> +            {
-> +                ret = CC_RET_DEFERRED;
-> +            }
-> +            else
-> +            {
-> +                multi_client_connect_post(m, mi, ccs->config_file,
-> +                                          option_types_found);
-> +                ret = CC_RET_SUCCEEDED;
-> +            }
->           }
->           else
->           {
->               ret = CC_RET_FAILED;
->           }
-> -
-> -        if (!platform_unlink(dc_file))
-> +cleanup:
-> +        if (ret != CC_RET_DEFERRED)
->           {
-> -            msg(D_MULTI_ERRORS, "MULTI: problem deleting temporary file: %s",
-> -                dc_file);
-> +            ccs_delete_config_file(mi);
-> +            ccs_delete_deferred_ret_file(mi);
->           }
-> -cleanup:
->           argv_free(&argv);
->           gc_free(&gc);
->       }
-> diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-> index 11da0209..3ebf6b9f 100644
-> --- a/src/openvpn/multi.h
-> +++ b/src/openvpn/multi.h
-> @@ -73,6 +73,18 @@ struct client_connect_defer_state
->       /* Remember which option classes where processed for delayed option
->        * handling. */
->       unsigned int option_types_found;
-> +
-> +    /**
-> +     * The temporrary file name that contains the return status of the
-
-temporrary -> temporary
-
-
-> +     * client-connect script if it exits with defer as status
-> +     */
-> +    char *deferred_ret_file;
-> +
-> +    /**
-> +     * The temporary file name that contains the config directives
-> +     * returned by the client-connect script
-> +     */
-> +    char *config_file;
->   };
->   
->   /**
-> 
 
