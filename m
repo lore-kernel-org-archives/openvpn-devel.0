@@ -1,8 +1,10 @@
-From: David Sommerseth <davids@...515...>
-Date: Sun, 19 Jul 2020 13:48:53 +0200
-Message-Id: <20200719114853.24168-1-davids@...515...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] doc/man: Do not install man *.rst files
+Date: Sun, 19 Jul 2020 13:55:24 +0200 (CEST)
+Message-Id: <202007191155.06JBtOAW063657@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20200719114853.24168-1-davids@...515...>
+References: <20200719114853.24168-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: doc/man: Do not install man
+ CONTRIBUTING.rst Changes.rst files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,50 +15,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <davids@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-When the man page got split up into several .rst files, these files got
-listed into dist_doc_DATA=.  This variable will both distribute (package
-in the source tarball) and install these files into /usr/share/doc.
-This was not intended, and it duplicates the content and makes the doc
-dir quite messy.
+Acked-by: Gert Doering <gert@...1296...>
 
-By moving these files to dist_noinst_DATA= instead, these files are
-still distributed but not installed via 'make install'.
+Your patch has been applied to the master branch.
 
-Signed-off-by: David Sommerseth <davids@...515...>
----
- doc/Makefile.am | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+commit 4cabd28a77116ab3926f81258af9bdb342e0336a
+Author: David Sommerseth
+Date:   Sun Jul 19 13:48:53 2020 +0200
 
-diff --git a/doc/Makefile.am b/doc/Makefile.am
-index add92198..340dd553 100644
---- a/doc/Makefile.am
-+++ b/doc/Makefile.am
-@@ -15,7 +15,11 @@ MAINTAINERCLEANFILES = \
- SUBDIRS = doxygen
- 
- dist_doc_DATA = \
--	management-notes.txt openvpn.8.rst \
-+	management-notes.txt
-+
-+dist_noinst_DATA = \
-+	README.plugins interactive-service-notes.rst \
-+	openvpn.8.rst \
- 	man-sections/advanced-options.rst \
- 	man-sections/client-options.rst \
- 	man-sections/connection-profiles.rst \
-@@ -41,9 +45,6 @@ dist_doc_DATA = \
- 	man-sections/vpn-network-options.rst \
- 	man-sections/windows-options.rst
- 
--dist_noinst_DATA = \
--	README.plugins interactive-service-notes.rst
--
- openvpn.8 :
- if HAVE_PYDOCUTILS
- 	$(RST2MAN) $(srcdir)/$@.rst > $@
--- 
-2.26.0
+     doc/man: Do not install man CONTRIBUTING.rst Changes.rst files
+
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20200719114853.24168-1-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20476.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
