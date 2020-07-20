@@ -1,10 +1,8 @@
-Date: Mon, 20 Jul 2020 12:52:03 +0200 (CEST)
-Message-Id: <202007201052.06KAq3Fh093607@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200719173436.16431-5-arne@...1227...>
-References: <20200719173436.16431-5-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: client-connect: Implement
- deferred connect support for plugin API v2
+From: David Sommerseth <davids@...515...>
+Date: Mon, 20 Jul 2020 13:18:40 +0200
+Message-Id: <20200720111840.7527-1-davids@...515...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Remove --client-cert-not-required
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,98 +13,74 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+This removes support for the --client-cert-not-required option.  To
+avoid starting a server with this option just ignored, which would make
+it impossible for existing clients to connect it will exit with
+instructions to replace this option with --verify-client-cert none.
 
-Stared-at-code, and whacked it from all sides - sync and 
-async/deferred CLIENT_CONNECT and CLIENT_CONNECT_V2, with
-"success", "failure" and "disabled" rejection:
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ src/openvpn/options.c                | 9 +++------
+ src/plugins/auth-pam/README.auth-pam | 2 +-
+ 2 files changed, 4 insertions(+), 7 deletions(-)
 
-Test sets succeeded: 5 5a 5b 5c 5v1 5v2 5v3 5w1 5w2 5w3 5w4 5x1 5x2 5x3 5x4.
-Test sets failed: none.
-
-(Full "full test" is still running, but I do not expect breakage
-in other code paths)
-
-I even tested this case:
-
-2020-07-20 12:12:20 us=422277 cron2-freebsd-tc-amd64/194.97.140.21:50614 A plugin that defers from the OPENVPN_PLUGIN_CLIENT_CONNECT_V2 call must also declare support for OPENVPN_PLUGIN_CLIENT_CONNECT_DEFER_V2
-
-which I truly like ("this is an error in the plugin, point it 
-out clearly and refuse cooperation")
-
-
-The polling of the plugin status is a bit weird, as in "events are firing
-much more often than I would have expected" - this is for a plugin with
-25s delay (and the plugin handler logging the remaining time):
-
-2020-07-20 12:30:26 PLUGIN sample-cc: OPENVPN_PLUGIN_CLIENT_CONNECT_V2
-2020-07-20 12:30:26 PLUGIN sample-cc: env has UV_WANT_CC2_ASYNC=25 -> set up deferred handler
-2020-07-20 12:30:26 PLUGIN_CALL: POST /root/t_server/tun-udp-p2mp-112-mask/sample-client-connect.so/PLUGIN_CLIENT_CONNECT status=2
-2020-07-20 12:30:27 cron2-freebsd-tc-amd64/194.97.140.21:35288 PUSH: Received control message: 'PUSH_REQUEST'
-2020-07-20 12:30:27 PLUGIN sample-cc: defer_v2: seconds left=24
-2020-07-20 12:30:27 cron2-freebsd-tc-amd64/194.97.140.21:35288 PLUGIN_CALL: POST ...V2 status=2
-2020-07-20 12:30:27 PLUGIN sample-cc: defer_v2: seconds left=24
-2020-07-20 12:30:27 cron2-freebsd-tc-amd64/194.97.140.21:35288 PLUGIN_CALL: POST ...V2 status=2
-2020-07-20 12:30:28 PLUGIN sample-cc: defer_v2: seconds left=23
-2020-07-20 12:30:28 cron2-freebsd-tc-amd64/194.97.140.21:35288 PLUGIN_CALL: POST ...V2 status=2
-2020-07-20 12:30:32 cron2-freebsd-tc-amd64/194.97.140.21:35288 PUSH: Received control message: 'PUSH_REQUEST'
-2020-07-20 12:30:32 PLUGIN sample-cc: defer_v2: seconds left=19
-2020-07-20 12:30:32 cron2-freebsd-tc-amd64/194.97.140.21:35288 PLUGIN_CALL: POST ...V2 status=2
-2020-07-20 12:30:32 PLUGIN sample-cc: defer_v2: seconds left=19
-2020-07-20 12:30:32 cron2-freebsd-tc-amd64/194.97.140.21:35288 PLUGIN_CALL: POST ...V2 status=2
-2020-07-20 12:30:37 cron2-freebsd-tc-amd64/194.97.140.21:35288 PUSH: Received control message: 'PUSH_REQUEST'
-2020-07-20 12:30:37 PLUGIN sample-cc: defer_v2: seconds left=14
-2020-07-20 12:30:37 cron2-freebsd-tc-amd64/194.97.140.21:35288 PLUGIN_CALL: POST ...V2 status=2
-2020-07-20 12:30:37 PLUGIN sample-cc: defer_v2: seconds left=14
-2020-07-20 12:30:37 cron2-freebsd-tc-amd64/194.97.140.21:35288 PLUGIN_CALL: POST ...V2 status=2
-2020-07-20 12:30:42 PLUGIN sample-cc: defer_v2: seconds left=9
-2020-07-20 12:30:42 cron2-freebsd-tc-amd64/194.97.140.21:35288 PLUGIN_CALL: POST ...V2 status=2
-2020-07-20 12:30:42 cron2-freebsd-tc-amd64/194.97.140.21:35288 PUSH: Received control message: 'PUSH_REQUEST'
-2020-07-20 12:30:42 PLUGIN sample-cc: defer_v2: seconds left=9
-2020-07-20 12:30:42 cron2-freebsd-tc-amd64/194.97.140.21:35288 PLUGIN_CALL: POST ...V2 status=2
-2020-07-20 12:30:42 PLUGIN sample-cc: defer_v2: seconds left=9
-2020-07-20 12:30:42 cron2-freebsd-tc-amd64/194.97.140.21:35288 PLUGIN_CALL: POST ...V2 status=2
-2020-07-20 12:30:47 PLUGIN sample-cc: defer_v2: seconds left=4
-2020-07-20 12:30:47 cron2-freebsd-tc-amd64/194.97.140.21:35288 PLUGIN_CALL: POST ...V2 status=2
-2020-07-20 12:30:47 cron2-freebsd-tc-amd64/194.97.140.21:35288 PUSH: Received control message: 'PUSH_REQUEST'
-2020-07-20 12:30:47 PLUGIN sample-cc: defer_v2: seconds left=4
-2020-07-20 12:30:47 cron2-freebsd-tc-amd64/194.97.140.21:35288 PLUGIN_CALL: POST ...V2 status=2
-2020-07-20 12:30:47 PLUGIN sample-cc: defer_v2: seconds left=4
-2020-07-20 12:30:47 cron2-freebsd-tc-amd64/194.97.140.21:35288 PLUGIN_CALL: POST ...V2 status=2
-2020-07-20 12:30:52 PLUGIN sample-cc: defer_v2: seconds left=-1
-2020-07-20 12:30:52 PLUGIN sample-cc: env has UV_WANT_CC2_FAIL -> fail
-2020-07-20 12:30:52 cron2-freebsd-tc-amd64/194.97.140.21:35288 PLUGIN_CALL: POST /root/t_server/tun-udp-p2mp-112-mask/sample-client-connect.so/PLUGIN_CLIENT_CONNECT_DEFER_V2 status=1
-2020-07-20 12:30:52 cron2-freebsd-tc-amd64/194.97.140.21:35288 PLUGIN_CALL: plugin function PLUGIN_CLIENT_CONNECT_DEFER_V2 failed with status 1: /root/t_server/tun-udp-p2mp-112-mask/sample-client-connect.so
-2020-07-20 12:30:52 cron2-freebsd-tc-amd64/194.97.140.21:35288 WARNING: client-connect-v2 plugin call failed
-2020-07-20 12:30:52 PLUGIN sample-cc: OPENVPN_PLUGIN_CLIENT_DISCONNECT
-
-Is this intentional?  Or more some sort of "huh? why?" effect?
-
-(This is with just a single client connecting, so no events from 
-other instances)
-
-
-Your patch has been applied to the master branch.
-
-commit aad16b6c48735c5449d9b3bd0689bfc0a0a9fff6
-Author: Arne Schwabe
-Date:   Sun Jul 19 19:34:36 2020 +0200
-
-     client-connect: Implement deferred connect support for plugin API v2
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200719173436.16431-5-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20480.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index a81336f2..ae7b8586 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -446,8 +446,6 @@ static const char usage_message[] =
+     "                  Only valid in a client-specific config file.\n"
+     "--disable       : Client is disabled.\n"
+     "                  Only valid in a client-specific config file.\n"
+-    "--client-cert-not-required : (DEPRECATED) Don't require client certificate, client\n"
+-    "                  will authenticate using username/password.\n"
+     "--verify-client-cert [none|optional|require] : perform no, optional or\n"
+     "                  mandatory client certificate verification.\n"
+     "                  Default is to require the client to supply a certificate.\n"
+@@ -2479,7 +2477,7 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
+         }
+         if (options->ssl_flags & (SSLF_CLIENT_CERT_NOT_REQUIRED|SSLF_CLIENT_CERT_OPTIONAL))
+         {
+-            msg(M_USAGE, "--client-cert-not-required and --verify-client-cert require --mode server");
++            msg(M_USAGE, "--verify-client-cert require --mode server");
+         }
+         if (options->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME)
+         {
+@@ -2552,7 +2550,7 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
+     if (options->ssl_flags & (SSLF_CLIENT_CERT_NOT_REQUIRED|SSLF_CLIENT_CERT_OPTIONAL))
+     {
+         msg(M_WARN, "WARNING: POTENTIALLY DANGEROUS OPTION "
+-            "--verify-client-cert none|optional (or --client-cert-not-required) "
++            "--verify-client-cert none|optional "
+             "may accept clients which do not present a certificate");
+     }
+ 
+@@ -6953,8 +6951,7 @@ add_option(struct options *options,
+     else if (streq(p[0], "client-cert-not-required") && !p[1])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+-        options->ssl_flags |= SSLF_CLIENT_CERT_NOT_REQUIRED;
+-        msg(M_WARN, "DEPRECATED OPTION: --client-cert-not-required, use --verify-client-cert instead");
++        msg(M_FATAL, "REMOVED OPTION: --client-cert-not-required, use '--verify-client-cert none' instead");
+     }
+     else if (streq(p[0], "verify-client-cert") && !p[2])
+     {
+diff --git a/src/plugins/auth-pam/README.auth-pam b/src/plugins/auth-pam/README.auth-pam
+index 64b3ace7..e3ca027e 100644
+--- a/src/plugins/auth-pam/README.auth-pam
++++ b/src/plugins/auth-pam/README.auth-pam
+@@ -60,7 +60,7 @@ is to be answered with the constant value "mydomain.com":
+ The following OpenVPN directives can also influence
+ the operation of this plugin:
+ 
+-  client-cert-not-required
++  verify-client-cert none
+   username-as-common-name
+   static-challenge
+ 
+-- 
+2.26.0
 
 
