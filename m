@@ -1,13 +1,14 @@
-References: <E1jxQx3-0003xM-Ke@...2487...>
- <20200720091700.30271-1-arne@...1227...>
-From: tincanteksup <tincanteksup@...277...>
-Message-ID: <89a4730f-a721-9948-41a2-d0d73f1dbbc1@...277...>
-Date: Mon, 20 Jul 2020 13:43:59 +0100
+References: <20200717134739.21168-1-arne@...1227...>
+ <20200717134739.21168-5-arne@...1227...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <7c0a05cf-3e82-2577-b028-3a0505c7dec5@...2080...>
+Date: Mon, 20 Jul 2020 15:16:28 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200720091700.30271-1-arne@...1227...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH v2 1/9] Indicate that a client is in
- pull mode in IV_PROTO
+In-Reply-To: <20200717134739.21168-5-arne@...1227...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="SlWZaFyUqMKOkJmO6YrbQPu0Lq039bIoy"
+Subject: Re: [Openvpn-devel] [PATCH v2 5/9] Remove key-method 1
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,135 +17,218 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--SlWZaFyUqMKOkJmO6YrbQPu0Lq039bIoy
+Content-Type: multipart/mixed; boundary="tH62OoCxQkLb4yPTpc0xylbRMcr5eGbBl";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <7c0a05cf-3e82-2577-b028-3a0505c7dec5@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH v2 5/9] Remove key-method 1
+References: <20200717134739.21168-1-arne@...1227...>
+ <20200717134739.21168-5-arne@...1227...>
+In-Reply-To: <20200717134739.21168-5-arne@...1227...>
 
-On 20/07/2020 10:17, Arne Schwabe wrote:
-> This allows us to skip waiting for the first PUSH_REQUEST message from
-> the client to send the response.
-> 
-> This changes the interpretation of IV_PROTO from a scalar to a bitfield
-> Since we only have IV_PROTO=2 defined so far and will support DATA_V2
-> this should not make any problem. This avoid adding another IV_xxx variable
-> that takes valuable space in the protocol frame.
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> 
-> Patch V2: Use bitmask for IV_PROTO_DATA_V2 and add more documentation.
-> 
+--tH62OoCxQkLb4yPTpc0xylbRMcr5eGbBl
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+On 17/07/2020 15:47, Arne Schwabe wrote:
+> Key-method 1 is only needed to talk to pre OpenVPN 2.0 clients.
+>=20
+> Patch V2: Fix style. Make V1 op codes illegal, remove all code handling
+>           v1 op codes and give a good warning message if we encounter
+>           them in the legal op codes pre-check.
+>=20
 > Signed-off-by: Arne Schwabe <arne@...1227...>
 > ---
->   doc/man-sections/server-options.rst |  6 +++++-
->   src/openvpn/multi.c                 | 12 ++++++++++--
->   src/openvpn/ssl.c                   | 15 +++++++++++++--
->   src/openvpn/ssl.h                   | 16 ++++++++++++++++
->   4 files changed, 44 insertions(+), 5 deletions(-)
-> 
-> diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-options.rst
-> index c8e9fc61..e24cb135 100644
-> --- a/doc/man-sections/server-options.rst
-> +++ b/doc/man-sections/server-options.rst
-> @@ -464,9 +464,13 @@ fast hardware. SSL/TLS authentication must be used in this mode.
->     :code:`IV_LZ4=1`
->           If the client supports LZ4 compressions.
->   
-> -  :code:`IV_PROTO=2`
-> +  :code:`IV_PROTO=2` (bit 2)
->           If the client supports peer-id floating mechanism
->   
-> +  :code:`IV_PROTO=4` (bit 3)
-> +        When the client expects a push-reply and the server may
-> +        send this reply without waiting for a push-request first.
-> +
->     :code:`IV_NCP=2`
->           Negotiable ciphers, client supports ``--cipher`` pushed by
->           the server, a value of 2 or greater indicates client supports
-> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-> index d9456f34..cb950db5 100644
-> --- a/src/openvpn/multi.c
-> +++ b/src/openvpn/multi.c
-> @@ -1792,10 +1792,18 @@ multi_client_set_protocol_options(struct context *c)
->       {
->           int proto = 0;
->           int r = sscanf(optstr, "IV_PROTO=%d", &proto);
-> -        if ((r == 1) && (proto >= 2))
-> +        if (r == 1)
->           {
-> -            tls_multi->use_peer_id = true;
-> +            if (proto & IV_PROTO_DATA_V2)
-> +            {
-> +                tls_multi->use_peer_id = true;
-> +            }
-> +            if (proto & IV_PROTO_REQUEST_PUSH)
-> +            {
-> +                c->c2.push_request_received = true;
-> +            }
->           }
-> +
->       }
->   
->       /* Select cipher if client supports Negotiable Crypto Parameters */
+>  doc/doxygen/doc_control_processor.h |   6 +-
+>  doc/doxygen/doc_key_generation.h    |   6 +-
+>  doc/doxygen/doc_protocol_overview.h |   2 +-
+>  src/openvpn/forward.c               |   2 +-
+>  src/openvpn/helper.c                |   5 -
+>  src/openvpn/init.c                  |   1 -
+>  src/openvpn/options.c               |  35 +----
+>  src/openvpn/options.h               |   4 -
+>  src/openvpn/ssl.c                   | 230 ++++------------------------
+>  src/openvpn/ssl.h                   |  19 +--
+>  src/openvpn/ssl_common.h            |   1 -
+>  11 files changed, 42 insertions(+), 269 deletions(-)
+
+[...snip...]
+
 > diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 54a23011..04d78a81 100644
+> index 00b97352..4144217d 100644
 > --- a/src/openvpn/ssl.c
 > +++ b/src/openvpn/ssl.c
-> @@ -2299,8 +2299,19 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
->           buf_printf(&out, "IV_PLAT=win\n");
->   #endif
->   
-> -        /* support for P_DATA_V2 */
-> -        buf_printf(&out, "IV_PROTO=2\n");
-> +        /* support for P_DATA_V2*/
-> +        int iv_proto = IV_PROTO_DATA_V2;
-> +
-> +        /* support for receiving push_reply before sending
-> +         * push request, also signal that the client wants
-> +         * to get push-reply messages without without requiring a round
-> +         * trip for a push request message*/
-> +        if(session->opt->pull)
-> +        {
-> +            iv_proto |= IV_PROTO_REQUEST_PUSH;
-> +        }
-> +
-> +        buf_printf(&out, "IV_PROTO=%d\n", iv_proto);
->   
->           /* support for Negotiable Crypto Parameters */
->           if (session->opt->ncp_enabled
-> diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-> index 58a9b0d4..81f8810e 100644
-> --- a/src/openvpn/ssl.h
-> +++ b/src/openvpn/ssl.h
-> @@ -99,6 +99,22 @@
->   /* Maximum length of OCC options string passed as part of auth handshake */
->   #define TLS_OPTIONS_LEN 512
->   
-> +/* Definitions of the bits in the IV_PROTO bitfield
-> + *
-> + * In older OpenVPN versions this used as comparision
 
-comparision -> comparison
+[...snip...]
 
-Also, paragraph are not make sense to me .. ?
+> @@ -2225,52 +2205,6 @@ read_string_alloc(struct buffer *buf)
+>      return str;
+>  }
+>=20=20
+> -/*
+> - * Handle the reading and writing of key data to and from
+> - * the TLS control channel (cleartext).
+> - */
+
+Is it needed to remove this comment?  Or move it after the push_peer_info()
+function?
+
+> -static bool
+> -key_method_1_write(struct buffer *buf, struct tls_session *session)
+> -{
+[...snip...]
+> -}
+> -
+>  static bool
+>  push_peer_info(struct buffer *buf, struct tls_session *session)
+>  {
+> @@ -2312,7 +2246,7 @@ push_peer_info(struct buffer *buf, struct tls_sessi=
+on *session)
+>           * push request, also signal that the client wants
+>           * to get push-reply messages without without requiring a round
+>           * trip for a push request message*/
+> -        if(session->opt->pull)
+> +        if (session->opt->pull)
+>          {
+>              iv_proto |=3D IV_PROTO_REQUEST_PUSH;
+>          }
+> @@ -2394,7 +2328,6 @@ key_method_2_write(struct buffer *buf, struct tls_s=
+ession *session)
+
+[...snip...]
+
+> @@ -3470,14 +3316,12 @@ tls_pre_decrypt(struct tls_multi *multi,
+>              }
+>=20=20
+>              /* hard reset ? */
+> -            if (is_hard_reset(op, 0))
+> +            if (is_hard_reset_method2(op))
+>              {
+>                  /* verify client -> server or server -> client connectio=
+n */
+> -                if (((op =3D=3D P_CONTROL_HARD_RESET_CLIENT_V1
+> -                      || op =3D=3D P_CONTROL_HARD_RESET_CLIENT_V2
+> +                if (((op =3D=3D P_CONTROL_HARD_RESET_CLIENT_V2
+>                        || op =3D=3D P_CONTROL_HARD_RESET_CLIENT_V3) && !m=
+ulti->opt.server)
+> -                    || ((op =3D=3D P_CONTROL_HARD_RESET_SERVER_V1
+> -                         || op =3D=3D P_CONTROL_HARD_RESET_SERVER_V2) &&=
+ multi->opt.server))
+> +                    || ((op =3D=3D P_CONTROL_HARD_RESET_SERVER_V2) && mu=
+lti->opt.server))
+>                  {
+>                      msg(D_TLS_ERRORS,
+>                          "TLS Error: client->client or server->server con=
+nection attempted from %s",
+> @@ -3542,19 +3386,11 @@ tls_pre_decrypt(struct tls_multi *multi,
+>               * Initial packet received.
+>               */
+>=20=20
+> -            if (i =3D=3D TM_SIZE && is_hard_reset(op, 0))
+> +            if (i =3D=3D TM_SIZE && is_hard_reset_method2(op))
+>              {
+>                  struct tls_session *session =3D &multi->session[TM_ACTIV=
+E];
+>                  struct key_state *ks =3D &session->key[KS_PRIMARY];
+>=20=20
+> -                if (!is_hard_reset(op, multi->opt.key_method))
+> -                {
+> -                    msg(D_TLS_ERRORS, "TLS ERROR: initial packet local/r=
+emote key_method mismatch, local key_method=3D%d, op=3D%s",
+> -                        multi->opt.key_method,
+> -                        packet_opcode_name(op));
+> -                    goto error;
+> -                }
+> -
+>                  /*
+>                   * If we have no session currently in progress, the init=
+ial packet will
+>                   * open a new session in TM_ACTIVE rather than TM_UNTRUS=
+TED.
+> @@ -3594,7 +3430,7 @@ tls_pre_decrypt(struct tls_multi *multi,
+>                  }
+>              }
+>=20=20
+> -            if (i =3D=3D TM_SIZE && is_hard_reset(op, 0))
+> +            if (i =3D=3D TM_SIZE && is_hard_reset_method2(op))
+
+Do we need this if() block?  Considering it is exactly the same if() statem=
+ent
+as the previous if() block.  I would suggest merging them, but you might hi=
+t a
+challenge with reuse of struct tls_session *session, where one is referring=
+ to
+TM_ACTIVE vs TM_UNTRUSTED.
+
+>              {
+>                  /*
+>                   * No match with existing sessions,
+> @@ -3614,14 +3450,6 @@ tls_pre_decrypt(struct tls_multi *multi,
+>                      goto error;
+>                  }
+>=20=20
+> -                if (!is_hard_reset(op, multi->opt.key_method))
+> -                {
+> -                    msg(D_TLS_ERRORS, "TLS ERROR: new session local/remo=
+te key_method mismatch, local key_method=3D%d, op=3D%s",
+> -                        multi->opt.key_method,
+> -                        packet_opcode_name(op));
+> -                    goto error;
+> -                }
+> -
+>                  if (!read_control_auth(buf, &session->tls_wrap, from,
+>                                         session->opt))
+>                  {
+
+I had already started my own approach of removing --key-method when I was m=
+ade
+aware of this patch.  Considering the size of it, my own barely tested chan=
+ges
+is about 90% similar to this patch.  But this patch has some improvements I
+didn't consider in my work.
+
+I've done a quick 'make check' as well, and it works fine.  There are just a
+couple of minor things to consider, otherwise I will happily ACK this patch.
 
 
-> + * IV_PROTO >= 2 to determine if DATA_V2 is supported.
-> + * Therefore any client announcing any of the flags must
-> + * also announce IV_PROTO_DATA_V2. We also treat bit 0
-> + * as reserved for this reason */
-> +
-> +/** Support P_DATA_V2 */
-> +#define IV_PROTO_DATA_V2        (1<<1)
-> +
-> +/** Assume client will send a push request and server does not need
-> + * to wait for a push-request to send a push-reply */
-> +#define IV_PROTO_REQUEST_PUSH   (1<<2)
-> +
-> +
->   /* Default field in X509 to be username */
->   #define X509_USERNAME_FIELD_DEFAULT "CN"
->   
-> 
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
+
+
+
+--tH62OoCxQkLb4yPTpc0xylbRMcr5eGbBl--
+
+--SlWZaFyUqMKOkJmO6YrbQPu0Lq039bIoy
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJfFZktAAoJEIbPlEyWcf3yg24P/jWQV/6mBj6N0Uo5Z4sZE5sF
+xPyo85u7gITD4slT1Rq4KRTAcmztFWUHErj9Xu0m05bFgPXf+N7YcqLouK7cElYp
+Yd5P96ZiemDxP0L9mzyEbFtBWaOz3B5fvac0HjhskTpW26Rj3RjFz1w4DcdY7TLK
+nOdevWB0e/BKM4O5lbMhG+EjNjIedkWXFJef0Om3qq1WXbOH42B6OH97/rBpPEel
+LsyUR/yRd3WPxPhZYJXj1EyY9ihozIdc4NKZvwrgk53krS5ZFaX3pQpPUjt7BOrB
+3lMzPVIz//qkEJdvPid3O1jMHEbsB13ewU/1jzjlmmvFI4pGBvecVCuKxUMOfIFe
+m9ZWfl9Oq5NLxuOQjpsJRcr//Aee9uTIlR4jUwhRAJc8AC/7gdk1uflvABL9tdnJ
+A4Ny6F6qtuioKlguiP2QfI4DUjW/SDLvjM5HJBJSW4HizNEHSatYP0CVgY/FSkqC
+qgsdjRijQCCF1Xwco0Fw5H4Drj827Sdfqb5+/2vc4NLwVwx/HIz5jKpAkYBZ5RiM
+UkoCRmahOnobq7h1PZQBqpsEaa/V09XlfzFLn19Vy1r7wJ2HGxdw/tgTenNhWWkZ
+iGNpoYdXzGL++7g0fpJwx8Xod7KIAxGM7niWmiHzbfJnpu8eRVuqekSNly4zb7g/
+BVX0SmXGkz/PM0lB1Hg9
+=wMeN
+-----END PGP SIGNATURE-----
+
+--SlWZaFyUqMKOkJmO6YrbQPu0Lq039bIoy--
 
