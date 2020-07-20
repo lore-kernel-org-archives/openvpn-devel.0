@@ -1,13 +1,10 @@
-References: <E1jxQx3-0003xM-Ke@...2487...>
- <20200720091700.30271-1-arne@...1227...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <0c06f527-c7a0-641e-6b4b-2c484e10d1c5@...2181...>
-Date: Mon, 20 Jul 2020 11:27:51 +0200
-MIME-Version: 1.0
-In-Reply-To: <20200720091700.30271-1-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v2 1/9] Indicate that a client is in
- pull mode in IV_PROTO
+Date: Mon, 20 Jul 2020 11:30:55 +0200 (CEST)
+Message-Id: <202007200930.06K9Utis092334@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20200719173436.16431-4-arne@...1227...>
+References: <20200719173436.16431-4-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: client-connect: Add deferred
+ support to the client-connect plugin v1 handler
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,155 +13,115 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: Fabian Knittel <fabian.knittel@...1547...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Acked-by: Gert Doering <gert@...1296...>
 
-On 20/07/2020 11:17, Arne Schwabe wrote:
-> This allows us to skip waiting for the first PUSH_REQUEST message from
-> the client to send the response.
-> 
-> This changes the interpretation of IV_PROTO from a scalar to a bitfield
-> Since we only have IV_PROTO=2 defined so far and will support DATA_V2
-> this should not make any problem. This avoid adding another IV_xxx variable
-> that takes valuable space in the protocol frame.
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> 
-> Patch V2: Use bitmask for IV_PROTO_DATA_V2 and add more documentation.
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  doc/man-sections/server-options.rst |  6 +++++-
->  src/openvpn/multi.c                 | 12 ++++++++++--
->  src/openvpn/ssl.c                   | 15 +++++++++++++--
->  src/openvpn/ssl.h                   | 16 ++++++++++++++++
->  4 files changed, 44 insertions(+), 5 deletions(-)
-> 
-> diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-options.rst
-> index c8e9fc61..e24cb135 100644
-> --- a/doc/man-sections/server-options.rst
-> +++ b/doc/man-sections/server-options.rst
-> @@ -464,9 +464,13 @@ fast hardware. SSL/TLS authentication must be used in this mode.
->    :code:`IV_LZ4=1`
->          If the client supports LZ4 compressions.
->  
-> -  :code:`IV_PROTO=2`
-> +  :code:`IV_PROTO=2` (bit 2)
->          If the client supports peer-id floating mechanism
->  
-> +  :code:`IV_PROTO=4` (bit 3)
-> +        When the client expects a push-reply and the server may
-> +        send this reply without waiting for a push-request first.
-> +
+Stared-at-code, server torture test, all succeeded.
+
+Grammar change from Richard included (in the "v1 api" comment).
+
+I have modified the commit message a bit to make it more clear that 
+this is about CLIENT_CONNECT and CLIENT_CONNECT_V2, not plugin_func_v1()
+vs. plugin_func_v2().
 
 
-Maybe it's just me, but documenting a bitfield this way is a bit
-counter-intuitive. From the doc it seems to me that IV_PROTO can either
-have value "2" or value "4", not a combination of the two.
+Testing this with my new "client connect tester" plugin, I discovered
+two things:
 
-Maybe it's better to have something like:
+ - one, if the plugin wants to use the "file based status signalling"
+   API via $ENV{client_connect_deferred_file}, the file MUST be created
+   (with content "2") before returning DEFER - otherwise the caller
+   will treat the combination of "no CLIENT_CONNECT_DEFER handler and
+   no file" as "success" and continue.  
 
-IV_PROTO
-	- bit 2: ....
-	- bit 3: .....
-
-So it's clear that both bits can be used when needed?
-An alternative would be to explicitly mention that both values/bits can
-be used at the same time.
-
-Opinions?
+   This can not be changed without deeper knowlege whether a DEFER 
+   handler exists or not (possibly worth having a deeper look).
 
 
+ - second, we read the "option file" ($ENV{client_connect_config_file}) 
+   multiple times on every PUSH_REQUEST - it works, but this is a latent
+   race condition, reading a "not yet fully written" file.  So we only
+   should do this on "final SUCCESS".
 
-cheers,
+   Here's a log with a plugin that sleeps 15 seconds - added some 
+   msg() to see what ret/file_ret is at which point
+
+2020-07-20 11:24:19 us=679280 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1 (enter): ret=3, deferred=0
+2020-07-20 11:24:19 us=679456 PLUGIN sample-cc: OPENVPN_PLUGIN_CLIENT_CONNECT
+2020-07-20 11:24:19 us=681322 PLUGIN sample-cc: in async/deferred handler, sleep(15)
+2020-07-20 11:24:19 us=682060 cron2-freebsd-tc-amd64/194.97.140.21:63588 PLUGIN_CALL: POST /root/t_server/tun-udp-p2mp-112-mask/sample-client-connect.so/PLUGIN_CLIENT_CONNECT status=2
+2020-07-20 11:24:19 us=682132 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1: ret=2, file_ret=2
+2020-07-20 11:24:19 us=682155 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1: ret=2
+2020-07-20 11:24:20 us=753014 cron2-freebsd-tc-amd64/194.97.140.21:63588 PUSH: Received control message: 'PUSH_REQUEST'
+2020-07-20 11:24:20 us=753070 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1 (enter): ret=3, deferred=1
+2020-07-20 11:24:20 us=753105 cron2-freebsd-tc-amd64/194.97.140.21:63588 OPTIONS IMPORT: reading client specific options from: /tmp/openvpn_cc_7a30544bd345b76b6b2ea66939408119.tmp
+2020-07-20 11:24:20 us=753180 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1: ret=1, file_ret=2
+2020-07-20 11:24:20 us=753203 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1: ret=2
+2020-07-20 11:24:20 us=753278 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1 (enter): ret=3, deferred=1
+2020-07-20 11:24:20 us=753312 cron2-freebsd-tc-amd64/194.97.140.21:63588 OPTIONS IMPORT: reading client specific options from: /tmp/openvpn_cc_7a30544bd345b76b6b2ea66939408119.tmp
+2020-07-20 11:24:20 us=753365 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1: ret=1, file_ret=2
+2020-07-20 11:24:20 us=753386 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1: ret=2
+2020-07-20 11:24:21 us=879455 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1 (enter): ret=3, deferred=1
+2020-07-20 11:24:21 us=879546 cron2-freebsd-tc-amd64/194.97.140.21:63588 OPTIONS IMPORT: reading client specific options from: /tmp/openvpn_cc_7a30544bd345b76b6b2ea66939408119.tmp
+2020-07-20 11:24:21 us=879618 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1: ret=1, file_ret=2
+2020-07-20 11:24:21 us=879636 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1: ret=2
+2020-07-20 11:24:25 us=832648 cron2-freebsd-tc-amd64/194.97.140.21:63588 PUSH: Received control message: 'PUSH_REQUEST'
+2020-07-20 11:24:25 us=832705 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1 (enter): ret=3, deferred=1
+2020-07-20 11:24:25 us=832742 cron2-freebsd-tc-amd64/194.97.140.21:63588 OPTIONS IMPORT: reading client specific options from: /tmp/openvpn_cc_7a30544bd345b76b6b2ea66939408119.tmp
+2020-07-20 11:24:25 us=832835 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1: ret=1, file_ret=2
+2020-07-20 11:24:25 us=832853 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1: ret=2
+2020-07-20 11:24:25 us=832920 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1 (enter): ret=3, deferred=1
+2020-07-20 11:24:25 us=832955 cron2-freebsd-tc-amd64/194.97.140.21:63588 OPTIONS IMPORT: reading client specific options from: /tmp/openvpn_cc_7a30544bd345b76b6b2ea66939408119.tmp
+2020-07-20 11:24:25 us=833006 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1: ret=1, file_ret=2
+2020-07-20 11:24:25 us=833027 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1: ret=2
+2020-07-20 11:24:30 us=865604 cron2-freebsd-tc-amd64/194.97.140.21:63588 PUSH: Received control message: 'PUSH_REQUEST'
+2020-07-20 11:24:30 us=865667 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1 (enter): ret=3, deferred=1
+2020-07-20 11:24:30 us=865710 cron2-freebsd-tc-amd64/194.97.140.21:63588 OPTIONS IMPORT: reading client specific options from: /tmp/openvpn_cc_7a30544bd345b76b6b2ea66939408119.tmp
+2020-07-20 11:24:30 us=865802 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1: ret=1, file_ret=2
+2020-07-20 11:24:30 us=865821 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1: ret=2
+2020-07-20 11:24:30 us=865894 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1 (enter): ret=3, deferred=1
+2020-07-20 11:24:30 us=865923 cron2-freebsd-tc-amd64/194.97.140.21:63588 OPTIONS IMPORT: reading client specific options from: /tmp/openvpn_cc_7a30544bd345b76b6b2ea66939408119.tmp
+2020-07-20 11:24:30 us=865974 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1: ret=1, file_ret=2
+2020-07-20 11:24:30 us=865990 cron2-freebsd-tc-amd64/194.97.140.21:63588 mcccp1: ret=2
+2020-07-20 11:24:34 us=681701 PLUGIN sample-cc: env has UV_WANT_CC_DISABLE, reject
+2020-07-20 11:24:34 us=681955 PLUGIN sample-cc: cc_handle_deferred_v1: done, signalling success
+2020-07-20 11:24:34 us=682094 mcccp1 (enter): ret=3, deferred=1
+2020-07-20 11:24:34 us=682280 OPTIONS IMPORT: reading client specific options from: /tmp/openvpn_cc_7a30544bd345b76b6b2ea66939408119.tmp
+2020-07-20 11:24:34 us=682549 mcccp1: ret=1, file_ret=1
+2020-07-20 11:24:34 us=682705 mcccp1: ret=1
+2020-07-20 11:24:34 us=682972 PLUGIN sample-cc: OPENVPN_PLUGIN_CLIENT_CONNECT_V2
+2020-07-20 11:24:34 us=683080 PLUGIN_CALL: POST /root/t_server/tun-udp-p2mp-112-mask/sample-client-connect.so/PLUGIN_CLIENT_CONNECT status=0
+2020-07-20 11:24:34 us=690210 OPTIONS IMPORT: reading client specific options from: /tmp/openvpn_cc_2938f1331badc1d130fbe9454149b280.tmp
+2020-07-20 11:24:34 us=690325 MULTI: client has been rejected due to 'disable' directive
+2020-07-20 11:24:34 us=690364 PLUGIN sample-cc: OPENVPN_PLUGIN_CLIENT_DISCONNECT
+
+(there is more weirdness here, because the "disable" is sent by CLIENT_CONNECT,
+but only noticed after CLIENT_CONNECT_V2 is called...)
 
 
->    :code:`IV_NCP=2`
->          Negotiable ciphers, client supports ``--cipher`` pushed by
->          the server, a value of 2 or greater indicates client supports
-> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-> index d9456f34..cb950db5 100644
-> --- a/src/openvpn/multi.c
-> +++ b/src/openvpn/multi.c
-> @@ -1792,10 +1792,18 @@ multi_client_set_protocol_options(struct context *c)
->      {
->          int proto = 0;
->          int r = sscanf(optstr, "IV_PROTO=%d", &proto);
-> -        if ((r == 1) && (proto >= 2))
-> +        if (r == 1)
->          {
-> -            tls_multi->use_peer_id = true;
-> +            if (proto & IV_PROTO_DATA_V2)
-> +            {
-> +                tls_multi->use_peer_id = true;
-> +            }
-> +            if (proto & IV_PROTO_REQUEST_PUSH)
-> +            {
-> +                c->c2.push_request_received = true;
-> +            }
->          }
-> +
->      }
->  
->      /* Select cipher if client supports Negotiable Crypto Parameters */
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 54a23011..04d78a81 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -2299,8 +2299,19 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
->          buf_printf(&out, "IV_PLAT=win\n");
->  #endif
->  
-> -        /* support for P_DATA_V2 */
-> -        buf_printf(&out, "IV_PROTO=2\n");
-> +        /* support for P_DATA_V2*/
-> +        int iv_proto = IV_PROTO_DATA_V2;
-> +
-> +        /* support for receiving push_reply before sending
-> +         * push request, also signal that the client wants
-> +         * to get push-reply messages without without requiring a round
-> +         * trip for a push request message*/
-> +        if(session->opt->pull)
-> +        {
-> +            iv_proto |= IV_PROTO_REQUEST_PUSH;
-> +        }
-> +
-> +        buf_printf(&out, "IV_PROTO=%d\n", iv_proto);
->  
->          /* support for Negotiable Crypto Parameters */
->          if (session->opt->ncp_enabled
-> diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-> index 58a9b0d4..81f8810e 100644
-> --- a/src/openvpn/ssl.h
-> +++ b/src/openvpn/ssl.h
-> @@ -99,6 +99,22 @@
->  /* Maximum length of OCC options string passed as part of auth handshake */
->  #define TLS_OPTIONS_LEN 512
->  
-> +/* Definitions of the bits in the IV_PROTO bitfield
-> + *
-> + * In older OpenVPN versions this used as comparision
-> + * IV_PROTO >= 2 to determine if DATA_V2 is supported.
-> + * Therefore any client announcing any of the flags must
-> + * also announce IV_PROTO_DATA_V2. We also treat bit 0
-> + * as reserved for this reason */
-> +
-> +/** Support P_DATA_V2 */
-> +#define IV_PROTO_DATA_V2        (1<<1)
-> +
-> +/** Assume client will send a push request and server does not need
-> + * to wait for a push-request to send a push-reply */
-> +#define IV_PROTO_REQUEST_PUSH   (1<<2)
-> +
-> +
->  /* Default field in X509 to be username */
->  #define X509_USERNAME_FIELD_DEFAULT "CN"
->  
-> 
+Your patch has been applied to the master branch.
 
--- 
-Antonio Quartulli
+commit 3d2af1568ccb5b64446fb77218193e6f2ad6e995
+Author: Fabian Knittel
+Date:   Sun Jul 19 19:34:35 2020 +0200
+
+     client-connect: Add deferred support to the client-connect plugin v1 handler
+
+     Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20200719173436.16431-4-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20483.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
