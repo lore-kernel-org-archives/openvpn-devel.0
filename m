@@ -1,13 +1,16 @@
-References: <E1jxUNh-0007hr-Bd@...2479...>
- <20200720142703.3324-1-arne@...1227...>
-From: tincanteksup <tincanteksup@...277...>
-Message-ID: <eab9563a-2063-bb7c-e436-b9f852450efb@...277...>
-Date: Mon, 20 Jul 2020 15:48:19 +0100
+References: <20200717134739.21168-1-arne@...1227...>
+ <20200717134739.21168-5-arne@...1227...>
+ <7c0a05cf-3e82-2577-b028-3a0505c7dec5@...2080...>
+ <08cdcced-3146-8b94-5c5d-be2773b2b80a@...1227...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <59a5ef1d-3b5f-f06a-e0e7-0443f0e2313e@...2080...>
+Date: Mon, 20 Jul 2020 20:49:27 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200720142703.3324-1-arne@...1227...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH v7] client-connect: Add documentation
- for the deferred client connect feature
+In-Reply-To: <08cdcced-3146-8b94-5c5d-be2773b2b80a@...1227...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="INHjpLFvO0G09UamYz36orxqEWScEu2Qr"
+Subject: Re: [Openvpn-devel] [PATCH v2 5/9] Remove key-method 1
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,176 +19,214 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-1x typo, 3x suggestions
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--INHjpLFvO0G09UamYz36orxqEWScEu2Qr
+Content-Type: multipart/mixed; boundary="c6U235JTU1tOUxyD6Uk6xNDxcnxxaiL7u";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <59a5ef1d-3b5f-f06a-e0e7-0443f0e2313e@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH v2 5/9] Remove key-method 1
+References: <20200717134739.21168-1-arne@...1227...>
+ <20200717134739.21168-5-arne@...1227...>
+ <7c0a05cf-3e82-2577-b028-3a0505c7dec5@...2080...>
+ <08cdcced-3146-8b94-5c5d-be2773b2b80a@...1227...>
+In-Reply-To: <08cdcced-3146-8b94-5c5d-be2773b2b80a@...1227...>
 
-On 20/07/2020 15:27, Arne Schwabe wrote:
-> Signed-off-by: David Sommerseth <davids@...515...>
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> 
-> Patch V5: Fix typos, clarify man page section about deferred client-connect
->            script. Add section to Changes.rst
-> 
-> Patch V6: Convert manpage to rst
-> 
->            It also incoroporates suggested changes from Richard Bonhomme
+--c6U235JTU1tOUxyD6Uk6xNDxcnxxaiL7u
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-incoroporates -> incorporates
+On 20/07/2020 15:22, Arne Schwabe wrote:
+> Am 20.07.20 um 15:16 schrieb David Sommerseth:
+>> On 17/07/2020 15:47, Arne Schwabe wrote:
+>>> Key-method 1 is only needed to talk to pre OpenVPN 2.0 clients.
+>>>
+>>> Patch V2: Fix style. Make V1 op codes illegal, remove all code handling
+>>>           v1 op codes and give a good warning message if we encounter
+>>>           them in the legal op codes pre-check.
+>>>
+>>> Signed-off-by: Arne Schwabe <arne@...1227...>
+>>> ---
+>>>  doc/doxygen/doc_control_processor.h |   6 +-
+>>>  doc/doxygen/doc_key_generation.h    |   6 +-
+>>>  doc/doxygen/doc_protocol_overview.h |   2 +-
+>>>  src/openvpn/forward.c               |   2 +-
+>>>  src/openvpn/helper.c                |   5 -
+>>>  src/openvpn/init.c                  |   1 -
+>>>  src/openvpn/options.c               |  35 +----
+>>>  src/openvpn/options.h               |   4 -
+>>>  src/openvpn/ssl.c                   | 230 ++++------------------------
+>>>  src/openvpn/ssl.h                   |  19 +--
+>>>  src/openvpn/ssl_common.h            |   1 -
+>>>  11 files changed, 42 insertions(+), 269 deletions(-)
+>>
+>> [...snip...]
+>>
+>>> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+>>> index 00b97352..4144217d 100644
+>>> --- a/src/openvpn/ssl.c
+>>> +++ b/src/openvpn/ssl.c
+>>
+>> [...snip...]
+>>
+>>> @@ -2225,52 +2205,6 @@ read_string_alloc(struct buffer *buf)
+>>>      return str;
+>>>  }
+>>>=20=20
+>>> -/*
+>>> - * Handle the reading and writing of key data to and from
+>>> - * the TLS control channel (cleartext).
+>>> - */
+>>
+>> Is it needed to remove this comment?  Or move it after the push_peer_inf=
+o()
+>> function?
+>=20
+> Yeah, we can move the comment.
+
+Yes, please ... Since it's not a bad comment, I don't like loosing helpful
+pointers in comments :)
+
+>>
+>>> -static bool
+>>> -key_method_1_write(struct buffer *buf, struct tls_session *session)
+>>> -{
+>> [...snip...]
+>>> -}
+>>> -
+>>>  static bool
+>>>  push_peer_info(struct buffer *buf, struct tls_session *session)
+>>>  {
+>>> @@ -2312,7 +2246,7 @@ push_peer_info(struct buffer *buf, struct tls_ses=
+sion *session)
+>>>           * push request, also signal that the client wants
+>>>           * to get push-reply messages without without requiring a round
+>>>           * trip for a push request message*/
+>>> -        if(session->opt->pull)
+>>> +        if (session->opt->pull)
+>>>          {
+>>>              iv_proto |=3D IV_PROTO_REQUEST_PUSH;
+>>>          }
+>>> @@ -2394,7 +2328,6 @@ key_method_2_write(struct buffer *buf, struct tls=
+_session *session)
+>>
+>> [...snip...]
+>>
+>>> @@ -3470,14 +3316,12 @@ tls_pre_decrypt(struct tls_multi *multi,
+>>>              }
+>>>=20=20
+>>>              /* hard reset ? */
+>>> -            if (is_hard_reset(op, 0))
+>>> +            if (is_hard_reset_method2(op))
+>>>              {
+>>>                  /* verify client -> server or server -> client connect=
+ion */
+>>> -                if (((op =3D=3D P_CONTROL_HARD_RESET_CLIENT_V1
+>>> -                      || op =3D=3D P_CONTROL_HARD_RESET_CLIENT_V2
+>>> +                if (((op =3D=3D P_CONTROL_HARD_RESET_CLIENT_V2
+>>>                        || op =3D=3D P_CONTROL_HARD_RESET_CLIENT_V3) && =
+!multi->opt.server)
+>>> -                    || ((op =3D=3D P_CONTROL_HARD_RESET_SERVER_V1
+>>> -                         || op =3D=3D P_CONTROL_HARD_RESET_SERVER_V2) =
+&& multi->opt.server))
+>>> +                    || ((op =3D=3D P_CONTROL_HARD_RESET_SERVER_V2) && =
+multi->opt.server))
+>>>                  {
+>>>                      msg(D_TLS_ERRORS,
+>>>                          "TLS Error: client->client or server->server c=
+onnection attempted from %s",
+>>> @@ -3542,19 +3386,11 @@ tls_pre_decrypt(struct tls_multi *multi,
+>>>               * Initial packet received.
+>>>               */
+>>>=20=20
+>>> -            if (i =3D=3D TM_SIZE && is_hard_reset(op, 0))
+>>> +            if (i =3D=3D TM_SIZE && is_hard_reset_method2(op))
+>>>              {
+>>>                  struct tls_session *session =3D &multi->session[TM_ACT=
+IVE];
+>>>                  struct key_state *ks =3D &session->key[KS_PRIMARY];
+>>>=20=20
+>>> -                if (!is_hard_reset(op, multi->opt.key_method))
+>>> -                {
+>>> -                    msg(D_TLS_ERRORS, "TLS ERROR: initial packet local=
+/remote key_method mismatch, local key_method=3D%d, op=3D%s",
+>>> -                        multi->opt.key_method,
+>>> -                        packet_opcode_name(op));
+>>> -                    goto error;
+>>> -                }
+>>> -
+>>>                  /*
+>>>                   * If we have no session currently in progress, the in=
+itial packet will
+>>>                   * open a new session in TM_ACTIVE rather than TM_UNTR=
+USTED.
+>>> @@ -3594,7 +3430,7 @@ tls_pre_decrypt(struct tls_multi *multi,
+>>>                  }
+>>>              }
+>>>=20=20
+>>> -            if (i =3D=3D TM_SIZE && is_hard_reset(op, 0))
+>>> +            if (i =3D=3D TM_SIZE && is_hard_reset_method2(op))
+>>
+>> Do we need this if() block?  Considering it is exactly the same if() sta=
+tement
+>> as the previous if() block.  I would suggest merging them, but you might=
+ hit a
+>> challenge with reuse of struct tls_session *session, where one is referr=
+ing to
+>> TM_ACTIVE vs TM_UNTRUSTED.
+>=20
+> That is something that might be possible but I would consider outside of
+> patch. The first block actually modifies i (i =3D TM_ACTIVE;), so that
+> needs a separate patch with an explaination why/how we simplify the
+> logic here.
+
+Alright, I can see the argument of not touching it now.
+
+Could we then just add a comment to these two sections for now, indicating =
+why
+they have been kept separate despite the if() statement being identical?
+Something like "This section processes {TM_ACTIVE, TM_UNTRUSTED} sessions" =
+and
+elaborate a little bit around that, which may help refactoring this code la=
+ter on.
 
 
-> <tincanteksup@...277...> [0]
-> 
-> [0] Message-ID: <82c2d70f-e2f9-f810-2c55-788358a0cb08@...277...>
->      URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20331.html
-> 
-> Patch V7: Reinclude the changes of Changes.rst and openvpn-plugin.h
+--=20
+kind regards,
 
-Reinclude -> Re-include (or maybe "Restore the lost changes of..")
-
->            Clarify some parts of the documentation.
-> ---
->   Changes.rst                          |  5 +++++
->   doc/man-sections/generic-options.rst | 11 ++++++----
->   doc/man-sections/script-options.rst  | 33 ++++++++++++++++++++++++++++
->   include/openvpn-plugin.h.in          | 21 +++++++++++++-----
->   4 files changed, 60 insertions(+), 10 deletions(-)
-> 
-> diff --git a/Changes.rst b/Changes.rst
-> index 34abcd97..78a66650 100644
-> --- a/Changes.rst
-> +++ b/Changes.rst
-> @@ -25,6 +25,11 @@ Improved Data channel cipher negotiation
->   Asynchronous (deferred) authentication support for auth-pam plugin.
->       See src/plugins/auth-pam/README.auth-pam for details.
->   
-> +Deferred client-connect
-> +    The ``--client-connect`` option and the connect plugin API allow
-> +    asynchronous/deferred return of the configuration file in the same way
-> +    as the auth-plugin.
-> +
->   Deprecated features
->   -------------------
->   For an up-to-date list of all deprecated options, see this wiki page:
-> diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generic-options.rst
-> index d44dc05f..a07fe7e7 100644
-> --- a/doc/man-sections/generic-options.rst
-> +++ b/doc/man-sections/generic-options.rst
-> @@ -394,11 +394,14 @@ which mode OpenVPN is configured as.
->   
->     This directory will be used by in the following cases:
->   
-> -  * ``--client-connect`` scripts to dynamically generate client-specific
-> -    configuration files.
-> +  * ``--client-connect`` scripts and :code:`OPENVPN_PLUGIN_CLIENT_CONNECT`
-> +    plug-in hook to dynamically generate client-specific configuration
-> +    :code:`client_connect_config_file` and return success/failure via
-> +    :code:`client_connect_deferred_file` when using deferred client connect
-> +    method
->   
-> -  * :code:`OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY` plugin hook to return
-> -    success/failure via ``auth_control_file`` when using deferred auth
-> +  * :code:`OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY` plug-in hooks returns
-> +    success/failure via :code:`auth_control_file` when using deferred auth
->       method
->   
->     * :code:`OPENVPN_PLUGIN_ENABLE_PF` plugin hook to pass filtering rules
-> diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-options.rst
-> index ddc1363c..a1d489b8 100644
-> --- a/doc/man-sections/script-options.rst
-> +++ b/doc/man-sections/script-options.rst
-> @@ -137,6 +137,13 @@ SCRIPT HOOKS
->     returns a non-zero error status, it will cause the client to be
->     disconnected.
->   
-> +  If a ``--client-connect`` wants to defer the generating of the
-> +  configuration then the script should use the
-> +  :code:`client_connect_deferred_file` and
-> +  :code:`client_connect_config_file` environment variables. And write
-> +  status accordingly into these files.  See the `Environmental Variables`_
-> +  section for more details.
-> +
->   --client-disconnect cmd
->     Like ``--client-connect`` but called on client instance shutdown. Will
->     not be called unless the ``--client-connect`` script and plugins (if
-> @@ -512,6 +519,32 @@ instances.
->       Total number of bytes sent to client during VPN session. Set prior to
->       execution of the ``--client-disconnect`` script.
->   
-> +:code:`client_connect_config_file`
-> +    The path to the configuration file that should be written by the
-
-suggest:
-should be written by the ->
-should be written to by the
+David Sommerseth
+OpenVPN Inc
 
 
-> +    ``--client-connect`` script.  The content of this environment variable
-> +    is identical to the file as an argument of the called
-> +    ``--client-connect`` script.
-> +
-> +:code:`client_connect_deferred_file`
-> +    This file can be optionally written to to communicate a status code of
 
-suggest:
-written to to communicate
-written to in order to communicate
+--c6U235JTU1tOUxyD6Uk6xNDxcnxxaiL7u--
 
+--INHjpLFvO0G09UamYz36orxqEWScEu2Qr
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-> +    the ``--client-connect`` script.  The first character in the file must
-> +    be either :code:`1` to indicate normal script execution, :code:`0`
-> +    indicates an error (in the same way that a non zero exit status does)
-> +    or :code:`2` to indicate that the script deferred returning the config
-> +    file. When the script defers returning the configuration, it must also
-> +    write :code:`2` to the file to indicate the deferral.
-> +
-> +    A background process or similar must then take care of writing the
-> +    configuration to the file indicated by the
-> +    :code:`client_connect_config_file` environment variable and when
-> +    finished, write the a :code:`1` to this file (or :code:`0` in case of
-> +    an error).
-> +
-> +    The absence of any character in the file when the script finishes
-> +    executing is interpreted the same as :code:`1`. This allows scripts
-> +    that are not written to support the defer mechanism to be used
-> +    unmodified.
-> +
->   :code:`common_name`
->       The X509 common name of an authenticated client. Set prior to execution
->       of ``--client-connect``, ``--client-disconnect`` and
-> diff --git a/include/openvpn-plugin.h.in b/include/openvpn-plugin.h.in
-> index 38fbe097..64b20886 100644
-> --- a/include/openvpn-plugin.h.in
-> +++ b/include/openvpn-plugin.h.in
-> @@ -557,12 +557,21 @@ OPENVPN_PLUGIN_DEF openvpn_plugin_handle_t OPENVPN_PLUGIN_FUNC(openvpn_plugin_op
->    * OPENVPN_PLUGIN_FUNC_SUCCESS on success, OPENVPN_PLUGIN_FUNC_ERROR on failure
->    *
->    * In addition, OPENVPN_PLUGIN_FUNC_DEFERRED may be returned by
-> - * OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY.  This enables asynchronous
-> - * authentication where the plugin (or one of its agents) may indicate
-> - * authentication success/failure some number of seconds after the return
-> - * of the OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY handler by writing a single
-> - * char to the file named by auth_control_file in the environmental variable
-> - * list (envp).
-> + * OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY, OPENVPN_PLUGIN_CLIENT_CONNECT and
-> + * OPENVPN_PLUGIN_CLIENT_CONNECT_V2. This enables asynchronous
-> + * authentication or client connect  where the plugin (or one of its agents)
-> + * may indicate authentication success/failure or client configuration some
-> + * number of seconds after the return of the function handler.
-> + * For OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY and OPENVPN_PLUGIN_CLIENT_CONNECT
-> + * this is done by writing a single char to the file named by
-> + * auth_control_file/client_connect_deferred_file
-> + * in the environmental variable list (envp).
-> + *
-> + * In addition the OPENVPN_PLUGIN_CLIENT_CONNECT_DEFER and
-> + * OPENVPN_PLUGIN_CLIENT_CONNECT_DEFER_V2 are called when OpenVPN tries to
-> + * get the deferred result. For a V2 call implementing this function is
-> + * required as information is not passed by files. For the normal version
-> + * the call is optional.
->    *
->    * first char of auth_control_file:
->    * '0' -- indicates auth failure
-> 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJfFec3AAoJEIbPlEyWcf3ypC0QAI8yisksWTutKXPqVUMVvkQk
+9Rcj2fzreiAtXP+Asp8Z1wGV0HVhLR/iKn4NSgGhyH8T0YQ8yseyKEnh/+Q/aE6k
+ZLu9BjvHamdUuTsFHUqEDyDErb3dwhSvhdp1CBWnis18IZ72vSIN9WkTrjTRj0hX
+2TsqJrfZPWCw+I7zsFDf+4F8LNsyOQ2ho+XWzZ1H6VdQWX9Z+zIKISN+x+vRdg6x
+mzRKrk8XWNE6Yv+NpY7YDKAaxtEt2mwZQdZvmR0ERXmD8JcE7oo2JvnpfQaVf7V2
+3tnZWRoHluC8zgAioseTAsVf0Tr4oRSh8cSLSBq5RWWHqf0A6+7Lqg3EeXwG7UE/
+3Q9aFc6xvMrWpAsvjPEsScjVBiJz+QxU2NAuNfl9aihHj58GFzVm0SkZhEjQl6oG
+7UFVPUkhYNYGH3LnqyyLI+l9xCgYVNfc/a4DlvM2DtJBVFu0wEktmkLGALHJGINW
+hT2LS2njjytDmz75mJ0ivngazA1QlMp4seag+fhZ9oPLeThB+raqKx/CNI1rFpel
+7W22LIH0SiJ8srARdIu/pHxatCtKhcfmEn7g51qrk/Bwj5XyVQOTxoRTItiFqHdt
+LNzikMmuqJEaMqCmXNQlrMkdjKdxmJPcQUGYUF0s4tOiIWBivtpxMzA/7SJd6z1G
+682wNTGVpgDIV79rFej/
+=nIF8
+-----END PGP SIGNATURE-----
+
+--INHjpLFvO0G09UamYz36orxqEWScEu2Qr--
 
