@@ -1,10 +1,15 @@
-Date: Mon, 20 Jul 2020 11:46:27 +0200 (CEST)
-Message-Id: <202007200946.06K9kRwa092623@...2054...>
+Date: Mon, 20 Jul 2020 11:57:38 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200720070802.18819-1-gert@...1296...>
-References: <20200720070802.18819-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Separate handling of
- non-deferred return values for client-connect-scripts.
+Message-ID: <20200720095738.GO1431@...1296...>
+References: <20200719173436.16431-2-arne@...1227...>
+ <202007192005.06JK5s9N070266@...2054...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="L/65QfJQPh8Q3KMl"
+Content-Disposition: inline
+In-Reply-To: <202007192005.06JK5s9N070266@...2054...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: client-connect: Add
+ deferred support to the client-connect script handler
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,29 +18,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+To: Fabian Knittel <fabian.knittel@...1547...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master branch.
+--L/65QfJQPh8Q3KMl
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-commit 3658e57797656e63e35be65397101a7191897272
-Author: Gert Doering
-Date:   Mon Jul 20 09:08:02 2020 +0200
+Hi,
 
-     Separate handling of non-deferred return values for client-connect-scripts.
+On Sun, Jul 19, 2020 at 10:05:54PM +0200, Gert Doering wrote:
+[..]
+> the fact that it's reading the "client specific options" even in case of=
+=20
+> failure is clear form the source (but I decided that it won't do harm, so=
+=20
+> "leave it in") but the fact that it's not logging the failure is not good=
+ - so=20
+> I think we need to differenciate CC_RET_SUCCEEDED vs. CC_RET_FAILED in th=
+e=20
+> "if (ret !=3D CC_RET_DEFERRED)" clause in in multi_client_connect_script_=
+deferred().
+>=20
+> Since this is logging, and basic functionality works, I think this can go=
+ in=20
+> a followup patch.
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20200720070802.18819-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20488.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Just for the record: this has been addressed in commit 3658e5779.
 
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
---
-kind regards,
+Gert Doering - Munich, Germany                             gert@...1296...
 
-Gert Doering
+--L/65QfJQPh8Q3KMl
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJfFWqNAAoJEB2Cnv7KVigSRdMMAIxfG5G/x35GiKhYubTLx9SV
+LmhIxDsQXGRSHh9E/rxdgH0c4RNY0yA3b9FsrzPI+2Q/NsiNjDk+WGvY85NP8CWe
+NTTCATl9ktp3IAv9gAxjfpwBeNpUlSoxbIVP+8pLj2nIgWRJZj+NXNuL5OWwBbhJ
+nKIwmVakIAQJ7UgHlkFpV+QeD6dhST+r0UkNP4YUS8kM9cLUlA+kkTPj1ATzQ6no
+h5dmXS7VAyd6KsQtc8DouBCXGvfS2oDCf86kvGVL0NhG+cCjIfW/X6C1p92yAmip
+6nI72m64u9gMwCe2rtlQnrhTpzjcrRqa84gaPSH8Pplo+g0nFR3TKi95Rq+vUnx2
+j/CfYMVducXG2a/NAXA6bjqZxfkDIMjQ147PCU4YNIqWo7rLbCbs5p5JpnSst1Lt
+UzifV8OAsD2Qd15fbc2X1y+w4ZNiq1Avew8nYWMZIft4BRo+myjfdXMAFwPV9bNx
+lKDdvqPHAKqEA98gyxriXzOKEvSA4CjUg9VnjrOvbQ==
+=1IbC
+-----END PGP SIGNATURE-----
+
+--L/65QfJQPh8Q3KMl--
 
