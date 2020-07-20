@@ -1,10 +1,14 @@
+References: <20200720070802.18819-1-gert@...1296...>
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 20 Jul 2020 11:17:00 +0200
-Message-Id: <20200720091700.30271-1-arne@...1227...>
-In-Reply-To: <E1jxQx3-0003xM-Ke@...2487...>
-References: <E1jxQx3-0003xM-Ke@...2487...>
-Subject: [Openvpn-devel] [PATCH v2 1/9] Indicate that a client is in pull
- mode in IV_PROTO
+Message-ID: <45ad7a49-fcf1-74ed-a082-c952fbb61246@...1227...>
+Date: Mon, 20 Jul 2020 11:21:18 +0200
+MIME-Version: 1.0
+In-Reply-To: <20200720070802.18819-1-gert@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="JjI217AJxOQYxAsNlbETIdoZp2Y2JxjCT"
+Subject: Re: [Openvpn-devel] [PATCH] Separate handling of non-deferred
+ return values for client-connect-scripts.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,128 +17,83 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--JjI217AJxOQYxAsNlbETIdoZp2Y2JxjCT
+Content-Type: multipart/mixed; boundary="no5ZJ3CvmVvvogqsYIYk7jB1Yvy5TBSIE"
+
+--no5ZJ3CvmVvvogqsYIYk7jB1Yvy5TBSIE
+Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-This allows us to skip waiting for the first PUSH_REQUEST message from
-the client to send the response.
+Am 20.07.20 um 09:08 schrieb Gert Doering:
+> (Only) on "CC_RET_SUCCESS", run multi_client_connect_post().
+>=20
+> On "CC_RET_FAILURE", add missing log line, do not call ..._post().
+>=20
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>  src/openvpn/multi.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+> index 08112c98..e99de713 100644
+> --- a/src/openvpn/multi.c
+> +++ b/src/openvpn/multi.c
+> @@ -2139,13 +2139,19 @@ multi_client_connect_script_deferred(struct multi=
+_context *m,
+>          ret =3D CC_RET_DEFERRED;
+>      }
+>=20=20
+> -    if (ret !=3D CC_RET_DEFERRED)
+> +    if (ret =3D=3D CC_RET_SUCCEEDED)
+>      {
+>          ccs_delete_deferred_ret_file(mi);
+>          multi_client_connect_post(m, mi, ccs->config_file,
+>                                    option_types_found);
+>          ccs_delete_config_file(mi);
+>      }
+> +    if (ret =3D=3D CC_RET_FAILED)
+> +    {
+> +	msg(M_INFO, "MULTI: deferred --client-connect script returned CC_RET_FA=
+ILED");
+> +        ccs_delete_deferred_ret_file(mi);
+> +        ccs_delete_config_file(mi);
+> +    }
+>      return ret;
+>  }
 
-This changes the interpretation of IV_PROTO from a scalar to a bitfield
-Since we only have IV_PROTO=2 defined so far and will support DATA_V2
-this should not make any problem. This avoid adding another IV_xxx variable
-that takes valuable space in the protocol frame.
+Looks good to me. Reading the config file on failed should not hurt but
+is a very weird thing to do.
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-By: Arne Schwabe <arne@...1227...>
 
-Patch V2: Use bitmask for IV_PROTO_DATA_V2 and add more documentation.
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- doc/man-sections/server-options.rst |  6 +++++-
- src/openvpn/multi.c                 | 12 ++++++++++--
- src/openvpn/ssl.c                   | 15 +++++++++++++--
- src/openvpn/ssl.h                   | 16 ++++++++++++++++
- 4 files changed, 44 insertions(+), 5 deletions(-)
+--no5ZJ3CvmVvvogqsYIYk7jB1Yvy5TBSIE--
 
-diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-options.rst
-index c8e9fc61..e24cb135 100644
---- a/doc/man-sections/server-options.rst
-+++ b/doc/man-sections/server-options.rst
-@@ -464,9 +464,13 @@ fast hardware. SSL/TLS authentication must be used in this mode.
-   :code:`IV_LZ4=1`
-         If the client supports LZ4 compressions.
- 
--  :code:`IV_PROTO=2`
-+  :code:`IV_PROTO=2` (bit 2)
-         If the client supports peer-id floating mechanism
- 
-+  :code:`IV_PROTO=4` (bit 3)
-+        When the client expects a push-reply and the server may
-+        send this reply without waiting for a push-request first.
-+
-   :code:`IV_NCP=2`
-         Negotiable ciphers, client supports ``--cipher`` pushed by
-         the server, a value of 2 or greater indicates client supports
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index d9456f34..cb950db5 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -1792,10 +1792,18 @@ multi_client_set_protocol_options(struct context *c)
-     {
-         int proto = 0;
-         int r = sscanf(optstr, "IV_PROTO=%d", &proto);
--        if ((r == 1) && (proto >= 2))
-+        if (r == 1)
-         {
--            tls_multi->use_peer_id = true;
-+            if (proto & IV_PROTO_DATA_V2)
-+            {
-+                tls_multi->use_peer_id = true;
-+            }
-+            if (proto & IV_PROTO_REQUEST_PUSH)
-+            {
-+                c->c2.push_request_received = true;
-+            }
-         }
-+
-     }
- 
-     /* Select cipher if client supports Negotiable Crypto Parameters */
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 54a23011..04d78a81 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2299,8 +2299,19 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
-         buf_printf(&out, "IV_PLAT=win\n");
- #endif
- 
--        /* support for P_DATA_V2 */
--        buf_printf(&out, "IV_PROTO=2\n");
-+        /* support for P_DATA_V2*/
-+        int iv_proto = IV_PROTO_DATA_V2;
-+
-+        /* support for receiving push_reply before sending
-+         * push request, also signal that the client wants
-+         * to get push-reply messages without without requiring a round
-+         * trip for a push request message*/
-+        if(session->opt->pull)
-+        {
-+            iv_proto |= IV_PROTO_REQUEST_PUSH;
-+        }
-+
-+        buf_printf(&out, "IV_PROTO=%d\n", iv_proto);
- 
-         /* support for Negotiable Crypto Parameters */
-         if (session->opt->ncp_enabled
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index 58a9b0d4..81f8810e 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -99,6 +99,22 @@
- /* Maximum length of OCC options string passed as part of auth handshake */
- #define TLS_OPTIONS_LEN 512
- 
-+/* Definitions of the bits in the IV_PROTO bitfield
-+ *
-+ * In older OpenVPN versions this used as comparision
-+ * IV_PROTO >= 2 to determine if DATA_V2 is supported.
-+ * Therefore any client announcing any of the flags must
-+ * also announce IV_PROTO_DATA_V2. We also treat bit 0
-+ * as reserved for this reason */
-+
-+/** Support P_DATA_V2 */
-+#define IV_PROTO_DATA_V2        (1<<1)
-+
-+/** Assume client will send a push request and server does not need
-+ * to wait for a push-request to send a push-reply */
-+#define IV_PROTO_REQUEST_PUSH   (1<<2)
-+
-+
- /* Default field in X509 to be username */
- #define X509_USERNAME_FIELD_DEFAULT "CN"
- 
--- 
-2.26.2
+--JjI217AJxOQYxAsNlbETIdoZp2Y2JxjCT
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl8VYg4ACgkQFRhsZwKx
+RFRodg//QKB8DbpftDX4FQ6JxcHPiW2n6L/AjB/2YrWOhLtMTvAbLQ0htEVBwGkf
+Xat6jH4Mz46duZ2Oeqe+0Yb/x/lguu6dEYIJ8jAz8WKDP7fCZUbzVMIvikVZt+t/
+pToYYkZ+AIkv9yNsaThnPpjOvUnFBVEjWMECm/9SYDZANUVqG8Ka2VqMby2+zUAa
+1x5qk8ObfK008h86tC22SAbgBuKqmN6LewmPCBr0Bn43ni3PorBpmqnJ6Nj677O4
+FLqNlCVWf01GJYopAdkraILIKSlb58uP4zSpFZrmDX/nzpWY9ZVApymwX/mi7GPJ
+fSjjuatZTrKjV1wQRcjQDpcAWJD/0VXWLtzBMCf8adxZ0CYb3lea6CVGRpPFklWS
+1xtnUnlvSwMVST1LFfJI35NoSH7HBctM/5Fy2XiB2mXHslDfTUrcLYSEt+Aeeqae
+W1BrHrklLGZWuqJL9GWkTghFi06M0Lp7jvv+9HncIVNnpeGMIUzTsliAhNDfPzPM
+CVWsoWdVx9ELCt1Js1eX/9cgMLvxcAnFUvLvVVBoXa9ueI5Xlg4qMddqL4n2vXCM
+R2ed3XB+caXjfcVZS1w+vHs7XJbNTnp0Jv3J3Wi7tS3GM+3yd1160Eaunc09yNk9
+JFz5MdvCHXRyMv7K+EgToFBcL3uahZxN1aaLtXtg0kimQdgZBN4=
+=Qu3A
+-----END PGP SIGNATURE-----
+
+--JjI217AJxOQYxAsNlbETIdoZp2Y2JxjCT--
 
