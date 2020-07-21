@@ -1,9 +1,11 @@
-Date: Tue, 21 Jul 2020 21:50:02 +0200 (CEST)
-Message-Id: <202007211950.06LJo25r074232@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200717134739.21168-6-arne@...1227...>
-References: <20200717134739.21168-6-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove ENABLE_OCC #define
+From: Antonio Quartulli <a@...2181...>
+Date: Tue, 21 Jul 2020 21:55:18 +0200
+Message-Id: <20200721195518.14358-1-a@...2181...>
+In-Reply-To: <ae3a509f-dc9f-0949-05a9-7e1f9d87d287@...2181...>
+References: <ae3a509f-dc9f-0949-05a9-7e1f9d87d287@...2181...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v2] t_net.sh: drop hard dependency on
+ t_client.rc
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,32 +16,77 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-NOW I can finally merge this, since key-method v1 is gone
-and this compiles without unresolveds \o/
+Right now t_net.sh depends on t_client.rc in order to source the
+RUN_SUDO variable only.
+However, t_client.rc is something that a few people only have configured
+and thus this would result in t_net.sh almost never executed even if it
+just could.
 
-Stared-at-code, test compiled, ship.
+Drop dependency on t_client.rc by falling back to RUN_SUDO=sudo when the
+file is missing and no RUN_SUDO is passed via env.
 
-Your patch has been applied to the master branch.
+While at it, reword the error message to better match the current logic
+flow.
 
-commit ba66faad5608233f792c3679ebade09ff324a4b3
-Author: Arne Schwabe
-Date:   Fri Jul 17 15:47:36 2020 +0200
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
 
-     Remove ENABLE_OCC #define
+Changes from v1:
+* default to sudo when no RUN_SUDO is set externally
+* change warning message
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200717134739.21168-6-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20442.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+ tests/t_net.sh | 26 +++++++++++---------------
+ 1 file changed, 11 insertions(+), 15 deletions(-)
 
-
---
-kind regards,
-
-Gert Doering
+diff --git a/tests/t_net.sh b/tests/t_net.sh
+index c67c3df2..eef3c5d1 100755
+--- a/tests/t_net.sh
++++ b/tests/t_net.sh
+@@ -76,10 +76,6 @@ if [ -r "${top_builddir}"/t_client.rc ]; then
+     . "${top_builddir}"/t_client.rc
+ elif [ -r "${srcdir}"/t_client.rc ]; then
+     . "${srcdir}"/t_client.rc
+-else
+-    echo "$0: cannot find 't_client.rc' in build dir ('${top_builddir}')" >&2
+-    echo "$0: or source directory ('${srcdir}'). SKIPPING TEST." >&2
+-    exit 77
+ fi
+ 
+ if [ ! -x "$openvpn" ]; then
+@@ -117,18 +113,18 @@ else
+ 
+     if [ -z "$RUN_SUDO" ]
+     then
+-        echo "$0: this test must run be as root, or RUN_SUDO=... " >&2
+-        echo "      must be set correctly in 't_client.rc'. SKIP." >&2
+-        exit 77
++        echo "$0: no RUN_SUDO=... in t_client.rc or environment, defaulting to 'sudo'." >&2
++        echo "      if that does not work, set RUN_SUDO= correctly for your system." >&2
++        RUN_SUDO="sudo"
++    fi
++
++    # check that we can run the unit-test binary with sudo
++	if $RUN_SUDO $UNIT_TEST test
++    then
++	    echo "$0: $RUN_SUDO $UNIT_TEST succeeded, good."
+     else
+-        # check that we can run the unit-test binary with sudo
+-	    if $RUN_SUDO $UNIT_TEST test
+-        then
+-	        echo "$0: $RUN_SUDO $UNIT_TEST succeeded, good."
+-        else
+-	        echo "$0: $RUN_SUDO $UNIT_TEST failed, cannot go on. SKIP." >&2
+-	        exit 77
+-        fi
++	    echo "$0: $RUN_SUDO $UNIT_TEST failed, cannot go on. SKIP." >&2
++	    exit 77
+     fi
+ fi
+ 
+-- 
+2.27.0
 
 
