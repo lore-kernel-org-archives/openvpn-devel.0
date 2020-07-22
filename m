@@ -1,13 +1,14 @@
-References: <20200616180046.8069-1-juliusz@...2525...>
- <c926d584-471b-c66e-21f8-4c31410b5e4f@...2525...>
- <4f5787ef-fa03-f7d1-db9a-52fe61caf281@...1227...>
-From: Juliusz Sosinowicz <juliusz@...2525...>
-Message-ID: <4cb6ea57-4dd1-8230-cec4-d4e8f434944b@...2525...>
-Date: Wed, 22 Jul 2020 16:02:25 +0200
+References: <20200717134739.21168-1-arne@...1227...>
+ <20200717134739.21168-8-arne@...1227...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <6fe3f761-ea6e-4b52-36b1-24d20a92a97b@...2080...>
+Date: Wed, 22 Jul 2020 16:32:00 +0200
 MIME-Version: 1.0
-In-Reply-To: <4f5787ef-fa03-f7d1-db9a-52fe61caf281@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Support for wolfSSL in OpenVPN
+In-Reply-To: <20200717134739.21168-8-arne@...1227...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="fYBosd5kHvi4nRg8IZOqki23uImJP0oud"
+Subject: Re: [Openvpn-devel] [PATCH 8/9] Rename ncp-ciphers to data-ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,69 +17,112 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-Hi Arne,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--fYBosd5kHvi4nRg8IZOqki23uImJP0oud
+Content-Type: multipart/mixed; boundary="sOF82zxxb4mxTUBulpNeR3UFXQrhRKuZv";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <6fe3f761-ea6e-4b52-36b1-24d20a92a97b@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH 8/9] Rename ncp-ciphers to data-ciphers
+References: <20200717134739.21168-1-arne@...1227...>
+ <20200717134739.21168-8-arne@...1227...>
+In-Reply-To: <20200717134739.21168-8-arne@...1227...>
 
-thank you for your feedback. I tested the patch on the latest master 
-version at the time of writing and it looks like these requirements were 
-added in the last week which is why I wasn't able to address them 
-before.I will look into the new issues and get back to you when they are 
-fixed.
+--sOF82zxxb4mxTUBulpNeR3UFXQrhRKuZv
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-I agree that most of these functions only require exposing existing 
-functionality on our side.
+On 17/07/2020 15:47, Arne Schwabe wrote:
+> The change in name signals that data-ciphers is the preferred way to
+> configure data channel (and not --cipher). The data prefix is chosen
+> to avoid ambiguity and make it distinct from tls-cipher for the TLS
+> ciphers.
+>=20
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> ---
+>  Changes.rst                            | 13 ++++++++++---
+>  doc/man-sections/protocol-options.rst  | 11 +++++++----
+>  doc/man-sections/server-options.rst    |  4 ++--
+>  sample/sample-config-files/client.conf |  2 +-
+>  src/openvpn/multi.c                    |  4 ++--
+>  src/openvpn/options.c                  |  5 +++--
+>  src/openvpn/ssl_ncp.c                  |  4 ++--
+>  7 files changed, 27 insertions(+), 16 deletions(-)
+>=20
+[...snip...]
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index 31e33ae3..896abcde 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -536,7 +536,7 @@ static const char usage_message[] =3D
+>      "--cipher alg    : Encrypt packets with cipher algorithm alg\n"
+>      "                  (default=3D%s).\n"
+>      "                  Set alg=3Dnone to disable encryption.\n"
+> -    "--ncp-ciphers list : List of ciphers that are allowed to be negotia=
+ted.\n"
+> +    "--data-ciphers list : List of ciphers that are allowed to be negoti=
+ated.\n"
+>      "--ncp-disable   : (DEPRECATED) Disable cipher negotiation.\n"
+>      "--prng alg [nsl] : For PRNG, use digest algorithm alg, and\n"
+>      "                   nonce_secret_len=3Dnsl.  Set alg=3Dnone to disab=
+le PRNG.\n"
+> @@ -7866,7 +7866,8 @@ add_option(struct options *options,
+>          VERIFY_PERMISSION(OPT_P_NCP|OPT_P_INSTANCE);
+>          options->ciphername =3D p[1];
+>      }
+> -    else if (streq(p[0], "ncp-ciphers") && p[1] && !p[2])
+> +    else if ((streq(p[0], "data-ciphers") || streq(p[0], "ncp-ciphers"))
+> +            && p[1] && !p[2])
 
-Sincerely
-Juliusz
+I do agree to using --data-ciphers instead of --ncp-ciphers, that is far mo=
+re
+user-friendly naming of this feature.  NCP is a more technical
+"under-the-hood" terminology which users don't really need to relate to, wh=
+ere
+--data-ciphers better explains what it is used for.
 
-On 22/07/2020 15:37, Arne Schwabe wrote:
-> Am 15.07.20 um 10:26 schrieb Juliusz Sosinowicz:
->> Hi Everyone,
->>
->> do you have an update on the latest patch I sent? There have been
->> updates to wolfSSL to fix the remaining issues brought up last time.
->>
-> Yes. I looked at this today in the expectation that I just compile test,
-> do a few quick tests and the ACK+merge it:
->
-> However during our preperation for the next OpenVPN release, we
-> reevaluated the minimum OpenSSL version and decided that OpenSSL 1.0.2
-> is our minimum target for the next release and removed the OpenSSL 1.0.1
-> compatibility defines. I was not aware that WolfSSL depended on the
-> compatibility to 1.0.1 but rather surprised since we added all the tests
-> compatibility in autoconf that made the OpenSSL 1.1.0+ API checks also
-> work for WolfSSL. We also removed the option to compile OpenVPN without
-> AEAD support and since WolfSSL supports TLS 1.3, I also did not expect
-> that this would be problematic for WolfSSL.
->
->
-> The missing functions that I can see quickly are:
->
-> SSL_CTX_set1_curves/SSL_CTX_set1_groups
-> SSL_CTX_get0_certificate
-> X509_get0_notBefore
-> X509_get0_notAfter
-> SSL_CTX_set_ecdh_auto (Would not be need if WolfSSL declared >= 1.1.0
-> version)
-> CRYPTO_memcmp
->
-> Also EVP_CIPH_FLAG_AEAD_CIPHER was undefined. It looks that in the older
-> version/patch the use of the define was ifdef'ed under the assumption
-> that support of AEAD implies existence of the macro, which is seems not
-> to have been true in the case of WolfSSL.
->
-> None of the offending functions looks particularly bad. The get0 are
-> just the more modern name of older identical OpenSSL version. The set
-> groups is probably already somehow support but not exposed and I would
-> be surprised if a constant time memcmp does not already exist in WolfSSL.
->
-> Reverting the patch that removed 1.0.1 feel like a bad option at this
-> point and will also raise (rightfully) eyebrows and questions.
->
-> Arne
->
->
+But I do reject NOT adding a deprecation path for --ncp-ciphers.  We should
+support --ncp-ciphers for 1-2 major releases, but after that it should be
+removed.  We have too many options and we certainly should avoid duplicating
+options with the exact same functionality.
+
+
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
+
+
+
+--sOF82zxxb4mxTUBulpNeR3UFXQrhRKuZv--
+
+--fYBosd5kHvi4nRg8IZOqki23uImJP0oud
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJfGE3hAAoJEIbPlEyWcf3y1zcQAMfI5v44bIRAqL8PQTEmVy2j
+7Mn1Nd+hwUvCZiSz+UeKAhnfo9rJ+Sf2kjJlbO6A/tviUR1BcjPv6y1lcJUDnj5+
+cR3P00Y4045bfj6F9cReJwX7tUVqqzUZh8pbs6duqsMUpeQc95ec2dtBkn23/MCe
+zPvfSjk6R8xjGWGVQik0+iEhV3BrLxomaAdWY8/jIgpUFDK5fX/9tdg7mkwSgCyM
+nKQpUiW1Jq/biwOmFnGSc7IJ6E7mv5Nn067AMDeF5P2QoNzlAWigPUHqF4VeWPL3
+9io3HAWOqz+tp7n+mf7toggHfKGn7h7iCnac3s6a1S67gVpLuv+sjNams4adWIYI
+O67RdiZighzthyd0jSXrZy+mPPGqobdT/iR2m+8SlgZtZhol67L0iAIAWdoZQgGr
+jMUwpuoGkaAF44gABuFqkSqt2OtecdZsOKpmEfELs4Dd90FSPnVesxA4CEKHzPU9
+RnHNY/ZWw8opfZY9ZTRaqPU2lcPIxilSgG68OkLywlbMoJswRuUka+Fky01BB7Cg
+dW5QqeBz+TsB4Mb7cXnNXwjdSDqCdLGYgbikxYsDhYqKksbNmCsKaPyuWrVJZd8H
+TpkBHHWRXMT6ZIN+QMSRfb2Gkm1NWvm/Wu0AWyxh+Syor8lMl6Y65E4zbgmedT8m
+hhyQ28CT2IIKYbFutD/Y
+=5xd4
+-----END PGP SIGNATURE-----
+
+--fYBosd5kHvi4nRg8IZOqki23uImJP0oud--
 
