@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Wed, 22 Jul 2020 11:30:50 +0200
-Message-Id: <20200722093050.20474-3-arne@...1227...>
+Date: Wed, 22 Jul 2020 11:30:49 +0200
+Message-Id: <20200722093050.20474-2-arne@...1227...>
 In-Reply-To: <20200722093050.20474-1-arne@...1227...>
 References: <20200722093050.20474-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 3/3] Clean up a number of leftover C89
- initialisations in ssl.c
+Subject: [Openvpn-devel] [PATCH 2/3] Cleanup tls_pre_decrypt_lite and
+ tls_pre_encrypt
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,196 +17,276 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+Mostly C90 -> C99 cleanups and again immediately instead
+wrapping function body into if.
+
+(Review with ignore whitespace)
+
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/ssl.c | 56 +++++++++++++++++------------------------------
- 1 file changed, 20 insertions(+), 36 deletions(-)
+ src/openvpn/ssl.c | 219 ++++++++++++++++++++++------------------------
+ 1 file changed, 106 insertions(+), 113 deletions(-)
 
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 916d2d37..7e5c0805 100644
+index 6d146a63..916d2d37 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -831,10 +831,9 @@ session_index_name(int index)
- static const char *
- print_key_id(struct tls_multi *multi, struct gc_arena *gc)
- {
--    int i;
-     struct buffer out = alloc_buf_gc(256, gc);
+@@ -3696,100 +3696,91 @@ tls_pre_decrypt_lite(const struct tls_auth_standalone *tas,
+                      const struct buffer *buf)
  
--    for (i = 0; i < KEY_SCAN_SIZE; ++i)
+ {
+-    struct gc_arena gc = gc_new();
+-    bool ret = false;
+-
+-    if (buf->len > 0)
++    if (buf->len <= 0)
+     {
+-        int op;
+-        int key_id;
++        return false;
++    }
++    struct gc_arena gc = gc_new();
+ 
+-        /* get opcode and key ID */
+-        {
+-            uint8_t c = *BPTR(buf);
+-            op = c >> P_OPCODE_SHIFT;
+-            key_id = c & P_KEY_ID_MASK;
+-        }
++    /* get opcode and key ID */
++    uint8_t pkt_firstbyte = *BPTR(buf);
++    int op = pkt_firstbyte >> P_OPCODE_SHIFT;
++    int key_id = pkt_firstbyte & P_KEY_ID_MASK;
+ 
+-        /* this packet is from an as-yet untrusted source, so
+-         * scrutinize carefully */
++    /* this packet is from an as-yet untrusted source, so
++     * scrutinize carefully */
+ 
+-        if (op != P_CONTROL_HARD_RESET_CLIENT_V2
+-            && op != P_CONTROL_HARD_RESET_CLIENT_V3)
+-        {
+-            /*
+-             * This can occur due to bogus data or DoS packets.
+-             */
+-            dmsg(D_TLS_STATE_ERRORS,
+-                 "TLS State Error: No TLS state for client %s, opcode=%d",
+-                 print_link_socket_actual(from, &gc),
+-                 op);
+-            goto error;
+-        }
++    if (op != P_CONTROL_HARD_RESET_CLIENT_V2
++        && op != P_CONTROL_HARD_RESET_CLIENT_V3)
++    {
++        /*
++         * This can occur due to bogus data or DoS packets.
++         */
++        dmsg(D_TLS_STATE_ERRORS,
++             "TLS State Error: No TLS state for client %s, opcode=%d",
++             print_link_socket_actual(from, &gc),
++             op);
++        goto error;
++    }
+ 
+-        if (key_id != 0)
+-        {
+-            dmsg(D_TLS_STATE_ERRORS,
+-                 "TLS State Error: Unknown key ID (%d) received from %s -- 0 was expected",
+-                 key_id,
+-                 print_link_socket_actual(from, &gc));
+-            goto error;
+-        }
++    if (key_id != 0)
++    {
++        dmsg(D_TLS_STATE_ERRORS,
++             "TLS State Error: Unknown key ID (%d) received from %s -- 0 was expected",
++             key_id,
++             print_link_socket_actual(from, &gc));
++        goto error;
++    }
+ 
+-        if (buf->len > EXPANDED_SIZE_DYNAMIC(&tas->frame))
+-        {
+-            dmsg(D_TLS_STATE_ERRORS,
+-                 "TLS State Error: Large packet (size %d) received from %s -- a packet no larger than %d bytes was expected",
+-                 buf->len,
+-                 print_link_socket_actual(from, &gc),
+-                 EXPANDED_SIZE_DYNAMIC(&tas->frame));
+-            goto error;
+-        }
++    if (buf->len > EXPANDED_SIZE_DYNAMIC(&tas->frame))
++    {
++        dmsg(D_TLS_STATE_ERRORS,
++             "TLS State Error: Large packet (size %d) received from %s -- a packet no larger than %d bytes was expected",
++             buf->len,
++             print_link_socket_actual(from, &gc),
++             EXPANDED_SIZE_DYNAMIC(&tas->frame));
++        goto error;
++    }
+ 
+-        {
+-            struct buffer newbuf = clone_buf(buf);
+-            struct tls_wrap_ctx tls_wrap_tmp = tas->tls_wrap;
+-            bool status;
+-
+-            /* HMAC test, if --tls-auth was specified */
+-            status = read_control_auth(&newbuf, &tls_wrap_tmp, from, NULL);
+-            free_buf(&newbuf);
+-            free_buf(&tls_wrap_tmp.tls_crypt_v2_metadata);
+-            if (tls_wrap_tmp.cleanup_key_ctx)
+-            {
+-                free_key_ctx_bi(&tls_wrap_tmp.opt.key_ctx_bi);
+-            }
+-            if (!status)
+-            {
+-                goto error;
+-            }
+ 
+-            /*
+-             * At this point, if --tls-auth is being used, we know that
+-             * the packet has passed the HMAC test, but we don't know if
+-             * it is a replay yet.  We will attempt to defeat replays
+-             * by not advancing to the S_START state until we
+-             * receive an ACK from our first reply to the client
+-             * that includes an HMAC of our randomly generated 64 bit
+-             * session ID.
+-             *
+-             * On the other hand if --tls-auth is not being used, we
+-             * will proceed to begin the TLS authentication
+-             * handshake with only cursory integrity checks having
+-             * been performed, since we will be leaving the task
+-             * of authentication solely up to TLS.
+-             */
++    struct buffer newbuf = clone_buf(buf);
++    struct tls_wrap_ctx tls_wrap_tmp = tas->tls_wrap;
+ 
+-            ret = true;
+-        }
++    /* HMAC test, if --tls-auth was specified */
++    bool status = read_control_auth(&newbuf, &tls_wrap_tmp, from, NULL);
++    free_buf(&newbuf);
++    free_buf(&tls_wrap_tmp.tls_crypt_v2_metadata);
++    if (tls_wrap_tmp.cleanup_key_ctx)
++    {
++        free_key_ctx_bi(&tls_wrap_tmp.opt.key_ctx_bi);
++    }
++    if (!status)
++    {
++        goto error;
+     }
++
++    /*
++     * At this point, if --tls-auth is being used, we know that
++     * the packet has passed the HMAC test, but we don't know if
++     * it is a replay yet.  We will attempt to defeat replays
++     * by not advancing to the S_START state until we
++     * receive an ACK from our first reply to the client
++     * that includes an HMAC of our randomly generated 64 bit
++     * session ID.
++     *
++     * On the other hand if --tls-auth is not being used, we
++     * will proceed to begin the TLS authentication
++     * handshake with only cursory integrity checks having
++     * been performed, since we will be leaving the task
++     * of authentication solely up to TLS.
++     */
+     gc_free(&gc);
+-    return ret;
++    return true;
+ 
+ error:
+     tls_clear_error();
+     gc_free(&gc);
+-    return ret;
++    return false;
+ }
+ 
+ /* Choose the key with which to encrypt a data packet */
+@@ -3798,48 +3789,50 @@ tls_pre_encrypt(struct tls_multi *multi,
+                 struct buffer *buf, struct crypto_options **opt)
+ {
+     multi->save_ks = NULL;
+-    if (buf->len > 0)
++    if (buf->len <= 0)
+     {
+-        int i;
+-        struct key_state *ks_select = NULL;
+-        for (i = 0; i < KEY_SCAN_SIZE; ++i)
++        buf->len = 0;
++        opt = NULL;
++    }
++
++    struct key_state *ks_select = NULL;
 +    for (int i = 0; i < KEY_SCAN_SIZE; ++i)
-     {
-         struct key_state *ks = multi->key_scan[i];
-         buf_printf(&out, " [key#%d state=%s id=%d sid=%s]", i,
-@@ -1315,8 +1314,6 @@ tls_multi_init_set_options(struct tls_multi *multi,
- void
- tls_multi_free(struct tls_multi *multi, bool clear)
- {
--    int i;
--
-     ASSERT(multi);
- 
-     auth_set_client_reason(multi, NULL);
-@@ -1339,7 +1336,7 @@ tls_multi_free(struct tls_multi *multi, bool clear)
- 
-     free(multi->remote_ciphername);
- 
--    for (i = 0; i < TM_SIZE; ++i)
-+    for (int i = 0; i < TM_SIZE; ++i)
-     {
-         tls_session_free(&multi->session[i], false);
-     }
-@@ -1367,11 +1364,10 @@ tls_multi_free(struct tls_multi *multi, bool clear)
- static bool
- swap_hmac(struct buffer *buf, const struct crypto_options *co, bool incoming)
- {
--    const struct key_ctx *ctx;
--
-     ASSERT(co);
- 
--    ctx = (incoming ? &co->key_ctx_bi.decrypt : &co->key_ctx_bi.encrypt);
-+    const struct key_ctx *ctx = (incoming ? &co->key_ctx_bi.decrypt :
-+                                 &co->key_ctx_bi.encrypt);
-     ASSERT(ctx->hmac);
- 
-     {
-@@ -1623,25 +1619,21 @@ tls1_P_hash(const md_kt_t *md_kt,
-             int olen)
- {
-     struct gc_arena gc = gc_new();
--    int chunk;
--    hmac_ctx_t *ctx;
--    hmac_ctx_t *ctx_tmp;
-     uint8_t A1[MAX_HMAC_KEY_LENGTH];
--    unsigned int A1_len;
- 
- #ifdef ENABLE_DEBUG
-     const int olen_orig = olen;
-     const uint8_t *out_orig = out;
- #endif
- 
--    ctx = hmac_ctx_new();
--    ctx_tmp = hmac_ctx_new();
-+    hmac_ctx_t *ctx = hmac_ctx_new();
-+    hmac_ctx_t *ctx_tmp = hmac_ctx_new();
- 
-     dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash sec: %s", format_hex(sec, sec_len, 0, &gc));
-     dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash seed: %s", format_hex(seed, seed_len, 0, &gc));
- 
--    chunk = md_kt_size(md_kt);
--    A1_len = md_kt_size(md_kt);
-+    int chunk = md_kt_size(md_kt);
-+    unsigned int A1_len = md_kt_size(md_kt);
- 
-     hmac_ctx_init(ctx, sec, sec_len, md_kt);
-     hmac_ctx_init(ctx_tmp, sec, sec_len, md_kt);
-@@ -1711,21 +1703,18 @@ tls1_PRF(const uint8_t *label,
-     struct gc_arena gc = gc_new();
-     const md_kt_t *md5 = md_kt_get("MD5");
-     const md_kt_t *sha1 = md_kt_get("SHA1");
--    int len,i;
--    const uint8_t *S1,*S2;
--    uint8_t *out2;
- 
--    out2 = (uint8_t *) gc_malloc(olen, false, &gc);
-+    uint8_t *out2 = (uint8_t *) gc_malloc(olen, false, &gc);
- 
--    len = slen/2;
--    S1 = sec;
--    S2 = &(sec[len]);
-+    int len = slen/2;
-+    const uint8_t *S1 = sec;
-+    const uint8_t *S2 = &(sec[len]);
-     len += (slen&1); /* add for odd, make longer */
- 
-     tls1_P_hash(md5,S1,len,label,label_len,out1,olen);
-     tls1_P_hash(sha1,S2,len,label,label_len,out2,olen);
- 
--    for (i = 0; i<olen; i++)
-+    for (int i = 0; i<olen; i++)
-     {
-         out1[i] ^= out2[i];
-     }
-@@ -2198,7 +2187,6 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
-     if (session->opt->push_peer_info_detail > 0)
-     {
-         struct env_set *es = session->opt->es;
--        struct env_item *e;
-         struct buffer out = alloc_buf_gc(512*3, &gc);
- 
-         /* push version */
-@@ -2271,7 +2259,7 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
++    {
++        struct key_state *ks = multi->key_scan[i];
++        if (ks->state >= S_ACTIVE
++            && (ks->authenticated == KS_AUTH_TRUE)
++            && ks->crypto_options.key_ctx_bi.initialized
++            )
+         {
+-            struct key_state *ks = multi->key_scan[i];
+-            if (ks->state >= S_ACTIVE
+-                && (ks->authenticated == KS_AUTH_TRUE)
+-                && ks->crypto_options.key_ctx_bi.initialized
+-                )
++            if (!ks_select)
+             {
+-                if (!ks_select)
+-                {
+-                    ks_select = ks;
+-                }
+-                if (now >= ks->auth_deferred_expire)
+-                {
+-                    ks_select = ks;
+-                    break;
+-                }
++                ks_select = ks;
++            }
++            if (now >= ks->auth_deferred_expire)
++            {
++                ks_select = ks;
++                break;
+             }
          }
++    }
  
-         /* push env vars that begin with UV_, IV_PLAT_VER and IV_GUI_VER */
--        for (e = es->list; e != NULL; e = e->next)
-+        for (struct env_item *e = es->list; e != NULL; e = e->next)
-         {
-             if (e->string)
-             {
-@@ -3004,10 +2992,8 @@ tls_multi_process(struct tls_multi *multi,
-                   interval_t *wakeup)
- {
-     struct gc_arena gc = gc_new();
--    int i;
-     int active = TLSMP_INACTIVE;
-     bool error = false;
--    int tas;
+-        if (ks_select)
+-        {
+-            *opt = &ks_select->crypto_options;
+-            multi->save_ks = ks_select;
+-            dmsg(D_TLS_KEYSELECT, "TLS: tls_pre_encrypt: key_id=%d", ks_select->key_id);
+-            return;
+-        }
+-        else
+-        {
+-            struct gc_arena gc = gc_new();
+-            dmsg(D_TLS_KEYSELECT, "TLS Warning: no data channel send key available: %s",
+-                 print_key_id(multi, &gc));
+-            gc_free(&gc);
+-        }
++    if (ks_select)
++    {
++        *opt = &ks_select->crypto_options;
++        multi->save_ks = ks_select;
++        dmsg(D_TLS_KEYSELECT, "TLS: tls_pre_encrypt: key_id=%d", ks_select->key_id);
++        return;
+     }
++    else
++    {
++        struct gc_arena gc = gc_new();
++        dmsg(D_TLS_KEYSELECT, "TLS Warning: no data channel send key available: %s",
++             print_key_id(multi, &gc));
++        gc_free(&gc);
  
-     perf_push(PERF_TLS_MULTI_PROCESS);
+-    buf->len = 0;
+-    *opt = NULL;
++        *opt = NULL;
++        buf->len = 0;
++    }
+ }
  
-@@ -3018,7 +3004,7 @@ tls_multi_process(struct tls_multi *multi,
-      * and which has a defined remote IP addr.
-      */
- 
--    for (i = 0; i < TM_SIZE; ++i)
-+    for (int i = 0; i < TM_SIZE; ++i)
-     {
-         struct tls_session *session = &multi->session[i];
-         struct key_state *ks = &session->key[KS_PRIMARY];
-@@ -3093,7 +3079,7 @@ tls_multi_process(struct tls_multi *multi,
- 
-     update_time();
- 
--    tas = tls_authentication_status(multi, TLS_MULTI_AUTH_STATUS_INTERVAL);
-+    int tas = tls_authentication_status(multi, TLS_MULTI_AUTH_STATUS_INTERVAL);
- 
-     /*
-      * If lame duck session expires, kill it.
-@@ -3126,7 +3112,7 @@ tls_multi_process(struct tls_multi *multi,
-      */
-     if (error)
-     {
--        for (i = 0; i < (int) SIZE(multi->key_scan); ++i)
-+        for (int i = 0; i < (int) SIZE(multi->key_scan); ++i)
-         {
-             if (multi->key_scan[i]->state >= S_ACTIVE)
-             {
-@@ -3143,7 +3129,7 @@ nohard:
-         const int throw_level = GREMLIN_CONNECTION_FLOOD_LEVEL(multi->opt.gremlin);
-         if (throw_level)
-         {
--            for (i = 0; i < (int) SIZE(multi->key_scan); ++i)
-+            for (int i = 0; i < (int) SIZE(multi->key_scan); ++i)
-             {
-                 if (multi->key_scan[i]->state >= throw_level)
-                 {
-@@ -3956,13 +3942,11 @@ void
- tls_update_remote_addr(struct tls_multi *multi, const struct link_socket_actual *addr)
- {
-     struct gc_arena gc = gc_new();
--    int i, j;
--
--    for (i = 0; i < TM_SIZE; ++i)
-+    for (int i = 0; i < TM_SIZE; ++i)
-     {
-         struct tls_session *session = &multi->session[i];
- 
--        for (j = 0; j < KS_SIZE; ++j)
-+        for (int j = 0; j < KS_SIZE; ++j)
-         {
-             struct key_state *ks = &session->key[j];
- 
+ void
 -- 
 2.26.2
 
