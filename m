@@ -1,8 +1,15 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Fri, 24 Jul 2020 17:14:45 +0300
-Message-Id: <20200724141445.302-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH] Improve Windows version detection with
- manifest
+From: Arne Schwabe <arne@...1227...>
+References: <20200717134739.21168-1-arne@...1227...>
+ <20200724140407.22393-1-arne@...1227...>
+Message-ID: <1b9f890e-5646-825d-a75f-b2fe29a19220@...1227...>
+Date: Fri, 24 Jul 2020 16:16:00 +0200
+MIME-Version: 1.0
+In-Reply-To: <20200724140407.22393-1-arne@...1227...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="lW5svGezDjFYzy8POgLnrtpFoo3lnZkKu"
+Subject: Re: [Openvpn-devel] [PATCH 10/10] Add a note that ncp-ciphers is
+ replaced by data-ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,214 +18,86 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
 
-From: Lev Stipakov <lev@...515...>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--lW5svGezDjFYzy8POgLnrtpFoo3lnZkKu
+Content-Type: multipart/mixed; boundary="3NWtO2jh6Mk0N2YsfsEz0bthEC9d21GoY"
 
-Add manifest file to detect Windows versions greater than Windows 8.
+--3NWtO2jh6Mk0N2YsfsEz0bthEC9d21GoY
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-Below is an example output on Windows 10.
+Am 24.07.20 um 16:04 schrieb Arne Schwabe:
+> This patch adds a message that informs the user that the ncp-cipher
+> is renamed to data-ciphers. This should address the following concerns:
+>=20
+>  - Users being confused by old options.
+>  - Nudge users to use the modern variant of an option
+>=20
+> The man page already documents ncp-ciphers as an old name for
+> data-ciphers, so looking it up in the man page will also work.
+>=20
+> Note that I did not add "deprecated old option" to this message
+> since I still think that eventually removing the option will only
+> break configs and we gain almost nothing from that.
+>=20
+> Also still accepting the option even though we do not recommend usage of
+> it also follows the robustness principle of:
+> "be strict in what you send and tolerant in what you receive"
+>=20
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> ---
+>  src/openvpn/options.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+>=20
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index 5beaba0f..01f0ca0f 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -7939,6 +7939,11 @@ add_option(struct options *options,
+>              && p[1] && !p[2])
+>      {
+>          VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_INSTANCE);
+> +        if (streq(p[0], "ncp-ciphers"))
+> +        {
+> +            msg(M_INFO, "Note: Rewriting option '--ncp-ciphers' to "
+> +                        " '--data-ciphers'");
+> +        }
+>          options->ncp_ciphers =3D p[1];
+>      }
+>      else if (streq(p[0], "ncp-disable") && !p[1])
+>=20
 
-Before:
-        Windows version 6.2 (Windows 8 or greater) 64bit
+Sorry, send out an old version. V2 incoming.
 
-After:
-        Windows version 10.0 (Windows 10 or greater) 64bit
+Arne
 
-Signed-off-by: Lev Stipakov <lev@...515...>
----
- src/compat/compat-versionhelpers.h     |  6 +++++
- src/openvpn/openvpn.manifest           | 33 ++++++++++++++++++++++++++
- src/openvpn/openvpn.vcxproj            | 15 ++++++++++++
- src/openvpn/openvpn.vcxproj.filters    |  5 ++++
- src/openvpn/openvpn_win32_resources.rc |  2 ++
- src/openvpn/win32.c                    | 20 ++++++++++++++--
- src/openvpn/win32.h                    |  8 ++++---
- 7 files changed, 84 insertions(+), 5 deletions(-)
- create mode 100644 src/openvpn/openvpn.manifest
 
-diff --git a/src/compat/compat-versionhelpers.h b/src/compat/compat-versionhelpers.h
-index 251fb047..c8511d0f 100644
---- a/src/compat/compat-versionhelpers.h
-+++ b/src/compat/compat-versionhelpers.h
-@@ -95,6 +95,12 @@ IsWindows8Point1OrGreater(void)
-     return IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WINBLUE), LOBYTE(_WIN32_WINNT_WINBLUE), 0);
- }
- 
-+VERSIONHELPERAPI
-+IsWindows10OrGreater()
-+{
-+    return IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WINTHRESHOLD), LOBYTE(_WIN32_WINNT_WINTHRESHOLD), 0);
-+}
-+
- VERSIONHELPERAPI
- IsWindowsServer(void)
- {
-diff --git a/src/openvpn/openvpn.manifest b/src/openvpn/openvpn.manifest
-new file mode 100644
-index 00000000..fa5b3d7f
---- /dev/null
-+++ b/src/openvpn/openvpn.manifest
-@@ -0,0 +1,33 @@
-+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-+<assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3">
-+    <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
-+        <application>
-+            <!-- Windows 10 -->
-+            <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"/>
-+            <!-- Windows 8.1 -->
-+            <supportedOS Id="{1f676c76-80e1-4239-95bb-83d0f6d0da78}"/>
-+            <!-- Windows 8 -->
-+            <supportedOS Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}"/>
-+            <!-- Windows 7 -->
-+            <supportedOS Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"/>
-+            <!-- Windows Vista -->
-+            <supportedOS Id="{e2011457-1546-43c5-a5fe-008deee3d3f0}"/>
-+        </application>
-+    </compatibility>
-+    <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
-+        <security>
-+            <requestedPrivileges>
-+                <!--
-+                  UAC settings:
-+                  - app should run at same integrity level as calling process
-+                  - app does not need to manipulate windows belonging to
-+                    higher-integrity-level processes
-+                  -->
-+                <requestedExecutionLevel
-+                    level="asInvoker"
-+                    uiAccess="false"
-+                />
-+            </requestedPrivileges>
-+        </security>
-+    </trustInfo>
-+</assembly>
-diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
-index bd1a5844..5367979d 100644
---- a/src/openvpn/openvpn.vcxproj
-+++ b/src/openvpn/openvpn.vcxproj
-@@ -70,6 +70,18 @@
-   <PropertyGroup>
-     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-   </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-+    <GenerateManifest>false</GenerateManifest>
-+  </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-+    <GenerateManifest>false</GenerateManifest>
-+  </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-+    <GenerateManifest>false</GenerateManifest>
-+  </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-+    <GenerateManifest>false</GenerateManifest>
-+  </PropertyGroup>
-   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-     <ClCompile>
-       <AdditionalIncludeDirectories>..\compat;$(TAP_WINDOWS_HOME)/include;$(OPENSSL_HOME)/include;$(LZO_HOME)/include;$(PKCS11H_HOME)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-@@ -311,6 +323,9 @@
-       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-     </ProjectReference>
-   </ItemGroup>
-+  <ItemGroup>
-+    <Manifest Include="openvpn.manifest" />
-+  </ItemGroup>
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-   <ImportGroup Label="ExtensionTargets">
-   </ImportGroup>
-diff --git a/src/openvpn/openvpn.vcxproj.filters b/src/openvpn/openvpn.vcxproj.filters
-index e0bc7d5e..cf5748c7 100644
---- a/src/openvpn/openvpn.vcxproj.filters
-+++ b/src/openvpn/openvpn.vcxproj.filters
-@@ -515,4 +515,9 @@
-       <Filter>Resource Files</Filter>
-     </ResourceCompile>
-   </ItemGroup>
-+  <ItemGroup>
-+    <Manifest Include="openvpn.manifest">
-+      <Filter>Resource Files</Filter>
-+    </Manifest>
-+  </ItemGroup>
- </Project>
-\ No newline at end of file
-diff --git a/src/openvpn/openvpn_win32_resources.rc b/src/openvpn/openvpn_win32_resources.rc
-index e4f1ee95..1ea5f878 100644
---- a/src/openvpn/openvpn_win32_resources.rc
-+++ b/src/openvpn/openvpn_win32_resources.rc
-@@ -7,6 +7,8 @@
- 
- #pragma code_page(65001) /* UTF8 */
- 
-+1 RT_MANIFEST "openvpn.manifest"
-+
- LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
- 
- VS_VERSION_INFO VERSIONINFO
-diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index eb4c0307..7e913165 100644
---- a/src/openvpn/win32.c
-+++ b/src/openvpn/win32.c
-@@ -1417,10 +1417,18 @@ win32_version_info(void)
-     {
-         return WIN_7;
-     }
--    else
-+
-+    if (!IsWindows8Point1OrGreater())
-     {
-         return WIN_8;
-     }
-+
-+    if (!IsWindows10OrGreater())
-+    {
-+        return WIN_8_1;
-+    }
-+
-+    return WIN_10;
- }
- 
- bool
-@@ -1458,7 +1466,15 @@ win32_version_string(struct gc_arena *gc, bool add_name)
-             break;
- 
-         case WIN_8:
--            buf_printf(&out, "6.2%s", add_name ? " (Windows 8 or greater)" : "");
-+            buf_printf(&out, "6.2%s", add_name ? " (Windows 8)" : "");
-+            break;
-+
-+        case WIN_8_1:
-+            buf_printf(&out, "6.3%s", add_name ? " (Windows 8.1)" : "");
-+            break;
-+
-+        case WIN_10:
-+            buf_printf(&out, "10.0%s", add_name ? " (Windows 10 or greater)" : "");
-             break;
- 
-         default:
-diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
-index 79504776..da85ed4d 100644
---- a/src/openvpn/win32.h
-+++ b/src/openvpn/win32.h
-@@ -298,10 +298,12 @@ bool win_wfp_block_dns(const NET_IFINDEX index, const HANDLE msg_channel);
- 
- bool win_wfp_uninit(const NET_IFINDEX index, const HANDLE msg_channel);
- 
--#define WIN_XP 0
-+#define WIN_XP    0
- #define WIN_VISTA 1
--#define WIN_7 2
--#define WIN_8 3
-+#define WIN_7     2
-+#define WIN_8     3
-+#define WIN_8_1   4
-+#define WIN_10    5
- 
- int win32_version_info(void);
- 
--- 
-2.17.1
+--3NWtO2jh6Mk0N2YsfsEz0bthEC9d21GoY--
 
+--lW5svGezDjFYzy8POgLnrtpFoo3lnZkKu
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl8a7SAACgkQFRhsZwKx
+RFQCBQ/8CotUV30JQgXc4jslnr/aE6jJQKGeYbAgxwvuyE6u1pxQRRYJZbDpaBdJ
+CyOin7/uC0II+DEeQ9dqvuFU1DanBpQzBDZeUc+gQy8YxTwjGL6FsTtE8YBLuxOj
+M7pa5vuvWwFi5+K7gUGRqZWJhjj+L+Dx4WCUbwWlmIv0JgeSROaBwiFgVIpdhyME
+IC8kcPy0qH1sqzXMFK3a7dWKrFrRffVNKiDWdpqZ1PfV4c460dUYaq7W9Lr6/0tO
+vxpmMcITS+QZmhCTzyLVEP7+QCp9B3yNacVGiYxKgqFj2SGe5QResssGUxTrfR3u
++rxl1kjvz5KXq+Yfr0J4TEe2BPVESoVgSVAbOFlfrfQ+pd3YTwULI6/6tUYNJrPr
+VcAvVXL9T5LwIpnFpYSDyADNBTAdUW1aPsVT1x6tZuyfNY17yCMeW0X9wQEPzojC
+8z2KthSLRGKgZZ0LeL++RXy/cH8q4NYazXUItFmP9WXA+lwGeLN5cMwDRcLPjG5S
+oOn4HGNBhEI9sOXqiBGaHx7i1ohpQLIMoCx7kL3gh4B7t87holCz88jgYInkkS5i
+mvjfs3TBptPDXHBznHDw3LoTPIgxc2aeNXNXkcEhjgLKXJLipZe+YfrDLqOfurAo
+zDI2YXIRdCtrIU7cPUG+0b5QeOa14hzBjL2EHHyS+fLIncjR6c0=
+=34tL
+-----END PGP SIGNATURE-----
+
+--lW5svGezDjFYzy8POgLnrtpFoo3lnZkKu--
 
