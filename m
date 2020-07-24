@@ -1,10 +1,14 @@
-MIME-Version: 1.0
+Date: Fri, 24 Jul 2020 21:40:53 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20200724194053.GK1431@...1296...>
 References: <20200724141445.302-1-lstipakov@...277...>
  <20200724184020.GJ1431@...1296...>
-In-Reply-To: <20200724184020.GJ1431@...1296...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Fri, 24 Jul 2020 22:34:17 +0300
-Message-ID: <CAGyAFMXkD2LJ+z8hVo8DphZL2pJC77ABqVeHxtYzx6Pj9AsUxQ@...278...>
+ <CAGyAFMXkD2LJ+z8hVo8DphZL2pJC77ABqVeHxtYzx6Pj9AsUxQ@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="Unr0GAwC1Xucki3H"
+Content-Disposition: inline
+In-Reply-To: <CAGyAFMXkD2LJ+z8hVo8DphZL2pJC77ABqVeHxtYzx6Pj9AsUxQ@...278...>
 Subject: Re: [Openvpn-devel] [PATCH] Improve Windows version detection with
  manifest
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,92 +19,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+To: Lev Stipakov <lstipakov@...277...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>, Lev Stipakov <lev@...515...>
+
+--Unr0GAwC1Xucki3H
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Lev Stipakov <lev@...515...>
+Content-Disposition: inline
 
-Hm.. I tested mingw build (windows-nsis) on Ubuntu 19.04 and
-everything worked fine.
+Hi,
 
-That's because:
+On Fri, Jul 24, 2020 at 10:34:17PM +0300, Lev Stipakov wrote:
+> 2) When I tested mingw build, I pointed source url to git repo, not to
+> tarball - that's why it worked.
 
-1) Ubuntu 19.04 probably has recent enough mingw with _WIN32_WINNT_WINTHRES=
-HOLD
+How do you build?  I use the "build-snapshot" script, and that does
+a "make dist" somewhere in between.
 
-2) When I tested mingw build, I pointed source url to git repo, not to
-tarball - that's why it worked.
+> That XML is required (no matter msvc or mingw) to tell Windows that
+> your app is Win10-aware and allows you
+> to use API which detects Windows >=3D 8.1
 
-That XML is required (no matter msvc or mingw) to tell Windows that
-your app is Win10-aware and allows you
-to use API which detects Windows >=3D 8.1
+Thanks for explaining.
 
-I'll send V2 with above issues fixed.
+> I'll send V2 with above issues fixed.
 
-pe 24. hein=C3=A4k. 2020 klo 21.40 Gert Doering (gert@...1296...) kirjoitti:
->
-> Hi,
->
-> On Fri, Jul 24, 2020 at 05:14:45PM +0300, Lev Stipakov wrote:
-> > From: Lev Stipakov <lev@...515...>
-> >
-> > Add manifest file to detect Windows versions greater than Windows 8.
->
-> NAK, this breaks Ubuntu/MinGW builds.  Actually, I think it breaks all
-> windows builds, if you build from tarballs (which the "generic" build doe=
-s -
-> first, make dist, then, build from there).
->
-> You introduce an include to "openvpn.manifest", but this is not bundled,
-> so
->
-> i686-w64-mingw32-windres -DHAVE_CONFIG_H -I. -I../.. -I../../include  -I.=
-./../include -I../../src/compat -DWIN32_LEAN_AND_MEAN -DNTDDI_VERSION=3DNTD=
-DI_VISTA -D_WIN32_WINNT=3D_WIN32_WINNT_VISTA -i "openvpn_win32_resources.rc=
-" -o "openvpn_win32_resources.o"
-> i686-w64-mingw32-windres: can't open file `openvpn.manifest': No such fil=
-e or directory
-> Makefile:933: recipe for target 'openvpn_win32_resources.o' failed
-> make[4]: *** [openvpn_win32_resources.o] Error 1
-> make[4]: *** Waiting for unfinished jobs....
->
-> And this is what breaks MinGW builds:
->
-> ../../src/compat/compat-versionhelpers.h: In function 'IsWindows10OrGreat=
-er':
-> ../../src/compat/compat-versionhelpers.h:101:45: error: '_WIN32_WINNT_WIN=
-THRESHOLD' undeclared (first use in this function); did you mean '_WIN32_WI=
-NNT_WINBLUE'?
->      return IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WINTHRESHOLD), =
-LOBYTE(_WIN32_WINNT_WINTHRESHOLD), 0);
->                                              ^
-> ../../src/compat/compat-versionhelpers.h:101:45: note: each undeclared id=
-entifier is reported only once for each function it appears in
->
->
-> possibly the _WIN32_WINNT_WINTHRESHOLD is missing on MinGW, at least the
-> version bundled with Ubuntu 18.04 (I've skimmed the headers, and it's
-> missing).
->
->
-> The rest of the code changes look good, and I have no idea what all the
-> XML files do - but those are relevant for MSVC, and you are the expert
-> on that ("if you say this is beneficial, I'll merge").
->
-> gert
->
-> --
-> "If was one thing all people took for granted, was conviction that if you
->  feed honest figures into a computer, honest figures come out. Never doub=
-ted
->  it myself till I met a computer with a sense of humor."
->                              Robert A. Heinlein, The Moon is a Harsh Mist=
-ress
->
-> Gert Doering - Munich, Germany                             gert@...1296...
+Thanks :)
 
-
-
+gert
 --=20
--Lev
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--Unr0GAwC1Xucki3H
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJfGzlFAAoJEB2Cnv7KVigSAPcL/0Mv5qbQSqJrdkgQIsPjMVgk
+8JgES750jWHYWAhS6HOZ73CfyoRH17z2OckJuJX3wq6kGvKF2CLd/7WxqcuGX9EO
+Uj595hTtJA86VH74iXYFVyWzIBrjeuuo5PF3V5JC0mQO/WZL9DTUOp5JHQ5emex1
+IgzFd2nALWsO8gYC5hjZm52uj/tqnCczAiEQV0jbPm1hamS4Tr285kM0zA31RWrZ
+OpbV5NGmNWHwUsFRecbKs8lyRJGmKW+45pxWxzwxiL42zCvEunmZJ72OJ66vbdIw
+deaMB0So7hgojSwpyi2ezywfAnGBkm+lVrEgohuu+HsibO0+6GWt+yh+errJiwfY
+hKlRRhG0q7km7te7iImy/my1vW+bM0gjKF/QW08TCR9qjKOSZXdfJXh2EFBl1oPU
+XASZqRaBLJ+3ggdjP3ILOHKHWbbyfvPwyiHFY3CCp9I0uCllO6Il0RouhunGHilr
+m7tni/kw23zMchjsDwDny1M/Z3q8SZHqfnvBPGxprQ==
+=VT4E
+-----END PGP SIGNATURE-----
+
+--Unr0GAwC1Xucki3H--
 
