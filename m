@@ -1,8 +1,13 @@
+Date: Fri, 24 Jul 2020 20:24:20 +0200
 From: Gert Doering <gert@...1296...>
-Date: Fri, 24 Jul 2020 20:13:24 +0200
-Message-Id: <20200724181324.19037-1-gert@...1296...>
+Message-ID: <20200724182420.GI1431@...1296...>
+References: <20200724112631.195-1-lstipakov@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Repair --inetd
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="xfNO0BElwiDU8PoS"
+Content-Disposition: inline
+In-Reply-To: <20200724112631.195-1-lstipakov@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Remove unused no-op function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,50 +16,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
 
-commit 25a422cc60 deprecated --inetd, which is still something we want.
+--xfNO0BElwiDU8PoS
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Unlike all "usual" deprecated option warnings, we cannot print this at
-option parsing time, because we need logging to be set up first - otherwise
-the deprecation warning is sent via the socket (on stdin/stdout)
-towards the connecting client, totally breaking this mode.
+Hi,
 
-(Which is why we want to deprecate it: too special even for us)
+On Fri, Jul 24, 2020 at 02:26:31PM +0300, Lev Stipakov wrote:
+> From: Lev Stipakov <lev@...515...>
+>=20
+> Body of check_subnet_conflict() was commented out
+> (#if 0) back in 2011, so it is safe now to completely
+> elimitate this function, including all calls to it.
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/openvpn/options.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+I'm a bit sceptical about that one.  Can we make it *work* instead?
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 1a915e27..a8a9bb97 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2050,6 +2050,11 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-         msg(M_USAGE, "--inetd nowait only makes sense in --dev tap mode");
-     }
- 
-+    if (options->inetd)
-+    {
-+        msg(M_WARN, "DEPRECATED OPTION: --inetd mode is deprecated "
-+                    "and will be removed in OpenVPN 2.6");
-+    }
- 
-     if (options->lladdr && dev != DEV_TYPE_TAP)
-     {
-@@ -5802,8 +5807,6 @@ add_option(struct options *options,
-     }
-     else if (streq(p[0], "inetd") && !p[3])
-     {
--        msg(M_WARN, "DEPRECATED OPTION: --inetd mode is deprecated "
--                    "and will be removed in OpenVPN 2.6");
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-         if (!options->inetd)
-         {
--- 
-2.26.2
+It's a good idea, and I've seen support calls with "hey, openvpn is
+not working, why?" due to RFC address conflict - so having an indication
+in the log might be helpful.
 
+I agree that with "#if 0" this is just dead code.
+
+Any indication in the commit why it was commented out?  Not working
+right?
+
+gert
+
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--xfNO0BElwiDU8PoS
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJfGydTAAoJEB2Cnv7KVigShiIL/iaP9oElWamI20IosqcxSLmS
+xCjh8xoz5RDMaoOe3w13gBnTjn8LsbAAGV4/sM/G0OdmikFeGVd8BEBVUZP8pAg6
+UfzxzifrO37vnvMxhvzZgeYklEOlzBJWVb9c8WUwGSfBm+0bKwiyczc/bWcMBOow
+2OiarB46Wgl2jwv1Kne4jwa2K53QPRB/TNtK3P/Nzwqpho1maaZznDfM2qvvoq8m
+3krI/C5kHANfKLM5QQr2KwAkwwkML0dauuIQHt0UoYWTaYlSSj7iL7gUF+PNtuUj
+p1K0wQH/T3Pum+igw318rPSqYgCQt4cE9K7lKVfXwVhgu7lo0T/LHHtoMmlMPEuW
+kQ/S6E50yQmzqfrLg+NiKwpp+f3DwGX8Ve+zaLA3BLZNp53KwRrAqLCxxhWIHX2s
+T6uKQ05dGCBtN55hm1Ob3p4bG3GHPhCSepQymuomaoiZAlKpZM1g6ESX6cPx196v
+sHnnQz9ilnklFBOZ1RhmdtBr0Op0cjA2EizkKiSH1g==
+=gROp
+-----END PGP SIGNATURE-----
+
+--xfNO0BElwiDU8PoS--
 
