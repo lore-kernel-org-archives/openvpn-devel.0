@@ -1,10 +1,13 @@
-Date: Fri, 24 Jul 2020 22:30:33 +0200 (CEST)
-Message-Id: <202007242030.06OKUXSI061381@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200724195634.493-1-lstipakov@...277...>
-References: <20200724195634.493-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Improve Windows version
- detection with manifest
+References: <20200724181324.19037-1-gert@...1296...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <96532966-36e0-420e-92aa-8948a94d6876@...1227...>
+Date: Fri, 24 Jul 2020 23:58:06 +0200
+MIME-Version: 1.0
+In-Reply-To: <20200724181324.19037-1-gert@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="MPxTR4P75puMUAMZP0HgA2KgvTvDaep4p"
+Subject: Re: [Openvpn-devel] [PATCH] Repair --inetd
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,43 +16,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--MPxTR4P75puMUAMZP0HgA2KgvTvDaep4p
+Content-Type: multipart/mixed; boundary="RidZ0gCCPULmV5TXkfBYmSttYo3FmV52g"
+
+--RidZ0gCCPULmV5TXkfBYmSttYo3FmV52g
+Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-Acked-by: Gert Doering <gert@...1296...>
-
-Thanks for the v2.  Builds nicely with "./build-snapshot" on my 
-ubuntu 18.04 builder now.  I have not tested the resulting installer.
-
-The code change for the C code look good to me.
-
-Thanks for the explanation about the manifest ("I've heard that 
-before, but I won't ever become a windows programmer, it seems"),
-and I assume that the .vcproj adaptions are related to that.
-
-You are the expert on MSVC building, so if you say this is needed,
-and it does not look harmful, I'm fine :-)
-
-Your patch has been applied to the master branch.
-
-commit a7d6977e6e14c512c89e51886b235af153cd4841
-Author: Lev Stipakov
-Date:   Fri Jul 24 22:56:34 2020 +0300
-
-     Improve Windows version detection with manifest
-
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200724195634.493-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20580.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Am 24.07.20 um 20:13 schrieb Gert Doering:
+> commit 25a422cc60 deprecated --inetd, which is still something we want.
+>=20
+> Unlike all "usual" deprecated option warnings, we cannot print this at
+> option parsing time, because we need logging to be set up first - otherwi=
+se
+> the deprecation warning is sent via the socket (on stdin/stdout)
+> towards the connecting client, totally breaking this mode.
+>=20
+> (Which is why we want to deprecate it: too special even for us)
 
 
---
-kind regards,
+Acked-By: Arne Schwabe <arne@...1227...>
 
-Gert Doering
 
+
+
+--RidZ0gCCPULmV5TXkfBYmSttYo3FmV52g--
+
+--MPxTR4P75puMUAMZP0HgA2KgvTvDaep4p
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl8bWW4ACgkQFRhsZwKx
+RFRR+RAAlvwgyCuupibvywyI+Zkw9/iPYGMYOqPdLPuSSbxo3Lhv06JStt0gvH//
+w0DnD3XsJNctUn7OhXxgWa36FsUx1gLMklNE61WBaZTGcn2inG9a2xJtnD/V+hQa
+xhcPJZHUDu5jrKKKlGAz/nS6KfGsIihBoeqBE+bjOuxPsAbPbYf5zSneDP6mQ0Sg
+t8wkb82h0jw4XXjz7kFyvT112UrEMEvi9SyDH6KCg6sArsiYNPBY3UVJ3FQWWJ9c
+La7UHa+yWU0eNwApCKTUSwmbbHM4ckacVCGddM7lRcx1E6T+fktrJGO5Zgprvtt3
+DlIHp6uwejTeFpUrx9UnG7h++r7KUDttZS0PIXxbTFRScwOWXn45JoY+S6VV7oOF
+DA0tuse/UpKrKCTlWROZZJb+iQa/TGgEbPHZrZycVEXcUuaYC+Ho2pp2fhyb14CN
+RGAgGKiqW10bGvhCyEnhoNyzz0vuVdrlMb4SUeU77GIIRUlyJ67AvfeIf/sZsJcR
+wzXxglIjyB8cidhsnLQrU8ZQfeJKLUwjtDm6VXGDqGCK5Va54ihi9rs8MwWN46b7
+tO15kVVQkXU+t+JriDHPBgssRAbkZu1gEHgtgxzI2BDHc230OkBQzrIfpF0NeoyL
+3VkiLE8hYbCNB4jbhTeegSYTKbtKwm2IF8FjYwYcWHzFwXminLg=
+=wPqD
+-----END PGP SIGNATURE-----
+
+--MPxTR4P75puMUAMZP0HgA2KgvTvDaep4p--
 
