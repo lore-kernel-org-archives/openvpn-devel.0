@@ -1,10 +1,8 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Fri, 24 Jul 2020 16:25:57 +0200
-Message-Id: <20200724142557.25204-1-arne@...1227...>
-In-Reply-To: <20200717134739.21168-1-arne@...1227...>
-References: <20200717134739.21168-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v2 10/10] Add a note that ncp-ciphers is
- replaced by data-ciphers
+From: Gert Doering <gert@...1296...>
+Date: Fri, 24 Jul 2020 20:13:24 +0200
+Message-Id: <20200724181324.19037-1-gert@...1296...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Repair --inetd
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,44 +15,45 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This patch adds a message that informs the user that the ncp-cipher
-is renamed to data-ciphers. This should address the following concerns:
+commit 25a422cc60 deprecated --inetd, which is still something we want.
 
- - Users being confused by old options.
- - Nudge users to use the modern variant of an option
+Unlike all "usual" deprecated option warnings, we cannot print this at
+option parsing time, because we need logging to be set up first - otherwise
+the deprecation warning is sent via the socket (on stdin/stdout)
+towards the connecting client, totally breaking this mode.
 
-The man page already documents ncp-ciphers as an old name for
-data-ciphers, so looking it up in the man page will also work.
+(Which is why we want to deprecate it: too special even for us)
 
-Note that I did not add "deprecated old option" to this message
-since I still think that eventually removing the option will only
-break configs and we gain almost nothing from that.
-
-Also still accepting the option even though we do not recommend usage of
-it also follows the robustness principle of:
-"be strict in what you send and tolerant in what you receive"
-
-Signed-off-by: Arne Schwabe <arne@...1227...>
+Signed-off-by: Gert Doering <gert@...1296...>
 ---
- src/openvpn/options.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ src/openvpn/options.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 5beaba0f..2cff9473 100644
+index 1a915e27..a8a9bb97 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -7939,7 +7939,11 @@ add_option(struct options *options,
-             && p[1] && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_INSTANCE);
-+        if (streq(p[0], "ncp-ciphers"))
-+        {
-+            msg(M_INFO, "Note: Treating option '--ncp-ciphers' as "
-+                        " '--data-ciphers' (renamed in OpenVPN 2.5).");
-+        }
-         options->ncp_ciphers = p[1];
+@@ -2050,6 +2050,11 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
+         msg(M_USAGE, "--inetd nowait only makes sense in --dev tap mode");
      }
-     else if (streq(p[0], "ncp-disable") && !p[1])
+ 
++    if (options->inetd)
++    {
++        msg(M_WARN, "DEPRECATED OPTION: --inetd mode is deprecated "
++                    "and will be removed in OpenVPN 2.6");
++    }
+ 
+     if (options->lladdr && dev != DEV_TYPE_TAP)
+     {
+@@ -5802,8 +5807,6 @@ add_option(struct options *options,
+     }
+     else if (streq(p[0], "inetd") && !p[3])
+     {
+-        msg(M_WARN, "DEPRECATED OPTION: --inetd mode is deprecated "
+-                    "and will be removed in OpenVPN 2.6");
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+         if (!options->inetd)
+         {
 -- 
 2.26.2
 
