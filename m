@@ -1,11 +1,15 @@
+References: <20200717134739.21168-1-arne@...1227...>
+ <20200717134739.21168-8-arne@...1227...>
+ <6fe3f761-ea6e-4b52-36b1-24d20a92a97b@...2080...>
+ <145d42e9-1a92-2e60-b494-f49f381ce662@...1227...>
+ <c8c30f1b-f378-f2ce-3b9f-390fb8f08582@...2080...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <0d423a5d-544e-dde7-3804-6ae92674766d@...1856...>
+Date: Fri, 24 Jul 2020 10:06:31 +0200
 MIME-Version: 1.0
-References: <4B3OgL3j077iDP_MhneRo1v3CxM7prwXD2RgkpFEKEK5OUPBRPTsT2E6lJDmOzUw2Vf_T5FtOtUUnMzBh06X0L7z3zl00BgZP_a01CXQkh0=@protonmail.com>
- <ed2ca789-8501-f54b-3fe1-03039d456b93@...1227...>
-In-Reply-To: <ed2ca789-8501-f54b-3fe1-03039d456b93@...1227...>
-From: Selva Nair <selva.nair@...277...>
-Date: Thu, 23 Jul 2020 20:35:07 -0400
-Message-ID: <CAKuzo_gF00xHdDK++Bj-KpBEeVHb9meq=tAEu=FMfnTovjqE7Q@...278...>
-Subject: Re: [Openvpn-devel] Regarding deprecation of --route-nopull
+In-Reply-To: <c8c30f1b-f378-f2ce-3b9f-390fb8f08582@...2080...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH 8/9] Rename ncp-ciphers to data-ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,43 +18,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Arne Schwabe <arne@...1227...>
-Cc: =?UTF-8?B?QW5kcsOp?= <pippin1st+devel@...2282...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi
+Hi,
 
-On Thu, Jul 23, 2020 at 4:50 PM Arne Schwabe <arne@...1227...> wrote:
->
-> Am 23.07.2020 um 20:14 schrieb Andr=C3=A9 via Openvpn-devel:
-> > Hi,
-> >
-> > Regarding,
-> >  https://community.openvpn.net/openvpn/wiki/DeprecatedOptions#Option:--=
-route-nopull
-> >  "Openvpn devs would like to know if you use this option".
-> >
-> > Many pfSense users use this option to policy route.
->
-> I would also vote for keeping this option. Yes you can emulate the
-> option by using a number of pull-filter lines but that feels like not a
-> good user experience.
+On 23-07-2020 18:09, David Sommerseth wrote:
+>> This was a deliberate decision. We really want to people to move towards
+>> ncp and putting another hurdle with having an option that works better
+>> on but gives a warning and a option that does not work on 2.4 does not
+>> help here. If we decide that really aliases are a no-go in OpenVPN then
+>> I would rather drop data-ciphers and stay with ncp-ciphers forever for
+>> this reason.
+> 
+> Lets take a few steps back try to see a broader picture.
+> 
+> [..snip..]
+> 
+> We really need a proper and sane processes to allow the development of OpenVPN
+> to have a chance to move on and leave things behind when appropriate, to be
+> able to evolve and grow with the future - without being strangled by what
+> existed in the far past (meaning: no longer community supported releases).
+> Otherwise I do fear for the future of OpenVPN 2.x.
+> 
+> By having a clear strategy and adhering to a process of feature/option
+> management in OpenVPN, we give clearly defined time-window for stability and
+> functionality for our users.  This predictability is, in my experience, much
+> more important to users than if a specifically named option is supported or not.
 
-That's because route-nopull is not what it appears to be. A single
-line of "pull-fliter ignore route" will do exactly what one would
-think "route-nopull" should do, but the latter does more. It's poorly
-named and now we have better ways to control pulled options, so I have
-no love for it.
+Yes, you've made these points clear earlier on IRC. I (and with me Arne
+and Gert) just don't agree with you on some of the details, resulting in
+a different verdict on this patch.
 
-> Also route-pull works in both OpenVPN 2.x and 3.x
-> clients while pull-filter is currently 2.x only.
+None of us has trouble with deprecating options. We appreciate the work
+you've put into the DeprecatedOptions page, and all of us have sent
+and/or acked patched to remove dangerous or obsolete options.
 
-Actually pull-filter cannot be compared with route-nopull as the
-former is customizable. The real question is whether there is any
-compelling reason to use it other than lack of alternatives in 2.3 and
-older. I didn't know 3.x does not support pull-filter. Why? It's easy
-to code (at least I know that for sure) so that can't be the reason.
+This difference is in how we weigh the pros and cons per option. So I'll
+leave the broader picture for now, and summarize why I'm going to ACK
+Arne's patch exactly because is *doesn't* print a warning when the old
+name is used.
 
-Selva
+Option name aliases add negligible code complexity and are trivial to
+maintain. (Just look at --udp-mtu.) Keeping them in allows users to
+write configs that work well and do not produce any warnings on both
+older and newer versions. (Printing warnings for harmless things reduces
+the value of the other warnings we print.)
+
+Let's focus our time and effort on reducing actual complexity.
+
+-Steffan
 
