@@ -1,10 +1,14 @@
-Date: Sat, 25 Jul 2020 10:16:43 +0200 (CEST)
-Message-Id: <202007250816.06P8Gh6D074150@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200724104841.89-1-lstipakov@...277...>
-References: <20200724104841.89-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: wintun: remove SYSTEM elevation
- hack
+References: <4B3OgL3j077iDP_MhneRo1v3CxM7prwXD2RgkpFEKEK5OUPBRPTsT2E6lJDmOzUw2Vf_T5FtOtUUnMzBh06X0L7z3zl00BgZP_a01CXQkh0=@protonmail.com>
+ <ed2ca789-8501-f54b-3fe1-03039d456b93@...1227...>
+ <CAKuzo_gF00xHdDK++Bj-KpBEeVHb9meq=tAEu=FMfnTovjqE7Q@...278...>
+ <dbfda552-b771-cf31-26b2-4917e5b246e7@...1227...>
+From: tincanteksup <tincanteksup@...277...>
+Message-ID: <badca6b2-e69c-ec76-0261-c3326eb90f0a@...277...>
+Date: Sat, 25 Jul 2020 11:27:27 +0100
+MIME-Version: 1.0
+In-Reply-To: <dbfda552-b771-cf31-26b2-4917e5b246e7@...1227...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] Regarding deprecation of --route-nopull
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,40 +17,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Hi,
 
-Code changes look good, Makefile / .vcxproj file changes look reasonable,
-and it passes my MinGW test build.
+thanks for the list!
 
-I have not tested the resulting binary because I do not hit this particular
-code path anyway - and the end result is fairly trivial ("if (!iservice)
-then complain") :-)
+On 24/07/2020 11:00, Arne Schwabe wrote:
+> To emulate pull-filter with pull-filter you need to block this list:
+> 
+> redirect-private
+> redirect-gateway
+> block-ipv6
+> client-nat
+> route
+> route-ipv6
+> route-gateway
+> route-metric
+> ip-win32
+> dhcp-option
+> dhcp-renew
+> register-dns
+> tap-sleep
+> block-outside-dns
+> 
+> but not block
+> 
+> route-gateway
+> route-dealy
+> 
+> And without looking at the source code you will be hard pressed to come
+> up with the same list.
 
-Thanks.
-
-Your patch has been applied to the master branch.
-
-commit 6d19775a468f0d35cd1f199b489ee18a74e6c905
-Author: Lev Stipakov
-Date:   Fri Jul 24 13:48:41 2020 +0300
-
-     wintun: remove SYSTEM elevation hack
-
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200724104841.89-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20567.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+Noted:
+https://community.openvpn.net/openvpn/wiki/DeprecatedOptions#Option:--route-nopull
 
