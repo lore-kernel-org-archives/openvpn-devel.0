@@ -1,15 +1,8 @@
 From: Arne Schwabe <arne@...1227...>
-References: <20200722093050.20474-1-arne@...1227...>
- <20200722093050.20474-2-arne@...1227...>
-Message-ID: <e2ca42cd-429c-8384-4a77-162bf57d7f8b@...1227...>
-Date: Sat, 25 Jul 2020 13:45:12 +0200
-MIME-Version: 1.0
-In-Reply-To: <20200722093050.20474-2-arne@...1227...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="eWQkjfr4OU44rFQrjpz7tOua5qFXi6IzG"
-Subject: Re: [Openvpn-devel] [PATCH 2/3] Cleanup tls_pre_decrypt_lite and
- tls_pre_encrypt
+Date: Sun, 26 Jul 2020 01:48:02 +0200
+Message-Id: <20200725234803.22058-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH 1/2] Simplify calling logic of
+ check_connection_established_dowork
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,51 +11,148 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---eWQkjfr4OU44rFQrjpz7tOua5qFXi6IzG
-Content-Type: multipart/mixed; boundary="jUB0n4M2iCBkVfKN1y2Pxr84i6xFjdEuw"
+The check event_timeout_defined in check_connection_established is
+completely redundant as event_timeout_trigger will do the very same
+check as first action. Removing this check makes the function
+superfluous. To further improve the code  move the call check if the
+time is expired into process_coarse_timers
 
---jUB0n4M2iCBkVfKN1y2Pxr84i6xFjdEuw
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/forward.c | 77 +++++++++++++++++++------------------------
+ src/openvpn/forward.h |  2 +-
+ 2 files changed, 34 insertions(+), 45 deletions(-)
 
-Am 22.07.20 um 11:30 schrieb Arne Schwabe:
-> Mostly C90 -> C99 cleanups and again immediately instead
-> wrapping function body into if.
->=20
-> (Review with ignore whitespace)
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 3d462d0a..30a3fd46 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -138,21 +138,6 @@ check_incoming_control_channel(struct context *c)
+ #endif
+ }
+ 
+-/*
+- * Options like --up-delay need to be triggered by this function which
+- * checks for connection establishment.
+- */
+-static inline void
+-check_connection_established(struct context *c)
+-{
+-    void check_connection_established_dowork(struct context *c);
+-
+-    if (event_timeout_defined(&c->c2.wait_for_connect))
+-    {
+-        check_connection_established_dowork(c);
+-    }
+-}
+-
+ /*
+  * Should we add routes?
+  */
+@@ -437,43 +422,45 @@ check_push_request_dowork(struct context *c)
+ 
+ /*
+  * Things that need to happen immediately after connection initiation should go here.
++ *
++ * Options like --up-delay need to be triggered by this function which
++ * checks for connection establishment.
+  */
+ void
+-check_connection_established_dowork(struct context *c)
++check_connection_established(struct context *c)
+ {
+-    if (event_timeout_trigger(&c->c2.wait_for_connect, &c->c2.timeval, ETT_DEFAULT))
++
++    if (CONNECTION_ESTABLISHED(c))
+     {
+-        if (CONNECTION_ESTABLISHED(c))
+-        {
+ #if P2MP
+-            /* if --pull was specified, send a push request to server */
+-            if (c->c2.tls_multi && c->options.pull)
+-            {
++        /* if --pull was specified, send a push request to server */
++        if (c->c2.tls_multi && c->options.pull)
++        {
+ #ifdef ENABLE_MANAGEMENT
+-                if (management)
+-                {
+-                    management_set_state(management,
+-                                         OPENVPN_STATE_GET_CONFIG,
+-                                         NULL,
+-                                         NULL,
+-                                         NULL,
+-                                         NULL,
+-                                         NULL);
+-                }
+-#endif
+-                /* fire up push request right away (already 1s delayed) */
+-                event_timeout_init(&c->c2.push_request_interval, 0, now);
+-                reset_coarse_timers(c);
+-            }
+-            else
+-#endif /* if P2MP */
++            if (management)
+             {
+-                do_up(c, false, 0);
++                management_set_state(management,
++                                     OPENVPN_STATE_GET_CONFIG,
++                                     NULL,
++                                     NULL,
++                                     NULL,
++                                     NULL,
++                                     NULL);
+             }
+-
+-            event_timeout_clear(&c->c2.wait_for_connect);
++#endif
++            /* fire up push request right away (already 1s delayed) */
++            event_timeout_init(&c->c2.push_request_interval, 0, now);
++            reset_coarse_timers(c);
+         }
++        else
++#endif /* if P2MP */
++        {
++            do_up(c, false, 0);
++        }
++
++        event_timeout_clear(&c->c2.wait_for_connect);
+     }
++
+ }
+ 
+ bool
+@@ -777,8 +764,10 @@ process_coarse_timers(struct context *c)
+     check_status_file(c);
+ 
+     /* process connection establishment items */
+-    check_connection_established(c);
+-
++    if (event_timeout_trigger(&c->c2.wait_for_connect, &c->c2.timeval, ETT_DEFAULT))
++    {
++        check_connection_established(c);
++    }
+ #if P2MP
+     /* see if we should send a push_request in response to --pull */
+     check_push_request(c);
+diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
+index ff898133..635e84ae 100644
+--- a/src/openvpn/forward.h
++++ b/src/openvpn/forward.h
+@@ -88,7 +88,7 @@ void check_fragment_dowork(struct context *c);
+ 
+ #endif /* ENABLE_FRAGMENT */
+ 
+-void check_connection_established_dowork(struct context *c);
++void check_connection_established(struct context *c);
+ 
+ void check_add_routes_dowork(struct context *c);
+ 
+-- 
+2.26.2
 
-
-I made a mistake in this. Ignore it and wait for V2
-
-
-
---jUB0n4M2iCBkVfKN1y2Pxr84i6xFjdEuw--
-
---eWQkjfr4OU44rFQrjpz7tOua5qFXi6IzG
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl8cG0gACgkQFRhsZwKx
-RFS3dA//TB81wVYKevU0OigvLr0O+BY3HHzEA+gAF8Ur7QKqX5N1p6KKNZtYXFdF
-1hVENH7C06FTbOQB019sWb/u+uMlQ8ELuAzF6lR2Y+77rKN4veKjHMKZfPqoHsJJ
-eFLXEwJmetsq5tjwhaBdUyDSmP9skAtI2/Uq5a0JQNVF98S5fDoLZFEj/Yj1c7Hg
-3jjK9hewL3bda5hEjLiPwWeuN11CvfIiNta3Z2izYhQTB7eeJjmaiiDWj+pj8T/F
-I5lUT5seP2Vo3p1YMlRpPV5ODQlA3wM2URZjdee1169YcHHOPORBmk2N4aF92GoK
-FtixzZnbEzwn4VgzxAbakvXkoXz6g3E6B7qqPqC2lZGhKluB9AeaDJlReONzWBm5
-U7uzzm5soTO0PfsOjIwj46lk1ACqu1RBXM93cFfucUax2DL96tUKhEUZdvgscbCG
-PC3PLvFqQUyZitauZk6DYESejjdddM1+03KDDWrxYAcLbvQM0pa2TpJT5Wrp3Yef
-hBkxk+xtqXdXpH8mRs0YAEKrmdkISnUHy1Or9H+e0istbJKY83x2CSEm6nzeNElG
-Tc9x4zgXRUZ8UO2J6TYrWKPiqDhuw039yVkIi+uYyfDj5uTbS/55Xo6C9lzGxJ3k
-B4oM3HOTIPYBDfYxd2nmSc0xM4GOU1yfDfW8quxnpuc7gIn1YM4=
-=RuOV
------END PGP SIGNATURE-----
-
---eWQkjfr4OU44rFQrjpz7tOua5qFXi6IzG--
 
