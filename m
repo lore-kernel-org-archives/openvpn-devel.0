@@ -1,8 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Sun, 26 Jul 2020 01:48:02 +0200
-Message-Id: <20200725234803.22058-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 1/2] Simplify calling logic of
- check_connection_established_dowork
+Date: Sun, 26 Jul 2020 01:48:03 +0200
+Message-Id: <20200725234803.22058-2-arne@...1227...>
+In-Reply-To: <20200725234803.22058-1-arne@...1227...>
+References: <20200725234803.22058-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH 2/2] Avoid sending push request after
+ receving push reply
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,143 +17,84 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The check event_timeout_defined in check_connection_established is
-completely redundant as event_timeout_trigger will do the very same
-check as first action. Removing this check makes the function
-superfluous. To further improve the code  move the call check if the
-time is expired into process_coarse_timers
+The introduction of IV_PROTO_REQUEST_PUSH (c290df55) sometimes causes the
+server to reply before we setup the push timer. The push reply will then clear
+a timer that has not been setup yet. We then start sending push
+request after we have gone through the whole initialisation already.
+
+This patch also clears the connestion_established timer that sets up the
+push request timer. This lead to the
+
+management_set_state(management,  OPENVPN_STATE_GET_CONFIG, ...)
+
+function not being called. But a to display "waiting for configuration..." or
+sending a "getting config state" after "initialisation" does not make sense
+anyway.
+
+Also add the IV_PROTO_REQUEST_PUSH feature as new feature in Changes.rst
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/forward.c | 77 +++++++++++++++++++------------------------
- src/openvpn/forward.h |  2 +-
- 2 files changed, 34 insertions(+), 45 deletions(-)
+ Changes.rst           | 11 +++++++++++
+ src/openvpn/forward.c |  3 +++
+ src/openvpn/push.c    |  1 +
+ 3 files changed, 15 insertions(+)
 
+diff --git a/Changes.rst b/Changes.rst
+index 8fbaf419..e377a36c 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -37,6 +37,13 @@ Deferred client-connect
+     asynchronous/deferred return of the configuration file in the same way
+     as the auth-plugin.
+ 
++Faster connection setup
++    A client will signal in the ``IV_PROTO`` variable that is in pull
++    mode. This allows the server to push the configuration options to
++    the client without waiting for a ``PULL_REQUEST`` message. The feature
++    is automatically enabled if both client and server support it and
++    reduces the of connection setup time by one round-trip time.
++
+ Deprecated features
+ -------------------
+ For an up-to-date list of all deprecated options, see this wiki page:
+@@ -72,6 +79,10 @@ User-visible Changes
+ - Support for building with OpenSSL 1.0.1 has been removed. The minimum
+   supported OpenSSL version is now 1.0.2.
+ 
++- The GET_CONFIG management state is ommited if the server pushes
++  the client configuration almost immediately as result of the
++  faster connection setup feature.
++
+ 
+ Overview of changes in 2.4
+ ==========================
 diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 3d462d0a..30a3fd46 100644
+index 30a3fd46..759fdbe1 100644
 --- a/src/openvpn/forward.c
 +++ b/src/openvpn/forward.c
-@@ -138,21 +138,6 @@ check_incoming_control_channel(struct context *c)
- #endif
- }
- 
--/*
-- * Options like --up-delay need to be triggered by this function which
-- * checks for connection establishment.
-- */
--static inline void
--check_connection_established(struct context *c)
--{
--    void check_connection_established_dowork(struct context *c);
--
--    if (event_timeout_defined(&c->c2.wait_for_connect))
--    {
--        check_connection_established_dowork(c);
--    }
--}
--
- /*
-  * Should we add routes?
-  */
-@@ -437,43 +422,45 @@ check_push_request_dowork(struct context *c)
- 
- /*
-  * Things that need to happen immediately after connection initiation should go here.
+@@ -425,6 +425,9 @@ check_push_request_dowork(struct context *c)
+  *
+  * Options like --up-delay need to be triggered by this function which
+  * checks for connection establishment.
 + *
-+ * Options like --up-delay need to be triggered by this function which
-+ * checks for connection establishment.
++ * Note: The process_incoming_push_reply currently assumes that this function
++ * only sets ups the pull request timer when pull is enabled.
   */
  void
--check_connection_established_dowork(struct context *c)
-+check_connection_established(struct context *c)
- {
--    if (event_timeout_trigger(&c->c2.wait_for_connect, &c->c2.timeval, ETT_DEFAULT))
-+
-+    if (CONNECTION_ESTABLISHED(c))
-     {
--        if (CONNECTION_ESTABLISHED(c))
--        {
- #if P2MP
--            /* if --pull was specified, send a push request to server */
--            if (c->c2.tls_multi && c->options.pull)
--            {
-+        /* if --pull was specified, send a push request to server */
-+        if (c->c2.tls_multi && c->options.pull)
-+        {
- #ifdef ENABLE_MANAGEMENT
--                if (management)
--                {
--                    management_set_state(management,
--                                         OPENVPN_STATE_GET_CONFIG,
--                                         NULL,
--                                         NULL,
--                                         NULL,
--                                         NULL,
--                                         NULL);
--                }
--#endif
--                /* fire up push request right away (already 1s delayed) */
--                event_timeout_init(&c->c2.push_request_interval, 0, now);
--                reset_coarse_timers(c);
--            }
--            else
--#endif /* if P2MP */
-+            if (management)
-             {
--                do_up(c, false, 0);
-+                management_set_state(management,
-+                                     OPENVPN_STATE_GET_CONFIG,
-+                                     NULL,
-+                                     NULL,
-+                                     NULL,
-+                                     NULL,
-+                                     NULL);
+ check_connection_established(struct context *c)
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 84193afe..9c720b42 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -358,6 +358,7 @@ incoming_push_message(struct context *c, const struct buffer *buffer)
              }
--
--            event_timeout_clear(&c->c2.wait_for_connect);
-+#endif
-+            /* fire up push request right away (already 1s delayed) */
-+            event_timeout_init(&c->c2.push_request_interval, 0, now);
-+            reset_coarse_timers(c);
          }
-+        else
-+#endif /* if P2MP */
-+        {
-+            do_up(c, false, 0);
-+        }
-+
+         event_timeout_clear(&c->c2.push_request_interval);
 +        event_timeout_clear(&c->c2.wait_for_connect);
      }
-+
- }
  
- bool
-@@ -777,8 +764,10 @@ process_coarse_timers(struct context *c)
-     check_status_file(c);
- 
-     /* process connection establishment items */
--    check_connection_established(c);
--
-+    if (event_timeout_trigger(&c->c2.wait_for_connect, &c->c2.timeval, ETT_DEFAULT))
-+    {
-+        check_connection_established(c);
-+    }
- #if P2MP
-     /* see if we should send a push_request in response to --pull */
-     check_push_request(c);
-diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
-index ff898133..635e84ae 100644
---- a/src/openvpn/forward.h
-+++ b/src/openvpn/forward.h
-@@ -88,7 +88,7 @@ void check_fragment_dowork(struct context *c);
- 
- #endif /* ENABLE_FRAGMENT */
- 
--void check_connection_established_dowork(struct context *c);
-+void check_connection_established(struct context *c);
- 
- void check_add_routes_dowork(struct context *c);
- 
+     goto cleanup;
 -- 
 2.26.2
 
