@@ -1,10 +1,8 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Sun, 26 Jul 2020 01:48:03 +0200
-Message-Id: <20200725234803.22058-2-arne@...1227...>
-In-Reply-To: <20200725234803.22058-1-arne@...1227...>
-References: <20200725234803.22058-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 2/2] Avoid sending push request after
- receving push reply
+Date: Sun, 26 Jul 2020 01:50:23 +0200
+Message-Id: <20200725235023.22441-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Include utun device number in utun error
+ messages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,84 +15,133 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The introduction of IV_PROTO_REQUEST_PUSH (c290df55) sometimes causes the
-server to reply before we setup the push timer. The push reply will then clear
-a timer that has not been setup yet. We then start sending push
-request after we have gone through the whole initialisation already.
+For lack of a better API (or knowledge about a better API) we try to
+open utun devices on macOS by trying utun0 to utun255 and use the
+first one that works. On my Mac I have already 4 devices that
+do nothing but are just there and another VPN connection resulting in a
+number of error messages. This explicitly  shows in the log that we
+tried the devices instead of some unspecific error.
 
-This patch also clears the connestion_established timer that sets up the
-push request timer. This lead to the
+This changes the log from:
 
-management_set_state(management,  OPENVPN_STATE_GET_CONFIG, ...)
+Opening utun (connect(AF_SYS_CONTROL)): Resource busy (errno=16)
+Opening utun (connect(AF_SYS_CONTROL)): Resource busy (errno=16)
+Opening utun (connect(AF_SYS_CONTROL)): Resource busy (errno=16)
+Opening utun (connect(AF_SYS_CONTROL)): Resource busy (errno=16)
+Opening utun (connect(AF_SYS_CONTROL)): Resource busy (errno=16)
+Opened utun device utun5
 
-function not being called. But a to display "waiting for configuration..." or
-sending a "getting config state" after "initialisation" does not make sense
-anyway.
+to
 
-Also add the IV_PROTO_REQUEST_PUSH feature as new feature in Changes.rst
+Opening utun0 failed (connect(AF_SYS_CONTROL)): Resource busy (errno=16)
+Opening utun1 failed (connect(AF_SYS_CONTROL)): Resource busy (errno=16)
+Opening utun2 failed (connect(AF_SYS_CONTROL)): Resource busy (errno=16)
+Opening utun3 failed (connect(AF_SYS_CONTROL)): Resource busy (errno=16)
+Opening utun4 failed (connect(AF_SYS_CONTROL)): Resource busy (errno=16)
+Opened utun device utun5
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- Changes.rst           | 11 +++++++++++
- src/openvpn/forward.c |  3 +++
- src/openvpn/push.c    |  1 +
- 3 files changed, 15 insertions(+)
+ src/openvpn/tun.c | 35 +++++++++++++++++++----------------
+ 1 file changed, 19 insertions(+), 16 deletions(-)
 
-diff --git a/Changes.rst b/Changes.rst
-index 8fbaf419..e377a36c 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -37,6 +37,13 @@ Deferred client-connect
-     asynchronous/deferred return of the configuration file in the same way
-     as the auth-plugin.
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 82d96927..ed00644c 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -2950,14 +2950,16 @@ utun_open_helper(struct ctl_info ctlInfo, int utunnum)
  
-+Faster connection setup
-+    A client will signal in the ``IV_PROTO`` variable that is in pull
-+    mode. This allows the server to push the configuration options to
-+    the client without waiting for a ``PULL_REQUEST`` message. The feature
-+    is automatically enabled if both client and server support it and
-+    reduces the of connection setup time by one round-trip time.
-+
- Deprecated features
- -------------------
- For an up-to-date list of all deprecated options, see this wiki page:
-@@ -72,6 +79,10 @@ User-visible Changes
- - Support for building with OpenSSL 1.0.1 has been removed. The minimum
-   supported OpenSSL version is now 1.0.2.
- 
-+- The GET_CONFIG management state is ommited if the server pushes
-+  the client configuration almost immediately as result of the
-+  faster connection setup feature.
-+
- 
- Overview of changes in 2.4
- ==========================
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 30a3fd46..759fdbe1 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -425,6 +425,9 @@ check_push_request_dowork(struct context *c)
-  *
-  * Options like --up-delay need to be triggered by this function which
-  * checks for connection establishment.
-+ *
-+ * Note: The process_incoming_push_reply currently assumes that this function
-+ * only sets ups the pull request timer when pull is enabled.
-  */
- void
- check_connection_established(struct context *c)
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 84193afe..9c720b42 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -358,6 +358,7 @@ incoming_push_message(struct context *c, const struct buffer *buffer)
-             }
-         }
-         event_timeout_clear(&c->c2.push_request_interval);
-+        event_timeout_clear(&c->c2.wait_for_connect);
+     if (fd < 0)
+     {
+-        msg(M_INFO | M_ERRNO, "Opening utun (socket(SYSPROTO_CONTROL))");
++        msg(M_INFO | M_ERRNO, "Opening utun%d failed (socket(SYSPROTO_CONTROL))",
++            utunnum);
+         return -2;
      }
  
-     goto cleanup;
+     if (ioctl(fd, CTLIOCGINFO, &ctlInfo) == -1)
+     {
+         close(fd);
+-        msg(M_INFO | M_ERRNO, "Opening utun (ioctl(CTLIOCGINFO))");
++        msg(M_INFO | M_ERRNO, "Opening utun%d failed (ioctl(CTLIOCGINFO))",
++            utunnum);
+         return -2;
+     }
+ 
+@@ -2975,7 +2977,8 @@ utun_open_helper(struct ctl_info ctlInfo, int utunnum)
+ 
+     if (connect(fd, (struct sockaddr *)&sc, sizeof(sc)) < 0)
+     {
+-        msg(M_INFO | M_ERRNO, "Opening utun (connect(AF_SYS_CONTROL))");
++        msg(M_INFO | M_ERRNO, "Opening utun%d failed (connect(AF_SYS_CONTROL))",
++            utunnum);
+         close(fd);
+         return -1;
+     }
+@@ -5682,15 +5685,15 @@ write_dhcp_str(struct buffer *buf, const int type, const char *str, bool *error)
+  *  0x1D  0x7 openvpn 0x3 net 0x00 0x0A duckduckgo 0x3 com 0x00
+  */
+ static void
+-write_dhcp_search_str(struct buffer *buf, const int type, const char * const *str_array,
++write_dhcp_search_str(struct buffer *buf, const int type, const char *const *str_array,
+                       int array_len, bool *error)
+ {
+-    char         tmp_buf[256];
+-    int          i;
+-    int          len = 0;
+-    int          label_length_pos;
++    char tmp_buf[256];
++    int i;
++    int len = 0;
++    int label_length_pos;
+ 
+-    for (i=0; i < array_len; i++)
++    for (i = 0; i < array_len; i++)
+     {
+         const char  *ptr = str_array[i];
+ 
+@@ -5701,7 +5704,7 @@ write_dhcp_search_str(struct buffer *buf, const int type, const char * const *st
+             return;
+         }
+         /* Loop over all subdomains separated by a dot and replace the dot
+-           with the length of the subdomain */
++         * with the length of the subdomain */
+ 
+         /* label_length_pos points to the byte to be replaced by the length
+          * of the following domain label */
+@@ -5709,7 +5712,7 @@ write_dhcp_search_str(struct buffer *buf, const int type, const char * const *st
+ 
+         while (true)
+         {
+-            if (*ptr == '.' || *ptr == '\0' )
++            if (*ptr == '.' || *ptr == '\0')
+             {
+                 tmp_buf[label_length_pos] = (len-label_length_pos)-1;
+                 label_length_pos = len;
+@@ -5769,8 +5772,8 @@ build_dhcp_options_string(struct buffer *buf, const struct tuntap_options *o)
+     if (o->domain_search_list_len > 0)
+     {
+         write_dhcp_search_str(buf, 119, o->domain_search_list,
+-                                        o->domain_search_list_len,
+-                                       &error);
++                              o->domain_search_list_len,
++                              &error);
+     }
+ 
+     /* the MS DHCP server option 'Disable Netbios-over-TCP/IP
+@@ -6149,9 +6152,9 @@ wintun_register_ring_buffer(struct tuntap *tt, const char *device_guid)
+     else
+     {
+         msg(M_FATAL, "ERROR:  Wintun requires SYSTEM privileges and therefore "
+-                     "should be used with interactive service. If you want to "
+-                     "use openvpn from command line, you need to do SYSTEM "
+-                     "elevation yourself (for example with psexec).");
++            "should be used with interactive service. If you want to "
++            "use openvpn from command line, you need to do SYSTEM "
++            "elevation yourself (for example with psexec).");
+     }
+ 
+     return ret;
 -- 
 2.26.2
 
