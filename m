@@ -1,9 +1,10 @@
-Date: Sat, 25 Jul 2020 10:04:16 +0200 (CEST)
-Message-Id: <202007250804.06P84GSN073884@...2054...>
+Date: Sat, 25 Jul 2020 10:16:43 +0200 (CEST)
+Message-Id: <202007250816.06P8Gh6D074150@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200724181324.19037-1-gert@...1296...>
-References: <20200724181324.19037-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Repair --inetd
+In-Reply-To: <20200724104841.89-1-lstipakov@...277...>
+References: <20200724104841.89-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: wintun: remove SYSTEM elevation
+ hack
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,21 +15,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+To: Lev Stipakov <lev@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master branch.
+Acked-by: Gert Doering <gert@...1296...>
 
-commit 96d57b0fc5cc2bf08fdf78141130e3c8092ca4d5
-Author: Gert Doering
-Date:   Fri Jul 24 20:13:24 2020 +0200
+Code changes look good, Makefile / .vcxproj file changes look reasonable,
+and it passes my MinGW test build.
 
-     Repair --inetd
+I have not tested the resulting binary because I do not hit this particular
+code path anyway - and the end result is fairly trivial ("if (!iservice)
+then complain") :-)
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20200724181324.19037-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20574.html
+Thanks.
+
+Your patch has been applied to the master branch.
+
+commit 6d19775a468f0d35cd1f199b489ee18a74e6c905
+Author: Lev Stipakov
+Date:   Fri Jul 24 13:48:41 2020 +0300
+
+     wintun: remove SYSTEM elevation hack
+
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20200724104841.89-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20567.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
