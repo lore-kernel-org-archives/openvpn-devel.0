@@ -1,12 +1,13 @@
-References: <20200725235143.22736-1-arne@...1227...>
+References: <20200725234803.22058-1-arne@...1227...>
+ <20200725234803.22058-2-arne@...1227...>
 From: tincanteksup <tincanteksup@...277...>
-Message-ID: <5c15f1f1-351f-4602-64af-ced891e67b9f@...277...>
-Date: Sun, 26 Jul 2020 14:05:18 +0100
+Message-ID: <9ed74d2c-cddd-48fb-5459-9d8801610c88@...277...>
+Date: Sun, 26 Jul 2020 14:13:14 +0100
 MIME-Version: 1.0
-In-Reply-To: <20200725235143.22736-1-arne@...1227...>
+In-Reply-To: <20200725234803.22058-2-arne@...1227...>
 Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH] Refuse PUSH_REQUEST as client/refactor
- process_incoming_push_request
+Subject: Re: [Openvpn-devel] [PATCH 2/2] Avoid sending push request after
+ receving push reply
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,104 +20,106 @@ Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Sanity check:
+a little help..
 
-On 26/07/2020 00:51, Arne Schwabe wrote:
-> When a server sends a client a push request, the client will reply
-> with a push reply. The reply is bogus and almost empty since almost
-> all the options that are normally set (remote ip etc) are unset.
+On 26/07/2020 00:48, Arne Schwabe wrote:
+> The introduction of IV_PROTO_REQUEST_PUSH (c290df55) sometimes causes the
+> server to reply before we setup the push timer. The push reply will then clear
+> a timer that has not been setup yet. We then start sending push
+> request after we have gone through the whole initialisation already.
 > 
-> I checked 2.4 and master and this does not have any security implications
-> or other bugs but it is still better to refuse this.
+> This patch also clears the connestion_established timer that sets up the
+> push request timer. This lead to the
 > 
-> This code also refactors the method to get rid of the ret variable to
-> make the code flow easier to understand.
+> management_set_state(management,  OPENVPN_STATE_GET_CONFIG, ...)
+> 
+> function not being called. But a to display "waiting for configuration..." or
+
+I think this was meant to read as (moved 'a'):
+
+But to display a "waiting for configuration..."
+
+
+> sending a "getting config state" after "initialisation" does not make sense
+> anyway.
+> 
+> Also add the IV_PROTO_REQUEST_PUSH feature as new feature in Changes.rst
 > 
 > Signed-off-by: Arne Schwabe <arne@...1227...>
 > ---
->   src/openvpn/push.c | 40 ++++++++++++++++++++++------------------
->   1 file changed, 22 insertions(+), 18 deletions(-)
+>   Changes.rst           | 11 +++++++++++
+>   src/openvpn/forward.c |  3 +++
+>   src/openvpn/push.c    |  1 +
+>   3 files changed, 15 insertions(+)
 > 
+> diff --git a/Changes.rst b/Changes.rst
+> index 8fbaf419..e377a36c 100644
+> --- a/Changes.rst
+> +++ b/Changes.rst
+> @@ -37,6 +37,13 @@ Deferred client-connect
+>       asynchronous/deferred return of the configuration file in the same way
+>       as the auth-plugin.
+>   
+> +Faster connection setup
+> +    A client will signal in the ``IV_PROTO`` variable that is in pull
+
+I think this is meant to read:
+variable that is in pull ->
+variable that it is in pull
+
+
+> +    mode. This allows the server to push the configuration options to
+> +    the client without waiting for a ``PULL_REQUEST`` message. The feature
+> +    is automatically enabled if both client and server support it and
+> +    reduces the of connection setup time by one round-trip time.
+> +
+>   Deprecated features
+>   -------------------
+>   For an up-to-date list of all deprecated options, see this wiki page:
+> @@ -72,6 +79,10 @@ User-visible Changes
+>   - Support for building with OpenSSL 1.0.1 has been removed. The minimum
+>     supported OpenSSL version is now 1.0.2.
+>   
+> +- The GET_CONFIG management state is ommited if the server pushes
+
+ommited -> ommitted
+
+
+> +  the client configuration almost immediately as result of the
+> +  faster connection setup feature.
+> +
+>   
+>   Overview of changes in 2.4
+>   ==========================
+> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+> index 30a3fd46..759fdbe1 100644
+> --- a/src/openvpn/forward.c
+> +++ b/src/openvpn/forward.c
+> @@ -425,6 +425,9 @@ check_push_request_dowork(struct context *c)
+>    *
+>    * Options like --up-delay need to be triggered by this function which
+>    * checks for connection establishment.
+> + *
+> + * Note: The process_incoming_push_reply currently assumes that this function
+> + * only sets ups the pull request timer when pull is enabled.
+
+ups -> up
+
+
+>    */
+>   void
+>   check_connection_established(struct context *c)
 > diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-> index 1c4f2033..84193afe 100644
+> index 84193afe..9c720b42 100644
 > --- a/src/openvpn/push.c
 > +++ b/src/openvpn/push.c
-> @@ -733,13 +733,19 @@ push_remove_option(struct options *o, const char *p)
->   int
->   process_incoming_push_request(struct context *c)
->   {
-> -    int ret = PUSH_MSG_ERROR;
-> +    /* if we receive a message a client we do not want to reply to it
-> +     * so limit this to multi server */
-
-This sentence does not make sense, suggestion:
-
-If a client receives a push request then ignore it.  Only multi server 
-will reply to a push requests.
-
-Something like that ..
-
-
-
-
-> +    if (c->options.mode != MODE_SERVER)
-> +    {
-> +        return PUSH_MSG_ERROR;
-> +    }
-> +
->   
->       if (tls_authentication_status(c->c2.tls_multi, 0) == TLS_AUTHENTICATION_FAILED || c->c2.context_auth == CAS_FAILED)
->       {
->           const char *client_reason = tls_client_reason(c->c2.tls_multi);
->           send_auth_failed(c, client_reason);
-> -        ret = PUSH_MSG_AUTH_FAILURE;
-> +        return PUSH_MSG_AUTH_FAILURE;
->       }
->       else if (c->c2.context_auth == CAS_SUCCEEDED)
->       {
-> @@ -748,29 +754,27 @@ process_incoming_push_request(struct context *c)
->           openvpn_time(&now);
->           if (c->c2.sent_push_reply_expiry > now)
->           {
-> -            ret = PUSH_MSG_ALREADY_REPLIED;
-> +            return PUSH_MSG_ALREADY_REPLIED;
+> @@ -358,6 +358,7 @@ incoming_push_message(struct context *c, const struct buffer *buffer)
+>               }
 >           }
-> -        else
-> -        {
-> -            /* per-client push options - peer-id, cipher, ifconfig, ipv6-ifconfig */
-> -            struct push_list push_list = { 0 };
-> -            struct gc_arena gc = gc_new();
->   
-> -            if (prepare_push_reply(c, &gc, &push_list)
-> -                && send_push_reply(c, &push_list))
-> -            {
-> -                ret = PUSH_MSG_REQUEST;
-> -                c->c2.sent_push_reply_expiry = now + 30;
-> -            }
-> -            gc_free(&gc);
-> +        int ret = PUSH_MSG_ERROR;
-> +        /* per-client push options - peer-id, cipher, ifconfig, ipv6-ifconfig */
-> +        struct push_list push_list = { 0 };
-> +        struct gc_arena gc = gc_new();
-> +
-> +        if (prepare_push_reply(c, &gc, &push_list)
-> +            && send_push_reply(c, &push_list))
-> +        {
-> +            ret = PUSH_MSG_REQUEST;
-> +            c->c2.sent_push_reply_expiry = now + 30;
->           }
-> +        gc_free(&gc);
-> +        return ret;
+>           event_timeout_clear(&c->c2.push_request_interval);
+> +        event_timeout_clear(&c->c2.wait_for_connect);
 >       }
->       else
->       {
-> -        ret = PUSH_MSG_REQUEST_DEFERRED;
-> +        return PUSH_MSG_REQUEST_DEFERRED;
->       }
-> -
-> -    return ret;
->   }
 >   
->   static void
+>       goto cleanup;
 > 
 
