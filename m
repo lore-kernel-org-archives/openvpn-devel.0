@@ -1,13 +1,14 @@
-References: <20200725234803.22058-1-arne@...1227...>
- <20200725234803.22058-2-arne@...1227...>
-From: tincanteksup <tincanteksup@...277...>
-Message-ID: <9ed74d2c-cddd-48fb-5459-9d8801610c88@...277...>
-Date: Sun, 26 Jul 2020 14:13:14 +0100
+From: Arne Schwabe <arne@...1227...>
+References: <20200717171036.20687-1-davids@...515...>
+ <6062d64c-14ef-0e0d-4e83-925b79b4900b@...1227...>
+Message-ID: <7030cf8b-d047-107d-21b8-f02c8a1338c9@...1227...>
+Date: Sun, 26 Jul 2020 15:31:24 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200725234803.22058-2-arne@...1227...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH 2/2] Avoid sending push request after
- receving push reply
+In-Reply-To: <6062d64c-14ef-0e0d-4e83-925b79b4900b@...1227...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="OiCxWH2BLziKePW12AQTLqOyMqutfM9x3"
+Subject: Re: [Openvpn-devel] [PATCH] Remove --no-replay
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,110 +17,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <davids@...515...>, openvpn-devel@lists.sourceforge.net
 
-a little help..
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--OiCxWH2BLziKePW12AQTLqOyMqutfM9x3
+Content-Type: multipart/mixed; boundary="P0XKd6fnSAkou4v7q1iModQG4cajZLWjF"
 
-On 26/07/2020 00:48, Arne Schwabe wrote:
-> The introduction of IV_PROTO_REQUEST_PUSH (c290df55) sometimes causes the
-> server to reply before we setup the push timer. The push reply will then clear
-> a timer that has not been setup yet. We then start sending push
-> request after we have gone through the whole initialisation already.
-> 
-> This patch also clears the connestion_established timer that sets up the
-> push request timer. This lead to the
-> 
-> management_set_state(management,  OPENVPN_STATE_GET_CONFIG, ...)
-> 
-> function not being called. But a to display "waiting for configuration..." or
+--P0XKd6fnSAkou4v7q1iModQG4cajZLWjF
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-I think this was meant to read as (moved 'a'):
+Am 26.07.20 um 02:01 schrieb Arne Schwabe:
+> Am 17.07.20 um 19:10 schrieb David Sommerseth:
+>> The --no-replay feature is considered to be a security weakness, which
+>> was also highlighed during the OpenVPN 2.4 security audit [0].  This
+>> option was added to the DeprecatedOptions[1] list and has been reported
+>> as deprecated since OpenVPN 2.4.
+>=20
+> As a side note, removing this feature weakens the ability to use OpenVPN
+> is a pure tunnel without crypto (--auth none, --cipher none and
+> no-replay) since this removes the ability to disable replay proctection
+> when no authentication is enabled. (replay protection without auth is
+> silly as a attacker can just fake the replay id too.)
+>=20
+> Acked-By: Arne Schwabe
 
-But to display a "waiting for configuration..."
+I given that a bit of a thought. But we need to decide if we to support
+unencrypted transport only session or not in future. If we do not want
+to support them, then applying this patch is fine, otherwise we should
+restrict disabling no-replay to --auth none and also --auth none to
+--cipher none basically:
 
+--cipher !=3D none =3D> auth none and no-replay forbidden
 
-> sending a "getting config state" after "initialisation" does not make sense
-> anyway.
-> 
-> Also add the IV_PROTO_REQUEST_PUSH feature as new feature in Changes.rst
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->   Changes.rst           | 11 +++++++++++
->   src/openvpn/forward.c |  3 +++
->   src/openvpn/push.c    |  1 +
->   3 files changed, 15 insertions(+)
-> 
-> diff --git a/Changes.rst b/Changes.rst
-> index 8fbaf419..e377a36c 100644
-> --- a/Changes.rst
-> +++ b/Changes.rst
-> @@ -37,6 +37,13 @@ Deferred client-connect
->       asynchronous/deferred return of the configuration file in the same way
->       as the auth-plugin.
->   
-> +Faster connection setup
-> +    A client will signal in the ``IV_PROTO`` variable that is in pull
+--cipher =3D=3D none =3D> allows auth none and also no-replay
 
-I think this is meant to read:
-variable that is in pull ->
-variable that it is in pull
+--cipher none and auth none, warn if no-replay is used that it does not
+prevent replay attacks. But do not fail since we would break a lot of
+setups.
 
 
-> +    mode. This allows the server to push the configuration options to
-> +    the client without waiting for a ``PULL_REQUEST`` message. The feature
-> +    is automatically enabled if both client and server support it and
-> +    reduces the of connection setup time by one round-trip time.
-> +
->   Deprecated features
->   -------------------
->   For an up-to-date list of all deprecated options, see this wiki page:
-> @@ -72,6 +79,10 @@ User-visible Changes
->   - Support for building with OpenSSL 1.0.1 has been removed. The minimum
->     supported OpenSSL version is now 1.0.2.
->   
-> +- The GET_CONFIG management state is ommited if the server pushes
+--P0XKd6fnSAkou4v7q1iModQG4cajZLWjF--
 
-ommited -> ommitted
+--OiCxWH2BLziKePW12AQTLqOyMqutfM9x3
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
-> +  the client configuration almost immediately as result of the
-> +  faster connection setup feature.
-> +
->   
->   Overview of changes in 2.4
->   ==========================
-> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-> index 30a3fd46..759fdbe1 100644
-> --- a/src/openvpn/forward.c
-> +++ b/src/openvpn/forward.c
-> @@ -425,6 +425,9 @@ check_push_request_dowork(struct context *c)
->    *
->    * Options like --up-delay need to be triggered by this function which
->    * checks for connection establishment.
-> + *
-> + * Note: The process_incoming_push_reply currently assumes that this function
-> + * only sets ups the pull request timer when pull is enabled.
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl8dha0ACgkQFRhsZwKx
+RFQ4VA/+Ih3jPDK0/quSmHjWHK7o/QDikEMDtALbNDmNErxHrQEpZy8jsTsj6Fdi
+6CNsVEPbtpFagjbQvLsYetzfKO5fz84n1LEldYkvATueEPNlcbdiaEFnB4eJo2UG
+6eBHCzSH7HsNhYs5EzCggsaNaBd9KYAKHj7VScyGnD5vjGgQa5VcZvNE55BSINfO
+8qzP+yT7yY33k1jqRyUXe/FtV/RzQc+dX+IkNzsrt8LMEfcI7bm8vAcYHSkaBOGR
+Wdg6q97VCps1QEOrXBXzdpO252duJQy9S4DNfxfqUitq6Q5GC4Wv2xKPGftElrPW
+AKtPsvqfxZ8HsoeBTPml9N0qwuB1KgbvlC/WVRBg9Zi7g7GUZ8OOf9UC/RVddeCa
+H14M0j/F4u/pSdTJ7UcnSsCHYIRu12/oye4OyJKJbBh2itZ6vyl7UQnvriKUYiZQ
+0hQF5s31J9GP5b1TSA+aYqnW5JwCApdGaYy8G//Y3dx37qldZerzeLVMDGWr9aRl
+7Y98HVng8Cuck95bXHVrZLmPxmBEbM/tnnYtvUUL1OfMYt6Ysdiu4pFdY0nyMFOT
+2bA9C7xhX+QvzPbbAJvu3YrWmeLg0pJhkrIblowNtwQXBq0sjFm3ZOWbF94HNlFV
+Df0Z9GRFMLApmiKnxiqE44hW6frYbyPpHvwYq81V3QQr0u3ZHNM=
+=oX3I
+-----END PGP SIGNATURE-----
 
-ups -> up
-
-
->    */
->   void
->   check_connection_established(struct context *c)
-> diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-> index 84193afe..9c720b42 100644
-> --- a/src/openvpn/push.c
-> +++ b/src/openvpn/push.c
-> @@ -358,6 +358,7 @@ incoming_push_message(struct context *c, const struct buffer *buffer)
->               }
->           }
->           event_timeout_clear(&c->c2.push_request_interval);
-> +        event_timeout_clear(&c->c2.wait_for_connect);
->       }
->   
->       goto cleanup;
-> 
+--OiCxWH2BLziKePW12AQTLqOyMqutfM9x3--
 
