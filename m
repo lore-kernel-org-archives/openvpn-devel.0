@@ -1,8 +1,13 @@
+References: <20200717171036.20687-1-davids@...515...>
 From: Arne Schwabe <arne@...1227...>
-Date: Sun, 26 Jul 2020 01:51:43 +0200
-Message-Id: <20200725235143.22736-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Refuse PUSH_REQUEST as client/refactor
- process_incoming_push_request
+Message-ID: <6062d64c-14ef-0e0d-4e83-925b79b4900b@...1227...>
+Date: Sun, 26 Jul 2020 02:01:51 +0200
+MIME-Version: 1.0
+In-Reply-To: <20200717171036.20687-1-davids@...515...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="MzffI6yGI1KG5WzmDdzG8WW3xWAXTvu5s"
+Subject: Re: [Openvpn-devel] [PATCH] Remove --no-replay
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,96 +16,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: David Sommerseth <davids@...515...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--MzffI6yGI1KG5WzmDdzG8WW3xWAXTvu5s
+Content-Type: multipart/mixed; boundary="DoXTm5zaRol3sHZVSC67jFo1T98Zs9tKh"
+
+--DoXTm5zaRol3sHZVSC67jFo1T98Zs9tKh
+Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-When a server sends a client a push request, the client will reply
-with a push reply. The reply is bogus and almost empty since almost
-all the options that are normally set (remote ip etc) are unset.
+Am 17.07.20 um 19:10 schrieb David Sommerseth:
+> The --no-replay feature is considered to be a security weakness, which
+> was also highlighed during the OpenVPN 2.4 security audit [0].  This
+> option was added to the DeprecatedOptions[1] list and has been reported
+> as deprecated since OpenVPN 2.4.
 
-I checked 2.4 and master and this does not have any security implications
-or other bugs but it is still better to refuse this.
+As a side note, removing this feature weakens the ability to use OpenVPN
+is a pure tunnel without crypto (--auth none, --cipher none and
+no-replay) since this removes the ability to disable replay proctection
+when no authentication is enabled. (replay protection without auth is
+silly as a attacker can just fake the replay id too.)
 
-This code also refactors the method to get rid of the ret variable to
-make the code flow easier to understand.
+Acked-By: Arne Schwabe
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/push.c | 40 ++++++++++++++++++++++------------------
- 1 file changed, 22 insertions(+), 18 deletions(-)
 
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 1c4f2033..84193afe 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -733,13 +733,19 @@ push_remove_option(struct options *o, const char *p)
- int
- process_incoming_push_request(struct context *c)
- {
--    int ret = PUSH_MSG_ERROR;
-+    /* if we receive a message a client we do not want to reply to it
-+     * so limit this to multi server */
-+    if (c->options.mode != MODE_SERVER)
-+    {
-+        return PUSH_MSG_ERROR;
-+    }
-+
- 
-     if (tls_authentication_status(c->c2.tls_multi, 0) == TLS_AUTHENTICATION_FAILED || c->c2.context_auth == CAS_FAILED)
-     {
-         const char *client_reason = tls_client_reason(c->c2.tls_multi);
-         send_auth_failed(c, client_reason);
--        ret = PUSH_MSG_AUTH_FAILURE;
-+        return PUSH_MSG_AUTH_FAILURE;
-     }
-     else if (c->c2.context_auth == CAS_SUCCEEDED)
-     {
-@@ -748,29 +754,27 @@ process_incoming_push_request(struct context *c)
-         openvpn_time(&now);
-         if (c->c2.sent_push_reply_expiry > now)
-         {
--            ret = PUSH_MSG_ALREADY_REPLIED;
-+            return PUSH_MSG_ALREADY_REPLIED;
-         }
--        else
--        {
--            /* per-client push options - peer-id, cipher, ifconfig, ipv6-ifconfig */
--            struct push_list push_list = { 0 };
--            struct gc_arena gc = gc_new();
- 
--            if (prepare_push_reply(c, &gc, &push_list)
--                && send_push_reply(c, &push_list))
--            {
--                ret = PUSH_MSG_REQUEST;
--                c->c2.sent_push_reply_expiry = now + 30;
--            }
--            gc_free(&gc);
-+        int ret = PUSH_MSG_ERROR;
-+        /* per-client push options - peer-id, cipher, ifconfig, ipv6-ifconfig */
-+        struct push_list push_list = { 0 };
-+        struct gc_arena gc = gc_new();
-+
-+        if (prepare_push_reply(c, &gc, &push_list)
-+            && send_push_reply(c, &push_list))
-+        {
-+            ret = PUSH_MSG_REQUEST;
-+            c->c2.sent_push_reply_expiry = now + 30;
-         }
-+        gc_free(&gc);
-+        return ret;
-     }
-     else
-     {
--        ret = PUSH_MSG_REQUEST_DEFERRED;
-+        return PUSH_MSG_REQUEST_DEFERRED;
-     }
--
--    return ret;
- }
- 
- static void
--- 
-2.26.2
 
+--DoXTm5zaRol3sHZVSC67jFo1T98Zs9tKh--
+
+--MzffI6yGI1KG5WzmDdzG8WW3xWAXTvu5s
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl8cx+8ACgkQFRhsZwKx
+RFTdmA/+IXz0gdt/eAHGdMpHx+xgO9de5/NgfgTv7ERgsN8nAc6Fj6WatAmIt3CG
+8c0CqUU84UUIg2ADHrTCO0qE48Es8kd5lmVxJIl/67u9ZozjS7nbCRx8mfLu5E/u
+uPqaLc/18rcjRiFbeyM6ZcvGFMc8Qq1QZdfrWVlqrrPz6N5y6xXLCwXFu3LWpXuq
+6iAYmAfCANpWb4qdJfegSgbulfIyWEFaV9i0p+lvw7q0MptV0kolmc65Sm3jxUJh
+P6rVTNrkhJtxhwg2jqPlM4yPKhPVJyhPzGMLbvswiIDhPNw/+BdYs2EyI5YEdSj/
+lk5xFW3xHUgU+ZbGfreICd7Qkgdq+ocO2ELxqJNCkb649atZ5nA5I/VucOWOxfSz
+SI2HPftsvnVlIWq76H0qxZA+kapomXjKYBlg4XgDP58LPTOL7/ND3dbB0S9Jk21x
+cLtnStrTSuB4SLn7/noqxtyQQ7tbveK/DXV3Xn4BeiNO/oB+BPGzmfqFaUEi3RJl
+7ESD29Mzu1kbw3Spf9wAMHMr5nlFvzC6zXEhQd95FWS9ol7WazfQUhn6hMtIGmRU
+0t0FQsQ5dKLLruxbyYgq2nZWopQAFmddGShANk0qhyuK449lEqFm2Ohq77jsbtFB
+7XsVeCSb74sPvEIy/wzLW/1SRGZtYZx+n9Vt5vNrrQ0tVdFSok8=
+=ehJ/
+-----END PGP SIGNATURE-----
+
+--MzffI6yGI1KG5WzmDdzG8WW3xWAXTvu5s--
 
