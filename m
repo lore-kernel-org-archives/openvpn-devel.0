@@ -1,8 +1,8 @@
 From: Vladislav Grishenko <themiron@...2010...>
-Date: Tue, 28 Jul 2020 03:13:40 +0500
-Message-Id: <20200727221341.22544-1-themiron@...2010...>
-Subject: [Openvpn-devel] [PATCH 1/2] Support multiple x509 field list to be
- username
+Date: Tue, 28 Jul 2020 03:13:41 +0500
+Message-Id: <20200727221341.22544-2-themiron@...2010...>
+Subject: [Openvpn-devel] [PATCH 2/2] Allow killing of client instances by cn
+ with wildcards
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,309 +15,60 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-OpenVPN has the ability to choose different x509 field in case "CN"
-can't be use used to be unique connected username since commit
-935c62be9c0c8a256112df818bfb8470586a23b6.
-Unfortunately it's not enough in case client has multiple and valid
-certificates from PKI for different devices (ex. laptop, mobile, etc)
-with the same CN/UID.
+In case of some permanent part of common name (ex. domain) and/or
+long complex common name consisting of multiple x509 fields, it's
+handly to kill client instances via management interface with just
+part of common name, not by exact match only.
 
-Having --duplicate-cn as a workaround helps only partially - clients
-can be connected, but it breaks coexistance with --ifconfig-pool-persist,
---client-config-dir and opens doors to DoS possibility since same client
-device (with the same cert) being reconnected doesn't replace previously
-connected session no more, so can exhaust server ressources (ex. address
-pool) and can prevent other clients to be connected.
+Patch allows to use wildcard placeholder '*' as the last trailing
+symbol of kill command parameter.
+Single '*' wildcard would be too greedy and can be too harmful,
+therefore not allowed. Wildcards in the middle of parameter string
+are not supported to keep the the things simple at the moment.
 
-With this patch, multiple x509 fields incl. "serialNumber" can be chosen
-to be username as --x509-username-files space-separated parameters.
-Multiple fields will be joined into one username using '/' delimeter for
-consistency with CN/addr logging and preserving ability for hierarchical
-ccd. As long as resulting username is unique, --duplicate-cn will not
-be required. Default value is preserved as "CN" only.
-
-Openssl backend is the only supported at the moment, since so far MbedTLS
-has no alt user name support at all.
+Signed-off-by: Vladislav Grishenko <themiron@...2010...>
 ---
- doc/man-sections/tls-options.rst |  9 ++++---
- src/openvpn/init.c               |  4 +--
- src/openvpn/options.c            | 46 ++++++++++++++++++--------------
- src/openvpn/options.h            |  4 +--
- src/openvpn/ssl.h                |  1 +
- src/openvpn/ssl_common.h         |  8 +++++-
- src/openvpn/ssl_verify.c         | 35 ++++++++++++++++--------
- src/openvpn/ssl_verify_openssl.c | 15 +++++++++++
- 8 files changed, 83 insertions(+), 39 deletions(-)
+ doc/management-notes.txt | 2 ++
+ src/openvpn/multi.c      | 6 +++++-
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
-index 8c2db7cd..301f8be4 100644
---- a/doc/man-sections/tls-options.rst
-+++ b/doc/man-sections/tls-options.rst
-@@ -632,13 +632,13 @@ certificates and keys: https://github.com/OpenVPN/easy-rsa
-   options can be defined to track multiple attributes.
+diff --git a/doc/management-notes.txt b/doc/management-notes.txt
+index 61daaf07..91073693 100644
+--- a/doc/management-notes.txt
++++ b/doc/management-notes.txt
+@@ -195,6 +195,8 @@ Command examples:
  
- --x509-username-field args
--  Field in the X.509 certificate subject to be used as the username
-+  Field list in the X.509 certificate subject to be used as the username
-   (default :code:`CN`).
+   kill Test-Client -- kill the client instance having a
+                       common name of "Test-Client".
++  kill Test-Cli*   -- kill the client instances having a
++                      common name starting with "Test-Cli".
+   kill 1.2.3.4:4000 -- kill the client instance having a
+                        source address and port of 1.2.3.4:4000
  
-   Valid syntax:
-   ::
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 9bda38b0..8952658a 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -3772,6 +3772,10 @@ management_callback_kill_by_cn(void *arg, const char *del_cn)
+     struct hash_element *he;
+     int count = 0;
  
--     x509-username-field [ext:]fieldname
-+     x509-username-field [ext:]fieldname [[ext:]fieldname...]
- 
-   Typically, this option is specified with **fieldname** as
-   either of the following:
-@@ -646,6 +646,7 @@ certificates and keys: https://github.com/OpenVPN/easy-rsa
- 
-      x509-username-field emailAddress
-      x509-username-field ext:subjectAltName
-+     x509-username-field CN serialNumber
- 
-   The first example uses the value of the :code:`emailAddress` attribute
-   in the certificate's Subject field as the username. The second example
-@@ -653,7 +654,9 @@ certificates and keys: https://github.com/OpenVPN/easy-rsa
-   ``fieldname`` :code:`subjectAltName` be searched for an rfc822Name
-   (email) field to be used as the username. In cases where there are
-   multiple email addresses in :code:`ext:fieldname`, the last occurrence
--  is chosen.
-+  is chosen. The last example uses the value of :code:`CN` attribute in
-+  the Subject field and the hex representation of certificate's serial
-+  number delimited by slash symbol as the resulting username.
- 
-   When this option is used, the ``--verify-x509-name`` option will match
-   against the chosen ``fieldname`` instead of the Common Name.
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 1ea4735d..11b417a8 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2912,9 +2912,9 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
-     to.verify_hash = options->verify_hash;
-     to.verify_hash_algo = options->verify_hash_algo;
- #ifdef ENABLE_X509ALTUSERNAME
--    to.x509_username_field = (char *) options->x509_username_field;
-+    memmove(to.x509_username_field, options->x509_username_field, sizeof(to.x509_username_field));
- #else
--    to.x509_username_field = X509_USERNAME_FIELD_DEFAULT;
-+    to.x509_username_field[0] = X509_USERNAME_FIELD_DEFAULT;
- #endif
-     to.es = c->c2.es;
-     to.net_ctx = &c->net_ctx;
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index bc256b18..a51038dd 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -877,7 +877,7 @@ init_options(struct options *o, const bool init_gc)
-     o->tls_cert_profile = NULL;
-     o->ecdh_curve = NULL;
- #ifdef ENABLE_X509ALTUSERNAME
--    o->x509_username_field = X509_USERNAME_FIELD_DEFAULT;
-+    o->x509_username_field[0] = X509_USERNAME_FIELD_DEFAULT;
- #endif
- #ifdef ENABLE_PKCS11
-     o->pkcs11_pin_cache_period = -1;
-@@ -8434,7 +8434,7 @@ add_option(struct options *options,
-         x509_track_add(&options->x509_track, p[1], msglevel, &options->gc);
-     }
- #ifdef ENABLE_X509ALTUSERNAME
--    else if (streq(p[0], "x509-username-field") && p[1] && !p[2])
-+    else if (streq(p[0], "x509-username-field") && p[1])
++    /* Allow trailing wildcard */
++    int len = strlen(del_cn);
++    len += (len > 1 && del_cn[len-1] == '*') ? -1 : 1;
++
+     hash_iterator_init(m->iter, &hi);
+     while ((he = hash_iterator_next(&hi)))
      {
-         /* This option used to automatically upcase the fieldname passed as the
-          * option argument, e.g., "ou" became "OU". Now, this "helpfulness" is
-@@ -8443,32 +8443,38 @@ add_option(struct options *options,
-          * "emailAddress" are left as-is. An option parameter having the "ext:"
-          * prefix for matching X.509v3 extended fields will also remain unchanged.
-          */
--        char *s = p[1];
-+        size_t j;
- 
-         VERIFY_PERMISSION(OPT_P_GENERAL);
--        if (strncmp("ext:", s, 4) != 0)
-+
-+        for (j = 1; j < MAX_PARMS && p[j] != NULL; ++j)
+@@ -3779,7 +3783,7 @@ management_callback_kill_by_cn(void *arg, const char *del_cn)
+         if (!mi->halt)
          {
--            size_t i = 0;
--            while (s[i] && !isupper(s[i]))
--            {
--                i++;
--            }
--            if (strlen(s) == i)
-+            char *s = p[j];
-+
-+            if (strncmp("ext:", s, 4) != 0)
+             const char *cn = tls_common_name(mi->context.c2.tls_multi, false);
+-            if (cn && !strcmp(cn, del_cn))
++            if (cn && !strncmp(cn, del_cn, len))
              {
--                while ((*s = toupper(*s)) != '\0')
-+                size_t i = 0;
-+                while (s[i] && !isupper(s[i]))
-+                {
-+                    i++;
-+                }
-+                if (strlen(s) == i)
-                 {
--                    s++;
-+                    while ((*s = toupper(*s)) != '\0')
-+                    {
-+                        s++;
-+                    }
-+                    msg(M_WARN, "DEPRECATED FEATURE: automatically upcased the "
-+                        "--x509-username-field parameter to '%s'; please update your"
-+                        "configuration", p[j]);
-                 }
--                msg(M_WARN, "DEPRECATED FEATURE: automatically upcased the "
--                    "--x509-username-field parameter to '%s'; please update your"
--                    "configuration", p[1]);
-             }
-+            else if (!x509_username_field_ext_supported(s+4))
-+            {
-+                msg(msglevel, "Unsupported x509-username-field extension: %s", s);
-+            }
-+            options->x509_username_field[j-1] = p[j];
-         }
--        else if (!x509_username_field_ext_supported(s+4))
--        {
--            msg(msglevel, "Unsupported x509-username-field extension: %s", s);
--        }
--        options->x509_username_field = p[1];
-     }
- #endif /* ENABLE_X509ALTUSERNAME */
- #ifdef ENABLE_PKCS11
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index c5df2d18..e84aafec 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -582,8 +582,8 @@ struct options
-     int handshake_window;
- 
- #ifdef ENABLE_X509ALTUSERNAME
--    /* Field used to be the username in X509 cert. */
--    char *x509_username_field;
-+    /* Field list used to be the username in X509 cert. */
-+    char *x509_username_field[MAX_PARMS];
- #endif
- 
-     /* Old key allowed to live n seconds after new key goes active */
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index 005628f6..51d6ab32 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -119,6 +119,7 @@
- 
- /* Default field in X509 to be username */
- #define X509_USERNAME_FIELD_DEFAULT "CN"
-+#define X509_USERNAME_FIELD_DELIMITER '/'
- 
- #define KEY_METHOD_2  2
- 
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 9f777750..a322b923 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -285,7 +285,13 @@ struct tls_options
-     const char *remote_cert_eku;
-     uint8_t *verify_hash;
-     hash_algo_type verify_hash_algo;
--    char *x509_username_field;
-+
-+    /* Field list used to be the username in X509 cert. */
-+#ifdef ENABLE_X509ALTUSERNAME
-+    char *x509_username_field[MAX_PARMS];
-+#else
-+    char *x509_username_field[2];
-+#endif
- 
-     /* allow openvpn config info to be
-      * passed over control channel */
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index 844bc57d..33ca58dc 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -48,7 +48,7 @@
- #include "push.h"
- 
- /** Maximum length of common name */
--#define TLS_USERNAME_LEN 64
-+#define TLS_USERNAME_LEN 128
- 
- static void
- string_mod_remap_name(char *str)
-@@ -640,6 +640,7 @@ verify_cert(struct tls_session *session, openvpn_x509_cert_t *cert, int cert_dep
-     char common_name[TLS_USERNAME_LEN+1] = {0}; /* null-terminated */
-     const struct tls_options *opt;
-     struct gc_arena gc = gc_new();
-+    size_t i, size;
- 
-     opt = session->opt;
-     ASSERT(opt);
-@@ -660,19 +661,31 @@ verify_cert(struct tls_session *session, openvpn_x509_cert_t *cert, int cert_dep
-     string_replace_leading(subject, '-', '_');
- 
-     /* extract the username (default is CN) */
--    if (SUCCESS != backend_x509_get_username(common_name, sizeof(common_name),
--                                             opt->x509_username_field, cert))
-+    size = sizeof(common_name);
-+    for (i = 0; opt->x509_username_field[i] != NULL && size > !!i; i++)
-     {
--        if (!cert_depth)
-+        char *buf = common_name + sizeof(common_name) - size;
-+
-+        if (SUCCESS != backend_x509_get_username(buf + !!i, size - !!i,
-+                                                 opt->x509_username_field[i], cert))
-         {
--            msg(D_TLS_ERRORS, "VERIFY ERROR: could not extract %s from X509 "
--                "subject string ('%s') -- note that the username length is "
--                "limited to %d characters",
--                opt->x509_username_field,
--                subject,
--                TLS_USERNAME_LEN);
--            goto cleanup;
-+            break;
-+        }
-+        else if (i != 0)
-+        {
-+            *buf = X509_USERNAME_FIELD_DELIMITER;
-         }
-+        size -= strlen(buf);
-+    }
-+    if (cert_depth == 0 && opt->x509_username_field[i] != NULL)
-+    {
-+        msg(D_TLS_ERRORS, "VERIFY ERROR: could not extract %s from X509 "
-+            "subject string ('%s') -- note that the username length is "
-+            "limited to %d characters",
-+            opt->x509_username_field[i],
-+            subject,
-+            TLS_USERNAME_LEN);
-+        goto cleanup;
-     }
- 
-     /* enforce character class restrictions in common name */
-diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
-index ff14db23..ebff0c92 100644
---- a/src/openvpn/ssl_verify_openssl.c
-+++ b/src/openvpn/ssl_verify_openssl.c
-@@ -268,6 +268,21 @@ backend_x509_get_username(char *common_name, int cn_len,
-             return FAILURE;
-         }
-     }
-+    else if (strcmp(LN_serialNumber,x509_username_field) == 0)
-+    {
-+        ASN1_INTEGER *asn1_i = X509_get_serialNumber(peer_cert);
-+        struct gc_arena gc = gc_new();
-+        char *serial;
-+
-+        serial = format_hex_ex(asn1_i->data, asn1_i->length, 0, 1, NULL, &gc);
-+        if (!serial || cn_len <= strlen(serial)+2)
-+        {
-+            gc_free(&gc);
-+            return FAILURE;
-+        }
-+        openvpn_snprintf(common_name, cn_len, "0x%s", serial);
-+        gc_free(&gc);
-+    }
-     else
- #endif
-     if (FAILURE == extract_x509_field_ssl(X509_get_subject_name(peer_cert),
+                 multi_signal_instance(m, mi, SIGTERM);
+                 ++count;
 -- 
 2.17.1
 
