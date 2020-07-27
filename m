@@ -1,7 +1,9 @@
-From: Vladislav Grishenko <themiron@...2010...>
-Date: Mon, 27 Jul 2020 22:17:50 +0500
-Message-Id: <20200727171750.26657-1-themiron@...2010...>
-Subject: [Openvpn-devel] [PATCH] Log serial number of revoked certificate
+From: Gert Doering <gert@...1296...>
+Date: Mon, 27 Jul 2020 20:34:35 +0200
+Message-Id: <20200727183436.6625-1-gert@...1296...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH 1/2] Fix sequence of events for async plugin
+ v1 handler.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,108 +16,47 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-As it appears commit 767e4c56becbfeea525e4695a810593f373883cd "Log
-serial number of revoked certificate" hasn't survive refactoring
-of CRL handling.
+If multi_client_connect_call_plugin_v1() goes to "deferred mode",
+*and* there is no OPENVPN_CLIENT_CONNECT_DEFER handler, we
+would read the "client specific options" file after every
+(succeeded-because-not-present) call to plugin_call().
 
-In most of situations admin of OpenVPN server needs to know which
-particular certificate is used by client.
-In the case when certificate is valid, environment variable can be
-used for that but once it is revoked, no user scripts are invoked
-so there is no way to get serial number, only subject is logged.
+Move this to "after we have checked the deferred-cc file, and we
+know for sure that we have CC_RET_SUCCEEDED".
 
-Let's log certificate serial in case it is revoked and additionally
-log certificate depth & subject in crl-verify "dir" mode for better
-consistency with crl file (non-dir) mode.
-
-Signed-off-by: Vladislav Grishenko <themiron@...2010...>
+Signed-off-by: Gert Doering <gert@...1296...>
 ---
- src/openvpn/ssl_verify.c         | 7 ++++---
- src/openvpn/ssl_verify_mbedtls.c | 5 +++--
- src/openvpn/ssl_verify_openssl.c | 5 +++--
- 3 files changed, 10 insertions(+), 7 deletions(-)
+ src/openvpn/multi.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index 844bc57d..07745514 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -599,7 +599,7 @@ cleanup:
-  * check peer cert against CRL directory
-  */
- static result_t
--verify_check_crl_dir(const char *crl_dir, openvpn_x509_cert_t *cert)
-+verify_check_crl_dir(const char *crl_dir, int cert_depth, openvpn_x509_cert_t *cert, char *subject)
- {
-     result_t ret = FAILURE;
-     char fn[256];
-@@ -616,7 +616,8 @@ verify_check_crl_dir(const char *crl_dir, openvpn_x509_cert_t *cert)
-     fd = platform_open(fn, O_RDONLY, 0);
-     if (fd >= 0)
-     {
--        msg(D_HANDSHAKE, "VERIFY CRL: certificate serial number %s is revoked", serial);
-+        msg(D_HANDSHAKE, "VERIFY CRL: depth=%d, %s, serial=%s is revoked",
-+            cert_depth, subject, serial);
-         goto cleanup;
-     }
- 
-@@ -758,7 +759,7 @@ verify_cert(struct tls_session *session, openvpn_x509_cert_t *cert, int cert_dep
-     {
-         if (opt->ssl_flags & SSLF_CRL_VERIFY_DIR)
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 9bda38b0..cfb34720 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -2065,8 +2065,6 @@ multi_client_connect_call_plugin_v1(struct multi_context *m,
+                                    &argv, NULL, mi->context.c2.es);
+         if (plug_ret == OPENVPN_PLUGIN_FUNC_SUCCESS)
          {
--            if (SUCCESS != verify_check_crl_dir(opt->crl_file, cert))
-+            if (SUCCESS != verify_check_crl_dir(opt->crl_file, cert_depth, cert, subject))
-             {
-                 goto cleanup;
-             }
-diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c
-index fd31bbbd..e9982e41 100644
---- a/src/openvpn/ssl_verify_mbedtls.c
-+++ b/src/openvpn/ssl_verify_mbedtls.c
-@@ -68,6 +68,7 @@ verify_callback(void *session_obj, mbedtls_x509_crt *cert, int cert_depth,
-         int ret = 0;
-         char errstr[512] = { 0 };
-         char *subject = x509_get_subject(cert, &gc);
-+        char *serial = backend_x509_get_serial(cert, &gc);
- 
-         ret = mbedtls_x509_crt_verify_info(errstr, sizeof(errstr)-1, "", *flags);
-         if (ret <= 0 && !openvpn_snprintf(errstr, sizeof(errstr),
-@@ -82,8 +83,8 @@ verify_callback(void *session_obj, mbedtls_x509_crt *cert, int cert_depth,
- 
-         if (subject)
-         {
--            msg(D_TLS_ERRORS, "VERIFY ERROR: depth=%d, subject=%s: %s",
--                cert_depth, subject, errstr);
-+            msg(D_TLS_ERRORS, "VERIFY ERROR: depth=%d, subject=%s, serial=%s: %s",
-+                cert_depth, subject, serial ? serial : "", errstr);
+-            multi_client_connect_post(m, mi, ccs->config_file,
+-                                      option_types_found);
+             ret = CC_RET_SUCCEEDED;
          }
-         else
+         else if (plug_ret == OPENVPN_PLUGIN_FUNC_DEFERRED)
+@@ -2100,6 +2098,13 @@ multi_client_connect_call_plugin_v1(struct multi_context *m,
          {
-diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
-index ff14db23..20095cf7 100644
---- a/src/openvpn/ssl_verify_openssl.c
-+++ b/src/openvpn/ssl_verify_openssl.c
-@@ -71,6 +71,7 @@ verify_callback(int preverify_ok, X509_STORE_CTX *ctx)
-     {
-         /* get the X509 name */
-         char *subject = x509_get_subject(current_cert, &gc);
-+        char *serial = backend_x509_get_serial(current_cert, &gc);
- 
-         if (!subject)
-         {
-@@ -89,10 +90,10 @@ verify_callback(int preverify_ok, X509_STORE_CTX *ctx)
+             ret = CC_RET_DEFERRED;
          }
- 
-         /* Remote site specified a certificate, but it's not correct */
--        msg(D_TLS_ERRORS, "VERIFY ERROR: depth=%d, error=%s: %s",
-+        msg(D_TLS_ERRORS, "VERIFY ERROR: depth=%d, error=%s: %s, serial=%s",
-             X509_STORE_CTX_get_error_depth(ctx),
-             X509_verify_cert_error_string(X509_STORE_CTX_get_error(ctx)),
--            subject);
-+            subject, serial ? serial : "");
- 
-         ERR_clear_error();
++
++        /* if we still think we have succeeded, do postprocessing */
++        if (ret == CC_RET_SUCCEEDED)
++        {
++            multi_client_connect_post(m, mi, ccs->config_file,
++                                      option_types_found);
++        }
+ cleanup:
+         argv_free(&argv);
  
 -- 
-2.17.1
+2.26.2
 
 
