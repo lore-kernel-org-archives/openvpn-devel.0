@@ -1,10 +1,7 @@
-Date: Mon, 27 Jul 2020 16:14:26 +0200 (CEST)
-Message-Id: <202007271414.06REEQlc082928@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200717171818.230371-1-matthias.andree@...68...>
-References: <20200717171818.230371-1-matthias.andree@...68...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix stack buffer overruns in
- NEXTADDR() macro:
+From: Vladislav Grishenko <themiron@...2010...>
+Date: Mon, 27 Jul 2020 22:17:50 +0500
+Message-Id: <20200727171750.26657-1-themiron@...2010...>
+Subject: [Openvpn-devel] [PATCH] Log serial number of revoked certificate
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,63 +12,110 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Matthias Andree <matthias.andree@...68...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.4 branch
-(bugfix).
+As it appears commit 767e4c56becbfeea525e4695a810593f373883cd "Log
+serial number of revoked certificate" hasn't survive refactoring
+of CRL handling.
 
-Thanks for the fix.  Yes, this was "very obvious in hindsight".
+In most of situations admin of OpenVPN server needs to know which
+particular certificate is used by client.
+In the case when certificate is valid, environment variable can be
+used for that but once it is revoked, no user scripts are invoked
+so there is no way to get serial number, only subject is logged.
 
-To my defense, I can only argue that it's always been that way -
-while I was the last one to touch that line (in 2ff366f78), 
-the *order* of operations was "always like this"...
+Let's log certificate serial in case it is revoked and additionally
+log certificate depth & subject in crl-verify "dir" mode for better
+consistency with crl file (non-dir) mode.
 
--            l = ROUNDUP(u.sa_len); memmove(cp, &(u), l); cp += l;\
-+            l = ROUNDUP( ((struct sockaddr *)&(u))->sa_len); memmove(cp, &(u), l); cp += l;\
+Signed-off-by: Vladislav Grishenko <themiron@...2010...>
+---
+ src/openvpn/ssl_verify.c         | 7 ++++---
+ src/openvpn/ssl_verify_mbedtls.c | 5 +++--
+ src/openvpn/ssl_verify_openssl.c | 5 +++--
+ 3 files changed, 10 insertions(+), 7 deletions(-)
 
-.. anyway.  I have tested your fix on all platforms that use this
-code path and which I had available, which is 
-
- - FreeBSD 7.4/amd64           (works)
- - FreeBSD 11.3/amd64          (works)
- - FreeBSD 12.1/amd64          (works)
- - FreeBSD 12.1/i386           (works)
- - FreeBSD 12.x/sparc64        (postponed, hardware down)
- - FreeBSD 12.1/arm64 (rPI 3)  (works)
- - NetBSD 8.1/i386 (turns out to be broken before and after)
-     ("GDG6: problem writing to routing socket", already trac #734)
- - OpenBSD 6.5/amd64           (works)
- - MacOS Mojave/amd64          (works)
- - MacOS 10.5/i386             (works)   [only tested 2.4]
-
-and the code is excercised by "openvpn --show-gateway" (and by 
-the internal user of this, "do we need an IPv6 redirect route").
-
-OpenSolaris, Linux and Windows use different code paths.
-
-(The OpenSolaris NEXTADDR() actually has the same problem, just
-nobody noticed it so far - so I'll send a followup patch to fix
-it over there as well)
-
-
-commit 5fde831c580775aa5c1fe3539b06260d994eee10 (master)
-commit 7c428ca19a8df6b9630734eafce1132f457be951 (release/2.4)
-Author: Matthias Andree
-Date:   Fri Jul 17 19:18:18 2020 +0200
-
-     Fix stack buffer overruns in NEXTADDR() macro:
-
-     Signed-off-by: Matthias Andree <matthias.andree@...68...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200717171818.230371-1-matthias.andree@...68...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20461.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 844bc57d..07745514 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -599,7 +599,7 @@ cleanup:
+  * check peer cert against CRL directory
+  */
+ static result_t
+-verify_check_crl_dir(const char *crl_dir, openvpn_x509_cert_t *cert)
++verify_check_crl_dir(const char *crl_dir, int cert_depth, openvpn_x509_cert_t *cert, char *subject)
+ {
+     result_t ret = FAILURE;
+     char fn[256];
+@@ -616,7 +616,8 @@ verify_check_crl_dir(const char *crl_dir, openvpn_x509_cert_t *cert)
+     fd = platform_open(fn, O_RDONLY, 0);
+     if (fd >= 0)
+     {
+-        msg(D_HANDSHAKE, "VERIFY CRL: certificate serial number %s is revoked", serial);
++        msg(D_HANDSHAKE, "VERIFY CRL: depth=%d, %s, serial=%s is revoked",
++            cert_depth, subject, serial);
+         goto cleanup;
+     }
+ 
+@@ -758,7 +759,7 @@ verify_cert(struct tls_session *session, openvpn_x509_cert_t *cert, int cert_dep
+     {
+         if (opt->ssl_flags & SSLF_CRL_VERIFY_DIR)
+         {
+-            if (SUCCESS != verify_check_crl_dir(opt->crl_file, cert))
++            if (SUCCESS != verify_check_crl_dir(opt->crl_file, cert_depth, cert, subject))
+             {
+                 goto cleanup;
+             }
+diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c
+index fd31bbbd..e9982e41 100644
+--- a/src/openvpn/ssl_verify_mbedtls.c
++++ b/src/openvpn/ssl_verify_mbedtls.c
+@@ -68,6 +68,7 @@ verify_callback(void *session_obj, mbedtls_x509_crt *cert, int cert_depth,
+         int ret = 0;
+         char errstr[512] = { 0 };
+         char *subject = x509_get_subject(cert, &gc);
++        char *serial = backend_x509_get_serial(cert, &gc);
+ 
+         ret = mbedtls_x509_crt_verify_info(errstr, sizeof(errstr)-1, "", *flags);
+         if (ret <= 0 && !openvpn_snprintf(errstr, sizeof(errstr),
+@@ -82,8 +83,8 @@ verify_callback(void *session_obj, mbedtls_x509_crt *cert, int cert_depth,
+ 
+         if (subject)
+         {
+-            msg(D_TLS_ERRORS, "VERIFY ERROR: depth=%d, subject=%s: %s",
+-                cert_depth, subject, errstr);
++            msg(D_TLS_ERRORS, "VERIFY ERROR: depth=%d, subject=%s, serial=%s: %s",
++                cert_depth, subject, serial ? serial : "", errstr);
+         }
+         else
+         {
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
+index ff14db23..20095cf7 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -71,6 +71,7 @@ verify_callback(int preverify_ok, X509_STORE_CTX *ctx)
+     {
+         /* get the X509 name */
+         char *subject = x509_get_subject(current_cert, &gc);
++        char *serial = backend_x509_get_serial(current_cert, &gc);
+ 
+         if (!subject)
+         {
+@@ -89,10 +90,10 @@ verify_callback(int preverify_ok, X509_STORE_CTX *ctx)
+         }
+ 
+         /* Remote site specified a certificate, but it's not correct */
+-        msg(D_TLS_ERRORS, "VERIFY ERROR: depth=%d, error=%s: %s",
++        msg(D_TLS_ERRORS, "VERIFY ERROR: depth=%d, error=%s: %s, serial=%s",
+             X509_STORE_CTX_get_error_depth(ctx),
+             X509_verify_cert_error_string(X509_STORE_CTX_get_error(ctx)),
+-            subject);
++            subject, serial ? serial : "");
+ 
+         ERR_clear_error();
+ 
+-- 
+2.17.1
 
 
