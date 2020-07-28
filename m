@@ -1,10 +1,10 @@
-Date: Tue, 28 Jul 2020 09:46:23 +0200 (CEST)
-Message-Id: <202007280746.06S7kNo6004017@...2054...>
+Date: Tue, 28 Jul 2020 09:46:28 +0200 (CEST)
+Message-Id: <202007280746.06S7kSN7004026@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200727183436.6625-2-gert@...1296...>
-References: <20200727183436.6625-2-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Abort client-connect handler
- loop after first handler sets 'disable'.
+In-Reply-To: <20200727183436.6625-1-gert@...1296...>
+References: <20200727183436.6625-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix sequence of events for
+ async plugin v1 handler.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,16 +20,18 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Patch has been applied to the master branch.
 
-commit 20b394746a7a351d892bb8c21beb66dd138631d9
-Author: Gert Doering
-Date:   Mon Jul 27 20:34:36 2020 +0200
+(I have tested this on the "t_server" test rig, of course :) )
 
-     Abort client-connect handler loop after first handler sets 'disable'.
+commit 08f3c1cab7367fc8447001db34fd9627d60ba2b2
+Author: Gert Doering
+Date:   Mon Jul 27 20:34:35 2020 +0200
+
+     Fix sequence of events for async plugin v1 handler.
 
      Signed-off-by: Gert Doering <gert@...1296...>
      Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20200727183436.6625-2-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20612.html
+     Message-Id: <20200727183436.6625-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20613.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
