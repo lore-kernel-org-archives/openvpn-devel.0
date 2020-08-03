@@ -1,8 +1,11 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Fri, 31 Jul 2020 12:06:29 +0200
-Message-Id: <20200731100629.24611-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Skip existing interfaces on opening the
- first available utun on macOS
+References: <56d6f733-9f00-f76f-f7c7-9ac280020f50@...1879...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <fc329812-98ec-d838-bee2-9271db84e7e4@...515...>
+Date: Mon, 3 Aug 2020 13:26:12 +0300
+MIME-Version: 1.0
+In-Reply-To: <56d6f733-9f00-f76f-f7c7-9ac280020f50@...1879...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] MSI Installer: Add .ovpn file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,36 +14,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="iso-8859-15"
+Content-Transfer-Encoding: quoted-printable
+To: =?UTF-8?Q?Robert_Gr=c3=a4tz?= <graetzrx@...1879...>, openvpn-devel@lists.sourceforge.net
 
-This avoids the error messages trying to open already used utuns.
+Hi,
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/tun.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+I have not developed the MSI installer and know only the basics about
+MSI. Simon Rozman (rozmansi) is the right person to ask about this.
 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index cc7b65cf..b9e444b6 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -3023,6 +3023,13 @@ open_darwin_utun(const char *dev, const char *dev_type, const char *dev_node, st
-     {
-         for (utunnum = 0; utunnum<255; utunnum++)
-         {
-+            char ifname[20];
-+            /* if the interface exists silently skip it */
-+            ASSERT(snprintf(ifname, sizeof(ifname), "utun%d", utunnum));
-+            if (if_nametoindex(ifname))
-+            {
-+                continue;
-+            }
-             fd = utun_open_helper(ctlInfo, utunnum);
-             /* Break if the fd is valid,
-              * or if early initialization failed (-2) */
--- 
-2.26.2
+That said, I think using a "Merge Module" might be the way forward. The
+tap-windows6 "installer" is implemented as such (MSM).
+
+Samuli
+
+Il 30/07/20 11:21, Robert Gr=E4tz ha scritto:
+> Hello,
+>=20
+> I am very happy that 2.5 will be hopefully soon released.
+>=20
+> I want to integrate my config file inside the msi installer. I think
+> that romansi mentioned that there will be a proper solution for this
+> issue. Are there any news or documentation yet? I tried something with
+> Microsoft Orca [1], but it doesn't work yet.
+>=20
+> Best regards
+>=20
+> Robert
+>=20
+>=20
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
 
