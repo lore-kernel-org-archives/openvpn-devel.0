@@ -1,11 +1,10 @@
-MIME-Version: 1.0
-References: <56d6f733-9f00-f76f-f7c7-9ac280020f50@...1879...>
-In-Reply-To: <56d6f733-9f00-f76f-f7c7-9ac280020f50@...1879...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Wed, 5 Aug 2020 00:29:09 +0500
-Message-ID: <CAFHpkQEt1uS4uRrHvYa-Zp3t9+igm3Zhqxs99-VKh+OX3g=6pA@...278...>
-Content-Type: multipart/alternative; boundary="0000000000009ee46e05ac1245ad"
-Subject: Re: [Openvpn-devel] MSI Installer: Add .ovpn file
+Date: Tue, 4 Aug 2020 21:32:13 +0200 (CEST)
+Message-Id: <202008041932.074JWDWI064009@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20200720142703.3324-1-arne@...1227...>
+References: <20200720142703.3324-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: client-connect: Add
+ documentation for the deferred client connect feature
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,75 +13,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?Q?Robert_Gr=C3=A4tz?= <graetzrx@...1879...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---0000000000009ee46e05ac1245ad
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Acked-by: Gert Doering <gert@...1296...>
 
-Hello,
+The code is long in.  I thought I'd see some review by "not me"
+on the docs, but since the 2.5_beta1 cutoff date is coming soon,
+I just did this now.  Included all the latest suggestions from
+Richard as well.
 
-we used to put *.ovpn files on special dedicated website (some guide +
-installer downloads + ovpn).
-works as charm
+I have reworded the "script-options.rst" section somewhat, because
+I found it a bit unclear in regards to "what does a script/plugin 
+have to do, when?" - since I struggled with this, I now know :-)
 
-=D1=87=D1=82, 30 =D0=B8=D1=8E=D0=BB. 2020 =D0=B3. =D0=B2 13:37, Robert Gr=
-=C3=A4tz <graetzrx@...1879...>:
+Your patch has been applied to the master branch.
 
-> Hello,
->
-> I am very happy that 2.5 will be hopefully soon released.
->
-> I want to integrate my config file inside the msi installer. I think
-> that romansi mentioned that there will be a proper solution for this
-> issue. Are there any news or documentation yet? I tried something with
-> Microsoft Orca [1], but it doesn't work yet.
->
-> Best regards
->
-> Robert
->
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+commit 71d56aea895cc13aad06048066251979162db3f3
+Author: Arne Schwabe
+Date:   Mon Jul 20 16:27:03 2020 +0200
 
---0000000000009ee46e05ac1245ad
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+     client-connect: Add documentation for the deferred client connect feature
 
-<div dir=3D"ltr"><div>Hello,</div><div><br></div><div>we used to put *.ovpn=
- files on special dedicated website (some guide + installer downloads + ovp=
-n).</div><div>works as charm<br></div></div><br><div class=3D"gmail_quote">=
-<div dir=3D"ltr" class=3D"gmail_attr">=D1=87=D1=82, 30 =D0=B8=D1=8E=D0=BB. =
-2020 =D0=B3. =D0=B2 13:37, Robert Gr=C3=A4tz &lt;<a href=3D"mailto:graetzrx=
-@...1879...">graetzrx@...1879...</a>&gt;:<br></div><blockquote class=3D"gma=
-il_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,2=
-04,204);padding-left:1ex">Hello,<br>
-<br>
-I am very happy that 2.5 will be hopefully soon released.<br>
-<br>
-I want to integrate my config file inside the msi installer. I think <br>
-that romansi mentioned that there will be a proper solution for this <br>
-issue. Are there any news or documentation yet? I tried something with <br>
-Microsoft Orca [1], but it doesn&#39;t work yet.<br>
-<br>
-Best regards<br>
-<br>
-Robert<br>
-<br>
-<br>
-_______________________________________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
-envpn-devel@lists.sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
-=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
-nfo/openvpn-devel</a><br>
-</blockquote></div>
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20200720142703.3324-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20511.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
---0000000000009ee46e05ac1245ad--
+
+--
+kind regards,
+
+Gert Doering
+
 
