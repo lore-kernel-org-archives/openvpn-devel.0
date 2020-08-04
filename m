@@ -1,10 +1,14 @@
-Date: Tue, 4 Aug 2020 21:32:13 +0200 (CEST)
-Message-Id: <202008041932.074JWDWI064009@...2054...>
+Date: Tue, 4 Aug 2020 21:39:43 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200720142703.3324-1-arne@...1227...>
-References: <20200720142703.3324-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: client-connect: Add
- documentation for the deferred client connect feature
+Message-ID: <20200804193943.GU75094@...1296...>
+References: <20200731100629.24611-1-arne@...1227...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="pE2VAHO2njSJCslu"
+Content-Disposition: inline
+In-Reply-To: <20200731100629.24611-1-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] Skip existing interfaces on opening the
+ first available utun on macOS
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,41 +17,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+--pE2VAHO2njSJCslu
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-The code is long in.  I thought I'd see some review by "not me"
-on the docs, but since the 2.5_beta1 cutoff date is coming soon,
-I just did this now.  Included all the latest suggestions from
-Richard as well.
+Hi,
 
-I have reworded the "script-options.rst" section somewhat, because
-I found it a bit unclear in regards to "what does a script/plugin 
-have to do, when?" - since I struggled with this, I now know :-)
+On Fri, Jul 31, 2020 at 12:06:29PM +0200, Arne Schwabe wrote:
+> This avoids the error messages trying to open already used utuns.
+>=20
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 
-Your patch has been applied to the master branch.
+I think the code looks good, but I have no time right now to test it
+(I can build MacOS binaries but have no test environment set up
+"just now").
 
-commit 71d56aea895cc13aad06048066251979162db3f3
-Author: Arne Schwabe
-Date:   Mon Jul 20 16:27:03 2020 +0200
+Jonathan, do you have time?
 
-     client-connect: Add documentation for the deferred client connect feature
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-     Signed-off-by: David Sommerseth <davids@...515...>
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200720142703.3324-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20511.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Gert Doering - Munich, Germany                             gert@...1296...
 
+--pE2VAHO2njSJCslu
+Content-Type: application/pgp-signature; name="signature.asc"
 
---
-kind regards,
+-----BEGIN PGP SIGNATURE-----
 
-Gert Doering
+iQGcBAEBAgAGBQJfKbl+AAoJEB2Cnv7KVigSS/MMAJOyAHfTvgmGtWly2ptezkfL
+3QvIHOcEb8pJrBAvqaXP9QKPvIH+6BuCnq6ODyTV7Tmxpo6YYxFqrgFdE82b1C2A
+OZGd+12eyYyJXCFyr9AN4rH91K5Qvy7oeo0Q+U2K9LfS1qU3DgY8uLP6+LaDjcCR
+Of2dOr3udIzKOuwPa5X6I2SxKf6V4T0vvpsSOk1pVs5ptdGC6cUyain3iBFKGm/l
+S9O5fLF1j3zQACVuK0MlVQmIyoxoxoTjXNrgoHjMet+bYiAa4NopkkPfiigb6vMA
+mBmEoG0Yj2DClHRYRsYDRijrlPlaeMtVMA1EYEb2R6OQP1deDZggG/G4yShRTawv
+zHOyV8O1Lyh3fn5QQWpHU0gvflsJTfgtfN723E4+8lvpQawEw0Rf1rekdgBpOrUm
+rPMQtWSWhbbcurJaucJPp/hmNgrPDYE7h+lv5Q3chDhK48QR6ca6frhWrhb1ZASo
+6VQ4tXHxZGHcpV6L/2hCBXToCjw/OGcAfLje5KUAvg==
+=ZDmE
+-----END PGP SIGNATURE-----
 
+--pE2VAHO2njSJCslu--
 
