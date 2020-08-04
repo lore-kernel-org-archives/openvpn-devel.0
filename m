@@ -1,12 +1,13 @@
-Date: Tue, 4 Aug 2020 22:20:10 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200804202010.GV75094@...1296...>
 References: <20200729113835.2415-1-arne@...1227...>
+ <20200804202010.GV75094@...1296...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <b8c90764-96e4-6e6d-2060-ee3d84cb446d@...1227...>
+Date: Wed, 5 Aug 2020 00:20:54 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="LiQwW4YX+w4axhAx"
-Content-Disposition: inline
-In-Reply-To: <20200729113835.2415-1-arne@...1227...>
+In-Reply-To: <20200804202010.GV75094@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="TmM5vJUpsQEwJ7lspnjLFy7utJLdiAZUu"
 Subject: Re: [Openvpn-devel] [PATCH v2] Rework NCP compability logic and
  drop BF-CBC support by default
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,168 +18,115 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---LiQwW4YX+w4axhAx
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--TmM5vJUpsQEwJ7lspnjLFy7utJLdiAZUu
+Content-Type: multipart/mixed; boundary="liH7ktXw9eVoQKtD95Wlv1BszRILCyTPJ"
+
+--liH7ktXw9eVoQKtD95Wlv1BszRILCyTPJ
+Content-Language: en-GB
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-Hi,
-
-On Wed, Jul 29, 2020 at 01:38:35PM +0200, Arne Schwabe wrote:
-> This reworks the NCP logic to be more strict about what is
-> considered an acceptable result of an NCP negotiation. It also
-> us to finally drop BF-CBC support by default.
-
-I think the goals are good, but there are two corner cases in the
-code that are not quite right yet
-
-[ RUN      ] test_extract_client_ciphers
-[       OK ] test_extract_client_ciphers
-[ RUN      ] test_poor_man
-[  ERROR   ] --- Test failed with exception: Segmentation fault(11)
-[  FAILED  ] test_poor_man
-[ RUN      ] test_ncp_best
-[       OK ] test_ncp_best
-[=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D] 4 test(s) run.
-[  PASSED  ] 3 test(s).
-[  FAILED  ] 1 test(s), listed below:
-[  FAILED  ] test_poor_man
-
- 1 FAILED TEST(S)
-FAIL: ncp_testdriver
 
 
-... and unfortunately, it also segfaults when a 2.2 client connects -=20
-so, on my server test rig all openvpn processes are gone after 2.2=20
-has tested...
-
-2020-08-04 22:05:05 us=3D274264 194.97.140.21:43906 TLS: Initial packet fro=
-m [AF_INET6]::ffff:194.97.140.21:43906, sid=3D3c3a2afa adfd47fa
-2020-08-04 22:05:05 us=3D390684 194.97.140.21:43906 VERIFY OK: depth=3D1, C=
-=3DUS, ST=3DCalifornia, L=3DPleasanton, O=3DOpenVPN community project, CN=
-=3DOpenVPN community project CA, emailAddress=3Dsamuli@...515...
-2020-08-04 22:05:05 us=3D390938 194.97.140.21:43906 VERIFY OK: depth=3D0, C=
-=3DDE, ST=3DBavaria, L=3DMunich, O=3DOpenVPN community project, CN=3Dcron2-=
-freebsd-tc-amd64-22, ??=3DGert Doering, emailAddress=3Dgert@...1296...
-2020-08-04 22:05:05 us=3D604124 194.97.140.21:43906 Control Channel: TLSv1.=
-0, cipher TLS-ECDHE-RSA-WITH-AES-256-CBC-SHA, 2048 bit key
-2020-08-04 22:05:05 us=3D604229 194.97.140.21:43906 [cron2-freebsd-tc-amd64=
--22] Peer Connection Initiated with [AF_INET6]::ffff:194.97.140.21:43906
-2020-08-04 22:05:05 us=3D604292 cron2-freebsd-tc-amd64-22/194.97.140.21:439=
-06 MULTI_sva: pool returned IPv4=3D10.204.1.18, IPv6=3Dfd00:abcd:204:1::1003
-2020-08-04 22:05:05 us=3D604386 cron2-freebsd-tc-amd64-22/194.97.140.21:439=
-06 mcccp1 (enter): ret=3D3, deferred=3D0
-2020-08-04 22:05:05 us=3D604438 cron2-freebsd-tc-amd64-22/194.97.140.21:439=
-06 MULTI: Learn: 10.204.1.18 -> cron2-freebsd-tc-amd64-22/194.97.140.21:439=
-06
-2020-08-04 22:05:05 us=3D604531 cron2-freebsd-tc-amd64-22/194.97.140.21:439=
-06 MULTI: primary virtual IP for cron2-freebsd-tc-amd64-22/194.97.140.21:43=
-906: 10.204.1.18
-2020-08-04 22:05:05 us=3D604614 cron2-freebsd-tc-amd64-22/194.97.140.21:439=
-06 MULTI: Learn: fd00:abcd:204:1::1003 -> cron2-freebsd-tc-amd64-22/194.97.=
-140.21:43906
-2020-08-04 22:05:05 us=3D604658 cron2-freebsd-tc-amd64-22/194.97.140.21:439=
-06 MULTI: primary virtual IPv6 for cron2-freebsd-tc-amd64-22/194.97.140.21:=
-43906: fd00:abcd:204:1::1003
-
-Program received signal SIGSEGV, Segmentation fault.
-0x00007ffff7d9112d in ?? () from /lib64/libc.so.6
-(gdb) where
-#0  0x00007ffff7d9112d in ?? () from /lib64/libc.so.6
-#1  0x00005555555d2299 in ncp_get_best_cipher (server_list=3D0x55555562bf78=
- "AES-256-GCM:AES-128-GCM", peer_info=3Dpeer_info@...1851...=3D0x0,=20
-    remote_cipher=3D0x55555566a800 "BF-CBC", gc=3Dgc@...1851...=3D0x5555556=
-3de50) at ssl_ncp.c:231
-#2  0x000055555558ea38 in multi_client_set_protocol_options (c=3D0x55555563=
-de50) at multi.c:1833
-#3  multi_client_connect_late_setup (option_types_found=3D<optimized out>, =
-mi=3D0x55555563dc90, m=3D0x7fffffffc410) at multi.c:2434
-#4  multi_connection_established (mi=3D0x55555563dc90, m=3D0x7fffffffc410) =
-at multi.c:2672
-#5  multi_process_post (m=3Dm@...1851...=3D0x7fffffffc410, mi=3D0x55555563d=
-c90, flags=3Dflags@...1851...=3D9) at multi.c:2989
-#6  0x000055555558f802 in multi_process_incoming_link (m=3Dm@...1851...=3D0=
-x7fffffffc410, instance=3Dinstance@...1851...=3D0x55555563dc90,=20
-    mpp_flags=3Dmpp_flags@...1851...=3D9) at multi.c:3361
+>=20
+> I'm not exactly sure what the code *does*, TBH, but de-fusing the check
+> into
+>=20
+>     if (remote_cipher =3D=3D NULL=20
+>         || (peer_info && strstr(peer_info, "IV_CIPHERS=3D") ))
+>=20
+> makes it no longer crash (and also pass the unit test).
 
 
-It seems to be failing on "peer_info" being "NULL" - this used to be=20
-optional in 2.2, and we only made it "always send something" in 2.3 with
-some of the more interesting IV_ variables.  If I call the 2.2 client
-with "--push-peer-info", it will no longer core dump the server, but
-then fail with
+Yes that is the right fix. My test client client had a push-peer-info in
+it so I didn't catch this. :(
 
-2020-08-04 22:08:30 us=3D121232 cron2-freebsd-tc-amd64-22/194.97.140.21:108=
-72 PUSH: No common cipher between server and client. Server data-ciphers: '=
-AES-256-GCM:AES-128-GCM', client supports cipher 'BF-CBC'
 
-(as in the 2.3 case below)
+>=20
+> This patch also breaks connections from "default 2.3" clients, though in =
+a=20
+> different way:
+>=20
+> Aug  4 21:56:25 gentoo tun-udp-p2mp-112-mask[25184]: cron2-freebsd-tc-amd=
+64-23/194.97.140.21:48168 PUSH: No common cipher between server and client.=
+ Server data-ciphers: 'AES-256-GCM:AES-128-GCM', client supports cipher 'BF=
+-CBC'
+> ug  4 21:56:27 gentoo tun-udp-p2mp-112-mask[25184]: cron2-freebsd-tc-amd6=
+4-23/194.97.140.21:48168 SENT CONTROL [cron2-freebsd-tc-amd64-23]: 'AUTH_FA=
+ILED,Data channel cipher negotiation failed (no shared cipher)' (status=3D1)
+>=20
+> this is a server that has *no* "--cipher" in its config, and a client
+> that has nothing either and no NCP - so it advertises "OCC cipher bf-cbc",
+> which is no longer accepted on the server.
+>=20
+> Is that intentional?
 
-The culprit is this code in ncp_get_best_cipher():
+Yes. That is intentional. If you do not have any cipher option in the
+config, there is nowadays a very high change that you allow BF-CBC by
+"accident". I encountered this first-hand ("I do want to put as few
+option in a config as possible").
 
-    if (remote_cipher =3D=3D NULL || strstr(peer_info, "IV_CIPHERS=3D"))
+Since 2.4 only warns about SWEET32/BF-CBC being if you actually
+negotiate it (i.e. talking to a 2.3 client/server), many of these
+probably were not even aware that they allowed BF-CBC.
 
-- that's the only place where we do not check for "peer_info !=3D NULL"
-before looking into it.
+If you really want BF-CBC with the new patch you need to either add it
+to data-ciphers or explicitly set --cipher BF-CBC (that adds it to
+data-cipher and data-ciphers-fallback).
 
-I'm not exactly sure what the code *does*, TBH, but de-fusing the check
-into
+When I am back from vacation, I can send a patch with better wording to
+Changes.rst:
 
-    if (remote_cipher =3D=3D NULL=20
-        || (peer_info && strstr(peer_info, "IV_CIPHERS=3D") ))
+Removal of BF-CBC support in default configuratio:
+- By default OpenVPN 2.5 will only accept AES-256-GCM and AES-128-GCM as
+data ciphers. OpenVPN 2.4 allows AES-256-GCM,AES-128-GCM and BF-CBC when
+no --cipher and --ncp-ption were present. Accepting BF-CBC can be
+enabled by adding
 
-makes it no longer crash (and also pass the unit test).
+    data-ciphers AES-256-GCM:AES-128-GCM:BF-CBC
+
+for very old peers also
+
+    data-ciphers-fallback BF-CBC
+
+to offer backwards compatiblity with older config an *explicit*
+
+    cipher BF-CBC
+
+in the configuration will be automatically translated in the two
+commands above. We strongly recommend to switching away from BF-CBC to a
+more secure cipher.
+
+Arne
 
 
 
-This patch also breaks connections from "default 2.3" clients, though in a=
-=20
-different way:
+--liH7ktXw9eVoQKtD95Wlv1BszRILCyTPJ--
 
-Aug  4 21:56:25 gentoo tun-udp-p2mp-112-mask[25184]: cron2-freebsd-tc-amd64=
--23/194.97.140.21:48168 PUSH: No common cipher between server and client. S=
-erver data-ciphers: 'AES-256-GCM:AES-128-GCM', client supports cipher 'BF-C=
-BC'
-ug  4 21:56:27 gentoo tun-udp-p2mp-112-mask[25184]: cron2-freebsd-tc-amd64-=
-23/194.97.140.21:48168 SENT CONTROL [cron2-freebsd-tc-amd64-23]: 'AUTH_FAIL=
-ED,Data channel cipher negotiation failed (no shared cipher)' (status=3D1)
-
-this is a server that has *no* "--cipher" in its config, and a client
-that has nothing either and no NCP - so it advertises "OCC cipher bf-cbc",
-which is no longer accepted on the server.
-
-Is that intentional?
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---LiQwW4YX+w4axhAx
+--TmM5vJUpsQEwJ7lspnjLFy7utJLdiAZUu
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJfKcL5AAoJEB2Cnv7KVigS5LgL/1CNfDkfrKP8FONk+fMh/Obu
-m4b6bGn2bvACsvRSZSDXSWLwXyOr/gq+P0gjCfPQHSPnp/zC2kzaVF3PrtezU02D
-McALDJsGIKpN6CZHgJcXt8LGjhTaKcpC4+EXvAC4/n2vrg7BJum61591X5EvqQGh
-16JQqqhyjPhzrvz23CScuSy/vaNdr3b/Q5C3lRjxSo/QVub5pw+9MQYmfN5P9N+F
-ZVy3nypKN9BexERnFn5zkwkad9fJAI8dgaXKkae3ltS0qsVzBu+uIwLwgyUiHFbh
-hZ4jjcGRLTCBbRalI26RQnUC7+wiqNyIznAYOGsTCKOBUmBCiOvUrEGg2rqAHVOb
-NIaKeQ4A8D2UI8uVZrDdEuEmVR+44eC/8nSPrUnd2eL9UZFKl7OM7cxDKfyVA+hN
-dSpAp1dWs08GpP8mU5Rnh6hqZcic/iiZFU36wkMFq1jZnHIfgVsYpffh2b/3M5Y9
-MzkPeSHdM8nvJxN2Mz1Gp90slXimKnoMneLVreafUg==
-=5C++
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl8p30YACgkQFRhsZwKx
+RFTA2xAApDuRXFsOrJpKtjfumv37E696IN2d3IOpN82mXmTYGiLnJL0EmuaJBSjn
+R+jQgZjHJFU28uGTq1aczG2MKtHYkuONgDNN97UE+AaTjJaDm2WbfGhOMVw7n8Pr
+gi64l59pT5bSNb8xqvtA3HRAa8ONWH88626ntdVePHWcLvRRVmy/pZ24D0Jhhqn0
+eOTVQsGTo0XKkp34QVoVyejSJqmh24zHmGlMU+//LDQ1mU3I24B3AY/rQM+Mhi1U
+go/RXyhdBOZo+H8S2os33SXM4DMANI7Zn8ZPVCLZrjCQjEXuFm82CCo1DA2OzFQ2
+BvggoEqAay67OBWf+9ZFFrGSh/aiTGF/0nFvwPi0HMn3MRSBkUDa/hpvfDuz8SbK
+FUOxrT2BEUUyCEaZnb5jZT2rpLbCyqOD4RkSBRbDyHYtCkJ1aryb8lLISszV8GmE
+TalSaoUe/Jvl66oLlGJjJSlJ+8i1HRaCWb0+sSf6nPGV+EG+cQd55gxSLjxbRXE8
+iwdROy8NaBG51JTzqDOuCzjh/OD5whPcTMoyIGMpDYlN2urpwQxCsZyJZawO25+K
+vExGah9b1pWNnt3sQUkrsrcrOlHtsXVZOmuSz47wZkVjh2XmwudxVS8fsPeDZefs
+g5h8ZbzcYqEzpVxX2x5AoyyOZLjWjbla613W76rCgco8+1KfIJk=
+=s+yX
 -----END PGP SIGNATURE-----
 
---LiQwW4YX+w4axhAx--
+--TmM5vJUpsQEwJ7lspnjLFy7utJLdiAZUu--
 
