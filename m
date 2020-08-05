@@ -1,16 +1,10 @@
-Date: Wed, 5 Aug 2020 14:41:52 +0200
+Date: Wed, 5 Aug 2020 15:42:25 +0200 (CEST)
+Message-Id: <202008051342.075DgP01089010@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20200805124152.GD75094@...1296...>
-References: <20200805102333.3109-1-themiron@...2010...>
- <202008051154.075Bsv9p086558@...2054...>
- <000d01d66b23$d2e48f70$78adae50$@yandex-team.ru>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="fLj60tP2PZ34xyqD"
-Content-Disposition: inline
-In-Reply-To: <000d01d66b23$d2e48f70$78adae50$@yandex-team.ru>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Log serial number of
- revoked certificate
+In-Reply-To: <20200805062548.38082-1-lstipakov@...277...>
+References: <20200805062548.38082-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix compilation with
+ --disable-lzo and --disable-lz4
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,56 +13,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Vladislav Grishenko <themiron@...2010...>
-Cc: 'Gert Doering' <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---fLj60tP2PZ34xyqD
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Acked-by: Gert Doering <gert@...1296...>
 
-Hi,
+Thanks.  Tested that it indeed fixes things, and that it is 
+not necessary for 2.4 (compile-tested only).
 
-On Wed, Aug 05, 2020 at 05:27:45PM +0500, Vladislav Grishenko wrote:
-> Thank you.
-> I'd appreciate if patch could be applied to release/2.4 too, no changes a=
-re
-> required - related code is the same, just hunks offset in ssl_verify.c and
-> ssl_verify_openssl.c
-> I've tested 2.4.9 [git:release/2.4/7c428ca19a8df6b9+] with patch on sample
-> certificates, please refer log is below:
+Added "trac #1308" to the commit message.
 
-OK.  Done.  Thanks :-)
+Your patch has been applied to the master branch.
 
-commit 4ee2c1cd877b2e99b41fd248bf853329af825188 (HEAD -> release/2.4)
+commit dab34fdd0639c6de8c5ca759cca00b7e60da32f1
+Author: Lev Stipakov
+Date:   Wed Aug 5 06:25:48 2020 +0000
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+     Fix compilation with --disable-lzo and --disable-lz4
 
-Gert Doering - Munich, Germany                             gert@...1296...
+     Signed-off-by: Lev Stipakov <lstipakov@...277...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20200805062548.38082-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20637.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
---fLj60tP2PZ34xyqD
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+--
+kind regards,
 
-iQGcBAEBAgAGBQJfKqkPAAoJEB2Cnv7KVigSZyML/0GLFBdAXABymVB1yaVgZ4tv
-rNS67+Jge8Fo0dJdRvZbfTS2ekBvUYEip7ttbFkUrykLwZP0r4Rpfo3Tk0wdPrPd
-NlstSrSC+sfmeKw0mb26RonQ3QCJy4vC1PrPHZZ/jzLk//yqTDsNTGCfS2gs0Nl7
-8dOZ+ccIOYPWus3ELDPwfYG4Ui2I1zSm1tkEu8w1zm+RJWZNNxuaDDJtxosDY+sy
-vLITq029T8ykKSuMRw3tn5SAFwksf3XTT8cAjBAuXLGLJduR2Nuc7f7iVE4HwNu7
-sBGeY66br4etyNmiHeKMQmv1hiME2VbQX1yyL/6OH951jrAsZlfcfooKTn8aqS+i
-07kmFXu3WoO6RIHpdSTiorPudRI3spbu+UbWzKyPUfIY+uO+bgbSDx6J9ShMQbEe
-UaOW9kRJPoTgif5e8WX2etnturGuhM//zPoS+fXftMNmdYmstd94JSaf7Hu45B/v
-33isoQFOAzHGIQy3rSktpO/vAurVpvFwJVYypDSxVA==
-=G+h8
------END PGP SIGNATURE-----
+Gert Doering
 
---fLj60tP2PZ34xyqD--
 
