@@ -1,11 +1,18 @@
+References: <20200729113835.2415-1-arne@...1227...>
+ <20200804202010.GV75094@...1296...>
+ <b8c90764-96e4-6e6d-2060-ee3d84cb446d@...1227...>
+ <20200805064318.GY75094@...1296...>
+ <20200805114523.GA75094@...1296...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <f382976e-4125-ff7c-6d2c-84de886db5af@...1227...>
+Date: Sat, 8 Aug 2020 20:11:13 +0200
 MIME-Version: 1.0
-References: <20200806190140.9637-1-tincanteksup@...277...>
-In-Reply-To: <20200806190140.9637-1-tincanteksup@...277...>
-From: Selva Nair <selva.nair@...277...>
-Date: Thu, 6 Aug 2020 15:27:09 -0400
-Message-ID: <CAKuzo_h_VRDBt4C76KXcrX0STyf0iP4sjq5DbZvOnXaFpkOp2A@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Improve error msg when all TAP adapters
- are in use "or disabled"
+In-Reply-To: <20200805114523.GA75094@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="H9aFzM7rBBQVJoGdladxjJpZIN3gKYK7k"
+Subject: Re: [Openvpn-devel] [PATCH v2] Rework NCP compability logic and
+ drop BF-CBC support by default
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,50 +21,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Richard Bonhomme <tincanteksup@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--H9aFzM7rBBQVJoGdladxjJpZIN3gKYK7k
+Content-Type: multipart/mixed; boundary="zCSgpRPvI1DAJpt5c5amFav5B8p8F9Oon"
 
-This looks good but can we do better? We don't check the error
-(GetLastError()) after the CreateFile() failure -- can we determine
-whether the error was due to permissions, busy file (in use) or
-disabled device and print out a more specific error message? I'm not
-sure what errors are triggered by CreateFile, so just wondering..
+--zCSgpRPvI1DAJpt5c5amFav5B8p8F9Oon
+Content-Language: en-GB
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-Selva
 
-On Thu, Aug 6, 2020 at 3:02 PM Richard Bonhomme <tincanteksup@...277...> wrote:
->
-> Ref: https://github.com/OpenVPN/openvpn-gui/issues/356
->
-> Signed-off-by: Richard Bonhomme <tincanteksup@...277...>
-> ---
->  src/openvpn/tun.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-> index cc7b65cf..44ca8450 100644
-> --- a/src/openvpn/tun.c
-> +++ b/src/openvpn/tun.c
-> @@ -6436,7 +6436,7 @@ tun_open_device(struct tuntap *tt, const char *dev_node, const char **device_gui
->
->              if (!*device_guid)
->              {
-> -                msg(M_FATAL, "All %s adapters on this system are currently in use.", print_windows_driver(tt->windows_driver));
-> +                msg(M_FATAL, "All %s adapters on this system are currently in use or disabled.", print_windows_driver(tt->windows_driver));
->              }
->
->              if (tt->windows_driver != windows_driver)
-> --
-> 2.17.1
->
->
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>=20
+>=20
+> Not sure how to tackle the "ccd/ push cipher is broken now with 2.4-NCP
+> clients" part.  I think this is useful functionality, but the current
+> patch does not allow this "unless the client is already using the to-be-
+> pushed cipher, or it's one of the two NCP=3D2 AEAD ciphers".  Which makes
+> it slightly less than useful...
+
+
+I am not sure we can fix this in a good way. The behaviour is bascially
+blindly push a cipher no matter what the client announces.
+
+What we would need to still support this behaviour is a
+
+
+--data-cipher-force-cipher-if-only-iv_ncp2-present cipher
+
+that picks that cipher if the client has only IV_NCP=3D2. That sounds like
+a very ugly and obscure option. Or an option that is
+
+--iv-ncp-2-is-data-ciphers "foo:AES-128-CBC:MySpecial-Cipher"
+
+and then the server would translate IV_NCP=3D2 to that list instead of
+"AES-256-GCM:AES-128-GCM"
+
+All other options that I can come up break proper negotiation support.
+The option names are of course silly and would need to be replaced by
+better sounding alternatives. *If* we want to support this corner case I
+would suggest the second alternative and implement it in a follow up
+patch. The question is if this corner case is important enough to
+support it.
+
+Arne
+
+
+--zCSgpRPvI1DAJpt5c5amFav5B8p8F9Oon--
+
+--H9aFzM7rBBQVJoGdladxjJpZIN3gKYK7k
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl8u6sEACgkQFRhsZwKx
+RFR9XQ/9EGXewVEjAc+27yRoqU1aoT4esQxTY7PBM+gK3o5Zv1hkJLCnukPFlfpE
+boj9AEgnnvl+0rBZO2vAGL3x12qONYVT4EDnELzDC7QpHtm578PneeGmHlE7Q7Qb
+XokGLBasuGNKeg66/u4e4W5V++0Ibvft5J5nvf+ifgwmiN6lgBq5quz7kHL+cDrX
+fW7dJSBJ5XavU/XaJeAu20S31n6vj98o53IlSMV6ecXxHfDxFEbId6OPytLFgTbl
+P6jOcDzqEDVlhmxA10pmohGrPTwifnUYysSZ8+bHa2Gtpyicu0mKKw9poNjcNrS2
+LIAl85rU9GYj+0DVFQYB7FfHoErLYsdYPgm7yxnZxuI594QejHNefdkz62atS6YW
+B8YTuI9EltD/70Fj7DDISO9hmT2rGE+HqKRaL1kdBwfYUrCA9KCoRL9pETHwDC/E
+Iabe2WRx3VukEfi34pZU2cwndbO/Cm71wKXQSbqnNFcu7wWzROUUh5ko8n6BRZYC
+geEkQmpb/jeRmPBwMCoVbnBh/BY+hSJxv29aWTqm/eyMARE0qOEswTHgy6f+IcSj
+FODG6I3zi8Qh/GW4dfbMTsmSAKG1kas74euus8+kP7HSDpDc/VAxQdj9Sz2GbAu2
+v5mQLKUFmkXWOoHXLNTuQbiinbMCgyuTEP/2bdIuOay3FJxZRIc=
+=IrJB
+-----END PGP SIGNATURE-----
+
+--H9aFzM7rBBQVJoGdladxjJpZIN3gKYK7k--
 
