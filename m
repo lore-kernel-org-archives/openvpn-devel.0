@@ -1,19 +1,10 @@
-Date: Sun, 9 Aug 2020 09:46:22 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200809074622.GR75094@...1296...>
-References: <20200729113835.2415-1-arne@...1227...>
- <20200804202010.GV75094@...1296...>
- <b8c90764-96e4-6e6d-2060-ee3d84cb446d@...1227...>
- <20200805064318.GY75094@...1296...>
- <20200805114523.GA75094@...1296...>
- <f382976e-4125-ff7c-6d2c-84de886db5af@...1227...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="z3ovhOgMYmj8MRdq"
-Content-Disposition: inline
-In-Reply-To: <f382976e-4125-ff7c-6d2c-84de886db5af@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Rework NCP compability logic and
- drop BF-CBC support by default
+From: Arne Schwabe <arne@...1227...>
+Date: Sun,  9 Aug 2020 16:19:22 +0200
+Message-Id: <20200809141922.7853-2-arne@...1227...>
+In-Reply-To: <20200809141922.7853-1-arne@...1227...>
+References: <20200809141922.7853-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v3 2/2] Document different behaviour of
+ dynamic cipher negotiation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,115 +13,162 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---z3ovhOgMYmj8MRdq
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+This adds a section in the man page that details the various behaviour
+of older client/servers when using OpenVPN 2.5.
 
-Hi,
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ Changes.rst                             | 23 +++++++
+ doc/man-sections/cipher-negotiation.rst | 87 +++++++++++++++++++++++++
+ doc/openvpn.8.rst                       |  1 +
+ 3 files changed, 111 insertions(+)
+ create mode 100644 doc/man-sections/cipher-negotiation.rst
 
-On Sat, Aug 08, 2020 at 08:11:13PM +0200, Arne Schwabe wrote:
-> > Not sure how to tackle the "ccd/ push cipher is broken now with 2.4-NCP
-> > clients" part.  I think this is useful functionality, but the current
-> > patch does not allow this "unless the client is already using the to-be-
-> > pushed cipher, or it's one of the two NCP=3D2 AEAD ciphers".  Which mak=
-es
-> > it slightly less than useful...
->=20
-> I am not sure we can fix this in a good way. The behaviour is bascially
-> blindly push a cipher no matter what the client announces.
+diff --git a/Changes.rst b/Changes.rst
+index 37792342..2cfd2ee2 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -29,6 +29,29 @@ Improved Data channel cipher negotiation
+     ``data-ciphers ChaCha20-Poly1305:AES-256-GCM`` on the server that
+     prefers ChaCha20-Poly1305 but uses it only if the client supports it.
+ 
++    See the data channel negotiation section in the manual for more details.
++
++Removal of BF-CBC support in default configuration:
++    By default OpenVPN 2.5 will only accept AES-256-GCM and AES-128-GCM as
++    data ciphers. OpenVPN 2.4 allows AES-256-GCM,AES-128-GCM and BF-CBC when
++    no --cipher and --ncp-ption were present. Accepting BF-CBC can be
++    enabled by adding
++
++        data-ciphers AES-256-GCM:AES-128-GCM:BF-CBC
++
++    and when you need to support very old peers also
++
++        data-ciphers-fallback BF-CBC
++
++    to offer backwards compatiblity with older config an *explicit*
++
++        cipher BF-CBC
++
++    in the configuration will be automatically translated in adding BF-CBC
++    to the data-ciphers option and setting data-ciphers-fallback to BF-CBC
++    commands above. We strongly recommend to switching away from BF-CBC to a
++    more secure cipher.
++
+ Asynchronous (deferred) authentication support for auth-pam plugin.
+     See src/plugins/auth-pam/README.auth-pam for details.
+ 
+diff --git a/doc/man-sections/cipher-negotiation.rst b/doc/man-sections/cipher-negotiation.rst
+new file mode 100644
+index 00000000..98ce1fec
+--- /dev/null
++++ b/doc/man-sections/cipher-negotiation.rst
+@@ -0,0 +1,87 @@
++Data channel cipher negotiation
++===============================
++
++OpenVPN 2.4 and higher have the capability to dynamically negotiate the data cipher that
++is used to encrypt data packets. This section describes the mechanism in more detail and the
++different backwards compatibility mechanism with older server and clients.
++
++OpenVPN 2.5 and higher behaviour
++--------------------------------
++When both client and server are at least running OpenVPN 2.5, that the order of
++the ciphers of the server's ``--data-ciphers`` is used to pick the the data cipher.
++That means that the first cipher in that last that is also in the client's
++``--data-ciphers`` list is chosen. If no common cipher is found the client is rejected
++with a AUTH_FAILED message (as seen in client log):
++
++    AUTH: Received control message: AUTH_FAILED,Data channel cipher negotiation failed (no shared cipher)
++
++OpenVPN 2.5 will only allow the ciphers specified in ``--data-ciphers``. To ensure
++backwards compatibility also if a cipher is specified using the ``--cipher`` option
++it is automatically added to this list. If both options are unset the default is
++:code:`AES-256-GCM:AES-128-GCM`.
++
++OpenVPN 2.4 clients
++-------------------
++The negotiation support in OpenVPN 2.4 was a first implementation and still had some
++quirks. Its main goal was "upgrade to AES-256-GCM when possible".
++An OpenVPN 2.4 client that is build against a crypto library that supports AES in GCM
++mode and does not have ``--ncp-disable`` will always announce support for
++`AES-256-GCM` and `AES-128-GCM` even if the ``--ncp-ciphers`` option does not inlcude
++those two ciphers. It is therefore recommended to add `AES-256-GCM` and `AES-128-GCM`
++to the ``--ncp-ciphers`` options to workaround this bug.
++
++
++OpenVPN 3 clients
++-----------------
++Clients based on the OpenVPN 3.x library (https://github.com/openvpn/openvpn3/)
++do not have a configurable ``--ncp-ciphers`` or ``--data-cipher`` option. Instead
++these clients will announce support for all their supported AEAD ciphers
++(`AES-256-GCM`, `AES-128-GCM` and in newer versions also `Chacha20-Poly1305`).
++
++To support OpenVPN 3.x based clients at least one of these ciphers needs to be
++included in the ``--data-ciphers`` option.
++
++
++OpenVPN 2.3 clients and older (and clients with ``--ncp-disable``)
++------------------------------------------------------------------
++When a client without cipher negotiation support connects to a server the
++cipher specified with the ``--cipher`` option in the client configuration
++must be included in the ``--data-ciphers`` option of the server to allow
++the client to connect. Otherwise the client will be sent the ``AUTH_FAILED``
++message that indicates no shared cipher.
++
++If the client has been configured with the ``--enable-small``
++:code:``./configure`` argument, using ``data-ciphers-fallback cipher``
++with the explicit cipher used by the client is necessary.
++
++OpenVPN 2.4 server
++------------------
++When a client indicates support for `AES-128-GCM` and `AES-256-GCM`
++(with ``IV_NCP=2``) an OpenVPN 2.4 server will), send the first
++cipher of the ``--ncp-ciphers`` to the OpenVPN client regardless of what
++cipher is. To ensure compatibility with behaviour as a client, adding
++`AES-128-GCM` and `AES-256-GCM` to the ``--data-ciphers`` is required
++since OpenVPN 2.5+ will only announce the ``IV_NCP=2`` flag if those
++ciphers are present.
++
++OpenVPN 2.3 and older servers (and servers with ``-ncp-disable``)
++-----------------------------------------------------------------
++The cipher used by the server must be included in ``--data-ciphers`` to
++allow the client connecting to a server without cipher negotiation
++suppport.
++(As compatibility OpenVPN 2.5 will also accept the cipher set with
++``--cipher``)
++
++If the server has been configured with the ``--enable-small``
++:code:``./configure` argument, using ``data-ciphers-fallback cipher``
++with the explicit cipher used by the server is necessary.
++
++Blowfish in CBC mode (BFB-CBC) deprecation
++------------------------------------------
++The ``--cipher`` option defaulted to ``BF-CBC`` in OpenVPN in
++OpenVPN 2.4 and older version. The default was never changed
++to ensure backwards compatibility. In OpenVPN 2.5 this behaviour
++has now been changed that if the ``--cipher`` is not explicitly
++set it does not allow the weak ``BF-CBC`` cipher anymore and
++needs to explicitly added as ``--cipher BFC-CBC`` or added to
++``-data-ciphers``.
+\ No newline at end of file
+diff --git a/doc/openvpn.8.rst b/doc/openvpn.8.rst
+index 4a7ca3aa..db81274f 100644
+--- a/doc/openvpn.8.rst
++++ b/doc/openvpn.8.rst
+@@ -75,6 +75,7 @@ placed in a configuration file.
+ .. include:: man-sections/client-options.rst
+ .. include:: man-sections/server-options.rst
+ .. include:: man-sections/encryption-options.rst
++.. include:: man-sections/cipher-negotiation.rst
+ .. include:: man-sections/network-config.rst
+ .. include:: man-sections/script-options.rst
+ .. include:: man-sections/management-options.rst
+-- 
+2.26.2
 
-Yes.  And set the server instance to use this cipher.
-
-So something like "--data-cipher-override-push"...
-
-The use of that option would, basically, be "I have lots of 2.4 clients,
-I can not update their client configs all over night, but for whatever
-reason I do not want to use AES-GCM ciphers (and not BF-CBC either)".  I
-can not foresee a strong reason to not use AES-GCM, but maybe some sort
-of embedded platform that performs great on ChaCha-Poly and very poorly
-on AES...  or, worst case, AES is broken.
-
-Not sure how realistic that is.
-
-
-> What we would need to still support this behaviour is a
->=20
-> --data-cipher-force-cipher-if-only-iv_ncp2-present cipher
->=20
-> that picks that cipher if the client has only IV_NCP=3D2. That sounds like
-> a very ugly and obscure option. Or an option that is
->=20
-> --iv-ncp-2-is-data-ciphers "foo:AES-128-CBC:MySpecial-Cipher"
->=20
-> and then the server would translate IV_NCP=3D2 to that list instead of
-> "AES-256-GCM:AES-128-GCM"
->=20
-> All other options that I can come up break proper negotiation support.
-
-
-Either this ("we pretend the client has really sent *this* list of=20
-ciphers") or we override negotiation by forcing a particular cipher
-for this client (use on the server and push to client - which a 2.3
-and 2.2 client will ignore with a warning).=20=20=20
-
-Overriding could come with a warning in the server log ("forcing a=20
-cipher that is not in the list advertised by the client, might break").
-
-
-> The option names are of course silly and would need to be replaced by
-> better sounding alternatives. *If* we want to support this corner case I
-> would suggest the second alternative and implement it in a follow up
-> patch. The question is if this corner case is important enough to
-> support it.
-
-Doing this in a followup patch sounds reasonable...  this could even
-go into 2.5 later on (as it would fix a - small - regression).
-
-So - let's get this in :-) - v3, please, which does not core dump.
-
-
-Also, I think we need to better document what happens wrt cipher
-negotiation depending on client/server combinations (2.2+2.3, 2.4,
-2.5 to a 2.3 / 2.4 / 2.5 server, OCC/NCP/new NCP, ...).
-
-Maybe a table in the Wiki?   Or something in doc/
-
-We have your commit message, which is a good start, but if people get
-all confused about this (like I was :-) ), they will not look into the
-git logs.
-
-gert
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---z3ovhOgMYmj8MRdq
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJfL6nOAAoJEB2Cnv7KVigS5iIL/i6jbKOONgfEAQo0X1iUxWm5
-5JKJH7vBvstumQpr6a7ZtrFeMWyobBIfIAi6kXhJILTzxYh1vEK6s7w7dNkecxaJ
-YleSHCOTnvLzt8G301Ro8mTk2coaLnN8/rrZA/ylR21uGPJVFM169XlVmgatpwUD
-wf7AdFmFD0y1DOLv7H6XmrM78gzDZCPEEr48m6bYJkUcFID0FemceZp0rJuefcnm
-0gPetJsrYxHtO0V2zFDZfrPaV27wHqygqhnnUJMfRZ9hTvUlnB3fMwvvP7XkOqf2
-CjCYTO9yAwDHSSEh+J1kP5gynTEoo39gubYWVe5yv3T8mLbioSEk/Cc1bZ0Jc0ld
-OXISXWLsD0047L2gat1GiIi7RNBGKKAH6QZhexvof1f50QnGBbT6OoLSj0ji+l5n
-bFue0AetA067zIi1x/Vuf3ackOujIUAzlXqfDaaQQH4UyCLpvOEnsTQfMg0i5i7s
-dMoMYWZ6ZIdKjV5SmJZmS1WdV0V2BQcqH2LmUP5dNQ==
-=hYx3
------END PGP SIGNATURE-----
-
---z3ovhOgMYmj8MRdq--
 
