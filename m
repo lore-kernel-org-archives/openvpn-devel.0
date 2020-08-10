@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 10 Aug 2020 16:37:00 +0200
-Message-Id: <20200810143707.5834-11-arne@...1227...>
+Date: Mon, 10 Aug 2020 16:37:05 +0200
+Message-Id: <20200810143707.5834-16-arne@...1227...>
 In-Reply-To: <20200810143707.5834-1-arne@...1227...>
 References: <20200810143707.5834-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 10/17] Eliminate
- check_incoming_control_channel wrapper function
+Subject: [Openvpn-devel] [PATCH 15/17] Refactor
+ key_state_export_keying_material functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,180 +17,195 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Move the check that calls this function into the calling function.
-Also eliminate the if (len) check in the
-check_incoming_control_channel_dowork function as it is only called
-if len is > 0 anyway and replace it with a ASSERT.
+This refactors the common code between mbed SSL and OpenSSL into
+export_user_keying_material and also prepares the backend functions
+to export more than one key.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/forward.c | 117 +++++++++++++++++++-----------------------
- src/openvpn/forward.h |   2 +-
- 2 files changed, 55 insertions(+), 64 deletions(-)
+ src/openvpn/ssl.c         | 32 +++++++++++++++++++++++++++++++-
+ src/openvpn/ssl_backend.h | 14 ++++++++++++--
+ src/openvpn/ssl_mbedtls.c | 22 ++++++++--------------
+ src/openvpn/ssl_openssl.c | 34 ++++++++++++++++------------------
+ 4 files changed, 67 insertions(+), 35 deletions(-)
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 866dd138..0e05b08b 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -121,21 +121,6 @@ check_tls_errors(struct context *c)
-     }
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 0d54c9ed..774ba7ed 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2412,6 +2412,36 @@ error:
+     return false;
  }
  
--/*
-- * Check for possible incoming configuration
-- * messages on the control channel.
-- */
--static inline void
--check_incoming_control_channel(struct context *c)
--{
--#if P2MP
--    if (tls_test_payload_len(c->c2.tls_multi) > 0)
--    {
--        check_incoming_control_channel_dowork(c);
--    }
--#endif
--}
--
- /*
-  * Set our wakeup to 0 seconds, so we will be rescheduled
-  * immediately.
-@@ -222,61 +207,61 @@ check_tls_errors_nco(struct context *c)
-  * messages on the control channel.
-  */
- void
--check_incoming_control_channel_dowork(struct context *c)
-+check_incoming_control_channel(struct context *c)
- {
--    const int len = tls_test_payload_len(c->c2.tls_multi);
--    if (len)
-+    int len = tls_test_payload_len(c->c2.tls_multi);
-+    /* We should only be called with len >0 */
-+    ASSERT(len > 0);
++static void
++export_user_keying_material(struct key_state_ssl *ssl,
++                            struct tls_session *session)
++{
++    if (session->opt->ekm_size > 0)
++    {
++        unsigned int size = session->opt->ekm_size;
++        struct gc_arena gc = gc_new();
 +
-+    struct gc_arena gc = gc_new();
-+    struct buffer buf = alloc_buf_gc(len, &gc);
-+    if (tls_rec_payload(c->c2.tls_multi, &buf))
++        unsigned const char *ekm;
++        if ((ekm = key_state_export_keying_material(ssl, session,
++                                                    EXPORT_KEY_USER, &gc)))
++        {
++            unsigned int len = (size * 2) + 2;
++
++            const char *key = format_hex_ex(ekm, size, len, 0, NULL, &gc);
++            setenv_str(session->opt->es, "exported_keying_material", key);
++
++            dmsg(D_TLS_DEBUG_MED, "%s: exported keying material: %s",
++                 __func__, key);
++        }
++        else
++        {
++            msg(M_WARN, "WARNING: Export keying material failed!");
++            setenv_del(session->opt->es, "exported_keying_material");
++        }
++        gc_free(&gc);
++    }
++}
++
+ /**
+  * Handle reading key data, peer-info, username/password, OCC
+  * from the TLS control channel (cleartext).
+@@ -2541,7 +2571,7 @@ key_method_2_read(struct buffer *buf, struct tls_multi *multi, struct tls_sessio
+     if ((ks->authenticated > KS_AUTH_FALSE)
+         && plugin_defined(session->opt->plugins, OPENVPN_PLUGIN_TLS_FINAL))
      {
+-        key_state_export_keying_material(&ks->ks_ssl, session);
++        export_user_keying_material(&ks->ks_ssl, session);
+ 
+         if (plugin_call(session->opt->plugins, OPENVPN_PLUGIN_TLS_FINAL, NULL, NULL, session->opt->es) != OPENVPN_PLUGIN_FUNC_SUCCESS)
+         {
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index 7f52ab1e..40e9106a 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -389,6 +389,12 @@ void key_state_ssl_free(struct key_state_ssl *ks_ssl);
+ void backend_tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx,
+                                 const char *crl_file, bool crl_inline);
+ 
++
++/* defines the different RFC5705 that are used in OpenVPN */
++enum export_key_identifier {
++    EXPORT_KEY_USER
++};
++
+ /**
+  * Keying Material Exporters [RFC 5705] allows additional keying material to be
+  * derived from existing TLS channel. This exported keying material can then be
+@@ -396,11 +402,15 @@ void backend_tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx,
+  *
+  * @param ks_ssl       The SSL channel's state info
+  * @param session      The session associated with the given key_state
++ * @param key          The key to export.
++ * @returns            The exported key material
+  */
+ 
+-void
++unsigned const char*
+ key_state_export_keying_material(struct key_state_ssl *ks_ssl,
+-                                 struct tls_session *session) __attribute__((nonnull));
++                                 struct tls_session *session,
++                                 enum export_key_identifier export_key,
++                                 struct gc_arena *gc) __attribute__((nonnull));
+ 
+ /**************************************************************************/
+ /** @addtogroup control_tls
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index 9c874788..4a6fad5f 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -231,24 +231,18 @@ mbedtls_ssl_export_keys_cb(void *p_expkey, const unsigned char *ms,
+ }
+ #endif /* HAVE_EXPORT_KEYING_MATERIAL */
+ 
+-void
++const unsigned char *
+ key_state_export_keying_material(struct key_state_ssl *ssl,
+-                                 struct tls_session *session)
++                                 struct tls_session *session,
++                                 enum export_key_identifier key_id,
++                                 struct gc_arena *gc)
+ {
+-    if (ssl->exported_key_material)
++    if (key_id == EXPORT_KEY_USER)
+     {
+-        unsigned int size = session->opt->ekm_size;
 -        struct gc_arena gc = gc_new();
--        struct buffer buf = alloc_buf_gc(len, &gc);
--        if (tls_rec_payload(c->c2.tls_multi, &buf))
--        {
--            /* force null termination of message */
--            buf_null_terminate(&buf);
-+        /* force null termination of message */
-+        buf_null_terminate(&buf);
+-        unsigned int len = (size * 2) + 2;
+-
+-        const char *key = format_hex_ex(ssl->exported_key_material,
+-                                        size, len, 0, NULL, &gc);
+-        setenv_str(session->opt->es, "exported_keying_material", key);
+-
+-        dmsg(D_TLS_DEBUG_MED, "%s: exported keying material: %s",
+-             __func__, key);
+-        gc_free(&gc);
++        return ssl->exported_key_material;
+     }
++
++    return  NULL;
+ }
  
--            /* enforce character class restrictions */
--            string_mod(BSTR(&buf), CC_PRINT, CC_CRLF, 0);
-+        /* enforce character class restrictions */
-+        string_mod(BSTR(&buf), CC_PRINT, CC_CRLF, 0);
  
--            if (buf_string_match_head_str(&buf, "AUTH_FAILED"))
--            {
--                receive_auth_failed(c, &buf);
--            }
--            else if (buf_string_match_head_str(&buf, "PUSH_"))
--            {
--                incoming_push_message(c, &buf);
--            }
--            else if (buf_string_match_head_str(&buf, "RESTART"))
--            {
--                server_pushed_signal(c, &buf, true, 7);
--            }
--            else if (buf_string_match_head_str(&buf, "HALT"))
--            {
--                server_pushed_signal(c, &buf, false, 4);
--            }
--            else if (buf_string_match_head_str(&buf, "INFO_PRE"))
--            {
--                server_pushed_info(c, &buf, 8);
--            }
--            else if (buf_string_match_head_str(&buf, "INFO"))
--            {
--                server_pushed_info(c, &buf, 4);
--            }
--            else if (buf_string_match_head_str(&buf, "CR_RESPONSE"))
--            {
--                receive_cr_response(c, &buf);
--            }
--            else
--            {
--                msg(D_PUSH_ERRORS, "WARNING: Received unknown control message: %s", BSTR(&buf));
--            }
-+        if (buf_string_match_head_str(&buf, "AUTH_FAILED"))
-+        {
-+            receive_auth_failed(c, &buf);
-+        }
-+        else if (buf_string_match_head_str(&buf, "PUSH_"))
-+        {
-+            incoming_push_message(c, &buf);
-+        }
-+        else if (buf_string_match_head_str(&buf, "RESTART"))
-+        {
-+            server_pushed_signal(c, &buf, true, 7);
-+        }
-+        else if (buf_string_match_head_str(&buf, "HALT"))
-+        {
-+            server_pushed_signal(c, &buf, false, 4);
-+        }
-+        else if (buf_string_match_head_str(&buf, "INFO_PRE"))
-+        {
-+            server_pushed_info(c, &buf, 8);
-+        }
-+        else if (buf_string_match_head_str(&buf, "INFO"))
-+        {
-+            server_pushed_info(c, &buf, 4);
-+        }
-+        else if (buf_string_match_head_str(&buf, "CR_RESPONSE"))
-+        {
-+            receive_cr_response(c, &buf);
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 5ba74402..5cc03cf0 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -158,35 +158,33 @@ tls_ctx_initialised(struct tls_root_ctx *ctx)
+     return NULL != ctx->ctx;
+ }
+ 
+-void
++unsigned const char *
+ key_state_export_keying_material(struct key_state_ssl *ssl,
+-                                 struct tls_session *session)
++                                 struct tls_session *session,
++                                 enum export_key_identifier key_id,
++                                 struct gc_arena *gc)
++
+ {
+-    if (session->opt->ekm_size > 0)
++    if (key_id == EXPORT_KEY_USER)
+     {
+         unsigned int size = session->opt->ekm_size;
+-        struct gc_arena gc = gc_new();
+-        unsigned char *ekm = (unsigned char *) gc_malloc(size, true, &gc);
++        unsigned char *ekm = (unsigned char *) gc_malloc(size, true, gc);
+ 
+         if (SSL_export_keying_material(ssl->ssl, ekm, size,
+-                                       session->opt->ekm_label,
+-                                       session->opt->ekm_label_size,
+-                                       NULL, 0, 0))
++                                      session->opt->ekm_label,
++                                      session->opt->ekm_label_size,
++                                      NULL, 0, 0))
+         {
+-            unsigned int len = (size * 2) + 2;
+-
+-            const char *key = format_hex_ex(ekm, size, len, 0, NULL, &gc);
+-            setenv_str(session->opt->es, "exported_keying_material", key);
+-
+-            dmsg(D_TLS_DEBUG_MED, "%s: exported keying material: %s",
+-                 __func__, key);
++            return ekm;
          }
          else
          {
--            msg(D_PUSH_ERRORS, "WARNING: Receive control message failed");
-+            msg(D_PUSH_ERRORS, "WARNING: Received unknown control message: %s", BSTR(&buf));
+-            msg(M_WARN, "WARNING: Export keying material failed!");
+-            setenv_del(session->opt->es, "exported_keying_material");
++            return NULL;
          }
--
 -        gc_free(&gc);
-     }
++    }
 +    else
 +    {
-+        msg(D_PUSH_ERRORS, "WARNING: Receive control message failed");
-+    }
-+
-+    gc_free(&gc);
- }
- 
- /*
-@@ -1877,8 +1862,14 @@ pre_select(struct context *c)
-         return;
++        return NULL;
      }
- 
--    /* check for incoming configuration info on the control channel */
--    check_incoming_control_channel(c);
-+#if P2MP
-+    /* check for incoming control messages on the control channel like
-+     * push request/reply, or authentication failure and 2FA messages */
-+    if (tls_test_payload_len(c->c2.tls_multi) > 0)
-+    {
-+        check_incoming_control_channel(c);
-+    }
-+#endif
- 
-     /* Should we send an OCC message? */
-     check_send_occ_msg(c);
-diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
-index e8b8900a..27e7fde7 100644
---- a/src/openvpn/forward.h
-+++ b/src/openvpn/forward.h
-@@ -75,7 +75,7 @@ void check_tls_errors_co(struct context *c);
- void check_tls_errors_nco(struct context *c);
- 
- #if P2MP
--void check_incoming_control_channel_dowork(struct context *c);
-+void check_incoming_control_channel(struct context *c);
- 
- void check_scheduled_exit(struct context *c);
+ }
  
 -- 
 2.26.2
