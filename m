@@ -1,10 +1,10 @@
-Date: Mon, 10 Aug 2020 19:49:08 +0200 (CEST)
-Message-Id: <202008101749.07AHn8sk028455@...2054...>
+Date: Mon, 10 Aug 2020 20:06:17 +0200 (CEST)
+Message-Id: <202008101806.07AI6Hhp028768@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200810143707.5834-9-arne@...1227...>
-References: <20200810143707.5834-9-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Rename
- check_ping_restart_dowork to trigger_ping_timeout_signal
+In-Reply-To: <20200810143707.5834-10-arne@...1227...>
+References: <20200810143707.5834-10-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Eliminate check_fragment
+ function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,24 +20,22 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-(Why have local prototypes when the "real" prototype is just
-a few lines further up in the same .h...??  And another
-.._dowork() removal lurking :-) )
+"What the message says".
 
-Basic client test.
+Passed the client-side test that excercises fragments.
 
 Your patch has been applied to the master branch.
 
-commit 76ea0859c5d0549f5d6193cbd5e43873e22d5906
+commit b7aebba25645e9e9c1359313fc35724f7e0e8529
 Author: Arne Schwabe
-Date:   Mon Aug 10 16:36:58 2020 +0200
+Date:   Mon Aug 10 16:36:59 2020 +0200
 
-     Rename check_ping_restart_dowork to trigger_ping_timeout_signal
+     Eliminate check_fragment function
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200810143707.5834-9-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20675.html
+     Message-Id: <20200810143707.5834-10-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20672.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
