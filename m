@@ -1,10 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Mon, 10 Aug 2020 11:00:32 +0200
-Message-Id: <20200810090032.4220-1-arne@...1227...>
-In-Reply-To: <20200809141922.7853-2-arne@...1227...>
-References: <20200809141922.7853-2-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v2 2/2] Document different behaviour of
- dynamic cipher negotiation
+Date: Mon, 10 Aug 2020 14:42:47 +0200 (CEST)
+Message-Id: <202008101242.07ACglSu012072@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20200809141922.7853-1-arne@...1227...>
+References: <20200809141922.7853-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Rework NCP compability logic
+ and drop BF-CBC support by default
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,168 +15,66 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This adds a section in the man page that details the various behaviour
-of older client/servers when using OpenVPN 2.5.
+Acked-by: Gert Doering <gert@...1296...>
 
-Patch V2: Include grammar/spelling fixes from
-          Richard Bonhomme <tincanteksup@...277...>
+As discussed on IRC, I have rewritten parts of the commit
+message to take the v3 changes and Richard's language comments
+into account.  I have also removed the whitespace change
+hunks from multi.c that are not correct according to the 
+Whitespace Governor.
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- Changes.rst                             | 23 +++++++
- doc/man-sections/cipher-negotiation.rst | 92 +++++++++++++++++++++++++
- doc/openvpn.8.rst                       |  1 +
- 3 files changed, 116 insertions(+)
- create mode 100644 doc/man-sections/cipher-negotiation.rst
+I can't claim that I understand every single aspect of the
+change set, but I have thoroughly tested this on the server
+testbed.  It nicely exploded until I added "cipher BF-CBC"
+to all server.conf settings - as documented and logged.  After
+changing this, all tests pass - 2.2 to master clients, with
+and without OCC, with and without --disable-ncp.
 
-diff --git a/Changes.rst b/Changes.rst
-index 37792342..8c6cafb6 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -29,6 +29,29 @@ Improved Data channel cipher negotiation
-     ``data-ciphers ChaCha20-Poly1305:AES-256-GCM`` on the server that
-     prefers ChaCha20-Poly1305 but uses it only if the client supports it.
- 
-+    See the data channel negotiation section in the manual for more details.
-+
-+Removal of BF-CBC support in default configuration:
-+    By default OpenVPN 2.5 will only accept AES-256-GCM and AES-128-GCM as
-+    data ciphers. OpenVPN 2.4 allows AES-256-GCM,AES-128-GCM and BF-CBC when
-+    no --cipher and --ncp-cipher options are present. Accepting BF-CBC can be
-+    enabled by adding
-+
-+        data-ciphers AES-256-GCM:AES-128-GCM:BF-CBC
-+
-+    and when you need to support very old peers also
-+
-+        data-ciphers-fallback BF-CBC
-+
-+    to offer backwards compatibility with older config an *explicit*
-+
-+        cipher BF-CBC
-+
-+    in the configuration will be automatically translated in adding BF-CBC
-+    to the data-ciphers option and setting data-ciphers-fallback to BF-CBC
-+    commands above. We strongly recommend to switching away from BF-CBC to a
-+    more secure cipher.
-+
- Asynchronous (deferred) authentication support for auth-pam plugin.
-     See src/plugins/auth-pam/README.auth-pam for details.
- 
-diff --git a/doc/man-sections/cipher-negotiation.rst b/doc/man-sections/cipher-negotiation.rst
-new file mode 100644
-index 00000000..1bd57258
---- /dev/null
-+++ b/doc/man-sections/cipher-negotiation.rst
-@@ -0,0 +1,92 @@
-+Data channel cipher negotiation
-+===============================
-+
-+OpenVPN 2.4 and higher have the capability to negotiate the data cipher that
-+is used to encrypt data packets. This section describes the mechanism in more detail and the
-+different backwards compatibility mechanism with older server and clients.
-+
-+OpenVPN 2.5 and higher behaviour
-+--------------------------------
-+When both client and server are at least running OpenVPN 2.5, that the order of
-+the ciphers of the server's ``--data-ciphers`` is used to pick the the data cipher.
-+That means that the first cipher in that list that is also in the client's
-+``--data-ciphers`` list is chosen. If no common cipher is found the client is rejected
-+with a AUTH_FAILED message (as seen in client log):
-+
-+    AUTH: Received control message: AUTH_FAILED,Data channel cipher negotiation failed (no shared cipher)
-+
-+OpenVPN 2.5 will only allow the ciphers specified in ``--data-ciphers``. To ensure
-+backwards compatibility also if a cipher is specified using the ``--cipher`` option
-+it is automatically added to this list. If both options are unset the default is
-+:code:`AES-256-GCM:AES-128-GCM`.
-+
-+OpenVPN 2.4 clients
-+-------------------
-+The negotiation support in OpenVPN 2.4 was a first implementation and still had some
-+quirks. Its main goal was "upgrade to AES-256-GCM when possible".
-+An OpenVPN 2.4 client that is built against a crypto library that supports AES in GCM
-+mode and does not have ``--ncp-disable`` will always announce support for
-+`AES-256-GCM` and `AES-128-GCM` even if the ``--ncp-ciphers`` option does not include
-+those two ciphers. It is therefore recommended to add `AES-256-GCM` and `AES-128-GCM`
-+to the ``--ncp-ciphers`` options to workaround this bug.
-+
-+
-+OpenVPN 3 clients
-+-----------------
-+Clients based on the OpenVPN 3.x library (https://github.com/openvpn/openvpn3/)
-+do not have a configurable ``--ncp-ciphers`` or ``--data-cipher`` option. Instead
-+these clients will announce support for all their supported AEAD ciphers
-+(`AES-256-GCM`, `AES-128-GCM` and in newer versions also `Chacha20-Poly1305`).
-+
-+To support OpenVPN 3.x based clients at least one of these ciphers needs to be
-+included in the server's ``--data-ciphers`` option.
-+
-+
-+OpenVPN 2.3 clients and older (and clients with ``--ncp-disable``)
-+------------------------------------------------------------------
-+When a client without cipher negotiation support connects to a server the
-+cipher specified with the ``--cipher`` option in the client configuration
-+must be included in the ``--data-ciphers`` option of the server to allow
-+the client to connect. Otherwise the client will be sent the ``AUTH_FAILED``
-+message that indicates no shared cipher.
-+
-+If the client has been configured with the ``--enable-small``
-+:code:``./configure`` argument, using ``data-ciphers-fallback cipher``
-+in the server config file with the explicit cipher used by the client
-+is necessary.
-+
-+OpenVPN 2.4 server
-+------------------
-+When a client indicates support for `AES-128-GCM` and `AES-256-GCM`
-+(with ``IV_NCP=2``) an OpenVPN 2.4 server will send the first
-+cipher of the ``--ncp-ciphers`` to the OpenVPN client regardless of what
-+the cipher is. To emulate the behaviour of an OpenVPN 2.4 client as close
-+as possible and have compatibility to a setup that depends on this quirk,
-+adding  `AES-128-GCM` and `AES-256-GCM` to the client's ``--data-ciphers``
-+option is required. OpenVPN 2.5+ will only announce the ``IV_NCP=2`` flag if
-+those ciphers are present.
-+
-+OpenVPN 2.3 and older servers (and servers with ``-ncp-disable``)
-+-----------------------------------------------------------------
-+The cipher used by the server must be included in ``--data-ciphers`` to
-+allow the client connecting to a server without cipher negotiation
-+support.
-+(For compatibility OpenVPN 2.5 will also accept the cipher set with
-+``--cipher``)
-+
-+If the server has been configured with the ``--enable-small``
-+:code:``./configure` argument, adding ``data-ciphers-fallback cipher``
-+to the client config with the explicit cipher used by the server
-+is necessary.
-+
-+Blowfish in CBC mode (BFB-CBC) deprecation
-+------------------------------------------
-+The ``--cipher`` option defaulted to ``BF-CBC`` in OpenVPN 2.4 and older
-+version. The default was never changed to ensure backwards compatibility.
-+In OpenVPN 2.5 this behaviour has now been changed so that if the ``--cipher``
-+is not explicitly set it does not allow the weak ``BF-CBC`` cipher any more
-+and needs to explicitly added as ``--cipher BFC-CBC`` or added to
-+``-data-ciphers``.
-+
-+We strongly recommend to switching away from BF-CBC to a
-+more secure cipher as soon as possible instead.
-\ No newline at end of file
-diff --git a/doc/openvpn.8.rst b/doc/openvpn.8.rst
-index 4a7ca3aa..db81274f 100644
---- a/doc/openvpn.8.rst
-+++ b/doc/openvpn.8.rst
-@@ -75,6 +75,7 @@ placed in a configuration file.
- .. include:: man-sections/client-options.rst
- .. include:: man-sections/server-options.rst
- .. include:: man-sections/encryption-options.rst
-+.. include:: man-sections/cipher-negotiation.rst
- .. include:: man-sections/network-config.rst
- .. include:: man-sections/script-options.rst
- .. include:: man-sections/management-options.rst
--- 
-2.26.2
+CAVEAT: setting an per-instance cipher from ccd/ is ignored
+now, if the client is 2.4 (IV_NCP=2, but no IV_CIPHER) and 
+is not already advertising the cipher in question (and in 
+this case, it does need not do anything).  After some discussion 
+between Arne, Steffan and me, we have decided to document 
+this, and bring back the functionality in a followup patch 
+if a compelling use case is found why we actually need it.
+
+
+I have also tested the client side of this against a slightly
+older master server, and that worked as well.  The --ncp-disable
+cases "with cipher not set in the config" break (as documented), 
+and want "--cipher bf-cbc" added to the client config.
+
+CAVEAT: the particular funky case of "--client vs. a --tls-server
+server" (--inetd) breaks, because the server decides that it
+wants to "push BF-CBC", which the *client* then rejects based
+on "not allowed - BF-CBC not in AES-256-GCM:AES-128-GCM" - I think
+this might work if the server were not pushing anything, but it's 
+a strange corner case anyway.  So, just documenting this here
+(adding "--cipher BF-CBC" makes it work).
+
+
+Your patch has been applied to the master branch.
+
+commit 2c1d8c33d99d1d6d7902ea5845d7327aa6db9363
+Author: Arne Schwabe
+Date:   Sun Aug 9 16:19:21 2020 +0200
+
+     Rework NCP compability logic and drop BF-CBC support by default
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20200809141922.7853-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20656.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
