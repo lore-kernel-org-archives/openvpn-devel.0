@@ -1,10 +1,8 @@
-Date: Mon, 10 Aug 2020 17:54:17 +0200 (CEST)
-Message-Id: <202008101554.07AFsHwv021865@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200810143707.5834-6-arne@...1227...>
-References: <20200810143707.5834-6-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove buf argument from
- link_socket_set_outgoing_addr
+From: Antonio Quartulli <a@...2181...>
+Date: Mon, 10 Aug 2020 18:17:23 +0200
+Message-Id: <20200810161723.25576-1-a@...2181...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] travis: don't run t_net.sh test
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +13,41 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-Acked-by: Gert Doering <gert@...1296...>
+Not all travis instances are fit for running t_net.sh test due to
+various configurations knob that we have no access to.
 
-Stared-at-code - best viewed with -w - and tested (udp, tcp, p2p).
+Prevent failures by not running t_net.sh on travis at all.
+The t_net.sh is executed by other test rigs which we have more control
+over.
 
-Your patch has been applied to the master branch.
+The test is skipped by specifying RUN_SUDO=false which will make any
+pre-test fail, forcing the Makefile to skip that particular test.
 
-commit 60200b9e1a977c32e64907ed67406dd4208e8abf
-Author: Arne Schwabe
-Date:   Mon Aug 10 16:36:55 2020 +0200
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
 
-     Remove buf argument from link_socket_set_outgoing_addr
+Tested on travis:
+https://travis-ci.org/github/OpenVPN/openvpn/builds/716605942
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200810143707.5834-6-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20677.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+ .travis.yml | 1 +
+ 1 file changed, 1 insertion(+)
 
-
---
-kind regards,
-
-Gert Doering
+diff --git a/.travis.yml b/.travis.yml
+index 9e374f55..2d379c70 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -7,6 +7,7 @@ language: c
+ env:
+   global:
+     - JOBS=3
++    - RUN_SUDO="false"
+     - PREFIX="${HOME}/opt"
+     - TAP_WINDOWS_VERSION=9.23.3
+     - LZO_VERSION=2.10
+-- 
+2.28.0
 
 
