@@ -1,8 +1,9 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Mon, 10 Aug 2020 18:17:23 +0200
-Message-Id: <20200810161723.25576-1-a@...2181...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] travis: don't run t_net.sh test
+Date: Mon, 10 Aug 2020 18:34:59 +0200 (CEST)
+Message-Id: <202008101634.07AGYxab023379@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20200810161723.25576-1-a@...2181...>
+References: <20200810161723.25576-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: travis: don't run t_net.sh test
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,41 +14,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Not all travis instances are fit for running t_net.sh test due to
-various configurations knob that we have no access to.
+Acked-by: Gert Doering <gert@...1296...>
 
-Prevent failures by not running t_net.sh on travis at all.
-The t_net.sh is executed by other test rigs which we have more control
-over.
+Haven't tested, but this looks a reasonable workaround for
+"dummy.ko is not available on Travis, and t_net.sh will
+always fail, without any informational value"
 
-The test is skipped by specifying RUN_SUDO=false which will make any
-pre-test fail, forcing the Makefile to skip that particular test.
+Your patch has been applied to the master branch.
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
+commit feacd01c584898977c3450bf48d1ea5cbb9029f1
+Author: Antonio Quartulli
+Date:   Mon Aug 10 18:17:23 2020 +0200
 
-Tested on travis:
-https://travis-ci.org/github/OpenVPN/openvpn/builds/716605942
+     travis: don't run t_net.sh test
 
- .travis.yml | 1 +
- 1 file changed, 1 insertion(+)
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20200810161723.25576-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20684.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-diff --git a/.travis.yml b/.travis.yml
-index 9e374f55..2d379c70 100644
---- a/.travis.yml
-+++ b/.travis.yml
-@@ -7,6 +7,7 @@ language: c
- env:
-   global:
-     - JOBS=3
-+    - RUN_SUDO="false"
-     - PREFIX="${HOME}/opt"
-     - TAP_WINDOWS_VERSION=9.23.3
-     - LZO_VERSION=2.10
--- 
-2.28.0
+
+--
+kind regards,
+
+Gert Doering
 
 
