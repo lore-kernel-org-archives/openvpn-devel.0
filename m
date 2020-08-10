@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 10 Aug 2020 16:36:55 +0200
-Message-Id: <20200810143707.5834-6-arne@...1227...>
+Date: Mon, 10 Aug 2020 16:37:07 +0200
+Message-Id: <20200810143707.5834-18-arne@...1227...>
 In-Reply-To: <20200810143707.5834-1-arne@...1227...>
 References: <20200810143707.5834-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 05/17] Remove buf argument from
- link_socket_set_outgoing_addr
+Subject: [Openvpn-devel] [PATCH 17/17] Move openvpn specific key expansion
+ into its own function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,120 +17,186 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This was only used in a check that is better suited in the calling
-functions. This also removes passing the buf argument to
-link_socket_connection_initiated that also does not use that
-parameter at all.
+This moves the OpenVPN specific PRF into its own function also
+simplifies the code a bit by passing tls_session directly instead of
+5 of its fields.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/forward.c |  4 ++--
- src/openvpn/socket.c  |  3 +--
- src/openvpn/socket.h  | 35 +++++++++++++++--------------------
- src/openvpn/ssl.c     |  2 +-
- 4 files changed, 19 insertions(+), 25 deletions(-)
+ src/openvpn/ssl.c | 109 +++++++++++++++++++++++++++++-----------------
+ 1 file changed, 69 insertions(+), 40 deletions(-)
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 79c07e46..8a0d63f7 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1177,9 +1177,9 @@ process_incoming_link_part2(struct context *c, struct link_socket_info *lsi, con
-          *
-          * Also, update the persisted version of our packet-id.
-          */
--        if (!TLS_MODE(c))
-+        if (!TLS_MODE(c) && c->c2.buf.len > 0)
-         {
--            link_socket_set_outgoing_addr(&c->c2.buf, lsi, &c->c2.from, NULL, c->c2.es);
-+            link_socket_set_outgoing_addr(lsi, &c->c2.from, NULL, c->c2.es);
-         }
- 
-         /* reset packet received timer */
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 61463bcd..c486327b 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -2450,8 +2450,7 @@ ipchange_fmt(const bool include_cmd, struct argv *argv, const struct link_socket
- }
- 
- void
--link_socket_connection_initiated(const struct buffer *buf,
--                                 struct link_socket_info *info,
-+link_socket_connection_initiated(struct link_socket_info *info,
-                                  const struct link_socket_actual *act,
-                                  const char *common_name,
-                                  struct env_set *es)
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index 8db9e8ba..7aeae527 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -435,8 +435,7 @@ in_addr_t link_socket_current_remote(const struct link_socket_info *info);
- const struct in6_addr *link_socket_current_remote_ipv6
-     (const struct link_socket_info *info);
- 
--void link_socket_connection_initiated(const struct buffer *buf,
--                                      struct link_socket_info *info,
-+void link_socket_connection_initiated(struct link_socket_info *info,
-                                       const struct link_socket_actual *addr,
-                                       const char *common_name,
-                                       struct env_set *es);
-@@ -984,29 +983,25 @@ link_socket_get_outgoing_addr(struct buffer *buf,
- }
- 
- static inline void
--link_socket_set_outgoing_addr(const struct buffer *buf,
--                              struct link_socket_info *info,
-+link_socket_set_outgoing_addr(struct link_socket_info *info,
-                               const struct link_socket_actual *act,
-                               const char *common_name,
-                               struct env_set *es)
- {
--    if (!buf || buf->len > 0)
-+    struct link_socket_addr *lsa = info->lsa;
-+    if (
-+        /* new or changed address? */
-+        (!info->connection_established
-+         || !addr_match_proto(&act->dest, &lsa->actual.dest, info->proto)
-+        )
-+        &&
-+        /* address undef or address == remote or --float */
-+        (info->remote_float
-+         || (!lsa->remote_list || addrlist_match_proto(&act->dest, lsa->remote_list, info->proto))
-+        )
-+        )
-     {
--        struct link_socket_addr *lsa = info->lsa;
--        if (
--            /* new or changed address? */
--            (!info->connection_established
--             || !addr_match_proto(&act->dest, &lsa->actual.dest, info->proto)
--            )
--            &&
--            /* address undef or address == remote or --float */
--            (info->remote_float
--             || (!lsa->remote_list || addrlist_match_proto(&act->dest, lsa->remote_list, info->proto))
--            )
--            )
--        {
--            link_socket_connection_initiated(buf, info, act, common_name, es);
--        }
-+        link_socket_connection_initiated(info, act, common_name, es);
-     }
- }
- 
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 3bf0dcf8..a43ee985 100644
+index 774ba7ed..91743862 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -2762,7 +2762,7 @@ tls_process(struct tls_multi *multi,
-                 INCR_SUCCESS;
+@@ -1765,27 +1765,38 @@ openvpn_PRF(const uint8_t *secret,
+     VALGRIND_MAKE_READABLE((void *)output, output_len);
+ }
  
-                 /* Set outgoing address for data channel packets */
--                link_socket_set_outgoing_addr(NULL, to_link_socket_info, &ks->remote_addr, session->common_name, session->opt->es);
-+                link_socket_set_outgoing_addr(to_link_socket_info, &ks->remote_addr, session->common_name, session->opt->es);
+-/*
+- * Using source entropy from local and remote hosts, mix into
+- * master key.
+- */
+-static bool
+-generate_key_expansion(struct key_ctx_bi *key,
+-                       const struct key_type *key_type,
+-                       const struct key_source2 *key_src,
+-                       const struct session_id *client_sid,
+-                       const struct session_id *server_sid,
+-                       bool server)
++static void
++init_key_contexts(struct key_ctx_bi *key,
++                  const struct key_type *key_type,
++                  bool server,
++                  struct key2 *key2)
++{
++    /* Initialize OpenSSL key contexts */
++    int key_direction = server ? KEY_DIRECTION_INVERSE : KEY_DIRECTION_NORMAL;
++    init_key_ctx_bi(key, key2, key_direction, key_type, "Data Channel");
++
++    /* Initialize implicit IVs */
++    key_ctx_update_implicit_iv(&key->encrypt, (*key2).keys[(int)server].hmac,
++                               MAX_HMAC_KEY_LENGTH);
++    key_ctx_update_implicit_iv(&key->decrypt, (*key2).keys[1-(int)server].hmac,
++                               MAX_HMAC_KEY_LENGTH);
++
++}
++
++
++static struct key2
++generate_key_expansion_oepnvpn_prf(const struct tls_session *session)
+ {
++
+     uint8_t master[48] = { 0 };
+-    struct key2 key2 = { 0 };
+-    bool ret = false;
  
-                 /* Flush any payload packets that were buffered before our state transitioned to S_ACTIVE */
-                 flush_payload_buffer(ks);
+-    if (key->initialized)
+-    {
+-        msg(D_TLS_ERRORS, "TLS Error: key already initialized");
+-        goto exit;
+-    }
++    const struct key_state *ks = &session->key[KS_PRIMARY];
++    const struct key_source2 *key_src = ks->key_src;
++
++    const struct session_id *client_sid = session->opt->server ?
++                                          &ks->session_id_remote : &session->session_id;
++    const struct session_id *server_sid = !session->opt->server ?
++                                          &ks->session_id_remote : &session->session_id;
+ 
+     /* debugging print of source key material */
+     key_source2_print(key_src);
+@@ -1803,6 +1814,7 @@ generate_key_expansion(struct key_ctx_bi *key,
+                 master,
+                 sizeof(master));
+ 
++    struct key2 key2;
+     /* compute key expansion */
+     openvpn_PRF(master,
+                 sizeof(master),
+@@ -1815,41 +1827,62 @@ generate_key_expansion(struct key_ctx_bi *key,
+                 server_sid,
+                 (uint8_t *)key2.keys,
+                 sizeof(key2.keys));
++    secure_memzero(&master, sizeof(master));
+ 
++    /* We use the DES fixup here so we can drop it once we
++     * drop DES support and non RFC5705 key derivation */
++    for (int i = 0; i < 2; ++i)
++    {
++        fixup_key(&key2.keys[i], &session->opt->key_type);
++    }
+     key2.n = 2;
+ 
+-    key2_print(&key2, key_type, "Master Encrypt", "Master Decrypt");
++    return key2;
++}
++
++/*
++ * Using source entropy from local and remote hosts, mix into
++ * master key.
++ */
++static bool
++generate_key_expansion(struct key_ctx_bi *key,
++                       const struct tls_session *session)
++{
++    bool ret = false;
++
++    if (key->initialized)
++    {
++        msg(D_TLS_ERRORS, "TLS Error: key already initialized");
++        goto exit;
++    }
++
++
++    bool server = session->opt->server;
++
++    struct key2 key2 = generate_key_expansion_oepnvpn_prf(session);
++
++    key2_print(&key2, &session->opt->key_type,
++               "Master Encrypt", "Master Decrypt");
+ 
+     /* check for weak keys */
+     for (int i = 0; i < 2; ++i)
+     {
+-        fixup_key(&key2.keys[i], key_type);
+-        if (!check_key(&key2.keys[i], key_type))
++        if (!check_key(&key2.keys[i], &session->opt->key_type))
+         {
+             msg(D_TLS_ERRORS, "TLS Error: Bad dynamic key generated");
+             goto exit;
+         }
+     }
+-
+-    /* Initialize OpenSSL key contexts */
+-    int key_direction = server ? KEY_DIRECTION_INVERSE : KEY_DIRECTION_NORMAL;
+-    init_key_ctx_bi(key, &key2, key_direction, key_type, "Data Channel");
+-
+-    /* Initialize implicit IVs */
+-    key_ctx_update_implicit_iv(&key->encrypt, key2.keys[(int)server].hmac,
+-                               MAX_HMAC_KEY_LENGTH);
+-    key_ctx_update_implicit_iv(&key->decrypt, key2.keys[1-(int)server].hmac,
+-                               MAX_HMAC_KEY_LENGTH);
+-
++    init_key_contexts(key, &session->opt->key_type, server, &key2);
+     ret = true;
+ 
+ exit:
+-    secure_memzero(&master, sizeof(master));
+     secure_memzero(&key2, sizeof(key2));
+ 
+     return ret;
+ }
+ 
++
+ static void
+ key_ctx_update_implicit_iv(struct key_ctx *ctx, uint8_t *key, size_t key_len)
+ {
+@@ -1879,10 +1912,7 @@ tls_session_generate_data_channel_keys(struct tls_session *session)
+ {
+     bool ret = false;
+     struct key_state *ks = &session->key[KS_PRIMARY];   /* primary key */
+-    const struct session_id *client_sid = session->opt->server ?
+-                                          &ks->session_id_remote : &session->session_id;
+-    const struct session_id *server_sid = !session->opt->server ?
+-                                          &ks->session_id_remote : &session->session_id;
++
+ 
+     if (ks->authenticated == KS_AUTH_FALSE)
+     {
+@@ -1891,9 +1921,8 @@ tls_session_generate_data_channel_keys(struct tls_session *session)
+     }
+ 
+     ks->crypto_options.flags = session->opt->crypto_flags;
+-    if (!generate_key_expansion(&ks->crypto_options.key_ctx_bi,
+-                                &session->opt->key_type, ks->key_src, client_sid, server_sid,
+-                                session->opt->server))
++
++    if (!generate_key_expansion(&ks->crypto_options.key_ctx_bi, session))
+     {
+         msg(D_TLS_ERRORS, "TLS Error: generate_key_expansion failed");
+         goto cleanup;
 -- 
 2.26.2
 
