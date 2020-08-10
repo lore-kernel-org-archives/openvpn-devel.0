@@ -1,10 +1,10 @@
-Date: Mon, 10 Aug 2020 20:16:17 +0200 (CEST)
-Message-Id: <202008101816.07AIGGIe029002@...2054...>
+Date: Mon, 10 Aug 2020 20:32:08 +0200 (CEST)
+Message-Id: <202008101832.07AIW8PR029231@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200810143707.5834-11-arne@...1227...>
-References: <20200810143707.5834-11-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Eliminate
- check_incoming_control_channel wrapper function
+In-Reply-To: <20200810143707.5834-12-arne@...1227...>
+References: <20200810143707.5834-12-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Eliminate check_tls wrapper
+ function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,22 +20,20 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-"What it says".  Best viewed with -w due to indentation change.
-
-Client side tested.
+Straightforward.  Client-side tested.
 
 Your patch has been applied to the master branch.
 
-commit eed645b34760955a060b8002dd69901cefefd0aa
+commit cd88d947b100deb55bb8388fd2f1e95e0af4a658
 Author: Arne Schwabe
-Date:   Mon Aug 10 16:37:00 2020 +0200
+Date:   Mon Aug 10 16:37:01 2020 +0200
 
-     Eliminate check_incoming_control_channel wrapper function
+     Eliminate check_tls wrapper function
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200810143707.5834-11-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20680.html
+     Message-Id: <20200810143707.5834-12-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20670.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
