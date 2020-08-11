@@ -1,12 +1,13 @@
 From: "Vladislav Grishenko" <themiron.ru@...277...>
 References: <20200810143707.5834-1-arne@...1227...>
- <20200810143707.5834-2-arne@...1227...>
-In-Reply-To: <20200810143707.5834-2-arne@...1227...>
-Date: Tue, 11 Aug 2020 13:31:02 +0500
-Message-ID: <031701d66fb9$bfca7e00$3f5f7a00$@gmail.com>
+ <20200810143707.5834-3-arne@...1227...>
+In-Reply-To: <20200810143707.5834-3-arne@...1227...>
+Date: Tue, 11 Aug 2020 13:31:55 +0500
+Message-ID: <031801d66fb9$df42acd0$9dc80670$@gmail.com>
 MIME-Version: 1.0
 Content-Language: ru
-Subject: Re: [Openvpn-devel] [PATCH 01/17] Refactor/Reformat tls_pre_decrypt
+Subject: Re: [Openvpn-devel] [PATCH 02/17] Cleanup tls_pre_decrypt_lite and
+ tls_pre_encrypt
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
