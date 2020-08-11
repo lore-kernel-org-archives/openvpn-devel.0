@@ -1,14 +1,14 @@
-Date: Tue, 11 Aug 2020 11:22:38 +0200
+Date: Tue, 11 Aug 2020 11:32:27 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20200811092238.GD75094@...1296...>
-References: <1552943809-6367-1-git-send-email-selva.nair@...277...>
+Message-ID: <20200811093227.GE75094@...1296...>
+References: <cc9094b8-caa6-34b6-ed7a-3ccb34560113@...1918...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="juwRYO7N74otsfNI"
+ protocol="application/pgp-signature"; boundary="PSXRUCbmiibGgnYg"
 Content-Disposition: inline
-In-Reply-To: <1552943809-6367-1-git-send-email-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Improve the documentation for
- --dhcp-option
+In-Reply-To: <cc9094b8-caa6-34b6-ed7a-3ccb34560113@...1918...>
+Subject: Re: [Openvpn-devel] [PATCH v2 1/2] Send auth fail to client on
+ reneg failure
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,27 +17,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: selva.nair@...277...
+To: Eric Thorpe <eric@...1918...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---juwRYO7N74otsfNI
+--PSXRUCbmiibGgnYg
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Mon, Mar 18, 2019 at 05:16:49PM -0400, selva.nair@...277... wrote:
-> From: Selva Nair <selva.nair@...277...>
->=20
-> Make clear that --dhcp-option is not processed on
-> non-Windows clients and the user is expected to handle
-> it using an --up script.
+On Thu, Apr 11, 2019 at 12:07:27PM +1000, Eric Thorpe wrote:
+> This patch relies on Arne's "Add send_control_channel_string_dowork
+> variant" patch.
 
-I'm going through "lost" patches in patchwork - and this one is still
-relevant, I think, but the documentation looks much different now  (.rst).
+So.  After we left you out in the cold for over a year (apologies=20
+for that), we should revisit your patch set.
 
-Could you re-send?
+I checked with Arne, he says "no, that functionality is not in yet,
+but still interesting" - and all the *other* auth/plugin/async/SSO
+related code we had brewing is in.
+
+So - if you're not too frustrated with us yet: can you re-send?
 
 gert
 --=20
@@ -50,22 +51,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---juwRYO7N74otsfNI
+--PSXRUCbmiibGgnYg
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJfMmNdAAoJEB2Cnv7KVigSIxIL/ArrwIkbMzDlaHoifCndsUzr
-gE1DKOrsn81TIx4Z+jovL50SgX3EtmScN6uygJtFhY20OsIk4F5R2AmYztkAbgCw
-R+GA+w6LVkQC79zYndW+QGw/sVLysChmQJZ2IMklaJoeNo22NzkvOe58V6F8B3Ud
-sG24vt7e7/ucQpMl5Ar1jnOj/280IQzq44MUy36n+4ZPxw9G64STf6a36eTcLJy9
-YY8P9TK+RgY0DtgjYE6ft4x8kzt+i2r96sNLYdI+kXqRcKq6gIVyWUYKsCy41Rye
-0F7xR9zhlnIWUzQuUukm0vIfwrASY4KSVrwYAVnRWxR2fVzYHahXfJZ9YD0nw1Tw
-ZtGs3TuowymlMnXD5lAgRJEcU2Birqat8DGs0wwBibZa10lUYDOR8+bboPzqll5Q
-1ZrNJJkRx4ccgRHqURAfkpM/VUiSdrbGdFX2T2diMvtzs5px7XhQWXT3qZwSopQu
-a7LdM2DvwaGbrzorSywsNkZArCtEUw+UOvDuzyNhbw==
-=jV57
+iQGcBAEBAgAGBQJfMmWqAAoJEB2Cnv7KVigSEUQL/3PCs3AJOE4M7KJJcUd2aKbN
+Brz3GCmOw2eIwmxNud09aMgyFiNOloEuEFJiri77c5nmVJ7BCvbUC/BhSILcakQG
+ClpeEOj1MDvD9ZjpIDpwI8tbWV3y2kIw5MR4au/6YfU18n707hFm6Td1emaaOjlX
+7d5gHhuzPDgvmrIUgDxYctr6HFEIYOzDJXu+YgxUD++H8A0Jo7sS5CoN6mwyYjQw
+QR0OCwE4tOJ9+KDhP6RKlXYR52n/AtTxcFg4xwr8y2PFobI+NWIPs7Zlc2qRrM+A
+StNZkE9NdbZlK+gOMB9wrmC53BBPa1jeROe+5KIQac9ECdiFxxlpkTBgy5U/VD20
+vb/0ebgwnz9MN3Shp2/dvVv3O0+3AreZVppt06f7o5gc7duX/kf9U+5kptsB7KP+
+ul3PVCXZWEyBa8Q3VdlD2JTrwLFIglNauvyP7ZqBxV5vg0g2VmSve1eQoECK72+P
+SB9Qh2/n/Nn+T9D0mJfxCIl6nA+0R+wtPykSB/+lIA==
+=B125
 -----END PGP SIGNATURE-----
 
---juwRYO7N74otsfNI--
+--PSXRUCbmiibGgnYg--
 
