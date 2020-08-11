@@ -1,11 +1,9 @@
-From: Gert Doering <gert@...1296...>
-Date: Tue, 11 Aug 2020 12:44:01 +0200
-Message-Id: <20200811104401.31075-1-gert@...1296...>
-In-Reply-To: <20200717190801.17780-1-gert@...1296...>
-References: <20200717190801.17780-1-gert@...1296...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Add demo plugin that excercises
- "CLIENT_CONNECT" and "CLIENT_CONNECT_V2" paths
+From: Arne Schwabe <arne@...1227...>
+Date: Tue, 11 Aug 2020 12:55:41 +0200
+Message-Id: <20200811105541.2543-1-arne@...1227...>
+In-Reply-To: <20200811091006.GA75094@...1296...>
+References: <20200811091006.GA75094@...1296...>
+Subject: [Openvpn-devel] [PATCH v2 01/17] Refactor/Reformat tls_pre_decrypt
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,713 +16,889 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is a new "samples" plugin which does not do many useful things,
-besides
- - show how a plugin is programmed
- - how the various messages get dispatched
- - how to pass back information from a client-connect/v2 plugin
- - how to do async-cc plugins  [not yet implemented]
+- Extract data packet handling to its own function
+- Replace two instances of
+          if (x) { code }
+  with
+          if (!x) return; code
 
-the operation of the plugin is controlled by UV_WANT_* environment variables
-controlled by the client ("--setenv UV_WANT_CC_FAIL 1 --push-peer-info"),
-to "fail CLIENT_CONNECT" or "use async-cc for CLIENT_CONNECT_V2" or
-"send 'disable' back from ...") - which is useful for automated testing
-of server success/defer/fail code paths for the CLIENT_CONNECT_* functions.
+- Remove extra curly braces that were used for pre C99 code style
+  to be able to declare variables in the middle of a block
 
-See samples/sample-plugins/client-connect/README for details how to do this.
+This patch is easier to review with "ignore white space" as the
+diff is then a lot smaller in that case and the changes more obvious.
 
-v2:
-  - implement async / deferred operation both for CLIENT_CONNECT and
-    CLIENT_CONNECT_V2 plugin calls
-  - implement returning openvpn-controlled (setenv) config snippets
-    (so the client side can verify in automated testing that the plugin
-    operated correctly, without hard-coding something in the plugin code)
+Patch V2: Fix function name spelling, cleanup goto code in the new
+          handle_data_channel_packet function
+
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- sample/sample-plugins/client-connect/Makefile |  16 +
- sample/sample-plugins/client-connect/README   |  34 +
- .../client-connect/sample-client-connect.c    | 609 ++++++++++++++++++
- 3 files changed, 659 insertions(+)
- create mode 100644 sample/sample-plugins/client-connect/Makefile
- create mode 100644 sample/sample-plugins/client-connect/README
- create mode 100644 sample/sample-plugins/client-connect/sample-client-connect.c
+ src/openvpn/ssl.c | 784 ++++++++++++++++++++++++----------------------
+ 1 file changed, 403 insertions(+), 381 deletions(-)
 
-diff --git a/sample/sample-plugins/client-connect/Makefile b/sample/sample-plugins/client-connect/Makefile
-new file mode 100644
-index 00000000..ff187c43
---- /dev/null
-+++ b/sample/sample-plugins/client-connect/Makefile
-@@ -0,0 +1,16 @@
-+all: sample-client-connect.so
-+
-+
-+sample-client-connect.o: sample-client-connect.c
-+
-+# This directory is where we will look for openvpn-plugin.h
-+CPPFLAGS=-I../../../include
-+
-+CC=gcc
-+CFLAGS=-O2 -Wall -Wno-unused-variable -g
-+
-+.c.o:
-+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -c $<
-+
-+sample-client-connect.so: sample-client-connect.o
-+	$(CC) $(CFLAGS) -fPIC -shared $(LDFLAGS) -Wl,-soname,$@ -o $@ $< -lc
-diff --git a/sample/sample-plugins/client-connect/README b/sample/sample-plugins/client-connect/README
-new file mode 100644
-index 00000000..be6ef947
---- /dev/null
-+++ b/sample/sample-plugins/client-connect/README
-@@ -0,0 +1,34 @@
-+OpenVPN plugin examples.
-+
-+Examples provided:
-+
-+sample-client-connect.c
-+
-+  - hook to all plugin hooks that openvpn offers
-+  - log which hook got called
-+  - on CLIENT_CONNECT or CLIENT_CONNECT_V2 set some config variables
-+    (controlled by "setenv plugin_cc_config ..." and "plugin_cc2_config"
-+    in openvpn's config)
-+
-+  - if the environment variable UV_WANT_CC_FAIL is set, fail
-+  - if the environment variable UV_WANT_CC_DISABLE is set, reject ("disable")
-+  - if the environment variable UV_WANT_CC_ASYNC is set, go to
-+    asynchronous/deferred mode on CLIENT_CONNECT, and sleep for
-+    ${UV_WANT_CC_ASYNC} seconds
-+
-+  - if the environment variable UV_WANT_CC2_FAIL is set, fail CC2
-+  - if the environment variable UV_WANT_CC2_DISABLE is set, reject ("disable")
-+  - if the environment variable UV_WANT_CC2_ASYNC is set, go to
-+    asynchronous/deferred mode on CLIENT_CONNECT_V2, and sleep for
-+    ${UV_WANT_CC2_ASYNC} seconds
-+
-+    (this can be client-controlled with --setenv UV_WANT_CC_ASYNC nnn
-+     etc. --> for easy testing server code paths)
-+
-+To build (not very sophisticated right now, needs gcc):
-+
-+  .../sample-plugins/client-connect$ make (Linux/BSD/etc.)
-+
-+To use in OpenVPN, add to config file:
-+
-+  plugin sample-client-connect.so (Linux/BSD/etc.)
-diff --git a/sample/sample-plugins/client-connect/sample-client-connect.c b/sample/sample-plugins/client-connect/sample-client-connect.c
-new file mode 100644
-index 00000000..6e874524
---- /dev/null
-+++ b/sample/sample-plugins/client-connect/sample-client-connect.c
-@@ -0,0 +1,609 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2002-2018 OpenVPN Inc <sales@...515...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+ */
-+
-+/*
-+ * This file implements a simple OpenVPN plugin module which
-+ * will log the calls made, and send back some config statements
-+ * when called on the CLIENT_CONNECT and CLIENT_CONNECT_V2 hooks.
-+ *
-+ * it can be asked to fail or go to async/deferred mode by setting
-+ * environment variables (UV_WANT_CC_FAIL, UV_WANT_CC_ASYNC,
-+ * UV_WANT_CC2_ASYNC) - mostly used as a testing vehicle for the
-+ * server side code to handle these cases
-+ *
-+ * See the README file for build instructions and env control variables.
-+ */
-+
-+#include <stdio.h>
-+#include <string.h>
-+#include <stdlib.h>
-+#include <stdbool.h>
-+#include <unistd.h>
-+#include <fcntl.h>
-+#include <sys/wait.h>
-+
-+#include "openvpn-plugin.h"
-+
-+/* Pointers to functions exported from openvpn */
-+static plugin_log_t plugin_log = NULL;
-+static plugin_secure_memzero_t plugin_secure_memzero = NULL;
-+static plugin_base64_decode_t plugin_base64_decode = NULL;
-+
-+/* module name for plugin_log() */
-+static char *MODULE = "sample-cc";
-+
-+/*
-+ * Our context, where we keep our state.
-+ */
-+
-+struct plugin_context {
-+    int verb;                           /* logging verbosity */
-+};
-+
-+/* this is used for the CLIENT_CONNECT_V2 async/deferred handler
-+ *
-+ * the "CLIENT_CONNECT_V2" handler puts per-client information into
-+ * this, and the "CLIENT_CONNECT_DEFER_V2" handler looks at it to see
-+ * if it's time yet to succeed/fail
-+ */
-+struct plugin_per_client_context {
-+    time_t sleep_until;                 /* wakeup time (time() + sleep) */
-+    bool want_fail;
-+    bool want_disable;
-+    const char *client_config;
-+};
-+
-+/*
-+ * Given an environmental variable name, search
-+ * the envp array for its value, returning it
-+ * if found or NULL otherwise.
-+ */
-+static const char *
-+get_env(const char *name, const char *envp[])
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index eefa2424..7e2d37f9 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -3142,6 +3142,95 @@ nohard:
+  * to implement a multiplexed TLS channel over the TCP/UDP port.
+  */
+ 
++static inline void
++handle_data_channel_packet(struct tls_multi *multi,
++                           const struct link_socket_actual *from,
++                           struct buffer *buf,
++                           struct crypto_options **opt,
++                           bool floated,
++                           const uint8_t **ad_start)
 +{
-+    if (envp)
++    struct gc_arena gc = gc_new();
++
++    uint8_t c = *BPTR(buf);
++    int op = c >> P_OPCODE_SHIFT;
++    int key_id = c & P_KEY_ID_MASK;
++
++    /* data channel packet */
++    for (int i = 0; i < KEY_SCAN_SIZE; ++i)
 +    {
-+        int i;
-+        const int namelen = strlen(name);
-+        for (i = 0; envp[i]; ++i)
++        struct key_state *ks = multi->key_scan[i];
++
++        /*
++         * This is the basic test of TLS state compatibility between a local OpenVPN
++         * instance and its remote peer.
++         *
++         * If the test fails, it tells us that we are getting a packet from a source
++         * which claims reference to a prior negotiated TLS session, but the local
++         * OpenVPN instance has no memory of such a negotiation.
++         *
++         * It almost always occurs on UDP sessions when the passive side of the
++         * connection is restarted without the active side restarting as well (the
++         * passive side is the server which only listens for the connections, the
++         * active side is the client which initiates connections).
++         */
++        if (DECRYPT_KEY_ENABLED(multi, ks)
++            && key_id == ks->key_id
++            && (ks->authenticated == KS_AUTH_TRUE)
++            && (floated || link_socket_actual_match(from, &ks->remote_addr)))
 +        {
-+            if (!strncmp(envp[i], name, namelen))
++            if (!ks->crypto_options.key_ctx_bi.initialized)
 +            {
-+                const char *cp = envp[i] + namelen;
-+                if (*cp == '=')
-+                {
-+                    return cp + 1;
-+                }
++                msg(D_MULTI_DROPPED,
++                    "Key %s [%d] not initialized (yet), dropping packet.",
++                    print_link_socket_actual(from, &gc), key_id);
++                goto done;
 +            }
++
++            /* return appropriate data channel decrypt key in opt */
++            *opt = &ks->crypto_options;
++            if (op == P_DATA_V2)
++            {
++                *ad_start = BPTR(buf);
++            }
++            ASSERT(buf_advance(buf, 1));
++            if (op == P_DATA_V1)
++            {
++                *ad_start = BPTR(buf);
++            }
++            else if (op == P_DATA_V2)
++            {
++                if (buf->len < 4)
++                {
++                    msg(D_TLS_ERRORS, "Protocol error: received P_DATA_V2 from %s but length is < 4",
++                        print_link_socket_actual(from, &gc));
++                    ++multi->n_soft_errors;
++                    goto done;
++                }
++                ASSERT(buf_advance(buf, 3));
++            }
++
++            ++ks->n_packets;
++            ks->n_bytes += buf->len;
++            dmsg(D_TLS_KEYSELECT,
++                 "TLS: tls_pre_decrypt, key_id=%d, IP=%s",
++                 key_id, print_link_socket_actual(from, &gc));
++            gc_free(&gc);
++            return;
 +        }
 +    }
-+    return NULL;
++
++    msg(D_TLS_ERRORS,
++        "TLS Error: local/remote TLS keys are out of sync: %s [%d]",
++        print_link_socket_actual(from, &gc), key_id);
++
++done:
++    tls_clear_error();
++    buf->len = 0;
++    *opt = NULL;
++    gc_free(&gc);
 +}
 +
+ /*
+  *
+  * When we are in TLS mode, this is the first routine which sees
+@@ -3175,440 +3264,374 @@ tls_pre_decrypt(struct tls_multi *multi,
+                 bool floated,
+                 const uint8_t **ad_start)
+ {
 +
-+static int
-+atoi_null0(const char *str)
-+{
-+    if (str)
++    if (buf->len <= 0)
 +    {
-+        return atoi(str);
-+    }
-+    else
-+    {
-+        return 0;
-+    }
-+}
-+
-+/* use v3 functions so we can use openvpn's logging and base64 etc. */
-+OPENVPN_EXPORT int
-+openvpn_plugin_open_v3(const int v3structver,
-+                       struct openvpn_plugin_args_open_in const *args,
-+                       struct openvpn_plugin_args_open_return *ret)
-+{
-+    const char **argv = args->argv;
-+    const char **envp = args->envp;
-+
-+    /* Check API compatibility -- struct version 5 or higher needed */
-+    if (v3structver < 5)
-+    {
-+        fprintf(stderr, "sample-client-connect: this plugin is incompatible with the running version of OpenVPN\n");
-+        return OPENVPN_PLUGIN_FUNC_ERROR;
++        buf->len = 0;
++        *opt = NULL;
++        return false;
 +    }
 +
-+    /*
-+     * Allocate our context
-+     */
-+    struct plugin_context *context = calloc(1, sizeof(struct plugin_context));
-+    if (!context)
+     struct gc_arena gc = gc_new();
+     bool ret = false;
+ 
+-    if (buf->len > 0)
++    /* get opcode  */
++    uint8_t pkt_firstbyte = *BPTR(buf);
++    int op = pkt_firstbyte >> P_OPCODE_SHIFT;
++
++    if ((op == P_DATA_V1) || (op == P_DATA_V2))
+     {
+-        int i;
+-        int op;
+-        int key_id;
++        handle_data_channel_packet(multi, from, buf, opt, floated, ad_start);
++        return false;
++    }
+ 
+-        /* get opcode and key ID */
++    /* get key_id */
++    int key_id = pkt_firstbyte & P_KEY_ID_MASK;
++
++    /* control channel packet */
++    bool do_burst = false;
++    bool new_link = false;
++    struct session_id sid;         /* remote session ID */
++
++    /* verify legal opcode */
++    if (op < P_FIRST_OPCODE || op > P_LAST_OPCODE)
 +    {
++        if (op == P_CONTROL_HARD_RESET_CLIENT_V1
++            || op == P_CONTROL_HARD_RESET_SERVER_V1)
+         {
+-            uint8_t c = *BPTR(buf);
+-            op = c >> P_OPCODE_SHIFT;
+-            key_id = c & P_KEY_ID_MASK;
++            msg(D_TLS_ERRORS, "Peer tried unsupported key-method 1");
+         }
++        msg(D_TLS_ERRORS,
++            "TLS Error: unknown opcode received from %s op=%d",
++            print_link_socket_actual(from, &gc), op);
 +        goto error;
 +    }
-+
-+    /*
-+     * Intercept just about everything...
-+     */
-+    ret->type_mask =
-+        OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_UP)
-+        |OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_DOWN)
-+        |OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_ROUTE_UP)
-+        |OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_IPCHANGE)
-+        |OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_TLS_VERIFY)
-+        |OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_CLIENT_CONNECT)
-+        |OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_CLIENT_CONNECT_V2)
-+        |OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_CLIENT_CONNECT_DEFER_V2)
-+        |OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_CLIENT_DISCONNECT)
-+        |OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_LEARN_ADDRESS)
-+        |OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_TLS_FINAL);
-+
-+    /* Save global pointers to functions exported from openvpn */
-+    plugin_log = args->callbacks->plugin_log;
-+    plugin_secure_memzero = args->callbacks->plugin_secure_memzero;
-+    plugin_base64_decode = args->callbacks->plugin_base64_decode;
-+
-+    /*
-+     * Get verbosity level from environment
-+     */
-+    context->verb = atoi_null0(get_env("verb", envp));
-+
-+    ret->handle = (openvpn_plugin_handle_t *) context;
-+    plugin_log(PLOG_NOTE, MODULE, "initialization succeeded");
-+    return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+
-+error:
-+    if (context)
+ 
+-        if ((op == P_DATA_V1) || (op == P_DATA_V2))
++    /* hard reset ? */
++    if (is_hard_reset_method2(op))
 +    {
-+        free(context);
-+    }
-+    return OPENVPN_PLUGIN_FUNC_ERROR;
-+}
-+
-+
-+/* there are two possible interfaces for an openvpn plugin how
-+ * to be called on "client connect", which primarily differ in the
-+ * way config options are handed back to the client instance
-+ * (see openvpn/multi.c, multi_client_connect_call_plugin_{v1,v2}())
-+ *
-+ * OPENVPN_PLUGIN_CLIENT_CONNECT
-+ *   openvpn creates a temp file and passes the name to the plugin
-+ *    (via argv[1] variable, argv[0] is the name of the plugin)
-+ *   the plugin can write config statements to that file, and openvpn
-+ *    reads it in like a "ccd/$cn" per-client config file
-+ *
-+ * OPENVPN_PLUGIN_CLIENT_CONNECT_V2
-+ *   the caller passes in a pointer to an "openvpn_plugin_string_list"
-+ *   (openvpn-plugin.h), which is a linked list of (name,value) pairs
-+ *
-+ *   we fill in one node with name="config" and value="our config"
-+ *
-+ *   both "l" and "l->name" and "l->value" are malloc()ed by the plugin
-+ *   and free()ed by the caller (openvpn_plugin_string_list_free())
-+ */
-+
-+/* helper function to write actual "here are your options" file,
-+ * called from sync and sync handler
-+ */
-+int
-+write_cc_options_file(const char *name, const char **envp)
-+{
-+    if (!name)
-+    {
-+        return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+    }
-+
-+    FILE *fp = fopen(name,"w");
-+    if (!fp)
-+    {
-+        plugin_log(PLOG_ERR, MODULE, "fopen('%s') failed", name);
-+        return OPENVPN_PLUGIN_FUNC_ERROR;
-+    }
-+
-+    /* config to-be-sent can come from "setenv plugin_cc_config" in openvpn */
-+    const char *p = get_env("plugin_cc_config", envp);
-+    if (p)
-+    {
-+        fprintf(fp, "%s\n", p);
-+    }
-+
-+    /* some generic config snippets so we know it worked */
-+    fprintf(fp, "push \"echo sample-cc plugin 1 called\"\n");
-+
-+    /* if the caller wants, reject client by means of "disable" option */
-+    if (get_env("UV_WANT_CC_DISABLE", envp))
-+    {
-+        plugin_log(PLOG_NOTE, MODULE, "env has UV_WANT_CC_DISABLE, reject");
-+        fprintf(fp, "disable\n");
-+    }
-+    fclose(fp);
-+
-+    return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+}
-+
-+int
-+cc_handle_deferred_v1(int seconds, const char *name, const char **envp)
-+{
-+    const char *ccd_file = get_env("client_connect_deferred_file", envp);
-+    if (!ccd_file)
-+    {
-+        plugin_log(PLOG_NOTE, MODULE, "env has UV_WANT_CC_ASYNC=%d, but "
-+                   "'client_connect_deferred_file' not set -> fail", seconds);
-+        return OPENVPN_PLUGIN_FUNC_ERROR;
-+    }
-+
-+    /* the CLIENT_CONNECT (v1) API is a bit tricky to work with, because
-+     * completition can be signalled both by the "deferred_file" and by
-+     * the new ...CLIENT_CONNECT_DEFER API - which is optional.
-+     *
-+     * For OpenVPN to be able to differenciate, we must create the file
-+     * right away if we want to use that for signalling.
-+     */
-+    int fd = open(ccd_file, O_WRONLY);
-+    if (fd < 0)
-+    {
-+        plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "open('%s') failed", ccd_file);
-+        return OPENVPN_PLUGIN_FUNC_ERROR;
-+    }
-+
-+    if (write(fd, "2", 1) != 1)
-+    {
-+        plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "write to '%s' failed", ccd_file );
-+        close(fd);
-+        return OPENVPN_PLUGIN_FUNC_ERROR;
-+    }
-+    close(fd);
-+
-+    /* we do not want to complicate our lives with having to wait()
-+     * for child processes (so they are not zombiefied) *and* we MUST NOT
-+     * fiddle with signal handlers (= shared with openvpn main), so
-+     * we use double-fork() trick.
-+     */
-+
-+    /* fork, sleep, succeed/fail according to env vars */
-+    pid_t p1 = fork();
-+    if (p1 < 0)                 /* Fork failed */
-+    {
-+        return OPENVPN_PLUGIN_FUNC_ERROR;
-+    }
-+    if (p1 > 0)                 /* parent process */
-+    {
-+        waitpid(p1, NULL, 0);
-+        return OPENVPN_PLUGIN_FUNC_DEFERRED;
-+    }
-+
-+    /* first gen child process, fork() again and exit() right away */
-+    pid_t p2 = fork();
-+    if (p2 < 0)
-+    {
-+        plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "BACKGROUND: fork(2) failed");
-+        exit(1);
-+    }
-+    if (p2 > 0)                 /* new parent: exit right away */
-+    {
-+        exit(0);
-+    }
-+
-+    /* (grand-)child process
-+     *  - never call "return" now (would mess up openvpn)
-+     *  - return status is communicated by file
-+     *  - then exit()
-+     */
-+
-+    /* do mighty complicated work that will really take time here... */
-+    plugin_log(PLOG_NOTE, MODULE, "in async/deferred handler, sleep(%d)", seconds);
-+    sleep(seconds);
-+
-+    /* write config options to openvpn */
-+    int ret = write_cc_options_file(name, envp);
-+
-+    /* by setting "UV_WANT_CC_FAIL" we can be triggered to fail */
-+    const char *p = get_env("UV_WANT_CC_FAIL", envp);
-+    if (p)
-+    {
-+        plugin_log(PLOG_NOTE, MODULE, "env has UV_WANT_CC_FAIL=%s -> fail", p);
-+        ret = OPENVPN_PLUGIN_FUNC_ERROR;
-+    }
-+
-+    /* now signal success/failure state to openvpn */
-+    fd = open(ccd_file, O_WRONLY);
-+    if (fd < 0)
-+    {
-+        plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "open('%s') failed", ccd_file);
-+        exit(1);
-+    }
-+
-+    plugin_log(PLOG_NOTE, MODULE, "cc_handle_deferred_v1: done, signalling %s",
-+               (ret == OPENVPN_PLUGIN_FUNC_SUCCESS) ? "success" : "fail" );
-+
-+    if (write(fd, (ret == OPENVPN_PLUGIN_FUNC_SUCCESS) ? "1" : "0", 1) != 1)
-+    {
-+        plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "write to '%s' failed", ccd_file );
-+    }
-+    close(fd);
-+
-+    exit(0);
-+}
-+
-+int
-+openvpn_plugin_client_connect(struct plugin_context *context,
-+                              const char **argv,
-+                              const char **envp)
-+{
-+    /* log environment variables handed to us by OpenVPN, but
-+     * only if "setenv verb" is 3 or higher (arbitrary number)
-+     */
-+    if (context->verb>=3)
-+    {
-+        for (int i = 0; argv[i]; i++)
-+        {
-+            plugin_log(PLOG_NOTE, MODULE, "per-client argv: %s", argv[i]);
-+        }
-+        for (int i = 0; envp[i]; i++)
-+        {
-+            plugin_log(PLOG_NOTE, MODULE, "per-client env: %s", envp[i]);
++        /* verify client -> server or server -> client connection */
++        if (((op == P_CONTROL_HARD_RESET_CLIENT_V2
++              || op == P_CONTROL_HARD_RESET_CLIENT_V3) && !multi->opt.server)
++            || ((op == P_CONTROL_HARD_RESET_SERVER_V2) && multi->opt.server))
+         {
+-            /* data channel packet */
+-            for (i = 0; i < KEY_SCAN_SIZE; ++i)
+-            {
+-                struct key_state *ks = multi->key_scan[i];
+-
+-                /*
+-                 * This is the basic test of TLS state compatibility between a local OpenVPN
+-                 * instance and its remote peer.
+-                 *
+-                 * If the test fails, it tells us that we are getting a packet from a source
+-                 * which claims reference to a prior negotiated TLS session, but the local
+-                 * OpenVPN instance has no memory of such a negotiation.
+-                 *
+-                 * It almost always occurs on UDP sessions when the passive side of the
+-                 * connection is restarted without the active side restarting as well (the
+-                 * passive side is the server which only listens for the connections, the
+-                 * active side is the client which initiates connections).
+-                 */
+-                if (DECRYPT_KEY_ENABLED(multi, ks)
+-                    && key_id == ks->key_id
+-                    && (ks->authenticated == KS_AUTH_TRUE)
+-                    && (floated || link_socket_actual_match(from, &ks->remote_addr)))
+-                {
+-                    if (!ks->crypto_options.key_ctx_bi.initialized)
+-                    {
+-                        msg(D_MULTI_DROPPED,
+-                            "Key %s [%d] not initialized (yet), dropping packet.",
+-                            print_link_socket_actual(from, &gc), key_id);
+-                        goto error_lite;
+-                    }
+-
+-                    /* return appropriate data channel decrypt key in opt */
+-                    *opt = &ks->crypto_options;
+-                    if (op == P_DATA_V2)
+-                    {
+-                        *ad_start = BPTR(buf);
+-                    }
+-                    ASSERT(buf_advance(buf, 1));
+-                    if (op == P_DATA_V1)
+-                    {
+-                        *ad_start = BPTR(buf);
+-                    }
+-                    else if (op == P_DATA_V2)
+-                    {
+-                        if (buf->len < 4)
+-                        {
+-                            msg(D_TLS_ERRORS, "Protocol error: received P_DATA_V2 from %s but length is < 4",
+-                                print_link_socket_actual(from, &gc));
+-                            goto error;
+-                        }
+-                        ASSERT(buf_advance(buf, 3));
+-                    }
++            msg(D_TLS_ERRORS,
++                "TLS Error: client->client or server->server connection attempted from %s",
++                print_link_socket_actual(from, &gc));
++            goto error;
 +        }
 +    }
-+
-+    /* by setting "UV_WANT_CC_ASYNC" we go to async/deferred mode */
-+    const char *p = get_env("UV_WANT_CC_ASYNC", envp);
-+    if (p)
-+    {
-+        /* the return value will usually be OPENVPN_PLUGIN_FUNC_DEFERRED
-+         * ("I will do my job in the background, check the status file!")
-+         * but depending on env setup it might be "..._ERRROR"
-+         */
-+        return cc_handle_deferred_v1(atoi(p), argv[1], envp);
-+    }
-+
-+    /* -- this is synchronous mode (openvpn waits for us) -- */
-+
-+    /* by setting "UV_WANT_CC_FAIL" we can be triggered to fail */
-+    p = get_env("UV_WANT_CC_FAIL", envp);
-+    if (p)
-+    {
-+        plugin_log(PLOG_NOTE, MODULE, "env has UV_WANT_CC_FAIL=%s -> fail", p);
-+        return OPENVPN_PLUGIN_FUNC_ERROR;
-+    }
-+
-+    /* does the caller want options?  give them some */
-+    int ret = write_cc_options_file(argv[1], envp);
-+
-+    return ret;
-+}
-+
-+int
-+openvpn_plugin_client_connect_v2(struct plugin_context *context,
-+                                 struct plugin_per_client_context *pcc,
-+                                 const char **envp,
-+                                 struct openvpn_plugin_string_list **return_list)
-+{
-+    /* by setting "UV_WANT_CC2_ASYNC" we go to async/deferred mode */
-+    const char *want_async = get_env("UV_WANT_CC2_ASYNC", envp);
-+    const char *want_fail = get_env("UV_WANT_CC2_FAIL", envp);
-+    const char *want_disable = get_env("UV_WANT_CC2_DISABLE", envp);
-+
-+    /* config to push towards client - can be controlled by OpenVPN
-+     * config ("setenv plugin_cc2_config ...") - mostly useful in a
-+     * regression test environment to push stuff like routes which are
-+     * then verified by t_client ping tests
+ 
+-                    ++ks->n_packets;
+-                    ks->n_bytes += buf->len;
+-                    dmsg(D_TLS_KEYSELECT,
+-                         "TLS: tls_pre_decrypt, key_id=%d, IP=%s",
+-                         key_id, print_link_socket_actual(from, &gc));
+-                    gc_free(&gc);
+-                    return ret;
+-                }
+-            }
++    /*
++     * Authenticate Packet
 +     */
-+    const char *client_config = get_env("plugin_cc2_config", envp);
-+    if (!client_config)
++    dmsg(D_TLS_DEBUG, "TLS: control channel, op=%s, IP=%s",
++         packet_opcode_name(op), print_link_socket_actual(from, &gc));
+ 
++    /* get remote session-id */
 +    {
-+        /* pick something meaningless which can be verified in client log */
-+        client_config = "push \"setenv CC2 MOOH\"\n";
++        struct buffer tmp = *buf;
++        buf_advance(&tmp, 1);
++        if (!session_id_read(&sid, &tmp) || !session_id_defined(&sid))
++        {
+             msg(D_TLS_ERRORS,
+-                "TLS Error: local/remote TLS keys are out of sync: %s [%d]",
+-                print_link_socket_actual(from, &gc), key_id);
+-            goto error_lite;
++                "TLS Error: session-id not found in packet from %s",
++                print_link_socket_actual(from, &gc));
++            goto error;
+         }
+-        else                      /* control channel packet */
+-        {
+-            bool do_burst = false;
+-            bool new_link = false;
+-            struct session_id sid; /* remote session ID */
 +    }
 +
-+    if (want_async)
++    int i;
++    /* use session ID to match up packet with appropriate tls_session object */
++    for (i = 0; i < TM_SIZE; ++i)
 +    {
-+        /* we do no really useful work here, so we just tell the
-+         * "CLIENT_CONNECT_DEFER_V2" handler that it should sleep
-+         * and then "do things" via the per-client-context
++        struct tls_session *session = &multi->session[i];
++        struct key_state *ks = &session->key[KS_PRIMARY];
+ 
+-            /* verify legal opcode */
+-            if (op < P_FIRST_OPCODE || op > P_LAST_OPCODE)
++        dmsg(D_TLS_DEBUG,
++             "TLS: initial packet test, i=%d state=%s, mysid=%s, rec-sid=%s, rec-ip=%s, stored-sid=%s, stored-ip=%s",
++             i,
++             state_name(ks->state),
++             session_id_print(&session->session_id, &gc),
++             session_id_print(&sid, &gc),
++             print_link_socket_actual(from, &gc),
++             session_id_print(&ks->session_id_remote, &gc),
++             print_link_socket_actual(&ks->remote_addr, &gc));
++
++        if (session_id_equal(&ks->session_id_remote, &sid))
++        /* found a match */
++        {
++            if (i == TM_LAME_DUCK)
+             {
+-                if (op == P_CONTROL_HARD_RESET_CLIENT_V1
+-                    || op == P_CONTROL_HARD_RESET_SERVER_V1)
+-                {
+-                    msg(D_TLS_ERRORS, "Peer tried unsupported key-method 1");
+-                }
+                 msg(D_TLS_ERRORS,
+-                    "TLS Error: unknown opcode received from %s op=%d",
+-                    print_link_socket_actual(from, &gc), op);
++                    "TLS ERROR: received control packet with stale session-id=%s",
++                    session_id_print(&sid, &gc));
+                 goto error;
+             }
++            dmsg(D_TLS_DEBUG,
++                 "TLS: found match, session[%d], sid=%s",
++                 i, session_id_print(&sid, &gc));
++            break;
++        }
++    }
+ 
+-            /* hard reset ? */
+-            if (is_hard_reset_method2(op))
+-            {
+-                /* verify client -> server or server -> client connection */
+-                if (((op == P_CONTROL_HARD_RESET_CLIENT_V2
+-                      || op == P_CONTROL_HARD_RESET_CLIENT_V3) && !multi->opt.server)
+-                    || ((op == P_CONTROL_HARD_RESET_SERVER_V2) && multi->opt.server))
+-                {
+-                    msg(D_TLS_ERRORS,
+-                        "TLS Error: client->client or server->server connection attempted from %s",
+-                        print_link_socket_actual(from, &gc));
+-                    goto error;
+-                }
+-            }
+-
+-            /*
+-             * Authenticate Packet
+-             */
+-            dmsg(D_TLS_DEBUG, "TLS: control channel, op=%s, IP=%s",
+-                 packet_opcode_name(op), print_link_socket_actual(from, &gc));
++    /*
++     * Hard reset and session id does not match any session in
++     * multi->session: Possible initial packet
++     */
++    if (i == TM_SIZE && is_hard_reset_method2(op))
++    {
++        struct tls_session *session = &multi->session[TM_ACTIVE];
++        struct key_state *ks = &session->key[KS_PRIMARY];
+ 
+-            /* get remote session-id */
++        /*
++         * If we have no session currently in progress, the initial packet will
++         * open a new session in TM_ACTIVE rather than TM_UNTRUSTED.
 +         */
-+        pcc->sleep_until = time(NULL) + atoi(want_async);
-+        pcc->want_fail = (want_fail != NULL);
-+        pcc->want_disable = (want_disable != NULL);
-+        pcc->client_config = client_config;
-+        plugin_log(PLOG_NOTE, MODULE, "env has UV_WANT_CC2_ASYNC=%s -> set up deferred handler", want_async);
-+        return OPENVPN_PLUGIN_FUNC_DEFERRED;
++        if (!session_id_defined(&ks->session_id_remote))
++        {
++            if (multi->opt.single_session && multi->n_sessions)
+             {
+-                struct buffer tmp = *buf;
+-                buf_advance(&tmp, 1);
+-                if (!session_id_read(&sid, &tmp) || !session_id_defined(&sid))
+-                {
+-                    msg(D_TLS_ERRORS,
+-                        "TLS Error: session-id not found in packet from %s",
+-                        print_link_socket_actual(from, &gc));
+-                    goto error;
+-                }
++                msg(D_TLS_ERRORS,
++                    "TLS Error: Cannot accept new session request from %s due to session context expire or --single-session [1]",
++                    print_link_socket_actual(from, &gc));
++                goto error;
+             }
+ 
+-            /* use session ID to match up packet with appropriate tls_session object */
+-            for (i = 0; i < TM_SIZE; ++i)
++#ifdef ENABLE_MANAGEMENT
++            if (management)
+             {
+-                struct tls_session *session = &multi->session[i];
+-                struct key_state *ks = &session->key[KS_PRIMARY];
+-
+-                dmsg(D_TLS_DEBUG,
+-                     "TLS: initial packet test, i=%d state=%s, mysid=%s, rec-sid=%s, rec-ip=%s, stored-sid=%s, stored-ip=%s",
+-                     i,
+-                     state_name(ks->state),
+-                     session_id_print(&session->session_id, &gc),
+-                     session_id_print(&sid, &gc),
+-                     print_link_socket_actual(from, &gc),
+-                     session_id_print(&ks->session_id_remote, &gc),
+-                     print_link_socket_actual(&ks->remote_addr, &gc));
+-
+-                if (session_id_equal(&ks->session_id_remote, &sid))
+-                /* found a match */
+-                {
+-                    if (i == TM_LAME_DUCK)
+-                    {
+-                        msg(D_TLS_ERRORS,
+-                            "TLS ERROR: received control packet with stale session-id=%s",
+-                            session_id_print(&sid, &gc));
+-                        goto error;
+-                    }
+-                    dmsg(D_TLS_DEBUG,
+-                         "TLS: found match, session[%d], sid=%s",
+-                         i, session_id_print(&sid, &gc));
+-                    break;
+-                }
++                management_set_state(management,
++                                     OPENVPN_STATE_AUTH,
++                                     NULL,
++                                     NULL,
++                                     NULL,
++                                     NULL,
++                                     NULL);
+             }
++#endif
+ 
+-            /*
+-             * Hard reset and session id does not match any session in
+-             * multi->session: Possible initial packet
+-             */
+-            if (i == TM_SIZE && is_hard_reset_method2(op))
+-            {
+-                struct tls_session *session = &multi->session[TM_ACTIVE];
+-                struct key_state *ks = &session->key[KS_PRIMARY];
+-
+-                /*
+-                 * If we have no session currently in progress, the initial packet will
+-                 * open a new session in TM_ACTIVE rather than TM_UNTRUSTED.
+-                 */
+-                if (!session_id_defined(&ks->session_id_remote))
+-                {
+-                    if (multi->opt.single_session && multi->n_sessions)
+-                    {
+-                        msg(D_TLS_ERRORS,
+-                            "TLS Error: Cannot accept new session request from %s due to session context expire or --single-session [1]",
+-                            print_link_socket_actual(from, &gc));
+-                        goto error;
+-                    }
++            msg(D_TLS_DEBUG_LOW,
++                "TLS: Initial packet from %s, sid=%s",
++                print_link_socket_actual(from, &gc),
++                session_id_print(&sid, &gc));
+ 
+-#ifdef ENABLE_MANAGEMENT
+-                    if (management)
+-                    {
+-                        management_set_state(management,
+-                                             OPENVPN_STATE_AUTH,
+-                                             NULL,
+-                                             NULL,
+-                                             NULL,
+-                                             NULL,
+-                                             NULL);
+-                    }
+-#endif
++            do_burst = true;
++            new_link = true;
++            i = TM_ACTIVE;
++            session->untrusted_addr = *from;
++        }
 +    }
-+
-+    /* by setting "UV_WANT_CC2_FAIL" we can be triggered to fail here */
-+    if (want_fail)
+ 
+-                    msg(D_TLS_DEBUG_LOW,
+-                        "TLS: Initial packet from %s, sid=%s",
+-                        print_link_socket_actual(from, &gc),
+-                        session_id_print(&sid, &gc));
++    /*
++     * If we detected new session in the last if block, i has
++     * changed to TM_ACTIVE, so check the condition again.
++     */
++    if (i == TM_SIZE && is_hard_reset_method2(op))
 +    {
-+        plugin_log(PLOG_NOTE, MODULE, "env has UV_WANT_CC2_FAIL=%s -> fail", want_fail);
-+        return OPENVPN_PLUGIN_FUNC_ERROR;
-+    }
-+
-+    struct openvpn_plugin_string_list *rl =
-+        calloc(1, sizeof(struct openvpn_plugin_string_list));
-+    if (!rl)
-+    {
-+        plugin_log(PLOG_ERR, MODULE, "malloc(return_list) failed");
-+        return OPENVPN_PLUGIN_FUNC_ERROR;
-+    }
-+    rl->name = strdup("config");
-+    if (want_disable)
-+    {
-+        plugin_log(PLOG_NOTE, MODULE, "env has UV_WANT_CC2_DISABLE, reject");
-+        rl->value = strdup("disable\n");
++        /*
++         * No match with existing sessions,
++         * probably a new session.
++         */
++        struct tls_session *session = &multi->session[TM_UNTRUSTED];
+ 
+-                    do_burst = true;
+-                    new_link = true;
+-                    i = TM_ACTIVE;
+-                    session->untrusted_addr = *from;
+-                }
+-            }
++        /*
++         * If --single-session, don't allow any hard-reset connection request
++         * unless it the the first packet of the session.
++         */
++        if (multi->opt.single_session)
++        {
++            msg(D_TLS_ERRORS,
++                "TLS Error: Cannot accept new session request from %s due to session context expire or --single-session [2]",
++                print_link_socket_actual(from, &gc));
++            goto error;
++        }
+ 
+-            /*
+-             * If we detected new session in the last if block, i has
+-             * changed to TM_ACTIVE, so check the condition again.
+-             */
+-            if (i == TM_SIZE && is_hard_reset_method2(op))
+-            {
+-                /*
+-                 * No match with existing sessions,
+-                 * probably a new session.
+-                 */
+-                struct tls_session *session = &multi->session[TM_UNTRUSTED];
+-
+-                /*
+-                 * If --single-session, don't allow any hard-reset connection request
+-                 * unless it the the first packet of the session.
+-                 */
+-                if (multi->opt.single_session)
+-                {
+-                    msg(D_TLS_ERRORS,
+-                        "TLS Error: Cannot accept new session request from %s due to session context expire or --single-session [2]",
+-                        print_link_socket_actual(from, &gc));
+-                    goto error;
+-                }
++        if (!read_control_auth(buf, &session->tls_wrap, from,
++                               session->opt))
++        {
++            goto error;
++        }
+ 
+-                if (!read_control_auth(buf, &session->tls_wrap, from,
+-                                       session->opt))
+-                {
+-                    goto error;
+-                }
++        /*
++         * New session-initiating control packet is authenticated at this point,
++         * assuming that the --tls-auth command line option was used.
++         *
++         * Without --tls-auth, we leave authentication entirely up to TLS.
++         */
++        msg(D_TLS_DEBUG_LOW,
++            "TLS: new session incoming connection from %s",
++            print_link_socket_actual(from, &gc));
+ 
+-                /*
+-                 * New session-initiating control packet is authenticated at this point,
+-                 * assuming that the --tls-auth command line option was used.
+-                 *
+-                 * Without --tls-auth, we leave authentication entirely up to TLS.
+-                 */
+-                msg(D_TLS_DEBUG_LOW,
+-                    "TLS: new session incoming connection from %s",
+-                    print_link_socket_actual(from, &gc));
++        new_link = true;
++        i = TM_UNTRUSTED;
++        session->untrusted_addr = *from;
 +    }
 +    else
 +    {
-+        rl->value = strdup(client_config);
++        struct tls_session *session = &multi->session[i];
++        struct key_state *ks = &session->key[KS_PRIMARY];
+ 
+-                new_link = true;
+-                i = TM_UNTRUSTED;
+-                session->untrusted_addr = *from;
+-            }
+-            else
++        /*
++         * Packet must belong to an existing session.
++         */
++        if (i != TM_ACTIVE && i != TM_UNTRUSTED)
++        {
++            msg(D_TLS_ERRORS,
++                "TLS Error: Unroutable control packet received from %s (si=%d op=%s)",
++                print_link_socket_actual(from, &gc),
++                i,
++                packet_opcode_name(op));
++            goto error;
++        }
++
++        /*
++         * Verify remote IP address
++         */
++        if (!new_link && !link_socket_actual_match(&ks->remote_addr, from))
++        {
++            msg(D_TLS_ERRORS, "TLS Error: Received control packet from unexpected IP addr: %s",
++                print_link_socket_actual(from, &gc));
++            goto error;
++        }
++
++        /*
++         * Remote is requesting a key renegotiation
++         */
++        if (op == P_CONTROL_SOFT_RESET_V1
++            && DECRYPT_KEY_ENABLED(multi, ks))
++        {
++            if (!read_control_auth(buf, &session->tls_wrap, from,
++                                   session->opt))
+             {
+-                struct tls_session *session = &multi->session[i];
+-                struct key_state *ks = &session->key[KS_PRIMARY];
++                goto error;
++            }
+ 
+-                /*
+-                 * Packet must belong to an existing session.
+-                 */
+-                if (i != TM_ACTIVE && i != TM_UNTRUSTED)
+-                {
+-                    msg(D_TLS_ERRORS,
+-                        "TLS Error: Unroutable control packet received from %s (si=%d op=%s)",
+-                        print_link_socket_actual(from, &gc),
+-                        i,
+-                        packet_opcode_name(op));
+-                    goto error;
+-                }
++            key_state_soft_reset(session);
+ 
+-                /*
+-                 * Verify remote IP address
+-                 */
+-                if (!new_link && !link_socket_actual_match(&ks->remote_addr, from))
+-                {
+-                    msg(D_TLS_ERRORS, "TLS Error: Received control packet from unexpected IP addr: %s",
+-                        print_link_socket_actual(from, &gc));
+-                    goto error;
+-                }
++            dmsg(D_TLS_DEBUG,
++                 "TLS: received P_CONTROL_SOFT_RESET_V1 s=%d sid=%s",
++                 i, session_id_print(&sid, &gc));
++        }
++        else
++        {
++            /*
++             * Remote responding to our key renegotiation request?
++             */
++            if (op == P_CONTROL_SOFT_RESET_V1)
++            {
++                do_burst = true;
++            }
+ 
+-                /*
+-                 * Remote is requesting a key renegotiation
+-                 */
+-                if (op == P_CONTROL_SOFT_RESET_V1
+-                    && DECRYPT_KEY_ENABLED(multi, ks))
+-                {
+-                    if (!read_control_auth(buf, &session->tls_wrap, from,
+-                                           session->opt))
+-                    {
+-                        goto error;
+-                    }
++            if (!read_control_auth(buf, &session->tls_wrap, from,
++                                   session->opt))
++            {
++                goto error;
++            }
+ 
+-                    key_state_soft_reset(session);
++            dmsg(D_TLS_DEBUG,
++                 "TLS: received control channel packet s#=%d sid=%s",
++                 i, session_id_print(&sid, &gc));
++        }
 +    }
-+
-+    if (!rl->name || !rl->value)
-+    {
-+        plugin_log(PLOG_ERR, MODULE, "malloc(return_list->xx) failed");
-+        return OPENVPN_PLUGIN_FUNC_ERROR;
-+    }
-+
-+    *return_list = rl;
-+
-+    return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+}
-+
-+int
-+openvpn_plugin_client_connect_defer_v2(struct plugin_context *context,
-+                                       struct plugin_per_client_context *pcc,
-+                                       struct openvpn_plugin_string_list
-+                                       **return_list)
-+{
-+    time_t time_left = pcc->sleep_until - time(NULL);
-+    plugin_log(PLOG_NOTE, MODULE, "defer_v2: seconds left=%d",
-+               (int) time_left);
-+
-+    /* not yet due? */
-+    if (time_left > 0)
-+    {
-+        return OPENVPN_PLUGIN_FUNC_DEFERRED;
-+    }
-+
-+    /* client wants fail? */
-+    if (pcc->want_fail)
-+    {
-+        plugin_log(PLOG_NOTE, MODULE, "env has UV_WANT_CC2_FAIL -> fail" );
-+        return OPENVPN_PLUGIN_FUNC_ERROR;
-+    }
-+
-+    /* fill in RL according to with-disable / without-disable */
-+
-+    /* TODO: unify this with non-deferred case */
-+    struct openvpn_plugin_string_list *rl =
-+        calloc(1, sizeof(struct openvpn_plugin_string_list));
-+    if (!rl)
-+    {
-+        plugin_log(PLOG_ERR, MODULE, "malloc(return_list) failed");
-+        return OPENVPN_PLUGIN_FUNC_ERROR;
-+    }
-+    rl->name = strdup("config");
-+    if (pcc->want_disable)
-+    {
-+        plugin_log(PLOG_NOTE, MODULE, "env has UV_WANT_CC2_DISABLE, reject");
-+        rl->value = strdup("disable\n");
-+    }
-+    else
-+    {
-+        rl->value = strdup(pcc->client_config);
-+    }
-+
-+    if (!rl->name || !rl->value)
-+    {
-+        plugin_log(PLOG_ERR, MODULE, "malloc(return_list->xx) failed");
-+        return OPENVPN_PLUGIN_FUNC_ERROR;
-+    }
-+
-+    *return_list = rl;
-+
-+    return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+}
-+
-+OPENVPN_EXPORT int
-+openvpn_plugin_func_v2(openvpn_plugin_handle_t handle,
-+                       const int type,
-+                       const char *argv[],
-+                       const char *envp[],
-+                       void *per_client_context,
-+                       struct openvpn_plugin_string_list **return_list)
-+{
-+    struct plugin_context *context = (struct plugin_context *) handle;
-+    struct plugin_per_client_context *pcc = (struct plugin_per_client_context *) per_client_context;
-+
-+    /* for most functions, we just "don't do anything" but log the
-+     * event received (so one can follow it in the log and understand
-+     * the sequence of events).  CONNECT and CONNECT_V2 are handled
+ 
+-                    dmsg(D_TLS_DEBUG,
+-                         "TLS: received P_CONTROL_SOFT_RESET_V1 s=%d sid=%s",
+-                         i, session_id_print(&sid, &gc));
+-                }
+-                else
+-                {
+-                    /*
+-                     * Remote responding to our key renegotiation request?
+-                     */
+-                    if (op == P_CONTROL_SOFT_RESET_V1)
+-                    {
+-                        do_burst = true;
+-                    }
++    /*
++     * We have an authenticated control channel packet (if --tls-auth was set).
++     * Now pass to our reliability layer which deals with
++     * packet acknowledgements, retransmits, sequencing, etc.
 +     */
-+    switch (type)
++    struct tls_session *session = &multi->session[i];
++    struct key_state *ks = &session->key[KS_PRIMARY];
+ 
+-                    if (!read_control_auth(buf, &session->tls_wrap, from,
+-                                           session->opt))
+-                    {
+-                        goto error;
+-                    }
++    /* Make sure we were initialized and that we're not in an error state */
++    ASSERT(ks->state != S_UNDEF);
++    ASSERT(ks->state != S_ERROR);
++    ASSERT(session_id_defined(&session->session_id));
+ 
+-                    dmsg(D_TLS_DEBUG,
+-                         "TLS: received control channel packet s#=%d sid=%s",
+-                         i, session_id_print(&sid, &gc));
+-                }
+-            }
++    /* Let our caller know we processed a control channel packet */
++    ret = true;
+ 
+-            /*
+-             * We have an authenticated control channel packet (if --tls-auth was set).
+-             * Now pass to our reliability layer which deals with
+-             * packet acknowledgements, retransmits, sequencing, etc.
+-             */
+-            {
+-                struct tls_session *session = &multi->session[i];
+-                struct key_state *ks = &session->key[KS_PRIMARY];
++    /*
++     * Set our remote address and remote session_id
++     */
++    if (new_link)
 +    {
-+        case OPENVPN_PLUGIN_UP:
-+            plugin_log(PLOG_NOTE, MODULE, "OPENVPN_PLUGIN_UP");
-+            break;
-+
-+        case OPENVPN_PLUGIN_DOWN:
-+            plugin_log(PLOG_NOTE, MODULE, "OPENVPN_PLUGIN_DOWN");
-+            break;
-+
-+        case OPENVPN_PLUGIN_ROUTE_UP:
-+            plugin_log(PLOG_NOTE, MODULE, "OPENVPN_PLUGIN_ROUTE_UP");
-+            break;
-+
-+        case OPENVPN_PLUGIN_IPCHANGE:
-+            plugin_log(PLOG_NOTE, MODULE, "OPENVPN_PLUGIN_IPCHANGE");
-+            break;
-+
-+        case OPENVPN_PLUGIN_TLS_VERIFY:
-+            plugin_log(PLOG_NOTE, MODULE, "OPENVPN_PLUGIN_TLS_VERIFY");
-+            break;
-+
-+        case OPENVPN_PLUGIN_CLIENT_CONNECT:
-+            plugin_log(PLOG_NOTE, MODULE, "OPENVPN_PLUGIN_CLIENT_CONNECT");
-+            return openvpn_plugin_client_connect(context, argv, envp);
-+
-+        case OPENVPN_PLUGIN_CLIENT_CONNECT_V2:
-+            plugin_log(PLOG_NOTE, MODULE, "OPENVPN_PLUGIN_CLIENT_CONNECT_V2");
-+            return openvpn_plugin_client_connect_v2(context, pcc, envp,
-+                                                    return_list);
-+
-+        case OPENVPN_PLUGIN_CLIENT_CONNECT_DEFER_V2:
-+            plugin_log(PLOG_NOTE, MODULE, "OPENVPN_PLUGIN_CLIENT_CONNECT_DEFER_V2");
-+            return openvpn_plugin_client_connect_defer_v2(context, pcc,
-+                                                          return_list);
-+
-+        case OPENVPN_PLUGIN_CLIENT_DISCONNECT:
-+            plugin_log(PLOG_NOTE, MODULE, "OPENVPN_PLUGIN_CLIENT_DISCONNECT");
-+            break;
-+
-+        case OPENVPN_PLUGIN_LEARN_ADDRESS:
-+            plugin_log(PLOG_NOTE, MODULE, "OPENVPN_PLUGIN_LEARN_ADDRESS");
-+            break;
-+
-+        case OPENVPN_PLUGIN_TLS_FINAL:
-+            plugin_log(PLOG_NOTE, MODULE, "OPENVPN_PLUGIN_TLS_FINAL");
-+            break;
-+
-+        default:
-+            plugin_log(PLOG_NOTE, MODULE, "OPENVPN_PLUGIN_? type=%d\n", type);
++        ks->session_id_remote = sid;
++        ks->remote_addr = *from;
++        ++multi->n_sessions;
 +    }
-+    return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+}
-+
-+OPENVPN_EXPORT void *
-+openvpn_plugin_client_constructor_v1(openvpn_plugin_handle_t handle)
-+{
-+    printf("FUNC: openvpn_plugin_client_constructor_v1\n");
-+    return calloc(1, sizeof(struct plugin_per_client_context));
-+}
-+
-+OPENVPN_EXPORT void
-+openvpn_plugin_client_destructor_v1(openvpn_plugin_handle_t handle, void *per_client_context)
-+{
-+    printf("FUNC: openvpn_plugin_client_destructor_v1\n");
-+    free(per_client_context);
-+}
-+
-+OPENVPN_EXPORT void
-+openvpn_plugin_close_v1(openvpn_plugin_handle_t handle)
-+{
-+    struct plugin_context *context = (struct plugin_context *) handle;
-+    printf("FUNC: openvpn_plugin_close_v1\n");
-+    free(context);
-+}
++    else if (!link_socket_actual_match(&ks->remote_addr, from))
++    {
++        msg(D_TLS_ERRORS,
++            "TLS Error: Existing session control channel packet from unknown IP address: %s",
++            print_link_socket_actual(from, &gc));
++        goto error;
++    }
+ 
+-                /* Make sure we were initialized and that we're not in an error state */
+-                ASSERT(ks->state != S_UNDEF);
+-                ASSERT(ks->state != S_ERROR);
+-                ASSERT(session_id_defined(&session->session_id));
++    /*
++     * Should we do a retransmit of all unacknowledged packets in
++     * the send buffer?  This improves the start-up efficiency of the
++     * initial key negotiation after the 2nd peer comes online.
++     */
++    if (do_burst && !session->burst)
++    {
++        reliable_schedule_now(ks->send_reliable);
++        session->burst = true;
++    }
+ 
+-                /* Let our caller know we processed a control channel packet */
+-                ret = true;
++    /* Check key_id */
++    if (ks->key_id != key_id)
++    {
++        msg(D_TLS_ERRORS,
++            "TLS ERROR: local/remote key IDs out of sync (%d/%d) ID: %s",
++            ks->key_id, key_id, print_key_id(multi, &gc));
++        goto error;
++    }
+ 
+-                /*
+-                 * Set our remote address and remote session_id
+-                 */
+-                if (new_link)
+-                {
+-                    ks->session_id_remote = sid;
+-                    ks->remote_addr = *from;
+-                    ++multi->n_sessions;
+-                }
+-                else if (!link_socket_actual_match(&ks->remote_addr, from))
+-                {
+-                    msg(D_TLS_ERRORS,
+-                        "TLS Error: Existing session control channel packet from unknown IP address: %s",
+-                        print_link_socket_actual(from, &gc));
+-                    goto error;
+-                }
++    /*
++     * Process incoming ACKs for packets we can now
++     * delete from reliable send buffer
++     */
++    {
++        /* buffers all packet IDs to delete from send_reliable */
++        struct reliable_ack send_ack;
+ 
+-                /*
+-                 * Should we do a retransmit of all unacknowledged packets in
+-                 * the send buffer?  This improves the start-up efficiency of the
+-                 * initial key negotiation after the 2nd peer comes online.
+-                 */
+-                if (do_burst && !session->burst)
+-                {
+-                    reliable_schedule_now(ks->send_reliable);
+-                    session->burst = true;
+-                }
++        send_ack.len = 0;
++        if (!reliable_ack_read(&send_ack, buf, &session->session_id))
++        {
++            msg(D_TLS_ERRORS,
++                "TLS Error: reading acknowledgement record from packet");
++            goto error;
++        }
++        reliable_send_purge(ks->send_reliable, &send_ack);
++    }
+ 
+-                /* Check key_id */
+-                if (ks->key_id != key_id)
+-                {
+-                    msg(D_TLS_ERRORS,
+-                        "TLS ERROR: local/remote key IDs out of sync (%d/%d) ID: %s",
+-                        ks->key_id, key_id, print_key_id(multi, &gc));
+-                    goto error;
+-                }
++    if (op != P_ACK_V1 && reliable_can_get(ks->rec_reliable))
++    {
++        packet_id_type id;
+ 
+-                /*
+-                 * Process incoming ACKs for packets we can now
+-                 * delete from reliable send buffer
+-                 */
++        /* Extract the packet ID from the packet */
++        if (reliable_ack_read_packet_id(buf, &id))
++        {
++            /* Avoid deadlock by rejecting packet that would de-sequentialize receive buffer */
++            if (reliable_wont_break_sequentiality(ks->rec_reliable, id))
++            {
++                if (reliable_not_replay(ks->rec_reliable, id))
+                 {
+-                    /* buffers all packet IDs to delete from send_reliable */
+-                    struct reliable_ack send_ack;
+-
+-                    send_ack.len = 0;
+-                    if (!reliable_ack_read(&send_ack, buf, &session->session_id))
++                    /* Save incoming ciphertext packet to reliable buffer */
++                    struct buffer *in = reliable_get_buf(ks->rec_reliable);
++                    ASSERT(in);
++                    if (!buf_copy(in, buf))
+                     {
+-                        msg(D_TLS_ERRORS,
+-                            "TLS Error: reading acknowledgement record from packet");
++                        msg(D_MULTI_DROPPED,
++                            "Incoming control channel packet too big, dropping.");
+                         goto error;
+                     }
+-                    reliable_send_purge(ks->send_reliable, &send_ack);
++                    reliable_mark_active_incoming(ks->rec_reliable, in, id, op);
+                 }
+ 
+-                if (op != P_ACK_V1 && reliable_can_get(ks->rec_reliable))
+-                {
+-                    packet_id_type id;
+-
+-                    /* Extract the packet ID from the packet */
+-                    if (reliable_ack_read_packet_id(buf, &id))
+-                    {
+-                        /* Avoid deadlock by rejecting packet that would de-sequentialize receive buffer */
+-                        if (reliable_wont_break_sequentiality(ks->rec_reliable, id))
+-                        {
+-                            if (reliable_not_replay(ks->rec_reliable, id))
+-                            {
+-                                /* Save incoming ciphertext packet to reliable buffer */
+-                                struct buffer *in = reliable_get_buf(ks->rec_reliable);
+-                                ASSERT(in);
+-                                if (!buf_copy(in, buf))
+-                                {
+-                                    msg(D_MULTI_DROPPED,
+-                                        "Incoming control channel packet too big, dropping.");
+-                                    goto error;
+-                                }
+-                                reliable_mark_active_incoming(ks->rec_reliable, in, id, op);
+-                            }
+-
+-                            /* Process outgoing acknowledgment for packet just received, even if it's a replay */
+-                            reliable_ack_acknowledge_packet_id(ks->rec_ack, id);
+-                        }
+-                    }
+-                }
++                /* Process outgoing acknowledgment for packet just received, even if it's a replay */
++                reliable_ack_acknowledge_packet_id(ks->rec_ack, id);
+             }
+         }
+     }
+@@ -3621,7 +3644,6 @@ done:
+ 
+ error:
+     ++multi->n_soft_errors;
+-error_lite:
+     tls_clear_error();
+     goto done;
+ }
 -- 
 2.26.2
 
