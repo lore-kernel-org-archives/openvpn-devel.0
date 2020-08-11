@@ -1,14 +1,15 @@
-Date: Tue, 11 Aug 2020 11:10:06 +0200
+Date: Tue, 11 Aug 2020 11:13:28 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20200811091006.GA75094@...1296...>
+Message-ID: <20200811091328.GB75094@...1296...>
 References: <20200810143707.5834-1-arne@...1227...>
- <20200810143707.5834-2-arne@...1227...>
+ <20200810143707.5834-3-arne@...1227...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="TMgB3/Ch1aWgZB1L"
+ protocol="application/pgp-signature"; boundary="7gQyIpR7q4QSXYu+"
 Content-Disposition: inline
-In-Reply-To: <20200810143707.5834-2-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 01/17] Refactor/Reformat tls_pre_decrypt
+In-Reply-To: <20200810143707.5834-3-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH 02/17] Cleanup tls_pre_decrypt_lite and
+ tls_pre_encrypt
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,35 +21,21 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---TMgB3/Ch1aWgZB1L
+--7gQyIpR7q4QSXYu+
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Mon, Aug 10, 2020 at 04:36:51PM +0200, Arne Schwabe wrote:
-> - Extract data packet handling to its own function
-> - Replace two instances of
->           if (x) { code }
->   with
->           if (!x) return; code
+On Mon, Aug 10, 2020 at 04:36:52PM +0200, Arne Schwabe wrote:
+> Mostly C90 -> C99 cleanups and again immediately instead
+> wrapping function body into if.
 >=20
-> - Remove extra curly braces that were used for pre C99 code style
->   to be able to declare variables in the middle of a block
->=20
-> This patch is easier to review with "ignore white space" as the
-> diff is then a lot smaller in that case and the changes more obvious.
+> (Review with ignore whitespace)
 
-Generally, the patch works, and makes the resulting code better - but
-we're not fully there yet.  There is a funny germanism with "packet()"
-showing up as "paket()" [which I could fix on the fly] but there is
-also the labels at the end of handle_data_channel_pa(c)ket() which=20
-are a bit awkward now - "done:" is not used anymore, "error:" is only
-used once (so the caller could just increase the ->n_soft_errors and=20
-jump to error_lite:)
-
-So I'd rather not merge it "as it is"
+This does not apply without 01, and since I just asked for changes on 01,=20
+I'm putting this one to "changes requested" as well...
 
 gert
 --=20
@@ -61,22 +48,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---TMgB3/Ch1aWgZB1L
+--7gQyIpR7q4QSXYu+
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJfMmBuAAoJEB2Cnv7KVigSQ9sMAIGmWTRVim0wFkECZ1PO+e2R
-yeisOlDl6ijaQbmRAy3hgDfQqZwC7H8CiuLHL6pnsiY5MTJnOzbwYf3q6dvENzSq
-HWNEqI5aDlbNH/qpelNb4s91QWbWdBinkm4PYBfgFEhNr2P6Es/4+ccU+j3xFYt7
-VuDXChKuNzuF/yF6+vko3H1RxHdg4tUxxGsBxvWFfak99wX92Ilr/t6ZL0wep2a+
-uhcsiQaRLVCZK8C/tGT9wzh2sADDgwHQaOyTwl8zb2y6DSUNC3cJoZ3y5tRFD8IB
-cRh/8Ky7Wo/i2MxaUtcqq0mpSu5IbEifNo7ujWCTIoB+z9y5eEtuM4Mf6ANKWN8J
-q+NYpPgnp6KazFniHdmGiWmCWrK5v4CQvJ33DzLU3BpFEIRLjogpCKrn3li/eVJh
-CM+4MsakXuz2Jsd7y9Nxyl1OvvzOd9ls+1geVTGj+MnwJKbULKaHZsMooazdehsw
-WFSq1LN5X27Ogai4kdF5b03SclCWbw9I4LwYf2Tmbg==
-=l1HD
+iQGcBAEBAgAGBQJfMmE3AAoJEB2Cnv7KVigSpNML/3+7bmpLh7Pk7/WO42T9O760
+/teudn/IATP1hzRKZ8WYL9Lk/37X2fNRvw5V87FZqp+sBgePdS/RlXePPTlt1jtJ
+HpwUYaFUAYSptKphYPmWmidZRIQ6RTKeFTbakCmA/HBO8Imos2xkal6WGy1SD4Fk
+QC2oXutJJyBF4/GQUVqLJ/PwWnSchD/vA6YChhLTSnCfmGsw6zZHZkz3mhI22uVg
+RTMQS7KeIs65ffwyvt8Sc6qLsFiw3sdrqK983VkTFxpAs7rIrpiBlPa2MZQ3Q61Z
+0Dng7MUiezNxg8AHmHS1mso2xGB9kuIKr2bjQFBle6Eqm1l8tdxwwmrIS7pSVa/3
+nCUJJ9aJ0BEE8QTws9FMmWB2RbvCqFF17aijA0dpiC1NrmwghNZZ0KjpOxdEkwW1
+8bl1HdoOFCMxHjBdADWA7bg2NgcKZxKxDxmWuSVYBA6AFN1zQXqGb0usL9ZvSE5k
+bfOPhvFOeFP9v0ZJemKhc7AquF7Cg1sfon9Kp2w1hQ==
+=5la9
 -----END PGP SIGNATURE-----
 
---TMgB3/Ch1aWgZB1L--
+--7gQyIpR7q4QSXYu+--
 
