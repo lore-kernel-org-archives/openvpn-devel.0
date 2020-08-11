@@ -1,14 +1,16 @@
-Date: Tue, 11 Aug 2020 11:32:27 +0200
+Date: Tue, 11 Aug 2020 11:51:25 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20200811093227.GE75094@...1296...>
-References: <cc9094b8-caa6-34b6-ed7a-3ccb34560113@...1918...>
+Message-ID: <20200811095125.GF75094@...1296...>
+References: <20181024113341.1242-1-arne@...1227...>
+ <2c30a581-b699-150f-2dc8-309e15860f27@...2080...>
+ <6512229c-0300-cd4b-5b79-ec6d2f1e2ac6@...1227...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="PSXRUCbmiibGgnYg"
+ protocol="application/pgp-signature"; boundary="gvPGo+RAdjC9O5ul"
 Content-Disposition: inline
-In-Reply-To: <cc9094b8-caa6-34b6-ed7a-3ccb34560113@...1918...>
-Subject: Re: [Openvpn-devel] [PATCH v2 1/2] Send auth fail to client on
- reneg failure
+In-Reply-To: <6512229c-0300-cd4b-5b79-ec6d2f1e2ac6@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] Document comp-lzo no and compress being
+ incompatible
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,30 +19,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Eric Thorpe <eric@...1918...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---PSXRUCbmiibGgnYg
+--gvPGo+RAdjC9O5ul
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Thu, Apr 11, 2019 at 12:07:27PM +1000, Eric Thorpe wrote:
-> This patch relies on Arne's "Add send_control_channel_string_dowork
-> variant" patch.
+On Fri, Oct 26, 2018 at 04:48:26PM +0200, Arne Schwabe wrote:
+> Am 26.10.18 um 13:31 schrieb David Sommerseth:
+> > On 24/10/18 13:33, Arne Schwabe wrote:
+> >> Most of the new compress but not v2 version do use swap operation. For
+> >> 'compress lzo' the swap option is not used for backwards compatibility.
+> >> For lz4 the swap option is also not a problem since there is no version
+> >> without swap. Unfortunately, compress introduced a second stub format
+> >> with swap, contrary to the one in 'comp-lzo no' that does not use swap.
+> >>
+> >> Document this weirdness to let not others fall into this trap.
 
-So.  After we left you out in the cold for over a year (apologies=20
-for that), we should revisit your patch set.
-
-I checked with Arne, he says "no, that functionality is not in yet,
-but still interesting" - and all the *other* auth/plugin/async/SSO
-related code we had brewing is in.
-
-So - if you're not too frustrated with us yet: can you re-send?
+If we still want that: can you re-send based on the .rst we have no?
 
 gert
+
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -51,22 +54,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---PSXRUCbmiibGgnYg
+--gvPGo+RAdjC9O5ul
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJfMmWqAAoJEB2Cnv7KVigSEUQL/3PCs3AJOE4M7KJJcUd2aKbN
-Brz3GCmOw2eIwmxNud09aMgyFiNOloEuEFJiri77c5nmVJ7BCvbUC/BhSILcakQG
-ClpeEOj1MDvD9ZjpIDpwI8tbWV3y2kIw5MR4au/6YfU18n707hFm6Td1emaaOjlX
-7d5gHhuzPDgvmrIUgDxYctr6HFEIYOzDJXu+YgxUD++H8A0Jo7sS5CoN6mwyYjQw
-QR0OCwE4tOJ9+KDhP6RKlXYR52n/AtTxcFg4xwr8y2PFobI+NWIPs7Zlc2qRrM+A
-StNZkE9NdbZlK+gOMB9wrmC53BBPa1jeROe+5KIQac9ECdiFxxlpkTBgy5U/VD20
-vb/0ebgwnz9MN3Shp2/dvVv3O0+3AreZVppt06f7o5gc7duX/kf9U+5kptsB7KP+
-ul3PVCXZWEyBa8Q3VdlD2JTrwLFIglNauvyP7ZqBxV5vg0g2VmSve1eQoECK72+P
-SB9Qh2/n/Nn+T9D0mJfxCIl6nA+0R+wtPykSB/+lIA==
-=B125
+iQGcBAEBAgAGBQJfMmocAAoJEB2Cnv7KVigSje4L/Rnp/aW2PogrHUzPsh1oVsDK
+pnCBiSh4G0no3VkL6ytdOgHiBjOv8LXESygsh19HzejEc8NhxCSXrh9QJRTK/e7K
+qhJXOaF6OPV4llboR9TC67tfzxH0O8jNrgE3XqVKhWpOl5sm0aRHOmexD0DlhgIk
+QjRTpwJ+tioYznneICFzteZNo7ffesTIDyq797Q9TGPg7blgdLC8c5tVwr5KXypM
+tsxkV7Kz/sSdlaZSUwlPItrtXEOf0oRXmrakvInqq4KIE2tbEJKRy03OMxJQJBAo
+yp+Si4jExzmvhsV429GU0078TEuofB6qlgya7z2dqwNMSvAf9XxazlF+/vOAWuRS
+KLnGR7JUg293SXxBI+NjTaWw30aA6fGOH7QJLLozgUZ99Ui1vmv4IZII1zW7IjA5
+Q3/suVp94owMjun5LbX7KIKbHGYSO5oAZfyVVmi3vc3P6ZcyeEc88LwvxzcvpHpZ
+tFudbYomrFFPPvlwhxuwkvMXO3PGIQovgzpl5Q2cJw==
+=c5aG
 -----END PGP SIGNATURE-----
 
---PSXRUCbmiibGgnYg--
+--gvPGo+RAdjC9O5ul--
 
