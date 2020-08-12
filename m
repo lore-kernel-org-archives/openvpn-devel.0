@@ -1,8 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Wed, 12 Aug 2020 10:55:37 +0200
-Message-Id: <20200812085539.19620-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 1/3] Refactor
- key_state_export_keying_material functions
+Date: Wed, 12 Aug 2020 10:55:38 +0200
+Message-Id: <20200812085539.19620-2-arne@...1227...>
+In-Reply-To: <20200812085539.19620-1-arne@...1227...>
+References: <20200812085539.19620-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH 2/3] Move openvpn specific key expansion
+ into its own function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,215 +17,186 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This refactors the common code between mbed SSL and OpenSSL into
-export_user_keying_material and also prepares the backend functions
-to export more than one key.
-
-Also fix checking the return value of SSL_export_keying_material
-only 1 is a sucess, -1 is also an error.
+This moves the OpenVPN specific PRF into its own function also
+simplifies the code a bit by passing tls_session directly instead of
+5 of its fields.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/ssl.c         | 33 ++++++++++++++++++++++++-
- src/openvpn/ssl_backend.h | 18 ++++++++++++--
- src/openvpn/ssl_mbedtls.c | 22 ++++++-----------
- src/openvpn/ssl_openssl.c | 51 +++++++++++++++++++++------------------
- 4 files changed, 83 insertions(+), 41 deletions(-)
+ src/openvpn/ssl.c | 109 +++++++++++++++++++++++++++++-----------------
+ 1 file changed, 69 insertions(+), 40 deletions(-)
 
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index f16114c2..390114e1 100644
+index 390114e1..e44017c6 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -2412,6 +2412,37 @@ error:
-     return false;
+@@ -1765,27 +1765,38 @@ openvpn_PRF(const uint8_t *secret,
+     VALGRIND_MAKE_READABLE((void *)output, output_len);
  }
  
+-/*
+- * Using source entropy from local and remote hosts, mix into
+- * master key.
+- */
+-static bool
+-generate_key_expansion(struct key_ctx_bi *key,
+-                       const struct key_type *key_type,
+-                       const struct key_source2 *key_src,
+-                       const struct session_id *client_sid,
+-                       const struct session_id *server_sid,
+-                       bool server)
 +static void
-+export_user_keying_material(struct key_state_ssl *ssl,
-+                            struct tls_session *session)
++init_key_contexts(struct key_ctx_bi *key,
++                  const struct key_type *key_type,
++                  bool server,
++                  struct key2 *key2)
 +{
-+    if (session->opt->ekm_size > 0)
-+    {
-+        unsigned int size = session->opt->ekm_size;
-+        struct gc_arena gc = gc_new();
++    /* Initialize OpenSSL key contexts */
++    int key_direction = server ? KEY_DIRECTION_INVERSE : KEY_DIRECTION_NORMAL;
++    init_key_ctx_bi(key, key2, key_direction, key_type, "Data Channel");
 +
-+        unsigned char *ekm;
-+        if ((ekm = key_state_export_keying_material(ssl, session,
-+                                                    EXPORT_KEY_USER, &gc)))
-+        {
-+            unsigned int len = (size * 2) + 2;
++    /* Initialize implicit IVs */
++    key_ctx_update_implicit_iv(&key->encrypt, (*key2).keys[(int)server].hmac,
++                               MAX_HMAC_KEY_LENGTH);
++    key_ctx_update_implicit_iv(&key->decrypt, (*key2).keys[1-(int)server].hmac,
++                               MAX_HMAC_KEY_LENGTH);
 +
-+            const char *key = format_hex_ex(ekm, size, len, 0, NULL, &gc);
-+            setenv_str(session->opt->es, "exported_keying_material", key);
-+
-+            dmsg(D_TLS_DEBUG_MED, "%s: exported keying material: %s",
-+                 __func__, key);
-+            secure_memzero(ekm, size);
-+        }
-+        else
-+        {
-+            msg(M_WARN, "WARNING: Export keying material failed!");
-+            setenv_del(session->opt->es, "exported_keying_material");
-+        }
-+        gc_free(&gc);
-+    }
 +}
 +
- /**
-  * Handle reading key data, peer-info, username/password, OCC
-  * from the TLS control channel (cleartext).
-@@ -2541,7 +2572,7 @@ key_method_2_read(struct buffer *buf, struct tls_multi *multi, struct tls_sessio
-     if ((ks->authenticated > KS_AUTH_FALSE)
-         && plugin_defined(session->opt->plugins, OPENVPN_PLUGIN_TLS_FINAL))
-     {
--        key_state_export_keying_material(&ks->ks_ssl, session);
-+        export_user_keying_material(&ks->ks_ssl, session);
- 
-         if (plugin_call(session->opt->plugins, OPENVPN_PLUGIN_TLS_FINAL, NULL, NULL, session->opt->es) != OPENVPN_PLUGIN_FUNC_SUCCESS)
-         {
-diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
-index 7f52ab1e..8faaefd5 100644
---- a/src/openvpn/ssl_backend.h
-+++ b/src/openvpn/ssl_backend.h
-@@ -389,18 +389,32 @@ void key_state_ssl_free(struct key_state_ssl *ks_ssl);
- void backend_tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx,
-                                 const char *crl_file, bool crl_inline);
- 
 +
-+/* defines the different RFC5705 that are used in OpenVPN */
-+enum export_key_identifier {
-+    EXPORT_KEY_USER
-+};
-+
- /**
-  * Keying Material Exporters [RFC 5705] allows additional keying material to be
-  * derived from existing TLS channel. This exported keying material can then be
-  * used for a variety of purposes.
-  *
-+ * Note
-+ *
-  * @param ks_ssl       The SSL channel's state info
-  * @param session      The session associated with the given key_state
-+ * @param key          The key to export.
-+ * @param gc           gc_arena that might be used to allocate a string
-+ * @returns            The exported key material, the caller may zero the
-+ *                     string but should not free it
-  */
- 
--void
-+unsigned char*
- key_state_export_keying_material(struct key_state_ssl *ks_ssl,
--                                 struct tls_session *session) __attribute__((nonnull));
-+                                 struct tls_session *session,
-+                                 enum export_key_identifier export_key,
-+                                 struct gc_arena *gc) __attribute__((nonnull));
- 
- /**************************************************************************/
- /** @addtogroup control_tls
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index 9c874788..8ae6ec7b 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -231,24 +231,18 @@ mbedtls_ssl_export_keys_cb(void *p_expkey, const unsigned char *ms,
- }
- #endif /* HAVE_EXPORT_KEYING_MATERIAL */
- 
--void
-+unsigned char *
- key_state_export_keying_material(struct key_state_ssl *ssl,
--                                 struct tls_session *session)
-+                                 struct tls_session *session,
-+                                 enum export_key_identifier key_id,
-+                                 struct gc_arena *gc)
++static struct key2
++generate_key_expansion_oepnvpn_prf(const struct tls_session *session)
  {
--    if (ssl->exported_key_material)
-+    if (key_id == EXPORT_KEY_USER)
-     {
--        unsigned int size = session->opt->ekm_size;
--        struct gc_arena gc = gc_new();
--        unsigned int len = (size * 2) + 2;
--
--        const char *key = format_hex_ex(ssl->exported_key_material,
--                                        size, len, 0, NULL, &gc);
--        setenv_str(session->opt->es, "exported_keying_material", key);
--
--        dmsg(D_TLS_DEBUG_MED, "%s: exported keying material: %s",
--             __func__, key);
--        gc_free(&gc);
-+        return ssl->exported_key_material;
-     }
 +
-+    return  NULL;
- }
+     uint8_t master[48] = { 0 };
+-    struct key2 key2 = { 0 };
+-    bool ret = false;
  
- 
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 5ba74402..1aad4f89 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -158,35 +158,38 @@ tls_ctx_initialised(struct tls_root_ctx *ctx)
-     return NULL != ctx->ctx;
- }
- 
--void
-+unsigned char *
- key_state_export_keying_material(struct key_state_ssl *ssl,
--                                 struct tls_session *session)
-+                                 struct tls_session *session,
-+                                 enum export_key_identifier key_id,
-+                                 struct gc_arena *gc)
-+
- {
--    if (session->opt->ekm_size > 0)
+-    if (key->initialized)
 -    {
--        unsigned int size = session->opt->ekm_size;
--        struct gc_arena gc = gc_new();
--        unsigned char *ekm = (unsigned char *) gc_malloc(size, true, &gc);
-+    const char *label;
-+    size_t label_size, ekm_size;
+-        msg(D_TLS_ERRORS, "TLS Error: key already initialized");
+-        goto exit;
+-    }
++    const struct key_state *ks = &session->key[KS_PRIMARY];
++    const struct key_source2 *key_src = ks->key_src;
++
++    const struct session_id *client_sid = session->opt->server ?
++                                          &ks->session_id_remote : &session->session_id;
++    const struct session_id *server_sid = !session->opt->server ?
++                                          &ks->session_id_remote : &session->session_id;
  
--        if (SSL_export_keying_material(ssl->ssl, ekm, size,
--                                       session->opt->ekm_label,
--                                       session->opt->ekm_label_size,
--                                       NULL, 0, 0))
--        {
--            unsigned int len = (size * 2) + 2;
-+    if (key_id == EXPORT_KEY_USER)
-+    {
-+        label = session->opt->ekm_label;
-+        label_size = session->opt->ekm_label_size;
-+        ekm_size = session->opt->ekm_size;
-+    }
-+    else
-+    {
-+        ASSERT(0);
-+    }
+     /* debugging print of source key material */
+     key_source2_print(key_src);
+@@ -1803,6 +1814,7 @@ generate_key_expansion(struct key_ctx_bi *key,
+                 master,
+                 sizeof(master));
  
--            const char *key = format_hex_ex(ekm, size, len, 0, NULL, &gc);
--            setenv_str(session->opt->es, "exported_keying_material", key);
-+    unsigned char *ekm = (unsigned char *) gc_malloc(ekm_size, true, gc);
++    struct key2 key2;
+     /* compute key expansion */
+     openvpn_PRF(master,
+                 sizeof(master),
+@@ -1815,41 +1827,62 @@ generate_key_expansion(struct key_ctx_bi *key,
+                 server_sid,
+                 (uint8_t *)key2.keys,
+                 sizeof(key2.keys));
++    secure_memzero(&master, sizeof(master));
  
--            dmsg(D_TLS_DEBUG_MED, "%s: exported keying material: %s",
--                 __func__, key);
--        }
--        else
--        {
--            msg(M_WARN, "WARNING: Export keying material failed!");
--            setenv_del(session->opt->es, "exported_keying_material");
--        }
--        gc_free(&gc);
-+    if (SSL_export_keying_material(ssl->ssl, ekm, ekm_size, label,
-+                                   label_size, NULL, 0, 0) == 1)
++    /* We use the DES fixup here so we can drop it once we
++     * drop DES support and non RFC5705 key derivation */
++    for (int i = 0; i < 2; ++i)
 +    {
-+        return ekm;
++        fixup_key(&key2.keys[i], &session->opt->key_type);
 +    }
-+    else
+     key2.n = 2;
+ 
+-    key2_print(&key2, key_type, "Master Encrypt", "Master Decrypt");
++    return key2;
++}
++
++/*
++ * Using source entropy from local and remote hosts, mix into
++ * master key.
++ */
++static bool
++generate_key_expansion(struct key_ctx_bi *key,
++                       const struct tls_session *session)
++{
++    bool ret = false;
++
++    if (key->initialized)
 +    {
-+        secure_memzero(ekm, ekm_size);
-+        return NULL;
++        msg(D_TLS_ERRORS, "TLS Error: key already initialized");
++        goto exit;
++    }
++
++
++    bool server = session->opt->server;
++
++    struct key2 key2 = generate_key_expansion_oepnvpn_prf(session);
++
++    key2_print(&key2, &session->opt->key_type,
++               "Master Encrypt", "Master Decrypt");
+ 
+     /* check for weak keys */
+     for (int i = 0; i < 2; ++i)
+     {
+-        fixup_key(&key2.keys[i], key_type);
+-        if (!check_key(&key2.keys[i], key_type))
++        if (!check_key(&key2.keys[i], &session->opt->key_type))
+         {
+             msg(D_TLS_ERRORS, "TLS Error: Bad dynamic key generated");
+             goto exit;
+         }
      }
+-
+-    /* Initialize OpenSSL key contexts */
+-    int key_direction = server ? KEY_DIRECTION_INVERSE : KEY_DIRECTION_NORMAL;
+-    init_key_ctx_bi(key, &key2, key_direction, key_type, "Data Channel");
+-
+-    /* Initialize implicit IVs */
+-    key_ctx_update_implicit_iv(&key->encrypt, key2.keys[(int)server].hmac,
+-                               MAX_HMAC_KEY_LENGTH);
+-    key_ctx_update_implicit_iv(&key->decrypt, key2.keys[1-(int)server].hmac,
+-                               MAX_HMAC_KEY_LENGTH);
+-
++    init_key_contexts(key, &session->opt->key_type, server, &key2);
+     ret = true;
+ 
+ exit:
+-    secure_memzero(&master, sizeof(master));
+     secure_memzero(&key2, sizeof(key2));
+ 
+     return ret;
  }
  
++
+ static void
+ key_ctx_update_implicit_iv(struct key_ctx *ctx, uint8_t *key, size_t key_len)
+ {
+@@ -1879,10 +1912,7 @@ tls_session_generate_data_channel_keys(struct tls_session *session)
+ {
+     bool ret = false;
+     struct key_state *ks = &session->key[KS_PRIMARY];   /* primary key */
+-    const struct session_id *client_sid = session->opt->server ?
+-                                          &ks->session_id_remote : &session->session_id;
+-    const struct session_id *server_sid = !session->opt->server ?
+-                                          &ks->session_id_remote : &session->session_id;
++
+ 
+     if (ks->authenticated == KS_AUTH_FALSE)
+     {
+@@ -1891,9 +1921,8 @@ tls_session_generate_data_channel_keys(struct tls_session *session)
+     }
+ 
+     ks->crypto_options.flags = session->opt->crypto_flags;
+-    if (!generate_key_expansion(&ks->crypto_options.key_ctx_bi,
+-                                &session->opt->key_type, ks->key_src, client_sid, server_sid,
+-                                session->opt->server))
++
++    if (!generate_key_expansion(&ks->crypto_options.key_ctx_bi, session))
+     {
+         msg(D_TLS_ERRORS, "TLS Error: generate_key_expansion failed");
+         goto cleanup;
 -- 
 2.26.2
 
