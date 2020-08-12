@@ -1,10 +1,15 @@
+References: <20200722132852.48508-1-gert@...1296...>
+ <20200723121949.78223-1-gert@...1296...>
 From: Arne Schwabe <arne@...1227...>
-Date: Wed, 12 Aug 2020 10:55:38 +0200
-Message-Id: <20200812085539.19620-2-arne@...1227...>
-In-Reply-To: <20200812085539.19620-1-arne@...1227...>
-References: <20200812085539.19620-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 2/3] Move openvpn specific key expansion
- into its own function
+Message-ID: <ee8b7463-f3d0-401e-815b-72bcbe6723a5@...1227...>
+Date: Wed, 12 Aug 2020 11:43:27 +0200
+MIME-Version: 1.0
+In-Reply-To: <20200723121949.78223-1-gert@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="nMfmckGeuIxtwgJ1XtBGFi5UnJkEKiskW"
+Subject: Re: [Openvpn-devel] [PATCH] Workaround FreeBSD 12+ race condition
+ on tun/tap open with IPv6.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,191 +18,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--nMfmckGeuIxtwgJ1XtBGFi5UnJkEKiskW
+Content-Type: multipart/mixed; boundary="bJmtBWVfifcKll0ESedlrvdTB6GxjHmIO"
+
+--bJmtBWVfifcKll0ESedlrvdTB6GxjHmIO
+Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-This moves the OpenVPN specific PRF into its own function also
-simplifies the code a bit by passing tls_session directly instead of
-5 of its fields.
+Am 23.07.20 um 14:19 schrieb Gert Doering:
+> On FreeBSD 12 (tested and verified on 12.1-RELEASE-p2), after "ifconfig
+> inet6" for a tun/tap interface, there sometimes is a race condition
+> where the "IFDISABLED" flag shows up after a short time frame, under
+> a second, and never clears itself.  This disables use of the configured
+> IPv6 address on the interface, breaking IPv6 over tun/tap operation.
+>=20
+> This only happens if ipv6_activate_all_interfaces=3D"YES" is not
+> set in /etc/rc.conf - but there might be reasons why this is not so.
+>=20
+> As a workaround until this can be fixed on the FreeBSD side (or a
+> better workaround is found), sleep(1) after ifconfig, then call
+> "ifconfig $dev inet6 -ifdisable".
+>=20
+> Yes, this is massively ugly but makes the problem completely go
+> away for my test systems.
+>=20
+> (The same effect can be achieved with an --up script that does this,
+> but it's even less pretty - see trac ticket)
+>=20
+> FreeBSD: https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=3D248172
+>=20
+> v2: reword text, refer to FreeBSD bug with much more details
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/ssl.c | 109 +++++++++++++++++++++++++++++-----------------
- 1 file changed, 69 insertions(+), 40 deletions(-)
+Acked-By: Arne Schwabe <arne@...1227...>
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 390114e1..e44017c6 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1765,27 +1765,38 @@ openvpn_PRF(const uint8_t *secret,
-     VALGRIND_MAKE_READABLE((void *)output, output_len);
- }
- 
--/*
-- * Using source entropy from local and remote hosts, mix into
-- * master key.
-- */
--static bool
--generate_key_expansion(struct key_ctx_bi *key,
--                       const struct key_type *key_type,
--                       const struct key_source2 *key_src,
--                       const struct session_id *client_sid,
--                       const struct session_id *server_sid,
--                       bool server)
-+static void
-+init_key_contexts(struct key_ctx_bi *key,
-+                  const struct key_type *key_type,
-+                  bool server,
-+                  struct key2 *key2)
-+{
-+    /* Initialize OpenSSL key contexts */
-+    int key_direction = server ? KEY_DIRECTION_INVERSE : KEY_DIRECTION_NORMAL;
-+    init_key_ctx_bi(key, key2, key_direction, key_type, "Data Channel");
-+
-+    /* Initialize implicit IVs */
-+    key_ctx_update_implicit_iv(&key->encrypt, (*key2).keys[(int)server].hmac,
-+                               MAX_HMAC_KEY_LENGTH);
-+    key_ctx_update_implicit_iv(&key->decrypt, (*key2).keys[1-(int)server].hmac,
-+                               MAX_HMAC_KEY_LENGTH);
-+
-+}
-+
-+
-+static struct key2
-+generate_key_expansion_oepnvpn_prf(const struct tls_session *session)
- {
-+
-     uint8_t master[48] = { 0 };
--    struct key2 key2 = { 0 };
--    bool ret = false;
- 
--    if (key->initialized)
--    {
--        msg(D_TLS_ERRORS, "TLS Error: key already initialized");
--        goto exit;
--    }
-+    const struct key_state *ks = &session->key[KS_PRIMARY];
-+    const struct key_source2 *key_src = ks->key_src;
-+
-+    const struct session_id *client_sid = session->opt->server ?
-+                                          &ks->session_id_remote : &session->session_id;
-+    const struct session_id *server_sid = !session->opt->server ?
-+                                          &ks->session_id_remote : &session->session_id;
- 
-     /* debugging print of source key material */
-     key_source2_print(key_src);
-@@ -1803,6 +1814,7 @@ generate_key_expansion(struct key_ctx_bi *key,
-                 master,
-                 sizeof(master));
- 
-+    struct key2 key2;
-     /* compute key expansion */
-     openvpn_PRF(master,
-                 sizeof(master),
-@@ -1815,41 +1827,62 @@ generate_key_expansion(struct key_ctx_bi *key,
-                 server_sid,
-                 (uint8_t *)key2.keys,
-                 sizeof(key2.keys));
-+    secure_memzero(&master, sizeof(master));
- 
-+    /* We use the DES fixup here so we can drop it once we
-+     * drop DES support and non RFC5705 key derivation */
-+    for (int i = 0; i < 2; ++i)
-+    {
-+        fixup_key(&key2.keys[i], &session->opt->key_type);
-+    }
-     key2.n = 2;
- 
--    key2_print(&key2, key_type, "Master Encrypt", "Master Decrypt");
-+    return key2;
-+}
-+
-+/*
-+ * Using source entropy from local and remote hosts, mix into
-+ * master key.
-+ */
-+static bool
-+generate_key_expansion(struct key_ctx_bi *key,
-+                       const struct tls_session *session)
-+{
-+    bool ret = false;
-+
-+    if (key->initialized)
-+    {
-+        msg(D_TLS_ERRORS, "TLS Error: key already initialized");
-+        goto exit;
-+    }
-+
-+
-+    bool server = session->opt->server;
-+
-+    struct key2 key2 = generate_key_expansion_oepnvpn_prf(session);
-+
-+    key2_print(&key2, &session->opt->key_type,
-+               "Master Encrypt", "Master Decrypt");
- 
-     /* check for weak keys */
-     for (int i = 0; i < 2; ++i)
-     {
--        fixup_key(&key2.keys[i], key_type);
--        if (!check_key(&key2.keys[i], key_type))
-+        if (!check_key(&key2.keys[i], &session->opt->key_type))
-         {
-             msg(D_TLS_ERRORS, "TLS Error: Bad dynamic key generated");
-             goto exit;
-         }
-     }
--
--    /* Initialize OpenSSL key contexts */
--    int key_direction = server ? KEY_DIRECTION_INVERSE : KEY_DIRECTION_NORMAL;
--    init_key_ctx_bi(key, &key2, key_direction, key_type, "Data Channel");
--
--    /* Initialize implicit IVs */
--    key_ctx_update_implicit_iv(&key->encrypt, key2.keys[(int)server].hmac,
--                               MAX_HMAC_KEY_LENGTH);
--    key_ctx_update_implicit_iv(&key->decrypt, key2.keys[1-(int)server].hmac,
--                               MAX_HMAC_KEY_LENGTH);
--
-+    init_key_contexts(key, &session->opt->key_type, server, &key2);
-     ret = true;
- 
- exit:
--    secure_memzero(&master, sizeof(master));
-     secure_memzero(&key2, sizeof(key2));
- 
-     return ret;
- }
- 
-+
- static void
- key_ctx_update_implicit_iv(struct key_ctx *ctx, uint8_t *key, size_t key_len)
- {
-@@ -1879,10 +1912,7 @@ tls_session_generate_data_channel_keys(struct tls_session *session)
- {
-     bool ret = false;
-     struct key_state *ks = &session->key[KS_PRIMARY];   /* primary key */
--    const struct session_id *client_sid = session->opt->server ?
--                                          &ks->session_id_remote : &session->session_id;
--    const struct session_id *server_sid = !session->opt->server ?
--                                          &ks->session_id_remote : &session->session_id;
-+
- 
-     if (ks->authenticated == KS_AUTH_FALSE)
-     {
-@@ -1891,9 +1921,8 @@ tls_session_generate_data_channel_keys(struct tls_session *session)
-     }
- 
-     ks->crypto_options.flags = session->opt->crypto_flags;
--    if (!generate_key_expansion(&ks->crypto_options.key_ctx_bi,
--                                &session->opt->key_type, ks->key_src, client_sid, server_sid,
--                                session->opt->server))
-+
-+    if (!generate_key_expansion(&ks->crypto_options.key_ctx_bi, session))
-     {
-         msg(D_TLS_ERRORS, "TLS Error: generate_key_expansion failed");
-         goto cleanup;
--- 
-2.26.2
+This looks like a ugly workaround but if it is the best we can, so be it.
 
+Arne
+
+
+--bJmtBWVfifcKll0ESedlrvdTB6GxjHmIO--
+
+--nMfmckGeuIxtwgJ1XtBGFi5UnJkEKiskW
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl8zub8ACgkQFRhsZwKx
+RFR+Zg//Uqk8sh7vhS2p84q+aNnklaV212KO5boh4wBs+2Qv5d203S/sLNdhAS6Y
+L+qzLUEgRos7kfSupjccZVYKiJN6/LSY7DzXOobUeykfpxjmf2xCaXyd7SbsWxG5
+yjR2Scey5Gx8slNxAfUStDQa1Hu2xTWTbTg/sYEQbnQYPMhCEd5QqtzP7V8FSHEa
+xZ8xWSQOpeb+wkGVKstsdlveLaSUpwGbJabhbZf633AYKZICO2YE7EgDziP8v1fi
+xJ7CbezWKut3WKAyd1I5Wh74LyF+VWggtFdUKq4Vg8RVQdr8Eu3Rejl/NFAxlhSI
+MZ9l96tcjtQjUcQpL62c2gWNSIKU7XcNRXSgJ5CfYADFDKUUM3wqJWAOnkxMYlIn
+j1J+mpDiV8IJ9n7qorcaSqJsXdX/TXlrqsS1SkEkXTyjYuHMAv/UmRCnGfLbHIPG
+QLzqU0ZgsLmahDgjn4oWG3GeGRh4Lm9YrH0afLOLNYTMmYDOqjRm5RcDMfpwHZ8O
+vDiIkWZQ3LxjxO+l9KEvCZGKZ9LvHd71oOcyeKVd4okqAOozfvs4VSfzpYfD8EHU
+vhjChrLFzHJzskcay5aIU6MctCvp+aW96YtgyzMrLvHqHI86mjHWxX2ixzYGIivI
+30HPHlgIYW3hB7JZcjQkqwYX1xyM0hoTAxht5TJdFrJHxV0SwOU=
+=xfmw
+-----END PGP SIGNATURE-----
+
+--nMfmckGeuIxtwgJ1XtBGFi5UnJkEKiskW--
 
