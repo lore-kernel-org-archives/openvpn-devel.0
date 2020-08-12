@@ -1,8 +1,8 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Wed, 12 Aug 2020 10:54:12 +0200
-Message-Id: <20200812085412.19178-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Improve sections about older OpenVPN
- clients in cipher-negotiation.rst
+Date: Wed, 12 Aug 2020 10:55:37 +0200
+Message-Id: <20200812085539.19620-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH 1/3] Refactor
+ key_state_export_keying_material functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,93 +15,215 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
- - Explain the IV_NCP=2 client situation in 2.4 a bit better.
- - Make more clear what exact versions are meant in the old client section
- - add a missing - in a heading
+This refactors the common code between mbed SSL and OpenSSL into
+export_user_keying_material and also prepares the backend functions
+to export more than one key.
 
-Thanks to Richard Bohnhomme for initial proof reading.
+Also fix checking the return value of SSL_export_keying_material
+only 1 is a sucess, -1 is also an error.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- doc/man-sections/cipher-negotiation.rst | 34 ++++++++++++++-----------
- 1 file changed, 19 insertions(+), 15 deletions(-)
+ src/openvpn/ssl.c         | 33 ++++++++++++++++++++++++-
+ src/openvpn/ssl_backend.h | 18 ++++++++++++--
+ src/openvpn/ssl_mbedtls.c | 22 ++++++-----------
+ src/openvpn/ssl_openssl.c | 51 +++++++++++++++++++++------------------
+ 4 files changed, 83 insertions(+), 41 deletions(-)
 
-diff --git a/doc/man-sections/cipher-negotiation.rst b/doc/man-sections/cipher-negotiation.rst
-index 46c9d7cf..b2c20241 100644
---- a/doc/man-sections/cipher-negotiation.rst
-+++ b/doc/man-sections/cipher-negotiation.rst
-@@ -22,14 +22,18 @@ it is automatically added to this list. If both options are unset the default is
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index f16114c2..390114e1 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2412,6 +2412,37 @@ error:
+     return false;
+ }
  
- OpenVPN 2.4 clients
- -------------------
--The negotiation support in OpenVPN 2.4 was a first implementation and still had some
--quirks. Its main goal was "upgrade to AES-256-GCM when possible".
-+The negotiation support in OpenVPN 2.4 was the first iteration of the implementation
-+and still had some quirks. Its main goal was "upgrade to AES-256-GCM when possible".
- An OpenVPN 2.4 client that is built against a crypto library that supports AES in GCM
- mode and does not have ``--ncp-disable`` will always announce support for
--`AES-256-GCM` and `AES-128-GCM` even if the ``--ncp-ciphers`` option does not include
--those two ciphers. It is therefore recommended to add `AES-256-GCM` and `AES-128-GCM`
--to the ``--ncp-ciphers`` options to workaround this bug.
-+`AES-256-GCM` and `AES-128-GCM` to a server by sending :code:`IV_NCP=2`.
++static void
++export_user_keying_material(struct key_state_ssl *ssl,
++                            struct tls_session *session)
++{
++    if (session->opt->ekm_size > 0)
++    {
++        unsigned int size = session->opt->ekm_size;
++        struct gc_arena gc = gc_new();
++
++        unsigned char *ekm;
++        if ((ekm = key_state_export_keying_material(ssl, session,
++                                                    EXPORT_KEY_USER, &gc)))
++        {
++            unsigned int len = (size * 2) + 2;
++
++            const char *key = format_hex_ex(ekm, size, len, 0, NULL, &gc);
++            setenv_str(session->opt->es, "exported_keying_material", key);
++
++            dmsg(D_TLS_DEBUG_MED, "%s: exported keying material: %s",
++                 __func__, key);
++            secure_memzero(ekm, size);
++        }
++        else
++        {
++            msg(M_WARN, "WARNING: Export keying material failed!");
++            setenv_del(session->opt->es, "exported_keying_material");
++        }
++        gc_free(&gc);
++    }
++}
++
+ /**
+  * Handle reading key data, peer-info, username/password, OCC
+  * from the TLS control channel (cleartext).
+@@ -2541,7 +2572,7 @@ key_method_2_read(struct buffer *buf, struct tls_multi *multi, struct tls_sessio
+     if ((ks->authenticated > KS_AUTH_FALSE)
+         && plugin_defined(session->opt->plugins, OPENVPN_PLUGIN_TLS_FINAL))
+     {
+-        key_state_export_keying_material(&ks->ks_ssl, session);
++        export_user_keying_material(&ks->ks_ssl, session);
  
-+This only causes a problem if ``--ncp-ciphers`` option has been changed from the
-+default of :code:`AES-256-GCM:AES-128-GCM` to a value that does not include
-+these two ciphers. When a OpenVPN servers try to use `AES-256-GCM` or
-+`AES-128-GCM` the connection will then fail. It is therefore recommended to
-+always have the `AES-256-GCM` and `AES-128-GCM` ciphers to the ``--ncp-ciphers``
-+options to avoid this behaviour.
+         if (plugin_call(session->opt->plugins, OPENVPN_PLUGIN_TLS_FINAL, NULL, NULL, session->opt->es) != OPENVPN_PLUGIN_FUNC_SUCCESS)
+         {
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index 7f52ab1e..8faaefd5 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -389,18 +389,32 @@ void key_state_ssl_free(struct key_state_ssl *ks_ssl);
+ void backend_tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx,
+                                 const char *crl_file, bool crl_inline);
  
- OpenVPN 3 clients
- -----------------
-@@ -42,7 +46,7 @@ To support OpenVPN 3.x based clients at least one of these ciphers needs to be
- included in the server's ``--data-ciphers`` option.
++
++/* defines the different RFC5705 that are used in OpenVPN */
++enum export_key_identifier {
++    EXPORT_KEY_USER
++};
++
+ /**
+  * Keying Material Exporters [RFC 5705] allows additional keying material to be
+  * derived from existing TLS channel. This exported keying material can then be
+  * used for a variety of purposes.
+  *
++ * Note
++ *
+  * @param ks_ssl       The SSL channel's state info
+  * @param session      The session associated with the given key_state
++ * @param key          The key to export.
++ * @param gc           gc_arena that might be used to allocate a string
++ * @returns            The exported key material, the caller may zero the
++ *                     string but should not free it
+  */
+ 
+-void
++unsigned char*
+ key_state_export_keying_material(struct key_state_ssl *ks_ssl,
+-                                 struct tls_session *session) __attribute__((nonnull));
++                                 struct tls_session *session,
++                                 enum export_key_identifier export_key,
++                                 struct gc_arena *gc) __attribute__((nonnull));
+ 
+ /**************************************************************************/
+ /** @addtogroup control_tls
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index 9c874788..8ae6ec7b 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -231,24 +231,18 @@ mbedtls_ssl_export_keys_cb(void *p_expkey, const unsigned char *ms,
+ }
+ #endif /* HAVE_EXPORT_KEYING_MATERIAL */
+ 
+-void
++unsigned char *
+ key_state_export_keying_material(struct key_state_ssl *ssl,
+-                                 struct tls_session *session)
++                                 struct tls_session *session,
++                                 enum export_key_identifier key_id,
++                                 struct gc_arena *gc)
+ {
+-    if (ssl->exported_key_material)
++    if (key_id == EXPORT_KEY_USER)
+     {
+-        unsigned int size = session->opt->ekm_size;
+-        struct gc_arena gc = gc_new();
+-        unsigned int len = (size * 2) + 2;
+-
+-        const char *key = format_hex_ex(ssl->exported_key_material,
+-                                        size, len, 0, NULL, &gc);
+-        setenv_str(session->opt->es, "exported_keying_material", key);
+-
+-        dmsg(D_TLS_DEBUG_MED, "%s: exported keying material: %s",
+-             __func__, key);
+-        gc_free(&gc);
++        return ssl->exported_key_material;
+     }
++
++    return  NULL;
+ }
  
  
--OpenVPN 2.3 clients and older (and clients with ``--ncp-disable``)
-+OpenVPN 2.3 and older clients (and clients with ``--ncp-disable``)
- ------------------------------------------------------------------
- When a client without cipher negotiation support connects to a server the
- cipher specified with the ``--cipher`` option in the client configuration
-@@ -50,10 +54,10 @@ must be included in the ``--data-ciphers`` option of the server to allow
- the client to connect. Otherwise the client will be sent the ``AUTH_FAILED``
- message that indicates no shared cipher.
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 5ba74402..1aad4f89 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -158,35 +158,38 @@ tls_ctx_initialised(struct tls_root_ctx *ctx)
+     return NULL != ctx->ctx;
+ }
  
--If the client has been configured with the ``--enable-small``
--:code:``./configure`` argument, using ``data-ciphers-fallback cipher``
--in the server config file with the explicit cipher used by the client
--is necessary.
-+If the client is 2.3 or older and has been configured with the
-+``--enable-small``  :code:`./configure` argument, using
-+``data-ciphers-fallback cipher`` in the server config file with the explicit
-+cipher used by the client is necessary.
+-void
++unsigned char *
+ key_state_export_keying_material(struct key_state_ssl *ssl,
+-                                 struct tls_session *session)
++                                 struct tls_session *session,
++                                 enum export_key_identifier key_id,
++                                 struct gc_arena *gc)
++
+ {
+-    if (session->opt->ekm_size > 0)
+-    {
+-        unsigned int size = session->opt->ekm_size;
+-        struct gc_arena gc = gc_new();
+-        unsigned char *ekm = (unsigned char *) gc_malloc(size, true, &gc);
++    const char *label;
++    size_t label_size, ekm_size;
  
- OpenVPN 2.4 server
- ------------------
-@@ -66,7 +70,7 @@ adding  `AES-128-GCM` and `AES-256-GCM` to the client's ``--data-ciphers``
- option is required. OpenVPN 2.5+ will only announce the ``IV_NCP=2`` flag if
- those ciphers are present.
+-        if (SSL_export_keying_material(ssl->ssl, ekm, size,
+-                                       session->opt->ekm_label,
+-                                       session->opt->ekm_label_size,
+-                                       NULL, 0, 0))
+-        {
+-            unsigned int len = (size * 2) + 2;
++    if (key_id == EXPORT_KEY_USER)
++    {
++        label = session->opt->ekm_label;
++        label_size = session->opt->ekm_label_size;
++        ekm_size = session->opt->ekm_size;
++    }
++    else
++    {
++        ASSERT(0);
++    }
  
--OpenVPN 2.3 and older servers (and servers with ``-ncp-disable``)
-+OpenVPN 2.3 and older servers (and servers with ``--ncp-disable``)
- -----------------------------------------------------------------
- The cipher used by the server must be included in ``--data-ciphers`` to
- allow the client connecting to a server without cipher negotiation
-@@ -74,10 +78,10 @@ support.
- (For compatibility OpenVPN 2.5 will also accept the cipher set with
- ``--cipher``)
+-            const char *key = format_hex_ex(ekm, size, len, 0, NULL, &gc);
+-            setenv_str(session->opt->es, "exported_keying_material", key);
++    unsigned char *ekm = (unsigned char *) gc_malloc(ekm_size, true, gc);
  
--If the server has been configured with the ``--enable-small``
--:code:``./configure` argument, adding ``data-ciphers-fallback cipher``
--to the client config with the explicit cipher used by the server
--is necessary.
-+If the server is 2.3 or older and  has been configured with the
-+``--enable-small`` :code:`./configure` argument, adding
-+``data-ciphers-fallback cipher`` to the client config with the explicit
-+cipher used by the server is necessary.
+-            dmsg(D_TLS_DEBUG_MED, "%s: exported keying material: %s",
+-                 __func__, key);
+-        }
+-        else
+-        {
+-            msg(M_WARN, "WARNING: Export keying material failed!");
+-            setenv_del(session->opt->es, "exported_keying_material");
+-        }
+-        gc_free(&gc);
++    if (SSL_export_keying_material(ssl->ssl, ekm, ekm_size, label,
++                                   label_size, NULL, 0, 0) == 1)
++    {
++        return ekm;
++    }
++    else
++    {
++        secure_memzero(ekm, ekm_size);
++        return NULL;
+     }
+ }
  
- Blowfish in CBC mode (BF-CBC) deprecation
- ------------------------------------------
 -- 
 2.26.2
 
