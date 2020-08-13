@@ -1,12 +1,11 @@
-References: <20200812140120.21287-1-arne@...1227...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <acdbc6b7-d9ef-7824-6511-d7bec7713b1d@...1856...>
-Date: Wed, 12 Aug 2020 21:43:05 +0200
+From: Eric Thorpe <eric@...1918...>
+Date: Thu, 13 Aug 2020 00:29:23 -0700
+Message-Id: <20200813072923.24385-2-eric@...1918...>
+In-Reply-To: <20200813072923.24385-1-eric@...1918...>
+References: <20200813072923.24385-1-eric@...1918...>
 MIME-Version: 1.0
-In-Reply-To: <20200812140120.21287-1-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v2 1/3] Refactor
- key_state_export_keying_material functions
+Subject: [Openvpn-devel] [PATCH 2/2] Allows a plugin to provide a
+ client_reason for authentication failure
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,70 +14,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Signed-off-by: Eric Thorpe <eric@...1918...>
+---
+ src/openvpn/ssl_verify.c | 33 ++++++++++++++++++++++++++++++---
+ 1 file changed, 30 insertions(+), 3 deletions(-)
 
-On 12-08-2020 16:01, Arne Schwabe wrote:
-> This refactors the common code between mbed SSL and OpenSSL into
-> export_user_keying_material and also prepares the backend functions
-> to export more than one key.
-> 
-> Also fix checking the return value of SSL_export_keying_material
-> only 1 is a sucess, -1 is also an error.
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> 
-> Patch V2: Cache secrets for mbed TLS instead generating all ekms
->           in the call back function
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->
->  [...]
-> 
-> --- a/src/openvpn/ssl_backend.h
-> +++ b/src/openvpn/ssl_backend.h
-> @@ -394,13 +394,23 @@ void backend_tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx,
->   * derived from existing TLS channel. This exported keying material can then be
->   * used for a variety of purposes.
->   *
-> + *
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 8d8531c7..356b30fd 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -1157,6 +1157,9 @@ verify_user_pass_plugin(struct tls_session *session, =
+struct tls_multi *multi,
+     /* Is username defined? */
+     if ((session->opt->ssl_flags & SSLF_AUTH_USER_PASS_OPTIONAL) || strlen=
+(up->username))
+     {
++        struct plugin_return pr, prfetch;
++        plugin_return_init(&pr);
++
+         /* set username/password in private env space */
+         setenv_str(session->opt->es, "username", up->username);
+         setenv_str(session->opt->es, "password", up->password);
+@@ -1180,7 +1183,23 @@ verify_user_pass_plugin(struct tls_session *session,=
+ struct tls_multi *multi,
+ #endif
+=20
+         /* call command */
+-        retval =3D plugin_call(session->opt->plugins, OPENVPN_PLUGIN_AUTH_=
+USER_PASS_VERIFY, NULL, NULL, session->opt->es);
++        retval =3D plugin_call(session->opt->plugins, OPENVPN_PLUGIN_AUTH_=
+USER_PASS_VERIFY, NULL, &pr, session->opt->es);
++
++        /* Fetch client reason */
++        plugin_return_get_column(&pr, &prfetch, "client_reason");
++        if (plugin_return_defined(&prfetch))
++        {
++            int i;
++            for (i =3D 0; i < prfetch.n; ++i)
++            {
++                if (prfetch.list[i] && prfetch.list[i]->value)
++                {
++                    auth_set_client_reason(multi, prfetch.list[i]->value);
++                }
++            }
++        }
++
++        plugin_return_free(&pr);
+=20
+ #ifdef PLUGIN_DEF_AUTH
+         /* purge auth control filename (and file itself) for non-deferred =
+returns */
+@@ -1436,8 +1455,16 @@ verify_user_pass(struct user_pass *up, struct tls_mu=
+lti *multi,
+         if (multi->connection_established)
+         {
+             /* Notify the client */
+-            send_push_reply_auth_failed(multi, "SESSION:Auth failed");
+-
++            const char *client_reason;
++            if (multi->client_reason !=3D NULL)
++            {
++                client_reason =3D multi->client_reason;
++            }
++            else
++            {
++                client_reason =3D "SESSION:Auth failed";
++            }
++            send_push_reply_auth_failed(multi, client_reason);
+         }
+         ks->authenticated =3D KS_AUTH_FALSE;
+         msg(D_TLS_ERRORS, "TLS Auth Error: Auth Username/Password verifica=
+tion failed for peer");
+--=20
+2.25.1
 
-This extra newline seems unneeded.
-
->   * @param ks_ssl       The SSL channel's state info
->   * @param session      The session associated with the given key_state
-> + * @param label        The label to use when exporting the key
-> + * @param label_size   The size of the label to use when exporting the key
-> + *
-> + * @param gc           gc_arena that might be used to allocate the string
-> + *                     returned
-> + * @returns            The exported key material, the caller may zero the
-> + *                     string but should not free it
->   */
->  
-> -void
-> -key_state_export_keying_material(struct key_state_ssl *ks_ssl,
-> -                                 struct tls_session *session) __attribute__((nonnull));
-> +unsigned char*
-> +key_state_export_keying_material(struct tls_session *session,
-> +                                 const char* label, size_t label_size,
-> +                                 size_t ekm_size,
-> +                                 struct gc_arena *gc) __attribute__((nonnull));
-
-(Quoting a former colleague:) comment is a lie! It does not match the
-actual function prototype.
-
-All the code itself looks good to me. I *think* it could be made
-slightly better even, but these changes make sense for the intended
-goal, and look correct.
-
-Tested both openssl and mbedtls builds (with -fsanitize=address), and
-verified that this indeed produces the same exported values for both
-builds and a build without this patch.
-
--Steffan
 
