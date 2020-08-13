@@ -1,9 +1,14 @@
-From: Eric Thorpe <eric@...1918...>
-Date: Thu, 13 Aug 2020 00:29:22 -0700
-Message-Id: <20200813072923.24385-1-eric@...1918...>
+References: <20200813072923.24385-1-eric@...1918...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <1fb10dd1-8ddf-c467-21a5-a93e21e6a8ac@...1227...>
+Date: Thu, 13 Aug 2020 10:30:25 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/2] Send auth-fail messages to clients on
- renegotiation failures via auth-token or user-pass expiry
+In-Reply-To: <20200813072923.24385-1-eric@...1918...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="o85iaZ5DsGfABnpL30fxgrATiFA00t1PK"
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Send auth-fail messages to clients
+ on renegotiation failures via auth-token or user-pass expiry
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,120 +17,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Eric Thorpe <eric@...1918...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--o85iaZ5DsGfABnpL30fxgrATiFA00t1PK
+Content-Type: multipart/mixed; boundary="vkujcdV2GU4wdPfD1QkRsd38weqNhYDYE"
+
+--vkujcdV2GU4wdPfD1QkRsd38weqNhYDYE
+Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
 
-Signed-off-by: Eric Thorpe <eric@...1918...>
----
- src/openvpn/multi.c      |  2 ++
- src/openvpn/push.c       | 30 ++++++++++++++++++++++++++++++
- src/openvpn/ssl_common.h |  1 +
- src/openvpn/ssl_verify.c |  7 +++++++
- 4 files changed, 40 insertions(+)
+>  /*
+>   * Send restart message from server to client.
+>   */
+> diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+> index 96897e48..b5cc9dc9 100644
+> --- a/src/openvpn/ssl_common.h
+> +++ b/src/openvpn/ssl_common.h
+> @@ -576,6 +576,7 @@ struct tls_multi
+>=20=20
+>      char *remote_ciphername;    /**< cipher specified in peer's config f=
+ile */
+>=20=20
+> +    bool connection_established; /** Notifies future auth calls this is =
+a reneg */
+>      /*
+>       * Our session objects.
+>       */
+>
 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 13738180..288680c9 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -2689,6 +2689,8 @@ multi_connection_established(struct multi_context *m,=
- struct multi_instance *mi)
-=20
-         mi->context.c2.context_auth =3D CAS_FAILED;
-     }
-+    /* Set connection established for reneg handling */
-+    mi->context.c2.tls_multi->connection_established =3D true;
-=20
-     /* increment number of current authenticated clients */
-     ++m->n_clients;
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index e0d2eeaf..3567b22d 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -311,6 +311,36 @@ send_auth_pending_messages(struct context *c, const ch=
-ar *extra)
-     return true;
- }
-=20
-+/*
-+* Send auth failed message from server to client without scheduling.
-+* Main use for queuing a message during renegotiation
-+*/
-+void
-+send_push_reply_auth_failed(struct tls_multi *multi, const char *client_re=
-ason)
-+{
-+    struct gc_arena gc =3D gc_new();
-+    static const char auth_failed[] =3D "AUTH_FAILED";
-+    size_t len;
-+
-+    len =3D (client_reason ? strlen(client_reason)+1 : 0) + sizeof(auth_fa=
-iled);
-+    if (len > PUSH_BUNDLE_SIZE)
-+    {
-+        len =3D PUSH_BUNDLE_SIZE;
-+    }
-+
-+    {
-+        struct buffer buf =3D alloc_buf_gc(len, &gc);
-+        buf_printf(&buf, auth_failed);
-+        if (client_reason)
-+        {
-+            buf_printf(&buf, ",%s", client_reason);
-+        }
-+        send_control_channel_string_dowork(multi, BSTR(&buf), D_PUSH);
-+    }
-+
-+    gc_free(&gc);
-+}
-+
- /*
-  * Send restart message from server to client.
-  */
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 96897e48..b5cc9dc9 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -576,6 +576,7 @@ struct tls_multi
-=20
-     char *remote_ciphername;    /**< cipher specified in peer's config fil=
-e */
-=20
-+    bool connection_established; /** Notifies future auth calls this is a =
-reneg */
-     /*
-      * Our session objects.
-      */
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index 97ccb93b..8d8531c7 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -1318,6 +1318,7 @@ verify_user_pass(struct user_pass *up, struct tls_mul=
-ti *multi,
-         }
-         else
-         {
-+            send_push_reply_auth_failed(multi, "SESSION:Auth-token expired=
-");
-             wipe_auth_token(multi);
-             ks->authenticated =3D KS_AUTH_FALSE;
-             msg(M_WARN, "TLS: Username/auth-token authentication "
-@@ -1432,6 +1433,12 @@ verify_user_pass(struct user_pass *up, struct tls_mu=
-lti *multi,
-     }
-     else
-     {
-+        if (multi->connection_established)
-+        {
-+            /* Notify the client */
-+            send_push_reply_auth_failed(multi, "SESSION:Auth failed");
-+
-+        }
-         ks->authenticated =3D KS_AUTH_FALSE;
-         msg(D_TLS_ERRORS, "TLS Auth Error: Auth Username/Password verifica=
-tion failed for peer");
-     }
---=20
-2.25.1
+NAK from my side. Adding another variable to state machine for just this
+feature that duplicates already existing states is something I really
+want to avoid. This might look and work fine for this patch but at the
+end you end up with a plenthora of mini states and unclear
+interdependency. I worked hard in the connect-client patches to remove
+duplication of these states and are not eager to reduce them, especially
+not "connection_established" which duplicates the name of
+link_socket->connection_established that has a completely different meaning.
 
+Arne
+
+
+--vkujcdV2GU4wdPfD1QkRsd38weqNhYDYE--
+
+--o85iaZ5DsGfABnpL30fxgrATiFA00t1PK
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl80+iEACgkQFRhsZwKx
+RFRCbhAAlYdTFSYMe4QKVUd7VazCgZ7TTIS1DZAvzPgxYJ7p6rS+aAB6hBUy2FDM
+tCJZoqlaBZbN7ex8sKo3v/yweblo3Cc9hCBzy/CFMOcsBw2/5u0zUAD0G6rK5UbX
+vOJQtiXoi7OcjKzE6v5qPwW5+a0rrWwDHoJFIri7yqgqXVlAv4HDG/2jHUQ+Ria3
+dgMJoxIy3IQLfHklpe3MQZ7gs64y6ugYEKrAXKSeV3v9N5IytAsUYokFZtWMaQVe
+xvDIoDKl6iZmNMSNu5CQ0ECa3JsmSr2u7DOMg8sQH0Wt+ezxpkgn1RjAsvolZNU4
+EyjNvLf9lZlWdaYyQhlheoLHdnrwKaGEzWe+UgXQGuJrIQ9lJrxmTROcMjZ4CDuM
+0PbcIMX2qJ3hLT+g6oJTuL7tltoDlNsNeAhjTCJjtZL4iMp2SQ8JLCxX1RdSHog6
+kBx38LeKV4fMH4H+doZux3FbaHbLvy/zg60kH8E3JDvTU91X7LwpJFx4A5KHkFGA
+doGi3qSmhFVk1lYWwPQFo9UsXfCteOhkoByhsnCG3bTsAjhACZoEBRLdayniWuv+
+gMd3EjrEAuMu4kDINaHm+flN21HWNYT1eP3R4HQaaUk4Wuai2z8NknBMQc/Oh94Q
+txQ63y6ozVW7s/aVDI6+7qLP0jXiAoTijTDpAxD/6UyIOZO0DY8=
+=c7WO
+-----END PGP SIGNATURE-----
+
+--o85iaZ5DsGfABnpL30fxgrATiFA00t1PK--
 
