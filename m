@@ -1,11 +1,13 @@
+References: <cc9094b8-caa6-34b6-ed7a-3ccb34560113@...1918...>
+ <20200811093227.GE75094@...1296...>
 From: Eric Thorpe <eric@...1918...>
-Date: Thu, 13 Aug 2020 00:29:23 -0700
-Message-Id: <20200813072923.24385-2-eric@...1918...>
-In-Reply-To: <20200813072923.24385-1-eric@...1918...>
-References: <20200813072923.24385-1-eric@...1918...>
+Message-ID: <1de7a03b-4e55-e8c0-7ce2-95f9b011e0fc@...1918...>
+Date: Thu, 13 Aug 2020 17:32:42 +1000
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/2] Allows a plugin to provide a
- client_reason for authentication failure
+In-Reply-To: <20200811093227.GE75094@...1296...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v2 1/2] Send auth fail to client on
+ reneg failure
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,82 +16,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Signed-off-by: Eric Thorpe <eric@...1918...>
+Have re-based to master and resent.
+
+Cheers,
+Eric
+
 ---
- src/openvpn/ssl_verify.c | 33 ++++++++++++++++++++++++++++++---
- 1 file changed, 30 insertions(+), 3 deletions(-)
+Eric Thorpe
+SparkLabs Developer
+https://www.sparklabs.com
+https://twitter.com/sparklabs
+support@...1918...
 
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index 8d8531c7..356b30fd 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -1157,6 +1157,9 @@ verify_user_pass_plugin(struct tls_session *session, =
-struct tls_multi *multi,
-     /* Is username defined? */
-     if ((session->opt->ssl_flags & SSLF_AUTH_USER_PASS_OPTIONAL) || strlen=
-(up->username))
-     {
-+        struct plugin_return pr, prfetch;
-+        plugin_return_init(&pr);
-+
-         /* set username/password in private env space */
-         setenv_str(session->opt->es, "username", up->username);
-         setenv_str(session->opt->es, "password", up->password);
-@@ -1180,7 +1183,23 @@ verify_user_pass_plugin(struct tls_session *session,=
- struct tls_multi *multi,
- #endif
-=20
-         /* call command */
--        retval =3D plugin_call(session->opt->plugins, OPENVPN_PLUGIN_AUTH_=
-USER_PASS_VERIFY, NULL, NULL, session->opt->es);
-+        retval =3D plugin_call(session->opt->plugins, OPENVPN_PLUGIN_AUTH_=
-USER_PASS_VERIFY, NULL, &pr, session->opt->es);
-+
-+        /* Fetch client reason */
-+        plugin_return_get_column(&pr, &prfetch, "client_reason");
-+        if (plugin_return_defined(&prfetch))
-+        {
-+            int i;
-+            for (i =3D 0; i < prfetch.n; ++i)
-+            {
-+                if (prfetch.list[i] && prfetch.list[i]->value)
-+                {
-+                    auth_set_client_reason(multi, prfetch.list[i]->value);
-+                }
-+            }
-+        }
-+
-+        plugin_return_free(&pr);
-=20
- #ifdef PLUGIN_DEF_AUTH
-         /* purge auth control filename (and file itself) for non-deferred =
-returns */
-@@ -1436,8 +1455,16 @@ verify_user_pass(struct user_pass *up, struct tls_mu=
-lti *multi,
-         if (multi->connection_established)
-         {
-             /* Notify the client */
--            send_push_reply_auth_failed(multi, "SESSION:Auth failed");
--
-+            const char *client_reason;
-+            if (multi->client_reason !=3D NULL)
-+            {
-+                client_reason =3D multi->client_reason;
-+            }
-+            else
-+            {
-+                client_reason =3D "SESSION:Auth failed";
-+            }
-+            send_push_reply_auth_failed(multi, client_reason);
-         }
-         ks->authenticated =3D KS_AUTH_FALSE;
-         msg(D_TLS_ERRORS, "TLS Auth Error: Auth Username/Password verifica=
-tion failed for peer");
---=20
-2.25.1
-
+On 11/08/2020 7:32 pm, Gert Doering wrote:
+> Hi,
+>
+> On Thu, Apr 11, 2019 at 12:07:27PM +1000, Eric Thorpe wrote:
+>> This patch relies on Arne's "Add send_control_channel_string_dowork
+>> variant" patch.
+> So.  After we left you out in the cold for over a year (apologies
+> for that), we should revisit your patch set.
+>
+> I checked with Arne, he says "no, that functionality is not in yet,
+> but still interesting" - and all the *other* auth/plugin/async/SSO
+> related code we had brewing is in.
+>
+> So - if you're not too frustrated with us yet: can you re-send?
+>
+> gert
 
