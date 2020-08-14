@@ -1,9 +1,14 @@
-From: Vladislav Grishenko <themiron@...2010...>
-Date: Fri, 14 Aug 2020 22:12:04 +0500
-Message-Id: <20200814171204.22289-1-themiron@...2010...>
-In-Reply-To: <98f65e22-a66c-aeea-f705-ad5a0f7a2e28@...1227...>
 References: <98f65e22-a66c-aeea-f705-ad5a0f7a2e28@...1227...>
-Subject: [Openvpn-devel] [PATCH v2] Allow management to kill client
+ <20200814171204.22289-1-themiron@...2010...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <18c95bb9-408c-a608-fd2c-9f8b5f6f88eb@...1227...>
+Date: Fri, 14 Aug 2020 19:35:24 +0200
+MIME-Version: 1.0
+In-Reply-To: <20200814171204.22289-1-themiron@...2010...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="Tf06XGF0MI9viPKH9yKyLGZghNIr17jGA"
+Subject: Re: [Openvpn-devel] [PATCH v2] Allow management to kill client
  instances by CN wildcard
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -13,76 +18,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Vladislav Grishenko <themiron@...2010...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--Tf06XGF0MI9viPKH9yKyLGZghNIr17jGA
+Content-Type: multipart/mixed; boundary="xn3cov7iqnV9FyGA66WYxaWULOCG3lse8"
+
+--xn3cov7iqnV9FyGA66WYxaWULOCG3lse8
+Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-In case of some permanent part of common name (ex. domain) and/or
-long complex common name consisting of multiple x509 fields, it's
-handly to kill client instances via management interface with just
-prefix of common name, not by exact match only.
+Am 14.08.20 um 19:12 schrieb Vladislav Grishenko:
+> In case of some permanent part of common name (ex. domain) and/or
+> long complex common name consisting of multiple x509 fields, it's
+> handly to kill client instances via management interface with just
+> prefix of common name, not by exact match only.
+>=20
+> Patch allows to use asterisk as wildcard placeholder in the last
+> trailing symbol of kill command parameter.
+> Single asterisk - empty prefix would be too greedy and can be too
+> harmful, therefore not allowed. Wildcards in the middle of
+> parameter string are not supported to keep the the things simple at the m=
+oment.
+>=20
+> v2: fine tune comments
+>
 
-Patch allows to use asterisk as wildcard placeholder in the last
-trailing symbol of kill command parameter.
-Single asterisk - empty prefix would be too greedy and can be too
-harmful, therefore not allowed. Wildcards in the middle of
-parameter string are not supported to keep the the things simple at the moment.
+Thanks for v2,
 
-v2: fine tune comments
+Acked-By; Arne Schwabe <arne@...1227...>
 
-Signed-off-by: Vladislav Grishenko <themiron@...2010...>
----
- doc/management-notes.txt |  2 ++
- src/openvpn/multi.c      | 15 ++++++++++++++-
- 2 files changed, 16 insertions(+), 1 deletion(-)
 
-diff --git a/doc/management-notes.txt b/doc/management-notes.txt
-index 61daaf07..91073693 100644
---- a/doc/management-notes.txt
-+++ b/doc/management-notes.txt
-@@ -195,6 +195,8 @@ Command examples:
- 
-   kill Test-Client -- kill the client instance having a
-                       common name of "Test-Client".
-+  kill Test-Cli*   -- kill the client instances having a
-+                      common name starting with "Test-Cli".
-   kill 1.2.3.4:4000 -- kill the client instance having a
-                        source address and port of 1.2.3.4:4000
- 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 13738180..36be5de2 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -3820,6 +3820,19 @@ management_callback_kill_by_cn(void *arg, const char *del_cn)
-     struct hash_element *he;
-     int count = 0;
- 
-+    /* Check passed string for non-empty prefix with trailing asterisk */
-+    size_t len = strlen(del_cn);
-+    if (len > 1 && del_cn[len - 1] == '*')
-+    {
-+        /* Exclude trailing asterisk from string comparison */
-+        len--;
-+    }
-+    else
-+    {
-+        /* Include terminating NUL char to perform exact string comparison */
-+        len++;
-+    }
-+
-     hash_iterator_init(m->iter, &hi);
-     while ((he = hash_iterator_next(&hi)))
-     {
-@@ -3827,7 +3840,7 @@ management_callback_kill_by_cn(void *arg, const char *del_cn)
-         if (!mi->halt)
-         {
-             const char *cn = tls_common_name(mi->context.c2.tls_multi, false);
--            if (cn && !strcmp(cn, del_cn))
-+            if (cn && !strncmp(cn, del_cn, len))
-             {
-                 multi_signal_instance(m, mi, SIGTERM);
-                 ++count;
--- 
-2.17.1
+--xn3cov7iqnV9FyGA66WYxaWULOCG3lse8--
 
+--Tf06XGF0MI9viPKH9yKyLGZghNIr17jGA
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl82y10ACgkQFRhsZwKx
+RFS+wRAAqx7ZU6KmhJkmWCjDpgJ1ZEqcz7vhJNaZ7KTgC0z7mWMAtQ/dI4SDR5Xj
+8xWCyx+NVVDu8udmFdTM5K5ghPSYqQpc4isSYevVeIqtLq+AlFO+RUmevnd2HTte
+1NsXcAaQi0H/mDHweTa35HdLq+nIBhxTKqOAAFHh8WWZz+3MLCQ4A9OCztoK3sze
+/c6mQw8wjSfJ7GRQP5dzjtMAlhkwGz5IoMWZCZTYF8vyQGa3kyT79t3WfVcKJaYV
+0sqQpggWN7JZI7TkyQZzwULxQyuuwwjV5g19q7fz7EAiU2eMLm78xunbb9Kz5kRW
+NQE30NsfdZvqR6FXL8JgEfeQAHHRwQ/ciSfTu7N1ykcmngwiVbVBCOIw7GscyRcl
+5k+SGNspPOcjhFUY0ieS1cGhmHPAcV6gTXjmKo6bCPt1249Qt3AG1soEVNEmZtjv
+UpKWxKdT4Solt1bvP+Mmvon/QHSkQuniG8FD5mP5JqDFGJVu27O1dIUcVT2XA3PE
+MjRknbpWfpQ54BTZEzvxmJ8wg/ahAN15j5JQhAyVeuoxSXpHGH6rcPngs1tU0sed
+3qQB9ifU5r7bjNlHJ/rE5GxeTF+bNK8MWsn2w+xSG4Cod5HZLo/KJemvXF5F872A
+njwvEzzguHBaTdcg+clfEu/Mmfuo1GyF+60NyA+2wVefuljcAQA=
+=nV5u
+-----END PGP SIGNATURE-----
+
+--Tf06XGF0MI9viPKH9yKyLGZghNIr17jGA--
 
