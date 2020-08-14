@@ -1,11 +1,15 @@
-From: tincanteksup <tincanteksup@...277...>
-References: <20200814080619.2108-1-arne@...1227...>
-Message-ID: <aefeeda7-68ea-2269-c68a-cd1b8282dbbe@...277...>
-Date: Fri, 14 Aug 2020 19:50:29 +0100
+From: "Vladislav Grishenko" <themiron@...2010...>
+References: <98f65e22-a66c-aeea-f705-ad5a0f7a2e28@...1227...>
+ <20200814171204.22289-1-themiron@...2010...>
+ <18c95bb9-408c-a608-fd2c-9f8b5f6f88eb@...1227...>
+ <CAKuzo_iRjG_pEqjYsaKNniL8LuZ1EL+ok-6BS8Ys0xnOaEwsXw@...278...>
+In-Reply-To: <CAKuzo_iRjG_pEqjYsaKNniL8LuZ1EL+ok-6BS8Ys0xnOaEwsXw@...278...>
+Date: Sat, 15 Aug 2020 00:06:47 +0500
+Message-ID: <00c901d6726e$0f38d480$2daa7d80$@yandex-team.ru>
 MIME-Version: 1.0
-In-Reply-To: <20200814080619.2108-1-arne@...1227...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH] Fix client's poor man NCP fallback
+Content-Language: ru
+Subject: Re: [Openvpn-devel] [PATCH v2] Allow management to kill client
+ instances by CN wildcard
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,70 +18,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: 'Selva Nair' <selva.nair@...277...>, 'openvpn-devel' <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-I tested this patch and it does make --data-ciphers and 
---data-ciphers-fallback behave in their intended "fashion".
+Yes, killing a client with cn ending in * will also lead to killing all the
+clients whose cn starts with that prefix.
+Use other char would no-intuitive (ex. +).
+What about optional "prefix" mode word for explicit mode (can be also
+enhanced one day with suffix/regexp/etc).
 
-Unfortunately, the commit message is grammatically incorrect and also 
-logically misleading.
+	kill cn [mode]: Kill the client instance(s) having common name cn.
 
-The intended fashion is for --data-ciphers to recognise that the correct 
-cipher *has* been chosen and use it accordingly.
+--
+Best Regards, Vladislav Grishenko
 
-And for --data-ciphers-fallback to *not*
-> be used in situations other than no OCC cipher.
+-----Original Message-----
+From: Selva Nair <selva.nair@...277...> 
+Sent: Friday, August 14, 2020 11:22 PM
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Subject: Re: [Openvpn-devel] [PATCH v2] Allow management to kill client
+instances by CN wildcard
+
+Hi
+
+On Fri, Aug 14, 2020 at 1:36 PM Arne Schwabe <arne@...1227...> wrote:
+>
+> Am 14.08.20 um 19:12 schrieb Vladislav Grishenko:
+> > In case of some permanent part of common name (ex. domain) and/or 
+> > long complex common name consisting of multiple x509 fields, it's 
+> > handly to kill client instances via management interface with just 
+> > prefix of common name, not by exact match only.
+> >
+> > Patch allows to use asterisk as wildcard placeholder in the last 
+> > trailing symbol of kill command parameter.
+> > Single asterisk - empty prefix would be too greedy and can be too 
+> > harmful, therefore not allowed. Wildcards in the middle of parameter 
+> > string are not supported to keep the the things simple at the moment.
+> >
+> > v2: fine tune comments
+> >
+>
+> Thanks for v2,
+>
+> Acked-By; Arne Schwabe <arne@...1227...>
+
+'*' is an allowed character in x509 common name unless we explicitly forbid
+it. So killing a client with name ending in * would get tricky if not
+impossible without side effects.
+
+Selva
 
 
-Reported-by: Richard Bonhomme <tincanteksup@...277...>
-Tested-by: Richard Bonhomme <tincanteksup@...277...>
+_______________________________________________
+Openvpn-devel mailing list
+Openvpn-devel@lists.sourceforge.net
+https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
-
-On 14/08/2020 09:06, Arne Schwabe wrote:
-> OpenVPN 2.5 clients do not correctly do a fallback to the server server.
-> This commit fixes that logic and also fixes --data-ciphers-fallback to
-> be used in situations other than no OCC cipher.
-> 
-> To reproduce the error use a client with only --data-ciphers set against
-> a server without NCP.
-> 
->          OPTIONS ERROR: failed to negotiate cipher with server.
->          Add the server's cipher  ('AES-256-CBC') to --data-ciphers
->          (currently 'AES-256-CBC') if you want to connect to this server.
-> 
-> Reported by: Richard Bonhomme <tincanteksup@...277...>
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->   src/openvpn/ssl_ncp.c | 9 +++++----
->   1 file changed, 5 insertions(+), 4 deletions(-)
-> 
-> diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-> index f522b8f0..c9ab85ce 100644
-> --- a/src/openvpn/ssl_ncp.c
-> +++ b/src/openvpn/ssl_ncp.c
-> @@ -296,13 +296,14 @@ check_pull_client_ncp(struct context *c, const int found)
->       }
->       /* If the server did not push a --cipher, we will switch to the
->        * remote cipher if it is in our ncp-ciphers list */
-> -    bool useremotecipher = tls_poor_mans_ncp(&c->options,
-> -                                             c->c2.tls_multi->remote_ciphername);
-> -
-> +    if(tls_poor_mans_ncp(&c->options, c->c2.tls_multi->remote_ciphername))
-> +    {
-> +        return true;
-> +    }
->   
->       /* We could not figure out the peer's cipher but we have fallback
->        * enabled */
-> -    if (!useremotecipher && c->options.enable_ncp_fallback)
-> +    if (!c->c2.tls_multi->remote_ciphername && c->options.enable_ncp_fallback)
->       {
->           return true;
->       }
-> 
 
