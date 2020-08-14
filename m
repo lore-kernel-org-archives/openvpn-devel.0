@@ -1,7 +1,14 @@
+References: <20200813101301.12720-1-gert@...1296...>
 From: Arne Schwabe <arne@...1227...>
-Date: Fri, 14 Aug 2020 10:06:19 +0200
-Message-Id: <20200814080619.2108-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Fix client's poor man NCP fallback
+Message-ID: <11b0fc14-72cd-4064-a25b-c0b267b59f09@...1227...>
+Date: Fri, 14 Aug 2020 12:23:45 +0200
+MIME-Version: 1.0
+In-Reply-To: <20200813101301.12720-1-gert@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="HPwAXUOw8aT6jPcYotAcXhmKYxdt6UTRK"
+Subject: Re: [Openvpn-devel] [PATCH] Fix stack overflow in OpenSolaris
+ NEXTADDR()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,52 +17,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--HPwAXUOw8aT6jPcYotAcXhmKYxdt6UTRK
+Content-Type: multipart/mixed; boundary="Qdlp6wiSEOZce6phO3MQsvmC4EWfocAAm"
+
+--Qdlp6wiSEOZce6phO3MQsvmC4EWfocAAm
+Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-OpenVPN 2.5 clients do not correctly do a fallback to the server server.
-This commit fixes that logic and also fixes --data-ciphers-fallback to
-be used in situations other than no OCC cipher.
+Am 13.08.20 um 12:13 schrieb Gert Doering:
+> Commit 5fde831c5807 fixed NEXTADDR() for all *BSDs and MacOS.
+>=20
+> OpenSolaris has to use a slightly different macro due to lack of
+> sockaddr->sa_len - but it has the same problem, first rounding up,
+> then memmove()'ing.  Switch order.
+>=20
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>  src/openvpn/route.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+> index 24563ed6..f127a90a 100644
+> --- a/src/openvpn/route.c
+> +++ b/src/openvpn/route.c
+> @@ -3429,7 +3429,7 @@ struct rtmsg {
+>  #if defined(TARGET_SOLARIS)
+>  #define NEXTADDR(w, u) \
+>      if (rtm_addrs & (w)) { \
+> -        l =3D ROUNDUP(sizeof(u)); memmove(cp, &(u), l); cp +=3D l; \
+> +        l =3D sizeof(u); memmove(cp, &(u), l); cp +=3D ROUNDUP(l); \
+>      }
+>=20=20
+>  #define ADVANCE(x, n) (x +=3D ROUNDUP(sizeof(struct sockaddr_in)))
+>=20
 
-To reproduce the error use a client with only --data-ciphers set against
-a server without NCP.
+Acked-By: Arne Schwabe <arne@...1227...>
 
-        OPTIONS ERROR: failed to negotiate cipher with server.
-        Add the server's cipher  ('AES-256-CBC') to --data-ciphers
-        (currently 'AES-256-CBC') if you want to connect to this server.
 
-Reported by: Richard Bonhomme <tincanteksup@...277...>
+--Qdlp6wiSEOZce6phO3MQsvmC4EWfocAAm--
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/ssl_ncp.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+--HPwAXUOw8aT6jPcYotAcXhmKYxdt6UTRK
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-index f522b8f0..c9ab85ce 100644
---- a/src/openvpn/ssl_ncp.c
-+++ b/src/openvpn/ssl_ncp.c
-@@ -296,13 +296,14 @@ check_pull_client_ncp(struct context *c, const int found)
-     }
-     /* If the server did not push a --cipher, we will switch to the
-      * remote cipher if it is in our ncp-ciphers list */
--    bool useremotecipher = tls_poor_mans_ncp(&c->options,
--                                             c->c2.tls_multi->remote_ciphername);
--
-+    if(tls_poor_mans_ncp(&c->options, c->c2.tls_multi->remote_ciphername))
-+    {
-+        return true;
-+    }
- 
-     /* We could not figure out the peer's cipher but we have fallback
-      * enabled */
--    if (!useremotecipher && c->options.enable_ncp_fallback)
-+    if (!c->c2.tls_multi->remote_ciphername && c->options.enable_ncp_fallback)
-     {
-         return true;
-     }
--- 
-2.26.2
+-----BEGIN PGP SIGNATURE-----
 
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl82ZjEACgkQFRhsZwKx
+RFS6bBAAqQIbdSkG8k749vOXtEO6E+/O9V0y2/5ICxI8MnjM/hVwU4MYVH1fugH7
+jExRTo1jYIYa4qO+H9CrnruSyRsxwBPBfsjlmYMYdVsP7MKcCUxRYJf7Qjlm4G7r
+E1lw2BwlBhsYCk5FNTqKNkNDn6kviToy4n0oH6iKR3qV2I9YrudO9IHf5HA73g7E
+MHtvuaXfZFWbdWRkh252isglgiQ5yNMY17z/Iabj7raQj15yiCXPBsomqbuS/MTV
+xfJ5eEItcowWLexub4ts6dIHQev0SV7/ZetB0Fndm7kIBnZ+46DwkClS7YxB0Yc5
+/kiyYxWpKXe+Igy4YwpY7je6jd8/TqXruBBZSuL5LKerzXXIqR9tJQqcxCH8d9vj
+UCWhYjxO+mtcpUPvPoCnV1X7DuZVtuLf0I0u+dWbb5xg0mKgEeGGyFQn1yQhTfRR
+DmenNLsP9iG2EejdxQRZneuYlTDSFvAcrU5SDGQPzMVtO57g4FIDV3N47y2c5rEu
+BA0zd76e3JHL6wBv01U3IF7spsYx9aURPcWrhiWE2CL+Kus6NScrj6DLCpowkg3b
+8IXk7T2Jl3Oh+kLyP9N5nV9eSQV6hgylP0nzUnVaGFjCWgRmC0MZTG1ek1z1dYz4
+qv/gm0WlGJezDYdKghHVzslpikekFjuUCl0u1SQ7ZSE/8Bpp8Ek=
+=XA3F
+-----END PGP SIGNATURE-----
+
+--HPwAXUOw8aT6jPcYotAcXhmKYxdt6UTRK--
 
