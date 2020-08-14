@@ -1,14 +1,10 @@
-References: <20200727221341.22544-1-themiron@...2010...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <3dcf2ac7-c2fd-c33a-4fbd-aa290260f93e@...1227...>
-Date: Fri, 14 Aug 2020 15:55:54 +0200
-MIME-Version: 1.0
-In-Reply-To: <20200727221341.22544-1-themiron@...2010...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="ug43waU1giXYnQaJTI5mpWewOu735Oih9"
-Subject: Re: [Openvpn-devel] [PATCH 1/2] Support multiple x509 field list to
- be username
+Date: Fri, 14 Aug 2020 16:51:53 +0200
+Message-Id: <20200814145153.12895-1-arne@...1227...>
+In-Reply-To: <acdbc6b7-d9ef-7824-6511-d7bec7713b1d@...1856...>
+References: <acdbc6b7-d9ef-7824-6511-d7bec7713b1d@...1856...>
+Subject: [Openvpn-devel] [PATCH v3 1/3] Refactor
+ key_state_export_keying_material functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,402 +13,309 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Vladislav Grishenko <themiron@...2010...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---ug43waU1giXYnQaJTI5mpWewOu735Oih9
-Content-Type: multipart/mixed; boundary="vY4Vn3S7AYgPtG6Ph1m5utCSGPFkObJBY"
-
---vY4Vn3S7AYgPtG6Ph1m5utCSGPFkObJBY
-Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Am 28.07.20 um 00:13 schrieb Vladislav Grishenko:
-> OpenVPN has the ability to choose different x509 field in case "CN"
-> can't be use used to be unique connected username since commit
-> 935c62be9c0c8a256112df818bfb8470586a23b6.
-> Unfortunately it's not enough in case client has multiple and valid
-> certificates from PKI for different devices (ex. laptop, mobile, etc)
-> with the same CN/UID.
->=20
-> Having --duplicate-cn as a workaround helps only partially - clients
-> can be connected, but it breaks coexistance with --ifconfig-pool-persist,
-> --client-config-dir and opens doors to DoS possibility since same client
-> device (with the same cert) being reconnected doesn't replace previously
-> connected session no more, so can exhaust server ressources (ex. address
-> pool) and can prevent other clients to be connected.
->=20
-> With this patch, multiple x509 fields incl. "serialNumber" can be chosen
-> to be username as --x509-username-files space-separated parameters.
-> Multiple fields will be joined into one username using '/' delimeter for
-> consistency with CN/addr logging and preserving ability for hierarchical
-> ccd. As long as resulting username is unique, --duplicate-cn will not
-> be required. Default value is preserved as "CN" only.
->=20
-> Openssl backend is the only supported at the moment, since so far MbedTLS
-> has no alt user name support at all.
-> ---
->  doc/man-sections/tls-options.rst |  9 ++++---
->  src/openvpn/init.c               |  4 +--
->  src/openvpn/options.c            | 46 ++++++++++++++++++--------------
->  src/openvpn/options.h            |  4 +--
->  src/openvpn/ssl.h                |  1 +
->  src/openvpn/ssl_common.h         |  8 +++++-
->  src/openvpn/ssl_verify.c         | 35 ++++++++++++++++--------
->  src/openvpn/ssl_verify_openssl.c | 15 +++++++++++
->  8 files changed, 83 insertions(+), 39 deletions(-)
->=20
-> diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-opti=
-ons.rst
-> index 8c2db7cd..301f8be4 100644
-> --- a/doc/man-sections/tls-options.rst
-> +++ b/doc/man-sections/tls-options.rst
-> @@ -632,13 +632,13 @@ certificates and keys: https://github.com/OpenVPN/e=
-asy-rsa
->    options can be defined to track multiple attributes.
->=20=20
->  --x509-username-field args
-> -  Field in the X.509 certificate subject to be used as the username
-> +  Field list in the X.509 certificate subject to be used as the username
->    (default :code:`CN`).
->=20=20
->    Valid syntax:
->    ::
->=20=20
-> -     x509-username-field [ext:]fieldname
-> +     x509-username-field [ext:]fieldname [[ext:]fieldname...]
->=20=20
->    Typically, this option is specified with **fieldname** as
->    either of the following:
-> @@ -646,6 +646,7 @@ certificates and keys: https://github.com/OpenVPN/eas=
-y-rsa
->=20=20
->       x509-username-field emailAddress
->       x509-username-field ext:subjectAltName
-> +     x509-username-field CN serialNumber
->=20=20
->    The first example uses the value of the :code:`emailAddress` attribute
->    in the certificate's Subject field as the username. The second example
-> @@ -653,7 +654,9 @@ certificates and keys: https://github.com/OpenVPN/eas=
-y-rsa
->    ``fieldname`` :code:`subjectAltName` be searched for an rfc822Name
->    (email) field to be used as the username. In cases where there are
->    multiple email addresses in :code:`ext:fieldname`, the last occurrence
-> -  is chosen.
-> +  is chosen. The last example uses the value of :code:`CN` attribute in
-> +  the Subject field and the hex representation of certificate's serial
-> +  number delimited by slash symbol as the resulting username.
->=20=20
->    When this option is used, the ``--verify-x509-name`` option will match
->    against the chosen ``fieldname`` instead of the Common Name.
-> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index 1ea4735d..11b417a8 100644
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -2912,9 +2912,9 @@ do_init_crypto_tls(struct context *c, const unsigne=
-d int flags)
->      to.verify_hash =3D options->verify_hash;
->      to.verify_hash_algo =3D options->verify_hash_algo;
->  #ifdef ENABLE_X509ALTUSERNAME
-> -    to.x509_username_field =3D (char *) options->x509_username_field;
-> +    memmove(to.x509_username_field, options->x509_username_field, sizeof=
-(to.x509_username_field));
->  #else
-> -    to.x509_username_field =3D X509_USERNAME_FIELD_DEFAULT;
-> +    to.x509_username_field[0] =3D X509_USERNAME_FIELD_DEFAULT;
->  #endif
+This refactors the common code between mbed SSL and OpenSSL into
+export_user_keying_material and also prepares the backend functions
+to export more than one key.
 
-Can't we use the same code in both cases? And why memmove instead memcpy?
+Also fix checking the return value of SSL_export_keying_material
+only 1 is a sucess, -1 is also an error.
 
+Signed-off-by: Arne Schwabe <arne@...1227...>
 
->      to.es =3D c->c2.es;
->      to.net_ctx =3D &c->net_ctx;
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index bc256b18..a51038dd 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -877,7 +877,7 @@ init_options(struct options *o, const bool init_gc)
->      o->tls_cert_profile =3D NULL;
->      o->ecdh_curve =3D NULL;
->  #ifdef ENABLE_X509ALTUSERNAME
-> -    o->x509_username_field =3D X509_USERNAME_FIELD_DEFAULT;
-> +    o->x509_username_field[0] =3D X509_USERNAME_FIELD_DEFAULT;
->  #endif
->  #ifdef ENABLE_PKCS11
->      o->pkcs11_pin_cache_period =3D -1;
-> @@ -8434,7 +8434,7 @@ add_option(struct options *options,
->          x509_track_add(&options->x509_track, p[1], msglevel, &options->g=
-c);
->      }
->  #ifdef ENABLE_X509ALTUSERNAME
-> -    else if (streq(p[0], "x509-username-field") && p[1] && !p[2])
-> +    else if (streq(p[0], "x509-username-field") && p[1])
->      {
->          /* This option used to automatically upcase the fieldname passed=
- as the
->           * option argument, e.g., "ou" became "OU". Now, this "helpfulne=
-ss" is
-> @@ -8443,32 +8443,38 @@ add_option(struct options *options,
->           * "emailAddress" are left as-is. An option parameter having the=
- "ext:"
->           * prefix for matching X.509v3 extended fields will also remain =
-unchanged.
->           */
-> -        char *s =3D p[1];
-> +        size_t j;
->=20=20
->          VERIFY_PERMISSION(OPT_P_GENERAL);
-> -        if (strncmp("ext:", s, 4) !=3D 0)
-> +
-> +        for (j =3D 1; j < MAX_PARMS && p[j] !=3D NULL; ++j)
->          {
-> -            size_t i =3D 0;
-> -            while (s[i] && !isupper(s[i]))
-> -            {
-> -                i++;
-> -            }
-> -            if (strlen(s) =3D=3D i)
-> +            char *s =3D p[j];
-> +
-> +            if (strncmp("ext:", s, 4) !=3D 0)
->              {
-> -                while ((*s =3D toupper(*s)) !=3D '\0')
-> +                size_t i =3D 0;
-> +                while (s[i] && !isupper(s[i]))
-> +                {
-> +                    i++;
-> +                }
-> +                if (strlen(s) =3D=3D i)
->                  {
-> -                    s++;
-> +                    while ((*s =3D toupper(*s)) !=3D '\0')
-> +                    {
-> +                        s++;
-> +                    }
-> +                    msg(M_WARN, "DEPRECATED FEATURE: automatically upcas=
-ed the "
-> +                        "--x509-username-field parameter to '%s'; please=
- update your"
-> +                        "configuration", p[j]);
->                  }
-> -                msg(M_WARN, "DEPRECATED FEATURE: automatically upcased t=
-he "
-> -                    "--x509-username-field parameter to '%s'; please upd=
-ate your"
-> -                    "configuration", p[1]);
->              }
-> +            else if (!x509_username_field_ext_supported(s+4))
-> +            {
-> +                msg(msglevel, "Unsupported x509-username-field extension=
-: %s", s);
-> +            }
-> +            options->x509_username_field[j-1] =3D p[j];
->          }
-> -        else if (!x509_username_field_ext_supported(s+4))
-> -        {
-> -            msg(msglevel, "Unsupported x509-username-field extension: %s=
-", s);
-> -        }
-> -        options->x509_username_field =3D p[1];
->      }
->  #endif /* ENABLE_X509ALTUSERNAME */
->  #ifdef ENABLE_PKCS11
-> diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-> index c5df2d18..e84aafec 100644
-> --- a/src/openvpn/options.h
-> +++ b/src/openvpn/options.h
-> @@ -582,8 +582,8 @@ struct options
->      int handshake_window;
->=20=20
->  #ifdef ENABLE_X509ALTUSERNAME
-> -    /* Field used to be the username in X509 cert. */
-> -    char *x509_username_field;
-> +    /* Field list used to be the username in X509 cert. */
-> +    char *x509_username_field[MAX_PARMS];
->  #endif
->=20=20
->      /* Old key allowed to live n seconds after new key goes active */
-> diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-> index 005628f6..51d6ab32 100644
-> --- a/src/openvpn/ssl.h
-> +++ b/src/openvpn/ssl.h
-> @@ -119,6 +119,7 @@
->=20=20
->  /* Default field in X509 to be username */
->  #define X509_USERNAME_FIELD_DEFAULT "CN"
-> +#define X509_USERNAME_FIELD_DELIMITER '/'
->=20=20
+Patch V2: Cache secrets for mbed TLS instead generating all ekms
+          in the call back function
 
-This seems to be used nowhere.
+Patch V3: comment is no longer a lie. (fixed doxygen)
 
->  #define KEY_METHOD_2  2
->=20=20
-> diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-> index 9f777750..a322b923 100644
-> --- a/src/openvpn/ssl_common.h
-> +++ b/src/openvpn/ssl_common.h
-> @@ -285,7 +285,13 @@ struct tls_options
->      const char *remote_cert_eku;
->      uint8_t *verify_hash;
->      hash_algo_type verify_hash_algo;
-> -    char *x509_username_field;
-> +
-> +    /* Field list used to be the username in X509 cert. */
-> +#ifdef ENABLE_X509ALTUSERNAME
-> +    char *x509_username_field[MAX_PARMS];
-> +#else
-> +    char *x509_username_field[2];
-> +#endif
->=20=20
->      /* allow openvpn config info to be
->       * passed over control channel */
-> diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-> index 844bc57d..33ca58dc 100644
-> --- a/src/openvpn/ssl_verify.c
-> +++ b/src/openvpn/ssl_verify.c
-> @@ -48,7 +48,7 @@
->  #include "push.h"
->=20=20
->  /** Maximum length of common name */
-> -#define TLS_USERNAME_LEN 64
-> +#define TLS_USERNAME_LEN 128
->=20=20
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/ssl.c         | 36 ++++++++++++++++++-
+ src/openvpn/ssl_backend.h | 20 +++++++----
+ src/openvpn/ssl_mbedtls.c | 73 ++++++++++++++++++++-------------------
+ src/openvpn/ssl_mbedtls.h | 12 +++++--
+ src/openvpn/ssl_openssl.c | 43 +++++++++--------------
+ 5 files changed, 114 insertions(+), 70 deletions(-)
 
-NAK on this one. The X509 CN name length is max 64 characeters. So you
-either have stick to that limit in your patch or have to untagle the CN
-name length vs the field you are using, which might end up in a seperate
-patch.
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index f16114c2..3fcaa25f 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2412,6 +2412,40 @@ error:
+     return false;
+ }
+ 
++static void
++export_user_keying_material(struct key_state_ssl *ssl,
++                            struct tls_session *session)
++{
++    if (session->opt->ekm_size > 0)
++    {
++        unsigned int size = session->opt->ekm_size;
++        struct gc_arena gc = gc_new();
++
++        unsigned char *ekm;
++        if ((ekm = key_state_export_keying_material(session,
++                                                    session->opt->ekm_label,
++                                                    session->opt->ekm_label_size,
++                                                    session->opt->ekm_size,
++                                                    &gc)))
++        {
++            unsigned int len = (size * 2) + 2;
++
++            const char *key = format_hex_ex(ekm, size, len, 0, NULL, &gc);
++            setenv_str(session->opt->es, "exported_keying_material", key);
++
++            dmsg(D_TLS_DEBUG_MED, "%s: exported keying material: %s",
++                 __func__, key);
++            secure_memzero(ekm, size);
++        }
++        else
++        {
++            msg(M_WARN, "WARNING: Export keying material failed!");
++            setenv_del(session->opt->es, "exported_keying_material");
++        }
++        gc_free(&gc);
++    }
++}
++
+ /**
+  * Handle reading key data, peer-info, username/password, OCC
+  * from the TLS control channel (cleartext).
+@@ -2541,7 +2575,7 @@ key_method_2_read(struct buffer *buf, struct tls_multi *multi, struct tls_sessio
+     if ((ks->authenticated > KS_AUTH_FALSE)
+         && plugin_defined(session->opt->plugins, OPENVPN_PLUGIN_TLS_FINAL))
+     {
+-        key_state_export_keying_material(&ks->ks_ssl, session);
++        export_user_keying_material(&ks->ks_ssl, session);
+ 
+         if (plugin_call(session->opt->plugins, OPENVPN_PLUGIN_TLS_FINAL, NULL, NULL, session->opt->es) != OPENVPN_PLUGIN_FUNC_SUCCESS)
+         {
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index 7f52ab1e..cf9fba25 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -394,13 +394,21 @@ void backend_tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx,
+  * derived from existing TLS channel. This exported keying material can then be
+  * used for a variety of purposes.
+  *
+- * @param ks_ssl       The SSL channel's state info
+  * @param session      The session associated with the given key_state
+- */
+-
+-void
+-key_state_export_keying_material(struct key_state_ssl *ks_ssl,
+-                                 struct tls_session *session) __attribute__((nonnull));
++ * @param label        The label to use when exporting the key
++ * @param label_size   The size of the label to use when exporting the key
++ * @param ekm_size     THe size of the exported/returned key material
++ * @param gc           gc_arena that might be used to allocate the string
++ *                     returned
++ * @returns            The exported key material, the caller may zero the
++ *                     string but should not free it
++ */
++
++unsigned char*
++key_state_export_keying_material(struct tls_session *session,
++                                 const char* label, size_t label_size,
++                                 size_t ekm_size,
++                                 struct gc_arena *gc) __attribute__((nonnull));
+ 
+ /**************************************************************************/
+ /** @addtogroup control_tls
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index 9c874788..4287b59e 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -206,51 +206,54 @@ mbedtls_ssl_export_keys_cb(void *p_expkey, const unsigned char *ms,
+ {
+     struct tls_session *session = p_expkey;
+     struct key_state_ssl *ks_ssl = &session->key[KS_PRIMARY].ks_ssl;
+-    unsigned char client_server_random[64];
++    struct tls_key_cache *cache = &ks_ssl->tls_key_cache;
+ 
+-    ks_ssl->exported_key_material = gc_malloc(session->opt->ekm_size,
+-                                              true, NULL);
++    static_assert(sizeof(ks_ssl->ctx->session->master)
++                    == sizeof(cache->master_secret), "master size mismatch");
+ 
+-    memcpy(client_server_random, client_random, 32);
+-    memcpy(client_server_random + 32, server_random, 32);
++    memcpy(cache->client_server_random, client_random, 32);
++    memcpy(cache->client_server_random + 32, server_random, 32);
++    memcpy(cache->master_secret, ms, sizeof(cache->master_secret));
++    cache->tls_prf_type = tls_prf_type;
+ 
+-    const size_t ms_len = sizeof(ks_ssl->ctx->session->master);
+-    int ret = mbedtls_ssl_tls_prf(tls_prf_type, ms, ms_len,
+-                                  session->opt->ekm_label, client_server_random,
+-                                  sizeof(client_server_random), ks_ssl->exported_key_material,
+-                                  session->opt->ekm_size);
+-
+-    if (!mbed_ok(ret))
+-    {
+-        secure_memzero(ks_ssl->exported_key_material, session->opt->ekm_size);
+-    }
+-
+-    secure_memzero(client_server_random, sizeof(client_server_random));
+-
+-    return ret;
++    return true;
+ }
+-#endif /* HAVE_EXPORT_KEYING_MATERIAL */
+ 
+-void
+-key_state_export_keying_material(struct key_state_ssl *ssl,
+-                                 struct tls_session *session)
++unsigned char *
++key_state_export_keying_material(struct tls_session *session,
++                                 const char* label, size_t label_size,
++                                 size_t ekm_size,
++                                 struct gc_arena *gc)
+ {
+-    if (ssl->exported_key_material)
++    ASSERT(strlen(label) == label_size);
++
++    struct tls_key_cache *cache = &session->key[KS_PRIMARY].ks_ssl.tls_key_cache;
++
++    /* If the type is NONE, we either have no cached secrets or
++     * there is no PRF, in both cases we cannot generate key material */
++    if (cache->tls_prf_type == MBEDTLS_SSL_TLS_PRF_NONE)
+     {
+-        unsigned int size = session->opt->ekm_size;
+-        struct gc_arena gc = gc_new();
+-        unsigned int len = (size * 2) + 2;
++        return NULL;
++    }
+ 
+-        const char *key = format_hex_ex(ssl->exported_key_material,
+-                                        size, len, 0, NULL, &gc);
+-        setenv_str(session->opt->es, "exported_keying_material", key);
++    unsigned char *ekm = (unsigned char *) gc_malloc(ekm_size, true, gc);
++    int ret = mbedtls_ssl_tls_prf(cache->tls_prf_type, cache->master_secret,
++                                  sizeof(cache->master_secret),
++                                  label, cache->client_server_random,
++                                  sizeof(cache->client_server_random),
++                                  ekm, ekm_size);
+ 
+-        dmsg(D_TLS_DEBUG_MED, "%s: exported keying material: %s",
+-             __func__, key);
+-        gc_free(&gc);
++    if (mbed_ok(ret))
++    {
++        return ekm;
++    }
++    else
++    {
++        secure_memzero(ekm, session->opt->ekm_size);
++        return  NULL;
+     }
+ }
+-
++#endif /* HAVE_EXPORT_KEYING_MATERIAL */
+ 
+ bool
+ tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags)
+@@ -1178,7 +1181,7 @@ key_state_ssl_free(struct key_state_ssl *ks_ssl)
+ {
+     if (ks_ssl)
+     {
+-        free(ks_ssl->exported_key_material);
++        CLEAR(ks_ssl->tls_key_cache);
+ 
+         if (ks_ssl->ctx)
+         {
+diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h
+index 0525134f..17aae551 100644
+--- a/src/openvpn/ssl_mbedtls.h
++++ b/src/openvpn/ssl_mbedtls.h
+@@ -82,6 +82,15 @@ struct external_context {
+     void *sign_ctx;
+ };
+ 
++/** struct to cache TLS secrets for keying material exporter (RFC 5705).
++ * The constants (64 and 48) are inherent to TLS version and
++ * the whole keying material export will likely change when they change */
++struct tls_key_cache {
++    unsigned char client_server_random[64];
++    mbedtls_tls_prf_types tls_prf_type;
++    unsigned char master_secret[48];
++};
++
+ /**
+  * Structure that wraps the TLS context. Contents differ depending on the
+  * SSL library used.
+@@ -114,8 +123,7 @@ struct key_state_ssl {
+     mbedtls_ssl_context *ctx;           /**< mbedTLS connection context */
+     bio_ctx *bio_ctx;
+ 
+-    /** Keying material exporter cache (RFC 5705). */
+-    uint8_t *exported_key_material;
++    struct tls_key_cache tls_key_cache;
+ 
+ };
+ 
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 5ba74402..f52c7c39 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -158,35 +158,26 @@ tls_ctx_initialised(struct tls_root_ctx *ctx)
+     return NULL != ctx->ctx;
+ }
+ 
+-void
+-key_state_export_keying_material(struct key_state_ssl *ssl,
+-                                 struct tls_session *session)
+-{
+-    if (session->opt->ekm_size > 0)
+-    {
+-        unsigned int size = session->opt->ekm_size;
+-        struct gc_arena gc = gc_new();
+-        unsigned char *ekm = (unsigned char *) gc_malloc(size, true, &gc);
++unsigned char*
++key_state_export_keying_material(struct tls_session *session,
++                                 const char* label, size_t label_size,
++                                 size_t ekm_size,
++                                 struct gc_arena *gc)
+ 
+-        if (SSL_export_keying_material(ssl->ssl, ekm, size,
+-                                       session->opt->ekm_label,
+-                                       session->opt->ekm_label_size,
+-                                       NULL, 0, 0))
+-        {
+-            unsigned int len = (size * 2) + 2;
++{
++    unsigned char *ekm = (unsigned char *) gc_malloc(ekm_size, true, gc);
+ 
+-            const char *key = format_hex_ex(ekm, size, len, 0, NULL, &gc);
+-            setenv_str(session->opt->es, "exported_keying_material", key);
++    SSL* ssl = session->key[KS_PRIMARY].ks_ssl.ssl;
+ 
+-            dmsg(D_TLS_DEBUG_MED, "%s: exported keying material: %s",
+-                 __func__, key);
+-        }
+-        else
+-        {
+-            msg(M_WARN, "WARNING: Export keying material failed!");
+-            setenv_del(session->opt->es, "exported_keying_material");
+-        }
+-        gc_free(&gc);
++    if (SSL_export_keying_material(ssl, ekm, ekm_size, label,
++                                   label_size, NULL, 0, 0) == 1)
++    {
++        return ekm;
++    }
++    else
++    {
++        secure_memzero(ekm, ekm_size);
++        return NULL;
+     }
+ }
+ 
+-- 
+2.26.2
 
-
-
->  static void
->  string_mod_remap_name(char *str)
-> @@ -640,6 +640,7 @@ verify_cert(struct tls_session *session, openvpn_x509=
-_cert_t *cert, int cert_dep
->      char common_name[TLS_USERNAME_LEN+1] =3D {0}; /* null-terminated */
->      const struct tls_options *opt;
->      struct gc_arena gc =3D gc_new();
-> +    size_t i, size;
->=20=20
->      opt =3D session->opt;
->      ASSERT(opt);
-> @@ -660,19 +661,31 @@ verify_cert(struct tls_session *session, openvpn_x5=
-09_cert_t *cert, int cert_dep
->      string_replace_leading(subject, '-', '_');
->=20=20
->      /* extract the username (default is CN) */
-> -    if (SUCCESS !=3D backend_x509_get_username(common_name, sizeof(commo=
-n_name),
-> -                                             opt->x509_username_field, c=
-ert))
-> +    size =3D sizeof(common_name);
-> +    for (i =3D 0; opt->x509_username_field[i] !=3D NULL && size > !!i; i=
-++)
->      {
-
-C89 style instead C99. The !!i feels weird. It is the same as max(i, 1)
-but less readable.
-> -        if (!cert_depth)
-> +        char *buf =3D common_name + sizeof(common_name) - size;
-> +
-> +        if (SUCCESS !=3D backend_x509_get_username(buf + !!i, size - !!i,
-> +                                                 opt->x509_username_fiel=
-d[i], cert))
->          {
-> -            msg(D_TLS_ERRORS, "VERIFY ERROR: could not extract %s from X=
-509 "
-> -                "subject string ('%s') -- note that the username length =
-is "
-> -                "limited to %d characters",
-> -                opt->x509_username_field,
-> -                subject,
-> -                TLS_USERNAME_LEN);
-> -            goto cleanup;
-> +            break;
-> +        }
-> +        else if (i !=3D 0)
-> +        {
-> +            *buf =3D X509_USERNAME_FIELD_DELIMITER;
->          }
-> +        size -=3D strlen(buf);
-> +    }
-> +    if (cert_depth =3D=3D 0 && opt->x509_username_field[i] !=3D NULL)
-> +    {
-> +        msg(D_TLS_ERRORS, "VERIFY ERROR: could not extract %s from X509 "
-> +            "subject string ('%s') -- note that the username length is "
-> +            "limited to %d characters",
-> +            opt->x509_username_field[i],
-> +            subject,
-> +            TLS_USERNAME_LEN);
-> +        goto cleanup;
->      }
-
-Not really wrong but we normally do stuff like appending etc to a string
-with our buf method/ classes. I would prefer we do it the same here
-instead of doing it completely different (espeically the !! is nowhere
-else found in the code base).
-
-
->=20=20
->      /* enforce character class restrictions in common name */
-> diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_op=
-enssl.c
-> index ff14db23..ebff0c92 100644
-> --- a/src/openvpn/ssl_verify_openssl.c
-> +++ b/src/openvpn/ssl_verify_openssl.c
-> @@ -268,6 +268,21 @@ backend_x509_get_username(char *common_name, int cn_=
-len,
->              return FAILURE;
->          }
->      }
-> +    else if (strcmp(LN_serialNumber,x509_username_field) =3D=3D 0)
-> +    {
-> +        ASN1_INTEGER *asn1_i =3D X509_get_serialNumber(peer_cert);
-> +        struct gc_arena gc =3D gc_new();
-> +        char *serial;
-> +
-> +        serial =3D format_hex_ex(asn1_i->data, asn1_i->length, 0, 1, NUL=
-L, &gc);
-> +        if (!serial || cn_len <=3D strlen(serial)+2)
-> +        {
-> +            gc_free(&gc);
-> +            return FAILURE;
-> +        }
-> +        openvpn_snprintf(common_name, cn_len, "0x%s", serial);
-> +        gc_free(&gc);
-> +    }
->      else
->  #endif
->      if (FAILURE =3D=3D extract_x509_field_ssl(X509_get_subject_name(peer=
-_cert),
->=20
-
-
-
---vY4Vn3S7AYgPtG6Ph1m5utCSGPFkObJBY--
-
---ug43waU1giXYnQaJTI5mpWewOu735Oih9
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl82l+oACgkQFRhsZwKx
-RFT5wxAAgM21qlP7brkjCXMuZKKnmdkZPuVb3jHY500WSsFmjcyAFGOtzpUsZlYp
-zppeamIWFbF0anZuI7xIDxgw6tuSbK9zzo2J+jJAvRbQMrqWUcVme7A46WzNScNL
-o26HkTdzFJ7nSFPJZUAVMnrIuGa+WqOa9pAlfskRwMzNaOpZduBF4v3n0m/dELXL
-eqIFfU9TRnzNaOeX1bwL7dLjcm2w9abxzdMu6+rWmfMNzDO78H/2ItfeowKAWl3g
-q6KWJQEgy+hC597S1GceiTWYaYX+JYXOOVmwCDTY3bH9/7wCM3J3F5O3SVCUxA7D
-lKmWxougGd1k/yzo8cz6cEZ816qLg8NXNY1xKngoXtneKMeMWR3NIEBhGs+IMLvh
-m+JZMaZl2d4ACmB/qNbX7n89wOZhPzj6UV5taJBRpleB1xN+xLm1LCYfmnK3LSjZ
-EV+vfdB5na5I6DVrE3Y0VzSPu9bSCD0BNwh7HoNCxK3hHz6QfBuA9BRa6vxscVko
-dFBfNFdAcm5DVR87QYjMVHnJLU9CV+K//zwbEjo1tEAGbL65XFW8HO9kZl6yyuA7
-aLq7747qnXrI+uUXle7ibAczxtI5PzxAaqYm1ClxksjDTyeE3L7YYh+RRWWdBNtv
-BlZ+UnmwPowiVtQo6ZCdbO9Oboowx0NHYP36nastzLt9Zt00kwU=
-=ppZY
------END PGP SIGNATURE-----
-
---ug43waU1giXYnQaJTI5mpWewOu735Oih9--
 
