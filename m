@@ -1,11 +1,13 @@
-From: tincanteksup <tincanteksup@...277...>
-References: <ee0e5768-c1d3-47ea-a466-b868b78cbe21@...277...>
-Message-ID: <98e4ad88-d6de-e308-4e2d-665a9333bf83@...277...>
-Date: Sat, 15 Aug 2020 19:31:25 +0100
+Date: Sat, 15 Aug 2020 21:03:15 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20200815190315.GN75094@...1296...>
+References: <20200815120522.1404-1-mkroken@...277...>
 MIME-Version: 1.0
-In-Reply-To: <ee0e5768-c1d3-47ea-a466-b868b78cbe21@...277...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] 2.5-beta-1 Windows installer problems
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="pWT/WNRdoJORH3Bm"
+Content-Disposition: inline
+In-Reply-To: <20200815120522.1404-1-mkroken@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 0/2] Fix mistyped option names
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,49 +16,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Magnus Kroken <mkroken@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Comment inline:
+--pWT/WNRdoJORH3Bm
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 15/08/2020 19:29, tincanteksup wrote:
-> Hi,
-> 
-> I would like to document the very strange issues I had testing the 2.5 
-> MSI installers.
-> 
-> The first test was on a Win7-Ent/32bit VM with 32bit installer.  The 
-> second test was a real PC with Win7-HomePro/64bit (yeah, user did not 
-> want w10) 64bit installer. The third test was Win10/64bit VM 64bit 
-> installer.
-> 
-> The results were almost identical:
-> 
-> 1. Logged in as admin user.
-> 2. Installed over previous installation.
->     Completed apparently OK ?
-> 3. On testing the VPN I found that:
->     IPv6 worked (could ping both ways)
->     IPv4 did not (could not ping either way)
->     Firewall disabled. Dual stack VPN.
-> 4. Logged out/Logged in as normal user.
-> 5. OpenVPN Installer forced a re-install of the TAP/wintun drivers.
->     The user could select "do not install" but the installer was auto-run.
+Hi,
 
-I did "Install" the drivers as non-admin user and was *not* prompted for 
-admin password.
+On Sat, Aug 15, 2020 at 02:05:20PM +0200, Magnus Kroken wrote:
+> While preparing a 2.5_beta1 package, I had to look
+> back and forth betwenn various sources to get option
+> names right. It seems that in some places names are
+> altered to make grammatical sense, which I find
+> confusing.
 
+Thanks for pointing that out, and of course you are right
+that this needs fixing.  Thanks for your patches, will apply
+ASAP (tomorrow-ish).
 
->     The user was *not* prompted for admin password.
-> 6. Using the same VPN config as above, the VPN now functions correctly.
-> 
-> The only difference was that on Win10 I could not test logging back in 
-> as a standard user because my VM could not be activated.
-> 
-> I do not know where would be the bast place to raise these issues and so 
-> sent my feedback to the list for further consideration.
-> 
-> Regards
-> Richard
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--pWT/WNRdoJORH3Bm
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJfODFzAAoJEB2Cnv7KVigS7uML/jj2j3eH3SFzAGn30ercxKFT
+fy3acoqULD5fR+XgEa9/TKT+HViqM6Qwam0v/Wz4+H1hwIbUfqIaqiWlCroo1zmH
+E92C+d1Qo8yBuaUCqtOyZHZOE8lqucUlfiwR1Z30vNwy7qOnXZrvy9qIp1B5pOhY
+U//Gmci7905Y1Dea2Rgo8xWqpc7OzP4xHAEHs3QiBxswM9sTJRDIcg1Mk0cme4HG
+3ewgSVn37EsbFmvWqFdQ3aX6XUilPot0/xk7DbCXw1kuBgKJft5Vy9f2zUDFO8IW
+FmfJ6O5VLigAnDdQzVb6xb8UY5Pl6ZqMVaF5NRGfMp4U9YkaBAnLWaB9GU7dutjR
+5NfClDkmyoEMWw6e2eWnxU6HJZHnKnVH4/XDoa8NJ/s5vZkMsENgFMcGpLti4Jjf
+xfkYsdwcm5G65Cr8/h//FdPS+VZwFhqB0/0yNhF/mGWzJQuuVitNZL91+PIqPGIv
+GChjsLW4z0yFAyzWgzm06e6zKqWSgT5bZpdmqHjPVA==
+=iV6W
+-----END PGP SIGNATURE-----
+
+--pWT/WNRdoJORH3Bm--
 
