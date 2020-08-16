@@ -1,12 +1,10 @@
-From: tincanteksup <tincanteksup@...277...>
-References: <ee0e5768-c1d3-47ea-a466-b868b78cbe21@...277...>
- <98e4ad88-d6de-e308-4e2d-665a9333bf83@...277...>
-Message-ID: <5fc681b6-0f69-40a5-9ede-8edc88704e8d@...277...>
-Date: Sun, 16 Aug 2020 14:05:58 +0100
-MIME-Version: 1.0
-In-Reply-To: <98e4ad88-d6de-e308-4e2d-665a9333bf83@...277...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] 2.5-beta-1 Windows installer problems
+From: selva.nair@...277...
+Date: Sun, 16 Aug 2020 15:06:39 -0400
+Message-Id: <1597604799-23135-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1552943809-6367-1-git-send-email-selva.nair@...277...>
+References: <1552943809-6367-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH v2] Improve the documentation for
+ --dhcp-option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,85 +13,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
+Cc: Selva Nair <selva@...2572...>, Selva Nair <selva.nair@...277...>
 
-I tried this again on a completely fresh Win10 VM.
+From: Selva Nair <selva@...2572...>
 
-The experience was the same, IPv6 works v4 does not.
+- Stress that these are handled internally only on some platforms
+- Correct the statement about wintun 
+- Document DOMAIN-SEARCH
 
-When installing as an admin user and then switching to a non-admin, the 
-installation still continues but does ask for admin password.  But the 
-result is still the same, no IPv4.
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+v2: Rebase to master and reword to match the new rst version
+    Add doc for DOMAIN-SEARCH
 
-Uninstalling and then installing as a non-admin from scratch seems a lot 
-smoother but the final result is the same, no IPv4.
+ doc/man-sections/vpn-network-options.rst | 23 +++++++++++++++++------
+ 1 file changed, 17 insertions(+), 6 deletions(-)
 
-Summary:
+diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections/vpn-network-options.rst
+index 7100c1ae..825dd1ca 100644
+--- a/doc/man-sections/vpn-network-options.rst
++++ b/doc/man-sections/vpn-network-options.rst
+@@ -93,12 +93,18 @@ routing.
+   or :code:`tap`.
+ 
+ --dhcp-option args
+-  Set additional network settings via DHCP.  On Windows, this is parsed by
+-  the ``tap-windows6`` or ``wintun`` driver.  On other platforms these
+-  options can be picked up by an ``--up`` script or plug-in if it has been
+-  pushed by the OpenVPN server.  The option will then be saved in the
+-  client's environment before the ``--up`` script is called, under the name
+-  :code:`foreign_option_{n}`.
++  Set additional network parameters on supported platforms. May be specified
++  on the client or pushed from the server. On Windows these options are
++  handled by the ``tap-windows6`` driver by default or directly by OpenVPN
++  if dhcp is disabled or the ``wintun`` driver is in use. The
++  ``OpenVPN for Android`` client also handles them internally.
++
++  On all other platforms these options are only saved in the client's
++  environment under the name :code:`foreign_options_{n}` before the
++  ``--up`` script is called. A plugin or an ``--up`` script must be used to
++  pick up and interpret these as required. Many Linux distributions include
++  such scripts and some third-party user interfaces such as tunnelblick also
++  come with scripts that process these options.
+ 
+   Valid syntax:
+   ::
+@@ -108,6 +114,11 @@ routing.
+   :code:`DOMAIN` ``name``
+         Set Connection-specific DNS Suffix to :code:`name`.
+ 
++  :code:`DOMAIN-SEARCH` ``name``
++        Add :code:`name` to the domain search list.
++        Repeat this option to add more entries. Up to
++        10 domains are supported.
++
+   :code:`DNS` ``address``
+         Set primary domain name server IPv4 or IPv6 address.
+         Repeat this option to set secondary DNS server addresses.
+-- 
+2.17.1
 
-Win10 install from non-admin seems to be cleanly done but the result is 
-no Ipv4.
-
-Win10 install as admin user is not so clean.  OpenVPN installer seems to 
-be left in an incomplete state until a non-admin user logs in.  In my 
-opinion, this is not ideal considering the number of single user 
-machines in use.  Microsoft do what they must to protect the system when 
-a single user machine is in use, openvpn should not be so picky..
-
-Win7 .. same result, no Ipv4.
-
-Win7 install seems to have the same issues of who is allowed to install 
-openvpn but does a bad job of it, no admin password prompt.
-
-I know this is a beta so I'm not complaining, only offering feedback
-
-Regards
-
-
-
-
-On 15/08/2020 19:31, tincanteksup wrote:
-> Comment inline:
-> 
-> On 15/08/2020 19:29, tincanteksup wrote:
->> Hi,
->>
->> I would like to document the very strange issues I had testing the 2.5 
->> MSI installers.
->>
->> The first test was on a Win7-Ent/32bit VM with 32bit installer.  The 
->> second test was a real PC with Win7-HomePro/64bit (yeah, user did not 
->> want w10) 64bit installer. The third test was Win10/64bit VM 64bit 
->> installer.
->>
->> The results were almost identical:
->>
->> 1. Logged in as admin user.
->> 2. Installed over previous installation.
->>     Completed apparently OK ?
->> 3. On testing the VPN I found that:
->>     IPv6 worked (could ping both ways)
->>     IPv4 did not (could not ping either way)
->>     Firewall disabled. Dual stack VPN.
->> 4. Logged out/Logged in as normal user.
->> 5. OpenVPN Installer forced a re-install of the TAP/wintun drivers.
->>     The user could select "do not install" but the installer was 
->> auto-run.
-> 
-> I did "Install" the drivers as non-admin user and was *not* prompted for 
-> admin password.
-> 
-> 
->>     The user was *not* prompted for admin password.
->> 6. Using the same VPN config as above, the VPN now functions correctly.
->>
->> The only difference was that on Win10 I could not test logging back in 
->> as a standard user because my VM could not be activated.
->>
->> I do not know where would be the bast place to raise these issues and 
->> so sent my feedback to the list for further consideration.
->>
->> Regards
->> Richard
 
