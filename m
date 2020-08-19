@@ -1,21 +1,8 @@
-MIME-Version: 1.0
-References: <20200818063212.GW75094@...1296...>
- <CAKuzo_jEGvTnkbsgJVm5beW5SapWoy_xLk_LA+-N59oa6SbbkA@...278...>
- <81A6F618-2F74-417F-A476-BF290CCFF143@...277...>
- <20200818181820.GZ75094@...1296...>
- <2F7C4631-7E3C-47FB-BC8E-E4271F38AD9F@...277...>
- <20200818192104.GB75094@...1296...>
- <CAKuzo_h2hLeQodHsJ7uzetq_XeGPJiu3i-o2tXuL29HbJcG6bA@...278...>
- <20200818194248.GC75094@...1296...>
- <CAKuzo_jG-NOqD4wHZ1SL-2Ti5NgocUDzSOpV5yqMaTXZ2UXVrA@...278...>
- <CAAWBBYPby1vNtcmqy32=jJbVO=vxaZuHphjR4UxJfS9pOAMc-Q@...278...>
- <20200819060327.GE75094@...1296...>
- <DC25B829-92E2-4052-AFDF-CC3F90BE4286@...277...>
-In-Reply-To: <DC25B829-92E2-4052-AFDF-CC3F90BE4286@...277...>
 From: Lev Stipakov <lstipakov@...277...>
-Date: Wed, 19 Aug 2020 09:57:42 +0300
-Message-ID: <CAGyAFMUD6xFrOXjRgfsh4v=H069dV28HWD9Jdu1EBDgjB9hP+w@...278...>
-Subject: Re: [Openvpn-devel] 2.5-beta-1 Wintun requires SYSTEM privileges
+Date: Wed, 19 Aug 2020 10:07:46 +0300
+Message-Id: <20200819070746.197-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] tun.c: enable using wintun driver under
+ SYSTEM
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,23 +11,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Marvin Adeff <volleynbike@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: Lev Stipakov <lev@...515...>
 
-Hi,
+From: Lev Stipakov <lev@...515...>
 
-As Gert mentioned, OpenVPN will set what is needed when connection is
-established - just double-checked that this is indeed the case.
+Commit 6d19775a468 has removed SYSTEM elevation hack,
+but introduced regression - inability to use wintun without interactive service.
 
-> So it didn=E2=80=99t read the .ovpn (to select dhcp) and it didn=E2=80=99=
-t have anything to populate the IP/subnet/dns etc.  This can=E2=80=99t be r=
-ight.  At the least it should be set to dhcp by default with static IPs add=
-ed later if necessary.  Or am I doing something wrong?
+Proceed with ring buffers registration even if iservice is unavailable and display
+relevant error message.
 
-Apart from missing values when the adapter is not connected, do you
-experience any other issues?
+Trac #1318
 
--Lev
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/openvpn/tun.c | 30 +++++++++++++++++++++++++-----
+ 1 file changed, 25 insertions(+), 5 deletions(-)
+
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 30454454..62557364 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -6158,12 +6158,32 @@ wintun_register_ring_buffer(struct tuntap *tt, const char *device_guid)
+     }
+     else
+     {
+-        msg(M_FATAL, "ERROR:  Wintun requires SYSTEM privileges and therefore "
+-                     "should be used with interactive service. If you want to "
+-                     "use openvpn from command line, you need to do SYSTEM "
+-                     "elevation yourself (for example with psexec).");
+-    }
++        if (!register_ring_buffers(tt->hand,
++                                   tt->wintun_send_ring,
++                                   tt->wintun_receive_ring,
++                                   tt->rw_handle.read,
++                                   tt->rw_handle.write))
++        {
++            switch (GetLastError())
++            {
++                case ERROR_ACCESS_DENIED:
++                    msg(M_FATAL, "ERROR:  Wintun requires SYSTEM privileges and therefore "
++                                 "should be used with interactive service. If you want to "
++                                 "use openvpn from command line, you need to do SYSTEM "
++                                 "elevation yourself (for example with psexec).");
++                    break;
++
++                case ERROR_ALREADY_INITIALIZED:
++                    msg(M_NONFATAL, "Adapter %s is already in use", device_guid);
++                    break;
+ 
++                default:
++                    msg(M_NONFATAL | M_ERRNO, "Failed to register ring buffers");
++            }
++            ret = false;
++        }
++
++    }
+     return ret;
+ }
+ 
+-- 
+2.17.1
+
 
