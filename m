@@ -1,14 +1,9 @@
-References: <20200820014258.38377-1-eric@...1918...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <ff5e24b5-f537-b870-a2a4-97561e682dc3@...1227...>
-Date: Thu, 20 Aug 2020 08:47:51 +0200
+From: Jan Seeger <jan.seeger@...2574...>
+Date: Thu, 20 Aug 2020 15:49:46 +0200
+Message-Id: <20200820134946.10573-1-jan.seeger@...2574...>
 MIME-Version: 1.0
-In-Reply-To: <20200820014258.38377-1-eric@...1918...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="WOeDwJa3QVW9kWThVB8AiObSl7xFEURNi"
-Subject: Re: [Openvpn-devel] [PATCH] Fixes a bug in
- management_callback_send_cc_message, should be strlen instead of sizeof
+Subject: [Openvpn-devel] [PATCH] Added environment variable for IPv6 route
+ metric.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,70 +12,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Eric Thorpe <eric@...1918...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---WOeDwJa3QVW9kWThVB8AiObSl7xFEURNi
-Content-Type: multipart/mixed; boundary="5sxaKPFs3VBeth9q81K4vB3pw6s2xb8ih"
-
---5sxaKPFs3VBeth9q81K4vB3pw6s2xb8ih
-Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Am 20.08.20 um 03:42 schrieb Eric Thorpe:
-> Signed-off-by: Eric Thorpe <eric@...1918...>
-> ---
->  src/openvpn/init.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index dfa045b0..a785934a 100644
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -312,7 +312,7 @@ management_callback_send_cc_message(void *arg,
->                                      const char *parameters)
->  {
->      struct context *c =3D (struct context *) arg;
-> -    size_t len =3D strlen(command) + 1 + sizeof(parameters) + 1;
-> +    size_t len =3D strlen(command) + 1 + strlen(parameters) + 1;
->      if (len > PUSH_BUNDLE_SIZE)
->      {
->          return false;
->=20
+---
+ doc/man-sections/script-options.rst | 4 ++--
+ src/openvpn/route.c                 | 6 ++++++
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
-Acked-By: Arne Schwabe <arne@...1227...>
+diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-options.rst
+index b4bbf52f..062646b2 100644
+--- a/doc/man-sections/script-options.rst
++++ b/doc/man-sections/script-options.rst
+@@ -710,10 +710,10 @@ instances.
+     A set of variables which define each IPv6 route to be added, and are
+     set prior to **--up** script execution.
+ 
+-    ``parm`` will be one of :code:`network` or :code:`gateway`
++    ``parm`` will be one of :code:`network`, :code:`gateway`
+     (:code:`netmask` is contained as :code:`/nnn` in the
+     ``route_ipv6_network_{n}``, unlike IPv4 where it is passed in a
+-    separate environment variable).
++    separate environment variable) or :code:`metric`.
+ 
+     ``n`` is the OpenVPN route number, starting from 1.
+ 
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index f127a90a..7174f518 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -1463,6 +1463,7 @@ setenv_route_ipv6(struct env_set *es, const struct route_ipv6 *r6, int i)
+         struct buffer name1 = alloc_buf_gc( 256, &gc );
+         struct buffer val = alloc_buf_gc( 256, &gc );
+         struct buffer name2 = alloc_buf_gc( 256, &gc );
++        struct buffer name3 = alloc_buf_gc( 256, &gc );
+ 
+         buf_printf( &name1, "route_ipv6_network_%d", i );
+         buf_printf( &val, "%s/%d", print_in6_addr( r6->network, 0, &gc ),
+@@ -1471,6 +1472,11 @@ setenv_route_ipv6(struct env_set *es, const struct route_ipv6 *r6, int i)
+ 
+         buf_printf( &name2, "route_ipv6_gateway_%d", i );
+         setenv_str( es, BSTR(&name2), print_in6_addr( r6->gateway, 0, &gc ));
++
++        if (r6->flags & RT_METRIC_DEFINED) {
++            buf_printf( &name3, "route_ipv6_metric_%d", i) ;
++            setenv_int( es, BSTR(&name3), r6->metric);
++        }
+     }
+     gc_free(&gc);
+ }
+-- 
+2.26.2
 
-This probably has escaped my radar because probably the the 2FA codes
-were always small enough to fit into the 8 extra character of a pointer
-size.
-
-Arne
-
-
---5sxaKPFs3VBeth9q81K4vB3pw6s2xb8ih--
-
---WOeDwJa3QVW9kWThVB8AiObSl7xFEURNi
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl8+HJgACgkQFRhsZwKx
-RFSE0Q//e7OFM+6SM1iivZINw+B6Sqz475W3wCS1WpSE1yVYWh7lKcS6VdwPK/RF
-96gbP+KULVOO401O6P8owJfb45Fh3O0PgdD+7U+YGNi2gH9AeOl5NyCRPKD2DfWV
-Rn2hkicjv1eX6eE6HatpUdn4zefcW3nNXJGXf65m4eDkPi7aUgSD2IZW5/5DP8jb
-q3GzPhiPoKbHhFDwI5x6NSk+NObWUGKNYM/wFDo4jolIWvL5sSkUxrXkOTcEgGCN
-xoKT490dt73BvclAaHVFAl6Ds2bQ41IVZyfDI63z37gV5deXNrVTWOw8aeontgET
-nNKiVgHB1o5KNnvp7M7LJ+ui434vlks/lUIKqj9KFG2SkvcVumE3NaPETEf8kL5m
-vaVKQhLiEEP3kfqptn/AmF0HXKosu+7phO6letSGRhJ9uJOBC3BnQxiOhn1t+hJX
-74BV9QT/8Lp31avuEXnFbeUn3DEQ/9ydh297bFnPtWTr35w28FlyqV42O3BvcybW
-CnBpVf0Ch6lUHnss5uCnOI8M00A3JmgbMyzcaENe8e3gknGcgU6xhdRFRMlLFowI
-Uu5yE8dy44pQ+7vZEB3+zmjn/BARt5tAuls+NmcYEcoL6+wEhzQPR/LLwHdtkfQP
-d3Vm4vr7qaOMpt+X/8aCBN/LmM7pnpZtcTQOP/TWZcaeOFMw/NA=
-=HD3j
------END PGP SIGNATURE-----
-
---WOeDwJa3QVW9kWThVB8AiObSl7xFEURNi--
 
