@@ -1,13 +1,12 @@
-References: <20200812140120.21287-1-arne@...1227...>
- <20200812140120.21287-2-arne@...1227...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <ed058045-8f27-631a-2caf-ae03601c64e4@...1856...>
-Date: Fri, 21 Aug 2020 22:00:02 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200812140120.21287-2-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v2 2/3] Move openvpn specific key
- expansion into its own function
+References: <20200819070746.197-1-lstipakov@...277...>
+In-Reply-To: <20200819070746.197-1-lstipakov@...277...>
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 21 Aug 2020 17:13:29 -0400
+Message-ID: <CAKuzo_hm24jvC6C=fLO_Rzx0xu5rb_5LdDEwCoi5MSQPdGtqaw@...278...>
+Content-Type: multipart/alternative; boundary="0000000000009a462b05ad6a1bc0"
+Subject: Re: [Openvpn-devel] [PATCH] tun.c: enable using wintun driver under
+ SYSTEM
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,225 +15,190 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Lev Stipakov <lev@...515...>
+
+--0000000000009a462b05ad6a1bc0
+Content-Type: text/plain; charset="UTF-8"
 
 Hi,
 
-On 12-08-2020 16:01, Arne Schwabe wrote:
-> This moves the OpenVPN specific PRF into its own function also
-> simplifies the code a bit by passing tls_session directly instead of
-> 5 of its fields.
+On Wed, Aug 19, 2020 at 3:08 AM Lev Stipakov <lstipakov@...277...> wrote:
 
-Moves in the right direction. Some comments though:
-
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> 
-> Patch V2: Rebase
+> From: Lev Stipakov <lev@...515...>
+>
+> Commit 6d19775a468 has removed SYSTEM elevation hack,
+> but introduced regression - inability to use wintun without interactive
+> service.
+>
+> Proceed with ring buffers registration even if iservice is unavailable and
+> display
+> relevant error message.
+>
+> Trac #1318
+>
+> Signed-off-by: Lev Stipakov <lev@...515...>
 > ---
->  src/openvpn/ssl.c | 109 +++++++++++++++++++++++++++++-----------------
->  1 file changed, 69 insertions(+), 40 deletions(-)
-> 
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 3fcaa25f..06cc4c0b 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -1765,27 +1765,38 @@ openvpn_PRF(const uint8_t *secret,
->      VALGRIND_MAKE_READABLE((void *)output, output_len);
->  }
->  
-> -/*
-> - * Using source entropy from local and remote hosts, mix into
-> - * master key.
-> - */
-> -static bool
-> -generate_key_expansion(struct key_ctx_bi *key,
-> -                       const struct key_type *key_type,
-> -                       const struct key_source2 *key_src,
-> -                       const struct session_id *client_sid,
-> -                       const struct session_id *server_sid,
-> -                       bool server)
-> +static void
-> +init_key_contexts(struct key_ctx_bi *key,
-> +                  const struct key_type *key_type,
-> +                  bool server,
-> +                  struct key2 *key2)
-> +{
-> +    /* Initialize OpenSSL key contexts */
-
-Since you're touching this, can you remove "OpenSSL" from this comment.
-It's a lie! Sometimes.
-
-> +    int key_direction = server ? KEY_DIRECTION_INVERSE : KEY_DIRECTION_NORMAL;
-> +    init_key_ctx_bi(key, key2, key_direction, key_type, "Data Channel");
-> +
-> +    /* Initialize implicit IVs */
-> +    key_ctx_update_implicit_iv(&key->encrypt, (*key2).keys[(int)server].hmac,
-> +                               MAX_HMAC_KEY_LENGTH);
-> +    key_ctx_update_implicit_iv(&key->decrypt, (*key2).keys[1-(int)server].hmac,
-> +                               MAX_HMAC_KEY_LENGTH);
-> +
-> +}
-> +
-> +
-> +static struct key2
-> +generate_key_expansion_oepnvpn_prf(const struct tls_session *session)
-
-What is this oepnvpn you're talking about?
-
->  {
-> +
-
-Unneeded newline.
-
->      uint8_t master[48] = { 0 };
-> -    struct key2 key2 = { 0 };
-> -    bool ret = false;
->  
-> -    if (key->initialized)
-> -    {
-> -        msg(D_TLS_ERRORS, "TLS Error: key already initialized");
-> -        goto exit;
-> -    }
-> +    const struct key_state *ks = &session->key[KS_PRIMARY];
-> +    const struct key_source2 *key_src = ks->key_src;
-> +
-> +    const struct session_id *client_sid = session->opt->server ?
-> +                                          &ks->session_id_remote : &session->session_id;
-> +    const struct session_id *server_sid = !session->opt->server ?
-> +                                          &ks->session_id_remote : &session->session_id;
->  
->      /* debugging print of source key material */
->      key_source2_print(key_src);
-> @@ -1803,6 +1814,7 @@ generate_key_expansion(struct key_ctx_bi *key,
->                  master,
->                  sizeof(master));
->  
-> +    struct key2 key2;
->      /* compute key expansion */
->      openvpn_PRF(master,
->                  sizeof(master),
-> @@ -1815,41 +1827,62 @@ generate_key_expansion(struct key_ctx_bi *key,
->                  server_sid,
->                  (uint8_t *)key2.keys,
->                  sizeof(key2.keys));
-> +    secure_memzero(&master, sizeof(master));
->  
-> +    /* We use the DES fixup here so we can drop it once we
-> +     * drop DES support and non RFC5705 key derivation */
-> +    for (int i = 0; i < 2; ++i)
-> +    {
-> +        fixup_key(&key2.keys[i], &session->opt->key_type);
-> +    }
-
-Very nice that we can finally get rid of this. But I'm wondering now:
-should we forbid DES (or maybe even any small block cipher) when using EKM?
-
-Even if we remove small block cipher support completely from 2.6, I'd
-still really like to backport EKM to 2.5 ("long-term compat"). At that
-will still allow persistent users to force it to use DES.
-
->      key2.n = 2;
->  
-> -    key2_print(&key2, key_type, "Master Encrypt", "Master Decrypt");
-> +    return key2;
-> +}
-> +
-> +/*
-> + * Using source entropy from local and remote hosts, mix into
-> + * master key.
-> + */
-> +static bool
-> +generate_key_expansion(struct key_ctx_bi *key,
-> +                       const struct tls_session *session)
-> +{
-> +    bool ret = false;
-> +
-> +    if (key->initialized)
-> +    {
-> +        msg(D_TLS_ERRORS, "TLS Error: key already initialized");
-> +        goto exit;
-> +    }
-> +
-> +
-> +    bool server = session->opt->server;
-> +
-> +    struct key2 key2 = generate_key_expansion_oepnvpn_prf(session);
-
-Possible use-before-initialization/declaration here (undefined behavior).
-
-key2 is used in the exit: label, so it should not be declared after the
-"goto exit" above. This is type of mistake is the reason I don't like
-late-declaration of any variable in functions that use a goto-error
-flow. Next to not-too-smart static analyzers complaining about this
-construct even if not used behind the label.
-
-> +
-> +    key2_print(&key2, &session->opt->key_type,
-> +               "Master Encrypt", "Master Decrypt");
->  
->      /* check for weak keys */
->      for (int i = 0; i < 2; ++i)
->      {
-> -        fixup_key(&key2.keys[i], key_type);
-> -        if (!check_key(&key2.keys[i], key_type))
-> +        if (!check_key(&key2.keys[i], &session->opt->key_type))
->          {
->              msg(D_TLS_ERRORS, "TLS Error: Bad dynamic key generated");
->              goto exit;
->          }
+>  src/openvpn/tun.c | 30 +++++++++++++++++++++++++-----
+>  1 file changed, 25 insertions(+), 5 deletions(-)
+>
+> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+> index 30454454..62557364 100644
+> --- a/src/openvpn/tun.c
+> +++ b/src/openvpn/tun.c
+> @@ -6158,12 +6158,32 @@ wintun_register_ring_buffer(struct tuntap *tt,
+> const char *device_guid)
 >      }
-> -
-> -    /* Initialize OpenSSL key contexts */
-> -    int key_direction = server ? KEY_DIRECTION_INVERSE : KEY_DIRECTION_NORMAL;
-> -    init_key_ctx_bi(key, &key2, key_direction, key_type, "Data Channel");
-> -
-> -    /* Initialize implicit IVs */
-> -    key_ctx_update_implicit_iv(&key->encrypt, key2.keys[(int)server].hmac,
-> -                               MAX_HMAC_KEY_LENGTH);
-> -    key_ctx_update_implicit_iv(&key->decrypt, key2.keys[1-(int)server].hmac,
-> -                               MAX_HMAC_KEY_LENGTH);
-> -
-> +    init_key_contexts(key, &session->opt->key_type, server, &key2);
->      ret = true;
->  
->  exit:
-> -    secure_memzero(&master, sizeof(master));
->      secure_memzero(&key2, sizeof(key2));
->  
+>      else
+>      {
+> -        msg(M_FATAL, "ERROR:  Wintun requires SYSTEM privileges and
+> therefore "
+> -                     "should be used with interactive service. If you
+> want to "
+> -                     "use openvpn from command line, you need to do
+> SYSTEM "
+> -                     "elevation yourself (for example with psexec).");
+> -    }
+> +        if (!register_ring_buffers(tt->hand,
+> +                                   tt->wintun_send_ring,
+> +                                   tt->wintun_receive_ring,
+> +                                   tt->rw_handle.read,
+> +                                   tt->rw_handle.write))
+> +        {
+> +            switch (GetLastError())
+> +            {
+> +                case ERROR_ACCESS_DENIED:
+> +                    msg(M_FATAL, "ERROR:  Wintun requires SYSTEM
+> privileges and therefore "
+> +                                 "should be used with interactive
+> service. If you want to "
+> +                                 "use openvpn from command line, you need
+> to do SYSTEM "
+> +                                 "elevation yourself (for example with
+> psexec).");
+> +                    break;
+> +
+> +                case ERROR_ALREADY_INITIALIZED:
+> +                    msg(M_NONFATAL, "Adapter %s is already in use",
+> device_guid);
+> +                    break;
+>
+> +                default:
+> +                    msg(M_NONFATAL | M_ERRNO, "Failed to register ring
+> buffers");
+> +            }
+> +            ret = false;
+> +        }
+> +
+> +    }
 >      return ret;
 >  }
->  
-> +
->  static void
->  key_ctx_update_implicit_iv(struct key_ctx *ctx, uint8_t *key, size_t key_len)
->  {
-> @@ -1879,10 +1912,7 @@ tls_session_generate_data_channel_keys(struct tls_session *session)
->  {
->      bool ret = false;
->      struct key_state *ks = &session->key[KS_PRIMARY];   /* primary key */
-> -    const struct session_id *client_sid = session->opt->server ?
-> -                                          &ks->session_id_remote : &session->session_id;
-> -    const struct session_id *server_sid = !session->opt->server ?
-> -                                          &ks->session_id_remote : &session->session_id;
-> +
->  
->      if (ks->authenticated == KS_AUTH_FALSE)
->      {
-> @@ -1891,9 +1921,8 @@ tls_session_generate_data_channel_keys(struct tls_session *session)
->      }
->  
->      ks->crypto_options.flags = session->opt->crypto_flags;
-> -    if (!generate_key_expansion(&ks->crypto_options.key_ctx_bi,
-> -                                &session->opt->key_type, ks->key_src, client_sid, server_sid,
-> -                                session->opt->server))
-> +
-> +    if (!generate_key_expansion(&ks->crypto_options.key_ctx_bi, session))
->      {
->          msg(D_TLS_ERRORS, "TLS Error: generate_key_expansion failed");
->          goto cleanup;
-> 
+>
 
--Steffan
+Looks good and running as SYSTEM works now as expected. Tested on 64 bit
+Windows 10.
+
+Acked-by: selva.nair@...277...
+
+--0000000000009a462b05ad6a1bc0
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div>Hi,</div><br><div class=3D"gmail_quote"><div dir=3D"l=
+tr" class=3D"gmail_attr">On Wed, Aug 19, 2020 at 3:08 AM Lev Stipakov &lt;<=
+a href=3D"mailto:lstipakov@...277...">lstipakov@...277...</a>&gt; wrote:<br=
+></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;=
+border-left:1px solid rgb(204,204,204);padding-left:1ex">From: Lev Stipakov=
+ &lt;<a href=3D"mailto:lev@...515..." target=3D"_blank">lev@...515...</a>&g=
+t;<br>
+<br>
+Commit 6d19775a468 has removed SYSTEM elevation hack,<br>
+but introduced regression - inability to use wintun without interactive ser=
+vice.<br>
+<br>
+Proceed with ring buffers registration even if iservice is unavailable and =
+display<br>
+relevant error message.<br>
+<br>
+Trac #1318<br>
+<br>
+Signed-off-by: Lev Stipakov &lt;<a href=3D"mailto:lev@...515..." target=3D"=
+_blank">lev@...515...</a>&gt;<br>
+---<br>
+=C2=A0src/openvpn/tun.c | 30 +++++++++++++++++++++++++-----<br>
+=C2=A01 file changed, 25 insertions(+), 5 deletions(-)<br>
+<br>
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c<br>
+index 30454454..62557364 100644<br>
+--- a/src/openvpn/tun.c<br>
++++ b/src/openvpn/tun.c<br>
+@@ -6158,12 +6158,32 @@ wintun_register_ring_buffer(struct tuntap *tt, cons=
+t char *device_guid)<br>
+=C2=A0 =C2=A0 =C2=A0}<br>
+=C2=A0 =C2=A0 =C2=A0else<br>
+=C2=A0 =C2=A0 =C2=A0{<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(M_FATAL, &quot;ERROR:=C2=A0 Wintun require=
+s SYSTEM privileges and therefore &quot;<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0&quot;should be used with interactive service. If you want to &quot;<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0&quot;use openvpn from command line, you need to do SYSTEM &quot;<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0&quot;elevation yourself (for example with psexec).&quot;);<br>
+-=C2=A0 =C2=A0 }<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!register_ring_buffers(tt-&gt;hand,<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0tt-&gt;wintun_send_ring=
+,<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0tt-&gt;wintun_receive_r=
+ing,<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0tt-&gt;rw_handle.read,<=
+br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0tt-&gt;rw_handle.write)=
+)<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 switch (GetLastError())<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 case ERROR_ACCESS_=
+DENIED:<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(=
+M_FATAL, &quot;ERROR:=C2=A0 Wintun requires SYSTEM privileges and therefore=
+ &quot;<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0&quot;should be used with inte=
+ractive service. If you want to &quot;<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0&quot;use openvpn from command=
+ line, you need to do SYSTEM &quot;<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0&quot;elevation yourself (for =
+example with psexec).&quot;);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 brea=
+k;<br>
++<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 case ERROR_ALREADY=
+_INITIALIZED:<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(=
+M_NONFATAL, &quot;Adapter %s is already in use&quot;, device_guid);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 brea=
+k;<br>
+<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 default:<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(=
+M_NONFATAL | M_ERRNO, &quot;Failed to register ring buffers&quot;);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ret =3D false;<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
++<br>
++=C2=A0 =C2=A0 }<br>
+=C2=A0 =C2=A0 =C2=A0return ret;<br>
+=C2=A0}<br></blockquote><div><br></div><div>Looks good and running as SYSTE=
+M works now as expected. Tested on 64 bit Windows 10.</div><div><br></div><=
+div>Acked-by: <a href=3D"mailto:selva.nair@...277...">selva.nair@...277...<=
+/a>=C2=A0</div></div></div>
+
+--0000000000009a462b05ad6a1bc0--
 
