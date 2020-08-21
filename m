@@ -1,9 +1,13 @@
-From: Eric Thorpe <eric@...1918...>
-Date: Thu, 20 Aug 2020 23:24:43 -0700
-Message-Id: <20200821062443.69245-1-eric@...1918...>
+References: <acdbc6b7-d9ef-7824-6511-d7bec7713b1d@...1856...>
+ <20200814145153.12895-1-arne@...1227...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <d6cf7b19-9222-9049-0fa3-76832ca828d7@...1856...>
+Date: Fri, 21 Aug 2020 21:31:34 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Adds client-auth-pending-extra management
- functionality.
+In-Reply-To: <20200814145153.12895-1-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v3 1/3] Refactor
+ key_state_export_keying_material functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,257 +16,317 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-This allows extra INFO_PRE mesasges to be sent to a client during an
-authentication stage. This may be required to send additional challenges,
-or allow longer messages to be sent by breaking them up and sending in part=
-s.
+Hi,
 
-Signed-off-by: Eric Thorpe <eric@...1918...>
----
- doc/management-notes.txt | 32 +++++++++++++++++++++++-----
- src/openvpn/manage.c     | 45 ++++++++++++++++++++++++++++++++++++++++
- src/openvpn/manage.h     |  3 +++
- src/openvpn/multi.c      | 17 +++++++++++++++
- src/openvpn/push.c       |  7 ++++++-
- src/openvpn/push.h       |  1 +
- 6 files changed, 99 insertions(+), 6 deletions(-)
+On 14-08-2020 16:51, Arne Schwabe wrote:
+> This refactors the common code between mbed SSL and OpenSSL into
+> export_user_keying_material and also prepares the backend functions
+> to export more than one key.
+> 
+> Also fix checking the return value of SSL_export_keying_material
+> only 1 is a sucess, -1 is also an error.
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> 
+> Patch V2: Cache secrets for mbed TLS instead generating all ekms
+>           in the call back function
+> 
+> Patch V3: comment is no longer a lie. (fixed doxygen)
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> ---
+>  src/openvpn/ssl.c         | 36 ++++++++++++++++++-
+>  src/openvpn/ssl_backend.h | 20 +++++++----
+>  src/openvpn/ssl_mbedtls.c | 73 ++++++++++++++++++++-------------------
+>  src/openvpn/ssl_mbedtls.h | 12 +++++--
+>  src/openvpn/ssl_openssl.c | 43 +++++++++--------------
+>  5 files changed, 114 insertions(+), 70 deletions(-)
+> 
+> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+> index f16114c2..3fcaa25f 100644
+> --- a/src/openvpn/ssl.c
+> +++ b/src/openvpn/ssl.c
+> @@ -2412,6 +2412,40 @@ error:
+>      return false;
+>  }
+>  
+> +static void
+> +export_user_keying_material(struct key_state_ssl *ssl,
+> +                            struct tls_session *session)
+> +{
+> +    if (session->opt->ekm_size > 0)
+> +    {
+> +        unsigned int size = session->opt->ekm_size;
+> +        struct gc_arena gc = gc_new();
+> +
+> +        unsigned char *ekm;
+> +        if ((ekm = key_state_export_keying_material(session,
+> +                                                    session->opt->ekm_label,
+> +                                                    session->opt->ekm_label_size,
+> +                                                    session->opt->ekm_size,
+> +                                                    &gc)))
+> +        {
+> +            unsigned int len = (size * 2) + 2;
+> +
+> +            const char *key = format_hex_ex(ekm, size, len, 0, NULL, &gc);
+> +            setenv_str(session->opt->es, "exported_keying_material", key);
+> +
+> +            dmsg(D_TLS_DEBUG_MED, "%s: exported keying material: %s",
+> +                 __func__, key);
+> +            secure_memzero(ekm, size);
+> +        }
+> +        else
+> +        {
+> +            msg(M_WARN, "WARNING: Export keying material failed!");
+> +            setenv_del(session->opt->es, "exported_keying_material");
+> +        }
+> +        gc_free(&gc);
+> +    }
+> +}
+> +
+>  /**
+>   * Handle reading key data, peer-info, username/password, OCC
+>   * from the TLS control channel (cleartext).
+> @@ -2541,7 +2575,7 @@ key_method_2_read(struct buffer *buf, struct tls_multi *multi, struct tls_sessio
+>      if ((ks->authenticated > KS_AUTH_FALSE)
+>          && plugin_defined(session->opt->plugins, OPENVPN_PLUGIN_TLS_FINAL))
+>      {
+> -        key_state_export_keying_material(&ks->ks_ssl, session);
+> +        export_user_keying_material(&ks->ks_ssl, session);
+>  
+>          if (plugin_call(session->opt->plugins, OPENVPN_PLUGIN_TLS_FINAL, NULL, NULL, session->opt->es) != OPENVPN_PLUGIN_FUNC_SUCCESS)
+>          {
+> diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+> index 7f52ab1e..cf9fba25 100644
+> --- a/src/openvpn/ssl_backend.h
+> +++ b/src/openvpn/ssl_backend.h
+> @@ -394,13 +394,21 @@ void backend_tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx,
+>   * derived from existing TLS channel. This exported keying material can then be
+>   * used for a variety of purposes.
+>   *
+> - * @param ks_ssl       The SSL channel's state info
+>   * @param session      The session associated with the given key_state
+> - */
+> -
+> -void
+> -key_state_export_keying_material(struct key_state_ssl *ks_ssl,
+> -                                 struct tls_session *session) __attribute__((nonnull));
+> + * @param label        The label to use when exporting the key
+> + * @param label_size   The size of the label to use when exporting the key
+> + * @param ekm_size     THe size of the exported/returned key material
+> + * @param gc           gc_arena that might be used to allocate the string
+> + *                     returned
+> + * @returns            The exported key material, the caller may zero the
+> + *                     string but should not free it
+> + */
+> +
+> +unsigned char*
+> +key_state_export_keying_material(struct tls_session *session,
+> +                                 const char* label, size_t label_size,
+> +                                 size_t ekm_size,
+> +                                 struct gc_arena *gc) __attribute__((nonnull));
+>  
+>  /**************************************************************************/
+>  /** @addtogroup control_tls
+> diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+> index 9c874788..4287b59e 100644
+> --- a/src/openvpn/ssl_mbedtls.c
+> +++ b/src/openvpn/ssl_mbedtls.c
+> @@ -206,51 +206,54 @@ mbedtls_ssl_export_keys_cb(void *p_expkey, const unsigned char *ms,
+>  {
+>      struct tls_session *session = p_expkey;
+>      struct key_state_ssl *ks_ssl = &session->key[KS_PRIMARY].ks_ssl;
+> -    unsigned char client_server_random[64];
+> +    struct tls_key_cache *cache = &ks_ssl->tls_key_cache;
+>  
+> -    ks_ssl->exported_key_material = gc_malloc(session->opt->ekm_size,
+> -                                              true, NULL);
+> +    static_assert(sizeof(ks_ssl->ctx->session->master)
+> +                    == sizeof(cache->master_secret), "master size mismatch");
+>  
+> -    memcpy(client_server_random, client_random, 32);
+> -    memcpy(client_server_random + 32, server_random, 32);
+> +    memcpy(cache->client_server_random, client_random, 32);
+> +    memcpy(cache->client_server_random + 32, server_random, 32);
+> +    memcpy(cache->master_secret, ms, sizeof(cache->master_secret));
+> +    cache->tls_prf_type = tls_prf_type;
+>  
+> -    const size_t ms_len = sizeof(ks_ssl->ctx->session->master);
+> -    int ret = mbedtls_ssl_tls_prf(tls_prf_type, ms, ms_len,
+> -                                  session->opt->ekm_label, client_server_random,
+> -                                  sizeof(client_server_random), ks_ssl->exported_key_material,
+> -                                  session->opt->ekm_size);
+> -
+> -    if (!mbed_ok(ret))
+> -    {
+> -        secure_memzero(ks_ssl->exported_key_material, session->opt->ekm_size);
+> -    }
+> -
+> -    secure_memzero(client_server_random, sizeof(client_server_random));
+> -
+> -    return ret;
+> +    return true;
+>  }
+> -#endif /* HAVE_EXPORT_KEYING_MATERIAL */
+>  
+> -void
+> -key_state_export_keying_material(struct key_state_ssl *ssl,
+> -                                 struct tls_session *session)
+> +unsigned char *
+> +key_state_export_keying_material(struct tls_session *session,
+> +                                 const char* label, size_t label_size,
+> +                                 size_t ekm_size,
+> +                                 struct gc_arena *gc)
+>  {
+> -    if (ssl->exported_key_material)
+> +    ASSERT(strlen(label) == label_size);
+> +
+> +    struct tls_key_cache *cache = &session->key[KS_PRIMARY].ks_ssl.tls_key_cache;
+> +
+> +    /* If the type is NONE, we either have no cached secrets or
+> +     * there is no PRF, in both cases we cannot generate key material */
+> +    if (cache->tls_prf_type == MBEDTLS_SSL_TLS_PRF_NONE)
+>      {
+> -        unsigned int size = session->opt->ekm_size;
+> -        struct gc_arena gc = gc_new();
+> -        unsigned int len = (size * 2) + 2;
+> +        return NULL;
+> +    }
+>  
+> -        const char *key = format_hex_ex(ssl->exported_key_material,
+> -                                        size, len, 0, NULL, &gc);
+> -        setenv_str(session->opt->es, "exported_keying_material", key);
+> +    unsigned char *ekm = (unsigned char *) gc_malloc(ekm_size, true, gc);
+> +    int ret = mbedtls_ssl_tls_prf(cache->tls_prf_type, cache->master_secret,
+> +                                  sizeof(cache->master_secret),
+> +                                  label, cache->client_server_random,
+> +                                  sizeof(cache->client_server_random),
+> +                                  ekm, ekm_size);
+>  
+> -        dmsg(D_TLS_DEBUG_MED, "%s: exported keying material: %s",
+> -             __func__, key);
+> -        gc_free(&gc);
+> +    if (mbed_ok(ret))
+> +    {
+> +        return ekm;
+> +    }
+> +    else
+> +    {
+> +        secure_memzero(ekm, session->opt->ekm_size);
+> +        return  NULL;
+>      }
+>  }
+> -
+> +#endif /* HAVE_EXPORT_KEYING_MATERIAL */
+>  
+>  bool
+>  tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags)
+> @@ -1178,7 +1181,7 @@ key_state_ssl_free(struct key_state_ssl *ks_ssl)
+>  {
+>      if (ks_ssl)
+>      {
+> -        free(ks_ssl->exported_key_material);
+> +        CLEAR(ks_ssl->tls_key_cache);
+>  
+>          if (ks_ssl->ctx)
+>          {
+> diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h
+> index 0525134f..17aae551 100644
+> --- a/src/openvpn/ssl_mbedtls.h
+> +++ b/src/openvpn/ssl_mbedtls.h
+> @@ -82,6 +82,15 @@ struct external_context {
+>      void *sign_ctx;
+>  };
+>  
+> +/** struct to cache TLS secrets for keying material exporter (RFC 5705).
+> + * The constants (64 and 48) are inherent to TLS version and
+> + * the whole keying material export will likely change when they change */
+> +struct tls_key_cache {
+> +    unsigned char client_server_random[64];
+> +    mbedtls_tls_prf_types tls_prf_type;
+> +    unsigned char master_secret[48];
+> +};
+> +
+>  /**
+>   * Structure that wraps the TLS context. Contents differ depending on the
+>   * SSL library used.
+> @@ -114,8 +123,7 @@ struct key_state_ssl {
+>      mbedtls_ssl_context *ctx;           /**< mbedTLS connection context */
+>      bio_ctx *bio_ctx;
+>  
+> -    /** Keying material exporter cache (RFC 5705). */
+> -    uint8_t *exported_key_material;
+> +    struct tls_key_cache tls_key_cache;
+>  
+>  };
+>  
+> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+> index 5ba74402..f52c7c39 100644
+> --- a/src/openvpn/ssl_openssl.c
+> +++ b/src/openvpn/ssl_openssl.c
+> @@ -158,35 +158,26 @@ tls_ctx_initialised(struct tls_root_ctx *ctx)
+>      return NULL != ctx->ctx;
+>  }
+>  
+> -void
+> -key_state_export_keying_material(struct key_state_ssl *ssl,
+> -                                 struct tls_session *session)
+> -{
+> -    if (session->opt->ekm_size > 0)
+> -    {
+> -        unsigned int size = session->opt->ekm_size;
+> -        struct gc_arena gc = gc_new();
+> -        unsigned char *ekm = (unsigned char *) gc_malloc(size, true, &gc);
+> +unsigned char*
+> +key_state_export_keying_material(struct tls_session *session,
+> +                                 const char* label, size_t label_size,
+> +                                 size_t ekm_size,
+> +                                 struct gc_arena *gc)
+>  
+> -        if (SSL_export_keying_material(ssl->ssl, ekm, size,
+> -                                       session->opt->ekm_label,
+> -                                       session->opt->ekm_label_size,
+> -                                       NULL, 0, 0))
+> -        {
+> -            unsigned int len = (size * 2) + 2;
+> +{
+> +    unsigned char *ekm = (unsigned char *) gc_malloc(ekm_size, true, gc);
+>  
+> -            const char *key = format_hex_ex(ekm, size, len, 0, NULL, &gc);
+> -            setenv_str(session->opt->es, "exported_keying_material", key);
+> +    SSL* ssl = session->key[KS_PRIMARY].ks_ssl.ssl;
+>  
+> -            dmsg(D_TLS_DEBUG_MED, "%s: exported keying material: %s",
+> -                 __func__, key);
+> -        }
+> -        else
+> -        {
+> -            msg(M_WARN, "WARNING: Export keying material failed!");
+> -            setenv_del(session->opt->es, "exported_keying_material");
+> -        }
+> -        gc_free(&gc);
+> +    if (SSL_export_keying_material(ssl, ekm, ekm_size, label,
+> +                                   label_size, NULL, 0, 0) == 1)
+> +    {
+> +        return ekm;
+> +    }
+> +    else
+> +    {
+> +        secure_memzero(ekm, ekm_size);
+> +        return NULL;
+>      }
+>  }
+>  
+> 
 
-diff --git a/doc/management-notes.txt b/doc/management-notes.txt
-index 61daaf07..74e05414 100644
---- a/doc/management-notes.txt
-+++ b/doc/management-notes.txt
-@@ -595,10 +595,10 @@ notification for more info.
- COMMAND -- client-pending-auth  (OpenVPN 2.5 or higher)
- ----------------------------------------------------
-=20
--Instruct OpenVPN server to send AUTH_PENDING and INFO_PRE message
-+Instruct the OpenVPN server to send AUTH_PENDING and INFO_PRE message
- to signal a pending authenticating to the client. A pending auth means
--that the connecting requires extra authentication like a one time
--password or doing a single sign one via web.
-+that the connection requires extra authentication like a one time
-+password or doing a single sign on via web.
-=20
-     client-pending-auth {CID} {EXTRA}
-=20
-@@ -611,8 +611,8 @@ out of band authentication).
-=20
- Before issuing a client-pending-auth to a client instead of a
- client-auth/client-deny, the server should check the IV_SSO
--environment variable if the method is support. The currently
--defined method are crtext for challenge/response using text
-+environment variable if the method is supported. The currently
-+defined methods are crtext for challenge/response using text
- (e.g. TOTP), openurl and proxy_url for opening an URL in the client to
- continue authentication. A client supporting the first two methods would
- set
-@@ -676,7 +676,29 @@ and <challgenge_text> fields are used:
-=20
- <challenge_text>: the challenge text to be shown to the user.
-=20
-+COMMAND -- client-auth-pending-extra  (OpenVPN 2.5 or higher)
-+-------------------------------------------------------------
-=20
-+Instruct the OpenVPN server to send an INFO_PRE message to the client.=20
-+This should be used following client-auth-pending to send extra messages=20
-+to the client during an authentication stage, or respond to CR_RESPONSE me=
-ssages
-+if further challenges are required.
-+
-+    client-pending-auth-extra {CID} {EXTRA}
-+
-+The server will send INFO_PRE,{EXTRA} to the client.
-+The client is expected to display the extra information to the user. For t=
-he=20
-+format of EXTRA, see the client-pending-auth section of this document.
-+For the OpenVPN server this is stateless operation and needs to be
-+followed by a client-deny/client-auth[-nt] command (that is the result of =
-the
-+out of band authentication).
-+
-+Before issuing a client-pending-auth-extra to a client, the server should=
-=20
-+check the IV_SSO environment variable if the method is supported.
-+
-+    setenv IV_SSO openurl,crtext
-+
-+Refer to client-auth-pending for further information.
-=20
- COMMAND -- client-deny  (OpenVPN 2.1 or higher)
- -----------------------------------------------
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 898cb3b3..b5a7d0df 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -107,6 +107,8 @@ man_help(void)
-     msg(M_CLIENT, "                             text R and optional client=
- reason text CR");
-     msg(M_CLIENT, "client-pending-auth CID MSG : Instruct OpenVPN to send =
-AUTH_PENDING and INFO_PRE msg"
-         "                          to the client and wait for a final clie=
-nt-auth/client-deny");
-+    msg(M_CLIENT, "client-pending-auth-extra CID MSG : Instruct OpenVPN to=
- send INFO_PRE msg to the client"
-+        "                          without AUTH_PENDING. For additional me=
-ssages");
-     msg(M_CLIENT, "client-kill CID [M]    : Kill client instance CID with =
-message M (def=3DRESTART)");
-     msg(M_CLIENT, "env-filter [level]     : Set env-var filter level");
- #ifdef MANAGEMENT_PF
-@@ -1040,6 +1042,42 @@ man_client_pending_auth(struct management *man, cons=
-t char *cid_str, const char
-     }
- }
-=20
-+/**
-+ * Send additional INFO_PRE information to the client for additional authe=
-ntication steps
-+ *
-+ * @param man           The management interface struct
-+ * @param cid_str       The CID in string form
-+ * @param extra         The string to be send to the client containing
-+ *                      the information of the additional steps
-+ */
-+static void
-+man_client_pending_auth_extra(struct management* man, const char* cid_str,=
- const char* extra)
-+{
-+    unsigned long cid =3D 0;
-+    if (parse_cid(cid_str, &cid))
-+    {
-+        if (man->persist.callback.client_pending_auth_extra)
-+        {
-+            bool ret =3D (*man->persist.callback.client_pending_auth_extra)
-+                (man->persist.callback.arg, cid, extra);
-+
-+            if (ret)
-+            {
-+                msg(M_CLIENT, "SUCCESS: client-pending-auth-extra command =
-succeeded");
-+            }
-+            else
-+            {
-+                msg(M_CLIENT, "SUCCESS: client-pending-auth-extra command =
-failed."
-+                    " Extra paramter might be too long");
-+            }
-+        }
-+        else
-+        {
-+            msg(M_CLIENT, "ERROR: The client-pending-auth-extra command is=
- not supported by the current daemon mode");
-+        }
-+    }
-+}
-+
- static void
- man_client_auth(struct management *man, const char *cid_str, const char *k=
-id_str, const bool extra)
- {
-@@ -1587,6 +1625,13 @@ man_dispatch_command(struct management *man, struct =
-status_output *so, const cha
-             man_client_pending_auth(man, p[1], p[2]);
-         }
-     }
-+    else if (streq(p[0], "client-pending-auth-extra"))
-+    {
-+        if (man_need(man, p, 2, 0))
-+        {
-+            man_client_pending_auth_extra(man, p[1], p[2]);
-+        }
-+    }
- #ifdef MANAGEMENT_PF
-     else if (streq(p[0], "client-pf"))
-     {
-diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index 881bfb14..e586f9ca 100644
---- a/src/openvpn/manage.h
-+++ b/src/openvpn/manage.h
-@@ -177,6 +177,9 @@ struct management_callback
-     bool (*client_pending_auth) (void *arg,
-                                  const unsigned long cid,
-                                  const char *url);
-+    bool (*client_pending_auth_extra) (void* arg,
-+                                       const unsigned long cid,
-+                                       const char* url);
-     char *(*get_peer_info) (void *arg, const unsigned long cid);
- #endif
- #ifdef MANAGEMENT_PF
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 13738180..157db302 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -3931,6 +3931,22 @@ management_client_pending_auth(void *arg,
-     return false;
- }
-=20
-+static bool
-+management_client_pending_auth_extra(void* arg,
-+    const unsigned long cid,
-+    const char* extra)
-+{
-+    struct multi_context* m =3D (struct multi_context*)arg;
-+    struct multi_instance* mi =3D lookup_by_cid(m, cid);
-+    if (mi)
-+    {
-+        /* sends INFO_PRE message to client */
-+        bool ret =3D send_auth_info_pre_message(&mi->context, extra);
-+        multi_schedule_context_wakeup(m, mi);
-+        return ret;
-+    }
-+    return false;
-+}
-=20
- static bool
- management_client_auth(void *arg,
-@@ -4040,6 +4056,7 @@ init_management_callback_multi(struct multi_context *=
-m)
-         cb.kill_by_cid =3D management_kill_by_cid;
-         cb.client_auth =3D management_client_auth;
-         cb.client_pending_auth =3D management_client_pending_auth;
-+        cb.client_pending_auth_extra =3D management_client_pending_auth_ex=
-tra;
-         cb.get_peer_info =3D management_get_peer_info;
- #endif
- #ifdef MANAGEMENT_PF
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index e0d2eeaf..beb3223b 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -292,8 +292,13 @@ send_auth_pending_messages(struct context *c, const ch=
-ar *extra)
- {
-     send_control_channel_string(c, "AUTH_PENDING", D_PUSH);
-=20
--    static const char info_pre[] =3D "INFO_PRE,";
-+    return send_auth_info_pre_message(c, extra);
-+}
-=20
-+bool
-+send_auth_info_pre_message(struct context* c, const char* extra)
-+{
-+    static const char info_pre[] =3D "INFO_PRE,";
-=20
-     size_t len =3D strlen(extra)+1 + sizeof(info_pre);
-     if (len > PUSH_BUNDLE_SIZE)
-diff --git a/src/openvpn/push.h b/src/openvpn/push.h
-index 2faf19a6..e067f8b1 100644
---- a/src/openvpn/push.h
-+++ b/src/openvpn/push.h
-@@ -78,6 +78,7 @@ void send_auth_failed(struct context *c, const char *clie=
-nt_reason);
-  * more details on message format
-  */
- bool send_auth_pending_messages(struct context *c, const char *extra);
-+bool send_auth_info_pre_message(struct context* c, const char* extra);
-=20
- void send_restart(struct context *c, const char *kill_msg);
-=20
---=20
-2.25.1
+Thanks, looks good to me now. Changes wrt v2 in comments and whitespace
+only, so didn't re-test.
 
+Acked-by: Steffan Karger <steffan@...1856...>
+
+-Steffan
 
