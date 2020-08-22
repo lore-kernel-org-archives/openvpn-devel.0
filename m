@@ -1,11 +1,14 @@
-References: <20200814080619.2108-1-arne@...1227...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <91ec5a18-89a9-44fd-6ac5-9b9bafdbb27d@...1856...>
-Date: Sat, 22 Aug 2020 11:30:06 +0200
-MIME-Version: 1.0
-In-Reply-To: <20200814080619.2108-1-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Fix client's poor man NCP fallback
+Mime-Version: 1.0 (1.0)
+From: Marvin Adeff <volleynbike@...277...>
+In-Reply-To: <20200822072030.GX75094@...1296...>
+Date: Sat, 22 Aug 2020 10:15:58 -0700
+Message-Id: <947C13C0-4DE2-4B4C-A694-50EA8FB2BEA9@...277...>
+References: <20200819070746.197-1-lstipakov@...277...>
+ <CAKuzo_hm24jvC6C=fLO_Rzx0xu5rb_5LdDEwCoi5MSQPdGtqaw@...278...>
+ <5BBA3889-D486-40CA-A651-78F19FD1463B@...277...>
+ <20200822072030.GX75094@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] tun.c: enable using wintun driver under
+ SYSTEM
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,60 +17,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+To: Gert Doering <gert@...1296...>
+Cc: Selva Nair <selva.nair@...277...>, Lev Stipakov <lev@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+No need to rush.  I=E2=80=99m happy to wait until Wednesday for beta2.=20
 
-On 14-08-2020 10:06, Arne Schwabe wrote:
-> OpenVPN 2.5 clients do not correctly do a fallback to the server server.
-> This commit fixes that logic and also fixes --data-ciphers-fallback to
-> be used in situations other than no OCC cipher.
-> 
-> To reproduce the error use a client with only --data-ciphers set against
-> a server without NCP.
-> 
->         OPTIONS ERROR: failed to negotiate cipher with server.
->         Add the server's cipher  ('AES-256-CBC') to --data-ciphers
->         (currently 'AES-256-CBC') if you want to connect to this server.
-> 
-> Reported by: Richard Bonhomme <tincanteksup@...277...>
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  src/openvpn/ssl_ncp.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
-> 
-> diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-> index f522b8f0..c9ab85ce 100644
-> --- a/src/openvpn/ssl_ncp.c
-> +++ b/src/openvpn/ssl_ncp.c
-> @@ -296,13 +296,14 @@ check_pull_client_ncp(struct context *c, const int found)
->      }
->      /* If the server did not push a --cipher, we will switch to the
->       * remote cipher if it is in our ncp-ciphers list */
-> -    bool useremotecipher = tls_poor_mans_ncp(&c->options,
-> -                                             c->c2.tls_multi->remote_ciphername);
-> -
-> +    if(tls_poor_mans_ncp(&c->options, c->c2.tls_multi->remote_ciphername))
-> +    {
-> +        return true;
-> +    }
->  
->      /* We could not figure out the peer's cipher but we have fallback
->       * enabled */
-> -    if (!useremotecipher && c->options.enable_ncp_fallback)
-> +    if (!c->c2.tls_multi->remote_ciphername && c->options.enable_ncp_fallback)
->      {
->          return true;
->      }
-> 
+Cheers,
+Marvin=20
 
-This makes sense. Given that the commit message is fixed as suggested by
-Richard:
+Sent from my iPhone
 
-Acked-by: Steffan Karger <steffan@...1856...>
-
--Steffan
+> On Aug 22, 2020, at 12:20 AM, Gert Doering <gert@...1296...> wrote:
+>=20
+> Hi,
+>=20
+>> On Fri, Aug 21, 2020 at 07:37:27PM -0700, Marvin Adeff wrote:
+>> When will this be available as an installable (beta) msi?
+>=20
+> I'll merge the commit today or tomorrow (sorry for the lag on my side,
+> was travelling and had only limited access to "Internet and focus").
+>=20
+> My plan is to do a formal "beta2" tag on Wednesday, but of course
+> Samuli/Lev could do a new installer ("beta1_1") earlier.
+>=20
+> gert
+> --=20
+> "If was one thing all people took for granted, was conviction that if you=
+=20
+> feed honest figures into a computer, honest figures come out. Never doubt=
+ed=20
+> it myself till I met a computer with a sense of humor."
+>                             Robert A. Heinlein, The Moon is a Harsh Mistr=
+ess
+>=20
+> Gert Doering - Munich, Germany                             gert@...1296...
 
