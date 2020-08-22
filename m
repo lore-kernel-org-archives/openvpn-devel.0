@@ -1,14 +1,11 @@
-References: <20200821062443.69245-1-eric@...1918...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <bd154015-3f5f-6035-c4ff-fae5abc7857c@...1227...>
-Date: Sat, 22 Aug 2020 11:12:21 +0200
+References: <20200814080619.2108-1-arne@...1227...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <91ec5a18-89a9-44fd-6ac5-9b9bafdbb27d@...1856...>
+Date: Sat, 22 Aug 2020 11:30:06 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200821062443.69245-1-eric@...1918...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="ms9QrMxWE8Wjl0pgBV028YjawNljaNnvd"
-Subject: Re: [Openvpn-devel] [PATCH] Adds client-auth-pending-extra
- management functionality.
+In-Reply-To: <20200814080619.2108-1-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] Fix client's poor man NCP fallback
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,53 +14,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Eric Thorpe <eric@...1918...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---ms9QrMxWE8Wjl0pgBV028YjawNljaNnvd
-Content-Type: multipart/mixed; boundary="VRnseTvNEwTDf5QAwF40p3rCENoGYjhdD"
+Hi,
 
---VRnseTvNEwTDf5QAwF40p3rCENoGYjhdD
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+On 14-08-2020 10:06, Arne Schwabe wrote:
+> OpenVPN 2.5 clients do not correctly do a fallback to the server server.
+> This commit fixes that logic and also fixes --data-ciphers-fallback to
+> be used in situations other than no OCC cipher.
+> 
+> To reproduce the error use a client with only --data-ciphers set against
+> a server without NCP.
+> 
+>         OPTIONS ERROR: failed to negotiate cipher with server.
+>         Add the server's cipher  ('AES-256-CBC') to --data-ciphers
+>         (currently 'AES-256-CBC') if you want to connect to this server.
+> 
+> Reported by: Richard Bonhomme <tincanteksup@...277...>
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> ---
+>  src/openvpn/ssl_ncp.c | 9 +++++----
+>  1 file changed, 5 insertions(+), 4 deletions(-)
+> 
+> diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
+> index f522b8f0..c9ab85ce 100644
+> --- a/src/openvpn/ssl_ncp.c
+> +++ b/src/openvpn/ssl_ncp.c
+> @@ -296,13 +296,14 @@ check_pull_client_ncp(struct context *c, const int found)
+>      }
+>      /* If the server did not push a --cipher, we will switch to the
+>       * remote cipher if it is in our ncp-ciphers list */
+> -    bool useremotecipher = tls_poor_mans_ncp(&c->options,
+> -                                             c->c2.tls_multi->remote_ciphername);
+> -
+> +    if(tls_poor_mans_ncp(&c->options, c->c2.tls_multi->remote_ciphername))
+> +    {
+> +        return true;
+> +    }
+>  
+>      /* We could not figure out the peer's cipher but we have fallback
+>       * enabled */
+> -    if (!useremotecipher && c->options.enable_ncp_fallback)
+> +    if (!c->c2.tls_multi->remote_ciphername && c->options.enable_ncp_fallback)
+>      {
+>          return true;
+>      }
+> 
 
-Am 21.08.20 um 08:24 schrieb Eric Thorpe:
-> This allows extra INFO_PRE mesasges to be sent to a client during an
-> authentication stage. This may be required to send additional challenges,
-> or allow longer messages to be sent by breaking them up and sending in pa=
-rts.
+This makes sense. Given that the commit message is fixed as suggested by
+Richard:
 
-Could you describe for what feature you need this? If we are extending
-the protocol for some multiline AUTH_PENDING feature, we should document
-how this works etc...
+Acked-by: Steffan Karger <steffan@...1856...>
 
-Arne
-
-
---VRnseTvNEwTDf5QAwF40p3rCENoGYjhdD--
-
---ms9QrMxWE8Wjl0pgBV028YjawNljaNnvd
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl9A4XUACgkQFRhsZwKx
-RFS0IQ//ak3jSnvnTJda0cSPmux7VuNJAB0hsKLc5DShgT+becZz42LZ8BMsL8no
-NWZLXRyfEQGZv6j7tKLKXxCN19Ty882qZRMkvV05j7dPPfs2iCg8OLblBOvUwLI9
-O32jx3vbPQV31IcO5JNpdog8nee4iWkakfkaiJKpRtV54kqx0inHC42A2ZC8aM3s
-2Od3wBaDwmNaO2FU04jD4j8FctOdr7sokFKX89s+f0Dbcu4eNY5aFSozqIYAt9uH
-OrvM05yKhJYDK9YcZlCKFdiTFFe1fuN+uAcTulURfk9CKkffprhfBrNc17JnIJrQ
-Ag81qqoHJLW908FlbXligJVxB7xJ82MnTzreVIpwdknVjUPWNGTAfMiX5QHjn1/k
-RkS4pThoGP5djGhf5lnDkaxf3YS+Mk/kTsvsSn2UtzJzQLk1EaLZfx6Br2I9gNcx
-VJAaRdFX4SLjmpHnVp6kBjBJL7Aw8ThfOOoz+F0zIWoGE7s4exxpKvcaSfn6YLKk
-eQrxrOqrc7jcO/OQc6VroBRvgN41GmMQsZ2V06BN4+xevN5F/arjlAmEiKz4UPee
-G5HJUQEROsnR9uX7VIeI4yWku7cEAB0NDH4kH/wYf5PpVtykyp+880d5bb1yVgeT
-5Ebuan+pgbesodh3z17Arf6dbtvjykb50wXa9ldKggi9lABXgE0=
-=FUl1
------END PGP SIGNATURE-----
-
---ms9QrMxWE8Wjl0pgBV028YjawNljaNnvd--
+-Steffan
 
