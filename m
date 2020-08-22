@@ -1,16 +1,13 @@
-Date: Sat, 22 Aug 2020 09:20:30 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200822072030.GX75094@...1296...>
-References: <20200819070746.197-1-lstipakov@...277...>
- <CAKuzo_hm24jvC6C=fLO_Rzx0xu5rb_5LdDEwCoi5MSQPdGtqaw@...278...>
- <5BBA3889-D486-40CA-A651-78F19FD1463B@...277...>
+References: <28a15eaf-16e5-0756-82c7-29035ec15382@...1918...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <684df390-6ac8-4715-1e78-b9aadb96cc23@...1227...>
+Date: Sat, 22 Aug 2020 11:07:05 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="a8kRBn33jkh2Wtq5"
-Content-Disposition: inline
-In-Reply-To: <5BBA3889-D486-40CA-A651-78F19FD1463B@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] tun.c: enable using wintun driver under
- SYSTEM
+In-Reply-To: <28a15eaf-16e5-0756-82c7-29035ec15382@...1918...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="CH0YPsTx3Si7mAE6kdEF7QZLJAeWuTRY2"
+Subject: Re: [Openvpn-devel] AUTH_PENDING from client-pending-auth query
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,52 +16,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Marvin Adeff <volleynbike@...277...>
-Cc: Selva Nair <selva.nair@...277...>, Lev Stipakov <lev@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Eric Thorpe <eric@...1918...>, openvpn-devel@lists.sourceforge.net
 
---a8kRBn33jkh2Wtq5
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--CH0YPsTx3Si7mAE6kdEF7QZLJAeWuTRY2
+Content-Type: multipart/mixed; boundary="CXJYQFHeTOthaCeGDKF8QwBiHMt9TITw7"
+
+--CXJYQFHeTOthaCeGDKF8QwBiHMt9TITw7
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+Am 21.08.20 um 02:56 schrieb Eric Thorpe:
+> Hi All,
+>=20
+> Arne might be best to answer this but wasn't sure. I've been testing out
+> the client-pending-auth/cr-response stuff recently and had a question.
+> Currently, the first thing that happens from the client-pending-auth
+> management command is the client is sent an AUTH_PENDING control channel
+> notification, however this isn't handled, all the client receives is a
+> log message about an unknown push notification. Is there a plan for this
+> AUTH_PENDING message to do something in the future, is it for
+> compatibility for something else or is it simply extraneous and can be
+> removed?
 
-On Fri, Aug 21, 2020 at 07:37:27PM -0700, Marvin Adeff wrote:
-> When will this be available as an installable (beta) msi?
+OpenVPN 2.x currently ignores AUTH_PENDING but the OpenVPN 3.x library
+needs it to enter that state.
 
-I'll merge the commit today or tomorrow (sorry for the lag on my side,
-was travelling and had only limited access to "Internet and focus").
+Arne
 
-My plan is to do a formal "beta2" tag on Wednesday, but of course
-Samuli/Lev could do a new installer ("beta1_1") earlier.
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+--CXJYQFHeTOthaCeGDKF8QwBiHMt9TITw7--
 
-Gert Doering - Munich, Germany                             gert@...1296...
-
---a8kRBn33jkh2Wtq5
+--CH0YPsTx3Si7mAE6kdEF7QZLJAeWuTRY2
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJfQMc9AAoJEB2Cnv7KVigSl44L/3ohFLEJav7x9CIhS087uyEo
-YmzU9DWY/CrVMpj0/M5EoRU92eMEwAV++5LePQ7ukow78J7/iGztUUqg0kIzWhAw
-m2p4fyFGVux79jk4KpcNvDuZVXS7LBjgbF/KQzMVXOSZNLrKgrwHdVrmM8TNEVEn
-ibDdcM0UhIJvkxKlU+QYAL80R12nro+/IVMaZk39837GrkBB+XmqFWrbA9a107Pn
-gwwXcRtwVcuB0arJkjDNQ2HX/OhBMRYq7CRYzv67OM8NXvwnwxdpxrat26H8MdI9
-UfKKyjpCfIq2LFPLM+HfVPdPj1LuFp5e2Q3Of8IFx0IBxvZb79+w192ckxHVkQCx
-9GCTtamH8JeKwNoOSv+3j7Z+3Ovd/dWWbgeCk9fIMogL+UP12SIJ3MIsp8fEjcVL
-O3s/pXXsA0cWRFxKl9GEGf4p0/iBcC5ubLeIWZZ/QdNZSsV49rTgSxQQ3Emo/7fW
-+YzLkmaOLQokSgF+7SfGWUvRbIvmjXqKK94PkrC3NA==
-=q0UI
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl9A4DoACgkQFRhsZwKx
+RFRGvA//UY5iq8WeQxOnbFxg6Ih8eLfGIyplpUMo2bcrnWGdQYDzaN1PzlzgHee8
+Nw0hRiOdCio4uqiZG6X9lRbhjaJX5rDBRAxyAjm6mbLwaxtI7pz/aZAhINYBMyc6
+mJJHluz3pCLxY2GMZqejzaXDRusWSNzrcw9hbCbbEzdrVi773iooRgV+MKfxVbHZ
+ak+USg0ejkLCVOeydk/qKbvONkEgO9tG3gJXgL00eI3orXo0XRR9tkBfrDV2sVb2
+A6qrKZKJjZlmnJyjGIGTm2mCbZikh0q6F/Hdz8ZsykgRHe1IyYADj78v/j8qp2w3
+st6mJMZ6oNZWaBWaJbIktc2Z48LiggmhuYOxMNhAGP8N1f8xktOlFZPErI9LBrxC
+6faOIYoGqbnVcjzne3IBfvlfjnhVjIk5CVpAg0XcJifoUxgj0G+SK37K1xn6d4wR
+jBfnfbGykgMLvEzX+qGhqTBJu1w5XxeNo3BO2PURZLgrxefAmcysnBEtgGVCjeDp
+qFAJ1AwS1MOAU2A3qy/qxwsvEtb/Zd+dDAKYgELJr3fGqC40yHZbUKR5GQ1OkB+5
+emYP7XwEP4RcGP8Ls6zT7LShp6DUAc8sz64dQuw09adYUCfFUR2GcQQK+UJRUxQ1
+ZMzpS5YJAUUm/8NvChnzhaLWSpjtsaGbkxV5E65AQ0+shewNltI=
+=yUKE
 -----END PGP SIGNATURE-----
 
---a8kRBn33jkh2Wtq5--
+--CH0YPsTx3Si7mAE6kdEF7QZLJAeWuTRY2--
 
