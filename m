@@ -1,10 +1,10 @@
-Date: Sun, 23 Aug 2020 21:04:21 +0200 (CEST)
-Message-Id: <202008231904.07NJ4Ld8026305@...2054...>
+Date: Sun, 23 Aug 2020 21:34:29 +0200 (CEST)
+Message-Id: <202008231934.07NJYTgb026839@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200814080619.2108-1-arne@...1227...>
-References: <20200814080619.2108-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix client's poor man NCP
- fallback
+In-Reply-To: <20200820014258.38377-1-eric@...1918...>
+References: <20200820014258.38377-1-eric@...1918...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fixes a bug in
+ management_callback_send_cc_message, should be strlen instead of sizeof
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,37 +15,24 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Eric Thorpe <eric@...1918...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I have not specifically tested the scenarios that this is fixing (due
-to time constraints and really poor Internet $here).  I totally trust 
-Steffan's review and Richard's testing, though, to fix the problem
-observed.
-
-I have run it through t_client tests (against git master servers 
-about ~1 year old) and through the t_server tests (against 2.2/2.3/
-2.3-small/2.4 and roughly 4-weeks-old master clients) and these all
-pass.  So it's definitely not breaking anything I'm currently 
-testing :-)
-
-I have worked in Richard's most recent suggestions for the commit
-message and reworded it a bit more.  If it does not make *any* sense
-anymore, it's all my fault.
+I have not tested this, but the change is definitely "obviously correct" :)
 
 Your patch has been applied to the master and release/2.5 branch.
 
-commit 2ab0a92442dce1d82fcb9e2b305313ef668d40bf (master)
-commit a61883406f7caf39aab274979bb2d43d85804df8 (release/2.5)
-Author: Arne Schwabe
-Date:   Fri Aug 14 10:06:19 2020 +0200
+commit 62560e2a29144ffefec231ae7147eb4e9c7dfebf (master)
+commit 6e1fccaa47c9376cf862219d98678345408c9a54 (release/2.5)
+Author: Eric Thorpe
+Date:   Wed Aug 19 18:42:58 2020 -0700
 
-     Fix client's poor man NCP fallback
+     Fixes a bug in management_callback_send_cc_message, should be strlen instead of sizeof
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Steffan Karger <steffan@...1856...>
-     Message-Id: <20200814080619.2108-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20734.html
+     Signed-off-by: Eric Thorpe <eric@...1918...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20200820014258.38377-1-eric@...1918...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20783.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
