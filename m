@@ -1,10 +1,12 @@
-Date: Sun, 23 Aug 2020 14:36:44 +0200 (CEST)
-Message-Id: <202008231236.07NCaiHZ011133@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200819070746.197-1-lstipakov@...277...>
-References: <20200819070746.197-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: tun.c: enable using wintun
- driver under SYSTEM
+From: tincanteksup <tincanteksup@...277...>
+References: <20200814080619.2108-1-arne@...1227...>
+ <aefeeda7-68ea-2269-c68a-cd1b8282dbbe@...277...>
+Message-ID: <024de2a8-c7ae-d15a-c22b-e52cf6d7e0d8@...277...>
+Date: Sun, 23 Aug 2020 14:56:13 +0100
+MIME-Version: 1.0
+In-Reply-To: <aefeeda7-68ea-2269-c68a-cd1b8282dbbe@...277...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH] Fix client's poor man NCP fallback
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +15,114 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.5 branch.
-
-(I have not tested anything, but diffing tun.c to 6d19775a468~1 shows
-that's it is the same code that was removed, except for a more detailed
-error message)
-
-commit ed47c097db63f8334f32bf9482da488928ff909b (master)
-commit f4761dd12ec5eb10a5897ecb7dc427f54a9b0769 (release/2.5)
-Author: Lev Stipakov
-Date:   Wed Aug 19 10:07:46 2020 +0300
-
-     tun.c: enable using wintun driver under SYSTEM
-
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Selva Nair <selva.nair@...277...>
-     Message-Id: <20200819070746.197-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20780.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
+This is my suggestion for the commit message:
 
 --
-kind regards,
 
-Gert Doering
+This commit fixes two separate issues which are closely linked.
 
+First, a 2.5 client cannot connect to a server which does not support 
+NCP and is not using one of the default --data-ciphers (AES-*-GCM).
+
+This is because the 2.5 client does not use its configured 
+--data-ciphers cipher.
+
+Fix a 2.5 client to use the configured --data-ciphers cipher.
+
+Second, do not allow the 2.5 client to use --data-ciphers-fallback in 
+the above situation because that is not it's intended use.
+
+Fix -data-ciphers-fallback to only be used when there is no OCC cipher.
+
+--
+
+
+I wanted to get rid of the idea of fallback in the first part of the 
+message because it is not "falling-back" to the --data-ciphers cipher. 
+It is actually not recognising that it is configured with the correct 
+cipher at all.
+
+And the second part is the *only* case in which a "fallback" is required 
+and allowed.
+
+The original message reads as if the opposite were true and using 
+--data-ciphers-fallback can be used in any situation other than no OCC 
+cipher.
+
+This is only a suggestion to help clarify the commit. Reword it how you 
+see fit.
+
+
+
+
+On 14/08/2020 19:50, tincanteksup wrote:
+> Hi,
+> 
+> I tested this patch and it does make --data-ciphers and 
+> --data-ciphers-fallback behave in their intended "fashion".
+> 
+> Unfortunately, the commit message is grammatically incorrect and also 
+> logically misleading.
+> 
+> The intended fashion is for --data-ciphers to recognise that the correct 
+> cipher *has* been chosen and use it accordingly.
+> 
+> And for --data-ciphers-fallback to *not*
+>> be used in situations other than no OCC cipher.
+> 
+> 
+> Reported-by: Richard Bonhomme <tincanteksup@...277...>
+> Tested-by: Richard Bonhomme <tincanteksup@...277...>
+> 
+> 
+> On 14/08/2020 09:06, Arne Schwabe wrote:
+>> OpenVPN 2.5 clients do not correctly do a fallback to the server server.
+>> This commit fixes that logic and also fixes --data-ciphers-fallback to
+>> be used in situations other than no OCC cipher.
+>>
+>> To reproduce the error use a client with only --data-ciphers set against
+>> a server without NCP.
+>>
+>>          OPTIONS ERROR: failed to negotiate cipher with server.
+>>          Add the server's cipher  ('AES-256-CBC') to --data-ciphers
+>>          (currently 'AES-256-CBC') if you want to connect to this server.
+>>
+>> Reported by: Richard Bonhomme <tincanteksup@...277...>
+>>
+>> Signed-off-by: Arne Schwabe <arne@...1227...>
+>> ---
+>>   src/openvpn/ssl_ncp.c | 9 +++++----
+>>   1 file changed, 5 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
+>> index f522b8f0..c9ab85ce 100644
+>> --- a/src/openvpn/ssl_ncp.c
+>> +++ b/src/openvpn/ssl_ncp.c
+>> @@ -296,13 +296,14 @@ check_pull_client_ncp(struct context *c, const 
+>> int found)
+>>       }
+>>       /* If the server did not push a --cipher, we will switch to the
+>>        * remote cipher if it is in our ncp-ciphers list */
+>> -    bool useremotecipher = tls_poor_mans_ncp(&c->options,
+>> -                                             
+>> c->c2.tls_multi->remote_ciphername);
+>> -
+>> +    if(tls_poor_mans_ncp(&c->options, 
+>> c->c2.tls_multi->remote_ciphername))
+>> +    {
+>> +        return true;
+>> +    }
+>>       /* We could not figure out the peer's cipher but we have fallback
+>>        * enabled */
+>> -    if (!useremotecipher && c->options.enable_ncp_fallback)
+>> +    if (!c->c2.tls_multi->remote_ciphername && 
+>> c->options.enable_ncp_fallback)
+>>       {
+>>           return true;
+>>       }
+>>
 
