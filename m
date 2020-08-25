@@ -1,15 +1,8 @@
-References: <20200821062443.69245-1-eric@...1918...>
- <bd154015-3f5f-6035-c4ff-fae5abc7857c@...1227...>
- <3df6fedd-f30a-4e08-0e82-b31a7728f21d@...1918...>
- <446bb2a7-7597-1c89-b4eb-543abf4e6e3f@...1227...>
-From: Eric Thorpe <eric@...1918...>
-Message-ID: <2f192d4f-fa69-20d3-f9a2-90329d308b53@...1918...>
-Date: Tue, 25 Aug 2020 09:58:22 +1000
-MIME-Version: 1.0
-In-Reply-To: <446bb2a7-7597-1c89-b4eb-543abf4e6e3f@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Adds client-auth-pending-extra
- management functionality.
+From: Arne Schwabe <arne@...1227...>
+Date: Tue, 25 Aug 2020 06:16:47 +0200
+Message-Id: <20200825041647.26235-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Fix compilation with older mbed TLS
+ versions (mbedtls_tls_prf_types undefined)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,92 +11,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi Arne,
+The usage of the new keying material methods was not properly guarded.
 
-> - to avoid the 256 byte management limit and multiple commands use maybe
-> the same approach as client-auth that allows a longer frame, you can
-> still limit that to 1024.
-To be clear here, it isn't so much the limitation of the management or 
-control channel, it's situations where a tun-mtu may be set to say 750 
-for example, meaning the data size can only realistically be about 730 
-minus INFO_PRE, flags, etc, or OpenVPN or the network will drop the 
-control channel message. I would not recommend making any changes to 
-management or the control channel here, simply just have the ability to 
-send the data in smaller parts.
+To avoid a number of ifdefs this commit uses a dummy struct and function.
+When we eventually drop support for non-EKM mbed TLS version we can remove
+these.
 
-> CR_TEXT is challenge response text and those clients that currently
-> implement it only allow a single line. I would suggest the following to
-> get the patch in a acceptable state:
->
-> - Document your authentication method also in management.txt and also
-> what IV_SSO flag indicates this authentication method.
-Are you suggesting that I do not use CR_TEXT, and instead introduce a 
-new Challenge Response type (CR_DATA for example)?
-
-Cheers,
-Eric
-
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
-Eric Thorpe
-SparkLabs Developer
-https://www.sparklabs.com
-https://twitter.com/sparklabs
-support@...1918...
+ src/openvpn/ssl_mbedtls.c | 10 ++++++++++
+ src/openvpn/ssl_mbedtls.h |  5 ++++-
+ 2 files changed, 14 insertions(+), 1 deletion(-)
 
-On 25/08/2020 1:02 am, Arne Schwabe wrote:
-> Am 24.08.20 um 09:59 schrieb Eric Thorpe:
->> Hi Arne,
->>
->> The main scenario this addresses is 2FA authentication which needs to
->> transmit very long responses such as those requiring keys. In these
->> cases, the responses can be upwards of 1500 bytes. Management is
->> restricted (currently) to 256 bytes and the control channel I believe to
->> 1024, however the larger problem is low MTU connections or poorly
->> configured connection with fragmentation problems would refuse to
->> transmit packets of this size over the control channel, so we need the
->> ability to break these up.
->>
->> At the moment I'm experimenting with the following layout which has
->> shown success:
->>
->> client-auth-pending <CID> CR_TEXT:R,C:2
->> client-auth-pending-extra <CID> CR_TEXT:CN,1:<data>
->> client-auth-pending-extra <CID> CR_TEXT:CN,2:<data>
->>
->> Where flag C=Chunked data and 2 is the number of chunks to expect. Then
->> CN,<chunk number>:<data>.
->>
->> The other issue this addresses is there are scenario where more than one
->> challenge reply is required. A simple example of this is resident key
->> registration, where the username is pulled from the clients certificate,
->> a password is queried, then attestation is queried, and then
->> authentication is queried.
-> Depends on if these should asked sequentially, the  you just send
-> another CR_TEXT challenge after the first is answer or in parallel.
->
->> client-auth-pending-extra is a bit of a catch-all addition where it
->> effectively opens up the client-auth-pending spec to allow the control
->> channel to be used without having to constantly drop the connection like
->> the current AUTH_DENY method pre-2.5, but without spamming the user with
->> AUTH_PENDING notifications, and allows a connected management script to
->> handle it without adding further complexity internally to OpenVPN.
-> CR_TEXT is challenge response text and those clients that currently
-> implement it only allow a single line. I would suggest the following to
-> get the patch in a acceptable state:
->
-> - Document your authentication method also in management.txt and also
-> what IV_SSO flag indicates this authentication method.
->
-> - to avoid the 256 byte management limit and multiple commands use maybe
-> the same approach as client-auth that allows a longer frame, you can
-> still limit that to 1024.
->
-> Otherwise I think this the right direction.
->
-> Arne
->
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index 4287b59e..4ec355a9 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -253,6 +253,16 @@ key_state_export_keying_material(struct tls_session *session,
+         return  NULL;
+     }
+ }
++#else
++unsigned char*
++key_state_export_keying_material(struct tls_session *session,
++                                 const char* label, size_t label_size,
++                                 size_t ekm_size,
++                                 struct gc_arena *gc)
++{
++    /* Dummy function to avoid ifdefs in the common code */
++    return NULL;
++}
+ #endif /* HAVE_EXPORT_KEYING_MATERIAL */
+ 
+ bool
+diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h
+index 17aae551..ff64e17c 100644
+--- a/src/openvpn/ssl_mbedtls.h
++++ b/src/openvpn/ssl_mbedtls.h
+@@ -82,6 +82,7 @@ struct external_context {
+     void *sign_ctx;
+ };
+ 
++#ifdef HAVE_EXPORT_KEYING_MATERIAL
+ /** struct to cache TLS secrets for keying material exporter (RFC 5705).
+  * The constants (64 and 48) are inherent to TLS version and
+  * the whole keying material export will likely change when they change */
+@@ -90,6 +91,9 @@ struct tls_key_cache {
+     mbedtls_tls_prf_types tls_prf_type;
+     unsigned char master_secret[48];
+ };
++#else
++struct tls_key_cache { };
++#endif
+ 
+ /**
+  * Structure that wraps the TLS context. Contents differ depending on the
+@@ -124,7 +128,6 @@ struct key_state_ssl {
+     bio_ctx *bio_ctx;
+ 
+     struct tls_key_cache tls_key_cache;
+-
+ };
+ 
+ /**
+-- 
+2.26.2
+
 
