@@ -1,8 +1,20 @@
+References: <20200813072923.24385-1-eric@...1918...>
+ <1fb10dd1-8ddf-c467-21a5-a93e21e6a8ac@...1227...>
+ <0a634481-cf3b-de2f-5e34-8f5c5ef16fdc@...1918...>
+ <CAKuzo_h_xWf-Jbkow=H3sL_CQw5CC23pw3DxH0Nsydj2f57usg@...278...>
+ <dc800745-efe3-0f10-d08f-046fc041c96a@...1918...>
+ <CAKuzo_heHMcpRd31Lc=ZHDjPAb3GsQoBQB4iQvXCd7EPTnGEug@...278...>
+ <294d779c-44a1-7f4c-c506-5f21dc76e8ac@...1918...>
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 25 Aug 2020 06:16:47 +0200
-Message-Id: <20200825041647.26235-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Fix compilation with older mbed TLS
- versions (mbedtls_tls_prf_types undefined)
+Message-ID: <9e1e0324-45a1-d6ab-068a-eff8bb75aef1@...1227...>
+Date: Tue, 25 Aug 2020 08:24:33 +0200
+MIME-Version: 1.0
+In-Reply-To: <294d779c-44a1-7f4c-c506-5f21dc76e8ac@...1918...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="nf8thz1BxNTSCHl4oeQ40ScaKqHDXgkCX"
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Send auth-fail messages to clients
+ on renegotiation failures via auth-token or user-pass expiry
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,74 +23,120 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Eric Thorpe <eric@...1918...>, Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--nf8thz1BxNTSCHl4oeQ40ScaKqHDXgkCX
+Content-Type: multipart/mixed; boundary="rZ9qrNN8vQHPwSZ50WLtypKbOKdDY1hNo"
+
+--rZ9qrNN8vQHPwSZ50WLtypKbOKdDY1hNo
+Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-The usage of the new keying material methods was not properly guarded.
+Am 25.08.20 um 01:51 schrieb Eric Thorpe:
+> Hi Selva,
+>=20
+>> In multi_connection_estableished, we have
+>>
+>> #ifdef MANAGEMENT_DEF_AUTH
+>> =C2=A0 =C2=A0 if (management)
+>> =C2=A0 =C2=A0 {
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 management_connection_established(management,
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 &mi->context.c2.mda_context,
+>> mi->context.c2.es <http://context.c2.es>);
+>> =C2=A0 =C2=A0 }
+>> #endif
+>> I do not see why this requires --management-client-auth or any
+>> management related options to be in use.=20
+>=20
+> management is set to NULL unless a management address is defined
+> (--management), so the above is not called for a plugin or script
+>=20
+> bool
+> open_management(struct context *c)
+> {
+> =C2=A0=C2=A0=C2=A0 /* initialize management layer */
+> =C2=A0=C2=A0=C2=A0 if (management)
+> =C2=A0=C2=A0=C2=A0 {
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (c->options.management_addr=
+) <----
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 {
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ....
+> =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 {
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 else
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 {
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 close_=
+management(); <----
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
+>=20
+> I'm not trying to be resistant in finding another way here to avoid this
+> extra state you guys don't want, this is a real bug in re-auth/reneg
+> that we have seen occur multiple times in various setups that we want to
+> see fixed, and it effects management,=20
 
-To avoid a number of ifdefs this commit uses a dummy struct and function.
-When we eventually drop support for non-EKM mbed TLS version we can remove
-these.
+Management goes another code path and management_client_auth directly
+calls send_auth_failed.
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/ssl_mbedtls.c | 10 ++++++++++
- src/openvpn/ssl_mbedtls.h |  5 ++++-
- 2 files changed, 14 insertions(+), 1 deletion(-)
+> script and plugin authentication,
+> however I have had a good walk through the code and I can't see another w=
+ay.
+>
+> The other alternative here is to refactor up the call chain so the
+> context_2 is passed to each of these functions instead of just multi &
+> session, however this is about a 500 line refactor that I really don't
+> want to do.
 
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index 4287b59e..4ec355a9 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -253,6 +253,16 @@ key_state_export_keying_material(struct tls_session *session,
-         return  NULL;
-     }
- }
-+#else
-+unsigned char*
-+key_state_export_keying_material(struct tls_session *session,
-+                                 const char* label, size_t label_size,
-+                                 size_t ekm_size,
-+                                 struct gc_arena *gc)
-+{
-+    /* Dummy function to avoid ifdefs in the common code */
-+    return NULL;
-+}
- #endif /* HAVE_EXPORT_KEYING_MATERIAL */
- 
- bool
-diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h
-index 17aae551..ff64e17c 100644
---- a/src/openvpn/ssl_mbedtls.h
-+++ b/src/openvpn/ssl_mbedtls.h
-@@ -82,6 +82,7 @@ struct external_context {
-     void *sign_ctx;
- };
- 
-+#ifdef HAVE_EXPORT_KEYING_MATERIAL
- /** struct to cache TLS secrets for keying material exporter (RFC 5705).
-  * The constants (64 and 48) are inherent to TLS version and
-  * the whole keying material export will likely change when they change */
-@@ -90,6 +91,9 @@ struct tls_key_cache {
-     mbedtls_tls_prf_types tls_prf_type;
-     unsigned char master_secret[48];
- };
-+#else
-+struct tls_key_cache { };
-+#endif
- 
- /**
-  * Structure that wraps the TLS context. Contents differ depending on the
-@@ -124,7 +128,6 @@ struct key_state_ssl {
-     bio_ctx *bio_ctx;
- 
-     struct tls_key_cache tls_key_cache;
--
- };
- 
- /**
--- 
-2.26.2
+Well the tls session should basically only care about its own session
+and the outer logic that ties the tls session together should handle
+this. The current code is not as clean as it could be/should be. But I
+also haven't digged deep enough to actually understand if your is
+actually fixing the problem correctly. We have a working scenario (I
+assume) with management and client-auth
 
+- Do we send the AUTH_FAILED over the new or the old tls session?
+- Do we establish the data channel (key_method_2_write) before writing
+the key?
+
+(and the same for the new approach)
+
+You haven't described the bug/symptons you are seeing yet but I assume
+you get desynced keys etc?
+
+I understand that is frustrating from your end since you have a quite
+simple fix and fixes your problem but I am here maintaining OpenVPN and
+it took me 1-2 weeks to get rid of 2-3 similar variables to the one you
+want to introduce.
+
+Arne
+
+
+--rZ9qrNN8vQHPwSZ50WLtypKbOKdDY1hNo--
+
+--nf8thz1BxNTSCHl4oeQ40ScaKqHDXgkCX
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl9ErqIACgkQFRhsZwKx
+RFSzZw//QCphc5HC9fVxgHmYFz4Eahy8Upi5mXHR8QZiLwCU6GmSsYpLqfLAARm1
+JckG+iMDH3jK98OBkXFY6VB1s+Y9cQ09F56NAoKioGFv36hlODHyLjmUKFvj3g1v
+SOQn2b4Qv2/YesGI0r0ECjdPBV2kcP2c8AVFLx+7b7LEEGBW144DdWkxM+J0b8j1
+xem2l07y+1TCM5PUtgF/InNrq/ZhEJS7ON/RbFWMCuv7cymPjn6N2KZfLaLXmsRq
+oBvVxY1fnqhtWQQmBqLamLwEKzVibF4EYbezGaGHDA/DRFOwHeEZDaW03vKn38Y6
+GJZ2+OR5Jny07Uu/d/OKSP7xRjCCC9jfVnHYennkaEpoB864FEyVSCPsp1tsv/kk
+2gQLZAHIV1YYV9+N06cqGorWFEhxkaz+wEvQGJdT/esZq2hOzkDhx59hi//OVUZ6
+Zb0AKiUUZHs9+DpvIwLal0A4jSRVi8LLiRH9y9UP7zZrHiea1Ss/dvTbGrle2l1a
+NAfPHppabpaVzYvFI8Ku9QxFgfPachPUMwmzCcLKYBJAeB2ITuokQcmZ8XT+kx1T
+c6LIaos7s8t0to8dgkWtKQUyqRK8kmO3c5s1kBDDMjp/y0nKRo/Kmexnhto10x5q
+u/XWlPNP2UsX37PNWWZ6ublP0wSx7WqPUnEXZT1xyDtnnNvyKB4=
+=c+t1
+-----END PGP SIGNATURE-----
+
+--nf8thz1BxNTSCHl4oeQ40ScaKqHDXgkCX--
 
