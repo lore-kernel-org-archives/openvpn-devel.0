@@ -1,19 +1,17 @@
-References: <20200813072923.24385-1-eric@...1918...>
- <1fb10dd1-8ddf-c467-21a5-a93e21e6a8ac@...1227...>
- <0a634481-cf3b-de2f-5e34-8f5c5ef16fdc@...1918...>
- <CAKuzo_h_xWf-Jbkow=H3sL_CQw5CC23pw3DxH0Nsydj2f57usg@...278...>
- <dc800745-efe3-0f10-d08f-046fc041c96a@...1918...>
- <CAKuzo_heHMcpRd31Lc=ZHDjPAb3GsQoBQB4iQvXCd7EPTnGEug@...278...>
- <294d779c-44a1-7f4c-c506-5f21dc76e8ac@...1918...>
- <9e1e0324-45a1-d6ab-068a-eff8bb75aef1@...1227...>
+References: <20200821062443.69245-1-eric@...1918...>
+ <bd154015-3f5f-6035-c4ff-fae5abc7857c@...1227...>
+ <3df6fedd-f30a-4e08-0e82-b31a7728f21d@...1918...>
+ <446bb2a7-7597-1c89-b4eb-543abf4e6e3f@...1227...>
+ <2f192d4f-fa69-20d3-f9a2-90329d308b53@...1918...>
+ <f2ddadee-f969-2bcb-5b19-ad2273a17b18@...1227...>
 From: Eric Thorpe <eric@...1918...>
-Message-ID: <6d416208-e6f6-a0d9-e7e8-ef757f8893ba@...1918...>
-Date: Wed, 26 Aug 2020 11:12:32 +1000
+Message-ID: <050fed64-f566-35be-f3fa-d9d79cf2a7c6@...1918...>
+Date: Wed, 26 Aug 2020 11:15:15 +1000
 MIME-Version: 1.0
-In-Reply-To: <9e1e0324-45a1-d6ab-068a-eff8bb75aef1@...1227...>
+In-Reply-To: <f2ddadee-f969-2bcb-5b19-ad2273a17b18@...1227...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH 1/2] Send auth-fail messages to clients
- on renegotiation failures via auth-token or user-pass expiry
+Subject: Re: [Openvpn-devel] [PATCH] Adds client-auth-pending-extra
+ management functionality.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,58 +20,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: Arne Schwabe <arne@...1227...>, Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-> Management goes another code path and management_client_auth directly
-> calls send_auth_failed.
-I'm afraid in the case of renegotiation this is not relevant
+Hi Arne,
 
-> But I
-> also haven't digged deep enough to actually understand if your is
-> actually fixing the problem correctly.
-May I request that we resolve this first to ensure the content of the=20
-patch is correct, and then we can move onto finding a way to avoid this=20
-extra state?
+I'm happy to resubmit the patch with further documentation to what I 
+have already included with this patch, however I need to know what is 
+likely to be accepted.
 
-> You haven't described the bug/symptons you are seeing yet but I assume
-> you get desynced keys etc?
-If I haven't been detailed enough, I apologise. Here is an in-depth=20
-explanation.
+Per my previous question and example, is it acceptable to keep using 
+CR_TEXT and document the C and CR flags, or, as I think you have hinted, 
+would you prefer I create a fourth INFOPRE spec, for example CR_DATA, 
+and document that instead?
 
-In the event of a renegotiation where there is some form of user/pass in=20
-place, and auth-tokens are not being used, if the verification of the=20
-user/pass fails, for example, they enter an incorrect password and are=20
-not using auth-nocache or are using some form of static-challenge=20
-attached to the password which has expired, or the server has a hiccup=20
-and rejects auth for some reason (the list goes on), the client will=20
-receive no indication that authentication has failed as AUTH_FAILED is=20
-only sent in response to a push_request. The client will appear=20
-connected but traffic will cease until a ping-restart occurs due to a=20
-key desync. This occurs regardless of auth method used, whether it be=20
-plugin, script or management.
+It would also be highly appreciated if I could get some indication if 
+this patch is acceptable outside of the requirement for further 
+documentation or if the code needs further changes.
 
-In the event an auth-token is used, if the auth-token fails, whether it=20
-be because the auth-token is incorrect or expired, the user will also=20
-receive no indication that it has failed, and again, the client will=20
-appear as if it is in a connected state even though it is not until a=20
-ping-restart occurs.
-
-This is very easy to test, simply setup a basic server using the=20
-included PAM plugin module, set reneg-sec to something short like 10=20
-seconds, set auth-nocache on the client, connect, then on the reneg=20
-enter an incorrect password.
-
-Originally we treated various scenarios as a misconfiguration, however=20
-there are server administrators out there that genuinely don't want to=20
-use auth tokens, and others that genuinely want their users to reauth=20
-manually each period via a renegotiation, so we feel this should be=20
-fixed. We've had this patch available as-is now for over a year and have=20
-had no reports of issues with it for those using it.
-
-Regards,
+Thanks,
 Eric
 
 ---
@@ -83,80 +49,40 @@ https://www.sparklabs.com
 https://twitter.com/sparklabs
 support@...1918...
 
-On 25/08/2020 4:24 pm, Arne Schwabe wrote:
-> Am 25.08.20 um 01:51 schrieb Eric Thorpe:
->> Hi Selva,
+On 25/08/2020 5:25 pm, Arne Schwabe wrote:
+> Am 25.08.20 um 01:58 schrieb Eric Thorpe:
+>> Hi Arne,
 >>
->>> In multi_connection_estableished, we have
+>>> - to avoid the 256 byte management limit and multiple commands use maybe
+>>> the same approach as client-auth that allows a longer frame, you can
+>>> still limit that to 1024.
+>> To be clear here, it isn't so much the limitation of the management or
+>> control channel, it's situations where a tun-mtu may be set to say 750
+>> for example, meaning the data size can only realistically be about 730
+>> minus INFO_PRE, flags, etc, or OpenVPN or the network will drop the
+>> control channel message. I would not recommend making any changes to
+>> management or the control channel here, simply just have the ability to
+>> send the data in smaller parts.
+>>
+>>> CR_TEXT is challenge response text and those clients that currently
+>>> implement it only allow a single line. I would suggest the following to
+>>> get the patch in a acceptable state:
 >>>
->>> #ifdef MANAGEMENT_DEF_AUTH
->>>  =C2=A0 =C2=A0 if (management)
->>>  =C2=A0 =C2=A0 {
->>>  =C2=A0 =C2=A0 =C2=A0 =C2=A0 management_connection_established(manageme=
-nt,
->>>  =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 &mi->context.c2.mda_context,
->>> mi->context.c2.es <http://context.c2.es>);
->>>  =C2=A0 =C2=A0 }
->>> #endif
->>> I do not see why this requires --management-client-auth or any
->>> management related options to be in use.
->> management is set to NULL unless a management address is defined
->> (--management), so the above is not called for a plugin or script
->>
->> bool
->> open_management(struct context *c)
->> {
->>  =C2=A0=C2=A0=C2=A0 /* initialize management layer */
->>  =C2=A0=C2=A0=C2=A0 if (management)
->>  =C2=A0=C2=A0=C2=A0 {
->>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (c->options.management_ad=
-dr) <----
->>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 {
->>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ....
->>  =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 {
->>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 else
->>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 {
->>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 clos=
-e_management(); <----
->>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
->>
->> I'm not trying to be resistant in finding another way here to avoid this
->> extra state you guys don't want, this is a real bug in re-auth/reneg
->> that we have seen occur multiple times in various setups that we want to
->> see fixed, and it effects management,
-> Management goes another code path and management_client_auth directly
-> calls send_auth_failed.
+>>> - Document your authentication method also in management.txt and also
+>>> what IV_SSO flag indicates this authentication method.
+>> Are you suggesting that I do not use CR_TEXT, and instead introduce a
+>> new Challenge Response type (CR_DATA for example)?
+> IV_SSO=crtext is a basically the AUTH_PENDING variant of presenting the
+> user the text of CR_TEXT and responding with the answer.
 >
->> script and plugin authentication,
->> however I have had a good walk through the code and I can't see another =
-way.
->>
->> The other alternative here is to refactor up the call chain so the
->> context_2 is passed to each of these functions instead of just multi &
->> session, however this is about a 500 line refactor that I really don't
->> want to do.
-> Well the tls session should basically only care about its own session
-> and the outer logic that ties the tls session together should handle
-> this. The current code is not as clean as it could be/should be. But I
-> also haven't digged deep enough to actually understand if your is
-> actually fixing the problem correctly. We have a working scenario (I
-> assume) with management and client-auth
+> What you doing seems to be different. And if we add something that is
+> different we should it its own IV_SSO flag to announce itself. And if
+> you need "just" a multiline or longer text than current crtext can give
+> to the user, we still need a flag for this new method, so we can signal
+> if the client supports this.
 >
-> - Do we send the AUTH_FAILED over the new or the old tls session?
-> - Do we establish the data channel (key_method_2_write) before writing
-> the key?
->
-> (and the same for the new approach)
->
-> You haven't described the bug/symptons you are seeing yet but I assume
-> you get desynced keys etc?
->
-> I understand that is frustrating from your end since you have a quite
-> simple fix and fixes your problem but I am here maintaining OpenVPN and
-> it took me 1-2 weeks to get rid of 2-3 similar variables to the one you
-> want to introduce.
+> I am just asking that if we add new methods to AUTH_PENDING to properly
+> document them.
 >
 > Arne
 >
