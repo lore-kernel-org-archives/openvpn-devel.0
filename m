@@ -1,22 +1,20 @@
-References: <20200813072923.24385-1-eric@...1918...>
- <1fb10dd1-8ddf-c467-21a5-a93e21e6a8ac@...1227...>
- <0a634481-cf3b-de2f-5e34-8f5c5ef16fdc@...1918...>
- <CAKuzo_h_xWf-Jbkow=H3sL_CQw5CC23pw3DxH0Nsydj2f57usg@...278...>
- <dc800745-efe3-0f10-d08f-046fc041c96a@...1918...>
- <CAKuzo_heHMcpRd31Lc=ZHDjPAb3GsQoBQB4iQvXCd7EPTnGEug@...278...>
- <294d779c-44a1-7f4c-c506-5f21dc76e8ac@...1918...>
- <9e1e0324-45a1-d6ab-068a-eff8bb75aef1@...1227...>
- <6d416208-e6f6-a0d9-e7e8-ef757f8893ba@...1918...>
+References: <20200821062443.69245-1-eric@...1918...>
+ <bd154015-3f5f-6035-c4ff-fae5abc7857c@...1227...>
+ <3df6fedd-f30a-4e08-0e82-b31a7728f21d@...1918...>
+ <446bb2a7-7597-1c89-b4eb-543abf4e6e3f@...1227...>
+ <2f192d4f-fa69-20d3-f9a2-90329d308b53@...1918...>
+ <f2ddadee-f969-2bcb-5b19-ad2273a17b18@...1227...>
+ <050fed64-f566-35be-f3fa-d9d79cf2a7c6@...1918...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <4f554f9d-cc69-6ba1-7f99-b3368d68f7ab@...1227...>
-Date: Wed, 26 Aug 2020 10:45:38 +0200
+Message-ID: <c6d1361f-f7d5-9a28-ff93-580b9dd75ad3@...1227...>
+Date: Wed, 26 Aug 2020 10:55:42 +0200
 MIME-Version: 1.0
-In-Reply-To: <6d416208-e6f6-a0d9-e7e8-ef757f8893ba@...1918...>
+In-Reply-To: <050fed64-f566-35be-f3fa-d9d79cf2a7c6@...1918...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="3pxcwDcSmM4uc8ZnKmWevFNvI4k0Dh6mR"
-Subject: Re: [Openvpn-devel] [PATCH 1/2] Send auth-fail messages to clients
- on renegotiation failures via auth-token or user-pass expiry
+ boundary="uxuP1fPDa1pUM7e4pHjwedntoAixQg3x6"
+Subject: Re: [Openvpn-devel] [PATCH] Adds client-auth-pending-extra
+ management functionality.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -25,77 +23,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Eric Thorpe <eric@...1918...>, Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Eric Thorpe <eric@...1918...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---3pxcwDcSmM4uc8ZnKmWevFNvI4k0Dh6mR
-Content-Type: multipart/mixed; boundary="w1X2Q7xFE1lqjqrhFsuY2ZGBOojDSRzRH"
+--uxuP1fPDa1pUM7e4pHjwedntoAixQg3x6
+Content-Type: multipart/mixed; boundary="i0pV3ATTdAUhJLXbEXFdKYlLHgxoW50vG"
 
---w1X2Q7xFE1lqjqrhFsuY2ZGBOojDSRzRH
+--i0pV3ATTdAUhJLXbEXFdKYlLHgxoW50vG
 Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-Am 26.08.20 um 03:12 schrieb Eric Thorpe:
->> Management goes another code path and management_client_auth directly
->> calls send_auth_failed.
-> I'm afraid in the case of renegotiation this is not relevant
-
-That code/commit message is explicitly talking about renegotiation. So
-if that is also broken, there seems to be something else wrong.
-
+Am 26.08.20 um 03:15 schrieb Eric Thorpe:
+> Hi Arne,
 >=20
->> But I
->> also haven't digged deep enough to actually understand if your is
->> actually fixing the problem correctly.
-> May I request that we resolve this first to ensure the content of the
-> patch is correct, and then we can move onto finding a way to avoid this
-> extra state?
+> I'm happy to resubmit the patch with further documentation to what I
+> have already included with this patch, however I need to know what is
+> likely to be accepted.
+>=20
+> Per my previous question and example, is it acceptable to keep using
+> CR_TEXT and document the C and CR flags, or, as I think you have hinted,
+> would you prefer I create a fourth INFOPRE spec, for example CR_DATA,
+> and document that instead?
 
-Yeah but I as a said, I currently don't understand it well enough to
-understand if your patch is correct or not and if the code path for
-management sending AUTH_FAILED on renegotiation is also not working,
-there is probably something else broken.
+Maybe. I am not against the idea of allowing more authentication
+methods. But I am not sure what you are trying to achieve.
 
-As I said:
+> It would also be highly appreciated if I could get some indication if
+> this patch is acceptable outside of the requirement for further
+> documentation or if the code needs further changes.
 
-- Do we send the AUTH_FAILED over the new or the old tls session?
-- Do we establish the data channel (key_method_2_write) before writing
-the key?
+Currently I don't understand what authentication method you are trying
+to implement. It is frustrating for me that you avoid that question.
 
-are questions that I don't have an answer to currently and you also
-ignored those questions, so I assume you are not sure either. And I
-don't want to merge a patch where neither I nor the author of the patch
-really understand the implications and whether the patch is really
-fixing the root cause or just band aiding the symptoms.
+For accepting it is very simple. Either is something everyone using
+OpenVPN can implement and understand and you are willing to share with
+OpenVPN. Then the patches can go. If it a special private authentication
+method and you don't want to share that, then your patches can also be
+kept private and applied your own branch/client/server.
 
 Arne
 
 
---w1X2Q7xFE1lqjqrhFsuY2ZGBOojDSRzRH--
+--i0pV3ATTdAUhJLXbEXFdKYlLHgxoW50vG--
 
---3pxcwDcSmM4uc8ZnKmWevFNvI4k0Dh6mR
+--uxuP1fPDa1pUM7e4pHjwedntoAixQg3x6
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl9GITIACgkQFRhsZwKx
-RFSZTA//cmZ7+mM3rcKudMqXwVB7My0tKrEKjUmto+/2S+LM94t4VrY6kyTY3uDU
-JHGuB9+c/FJ+WkuqcJ9GPPAQhgbRaEgY4xJvmBaDc2xg2q83/2dbGqLiHzsVY9ni
-ajVfvSqN0Fioukux92qEdS6rzsc1khRkg0I805gOfYgt8DzFHRwmzclF+x6rpdXN
-W0710X6jwUH8mT/VvjYD/6LizvEFtan1d1UjPAAZ+Mb15wPVzHVIsgtfIyWsYvF9
-/gBhd/O77+l5MrrBpHCWN4loAdZVwlRedNqgo336J/V0VJsKWTXIIgvAPwIaZ8D1
-EgrWtG/TPsit0vKUhIeZNw+YJ8lIPeFbT8jBhfRsQOUqiQi2VoyrjVM8f9FBtX3a
-+Gw7ytlik/w2PNqEkSYvTatGe2nhz1W7RZ1equynhqK7oLfzoarOvEn2uT0eWwff
-NHAQdMf2NzFXWvPoIu6NI2dYaQ2jhhFHX/ID6gOA2pkA5X/wBtLBpOdNlQ9P9Qjn
-bjl9Rd/QrDEq3hYTH5Ir/G8dxtkV6KteiQiUNnHbW3c2WNW/E0A3gnd5XKuk0LOB
-KpjGyrvMsgnR7DdSEaO52O9xtKmfWxrXD0WwW/6k7GfxgpMYp8xKNG94QaBN3+G0
-p5ISnlwBNDwF+myg8+Kb3+dswmK7+LfrPDPS9mkARYowRmjfn5U=
-=xjN9
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl9GI44ACgkQFRhsZwKx
+RFQRcA/9Ghh5Xu2jZPOWIXqKrLJXxZa6XDtoGHhUrbwrHqgsr06Tsbx99kY+DN+M
+lObj/Ftoh6j3s6LapVlDdh8XfFELzj3wBTKc8m3l6T4OFa9EvJ6Z7hgPBEu/vJVi
+OCIHMKoAQr/Y0hUs+j3eEA1BNmO+gC31OzuwBrwx3Eu3o05N8NBfmFzhDNJXwFCS
+WyUeuQ2dTQV46DgkwuRKefRc20AH1COS757k2Iqp6KLX/NH3tqKK7mReG4uxcE5A
+tJDRoFJgVCZQ10d/AMM7BF/NNnlCEMvZbBPxAPkRVV4cvR28pkgqgrmsKbhuC6R2
+xke1dadicbe0q5zjmUducP2lukfNDNaYBImYCQE1qn4nfJy/QqcBdl6CpRgOI9ov
+zvFZaJw1p5fNgalm55K524qxyb2snEFydSZxxFLd9oPb0kFAbp+eOe4hVtNZUZPK
+amiUJ2Raxh2Q0yJZmFy+ywp979h+0TfXFzz7x0gbATWEaIxgqqs5ZfYeqIB7CZEn
+NraHs//tkUY/8owtvcziVD8q4Ga8ILNi1N5oJeyrmWp0y0E410mTvYIMlmI+Txrl
+AnQ4sKEfaoMBAPlj4VIo89tmnxU0KrNvJO+vcmUeVF9RIpoKUK2o+/PD3pOg+8f8
+jSb+Klk7fl0+kIP1to8NLx2JhGwHuViW3Hpaf5RsK7Ug1GsaVqQ=
+=aQa2
 -----END PGP SIGNATURE-----
 
---3pxcwDcSmM4uc8ZnKmWevFNvI4k0Dh6mR--
+--uxuP1fPDa1pUM7e4pHjwedntoAixQg3x6--
 
