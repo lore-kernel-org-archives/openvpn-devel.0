@@ -1,17 +1,22 @@
-References: <20200821062443.69245-1-eric@...1918...>
- <bd154015-3f5f-6035-c4ff-fae5abc7857c@...1227...>
- <3df6fedd-f30a-4e08-0e82-b31a7728f21d@...1918...>
- <446bb2a7-7597-1c89-b4eb-543abf4e6e3f@...1227...>
- <2f192d4f-fa69-20d3-f9a2-90329d308b53@...1918...>
- <f2ddadee-f969-2bcb-5b19-ad2273a17b18@...1227...>
-From: Eric Thorpe <eric@...1918...>
-Message-ID: <050fed64-f566-35be-f3fa-d9d79cf2a7c6@...1918...>
-Date: Wed, 26 Aug 2020 11:15:15 +1000
+References: <20200813072923.24385-1-eric@...1918...>
+ <1fb10dd1-8ddf-c467-21a5-a93e21e6a8ac@...1227...>
+ <0a634481-cf3b-de2f-5e34-8f5c5ef16fdc@...1918...>
+ <CAKuzo_h_xWf-Jbkow=H3sL_CQw5CC23pw3DxH0Nsydj2f57usg@...278...>
+ <dc800745-efe3-0f10-d08f-046fc041c96a@...1918...>
+ <CAKuzo_heHMcpRd31Lc=ZHDjPAb3GsQoBQB4iQvXCd7EPTnGEug@...278...>
+ <294d779c-44a1-7f4c-c506-5f21dc76e8ac@...1918...>
+ <9e1e0324-45a1-d6ab-068a-eff8bb75aef1@...1227...>
+ <6d416208-e6f6-a0d9-e7e8-ef757f8893ba@...1918...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <4f554f9d-cc69-6ba1-7f99-b3368d68f7ab@...1227...>
+Date: Wed, 26 Aug 2020 10:45:38 +0200
 MIME-Version: 1.0
-In-Reply-To: <f2ddadee-f969-2bcb-5b19-ad2273a17b18@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Adds client-auth-pending-extra
- management functionality.
+In-Reply-To: <6d416208-e6f6-a0d9-e7e8-ef757f8893ba@...1918...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="3pxcwDcSmM4uc8ZnKmWevFNvI4k0Dh6mR"
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Send auth-fail messages to clients
+ on renegotiation failures via auth-token or user-pass expiry
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,70 +25,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: Eric Thorpe <eric@...1918...>, Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi Arne,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--3pxcwDcSmM4uc8ZnKmWevFNvI4k0Dh6mR
+Content-Type: multipart/mixed; boundary="w1X2Q7xFE1lqjqrhFsuY2ZGBOojDSRzRH"
 
-I'm happy to resubmit the patch with further documentation to what I 
-have already included with this patch, however I need to know what is 
-likely to be accepted.
+--w1X2Q7xFE1lqjqrhFsuY2ZGBOojDSRzRH
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-Per my previous question and example, is it acceptable to keep using 
-CR_TEXT and document the C and CR flags, or, as I think you have hinted, 
-would you prefer I create a fourth INFOPRE spec, for example CR_DATA, 
-and document that instead?
+Am 26.08.20 um 03:12 schrieb Eric Thorpe:
+>> Management goes another code path and management_client_auth directly
+>> calls send_auth_failed.
+> I'm afraid in the case of renegotiation this is not relevant
 
-It would also be highly appreciated if I could get some indication if 
-this patch is acceptable outside of the requirement for further 
-documentation or if the code needs further changes.
+That code/commit message is explicitly talking about renegotiation. So
+if that is also broken, there seems to be something else wrong.
 
-Thanks,
-Eric
+>=20
+>> But I
+>> also haven't digged deep enough to actually understand if your is
+>> actually fixing the problem correctly.
+> May I request that we resolve this first to ensure the content of the
+> patch is correct, and then we can move onto finding a way to avoid this
+> extra state?
 
----
-Eric Thorpe
-SparkLabs Developer
-https://www.sparklabs.com
-https://twitter.com/sparklabs
-support@...1918...
+Yeah but I as a said, I currently don't understand it well enough to
+understand if your patch is correct or not and if the code path for
+management sending AUTH_FAILED on renegotiation is also not working,
+there is probably something else broken.
 
-On 25/08/2020 5:25 pm, Arne Schwabe wrote:
-> Am 25.08.20 um 01:58 schrieb Eric Thorpe:
->> Hi Arne,
->>
->>> - to avoid the 256 byte management limit and multiple commands use maybe
->>> the same approach as client-auth that allows a longer frame, you can
->>> still limit that to 1024.
->> To be clear here, it isn't so much the limitation of the management or
->> control channel, it's situations where a tun-mtu may be set to say 750
->> for example, meaning the data size can only realistically be about 730
->> minus INFO_PRE, flags, etc, or OpenVPN or the network will drop the
->> control channel message. I would not recommend making any changes to
->> management or the control channel here, simply just have the ability to
->> send the data in smaller parts.
->>
->>> CR_TEXT is challenge response text and those clients that currently
->>> implement it only allow a single line. I would suggest the following to
->>> get the patch in a acceptable state:
->>>
->>> - Document your authentication method also in management.txt and also
->>> what IV_SSO flag indicates this authentication method.
->> Are you suggesting that I do not use CR_TEXT, and instead introduce a
->> new Challenge Response type (CR_DATA for example)?
-> IV_SSO=crtext is a basically the AUTH_PENDING variant of presenting the
-> user the text of CR_TEXT and responding with the answer.
->
-> What you doing seems to be different. And if we add something that is
-> different we should it its own IV_SSO flag to announce itself. And if
-> you need "just" a multiline or longer text than current crtext can give
-> to the user, we still need a flag for this new method, so we can signal
-> if the client supports this.
->
-> I am just asking that if we add new methods to AUTH_PENDING to properly
-> document them.
->
-> Arne
->
+As I said:
+
+- Do we send the AUTH_FAILED over the new or the old tls session?
+- Do we establish the data channel (key_method_2_write) before writing
+the key?
+
+are questions that I don't have an answer to currently and you also
+ignored those questions, so I assume you are not sure either. And I
+don't want to merge a patch where neither I nor the author of the patch
+really understand the implications and whether the patch is really
+fixing the root cause or just band aiding the symptoms.
+
+Arne
+
+
+--w1X2Q7xFE1lqjqrhFsuY2ZGBOojDSRzRH--
+
+--3pxcwDcSmM4uc8ZnKmWevFNvI4k0Dh6mR
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl9GITIACgkQFRhsZwKx
+RFSZTA//cmZ7+mM3rcKudMqXwVB7My0tKrEKjUmto+/2S+LM94t4VrY6kyTY3uDU
+JHGuB9+c/FJ+WkuqcJ9GPPAQhgbRaEgY4xJvmBaDc2xg2q83/2dbGqLiHzsVY9ni
+ajVfvSqN0Fioukux92qEdS6rzsc1khRkg0I805gOfYgt8DzFHRwmzclF+x6rpdXN
+W0710X6jwUH8mT/VvjYD/6LizvEFtan1d1UjPAAZ+Mb15wPVzHVIsgtfIyWsYvF9
+/gBhd/O77+l5MrrBpHCWN4loAdZVwlRedNqgo336J/V0VJsKWTXIIgvAPwIaZ8D1
+EgrWtG/TPsit0vKUhIeZNw+YJ8lIPeFbT8jBhfRsQOUqiQi2VoyrjVM8f9FBtX3a
++Gw7ytlik/w2PNqEkSYvTatGe2nhz1W7RZ1equynhqK7oLfzoarOvEn2uT0eWwff
+NHAQdMf2NzFXWvPoIu6NI2dYaQ2jhhFHX/ID6gOA2pkA5X/wBtLBpOdNlQ9P9Qjn
+bjl9Rd/QrDEq3hYTH5Ir/G8dxtkV6KteiQiUNnHbW3c2WNW/E0A3gnd5XKuk0LOB
+KpjGyrvMsgnR7DdSEaO52O9xtKmfWxrXD0WwW/6k7GfxgpMYp8xKNG94QaBN3+G0
+p5ISnlwBNDwF+myg8+Kb3+dswmK7+LfrPDPS9mkARYowRmjfn5U=
+=xjN9
+-----END PGP SIGNATURE-----
+
+--3pxcwDcSmM4uc8ZnKmWevFNvI4k0Dh6mR--
 
