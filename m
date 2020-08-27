@@ -1,21 +1,22 @@
-References: <20200813072923.24385-1-eric@...1918...>
- <1fb10dd1-8ddf-c467-21a5-a93e21e6a8ac@...1227...>
- <0a634481-cf3b-de2f-5e34-8f5c5ef16fdc@...1918...>
- <CAKuzo_h_xWf-Jbkow=H3sL_CQw5CC23pw3DxH0Nsydj2f57usg@...278...>
- <dc800745-efe3-0f10-d08f-046fc041c96a@...1918...>
- <CAKuzo_heHMcpRd31Lc=ZHDjPAb3GsQoBQB4iQvXCd7EPTnGEug@...278...>
- <294d779c-44a1-7f4c-c506-5f21dc76e8ac@...1918...>
- <9e1e0324-45a1-d6ab-068a-eff8bb75aef1@...1227...>
- <6d416208-e6f6-a0d9-e7e8-ef757f8893ba@...1918...>
- <4f554f9d-cc69-6ba1-7f99-b3368d68f7ab@...1227...>
-From: Eric Thorpe <eric@...1918...>
-Message-ID: <3beb853d-5fe0-4d32-c013-d2af92f151e9@...1918...>
-Date: Thu, 27 Aug 2020 09:57:19 +1000
+References: <20200821062443.69245-1-eric@...1918...>
+ <bd154015-3f5f-6035-c4ff-fae5abc7857c@...1227...>
+ <3df6fedd-f30a-4e08-0e82-b31a7728f21d@...1918...>
+ <446bb2a7-7597-1c89-b4eb-543abf4e6e3f@...1227...>
+ <2f192d4f-fa69-20d3-f9a2-90329d308b53@...1918...>
+ <f2ddadee-f969-2bcb-5b19-ad2273a17b18@...1227...>
+ <050fed64-f566-35be-f3fa-d9d79cf2a7c6@...1918...>
+ <c6d1361f-f7d5-9a28-ff93-580b9dd75ad3@...1227...>
+ <84776d54-ca63-e21a-6c6d-311760f9e280@...1918...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <e4040184-0209-da97-e98c-f55c29b9a463@...1227...>
+Date: Thu, 27 Aug 2020 10:39:22 +0200
 MIME-Version: 1.0
-In-Reply-To: <4f554f9d-cc69-6ba1-7f99-b3368d68f7ab@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH 1/2] Send auth-fail messages to clients
- on renegotiation failures via auth-token or user-pass expiry
+In-Reply-To: <84776d54-ca63-e21a-6c6d-311760f9e280@...1918...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="c6k576IMkHNJkMNq7OhQEpqw3KiRttPD6"
+Subject: Re: [Openvpn-devel] [PATCH] Adds client-auth-pending-extra
+ management functionality.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,104 +25,83 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Eric Thorpe <eric@...1918...>, openvpn-devel@lists.sourceforge.net
 
-Hi Arne,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--c6k576IMkHNJkMNq7OhQEpqw3KiRttPD6
+Content-Type: multipart/mixed; boundary="1VElx7EzCsXbVwSasinbDPTWOZ9Y2cUEo"
 
-> That code/commit message is explicitly talking about renegotiation. So
-> if that is also broken, there seems to be something else wrong.
-You are quite correct, I've muddled this up with a different issue I've 
-been working through with Deferred Auth, management should not be a part 
-of this discussion.
+--1VElx7EzCsXbVwSasinbDPTWOZ9Y2cUEo
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-> - Do we send the AUTH_FAILED over the new or the old tls session?
-The AUTH_FAILED is sent in the old (current) tls session, that is of 
-course assuming that it is still active at the time of reneg. Normally 
-if reneg is done with only keys or an auth-token, there isn't the risk 
-of authentication being too slow. If a user takes too long to enter a 
-password, or deferred auth is in use, the server can sigterm the user on 
-it's end before authentication is complete and we have the same result. 
-With this said though, the configuration can be adjusted to give the 
-user a grace period on the server, so that specific scenario isn't 
-something that needs to be handled in my opinion as it can be tuned in 
-the configuration.
+Am 27.08.20 um 01:34 schrieb Eric Thorpe:
+> Hi Arne,
+>=20
+> The first we are trying to migrate across is U2F -
+> https://www.sparklabs.com/support/kb/article/yubikey-u2f-two-factor-authe=
+ntication-with-openvpn-and-viscosity/
+> <https://www.sparklabs.com/support/kb/article/yubikey-u2f-two-factor-auth=
+entication-with-openvpn-and-viscosity/>
 
-> - Do we establish the data channel (key_method_2_write) before writing
-> the key?
-This is the question I specifically ignored as I'm not sure why it's 
-relevant to plugin/script authentication. key_method_2_write, unless I'm 
-mistaken (and I'm happy to be corrected here), is client side. The 
-client knows it's time to renegotiate as part of it's regular wake up 
-routines or server trigger, of which key_method_2_write is called and 
-queries for the user/pass (either by management, file, terminal, etc), 
-and then pushes it all to the server. Unlike the initial connection 
-process however, a push_request does not follow this information push, 
-so if authentication fails at the server end, there is no indication of 
-such and we end up with desync.
 
-> understand the implications and whether the patch is really
-> fixing the root cause or just band aiding the symptoms.
-This I can't answer. I don't think it's a band aid, however there are 
-still scenarios this will not cover as mentioned above. Someone with 
-more in depth knowledge will need to help review this patch to determine 
-if this is a fix, or indeed a band aid to a deeper problem that needs to 
-be reviewed.
+Okay makes more sense now and I see that U2F needs larger messages. But
+especially U2F is important/common enough to properly document how this
+should be done in detail. The last thing we want is to end up with two
+different U2F implementation in OpenVPN one from your side and one from
+us (OpenVPN inc) that are incompatible with each other.
 
-With this in mind, I'm afraid I have spent enough time on this. We will 
-continue to maintain this patch in our fork. In the mean time, we've 
-tried to do the right thing by submitting a patch for an issue we've 
-discovered and brought to the mailing lists attention a long time ago 
-now, and then do the right thing again updating it when requested. I 
-will leave the conversation here and leave it to the repo maintainers 
-from here whether they wish to use this patch as is, modify it to their 
-needs or NAK it for a better future solution. I will keep an eye out for 
-a new patch and assist in it's testing if someone wishes to improve upon 
-this.
+So we probably want a IV_SSO=3Du2f, so the client can signal U2F support
+and then a documentation what messages are sent back and forth and then
+I see no problem in merging your patches.
 
-Cheers,
-Eric
+> Even though the patches in the above article work for the vast majority,
+> they are a bit of a hack and we want to get away from them as they're
+> still prone to failing on connections with low MTU or fragmentation
+> issues as previously mentioned.
+>=20
+> All our 2FA supported methods that we want to migrate across to
+> AUTH_PENDING instead of AUTH_FAILED are available here as well if you'd
+> like some further examples of what this would be used for -
+> https://github.com/thesparklabs/openvpn-two-factor-extensions
+> <https://github.com/thesparklabs/openvpn-two-factor-extensions>
+>=20
+> Anything using this new method would also end up in the above repo.
 
----
-Eric Thorpe
-SparkLabs Developer
-https://www.sparklabs.com
-https://twitter.com/sparklabs
-support@...1918...
+If you interested in the SAML/webauth/other web based authentication
+protocols, here is a document that I am preparing to document that
+properly (should also be soon on the official openvpn3 repo):
 
-On 26/08/2020 6:45 pm, Arne Schwabe wrote:
-> Am 26.08.20 um 03:12 schrieb Eric Thorpe:
->>> Management goes another code path and management_client_auth directly
->>> calls send_auth_failed.
->> I'm afraid in the case of renegotiation this is not relevant
-> That code/commit message is explicitly talking about renegotiation. So
-> if that is also broken, there seems to be something else wrong.
->
->>> But I
->>> also haven't digged deep enough to actually understand if your is
->>> actually fixing the problem correctly.
->> May I request that we resolve this first to ensure the content of the
->> patch is correct, and then we can move onto finding a way to avoid this
->> extra state?
-> Yeah but I as a said, I currently don't understand it well enough to
-> understand if your patch is correct or not and if the code path for
-> management sending AUTH_FAILED on renegotiation is also not working,
-> there is probably something else broken.
->
-> As I said:
->
-> - Do we send the AUTH_FAILED over the new or the old tls session?
-> - Do we establish the data channel (key_method_2_write) before writing
-> the key?
->
-> are questions that I don't have an answer to currently and you also
-> ignored those questions, so I assume you are not sure either. And I
-> don't want to merge a patch where neither I nor the author of the patch
-> really understand the implications and whether the patch is really
-> fixing the root cause or just band aiding the symptoms.
->
-> Arne
->
+https://github.com/schwabe/openvpn3/blob/schwabe/web_auth_spec/doc/webauth.=
+md
+
+Arne
+
+
+--1VElx7EzCsXbVwSasinbDPTWOZ9Y2cUEo--
+
+--c6k576IMkHNJkMNq7OhQEpqw3KiRttPD6
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl9HcToACgkQFRhsZwKx
+RFRb+w/+NYLZO4XLUI7VN/wnXXcJgIYMLbs3Nsy6PlA58JkMxpmQVoY+ZgN4Dop9
+BG+Vvz51GgJ8vR+iiaKeeSaIfSEkOYw1Oa4dONco3TS7QwFceC34Y4BVB9v06qg5
+y/7LfmH/XuC3lS0QYzkkJimwaM/PkkU5sWVIrab+luyJoPyybtb5mBYUeTzIfP6D
+SJyOlTxNJ5uZ7KjrKARqOkKe/SF6pbg/yYWLT/TPX3dqyJBrdcwxp3qrB6rbSIuQ
+kw97HDR8nCm0faUd0v44lkJHulWH6BdSHD1Y+mJ2xB8E/CeIHk/JufxIgf+rQU8h
+UrBXkzC24T/qTnDuW8rDpkgInuEgybZpEgWRnU76jJ6trLo5MxM5PAiGqAx6rDiG
+3kVw4XTEjdaIRiBk6VCTF9cXklY8wuE7kFT/sFH0YhuDQDQMUIAd6ZRqKECAAihR
+VjQrvmBDAjCkmOSW5FjnLEwpodZxdp9XqahdfAfDUrmZGRM6V51mtxR9I8sGyeqc
+clsDm8WYvADXe+tHiu8NMkf+ELXl005dW5gOYpt8s6L8tfALb76tJt3aDlpmewzY
+soqncEABQX7Vk6ZWE86PKtfmjJaLDoUuEWtGEZ6QWckxYLrRDArLPwMV5DGF6gVF
+3MQF2Fz5fy/q08fZ24CjtWC+rfzr3z3W685PtPZNSbWq09tWICc=
+=merK
+-----END PGP SIGNATURE-----
+
+--c6k576IMkHNJkMNq7OhQEpqw3KiRttPD6--
 
