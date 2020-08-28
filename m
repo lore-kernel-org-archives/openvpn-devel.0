@@ -1,11 +1,10 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <f10b3cfd-d020-5598-ec84-95fc8cd0e8e9@...515...>
-Date: Fri, 28 Aug 2020 16:09:59 +0300
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="sGwZNhN1kwoj18EhfiMzN7f0wBC9czMB1"
-Subject: [Openvpn-devel] Help testing OpenVPN 2.5-beta2 driver installation?
+Date: Fri, 28 Aug 2020 15:25:08 +0200 (CEST)
+Message-Id: <202008281325.07SDP8rA045378@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20200825041647.26235-1-arne@...1227...>
+References: <20200825041647.26235-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix compilation with older mbed
+ TLS versions (mbedtls_tls_prf_types undefined)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,60 +13,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---sGwZNhN1kwoj18EhfiMzN7f0wBC9czMB1
-Content-Type: multipart/mixed; boundary="fnFAsdLv594x3sSD975oH0OqElo8px2FY"
+Acked-by: Gert Doering <gert@...1296...>
 
---fnFAsdLv594x3sSD975oH0OqElo8px2FY
-Content-Language: en-US
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
+Thanks for this.  I have tried to review it without having to understand
+all of the EKM/PRF stuff, and it sort of looks reasonable.  The approach
+of not having more #ifdefs in the common code is certainly welcome.
 
-Hi,
+I have *tested* it, though, on some of the buildbots that failed before,
+and this looks all reasonable (NetBSD 8.1 with mbedtls-2.14.1), plus
+Linux with a very recent mbedtls (2.22.0).  All succeeded.
 
-It would be great if somebody would find time to test the following
-installer:
+Your patch has been applied to the master branch.
 
-https://build.openvpn.net/downloads/releases/OpenVPN-2.5-beta2-I601-amd64.m=
-si
+commit 136c5f015c3e7eceecc07a45655d5da5616e9131
+Author: Arne Schwabe
+Date:   Tue Aug 25 06:16:47 2020 +0200
 
-In particular I'd like to know if anyone else has problems installing
-Wintun or Tap-windows6. My exact issue is described here:
+     Fix compilation with older mbed TLS versions (mbedtls_tls_prf_types undefined)
 
-https://github.com/OpenVPN/openvpn-build/issues/187
-
-At the moment two people have successfully ran that installer and one
-(me) have failed.
-
-Samuli
-
-
-PS. The installer has a known, upgrade-related issue as well, but we
-already have plans on how to tackle that:
-
-https://github.com/OpenVPN/openvpn-build/issues/188
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20200825041647.26235-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20812.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
---fnFAsdLv594x3sSD975oH0OqElo8px2FY--
+--
+kind regards,
 
---sGwZNhN1kwoj18EhfiMzN7f0wBC9czMB1
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Gert Doering
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAl9JAicACgkQKVhNn0CG
-RXgTUwgAlzN4GrmYRsOWGzxmJ1/jNcJgruqUPasA2auRSPxaKrQwJYyEz3emfwPd
-XwNTGu9YHoSHPxyoIVf9hgaZGICpxOc/5zW9V+lyAU5Q1i8l2EVKoNzustlLC8vj
-M0mfLB6hwbepBT2hBVcnmra2yMQUaWeV2qVXDnGZma/0w5rqHF6P/zHTpd3qI6+b
-DcFnm8KG39GoujyX4EjTsEUVDLRl8KXpNnzDn9gnY5HrJNpElX886dEkB0nFxClf
-3s58NrMA9+sj7+SGeUmYSzTx9sGX/uLbs9b4kUH4DYmddLqCQqVdbrMCPJnYEeiX
-vUO1NT1Reh45YHBUH0UPelg0XKatEg==
-=1SiL
------END PGP SIGNATURE-----
-
---sGwZNhN1kwoj18EhfiMzN7f0wBC9czMB1--
 
