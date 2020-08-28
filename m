@@ -1,10 +1,12 @@
-Date: Fri, 28 Aug 2020 15:25:08 +0200 (CEST)
-Message-Id: <202008281325.07SDP8rA045378@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200825041647.26235-1-arne@...1227...>
-References: <20200825041647.26235-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix compilation with older mbed
- TLS versions (mbedtls_tls_prf_types undefined)
+References: <f10b3cfd-d020-5598-ec84-95fc8cd0e8e9@...515...>
+From: =?UTF-8?Q?Thomas_Sch=c3=a4fer?= <tschaefer@...75...>
+Message-ID: <62531f19-49ad-0060-3b84-e88597ca5354@...75...>
+Date: Fri, 28 Aug 2020 15:55:40 +0200
+MIME-Version: 1.0
+In-Reply-To: <f10b3cfd-d020-5598-ec84-95fc8cd0e8e9@...515...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] Help testing OpenVPN 2.5-beta2 driver
+ installation?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,39 +15,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+It works for me without problems.
 
-Thanks for this.  I have tried to review it without having to understand
-all of the EKM/PRF stuff, and it sort of looks reasonable.  The approach
-of not having more #ifdefs in the common code is certainly welcome.
+Windows 10 Home 2004 Build 19041.450
 
-I have *tested* it, though, on some of the buildbots that failed before,
-and this looks all reasonable (NetBSD 8.1 with mbedtls-2.14.1), plus
-Linux with a very recent mbedtls (2.22.0).  All succeeded.
+When uninstalling and installing it again I had a temporary connection 
+problem. But reboot has helped.
 
-Your patch has been applied to the master branch.
-
-commit 136c5f015c3e7eceecc07a45655d5da5616e9131
-Author: Arne Schwabe
-Date:   Tue Aug 25 06:16:47 2020 +0200
-
-     Fix compilation with older mbed TLS versions (mbedtls_tls_prf_types undefined)
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200825041647.26235-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20812.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Thomas
 
 
---
-kind regards,
-
-Gert Doering
+Am 28.08.20 um 15:09 schrieb Samuli Seppänen:
+> Hi,
+> 
+> It would be great if somebody would find time to test the following
+> installer:
+> 
+> https://build.openvpn.net/downloads/releases/OpenVPN-2.5-beta2-I601-amd64.msi
+> 
+> In particular I'd like to know if anyone else has problems installing
+> Wintun or Tap-windows6. My exact issue is described here:
+> 
+> https://github.com/OpenVPN/openvpn-build/issues/187
+> 
+> At the moment two people have successfully ran that installer and one
+> (me) have failed.
+> 
+> Samuli
+> 
+> 
+> PS. The installer has a known, upgrade-related issue as well, but we
+> already have plans on how to tackle that:
+> 
+> https://github.com/OpenVPN/openvpn-build/issues/188
+> 
+> 
+> 
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+> 
 
 
