@@ -1,10 +1,17 @@
-Date: Sun, 30 Aug 2020 22:16:35 +0200 (CEST)
-Message-Id: <202008302016.07UKGZXg091535@...2054...>
+Date: Sun, 30 Aug 2020 22:37:20 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200830131440.10933-1-arne@...1227...>
-References: <20200830131440.10933-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix client NCP OCC fallback
- when server and client cipher are identical
+Message-ID: <20200830203720.GX75094@...1296...>
+References: <20200814080619.2108-1-arne@...1227...>
+ <CAAWBBYM2+4FqN-HyV9W19fJfAHKd9K4KHhnQFz2_5f3tzdvMFA@...278...>
+ <20200829194728.GU75094@...1296...>
+ <CAAWBBYM+8YfP9-nwAsPYM806CzQXoy_5d+9MLkfyGPatE3BTAQ@...278...>
+ <20200830120703.GV75094@...1296...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="MxYQAzdbOWKZB282"
+Content-Disposition: inline
+In-Reply-To: <20200830120703.GV75094@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix client's poor man NCP fallback
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,56 +20,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Rafael Gava <gava100@...277...>
+Cc: Gert Doering <gert@...1296...>, Arne Schwabe <arne@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Acked-by: Gert Doering <gert@...1296...>
+--MxYQAzdbOWKZB282
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Besides the visual check ("nice, one level of indentation removed!"),
-I have also added 5 more tests to our test environment (running on
-phillip, so available for all t_client instances):
+Hi,
 
- - git master client to 2.3 server, "--cipher bf-cbc"
-   ("OCC based NCP, same cipher on client and server")
- - git master client to 2.3 server, "--cipher aes-gcm, --data-ciphers bf-cbc"
-   ("OCC based NCP, different cipher on client and server, but server
-   client allowed on client")
- - git master client to 2.3 "--enable-small" server, --data-ciphers-fallback
-   ("no NCP of any sort, falling back to the fallback cipher")
- - git master client to 2.4
-   ("2.4 style NCP, receiving pushed AES-256-GCM")
- - git master client to 2.4 with "--ncp-disable"
-   (fallback to OCC based NCP with "same cipher")
+On Sun, Aug 30, 2020 at 02:07:03PM +0200, Gert Doering wrote:
+> On Sat, Aug 29, 2020 at 09:42:46PM -0300, Rafael Gava wrote:
+[..]
+> If it still doesn't do that, you found a new bug :-)
 
-Previous git master nicely ran into the problem Gava reported for both
-"same cipher on the client as OCC-signalled from the server" cases
-(unsurprisingly) and with the patch, all 5 test cases succeeded.
+So - patch has been merged, and I think I have set up an appropriate
+testbed to verify this (2.5/master talking to 2.3.18 with OCC enabled).
 
-Plus all the cases where this code is running on the server side (which
-received much more scrutiny and testing than as-client-to-older-servers, 
-alas).
+With Arne's (v2) patch it is no longer failing.
 
-Your patch has been applied to the master and release/2.5 branch.
+Can you re-test your scenarios, please?
 
-commit 6ffe64e34004967a96514cc55abb22215fbe5640 (master)
-commit ea3c0ecc11f64fe4a58441c6d9c889472f6ed606 (release/2.5)
-Author: Arne Schwabe
-Date:   Sun Aug 30 15:14:40 2020 +0200
+gert
 
-     Fix client NCP OCC fallback when server and client cipher are identical
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200830131440.10933-1-arne@...1227...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20200830131440.10933-1-arne@...1227...
-     Signed-off-by: Gert Doering <gert@...1296...>
+Gert Doering - Munich, Germany                             gert@...1296...
 
+--MxYQAzdbOWKZB282
+Content-Type: application/pgp-signature; name="signature.asc"
 
---
-kind regards,
+-----BEGIN PGP SIGNATURE-----
 
-Gert Doering
+iQGcBAEBAgAGBQJfTA3/AAoJEB2Cnv7KVigSEhAL+wQ/SEJasmssHCFNQDQu657W
+ND3Zo7m9kCSlixG4gvwPDkzISewBu7nc+ZK+yJrpWpGG8VlwjkbIcT5rd1w4PVbw
+bcwfUwHmM6GJwnsMXZwpxKoHXNQiR8nWhWsNwV+SJOoOX/n9aqxxDm+CBi1CIgvH
++rVpnjBvoar9HuVhMdH+WIHnAGVag6mSI29QvXIJIIQmNX0Jmbll1rniozXhDwGa
+OsqAgcOyQcrMbhgcxKssjFCPr9kVtomzDMmGdzADWsprxBQBWdhWhrVeFLpbNcZX
+TVEYrfEar5kiK31iPJRJwZQjct7u+UUDec5ocjWAWzXQts5xVAU3cIA1Z9qEE/b6
+F41/UfeJkUA308sxZ5TdDbR5qzyrKWPCVLM0abeqfSBPFTeEurR6Y6mFMcvu3rT5
+YjjrRQOWDyJajEaAaUkBOv4my/gxxBwkH1SgdwwojS1/eT6VZ6FupufY+DTPSplF
+DVifNiwohHQhP8Z5qWBZk080mzMnBdBY0N55ebUp2A==
+=Smls
+-----END PGP SIGNATURE-----
 
+--MxYQAzdbOWKZB282--
 
