@@ -1,16 +1,11 @@
-MIME-Version: 1.0
-References: <20200814080619.2108-1-arne@...1227...>
- <CAAWBBYM2+4FqN-HyV9W19fJfAHKd9K4KHhnQFz2_5f3tzdvMFA@...278...>
- <20200829194728.GU75094@...1296...>
- <CAAWBBYM+8YfP9-nwAsPYM806CzQXoy_5d+9MLkfyGPatE3BTAQ@...278...>
- <20200830120703.GV75094@...1296...>
- <20200830203720.GX75094@...1296...>
-In-Reply-To: <20200830203720.GX75094@...1296...>
-From: Rafael Gava <gava100@...277...>
-Date: Sun, 30 Aug 2020 21:26:10 -0300
-Message-ID: <CAAWBBYMnFOBo4pp_iZ-KnYu7pHbiLqYQJ3rKO1RF+yXcvivgYg@...278...>
-Content-Type: multipart/alternative; boundary="000000000000bb4f6a05ae217381"
-Subject: Re: [Openvpn-devel] [PATCH] Fix client's poor man NCP fallback
+From: "=?gb18030?B?u8TRxA==?=" <383181189@...1414...>
+Mime-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="----=_NextPart_5F4C9614_102BCDF8_2CFB5DD2"
+Content-Transfer-Encoding: 8Bit
+Date: Mon, 31 Aug 2020 14:17:56 +0800
+Message-ID: <tencent_6F083FFBBD866A31090A4D2B4BE7AD3BF109@...1414...>
+Subject: [Openvpn-devel] Kernel Acceleration Module
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,93 +14,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: Arne Schwabe <arne@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: =?gb18030?B?T3BlbnZwbi1kZXZlbA==?= <Openvpn-devel@lists.sourceforge.net>
 
---000000000000bb4f6a05ae217381
-Content-Type: text/plain; charset="UTF-8"
+This is a multi-part message in MIME format.
 
-Hi Gert,
+------=_NextPart_5F4C9614_102BCDF8_2CFB5DD2
+Content-Type: text/plain;
+	charset="gb18030"
+Content-Transfer-Encoding: base64
 
-Good news, it worked beautifully with tun and tap interfaces!
+RGVhciBEZXZzLA0KDQoNCkkgcmVhZCB0aGF0IGEga2VybmVsIGFjY2VsZXJhdGlvbiBtb2R1bGUg
+aXMgV0lQIGZyb20mbmJzcDtodHRwczovL29wZW52cG4ubmV0L29wZW52cG4taGFja2F0aG9uLTIw
+MTkvLiBJdCdzIHZlcnkgZXhjaXRpbmcgYmVjYXVzZSBwZXJmb3JtYW5jZSB3aWxsIGhhdmUgbXVj
+aCBpbXByb3ZlbWVudC4NCklmIHlvdSBkb24ndCBtaW5kLCB3b3VsZCB5b3Ugc2hhcmUgdXMgc29t
+ZSBsYXN0ZXN0IG5ld3MgYmVjYXVzZSBpdCBzZWVtcyB0aGF0IG5vIG1vcmUgbmV3cyBpcyBmb3Vu
+ZCBhZnRlciBHb29nbGU/IFRoYW5rcyBhIGxvdCEmbmJzcDsNCg0KDQpUb255
 
-Thank you very much!!!!
+------=_NextPart_5F4C9614_102BCDF8_2CFB5DD2
+Content-Type: text/html;
+	charset="gb18030"
+Content-Transfer-Encoding: base64
 
-BR
+PG1ldGEgaHR0cC1lcXVpdj0iQ29udGVudC1UeXBlIiBjb250ZW50PSJ0ZXh0L2h0bWw7IGNoYXJz
+ZXQ9R0IxODAzMCI+PGRpdj5EZWFyIERldnMsPC9kaXY+PGRpdj48YnI+PC9kaXY+PGRpdj5JIHJl
+YWQgdGhhdCBhIGtlcm5lbCBhY2NlbGVyYXRpb24gbW9kdWxlIGlzIFdJUCBmcm9tJm5ic3A7PGEg
+aHJlZj0iaHR0cHM6Ly9vcGVudnBuLm5ldC9vcGVudnBuLWhhY2thdGhvbi0yMDE5LyI+aHR0cHM6
+Ly9vcGVudnBuLm5ldC9vcGVudnBuLWhhY2thdGhvbi0yMDE5LzwvYT4uIEl0J3MgdmVyeSBleGNp
+dGluZyBiZWNhdXNlIHBlcmZvcm1hbmNlIHdpbGwgaGF2ZSBtdWNoIGltcHJvdmVtZW50LjwvZGl2
+PjxkaXY+SWYgeW91IGRvbid0IG1pbmQsIHdvdWxkIHlvdSBzaGFyZSB1cyBzb21lIGxhc3Rlc3Qg
+bmV3cyBiZWNhdXNlIGl0IHNlZW1zIHRoYXQgbm8gbW9yZSBuZXdzIGlzIGZvdW5kIGFmdGVyIEdv
+b2dsZT8gVGhhbmtzIGEgbG90ISZuYnNwOzwvZGl2PjxkaXY+PGJyPjwvZGl2PjxkaXY+VG9ueTwv
+ZGl2Pg==
 
-Gava
+------=_NextPart_5F4C9614_102BCDF8_2CFB5DD2--
 
-On Sun, Aug 30, 2020 at 5:37 PM Gert Doering <gert@...1296...> wrote:
 
-> Hi,
->
-> On Sun, Aug 30, 2020 at 02:07:03PM +0200, Gert Doering wrote:
-> > On Sat, Aug 29, 2020 at 09:42:46PM -0300, Rafael Gava wrote:
-> [..]
-> > If it still doesn't do that, you found a new bug :-)
->
-> So - patch has been merged, and I think I have set up an appropriate
-> testbed to verify this (2.5/master talking to 2.3.18 with OCC enabled).
->
-> With Arne's (v2) patch it is no longer failing.
->
-> Can you re-test your scenarios, please?
->
-> gert
->
-> --
-> "If was one thing all people took for granted, was conviction that if you
->  feed honest figures into a computer, honest figures come out. Never
-> doubted
->  it myself till I met a computer with a sense of humor."
->                              Robert A. Heinlein, The Moon is a Harsh
-> Mistress
->
-> Gert Doering - Munich, Germany
-> gert@...1296...
->
 
---000000000000bb4f6a05ae217381
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Hi=C2=A0Gert,<div><br></div><div>Good news, it worked beau=
-tifully with tun and tap interfaces!=C2=A0</div><div><br></div><div>Thank y=
-ou very much!!!!</div><div><br></div><div>BR</div><div><br></div><div>Gava<=
-/div></div><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_a=
-ttr">On Sun, Aug 30, 2020 at 5:37 PM Gert Doering &lt;<a href=3D"mailto:ger=
-t@...1296...">gert@...1296...</a>&gt; wrote:<br></div><blockquote class=3D"=
-gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(20=
-4,204,204);padding-left:1ex">Hi,<br>
-<br>
-On Sun, Aug 30, 2020 at 02:07:03PM +0200, Gert Doering wrote:<br>
-&gt; On Sat, Aug 29, 2020 at 09:42:46PM -0300, Rafael Gava wrote:<br>
-[..]<br>
-&gt; If it still doesn&#39;t do that, you found a new bug :-)<br>
-<br>
-So - patch has been merged, and I think I have set up an appropriate<br>
-testbed to verify this (2.5/master talking to 2.3.18 with OCC enabled).<br>
-<br>
-With Arne&#39;s (v2) patch it is no longer failing.<br>
-<br>
-Can you re-test your scenarios, please?<br>
-<br>
-gert<br>
-<br>
--- <br>
-&quot;If was one thing all people took for granted, was conviction that if =
-you <br>
-=C2=A0feed honest figures into a computer, honest figures come out. Never d=
-oubted <br>
-=C2=A0it myself till I met a computer with a sense of humor.&quot;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Robert A. Heinlein, The Moon is a Harsh Mist=
-ress<br>
-<br>
-Gert Doering - Munich, Germany=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<a href=3D"mailt=
-o:gert@...1296..." target=3D"_blank">gert@...1296...</a><br>
-</blockquote></div>
-
---000000000000bb4f6a05ae217381--
 
