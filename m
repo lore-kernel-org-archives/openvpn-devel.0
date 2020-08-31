@@ -7,9 +7,9 @@ References: <20200814080619.2108-1-arne@...1227...>
  <20200830203720.GX75094@...1296...>
 In-Reply-To: <20200830203720.GX75094@...1296...>
 From: Rafael Gava <gava100@...277...>
-Date: Sun, 30 Aug 2020 18:58:52 -0300
-Message-ID: <CAAWBBYOaN2yo-jUXmNL9c8_MvSSY_qzi1NKp-wpT9goYTHu8dg@...278...>
-Content-Type: multipart/alternative; boundary="000000000000e8c81a05ae1f644d"
+Date: Sun, 30 Aug 2020 21:26:10 -0300
+Message-ID: <CAAWBBYMnFOBo4pp_iZ-KnYu7pHbiLqYQJ3rKO1RF+yXcvivgYg@...278...>
+Content-Type: multipart/alternative; boundary="000000000000bb4f6a05ae217381"
 Subject: Re: [Openvpn-devel] [PATCH] Fix client's poor man NCP fallback
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -22,22 +22,18 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Gert Doering <gert@...1296...>
 Cc: Arne Schwabe <arne@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---000000000000e8c81a05ae1f644d
+--000000000000bb4f6a05ae217381
 Content-Type: text/plain; charset="UTF-8"
 
 Hi Gert,
 
-thanks for the prompt fix.
+Good news, it worked beautifully with tun and tap interfaces!
 
-Our server is an old appliance and I really don't know if it was compiled
-with "enable-small". I'll try to figure that. :-)
-
-Sure, I'll try the fix and let you know ASAP.
+Thank you very much!!!!
 
 BR
 
 Gava
-
 
 On Sun, Aug 30, 2020 at 5:37 PM Gert Doering <gert@...1296...> wrote:
 
@@ -69,20 +65,18 @@ On Sun, Aug 30, 2020 at 5:37 PM Gert Doering <gert@...1296...> wrote:
 > gert@...1296...
 >
 
---000000000000e8c81a05ae1f644d
+--000000000000bb4f6a05ae217381
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">Hi Gert,=C2=A0<div><br></div><div>thanks for the prompt fi=
-x.</div><div><br></div><div>Our server is an old appliance=C2=A0and I reall=
-y don&#39;t know if it was compiled with &quot;enable-small&quot;. I&#39;ll=
- try to figure that. :-)</div><div><br></div><div>Sure, I&#39;ll try the fi=
-x and let you know ASAP.</div><div><br></div><div>BR</div><div><br></div><d=
-iv>Gava</div><div><br></div></div><br><div class=3D"gmail_quote"><div dir=
-=3D"ltr" class=3D"gmail_attr">On Sun, Aug 30, 2020 at 5:37 PM Gert Doering =
-&lt;<a href=3D"mailto:gert@...1296...">gert@...1296...</a>&gt; wrote:<br></=
-div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;bor=
-der-left:1px solid rgb(204,204,204);padding-left:1ex">Hi,<br>
+<div dir=3D"ltr">Hi=C2=A0Gert,<div><br></div><div>Good news, it worked beau=
+tifully with tun and tap interfaces!=C2=A0</div><div><br></div><div>Thank y=
+ou very much!!!!</div><div><br></div><div>BR</div><div><br></div><div>Gava<=
+/div></div><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_a=
+ttr">On Sun, Aug 30, 2020 at 5:37 PM Gert Doering &lt;<a href=3D"mailto:ger=
+t@...1296...">gert@...1296...</a>&gt; wrote:<br></div><blockquote class=3D"=
+gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(20=
+4,204,204);padding-left:1ex">Hi,<br>
 <br>
 On Sun, Aug 30, 2020 at 02:07:03PM +0200, Gert Doering wrote:<br>
 &gt; On Sat, Aug 29, 2020 at 09:42:46PM -0300, Rafael Gava wrote:<br>
@@ -113,5 +107,5 @@ Gert Doering - Munich, Germany=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
 o:gert@...1296..." target=3D"_blank">gert@...1296...</a><br>
 </blockquote></div>
 
---000000000000e8c81a05ae1f644d--
+--000000000000bb4f6a05ae217381--
 
