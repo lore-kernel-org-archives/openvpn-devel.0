@@ -1,11 +1,11 @@
 From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <22a91a88-9555-ef6a-2941-22adfc7f9788@...515...>
-Date: Tue, 1 Sep 2020 17:16:08 +0300
+Message-ID: <b99b879f-d0c1-af75-b2f9-cda3fa5ef526@...515...>
+Date: Tue, 1 Sep 2020 20:11:11 +0300
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="tWtp7nR61kKUDO1wRsll4CsY0xDKUSzfx"
-Subject: [Openvpn-devel] OpenVPN 2.5-beta3 released
+ boundary="1CSVVb4aktfsjmtILFhbLcAPPs7XKv5mH"
+Subject: [Openvpn-devel] Community meetings in September 2020
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,99 +14,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, openvpn-announce@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---tWtp7nR61kKUDO1wRsll4CsY0xDKUSzfx
-Content-Type: multipart/mixed; boundary="3eZJVVLwos1aVd9lnueAf7dtk0023GSzL"
+--1CSVVb4aktfsjmtILFhbLcAPPs7XKv5mH
+Content-Type: multipart/mixed; boundary="lyX4ZHdnDx7djQIY8mF9fOUBJ0WgkTD7k"
 
---3eZJVVLwos1aVd9lnueAf7dtk0023GSzL
+--lyX4ZHdnDx7djQIY8mF9fOUBJ0WgkTD7k
 Content-Language: en-US
-Content-Type: text/plain; charset="iso-8859-15"
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-The OpenVPN community project team is proud to release OpenVPN
-2.5-beta3. Source code and Windows installers can be downloaded from
+---
 
-<https://openvpn.net/community-downloads/>
+Hi,
 
-Debian and Ubuntu packages are available in the official apt repositories:
+Our community meetings will alternate between Wed 11:30 CET and Thu
+20:00 CET.
 
-<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos>
+Next meetings have been scheduled to
 
-On RedHat derivatives we recommend using the Fedora Copr repository:
+- Wed 2nd September 11:30 CET
+- Thu 10th September 20:00 CET
+- Wed 16th September 11:30 CET
+- Thu 24th September 20:00 CET
+- Wed 30th September 11:30 CET
 
-<https://copr.fedorainfracloud.org/coprs/dsommers/openvpn-beta>
+The place is #openvpn-meeting IRC channel at Freenode. Meeting agendas
+and summaries are in here:
 
-This release includes fixes to MSI packaging and client NCP OCP fallback
-behavior.
+<https://community.openvpn.net/openvpn/wiki/IrcMeetings>
 
-OpenVPN 2.5 is a new major release with many new features:
-
-    - Client-specific tls-crypt keys (--tls-crypt-v2)
-    - Added support for using the ChaCha20-Poly1305 cipher in the
-OpenVPN data channel
-    - Improved Data channel cipher negotiation
-    - Removal of BF-CBC support in default configuration
-    - Asynchronous (deferred) authentication support for auth-pam plugin
-    - Deferred client-connect
-    - Faster connection setup
-    - Netlink support
-    - Wintun support
-    - IPv6-only operation
-    - Improved Windows 10 detection
-    - Linux VRF support
-    - TLS 1.3 support
-    - Support setting DHCP search domain
-    - Handle setting of tun/tap interface MTU on Windows
-    - HMAC based auth-token support
-    - VLAN support
-    - Support building of .msi installers for Windows
-    - Allow unicode search string in --cryptoapicert option (Windows)
-    - Support IPv4 configs with /31 netmasks now
-    - New option --block-ipv6 to reject all IPv6 packets (ICMPv6)
-    - IPv4-only VPN
-
-More details on these new features as well as a list of deprecated
-features and user-visible changes are available in Changes.rst:
-
-<https://github.com/OpenVPN/openvpn/blob/release/2.5/Changes.rst>
-
-For generic help use these support channels:
-
-Official documentation:
-<http://openvpn.net/index.php/open-source/documentation/howto.html>
-Wiki: <https://community.openvpn.net>
-Forums: <https://forums.openvpn.net>
-User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
-User IRC channel: #openvpn at irc.freenode.net
-
-Please report bugs and ask development questions here:
-
-Bug tracker and wiki: <https://community.openvpn.net>
-Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
-Developer IRC channel: #openvpn-devel at irc.freenode.net (requires
-Freenode registration)
+Samuli
 
 
---3eZJVVLwos1aVd9lnueAf7dtk0023GSzL--
 
---tWtp7nR61kKUDO1wRsll4CsY0xDKUSzfx
+
+
+
+
+
+
+
+
+
+
+--lyX4ZHdnDx7djQIY8mF9fOUBJ0WgkTD7k--
+
+--1CSVVb4aktfsjmtILFhbLcAPPs7XKv5mH
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAl9OV6gACgkQKVhNn0CG
-RXiaJgf+PKNyGe+WhVheFARttaR/KXRK0hahkBxOOLLgbbBhbPiwzOPI6VvVvIFn
-FyO/kuhIIqqSHJn2nw4wruHvS48RrRJKpjjk0LHy5MYMPgxekiPmulJQRj+tqdmJ
-kxLNpFzbmxOx1SBS8X594N3S16lFrHKaUVud8UJvFrNvNWbn5cKC8KheL1yfgKEE
-uXg1KwlLTgVc0mvRo80h99CK6EfWiUzfiCPg4dLdm7f6usr/RG0BNx5W3BCLyQwU
-VjPV58TOdBroriLrQ43jGIMF6gf0QPCIsnlfqPUr5YVaojSMZXAylOeDEGd6I7IP
-E64zJpCJkSPdHkXrDUVUtFVcZB7MOQ==
-=muBm
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAl9OgK8ACgkQKVhNn0CG
+RXjJtggAjpDn25NrT+6kQPrOik0++apCyRcMQ64EemqgJkLsGtj1BQIpvWt2cggc
+kmXK3uNKR2vcEZhDxS/VjyAvkLlZTnCqCXCtbKuvZhsAmPLGGUC6Awju+4jc7ad+
+3Xe+Bv4GvY/H4r62O0KgTAwP8KiujBmUWMgbeHi9i9+asq7shvsK4VG3uDsrHU9+
+Fot9hPkmlSwZCzMREVnGcaXiGm5OoEZ/93WEEondEfnx6lfBiGQYsmXydIuTB4uE
+75zwUTMuWwbYiyRvZ97yh8at24U9uQeOfhkb59DXNYnxN1Ty8OdM761KwQpSCrCJ
+AyLr4hM+24/X0yyTWhWzDTPE+AxZng==
+=BK3i
 -----END PGP SIGNATURE-----
 
---tWtp7nR61kKUDO1wRsll4CsY0xDKUSzfx--
+--1CSVVb4aktfsjmtILFhbLcAPPs7XKv5mH--
 
