@@ -1,18 +1,11 @@
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <22a91a88-9555-ef6a-2941-22adfc7f9788@...515...>
+Date: Tue, 1 Sep 2020 17:16:08 +0300
 MIME-Version: 1.0
-References: <20200814080619.2108-1-arne@...1227...>
- <CAAWBBYM2+4FqN-HyV9W19fJfAHKd9K4KHhnQFz2_5f3tzdvMFA@...278...>
- <20200829194728.GU75094@...1296...>
- <CAAWBBYM+8YfP9-nwAsPYM806CzQXoy_5d+9MLkfyGPatE3BTAQ@...278...>
- <20200830120703.GV75094@...1296...>
- <20200830203720.GX75094@...1296...>
- <CAAWBBYMnFOBo4pp_iZ-KnYu7pHbiLqYQJ3rKO1RF+yXcvivgYg@...278...>
- <20200831132357.GZ75094@...1296...>
-In-Reply-To: <20200831132357.GZ75094@...1296...>
-From: Rafael Gava <gava100@...277...>
-Date: Mon, 31 Aug 2020 11:12:37 -0300
-Message-ID: <CAAWBBYNLPWmjJ3whY6FAj2G8tT_qkPWZR-gUsKFHe1memta2Og@...278...>
-Content-Type: multipart/alternative; boundary="00000000000054895b05ae2cff4a"
-Subject: Re: [Openvpn-devel] [PATCH] Fix client's poor man NCP fallback
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="tWtp7nR61kKUDO1wRsll4CsY0xDKUSzfx"
+Subject: [Openvpn-devel] OpenVPN 2.5-beta3 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,86 +14,99 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: Arne Schwabe <arne@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, openvpn-announce@lists.sourceforge.net
 
---00000000000054895b05ae2cff4a
-Content-Type: text/plain; charset="UTF-8"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--tWtp7nR61kKUDO1wRsll4CsY0xDKUSzfx
+Content-Type: multipart/mixed; boundary="3eZJVVLwos1aVd9lnueAf7dtk0023GSzL"
 
-Hi Gert,
-
-Glad that we could help! :-)
-
-If you guys need anything else that we can help, please let us know.
-
-BR
-
-Gava
-
-On Mon, Aug 31, 2020 at 10:23 AM Gert Doering <gert@...1296...> wrote:
-
-> Hi,
->
-> On Sun, Aug 30, 2020 at 09:26:10PM -0300, Rafael Gava wrote:
-> > Good news, it worked beautifully with tun and tap interfaces!
-> >
-> > Thank you very much!!!!
->
-> Cool, thanks for testing.  I have just tagged 2.5_beta3, and lev/mattock
-> will go about building a beta3 .msi with it (and hopefully lots of other
-> windows specific fixes :-) ).
->
-> gert
-> --
-> "If was one thing all people took for granted, was conviction that if you
->  feed honest figures into a computer, honest figures come out. Never
-> doubted
->  it myself till I met a computer with a sense of humor."
->                              Robert A. Heinlein, The Moon is a Harsh
-> Mistress
->
-> Gert Doering - Munich, Germany
-> gert@...1296...
->
-
---00000000000054895b05ae2cff4a
-Content-Type: text/html; charset="UTF-8"
+--3eZJVVLwos1aVd9lnueAf7dtk0023GSzL
+Content-Language: en-US
+Content-Type: text/plain; charset="iso-8859-15"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div>Hi Gert,=C2=A0</div><div><br></div><div>Glad that we =
-could help! :-)</div><div><br></div><div>If you guys need anything else tha=
-t we can help, please let us know.</div><div><br></div><div>BR</div><div><b=
-r></div><div>Gava</div></div><br><div class=3D"gmail_quote"><div dir=3D"ltr=
-" class=3D"gmail_attr">On Mon, Aug 31, 2020 at 10:23 AM Gert Doering &lt;<a=
- href=3D"mailto:gert@...1296...">gert@...1296...</a>&gt; wrote:<br></div><b=
-lockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-le=
-ft:1px solid rgb(204,204,204);padding-left:1ex">Hi,<br>
-<br>
-On Sun, Aug 30, 2020 at 09:26:10PM -0300, Rafael Gava wrote:<br>
-&gt; Good news, it worked beautifully with tun and tap interfaces!<br>
-&gt; <br>
-&gt; Thank you very much!!!!<br>
-<br>
-Cool, thanks for testing.=C2=A0 I have just tagged 2.5_beta3, and lev/matto=
-ck<br>
-will go about building a beta3 .msi with it (and hopefully lots of other<br>
-windows specific fixes :-) ).<br>
-<br>
-gert<br>
--- <br>
-&quot;If was one thing all people took for granted, was conviction that if =
-you <br>
-=C2=A0feed honest figures into a computer, honest figures come out. Never d=
-oubted <br>
-=C2=A0it myself till I met a computer with a sense of humor.&quot;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Robert A. Heinlein, The Moon is a Harsh Mist=
-ress<br>
-<br>
-Gert Doering - Munich, Germany=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<a href=3D"mailt=
-o:gert@...1296..." target=3D"_blank">gert@...1296...</a><br>
-</blockquote></div>
+The OpenVPN community project team is proud to release OpenVPN
+2.5-beta3. Source code and Windows installers can be downloaded from
 
---00000000000054895b05ae2cff4a--
+<https://openvpn.net/community-downloads/>
+
+Debian and Ubuntu packages are available in the official apt repositories:
+
+<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos>
+
+On RedHat derivatives we recommend using the Fedora Copr repository:
+
+<https://copr.fedorainfracloud.org/coprs/dsommers/openvpn-beta>
+
+This release includes fixes to MSI packaging and client NCP OCP fallback
+behavior.
+
+OpenVPN 2.5 is a new major release with many new features:
+
+    - Client-specific tls-crypt keys (--tls-crypt-v2)
+    - Added support for using the ChaCha20-Poly1305 cipher in the
+OpenVPN data channel
+    - Improved Data channel cipher negotiation
+    - Removal of BF-CBC support in default configuration
+    - Asynchronous (deferred) authentication support for auth-pam plugin
+    - Deferred client-connect
+    - Faster connection setup
+    - Netlink support
+    - Wintun support
+    - IPv6-only operation
+    - Improved Windows 10 detection
+    - Linux VRF support
+    - TLS 1.3 support
+    - Support setting DHCP search domain
+    - Handle setting of tun/tap interface MTU on Windows
+    - HMAC based auth-token support
+    - VLAN support
+    - Support building of .msi installers for Windows
+    - Allow unicode search string in --cryptoapicert option (Windows)
+    - Support IPv4 configs with /31 netmasks now
+    - New option --block-ipv6 to reject all IPv6 packets (ICMPv6)
+    - IPv4-only VPN
+
+More details on these new features as well as a list of deprecated
+features and user-visible changes are available in Changes.rst:
+
+<https://github.com/OpenVPN/openvpn/blob/release/2.5/Changes.rst>
+
+For generic help use these support channels:
+
+Official documentation:
+<http://openvpn.net/index.php/open-source/documentation/howto.html>
+Wiki: <https://community.openvpn.net>
+Forums: <https://forums.openvpn.net>
+User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+User IRC channel: #openvpn at irc.freenode.net
+
+Please report bugs and ask development questions here:
+
+Bug tracker and wiki: <https://community.openvpn.net>
+Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+Developer IRC channel: #openvpn-devel at irc.freenode.net (requires
+Freenode registration)
+
+
+--3eZJVVLwos1aVd9lnueAf7dtk0023GSzL--
+
+--tWtp7nR61kKUDO1wRsll4CsY0xDKUSzfx
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEbQT48bAXMRH0mXleKVhNn0CGRXgFAl9OV6gACgkQKVhNn0CG
+RXiaJgf+PKNyGe+WhVheFARttaR/KXRK0hahkBxOOLLgbbBhbPiwzOPI6VvVvIFn
+FyO/kuhIIqqSHJn2nw4wruHvS48RrRJKpjjk0LHy5MYMPgxekiPmulJQRj+tqdmJ
+kxLNpFzbmxOx1SBS8X594N3S16lFrHKaUVud8UJvFrNvNWbn5cKC8KheL1yfgKEE
+uXg1KwlLTgVc0mvRo80h99CK6EfWiUzfiCPg4dLdm7f6usr/RG0BNx5W3BCLyQwU
+VjPV58TOdBroriLrQ43jGIMF6gf0QPCIsnlfqPUr5YVaojSMZXAylOeDEGd6I7IP
+E64zJpCJkSPdHkXrDUVUtFVcZB7MOQ==
+=muBm
+-----END PGP SIGNATURE-----
+
+--tWtp7nR61kKUDO1wRsll4CsY0xDKUSzfx--
 
