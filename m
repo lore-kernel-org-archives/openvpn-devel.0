@@ -1,14 +1,14 @@
-From: Simon Rozman <simon@...2293...>
-Date: Wed, 2 Sep 2020 14:32:06 +0000
-Message-ID: <fa595d8e8b9e446b91ee05cb783ac55c@...2293...>
-References: <20200902123938.188-1-lstipakov@...277...>
- <CAKuzo_hU94k2kKShBD5v+CB=3jhUT_FvxCHELZxBCMe5X_WDOw@...278...>
-In-Reply-To: <CAKuzo_hU94k2kKShBD5v+CB=3jhUT_FvxCHELZxBCMe5X_WDOw@...278...>
-Content-Language: en-US
-Content-Type: multipart/alternative;
- boundary="_000_fa595d8e8b9e446b91ee05cb783ac55crozmansi_"
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] openvpnmsica: remove adapter renaming
+References: <20200902133755.308-1-lstipakov@...277...>
+ <CAKuzo_hmoG=MfxsuefwJ5CUMHvXAYCH-n5A-DP4JsJsWBPr-qg@...278...>
+ <CAGyAFMVpyJ2tgwopvArJrteJcPCF2bE80ezbGXVgotpJQBsBYQ@...278...>
+ <CAKuzo_j1iQ=M1mKnnCvUcUxS5HfER_2OTmxooaORS1z684_Hew@...278...>
+In-Reply-To: <CAKuzo_j1iQ=M1mKnnCvUcUxS5HfER_2OTmxooaORS1z684_Hew@...278...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Wed, 2 Sep 2020 17:53:14 +0300
+Message-ID: <CAGyAFMX4nscyEfT0GGX8dNYVV8j_uLcO=k0XxZf8D1hqowD1wA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] openvpnmsica: make adapter renaming
+ non-fatal
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,99 +17,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>, Lev Stipakov <lstipakov@...277...>
-Cc: Lev Stipakov <lev@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Lev Stipakov <lev@...515...>
 
---_000_fa595d8e8b9e446b91ee05cb783ac55crozmansi_
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Hi,
 
-SGksDQoNCkFkYXB0ZXIgbmFtZSBhbHJlYWR5IGlzIGNvbmZpZ3VyYWJsZSBpbiBvcGVudnBuLWJ1
-aWxkL3dpbmRvd3MtbXNpL21zaS53eHM6IGh0dHBzOi8vZ2l0aHViLmNvbS9BbWViaXMvb3BlbnZw
-bi1idWlsZC9ibG9iLzVmNWJhODA3ZGUyYmFkNTBkMDFhNWIwOGRmYzZmYWQ5OGVlNDEyMTMvd2lu
-ZG93cy1tc2kvbXNpLnd4cyNMMTMwMA0KDQpSZWdhcmRzLCBTaW1vbg0KDQpGcm9tOiBTZWx2YSBO
-YWlyIDxzZWx2YS5uYWlyQC4uLjI3Ny4uLj4NClNlbnQ6IFdlZG5lc2RheSwgU2VwdGVtYmVyIDIs
-IDIwMjAgMzoxMiBQTQ0KVG86IExldiBTdGlwYWtvdiA8bHN0aXBha292QC4uLjI3Ny4uLj4NCkNj
-OiBMZXYgU3RpcGFrb3YgPGxldkAuLi41MTUuLi4+OyBvcGVudnBuLWRldmVsIDxvcGVudnBuLWRl
-dmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldD4NClN1YmplY3Q6IFJlOiBbT3BlbnZwbi1kZXZlbF0g
-W1BBVENIXSBvcGVudnBubXNpY2E6IHJlbW92ZSBhZGFwdGVyIHJlbmFtaW5nDQoNCkhpLA0KDQpJ
-IHdvdWxkIHN1Z2dlc3QgdG8ga2VlcCB0aGlzIHJlbmFtaW5nIGJ1dCBtYWtlIGl0IG5vdCBmYXRh
-bC4gQSBkZXNjcmlwdGl2ZSBuYW1lIGlzIG5pY2UgdG8gaGF2ZSBhbmQgd2UgY291bGQgZXZlbiBt
-YWtlIHRoZSBuYW1lIGNvbmZpZ3VyYWJsZSBhdCBzb21lIHBvaW50IGluIGZ1dHVyZS4NCg0KU2Vs
-dmENCg==
+>> Warning is printed inside tap_delete_adapter().
+>
+> tap_delete_adapter() is not called here.
 
---_000_fa595d8e8b9e446b91ee05cb783ac55crozmansi_
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: base64
+Right, I managed to mistype tap_set_adapter_name().
 
-PGh0bWwgeG1sbnM6dj0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp2bWwiIHhtbG5zOm89InVy
-bjpzY2hlbWFzLW1pY3Jvc29mdC1jb206b2ZmaWNlOm9mZmljZSIgeG1sbnM6dz0idXJuOnNjaGVt
-YXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6d29yZCIgeG1sbnM6bT0iaHR0cDovL3NjaGVtYXMubWlj
-cm9zb2Z0LmNvbS9vZmZpY2UvMjAwNC8xMi9vbW1sIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcv
-VFIvUkVDLWh0bWw0MCI+DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIg
-Y29udGVudD0idGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij4NCjxtZXRhIG5hbWU9IkdlbmVyYXRv
-ciIgY29udGVudD0iTWljcm9zb2Z0IFdvcmQgMTUgKGZpbHRlcmVkIG1lZGl1bSkiPg0KPHN0eWxl
-PjwhLS0NCi8qIEZvbnQgRGVmaW5pdGlvbnMgKi8NCkBmb250LWZhY2UNCgl7Zm9udC1mYW1pbHk6
-IkNhbWJyaWEgTWF0aCI7DQoJcGFub3NlLTE6MiA0IDUgMyA1IDQgNiAzIDIgNDt9DQpAZm9udC1m
-YWNlDQoJe2ZvbnQtZmFtaWx5OkNhbGlicmk7DQoJcGFub3NlLTE6MiAxNSA1IDIgMiAyIDQgMyAy
-IDQ7fQ0KQGZvbnQtZmFjZQ0KCXtmb250LWZhbWlseTpDb25zb2xhczsNCglwYW5vc2UtMToyIDEx
-IDYgOSAyIDIgNCAzIDIgNDt9DQovKiBTdHlsZSBEZWZpbml0aW9ucyAqLw0KcC5Nc29Ob3JtYWws
-IGxpLk1zb05vcm1hbCwgZGl2Lk1zb05vcm1hbA0KCXttYXJnaW46MGNtOw0KCWZvbnQtc2l6ZTox
-MS4wcHQ7DQoJZm9udC1mYW1pbHk6IkNhbGlicmkiLHNhbnMtc2VyaWY7fQ0KYTpsaW5rLCBzcGFu
-Lk1zb0h5cGVybGluaw0KCXttc28tc3R5bGUtcHJpb3JpdHk6OTk7DQoJY29sb3I6Ymx1ZTsNCgl0
-ZXh0LWRlY29yYXRpb246dW5kZXJsaW5lO30NCnNwYW4uRW1haWxTdHlsZTE5DQoJe21zby1zdHls
-ZS10eXBlOnBlcnNvbmFsLXJlcGx5Ow0KCWZvbnQtZmFtaWx5OiJDYWxpYnJpIixzYW5zLXNlcmlm
-Ow0KCWNvbG9yOndpbmRvd3RleHQ7fQ0KLk1zb0NocERlZmF1bHQNCgl7bXNvLXN0eWxlLXR5cGU6
-ZXhwb3J0LW9ubHk7DQoJZm9udC1mYW1pbHk6IkNhbGlicmkiLHNhbnMtc2VyaWY7DQoJbXNvLWZh
-cmVhc3QtbGFuZ3VhZ2U6RU4tVVM7fQ0KQHBhZ2UgV29yZFNlY3Rpb24xDQoJe3NpemU6NjEyLjBw
-dCA3OTIuMHB0Ow0KCW1hcmdpbjo3MC44NXB0IDcwLjg1cHQgNzAuODVwdCA3MC44NXB0O30NCmRp
-di5Xb3JkU2VjdGlvbjENCgl7cGFnZTpXb3JkU2VjdGlvbjE7fQ0KLS0+PC9zdHlsZT48IS0tW2lm
-IGd0ZSBtc28gOV0+PHhtbD4NCjxvOnNoYXBlZGVmYXVsdHMgdjpleHQ9ImVkaXQiIHNwaWRtYXg9
-IjEwMjYiIC8+DQo8L3htbD48IVtlbmRpZl0tLT48IS0tW2lmIGd0ZSBtc28gOV0+PHhtbD4NCjxv
-OnNoYXBlbGF5b3V0IHY6ZXh0PSJlZGl0Ij4NCjxvOmlkbWFwIHY6ZXh0PSJlZGl0IiBkYXRhPSIx
-IiAvPg0KPC9vOnNoYXBlbGF5b3V0PjwveG1sPjwhW2VuZGlmXS0tPg0KPC9oZWFkPg0KPGJvZHkg
-bGFuZz0iU0wiIGxpbms9ImJsdWUiIHZsaW5rPSJwdXJwbGUiPg0KPGRpdiBjbGFzcz0iV29yZFNl
-Y3Rpb24xIj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIGxhbmc9IkVOLUdCIiBzdHlsZT0i
-bXNvLWZhcmVhc3QtbGFuZ3VhZ2U6RU4tVVMiPkhpLDxvOnA+PC9vOnA+PC9zcGFuPjwvcD4NCjxw
-IGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIGxhbmc9IkVOLUdCIiBzdHlsZT0ibXNvLWZhcmVhc3Qt
-bGFuZ3VhZ2U6RU4tVVMiPjxvOnA+Jm5ic3A7PC9vOnA+PC9zcGFuPjwvcD4NCjxwIGNsYXNzPSJN
-c29Ob3JtYWwiPjxzcGFuIGxhbmc9IkVOLUdCIiBzdHlsZT0ibXNvLWZhcmVhc3QtbGFuZ3VhZ2U6
-RU4tVVMiPkFkYXB0ZXIgbmFtZQ0KPGk+YWxyZWFkeSBpczwvaT4gY29uZmlndXJhYmxlIGluIG9w
-ZW52cG4tYnVpbGQvd2luZG93cy1tc2kvbXNpLnd4czogPGEgaHJlZj0iaHR0cHM6Ly9naXRodWIu
-Y29tL0FtZWJpcy9vcGVudnBuLWJ1aWxkL2Jsb2IvNWY1YmE4MDdkZTJiYWQ1MGQwMWE1YjA4ZGZj
-NmZhZDk4ZWU0MTIxMy93aW5kb3dzLW1zaS9tc2kud3hzI0wxMzAwIj4NCmh0dHBzOi8vZ2l0aHVi
-LmNvbS9BbWViaXMvb3BlbnZwbi1idWlsZC9ibG9iLzVmNWJhODA3ZGUyYmFkNTBkMDFhNWIwOGRm
-YzZmYWQ5OGVlNDEyMTMvd2luZG93cy1tc2kvbXNpLnd4cyNMMTMwMDwvYT48bzpwPjwvbzpwPjwv
-c3Bhbj48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48c3BhbiBsYW5nPSJFTi1HQiIgc3R5bGU9
-Im1zby1mYXJlYXN0LWxhbmd1YWdlOkVOLVVTIj48bzpwPiZuYnNwOzwvbzpwPjwvc3Bhbj48L3A+
-DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48c3BhbiBsYW5nPSJFTi1HQiIgc3R5bGU9Im1zby1mYXJl
-YXN0LWxhbmd1YWdlOkVOLVVTIj5SZWdhcmRzLCBTaW1vbjxvOnA+PC9vOnA+PC9zcGFuPjwvcD4N
-CjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIGxhbmc9IkVOLUdCIiBzdHlsZT0ibXNvLWZhcmVh
-c3QtbGFuZ3VhZ2U6RU4tVVMiPjxvOnA+Jm5ic3A7PC9vOnA+PC9zcGFuPjwvcD4NCjxkaXYgc3R5
-bGU9ImJvcmRlcjpub25lO2JvcmRlci1sZWZ0OnNvbGlkIGJsdWUgMS41cHQ7cGFkZGluZzowY20g
-MGNtIDBjbSA0LjBwdCI+DQo8ZGl2Pg0KPGRpdiBzdHlsZT0iYm9yZGVyOm5vbmU7Ym9yZGVyLXRv
-cDpzb2xpZCAjRTFFMUUxIDEuMHB0O3BhZGRpbmc6My4wcHQgMGNtIDBjbSAwY20iPg0KPHAgY2xh
-c3M9Ik1zb05vcm1hbCI+PGI+PHNwYW4gbGFuZz0iRU4tR0IiPkZyb206PC9zcGFuPjwvYj48c3Bh
-biBsYW5nPSJFTi1HQiI+IFNlbHZhIE5haXIgJmx0O3NlbHZhLm5haXJALi4uMjc3Li4uJmd0Ow0K
-PGJyPg0KPGI+U2VudDo8L2I+IFdlZG5lc2RheSwgU2VwdGVtYmVyIDIsIDIwMjAgMzoxMiBQTTxi
-cj4NCjxiPlRvOjwvYj4gTGV2IFN0aXBha292ICZsdDtsc3RpcGFrb3ZALi4uMjc3Li4uJmd0Ozxi
-cj4NCjxiPkNjOjwvYj4gTGV2IFN0aXBha292ICZsdDtsZXZALi4uNTE1Li4uJmd0Ozsgb3BlbnZw
-bi1kZXZlbCAmbHQ7b3BlbnZwbi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQmZ3Q7PGJyPg0K
-PGI+U3ViamVjdDo8L2I+IFJlOiBbT3BlbnZwbi1kZXZlbF0gW1BBVENIXSBvcGVudnBubXNpY2E6
-IHJlbW92ZSBhZGFwdGVyIHJlbmFtaW5nPG86cD48L286cD48L3NwYW4+PC9wPg0KPC9kaXY+DQo8
-L2Rpdj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIGxhbmc9IkVOLUdCIj48bzpwPiZuYnNw
-OzwvbzpwPjwvc3Bhbj48L3A+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PHNwYW4gbGFu
-Zz0iRU4tR0IiPkhpLDxvOnA+PC9vOnA+PC9zcGFuPjwvcD4NCjxkaXY+DQo8cCBjbGFzcz0iTXNv
-Tm9ybWFsIj48c3BhbiBsYW5nPSJFTi1HQiI+PG86cD4mbmJzcDs8L286cD48L3NwYW4+PC9wPg0K
-PGRpdj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIGxhbmc9IkVOLUdCIj5JIHdvdWxkIHN1
-Z2dlc3QgdG8ga2VlcCB0aGlzIHJlbmFtaW5nIGJ1dCBtYWtlIGl0IG5vdCBmYXRhbC4gQSBkZXNj
-cmlwdGl2ZSZuYnNwO25hbWUgaXMgbmljZSB0byBoYXZlIGFuZCB3ZSBjb3VsZCBldmVuIG1ha2Ug
-dGhlIG5hbWUgY29uZmlndXJhYmxlIGF0IHNvbWUgcG9pbnQgaW4gZnV0dXJlLiZuYnNwOzxvOnA+
-PC9vOnA+PC9zcGFuPjwvcD4NCjwvZGl2Pg0KPC9kaXY+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05v
-cm1hbCI+PHNwYW4gbGFuZz0iRU4tR0IiPjxvOnA+Jm5ic3A7PC9vOnA+PC9zcGFuPjwvcD4NCjwv
-ZGl2Pg0KPGRpdj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIGxhbmc9IkVOLUdCIj5TZWx2
-YTxvOnA+PC9vOnA+PC9zcGFuPjwvcD4NCjwvZGl2Pg0KPC9kaXY+DQo8L2Rpdj4NCjwvZGl2Pg0K
-PC9ib2R5Pg0KPC9odG1sPg0K
+> I was suggesting that if we do check the return value, let us also print a warning
+> that renaming failed. That can't be done anywhere except just before converting the error
+> to SUCCESS.
 
---_000_fa595d8e8b9e446b91ee05cb783ac55crozmansi_--
+I realized that warning inside tap_set_adapter_name() also
+displays a messagebox, which we probably don't want to show.
+
+I'll send a v2 which prints warning and doesn't display a messagebox.
+
+-- 
+-Lev
 
