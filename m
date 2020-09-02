@@ -1,14 +1,14 @@
+From: Simon Rozman <simon@...2293...>
+Date: Wed, 2 Sep 2020 14:32:06 +0000
+Message-ID: <fa595d8e8b9e446b91ee05cb783ac55c@...2293...>
+References: <20200902123938.188-1-lstipakov@...277...>
+ <CAKuzo_hU94k2kKShBD5v+CB=3jhUT_FvxCHELZxBCMe5X_WDOw@...278...>
+In-Reply-To: <CAKuzo_hU94k2kKShBD5v+CB=3jhUT_FvxCHELZxBCMe5X_WDOw@...278...>
+Content-Language: en-US
+Content-Type: multipart/alternative;
+ boundary="_000_fa595d8e8b9e446b91ee05cb783ac55crozmansi_"
 MIME-Version: 1.0
-References: <20200902133755.308-1-lstipakov@...277...>
- <CAKuzo_hmoG=MfxsuefwJ5CUMHvXAYCH-n5A-DP4JsJsWBPr-qg@...278...>
- <CAGyAFMVpyJ2tgwopvArJrteJcPCF2bE80ezbGXVgotpJQBsBYQ@...278...>
-In-Reply-To: <CAGyAFMVpyJ2tgwopvArJrteJcPCF2bE80ezbGXVgotpJQBsBYQ@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 2 Sep 2020 10:22:43 -0400
-Message-ID: <CAKuzo_j1iQ=M1mKnnCvUcUxS5HfER_2OTmxooaORS1z684_Hew@...278...>
-Content-Type: multipart/alternative; boundary="0000000000008a878505ae555f77"
-Subject: Re: [Openvpn-devel] [PATCH] openvpnmsica: make adapter renaming
- non-fatal
+Subject: Re: [Openvpn-devel] [PATCH] openvpnmsica: remove adapter renaming
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,95 +17,99 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Lev Stipakov <lev@...515...>
+To: Selva Nair <selva.nair@...277...>, Lev Stipakov <lstipakov@...277...>
+Cc: Lev Stipakov <lev@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---0000000000008a878505ae555f77
-Content-Type: text/plain; charset="UTF-8"
+--_000_fa595d8e8b9e446b91ee05cb783ac55crozmansi_
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 
-Hi
+SGksDQoNCkFkYXB0ZXIgbmFtZSBhbHJlYWR5IGlzIGNvbmZpZ3VyYWJsZSBpbiBvcGVudnBuLWJ1
+aWxkL3dpbmRvd3MtbXNpL21zaS53eHM6IGh0dHBzOi8vZ2l0aHViLmNvbS9BbWViaXMvb3BlbnZw
+bi1idWlsZC9ibG9iLzVmNWJhODA3ZGUyYmFkNTBkMDFhNWIwOGRmYzZmYWQ5OGVlNDEyMTMvd2lu
+ZG93cy1tc2kvbXNpLnd4cyNMMTMwMA0KDQpSZWdhcmRzLCBTaW1vbg0KDQpGcm9tOiBTZWx2YSBO
+YWlyIDxzZWx2YS5uYWlyQC4uLjI3Ny4uLj4NClNlbnQ6IFdlZG5lc2RheSwgU2VwdGVtYmVyIDIs
+IDIwMjAgMzoxMiBQTQ0KVG86IExldiBTdGlwYWtvdiA8bHN0aXBha292QC4uLjI3Ny4uLj4NCkNj
+OiBMZXYgU3RpcGFrb3YgPGxldkAuLi41MTUuLi4+OyBvcGVudnBuLWRldmVsIDxvcGVudnBuLWRl
+dmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldD4NClN1YmplY3Q6IFJlOiBbT3BlbnZwbi1kZXZlbF0g
+W1BBVENIXSBvcGVudnBubXNpY2E6IHJlbW92ZSBhZGFwdGVyIHJlbmFtaW5nDQoNCkhpLA0KDQpJ
+IHdvdWxkIHN1Z2dlc3QgdG8ga2VlcCB0aGlzIHJlbmFtaW5nIGJ1dCBtYWtlIGl0IG5vdCBmYXRh
+bC4gQSBkZXNjcmlwdGl2ZSBuYW1lIGlzIG5pY2UgdG8gaGF2ZSBhbmQgd2UgY291bGQgZXZlbiBt
+YWtlIHRoZSBuYW1lIGNvbmZpZ3VyYWJsZSBhdCBzb21lIHBvaW50IGluIGZ1dHVyZS4NCg0KU2Vs
+dmENCg==
 
-On Wed, Sep 2, 2020 at 9:54 AM Lev Stipakov <lstipakov@...277...> wrote:
+--_000_fa595d8e8b9e446b91ee05cb783ac55crozmansi_
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: base64
 
-> Hi,
->
-> >>                  if (dwResult != ERROR_SUCCESS)
-> >>                  {
-> >> -                    tap_delete_adapter(NULL, &guidAdapter,
-> &bRebootRequired);
-> >> +                    /* failed renaming is not a fatal error, continue
-> */
-> >> +                    dwResult = ERROR_SUCCESS;
-> >
-> >
-> > This looks strange. If we are going to rewrite dwResult, why set it and
-> check it at all, just call
-> > tap_set_adapter() without storing the return value and add the comment.
->
-> I think this is good for documentation purposes - that we are aware
-> that function may fail, but in this case it is not fatal and we continue.
->
+PGh0bWwgeG1sbnM6dj0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp2bWwiIHhtbG5zOm89InVy
+bjpzY2hlbWFzLW1pY3Jvc29mdC1jb206b2ZmaWNlOm9mZmljZSIgeG1sbnM6dz0idXJuOnNjaGVt
+YXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6d29yZCIgeG1sbnM6bT0iaHR0cDovL3NjaGVtYXMubWlj
+cm9zb2Z0LmNvbS9vZmZpY2UvMjAwNC8xMi9vbW1sIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcv
+VFIvUkVDLWh0bWw0MCI+DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIg
+Y29udGVudD0idGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij4NCjxtZXRhIG5hbWU9IkdlbmVyYXRv
+ciIgY29udGVudD0iTWljcm9zb2Z0IFdvcmQgMTUgKGZpbHRlcmVkIG1lZGl1bSkiPg0KPHN0eWxl
+PjwhLS0NCi8qIEZvbnQgRGVmaW5pdGlvbnMgKi8NCkBmb250LWZhY2UNCgl7Zm9udC1mYW1pbHk6
+IkNhbWJyaWEgTWF0aCI7DQoJcGFub3NlLTE6MiA0IDUgMyA1IDQgNiAzIDIgNDt9DQpAZm9udC1m
+YWNlDQoJe2ZvbnQtZmFtaWx5OkNhbGlicmk7DQoJcGFub3NlLTE6MiAxNSA1IDIgMiAyIDQgMyAy
+IDQ7fQ0KQGZvbnQtZmFjZQ0KCXtmb250LWZhbWlseTpDb25zb2xhczsNCglwYW5vc2UtMToyIDEx
+IDYgOSAyIDIgNCAzIDIgNDt9DQovKiBTdHlsZSBEZWZpbml0aW9ucyAqLw0KcC5Nc29Ob3JtYWws
+IGxpLk1zb05vcm1hbCwgZGl2Lk1zb05vcm1hbA0KCXttYXJnaW46MGNtOw0KCWZvbnQtc2l6ZTox
+MS4wcHQ7DQoJZm9udC1mYW1pbHk6IkNhbGlicmkiLHNhbnMtc2VyaWY7fQ0KYTpsaW5rLCBzcGFu
+Lk1zb0h5cGVybGluaw0KCXttc28tc3R5bGUtcHJpb3JpdHk6OTk7DQoJY29sb3I6Ymx1ZTsNCgl0
+ZXh0LWRlY29yYXRpb246dW5kZXJsaW5lO30NCnNwYW4uRW1haWxTdHlsZTE5DQoJe21zby1zdHls
+ZS10eXBlOnBlcnNvbmFsLXJlcGx5Ow0KCWZvbnQtZmFtaWx5OiJDYWxpYnJpIixzYW5zLXNlcmlm
+Ow0KCWNvbG9yOndpbmRvd3RleHQ7fQ0KLk1zb0NocERlZmF1bHQNCgl7bXNvLXN0eWxlLXR5cGU6
+ZXhwb3J0LW9ubHk7DQoJZm9udC1mYW1pbHk6IkNhbGlicmkiLHNhbnMtc2VyaWY7DQoJbXNvLWZh
+cmVhc3QtbGFuZ3VhZ2U6RU4tVVM7fQ0KQHBhZ2UgV29yZFNlY3Rpb24xDQoJe3NpemU6NjEyLjBw
+dCA3OTIuMHB0Ow0KCW1hcmdpbjo3MC44NXB0IDcwLjg1cHQgNzAuODVwdCA3MC44NXB0O30NCmRp
+di5Xb3JkU2VjdGlvbjENCgl7cGFnZTpXb3JkU2VjdGlvbjE7fQ0KLS0+PC9zdHlsZT48IS0tW2lm
+IGd0ZSBtc28gOV0+PHhtbD4NCjxvOnNoYXBlZGVmYXVsdHMgdjpleHQ9ImVkaXQiIHNwaWRtYXg9
+IjEwMjYiIC8+DQo8L3htbD48IVtlbmRpZl0tLT48IS0tW2lmIGd0ZSBtc28gOV0+PHhtbD4NCjxv
+OnNoYXBlbGF5b3V0IHY6ZXh0PSJlZGl0Ij4NCjxvOmlkbWFwIHY6ZXh0PSJlZGl0IiBkYXRhPSIx
+IiAvPg0KPC9vOnNoYXBlbGF5b3V0PjwveG1sPjwhW2VuZGlmXS0tPg0KPC9oZWFkPg0KPGJvZHkg
+bGFuZz0iU0wiIGxpbms9ImJsdWUiIHZsaW5rPSJwdXJwbGUiPg0KPGRpdiBjbGFzcz0iV29yZFNl
+Y3Rpb24xIj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIGxhbmc9IkVOLUdCIiBzdHlsZT0i
+bXNvLWZhcmVhc3QtbGFuZ3VhZ2U6RU4tVVMiPkhpLDxvOnA+PC9vOnA+PC9zcGFuPjwvcD4NCjxw
+IGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIGxhbmc9IkVOLUdCIiBzdHlsZT0ibXNvLWZhcmVhc3Qt
+bGFuZ3VhZ2U6RU4tVVMiPjxvOnA+Jm5ic3A7PC9vOnA+PC9zcGFuPjwvcD4NCjxwIGNsYXNzPSJN
+c29Ob3JtYWwiPjxzcGFuIGxhbmc9IkVOLUdCIiBzdHlsZT0ibXNvLWZhcmVhc3QtbGFuZ3VhZ2U6
+RU4tVVMiPkFkYXB0ZXIgbmFtZQ0KPGk+YWxyZWFkeSBpczwvaT4gY29uZmlndXJhYmxlIGluIG9w
+ZW52cG4tYnVpbGQvd2luZG93cy1tc2kvbXNpLnd4czogPGEgaHJlZj0iaHR0cHM6Ly9naXRodWIu
+Y29tL0FtZWJpcy9vcGVudnBuLWJ1aWxkL2Jsb2IvNWY1YmE4MDdkZTJiYWQ1MGQwMWE1YjA4ZGZj
+NmZhZDk4ZWU0MTIxMy93aW5kb3dzLW1zaS9tc2kud3hzI0wxMzAwIj4NCmh0dHBzOi8vZ2l0aHVi
+LmNvbS9BbWViaXMvb3BlbnZwbi1idWlsZC9ibG9iLzVmNWJhODA3ZGUyYmFkNTBkMDFhNWIwOGRm
+YzZmYWQ5OGVlNDEyMTMvd2luZG93cy1tc2kvbXNpLnd4cyNMMTMwMDwvYT48bzpwPjwvbzpwPjwv
+c3Bhbj48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48c3BhbiBsYW5nPSJFTi1HQiIgc3R5bGU9
+Im1zby1mYXJlYXN0LWxhbmd1YWdlOkVOLVVTIj48bzpwPiZuYnNwOzwvbzpwPjwvc3Bhbj48L3A+
+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48c3BhbiBsYW5nPSJFTi1HQiIgc3R5bGU9Im1zby1mYXJl
+YXN0LWxhbmd1YWdlOkVOLVVTIj5SZWdhcmRzLCBTaW1vbjxvOnA+PC9vOnA+PC9zcGFuPjwvcD4N
+CjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIGxhbmc9IkVOLUdCIiBzdHlsZT0ibXNvLWZhcmVh
+c3QtbGFuZ3VhZ2U6RU4tVVMiPjxvOnA+Jm5ic3A7PC9vOnA+PC9zcGFuPjwvcD4NCjxkaXYgc3R5
+bGU9ImJvcmRlcjpub25lO2JvcmRlci1sZWZ0OnNvbGlkIGJsdWUgMS41cHQ7cGFkZGluZzowY20g
+MGNtIDBjbSA0LjBwdCI+DQo8ZGl2Pg0KPGRpdiBzdHlsZT0iYm9yZGVyOm5vbmU7Ym9yZGVyLXRv
+cDpzb2xpZCAjRTFFMUUxIDEuMHB0O3BhZGRpbmc6My4wcHQgMGNtIDBjbSAwY20iPg0KPHAgY2xh
+c3M9Ik1zb05vcm1hbCI+PGI+PHNwYW4gbGFuZz0iRU4tR0IiPkZyb206PC9zcGFuPjwvYj48c3Bh
+biBsYW5nPSJFTi1HQiI+IFNlbHZhIE5haXIgJmx0O3NlbHZhLm5haXJALi4uMjc3Li4uJmd0Ow0K
+PGJyPg0KPGI+U2VudDo8L2I+IFdlZG5lc2RheSwgU2VwdGVtYmVyIDIsIDIwMjAgMzoxMiBQTTxi
+cj4NCjxiPlRvOjwvYj4gTGV2IFN0aXBha292ICZsdDtsc3RpcGFrb3ZALi4uMjc3Li4uJmd0Ozxi
+cj4NCjxiPkNjOjwvYj4gTGV2IFN0aXBha292ICZsdDtsZXZALi4uNTE1Li4uJmd0Ozsgb3BlbnZw
+bi1kZXZlbCAmbHQ7b3BlbnZwbi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQmZ3Q7PGJyPg0K
+PGI+U3ViamVjdDo8L2I+IFJlOiBbT3BlbnZwbi1kZXZlbF0gW1BBVENIXSBvcGVudnBubXNpY2E6
+IHJlbW92ZSBhZGFwdGVyIHJlbmFtaW5nPG86cD48L286cD48L3NwYW4+PC9wPg0KPC9kaXY+DQo8
+L2Rpdj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIGxhbmc9IkVOLUdCIj48bzpwPiZuYnNw
+OzwvbzpwPjwvc3Bhbj48L3A+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PHNwYW4gbGFu
+Zz0iRU4tR0IiPkhpLDxvOnA+PC9vOnA+PC9zcGFuPjwvcD4NCjxkaXY+DQo8cCBjbGFzcz0iTXNv
+Tm9ybWFsIj48c3BhbiBsYW5nPSJFTi1HQiI+PG86cD4mbmJzcDs8L286cD48L3NwYW4+PC9wPg0K
+PGRpdj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIGxhbmc9IkVOLUdCIj5JIHdvdWxkIHN1
+Z2dlc3QgdG8ga2VlcCB0aGlzIHJlbmFtaW5nIGJ1dCBtYWtlIGl0IG5vdCBmYXRhbC4gQSBkZXNj
+cmlwdGl2ZSZuYnNwO25hbWUgaXMgbmljZSB0byBoYXZlIGFuZCB3ZSBjb3VsZCBldmVuIG1ha2Ug
+dGhlIG5hbWUgY29uZmlndXJhYmxlIGF0IHNvbWUgcG9pbnQgaW4gZnV0dXJlLiZuYnNwOzxvOnA+
+PC9vOnA+PC9zcGFuPjwvcD4NCjwvZGl2Pg0KPC9kaXY+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05v
+cm1hbCI+PHNwYW4gbGFuZz0iRU4tR0IiPjxvOnA+Jm5ic3A7PC9vOnA+PC9zcGFuPjwvcD4NCjwv
+ZGl2Pg0KPGRpdj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIGxhbmc9IkVOLUdCIj5TZWx2
+YTxvOnA+PC9vOnA+PC9zcGFuPjwvcD4NCjwvZGl2Pg0KPC9kaXY+DQo8L2Rpdj4NCjwvZGl2Pg0K
+PC9ib2R5Pg0KPC9odG1sPg0K
 
-That's achieved also by just adding a comment that we don't check the
-return value as failure is not fatal. Anyway, this works too.
-
-
->
-> > Or, better, print a warning message saying the rename failed.
->
-> Warning is printed inside tap_delete_adapter().
->
-
-tap_delete_adapter() is not called here. I was suggesting that if we do
-check the return value, let us also print a  warning that renaming failed.
-That can't be  done anywhere except just before converting the error
-to SUCCESS.
-
-Selva
-
---0000000000008a878505ae555f77
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div>Hi</div><br><div class=3D"gmail_quote"><div dir=3D"lt=
-r" class=3D"gmail_attr">On Wed, Sep 2, 2020 at 9:54 AM Lev Stipakov &lt;<a =
-href=3D"mailto:lstipakov@...277..." target=3D"_blank">lstipakov@...277...</=
-a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0p=
-x 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">Hi=
-,<br>
-<br>
-&gt;&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (=
-dwResult !=3D ERROR_SUCCESS)<br>
-&gt;&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
-&gt;&gt; -=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 tap_delete_adapter(NULL, &amp;guidAdapter, &amp;bRebootRequired);<br>
-&gt;&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 /* failed renaming is not a fatal error, continue */<br>
-&gt;&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 dwResult =3D ERROR_SUCCESS;<br>
-&gt;<br>
-&gt;<br>
-&gt; This looks strange. If we are going to rewrite dwResult, why set it an=
-d check it at all, just call<br>
-&gt; tap_set_adapter() without storing the return value and add the comment=
-.<br>
-<br>
-I think this is good for documentation purposes - that we are aware<br>
-that function may fail, but in this case it is not fatal and we continue.<b=
-r></blockquote><div><br></div><div>That&#39;s achieved also by just adding =
-a comment that we don&#39;t check the</div><div>return value as failure is =
-not fatal. Anyway, this works too.</div><div>=C2=A0</div><blockquote class=
-=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rg=
-b(204,204,204);padding-left:1ex">
-<br>
-&gt; Or, better, print a warning message saying the rename failed.<br>
-<br>
-Warning is printed inside tap_delete_adapter().<br></blockquote><div><br></=
-div><div>tap_delete_adapter() is not called here. I was suggesting that if =
-we do=C2=A0</div><div>check the return value, let us also print a=C2=A0 war=
-ning that renaming failed.=C2=A0</div><div>That can&#39;t be=C2=A0 done any=
-where except just before converting the error</div><div>to SUCCESS.</div><d=
-iv><br></div><div>Selva</div></div></div>
-
---0000000000008a878505ae555f77--
+--_000_fa595d8e8b9e446b91ee05cb783ac55crozmansi_--
 
