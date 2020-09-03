@@ -1,13 +1,8 @@
-From: Simon Rozman <simon@...2293...>
-Date: Thu, 3 Sep 2020 13:21:06 +0000
-Message-ID: <2df48d32ccb64b56a079410cf8782b71@...2293...>
-References: <CAGyAFMX4nscyEfT0GGX8dNYVV8j_uLcO=k0XxZf8D1hqowD1wA@...278...>
- <20200902213643.401-1-lstipakov@...277...>
-In-Reply-To: <20200902213643.401-1-lstipakov@...277...>
-Content-Language: en-US
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH v2] openvpnmsica: make adapter renaming
- non-fatal
+From: selva.nair@...277...
+Date: Thu,  3 Sep 2020 19:56:44 -0400
+Message-Id: <1599177404-29996-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH] In tap.c use DiInstallDevice to install the
+ driver on a new adapter
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,204 +11,346 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: Lev Stipakov <lstipakov@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Cc: Lev Stipakov <lev@...515...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+From: Selva Nair <selva.nair@...277...>
 
-> -----Original Message-----
-> From: Lev Stipakov <lstipakov@...277...>
-> Sent: Wednesday, September 2, 2020 11:37 PM
-> To: openvpn-devel@lists.sourceforge.net
-> Cc: Lev Stipakov <lev@...515...>
-> Subject: [Openvpn-devel] [PATCH v2] openvpnmsica: make adapter renaming
-> non-fatal
->=20
-> From: Lev Stipakov <lev@...515...>
->=20
-> For some users renaming adapter
->=20
->     Local Area Connection > OpenVPN TAP-Windows6
->=20
-> mysteriously fails, see https://github.com/OpenVPN/openvpn-
-> build/issues/187
->=20
-> Since renaming is just a "nice to have", make it non-fatal
-> and, in case of error, only log message and don't display messagebox.
->=20
-> Signed-off-by: Lev Stipakov <lev@...515...>
-> ---
->=20
->  v2: only log error, don't display messagebox
->=20
->  src/openvpnmsica/dllmain.c      |  2 +-
->  src/openvpnmsica/openvpnmsica.c |  9 +++------
->  src/tapctl/main.c               |  2 +-
->  src/tapctl/tap.c                | 11 +++++++----
->  src/tapctl/tap.h                |  6 +++++-
->  5 files changed, 17 insertions(+), 13 deletions(-)
->=20
-> diff --git a/src/openvpnmsica/dllmain.c b/src/openvpnmsica/dllmain.c
-> index 201fd9af..34946ed8 100644
-> --- a/src/openvpnmsica/dllmain.c
-> +++ b/src/openvpnmsica/dllmain.c
-> @@ -193,6 +193,6 @@ x_msg_va(const unsigned int flags, const char
-> *format, va_list arglist)
->          }
->      }
->=20
-> -    MsiProcessMessage(s->hInstall, INSTALLMESSAGE_ERROR, hRecordProg);
-> +    MsiProcessMessage(s->hInstall, (flags & M_WARN) ?
-> INSTALLMESSAGE_INFO : INSTALLMESSAGE_ERROR, hRecordProg);
->      MsiCloseHandle(hRecordProg);
->  }
-> diff --git a/src/openvpnmsica/openvpnmsica.c
-> b/src/openvpnmsica/openvpnmsica.c
-> index 31e90bd2..f203f736 100644
-> --- a/src/openvpnmsica/openvpnmsica.c
-> +++ b/src/openvpnmsica/openvpnmsica.c
-> @@ -1096,12 +1096,9 @@ ProcessDeferredAction(_In_ MSIHANDLE hInstall)
->              dwResult =3D tap_create_adapter(NULL, NULL, szHardwareId,
-> &bRebootRequired, &guidAdapter);
->              if (dwResult =3D=3D ERROR_SUCCESS)
->              {
-> -                /* Set adapter name. */
-> -                dwResult =3D tap_set_adapter_name(&guidAdapter, szName);
-> -                if (dwResult !=3D ERROR_SUCCESS)
-> -                {
-> -                    tap_delete_adapter(NULL, &guidAdapter,
-> &bRebootRequired);
-> -                }
-> +                /* Set adapter name. May fail on some machines, but
-> that is not critical - use silent
-> +                   flag to mute messagebox and print error only to log
-> */
-> +                tap_set_adapter_name(&guidAdapter, szName, TRUE);
->              }
->          }
->          else if (wcsncmp(szArg[i], L"deleteN=3D", 8) =3D=3D 0)
-> diff --git a/src/tapctl/main.c b/src/tapctl/main.c
-> index 31bb2ec7..d5bc7290 100644
-> --- a/src/tapctl/main.c
-> +++ b/src/tapctl/main.c
-> @@ -237,7 +237,7 @@ _tmain(int argc, LPCTSTR argv[])
->              }
->=20
->              /* Rename the adapter. */
-> -            dwResult =3D tap_set_adapter_name(&guidAdapter, szName);
-> +            dwResult =3D tap_set_adapter_name(&guidAdapter, szName,
-> FALSE);
->              if (dwResult !=3D ERROR_SUCCESS)
->              {
->                  StringFromIID((REFIID)&guidAdapter, &szAdapterId);
-> diff --git a/src/tapctl/tap.c b/src/tapctl/tap.c
-> index 7cb3dedc..0dfe239f 100644
-> --- a/src/tapctl/tap.c
-> +++ b/src/tapctl/tap.c
-> @@ -1140,9 +1140,12 @@ ExecCommand(const WCHAR* cmdline)
->  DWORD
->  tap_set_adapter_name(
->      _In_ LPCGUID pguidAdapter,
-> -    _In_ LPCTSTR szName)
-> +    _In_ LPCTSTR szName,
-> +    _In_ BOOL bSilent)
->  {
->      DWORD dwResult;
-> +    int msg_flag =3D bSilent ? M_WARN : M_NONFATAL;
-> +    msg_flag |=3D M_ERRNO;
->=20
->      if (pguidAdapter =3D=3D NULL || szName =3D=3D NULL)
->      {
-> @@ -1176,7 +1179,7 @@ tap_set_adapter_name(
->      if (dwResult !=3D ERROR_SUCCESS)
->      {
->          SetLastError(dwResult); /* MSDN does not mention RegOpenKeyEx()
-> to set GetLastError(). But we do have an error code. Set last error
-> manually. */
-> -        msg(M_NONFATAL | M_ERRNO, "%s: RegOpenKeyEx(HKLM, \"%"
-> PRIsLPTSTR "\") failed", __FUNCTION__, szRegKey);
-> +        msg(msg_flag, "%s: RegOpenKeyEx(HKLM, \"%" PRIsLPTSTR "\")
-> failed", __FUNCTION__, szRegKey);
->          goto cleanup_szAdapterId;
->      }
->=20
-> @@ -1185,7 +1188,7 @@ tap_set_adapter_name(
->      if (dwResult !=3D ERROR_SUCCESS)
->      {
->          SetLastError(dwResult);
-> -        msg(M_NONFATAL | M_ERRNO, "%s: Error reading adapter name",
-> __FUNCTION__);
-> +        msg(msg_flag, "%s: Error reading adapter name", __FUNCTION__);
->          goto cleanup_hKey;
->      }
->=20
-> @@ -1203,7 +1206,7 @@ tap_set_adapter_name(
->      if (dwResult !=3D ERROR_SUCCESS)
->      {
->          SetLastError(dwResult);
-> -        msg(M_NONFATAL | M_ERRNO, "%s: Error renaming adapter",
-> __FUNCTION__);
-> +        msg(msg_flag, "%s: Error renaming adapter", __FUNCTION__);
->          goto cleanup_hKey;
->      }
->=20
-> diff --git a/src/tapctl/tap.h b/src/tapctl/tap.h
-> index 102de32d..1f531cf2 100644
-> --- a/src/tapctl/tap.h
-> +++ b/src/tapctl/tap.h
-> @@ -117,13 +117,17 @@ tap_enable_adapter(
->   * @param pguidAdapter  A pointer to GUID that contains network adapter
-> ID.
->   *
->   * @param szName        New adapter name - must be unique
-> + *
-> + * @param bSilent       If true, MSI installer won't display message
-> box and
-> + *                      only print error to log.
->   *
->   * @return ERROR_SUCCESS on success; Win32 error code otherwise
->   **/
->  DWORD
->  tap_set_adapter_name(
->      _In_ LPCGUID pguidAdapter,
-> -    _In_ LPCTSTR szName);
-> +    _In_ LPCTSTR szName,
-> +    _In_ BOOL bSilent);
->=20
->=20
->  /**
-> --
-> 2.17.1
->=20
->=20
->=20
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+As reported in Trac 1321, additional adapter instalaltion
+by tapctl.exe fails to fully setup the device node (some registry
+keys missing, error in setapi.dev.log etc.).
+Although the exact cause of this failure is unclear,
+letting the Plug and Play subsystem handle the instalaltion
+by calling DiInsatllDevice() avoids it.
 
-I have reviewed the code, compiled it, built MSI, tested it.
+We let the system automatically choose the best driver
+by passing NULL for driverinfo to DiInstallDevice().
+This also eliminates the need for enumerating all drivers
+in the Net class and selecting a matching one.
 
-Although I could not create a phantom TUN adapter to reproduce the issue. R=
-enaming "Ethernet" adapter to "OpenVPN TAP-Windows6" and trying to install =
-MSI next displayed an error in evaluation phase that a foreign adapter with=
- the same name already exists - which is expected.
+Somehow mingw-w64 fails to find  DiInstallDriver() in
+newdev.lib although the header does define it. Use LoadLibrary()
+to locate it at run time (available in Vista and above).
 
-This patch is about solving the situation when:
-1. There are no apparent TAP-Windows6 or Wintun adapters present =3D> insta=
-llation decides to create one.
-2. Once adapter is created, the renaming to the desired name fails (as if t=
-he name is already taken).
+Built using mingw and tested both the msi installer (code shared
+with libopenvpnmscia.dll) and tapctl.exe on Windows 10 64 bit.
 
-I agree with everybody that having a consistently named adapter after initi=
-al setup is nice, but not that essential to make the installation fail. So.=
-..
+Fixes: Trac #1321
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ config-msvc.h    |   1 +
+ src/tapctl/tap.c | 231 +++++++++++++++++++------------------------------------
+ 2 files changed, 78 insertions(+), 154 deletions(-)
 
-Acked-by: Simon Rozman <simon@...2293...>
-
-Regards,
-Simon
+diff --git a/config-msvc.h b/config-msvc.h
+index 8ef4897..f199bb2 100644
+--- a/config-msvc.h
++++ b/config-msvc.h
+@@ -112,6 +112,7 @@
+ #define HAVE_EC_GROUP_ORDER_BITS 1
+ #define OPENSSL_NO_EC 1
+ #define HAVE_EVP_CIPHER_CTX_RESET 1
++#define HAVE_DIINSTALLDEVICE 1
+ 
+ #define PATH_SEPARATOR     '\\'
+ #define PATH_SEPARATOR_STR "\\"
+diff --git a/src/tapctl/tap.c b/src/tapctl/tap.c
+index 7cb3ded..e36d132 100644
+--- a/src/tapctl/tap.c
++++ b/src/tapctl/tap.c
+@@ -33,18 +33,69 @@
+ #include <setupapi.h>
+ #include <stdio.h>
+ #include <tchar.h>
++#include <newdev.h>
+ 
+ #ifdef _MSC_VER
+ #pragma comment(lib, "advapi32.lib")
+ #pragma comment(lib, "ole32.lib")
+ #pragma comment(lib, "setupapi.lib")
++#pragma comment(lib, "newdev.lib")
+ #endif
+ 
++
+ const static GUID GUID_DEVCLASS_NET = { 0x4d36e972L, 0xe325, 0x11ce, { 0xbf, 0xc1, 0x08, 0x00, 0x2b, 0xe1, 0x03, 0x18 } };
+ 
+ const static TCHAR szAdapterRegKeyPathTemplate[] = TEXT("SYSTEM\\CurrentControlSet\\Control\\Network\\%") TEXT(PRIsLPOLESTR) TEXT("\\%") TEXT(PRIsLPOLESTR) TEXT("\\Connection");
+ #define ADAPTER_REGKEY_PATH_MAX (_countof(TEXT("SYSTEM\\CurrentControlSet\\Control\\Network\\")) - 1 + 38 + _countof(TEXT("\\")) - 1 + 38 + _countof(TEXT("\\Connection")))
+ 
++/**
++ * Dynamically load a library and find a function in it
++ *
++ * @param libname     Name of the library to load
++ * @param funcname    Name of the function to find
++ * @param m           Pointer to a module. On return this is set to the
++ *                    the handle to the loaded library. The caller must
++ *                    free it by calling FreeLibrary() if not NULL.
++ *
++ * @return            Pointer to the function
++ *                    NULL on error -- use GetLastError() to find the error code.
++ *
++ **/
++static void *
++find_function(const WCHAR *libname, const char *funcname, HMODULE *m)
++{
++    WCHAR libpath[MAX_PATH];
++    void *fptr = NULL;
++
++    /* Make sure the dll is loaded from the system32 folder */
++    if (!GetSystemDirectoryW(libpath, _countof(libpath)))
++    {
++       return NULL;
++    }
++
++    size_t len = _countof(libpath) - wcslen(libpath) - 1;
++    if (len < wcslen(libname) + 1)
++    {
++       SetLastError(ERROR_INSUFFICIENT_BUFFER);
++       return NULL;
++    }
++    wcsncat(libpath, L"\\", len);
++    wcsncat(libpath, libname, len-1);
++
++    *m = LoadLibraryW(libpath);
++    if (*m == NULL)
++    {
++       return NULL;
++    }
++    fptr = GetProcAddress(*m, funcname);
++    if (!fptr)
++    {
++       FreeLibrary(*m);
++       *m = NULL;
++       return NULL;
++    }
++    return fptr;
++}
+ 
+ /**
+  * Returns length of string of strings
+@@ -678,6 +729,7 @@ tap_create_adapter(
+     _Out_ LPGUID pguidAdapter)
+ {
+     DWORD dwResult;
++    HMODULE libnewdev = NULL;
+ 
+     if (szHwId == NULL
+         || pbRebootRequired == NULL
+@@ -746,129 +798,7 @@ tap_create_adapter(
+         goto cleanup_hDevInfoList;
+     }
+ 
+-    /* Search for the driver. */
+-    if (!SetupDiBuildDriverInfoList(
+-            hDevInfoList,
+-            &devinfo_data,
+-            SPDIT_CLASSDRIVER))
+-    {
+-        dwResult = GetLastError();
+-        msg(M_NONFATAL, "%s: SetupDiBuildDriverInfoList failed", __FUNCTION__);
+-        goto cleanup_hDevInfoList;
+-    }
+-    DWORDLONG dwlDriverVersion = 0;
+-    DWORD drvinfo_detail_data_size = sizeof(SP_DRVINFO_DETAIL_DATA) + 0x100;
+-    SP_DRVINFO_DETAIL_DATA *drvinfo_detail_data = (SP_DRVINFO_DETAIL_DATA *)malloc(drvinfo_detail_data_size);
+-    if (drvinfo_detail_data == NULL)
+-    {
+-        msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, drvinfo_detail_data_size);
+-        dwResult = ERROR_OUTOFMEMORY; goto cleanup_DriverInfoList;
+-    }
+-
+-    for (DWORD dwIndex = 0;; dwIndex++)
+-    {
+-        /* Get a driver from the list. */
+-        SP_DRVINFO_DATA drvinfo_data = { .cbSize = sizeof(SP_DRVINFO_DATA) };
+-        if (!SetupDiEnumDriverInfo(
+-                hDevInfoList,
+-                &devinfo_data,
+-                SPDIT_CLASSDRIVER,
+-                dwIndex,
+-                &drvinfo_data))
+-        {
+-            if (GetLastError() == ERROR_NO_MORE_ITEMS)
+-            {
+-                break;
+-            }
+-            else
+-            {
+-                /* Something is wrong with this driver. Skip it. */
+-                msg(M_WARN | M_ERRNO, "%s: SetupDiEnumDriverInfo(%u) failed", __FUNCTION__, dwIndex);
+-                continue;
+-            }
+-        }
+-
+-        /* Get driver info details. */
+-        DWORD dwSize;
+-        drvinfo_detail_data->cbSize = sizeof(SP_DRVINFO_DETAIL_DATA);
+-        if (!SetupDiGetDriverInfoDetail(
+-                hDevInfoList,
+-                &devinfo_data,
+-                &drvinfo_data,
+-                drvinfo_detail_data,
+-                drvinfo_detail_data_size,
+-                &dwSize))
+-        {
+-            if (GetLastError() == ERROR_INSUFFICIENT_BUFFER)
+-            {
+-                /* (Re)allocate buffer. */
+-                if (drvinfo_detail_data)
+-                {
+-                    free(drvinfo_detail_data);
+-                }
+-
+-                drvinfo_detail_data_size = dwSize;
+-                drvinfo_detail_data = (SP_DRVINFO_DETAIL_DATA *)malloc(drvinfo_detail_data_size);
+-                if (drvinfo_detail_data == NULL)
+-                {
+-                    msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, drvinfo_detail_data_size);
+-                    dwResult = ERROR_OUTOFMEMORY; goto cleanup_DriverInfoList;
+-                }
+-
+-                /* Re-get driver info details. */
+-                drvinfo_detail_data->cbSize = sizeof(SP_DRVINFO_DETAIL_DATA);
+-                if (!SetupDiGetDriverInfoDetail(
+-                        hDevInfoList,
+-                        &devinfo_data,
+-                        &drvinfo_data,
+-                        drvinfo_detail_data,
+-                        drvinfo_detail_data_size,
+-                        &dwSize))
+-                {
+-                    /* Something is wrong with this driver. Skip it. */
+-                    continue;
+-                }
+-            }
+-            else
+-            {
+-                /* Something is wrong with this driver. Skip it. */
+-                msg(M_WARN | M_ERRNO, "%s: SetupDiGetDriverInfoDetail(\"%hs\") failed", __FUNCTION__, drvinfo_data.Description);
+-                continue;
+-            }
+-        }
+-
+-        /* Check the driver version and hardware ID. */
+-        if (dwlDriverVersion < drvinfo_data.DriverVersion
+-            && drvinfo_detail_data->HardwareID
+-            && _tcszistr(drvinfo_detail_data->HardwareID, szHwId))
+-        {
+-            /* Newer version and matching hardware ID found. Select the driver. */
+-            if (!SetupDiSetSelectedDriver(
+-                    hDevInfoList,
+-                    &devinfo_data,
+-                    &drvinfo_data))
+-            {
+-                /* Something is wrong with this driver. Skip it. */
+-                msg(M_WARN | M_ERRNO, "%s: SetupDiSetSelectedDriver(\"%hs\") failed", __FUNCTION__, drvinfo_data.Description);
+-                continue;
+-            }
+-
+-            dwlDriverVersion = drvinfo_data.DriverVersion;
+-        }
+-    }
+-    if (drvinfo_detail_data)
+-    {
+-        free(drvinfo_detail_data);
+-    }
+-
+-    if (dwlDriverVersion == 0)
+-    {
+-        dwResult = ERROR_NOT_FOUND;
+-        msg(M_NONFATAL, "%s: No driver for device \"%" PRIsLPTSTR "\" installed.", __FUNCTION__, szHwId);
+-        goto cleanup_DriverInfoList;
+-    }
+-
+-    /* Call appropriate class installer. */
++    /* Register the device instance with the PnP Manager */
+     if (!SetupDiCallClassInstaller(
+             DIF_REGISTERDEVICE,
+             hDevInfoList,
+@@ -876,43 +806,38 @@ tap_create_adapter(
+     {
+         dwResult = GetLastError();
+         msg(M_NONFATAL, "%s: SetupDiCallClassInstaller(DIF_REGISTERDEVICE) failed", __FUNCTION__);
+-        goto cleanup_DriverInfoList;
++        goto cleanup_hDevInfoList;
+     }
+ 
+-    /* Register device co-installers if any. */
+-    if (!SetupDiCallClassInstaller(
+-            DIF_REGISTER_COINSTALLERS,
+-            hDevInfoList,
+-            &devinfo_data))
+-    {
+-        dwResult = GetLastError();
+-        msg(M_WARN | M_ERRNO, "%s: SetupDiCallClassInstaller(DIF_REGISTER_COINSTALLERS) failed", __FUNCTION__);
+-    }
++    /* Install the device using DiInstallDevice()
++     * We instruct the system to use the best driver in the driver store
++     * by setting the drvinfo argument of DiInstallDevice as NULL. This
++     * assumes a driver is already installed in the driver store.
++     */
++#ifdef HAVE_DIINSTALLDEVICE
++    if (!DiInstallDevice(hwndParent, hDevInfoList, &devinfo_data, NULL, 0, pbRebootRequired))
++#else
++    /* mingw does not resolve DiInstallDevice, so load it at run time. */
++    typedef BOOL (WINAPI *DiInstallDeviceFn) (HWND, HDEVINFO, SP_DEVINFO_DATA *,
++                                                  SP_DRVINFO_DATA *, DWORD, BOOL *);
++    DiInstallDeviceFn installfn
++           = find_function (L"newdev.dll", "DiInstallDevice", &libnewdev);
+ 
+-    /* Install adapters if any. */
+-    if (!SetupDiCallClassInstaller(
+-            DIF_INSTALLINTERFACES,
+-            hDevInfoList,
+-            &devinfo_data))
++    if (!installfn)
+     {
+         dwResult = GetLastError();
+-        msg(M_WARN | M_ERRNO, "%s: SetupDiCallClassInstaller(DIF_INSTALLINTERFACES) failed", __FUNCTION__);
++        msg(M_NONFATAL | M_ERRNO, "%s: Failed to locate DiInstallDevice()", __FUNCTION__);
++        goto cleanup_hDevInfoList;
+     }
+ 
+-    /* Install the device. */
+-    if (!SetupDiCallClassInstaller(
+-            DIF_INSTALLDEVICE,
+-            hDevInfoList,
+-            &devinfo_data))
++    if (!installfn(hwndParent, hDevInfoList, &devinfo_data, NULL, 0, pbRebootRequired))
++#endif
+     {
+         dwResult = GetLastError();
+-        msg(M_NONFATAL | M_ERRNO, "%s: SetupDiCallClassInstaller(DIF_INSTALLDEVICE) failed", __FUNCTION__);
++        msg(M_NONFATAL | M_ERRNO, "%s: DiInstallDevice failed", __FUNCTION__);
+         goto cleanup_remove_device;
+     }
+ 
+-    /* Check if a system reboot is required. (Ignore errors) */
+-    check_reboot(hDevInfoList, &devinfo_data, pbRebootRequired);
+-
+     /* Get network adapter ID from registry. Retry for max 30sec. */
+     dwResult = get_net_adapter_guid(hDevInfoList, &devinfo_data, 30, pguidAdapter);
+ 
+@@ -958,13 +883,11 @@ cleanup_remove_device:
+         }
+     }
+ 
+-cleanup_DriverInfoList:
+-    SetupDiDestroyDriverInfoList(
+-        hDevInfoList,
+-        &devinfo_data,
+-        SPDIT_CLASSDRIVER);
+-
+ cleanup_hDevInfoList:
++    if (libnewdev)
++    {
++        FreeLibrary(libnewdev);
++    }
+     SetupDiDestroyDeviceInfoList(hDevInfoList);
+     return dwResult;
+ }
+-- 
+2.1.4
 
 
