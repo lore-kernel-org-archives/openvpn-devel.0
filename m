@@ -1,12 +1,10 @@
-References: <5f81e5b6-7500-7754-0296-0665c85fdc3e@...277...>
- <2fb10cd6-296d-5aa7-c078-cd7b04f4fc6c@...2080...>
-From: tincanteksup <tincanteksup@...277...>
-Message-ID: <ffb998e2-4651-7f6a-9061-1c2dd71b4482@...277...>
-Date: Fri, 4 Sep 2020 18:44:08 +0100
-MIME-Version: 1.0
-In-Reply-To: <2fb10cd6-296d-5aa7-c078-cd7b04f4fc6c@...2080...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] New man-section pages format
+Date: Fri, 4 Sep 2020 21:26:09 +0200 (CEST)
+Message-Id: <202009041926.084JQ9x5004562@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20200902213643.401-1-lstipakov@...277...>
+References: <20200902213643.401-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: openvpnmsica: make adapter
+ renaming non-fatal
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,65 +13,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+Your patch has been applied to the master and release/2.5 branch.
+
+Thanks for coming up with the solution & testing & reviewing it!
+
+The comment line is a bit long... uncrustify will catch it next time.
+
+I have not tested anything, trusting Lev and Simon here :-)  (but
+from a cursory glance, the change looks nice and reasonable)
+
+commit b341b1c596931f8a1f77f054ba505b5c1e3547be (master)
+commit 567e277f1cbaa8059319a8feea4c08edf77b6a5a (release/2.5)
+Author: Lev Stipakov
+Date:   Thu Sep 3 00:36:43 2020 +0300
+
+     openvpnmsica: make adapter renaming non-fatal
+
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Simon Rozman <simon@...2293...>
+     Message-Id: <20200902213643.401-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20875.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
+--
+kind regards,
 
-On 04/09/2020 14:36, David Sommerseth wrote:
-> On 04/09/2020 15:21, tincanteksup wrote:
->> Hi,
->>
->> this is just something to chew-over..
->>
->> See:
->> https://github.com/OpenVPN/openvpn/blob/master/doc/man-sections/generic-options.rst
->>
->>
->> I noticed that generally the option names, eg: --auth-nocache, wrap and the
->> result is unpleasant.
->>
->> However, further down that same page --daemon progname does not wrap and looks
->> much nicer.
->>
->> I know which format I prefer, perhaps this can be changed..
-> 
-> Do you mean the wrapping in the HTML rendering on GitHub?  That can only be
-> changed by changing the number of characters in the option.  It's not
-> something we control, it's the GitHub .rst rendering.
-> 
-> $ echo -n "--daemon progname" | wc -c
-> 17
-> $ echo -n "--auth-nocache" | wc -c
-> 14
-> 
-> IIRC, the limit is more than 16 characters, and the option gets a cell on a
-> single line.
-> 
-> Now, if you find a setting we can tweak (even a .. notation in the .rst files)
-> where we can reduce this limit to 2 character (which means all options gets
-> its own line - which will be consistent all over), I'm open to consider that.
->   I haven't had time to dig into it.
-> 
-> But I agree, the wrapping is not nice at all.  That said, we have had more
-> focus on ensuring the man/*roff rendering looks nice and reasonable more than
-> the HTML rendering on GitHub - in addition files which are more easy to edit
-> in a text editor.  After all, the HTML rendering was just a bonus over the .8
-> rendering [1] on GitHub before the .rst conversion.
-> 
-> [1] <https://github.com/OpenVPN/openvpn/blob/release/2.4/doc/openvpn.8>
-> 
-> 
+Gert Doering
 
-Thanks David, I'll see what, if anything, can be done to wrestle github 
-into submission ;-)
-
-> 
-> 
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> 
 
