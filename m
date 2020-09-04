@@ -1,10 +1,12 @@
-MIME-Version: 1.0
 References: <5f81e5b6-7500-7754-0296-0665c85fdc3e@...277...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <2fb10cd6-296d-5aa7-c078-cd7b04f4fc6c@...2080...>
+Date: Fri, 4 Sep 2020 15:36:07 +0200
+MIME-Version: 1.0
 In-Reply-To: <5f81e5b6-7500-7754-0296-0665c85fdc3e@...277...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Fri, 4 Sep 2020 16:27:49 +0300
-Message-ID: <CAFHpkQFRAEFAHib6Xg58YE2xsGkgHZTMcJzA0JzMnAdP5vBMDA@...278...>
-Content-Type: multipart/alternative; boundary="0000000000007a3a4805ae7cd9d1"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="U182Idvg1t27CpyCiuhzXq3txD6IY5cxR"
 Subject: Re: [Openvpn-devel] New man-section pages format
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -14,82 +16,106 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: tincanteksup <tincanteksup@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---0000000000007a3a4805ae7cd9d1
-Content-Type: text/plain; charset="UTF-8"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--U182Idvg1t27CpyCiuhzXq3txD6IY5cxR
+Content-Type: multipart/mixed; boundary="ZgbdxJxefAQL4lukLkRdAMfC8kwqs2P5t";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <2fb10cd6-296d-5aa7-c078-cd7b04f4fc6c@...2080...>
+Subject: Re: [Openvpn-devel] New man-section pages format
+References: <5f81e5b6-7500-7754-0296-0665c85fdc3e@...277...>
+In-Reply-To: <5f81e5b6-7500-7754-0296-0665c85fdc3e@...277...>
 
-I thought of using autogen. No time yet
-
-On Fri, Sep 4, 2020, 4:23 PM tincanteksup <tincanteksup@...277...> wrote:
-
-> Hi,
->
-> this is just something to chew-over..
->
-> See:
->
-> https://github.com/OpenVPN/openvpn/blob/master/doc/man-sections/generic-options.rst
->
-> I noticed that generally the option names, eg: --auth-nocache, wrap and
-> the result is unpleasant.
->
-> However, further down that same page --daemon progname does not wrap and
-> looks much nicer.
->
-> I know which format I prefer, perhaps this can be changed..
->
-> BR
-> Richard
->
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
-
---0000000000007a3a4805ae7cd9d1
-Content-Type: text/html; charset="UTF-8"
+--ZgbdxJxefAQL4lukLkRdAMfC8kwqs2P5t
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"auto">I thought of using autogen. No time yet</div><br><div cla=
-ss=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">On Fri, Sep 4, 202=
-0, 4:23 PM tincanteksup &lt;<a href=3D"mailto:tincanteksup@...277...">tinca=
-nteksup@...277...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote"=
- style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Hi=
-,<br>
-<br>
-this is just something to chew-over..<br>
-<br>
-See: <br>
-<a href=3D"https://github.com/OpenVPN/openvpn/blob/master/doc/man-sections/=
-generic-options.rst" rel=3D"noreferrer noreferrer" target=3D"_blank">https:=
-//github.com/OpenVPN/openvpn/blob/master/doc/man-sections/generic-options.r=
-st</a><br>
-<br>
-I noticed that generally the option names, eg: --auth-nocache, wrap and <br>
-the result is unpleasant.<br>
-<br>
-However, further down that same page --daemon progname does not wrap and <b=
-r>
-looks much nicer.<br>
-<br>
-I know which format I prefer, perhaps this can be changed..<br>
-<br>
-BR<br>
-Richard<br>
-<br>
-<br>
-_______________________________________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank" re=
-l=3D"noreferrer">Openvpn-devel@lists.sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
-=3D"noreferrer noreferrer" target=3D"_blank">https://lists.sourceforge.net/=
-lists/listinfo/openvpn-devel</a><br>
-</blockquote></div>
+On 04/09/2020 15:21, tincanteksup wrote:
+> Hi,
+>=20
+> this is just something to chew-over..
+>=20
+> See:
+> https://github.com/OpenVPN/openvpn/blob/master/doc/man-sections/generic-o=
+ptions.rst
+>=20
+>=20
+> I noticed that generally the option names, eg: --auth-nocache, wrap and t=
+he
+> result is unpleasant.
+>=20
+> However, further down that same page --daemon progname does not wrap and =
+looks
+> much nicer.
+>=20
+> I know which format I prefer, perhaps this can be changed..
 
---0000000000007a3a4805ae7cd9d1--
+Do you mean the wrapping in the HTML rendering on GitHub?  That can only be
+changed by changing the number of characters in the option.  It's not
+something we control, it's the GitHub .rst rendering.
+
+$ echo -n "--daemon progname" | wc -c
+17
+$ echo -n "--auth-nocache" | wc -c
+14
+
+IIRC, the limit is more than 16 characters, and the option gets a cell on a
+single line.
+
+Now, if you find a setting we can tweak (even a .. notation in the .rst fil=
+es)
+where we can reduce this limit to 2 character (which means all options gets
+its own line - which will be consistent all over), I'm open to consider tha=
+t.
+ I haven't had time to dig into it.
+
+But I agree, the wrapping is not nice at all.  That said, we have had more
+focus on ensuring the man/*roff rendering looks nice and reasonable more th=
+an
+the HTML rendering on GitHub - in addition files which are more easy to edit
+in a text editor.  After all, the HTML rendering was just a bonus over the =
+.8
+rendering [1] on GitHub before the .rst conversion.
+
+[1] <https://github.com/OpenVPN/openvpn/blob/release/2.4/doc/openvpn.8>
+
+
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
+
+
+
+--ZgbdxJxefAQL4lukLkRdAMfC8kwqs2P5t--
+
+--U182Idvg1t27CpyCiuhzXq3txD6IY5cxR
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJfUkLRAAoJEIbPlEyWcf3yI0MP/0Tp6h59PiFdHPddMRYhccNb
+K2i0QyKx4wHuok4GG6yjZaT4bhwru0P+j9dyU4u4E8vJMllvoqsSvsxIHb51dGMF
+wsYxMZx6ykIUY7wlr1rSOXftcPAsN0rrm/FKklgRIXbxoe7FJZUIpgIQe7uxSOMu
+iCAYO6fx5eiiqzJSdCoSYwf2x61fzSH9licdrpKDoatLFHLhbfi2PUFTGElASwqS
+bqZz1zMHZ8+jg2v4YEbQlu04rGVJjr451l68Q9/Ky1mJACRoqJBqYsHRnK/q61VQ
+UVzOG/CP3lMFKIQMw2GH92gKxpuMnJ+rzYY+J/nNnDSZgoBOuta1ui88OSqwBc9M
+Eb546uh5vZvw6iTl8nbRZYzT0S63LWXfQ3k7Prw67/KxZ1Suf7Opu/8RfzfPPib4
+tiM4VqDZUB0iHeK53yxx0GtwWYlFwpiRVK/svFeYEbxb85qVYi7CsCjP3tXLMalB
+W1ONPEJPh21Jf1wUT6sIHV8rKWLfuZyFVSm/eKXvl5VrAwlGjiuCt8KLDAUW0ZyX
+rS7Gsl3w+AOqx8+kGlyOpCU8oxXCtCPb/ELB4mVIeJ9OGudz+NOdTmY+wza9sIwz
+GqbCci5/MiREBXDL1L977t0+wT+MsoD3txBY46Hu6YNbbg57MGTwyoguSYPDZRX/
+ht1Tt5i+CoJ1McPvrcOT
+=/OXW
+-----END PGP SIGNATURE-----
+
+--U182Idvg1t27CpyCiuhzXq3txD6IY5cxR--
 
