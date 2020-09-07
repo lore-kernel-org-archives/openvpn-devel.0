@@ -1,8 +1,8 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon,  7 Sep 2020 18:02:24 +0200
-Message-Id: <20200907160224.18670-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Cleanup print_details and add signature/ED
- certificate print
+Date: Mon,  7 Sep 2020 18:18:49 +0200
+Message-Id: <20200907161849.20508-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Ignore --cipher for cipher negotiation in
+ server client mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,170 +15,74 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This commit cleans up the logic in the function a bit. It also makes it
-more clear the the details printed in the second part of the message are
-details about the peer certificate and not the TLS connection as such.
-Also print the signature algorithm as this might help to identify
-peer certificate that still use SHA1.
-
-The new format with for TLS 1.3 and an EC certificate.
-
-Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 384 bit EC, curve secp384r1, signature: ecdsa-with-SHA256
-
-Using the more generic OpenSSL functions also allows use to correctly
-print details about ED certificates:
-
-Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 253 bit ED25519, signature: ED25519
+OpenVPN will ignore --cipher in lieu of the replacement data-ciphers
+for cipher negioation.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/ssl_openssl.c | 118 +++++++++++++++++++++++++-------------
- 1 file changed, 78 insertions(+), 40 deletions(-)
+ doc/man-sections/protocol-options.rst |  6 ++++--
+ src/openvpn/options.c                 | 26 ++++----------------------
+ 2 files changed, 8 insertions(+), 24 deletions(-)
 
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index f52c7c39..c602c625 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -2031,6 +2031,80 @@ key_state_read_plaintext(struct key_state_ssl *ks_ssl, struct buffer *buf,
-     return ret;
- }
+diff --git a/doc/man-sections/protocol-options.rst b/doc/man-sections/protocol-options.rst
+index e9d5d63d..ca1407b9 100644
+--- a/doc/man-sections/protocol-options.rst
++++ b/doc/man-sections/protocol-options.rst
+@@ -57,8 +57,10 @@ configured in a compatible way between both the local and remote side.
+   http://www.cs.ucsd.edu/users/mihir/papers/hmac.html
  
-+/**
-+ * Print human readable information about the certifcate into buf
-+ * @param cert      the certificate being used
-+ * @param buf       output buffer
-+ * @param buflen    output buffer length
-+ */
-+static void
-+print_cert_details(X509 *cert, char *buf, size_t buflen)
-+{
-+    const char *curve = "";
-+    const char *type = "(error getting type)";
-+    EVP_PKEY *pkey = X509_get_pubkey(cert);
-+
-+    if (pkey == NULL)
-+    {
-+        buf[0] = 0;
-+        return;
-+    }
-+
-+    int typeid = EVP_PKEY_id(pkey);
-+
-+#ifndef OPENSSL_NO_EC
-+    if (typeid == EVP_PKEY_EC && EVP_PKEY_get0_EC_KEY(pkey) != NULL)
-+    {
-+        EC_KEY *ec = EVP_PKEY_get0_EC_KEY(pkey);
-+        const EC_GROUP *group = EC_KEY_get0_group(ec);
-+
-+        int nid = EC_GROUP_get_curve_name(group);
-+        if (nid == 0 || (curve = OBJ_nid2sn(nid)) == NULL)
-+        {
-+            curve = "(error getting curve name)";
-+        }
-+    }
-+#endif
-+    if (EVP_PKEY_id(pkey) != 0)
-+    {
-+        int typeid = EVP_PKEY_id(pkey);
-+        type = OBJ_nid2sn(typeid);
-+
-+        /* OpenSSL reports rsaEncryption, dsaEncryption and
-+        * id-ecPublicKey, map these values to nicer ones */
-+        if (typeid == EVP_PKEY_RSA)
-+        {
-+            type = "RSA";
-+        }
-+        else if (typeid == EVP_PKEY_DSA)
-+        {
-+            type = "DSA";
-+        }
-+        else if (typeid == EVP_PKEY_EC)
-+        {
-+            /* EC gets the curve appended after the type */
-+            type = "EC, curve ";
-+        }
-+        else if (type == NULL)
-+        {
-+            type = "unknown type";
-+        }
-+    }
-+
-+    char sig[128];
-+    int signature_nid = X509_get_signature_nid(cert);
-+    if (signature_nid != 0)
-+    {
-+        openvpn_snprintf(sig, sizeof(sig), ", signature: %s",
-+                         OBJ_nid2sn(signature_nid));
-+    }
-+
-+    openvpn_snprintf(buf, buflen, ", peer certificate: %d bit %s%s%s",
-+                     EVP_PKEY_bits(pkey), type, curve, sig);
-+
-+    EVP_PKEY_free(pkey);
-+}
-+
- /* **************************************
-  *
-  * Information functions
-@@ -2042,7 +2116,6 @@ void
- print_details(struct key_state_ssl *ks_ssl, const char *prefix)
- {
-     const SSL_CIPHER *ciph;
--    X509 *cert;
-     char s1[256];
-     char s2[256];
+ --cipher alg
+-  This option is deprecated for server-client mode. ``--data-ciphers``
+-  or possibly `--data-ciphers-fallback`` should be used instead.
++  This option is ignored for server-client mode cipher selection.
++  ``--data-ciphers`` or possibly ``--data-ciphers-fallback`` must be used
++  instead.  It only determines which cipher is send in the
++  OCC string (see ``opt-verify``) for compatbility with old peers.
  
-@@ -2053,48 +2126,13 @@ print_details(struct key_state_ssl *ks_ssl, const char *prefix)
-                      SSL_get_version(ks_ssl->ssl),
-                      SSL_CIPHER_get_version(ciph),
-                      SSL_CIPHER_get_name(ciph));
--    cert = SSL_get_peer_certificate(ks_ssl->ssl);
--    if (cert != NULL)
--    {
--        EVP_PKEY *pkey = X509_get_pubkey(cert);
--        if (pkey != NULL)
--        {
--            if ((EVP_PKEY_id(pkey) == EVP_PKEY_RSA) && (EVP_PKEY_get0_RSA(pkey) != NULL))
--            {
--                RSA *rsa = EVP_PKEY_get0_RSA(pkey);
--                openvpn_snprintf(s2, sizeof(s2), ", %d bit RSA",
--                                 RSA_bits(rsa));
--            }
--            else if ((EVP_PKEY_id(pkey) == EVP_PKEY_DSA) && (EVP_PKEY_get0_DSA(pkey) != NULL))
--            {
--                DSA *dsa = EVP_PKEY_get0_DSA(pkey);
--                openvpn_snprintf(s2, sizeof(s2), ", %d bit DSA",
--                                 DSA_bits(dsa));
--            }
--#ifndef OPENSSL_NO_EC
--            else if ((EVP_PKEY_id(pkey) == EVP_PKEY_EC) && (EVP_PKEY_get0_EC_KEY(pkey) != NULL))
--            {
--                EC_KEY *ec = EVP_PKEY_get0_EC_KEY(pkey);
--                const EC_GROUP *group = EC_KEY_get0_group(ec);
--                const char *curve;
-+    X509 *cert = SSL_get_peer_certificate(ks_ssl->ssl);
+   Encrypt data channel packets with cipher algorithm ``alg``.
  
--                int nid = EC_GROUP_get_curve_name(group);
--                if (nid == 0 || (curve = OBJ_nid2sn(nid)) == NULL)
--                {
--                    curve = "Error getting curve name";
--                }
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 01da88ad..7dc3e3eb 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3074,12 +3074,6 @@ options_postprocess_cipher(struct options *o)
+                          "--data-ciphers-fallback config option");
+         }
+ 
+-        msg(M_WARN, "--cipher is not set. Previous OpenVPN version defaulted to "
+-            "BF-CBC as fallback when cipher negotiation failed in this case. "
+-            "If you need this fallback please add '--data-ciphers-fallback "
+-            "BF-CBC' to your configuration and/or add BF-CBC to "
+-            "--data-ciphers.");
 -
--                openvpn_snprintf(s2, sizeof(s2), ", %d bit EC, curve: %s",
--                                 EC_GROUP_order_bits(group), curve);
+         /* We still need to set the ciphername to BF-CBC since various other
+          * parts of OpenVPN assert that the ciphername is set */
+         o->ciphername = "BF-CBC";
+@@ -3087,22 +3081,10 @@ options_postprocess_cipher(struct options *o)
+     else if (!o->enable_ncp_fallback
+              && !tls_item_in_cipher_list(o->ciphername, o->ncp_ciphers))
+     {
+-        msg(M_WARN, "DEPRECATED OPTION: --cipher set to '%s' but missing in"
+-            " --data-ciphers (%s). Future OpenVPN version will "
+-            "ignore --cipher for cipher negotiations. "
+-            "Add '%s' to --data-ciphers or change --cipher '%s' to "
+-            "--data-ciphers-fallback '%s' to silence this warning.",
+-            o->ciphername, o->ncp_ciphers, o->ciphername,
+-            o->ciphername, o->ciphername);
+-        o->enable_ncp_fallback = true;
 -
--            }
--#endif
--            EVP_PKEY_free(pkey);
--        }
-+    if (cert)
-+    {
-+        print_cert_details(cert, s2, sizeof(s2));
-         X509_free(cert);
+-        /* Append the --cipher to ncp_ciphers to allow it in NCP */
+-        size_t newlen = strlen(o->ncp_ciphers) + 1 + strlen(o->ciphername) + 1;
+-        char *ncp_ciphers = gc_malloc(newlen, false, &o->gc);
+-
+-        ASSERT(openvpn_snprintf(ncp_ciphers, newlen, "%s:%s", o->ncp_ciphers,
+-                                o->ciphername));
+-        o->ncp_ciphers = ncp_ciphers;
++        msg(M_WARN, "Note: --cipher set to '%s' but missing in"
++            " --data-ciphers (%s). OpenVPN 2.6+ ignores --cipher for "
++            "cipher negiotiation.",
++            o->ciphername, o->ncp_ciphers);
      }
--    /* The SSL API does not allow us to look at temporary RSA/DH keys,
--     * otherwise we should print their lengths too */
-     msg(D_HANDSHAKE, "%s%s", s1, s2);
  }
  
 -- 
