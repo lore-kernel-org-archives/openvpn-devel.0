@@ -1,10 +1,7 @@
-Date: Fri, 4 Sep 2020 21:26:09 +0200 (CEST)
-Message-Id: <202009041926.084JQ9x5004562@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200902213643.401-1-lstipakov@...277...>
-References: <20200902213643.401-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: openvpnmsica: make adapter
- renaming non-fatal
+From: Vladislav Grishenko <themiron@...2010...>
+Date: Mon,  7 Sep 2020 18:17:34 +0500
+Message-Id: <20200907131734.31164-1-themiron@...2010...>
+Subject: [Openvpn-devel] [PATCH] Fix best gateway selection over netlink
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,35 +12,49 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.5 branch.
+Netlink route request with NLM_F_DUMP flag set means to
+return all entries matching criteria passed in message
+content - matching supplied dst address in our case.
+So, gateway from the first returned route was always used
+even there were more specific routes present.
+By a chance, after route refactoring in ~2.6.38 first route
+is the default route, so default gateway was always used,
+hiding the problem.
+On earlier kernels default route is the last one, so
+route w/o gateway is likely be returned as first causes
+gateway always to be 0.0.0.0.
 
-Thanks for coming up with the solution & testing & reviewing it!
+Fix this behavior by requesting exact route, not dump along
+with specifying correct dst perfix size.
 
-The comment line is a bit long... uncrustify will catch it next time.
+Tested on 5.4.0, 4.1.51 and 2.6.36 kernels.
 
-I have not tested anything, trusting Lev and Simon here :-)  (but
-from a cursory glance, the change looks nice and reasonable)
+Signed-off-by: Vladislav Grishenko <themiron@...2010...>
+---
+ src/openvpn/networking_sitnl.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-commit b341b1c596931f8a1f77f054ba505b5c1e3547be (master)
-commit 567e277f1cbaa8059319a8feea4c08edf77b6a5a (release/2.5)
-Author: Lev Stipakov
-Date:   Thu Sep 3 00:36:43 2020 +0300
-
-     openvpnmsica: make adapter renaming non-fatal
-
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Simon Rozman <simon@...2293...>
-     Message-Id: <20200902213643.401-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20875.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
+index 713a213a..150dfa5c 100644
+--- a/src/openvpn/networking_sitnl.c
++++ b/src/openvpn/networking_sitnl.c
+@@ -477,11 +477,12 @@ sitnl_route_best_gw(sa_family_t af_family, const inet_address_t *dst,
+     {
+         case AF_INET:
+             res.addr_size = sizeof(in_addr_t);
+-            req.n.nlmsg_flags |= NLM_F_DUMP;
++            req.r.rtm_dst_len = 32;
+             break;
+ 
+         case AF_INET6:
+             res.addr_size = sizeof(struct in6_addr);
++            req.r.rtm_dst_len = 128;
+             break;
+ 
+         default:
+-- 
+2.17.1
 
 
