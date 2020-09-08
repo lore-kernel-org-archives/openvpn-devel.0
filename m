@@ -1,14 +1,8 @@
-References: <011701d6858cyandex-team.ru>
- <20200908123625.23179-1-themiron@...2010...>
- <33df2e45-ebd9-fbd5-1fac-e43c4d9090ca@...2080...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <ff1ab111-3b3a-b99a-c99f-ad55c426c61e@...2181...>
-Date: Tue, 8 Sep 2020 15:24:57 +0200
-MIME-Version: 1.0
-In-Reply-To: <33df2e45-ebd9-fbd5-1fac-e43c4d9090ca@...2080...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v3] Fix best gateway selection over
- netlink
+From: Arne Schwabe <arne@...1227...>
+Date: Tue,  8 Sep 2020 17:41:53 +0200
+Message-Id: <20200908154157.13809-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH 0/4] Allow setting up OpenVPN in TLS mode
+ without CA
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,50 +11,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: David Sommerseth <openvpn@...2080...>, Vladislav Grishenko <themiron@...2010...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Setting up a CA even with the help of easy-tls and similar tools is
+difficult/tiresome. For small setups self-signed certificates are
+sufficient enough and restarting the server to add another client is
+generally not a big problem (when you need that capability a CA is
+better suited).
 
-On 08/09/2020 15:08, David Sommerseth wrote:
-> On 08/09/2020 14:36, Vladislav Grishenko wrote:
->> On kernels earlier than 2.6.38 default routes are the last ones,
->> so arbitrary host/net route w/o gateway is likely be returned as
->> first, causing gateway to be invalid or empty.
->> After refactoring in 2.6.38 kernel default routes are on top, so
->> the problem with older kernels was hidden.
-> 
-> I haven't paid too much attention here, but I don't think I've seen this point
-> being brought up.  But do we really care about such old kernels at all?
-> 
-> AFAIK, RHEL-6 (which goes EOL in November this year and which is not planned
-> to be supported in OpenVPN 2.5+) is the only distro carrying such an old
-> kernel release (2.6.32 baseline).  Even an internal OpenWRT 19.07 box of mine
-> (which should be upgraded, I know!) ships with 4.14.  Unless I'm completely
-> clueless (which is a possibility), 2.4 and 2.6 kernels are mostly interesting
-> for boards with 4MB flash memory.  And I would suspect such boards with that
-> little flash memory to belong to that past.  (And OpenVPN 2.4 is perfectly
-> fine too for some time forward anyhow, which should work just fine).
+This patch set allows setting up OpenVPN with verification of peer
+certificates and without a CA certificate. Instead of verifying
+certificates through a CA, it allows to verify a certificate just by it
+fingerprint. This is usually called certificate pinning. (If you wonder if
+this secure, it is as secure as normal CA operation as certificate signature
+also only sign the finerprinter of a certificate and not the whole cert.)
 
-Well, this is an actual flaw in the sitnl code.
-It now works, but it may break at some point (it is apparently relying
-on a self-made assumption which may not hold true in the future).
+The commit themselves have examples.
 
-For this reason sitnl *needs* fixing.
+The main difference of this patch set to Jason's V1 version is that it does
+not rely on an external script on the server side and instead relys on an a
+inlined <peer-fingerprint> section. The downside is that this requires a
+server restart on adding a client but the upside is that no script-security
+or external scripts are necessary and server/client setup become symmetric.
 
-On the other hand, helping out people that are stuck on old platforms to
-upgrade to modern (aka more secure) OpenVPN versions is also not a bad idea.
+Arne Schwabe (3):
+  Extend verify-hash to allow multiple hashes
+  Implement peer-fingerprint to check fingerprint of peer certificate
+  Document the simple self-signed certificate setup in examples
 
-Since the fix is relatively small, I'd consider it for inclusion.
+Jason A. Donenfeld (1):
+  Support fingerprint authentication without CA certificate
 
-I'll try to review it ASAP so that it can be considered for going into
-the next beta (2.5 compiles with sitnl by default - this is how this
-issue was exposed)
-
-
-Regards,
+ Changes.rst                       |  12 +++
+ doc/man-sections/examples.rst     |  46 ++++++----
+ doc/man-sections/inline-files.rst |   4 +-
+ doc/man-sections/tls-options.rst  |  36 +++++++-
+ src/openvpn/init.c                |   3 +
+ src/openvpn/options.c             | 145 +++++++++++++++++++++++++-----
+ src/openvpn/options.h             |  13 ++-
+ src/openvpn/ssl.c                 |   2 +-
+ src/openvpn/ssl_common.h          |   4 +-
+ src/openvpn/ssl_verify.c          |  30 +++++--
+ src/openvpn/ssl_verify_mbedtls.c  |  17 ++++
+ src/openvpn/ssl_verify_openssl.c  |   2 +-
+ 12 files changed, 263 insertions(+), 51 deletions(-)
 
 -- 
-Antonio Quartulli
+2.26.2
+
 
