@@ -1,8 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue,  8 Sep 2020 17:41:53 +0200
-Message-Id: <20200908154157.13809-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 0/4] Allow setting up OpenVPN in TLS mode
- without CA
+Date: Tue,  8 Sep 2020 17:41:57 +0200
+Message-Id: <20200908154157.13809-5-arne@...1227...>
+In-Reply-To: <20200908154157.13809-1-arne@...1227...>
+References: <20200908154157.13809-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH 4/4] Document the simple self-signed
+ certificate setup in examples
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,49 +17,131 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Setting up a CA even with the help of easy-tls and similar tools is
-difficult/tiresome. For small setups self-signed certificates are
-sufficient enough and restarting the server to add another client is
-generally not a big problem (when you need that capability a CA is
-better suited).
+Also remove the static key setup example as it is less secure and we
+want to avoid it for new setups as we want to slowly deprecate these.
 
-This patch set allows setting up OpenVPN with verification of peer
-certificates and without a CA certificate. Instead of verifying
-certificates through a CA, it allows to verify a certificate just by it
-fingerprint. This is usually called certificate pinning. (If you wonder if
-this secure, it is as secure as normal CA operation as certificate signature
-also only sign the finerprinter of a certificate and not the whole cert.)
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ Changes.rst                      |  5 ++++
+ doc/man-sections/examples.rst    | 46 ++++++++++++++++++++------------
+ doc/man-sections/tls-options.rst |  4 +++
+ 3 files changed, 38 insertions(+), 17 deletions(-)
 
-The commit themselves have examples.
-
-The main difference of this patch set to Jason's V1 version is that it does
-not rely on an external script on the server side and instead relys on an a
-inlined <peer-fingerprint> section. The downside is that this requires a
-server restart on adding a client but the upside is that no script-security
-or external scripts are necessary and server/client setup become symmetric.
-
-Arne Schwabe (3):
-  Extend verify-hash to allow multiple hashes
-  Implement peer-fingerprint to check fingerprint of peer certificate
-  Document the simple self-signed certificate setup in examples
-
-Jason A. Donenfeld (1):
-  Support fingerprint authentication without CA certificate
-
- Changes.rst                       |  12 +++
- doc/man-sections/examples.rst     |  46 ++++++----
- doc/man-sections/inline-files.rst |   4 +-
- doc/man-sections/tls-options.rst  |  36 +++++++-
- src/openvpn/init.c                |   3 +
- src/openvpn/options.c             | 145 +++++++++++++++++++++++++-----
- src/openvpn/options.h             |  13 ++-
- src/openvpn/ssl.c                 |   2 +-
- src/openvpn/ssl_common.h          |   4 +-
- src/openvpn/ssl_verify.c          |  30 +++++--
- src/openvpn/ssl_verify_mbedtls.c  |  17 ++++
- src/openvpn/ssl_verify_openssl.c  |   2 +-
- 12 files changed, 263 insertions(+), 51 deletions(-)
-
+diff --git a/Changes.rst b/Changes.rst
+index 6007412c..6ae706c6 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -8,6 +8,11 @@ Certificate pinning/verify peer fingerprint
+     fingerprint of the peer. The option has use a number of
+     SHA256 fingerprints.
+ 
++TLS mode with self-signed certificates
++    When ``--peer-fingerprint`` is used, the ``--ca`` and ``--capath`` option
++    become optional. This allows for small OpenVPN setups without setting up
++    a PKI with Easy-RSA or similar software.
++
+ New features
+ ------------
+ Client-specific tls-crypt keys (``--tls-crypt-v2``)
+diff --git a/doc/man-sections/examples.rst b/doc/man-sections/examples.rst
+index 3f494ea4..ae7a49b4 100644
+--- a/doc/man-sections/examples.rst
++++ b/doc/man-sections/examples.rst
+@@ -60,8 +60,8 @@ that is part of your local subnet for either of the tunnel endpoints,
+ you will get a weird feedback loop.
+ 
+ 
+-Example 1: A simple tunnel without security
+--------------------------------------------
++Example 1: A simple tunnel without security (not recommended)
++-------------------------------------------------------------
+ 
+ On bob:
+ ::
+@@ -92,31 +92,41 @@ The ``--verb 9`` option will produce verbose output, similar to the
+ quietly.
+ 
+ 
+-Example 2: A tunnel with static-key security (i.e. using a pre-shared secret)
+------------------------------------------------------------------------------
++Example 2: A tunnel with self-signed certificates and fingerprint
++-----------------------------------------------------------------
+ 
+-First build a static key on bob.
++First build a self-signed certificate on bob and display its fingerprint.
+ ::
+ 
+-   openvpn --genkey --secret key
++   openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -keyout bob.pem -out bob.pem -nodes -sha256 -days 3650 -subj '/CN=bob'
++   openssl x509 -noout -sha256 -fingerprint -in bob.pem
+ 
+-This command will build a key file called ``key`` (in ascii format). Now
+-copy ``key`` to ``alice.example.com`` over a secure medium such as by using
+-the ``scp``\(1) program.
++and the same on alice:
++::
++
++   openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -keyout alice.pem -out alice.pem -nodes -sha256 -days 3650 -subj '/CN=alice'
++   openssl x509 -noout -sha256 -fingerprint -in alice.pem
++
++
++These commands will build a text file called ``bob.pem`` or ``alice.pem`` (in ascii format)
++that contain both self-signed certificate and key and show the fingerprint of the certificates.
++Transfer the fingerprints  over a secure medium such as by using
++the ``scp``\(1) or ``ssh``\(1) program.
+ 
+ On bob:
+ ::
+ 
+-   openvpn --remote alice.example.com --dev tun1  \
+-            --ifconfig 10.4.0.1 10.4.0.2 --verb 5 \
+-            --secret key
++   openvpn --ifconfig 10.4.0.1 10.4.0.2 --tls-server --dev tun --dh none \
++           --cert bob.pem --key bob.pem --cipher AES-256-GCM \
++           --peer-fingerprint "$fingerprint_of_alices_cert"
+ 
+ On alice:
+ ::
+ 
+-   openvpn --remote bob.example.com --dev tun1   \
+-           --ifconfig 10.4.0.2 10.4.0.1 --verb 5 \
+-           --secret key
++   openvpn --remote bob.example.com --tls-client --dev tun1   \
++           --ifconfig 10.4.0.2 10.4.0.1 --cipher AES-256-GCM  \
++           --cert alice.pem --key alice.pem
++           --peer-fingerprint "$fingerprint_of_bobs_cert"
+ 
+ Now verify the tunnel is working by pinging across the tunnel.
+ 
+@@ -130,9 +140,11 @@ On alice:
+ 
+    ping 10.4.0.1
+ 
++Note: This example use a elliptic curve (`secp384`), which allows
++``--dh`` and to ``none``.
+ 
+-Example 3: A tunnel with full TLS-based security
+-------------------------------------------------
++Example 3: A tunnel with full PKI and TLS-based security
++--------------------------------------------------------
+ 
+ For this test, we will designate ``bob`` as the TLS client and ``alice``
+ as the TLS server.
+diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
+index 658300b8..c2bf573f 100644
+--- a/doc/man-sections/tls-options.rst
++++ b/doc/man-sections/tls-options.rst
+@@ -609,6 +609,10 @@ If the option is inlined, ``algo`` is always :code:`SHA256`.
+     11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff:00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff:00
+     </peer-fingerprint>
+ 
++  When the ``--peer-fingerprint`` option is used, specifying a CA with ``--ca`` or ``--capath`` is
++  optional. This allows the he ``--peer-fingerprint`` to be used as alternative to a PKI with
++  self-signed certificates for small setups. See the examples section for such a setup.
++
+ --verify-x509-name args
+   Accept connections only if a host's X.509 name is equal to **name.** The
+   remote host must also pass all other tests of verification.
 -- 
 2.26.2
 
