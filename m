@@ -1,14 +1,18 @@
-References: <20200903114455.29341-1-themiron@...2010...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <0ec2c2a7-61d5-69c6-76a4-af83c283c64c@...2080...>
-Date: Tue, 8 Sep 2020 15:22:44 +0200
+From: Arne Schwabe <arne@...1227...>
+References: <20200908111511.9271-1-gert@...1296...>
+ <8f5ce86d-f11c-4858-26c6-abc21200368c@...2080...>
+ <20200908163523.GE75094@...1296...>
+ <762075ad-7c4f-48e5-0887-d5a4083a9bf7@...1227...>
+ <eAWhYvj75Zizi0tQw1j-aAO6OQYYZZhQFc8scdog5dIVs9au2ZcRGqVZN0QkmlmxPwasBDCV7wWROCzi0d5h1A1YKwGHOmOO5hfXL3e823o=@protonmail.com>
+Message-ID: <a1e8e907-537a-1455-88c5-1a25cca17527@...1227...>
+Date: Tue, 8 Sep 2020 19:43:20 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200903114455.29341-1-themiron@...2010...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
+In-Reply-To: <eAWhYvj75Zizi0tQw1j-aAO6OQYYZZhQFc8scdog5dIVs9au2ZcRGqVZN0QkmlmxPwasBDCV7wWROCzi0d5h1A1YKwGHOmOO5hfXL3e823o=@protonmail.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="ghaaweZg8Ir3Wk8YusFcGUIetrJME261A"
-Subject: Re: [Openvpn-devel] [PATCH] Fix --remote protocol can't be set
- without port argument
+ boundary="zPPk1vFb49q7OPJhA4xVPsQ4sl5i9tYqU"
+Subject: Re: [Openvpn-devel] [PATCH] Document that --push-remove is
+ generally more suitable than --push-reset
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,88 +21,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Vladislav Grishenko <themiron@...2010...>, openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?B?QW5kcsOp?= <pippin1st+devel@...2282...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---ghaaweZg8Ir3Wk8YusFcGUIetrJME261A
-Content-Type: multipart/mixed; boundary="Mm76vNmrTFZRf3PcPuoZWhLOtUhGjJdyt";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-To: Vladislav Grishenko <themiron@...2010...>,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <0ec2c2a7-61d5-69c6-76a4-af83c283c64c@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix --remote protocol can't be set
- without port argument
-References: <20200903114455.29341-1-themiron@...2010...>
-In-Reply-To: <20200903114455.29341-1-themiron@...2010...>
+--zPPk1vFb49q7OPJhA4xVPsQ4sl5i9tYqU
+Content-Type: multipart/mixed; boundary="0vq2dZYGQLhazvDz3kbGDSVkjOWejGIEO"
 
---Mm76vNmrTFZRf3PcPuoZWhLOtUhGjJdyt
-Content-Language: en-US
+--0vq2dZYGQLhazvDz3kbGDSVkjOWejGIEO
+Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 03/09/2020 13:44, Vladislav Grishenko wrote:
-> According client-options.rst additional argumets ``port`` and ``proto``
-> are both optional and it's allowed to have port absent and protocol set:
->     --remote args
->       Examples:
->          remote server.example.net tcp
+Am 08.09.20 um 19:04 schrieb Andr=C3=A9:
+> Hi,
 >=20
-> But when protocol is set without preceeding port argument, it is being
-> misparsed as a port with subsequent error:
->     RESOLVE: Cannot resolve host address: server.example.net:tcp
->     (Servname not supported for ai_socktype)
->=20
-> Since protocol names are predefined and don't match service names, fix
-> this behavior by checking second argument for valid protocol first.
->=20
-> Signed-off-by: Vladislav Grishenko <themiron@...2010...>
-Uhm ... I'm leaning towards a NAK to this patch and would rather suggest
-updating the man page to be correct.  This is a mistake from my side when
-converting the man page to .rst files.  The example should be:
+> My vote would be to deprecate --push-reset
+> (same for --route-nopull)
+>
 
-       remote server.example.net 1194 tcp
+Route-nopull is still a very useful option that has no good replacement.
+I regularly use it when the server should not mess up my routing table.
 
-The OpenVPN 2.4 and prior releases has this line:
-
-       --remote host [port] [proto]
-
-But this syntax was not supported by rst2man, so it was replaced with "args"
-and the examples coming below; which carried an error.
+Arne
 
 
---=20
-kind regards,
+--0vq2dZYGQLhazvDz3kbGDSVkjOWejGIEO--
 
-David Sommerseth
-OpenVPN Inc
-
-
-
---Mm76vNmrTFZRf3PcPuoZWhLOtUhGjJdyt--
-
---ghaaweZg8Ir3Wk8YusFcGUIetrJME261A
+--zPPk1vFb49q7OPJhA4xVPsQ4sl5i9tYqU
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJfV4WkAAoJEIbPlEyWcf3yOkUQAKfxdVcidWSkQbpMaXZysgDu
-5uRUfYRAgnev4KvJoyPYMboInYCmIlUvhzB+kPE6rM4rj2IRC8wutQcp+cBpKzbS
-ISMLcSUTU5S/lE4EV+A+WxUsTSMhXaSAVhZ433hmsWKWaClqmCik+y09mXso4mGe
-+pAOr6rWfLVBW+3ndz656D/ZKeQ+NXe5F00xSGQgjw59mojmggQ5cLp77tUtbmo+
-NsOqyZCpFfy5ejOpYX0zsElDzhTA8pzTJfUDwnOTaLaYaLZ4AlNbuIOjTtAOdjqA
-xfUrjRcbEkJFj3kjmcbbMKZGMukcEspimuANPiM8/S9YOvsSGVPxDct7eTe0iJzp
-84Y7HPbTNJczCXcOVcCnW0A4JQEQW2+ID/Es1fzhj0g+6U64tboA6puiZg0R0G5T
-IDYs3/o0O5ZR0cRQGmc4XWwDQu5IT1R+7FYBQgrh70eVZd9BNAQCkYl0mMbtjqV/
-C94lExV52PBpqbwFoWsE7V8EuOPVBvvWyzGNaMHfBpBaLXXR/5xn+/OLKQOI1ND8
-QYI3ivsy9Ht7c6z8rsd3RYboNSPS/yNroXSGFUKJOkNsYgF8k1TEoEn/KmrP2yHR
-b7S2LS7/xTpmXJ9YMJzYlENf0XxnmigtaT+J1FUig//1OMkoFhJsUHzSpZNOf7vA
-CL0UOtmk2LKbUqjgK+Su
-=p2ke
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl9XwrgACgkQFRhsZwKx
+RFSy+g//YzdjgLKXcT8xOfwA+fdPFPE8HcOBqakQZRLGjky95SzV1BR1PvS2JQwN
+oNFtED8TPPN+Mk3Qq6Wp72JZZ/WXH031UUBzk09Fxt0EOOo49r+1rk/HrNtGntF8
+NcWyQhjPE631JkGjgPcUds+k4J2P7TwET9H8yLBmIMhlK1k1BlXimzP/XeG/e566
+k0UIsrdFHvLXuq5jFl5M42rIHxyLnWM0P/dqQbLPbL70Xu2XAa0AV/Vt17Jovkzw
+nlWK/s6COZ5ioqhr9UHBjhpMXysAGc3XtIOZp0DoMYJFZqytU6qSLmeEOHj8Yxxa
+WsbvjtEPkJHOi1mw5Dhw1nohtSly6oGE6iPAa7I3tJir/YXysnQwZnBQal7lsjzt
+tO3mrkR+n88rExcUmgeEF17z6us19rU5ldQ/A7MRMapTEWSfg6hiZKnC1BBEYPRa
+x8/t+vgXOkeHXDMSJjVWr5gkgltji8zzCRXHYs5P8RQ06hAvOk2CwR5K9yvc2nYf
+YLkPaeQivOLPYNayr7cJ6eL1j073aZYwTcEKmomNYvbCA1yqzM5t64bDCX6I76oO
+bZovSYqyQdzyWPlx7XeLPXlazshhzmFJI7n42p/XSBXZgW/uzVzQ5xhe7C8mCR4R
+HGzRTmPN2Py+6TDtGloAOjQiaXDQzG3vK3K8dvP/T4OqtsLt98Q=
+=f1o7
 -----END PGP SIGNATURE-----
 
---ghaaweZg8Ir3Wk8YusFcGUIetrJME261A--
+--zPPk1vFb49q7OPJhA4xVPsQ4sl5i9tYqU--
 
