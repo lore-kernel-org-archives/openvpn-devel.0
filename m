@@ -1,18 +1,13 @@
-From: Arne Schwabe <arne@...1227...>
-References: <20200908111511.9271-1-gert@...1296...>
- <8f5ce86d-f11c-4858-26c6-abc21200368c@...2080...>
- <20200908163523.GE75094@...1296...>
- <762075ad-7c4f-48e5-0887-d5a4083a9bf7@...1227...>
- <eAWhYvj75Zizi0tQw1j-aAO6OQYYZZhQFc8scdog5dIVs9au2ZcRGqVZN0QkmlmxPwasBDCV7wWROCzi0d5h1A1YKwGHOmOO5hfXL3e823o=@protonmail.com>
-Message-ID: <a1e8e907-537a-1455-88c5-1a25cca17527@...1227...>
-Date: Tue, 8 Sep 2020 19:43:20 +0200
+From: "Vladislav Grishenko" <themiron.ru@...277...>
+References: <20200903114455.29341-1-themiron@...2010...>
+ <0ec2c2a7-61d5-69c6-76a4-af83c283c64c@...2080...>
+In-Reply-To: <0ec2c2a7-61d5-69c6-76a4-af83c283c64c@...2080...>
+Date: Wed, 9 Sep 2020 00:01:28 +0500
+Message-ID: <020d01d68612$75dbca00$61935e00$@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <eAWhYvj75Zizi0tQw1j-aAO6OQYYZZhQFc8scdog5dIVs9au2ZcRGqVZN0QkmlmxPwasBDCV7wWROCzi0d5h1A1YKwGHOmOO5hfXL3e823o=@protonmail.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="zPPk1vFb49q7OPJhA4xVPsQ4sl5i9tYqU"
-Subject: Re: [Openvpn-devel] [PATCH] Document that --push-remove is
- generally more suitable than --push-reset
+Content-Language: ru
+Subject: Re: [Openvpn-devel] [PATCH] Fix --remote protocol can't be set
+ without port argument
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,53 +16,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?B?QW5kcsOp?= <pippin1st+devel@...2282...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---zPPk1vFb49q7OPJhA4xVPsQ4sl5i9tYqU
-Content-Type: multipart/mixed; boundary="0vq2dZYGQLhazvDz3kbGDSVkjOWejGIEO"
-
---0vq2dZYGQLhazvDz3kbGDSVkjOWejGIEO
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+To: 'David Sommerseth' <openvpn@...2080...>, openvpn-devel@lists.sourceforge.net
 
-Am 08.09.20 um 19:04 schrieb Andr=C3=A9:
-> Hi,
+Hi David,
+
+> -----Original Message-----
+> From: David Sommerseth <openvpn@...2080...>
+> Sent: Tuesday, September 8, 2020 6:23 PM
+> To: Vladislav Grishenko <themiron@...2010...>; openvpn-
+> devel@lists.sourceforge.net
+> Subject: Re: [Openvpn-devel] [PATCH] Fix --remote protocol can't be set w=
+ithout
+> port argument
 >=20
-> My vote would be to deprecate --push-reset
-> (same for --route-nopull)
->
+> On 03/09/2020 13:44, Vladislav Grishenko wrote:
+> > According client-options.rst additional argumets ``port`` and
+> > ``proto`` are both optional and it's allowed to have port absent and pr=
+otocol
+> set:
+> >     --remote args
+> >       Examples:
+> >          remote server.example.net tcp
+> >
+> > But when protocol is set without preceeding port argument, it is being
+> > misparsed as a port with subsequent error:
+> >     RESOLVE: Cannot resolve host address: server.example.net:tcp
+> >     (Servname not supported for ai_socktype)
+> >
+> > Since protocol names are predefined and don't match service names, fix
+> > this behavior by checking second argument for valid protocol first.
+> >
+> Uhm ... I'm leaning towards a NAK to this patch and would rather suggest
+> updating the man page to be correct.  This is a mistake from my side when
+> converting the man page to .rst files.  The example should be:
+>=20
+>        remote server.example.net 1194 tcp
+>=20
 
-Route-nopull is still a very useful option that has no good replacement.
-I regularly use it when the server should not mess up my routing table.
+Hum. Initially all variants were supported, by checking numeric port and ta=
+king it as proto, if not numeric. Later port became string servname and opt=
+ional logic was lost.
+Man pages still has all of them since that time:
+	remote server.exmaple.net
+	remote server.exmaple.net 1194
+	remote server.exmaple.net tcp
 
-Arne
+At first look there is no need for proto w/o port set,  why it can be impor=
+tant?
+With support of server host & port discovery (DNS SRV RFC 2782), port info =
+is not required, only host and protocol make sense. So I though about this =
+one little step forward toward ~consistent syntax.
+Does it makes any sense?
+
+> The OpenVPN 2.4 and prior releases has this line:
+>=20
+>        --remote host [port] [proto]
+>=20
+> But this syntax was not supported by rst2man, so it was replaced with "ar=
+gs"
+> and the examples coming below; which carried an error.
+>=20
+>=20
+> --
+> kind regards,
+>=20
+> David Sommerseth
+> OpenVPN Inc
+>=20
 
 
---0vq2dZYGQLhazvDz3kbGDSVkjOWejGIEO--
-
---zPPk1vFb49q7OPJhA4xVPsQ4sl5i9tYqU
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl9XwrgACgkQFRhsZwKx
-RFSy+g//YzdjgLKXcT8xOfwA+fdPFPE8HcOBqakQZRLGjky95SzV1BR1PvS2JQwN
-oNFtED8TPPN+Mk3Qq6Wp72JZZ/WXH031UUBzk09Fxt0EOOo49r+1rk/HrNtGntF8
-NcWyQhjPE631JkGjgPcUds+k4J2P7TwET9H8yLBmIMhlK1k1BlXimzP/XeG/e566
-k0UIsrdFHvLXuq5jFl5M42rIHxyLnWM0P/dqQbLPbL70Xu2XAa0AV/Vt17Jovkzw
-nlWK/s6COZ5ioqhr9UHBjhpMXysAGc3XtIOZp0DoMYJFZqytU6qSLmeEOHj8Yxxa
-WsbvjtEPkJHOi1mw5Dhw1nohtSly6oGE6iPAa7I3tJir/YXysnQwZnBQal7lsjzt
-tO3mrkR+n88rExcUmgeEF17z6us19rU5ldQ/A7MRMapTEWSfg6hiZKnC1BBEYPRa
-x8/t+vgXOkeHXDMSJjVWr5gkgltji8zzCRXHYs5P8RQ06hAvOk2CwR5K9yvc2nYf
-YLkPaeQivOLPYNayr7cJ6eL1j073aZYwTcEKmomNYvbCA1yqzM5t64bDCX6I76oO
-bZovSYqyQdzyWPlx7XeLPXlazshhzmFJI7n42p/XSBXZgW/uzVzQ5xhe7C8mCR4R
-HGzRTmPN2Py+6TDtGloAOjQiaXDQzG3vK3K8dvP/T4OqtsLt98Q=
-=f1o7
------END PGP SIGNATURE-----
-
---zPPk1vFb49q7OPJhA4xVPsQ4sl5i9tYqU--
 
