@@ -1,9 +1,15 @@
-From: Vladislav Grishenko <themiron@...2010...>
-Date: Tue,  8 Sep 2020 17:36:25 +0500
-Message-Id: <20200908123625.23179-1-themiron@...2010...>
-In-Reply-To: <011701d6858cyandex-team.ru>
 References: <011701d6858cyandex-team.ru>
-Subject: [Openvpn-devel] [PATCH v3] Fix best gateway selection over netlink
+ <20200908123625.23179-1-themiron@...2010...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <33df2e45-ebd9-fbd5-1fac-e43c4d9090ca@...2080...>
+Date: Tue, 8 Sep 2020 15:08:16 +0200
+MIME-Version: 1.0
+In-Reply-To: <20200908123625.23179-1-themiron@...2010...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="z9t9ozf2es34tJ6I8ubqk275gxt3sbHZW"
+Subject: Re: [Openvpn-devel] [PATCH v3] Fix best gateway selection over
+ netlink
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,146 +18,93 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Vladislav Grishenko <themiron@...2010...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--z9t9ozf2es34tJ6I8ubqk275gxt3sbHZW
+Content-Type: multipart/mixed; boundary="k6eX5PIqrxdYydgUkWUUE8vvAccwU4X11";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: Vladislav Grishenko <themiron@...2010...>,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <33df2e45-ebd9-fbd5-1fac-e43c4d9090ca@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH v3] Fix best gateway selection over
+ netlink
+References: <011701d6858cyandex-team.ru>
+ <20200908123625.23179-1-themiron@...2010...>
+In-Reply-To: <20200908123625.23179-1-themiron@...2010...>
+
+--k6eX5PIqrxdYydgUkWUUE8vvAccwU4X11
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-Netlink route request with NLM_F_DUMP flag set means to return
-all entries matching criteria passed in message content -
-matching supplied family & dst address in our case.
-So, gateway from the first ipv4 route was always used.
+On 08/09/2020 14:36, Vladislav Grishenko wrote:
+> On kernels earlier than 2.6.38 default routes are the last ones,
+> so arbitrary host/net route w/o gateway is likely be returned as
+> first, causing gateway to be invalid or empty.
+> After refactoring in 2.6.38 kernel default routes are on top, so
+> the problem with older kernels was hidden.
 
-On kernels earlier than 2.6.38 default routes are the last ones,
-so arbitrary host/net route w/o gateway is likely be returned as
-first, causing gateway to be invalid or empty.
-After refactoring in 2.6.38 kernel default routes are on top, so
-the problem with older kernels was hidden.
+I haven't paid too much attention here, but I don't think I've seen this po=
+int
+being brought up.  But do we really care about such old kernels at all?
 
-Fix this behavior by selecting first 0.0.0.0/0 if dst was not set
-or empty. For IPv6, no behavior is changed - request ::/128 route,
-so just clarify the sizes via netlink route api.
+AFAIK, RHEL-6 (which goes EOL in November this year and which is not planned
+to be supported in OpenVPN 2.5+) is the only distro carrying such an old
+kernel release (2.6.32 baseline).  Even an internal OpenWRT 19.07 box of mi=
+ne
+(which should be upgraded, I know!) ships with 4.14.  Unless I'm completely
+clueless (which is a possibility), 2.4 and 2.6 kernels are mostly interesti=
+ng
+for boards with 4MB flash memory.  And I would suspect such boards with that
+little flash memory to belong to that past.  (And OpenVPN 2.4 is perfectly
+fine too for some time forward anyhow, which should work just fine).
 
-Tested on 5.4.0, 4.1.51, 2.6.36 and 2.6.22 kernels.
+If this fix has other qualities, then it's fine to consider such a patch.  =
+But
+I don't see the need for this if it is primarily to enable support for anci=
+ent
+kernel releases which are no longer supported by the upstream kernel commun=
+ity
+(where 4.4 is the oldest one).
 
-Signed-off-by: Vladislav Grishenko <themiron@...2010...>
----
- doc/man-sections/advanced-options.rst |  7 +++--
- src/openvpn/networking_sitnl.c        | 44 ++++++++++++++++++++++++---
- 2 files changed, 45 insertions(+), 6 deletions(-)
+I would lean on what Antonio says here as well, as he kinda owns the sitnl
+implementation and API.
 
-diff --git a/doc/man-sections/advanced-options.rst b/doc/man-sections/advanced-options.rst
-index 9b96e406..bedc8841 100644
---- a/doc/man-sections/advanced-options.rst
-+++ b/doc/man-sections/advanced-options.rst
-@@ -11,8 +11,11 @@ Standalone Debug Options
-      --show-gateway
-      --show-gateway IPv6-target
- 
--  If an IPv6 target address is passed as argument, the IPv6 route for this
--  host is reported.
-+  For IPv6 this queries the route towards ::/128, or the specified IPv6
-+  target address if passed as argument.
-+  For IPv4 on Linux, Windows, MacOS and BSD it looks for a 0.0.0.0/0 route.
-+  If there are more specific routes, the result will not always be matching
-+  the route of the IPv4 packets to the VPN gateway.
- 
- 
- Advanced Expert Options
-diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
-index 713a213a..2bc70a50 100644
---- a/src/openvpn/networking_sitnl.c
-+++ b/src/openvpn/networking_sitnl.c
-@@ -345,6 +345,13 @@ sitnl_send(struct nlmsghdr *payload, pid_t peer, unsigned int groups,
-  *               continue;
-  *           }
-  */
-+
-+            if (h->nlmsg_type == NLMSG_DONE)
-+            {
-+                ret = 0;
-+                goto out;
-+            }
-+
-             if (h->nlmsg_type == NLMSG_ERROR)
-             {
-                 err = (struct nlmsgerr *)NLMSG_DATA(h);
-@@ -360,7 +367,11 @@ sitnl_send(struct nlmsghdr *payload, pid_t peer, unsigned int groups,
-                         ret = 0;
-                         if (cb)
-                         {
--                            ret = cb(h, arg_cb);
-+                            int r = cb(h, arg_cb);
-+                            if (r <= 0)
-+                            {
-+                                ret = r;
-+                            }
-                         }
-                     }
-                     else
-@@ -375,8 +386,12 @@ sitnl_send(struct nlmsghdr *payload, pid_t peer, unsigned int groups,
- 
-             if (cb)
-             {
--                ret = cb(h, arg_cb);
--                goto out;
-+                int r = cb(h, arg_cb);
-+                if (r <= 0)
-+                {
-+                    ret = r;
-+                    goto out;
-+                }
-             }
-             else
-             {
-@@ -410,6 +425,7 @@ typedef struct {
-     int addr_size;
-     inet_address_t gw;
-     char iface[IFNAMSIZ];
-+    bool default_only;
- } route_res_t;
- 
- static int
-@@ -421,6 +437,12 @@ sitnl_route_save(struct nlmsghdr *n, void *arg)
-     int len = n->nlmsg_len - NLMSG_LENGTH(sizeof(*r));
-     unsigned int ifindex = 0;
- 
-+    /* filter-out non-zero dst prefixes */
-+    if (res->default_only && r->rtm_dst_len != 0)
-+    {
-+        return 1;
-+    }
-+
-     while (RTA_OK(rta, len))
-     {
-         switch (rta->rta_type)
-@@ -477,11 +499,25 @@ sitnl_route_best_gw(sa_family_t af_family, const inet_address_t *dst,
-     {
-         case AF_INET:
-             res.addr_size = sizeof(in_addr_t);
--            req.n.nlmsg_flags |= NLM_F_DUMP;
-+            /*
-+             * kernel can't return 0.0.0.0/8 host route, dump all
-+             * the routes and filter for 0.0.0.0/0 in cb()
-+             */
-+            if (!dst || !dst->ipv4)
-+            {
-+                req.n.nlmsg_flags |= NLM_F_DUMP;
-+                res.default_only = true;
-+            }
-+            else
-+            {
-+                req.r.rtm_dst_len = 32;
-+            }
-             break;
- 
-         case AF_INET6:
-             res.addr_size = sizeof(struct in6_addr);
-+            /* kernel can return ::/128 host route */
-+            req.r.rtm_dst_len = 128;
-             break;
- 
-         default:
--- 
-2.17.1
 
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
+
+
+
+--k6eX5PIqrxdYydgUkWUUE8vvAccwU4X11--
+
+--z9t9ozf2es34tJ6I8ubqk275gxt3sbHZW
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJfV4JIAAoJEIbPlEyWcf3y/54QAIAIII9uwghyuGIRlWAsNuD1
+GX4Lb+e+kElx7mnvh1GX3SlVlnrBEqwkrhlM2/p7afpX5ONOS/gJhwsWi1Rbwxfi
+o+s4+ZcWA/BGu5KSpNKNub7rU9aI/4RaVqai0CiSqJ4bJE5dKV8TKVAdL/hq0MK6
+sfUjI6mwLH03a3QlofJqE15L0tLlaFU6Vg5A6Shh5PBOjbpK7EzikOzTzQVieM8f
+3gY3iryt1QEq7uwUmPddvhiHCFA39lW5JcDI87jEg/R2Ys+oTUFQY6BMqljUMjdO
+XCO5fjCaVXCH4H8Cn+xZxl1Zc2xPWccebkrw3jQ+CjH0KLegRUqxDPCNQhVN6kS8
+vw7blKuXPieTvDnpPuG0CxwYOofd7ey2AstjVXFj2hTqoFr+AN0+tGASWTmKgyAr
+IdZgZmhS259DGNrbt57Jmt4xpFxDwDSu9O0c393lZVg7ZSlG7gwXSrcuoxubN0MY
+ECixF62tejp5VSGgZYKXwVAd10ywOyVqvpywjyM4Ik6ufez+w+bhtlqWmFHA5HOb
+8plnj3YFrgV9sv63zAdqF6OiqYaRT4vxbmf/c6tgfAcIWIkpvkmApmkr/3+vDtiS
+bZYIMM9tq52HwblLn8xXRIis/d/hSnG6/2p6AKlsozvg/rApAF4DlTZCvFcF4mOH
+/epl/bHqYaGwIYKhhIOc
+=9PnI
+-----END PGP SIGNATURE-----
+
+--z9t9ozf2es34tJ6I8ubqk275gxt3sbHZW--
 
