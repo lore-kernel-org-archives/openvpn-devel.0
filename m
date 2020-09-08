@@ -1,15 +1,15 @@
-Date: Tue, 8 Sep 2020 18:35:23 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20200908163523.GE75094@...1296...>
-References: <20200908111511.9271-1-gert@...1296...>
- <8f5ce86d-f11c-4858-26c6-abc21200368c@...2080...>
+References: <20200908154157.13809-1-arne@...1227...>
+ <f4128ade-e54c-00b4-0e16-c54e08ab0454@...2318...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <ea18a0ae-5512-ad24-ab13-48bfb8ef3a7b@...1227...>
+Date: Tue, 8 Sep 2020 18:38:55 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="wnBDZIh98Y6AWY8/"
-Content-Disposition: inline
-In-Reply-To: <8f5ce86d-f11c-4858-26c6-abc21200368c@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Document that --push-remove is
- generally more suitable than --push-reset
+In-Reply-To: <f4128ade-e54c-00b4-0e16-c54e08ab0454@...2318...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="JuxUgwNd0Rii6Iy8HJwkMbJP3x6kaNmPr"
+Subject: Re: [Openvpn-devel] [PATCH 0/4] Allow setting up OpenVPN in TLS
+ mode without CA
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,53 +18,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn@...2080...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?Q?Fran=c3=a7ois_Kooman?= <fkooman@...2318...>, openvpn-devel@lists.sourceforge.net
 
---wnBDZIh98Y6AWY8/
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--JuxUgwNd0Rii6Iy8HJwkMbJP3x6kaNmPr
+Content-Type: multipart/mixed; boundary="6KMMeQfOQtFsadb9eE7mmRY0V3bGaXFj0"
+
+--6KMMeQfOQtFsadb9eE7mmRY0V3bGaXFj0
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+> One of the nice features of Jason's patch was that also for big(ger)
+> deployments you could get rid of the CA if you have another channel to
+> establish trust between client and server.
 
-On Tue, Sep 08, 2020 at 03:11:40PM +0200, David Sommerseth wrote:
-> It would be good if --push-reset would actually not remove certain critic=
-al
-> options, but this is anyhow a good heads-up for our users.
+I really wonder which large deployment want to do that instead of a CA.
+I really understand the need for small and simple deployments. But for
+larger deployments a CA + CRL seems more useful for everything that I
+can come up with.
 
-Well, that ticket sat there 10 years (!!) waiting for someone to go
-and implement it...  6 years it sat on your lap, 4 years on mine (or so),
-so it looks like this is not going to happen any time soon.
+> I guess it won't be possible to use --tls-verify (on the server) with you=
+r patch and verify the fingerprint(s) there?=20
+No. Currently not.
 
-gert
+Arne
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
 
-Gert Doering - Munich, Germany                             gert@...1296...
+--6KMMeQfOQtFsadb9eE7mmRY0V3bGaXFj0--
 
---wnBDZIh98Y6AWY8/
+--JuxUgwNd0Rii6Iy8HJwkMbJP3x6kaNmPr
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJfV7LKAAoJEB2Cnv7KVigSAVQMAI25IwPE1hmgA6P7ZUTKJlDu
-CDiaNQs1KMq/UnsxPSD3xj6Gz6nLYZ3pIVq/h8xKvjuA8V6EFe/MKot2S7lEDYIA
-h2GJHoXchslduowO7+d+s5TOfgon1r/eg7DFSeCbm96WMRdLbavwG0vIFgpXRcYv
-RJQdt4hBnFMJgmPfoqykzB3mLuKV5So/o0VkGtDXXTixEcZvNvN0bPfseI+dSNQg
-DajWGfxF1EVevMBRs6Ifc0/HWwdOJrBPIVv4/fzSDTBDH07tmsmgbsAacDtHpgpw
-LKFX8rxvr5sAtoijxrO2izQ6jZh0M0wdt1924tQQXMwtDgTYcKlPYSYsOfhXmPI2
-kz7QNKRzZhwj5szw48Xm8Ighqs8LVPTHPQSD5d3zld7zFCGqeBRqYWWl9dfcfSc4
-q+UW4w8aQA/90d6dpngH5bsEm7emlxtd8a3e5xvi6p7HLr/YLmxXYN+YpdqCBQba
-xsuPteUTIox7Am9ye0m3513D5YPvhN3S/iaflFwbTg==
-=CdWv
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl9Xs58ACgkQFRhsZwKx
+RFRanhAAhMKMc0dD726J2R0FGynME/SHa7k0O9hnbJsGcdI/YDfHDRFcCIefaC0R
+U3NI+iqHnVpMbuVNjwWC6JU9IHEVwfyASTOVqBwx0mhX5k2UVIBKVpYD7BbfKL2M
+wlRyKcl18nwQw9ZpLO4XZ1bQ3LUrvB/XFRNHzzciXbcOBKDzLWdCNdwkeT3uJs6g
+RPvPGd34c306Az381IxOyjLR0E0NnXlDeoA+NF9y++gJC3Okwwl8mOJKjzVYaNrA
+SDqEEpLehFgo43cnZxoJURtXKLO04rxLMGGbSwXLdMybPUfAuJk7cve5EsJW3jwS
+H1lqixzyUaEj3BDR9Gsgr9PfQTocZcuqU/oB3kJl+KwfUrJkCHFhsmF0nvWHBX+2
+lCwxlV3BjxmRY9ZnyV85vvT3wsTFo7YVufK8WRvdQ0zDvpT2Lxq2BGG3BndA6gNe
+8BRdifRIgFyWN+kzBMjw2+NH4vnMySQSM0bWQhUDBgMtw/Ylfm7J90EzIU29xQo3
+qM+clP9t75d7GW/SGqHYaqbOKCIzE0iwtuh+dhQmhCrHjI6gxE0yuchieaShpvta
+08RwfFU38WzBnEU5A+E33gKcqQmUjT2V2AsLWtGMorE7ePHsLzzd+4Ozlo77zQ5a
+Grr5b+Pmhs7MLEwtaXtQ393BmSF/CKzzxZ30gUFzEdmD+GagEpw=
+=wUbu
 -----END PGP SIGNATURE-----
 
---wnBDZIh98Y6AWY8/--
+--JuxUgwNd0Rii6Iy8HJwkMbJP3x6kaNmPr--
 
