@@ -1,14 +1,14 @@
-References: <20200908111511.9271-1-gert@...1296...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <13843e71-6707-bda4-1b5e-62c484ac9c26@...1227...>
-Date: Tue, 8 Sep 2020 15:09:42 +0200
+References: <011701d6858cyandex-team.ru>
+ <20200908123625.23179-1-themiron@...2010...>
+ <33df2e45-ebd9-fbd5-1fac-e43c4d9090ca@...2080...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <ff1ab111-3b3a-b99a-c99f-ad55c426c61e@...2181...>
+Date: Tue, 8 Sep 2020 15:24:57 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200908111511.9271-1-gert@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="Ij2WN8sXOX4LwdjDsoYQOECdNgRevl8Xk"
-Subject: Re: [Openvpn-devel] [PATCH] Document that --push-remove is
- generally more suitable than --push-reset
+In-Reply-To: <33df2e45-ebd9-fbd5-1fac-e43c4d9090ca@...2080...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v3] Fix best gateway selection over
+ netlink
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,54 +17,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: David Sommerseth <openvpn@...2080...>, Vladislav Grishenko <themiron@...2010...>, openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---Ij2WN8sXOX4LwdjDsoYQOECdNgRevl8Xk
-Content-Type: multipart/mixed; boundary="dmiitf8pdG5HCMweGxmc6966dE5IM30bV"
+Hi,
 
---dmiitf8pdG5HCMweGxmc6966dE5IM30bV
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+On 08/09/2020 15:08, David Sommerseth wrote:
+> On 08/09/2020 14:36, Vladislav Grishenko wrote:
+>> On kernels earlier than 2.6.38 default routes are the last ones,
+>> so arbitrary host/net route w/o gateway is likely be returned as
+>> first, causing gateway to be invalid or empty.
+>> After refactoring in 2.6.38 kernel default routes are on top, so
+>> the problem with older kernels was hidden.
+> 
+> I haven't paid too much attention here, but I don't think I've seen this point
+> being brought up.  But do we really care about such old kernels at all?
+> 
+> AFAIK, RHEL-6 (which goes EOL in November this year and which is not planned
+> to be supported in OpenVPN 2.5+) is the only distro carrying such an old
+> kernel release (2.6.32 baseline).  Even an internal OpenWRT 19.07 box of mine
+> (which should be upgraded, I know!) ships with 4.14.  Unless I'm completely
+> clueless (which is a possibility), 2.4 and 2.6 kernels are mostly interesting
+> for boards with 4MB flash memory.  And I would suspect such boards with that
+> little flash memory to belong to that past.  (And OpenVPN 2.4 is perfectly
+> fine too for some time forward anyhow, which should work just fine).
 
-Am 08.09.20 um 13:15 schrieb Gert Doering:
-> It's a long-standing and well-known problem that --push-reset removes
-> "critical" options from the push list (like "topology subnet") which
-> will then lead to non-working client configs.  This can not be
-> reasonably fixed, because the list of "critical" options depends on
-> overall server config.
->=20
-> So just document the fact, and point people towards --push-remove as
-> a more selective tool.
->
+Well, this is an actual flaw in the sitnl code.
+It now works, but it may break at some point (it is apparently relying
+on a self-made assumption which may not hold true in the future).
 
-Acked-By: Arne Schwabe <arne@...1227...>
+For this reason sitnl *needs* fixing.
+
+On the other hand, helping out people that are stuck on old platforms to
+upgrade to modern (aka more secure) OpenVPN versions is also not a bad idea.
+
+Since the fix is relatively small, I'd consider it for inclusion.
+
+I'll try to review it ASAP so that it can be considered for going into
+the next beta (2.5 compiles with sitnl by default - this is how this
+issue was exposed)
 
 
---dmiitf8pdG5HCMweGxmc6966dE5IM30bV--
+Regards,
 
---Ij2WN8sXOX4LwdjDsoYQOECdNgRevl8Xk
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl9XgpYACgkQFRhsZwKx
-RFTwdA/+KKWsnh+tVP2NhF3KoGWY1/ZAXh6RTfnprH8Rf61hkA+RCi5uuU9Jz3SG
-sz6c7xSX1M+6rQNvdPLc3QjMAC3RXbJ+9MhZ4IROrNbrpraNT779+nkwxKNFWcNc
-cYJ517R26n+IhletuXNgeBgL25SkbEvq2aiAAKkzI2sk7f7Bj3pSCcuyg/Zp4nMS
-5JPh2jzOyvUZTDh5BCQyXLXdXKAcf6ArXgYwPRE88Z6LiqsASc9MnIy1iM8FelWy
-Efn+y/QGnVzz1duyxYTGEYesyaoTKlo6EZxIzf27sKCu2JCKI0fqktil8nNIUUqB
-RAY31cxi2l3IrqWLcgQeUXiLAOYALQaygoDT/8HQq9Nu2XgEG5UwDBwVqUdOXM9R
-8kp27SnGu0oRneZwoi2T4PGMMLXyLgMiYwy1AP5lKjtnealYoYKDDpXpqd6iYLFE
-3KM/3XxTE4Vm6Xz4UePepNysiLzLLz0hYnXlXy/0+yzBRcbK+1CMo2XPjwbuKYp1
-ZxMcdmzLatbiFAHsZZ0Me43x97G1ajxFaV38AiWrhOQ2SQyaxiFltqQ/YTU4U3eP
-KkdOoZLQfMLYvguaMBfputnqHMG+cEKcpTFirYesVoTIyatbhzY9gbIPwE6lLYpQ
-JPvoLqP1DB60FS/+Or6FCh7FDdi1OwDAllt/3HgXTx1NTtX83Lw=
-=BTT1
------END PGP SIGNATURE-----
-
---Ij2WN8sXOX4LwdjDsoYQOECdNgRevl8Xk--
+-- 
+Antonio Quartulli
 
