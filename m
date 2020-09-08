@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue,  8 Sep 2020 17:41:57 +0200
-Message-Id: <20200908154157.13809-5-arne@...1227...>
+Date: Tue,  8 Sep 2020 17:41:56 +0200
+Message-Id: <20200908154157.13809-4-arne@...1227...>
 In-Reply-To: <20200908154157.13809-1-arne@...1227...>
 References: <20200908154157.13809-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 4/4] Document the simple self-signed
- certificate setup in examples
+Subject: [Openvpn-devel] [PATCH 3/4] Support fingerprint authentication
+ without CA certificate
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,132 +16,234 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: "Jason A. Donenfeld" <Jason@...2390...>
 
-Also remove the static key setup example as it is less secure and we
-want to avoid it for new setups as we want to slowly deprecate these.
+From: "Jason A. Donenfeld" <Jason@...2390...>
+
+OpenVPN traditionally works around CAs. However many TLS-based protocols also
+allow an alternative simpler mode in which rather than verify certificates
+against CAs, the certificate itself is hashed and compared against a
+pre-known set of acceptable hashes. This is usually referred to as
+"fingerprint verification". It's popular across SMTP servers, IRC servers,
+XMPP servers, and even in the context of HTTP with pinning.
+
+   * Allow not specifying the --ca parameter, to specify that
+     certificates should not be checked against a CA.
+
+I've included some instructions on how to use all of this.
+
+Server side:
+============
+
+Make self-signed cert:
+$ openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -keyout serverkey.pem -out servercert.pem -nodes -sha256 -days 3650 -subj '/CN=server'
+
+Record our fingerprint in an environment variable for the client to use later:
+$ server_fingerprint="$(openssl x509 -in servercert.pem -noout -sha256 -fingerprint | sed 's/.*=//;s/\(.*\)/\1/')"
+
+Client side:
+============
+Make self-signed cert:
+$ openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -keyout clientkey.pem -out clientcert.pem -nodes -sha256 -days 3650 -subj '/CN=client'
+
+Record our fingerprint in an environment variable for the server to use later:
+$ client_fingerprint="$(openssl x509 -in clientcert.pem -noout -sha256 -fingerprint | sed 's/.*=//;s/\(.*\)/\1/')"
+
+Start server/client
+===================
+
+Start openvpn with peer fingerprint verification:
+
+$ sudo openvpn --server 10.66.0.0 255.255.255.0 --dev tun --dh none --cert servercert.pem --key serverkey.pem --peer-fingerprint "$client_fingerprint"
+
+$ sudo openvpn --client --remote 127.0.0.1 --dev tun --cert clientcert.pem --key clientkey.pem --peer-fingerprint "$server_fingerprint" --nobind
+
+Signed-off-by: Jason A. Donenfeld <Jason@...2390...>
+
+Patch V2: Changes in V2 (by Arne Schwabe):
+          - Only check peer certificates, not all cert levels, if you need
+            multiple levels of certificate you should use a real CA
+          - Use peer-fingerprint instead tls-verify on server side in example.
+          - rename variable ca_file_none to verify_hash_no_ca
+          - do no require --ca none but allow --ca simply
+            to be absent when --peer-fingprint is present
+          - adjust warnings/errors messages to also point to
+            peer-fingerprint as valid verification method.
+          - Fix mbed TLS version of not requiring CA
+            not working
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- Changes.rst                      |  5 ++++
- doc/man-sections/examples.rst    | 46 ++++++++++++++++++++------------
- doc/man-sections/tls-options.rst |  4 +++
- 3 files changed, 38 insertions(+), 17 deletions(-)
+ src/openvpn/init.c               |  2 ++
+ src/openvpn/options.c            | 30 +++++++++++++++++++++++-------
+ src/openvpn/options.h            |  1 +
+ src/openvpn/ssl.c                |  2 +-
+ src/openvpn/ssl_common.h         |  1 +
+ src/openvpn/ssl_verify_mbedtls.c | 17 +++++++++++++++++
+ src/openvpn/ssl_verify_openssl.c |  2 +-
+ 7 files changed, 46 insertions(+), 9 deletions(-)
 
-diff --git a/Changes.rst b/Changes.rst
-index 6007412c..6ae706c6 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -8,6 +8,11 @@ Certificate pinning/verify peer fingerprint
-     fingerprint of the peer. The option has use a number of
-     SHA256 fingerprints.
- 
-+TLS mode with self-signed certificates
-+    When ``--peer-fingerprint`` is used, the ``--ca`` and ``--capath`` option
-+    become optional. This allows for small OpenVPN setups without setting up
-+    a PKI with Easy-RSA or similar software.
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 0c2b823e..585b5760 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2910,6 +2910,8 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
+     to.verify_hash = options->verify_hash;
+     to.verify_hash_algo = options->verify_hash_algo;
+     to.verify_hash_depth = options->verify_hash_depth;
++    to.verify_hash_no_ca = options->verify_hash_no_ca;
 +
- New features
- ------------
- Client-specific tls-crypt keys (``--tls-crypt-v2``)
-diff --git a/doc/man-sections/examples.rst b/doc/man-sections/examples.rst
-index 3f494ea4..ae7a49b4 100644
---- a/doc/man-sections/examples.rst
-+++ b/doc/man-sections/examples.rst
-@@ -60,8 +60,8 @@ that is part of your local subnet for either of the tunnel endpoints,
- you will get a weird feedback loop.
+ #ifdef ENABLE_X509ALTUSERNAME
+     to.x509_username_field = (char *) options->x509_username_field;
+ #else
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index df9eef07..8e00e896 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2721,18 +2721,23 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
+         else
+         {
+ #ifdef ENABLE_CRYPTO_MBEDTLS
+-            if (!(options->ca_file))
++            if (!(options->ca_file || options->verify_hash_no_ca))
+             {
+-                msg(M_USAGE, "You must define CA file (--ca)");
++                msg(M_USAGE, "You must define CA file (--ca) and/or "
++                    "peer fingeprint verification "
++                    "(--peer-fingerprint)");
+             }
+             if (options->ca_path)
+             {
+                 msg(M_USAGE, "Parameter --capath cannot be used with the mbed TLS version version of OpenVPN.");
+             }
+ #else  /* ifdef ENABLE_CRYPTO_MBEDTLS */
+-            if ((!(options->ca_file)) && (!(options->ca_path)))
++            if ((!(options->ca_file)) && (!(options->ca_path))
++                && (!(options->verify_hash_no_ca)))
+             {
+-                msg(M_USAGE, "You must define CA file (--ca) or CA path (--capath)");
++                msg(M_USAGE, "You must define CA file (--ca) or CA path "
++                    "(--capath) and/or peer fingeprint verification "
++                    "(--peer-fingerprint)");
+             }
+ #endif
+             if (pull)
+@@ -2751,7 +2756,8 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
+ #if P2MP
+                     if (!options->auth_user_pass_file)
+ #endif
+-                    msg(M_USAGE, "No client-side authentication method is specified.  You must use either --cert/--key, --pkcs12, or --auth-user-pass");
++                    msg(M_USAGE, "No client-side authentication method is specified.  You must use either --cert/--key,"
++                        " --pkcs12, or --auth-user-pass");
+                 }
+                 else if (sum == 2)
+                 {
+@@ -3241,6 +3247,13 @@ options_postprocess_mutate(struct options *o)
+         options_postprocess_http_proxy_override(o);
+     }
+ #endif
++    if (!o->ca_file && !o->ca_path && o->verify_hash
++        && o->verify_hash_depth == 0)
++    {
++        msg(M_INFO, "Using certificate fingerprint to verify peer (no CA "
++            "option set). ");
++        o->verify_hash_no_ca = true;
++    }
  
+ #if P2MP
+     /*
+@@ -3476,8 +3489,11 @@ options_postprocess_filechecks(struct options *options)
+     errs |= check_file_access_inline(options->dh_file_inline, CHKACC_FILE,
+                                      options->dh_file, R_OK, "--dh");
  
--Example 1: A simple tunnel without security
---------------------------------------------
-+Example 1: A simple tunnel without security (not recommended)
-+-------------------------------------------------------------
+-    errs |= check_file_access_inline(options->ca_file_inline, CHKACC_FILE,
+-                                     options->ca_file, R_OK, "--ca");
++    if (!options->verify_hash_no_ca)
++    {
++        errs |= check_file_access_inline(options->ca_file_inline, CHKACC_FILE,
++                                         options->ca_file, R_OK, "--ca");
++    }
  
- On bob:
- ::
-@@ -92,31 +92,41 @@ The ``--verb 9`` option will produce verbose output, similar to the
- quietly.
+     errs |= check_file_access_chroot(options->chroot_dir, CHKACC_FILE,
+                                      options->ca_path, R_OK, "--capath");
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index eee6bd21..ea1b49d0 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -565,6 +565,7 @@ struct options
+     struct verify_hash_list *verify_hash;
+     hash_algo_type verify_hash_algo;
+     int verify_hash_depth;
++    bool verify_hash_no_ca;
+     unsigned int ssl_flags; /* set to SSLF_x flags from ssl.h */
  
+ #ifdef ENABLE_PKCS11
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 3fcaa25f..45836821 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -684,7 +684,7 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx)
+     }
+ #endif
  
--Example 2: A tunnel with static-key security (i.e. using a pre-shared secret)
-------------------------------------------------------------------------------
-+Example 2: A tunnel with self-signed certificates and fingerprint
-+-----------------------------------------------------------------
+-    if (options->ca_file || options->ca_path)
++    if ((!options->verify_hash_no_ca && options->ca_file) || options->ca_path)
+     {
+         tls_ctx_load_ca(new_ctx, options->ca_file, options->ca_file_inline,
+                         options->ca_path, options->tls_server);
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 3a07c3d3..33fd8237 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -284,6 +284,7 @@ struct tls_options
+     const char *remote_cert_eku;
+     struct verify_hash_list *verify_hash;
+     int verify_hash_depth;
++    bool verify_hash_no_ca;
+     hash_algo_type verify_hash_algo;
+     char *x509_username_field;
  
--First build a static key on bob.
-+First build a self-signed certificate on bob and display its fingerprint.
- ::
+diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c
+index 93891038..1ed1e0e2 100644
+--- a/src/openvpn/ssl_verify_mbedtls.c
++++ b/src/openvpn/ssl_verify_mbedtls.c
+@@ -62,6 +62,23 @@ verify_callback(void *session_obj, mbedtls_x509_crt *cert, int cert_depth,
+     struct buffer cert_fingerprint = x509_get_sha256_fingerprint(cert, &gc);
+     cert_hash_remember(session, cert_depth, &cert_fingerprint);
  
--   openvpn --genkey --secret key
-+   openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -keyout bob.pem -out bob.pem -nodes -sha256 -days 3650 -subj '/CN=bob'
-+   openssl x509 -noout -sha256 -fingerprint -in bob.pem
- 
--This command will build a key file called ``key`` (in ascii format). Now
--copy ``key`` to ``alice.example.com`` over a secure medium such as by using
--the ``scp``\(1) program.
-+and the same on alice:
-+::
 +
-+   openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -keyout alice.pem -out alice.pem -nodes -sha256 -days 3650 -subj '/CN=alice'
-+   openssl x509 -noout -sha256 -fingerprint -in alice.pem
++    if (session->opt->verify_hash_no_ca)
++    {
++        /*
++         * If we decide to verify the peer certificate based on the fingerprint
++         * we ignore wrong dates and the certificate not being trusted.
++         * Any other problem with the certificate (wrong key, bad cert,...)
++         * will still trigger an error.
++         * Clearing these flags relies on verify_cert will later rejecting a
++         * certificate that has no matching fingerprint.
++         */
++        uint32_t flags_ignore = MBEDTLS_X509_BADCERT_NOT_TRUSTED
++                                | MBEDTLS_X509_BADCERT_EXPIRED
++                                | MBEDTLS_X509_BADCERT_FUTURE;
++        *flags = *flags & ~flags_ignore;
++    }
 +
-+
-+These commands will build a text file called ``bob.pem`` or ``alice.pem`` (in ascii format)
-+that contain both self-signed certificate and key and show the fingerprint of the certificates.
-+Transfer the fingerprints  over a secure medium such as by using
-+the ``scp``\(1) or ``ssh``\(1) program.
+     /* did peer present cert which was signed by our root cert? */
+     if (*flags != 0)
+     {
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
+index 454efeec..cb2a2e2a 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -67,7 +67,7 @@ verify_callback(int preverify_ok, X509_STORE_CTX *ctx)
+     cert_hash_remember(session, X509_STORE_CTX_get_error_depth(ctx), &cert_hash);
  
- On bob:
- ::
- 
--   openvpn --remote alice.example.com --dev tun1  \
--            --ifconfig 10.4.0.1 10.4.0.2 --verb 5 \
--            --secret key
-+   openvpn --ifconfig 10.4.0.1 10.4.0.2 --tls-server --dev tun --dh none \
-+           --cert bob.pem --key bob.pem --cipher AES-256-GCM \
-+           --peer-fingerprint "$fingerprint_of_alices_cert"
- 
- On alice:
- ::
- 
--   openvpn --remote bob.example.com --dev tun1   \
--           --ifconfig 10.4.0.2 10.4.0.1 --verb 5 \
--           --secret key
-+   openvpn --remote bob.example.com --tls-client --dev tun1   \
-+           --ifconfig 10.4.0.2 10.4.0.1 --cipher AES-256-GCM  \
-+           --cert alice.pem --key alice.pem
-+           --peer-fingerprint "$fingerprint_of_bobs_cert"
- 
- Now verify the tunnel is working by pinging across the tunnel.
- 
-@@ -130,9 +140,11 @@ On alice:
- 
-    ping 10.4.0.1
- 
-+Note: This example use a elliptic curve (`secp384`), which allows
-+``--dh`` and to ``none``.
- 
--Example 3: A tunnel with full TLS-based security
--------------------------------------------------
-+Example 3: A tunnel with full PKI and TLS-based security
-+--------------------------------------------------------
- 
- For this test, we will designate ``bob`` as the TLS client and ``alice``
- as the TLS server.
-diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
-index 658300b8..c2bf573f 100644
---- a/doc/man-sections/tls-options.rst
-+++ b/doc/man-sections/tls-options.rst
-@@ -609,6 +609,10 @@ If the option is inlined, ``algo`` is always :code:`SHA256`.
-     11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff:00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff:00
-     </peer-fingerprint>
- 
-+  When the ``--peer-fingerprint`` option is used, specifying a CA with ``--ca`` or ``--capath`` is
-+  optional. This allows the he ``--peer-fingerprint`` to be used as alternative to a PKI with
-+  self-signed certificates for small setups. See the examples section for such a setup.
-+
- --verify-x509-name args
-   Accept connections only if a host's X.509 name is equal to **name.** The
-   remote host must also pass all other tests of verification.
+     /* did peer present cert which was signed by our root cert? */
+-    if (!preverify_ok)
++    if (!preverify_ok && !session->opt->verify_hash_no_ca)
+     {
+         /* get the X509 name */
+         char *subject = x509_get_subject(current_cert, &gc);
 -- 
 2.26.2
 
