@@ -1,9 +1,15 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed,  9 Sep 2020 15:00:24 +0200
-Message-Id: <20200909130024.24264-1-gert@...1296...>
+From: "Vladislav Grishenko" <themiron@...2010...>
+References: <de9db75e-98de-6a56-6f3c-6ba66f475cca@...1227...>
+ <20200826165128.23117-1-themiron@...2010...>
+ <e170069f-a0da-0f86-fb05-ec900e799f52@...1227...>
+ <027b01d6869f$2ce27910$86a76b30$@yandex-team.ru>
+ <60d933c1-5238-1d0f-91e5-b94570180531@...1227...>
+In-Reply-To: <60d933c1-5238-1d0f-91e5-b94570180531@...1227...>
+Date: Wed, 9 Sep 2020 19:12:56 +0500
+Message-ID: <02ba01d686b3$51a11ef0$f4e35cd0$@yandex-team.ru>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Replace 'echo -n' with 'printf' in
- tests/t_lpback.sh
+Content-Language: ru
+Subject: Re: [Openvpn-devel] [PATCH v2] Add DNS SRV host discovery support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,65 +18,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: 'Arne Schwabe' <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-"echo -n" is inherently less portable than printf, so the tests look
-ugly on (at least) OpenSolaris/Illumos on AIX.
+> From: Arne Schwabe
+> Sent: Wednesday, September 9, 2020 5:15 PM
+> > I see your point, thank you.
+> > Fallback is done just to conform RFC 2782 suggestion, personally I feel=
+ it's
+> hardly be used with controllable client profiles when it's known that dom=
+ain.tld
+> does dns srv.
+>=20
+> Yes. And see the point in that RFC. I would rather document that for out =
+fallback
+> the user has to manually specify that because I don't see a good "works f=
+or all"
+> fallback.
 
-Add a blank at the end of the tls-crypt-v2 messages, so it has the
-same look as the cipher messages ("... OK").
+Sure, I saw. RFC point of fallback was pretty valid for combined --remote f=
+or seamless migration dns->srv dns.
+With new --remote-srv this will be not necessary anymore, no migration here=
+. Moreover, facing the coexisting with usual --remote, fallback becomes pre=
+tty useless additional complexity.
 
-Reported-by: mnowak on Trac
-Trac: #1196
+>=20
+> > Additional --remote-srv indeed has benefits:
+> > * opens a non-conflicting syntax way to have multiple udp/tcp dns srv
+> requests, as you wrote in earlier mails. This will allow to sort them all=
+ by
+> prio/weight.
+> > * cleaner syntax for specifying custom dns srv service name, with
+> > default "openvpn" and protocol (if need to limit discovery to only udp =
+or tcp)
+> So, in my mind syntax looks like:
+> > 	--remote-srv [service] [protocol], where both args are optional, by
+> > default service=3D=3Dopenvpn, protocol=3D=3Dany
+>=20
+> Sounds good to me!
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- tests/t_lpback.sh | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Great, doing this way.
 
-diff --git a/tests/t_lpback.sh b/tests/t_lpback.sh
-index f2729fd4..6206899d 100755
---- a/tests/t_lpback.sh
-+++ b/tests/t_lpback.sh
-@@ -44,7 +44,7 @@ set +e
- e=0
- for cipher in ${CIPHERS}
- do
--    echo -n "Testing cipher ${cipher}... "
-+    printf "Testing cipher ${cipher}... "
-     ( "${top_builddir}/src/openvpn/openvpn" --test-crypto --secret key.$$ --cipher ${cipher} ) >log.$$ 2>&1
-     if [ $? != 0 ] ; then
-         echo "FAILED"
-@@ -55,7 +55,7 @@ do
-     fi
- done
- 
--echo -n "Testing tls-crypt-v2 server key generation..."
-+printf "Testing tls-crypt-v2 server key generation... "
- "${top_builddir}/src/openvpn/openvpn" \
-     --genkey tls-crypt-v2-server tc-server-key.$$ >log.$$ 2>&1
- if [ $? != 0 ] ; then
-@@ -66,7 +66,7 @@ else
-     echo "OK"
- fi
- 
--echo -n "Testing tls-crypt-v2 key generation (no metadata)..."
-+printf "Testing tls-crypt-v2 key generation (no metadata)... "
- "${top_builddir}/src/openvpn/openvpn" --tls-crypt-v2 tc-server-key.$$ \
-     --genkey tls-crypt-v2-client tc-client-key.$$ >log.$$ 2>&1
- if [ $? != 0 ] ; then
-@@ -84,7 +84,7 @@ while [ $i -lt 732 ]; do
-     METADATA="${METADATA}A"
-     i=$(expr $i + 1)
- done
--echo -n "Testing tls-crypt-v2 key generation (max length metadata)..."
-+printf "Testing tls-crypt-v2 key generation (max length metadata)... "
- "${top_builddir}/src/openvpn/openvpn" --tls-crypt-v2 tc-server-key.$$ \
-     --genkey tls-crypt-v2-client tc-client-key.$$ "${METADATA}" \
-     >log.$$ 2>&1
--- 
-2.26.2
+>=20
+> > And, important thing, multiple --remote-srv still needs to be supported=
+ for:
+> > * custom order of protocol
+> > * different service names
+> > * allow to reuse --remote-random with --random-srv as well to achieve
+> > dns-srv-based lb
+> >
+> > Is it good enough in this form?
+>=20
+> I don't really see the need for that but it doesn't break the normal case=
+ of just
+> one remote-srv, so fine with me.
+>=20
+> Arne
+>=20
+
+--
+Best Regards, Vladislav Grishenko
+
+
 
 
