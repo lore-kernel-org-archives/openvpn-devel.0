@@ -1,16 +1,8 @@
-References: <20200908154157.13809-1-arne@...1227...>
- <f4128ade-e54c-00b4-0e16-c54e08ab0454@...2318...>
- <ea18a0ae-5512-ad24-ab13-48bfb8ef3a7b@...1227...>
- <a15ba93c-e908-7110-6b41-61b964ea436b@...2318...>
- <61cd03f5-5099-892a-5c08-13820275d978@...1227...>
-From: tincanteksup <tincanteksup@...277...>
-Message-ID: <97732182-f0dd-db05-257b-f59e0a0f6d43@...277...>
-Date: Wed, 9 Sep 2020 19:23:21 +0100
+From: David Sommerseth <davids@...515...>
+Date: Wed,  9 Sep 2020 20:30:12 +0200
+Message-Id: <20200909183012.7504-1-davids@...515...>
 MIME-Version: 1.0
-In-Reply-To: <61cd03f5-5099-892a-5c08-13820275d978@...1227...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH 0/4] Allow setting up OpenVPN in TLS
- mode without CA
+Subject: [Openvpn-devel] [PATCH] man: Improve --remote entry
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,38 +11,105 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+The --remote entry had a syntax mistake in the argument examples, which
+was introduced during the .rst conversion.
 
+In addition this section did not have a good flow.  So the text was
+regrouped and re-organized a bit so related text pieces are now gathered
+in the same context instead of being more spread out.
 
-On 09/09/2020 11:21, Arne Schwabe wrote:
-> Am 09.09.20 um 10:04 schrieb François Kooman:
->> On 9/8/20 6:38 PM, Arne Schwabe wrote:
->>> I really wonder which large deployment want to do that instead of a CA.
->>> I really understand the need for small and simple deployments. But for
->>> larger deployments a CA + CRL seems more useful for everything that I
->>> can come up with.
->>
->> It would be more for the situation where you already have a "parallel
->> trust", e.g. through an OAuth API where a CA would be redundant. Just
->> having an API to register fingerprints (which would act as a CRL at the
->> same time by simply removing fingerprints) is easier than having a
->> complete CA with CRL.
->>
->> Of course, all of this can also be done by using a CA, and something can
->> be said that if you operate on that scale you can also handle the extra
->> "cost" of a CA...
-> 
-> I am happy to review a patch that adds a allow_no_ca or similar flag to
-> the tls-verify option that allows this but I don't have a real
-> motivation to implement it myself.
-> 
-> Just allowing ca not set with tls-verify script being set is a bit too
-> dangerous for my taste.
-> 
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ doc/man-sections/client-options.rst | 60 ++++++++++++++++-------------
+ 1 file changed, 34 insertions(+), 26 deletions(-)
 
-I too would like to see an external list of fingerprints be made available.
-https://community.openvpn.net/openvpn/ticket/1323#ticket
+diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-options.rst
+index ec1e3b11..af21fbcd 100644
+--- a/doc/man-sections/client-options.rst
++++ b/doc/man-sections/client-options.rst
+@@ -244,43 +244,51 @@ configuration.
+   use :code:`ignore`.
+ 
+ --remote args
+-  Remote host name or IP address.  It supports two additional optional
+-  arguments: ``port`` and ``proto``.  On the client, multiple ``--remote``
+-  options may be specified for redundancy, each referring to a different
+-  OpenVPN server. Specifying multiple ``--remote`` options for this
+-  purpose is a special case of the more general connection-profile
+-  feature. See the ``<connection>`` documentation below.
++  Remote host name or IP address, port and protocol.
+ 
+-  The OpenVPN client will try to connect to a server at ``host:port`` in
+-  the order specified by the list of ``--remote`` options.
+-
+-  Examples:
++  Valid syntaxes:
+   ::
+ 
+-     remote server.example.net
+-     remote server.example.net 1194
+-     remote server.example.net tcp
++     remote host
++     remote host port
++     remote host port proto
+ 
+-  ``proto`` indicates the protocol to use when connecting with the remote,
+-  and may be :code:`tcp` or :code:`udp`.
++  The ``port`` and ``proto`` arguments are optional. The OpenVPN client
++  will try to connect to a server at ``host:port``.  The ``proto`` argument
++  indicates the protocol to use when connecting with the remote, and may be
++  :code:`tcp` or :code:`udp`.  To enforce IPv4 or IPv6 connections add a
++  :code:`4` or :code:`6` suffix; like :code:`udp4` / :code:`udp6`
++  / :code:`tcp4` / :code:`tcp6`.
+ 
+-  For forcing IPv4 or IPv6 connection suffix tcp or udp with 4/6 like
+-  udp4/udp6/tcp4/tcp6.
++  On the client, multiple ``--remote`` options may be specified for
++  redundancy, each referring to a different OpenVPN server, in the order
++  specified by the list of ``--remote`` options. Specifying multiple
++  ``--remote`` options for this purpose is a special case of the more
++  general connection-profile feature. See the ``<connection>``
++  documentation below.
+ 
+   The client will move on to the next host in the list, in the event of
+   connection failure. Note that at any given time, the OpenVPN client will
+   at most be connected to one server.
+ 
+-  Note that since UDP is connectionless, connection failure is defined by
+-  the ``--ping`` and ``--ping-restart`` options.
++  Examples:
++  ::
+ 
+-  Note the following corner case: If you use multiple ``--remote``
+-  options, AND you are dropping root privileges on the client with
+-  ``--user`` and/or ``--group`` AND the client is running a non-Windows
+-  OS, if the client needs to switch to a different server, and that server
+-  pushes back different TUN/TAP or route settings, the client may lack the
+-  necessary privileges to close and reopen the TUN/TAP interface. This
+-  could cause the client to exit with a fatal error.
++     remote server1.example.net
++     remote server1.example.net 1194
++     remote server2.example.net 1194 tcp
++
++  *Note:*
++     Since UDP is connectionless, connection failure is defined by
++     the ``--ping`` and ``--ping-restart`` options.
++
++     Also, if you use multiple ``--remote`` options, AND you are dropping
++     root privileges on the client with ``--user`` and/or ``--group`` AND
++     the client is running a non-Windows OS, if the client needs to switch
++     to a different server, and that server pushes back different TUN/TAP
++     or route settings, the client may lack the necessary privileges to
++     close and reopen the TUN/TAP interface. This could cause the client
++     to exit with a fatal error.
+ 
+   If ``--remote`` is unspecified, OpenVPN will listen for packets from any
+   IP address, but will not act on those packets unless they pass all
+-- 
+2.26.0
+
 
