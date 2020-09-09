@@ -1,16 +1,11 @@
-References: <de9db75e-98de-6a56-6f3c-6ba66f475cca@...1227...>
- <20200826165128.23117-1-themiron@...2010...>
- <e170069f-a0da-0f86-fb05-ec900e799f52@...1227...>
- <027b01d6869f$2ce27910$86a76b30$@yandex-team.ru>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <60d933c1-5238-1d0f-91e5-b94570180531@...1227...>
-Date: Wed, 9 Sep 2020 14:15:16 +0200
+From: Gert Doering <gert@...1296...>
+Date: Wed,  9 Sep 2020 14:22:23 +0200
+Message-Id: <20200909122223.9222-1-gert@...1296...>
+In-Reply-To: <20200909120707.8663-1-gert@...1296...>
+References: <20200909120707.8663-1-gert@...1296...>
 MIME-Version: 1.0
-In-Reply-To: <027b01d6869f$2ce27910$86a76b30$@yandex-team.ru>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="wDot3jCR2BGppEkGpC2IZDkqsTLXhpUQj"
-Subject: Re: [Openvpn-devel] [PATCH v2] Add DNS SRV host discovery support
+Subject: [Openvpn-devel] [PATCH v3] socks.c: fix alen for DOMAIN type
+ addresses, bump up buffer sizes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,77 +14,72 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Vladislav Grishenko <themiron@...2010...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---wDot3jCR2BGppEkGpC2IZDkqsTLXhpUQj
-Content-Type: multipart/mixed; boundary="x461a4IU20zzfL28ejvrToJEHEVXXewEk"
-
---x461a4IU20zzfL28ejvrToJEHEVXXewEk
-Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-> I see your point, thank you.
-> Fallback is done just to conform RFC 2782 suggestion, personally I feel i=
-t's hardly be used with controllable client profiles when it's known that d=
-omain.tld does dns srv.
+When a SOCKS5 server sends back a reply, it encodes an "address",
+which can be IPv4 (4 bytes), IPv6 (16 bytes) or "a domain name",
+which has a lenght (1 byte) and "a string of length <length>" - so
+when copying bytes, we need to hande "length +1" bytes.
 
-Yes. And see the point in that RFC. I would rather document that for out
-fallback the user has to manually specify that because I don't see a
-good "works for all" fallback.
+Our code totally doesn't use this variant of addresses on reception,
+but since this has been pointed out by "tpw_rules" in Trac, fix it,
+so if/when someone works on this again, the foundation is correct.
 
-> Additional --remote-srv indeed has benefits:
-> * opens a non-conflicting syntax way to have multiple udp/tcp dns srv req=
-uests, as you wrote in earlier mails. This will allow to sort them all by p=
-rio/weight.
-> * cleaner syntax for specifying custom dns srv service name, with default=
- "openvpn" and protocol (if need to limit discovery to only udp or tcp)
-> So, in my mind syntax looks like:
-> 	--remote-srv [service] [protocol], where both args are optional, by defa=
-ult service=3D=3Dopenvpn, protocol=3D=3Dany
+While at it, increase buffer size used for sending to handle domain
+names longer than 122 characters (length was already checked, so a
+longer name would not overflow but just "not work").
 
-Sounds good to me!
+v2: increase buf[] len in recv_socks_reply() from 22 to 270 so it
+    is large enough to actually copy a domain name
 
-> And, important thing, multiple --remote-srv still needs to be supported f=
-or:
-> * custom order of protocol
-> * different service names
-> * allow to reuse --remote-random with --random-srv as well to achieve dns=
--srv-based lb
->=20
-> Is it good enough in this form?
+v3: increase buf[] len in establish_socks_proxy_passthru() from 128 to
+    270, to handle long domain names in queries
 
-I don't really see the need for that but it doesn't break the normal
-case of just one remote-srv, so fine with me.
+Reported-By: tpw_rules in Trac
+Trac: #848
 
-Arne
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/socks.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
+diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c
+index 57f0cee2..d43d84a8 100644
+--- a/src/openvpn/socks.c
++++ b/src/openvpn/socks.c
+@@ -312,7 +312,7 @@ recv_socks_reply(socket_descriptor_t sd,
+     char atyp = '\0';
+     int alen = 0;
+     int len = 0;
+-    char buf[22];
++    char buf[270];		/* 4 + alen(max 256) + 2 */
+     const int timeout_sec = 5;
+ 
+     if (addr != NULL)
+@@ -381,7 +381,10 @@ recv_socks_reply(socket_descriptor_t sd,
+                     break;
+ 
+                 case '\x03':    /* DOMAINNAME */
+-                    alen = (unsigned char) c;
++                    /* RFC 1928, section 5: 1 byte length, <n> bytes name,
++                     * so the total "address length" is (length+1)
++                     */
++                    alen = (unsigned char) c +1;
+                     break;
+ 
+                 case '\x04':    /* IP V6 */
+@@ -451,7 +454,7 @@ establish_socks_proxy_passthru(struct socks_proxy_info *p,
+                                const char *servname,    /* openvpn server port */
+                                volatile int *signal_received)
+ {
+-    char buf[128];
++    char buf[270];
+     size_t len;
+ 
+     if (!socks_handshake(p, sd, signal_received))
+-- 
+2.26.2
 
-
---x461a4IU20zzfL28ejvrToJEHEVXXewEk--
-
---wDot3jCR2BGppEkGpC2IZDkqsTLXhpUQj
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl9Yx1QACgkQFRhsZwKx
-RFQ5qg/+OyOAa0J4oUYbt5tBvkYNeMYtloO0yDT8TqcwYFL+PuLsTCQ6JwTO+LTG
-4yS8ubf7Pk1O+IVUay0rAoETk308hg1DYMI418WDMWEYXwC92MhO74YGM/zeWNJZ
-1CZMdpvt7wFaPheURGVHcZ7x7dJPaOE0x0lVMJK+1z01L5dfG3WYKWuMmIkGCCtJ
-lpk4U7Aq84W+l3HrywTGmIu7awAXNRBtFTDcVpxoLiDFdni+Bgcw0sF6SsbOAhHU
-rKjU0XIXUbDDr7HHCKwlMd1W4BYAPTMEEirkpMdoYngBtMRkv5h7DhVAB7YJtMWn
-EN7ziaa8qxN5fTgDvzmgiTOJGrBvbZU84exCusY4nKekblk7pwS5ziZe8SMLXAxl
-tFbK1SpdILxTHNV7qlQ7/HVepa3ktSSiDW9wQBop1ZICgTuyQDDslIIucUwwKsuN
-CZiM+E9AvfJRBvnoVrZDQU74gYX00X/2lM9yxvCBxGnZU75SjBHbrpzotyC/33ys
-uT7YqyJFpvpKZ0CLgRik6YSBdE+l0wbuCUVL3ATUkVNkVj028eDOFiG2sgGlLGVb
-wfI2e/PqZeT8uzAxUwXtHZ8o8x3cu22hOhtAQYm+EeP7kMeySM6to4SQmcs927/m
-WDouBMeKvbbcM/RGQvSriSZLlDxERPyEc+x0kqNWWgShBS3ZB60=
-=SKdm
------END PGP SIGNATURE-----
-
---wDot3jCR2BGppEkGpC2IZDkqsTLXhpUQj--
 
