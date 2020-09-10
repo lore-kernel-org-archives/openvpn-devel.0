@@ -1,14 +1,19 @@
-References: <20200909153725.1158-1-gert@...1296...>
+References: <20200908154157.13809-1-arne@...1227...>
+ <f4128ade-e54c-00b4-0e16-c54e08ab0454@...2318...>
+ <ea18a0ae-5512-ad24-ab13-48bfb8ef3a7b@...1227...>
+ <a15ba93c-e908-7110-6b41-61b964ea436b@...2318...>
+ <61cd03f5-5099-892a-5c08-13820275d978@...1227...>
+ <97732182-f0dd-db05-257b-f59e0a0f6d43@...277...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <9020cf9f-6224-95ef-0f6b-0ce6354a5e4f@...1227...>
-Date: Thu, 10 Sep 2020 10:19:49 +0200
+Message-ID: <22ba7745-caeb-5fca-804a-09e47da5601c@...1227...>
+Date: Thu, 10 Sep 2020 10:38:32 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200909153725.1158-1-gert@...1296...>
+In-Reply-To: <97732182-f0dd-db05-257b-f59e0a0f6d43@...277...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="SAb8lkGfcKiVNpiHcuEAhhPX0bLGVIIdN"
-Subject: Re: [Openvpn-devel] [PATCH] Fix TUNSETGROUP compatibility with very
- old Linux systems.
+ boundary="yWKjS35X0G2p6nnya2Zsxgv9z6DhN5tes"
+Subject: Re: [Openvpn-devel] [PATCH 0/4] Allow setting up OpenVPN in TLS
+ mode without CA
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,91 +22,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+To: tincanteksup <tincanteksup@...277...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---SAb8lkGfcKiVNpiHcuEAhhPX0bLGVIIdN
-Content-Type: multipart/mixed; boundary="SLupYFztZnwtdcGo9oUSDJ5ud5oMdl1hO"
+--yWKjS35X0G2p6nnya2Zsxgv9z6DhN5tes
+Content-Type: multipart/mixed; boundary="kkR29WTS4jfPZhsKjjmsWZtWTcBbnKyoI"
 
---SLupYFztZnwtdcGo9oUSDJ5ud5oMdl1hO
+--kkR29WTS4jfPZhsKjjmsWZtWTcBbnKyoI
 Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-Am 09.09.20 um 17:37 schrieb Gert Doering:
-> Our code works on "very old Linux" (Fedora-1), but needs a #define
-> for TUNSETGROUP to compile.  Everything else is there.
+Am 09.09.20 um 20:23 schrieb tincanteksup:
 >=20
-> While at it, fix TUNSETGROUP error message.
 >=20
-> Reported-By: noloader on Trac
-> Trac: #1152
+> On 09/09/2020 11:21, Arne Schwabe wrote:
+>> Am 09.09.20 um 10:04 schrieb Fran=C3=A7ois Kooman:
+>>> On 9/8/20 6:38 PM, Arne Schwabe wrote:
+>>>> I really wonder which large deployment want to do that instead of a CA.
+>>>> I really understand the need for small and simple deployments. But for
+>>>> larger deployments a CA + CRL seems more useful for everything that I
+>>>> can come up with.
+>>>
+>>> It would be more for the situation where you already have a "parallel
+>>> trust", e.g. through an OAuth API where a CA would be redundant. Just
+>>> having an API to register fingerprints (which would act as a CRL at the
+>>> same time by simply removing fingerprints) is easier than having a
+>>> complete CA with CRL.
+>>>
+>>> Of course, all of this can also be done by using a CA, and something can
+>>> be said that if you operate on that scale you can also handle the extra
+>>> "cost" of a CA...
+>>
+>> I am happy to review a patch that adds a allow_no_ca or similar flag to
+>> the tls-verify option that allows this but I don't have a real
+>> motivation to implement it myself.
+>>
+>> Just allowing ca not set with tls-verify script being set is a bit too
+>> dangerous for my taste.
+>>
 >=20
-> Signed-off-by: Gert Doering <gert@...1296...>
-> ---
->  src/openvpn/tun.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
->=20
-> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-> index 923131ad..651cb871 100644
-> --- a/src/openvpn/tun.c
-> +++ b/src/openvpn/tun.c
-> @@ -1993,6 +1993,11 @@ open_tun(const char *dev, const char *dev_type, co=
-nst char *dev_node, struct tun
->=20=20
->  #ifdef ENABLE_FEATURE_TUN_PERSIST
->=20=20
-> +/* TUNSETGROUP appeared in 2.6.23 */
-> +#ifndef TUNSETGROUP
-> +# define TUNSETGROUP   _IOW('T', 206, int)
-> +#endif
-> +
->  void
->  tuncfg(const char *dev, const char *dev_type, const char *dev_node,
->         int persist_mode, const char *username, const char *groupname,
-> @@ -2032,7 +2037,7 @@ tuncfg(const char *dev, const char *dev_type, const=
- char *dev_node,
->          }
->          else if (ioctl(tt->fd, TUNSETGROUP, platform_state_group.gr->gr_=
-gid) < 0)
->          {
-> -            msg(M_ERR, "Cannot ioctl TUNSETOWNER(%s) %s", groupname, dev=
-);
-> +            msg(M_ERR, "Cannot ioctl TUNSETGROUP(%s) %s", groupname, dev=
-);
->          }
->      }
->      close_tun(tt, ctx);
->=20
+> I too would like to see an external list of fingerprints be made availabl=
+e.
+> https://community.openvpn.net/openvpn/ticket/1323#ticket
 
-Hm, it does not hurt, so...
+Yes it would be nicer but this is for small setups and reconnects and
+quick and cheap. I don't want this feature to evolve into a second PKI
+infrastructure just worse.
 
-Acked-By: Arne Schwabe <arne@...1227...>
+Arne
 
 
---SLupYFztZnwtdcGo9oUSDJ5ud5oMdl1hO--
+--kkR29WTS4jfPZhsKjjmsWZtWTcBbnKyoI--
 
---SAb8lkGfcKiVNpiHcuEAhhPX0bLGVIIdN
+--yWKjS35X0G2p6nnya2Zsxgv9z6DhN5tes
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl9Z4aUACgkQFRhsZwKx
-RFSdyg//WyjvmQSs2xEpKXky+a1j3GtaHdLRQyMU0GXrwKqqfN6Cu8W69krEKvEE
-91YTnvEB0aP51AK44xwHmVCyfZQdN3aMs/t84Wtmx91YlYB+MxNpR/hkj7iHnxng
-dcYxBImvr4W+vHhYNodUmgIg+7ScZ+NdIl5l5uZsOwxYN9nRB9EjueWaD3Eaw5jh
-sE4a1wdvt2p/u/s1pX/kFQcPukMZgnrNgZckf044E0iRsKB2J/mML4+G7y6alimm
-jebH4Ek1+ox87jcdDCarAsDoIntMnoA/1EEmYVcCrJVQO0xF3fD3IjfwCC6Symu9
-awIuerG18QZJT6PmT5DXqGc7LGIBObWvA8pZhaBNCc1fpPN20jx35YJ5837NEW1j
-1m18iNFGUH1mFEvX0UfEZ4QxVvhbwYD070CwdUoFYAoUMaYDi/fcHrtQxHJK/gvH
-VPTweQOQF1I99qoi19OkO3JE3fkHlem8vIFz1fmomZSUvgq5xUujrpZwQegJY2zn
-qlTcaZHO8SZspB9IMi9x0AzfwN2zBF2U2L56u6nngXtCkYkk80cV74fxdehVh5+T
-NiQx0UXL3JdIje7iK7UtJfzqijU4Iaia9tnwQm3wGXqCOr62mrzcnHVl/tu6WSoX
-SEiKsLjmiXJ9tembVVWz/muY/1ucRfQZfPQd0hSxQLiaH/fxpnc=
-=Denm
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl9Z5ggACgkQFRhsZwKx
+RFTA5A//R1bb6fkYBo3YLl6RQ+QiJhUFe6mHQyDKF7DqPasMBJXXwqveT324wk8k
+R9YyYJ5k9Z9KN6W138PwTTcNEOGsHzHcMMg/cQg4D51IGrDFA6DlcCU+jjUarYf5
+fshlzkznYzbZahK15+k/b65hs1qv6maOxZ3EJ4slMWsoXBGeJGOOohWJXPwc73Ev
+C/TR2BFrgWRmau40bxRZDxmcFSE7wjrS2M6rpreA/PtkQeVEdFfR/Pp5NB/BzRIo
+m0N04swHEpQIZovUNL+O7cEJLA51Ku+Nf4kiPiFDelrcLS8IE6AOqhW7Uni5nDsP
+xwm+qioaDlUl4O+zMkla2WrTgYYGVrCAEtD6D+UXmKJ166ccMyQ6vBET9vgMrNYP
+E05cA8JUjP7obm8RWMHc5WKypxh+/54kqP//PgSeUofKDNN+TdbIYuV2RU/lK229
+rjR4Pf/W4pzFHyMCQ1mlCbErFlQnGGipU2TMWiBHWbpGJ+UD+pKGLvVvbXpcSLtN
+/LSmwYx/j13mU9Y1Q/A9Qk2yCndrWMS+6O0kFSIrxp+EsgwKC2MW7wkROp9Ig9IO
+zj2MT/Zaph+opWB0SfKmPwaSw1tHG9zEcfjF5HP11E6tdSVexKNLtX1Ox1eizqQA
+lApFe/XoyS0Vy3AtR0PAsMDE/XKt8SCsD5xHDOD9YnSqLiuhGq0=
+=yeA9
 -----END PGP SIGNATURE-----
 
---SAb8lkGfcKiVNpiHcuEAhhPX0bLGVIIdN--
+--yWKjS35X0G2p6nnya2Zsxgv9z6DhN5tes--
 
