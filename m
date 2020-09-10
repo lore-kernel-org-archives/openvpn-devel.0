@@ -1,13 +1,10 @@
-From: Antonio Quartulli <a@...2181...>
-References: <011701d6858cyandex-team.ru>
- <20200908123625.23179-1-themiron@...2010...>
-Message-ID: <46aa47fd-0b16-d09b-fa76-8474fc8b1567@...2181...>
-Date: Thu, 10 Sep 2020 11:02:14 +0200
-MIME-Version: 1.0
-In-Reply-To: <20200908123625.23179-1-themiron@...2010...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v3] Fix best gateway selection over
- netlink
+Date: Thu, 10 Sep 2020 11:10:35 +0200 (CEST)
+Message-Id: <202009100910.08A9AZwu033604@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20200909153725.1158-1-gert@...1296...>
+References: <20200909153725.1158-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix TUNSETGROUP compatibility
+ with very old Linux systems.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,41 +13,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Vladislav Grishenko <themiron@...2010...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Patch has been applied to the master, release/2.5 and release/2.4 branch.
 
-On 08/09/2020 14:36, Vladislav Grishenko wrote:
-> Netlink route request with NLM_F_DUMP flag set means to return
-> all entries matching criteria passed in message content -
-> matching supplied family & dst address in our case.
-> So, gateway from the first ipv4 route was always used.
-> 
-> On kernels earlier than 2.6.38 default routes are the last ones,
-> so arbitrary host/net route w/o gateway is likely be returned as
-> first, causing gateway to be invalid or empty.
-> After refactoring in 2.6.38 kernel default routes are on top, so
-> the problem with older kernels was hidden.
-> 
-> Fix this behavior by selecting first 0.0.0.0/0 if dst was not set
-> or empty. For IPv6, no behavior is changed - request ::/128 route,
-> so just clarify the sizes via netlink route api.
-> 
-> Tested on 5.4.0, 4.1.51, 2.6.36 and 2.6.22 kernels.
-> 
-> Signed-off-by: Vladislav Grishenko <themiron@...2010...>
+commit a4e0ac0604460ea2431acb7481d6ffb7a3fc6298 (master)
+commit 43e70c78c34b90b15b6bfdac9c1911853defca10 (release/2.5)
+commit a1dc800348937d6993f5008140081f66a695026a (release/2.4)
+Author: Gert Doering
+Date:   Wed Sep 9 17:37:25 2020 +0200
 
-Thanks for taking care of this issue and for digging into the sitnl code.
+     Fix TUNSETGROUP compatibility with very old Linux systems.
 
-The change is really contained and and easy to review.
-Tested a bit and it works as expected.
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20200909153725.1158-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20932.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Acked-by: Antonio Quartulli <a@...2181...>
 
--- 
-Antonio Quartulli
+--
+kind regards,
 
+Gert Doering
 
 
