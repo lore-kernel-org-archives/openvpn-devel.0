@@ -1,10 +1,10 @@
-Date: Thu, 10 Sep 2020 11:10:35 +0200 (CEST)
-Message-Id: <202009100910.08A9AZwu033604@...2054...>
+Date: Thu, 10 Sep 2020 11:23:17 +0200 (CEST)
+Message-Id: <202009100923.08A9NHEB034653@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200909153725.1158-1-gert@...1296...>
-References: <20200909153725.1158-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix TUNSETGROUP compatibility
- with very old Linux systems.
+In-Reply-To: <20200908123625.23179-1-themiron@...2010...>
+References: <20200908123625.23179-1-themiron@...2010...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix best gateway selection over
+ netlink
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,23 +15,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+To: Vladislav Grishenko <themiron@...2010...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master, release/2.5 and release/2.4 branch.
+Thanks a lot.
 
-commit a4e0ac0604460ea2431acb7481d6ffb7a3fc6298 (master)
-commit 43e70c78c34b90b15b6bfdac9c1911853defca10 (release/2.5)
-commit a1dc800348937d6993f5008140081f66a695026a (release/2.4)
-Author: Gert Doering
-Date:   Wed Sep 9 17:37:25 2020 +0200
+Your patch has been applied to the master and release/2.5 branch.
 
-     Fix TUNSETGROUP compatibility with very old Linux systems.
+(I have lightly tested this on Linux 4.19.9 and stared a bit
+at the code.  Antonio is the master of this code and if he says
+it's good, it is :-) )
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20200909153725.1158-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20932.html
+commit 505d5ad8fadcdc56bae07f4b95c05acd93a47c24 (master)
+commit 7a9fefb6e2ea28967a09956eeb041b687ca0e335 (release/2.5)
+Author: Vladislav Grishenko
+Date:   Tue Sep 8 17:36:25 2020 +0500
+
+     Fix best gateway selection over netlink
+
+     Signed-off-by: Vladislav Grishenko <themiron@...2010...>
+     Acked-by: Antonio Quartulli <a@...2181...>
+     Message-Id: <20200908123625.23179-1-themiron@...2010...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20900.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
