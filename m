@@ -1,25 +1,14 @@
+References: <20200909153725.1158-1-gert@...1296...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <9020cf9f-6224-95ef-0f6b-0ce6354a5e4f@...1227...>
+Date: Thu, 10 Sep 2020 10:19:49 +0200
 MIME-Version: 1.0
-References: <20200814080619.2108-1-arne@...1227...>
- <CAAWBBYM2+4FqN-HyV9W19fJfAHKd9K4KHhnQFz2_5f3tzdvMFA@...278...>
- <20200829194728.GU75094@...1296...>
- <CAAWBBYM+8YfP9-nwAsPYM806CzQXoy_5d+9MLkfyGPatE3BTAQ@...278...>
- <20200830120703.GV75094@...1296...>
- <20200830203720.GX75094@...1296...>
- <CAAWBBYMnFOBo4pp_iZ-KnYu7pHbiLqYQJ3rKO1RF+yXcvivgYg@...278...>
- <20200831132357.GZ75094@...1296...>
- <CAAWBBYNLPWmjJ3whY6FAj2G8tT_qkPWZR-gUsKFHe1memta2Og@...278...>
- <CAAF3xa8T=mmZUQdyF3=AZMZZf46TJ85zH=WwAm7ORZiiGGWqZg@...278...>
- <CAKuzo_iTQWBA3t=to4sKdt21pxotNECVfTMFP_fhrEeQ3ejnQQ@...278...>
- <CAAF3xa_Jz1bjw52zBLLdXjgMymk8q+47kt9R8bP8K9Fpt8+s3g@...278...>
- <CAKuzo_jj0SXCVLrthzeCJddK2iKKXAAg4SGTA_pNRXYqcJfTQw@...278...>
- <CAAF3xa-fQ_m=Tow44wqf3DMqWEq9z90n+6Xgg6NvW-UdTaVjHQ@...278...>
- <CAKuzo_gEfixxkFVz3H4myjX9tQAXgGBMpKMJH4fWF2PesHDKDA@...278...>
- <21A02C2A-4FB5-4E3E-9D9C-B09253C9EBD9@...277...>
-In-Reply-To: <21A02C2A-4FB5-4E3E-9D9C-B09253C9EBD9@...277...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Thu, 10 Sep 2020 10:38:41 +0300
-Message-ID: <CAGyAFMV8JUUO7U3cgKGC-gVC2mqBTrtbFFbM8ATSAk+nO2hsMw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix client's poor man NCP fallback
+In-Reply-To: <20200909153725.1158-1-gert@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="SAb8lkGfcKiVNpiHcuEAhhPX0bLGVIIdN"
+Subject: Re: [Openvpn-devel] [PATCH] Fix TUNSETGROUP compatibility with very
+ old Linux systems.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -28,34 +17,91 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Marvin Adeff <volleynbike@...277...>
-Cc: Selva Nair <selva.nair@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-Hi Marvin,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--SAb8lkGfcKiVNpiHcuEAhhPX0bLGVIIdN
+Content-Type: multipart/mixed; boundary="SLupYFztZnwtdcGo9oUSDJ5ud5oMdl1hO"
 
-> 1.  I installed the beta3 msi from the web site logged in as a user that has admin privileges.  But no elevation was used to install it, just double-click on the file.
-> 2.  I only used the GUI as installed, with no elevation, to start OpenVPN.
-> 3.  With TAP selected in my .ovpn config file, everything works normally.
-> 4.  I am reporting that (from the same login) if I change the .ovpn to use wintun (all edits done through the GUI selection), it fails with the error I showed below.
+--SLupYFztZnwtdcGo9oUSDJ5ud5oMdl1hO
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-This doesn't look right. Could you provide a relevant part of a log
-file? For example, below is my recent connection log with beta3 and
-wintun:
+Am 09.09.20 um 17:37 schrieb Gert Doering:
+> Our code works on "very old Linux" (Fedora-1), but needs a #define
+> for TUNSETGROUP to compile.  Everything else is there.
+>=20
+> While at it, fix TUNSETGROUP error message.
+>=20
+> Reported-By: noloader on Trac
+> Trac: #1152
+>=20
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>  src/openvpn/tun.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+> index 923131ad..651cb871 100644
+> --- a/src/openvpn/tun.c
+> +++ b/src/openvpn/tun.c
+> @@ -1993,6 +1993,11 @@ open_tun(const char *dev, const char *dev_type, co=
+nst char *dev_node, struct tun
+>=20=20
+>  #ifdef ENABLE_FEATURE_TUN_PERSIST
+>=20=20
+> +/* TUNSETGROUP appeared in 2.6.23 */
+> +#ifndef TUNSETGROUP
+> +# define TUNSETGROUP   _IOW('T', 206, int)
+> +#endif
+> +
+>  void
+>  tuncfg(const char *dev, const char *dev_type, const char *dev_node,
+>         int persist_mode, const char *username, const char *groupname,
+> @@ -2032,7 +2037,7 @@ tuncfg(const char *dev, const char *dev_type, const=
+ char *dev_node,
+>          }
+>          else if (ioctl(tt->fd, TUNSETGROUP, platform_state_group.gr->gr_=
+gid) < 0)
+>          {
+> -            msg(M_ERR, "Cannot ioctl TUNSETOWNER(%s) %s", groupname, dev=
+);
+> +            msg(M_ERR, "Cannot ioctl TUNSETGROUP(%s) %s", groupname, dev=
+);
+>          }
+>      }
+>      close_tun(tt, ctx);
+>=20
 
-2020-09-10 10:27:05 interactive service msg_channel=584
-2020-09-10 10:27:05 ROUTE_GATEWAY 100.64.0.1/255.240.0.0 I=20
-HWADDR=84:fd:d1:e8:1e:6c
-2020-09-10 10:27:05 open_tun
-2020-09-10 10:27:05 Ring buffers registered via service
-2020-09-10 10:27:05 wintun device [OpenVPN Wintun] opened
+Hm, it does not hurt, so...
 
-The first line means the openvpn-gui uses interactive service, which
-is used to open wintun device (which requires SYSTEM privileges)
-and setting up tun interface (which requires elevated privileges).
+Acked-By: Arne Schwabe <arne@...1227...>
 
-Symptomes you mentioned are the same when GUI is run under elevated
-privileges and interactive service is not used, but
-it is impossible to say if this is the case without seeing logs.
+
+--SLupYFztZnwtdcGo9oUSDJ5ud5oMdl1hO--
+
+--SAb8lkGfcKiVNpiHcuEAhhPX0bLGVIIdN
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl9Z4aUACgkQFRhsZwKx
+RFSdyg//WyjvmQSs2xEpKXky+a1j3GtaHdLRQyMU0GXrwKqqfN6Cu8W69krEKvEE
+91YTnvEB0aP51AK44xwHmVCyfZQdN3aMs/t84Wtmx91YlYB+MxNpR/hkj7iHnxng
+dcYxBImvr4W+vHhYNodUmgIg+7ScZ+NdIl5l5uZsOwxYN9nRB9EjueWaD3Eaw5jh
+sE4a1wdvt2p/u/s1pX/kFQcPukMZgnrNgZckf044E0iRsKB2J/mML4+G7y6alimm
+jebH4Ek1+ox87jcdDCarAsDoIntMnoA/1EEmYVcCrJVQO0xF3fD3IjfwCC6Symu9
+awIuerG18QZJT6PmT5DXqGc7LGIBObWvA8pZhaBNCc1fpPN20jx35YJ5837NEW1j
+1m18iNFGUH1mFEvX0UfEZ4QxVvhbwYD070CwdUoFYAoUMaYDi/fcHrtQxHJK/gvH
+VPTweQOQF1I99qoi19OkO3JE3fkHlem8vIFz1fmomZSUvgq5xUujrpZwQegJY2zn
+qlTcaZHO8SZspB9IMi9x0AzfwN2zBF2U2L56u6nngXtCkYkk80cV74fxdehVh5+T
+NiQx0UXL3JdIje7iK7UtJfzqijU4Iaia9tnwQm3wGXqCOr62mrzcnHVl/tu6WSoX
+SEiKsLjmiXJ9tembVVWz/muY/1ucRfQZfPQd0hSxQLiaH/fxpnc=
+=Denm
+-----END PGP SIGNATURE-----
+
+--SAb8lkGfcKiVNpiHcuEAhhPX0bLGVIIdN--
 
