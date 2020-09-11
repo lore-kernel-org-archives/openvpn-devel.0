@@ -1,12 +1,10 @@
-References: <20200909122926.9523-1-gert@...1296...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <986465b6-d9bc-f102-8ffd-f8b79dfc19a7@...2181...>
-Date: Fri, 11 Sep 2020 14:35:06 +0200
-MIME-Version: 1.0
+Date: Fri, 11 Sep 2020 14:43:48 +0200 (CEST)
+Message-Id: <202009111243.08BChmeS061017@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20200909122926.9523-1-gert@...1296...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Fix description of --client-disconnect
- calling convention in manpage.
+References: <20200909122926.9523-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix description of
+ --client-disconnect calling convention in manpage.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +13,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Patch has been applied to the master and release/2.5 branch.
 
-On 09/09/2020 14:29, Gert Doering wrote:
-> The man page claimed that --client-disconnect "is passed the same
-> pathname as the corresponding --client-connect command", which is
-> not what the code does.  Fix.
-> 
-> Reported-By: hvenev in Trac
-> Trac: #884
-> 
-> Signed-off-by: Gert Doering <gert@...1296...>
+For 2.4, the textual change was applied to doc/openvpn.8, with
+nroff formatting.
 
-Checked the code and I agree with Gert fix to the documentation.
-No additional argument is passed.
+commit 50c7700da09a1f83474e18f8709d59dbc4b509e2 (master)
+commit 79910a3d2d78ec8c1b9becbd169eb9074fb242dd (release/2.5)
+commit 9481cca682112b502f83afe537164fcdb0606e55 (release/2.4)
+Author: Gert Doering
+Date:   Wed Sep 9 14:29:26 2020 +0200
 
-Acked-by: Antonio Quartulli <a@...2181...>
+     Fix description of --client-disconnect calling convention in manpage.
+
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Antonio Quartulli <a@...2181...>
+     Message-Id: <20200909122926.9523-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20929.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
--- 
-Antonio Quartulli
+--
+kind regards,
+
+Gert Doering
+
 
