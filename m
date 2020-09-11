@@ -1,22 +1,15 @@
+References: <20200717190801.17780-1-gert@...1296...>
+ <20200811104401.31075-1-gert@...1296...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <15bba1d3-81e9-e37b-9d30-ad99b2425767@...2080...>
+Date: Fri, 11 Sep 2020 21:03:43 +0200
 MIME-Version: 1.0
-References: <CAAWBBYNLPWmjJ3whY6FAj2G8tT_qkPWZR-gUsKFHe1memta2Og@...278...>
- <CAAF3xa8T=mmZUQdyF3=AZMZZf46TJ85zH=WwAm7ORZiiGGWqZg@...278...>
- <CAKuzo_iTQWBA3t=to4sKdt21pxotNECVfTMFP_fhrEeQ3ejnQQ@...278...>
- <CAAF3xa_Jz1bjw52zBLLdXjgMymk8q+47kt9R8bP8K9Fpt8+s3g@...278...>
- <CAKuzo_jj0SXCVLrthzeCJddK2iKKXAAg4SGTA_pNRXYqcJfTQw@...278...>
- <CAAF3xa-fQ_m=Tow44wqf3DMqWEq9z90n+6Xgg6NvW-UdTaVjHQ@...278...>
- <CAKuzo_gEfixxkFVz3H4myjX9tQAXgGBMpKMJH4fWF2PesHDKDA@...278...>
- <21A02C2A-4FB5-4E3E-9D9C-B09253C9EBD9@...277...>
- <20200910073321.GR75094@...1296...>
- <CAAF3xa9CHb_xe0fn5tdiYRx-Bp3gpTfTL-KfHKqMEMdxe+XFkQ@...278...>
- <20200911055839.GZ75094@...1296...>
- <CAKuzo_hA2sSzCcYjgtqstX4o8knzBE9HjFboNX8s+T7pPY4=6Q@...278...>
-In-Reply-To: <CAKuzo_hA2sSzCcYjgtqstX4o8knzBE9HjFboNX8s+T7pPY4=6Q@...278...>
-From: Rafael Gava <gava100@...277...>
-Date: Fri, 11 Sep 2020 14:45:11 -0300
-Message-ID: <CAAWBBYOY=61O=pfYW=cLPouRpUPJqnBypbyuVqCkuuOK13QEEw@...278...>
-Content-Type: multipart/alternative; boundary="000000000000c942b105af0d3ff0"
-Subject: Re: [Openvpn-devel] problem with beta3 and wintun
+In-Reply-To: <20200811104401.31075-1-gert@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="mUWvmqFANDBoRENqtgaxT8UXkLr7JfB2A"
+Subject: Re: [Openvpn-devel] [PATCH v2] Add demo plugin that excercises
+ "CLIENT_CONNECT" and "CLIENT_CONNECT_V2" paths
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -25,124 +18,100 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel@lists.sourceforge.net, Gert Doering <gert@...1296...>
 
---000000000000c942b105af0d3ff0
-Content-Type: text/plain; charset="UTF-8"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--mUWvmqFANDBoRENqtgaxT8UXkLr7JfB2A
+Content-Type: multipart/mixed; boundary="MbmrUWb0C3MLiGWnkjqhUvXFemXHB0KOB";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Cc: openvpn-devel@lists.sourceforge.net, Gert Doering <gert@...1296...>
+Message-ID: <15bba1d3-81e9-e37b-9d30-ad99b2425767@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Add demo plugin that excercises
+ "CLIENT_CONNECT" and "CLIENT_CONNECT_V2" paths
+References: <20200717190801.17780-1-gert@...1296...>
+ <20200811104401.31075-1-gert@...1296...>
+In-Reply-To: <20200811104401.31075-1-gert@...1296...>
 
-Hi Selva,
-
-I was wondering if it's possible to detect UAC during the installation.
-What do you think?
-
-BR
-
-Gava
-
-On Fri, Sep 11, 2020 at 1:48 PM Selva Nair <selva.nair@...277...> wrote:
-
-> Hi,
->
-> On Fri, Sep 11, 2020 at 1:58 AM Gert Doering <gert@...1296...> wrote:
->
->> Hi,
->>
->> On Thu, Sep 10, 2020 at 06:10:17PM -0700, Marvin wrote:
->> > To All 3,
->> > Thank you with your help I found the issue. UAC was disabled in the
->> > registry on this image.  IIRC we had trouble updating some software by
->> > automated script and turning UAC off was required.
->> >
->> > After re-enabling UAC, wintun started normally.
->>
->> Cool, thanks for digging into this and reporting back.
->>
->> Selva, is there any reasonable way to detect this?  Or do we just go
->> for "we always use the iservice if it is running, no matter what
->> privs the GUI is running with"?
->
->
-> I think TokenElevationType will indicate whether using split token (UAC
-> enabled) or not.
->
-> Personally, I would like to show a warning when the GUI is started with
-> privileges but some users may not like it. And we could make iservice a
-> requirement for the GUI. The service is mature enough now and has become a
-> necessity with wintun support.
->
-> Although we don't have any reason not to connect to named pipes as admin
-> in post-vista systems, the idea that the GUI should be run without elevated
-> privileges appeals to me. Unless the user has taken deliberate steps to
-> force running it as admin, it just works that way. Disabling UAC and then
-> log in as admin for day to day work is like using root for browsing the
-> web.
->
-> That said, I won't object to a patch that removes the restriction when the
-> runtime version is Win7 and newer.
->
-> Selva
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
-
---000000000000c942b105af0d3ff0
-Content-Type: text/html; charset="UTF-8"
+--MbmrUWb0C3MLiGWnkjqhUvXFemXHB0KOB
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">Hi Selva,=C2=A0<div><br></div><div>I was wondering if it&#=
-39;s possible to detect UAC during the installation. What do you=C2=A0think=
-?</div><div><br></div><div>BR</div><div><br></div><div>Gava</div></div><br>=
-<div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">On Fri, Se=
-p 11, 2020 at 1:48 PM Selva Nair &lt;<a href=3D"mailto:selva.nair@...277...=
-">selva.nair@...277...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_q=
-uote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,2=
-04);padding-left:1ex"><div dir=3D"ltr"><div dir=3D"ltr">Hi,</div><br><div c=
-lass=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">On Fri, Sep 11, =
-2020 at 1:58 AM Gert Doering &lt;<a href=3D"mailto:gert@...1296..." target=
-=3D"_blank">gert@...1296...</a>&gt; wrote:<br></div><blockquote class=3D"gm=
-ail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,=
-204,204);padding-left:1ex">Hi,<br>
-<br>
-On Thu, Sep 10, 2020 at 06:10:17PM -0700, Marvin wrote:<br>
-&gt; To All 3,<br>
-&gt; Thank you with your help I found the issue. UAC was disabled in the<br>
-&gt; registry on this image.=C2=A0 IIRC we had trouble updating some softwa=
-re by<br>
-&gt; automated script and turning UAC off was required.<br>
-&gt; <br>
-&gt; After re-enabling UAC, wintun started normally.<br>
-<br>
-Cool, thanks for digging into this and reporting back.<br>
-<br>
-Selva, is there any reasonable way to detect this?=C2=A0 Or do we just go<b=
-r>
-for &quot;we always use the iservice if it is running, no matter what <br>
-privs the GUI is running with&quot;?</blockquote><div><br></div><div>I thin=
-k TokenElevationType will indicate whether using split token (UAC enabled) =
-or not.</div><div><br></div><div>Personally, I would like to show a warning=
- when the GUI is started with privileges but some users may not like it. An=
-d we could make iservice a requirement for=C2=A0the=C2=A0GUI. The service i=
-s mature enough now and has become a necessity with wintun support.</div><d=
-iv><br></div><div>Although we don&#39;t=C2=A0have any reason not to connect=
- to named=C2=A0pipes as admin in post-vista systems, the idea that the GUI =
-should be run without elevated privileges appeals to me. Unless the user ha=
-s taken deliberate steps to force running it as admin, it just works that w=
-ay. Disabling UAC and then log in as admin for day=C2=A0to day work is like=
- using root for browsing the web.=C2=A0</div><div><br></div><div>That said,=
- I won&#39;t=C2=A0object to a patch that removes the restriction when the r=
-untime version is Win7 and newer.</div><div><br></div><div>Selva</div></div=
-></div>
-_______________________________________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
-envpn-devel@lists.sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
-=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
-nfo/openvpn-devel</a><br>
-</blockquote></div>
+On 11/08/2020 12:44, Gert Doering wrote:
+> This is a new "samples" plugin which does not do many useful things,
+> besides
+>  - show how a plugin is programmed
+>  - how the various messages get dispatched
+>  - how to pass back information from a client-connect/v2 plugin
+>  - how to do async-cc plugins  [not yet implemented]
+>=20
+> the operation of the plugin is controlled by UV_WANT_* environment variab=
+les
+> controlled by the client ("--setenv UV_WANT_CC_FAIL 1 --push-peer-info"),
+> to "fail CLIENT_CONNECT" or "use async-cc for CLIENT_CONNECT_V2" or
+> "send 'disable' back from ...") - which is useful for automated testing
+> of server success/defer/fail code paths for the CLIENT_CONNECT_* function=
+s.
+>=20
+> See samples/sample-plugins/client-connect/README for details how to do th=
+is.
+>=20
+> v2:
+>   - implement async / deferred operation both for CLIENT_CONNECT and
+>     CLIENT_CONNECT_V2 plugin calls
+>   - implement returning openvpn-controlled (setenv) config snippets
+>     (so the client side can verify in automated testing that the plugin
+>     operated correctly, without hard-coding something in the plugin code)
+> ---
+>  sample/sample-plugins/client-connect/Makefile |  16 +
+>  sample/sample-plugins/client-connect/README   |  34 +
+>  .../client-connect/sample-client-connect.c    | 609 ++++++++++++++++++
+>  3 files changed, 659 insertions(+)
+>  create mode 100644 sample/sample-plugins/client-connect/Makefile
+>  create mode 100644 sample/sample-plugins/client-connect/README
+>  create mode 100644 sample/sample-plugins/client-connect/sample-client-co=
+nnect.c
+>=20
+> diff --git a/sample/sample-plugins/client-connect/Makefile b/sample/sampl=
+e-plugins/client-connect/Makefile
+> new file mode 100644
+> index 00000000..ff187c43
+> --- /dev/null
+> +++ b/sample/sample-plugins/client-connect/Makefile
+> @@ -0,0 +1,16 @@
+> +all: sample-client-connect.so
+> +
+> +
+> +sample-client-connect.o: sample-client-connect.c
+> +
+> +# This directory is where we will look for openvpn-plugin.h
+> +CPPFLAGS=3D-I../../../include
+> +
+> +CC=3Dgcc
 
---000000000000c942b105af0d3ff0--
+If you don't set this; CC will normally be 'cc', which is normally linked to
+gcc on Linux systems.
 
+> +CFLAGS=3D-O2 -Wall -Wno-unused-variable -g
+
+I would probably skip the -Wno-unused-variable and rather not declare unused
+variables.
+
+[...snip...]
+
+> --- /dev/null
+> +++ b/sample/sample-plugins/client-connect/sample-client-connect.c
+
+[...snip...]
+
+> +/* use v3 functions so we can use openvpn's logging and base64 etc. */
+> +OPENVPN_EXPORT int
+> +openvpn_plugin_open_v3(const int v3structver,
+> +                       struct openvpn_plugin_args_open_in const *args,
+> +                       struct openvpn_plugin_args_open_return *ret)
+> +{
+> +    const char **argv =3D args->argv;
+--MbmrUWb0C3MLiGWnkjqhUvXFemXHB0KOB--
+
+--mUWvmqFANDBoRENqtgaxT8UXkLr7JfB2A--
