@@ -1,9 +1,14 @@
-Date: Fri, 11 Sep 2020 18:25:03 +0200 (CEST)
-Message-Id: <202009111625.08BGP33J064177@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200911154259.13837-1-davids@...515...>
-References: <20200911154259.13837-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: man: Add missing --server-ipv6
+References: <20200909104837.6123-1-gert@...1296...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <5544ca39-3d84-2bca-ce43-ef5b62bf0578@...2080...>
+Date: Fri, 11 Sep 2020 18:46:05 +0200
+MIME-Version: 1.0
+In-Reply-To: <20200909104837.6123-1-gert@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="2hy94H7txTqlLr5exKq8XyTpXlVKYcW2G"
+Subject: Re: [Openvpn-devel] [PATCH] Handle NULL returns from calloc() in
+ sample plugins.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,42 +17,83 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--2hy94H7txTqlLr5exKq8XyTpXlVKYcW2G
+Content-Type: multipart/mixed; boundary="5UKN5PEp8aybClVOvrkkjqyB9apkaNlkG";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <5544ca39-3d84-2bca-ce43-ef5b62bf0578@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] Handle NULL returns from calloc() in
+ sample plugins.
+References: <20200909104837.6123-1-gert@...1296...>
+In-Reply-To: <20200909104837.6123-1-gert@...1296...>
+
+--5UKN5PEp8aybClVOvrkkjqyB9apkaNlkG
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-Acked-by: Gert Doering <gert@...1296...>
+On 09/09/2020 12:48, Gert Doering wrote:
+> This is basic housekeeping, adding NULL checks to context initialization
+> of the sample plugin collection which are missing it.  Realistically,
+> this can never happen, but since these are supposed to be "good examples",
+> not checking calloc() return isn't one.
+>=20
+> Trac: #587
+>=20
+> Reported-By: Dogbert (in Trac)
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>  sample/sample-plugins/defer/simple.c                        | 5 +++++
+>  .../keying-material-exporter-demo/keyingmaterialexporter.c  | 6 ++++++
+>  sample/sample-plugins/log/log.c                             | 5 +++++
+>  sample/sample-plugins/log/log_v3.c                          | 5 +++++
+>  sample/sample-plugins/simple/simple.c                       | 5 +++++
+>  5 files changed, 26 insertions(+)
+>=20
 
-Thanks :)
+I've just glared at the code and compiled all the sample plug-ins.  All loo=
+ks
+reasonable and good.
 
-I have removed one line
- 
-  +  This is only accepted if ``--mode server`` or ``--server`` is set.
-
-as this is no longer correct after merging of Antonio's ipv6-only
-patch set (but the corresponding doc change might have gotten lost in
-between).
-
-Your patch has been applied to the master and release/2.5 branch.
-
-commit 8120e1ad4f20d4ec1fa9e191f3b15740c4aec448 (master)
-commit a4c03b46b24f952489a6ad19a434f2dff13d1276 (release/2.5)
-Author: David Sommerseth
-Date:   Fri Sep 11 17:42:59 2020 +0200
-
-     man: Add missing --server-ipv6
-
-     Signed-off-by: David Sommerseth <davids@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200911154259.13837-1-davids@...515...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20200911154259.13837-1-davids@...515...
-     Signed-off-by: Gert Doering <gert@...1296...>
+Acked-By: David Sommerseth <davids@...515...>
 
 
---
+--=20
 kind regards,
 
-Gert Doering
+David Sommerseth
+OpenVPN Inc
 
+
+
+--5UKN5PEp8aybClVOvrkkjqyB9apkaNlkG--
+
+--2hy94H7txTqlLr5exKq8XyTpXlVKYcW2G
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJfW6nNAAoJEIbPlEyWcf3yiF4QAL7C89Eyc49ThrIrvRBRs4Mj
+/cluxvYJq0p7PMIzFULCPDF5x27kbYBLMLI8Xrwen12cPYFuEtkcVpUhGR8e2NG5
+X6DZOUxV1sCWcMgYBQi8cypNYskOBTmodwVTKgg6SFXJpvpTEFYSQgivXQTRsMMy
+eIFauezPH6M02ttsRrIdSmkfxrLZEo26nsKJNYuICTu8uRqlbu9dpJq29ojYSnaq
+/CK/T9pOOsI3F6k3z38xpNoX1FgjJL0XR2ZKfu+UE04K3wHB18Rh3atIbaTvALXf
+YZQCVjfuVdsyzrSPqdqtKSDG3DkbTKjcwaaQFHhDUmy+XvHOJueRbMmsYT2h0Nab
+YRReVXTK8eqru+roa+acksrlN//qNvYahmdBzNunxrdDdBg/CAShiVggJ8yIY5O0
+Et2WZaxUo2uwzINxu5lJHFZ2nuHbl2HPA1hpDeqkEWoE3mprWpm+yytrSfmfAIst
+tNs5DrJptPn9S1mCLncBFBmuYEPEoXuu0d6tlNPAC9uqnnOYSrIwjEEzSlEkelih
+F2WJnbhttodfQYfdoiwZ+l73011dZ0jpUquyqsuaLeU1xM+IUMmh5dPWmfpavWuc
+cYpDpsQ4evXxBC4SY3itBOO6esT8FasqVnVAy1ELx1fDrNo0X96yRcekAXemkOtn
+5fQvxKg962IhiQSVVvOK
+=+GCZ
+-----END PGP SIGNATURE-----
+
+--2hy94H7txTqlLr5exKq8XyTpXlVKYcW2G--
 
