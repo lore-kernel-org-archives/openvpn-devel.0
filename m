@@ -1,10 +1,8 @@
-Date: Fri, 11 Sep 2020 14:43:48 +0200 (CEST)
-Message-Id: <202009111243.08BChmeS061017@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200909122926.9523-1-gert@...1296...>
-References: <20200909122926.9523-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix description of
- --client-disconnect calling convention in manpage.
+From: David Sommerseth <davids@...515...>
+Date: Fri, 11 Sep 2020 17:42:59 +0200
+Message-Id: <20200911154259.13837-1-davids@...515...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] man: Add missing --server-ipv6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,32 +13,43 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master and release/2.5 branch.
+During the conversion from .8 to .rst and further reorganizing of the
+content into separate files, the --server-ipv6 entry got lost.  This
+resurrects it again.
 
-For 2.4, the textual change was applied to doc/openvpn.8, with
-nroff formatting.
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ doc/man-sections/server-options.rst | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-commit 50c7700da09a1f83474e18f8709d59dbc4b509e2 (master)
-commit 79910a3d2d78ec8c1b9becbd169eb9074fb242dd (release/2.5)
-commit 9481cca682112b502f83afe537164fcdb0606e55 (release/2.4)
-Author: Gert Doering
-Date:   Wed Sep 9 14:29:26 2020 +0200
-
-     Fix description of --client-disconnect calling convention in manpage.
-
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20200909122926.9523-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20929.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-options.rst
+index 2009953c..1c25d75a 100644
+--- a/doc/man-sections/server-options.rst
++++ b/doc/man-sections/server-options.rst
+@@ -639,6 +639,20 @@ fast hardware. SSL/TLS authentication must be used in this mode.
+     mode server
+     tls-server
+ 
++--server-ipv6 args
++  Convenience-function to enable a number of IPv6 related options at once,
++  namely ``--ifconfig-ipv6``, ``--ifconfig-ipv6-pool`` and
++  ``--push tun-ipv6``.
++
++  Valid syntax:
++  ::
++
++     server-ipv6 ipv6addr/bits
++
++  This is only accepted if ``--mode server`` or ``--server`` is set.
++  Pushing of the ``--tun-ipv6`` directive is done for older clients which
++  require an explicit ``--tun-ipv6`` in their configuration.
++
+ --stale-routes-check args
+   Remove routes which haven't had activity for ``n`` seconds (i.e. the ageing
+   time).  This check is run every ``t`` seconds (i.e. check interval).
+-- 
+2.26.0
 
 
