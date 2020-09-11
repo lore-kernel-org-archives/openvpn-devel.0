@@ -1,10 +1,9 @@
-Date: Fri, 11 Sep 2020 13:20:45 +0200 (CEST)
-Message-Id: <202009111120.08BBKjQj059634@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200909130024.24264-1-gert@...1296...>
-References: <20200909130024.24264-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Replace 'echo -n' with 'printf'
- in tests/t_lpback.sh
+Date: Fri, 11 Sep 2020 13:59:16 +0200
+Message-Id: <20200911115916.16117-1-gert@...1296...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] If IPv6 pool specification sets pool start
+ to ::0 address, increment.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +14,72 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master and release/2.5 branch.
+The first IPv6 address in a subnet is not usable (IPv6 anycast address),
+but our pool code ignored this.
 
-commit 81f9bb3a2ff9a3b0f5a1bdbac1d0daf38747ae7b (master)
-commit d17eb65d144f157942a1675bdb25f89f15aff839 (release/2.5)
-Author: Gert Doering
-Date:   Wed Sep 9 15:00:24 2020 +0200
+Instead of assigning an unusable address or erroring out, just log the
+fact, and increment the pool start to <pool_base>::1
 
-     Replace 'echo -n' with 'printf' in tests/t_lpback.sh
+NOTE: this is a bit simplistic.  A pool that is larger than /96 and
+has non-0 bits in the "uppermost bits" will still get the increment
+as we only look at the lowermost 32 bits.
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20200909130024.24264-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20930.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+NOTE2: if the pool is specified with "--server-ipv6 $base/$bits", this
+is a non-issue, as the address for the pool start will be incremented
+anyway.
 
+Reported-by: NicolaF_ in Trac
+Trac: #1282
 
---
-kind regards,
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ doc/man-sections/server-options.rst |  3 ++-
+ src/openvpn/pool.c                  | 15 +++++++++++++++
+ 2 files changed, 17 insertions(+), 1 deletion(-)
 
-Gert Doering
+diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-options.rst
+index 2009953c..56ffff9a 100644
+--- a/doc/man-sections/server-options.rst
++++ b/doc/man-sections/server-options.rst
+@@ -204,7 +204,8 @@ fast hardware. SSL/TLS authentication must be used in this mode.
+      ifconfig-ipv6-pool ipv6addr/bits
+ 
+   The pool starts at ``ipv6addr`` and matches the offset determined from
+-  the start of the IPv4 pool.
++  the start of the IPv4 pool.  If the host part of the given IPv6
++  address is ``0``, the pool starts at ``ipv6addr`` +1.
+ 
+ --ifconfig-pool-persist args
+   Persist/unpersist ifconfig-pool data to ``file``, at ``seconds``
+diff --git a/src/openvpn/pool.c b/src/openvpn/pool.c
+index 1f74ac57..2814ff46 100644
+--- a/src/openvpn/pool.c
++++ b/src/openvpn/pool.c
+@@ -224,6 +224,21 @@ ifconfig_pool_init(const bool ipv4_pool, enum pool_type type, in_addr_t start,
+         }
+ 
+         pool->ipv6.base = ipv6_base;
++
++        /* if a pool starts at ::0, that first IPv6 address is not usable
++         * first clients (subnet anycast address).  Start with 1, then.
++         * NOTE: this will also fire for something like
++         *    ifconfig-ipv6-pool 2001:db8:0:1:1234::0/64
++         * as we only look at the rightmost 32 bits.  So be it...
++         */
++        if (base == 0)
++        {
++            msg(D_IFCONFIG_POOL, "IFCONFIG POOL IPv6: incrementing pool start "
++		"to avoid ::0 assignment");
++            base++;
++            pool->ipv6.base.s6_addr[15]++;
++        }
++
+         pool_ipv6_size = ipv6_netbits >= 112
+                           ? (1 << (128 - ipv6_netbits)) - base
+                           : IFCONFIG_POOL_MAX;
+-- 
+2.26.2
 
 
