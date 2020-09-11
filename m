@@ -1,9 +1,19 @@
-From: Gert Doering <gert@...1296...>
-Date: Fri, 11 Sep 2020 13:59:16 +0200
-Message-Id: <20200911115916.16117-1-gert@...1296...>
+References: <20200616180046.8069-1-juliusz@...2525...>
+ <c926d584-471b-c66e-21f8-4c31410b5e4f@...2525...>
+ <4f5787ef-fa03-f7d1-db9a-52fe61caf281@...1227...>
+ <4cb6ea57-4dd1-8230-cec4-d4e8f434944b@...2525...>
+ <5b5bd12b-d2a0-8901-1a0e-4ba7b3e5f7d0@...1227...>
+ <9630aa71-2ba0-879a-3345-85a9551cd169@...2525...>
+ <1e682031-8b10-7beb-1379-b32535f40de8@...1227...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <3c5c4e7d-616a-8992-859b-3bec4f9f83da@...2080...>
+Date: Fri, 11 Sep 2020 14:29:55 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] If IPv6 pool specification sets pool start
- to ::0 address, increment.
+In-Reply-To: <1e682031-8b10-7beb-1379-b32535f40de8@...1227...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="97lgZkwInZ1dUSpsZVJL2fzlmAThTsbGX"
+Subject: Re: [Openvpn-devel] [PATCH] Support for wolfSSL in OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,74 +22,85 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--97lgZkwInZ1dUSpsZVJL2fzlmAThTsbGX
+Content-Type: multipart/mixed; boundary="8dejEkbQ7lYDBBA1uDVe8UeeDX0hjkaYr";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: "openvpn-devel@lists.sourceforge.net"
+ <openvpn-devel@lists.sourceforge.net>
+Message-ID: <3c5c4e7d-616a-8992-859b-3bec4f9f83da@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] Support for wolfSSL in OpenVPN
+References: <20200616180046.8069-1-juliusz@...2525...>
+ <c926d584-471b-c66e-21f8-4c31410b5e4f@...2525...>
+ <4f5787ef-fa03-f7d1-db9a-52fe61caf281@...1227...>
+ <4cb6ea57-4dd1-8230-cec4-d4e8f434944b@...2525...>
+ <5b5bd12b-d2a0-8901-1a0e-4ba7b3e5f7d0@...1227...>
+ <9630aa71-2ba0-879a-3345-85a9551cd169@...2525...>
+ <1e682031-8b10-7beb-1379-b32535f40de8@...1227...>
+In-Reply-To: <1e682031-8b10-7beb-1379-b32535f40de8@...1227...>
+
+--8dejEkbQ7lYDBBA1uDVe8UeeDX0hjkaYr
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-The first IPv6 address in a subnet is not usable (IPv6 anycast address),
-but our pool code ignored this.
+On 10/09/2020 14:16, Arne Schwabe wrote:
+> Am 10.09.20 um 14:11 schrieb Juliusz Sosinowicz:
+>> Hi Arne,
+>>
+>> I understand your concern and apologize for the delay. We have been busy
+>> with the release of wolfSSL 4.5.0. I will make sure that the fixes
+>> necessary for OpenVPN support will be prioritized.
+>>
+>> Sincerely
+>> Juliusz
+>=20
+> I think the best way forward is to include wolfSSL support into OpenVPN
+> master now and if we have proper a proper support of wolfSSL that is
+> kept up to from your side then it will be part of the next release. And
+> otherwise we remove the support before the next release. That should our
+> concerns of wanting to see ongoing support and also your concern of it
+> not being included.
 
-Instead of assigning an unusable address or erroring out, just log the
-fact, and increment the pool start to <pool_base>::1
+I completely agree.  This makes a lot of sense and is a reasonable way forw=
+ard.
 
-NOTE: this is a bit simplistic.  A pool that is larger than /96 and
-has non-0 bits in the "uppermost bits" will still get the increment
-as we only look at the lowermost 32 bits.
 
-NOTE2: if the pool is specified with "--server-ipv6 $base/$bits", this
-is a non-issue, as the address for the pool start will be incremented
-anyway.
+--=20
+kind regards,
 
-Reported-by: NicolaF_ in Trac
-Trac: #1282
+David Sommerseth
+OpenVPN Inc
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- doc/man-sections/server-options.rst |  3 ++-
- src/openvpn/pool.c                  | 15 +++++++++++++++
- 2 files changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-options.rst
-index 2009953c..56ffff9a 100644
---- a/doc/man-sections/server-options.rst
-+++ b/doc/man-sections/server-options.rst
-@@ -204,7 +204,8 @@ fast hardware. SSL/TLS authentication must be used in this mode.
-      ifconfig-ipv6-pool ipv6addr/bits
- 
-   The pool starts at ``ipv6addr`` and matches the offset determined from
--  the start of the IPv4 pool.
-+  the start of the IPv4 pool.  If the host part of the given IPv6
-+  address is ``0``, the pool starts at ``ipv6addr`` +1.
- 
- --ifconfig-pool-persist args
-   Persist/unpersist ifconfig-pool data to ``file``, at ``seconds``
-diff --git a/src/openvpn/pool.c b/src/openvpn/pool.c
-index 1f74ac57..2814ff46 100644
---- a/src/openvpn/pool.c
-+++ b/src/openvpn/pool.c
-@@ -224,6 +224,21 @@ ifconfig_pool_init(const bool ipv4_pool, enum pool_type type, in_addr_t start,
-         }
- 
-         pool->ipv6.base = ipv6_base;
-+
-+        /* if a pool starts at ::0, that first IPv6 address is not usable
-+         * first clients (subnet anycast address).  Start with 1, then.
-+         * NOTE: this will also fire for something like
-+         *    ifconfig-ipv6-pool 2001:db8:0:1:1234::0/64
-+         * as we only look at the rightmost 32 bits.  So be it...
-+         */
-+        if (base == 0)
-+        {
-+            msg(D_IFCONFIG_POOL, "IFCONFIG POOL IPv6: incrementing pool start "
-+		"to avoid ::0 assignment");
-+            base++;
-+            pool->ipv6.base.s6_addr[15]++;
-+        }
-+
-         pool_ipv6_size = ipv6_netbits >= 112
-                           ? (1 << (128 - ipv6_netbits)) - base
-                           : IFCONFIG_POOL_MAX;
--- 
-2.26.2
 
+--8dejEkbQ7lYDBBA1uDVe8UeeDX0hjkaYr--
+
+--97lgZkwInZ1dUSpsZVJL2fzlmAThTsbGX
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJfW23JAAoJEIbPlEyWcf3yFBgQAKUTy5L+t9rvtZI2ada8/5QA
+rJZN8kmQYEW9CYhC+zMEveoj55YcyhAo9TrRg5Qf3bhB3u11ZSPhaSjtM9raRjDm
+/f9rHzzDeImw5thNgTUw9XdkJ491E62XwvJL87Ps7WWBFhIEfbWRJAW5MuB59dUI
+nxJy5IOkdQtD7sHz3mDR0miOfSs2Y1vQADQtVQkVQfr9mKEF+PK2fHqDUyArTu8S
+YAB/IIVtB5vWbMSE3GG1FkEALxb9XJffwzkDatzefPRJAdVEbiF5V+3Q7Wi45ZwR
+JvD8cEw0crc1xwE6MK0thF4e0hF9b7XLPMoxHqmp7jEVazV/AOxTC3hbpEpD3S2a
+equHKWyecp/LajYmWdF+CPlNjQptYpQ19v2j2j0AeFqtli1pVuRriVo1d8C+gi8R
+3Xg5AyCd6Hpquk97oIAs6qanfK7ym2b4D8t0FX/54gfza4XiAW+czpEIu+7dIR95
+h+UefPyApbzc353M1V5sS8HilSTCyQdAMCgKdrnwl38ebvI3hpbnv21oH80IXSei
+2dOKJ4wj4whk+4Ol9cRpMuwq54/SsiR8QCTKlsXMdZKn9jO7hxy88LfJYE0T6TyU
+bFAwfzkMFF9xPlkbp9J1yJOKai/d7I8ONHOJtIgliGwutW400QZXirdOvUNgnLKc
+iJnaVtLbakNRJAXNb2qz
+=NMU6
+-----END PGP SIGNATURE-----
+
+--97lgZkwInZ1dUSpsZVJL2fzlmAThTsbGX--
 
