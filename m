@@ -1,23 +1,16 @@
+Date: Fri, 11 Sep 2020 23:39:47 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20200911213947.GI75094@...1296...>
+References: <20200717190801.17780-1-gert@...1296...>
+ <20200811104401.31075-1-gert@...1296...>
+ <15bba1d3-81e9-e37b-9d30-ad99b2425767@...2080...>
 MIME-Version: 1.0
-References: <CAAWBBYNLPWmjJ3whY6FAj2G8tT_qkPWZR-gUsKFHe1memta2Og@...278...>
- <CAAF3xa8T=mmZUQdyF3=AZMZZf46TJ85zH=WwAm7ORZiiGGWqZg@...278...>
- <CAKuzo_iTQWBA3t=to4sKdt21pxotNECVfTMFP_fhrEeQ3ejnQQ@...278...>
- <CAAF3xa_Jz1bjw52zBLLdXjgMymk8q+47kt9R8bP8K9Fpt8+s3g@...278...>
- <CAKuzo_jj0SXCVLrthzeCJddK2iKKXAAg4SGTA_pNRXYqcJfTQw@...278...>
- <CAAF3xa-fQ_m=Tow44wqf3DMqWEq9z90n+6Xgg6NvW-UdTaVjHQ@...278...>
- <CAKuzo_gEfixxkFVz3H4myjX9tQAXgGBMpKMJH4fWF2PesHDKDA@...278...>
- <21A02C2A-4FB5-4E3E-9D9C-B09253C9EBD9@...277...>
- <20200910073321.GR75094@...1296...>
- <CAAF3xa9CHb_xe0fn5tdiYRx-Bp3gpTfTL-KfHKqMEMdxe+XFkQ@...278...>
- <20200911055839.GZ75094@...1296...>
- <CAKuzo_hA2sSzCcYjgtqstX4o8knzBE9HjFboNX8s+T7pPY4=6Q@...278...>
- <CAAWBBYOY=61O=pfYW=cLPouRpUPJqnBypbyuVqCkuuOK13QEEw@...278...>
-In-Reply-To: <CAAWBBYOY=61O=pfYW=cLPouRpUPJqnBypbyuVqCkuuOK13QEEw@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Fri, 11 Sep 2020 15:45:15 -0400
-Message-ID: <CAKuzo_gfo_vMRCi3QJ9f62bn-CQQHsWBLXSBQX0B4mmdmDh2Cg@...278...>
-Content-Type: multipart/alternative; boundary="0000000000007128a405af0eed5d"
-Subject: Re: [Openvpn-devel] problem with beta3 and wintun
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="YZlgiSU82KsurN9l"
+Content-Disposition: inline
+In-Reply-To: <15bba1d3-81e9-e37b-9d30-ad99b2425767@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Add demo plugin that excercises
+ "CLIENT_CONNECT" and "CLIENT_CONNECT_V2" paths
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -26,53 +19,101 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Rafael Gava <gava100@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: David Sommerseth <openvpn@...2080...>
+Cc: openvpn-devel@lists.sourceforge.net, Gert Doering <gert@...1296...>
 
---0000000000007128a405af0eed5d
-Content-Type: text/plain; charset="UTF-8"
-
-Hi
-
-On Fri, Sep 11, 2020 at 1:45 PM RafaeHil Gava <gava100@...277...> wrote:
-
-> Hi Selva,
->
-> I was wondering if it's possible to detect UAC during the installation.
-> What do you think?
->
-
-There are many ways of running the GUI as admin and all involve some
-deliberate action on the part of the user. The best we can do is to warn
-them that the GUI is running as admin and its not recommended. That will
-also cover the initial launch of GUI on install with UAC disabled or from
-an elevated cmdline.
-
-Disabling UAC can be legit too if the admin knows what they are doing --
-like, all users have limited privileges and admins login only to do tasks
-requiring elevation etc.
-
-Selva
-
---0000000000007128a405af0eed5d
-Content-Type: text/html; charset="UTF-8"
+--YZlgiSU82KsurN9l
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-<div dir=3D"ltr"><div>Hi</div><br><div class=3D"gmail_quote"><div dir=3D"lt=
-r" class=3D"gmail_attr">On Fri, Sep 11, 2020 at 1:45 PM RafaeHil Gava &lt;<=
-a href=3D"mailto:gava100@...277...">gava100@...277...</a>&gt; wrote:<br></d=
-iv><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;bord=
-er-left:1px solid rgb(204,204,204);padding-left:1ex"><div dir=3D"ltr">Hi Se=
-lva,=C2=A0<div><br></div><div>I was wondering if it&#39;s possible to detec=
-t UAC during the installation. What do you=C2=A0think?</div></div></blockqu=
-ote><div><br></div><div>There are many ways of running the GUI as admin and=
- all involve some deliberate action on the part of the user. The best we ca=
-n do is to warn them that the GUI is running as admin and its not recommend=
-ed. That will also cover the initial launch of GUI on install with UAC disa=
-bled or from an elevated cmdline.</div><div><br></div><div>Disabling UAC ca=
-n be legit too if the admin knows what they are doing -- like, all users ha=
-ve limited privileges and admins login only to do tasks requiring elevation=
- etc.</div><div><br></div><div>Selva</div></div></div>
+Hi,
 
---0000000000007128a405af0eed5d--
+thanks for the review.
+
+On Fri, Sep 11, 2020 at 09:03:43PM +0200, David Sommerseth wrote:
+> On 11/08/2020 12:44, Gert Doering wrote:
+> > This is a new "samples" plugin which does not do many useful things,
+> > besides
+[..]
+> > +sample-client-connect.o: sample-client-connect.c
+> > +
+> > +# This directory is where we will look for openvpn-plugin.h
+> > +CPPFLAGS=3D-I../../../include
+> > +
+> > +CC=3Dgcc
+>=20
+> If you don't set this; CC will normally be 'cc', which is normally linked=
+ to
+> gcc on Linux systems.
+>=20
+> > +CFLAGS=3D-O2 -Wall -Wno-unused-variable -g
+>=20
+> I would probably skip the -Wno-unused-variable and rather not declare unu=
+sed
+> variables.
+
+Yeah, not sure how that one slipped in.  I *did* try to make it warning-fre=
+e,
+so, next version is coming :-)
+
+> > +    rl->name =3D strdup("config");
+>=20
+> I'm getting a lot of "warning: implicit declaration of function ???strdup=
+???;" and
+>  "warning: assignment to ???char *??? from ???int??? makes pointer from i=
+nteger
+> without a cast" compiler warning on all of these strdup() calls.
+>=20
+> We do use strdup() in the main openvpn code, but that code includes confi=
+g.h,
+> which contains #define _GNU_SOURCE 1.  This removes this compiler warning.
+>=20
+> This is on RHEL-7 with both gcc-4.8 and gcc-9.3.
+
+Not sure what you are hitting there.  According to "man strdup()",=20
+inclusion of <string.h> should be fully sufficient, without any extra
+declarations.  But maybe it's a -std=3D... thing to tell GCC what
+C language level is desired?
+
+I developed and tested this on a gentoo linux, with gcc-9.2.0, and it's=20
+*not* throwing strdup() warnings.
+
+> Otherwise, the code looks reasonable and it works.  The log file does not
+> include the pushed echo statement (can be enabled in options.c:5286).  The
+> management interface shows the pushed echo message.
+
+Yeah, the "echo" directive is sort of weird.  It's blanked out of PUSH
+messages as well...  I do wonder what James had in mind here, or what=20
+AS/Connect are using it for :-)
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--YZlgiSU82KsurN9l
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJfW+6iAAoJEB2Cnv7KVigS05wMAK/Pm2PbmNvN3u8ROrv9Oc1c
+hmTcbhG6BAlT4SYGrwyElna3lLEj+wTtiIH4E8Ou3KWuvy06hJDJcqcJ1NgHmfRE
+tA70QsVkqOAV8n074hwXfelSvEAItKQmJYfbr552hBUn0xExNOXEgL+QY7aAZJrh
+dEdA5FHeIfdZvW0AhmewMdLC79/+n+3DdW0/Tpx6KKy0C/u37OXRjsss9yz4H9E4
+0QsunQJ82NYXduSbUgqxP8NswELR42RWY3L/0qs2QICUKEAztaWbv0PnQAGhKXth
+Gl6CTKONhPDpYsR9u5RTsw54cXS4xlfFQwa0i305HuoUA/u5KwKr1kFcgI6jxIPb
+nSKTsVy5B3g+2tuFjlXQD6+socjjzwUz6F1oBJPDriBhPDZG+UScaXKTCNJrcFZ4
+S/iVKu26RlVxaz59KLedMs+hsQizHeqMJ1up+STtWAPBCkd1TlY58z3DLubh0jxO
+UjlGrpfmKCD8Xlgzzp4SoCqL1nPC8B63l26dCSl9vw==
+=l3Yb
+-----END PGP SIGNATURE-----
+
+--YZlgiSU82KsurN9l--
 
