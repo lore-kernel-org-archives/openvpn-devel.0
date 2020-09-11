@@ -1,21 +1,10 @@
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <1b9c254c-75a6-e64c-fef6-23fa6c77fd6c@...515...>
+Date: Fri, 11 Sep 2020 20:15:24 +0300
 MIME-Version: 1.0
-References: <CAAWBBYNLPWmjJ3whY6FAj2G8tT_qkPWZR-gUsKFHe1memta2Og@...278...>
- <CAAF3xa8T=mmZUQdyF3=AZMZZf46TJ85zH=WwAm7ORZiiGGWqZg@...278...>
- <CAKuzo_iTQWBA3t=to4sKdt21pxotNECVfTMFP_fhrEeQ3ejnQQ@...278...>
- <CAAF3xa_Jz1bjw52zBLLdXjgMymk8q+47kt9R8bP8K9Fpt8+s3g@...278...>
- <CAKuzo_jj0SXCVLrthzeCJddK2iKKXAAg4SGTA_pNRXYqcJfTQw@...278...>
- <CAAF3xa-fQ_m=Tow44wqf3DMqWEq9z90n+6Xgg6NvW-UdTaVjHQ@...278...>
- <CAKuzo_gEfixxkFVz3H4myjX9tQAXgGBMpKMJH4fWF2PesHDKDA@...278...>
- <21A02C2A-4FB5-4E3E-9D9C-B09253C9EBD9@...277...>
- <20200910073321.GR75094@...1296...>
- <CAAF3xa9CHb_xe0fn5tdiYRx-Bp3gpTfTL-KfHKqMEMdxe+XFkQ@...278...>
- <20200911055839.GZ75094@...1296...>
-In-Reply-To: <20200911055839.GZ75094@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Fri, 11 Sep 2020 12:47:08 -0400
-Message-ID: <CAKuzo_hA2sSzCcYjgtqstX4o8knzBE9HjFboNX8s+T7pPY4=6Q@...278...>
-Content-Type: multipart/alternative; boundary="000000000000ce420505af0c707b"
-Subject: Re: [Openvpn-devel] problem with beta3 and wintun
+Content-Type: multipart/mixed; boundary="------------A76841F4E7E367F6C53DE879"
+Content-Language: en-US
+Subject: [Openvpn-devel] OpenVPN 2.5-beta4 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,92 +13,120 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
 
---000000000000ce420505af0c707b
-Content-Type: text/plain; charset="UTF-8"
-
-Hi,
-
-On Fri, Sep 11, 2020 at 1:58 AM Gert Doering <gert@...1296...> wrote:
-
-> Hi,
->
-> On Thu, Sep 10, 2020 at 06:10:17PM -0700, Marvin wrote:
-> > To All 3,
-> > Thank you with your help I found the issue. UAC was disabled in the
-> > registry on this image.  IIRC we had trouble updating some software by
-> > automated script and turning UAC off was required.
-> >
-> > After re-enabling UAC, wintun started normally.
->
-> Cool, thanks for digging into this and reporting back.
->
-> Selva, is there any reasonable way to detect this?  Or do we just go
-> for "we always use the iservice if it is running, no matter what
-> privs the GUI is running with"?
-
-
-I think TokenElevationType will indicate whether using split token (UAC
-enabled) or not.
-
-Personally, I would like to show a warning when the GUI is started with
-privileges but some users may not like it. And we could make iservice a
-requirement for the GUI. The service is mature enough now and has become a
-necessity with wintun support.
-
-Although we don't have any reason not to connect to named pipes as admin in
-post-vista systems, the idea that the GUI should be run without elevated
-privileges appeals to me. Unless the user has taken deliberate steps to
-force running it as admin, it just works that way. Disabling UAC and then
-log in as admin for day to day work is like using root for browsing the
-web.
-
-That said, I won't object to a patch that removes the restriction when the
-runtime version is Win7 and newer.
-
-Selva
-
---000000000000ce420505af0c707b
-Content-Type: text/html; charset="UTF-8"
+This is a multi-part message in MIME format.
+--------------A76841F4E7E367F6C53DE879
+Content-Type: text/plain; charset="iso-8859-15"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div dir=3D"ltr">Hi,</div><br><div class=3D"gmail_quote"><=
-div dir=3D"ltr" class=3D"gmail_attr">On Fri, Sep 11, 2020 at 1:58 AM Gert D=
-oering &lt;<a href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1826...=
-6...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"mar=
-gin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1=
-ex">Hi,<br>
-<br>
-On Thu, Sep 10, 2020 at 06:10:17PM -0700, Marvin wrote:<br>
-&gt; To All 3,<br>
-&gt; Thank you with your help I found the issue. UAC was disabled in the<br>
-&gt; registry on this image.=C2=A0 IIRC we had trouble updating some softwa=
-re by<br>
-&gt; automated script and turning UAC off was required.<br>
-&gt; <br>
-&gt; After re-enabling UAC, wintun started normally.<br>
-<br>
-Cool, thanks for digging into this and reporting back.<br>
-<br>
-Selva, is there any reasonable way to detect this?=C2=A0 Or do we just go<b=
-r>
-for &quot;we always use the iservice if it is running, no matter what <br>
-privs the GUI is running with&quot;?</blockquote><div><br></div><div>I thin=
-k TokenElevationType will indicate whether using split token (UAC enabled) =
-or not.</div><div><br></div><div>Personally, I would like to show a warning=
- when the GUI is started with privileges but some users may not like it. An=
-d we could make iservice a requirement for=C2=A0the=C2=A0GUI. The service i=
-s mature enough now and has become a necessity with wintun support.</div><d=
-iv><br></div><div>Although we don&#39;t=C2=A0have any reason not to connect=
- to named=C2=A0pipes as admin in post-vista systems, the idea that the GUI =
-should be run without elevated privileges appeals to me. Unless the user ha=
-s taken deliberate steps to force running it as admin, it just works that w=
-ay. Disabling UAC and then log in as admin for day=C2=A0to day work is like=
- using root for browsing the web.=C2=A0</div><div><br></div><div>That said,=
- I won&#39;t=C2=A0object to a patch that removes the restriction when the r=
-untime version is Win7 and newer.</div><div><br></div><div>Selva</div></div=
-></div>
+The OpenVPN community project team is proud to release OpenVPN
+2.5-beta4. Source code and Windows installers can be downloaded from our
+download page:
 
---000000000000ce420505af0c707b--
+<https://openvpn.net/community-downloads/>
+
+Debian and Ubuntu packages are available in the official apt repositories:
+
+<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos>
+
+On Red Hat derivatives we recommend using the Fedora Copr repository:
+
+<https://copr.fedorainfracloud.org/coprs/dsommers/openvpn-beta/>
+
+The 2.5-beta4 release includes important fixes to the Windows MSI
+installers, plus some smaller fixes to OpenVPN itself.
+
+OpenVPN 2.5 is a new major release with many new features:
+
+    Client-specific tls-crypt keys (--tls-crypt-v2)
+    Added support for using the ChaCha20-Poly1305 cipher in the OpenVPN
+data channel
+    Improved Data channel cipher negotiation
+    Removal of BF-CBC support in default configuration
+    Asynchronous (deferred) authentication support for auth-pam plugin
+    Deferred client-connect
+    Faster connection setup
+    Netlink support
+    Wintun support
+    IPv6-only operation
+    Improved Windows 10 detection
+    Linux VRF support
+    TLS 1.3 support
+    Support setting DHCP search domain
+    Handle setting of tun/tap interface MTU on Windows
+    HMAC based auth-token support
+    VLAN support
+    Support building of .msi installers for Windows
+    Allow unicode search string in --cryptoapicert option (Windows)
+    Support IPv4 configs with /31 netmasks now
+    New option --block-ipv6 to reject all IPv6 packets (ICMPv6)
+
+More details on these new features as well as a list of deprecated
+features and user-visible changes are available in Changes.rst:
+
+<https://github.com/OpenVPN/openvpn/blob/release/2.5/Changes.rst>
+
+For generic help use these support channels:
+
+    Official documentation:
+<http://openvpn.net/index.php/open-source/documentation/howto.html>
+    Wiki: <https://community.openvpn.net/>
+    Forums: <https://forums.openvpn.net/>
+    User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+    User IRC channel: #openvpn at irc.freenode.net
+
+Please report bugs and ask development questions here:
+
+    Community bug tracker: <https://community.openvpn.net/>
+    Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+    Developer IRC channel: #openvpn-devel at irc.freenode.net (requires
+Freenode registration)
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+--------------A76841F4E7E367F6C53DE879
+Content-Type: application/pgp-keys;
+ name="pEpkey.asc"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="pEpkey.asc"
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+mQENBF9XbKwBCADAEsX9sF+0PauqVCIX5SzteYzz2/awfjio7R4A7yGOkCPyFZui
+ryItvJ9Oh21Woq2DW41JNZ16BR+3gJnWZ2wjKrYORXkk6Cq2mGfs1VHkikOXGeKh
+G0kmNgewOB2xrbk27VvhALeUBRlbHF5w1XqGekm1tB/a8OThiyLA/jCzTf8LGSCq
+rZoeg/DSvUNoOIuz/VzKvPRBNrvBgGfoR4qMmg5m6OaneaPckCuT58eNDMOGW3SD
+f1wk31xBaqHNV2VMAyFuioxl3oyWdjp0dwdvgop+/l/8TJ/gUWqfQ8k5sik40Vlr
+LrTwlR5+2/zOutJIy2N4T3xvz/4W6AthWe5BABEBAAG0JVNhbXVsaSBTZXBww6Ru
+ZW4gPHNhbXVsaUBvcGVudnBuLm5ldD6JAVQEEwEIAD4WIQTUwk9SkPxedAa+noMq
+Bow1gbDSfQUCX1dsrQIbAwUJAeEzgAULCQgHAgYVCgkICwIEFgIDAQIeAQIXgAAK
+CRAqBow1gbDSfU62CACJBr2t6bor5THu7nx6NMTV2ubtsUYyHiLD4FeMXgRDSMhV
+1GPJwSVF7qg1yNShlqco04Hykp/hDP83CG6ivZC21QACcVaUnRfACDETBGZ5ciUi
+gLwjknDR9sQ9azOoqPp+bNBrlLWiQdYw7nyuNUYYGXQkv2stj7Rb11fR8IkWhIky
+2VK8n5ppd3Al1nTNWxZkrTBgCO/JYXSWaZXFydwOPQxlzIBBeUoM3yoVxCP7qypu
+ZbVQrDSX9L4LAFIBtgWaEBc2a2ocdlrwcQTovC8CWbg/b+0cG0FUsCuRhH4hsZOI
+UiOwGGku2uLH5+JNKNDYgNmWgBZhV6wl59X4iZqguQENBF9XbKwBCADuoJFZ4PwJ
+aCXWadIuuhy7pn+Gu7og85UGbb0xuI2mPtzR83V2qur/LeY8OnQSMSyy5n3ZBim5
+noTe7la+9v/sYX+CC9Zj9KXXkTYiwDWtg+Pvwwjooee/ea336/kYaQSn1L2KHOJW
+SgkQlfvM5FIvekQRvJ7scHn0o1tXKCtKVAOP9XIZdl2Dp+QGtKRAwJRFUiyd5oMq
+7vY2x0YJoRS9Looq/+iqYNM+9zU0CjRNSXzfnKxBzSOVLtYBDFsud2LCt0bE5Gky
+RFBq6cbJUt6aQInzzxVPW7kzEGKHi25AeCZ5UkX07eIGLwNO7PAX7A6YmsbF4Xbd
+21sZEbb6EBVtABEBAAGJATwEGAEIACYWIQTUwk9SkPxedAa+noMqBow1gbDSfQUC
+X1dsrAIbDAUJAeEzgAAKCRAqBow1gbDSfQe7CACZ6GI+rgKsIuXzhbyafZALyk55
+d7I/6iFYNhCYUrVSOT187fhu1F/NTMCvcgQiOly+vvi9Xnw1JJTHVRSAmSMtCz/i
+pM8mwU9HHQpHaN6adLdPsfhqsQM3/rGpQ6eGaNimfiQygA1YESvQIUC/edYw3ItF
+4LOGu0Eyl5fbXV17ei21BzYiSrqtoBVfS0/G6p9fhP6j8w6OmpIc+ugSY/JmHNMb
+NAjg6BR4Uuib/XeMIhtm57UmZqtJzBN0K61exQ2dJTvVdQ4X7wIqB73q3oNLJqJ1
+kCZgoaLwFQhBMvRgh8zmk3Xm45RrmJAuPtgT4lzD1QcH0HZLkQFeI5QuHNC8
+=3DqMWb
+-----END PGP PUBLIC KEY BLOCK-----
+
+--------------A76841F4E7E367F6C53DE879--
 
