@@ -1,12 +1,13 @@
-References: <20200911115916.16117-1-gert@...1296...>
+References: <20200909120707.8663-1-gert@...1296...>
+ <20200909122223.9222-1-gert@...1296...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <e53ed74d-d1c0-c76a-3622-da00e00cfb8b@...2181...>
-Date: Mon, 14 Sep 2020 10:56:59 +0200
+Message-ID: <75cfa18c-f0a7-66a1-d329-3c64da69062a@...2181...>
+Date: Mon, 14 Sep 2020 11:04:39 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200911115916.16117-1-gert@...1296...>
+In-Reply-To: <20200909122223.9222-1-gert@...1296...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] If IPv6 pool specification sets pool
- start to ::0 address, increment.
+Subject: Re: [Openvpn-devel] [PATCH v3] socks.c: fix alen for DOMAIN type
+ addresses, bump up buffer sizes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,31 +17,40 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On 11/09/2020 13:59, Gert Doering wrote:
-> index 1f74ac57..2814ff46 100644
-> --- a/src/openvpn/pool.c
-> +++ b/src/openvpn/pool.c
-> @@ -224,6 +224,21 @@ ifconfig_pool_init(const bool ipv4_pool, enum pool_type type, in_addr_t start,
->          }
->  
->          pool->ipv6.base = ipv6_base;
-> +
-> +        /* if a pool starts at ::0, that first IPv6 address is not usable
-> +         * first clients (subnet anycast address).  Start with 1, then.
-> +         * NOTE: this will also fire for something like
-> +         *    ifconfig-ipv6-pool 2001:db8:0:1:1234::0/64
-> +         * as we only look at the rightmost 32 bits.  So be it...
-> +         */
-> +        if (base == 0)
+On 09/09/2020 14:22, Gert Doering wrote:
+> When a SOCKS5 server sends back a reply, it encodes an "address",
+> which can be IPv4 (4 bytes), IPv6 (16 bytes) or "a domain name",
+> which has a lenght (1 byte) and "a string of length <length>" - so
+> when copying bytes, we need to hande "length +1" bytes.
+> 
+> Our code totally doesn't use this variant of addresses on reception,
+> but since this has been pointed out by "tpw_rules" in Trac, fix it,
+> so if/when someone works on this again, the foundation is correct.
+> 
+> While at it, increase buffer size used for sending to handle domain
+> names longer than 122 characters (length was already checked, so a
+> longer name would not overflow but just "not work").
+> 
+> v2: increase buf[] len in recv_socks_reply() from 22 to 270 so it
+>     is large enough to actually copy a domain name
+> 
+> v3: increase buf[] len in establish_socks_proxy_passthru() from 128 to
+>     270, to handle long domain names in queries
+> 
+> Reported-By: tpw_rules in Trac
+> Trac: #848
+> 
+> Signed-off-by: Gert Doering <gert@...1296...>
 
-why not memcmp'ing ipv6.base with in6addr_any (defined in netinet/in.h)?
-This way you get rid of the first NOTE (unless this header is linux
-specific..).
+After a quick discussion on IRC I am fine with this patch, assuming the
+whitespace is added after the '+' operator.
+
+Further refactoring of this code will be carried on in later patches.
 
 Regards,
 
