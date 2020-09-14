@@ -1,9 +1,11 @@
 From: David Sommerseth <davids@...515...>
-Date: Mon, 14 Sep 2020 13:57:06 +0200
-Message-Id: <20200914115706.11066-1-davids@...515...>
+Date: Mon, 14 Sep 2020 14:27:21 +0200
+Message-Id: <20200914122721.14173-1-davids@...515...>
+In-Reply-To: <20200914115706.11066-1-davids@...515...>
+References: <20200914115706.11066-1-davids@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] sample-plugins: Partially autotoolize the
- sample-plugins build
+Subject: [Openvpn-devel] [PATCH v2] sample-plugins: Partially autotoolize
+ the sample-plugins build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -44,20 +46,29 @@ these sample-plugins on Windows requires a bit different compile and
 linking steps than *nix systems in general.
 
 Signed-off-by: David Sommerseth <davids@...515...>
+
+---
+v2 - Process README files with correct instructions and details
 ---
  configure.ac                                  |  1 +
- sample/sample-plugins/Makefile.am             | 28 +++++++++++++++++
- sample/sample-plugins/Makefile.plugins        | 31 +++++++++++++++++++
- sample/sample-plugins/defer/build             | 15 ---------
- .../keying-material-exporter-demo/build       | 15 ---------
- sample/sample-plugins/log/build               | 15 ---------
- sample/sample-plugins/simple/build            | 15 ---------
- 7 files changed, 60 insertions(+), 60 deletions(-)
+ sample/sample-plugins/Makefile.am             | 28 ++++++++++++++
+ sample/sample-plugins/Makefile.plugins        | 31 ++++++++++++++++
+ sample/sample-plugins/README                  | 37 +++++++++++++++++++
+ sample/sample-plugins/defer/README            | 16 --------
+ sample/sample-plugins/defer/build             | 15 --------
+ .../keying-material-exporter-demo/build       | 15 --------
+ sample/sample-plugins/log/build               | 15 --------
+ sample/sample-plugins/simple/README           | 16 --------
+ sample/sample-plugins/simple/build            | 15 --------
+ 10 files changed, 97 insertions(+), 92 deletions(-)
  create mode 100644 sample/sample-plugins/Makefile.am
  create mode 100644 sample/sample-plugins/Makefile.plugins
+ create mode 100644 sample/sample-plugins/README
+ delete mode 100644 sample/sample-plugins/defer/README
  delete mode 100755 sample/sample-plugins/defer/build
  delete mode 100755 sample/sample-plugins/keying-material-exporter-demo/build
  delete mode 100755 sample/sample-plugins/log/build
+ delete mode 100644 sample/sample-plugins/simple/README
  delete mode 100755 sample/sample-plugins/simple/build
 
 diff --git a/configure.ac b/configure.ac
@@ -143,6 +154,71 @@ index 00000000..76768dbe
 +clean :
 +	rm -f $(foreach var, $(PLUGINS), $(var).o) \
 +	$(foreach var, $(PLUGINS), $(var).so)
+diff --git a/sample/sample-plugins/README b/sample/sample-plugins/README
+new file mode 100644
+index 00000000..167d8d32
+--- /dev/null
++++ b/sample/sample-plugins/README
+@@ -0,0 +1,37 @@
++OpenVPN plug-in examples.
++
++Examples provided:
++
++* authentication and logging
++simple/simple.c -- using the --auth-user-pass-verify callback, verify
++                   that the username/password is "foo"/"bar".
++defer/simple.c  -- using the --auth-user-pass-verify callback,
++                   test deferred authentication.
++log/log.c       -- Extended variant of simple/simple.c which adds more
++                   logging of what is happening inside the plug-in
++log/log_v3.c    -- A variant of log/log.c, which makes use of the
++                   OpenVPN plug-in v3 API.  This will also log even more
++                   information related to certificates in use.
++
++* cryptography related
++simple/base64.c -- Example using the OpenVPN exported base64 encode/decode
++                   functions
++keying-material-exporter-demo/keyingmaterialexporter.c
++                -- Example based on TLS Keying Material Exporters over HTTP [RFC-5705]
++                   (openvpn/doc/keying-material-exporter.txt).  For more details, see
++                   keying-material-exporter-demo/README
++
++
++To build on *BSD/Linux platforms:
++
++   make                   (builds a default set of plug-ins)
++   make simple/simple.so
++
++To build on Windows platform (MinGW):
++
++   cd simple; ./winbuild simple.so
++
++To use in OpenVPN, add to config file:
++
++  plugin simple.so (Linux/BSD/etc.)
++  plugin simple.dll
+diff --git a/sample/sample-plugins/defer/README b/sample/sample-plugins/defer/README
+deleted file mode 100644
+index d8990f8b..00000000
+--- a/sample/sample-plugins/defer/README
++++ /dev/null
+@@ -1,16 +0,0 @@
+-OpenVPN plugin examples.
+-
+-Examples provided:
+-
+-simple.c -- using the --auth-user-pass-verify callback,
+-            test deferred authentication.
+-
+-To build:
+-
+-  ./build simple (Linux/BSD/etc.)
+-  ./winbuild simple (MinGW on Windows)
+-
+-To use in OpenVPN, add to config file:
+-
+-  plugin simple.so (Linux/BSD/etc.)
+-  plugin simple.dll (MinGW on Windows)
 diff --git a/sample/sample-plugins/defer/build b/sample/sample-plugins/defer/build
 deleted file mode 100755
 index ba41a39f..00000000
@@ -206,6 +282,28 @@ index c07ec408..00000000
 -
 -$CC $CPPFLAGS $CFLAGS -fPIC -c $1.c && \
 -$CC $CFLAGS -fPIC -shared $LDFLAGS -Wl,-soname,$1.so -o $1.so $1.o -lc
+diff --git a/sample/sample-plugins/simple/README b/sample/sample-plugins/simple/README
+deleted file mode 100644
+index 4400cd30..00000000
+--- a/sample/sample-plugins/simple/README
++++ /dev/null
+@@ -1,16 +0,0 @@
+-OpenVPN plugin examples.
+-
+-Examples provided:
+-
+-simple.c -- using the --auth-user-pass-verify callback, verify
+-            that the username/password is "foo"/"bar".
+-
+-To build:
+-
+-  ./build simple (Linux/BSD/etc.)
+-  ./winbuild simple (MinGW on Windows)
+-
+-To use in OpenVPN, add to config file:
+-
+-  plugin simple.so (Linux/BSD/etc.)
+-  plugin simple.dll (MinGW on Windows)
 diff --git a/sample/sample-plugins/simple/build b/sample/sample-plugins/simple/build
 deleted file mode 100755
 index bbb05f7c..00000000
