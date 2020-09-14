@@ -1,9 +1,13 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon, 14 Sep 2020 09:08:43 +0200
-Message-Id: <20200914070843.51678-1-gert@...1296...>
+References: <20200909120707.8663-1-gert@...1296...>
+ <20200909122223.9222-1-gert@...1296...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <f550e368-a634-e4ee-5f3a-59a84c095ae3@...2181...>
+Date: Mon, 14 Sep 2020 09:44:21 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix combination of --dev tap and --topology
- subnet across multiple platforms.
+In-Reply-To: <20200909122223.9222-1-gert@...1296...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v3] socks.c: fix alen for DOMAIN type
+ addresses, bump up buffer sizes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,128 +16,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
---topology should have no effect in tap mode (tap is always "subnet"),
-but due to the way options are checked, setting "topology subnet" caught
-an improper branch on all non-linux and non-win32 platforms.
+Hi,
 
-Easily tested by adding "--topology subnet" to a "--dev tap" t_client
-test.
+On 09/09/2020 14:22, Gert Doering wrote:
+> diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c
+> index 57f0cee2..d43d84a8 100644
+> --- a/src/openvpn/socks.c
+> +++ b/src/openvpn/socks.c
+> @@ -312,7 +312,7 @@ recv_socks_reply(socket_descriptor_t sd,
+>      char atyp = '\0';
+>      int alen = 0;
+>      int len = 0;
+> -    char buf[22];
+> +    char buf[270];		/* 4 + alen(max 256) + 2 */
+>      const int timeout_sec = 5;
+>  
+>      if (addr != NULL)
+> @@ -381,7 +381,10 @@ recv_socks_reply(socket_descriptor_t sd,
+>                      break;
+>  
+>                  case '\x03':    /* DOMAINNAME */
+> -                    alen = (unsigned char) c;
+> +                    /* RFC 1928, section 5: 1 byte length, <n> bytes name,
+> +                     * so the total "address length" is (length+1)
+> +                     */
+> +                    alen = (unsigned char) c +1;
 
-Tested, verified, and fixed on FreeBSD 13.3, NetBSD 8.1, OpenBSD 6.5,
-OpenIndiana 2019 (Solaris) and MacOS X Mojave.
+since you are touching this line...how about making it straight?
+1) why casting to unsigned char? "alen" is int.
+2) please add a space after the '+' operator.
 
-This is a forward-port of commit 6c13e24e5709 - the original intent
-for "master" was to restructure tun.c in a larger way and clean up
-these if() blocks more nicely... which has not happened yet, so this
-patch is basically applying exactly the same changes to context that
-has changed too much for git to be able to do this automatically.
+Regards,
 
-Trac: #1085
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/openvpn/tun.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
-
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 651cb871..fde94294 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -1224,7 +1224,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-         argv_printf(&argv, "%s %s netmask 255.255.255.255", IFCONFIG_PATH,
-                     ifname);
-     }
--    else if (tt->topology == TOP_SUBNET)
-+    else if (tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET)
-     {
-         argv_printf(&argv, "%s %s %s %s netmask %s mtu %d up", IFCONFIG_PATH,
-                     ifname, ifconfig_local, ifconfig_local,
-@@ -1243,7 +1243,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-         solaris_error_close(tt, es, ifname, false);
-     }
- 
--    if (!tun && tt->topology == TOP_SUBNET)
-+    if (!tun && tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET)
-     {
-         /* Add a network route for the local tun interface */
-         struct route_ipv4 r;
-@@ -1274,7 +1274,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-                     IFCONFIG_PATH, ifname, ifconfig_local,
-                     ifconfig_remote_netmask, tun_mtu);
-     }
--    else if (tt->topology == TOP_SUBNET)
-+    else if (tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET)
-     {
-         remote_end = create_arbitrary_remote( tt );
-         argv_printf(&argv, "%s %s %s %s mtu %d netmask %s up -link0",
-@@ -1292,7 +1292,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-     openvpn_execve_check(&argv, es, S_FATAL, "OpenBSD ifconfig failed");
- 
-     /* Add a network route for the local tun interface */
--    if (!tun && tt->topology == TOP_SUBNET)
-+    if (!tun && tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET)
-     {
-         struct route_ipv4 r;
-         CLEAR(r);
-@@ -1312,7 +1312,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-                     IFCONFIG_PATH, ifname, ifconfig_local,
-                     ifconfig_remote_netmask, tun_mtu);
-     }
--    else if (tt->topology == TOP_SUBNET)
-+    else if (tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET)
-     {
-         remote_end = create_arbitrary_remote(tt);
-         argv_printf(&argv, "%s %s %s %s mtu %d netmask %s up", IFCONFIG_PATH,
-@@ -1334,7 +1334,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-     openvpn_execve_check(&argv, es, S_FATAL, "NetBSD ifconfig failed");
- 
-     /* Add a network route for the local tun interface */
--    if (!tun && tt->topology == TOP_SUBNET)
-+    if (!tun && tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET)
-     {
-         struct route_ipv4 r;
-         CLEAR(r);
-@@ -1366,7 +1366,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-     }
-     else
-     {
--        if (tt->topology == TOP_SUBNET)
-+        if (tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET)
-         {
-             argv_printf(&argv, "%s %s %s %s netmask %s mtu %d up",
-                         IFCONFIG_PATH, ifname, ifconfig_local, ifconfig_local,
-@@ -1384,7 +1384,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-     openvpn_execve_check(&argv, es, S_FATAL, "Mac OS X ifconfig failed");
- 
-     /* Add a network route for the local tun interface */
--    if (!tun && tt->topology == TOP_SUBNET)
-+    if (!tun && tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET)
-     {
-         struct route_ipv4 r;
-         CLEAR(r);
-@@ -1406,7 +1406,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-                     IFCONFIG_PATH, ifname, ifconfig_local,
-                     ifconfig_remote_netmask, tun_mtu);
-     }
--    else if (tt->topology == TOP_SUBNET)
-+    else if (tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET)
-     {
-         remote_end = create_arbitrary_remote( tt );
-         argv_printf(&argv, "%s %s %s %s mtu %d netmask %s up", IFCONFIG_PATH,
-@@ -1423,7 +1423,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-     openvpn_execve_check(&argv, es, S_FATAL, "FreeBSD ifconfig failed");
- 
-     /* Add a network route for the local tun interface */
--    if (!tun && tt->topology == TOP_SUBNET)
-+    if (!tun && tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET)
-     {
-         struct route_ipv4 r;
-         CLEAR(r);
 -- 
-2.28.0
-
+Antonio Quartulli
 
