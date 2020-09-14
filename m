@@ -1,10 +1,7 @@
-Date: Mon, 14 Sep 2020 10:02:15 +0200 (CEST)
-Message-Id: <202009140802.08E82Fvo052653@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200913145621.12125-1-gert@...1296...>
-References: <20200913145621.12125-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix --show-gateway for IPv6 on
- NetBSD/i386.
+From: Lev Stipakov <lstipakov@...277...>
+Date: Mon, 14 Sep 2020 11:44:44 +0300
+Message-Id: <20200914084444.96-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] msvc: better support for 32bit architecture
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,29 +12,68 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Patch has been applied to many branches... (bugfix).
+From: Lev Stipakov <lev@...515...>
 
-commit 37aab49b083a9e385970e3ab2dd727ea1a95ff35 (master)
-commit 9a695902402faafa343783c38761c4c0ccbb2b83 (HEAD -> release/2.5)
-commit 9e9fd488d7d939ac9992f8bd4c7394a39b73d7e4 (HEAD -> release/2.4)
-Author: Gert Doering
-Date:   Sun Sep 13 16:56:21 2020 +0200
+Previously dependency directory was hardcoded to
 
-     Fix --show-gateway for IPv6 on NetBSD/i386.
+..\openvpn-build\msvc\image
 
-     Signed-off-by: Gert Doering <gert@...2576...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20200913145621.12125-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20983.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+which means that to build for 32bit architecture,
+one needs to rebuild dependencies and do the same again
+for 64bit architecture.
 
+Add architecture's "bitness" to dependency directory.
 
---
-kind regards,
+As a bonus, add missing libraries to 32bit targets.
 
-Gert Doering
+This requires correspondig change to openvpn-build:
+
+https://github.com/OpenVPN/openvpn-build/pull/190
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/compat/PropertySheet.props | 2 +-
+ src/openvpn/openvpn.vcxproj    | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/compat/PropertySheet.props b/src/compat/PropertySheet.props
+index fdded318..4f94b972 100644
+--- a/src/compat/PropertySheet.props
++++ b/src/compat/PropertySheet.props
+@@ -3,7 +3,7 @@
+   <ImportGroup Label="PropertySheets" />
+   <PropertyGroup Label="UserMacros">
+     <SOURCEBASE>$(SolutionDir)</SOURCEBASE>
+-    <OPENVPN_DEPROOT>$(SOURCEBASE)\..\openvpn-build\msvc\image</OPENVPN_DEPROOT>
++    <OPENVPN_DEPROOT>$(SOURCEBASE)\..\openvpn-build\msvc\image$(PlatformArchitecture)</OPENVPN_DEPROOT>
+     <OPENSSL_HOME>$(OPENVPN_DEPROOT)</OPENSSL_HOME>
+     <TAP_WINDOWS_HOME>$(OPENVPN_DEPROOT)</TAP_WINDOWS_HOME>
+     <LZO_HOME>$(OPENVPN_DEPROOT)</LZO_HOME>
+diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
+index 5367979d..3863854b 100644
+--- a/src/openvpn/openvpn.vcxproj
++++ b/src/openvpn/openvpn.vcxproj
+@@ -92,7 +92,7 @@
+     </ClCompile>
+     <ResourceCompile />
+     <Link>
+-      <AdditionalDependencies>legacy_stdio_definitions.lib;Ncrypt.lib;libssl.lib;libcrypto.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
++      <AdditionalDependencies>legacy_stdio_definitions.lib;Ncrypt.lib;libssl.lib;libcrypto.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;setupapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+       <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(LZO_HOME)/lib;$(PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+       <SubSystem>Console</SubSystem>
+     </Link>
+@@ -122,7 +122,7 @@
+     </ClCompile>
+     <ResourceCompile />
+     <Link>
+-      <AdditionalDependencies>legacy_stdio_definitions.lib;Ncrypt.lib;libssl.lib;libcrypto.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
++      <AdditionalDependencies>legacy_stdio_definitions.lib;Ncrypt.lib;libssl.lib;libcrypto.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;setupapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+       <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(LZO_HOME)/lib;$(PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+       <SubSystem>Console</SubSystem>
+     </Link>
+-- 
+2.17.1
 
 
