@@ -1,11 +1,14 @@
-From: David Sommerseth <davids@...515...>
-Date: Mon, 14 Sep 2020 14:27:21 +0200
-Message-Id: <20200914122721.14173-1-davids@...515...>
-In-Reply-To: <20200914115706.11066-1-davids@...515...>
-References: <20200914115706.11066-1-davids@...515...>
+Date: Mon, 14 Sep 2020 15:55:22 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20200914135522.GX75094@...1296...>
+References: <20191127134258.9162-1-l@...2534...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] sample-plugins: Partially autotoolize
- the sample-plugins build
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="vZg1K/LA5SDz0xp4"
+Content-Disposition: inline
+In-Reply-To: <20191127134258.9162-1-l@...2534...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix IPv6 configuration on Windows using
+ netsh
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,318 +17,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Laurent Fasnacht <l@...2534...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-The sample-plugins have their own set of build/winbuild scripts in each
-of these plugin directories.  This does not give a good way to reuse
-various macros the autoconf/automake/configure process enables; which
-can contain important macros to make some code build without errors or
-warnings.
+--vZg1K/LA5SDz0xp4
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Normally we would embrace the full autoconf/automake approach. But this
-is sample code which we only want to build per request and the built
-code should not be installed anywhere via 'make install'.  But since we
-do use libtool other plug-ins being installed and automake gets kind of
-cranky when it comes to define certain build targets not following the
-expected use cases, we try to only embrace just enough of automake to
-get our main goals achieved.
+Hi,
 
-This changeset kicks out the build scripts and replaces them with a
-single Makefile.plugins file, which defines the plugins we want to build
-by default when running 'make from the sample-plugins directory.
-Neither of these plugins are otherwise built by default.  No sample-plugins
-are being installed.  But we have enough strings attached to automake
-to grab the CFLAGS and LDFLAGS used by the rest of the code.  This also
-makes it easy to use #include "config.h" in sample code, to also get
-various macros defined by the ./configure run.
+On Wed, Nov 27, 2019 at 01:43:38PM +0000, Laurent Fasnacht wrote:
+> Apparently, `netsh interface ipv6 set address ...` defaults to using
+> a subnet of /64, and therefore adds an onlink route of that size.
+>=20
+> When using a tun tunnel, the tap adapter only replies to neighbor
+> discovery packets for fe80::8. This leads to the unfortunate situation
+> where all the hosts in the /64 are not reachable.
+>=20
+> This patch fixes that situation by specifying a /128 netmask, as the real
+> route is added afterwards, via the gateway.
 
-This patch does not touch the winbuild scripts, as it seems building
-these sample-plugins on Windows requires a bit different compile and
-linking steps than *nix systems in general.
+So, coming back to this.
 
-Signed-off-by: David Sommerseth <davids@...515...>
+I tried to reproduce this in the context of=20
 
----
-v2 - Process README files with correct instructions and details
----
- configure.ac                                  |  1 +
- sample/sample-plugins/Makefile.am             | 28 ++++++++++++++
- sample/sample-plugins/Makefile.plugins        | 31 ++++++++++++++++
- sample/sample-plugins/README                  | 37 +++++++++++++++++++
- sample/sample-plugins/defer/README            | 16 --------
- sample/sample-plugins/defer/build             | 15 --------
- .../keying-material-exporter-demo/build       | 15 --------
- sample/sample-plugins/log/build               | 15 --------
- sample/sample-plugins/simple/README           | 16 --------
- sample/sample-plugins/simple/build            | 15 --------
- 10 files changed, 97 insertions(+), 92 deletions(-)
- create mode 100644 sample/sample-plugins/Makefile.am
- create mode 100644 sample/sample-plugins/Makefile.plugins
- create mode 100644 sample/sample-plugins/README
- delete mode 100644 sample/sample-plugins/defer/README
- delete mode 100755 sample/sample-plugins/defer/build
- delete mode 100755 sample/sample-plugins/keying-material-exporter-demo/build
- delete mode 100755 sample/sample-plugins/log/build
- delete mode 100644 sample/sample-plugins/simple/README
- delete mode 100755 sample/sample-plugins/simple/build
+  https://community.openvpn.net/openvpn/ticket/1054
 
-diff --git a/configure.ac b/configure.ac
-index f8279924..ebb32204 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1433,6 +1433,7 @@ AC_CONFIG_FILES([
- 	doc/doxygen/Makefile
- 	doc/doxygen/openvpn.doxyfile
- 	include/Makefile
-+	sample/sample-plugins/Makefile
- 	src/Makefile
- 	src/compat/Makefile
- 	src/openvpn/Makefile
-diff --git a/sample/sample-plugins/Makefile.am b/sample/sample-plugins/Makefile.am
-new file mode 100644
-index 00000000..d02abe48
---- /dev/null
-+++ b/sample/sample-plugins/Makefile.am
-@@ -0,0 +1,28 @@
-+#
-+#  OpenVPN -- An application to securely tunnel IP networks
-+#             over a single UDP port, with support for SSL/TLS-based
-+#             session authentication and key exchange,
-+#             packet encryption, packet authentication, and
-+#             packet compression.
-+#
-+#  Copyright (C) 2002-2020 OpenVPN Inc <sales@...515...>
-+#
-+
-+MAINTAINERCLEANFILES = \
-+	$(srcdir)/Makefile.in
-+
-+# We don't want automake to pull in libtool for building these
-+# sample-plugins.  Even though this breaks the conceptual ideas
-+# around autoconf/automake/libtools ... these sample plug-ins
-+# are just sample code, not to be installed or distributed outside
-+# of the source tarball.  Not even built by default, by design.
-+#
-+# We only add this as a simple and convenient way to build all
-+# these plug-ins with the same build parameters as the rest
-+# of the OpenVPN code.
-+#
-+# All the plugins which will be built are processed in this
-+# separate Makefile, which disconnects everything just enough
-+# to achieve our goal.
-+include Makefile.plugins
-+
-diff --git a/sample/sample-plugins/Makefile.plugins b/sample/sample-plugins/Makefile.plugins
-new file mode 100644
-index 00000000..76768dbe
---- /dev/null
-+++ b/sample/sample-plugins/Makefile.plugins
-@@ -0,0 +1,31 @@
-+#  SPDX-License-Identifier: GPL-2.0-only
-+#
-+#  Copyright (C) 2020 OpenVPN Inc <sales@...515...>
-+#
-+
-+#
-+# Plug-ins to build - listed entries should not carry any extensions
-+#
-+PLUGINS = \
-+	defer/simple \
-+	keying-material-exporter-demo/keyingmaterialexporter \
-+	log/log log/log_v3 \
-+	simple/base64 \
-+	simple/simple
-+
-+# All the plugins to build - rewritten with .so extension
-+all : $(foreach var, $(PLUGINS), $(var).so)
-+
-+# Compile step
-+.c.o :
-+	test -d `dirname $@` || $(MKDIR_P) `dirname $@`; \
-+	$(CC) -c -o $@ $(CFLAGS) -I$(top_srcdir) -fPIC $<
-+
-+# Link step
-+%.so : %.o
-+	$(CC) $(LDFLAGS) -shared -fPIC -o $@ $<
-+
-+# Clean up all build object and shared object files
-+clean :
-+	rm -f $(foreach var, $(PLUGINS), $(var).o) \
-+	$(foreach var, $(PLUGINS), $(var).so)
-diff --git a/sample/sample-plugins/README b/sample/sample-plugins/README
-new file mode 100644
-index 00000000..167d8d32
---- /dev/null
-+++ b/sample/sample-plugins/README
-@@ -0,0 +1,37 @@
-+OpenVPN plug-in examples.
-+
-+Examples provided:
-+
-+* authentication and logging
-+simple/simple.c -- using the --auth-user-pass-verify callback, verify
-+                   that the username/password is "foo"/"bar".
-+defer/simple.c  -- using the --auth-user-pass-verify callback,
-+                   test deferred authentication.
-+log/log.c       -- Extended variant of simple/simple.c which adds more
-+                   logging of what is happening inside the plug-in
-+log/log_v3.c    -- A variant of log/log.c, which makes use of the
-+                   OpenVPN plug-in v3 API.  This will also log even more
-+                   information related to certificates in use.
-+
-+* cryptography related
-+simple/base64.c -- Example using the OpenVPN exported base64 encode/decode
-+                   functions
-+keying-material-exporter-demo/keyingmaterialexporter.c
-+                -- Example based on TLS Keying Material Exporters over HTTP [RFC-5705]
-+                   (openvpn/doc/keying-material-exporter.txt).  For more details, see
-+                   keying-material-exporter-demo/README
-+
-+
-+To build on *BSD/Linux platforms:
-+
-+   make                   (builds a default set of plug-ins)
-+   make simple/simple.so
-+
-+To build on Windows platform (MinGW):
-+
-+   cd simple; ./winbuild simple.so
-+
-+To use in OpenVPN, add to config file:
-+
-+  plugin simple.so (Linux/BSD/etc.)
-+  plugin simple.dll
-diff --git a/sample/sample-plugins/defer/README b/sample/sample-plugins/defer/README
-deleted file mode 100644
-index d8990f8b..00000000
---- a/sample/sample-plugins/defer/README
-+++ /dev/null
-@@ -1,16 +0,0 @@
--OpenVPN plugin examples.
--
--Examples provided:
--
--simple.c -- using the --auth-user-pass-verify callback,
--            test deferred authentication.
--
--To build:
--
--  ./build simple (Linux/BSD/etc.)
--  ./winbuild simple (MinGW on Windows)
--
--To use in OpenVPN, add to config file:
--
--  plugin simple.so (Linux/BSD/etc.)
--  plugin simple.dll (MinGW on Windows)
-diff --git a/sample/sample-plugins/defer/build b/sample/sample-plugins/defer/build
-deleted file mode 100755
-index ba41a39f..00000000
---- a/sample/sample-plugins/defer/build
-+++ /dev/null
-@@ -1,15 +0,0 @@
--#!/bin/sh
--
--#
--# Build an OpenVPN plugin module on *nix.  The argument should
--# be the base name of the C source file (without the .c).
--#
--
--# This directory is where we will look for openvpn-plugin.h
--CPPFLAGS="${CPPFLAGS:--I../../../include}"
--
--CC="${CC:-gcc}"
--CFLAGS="${CFLAGS:--O2 -Wall -g}"
--
--$CC $CPPFLAGS $CFLAGS -fPIC -c $1.c && \
--$CC $CFLAGS -fPIC -shared ${LDFLAGS} -Wl,-soname,$1.so -o $1.so $1.o -lc
-diff --git a/sample/sample-plugins/keying-material-exporter-demo/build b/sample/sample-plugins/keying-material-exporter-demo/build
-deleted file mode 100755
-index bbb05f7c..00000000
---- a/sample/sample-plugins/keying-material-exporter-demo/build
-+++ /dev/null
-@@ -1,15 +0,0 @@
--#!/bin/sh
--
--#
--# Build an OpenVPN plugin module on *nix.  The argument should
--# be the base name of the C source file (without the .c).
--#
--
--# This directory is where we will look for openvpn-plugin.h
--CPPFLAGS="${CPPFLAGS:--I../../..}"
--
--CC="${CC:-gcc}"
--CFLAGS="${CFLAGS:--O2 -Wall -g}"
--
--$CC $CPPFLAGS $CFLAGS -fPIC -c $1.c && \
--$CC $CFLAGS -fPIC -shared $LDFLAGS -Wl,-soname,$1.so -o $1.so $1.o -lc
-diff --git a/sample/sample-plugins/log/build b/sample/sample-plugins/log/build
-deleted file mode 100755
-index c07ec408..00000000
---- a/sample/sample-plugins/log/build
-+++ /dev/null
-@@ -1,15 +0,0 @@
--#!/bin/sh
--
--#
--# Build an OpenVPN plugin module on *nix.  The argument should
--# be the base name of the C source file (without the .c).
--#
--
--# This directory is where we will look for openvpn-plugin.h
--CPPFLAGS="${CPPFLAGS:--I../../../include}"
--
--CC="${CC:-gcc}"
--CFLAGS="${CFLAGS:--O2 -Wall -g}"
--
--$CC $CPPFLAGS $CFLAGS -fPIC -c $1.c && \
--$CC $CFLAGS -fPIC -shared $LDFLAGS -Wl,-soname,$1.so -o $1.so $1.o -lc
-diff --git a/sample/sample-plugins/simple/README b/sample/sample-plugins/simple/README
-deleted file mode 100644
-index 4400cd30..00000000
---- a/sample/sample-plugins/simple/README
-+++ /dev/null
-@@ -1,16 +0,0 @@
--OpenVPN plugin examples.
--
--Examples provided:
--
--simple.c -- using the --auth-user-pass-verify callback, verify
--            that the username/password is "foo"/"bar".
--
--To build:
--
--  ./build simple (Linux/BSD/etc.)
--  ./winbuild simple (MinGW on Windows)
--
--To use in OpenVPN, add to config file:
--
--  plugin simple.so (Linux/BSD/etc.)
--  plugin simple.dll (MinGW on Windows)
-diff --git a/sample/sample-plugins/simple/build b/sample/sample-plugins/simple/build
-deleted file mode 100755
-index bbb05f7c..00000000
---- a/sample/sample-plugins/simple/build
-+++ /dev/null
-@@ -1,15 +0,0 @@
--#!/bin/sh
--
--#
--# Build an OpenVPN plugin module on *nix.  The argument should
--# be the base name of the C source file (without the .c).
--#
--
--# This directory is where we will look for openvpn-plugin.h
--CPPFLAGS="${CPPFLAGS:--I../../..}"
--
--CC="${CC:-gcc}"
--CFLAGS="${CFLAGS:--O2 -Wall -g}"
--
--$CC $CPPFLAGS $CFLAGS -fPIC -c $1.c && \
--$CC $CFLAGS -fPIC -shared $LDFLAGS -Wl,-soname,$1.so -o $1.so $1.o -lc
--- 
-2.26.0
+and actually couldn't.
 
+I tested on Win10, and both on tun and tap mode, the existing code
+always configured a "/128" on-link (and then added the /64 route to
+what it thought was the right gateway - fe80::8 for tun, its own
+address for tap).
+
+
+I will need to touch the code now anyway, as the behaviour for tap is
+*wrong* (for tap, it really needs to have a /64 on-link, and do ND=20
+inside the network) - but if I could reproduce the issue you saw=20
+for tun, it would make my life easier :-)
+
+Arne: in "dev tun" mode on windows, we can only reach a single gateway
+IP (fe80::8) which is the "spoof ND replies!" thing in the tun/tap driver
+- everything else only works if sent via fe80::8 -> strip ethernet header
+-> send as "tun" packets.  So, /128 is correct for tun.
+
+gert
+
+
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--vZg1K/LA5SDz0xp4
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJfX3ZJAAoJEB2Cnv7KVigSgnwL/1UG46s9dH0/2vVuYIYhTIhG
+4glxXi7T8Zy/AkbMXuq0GiLDf47J3cIyDFEwqS91oeH2XtwJqeuvUY9DXKKi3MIr
+9hJUAVrtvcQBq7JuRA1dgFOiJbK0kNNuUH8uLdrPk4AsZ2b0qHsDrCJF/pZDncEu
+2owKlCSBvZC1aZZEJhPsZRnJuXbaCKhkf8p9zUaLRZtfkdSaxXIAvuNLNXf4qHHR
+31V8JD9ohmAteQs83i0xcQS5LRZBA8ARZ1934rm1KvDYeCFgcCe2ikK+/pF9MkeV
+kY2KI1Ow1lfaVnVFymxlalulvreC0moCUiociJYXSRubXxqCGYhOqJmAT3Yx4kBD
+qa1Eh4x3+DJTd8IVUFRXVlR3trZPG4r5FxD+wPyz6JWKiZQISXuh14aydUTyGKZG
+K9MyX5AeX0nLKjLnen84vs1YFnMS6xvrw7jfm/hsfAlxLRlCCN413k/rpZNZdFKy
++BKOu2KC++m1gnaW9sKSlx+itJpgPzhZ+7b4E560Hg==
+=iKWq
+-----END PGP SIGNATURE-----
+
+--vZg1K/LA5SDz0xp4--
 
