@@ -1,13 +1,10 @@
-References: <20200909120707.8663-1-gert@...1296...>
- <20200909122223.9222-1-gert@...1296...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <f550e368-a634-e4ee-5f3a-59a84c095ae3@...2181...>
-Date: Mon, 14 Sep 2020 09:44:21 +0200
-MIME-Version: 1.0
-In-Reply-To: <20200909122223.9222-1-gert@...1296...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v3] socks.c: fix alen for DOMAIN type
- addresses, bump up buffer sizes
+Date: Mon, 14 Sep 2020 10:02:15 +0200 (CEST)
+Message-Id: <202009140802.08E82Fvo052653@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20200913145621.12125-1-gert@...1296...>
+References: <20200913145621.12125-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix --show-gateway for IPv6 on
+ NetBSD/i386.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,43 +13,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Patch has been applied to many branches... (bugfix).
 
-On 09/09/2020 14:22, Gert Doering wrote:
-> diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c
-> index 57f0cee2..d43d84a8 100644
-> --- a/src/openvpn/socks.c
-> +++ b/src/openvpn/socks.c
-> @@ -312,7 +312,7 @@ recv_socks_reply(socket_descriptor_t sd,
->      char atyp = '\0';
->      int alen = 0;
->      int len = 0;
-> -    char buf[22];
-> +    char buf[270];		/* 4 + alen(max 256) + 2 */
->      const int timeout_sec = 5;
->  
->      if (addr != NULL)
-> @@ -381,7 +381,10 @@ recv_socks_reply(socket_descriptor_t sd,
->                      break;
->  
->                  case '\x03':    /* DOMAINNAME */
-> -                    alen = (unsigned char) c;
-> +                    /* RFC 1928, section 5: 1 byte length, <n> bytes name,
-> +                     * so the total "address length" is (length+1)
-> +                     */
-> +                    alen = (unsigned char) c +1;
+commit 37aab49b083a9e385970e3ab2dd727ea1a95ff35 (master)
+commit 9a695902402faafa343783c38761c4c0ccbb2b83 (HEAD -> release/2.5)
+commit 9e9fd488d7d939ac9992f8bd4c7394a39b73d7e4 (HEAD -> release/2.4)
+Author: Gert Doering
+Date:   Sun Sep 13 16:56:21 2020 +0200
 
-since you are touching this line...how about making it straight?
-1) why casting to unsigned char? "alen" is int.
-2) please add a space after the '+' operator.
+     Fix --show-gateway for IPv6 on NetBSD/i386.
 
-Regards,
+     Signed-off-by: Gert Doering <gert@...2576...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20200913145621.12125-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg20983.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
--- 
-Antonio Quartulli
+--
+kind regards,
+
+Gert Doering
+
 
