@@ -1,9 +1,9 @@
-From: Vladislav Grishenko <themiron@...2010...>
-Date: Mon, 14 Sep 2020 06:04:02 +0500
-Message-Id: <20200914010402.22715-1-themiron@...2010...>
-In-Reply-To: <02ba01d686b31a11ef0yandex-team.ru>
-References: <02ba01d686b31a11ef0yandex-team.ru>
-Subject: [Openvpn-devel] [PATCH v3] Add DNS SRV remote host discovery support
+MIME-Version: 1.0
+From: Rafael Gava <gava100@...277...>
+Date: Sun, 13 Sep 2020 22:23:16 -0300
+Message-ID: <CAAWBBYMu6mT+H3atWxx1Stqt63kvTj-MGpUiM_2uDnAjbqNb=w@...278...>
+Content-Type: multipart/alternative; boundary="000000000000ad9c2405af3be176"
+Subject: [Openvpn-devel]  NAT client-ip
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,1957 +12,266 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-DNS SRV host discovery allows to have multiple OpenVPN servers for a single
-domain w/o explicit profile enumeration, to move services from host to host
-with little fuss, and to designate hosts as primary servers for a service
-and others as backups.
-Feature has been asked several times already, useful in case of huge ammount
-of clients & servers deployed.
+--000000000000ad9c2405af3be176
+Content-Type: text/plain; charset="UTF-8"
 
-Patch introduces "--remote-srv domain [service] [proto]" option, which
-enables DNS SRV discovery and optionally allows to change default "openvpn"
-service and default "auto" protocol to the specified values.
-Client will try to resolve "_service._proto.domain" name via DNS and use
-returned DNS SRV records as OpenVPN remote server list ordered by server
-selection mechanism defined in RFC 2782:
+Hello guys,
 
-    A client MUST attempt to contact the target host with the
-    lowest-numbered priority field value it can reach, target hosts
-    with the same priority SHOULD be tried in an order defined by the
-    weight field.
-    The weight field specifies a relative weight for entries with the
-    same priority. Larger weights SHOULD be given a proportionately
-    higher probability of being selected.
-    Domain administrators SHOULD use Weight 0 when there isn't any
-    server selection to do. In the presence of records containing
-    weights greater than 0, records with weight 0 SHOULD have a very
-    small chance of being selected.
+A couple years ago I submitted this patch which allows the user to set the
+'client-ip' as a convenient way to use the leased IP address received from
+OpenVPN server in NAT configuration. For example:
 
-Example: instead of multiple remotes in order:
-    remote s1.example.net 1194 udp
-    remote s2.example.net 1194 udp
-    remote s3.example.net 1194 udp
-    remote s4.example.net 1194 tcp
+client-nat snat client-ip 255.255.255.255 172.20.1.15
 
-now it's possible to specify just one remote-srv:
-    remote-srv example.net
+, where 'client-ip' string is replaced with the leased IP address received
+from OpenVPN server.
 
-and configure following DNS SRV records:
+At that time, it was NACKED due to the fact that I was using both client-ip
+and localhost strings. So, it's changed now and I'd like to re-submit it
+again for appreciation.
 
-    name                             prio weight port host
-    _openvpn._udp.example.net IN SRV 10   60     1194 s1.example.net
-    _openvpn._udp.example.net IN SRV 10   40     1194 s2.example.net
-    _openvpn._udp.example.net IN SRV 10   0      1194 s3.example.net
-    _openvpn._tcp.example.net IN SRV 20   0      443  s4.example.net
+Thanks
 
-Client will first try to resolve "_openvpn._udp.example.net" and
-"_openvpn._tcp.example.net" names.
-Next, "s1.example.net", "s2.example.net" and "s3.example.net" will be
-ordered before "s4.example.net" as their priority 10 is smaller than 20.
-Next, "s1.example.net", "s2.example.net" and "s3.example.net" will be
-randomly ordered with weight probability - first will be either
-"s1.example.net" with probability 60% or "s2.example.net" with 40% or
-"s3.example.net" with almost zero probability.
-Next, if "s1.example.net" is picked as first, second server will be either
-"s2.example.net" with almost 100% probability or "s3.example.net" instead.
-Next, if "s2.example.net" is picked as second, "s3.example.net" will be
-skipped due zero weight.
-"s4.example.net" will be the last one as the only server with priority 20.
-Finally, servers will be resolved and accessed in this order.
+Gava
 
-If "_openvpn._udp.example.net" and "_openvpn._udp.example.net" can't be
-resolved or no valid records were returned, client will move on to the
-next connection entry.
+-------------------------------------
 
-Tested on Linux & Windows 10.
+From e273b13bc10da8f917a981957cf2c43ba6bd1e10 Mon Sep 17 00:00:00 2001
+From: Rafael Gava de Oliveira <Rafael.Oliveira@...2056...>
+Date: Sat, 12 Sep 2020 19:27:25 -0300
+Subject: [PATCH] Allows the usage of the string 'client-ip' in the
+client-nat
+ network configuration in a way that is not necessary to inform the IP
+address
+ beforehand. Openvpn will dynamically set the received IP from DHCP.
 
-v2: use DNS SRV for feature naming
-    change option name to --remote-service-discovery
-    add --remote-service-discovery [service] optional parameter support
-    rewrite man, add algo/prio/weight description and examples
-    fix random weight selection was not implicit
-    remove pulled REMOTE_DISCOVERY support, not needed
-    split windows/unix-specific parts into extra functions
-    rename functions into servinfo scope, add doxygen comments when appropriate
-    remove addrinfo hack, use servinfo containers of addrinfo list instead
-    better proxy support (tcp mode not supported so far)
-    log discovery attempts and results, if enabled
+Example:
 
-v3: complete logic rewrite
-    use separate --remote-srv [service] [proto] option
-    remove fallback, same is achieved with additiona --remote/--remote-srv
-    add "auto" protocol support to allow both udp & tcp hosts be discovered
-    add support for tcp / http proxy (natively)
-    man update
+client-nat snat client-ip 255.255.255.255 172.20.1.15
 
-Signed-off-by: Vladislav Grishenko <themiron@...2010...>
+Replaces the 'client-ip' string with the DHCP address received from
+the openvpn server.
 ---
- configure.ac                        |   2 +-
- doc/man-sections/client-options.rst |  88 ++-
- doc/management-notes.txt            |   6 +
- src/openvpn/Makefile.am             |   2 +-
- src/openvpn/buffer.h                |   5 -
- src/openvpn/errlevel.h              |   1 +
- src/openvpn/init.c                  |  57 +-
- src/openvpn/openvpn.vcxproj         |   8 +-
- src/openvpn/options.c               | 238 ++++++--
- src/openvpn/options.h               |   4 +
- src/openvpn/socket.c                | 836 +++++++++++++++++++++++++++-
- src/openvpn/socket.h                |  56 +-
- src/openvpn/syshead.h               |   5 +
- 13 files changed, 1231 insertions(+), 77 deletions(-)
+ src/openvpn/clinat.c  | 45 ++++++++++++++++++++++++++++++++++++++++-----
+ src/openvpn/clinat.h  |  2 ++
+ src/openvpn/init.c    |  2 ++
+ src/openvpn/options.c |  2 +-
+ 4 files changed, 45 insertions(+), 6 deletions(-)
+ mode change 100644 => 100755 src/openvpn/clinat.c
 
-diff --git a/configure.ac b/configure.ac
-index f8279924..67251bed 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -477,7 +477,7 @@ SOCKET_INCLUDES="
- "
- 
- AC_CHECK_HEADERS(
--	[net/if.h netinet/ip.h resolv.h sys/un.h net/if_utun.h sys/kern_control.h],
-+	[net/if.h netinet/ip.h arpa/nameser.h resolv.h sys/un.h net/if_utun.h sys/kern_control.h],
- 	,
- 	,
- 	[[${SOCKET_INCLUDES}]]
-diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-options.rst
-index ec1e3b11..9500c4a4 100644
---- a/doc/man-sections/client-options.rst
-+++ b/doc/man-sections/client-options.rst
-@@ -299,10 +299,88 @@ configuration.
-   specification (4/6 suffix), OpenVPN will try both IPv4 and IPv6
-   addresses, in the order getaddrinfo() returns them.
- 
-+--remote-srv args
-+  Perform DNS SRV remote host discovery using specified ``domain`` and
-+  two additional optional arguments: ``service`` and ``proto``. On the
-+  client, multiple ``--remote-srv`` options may be specified for
-+  redundancy, each referring to a different DNS SRV domain. Specifying
-+  multiple ``--remote`` or ``--remote-srv`` options for this purpose is
-+  a special case of the more general connection-profile feature. See the
-+  ``<connection>`` documentation below.
+diff --git a/src/openvpn/clinat.c b/src/openvpn/clinat.c
+old mode 100644
+new mode 100755
+index b08fd54..865b0e2
+--- a/src/openvpn/clinat.c
++++ b/src/openvpn/clinat.c
+@@ -128,12 +128,16 @@ add_client_nat_to_option_list(struct
+client_nat_option_list *dest,
+         msg(msglevel, "client-nat: type must be 'snat' or 'dnat'");
+         return;
+     }
+-
+-    e.network = getaddr(0, network, 0, &ok, NULL);
+-    if (!ok)
++    if (network && !strcmp(network, "client-ip"))
+     {
+-        msg(msglevel, "client-nat: bad network: %s", network);
+-        return;
++        e.network = 0xFFFFFFFF;
++    } else {
++        e.network = getaddr(0, network, 0, &ok, NULL);
++        if (!ok)
++        {
++            msg(msglevel, "client-nat: bad network: %s", network);
++            return;
++        }
+     }
+     e.netmask = getaddr(0, netmask, 0, &ok, NULL);
+     if (!ok)
+@@ -276,3 +280,34 @@ client_nat_transform(const struct
+client_nat_option_list *list,
+         }
+     }
+ }
 +
-+  Client will try to resolve ``_service._proto.domain`` name via DNS and
-+  use returned DNS SRV records as OpenVPN remote server list ordered by
-+  server selection mechanism defined in RFC 2782:
-+  ::
++/*
++* Replaces the client-ip token with the IP received from OpenVPN Server
++*/
++bool
++update_client_ip_nat(struct client_nat_option_list *dest, in_addr_t
+local_ip)
++{
++    int i;
++    bool ret = false;
 +
-+    A client MUST attempt to contact the target host with the
-+    lowest-numbered priority field value it can reach, target hosts
-+    with the same priority SHOULD be tried in an order defined by the
-+    weight field.
-+    The weight field specifies a relative weight for entries with the
-+    same priority. Larger weights SHOULD be given a proportionately
-+    higher probability of being selected.
-+    Domain administrators SHOULD use Weight 0 when there isn't any
-+    server selection to do. In the presence of records containing
-+    weights greater than 0, records with weight 0 SHOULD have a very
-+    small chance of being selected.
++    if (!dest)
++        return ret;
 +
-+  If one DNS SRV record resolves to multiple IP addresses, OpenVPN will
-+  try them in the order that the system getaddrinfo() presents them.
++    for (i=0; i <= dest->n; i++)
++    {
++        struct client_nat_entry *nat_entry = &dest->entries[i];
++        if (nat_entry && nat_entry->network == 0xFFFFFFFF)
++        {
++            struct in_addr addr;
 +
-+  Example:
-+  ::
++            nat_entry->network = ntohl(local_ip);
++            addr.s_addr = nat_entry->network;
++            char *dot_ip = inet_ntoa(addr);
 +
-+     remote-srv example.net
-+     remote-srv example.net openvpn
-+     remote-srv example.net openvpn auto
++            msg (M_INFO, "Updating NAT table client-ip to: %s", dot_ip);
++            ret = true;
++        }
++    }
 +
-+  By default, ``service`` is :code:`openvpn` as OpenVPN's IANA registered
-+  service name.
++    return ret;
++}
+diff --git a/src/openvpn/clinat.h b/src/openvpn/clinat.h
+index eec7a03..c2941b9 100644
+--- a/src/openvpn/clinat.h
++++ b/src/openvpn/clinat.h
+@@ -64,4 +64,6 @@ void client_nat_transform(const struct
+client_nat_option_list *list,
+                           struct buffer *ipbuf,
+                           const int direction);
+
++bool update_client_ip_nat(struct client_nat_option_list *dest, in_addr_t
+local_ip);
 +
-+  ``proto`` indicates the protocol part for discovery and the protocol to
-+  use when connecting with the remote. It may be :code:`tcp`, :code:`udp`
-+  or special value :code:`auto` used by default to try both. In this case
-+  all the discovered remote servers will be ordered by server selection
-+  mechanism regardless the used protocol.
-+
-+  For forcing IPv4 or IPv6 connection suffix tcp, udp or auto with 4/6 like
-+  udp4/udp6/tcp4/tcp6/auto4/auto6.
-+
-+  DNS SRV records example:
-+  ::
-+
-+     name                             prio weight port target
-+     _openvpn._udp.example.net IN SRV 10   60     1194 s1.example.net
-+     _openvpn._udp.example.net IN SRV 10   40     1194 s2.example.net
-+     _openvpn._udp.example.net IN SRV 10   0      1194 s3.example.net
-+     _openvpn._tcp.example.net IN SRV 20   0      443  s4.example.net
-+
-+  For above, client will first try to resolve ``_openvpn._udp.example.net``
-+  and ``_openvpn._tcp.example.net`` names.
-+  Next, ``s1.example.net``, ``s2.example.net`` and ``s3.example.net`` will
-+  be ordered before ``s4.example.net`` as their priority 10 is smaller
-+  than 20.
-+  Next, ``s1.example.net``, ``s2.example.net`` and ``s3.example.net`` will
-+  be randomly ordered with weight probability - first will be either
-+  ``s1.example.net`` with probability 60% or ``s2.example.net`` with 40%
-+  or ``s3.example.net`` with almost zero probability.
-+  Next, if ``s1.example.net`` is picked as first, second server will be
-+  either ``s2.example.net`` with almost 100% probability or
-+  ``s3.example.net`` instead.
-+  Next, if ``s2.example.net`` is picked as second, ``s3.example.net`` will
-+  be skipped due zero weight.
-+  ``s4.example.net`` will be the last one as the only server with prio 20.
-+  Finally, servers will be resolved and accessed in this order.
-+
-+  If ``_openvpn._udp.example.net`` and ``_openvpn._udp.example.net`` can't
-+  be resolved or no valid records were returned, client will move on to the
-+  next connection entry.
-+
- --remote-random
--  When multiple ``--remote`` address/ports are specified, or if connection
--  profiles are being used, initially randomize the order of the list as a
--  kind of basic load-balancing measure.
-+  When multiple ``--remote`` address/ports or ``--remote-srv`` records are
-+  specified, or if connection profiles are being used, initially randomize
-+  the order of the list as a kind of basic load-balancing measure.
- 
- --remote-random-hostname
-   Prepend a random string (6 bytes, 12 hex characters) to hostname to
-@@ -310,8 +388,8 @@ configuration.
-   "<random-chars>.foo.bar.gov".
- 
- --resolv-retry n
--  If hostname resolve fails for ``--remote``, retry resolve for ``n``
--  seconds before failing.
-+  If hostname resolve fails for ``--remote`` or ``--remote-srv``, retry
-+  resolve for ``n`` seconds before failing.
- 
-   Set ``n`` to "infinite" to retry indefinitely.
- 
-diff --git a/doc/management-notes.txt b/doc/management-notes.txt
-index 61daaf07..d06a4782 100644
---- a/doc/management-notes.txt
-+++ b/doc/management-notes.txt
-@@ -851,6 +851,12 @@ the above notification, use this command:
- 
-   remote MOD vpn.otherexample.com 1234
- 
-+DNS SRV discovery domain and service name with protocol code:`auto`
-+can't be overriden, but either acceted or skipped only.
-+Example of such notification:
-+
-+  >REMOTE:example.com,openvpn,auto
-+
- To accept the same host and port as the client would ordinarily
- have connected to, use this command:
- 
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index 37b002c6..f7632047 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -143,5 +143,5 @@ openvpn_LDADD = \
- 	$(OPTIONAL_INOTIFY_LIBS)
- if WIN32
- openvpn_SOURCES += openvpn_win32_resources.rc block_dns.c block_dns.h ring_buffer.h
--openvpn_LDADD += -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwinmm -lfwpuclnt -lrpcrt4 -lncrypt -lsetupapi
-+openvpn_LDADD += -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwinmm -lfwpuclnt -lrpcrt4 -lncrypt -lsetupapi -ldnsapi
- endif
-diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
-index 1722ffd5..ae0cf0eb 100644
---- a/src/openvpn/buffer.h
-+++ b/src/openvpn/buffer.h
-@@ -198,11 +198,6 @@ bool buf_init_debug(struct buffer *buf, int offset, const char *file, int line);
- 
- 
- /* inline functions */
--inline static void
--gc_freeaddrinfo_callback(void *addr)
--{
--    freeaddrinfo((struct addrinfo *) addr);
--}
- 
- /** Return an empty struct buffer */
- static inline struct buffer
-diff --git a/src/openvpn/errlevel.h b/src/openvpn/errlevel.h
-index e448fc37..c77dc76c 100644
---- a/src/openvpn/errlevel.h
-+++ b/src/openvpn/errlevel.h
-@@ -91,6 +91,7 @@
- #define D_OSBUF              LOGLEV(3, 43, 0)        /* show socket/tun/tap buffer sizes */
- #define D_PS_PROXY           LOGLEV(3, 44, 0)        /* messages related to --port-share option */
- #define D_PF_INFO            LOGLEV(3, 45, 0)        /* packet filter informational messages */
-+#define D_RESOLVE_INFO       LOGLEV(3, 46, 0)        /* show hostname resolve info */
- 
- #define D_SHOW_PARMS         LOGLEV(4, 50, 0)        /* show all parameters on program initiation */
- #define D_SHOW_OCC           LOGLEV(4, 51, 0)        /* show options compatibility string */
+ #endif /* if !defined(CLINAT_H) */
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index a785934a..16980e8a 100644
+index a785934..8d6f9a8 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
-@@ -352,7 +352,12 @@ management_callback_remote_cmd(void *arg, const char **p)
-         }
-         else if (!strcmp(p[1], "MOD") && p[2] && p[3])
-         {
--            if (strlen(p[2]) < RH_HOST_LEN && strlen(p[3]) < RH_PORT_LEN)
-+            if (ce->remote_srv && ce->proto == PROTO_AUTO)
-+            {
-+                /* can't mutate --remote-srv into --remote without protocol  */
-+                ret = false;
-+            }
-+            else if (strlen(p[2]) < RH_HOST_LEN && strlen(p[3]) < RH_PORT_LEN)
-             {
-                 struct remote_host_store *rhs = c->options.rh_store;
-                 if (!rhs)
-@@ -365,6 +370,7 @@ management_callback_remote_cmd(void *arg, const char **p)
- 
-                 ce->remote = rhs->host;
-                 ce->remote_port = rhs->port;
-+                ce->remote_srv = false;
-                 flags = CE_MAN_QUERY_REMOTE_MOD;
-                 ret = true;
-             }
-@@ -456,10 +462,16 @@ init_connection_list(struct context *c)
- static void
- clear_remote_addrlist(struct link_socket_addr *lsa, bool free)
- {
--    if (lsa->remote_list && free)
-+    if (lsa->service_list && free)
-+    {
-+        freeservinfo(lsa->service_list);
-+    }
-+    else if (lsa->remote_list && free)
-     {
-         freeaddrinfo(lsa->remote_list);
+@@ -1920,6 +1920,8 @@ do_open_tun(struct context *c)
+                               SET_MTU_TUN | SET_MTU_UPPER_BOUND);
      }
-+    lsa->service_list = NULL;
-+    lsa->current_service = NULL;
-     lsa->remote_list = NULL;
-     lsa->current_remote = NULL;
- }
-@@ -492,8 +504,29 @@ next_connection_entry(struct context *c)
-                 c->c1.link_socket_addr.current_remote =
-                     c->c1.link_socket_addr.current_remote->ai_next;
-             }
-+            /* Check if there is another resolved service to try for
-+             * the current connection */
-+            else if (c->c1.link_socket_addr.current_service
-+                && c->c1.link_socket_addr.current_service->next)
-+            {
-+                c->c1.link_socket_addr.current_service =
-+                    c->c1.link_socket_addr.current_service->next;
-+                c->c1.link_socket_addr.remote_list =
-+                    c->c1.link_socket_addr.current_service->ai;
-+                c->c1.link_socket_addr.current_remote =
-+                    c->c1.link_socket_addr.remote_list;
-+            }
-             else
-             {
-+                /* All services iterated w/o close_instance, so clear
-+                 * the addrinfo objects here */
-+                if (c->c1.link_socket_addr.service_list)
-+                {
-+                    ASSERT(!c->options.persist_remote_ip);
-+                    clear_remote_addrlist(&c->c1.link_socket_addr,
-+                                          !c->options.resolve_in_advance);
-+                }
+
++    update_client_ip_nat(c->options.client_nat, c->c1.tuntap->local);
 +
-                 /* FIXME (schwabe) fix the persist-remote-ip option for real,
-                  * this is broken probably ever since connection lists and multiple
-                  * remote existed
-@@ -538,8 +571,14 @@ next_connection_entry(struct context *c)
-         }
- 
-         c->options.ce = *ce;
-+        if (ce_defined && c->c1.link_socket_addr.current_service)
-+        {
-+            /* map in current service */
-+            struct servinfo *si = c->c1.link_socket_addr.current_service;
-+            ce_defined = options_mutate_ce_servinfo(&c->options, si);
-+        }
- #ifdef ENABLE_MANAGEMENT
--        if (ce_defined && management && management_query_remote_enabled(management))
-+        else if (ce_defined && management && management_query_remote_enabled(management))
-         {
-             /* allow management interface to override connection entry details */
-             ce_defined = ce_management_query_remote(c);
-@@ -3636,6 +3675,7 @@ do_close_link_socket(struct context *c)
-                ||
-                ( c->sig->source != SIG_SOURCE_HARD
-                  && ((c->c1.link_socket_addr.current_remote && c->c1.link_socket_addr.current_remote->ai_next)
-+                     || (c->c1.link_socket_addr.current_service && c->c1.link_socket_addr.current_service->next)
-                      || c->options.no_advance))
-                )))
-     {
-@@ -4171,6 +4211,17 @@ init_instance(struct context *c, const struct env_set *env, const unsigned int f
-     /* map in current connection entry */
-     next_connection_entry(c);
- 
-+    /* map in current remote service */
-+    if (c->options.ce.remote_srv)
-+    {
-+        do_resolve_service(c);
-+        if (IS_SIG(c))
-+        {
-+             goto sig;
-+        }
-+        update_options_ce_post(&c->options);
-+    }
-+
-     /* link_socket_mode allows CM_CHILD_TCP
-      * instances to inherit acceptable fds
-      * from a top-level parent */
-diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
-index 5367979d..996c0160 100644
---- a/src/openvpn/openvpn.vcxproj
-+++ b/src/openvpn/openvpn.vcxproj
-@@ -92,7 +92,7 @@
-     </ClCompile>
-     <ResourceCompile />
-     <Link>
--      <AdditionalDependencies>legacy_stdio_definitions.lib;Ncrypt.lib;libssl.lib;libcrypto.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
-+      <AdditionalDependencies>legacy_stdio_definitions.lib;Ncrypt.lib;libssl.lib;libcrypto.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;dnsapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-       <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(LZO_HOME)/lib;$(PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-       <SubSystem>Console</SubSystem>
-     </Link>
-@@ -107,7 +107,7 @@
-     </ClCompile>
-     <ResourceCompile />
-     <Link>
--      <AdditionalDependencies>legacy_stdio_definitions.lib;Ncrypt.lib;libssl.lib;libcrypto.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;setupapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-+      <AdditionalDependencies>legacy_stdio_definitions.lib;Ncrypt.lib;libssl.lib;libcrypto.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;setupapi.lib;dnsapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-       <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(LZO_HOME)/lib;$(PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-       <SubSystem>Console</SubSystem>
-     </Link>
-@@ -122,7 +122,7 @@
-     </ClCompile>
-     <ResourceCompile />
-     <Link>
--      <AdditionalDependencies>legacy_stdio_definitions.lib;Ncrypt.lib;libssl.lib;libcrypto.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
-+      <AdditionalDependencies>legacy_stdio_definitions.lib;Ncrypt.lib;libssl.lib;libcrypto.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;dnsapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-       <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(LZO_HOME)/lib;$(PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-       <SubSystem>Console</SubSystem>
-     </Link>
-@@ -137,7 +137,7 @@
-     </ClCompile>
-     <ResourceCompile />
-     <Link>
--      <AdditionalDependencies>legacy_stdio_definitions.lib;Ncrypt.lib;libssl.lib;libcrypto.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;setupapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-+      <AdditionalDependencies>legacy_stdio_definitions.lib;Ncrypt.lib;libssl.lib;libcrypto.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;setupapi.lib;dnsapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-       <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(LZO_HOME)/lib;$(PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-       <SubSystem>Console</SubSystem>
-     </Link>
+     ret = true;
+     static_context = c;
+ #ifndef TARGET_ANDROID
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 8bf82c57..552b7235 100644
+index 8bf82c5..26f11fa 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -121,6 +121,7 @@ static const char usage_message[] =
-     "Tunnel Options:\n"
-     "--local host    : Local host name or ip address. Implies --bind.\n"
-     "--remote host [port] : Remote host name or ip address.\n"
-+    "--remote-srv domain [service] : Perform DNS SRV remote host discovery.\n"
-     "--remote-random : If multiple --remote options specified, choose one randomly.\n"
-     "--remote-random-hostname : Add a random string to remote DNS name.\n"
-     "--mode m        : Major mode, m = 'p2p' (default, point-to-point) or 'server'.\n"
-@@ -1446,6 +1447,7 @@ show_connection_entry(const struct connection_entry *o)
-     SHOW_STR(local_port);
-     SHOW_STR(remote);
-     SHOW_STR(remote_port);
-+    SHOW_BOOL(remote_srv);
-     SHOW_BOOL(remote_float);
-     SHOW_BOOL(bind_defined);
-     SHOW_BOOL(bind_local);
-@@ -1980,6 +1982,58 @@ connection_entry_load_re(struct connection_entry *ce, const struct remote_entry
-     {
-         ce->af = re->af;
-     }
-+    ce->remote_srv = re->remote_srv;
-+}
-+
-+static bool
-+options_postprocess_verify_ce_proto(const struct options *options, const struct connection_entry *ce)
-+{
-+    int level = M_WARN|M_NOPREFIX|M_OPTERR;
-+
-+    /*
-+     * Sanity check on --local, --remote, and --ifconfig
-+     */
-+
-+    if (proto_is_net(ce->proto)
-+        && string_defined_equal(ce->local, ce->remote)
-+        && string_defined_equal(ce->local_port, ce->remote_port))
-+    {
-+        msg(level, "--remote and --local addresses are the same");
-+        return false;
-+    }
-+
-+    if (string_defined_equal(ce->remote, options->ifconfig_local)
-+        || string_defined_equal(ce->remote, options->ifconfig_remote_netmask))
-+    {
-+        msg(level, "--local and --remote addresses must be distinct from --ifconfig addresses");
-+        return false;
-+    }
-+
-+    /*
-+     * Check that protocol options make sense.
-+     */
-+
-+#ifdef ENABLE_FRAGMENT
-+    if (!proto_is_udp(ce->proto) && ce->fragment)
-+    {
-+        msg(level, "--fragment can only be used with --proto udp");
-+        return false;
-+    }
-+#endif
-+
-+    if (!proto_is_udp(ce->proto) && ce->explicit_exit_notification)
-+    {
-+        msg(level, "--explicit-exit-notify can only be used with --proto udp");
-+        return false;
-+    }
-+
-+    if ((ce->http_proxy_options) && ce->proto != PROTO_TCP_CLIENT)
-+    {
-+        msg(level, "--http-proxy MUST be used in TCP Client mode (i.e. --proto tcp-client)");
-+        return false;
-+    }
-+
-+    return true;
- }
- 
- static void
-@@ -2014,6 +2068,11 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-         msg(M_USAGE, "--proto tcp is ambiguous in this context.  Please specify --proto tcp-server or --proto tcp-client");
-     }
- 
-+    if (ce->proto == PROTO_AUTO && !ce->remote_srv)
-+    {
-+        msg(M_USAGE, "--proto auto can be only used with --remote-srv");
-+    }
-+
-     /*
-      * Sanity check on daemon/inetd modes
-      */
-@@ -2023,9 +2082,9 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-         msg(M_USAGE, "only one of --daemon or --inetd may be specified");
-     }
- 
--    if (options->inetd && (ce->local || ce->remote))
-+    if (options->inetd && (ce->local || ce->remote || ce->remote_srv))
-     {
--        msg(M_USAGE, "--local or --remote cannot be used with --inetd");
-+        msg(M_USAGE, "--local or --remote or --remote_srv cannot be used with --inetd");
-     }
- 
-     if (options->inetd && ce->proto == PROTO_TCP_CLIENT)
-@@ -2070,7 +2129,8 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
- 
-     if (!proto_is_udp(ce->proto) && options->mtu_test)
-     {
--        msg(M_USAGE, "--mtu-test only makes sense with --proto udp");
-+        int level = (ce->proto == PROTO_AUTO) ? M_WARN|M_NOPREFIX|M_OPTERR : M_USAGE;
-+        msg(level, "--mtu-test only makes sense with --proto udp");
-     }
- 
-     /* will we be pulling options from server? */
-@@ -2082,6 +2142,11 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-      * Sanity check on --local, --remote, and --ifconfig
-      */
- 
-+    if (ce->remote_srv && options->ip_remote_hint)
-+    {
-+        msg(M_USAGE, "--remote-srv and --ip_remote_hint can't be used together");
-+    }
-+
-     if (proto_is_net(ce->proto)
-         && string_defined_equal(ce->local, ce->remote)
-         && string_defined_equal(ce->local_port, ce->remote_port))
-@@ -2200,13 +2265,15 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
- #ifdef ENABLE_FRAGMENT
-     if (!proto_is_udp(ce->proto) && ce->fragment)
-     {
--        msg(M_USAGE, "--fragment can only be used with --proto udp");
-+        int level = (ce->proto == PROTO_AUTO) ? M_WARN|M_NOPREFIX|M_OPTERR : M_USAGE;
-+        msg(level, "--fragment can only be used with --proto udp");
-     }
- #endif
- 
-     if (!proto_is_udp(ce->proto) && ce->explicit_exit_notification)
-     {
--        msg(M_USAGE, "--explicit-exit-notify can only be used with --proto udp");
-+        int level = (ce->proto == PROTO_AUTO) ? M_WARN|M_NOPREFIX|M_OPTERR : M_USAGE;
-+        msg(level, "--explicit-exit-notify can only be used with --proto udp");
-     }
- 
-     if (!ce->remote && ce->proto == PROTO_TCP_CLIENT)
-@@ -2216,8 +2283,10 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
- 
-     if ((ce->http_proxy_options) && ce->proto != PROTO_TCP_CLIENT)
-     {
--        msg(M_USAGE, "--http-proxy MUST be used in TCP Client mode (i.e. --proto tcp-client)");
-+        int level = (ce->proto == PROTO_AUTO) ? M_WARN|M_NOPREFIX|M_OPTERR : M_USAGE;
-+        msg(level, "--http-proxy MUST be used in TCP Client mode (i.e. --proto tcp-client)");
-     }
-+
-     if ((ce->http_proxy_options) && !ce->http_proxy_options->server)
-     {
-         msg(M_USAGE, "--http-proxy not specified but other http proxy options present");
-@@ -2279,6 +2348,10 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-         {
-             msg(M_USAGE, "--remote cannot be used with --mode server");
-         }
-+        if (ce->remote_srv)
-+        {
-+            msg(M_USAGE, "--remote-srv cannot be used with --mode server");
-+        }
-         if (!ce->bind_local)
-         {
-             msg(M_USAGE, "--nobind cannot be used with --mode server");
-@@ -2793,6 +2866,53 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-     uninit_options(&defaults);
- }
- 
-+static bool
-+options_postprocess_mutate_ce_proto(struct options *o, struct connection_entry *ce)
-+{
-+    bool result = true;
-+
-+    if (ce->proto == PROTO_TCP_CLIENT && !ce->local && !ce->local_port_defined && !ce->bind_defined)
-+    {
-+        ce->bind_local = false;
-+    }
-+
-+    if (ce->proto == PROTO_UDP && ce->socks_proxy_server && !ce->local && !ce->local_port_defined && !ce->bind_defined)
-+    {
-+        ce->bind_local = false;
-+    }
-+
-+    if (!ce->bind_local)
-+    {
-+        ce->local_port = NULL;
-+    }
-+
-+    /* if protocol forcing is enabled, disable all protocols except for the forced one */
-+    if (o->proto_force >= 0 && o->proto_force != ce->proto && ce->proto != PROTO_AUTO)
-+    {
-+        result = false;
-+    }
-+
-+    /* our socks code is not fully IPv6 enabled yet (TCP works, UDP not)
-+     * so fall back to IPv4-only (trac #1221)
-+     */
-+    if (ce->socks_proxy_server && proto_is_udp(ce->proto) && ce->af != AF_INET)
-+    {
-+        if (ce->af == AF_INET6)
-+        {
-+            msg(M_INFO, "WARNING: '--proto udp6' is not compatible with "
-+                "'--socks-proxy' today.  Forcing IPv4 mode." );
-+        }
-+        else
-+        {
-+            msg(M_INFO, "NOTICE: dual-stack mode for '--proto udp' does not "
-+                "work correctly with '--socks-proxy' today.  Forcing IPv4." );
-+        }
-+        ce->af = AF_INET;
-+    }
-+
-+    return result;
-+}
-+
- static void
- options_postprocess_mutate_ce(struct options *o, struct connection_entry *ce)
- {
-@@ -2816,23 +2936,7 @@ options_postprocess_mutate_ce(struct options *o, struct connection_entry *ce)
-     }
- #endif
- 
--    if (ce->proto == PROTO_TCP_CLIENT && !ce->local && !ce->local_port_defined && !ce->bind_defined)
--    {
--        ce->bind_local = false;
--    }
--
--    if (ce->proto == PROTO_UDP && ce->socks_proxy_server && !ce->local && !ce->local_port_defined && !ce->bind_defined)
--    {
--        ce->bind_local = false;
--    }
--
--    if (!ce->bind_local)
--    {
--        ce->local_port = NULL;
--    }
--
--    /* if protocol forcing is enabled, disable all protocols except for the forced one */
--    if (o->proto_force >= 0 && o->proto_force != ce->proto)
-+    if (!options_postprocess_mutate_ce_proto(o, ce))
-     {
-         ce->flags |= CE_DISABLED;
-     }
-@@ -2853,24 +2957,6 @@ options_postprocess_mutate_ce(struct options *o, struct connection_entry *ce)
- #endif
-     }
- 
--    /* our socks code is not fully IPv6 enabled yet (TCP works, UDP not)
--     * so fall back to IPv4-only (trac #1221)
--     */
--    if (ce->socks_proxy_server && proto_is_udp(ce->proto) && ce->af != AF_INET)
--    {
--        if (ce->af == AF_INET6)
--        {
--            msg(M_INFO, "WARNING: '--proto udp6' is not compatible with "
--                "'--socks-proxy' today.  Forcing IPv4 mode." );
--        }
--        else
--        {
--            msg(M_INFO, "NOTICE: dual-stack mode for '--proto udp' does not "
--                "work correctly with '--socks-proxy' today.  Forcing IPv4." );
--        }
--        ce->af = AF_INET;
--    }
--
-     /*
-      * Set MTU defaults
-      */
-@@ -2938,6 +3024,32 @@ options_postprocess_mutate_ce(struct options *o, struct connection_entry *ce)
-     }
- }
- 
-+/*
-+ * Merges servinfo's hostname, servname and proto into current connection
-+ * entry if possible and doesn't conflict with the options.
-+ * Used by runtime DNS SRV discovery.
-+ */
-+bool
-+options_mutate_ce_servinfo(struct options *o, struct servinfo *si)
-+{
-+    struct connection_entry ce = o->ce;
-+
-+    ASSERT(ce.remote_srv);
-+
-+    ce.remote = si->hostname;
-+    ce.remote_port = si->servname;
-+    ce.proto = si->proto;
-+
-+    if (options_postprocess_mutate_ce_proto(o, &ce)
-+        && options_postprocess_verify_ce_proto(o, &ce))
-+    {
-+        o->ce = ce;
-+        return true;
-+    }
-+
-+    return false;
-+}
-+
- #ifdef _WIN32
- /* If iservice is in use, we need def1 method for redirect-gateway */
- static void
-@@ -5675,6 +5787,7 @@ add_option(struct options *options,
-     {
-         struct remote_entry re;
-         re.remote = re.remote_port = NULL;
-+        re.remote_srv = false;
-         re.proto = -1;
-         re.af = 0;
- 
-@@ -5710,6 +5823,47 @@ add_option(struct options *options,
-             connection_entry_load_re(&options->ce, &re);
-         }
-     }
-+    else if (streq(p[0], "remote-srv") && p[1] && !p[4])
-+    {
-+        struct remote_entry re;
-+        re.remote = NULL;
-+        re.remote_port = OPENVPN_SERVICE;
-+        re.remote_srv = true;
-+        re.proto = PROTO_AUTO;
-+        re.af = 0;
-+
-+        VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);
-+        re.remote = p[1];
-+        if (p[2])
-+        {
-+            re.remote_port = p[2];
-+            if (p[3])
-+            {
-+                const int proto = ascii2proto(p[3]);
-+                const sa_family_t af = ascii2af(p[3]);
-+                if (proto < 0)
-+                {
-+                    msg(msglevel, "remote-srv: bad protocol associated with host %s: '%s'", p[1], p[3]);
-+                    goto err;
-+                }
-+                re.proto = proto;
-+                re.af = af;
-+            }
-+        }
-+        if (permission_mask & OPT_P_GENERAL)
-+        {
-+            struct remote_entry *e = alloc_remote_entry(options, msglevel);
-+            if (!e)
-+            {
-+                goto err;
-+            }
-+            *e = re;
-+        }
-+        else if (permission_mask & OPT_P_CONNECTION)
-+        {
-+            connection_entry_load_re(&options->ce, &re);
-+        }
-+    }
-     else if (streq(p[0], "resolv-retry") && p[1] && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-@@ -6222,7 +6376,7 @@ add_option(struct options *options,
-         int proto_force;
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-         proto_force = ascii2proto(p[1]);
--        if (proto_force < 0)
-+        if (proto_force < 0 || proto_force == PROTO_AUTO)
-         {
-             msg(msglevel, "Bad --proto-force protocol: '%s'", p[1]);
-             goto err;
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 877e9396..cf22ffea 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -92,6 +92,7 @@ struct connection_entry
-     const char *remote_port;
-     const char *local;
-     const char *remote;
-+    bool remote_srv;
-     bool remote_float;
-     bool bind_defined;
-     bool bind_ipv6_only;
-@@ -152,6 +153,7 @@ struct remote_entry
-     const char *remote_port;
-     int proto;
-     sa_family_t af;
-+    bool remote_srv;
- };
- 
- #define CONNECTION_LIST_SIZE 64
-@@ -787,6 +789,8 @@ char *options_string_extract_option(const char *options_string,
- 
- void options_postprocess(struct options *options);
- 
-+bool options_mutate_ce_servinfo(struct options *o, struct servinfo *si);
-+
- void pre_pull_save(struct options *o);
- 
- void pre_pull_restore(struct options *o, struct gc_arena *gc);
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 76bdbfc5..3933933d 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -260,22 +260,37 @@ get_cached_dns_entry(struct cached_dns_entry *dns_cache,
-                      const char *servname,
-                      int ai_family,
-                      int resolve_flags,
--                     struct addrinfo **ai)
-+                     struct addrinfo **ai,
-+                     struct servinfo **si)
- {
-     struct cached_dns_entry *ph;
-     int flags;
- 
-     /* Only use flags that are relevant for the structure */
--    flags = resolve_flags & GETADDR_CACHE_MASK;
-+    if (si)
-+    {
-+        flags = resolve_flags & GETADDR_CACHE_SERVICE_MASK;
-+    }
-+    else
-+    {
-+        flags = resolve_flags & GETADDR_CACHE_MASK;
-+    }
- 
-     for (ph = dns_cache; ph; ph = ph->next)
-     {
-         if (streqnull(ph->hostname, hostname)
-             && streqnull(ph->servname, servname)
--            && ph->ai_family == ai_family
-+            && (si || ph->ai_family == ai_family)
-             && ph->flags == flags)
-         {
--            *ai = ph->ai;
-+            if (si)
-+            {
-+                *si = ph->si;
-+            }
-+            else if (ai)
-+            {
-+                *ai = ph->ai;
-+            }
-             return 0;
-         }
-     }
-@@ -298,7 +313,7 @@ do_preresolve_host(struct context *c,
-                              servname,
-                              af,
-                              flags,
--                             &ai) == 0)
-+                             &ai, NULL) == 0)
-     {
-         /* entry already cached, return success */
-         return 0;
-@@ -337,6 +352,76 @@ do_preresolve_host(struct context *c,
-     return status;
- }
- 
-+static int
-+do_preresolve_service(struct context *c,
-+                      const char *hostname,
-+                      const char *servname,
-+                      const int af,
-+                      const int flags,
-+                      bool preresolve_host)
-+{
-+    struct servinfo *si;
-+    int status;
-+
-+    if (get_cached_dns_entry(c->c1.dns_cache,
-+                             hostname,
-+                             servname,
-+                             af,
-+                             flags,
-+                             NULL, &si) == 0)
-+    {
-+        /* entry already cached, return success */
-+        return 0;
-+    }
-+
-+    status = openvpn_getservinfo(flags, hostname, servname,
-+                                 c->options.resolve_retry_seconds, NULL,
-+                                 af, &si);
-+    if (status == 0)
-+    {
-+        struct cached_dns_entry *ph;
-+
-+        ALLOC_OBJ_CLEAR_GC(ph, struct cached_dns_entry, &c->gc);
-+        ph->si = si;
-+        ph->hostname = hostname;
-+        ph->servname = servname;
-+        ph->flags = flags & GETADDR_CACHE_SERVICE_MASK;
-+
-+        if (!c->c1.dns_cache)
-+        {
-+            c->c1.dns_cache = ph;
-+        }
-+        else
-+        {
-+            struct cached_dns_entry *prev = c->c1.dns_cache;
-+            while (prev->next)
-+            {
-+                prev = prev->next;
-+            }
-+            prev->next = ph;
-+        }
-+
-+        gc_addspecial(si, &gc_freeservinfo_callback, &c->gc);
-+
-+        /* preresolve service targets unless disabled */
-+        if (preresolve_host)
-+        {
-+            while (si)
-+            {
-+                int host_flags = flags & ~GETADDR_PROTO_MASK;
-+                if (proto_is_dgram(si->proto))
-+                {
-+                    host_flags |= GETADDR_DATAGRAM;
-+                }
-+                /* ignore errors */
-+                do_preresolve_host(c, si->hostname, si->servname, af, host_flags);
-+                si = si->next;
-+            }
-+        }
-+    }
-+    return status;
-+}
-+
- void
- do_preresolve(struct context *c)
- {
-@@ -375,8 +460,30 @@ do_preresolve(struct context *c)
-             remote = ce->remote;
-         }
- 
-+        /* Preresolve remote services */
-+        if (ce->remote_srv)
-+        {
-+            int service_flags = flags|GETADDR_SERVICE;
-+
-+            if (proto_is_dgram(ce->proto) || ce->proto == PROTO_AUTO)
-+            {
-+                service_flags |= GETADDR_DATAGRAM;
-+            }
-+            if (proto_is_stream(ce->proto) || ce->proto == PROTO_AUTO)
-+            {
-+                service_flags |= GETADDR_STREAM;
-+            }
-+
-+            /* HTTP remote hostnames does not need to be resolved */
-+            status = do_preresolve_service(c, remote, ce->remote_port, ce->af,
-+                                           service_flags, !ce->http_proxy_options);
-+            if (status != 0)
-+            {
-+                goto err;
-+            }
-+        }
-         /* HTTP remote hostname does not need to be resolved */
--        if (!ce->http_proxy_options)
-+        else if (!ce->http_proxy_options)
-         {
-             status = do_preresolve_host(c, remote, ce->remote_port, ce->af, flags);
-             if (status != 0)
-@@ -432,6 +539,584 @@ err:
-     throw_signal_soft(SIGHUP, "Preresolving failed");
- }
- 
-+/*
-+ * Allocates new service structure on heap and stores
-+ * its initial host, port and proto values.
-+ */
-+static struct servinfo *
-+alloc_servinfo(const char *hostname, uint16_t port, int proto)
-+{
-+    size_t namesize = hostname ? strlen(hostname) + 1 : 0;
-+
-+    char servname[sizeof("65535")];
-+    openvpn_snprintf(servname, sizeof(servname), "%u", port);
-+    size_t servsize = strlen(servname) + 1;
-+
-+    struct servinfo *si = calloc(1, sizeof(*si) + namesize + servsize);
-+    if (si)
-+    {
-+        if (hostname)
-+        {
-+            si->hostname = (char *)(si + 1);
-+            memcpy((char *)si->hostname, hostname, namesize);
-+        }
-+        si->servname = (char *)(si + 1) + namesize;
-+        memcpy((char *)si->servname, servname, servsize);
-+        si->proto = proto;
-+    }
-+    return si;
-+}
-+
-+#ifdef _WIN32
-+/*
-+ * Queries DNS SRV records for specified DNS domain.
-+ * Returns EAI_* status and service list on success in order of receive.
-+ */
-+static int
-+query_servinfo_win32(const char *domain, int proto, struct servinfo *next,
-+                     struct servinfo **res)
-+{
-+    PDNS_RECORD pDnsRecord;
-+    int status;
-+
-+    ASSERT(res);
-+
-+    DNS_STATUS DnsStatus = DnsQuery(domain, DNS_TYPE_SRV, DNS_QUERY_STANDARD, NULL, &pDnsRecord, NULL);
-+    dmsg(D_SOCKET_DEBUG, "DNSQUERY type=%d domain=%s result=%d",
-+         DNS_TYPE_SRV, domain, DnsStatus);
-+    switch (DnsStatus)
-+    {
-+        case ERROR_SUCCESS:
-+            break;
-+
-+        case DNS_ERROR_RCODE_NAME_ERROR:
-+            return EAI_NONAME; /* HOST_NOT_FOUND */
-+
-+        case DNS_INFO_NO_RECORDS:
-+            return EAI_NODATA; /* NO_DATA */
-+
-+        case DNS_ERROR_NO_DNS_SERVERS:
-+        case DNS_ERROR_RCODE_FORMAT_ERROR:
-+        case DNS_ERROR_RCODE_NOT_IMPLEMENTED:
-+        case DNS_ERROR_RCODE_REFUSED:
-+            return EAI_FAIL; /* NO_RECOVERY */
-+
-+        case ERROR_TIMEOUT:
-+        case DNS_ERROR_RCODE_SERVER_FAILURE:
-+        case DNS_ERROR_TRY_AGAIN_LATER:
-+            return EAI_AGAIN; /* TRY_AGAIN */
-+
-+        default:
-+            return EAI_NODATA;
-+    }
-+
-+    struct servinfo *list = NULL, *first = NULL;
-+    for (PDNS_RECORD rr = pDnsRecord; rr; rr = rr->pNext)
-+    {
-+        if (rr->wType == DNS_TYPE_SRV)
-+        {
-+            PDNS_SRV_DATA rdata = &rr->Data.Srv;
-+
-+            if (rr->wDataLength >= sizeof(DNS_SRV_DATA) && *rdata->pNameTarget)
-+            {
-+                struct servinfo *si = alloc_servinfo(rdata->pNameTarget, rdata->wPort, proto);
-+                if (!si)
-+                {
-+                    freeservinfo(list);
-+                    status = EAI_MEMORY;
-+                    goto done;
-+                }
-+                si->prio = rdata->wPriority;
-+                si->weight = rdata->wWeight;
-+                si->next = list, list = si;
-+                if (!first)
-+                {
-+                    first = si;
-+                }
-+            }
-+        }
-+    }
-+    if (list)
-+    {
-+        first->next = next;
-+        *res = list;
-+        status = 0;
-+    }
-+    else
-+    {
-+        status = EAI_NODATA;
-+    }
-+
-+done:
-+    DnsRecordListFree(pDnsRecord, DnsFreeParsedMessageFields);
-+    return status;
-+}
-+
-+#else
-+/*
-+ * Queries DNS SRV records for specified DNS domain.
-+ * Returns EAI_* status and service list on success in order of receive.
-+ */
-+static int
-+query_servinfo(const char *domain, int proto, struct servinfo *next,
-+               struct servinfo **res)
-+{
-+    unsigned char answer[NS_MAXMSG];
-+    int status;
-+
-+    int n = res_query(domain, ns_c_in, ns_t_srv, answer, NS_MAXMSG);
-+    dmsg(D_SOCKET_DEBUG, "RES_QUERY class=%d type=%d domain=%s result=%d",
-+         ns_c_in, ns_t_srv, domain, n);
-+    if (n < 0)
-+    {
-+        switch (h_errno)
-+        {
-+            case HOST_NOT_FOUND:
-+                return EAI_NONAME;
-+
-+            case NO_ADDRESS:
-+#if NO_ADDRESS != NO_DATA
-+            case NO_DATA:
-+#endif
-+                return EAI_NODATA;
-+
-+            case NO_RECOVERY:
-+                return EAI_FAIL;
-+
-+            case TRY_AGAIN:
-+                return EAI_AGAIN;
-+        }
-+        return EAI_SYSTEM;
-+    }
-+
-+    ns_msg msg;
-+    if (ns_initparse(answer, n, &msg) < 0)
-+    {
-+        return EAI_FAIL;
-+    }
-+
-+    struct servinfo *list = NULL, *first = NULL;
-+    for (int i = 0; i < ns_msg_count(msg, ns_s_an); i++)
-+    {
-+        ns_rr rr;
-+
-+        if (ns_parserr(&msg, ns_s_an, i, &rr) == 0 && ns_rr_type(rr) == ns_t_srv)
-+        {
-+            const unsigned char *rdata = ns_rr_rdata(rr);
-+            char name[NS_MAXDNAME];
-+
-+            if (ns_rr_rdlen(rr) > 6
-+                && dn_expand(ns_msg_base(msg), ns_msg_end(msg),
-+                             rdata + 6, name, sizeof(name)) > 0 && *name)
-+            {
-+                struct servinfo *si = alloc_servinfo(name, ns_get16(rdata + 4), proto);
-+                if (!si)
-+                {
-+                    freeservinfo(list);
-+                    status = EAI_MEMORY;
-+                    goto done;
-+                }
-+                si->prio = ns_get16(rdata);
-+                si->weight = ns_get16(rdata + 2);
-+                si->next = list, list = si;
-+                if (!first)
-+                {
-+                    first = si;
-+                }
-+            }
-+        }
-+    }
-+    if (list)
-+    {
-+        first->next = next;
-+        *res = list;
-+        status = 0;
-+    }
-+    else
-+    {
-+        status = EAI_NODATA;
-+    }
-+
-+done:
-+    return status;
-+}
-+#endif
-+
-+/*
-+ * Service structure compare function for server selection
-+ * mechanism, defined in RFC 2782.
-+ */
-+static int
-+servinfo_cmp(const void *a, const void *b)
-+{
-+    const struct servinfo *ae = *(struct servinfo **)a;
-+    const struct servinfo *be = *(struct servinfo **)b;
-+
-+    /* lowest-numbered priority first */
-+    if (ae->prio != be->prio)
-+    {
-+        return ae->prio < be->prio ? -1 : 1;
-+    }
-+
-+    /* zero-weighted first */
-+    if ((ae->weight == 0 && be->weight)
-+        || (ae->weight && be->weight == 0))
-+    {
-+        return ae->weight < be->weight ? -1 : 1;
-+    }
-+
-+    /* else keep received order, can't be equal */
-+    return ae->order > be->order ? -1 : 1;
-+}
-+
-+/*
-+ * Sort & order service list according server selection mechanism,
-+ * defined in RFC 2782.
-+ * Returns service list. Although specific elements can be freed,
-+ * non-empty list can never become empty.
-+ */
-+static struct servinfo *
-+sort_servinfo(struct servinfo *list)
-+{
-+    struct servinfo ordered, *tail = &ordered;
-+    int count = 0;
-+    struct gc_arena gc = gc_new();
-+
-+    ASSERT(list);
-+
-+    /* count and number entries in reverse order */
-+    for (struct servinfo *si = list; si; si = si->next)
-+    {
-+        si->order = count++;
-+    }
-+
-+    struct servinfo **sorted;
-+    ALLOC_ARRAY_CLEAR_GC(sorted, struct servinfo *, count, &gc);
-+    for (struct servinfo *si = list; si; si = si->next)
-+    {
-+        sorted[si->order] = si;
-+    }
-+
-+    /* sort records by priority and zero weight */
-+    qsort(sorted, count, sizeof(sorted[0]), servinfo_cmp);
-+
-+    /* apply weighted selection mechanism */
-+    ordered.next = NULL;
-+    for (int i = 0; i < count;)
-+    {
-+        struct servinfo unordered;
-+
-+        /* compute the sum of the weights of records of the same
-+         * priority and put them in the unordered list */
-+        unordered.prio = sorted[i]->prio;
-+        unordered.weight = 0;
-+        unordered.next = NULL;
-+        for (struct servinfo *prev = &unordered;
-+             i < count && sorted[i]->prio == unordered.prio; i++)
-+        {
-+            unordered.weight += sorted[i]->weight;
-+
-+            /* add entry to the tail of unordered list */
-+            sorted[i]->next = NULL;
-+            prev->next = sorted[i], prev = sorted[i];
-+        }
-+
-+        /* process the unordered list */
-+        while (unordered.next)
-+        {
-+            /* choose a uniform random number between 0 and the sum
-+             * computed (inclusive) */
-+            int weight = get_random() % (unordered.weight + 1);
-+
-+            /* select the entries whose running sum value is the first
-+             * in the selected order which is greater than or equal
-+             * to the random number selected */
-+            for (struct servinfo *si = unordered.next, *prev = &unordered;
-+                 si; prev = si, si = si->next)
-+            {
-+                /* selected entry is the next one to be contacted */
-+                if (si->weight >= weight)
-+                {
-+                    unordered.weight -= si->weight;
-+
-+                    /* move entry to the ordered list */
-+                    prev->next = si->next;
-+                    si->next = NULL;
-+                    tail->next = si, tail = si;
-+
-+                    /* in the presence of records containing weights greater
-+                     * than 0, records with weight 0 should have a very small
-+                     * chance of being selected, so skip them all after the
-+                     * last weighted */
-+                    if (unordered.weight == 0 && si->weight)
-+                    {
-+                        freeservinfo(unordered.next);
-+                        unordered.next = NULL;
-+                    }
-+                    break;
-+                }
-+                weight -= si->weight;
-+            }
-+        }
-+    }
-+
-+    gc_free(&gc);
-+    return ordered.next;
-+}
-+
-+
-+/*
-+ * Resolves DNS SRV records for specified domain and service.
-+ * Returns EAI_* status (like getaddrinfo) and service list, ordered
-+ * according server selection mechanism, defined in RFC 2782.
-+ */
-+static int
-+getservinfo(const char *domain,
-+            const char *service,
-+            int flags,
-+            struct servinfo **res)
-+{
-+    static const struct {
-+        int flags;
-+        int proto;
-+        const char *name;
-+    } proto[] = {
-+        { GETADDR_DATAGRAM, PROTO_UDP, "udp" },
-+        { GETADDR_STREAM, PROTO_TCP_CLIENT, "tcp" }
-+    };
-+    struct servinfo *list = NULL;
-+    int status = EAI_SOCKTYPE;
-+
-+    ASSERT(res);
-+
-+    if (!domain)
-+    {
-+        return EAI_NONAME;
-+    }
-+    if (!service)
-+    {
-+        return EAI_SERVICE;
-+    }
-+
-+    int proto_flags = flags & GETADDR_PROTO_MASK;
-+    for (int i = 0; i < SIZE(proto); i++)
-+    {
-+        if (proto_flags & proto[i].flags)
-+        {
-+            proto_flags &= ~proto[i].flags;
-+
-+            char qname[256];
-+            if (!openvpn_snprintf(qname, sizeof(qname), "_%s._%s.%s",
-+                                  service, proto[i].name, domain))
-+            {
-+                freeservinfo(list);
-+                return EAI_MEMORY;
-+            }
-+
-+#ifdef _WIN32
-+            status = query_servinfo_win32(qname, proto[i].proto, list, &list);
-+#else
-+            status = query_servinfo(qname, proto[i].proto, list, &list);
-+#endif
-+        }
-+    }
-+
-+    if (list)
-+    {
-+        *res = sort_servinfo(list);
-+        status = 0;
-+    }
-+
-+    return status;
-+}
-+
-+void
-+freeservinfo(struct servinfo *res)
-+{
-+    while (res)
-+    {
-+        struct servinfo *si = res;
-+        res = res->next;
-+        freeaddrinfo(si->ai);
-+        free(si);
-+    }
-+}
-+
-+/*
-+ * Translate IPv4/IPv6 hostname and service name into struct servinfo
-+ * If resolve error, try again for resolve_retry_seconds seconds.
-+ */
-+int
-+openvpn_getservinfo(unsigned int flags,
-+                    const char *hostname,
-+                    const char *servname,
-+                    int resolve_retry_seconds,
-+                    volatile int *signal_received,
-+                    int family,
-+                    struct servinfo **res)
-+{
-+    int status;
-+    int sigrec = 0;
-+    int msglevel = (flags & GETADDR_FATAL) ? M_FATAL : D_RESOLVE_ERRORS;
-+    struct gc_arena gc = gc_new();
-+    const char *print_hostname;
-+    const char *print_servname;
-+
-+    ASSERT(res);
-+
-+    ASSERT(hostname || servname);
-+    ASSERT(!(flags & GETADDR_HOST_ORDER));
-+
-+    if (hostname)
-+    {
-+        print_hostname = hostname;
-+    }
-+    else
-+    {
-+        print_hostname = "undefined";
-+    }
-+
-+    if (servname)
-+    {
-+        print_servname = servname;
-+    }
-+    else
-+    {
-+        print_servname = "";
-+    }
-+
-+    if (flags & GETADDR_MSG_VIRT_OUT)
-+    {
-+        msglevel |= M_MSG_VIRT_OUT;
-+    }
-+
-+    if ((flags & (GETADDR_FATAL_ON_SIGNAL|GETADDR_WARN_ON_SIGNAL))
-+        && !signal_received)
-+    {
-+        signal_received = &sigrec;
-+    }
-+
-+    const int fail_wait_interval = 5; /* seconds */
-+    /* Add +4 to cause integer division rounding up (1 + 4) = 5, (0+4)/5=0 */
-+    int resolve_retries = (flags & GETADDR_TRY_ONCE) ? 1 :
-+                          ((resolve_retry_seconds + 4)/ fail_wait_interval);
-+    const char *fmt;
-+    int level = 0;
-+
-+    fmt = "RESOLVE: Cannot resolve service: %s:%s (%s)";
-+    if ((flags & GETADDR_MENTION_RESOLVE_RETRY)
-+        && !resolve_retry_seconds)
-+    {
-+        fmt = "RESOLVE: Cannot resolve service: %s:%s (%s) (I would have retried this name query if you had specified the --resolv-retry option.)";
-+    }
-+
-+#ifdef ENABLE_MANAGEMENT
-+    if (flags & GETADDR_UPDATE_MANAGEMENT_STATE)
-+    {
-+        if (management)
-+        {
-+            management_set_state(management,
-+                                 OPENVPN_STATE_RESOLVE,
-+                                 NULL,
-+                                 NULL,
-+                                 NULL,
-+                                 NULL,
-+                                 NULL);
-+        }
-+    }
-+#endif
-+
-+    /*
-+     * Resolve service
-+     */
-+    while (true)
-+    {
-+        dmsg(D_SOCKET_DEBUG, "GETSERVINFO flags=0x%04x family=%d host=%s service=%s",
-+             flags, family, print_hostname, print_servname);
-+        status = getservinfo(hostname, servname, flags, res);
-+
-+        if (signal_received)
-+        {
-+            get_signal(signal_received);
-+            if (*signal_received) /* were we interrupted by a signal? */
-+            {
-+                if (*signal_received == SIGUSR1) /* ignore SIGUSR1 */
-+                {
-+                    msg(level, "RESOLVE: Ignored SIGUSR1 signal received during DNS resolution attempt");
-+                    *signal_received = 0;
-+                }
-+                else
-+                {
-+                    /* turn success into failure (interrupted syscall) */
-+                    if (0 == status)
-+                    {
-+                        ASSERT(res);
-+                        freeservinfo(*res);
-+                        *res = NULL;
-+                        status = EAI_AGAIN; /* = temporary failure */
-+                        errno = EINTR;
-+                    }
-+                    goto done;
-+                }
-+            }
-+        }
-+
-+        /* success? */
-+        if (0 == status)
-+        {
-+            break;
-+        }
-+
-+        /* resolve lookup failed, should we
-+         * continue or fail? */
-+        level = msglevel;
-+        if (resolve_retries > 0)
-+        {
-+            level = D_RESOLVE_ERRORS;
-+        }
-+
-+        msg(level,
-+            fmt,
-+            print_hostname,
-+            print_servname,
-+            gai_strerror(status));
-+
-+        if (--resolve_retries <= 0)
-+        {
-+            goto done;
-+        }
-+
-+        management_sleep(fail_wait_interval);
-+
-+#ifndef _WIN32
-+        /* resolve failed, force resolv.conf reload */
-+        res_init();
-+#endif
-+    }
-+
-+    ASSERT(res);
-+
-+    /* service resolve succeeded */
-+
-+done:
-+    if (signal_received && *signal_received)
-+    {
-+        int level = 0;
-+        if (flags & GETADDR_FATAL_ON_SIGNAL)
-+        {
-+            level = M_FATAL;
-+        }
-+        else if (flags & GETADDR_WARN_ON_SIGNAL)
-+        {
-+            level = M_WARN;
-+        }
-+        msg(level, "RESOLVE: signal received during DNS resolution attempt");
-+    }
-+
-+    gc_free(&gc);
-+    return status;
-+}
-+
- /*
-  * Translate IPv4/IPv6 addr or hostname into struct addrinfo
-  * If resolve error, try again for resolve_retry_seconds seconds.
-@@ -557,13 +1242,10 @@ openvpn_getaddrinfo(unsigned int flags,
-          */
-         while (true)
-         {
--#ifndef _WIN32
--            res_init();
--#endif
-             /* try hostname lookup */
-             hints.ai_flags &= ~AI_NUMERICHOST;
--            dmsg(D_SOCKET_DEBUG, "GETADDRINFO flags=0x%04x ai_family=%d ai_socktype=%d",
--                 flags, hints.ai_family, hints.ai_socktype);
-+            dmsg(D_SOCKET_DEBUG, "GETADDRINFO flags=0x%04x ai_family=%d ai_socktype=%d hostname=%s servname=%s",
-+                 flags, hints.ai_family, hints.ai_socktype, print_hostname, print_servname);
-             status = getaddrinfo(hostname, servname, &hints, res);
- 
-             if (signal_received)
-@@ -618,6 +1300,11 @@ openvpn_getaddrinfo(unsigned int flags,
-             }
- 
-             management_sleep(fail_wait_interval);
-+
-+#ifndef _WIN32
-+            /* resolve failed, force resolv.conf reload */
-+            res_init();
-+#endif
-         }
- 
-         ASSERT(res);
-@@ -1707,7 +2394,7 @@ resolve_bind_local(struct link_socket *sock, const sa_family_t af)
-                                       sock->local_port,
-                                       af,
-                                       flags,
--                                      &sock->info.lsa->bind_local);
-+                                      &sock->info.lsa->bind_local, NULL);
- 
-         if (status)
-         {
-@@ -1790,7 +2477,7 @@ resolve_remote(struct link_socket *sock,
-                                           sock->remote_host,
-                                           sock->remote_port,
-                                           sock->info.af,
--                                          flags, &ai);
-+                                          flags, &ai, NULL);
-             if (status)
-             {
-                 status = openvpn_getaddrinfo(flags, sock->remote_host, sock->remote_port,
-@@ -1801,6 +2488,10 @@ resolve_remote(struct link_socket *sock,
-             {
-                 sock->info.lsa->remote_list = ai;
-                 sock->info.lsa->current_remote = ai;
-+                if (sock->info.lsa->current_service)
-+                {
-+                    sock->info.lsa->current_service->ai = ai;
-+                }
- 
-                 dmsg(D_SOCKET_DEBUG, "RESOLVE_REMOTE flags=0x%04x phase=%d rrs=%d sig=%d status=%d",
-                      flags,
-@@ -1851,7 +2542,107 @@ done:
-     gc_free(&gc);
- }
- 
-+void
-+do_resolve_service(struct context *c)
-+{
-+    struct connection_entry *ce = &c->options.ce;
-+
-+    if (ce->remote_srv
-+        && !c->c1.link_socket_addr.service_list)
-+    {
-+        if (ce->remote)
-+        {
-+            unsigned int flags = sf2gaf(GETADDR_RESOLVE|
-+                                        GETADDR_UPDATE_MANAGEMENT_STATE|
-+                                        GETADDR_SERVICE,
-+                                        c->options.sockflags);
-+            int retry = 0;
-+            int status = -1;
-+            struct servinfo *si;
-+
-+            if (proto_is_dgram(ce->proto) || ce->proto == PROTO_AUTO)
-+            {
-+                flags |= GETADDR_DATAGRAM;
-+            }
-+            if (proto_is_stream(ce->proto) || ce->proto == PROTO_AUTO)
-+            {
-+                flags |= GETADDR_STREAM;
-+            }
-+
-+            if (c->options.sockflags & SF_HOST_RANDOMIZE)
-+            {
-+                flags |= GETADDR_RANDOMIZE;
-+            }
-+
-+            if (c->options.resolve_retry_seconds == RESOLV_RETRY_INFINITE)
-+            {
-+                flags |= (GETADDR_TRY_ONCE | GETADDR_FATAL);
-+                retry = 0;
-+            }
-+            else if (c->options.resolve_retry_seconds)
-+            {
-+                flags |= GETADDR_FATAL;
-+                retry = c->options.resolve_retry_seconds;
-+            }
-+            else
-+            {
-+                flags |= (GETADDR_FATAL | GETADDR_MENTION_RESOLVE_RETRY);
-+                retry = 0;
-+            }
-+
-+            status = get_cached_dns_entry(c->c1.dns_cache,
-+                                          ce->remote,
-+                                          ce->remote_port,
-+                                          ce->af,
-+                                          flags, NULL, &si);
-+            if (status)
-+            {
-+                status = openvpn_getservinfo(flags, ce->remote, ce->remote_port,
-+                                             retry, &c->sig->signal_received, ce->af, &si);
-+            }
-+
-+            if (status == 0)
-+            {
-+                c->c1.link_socket_addr.service_list = si;
-+                c->c1.link_socket_addr.current_service = NULL;
-+
-+                /* advance to the first appropriate service */
-+                while (si)
-+                {
-+                    /* map in current service */
-+                    if (!c->c1.link_socket_addr.current_service
-+                        && options_mutate_ce_servinfo(&c->options, si))
-+                    {
-+                        c->c1.link_socket_addr.current_service = si;
-+                    }
-+
-+                    /* log discovered service hosts */
-+                    msg(D_RESOLVE_INFO, "DNS SRV remote host: %s:%s,%s prio %u weight %u",
-+                        np(si->hostname), np(si->servname),
-+                        proto2ascii(si->proto, ce->af, false),
-+                        si->prio, si->weight);
-+
-+                    si = si->next;
-+                }
-+                if (!c->c1.link_socket_addr.current_service)
-+                {
-+                    status = EAI_NODATA;
-+                }
- 
-+                dmsg(D_SOCKET_DEBUG, "RESOLVE_SERVICE flags=0x%04x rrs=%d sig=%d status=%d",
-+                     flags,
-+                     retry,
-+                     c->sig->signal_received,
-+                     status);
-+            }
-+
-+            if (!c->sig->signal_received && status != 0)
-+            {
-+                c->sig->signal_received = SIGUSR1;
-+            }
-+        }
-+    }
-+}
- 
- struct link_socket *
- link_socket_new(void)
-@@ -3161,16 +3952,19 @@ static const struct proto_names proto_names[] = {
-     {"tcp-server", "TCP_SERVER", AF_UNSPEC, PROTO_TCP_SERVER},
-     {"tcp-client", "TCP_CLIENT", AF_UNSPEC, PROTO_TCP_CLIENT},
-     {"tcp",        "TCP", AF_UNSPEC, PROTO_TCP},
-+    {"auto",       "AUTO", AF_UNSPEC, PROTO_AUTO},
-     /* force IPv4 */
-     {"udp4",       "UDPv4", AF_INET, PROTO_UDP},
-     {"tcp4-server","TCPv4_SERVER", AF_INET, PROTO_TCP_SERVER},
-     {"tcp4-client","TCPv4_CLIENT", AF_INET, PROTO_TCP_CLIENT},
-     {"tcp4",       "TCPv4", AF_INET, PROTO_TCP},
-+    {"auto4",      "AUTOv4", AF_INET, PROTO_AUTO},
-     /* force IPv6 */
-     {"udp6","UDPv6", AF_INET6, PROTO_UDP},
-     {"tcp6-server","TCPv6_SERVER", AF_INET6, PROTO_TCP_SERVER},
-     {"tcp6-client","TCPv6_CLIENT", AF_INET6, PROTO_TCP_CLIENT},
--    {"tcp6","TCPv6", AF_INET6, PROTO_TCP},
-+    {"tcp6",       "TCPv6", AF_INET6, PROTO_TCP},
-+    {"auto6",      "AUTOv6", AF_INET6, PROTO_AUTO},
- };
- 
- bool
-@@ -3180,14 +3974,21 @@ proto_is_net(int proto)
-     {
-         ASSERT(0);
-     }
--    return proto != PROTO_NONE;
-+    return proto != PROTO_NONE && proto != PROTO_AUTO;
- }
-+
- bool
- proto_is_dgram(int proto)
- {
-     return proto_is_udp(proto);
- }
- 
-+bool
-+proto_is_stream(int proto)
-+{
-+    return proto_is_tcp(proto);
-+}
-+
- bool
- proto_is_udp(int proto)
- {
-@@ -3266,6 +4067,11 @@ proto2ascii_all(struct gc_arena *gc)
- 
-     for (i = 0; i < SIZE(proto_names); ++i)
-     {
-+        if (proto_names[i].proto == PROTO_NONE
-+            || proto_names[i].proto == PROTO_AUTO)
-+        {
-+            continue;
-+        }
-         if (i)
-         {
-             buf_printf(&out, " ");
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index 7aeae527..8a267581 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -40,6 +40,11 @@
-  */
- #define OPENVPN_PORT "1194"
- 
-+/*
-+ * OpenVPN's default service name for DNS SRV discovery.
-+ */
-+#define OPENVPN_SERVICE "openvpn"
-+
- /*
-  * Number of seconds that "resolv-retry infinite"
-  * represents.
-@@ -71,13 +76,29 @@ struct openvpn_sockaddr
-     } addr;
- };
- 
-+/* struct to hold resolved service targets */
-+struct servinfo
-+{
-+    const char *hostname;
-+    const char *servname;
-+    int proto;
-+    int order;
-+    unsigned short prio;
-+    unsigned short weight;
-+    struct addrinfo *ai;
-+    struct servinfo *next;
-+};
-+
- /* struct to hold preresolved host names */
- struct cached_dns_entry {
-     const char *hostname;
-     const char *servname;
-     int ai_family;
-     int flags;
--    struct addrinfo *ai;
-+    union {
-+        struct addrinfo *ai;
-+        struct servinfo *si;
-+    };
-     struct cached_dns_entry *next;
- };
- 
-@@ -106,6 +127,9 @@ struct link_socket_addr
-     struct addrinfo *remote_list; /* complete remote list */
-     struct addrinfo *current_remote; /* remote used in the
-                                       * current connection attempt */
-+    struct servinfo *service_list; /* complete service list */
-+    struct servinfo *current_service; /* service used in the
-+                                       * current connection attempt */
-     struct link_socket_actual actual; /* reply to this address */
- };
- 
-@@ -338,6 +362,8 @@ void link_socket_init_phase2(struct link_socket *sock,
- 
- void do_preresolve(struct context *c);
- 
-+void do_resolve_service(struct context *c);
-+
- void socket_adjust_frame_parameters(struct frame *frame, int proto);
- 
- void frame_adjust_path_mtu(struct frame *frame, int pmtu, int proto);
-@@ -486,6 +512,7 @@ socket_descriptor_t socket_do_accept(socket_descriptor_t sd,
- bool proto_is_net(int proto);
- 
- bool proto_is_dgram(int proto);
-+bool proto_is_stream(int proto);
- 
- bool proto_is_udp(int proto);
- 
-@@ -532,8 +559,12 @@ bool unix_socket_get_peer_uid_gid(const socket_descriptor_t sd, int *uid, int *g
- #define GETADDR_RANDOMIZE             (1<<9)
- #define GETADDR_PASSIVE               (1<<10)
- #define GETADDR_DATAGRAM              (1<<11)
-+#define GETADDR_STREAM                (1<<12)
-+#define GETADDR_SERVICE               (1<<13)
- 
-+#define GETADDR_PROTO_MASK              (GETADDR_DATAGRAM|GETADDR_STREAM)
- #define GETADDR_CACHE_MASK              (GETADDR_DATAGRAM|GETADDR_PASSIVE)
-+#define GETADDR_CACHE_SERVICE_MASK      (GETADDR_PROTO_MASK|GETADDR_SERVICE)
- 
- /**
-  * Translate an IPv4 addr or hostname from string form to in_addr_t
-@@ -561,6 +592,28 @@ int openvpn_getaddrinfo(unsigned int flags,
-                         int ai_family,
-                         struct addrinfo **res);
- 
-+int openvpn_getservinfo(unsigned int flags,
-+                        const char *hostname,
-+                        const char *servname,
-+                        int resolve_retry_seconds,
-+                        volatile int *signal_received,
-+                        int family,
-+                        struct servinfo **res);
-+
-+void freeservinfo(struct servinfo *res);
-+
-+inline static void
-+gc_freeaddrinfo_callback(void *addr)
-+{
-+    freeaddrinfo((struct addrinfo *) addr);
-+}
-+
-+inline static void
-+gc_freeservinfo_callback(void *addr)
-+{
-+    freeservinfo((struct servinfo *) addr);
-+}
-+
- /*
-  * Transport protocol naming and other details.
-  */
-@@ -575,6 +628,7 @@ enum proto_num {
-     PROTO_TCP,
-     PROTO_TCP_SERVER,
-     PROTO_TCP_CLIENT,
-+    PROTO_AUTO,
-     PROTO_N
- };
- 
-diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index 8342eae0..e5852753 100644
---- a/src/openvpn/syshead.h
-+++ b/src/openvpn/syshead.h
-@@ -38,6 +38,7 @@
- 
- #ifdef _WIN32
- #include <windows.h>
-+#include <windns.h>
- #include <winsock2.h>
- #include <tlhelp32.h>
- #define sleep(x) Sleep((x)*1000)
-@@ -176,6 +177,10 @@
- #include <netinet/in.h>
- #endif
- 
-+#ifdef HAVE_ARPA_NAMESER_H
-+#include <arpa/nameser.h>
-+#endif
-+
- #ifdef HAVE_RESOLV_H
- #include <resolv.h>
- #endif
+@@ -231,7 +231,7 @@ static const char usage_message[] =
+     "                   ICMPv6 host unreachable messages on the client.\n"
+     "                   (Server) Instead of forwarding IPv6 packets send\n"
+     "                   ICMPv6 host unreachable packets to the client.\n"
+-    "--client-nat snat|dnat network netmask alias : on client add 1-to-1
+NAT rule.\n"
++    "--client-nat snat|dnat network|'client-ip' netmask alias : on client
+add 1-to-1 NAT rule.\n"
+     "--push-peer-info : (client only) push client info to server.\n"
+     "--setenv name value : Set a custom environmental variable to pass to
+script.\n"
+     "--setenv FORWARD_COMPATIBLE 1 : Relax config file syntax checking to
+allow\n"
 -- 
-2.17.1
+2.7.4
 
+--000000000000ad9c2405af3be176
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hello guys,<br><br>A couple years ago I submitted this pat=
+ch which allows the user to set the &#39;client-ip&#39; as a convenient way=
+ to use the leased IP address received from OpenVPN server in NAT configura=
+tion. For example:<br><br>client-nat snat client-ip 255.255.255.255 172.20.=
+1.15 <br><br>, where &#39;client-ip&#39; string is replaced with the leased=
+ IP address received from OpenVPN server. <br><br>At that time, it was NACK=
+ED due to the fact that I was using both client-ip and localhost strings. S=
+o, it&#39;s changed now and I&#39;d like to re-submit it again for apprecia=
+tion.<br><br>Thanks<br><br>Gava<br><div><br></div><div>--------------------=
+-----------------</div><div><br></div><div>From e273b13bc10da8f917a981957cf=
+2c43ba6bd1e10 Mon Sep 17 00:00:00 2001<br>From: Rafael Gava de Oliveira &lt=
+;<a href=3D"mailto:Rafael.Oliveira@...2056...">Rafael.Oliveira@...2056...</=
+a>&gt;<br>Date: Sat, 12 Sep 2020 19:27:25 -0300<br>Subject: [PATCH] Allows =
+the usage of the string &#39;client-ip&#39; in the client-nat<br>=C2=A0netw=
+ork configuration in a way that is not necessary to inform the IP address<b=
+r>=C2=A0beforehand. Openvpn will dynamically set the received IP from DHCP.=
+<br><br>Example:<br><br>	client-nat snat client-ip 255.255.255.255 172.20.1=
+.15<br><br>Replaces the &#39;client-ip&#39; string with the DHCP address re=
+ceived from<br>the openvpn server.<br>---<br>=C2=A0src/openvpn/clinat.c =C2=
+=A0| 45 ++++++++++++++++++++++++++++++++++++++++-----<br>=C2=A0src/openvpn/=
+clinat.h =C2=A0| =C2=A02 ++<br>=C2=A0src/openvpn/init.c =C2=A0 =C2=A0| =C2=
+=A02 ++<br>=C2=A0src/openvpn/options.c | =C2=A02 +-<br>=C2=A04 files change=
+d, 45 insertions(+), 6 deletions(-)<br>=C2=A0mode change 100644 =3D&gt; 100=
+755 src/openvpn/clinat.c<br><br>diff --git a/src/openvpn/clinat.c b/src/ope=
+nvpn/clinat.c<br>old mode 100644<br>new mode 100755<br>index b08fd54..865b0=
+e2<br>--- a/src/openvpn/clinat.c<br>+++ b/src/openvpn/clinat.c<br>@@ -128,1=
+2 +128,16 @@ add_client_nat_to_option_list(struct client_nat_option_list *d=
+est,<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0msg(msglevel, &quot;client-nat: t=
+ype must be &#39;snat&#39; or &#39;dnat&#39;&quot;);<br>=C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0return;<br>=C2=A0 =C2=A0 =C2=A0}<br>-<br>- =C2=A0 =C2=A0e.=
+network =3D getaddr(0, network, 0, &amp;ok, NULL);<br>- =C2=A0 =C2=A0if (!o=
+k)<br>+ =C2=A0 =C2=A0if (network &amp;&amp; !strcmp(network, &quot;client-i=
+p&quot;))<br>=C2=A0 =C2=A0 =C2=A0{<br>- =C2=A0 =C2=A0 =C2=A0 =C2=A0msg(msgl=
+evel, &quot;client-nat: bad network: %s&quot;, network);<br>- =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0return;<br>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0e.network =3D 0xFFFFF=
+FFF;<br>+ =C2=A0 =C2=A0} else {<br>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0e.network =
+=3D getaddr(0, network, 0, &amp;ok, NULL);<br>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+if (!ok)<br>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0msg(msglevel, &quot;client-nat: bad network: %s&quot;, networ=
+k);<br>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return;<br>+ =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0}<br>=C2=A0 =C2=A0 =C2=A0}<br>=C2=A0 =C2=A0 =C2=A0e.netmas=
+k =3D getaddr(0, netmask, 0, &amp;ok, NULL);<br>=C2=A0 =C2=A0 =C2=A0if (!ok=
+)<br>@@ -276,3 +280,34 @@ client_nat_transform(const struct client_nat_opti=
+on_list *list,<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>=C2=A0 =C2=A0 =C2=
+=A0}<br>=C2=A0}<br>+<br>+/*<br>+* Replaces the client-ip token with the IP =
+received from OpenVPN Server<br>+*/<br>+bool <br>+update_client_ip_nat(stru=
+ct client_nat_option_list *dest, in_addr_t local_ip)<br>+{<br>+ =C2=A0 =C2=
+=A0int i;<br>+ =C2=A0 =C2=A0bool ret =3D false;<br>+<br>+ =C2=A0 =C2=A0if (=
+!dest)<br>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0return ret;<br>+<br>+ =C2=A0 =C2=A0f=
+or (i=3D0; i &lt;=3D dest-&gt;n; i++) <br>+ =C2=A0 =C2=A0{<br>+ =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0struct client_nat_entry *nat_entry =3D &amp;dest-&gt;entri=
+es[i];<br>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0if (nat_entry &amp;&amp; nat_entry-&=
+gt;network =3D=3D 0xFFFFFFFF) <br>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>+ =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0struct in_addr addr;<br>+<br>+ =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0nat_entry-&gt;network =3D ntohl(local_ip=
+);<br>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0addr.s_addr =3D nat_entry-=
+&gt;network;<br>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0char *dot_ip =3D=
+ inet_ntoa(addr);<br>+<br>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0msg (M=
+_INFO, &quot;Updating NAT table client-ip to: %s&quot;, dot_ip); <br>+ =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0ret =3D true;<br>+ =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0}<br>+ =C2=A0 =C2=A0}<br>+<br>+ =C2=A0 =C2=A0return ret;<br>+}<br=
+>diff --git a/src/openvpn/clinat.h b/src/openvpn/clinat.h<br>index eec7a03.=
+.c2941b9 100644<br>--- a/src/openvpn/clinat.h<br>+++ b/src/openvpn/clinat.h=
+<br>@@ -64,4 +64,6 @@ void client_nat_transform(const struct client_nat_opt=
+ion_list *list,<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0struct buffer *ipbuf,<br>=C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0const int direction);<br>=C2=A0<br>+bool update_client_ip_=
+nat(struct client_nat_option_list *dest, in_addr_t local_ip);<br>+<br>=C2=
+=A0#endif /* if !defined(CLINAT_H) */<br>diff --git a/src/openvpn/init.c b/=
+src/openvpn/init.c<br>index a785934..8d6f9a8 100644<br>--- a/src/openvpn/in=
+it.c<br>+++ b/src/openvpn/init.c<br>@@ -1920,6 +1920,8 @@ do_open_tun(struc=
+t context *c)<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0SET_MTU_TUN | SET_MT=
+U_UPPER_BOUND);<br>=C2=A0 =C2=A0 =C2=A0}<br>=C2=A0<br>+ =C2=A0 =C2=A0update=
+_client_ip_nat(c-&gt;options.client_nat, c-&gt;c1.tuntap-&gt;local);<br>+<b=
+r>=C2=A0 =C2=A0 =C2=A0ret =3D true;<br>=C2=A0 =C2=A0 =C2=A0static_context =
+=3D c;<br>=C2=A0#ifndef TARGET_ANDROID<br>diff --git a/src/openvpn/options.=
+c b/src/openvpn/options.c<br>index 8bf82c5..26f11fa 100644<br>--- a/src/ope=
+nvpn/options.c<br>+++ b/src/openvpn/options.c<br>@@ -231,7 +231,7 @@ static=
+ const char usage_message[] =3D<br>=C2=A0 =C2=A0 =C2=A0&quot; =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ICMPv6 host unreachable m=
+essages on the client.\n&quot;<br>=C2=A0 =C2=A0 =C2=A0&quot; =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 (Server) Instead of forwar=
+ding IPv6 packets send\n&quot;<br>=C2=A0 =C2=A0 =C2=A0&quot; =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ICMPv6 host unreachable pa=
+ckets to the client.\n&quot;<br>- =C2=A0 =C2=A0&quot;--client-nat snat|dnat=
+ network netmask alias : on client add 1-to-1 NAT rule.\n&quot;<br>+ =C2=A0=
+ =C2=A0&quot;--client-nat snat|dnat network|&#39;client-ip&#39; netmask ali=
+as : on client add 1-to-1 NAT rule.\n&quot;<br>=C2=A0 =C2=A0 =C2=A0&quot;--=
+push-peer-info : (client only) push client info to server.\n&quot;<br>=C2=
+=A0 =C2=A0 =C2=A0&quot;--setenv name value : Set a custom environmental var=
+iable to pass to script.\n&quot;<br>=C2=A0 =C2=A0 =C2=A0&quot;--setenv FORW=
+ARD_COMPATIBLE 1 : Relax config file syntax checking to allow\n&quot;<br>--=
+ <br>2.7.4<br><br></div></div>
+
+--000000000000ad9c2405af3be176--
 
