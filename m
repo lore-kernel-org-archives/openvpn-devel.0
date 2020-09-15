@@ -1,16 +1,11 @@
+From: David Sommerseth <davids@...515...>
+Date: Tue, 15 Sep 2020 22:52:54 +0200
+Message-Id: <20200915205254.32605-1-davids@...515...>
+In-Reply-To: <20200914115706.11066-1-davids@...515...>
 References: <20200914115706.11066-1-davids@...515...>
- <20200914122721.14173-1-davids@...515...>
- <20200915102254.GC75094@...1296...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <a04b390d-c9e7-f22f-f85e-2773c7db5d63@...2080...>
-Date: Tue, 15 Sep 2020 22:52:05 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200915102254.GC75094@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="CTvZUWfLnvAr5e4O4bEI6rCGT0y3vDRtM"
-Subject: Re: [Openvpn-devel] [PATCH v2] sample-plugins: Partially
- autotoolize the sample-plugins build
+Subject: [Openvpn-devel] [PATCH v3] sample-plugins: Partially autotoolize
+ the sample-plugins build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,118 +14,322 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---CTvZUWfLnvAr5e4O4bEI6rCGT0y3vDRtM
-Content-Type: multipart/mixed; boundary="69cyejD3kcEVPQZmw0ino1fitYnXxWAND";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-To: Gert Doering <gert@...1296...>, David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <a04b390d-c9e7-f22f-f85e-2773c7db5d63@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH v2] sample-plugins: Partially autotoolize
- the sample-plugins build
-References: <20200914115706.11066-1-davids@...515...>
- <20200914122721.14173-1-davids@...515...>
- <20200915102254.GC75094@...1296...>
-In-Reply-To: <20200915102254.GC75094@...1296...>
+The sample-plugins have their own set of build/winbuild scripts in each
+of these plugin directories.  This does not give a good way to reuse
+various macros the autoconf/automake/configure process enables; which
+can contain important macros to make some code build without errors or
+warnings.
 
---69cyejD3kcEVPQZmw0ino1fitYnXxWAND
-Content-Language: en-US
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Normally we would embrace the full autoconf/automake approach. But this
+is sample code which we only want to build per request and the built
+code should not be installed anywhere via 'make install'.  But since we
+do use libtool other plug-ins being installed and automake gets kind of
+cranky when it comes to define certain build targets not following the
+expected use cases, we try to only embrace just enough of automake to
+get our main goals achieved.
 
-On 15/09/2020 12:22, Gert Doering wrote:
-> Hi,
->=20
-> On Mon, Sep 14, 2020 at 02:27:21PM +0200, David Sommerseth wrote:
->> The sample-plugins have their own set of build/winbuild scripts in each
->> of these plugin directories.  This does not give a good way to reuse
->> various macros the autoconf/automake/configure process enables; which
->> can contain important macros to make some code build without errors or
->> warnings.
->=20
-> This looks like a step in the right direction, but is not fully working
-> yet - I tried both an "in-tree" and "out of tree" build, and it fails
-> compilation with
->=20
-> sample-plugins$ gmake
-> test -d `dirname defer/simple.o` || ../../../openvpn/./install-sh -c -d `=
-dirname defer/simple.o`; \
-> cc -c -o defer/simple.o -Wall -Wno-unused-parameter -Wno-unused-function =
--g -O2 -std=3Dc99 -I../../../openvpn -fPIC ../../../openvpn/sample/sample-p=
-lugins/defer/simple.c
-> ../../../openvpn/sample/sample-plugins/defer/simple.c:58:10: fatal error:=
- 'openvpn-plugin.h' file
->       not found
-> #include "openvpn-plugin.h"
->          ^~~~~~~~~~~~~~~~~~
-> 1 error generated.
->=20
->=20
-> openvpn-plugin.h is installed if you install openvpn first, but if
-> you only build in tree, it seems to need an extra=20
->=20
->   -I$(top_srcdir)/include
->=20
-> to find openvpn-plugin.h
+This changeset kicks out the build scripts and replaces them with a
+single Makefile.plugins file, which defines the plugins we want to build
+by default when running 'make from the sample-plugins directory.
+Neither of these plugins are otherwise built by default.  No sample-plugins
+are being installed.  But we have enough strings attached to automake
+to grab the CFLAGS and LDFLAGS used by the rest of the code.  This also
+makes it easy to use #include "config.h" in sample code, to also get
+various macros defined by the ./configure run.
 
-Hmmm ... I would have expected that to be picked up automatically, but clea=
-rly
-didn't watch the compile arguments carefully enough.
+This patch does not touch the winbuild scripts, as it seems building
+these sample-plugins on Windows requires a bit different compile and
+linking steps than *nix systems in general.
 
-> It also needs gmake - running "make" will do "nothing at all", which
-> I found surprising, but did not investigate more closely.  This is likely
-> due to implicit rules that need to be written differently for BSD make.
+Signed-off-by: David Sommerseth <davids@...515...>
 
-Yikes ... I see potentially two issues here.  BSD Make seems to lack support
-for $(foreach ...) and it does not grok '%.so : %.o' (which is Make "macro
-magic" to simplify rule writing).  To avoid this and make it BSD Make
-compatible, we would probably need to go full-fledged automake - pulling in
-libtools (and the awkward .libs directories, .la/.lo files, etc, etc).
+---
+v2 - Process README files with correct instructions and details
+v3 - Add missing -I$(top_srcdir)/include and explicitly state GNU Make
+     requirement
+---
+ configure.ac                                  |  1 +
+ sample/sample-plugins/Makefile.am             | 30 +++++++++++++++
+ sample/sample-plugins/Makefile.plugins        | 31 ++++++++++++++++
+ sample/sample-plugins/README                  | 37 +++++++++++++++++++
+ sample/sample-plugins/defer/README            | 16 --------
+ sample/sample-plugins/defer/build             | 15 --------
+ .../keying-material-exporter-demo/build       | 15 --------
+ sample/sample-plugins/log/build               | 15 --------
+ sample/sample-plugins/simple/README           | 16 --------
+ sample/sample-plugins/simple/build            | 15 --------
+ 10 files changed, 99 insertions(+), 92 deletions(-)
+ create mode 100644 sample/sample-plugins/Makefile.am
+ create mode 100644 sample/sample-plugins/Makefile.plugins
+ create mode 100644 sample/sample-plugins/README
+ delete mode 100644 sample/sample-plugins/defer/README
+ delete mode 100755 sample/sample-plugins/defer/build
+ delete mode 100755 sample/sample-plugins/keying-material-exporter-demo/build
+ delete mode 100755 sample/sample-plugins/log/build
+ delete mode 100644 sample/sample-plugins/simple/README
+ delete mode 100755 sample/sample-plugins/simple/build
 
-So if we're fine with reducing this to GNU Make only, the change is trivial.
+diff --git a/configure.ac b/configure.ac
+index f8279924..ebb32204 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1433,6 +1433,7 @@ AC_CONFIG_FILES([
+ 	doc/doxygen/Makefile
+ 	doc/doxygen/openvpn.doxyfile
+ 	include/Makefile
++	sample/sample-plugins/Makefile
+ 	src/Makefile
+ 	src/compat/Makefile
+ 	src/openvpn/Makefile
+diff --git a/sample/sample-plugins/Makefile.am b/sample/sample-plugins/Makefile.am
+new file mode 100644
+index 00000000..657764a6
+--- /dev/null
++++ b/sample/sample-plugins/Makefile.am
+@@ -0,0 +1,30 @@
++#
++#  OpenVPN -- An application to securely tunnel IP networks
++#             over a single UDP port, with support for SSL/TLS-based
++#             session authentication and key exchange,
++#             packet encryption, packet authentication, and
++#             packet compression.
++#
++#  Copyright (C) 2002-2020 OpenVPN Inc <sales@...515...>
++#
++
++MAINTAINERCLEANFILES = \
++	$(srcdir)/Makefile.in
++
++AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/include
++
++# We don't want automake to pull in libtool for building these
++# sample-plugins.  Even though this breaks the conceptual ideas
++# around autoconf/automake/libtools ... these sample plug-ins
++# are just sample code, not to be installed or distributed outside
++# of the source tarball.  Not even built by default, by design.
++#
++# We only add this as a simple and convenient way to build all
++# these plug-ins with the same build parameters as the rest
++# of the OpenVPN code.
++#
++# All the plugins which will be built are processed in this
++# separate Makefile, which disconnects everything just enough
++# to achieve our goal.
++include Makefile.plugins
++
+diff --git a/sample/sample-plugins/Makefile.plugins b/sample/sample-plugins/Makefile.plugins
+new file mode 100644
+index 00000000..d19aa5bb
+--- /dev/null
++++ b/sample/sample-plugins/Makefile.plugins
+@@ -0,0 +1,31 @@
++#  SPDX-License-Identifier: GPL-2.0-only
++#
++#  Copyright (C) 2020 OpenVPN Inc <sales@...515...>
++#
++
++#
++# Plug-ins to build - listed entries should not carry any extensions
++#
++PLUGINS = \
++	defer/simple \
++	keying-material-exporter-demo/keyingmaterialexporter \
++	log/log log/log_v3 \
++	simple/base64 \
++	simple/simple
++
++# All the plugins to build - rewritten with .so extension
++all : $(foreach var, $(PLUGINS), $(var).so)
++
++# Compile step
++.c.o :
++	test -d `dirname $@` || $(MKDIR_P) `dirname $@`; \
++	$(CC) -c -o $@ $(CFLAGS) $(AM_CPPFLAGS) -fPIC $<
++
++# Link step
++%.so : %.o
++	$(CC) $(LDFLAGS) -shared -fPIC -o $@ $<
++
++# Clean up all build object and shared object files
++clean :
++	rm -f $(foreach var, $(PLUGINS), $(var).o) \
++	$(foreach var, $(PLUGINS), $(var).so)
+diff --git a/sample/sample-plugins/README b/sample/sample-plugins/README
+new file mode 100644
+index 00000000..3ed60348
+--- /dev/null
++++ b/sample/sample-plugins/README
+@@ -0,0 +1,37 @@
++OpenVPN plug-in examples.
++
++Examples provided:
++
++* authentication and logging
++simple/simple.c -- using the --auth-user-pass-verify callback, verify
++                   that the username/password is "foo"/"bar".
++defer/simple.c  -- using the --auth-user-pass-verify callback,
++                   test deferred authentication.
++log/log.c       -- Extended variant of simple/simple.c which adds more
++                   logging of what is happening inside the plug-in
++log/log_v3.c    -- A variant of log/log.c, which makes use of the
++                   OpenVPN plug-in v3 API.  This will also log even more
++                   information related to certificates in use.
++
++* cryptography related
++simple/base64.c -- Example using the OpenVPN exported base64 encode/decode
++                   functions
++keying-material-exporter-demo/keyingmaterialexporter.c
++                -- Example based on TLS Keying Material Exporters over HTTP [RFC-5705]
++                   (openvpn/doc/keying-material-exporter.txt).  For more details, see
++                   keying-material-exporter-demo/README
++
++
++To build on *BSD/Linux platforms (requires GNU Make):
++
++   gmake                   (builds a default set of plug-ins)
++   gmake simple/simple.so
++
++To build on Windows platform (MinGW):
++
++   cd simple; ./winbuild simple.so
++
++To use in OpenVPN, add to config file:
++
++  plugin simple.so (Linux/BSD/etc.)
++  plugin simple.dll
+diff --git a/sample/sample-plugins/defer/README b/sample/sample-plugins/defer/README
+deleted file mode 100644
+index d8990f8b..00000000
+--- a/sample/sample-plugins/defer/README
++++ /dev/null
+@@ -1,16 +0,0 @@
+-OpenVPN plugin examples.
+-
+-Examples provided:
+-
+-simple.c -- using the --auth-user-pass-verify callback,
+-            test deferred authentication.
+-
+-To build:
+-
+-  ./build simple (Linux/BSD/etc.)
+-  ./winbuild simple (MinGW on Windows)
+-
+-To use in OpenVPN, add to config file:
+-
+-  plugin simple.so (Linux/BSD/etc.)
+-  plugin simple.dll (MinGW on Windows)
+diff --git a/sample/sample-plugins/defer/build b/sample/sample-plugins/defer/build
+deleted file mode 100755
+index ba41a39f..00000000
+--- a/sample/sample-plugins/defer/build
++++ /dev/null
+@@ -1,15 +0,0 @@
+-#!/bin/sh
+-
+-#
+-# Build an OpenVPN plugin module on *nix.  The argument should
+-# be the base name of the C source file (without the .c).
+-#
+-
+-# This directory is where we will look for openvpn-plugin.h
+-CPPFLAGS="${CPPFLAGS:--I../../../include}"
+-
+-CC="${CC:-gcc}"
+-CFLAGS="${CFLAGS:--O2 -Wall -g}"
+-
+-$CC $CPPFLAGS $CFLAGS -fPIC -c $1.c && \
+-$CC $CFLAGS -fPIC -shared ${LDFLAGS} -Wl,-soname,$1.so -o $1.so $1.o -lc
+diff --git a/sample/sample-plugins/keying-material-exporter-demo/build b/sample/sample-plugins/keying-material-exporter-demo/build
+deleted file mode 100755
+index bbb05f7c..00000000
+--- a/sample/sample-plugins/keying-material-exporter-demo/build
++++ /dev/null
+@@ -1,15 +0,0 @@
+-#!/bin/sh
+-
+-#
+-# Build an OpenVPN plugin module on *nix.  The argument should
+-# be the base name of the C source file (without the .c).
+-#
+-
+-# This directory is where we will look for openvpn-plugin.h
+-CPPFLAGS="${CPPFLAGS:--I../../..}"
+-
+-CC="${CC:-gcc}"
+-CFLAGS="${CFLAGS:--O2 -Wall -g}"
+-
+-$CC $CPPFLAGS $CFLAGS -fPIC -c $1.c && \
+-$CC $CFLAGS -fPIC -shared $LDFLAGS -Wl,-soname,$1.so -o $1.so $1.o -lc
+diff --git a/sample/sample-plugins/log/build b/sample/sample-plugins/log/build
+deleted file mode 100755
+index c07ec408..00000000
+--- a/sample/sample-plugins/log/build
++++ /dev/null
+@@ -1,15 +0,0 @@
+-#!/bin/sh
+-
+-#
+-# Build an OpenVPN plugin module on *nix.  The argument should
+-# be the base name of the C source file (without the .c).
+-#
+-
+-# This directory is where we will look for openvpn-plugin.h
+-CPPFLAGS="${CPPFLAGS:--I../../../include}"
+-
+-CC="${CC:-gcc}"
+-CFLAGS="${CFLAGS:--O2 -Wall -g}"
+-
+-$CC $CPPFLAGS $CFLAGS -fPIC -c $1.c && \
+-$CC $CFLAGS -fPIC -shared $LDFLAGS -Wl,-soname,$1.so -o $1.so $1.o -lc
+diff --git a/sample/sample-plugins/simple/README b/sample/sample-plugins/simple/README
+deleted file mode 100644
+index 4400cd30..00000000
+--- a/sample/sample-plugins/simple/README
++++ /dev/null
+@@ -1,16 +0,0 @@
+-OpenVPN plugin examples.
+-
+-Examples provided:
+-
+-simple.c -- using the --auth-user-pass-verify callback, verify
+-            that the username/password is "foo"/"bar".
+-
+-To build:
+-
+-  ./build simple (Linux/BSD/etc.)
+-  ./winbuild simple (MinGW on Windows)
+-
+-To use in OpenVPN, add to config file:
+-
+-  plugin simple.so (Linux/BSD/etc.)
+-  plugin simple.dll (MinGW on Windows)
+diff --git a/sample/sample-plugins/simple/build b/sample/sample-plugins/simple/build
+deleted file mode 100755
+index bbb05f7c..00000000
+--- a/sample/sample-plugins/simple/build
++++ /dev/null
+@@ -1,15 +0,0 @@
+-#!/bin/sh
+-
+-#
+-# Build an OpenVPN plugin module on *nix.  The argument should
+-# be the base name of the C source file (without the .c).
+-#
+-
+-# This directory is where we will look for openvpn-plugin.h
+-CPPFLAGS="${CPPFLAGS:--I../../..}"
+-
+-CC="${CC:-gcc}"
+-CFLAGS="${CFLAGS:--O2 -Wall -g}"
+-
+-$CC $CPPFLAGS $CFLAGS -fPIC -c $1.c && \
+-$CC $CFLAGS -fPIC -shared $LDFLAGS -Wl,-soname,$1.so -o $1.so $1.o -lc
+-- 
+2.26.0
 
-> I do not think this is a serious issue - just document it in the README,
-> and it's still better than 4 individual "build" files, half of it who
-> were missing the needed "-I" as well :-)
-
-New updated patch coming very soon.
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
-
-
-
---69cyejD3kcEVPQZmw0ino1fitYnXxWAND--
-
---CTvZUWfLnvAr5e4O4bEI6rCGT0y3vDRtM
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJfYSl2AAoJEIbPlEyWcf3y17QQAJFLO2FzNbO5jVuwk/KwtAhl
-bjO4bIGT8q7DOFKGv+YheVjZUC1q0d03YhVfjyNYdw/s6ysIyPr4z9tD9ILaZFkx
-DV/Fa0P5uiGPJLNeztHYUAMxEYmaJAnEbgP+TlSMYVf/4x/ShpFVfMdwHfWgfg8+
-GppziCAbuWyY9FNITkDYDNAjoo6h3BrgLun8ikr4fLMqH4g2A2RZdCfOzGKtMZZA
-JCNoRV70f8kMjGIq8e7JaFo6qFeisqEIpSx8SmhELppq+ZCx0dYekzMt0Fjtt/11
-RNYp8DjqjkqfGpfGwvv9RIltrtc8TcEIq0ii6Kid4VMQjn4DJIJDgK2ihOFEnFVx
-EQnVVz6TawbAEGXUZgZklKxLgFBIRmzQHMq4V5bb7fk0kafi1OteP5OvSmehnY/m
-HikBGSNOeBVOjxumiH6uJfsyDa76H4kqu0mErnSs5FzhePvXSIFH6yirXTnYFq9M
-KPa81Mu3FKSgrmTHypcwqX0RGzHAkfjNtM1RGipeGyeVyBrdX2UvUpWfFuA8z9UX
-zUMPqbzm8ZuHECOeMlQbkDjG5jLAoNFzFb29mb5ddbAbNoIK1wTMRYrL+BnLVqNF
-I2cM/w/n/PB+RDZWcCug1gbc0Evx+010TlWOWRGdhDcUNr9btLyhdlc/E/Y++E5X
-c+HNuTOFIl4lyd8dSPhR
-=YHVT
------END PGP SIGNATURE-----
-
---CTvZUWfLnvAr5e4O4bEI6rCGT0y3vDRtM--
 
