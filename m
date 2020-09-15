@@ -1,10 +1,11 @@
-Date: Tue, 15 Sep 2020 09:02:30 +0200 (CEST)
-Message-Id: <202009150702.08F72UNl084183@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1600126181-16364-1-git-send-email-selva.nair@...277...>
-References: <1600126181-16364-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Allow --dhcp-option in config
- file when windows-driver is wintun
+Date: Tue, 15 Sep 2020 11:41:01 +0200
+Message-Id: <20200915094101.86470-1-gert@...1296...>
+In-Reply-To: <20200914182323.71971-1-gert@...1296...>
+References: <20200914182323.71971-1-gert@...1296...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v2] Fix netbits setting (in TAP mode) for
+ IPv6 on Windows.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,30 +16,131 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.5 branch.
+For TUN interfaces, the IPv6 address needs to be configured with
+"address/128" and a local subnet route is needed, pointing to our
+fake gateway fe80::8.  There is no ethernet headers or ND outside
+the tun/tap interface, so anything but fe80::8 is not resolvable.
 
-("Looks good to me" as well, Lev just beat me with testing and ACKing)
+For TAP interfaces, the proper subnet mask (netbits) must be configured,
+and no connected route to "our local host address" must be configured,
+to make make IPv6 ND work inside the local subnet.
 
-commit b8625abbd5be21a810b648058e6e411a7ff19702 (master)
-commit 9fe13491de31fff127bdceb6026fc05732f7dfb3 (release/2.5)
-Author: Selva Nair
-Date:   Mon Sep 14 19:29:41 2020 -0400
+Our code was nicely consistent in doing the same thing in tun.c
+("gui/openvpn running with admin privileges") and in the requests
+to the interactive service ("gui running with user privs").  Fix in
+both places.
 
-     Allow --dhcp-option in config file when windows-driver is wintun
+On tun close, symmetric to addition, remove the on-link subnet route only
+for "tun" interfaces.  Address removal works without specifying netbits.
 
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <1600126181-16364-1-git-send-email-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21005.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+While at it, extend do_address_service() to actually log both IPv4
+and IPv6 addresses requested via it.
 
+Tested on Win10/64.
 
---
-kind regards,
+v2:
+  - change logging to use D_IFCONFIG
+  - fix whitespace on "?" operator
 
-Gert Doering
+Reported-By: Laurent Fasnacht <l@...2534...>
+Reported-By: Klara Mall <klara.mall@...2577...>
+Trac: #1054
+
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/errlevel.h |  1 +
+ src/openvpn/tun.c      | 32 +++++++++++++++++++++++++-------
+ 2 files changed, 26 insertions(+), 7 deletions(-)
+
+diff --git a/src/openvpn/errlevel.h b/src/openvpn/errlevel.h
+index e448fc37..5663f841 100644
+--- a/src/openvpn/errlevel.h
++++ b/src/openvpn/errlevel.h
+@@ -91,6 +91,7 @@
+ #define D_OSBUF              LOGLEV(3, 43, 0)        /* show socket/tun/tap buffer sizes */
+ #define D_PS_PROXY           LOGLEV(3, 44, 0)        /* messages related to --port-share option */
+ #define D_PF_INFO            LOGLEV(3, 45, 0)        /* packet filter informational messages */
++#define D_IFCONFIG           LOGLEV(3, 0,  0)        /* show ifconfig info (don't mute) */
+ 
+ #define D_SHOW_PARMS         LOGLEV(4, 50, 0)        /* show all parameters on program initiation */
+ #define D_SHOW_OCC           LOGLEV(4, 51, 0)        /* show options compatibility string */
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index fde94294..faa02504 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -115,11 +115,17 @@ do_address_service(const bool add, const short family, const struct tuntap *tt)
+     {
+         addr.address.ipv4.s_addr = htonl(tt->local);
+         addr.prefix_len = netmask_to_netbits2(tt->adapter_netmask);
++        msg(D_IFCONFIG, "INET address service: %s %s/%d",
++            add ? "add" : "remove",
++            print_in_addr_t(tt->local, 0, &gc), addr.prefix_len);
+     }
+     else
+     {
+         addr.address.ipv6 = tt->local_ipv6;
+-        addr.prefix_len = tt->netbits_ipv6;
++        addr.prefix_len = (tt->type == DEV_TYPE_TUN) ? 128 : tt->netbits_ipv6;
++        msg(D_IFCONFIG, "INET6 address service: %s %s/%d",
++            add ? "add" : "remove",
++            print_in6_addr(tt->local_ipv6, 0, &gc), addr.prefix_len);
+     }
+ 
+     if (!send_msg_iservice(pipe, &addr, sizeof(addr), &ack, "TUN"))
+@@ -1088,24 +1094,36 @@ do_ifconfig_ipv6(struct tuntap *tt, const char *ifname, int tun_mtu,
+     else if (tt->options.msg_channel)
+     {
+         do_address_service(true, AF_INET6, tt);
+-        add_route_connected_v6_net(tt, es);
++        if (tt->type == DEV_TYPE_TUN)
++        {
++            add_route_connected_v6_net(tt, es);
++        }
+         do_dns_service(true, AF_INET6, tt);
+         do_set_mtu_service(tt, AF_INET6, tun_mtu);
+     }
+     else
+     {
+         /* example: netsh interface ipv6 set address interface=42
+-         *                  2001:608:8003::d store=active
++         *                  2001:608:8003::d/bits store=active
+          */
+         char iface[64];
+ 
++        /* in TUN mode, we only simulate a subnet, so the interface
++         * is configured with /128 + a route to fe80::8.  In TAP mode,
++         * the correct netbits must be set, and no on-link route
++         */
++        int netbits = (tt->type == DEV_TYPE_TUN) ? 128 : tt->netbits_ipv6;
++
+         openvpn_snprintf(iface, sizeof(iface), "interface=%lu",
+                          tt->adapter_index);
+-        argv_printf(&argv, "%s%s interface ipv6 set address %s %s store=active",
++        argv_printf(&argv, "%s%s interface ipv6 set address %s %s/%d store=active",
+                     get_win_sys_path(), NETSH_PATH_SUFFIX, iface,
+-                    ifconfig_ipv6_local);
++                    ifconfig_ipv6_local, netbits);
+         netsh_command(&argv, 4, M_FATAL);
+-        add_route_connected_v6_net(tt, es);
++        if (tt->type == DEV_TYPE_TUN)
++        {
++            add_route_connected_v6_net(tt, es);
++        }
+         /* set ipv6 dns servers if any are specified */
+         netsh_set_dns6_servers(tt->options.dns6, tt->options.dns6_len, ifname);
+         windows_set_mtu(tt->adapter_index, AF_INET6, tun_mtu);
+@@ -6688,7 +6706,7 @@ netsh_delete_address_dns(const struct tuntap *tt, bool ipv6, struct gc_arena *gc
+         netsh_command(&argv, 1, M_WARN);
+     }
+ 
+-    if (ipv6)
++    if (ipv6 && tt->type == DEV_TYPE_TUN)
+     {
+         delete_route_connected_v6_net(tt);
+     }
+-- 
+2.28.0
 
 
