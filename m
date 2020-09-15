@@ -1,11 +1,15 @@
+Date: Tue, 15 Sep 2020 12:22:54 +0200
 From: Gert Doering <gert@...1296...>
-Date: Tue, 15 Sep 2020 11:41:01 +0200
-Message-Id: <20200915094101.86470-1-gert@...1296...>
-In-Reply-To: <20200914182323.71971-1-gert@...1296...>
-References: <20200914182323.71971-1-gert@...1296...>
+Message-ID: <20200915102254.GC75094@...1296...>
+References: <20200914115706.11066-1-davids@...515...>
+ <20200914122721.14173-1-davids@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Fix netbits setting (in TAP mode) for
- IPv6 on Windows.
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="QU4HcMF0gOtcBmJ3"
+Content-Disposition: inline
+In-Reply-To: <20200914122721.14173-1-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH v2] sample-plugins: Partially
+ autotoolize the sample-plugins build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,133 +18,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <davids@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-For TUN interfaces, the IPv6 address needs to be configured with
-"address/128" and a local subnet route is needed, pointing to our
-fake gateway fe80::8.  There is no ethernet headers or ND outside
-the tun/tap interface, so anything but fe80::8 is not resolvable.
+--QU4HcMF0gOtcBmJ3
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-For TAP interfaces, the proper subnet mask (netbits) must be configured,
-and no connected route to "our local host address" must be configured,
-to make make IPv6 ND work inside the local subnet.
+Hi,
 
-Our code was nicely consistent in doing the same thing in tun.c
-("gui/openvpn running with admin privileges") and in the requests
-to the interactive service ("gui running with user privs").  Fix in
-both places.
+On Mon, Sep 14, 2020 at 02:27:21PM +0200, David Sommerseth wrote:
+> The sample-plugins have their own set of build/winbuild scripts in each
+> of these plugin directories.  This does not give a good way to reuse
+> various macros the autoconf/automake/configure process enables; which
+> can contain important macros to make some code build without errors or
+> warnings.
 
-On tun close, symmetric to addition, remove the on-link subnet route only
-for "tun" interfaces.  Address removal works without specifying netbits.
+This looks like a step in the right direction, but is not fully working
+yet - I tried both an "in-tree" and "out of tree" build, and it fails
+compilation with
 
-While at it, extend do_address_service() to actually log both IPv4
-and IPv6 addresses requested via it.
+sample-plugins$ gmake
+test -d `dirname defer/simple.o` || ../../../openvpn/./install-sh -c -d `di=
+rname defer/simple.o`; \
+cc -c -o defer/simple.o -Wall -Wno-unused-parameter -Wno-unused-function -g=
+ -O2 -std=3Dc99 -I../../../openvpn -fPIC ../../../openvpn/sample/sample-plu=
+gins/defer/simple.c
+../../../openvpn/sample/sample-plugins/defer/simple.c:58:10: fatal error: '=
+openvpn-plugin.h' file
+      not found
+#include "openvpn-plugin.h"
+         ^~~~~~~~~~~~~~~~~~
+1 error generated.
 
-Tested on Win10/64.
 
-v2:
-  - change logging to use D_IFCONFIG
-  - fix whitespace on "?" operator
+openvpn-plugin.h is installed if you install openvpn first, but if
+you only build in tree, it seems to need an extra=20
 
-Reported-By: Laurent Fasnacht <l@...2534...>
-Reported-By: Klara Mall <klara.mall@...2577...>
-Trac: #1054
+  -I$(top_srcdir)/include
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/openvpn/errlevel.h |  1 +
- src/openvpn/tun.c      | 32 +++++++++++++++++++++++++-------
- 2 files changed, 26 insertions(+), 7 deletions(-)
+to find openvpn-plugin.h
 
-diff --git a/src/openvpn/errlevel.h b/src/openvpn/errlevel.h
-index e448fc37..5663f841 100644
---- a/src/openvpn/errlevel.h
-+++ b/src/openvpn/errlevel.h
-@@ -91,6 +91,7 @@
- #define D_OSBUF              LOGLEV(3, 43, 0)        /* show socket/tun/tap buffer sizes */
- #define D_PS_PROXY           LOGLEV(3, 44, 0)        /* messages related to --port-share option */
- #define D_PF_INFO            LOGLEV(3, 45, 0)        /* packet filter informational messages */
-+#define D_IFCONFIG           LOGLEV(3, 0,  0)        /* show ifconfig info (don't mute) */
- 
- #define D_SHOW_PARMS         LOGLEV(4, 50, 0)        /* show all parameters on program initiation */
- #define D_SHOW_OCC           LOGLEV(4, 51, 0)        /* show options compatibility string */
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index fde94294..faa02504 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -115,11 +115,17 @@ do_address_service(const bool add, const short family, const struct tuntap *tt)
-     {
-         addr.address.ipv4.s_addr = htonl(tt->local);
-         addr.prefix_len = netmask_to_netbits2(tt->adapter_netmask);
-+        msg(D_IFCONFIG, "INET address service: %s %s/%d",
-+            add ? "add" : "remove",
-+            print_in_addr_t(tt->local, 0, &gc), addr.prefix_len);
-     }
-     else
-     {
-         addr.address.ipv6 = tt->local_ipv6;
--        addr.prefix_len = tt->netbits_ipv6;
-+        addr.prefix_len = (tt->type == DEV_TYPE_TUN) ? 128 : tt->netbits_ipv6;
-+        msg(D_IFCONFIG, "INET6 address service: %s %s/%d",
-+            add ? "add" : "remove",
-+            print_in6_addr(tt->local_ipv6, 0, &gc), addr.prefix_len);
-     }
- 
-     if (!send_msg_iservice(pipe, &addr, sizeof(addr), &ack, "TUN"))
-@@ -1088,24 +1094,36 @@ do_ifconfig_ipv6(struct tuntap *tt, const char *ifname, int tun_mtu,
-     else if (tt->options.msg_channel)
-     {
-         do_address_service(true, AF_INET6, tt);
--        add_route_connected_v6_net(tt, es);
-+        if (tt->type == DEV_TYPE_TUN)
-+        {
-+            add_route_connected_v6_net(tt, es);
-+        }
-         do_dns_service(true, AF_INET6, tt);
-         do_set_mtu_service(tt, AF_INET6, tun_mtu);
-     }
-     else
-     {
-         /* example: netsh interface ipv6 set address interface=42
--         *                  2001:608:8003::d store=active
-+         *                  2001:608:8003::d/bits store=active
-          */
-         char iface[64];
- 
-+        /* in TUN mode, we only simulate a subnet, so the interface
-+         * is configured with /128 + a route to fe80::8.  In TAP mode,
-+         * the correct netbits must be set, and no on-link route
-+         */
-+        int netbits = (tt->type == DEV_TYPE_TUN) ? 128 : tt->netbits_ipv6;
-+
-         openvpn_snprintf(iface, sizeof(iface), "interface=%lu",
-                          tt->adapter_index);
--        argv_printf(&argv, "%s%s interface ipv6 set address %s %s store=active",
-+        argv_printf(&argv, "%s%s interface ipv6 set address %s %s/%d store=active",
-                     get_win_sys_path(), NETSH_PATH_SUFFIX, iface,
--                    ifconfig_ipv6_local);
-+                    ifconfig_ipv6_local, netbits);
-         netsh_command(&argv, 4, M_FATAL);
--        add_route_connected_v6_net(tt, es);
-+        if (tt->type == DEV_TYPE_TUN)
-+        {
-+            add_route_connected_v6_net(tt, es);
-+        }
-         /* set ipv6 dns servers if any are specified */
-         netsh_set_dns6_servers(tt->options.dns6, tt->options.dns6_len, ifname);
-         windows_set_mtu(tt->adapter_index, AF_INET6, tun_mtu);
-@@ -6688,7 +6706,7 @@ netsh_delete_address_dns(const struct tuntap *tt, bool ipv6, struct gc_arena *gc
-         netsh_command(&argv, 1, M_WARN);
-     }
- 
--    if (ipv6)
-+    if (ipv6 && tt->type == DEV_TYPE_TUN)
-     {
-         delete_route_connected_v6_net(tt);
-     }
--- 
-2.28.0
+It also needs gmake - running "make" will do "nothing at all", which
+I found surprising, but did not investigate more closely.  This is likely
+due to implicit rules that need to be written differently for BSD make.
 
+I do not think this is a serious issue - just document it in the README,
+and it's still better than 4 individual "build" files, half of it who
+were missing the needed "-I" as well :-)
+
+gert
+
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--QU4HcMF0gOtcBmJ3
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJfYJX9AAoJEB2Cnv7KVigSKEIL/RcPNcHYdC3JIsTPhECdmTKu
+8/2/aJbzh8PHUXFkK3BYjed6sW7yeni+6AWtqeDK+qzlT2dkaGRaQqR/GRaykLRb
+5bVdWpY3BOl5gFN7wB0qPmiiZvoIdvUdBBNGLSiS6zCa/nkibmJxGGRNidiycWFA
+16xh4iCXtbMBzsfiU8QJA2ZqoSXSiMHq34TkB6V4PP7380M+d/nWsyobKV4wmkRG
+wY2VVXs1OlIwDMKMrs0Ah+XefyxwIjgSLecWq9V24xbpHxl7uXY6/fRKKCfc1SNB
+ZD3RO+nKblS+bweIapLcxszdLpLxemVEaITY7QlxoROxnf8w95PVqnqpBCJSAgL1
+Djql4Bh77p5i3JfhzgmYNOQF4tRjW2Q5sWNVyhIffo9zbozMEcrTuXAkagU8YK2q
+l44OKy0vWXaJ46Bl53VJl3axy+mpwMxwhYFvIzUsR8E17dzAfBjOJEm7Shh6oG56
+QM1slcpmS0N6GlSl+Y0DIW2BEUGB/XjrEbjWhTNsKA==
+=KDJV
+-----END PGP SIGNATURE-----
+
+--QU4HcMF0gOtcBmJ3--
 
