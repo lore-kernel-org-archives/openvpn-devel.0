@@ -1,7 +1,10 @@
-From: selva.nair@...277...
-Date: Mon, 14 Sep 2020 19:29:41 -0400
-Message-Id: <1600126181-16364-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH] Allow --dhcp-option in config file when
+MIME-Version: 1.0
+References: <1600126181-16364-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1600126181-16364-1-git-send-email-selva.nair@...277...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Tue, 15 Sep 2020 09:48:15 +0300
+Message-ID: <CAGyAFMUU_zfnEFseD=Ni_iSU6TLcupNdPOL7MjzzD4CaR2_7Xw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Allow --dhcp-option in config file when
  windows-driver is wintun
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -11,45 +14,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Selva <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Selva Nair <selva.nair@...277...>
+Hi,
 
-When wintun is in use we mutate ip_win32_type to NETSH
-and then complain that ip-win32 option should be dynamic or adaptive
-if any --dhcp-option directive is present in the config file. This
-causes a fatal error.
+> -        msg(M_USAGE, "--dhcp-options requires --ip-win32 dynamic or adaptive");
+> +        msg(M_USAGE, "--dhcp-option requires --ip-win32 dynamic or adaptive");
 
-How to reproduce: specify a --dhcp-option in the config and change the
---windows-driver to wintun.
+Nice, this typo has been there since at least 2005.
 
-Fix this behaviour. A typo in the message is also corrected.
+It looks like that warning is not quite correct - for example,
+DNS can be set via iservice or netsh, which means that
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- src/openvpn/options.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+--ip-win32 netsh
+--dhcp-option DNS 8.8.8.8
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 8bf82c5..4b22d3d 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2181,10 +2181,11 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-     }
- 
-     if (options->tuntap_options.dhcp_options
-+        && options->windows_driver != WINDOWS_DRIVER_WINTUN
-         && options->tuntap_options.ip_win32_type != IPW32_SET_DHCP_MASQ
-         && options->tuntap_options.ip_win32_type != IPW32_SET_ADAPTIVE)
-     {
--        msg(M_USAGE, "--dhcp-options requires --ip-win32 dynamic or adaptive");
-+        msg(M_USAGE, "--dhcp-option requires --ip-win32 dynamic or adaptive");
-     }
- 
-     if (options->windows_driver == WINDOWS_DRIVER_WINTUN && dev != DEV_TYPE_TUN)
--- 
-2.1.4
+is a valid combination regardless of driver type. On the other hand,
+NBDD/NTP are set via DHCP.
 
+It would be good to make the warning condition more fine-grained, but
+this patch is good enough as it is, since it fixes important case - specify
+DNS in the ovpn profile when using wintun.
+
+Built and tested with MSVC.
+
+Acked-by: Lev Stipakov <lstipakov@...277...>
 
