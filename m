@@ -1,8 +1,14 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Mon, 21 Sep 2020 12:29:34 +0200
-Message-Id: <20200921102934.18887-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v2] Allow 'none' cipher being specified in
- --data-ciphers
+References: <20200920090929.8321-1-gert@...1296...>
+ <d682d99e-1c9a-6832-cb04-6f3d5d45f13f@...2181...>
+ <20200921075040.GO976@...1296...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <4332859d-93f8-1352-8d05-ead5f62c6ad0@...2181...>
+Date: Mon, 21 Sep 2020 15:45:59 +0200
+MIME-Version: 1.0
+In-Reply-To: <20200921075040.GO976@...1296...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] Fix line number reporting on config
+ file errors after <inline> segments
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,118 +17,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Although we want to get rid of none as cipher, we still have not
-deprecated it. In order to use it currently you need
---ncp-disable together with --cipher none to use the none cipher.
+Hi,
 
-In our current situation allowing none to be specified in data-ciphers
-is the lesser evil.
+On 21/09/2020 09:50, Gert Doering wrote:
+> Hi,
+> 
+> On Mon, Sep 21, 2020 at 09:22:38AM +0200, Antonio Quartulli wrote:
+>> Sorry for not chiming in earlier, but honestly I believe your other
+>> option would be "cleaner". The other option being "return int instead of
+>> bool, where the returned value is the number of lines of the inline'd
+>> material.
+>>
+>> If 0, we know there was no inline'd material, thus we can treat that
+>> result as "not inline'd".
+> 
+> We could do that, indeed.  I was torn between both variants - this one
+> is a bit more intrusive (because it adds a new argument to so many
+> functions), but on the other hand, the bool stays a bool and is not
+> magically overloaded - which would make the call to add_option() 
+> either "even longer", or if you rely on magic "we just pass the integer
+> to a bool-expecting function" much harder to understand.
+> 
+>> Anyway, this is just my opinion. If you believe this is a better
+>> approach, I am fine with it too.
+> 
+> I wasn't sure.  In the end, this one didn't feel so bad, so this is
+> what we have.
+> 
+> Maybe I'll do the other one as well, for fun, and to compare :-)
+> 
+>>> @@ -4692,7 +4696,7 @@ check_inline_file(struct in_src *is, char *p[], struct gc_arena *gc)
+>>>              p[0] = string_alloc(arg + 1, gc);
+>>>              close_tag = alloc_buf(strlen(p[0]) + 4);
+>>>              buf_printf(&close_tag, "</%s>", p[0]);
+>>> -            p[1] = read_inline_file(is, BSTR(&close_tag), gc);
+>>> +            p[1] = read_inline_file(is, BSTR(&close_tag), num_lines, gc);
+>>
+>> am I wrong or here we should add 1 to num_lines to include the opening
+>> tag that was parsed *before* entering read_inline_file()?
+> 
+> The opening tag is parsed as "regular" line in read_config_file(), and as 
+> such, the "++line_num" in there applies.
+> 
+> (I have tested this :-) - nothing more embarrassing than a patch to fix
+> line numbers actually still printing wrong line numbers)
+> 
 
-This commit also fixes that we use '[null-cipher]' instead 'none' when
-setting remote_cipher
+Ok, then for me this patch is good to go.
 
-Patch V2: Also work correctly if remote_cipher is NULL.
+FTR on IRC we discussed the possibility of using the "other approach".
+Gert may give it a try and decide if he wants to send that version to
+the ml as well.
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/ssl.c                   |  8 ++++++++
- src/openvpn/ssl_ncp.c               | 16 +++++++++++++++-
- tests/unit_tests/openvpn/test_ncp.c | 10 ++++++++--
- 3 files changed, 31 insertions(+), 3 deletions(-)
+In any case, this patch gets my blessing:
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 3fcaa25f..69bede27 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2518,6 +2518,14 @@ key_method_2_read(struct buffer *buf, struct tls_multi *multi, struct tls_sessio
-     multi->remote_ciphername =
-         options_string_extract_option(options, "cipher", NULL);
- 
-+    /* In OCC we send '[null-cipher]' instead 'none' */
-+    if (multi->remote_ciphername
-+        && strcmp(multi->remote_ciphername, "[null-cipher]") == 0)
-+    {
-+        free(multi->remote_ciphername);
-+        multi->remote_ciphername = string_alloc("none", NULL);
-+    }
-+
-     if (tls_session_user_pass_enabled(session))
-     {
-         /* Perform username/password authentication */
-diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-index 55496395..c8229044 100644
---- a/src/openvpn/ssl_ncp.c
-+++ b/src/openvpn/ssl_ncp.c
-@@ -110,7 +110,15 @@ mutate_ncp_cipher_list(const char *list, struct gc_arena *gc)
-          * e.g. replacing AeS-128-gCm with AES-128-GCM
-          */
-         const cipher_kt_t *ktc = cipher_kt_get(token);
--        if (!ktc)
-+        if (strcmp(token, "none") == 0)
-+        {
-+            msg(M_WARN, "WARNING: cipher 'none' specified for --data-ciphers. "
-+                        "This allows negotiation of NO encryption and "
-+                        "tunnelled data WILL then be transmitted in clear text "
-+                        "over the network! "
-+                        "PLEASE DO RECONSIDER THIS SETTING!");
-+        }
-+        if (!ktc && strcmp(token, "none")!= 0)
-         {
-             msg(M_WARN, "Unsupported cipher in --data-ciphers: %s", token);
-             error_found = true;
-@@ -118,6 +126,12 @@ mutate_ncp_cipher_list(const char *list, struct gc_arena *gc)
-         else
-         {
-             const char *ovpn_cipher_name = cipher_kt_name(ktc);
-+            if (ktc == NULL)
-+            {
-+                /* NULL resolves to [null-cipher] but we need none for
-+                 * data-ciphers */
-+                ovpn_cipher_name = "none";
-+            }
- 
-             if (buf_len(&new_list)> 0)
-             {
-diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn/test_ncp.c
-index a4334c89..046c6876 100644
---- a/tests/unit_tests/openvpn/test_ncp.c
-+++ b/tests/unit_tests/openvpn/test_ncp.c
-@@ -50,7 +50,9 @@ test_check_ncp_ciphers_list(void **state)
-     struct gc_arena gc = gc_new();
-     bool have_chacha = cipher_kt_get("CHACHA20-POLY1305");
- 
--
-+    assert_string_equal(mutate_ncp_cipher_list("none", &gc), "none");
-+    assert_string_equal(mutate_ncp_cipher_list("AES-256-GCM:none", &gc),
-+                        "AES-256-GCM:none");
- 
-     assert_string_equal(mutate_ncp_cipher_list(aes_ciphers, &gc), aes_ciphers);
- 
-@@ -139,7 +141,7 @@ test_poor_man(void **state)
-     char *best_cipher;
- 
-     const char *serverlist = "CHACHA20_POLY1305:AES-128-GCM";
--    const char *serverlistbfcbc = "CHACHA20_POLY1305:AES-128-GCM:BF-CBC";
-+    const char *serverlistbfcbc = "CHACHA20_POLY1305:AES-128-GCM:BF-CBC:none";
- 
-     best_cipher = ncp_get_best_cipher(serverlist,
-                                       "IV_YOLO=NO\nIV_BAR=7",
-@@ -166,6 +168,10 @@ test_poor_man(void **state)
- 
-     assert_string_equal(best_cipher, "AES-128-GCM");
- 
-+    best_cipher = ncp_get_best_cipher(serverlist, NULL,
-+                                      "none", &gc);
-+    assert_string_equal(best_cipher, "none");
-+
-     best_cipher = ncp_get_best_cipher(serverlist, NULL,NULL, &gc);
-     assert_ptr_equal(best_cipher, NULL);
- 
+Acked-by: Antonio Quartulli <a@...2181...>
+
+
 -- 
-2.26.2
-
+Antonio Quartulli
 
