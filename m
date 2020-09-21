@@ -1,7 +1,7 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 21 Sep 2020 12:23:09 +0200
-Message-Id: <20200921102309.18165-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Allow 'none' cipher being specified in
+Date: Mon, 21 Sep 2020 12:29:34 +0200
+Message-Id: <20200921102934.18887-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v2] Allow 'none' cipher being specified in
  --data-ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -25,23 +25,26 @@ is the lesser evil.
 This commit also fixes that we use '[null-cipher]' instead 'none' when
 setting remote_cipher
 
+Patch V2: Also work correctly if remote_cipher is NULL.
+
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/ssl.c                   |  7 +++++++
+ src/openvpn/ssl.c                   |  8 ++++++++
  src/openvpn/ssl_ncp.c               | 16 +++++++++++++++-
  tests/unit_tests/openvpn/test_ncp.c | 10 ++++++++--
- 3 files changed, 30 insertions(+), 3 deletions(-)
+ 3 files changed, 31 insertions(+), 3 deletions(-)
 
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 3fcaa25f..deb6dc8d 100644
+index 3fcaa25f..69bede27 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -2518,6 +2518,13 @@ key_method_2_read(struct buffer *buf, struct tls_multi *multi, struct tls_sessio
+@@ -2518,6 +2518,14 @@ key_method_2_read(struct buffer *buf, struct tls_multi *multi, struct tls_sessio
      multi->remote_ciphername =
          options_string_extract_option(options, "cipher", NULL);
  
 +    /* In OCC we send '[null-cipher]' instead 'none' */
-+    if (strcmp(multi->remote_ciphername, "[null-cipher]") == 0)
++    if (multi->remote_ciphername
++        && strcmp(multi->remote_ciphername, "[null-cipher]") == 0)
 +    {
 +        free(multi->remote_ciphername);
 +        multi->remote_ciphername = string_alloc("none", NULL);
