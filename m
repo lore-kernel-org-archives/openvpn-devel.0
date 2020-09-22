@@ -1,13 +1,10 @@
-From: "Vladislav Grishenko" <themiron@...2010...>
-References: <20200922004005.10268-1-themiron@...2010...>
- <75c379c2-35da-da12-d21f-44b1d6b1065b@...1227...>
+From: Vladislav Grishenko <themiron@...2010...>
+Date: Tue, 22 Sep 2020 17:21:34 +0500
+Message-Id: <20200922122134.12634-1-themiron@...2010...>
 In-Reply-To: <75c379c2-35da-da12-d21f-44b1d6b1065b@...1227...>
-Date: Tue, 22 Sep 2020 14:34:00 +0500
-Message-ID: <010d01d690c3$80edd120$82c97360$@yandex-team.ru>
-MIME-Version: 1.0
-Content-Language: ru
-Subject: Re: [Openvpn-devel] [PATCH] Fix update_time() and
- openvpn_gettimeofday()
+References: <75c379c2-35da-da12-d21f-44b1d6b1065b@...1227...>
+Subject: [Openvpn-devel] [PATCH v2] Fix update_time() and
+ openvpn_gettimeofday() coexistance
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,86 +14,63 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: 'Arne Schwabe' <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi Arne,
+With TIME_BACKTRACK_PROTECTION defined, openvpn_gettimeofday() uses and
+updates global variable "now_usec" along with "now" only if current time
+is ahead of the previsouly stored, taking nanoseconds into account.
+But, update_time() function updates only "now" leaving "now_usec" as
+is with any previously value stored.
+This breaks both update_time() and openvpn_gettimeofday() results and
+leads to time jumps in the future within one second, can affect shaper
+and user timers.
 
-> But that also
-> implies it is the other way round on other platforms. The update_time fun=
-ction is
-> called in multiple critical places. Do we have any idea about this?
+100.900 openvpn_gettimeofday():
+    now set to 100s, now_usec set to 900ns, stored time is 100.900
+101.300 update_time():
+    now set to 101s, but now_usec is not updated and still 900ns, stored
+    time jumps to the future 101.900
+101.600 openvpn_gettimeofday():
+    current time 101.600 is in the past relatively stored time 101.900,
+    now & now_usec variables are not updated, returned time 101.900 is
+    still and again incorrect
+102.100 openvpn_gettimeofday():
+    current time 102.100 is no longer in the past relatively stored time
+    101.900, so now & now_usec get updated with wrong time delta from
+    previous openvpn_gettimeofday() call or now/now_usec math
 
-On Linux with glibc's implementation both time() and gettimeofday() results=
- in the same clock_gettime() call over VDSO (https://man7.org/linux/man-pag=
-es/man7/vdso.7.html).
-On FreeBSD (and so), same if VDSO is used both time() and gettimeofday() wi=
-ll use clock_gettime too with even additional "tv->tv_usec =3D 0" for time(=
-).
-So, on most of architectures there will be no difference after replacing ti=
-me() to gettimeofday() except. asm commands for moving 32/64bit tv_usec, it=
-'ll be not visible.
-On some acrhs/systems where VDSO is not supported - same syscall will happe=
-n.
+Since update_time() and openvpn_gettimeofday() calls are mixed in runtime,
+there're two ways to fix their coexistance:
+* either fix update_time() to always update "now_usec" for example by
+  moving update_time() to gettimeofday(). Unfortunately, it may bring
+  performance penalty depending on Arch/OS and vuruallized/hw environmant
+  according the tests on various Linux, FreeBSD and MacOS versions.
+* or, for now, allow update_time() to break "now_usec" value, since it's
+  used directly only in time ajusting and always invalidate it in
+  openvpn_gettimeofday() w/o checking the previous and possibly obsolete
+  value with no performance changes against the current implementation.
+This patch implements the second way.
 
-> I remember
-> vaguely that the default gettimeofday in FreeBSD is more accurate than the
-> Linux variant (involves a kernel call) but you can request a version simi=
-lar to the
-> Linux one by some flag (reading from a shared readonly memory page that is
-> read only).
+Signed-off-by: Vladislav Grishenko <themiron@...2010...>
+---
+ src/openvpn/otime.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-As for clock drifting, it maybe feasible to use clock_gettime() with CLOCK_=
-MONOTONIC and get rid of homegrown time adj code at all -> returned time wi=
-ll always be monotonic by design.
-At least on supported platforms (!_WIN32).
-
---
-Best Regards, Vladislav Grishenko
-
-> -----Original Message-----
-> From: Arne Schwabe <arne@...1227...>
-> Sent: Tuesday, September 22, 2020 1:41 PM
-> To: Vladislav Grishenko <themiron@...2010...>; openvpn-
-> devel@lists.sourceforge.net
-> Subject: Re: [Openvpn-devel] [PATCH] Fix update_time() and
-> openvpn_gettimeofday()
->=20
->=20
-> > --- a/src/openvpn/otime.h
-> > +++ b/src/openvpn/otime.h
-> > @@ -78,13 +78,9 @@ openvpn_gettimeofday(struct timeval *tv, void *tz)
-> > static inline void
-> >  update_time(void)
-> >  {
-> > -#ifdef _WIN32
-> > -    /* on _WIN32, gettimeofday is faster than time(NULL) */
-> > +    /* can't use time(NULL), now_usec needs to be updated */
-> >      struct timeval tv;
-> >      openvpn_gettimeofday(&tv, NULL);
-> > -#else
-> > -    update_now(time(NULL));
-> > -#endif
-> >  }
-> >
-> >  #else /* !TIME_BACKTRACK_PROTECTION */
-> >
->=20
-> I am hesitant about this change, it mentions that gettimeofday is faster =
-on
-> Windows than time(NULL) and we prefer it there for this reason. But that =
-also
-> implies it is the other way round on other platforms. The update_time fun=
-ction is
-> called in multiple critical places. Do we have any idea about this? I rem=
-ember
-> vaguely that the default gettimeofday in FreeBSD is more accurate than the
-> Linux variant (involves a kernel call) but you can request a version simi=
-lar to the
-> Linux one by some flag (reading from a shared readonly memory page that is
-> read only).
->=20
-> Arne
-
+diff --git a/src/openvpn/otime.c b/src/openvpn/otime.c
+index 640168a9..d27d1f9d 100644
+--- a/src/openvpn/otime.c
++++ b/src/openvpn/otime.c
+@@ -73,7 +73,7 @@ update_now_usec(struct timeval *tv)
+ {
+     const time_t last = now;
+     update_now(tv->tv_sec);
+-    if (now > last || (now == last && tv->tv_usec > now_usec))
++    if (now >= last)
+     {
+         now_usec = tv->tv_usec;
+     }
+-- 
+2.17.1
 
 
