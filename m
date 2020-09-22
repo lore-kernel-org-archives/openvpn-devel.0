@@ -1,10 +1,13 @@
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <2b7386c1-fd6d-7dcb-80fe-8453863fe420@...2181...>
-Date: Tue, 22 Sep 2020 16:17:56 +0200
+From: Thomas =?ISO-8859-1?Q?Sch=E4fer?= <tschaefer@...75...>
+Date: Tue, 22 Sep 2020 16:21:49 +0200
+Message-ID: <1759346.tdWV9SEqCh@...2258...>
+In-Reply-To: <b1352a58-c9a1-ab2d-f85d-c419c8887ef0@...515...>
+References: <b1352a58-c9a1-ab2d-f85d-c419c8887ef0@...515...>
 MIME-Version: 1.0
-Content-Language: en-US
-Subject: [Openvpn-devel] Introducing the OpenVPN Data Channel Offload Linux
- kernel module (ovpn-dco)
+Content-Type: multipart/mixed; boundary="nextPart2036207.irdbgypaU6"
+Content-Transfer-Encoding: 7Bit
+Subject: Re: [Openvpn-devel] OpenVPN 2.5-rc1 released unable to redirect
+ IPv4 default gateway under Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,77 +16,121 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Cc: Antonio Quartulli <antonio@...515...>
+To: openvpn-devel@lists.sourceforge.net
 
-Dear all,
+This is a multi-part message in MIME format.
 
-OpenVPN Inc.[1] and me are happy to announce that today we have released
-to the public our work-in-progress project called "ovpn-dco".
+--nextPart2036207.irdbgypaU6
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-ovpn-dco stands for "OpenVPN Data Channel Offload".
-It is a Linux kernel module and it implements all required
-functionalities to handle the OpenVPN data channel.
+Am Dienstag, 22. September 2020, 11:10:44 CEST schrieb Samuli Sepp=E4nen:
+> The OpenVPN community project team is proud to release OpenVPN
+> 2.5-rc1. Source code and Windows installers can be downloaded from our
+> download page:
+>=20
+> <https://openvpn.net/community-downloads/>
 
-In other words, when using ovpn-dco, the OpenVPN software will not send
-data traffic back and forth between user and kernel space (for
-encryption/decryption and routing), but operations on payloads will take
-place in the Linux kernel.
+Please report bugs and ask development questions here:
 
-Moving the data channel to kernel space is expected to finally remove
-that bottleneck that has long prevented OpenVPN to scale better.
-This is just the first step towards a feature-complete kernel based
-OpenVPN driver and we will continue to work on improving performance and
- implementing more features.
-
-The project is under heavy development, therefore APIs, data structures
-and anything else may drastically change in the following months.
-
-Our goal is to bring ovpn-dco up-to-the-standard with the rest of the
-Linux kernel and then submit it for review and inclusion to the netdev
-community.
-
-Clients currently able to leverage on the ovpn-dco kernel module are the
-OpenVPN3 reference client[2] and the OpenVPN3 Linux client[3] will
-include ovpn-dco support in the next release. Support for OpenVPN2 is
-planned.
-
-ovpn-dco is released under GPLv2 and everybody is welcome to run, crash
-and patch this kernel module.
-
-Code is hosted on both GitHub and GitLab:
-* https://gitlab.com/openvpn/ovpn-dco
-* https://github.com/OpenVPN/ovpn-dco
-
-Please refer to the README file for more details about how to build and
-test ovpn-dco.
-Patch submission can be done through this mailing list, as explained in
-the README as well.
-
-https://gitlab.com/openvpn/ovpn-dco/-/blob/master/README
+=20=20
+    Developer mailing list
 
 
-The idea of implementing an OpenVPN kernel module has been around for
-years; finally what were once words have become lines of code.
-I hope more enthusiasts will join the project and help pushing the
-development forward.
+I tested the todays windows release candidate (as client)  against my home =
+servers.=20
 
-A big thanks goes to OpenVPN Inc. for having provided all required
-resources to make this happen.
+I get=20
+Note: unable to redirect IPv4 default gateway -- Cannot read current defaul=
+t gateway from system
+
+Environment:
+
+Windows client: IPv6-only Wifi
+
+Linux/Synology  server: behind DS-lite
+
+transport IPv6, works, payload IPv6 works, payload IPv4 works only partly
+
+Redirection of IPv6 works, redirection of IPv4 doesn't work
+
+Regards,
+Thomas
+
+--nextPart2036207.irdbgypaU6
+Content-Disposition: attachment; filename="ovpn25.rc1-log.tar.xz"
+Content-Transfer-Encoding: base64
+Content-Type: application/x-xz-compressed-tar; name="ovpn25.rc1-log.tar.xz"
+
+/Td6WFoAAATm1rRGAgAhARYAAAB0L+Wj4Hf/DhldABcLxoeSWjunj8clDrgPtJWrg6pwLN26qLFB
+H/bUj99Wz+g3KEy1aulOxWADdvXu7pTUElLjDC/Tn72+hxpCRHNgUBmAEGvUBBY2EEUPanwfn3Rz
+krNDfI5eBYcbzluijxJEUeklsNrcQYUIdIjuEaEnff5PDZW0DQZ44JEATLx94Cjz+dn49lDhnEL5
+ZAiOqRBitlWxUOXkW7S20E4rHINAPcRDpHD1zuLflzvGC0564qQUKmXDRdcLy3l3pA3FayEmY1H+
+RCo1mFpIZuMturf7qywk5jqWXfz/eHoLv9GD5B5gAbIQHQ8DSUlfiR7Z0qg5c2JAocpJwlFVQEZN
+3Ud2qtueylp7mFHQJlbfls3qYMW7urLlsTZh2Mp4w5/0l9apzcAxfHtQCb5V4SBwJZMN89osH6av
+OOUgc1/uIEp0T3e8KElodeMAyn3VFIzizusdOu25Vz+PXglcDBPbQqrK970m4GgqA/+sRA5f1izo
+MEEwSc0oLxzTtL4Hq6hXayyvDesikMS4RI3V0j/CjCvSdNiI/EzlAaRUKZMax/A2Y+5TpLytaAd8
+WbX4+V0OEJHb1lI0HTBoxlXuJDD8jd0FgCwhsLJo9YgYRijBy1ehLhLAtfRqJwTW8PmJ0RrmEFdo
+b3cPBk9ShnuhzgBdJpg+JN5PJNXlZ1tMImuJgQHxw1EMZketFAxUcpQqfFFDma75Rc9QJH071UCp
+2TFJ5MNaejgWAstxoHyCqU/0v1EVL3t+C/H8+l67B+yOe9jEHl0sZT755V8YZplK173K8SHxibTt
+2O/pmXPzwNTyiqqc08lx+H/goYlfaFh7rSRfzBhXk8Dw1u+IvPdXbdyumWt3HUalbi+Yk78E3IKm
+kUZtopHzieTvZ10HlCDdWizkzbmOcIhUIacP32rXnE3YPaedQ3g9Ds/bCjY7m33L5liiszrMl2CK
+yFFlMSt+EnaArNeR85BHkkLe8fhyzLz9Oz7YY8COThdsFtZA1aqiUUO33LGxSFMG9lFJ1uqQBqed
+EVwJs962CJcuCCL5cIjueOU1hLohfsJX3BHLdRI2ng4EQqvteDYCA3PiQKUl89uOySiEz/Meghva
+e4/GRlmPKyiotuqR39pdWxLyuF3C9p6+COK026w43gAdu0dH+wu68+Q3ETpOc3rXQGzAPEyYhSeV
+hls+HDKrFTXrF0KvncSGbS5yUuDhauHVY1BScpGDG1yJypPb+2TVDD+FYu9WgOyezguBXUYh0BJL
+aNlZTwxEXPgoYolz9jwkcy7z2AWfGZlFOdB+xWlEZW9uzQJOsOAq41aIVHO7q0ZcwJYO6yiJi3Kw
+cXVQknoA1dcXhtCxywHsZQgX4SCvbbl2YKoa6G/CwVfijkhzV3AQvkoxVkJI5ilNAN7UtQLfrai7
+dob2fJZ1miCDz0G5F3aBZphNd79YfDFRcIjetBVus8BMRgCc9w/tt5gIYlyTepeH816Z9/lsh1oA
+6i5n0dPGtJuCsEDX74BG5RgnUm2qfo+3bKl9X+J7EGM9gYvzltXrkD8obxFb1dmXsMsalEd/YvKL
+OOQbkQFlFmzL+ZN676eCRQEdwn7limfwJyfxEsQApetW5WbgB071mZAJRGLeC99EOHTHgTwlWYuL
+1r0d2TC383N6UhPBV19gojLAOL3bVqUnquot3L9ljmfHDcvQtz14gplYMAvPCxGqvtRvvCleW/Pm
+9MVYn2E3SYkdcvzdlbxiYpLHXVdd/axWBBsOgLn857Ufcjey/qm2LVWEXKj/sgkcoW5DJRVJK2Hj
+le4vDEgnnUX4xS/50VtVRysVJ86bNTxhrgGrQWKgAss7X3I8KwMHGjbx0aOK3QhkCEa1Tb/immyZ
+tGcf07EAc2y4MX/Bk7HK5M23kqFxjcDte3wZXgc428MeghoQEE/Z+pCp6e88gBYYd26LItYMaJk/
+VBTRRfetOP5XDFwrjpSBVKTa2pm5bLjsNdLhqE454uunXcK4W2r4MSUD0T7I7jUeA4fSL3Yz+zNR
+04AhbGyx+JmLHH8EWLr6CfRM5hWPK2YB3WuFTSToNJMHEfWYsE4q8GXeN5v6oWgQPzZWmXgPt+Ac
+n6TnoRqaosKP50x1UdWG78O5BS3Q7DMDotR2wwbZRzaeXP1AMTZPm4zR+/ARg8zQzB5ddm8iAhOZ
+/HvAjTJfQMUoREGh4FnrP8f/6OxdPp9dctJ3omJs3DLtEx+z/UofMjYPhVvcHPMmC89IA/yvviBz
+9bptFVHWkkTnJAHyQkoW/fcJiisJaOX/0AMmOSYXlLbnGScak1VTpIYfilIr+nRXjRss1Xhckv28
+YDCHZTGZ1r7eb2D1n0bEWYtP4wGE8n++LciYuxBtsG93T07lIyclSpc77tqf6o6Qs9VovAaEqAWt
+WK73k/slLl7GlkkF/R1DLsEuYYnGrYUh/MB0t1SqfTyGXMSFLeFlzi0Lx58q7aj0TVZkpPWVWtdG
+mLWj7WU4znBxUunr+zYnbd872BfW5RgE4T0NKw3D4MCeD1cwl1K7Q7UPRgRcfyCEVukrzDl5/qOI
+gLKaBjPd62af/t08uoRuVjkIuspulZO55Mopo2QcnYPn+O7wV2bzkjMPIfAE0qsOuUEpj18teTU6
+JOb0cw42pEIfvnlz2mVcAkUn/fSXwvQNFAHzd+kIPRnd4pAwMbL0lajKQ5AWsTrjYJ42c9HdRNOH
+9tPhQTZiuFWQBJJ9RtxU4dluZeLULzynHlYju+9zJtqSlku0KpKDQDwjMgx2rfl3kY8xlFcFjJNO
+KqRN3XU22xm6y6/kJuVMP9mqgdtg8C9FuQn+vNWN6B3kiigpw5w7rqfhqTjWm61/CCpgzz+X7+2V
+dVXUsl/dxBo2dNWv+B0UOsYtqc26rhMDOmKp0bfr6LRxJCOvaOFdAji1dL7knaxld4vFdk4pfANT
+uVOdUwq2y2rKqGnnpPtpaji9HeQAZONYURl8fb6bvs0URvjJQ71ytLUUKimbVdqFBoHmgEF7tGl0
+dyhmhFKtVd9hXGpZzTN4OVPrN3EkC75pv49s3IvcBTyy5JsxaGtVpp25AZq54cWxP4BiznphvjXM
+IRWAQOWETYiaAhNdfPK1UBbBrK5j3auYlhs7ssbm2FQ986iEDqMtdiENkuae9c9xsCI9HUhC4PIM
+MYJymzgZGjweNkXcuQ65oZsGqokJXZap4pFf0eY/aNJV5PuTGVw9wBgyvteG8sy5FQqgmooYlMen
+NFaAoMRb/d6ZWUaly21xgFpRK+5Ozh9GVLaqBwqdOgPQNKzV8Uwpi9L8h7YoMxWoMoqc2BQc5aOs
++XtBkjBu2u4KR0vEh75WyhJTvNeNCNRnwDcy9cIfnvbbCq8zdPwAV+y9Gpkz1x7OGsqwCAmGppRv
+L/rCfR1FrnhhwRVZy0hRc6+FqOvmQHocgOiUWeMrorQWaM6rg42mT843Lsu3BviU3Jq93aprE8Xn
+25rybYmcVAclUIaNhGKbpK6NSood0rA1cGI5uHQpu+TTF+NX8kvRTA3+2o1quoKjY6VdXfXF2XXu
+JB0ij3PxVq2XOhlTgQh2/PPgf/fYgkEKI018Wwy8SnxZvIlx+iMpCB5bkjjsLDFHUCo9HjH+GgXk
+69mKLWjtd11BwlQJySjdJDShAYJCql++f3tkAbilj40snnYDGCC4jnKsJvcuaBPztdSrfdU9aBZh
+uJCpHteBabJwXlBgf+DkY1wqlFXxXLkGUa3c5iPNL3nScG0lEyA3bmoQy2Xkg9Dal6vApi7QKxRM
+Zp5QUNZeo5WosDOtVIUtOHcEoDbfR0Fc9RIkv6LFhApHJhXdZruAyNsShDIlSlZxvhoDehf5lXwa
+Pphy+3/Nvgs0giBZ34nWnkT76ArtnPQqxxvMToRqT6SFeAqYR7PcYH2/rJIBpDHkK9SKma/3P7nz
+PrAzUhLPISfb359mrOgZ5v3dyHfkAhdGjf/jeivk2sL2dWPOXJ8Xcfi+7r5OvYq1izG5NSyqp4sv
+E28Ll+TAXlWlrvGjIlXwmhPNGGN442OySjEZpGxTrcYuSTIB37qx/m6ukjVNPpF2v2xo4wKSzKqn
+ftusOWxauzPdfzSH6wxfXgRiVow38EBHjOnclLRvcsmVOBLukde8oqU+UauAoGYt26Igd7Lm3tIF
+88QLPad23y21lXgrQHvLPGtFOiO9R6twXb6jNMz987lTtx4ANtNcAbyY5lCuRnNLNBAP/uZGZLyM
+j5KgWdD+F1JstBg7ykdObI1VGGBcKIr8XU1kLUmDXjhw50g3OixhYQVAJVVHRtK16Kl73vD4GBvL
+g9m3vEbsSKdK8RuZL+WYHOVpbG2f7y7ybu+u8mkvLoJYZoswFIeU8Q4JTE6wcv5R/zOlhNUhtlnL
+7H9c/aGTNuy57NAoBgL9O0HmjJSjJ8elfYJnB/RIGUU5G8+3+He8PIevhPwblUokwkg35eEfYRj+
+jVwrOY3XVE53KOLCER38p0WQ9KuuUFVeWX619rbVORBFI8Z3rd5GGyWghkTbMJa0LG0R4CcJ/0Gb
+FSBnKVGew1f/qr4+PXA8XYSPw53fJQ8S404QYs5pTZk+oNMa3DXtxbqL7jbCti3t3NfSTY3ocMFw
+WzlKVVYh55e/pUTMcgkDPPC7AoBkvpX2eNxSWvfsDqHau7RXEZgA57KAWno5Zdfw6lpmD5//EHR/
+Bzl+MiWty9Cz1SCzjQigXCinZALXLBb5Fpb4Up/6cMlH8ZD2cvpakO85tlrIBPlZ12iYjBO0R/gu
+B8+7hMtg4aIg79XJ2sLE0C5Jppn3BpB0yaMmlj5JMJdILvU+WV8xoM8gS1uHiVSqegAAAADNLMOE
+jQ/rhwABtRyA8AEAMtjEbbHEZ/sCAAAAAARZWg==
 
 
-Looking forward to see patches coming through!
-Happy hacking!
+--nextPart2036207.irdbgypaU6--
 
 
-[1] https://www.openvpn.net
-[2]
-https://github.com/openvpn/openvpn3#building-the-openvpn-3-client-on-linux
-[3] https://community.openvpn.net/openvpn/wiki/OpenVPN3Linux
 
--- 
-Antonio Quartulli
-OpenVPN Inc.
 
