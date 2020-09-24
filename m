@@ -1,11 +1,13 @@
+References: <20200917131223.11519-1-themiron@...2010...>
+ <20200920205704.18274-1-themiron@...2010...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <0175aef6-8f4c-c482-12d7-189c677085ab@...2181...>
+Date: Thu, 24 Sep 2020 10:11:41 +0200
 MIME-Version: 1.0
-References: <20200924064452.1001-1-simon@...2293...>
-In-Reply-To: <20200924064452.1001-1-simon@...2293...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Thu, 24 Sep 2020 11:08:46 +0300
-Message-ID: <CAGyAFMV1V==WKEd0YPz0ieX+hJYogf5s+CBJD5=BsEEpSWMr4g@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 1/3] netsh: Specify interfaces by index
- rather than name
+In-Reply-To: <20200920205704.18274-1-themiron@...2010...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v6 1/2] Selectively reformat too long
+ lines
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,43 +16,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Simon Rozman <simon@...2293...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Vladislav Grishenko <themiron@...2010...>, openvpn-devel@lists.sourceforge.net
 
-Good old "name vs index" thing.
+Hi,
 
-According to "man" of netsh, index indeed could be used for "set
-address" and "add route":
+On 20/09/2020 22:57, Vladislav Grishenko wrote:
+> @@ -3170,7 +3179,7 @@ static const struct proto_names proto_names[] = {
+>      {"udp6","UDPv6", AF_INET6, PROTO_UDP},
+>      {"tcp6-server","TCPv6_SERVER", AF_INET6, PROTO_TCP_SERVER},
+>      {"tcp6-client","TCPv6_CLIENT", AF_INET6, PROTO_TCP_CLIENT},
+> -    {"tcp6","TCPv6", AF_INET6, PROTO_TCP},
+> +    {"tcp6",       "TCPv6", AF_INET6, PROTO_TCP},
 
-> interface         - Interface name or index.
+What are you actually fixing here? Adding a tab?
+I feel there should be a space after each ',', but that is probably out
+of the scope of this patch?
 
-> +        DWORD adapter_index;
->          if (r6->adapter_index)          /* vpn server special route */
->          {
-> -            buf_printf(&out, "interface=%lu", r6->adapter_index );
-> +            adapter_index = r6->adapter_index;
->              gateway_needed = true;
->          }
->          else
->          {
-> -            buf_printf(&out, "interface=%lu", tt->adapter_index );
-> +            adapter_index = tt->adapter_index;
->          }
 
-Here I would do something like
-
-  DWORD adapter_index = tt->adapter_index;
-  if (r6->adapter_index)
-  {
-      adapter_index = r6->adapter_index;
-      gateway_needed = true;
-  }
-
-to make code more concise, but I am fine with current implementation too.
-
-Stared at the code, built and tested on MSVC/Win10. Works as expected.
-
-Acked-by: Lev Stipakov <lstipakov@...277...>
+-- 
+Antonio Quartulli
 
