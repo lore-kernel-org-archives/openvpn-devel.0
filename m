@@ -1,12 +1,12 @@
 MIME-Version: 1.0
-References: <20200924064452.1001-1-simon@...2293...>
- <20200924064452.1001-3-simon@...2293...>
-In-Reply-To: <20200924064452.1001-3-simon@...2293...>
+References: <A975CEB0-C46B-4A03-A862-C1B321A26D07@...2293...>
+ <20200924065519.1839-1-simon@...2293...>
+In-Reply-To: <20200924065519.1839-1-simon@...2293...>
 From: Lev Stipakov <lstipakov@...277...>
-Date: Thu, 24 Sep 2020 12:24:40 +0300
-Message-ID: <CAGyAFMURuHocxj=pscqr0JfyW_3R3Uqq841C9Ni8JTt+gPkTig@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 3/3] netsh: Delete WINS servers on TUN
- close
+Date: Thu, 24 Sep 2020 12:31:03 +0300
+Message-ID: <CAGyAFMUdGqGghmaKPaau+QZ=78i9goepGD2RBkbbVRBZTAh_0Q@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] openvpnmsica: Simplify find_adapters()
+ to void return
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,12 +22,16 @@ Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-> +                    "%s%s interface ipv4 delete winsservers %lu all",
+> to return result code. It still logs any error thou.
 
-For DNS we use "dns", so it would be nice to unify it - either use
-dnsservers/winsservers or dns/wins. But that could be done later.
+though
 
-Code makes sense, compiled/tested on MSVC/Win10.
+> -static UINT
+> +static void
+
+Indeed, the return value of find_adapters() has never been used.
+
+Compiled with MSVC.
 
 Acked-by: Lev Stipakov <lstipakov@...277...>
 
