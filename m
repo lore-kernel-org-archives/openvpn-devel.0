@@ -1,11 +1,11 @@
 From: Simon Rozman <simon@...2293...>
-Date: Thu, 24 Sep 2020 08:55:19 +0200
-Message-Id: <20200924065519.1839-1-simon@...2293...>
-In-Reply-To: <A975CEB0-C46B-4A03-A862-C1B321A26D07@...2293...>
-References: <A975CEB0-C46B-4A03-A862-C1B321A26D07@...2293...>
+Date: Thu, 24 Sep 2020 08:44:51 +0200
+Message-Id: <20200924064452.1001-2-simon@...2293...>
+In-Reply-To: <20200924064452.1001-1-simon@...2293...>
+References: <20200924064452.1001-1-simon@...2293...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] openvpnmsica: Simplify find_adapters() to
- void return
+Subject: [Openvpn-devel] [PATCH 2/3] netsh: Clear existing IPv6 DNS servers
+ before configuring new ones
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,51 +18,42 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-As the find_adapters() failure is not critical and FindSystemInfo()
-should continue regardless, the find_adapters() has been simplified not
-to return result code. It still logs any error thou.
+When there are no IPv6 DNS published, the adapter state is not
+sanitized and might contain IPv6 DNS server from a previous session.
+
+netsh_ifconfig_options() clears DNS servers for IPv4 already.
 
 Signed-off-by: Simon Rozman <simon@...2293...>
 ---
- src/openvpnmsica/openvpnmsica.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ src/openvpn/tun.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/src/openvpnmsica/openvpnmsica.c b/src/openvpnmsica/openvpnmsica.c
-index f203f736..de1cf65c 100644
---- a/src/openvpnmsica/openvpnmsica.c
-+++ b/src/openvpnmsica/openvpnmsica.c
-@@ -248,7 +248,7 @@ cleanup_OpenSCManager:
- }
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 8fd3229f..b1cd7a1b 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -5281,7 +5281,6 @@ ip_addr_member_of(const in_addr_t addr, const IP_ADDR_STRING *ias)
+  * Set the ipv6 dns servers on the specified interface.
+  * The list of dns servers currently set on the interface
+  * are cleared first.
+- * No action is taken if number of addresses (addr_len) < 1.
+  */
+ static void
+ netsh_set_dns6_servers(const struct in6_addr *addr_list,
+@@ -5291,6 +5290,13 @@ netsh_set_dns6_servers(const struct in6_addr *addr_list,
+     struct gc_arena gc = gc_new();
+     struct argv argv = argv_new();
  
- 
--static UINT
-+static void
- find_adapters(
-     _In_ MSIHANDLE hInstall,
-     _In_z_ LPCTSTR szzHardwareIDs,
-@@ -262,12 +262,12 @@ find_adapters(
-     uiResult = tap_list_adapters(NULL, szzHardwareIDs, &pAdapterList);
-     if (uiResult != ERROR_SUCCESS)
++    /* delete existing DNS settings from TAP interface */
++    argv_printf(&argv, "%s%s interface ipv6 delete dns %lu all",
++                get_win_sys_path(),
++                NETSH_PATH_SUFFIX,
++                adapter_index);
++    netsh_command(&argv, 2, M_FATAL);
++
+     for (int i = 0; i < addr_len; ++i)
      {
--        return uiResult;
-+        return;
-     }
-     else if (pAdapterList == NULL)
-     {
-         /* No adapters - no fun. */
--        return ERROR_SUCCESS;
-+        return;
-     }
- 
-     /* Get IPv4/v6 info for all network adapters. Actually, we're interested in link status only: up/down? */
-@@ -394,7 +394,6 @@ cleanup_pAdapterAdresses:
-     free(pAdapterAdresses);
- cleanup_pAdapterList:
-     tap_free_adapter_list(pAdapterList);
--    return uiResult;
- }
- 
- 
+         const char *fmt = (i == 0) ?
 -- 
 2.28.0.windows.1
 
