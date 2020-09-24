@@ -1,11 +1,10 @@
-MIME-Version: 1.0
-References: <20200924065915.164-1-simon@...2293...>
-In-Reply-To: <20200924065915.164-1-simon@...2293...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Thu, 24 Sep 2020 13:35:35 +0300
-Message-ID: <CAGyAFMV4st-MemDgGbYaw25CkGxkML1uBkPuCVhjWKEKxbQrrA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] openvpnmsica: Skip legacy TAP-Windows6
- adapters from evaluation
+Date: Thu, 24 Sep 2020 12:55:26 +0200 (CEST)
+Message-Id: <202009241055.08OAtQpb008689@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20200924064452.1001-1-simon@...2293...>
+References: <20200924064452.1001-1-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: netsh: Specify interfaces by
+ index rather than name
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,42 +13,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Simon Rozman <simon@...2293...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Simon Rozman via Openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+This patch is good and a useful change (I have stared-at-code and
+it make sense, and Lev has reviewed and tested it on Win10/MSVC).
 
-> Legacy TAP-Windows6 adapters (marked as IF_TYPE_ETHERNET_CSMACD 0x6)
-> fail to upgrade to the new driver on Windows 7: Device cannot start
-> (Code 10).
+I have test compiled this in MinGW on Ubuntu 18.04 and tested IPv6 route
+installation/removal on Win7/64 with the GUI running as Administrator
+(= netsh commands used, not iservice) and it is also doing the right
+things.  I have tested "ipv6 ifconfig", "ipv6 route" and "ipv6 DNS",
+but not "IPv4 configs" or "enable DHCP".
 
-Does "legacy" adapter mean the one which was built before
-https://github.com/OpenVPN/tap-windows6/commit/c869bc91c2537868d012af6cf833889420350387
-(merged in 10/2019) ?
 
-I just installed 2.4.6 (released in 04/2018) on Windows 7 and upgraded
-it to 2.5rc1 without any issues.
+At this point in the release cycle I would normally have not 
+included it into release/2.5 anymore - we're trying to eventually 
+reach a release, and not merge refactoring things anymore - *but* 
+since this is well-contained, and 2/3+3/3 are actual bugfixes that 
+sort of need this as prerequisite, so be it.
 
-Am I missing something? Also, is it supposed to be only Windows 7 specific?
+Let's see if we beat the number of release candidates 2.1 had... :-)
 
-> +    OSVERSIONINFOEX osvi = { sizeof(OSVERSIONINFOEX), HIBYTE(_WIN32_WINNT_WIN8), LOBYTE(_WIN32_WINNT_WIN8) };
-> +    DWORDLONG const dwlConditionMask = VerSetConditionMask(VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL), VER_MINORVERSION, VER_GREATER_EQUAL);
-> +    BOOL bSkipLegacyAdapters = !VerifyVersionInfo(&osvi, VER_MAJORVERSION | VER_MINORVERSION, dwlConditionMask);
+Your patch has been applied to the master and release/2.5 branch.
 
-Cannot we use IsWindows7OrGreater() ? It should work even though
-msiexec is not manifested.
+commit 6020e94bcf9eda89aa6573cb2eb1faf6d267cb46 (master)
+commit 422343040f137cf970aea0cf8f1f248d5dc50b9d (release/2.5)
+Author: Simon Rozman via Openvpn-devel
+Date:   Thu Sep 24 08:44:50 2020 +0200
 
-> +        if (CM_Get_DevNode_Status(&node->ulStatus, &node->ulProblemNumber, devinfo_data.DevInst, 0) != CR_SUCCESS)
-> +        {
-> +            node->ulStatus = 0;
-> +            node->ulProblemNumber = 0;
-> +        }
+     netsh: Specify interfaces by index rather than name
 
-Is this change related to the bug we're supposingly fixing? What does
-it do, why is it needed?
+     Signed-off-by: Simon Rozman <simon@...2293...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <20200924064452.1001-1-simon@...2293...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21076.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
--- 
--Lev
+--
+kind regards,
+
+Gert Doering
+
 
