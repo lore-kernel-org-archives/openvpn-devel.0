@@ -1,6 +1,8 @@
 From: Vladislav Grishenko <themiron@...2010...>
-Date: Mon, 28 Sep 2020 04:15:13 +0500
-Message-Id: <20200927231513.27608-1-themiron@...2010...>
+Date: Mon, 28 Sep 2020 04:32:24 +0500
+Message-Id: <20200927233224.2859-1-themiron@...2010...>
+In-Reply-To: <20200927231513.27608-1-themiron@...2010...>
+References: <20200927231513.27608-1-themiron@...2010...>
 Subject: [Openvpn-devel] [PATCH] Speedup TCP remote hosts connections
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -38,16 +40,18 @@ If connection still can't established - this should be treated as either too
 slow/far or non-responding server, so imprecise connection checks every next
 one second in loop will be performed as usual.
 
+v2: cosmetics, decrease connection_timeout to avoid wait more than it in total
+
 Signed-off-by: Vladislav Grishenko <themiron@...2010...>
 ---
- src/openvpn/socket.c | 20 +++++++++++++++++++-
- 1 file changed, 19 insertions(+), 1 deletion(-)
+ src/openvpn/socket.c | 22 +++++++++++++++++++++-
+ 1 file changed, 21 insertions(+), 1 deletion(-)
 
 diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 76bdbfc5..66b1e4e2 100644
+index 76bdbfc5..049216ff 100644
 --- a/src/openvpn/socket.c
 +++ b/src/openvpn/socket.c
-@@ -1464,13 +1464,26 @@ openvpn_connect(socket_descriptor_t sd,
+@@ -1464,13 +1464,27 @@ openvpn_connect(socket_descriptor_t sd,
  #endif
          )
      {
@@ -68,6 +72,7 @@ index 76bdbfc5..66b1e4e2 100644
 +            if (connect_wait)
 +            {
 +                connect_wait = false;
++                connect_timeout--;
 +                timeout = 1000;
 +            }
 +
@@ -75,13 +80,14 @@ index 76bdbfc5..66b1e4e2 100644
  #else
              fd_set writes;
              struct timeval tv;
-@@ -1479,6 +1492,11 @@ openvpn_connect(socket_descriptor_t sd,
+@@ -1479,6 +1493,12 @@ openvpn_connect(socket_descriptor_t sd,
              openvpn_fd_set(sd, &writes);
              tv.tv_sec = 0;
              tv.tv_usec = 0;
 +            if (connect_wait)
 +            {
 +                connect_wait = false;
++                connect_timeout--;
 +                tv.tv_sec = 1;
 +            }
  
