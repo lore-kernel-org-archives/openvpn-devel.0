@@ -1,11 +1,9 @@
-MIME-Version: 1.0
-References: <1600994969-7623-1-git-send-email-selva.nair@...277...>
- <1601085886-10351-1-git-send-email-selva.nair@...277...>
+Date: Mon, 28 Sep 2020 12:25:08 +0200 (CEST)
+Message-Id: <202009281025.08SAP8eg087998@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <1601085886-10351-1-git-send-email-selva.nair@...277...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Mon, 28 Sep 2020 11:57:36 +0300
-Message-ID: <CAGyAFMU5GpQxkMOQohaGDaOVDRW8ER7GXG8T49k5i752xG=z=g@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Set DNS Domain using iservice
+References: <1601085886-10351-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Set DNS Domain using iservice
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,26 +12,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Your patch has been applied to the master and release/2.5 branch.
 
-> +    if (msg->domains[0]) {
+I have not tested it, but at least test compiled on MinGW/Ubuntu 18.04,
+and slightly stared at the code.  Whitespace fixed as instructed :-)
 
-Curly bracket could go to the next line, but @cron2 could fix that.
+commit 70882f3e40df1c70c553b8c22c747b468d5a0dc7 (master)
+commit 7d7bb0c9ba0594809a889798485c299e8973a24f (release/2.5)
+Author: Selva Nair
+Date:   Fri Sep 25 22:04:46 2020 -0400
 
-do_dns_domain_service() duplicates code from do_dns_service(), but
-putting everything into one function will make it harder to read.
+     Set DNS Domain using iservice
 
-Compiled and tested on MSVC/Win10 - with that and ADAPTER_DOMAIN_SUFFIX patch
-I connected to corporate VPN with Wintun and was able to browse intra websites
-such as https://jenkins-dev. Also checked that "Connection-specific
-DNS Suffix" is visible in "ipconfig /all".
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <1601085886-10351-1-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21097.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-I didn't run client on Windows 7, but checked that "wmic nicconf" works there.
 
-Acked-by: Lev Stipakov <lstipakov@...277...>
+--
+kind regards,
+
+Gert Doering
+
 
