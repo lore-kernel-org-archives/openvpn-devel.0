@@ -1,10 +1,10 @@
-Date: Tue, 29 Sep 2020 11:26:24 +0200 (CEST)
-Message-Id: <202009290926.08T9QOxW008500@...2054...>
+Date: Tue, 29 Sep 2020 12:18:03 +0200 (CEST)
+Message-Id: <202009291018.08TAI3DX019277@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200922100021.20329-1-lstipakov@...277...>
-References: <20200922100021.20329-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Alias ADAPTER_DOMAIN_SUFFIX to
- DOMAIN
+In-Reply-To: <20200922170841.13729-1-themiron@...2010...>
+References: <20200922170841.13729-1-themiron@...2010...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix update_time() and
+ openvpn_gettimeofday() coexistence
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,32 +15,38 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
+To: Vladislav Grishenko <themiron@...2010...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-I think this is reasonable for AS compatibility, which is 
-desirable.  (Otherwise, I do have some reservation on
-"why do we need to work around uncoordinated actions on the 
-v3/AS side in the v2 source?")
+I think this is a good first patch for the problem at hand, and it 
+might actually fix one of our (old!) open trac tickets, claiming that 
+the shaper is not (always) working correctly on Linux - Trac#91
 
-I have not tested this besides "stare at source" and "compile
-with MinGW", but it looks trivially correct enough.
+For master, we should look more closely into always using "one of
+the usec providing" time functions, and not mixing time() and
+gettimeofday() - at least on platforms where this can be done 
+without adverse effects, even if virtualization is involved
+(making *some* time related functions horribly slow).
+
+I have read the context (otime.h, otime.c), agree with your
+conclusions, *and* have tested it client-side on Linux and
+FreeBSD - nothing broke.  I have not tested the shaper.
 
 Your patch has been applied to the master and release/2.5 branch.
 
-commit d6720203fa9ba446497798a284c17093b92de1dc (master)
-commit 2062876f3a4c87a552ce5d7cb68113e349a5c872 (release/2.5)
-Author: Lev Stipakov
-Date:   Tue Sep 22 13:00:21 2020 +0300
+commit e9e47f498674f6db8c3b88b32c877c5beb09a888 (master)
+commit 51ee3574faade4dae5762140ea9f3a5eadc9d1e3 (release/2.5)
+Author: Vladislav Grishenko
+Date:   Tue Sep 22 22:08:41 2020 +0500
 
-     Alias ADAPTER_DOMAIN_SUFFIX to DOMAIN
+     Fix update_time() and openvpn_gettimeofday() coexistence
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
+     Signed-off-by: Vladislav Grishenko <themiron@...2010...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200922100021.20329-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21107.html
+     Message-Id: <20200922170841.13729-1-themiron@...2010...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21070.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
