@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Wed, 30 Sep 2020 15:13:09 +0200
-Message-Id: <20200930131317.1299-5-arne@...1227...>
+Date: Wed, 30 Sep 2020 15:13:14 +0200
+Message-Id: <20200930131317.1299-10-arne@...1227...>
 In-Reply-To: <20200930131317.1299-1-arne@...1227...>
 References: <20200930131317.1299-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 03/11] Implement server side of AUTH_PENDING
- with extending timeout
+Subject: [Openvpn-devel] [PATCH 08/11] Allow pending auth to be send from a
+ auth plugin
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,281 +19,321 @@ To: openvpn-devel@lists.sourceforge.net
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/manage.c     | 26 +++++++++++++------
- src/openvpn/manage.h     |  3 ++-
- src/openvpn/multi.c      | 27 +++-----------------
- src/openvpn/push.c       | 55 +++++++++++++++++++++++++++++++++++++---
- src/openvpn/push.h       | 10 ++++++++
- src/openvpn/ssl.c        |  1 +
- src/openvpn/ssl_common.h |  1 +
- 7 files changed, 87 insertions(+), 36 deletions(-)
+ doc/man-sections/generic-options.rst |   3 +-
+ include/openvpn-plugin.h.in          |   8 ++
+ src/openvpn/ssl.c                    |   2 +-
+ src/openvpn/ssl_common.h             |   1 +
+ src/openvpn/ssl_verify.c             | 165 ++++++++++++++++++++++++---
+ src/openvpn/ssl_verify.h             |   2 +-
+ 6 files changed, 165 insertions(+), 16 deletions(-)
 
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 898cb3b3..8df60d7a 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -990,19 +990,26 @@ parse_cid(const char *str, unsigned long *cid)
- }
+diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generic-options.rst
+index d5f08839..32eeda68 100644
+--- a/doc/man-sections/generic-options.rst
++++ b/doc/man-sections/generic-options.rst
+@@ -409,7 +409,8 @@ which mode OpenVPN is configured as.
  
- static bool
--parse_kid(const char *str, unsigned int *kid)
-+parse_uint(const char *str, const char* what, unsigned int *uint)
- {
--    if (sscanf(str, "%u", kid) == 1)
-+    if (sscanf(str, "%u", uint) == 1)
-     {
-         return true;
-     }
-     else
-     {
--        msg(M_CLIENT, "ERROR: cannot parse KID");
-+        msg(M_CLIENT, "ERROR: cannot parse %s", what);
-         return false;
-     }
- }
- 
-+static bool
-+parse_kid(const char *str, unsigned int *kid)
-+{
-+    return parse_uint(str, "KID", kid);
-+}
+   * :code:`OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY` plug-in hooks returns
+     success/failure via :code:`auth_control_file` when using deferred auth
+-    method
++    method and pending authentification via :code:`pending_auth_file`.
 +
-+
- /**
-  * Will send a notification to the client that succesful authentication
-  * will require an additional step (web based SSO/2-factor auth/etc)
-@@ -1013,15 +1020,18 @@ parse_kid(const char *str, unsigned int *kid)
-  *                      the information of the additional steps
-  */
- static void
--man_client_pending_auth(struct management *man, const char *cid_str, const char *extra)
-+man_client_pending_auth(struct management *man, const char *cid_str,
-+                        const char *extra, const char *timeout_str)
- {
-     unsigned long cid = 0;
--    if (parse_cid(cid_str, &cid))
-+    unsigned int timeout = 0;
-+    if (parse_cid(cid_str, &cid)
-+        && parse_uint(timeout_str, "TIMEOUT", &timeout))
-     {
-         if (man->persist.callback.client_pending_auth)
-         {
-             bool ret = (*man->persist.callback.client_pending_auth)
--                           (man->persist.callback.arg, cid, extra);
-+                           (man->persist.callback.arg, cid, extra, timeout);
  
-             if (ret)
-             {
-@@ -1582,9 +1592,9 @@ man_dispatch_command(struct management *man, struct status_output *so, const cha
-     }
-     else if (streq(p[0], "client-pending-auth"))
-     {
--        if (man_need(man, p, 2, 0))
-+        if (man_need(man, p, 3, 0))
-         {
--            man_client_pending_auth(man, p[1], p[2]);
-+            man_client_pending_auth(man, p[1], p[2], p[3]);
-         }
-     }
- #ifdef MANAGEMENT_PF
-diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index 881bfb14..1c497427 100644
---- a/src/openvpn/manage.h
-+++ b/src/openvpn/manage.h
-@@ -176,7 +176,8 @@ struct management_callback
-                          struct buffer_list *cc_config); /* ownership transferred */
-     bool (*client_pending_auth) (void *arg,
-                                  const unsigned long cid,
--                                 const char *url);
-+                                 const char *extra,
-+                                 unsigned int timeout);
-     char *(*get_peer_info) (void *arg, const unsigned long cid);
+   * :code:`OPENVPN_PLUGIN_ENABLE_PF` plugin hook to pass filtering rules
+     via ``pf_file``
+diff --git a/include/openvpn-plugin.h.in b/include/openvpn-plugin.h.in
+index 64b20886..bb561643 100644
+--- a/include/openvpn-plugin.h.in
++++ b/include/openvpn-plugin.h.in
+@@ -567,6 +567,14 @@ OPENVPN_PLUGIN_DEF openvpn_plugin_handle_t OPENVPN_PLUGIN_FUNC(openvpn_plugin_op
+  * auth_control_file/client_connect_deferred_file
+  * in the environmental variable list (envp).
+  *
++ * Additionally the auth_pending_file can be written, which causes the openvpn
++ * server to send a pending auth request to the client. See doc/management.txt
++ * for more details on this authentication mechanism. The format of the
++ * auth_pending_file is
++ * line 1: timeout in seconds
++ * line 2: Pending auth method the client needs to support (e.g. openurl)
++ * line 3: EXTRA (e.g. OPEN_URL:http://www.example.com)
++ *
+  * In addition the OPENVPN_PLUGIN_CLIENT_CONNECT_DEFER and
+  * OPENVPN_PLUGIN_CLIENT_CONNECT_DEFER_V2 are called when OpenVPN tries to
+  * get the deferred result. For a V2 call implementing this function is
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index a125afa2..815f896e 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -994,7 +994,7 @@ key_state_free(struct key_state *ks, bool clear)
+     packet_id_free(&ks->crypto_options.packet_id);
+ 
+ #ifdef PLUGIN_DEF_AUTH
+-    key_state_rm_auth_control_file(ks);
++    key_state_rm_auth_control_files(ks);
  #endif
- #ifdef MANAGEMENT_PF
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 13738180..50e2e350 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -1771,28 +1771,6 @@ multi_client_connect_setenv(struct multi_context *m,
-     gc_free(&gc);
- }
  
--/**
-- * Extracts the IV_PROTO variable and returns its value or 0
-- * if it cannot be extracted.
-- *
-- */
--static unsigned int
--extract_iv_proto(const char *peer_info)
--{
--
--    const char *optstr = peer_info ? strstr(peer_info, "IV_PROTO=") : NULL;
--    if (optstr)
--    {
--        int proto = 0;
--        int r = sscanf(optstr, "IV_PROTO=%d", &proto);
--        if (r == 1 && proto > 0)
--        {
--            return proto;
--        }
--    }
--    return 0;
--}
--
- /**
-  * Calculates the options that depend on the client capabilities
-  * based on local options and available peer info
-@@ -3917,14 +3895,15 @@ management_kill_by_cid(void *arg, const unsigned long cid, const char *kill_msg)
- static bool
- management_client_pending_auth(void *arg,
-                                const unsigned long cid,
--                               const char *extra)
-+                               const char *extra,
-+                               unsigned int timeout)
- {
-     struct multi_context *m = (struct multi_context *) arg;
-     struct multi_instance *mi = lookup_by_cid(m, cid);
-     if (mi)
-     {
-         /* sends INFO_PRE and AUTH_PENDING messages to client */
--        bool ret = send_auth_pending_messages(&mi->context, extra);
-+        bool ret = send_auth_pending_messages(&mi->context, extra, timeout);
-         multi_schedule_context_wakeup(m, mi);
-         return ret;
-     }
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 44633dc6..ece63650 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -347,26 +347,58 @@ send_auth_failed(struct context *c, const char *client_reason)
-     gc_free(&gc);
- }
+     if (clear)
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 7ccd1abb..98afc88c 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -216,6 +216,7 @@ struct key_state
+     unsigned int auth_control_status;
+     time_t acf_last_mod;
+     char *auth_control_file;
++    char *auth_pending_file;
+ #endif
+ };
  
-+
- bool
--send_auth_pending_messages(struct context *c, const char *extra)
-+send_auth_pending_messages(struct context *c, const char *extra,
-+                           unsigned int timeout)
- {
--    send_control_channel_string(c, "AUTH_PENDING", D_PUSH);
-+    struct key_state *ks = &tls_multi->session[TM_ACTIVE].key[KS_PRIMARY];
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index e7e62afa..fc3a1116 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -843,13 +843,129 @@ man_def_auth_test(const struct key_state *ks)
+ #endif /* ifdef MANAGEMENT_DEF_AUTH */
  
-     static const char info_pre[] = "INFO_PRE,";
- 
-+    struct tls_multi *tls_multi = c->c2.tls_multi;
-+    const char *const peer_info = tls_multi->peer_info;
-+    unsigned int proto = extract_iv_proto(peer_info);
-+
-+
-+    /* Calculate the maximum timeout and subtract the time we already waited */
-+    unsigned int max_timeout = max_uint(tls_multi->opt.renegotiate_seconds/2,
-+                                        tls_multi->opt.handshake_window);
-+    max_timeout = max_timeout - (now - ks->initial);
-+    timeout = min_uint(max_timeout, timeout);
-+
-+    struct gc_arena gc = gc_new();
-+    if ((proto & IV_PROTO_AUTH_PENDING_KW) == 0)
-+    {
-+        send_control_channel_string(c, "AUTH_PENDING", D_PUSH);
-+    }
-+    else
-+    {
-+        static const char auth_pre[] = "AUTH_PENDING,timeout ";
-+        // Assume a worst case of 8 byte uint64 in decimal which
-+        // needs 20 bytes
-+        size_t len = 20 + 1 + sizeof(auth_pre);
-+        struct buffer buf = alloc_buf_gc(len, &gc);
-+        buf_printf(&buf, auth_pre);
-+        buf_printf(&buf, "%u", timeout);
-+        send_control_channel_string(c, BSTR(&buf), D_PUSH);
-+    }
-+
- 
-     size_t len = strlen(extra)+1 + sizeof(info_pre);
-     if (len > PUSH_BUNDLE_SIZE)
-     {
-+        gc_free(&gc);
-         return false;
-     }
--    struct gc_arena gc = gc_new();
- 
-     struct buffer buf = alloc_buf_gc(len, &gc);
-     buf_printf(&buf, info_pre);
-     buf_printf(&buf, "%s", extra);
-     send_control_channel_string(c, BSTR(&buf), D_PUSH);
- 
-+    ks->auth_deferred_expire = now + timeout;
-+
-     gc_free(&gc);
-     return true;
- }
-@@ -1010,4 +1042,21 @@ remove_iroutes_from_push_route_list(struct options *o)
-     }
- }
- 
-+unsigned int
-+extract_iv_proto(const char *peer_info)
+ #ifdef PLUGIN_DEF_AUTH
++/**
++ *  Removes auth_pending file from the file system
++ *  and key_state structure
++ */
++static void
++key_state_rm_auth_pending_file(struct key_state *ks)
 +{
-+
-+    const char *optstr = peer_info ? strstr(peer_info, "IV_PROTO=") : NULL;
-+    if (optstr)
++    if (ks && ks->auth_pending_file)
 +    {
-+        int proto = 0;
-+        int r = sscanf(optstr, "IV_PROTO=%d", &proto);
-+        if (r == 1 && proto > 0)
-+        {
-+            return proto;
-+        }
++        platform_unlink(ks->auth_pending_file);
++        free(ks->auth_pending_file);
++        ks->auth_pending_file = NULL;
 +    }
-+    return 0;
++}
+ 
+-/*
+- * auth_control_file functions
++/**
++ * Check peer_info if the client supports the requested pending auth method
+  */
++static bool
++check_auth_pending_method(const char *peer_info, const char *method)
++{
++    struct gc_arena gc = gc_new();
++
++    char *iv_sso = extract_var_peer_info(peer_info, "IV_SSO=", &gc);
++    if (!iv_sso)
++    {
++        gc_free(&gc);
++        return false;
++    }
++
++    const char *client_method = strtok(iv_sso, ",");
++    bool supported = false;
++
++    while (client_method)
++    {
++        if (0 == strcmp(client_method, method))
++        {
++            supported = true;
++            break;
++        }
++        client_method = strtok(NULL, ":");
++    }
++
++    gc_free(&gc);
++    return supported;
 +}
 +
- #endif /* if P2MP */
-diff --git a/src/openvpn/push.h b/src/openvpn/push.h
-index 01847671..a2192114 100644
---- a/src/openvpn/push.h
-+++ b/src/openvpn/push.h
-@@ -89,6 +89,16 @@ void send_restart(struct context *c, const char *kill_msg);
-  */
- void send_push_reply_auth_token(struct tls_multi *multi);
++/**
++ *  Checks if the deferred state should also send auth pending
++ *  request to the client. Also removes the auth_pending control file
++ *
++ *  @returns true   if file was either processed sucessfully or did not
++ *                  exist at all
++ *  @returns false  The file had an invlaid format or another error occured
++ */
++static bool
++key_state_check_auth_pending_file(struct key_state *ks,
++                                  struct tls_multi *multi)
++{
++    bool ret = true;
++    if (ks && ks->auth_pending_file)
++    {
++        struct buffer_list *lines = buffer_list_file(ks->auth_pending_file,
++                                                     1024);
++        if (lines && lines->head)
++        {
++            /* Must have at least three lines. further lines are ignored for
++             * forward compatibility */
++            if (!lines->head || !lines->head->next || !lines->head->next->next)
++            {
++                msg(M_WARN, "auth pending control file is not at least "
++                            "three lines long.");
++                buffer_list_free(lines);
++                return false;
++            }
++            struct buffer *timeout_buf = &lines->head->buf;
++            struct buffer *iv_buf = &lines->head->next->buf;
++            struct buffer *extra_buf = &lines->head->next->next->buf;
++
++            /* Remove newline chars at the end of the lines */
++            buf_chomp(timeout_buf);
++            buf_chomp(iv_buf);
++            buf_chomp(extra_buf);
++
++            long timeout = strtol(BSTR(timeout_buf), NULL, 10);
++            if (timeout == 0)
++            {
++                msg(M_WARN, "could not parse auth pending file timeout");
++                buffer_list_free(lines);
++                return false;
++            }
++
++            const char* pending_method = BSTR(iv_buf);
++            if (!check_auth_pending_method(multi->peer_info, pending_method))
++            {
++                char buf[128];
++                openvpn_snprintf(buf, sizeof(buf),
++                                 "Authentication failed, required pending auth "
++                                 "method '%s' not supported", pending_method);
++                auth_set_client_reason(multi, buf);
++                msg(M_INFO, "Client does not supported auth pending method "
++                            "'%s'", pending_method);
++                ret = false;
++            }
++            else
++            {
++                send_auth_pending_messages(multi, BSTR(extra_buf), timeout);
++            }
++        }
++
++        buffer_list_free(lines);
++    }
++    key_state_rm_auth_pending_file(ks);
++    return ret;
++}
  
 +
 +/**
-+ * Extracts the IV_PROTO variable and returns its value or 0
-+ * if it cannot be extracted.
-+ *
-+ * @param peer_info     peer info string to search for IV_PROTO
++ *  Removes auth_pending and auth_control files from file system
++ *  and key_state structure
 + */
-+unsigned int
-+extract_iv_proto(const char *peer_info);
+ void
+-key_state_rm_auth_control_file(struct key_state *ks)
++key_state_rm_auth_control_files(struct key_state *ks)
+ {
+     if (ks && ks->auth_control_file)
+     {
+@@ -857,23 +973,34 @@ key_state_rm_auth_control_file(struct key_state *ks)
+         free(ks->auth_control_file);
+         ks->auth_control_file = NULL;
+     }
++    key_state_rm_auth_pending_file(ks);
+ }
+ 
++/**
++ * Generates and creates the control files used for deferred authentification
++ * in the temporary directory.
++ *
++ * @return  true if file creation was successful
++ */
+ static bool
+-key_state_gen_auth_control_file(struct key_state *ks, const struct tls_options *opt)
++key_state_gen_auth_control_files(struct key_state *ks, const struct tls_options *opt)
+ {
+     struct gc_arena gc = gc_new();
+ 
+-    key_state_rm_auth_control_file(ks);
++    key_state_rm_auth_control_files(ks);
+     const char *acf = platform_create_temp_file(opt->tmp_dir, "acf", &gc);
+-    if (acf)
++    const char *apf = platform_create_temp_file(opt->tmp_dir, "apf", &gc);
 +
- /**
-  * Parses an AUTH_PENDING message and if in pull mode extends the timeout
++    if (acf && apf)
+     {
+         ks->auth_control_file = string_alloc(acf, NULL);
++        ks->auth_pending_file = string_alloc(apf, NULL);
+         setenv_str(opt->es, "auth_control_file", ks->auth_control_file);
++        setenv_str(opt->es, "auth_pending_file", ks->auth_pending_file);
+     }
+ 
+     gc_free(&gc);
+-    return acf;
++    return (acf && apf);
+ }
+ 
+ static unsigned int
+@@ -905,6 +1032,8 @@ key_state_test_auth_control_file(struct key_state *ks)
+     return ACF_DISABLED;
+ }
+ 
++
++
+ #endif /* ifdef PLUGIN_DEF_AUTH */
+ 
+ /*
+@@ -1067,7 +1196,7 @@ verify_user_pass_script(struct tls_session *session, struct tls_multi *multi,
+     struct gc_arena gc = gc_new();
+     struct argv argv = argv_new();
+     const char *tmp_file = "";
+-    bool ret = false;
++    bool ret = OPENVPN_PLUGIN_FUNC_ERROR;
+ 
+     /* Is username defined? */
+     if ((session->opt->ssl_flags & SSLF_AUTH_USER_PASS_OPTIONAL) || strlen(up->username))
+@@ -1172,7 +1301,7 @@ verify_user_pass_plugin(struct tls_session *session, struct tls_multi *multi,
+         add_session_token_env(session, multi, up);
+ #ifdef PLUGIN_DEF_AUTH
+         /* generate filename for deferred auth control file */
+-        if (!key_state_gen_auth_control_file(ks, session->opt))
++        if (!key_state_gen_auth_control_files(ks, session->opt))
+         {
+             msg(D_TLS_ERRORS, "TLS Auth Error (%s): "
+                 "could not create deferred auth control file", __func__);
+@@ -1184,10 +1313,20 @@ verify_user_pass_plugin(struct tls_session *session, struct tls_multi *multi,
+         retval = plugin_call(session->opt->plugins, OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY, NULL, NULL, session->opt->es);
+ 
+ #ifdef PLUGIN_DEF_AUTH
+-        /* purge auth control filename (and file itself) for non-deferred returns */
+-        if (retval != OPENVPN_PLUGIN_FUNC_DEFERRED)
++        if (retval == OPENVPN_PLUGIN_FUNC_DEFERRED)
++        {
++            /* Check if we the plugin has written the pending auth control
++             * file and send the pending auth to the client */
++            if(!key_state_check_auth_pending_file(ks, multi))
++            {
++                retval = OPENVPN_PLUGIN_FUNC_ERROR;
++                key_state_rm_auth_control_files(ks);
++            }
++        }
++        else
+         {
+-            key_state_rm_auth_control_file(ks);
++            /* purge auth control filename (and file itself) for non-deferred returns */
++            key_state_rm_auth_control_files(ks);
+         }
+ #endif
+ 
+@@ -1256,7 +1395,7 @@ verify_user_pass_management(struct tls_session *session,
+ #endif /* ifdef MANAGEMENT_DEF_AUTH */
+ 
+ 
+-/*
++/**
+  * Main username/password verification entry point
   *
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index c019c194..f0664a0f 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2709,6 +2709,7 @@ tls_process(struct tls_multi *multi,
-             buf = reliable_get_buf_output_sequenced(ks->send_reliable);
-             if (buf)
-             {
-+                ks->initial = now;
-                 ks->must_negotiate = now + session->opt->handshake_window;
-                 ks->auth_deferred_expire = now + auth_deferred_expire_window(session->opt);
+  * Will set session->ks[KS_PRIMARY].authenticated according to
+diff --git a/src/openvpn/ssl_verify.h b/src/openvpn/ssl_verify.h
+index b1ced956..5b413c57 100644
+--- a/src/openvpn/ssl_verify.h
++++ b/src/openvpn/ssl_verify.h
+@@ -93,7 +93,7 @@ int tls_authentication_status(struct tls_multi *multi, const int latency);
+  *
+  * @param ks    The key state the remove the file for
+  */
+-void key_state_rm_auth_control_file(struct key_state *ks);
++void key_state_rm_auth_control_files(struct key_state *ks);
  
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index d0a2c89b..7ccd1abb 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -175,6 +175,7 @@ struct key_state
- 
-     struct key_state_ssl ks_ssl; /* contains SSL object and BIOs for the control channel */
- 
-+    time_t initial;             /* when we created this session */
-     time_t established;         /* when our state went S_ACTIVE */
-     time_t must_negotiate;      /* key negotiation times out if not finished before this time */
-     time_t must_die;            /* this object is destroyed at this time */
+ /**
+  * Frees the given set of certificate hashes.
 -- 
 2.26.2
 
