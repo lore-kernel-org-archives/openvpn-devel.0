@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Wed, 30 Sep 2020 15:13:13 +0200
-Message-Id: <20200930131317.1299-9-arne@...1227...>
+Date: Wed, 30 Sep 2020 15:13:08 +0200
+Message-Id: <20200930131317.1299-4-arne@...1227...>
 In-Reply-To: <20200930131317.1299-1-arne@...1227...>
 References: <20200930131317.1299-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 07/11] Refactor extract_var_peer_info into
- standalone function and add ssl_util.c
+Subject: [Openvpn-devel] [PATCH 02/11] Implement client side handling of
+ AUTH_PENDING message
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,277 +17,329 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Our "natural" place for this function would be ssl.c but ssl.c has a lot of
-dependencies on all kinds of other compilation units so including ssl.c into
-unit tests is near impossible currently. Instead create a new file ssl_util.c
-that holds small utility functions like this one.
+This allows a client to extend the timeout of pull-request response
+while waiting for the user to complete a pending authentication. A
+timeout of 60s for a normal authentication might still works for a
+simple 2FA (but still challenging). With a sophisticated (or overly
+complicated) web based authentication 60s are quite short.
+
+To avoid not detecting network problem in this phase, we use the
+constant sending of PUSH_REQUEST/AUTH_PENDING as keepalive signal
+and still timeout the session after the handshake window time.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/Makefile.am              |  1 +
- src/openvpn/openvpn.vcxproj          |  2 +
- src/openvpn/openvpn.vcxproj.filters  |  6 +++
- src/openvpn/ssl.c                    |  2 +-
- src/openvpn/ssl_ncp.c                | 20 ++--------
- src/openvpn/ssl_util.c               | 59 ++++++++++++++++++++++++++++
- src/openvpn/ssl_util.h               | 49 +++++++++++++++++++++++
- src/openvpn/ssl_verify.c             |  1 +
- tests/unit_tests/openvpn/Makefile.am |  3 +-
- 9 files changed, 125 insertions(+), 18 deletions(-)
- create mode 100644 src/openvpn/ssl_util.c
- create mode 100644 src/openvpn/ssl_util.h
+ doc/man-sections/server-options.rst |  4 ++
+ doc/management-notes.txt            | 39 ++++++++++++----
+ src/openvpn/forward.c               | 11 ++++-
+ src/openvpn/integer.h               | 25 ++++++++++
+ src/openvpn/push.c                  | 72 ++++++++++++++++++++++++++++-
+ src/openvpn/push.h                  |  9 ++++
+ src/openvpn/ssl.c                   |  3 ++
+ src/openvpn/ssl.h                   |  3 ++
+ src/openvpn/ssl_common.h            |  1 +
+ 9 files changed, 156 insertions(+), 11 deletions(-)
 
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index 37b002c6..ec84929b 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -119,6 +119,7 @@ openvpn_SOURCES = \
- 	ssl_openssl.c ssl_openssl.h \
- 	ssl_mbedtls.c ssl_mbedtls.h \
- 	ssl_ncp.c ssl_ncp.h \
-+	ssl_util.c ssl_util.h \
- 	ssl_common.h \
- 	ssl_verify.c ssl_verify.h ssl_verify_backend.h \
- 	ssl_verify_openssl.c ssl_verify_openssl.h \
-diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
-index 3863854b..cf31940c 100644
---- a/src/openvpn/openvpn.vcxproj
-+++ b/src/openvpn/openvpn.vcxproj
-@@ -212,6 +212,7 @@
-     <ClCompile Include="ssl.c" />
-     <ClCompile Include="ssl_openssl.c" />
-     <ClCompile Include="ssl_ncp.c" />
-+    <ClCompile Include="ssl_util.c" />
-     <ClCompile Include="ssl_verify.c" />
-     <ClCompile Include="ssl_verify_openssl.c" />
-     <ClCompile Include="status.c" />
-@@ -300,6 +301,7 @@
-     <ClInclude Include="ssl_common.h" />
-     <ClInclude Include="ssl_ncp.h" />
-     <ClInclude Include="ssl_openssl.h" />
-+    <ClInclude Include="ssl_util.h" />
-     <ClInclude Include="ssl_verify.h" />
-     <ClInclude Include="ssl_verify_backend.h" />
-     <ClInclude Include="ssl_verify_openssl.h" />
-diff --git a/src/openvpn/openvpn.vcxproj.filters b/src/openvpn/openvpn.vcxproj.filters
-index cf5748c7..e8aed2c5 100644
---- a/src/openvpn/openvpn.vcxproj.filters
-+++ b/src/openvpn/openvpn.vcxproj.filters
-@@ -243,6 +243,9 @@
-     <ClCompile Include="ssl_ncp.c">
-       <Filter>Source Files</Filter>
-     </ClCompile>
-+    <ClCompile Include="ssl_util.c">
-+      <Filter>Source Files</Filter>
-+    </ClCompile>
-   </ItemGroup>
-   <ItemGroup>
-     <ClInclude Include="base64.h">
-@@ -509,6 +512,9 @@
-     <ClInclude Include="ssl_ncp.h">
-       <Filter>Header Files</Filter>
-     </ClInclude>
-+    <ClInclude Include="ssl_util.h">
-+      <Filter>Header Files</Filter>
-+    </ClInclude>
-   </ItemGroup>
-   <ItemGroup>
-     <ResourceCompile Include="openvpn_win32_resources.rc">
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index f0664a0f..a125afa2 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -4138,4 +4138,4 @@ delayed_auth_pass_purge(void)
- {
-     auth_user_pass.wait_for_push = false;
-     purge_user_pass(&auth_user_pass, false);
--}
-+}
-\ No newline at end of file
-diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-index 55496395..f4d755af 100644
---- a/src/openvpn/ssl_ncp.c
-+++ b/src/openvpn/ssl_ncp.c
-@@ -48,6 +48,7 @@
- #include "common.h"
+diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-options.rst
+index 5a689452..271c54d0 100644
+--- a/doc/man-sections/server-options.rst
++++ b/doc/man-sections/server-options.rst
+@@ -473,6 +473,10 @@ fast hardware. SSL/TLS authentication must be used in this mode.
+     - bit 1: The peer supports peer-id floating mechanism
+     - bit 2: The client expects a push-reply and the server may
+       send this reply without waiting for a push-request first.
++    - bit 3: The client is capable of doing key derivation using
++      RFC5705 key material exporter.
++    - bit 4: The client is capable of accepting additional arguments
++      to the `AUTH_PENDING` message.
  
- #include "ssl_ncp.h"
-+#include "ssl_util.h"
- #include "openvpn.h"
+   :code:`IV_NCP=2`
+         Negotiable ciphers, client supports ``--cipher`` pushed by
+diff --git a/doc/management-notes.txt b/doc/management-notes.txt
+index 61daaf07..99ba178a 100644
+--- a/doc/management-notes.txt
++++ b/doc/management-notes.txt
+@@ -600,14 +600,30 @@ to signal a pending authenticating to the client. A pending auth means
+ that the connecting requires extra authentication like a one time
+ password or doing a single sign one via web.
  
- /**
-@@ -181,23 +182,10 @@ const char *
- tls_peer_ncp_list(const char *peer_info, struct gc_arena *gc)
- {
-     /* Check if the peer sends the IV_CIPHERS list */
--    const char *ncp_ciphers_start;
--    if (peer_info && (ncp_ciphers_start = strstr(peer_info, "IV_CIPHERS=")))
-+    const char *iv_ciphers = extract_var_peer_info(peer_info,"IV_CIPHERS=", gc);
-+    if (iv_ciphers)
-     {
--        ncp_ciphers_start += strlen("IV_CIPHERS=");
--        const char *ncp_ciphers_end = strstr(ncp_ciphers_start, "\n");
--        if (!ncp_ciphers_end)
--        {
--            /* IV_CIPHERS is at end of the peer_info list and no '\n'
--             * follows */
--            ncp_ciphers_end = ncp_ciphers_start + strlen(ncp_ciphers_start);
--        }
+-    client-pending-auth {CID} {EXTRA}
 -
--        char *ncp_ciphers_peer = string_alloc(ncp_ciphers_start, gc);
--        /* NULL terminate the copy at the right position */
--        ncp_ciphers_peer[ncp_ciphers_end - ncp_ciphers_start] = '\0';
--        return ncp_ciphers_peer;
--
-+        return iv_ciphers;
-     }
-     else if (tls_peer_info_ncp_ver(peer_info)>=2)
-     {
-diff --git a/src/openvpn/ssl_util.c b/src/openvpn/ssl_util.c
-new file mode 100644
-index 00000000..90ec97f7
---- /dev/null
-+++ b/src/openvpn/ssl_util.c
-@@ -0,0 +1,59 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2002-2020 OpenVPN Inc <sales@...515...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+ */
-+#ifdef HAVE_CONFIG_H
-+#include "config.h"
-+#elif defined(_MSC_VER)
-+#include "config-msvc.h"
-+#endif
+-The server will send AUTH_PENDING and INFO_PRE,{EXTRA} to the client.
+-The client is expected to inform the user that authentication is pending and
+-display the extra information. For the format of EXTRA see below
+-For the OpenVPN server this is stateless operation and needs to be
+-followed by a client-deny/client-auth[-nt] command (that is the result of the
+-out of band authentication).
++    client-pending-auth {CID} {EXTRA} {TIMEOUT}
 +
-+#include "syshead.h"
++The server will send AUTH_PENDING and INFO_PRE,{EXTRA} to the client. If the
++client supports accepting keywords to AUTH_PENDING (announced via IV_PROTO),
++TIMEOUT parameter will be also be announced to the client to allow it to modify
++its own timeout. The client is expected to inform the user that authentication
++is pending and display the extra information and also show the user the
++remaining time to complete the auth if applicable.
 +
-+#include "ssl_util.h"
++Receiving a AUTH_PENDING message will make the client change its timeout the
++timeout proposed by the server, even if the timeout is shorter.
++If the client does not receive a packet from the server for hand-window the
++connection times out regardless of the timeout. This ensures that the connection
++still times out relatively quickly in case of network problems. The client will
++continously send PULL_REQUEST messages to the server until the timeout is reached.
++This message also triggers an ACK message from the server that resets the
++hand-window based timeout.
 +
-+char *
-+extract_var_peer_info(const char *peer_info, const char *var,
-+                      struct gc_arena *gc)
-+{
-+    const char *var_start;
++Both client and server limit the maximum timeout to the smaller value of half the
++--tls-reneg minimum time and --hand-window time (defaults to 60s).
 +
-+    if (peer_info && (var_start = strstr(peer_info, var)))
-+    {
-+        var_start += strlen(var);
-+        const char *var_end = strstr(var_start, "\n");
-+        if (!var_end)
++For the format of EXTRA see below. For the OpenVPN server this is a stateless
++operation and needs to be followed by a client-deny/client-auth[-nt] command
++(that is the result of the out of band authentication).
+ 
+ Before issuing a client-pending-auth to a client instead of a
+ client-auth/client-deny, the server should check the IV_SSO
+@@ -620,7 +636,7 @@ set
+     setenv IV_SSO openurl,crtext
+ 
+ The variable name IV_SSO is historic as AUTH_PENDING was first used
+-to signal single sign on support. To keep compatiblity with existing
++to signal single sign on support. To keep compatibility with existing
+ implementations the name IV_SSO is kept in lieu of a better name.
+ 
+ openurl
+@@ -636,6 +652,11 @@ The space in a control message is limited, so this url should be kept
+ short to avoid issues. If a loger url is required a URL that redirects
+ to the longer URL should be sent instead.
+ 
++A complete documentation how URLs should be handled on the client is available
++in the openvpn3 repository:
++
++https://github.com/OpenVPN/openvpn3/blob/master/doc/webauth.md
++
+ url_proxy
+ ========
+ To avoid issues with OpenVPN connection persist-tun and not able
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 325f1373..7d559544 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -233,6 +233,10 @@ check_incoming_control_channel(struct context *c)
+         {
+             receive_cr_response(c, &buf);
+         }
++        else if (buf_string_match_head_str(&buf, "AUTH_PENDING"))
 +        {
-+            /* var is at end of the peer_info list and no '\n'
-+             * follows */
-+            var_end = var_start + strlen(var_start);
++            receive_auth_pending(c, &buf);
 +        }
-+
-+        char *ncp_ciphers_peer = string_alloc(var_start, gc);
-+        /* NULL terminate the copy at the right position */
-+        ncp_ciphers_peer[var_end - var_start] = '\0';
-+        return ncp_ciphers_peer;
+         else
+         {
+             msg(D_PUSH_ERRORS, "WARNING: Received unknown control message: %s", BSTR(&buf));
+@@ -292,7 +296,12 @@ check_connection_established(struct context *c)
+             }
+ #endif
+             /* fire up push request right away (already 1s delayed) */
+-            c->c2.push_request_timeout = now + c->options.handshake_window;
++            /* We might receive a AUTH_PENDING request before we armed this
++             * timer. In that case we don't change the value */
++            if (c->c2.push_request_timeout < now)
++            {
++                c->c2.push_request_timeout = now + c->options.handshake_window;
++            }
+             event_timeout_init(&c->c2.push_request_interval, 0, now);
+             reset_coarse_timers(c);
+         }
+diff --git a/src/openvpn/integer.h b/src/openvpn/integer.h
+index 3755f43f..0c3511e6 100644
+--- a/src/openvpn/integer.h
++++ b/src/openvpn/integer.h
+@@ -39,6 +39,31 @@
+ /*
+  * min/max functions
+  */
++static inline unsigned int
++max_uint(unsigned int x, unsigned int y)
++{
++    if (x > y)
++    {
++        return x;
 +    }
 +    else
 +    {
-+        return NULL;
++        return y;
 +    }
 +}
-\ No newline at end of file
-diff --git a/src/openvpn/ssl_util.h b/src/openvpn/ssl_util.h
-new file mode 100644
-index 00000000..21bded6b
---- /dev/null
-+++ b/src/openvpn/ssl_util.h
-@@ -0,0 +1,49 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2002-2020 OpenVPN Inc <sales@...515...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+ */
 +
-+/**
-+ * @file SSL utility function. This file (and its .c file) is designed to
-+ *       to be included in units/etc without pulling in a lot of dependencies
-+ */
-+
-+#ifndef SSL_UTIL_H_
-+#define SSL_UTIL_H_
-+
-+#include "buffer.h"
-+
-+/**
-+ * Extracts a variable from peer info, the returned string will be allocated
-+ * using the supplied gc_arena
-+ *
-+ * @param peer_info     The peer's peer_info
-+ * @param var           The variable *including* =, e.g. IV_CIPHERS=
-+ *
-+ * @return  The content of the variable as NULL terminated string or NULL if the
-+ *          variable cannot be found.
-+ */
-+char *
-+extract_var_peer_info(const char *peer_info,
-+                      const char *var,
-+                      struct gc_arena *gc);
-+
-+#endif
-\ No newline at end of file
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index 97ccb93b..e7e62afa 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -46,6 +46,7 @@
- #endif
- #include "auth_token.h"
- #include "push.h"
-+#include "ssl_util.h"
++static inline unsigned int
++min_uint(unsigned int x, unsigned int y)
++{
++    if (x < y)
++    {
++        return x;
++    }
++    else
++    {
++        return y;
++    }
++}
  
- /** Maximum length of common name */
- #define TLS_USERNAME_LEN 64
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index f0880a6b..50f3a02e 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -125,4 +125,5 @@ ncp_testdriver_SOURCES = test_ncp.c mock_msg.c \
- 	$(openvpn_srcdir)/crypto_openssl.c \
- 	$(openvpn_srcdir)/otime.c \
- 	$(openvpn_srcdir)/packet_id.c \
--	$(openvpn_srcdir)/platform.c
-+	$(openvpn_srcdir)/platform.c \
-+	$(openvpn_srcdir)/ssl_util.c
+ static inline int
+ max_int(int x, int y)
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 5fc3eb18..44633dc6 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -231,6 +231,66 @@ receive_cr_response(struct context *c, const struct buffer *buffer)
+     msg(D_PUSH, "CR response was sent by client ('%s')", m);
+ }
+ 
++/**
++ * Parse the keyword for the AUTH_PENDING request
++ * @param buffer                buffer containing the keywords, the buffer's
++ *                              content will be modified by this function
++ * @param server_timeout        timeout pushed by the server or unchanged
++ *                              if the server does not push a timeout
++ */
++static void
++parse_auth_pending_keywords(const struct buffer *buffer,
++                            unsigned int *server_timeout)
++{
++    struct buffer buf = *buffer;
++
++    /* does the buffer start with "AUTH_PENDING," ? */
++    if (!buf_advance(&buf, strlen("AUTH_PENDING"))
++        || !(buf_read_u8(&buf) == ',') || !BLEN(&buf))
++    {
++        return;
++    }
++
++    /* parse the keywords in the same way that push options are parsed */
++    char line[OPTION_LINE_SIZE];
++
++    while (buf_parse(&buf, ',', line, sizeof(line)))
++    {
++        if (sscanf(line, "timeout %u", server_timeout) == 1)
++        {
++            ;
++        }
++        else
++        {
++            msg(D_PUSH, "ignoring AUTH_PENDING parameter: %s", line);
++        }
++    }
++}
++
++void
++receive_auth_pending(struct context *c, const struct buffer *buffer)
++{
++    if (!c->options.pull)
++        return;
++
++    /* Cap the increase at the maximum time we are willing stay in the
++     * pending authentication state */
++    unsigned int max_timeout = max_uint(c->options.renegotiate_seconds/2,
++                               c->options.handshake_window);
++
++    /* try to parse parameter keywords, default to hand-winow timeout if the
++     * server does not supply a timeout */
++    unsigned int server_timeout = c->options.handshake_window;
++    parse_auth_pending_keywords(buffer, &server_timeout);
++
++    msg(D_PUSH, "AUTH_PENDING received, extending handshake timeout from %us "
++                "to %us", c->options.handshake_window,
++                min_uint(max_timeout, server_timeout));
++
++    struct key_state *ks = &c->c2.tls_multi->session[TM_ACTIVE].key[KS_PRIMARY];
++    c->c2.push_request_timeout = ks->established + min_uint(max_timeout, server_timeout);
++}
++
+ /**
+  * Add an option to the given push list by providing a format string.
+  *
+@@ -372,7 +432,17 @@ send_push_request(struct context *c)
+     struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
+     struct key_state *ks = &session->key[KS_PRIMARY];
+ 
+-    if (c->c2.push_request_timeout > now)
++    /* We timeout here under two conditions:
++     * a) we reached the hard limit of push_request_timeout
++     * b) we have not seen anything from the server in hand_window time
++     *
++     * for non auth-pending scenario, push_request_timeout is the same as
++     * hand_window timeout. For b) every PUSH_REQUEST is a acknowledged by
++     * the server by a P_ACK_V1 packet that reset the keepalive timer
++     */
++
++    if (c->c2.push_request_timeout > now
++        && (now - ks->peer_last_packet) < c->options.handshake_window)
+     {
+         return send_control_channel_string(c, "PUSH_REQUEST", D_PUSH);
+     }
+diff --git a/src/openvpn/push.h b/src/openvpn/push.h
+index 2faf19a6..01847671 100644
+--- a/src/openvpn/push.h
++++ b/src/openvpn/push.h
+@@ -89,5 +89,14 @@ void send_restart(struct context *c, const char *kill_msg);
+  */
+ void send_push_reply_auth_token(struct tls_multi *multi);
+ 
++/**
++ * Parses an AUTH_PENDING message and if in pull mode extends the timeout
++ *
++ * @param c             The context struct
++ * @param buffer        Buffer containing the control message with AUTH_PENDING
++ */
++void
++receive_auth_pending(struct context *c, const struct buffer *buffer);
++
+ #endif /* if P2MP */
+ #endif /* ifndef PUSH_H */
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 3fcaa25f..c019c194 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2218,6 +2218,7 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+         if(session->opt->pull)
+         {
+             iv_proto |= IV_PROTO_REQUEST_PUSH;
++            iv_proto |= IV_PROTO_AUTH_PENDING_KW;
+         }
+ 
+         buf_printf(&out, "IV_PROTO=%d\n", iv_proto);
+@@ -3669,6 +3670,8 @@ tls_pre_decrypt(struct tls_multi *multi,
+             }
+         }
+     }
++    /* Remember that we received a valid control channel packet */
++    ks->peer_last_packet = now;
+ 
+ done:
+     buf->len = 0;
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index 005628f6..cce61354 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -117,6 +117,9 @@
+ #define IV_PROTO_REQUEST_PUSH   (1<<2)
+ 
+ 
++/** Supports signaling keywords with AUTH_PENDING, e.g. timeout=xy */
++#define IV_PROTO_AUTH_PENDING_KW (1<<4)
++
+ /* Default field in X509 to be username */
+ #define X509_USERNAME_FIELD_DEFAULT "CN"
+ 
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 96897e48..d0a2c89b 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -178,6 +178,7 @@ struct key_state
+     time_t established;         /* when our state went S_ACTIVE */
+     time_t must_negotiate;      /* key negotiation times out if not finished before this time */
+     time_t must_die;            /* this object is destroyed at this time */
++    time_t peer_last_packet;    /* Last time we received a paket in this control session */
+ 
+     int initial_opcode;         /* our initial P_ opcode */
+     struct session_id session_id_remote; /* peer's random session ID */
 -- 
 2.26.2
 
