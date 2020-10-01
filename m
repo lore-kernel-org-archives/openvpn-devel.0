@@ -1,14 +1,14 @@
-References: <84a29b8afab02733064c2cf715ae0b8c.squirrel@...2257...>
+References: <CAL3L06F7YvNHSFxWXrMFZf_8fSjmCH-RkMn1GXmLu7cW-G1=nw@...278...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <f27fb070-c84e-2319-2db5-b0cda50fe3c9@...1227...>
-Date: Thu, 1 Oct 2020 14:10:28 +0200
+Message-ID: <d2d272dc-c058-deb1-eb3b-e850d833e326@...1227...>
+Date: Thu, 1 Oct 2020 14:23:00 +0200
 MIME-Version: 1.0
-In-Reply-To: <84a29b8afab02733064c2cf715ae0b8c.squirrel@...2257...>
+In-Reply-To: <CAL3L06F7YvNHSFxWXrMFZf_8fSjmCH-RkMn1GXmLu7cW-G1=nw@...278...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="dwPgmjRRRygYSweeLGOFvQeRDdMzDozAl"
-Subject: Re: [Openvpn-devel] Add --up-pre with the same functionality as
- --down-pre
+ boundary="R0vQzsuC0RDD9fJv4F5fYbWLQNB26TdjM"
+Subject: Re: [Openvpn-devel] [PATCH 1/1] Exit management interface loop
+ early on receiving 'remote MOD' message.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,83 +17,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Simon Matter <simon.matter@...2249...>, openvpn-devel@lists.sourceforge.net
+To: Daniel Kaldor <daniel@...2518...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---dwPgmjRRRygYSweeLGOFvQeRDdMzDozAl
-Content-Type: multipart/mixed; boundary="rm9wG3sRO003b1eSLV8NcZERkP5XZyTom"
+--R0vQzsuC0RDD9fJv4F5fYbWLQNB26TdjM
+Content-Type: multipart/mixed; boundary="jAlNgB2cIo2f4JmDfzpXznQmbbYmrUvd4"
 
---rm9wG3sRO003b1eSLV8NcZERkP5XZyTom
+--jAlNgB2cIo2f4JmDfzpXznQmbbYmrUvd4
 Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-Am 22.11.17 um 17:58 schrieb Simon Matter:
-> Hi,
+Am 03.07.19 um 16:50 schrieb Daniel Kaldor:
+> OpenVPN using management interface and running with
+> 'management-query-remote' in the config will wait for a 'remote MOD'
+> or 'remote ACCEPT' message before continuing with connection.
 >=20
-> In our situation we have the requirement to run scripts before tun/tap is
-> opened, not after. While this could be hacked into the init script, the
-> proper way seems to add it to openvpn as --up-pre option. That's
-> independent from any init scripts / systemd service file and works the
-> same way as --down-pre, only for the up status.
+> Logs indicate that this stage of the connection process currently
+> takes ~1s to complete.
+> This seems to be because the management interface polling loop is
+> being run once unnecessarily after receiving 'remote MOD' message, and
+> is only exiting after 1s timeout is reached on final polling loop.
 >=20
-> My initial feature wish, posted 5 years ago, was turned down as won't fix:
-> https://community.openvpn.net/openvpn/ticket/284
+> This change exits the polling loop early, immediately after receiving
+> 'remote MOD' message and removes 1s delay in connection.
 >=20
-> But there are people who wish it and they have good reasons to wish it.
-> Just yesterday someone asked again:
-> https://community.openvpn.net/openvpn/ticket/284#comment:10
 >=20
-> Without going into much details
-
-This patch currently misses a commit message anyway but a good commit
-should explain why this change is a good one.
-
-> just one thing why --up + --up-pre is
-> better than hacking around outside of openvpn: the command called with
-> --up also gets additional run time information from openvpn by parameters
-> and environmental variables. You don't get all those information when
-> calling anything from outside of openvpn before openvpn actually starts.
+> ---
+>  src/openvpn/manage.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
 >=20
-> If you feel there are good reasons to still refuse this patch, please let
-> me know.
+> diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+> index 2d86dad..7343e8b 100644
+> --- a/src/openvpn/manage.c
+> +++ b/src/openvpn/manage.c
+> @@ -3348,7 +3348,13 @@ management_event_loop_n_seconds(struct
+> management *man, int sec)
+>          /* run command processing event loop */
+>          do
+>          {
+> -            man_standalone_event_loop(man, &signal_received, expire);
+> +            int status =3D -1;
+> +
+> +            status =3D man_standalone_event_loop(man, &signal_received, =
+expire);
+> +            if (status > 0)
+> +            {
+> +                return;
+> +            }
+>              if (!signal_received)
+>              {
+>                  man_check_for_signals(&signal_received);
 
-I am just looking at this patch since it is still in the review queue.
 
-- Missing documentation.
-- pre-up flag is wrong in terms of scripts. If we add this, it needs to
-be a different script because otherwise you will break use cases that
-also need the --up script.
-
-Also having down and down-pre but then only not also up/up-pre but a up
-with flag breaks the symmetry and is confusing.
+I have no doubt that the patch fixes your particular problem but it
+modifies the management loop to exit early for all commands and this
+feels it could cause trouble for other commands. Did you test anything
+other your use case?
 
 Arne
 
 
---rm9wG3sRO003b1eSLV8NcZERkP5XZyTom--
+--jAlNgB2cIo2f4JmDfzpXznQmbbYmrUvd4--
 
---dwPgmjRRRygYSweeLGOFvQeRDdMzDozAl
+--R0vQzsuC0RDD9fJv4F5fYbWLQNB26TdjM
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl91xzQACgkQFRhsZwKx
-RFRjphAAizBq0wquU2YjUUvg6RwAsaBu+mouOa3wnkP2GIlAycch3f8p8MJ++HNw
-nFJR6B6UnB3E6J6mVVPRFyKk3/zLCwlHWLifUu8UaCEQn/8N5uaPL2RKiCc3l/zj
-dnIETv/+D9nKjq/8D5ckhnMG4Yjt1xqalCbF40m1f4o8c7BP/hJDvLjOamTu4MrY
-8VyPP7e9Ryvef0RS/iad0/7rYDhX1sUlJ9pyoPMMWtRL8TksAFfWgZULPakf9+Tb
-ozyFTkoUx6mlorGkWyU4jk75L7JQvMn5v0UHil+Abr5Hlk1uNHb60Q6bqOwZv9bM
-LxuFhdGXbN+/m0wXw7h8NzcwtpQ89X5PWMF2k0TkJitXqHtACrwNu7H5FqRIWc7/
-oYaloZcFU4taVMM8j6LpabzRzYD57Np80XFLO8zm+dsV5bzScnIWidI9wLSu05oK
-RYw8r+JUkWn/CuTNAXVhBGFUbRTPyBOd7tP2DkSyULBivSvKUMm10qcy6ngPPRXZ
-5zClLZUaENjxzBt5LS7BJI0iYMh0M8kJ50qQPd0V5cSg5SCPtHzb4FSk/wbaodSK
-p9V7R4OIk5dCdLJ0vjJUu5CCruv/CHS47YpgrJbjKhQTVoTN2AsTWC113drKqcsp
-JP/GMkvcODywSnwiYMPnt73SOwO7eaQKaE5twptdqX42YwsZxbY=
-=k+5H
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl91yiQACgkQFRhsZwKx
+RFQXsg//QqTpP9vUKQs//rbdd6ZqRmO2TGYXBqxZ89A4R0gwtlhnQLbET5DlZDnb
+X9KwL6oPe0duLR5c1UpJ8GXGvCm71yXJD3Sp2T0ka1t6XpSTEFiSVpLmdiwLiNDB
+lslbrd6N0mbq7pD5RltD0Pvp3Lpfabk/Td1208t8UTsAmauzFzxF5tlK64ZchO/q
+sDti5Af/w+Oyr7HNN3ohNCXs6bUnb1KtnAGlNhP9In98r3Xcehu1WJLaGuv7ZLws
+dbKnsiUfMlXTvfUxBLKrD0XVW2h42yMBirRrqZbWe07WeGkAY1DJkHFn3umIfknf
+xinBNm8qwdiLcDl8v2MzAmGeeuR+bWC6cdy2KJ3wQ9h9ucGEQXqHVpR5+65FvGnf
+dvmPN2FltICsfaBXQPvCeiA9XLXJmJEDTpQElnEN9rVdUM4TqXIasIpbDRG82g9M
+fDIx2ZhABmDiCDVlq2QdWzLFbNLcpUBDhfOhaZ8iW/mUq0OIRLpiTfrMdCpknYL3
+5hyLS1NkpO9Lv5jJGi302zTeaAxxRffRX0ffIwxOwxY7HPPjg75uNC8i8A3TTnS1
+NaNNMZFC8oy88lPTdcR8tv/HOBC7oJQbE86gf3irRFof+Cf7it+C6NjFZS/27Sfb
+WjOXJjBhz3UHnn92nnShtGzVt2bVS3ogOJ3YbK6PYNxV56x5OWw=
+=yFOo
 -----END PGP SIGNATURE-----
 
---dwPgmjRRRygYSweeLGOFvQeRDdMzDozAl--
+--R0vQzsuC0RDD9fJv4F5fYbWLQNB26TdjM--
 
