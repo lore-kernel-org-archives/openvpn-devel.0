@@ -1,10 +1,14 @@
+References: <20200927231513.27608-1-themiron@...2010...>
+ <20200927233224.2859-1-themiron@...2010...>
 From: Arne Schwabe <arne@...1227...>
-Date: Wed, 30 Sep 2020 15:13:10 +0200
-Message-Id: <20200930131317.1299-6-arne@...1227...>
-In-Reply-To: <20200930131317.1299-1-arne@...1227...>
-References: <20200930131317.1299-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 04/11] Introduce management client state for
- AUTH_PENDING notifications
+Message-ID: <b2adda31-c5e5-f05f-68c2-2b4d56e5174e@...1227...>
+Date: Thu, 1 Oct 2020 12:47:32 +0200
+MIME-Version: 1.0
+In-Reply-To: <20200927233224.2859-1-themiron@...2010...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="UtyLlEy0huEZEAU4VD9cQfnmzw3CfG4X5"
+Subject: Re: [Openvpn-devel] [PATCH] Speedup TCP remote hosts connections
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,85 +17,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Vladislav Grishenko <themiron@...2010...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--UtyLlEy0huEZEAU4VD9cQfnmzw3CfG4X5
+Content-Type: multipart/mixed; boundary="LIRS4cmig4oFOiSyAj8Fs7SpHYI9YY2wN"
+
+--LIRS4cmig4oFOiSyAj8Fs7SpHYI9YY2wN
+Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-This allows a UI client to display the correct state. Technically the
-client is still waiting for PUSH_REPLY but for every practical concern
-this is a different state as we are waiting for the pending
-authentication to finish.
+Am 28.09.20 um 01:32 schrieb Vladislav Grishenko:
+> For non-blocking TCP/Unix connection, OpenVPN checks was it established in
+> loop and if not - sleeps or handles management for next one second. Since
+> the first check is made right after the connection attempt, it will likely
+> be always unsuccessful, resulting in redundant wait for one or more secon=
+ds:
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/manage.c |  3 +++
- src/openvpn/manage.h |  2 ++
- src/openvpn/push.c   | 18 ++++++++++++++++++
- 3 files changed, 23 insertions(+)
+Okay, I looked at the code and you are right. That code is a mess. It
+basically calls select/pool with a timeout of 0, then actively does
+select/pool in management for 1s and does this in a loop. That this
+totally wrong indeed.
 
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 8df60d7a..58ff0155 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -171,6 +171,9 @@ man_state_name(const int state)
-         case OPENVPN_STATE_TCP_CONNECT:
-             return "TCP_CONNECT";
- 
-+        case OPENVPN_STATE_AUTH_PENDING:
-+            return "AUTH_PENDING";
-+
-         default:
-             return "?";
-     }
-diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index 1c497427..1681e141 100644
---- a/src/openvpn/manage.h
-+++ b/src/openvpn/manage.h
-@@ -506,6 +506,8 @@ management_enable_def_auth(const struct management *man)
- #define OPENVPN_STATE_GET_CONFIG    9  /* Downloading configuration from server */
- #define OPENVPN_STATE_RESOLVE       10 /* DNS lookup */
- #define OPENVPN_STATE_TCP_CONNECT   11 /* Connecting to TCP server */
-+#define OPENVPN_STATE_AUTH_PENDING  12 /* Waiting in auth-pending mode
-+                                        * techhnically variant of GET_CONFIG */
- 
- #define OPENVPN_STATE_CLIENT_BASE   7  /* Base index of client-only states */
- 
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index ece63650..59f8f33c 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -248,12 +248,30 @@ parse_auth_pending_keywords(const struct buffer *buffer,
-     if (!buf_advance(&buf, strlen("AUTH_PENDING"))
-         || !(buf_read_u8(&buf) == ',') || !BLEN(&buf))
-     {
-+#ifdef ENABLE_MANAGEMENT
-+        if (management)
-+        {
-+            management_set_state(management, OPENVPN_STATE_AUTH_PENDING,
-+                                 "", NULL, NULL, NULL, NULL);
-+        }
-+#endif
-+
-         return;
-     }
- 
-     /* parse the keywords in the same way that push options are parsed */
-     char line[OPTION_LINE_SIZE];
- 
-+#ifdef ENABLE_MANAGEMENT
-+    /* Need to do the management notification with the keywords before
-+     * buf_parse is called, as it will insert \0 bytes into the buffer */
-+    if (management)
-+    {
-+        management_set_state(management, OPENVPN_STATE_AUTH_PENDING,
-+                             BSTR(&buf), NULL, NULL, NULL, NULL);
-+    }
-+#endif
-+
-     while (buf_parse(&buf, ',', line, sizeof(line)))
-     {
-         if (sscanf(line, "timeout %u", server_timeout) == 1)
--- 
-2.26.2
+I think we should be more radical here. Always do a 1s poll/select
+timeout and do a 0s management sleep/poll. That will also make the
+code a bit simpler.
 
+Arne
+
+
+--LIRS4cmig4oFOiSyAj8Fs7SpHYI9YY2wN--
+
+--UtyLlEy0huEZEAU4VD9cQfnmzw3CfG4X5
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl91s8UACgkQFRhsZwKx
+RFRM0A/9F2chsSWVM0fupntAgBBC3ka5+SrraJs7E9eL2FM7mBF4QZoMirmBxODe
+uIaald58K9sOt8N4+KtPMdOD7uVbx3bh+Mpgcq21EYziAVWrddXAfXjiI/eW1EcJ
+viLc/0+QAaYq5jYw0HSpQcu/UjuKCgXql8n6cOtKQAQNF7ANmAzDKwuxPeGIPkoe
+cTi6atx61RULIECDeYqp27bgwiNOgf6HPRuKCucW5uWFFf1vtNPgXrdOoSGIm/VY
+3W0Cr+bQ1XbCKfrQorNrsT2dOMKRbZe24Zo4acM9ukX+aEiTW5ox3+lo1g+eTj79
+9ucMr/7xs3xzZM/ScFcYnQW8J8i8/ARS6L0QCF6pYNuXuKwKzy6ccncGkRym8c5s
+0M5i0aBUCXfsZrkAVAD1O9yYu736iPakbYoG1/BRRV5JjiAjjhU/+MzhTGayauDe
+ZW9cz8JVwWFte7ZfFt2MsO538AEEhBzgSguWvsr+mj0iJXnGRM9wLJj0cTuD41Pr
+9bMlVG0ATSvgAcQcBqiLXbDbi3KaQRyHBH8uXV+QUrEjpSw9/a9gmN1+9rekL9dF
+L9x2UE7JEWzRzwHV9ZZkZxsdUMNfiGk2G+PmEQuF/PjlFouP92VR9DDn3W1NrHJk
+FxQ2Ti8jHO9607gXxQ6P/UHaZRYe0h9AXtjT9Nh4wrNxy6/JNBA=
+=0eLl
+-----END PGP SIGNATURE-----
+
+--UtyLlEy0huEZEAU4VD9cQfnmzw3CfG4X5--
 
