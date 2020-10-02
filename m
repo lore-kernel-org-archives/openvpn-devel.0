@@ -1,14 +1,11 @@
-Date: Fri, 2 Oct 2020 18:34:44 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20201002163444.GG976@...1296...>
+Date: Fri,  2 Oct 2020 19:57:36 +0200
+Message-Id: <20201002175736.82609-1-gert@...1296...>
+In-Reply-To: <63aacbfb-20a0-de78-fccb-bbf8a2ad4189@...2318...>
 References: <63aacbfb-20a0-de78-fccb-bbf8a2ad4189@...2318...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="H7BIH7T1fRJ3RGOi"
-Content-Disposition: inline
-In-Reply-To: <63aacbfb-20a0-de78-fccb-bbf8a2ad4189@...2318...>
-Subject: Re: [Openvpn-devel] with IPv6 VPN connection,
- IPv4 traffic does not get router over VPN
+Subject: [Openvpn-devel] [PATCH] Fix redirecting of IPv4 default gateway if
+ connecting over IPv6.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,86 +14,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?iso-8859-1?Q?Fran=E7ois?= Kooman <fkooman@...2318...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---H7BIH7T1fRJ3RGOi
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Commit aa34684972eb0 fixed a long-standing bug in setting the
+"route-list" flag RTSA_REMOTE_HOST for IPv4 ("we have a well-defined
+remote_host == VPN server IP address") even if connecting over IPv6.
 
-Hi,
+Unfortunately the logic in redirect_default_route_to_vpn() was also
+wrong, and refused cooperation if that flag is not set, triggering
+the message
+    "NOTE: unable to redirect IPv4 default gateway -- Cannot
+     obtain current remote host address"
 
-On Fri, Oct 02, 2020 at 03:26:29PM +0200, Fran=E7ois Kooman wrote:
-> The log shows this "NOTE": 2020-10-02 06:20:07 NOTE: unable to redirect=20
-> IPv4 default gateway -- Cannot obtain current remote host address
+Correct operation: if RTSA_REMOTE_HOST is not set, or remote_host
+is IPV4_INVALID_ADDR (= 255.255.255.255), do not try to install a
+host route for continued connectivity to the VPN server - which is
+not needed when connecting over IPv6.  But the actual *routes*
+(/0 or 2 x /1) can be installed just fine.
 
-I have a patch for that one already, which is fairly obvious:
+There is a second bug here, which hits if there is no IPv4 gateway
+at all.  In that case, the same function triggers the message
+    "NOTE: unable to redirect IPv4 default gateway -- Cannot
+     read current default gateway from system"
+
+This is caused by using "IPV4_INVALID_ADDR" as a flag for "do we
+know the remote_host?" - which worked before, but after the commit
+said above, the "remote_host" field is not well-defined unless
+RTSA_REMOTE_HOST is set.  So, change the condition to check that.
+
+Reported-By: François Kooman <fkooman@...2318...>
+Reported-By: Thomas Schäfer <tschaefer@...75...>
+Trac: #1332
+
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/route.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
 diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index d75aa5f4..490d6d51 100644
+index d75aa5f4..8037d8b3 100644
 --- a/src/openvpn/route.c
 +++ b/src/openvpn/route.c
-@@ -1015,10 +1015,6 @@ redirect_default_route_to_vpn(struct route_list *rl,=
- const struct tuntap *tt,
+@@ -1011,14 +1011,10 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt,
+          * - we are connecting to a non-IPv4 remote host (i.e. we use IPv6)
+          */
+         else if (!(rl->rgi.flags & RGI_ADDR_DEFINED) && !local
+-                 && (rl->spec.remote_host != IPV4_INVALID_ADDR))
++                 && (rl->spec.flags & RTSA_REMOTE_HOST))
          {
-             msg(M_WARN, "%s Cannot read current default gateway from syste=
-m", err);
+             msg(M_WARN, "%s Cannot read current default gateway from system", err);
          }
 -        else if (!(rl->spec.flags & RTSA_REMOTE_HOST))
 -        {
--            msg(M_WARN, "%s Cannot obtain current remote host address", er=
-r);
+-            msg(M_WARN, "%s Cannot obtain current remote host address", err);
 -        }
          else
          {
  #ifndef TARGET_ANDROID
-@@ -1041,7 +1037,8 @@ redirect_default_route_to_vpn(struct route_list *rl, =
-const struct tuntap *tt,
+@@ -1041,7 +1037,8 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt,
                  /* route remote host to original default gateway */
                  /* if remote_host is not ipv4 (ie: ipv6), just skip
                   * adding this special /32 route */
--                if (rl->spec.remote_host !=3D IPV4_INVALID_ADDR)
+-                if (rl->spec.remote_host != IPV4_INVALID_ADDR)
 +                if ((rl->spec.flags & RTSA_REMOTE_HOST)
-+                    && rl->spec.remote_host !=3D IPV4_INVALID_ADDR)
++                    && rl->spec.remote_host != IPV4_INVALID_ADDR)
                  {
                      add_route3(rl->spec.remote_host,
                                 IPV4_NETMASK_HOST,
+-- 
+2.28.0
 
-
-... but it's incomplete, as the "if there is no ipv4 gateway at all"
-case is also broken (Thomas Sch=E4fer reported this).
-
-This is just a HEADS UP ("I am working on it, and if you want, you can
-comment on the solution I found"), a proper patch will follow tonight.
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---H7BIH7T1fRJ3RGOi
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJfd1akAAoJEB2Cnv7KVigSNTEL/2XT0iBlYlGZM47c7n0Ei6PT
-/nm2lou8TScjCYmo2dw03j0WqnKMAXQ47igjEsi8NgFPVwEHFETgSY6iUvZFw60H
-w+uNETdOM8vYCzD3gsoi0+hPL+aFLojA2in4VFvvF2hhnVIw8iArxgabUGVtbnAK
-eHJqVO4+o3cHPNgLWqt/WiDSA/WKzHeiAhUYo+tz7ysGrA2hXg82riMcFqUnYrJN
-zRIWZ3cXieWC71IXWD71cKZTHnER1vvBNmaZ32OhaVDVPZBNyFvg+rx6ebTGg0pI
-CwBjKx7EtIgeSEU3PCawi+aMvDuyTPq9qECWjXKbEglPp/NmYPvMo6TGcX3xbl4b
-tbpGpvE6+XYLZVdP+nF3Epn7U1sKObxG/JWBLZPkqqVYk1gebwwPAVz04vTmml4z
-WaBeXbhnzKwisiN8/0rohDVsH78M17vaXXqgAG+wnb/z/QKFHD8qEpUPBUj2JSeS
-qcHVoZzxHwrPQe6dfWFvEepCH45T6ZCNzuCO++vlyw==
-=YQII
------END PGP SIGNATURE-----
-
---H7BIH7T1fRJ3RGOi--
 
