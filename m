@@ -1,11 +1,10 @@
+Date: Fri, 2 Oct 2020 21:33:08 +0200 (CEST)
+Message-Id: <202010021933.092JX8FB099292@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Fri,  2 Oct 2020 19:57:36 +0200
-Message-Id: <20201002175736.82609-1-gert@...1296...>
-In-Reply-To: <63aacbfb-20a0-de78-fccb-bbf8a2ad4189@...2318...>
-References: <63aacbfb-20a0-de78-fccb-bbf8a2ad4189@...2318...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix redirecting of IPv4 default gateway if
- connecting over IPv6.
+In-Reply-To: <20200924091004.29065-1-themiron@...2010...>
+References: <20200924091004.29065-1-themiron@...2010...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Selectively reformat too long
+ lines
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,74 +15,59 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Vladislav Grishenko <themiron@...2010...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Commit aa34684972eb0 fixed a long-standing bug in setting the
-"route-list" flag RTSA_REMOTE_HOST for IPv4 ("we have a well-defined
-remote_host == VPN server IP address") even if connecting over IPv6.
+Your patch has been applied to the master and release/2.5 branch.
 
-Unfortunately the logic in redirect_default_route_to_vpn() was also
-wrong, and refused cooperation if that flag is not set, triggering
-the message
-    "NOTE: unable to redirect IPv4 default gateway -- Cannot
-     obtain current remote host address"
+I am not particularily happy about merging this sort of "cleanup"
+patch so late before 2.5 release - *but* I have very carefully
+checked that it's really all just re-wrapping long function
+calls, or long text strings, so the danger to 2.5 stability is
+minimal.  OTOH, not merging this to release/2.5 means more work
+for all future bugfixes that happen to be close enough to one
+of these changes so the "diff context" is changed.  So, in it
+goes.
 
-Correct operation: if RTSA_REMOTE_HOST is not set, or remote_host
-is IPV4_INVALID_ADDR (= 255.255.255.255), do not try to install a
-host route for continued connectivity to the VPN server - which is
-not needed when connecting over IPv6.  But the actual *routes*
-(/0 or 2 x /1) can be installed just fine.
+As a side note - but too late to stop it, as Arne and Antonio
+have spoken - I do not think this sort of change is actually
+making the code *more* readable:
 
-There is a second bug here, which hits if there is no IPv4 gateway
-at all.  In that case, the same function triggers the message
-    "NOTE: unable to redirect IPv4 default gateway -- Cannot
-     read current default gateway from system"
+-        msg(M_WARN, "DEPRECATED OPTION: --inetd mode is deprecated "
+-            "and will be removed in OpenVPN 2.6");
++        msg(M_WARN,
++            "DEPRECATED OPTION: --inetd mode is deprecated and will be removed "
++            "in OpenVPN 2.6");
 
-This is caused by using "IPV4_INVALID_ADDR" as a flag for "do we
-know the remote_host?" - which worked before, but after the commit
-said above, the "remote_host" field is not well-defined unless
-RTSA_REMOTE_HOST is set.  So, change the condition to check that.
+it's basically making 3 lines out of two, while the text still needs 
+to be wrapped.  So instead of "two lengthy" lines, we now have "one
+very short line, one very long line, and one short line again" - I find
+that *less* readable, and since the old code conformed to the 80 character
+limit, it's commit noise which makes "git blame" harder to follow, with
+questionable benefit.
 
-Reported-By: François Kooman <fkooman@...2318...>
-Reported-By: Thomas Schäfer <tschaefer@...75...>
-Trac: #1332
+We need to cover this in the style guide, to make clear which variant
+is preferred (if the text fits into one line if putting it onto its
+own line, this is a different story).
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/openvpn/route.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index d75aa5f4..8037d8b3 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -1011,14 +1011,10 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt,
-          * - we are connecting to a non-IPv4 remote host (i.e. we use IPv6)
-          */
-         else if (!(rl->rgi.flags & RGI_ADDR_DEFINED) && !local
--                 && (rl->spec.remote_host != IPV4_INVALID_ADDR))
-+                 && (rl->spec.flags & RTSA_REMOTE_HOST))
-         {
-             msg(M_WARN, "%s Cannot read current default gateway from system", err);
-         }
--        else if (!(rl->spec.flags & RTSA_REMOTE_HOST))
--        {
--            msg(M_WARN, "%s Cannot obtain current remote host address", err);
--        }
-         else
-         {
- #ifndef TARGET_ANDROID
-@@ -1041,7 +1037,8 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt,
-                 /* route remote host to original default gateway */
-                 /* if remote_host is not ipv4 (ie: ipv6), just skip
-                  * adding this special /32 route */
--                if (rl->spec.remote_host != IPV4_INVALID_ADDR)
-+                if ((rl->spec.flags & RTSA_REMOTE_HOST)
-+                    && rl->spec.remote_host != IPV4_INVALID_ADDR)
-                 {
-                     add_route3(rl->spec.remote_host,
-                                IPV4_NETMASK_HOST,
--- 
-2.28.0
+commit a5409c0d34bf02cacdee61d61ba7b3e1f72e132f (master)
+commit c055e28654f340c617a2b0eece7fa28c79c1a9fc (release/2.5)
+Author: Vladislav Grishenko
+Date:   Thu Sep 24 14:10:04 2020 +0500
+
+     Selectively reformat too long lines
+
+     Signed-off-by: Vladislav Grishenko <themiron@...2010...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20200924091004.29065-1-themiron@...2010...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21083.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
