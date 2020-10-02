@@ -1,12 +1,11 @@
-References: <20201001154658.9798-1-davids@...515...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <346aa358-47be-2563-a75c-3ef81b3a5e8f@...1227...>
-Date: Fri, 2 Oct 2020 10:50:11 +0200
 MIME-Version: 1.0
-In-Reply-To: <20201001154658.9798-1-davids@...515...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="rAp7u7mD9FhgQMbhB9FqBrdKqcJScCwPS"
+References: <20201001154658.9798-1-davids@...515...>
+ <346aa358-47be-2563-a75c-3ef81b3a5e8f@...1227...>
+In-Reply-To: <346aa358-47be-2563-a75c-3ef81b3a5e8f@...1227...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Fri, 2 Oct 2020 15:03:12 +0500
+Message-ID: <CAFHpkQFaeM4pWsvyHC+ysSwL7OJLVW1fMzk7VxYAnCLJi6GOiw@...278...>
+Content-Type: multipart/alternative; boundary="00000000000035d1d405b0ad3ee4"
 Subject: Re: [Openvpn-devel] [PATCH] compat/lz4: Update to v1.9.2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -16,60 +15,92 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <davids@...515...>, openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: David Sommerseth <davids@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---rAp7u7mD9FhgQMbhB9FqBrdKqcJScCwPS
-Content-Type: multipart/mixed; boundary="YfuHqH0eVQ6oeNvYETZE4mF5TL0MVU9wG"
-
---YfuHqH0eVQ6oeNvYETZE4mF5TL0MVU9wG
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
+--00000000000035d1d405b0ad3ee4
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Am 01.10.20 um 17:46 schrieb David Sommerseth:
-> It's a long while since the bundled lz4 library has received an update.
-> It pulls in a lot of various fixes and enhancements, some of the changes
-> fixes compiler warnings and hardens the code a bit too.
->=20
+=D0=BF=D1=82, 2 =D0=BE=D0=BA=D1=82. 2020 =D0=B3. =D0=B2 13:51, Arne Schwabe=
+ <arne@...1227...>:
 
-Ack for release/2.5. I double checked that the file is identical (modulo
-compat defines) to the upsteam.
+> Am 01.10.20 um 17:46 schrieb David Sommerseth:
+> > It's a long while since the bundled lz4 library has received an update.
+> > It pulls in a lot of various fixes and enhancements, some of the changes
+> > fixes compiler warnings and hardens the code a bit too.
+> >
+>
+> Ack for release/2.5. I double checked that the file is identical (modulo
+> compat defines) to the upsteam.
+>
+> I think that this file is outdated so much shows that we do not really
+> care about compression so much. Also since we included it, lz4 libraries
+> have been available on all major distribution and not having lz4 is not
+> as problematic as before. For master I would like to see this
+> compat-lz4.* removed instead of being updated. For the 2.5.0 release it
+> is too late to remove, so okay for that.
+>
 
-I think that this file is outdated so much shows that we do not really
-care about compression so much. Also since we included it, lz4 libraries
-have been available on all major distribution and not having lz4 is not
-as problematic as before. For master I would like to see this
-compat-lz4.* removed instead of being updated. For the 2.5.0 release it
-is too late to remove, so okay for that.
+
+windows build process uses bundled lz4. if we simply remove it, windows
+build silently switch to "no lz4 enabled ... and that is ok"
 
 
-Acked-By: Arne Schwabe <arne@...1227...>
+>
+>
+> Acked-By: Arne Schwabe <arne@...1227...>
+>
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
 
+--00000000000035d1d405b0ad3ee4
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
---YfuHqH0eVQ6oeNvYETZE4mF5TL0MVU9wG--
+<div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote">=
+<div dir=3D"ltr" class=3D"gmail_attr">=D0=BF=D1=82, 2 =D0=BE=D0=BA=D1=82. 2=
+020 =D0=B3. =D0=B2 13:51, Arne Schwabe &lt;<a href=3D"mailto:arne@...2477...=
+.">arne@...1227...</a>&gt;:<br></div><blockquote class=3D"gmail_quote" styl=
+e=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);paddin=
+g-left:1ex">Am 01.10.20 um 17:46 schrieb David Sommerseth:<br>
+&gt; It&#39;s a long while since the bundled lz4 library has received an up=
+date.<br>
+&gt; It pulls in a lot of various fixes and enhancements, some of the chang=
+es<br>
+&gt; fixes compiler warnings and hardens the code a bit too.<br>
+&gt; <br>
+<br>
+Ack for release/2.5. I double checked that the file is identical (modulo<br>
+compat defines) to the upsteam.<br>
+<br>
+I think that this file is outdated so much shows that we do not really<br>
+care about compression so much. Also since we included it, lz4 libraries<br>
+have been available on all major distribution and not having lz4 is not<br>
+as problematic as before. For master I would like to see this<br>
+compat-lz4.* removed instead of being updated. For the 2.5.0 release it<br>
+is too late to remove, so okay for that.<br></blockquote><div><br></div><di=
+v><br></div><div>windows build process uses bundled lz4. if we simply remov=
+e it, windows build silently switch to &quot;no lz4 enabled ... and that is=
+ ok&quot;<br></div><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=
+=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding=
+-left:1ex">
+<br>
+<br>
+Acked-By: Arne Schwabe &lt;<a href=3D"mailto:arne@...1227..." target=3D"_bl=
+ank">arne@...1227...</a>&gt;<br>
+<br>
+_______________________________________________<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
+envpn-devel@lists.sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
+=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
+nfo/openvpn-devel</a><br>
+</blockquote></div></div>
 
---rAp7u7mD9FhgQMbhB9FqBrdKqcJScCwPS
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE88wmPb+Azu8xbws3FRhsZwKxRFQFAl926cMACgkQFRhsZwKx
-RFRxtRAAlyhXjkAXEM/SGzBJ77vc1T73Urkjt5PxHS6trAqn9ERl2D0CS9A8wmDH
-WeMqdwLKUHxBPgUkNaA/51w95fvsFkHQlyzTKYHEddzXyzpE7q8P638Bc2ONJJM2
-unHqcT9qinMQdSwSAGTmdSmHPoFYaShKK/vpUb8q4D63BXlXd0556P2iuKgKMH2f
-Ax6DsoGi1aple0BQskNW1DAL1y/GsCncBDDzaToasulfca7yUGG4azla3xTmqYut
-Twqe2Iuu8GnMYACFNS6kvJ3uaZ+AKQlLWRxnbFCe3R11AbYE9poAZXnPXWhtwzEP
-tFZJSb/+QYCTgC+JHIWV8RC3A9qbceUHqALbitTpcdaVcb6wkDSKg0pfjphKmgwl
-f0bLy+C9mtmc8AZZ3Jxv/lRQi4kM/td6Zhezbmru9QBNsuZEL/IDGtxrz94PBxAE
-dCR032dU8nSUBuY46eJ4oSprKhXpaaj3vhfzlRUmlLiki0DzVdfS9ZZApo2bT/XA
-VKApuNrqwmgby++qHUsU40V41OYN/r/JzL6qIAAVuBGh1f3LGmaCDA+DgjqoD67V
-NpCE+fEs0lqu/0f0L/vPSYXFKYkv+7KEa/C1tH7P4rdleLysJYaONv53EKeLLRWO
-5hK4odeP1NdzzudHOFgs22okNsGaUBLpypfwKlyHLOrlxB2QdNY=
-=OQrD
------END PGP SIGNATURE-----
-
---rAp7u7mD9FhgQMbhB9FqBrdKqcJScCwPS--
+--00000000000035d1d405b0ad3ee4--
 
