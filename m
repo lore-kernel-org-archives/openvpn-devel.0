@@ -1,11 +1,13 @@
+Date: Fri, 2 Oct 2020 17:34:12 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20201002153412.GE976@...1296...>
 References: <63aacbfb-20a0-de78-fccb-bbf8a2ad4189@...2318...>
- <b4686963-bb89-8777-94f2-caf3ceca8328@...1227...>
-From: =?UTF-8?Q?Fran=c3=a7ois_Kooman?= <fkooman@...2318...>
-Message-ID: <87553ed7-7289-39e2-3530-a01966f96d4f@...2318...>
-Date: Fri, 2 Oct 2020 17:26:37 +0200
+ <20201002150533.GC976@...1296...>
 MIME-Version: 1.0
-In-Reply-To: <b4686963-bb89-8777-94f2-caf3ceca8328@...1227...>
-Content-Language: en-US
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="ZcaUvQ23gCOmDTXi"
+Content-Disposition: inline
+In-Reply-To: <20201002150533.GC976@...1296...>
 Subject: Re: [Openvpn-devel] with IPv6 VPN connection,
  IPv4 traffic does not get router over VPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,19 +18,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: =?iso-8859-1?Q?Fran=E7ois?= Kooman <fkooman@...2318...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On 10/2/20 5:12 PM, Arne Schwabe wrote:
-> Is that a host that does not have a ipv4 default gw at all? Like IPv6
-> only connectivity?
+--ZcaUvQ23gCOmDTXi
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-It does, it has both IPv4 (RFC 1918) and IPv6 (Public IP) connectivity 
-behind a FritzBox. Both IPv4 and IPv6 work fine (checked it using v6.de) 
-without VPN. When starting the VPN, the IPv6 address changes, but the 
-IPv4 address stays the same indicating IPv4 traffic stays out of the tunnel.
+Hi,
 
-Regards,
-François
+On Fri, Oct 02, 2020 at 05:05:33PM +0200, Gert Doering wrote:
+> I'll open a "blocker" ticket in trac...
+
+https://community.openvpn.net/openvpn/ticket/1332
+
+JFTR
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--ZcaUvQ23gCOmDTXi
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJfd0hzAAoJEB2Cnv7KVigSkjsL/ikjcBbcEFfvAREDavp/3W7x
+23bt90d2XZMXExmBFqSfhP7Ot/IgtGdJQSgChw47Bx3LVuAX4c6lpeiuSRmPe9Hq
+O3bDdurHUnVRKOFiKWB7r0P0Ywxm9/p3duB9GqjozoHYR+qfqnmy7K3rpGv2tkCI
+1ruiFEkC/dzsYddCjcJ0Scj+qAtH4HoRN4aFqt9Ii8U/jrVuEVRI0D1E1klYRRen
+HCgx/f5Oh+tN/cpQ8ry9+PT8pwSEGSbduoD8ercvr2GIuLnRzuR56ElNqJ7NJdai
+W8EEuUXZFT+OY/ZApeVq+jswD+ChqL/nx5cyKqd+vjHzceFCzLF/qzQ7qk/BUwKq
+7DsVXsEpThO8ys0mRX6Dntw8d9kN7PfBkhr3XL+cHeCNjl7VMTFqKP3MS7dJxUsR
+35aUDs8vpJYj5B2emkA+vXnmrT5gCiiE3LssU5zq1EtbEeZGTFlsLKaCDAmeiy39
+n8GoQr6gubjxMK5MCQzSdcFnOD9KBR09KaviFluSSQ==
+=ahrK
+-----END PGP SIGNATURE-----
+
+--ZcaUvQ23gCOmDTXi--
 
