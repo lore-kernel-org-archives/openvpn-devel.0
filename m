@@ -1,15 +1,13 @@
-Date: Sun, 4 Oct 2020 18:08:13 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20201004160813.GO976@...1296...>
-References: <b1352a58-c9a1-ab2d-f85d-c419c8887ef0@...515...>
- <1759346.tdWV9SEqCh@...2258...>
+References: <63aacbfb-20a0-de78-fccb-bbf8a2ad4189@...2318...>
+ <20201004160510.GN976@...1296...>
+From: =?UTF-8?Q?Fran=c3=a7ois_Kooman?= <fkooman@...2318...>
+Message-ID: <51d6ba69-e7bc-027f-47cc-1f9a6192b17c@...2318...>
+Date: Sun, 4 Oct 2020 19:32:36 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="2IUIi54rL+LZyXu+"
-Content-Disposition: inline
-In-Reply-To: <1759346.tdWV9SEqCh@...2258...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.5-rc1 released unable to redirect
- IPv4 default gateway under Windows
+In-Reply-To: <20201004160510.GN976@...1296...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] with IPv6 VPN connection,
+ IPv4 traffic does not get router over VPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,63 +16,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Thomas =?iso-8859-1?Q?Sch=E4fer?= <tschaefer@...75...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---2IUIi54rL+LZyXu+
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="windows-1252"; format="flowed"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi Thomas,
+On 10/4/20 6:05 PM, Gert Doering wrote:
+> If you build your own openvpn, I'd appreciate quick feedback :-) -
+> otherwise, we'll release a RC3 "this week", so you can test this with
+> pre-built binaries as well.
 
-On Tue, Sep 22, 2020 at 04:21:49PM +0200, Thomas Sch=E4fer wrote:
-> I get=20
-> Note: unable to redirect IPv4 default gateway -- Cannot read current defa=
-ult gateway from system
+Just tested it on Linux, and it works like a charm now! I was already
+running OpenVPN 2.5 on my desktop, but never ran into this issue as
+NetworkManager takes care of routing all traffic over the VPN, no matter
+the redirect-gateway flags.
 
-I'm fairly sure I found this, and a fix has been merged today.
+Testing it from the CLI shows the bug in rc2. It works now with the
+latest version from release/2.5.
 
-I expect us to release a RC3 this week, so it can be thoroughly tested.
+Tested with:
 
-(You saw the same effect before, but it was a different bug this time...
-I've already increased my testing coverage on one of the build machines
-now to actually test redirecting v4/v6 gateway, over v4/v6 connections,
-and will add one more test machine that has no default route, with the
-same test cases - so, hopefully, preventing this from ever happening
-again)
+2020-10-04 19:27:04 OpenVPN 2.5_rc2 [git:release/2.5/7b4f53095c761bde]=20
+x86_64-pc-linux-gnu [SSL (OpenSSL)] [LZO] [LZ4] [EPOLL] [MH/PKTINFO]=20
+[AEAD] built on Oct  4 2020
+2020-10-04 19:27:04 library versions: OpenSSL 1.1.1g FIPS  21 Apr 2020,=20
+LZO 2.10
 
-thanks for testing & reporting.
+I don't have Windows building setup, so that will have to wait until rc3 :)
 
-gert
+Thanks!
 
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---2IUIi54rL+LZyXu+
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJfefNsAAoJEB2Cnv7KVigS3nkL/02x3XzH7yPcdazQ5Kf/RLA1
-9//RY125pOXPHdBxgmuWdlchNNPzSW+nZSghmkxf6dj6ZXSUoWGMlqQQpMEXcXif
-YN7UqJcTM4UU2uv3BmeIrwajZsfkxNQ7Udc2k2XfFFVz3hfszkn33FuuyAGcibHW
-XNsySEV0OAgwAw/zCETyxP0Qh+V7f3e49XtaH4AXfRCgBohsF9Hro5LwsD1rOOb0
-4yy1JwC0mCpEUEMMBALXrVdIrwbhbWVwiuv+/BZ5dmYOVLK7jhKLPcvhRVUZYEhp
-eDgAoO85EIghj7tMpfIpCR4LqgvNcwFtFxGAh1B22jZsV4hhVGqTp1ZtCEE0ITN1
-J2OqMkK13LTbZMsDH1kAi09cGg3vQRVb08K7ZqZ8OInumrWbhx5tgDUuwj+suAtd
-8cy72owUAS+dMgcnxzoLQGK9rkUcNzhuzSP0NGybYUtRQirkwmij6192Ptwr7z72
-SWz39dndQKLmh7/LrGG9VTK72zwwuuCmmGEvo+eHVg==
-=m3aG
------END PGP SIGNATURE-----
-
---2IUIi54rL+LZyXu+--
+Regards,
+Fran=E7ois
 
