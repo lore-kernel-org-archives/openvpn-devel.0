@@ -1,15 +1,10 @@
-Date: Sun, 4 Oct 2020 15:14:57 +0200
+Date: Sun, 4 Oct 2020 15:53:58 +0200 (CEST)
+Message-Id: <202010041353.094Drwux046819@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20201004131457.GL976@...1296...>
-References: <20200930131317.1299-1-arne@...1227...>
- <20200930131317.1299-2-arne@...1227...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="Nm48CqPeykZpOG4/"
-Content-Disposition: inline
-In-Reply-To: <20200930131317.1299-2-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Allow 'none' cipher being specified in
- --data-ciphers
+In-Reply-To: <20200930064845.28022-1-jan.seeger@...2574...>
+References: <20200930064845.28022-1-jan.seeger@...2574...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Added environment variable for
+ IPv6 route metric.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,72 +13,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Jan Seeger <jan.seeger@...2574...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---Nm48CqPeykZpOG4/
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Acked-by: Gert Doering <gert@...1296...>
 
-Hi,
+I have not actually tested this (I have no testbed with IPv6 route
+metrics, and I do not feel like creating one).  So I have only test-
+compiled this, and "stared at code", which looks good.
 
-On Wed, Sep 30, 2020 at 03:13:06PM +0200, Arne Schwabe wrote:
-> Although we want to get rid of none as cipher, we still have not
-> deprecated it. In order to use it currently you need
-> --ncp-disable together with --cipher none to use the none cipher.
->=20
-> In our current situation allowing none to be specified in data-ciphers
-> is the lesser evil.
->=20
-> This commit also fixes that we use '[null-cipher]' instead 'none' when
-> setting remote_cipher
->=20
-> Patch V2: Also work correctly if remote_cipher is NULL.
+Your patch has been applied to the master and release/2.5 branch.
 
-I was about to ACK-and-merge it, but it fails the "ping IPv4 with 3000 byte=
-s"
-test, triggering
+I have slightly reworded the commit message (as Antonio remarked) to
+mention the actual *name* of the added environment variable.
 
-2020-10-04 15:10:58 us=3D638418 cron2-freebsd-tc-amd64/2001:608:0:814::f000=
-:21 TCP/UDP packet too large on write to [AF_INET6]2001:608:0:814::f000:21:=
-50629 (tried=3D1529,max=3D1526)
+commit bfb288454aa43f8c2d0131bc87b48a37e4ab01b4 (master)
+commit 956c5af148d0f6d9b70d0498a499f6b70c8e8035 (HEAD -> release/2.5)
+Author: Jan Seeger
+Date:   Wed Sep 30 08:48:45 2020 +0200
 
-on the server side.
+     Added 'route_ipv6_metric_NN' environment variable for IPv6 route metric.
 
-"Wat?"
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20200930064845.28022-1-jan.seeger@...2574...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21110.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-(I could speculate that this was always broken for --cipher none, but
-since you've made me add two new testcases for it, I want this to actually
-work...)
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+--
+kind regards,
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Gert Doering
 
---Nm48CqPeykZpOG4/
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJfecrQAAoJEB2Cnv7KVigSxJwL/itsWVLtBiMl21TeL/x0SiQB
-0gNntyttbutZPe1QXm+NuPNYfbufV9jp3JPc3ydFdNQHkO7gSRRjLyu87qaH4u0/
-ovKgKO7JJs0sVTfWtUUqSCJfkOS+Vz73KMhF3+4UQx48+8YEUXwM11VwDhKYvJUh
-5LI9nLGrpMOs3v7LMd/63/NvQuTQeqHJajHzafkk+f0u625xkqHf7R8/fHLStghh
-hZLyNb1SsEsZtYwGML0TiKV9Z9o/sTrpl5yEQbgB0JGAdpopZQdbxMU9eq998TmR
-SrWHgT3bskDlKOF2sauihdjaz7lF8WHCfbp4yvoPaTYJxkXitio3am1aNB8I0aRT
-3GQhUNktlRFtmpoO666SSyre2Nuz17x5krVXYku6hbCH+2cjYUH8cjNXrIUJW9WZ
-0KyRudL5w0VfA+AfDOFGESEIC9EiYMInwUSNgVc9M6l4I7sL/OTWWG+l9kkcZV+E
-wv3YmKq1SJxG5aBufB9OPJvOurgayoUBNn68cU26Kg==
-=WHeP
------END PGP SIGNATURE-----
-
---Nm48CqPeykZpOG4/--
 
