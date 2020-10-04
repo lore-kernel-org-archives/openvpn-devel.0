@@ -1,16 +1,13 @@
-Date: Sun, 4 Oct 2020 17:35:32 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20201004153532.GM976@...1296...>
-References: <20200930131317.1299-1-arne@...1227...>
- <20200930131317.1299-2-arne@...1227...>
- <20201004131457.GL976@...1296...>
+References: <63aacbfb-20a0-de78-fccb-bbf8a2ad4189@...2318...>
+ <20201002175736.82609-1-gert@...1296...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <2df84a05-9234-b0e6-2d96-abc8800d0494@...2181...>
+Date: Sun, 4 Oct 2020 17:42:26 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="cX4WM3qIY/fHWHDu"
-Content-Disposition: inline
-In-Reply-To: <20201004131457.GL976@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Allow 'none' cipher being specified in
- --data-ciphers
+In-Reply-To: <20201002175736.82609-1-gert@...1296...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] Fix redirecting of IPv4 default gateway
+ if connecting over IPv6.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,51 +16,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---cX4WM3qIY/fHWHDu
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Sun, Oct 04, 2020 at 03:14:57PM +0200, Gert Doering wrote:
-> "Wat?"
+On 02/10/2020 19:57, Gert Doering wrote:
+> Commit aa34684972eb0 fixed a long-standing bug in setting the
+> "route-list" flag RTSA_REMOTE_HOST for IPv4 ("we have a well-defined
+> remote_host == VPN server IP address") even if connecting over IPv6.
+> 
+> Unfortunately the logic in redirect_default_route_to_vpn() was also
+> wrong, and refused cooperation if that flag is not set, triggering
+> the message
+>     "NOTE: unable to redirect IPv4 default gateway -- Cannot
+>      obtain current remote host address"
+> 
+> Correct operation: if RTSA_REMOTE_HOST is not set, or remote_host
+> is IPV4_INVALID_ADDR (= 255.255.255.255), do not try to install a
+> host route for continued connectivity to the VPN server - which is
+> not needed when connecting over IPv6.  But the actual *routes*
+> (/0 or 2 x /1) can be installed just fine.
+> 
+> There is a second bug here, which hits if there is no IPv4 gateway
+> at all.  In that case, the same function triggers the message
+>     "NOTE: unable to redirect IPv4 default gateway -- Cannot
+>      read current default gateway from system"
+> 
+> This is caused by using "IPV4_INVALID_ADDR" as a flag for "do we
+> know the remote_host?" - which worked before, but after the commit
+> said above, the "remote_host" field is not well-defined unless
+> RTSA_REMOTE_HOST is set.  So, change the condition to check that.
+> 
+> Reported-By: François Kooman <fkooman@...2318...>
+> Reported-By: Thomas Schäfer <tschaefer@...75...>
+> Trac: #1332
+> 
+> Signed-off-by: Gert Doering <gert@...1296...>
 
-Also, the unit test fails for me (on Linux):
+The bug becomes obvious after reading commit aa34684972eb0
+This fix is basically cleaning up some conditions which did not adapt to
+the new logic.
 
-[ RUN      ] test_poor_man
-[  ERROR   ] --- Test failed with exception: Segmentation fault(11)
+Stared at the code and tested on my system with and without an IPv4
+default route.
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Signed-off-by: Antonio Quartulli <a@...2181...>
 
-Gert Doering - Munich, Germany                             gert@...1296...
 
---cX4WM3qIY/fHWHDu
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJfeevDAAoJEB2Cnv7KVigSyCMMAJRvTgGiHCQi1DM2EsjXoOPT
-VOIqfD6deUauENI39PrfL3CkgfJx8siQNNRKplVxaMIq2/DDob3S9RU3+fp8ARAc
-B7SESoVijchdfv/4KCZKtAAra924+42SC+DyxxaTzCR3mRVqtdsXmKGYyds3nswT
-ogqYoZW+Lnzu/GVfiGKg7OG+MCJsut9OtFPxirRTRvLt2fpNt3SBLOwujtGEHUV9
-2XAIa4D5F5xNlbAUeT9oHjN7z4xi4DTZ2/PVdy+qh29Pr8nc71nMebUbx411vJgn
-0xy9HHrApbyTYjA/KdFzrMHjXkIyfpl4qRR9bYuiiVB24zPZDgoxIzoxqyW91NnF
-pE/cvIVeMl3VmwNZZKcxVzRO0U0RzT37fVX6ghadTdEk3PKoX9F/aAL5gtu+Ecdi
-1hU0rRm/zFShVHBowsmUsFrAeb1F5BQt8tRDQED2gJO5Dfg5zj9Cbvc6BD/Zh/gZ
-X2J9Qfl6PNCkhD/+rig6gB7GB3VPDPOlK1At3j176w==
-=qntL
------END PGP SIGNATURE-----
-
---cX4WM3qIY/fHWHDu--
+-- 
+Antonio Quartulli
 
