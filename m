@@ -1,10 +1,16 @@
-Date: Sun, 4 Oct 2020 15:53:58 +0200 (CEST)
-Message-Id: <202010041353.094Drwux046819@...2054...>
+Date: Sun, 4 Oct 2020 17:35:32 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20200930064845.28022-1-jan.seeger@...2574...>
-References: <20200930064845.28022-1-jan.seeger@...2574...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Added environment variable for
- IPv6 route metric.
+Message-ID: <20201004153532.GM976@...1296...>
+References: <20200930131317.1299-1-arne@...1227...>
+ <20200930131317.1299-2-arne@...1227...>
+ <20201004131457.GL976@...1296...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="cX4WM3qIY/fHWHDu"
+Content-Disposition: inline
+In-Reply-To: <20201004131457.GL976@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Allow 'none' cipher being specified in
+ --data-ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,38 +19,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Jan Seeger <jan.seeger@...2574...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+--cX4WM3qIY/fHWHDu
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-I have not actually tested this (I have no testbed with IPv6 route
-metrics, and I do not feel like creating one).  So I have only test-
-compiled this, and "stared at code", which looks good.
+Hi,
 
-Your patch has been applied to the master and release/2.5 branch.
+On Sun, Oct 04, 2020 at 03:14:57PM +0200, Gert Doering wrote:
+> "Wat?"
 
-I have slightly reworded the commit message (as Antonio remarked) to
-mention the actual *name* of the added environment variable.
+Also, the unit test fails for me (on Linux):
 
-commit bfb288454aa43f8c2d0131bc87b48a37e4ab01b4 (master)
-commit 956c5af148d0f6d9b70d0498a499f6b70c8e8035 (HEAD -> release/2.5)
-Author: Jan Seeger
-Date:   Wed Sep 30 08:48:45 2020 +0200
+[ RUN      ] test_poor_man
+[  ERROR   ] --- Test failed with exception: Segmentation fault(11)
 
-     Added 'route_ipv6_metric_NN' environment variable for IPv6 route metric.
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20200930064845.28022-1-jan.seeger@...2574...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21110.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Gert Doering - Munich, Germany                             gert@...1296...
 
+--cX4WM3qIY/fHWHDu
+Content-Type: application/pgp-signature; name="signature.asc"
 
---
-kind regards,
+-----BEGIN PGP SIGNATURE-----
 
-Gert Doering
+iQGcBAEBAgAGBQJfeevDAAoJEB2Cnv7KVigSyCMMAJRvTgGiHCQi1DM2EsjXoOPT
+VOIqfD6deUauENI39PrfL3CkgfJx8siQNNRKplVxaMIq2/DDob3S9RU3+fp8ARAc
+B7SESoVijchdfv/4KCZKtAAra924+42SC+DyxxaTzCR3mRVqtdsXmKGYyds3nswT
+ogqYoZW+Lnzu/GVfiGKg7OG+MCJsut9OtFPxirRTRvLt2fpNt3SBLOwujtGEHUV9
+2XAIa4D5F5xNlbAUeT9oHjN7z4xi4DTZ2/PVdy+qh29Pr8nc71nMebUbx411vJgn
+0xy9HHrApbyTYjA/KdFzrMHjXkIyfpl4qRR9bYuiiVB24zPZDgoxIzoxqyW91NnF
+pE/cvIVeMl3VmwNZZKcxVzRO0U0RzT37fVX6ghadTdEk3PKoX9F/aAL5gtu+Ecdi
+1hU0rRm/zFShVHBowsmUsFrAeb1F5BQt8tRDQED2gJO5Dfg5zj9Cbvc6BD/Zh/gZ
+X2J9Qfl6PNCkhD/+rig6gB7GB3VPDPOlK1At3j176w==
+=qntL
+-----END PGP SIGNATURE-----
 
+--cX4WM3qIY/fHWHDu--
 
