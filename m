@@ -1,13 +1,13 @@
 From: "Vladislav Grishenko" <themiron@...2010...>
-References: <20201005005114.13619-1-themiron@...2010...>
- <202010051036.095AaG7a076271@...2054...>
-In-Reply-To: <202010051036.095AaG7a076271@...2054...>
-Date: Mon, 5 Oct 2020 22:17:56 +0500
-Message-ID: <007901d69b3b$79beee20$6d3cca60$@yandex-team.ru>
+References: <20201001225319.25125-1-themiron@...2010...>
+ <202010041219.094CJNKk043968@...2054...>
+In-Reply-To: <202010041219.094CJNKk043968@...2054...>
+Date: Mon, 5 Oct 2020 22:22:43 +0500
+Message-ID: <007b01d69b3c$2321a980$6964fc80$@yandex-team.ru>
 MIME-Version: 1.0
 Content-Language: ru
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Support X509 field list to
- be username
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Speedup TCP remote hosts
+ connections
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,60 +23,51 @@ To: 'Gert Doering' <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Hi Gert,
-Thank you.
+
+Thanks for that.
+Perhaps same approach can be applied to server's tcp listening, would
+require testing of more management cases.
 
 --
 Best Regards, Vladislav Grishenko
 
 > -----Original Message-----
 > From: Gert Doering <gert@...1296...>
-> Sent: Monday, October 5, 2020 3:36 PM
+> Sent: Sunday, October 4, 2020 5:19 PM
 > To: Vladislav Grishenko <themiron@...2010...>
 > Cc: openvpn-devel@lists.sourceforge.net
-> Subject: [PATCH applied] Re: Support X509 field list to be username
+> Subject: [PATCH applied] Re: Speedup TCP remote hosts connections
 > 
 > Your patch has been applied to the master branch.
 > 
-> Client-side tested, and lightly stared at the code.
+> I have run a number of TCP client connect tests, to a very close server
+(speedup
+> very noticeable!), to distant server (still some difference), and to a
+non-
+> reachable IP address (because I was worried that this would block out
+> management, but it doesn't - it just shifts the "delay 1 s" to
+openvpn_connect(),
+> and makes it a "max 1s" instead of a hard sleep).
 > 
-> The whitespace dragon made me add that blank after comma (but not the
-other
-> one in code not already touched by this patch) - IRC discussion points to
-> "sp_after_comma", which we indeed do not set today.  We need to discuss
-this
-> with the dragons :-)
+> I have not looked into manage.c as closely, but from a quick glance, this
+also
+> looks reasonable.
 > 
-> After quite some deliberation I've decided that this is "new feature"
-> and "too late for 2.5", so not applied to release/2.5 - it was not an easy
-> decision, as this could indeed be a very useful feature for server
-operators
-> running "distribution provided" binaries, which usually is "2.5".  OTOH,
-at some
-> point we want to get 2.5.0 *out*, and if we keep adding features, we need
-more
-> RCs, and then we'll never get there.  OTOH, again, this is a fairly
-isolated change
-> - so if enough users yell at me that THEY MUST HAVE THIS, we could put it
-in
-> 2.5.1 or 2.5.2 ("small and isolated new features can be done in
-small-numbered
-> subreleases").
+> Since we need a RC3 anyway (due to the redirect-gateway bug), and Arne's
+> motto for 2.5 is "MAKE THINGS FAST!", I think this still fits into 2.5.
 > 
-> Also, we do want 2.6.0 to happen "soonish" this time, like "in one year,
-not in
-> four years".  Let's see...
-> 
-> commit 3b04c34de140355b5b1d4ed85f7ccf1db9b0135d
+> commit b68aa00603332357e6c711e91c5b4ba04d78294b (master) commit
+> d08b66f39cf80733a51e1607386dc4993faef09f (release/2.5)
 > Author: Vladislav Grishenko
-> Date:   Mon Oct 5 05:51:14 2020 +0500
+> Date:   Fri Oct 2 03:53:19 2020 +0500
 > 
->      Support X509 field list to be username
+>      Speedup TCP remote hosts connections
 > 
 >      Signed-off-by: Vladislav Grishenko <themiron@...2010...>
 >      Acked-by: Arne Schwabe <arne@...1227...>
->      Message-Id: <20201005005114.13619-1-themiron@...2010...>
+>      Message-Id: <20201001225319.25125-1-themiron@...2010...>
 >      URL: https://www.mail-archive.com/openvpn-
-> devel@lists.sourceforge.net/msg21168.html
+> devel@lists.sourceforge.net/msg21139.html
 >      Signed-off-by: Gert Doering <gert@...1296...>
 > 
 > 
