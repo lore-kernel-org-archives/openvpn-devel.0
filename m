@@ -1,10 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Thu,  8 Oct 2020 13:59:59 +0200
-Message-Id: <20201008115959.21151-1-arne@...1227...>
-In-Reply-To: <20200930131317.1299-2-arne@...1227...>
-References: <20200930131317.1299-2-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v3] Allow 'none' cipher being specified in
- --data-ciphers
+Date: Thu, 8 Oct 2020 17:02:18 +0200 (CEST)
+Message-Id: <202010081502.098F2Ijl037836@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20201008115959.21151-1-arne@...1227...>
+References: <20201008115959.21151-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Allow 'none' cipher being
+ specified in --data-ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,128 +15,63 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Although we want to get rid of none as cipher, we still have not
-deprecated it. In order to use it currently you need
---ncp-disable together with --cipher none to use the none cipher
-otherwise OpenVPN will spit out an error about an unrecognised
-cipher in --data-ciphers.
+Acked-by: Gert Doering <gert@...1296...>
 
-In our current situation allowing none to be specified in data-ciphers
-is the lesser evil.
+I have added two new cases to my server test suite: client with 
+"--data-ciphers none" and "--ncp-disable --cipher none", against 
+a server instance that permits "none" as part of its data-ciphers.
 
-This commit also fixes that we use '[null-cipher]' instead 'none' when
-setting remote_cipher.
+The first case failed on the client side ("unrecognized
+cipher: none"), the second case was refused by the server side 
+("No common cipher... client supports cipher '[null-cipher]').
 
-Note that negotiating to cipher 'none' can the same the same problems
-with frame size calculation as any other non AEAD cipher. If
---cipher none is also specified in the configuration, the workaround
-of commit e539c95dc will also apply to cipher none.
+Of course the server side *also* needs the patch to accept
+"none" as part of --data-ciphers :-)
 
-Patch V2: Also work correctly if remote_cipher is NULL.
-Patch V3: fix unit tests, add note about corner case
+Then, this works:
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/ssl.c                   |  8 ++++++++
- src/openvpn/ssl_ncp.c               | 16 +++++++++++++++-
- tests/unit_tests/openvpn/test_ncp.c | 14 ++++++++++++--
- 3 files changed, 35 insertions(+), 3 deletions(-)
+2020-10-04 15:04:28 us=208824 2001:608:4:0:669a:56c1:4175:2c5b peer info: IV_CIPHERS=none
+2020-10-04 15:04:28 us=251968 Data Channel: using negotiated cipher 'none'
+2020-10-04 15:04:28 us=252006 ******* WARNING *******: '--cipher none' was ...
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 3535fc72..f90c6a85 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2554,6 +2554,14 @@ key_method_2_read(struct buffer *buf, struct tls_multi *multi, struct tls_sessio
-     multi->remote_ciphername =
-         options_string_extract_option(options, "cipher", NULL);
- 
-+    /* In OCC we send '[null-cipher]' instead 'none' */
-+    if (multi->remote_ciphername
-+        && strcmp(multi->remote_ciphername, "[null-cipher]") == 0)
-+    {
-+        free(multi->remote_ciphername);
-+        multi->remote_ciphername = string_alloc("none", NULL);
-+    }
-+
-     if (tls_session_user_pass_enabled(session))
-     {
-         /* Perform username/password authentication */
-diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-index 55496395..c8229044 100644
---- a/src/openvpn/ssl_ncp.c
-+++ b/src/openvpn/ssl_ncp.c
-@@ -110,7 +110,15 @@ mutate_ncp_cipher_list(const char *list, struct gc_arena *gc)
-          * e.g. replacing AeS-128-gCm with AES-128-GCM
-          */
-         const cipher_kt_t *ktc = cipher_kt_get(token);
--        if (!ktc)
-+        if (strcmp(token, "none") == 0)
-+        {
-+            msg(M_WARN, "WARNING: cipher 'none' specified for --data-ciphers. "
-+                        "This allows negotiation of NO encryption and "
-+                        "tunnelled data WILL then be transmitted in clear text "
-+                        "over the network! "
-+                        "PLEASE DO RECONSIDER THIS SETTING!");
-+        }
-+        if (!ktc && strcmp(token, "none")!= 0)
-         {
-             msg(M_WARN, "Unsupported cipher in --data-ciphers: %s", token);
-             error_found = true;
-@@ -118,6 +126,12 @@ mutate_ncp_cipher_list(const char *list, struct gc_arena *gc)
-         else
-         {
-             const char *ovpn_cipher_name = cipher_kt_name(ktc);
-+            if (ktc == NULL)
-+            {
-+                /* NULL resolves to [null-cipher] but we need none for
-+                 * data-ciphers */
-+                ovpn_cipher_name = "none";
-+            }
- 
-             if (buf_len(&new_list)> 0)
-             {
-diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn/test_ncp.c
-index a4334c89..4077be5e 100644
---- a/tests/unit_tests/openvpn/test_ncp.c
-+++ b/tests/unit_tests/openvpn/test_ncp.c
-@@ -50,7 +50,9 @@ test_check_ncp_ciphers_list(void **state)
-     struct gc_arena gc = gc_new();
-     bool have_chacha = cipher_kt_get("CHACHA20-POLY1305");
- 
--
-+    assert_string_equal(mutate_ncp_cipher_list("none", &gc), "none");
-+    assert_string_equal(mutate_ncp_cipher_list("AES-256-GCM:none", &gc),
-+                        "AES-256-GCM:none");
- 
-     assert_string_equal(mutate_ncp_cipher_list(aes_ciphers, &gc), aes_ciphers);
- 
-@@ -139,7 +141,7 @@ test_poor_man(void **state)
-     char *best_cipher;
- 
-     const char *serverlist = "CHACHA20_POLY1305:AES-128-GCM";
--    const char *serverlistbfcbc = "CHACHA20_POLY1305:AES-128-GCM:BF-CBC";
-+    const char *serverlistbfcbc = "CHACHA20_POLY1305:AES-128-GCM:BF-CBC:none";
- 
-     best_cipher = ncp_get_best_cipher(serverlist,
-                                       "IV_YOLO=NO\nIV_BAR=7",
-@@ -166,6 +168,14 @@ test_poor_man(void **state)
- 
-     assert_string_equal(best_cipher, "AES-128-GCM");
- 
-+    best_cipher = ncp_get_best_cipher(serverlist, NULL,
-+                                      "none", &gc);
-+    assert_ptr_equal(best_cipher, NULL);
-+
-+    best_cipher = ncp_get_best_cipher(serverlistbfcbc, NULL,
-+                                      "none", &gc);
-+    assert_string_equal(best_cipher, "none");
-+
-     best_cipher = ncp_get_best_cipher(serverlist, NULL,NULL, &gc);
-     assert_ptr_equal(best_cipher, NULL);
- 
--- 
-2.26.2
+The warning in the logs is very clear and explicit - and I think
+this is good.  This is a very special-use setting, and should
+only be used with sufficient information and consideration.
+
+
+Big IPv4 packets (t_client test with 3000 bytes) do not work - something
+is wrong in our mtu/overhead calcululation.  But this is not something 
+new (as the v3 commit message rightly points out) - if I do "client 
+connects with --data-cipher DES-EDE3-CBC" (non AEAD) I get the same 
+
+  TCP/UDP packet too large on write to ... (tried=1544,max=1542)
+
+error as I have with "none" (there, it is tried=1529,max=1526).  Strange 
+enough this only happens for IPv4 packets.
+
+
+Your patch has been applied to the master and release/2.5 branch.
+
+commit c018fc00be25aee5921d234531f87753a3a7aec7 (master)
+commit f308251acdc539acb370aeccf46b0ec5587129c1 (release/2.5)
+Author: Arne Schwabe
+Date:   Thu Oct 8 13:59:59 2020 +0200
+
+     Allow 'none' cipher being specified in --data-ciphers
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20201008115959.21151-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21181.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
