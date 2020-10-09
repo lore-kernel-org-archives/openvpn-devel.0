@@ -1,8 +1,11 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Fri,  9 Oct 2020 15:46:03 +0200
-Message-Id: <20201009134603.36263-1-steffan@...1856...>
+References: <20201009134603.36263-1-steffan@...1856...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <dd8d6abb-2d5e-2ea7-e100-84fd2ee3e019@...2181...>
+Date: Fri, 9 Oct 2020 16:34:14 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] networking_iproute2: fix memory leak in
+In-Reply-To: <20201009134603.36263-1-steffan@...1856...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] networking_iproute2: fix memory leak in
  net_iface_mtu_set()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -12,31 +15,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
-ASAN yelled at me that someone forgot to call argv_free(). Fix that.
+Hi,
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- src/openvpn/networking_iproute2.c | 2 ++
- 1 file changed, 2 insertions(+)
+On 09/10/2020 15:46, Steffan Karger wrote:
+> ASAN yelled at me that someone forgot to call argv_free(). Fix that.
+> 
+> Signed-off-by: Steffan Karger <steffan@...1856...>
 
-diff --git a/src/openvpn/networking_iproute2.c b/src/openvpn/networking_iproute2.c
-index f3b9c614..3b460527 100644
---- a/src/openvpn/networking_iproute2.c
-+++ b/src/openvpn/networking_iproute2.c
-@@ -88,6 +88,8 @@ net_iface_mtu_set(openvpn_net_ctx_t *ctx, const char *iface, uint32_t mtu)
-     argv_msg(M_INFO, &argv);
-     openvpn_execve_check(&argv, ctx->es, S_FATAL, "Linux ip link set failed");
- 
-+    argv_free(&argv);
-+
-     return 0;
- }
- 
+I bet I know that someone!
+
+Thanks a lot for fixing this.
+
+Acked-by: Antonio Quartulli <a@...2181...>
+
+(this is for 2.5)
+
 -- 
-2.25.1
-
+Antonio Quartulli
 
