@@ -1,10 +1,9 @@
-Date: Fri, 9 Oct 2020 20:55:12 +0200 (CEST)
-Message-Id: <202010091855.099ItC03074725@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20201009144755.39719-1-steffan@...1856...>
-References: <20201009144755.39719-1-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Simplify key material exporter
- backend API
+Date: Fri,  9 Oct 2020 22:33:31 +0200
+Message-Id: <20201009203331.11779-1-gert@...1296...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Fix compilation on pre-EKM mbedTLS
+ libraries.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,35 +14,38 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-I have stared at the code a bit ("amazingly straightforward, no crypto
-convolutions at all :-)") and tortured the result a bit on the server 
-and client test bed.  No complaints.
+commit f0734e49956217 simplified key_state_export_keying_material(),
+changing the function prototype.  For older mbedTLS versions, there
+is "always fail" dummy function which was overlooked in that change.
 
-(I have excercised the "key-derivation tls-ekm" path, but not the 
-generic EKM path - no test case for that one yet... need to add one,
-it seems)
+Fix prototype.
 
-Your patch has been applied to the master branch.
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/ssl_mbedtls.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-commit f0734e499562175a6ebbefbfa12b730c976e2507
-Author: Steffan Karger
-Date:   Fri Oct 9 16:47:55 2020 +0200
-
-     Simplify key material exporter backend API
-
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20201009144755.39719-1-steffan@...1856...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20201009144755.39719-1-steffan@...1856...
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index bb5633b7..b100d03e 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -252,11 +252,10 @@ key_state_export_keying_material(struct tls_session *session,
+     }
+ }
+ #else
+-unsigned char*
++bool
+ key_state_export_keying_material(struct tls_session *session,
+                                  const char* label, size_t label_size,
+-                                 size_t ekm_size,
+-                                 struct gc_arena *gc)
++                                 void *ekm, size_t ekm_size)
+ {
+     /* Dummy function to avoid ifdefs in the common code */
+     return NULL;
+-- 
+2.22.0
 
 
