@@ -1,12 +1,13 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-References: <4bf0a788-1a6a-34a8-7ecf-587d23c3eb6b@...515...>
-Message-ID: <3b28a122-cf64-103f-770e-999533c355b0@...515...>
-Date: Thu, 8 Oct 2020 22:19:06 +0300
+References: <20200825073643.15920-1-arne@...1227...>
+ <20200825073643.15920-2-arne@...1227...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <95be61ea-3ef4-4efe-94a4-95e3a0e58e12@...1856...>
+Date: Fri, 9 Oct 2020 11:23:38 +0200
 MIME-Version: 1.0
-In-Reply-To: <4bf0a788-1a6a-34a8-7ecf-587d23c3eb6b@...515...>
-Content-Type: multipart/mixed; boundary="------------F7E65590F1BD95959CD20DA9"
+In-Reply-To: <20200825073643.15920-2-arne@...1227...>
 Content-Language: en-US
-Subject: [Openvpn-devel] Summary of the community meeting (8th October 2020)
+Subject: Re: [Openvpn-devel] [PATCH v4 2/2] Implement generating data
+ channel keys via EKM/RFC 5705
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,451 +16,400 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
-This is a multi-part message in MIME format.
---------------F7E65590F1BD95959CD20DA9
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-Here's the summary of the IRC meeting.
+On 25-08-2020 09:36, Arne Schwabe wrote:
+> OpenVPN currently uses its own (based on TLS 1.0) key derivation
+> mechanism to generate the 256 bytes key data in key2 struct that
+> are then used used to generate encryption/hmac/iv vectors. While
+> this mechanism is still secure, it is not state of the art.
+> 
+> Instead of modernising our own approach, this commit implements
+> key derivation using the Keying Material Exporters API introduced
+> by RFC 5705.
 
----
+Thanks! I'm glad to see you're picking up the work I haven't been able
+to find time for.
 
-COMMUNITY MEETING
+> We also use an opportunistic approach of negotiating the use of
+> EKM (exported key material) through an IV_PROTO flag and prefer
+> EKM to our own PRF if both client and server support it. The
+> use of EKM is pushed to the client as part of NCP as
+> key-derivation tls-ekm.
+> 
+> We still exchange the random data (112 bytes from client to server
+> and 64 byte from server to client) for the OpenVPN PRF but
+> do not use it. Removing that exchange would break the handshake
+> and make a key-method 3 or similar necessary.
+> 
+> As a side effect, this makes a little bit easier to have a FIPS compatible
+> version of OpenVPN since we do not rely on calling MD5 anymore.
+> 
+> Side note: this commit breaks the (not yet merged) WolfSSL support as it
+> claims to support EKM in the OpenSSL compat API but always returns an error
+> if you try to use it.
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 
-Place: #openvpn-meeting on irc.freenode.net
-Date: Thu 8th October 2020
-Time: 20:00 CEST (18:00 UTC)
+Signed off two times.
 
-Planned meeting topics for this meeting were here:
+> Patch v2: rebase/change to V2 of EKM refactoring
+> 
+> Patch v3: add Changes.rst
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> ---
+>  Changes.rst                      | 11 +++++++
+>  doc/doxygen/doc_key_generation.h | 14 +++++++--
+>  src/openvpn/crypto.h             |  4 +++
+>  src/openvpn/init.c               |  1 +
+>  src/openvpn/multi.c              |  4 +++
+>  src/openvpn/options.c            | 14 +++++++++
+>  src/openvpn/options.h            |  3 ++
+>  src/openvpn/push.c               |  5 ++-
+>  src/openvpn/ssl.c                | 54 ++++++++++++++++++++++++++++----
+>  src/openvpn/ssl.h                |  2 ++
+>  src/openvpn/ssl_backend.h        |  2 ++
+>  src/openvpn/ssl_mbedtls.c        |  7 ++---
+>  12 files changed, 107 insertions(+), 14 deletions(-)
+> 
+> diff --git a/Changes.rst b/Changes.rst
+> index f67e1d76..2a2829e7 100644
+> --- a/Changes.rst
+> +++ b/Changes.rst
+> @@ -1,3 +1,14 @@
+> +Overview of changes in 2.6
+> +==========================
+> +
+> +
+> +New features
+> +------------
+> +Keying Material Exporters (RFC 5705) based key generation
+> +    As part of the cipher negotiation OpenVPN will automatically prefer
+> +    the RFC5705 based key material generation to the current custom
+> +    OpenVPN PRF. This feature requires OpenSSL or mbed TLS 2.18+.
+> +
+>  Overview of changes in 2.5
+>  ==========================
+>  
+> diff --git a/doc/doxygen/doc_key_generation.h b/doc/doxygen/doc_key_generation.h
+> index 4bb9c708..cef773a9 100644
+> --- a/doc/doxygen/doc_key_generation.h
+> +++ b/doc/doxygen/doc_key_generation.h
+> @@ -58,6 +58,12 @@
+>   *
+>   * @subsection key_generation_method_2 Key method 2
+>   *
+> + * There are two methods for generating key data when using key method 2
+> + * the first is OpenVPN's traditional approach that exchanges random
+> + * data and uses a PRF and the other is using the RFC5705 keying material
+> + * exporter to generate the key material. For both methods the random
+> + * data is exchange but only used in the traditional method.
+> + *
+>   * -# The client generates random material in the following amounts:
+>   *    - Pre-master secret: 48 bytes
+>   *    - Client's PRF seed for master secret: 32 bytes
+> @@ -73,8 +79,12 @@
+>   *    server's random material.
+>   *
+>   * %Key method 2 %key expansion is performed by the \c
+> - * generate_key_expansion() function.  Please refer to its source code for
+> - * details of the %key expansion process.
+> + * generate_key_expansion_openvpn_prf() function.  Please refer to its source
+> + * code for details of the %key expansion process.
+> + *
+> + * When the client sends the IV_PROTO_TLS_KEY_EXPORT flag and the server replies
+> + * with `key-derivation tls-ekm` the RFC5705 key material exporter with the
+> + * label EXPORTER-OpenVPN-datakeys is used for the key data.
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2020-10-08>
+Did you request this label with IANA?
 
-Your local meeting time is easy to check from services such as
+Also, a user could now use --keying-material-exporter to export the data
+channel keys to a plugin. I'm inclined to say we should prevent that, by
+rejecting our internal label as a user label.
 
-<http://www.timeanddate.com/worldclock>
+>   * @subsection key_generation_random Source of random material
+>   *
+> diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+> index 999f643e..ec935ca5 100644
+> --- a/src/openvpn/crypto.h
+> +++ b/src/openvpn/crypto.h
+> @@ -254,6 +254,10 @@ struct crypto_options
+>  #define CO_MUTE_REPLAY_WARNINGS (1<<2)
+>      /**< Bit-flag indicating not to display
+>       *   replay warnings. */
+> +#define CO_USE_TLS_KEY_MATERIAL_EXPORT  (1<<3)
+> +    /**< Bit-flag indicating that key derivation
 
-SUMMARY
+Sugestion: "data channel key derivation".
 
-cron2, dazo, mattock and yanv participated in this meeting.
+> +     * is done using TLS keying material export [RFC5705]
+> +     */
+>      unsigned int flags;         /**< Bit-flags determining behavior of
+>                                   *   security operation functions. */
+>  };
+> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+> index a785934a..dff090b1 100644
+> --- a/src/openvpn/init.c
+> +++ b/src/openvpn/init.c
+> @@ -676,6 +676,7 @@ restore_ncp_options(struct context *c)
+>      c->options.ciphername = c->c1.ciphername;
+>      c->options.authname = c->c1.authname;
+>      c->options.keysize = c->c1.keysize;
+> +    c->options.data_channel_use_ekm = false;
+>  }
+>  
+>  void
+> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+> index 13738180..a5862020 100644
+> --- a/src/openvpn/multi.c
+> +++ b/src/openvpn/multi.c
+> @@ -1817,6 +1817,10 @@ multi_client_set_protocol_options(struct context *c)
+>          c->c2.push_request_received = true;
+>      }
+>  
+> +#ifdef HAVE_EXPORT_KEYING_MATERIAL
+> +    o->data_channel_use_ekm = (proto & IV_PROTO_TLS_KEY_EXPORT);
+> +#endif
+> +
+>      /* Select cipher if client supports Negotiable Crypto Parameters */
+>      if (!o->ncp_enabled)
+>      {
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index 8bf82c57..90e78a7b 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -7947,6 +7947,20 @@ add_option(struct options *options,
+>          }
+>          options->ncp_ciphers = p[1];
+>      }
+> +    else if (streq(p[0], "key-derivation") && p[1])
+> +    {
+> +        VERIFY_PERMISSION(OPT_P_NCP)
+> +#ifdef HAVE_EXPORT_KEYING_MATERIAL
+> +        if (streq(p[1], "tls-ekm"))
+> +        {
+> +            options->data_channel_use_ekm = true;
+> +        }
+> +        else
+> +#endif
+> +        {
+> +            msg(msglevel, "Unknown key-derivation method %s", p[1]);
+> +        }
+> +    }
 
----
+This option is also accepted on the command line or config file, but is
+not documented in the man page or --help text. It would probably be best
+to not accept is on the command line or config file, but I'm not sure we
+have the infra in place for that.
 
-Daynix Computing LTD has developed automation framework (hck-ci) for
-running Windows HCK/HLK certification tests with sponsoring for Red Hat
-to get virtio-win HCK/HLK tested:
+>      else if (streq(p[0], "ncp-disable") && !p[1])
+>      {
+>          VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_INSTANCE);
+> diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+> index 877e9396..c730c6a7 100644
+> --- a/src/openvpn/options.h
+> +++ b/src/openvpn/options.h
+> @@ -648,6 +648,9 @@ struct options
+>      /* Useful when packets sent by openvpn itself are not subject
+>       * to the routing tables that would move packets into the tunnel. */
+>      bool allow_recursive_routing;
+> +
+> +    /* Use RFC 5705 key export */
 
-<https://github.com/hck-ci>
+Suggestion: "Use RFC5705 key export to generate data channel keys".
 
-Daynix is offering to let the OpenVPN project use their hck-ci
-installation to test tap-windows6. This would allow them to generalize
-their CI to work with drivers other than virtio-win as well and OpenVPN
-project would benefit from getting proper Windows driver testing.
-Potentially OpenVPN project could run its own test setup, but there's
-not much need for it.
+> +    bool data_channel_use_ekm;
+>  };
+>  
+>  #define streq(x, y) (!strcmp((x), (y)))
+> diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+> index e0d2eeaf..17bba948 100644
+> --- a/src/openvpn/push.c
+> +++ b/src/openvpn/push.c
+> @@ -479,7 +479,10 @@ prepare_push_reply(struct context *c, struct gc_arena *gc,
+>      {
+>          push_option_fmt(gc, push_list, M_USAGE, "cipher %s", o->ciphername);
+>      }
+> -
+> +    if (o->data_channel_use_ekm)
+> +    {
+> +        push_option_fmt(gc, push_list, M_USAGE, "key-derivation tls-ekm");
+> +    }
+>      return true;
+>  }
+>  
+> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+> index b4d94b8a..9643fbdd 100644
+> --- a/src/openvpn/ssl.c
+> +++ b/src/openvpn/ssl.c
+> @@ -1784,6 +1784,29 @@ init_key_contexts(struct key_ctx_bi *key,
+>  }
+>  
+>  
+> +static bool
+> +generate_key_expansion_tls_export(struct tls_session *session, struct key2 *key2)
+> +{
+> +    struct gc_arena gc = gc_new();
+> +    unsigned char *key2data;
+> +
+> +    key2data = key_state_export_keying_material(session,
+> +                                                EXPORT_KEY_DATA_LABEL,
+> +                                                strlen(EXPORT_KEY_DATA_LABEL),
+> +                                                EXPORT_KEY_DATA_EKM_SIZE,
 
-What we would have to do is create the base Windows images that will be
-used in the test runs:
+Why not sizeof(key2->keys)? That makes it trivial to verify correctness
+(just read this function) and would make EXPORT_KEY_DATA_EKM_SIZE unneeded.
 
-<https://github.com/HCK-CI/HLK-Setup-Scripts>
+> +                                                &gc);
+> +    if (!key2data)
+> +    {
+> +        return false;
+> +    }
+> +    memcpy(key2->keys, key2data, sizeof(key2->keys));
+> +    secure_memzero(key2data, sizeof(key2->keys));
+> +    key2->n = 2;
+> +
+> +    gc_free(&gc);
+> +    return true;
+> +}
+> +
+>  static struct key2
+>  generate_key_expansion_openvpn_prf(const struct tls_session *session)
+>  {
+> @@ -1855,7 +1878,7 @@ generate_key_expansion_openvpn_prf(const struct tls_session *session)
+>   */
+>  static bool
+>  generate_key_expansion(struct key_ctx_bi *key,
+> -                       const struct tls_session *session)
+> +                       struct tls_session *session)
+>  {
+>      bool ret = false;
+>      struct key2 key2;
+> @@ -1866,10 +1889,20 @@ generate_key_expansion(struct key_ctx_bi *key,
+>          goto exit;
+>      }
+>  
+> -
+>      bool server = session->opt->server;
+>  
+> -    key2 = generate_key_expansion_openvpn_prf(session);
+> +    if (session->opt->crypto_flags & CO_USE_TLS_KEY_MATERIAL_EXPORT)
+> +    {
+> +        if(!generate_key_expansion_tls_export(session, &key2))
 
-Some older documentation is here:
+Missing space between if and (.
 
-<https://github.com/daynix/VirtHCK>
+> +        {
+> +            msg(D_TLS_ERRORS, "TLS Error: Keying material export failed");
+> +            goto exit;
+> +        }
+> +    }
+> +    else
+> +    {
+> +        key2 = generate_key_expansion_openvpn_prf(session);
+> +    }
+>  
+>      key2_print(&key2, &session->opt->key_type,
+>                 "Master Encrypt", "Master Decrypt");
+> @@ -1970,6 +2003,11 @@ tls_session_update_crypto_params(struct tls_session *session,
+>          return false;
+>      }
+>  
+> +    if (options->data_channel_use_ekm)
+> +    {
+> +        session->opt->crypto_flags |= CO_USE_TLS_KEY_MATERIAL_EXPORT;
+> +    }
+> +
+>      if (strcmp(options->ciphername, session->opt->config_ciphername))
+>      {
+>          msg(D_HANDSHAKE, "Data Channel: using negotiated cipher '%s'",
+> @@ -2254,13 +2292,11 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+>           * push request, also signal that the client wants
+>           * to get push-reply messages without without requiring a round
+>           * trip for a push request message*/
+> -        if(session->opt->pull)
+> +        if (session->opt->pull)
+>          {
+>              iv_proto |= IV_PROTO_REQUEST_PUSH;
+>          }
+>  
+> -        buf_printf(&out, "IV_PROTO=%d\n", iv_proto);
+> -
+>          /* support for Negotiable Crypto Parameters */
+>          if (session->opt->ncp_enabled
+>              && (session->opt->mode == MODE_SERVER || session->opt->pull))
+> @@ -2272,8 +2308,14 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+>                  buf_printf(&out, "IV_NCP=2\n");
+>              }
+>              buf_printf(&out, "IV_CIPHERS=%s\n", session->opt->config_ncp_ciphers);
+> +
+> +#ifdef HAVE_EXPORT_KEYING_MATERIAL
+> +            iv_proto |= IV_PROTO_TLS_KEY_EXPORT;
+> +#endif
+>          }
+>  
+> +        buf_printf(&out, "IV_PROTO=%d\n", iv_proto);
+> +
+>          /* push compression status */
+>  #ifdef USE_COMP
+>          comp_generate_peer_info_string(&session->opt->comp_options, &out);
+> diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+> index 005628f6..f00f8abd 100644
+> --- a/src/openvpn/ssl.h
+> +++ b/src/openvpn/ssl.h
+> @@ -116,6 +116,8 @@
+>   * to wait for a push-request to send a push-reply */
+>  #define IV_PROTO_REQUEST_PUSH   (1<<2)
+>  
+> +/** Supports key derivation via TLS key material exporter [RFC5705] */
+> +#define IV_PROTO_TLS_KEY_EXPORT (1<<3)
+>  
+>  /* Default field in X509 to be username */
+>  #define X509_USERNAME_FIELD_DEFAULT "CN"
+> diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+> index cf9fba25..06ced86a 100644
+> --- a/src/openvpn/ssl_backend.h
+> +++ b/src/openvpn/ssl_backend.h
+> @@ -389,6 +389,8 @@ void key_state_ssl_free(struct key_state_ssl *ks_ssl);
+>  void backend_tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx,
+>                                  const char *crl_file, bool crl_inline);
+>  
+> +#define EXPORT_KEY_DATA_LABEL       "EXPORTER-OpenVPN-datakeys"
+> +#define EXPORT_KEY_DATA_EKM_SIZE    (2 * (MAX_CIPHER_KEY_LENGTH + MAX_HMAC_KEY_LENGTH))
 
-The provisioning of the base Windows images could use some improvement.
-At the moment the base images "go sour" when the evaluation licenses
-expire. Building them from scratch would solve this problem.
+This is probably not needed (see above). Otherwise, I'd like to see a
+(static) assert somewhere that this indeed matches the size we're going
+to memcpy() into the keys struct.
 
-Mattock will take a closer look at this next week.
+>  /**
+>   * Keying Material Exporters [RFC 5705] allows additional keying material to be
+>   * derived from existing TLS channel. This exported keying material can then be
+> diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+> index 4ec355a9..f375e957 100644
+> --- a/src/openvpn/ssl_mbedtls.c
+> +++ b/src/openvpn/ssl_mbedtls.c
+> @@ -1168,11 +1168,8 @@ key_state_ssl_init(struct key_state_ssl *ks_ssl,
+>  
+>  #ifdef HAVE_EXPORT_KEYING_MATERIAL
+>      /* Initialize keying material exporter */
+> -    if (session->opt->ekm_size)
+> -    {
+> -        mbedtls_ssl_conf_export_keys_ext_cb(ks_ssl->ssl_config,
+> -                                            mbedtls_ssl_export_keys_cb, session);
+> -    }
+> +    mbedtls_ssl_conf_export_keys_ext_cb(ks_ssl->ssl_config,
+> +                                        mbedtls_ssl_export_keys_cb, session);
+>  #endif
+>  
+>      /* Initialise SSL context */
+> 
 
-The Daynix guys will start hanging out at #openvpn-devel to help us out
-with any issues that may arise.
+So, looks good in general, but needs a bit more polishing :)
 
---
-
-Noted that the https://openvpn.net website can't be modified until
-Monday or Tuesday as the Wordpress instances are being upgraded. This
-postpones the next 2.5 release slightly.
-
---
-
-Full chatlog attached
-
---------------F7E65590F1BD95959CD20DA9
-Content-Type: text/plain; charset=UTF-8;
- name="openvpn_irc_meeting_chatlog_2020-10-08.txt"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: attachment;
- filename="openvpn_irc_meeting_chatlog_2020-10-08.txt"
-
-(21:02:20) mattock: hello
-(21:02:49) mattock: meeting time
-(21:02:53) mattock: anyone else? :)
-(21:03:20) yanv: hello
-(21:04:34) mattock: hi!
-(21:08:53) yanv: I was invited by Samuli Sepp=EF=BF=BDnen to discuss poss=
-ibility for automation of HLK\HCK tests of the OpenVPN drivers. We develo=
-ped automation framework for the certification https://github.com/hck-ci =
-and run it virtio-win drivers: https://github.com/virtio-win/kvm-guest-dr=
-ivers-windows/pull/502.
-(21:08:53) yanv: I wanted to see if it can be useful for your project as =
-well.
-(21:08:54) vpnHelper: Title: HCK-CI =C2=B7 GitHub (at github.com)
-(21:09:30) mattock: that me
-(21:09:41) yanv: :)
-(21:09:51) mattock: it is surprisingly quiet today
-(21:10:07) mattock: anyhow, I will write a summary so even if nobody else=
- pops in here they can see all this
-(21:10:39) mattock: yanv: what kind of test rigs do you have?
-(21:10:42) mattock: all virtual?
-(21:10:50) yanv: Yes
-(21:10:56) mattock: ok
-(21:11:04) yanv: We are working to enable it to run on the physical machi=
-nes as well
-(21:11:20) yanv: in general the part that automates the test runs can do =
-it already today
-(21:11:20) mattock: in our case it seemed necessary to use real hardware =
-to be able to pass all the tests
-(21:11:46) mattock: but we're not at this point really interested in HLK =
-except for actual (regression) test purposes
-(21:11:55) yanv: but we don't have the part that will re-provision the ma=
-chines before the test execution (it is better to run on the clean machin=
-es and not ones that executed tests before)
-(21:12:26) mattock: on what are the test VMs running on? VMWare, EC2, Azu=
-re?
-(21:12:27) Pippin_ [Pippin_@...2315.../vpn/protonvpn/pippin/x-75792076] =C3=A8=
- entrato nella stanza.
-(21:12:35) yanv: QEMU\KVM
-(21:12:41) mattock: ok, that should work as well
-(21:12:45) yanv: Because we developed in to test virtio drivers
-(21:12:59) mattock: is there any provisioning code in place?
-(21:13:03) yanv: But then we changed it to be genreic
-(21:13:04) mattock: or just manually installed KVM hosts
-(21:13:14) mattock: +1 for the generic part :)
-(21:13:18) yanv: The hosts are manual installed
-(21:13:44) mattock: I've done my share of Windows automation with Puppet =
-and Powershell DSC
-(21:13:55) mattock: I actually do have some Puppet code that sets up HLK =
-nodes
-(21:14:05) yanv: also the initial preparation of the images is out of the=
- scope now (the installation of the test kit).
-(21:14:31) mattock: here: https://github.com/Puppet-Finland/puppet-hlk
-(21:14:33) vpnHelper: Title: GitHub - Puppet-Finland/puppet-hlk: A Puppet=
- module for setting up Windows Hardware Lab Kit (HLK) controllers and cli=
-ents (at github.com)
-(21:14:51) yanv: +1 > here: https://github.com/Puppet-Finland/puppet-hlk
-(21:14:52) vpnHelper: Title: GitHub - Puppet-Finland/puppet-hlk: A Puppet=
- module for setting up Windows Hardware Lab Kit (HLK) controllers and cli=
-ents (at github.com)
-(21:15:12) yanv: I saw it, can be a great idea to integrate it together.
-(21:15:42) mattock: yeah, I think reprovisioning the test nodes makes per=
-fect sense
-(21:15:46) mattock: HLK beats them to death
-(21:16:03) yanv: In any case, we use snapshots during the tests. So there=
- are definitions of the platforms (which OS, which Kit to use, etc), then=
- there is device under test definitions.
-(21:16:41) mattock: ok
-(21:16:53) yanv: the automation deployed the drivers to the VMs and confi=
-gures the HLK or HCK studio machine pool and then test project.
-(21:17:13) yanv: It execute tests either by MS playlist or by the definit=
-ions of white\black lists of the tests
-(21:17:46) mattock: how does it report back the results?
-(21:19:10) yanv: there is monitoring of the runs (so you get intermediate=
- results for the running tests), we also can apply filters at the end of =
-the test runs. Later the results are extracted (hlkx or hckx package) and=
- also we parse the package to unpack individual result (can be useful for=
- the people that don't have specific studio version installed , but want =
-to see the results)
-(21:19:58) yanv: Example: https://www.dropbox.com/sh/rp7fqrlcutcd5dz/AADG=
--lq2eqFSyDc7qsTtlhoDa?dl=3D0&lst=3D
-(21:19:59) vpnHelper: Title: Dropbox - NetKVM-Win10_1903x64_q35-2020_08_2=
-6_03_54_11 - Simplify your life (at www.dropbox.com)
-(21:20:14) yanv: You can see their results for NDIS miniport test run on =
-Windows 10
-(21:20:26) mattock: oh that's nice
-(21:21:20) mattock: would be useful to us
-(21:21:26) yanv: Currently we upload results to DropBox, but plugin for o=
-ther services can be developed
-(21:21:36) mattock: I suppose the CI tracks a Git repository and builds o=
-n every commit?
-(21:21:37) yanv: also there is an update of github PR
-(21:21:41) yanv: yes
-(21:21:56) mattock: it handles queuing of the jobs etc.?
-(21:22:03) mattock: jobs =3D commits to test
-(21:22:16) yanv: we have also a definition of what devices to tests depen=
-ding on the directory stricter.
-(21:22:35) yanv: the queuing actually handled by Jenkins.
-(21:22:42) mattock: ok
-(21:22:49) mattock: that's good enough
-(21:23:12) mattock: btw. zx2c4 in here is the main Wireguard/Wintun devel=
-oper
-(21:23:24) yanv: so auto_hck executed with command line that specifies de=
-vice\platform\commit hash
-(21:23:31) mattock: wintun could probably benefit from the same CI treatm=
-ent as tap-windows6
-(21:24:59) yanv: Trigger file example: https://github.com/HCK-CI/AutoHCK/=
-blob/master/triggers.yml.example
-(21:25:00) vpnHelper: Title: AutoHCK/triggers.yml.example at master =C2=B7=
- HCK-CI/AutoHCK =C2=B7 GitHub (at github.com)
-(21:25:03) dazo: hey! sorry!  time flew away
-(21:25:08) mattock: hi dazo!
-(21:25:21) mattock: good to have you here!
-(21:26:58) yanv: hi dazo
-(21:27:57) ***dazo catches up on the scrollback
-(21:30:32) mattock: yanv: now, we obviously would like tap-windows6 (and =
-wintun) to be tested by HCK_CI
-(21:30:43) mattock: are there any missing pieces at your end for that?
-(21:31:10) mattock: anything we could help you guys with to make this hap=
-pen?
-(21:32:26) yanv: so now there is a certain coupling between device and dr=
-iver. because part of the device info is used to configure the VM that wi=
-ll be the test client.
-(21:32:36) yanv: this is something we are working now to resolve
-(21:33:36) yanv: we did run tests for non-plug and play drivers (filesyst=
-em mini filters) with our system, but it is not 100% yet
-(21:34:16) yanv: another thing is the initial VMs provisioning. it can be=
- interested to integrate with the work you did with chef
-(21:34:44) mattock: puppet, but yes
-(21:34:55) yanv: sorry, my bad... puppet
-(21:35:29) mattock: for me it would be fairly straightforward to help out=
- with the VM provisioning, to return the favor
-(21:36:17) mattock: install the basic HLK client stuff on the node, test =
-certificates, all that
-(21:37:05) mattock: puppet would probably not be even required, most of i=
-t is powershell mixed with some powershell dsc
-(21:37:07) yanv: actually now we install  test certificates before the ru=
-n. but it works both way.
-(21:37:20) mattock: yeah
-(21:38:06) mattock: the HLK controller is a long-living instance I suppos=
-e?
-(21:38:11) mattock: not wiped out on every run
-(21:38:12) yanv: and now we have Jenkins that trigger the runs. if you wa=
-nt to use something else, some configuration can be required.
-(21:38:31) yanv: no, the idea is to run self-contained test setups.
-(21:38:43) mattock: ok
-(21:38:55) yanv: so that means , if you have powerful enough host, you ca=
-n run several setups in parallel
-(21:39:07) mattock: ok, that makes sense
-(21:39:37) mattock: so each driver/environment would have its own set of =
-HLK controllers and clients
-(21:39:41) yanv: so atuo-hck starts "setup" that contains controller mach=
-ine + at least one client (two for network devices)
-(21:39:55) yanv: it also configures linux bridge (or ovs)
-(21:40:29) yanv: no, the images can be shared
-(21:40:45) mattock: ok
-(21:40:45) yanv: during actual test run, we will use snapshots
-(21:41:36) yanv: https://www.dropbox.com/sh/rp7fqrlcutcd5dz/AADG-lq2eqFSy=
-Dc7qsTtlhoDa?dl=3D0&lst=3D
-(21:41:37) vpnHelper: Title: Dropbox - NetKVM-Win10_1903x64_q35-2020_08_2=
-6_03_54_11 - Simplify your life (at www.dropbox.com)
-(21:41:38) mattock: so essentially the provisioning of the VMs would crea=
-te the base image which can be snapshotted
-(21:41:43) yanv: sorry, wrong link
-(21:41:51) yanv: https://github.com/HCK-CI/AutoHCK/blob/master/lib/engine=
-s/hcktest/platforms.json
-(21:41:52) vpnHelper: Title: AutoHCK/platforms.json at master =C2=B7 HCK-=
-CI/AutoHCK =C2=B7 GitHub (at github.com)
-(21:42:07) yanv: check the sample definition file for the platforms
-(21:42:22) yanv: so for each os + test KIT you need to create base images=
-
-(21:42:49) yanv: the image names are used by convention of OS + kit type =
-+ kit version
-(21:43:17) yanv: For example:
-(21:43:17) yanv:  "name": "Win7x86",
-(21:43:17) yanv:     "kit": "HCK",
-(21:43:17) yanv:     "st_image": "HCK.qcow2",
-(21:43:17) yanv:     "clients": {
-(21:43:17) yanv:       "c1": {
-(21:43:19) yanv:         "name": "CL1",
-(21:43:21) yanv:         "cpus": "2",
-(21:43:25) yanv:         "memory": "2G",
-(21:43:26) mattock: I start to see why you'd want to automate the  base i=
-mage creation / provisioning
-(21:43:27) yanv:         "winrm_port": "4002",
-(21:43:29) yanv:         "image": "HCK-C1-Win7x86.qcow2"
-(21:43:31) yanv:       },
-(21:43:33) yanv:       "c2": {
-(21:43:35) yanv:         "name": "CL2",
-(21:43:37) yanv:         "cpus": "2",
-(21:43:39) yanv:         "memory": "2G",
-(21:43:41) yanv:         "winrm_port": "4003",
-(21:43:43) yanv:         "image": "HCK-C2-Win7x86.qcow2"
-(21:43:45) yanv:       }
-(21:43:47) yanv:     }
-(21:43:49) yanv:   },
-(21:43:50) mattock: you have quite a few platforms covered there
-(21:44:31) mattock: does this allow you to get signatures from Microsoft =
-that cover all the currently supported Windows versions?
-(21:44:32) yanv: Actually once you created the base images you use then "=
-forever". The problem is that Win10, is no longer 1 OS :) There are new k=
-its releases with new builds
-(21:44:44) mattock: yep
-(21:44:54) yanv: yes, that was the idea.
-(21:45:13) mattock: we never had such grand plans, lack of resources :D
-(21:45:36) yanv: the project was supported by Red Hat for virtio-win driv=
-ers :)
-(21:45:38) mattock: we operated on a false premise ("You need HLK to pass=
- to get signatures for Windows Server 2016+")
-(21:45:42) mattock: :P
-(21:45:56) mattock: I had a hunch this is not a pure volunteer effort :D
-(21:45:57) yanv: although they don't use it for certification, but it is =
-used for upstream CI
-(21:46:40) mattock: anyhow, "we are interested", so what do you propose f=
-or the next steps?
-(21:47:11) yanv: some pieces we created before RH support. it started as =
-a way for developer to run isolated test setups: https://github.com/dayni=
-x/VirtHCK
-(21:47:12) vpnHelper: Title: GitHub - daynix/VirtHCK: QEMU-KVM Virtual En=
-vironment for Running Microsoft HCK Tests (at github.com)
-(21:48:18) yanv: I guess the question is where do you want to run the tes=
-ts :) if it is on your servers, we need to help you to bring up the CI, p=
-robably with some changes in the engine.
-(21:48:34) yanv: we can run it on our servers as a best effort as well.
-(21:48:36) mattock: I really don't mind you running the tests
-(21:48:43) mattock: and best effort is more than enough
-(21:49:06) mattock: the code is open source and it changes rarely, so our=
- commits should not tax your system too much
-(21:49:17) mattock: recently we've had "many" commits - like <10 in a mon=
-th
-(21:49:22) mattock: but that's very uncommon
-(21:49:32) mattock: usually we have none in months
-(21:49:32) yanv: so we can see what drivers exactly you have, start from =
-win10 or windows server 2016\2019 (pick one) and get your help for initia=
-l image creation
-(21:49:55) mattock: +1
-(21:50:02) yanv: for us it will be a good change to test the system more =
-and make it more generic
-(21:50:23) mattock: is the "initial image creation" documented somewhere?=
-
-(21:50:29) yanv: yes
-(21:51:24) yanv: actually it is partially scripted. https://github.com/HC=
-K-CI/HLK-Setup-Scripts
-(21:51:25) vpnHelper: Title: GitHub - HCK-CI/HLK-Setup-Scripts: Helper sc=
-ripts to configure VMs needed for HLK/HCK setup to be used with AutoHCK (=
-at github.com)
-(21:53:17) mattock: I'll note that down
-(21:54:13) yanv: Older docs:
-(21:54:13) yanv: https://github.com/daynix/VirtHCK/wiki#Checklist_for_a_N=
-ew_Controller_VM
-(21:54:14) yanv: https://github.com/daynix/VirtHCK/wiki#Checklist_for_a_N=
-ew_Client_VM
-(21:54:14) vpnHelper: Title: Home =C2=B7 daynix/VirtHCK Wiki =C2=B7 GitHu=
-b (at github.com)
-(21:54:15) vpnHelper: Title: Home =C2=B7 daynix/VirtHCK Wiki =C2=B7 GitHu=
-b (at github.com)
-(21:56:03) mattock: I'll go through the documentation next week
-(21:56:15) mattock: the Windows images you are using are the evalution im=
-ages, correct?
-(21:57:42) yanv: yes and no. depending for what. for virtio-win CI we hav=
-e licenses from Red Hat. for development and internal testing, those are =
-evaluation images
-(21:58:18) mattock: when you restore from snapshot the evaluation counter=
- resets, right?
-(21:58:39) mattock: that is, the images won't go "sour" over time?
-(22:00:36) yanv: actually, you are right, they will go "sour" overtime...=
- because Windows will also check the date...
-(22:01:00) yanv: yes, more reasons to have image provisioning automation
-(22:01:20) mattock: I need to take a closer look at the provisioning part=
-
-(22:01:31) mattock: perhaps I can improve it in the process as well
-(22:02:14) mattock: I'm stretched pretty thin, but I will try to move thi=
-s forward, starting with just one  target platform
-(22:02:27) mattock: we're 2 minutes overtime
-(22:02:39) mattock: plus it is getting late (EEST timezone here)
-(22:03:02) mattock: if you hang around at #openvpn-devel perhaps I can po=
-ke you with questions occasionally?
-(22:03:50) mattock: what I'm trying to ask is: "can you hang around at #o=
-penvpn-devel so that I can ask questions when needed?" :D
-(22:04:26) yanv: no problem, I will also add Basil (he is mainly maintain=
-ing HCK_CI) now to the email thread we have and ask him to join #openvpn-=
-devel as well
-(22:04:33) mattock: ok great!
-(22:04:49) mattock: I'll also try to inquire if I could get somebody else=
- involved from our side
-(22:04:55) dazo: mattock: just a quick recap on the 2.5 release ... what =
-is missing here now?
-(22:05:24) mattock: dazo: nothing afaik, but our website is in read-only =
-mode due to Wordpress upgrade until Monday/Tuesday
-(22:05:39) mattock: so, I can't _publish_ the release tomorrow as planned=
-
-(22:05:52) dazo: mattock: good ... I saw some comments on tagging rc3 ...=
-=2E so I was wondering why another rc cycle
-(22:06:02) dazo: is there still outstanding issues we know about?
-(22:06:33) mattock: I believe it is rc3 instead of 2.5.0 as the Windows p=
-art still feels a bit wobbly
-(22:06:40) mattock: though it is getting into a pretty good shape
-(22:07:06) mattock: and the Windows code is evenly distributed between di=
-fferent projects including openvpn itself
-(22:07:28) dazo: "feels a bit wobbly" is a poor metric though :-P .... I =
-would say that if we do not have any known issues or expect to see any is=
-sues, it should be 2.5.0
-(22:07:35) mattock: I would prefer having the tapctl.exe and msica stuff =
-in another repo
-(22:07:49) mattock: well that is a fair argument :P
-(22:07:50) dazo: yeah, that's something we'll fix after the 2.5.0 release=
-
-(22:08:12) mattock: personally I don't care if it is 2.5-rc3 or 2.5.0
-(22:08:30) mattock: you can fight this out with cron2, or maybe I just mi=
-sremembered the version number :)
-(22:08:53) dazo: so, unless something really shows up before it's time to=
- tag ... I would vote for 2.5.0 now
-(22:09:05) mattock: ok with me
-(22:09:11) dazo: good :)
-(22:09:14) mattock: yanv: one quick question
-(22:09:23) yanv: yes
-(22:09:39) mattock: who is "we" - that is, who should I attribute hck-ci =
-to?
-(22:09:57) yanv: Daynix Computing LTD.
-(22:10:11) yanv: And mainly Basil Salman and me (Yan Vugenfirer)
-(22:10:11) mattock: ok, that's what I thought but I wanted to be sure
-(22:11:27) mattock: ok I think we're done for today
-(22:12:23) cron2: re
-(22:12:41) yanv: bye all
-(22:13:14) mattock: oh cron2 made it to the summary
-(22:13:15) mattock: bye!
-(22:13:55) yanv ha abbandonato la stanza ("Leaving").
-
---------------F7E65590F1BD95959CD20DA9
-Content-Type: application/pgp-keys;
- name="pEpkey.asc"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: attachment;
- filename="pEpkey.asc"
-
------BEGIN PGP PUBLIC KEY BLOCK-----
-
-mQENBF9XbKwBCADAEsX9sF+0PauqVCIX5SzteYzz2/awfjio7R4A7yGOkCPyFZui
-ryItvJ9Oh21Woq2DW41JNZ16BR+3gJnWZ2wjKrYORXkk6Cq2mGfs1VHkikOXGeKh
-G0kmNgewOB2xrbk27VvhALeUBRlbHF5w1XqGekm1tB/a8OThiyLA/jCzTf8LGSCq
-rZoeg/DSvUNoOIuz/VzKvPRBNrvBgGfoR4qMmg5m6OaneaPckCuT58eNDMOGW3SD
-f1wk31xBaqHNV2VMAyFuioxl3oyWdjp0dwdvgop+/l/8TJ/gUWqfQ8k5sik40Vlr
-LrTwlR5+2/zOutJIy2N4T3xvz/4W6AthWe5BABEBAAG0JVNhbXVsaSBTZXBww6Ru
-ZW4gPHNhbXVsaUBvcGVudnBuLm5ldD6JAVQEEwEIAD4WIQTUwk9SkPxedAa+noMq
-Bow1gbDSfQUCX1dsrQIbAwUJAeEzgAULCQgHAgYVCgkICwIEFgIDAQIeAQIXgAAK
-CRAqBow1gbDSfU62CACJBr2t6bor5THu7nx6NMTV2ubtsUYyHiLD4FeMXgRDSMhV
-1GPJwSVF7qg1yNShlqco04Hykp/hDP83CG6ivZC21QACcVaUnRfACDETBGZ5ciUi
-gLwjknDR9sQ9azOoqPp+bNBrlLWiQdYw7nyuNUYYGXQkv2stj7Rb11fR8IkWhIky
-2VK8n5ppd3Al1nTNWxZkrTBgCO/JYXSWaZXFydwOPQxlzIBBeUoM3yoVxCP7qypu
-ZbVQrDSX9L4LAFIBtgWaEBc2a2ocdlrwcQTovC8CWbg/b+0cG0FUsCuRhH4hsZOI
-UiOwGGku2uLH5+JNKNDYgNmWgBZhV6wl59X4iZqguQENBF9XbKwBCADuoJFZ4PwJ
-aCXWadIuuhy7pn+Gu7og85UGbb0xuI2mPtzR83V2qur/LeY8OnQSMSyy5n3ZBim5
-noTe7la+9v/sYX+CC9Zj9KXXkTYiwDWtg+Pvwwjooee/ea336/kYaQSn1L2KHOJW
-SgkQlfvM5FIvekQRvJ7scHn0o1tXKCtKVAOP9XIZdl2Dp+QGtKRAwJRFUiyd5oMq
-7vY2x0YJoRS9Looq/+iqYNM+9zU0CjRNSXzfnKxBzSOVLtYBDFsud2LCt0bE5Gky
-RFBq6cbJUt6aQInzzxVPW7kzEGKHi25AeCZ5UkX07eIGLwNO7PAX7A6YmsbF4Xbd
-21sZEbb6EBVtABEBAAGJATwEGAEIACYWIQTUwk9SkPxedAa+noMqBow1gbDSfQUC
-X1dsrAIbDAUJAeEzgAAKCRAqBow1gbDSfQe7CACZ6GI+rgKsIuXzhbyafZALyk55
-d7I/6iFYNhCYUrVSOT187fhu1F/NTMCvcgQiOly+vvi9Xnw1JJTHVRSAmSMtCz/i
-pM8mwU9HHQpHaN6adLdPsfhqsQM3/rGpQ6eGaNimfiQygA1YESvQIUC/edYw3ItF
-4LOGu0Eyl5fbXV17ei21BzYiSrqtoBVfS0/G6p9fhP6j8w6OmpIc+ugSY/JmHNMb
-NAjg6BR4Uuib/XeMIhtm57UmZqtJzBN0K61exQ2dJTvVdQ4X7wIqB73q3oNLJqJ1
-kCZgoaLwFQhBMvRgh8zmk3Xm45RrmJAuPtgT4lzD1QcH0HZLkQFeI5QuHNC8
-=3DqMWb
------END PGP PUBLIC KEY BLOCK-----
-
---------------F7E65590F1BD95959CD20DA9--
+-Steffan
 
