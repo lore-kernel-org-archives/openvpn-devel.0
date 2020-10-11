@@ -1,10 +1,10 @@
-Date: Sun, 11 Oct 2020 18:02:20 +0200 (CEST)
-Message-Id: <202010111602.09BG2K7j012945@...2054...>
+Date: Sun, 11 Oct 2020 20:25:41 +0200 (CEST)
+Message-Id: <202010111825.09BIPfmr014799@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20201005091805.17260-1-arne@...1227...>
-References: <20201005091805.17260-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Ignore deprecation warning for
- daemon on macOS
+In-Reply-To: <20201005111614.29325-1-arne@...1227...>
+References: <20201005111614.29325-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add function for common env
+ setting of verify user/pass calls
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,31 +20,46 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-"unavoidable warnings are less useful than no warnings at all" -
-so as a temporary measure, this makes sense.  Longterm, one could
-see whether a "platform_daemon()" call makes sense...  
+I have stared at the code (with and without "-w").  Looks good.
 
-(From how I read the posix_spawn(3) manpage, it latter is more intended 
-to replace fork()/exec() combos... not sure how that would help with
-daemonizing [controlling tty and that]... daemon(3) suggests that Apple 
-does not want people to start daemons by hand at all, using launchd(8)
-instead...  and I agree that *that* would need a totally different
-approach to "start openvpn")
+Removal of duplicated code is always good, as well as reduced
+indentation levels.  And if it fixes a bug, even better.
 
-Tested on Mojave: fixes the warnings in init.c and down-root.c.
+As a side note: "retval" in verify_user_pass_management() got
+sillified now... only one code path, only one possible exit.
 
-Your patch has been applied to the master branch.
+And we need to get rid of a few #ifdefs there...
 
-commit a480eaae1d32a6c3970911a561a64c1019944f92
+
+Code has been tortured a bit on the server testbed - works
+as before (using plugin-auth-pam in deferred mode with
+must-succeed and must-fail tests).  No auth script and no 
+management on the server today.
+
+Client side has been tested for good measure, but is not 
+executing these code paths at all.
+
+I have not specifically tested the buggy situation (no testbed
+for exactly that combination right now), but I know a production
+setup running that combination - they will surely test RC3 with
+the fix :-)
+
+The stray half-sentence in the commit message was fed to the
+whitespace dragon.
+
+Your patch has been applied to the master and release/2.5 branch.
+
+commit a4eeef17b20541a7afde0f1cbeae4a4e2b0c455a (master)
+commit 09aad8b4e1df91b7b6ed5163390eae3730b17d32 (release/2.5)
 Author: Arne Schwabe
-Date:   Mon Oct 5 11:18:05 2020 +0200
+Date:   Mon Oct 5 13:16:14 2020 +0200
 
-     Ignore deprecation warning for daemon on macOS
+     Add function for common env setting of verify user/pass calls
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20201005091805.17260-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21171.html
+     Message-Id: <20201005111614.29325-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21174.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
