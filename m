@@ -1,10 +1,9 @@
-Date: Thu, 15 Oct 2020 15:37:16 +0200 (CEST)
-Message-Id: <202010151337.09FDbGVE091942@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20201013204758.2472-1-gert@...1296...>
-References: <20201013204758.2472-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Avoid passing NULL to
- argv_printf_cat() in temp_file error case.
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <f2cedb6f-8be8-c7c6-f092-ac166aec2b7f@...515...>
+Date: Mon, 19 Oct 2020 18:04:40 +0300
+MIME-Version: 1.0
+Content-Language: en-US
+Subject: [Openvpn-devel] OpenVPN 2.5-rc3 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,40 +12,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>, openvpn-users@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
 
-Patch has been applied to the master and release/2.5 branch.
+The OpenVPN community project team is proud to release OpenVPN
+2.5-rc3. Source code and Windows installers can be downloaded from our
+download page:
 
-I have beaten this somewhat on the server torture bench, having
-a config with plugin-auth-pam (deferred), auth-user-pass-verify *and*
-auth-gen-token, testing both "via-env" (script-security 3 needed!)
-and "via-file", testing script success and failure.
+<https://openvpn.net/community-downloads/>
 
-There might be a race between deferred plugin-auth and a failing
-script - I saw something weird, but could not reproduce it (it might
-have been "restarted the client too often, so the server log was
-unclear on 'which message belongs to what instance'").
+Debian and Ubuntu packages are available in the official apt repositories:
 
-commit bbcada8abb410d077f7bc13b8157198b4bf6a3d1 (master)
-commit 20965a18e52e60966ed754e6171e08ebe67432d6 (release/2.5)
-Author: Gert Doering
-Date:   Tue Oct 13 22:47:58 2020 +0200
+<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos>
 
-     Avoid passing NULL to argv_printf_cat() in temp_file error case.
+On Red Hat derivatives we recommend using the Fedora Copr repository:
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20201013204758.2472-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21204.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+<https://copr.fedorainfracloud.org/coprs/dsommers/openvpn-beta/>
 
+This release includes a number of fixes to OpenVPN.
 
---
-kind regards,
+OpenVPN 2.5 is a new major release with many new features:
 
-Gert Doering
+     Client-specific tls-crypt keys (--tls-crypt-v2)
+     Added support for using the ChaCha20-Poly1305 cipher in the OpenVPN
+data channel
+     Improved Data channel cipher negotiation
+     Removal of BF-CBC support in default configuration
+     Asynchronous (deferred) authentication support for auth-pam plugin
+     Deferred client-connect
+     Faster connection setup
+     Netlink support
+     Wintun support
+     IPv6-only operation
+     Improved Windows 10 detection
+     Linux VRF support
+     TLS 1.3 support
+     Support setting DHCP search domain
+     Handle setting of tun/tap interface MTU on Windows
+     HMAC based auth-token support
+     VLAN support
+     Support building of .msi installers for Windows
+     Allow unicode search string in --cryptoapicert option (Windows)
+     Support IPv4 configs with /31 netmasks now
+     New option --block-ipv6 to reject all IPv6 packets (ICMPv6)
+     MSI installer (Windows)
+     The MSI installer now bundles EasyRSA 3, a modern take on OpenVPN CA
+       management
 
+More details on these new features as well as a list of deprecated
+features and user-visible changes are available in Changes.rst:
+
+<https://github.com/OpenVPN/openvpn/blob/release/2.5/Changes.rst>
+
+For generic help use these support channels:
+
+     Official documentation:
+<http://openvpn.net/index.php/open-source/documentation/howto.html>
+     Wiki: <https://community.openvpn.net/>
+     Forums: <https://forums.openvpn.net/>
+     User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+     User IRC channel: #openvpn at irc.freenode.net
+
+Please report bugs and ask development questions here:
+
+     Community bug tracker: <https://community.openvpn.net/>
+     Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+     Developer IRC channel: #openvpn-devel at irc.freenode.net (requires
+Freenode registration)
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
