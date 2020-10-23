@@ -1,10 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri, 23 Oct 2020 14:02:53 +0200
-Message-Id: <20201023120259.29783-1-arne@...1227...>
-In-Reply-To: <20201023113244.26295-1-arne@...1227...>
+Date: Fri, 23 Oct 2020 14:02:57 +0200
+Message-Id: <20201023120259.29783-5-arne@...1227...>
+In-Reply-To: <20201023120259.29783-1-arne@...1227...>
 References: <20201023113244.26295-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 2/8] Replace key_scan array of static points
- with inline function
+ <20201023120259.29783-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH 6/8] Rename DECRYPT_KEY_ENABLED to
+ TLS_AUTHENTICATED
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,154 +18,91 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The key_scan array is an array that is setup as a reference to members
-of itself that have static offsets. Replace this pointer indirection
-with an inline function. This has also the advantage that the compiler
-can inline the function and just just a direct offset into the struct.
-
-Replacing the implicit indirection with the pointer array with an
-explicit indirection with the inline function also makes the code a
-bit easier to follow.
+The macro's name suggests that the key is enabled and being used. But
+the macro actually something different but similar enough that the name
+was probably right at some point.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/ssl.c        | 20 +++++++-------------
- src/openvpn/ssl_common.h | 26 +++++++++++++++++++++-----
- src/openvpn/ssl_verify.c |  4 ++--
- 3 files changed, 30 insertions(+), 20 deletions(-)
+ src/openvpn/ssl.c        |  6 +++---
+ src/openvpn/ssl_verify.c |  2 +-
+ src/openvpn/ssl_verify.h | 13 ++++++++++---
+ 3 files changed, 14 insertions(+), 7 deletions(-)
 
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index fb1edd6e..618cc9cc 100644
+index e59dba31..e4f43a86 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -832,7 +832,7 @@ print_key_id(struct tls_multi *multi, struct gc_arena *gc)
- 
-     for (int i = 0; i < KEY_SCAN_SIZE; ++i)
-     {
--        struct key_state *ks = multi->key_scan[i];
-+        struct key_state *ks = get_key_scan(multi, i);
-         buf_printf(&out, " [key#%d state=%s id=%d sid=%s]", i,
-                    state_name(ks->state), ks->key_id,
-                    session_id_print(&ks->session_id_remote, gc));
-@@ -1229,12 +1229,6 @@ tls_multi_init(struct tls_options *tls_options)
-     /* get command line derived options */
-     ret->opt = *tls_options;
- 
--    /* set up list of keys to be scanned by data channel encrypt and decrypt routines */
--    ASSERT(SIZE(ret->key_scan) == 3);
--    ret->key_scan[0] = &ret->session[TM_ACTIVE].key[KS_PRIMARY];
--    ret->key_scan[1] = &ret->session[TM_ACTIVE].key[KS_LAME_DUCK];
--    ret->key_scan[2] = &ret->session[TM_LAME_DUCK].key[KS_LAME_DUCK];
--
-     /* By default not use P_DATA_V2 */
-     ret->use_peer_id = false;
- 
-@@ -3212,9 +3206,9 @@ tls_multi_process(struct tls_multi *multi,
+@@ -3216,7 +3216,7 @@ tls_multi_process(struct tls_multi *multi,
+      * verification failed.  A semi-trusted session can forward data on the
+      * TLS control channel but not on the tunnel channel.
       */
-     if (error)
+-    if (DECRYPT_KEY_ENABLED(multi, &multi->session[TM_UNTRUSTED].key[KS_PRIMARY]))
++    if (TLS_AUTHENTICATED(multi, &multi->session[TM_UNTRUSTED].key[KS_PRIMARY]))
      {
--        for (int i = 0; i < (int) SIZE(multi->key_scan); ++i)
-+        for (int i = 0; i < KEY_SCAN_SIZE; ++i)
-         {
--            if (multi->key_scan[i]->state >= S_ACTIVE)
-+            if (get_key_scan(multi, i)->state >= S_ACTIVE)
-             {
-                 goto nohard;
-             }
-@@ -3229,9 +3223,9 @@ nohard:
-         const int throw_level = GREMLIN_CONNECTION_FLOOD_LEVEL(multi->opt.gremlin);
-         if (throw_level)
-         {
--            for (int i = 0; i < (int) SIZE(multi->key_scan); ++i)
-+            for (int i = 0; i < KEY_SCAN_SIZE; ++i)
-             {
--                if (multi->key_scan[i]->state >= throw_level)
-+                if (get_key_scan(multi, i)->state >= throw_level)
-                 {
-                     ++multi->n_hard_errors;
-                     ++multi->n_soft_errors;
-@@ -3269,7 +3263,7 @@ handle_data_channel_packet(struct tls_multi *multi,
-     /* data channel packet */
-     for (int i = 0; i < KEY_SCAN_SIZE; ++i)
-     {
--        struct key_state *ks = multi->key_scan[i];
-+        struct key_state *ks = get_key_scan(multi, i);
- 
-         /*
-          * This is the basic test of TLS state compatibility between a local OpenVPN
-@@ -3878,7 +3872,7 @@ tls_pre_encrypt(struct tls_multi *multi,
-     struct key_state *ks_select = NULL;
-     for (int i = 0; i < KEY_SCAN_SIZE; ++i)
-     {
--        struct key_state *ks = multi->key_scan[i];
-+        struct key_state *ks = get_key_scan(multi, i);
-         if (ks->state >= S_ACTIVE
+         move_session(multi, TM_ACTIVE, TM_UNTRUSTED, true);
+         msg(D_TLS_DEBUG_LOW, "TLS: tls_multi_process: untrusted session promoted to %strusted",
+@@ -3301,7 +3301,7 @@ handle_data_channel_packet(struct tls_multi *multi,
+          * passive side is the server which only listens for the connections, the
+          * active side is the client which initiates connections).
+          */
+-        if (DECRYPT_KEY_ENABLED(multi, ks)
++        if (TLS_AUTHENTICATED(multi, ks)
+             && key_id == ks->key_id
              && (ks->authenticated == KS_AUTH_TRUE)
-             && ks->crypto_options.key_ctx_bi.initialized
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 810aba95..c07c58ac 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -501,11 +501,6 @@ struct tls_multi
-     /* const options and config info */
-     struct tls_options opt;
- 
--    struct key_state *key_scan[KEY_SCAN_SIZE];
--    /**< List of \c key_state objects in the
--     *   order they should be scanned by data
--     *   channel modules. */
--
-     /*
-      * used by tls_pre_encrypt to communicate the encrypt key
-      * to tls_post_encrypt()
-@@ -585,4 +580,25 @@ struct tls_multi
-      *   sessions with the remote peer. */
- };
- 
-+/**  gets an item  of \c key_state objects in the
-+ *   order they should be scanned by data
-+ *   channel modules. */
-+static inline struct key_state *
-+get_key_scan(struct tls_multi *multi, int index)
-+{
-+    switch (index)
-+    {
-+    case 0:
-+        return &multi->session[TM_ACTIVE].key[KS_PRIMARY];
-+    case 1:
-+        return &multi->session[TM_ACTIVE].key[KS_LAME_DUCK];
-+    case 2:
-+        return &multi->session[TM_LAME_DUCK].key[KS_LAME_DUCK];
-+    default:
-+        ASSERT(false);
-+    }
-+
-+};
-+
-+
- #endif /* SSL_COMMON_H_ */
+             && (floated || link_socket_actual_match(from, &ks->remote_addr)))
+@@ -3628,7 +3628,7 @@ tls_pre_decrypt(struct tls_multi *multi,
+          * Remote is requesting a key renegotiation
+          */
+         if (op == P_CONTROL_SOFT_RESET_V1
+-            && DECRYPT_KEY_ENABLED(multi, ks))
++            && TLS_AUTHENTICATED(multi, ks))
+         {
+             if (!read_control_auth(buf, &session->tls_wrap, from,
+                                    session->opt))
 diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index acc788fc..862a6f56 100644
+index 4172e2fd..98985c51 100644
 --- a/src/openvpn/ssl_verify.c
 +++ b/src/openvpn/ssl_verify.c
-@@ -972,7 +972,7 @@ tls_authentication_status(struct tls_multi *multi, const int latency)
+@@ -948,7 +948,7 @@ tls_authentication_status(struct tls_multi *multi, const int latency)
+     for (int i = 0; i < KEY_SCAN_SIZE; ++i)
+     {
+         struct key_state *ks = get_key_scan(multi, i);
+-        if (DECRYPT_KEY_ENABLED(multi, ks))
++        if (TLS_AUTHENTICATED(multi, ks))
+         {
+             active++;
+             if (ks->authenticated > KS_AUTH_FALSE)
+diff --git a/src/openvpn/ssl_verify.h b/src/openvpn/ssl_verify.h
+index b3fe25d2..7e8b9710 100644
+--- a/src/openvpn/ssl_verify.h
++++ b/src/openvpn/ssl_verify.h
+@@ -95,15 +95,22 @@ enum tls_auth_status
+ enum tls_auth_status
+ tls_authentication_status(struct tls_multi *multi, const int latency);
  
-         for (i = 0; i < KEY_SCAN_SIZE; ++i)
-         {
--            struct key_state *ks = multi->key_scan[i];
-+            struct key_state *ks = get_key_scan(multi, i);
-             if (DECRYPT_KEY_ENABLED(multi, ks))
-             {
-                 active = true;
-@@ -1045,7 +1045,7 @@ tls_authenticate_key(struct tls_multi *multi, const unsigned int mda_key_id, con
-         auth_set_client_reason(multi, client_reason);
-         for (i = 0; i < KEY_SCAN_SIZE; ++i)
-         {
--            struct key_state *ks = multi->key_scan[i];
-+            struct key_state *ks = get_key_scan(multi, i);
-             if (ks->mda_key_id == mda_key_id)
-             {
-                 ks->mda_status = auth ? ACF_SUCCEEDED : ACF_FAILED;
+-/** Check whether the \a ks \c key_state is ready to receive data channel
+- *   packets.
++/** Check whether the \a ks \c key_state has finished the key exchange part
++ *  of the OpenVPN hand shake. This is that the key_method_2read/write
++ *  handshakes have been completed and certificate verification have
++ *  been completed.
++ *
++ * connect/deferred auth might still pending. Also data-channel keys might
++ * not have been created since they are delayed until PUSH_REPLY for NCP
++ * clients.
++ *
+  *   @ingroup data_crypto
+  *
+  *   If true, it is safe to assume that this session has been authenticated
+  *   by TLS.
+  *
+  *   @note This macro only works if S_SENT_KEY + 1 == S_GOT_KEY. */
+-#define DECRYPT_KEY_ENABLED(multi, ks) ((ks)->state >= (S_GOT_KEY - (multi)->opt.server))
++#define TLS_AUTHENTICATED(multi, ks) ((ks)->state >= (S_GOT_KEY - (multi)->opt.server))
+ 
+ /**
+  * Remove the given key state's auth control file, if it exists.
 -- 
 2.26.2
 
