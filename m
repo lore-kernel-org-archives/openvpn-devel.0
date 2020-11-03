@@ -1,13 +1,14 @@
-Date: Mon, 2 Nov 2020 19:22:43 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20201102182243.GT976@...1296...>
 References: <ed56b8ea-00b7-eac2-7ab7-9bf9f21c838a@...2080...>
  <56ed6984-aba1-ffeb-8cd7-7591b75dbae4@...2080...>
+ <20201102182243.GT976@...1296...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <4dff8380-89c5-0e54-469b-02f27f2c3978@...2080...>
+Date: Tue, 3 Nov 2020 17:09:12 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="7cR/5cY1igHxmpEa"
-Content-Disposition: inline
-In-Reply-To: <56ed6984-aba1-ffeb-8cd7-7591b75dbae4@...2080...>
+In-Reply-To: <20201102182243.GT976@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="9e1TOhCKqK2eqma5RMHqe0J3A6A7evYZA"
 Subject: Re: [Openvpn-devel] OpenVPN 3 Linux client - v11 beta released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -17,56 +18,83 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn@...2080...>
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
---7cR/5cY1igHxmpEa
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--9e1TOhCKqK2eqma5RMHqe0J3A6A7evYZA
+Content-Type: multipart/mixed; boundary="a0bdQz2qlBR2RiG629Xh2h2KGDQLKyEEv";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+Message-ID: <4dff8380-89c5-0e54-469b-02f27f2c3978@...2080...>
+Subject: Re: [Openvpn-devel] OpenVPN 3 Linux client - v11 beta released
+References: <ed56b8ea-00b7-eac2-7ab7-9bf9f21c838a@...2080...>
+ <56ed6984-aba1-ffeb-8cd7-7591b75dbae4@...2080...>
+ <20201102182243.GT976@...1296...>
+In-Reply-To: <20201102182243.GT976@...1296...>
+
+--a0bdQz2qlBR2RiG629Xh2h2KGDQLKyEEv
+Content-Language: en-GB
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
-
-On Mon, Nov 02, 2020 at 03:00:58PM +0100, David Sommerseth wrote:
-> >   Then the imported configuration profile must get the DCO feature
-> >   enabled:
-> >=20
-> >       $ openvpn3 config-manage --show --name CFGNAME --dco true
+On 02/11/2020 19:22, Gert Doering wrote:
+> Hi,
 >=20
-> So I managed to introduce a typo here, this config-manage operation
-> should use --config instead of --name:
+> On Mon, Nov 02, 2020 at 03:00:58PM +0100, David Sommerseth wrote:
+>>>   Then the imported configuration profile must get the DCO feature
+>>>   enabled:
+>>>
+>>>       $ openvpn3 config-manage --show --name CFGNAME --dco true
+>>
+>> So I managed to introduce a typo here, this config-manage operation
+>> should use --config instead of --name:
+>>
+>>         $ openvpn3 config-manage --show --name CFGNAME --dco true
 >=20
->         $ openvpn3 config-manage --show --name CFGNAME --dco true
+> Yeah, right.  The difference is quite obvious :-)
 
-Yeah, right.  The difference is quite obvious :-)
+Gah!  If this fails, I'm giving completely up! :)
 
-gert
+         $ openvpn3 config-manage --show --config CFGNAME --dco true
+
+Hopefully, I didn't mess up again :-D
+
+
 --=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+kind regards,
 
-Gert Doering - Munich, Germany                             gert@...1296...
+David Sommerseth
+OpenVPN Inc
 
---7cR/5cY1igHxmpEa
+
+
+--a0bdQz2qlBR2RiG629Xh2h2KGDQLKyEEv--
+
+--9e1TOhCKqK2eqma5RMHqe0J3A6A7evYZA
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQGcBAEBAgAGBQJfoE5yAAoJEB2Cnv7KVigSKJ0L/0ie7IloA6eotjARzamEouFb
-XngGF0wfHRPobvR8oz2DjGWlLI7VcM6p0Y1tatAinnaS9c8PZRP/YBlzXLst3tPb
-xTjcgpLC/Hcy6DauED6dvnAECQfGXcLTS/MI4AgWWAxNFCtvp1dIafJGVLE24Smj
-qXJtJcImjkPFNVhm7jFpYRTTn2MkO/ODxO33q5FPYBlyC6d5sUYBTOvvVPM5+5MC
-0JVGRZclYsjFYEbgOfZc+sXnK+ls9iGO+IaZ2qZWxlZRuBkmztCxMDEsO+Z0pxsa
-/SYnlkPvl5vPv0fJwvFXsvbZbbLkioMkdfvmc+370gwAg8YGYXdMavvBWLt6I/+F
-lG9bJGN5ffJWau2lgIWSXQtTcp9/zVW7kJa51U9eTcMFJP0IgtC7MSRC5ie/gyem
-79MQokHlgU+fnoz/ZdOw6IdLt+Si+pgpiSdguu3nMNMi728n++9t7LFmVUzkHOPF
-RQ7erlSMZ5YwQYzGMLjBPGqageT9byQYgKfMrqADQw==
-=otBX
+iQIcBAEBCgAGBQJfoYCwAAoJEIbPlEyWcf3yq9cQAJ0ovQn4E7U/LrBjie7eybGq
+aN8LmR++d0ijAneqDjCNAzqnaZo9Jmvh+QQ4n3jJlVepkWNkGnbH/ncQzJecxCds
+xNDcO3shcauHAjUFTITURijW1zWfD1h6lH7xOjM1McMSv2E4QAzKx88qoKYrwDAn
+bFYz/3d4P5B4hBHcKEJHQWXEGd9g6jsowMFjAqt+9Vkack/VPa6bBG1aL/jKgR74
+VWShniao7sN1G0XWPo4MubkbnkjZIBujnQLxncCS7jZTnPnWAAsv1hiX8lyQPz7T
+ZvD+EsTY5CfEgttOqtR8QrQ54wVUM5lcGVltFB/YdQMt+aP7tjx7+KxpeF/bllLk
+6f8gGc7CkVf5fN+QgZEf8ulRfsH4hoUCb/jinCxW1jNTHTruZ0Cw6svWXBopRuyK
+euAELJkX+TWEnXkWlNogl98vmdkwkptfMATNxbrKbGYtjfdgtFX6gR3Pl3ErLAed
+uFFmeJxjapY4v/24Qem/lyQURerR0HvOsK4EflmzbkhEkCjRYFFsAp/QoESwY7SN
+C79+wumr1Um23G+A4G4quC+X8PZwgiL0wcxB+XkfEqUp1L+jMedAlewYNtuc6D37
+zjvTPKJU8Swurwlu7H/nvv+OScc1rlmFAhrkFHcDDH690P6MyJFzrBa2e3O8bneW
+lKQRiQOPqBRY8kRHHqzt
+=SpoU
 -----END PGP SIGNATURE-----
 
---7cR/5cY1igHxmpEa--
+--9e1TOhCKqK2eqma5RMHqe0J3A6A7evYZA--
 
