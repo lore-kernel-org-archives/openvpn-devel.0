@@ -1,14 +1,12 @@
-From: "Vladislav Grishenko" <themiron@...2010...>
-References: <20201003095253.16026-1-themiron@...2010...>
- <20201004223614.12429-1-themiron@...2010...>
- <47dbed91-a26b-51ff-0171-c2878df92238@...1227...>
-In-Reply-To: <47dbed91-a26b-51ff-0171-c2878df92238@...1227...>
-Date: Mon, 16 Nov 2020 03:10:25 +0500
-Message-ID: <000301d6bb9c$1eb99760$5c2cc620$@yandex-team.ru>
-MIME-Version: 1.0
-Content-Language: ru
-Subject: Re: [Openvpn-devel] [PATCH v8] Add DNS SRV remote host discovery
- support
+From: "=?gb18030?B?u8TRxA==?=" <383181189@...1414...>
+Mime-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="----=_NextPart_5FB48778_1117E900_71340092"
+Content-Transfer-Encoding: 8Bit
+Date: Wed, 18 Nov 2020 10:31:20 +0800
+Message-ID: <tencent_575125CE3C6A271AE16DBFD8500026496106@...1414...>
+Subject: [Openvpn-devel] [ovpn-dco] It seems not to compile ovpn-cli
+ successfully
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,768 +15,324 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: 'Arne Schwabe' <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: =?gb18030?B?T3BlbnZwbi1kZXZlbA==?= <openvpn-devel@lists.sourceforge.net>, =?gb18030?B?YW50b25pbw==?= <antonio@...515...>, =?gb18030?B?bGV2?= <lev@...515...>
 
-Hi Arne,
+This is a multi-part message in MIME format.
 
-Thank you for the review and please refer v9 where all the mentioned parts =
-are handled.
+------=_NextPart_5FB48778_1117E900_71340092
+Content-Type: text/plain;
+	charset="gb18030"
+Content-Transfer-Encoding: base64
 
---
-Best Regards, Vladislav Grishenko
+SGkgQW50b25pbywgTGV2LA0KDQoNCiZuYnNwO0knbSBhIGVuZCB1c2VyIG9mIE9wZW5WUE4uIEkg
+aGF2ZSBiZWVuIHBheWluZyBjbG9zZSBhdHRlbnRpb24gdG8gYW55IHNvbHV0aW9uIHRoYXQgbWFr
+ZXMgT3BlblZQTiBkYXRhIGNoYW5uZWwgcnVubmluZyBpbiB0aGUga2VybmVsIHNwYWNlLg0KTWFu
+eSB0aGFua3MgdG8geW91IGJyaW5naW5nIG92cG4tZGNvIGZpbm5hbHkgb3V0LiBDYW4gbm90IHdh
+aXQgdG8gaGF2ZSBhIHRyeS4gU28gSSB0cmllZCBjb21waWxpbmcgaXQuIEtlcm5lbCBtb2R1bGUg
+aXMgT0sgdG8gY29tcGlsZSB3aXRob3V0DQppc3N1ZXMgaW4gbXkgVWJ1bnR1IDE4LjA0IFBDLCBi
+dXQmbmJzcDsgaXQgc2VlbXMgbm90IHRvIGNvbXBpbGUgb3Zwbi1jbGkgc3VjY2Vzc2Z1bGx5LiBJ
+IGRpZCBub3Qgc2VlIE9WUE5fQ0lQSEVSX0FMR19DSEFDSEEyMFBPTFkxMzA1DQppcyBkZWZpbmVk
+LiBEaWQgSSBtaXNzIHRvIGluc3RhbGwgc29tZSBoZWFkZXIgZmlsZXMgb3IgbGliPw0KDQoNCiUg
+bWFrZSB0ZXN0cyZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7Jm5ic3A7DQptYWtlIC1DIHRlc3RzJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsmbmJzcDsNCm1h
+a2VbMV06IEVudGVyaW5nIGRpcmVjdG9yeSAnL21udC9zZGIzL3Byb2plY3Qvb3BlbnZwbi9vdnBu
+LWRjby5naXQvdGVzdHMnJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsNCmNjIC1XYWxsIG92cG4t
+Y2xpLmMgLUkuLi9pbmNsdWRlL3VhcGkgXCZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsm
+bmJzcDsNCiZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyBgcGtnLWNvbmZpZyAtLWNmbGFncyAt
+LWxpYnMgbGlibmwtMy4wIGxpYm5sLWdlbmwtMy4wYCBcJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyZuYnNwOw0KJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7IC1sbWJlZHRscyAtbG1iZWRjcnlwdG8gLW8gb3Zwbi1jbGkmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsNCkluIGZpbGUgaW5jbHVkZWQgZnJvbSAvdXNyL2luY2x1ZGUvbGli
+bmwzL25ldGxpbmsvc29ja2V0Lmg6MTY6MCwmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7DQombmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwO2Zyb20gb3Zwbi1jbGkuYzoxNzom
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsNCi91c3IvaW5jbHVk
+ZS9saWJubDMvbmV0bGluay9oYW5kbGVycy5oOjUxOjE1OiB3YXJuaW5nOiChrnN0cnVjdCBubG1z
+Z2VycqGvIGRlY2xhcmVkIGluc2lkZSBwYXJhbWV0ZXIgbGlzdCB3aWxsIG5vdCBiZSB2aXNpYmxl
+IG91dHNpZGUgb2YgdGhpcyBkZWZpbml0aW9uIG9yIGRlY2xhcmF0aW9uJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyZuYnNwOw0KJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7IHN0cnVjdCBubG1zZ2VyciAqbmxlcnIsIHZvaWQgKmFyZyk7DQombmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7Xn5+fn5+fn4NCi91
+c3IvaW5jbHVkZS9saWJubDMvbmV0bGluay9oYW5kbGVycy5oOjUwOjQzOiB3YXJuaW5nOiChrnN0
+cnVjdCBzb2NrYWRkcl9ubKGvIGRlY2xhcmVkIGluc2lkZSBwYXJhbWV0ZXIgbGlzdCB3aWxsIG5v
+dCBiZSB2aXNpYmxlIG91dHNpZGUgb2YgdGhpcyBkZWZpbml0aW9uIG9yIGRlY2xhcmF0aW9uDQom
+bmJzcDt0eXBlZGVmIGludCAoKm5sX3JlY3Ztc2dfZXJyX2NiX3QpKHN0cnVjdCBzb2NrYWRkcl9u
+bCAqbmxhLA0KJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7Xn5+fn5+fn5+
+fn4NCi91c3IvaW5jbHVkZS9saWJubDMvbmV0bGluay9oYW5kbGVycy5oOjEzNToxODogd2Fybmlu
+Zzogoa5zdHJ1Y3Qgc29ja2FkZHJfbmyhryBkZWNsYXJlZCBpbnNpZGUgcGFyYW1ldGVyIGxpc3Qg
+d2lsbCBub3QgYmUgdmlzaWJsZSBvdXRzaWRlIG9mIHRoaXMgZGVmaW5pdGlvbiBvciBkZWNsYXJh
+dGlvbg0KJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDtzdHJ1Y3Qgc29j
+a2FkZHJfbmwgKiwNCiZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7IF5+fn5+fn5+fn5+DQpvdnBuLWNsaS5jOiBJbiBmdW5jdGlvbiCh
+rm92cG5fbmxfbXNnX3NlbmShrzoNCm92cG4tY2xpLmM6MjMyOjM4OiB3YXJuaW5nOiBwYXNzaW5n
+IGFyZ3VtZW50IDMgb2Ygoa5ubF9jYl9lcnKhryBmcm9tIGluY29tcGF0aWJsZSBwb2ludGVyIHR5
+cGUgWy1XaW5jb21wYXRpYmxlLXBvaW50ZXItdHlwZXNdDQombmJzcDsgbmxfY2JfZXJyKGN0eC0m
+Z3Q7bmxfY2IsIE5MX0NCX0NVU1RPTSwgb3Zwbl9ubF9jYl9lcnJvciwgJmFtcDtzdGF0dXMpOw0K
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7IF5+fn5+fn5+fn5+fn5+fn4NCkluIGZpbGUgaW5jbHVkZWQgZnJv
+bSAvdXNyL2luY2x1ZGUvbGlibmwzL25ldGxpbmsvc29ja2V0Lmg6MTY6MCwNCiZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ZnJvbSBv
+dnBuLWNsaS5jOjE3Og0KL3Vzci9pbmNsdWRlL2xpYm5sMy9uZXRsaW5rL2hhbmRsZXJzLmg6MTI3
+OjEzOiBub3RlOiBleHBlY3RlZCChrm5sX3JlY3Ztc2dfZXJyX2NiX3Qge2FrYSBpbnQgKCopKHN0
+cnVjdCBzb2NrYWRkcl9ubCAqLCBzdHJ1Y3Qgbmxtc2dlcnIgKiwgdm9pZCAqKX2hryBidXQgYXJn
+dW1lbnQgaXMgb2YgdHlwZSChrmludCAoKikoc3RydWN0IHNvY2thZGRyX25sICosIHN0cnVjdCBu
+bG1zZ2VyciAqLCB2b2lkICopoa8NCiZuYnNwO2V4dGVybiBpbnQmbmJzcDsgbmxfY2JfZXJyKHN0
+cnVjdCBubF9jYiAqLCBlbnVtIG5sX2NiX2tpbmQsIG5sX3JlY3Ztc2dfZXJyX2NiX3QsDQombmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDtefn5+fn5+fn4NCm92
+cG4tY2xpLmM6IEluIGZ1bmN0aW9uIKGub3Zwbl9yZWFkX2NpcGhlcqGvOg0Kb3Zwbi1jbGkuYzoz
+NTU6MTc6IGVycm9yOiChrk9WUE5fQ0lQSEVSX0FMR19DSEFDSEEyMFBPTFkxMzA1oa8gdW5kZWNs
+YXJlZCAoZmlyc3QgdXNlIGluIHRoaXMgZnVuY3Rpb24pOyBkaWQgeW91IG1lYW4goa5PVlBOX0NJ
+UEhFUl9BTEdfQ0hBQ0hBMjBfUE9MWTEzMDWhrz8NCiZuYnNwOyAmbmJzcDtjdHgtJmd0O2NpcGhl
+ciA9IE9WUE5fQ0lQSEVSX0FMR19DSEFDSEEyMFBPTFkxMzA1Ow0KJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDtefn5+fn5+fn5+fn5+
+fn5+fn5+fn5+fn5+fn5+fn5+fg0KJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDtPVlBOX0NJUEhFUl9BTEdfQ0hBQ0hBMjBfUE9MWTEz
+MDUNCg0KDQoNClRvbnk=
 
-> -----Original Message-----
-> From: Arne Schwabe <arne@...1227...>
-> Sent: Tuesday, October 20, 2020 11:58 AM
-> To: Vladislav Grishenko <themiron@...2010...>; openvpn-
-> devel@lists.sourceforge.net
-> Subject: Re: [Openvpn-devel] [PATCH v8] Add DNS SRV remote host discovery
-> support
->=20
-> Am 05.10.20 um 00:36 schrieb Vladislav Grishenko:
-> > DNS SRV remote host discovery allows to have multiple OpenVPN servers
-> > for a single domain w/o explicit profile enumeration, to move services
-> > from host to host with little fuss, and to designate hosts as primary
-> > servers for a service and others as backups.
-> > Feature has been asked several times already, should be useful in case
-> > of substantial number of clients & servers deployed.
-> >
-> > Patch introduces "--remote-srv domain [service] [proto]" option.
-> > The "service" and "proto" arguments are optional. Client will try to
-> > resolve DNS SRV record "_service._proto.domain" and use returned DNS
-> > SRV records as remote server list ordered by server selection
-> > mechanism defined in RFC2782 (https://tools.ietf.org/html/rfc2782):
-> >
-> >     A client MUST attempt to contact the target host with the
-> >     lowest-numbered priority field value it can reach, target hosts
-> >     with the same priority SHOULD be tried in an order defined by the
-> >     weight field.
-> >     The weight field specifies a relative weight for entries with the
-> >     same priority. Larger weights SHOULD be given a proportionately
-> >     higher probability of being selected.
-> >     Domain administrators SHOULD use Weight 0 when there isn't any
-> >     server selection to do. In the presence of records containing
-> >     weights greater than 0, records with Weight 0 SHOULD have a very
-> >     small chance of being selected.
-> >
-> > Note: OpenVPN server selection mechanism implementation indeed will
-> > give records with weight of zero a very small chance of being selected
-> > first, but never skip them.
-> >
-> > Example: instead of multiple --remote in order:
-> >     remote server1.example.net 1194 udp
-> >     remote server2.example.net 1194 udp
-> >     remote server3.example.net 1194 udp
-> >     remote server4.example.net 443 tcp
-> >
-> > now it's possible to specify just one --remote-srv:
-> >     remote-srv example.net
-> >
-> > and configure following DNS SRV records:
-> >     name                             prio weight port target
-> >     _openvpn._udp.example.net IN SRV 10   60     1194 server1.example.n=
-et
-> >     _openvpn._udp.example.net IN SRV 10   40     1194 server2.example.n=
-et
-> >     _openvpn._udp.example.net IN SRV 10   0      1194 server3.example.n=
-et
-> >     _openvpn._tcp.example.net IN SRV 20   0       443 server4.example.n=
-et
->=20
-> Missing . at the end at least if it should be in a bind zone file:
->=20
->=20
-> _openvpn._udp.example.net. IN SRV 10   60     1194 server1.example.net.
->=20
-> or
->=20
-> _openvpn._udp		 IN SRV 10   60     1194 server1.example.net.
->=20
->=20
-> >
-> > For "--remote-srv example.net" following will happen in order:
-> > 1. The client will first try to resolve "_openvpn._udp.example.net"
-> >    and "_openvpn._tcp.example.net".
-> > 2. Records "server1.example.net:1194", "server2.example.net:1194"
-> >    and "server3.example.net:1194" will be selected before record
-> >    "server4.example.net:443" as their priority 10 is smaller than 20.
-> > 3. Records "server1.example.net:1194", "server2.example.net:1194"
-> >    and "server3.example.net:1194" will be randomly selected with
-> >    weight probability: first will be either "server1.example.net:1194"
-> >    with 60% probability or "server2.example.net:1194" with 40% or
-> >    "server3.example.net:1194" with almost zero probability.
-> > 4. If "server1.example.net:1194" was selected, the second record will
-> >    be either "server2.example.net:1194" with almost 100% probability
-> >    or "server3.example.net:1194" with almost 0%.
-> > 5. If "server2.example.net:1194" was selected, the third record will
-> >    be the only last record of priority 10 - "server3.example.net:1194".
-> > 6. Record "server4.example.net:443" will be the last one selected as
-> >    the only record with priority 20.
-> > 7. Each of the resulting "target:port" remote hosts will be resolved
-> >    and accessed if its protocol has no conflict with the rest of the
-> >    OpenVPN options.
-> >
-> >   If DNS SRV name can't be resolved or no valid records were returned,
-> >   client will move on to the next connection entry.
-> >
-> > v2:
-> >   - use DNS SRV for feature naming
-> >   - change option name to --remote-service-discovery
-> >   - add --remote-service-discovery [service] optional parameter support
-> >   - rewrite man, add algo/prio/weight description and examples
-> >   - fix random weight selection was not implicit
-> >   - remove pulled REMOTE_DISCOVERY support, not needed
-> >   - split windows/unix-specific parts into extra functions
-> >   - put functions into servinfo scope, add doxygen comments
-> >   - remove addrinfo hack, use servinfo containers of addrinfo list
-> >   - better proxy support (tcp mode not supported so far)
-> >   - log discovery attempts and results, if enabled
-> >
-> > v3:
-> >   - complete logic rewrite
-> >   - use separate --remote-srv [service] [proto] option
-> >   - remove fallback, additional --remote/--remote-srv does the same
-> >   - add "auto" protocol support to allow both udp & tcp discoverery
-> >   - add support for tcp / http proxy (natively)
-> >   - man update
-> >
-> > v4:
-> >   - due RFC 2782 ambiguity, prefer to use all resolved DNS SRV records,
-> >     even ones with weight 0 after the records containing weights greater
-> >     than 0 were all selected, keep related code disabled for historical
-> >     reasons.
-> >   - man update
-> >
-> > v5: rebase against upstream with connection advancing fix
-> >   - allow management skip/accept for remote service hosts as for --remo=
-te
-> >   - improve compatibility with a way "--persist-remote-ip" is handled
-> >   - ensure max line length is 80
-> >
-> > v6:
-> >   - pick out code-style conformant changes into separate patch
-> >   - add more options checks and comments
-> >
-> > v7:
-> >   - prefer line breaks before long string parameters
-> >   - use win32/posix suffixes for query_servinfo
-> >
-> > v8:
-> >   - rework compatibility with --preresolve and --persist-remote-ip
-> >   - fix dns data structures leak on wine/win32
-> >   - add priority and weight logging
-> >
-> > Signed-off-by: Vladislav Grishenko <themiron@...2010...>
-> > ---
-> >  configure.ac                        |   2 +-
-> >  doc/man-sections/client-options.rst | 117 +++-
-> >  doc/management-notes.txt            |   6 +
-> >  src/openvpn/Makefile.am             |   2 +-
-> >  src/openvpn/buffer.h                |   5 -
-> >  src/openvpn/errlevel.h              |   1 +
-> >  src/openvpn/init.c                  |  79 ++-
-> >  src/openvpn/openvpn.vcxproj         |   8 +-
-> >  src/openvpn/options.c               | 268 +++++++--
-> >  src/openvpn/options.h               |   4 +
-> >  src/openvpn/socket.c                | 854 +++++++++++++++++++++++++++-
-> >  src/openvpn/socket.h                |  58 +-
-> >  src/openvpn/syshead.h               |   5 +
-> >  13 files changed, 1328 insertions(+), 81 deletions(-)
-> >
-> > diff --git a/configure.ac b/configure.ac index ebb32204..22088aaf
-> > 100644
-> > --- a/configure.ac
-> > +++ b/configure.ac
-> > @@ -477,7 +477,7 @@ SOCKET_INCLUDES=3D"
-> >  "
-> >
-> >  AC_CHECK_HEADERS(
-> > -	[net/if.h netinet/ip.h resolv.h sys/un.h net/if_utun.h
-> sys/kern_control.h],
-> > +	[net/if.h netinet/ip.h arpa/nameser.h resolv.h sys/un.h
-> > +net/if_utun.h sys/kern_control.h],
-> >  	,
-> >  	,
-> >  	[[${SOCKET_INCLUDES}]]
-> > diff --git a/doc/man-sections/client-options.rst
-> > b/doc/man-sections/client-options.rst
-> > index af21fbcd..2ed9655d 100644
-> > --- a/doc/man-sections/client-options.rst
-> > +++ b/doc/man-sections/client-options.rst
-> > @@ -307,10 +307,117 @@ configuration.
-> >    specification (4/6 suffix), OpenVPN will try both IPv4 and IPv6
-> >    addresses, in the order getaddrinfo() returns them.
-> >
-> > +--remote-srv args
-> > +  Remote DNS SRV domain, service name and protocol.
-> > +
-> > +  Valid syntaxes:
-> > +  ::
-> > +
-> > +     remote-srv domain
-> > +     remote-srv domain service
-> > +     remote-srv domain service proto
-> > +
-> > +  The ``service`` and ``proto`` arguments are optional. Client will
-> > + try  to resolve DNS SRV record ``_service._proto.domain`` and use
-> > + returned  DNS SRV records as remote server list ordered by server
-> > + selection  mechanism defined in `RFC 2782
-> <https://tools.ietf.org/html/rfc2782>`_:
-> > +  ::
-> > +
-> > +    A client MUST attempt to contact the target host with the
-> > +    lowest-numbered priority field value it can reach, target hosts
-> > +    with the same priority SHOULD be tried in an order defined by the
-> > +    weight field.
-> > +    The weight field specifies a relative weight for entries with the
-> > +    same priority. Larger weights SHOULD be given a proportionately
-> > +    higher probability of being selected.
-> > +    Domain administrators SHOULD use Weight 0 when there isn't any
-> > +    server selection to do. In the presence of records containing
-> > +    weights greater than 0, records with Weight 0 SHOULD have a very
-> > +    small chance of being selected.
-> > +
-> > +  *Note:*
-> > +    OpenVPN server selection mechanism implementation indeed will give
-> > +    records with weight of zero a very small chance of being selected
-> > +    first, but never skip them.
-> > +
-> > +  The ``service`` argument indicates the symbolic name of the desired
-> > + service. By default it is :code:`openvpn` registered service name.
->=20
-> The last sentenced feels odd to me. But I am no native speaker I would wo=
-rd
-> that as:
->=20
-> By default service is the registered service name :code:`openvpn`.
->=20
-> > +
-> > +  The ``proto`` argument indicates the symbolic name of the desired
-> > + protocol and the protocol to use when connecting with the remote,
-> > + and  may either be :code:`tcp`, :code:`udp` or special value
-> > + :code:`auto`  used by default to try both. In this case all the
-> > + discovered remote  hosts will be ordered by server selection
-> > + mechanism regardless their  protocol. To enforce IPv4 or IPv6
-> > + connections add a :code:`4` or  :code:`6` suffix; like :code:`udp4`
-> > + / :code:`udp6` / :code:`tcp4` /  :code:`tcp6` / :code:`auto4` / :code=
-:`auto6`.
-> > +
-> > +  On the client, multiple ``--remote-srv`` options may be specified
-> > + for  redundancy, each referring to a different DNS SRV record name,
-> > + in the  order specified by the list of ``--remote-srv`` options.
-> > + Specifying  multiple ``--remote-srv`` options for this purpose is a
-> > + special case  of the more general connection-profile feature. See
-> > + the  ``<connection>`` documentation below.
-> > +
-> > +  The client will move on to the next DNS SRV record in the ordered
-> > + list,  in the event of connection failure. Note that at any given
-> > + time, the  OpenVPN client will at most be connected to one server.
-> > +
-> > +  If particular DNS SRV record next resolves to multiple IP
-> > + addresses,  OpenVPN will try them in the order that the system
-> > + getaddrinfo()  presents them, so prioritization and DNS
-> > + randomization is done by the  system library. Unless an IP version
-> > + is forced by the protocol  specification (4/6 suffix), OpenVPN will
-> > + try both IPv4 and IPv6  addresses, in the order getaddrinfo() returns=
- them.
-> > +
-> > +  Examples:
-> > +  ::
-> > +
-> > +     remote-srv example.net
-> > +     remote-srv example.net openvpn
-> > +     remote-srv example.net openvpn tcp
-> > +
-> > +  Example of DNS SRV records:
-> > +  ::
-> > +
-> > +     name                             prio weight port target
-> > +     _openvpn._udp.example.net IN SRV 10   60     1194 server1.example=
-.net
-> > +     _openvpn._udp.example.net IN SRV 10   40     1194 server2.example=
-.net
-> > +     _openvpn._udp.example.net IN SRV 10   0      1194 server3.example=
-.net
-> > +     _openvpn._tcp.example.net IN SRV 20   0       443 server4.example=
-.net
-> > +
->=20
-> Same problem with missing . at the end of the domain. I ended up with:
->=20
->=20
-> 2020-10-19 17:43:16 Resolved remote service host:
-> openpvn.blinkt.de.blinkt.de:1198,udp prio 10 weight 60
->=20
-> which is semi helpful.
->=20
->=20
-> > +  For ``--remote-srv example.net`` following will happen in order:
-> > +
-> > +  1. The client will first try to resolve ``_openvpn._udp.example.net``
-> > +     and ``_openvpn._tcp.example.net``.
-> > +  2. Records ``server1.example.net:1194``, ``server2.example.net:1194``
-> > +     and ``server3.example.net:1194`` will be selected before record
-> > +     ``server4.example.net:443`` as their priority 10 is smaller than =
-20.
-> > +  3. Records ``server1.example.net:1194``, ``server2.example.net:1194``
-> > +     and ``server3.example.net:1194`` will be randomly selected with
-> > +     weight probability: first will be either ``server1.example.net:11=
-94``
-> > +     with 60% probability or ``server2.example.net:1194`` with 40% or
-> > +     ``server3.example.net:1194`` with almost zero probability.
-> > +  4. If ``server1.example.net:1194`` was selected, the second record w=
-ill
-> > +     be either ``server2.example.net:1194`` with almost 100% probabili=
-ty
-> > +     or ``server3.example.net:1194`` with almost 0%.
-> > +  5. If ``server2.example.net:1194`` was selected, the third record wi=
-ll
-> > +     be the only last record of priority 10 - ``server3.example.net:11=
-94``.
-> > +  6. Record ``server4.example.net:443`` will be the last one selected =
-as
-> > +     the only record with priority 20.
-> > +  7. Each of the resulting ```target:port`` remote hosts will be resol=
-ved
-> > +     and accessed if its protocol has no conflict with the rest of the
-> > +     OpenVPN options.
-> > +
-> > +  If DNS SRV name can't be resolved or no valid records were
-> > + returned,
->=20
-> If /a/ DNS SRV name.
->=20
-> Use cannot rather than the informal "can't".
-> Also are instead of were to keep tenses the same in both sentences.
->=20
-> > +  client will move on to the next connection entry.
-> > +
->=20
-> the client
->=20
-> > +  For more information on DNS SRV see
-> > + https://tools.ietf.org/html/rfc2782
-> > +
-> >  --remote-random
-> > -  When multiple ``--remote`` address/ports are specified, or if
-> > connection
-> > -  profiles are being used, initially randomize the order of the list
-> > as a
-> > -  kind of basic load-balancing measure.
-> > +  When multiple ``--remote`` address/ports or ``--remote-srv``
-> > + records are  specified, or if connection profiles are being used,
-> > + initially randomize  the order of the list as a kind of basic load-ba=
-lancing
-> measure.
->=20
-> This is now even more confusing. I would completely rewrite it and not th=
-at
-> remote-srv is better.
->=20
-> --remote-random
->   Randomises the order of ``--remote-srv``, ``remote-srv`` and connection
-> profiles on start. This randomisationof these entries as a kind of basic =
-load-
-> balancing measure. Note that implementing DNS SRV entries (with a short T=
-TL if
-> it should be dynamic) and remote-srv is a better alternative for client-s=
-ide load
-> balancing.
->=20
->=20
->=20
-> > +}
-> > +
-> > +#else
-> > +/*
-> > + * Queries DNS SRV records for specified DNS domain.
-> > + * Returns EAI_* status and service list on success in order of receiv=
-e.
-> > + */
-> > +static int
-> > +query_servinfo_posix(const char *domain, int proto,
-> > +                     struct servinfo *next, struct servinfo **res) {
-> > +    unsigned char answer[NS_MAXMSG];
-> > +    int status;
->=20
->=20
-> on macOS:
->=20
-> ../../../openvpn-git/src/openvpn/socket.c:672:26: error: use of undeclared
->       identifier 'NS_MAXMSG'
->     unsigned char answer[NS_MAXMSG];
->=20
->=20
-> I used
->=20
-> #ifndef NS_MAXMSG
-> #define NS_MAXMSG 65335
-> #endif
->=20
-> for my testing in that function
->=20
->=20
-> > +
-> > +    int n =3D res_query(domain, ns_c_in, ns_t_srv, answer, NS_MAXMSG);
-> > +    dmsg(D_SOCKET_DEBUG, "RES_QUERY class=3D%d type=3D%d domain=3D%s
-> result=3D%d",
-> > +         ns_c_in, ns_t_srv, domain, n);
-> > +    if (n < 0)
-> > +    {
-> > +        switch (h_errno)
-> > +        {
-> > +            case HOST_NOT_FOUND:
-> > +                return EAI_NONAME;
-> > +
-> > +            case NO_ADDRESS:
-> > +#if NO_ADDRESS !=3D NO_DATA
-> > +            case NO_DATA:
-> > +#endif
-> > +                return EAI_NODATA;
-> > +
-> > +            case NO_RECOVERY:
-> > +                return EAI_FAIL;
-> > +
-> > +            case TRY_AGAIN:
-> > +                return EAI_AGAIN;
-> > +        }
-> > +        return EAI_SYSTEM;
-> > +    }
-> > +
-> > +    ns_msg msg;
-> > +    if (ns_initparse(answer, n, &msg) < 0)
-> > +    {
-> > +        return EAI_FAIL;
-> > +    }
-> > +
-> > +    struct servinfo *list =3D NULL, *first =3D NULL;
-> > +    for (int i =3D 0; i < ns_msg_count(msg, ns_s_an); i++)
-> > +    {
-> > +        ns_rr rr;
-> > +
-> > +        if (ns_parserr(&msg, ns_s_an, i, &rr) =3D=3D 0
-> > +            && ns_rr_type(rr) =3D=3D ns_t_srv)
-> > +        {
-> > +            const unsigned char *rdata =3D ns_rr_rdata(rr);
-> > +            char name[NS_MAXDNAME];
-> > +
-> > +            if (ns_rr_rdlen(rr) > 6
-> > +                && dn_expand(ns_msg_base(msg), ns_msg_end(msg),
-> > +                             rdata + 6, name, sizeof(name)) > 0 && *na=
-me)
-> > +            {
-> > +                struct servinfo *si =3D alloc_servinfo(name,
-> > +                                                     ns_get16(rdata + =
-4),
-> > +                                                     proto);
-> > +                if (!si)
-> > +                {
-> > +                    freeservinfo(list);
-> > +                    status =3D EAI_MEMORY;
-> > +                    goto done;
-> > +                }
-> > +                si->prio =3D ns_get16(rdata);
-> > +                si->weight =3D ns_get16(rdata + 2);
-> > +                si->next =3D list, list =3D si;
-> > +                if (!first)
-> > +                {
-> > +                    first =3D si;
-> > +                }
-> > +            }
-> > +        }
-> > +    }
-> > +    if (list)
-> > +    {
-> > +        first->next =3D next;
-> > +        *res =3D list;
-> > +        status =3D 0;
-> > +    }
-> > +    else
-> > +    {
-> > +        status =3D EAI_NODATA;
-> > +    }
-> > +
-> > +done:
-> > +    return status;
-> > +}
-> > +#endif
-> > +
-> > +/*
-> > + * Service structure compare function for server selection
-> > + * mechanism, defined in RFC 2782.
-> > + */
-> > +static int
-> > +servinfo_cmp(const void *a, const void *b) {
-> > +    const struct servinfo *ae =3D *(struct servinfo **)a;
-> > +    const struct servinfo *be =3D *(struct servinfo **)b;
-> > +
-> > +    /* lowest-numbered priority first */
-> > +    if (ae->prio !=3D be->prio)
-> > +    {
-> > +        return ae->prio < be->prio ? -1 : 1;
-> > +    }
-> > +
-> > +    /* zero-weighted first */
-> > +    if ((ae->weight =3D=3D 0 && be->weight)
-> > +        || (ae->weight && be->weight =3D=3D 0))
-> > +    {
-> > +        return ae->weight < be->weight ? -1 : 1;
-> > +    }
-> > +
-> > +    /* else keep received order, can't be equal */
-> > +    return ae->order > be->order ? -1 : 1; }
-> > +
-> > +/*
-> > + * Sort & order service list according server selection mechanism,
-> > + * defined in RFC 2782.
-> > + * Returns service list. Although specific elements can be freed,
-> > + * non-empty list can never become empty.
-> > + */
->=20
-> The comment about freed elements only applies if the #if 0 block is enabl=
-ed,
-> right? I would remove this. And in general it is better to have the funct=
-ion
-> comments as doxygen style comments.
->=20
->=20
-> > +static struct servinfo *
-> > +sort_servinfo(struct servinfo *list)
-> > +{
-> > +    struct servinfo ordered, *tail =3D &ordered;
-> > +    int count =3D 0;
-> > +    struct gc_arena gc =3D gc_new();
-> > +
-> > +    ASSERT(list);
-> > +
-> > +    /* count and number entries in reverse order */
-> > +    for (struct servinfo *si =3D list; si; si =3D si->next)
-> > +    {
-> > +        si->order =3D count++;
-> > +    }
-> > +
-> > +    struct servinfo **sorted;
-> > +    ALLOC_ARRAY_CLEAR_GC(sorted, struct servinfo *, count, &gc);
-> > +    for (struct servinfo *si =3D list; si; si =3D si->next)
-> > +    {
-> > +        sorted[si->order] =3D si;
-> > +    }
-> > +
-> > +    /* sort records by priority and zero weight */
-> > +    qsort(sorted, count, sizeof(sorted[0]), servinfo_cmp);
-> > +
-> > +    /* apply weighted selection mechanism */
-> > +    ordered.next =3D NULL;
-> > +    for (int i =3D 0; i < count;)
-> > +    {
-> > +        struct servinfo unordered;
-> > +
-> > +        /* compute the sum of the weights of records of the same
-> > +         * priority and put them in the unordered list */
-> > +        unordered.prio =3D sorted[i]->prio;
-> > +        unordered.weight =3D 0;
-> > +        unordered.next =3D NULL;
-> > +        for (struct servinfo *prev =3D &unordered;
-> > +             i < count && sorted[i]->prio =3D=3D unordered.prio; i++)
-> > +        {
-> > +            unordered.weight +=3D sorted[i]->weight;
-> > +
-> > +            /* add entry to the tail of unordered list */
-> > +            sorted[i]->next =3D NULL;
-> > +            prev->next =3D sorted[i], prev =3D sorted[i];
-> > +        }
-> > +
-> > +        /* process the unordered list */
-> > +        while (unordered.next)
-> > +        {
-> > +            /* choose a uniform random number between 0 and the sum
-> > +             * computed (inclusive) */
-> > +            int weight =3D get_random() % (unordered.weight + 1);
-> > +
-> > +            /* select the entries whose running sum value is the first
-> > +             * in the selected order which is greater than or equal
-> > +             * to the random number selected */
-> > +            for (struct servinfo *si =3D unordered.next, *prev =3D &un=
-ordered;
-> > +                 si; prev =3D si, si =3D si->next)
-> > +            {
-> > +                /* selected entry is the next one to be contacted */
-> > +                if (si->weight >=3D weight)
-> > +                {
-> > +                    unordered.weight -=3D si->weight;
-> > +
-> > +                    /* move entry to the ordered list */
-> > +                    prev->next =3D si->next;
-> > +                    si->next =3D NULL;
-> > +                    tail->next =3D si, tail =3D si;
-> > +
-> > +                    /*
-> > +                     * RFC 2782 is ambiguous, it says:
-> > +                     *   In the presence of records containing weights=
- greater
-> > +                     *   than 0, records with weight 0 should have a v=
-ery
-> > +                     *   small chance of being selected.
-> > +                     * According that, within the same priority, after=
- all
-> > +                     * records containing weights greater than 0 were =
-selected,
-> > +                     * the rest of records with weight 0 should be ski=
-pped.
-> > +                     * At the same time, it says:
-> > +                     *   The following algorithm SHOULD be used to ord=
-er the
-> > +                     *   SRV RRs of the same priority:
-> > +                     *   ...
-> > +                     *   Continue the ordering process until there are=
- no
-> > +                     *   unordered SRV RRs.
-> > +                     * This means records with wight 0 should always be
-> > +                     * selected, as last ones in worst case.
-> > +                     */
->=20
-> .... We implement the second option.
->=20
->=20
-> > +#if 0
-> > +                    /*
-> > +                     * Skip all the rest records with weight 0 after t=
-he last
-> > +                     * one with weight greater than 0.
-> > +                     */
-> > +                    if (unordered.weight =3D=3D 0 && si->weight)
-> > +                    {
-> > +                        freeservinfo(unordered.next);
-> > +                        unordered.next =3D NULL;
-> > +                    }
-> > +                    break;
-> > +#endif
->=20
-> Lets not add a #if 0 here
->=20
-> rather use a comment here that notes that we never skip records or someth=
-ing
-> like that.
->=20
->=20
->=20
->=20
-> > +                }
-> > +                weight -=3D si->weight;
-> > +            }
-> > +        }
-> > +    }
-> > +
-> > +    gc_free(&gc);
-> > +    return ordered.next;
-> > +}
-> > +
-> > +
-> > +/*
-> > + * Resolves DNS SRV records for specified domain and service.
-> > + * Returns EAI_* status (like getaddrinfo) and service list, ordered
-> > + * according server selection mechanism, defined in RFC 2782.
-> > + */
-> > +static int
-> > +getservinfo(const char *domain,
-> > +            const char *service,
-> > +            int flags,
-> > +            struct servinfo **res)
-> > +{
-> > +    static const struct {
-> > +        int flags;
-> > +        int proto;
-> > +        const char *name;
-> > +    } proto[] =3D {
-> > +        { GETADDR_DATAGRAM, PROTO_UDP, "udp" },
-> > +        { GETADDR_STREAM, PROTO_TCP_CLIENT, "tcp" }
-> > +    };
-> > +    struct servinfo *list =3D NULL;
-> > +    int status =3D EAI_SOCKTYPE;
-> > +
-> > +    ASSERT(res);
-> > +
-> > +    if (!domain)
-> > +    {
-> > +        return EAI_NONAME;
-> > +    }
-> > +    if (!service)
-> > +    {
-> > +        return EAI_SERVICE;
-> > +    }
-> > +
-> > +    int proto_flags =3D flags & GETADDR_PROTO_MASK;
-> > +    for (int i =3D 0; i < SIZE(proto); i++)
-> > +    {
-> > +        if (proto_flags & proto[i].flags)
-> > +        {
-> > +            proto_flags &=3D ~proto[i].flags;
-> > +
-> > +            char qname[256];
-> > +            if (!openvpn_snprintf(qname, sizeof(qname), "_%s._%s.%s",
-> > +                                  service, proto[i].name, domain))
-> > +            {
-> > +                freeservinfo(list);
-> > +                return EAI_MEMORY;
-> > +            }
-> > +
-> > +#ifdef _WIN32
-> > +            status =3D query_servinfo_win32(qname, proto[i].proto,
-> > +list, &list); #else
-> > +            status =3D query_servinfo_posix(qname, proto[i].proto,
-> > +list, &list); #endif
->=20
-> I think we should name those two function identical. They are doing ident=
-ical
-> stuff, so need for this ifdef and different function names.
->=20
->=20
->=20
-> >  bool
->=20
-> > +/* struct to hold resolved service targets */ struct servinfo {
-> > +    const char *hostname;
-> > +    const char *servname;
-> > +    int proto;
-> > +    int order;
-> > +    unsigned short prio;
-> > +    unsigned short weight;
-> > +    struct addrinfo *ai;
-> > +    struct servinfo *next;
-> > +};
-> > +
-> >  /* struct to hold preresolved host names */  struct cached_dns_entry
-> > {
-> >      const char *hostname;
-> >      const char *servname;
-> >      int ai_family;
-> >      int flags;
-> > -    struct addrinfo *ai;
-> > +    union {
-> > +        struct addrinfo *ai;
-> > +        struct servinfo *si;
-> > +    };
->=20
-> Is saving the space for one pointer really worth the potential danger of
-> accidentially using an addrinfo as servinfo or vice versa?
->=20
->=20
-> I tested the patch and it works as expected (apart from things mentioned =
-here).
->=20
-> But this should not be a legal config:
->=20
-> <connection>
-> remote foo.bar
-> remote-srv blinkt.de ovpn
-> </connection>
->=20
-> In a connection entry there should be only one of remote or remote-srv be
-> allowed.
->=20
-> Arne
+------=_NextPart_5FB48778_1117E900_71340092
+Content-Type: text/html;
+	charset="gb18030"
+Content-Transfer-Encoding: base64
+
+PG1ldGEgaHR0cC1lcXVpdj0iQ29udGVudC1UeXBlIiBjb250ZW50PSJ0ZXh0L2h0bWw7IGNoYXJz
+ZXQ9R0IxODAzMCI+PGRpdj48ZGl2PkhpIEFudG9uaW8sIExldiw8L2Rpdj48ZGl2Pjxicj48L2Rp
+dj48ZGl2PiZuYnNwO0knbSBhIGVuZCB1c2VyIG9mIE9wZW5WUE4uIEkgaGF2ZSBiZWVuIHBheWlu
+ZyBjbG9zZSBhdHRlbnRpb24gdG8gYW55IHNvbHV0aW9uIHRoYXQgbWFrZXMgT3BlblZQTiBkYXRh
+IGNoYW5uZWwgcnVubmluZyBpbiB0aGUga2VybmVsIHNwYWNlLjwvZGl2PjxkaXY+TWFueSB0aGFu
+a3MgdG8geW91IGJyaW5naW5nIG92cG4tZGNvIGZpbm5hbHkgb3V0LiBDYW4gbm90IHdhaXQgdG8g
+aGF2ZSBhIHRyeS4gU28gSSB0cmllZCBjb21waWxpbmcgaXQuIEtlcm5lbCBtb2R1bGUgaXMgT0sg
+dG8gY29tcGlsZSB3aXRob3V0PC9kaXY+PGRpdj5pc3N1ZXMgaW4gbXkgVWJ1bnR1IDE4LjA0IFBD
+LCBidXQmbmJzcDsgaXQgc2VlbXMgbm90IHRvIGNvbXBpbGUgb3Zwbi1jbGkgc3VjY2Vzc2Z1bGx5
+LiBJIGRpZCBub3Qgc2VlIE9WUE5fQ0lQSEVSX0FMR19DSEFDSEEyMFBPTFkxMzA1PC9kaXY+PGRp
+dj5pcyBkZWZpbmVkLiBEaWQgSSBtaXNzIHRvIGluc3RhbGwgc29tZSBoZWFkZXIgZmlsZXMgb3Ig
+bGliPzwvZGl2PjxkaXY+PGJyPjwvZGl2PjxkaXY+JSBtYWtlIHRlc3RzJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsmbmJzcDs8
+L2Rpdj48ZGl2Pm1ha2UgLUMgdGVzdHMmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyZuYnNwOzwvZGl2PjxkaXY+bWFrZVsxXTog
+RW50ZXJpbmcgZGlyZWN0b3J5ICcvbW50L3NkYjMvcHJvamVjdC9vcGVudnBuL292cG4tZGNvLmdp
+dC90ZXN0cycmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOzwvZGl2PjxkaXY+Y2MgLVdhbGwgb3Zw
+bi1jbGkuYyAtSS4uL2luY2x1ZGUvdWFwaSBcJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyZuYnNwOzwvZGl2PjxkaXY+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7IGBwa2ctY29uZmln
+IC0tY2ZsYWdzIC0tbGlicyBsaWJubC0zLjAgbGlibmwtZ2VubC0zLjBgIFwmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7Jm5ic3A7PC9k
+aXY+PGRpdj4mbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgLWxtYmVkdGxzIC1sbWJlZGNyeXB0
+byAtbyBvdnBuLWNsaSZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOzwvZGl2PjxkaXY+SW4gZmlsZSBp
+bmNsdWRlZCBmcm9tIC91c3IvaW5jbHVkZS9saWJubDMvbmV0bGluay9zb2NrZXQuaDoxNjowLCZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDs8L2Rpdj48ZGl2PiZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ZnJvbSBvdnBuLWNsaS5jOjE3OiZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOzwvZGl2PjxkaXY+L3Vzci9pbmNsdWRlL2xpYm5sMy9u
+ZXRsaW5rL2hhbmRsZXJzLmg6NTE6MTU6IHdhcm5pbmc6IKGuc3RydWN0IG5sbXNnZXJyoa8gZGVj
+bGFyZWQgaW5zaWRlIHBhcmFtZXRlciBsaXN0IHdpbGwgbm90IGJlIHZpc2libGUgb3V0c2lkZSBv
+ZiB0aGlzIGRlZmluaXRpb24gb3IgZGVjbGFyYXRpb24mbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7Jm5ic3A7PC9kaXY+PGRpdj4mbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgc3RydWN0IG5sbXNnZXJyICpubGVyciwgdm9pZCAqYXJnKTs8L2Rpdj48ZGl2PiZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDtefn5+
+fn5+fjwvZGl2PjxkaXY+L3Vzci9pbmNsdWRlL2xpYm5sMy9uZXRsaW5rL2hhbmRsZXJzLmg6NTA6
+NDM6IHdhcm5pbmc6IKGuc3RydWN0IHNvY2thZGRyX25soa8gZGVjbGFyZWQgaW5zaWRlIHBhcmFt
+ZXRlciBsaXN0IHdpbGwgbm90IGJlIHZpc2libGUgb3V0c2lkZSBvZiB0aGlzIGRlZmluaXRpb24g
+b3IgZGVjbGFyYXRpb248L2Rpdj48ZGl2PiZuYnNwO3R5cGVkZWYgaW50ICgqbmxfcmVjdm1zZ19l
+cnJfY2JfdCkoc3RydWN0IHNvY2thZGRyX25sICpubGEsPC9kaXY+PGRpdj4mbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDtefn5+fn5+fn5+fjwvZGl2PjxkaXY+L3Vzci9pbmNs
+dWRlL2xpYm5sMy9uZXRsaW5rL2hhbmRsZXJzLmg6MTM1OjE4OiB3YXJuaW5nOiChrnN0cnVjdCBz
+b2NrYWRkcl9ubKGvIGRlY2xhcmVkIGluc2lkZSBwYXJhbWV0ZXIgbGlzdCB3aWxsIG5vdCBiZSB2
+aXNpYmxlIG91dHNpZGUgb2YgdGhpcyBkZWZpbml0aW9uIG9yIGRlY2xhcmF0aW9uPC9kaXY+PGRp
+dj4mbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwO3N0cnVjdCBzb2NrYWRk
+cl9ubCAqLDwvZGl2PjxkaXY+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgXn5+fn5+fn5+fn48L2Rpdj48ZGl2Pm92cG4tY2xpLmM6
+IEluIGZ1bmN0aW9uIKGub3Zwbl9ubF9tc2dfc2VuZKGvOjwvZGl2PjxkaXY+b3Zwbi1jbGkuYzoy
+MzI6Mzg6IHdhcm5pbmc6IHBhc3NpbmcgYXJndW1lbnQgMyBvZiChrm5sX2NiX2VycqGvIGZyb20g
+aW5jb21wYXRpYmxlIHBvaW50ZXIgdHlwZSBbLVdpbmNvbXBhdGlibGUtcG9pbnRlci10eXBlc108
+L2Rpdj48ZGl2PiZuYnNwOyBubF9jYl9lcnIoY3R4LSZndDtubF9jYiwgTkxfQ0JfQ1VTVE9NLCBv
+dnBuX25sX2NiX2Vycm9yLCAmYW1wO3N0YXR1cyk7PC9kaXY+PGRpdj4mbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgXn5+fn5+fn5+fn5+fn5+fjwvZGl2PjxkaXY+SW4gZmlsZSBpbmNsdWRlZCBmcm9tIC91c3Iv
+aW5jbHVkZS9saWJubDMvbmV0bGluay9zb2NrZXQuaDoxNjowLDwvZGl2PjxkaXY+Jm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDtmcm9t
+IG92cG4tY2xpLmM6MTc6PC9kaXY+PGRpdj4vdXNyL2luY2x1ZGUvbGlibmwzL25ldGxpbmsvaGFu
+ZGxlcnMuaDoxMjc6MTM6IG5vdGU6IGV4cGVjdGVkIKGubmxfcmVjdm1zZ19lcnJfY2JfdCB7YWth
+IGludCAoKikoc3RydWN0IHNvY2thZGRyX25sICosIHN0cnVjdCBubG1zZ2VyciAqLCB2b2lkICop
+faGvIGJ1dCBhcmd1bWVudCBpcyBvZiB0eXBlIKGuaW50ICgqKShzdHJ1Y3Qgc29ja2FkZHJfbmwg
+Kiwgc3RydWN0IG5sbXNnZXJyICosIHZvaWQgKimhrzwvZGl2PjxkaXY+Jm5ic3A7ZXh0ZXJuIGlu
+dCZuYnNwOyBubF9jYl9lcnIoc3RydWN0IG5sX2NiICosIGVudW0gbmxfY2Jfa2luZCwgbmxfcmVj
+dm1zZ19lcnJfY2JfdCw8L2Rpdj48ZGl2PiZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwO15+fn5+fn5+fjwvZGl2PjxkaXY+b3Zwbi1jbGkuYzogSW4gZnVuY3Rp
+b24goa5vdnBuX3JlYWRfY2lwaGVyoa86PC9kaXY+PGRpdj5vdnBuLWNsaS5jOjM1NToxNzogZXJy
+b3I6IKGuT1ZQTl9DSVBIRVJfQUxHX0NIQUNIQTIwUE9MWTEzMDWhryB1bmRlY2xhcmVkIChmaXJz
+dCB1c2UgaW4gdGhpcyBmdW5jdGlvbik7IGRpZCB5b3UgbWVhbiChrk9WUE5fQ0lQSEVSX0FMR19D
+SEFDSEEyMF9QT0xZMTMwNaGvPzwvZGl2PjxkaXY+Jm5ic3A7ICZuYnNwO2N0eC0mZ3Q7Y2lwaGVy
+ID0gT1ZQTl9DSVBIRVJfQUxHX0NIQUNIQTIwUE9MWTEzMDU7PC9kaXY+PGRpdj4mbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwO15+fn5+
+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+PC9kaXY+PGRpdj4mbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwO09WUE5fQ0lQSEVSX0FM
+R19DSEFDSEEyMF9QT0xZMTMwNTwvZGl2PjwvZGl2PjxkaXY+PGJyPjwvZGl2PjxkaXY+VG9ueTwv
+ZGl2Pg==
+
+------=_NextPart_5FB48778_1117E900_71340092--
+
 
 
 
