@@ -1,13 +1,12 @@
-References: <20201118145413.26134-1-huangya90@...277...>
- <20201118145413.26134-2-huangya90@...277...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <6ee9c9c9-9276-7155-8a5f-d1b89435e1fe@...2181...>
-Date: Wed, 18 Nov 2020 16:14:12 +0100
+References: <20201118145413.26134-1-huangya90@...277...>
+Message-ID: <7687c14d-bfd7-5a41-6ede-d94ccfd91f3e@...2181...>
+Date: Wed, 18 Nov 2020 16:39:11 +0100
 MIME-Version: 1.0
-In-Reply-To: <20201118145413.26134-2-huangya90@...277...>
+In-Reply-To: <20201118145413.26134-1-huangya90@...277...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] ovpn-dco: nestns-test.sh - fix the
- issue that veth is not created successfully.
+Subject: Re: [Openvpn-devel] ovpn-dco: nestns-test.sh - fix the issue that
+ veth is not created successfully
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,29 +16,29 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-To: Tony He <huangya90@...277...>, openvpn-devel@lists.sourceforge.net, antonio@...515...
+Content-Transfer-Encoding: 7bit
+To: Tony He <huangya90@...277...>, a@...2181..., openvpn-devel@lists.sourceforge.net
 
-Hi,
+Hi Tony,
 
 On 18/11/2020 15:54, Tony He wrote:
-> According to user manual of "ip link", the command should be
-> "ip link add veth0 type veth peer name veth1"
 > 
-> instead of
-> "ip link add veth0 type veth peer veth1"
+> Hi Antonio,
 > 
-> With this fix, after running "./netns-test.sh", we can do ping test by
-> executing "ip netns exec peer0 ping 5.5.5.2"
+> Have you encountered this issue? Please help to review.
 > 
-> Tested in Ubuntu 18.04 PC.
-> 
-> Signed-off-by: Tony He <huangya90@...277...>
 
-Applied to master in revision c56b9d024570 with slightly amended commit
-message.
+No, we have never encountered this issue.
 
-Cheers,
+My feeling is that you are using userspace tools that are older than
+what we normally use.
+
+I see you are using Ubuntu 18.04 and that might be the reason.
+
+In any case, your patch is small and does not hurt :-)
+
+Thanks
+
 
 -- 
 Antonio Quartulli
