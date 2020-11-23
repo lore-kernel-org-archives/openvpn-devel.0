@@ -1,11 +1,13 @@
-References: <20201120160418.17690-1-arne@...1227...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <44f29658-6799-81de-3245-5c7a3d835734@...1856...>
-Date: Sun, 22 Nov 2020 10:08:36 +0100
+References: <20201004223614.12429-1-themiron@...2010...>
+ <20201115220857.9307-1-themiron@...2010...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <026bd62f-af6d-7dfe-2ba5-ffc4a751858d@...1227...>
+Date: Mon, 23 Nov 2020 14:13:01 +0100
 MIME-Version: 1.0
-In-Reply-To: <20201120160418.17690-1-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Fix port-share option with TLS-Crypt v2
+In-Reply-To: <20201115220857.9307-1-themiron@...2010...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH v9] Add DNS SRV remote host discovery
+ support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,76 +18,88 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Vladislav Grishenko <themiron@...2010...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
-
-On 20-11-2020 17:04, Arne Schwabe wrote:
-> The port-share option assumed that all openvpn initial reset packets
-> are between 14 and 255 bytes long. This is not true for tls-crypt-v2.
-
-Good catch, I totally missed this in the tls-crypt-v2 patch set.
-
-> ---
->  src/openvpn/ps.c | 34 ++++++++++++++++++++++++++++++----
->  1 file changed, 30 insertions(+), 4 deletions(-)
+Am 15.11.20 um 23:08 schrieb Vladislav Grishenko:
+> DNS SRV remote host discovery allows to have multiple OpenVPN servers for
+> a single domain w/o explicit profile enumeration, to move services from
+> host to host with little fuss, and to designate hosts as primary servers
+> for a service and others as backups.
+> Feature has been asked several times already, should be useful in case of
+> substantial number of clients & servers deployed.
 > 
-> diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
-> index 2089e6b9..cd00bc23 100644
-> --- a/src/openvpn/ps.c
-> +++ b/src/openvpn/ps.c
-> @@ -983,10 +983,36 @@ is_openvpn_protocol(const struct buffer *buf)
->      const int len = BLEN(buf);
->      if (len >= 3)
->      {
-> -        return p[0] == 0
-> -               && p[1] >= 14
-> -               && (p[2] == (P_CONTROL_HARD_RESET_CLIENT_V2 << P_OPCODE_SHIFT)
-> -                   || p[2] == (P_CONTROL_HARD_RESET_CLIENT_V3 << P_OPCODE_SHIFT));
-> +        if (p[2] == (P_CONTROL_HARD_RESET_CLIENT_V3 << P_OPCODE_SHIFT))
-> +        {
-> +            /* WKc is at least 306 byte (not including metadata):
-> +             *
-> +             * 16 bit len + 256 bit HMAC + 128 bit IV + 2048 bit Kc = 2448 bit
-
-The IV is part of the HMAC, so does not need to be counted here. So this
-this be 2320 bits / 290 bytes.
-
-> +             *
-> +             * This is increased by the normal length of client handshake +
-> +             * tls-crypt overhead (32)
-> +             *
-> +             * For metadata tls-crypt-v2.txt does not explicitly specify
-> +             * an upper limit but we also have TLS_CRYPT_V2_MAX_WKC_LEN
-> +             * as 1024 bytes. We err on the safe side with 255 extra overhead
-> +             *
-> +             * We don't do the 2 byte check for tls-crypt-v2 because it is very
-> +             * unrealistic to have only 2 bytes available.
-> +             */
-> +            int plen = (p[0] << 8) | p[1];
-> +
-> +            return  (plen >= 352 && plen < (1024 + 255));
-> +        }
-> +        else
-> +        {
-> +            /* first two bytes are the size field. This is an openvpn packet
-> +             * between 14 bytes and 255 (otherwise p[1] would be 01 or larger.
-> +             * on the hard reset packet key_id is zero, so only the opcode
-> +             * part is non-null */
-
-Instead of explaining the length field in the comment, why not just move
-the "int plen = (p[0] << 8) | p[1];" outside the if to have the code
-explain that by itself?
-
-> +            return p[0] == 0
-> +                && p[1] >= 14
-> +                && (p[2] == (P_CONTROL_HARD_RESET_CLIENT_V2 << P_OPCODE_SHIFT));
-> +        }
->      }
->      else if (len >= 2)
->      {
+> Patch introduces "--remote-srv domain [service] [proto]" option.
+> The "service" and "proto" arguments are optional. Client will try
+> to resolve DNS SRV record "_service._proto.domain" and use returned
+> DNS SRV records as remote server list ordered by server selection
+> mechanism defined in RFC2782 (https://tools.ietf.org/html/rfc2782):
 > 
+>     A client MUST attempt to contact the target host with the
+>     lowest-numbered priority field value it can reach, target hosts
+>     with the same priority SHOULD be tried in an order defined by the
+>     weight field.
+>     The weight field specifies a relative weight for entries with the
+>     same priority. Larger weights SHOULD be given a proportionately
+>     higher probability of being selected.
+>     Domain administrators SHOULD use Weight 0 when there isn't any
+>     server selection to do. In the presence of records containing
+>     weights greater than 0, records with Weight 0 SHOULD have a very
+>     small chance of being selected.
+> 
+> Note: OpenVPN server selection mechanism implementation indeed will
+> give records with weight of zero a very small chance of being selected
+> first, but never skip them.
+> 
+> Example: instead of multiple --remote in order, now it's possible to
+> specify just one --remote-srv and configure DNS SRV records:
+> 
+>     remote-srv example.net
+> 
+>     name                 prio weight port target
+>     $ORIGIN example.net.
+>     _openvpn._udp IN SRV 10   60     1194 server1.example.net.
+>     _openvpn._udp IN SRV 10   40     1194 server2.example.net.
+>     _openvpn._udp IN SRV 10   0      1194 server3.example.net.
+>     _openvpn._tcp IN SRV 20   0       443 server4.example.net.
+> 
+> For "--remote-srv example.net" following will happen in order:
+> 1. The client will first try to resolve "_openvpn._udp.example.net"
+>    and "_openvpn._tcp.example.net".
+> 2. Records "server1.example.net:1194", "server2.example.net:1194"
+>    and "server3.example.net:1194" will be selected before record
+>    "server4.example.net:443" as their priority 10 is smaller than 20.
+> 3. Records "server1.example.net:1194", "server2.example.net:1194"
+>    and "server3.example.net:1194" will be randomly selected with
+>    weight probability: first will be either "server1.example.net:1194"
+>    with 60% probability or "server2.example.net:1194" with 40% or
+>    "server3.example.net:1194" with almost zero probability.
+> 4. If "server1.example.net:1194" was selected, the second record will
+>    be either "server2.example.net:1194" with almost 100% probability
+>    or "server3.example.net:1194" with almost 0%.
+> 5. If "server2.example.net:1194" was selected, the third record will
+>    be the only last record of priority 10 - "server3.example.net:1194".
+> 6. Record "server4.example.net:443" will be the last one selected as
+>    the only record with priority 20.
+> 7. Each of the resulting "target:port" remote hosts will be resolved
+>    and accessed if its protocol has no conflict with the rest of the
+>    OpenVPN options.
+> 
+>   If DNS SRV name can't be resolved or no valid records were returned,
+>   client will move on to the next connection entry.
+> 
+> v9:
+>     add get_cached_srv_entry() for servinfo vs addrinfo cache split
+>     add check for mixed --remote and --remote-srv
+>     add doxygen dns srv functions comments
+>     use query_servinfo() for both unix and windows
+>     fix undefined NS_MAXMSG issue on macOS
+>     fix man
+> 
+>
 
-Thanks,
--Steffan
+Acked-By: Arne Schwabe<arne@...1227...>
+
+This addresses the concerns that I had with the last version.
+
+Arne
 
