@@ -1,10 +1,11 @@
-MIME-Version: 1.0
 References: <CAAUX2SVLbNnUAAk3VnupLkoNKWN9_BkVvNgBucgrJyKnJr2_JA@...278...>
-In-Reply-To: <CAAUX2SVLbNnUAAk3VnupLkoNKWN9_BkVvNgBucgrJyKnJr2_JA@...278...>
-From: Tony He <huangya90@...277...>
-Date: Tue, 24 Nov 2020 15:38:12 +0800
-Message-ID: <CAAUX2SVKdb+ft_a4VTSL-M0WAO=RsemL-tLNbm8A+4p0AuCokA@...278...>
-Content-Type: multipart/alternative; boundary="0000000000004ad89405b4d565af"
+ <CAAUX2SVKdb+ft_a4VTSL-M0WAO=RsemL-tLNbm8A+4p0AuCokA@...278...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <58d109fa-5be9-8e3f-907d-39e701e5a9e9@...2181...>
+Date: Tue, 24 Nov 2020 08:43:30 +0100
+MIME-Version: 1.0
+In-Reply-To: <CAAUX2SVKdb+ft_a4VTSL-M0WAO=RsemL-tLNbm8A+4p0AuCokA@...278...>
+Content-Language: en-US
 Subject: Re: [Openvpn-devel] [ovpn-dco] Kernel NULL point derefence
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -14,463 +15,260 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <antonio@...515...>, a@...2181..., openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Tony He <huangya90@...277...>, openvpn-devel@lists.sourceforge.net
 
---0000000000004ad89405b4d565af
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Hi Tony,
 
-Hi Antonio,
+Thanks a lot for all your tests.
+The faulty commit is:
 
-Did more test. Just FYI.
+commit ba109be633fd802b856d6a125f47e2d0ff7ad749
+Author: Antonio Quartulli <antonio@...515...>
+Date:   Sun Nov 22 16:13:17 2020 +0100
 
-ba109be633f bad.
-6eb6292a9d3 ?
-0989291e816 good
+    ovpn-dco: avoid potential out of bound access in aead_decrypt()
 
-Tony
 
-Tony He <huangya90@...277...> =E4=BA=8E2020=E5=B9=B411=E6=9C=8824=E6=97=A5=
-=E5=91=A8=E4=BA=8C =E4=B8=8A=E5=8D=889:19=E5=86=99=E9=81=93=EF=BC=9A
+I have just pushed a fix to master to address the bug.
+Could you please give it a go?
 
+Thanks a lot!
+
+On 24/11/2020 08:38, Tony He wrote:
 > Hi Antonio,
->
-> I'm using the latest commit 4b104be to test and encountered following
-> issue. I saw multi times in both peers. I never encountered this issue
-> before commit c56b9d0. Can you reproduce?
->
-> [  708.790419] ovpn_dco: module verification failed: signature and/or
-> required key missing - tainting kernel
->
-> [  708.790885] OpenVPN data channel offload (ovpn-dco) 4b104be-dirty --
-> (C) 2020 OpenVPN, Inc.
->
-> [  899.304454] BUG: kernel NULL pointer dereference, address:
-> 0000000000000008
->
-> [  899.305245] #PF: supervisor read access in kernel mode
->
->
-> [  899.306044] #PF: error_code(0x0000) - not-present page
->
->
-> [  899.306825] PGD 0 P4D 0
->
->
-> [  899.307597] Oops: 0000 [#1] SMP PTI
->
->
-> [  899.308335] CPU: 1 PID: 34 Comm: kworker/1:1 Tainted: G           OE
->   5.4.0-54-generic #60-Ubuntu
->
-> [  899.309922] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS
-> VirtualBox 12/01/2006
->
-> [  899.310887] Workqueue: ovpn-crypto-wq-tun0 ovpn_decrypt_work [ovpn_dco]
->
->
-> [  899.311762] RIP: 0010:gcmaes_crypt_by_sg.constprop.0+0x244/0x6c0
-> [aesni_intel]
->
-> [  899.312518] Code: ac f8 48 83 f8 01 19 c0 f7 d0 83 e0 b6 eb 87 4c 8b 74
-> 24 40 48 8d 7c 24 60 49 8b 76 40 41 8b 56 30 e8 10 eb ac f8 49 8b 76 48
-> <44> 8b 60 08 49 89 c5 49 39 76 40 0f 84 7d 02 00 00 41 8b 56 30
->  48
->
->
-> [  899.315985] RSP: 0018:ffff9ed680127800 EFLAGS: 00010246
->
->
-> [  899.316843] RAX: 0000000000000000 RBX: 0000000000000030 RCX:
-> ffffe78440adf700
->
-> [  899.317489] RDX: 0000000000000008 RSI: ffff9ed680127bb0 RDI:
-> ffff9ed680127bb0
->
-> [  899.318143] RBP: ffff9ed680127aa0 R08: ffff9ed680127ab0 R09:
-> ffff8c8f7c9b1460
->
-> [  899.318777] R10: ffff9ed680127b88 R11: 0000000000000b6a R12:
-> 0000000000000008
->
-> [  899.319581] R13: 0000000000000040 R14: ffff8c8f6ba4c590 R15:
-> ffff8c8f6b7dcb6a
->
-> [  899.320263] FS:  0000000000000000(0000) GS:ffff8c8f7eb00000(0000)
-> knlGS:0000000000000000
->
-> [  899.320841] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->
->
-> [  899.321486] CR2: 0000000000000008 CR3: 000000002d606003 CR4:
-> 00000000000606e0
->
-> [  899.322060] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
-> 0000000000000000
->
-> [  899.322685] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
-> 0000000000000400
->
-> [  899.323232] Call Trace:
->
->
-> [  899.323780]  ? check_preempt_wakeup+0xfd/0x210
->
->
-> [  899.324320]  ? check_preempt_curr+0x7a/0x90
->
->
-> [  899.324853]  ? ttwu_do_wakeup+0x1e/0x150
->
->
-> [  899.325360]  ? ttwu_do_activate+0x5b/0x70
->
->
-> [  899.325825]  ? try_to_wake_up+0x224/0x6a0
->
->
-> [  899.326303]  ? alloc_pages_current+0x87/0xe0
->
->
-> [  899.326760]  ? __update_load_avg_cfs_rq+0x212/0x2f0
->
->
-> [  899.327216]  ? __update_load_avg_cfs_rq+0x212/0x2f0
->
->
-> [  899.327664]  ? sched_clock_cpu+0x11/0xb0
->
->
-> [  899.328113]  ? update_blocked_averages+0x11c/0x590
-> [  899.328560]  ? update_group_capacity+0x2c/0x1d0
-> [  899.329007]  generic_gcmaes_decrypt+0x5b/0x80 [aesni_intel]
-> [  899.329466]  crypto_aead_decrypt+0x46/0x80
-> [  899.329905]  simd_aead_decrypt+0xa8/0xc0 [crypto_simd]
-> [  899.330456]  crypto_aead_decrypt+0x46/0x80
-> [  899.330884]  ovpn_aead_decrypt+0x268/0x3d0 [ovpn_dco]
-> [  899.331314]  ? __update_load_avg_cfs_rq+0x212/0x2f0
-> [  899.331734]  ? sched_clock_cpu+0x11/0xb0
-> [  899.332218]  ? x2apic_send_IPI+0x4a/0x50
-> [  899.332743]  ? native_send_call_func_single_ipi+0x1e/0x20
-> [  899.333122]  ? generic_exec_single+0x6e/0xd0
-> [  899.333523]  ? poke_int3_handler+0x80/0x80
-> [  899.333880]  ? smp_call_function_single+0xd1/0x110
-> [  899.334326]  ? poke_int3_handler+0x80/0x80
-> [  899.334696]  ? flush_tlb_mm_range+0xa1/0xe0
-> [  899.335042]  ? udp4_lib_lookup2+0x133/0x2d0
-> [  899.335366]  ? cpumask_next_and+0x1e/0x20
-> [  899.335685]  ? smp_call_function_many+0x23b/0x270
-> [  899.336165]  ? do_sync_core+0x1d/0x20
-> [  899.336494]  ? text_poke_bp_batch+0x106/0x160
-> [  899.336886]  ? arch_jump_label_transform_apply+0x3e/0x50
-> [  899.337209]  ? __jump_label_update+0x115/0x120
-> [  899.337505]  ovpn_decrypt_work+0x1c1/0x600 [ovpn_dco]
-> [  899.337803]  process_one_work+0x1eb/0x3b0
-> [  899.338113]  worker_thread+0x4d/0x400
-> [  899.338405]  kthread+0x104/0x140
-> [  899.338687]  ? process_one_work+0x3b0/0x3b0
-> [  899.338970]  ? kthread_park+0x90/0x90
-> [  899.339255]  ret_from_fork+0x35/0x40
-> [  899.339538] Modules linked in: ovpn_dco(OE) ip6_udp_tunnel udp_tunnel
-> dm_multipath scsi_dh_rdac scsi_dh_emc scsi_dh_alua intel_rapl_msr
-> intel_rapl_common rapl input_leds serio_raw joydev snd_intel8x0 snd_ac97
-> _codec ac97_bus snd_pcm snd_timer vboxguest(O) snd soundcore mac_hid
-> sch_fq_codel ip_tables x_tables autofs4 btrfs zstd_compress raid10 raid456
-> async_raid6_recov async_memcpy async_pq async_xor async_tx xor raid
-> 6_pq libcrc32c raid1 raid0 multipath linear hid_generic usbhid hid
-> crct10dif_pclmul crc32_pclmul ghash_clmulni_intel vboxvideo drm_vram_help=
-er
-> ttm aesni_intel crypto_simd cryptd glue_helper drm_kms_helper syscop
-> yarea sysfillrect sysimgblt fb_sys_fops psmouse ahci libahci i2c_piix4 drm
-> pata_acpi e1000 video
-> [  899.342316] CR2: 0000000000000008
-> [  899.342686] ---[ end trace dd4dab57d5473bc0 ]---
-> [  899.343082] RIP: 0010:gcmaes_crypt_by_sg.constprop.0+0x244/0x6c0
-> [aesni_intel]
-> [  899.343451] Code: ac f8 48 83 f8 01 19 c0 f7 d0 83 e0 b6 eb 87 4c 8b 74
-> 24 40 48 8d 7c 24 60 49 8b 76 40 41 8b 56 30 e8 10 eb ac f8 49 8b 76 48
-> <44> 8b 60 08 49 89 c5 49 39 76 40 0f 84 7d 02 00 00 41 8b 56 30
->  48
-> [  899.344605] RSP: 0018:ffff9ed680127800 EFLAGS: 00010246
-> [  899.344989] RAX: 0000000000000000 RBX: 0000000000000030 RCX:
-> ffffe78440adf700
-> [  899.345381] RDX: 0000000000000008 RSI: ffff9ed680127bb0 RDI:
-> ffff9ed680127bb0
-> [  899.345772] RBP: ffff9ed680127aa0 R08: ffff9ed680127ab0 R09:
-> ffff8c8f7c9b1460
-> [  899.346213] R10: ffff9ed680127b88 R11: 0000000000000b6a R12:
-> 0000000000000008
-> [  899.346624] R13: 0000000000000040 R14: ffff8c8f6ba4c590 R15:
-> ffff8c8f6b7dcb6a
-> [  899.347153] FS:  0000000000000000(0000) GS:ffff8c8f7eb00000(0000)
-> knlGS:0000000000000000
-> [  899.347550] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  899.347948] CR2: 0000000000000008 CR3: 000000002d606003 CR4:
-> 00000000000606e0
-> [  899.348382] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
-> 0000000000000000
-> [  899.348798] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
-> 0000000000000400
->
+> 
+> Did more test. Just FYI.
+> 
+> ba109be633f bad.
+> 6eb6292a9d3 ?
+> 0989291e816 good
+> 
 > Tony
->
+> 
+> Tony He <huangya90@...277... <mailto:huangya90@...277...>> 于2020年11月
+> 24日周二 上午9:19写道：
+> 
+>     Hi Antonio,
+> 
+>     I'm using the latest commit 4b104be to test and encountered
+>     following issue. I saw multi times in both peers. I never
+>     encountered this issue  before commit c56b9d0. Can you reproduce?
+> 
+>     [  708.790419] ovpn_dco: module verification failed: signature
+>     and/or required key missing - tainting kernel                      
+>                                                                        
+>                
+>     [  708.790885] OpenVPN data channel offload (ovpn-dco) 4b104be-dirty
+>     -- (C) 2020 OpenVPN, Inc.                                          
+>                                                                        
+>          
+>     [  899.304454] BUG: kernel NULL pointer dereference, address:
+>     0000000000000008                                                    
+>                                                                        
+>                
+>     [  899.305245] #PF: supervisor read access in kernel mode          
+>                                                                        
+>                                                                        
+>            
+>     [  899.306044] #PF: error_code(0x0000) - not-present page          
+>                                                                        
+>                                                                        
+>            
+>     [  899.306825] PGD 0 P4D 0                                          
+>                                                                        
+>                                                                        
+>          
+>     [  899.307597] Oops: 0000 [#1] SMP PTI                              
+>                                                                        
+>                                                                        
+>          
+>     [  899.308335] CPU: 1 PID: 34 Comm: kworker/1:1 Tainted: G          
+>     OE     5.4.0-54-generic #60-Ubuntu                                  
+>                                                                        
+>          
+>     [  899.309922] Hardware name: innotek GmbH VirtualBox/VirtualBox,
+>     BIOS VirtualBox 12/01/2006                                          
+>                                                                        
+>            
+>     [  899.310887] Workqueue: ovpn-crypto-wq-tun0 ovpn_decrypt_work
+>     [ovpn_dco]                                                          
+>                                                                        
+>              
+>     [  899.311762] RIP: 0010:gcmaes_crypt_by_sg.constprop.0+0x244/0x6c0
+>     [aesni_intel]                                                      
+>                                                                        
+>            
+>     [  899.312518] Code: ac f8 48 83 f8 01 19 c0 f7 d0 83 e0 b6 eb 87 4c
+>     8b 74 24 40 48 8d 7c 24 60 49 8b 76 40 41 8b 56 30 e8 10 eb ac f8 49
+>     8b 76 48 <44> 8b 60 08 49 89 c5 49 39 76 40 0f 84 7d 02 00 00 41 8b
+>     56 30
+>      48                                                                
+>                                                                        
+>                                                                        
+>            
+>     [  899.315985] RSP: 0018:ffff9ed680127800 EFLAGS: 00010246          
+>                                                                        
+>                                                                        
+>          
+>     [  899.316843] RAX: 0000000000000000 RBX: 0000000000000030 RCX:
+>     ffffe78440adf700                                                    
+>                                                                        
+>              
+>     [  899.317489] RDX: 0000000000000008 RSI: ffff9ed680127bb0 RDI:
+>     ffff9ed680127bb0                                                    
+>                                                                        
+>              
+>     [  899.318143] RBP: ffff9ed680127aa0 R08: ffff9ed680127ab0 R09:
+>     ffff8c8f7c9b1460                                                    
+>                                                                        
+>              
+>     [  899.318777] R10: ffff9ed680127b88 R11: 0000000000000b6a R12:
+>     0000000000000008                                                    
+>                                                                        
+>              
+>     [  899.319581] R13: 0000000000000040 R14: ffff8c8f6ba4c590 R15:
+>     ffff8c8f6b7dcb6a                                                    
+>                                                                        
+>              
+>     [  899.320263] FS:  0000000000000000(0000) GS:ffff8c8f7eb00000(0000)
+>     knlGS:0000000000000000                                              
+>                                                                        
+>          
+>     [  899.320841] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033    
+>                                                                        
+>                                                                        
+>          
+>     [  899.321486] CR2: 0000000000000008 CR3: 000000002d606003 CR4:
+>     00000000000606e0                                                    
+>                                                                        
+>              
+>     [  899.322060] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
+>     0000000000000000                                                    
+>                                                                        
+>              
+>     [  899.322685] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
+>     0000000000000400                                                    
+>                                                                        
+>              
+>     [  899.323232] Call Trace:                                          
+>                                                                        
+>                                                                        
+>          
+>     [  899.323780]  ? check_preempt_wakeup+0xfd/0x210                  
+>                                                                        
+>                                                                        
+>            
+>     [  899.324320]  ? check_preempt_curr+0x7a/0x90                      
+>                                                                        
+>                                                                        
+>          
+>     [  899.324853]  ? ttwu_do_wakeup+0x1e/0x150                        
+>                                                                        
+>                                                                        
+>            
+>     [  899.325360]  ? ttwu_do_activate+0x5b/0x70                        
+>                                                                        
+>                                                                        
+>          
+>     [  899.325825]  ? try_to_wake_up+0x224/0x6a0                        
+>                                                                        
+>                                                                        
+>          
+>     [  899.326303]  ? alloc_pages_current+0x87/0xe0                    
+>                                                                        
+>                                                                        
+>            
+>     [  899.326760]  ? __update_load_avg_cfs_rq+0x212/0x2f0              
+>                                                                        
+>                                                                        
+>          
+>     [  899.327216]  ? __update_load_avg_cfs_rq+0x212/0x2f0              
+>                                                                        
+>                                                                        
+>          
+>     [  899.327664]  ? sched_clock_cpu+0x11/0xb0                        
+>                                                                        
+>                                                                        
+>            
+>     [  899.328113]  ? update_blocked_averages+0x11c/0x590
+>     [  899.328560]  ? update_group_capacity+0x2c/0x1d0
+>     [  899.329007]  generic_gcmaes_decrypt+0x5b/0x80 [aesni_intel]
+>     [  899.329466]  crypto_aead_decrypt+0x46/0x80
+>     [  899.329905]  simd_aead_decrypt+0xa8/0xc0 [crypto_simd]
+>     [  899.330456]  crypto_aead_decrypt+0x46/0x80
+>     [  899.330884]  ovpn_aead_decrypt+0x268/0x3d0 [ovpn_dco]
+>     [  899.331314]  ? __update_load_avg_cfs_rq+0x212/0x2f0
+>     [  899.331734]  ? sched_clock_cpu+0x11/0xb0
+>     [  899.332218]  ? x2apic_send_IPI+0x4a/0x50
+>     [  899.332743]  ? native_send_call_func_single_ipi+0x1e/0x20
+>     [  899.333122]  ? generic_exec_single+0x6e/0xd0
+>     [  899.333523]  ? poke_int3_handler+0x80/0x80
+>     [  899.333880]  ? smp_call_function_single+0xd1/0x110
+>     [  899.334326]  ? poke_int3_handler+0x80/0x80
+>     [  899.334696]  ? flush_tlb_mm_range+0xa1/0xe0
+>     [  899.335042]  ? udp4_lib_lookup2+0x133/0x2d0
+>     [  899.335366]  ? cpumask_next_and+0x1e/0x20
+>     [  899.335685]  ? smp_call_function_many+0x23b/0x270
+>     [  899.336165]  ? do_sync_core+0x1d/0x20
+>     [  899.336494]  ? text_poke_bp_batch+0x106/0x160
+>     [  899.336886]  ? arch_jump_label_transform_apply+0x3e/0x50
+>     [  899.337209]  ? __jump_label_update+0x115/0x120
+>     [  899.337505]  ovpn_decrypt_work+0x1c1/0x600 [ovpn_dco]
+>     [  899.337803]  process_one_work+0x1eb/0x3b0
+>     [  899.338113]  worker_thread+0x4d/0x400
+>     [  899.338405]  kthread+0x104/0x140
+>     [  899.338687]  ? process_one_work+0x3b0/0x3b0
+>     [  899.338970]  ? kthread_park+0x90/0x90
+>     [  899.339255]  ret_from_fork+0x35/0x40
+>     [  899.339538] Modules linked in: ovpn_dco(OE) ip6_udp_tunnel
+>     udp_tunnel dm_multipath scsi_dh_rdac scsi_dh_emc scsi_dh_alua
+>     intel_rapl_msr intel_rapl_common rapl input_leds serio_raw joydev
+>     snd_intel8x0 snd_ac97
+>     _codec ac97_bus snd_pcm snd_timer vboxguest(O) snd soundcore mac_hid
+>     sch_fq_codel ip_tables x_tables autofs4 btrfs zstd_compress raid10
+>     raid456 async_raid6_recov async_memcpy async_pq async_xor async_tx
+>     xor raid
+>     6_pq libcrc32c raid1 raid0 multipath linear hid_generic usbhid hid
+>     crct10dif_pclmul crc32_pclmul ghash_clmulni_intel vboxvideo
+>     drm_vram_helper ttm aesni_intel crypto_simd cryptd glue_helper
+>     drm_kms_helper syscop
+>     yarea sysfillrect sysimgblt fb_sys_fops psmouse ahci libahci
+>     i2c_piix4 drm pata_acpi e1000 video
+>     [  899.342316] CR2: 0000000000000008
+>     [  899.342686] ---[ end trace dd4dab57d5473bc0 ]---
+>     [  899.343082] RIP: 0010:gcmaes_crypt_by_sg.constprop.0+0x244/0x6c0
+>     [aesni_intel]
+>     [  899.343451] Code: ac f8 48 83 f8 01 19 c0 f7 d0 83 e0 b6 eb 87 4c
+>     8b 74 24 40 48 8d 7c 24 60 49 8b 76 40 41 8b 56 30 e8 10 eb ac f8 49
+>     8b 76 48 <44> 8b 60 08 49 89 c5 49 39 76 40 0f 84 7d 02 00 00 41 8b
+>     56 30
+>      48
+>     [  899.344605] RSP: 0018:ffff9ed680127800 EFLAGS: 00010246
+>     [  899.344989] RAX: 0000000000000000 RBX: 0000000000000030 RCX:
+>     ffffe78440adf700
+>     [  899.345381] RDX: 0000000000000008 RSI: ffff9ed680127bb0 RDI:
+>     ffff9ed680127bb0
+>     [  899.345772] RBP: ffff9ed680127aa0 R08: ffff9ed680127ab0 R09:
+>     ffff8c8f7c9b1460
+>     [  899.346213] R10: ffff9ed680127b88 R11: 0000000000000b6a R12:
+>     0000000000000008
+>     [  899.346624] R13: 0000000000000040 R14: ffff8c8f6ba4c590 R15:
+>     ffff8c8f6b7dcb6a
+>     [  899.347153] FS:  0000000000000000(0000) GS:ffff8c8f7eb00000(0000)
+>     knlGS:0000000000000000
+>     [  899.347550] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>     [  899.347948] CR2: 0000000000000008 CR3: 000000002d606003 CR4:
+>     00000000000606e0
+>     [  899.348382] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
+>     0000000000000000
+>     [  899.348798] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
+>     0000000000000400
+> 
+>     Tony
+> 
 
---0000000000004ad89405b4d565af
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: base64
-
-PGRpdiBkaXI9Imx0ciI+SGkgQW50b25pbyw8ZGl2Pjxicj48L2Rpdj48ZGl2PkRpZCBtb3JlIHRl
-c3QuIEp1c3QgRllJLjwvZGl2PjxkaXY+PGJyPjwvZGl2PjxkaXY+YmExMDliZTYzM2YgYmFkLjxi
-cj48L2Rpdj48ZGl2PjZlYjYyOTJhOWQzID88YnI+PC9kaXY+PGRpdj4wOTg5MjkxZTgxNiBnb29k
-PGJyPjwvZGl2PjxkaXY+PGJyPjwvZGl2PjxkaXY+VG9ueTwvZGl2PjwvZGl2Pjxicj48ZGl2IGNs
-YXNzPSJnbWFpbF9xdW90ZSI+PGRpdiBkaXI9Imx0ciIgY2xhc3M9ImdtYWlsX2F0dHIiPlRvbnkg
-SGUgJmx0OzxhIGhyZWY9Im1haWx0bzpodWFuZ3lhOTBALi4uMjc3Li4uIj5odWFuZ3lhOTBALi4u
-Mjc3Li4uPC9hPiZndDsg5LqOMjAyMOW5tDEx5pyIMjTml6Xlkajkuowg5LiK5Y2IOToxOeWGmemB
-k++8mjxicj48L2Rpdj48YmxvY2txdW90ZSBjbGFzcz0iZ21haWxfcXVvdGUiIHN0eWxlPSJtYXJn
-aW46MHB4IDBweCAwcHggMC44ZXg7Ym9yZGVyLWxlZnQ6MXB4IHNvbGlkIHJnYigyMDQsMjA0LDIw
-NCk7cGFkZGluZy1sZWZ0OjFleCI+PGRpdiBkaXI9Imx0ciI+PGRpdj5IaSBBbnRvbmlvLDwvZGl2
-PjxkaXY+PGJyPjwvZGl2PjxkaXY+SSYjMzk7bSB1c2luZyB0aGUgbGF0ZXN0wqBjb21taXQgNGIx
-MDRiZSB0byB0ZXN0IGFuZCBlbmNvdW50ZXJlZCBmb2xsb3dpbmcgaXNzdWUuIEkgc2F3IG11bHRp
-IHRpbWVzIGluIGJvdGggcGVlcnMuIEkgbmV2ZXIgZW5jb3VudGVyZWQgdGhpcyBpc3N1ZcKgIGJl
-Zm9yZSBjb21taXQgYzU2YjlkMC4gQ2FuIHlvdSByZXByb2R1Y2U/PC9kaXY+PGRpdj48YnI+PC9k
-aXY+WyDCoDcwOC43OTA0MTldIG92cG5fZGNvOiBtb2R1bGUgdmVyaWZpY2F0aW9uIGZhaWxlZDog
-c2lnbmF0dXJlIGFuZC9vciByZXF1aXJlZCBrZXkgbWlzc2luZyAtIHRhaW50aW5nIGtlcm5lbCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCA8YnI+WyDCoDcwOC43OTA4ODVd
-IE9wZW5WUE4gZGF0YSBjaGFubmVsIG9mZmxvYWQgKG92cG4tZGNvKSA0YjEwNGJlLWRpcnR5IC0t
-IChDKSAyMDIwIE9wZW5WUE4sIEluYy4gwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgPGJyPlsgwqA4OTkuMzA0NDU0XSBCVUc6IGtlcm5l
-bCBOVUxMIHBvaW50ZXIgZGVyZWZlcmVuY2UsIGFkZHJlc3M6IDAwMDAwMDAwMDAwMDAwMDggwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgPGJyPlsgwqA4OTkuMzA1MjQ1XSAjUEY6IHN1cGVydmlz
-b3IgcmVhZCBhY2Nlc3MgaW4ga2VybmVsIG1vZGUgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqA8YnI+WyDCoDg5OS4zMDYwNDRdICNQRjog
-ZXJyb3JfY29kZSgweDAwMDApIC0gbm90LXByZXNlbnQgcGFnZSDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoDxicj5bIMKgODk5LjMwNjgy
-NV0gUEdEIDAgUDREIDAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgPGJyPlsgwqA4OTkuMzA3NTk3XSBPb3BzOiAwMDAwIFsjMV0gU01QIFBUSSDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCA8YnI+WyDCoDg5OS4zMDgzMzVdIENQVTogMSBQSUQ6IDM0
-IENvbW06IGt3b3JrZXIvMToxIFRhaW50ZWQ6IEcgwqAgwqAgwqAgwqAgwqAgT0UgwqAgwqAgNS40
-LjAtNTQtZ2VuZXJpYyAjNjAtVWJ1bnR1IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgPGJyPlsgwqA4OTkuMzA5OTIyXSBIYXJkd2FyZSBuYW1lOiBpbm5vdGVr
-IEdtYkggVmlydHVhbEJveC9WaXJ0dWFsQm94LCBCSU9TIFZpcnR1YWxCb3ggMTIvMDEvMjAwNiDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCA8YnI+WyDCoDg5OS4zMTA4ODddIFdvcmtxdWV1ZTogb3Zwbi1jcnlwdG8td3EtdHVuMCBv
-dnBuX2RlY3J5cHRfd29yayBbb3Zwbl9kY29dIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIDxicj5bIMKgODk5LjMxMTc2Ml0gUklQOiAwMDEwOmdjbWFlc19jcnlwdF9ieV9zZy5jb25z
-dHByb3AuMCsweDI0NC8weDZjMCBbYWVzbmlfaW50ZWxdIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-PGJyPlsgwqA4OTkuMzEyNTE4XSBDb2RlOiBhYyBmOCA0OCA4MyBmOCAwMSAxOSBjMCBmNyBkMCA4
-MyBlMCBiNiBlYiA4NyA0YyA4YiA3NCAyNCA0MCA0OCA4ZCA3YyAyNCA2MCA0OSA4YiA3NiA0MCA0
-MSA4YiA1NiAzMCBlOCAxMCBlYiBhYyBmOCA0OSA4YiA3NiA0OCAmbHQ7NDQmZ3Q7IDhiIDYwIDA4
-IDQ5IDg5IGM1IDQ5IDM5IDc2IDQwIDBmIDg0IDdkIDAyIDAwIDAwIDQxIDhiIDU2IDMwPGJyPsKg
-NDggwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqA8YnI+WyDCoDg5OS4zMTU5ODVdIFJTUDogMDAx
-ODpmZmZmOWVkNjgwMTI3ODAwIEVGTEFHUzogMDAwMTAyNDYgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgPGJyPlsgwqA4OTkuMzE2ODQzXSBS
-QVg6IDAwMDAwMDAwMDAwMDAwMDAgUkJYOiAwMDAwMDAwMDAwMDAwMDMwIFJDWDogZmZmZmU3ODQ0
-MGFkZjcwMCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCA8YnI+WyDCoDg5OS4zMTc0ODldIFJEWDog
-MDAwMDAwMDAwMDAwMDAwOCBSU0k6IGZmZmY5ZWQ2ODAxMjdiYjAgUkRJOiBmZmZmOWVkNjgwMTI3
-YmIwIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIDxicj5bIMKgODk5LjMxODE0M10gUkJQOiBmZmZm
-OWVkNjgwMTI3YWEwIFIwODogZmZmZjllZDY4MDEyN2FiMCBSMDk6IGZmZmY4YzhmN2M5YjE0NjAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgPGJyPlsgwqA4OTkuMzE4Nzc3XSBSMTA6IGZmZmY5ZWQ2
-ODAxMjdiODggUjExOiAwMDAwMDAwMDAwMDAwYjZhIFIxMjogMDAwMDAwMDAwMDAwMDAwOCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCA8YnI+WyDCoDg5OS4zMTk1ODFdIFIxMzogMDAwMDAwMDAwMDAw
-MDA0MCBSMTQ6IGZmZmY4YzhmNmJhNGM1OTAgUjE1OiBmZmZmOGM4ZjZiN2RjYjZhIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIDxicj5bIMKgODk5LjMyMDI2M10gRlM6IMKgMDAwMDAwMDAwMDAwMDAw
-MCgwMDAwKSBHUzpmZmZmOGM4ZjdlYjAwMDAwKDAwMDApIGtubEdTOjAwMDAwMDAwMDAwMDAwMDAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqA8YnI+WyDCoDg5OS4zMjA4NDFdIENTOiDCoDAwMTAgRFM6IDAwMDAgRVM6IDAwMDAg
-Q1IwOiAwMDAwMDAwMDgwMDUwMDMzIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIDxicj5bIMKgODk5LjMyMTQ4Nl0gQ1IyOiAwMDAwMDAwMDAwMDAwMDA4IENS
-MzogMDAwMDAwMDAyZDYwNjAwMyBDUjQ6IDAwMDAwMDAwMDAwNjA2ZTAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgPGJyPlsgwqA4OTkuMzIyMDYwXSBEUjA6IDAwMDAwMDAwMDAwMDAwMDAgRFIxOiAw
-MDAwMDAwMDAwMDAwMDAwIERSMjogMDAwMDAwMDAwMDAwMDAwMCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCA8YnI+WyDCoDg5OS4zMjI2ODVdIERSMzogMDAwMDAwMDAwMDAwMDAwMCBEUjY6IDAwMDAw
-MDAwZmZmZTBmZjAgRFI3OiAwMDAwMDAwMDAwMDAwNDAwIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IDxicj5bIMKgODk5LjMyMzIzMl0gQ2FsbCBUcmFjZTogwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgPGJyPlsgwqA4OTkuMzIzNzgwXSDCoD8gY2hlY2tfcHJl
-ZW1wdF93YWtldXArMHhmZC8weDIxMCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoDxicj5bIMKgODk5LjMyNDMyMF0g
-wqA/IGNoZWNrX3ByZWVtcHRfY3VycisweDdhLzB4OTAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgPGJyPlsg
-wqA4OTkuMzI0ODUzXSDCoD8gdHR3dV9kb193YWtldXArMHgxZS8weDE1MCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoDxicj5bIMKgODk5LjMyNTM2MF0gwqA/IHR0d3VfZG9fYWN0aXZhdGUrMHg1Yi8w
-eDcwIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIDxicj5bIMKgODk5LjMyNTgyNV0gwqA/IHRyeV90b193
-YWtlX3VwKzB4MjI0LzB4NmEwIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIDxicj5bIMKgODk5LjMyNjMw
-M10gwqA/IGFsbG9jX3BhZ2VzX2N1cnJlbnQrMHg4Ny8weGUwIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgPGJy
-PlsgwqA4OTkuMzI2NzYwXSDCoD8gX191cGRhdGVfbG9hZF9hdmdfY2ZzX3JxKzB4MjEyLzB4MmYw
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIDxicj5bIMKgODk5LjMyNzIxNl0gwqA/IF9fdXBkYXRlX2xvYWRfYXZnX2Nmc19ycSsw
-eDIxMi8weDJmMCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCA8YnI+WyDCoDg5OS4zMjc2NjRdIMKgPyBzY2hlZF9jbG9ja19jcHUr
-MHgxMS8weGIwIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgPGJyPlsgwqA4OTkuMzI4MTEzXSDCoD8g
-dXBkYXRlX2Jsb2NrZWRfYXZlcmFnZXMrMHgxMWMvMHg1OTA8YnI+WyDCoDg5OS4zMjg1NjBdIMKg
-PyB1cGRhdGVfZ3JvdXBfY2FwYWNpdHkrMHgyYy8weDFkMDxicj5bIMKgODk5LjMyOTAwN10gwqBn
-ZW5lcmljX2djbWFlc19kZWNyeXB0KzB4NWIvMHg4MCBbYWVzbmlfaW50ZWxdPGJyPlsgwqA4OTku
-MzI5NDY2XSDCoGNyeXB0b19hZWFkX2RlY3J5cHQrMHg0Ni8weDgwPGJyPlsgwqA4OTkuMzI5OTA1
-XSDCoHNpbWRfYWVhZF9kZWNyeXB0KzB4YTgvMHhjMCBbY3J5cHRvX3NpbWRdPGJyPlsgwqA4OTku
-MzMwNDU2XSDCoGNyeXB0b19hZWFkX2RlY3J5cHQrMHg0Ni8weDgwPGJyPlsgwqA4OTkuMzMwODg0
-XSDCoG92cG5fYWVhZF9kZWNyeXB0KzB4MjY4LzB4M2QwIFtvdnBuX2Rjb108YnI+WyDCoDg5OS4z
-MzEzMTRdIMKgPyBfX3VwZGF0ZV9sb2FkX2F2Z19jZnNfcnErMHgyMTIvMHgyZjA8YnI+WyDCoDg5
-OS4zMzE3MzRdIMKgPyBzY2hlZF9jbG9ja19jcHUrMHgxMS8weGIwPGJyPlsgwqA4OTkuMzMyMjE4
-XSDCoD8geDJhcGljX3NlbmRfSVBJKzB4NGEvMHg1MDxicj5bIMKgODk5LjMzMjc0M10gwqA/IG5h
-dGl2ZV9zZW5kX2NhbGxfZnVuY19zaW5nbGVfaXBpKzB4MWUvMHgyMDxicj5bIMKgODk5LjMzMzEy
-Ml0gwqA/IGdlbmVyaWNfZXhlY19zaW5nbGUrMHg2ZS8weGQwPGJyPlsgwqA4OTkuMzMzNTIzXSDC
-oD8gcG9rZV9pbnQzX2hhbmRsZXIrMHg4MC8weDgwPGJyPlsgwqA4OTkuMzMzODgwXSDCoD8gc21w
-X2NhbGxfZnVuY3Rpb25fc2luZ2xlKzB4ZDEvMHgxMTA8YnI+PGRpdj5bIMKgODk5LjMzNDMyNl0g
-wqA/IHBva2VfaW50M19oYW5kbGVyKzB4ODAvMHg4MDxicj5bIMKgODk5LjMzNDY5Nl0gwqA/IGZs
-dXNoX3RsYl9tbV9yYW5nZSsweGExLzB4ZTA8YnI+WyDCoDg5OS4zMzUwNDJdIMKgPyB1ZHA0X2xp
-Yl9sb29rdXAyKzB4MTMzLzB4MmQwPGJyPlsgwqA4OTkuMzM1MzY2XSDCoD8gY3B1bWFza19uZXh0
-X2FuZCsweDFlLzB4MjA8YnI+WyDCoDg5OS4zMzU2ODVdIMKgPyBzbXBfY2FsbF9mdW5jdGlvbl9t
-YW55KzB4MjNiLzB4MjcwPGJyPlsgwqA4OTkuMzM2MTY1XSDCoD8gZG9fc3luY19jb3JlKzB4MWQv
-MHgyMDxicj5bIMKgODk5LjMzNjQ5NF0gwqA/IHRleHRfcG9rZV9icF9iYXRjaCsweDEwNi8weDE2
-MDxicj5bIMKgODk5LjMzNjg4Nl0gwqA/IGFyY2hfanVtcF9sYWJlbF90cmFuc2Zvcm1fYXBwbHkr
-MHgzZS8weDUwPGJyPlsgwqA4OTkuMzM3MjA5XSDCoD8gX19qdW1wX2xhYmVsX3VwZGF0ZSsweDEx
-NS8weDEyMDxicj5bIMKgODk5LjMzNzUwNV0gwqBvdnBuX2RlY3J5cHRfd29yaysweDFjMS8weDYw
-MCBbb3Zwbl9kY29dPGJyPlsgwqA4OTkuMzM3ODAzXSDCoHByb2Nlc3Nfb25lX3dvcmsrMHgxZWIv
-MHgzYjA8YnI+WyDCoDg5OS4zMzgxMTNdIMKgd29ya2VyX3RocmVhZCsweDRkLzB4NDAwPGJyPlsg
-wqA4OTkuMzM4NDA1XSDCoGt0aHJlYWQrMHgxMDQvMHgxNDA8YnI+WyDCoDg5OS4zMzg2ODddIMKg
-PyBwcm9jZXNzX29uZV93b3JrKzB4M2IwLzB4M2IwPGJyPlsgwqA4OTkuMzM4OTcwXSDCoD8ga3Ro
-cmVhZF9wYXJrKzB4OTAvMHg5MDxicj5bIMKgODk5LjMzOTI1NV0gwqByZXRfZnJvbV9mb3JrKzB4
-MzUvMHg0MDxicj5bIMKgODk5LjMzOTUzOF0gTW9kdWxlcyBsaW5rZWQgaW46IG92cG5fZGNvKE9F
-KSBpcDZfdWRwX3R1bm5lbCB1ZHBfdHVubmVsIGRtX211bHRpcGF0aCBzY3NpX2RoX3JkYWMgc2Nz
-aV9kaF9lbWMgc2NzaV9kaF9hbHVhIGludGVsX3JhcGxfbXNyIGludGVsX3JhcGxfY29tbW9uIHJh
-cGwgaW5wdXRfbGVkcyBzZXJpb19yYXcgam95ZGV2IHNuZF9pbnRlbDh4MCBzbmRfYWM5Nzxicj5f
-Y29kZWMgYWM5N19idXMgc25kX3BjbSBzbmRfdGltZXIgdmJveGd1ZXN0KE8pIHNuZCBzb3VuZGNv
-cmUgbWFjX2hpZCBzY2hfZnFfY29kZWwgaXBfdGFibGVzIHhfdGFibGVzIGF1dG9mczQgYnRyZnMg
-enN0ZF9jb21wcmVzcyByYWlkMTAgcmFpZDQ1NiBhc3luY19yYWlkNl9yZWNvdiBhc3luY19tZW1j
-cHkgYXN5bmNfcHEgYXN5bmNfeG9yIGFzeW5jX3R4IHhvciByYWlkPGJyPjZfcHEgbGliY3JjMzJj
-IHJhaWQxIHJhaWQwIG11bHRpcGF0aCBsaW5lYXIgaGlkX2dlbmVyaWMgdXNiaGlkIGhpZCBjcmN0
-MTBkaWZfcGNsbXVsIGNyYzMyX3BjbG11bCBnaGFzaF9jbG11bG5pX2ludGVsIHZib3h2aWRlbyBk
-cm1fdnJhbV9oZWxwZXIgdHRtIGFlc25pX2ludGVsIGNyeXB0b19zaW1kIGNyeXB0ZCBnbHVlX2hl
-bHBlciBkcm1fa21zX2hlbHBlciBzeXNjb3A8YnI+eWFyZWEgc3lzZmlsbHJlY3Qgc3lzaW1nYmx0
-IGZiX3N5c19mb3BzIHBzbW91c2UgYWhjaSBsaWJhaGNpIGkyY19waWl4NCBkcm0gcGF0YV9hY3Bp
-IGUxMDAwIHZpZGVvPGJyPlsgwqA4OTkuMzQyMzE2XSBDUjI6IDAwMDAwMDAwMDAwMDAwMDg8YnI+
-WyDCoDg5OS4zNDI2ODZdIC0tLVsgZW5kIHRyYWNlIGRkNGRhYjU3ZDU0NzNiYzAgXS0tLTxicj5b
-IMKgODk5LjM0MzA4Ml0gUklQOiAwMDEwOmdjbWFlc19jcnlwdF9ieV9zZy5jb25zdHByb3AuMCsw
-eDI0NC8weDZjMCBbYWVzbmlfaW50ZWxdPGJyPlsgwqA4OTkuMzQzNDUxXSBDb2RlOiBhYyBmOCA0
-OCA4MyBmOCAwMSAxOSBjMCBmNyBkMCA4MyBlMCBiNiBlYiA4NyA0YyA4YiA3NCAyNCA0MCA0OCA4
-ZCA3YyAyNCA2MCA0OSA4YiA3NiA0MCA0MSA4YiA1NiAzMCBlOCAxMCBlYiBhYyBmOCA0OSA4YiA3
-NiA0OCAmbHQ7NDQmZ3Q7IDhiIDYwIDA4IDQ5IDg5IGM1IDQ5IDM5IDc2IDQwIDBmIDg0IDdkIDAy
-IDAwIDAwIDQxIDhiIDU2IDMwPGJyPsKgNDg8YnI+WyDCoDg5OS4zNDQ2MDVdIFJTUDogMDAxODpm
-ZmZmOWVkNjgwMTI3ODAwIEVGTEFHUzogMDAwMTAyNDY8YnI+WyDCoDg5OS4zNDQ5ODldIFJBWDog
-MDAwMDAwMDAwMDAwMDAwMCBSQlg6IDAwMDAwMDAwMDAwMDAwMzAgUkNYOiBmZmZmZTc4NDQwYWRm
-NzAwPGJyPlsgwqA4OTkuMzQ1MzgxXSBSRFg6IDAwMDAwMDAwMDAwMDAwMDggUlNJOiBmZmZmOWVk
-NjgwMTI3YmIwIFJESTogZmZmZjllZDY4MDEyN2JiMDxicj5bIMKgODk5LjM0NTc3Ml0gUkJQOiBm
-ZmZmOWVkNjgwMTI3YWEwIFIwODogZmZmZjllZDY4MDEyN2FiMCBSMDk6IGZmZmY4YzhmN2M5YjE0
-NjA8YnI+WyDCoDg5OS4zNDYyMTNdIFIxMDogZmZmZjllZDY4MDEyN2I4OCBSMTE6IDAwMDAwMDAw
-MDAwMDBiNmEgUjEyOiAwMDAwMDAwMDAwMDAwMDA4PGJyPlsgwqA4OTkuMzQ2NjI0XSBSMTM6IDAw
-MDAwMDAwMDAwMDAwNDAgUjE0OiBmZmZmOGM4ZjZiYTRjNTkwIFIxNTogZmZmZjhjOGY2YjdkY2I2
-YTxicj5bIMKgODk5LjM0NzE1M10gRlM6IMKgMDAwMDAwMDAwMDAwMDAwMCgwMDAwKSBHUzpmZmZm
-OGM4ZjdlYjAwMDAwKDAwMDApIGtubEdTOjAwMDAwMDAwMDAwMDAwMDA8YnI+WyDCoDg5OS4zNDc1
-NTBdIENTOiDCoDAwMTAgRFM6IDAwMDAgRVM6IDAwMDAgQ1IwOiAwMDAwMDAwMDgwMDUwMDMzPGJy
-PlsgwqA4OTkuMzQ3OTQ4XSBDUjI6IDAwMDAwMDAwMDAwMDAwMDggQ1IzOiAwMDAwMDAwMDJkNjA2
-MDAzIENSNDogMDAwMDAwMDAwMDA2MDZlMDxicj5bIMKgODk5LjM0ODM4Ml0gRFIwOiAwMDAwMDAw
-MDAwMDAwMDAwIERSMTogMDAwMDAwMDAwMDAwMDAwMCBEUjI6IDAwMDAwMDAwMDAwMDAwMDA8YnI+
-WyDCoDg5OS4zNDg3OThdIERSMzogMDAwMDAwMDAwMDAwMDAwMCBEUjY6IDAwMDAwMDAwZmZmZTBm
-ZjAgRFI3OiAwMDAwMDAwMDAwMDAwNDAwPGJyPjwvZGl2PjxkaXY+PGJyPjwvZGl2PjxkaXY+VG9u
-eTwvZGl2PjwvZGl2Pg0KPC9ibG9ja3F1b3RlPjwvZGl2Pg0K
-
---0000000000004ad89405b4d565af--
+-- 
+Antonio Quartulli
 
