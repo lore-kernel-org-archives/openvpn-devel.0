@@ -1,13 +1,9 @@
-References: <20201004223614.12429-1-themiron@...2010...>
- <20201115220857.9307-1-themiron@...2010...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <026bd62f-af6d-7dfe-2ba5-ffc4a751858d@...1227...>
-Date: Mon, 23 Nov 2020 14:13:01 +0100
 MIME-Version: 1.0
-In-Reply-To: <20201115220857.9307-1-themiron@...2010...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH v9] Add DNS SRV remote host discovery
- support
+From: Tony He <huangya90@...277...>
+Date: Tue, 24 Nov 2020 09:19:31 +0800
+Message-ID: <CAAUX2SVLbNnUAAk3VnupLkoNKWN9_BkVvNgBucgrJyKnJr2_JA@...278...>
+Content-Type: multipart/alternative; boundary="000000000000fc577f05b4d01a1d"
+Subject: [Openvpn-devel] [ovpn-dco] Kernel NULL point derefence
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,90 +12,437 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Vladislav Grishenko <themiron@...2010...>, openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <antonio@...515...>, a@...2181..., openvpn-devel@lists.sourceforge.net
 
-Am 15.11.20 um 23:08 schrieb Vladislav Grishenko:
-> DNS SRV remote host discovery allows to have multiple OpenVPN servers for
-> a single domain w/o explicit profile enumeration, to move services from
-> host to host with little fuss, and to designate hosts as primary servers
-> for a service and others as backups.
-> Feature has been asked several times already, should be useful in case of
-> substantial number of clients & servers deployed.
-> 
-> Patch introduces "--remote-srv domain [service] [proto]" option.
-> The "service" and "proto" arguments are optional. Client will try
-> to resolve DNS SRV record "_service._proto.domain" and use returned
-> DNS SRV records as remote server list ordered by server selection
-> mechanism defined in RFC2782 (https://tools.ietf.org/html/rfc2782):
-> 
->     A client MUST attempt to contact the target host with the
->     lowest-numbered priority field value it can reach, target hosts
->     with the same priority SHOULD be tried in an order defined by the
->     weight field.
->     The weight field specifies a relative weight for entries with the
->     same priority. Larger weights SHOULD be given a proportionately
->     higher probability of being selected.
->     Domain administrators SHOULD use Weight 0 when there isn't any
->     server selection to do. In the presence of records containing
->     weights greater than 0, records with Weight 0 SHOULD have a very
->     small chance of being selected.
-> 
-> Note: OpenVPN server selection mechanism implementation indeed will
-> give records with weight of zero a very small chance of being selected
-> first, but never skip them.
-> 
-> Example: instead of multiple --remote in order, now it's possible to
-> specify just one --remote-srv and configure DNS SRV records:
-> 
->     remote-srv example.net
-> 
->     name                 prio weight port target
->     $ORIGIN example.net.
->     _openvpn._udp IN SRV 10   60     1194 server1.example.net.
->     _openvpn._udp IN SRV 10   40     1194 server2.example.net.
->     _openvpn._udp IN SRV 10   0      1194 server3.example.net.
->     _openvpn._tcp IN SRV 20   0       443 server4.example.net.
-> 
-> For "--remote-srv example.net" following will happen in order:
-> 1. The client will first try to resolve "_openvpn._udp.example.net"
->    and "_openvpn._tcp.example.net".
-> 2. Records "server1.example.net:1194", "server2.example.net:1194"
->    and "server3.example.net:1194" will be selected before record
->    "server4.example.net:443" as their priority 10 is smaller than 20.
-> 3. Records "server1.example.net:1194", "server2.example.net:1194"
->    and "server3.example.net:1194" will be randomly selected with
->    weight probability: first will be either "server1.example.net:1194"
->    with 60% probability or "server2.example.net:1194" with 40% or
->    "server3.example.net:1194" with almost zero probability.
-> 4. If "server1.example.net:1194" was selected, the second record will
->    be either "server2.example.net:1194" with almost 100% probability
->    or "server3.example.net:1194" with almost 0%.
-> 5. If "server2.example.net:1194" was selected, the third record will
->    be the only last record of priority 10 - "server3.example.net:1194".
-> 6. Record "server4.example.net:443" will be the last one selected as
->    the only record with priority 20.
-> 7. Each of the resulting "target:port" remote hosts will be resolved
->    and accessed if its protocol has no conflict with the rest of the
->    OpenVPN options.
-> 
->   If DNS SRV name can't be resolved or no valid records were returned,
->   client will move on to the next connection entry.
-> 
-> v9:
->     add get_cached_srv_entry() for servinfo vs addrinfo cache split
->     add check for mixed --remote and --remote-srv
->     add doxygen dns srv functions comments
->     use query_servinfo() for both unix and windows
->     fix undefined NS_MAXMSG issue on macOS
->     fix man
-> 
->
+--000000000000fc577f05b4d01a1d
+Content-Type: text/plain; charset="UTF-8"
 
-Acked-By: Arne Schwabe<arne@...1227...>
+Hi Antonio,
 
-This addresses the concerns that I had with the last version.
+I'm using the latest commit 4b104be to test and encountered following
+issue. I saw multi times in both peers. I never encountered this issue
+before commit c56b9d0. Can you reproduce?
 
-Arne
+[  708.790419] ovpn_dco: module verification failed: signature and/or
+required key missing - tainting kernel
+
+[  708.790885] OpenVPN data channel offload (ovpn-dco) 4b104be-dirty -- (C)
+2020 OpenVPN, Inc.
+
+[  899.304454] BUG: kernel NULL pointer dereference, address:
+0000000000000008
+
+[  899.305245] #PF: supervisor read access in kernel mode
+
+
+[  899.306044] #PF: error_code(0x0000) - not-present page
+
+
+[  899.306825] PGD 0 P4D 0
+
+
+[  899.307597] Oops: 0000 [#1] SMP PTI
+
+
+[  899.308335] CPU: 1 PID: 34 Comm: kworker/1:1 Tainted: G           OE
+5.4.0-54-generic #60-Ubuntu
+
+[  899.309922] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS
+VirtualBox 12/01/2006
+
+[  899.310887] Workqueue: ovpn-crypto-wq-tun0 ovpn_decrypt_work [ovpn_dco]
+
+
+[  899.311762] RIP: 0010:gcmaes_crypt_by_sg.constprop.0+0x244/0x6c0
+[aesni_intel]
+
+[  899.312518] Code: ac f8 48 83 f8 01 19 c0 f7 d0 83 e0 b6 eb 87 4c 8b 74
+24 40 48 8d 7c 24 60 49 8b 76 40 41 8b 56 30 e8 10 eb ac f8 49 8b 76 48
+<44> 8b 60 08 49 89 c5 49 39 76 40 0f 84 7d 02 00 00 41 8b 56 30
+ 48
+
+
+[  899.315985] RSP: 0018:ffff9ed680127800 EFLAGS: 00010246
+
+
+[  899.316843] RAX: 0000000000000000 RBX: 0000000000000030 RCX:
+ffffe78440adf700
+
+[  899.317489] RDX: 0000000000000008 RSI: ffff9ed680127bb0 RDI:
+ffff9ed680127bb0
+
+[  899.318143] RBP: ffff9ed680127aa0 R08: ffff9ed680127ab0 R09:
+ffff8c8f7c9b1460
+
+[  899.318777] R10: ffff9ed680127b88 R11: 0000000000000b6a R12:
+0000000000000008
+
+[  899.319581] R13: 0000000000000040 R14: ffff8c8f6ba4c590 R15:
+ffff8c8f6b7dcb6a
+
+[  899.320263] FS:  0000000000000000(0000) GS:ffff8c8f7eb00000(0000)
+knlGS:0000000000000000
+
+[  899.320841] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+
+
+[  899.321486] CR2: 0000000000000008 CR3: 000000002d606003 CR4:
+00000000000606e0
+
+[  899.322060] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
+0000000000000000
+
+[  899.322685] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
+0000000000000400
+
+[  899.323232] Call Trace:
+
+
+[  899.323780]  ? check_preempt_wakeup+0xfd/0x210
+
+
+[  899.324320]  ? check_preempt_curr+0x7a/0x90
+
+
+[  899.324853]  ? ttwu_do_wakeup+0x1e/0x150
+
+
+[  899.325360]  ? ttwu_do_activate+0x5b/0x70
+
+
+[  899.325825]  ? try_to_wake_up+0x224/0x6a0
+
+
+[  899.326303]  ? alloc_pages_current+0x87/0xe0
+
+
+[  899.326760]  ? __update_load_avg_cfs_rq+0x212/0x2f0
+
+
+[  899.327216]  ? __update_load_avg_cfs_rq+0x212/0x2f0
+
+
+[  899.327664]  ? sched_clock_cpu+0x11/0xb0
+
+
+[  899.328113]  ? update_blocked_averages+0x11c/0x590
+[  899.328560]  ? update_group_capacity+0x2c/0x1d0
+[  899.329007]  generic_gcmaes_decrypt+0x5b/0x80 [aesni_intel]
+[  899.329466]  crypto_aead_decrypt+0x46/0x80
+[  899.329905]  simd_aead_decrypt+0xa8/0xc0 [crypto_simd]
+[  899.330456]  crypto_aead_decrypt+0x46/0x80
+[  899.330884]  ovpn_aead_decrypt+0x268/0x3d0 [ovpn_dco]
+[  899.331314]  ? __update_load_avg_cfs_rq+0x212/0x2f0
+[  899.331734]  ? sched_clock_cpu+0x11/0xb0
+[  899.332218]  ? x2apic_send_IPI+0x4a/0x50
+[  899.332743]  ? native_send_call_func_single_ipi+0x1e/0x20
+[  899.333122]  ? generic_exec_single+0x6e/0xd0
+[  899.333523]  ? poke_int3_handler+0x80/0x80
+[  899.333880]  ? smp_call_function_single+0xd1/0x110
+[  899.334326]  ? poke_int3_handler+0x80/0x80
+[  899.334696]  ? flush_tlb_mm_range+0xa1/0xe0
+[  899.335042]  ? udp4_lib_lookup2+0x133/0x2d0
+[  899.335366]  ? cpumask_next_and+0x1e/0x20
+[  899.335685]  ? smp_call_function_many+0x23b/0x270
+[  899.336165]  ? do_sync_core+0x1d/0x20
+[  899.336494]  ? text_poke_bp_batch+0x106/0x160
+[  899.336886]  ? arch_jump_label_transform_apply+0x3e/0x50
+[  899.337209]  ? __jump_label_update+0x115/0x120
+[  899.337505]  ovpn_decrypt_work+0x1c1/0x600 [ovpn_dco]
+[  899.337803]  process_one_work+0x1eb/0x3b0
+[  899.338113]  worker_thread+0x4d/0x400
+[  899.338405]  kthread+0x104/0x140
+[  899.338687]  ? process_one_work+0x3b0/0x3b0
+[  899.338970]  ? kthread_park+0x90/0x90
+[  899.339255]  ret_from_fork+0x35/0x40
+[  899.339538] Modules linked in: ovpn_dco(OE) ip6_udp_tunnel udp_tunnel
+dm_multipath scsi_dh_rdac scsi_dh_emc scsi_dh_alua intel_rapl_msr
+intel_rapl_common rapl input_leds serio_raw joydev snd_intel8x0 snd_ac97
+_codec ac97_bus snd_pcm snd_timer vboxguest(O) snd soundcore mac_hid
+sch_fq_codel ip_tables x_tables autofs4 btrfs zstd_compress raid10 raid456
+async_raid6_recov async_memcpy async_pq async_xor async_tx xor raid
+6_pq libcrc32c raid1 raid0 multipath linear hid_generic usbhid hid
+crct10dif_pclmul crc32_pclmul ghash_clmulni_intel vboxvideo drm_vram_helper
+ttm aesni_intel crypto_simd cryptd glue_helper drm_kms_helper syscop
+yarea sysfillrect sysimgblt fb_sys_fops psmouse ahci libahci i2c_piix4 drm
+pata_acpi e1000 video
+[  899.342316] CR2: 0000000000000008
+[  899.342686] ---[ end trace dd4dab57d5473bc0 ]---
+[  899.343082] RIP: 0010:gcmaes_crypt_by_sg.constprop.0+0x244/0x6c0
+[aesni_intel]
+[  899.343451] Code: ac f8 48 83 f8 01 19 c0 f7 d0 83 e0 b6 eb 87 4c 8b 74
+24 40 48 8d 7c 24 60 49 8b 76 40 41 8b 56 30 e8 10 eb ac f8 49 8b 76 48
+<44> 8b 60 08 49 89 c5 49 39 76 40 0f 84 7d 02 00 00 41 8b 56 30
+ 48
+[  899.344605] RSP: 0018:ffff9ed680127800 EFLAGS: 00010246
+[  899.344989] RAX: 0000000000000000 RBX: 0000000000000030 RCX:
+ffffe78440adf700
+[  899.345381] RDX: 0000000000000008 RSI: ffff9ed680127bb0 RDI:
+ffff9ed680127bb0
+[  899.345772] RBP: ffff9ed680127aa0 R08: ffff9ed680127ab0 R09:
+ffff8c8f7c9b1460
+[  899.346213] R10: ffff9ed680127b88 R11: 0000000000000b6a R12:
+0000000000000008
+[  899.346624] R13: 0000000000000040 R14: ffff8c8f6ba4c590 R15:
+ffff8c8f6b7dcb6a
+[  899.347153] FS:  0000000000000000(0000) GS:ffff8c8f7eb00000(0000)
+knlGS:0000000000000000
+[  899.347550] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  899.347948] CR2: 0000000000000008 CR3: 000000002d606003 CR4:
+00000000000606e0
+[  899.348382] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
+0000000000000000
+[  899.348798] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
+0000000000000400
+
+Tony
+
+--000000000000fc577f05b4d01a1d
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: base64
+
+PGRpdiBkaXI9Imx0ciI+PGRpdj5IaSBBbnRvbmlvLDwvZGl2PjxkaXY+PGJyPjwvZGl2PjxkaXY+
+SSYjMzk7bSB1c2luZyB0aGUgbGF0ZXN0wqBjb21taXQgNGIxMDRiZSB0byB0ZXN0IGFuZCBlbmNv
+dW50ZXJlZCBmb2xsb3dpbmcgaXNzdWUuIEkgc2F3IG11bHRpIHRpbWVzIGluIGJvdGggcGVlcnMu
+IEkgbmV2ZXIgZW5jb3VudGVyZWQgdGhpcyBpc3N1ZcKgIGJlZm9yZSBjb21taXQgYzU2YjlkMC4g
+Q2FuIHlvdSByZXByb2R1Y2U/PC9kaXY+PGRpdj48YnI+PC9kaXY+WyDCoDcwOC43OTA0MTldIG92
+cG5fZGNvOiBtb2R1bGUgdmVyaWZpY2F0aW9uIGZhaWxlZDogc2lnbmF0dXJlIGFuZC9vciByZXF1
+aXJlZCBrZXkgbWlzc2luZyAtIHRhaW50aW5nIGtlcm5lbCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCA8YnI+WyDCoDcwOC43OTA4ODVdIE9wZW5WUE4gZGF0YSBjaGFubmVs
+IG9mZmxvYWQgKG92cG4tZGNvKSA0YjEwNGJlLWRpcnR5IC0tIChDKSAyMDIwIE9wZW5WUE4sIElu
+Yy4gwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgPGJyPlsgwqA4OTkuMzA0NDU0XSBCVUc6IGtlcm5lbCBOVUxMIHBvaW50ZXIgZGVyZWZl
+cmVuY2UsIGFkZHJlc3M6IDAwMDAwMDAwMDAwMDAwMDggwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgPGJyPlsgwqA4OTkuMzA1MjQ1XSAjUEY6IHN1cGVydmlzb3IgcmVhZCBhY2Nlc3MgaW4ga2Vy
+bmVsIG1vZGUgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqA8YnI+WyDCoDg5OS4zMDYwNDRdICNQRjogZXJyb3JfY29kZSgweDAwMDApIC0g
+bm90LXByZXNlbnQgcGFnZSDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoDxicj5bIMKgODk5LjMwNjgyNV0gUEdEIDAgUDREIDAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgPGJyPlsgwqA4OTkuMzA3
+NTk3XSBPb3BzOiAwMDAwIFsjMV0gU01QIFBUSSDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCA8YnI+WyDCoDg5OS4zMDgzMzVdIENQVTogMSBQSUQ6IDM0IENvbW06IGt3b3JrZXIvMToxIFRh
+aW50ZWQ6IEcgwqAgwqAgwqAgwqAgwqAgT0UgwqAgwqAgNS40LjAtNTQtZ2VuZXJpYyAjNjAtVWJ1
+bnR1IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgPGJyPlsg
+wqA4OTkuMzA5OTIyXSBIYXJkd2FyZSBuYW1lOiBpbm5vdGVrIEdtYkggVmlydHVhbEJveC9WaXJ0
+dWFsQm94LCBCSU9TIFZpcnR1YWxCb3ggMTIvMDEvMjAwNiDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCA8YnI+WyDCoDg5OS4zMTA4
+ODddIFdvcmtxdWV1ZTogb3Zwbi1jcnlwdG8td3EtdHVuMCBvdnBuX2RlY3J5cHRfd29yayBbb3Zw
+bl9kY29dIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIDxicj5bIMKgODk5LjMxMTc2
+Ml0gUklQOiAwMDEwOmdjbWFlc19jcnlwdF9ieV9zZy5jb25zdHByb3AuMCsweDI0NC8weDZjMCBb
+YWVzbmlfaW50ZWxdIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgPGJyPlsgwqA4OTkuMzEyNTE4XSBD
+b2RlOiBhYyBmOCA0OCA4MyBmOCAwMSAxOSBjMCBmNyBkMCA4MyBlMCBiNiBlYiA4NyA0YyA4YiA3
+NCAyNCA0MCA0OCA4ZCA3YyAyNCA2MCA0OSA4YiA3NiA0MCA0MSA4YiA1NiAzMCBlOCAxMCBlYiBh
+YyBmOCA0OSA4YiA3NiA0OCAmbHQ7NDQmZ3Q7IDhiIDYwIDA4IDQ5IDg5IGM1IDQ5IDM5IDc2IDQw
+IDBmIDg0IDdkIDAyIDAwIDAwIDQxIDhiIDU2IDMwPGJyPsKgNDggwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqA8YnI+WyDCoDg5OS4zMTU5ODVdIFJTUDogMDAxODpmZmZmOWVkNjgwMTI3ODAwIEVG
+TEFHUzogMDAwMTAyNDYgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgPGJyPlsgwqA4OTkuMzE2ODQzXSBSQVg6IDAwMDAwMDAwMDAwMDAwMDAg
+UkJYOiAwMDAwMDAwMDAwMDAwMDMwIFJDWDogZmZmZmU3ODQ0MGFkZjcwMCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCA8YnI+WyDCoDg5OS4zMTc0ODldIFJEWDogMDAwMDAwMDAwMDAwMDAwOCBSU0k6
+IGZmZmY5ZWQ2ODAxMjdiYjAgUkRJOiBmZmZmOWVkNjgwMTI3YmIwIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIDxicj5bIMKgODk5LjMxODE0M10gUkJQOiBmZmZmOWVkNjgwMTI3YWEwIFIwODogZmZm
+ZjllZDY4MDEyN2FiMCBSMDk6IGZmZmY4YzhmN2M5YjE0NjAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgPGJyPlsgwqA4OTkuMzE4Nzc3XSBSMTA6IGZmZmY5ZWQ2ODAxMjdiODggUjExOiAwMDAwMDAw
+MDAwMDAwYjZhIFIxMjogMDAwMDAwMDAwMDAwMDAwOCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCA8
+YnI+WyDCoDg5OS4zMTk1ODFdIFIxMzogMDAwMDAwMDAwMDAwMDA0MCBSMTQ6IGZmZmY4YzhmNmJh
+NGM1OTAgUjE1OiBmZmZmOGM4ZjZiN2RjYjZhIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIDxicj5b
+IMKgODk5LjMyMDI2M10gRlM6IMKgMDAwMDAwMDAwMDAwMDAwMCgwMDAwKSBHUzpmZmZmOGM4Zjdl
+YjAwMDAwKDAwMDApIGtubEdTOjAwMDAwMDAwMDAwMDAwMDAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqA8YnI+WyDCoDg5OS4z
+MjA4NDFdIENTOiDCoDAwMTAgRFM6IDAwMDAgRVM6IDAwMDAgQ1IwOiAwMDAwMDAwMDgwMDUwMDMz
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIDxicj5bIMKg
+ODk5LjMyMTQ4Nl0gQ1IyOiAwMDAwMDAwMDAwMDAwMDA4IENSMzogMDAwMDAwMDAyZDYwNjAwMyBD
+UjQ6IDAwMDAwMDAwMDAwNjA2ZTAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgPGJyPlsgwqA4OTku
+MzIyMDYwXSBEUjA6IDAwMDAwMDAwMDAwMDAwMDAgRFIxOiAwMDAwMDAwMDAwMDAwMDAwIERSMjog
+MDAwMDAwMDAwMDAwMDAwMCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCA8YnI+WyDCoDg5OS4zMjI2
+ODVdIERSMzogMDAwMDAwMDAwMDAwMDAwMCBEUjY6IDAwMDAwMDAwZmZmZTBmZjAgRFI3OiAwMDAw
+MDAwMDAwMDAwNDAwIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIDxicj5bIMKgODk5LjMyMzIzMl0g
+Q2FsbCBUcmFjZTogwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgPGJyPlsgwqA4OTkuMzIzNzgwXSDCoD8gY2hlY2tfcHJlZW1wdF93YWtldXArMHhmZC8weDIx
+MCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoDxicj5bIMKgODk5LjMyNDMyMF0gwqA/IGNoZWNrX3ByZWVtcHRfY3Vy
+cisweDdhLzB4OTAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgPGJyPlsgwqA4OTkuMzI0ODUzXSDCoD8gdHR3
+dV9kb193YWtldXArMHgxZS8weDE1MCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoDxicj5bIMKgODk5
+LjMyNTM2MF0gwqA/IHR0d3VfZG9fYWN0aXZhdGUrMHg1Yi8weDcwIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIDxicj5bIMKgODk5LjMyNTgyNV0gwqA/IHRyeV90b193YWtlX3VwKzB4MjI0LzB4NmEwIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIDxicj5bIMKgODk5LjMyNjMwM10gwqA/IGFsbG9jX3BhZ2VzX2N1
+cnJlbnQrMHg4Ny8weGUwIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgPGJyPlsgwqA4OTkuMzI2NzYwXSDCoD8g
+X191cGRhdGVfbG9hZF9hdmdfY2ZzX3JxKzB4MjEyLzB4MmYwIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIDxicj5bIMKgODk5LjMy
+NzIxNl0gwqA/IF9fdXBkYXRlX2xvYWRfYXZnX2Nmc19ycSsweDIxMi8weDJmMCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCA8YnI+
+WyDCoDg5OS4zMjc2NjRdIMKgPyBzY2hlZF9jbG9ja19jcHUrMHgxMS8weGIwIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgPGJyPlsgwqA4OTkuMzI4MTEzXSDCoD8gdXBkYXRlX2Jsb2NrZWRfYXZlcmFn
+ZXMrMHgxMWMvMHg1OTA8YnI+WyDCoDg5OS4zMjg1NjBdIMKgPyB1cGRhdGVfZ3JvdXBfY2FwYWNp
+dHkrMHgyYy8weDFkMDxicj5bIMKgODk5LjMyOTAwN10gwqBnZW5lcmljX2djbWFlc19kZWNyeXB0
+KzB4NWIvMHg4MCBbYWVzbmlfaW50ZWxdPGJyPlsgwqA4OTkuMzI5NDY2XSDCoGNyeXB0b19hZWFk
+X2RlY3J5cHQrMHg0Ni8weDgwPGJyPlsgwqA4OTkuMzI5OTA1XSDCoHNpbWRfYWVhZF9kZWNyeXB0
+KzB4YTgvMHhjMCBbY3J5cHRvX3NpbWRdPGJyPlsgwqA4OTkuMzMwNDU2XSDCoGNyeXB0b19hZWFk
+X2RlY3J5cHQrMHg0Ni8weDgwPGJyPlsgwqA4OTkuMzMwODg0XSDCoG92cG5fYWVhZF9kZWNyeXB0
+KzB4MjY4LzB4M2QwIFtvdnBuX2Rjb108YnI+WyDCoDg5OS4zMzEzMTRdIMKgPyBfX3VwZGF0ZV9s
+b2FkX2F2Z19jZnNfcnErMHgyMTIvMHgyZjA8YnI+WyDCoDg5OS4zMzE3MzRdIMKgPyBzY2hlZF9j
+bG9ja19jcHUrMHgxMS8weGIwPGJyPlsgwqA4OTkuMzMyMjE4XSDCoD8geDJhcGljX3NlbmRfSVBJ
+KzB4NGEvMHg1MDxicj5bIMKgODk5LjMzMjc0M10gwqA/IG5hdGl2ZV9zZW5kX2NhbGxfZnVuY19z
+aW5nbGVfaXBpKzB4MWUvMHgyMDxicj5bIMKgODk5LjMzMzEyMl0gwqA/IGdlbmVyaWNfZXhlY19z
+aW5nbGUrMHg2ZS8weGQwPGJyPlsgwqA4OTkuMzMzNTIzXSDCoD8gcG9rZV9pbnQzX2hhbmRsZXIr
+MHg4MC8weDgwPGJyPlsgwqA4OTkuMzMzODgwXSDCoD8gc21wX2NhbGxfZnVuY3Rpb25fc2luZ2xl
+KzB4ZDEvMHgxMTA8YnI+PGRpdj5bIMKgODk5LjMzNDMyNl0gwqA/IHBva2VfaW50M19oYW5kbGVy
+KzB4ODAvMHg4MDxicj5bIMKgODk5LjMzNDY5Nl0gwqA/IGZsdXNoX3RsYl9tbV9yYW5nZSsweGEx
+LzB4ZTA8YnI+WyDCoDg5OS4zMzUwNDJdIMKgPyB1ZHA0X2xpYl9sb29rdXAyKzB4MTMzLzB4MmQw
+PGJyPlsgwqA4OTkuMzM1MzY2XSDCoD8gY3B1bWFza19uZXh0X2FuZCsweDFlLzB4MjA8YnI+WyDC
+oDg5OS4zMzU2ODVdIMKgPyBzbXBfY2FsbF9mdW5jdGlvbl9tYW55KzB4MjNiLzB4MjcwPGJyPlsg
+wqA4OTkuMzM2MTY1XSDCoD8gZG9fc3luY19jb3JlKzB4MWQvMHgyMDxicj5bIMKgODk5LjMzNjQ5
+NF0gwqA/IHRleHRfcG9rZV9icF9iYXRjaCsweDEwNi8weDE2MDxicj5bIMKgODk5LjMzNjg4Nl0g
+wqA/IGFyY2hfanVtcF9sYWJlbF90cmFuc2Zvcm1fYXBwbHkrMHgzZS8weDUwPGJyPlsgwqA4OTku
+MzM3MjA5XSDCoD8gX19qdW1wX2xhYmVsX3VwZGF0ZSsweDExNS8weDEyMDxicj5bIMKgODk5LjMz
+NzUwNV0gwqBvdnBuX2RlY3J5cHRfd29yaysweDFjMS8weDYwMCBbb3Zwbl9kY29dPGJyPlsgwqA4
+OTkuMzM3ODAzXSDCoHByb2Nlc3Nfb25lX3dvcmsrMHgxZWIvMHgzYjA8YnI+WyDCoDg5OS4zMzgx
+MTNdIMKgd29ya2VyX3RocmVhZCsweDRkLzB4NDAwPGJyPlsgwqA4OTkuMzM4NDA1XSDCoGt0aHJl
+YWQrMHgxMDQvMHgxNDA8YnI+WyDCoDg5OS4zMzg2ODddIMKgPyBwcm9jZXNzX29uZV93b3JrKzB4
+M2IwLzB4M2IwPGJyPlsgwqA4OTkuMzM4OTcwXSDCoD8ga3RocmVhZF9wYXJrKzB4OTAvMHg5MDxi
+cj5bIMKgODk5LjMzOTI1NV0gwqByZXRfZnJvbV9mb3JrKzB4MzUvMHg0MDxicj5bIMKgODk5LjMz
+OTUzOF0gTW9kdWxlcyBsaW5rZWQgaW46IG92cG5fZGNvKE9FKSBpcDZfdWRwX3R1bm5lbCB1ZHBf
+dHVubmVsIGRtX211bHRpcGF0aCBzY3NpX2RoX3JkYWMgc2NzaV9kaF9lbWMgc2NzaV9kaF9hbHVh
+IGludGVsX3JhcGxfbXNyIGludGVsX3JhcGxfY29tbW9uIHJhcGwgaW5wdXRfbGVkcyBzZXJpb19y
+YXcgam95ZGV2IHNuZF9pbnRlbDh4MCBzbmRfYWM5Nzxicj5fY29kZWMgYWM5N19idXMgc25kX3Bj
+bSBzbmRfdGltZXIgdmJveGd1ZXN0KE8pIHNuZCBzb3VuZGNvcmUgbWFjX2hpZCBzY2hfZnFfY29k
+ZWwgaXBfdGFibGVzIHhfdGFibGVzIGF1dG9mczQgYnRyZnMgenN0ZF9jb21wcmVzcyByYWlkMTAg
+cmFpZDQ1NiBhc3luY19yYWlkNl9yZWNvdiBhc3luY19tZW1jcHkgYXN5bmNfcHEgYXN5bmNfeG9y
+IGFzeW5jX3R4IHhvciByYWlkPGJyPjZfcHEgbGliY3JjMzJjIHJhaWQxIHJhaWQwIG11bHRpcGF0
+aCBsaW5lYXIgaGlkX2dlbmVyaWMgdXNiaGlkIGhpZCBjcmN0MTBkaWZfcGNsbXVsIGNyYzMyX3Bj
+bG11bCBnaGFzaF9jbG11bG5pX2ludGVsIHZib3h2aWRlbyBkcm1fdnJhbV9oZWxwZXIgdHRtIGFl
+c25pX2ludGVsIGNyeXB0b19zaW1kIGNyeXB0ZCBnbHVlX2hlbHBlciBkcm1fa21zX2hlbHBlciBz
+eXNjb3A8YnI+eWFyZWEgc3lzZmlsbHJlY3Qgc3lzaW1nYmx0IGZiX3N5c19mb3BzIHBzbW91c2Ug
+YWhjaSBsaWJhaGNpIGkyY19waWl4NCBkcm0gcGF0YV9hY3BpIGUxMDAwIHZpZGVvPGJyPlsgwqA4
+OTkuMzQyMzE2XSBDUjI6IDAwMDAwMDAwMDAwMDAwMDg8YnI+WyDCoDg5OS4zNDI2ODZdIC0tLVsg
+ZW5kIHRyYWNlIGRkNGRhYjU3ZDU0NzNiYzAgXS0tLTxicj5bIMKgODk5LjM0MzA4Ml0gUklQOiAw
+MDEwOmdjbWFlc19jcnlwdF9ieV9zZy5jb25zdHByb3AuMCsweDI0NC8weDZjMCBbYWVzbmlfaW50
+ZWxdPGJyPlsgwqA4OTkuMzQzNDUxXSBDb2RlOiBhYyBmOCA0OCA4MyBmOCAwMSAxOSBjMCBmNyBk
+MCA4MyBlMCBiNiBlYiA4NyA0YyA4YiA3NCAyNCA0MCA0OCA4ZCA3YyAyNCA2MCA0OSA4YiA3NiA0
+MCA0MSA4YiA1NiAzMCBlOCAxMCBlYiBhYyBmOCA0OSA4YiA3NiA0OCAmbHQ7NDQmZ3Q7IDhiIDYw
+IDA4IDQ5IDg5IGM1IDQ5IDM5IDc2IDQwIDBmIDg0IDdkIDAyIDAwIDAwIDQxIDhiIDU2IDMwPGJy
+PsKgNDg8YnI+WyDCoDg5OS4zNDQ2MDVdIFJTUDogMDAxODpmZmZmOWVkNjgwMTI3ODAwIEVGTEFH
+UzogMDAwMTAyNDY8YnI+WyDCoDg5OS4zNDQ5ODldIFJBWDogMDAwMDAwMDAwMDAwMDAwMCBSQlg6
+IDAwMDAwMDAwMDAwMDAwMzAgUkNYOiBmZmZmZTc4NDQwYWRmNzAwPGJyPlsgwqA4OTkuMzQ1Mzgx
+XSBSRFg6IDAwMDAwMDAwMDAwMDAwMDggUlNJOiBmZmZmOWVkNjgwMTI3YmIwIFJESTogZmZmZjll
+ZDY4MDEyN2JiMDxicj5bIMKgODk5LjM0NTc3Ml0gUkJQOiBmZmZmOWVkNjgwMTI3YWEwIFIwODog
+ZmZmZjllZDY4MDEyN2FiMCBSMDk6IGZmZmY4YzhmN2M5YjE0NjA8YnI+WyDCoDg5OS4zNDYyMTNd
+IFIxMDogZmZmZjllZDY4MDEyN2I4OCBSMTE6IDAwMDAwMDAwMDAwMDBiNmEgUjEyOiAwMDAwMDAw
+MDAwMDAwMDA4PGJyPlsgwqA4OTkuMzQ2NjI0XSBSMTM6IDAwMDAwMDAwMDAwMDAwNDAgUjE0OiBm
+ZmZmOGM4ZjZiYTRjNTkwIFIxNTogZmZmZjhjOGY2YjdkY2I2YTxicj5bIMKgODk5LjM0NzE1M10g
+RlM6IMKgMDAwMDAwMDAwMDAwMDAwMCgwMDAwKSBHUzpmZmZmOGM4ZjdlYjAwMDAwKDAwMDApIGtu
+bEdTOjAwMDAwMDAwMDAwMDAwMDA8YnI+WyDCoDg5OS4zNDc1NTBdIENTOiDCoDAwMTAgRFM6IDAw
+MDAgRVM6IDAwMDAgQ1IwOiAwMDAwMDAwMDgwMDUwMDMzPGJyPlsgwqA4OTkuMzQ3OTQ4XSBDUjI6
+IDAwMDAwMDAwMDAwMDAwMDggQ1IzOiAwMDAwMDAwMDJkNjA2MDAzIENSNDogMDAwMDAwMDAwMDA2
+MDZlMDxicj5bIMKgODk5LjM0ODM4Ml0gRFIwOiAwMDAwMDAwMDAwMDAwMDAwIERSMTogMDAwMDAw
+MDAwMDAwMDAwMCBEUjI6IDAwMDAwMDAwMDAwMDAwMDA8YnI+WyDCoDg5OS4zNDg3OThdIERSMzog
+MDAwMDAwMDAwMDAwMDAwMCBEUjY6IDAwMDAwMDAwZmZmZTBmZjAgRFI3OiAwMDAwMDAwMDAwMDAw
+NDAwPGJyPjwvZGl2PjxkaXY+PGJyPjwvZGl2PjxkaXY+VG9ueTwvZGl2PjwvZGl2Pg0K
+
+--000000000000fc577f05b4d01a1d--
 
