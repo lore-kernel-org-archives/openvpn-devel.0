@@ -1,10 +1,10 @@
-Date: Tue, 24 Nov 2020 18:03:07 +0100 (CET)
-Message-Id: <202011241703.0AOH37E1019532@...2054...>
+Date: Tue, 24 Nov 2020 19:31:29 +0100 (CET)
+Message-Id: <202011241831.0AOIVTR4020772@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20201124161313.18831-1-gert@...1296...>
-References: <20201124161313.18831-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Change travis build scripts to
- use https when fetching prerequisites.
+In-Reply-To: <20201029213259.1636-1-davids@...515...>
+References: <20201029213259.1636-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: build: Fix missing install of
+ man page in certain environments
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,23 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+To: David Sommerseth <davids@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master, release/2.5, release/2.4 branch.
+Acked-by: Gert Doering <gert@...1296...>
 
-commit 0d4069e41d3ba7178be30f78f1174f689dbdfa59 (master)
-commit d3dd620b13a21c3ed73fd466390f471915937309 (release/2.5)
-commit f16b4edabab1d24adfe3e8824d26f401f6afde6d (release/2.4)
-Author: Gert Doering
-Date:   Tue Nov 24 17:13:13 2020 +0100
+I have not tested it further, but the explanation + test report make
+this "good enough"
 
-     Change travis build scripts to use https when fetching prerequisites.
+Your patch has been applied to the master and release/2.5 branch.
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20201124161313.18831-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21264.html
+commit fc25ca3a7cf720fbb53889fdba6ac0154c7c9c1a (master)
+commit bbac1542cfb4a9d3033999b26813f0dd0618c3f0 (release/2.5)
+Author: David Sommerseth
+Date:   Thu Oct 29 22:32:59 2020 +0100
+
+     build: Fix missing install of man page in certain environments
+
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20201029213259.1636-1-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21236.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
