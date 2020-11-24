@@ -1,12 +1,10 @@
-References: <20201124161313.18831-1-gert@...1296...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <4ea4f305-42e7-1fbd-6e27-47510617d58d@...1227...>
-Date: Tue, 24 Nov 2020 17:15:08 +0100
-MIME-Version: 1.0
+Date: Tue, 24 Nov 2020 18:03:07 +0100 (CET)
+Message-Id: <202011241703.0AOH37E1019532@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20201124161313.18831-1-gert@...1296...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH] Change travis build scripts to use
- https when fetching prerequisites.
+References: <20201124161313.18831-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Change travis build scripts to
+ use https when fetching prerequisites.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,15 +13,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 24.11.20 um 17:13 schrieb Gert Doering:
-> Reported by "jub0bs" on hackerone.com (#1039504)
-> 
-> Signed-off-by: Gert Doering <gert@...1296...>
-> ---
+Patch has been applied to the master, release/2.5, release/2.4 branch.
 
-Acked-By: Arne Schwabe <arne@...1227...>
+commit 0d4069e41d3ba7178be30f78f1174f689dbdfa59 (master)
+commit d3dd620b13a21c3ed73fd466390f471915937309 (release/2.5)
+commit f16b4edabab1d24adfe3e8824d26f401f6afde6d (release/2.4)
+Author: Gert Doering
+Date:   Tue Nov 24 17:13:13 2020 +0100
+
+     Change travis build scripts to use https when fetching prerequisites.
+
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20201124161313.18831-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21264.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
