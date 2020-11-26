@@ -1,12 +1,10 @@
-References: <tencent_634348984485969552F3189D5284B3FD7C08@...1414...>
- <CAAUX2SVnf4dr8FNsgNXbFiRMK1VWQQJWE-JUmDPs4VgzcPsDaA@...278...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <fdf4b3e6-6130-04c4-7f4e-7f249d5db3ea@...1227...>
-Date: Thu, 26 Nov 2020 11:40:00 +0100
-MIME-Version: 1.0
-In-Reply-To: <CAAUX2SVnf4dr8FNsgNXbFiRMK1VWQQJWE-JUmDPs4VgzcPsDaA@...278...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [ovpn-dco] Is cbc-hmac supported?
+Date: Thu, 26 Nov 2020 12:49:43 +0100 (CET)
+Message-Id: <202011261149.0AQBnhXs072955@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20201023120259.29783-4-arne@...1227...>
+References: <20201023120259.29783-4-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Clean up
+ tls_authentication_status and document it
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,37 +15,43 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Tony He <huangya90@...277...>, Antonio Quartulli <a@...2181...>, lev@...515..., openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 26.11.20 um 10:41 schrieb Tony He:
-> Hi Arne,
-> 
->>Since the original thread was not on the mailing list I am missing your
->>goal but if your crypto acelator already works with OpenSSL, then it
->>will also work with the "normal" OpenVPN
-> 
-> Yes, it wokrs with "normal" OpenVPN(OpenVPN2), but according to the test
-> result, it's still not fast(about 60Mbps).
-> The bottleneck is not encryption operation any more. It comes from the
-> switch of user space and kernel space in the OpenVPN2,
-> which makes the poor CPU of  embedded device very busy. That's why we
-> need OpenVPN3 running in the kernel space.
+Acked-by: Gert Doering <gert@...1296...>
+
+This is not for the faint of heard... so I've excercised this
+on the server side test framework (which has various "fail auth"
+tests).
+
+The changes in push.c and ssl.c are self-explanatory, though I
+wonder why you didn't go for an "early exit if (!multi)" in
+tls_authentication_status() to avoid the extra condition.
+
+The change to ssl_verify.c is somewhat harder to grok - but after
+staring at the table for a while, the combinations and priority
+of evaluation becomes clear ("if either is ACF_FAILED, the result
+is ACF_FAILED.  Then, if either is UNDEFINED, ...") - and the new
+code reflects that, with WAY less magic, and more comments.  Yay.
+
+Your patch has been applied to the master branch.
+
+commit f9d3fbf9bc87ae6c05fc592712f610491a77d78b
+Author: Arne Schwabe
+Date:   Fri Oct 23 14:02:56 2020 +0200
+
+     Clean up tls_authentication_status and document it
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20201023120259.29783-4-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21224.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-What numbers are we are talking in crypto speed? Could you provide from
-your "poor" device:
+--
+kind regards,
 
-
-openssl speed -evp aes-128-cbc
-openssl speed -evp aes-128-gcm
-openssl speed -evp aes-128-ccm
-openssl speed -evp sha1
-openssl speed -evp chacha20-poly1305
-
-I want to what difference/gain in terms of raw crypto speed we are
-talking here.
-
-Arne
-
+Gert Doering
 
 
