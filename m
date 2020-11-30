@@ -1,9 +1,8 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 30 Nov 2020 13:38:13 +0100
-Message-Id: <20201130123813.21388-1-arne@...1227...>
-In-Reply-To: <20201120160418.17690-1-arne@...1227...>
-References: <20201120160418.17690-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v2] Fix port-share option with TLS-Crypt v2
+Date: Mon, 30 Nov 2020 13:39:28 +0100
+Message-Id: <20201130123928.21837-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Fix auth-token not being updated if
+ auth-nocache is set
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,65 +15,63 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The port-share option assumed that all openvpn initial reset packets
-are between 14 and 255 bytes long. This is not true for tls-crypt-v2.
+This fixes the auth-token not being updated if auth-nocache is set. Our
+set_auth_token method ensures that the auth-token always has a username
+but is a little bit too strict in the check.
 
-Patch V2: use correct length for TLS-Crypt v2, use length variable
-          non-tlscryptv2 test
+Also add doxygen documentation and remove null checks. We use this function
+only with non-null pointers and it makes it a bit nicer to read.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/ps.c | 34 +++++++++++++++++++++++++++++-----
- 1 file changed, 29 insertions(+), 5 deletions(-)
+ src/openvpn/misc.c |  9 +++++++--
+ src/openvpn/misc.h | 11 +++++++++++
+ 2 files changed, 18 insertions(+), 2 deletions(-)
 
-diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
-index 2089e6b9..5d760782 100644
---- a/src/openvpn/ps.c
-+++ b/src/openvpn/ps.c
-@@ -983,14 +983,38 @@ is_openvpn_protocol(const struct buffer *buf)
-     const int len = BLEN(buf);
-     if (len >= 3)
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index 1038b383..c0c72dd7 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -510,10 +510,15 @@ void
+ set_auth_token(struct user_pass *up, struct user_pass *tk, const char *token)
+ {
+ 
+-    if (token && strlen(token) && up && up->defined)
++    if (strlen(token) && (up->defined || tk->defined))
      {
--        return p[0] == 0
--               && p[1] >= 14
--               && (p[2] == (P_CONTROL_HARD_RESET_CLIENT_V2 << P_OPCODE_SHIFT)
--                   || p[2] == (P_CONTROL_HARD_RESET_CLIENT_V3 << P_OPCODE_SHIFT));
-+        int plen = (p[0] << 8) | p[1];
-+
-+        if (p[2] == (P_CONTROL_HARD_RESET_CLIENT_V3 << P_OPCODE_SHIFT))
++        /* auth-token has no password, so it needs the username
++         * either already set or copied from up */
+         strncpynt(tk->password, token, USER_PASS_LEN);
+-        strncpynt(tk->username, up->username, USER_PASS_LEN);
++        if (up->defined)
 +        {
-+            /* WKc is at least 290 byte (not including metadata):
-+             *
-+             * 16 bit len + 256 bit HMAC + 2048 bit Kc = 2320 bit
-+             *
-+             * This is increased by the normal length of client handshake +
-+             * tls-crypt overhead (32)
-+             *
-+             * For metadata tls-crypt-v2.txt does not explicitly specify
-+             * an upper limit but we also have TLS_CRYPT_V2_MAX_WKC_LEN
-+             * as 1024 bytes. We err on the safe side with 255 extra overhead
-+             *
-+             * We don't do the 2 byte check for tls-crypt-v2 because it is very
-+             * unrealistic to have only 2 bytes available.
-+             */
-+            return  (plen >= 336 && plen < (1024 + 255));
++            strncpynt(tk->username, up->username, USER_PASS_LEN);
 +        }
-+        else
-+        {
-+            /* For non tls-crypt2 we assume the packet length to valid between
-+             * 14 and 255 */
-+            return plen >= 14 && plen <= 255
-+                   && (p[2] == (P_CONTROL_HARD_RESET_CLIENT_V2 << P_OPCODE_SHIFT));
-+        }
+         tk->defined = true;
      }
-     else if (len >= 2)
-     {
--        return p[0] == 0 && p[1] >= 14;
-+        int plen = (p[0] << 8) | p[1];
-+        return plen >= 14 && plen <= 255;
-     }
-     else
-     {
+ 
+diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
+index a03d94e2..8c3a1227 100644
+--- a/src/openvpn/misc.h
++++ b/src/openvpn/misc.h
+@@ -145,6 +145,17 @@ void fail_user_pass(const char *prefix,
+ 
+ void purge_user_pass(struct user_pass *up, const bool force);
+ 
++/**
++ * Sets the auth-token to token if a username is available from either
++ * up or already present in tk. The method will also purge up if
++ * the auth-nocache option is active.
++ *
++ * @param up        (non Auth-token) Username/password
++ * @param tk        auth-token userpass to set
++ * @param token     token to use as password for the
++ *
++ * @note    all parameters to this function must not be null.
++ */
+ void set_auth_token(struct user_pass *up, struct user_pass *tk,
+                     const char *token);
+ 
 -- 
 2.26.2
 
