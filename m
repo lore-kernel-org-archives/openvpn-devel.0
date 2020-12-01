@@ -1,11 +1,13 @@
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <6fc85e8e-bb42-f46b-5b07-a1bae4b44fb9@...2080...>
-Date: Mon, 30 Nov 2020 21:58:34 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="Onv4U9MjggxueuhZxUP0kUjKDO2sMwva1"
-Subject: [Openvpn-devel] OpenVPN 3 Linux client - v12 beta released
+References: <tencent_634348984485969552F3189D5284B3FD7C08@...1414...>
+ <CAAUX2SVnf4dr8FNsgNXbFiRMK1VWQQJWE-JUmDPs4VgzcPsDaA@...278...>
+ <fdf4b3e6-6130-04c4-7f4e-7f249d5db3ea@...1227...>
+In-Reply-To: <fdf4b3e6-6130-04c4-7f4e-7f249d5db3ea@...1227...>
+From: Tony He <huangya90@...277...>
+Date: Tue, 1 Dec 2020 09:50:01 +0800
+Message-ID: <CAAUX2SVMaOXeKrkck4CUXVdMdtP5WBGS0rvfzQm9s5NFYECXqA@...278...>
+Content-Type: multipart/alternative; boundary="000000000000fcd95d05b55d58f1"
+Subject: Re: [Openvpn-devel] [ovpn-dco] Is cbc-hmac supported?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,151 +16,141 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: Antonio Quartulli <a@...2181...>, lev@...515..., openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---Onv4U9MjggxueuhZxUP0kUjKDO2sMwva1
-Content-Type: multipart/mixed; boundary="D9JGLLbWP4oVykDpYoKisO1SnWegUJFOs";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
-Message-ID: <6fc85e8e-bb42-f46b-5b07-a1bae4b44fb9@...2080...>
-Subject: OpenVPN 3 Linux client - v12 beta released
-
---D9JGLLbWP4oVykDpYoKisO1SnWegUJFOs
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
+--000000000000fcd95d05b55d58f1
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Hi Arne,
 
-The OpenVPN 3 Linux v12 beta is now ready.
+openssl speed -evp aes-128-cbc
+type 16 bytes 64 bytes 256 bytes 1024 bytes 8192 bytes aes-128-cbc
+20035.60k 123261.54k 267081.60k 1094764.09k 9181370.18k
+openssl speed -evp aes-128-gcm
+type 16 bytes 64 bytes 256 bytes 1024 bytes 8192 bytes aes-128-gcm
+18738.76k 19284.91k 19524.44k 19606.87k 19685.46k
+openssl speed -evp aes-128-ccm
+type 16 bytes 64 bytes 256 bytes 1024 bytes 8192 bytes aes-128-ccm
+53859.07k 215581.12k 862070.02k 3460786.43k 27566347.61k
+openssl speed -evp sha1
+type 16 bytes 64 bytes 256 bytes 1024 bytes 8192 bytes sha1 3108.57k
+12177.79k 57325.18k 181610.34k 1207364.27k
+openssl speed -evp chacha20-poly1305
+chacha20-poly1305 is an unknown cipher or digest
+Using old openssl, so chacha20-poly1305 is not supported.
 
-The highlights of this release includes:
+Tony
 
-* Feature: Web-based authentication
-  For servers allowing web based authentication, OpenVPN 3 Linux
-  will now pick up this authentication type request and handle
-  it.  If the openvpn2 or openvpn3 user-front-end applications
-  are able to open a browser window with the given URL, it will
-  do so.  If not, it will present the URL needed for the further
-  authentication process.  In addition, any VPN sessions awaiting
-  web based authentication is also presented via the
-  `openvpn3 sessions-list` command together with the authentication
-  URL.
+Arne Schwabe <arne@...1227...> =E4=BA=8E2020=E5=B9=B411=E6=9C=8826=E6=97=A5=
+=E5=91=A8=E5=9B=9B =E4=B8=8B=E5=8D=886:40=E5=86=99=E9=81=93=EF=BC=9A
 
-* Bugfix: OpenVPN 3 Linux configuration manager could crash
-  If the openvpn3-service-configmgr program was started with the
-  --state-dir argument pointing at an unreadable or non-existing
-  directory, it would crash.  This has been fixed to provide a
-  better error message and exit gracefully.  Front-end
-  applications will still report that the net.openvpn.v3.configruations
-  service is unavailable, this fix is not visible for end-users - just
-  improving the behaviour of openvpn3-service-configmgr.
+> Am 26.11.20 um 10:41 schrieb Tony He:
+> > Hi Arne,
+> >
+> >>Since the original thread was not on the mailing list I am missing your
+> >>goal but if your crypto acelator already works with OpenSSL, then it
+> >>will also work with the "normal" OpenVPN
+> >
+> > Yes, it wokrs with "normal" OpenVPN(OpenVPN2), but according to the test
+> > result, it's still not fast(about 60Mbps).
+> > The bottleneck is not encryption operation any more. It comes from the
+> > switch of user space and kernel space in the OpenVPN2,
+> > which makes the poor CPU of  embedded device very busy. That's why we
+> > need OpenVPN3 running in the kernel space.
+>
+>
+> What numbers are we are talking in crypto speed? Could you provide from
+> your "poor" device:
+>
+>
+> openssl speed -evp aes-128-cbc
+> openssl speed -evp aes-128-gcm
+> openssl speed -evp aes-128-ccm
+> openssl speed -evp sha1
+> openssl speed -evp chacha20-poly1305
+>
+> I want to what difference/gain in terms of raw crypto speed we are
+> talking here.
+>
+> Arne
+>
+>
+>
 
-* Bugfix: Properly handle restart of paused sessions
-  VPN sessions being paused (like via
-  `openvpn3 session-manage --pause`) would not recover properly if
-  it was recovered by using the `restart` method instead of `resume`.
-  When trying to pause the session again, it would not do so as the
-  session was considered paused already.  Resuming a VPN session
-  via both the `resume` and the `restart` method are considered
-  appropriate and is now handled correctly.
+--000000000000fcd95d05b55d58f1
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-* Bugfix: openvpn2 running in the foreground could exit with an error
-  If the openvpn2 front-end was used to start a VPN session and it
-  was running in the foreground (no use of --daemon), it would present
-  and error message when closing the session *if* the VPN session
-  was closed via another channel (such as `openvpn3 session-manage`).
-  This has been fixed and it will now exit properly if this situation
-  appears, without any additional error messages.
+<div dir=3D"ltr">Hi Arne,<div><br></div><div>openssl speed -evp aes-128-cbc=
+</div><div><div style=3D"white-space:pre-wrap">          type             1=
+6 bytes     64 bytes    256 bytes   1024 bytes   8192 bytes
+aes-128-cbc      20035.60k   123261.54k   267081.60k  1094764.09k  9181370.=
+18k
+              </div>openssl speed -evp aes-128-gcm</div><div><div style=3D"=
+white-space:pre-wrap">                type             16 bytes     64 byte=
+s    256 bytes   1024 bytes   8192 bytes
+aes-128-gcm      18738.76k    19284.91k    19524.44k    19606.87k    19685.=
+46k
+              </div>openssl speed -evp aes-128-ccm</div><div><div style=3D"=
+white-space:pre-wrap">                type             16 bytes     64 byte=
+s    256 bytes   1024 bytes   8192 bytes
+aes-128-ccm      53859.07k   215581.12k   862070.02k  3460786.43k 27566347.=
+61k
+              </div>openssl speed -evp sha1</div><div><div style=3D"white-s=
+pace:pre-wrap">   type             16 bytes     64 bytes    256 bytes   102=
+4 bytes   8192 bytes
+sha1              3108.57k    12177.79k    57325.18k   181610.34k  1207364.=
+27k
+              </div>openssl speed -evp chacha20-poly1305<br></div><div><div=
+ style=3D"white-space:pre-wrap">chacha20-poly1305 is an unknown cipher or d=
+igest</div><div style=3D"white-space:pre-wrap">Using old openssl, so chacha=
+20-poly1305 is not supported.</div><div style=3D"white-space:pre-wrap"><br>=
+</div><div style=3D"white-space:pre-wrap">Tony</div><div style=3D"white-spa=
+ce:pre-wrap">              </div></div></div><br><div class=3D"gmail_quote"=
+><div dir=3D"ltr" class=3D"gmail_attr">Arne Schwabe &lt;<a href=3D"mailto:a=
+rne@...1227...">arne@...1227...</a>&gt; =E4=BA=8E2020=E5=B9=B411=E6=9C=8826=
+=E6=97=A5=E5=91=A8=E5=9B=9B =E4=B8=8B=E5=8D=886:40=E5=86=99=E9=81=93=EF=BC=
+=9A<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px =
+0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">Am 26.11.20 =
+um 10:41 schrieb Tony He:<br>
+&gt; Hi Arne,<br>
+&gt; <br>
+&gt;&gt;Since the original thread was not on the mailing list I am missing =
+your<br>
+&gt;&gt;goal but if your crypto acelator already works with OpenSSL, then i=
+t<br>
+&gt;&gt;will also work with the &quot;normal&quot; OpenVPN<br>
+&gt; <br>
+&gt; Yes, it wokrs with &quot;normal&quot; OpenVPN(OpenVPN2), but according=
+ to the test<br>
+&gt; result, it&#39;s still not fast(about 60Mbps).<br>
+&gt; The bottleneck is not encryption operation any more. It comes from the=
+<br>
+&gt; switch of user space and kernel space in the OpenVPN2,<br>
+&gt; which makes the poor CPU of=C2=A0 embedded device=C2=A0very busy.=C2=
+=A0That&#39;s why we<br>
+&gt; need OpenVPN3 running in the kernel space.<br>
+<br>
+<br>
+What numbers are we are talking in crypto speed? Could you provide from<br>
+your &quot;poor&quot; device:<br>
+<br>
+<br>
+openssl speed -evp aes-128-cbc<br>
+openssl speed -evp aes-128-gcm<br>
+openssl speed -evp aes-128-ccm<br>
+openssl speed -evp sha1<br>
+openssl speed -evp chacha20-poly1305<br>
+<br>
+I want to what difference/gain in terms of raw crypto speed we are<br>
+talking here.<br>
+<br>
+Arne<br>
+<br>
+<br>
+</blockquote></div>
 
-* Bugfix: openvpn2 would misinterpret --keepalive
-  The OpenVPN option parser in the Python 3 openvpn module would not
-  properly parse a few arguments which used multiple arguments - such
-  as --keepalive.  This has been fixed.
-
-* Enhancements: openvpn2 now understands --tls-version-{min,max}
-  In prior releases, the Python 3 openvpn module did not understand
-  the --tls-version-min and --tls-version-max options.  This has been
-  resolved and these options are forwarded properly to the
-  configuration manager.
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
-
-
-[0] <https://gitlab.com/openvpn/openvpn3-linux>
-    <https://github.com/OpenVPN/openvpn3-linux>
-
----- Source tarballs ----------------------------------------------------
-* OpenVPN 3 Linux v11 beta
-
-  <https://swupdate.openvpn.net/community/releases/openvpn3-linux-12_beta.t=
-ar.xz>
-  <https://swupdate.openvpn.net/community/releases/openvpn3-linux-12_beta.t=
-ar.xz.asc>
-
----- SHA256 Checksums ---------------------------------------------------
-
-899a4211e883682f5d1fb50dad4425c743283c117b068d3af3d1189f65c2e0ce  openvpn3-=
-linux-12_beta.tar.xz
-7b592b652daa7f4119019d9764005a019765bc4a2ab5de65cf5faf982d0617f4  openvpn3-=
-linux-12_beta.tar.xz.asc
-
----- git references -----------------------------------------------------
-
-git tag: v12_beta
-git commit: be65151677fa854080a563a52d1a96b38ab29544
-
----- Changes from v11 to v12 --------------------------------------------
-
-David Sommerseth (11):
-      client: Properly reset the paused flag on session restart
-      python: Improve parsing of options with multiple arguments
-      python: Extend argument parser with support for --tls-version-min/max
-      dbus: Add web-auth constant to ClientAttentionGroup
-      client: Enable web-auth support and URL extraction
-      python: Add support for handling web-auth in openvpn2
-      python: Resolve error in openvpn2 on disconnect with pre-closed sessi=
-ons
-      common: Implement function for opening up URIs on the host
-      ovpn3cli: Add support web auth via openvpn3
-      ovpn3cli: Improve 'sessions-list' for sessions awaiting web auth
-      configmgr: Abort properly if --state-dir processing fails
-
--------------------------------------------------------------------------
-
-
-
---D9JGLLbWP4oVykDpYoKisO1SnWegUJFOs--
-
---Onv4U9MjggxueuhZxUP0kUjKDO2sMwva1
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJfxVz6AAoJEIbPlEyWcf3yuucP/RZ1GY+lShlWHLLYGxbq+3uS
-MD7a5ZmiwSKmlB1v5P6eECXNAW8sRrnhcRNG6g3D+w+l8iHutp9NaLU9v22jaX01
-cATv9oQMfh6yzmWyCZM7WMQIuwhIqIwL00ShC09syD/itv+4FSctdzZHMQyryAC8
-dJ0/3WWyibFd1WHbQoMNyURlRrAk10rQrSs3gEn5ph4E7S6EXASRT/tQhzK0427E
-TI3lpugPtzjtcdNmr9E2qRel5L3Pr6Kx/MU6pZBhcQmKXcc6y3Q7krIUAX501Msh
-2CHdBJZ+PAaKIMBcvkPihjJ8naAgA8UfJQ5jRCfDpeYHGpiU/wxqNw/9xNQl2zKt
-pgXH7IWnyDR2ogvuIDncA7kdgNPsADbm83hSG1+qp9OW+MpVJJwKDlkw3484x2Xa
-nVbzmunscTKlE4l73HN8+XqrlePtdB5Y3k2+14a9UldTSkRaF4KGEczSJtt4hmtl
-mcMERNkhKjGkxisZv9Ij+n1vted0sbg2545liMY1rWkx2MSblihVB0dWdCu6JlM7
-w7efnZge/2PEtBoGOgdlkFdYU3ck1YBS++a8Vr4CLf2rN/pTYwj7KcfXo++N3d0U
-NZQIV96lAyK25SYnKIaCwRWeZvmMsJXlP2sG+Eor+bi6GavEUU+wWdeAhI4mCrYZ
-s0eZVORInEiPxfQ/oifd
-=dNs4
------END PGP SIGNATURE-----
-
---Onv4U9MjggxueuhZxUP0kUjKDO2sMwva1--
+--000000000000fcd95d05b55d58f1--
 
