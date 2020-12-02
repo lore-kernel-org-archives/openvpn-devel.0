@@ -1,8 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Wed,  2 Dec 2020 12:59:28 +0100
-Message-Id: <20201202115928.16615-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v2] Remove auth_user_pass.wait_for_push
- variable
+Date: Wed, 2 Dec 2020 14:49:19 +0100 (CET)
+Message-Id: <202012021349.0B2DnJHL003818@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20201202115928.16615-1-arne@...1227...>
+References: <20201202115928.16615-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove
+ auth_user_pass.wait_for_push variable
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,126 +15,44 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This variable was first introduce in earlier attempt to fix the
-auth-token problems with auth-nocache before user_password and
-auth_token were split into two variables. The idea of the variable it
-is being set if --pull is in use. However the variable was not always
-set correctly, especially if username/password are queried after an
-expired auth-token. Instead using that variable use session->opt->pull
-directly.
+Acked-by: Gert Doering <gert@...1296...>
 
-Patch V2: rename delayed_auth_pass_purge to ssl_clean_user_pass to give
-          a more fitting name since this function is not only used in
-          the dealyed code path and also the new name aligns with
-          ssl_clean_auth_token. Also fix a leftover wait_for_push
-          in that function
+I have pre-tested these changes extensively yesterday, trying 
+to find new and exciting ways to break the combination of (async) 
+plugin-auth, gen-auth-token, and --auth-nocache on the client - and 
+this patchset finally makes this all work correctly :-)   
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/init.c   |  2 +-
- src/openvpn/manage.c |  1 -
- src/openvpn/misc.h   |  1 -
- src/openvpn/ssl.c    | 10 ++++------
- src/openvpn/ssl.h    |  5 ++++-
- 5 files changed, 9 insertions(+), 10 deletions(-)
+(my suggestion how to tackle this would have always stored the auth 
+username, even if no token auth in use, which seems to violate the 
+original principle of --auth-nocache)
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 2291a89a..27a4170d 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1615,7 +1615,7 @@ initialization_sequence_completed(struct context *c, const unsigned int flags)
-      */
-     if (c->options.mode == MODE_POINT_TO_POINT)
-     {
--        delayed_auth_pass_purge();
-+        ssl_clean_user_pass();
-     }
- 
-     /* Test if errors */
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 68b136fb..446b82f4 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -3579,7 +3579,6 @@ management_query_user_pass(struct management *man,
-         {
-             /* preserve caller's settings */
-             man->connection.up_query.nocache = up->nocache;
--            man->connection.up_query.wait_for_push = up->wait_for_push;
-             *up = man->connection.up_query;
-         }
-         secure_memzero(&man->connection.up_query, sizeof(man->connection.up_query));
-diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
-index 8c3a1227..e4342b0d 100644
---- a/src/openvpn/misc.h
-+++ b/src/openvpn/misc.h
-@@ -64,7 +64,6 @@ struct user_pass
- {
-     bool defined;
-     bool nocache;
--    bool wait_for_push; /* true if this object is waiting for a push-reply */
- 
- /* max length of username/password */
- #ifdef ENABLE_PKCS11
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 950bf421..efbf688f 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -434,8 +434,6 @@ ssl_set_auth_nocache(void)
- {
-     passbuf.nocache = true;
-     auth_user_pass.nocache = true;
--    /* wait for push-reply, because auth-token may still need the username */
--    auth_user_pass.wait_for_push = true;
- }
- 
- /*
-@@ -2414,14 +2412,15 @@ key_method_2_write(struct buffer *buf, struct tls_session *session)
-         }
-         /* if auth-nocache was specified, the auth_user_pass object reaches
-          * a "complete" state only after having received the push-reply
--         * message.
-+         * message. The push message might contain an auth-token that needs
-+         * the username of auth_user_pass.
-          *
-          * For this reason, skip the purge operation here if no push-reply
-          * message has been received yet.
-          *
-          * This normally happens upon first negotiation only.
-          */
--        if (!auth_user_pass.wait_for_push)
-+        if (!session->opt->pull)
-         {
-             purge_user_pass(&auth_user_pass, false);
-         }
-@@ -4195,8 +4194,7 @@ done:
- }
- 
- void
--delayed_auth_pass_purge(void)
-+ssl_clean_user_pass(void)
- {
--    auth_user_pass.wait_for_push = false;
-     purge_user_pass(&auth_user_pass, false);
- }
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index f3032dab..56034540 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -592,7 +592,10 @@ void extract_x509_field_test(void);
-  */
- bool is_hard_reset_method2(int op);
- 
--void delayed_auth_pass_purge(void);
-+/**
-+ * Cleans the saved user/password unless auth-nocache is in use.
-+ */
-+void ssl_clean_user_pass(void);
- 
- 
- /*
--- 
-2.26.2
+Tested again with pristine master sources with only this patch
+applied, and it still works.
+
+Your patch has been applied to the master, release/2.5 and
+release/2.4 branch (bugfix).
+
+commit dfd624b52bce7ddd0eeaab516df9848e432f3242 (master)
+commit 570f0564afb34ede41c99bf66f1f369bcf38b138 (release/2.5)
+commit 607dfa9648e9967f89d2ce5bf949e90503011522 (release/2.4)
+Author: Arne Schwabe
+Date:   Wed Dec 2 12:59:28 2020 +0100
+
+     Remove auth_user_pass.wait_for_push variable
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20201202115928.16615-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21297.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
