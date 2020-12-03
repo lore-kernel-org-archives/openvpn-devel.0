@@ -1,13 +1,8 @@
-References: <20201120160418.17690-1-arne@...1227...>
- <20201130123813.21388-1-arne@...1227...>
 From: Steffan Karger <steffan@...1856...>
-Message-ID: <e5d154e5-7451-c276-0068-de796fd0512f@...1856...>
-Date: Thu, 3 Dec 2020 15:10:13 +0100
+Date: Thu,  3 Dec 2020 16:49:50 +0100
+Message-Id: <20201203154951.29382-1-steffan@...1856...>
 MIME-Version: 1.0
-In-Reply-To: <20201130123813.21388-1-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v2] Fix port-share option with TLS-Crypt
- v2
+Subject: [Openvpn-devel] [PATCH 1/2] tls-crypt-v2: fix server memory leak
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,80 +11,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+tls-crypt-v2 was developed in parallel with the changes that allowed to
+use tls-auth/tls-crypt in connection blocks. The tls-crypt-v2 patch set
+was never updated to the new reality after commit 5817b49b, causing a
+memory leak of about 600 bytes for each connecting client.
 
-On 30-11-2020 13:38, Arne Schwabe wrote:
-> The port-share option assumed that all openvpn initial reset packets
-> are between 14 and 255 bytes long. This is not true for tls-crypt-v2.
-> 
-> Patch V2: use correct length for TLS-Crypt v2, use length variable
->           non-tlscryptv2 test
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  src/openvpn/ps.c | 34 +++++++++++++++++++++++++++++-----
->  1 file changed, 29 insertions(+), 5 deletions(-)
-> 
-> diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
-> index 2089e6b9..5d760782 100644
-> --- a/src/openvpn/ps.c
-> +++ b/src/openvpn/ps.c
-> @@ -983,14 +983,38 @@ is_openvpn_protocol(const struct buffer *buf)
->      const int len = BLEN(buf);
->      if (len >= 3)
->      {
-> -        return p[0] == 0
-> -               && p[1] >= 14
-> -               && (p[2] == (P_CONTROL_HARD_RESET_CLIENT_V2 << P_OPCODE_SHIFT)
-> -                   || p[2] == (P_CONTROL_HARD_RESET_CLIENT_V3 << P_OPCODE_SHIFT));
-> +        int plen = (p[0] << 8) | p[1];
-> +
-> +        if (p[2] == (P_CONTROL_HARD_RESET_CLIENT_V3 << P_OPCODE_SHIFT))
-> +        {
-> +            /* WKc is at least 290 byte (not including metadata):
-> +             *
-> +             * 16 bit len + 256 bit HMAC + 2048 bit Kc = 2320 bit
-> +             *
-> +             * This is increased by the normal length of client handshake +
-> +             * tls-crypt overhead (32)
-> +             *
-> +             * For metadata tls-crypt-v2.txt does not explicitly specify
-> +             * an upper limit but we also have TLS_CRYPT_V2_MAX_WKC_LEN
-> +             * as 1024 bytes. We err on the safe side with 255 extra overhead
-> +             *
-> +             * We don't do the 2 byte check for tls-crypt-v2 because it is very
-> +             * unrealistic to have only 2 bytes available.
-> +             */
-> +            return  (plen >= 336 && plen < (1024 + 255));
-> +        }
-> +        else
-> +        {
-> +            /* For non tls-crypt2 we assume the packet length to valid between
-> +             * 14 and 255 */
-> +            return plen >= 14 && plen <= 255
-> +                   && (p[2] == (P_CONTROL_HARD_RESET_CLIENT_V2 << P_OPCODE_SHIFT));
-> +        }
->      }
->      else if (len >= 2)
->      {
-> -        return p[0] == 0 && p[1] >= 14;
-> +        int plen = (p[0] << 8) | p[1];
-> +        return plen >= 14 && plen <= 255;
->      }
->      else
->      {
-> 
+It would be nicer to not reload the tls-crypt-v2 server key for each
+connecting client, but that requires more refactoring (and thus more time
+to get right). So for now just plug the leak by free'ing the memory when
+we close a client connection.
 
-Thanks. This looks good to me now.
+To test this easily, compile openvpn with -fsanity=address, run a server
+with tls-crypt-v2, connect a client, stop the server.
 
-Ran some tests to check that this correctly resolves the issue when
-using --tls-crypt-v2 in combination with --port-share.
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/init.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Acked-by: Steffan Karger <steffan@...1856...>
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 27a4170d..5cde8a4b 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -3619,6 +3619,7 @@ do_close_free_key_schedule(struct context *c, bool free_ssl_ctx)
+      * always free the tls_auth/crypt key. If persist_key is true, the key will
+      * be reloaded from memory (pre-cached)
+      */
++    free_key_ctx(&c->c1.ks.tls_crypt_v2_server_key);
+     free_key_ctx_bi(&c->c1.ks.tls_wrap_key);
+     CLEAR(c->c1.ks.tls_wrap_key);
+     buf_clear(&c->c1.ks.tls_crypt_v2_wkc);
+-- 
+2.25.1
 
--Steffan
 
