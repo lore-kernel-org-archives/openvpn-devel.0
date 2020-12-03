@@ -1,11 +1,10 @@
-References: <20201203154951.29382-1-steffan@...1856...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <53a9d994-312d-4349-33d2-2a0d39f50882@...2181...>
-Date: Thu, 3 Dec 2020 18:18:21 +0100
+From: Steffan Karger <steffan@...1856...>
+Date: Thu,  3 Dec 2020 19:22:30 +0100
+Message-Id: <20201203182230.33552-1-steffan@...1856...>
+In-Reply-To: <53a9d994-312d-4349-33d2-2a0d39f50882@...2181...>
+References: <53a9d994-312d-4349-33d2-2a0d39f50882@...2181...>
 MIME-Version: 1.0
-In-Reply-To: <20201203154951.29382-1-steffan@...1856...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH 1/2] tls-crypt-v2: fix server memory leak
+Subject: [Openvpn-devel] [PATCH 1/2 v2] tls-crypt-v2: fix server memory leak
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,39 +13,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi Steffan,
+tls-crypt-v2 was developed in parallel with the changes that allowed to
+use tls-auth/tls-crypt in connection blocks. The tls-crypt-v2 patch set
+was never updated to the new reality after commit 5817b49b, causing a
+memory leak of about 600 bytes for each connecting client.
 
-On 03/12/2020 16:49, Steffan Karger wrote:
-> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index 27a4170d..5cde8a4b 100644
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -3619,6 +3619,7 @@ do_close_free_key_schedule(struct context *c, bool free_ssl_ctx)
->       * always free the tls_auth/crypt key. If persist_key is true, the key will
->       * be reloaded from memory (pre-cached)
->       */
-> +    free_key_ctx(&c->c1.ks.tls_crypt_v2_server_key);
->      free_key_ctx_bi(&c->c1.ks.tls_wrap_key);
->      CLEAR(c->c1.ks.tls_wrap_key);
->      buf_clear(&c->c1.ks.tls_crypt_v2_wkc);
+It would be nicer to not reload the tls-crypt-v2 server key for each
+connecting client, but that requires more refactoring (and thus more time
+to get right). So for now just plug the leak by free'ing the memory when
+we close a client connection.
 
-A few lines below we call key_schedule_free() (under certain conditions)
-which also performs:
+To test this easily, compile openvpn with -fsanity=address, run a server
+with tls-crypt-v2, connect a client, stop the server.
 
-free_key_ctx(&ks->tls_crypt_v2_server_key);
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+v2: remove now-redundant free_key_ctx() from key_schedule_free()
 
+ src/openvpn/init.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I believe it is safe to call free_key_ctx() twice on the same object,
-but wouldn't it be better to have it called once only along the same
-code path?
-
-Regards,
-
-
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 27a4170d..c3493c42 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2561,7 +2561,6 @@ key_schedule_free(struct key_schedule *ks, bool free_ssl_ctx)
+     if (tls_ctx_initialised(&ks->ssl_ctx) && free_ssl_ctx)
+     {
+         tls_ctx_free(&ks->ssl_ctx);
+-        free_key_ctx(&ks->tls_crypt_v2_server_key);
+     }
+     CLEAR(*ks);
+ }
+@@ -3619,6 +3618,7 @@ do_close_free_key_schedule(struct context *c, bool free_ssl_ctx)
+      * always free the tls_auth/crypt key. If persist_key is true, the key will
+      * be reloaded from memory (pre-cached)
+      */
++    free_key_ctx(&c->c1.ks.tls_crypt_v2_server_key);
+     free_key_ctx_bi(&c->c1.ks.tls_wrap_key);
+     CLEAR(c->c1.ks.tls_wrap_key);
+     buf_clear(&c->c1.ks.tls_crypt_v2_wkc);
 -- 
-Antonio Quartulli
+2.25.1
+
 
