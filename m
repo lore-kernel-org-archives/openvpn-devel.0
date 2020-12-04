@@ -1,12 +1,18 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-References: <9cbe2737-df06-c921-1052-3dabe3fb4141@...515...>
-Message-ID: <7d06c8e9-ea46-e050-04cd-dccf04d2ba00@...515...>
-Date: Thu, 3 Dec 2020 22:09:32 +0200
 MIME-Version: 1.0
-In-Reply-To: <9cbe2737-df06-c921-1052-3dabe3fb4141@...515...>
-Content-Type: multipart/mixed; boundary="------------838D93BD1BC141A2928A419D"
-Content-Language: en-US
-Subject: [Openvpn-devel] Summary of the community meeting (3rd December 2020)
+References: <tencent_634348984485969552F3189D5284B3FD7C08@...1414...>
+ <CAAUX2SVnf4dr8FNsgNXbFiRMK1VWQQJWE-JUmDPs4VgzcPsDaA@...278...>
+ <fdf4b3e6-6130-04c4-7f4e-7f249d5db3ea@...1227...>
+ <CAAUX2SVMaOXeKrkck4CUXVdMdtP5WBGS0rvfzQm9s5NFYECXqA@...278...>
+ <5c166cc4-8f0c-f9be-a926-10bcde144259@...1147...>
+ <CAAUX2SV90sC2G5rrZh=mfBT-Hwb08BitHnG-ancCG1HsRrjsSg@...278...>
+ <9ac62807-7edf-d5e2-c09a-e2168f5b2e42@...1147...>
+ <a48bcdb9-38eb-2322-1a54-2480e9dc3aad@...1147...>
+In-Reply-To: <a48bcdb9-38eb-2322-1a54-2480e9dc3aad@...1147...>
+From: Tony He <huangya90@...277...>
+Date: Fri, 4 Dec 2020 15:41:44 +0800
+Message-ID: <CAAUX2SXPHJ6dbbS80Khrjx=C1xUaH2X625cKXJPte4XxeB3HkQ@...278...>
+Content-Type: multipart/alternative; boundary="00000000000061059805b59e9c34"
+Subject: Re: [Openvpn-devel] [ovpn-dco] Is cbc-hmac supported?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,306 +21,987 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Jan Just Keijser <janjust@...1147...>
+Cc: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net, lev@...515..., Antonio Quartulli <a@...2181...>
 
-This is a multi-part message in MIME format.
---------------838D93BD1BC141A2928A419D
-Content-Type: text/plain; charset=iso-8859-15
-Content-Transfer-Encoding: 7bit
+--00000000000061059805b59e9c34
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Hi Jan,
 
-Here's the summary of the IRC meeting.
+Yeah, need option " -elapsed" because OpenSSL counts user time instead of
+total time(user+sys time) without this option. You can see:
+* aes-128-cbc and sha1 are accelerated by HW engine. I believe speed is
+faster for openvpn dco module because it uses the HW engine in kernel space
+and bypasses the path between openssl and cryptodev.
+* aes-128-gcm is NOT accelerated by HW engine.
+* aes-128-ccm is NOT accelerated by HW engine but it seems that it is
+accelerated by HW instruction or other. I don't know my device has such
+function. SoC type is al314.
 
----
 
-COMMUNITY MEETING
+With cryptodev: # openssl speed -evp aes-128-cbc -elapsed You have chosen
+to measure elapsed time instead of user CPU time. Doing aes-128-cbc for 3s
+on 16 size blocks: 252783 aes-128-cbc's in 3.00s Doing aes-128-cbc for 3s
+on 64 size blocks: 253044 aes-128-cbc's in 3.00s Doing aes-128-cbc for 3s
+on 256 size blocks: 251746 aes-128-cbc's in 3.00s Doing aes-128-cbc for 3s
+on 1024 size blocks: 190306 aes-128-cbc's in 3.00s Doing aes-128-cbc for 3s
+on 8192 size blocks: 122657 aes-128-cbc's in 3.00s ......................
+type 16 bytes 64 bytes 256 bytes 1024 bytes 8192 bytes aes-128-cbc 1348.18k
+5398.27k 21482.33k 64957.78k 334935.38k # openssl speed -evp aes-128-gcm
+-elapsed You have chosen to measure elapsed time instead of user CPU time.
+Doing aes-128-gcm for 3s on 16 size blocks: 3509485 aes-128-gcm's in 3.00s
+Doing aes-128-gcm for 3s on 64 size blocks: 900678 aes-128-gcm's in 3.00s
+Doing aes-128-gcm for 3s on 256 size blocks: 228961 aes-128-gcm's in 3.00s
+Doing aes-128-gcm for 3s on 1024 size blocks: 57475 aes-128-gcm's in 3.00s
+Doing aes-128-gcm for 3s on 8192 size blocks: 7189 aes-128-gcm's in 3.00s
+.................. type 16 bytes 64 bytes 256 bytes 1024 bytes 8192 bytes
+aes-128-gcm 18717.25k 19214.46k 19538.01k 19618.13k 19630.76k
+# openssl speed -evp aes-128-ccm -elapsed You have chosen to measure
+elapsed time instead of user CPU time. Doing aes-128-ccm for 3s on 16 size
+blocks: 10179383 aes-128-ccm's in 3.00s Doing aes-128-ccm for 3s on 64 size
+blocks: 10179215 aes-128-ccm's in 3.00s Doing aes-128-ccm for 3s on 256
+size blocks: 10179785 aes-128-ccm's in 3.00s Doing aes-128-ccm for 3s on
+1024 size blocks: 10182095 aes-128-ccm's in 3.00s Doing aes-128-ccm for 3s
+on 8192 size blocks: 10179225 aes-128-ccm's in 3.00s ..................
+type 16 bytes 64 bytes 256 bytes 1024 bytes 8192 bytes aes-128-ccm
+54290.04k 217156.59k 868674.99k 3475488.43k 27796070.40k # openssl speed
+-evp sha1 -elapsed You have chosen to measure elapsed time instead of user
+CPU time. Doing sha1 for 3s on 16 size blocks: 95252 sha1's in 3.00s Doing
+sha1 for 3s on 64 size blocks: 95166 sha1's in 3.00s Doing sha1 for 3s on
+256 size blocks: 76177 sha1's in 3.00s Doing sha1 for 3s on 1024 size
+blocks: 68799 sha1's in 3.00s Doing sha1 for 3s on 8192 size blocks: 53034
+sha1's in 3.00s ................. type 16 bytes 64 bytes 256 bytes 1024
+bytes 8192 bytes sha1 508.01k 2030.21k 6500.44k 23483.39k 144818.18k
 
-Place: #openvpn-meeting on irc.freenode.net
-Date: Thu 3rd December 2020
-Time: 20:00 CET (19:00 UTC)
+Without cryptodev:
+# openssl speed -evp aes-128-cbc -elapsed You have chosen to measure
+elapsed time instead of user CPU time. Doing aes-128-cbc for 3s on 16 size
+blocks: 9235207 aes-128-cbc's in 3.00s Doing aes-128-cbc for 3s on 64 size
+blocks: 2498066 aes-128-cbc's in 3.00s Doing aes-128-cbc for 3s on 256 size
+blocks: 645288 aes-128-cbc's in 3.00s Doing aes-128-cbc for 3s on 1024 size
+blocks: 161372 aes-128-cbc's in 3.00s Doing aes-128-cbc for 3s on 8192 size
+blocks: 20385 aes-128-cbc's in 3.00s ................ type 16 bytes 64
+bytes 256 bytes 1024 bytes 8192 bytes aes-128-cbc 49254.44k 53292.07k
+55064.58k 55081.64k 55664.64k
+# openssl speed -evp aes-128-gcm -elapsed You have chosen to measure
+elapsed time instead of user CPU time. Doing aes-128-gcm for 3s on 16 size
+blocks: 3507422 aes-128-gcm's in 3.00s Doing aes-128-gcm for 3s on 64 size
+blocks: 901036 aes-128-gcm's in 3.00s Doing aes-128-gcm for 3s on 256 size
+blocks: 228857 aes-128-gcm's in 3.00s Doing aes-128-gcm for 3s on 1024 size
+blocks: 57411 aes-128-gcm's in 3.00s Doing aes-128-gcm for 3s on 8192 size
+blocks: 7188 aes-128-gcm's in 3.00s ................ type 16 bytes 64 bytes
+256 bytes 1024 bytes 8192 bytes aes-128-gcm 18706.25k 19222.10k 19529.13k
+19596.29k 19628.03k
+# openssl speed -evp aes-128-ccm -elapsed You have chosen to measure
+elapsed time instead of user CPU time. Doing aes-128-ccm for 3s on 16 size
+blocks: 10170897 aes-128-ccm's in 3.00s Doing aes-128-ccm for 3s on 64 size
+blocks: 10167692 aes-128-ccm's in 3.00s Doing aes-128-ccm for 3s on 256
+size blocks: 10166117 aes-128-ccm's in 3.00s Doing aes-128-ccm for 3s on
+1024 size blocks: 10167095 aes-128-ccm's in 3.00s Doing aes-128-ccm for 3s
+on 8192 size blocks: 10172046 aes-128-ccm's in 3.00s ................. type
+16 bytes 64 bytes 256 bytes 1024 bytes 8192 bytes aes-128-ccm 54244.78k
+216910.76k 867508.65k 3470368.43k 27776466.94k
+openssl speed -evp sha1 -elapsed You have chosen to measure elapsed time
+instead of user CPU time. Doing sha1 for 3s on 16 size blocks: 1877571
+sha1's in 3.00s Doing sha1 for 3s on 64 size blocks: 1250523 sha1's in
+3.00s Doing sha1 for 3s on 256 size blocks: 603090 sha1's in 3.00s Doing
+sha1 for 3s on 1024 size blocks: 198963 sha1's in 3.00s Doing sha1 for 3s
+on 8192 size blocks: 27380 sha1's in 3.00s ............... type 16 bytes 64
+bytes 256 bytes 1024 bytes 8192 bytes sha1 10013.71k 26677.82k 51463.68k
+67912.70k 74765.65k
 
-Planned meeting topics for this meeting were here:
+Tony
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2020-12-03>
+Jan Just Keijser <janjust@...1147...> =E4=BA=8E2020=E5=B9=B412=E6=9C=882=E6=
+=97=A5=E5=91=A8=E4=B8=89 =E4=B8=8B=E5=8D=8811:24=E5=86=99=E9=81=93=EF=BC=9A
 
-Your local meeting time is easy to check from services such as
+> Hi Tony,
+>
+> On 02/12/20 15:51, Jan Just Keijser wrote:
+>
+>
+> On 02/12/20 15:22, Tony He wrote:
+>
+> Hi Jan,
+>
+> Welcome to join the discussion.
+>
+> >the second set of numbers doesn't make sense, and a much better test is
+> to do an actual encryption test
+> I don't compile cryptodev kernel module for my PC and can not reproduce
+> this issue for now.  You don't understand  the reason why the performance
+> is much worse with cryptodev module for *big* blocks, right?
+> If yes, I guess the reason maybe kernel assign the work to multi cores
+> while OpenSSL uses one core. Would you share the output of command "mpstat
+> -P ALL 2"?
+>
+> sure, while using the cryptodev I see this:
+>
+> 15:28:36     CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal
+> %guest  %gnice   %idle
+> 15:28:38     all    1.87    0.00   23.19    0.12    0.00    0.00
+> 0.00    0.00    0.00   74.81
+> 15:28:38       0    0.00    0.00    0.00    0.50    0.00    0.00
+> 0.00    0.00    0.00   99.50
+> 15:28:38       1    7.00    0.00   93.00    0.00    0.00    0.00
+> 0.00    0.00    0.00    0.00
+> 15:28:38       2    0.00    0.00    0.00    0.00    0.00    0.00
+> 0.00    0.00    0.00  100.00
+> 15:28:38       3    0.00    0.00    0.00    0.00    0.00    0.00
+> 0.00    0.00    0.00  100.00
+>
+> 15:28:38     CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal
+> %guest  %gnice   %idle
+> 15:28:40     all    0.75    0.00   24.19    0.00    0.00    0.00
+> 0.00    0.00    0.00   75.06
+> 15:28:40       0    0.00    0.00    0.00    0.50    0.00    0.00
+> 0.00    0.00    0.00   99.50
+> 15:28:40       1    3.50    0.00   96.50    0.00    0.00    0.00
+> 0.00    0.00    0.00    0.00
+> 15:28:40       2    0.00    0.00    0.00    0.00    0.00    0.00
+> 0.00    0.00    0.00  100.00
+> 15:28:40       3    0.00    0.00    0.00    0.00    0.00    0.00
+> 0.00    0.00    0.00  100.00
+>
+> on a 4 core box; this means that 1 core is used 100% (which is what I
+> expected).
+>
+>
+> I suspect the main reason the cryptodev results on my i5-6800 go off the
+> rails is due to this:
+> (look at the "Doing aes-128-cbc lines")
+>
+> $ ./openssl speed -evp aes-128-cbc
+> Doing aes-128-cbc for 3s on 16 size blocks: 2835368 aes-128-cbc's in 1.14s
+> Doing aes-128-cbc for 3s on 64 size blocks: 2720745 aes-128-cbc's in 1.01s
+> Doing aes-128-cbc for 3s on 256 size blocks: 2377830 aes-128-cbc's in
+> *0.74s*
+> Doing aes-128-cbc for 3s on 1024 size blocks: 1538693 aes-128-cbc's in
+> *0.40s*
+> Doing aes-128-cbc for 3s on 8192 size blocks: 370202 aes-128-cbc's in
+> *0.11s*
+> OpenSSL 1.0.2m  2 Nov 2017
+> built on: reproducible build, date unspecified
+> options:bn(64,64) rc4(16x,int) des(idx,cisc,16,int) aes(partial) idea(int)
+> blowfish(idx)
+> compiler: gcc -I. -I.. -I../include  -DOPENSSL_THREADS -D_REENTRANT
+> -DDSO_DLFCN -DHAVE_DLFCN_H -DHAVE_CRYPTODEV -DUSE_CRYPTODEV_DIGESTS
+> -Wa,--noexecstack -m64 -DL_ENDIAN -O3 -Wall -DOPENSSL_IA32_SSE2
+> -DOPENSSL_BN_ASM_MONT -DOPENSSL_BN_ASM_MONT5 -DOPENSSL_BN_ASM_GF2m
+> -DRC4_ASM -DSHA1_ASM -DSHA256_ASM -DSHA512_ASM -DMD5_ASM -DAES_ASM
+> -DVPAES_ASM -DBSAES_ASM -DWHIRLPOOL_ASM -DGHASH_ASM -DECP_NISTZ256_ASM
+> The 'numbers' are in 1000s of bytes per second processed.
+> type             16 bytes     64 bytes    256 bytes   1024 bytes   8192
+> bytes
+> aes-128-cbc      39794.64k   172403.64k   822600.65k  3939054.08k
+> 27569952.58k
+>
+>
+> The timing for how quickly the results are returned are way off and
+> probably just wrong. The Openssl speed test is supposed to run for 3
+> seconds. The actual results returned for 8192 byte blocks is
+>
+> Doing aes-128-cbc for 3s on 8192 size blocks: 370202 aes-128-cbc's in
+> *0.11s*
+>
+> whereas without cryptodev I see
+>
+> Doing aes-128-cbc for 3s on 8192 size blocks: 457255 aes-128-cbc's in
+> *3.00s*
+>
+> So you can see that without cryptodev the i5-6800 actually says it's doing
+> more blocks (457,255 vs 370,202) but with cryptodev it is doing it in WAY
+> less time.  This leads me to believe the openssl speed code when using
+> cryptodev just "goes wrong".
+> It will be very interesting to see what the encryption test will bring -
+> that is a much better real-life-like example than a simple speed test.
+>
+> as a follow-up : someone whispered in my ear (thanks, Andr=C3=A9 ;) ) tha=
+t one
+> should use the -elapsed option for this, so here are new results:
+>
+> *with* cryptodev:
+>
+> ./openssl speed -evp aes-128-cbc -elapsed
+> You have chosen to measure elapsed time instead of user CPU time.
+> Doing aes-128-cbc for 3s on 16 size blocks: 2825786 aes-128-cbc's in 3.00s
+> Doing aes-128-cbc for 3s on 64 size blocks: 2716822 aes-128-cbc's in 3.00s
+> Doing aes-128-cbc for 3s on 256 size blocks: 2369723 aes-128-cbc's in 3.0=
+0s
+> Doing aes-128-cbc for 3s on 1024 size blocks: 1536054 aes-128-cbc's in
+> 3.00s
+> Doing aes-128-cbc for 3s on 8192 size blocks: 369984 aes-128-cbc's in 3.0=
+0s
+> [...]
+> aes-128-cbc      15,070.86k    57,958.87k   202,216.36k   524,306.43k
+> 1,010,302.98k
+>
+> *without* cryptodev:
+>
+> $ openssl speed -evp aes-128-cbc -elapsed
+> You have chosen to measure elapsed time instead of user CPU time.
+> Doing aes-128-cbc for 3s on 16 size blocks: 207188725 aes-128-cbc's in
+> 3.00s
+> Doing aes-128-cbc for 3s on 64 size blocks: 56855717 aes-128-cbc's in 3.0=
+0s
+> Doing aes-128-cbc for 3s on 256 size blocks: 14382122 aes-128-cbc's in
+> 3.00s
+> Doing aes-128-cbc for 3s on 1024 size blocks: 3618996 aes-128-cbc's in
+> 3.00s
+> Doing aes-128-cbc for 3s on 8192 size blocks: 456727 aes-128-cbc's in 3.0=
+0s
+> [...]
+> aes-128-cbc    1,105,006.53k  1,212,921.96k  1,227,274.41k  1,235,283.97k
+> 1,247,169.19k
+>
+> which more or less reflects the encryption test results I posted earlier.
+> The question becomes, what are you results when using the -elapsed flag?
+>
+> JJK
+>
+>
+> >My advice is to rerun your tests *without* the cryptodev module and then
+> decide wheter you really need CBC+CCM hmacs.
+> Yes, I confirm that without the cryptodev the performance is very bad for
+> my device. I don't have that device in my hand right now. But I saved one
+> aes-256-cbc result in my web notebook as below:
+>
+> type 16 bytes 64 bytes 256 bytes 1024 bytes 8192 bytes
+> aes-256-cbc 19626.95k 24289.71k 25054.46k 25347.75k 25337.86k
+> Please note, there are two modes to accelerate encryption/decryption.
+> 1. HW instructions like intel x86 CPU.
+> 2. Using a crypto engine.
+> When your device is 2 and its CPU is not powerful, normally with cryptodev
+> speed is much faster at least for big blocks. Maybe for small blocks it's
+> slower because
+> it needs the time to push the work to kernel and then HW engine and the
+> time spent is may longer than the time costed by OpenSSL directly does the
+> encryption/decryption.
+> Tony
+>
+> Jan Just Keijser <janjust@...1147...> =E4=BA=8E2020=E5=B9=B412=E6=9C=882=
+=E6=97=A5=E5=91=A8=E4=B8=89 =E4=B8=8B=E5=8D=887:24=E5=86=99=E9=81=93=EF=BC=
+=9A
+>
+>> hi Tony,
+>>
+>> On 01/12/20 02:50, Tony He wrote:
+>>
+>> Hi Arne,
+>>
+>> openssl speed -evp aes-128-cbc
+>> type 16 bytes 64 bytes 256 bytes 1024 bytes 8192 bytes aes-128-cbc
+>> 20035.60k 123261.54k 267081.60k 1094764.09k 9181370.18k
+>> openssl speed -evp aes-128-gcm
+>> type 16 bytes 64 bytes 256 bytes 1024 bytes 8192 bytes aes-128-gcm
+>> 18738.76k 19284.91k 19524.44k 19606.87k 19685.46k
+>> openssl speed -evp aes-128-ccm
+>> type 16 bytes 64 bytes 256 bytes 1024 bytes 8192 bytes aes-128-ccm
+>> 53859.07k 215581.12k 862070.02k 3460786.43k 27566347.61k
+>> openssl speed -evp sha1
+>> type 16 bytes 64 bytes 256 bytes 1024 bytes 8192 bytes sha1 3108.57k
+>> 12177.79k 57325.18k 181610.34k 1207364.27k
+>> openssl speed -evp chacha20-poly1305
+>> chacha20-poly1305 is an unknown cipher or digest
+>> Using old openssl, so chacha20-poly1305 is not supported.
+>>
+>>
+>> these numbers look suspiciously like you're using the linux cryptodev
+>> module. Openssl speed results for the linux cryptodev module are totally
+>> unreliable and I'd even go so far as to say that the *only* numbers I tr=
+ust
+>> in the output above are for aes-128-gcm
+>>
+>> For example, if I do the same on an i5-6800 I get *without* the cryptodev
+>> module:
+>>   $ openssl speed -evp aes-128-cbc
+>>   aes-128-cbc    1,104,599.38k  1,208,651.07k  1,231,766.70k
+>> 1,237,545.64k  1,248,793.94k
+>>
+>> and with the module I get
+>>   aes-128-cbc      45,087.41k   127,822.72k   581,517.17k  2,256,593.19k
+>> 27,583,804.51k
+>>
+>> the second set of numbers doesn't make sense, and a much better test is
+>> to do an actual encryption test, e.g.
+>>
+>> *without* the module
+>> cat BIGFILE | openssl aes-256-cbc -e -pass  pass:thisisabadpassword |  pv
+>> > /dev/null
+>> 2.93GB 0:00:05 [ 549MB/s] [
+>> <=3D>
+>> ]
+>>
+>> ('pv' aka 'pipeview' is a handy tool to measure the throughput of a UNIX
+>> pipe)
+>>
+>> and with the module:
+>> cat BIGFILE | ./openssl aes-256-cbc -e -pass  pass:thisisabadpassword
+>> -engine cryptodev|  pv > /dev/null
+>> engine "cryptodev" set.
+>> 2.93GB 0:00:07 [ 426MB/s] [              <=3D>
+>>
+>> so you see that using the cryptodev module actually slows things down -
+>> which is to be expected, as the application needs to do more work using =
+the
+>> cryptodev module.
+>>
+>> My advice is to rerun your tests *without* the cryptodev module and then
+>> decide wheter you really need CBC+CCM hmacs.
+>>
+>> HTH,
+>>
+>> JJK
+>>
+>>
+>> Arne Schwabe <arne@...1227...> =E4=BA=8E2020=E5=B9=B411=E6=9C=8826=E6=97=
+=A5=E5=91=A8=E5=9B=9B =E4=B8=8B=E5=8D=886:40=E5=86=99=E9=81=93=EF=BC=9A
+>>
+>>> Am 26.11.20 um 10:41 schrieb Tony He:
+>>> > Hi Arne,
+>>> >
+>>> >>Since the original thread was not on the mailing list I am missing yo=
+ur
+>>> >>goal but if your crypto acelator already works with OpenSSL, then it
+>>> >>will also work with the "normal" OpenVPN
+>>> >
+>>> > Yes, it wokrs with "normal" OpenVPN(OpenVPN2), but according to the
+>>> test
+>>> > result, it's still not fast(about 60Mbps).
+>>> > The bottleneck is not encryption operation any more. It comes from the
+>>> > switch of user space and kernel space in the OpenVPN2,
+>>> > which makes the poor CPU of  embedded device very busy. That's why we
+>>> > need OpenVPN3 running in the kernel space.
+>>>
+>>>
+>>> What numbers are we are talking in crypto speed? Could you provide from
+>>> your "poor" device:
+>>>
+>>>
+>>> openssl speed -evp aes-128-cbc
+>>> openssl speed -evp aes-128-gcm
+>>> openssl speed -evp aes-128-ccm
+>>> openssl speed -evp sha1
+>>> openssl speed -evp chacha20-poly1305
+>>>
+>>> I want to what difference/gain in terms of raw crypto speed we are
+>>> talking here.
+>>>
+>>> Arne
+>>>
+>>>
+>>>
+>>
+>>
+>>
+>> _______________________________________________
+>> Openvpn-devel mailing listOpenvpn-devel@...1440...://lists.sourceforge.n=
+et/lists/listinfo/openvpn-devel
+>>
+>>
+>>
+>
+>
 
-<http://www.timeanddate.com/worldclock>
+--00000000000061059805b59e9c34
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-SUMMARY
+<div dir=3D"ltr">Hi Jan,<div><div style=3D"white-space:pre-wrap"><br></div>=
+<div style=3D"white-space:pre-wrap">Yeah, need option &quot; -elapsed&quot;=
+ because OpenSSL counts user time instead of total time(user+sys time) with=
+out this option. You can see:</div><div style=3D"white-space:pre-wrap">* ae=
+s-128-cbc and sha1 are accelerated by HW engine. I believe speed is faster =
+ for openvpn dco module because it uses the HW engine in kernel space and b=
+ypasses the path between openssl and cryptodev.</div><div style=3D"white-sp=
+ace:pre-wrap">* aes-128-gcm is NOT accelerated by HW engine.</div><div styl=
+e=3D"white-space:pre-wrap">* aes-128-ccm is NOT accelerated by HW engine bu=
+t it seems that it is accelerated by HW instruction or other. I don&#39;t k=
+now my device has such function. SoC type is al314.</div><div style=3D"whit=
+e-space:pre-wrap"><br></div><div style=3D"white-space:pre-wrap"><br></div><=
+div style=3D"white-space:pre-wrap">With cryptodev:
+# openssl speed -evp aes-128-cbc -elapsed
+You have chosen to measure elapsed time instead of user CPU time.
+Doing aes-128-cbc for 3s on 16 size blocks: 252783 aes-128-cbc&#39;s in 3.0=
+0s
+Doing aes-128-cbc for 3s on 64 size blocks: 253044 aes-128-cbc&#39;s in 3.0=
+0s
+Doing aes-128-cbc for 3s on 256 size blocks: 251746 aes-128-cbc&#39;s in 3.=
+00s
+Doing aes-128-cbc for 3s on 1024 size blocks: 190306 aes-128-cbc&#39;s in 3=
+.00s
+Doing aes-128-cbc for 3s on 8192 size blocks: 122657 aes-128-cbc&#39;s in 3=
+.00s
+......................
+type             16 bytes     64 bytes    256 bytes   1024 bytes   8192 byt=
+es
+aes-128-cbc       1348.18k     5398.27k    21482.33k    64957.78k   334935.=
+38k
+# openssl speed -evp aes-128-gcm -elapsed
+You have chosen to measure elapsed time instead of user CPU time.
+Doing aes-128-gcm for 3s on 16 size blocks: 3509485 aes-128-gcm&#39;s in 3.=
+00s
+Doing aes-128-gcm for 3s on 64 size blocks: 900678 aes-128-gcm&#39;s in 3.0=
+0s
+Doing aes-128-gcm for 3s on 256 size blocks: 228961 aes-128-gcm&#39;s in 3.=
+00s
+Doing aes-128-gcm for 3s on 1024 size blocks: 57475 aes-128-gcm&#39;s in 3.=
+00s
+Doing aes-128-gcm for 3s on 8192 size blocks: 7189 aes-128-gcm&#39;s in 3.0=
+0s
+..................
+type             16 bytes     64 bytes    256 bytes   1024 bytes   8192 byt=
+es
+aes-128-gcm      18717.25k    19214.46k    19538.01k    19618.13k    19630.=
+76k</div><div style=3D"white-space:pre-wrap">
+# openssl speed -evp aes-128-ccm -elapsed
+You have chosen to measure elapsed time instead of user CPU time.
+Doing aes-128-ccm for 3s on 16 size blocks: 10179383 aes-128-ccm&#39;s in 3=
+.00s
+Doing aes-128-ccm for 3s on 64 size blocks: 10179215 aes-128-ccm&#39;s in 3=
+.00s
+Doing aes-128-ccm for 3s on 256 size blocks: 10179785 aes-128-ccm&#39;s in =
+3.00s
+Doing aes-128-ccm for 3s on 1024 size blocks: 10182095 aes-128-ccm&#39;s in=
+ 3.00s
+Doing aes-128-ccm for 3s on 8192 size blocks: 10179225 aes-128-ccm&#39;s in=
+ 3.00s
+..................
+type             16 bytes     64 bytes    256 bytes   1024 bytes   8192 byt=
+es
+aes-128-ccm      54290.04k   217156.59k   868674.99k  3475488.43k 27796070.=
+40k
+# openssl speed -evp sha1 -elapsed=20=20=20=20=20=20=20
+You have chosen to measure elapsed time instead of user CPU time.
+Doing sha1 for 3s on 16 size blocks: 95252 sha1&#39;s in 3.00s
+Doing sha1 for 3s on 64 size blocks: 95166 sha1&#39;s in 3.00s
+Doing sha1 for 3s on 256 size blocks: 76177 sha1&#39;s in 3.00s
+Doing sha1 for 3s on 1024 size blocks: 68799 sha1&#39;s in 3.00s
+Doing sha1 for 3s on 8192 size blocks: 53034 sha1&#39;s in 3.00s
+.................
+type             16 bytes     64 bytes    256 bytes   1024 bytes   8192 byt=
+es
+sha1               508.01k     2030.21k     6500.44k    23483.39k   144818.=
+18k
 
-becm, cron2, dazo, mattock, ordex, plaisthos and syzzer participated in
-this meeting.
+            </div></div><div style=3D"white-space:pre-wrap"><br></div><div =
+style=3D"white-space:pre-wrap">Without cryptodev:</div><div style=3D"white-=
+space:pre-wrap"><div># openssl speed -evp aes-128-cbc -elapsed
+You have chosen to measure elapsed time instead of user CPU time.
+Doing aes-128-cbc for 3s on 16 size blocks: 9235207 aes-128-cbc&#39;s in 3.=
+00s
+Doing aes-128-cbc for 3s on 64 size blocks: 2498066 aes-128-cbc&#39;s in 3.=
+00s
+Doing aes-128-cbc for 3s on 256 size blocks: 645288 aes-128-cbc&#39;s in 3.=
+00s
+Doing aes-128-cbc for 3s on 1024 size blocks: 161372 aes-128-cbc&#39;s in 3=
+.00s
+Doing aes-128-cbc for 3s on 8192 size blocks: 20385 aes-128-cbc&#39;s in 3.=
+00s
+................
+type             16 bytes     64 bytes    256 bytes   1024 bytes   8192 byt=
+es
+aes-128-cbc      49254.44k    53292.07k    55064.58k    55081.64k    55664.=
+64k</div><div>
+# openssl speed -evp aes-128-gcm -elapsed
+You have chosen to measure elapsed time instead of user CPU time.
+Doing aes-128-gcm for 3s on 16 size blocks: 3507422 aes-128-gcm&#39;s in 3.=
+00s
+Doing aes-128-gcm for 3s on 64 size blocks: 901036 aes-128-gcm&#39;s in 3.0=
+0s
+Doing aes-128-gcm for 3s on 256 size blocks: 228857 aes-128-gcm&#39;s in 3.=
+00s
+Doing aes-128-gcm for 3s on 1024 size blocks: 57411 aes-128-gcm&#39;s in 3.=
+00s
+Doing aes-128-gcm for 3s on 8192 size blocks: 7188 aes-128-gcm&#39;s in 3.0=
+0s
+................
+type             16 bytes     64 bytes    256 bytes   1024 bytes   8192 byt=
+es
+aes-128-gcm      18706.25k    19222.10k    19529.13k    19596.29k    19628.=
+03k</div><div>
+# openssl speed -evp aes-128-ccm -elapsed
+You have chosen to measure elapsed time instead of user CPU time.
+Doing aes-128-ccm for 3s on 16 size blocks: 10170897 aes-128-ccm&#39;s in 3=
+.00s
+Doing aes-128-ccm for 3s on 64 size blocks: 10167692 aes-128-ccm&#39;s in 3=
+.00s
+Doing aes-128-ccm for 3s on 256 size blocks: 10166117 aes-128-ccm&#39;s in =
+3.00s
+Doing aes-128-ccm for 3s on 1024 size blocks: 10167095 aes-128-ccm&#39;s in=
+ 3.00s
+Doing aes-128-ccm for 3s on 8192 size blocks: 10172046 aes-128-ccm&#39;s in=
+ 3.00s
+.................
+type             16 bytes     64 bytes    256 bytes   1024 bytes   8192 byt=
+es
+aes-128-ccm      54244.78k   216910.76k   867508.65k  3470368.43k 27776466.=
+94k</div><div>
+openssl speed -evp sha1 -elapsed
+You have chosen to measure elapsed time instead of user CPU time.
+Doing sha1 for 3s on 16 size blocks: 1877571 sha1&#39;s in 3.00s
+Doing sha1 for 3s on 64 size blocks: 1250523 sha1&#39;s in 3.00s
+Doing sha1 for 3s on 256 size blocks: 603090 sha1&#39;s in 3.00s
+Doing sha1 for 3s on 1024 size blocks: 198963 sha1&#39;s in 3.00s
+Doing sha1 for 3s on 8192 size blocks: 27380 sha1&#39;s in 3.00s
+...............
+type             16 bytes     64 bytes    256 bytes   1024 bytes   8192 byt=
+es
+sha1             10013.71k    26677.82k    51463.68k    67912.70k    74765.=
+65k
+             </div><div><br></div><div>Tony</div></div></div><br><div class=
+=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">Jan Just Keijser &lt=
+;<a href=3D"mailto:janjust@...1147...">janjust@...1147...</a>&gt; =E4=BA=8E=
+2020=E5=B9=B412=E6=9C=882=E6=97=A5=E5=91=A8=E4=B8=89 =E4=B8=8B=E5=8D=8811:2=
+4=E5=86=99=E9=81=93=EF=BC=9A<br></div><blockquote class=3D"gmail_quote" sty=
+le=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);paddi=
+ng-left:1ex">
+=20=20
+=20=20=20=20
+=20=20
+  <div bgcolor=3D"#FFFFFF">
+    <div>Hi Tony,<br>
+      <br>
+      On 02/12/20 15:51, Jan Just Keijser wrote:<br>
+    </div>
+    <blockquote type=3D"cite">
+=20=20=20=20=20=20
+      <div><br>
+        On 02/12/20 15:22, Tony He wrote:<br>
+      </div>
+      <blockquote type=3D"cite">
+=20=20=20=20=20=20=20=20
+        <div dir=3D"ltr">
+          <div>Hi Jan,</div>
+          <div><br>
+          </div>
+          <div>Welcome to join the discussion.</div>
+          <div><br>
+          </div>
+          <div>&gt;the second set of numbers doesn&#39;t make sense, and a
+            much better test is to do an actual encryption test</div>
+          <div>I don&#39;t compile cryptodev kernel module for my PC and can
+            not reproduce this issue for now.=C2=A0 You don&#39;t understan=
+d=C2=A0 the
+            reason why the performance is much worse with cryptodev
+            module for *big* blocks, right?<br>
+          </div>
+          <div>If yes, I guess the reason maybe kernel assign the work
+            to multi cores while OpenSSL uses one core. Would you share
+            the output of command &quot;mpstat -P ALL 2&quot;?</div>
+          <div><br>
+          </div>
+        </div>
+      </blockquote>
+      sure, while using the cryptodev I see this:<br>
+      <br>
+      15:28:36=C2=A0=C2=A0=C2=A0=C2=A0 CPU=C2=A0=C2=A0=C2=A0 %usr=C2=A0=C2=
+=A0 %nice=C2=A0=C2=A0=C2=A0 %sys %iowait=C2=A0=C2=A0=C2=A0 %irq=C2=A0=C2=A0=
+ %soft=C2=A0
+      %steal=C2=A0 %guest=C2=A0 %gnice=C2=A0=C2=A0 %idle<br>
+      15:28:38=C2=A0=C2=A0=C2=A0=C2=A0 all=C2=A0=C2=A0=C2=A0 1.87=C2=A0=C2=
+=A0=C2=A0 0.00=C2=A0=C2=A0 23.19=C2=A0=C2=A0=C2=A0 0.12=C2=A0=C2=A0=C2=A0 0=
+.00=C2=A0=C2=A0=C2=A0
+      0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 =
+0.00=C2=A0=C2=A0 74.81<br>
+      15:28:38=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0=C2=A0=C2=A0=C2=A0 0.00=
+=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 0.50=C2=A0=
+=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0
+      0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 =
+0.00=C2=A0=C2=A0 99.50<br>
+      15:28:38=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 1=C2=A0=C2=A0=C2=A0 7.00=
+=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0 93.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=
+=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0
+      0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 =
+0.00=C2=A0=C2=A0=C2=A0 0.00<br>
+      15:28:38=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 2=C2=A0=C2=A0=C2=A0 0.00=
+=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=
+=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0
+      0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 =
+0.00=C2=A0 100.00<br>
+      15:28:38=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 3=C2=A0=C2=A0=C2=A0 0.00=
+=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=
+=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0
+      0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 =
+0.00=C2=A0 100.00<br>
+      <br>
+      15:28:38=C2=A0=C2=A0=C2=A0=C2=A0 CPU=C2=A0=C2=A0=C2=A0 %usr=C2=A0=C2=
+=A0 %nice=C2=A0=C2=A0=C2=A0 %sys %iowait=C2=A0=C2=A0=C2=A0 %irq=C2=A0=C2=A0=
+ %soft=C2=A0
+      %steal=C2=A0 %guest=C2=A0 %gnice=C2=A0=C2=A0 %idle<br>
+      15:28:40=C2=A0=C2=A0=C2=A0=C2=A0 all=C2=A0=C2=A0=C2=A0 0.75=C2=A0=C2=
+=A0=C2=A0 0.00=C2=A0=C2=A0 24.19=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 0=
+.00=C2=A0=C2=A0=C2=A0
+      0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 =
+0.00=C2=A0=C2=A0 75.06<br>
+      15:28:40=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0=C2=A0=C2=A0=C2=A0 0.00=
+=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 0.50=C2=A0=
+=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0
+      0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 =
+0.00=C2=A0=C2=A0 99.50<br>
+      15:28:40=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 1=C2=A0=C2=A0=C2=A0 3.50=
+=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0 96.50=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=
+=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0
+      0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 =
+0.00=C2=A0=C2=A0=C2=A0 0.00<br>
+      15:28:40=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 2=C2=A0=C2=A0=C2=A0 0.00=
+=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=
+=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0
+      0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 =
+0.00=C2=A0 100.00<br>
+      15:28:40=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 3=C2=A0=C2=A0=C2=A0 0.00=
+=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=
+=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0
+      0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0 =
+0.00=C2=A0 100.00<br>
+      <br>
+      on a 4 core box; this means that 1 core is used 100% (which is
+      what I expected).<br>
+      <br>
+      <br>
+      I suspect the main reason the cryptodev results on my i5-6800 go
+      off the rails is due to this:<br>
+      (look at the &quot;Doing aes-128-cbc lines&quot;)<br>
+      <br>
+      $ ./openssl speed -evp aes-128-cbc<br>
+      Doing aes-128-cbc for 3s on 16 size blocks: 2835368 aes-128-cbc&#39;s
+      in 1.14s<br>
+      Doing aes-128-cbc for 3s on 64 size blocks: 2720745 aes-128-cbc&#39;s
+      in 1.01s<br>
+      Doing aes-128-cbc for 3s on 256 size blocks: 2377830 aes-128-cbc&#39;s
+      in <b>0.74s</b><br>
+      Doing aes-128-cbc for 3s on 1024 size blocks: 1538693
+      aes-128-cbc&#39;s in <b>0.40s</b><br>
+      Doing aes-128-cbc for 3s on 8192 size blocks: 370202 aes-128-cbc&#39;s
+      in <b>0.11s</b><br>
+      OpenSSL 1.0.2m=C2=A0 2 Nov 2017<br>
+      built on: reproducible build, date unspecified<br>
+      options:bn(64,64) rc4(16x,int) des(idx,cisc,16,int) aes(partial)
+      idea(int) blowfish(idx) <br>
+      compiler: gcc -I. -I.. -I../include=C2=A0 -DOPENSSL_THREADS
+      -D_REENTRANT -DDSO_DLFCN -DHAVE_DLFCN_H -DHAVE_CRYPTODEV
+      -DUSE_CRYPTODEV_DIGESTS -Wa,--noexecstack -m64 -DL_ENDIAN -O3
+      -Wall -DOPENSSL_IA32_SSE2 -DOPENSSL_BN_ASM_MONT
+      -DOPENSSL_BN_ASM_MONT5 -DOPENSSL_BN_ASM_GF2m -DRC4_ASM -DSHA1_ASM
+      -DSHA256_ASM -DSHA512_ASM -DMD5_ASM -DAES_ASM -DVPAES_ASM
+      -DBSAES_ASM -DWHIRLPOOL_ASM -DGHASH_ASM -DECP_NISTZ256_ASM<br>
+      The &#39;numbers&#39; are in 1000s of bytes per second processed.<br>
+      type=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 16 bytes=C2=A0=C2=A0=C2=A0=C2=A0 64 bytes=C2=A0=C2=A0=C2=A0 256 b=
+ytes=C2=A0=C2=A0 1024 bytes=C2=A0=C2=A0
+      8192 bytes<br>
+      aes-128-cbc=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 39794.64k=C2=A0=C2=A0 17240=
+3.64k=C2=A0=C2=A0 822600.65k=C2=A0 3939054.08k
+      27569952.58k<br>
+      <br>
+      <br>
+      The timing for how quickly the results are returned are way off
+      and probably just wrong. The Openssl speed test is supposed to run
+      for 3 seconds. The actual results returned for 8192 byte blocks is<br>
+      <br>
+      Doing aes-128-cbc for 3s on 8192 size blocks: 370202 aes-128-cbc&#39;s
+      in <b>0.11s</b><br>
+      <br>
+      whereas without cryptodev I see<br>
+      <br>
+      Doing aes-128-cbc for 3s on 8192 size blocks: 457255 aes-128-cbc&#39;s
+      in <b>3.00s</b><br>
+      <br>
+      So you can see that without cryptodev the i5-6800 actually says
+      it&#39;s doing more blocks (457,255 vs 370,202) but with cryptodev it
+      is doing it in WAY less time.=C2=A0 This leads me to believe the
+      openssl speed code when using cryptodev just &quot;goes wrong&quot;.<=
+br>
+      It will be very interesting to see what the encryption test will
+      bring - that is a much better real-life-like example than a simple
+      speed test.<br>
+      <br>
+    </blockquote>
+    as a follow-up : someone whispered in my ear (thanks, Andr=C3=A9 ;) )
+    that one should use the -elapsed option for this, so here are new
+    results:<br>
+    <br>
+    *with* cryptodev:<br>
+    <br>
+    ./openssl speed -evp aes-128-cbc -elapsed<br>
+    You have chosen to measure elapsed time instead of user CPU time.<br>
+    Doing aes-128-cbc for 3s on 16 size blocks: 2825786 aes-128-cbc&#39;s in
+    3.00s<br>
+    Doing aes-128-cbc for 3s on 64 size blocks: 2716822 aes-128-cbc&#39;s in
+    3.00s<br>
+    Doing aes-128-cbc for 3s on 256 size blocks: 2369723 aes-128-cbc&#39;s
+    in 3.00s<br>
+    Doing aes-128-cbc for 3s on 1024 size blocks: 1536054 aes-128-cbc&#39;s
+    in 3.00s<br>
+    Doing aes-128-cbc for 3s on 8192 size blocks: 369984 aes-128-cbc&#39;s
+    in 3.00s<br>
+    [...]<br>
+    aes-128-cbc=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 15,070.86k=C2=A0=C2=A0=C2=A0 =
+57,958.87k=C2=A0=C2=A0 202,216.36k=C2=A0=C2=A0
+    524,306.43k=C2=A0 1,010,302.98k<br>
+    <br>
+    *without* cryptodev:<br>
+    <br>
+    $ openssl speed -evp aes-128-cbc -elapsed<br>
+    You have chosen to measure elapsed time instead of user CPU time.<br>
+    Doing aes-128-cbc for 3s on 16 size blocks: 207188725 aes-128-cbc&#39;s
+    in 3.00s<br>
+    Doing aes-128-cbc for 3s on 64 size blocks: 56855717 aes-128-cbc&#39;s
+    in 3.00s<br>
+    Doing aes-128-cbc for 3s on 256 size blocks: 14382122 aes-128-cbc&#39;s
+    in 3.00s<br>
+    Doing aes-128-cbc for 3s on 1024 size blocks: 3618996 aes-128-cbc&#39;s
+    in 3.00s<br>
+    Doing aes-128-cbc for 3s on 8192 size blocks: 456727 aes-128-cbc&#39;s
+    in 3.00s<br>
+    [...]<br>
+    aes-128-cbc=C2=A0=C2=A0=C2=A0 1,105,006.53k=C2=A0 1,212,921.96k=C2=A0 1=
+,227,274.41k=C2=A0
+    1,235,283.97k=C2=A0 1,247,169.19k<br>
+    <br>
+    which more or less reflects the encryption test results I posted
+    earlier.<br>
+    The question becomes, what are you results when using the -elapsed
+    flag?<br>
+    <br>
+    JJK<br>
+    <br>
+    <blockquote type=3D"cite"> <br>
+      <blockquote type=3D"cite">
+        <div dir=3D"ltr">
+          <div>&gt;My advice is to rerun your tests *without* the
+            cryptodev module and then decide wheter you really need
+            CBC+CCM hmacs.</div>
+          <div>Yes, I confirm that without the cryptodev the performance
+            is very bad for my device. I don&#39;t have that device in my
+            hand right now. But I saved one aes-256-cbc result in my web
+            notebook as below:</div>
+          <div><br>
+          </div>
+          <div>
+            <div style=3D"white-space:pre-wrap;line-height:1.75;font-size:1=
+4px;text-align:left">type             16 bytes     64 bytes    256 bytes   =
+1024 bytes   8192 bytes</div>
+            <div style=3D"white-space:pre-wrap;line-height:1.75;font-size:1=
+4px;text-align:left">aes-256-cbc      19626.95k    24289.71k    25054.46k  =
+  25347.75k    25337.86k</div>
+            <div style=3D"white-space:pre-wrap;line-height:1.75;font-size:1=
+4px;text-align:left">
+</div>
+            <div>Please note, there are two modes to accelerate
+              encryption/decryption.</div>
+            <div style=3D"white-space:pre-wrap;line-height:1.75;font-size:1=
+4px;text-align:left"><div>1. HW instructions like intel x86 CPU.</div><div>=
+2. Using a crypto engine.</div><div>
+</div><div>When your device is 2 and its CPU is not powerful, normally with=
+ cryptodev speed is much faster at least for big blocks. Maybe for small bl=
+ocks it&#39;s slower because</div><div>it needs the time to push the work t=
+o kernel and then HW engine and the time spent is may longer than the time =
+costed by OpenSSL directly does the encryption/decryption.
+</div><div>
+</div></div>
+            <div style=3D"white-space:pre-wrap;line-height:1.75;font-size:1=
+4px;text-align:left">Tony
+</div>
+          </div>
+        </div>
+        <br>
+        <div class=3D"gmail_quote">
+          <div dir=3D"ltr" class=3D"gmail_attr">Jan Just Keijser &lt;<a hre=
+f=3D"mailto:janjust@...1147..." target=3D"_blank">janjust@...1147...</a>&gt;
+            =E4=BA=8E2020=E5=B9=B412=E6=9C=882=E6=97=A5=E5=91=A8=E4=B8=89 =
+=E4=B8=8B=E5=8D=887:24=E5=86=99=E9=81=93=EF=BC=9A<br>
+          </div>
+          <blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8=
+ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
+            <div bgcolor=3D"#FFFFFF">
+              <div>hi Tony,<br>
+                <br>
+                On 01/12/20 02:50, Tony He wrote:<br>
+              </div>
+              <blockquote type=3D"cite">
+                <div dir=3D"ltr">Hi Arne,
+                  <div><br>
+                  </div>
+                  <div>openssl speed -evp aes-128-cbc</div>
+                  <div>
+                    <div style=3D"white-space:pre-wrap">          type     =
+        16 bytes     64 bytes    256 bytes   1024 bytes   8192 bytes
+aes-128-cbc      20035.60k   123261.54k   267081.60k  1094764.09k  9181370.=
+18k
+              </div>
+                    openssl speed -evp aes-128-gcm</div>
+                  <div>
+                    <div style=3D"white-space:pre-wrap">                typ=
+e             16 bytes     64 bytes    256 bytes   1024 bytes   8192 bytes
+aes-128-gcm      18738.76k    19284.91k    19524.44k    19606.87k    19685.=
+46k
+              </div>
+                    openssl speed -evp aes-128-ccm</div>
+                  <div>
+                    <div style=3D"white-space:pre-wrap">                typ=
+e             16 bytes     64 bytes    256 bytes   1024 bytes   8192 bytes
+aes-128-ccm      53859.07k   215581.12k   862070.02k  3460786.43k 27566347.=
+61k
+              </div>
+                    openssl speed -evp sha1</div>
+                  <div>
+                    <div style=3D"white-space:pre-wrap">   type            =
+ 16 bytes     64 bytes    256 bytes   1024 bytes   8192 bytes
+sha1              3108.57k    12177.79k    57325.18k   181610.34k  1207364.=
+27k
+              </div>
+                    openssl speed -evp chacha20-poly1305<br>
+                  </div>
+                  <div>
+                    <div style=3D"white-space:pre-wrap">chacha20-poly1305 i=
+s an unknown cipher or digest</div>
+                    <div style=3D"white-space:pre-wrap">Using old openssl, =
+so chacha20-poly1305 is not supported.</div>
+                  </div>
+                </div>
+              </blockquote>
+              <br>
+              these numbers look suspiciously like you&#39;re using the
+              linux cryptodev module. Openssl speed results for the
+              linux cryptodev module are totally unreliable and I&#39;d even
+              go so far as to say that the *only* numbers I trust in the
+              output above are for aes-128-gcm<br>
+              <br>
+              For example, if I do the same on an i5-6800 I get
+              *without* the cryptodev module:<br>
+              =C2=A0 $ openssl speed -evp aes-128-cbc <br>
+              =C2=A0 aes-128-cbc=C2=A0=C2=A0=C2=A0 1,104,599.38k=C2=A0 1,20=
+8,651.07k=C2=A0
+              1,231,766.70k=C2=A0 1,237,545.64k=C2=A0 1,248,793.94k<br>
+              <br>
+              and with the module I get<br>
+              =C2=A0 aes-128-cbc=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 45,087.41k=
+=C2=A0=C2=A0 127,822.72k=C2=A0=C2=A0 581,517.17k=C2=A0
+              2,256,593.19k 27,583,804.51k<br>
+              <br>
+              the second set of numbers doesn&#39;t make sense, and a much
+              better test is to do an actual encryption test, e.g.<br>
+              <br>
+              *without* the module<br>
+              cat BIGFILE | openssl aes-256-cbc -e -pass=C2=A0
+              pass:thisisabadpassword |=C2=A0 pv &gt; /dev/null<br>
+              2.93GB 0:00:05 [ 549MB/s] [=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0
+&lt;=3D&gt;=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0
+              ]<br>
+              <br>
+              (&#39;pv&#39; aka &#39;pipeview&#39; is a handy tool to measu=
+re the
+              throughput of a UNIX pipe)<br>
+              <br>
+              and with the module:<br>
+              cat BIGFILE | ./openssl aes-256-cbc -e -pass=C2=A0
+              pass:thisisabadpassword -engine cryptodev|=C2=A0 pv &gt;
+              /dev/null<br>
+              engine &quot;cryptodev&quot; set.<br>
+              2.93GB 0:00:07 [ 426MB/s] [=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 &lt;=3D&gt;<br>
+              <br>
+              so you see that using the cryptodev module actually slows
+              things down - which is to be expected, as the application
+              needs to do more work using the cryptodev module.<br>
+              <br>
+              My advice is to rerun your tests *without* the cryptodev
+              module and then decide wheter you really need CBC+CCM
+              hmacs.<br>
+              <br>
+              HTH,<br>
+              <br>
+              JJK<br>
+              <br>
+              <br>
+              <blockquote type=3D"cite">
+                <div class=3D"gmail_quote">
+                  <div dir=3D"ltr" class=3D"gmail_attr">Arne Schwabe &lt;<a=
+ href=3D"mailto:arne@...1227..." target=3D"_blank">arne@...1227...</a>&gt;
+                    =E4=BA=8E2020=E5=B9=B411=E6=9C=8826=E6=97=A5=E5=91=A8=
+=E5=9B=9B =E4=B8=8B=E5=8D=886:40=E5=86=99=E9=81=93=EF=BC=9A<br>
+                  </div>
+                  <blockquote class=3D"gmail_quote" style=3D"margin:0px 0px=
+ 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">Am 26.1=
+1.20 um
+                    10:41 schrieb Tony He:<br>
+                    &gt; Hi Arne,<br>
+                    &gt; <br>
+                    &gt;&gt;Since the original thread was not on the
+                    mailing list I am missing your<br>
+                    &gt;&gt;goal but if your crypto acelator already
+                    works with OpenSSL, then it<br>
+                    &gt;&gt;will also work with the &quot;normal&quot; Open=
+VPN<br>
+                    &gt; <br>
+                    &gt; Yes, it wokrs with &quot;normal&quot; OpenVPN(Open=
+VPN2),
+                    but according to the test<br>
+                    &gt; result, it&#39;s still not fast(about 60Mbps).<br>
+                    &gt; The bottleneck is not encryption operation any
+                    more. It comes from the<br>
+                    &gt; switch of user space and kernel space in the
+                    OpenVPN2,<br>
+                    &gt; which makes the poor CPU of=C2=A0 embedded
+                    device=C2=A0very busy.=C2=A0That&#39;s why we<br>
+                    &gt; need OpenVPN3 running in the kernel space.<br>
+                    <br>
+                    <br>
+                    What numbers are we are talking in crypto speed?
+                    Could you provide from<br>
+                    your &quot;poor&quot; device:<br>
+                    <br>
+                    <br>
+                    openssl speed -evp aes-128-cbc<br>
+                    openssl speed -evp aes-128-gcm<br>
+                    openssl speed -evp aes-128-ccm<br>
+                    openssl speed -evp sha1<br>
+                    openssl speed -evp chacha20-poly1305<br>
+                    <br>
+                    I want to what difference/gain in terms of raw
+                    crypto speed we are<br>
+                    talking here.<br>
+                    <br>
+                    Arne<br>
+                    <br>
+                    <br>
+                  </blockquote>
+                </div>
+                <br>
+                <fieldset></fieldset>
+                <br>
+                <br>
+                <fieldset></fieldset>
+                <br>
+                <pre>_______________________________________________
+Openvpn-devel mailing list
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
+envpn-devel@lists.sourceforge.net</a>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" targ=
+et=3D"_blank">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</a>
+</pre>
+              </blockquote>
+              <br>
+            </div>
+          </blockquote>
+        </div>
+      </blockquote>
+      <br>
+    </blockquote>
+    <br>
+  </div>
 
----
+</blockquote></div>
 
-Agreed to release OpenVPN 2.4.10 early next week, assuming OpenSSL has
-made their pre-announced (=important) release before that.
-
----
-
-Agreed to bundle libpkcs11-helper 1.27 with 2.4.10. We're at 1.26 now,
-and the changes between the versions look safe.
-
----
-
-Noted that some of the auth-token fixed from Git "master" could and
-should be backported to release/2.5. The refactorings done in "master"
-could be omitted. It seems like at the moment there's no real need to
-push out 2.5.1.
-
----
-
-Agreed to not have meeting on Dec 23rd or 31st. The last meeting this
-month will be on 17th.
-
---
-
-Talked about HackerOne bounties. Agreed to go through the current
-HackerOne reports and set awards (bounties) and close all reports down
-(if possible) in the next meeting. Then we can close our HackerOne
-project for good.
-
----
-
-Noted that "IPv6 to community.openvpn.net" has not moved forward. But
-OpenVPN Inc. ops team manager is aware that cron2 needs to be kept happy
-and that IPv6 will have to arrive eventually.
-
----
-
-Talked about the buildbot upgrade. It will need a couple of days of
-concentrated effort from mattock's part. Doing the upgrade around
-Christmas time sounds realistic.
-
----
-
-Full chatlog attached
-
---------------838D93BD1BC141A2928A419D
-Content-Type: text/plain; charset=UTF-8;
- name="openvpn_irc_meeting_chatlog_2020-12-03.txt"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename="openvpn_irc_meeting_chatlog_2020-12-03.txt"
-
-(21:01:32) ordex: aloha!
-(21:01:57) syzzer_: hi!
-(21:02:10) mattock: hi
-(21:02:28) becm: hi
-(21:02:47) ordex: cron2: dazo: plaisthos: ?
-(21:02:53) ***cron2 hides
-(21:03:16) cron2 ha scelto come argomento: https://community.openvpn.net/openvpn/wiki/Topics-2020-12-03
-(21:03:35) dazo: Hey!
-(21:03:41) cron2: yo!
-(21:04:43) plaisthos: I am only semi here
-(21:04:52) ordex: which part is here exactly?
-(21:05:00) cron2: which is half more than usual on thursday evenings
-(21:05:05) ordex: :D
-(21:05:53) cron2: whoa, 4 ACKs on the list
-(21:06:20) ordex: amazzing
-(21:06:33) ordex: are we aiming at doing another 2.4.x release?
-(21:07:26) cron2: yes
-(21:08:00) cron2: a number of bugfixes have accumulated in release/2.4, so we agreed (2-3 weeks ago) to do a 2.4.10
-(21:08:04) cron2: eventually
-(21:08:18) mattock: internal meeting goes on and goes on...
-(21:08:36) cron2: tell them you do not care until the IPv6 crisis is solved :)
-(21:08:44) mattock: :)
-(21:08:57) ordex: :D
-(21:09:02) ordex: cron2: ok
-(21:09:12) mattock: so 2.4.10 when?
-(21:09:47) cron2: I want the line number fix to be in, but have not written the second version yet... so maybe early next week?  What works for you?
-(21:10:31) mattock: early next week would be ok
-(21:11:07) cron2: good.  I'll see that I can get the patch done tomorrow-ish, so ordex can review it ("he ACKed the other one but wanted to see a variant")
-(21:11:39) ordex: yup, can do
-(21:12:28) becm: will the 2.4.10 for Windows ship with the brand new pkcs11-helper 1.27?
-(21:12:28) cron2: 25 patches in tree since 2.4.9
-(21:13:05) cron2: do we have feedback about pcks11-helper in 2.5.0?
-(21:13:30) cron2: like, "works!" or "breaks :-("?  I haven't seen *any* feedback on 2.5.0 yet, which is sort of... "what does that mean?"
-(21:13:31) mattock: becm: it looks like we have 1.26 now in generic/build.vars
-(21:13:50) mattock: cron2: I think it means it is stable and boring
-(21:14:17) cron2: this is how I like my software :)
-(21:14:20) mattock: which is somewhat surprising given how much stuff went to it
-(21:14:31) mattock: perhaps we're doing something right :D
-(21:14:37) ordex: :D
-(21:14:38) ordex: it happens
-(21:14:44) ***cron2 pats his test rig :)
-(21:15:22) mattock: so, libpkcs11-helper 1.26 -> 1.27 in 2.4.10 and 2.5.1?
-(21:15:28) mattock: any reason not to?
-(21:15:35) cron2: becm: what is in there?
-(21:16:08) dazo: https://github.com/OpenSC/pkcs11-helper/releases
-(21:16:19) becm: looks like 2 bugfixes to me?
-(21:16:59) dazo: "thanks to Tunnelblick" ... smells like it has been tested ;-)
-(21:17:20) mattock: at least in tunnelblick
-(21:17:37) mattock: also look like your libpkcs11-helper patch should apply ok
-(21:17:46) mattock: I say "why not"
-(21:17:53) cron2: yea
-(21:17:54) cron2: h
-(21:18:28) dazo: agreed
-(21:19:17) ordex: looks good to me too
-(21:20:47) cron2: anything else on 2.4?
-(21:21:38) dazo: Don't think so
-(21:21:44) cron2: good :-)
-(21:21:48) cron2: 2.5 status, then
-(21:22:05) mattock: I think we need to update all the other dependencies as well - build-complete.vars has not been updated since 2.4.9, but that's the normal procedure anyways
-(21:22:23) cron2: 4 patches in tree since 2.5.0, 1 "make install" patch, 2 "client side fixup for auth-token + auth-nocache" patches
-(21:22:34) dazo: oh, OpenSSL is about to do a critical release one of these days .... we should wait for that to arrive
-(21:22:44) plaisthos: yeah
-(21:22:47) cron2: for the windows release, yes...
-(21:22:49) plaisthos: next week
-(21:22:50) dazo: I have no details what it might carry, but they did a pre-announcement
-(21:23:03) mattock: ok, let's not release anything before that openssl upgrade is out
-(21:23:14) mattock: I don't want to do releases every other day :)
-(21:23:29) cron2: anyway... we could do a 2.5.1 release, which has client side benefits, but the changes are small yet
-(21:23:44) dazo: mattock: Do you know how many releases Amazone does per day? ;-)
-(21:23:53) mattock: we're not Amazon
-(21:24:01) syzzer_: cron2: and a couple of tls-crypt-v2 fixes, "soonish", right? :-p
-(21:24:02) mattock: we have one guy doing releases
-(21:24:04) mattock: :)
-(21:24:15) cron2: master has a much larger fix set for auth-token in combination with plugin auth (or generally "multiple auth paths").  The patch is 3 lines, but it needs 7 pre-patches for cleanup... :-)
-(21:24:50) cron2: this would be a good fix to have in 2.5.x, but I'm somewhat reluctant to pull in all the refactoring needed
-(21:24:57) cron2: plaisthos: what do you think?
-(21:25:03) plaisthos: yeah I think the main fix can be backported
-(21:25:14) plaisthos: without the refactoring
-(21:25:32) plaisthos: the refactoring was also due to better understanding of the code etc
-(21:26:32) mattock: btw. do we want to have a meeting on 23rd Dec?
-(21:26:38) cron2: agree.  I'm not sure which of the interesting bits it needs
-(21:26:40) mattock: I'm sending the invite I forgot to send :)
-(21:26:45) mattock: 31st is probably out of the question
-(21:26:47) mattock: at least for me
-(21:26:57) dazo: 23rd is also not an ideal date
-(21:27:13) cron2: mattock: no 31st for me, and 23 is also interfering with family business :)
-(21:27:34) dazo: I'd suggest 17th as the last meeting this year and we all go and have a nice holiday time until January
-(21:27:57) cron2: syzzer_: yes, 3 tls-crypt related fixes coming in
-(21:28:14) cron2: dazo: someone wanted to do a 2.6 release in January or so :-)
-(21:28:27) cron2: "to meet debian cutoff"
-(21:28:32) mattock: dazo: agreed
-(21:28:34) ordex: :D
-(21:28:36) mattock: 17th it shall be
-(21:28:41) ordex: +1
-(21:28:44) cron2: aye aye sir!
-(21:29:21) dazo: cron2: I say a lot of crazy stuff :-P ... but! it's also depending on a lot of other factors, as the dco work and such
-(21:29:44) cron2: ok, sounds like "2.5.1 when there is enough interesting bits in"
-(21:30:19) cron2: dazo: haha :-) - I hear voices that tell me DCO is all done, it just needs a bit of polish
-(21:30:49) dazo: but we all know the polishing is where all the hard work appears :-P
-(21:30:55) cron2: well said :)
-(21:32:03) cron2: that said... 2.6?  anything interesting?
-(21:32:17) plaisthos: I broke ordex frist idea how to implement multiple peer mode
-(21:32:28) ordex: well, we're getting there :D
-(21:32:32) cron2: that was the wrong sort of polish :)
-(21:32:41) plaisthos: and now I passed to token back to ordex
-(21:35:12) cron2: sooo...
-(21:35:45) mattock: more on?
-(21:35:49) mattock: move on
-(21:35:55) mattock: auth-nocache?
-(21:36:05) cron2: auth-nocache went on the agenda because I felt it was a bit unclear what it was supposed to do... but since we managed to not change what it does while fixing the token stuff, it is somewhat "not that impotrant"
-(21:36:18) mattock: ok
-(21:36:23) mattock: next topic?
-(21:36:29) mattock: that is, "HackerOne bounties"
-(21:36:37) mattock: anyone remember how they're supposed to work?
-(21:36:39) cron2: (so what it does: it cleans username *and* password after TLS connect, and still does, just now it does so "after PUSH_REPLY, if pull")
-(21:36:46) cron2: mattock: i hoped that you could answer that
-(21:37:13) cron2: we actually received a useful submission - one of our travis scripts was doing http downloads with no checksumming, while it could have done https.
-(21:37:23) mattock: I have a vague recollection that we have to close the report down and then we can do something to tag the report as worth a bounty
-(21:37:25) cron2: So I changed that (it's in tree)
-(21:37:36) mattock: emphasis on "vague" :)
-(21:37:40) cron2: but I have no idea what the rules, and the sums, and the process is
-(21:37:48) mattock: we've never done it I believe
-(21:37:55) syzzer_: I share a vague recollection that matches mattock's
-(21:37:59) cron2: it's no critical bug, but worth some sort of thank you in any case
-(21:38:03) mattock: yeah
-(21:38:14) mattock: if two people have the same recollection that recollection may be correct :D
-(21:38:15) cron2: mattock: can you find out?
-(21:38:28) mattock: probably, I can try closing the report down now
-(21:38:36) cron2: commit d3dd620b13a21c3ed73fd466390f471915937309
-(21:38:38) cron2:     Reported by "jub0bs" on hackerone.com (#1039504)
-(21:40:00) mattock: ah
-(21:40:03) mattock: we can "Set award"
-(21:40:07) mattock: in dollars
-(21:40:08) cron2: ah!
-(21:40:20) mattock: what is the report worth?
-(21:40:23) cron2: so, what are the sums we are talking about, and who pays?
-(21:40:39) mattock: I believe the money comes from IBB and/or OSTIF
-(21:40:47) mattock: I'm not sure what kind of deal they did
-(21:41:15) mattock: I'll check if OSTIF has some guidelines on this
-(21:41:17) cron2: I have no idea what "someone could mess with your build scripts" is worth.  Less than "someone could crash your program", and much less than "someone can break into your software".  But in absolute numbers?
-(21:41:22) cron2: yes, that would be good
-(21:41:49) cron2: thanks :)
-(21:42:06) mattock: Guido Vranken who reported several issues in OpenVPN got $5000
-(21:42:09) mattock: https://ostif.org/congratulations-to-guido-vranken-for-earning-our-first-bug-bounty/
-(21:42:11) vpnHelper: Title: Congratulations to Guido Vranken for earning our first bug bounty! Open Source Technology Improvement Fund (at ostif.org)
-(21:42:32) cron2: that's quite a bit of money, but I seem to remember that he had at least one "crash our software" in them
-(21:42:32) mattock: but he spend _way_ more time on it than jub0bs
-(21:42:41) mattock: I'd say this is something like $50-$100
-(21:42:50) cron2: definitely... so $50-ish sound okay-ish
-(21:43:03) mattock: let's do $50, this kind of stuff is trivial to find by anyone
-(21:43:16) cron2: okay
-(21:43:18) mattock: nice that it was found, but not rocket science nor required much effort
-(21:44:08) syzzer_: and without any user impact :)
-(21:44:22) syzzer_: so yeah, sounds like the right order of magnitude
-(21:45:50) mattock: hackerone suggested $100 minimum so I chose that one
-(21:46:05) cron2: so this is what it is :)
-(21:46:39) mattock: awarded and closed the report
-(21:46:53) mattock: next topic?
-(21:46:56) cron2: purrfect
-(21:47:00) cron2: yes :)
-(21:47:04) cron2: dear to my heart!
-(21:47:34) mattock: the response ("no progress whatsover") is probably not what you'd like to hear
-(21:48:04) mattock: I will periodically bug the ops team manager about it
-(21:48:22) cron2: it is time for more interesting threats... has someone's dog died yet?
-(21:48:28) mattock: no, not yet
-(21:48:49) mattock: maybe you could hire a bunch of people to complain about lack of IPv6 support?
-(21:48:53) mattock: to build some pressure
-(21:48:58) mattock: :D
-(21:49:04) becm: mattock: mayba bargain, "drop the cookie-requirement or enable IPv6" :)
-(21:49:17) cron2: corp policy is "these are not serious customers, they are just complainers"
-(21:49:38) mattock: believe it or not, they'd like to keep _you_ happy
-(21:49:39) ordex: :D
-(21:49:45) mattock: they know your role in OpenVPN 2
-(21:50:27) mattock: I remind them that we need to keep you happy
-(21:50:32) cron2: good to be appreciated :-)
-(21:50:32) mattock: happy enough, at least :)
-(21:50:37) cron2: totally so!
-(21:50:50) mattock: I've _been reminding_ them
-(21:50:55) mattock: and will keep doing so
-(21:51:02) cron2: thanks.
-(21:51:05) mattock: np
-(21:51:07) cron2: sooo... buildbot...
-(21:51:10) becm: so if cron to "likes" to complain... the keep IPv6 from him? :)
-(21:51:28) cron2: becm: you could open a few sales inquiry tickets!
-(21:51:30) dazo: mattock: can you complete all the bounties there ... so we can shut it down finally?
-(21:51:46) mattock: dazo: just let me know which reports deserve a bounty
-(21:51:52) mattock: and what size
-(21:51:56) mattock: then it is no problem for me
-(21:52:31) cron2: if we close down hackerone, we should agree on a different way to receive reports that might be bounty-worthy...
-(21:52:55) cron2: (but I am too tired today to have good suggestions)
-(21:53:14) mattock: what if we go through the remaining hackerone tickets in the next meeting, set bounties and close all of them down?
-(21:53:25) cron2: okay
-(21:53:37) mattock: we have a bunch open
-(21:53:43) mattock: dazo: works for you?
-(21:54:27) mattock: on the topic list: https://community.openvpn.net/openvpn/wiki/Topics-2020-12-09
-(21:55:02) mattock: anyhow, buildbot: I think getting it nailed down around Christmas time looks realistic, possibly earlier
-(21:55:11) mattock: it needs a focused effort of a couple of days
-(21:55:22) mattock: with the Windows / tap-windows6 buildslave
-(21:55:35) mattock: plus upgrade of the buildslaves
-(21:55:43) cron2: with the *BSD zoo, the MacOS buildslave, the OpenSolaris buildslave :-) - yes
-(21:56:04) cron2: just let me know, then, and "what do I need" - which packages, which versions, etc.
-(21:56:11) ***cron2 <- python noob
-(21:56:14) mattock: cron2: +1
-(21:56:26) mattock: anything else for today?
-(21:56:44) ordex: make ipv6 great again!
-(21:57:24) cron2: there's a few ipv6 related bugs in trac... :-)
-(21:57:26) cron2: but not today
-(21:57:39) cron2: I wish you all a good evening!  I hear my sofa calling!
-(21:57:49) mattock: good evening everyone!
-(21:57:55) syzzer_: hehe, good night all!
-(21:57:55) mattock: I'll wrap up the summary and then head home
-(21:58:02) cron2: *wave*
-(21:58:12) ordex: good night !
-(21:58:26) dazo: mattock: I think I suggested $50 for a one report ... and that was about it
-(21:59:16) dazo: mattock: I tried to close down a lot of tickets .... was not aware there where that many left
-(22:06:48) mattock: dazo: ok
-
---------------838D93BD1BC141A2928A419D--
+--00000000000061059805b59e9c34--
 
