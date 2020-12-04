@@ -1,10 +1,15 @@
-Date: Fri, 4 Dec 2020 12:20:57 +0100 (CET)
-Message-Id: <202012041120.0B4BKvSL051250@...2054...>
+Date: Fri, 4 Dec 2020 15:01:35 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20201130123813.21388-1-arne@...1227...>
-References: <20201130123813.21388-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix port-share option with
- TLS-Crypt v2
+Message-ID: <20201204140135.GX976@...1296...>
+References: <20201004223614.12429-1-themiron@...2010...>
+ <20201115220857.9307-1-themiron@...2010...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="uzoI8dTrMX2TZbEU"
+Content-Disposition: inline
+In-Reply-To: <20201115220857.9307-1-themiron@...2010...>
+Subject: Re: [Openvpn-devel] [PATCH v9] Add DNS SRV remote host discovery
+ support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +18,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Vladislav Grishenko <themiron@...2010...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Magic heuristics... but if Arne and Steffan agree that this is correct,
-who am I to dispute it :-) - it passes client tests and is not
-"obviously wrong".
+--uzoI8dTrMX2TZbEU
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Your patch has been applied to the master and release/2.5 branch.
+Hi,
 
-commit 1387f52682dcd3789c56c9979ccedca281ff88f4 (master)
-commit c27f97dc0ac99344659cca57bd048543a9899266 (release/2.5)
-Author: Arne Schwabe
-Date:   Mon Nov 30 13:38:13 2020 +0100
+On Mon, Nov 16, 2020 at 03:08:57AM +0500, Vladislav Grishenko wrote:
+> DNS SRV remote host discovery allows to have multiple OpenVPN servers for
+> a single domain w/o explicit profile enumeration, to move services from
+> host to host with little fuss, and to designate hosts as primary servers
+> for a service and others as backups.
+> Feature has been asked several times already, should be useful in case of
+> substantial number of clients & servers deployed.
 
-     Fix port-share option with TLS-Crypt v2
+So, Arne has ACKed it, and I went work on it today.  One problem showed
+up on FreeBSD - the code uses EAI_NODATA, which is found in <netdb.h>
+on FreeBSD, but with this comment:
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Steffan Karger <steffan.karger@...2507...>
-     Message-Id: <20201130123813.21388-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21290.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+#if 0
+/* obsoleted */
+#define EAI_NODATA       7      /* no address associated with hostname */=20
+#endif
+
+I'm not sure what to make out of this, but as it stands, the patchset
+does not work.
+
+If I just add
+
+  #define EAI_NODATA 7
+
+to socket.c, it compiles and passes my regular client tests (no SRV tests
+yet), but I do not think this is the correct solution.
+
+(I have no idea *why* FreeBSD considers this "obsoleted", or what this
+define is used for - have not yet investigated in any way)
 
 
---
-kind regards,
+If you need to test on FreeBSD, openvpn-vagrant has boxes that get
+installed with all prerequisites (or I can give you access to one of
+my buildslaves).
 
-Gert Doering
+gert
 
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--uzoI8dTrMX2TZbEU
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJfykE+AAoJEB2Cnv7KVigSCzwMAKFKJ6lqf8ca/fLHs2x/1HP+
+FBDcFnhPDFYx7KajEEELnaES6BQGPfhuJwCcZsBPJKWaRHqHqx+pChzm5prsAsos
+tLR2uDw8ixMaucedz8VeAvYqifLtLR4W6Qo6zr59TWMKG8uXNA8XuIGo9EMqLJJL
+xRhxGMNI8qN5mblbCb1mTEILPvrMdKDivhhJJ+DrIYW3GYIj321qL5r14CsnXf5X
+ro0QB1BHyttWtvyvbV0AXs8YtBLbUwRE3zlSU+/yILXWR0zq4Bq3ni4VHpKyve9b
+E1ErHNiCfvsbCo7vz7yfZMWCgzyPdy11Q++e9Vr3BQfXzUjHzTPoK+USX3tvc56N
+aUfvdKvSaJq4JP1UUplZuFMrkNlL20owDUuORjROprfLRFjAZofvAJEbjCeVtprD
+l2hdMlKILMX+/BmVAS0dAedLfGE40RnYGlu5VyoA/B6rNnMPTZkMcEpZPWK8+SfC
+DN+sToYWCREh8nOiHgyHGzEf3xFh+Yjgx9+ypzZhKA==
+=L1nu
+-----END PGP SIGNATURE-----
+
+--uzoI8dTrMX2TZbEU--
 
