@@ -1,9 +1,10 @@
 From: Vladislav Grishenko <themiron@...2010...>
-Date: Fri,  4 Dec 2020 21:14:12 +0500
-Message-Id: <20201204161412.13326-1-themiron@...2010...>
+Date: Fri,  4 Dec 2020 21:14:36 +0500
+Message-Id: <20201204161436.13448-1-themiron@...2010...>
 In-Reply-To: <20201204140135.GX976@...1296...>
 References: <20201204140135.GX976@...1296...>
-Subject: [Openvpn-devel] [PATCH] Add DNS SRV remote host discovery support
+Subject: [Openvpn-devel] [PATCH v10] Add DNS SRV remote host discovery
+ support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
