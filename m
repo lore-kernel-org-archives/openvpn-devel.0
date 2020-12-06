@@ -1,11 +1,10 @@
-Date: Sun, 6 Dec 2020 17:09:16 +0100
-From: Michael Kress <lists@...1660...>
-Message-ID: <20201206170916.53031f6e@...1661...>
-In-Reply-To: <37a818a1-f770-9cbd-26f5-c4fbbd86a166@...1227...>
-References: <20201206145124.77fc2db6@...1661...>
- <37a818a1-f770-9cbd-26f5-c4fbbd86a166@...1227...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Update client config over control channel
+Date: Sun, 6 Dec 2020 19:47:49 +0100 (CET)
+Message-Id: <202012061847.0B6IlnG5018562@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20201206125711.12071-1-gert@...1296...>
+References: <20201206125711.12071-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix line number reporting on
+ config file errors after <inline> segments
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,51 +13,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am Sun, 6 Dec 2020 16:06:19 +0100
-schrieb Arne Schwabe <arne@...1227...>:
+Patch has been applied to the master, release/2.5 and release/2.4 branch
+(bugfix).  
 
-> Am 06.12.2020 um 14:51 schrieb Michael Kress:
-[..]
-> > Looking at check_incoming_control_channel_dowork() makes me think,
-> > if there could exist another PUSH_command that could be very
-> > generic and address code in a loaded plugin? Such a plugin could
-> > rewrite the local configuration file of the client.  
-> 
-> For limited communiction we already have --echo and push-peer-info
-> with UV_* variables.
+Release/2.4 has the same code, but is missing one recent round of 
+uncrustification, many conflicts due to different context and one
+due to the new inline-file-handling.
 
-Hm, eventually this could be used.
+Theoretically it could also be applied to release/2.3, but since it's not 
+a really *important* bugfix (= nobody but me noticed in 10+ years), I've 
+withstood the temptation.
 
-[..]
-> > This could help admins, that have to maintain a bigger VPN
-> > installation.  
-> 
-> To be honest I don't see the target audience like you do. Big central 
-> adminstrated setup will use their existing management software for 
-> managing client configuration and small admin will want to avoid to 
-> setup a mechanism like this. Also you are assuming a trust model 
-> ("client has ulimited trust of server") that is generally not there.
-> 
-> Also since we have script setup etc and openpvn is often run with 
-> evelated privileges, a config file can be used to gain these evalated 
-> privilges. So this mechanism will be a potential security problem.
-> 
-> And finally adding file management/config management feels like
-> adding functionality to OpenVPN that is really outside its scope. I
-> also not aware of any other TLS or certificate based protocol that
-> offers anything like this.
+I have adjusted the line break as instructed (creating two lines with 86 chars).
 
-Yes, the Unix philosophy "one tool, one task" is a good one, that
-this idea would compromise.
+commit a686f7e29af012783371f401f394ac1e62e5b75f (master)
+commit 97af8b3101af6a1f8fef778d2c9e0e5f13d2d440 (release/2.5)
+commit 8ce5a319fd7a9b13ed6fee92fbda567c24f832c5 (release/2.4)
+Author: Gert Doering
+Date:   Sun Dec 6 13:57:11 2020 +0100
 
-Thanks for your honesty and time! I won't follow that idea any longer.
-Eventually my view was a tad too narrow.
+     Fix line number reporting on config file errors after <inline> segments
 
--- 
-Servus
-  Michael
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20201206125711.12071-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21334.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
