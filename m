@@ -1,13 +1,8 @@
-References: <20200920090929.8321-1-gert@...1296...>
- <20201206125711.12071-1-gert@...1296...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <154793a6-d20e-ae8d-4737-f39a51491210@...2181...>
-Date: Sun, 6 Dec 2020 15:05:13 +0100
+Date: Sun, 6 Dec 2020 14:51:24 +0100
+From: Michael Kress <lists@...1660...>
+Message-ID: <20201206145124.77fc2db6@...1661...>
 MIME-Version: 1.0
-In-Reply-To: <20201206125711.12071-1-gert@...1296...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v2] Fix line number reporting on config
- file errors after <inline> segments
+Subject: [Openvpn-devel] Update client config over control channel
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,143 +11,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Hi list,
 
-On 06/12/2020 13:57, Gert Doering wrote:
-> <inline> segments neglected to increment the "current line number
-> in config file" variable (line_num), so after the first <inline>,
-> errors reported have the wrong line number.
-> 
-> Fix by introducing an extra argument to read_inline_file() function:
-> "so many lines in the inline block", and changing the return values of
-> the "check_inline*()" functions to "int", changing this from "false/true"
-> to "0 = no inline, 1...N = inline with <N> lines".
-> 
-> On calling add_options() this is implicitly converted back to bool.
-> 
-> v2: use int return value, not extra call-by-reference parameter
-> 
-> Trac: #1325
-> ---
->  src/openvpn/options.c | 33 +++++++++++++++++----------------
->  1 file changed, 17 insertions(+), 16 deletions(-)
-> 
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index 21f8d494..d8a86560 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -4659,7 +4659,8 @@ in_src_get(const struct in_src *is, char *line, const int size)
->  }
->  
->  static char *
-> -read_inline_file(struct in_src *is, const char *close_tag, struct gc_arena *gc)
-> +read_inline_file(struct in_src *is, const char *close_tag,
-> +                 int *num_lines, struct gc_arena *gc)
->  {
->      char line[OPTION_LINE_SIZE];
->      struct buffer buf = alloc_buf(8*OPTION_LINE_SIZE);
-> @@ -4668,6 +4669,7 @@ read_inline_file(struct in_src *is, const char *close_tag, struct gc_arena *gc)
->  
->      while (in_src_get(is, line, sizeof(line)))
->      {
-> +        (*num_lines)++;
->          char *line_ptr = line;
->          /* Remove leading spaces */
->          while (isspace(*line_ptr))
-> @@ -4701,10 +4703,10 @@ read_inline_file(struct in_src *is, const char *close_tag, struct gc_arena *gc)
->      return ret;
->  }
->  
-> -static bool
-> +static int
->  check_inline_file(struct in_src *is, char *p[], struct gc_arena *gc)
->  {
-> -    bool is_inline = false;
-> +    int num_inline_lines = 0;
->  
->      if (p[0] && !p[1])
->      {
-> @@ -4717,16 +4719,15 @@ check_inline_file(struct in_src *is, char *p[], struct gc_arena *gc)
->              p[0] = string_alloc(arg + 1, gc);
->              close_tag = alloc_buf(strlen(p[0]) + 4);
->              buf_printf(&close_tag, "</%s>", p[0]);
-> -            p[1] = read_inline_file(is, BSTR(&close_tag), gc);
-> +            p[1] = read_inline_file(is, BSTR(&close_tag), &num_inline_lines, gc);
->              p[2] = NULL;
->              free_buf(&close_tag);
-> -            is_inline = true;
->          }
->      }
-> -    return is_inline;
-> +    return num_inline_lines;
->  }
->  
-> -static bool
-> +static int
->  check_inline_file_via_fp(FILE *fp, char *p[], struct gc_arena *gc)
->  {
->      struct in_src is;
-> @@ -4735,7 +4736,7 @@ check_inline_file_via_fp(FILE *fp, char *p[], struct gc_arena *gc)
->      return check_inline_file(&is, p, gc);
->  }
->  
-> -static bool
-> +static int
->  check_inline_file_via_buf(struct buffer *multiline, char *p[],
->                            struct gc_arena *gc)
->  {
-> @@ -4806,13 +4807,13 @@ read_config_file(struct options *options,
->                  }
->                  if (parse_line(line + offset, p, SIZE(p)-1, file, line_num, msglevel, &options->gc))
->                  {
-> -                    bool is_inline;
-> -
->                      bypass_doubledash(&p[0]);
-> -                    is_inline = check_inline_file_via_fp(fp, p, &options->gc);
-> -                    add_option(options, p, is_inline, file, line_num, level,
-> +                    int lines_inline =
-> +                            check_inline_file_via_fp(fp, p, &options->gc);
+Problem: OpenVPN Clients have to be reconfigured from time to
+time because e.g.
+- CA certificate changed
+- client certificates/keys should get updated
+- client destination address to server should be changed
 
-This is quite ugly  - maybe we could just keep it on one line (as we
-recently agreed that we can go beyond 80 chars if useful)?
+For these and others eighter
+a) a human must take action and execute commands, store files etc. 
+b) some external mechanism uses the existing data channel and triggers
+    services outside of OpenVPN. This means, that on client side
+    another process has to be started, which comes with complications
+    like addressing, privileges and so on.
 
+Could you imagine a mechanism in OpenVPN, where the control channel
+could be used for generic messages between server and client? This
+control channel would acts like a websocket, is encrypted and secure.
 
-> +                    add_option(options, p, lines_inline, file, line_num, level,
->                                 msglevel, permission_mask, option_types_found,
->                                 es);
-> +                    line_num += lines_inline;
->                  }
->              }
->              if (fp != stdin)
-> @@ -4855,12 +4856,12 @@ read_config_string(const char *prefix,
->          ++line_num;
->          if (parse_line(line, p, SIZE(p)-1, prefix, line_num, msglevel, &options->gc))
->          {
-> -            bool is_inline;
-> -
->              bypass_doubledash(&p[0]);
-> -            is_inline = check_inline_file_via_buf(&multiline, p, &options->gc);
-> -            add_option(options, p, is_inline, prefix, line_num, 0, msglevel,
-> +            int lines_inline =
-> +                    check_inline_file_via_buf(&multiline, p, &options->gc);
-> +            add_option(options, p, lines_inline, prefix, line_num, 0, msglevel,
->                         permission_mask, option_types_found, es);
-> +            line_num += lines_inline;
->          }
->          CLEAR(p);
->      }
-> 
+A huge advantage to b) would be, that no external service has to exist
+on the client side and the addressing works via common name.
 
-The rest looks good and I "nicely" get errors reporting the correct lines!
+Looking at check_incoming_control_channel_dowork() makes me think, if
+there could exist another PUSH_command that could be very generic and
+address code in a loaded plugin? Such a plugin could rewrite the local
+configuration file of the client.
 
+On server side one could fire up the management interface and initiate
+this PUSH command - similar to "kill cn", that causes the server to
+tell the client that it should disconnect.
 
-Acked-by: Antonio Quartulli <a@...2181...>
+There is an architectural implication though: Secrets (like
+certificates) are transfered over the same transportation channel. Is
+this a huge DON'T in the art of crypto?
 
+This won't be a 100% solution for everybody, e.g.
+- there is no config file, OpenVPN gets started via network manager
+- write privileges for config or key material is not granted
+- plugin is not there because the user installed a standard OpenVPN
+  packet
+
+This could help admins, that have to maintain a bigger VPN installation.
+
+What do you think? Is this a completely stupid idea?
 
 -- 
-Antonio Quartulli
+Servus
+  Michael
 
