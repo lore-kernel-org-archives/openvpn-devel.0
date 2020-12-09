@@ -1,11 +1,14 @@
-References: <a7450cf9-f278-4e51-0c96-fa9aabddd169@...2181...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <926b8d0c-c3a2-6c6f-04ea-351fe0761e58@...1227...>
-Date: Wed, 9 Dec 2020 01:09:27 +0100
+References: <a32b8037-2e77-ac39-fc2e-05ff6f0c4b97@...1147...>
+ <0b595687-c79d-e95e-fc0c-adfe226e15c2@...1227...>
+ <3d90ed3d-3ef8-1bc1-141c-3cb63de16a00@...1227...>
+From: Jan Just Keijser <janjust@...1147...>
+Message-ID: <30b5d0f8-75c0-4d94-da2c-65e7810b4742@...1147...>
+Date: Wed, 9 Dec 2020 09:42:12 +0100
 MIME-Version: 1.0
-In-Reply-To: <a7450cf9-f278-4e51-0c96-fa9aabddd169@...2181...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [ovpn-dco] AES-CCM available for testing
+In-Reply-To: <3d90ed3d-3ef8-1bc1-141c-3cb63de16a00@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] weird issue with server failover when *Not*
+ using keepalive
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,49 +17,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Antonio Quartulli <a@...2181...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Am 06.12.20 um 17:09 schrieb Antonio Quartulli:
-> Hi all,
-> 
-> Some people have expressed interest in ovpn-dco supporting AES-CBC.
-> 
-> However, since ovpn-dco is currently using the AEAD kernel crypto API
-> only, introducing support for CBC mode would require quite some
-> refactoring and we do not really want to do that (the community believes
-> that as of now AEAD ciphers should always be preferred moving forward).
-> 
-> In a previous discussion on this mailing list, it was highlighted that
-> AES-CCM is nothing else than AES-CBC in disguise as AEAD cipher.
-> 
-> (for the curious: it is AES "Counter with CBC-MAC", known as CCM and
-> described in RFC3610).
-> 
-> For this reason I decided to give AES-CCM a try and I implemented in it
-> the "aes-ccm" branch of the ovpn-dco repo.
-> 
-> I am not sure if we're going to merge it to master yet, but for now it
-> would be interesting to gather feedback from those interested in this
-> cipher.
-> 
-> Please note that OpenVPN3 does not yet support this cipher, therefore
-> the only way to test AES-CCM in ovpn-dco is to use the ovpn-cli tool
-> provided in the tests/ folder.
-> 
-> 
-> To do so, just specify "aes-ccm" as algorithm when setting a new key.
-> 
+Hi,
 
-And here is a variant for OpenVPN 2.x that works with both mbed TLS and
-OpenSSL:
+On 04/12/20 16:24, Arne Schwabe wrote:
+>>> If I change the client config to list only a single
+>>>    remote <server> 1194 udp
+>>> line then this reconnect behavior does NOT occur ?!?!?!?
+>>>
+>> This might be a bug in the initialisation order. That the ping timer is
+>> armed before next_connection_entry is called. If you force it reconnect
+>> by restarting server or kill -USR1, does it then also show the
+>> disconnect after 120s behaviour?
+>
+> Following up to myself here. There are probably three problems here
+> mixed together:
+>
+> a) --pull implies --ping-restart and --ping pushed by the server for UDP
+> but the next_connection entry/update currently does not work correctly
+> so it is not working all the time.
+where is this implied in the code? I couldn't find it in the 2.4.9 codebase
+> b) the ping related options are missing in the options_pre_pull, so they
+> also get applied to connections after an UDP setting.
+>
+> c) the warning for keepalive in server mode + UDP should be a lot
+> stronger as the timeout after 120s+UDP is intended behaviour.
+>
+if 'keepalive' is a *requirement* for server mode + UDP but not for 
+server mode + TCP then it's still a bug, as a config file with entries
 
-https://github.com/schwabe/openvpn/tree/schwabe/aes-ccm
+remote server 1194 udp
+remote server 1194 tcp
 
-While it is not as fast as the ovpn-dco variant, it might be easier to
-use than the doc variant as you only need to add data-ciphers
-AES-128-CCM on both sides to test.
+fails with the observed behaviour  if the tcp server does not have 
+keepalive se.
 
-Arne
+Also, if 'keepalive' is a *requirement* then it should be set 
+mandatorily in server mode with sane defaults (like 'keepalive 10 60' ) .
+
+The original bug still stands:
+
+If I have a working setup, e.g.  server mode+TCP with no keepalive 
+(which makes sense) and on the client side I add a line
+   remote server 1194 udp
+
+then the *TCP* server config should continue to work instead of 
+restarting every 120 seconds, regardless of how I configurd my UDP server.
+
+JJK
 
