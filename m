@@ -1,12 +1,9 @@
 References: <a7450cf9-f278-4e51-0c96-fa9aabddd169@...2181...>
- <f69a02a5-4e06-00ad-366e-56f5699c4d98@...1147...>
- <e0af59b0-2310-7ce3-482e-2353c7ce1203@...2181...>
- <973df135-fb7c-009b-5b48-da888f54d51c@...1147...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <97bb9ea6-5252-66f7-b228-9aad39b93e02@...1227...>
-Date: Mon, 7 Dec 2020 15:30:20 +0100
+Message-ID: <926b8d0c-c3a2-6c6f-04ea-351fe0761e58@...1227...>
+Date: Wed, 9 Dec 2020 01:09:27 +0100
 MIME-Version: 1.0
-In-Reply-To: <973df135-fb7c-009b-5b48-da888f54d51c@...1147...>
+In-Reply-To: <a7450cf9-f278-4e51-0c96-fa9aabddd169@...2181...>
 Content-Language: en-GB
 Subject: Re: [Openvpn-devel] [ovpn-dco] AES-CCM available for testing
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,77 +14,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Jan Just Keijser <janjust@...1147...>, Antonio Quartulli <a@...2181...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Antonio Quartulli <a@...2181...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Am 07.12.20 um 12:33 schrieb Jan Just Keijser:
-> Hi Antonio,
+Am 06.12.20 um 17:09 schrieb Antonio Quartulli:
+> Hi all,
 > 
-> On 07/12/20 10:56, Antonio Quartulli wrote:
->> Hi Jan Just, Tony,
->>
->> On 07/12/2020 10:10, Jan Just Keijser wrote:
->>> Thank you very much for adding this so quickly; it won't help Tony He
->>> though, as he is stuck using a rather old AL314 + R9000 chip which does
->>> not support CCM or GCM. I just checked the driver code and indeed there
->>> is no HW support for GCM.  They *do* support some AEAD algorithms:
->>>
->>>    authenc-hmac-sha256-cbc-aes
->>>    authenc-hmac-sha384-cbc-aes
->>>
->>> which are listed as the (true) AEAD equivalent of AES+SHA ; the question
->>> is : how hard would it be to add support for this (and would it be worth
->>> it?)
->> I would ask the same question to the vendor: how hard would it be to
->> support AES-GCM in the current HW engine?
->>
->> Any info about that?
->> They are the best recipient for such feature request I think.
->>
->> As far as I understood the HW engine is also open source, so actually
->> anybody with the right motivation could take up that task.
-> I fully agree; however, the last change to the kernel driver for that
-> hardware was made over 3 years ago , so I suspect that it will be hard
-> to get GCM support for it.
->>
->> Forcing ourselves to sticking to legacy algorithms is not the right
->> move, imho (especially when there are solutions - see above).
->> To answer your question: my feeling is that working on it is not worth
->> the benefit.
->>
->>
-> again, I tend to agree *but* when you say that 'openvpn-dco only
-> supports AEAD crypto algorithms" you can expect that sooner or later
-> someone will ask the question "how about authenc-hmac-sha256-cbc-aes ?" 
-> because that *IS* an AEAD algorithm after all.
+> Some people have expressed interest in ovpn-dco supporting AES-CBC.
 > 
-> But without support in OpenVPN 2.x for this the point is moot, as far as
-> I am concerned, as supporting something only in the kernel driver will
-> make it interoperable with the open source  community version of OpenVPN.
+> However, since ovpn-dco is currently using the AEAD kernel crypto API
+> only, introducing support for CBC mode would require quite some
+> refactoring and we do not really want to do that (the community believes
+> that as of now AEAD ciphers should always be preferred moving forward).
+> 
+> In a previous discussion on this mailing list, it was highlighted that
+> AES-CCM is nothing else than AES-CBC in disguise as AEAD cipher.
+> 
+> (for the curious: it is AES "Counter with CBC-MAC", known as CCM and
+> described in RFC3610).
+> 
+> For this reason I decided to give AES-CCM a try and I implemented in it
+> the "aes-ccm" branch of the ovpn-dco repo.
+> 
+> I am not sure if we're going to merge it to master yet, but for now it
+> would be interesting to gather feedback from those interested in this
+> cipher.
+> 
+> Please note that OpenVPN3 does not yet support this cipher, therefore
+> the only way to test AES-CCM in ovpn-dco is to use the ovpn-cli tool
+> provided in the tests/ folder.
+> 
+> 
+> To do so, just specify "aes-ccm" as algorithm when setting a new key.
+> 
 
-To be honest, I am not seeing any API in OpenSSL that makes use of them
-as AEAD ciphers. And if reduce them to the fact of being
-encrypt-then-mac ciphers we are basically back with normal OpenVPN usage
-of CBC+SHA1 since we always used encrypt-then-mac instead of the
-mac-then-encrypt that TLS used before.
+And here is a variant for OpenVPN 2.x that works with both mbed TLS and
+OpenSSL:
 
-And the driver support argument at least for AES-CCM does not really
-count. From the README:
+https://github.com/schwabe/openvpn/tree/schwabe/aes-ccm
 
-This driver implements standard Linux Crypto API algorithms:
-ablkcipher - aes-cbc, aes-ecb, aes-ctr, dec-cbc, des-ecb,
-des3-ede-cbc, des3-ede-ecb.
-
-Something that implements aes-ctr and aes-cbc, implementing aes-ccm
-should be trivial. Even if means sending the data twice to the crypto
-engine for doing the cmac and the encryption in seperate calls.
-
-As my personal opinion: I still okay with CCM as it is still an optional
-mode for TLS 1.3 but TLS 1.3 does not implement any other mode and
-neither should we spend any extra time on algorithms that are already
-outdated and deprecated when we introduce them. I know that this feels
-unfair to people using old hardware but we have to make a cut at some point.
+While it is not as fast as the ovpn-dco variant, it might be easier to
+use than the doc variant as you only need to add data-ciphers
+AES-128-CCM on both sides to test.
 
 Arne
 
