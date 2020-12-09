@@ -1,8 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Wed,  9 Dec 2020 15:20:43 +0100
-Message-Id: <20201209142045.4489-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 1/3] Move restoring pr pull options to
- initialising of c2 context
+Date: Wed,  9 Dec 2020 15:20:45 +0100
+Message-Id: <20201209142045.4489-3-arne@...1227...>
+In-Reply-To: <20201209142045.4489-1-arne@...1227...>
+References: <20201209142045.4489-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH 3/3] Restore also ping related options on a
+ reconnect
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,62 +17,61 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-We currently delay restoring these options until we actually must
-restore them. Since there is no reason to do so apart from the very
-minor saving to not have to execute that code when a connection fails,
-move them it into the general context_2 initialisation.
+This fixes the issue that if a client reconnects the next connection
+entries inherits the keepalive settings that were pushed or set by
+the previous entry. Since UDP+PULL entries have an implicit 120s
+timeout, this timeout also got applied to a TCP session after an
+UDP entry.
 
+Reported-By: Jan Just Keijser <janjust@...1147...>
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/init.c    | 5 +++++
- src/openvpn/openvpn.h | 1 -
- src/openvpn/push.c    | 5 -----
- 3 files changed, 5 insertions(+), 6 deletions(-)
+ src/openvpn/options.c | 9 +++++++++
+ src/openvpn/options.h | 4 ++++
+ 2 files changed, 13 insertions(+)
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index c3493c42..2f44befe 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -4184,6 +4184,11 @@ init_instance(struct context *c, const struct env_set *env, const unsigned int f
-         }
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 9ab2ead2..95201094 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3600,6 +3600,11 @@ pre_pull_save(struct options *o)
+         o->pre_pull->ciphername = o->ciphername;
+         o->pre_pull->authname = o->authname;
+         o->pre_pull->keysize = o->keysize;
++
++        /* Ping related options should be reset to the config values on reconnect */
++        o->pre_pull->ping_rec_timeout = o->ping_rec_timeout;
++        o->pre_pull->ping_rec_timeout_action = o->ping_rec_timeout_action;
++        o->pre_pull->ping_send_timeout = o->ping_send_timeout;
      }
  
-+    if (c->options.pull)
-+    {
-+        pre_pull_restore(&c->options, &c->c2.gc);
-+    }
+ }
+@@ -3651,6 +3656,10 @@ pre_pull_restore(struct options *o, struct gc_arena *gc)
+         o->ciphername = pp->ciphername;
+         o->authname = pp->authname;
+         o->keysize = pp->keysize;
 +
-     /* map in current connection entry */
-     next_connection_entry(c);
++        o->ping_rec_timeout = pp->ping_rec_timeout;
++        o->ping_rec_timeout_action = pp->ping_rec_timeout_action;
++        o->ping_send_timeout = pp->ping_send_timeout;
+     }
  
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index 4ca89ba9..ece85e88 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -463,7 +463,6 @@ struct context_2
+     o->push_continuation = 0;
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index df0b4030..830ede47 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -79,6 +79,10 @@ struct options_pre_pull
+     const char* authname;
+     int keysize;
  
-     struct event_timeout push_request_interval;
-     int n_sent_push_requests;
--    bool did_pre_pull_restore;
++    int ping_send_timeout;
++    int ping_rec_timeout;
++    int ping_rec_timeout_action;
++
+     int foreign_option_index;
+ };
  
-     /* hash of pulled options, so we can compare when options change */
-     bool pulled_options_digest_init_done;
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 26a6201f..95c28ff1 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -812,11 +812,6 @@ process_incoming_push_reply(struct context *c,
-             md_ctx_init(c->c2.pulled_options_state, md_kt_get("SHA256"));
-             c->c2.pulled_options_digest_init_done = true;
-         }
--        if (!c->c2.did_pre_pull_restore)
--        {
--            pre_pull_restore(&c->options, &c->c2.gc);
--            c->c2.did_pre_pull_restore = true;
--        }
-         if (apply_push_options(&c->options,
-                                buf,
-                                permission_mask,
 -- 
 2.26.2
 
