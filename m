@@ -1,15 +1,8 @@
-References: <a32b8037-2e77-ac39-fc2e-05ff6f0c4b97@...1147...>
- <0b595687-c79d-e95e-fc0c-adfe226e15c2@...1227...>
- <3d90ed3d-3ef8-1bc1-141c-3cb63de16a00@...1227...>
- <30b5d0f8-75c0-4d94-da2c-65e7810b4742@...1147...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <06fd655a-6b8e-0e01-0ed6-cc1e71e76562@...1227...>
-Date: Wed, 9 Dec 2020 13:09:59 +0100
-MIME-Version: 1.0
-In-Reply-To: <30b5d0f8-75c0-4d94-da2c-65e7810b4742@...1147...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] weird issue with server failover when *Not*
- using keepalive
+Date: Wed,  9 Dec 2020 15:20:43 +0100
+Message-Id: <20201209142045.4489-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH 1/3] Move restoring pr pull options to
+ initialising of c2 context
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,63 +13,65 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Jan Just Keijser <janjust@...1147...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Am 09.12.20 um 09:42 schrieb Jan Just Keijser:
-> Hi,
-> 
-> On 04/12/20 16:24, Arne Schwabe wrote:
->>>> If I change the client config to list only a single
->>>>    remote <server> 1194 udp
->>>> line then this reconnect behavior does NOT occur ?!?!?!?
->>>>
->>> This might be a bug in the initialisation order. That the ping timer is
->>> armed before next_connection_entry is called. If you force it reconnect
->>> by restarting server or kill -USR1, does it then also show the
->>> disconnect after 120s behaviour?
->>
->> Following up to myself here. There are probably three problems here
->> mixed together:
->>
->> a) --pull implies --ping-restart and --ping pushed by the server for UDP
->> but the next_connection entry/update currently does not work correctly
->> so it is not working all the time.
-> where is this implied in the code? I couldn't find it in the 2.4.9 codebase
+We currently delay restoring these options until we actually must
+restore them. Since there is no reason to do so apart from the very
+minor saving to not have to execute that code when a connection fails,
+move them it into the general context_2 initialisation.
 
-The code that you pasted implies that. And the overall design of the
-timeouts used in the that p2mp part of openvpn.
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/init.c    | 5 +++++
+ src/openvpn/openvpn.h | 1 -
+ src/openvpn/push.c    | 5 -----
+ 3 files changed, 5 insertions(+), 6 deletions(-)
 
->> b) the ping related options are missing in the options_pre_pull, so they
->> also get applied to connections after an UDP setting.
->>
->> c) the warning for keepalive in server mode + UDP should be a lot
->> stronger as the timeout after 120s+UDP is intended behaviour.
->>
-> if 'keepalive' is a *requirement* for server mode + UDP but not for
-> server mode + TCP then it's still a bug, as a config file with entries
-> 
-> remote server 1194 udp
-> remote server 1194 tcp
-> 
-> fails with the observed behaviour  if the tcp server does not have
-> keepalive se.
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index c3493c42..2f44befe 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -4184,6 +4184,11 @@ init_instance(struct context *c, const struct env_set *env, const unsigned int f
+         }
+     }
+ 
++    if (c->options.pull)
++    {
++        pre_pull_restore(&c->options, &c->c2.gc);
++    }
++
+     /* map in current connection entry */
+     next_connection_entry(c);
+ 
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index 4ca89ba9..ece85e88 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -463,7 +463,6 @@ struct context_2
+ 
+     struct event_timeout push_request_interval;
+     int n_sent_push_requests;
+-    bool did_pre_pull_restore;
+ 
+     /* hash of pulled options, so we can compare when options change */
+     bool pulled_options_digest_init_done;
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 26a6201f..95c28ff1 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -812,11 +812,6 @@ process_incoming_push_reply(struct context *c,
+             md_ctx_init(c->c2.pulled_options_state, md_kt_get("SHA256"));
+             c->c2.pulled_options_digest_init_done = true;
+         }
+-        if (!c->c2.did_pre_pull_restore)
+-        {
+-            pre_pull_restore(&c->options, &c->c2.gc);
+-            c->c2.did_pre_pull_restore = true;
+-        }
+         if (apply_push_options(&c->options,
+                                buf,
+                                permission_mask,
+-- 
+2.26.2
 
-See b)
-> Also, if 'keepalive' is a *requirement* then it should be set
-> mandatorily in server mode with sane defaults (like 'keepalive 10 60' ) .
-
-Yeah, maybe. But what is a sane default?
-
-> The original bug still stands:
-> 
-> If I have a working setup, e.g.  server mode+TCP with no keepalive
-> (which makes sense) and on the client side I add a line
->   remote server 1194 udp
-> 
-> then the *TCP* server config should continue to work instead of
-> restarting every 120 seconds, regardless of how I configurd my UDP server.
-
-yeah b) is a bug that is not fixed at the moment.
-
-Arne
 
