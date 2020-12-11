@@ -1,11 +1,8 @@
-References: <9cbe2737-df06-c921-1052-3dabe3fb4141@...515...>
-From: tincanteksup <tincanteksup@...277...>
-Message-ID: <a01f3f7a-97b9-b591-ef19-19ae2ff7c842@...277...>
-Date: Thu, 10 Dec 2020 23:48:46 +0000
-MIME-Version: 1.0
-In-Reply-To: <9cbe2737-df06-c921-1052-3dabe3fb4141@...515...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] Community meetings in December 2020
+From: Arne Schwabe <arne@...1227...>
+Date: Fri, 11 Dec 2020 13:59:57 +0100
+Message-Id: <20201211125957.7764-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Fix tls-auth mismatch OCC message when
+ tls-cryptv2 is used.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,14 +11,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Please discuss and resolve the fate of the OpenVPN-Legacy-Service for 
-Windows.
+A server with tls-cryptv2 and tls-auth produces the warning:
 
-Ref: https://community.openvpn.net/openvpn/ticket/1344
+  WARNING: 'tls-auth' is present in local config but missing in remote config, local='tls-auth'"
 
-Official status of deprecation/removal requested.
+The tls-auth option has no argument so the strpefix with the space
+included does not match it.
+
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/options.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index d824cbad..d9d492b2 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -4138,7 +4138,7 @@ options_warning_safe_scan2(const int msglevel,
+     if (strprefix(p1, "key-method ")
+         || strprefix(p1, "keydir ")
+         || strprefix(p1, "proto ")
+-        || strprefix(p1, "tls-auth ")
++        || streq(p1, "tls-auth")
+         || strprefix(p1, "tun-ipv6")
+         || strprefix(p1, "cipher "))
+     {
+-- 
+2.26.2
+
 
