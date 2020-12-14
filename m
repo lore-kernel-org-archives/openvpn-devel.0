@@ -1,12 +1,7 @@
-References: <20201211125957.7764-1-arne@...1227...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <62f57160-4048-888e-875e-38e3084aba9f@...1856...>
-Date: Sun, 13 Dec 2020 09:36:01 +0100
-MIME-Version: 1.0
-In-Reply-To: <20201211125957.7764-1-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Fix tls-auth mismatch OCC message when
- tls-cryptv2 is used.
+From: Arne Schwabe <arne@...1227...>
+Date: Mon, 14 Dec 2020 18:24:07 +0100
+Message-Id: <20201214172407.30451-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Remove inetd support from OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,43 +10,815 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+This code is from another time and has almost no relevance today.
 
-On 11-12-2020 13:59, Arne Schwabe wrote:
-> A server with tls-cryptv2 and tls-auth produces the warning:
-> 
->   WARNING: 'tls-auth' is present in local config but missing in remote config, local='tls-auth'"
-> 
-> The tls-auth option has no argument so the strpefix with the space
-> included does not match it.
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  src/openvpn/options.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index d824cbad..d9d492b2 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -4138,7 +4138,7 @@ options_warning_safe_scan2(const int msglevel,
->      if (strprefix(p1, "key-method ")
->          || strprefix(p1, "keydir ")
->          || strprefix(p1, "proto ")
-> -        || strprefix(p1, "tls-auth ")
-> +        || streq(p1, "tls-auth")
->          || strprefix(p1, "tun-ipv6")
->          || strprefix(p1, "cipher "))
->      {
-> 
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ Changes.rst                                   |   7 +
+ doc/man-sections/link-options.rst             |   4 -
+ doc/man-sections/log-options.rst              |   4 +-
+ doc/man-sections/server-options.rst           |  31 ---
+ .../sample-config-files/xinetd-client-config  |  11 -
+ .../sample-config-files/xinetd-server-config  |  25 ---
+ src/openvpn/error.c                           |   4 +-
+ src/openvpn/forward.c                         |  18 +-
+ src/openvpn/init.c                            |  22 --
+ src/openvpn/misc.c                            |  20 --
+ src/openvpn/misc.h                            |   7 -
+ src/openvpn/options.c                         | 121 -----------
+ src/openvpn/options.h                         |   3 -
+ src/openvpn/socket.c                          | 191 +++++-------------
+ src/openvpn/socket.h                          |   6 -
+ 15 files changed, 70 insertions(+), 404 deletions(-)
+ delete mode 100644 sample/sample-config-files/xinetd-client-config
+ delete mode 100644 sample/sample-config-files/xinetd-server-config
 
-Thanks for fixing this.
+diff --git a/Changes.rst b/Changes.rst
+index 2a2829e7..2a847564 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -9,6 +9,13 @@ Keying Material Exporters (RFC 5705) based key generation
+     the RFC5705 based key material generation to the current custom
+     OpenVPN PRF. This feature requires OpenSSL or mbed TLS 2.18+.
+ 
++Deprecated features
++-------------------
++``inetd`` has been removed
++    This was a very limited and not-well-tested way to run OpenVPN, on TCP
++    and TAP mode only.
++
++
+ Overview of changes in 2.5
+ ==========================
+ 
+diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-options.rst
+index c132a623..b8a72d7a 100644
+--- a/doc/man-sections/link-options.rst
++++ b/doc/man-sections/link-options.rst
+@@ -366,10 +366,6 @@ the local and the remote host.
+   Persist replay-protection state across sessions using ``file`` to save
+   and reload the state.
+ 
+-  This option will strengthen protection against replay attacks,
+-  especially when you are using OpenVPN in a dynamic context (such as with
+-  ``--inetd``) when OpenVPN sessions are frequently started and stopped.
+-
+   This option will keep a disk copy of the current replay protection state
+   (i.e. the most recent packet timestamp and sequence number received from
+   the remote peer), so that if an OpenVPN session is stopped and
+diff --git a/doc/man-sections/log-options.rst b/doc/man-sections/log-options.rst
+index e385d180..d2451d8a 100644
+--- a/doc/man-sections/log-options.rst
++++ b/doc/man-sections/log-options.rst
+@@ -15,8 +15,8 @@ Log options
+   Output logging messages to ``file``, including output to stdout/stderr
+   which is generated by called scripts. If ``file`` already exists it will
+   be truncated. This option takes effect immediately when it is parsed in
+-  the command line and will supersede syslog output if ``--daemon`` or
+-  ``--inetd`` is also specified. This option is persistent over the entire
++  the command line and will supersede syslog output if ``--daemon``
++  is also specified. This option is persistent over the entire
+   course of an OpenVPN instantiation and will not be reset by
+   :code:`SIGHUP`, :code:`SIGUSR1`, or ``--ping-restart``.
+ 
+diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-options.rst
+index 5a689452..37ea8d43 100644
+--- a/doc/man-sections/server-options.rst
++++ b/doc/man-sections/server-options.rst
+@@ -286,37 +286,6 @@ fast hardware. SSL/TLS authentication must be used in this mode.
+ 
+      ifconfig-ipv6-push ipv6addr/bits ipv6remote
+ 
+---inetd args
+-  Valid syntaxes:
+-  ::
+-
+-     inetd
+-     inetd wait
+-     inetd nowait
+-     inetd wait progname
+-
+-  Use this option when OpenVPN is being run from the inetd or ``xinetd``\(8)
+-  server.
+-
+-  The :code:`wait` and :code:`nowait` option must match what is specified
+-  in the inetd/xinetd config file. The :code:`nowait` mode can only be used
+-  with ``--proto tcp-server`` The default is :code:`wait`.  The
+-  :code:`nowait` mode can be used to instantiate the OpenVPN daemon as a
+-  classic TCP server, where client connection requests are serviced on a
+-  single port number. For additional information on this kind of
+-  configuration, see the OpenVPN FAQ:
+-  https://community.openvpn.net/openvpn/wiki/325-openvpn-as-a--forking-tcp-server-which-can-service-multiple-clients-over-a-single-tcp-port
+-
+-  This option precludes the use of ``--daemon``, ``--local`` or
+-  ``--remote``.  Note that this option causes message and error output to
+-  be handled in the same way as the ``--daemon`` option. The optional
+-  ``progname`` parameter is also handled exactly as in ``--daemon``.
+-
+-  Also note that in ``wait`` mode, each OpenVPN tunnel requires a separate
+-  TCP/UDP port and a separate inetd or xinetd entry. See the OpenVPN 1.x
+-  HOWTO for an example on using OpenVPN with xinetd:
+-  https://openvpn.net/community-resources/1xhowto/
+-
+ --multihome
+   Configure a multi-homed UDP server. This option needs to be used when a
+   server has more than one IP address (e.g. multiple interfaces, or
+diff --git a/sample/sample-config-files/xinetd-client-config b/sample/sample-config-files/xinetd-client-config
+deleted file mode 100644
+index 03c5c1fa..00000000
+--- a/sample/sample-config-files/xinetd-client-config
++++ /dev/null
+@@ -1,11 +0,0 @@
+-# This OpenVPN config file
+-# is the client side counterpart
+-# of xinetd-server-config
+-
+-dev tun
+-ifconfig 10.4.0.1 10.4.0.2
+-remote my-server
+-port 1194
+-user nobody
+-secret /root/openvpn/key
+-inactive 600
+diff --git a/sample/sample-config-files/xinetd-server-config b/sample/sample-config-files/xinetd-server-config
+deleted file mode 100644
+index 803a6f8f..00000000
+--- a/sample/sample-config-files/xinetd-server-config
++++ /dev/null
+@@ -1,25 +0,0 @@
+-# An xinetd configuration file for OpenVPN.
+-#
+-# This file should be renamed to openvpn or something suitably
+-# descriptive and copied to the /etc/xinetd.d directory.
+-# xinetd can then be made aware of this file by restarting
+-# it or sending it a SIGHUP signal.
+-#
+-# For each potential incoming client, create a separate version
+-# of this configuration file on a unique port number.  Also note
+-# that the key file and ifconfig endpoints should be unique for
+-# each client.  This configuration assumes that the OpenVPN
+-# executable and key live in /root/openvpn.  Change this to fit
+-# your environment.
+-
+-service openvpn_1
+-{
+-        type            = UNLISTED
+-        port            = 1194
+-        socket_type     = dgram
+-        protocol        = udp
+-        wait            = yes
+-        user            = root
+-        server          = /root/openvpn/openvpn
+-        server_args     = --inetd --dev tun --ifconfig 10.4.0.2 10.4.0.1 --secret /root/openvpn/key --inactive 600 --user nobody
+-}
+diff --git a/src/openvpn/error.c b/src/openvpn/error.c
+index 7d0fcb2d..0ecbfc33 100644
+--- a/src/openvpn/error.c
++++ b/src/openvpn/error.c
+@@ -62,7 +62,7 @@ static int mute_category;   /* GLOBAL */
+  * Output mode priorities are as follows:
+  *
+  *  (1) --log-x overrides everything
+- *  (2) syslog is used if --daemon or --inetd is defined and not --log-x
++ *  (2) syslog is used if --daemon is defined and not --log-x
+  *  (3) if OPENVPN_DEBUG_COMMAND_LINE is defined, output
+  *      to constant logfile name.
+  *  (4) Output to stdout.
+@@ -476,7 +476,7 @@ open_syslog(const char *pgmname, bool stdio_to_null)
+         }
+     }
+ #else  /* if SYSLOG_CAPABILITY */
+-    msg(M_WARN, "Warning on use of --daemon/--inetd: this operating system lacks daemon logging features, therefore when I become a daemon, I won't be able to log status or error messages");
++    msg(M_WARN, "Warning on use of --daemon: this operating system lacks daemon logging features, therefore when I become a daemon, I won't be able to log status or error messages");
+ #endif
+ }
+ 
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 67615a6b..17a2699d 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -834,23 +834,15 @@ read_incoming_link(struct context *c)
+ #endif
+         {
+             /* received a disconnect from a connection-oriented protocol */
+-            if (c->options.inetd)
++            if (event_timeout_defined(&c->c2.explicit_exit_notification_interval))
+             {
+-                register_signal(c, SIGTERM, "connection-reset-inetd");
+-                msg(D_STREAM_ERRORS, "Connection reset, inetd/xinetd exit [%d]", status);
++                msg(D_STREAM_ERRORS, "Connection reset during exit notification period, ignoring [%d]", status);
++                management_sleep(1);
+             }
+             else
+             {
+-                if (event_timeout_defined(&c->c2.explicit_exit_notification_interval))
+-                {
+-                    msg(D_STREAM_ERRORS, "Connection reset during exit notification period, ignoring [%d]", status);
+-                    management_sleep(1);
+-                }
+-                else
+-                {
+-                    register_signal(c, SIGUSR1, "connection-reset"); /* SOFT-SIGUSR1 -- TCP connection reset */
+-                    msg(D_STREAM_ERRORS, "Connection reset, restarting [%d]", status);
+-                }
++                register_signal(c, SIGUSR1, "connection-reset"); /* SOFT-SIGUSR1 -- TCP connection reset */
++                msg(D_STREAM_ERRORS, "Connection reset, restarting [%d]", status);
+             }
+         }
+         perf_pop();
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index c3493c42..d234729c 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1236,7 +1236,6 @@ possibly_become_daemon(const struct options *options)
+ 
+     if (options->daemon)
+     {
+-        ASSERT(!options->inetd);
+         /* Don't chdir immediately, but the end of the init sequence, if needed */
+ 
+ #if defined(__APPLE__) && defined(__clang__)
+@@ -3449,7 +3448,6 @@ do_init_socket_1(struct context *c, const int mode)
+ #endif
+                             c->options.ce.bind_local,
+                             c->options.ce.remote_float,
+-                            c->options.inetd,
+                             &c->c1.link_socket_addr,
+                             c->options.ipchange,
+                             c->plugins,
+@@ -3552,23 +3550,6 @@ do_init_first_time(struct context *c)
+     }
+ }
+ 
+-/*
+- * If xinetd/inetd mode, don't allow restart.
+- */
+-static void
+-do_close_check_if_restart_permitted(struct context *c)
+-{
+-    if (c->options.inetd
+-        && (c->sig->signal_received == SIGHUP
+-            || c->sig->signal_received == SIGUSR1))
+-    {
+-        c->sig->signal_received = SIGTERM;
+-        msg(M_INFO,
+-            PACKAGE_NAME
+-            " started by inetd/xinetd cannot restart... Exiting.");
+-    }
+-}
+-
+ /*
+  * free buffers
+  */
+@@ -4462,9 +4443,6 @@ close_instance(struct context *c)
+         || c->mode == CM_CHILD_UDP
+         || c->mode == CM_TOP)
+     {
+-        /* if xinetd/inetd mode, don't allow restart */
+-        do_close_check_if_restart_permitted(c);
+-
+ #ifdef USE_COMP
+         if (c->c2.comp_context)
+         {
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index c0c72dd7..feaefb3b 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -75,26 +75,6 @@ set_std_files_to_null(bool stdin_only)
+ #endif
+ }
+ 
+-/*
+- *  dup inetd/xinetd socket descriptor and save
+- */
+-
+-int inetd_socket_descriptor = SOCKET_UNDEFINED; /* GLOBAL */
+-
+-void
+-save_inetd_socket_descriptor(void)
+-{
+-    inetd_socket_descriptor = INETD_SOCKET_DESCRIPTOR;
+-#if defined(HAVE_DUP) && defined(HAVE_DUP2)
+-    /* use handle passed by inetd/xinetd */
+-    if ((inetd_socket_descriptor = dup(INETD_SOCKET_DESCRIPTOR)) < 0)
+-    {
+-        msg(M_ERR, "INETD_SOCKET_DESCRIPTOR dup(%d) failed", INETD_SOCKET_DESCRIPTOR);
+-    }
+-    set_std_files_to_null(true);
+-#endif
+-}
+-
+ /*
+  * Prepend a random string to hostname to prevent DNS caching.
+  * For example, foo.bar.gov would be modified to <random-chars>.foo.bar.gov.
+diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
+index e4342b0d..9b018eb5 100644
+--- a/src/openvpn/misc.h
++++ b/src/openvpn/misc.h
+@@ -32,9 +32,6 @@
+ #include "buffer.h"
+ #include "platform.h"
+ 
+-/* socket descriptor passed by inetd/xinetd server to us */
+-#define INETD_SOCKET_DESCRIPTOR 0
+-
+ /* forward declarations */
+ struct plugin_list;
+ 
+@@ -42,10 +39,6 @@ struct plugin_list;
+ /* Set standard file descriptors to /dev/null */
+ void set_std_files_to_null(bool stdin_only);
+ 
+-/* dup inetd/xinetd socket descriptor and save */
+-extern int inetd_socket_descriptor;
+-void save_inetd_socket_descriptor(void);
+-
+ /* Make arrays of strings */
+ 
+ const char **make_arg_array(const char *first, const char *parms, struct gc_arena *gc);
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index ff3954d5..28d51c9a 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -324,8 +324,6 @@ static const char usage_message[] =
+     "                  as the program name to the system logger.\n"
+     "--syslog [name] : Output to syslog, but do not become a daemon.\n"
+     "                  See --daemon above for a description of the 'name' parm.\n"
+-    "--inetd [name] ['wait'|'nowait'] : Run as an inetd or xinetd server.\n"
+-    "                  See --daemon above for a description of the 'name' parm.\n"
+     "--log file      : Output log to file which is created/truncated on open.\n"
+     "--log-append file : Append log to file, or create file if nonexistent.\n"
+     "--suppress-timestamps : Don't log timestamps to stdout/stderr.\n"
+@@ -1603,7 +1601,6 @@ show_settings(const struct options *o)
+     SHOW_BOOL(up_restart);
+     SHOW_BOOL(up_delay);
+     SHOW_BOOL(daemon);
+-    SHOW_INT(inetd);
+     SHOW_BOOL(log);
+     SHOW_BOOL(suppress_timestamps);
+     SHOW_BOOL(machine_readable_output);
+@@ -2032,48 +2029,6 @@ options_postprocess_verify_ce(const struct options *options,
+             "--proto tcp-server or --proto tcp-client");
+     }
+ 
+-    /*
+-     * Sanity check on daemon/inetd modes
+-     */
+-
+-    if (options->daemon && options->inetd)
+-    {
+-        msg(M_USAGE, "only one of --daemon or --inetd may be specified");
+-    }
+-
+-    if (options->inetd && (ce->local || ce->remote))
+-    {
+-        msg(M_USAGE, "--local or --remote cannot be used with --inetd");
+-    }
+-
+-    if (options->inetd && ce->proto == PROTO_TCP_CLIENT)
+-    {
+-        msg(M_USAGE, "--proto tcp-client cannot be used with --inetd");
+-    }
+-
+-    if (options->inetd == INETD_NOWAIT && ce->proto != PROTO_TCP_SERVER)
+-    {
+-        msg(M_USAGE, "--inetd nowait can only be used with --proto tcp-server");
+-    }
+-
+-    if (options->inetd == INETD_NOWAIT
+-        && !(options->tls_server || options->tls_client))
+-    {
+-        msg(M_USAGE, "--inetd nowait can only be used in TLS mode");
+-    }
+-
+-    if (options->inetd == INETD_NOWAIT && dev != DEV_TYPE_TAP)
+-    {
+-        msg(M_USAGE, "--inetd nowait only makes sense in --dev tap mode");
+-    }
+-
+-    if (options->inetd)
+-    {
+-        msg(M_WARN,
+-            "DEPRECATED OPTION: --inetd mode is deprecated and will be removed "
+-            "in OpenVPN 2.6");
+-    }
+-
+     if (options->lladdr && dev != DEV_TYPE_TAP)
+     {
+         msg(M_USAGE, "--lladdr can only be used in --dev tap mode");
+@@ -2339,10 +2294,6 @@ options_postprocess_verify_ce(const struct options *options,
+         {
+             msg(M_USAGE, "--shaper cannot be used with --mode server");
+         }
+-        if (options->inetd)
+-        {
+-            msg(M_USAGE, "--inetd cannot be used with --mode server");
+-        }
+         if (options->ipchange)
+         {
+             msg(M_USAGE,
+@@ -2983,18 +2934,7 @@ options_postprocess_mutate_invariant(struct options *options)
+ {
+ #ifdef _WIN32
+     const int dev = dev_type_enum(options->dev, options->dev_type);
+-#endif
+ 
+-    /*
+-     * In forking TCP server mode, you don't need to ifconfig
+-     * the tap device (the assumption is that it will be bridged).
+-     */
+-    if (options->inetd == INETD_NOWAIT)
+-    {
+-        options->ifconfig_noexec = true;
+-    }
+-
+-#ifdef _WIN32
+     /* when using wintun, kernel doesn't send DHCP requests, so don't use it */
+     if (options->windows_driver == WINDOWS_DRIVER_WINTUN
+         && (options->tuntap_options.ip_win32_type == IPW32_SET_DHCP_MASQ || options->tuntap_options.ip_win32_type == IPW32_SET_ADAPTIVE))
+@@ -5895,67 +5835,6 @@ add_option(struct options *options,
+             }
+         }
+     }
+-    else if (streq(p[0], "inetd") && !p[3])
+-    {
+-        VERIFY_PERMISSION(OPT_P_GENERAL);
+-        if (!options->inetd)
+-        {
+-            int z;
+-            const char *name = NULL;
+-            const char *opterr = "when --inetd is used with two parameters, one of them must be 'wait' or 'nowait' and the other must be a daemon name to use for system logging";
+-
+-            options->inetd = -1;
+-
+-            for (z = 1; z <= 2; ++z)
+-            {
+-                if (p[z])
+-                {
+-                    if (streq(p[z], "wait"))
+-                    {
+-                        if (options->inetd != -1)
+-                        {
+-                            msg(msglevel, "%s", opterr);
+-                            goto err;
+-                        }
+-                        else
+-                        {
+-                            options->inetd = INETD_WAIT;
+-                        }
+-                    }
+-                    else if (streq(p[z], "nowait"))
+-                    {
+-                        if (options->inetd != -1)
+-                        {
+-                            msg(msglevel, "%s", opterr);
+-                            goto err;
+-                        }
+-                        else
+-                        {
+-                            options->inetd = INETD_NOWAIT;
+-                        }
+-                    }
+-                    else
+-                    {
+-                        if (name != NULL)
+-                        {
+-                            msg(msglevel, "%s", opterr);
+-                            goto err;
+-                        }
+-                        name = p[z];
+-                    }
+-                }
+-            }
+-
+-            /* default */
+-            if (options->inetd == -1)
+-            {
+-                options->inetd = INETD_WAIT;
+-            }
+-
+-            save_inetd_socket_descriptor();
+-            open_syslog(name, true);
+-        }
+-    }
+     else if (streq(p[0], "log") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 5b6d9441..56228668 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -319,9 +319,6 @@ struct options
+ 
+     int remap_sigusr1;
+ 
+-    /* inetd modes defined in socket.h */
+-    int inetd;
+-
+     bool log;
+     bool suppress_timestamps;
+     bool machine_readable_output;
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 97750681..891f63b0 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -1894,7 +1894,6 @@ link_socket_init_phase1(struct link_socket *sock,
+ #endif
+                         bool bind_local,
+                         bool remote_float,
+-                        int inetd,
+                         struct link_socket_addr *lsa,
+                         const char *ipchange_command,
+                         const struct plugin_list *plugins,
+@@ -1917,7 +1916,6 @@ link_socket_init_phase1(struct link_socket *sock,
+     sock->http_proxy = http_proxy;
+     sock->socks_proxy = socks_proxy;
+     sock->bind_local = bind_local;
+-    sock->inetd = inetd;
+     sock->resolve_retry_seconds = resolve_retry_seconds;
+     sock->mtu_discover_type = mtu_discover_type;
+ 
+@@ -1946,7 +1944,6 @@ link_socket_init_phase1(struct link_socket *sock,
+     {
+         ASSERT(accept_from);
+         ASSERT(sock->info.proto == PROTO_TCP_SERVER);
+-        ASSERT(!sock->inetd);
+         sock->sd = accept_from->sd;
+         /* inherit (possibly guessed) info AF from parent context */
+         sock->info.af = accept_from->info.af;
+@@ -1956,7 +1953,6 @@ link_socket_init_phase1(struct link_socket *sock,
+     if (sock->http_proxy)
+     {
+         ASSERT(sock->info.proto == PROTO_TCP_CLIENT);
+-        ASSERT(!sock->inetd);
+ 
+         /* the proxy server */
+         sock->remote_host = http_proxy->options.server;
+@@ -1969,8 +1965,6 @@ link_socket_init_phase1(struct link_socket *sock,
+     /* or in Socks proxy mode? */
+     else if (sock->socks_proxy)
+     {
+-        ASSERT(!sock->inetd);
+-
+         /* the proxy server */
+         sock->remote_host = socks_proxy->server;
+         sock->remote_port = socks_proxy->port;
+@@ -1998,15 +1992,7 @@ link_socket_init_phase1(struct link_socket *sock,
+         }
+     }
+ 
+-    /* were we started by inetd or xinetd? */
+-    if (sock->inetd)
+-    {
+-        ASSERT(sock->info.proto != PROTO_TCP_CLIENT);
+-        ASSERT(socket_defined(inetd_socket_descriptor));
+-        sock->sd = inetd_socket_descriptor;
+-        set_cloexec(sock->sd);          /* not created by create_socket*() */
+-    }
+-    else if (mode != LS_MODE_TCP_ACCEPT_FROM)
++    if (mode != LS_MODE_TCP_ACCEPT_FROM)
+     {
+         if (sock->bind_local)
+         {
+@@ -2016,58 +2002,6 @@ link_socket_init_phase1(struct link_socket *sock,
+     }
+ }
+ 
+-static
+-void
+-phase2_inetd(struct link_socket *sock, const struct frame *frame,
+-             const char *remote_dynamic, volatile int *signal_received)
+-{
+-    bool remote_changed = false;
+-
+-    if (sock->info.proto == PROTO_TCP_SERVER)
+-    {
+-        /* AF_INET as default (and fallback) for inetd */
+-        sock->info.lsa->actual.dest.addr.sa.sa_family = AF_INET;
+-#ifdef HAVE_GETSOCKNAME
+-        {
+-            /* inetd: hint family type for dest = local's */
+-            struct openvpn_sockaddr local_addr;
+-            socklen_t addrlen = sizeof(local_addr);
+-            if (getsockname(sock->sd, &local_addr.addr.sa, &addrlen) == 0)
+-            {
+-                sock->info.lsa->actual.dest.addr.sa.sa_family = local_addr.addr.sa.sa_family;
+-                dmsg(D_SOCKET_DEBUG, "inetd(%s): using sa_family=%d from getsockname(%d)",
+-                     proto2ascii(sock->info.proto, sock->info.af, false),
+-                     local_addr.addr.sa.sa_family, (int)sock->sd);
+-            }
+-            else
+-            {
+-                int saved_errno = errno;
+-                msg(M_WARN|M_ERRNO, "inetd(%s): getsockname(%d) failed, using AF_INET",
+-                    proto2ascii(sock->info.proto, sock->info.af, false), (int)sock->sd);
+-                /* if not called with a socket on stdin, --inetd cannot work */
+-                if (saved_errno == ENOTSOCK)
+-                {
+-                    msg(M_FATAL, "ERROR: socket required for --inetd operation");
+-                }
+-            }
+-        }
+-#else  /* ifdef HAVE_GETSOCKNAME */
+-        msg(M_WARN, "inetd(%s): this OS does not provide the getsockname() "
+-            "function, using AF_INET",
+-            proto2ascii(sock->info.proto, false));
+-#endif /* ifdef HAVE_GETSOCKNAME */
+-        sock->sd =
+-            socket_listen_accept(sock->sd,
+-                                 &sock->info.lsa->actual,
+-                                 remote_dynamic,
+-                                 sock->info.lsa->bind_local,
+-                                 false,
+-                                 sock->inetd == INETD_NOWAIT,
+-                                 signal_received);
+-    }
+-    ASSERT(!remote_changed);
+-}
+-
+ static void
+ phase2_set_socket_flags(struct link_socket *sock)
+ {
+@@ -2094,11 +2028,7 @@ linksock_print_addr(struct link_socket *sock)
+     const int msglevel = (sock->mode == LS_MODE_TCP_ACCEPT_FROM) ? D_INIT_MEDIUM : M_INFO;
+ 
+     /* print local address */
+-    if (sock->inetd)
+-    {
+-        msg(msglevel, "%s link local: [inetd]", proto2ascii(sock->info.proto, sock->info.af, true));
+-    }
+-    else if (sock->bind_local)
++    if (sock->bind_local)
+     {
+         sa_family_t ai_family = sock->info.lsa->actual.dest.addr.sa.sa_family;
+         /* Socket is always bound on the first matching address,
+@@ -2287,85 +2217,72 @@ link_socket_init_phase2(struct link_socket *sock,
+         remote_dynamic = sock->remote_host;
+     }
+ 
+-    /* were we started by inetd or xinetd? */
+-    if (sock->inetd)
+-    {
+-        phase2_inetd(sock, frame, remote_dynamic,  &sig_info->signal_received);
+-        if (sig_info->signal_received)
+-        {
+-            goto done;
+-        }
++    /* Second chance to resolv/create socket */
++    resolve_remote(sock, 2, &remote_dynamic,  &sig_info->signal_received);
+ 
+-    }
+-    else
++    /* If a valid remote has been found, create the socket with its addrinfo */
++    if (sock->info.lsa->current_remote)
+     {
+-        /* Second chance to resolv/create socket */
+-        resolve_remote(sock, 2, &remote_dynamic,  &sig_info->signal_received);
++        create_socket(sock, sock->info.lsa->current_remote);
++    }
+ 
+-        /* If a valid remote has been found, create the socket with its addrinfo */
+-        if (sock->info.lsa->current_remote)
+-        {
+-            create_socket(sock, sock->info.lsa->current_remote);
+-        }
++    /* If socket has not already been created create it now */
++    if (sock->sd == SOCKET_UNDEFINED)
++    {
++        /* If we have no --remote and have still not figured out the
++         * protocol family to use we will use the first of the bind */
+ 
+-        /* If socket has not already been created create it now */
+-        if (sock->sd == SOCKET_UNDEFINED)
++        if (sock->bind_local  && !sock->remote_host && sock->info.lsa->bind_local)
+         {
+-            /* If we have no --remote and have still not figured out the
+-             * protocol family to use we will use the first of the bind */
+-
+-            if (sock->bind_local  && !sock->remote_host && sock->info.lsa->bind_local)
++            /* Warn if this is because neither v4 or v6 was specified
++             * and we should not connect a remote */
++            if (sock->info.af == AF_UNSPEC)
+             {
+-                /* Warn if this is because neither v4 or v6 was specified
+-                 * and we should not connect a remote */
+-                if (sock->info.af == AF_UNSPEC)
+-                {
+-                    msg(M_WARN, "Could not determine IPv4/IPv6 protocol. Using %s",
+-                        addr_family_name(sock->info.lsa->bind_local->ai_family));
+-                    sock->info.af = sock->info.lsa->bind_local->ai_family;
+-                }
+-
+-                create_socket(sock, sock->info.lsa->bind_local);
++                msg(M_WARN, "Could not determine IPv4/IPv6 protocol. Using %s",
++                    addr_family_name(sock->info.lsa->bind_local->ai_family));
++                sock->info.af = sock->info.lsa->bind_local->ai_family;
+             }
+-        }
+ 
+-        /* Socket still undefined, give a warning and abort connection */
+-        if (sock->sd == SOCKET_UNDEFINED)
+-        {
+-            msg(M_WARN, "Could not determine IPv4/IPv6 protocol");
+-            sig_info->signal_received = SIGUSR1;
+-            goto done;
++            create_socket(sock, sock->info.lsa->bind_local);
+         }
++    }
+ 
+-        if (sig_info->signal_received)
+-        {
+-            goto done;
+-        }
++    /* Socket still undefined, give a warning and abort connection */
++    if (sock->sd == SOCKET_UNDEFINED)
++    {
++        msg(M_WARN, "Could not determine IPv4/IPv6 protocol");
++        sig_info->signal_received = SIGUSR1;
++        goto done;
++    }
+ 
+-        if (sock->info.proto == PROTO_TCP_SERVER)
+-        {
+-            phase2_tcp_server(sock, remote_dynamic,
+-                              &sig_info->signal_received);
+-        }
+-        else if (sock->info.proto == PROTO_TCP_CLIENT)
+-        {
+-            phase2_tcp_client(sock, sig_info);
++    if (sig_info->signal_received)
++    {
++        goto done;
++    }
+ 
+-        }
+-        else if (sock->info.proto == PROTO_UDP && sock->socks_proxy)
+-        {
+-            phase2_socks_client(sock, sig_info);
+-        }
++    if (sock->info.proto == PROTO_TCP_SERVER)
++    {
++        phase2_tcp_server(sock, remote_dynamic,
++                          &sig_info->signal_received);
++    }
++    else if (sock->info.proto == PROTO_TCP_CLIENT)
++    {
++        phase2_tcp_client(sock, sig_info);
++
++    }
++    else if (sock->info.proto == PROTO_UDP && sock->socks_proxy)
++    {
++        phase2_socks_client(sock, sig_info);
++    }
+ #ifdef TARGET_ANDROID
+-        if (sock->sd != -1)
+-        {
+-            protect_fd_nonlocal(sock->sd, &sock->info.lsa->actual.dest.addr.sa);
+-        }
++    if (sock->sd != -1)
++    {
++        protect_fd_nonlocal(sock->sd, &sock->info.lsa->actual.dest.addr.sa);
++    }
+ #endif
+-        if (sig_info->signal_received)
+-        {
+-            goto done;
+-        }
++    if (sig_info->signal_received)
++    {
++        goto done;
+     }
+ 
+     phase2_set_socket_flags(sock);
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index 7aeae527..4099f6ea 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -188,11 +188,6 @@ struct link_socket
+     struct cached_dns_entry *dns_cache;
+     bool bind_local;
+ 
+-#define INETD_NONE   0
+-#define INETD_WAIT   1
+-#define INETD_NOWAIT 2
+-    int inetd;
+-
+ #define LS_MODE_DEFAULT           0
+ #define LS_MODE_TCP_LISTEN        1
+ #define LS_MODE_TCP_ACCEPT_FROM   2
+@@ -318,7 +313,6 @@ link_socket_init_phase1(struct link_socket *sock,
+ #endif
+                         bool bind_local,
+                         bool remote_float,
+-                        int inetd,
+                         struct link_socket_addr *lsa,
+                         const char *ipchange_command,
+                         const struct plugin_list *plugins,
+-- 
+2.26.2
 
-Acked-by: Steffan Karger <steffan@...1856...>
-
--Steffan
 
