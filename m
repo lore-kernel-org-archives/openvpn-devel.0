@@ -1,8 +1,9 @@
 From: Domagoj Pensa <domagoj@...2540...>
-Message-ID: <20201215173004.26170-1-domagoj@...2540...>
-Date: Tue, 15 Dec 2020 18:30:04 +0100
+Message-ID: <20201215171600.25534-1-domagoj@...2540...>
+Date: Tue, 15 Dec 2020 18:16:00 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Skip DHCP renew with Wintun adapter
+Subject: [Openvpn-devel] [PATCH] Fix too early argv freeing when registering
+ DNS
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,81 +17,38 @@ Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 Cc: Domagoj Pensa <domagoj@...2540...>
 
-Wintun does not support DHCP.
-Running  DHCP renew with Wintun adapter fails with a logged warning.
+When registering DNS on Windows, argv is freed after being used in first
+ipconfig command (/flushdns).
 
-Fixed so that DHCP renewing is called only for TAP-Windows6 adapters.
+Then same argv is used uninitialized in next ipconfig command (/registerdns)
+causing heap exception and subprocess crash.
+
+As a consequence second command is never executed and locked netcmd
+semaphore is not cleanly released.
+
+Removing argv freeing between ipconfig calls solves the problem.
+
+This issue was introduced in commit 870e240 (argv: do fewer memory
+re-allocations). After a quick glance at commit no similar problem was
+spotted in rest of the argv related changes.
+
+Signed-off-by: Domagoj Pensa <domagoj@...2540...>
 ---
- src/openvpn/tun.c | 44 ++++++++++++++++++++++----------------------
- 1 file changed, 22 insertions(+), 22 deletions(-)
+ src/openvpn/tun.c | 1 -
+ 1 file changed, 1 deletion(-)
 
 diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 400a50ca..6892fdb7 100644
+index 400a50ca..2b227bb6 100644
 --- a/src/openvpn/tun.c
 +++ b/src/openvpn/tun.c
-@@ -6155,35 +6155,35 @@ tuntap_set_ip_addr(struct tuntap *tt,
-                 status,
-                 strerror_win32(status, &gc));
-         }
--    }
+@@ -5235,7 +5235,6 @@ ipconfig_register_dns(const struct env_set *es)
+                 WIN_IPCONFIG_PATH_SUFFIX);
+     argv_msg(D_TUNTAP_INFO, &argv);
+     openvpn_execve_check(&argv, es, 0, err);
+-    argv_free(&argv);
 =20
--    /*
--     * If the TAP-Windows driver is masquerading as a DHCP server
--     * make sure the TCP/IP properties for the adapter are
--     * set correctly.
--     */
--    if (dhcp_masq_post)
--    {
--        /* check dhcp enable status */
--        if (dhcp_status(index) =3D=3D DHCP_STATUS_DISABLED)
-+        /*
-+         * If the TAP-Windows driver is masquerading as a DHCP server
-+         * make sure the TCP/IP properties for the adapter are
-+         * set correctly.
-+         */
-+        if (dhcp_masq_post)
-         {
--            msg(M_WARN, "WARNING: You have selected '--ip-win32 dynamic', =
-which will not work unless the TAP-Windows TCP/IP properties are set to 'Ob=
-tain an IP address automatically'");
--        }
-+            /* check dhcp enable status */
-+            if (dhcp_status(index) =3D=3D DHCP_STATUS_DISABLED)
-+            {
-+                msg(M_WARN, "WARNING: You have selected '--ip-win32 dynami=
-c', which will not work unless the TAP-Windows TCP/IP properties are set to=
- 'Obtain an IP address automatically'");
-+            }
-=20
--        /* force an explicit DHCP lease renewal on TAP adapter? */
--        if (tt->options.dhcp_pre_release)
--        {
--            dhcp_release(tt);
-+            /* force an explicit DHCP lease renewal on TAP adapter? */
-+            if (tt->options.dhcp_pre_release)
-+            {
-+                dhcp_release(tt);
-+            }
-+            if (tt->options.dhcp_renew)
-+            {
-+                dhcp_renew(tt);
-+            }
-         }
--        if (tt->options.dhcp_renew)
-+        else
-         {
--            dhcp_renew(tt);
-+            fork_dhcp_action(tt);
-         }
-     }
--    else
--    {
--        fork_dhcp_action(tt);
--    }
-=20
-     if (tt->did_ifconfig_setup && tt->options.ip_win32_type =3D=3D IPW32_S=
-ET_IPAPI)
-     {
+     argv_printf(&argv, "%s%s /registerdns",
+                 get_win_sys_path(),
 --=20
 2.29.2
 
