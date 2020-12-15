@@ -1,12 +1,9 @@
-References: <9cbe2737-df06-c921-1052-3dabe3fb4141@...515...>
- <a01f3f7a-97b9-b591-ef19-19ae2ff7c842@...277...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <aecf05d7-15f4-6a68-18f0-240f8cdb39db@...515...>
-Date: Tue, 15 Dec 2020 12:31:31 +0200
-MIME-Version: 1.0
-In-Reply-To: <a01f3f7a-97b9-b591-ef19-19ae2ff7c842@...277...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] Community meetings in December 2020
+From: Arne Schwabe <arne@...1227...>
+Date: Tue, 15 Dec 2020 17:42:21 +0100
+Message-Id: <20201215164221.5995-2-arne@...1227...>
+In-Reply-To: <20201215164221.5995-1-arne@...1227...>
+References: <20201215164221.5995-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH 2/2] Fix condition to generate session keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,25 +12,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=iso-8859-15
-Content-Transfer-Encoding: 7bit
-To: tincanteksup <tincanteksup@...277...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Il 11/12/20 01:48, tincanteksup ha scritto:
-> Please discuss and resolve the fate of the OpenVPN-Legacy-Service for
-> Windows.
-> 
-> Ref: https://community.openvpn.net/openvpn/ticket/1344
-> 
-> Official status of deprecation/removal requested.
-> 
-> 
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+For --nobind clients OpenVPN reuses the context and tls_multi structs
+of the previous clients and does not rerun the connect scripts on
+connect. But since it is a new client connection, the key_id is 0 and
+we postpone the key generation but it will never happen.
 
-Added to the agenda for Thursday:
+This commit changes postponing the key generation to the right
+condition of NCP done for this session.
 
-https://community.openvpn.net/openvpn/wiki/Topics-2020-12-17
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/ssl.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
+
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index efbf688f..5d322598 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2351,7 +2351,7 @@ error:
+  * to the TLS control channel (cleartext).
+  */
+ static bool
+-key_method_2_write(struct buffer *buf, struct tls_session *session)
++key_method_2_write(struct buffer *buf, struct tls_multi *multi, struct tls_session *session)
+ {
+     struct key_state *ks = &session->key[KS_PRIMARY];      /* primary key */
+ 
+@@ -2442,12 +2442,17 @@ key_method_2_write(struct buffer *buf, struct tls_session *session)
+         goto error;
+     }
+ 
+-    /* Generate tunnel keys if we're a TLS server.
+-     * If we're a p2mp server and IV_NCP >= 2 is negotiated, the first key
+-     * generation is postponed until after the pull/push, so we can process pushed
+-     * cipher directives.
++    /*
++     * Generate tunnel keys if we're a TLS server.
++     *
++     * If we're a p2mp server to allow NCP, the first key
++     * generation is postponed until after the connect script finished and the
++     * NCP options can be processed. Since that always happens at after connect
++     * script options are available the CAS_SUCCEEDED status is identical to
++     * NCP options are processed and we have no extra state for NCP finished.
+      */
+-    if (session->opt->server && !(session->opt->mode == MODE_SERVER && ks->key_id <= 0))
++    if (session->opt->server && (session->opt->mode != MODE_SERVER
++            || multi->context_auth == CAS_SUCCEEDED))
+     {
+         if (ks->authenticated > KS_AUTH_FALSE)
+         {
+@@ -2936,7 +2941,7 @@ tls_process(struct tls_multi *multi,
+         if (!buf->len && ((ks->state == S_START && !session->opt->server)
+                           || (ks->state == S_GOT_KEY && session->opt->server)))
+         {
+-            if (!key_method_2_write(buf, session))
++            if (!key_method_2_write(buf, multi, session))
+             {
+                 goto error;
+             }
+-- 
+2.26.2
+
 
