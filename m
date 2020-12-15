@@ -1,14 +1,8 @@
-Date: Tue, 15 Dec 2020 18:35:58 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20201215173558.GN976@...1296...>
-References: <20201215171600.25534-1-domagoj@...2540...>
+From: Domagoj Pensa <domagoj@...2540...>
+Message-ID: <20201215173950.26596-1-domagoj@...2540...>
+Date: Tue, 15 Dec 2020 18:39:50 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="tILRO7B1j0X0kK2Z"
-Content-Disposition: inline
-In-Reply-To: <20201215171600.25534-1-domagoj@...2540...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix too early argv freeing when
- registering DNS
+Subject: [Openvpn-devel] [PATCH] Remove 1 second delay before running netsh
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,63 +11,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Domagoj Pensa <domagoj@...2540...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---tILRO7B1j0X0kK2Z
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
+Cc: Domagoj Pensa <domagoj@...2540...>
 
-Hi,
+When running various netsh commands before each 1 second sleep is added.
+As more netsh commands are run, especially for Wintun adapters, that can
+add to a noticable delayed connecting time.
 
-On Tue, Dec 15, 2020 at 06:16:00PM +0100, Domagoj Pensa wrote:
-> When registering DNS on Windows, argv is freed after being used in first
-> ipconfig command (/flushdns).
->=20
-> Then same argv is used uninitialized in next ipconfig command (/registerd=
-ns)
-> causing heap exception and subprocess crash.
->=20
-> As a consequence second command is never executed and locked netcmd
-> semaphore is not cleanly released.
->=20
-> Removing argv freeing between ipconfig calls solves the problem.
+This should be safe. No problems were found in tests and all netsh
+commands executed properly with delay removed. Also, no delays are used
+in a similar code in interactive service and netsh command executions
+are guarded with a semaphore.
 
-Oh!  Yes, now with your patch, this is very obvious - there is a trac
-ticket (so when I merge this, I'll add the trac ticket number to the
-commit message) but it sort of puzzled Selva and me, because the
-code "looked sane".
+Signed-off-by: Domagoj Pensa <domagoj@...2540...>
+---
+ src/openvpn/tun.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Acked-by: gert@...1296...
-
-gert
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 400a50ca..e9f1aadb 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -5207,7 +5207,6 @@ netsh_command(const struct argv *a, int n, int msglev=
+el)
+     for (i =3D 0; i < n; ++i)
+     {
+         bool status;
+-        management_sleep(1);
+         netcmd_semaphore_lock();
+         argv_msg_prefix(M_INFO, a, "NETSH");
+         status =3D openvpn_execve_check(a, NULL, 0, "ERROR: netsh command =
+failed");
 --=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+2.29.2
 
-Gert Doering - Munich, Germany                             gert@...1296...
 
---tILRO7B1j0X0kK2Z
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJf2PP+AAoJEB2Cnv7KVigS9yUL/jbukAFRQ+4HfAcfd+wwecLj
-7OJMEK2bu2INQmBQtQ6G2Df5BDC1XmUIgAa6y6OjwK5Ck2xq04u3xmYXVPmlsbWA
-FH4D+4OIqVfDxv2vwsJkiOQFLIEYy1JSBi45ALL/K6+I9lebAod7YH13Afhnj5Fe
-5A0SqG+R4Ed5G5FUdsFE9Qhdi6G6+dTWX2X8fYVVqu4AqL2zWiJUr+iNz7k91BsI
-tM0qGjo1NvGxpaMC4BuHb6di5GwthsTKJ1NOeePqXVfqpEGUG1BaaXxGKuIhe+D7
-+x/1pWUbKrCb3QyIzXQCxrPPuxlSghuemFC/rF2ytNSrrUeDVnRLv0et8j/VdTBn
-ZopNRaAnkhraHLNcCnwI/y/psIxAFqXtpmvypPBTA7DxfKwKPIs7V1XYG010bjas
-JrXCh/myYrr2y88UrT+m4P68KE3b046Fmzqxd0jZJy8rW8XnOxm52l4W0SdHBKOO
-KKkJtDQ+7pWs213R1l0HcRjhtVGSxzuZbTkhG4m23A==
-=kDDA
------END PGP SIGNATURE-----
-
---tILRO7B1j0X0kK2Z--
 
