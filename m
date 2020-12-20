@@ -1,14 +1,15 @@
-Date: Sun, 20 Dec 2020 21:48:12 +0100
+Date: Sun, 20 Dec 2020 19:54:02 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20201220204812.GV976@...1296...>
-References: <20201215173950.26596-1-domagoj@...2540...>
+Message-ID: <20201220185402.GQ976@...1296...>
+References: <20201220105430.GP976@...1296...>
+ <093511bd-43c0-a37c-1d8f-335d9df451d6@...1227...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="nZXg2M4iSwlWfAyw"
+ protocol="application/pgp-signature"; boundary="bN+oGdjWBBKFJM7z"
 Content-Disposition: inline
-In-Reply-To: <20201215173950.26596-1-domagoj@...2540...>
-Subject: Re: [Openvpn-devel] [PATCH] Remove 1 second delay before running
- netsh
+In-Reply-To: <093511bd-43c0-a37c-1d8f-335d9df451d6@...1227...>
+Subject: Re: [Openvpn-devel] wanted: mechanism to send text messages to
+ client
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,49 +18,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Domagoj Pensa <domagoj@...2540...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
---nZXg2M4iSwlWfAyw
-Content-Type: text/plain; charset="us-ascii"
+--bN+oGdjWBBKFJM7z
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Tue, Dec 15, 2020 at 06:39:50PM +0100, Domagoj Pensa wrote:
-> When running various netsh commands before each 1 second sleep is added.
-> As more netsh commands are run, especially for Wintun adapters, that can
-> add to a noticable delayed connecting time.
->=20
-> This should be safe. No problems were found in tests and all netsh
-> commands executed properly with delay removed. Also, no delays are used
-> in a similar code in interactive service and netsh command executions
-> are guarded with a semaphore.
+On Sun, Dec 20, 2020 at 04:00:13PM +0100, Arne Schwabe wrote:
+> > ... and the client would then either print this on the console
+> > (if !management) or dump it to management, where the GUI/Tunnelblick
+> > could pick it up and create a popup window.
+> >
+> See --echo.=A0 That is basically what you desribe as info-msg in your mail
 
-This is... interesting.  The offending sleep(1) was added there by
-james, 15 years ago, in commit a9c802b2a (imported from SVN)
+While echo sounds as if it would do what I want, it doesn't.
 
-That commit basically split the "sleep(5) after each try" into
-"sleep(1) before and sleep(4) after", so possibly it was needed=20
-before the very first netsh call...
+Echo is "something magic" - it is never printed by the 2.x client, it
+is not even logged.  And it's not displayed by the GUIs either, but
+instead it can be used to "do things"...
 
-The change itself is not commented in the commit message, so we=20
-can only guess
-
-commit a9c802b2a3f77f2b906e22f582681cdec0790c32
-Author: James Yonan <james@...515...>
-Date:   Thu Dec 22 18:09:40 2005 +0000
-
-    --ip-win32 adaptive is now the default.
-    --ip-win32 netsh (or --ip-win32 adaptive when in netsh
-    mode) can now set DNS/WINS addresses on the TAP-Win32
-    adapter.
-
-
-
-Lev: do you have a particular opinion on this change?  You do more
-testing with wintun...
+So less "echo to user" but "send this string to the management interface
+and make the mgmt client do something magic"...
 
 gert
 
@@ -73,22 +56,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---nZXg2M4iSwlWfAyw
+--bN+oGdjWBBKFJM7z
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJf37iLAAoJEB2Cnv7KVigSIXcL/3tIT2HqqvSFqUHH5ZToKi4b
-FQ2v9h8duvrRyYK9pF2Xntd3utzU4DwHyyAapx14qlYF4N3y9mRmoti4jRmKwWYo
-LyS9PYAMNAFAAY+RI8k2z7pACZDUfu5IzuyrJF4zP5vSInP1lP4Qx7V5fjplZI3p
-rWbefVMdHMpHkR2a0ysa73Isyo4jOxYG+YffThK6ND1oCONfHWE461sdP+vDlPJX
-3Kf57oiJN1FSWt1u8r8lqMf5WLPgGw7W/VXe+T1a/czs2+khV3ZDzrDykcDdSxdp
-aFq+yw7IxcuEJR54CxgbxQpHo7y0LM+ffQmSYOo+GVAcyRFL/+5FuYj8CIV09Bo+
-8VT60x0xDDNH+2EW9q+ojv5aY1ZvlOQ79YGS3sdNxsgBkP4on8Kgz8SPhx2l9hqn
-nUS7qtLaeS/qPBq2iLU7dOs4jbmA4g6G94tN/UsSH+ZJliKMxBaSa5MDQ7DgzGYy
-i7HU/B/wz0ItmYbAPCPXVV8UTQaYgehxr/lm14rXxQ==
-=/xF5
+iQGcBAEBAgAGBQJf353KAAoJEB2Cnv7KVigSJy8L/0LV78Qw+ozFPoNo9+py2aKf
+I6UyuG1+qxcbMMTTi7lEIl41WTlO3ngyyu/XPOl9ZQKzq2tvQCrfv6AFJ72vEvN0
+tB6K0K6Kn7aUDNLUO+WJAVxbV2X0ga8VYWpLEipWvXcFUsn4tvqkVWd/0nc7DPB3
+Wb1puh3KctD0OGu685Q2i1Cu8TAUkx5ZrXHS7WqQykPGP+w5ZPmsFXf+hJ4fV5Y2
+1xNCO6MGyp//7uhUevz1MseylUWef9tJxWH6yTZbahrphMof70ZBvAnCka8sw2Jm
+acj/OGn5RHB4e+ITKUiZdXyhEAX1SO4jJOhY+pRvDynRbw8gmsfRihWjLb7RCjZu
+Q6Xn6jgVfLUvX4gy1XFWSWplLi9C07B5C9HlQgm8CniAVkP0JK01U7dxPURB2fJE
+1IQY3c8kGZiZKc2cyhad6L8EfbHOXI1Xh41iIuSVNBDlFSbIwWQNbK2W4ivwKuFz
+Qy7gM0LU+iyPRxW12FSoNJ79mtN/QQtNJkktQJAn0Q==
+=etNY
 -----END PGP SIGNATURE-----
 
---nZXg2M4iSwlWfAyw--
+--bN+oGdjWBBKFJM7z--
 
