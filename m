@@ -1,10 +1,15 @@
+Date: Mon, 21 Dec 2020 08:04:20 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20201221070420.GW976@...1296...>
 References: <20201220105430.GP976@...1296...>
-From: tincanteksup <tincanteksup@...277...>
-Message-ID: <5172d81a-ed11-60d1-c546-52de35946ef7@...277...>
-Date: Mon, 21 Dec 2020 01:49:15 +0000
+ <093511bd-43c0-a37c-1d8f-335d9df451d6@...1227...>
+ <20201220185402.GQ976@...1296...>
+ <CAKuzo_ja=a9XxHkQX5Vv2_UTT1vWNfO8S-XLvvKZ_CQ6f-U1uQ@...278...>
 MIME-Version: 1.0
-In-Reply-To: <20201220105430.GP976@...1296...>
-Content-Language: en-GB
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="zBy0hMa+jq07jX86"
+Content-Disposition: inline
+In-Reply-To: <CAKuzo_ja=a9XxHkQX5Vv2_UTT1vWNfO8S-XLvvKZ_CQ6f-U1uQ@...278...>
 Subject: Re: [Openvpn-devel] wanted: mechanism to send text messages to
  client
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,71 +20,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: Gert Doering <gert@...1296...>, Arne Schwabe <arne@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Gert,
+--zBy0hMa+jq07jX86
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-using server side scripting, I can push *literally* anything I want to 
-the server via --push-peer-info and setenv UV_*
+Hi,
 
-Example:
-setenv UV_PING 10
-setenv UV_PINGRESTART 60
+On Sun, Dec 20, 2020 at 07:31:42PM -0500, Selva Nair wrote:
+> I thought we already went through this when we discussed the proposed "ec=
+ho
+> msg" in considerable detail 3 years ago.
 
-My server side script allows the client to effectively configure 
---keepalive (and a LOT more)
+Yeah, sorry.  Seems I got distracted and forgot all about the discussed
+"solution space", and just remembered the itch.
 
-My guess would be to push some expected and custom variables to the 
-client at logon.
+I'm sure the thread is still sitting in my mailbox... will go looking for
+it today.
 
-And the user can fend for themselves.
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-No --up .. no --issue
+Gert Doering - Munich, Germany                             gert@...1296...
 
-I guess something like --pull-peer-info would be suitable. That way, 
-what ever is received can be vetted.
+--zBy0hMa+jq07jX86
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
+iQGcBAEBAgAGBQJf4EjzAAoJEB2Cnv7KVigST/8L/iWiLgJaK6YjHFjIcTQ9N2+Q
+znIVHgZXRtD8qtvpS1ajyqI3HPprofwY1ZXPlJe5PmFyW0OlsoRnHZSo9odtVocA
+XARSI1KJm1CvfdQroxUexVYZMiFa0VPPeQVM/RRr+BDbtlPO57bFKeGkK+iX5aTj
+wsymNDQITEZhCRJfx1OcsJKrImN7Wb/Y8lLOetXoIMentM0RUA2FiIT71k/OjaMc
+Wo6dq42dTPK42yJg186nAxQoFFBi8f96oiquhiljtMoAR2aHZXUUvjKE9ZE6bySK
++unRQRcZpqZnQERlCEHUxe57Sp1obatFMyCTZHcuKhwHKW+S046lVYpyomjsRxbV
+xojHFn+s4EKpG7qYTy85b3NtmzW7dRtlkrCb7DKOIRTUwfwfMc0jtIIvR5Xdo6wP
+/qf1K9uUHt4B6ZVQX/qE7Qe1xX10rfN948pOrtC1DCTBTmJj0uKeK4Shq/Mj9w6t
+kxo9eqlz4XTQNVxJQj4BSXD4NLGoSuXwh/Cjodr7KA==
+=qaXB
+-----END PGP SIGNATURE-----
 
-If computers Did have sense of humour then you lot would probably have 
-gone insane by now.
-
-
-
-On 20/12/2020 10:54, Gert Doering wrote:
-> Hi,
-> 
-> I find myself looking for a mechanism by which I could send informational
-> messages ("your cert expires in two weeks, go refresh!" - "your openvpn
-> client needs an upgrade") from the openvpn server to incoming clients.
-> 
-> Of course this should work with all connecting clients, that is, "text
-> clients", windows GUI, Tunnelblick, iOS Connect, Android.
-> 
-> As far as I am aware, there is no such mechanism today.
-> 
-> Do we want to make one?
-> 
-> 
->  From the server / openvpn core side, it could be something totally trivial:
-> 
->    push "info-msg hey there!"
-> 
-> ... and the client would then either print this on the console
-> (if !management) or dump it to management, where the GUI/Tunnelblick
-> could pick it up and create a popup window.
-> 
-> What do you think?
-> 
-> gert
-> 
-> 
-> 
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> 
+--zBy0hMa+jq07jX86--
 
