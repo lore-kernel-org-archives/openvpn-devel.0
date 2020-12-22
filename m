@@ -3,13 +3,11 @@ References: <20201220105430.GP976@...1296...>
  <CACDCbPrvwmEGyAt1C4pVmzmCi0p-7nWkBqmDgDZAR00Bw6S8Zg@...278...>
  <CAFHpkQG+vH5LfZXfN0Zs2PVaW1_40tjuFD8ObF7FhBCyXV_JtQ@...278...>
  <CACDCbPprxYNcNhrPufPSZ6tU_7fFmWUP7wNPuzz_0EfGzWDCHA@...278...>
- <20201221191127.GB976@...1296...>
- <96b776cd-6ed9-a310-523f-b78497f4a38f@...1227...>
-In-Reply-To: <96b776cd-6ed9-a310-523f-b78497f4a38f@...1227...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 21 Dec 2020 15:51:59 -0500
-Message-ID: <CAKuzo_hs0Y=+RptBaLSAYyN2-jeTAHYKyZ=mV6xx_j0Q36R8Bw@...278...>
-Content-Type: multipart/alternative; boundary="000000000000170b9c05b6ffa211"
+In-Reply-To: <CACDCbPprxYNcNhrPufPSZ6tU_7fFmWUP7wNPuzz_0EfGzWDCHA@...278...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Tue, 22 Dec 2020 10:37:11 +0500
+Message-ID: <CAFHpkQEFZKrDNjNZTf2yJ-iUiQg83FZTCqxmq5c6i3vx3HY8gg@...278...>
+Content-Type: multipart/alternative; boundary="00000000000009e55805b706f860"
 Subject: Re: [Openvpn-devel] wanted: mechanism to send text messages to
  client
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,149 +18,174 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: Gert Doering <gert@...1296...>, Greg Cox <gcox@...1057...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Greg Cox <gcox@...1057...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---000000000000170b9c05b6ffa211
+--00000000000009e55805b706f860
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi,
+=D0=BF=D0=BD, 21 =D0=B4=D0=B5=D0=BA. 2020 =D0=B3. =D0=B2 23:26, Greg Cox <g=
+cox@...1057...>:
 
-On Mon, Dec 21, 2020 at 3:27 PM Arne Schwabe <arne@...1227...> wrote:
-
-> Am 21.12.20 um 20:11 schrieb Gert Doering:
-> > Hi,
-> >
-> > On Mon, Dec 21, 2020 at 06:24:36PM +0000, Greg Cox wrote:
-> >> My contention is, a VPN client has enough information from its own
-> certs to
-> >> know when its certs are expired and thus not going to work (Yes, there's
-> >> plenty of OTHER reasons a connection can fail, but in a well designed
-> >> setup, the user's certs will go stale long before the server).  It tells
-> >> you this problem in the logs, which folks never read.
-> >
-> > We consciously decided to make this not more prominent (so, warning only,
-> > not error) because the client's machine's time might be wrong - and
-> > ultimately it's the server's notion of time that decides if the cert
-> > is valid or not.  So this is a hint, but not a "IT WILL NOT WORK!" hard
-> > error.
-> >
-> >> If the software were
-> >> to contain a mechanism to make certain failure cases automatically more
-> >> prominent, particularly for 'simple' users who have GUI clients, it'll
-> be a
-> >> big win for supportability on larger installs.
-> >
-> > This is indeed getting into philosophy... we do send different types of
-> > AUTH_FAILED today (like, for token expired).  Maybe we could send an
-> > "AUTH_FAILED,cert expired" and have the client display this?
-> >
-> > (I admit that I'm neither an expert on AUTH_FAILED message, nor on
-> > "what is the client doing on variations of it", nor on "what *should*
-> > be the expected outcome?".  Selva, Arne will know more).
+> On Mon, Dec 21, 2020 at 7:57 AM =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=
+=BF=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...> wrote:
 >
-> It is easy to add that message, however the question is if we want to.
-> Sending different AUTH_FAILED message also leaks information. Especially
-> with authentication you don't want to give an attacker an idea how they
-> get before failing the authentication. I.e. if you send User disable,
-> certificate expired, account not allow to use VPN etc. an attacker gets
-> information about the account/profile he using to connect.
+>> that's interesting point.
+>> being dependent on whether users logs or not does not look very good.
+>>
 >
-> So with these AUTH_FAILED codes you have to be very careful not to
-> accidently leak information. I.e. AUTH_FAILED, cert expired happens only
-> if user/pass is right/wrong, otherwise you get a normal AUTH_FAILED.
+> We only go to their logs when they come to us with issues.  When we can
+> head the users off ahead of time, it's easier.
 >
-> HOWEVER, on the client side. We can transform a normal AUTH_FAILED into
-> an AUTH_FAILED, server gave no reason, [client certificate is expired]
-> or something like that.
+>
+>> I'd say it is identity management related thing to renew user cert when
+>> it is about to expire.
+>> i.e. notify user in proper way and tell him to renew.
+>>
+>> as a side question, how do you inform users ? i.e. is it some self
+>> service portal ?
+>>
+>
+> It's definitely "an IAM problem" to begin with... but it becomes "a VPN
+> problem" eventually.  (abstractly speaking).
+>
+> We have a cron that, every day, looks at the CA's VPN certs.  If you are
+> at 14, 7, 3, 2, or 1 days left, you get an email warning of the impending
+> expiration and links to the login portal + docs so you can renew (or revo=
+ke
+> the cert and stop being nagged).  At 2 days expired you get a final mail
+> explaining that it's expired and you won't be nagged anymore and what to =
+do
+> if you need back in.
 >
 
-We already warn on the client if the certificate has expired and warnings
-show up in red at least in OpenvPN-GUI. Sure, UI's can add more bold-face
-warnings and popups showing probable reasons, but better leave the core as
-is.
+wow.
 
-To chime in with Arne, a client presenting an invalid cert (expired, in CRL
-or otherwise bogus) has to be treated as rogue and should not be given any
-additional feedback from the server on the reason for failure.
+it is exactly how I meant it :)
 
-Selva
 
---000000000000170b9c05b6ffa211
+>
+> This helps tickets a lot, but when people filter their mail and never read
+> it, the lack of access falls through to being "a VPN problem."  We did wh=
+at
+> we could to head off the issue ahead of time from the IAM side, and it
+> becomes a situation where, as the support personnel, "well, there MUST be
+> something vastly wrong because surely nobody would miss 6 emails and end =
+up
+> here asking me to look at a problem." ... except, they do.
+>
+
+if there's self service portal, can we use dhcp option 114 (which is used
+for captive portal) ?
+
+
+
+> My contention is, a VPN client has enough information from its own certs
+> to know when its certs are expired and thus not going to work (Yes, there=
+'s
+> plenty of OTHER reasons a connection can fail, but in a well designed
+> setup, the user's certs will go stale long before the server).  It tells
+> you this problem in the logs, which folks never read.  If the software we=
+re
+> to contain a mechanism to make certain failure cases automatically more
+> prominent, particularly for 'simple' users who have GUI clients, it'll be=
+ a
+> big win for supportability on larger installs.
+>
+> And I realize this is getting into advocacy and away from what's right for
+> a -devel list, so I'll stop here on this thread.
+>
+
+we are still on topic.
+
+
+>
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
+
+--00000000000009e55805b706f860
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div>Hi,</div><br><div class=3D"gmail_quote"><div dir=3D"l=
-tr" class=3D"gmail_attr">On Mon, Dec 21, 2020 at 3:27 PM Arne Schwabe &lt;<=
-a href=3D"mailto:arne@...1227...">arne@...1227...</a>&gt; wrote:<br></div><=
-blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-l=
-eft:1px solid rgb(204,204,204);padding-left:1ex">Am 21.12.20 um 20:11 schri=
-eb Gert Doering:<br>
-&gt; Hi,<br>
-&gt; <br>
-&gt; On Mon, Dec 21, 2020 at 06:24:36PM +0000, Greg Cox wrote:<br>
-&gt;&gt; My contention is, a VPN client has enough information from its own=
- certs to<br>
-&gt;&gt; know when its certs are expired and thus not going to work (Yes, t=
-here&#39;s<br>
-&gt;&gt; plenty of OTHER reasons a connection can fail, but in a well desig=
-ned<br>
-&gt;&gt; setup, the user&#39;s certs will go stale long before the server).=
-=C2=A0 It tells<br>
-&gt;&gt; you this problem in the logs, which folks never read.=C2=A0 <br>
-&gt; <br>
-&gt; We consciously decided to make this not more prominent (so, warning on=
-ly,<br>
-&gt; not error) because the client&#39;s machine&#39;s time might be wrong =
-- and <br>
-&gt; ultimately it&#39;s the server&#39;s notion of time that decides if th=
-e cert<br>
-&gt; is valid or not.=C2=A0 So this is a hint, but not a &quot;IT WILL NOT =
-WORK!&quot; hard<br>
-&gt; error.<br>
-&gt; <br>
-&gt;&gt; If the software were<br>
-&gt;&gt; to contain a mechanism to make certain failure cases automatically=
- more<br>
-&gt;&gt; prominent, particularly for &#39;simple&#39; users who have GUI cl=
-ients, it&#39;ll be a<br>
-&gt;&gt; big win for supportability on larger installs.<br>
-&gt; <br>
-&gt; This is indeed getting into philosophy... we do send different types o=
-f<br>
-&gt; AUTH_FAILED today (like, for token expired).=C2=A0 Maybe we could send=
- an<br>
-&gt; &quot;AUTH_FAILED,cert expired&quot; and have the client display this?=
-<br>
-&gt; <br>
-&gt; (I admit that I&#39;m neither an expert on AUTH_FAILED message, nor on=
-<br>
-&gt; &quot;what is the client doing on variations of it&quot;, nor on &quot=
-;what *should*<br>
-&gt; be the expected outcome?&quot;.=C2=A0 Selva, Arne will know more).<br>
-<br>
-It is easy to add that message, however the question is if we want to.<br>
-Sending different AUTH_FAILED message also leaks information. Especially<br>
-with authentication you don&#39;t want to give an attacker an idea how they=
-<br>
-get before failing the authentication. I.e. if you send User disable,<br>
-certificate expired, account not allow to use VPN etc. an attacker gets<br>
-information about the account/profile he using to connect.<br>
-<br>
-So with these AUTH_FAILED codes you have to be very careful not to<br>
-accidently leak information. I.e. AUTH_FAILED, cert expired happens only<br>
-if user/pass is right/wrong, otherwise you get a normal AUTH_FAILED.<br>
-<br>
-HOWEVER, on the client side. We can transform a normal AUTH_FAILED into<br>
-an AUTH_FAILED, server gave no reason, [client certificate is expired]<br>
-or something like that.<br></blockquote><div><br></div><div>We already warn=
- on the client if the certificate has expired and warnings show up in red a=
-t least in OpenvPN-GUI. Sure, UI&#39;s can add more bold-face warnings and =
-popups showing probable reasons, but better leave the core as is.=C2=A0</di=
-v><div><br></div><div>To chime in with Arne, a client presenting an invalid=
- cert (expired, in CRL or otherwise bogus) has to be treated as rogue and s=
-hould not be given any additional feedback from the server on the reason fo=
-r failure.</div><div><br></div><div>Selva=C2=A0</div></div></div>
+<div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote">=
+<div dir=3D"ltr" class=3D"gmail_attr">=D0=BF=D0=BD, 21 =D0=B4=D0=B5=D0=BA. =
+2020 =D0=B3. =D0=B2 23:26, Greg Cox &lt;<a href=3D"mailto:gcox@...1057...">=
+gcox@...1057...</a>&gt;:<br></div><blockquote class=3D"gmail_quote" style=
+=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding=
+-left:1ex"><div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr" class=3D"gmai=
+l_attr">On Mon, Dec 21, 2020 at 7:57 AM =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=
+=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD &lt;<a href=3D"mailto:chipitsine@...1663...=
+." target=3D"_blank">chipitsine@...277...</a>&gt; wrote:<br></div></div><di=
+v class=3D"gmail_quote"><blockquote class=3D"gmail_quote" style=3D"margin:0=
+px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><=
+div dir=3D"ltr">that&#39;s interesting point.<div class=3D"gmail_quote"><di=
+v>being dependent on whether users logs or not does not look very good.</di=
+v></div></div></blockquote><div><br></div><div><div style=3D"font-family:co=
+urier new,monospace">We only go to their logs when they come to us with iss=
+ues.=C2=A0 When we can head the users off ahead of time, it&#39;s easier.<b=
+r></div></div><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"m=
+argin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left=
+:1ex"><div dir=3D"ltr"><div class=3D"gmail_quote"><div>I&#39;d say it is id=
+entity management related thing to renew user cert when it is about to expi=
+re.</div><div>i.e. notify user in proper way and tell him to renew.</div><d=
+iv><br></div><div>as a side question, how do you inform users ? i.e. is it =
+some self service portal ?<br></div></div></div></blockquote><div><br></div=
+><div style=3D"font-family:courier new,monospace">It&#39;s definitely &quot=
+;an IAM problem&quot; to begin with... but it becomes &quot;a VPN problem&q=
+uot; eventually.=C2=A0 (abstractly speaking).</div><div style=3D"font-famil=
+y:courier new,monospace"><br></div><div style=3D"font-family:courier new,mo=
+nospace">We have a cron that, every day, looks at the CA&#39;s VPN certs.=
+=C2=A0 If you are at 14, 7, 3, 2, or 1 days left, you get an email warning =
+of the impending expiration and links to the login portal + docs so you can=
+ renew (or revoke the cert and stop being nagged).=C2=A0 At 2 days expired =
+you get a final mail explaining that it&#39;s expired and you won&#39;t be =
+nagged anymore and what to do if you need back in.</div></div></div></block=
+quote><div><br></div><div>wow.</div><div><br></div><div>it is exactly how I=
+ meant it :)<br></div><div>=C2=A0</div><blockquote class=3D"gmail_quote" st=
+yle=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padd=
+ing-left:1ex"><div dir=3D"ltr"><div class=3D"gmail_quote"><div style=3D"fon=
+t-family:courier new,monospace"><br></div><div style=3D"font-family:courier=
+ new,monospace">This helps tickets a lot, but when people filter their mail=
+ and never read it, the lack of access falls through to being &quot;a VPN p=
+roblem.&quot;=C2=A0 We did what we could to head off the issue ahead of tim=
+e from the IAM side, and it becomes a situation where, as the support perso=
+nnel, &quot;well, there MUST be something vastly wrong because surely nobod=
+y would miss 6 emails and end up here asking me to look at a problem.&quot;=
+ ... except, they do.<br></div></div></div></blockquote><div><br></div><div=
+>if there&#39;s self service portal, can we use dhcp option 114 (which is u=
+sed for captive portal) ? <br></div><div><br></div><div>=C2=A0</div><blockq=
+uote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1p=
+x solid rgb(204,204,204);padding-left:1ex"><div dir=3D"ltr"><div class=3D"g=
+mail_quote"><div style=3D"font-family:courier new,monospace"></div><div sty=
+le=3D"font-family:courier new,monospace">My contention is, a VPN client has=
+ enough information from its own certs to know when its certs are expired a=
+nd thus not going to work (Yes, there&#39;s plenty of OTHER reasons a conne=
+ction can fail, but in a well designed setup, the user&#39;s certs will go =
+stale long before the server).=C2=A0 It tells you this problem in the logs,=
+ which folks never read.=C2=A0 If the software were to contain a mechanism =
+to make certain failure cases automatically more prominent, particularly fo=
+r &#39;simple&#39; users who have GUI clients, it&#39;ll be a big win for s=
+upportability on larger installs.<br></div><div style=3D"font-family:courie=
+r new,monospace"><br></div><div style=3D"font-family:courier new,monospace"=
+>And I realize this is getting into advocacy and away from what&#39;s right=
+ for a -devel list, so I&#39;ll stop here on this thread.</div></div></div>=
+</blockquote><div><br></div><div>we are still on topic.<br></div><div>=C2=
+=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8e=
+x;border-left:1px solid rgb(204,204,204);padding-left:1ex"><div dir=3D"ltr"=
+><div class=3D"gmail_quote"><div style=3D"font-family:courier new,monospace=
+"><br></div></div></div>
+_______________________________________________<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
+envpn-devel@lists.sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
+=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
+nfo/openvpn-devel</a><br>
+</blockquote></div></div>
 
---000000000000170b9c05b6ffa211--
+--00000000000009e55805b706f860--
 
