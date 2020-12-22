@@ -1,9 +1,15 @@
-Date: Tue, 22 Dec 2020 18:42:00 +0100
-From: Michael Kress <lists@...1660...>
-Message-ID: <20201222184200.41fa720e@...1661...>
-In-Reply-To: <20201220105430.GP976@...1296...>
 References: <20201220105430.GP976@...1296...>
+ <CACDCbPrvwmEGyAt1C4pVmzmCi0p-7nWkBqmDgDZAR00Bw6S8Zg@...278...>
+ <CAFHpkQG+vH5LfZXfN0Zs2PVaW1_40tjuFD8ObF7FhBCyXV_JtQ@...278...>
+ <CACDCbPprxYNcNhrPufPSZ6tU_7fFmWUP7wNPuzz_0EfGzWDCHA@...278...>
+ <20201221191127.GB976@...1296...>
+ <96b776cd-6ed9-a310-523f-b78497f4a38f@...1227...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <eeec7102-1b2a-a2cf-001a-56cfb698eafa@...1856...>
+Date: Tue, 22 Dec 2020 19:20:00 +0100
 MIME-Version: 1.0
+In-Reply-To: <96b776cd-6ed9-a310-523f-b78497f4a38f@...1227...>
+Content-Language: en-US
 Subject: Re: [Openvpn-devel] wanted: mechanism to send text messages to
  client
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -14,56 +20,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
 Hi,
-Am Sun, 20 Dec 2020 11:54:30 +0100
-schrieb Gert Doering <gert@...1296...>:
-> I find myself looking for a mechanism by which I could send
-> informational messages ("your cert expires in two weeks, go refresh!"
-> - "your openvpn client needs an upgrade") from the openvpn server to
-> incoming clients.
- 
-I'm quite late to the party, but something similar like this I asked a
-few days ago (06.12.2020):
-https://sourceforge.net/p/openvpn/mailman/message/37170200/
 
-I proposed a generic way to send whatever you like over the
-control channel. A plugin could be triggerd by hooks which react on
-this generic push command. The plugins for all different OS and UIs
-could trigger messages in new windows or network managers.
+On 21-12-2020 21:25, Arne Schwabe wrote:
+> Am 21.12.20 um 20:11 schrieb Gert Doering:
+>> On Mon, Dec 21, 2020 at 06:24:36PM +0000, Greg Cox wrote:
+>>> If the software were
+>>> to contain a mechanism to make certain failure cases automatically more
+>>> prominent, particularly for 'simple' users who have GUI clients, it'll be a
+>>> big win for supportability on larger installs.
+>>
+>> This is indeed getting into philosophy... we do send different types of
+>> AUTH_FAILED today (like, for token expired).  Maybe we could send an
+>> "AUTH_FAILED,cert expired" and have the client display this?
+>>
+>> (I admit that I'm neither an expert on AUTH_FAILED message, nor on
+>> "what is the client doing on variations of it", nor on "what *should*
+>> be the expected outcome?".  Selva, Arne will know more).
+> 
+> It is easy to add that message, [...]
 
-Your wish is to send a message, mine was to send a certificate. A
-generic push command could achive both, as long the plugin is
-installed.
+Uhm, I would say it's impossible to send that message. AUTH_FAILED
+messages are sent over the control channel, while in case of certificate
+errors the control channel will never be initialized.
 
-echo could be a possibility, but fiddling with log files must also be
-implemented (by a plugin?)
+We could however do something that has the same effect: don't prevent
+TLS from sending it's "certificate_expired" alert. OpenVPN 2 (don't know
+about 3) currently just doesn't respond at all if it detects a TLS error.
 
-Servus
-  Michael
+IIRC, this extra-paranoid behaviour has saved us from at least one of
+the timing-based attacks on TLS from the past, but I can't recall which one.
 
-> Of course this should work with all connecting clients, that is, "text
-> clients", windows GUI, Tunnelblick, iOS Connect, Android.
-> 
-> As far as I am aware, there is no such mechanism today.
-> 
-> Do we want to make one?
-> 
-> 
-> From the server / openvpn core side, it could be something totally
-> trivial:
-> 
->   push "info-msg hey there!"
-> 
-> ... and the client would then either print this on the console 
-> (if !management) or dump it to management, where the GUI/Tunnelblick
-> could pick it up and create a popup window.
-> 
-> What do you think?
-> 
-> gert
+At the same time, the TLS protocol and it's implementation have matured
+a lot since heartbleed. Possibly beyond the point where usability
+concerns now outweigh the security concerns. Before anyone suggests
+making this optional: no. no. no. I strongly believer we should
+carefully consider if we want to allow TLS to send alerts, or leave this
+as-is.
 
+David actually already brought this up in 2016, see this thread:
+https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12892.html
+
+Note that any of this is separate from the initial discussion, where
+Gert proposes to send notifications *before* the certificate expires.
+
+-Steffan
 
