@@ -1,14 +1,8 @@
 MIME-Version: 1.0
-References: <CAFHpkQEbh-5aOm-R7HPUBYq2TcFXYQ=XNd8rAo3955LVFjaK9Q@...278...>
- <3437a0a5-6522-9f29-4e98-b3b90f490f4d@...1147...>
- <CAFHpkQHAhBJctSON82bstHdcq89z8TLAyRA5M443yoTa6oKxag@...278...>
-In-Reply-To: <CAFHpkQHAhBJctSON82bstHdcq89z8TLAyRA5M443yoTa6oKxag@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 13 Jan 2021 14:10:10 -0500
-Message-ID: <CAKuzo_i+As22Fnoe-jO7MeuaqqfaaXeuaMKHxz6iU8NnNKGMzw@...278...>
-Content-Type: multipart/alternative; boundary="0000000000004f80ba05b8cce4db"
-Subject: Re: [Openvpn-devel] is it possible to store saved password in tpm
- instead of registry ?
+From: =?UTF-8?B?VMO1aXZvIExlZWRqw6Rydg==?= <toivol@...277...>
+Date: Wed, 13 Jan 2021 20:19:05 +0100
+Message-ID: <CAALvpZTo6VYxcLXtXXyMsUU-n3JRSOJ-62fny7Zfi28WSDYXmA@...278...>
+Subject: [Openvpn-devel] [PATCH] Stop using deprecated getpass()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,170 +11,161 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Cc: Jan Just Keijser <janjust@...1147...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---0000000000004f80ba05b8cce4db
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+The getpass() function is present in SUSv2, but marked LEGACY. It is
+removed in POSIX.1-2001. Additionally, on Solaris getpass() returns
+maximum 8 bytes. This will make longer passwords fail with no
+possibility for user to know what is happening.
 
-The blob stored in the registry is encrypted by DPAPI and requires access
-to the user's session to decrypt. No matter where the blob is stored, if an
-attacker has access to the session, anything the GUI can read can be read
-by the attacker too.
+This patch removes usage of getpass() completely and replaces it with
+direct implementation of what getpass() does: opens tty (existing code),
+outputs the prompt (existing code), turns off echoing (new code), reads
+one line (existing code shared with echoed mode), restores tty state
+(new code) and closes tty (existing code).
 
-That said, if there is a well-defined API for protecting data using a
-non-exportable key in TPM, respecting security boundaries, we could use it.
-The blob has to be still stored in registry or Windows password store
-(which also stores it in registry). TPM is useful for storing
-non-exportable private keys. For exportable data, if at all possible and
-space permits, I see little point in putting it in TPM.
+Signed-off-by: T=C3=B5ivo Leedj=C3=A4rv <69477666+tleedjarv@...2243...>
+---
+ configure.ac                  |  4 ++-
+ src/openvpn/console_builtin.c | 63 +++++++++++++++++++++--------------
+ 2 files changed, 41 insertions(+), 26 deletions(-)
 
-DPAPI supports an app-specific salt, and we could have it wrapped by TPM to
-add some extra protection but I would be wary of inventing our own schemes
-like that.
+diff --git a/configure.ac b/configure.ac
+index 1ab8fe59..2c094da7 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -645,7 +645,7 @@ AC_FUNC_FORK
 
-Storing the certificate private key in TPM makes sense.
+ AC_CHECK_FUNCS([ \
+        daemon chroot getpwnam setuid nice system getpid dup dup2 \
+-       getpass syslog openlog mlockall getgrnam setgid \
++       syslog openlog mlockall getgrnam setgid \
+        setgroups stat flock readv writev time gettimeofday \
+        ctime memset vsnprintf strdup \
+        setsid chdir putenv getpeername unlink \
+@@ -653,6 +653,8 @@ AC_CHECK_FUNCS([ \
+        epoll_create strsep \
+ ])
 
-Selva
++AC_CHECK_HEADERS([termios.h])
++
+ AC_CHECK_LIB(
+        [dl],
+        [dlopen],
+diff --git a/src/openvpn/console_builtin.c b/src/openvpn/console_builtin.c
+index 445928bf..f1d91b32 100644
+--- a/src/openvpn/console_builtin.c
++++ b/src/openvpn/console_builtin.c
+@@ -40,6 +40,10 @@
+ #include "buffer.h"
+ #include "misc.h"
 
-On Wed, Jan 13, 2021 at 1:31 PM =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=
-=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...> wrote:
++#ifdef HAVE_TERMIOS_H
++#include <termios.h>
++#endif
++
+ #ifdef _WIN32
 
->
->
-> =D1=81=D1=80, 13 =D1=8F=D0=BD=D0=B2. 2021 =D0=B3. =D0=B2 22:01, Jan Just =
-Keijser <janjust@...1147...>:
->
->> Hi,
->>
->> On 13/01/21 17:20, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=
-=86=D0=B8=D0=BD wrote:
->> > Hello,
->> >
->> > if user save password, it might be stolen from well known location
->> > (there are popular password stealers).
->> >
->> > in theory, is it possible to keep password in tpm ? will it prevent
->> > password from being stolen ?
->> >
->> in theory, yes, but as always, it depends on the circumstances.
->>
->> With TPM 1.2 you can only store a very limited amount of data in the TPM
->> chip; the (open source) implementation I have seen (tss, trousers) store
->>
->
-> I meant openvpn-gui + user/password authentication + password is kept in
-> registry encrypted by data protection api (not clear text, but might be
-> decrypted and stolen easily).
->
-> trousers is linux, right ?
->
->
->> a key in the TPM to scramble other data with; thus, you can encrypt a
->> private key or password with a key stored on the TPM and only if you
->> have the TPM will you be able to decrypt it.
->> I've never been particularly impressed with the security of this setup,
->> however, as trousers seems to suggest to store the actualy decryption
->> key in an environment variable...
->>
->> With TPM 2.0 you can store more data in the chip, including a full
->> private key. This makes it behave more like a regular PKCS#11 device,
->> where you store the private key, not the user password on it. Of course,
->> it will/should also be possible to store a user password on it.
->>
->> cheers,
->>
->> JJK
->>
->> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+ #include "win32.h"
+@@ -138,7 +142,7 @@ get_console_input_win32(const char *prompt, const
+bool echo, char *input, const
+ #endif   /* _WIN32 */
 
---0000000000004f80ba05b8cce4db
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div dir=3D"ltr">Hi,<div><br></div><div>The blob stored in=
- the registry is encrypted by DPAPI and requires access to the user&#39;s s=
-ession to decrypt. No matter where the blob is stored, if an attacker has a=
-ccess to the session, anything the GUI can read can be read by the attacker=
- too.</div><div><br></div><div>That said, if there is a well-defined API fo=
-r protecting data using a non-exportable key in TPM, respecting security bo=
-undaries, we could use it. The blob has to be still=C2=A0stored in registry=
- or Windows password store (which also stores it in registry). TPM is usefu=
-l for storing=C2=A0 non-exportable private keys. For exportable data, if at=
- all possible and space permits, I see little point in putting it in TPM.</=
-div></div><div><br></div>DPAPI supports an app-specific salt, and we could =
-have it wrapped by TPM to add some extra protection but I would be wary of =
-inventing our own schemes like that.<div><br></div><div>Storing the certifi=
-cate private key in TPM makes sense.</div><div><br></div><div>Selva</div><d=
-iv><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">On =
-Wed, Jan 13, 2021 at 1:31 PM =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=
-=B8=D1=86=D0=B8=D0=BD &lt;<a href=3D"mailto:chipitsine@...277..." target=3D=
-"_blank">chipitsine@...277...</a>&gt; wrote:<br></div><blockquote class=3D"=
-gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(20=
-4,204,204);padding-left:1ex"><div dir=3D"ltr"><div dir=3D"ltr"><br></div><b=
-r><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">=D1=81=
-=D1=80, 13 =D1=8F=D0=BD=D0=B2. 2021 =D0=B3. =D0=B2 22:01, Jan Just Keijser =
-&lt;<a href=3D"mailto:janjust@...1147..." target=3D"_blank">janjust@...2303...=
-...</a>&gt;:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px=
- 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">Hi,=
-<br>
-<br>
-On 13/01/21 17:20, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=
-=D0=B8=D0=BD wrote:<br>
-&gt; Hello,<br>
-&gt;<br>
-&gt; if user save password, it might be stolen from well known location <br>
-&gt; (there are popular password stealers).<br>
-&gt;<br>
-&gt; in theory, is it possible to keep password in tpm ? will it prevent <b=
-r>
-&gt; password from being stolen ?<br>
-&gt;<br>
-in theory, yes, but as always, it depends on the circumstances.<br>
-<br>
-With TPM 1.2 you can only store a very limited amount of data in the TPM <b=
-r>
-chip; the (open source) implementation I have seen (tss, trousers) store <b=
-r></blockquote><div><br></div><div>I meant openvpn-gui + user/password auth=
-entication + password is kept in registry encrypted by data protection api =
-(not clear text, but might be decrypted and stolen easily).</div><div><br><=
-/div><div>trousers is linux, right ? <br></div><div>=C2=A0</div><blockquote=
- class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px so=
-lid rgb(204,204,204);padding-left:1ex">
-a key in the TPM to scramble other data with; thus, you can encrypt a <br>
-private key or password with a key stored on the TPM and only if you <br>
-have the TPM will you be able to decrypt it.<br>
-I&#39;ve never been particularly impressed with the security of this setup,=
- <br>
-however, as trousers seems to suggest to store the actualy decryption <br>
-key in an environment variable...<br>
-<br>
-With TPM 2.0 you can store more data in the chip, including a full <br>
-private key. This makes it behave more like a regular PKCS#11 device, <br>
-where you store the private key, not the user password on it. Of course, <b=
-r>
-it will/should also be possible to store a user password on it.<br>
-<br>
-cheers,<br>
-<br>
-JJK<br>
-<br>
-</blockquote></div></div>
-_______________________________________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
-envpn-devel@lists.sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
-=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
-nfo/openvpn-devel</a><br>
-</blockquote></div></div></div>
+-#ifdef HAVE_GETPASS
++#ifdef HAVE_TERMIOS_H
 
---0000000000004f80ba05b8cce4db--
+ /**
+  * Open the current console TTY for read/write operations
+@@ -177,7 +181,7 @@ close_tty(FILE *fp)
+     }
+ }
+
+-#endif   /* HAVE_GETPASS */
++#endif   /* HAVE_TERMIOS_H */
+
+
+ /**
+@@ -201,7 +205,9 @@ get_console_input(const char *prompt, const bool
+echo, char *input, const int ca
+
+ #if defined(_WIN32)
+     return get_console_input_win32(prompt, echo, input, capacity);
+-#elif defined(HAVE_GETPASS)
++#elif defined(HAVE_TERMIOS_H)
++    int restore_tty =3D 0;
++    struct termios tty_a, tty_save;
+
+     /* did we --daemon'ize before asking for passwords?
+      * (in which case neither stdin or stderr are connected to a tty and
+@@ -220,33 +226,40 @@ get_console_input(const char *prompt, const bool
+echo, char *input, const int ca
+         close(fd);
+     }
+
+-    if (echo)
+-    {
+-        FILE *fp;
++    FILE *fp;
+
+-        fp =3D open_tty(true);
+-        fprintf(fp, "%s", prompt);
+-        fflush(fp);
+-        close_tty(fp);
++    fp =3D open_tty(true);
++    fprintf(fp, "%s", prompt);
++    fflush(fp);
++    close_tty(fp);
+
+-        fp =3D open_tty(false);
+-        if (fgets(input, capacity, fp) !=3D NULL)
+-        {
+-            chomp(input);
+-            ret =3D true;
+-        }
+-        close_tty(fp);
++    fp =3D open_tty(false);
++
++    if (!echo && (tcgetattr(fileno(fp), &tty_a) =3D=3D 0))
++    {
++        tty_save =3D tty_a;
++        tty_a.c_lflag &=3D ~(ECHO | ECHOE | ECHOK | ECHONL | ISIG);
++        restore_tty =3D (tcsetattr(fileno(fp), TCSAFLUSH, &tty_a) =3D=3D 0=
+);
+     }
+-    else
++
++    if (fgets(input, capacity, fp) !=3D NULL)
+     {
+-        char *gp =3D getpass(prompt);
+-        if (gp)
+-        {
+-            strncpynt(input, gp, capacity);
+-            secure_memzero(gp, strlen(gp));
+-            ret =3D true;
+-        }
++        chomp(input);
++        ret =3D true;
+     }
++
++    if (!echo && restore_tty)
++    {
++        (void) tcsetattr(fileno(fp), TCSAFLUSH, &tty_save);
++
++        /* Echo the non-echoed newline */
++        close_tty(fp);
++        fp =3D open_tty(true);
++        fprintf(fp, "\n");
++        fflush(fp);
++    }
++
++    close_tty(fp);
+ #else  /* if defined(_WIN32) */
+     msg(M_FATAL, "Sorry, but I can't get console input on this OS
+(%s)", prompt);
+ #endif /* if defined(_WIN32) */
+--=20
+2.26.2
 
