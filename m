@@ -1,11 +1,16 @@
-From: "Morris, Russell" <rmorris@...1315...>
-Date: Thu, 14 Jan 2021 01:58:09 +0000
-Message-ID: <SN6PR08MB6157C1537454E2B67EDFE3CCB9A80@...2590...>
-Content-Language: en-US
-Content-Type: multipart/alternative;
- boundary="_000_SN6PR08MB6157C1537454E2B67EDFE3CCB9A80SN6PR08MB6157namp_"
+References: <CAFHpkQEbh-5aOm-R7HPUBYq2TcFXYQ=XNd8rAo3955LVFjaK9Q@...278...>
+ <3437a0a5-6522-9f29-4e98-b3b90f490f4d@...1147...>
+ <CAFHpkQHAhBJctSON82bstHdcq89z8TLAyRA5M443yoTa6oKxag@...278...>
+From: Jan Just Keijser <janjust@...1147...>
+Message-ID: <491d08a7-c343-0e63-05fb-c045ea34dc8e@...1147...>
+Date: Thu, 14 Jan 2021 09:49:19 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] iOS, VPN On Demand (VoD)
+In-Reply-To: <CAFHpkQHAhBJctSON82bstHdcq89z8TLAyRA5M443yoTa6oKxag@...278...>
+Content-Type: multipart/alternative;
+ boundary="------------EC02B84E88A63F45FB1CA5AD"
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] is it possible to store saved password in tpm
+ instead of registry ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,110 +19,144 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---_000_SN6PR08MB6157C1537454E2B67EDFE3CCB9A80SN6PR08MB6157namp_
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------EC02B84E88A63F45FB1CA5AD
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
 Hi,
 
-Sorry if this is a dumb question - have been checking it out at https://ope=
-nvpn.net/vpn-server-resources/faq-regarding-openvpn-connect-ios/ ... but no=
-t 100% sure how to set this up. It seems like a VPN provide (ovpn file) can=
- be set up to support VPN On Demand in iOS ... right? Thinking there is lik=
-e a sample file somewhere, but I haven't found it yet ... LOL. I do have my=
- profile set up to autologin (authenticate / connect), as noted. And I did =
-try to add the 'vpn-on-demand' parameter (set to 0 or 1), but no joy (found=
- that here, https://github.com/iphoting/ovpnmcgen.rb/pull/12/commits/fd0fde=
-f5c51d1758835632ca906993d562597f7c).
+On 13/01/21 19:29, Илья Шипицин wrote:
+>
+>
+> ср, 13 янв. 2021 г. в 22:01, Jan Just Keijser <janjust@...1147... 
+> <mailto:janjust@...1147...>>:
+>
+>     Hi,
+>
+>     On 13/01/21 17:20, Илья Шипицин wrote:
+>     > Hello,
+>     >
+>     > if user save password, it might be stolen from well known location
+>     > (there are popular password stealers).
+>     >
+>     > in theory, is it possible to keep password in tpm ? will it prevent
+>     > password from being stolen ?
+>     >
+>     in theory, yes, but as always, it depends on the circumstances.
+>
+>     With TPM 1.2 you can only store a very limited amount of data in
+>     the TPM
+>     chip; the (open source) implementation I have seen (tss, trousers)
+>     store
+>
+>
+> I meant openvpn-gui + user/password authentication + password is kept 
+> in registry encrypted by data protection api (not clear text, but 
+> might be decrypted and stolen easily).
+>
+> trousers is linux, right ?
+>
+ah yes, indeed, trousers is Linux; I guess I defaulted to Open source 
+software for an open source VPN ;)
 
-Any pointers would be greatly appreciated!
+As for storing any old password in a TPM: yes that seems possible in 
+Windows 10 (with the right TPM support, I presume). For example, this
+https://superuser.com/questions/1527685/how-to-remove-webauthn-credentials-from-onboard-tpm-on-win10-device?rq=1
 
-Thanks,
-... Russell
+posts that someone wants to *get rid* of edge/chrome authn details 
+stored in the TPM.
+Could be that support for this is also present in chromium, which means 
+you should be able to find the source code that does this.
 
+HTH,
 
+JJK
 
---_000_SN6PR08MB6157C1537454E2B67EDFE3CCB9A80SN6PR08MB6157namp_
-Content-Type: text/html; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+--------------EC02B84E88A63F45FB1CA5AD
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
-osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
-//www.w3.org/TR/REC-html40">
-<head>
-<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii">
-<meta name=3D"Generator" content=3D"Microsoft Word 15 (filtered medium)">
-<style><!--
-/* Font Definitions */
-@font-face
-	{font-family:"Cambria Math";
-	panose-1:2 4 5 3 5 4 6 3 2 4;}
-@font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
-/* Style Definitions */
-p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	font-size:11.0pt;
-	font-family:"Calibri",sans-serif;}
-a:link, span.MsoHyperlink
-	{mso-style-priority:99;
-	color:#0563C1;
-	text-decoration:underline;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:"Calibri",sans-serif;
-	color:windowtext;}
-.MsoChpDefault
-	{mso-style-type:export-only;
-	font-family:"Calibri",sans-serif;}
-@page WordSection1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.0in 1.0in 1.0in;}
-div.WordSection1
-	{page:WordSection1;}
---></style><!--[if gte mso 9]><xml>
-<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
-<o:shapelayout v:ext=3D"edit">
-<o:idmap v:ext=3D"edit" data=3D"1" />
-</o:shapelayout></xml><![endif]-->
-</head>
-<body lang=3D"EN-US" link=3D"#0563C1" vlink=3D"#954F72" style=3D"word-wrap:=
-break-word">
-<div class=3D"WordSection1">
-<p class=3D"MsoNormal">Hi,<o:p></o:p></p>
-<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
-<p class=3D"MsoNormal">Sorry if this is a dumb question &#8211; have been c=
-hecking it out at
-<a href=3D"https://openvpn.net/vpn-server-resources/faq-regarding-openvpn-c=
-onnect-ios/">
-https://openvpn.net/vpn-server-resources/faq-regarding-openvpn-connect-ios/=
-</a> &#8230; but not 100% sure how to set this up. It seems like a VPN prov=
-ide (ovpn file) can be set up to support VPN On Demand in iOS &#8230; right=
-? Thinking there is like a sample file somewhere,
- but I haven&#8217;t found it yet &#8230; LOL. I do have my profile set up =
-to autologin (authenticate / connect), as noted. And I did try to add the &=
-#8217;vpn-on-demand&#8217; parameter (set to 0 or 1), but no joy (found tha=
-t here,
-<a href=3D"https://github.com/iphoting/ovpnmcgen.rb/pull/12/commits/fd0fdef=
-5c51d1758835632ca906993d562597f7c">
-https://github.com/iphoting/ovpnmcgen.rb/pull/12/commits/fd0fdef5c51d175883=
-5632ca906993d562597f7c</a>).<o:p></o:p></p>
-<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
-<p class=3D"MsoNormal">Any pointers would be greatly appreciated!<o:p></o:p=
-></p>
-<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
-<p class=3D"MsoNormal">Thanks,<o:p></o:p></p>
-<p class=3D"MsoNormal">&#8230; Russell<o:p></o:p></p>
-<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
-<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
-</div>
-</body>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  </head>
+  <body text="#000000" bgcolor="#FFFFFF">
+    <div class="moz-cite-prefix">Hi,<br>
+      <br>
+      On 13/01/21 19:29, Илья Шипицин wrote:<br>
+    </div>
+    <blockquote type="cite"
+cite="mid:CAFHpkQHAhBJctSON82bstHdcq89z8TLAyRA5M443yoTa6oKxag@...278...">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <div dir="ltr">
+        <div dir="ltr"><br>
+        </div>
+        <br>
+        <div class="gmail_quote">
+          <div dir="ltr" class="gmail_attr">ср, 13 янв. 2021 г. в 22:01,
+            Jan Just Keijser &lt;<a href="mailto:janjust@...1147..."
+              moz-do-not-send="true">janjust@...1147...</a>&gt;:<br>
+          </div>
+          <blockquote class="gmail_quote" style="margin:0px 0px 0px
+            0.8ex;border-left:1px solid
+            rgb(204,204,204);padding-left:1ex">Hi,<br>
+            <br>
+            On 13/01/21 17:20, Илья Шипицин wrote:<br>
+            &gt; Hello,<br>
+            &gt;<br>
+            &gt; if user save password, it might be stolen from well
+            known location <br>
+            &gt; (there are popular password stealers).<br>
+            &gt;<br>
+            &gt; in theory, is it possible to keep password in tpm ?
+            will it prevent <br>
+            &gt; password from being stolen ?<br>
+            &gt;<br>
+            in theory, yes, but as always, it depends on the
+            circumstances.<br>
+            <br>
+            With TPM 1.2 you can only store a very limited amount of
+            data in the TPM <br>
+            chip; the (open source) implementation I have seen (tss,
+            trousers) store <br>
+          </blockquote>
+          <div><br>
+          </div>
+          <div>I meant openvpn-gui + user/password authentication +
+            password is kept in registry encrypted by data protection
+            api (not clear text, but might be decrypted and stolen
+            easily).</div>
+          <div><br>
+          </div>
+          <div>trousers is linux, right ? <br>
+          </div>
+          <br>
+        </div>
+      </div>
+    </blockquote>
+    ah yes, indeed, trousers is Linux; I guess I defaulted to Open
+    source software for an open source VPN ;)<br>
+    <br>
+    As for storing any old password in a TPM: yes that seems possible in
+    Windows 10 (with the right TPM support, I presume). For example,
+    this<br>
+     
+<a class="moz-txt-link-freetext" href="https://superuser.com/questions/1527685/how-to-remove-webauthn-credentials-from-onboard-tpm-on-win10-device?rq=1">https://superuser.com/questions/1527685/how-to-remove-webauthn-credentials-from-onboard-tpm-on-win10-device?rq=1</a><br>
+    <br>
+    posts that someone wants to *get rid* of edge/chrome authn details
+    stored in the TPM.<br>
+    Could be that support for this is also present in chromium, which
+    means you should be able to find the source code that does this.<br>
+    <br>
+    HTH,<br>
+    <br>
+    JJK<br>
+  </body>
 </html>
 
---_000_SN6PR08MB6157C1537454E2B67EDFE3CCB9A80SN6PR08MB6157namp_--
+--------------EC02B84E88A63F45FB1CA5AD--
 
