@@ -1,12 +1,12 @@
 MIME-Version: 1.0
 References: <20200930131317.1299-1-arne@...1227...>
- <20200930131317.1299-3-arne@...1227...>
-In-Reply-To: <20200930131317.1299-3-arne@...1227...>
+ <20200930131317.1299-4-arne@...1227...>
+In-Reply-To: <20200930131317.1299-4-arne@...1227...>
 From: Lev Stipakov <lstipakov@...277...>
-Date: Fri, 15 Jan 2021 12:37:39 +0200
-Message-ID: <CAGyAFMUwbnMeEWsC_0iF=iU3FuE3Hg__v1VUdchSmBSRH0wXnw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 01/11] Change pull request timeout use a
- timeout rather than a number
+Date: Fri, 15 Jan 2021 15:13:13 +0200
+Message-ID: <CAGyAFMVCy=09wVifPBY0hXKQ9oMKbc8wzcEVG__acYbG6qH9Bg@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 02/11] Implement client side handling of
+ AUTH_PENDING message
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,13 +22,45 @@ Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-> +  The ``--hand-window`` parameter also controls the amount of of time that
+Please not that I got errors applying this patch, so I reviewed
+corresponding commit
+from github (https://github.com/schwabe/openvpn/commit/3901e46127a2db3e6dfb20c44e8d8e30adea58c7).
 
-"of of"
+> +Receiving a AUTH_PENDING message will make the client change its timeout the
+> +timeout proposed by the server, even if the timeout is shorter.
 
-> +  the OpenVPN client repeats the pull request until it times out on pull
-> +  requests until giving up.
+Typo.
 
-Looks like repetition. Just leave " repeats the pull request until it
-times out" ?
+
+>  /*
+>   * min/max functions
+>   */
+> +static inline unsigned int
+> +max_uint(unsigned int x, unsigned int y)
+
+It is 2021 and we have to write our own min/max :(
+
+
+> +    while (buf_parse(&buf, ',', line, sizeof(line)))
+> +    {
+> +        if (sscanf(line, "timeout %u", server_timeout) == 1)
+> +        {
+> +            ;
+> +        }
+
+This looks odd. Why not reverting if and getting rid of this empty
+"then" branch?
+
+
+> +    time_t peer_last_packet;    /* Last time we received a paket in this control session */
+
+Typo.
+
+
+Thanks for the in-line comments, code is much nicer to read this way.
+
+Waiting for typo fixes and rebase to ACK.
+
+-- 
+-Lev
 
