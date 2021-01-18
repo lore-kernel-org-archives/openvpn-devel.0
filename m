@@ -1,12 +1,10 @@
-MIME-Version: 1.0
-References: <20200930131317.1299-1-arne@...1227...>
- <20200930131317.1299-4-arne@...1227...>
-In-Reply-To: <20200930131317.1299-4-arne@...1227...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Fri, 15 Jan 2021 15:13:13 +0200
-Message-ID: <CAGyAFMVCy=09wVifPBY0hXKQ9oMKbc8wzcEVG__acYbG6qH9Bg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 02/11] Implement client side handling of
- AUTH_PENDING message
+Date: Mon, 18 Jan 2021 12:58:22 +0100 (CET)
+Message-Id: <202101181158.10IBwMpi047084@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20210105131758.20311-1-arne@...1227...>
+References: <20210105131758.20311-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Zero initialise msghdr prior to
+ calling sendmesg
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,52 +13,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+I have adjusted the whitespace as requested by Antonio, and added your 
+SoB-Line (as agreed on IRC).
 
-Please not that I got errors applying this patch, so I reviewed
-corresponding commit
-from github (https://github.com/schwabe/openvpn/commit/3901e46127a2db3e6dfb20c44e8d8e30adea58c7).
+Your patch has been applied to the master, and release/2.5 branch (bugfix).
 
-> +Receiving a AUTH_PENDING message will make the client change its timeout the
-> +timeout proposed by the server, even if the timeout is shorter.
+I have not merged it to 2.4 - it would nicely fit, but since this is all
+TARGET_ANDROID, and nobody builds the Android client with an old tree, this
+would just be "repo commit noise".
 
-Typo.
+commit aa58035a955a2ae7ffa2b93ca2c8d2c6e5472695 (master)
+commit a65d39bfd27cf5612e55dd536dd189e1a62624c2 (release/2.5)
+Author: Arne Schwabe
+Date:   Tue Jan 5 14:17:58 2021 +0100
 
+     Zero initialise msghdr prior to calling sendmesg
 
->  /*
->   * min/max functions
->   */
-> +static inline unsigned int
-> +max_uint(unsigned int x, unsigned int y)
-
-It is 2021 and we have to write our own min/max :(
-
-
-> +    while (buf_parse(&buf, ',', line, sizeof(line)))
-> +    {
-> +        if (sscanf(line, "timeout %u", server_timeout) == 1)
-> +        {
-> +            ;
-> +        }
-
-This looks odd. Why not reverting if and getting rid of this empty
-"then" branch?
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20210105131758.20311-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21418.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-> +    time_t peer_last_packet;    /* Last time we received a paket in this control session */
+--
+kind regards,
 
-Typo.
+Gert Doering
 
-
-Thanks for the in-line comments, code is much nicer to read this way.
-
-Waiting for typo fixes and rebase to ACK.
-
--- 
--Lev
 
