@@ -1,10 +1,10 @@
-Date: Mon, 18 Jan 2021 19:49:40 +0100 (CET)
-Message-Id: <202101181849.10IInei4052361@...2054...>
+Date: Mon, 18 Jan 2021 20:03:54 +0100 (CET)
+Message-Id: <202101181903.10IJ3s0Q052676@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20201225164214.22771-1-gert@...1296...>
-References: <20201225164214.22771-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Clarify --block-ipv6 intent and
- direction.
+In-Reply-To: <20201224115910.10129-1-domagoj@...2540...>
+References: <20201224115910.10129-1-domagoj@...2540...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove 1 second delay before
+ running netsh
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,24 +15,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+To: Domagoj Pensa <domagoj@...2540...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master and release/2.5 branch.
+Your patch has been applied to the master and releae/2.5 branch.
 
-The commit message has been fixed (option -> direction) as discussed.
+I have not tested it, not even test compiled - but if Lev says
+it works, this is all we need :-)
 
-commit 8a8ee283aa7a4b409a9dafc082a6c65b5539308b (master)
-commit 490203e6a7594ed946fe3158a694f80be2c18c9c (release/2.5)
-Author: Gert Doering
-Date:   Fri Dec 25 17:42:14 2020 +0100
+(As a side note: this reduces the *retry* delay on an error from
+5 seconds to 4 seconds now - which should not make any interesting
+difference)
 
-     Clarify --block-ipv6 intent and direction.
+commit b1a8213ee3fe35a4617608ec7653e4dffea79207 (master)
+commit e7641f9b53bb6075fe7be7d5e6d16378eabebabd (release/2.5)
+Author: Domagoj Pensa
+Date:   Thu Dec 24 12:59:10 2020 +0100
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Richard Bonhomme <tincanteksup@...277...>
-     Message-Id: <20201225164214.22771-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21407.html
+     Remove 1 second delay before running netsh
+
+     Signed-off-by: Domagoj Pensa <domagoj@...2540...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <20201224115910.10129-1-domagoj@...2540...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21405.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
