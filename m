@@ -1,10 +1,10 @@
-Date: Mon, 18 Jan 2021 20:03:54 +0100 (CET)
-Message-Id: <202101181903.10IJ3s0Q052676@...2054...>
+Date: Mon, 18 Jan 2021 20:16:10 +0100 (CET)
+Message-Id: <202101181916.10IJGAQY052965@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20201224115910.10129-1-domagoj@...2540...>
-References: <20201224115910.10129-1-domagoj@...2540...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove 1 second delay before
- running netsh
+In-Reply-To: <20201215173004.26170-1-domagoj@...2540...>
+References: <20201215173004.26170-1-domagoj@...2540...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Skip DHCP renew with Wintun
+ adapter
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,26 +18,24 @@ Content-Transfer-Encoding: 8bit
 To: Domagoj Pensa <domagoj@...2540...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and releae/2.5 branch.
+Your patch has been applied to the master and release/2.5 branch.
 
-I have not tested it, not even test compiled - but if Lev says
-it works, this is all we need :-)
+I've not tested it in any way, but looked at "git show -w", and this
+this makes it quite clear that the patch does not actually change
+as much code as it looks like, just moves the whole "dhcp_masq_post"
+code block into the "if (WINDOWS_DRIVER_TAP_WINDOWS6)" block - so,
+for TAP6, nothing changes, and for wintun, the code is not reached.
 
-(As a side note: this reduces the *retry* delay on an error from
-5 seconds to 4 seconds now - which should not make any interesting
-difference)
-
-commit b1a8213ee3fe35a4617608ec7653e4dffea79207 (master)
-commit e7641f9b53bb6075fe7be7d5e6d16378eabebabd (release/2.5)
+commit e0e7625c6b15f85b81d4f11d02f3daf4f32f1200 (master)
+commit b8f4ca323969c13b039f35e5792a35f3e903b28c (release/2.5)
 Author: Domagoj Pensa
-Date:   Thu Dec 24 12:59:10 2020 +0100
+Date:   Tue Dec 15 18:30:04 2020 +0100
 
-     Remove 1 second delay before running netsh
+     Skip DHCP renew with Wintun adapter
 
-     Signed-off-by: Domagoj Pensa <domagoj@...2540...>
      Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20201224115910.10129-1-domagoj@...2540...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21405.html
+     Message-Id: <20201215173004.26170-1-domagoj@...2540...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21364.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
