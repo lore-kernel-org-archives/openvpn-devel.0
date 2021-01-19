@@ -1,9 +1,11 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <5a59dba3-3244-c9e0-b2bf-9f05b1219bc7@...515...>
-Date: Tue, 19 Jan 2021 11:33:28 +0200
+From: tincanteksup <tincanteksup@...277...>
+References: <99e4c953-c5e0-bdf2-7268-c7987952aaed@...277...>
+Message-ID: <4c488349-5b75-e04a-f776-6b498b25b776@...277...>
+Date: Tue, 19 Jan 2021 21:02:16 +0000
 MIME-Version: 1.0
-Content-Language: en-US
-Subject: [Openvpn-devel] Community meetings in January 2021
+In-Reply-To: <99e4c953-c5e0-bdf2-7268-c7987952aaed@...277...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] Man sections: typo (No patch)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,25 +14,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+Just FTR.
 
-Next community meetings have been scheduled to
 
-- Wed 20th January 2021 at 11:30 CET
-- Wed 27th January 2021 at 11:30 CET
 
-The place is #openvpn-meeting IRC channel at Freenode. Meeting agendas
-and summaries are in here:
+diff --git a/doc/man-sections/tls-options.rst 
+b/doc/man-sections/tls-options.rst
+index 5dd20013..28cf6f1e 100644
+--- a/doc/man-sections/tls-options.rst
++++ b/doc/man-sections/tls-options.rst
+@@ -422,13 +422,13 @@ certificates and keys: 
+https://github.com/OpenVPN/easy-rsa
+    :code:`DEFAULT:!EXP:!LOW:!MEDIUM:!kDH:!kECDH:!DSS:!PSK:!SRP:!kRSA` when
+    using OpenSSL.
 
-<https://community.openvpn.net/openvpn/wiki/IrcMeetings>
+-  The default for `--tls-ciphersuites` is to use the crypto library's
+-  default.
+-
+  --tls-ciphersuites l
+    Same as ``--tls-cipher`` but for TLS 1.3 and up. mbed TLS has no
+    TLS 1.3 support yet and only the ``--tls-cipher`` setting is used.
 
-Samuli
++  The default for `--tls-ciphersuites` is to use the crypto library's
++  default.
++
+  --tls-client
+    Enable TLS and assume client role during TLS handshake.
 
-NOTE: we decided not to have the European late-evening meetings on
-Thursdays. They did not seem to serve their original purpose, which was
-getting more people from the Americas to participate.
 
