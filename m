@@ -1,11 +1,10 @@
-Date: Wed, 20 Jan 2021 19:52:55 +0100
+Date: Wed, 20 Jan 2021 19:54:00 +0100 (CET)
+Message-Id: <202101201854.10KIs0s0093100@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20210120185255.GM976@...1296...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="+eUe5/cUWamSiL/9"
-Content-Disposition: inline
-Subject: [Openvpn-devel] HEADS UP: removing --inetd support in 2.6
+In-Reply-To: <20201211125957.7764-1-arne@...1227...>
+References: <20201211125957.7764-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix tls-auth mismatch OCC
+ message when tls-cryptv2 is used.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,54 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-users@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---+eUe5/cUWamSiL/9
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Your patch has been applied to the master and release/2.5 branch.
 
-Hiya,
+Thanks :-)
 
-just so you have heard it: we're going to remove --inetd support from
-OpenVPN for OpenVPN 2.6 - since we're assuming that this is hardly
-used these days, and it complicates the code base quite a bit.
+commit 15daa9886b64a8378a6c5d68f79076dc44095696 (master)
+commit e1bcf8a4bf3986a25f3906abe213fc9cd171ea04 (release/2.5)
+Author: Arne Schwabe
+Date:   Fri Dec 11 13:59:57 2020 +0100
 
-If you have a good use-case for --inetd that can not be solved otherwise,=20
+     Fix tls-auth mismatch OCC message when tls-cryptv2 is used.
 
- ** NOW IS THE TIME **
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Steffan Karger <steffan@...1856...>
+     Message-Id: <20201211125957.7764-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21358.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-to tell us.
 
-gert
+--
+kind regards,
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Gert Doering
 
-Gert Doering - Munich, Germany                             gert@...1296...
-
---+eUe5/cUWamSiL/9
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJgCHwGAAoJEB2Cnv7KVigSX+AL/jhE9gUjIo0j2PFieoGk+bye
-xceNvmbKAvLEAQjxATMAmcU5Qv2lt1yO4k6D8SDWDjvS8tVUQy1Msk1WuOyCKxM4
-Z+r6tITMqyWJD422f07ndedX42D4flctDxZrJIZOqO2MiY8FwjQ2AgKTCW6uUas7
-GQQSFizw+Vv7OS2p1Az1tHCBhjBOxL/RMuxKkdQccShRPKZrOM6BZ4F3+0vHgWP3
-xSqS9H15/RqGSepSoil519vj6aiE2ll3Sj7CTSQpPA0RWY9wXOPEuaY9wYGjJZoM
-//EcVBGyzx/AvQTwmVtiGJLyPRKABJFAIKtrQEjJ1odGocLMVWPO+avOWC0WYAi4
-cLGJm6Ul3Hyh0M9bM9zekkRM5EBqs60dGQG9miUuX4ejTlIqs562Fw1BaC0pBPZ3
-amciRmcDMOxODK0r1kx54Af+xqerMDePs2xlOvIXNbL11wkfJ+nM+IZjF3vabEaq
-aP0KaCxu3ytMg+UEoSCFRTfb1+fiWR0Vr7ItgzpSXQ==
-=O1A/
------END PGP SIGNATURE-----
-
---+eUe5/cUWamSiL/9--
 
