@@ -1,9 +1,11 @@
-Date: Wed, 20 Jan 2021 07:55:08 +0100 (CET)
-Message-Id: <202101200655.10K6t8hH083225@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210119215617.116886-1-tincanteksup@...277...>
-References: <20210119215617.116886-1-tincanteksup@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Man page sections corrections
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+References: <5a59dba3-3244-c9e0-b2bf-9f05b1219bc7@...515...>
+Message-ID: <e633c4bd-b4f3-bcb5-3171-edb2b80d432b@...515...>
+Date: Wed, 20 Jan 2021 13:34:44 +0200
+MIME-Version: 1.0
+In-Reply-To: <5a59dba3-3244-c9e0-b2bf-9f05b1219bc7@...515...>
+Content-Language: en-US
+Subject: [Openvpn-devel] Summary of the community meeting (20th January 2021)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,34 +14,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Richard Bonhomme <tincanteksup@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=iso-8859-15
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Acked-by: Gert Doering <gert@...1296...>
+Hi,
 
-Thanks.  Well spotted.
+Here's the summary of the IRC meeting.
 
-Your patch has been applied to the master and release/2.5 branch.
+---
 
-commit 3b1ded3902b051b3c25f6e77da834ecd1b9f7eca (master)
-commit 9e2f1bf73aaf48a3a7baf0cda11ef1caf3c69baf (release/2.5)
-Author: Richard Bonhomme
-Date:   Tue Jan 19 21:56:17 2021 +0000
+COMMUNITY MEETING
 
-     Man page sections corrections
+Place: #openvpn-meeting on irc.freenode.net
+Date: Wed 20th January 2021
+Time: 11:30 CET (10:30 UTC)
 
-     Signed-off-by: Richard Bonhomme <tincanteksup@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210119215617.116886-1-tincanteksup@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21451.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Planned meeting topics for this meeting were here:
 
+<https://community.openvpn.net/openvpn/wiki/Topics-2021-01-20>
+
+Your local meeting time is easy to check from services such as
+
+<http://www.timeanddate.com/worldclock>
+
+SUMMARY
+
+cron2, dazo, lev, mattock, ordex and plaisthos participated in this meeting.
+
+---
+
+Closed down the remaining HackerOne reports and set the awards.
+Requested HackerOne to close down our project.
 
 --
-kind regards,
 
-Gert Doering
+Noted that enabling IPv6 on the openvpn.net domain in CloudFlare is
+progressing slowly. Some of the critical services that OpenVPN Inc. ops
+were worried about have already moved to .com.
 
+---
+
+Full chatlog attached
 
