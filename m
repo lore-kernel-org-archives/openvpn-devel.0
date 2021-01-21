@@ -1,11 +1,12 @@
-Date: Thu, 21 Jan 2021 12:11:16 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20210121111116.GS976@...1296...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="+ZVqm/XpfIo49T/Z"
-Content-Disposition: inline
-Subject: [Openvpn-devel] HEADS UP: fate of the built-in packet filter (PF)
+References: <20200930131317.1299-1-arne@...1227...>
+ <20200930131317.1299-5-arne@...1227...>
+In-Reply-To: <20200930131317.1299-5-arne@...1227...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Thu, 21 Jan 2021 13:41:19 +0200
+Message-ID: <CAGyAFMVn_E6cqnUgmdNiDq1rWheR8uHT5VEPK6puMjTxbP603w@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 03/11] Implement server side of
+ AUTH_PENDING with extending timeout
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,74 +15,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
-
---+ZVqm/XpfIo49T/Z
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-OpenVPN has a built-in packet filter, which has a couple of issues
+Note that I didn't manage to apply this patch on the latest master so
+I had to apply commit from
+https://github.com/schwabe/openvpn/commit/42ae41d812668c4c00badaf592825684fa387d9d
 
- - it is IPv4 only (though IPv6 patches existed at some point, but nobody
-   reviewed them, so they did not get merged)
+> +static bool
+> +parse_kid(const char *str, unsigned int *kid)
+<snip>
+> +        && parse_uint(timeout_str, "TIMEOUT", &timeout))
 
- - it can only be configured by a plugin or the management interface
-   (so actually *using* it is not very straightforward)
+Since you've added wrapper "parse_kid", why not add "parse_timeout"
+for consistency?
 
- - it is not tested in any automated way today
+> +        bool ret = send_auth_pending_messages(&mi->context, extra, timeout);
 
- - none of the core developers uses it, or knows any deployment where it
-   is used - so if we break it, we might not even notice
-
-   (this was actually what brought up the discussion today - if a plugin=20
-    returns OPENVPN_PLUGIN_FUNC_ERROR on OPENVPN_PLUGIN_ENABLE_PF, openvpn
-    will crash with a NULL pointer access...)
-
- - not even OpenVPN AS, which usually uses "those interesting features that
-   nobody else knows about" uses PF (compiles with --disable-pf)
+>C:\Users\lev\Projects\openvpn\src\openvpn\multi.c(3907,68): error C2220: the following warning is treated as an error
+>C:\Users\lev\Projects\openvpn\src\openvpn\multi.c(3907,68): warning C4020: 'send_auth_pending_messages': too many actual parameters
 
 
-Based on this, we consider ripping all the PF stuff *out* of OpenVPN
-for the 2.6 release ("hopefully later this year").
+> -send_auth_pending_messages(struct context *c, const char *extra)
+> +send_auth_pending_messages(struct context *c, const char *extra,
+> +                           unsigned int timeout)
+>  {
+> -    send_control_channel_string(c, "AUTH_PENDING", D_PUSH);
+> +    struct key_state *ks = &tls_multi->session[TM_ACTIVE].key[KS_PRIMARY];
+
+>C:\Users\lev\Projects\openvpn\src\openvpn\push.c(354,1): error C2220: the following warning is treated as an error
+>C:\Users\lev\Projects\openvpn\src\openvpn\push.c(354,1): warning C4029: declared formal parameter list different from definition
+>C:\Users\lev\Projects\openvpn\src\openvpn\push.c(355,38): error C2065: 'tls_multi': undeclared identifier
+>C:\Users\lev\Projects\openvpn\src\openvpn\push.c(355,40): error C2223: left of '->session' must point to struct/union
+
+> +        size_t len = 20 + 1 + sizeof(auth_pre);
+<snip>
+>      size_t len = strlen(extra)+1 + sizeof(info_pre);
+
+Whitespace inconsistency.
 
 
-This is your chance to speak up and tell us "I use OpenVPN pf for this
-totally cool thing, and there is no way to do this with the firewalling
-layer the operating system provides, because..." :-)
+> +unsigned int
+> +extract_iv_proto(const char *peer_info)
+> +{
+> +
+> +    const char *optstr = peer_info ? strstr(peer_info, "IV_PROTO=") : NULL;
 
-So - surprise us!
+Unnecessary line break.
 
-gert
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---+ZVqm/XpfIo49T/Z
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJgCWFTAAoJEB2Cnv7KVigSG6oL/36lPOGCFyFjnAFHKC8+4az/
-FH+JIcOFdvcoslYJt5NNl9mnwNIii0gEYqj3FQ/Vf6zM3ovIHvp1hEUrgwJtdU/e
-BNKDrNvvsRQ/EPIx5X/cOv8lu/awMPEBhC5DAvoePyrUXR+S+4GLbwfJK7eA3zbk
-oIwzmx9ZLqc6teg5LONt3ig+0FkOofzm7IQTU6Bye/26Fy9tVvSQ1D5PrWbd8eBS
-t1gKlqhqgwA+QKxhDPZUglUYarqfVta06I5Uq0DZLrXKtQ3QBTB2zaU8z/+Ziiuk
-L3fvZPc9fslNF+yecGfcboHUw7NVkNrz3pKCOKq1zmiIWWKrCqTIG2ru8EiVOXwj
-fbmQUJ7PTeynR+ZQzgPMm/yIGrsWycBKkDYcXFMaZHQLVNDeYvNzdOptLgd0TNGs
-qwtX9afzGr2ZoPogI3Ds18rVOPEZdBPbGEIFO7LhfyRhgHcXTycnr42GaZKDDEGY
-ViLePYLW9uPkcDYXXhfkthMJVZeja5P+UgWPyZoX5g==
-=EWIE
------END PGP SIGNATURE-----
-
---+ZVqm/XpfIo49T/Z--
+-- 
+-Lev
 
