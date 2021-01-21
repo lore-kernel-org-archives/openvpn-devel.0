@@ -1,8 +1,12 @@
-From: Gert Doering <gert@...1296...>
-Date: Thu, 21 Jan 2021 14:39:29 +0100
-Message-Id: <20210121133929.20186-1-gert@...1296...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Make OPENVPN_PLUGIN_ENABLE_PF failures FATAL
+References: <20200930131317.1299-1-arne@...1227...>
+ <20200930131317.1299-9-arne@...1227...>
+In-Reply-To: <20200930131317.1299-9-arne@...1227...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Thu, 21 Jan 2021 16:05:51 +0200
+Message-ID: <CAGyAFMV2MqzeeVQJXBbG9trW2vN6a13_mfjN-dn6v2qGSqFuiA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 07/11] Refactor extract_var_peer_info
+ into standalone function and add ssl_util.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,57 +15,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Without this patch, if openpn is using a plugin that provides
-OPENVPN_PLUGIN_ENABLE_PF but then fails (returns OPENVPN_PLUGIN_FUNC_ERROR),
-OpenVPN will crash on a NULL pointer reference.
+Hi,
 
-The underlying cause is (likely) the refactoring work regarding
-CAS_SUCCEEDED etc., and that nobody adjusted the pf.c code accordingly
-(it tries to sent itself a SIGUSR1, which tries to tear down the
-client MI instance, but since it is not fully set up yet at this
-point, things explode).  Full details on the call chain in Trac...
+Both new files have
 
-Since we intend to remove pf in 2.6, but we still do not want OpenVPN
-to ever SIGSEGV, change the requirements for the plugins to "MUST SUCCEED",
-so if the plugin ENABLE_PF call fails, abort openvpn with a M_FATAL
-message.
+> +}
+> \ No newline at end of file
 
-Trac: #1377
+Can probably be fixed by the committer.
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/openvpn/pf.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+Stared at the come, compiled with MSVC.
+No "brand new" code added, just existing one factored out
+into a separate function and generalized.
 
-diff --git a/src/openvpn/pf.c b/src/openvpn/pf.c
-index f9bbfb50..3f472ef4 100644
---- a/src/openvpn/pf.c
-+++ b/src/openvpn/pf.c
-@@ -639,8 +639,17 @@ pf_init_context(struct context *c)
-         }
-         if (!c->c2.pf.enabled)
-         {
--            msg(M_WARN, "WARNING: failed to init PF plugin, rejecting client.");
--            register_signal(c, SIGUSR1, "plugin-pf-init-failed");
-+            /* At some point in openvpn history, this code just printed a
-+             * warning and signalled itself (SIGUSR1, "plugin-pf-init-failed")
-+             * to terminate the client instance.  This got broken at one of
-+             * the client auth state refactorings (leading to SIGSEGV crashes)
-+             * and due to "pf will be removed anyway" reasons the easiest way
-+             * to prevent crashes is to REQUIRE that plugins succeed - so if
-+             * the plugin fails, we cleanly abort OpenVPN
-+             *
-+             * see also: https://community.openvpn.net/openvpn/ticket/1377
-+             */
-+            msg(M_FATAL, "FATAL: failed to init PF plugin, must succeed.");
-             return;
-         }
-     }
--- 
-2.26.2
+Acked-by: Lev Stipakov <lstipakov@...277...>
 
+Acked with distinction for updating MSVC project files.
 
