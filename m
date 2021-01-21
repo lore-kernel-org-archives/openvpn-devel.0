@@ -1,12 +1,8 @@
+From: Gert Doering <gert@...1296...>
+Date: Thu, 21 Jan 2021 14:39:29 +0100
+Message-Id: <20210121133929.20186-1-gert@...1296...>
 MIME-Version: 1.0
-References: <20200930131317.1299-1-arne@...1227...>
- <20200930131317.1299-8-arne@...1227...>
-In-Reply-To: <20200930131317.1299-8-arne@...1227...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Thu, 21 Jan 2021 15:44:17 +0200
-Message-ID: <CAGyAFMWSR5rA8oU-pm2YVSQz6+YLzQNK_0f4XtjnAew3FZ=qGg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 06/11] Add S_EXITCODE flag for
- openvpn_run_script to report exit code
+Subject: [Openvpn-devel] [PATCH] Make OPENVPN_PLUGIN_ENABLE_PF failures FATAL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,43 +11,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Without this patch, if openpn is using a plugin that provides
+OPENVPN_PLUGIN_ENABLE_PF but then fails (returns OPENVPN_PLUGIN_FUNC_ERROR),
+OpenVPN will crash on a NULL pointer reference.
 
-> +platform_ret_code(int stat)
-> +{
-> +
-> +    if (stat >= 0 && stat < 255)
+The underlying cause is (likely) the refactoring work regarding
+CAS_SUCCEEDED etc., and that nobody adjusted the pf.c code accordingly
+(it tries to sent itself a SIGUSR1, which tries to tear down the
+client MI instance, but since it is not fully set up yet at this
+point, things explode).  Full details on the call chain in Trac...
 
-Unneeded line break.
+Since we intend to remove pf in 2.6, but we still do not want OpenVPN
+to ever SIGSEGV, change the requirements for the plugins to "MUST SUCCEED",
+so if the plugin ENABLE_PF call fails, abort openvpn with a M_FATAL
+message.
 
+Trac: #1377
 
-> -/* interpret the status code returned by execve() */
-> +/** interpret the status code returned by execve() */
->  bool platform_system_ok(int stat);
->
-> +/** Return a return code if valid and between 0 and 255, -1 otherwise */
-> +int platform_ret_code(int stat);
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/pf.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-"Return a return code" looks odd. Maybe "status code" or "exit code" ?
+diff --git a/src/openvpn/pf.c b/src/openvpn/pf.c
+index f9bbfb50..3f472ef4 100644
+--- a/src/openvpn/pf.c
++++ b/src/openvpn/pf.c
+@@ -639,8 +639,17 @@ pf_init_context(struct context *c)
+         }
+         if (!c->c2.pf.enabled)
+         {
+-            msg(M_WARN, "WARNING: failed to init PF plugin, rejecting client.");
+-            register_signal(c, SIGUSR1, "plugin-pf-init-failed");
++            /* At some point in openvpn history, this code just printed a
++             * warning and signalled itself (SIGUSR1, "plugin-pf-init-failed")
++             * to terminate the client instance.  This got broken at one of
++             * the client auth state refactorings (leading to SIGSEGV crashes)
++             * and due to "pf will be removed anyway" reasons the easiest way
++             * to prevent crashes is to REQUIRE that plugins succeed - so if
++             * the plugin fails, we cleanly abort OpenVPN
++             *
++             * see also: https://community.openvpn.net/openvpn/ticket/1377
++             */
++            msg(M_FATAL, "FATAL: failed to init PF plugin, must succeed.");
+             return;
+         }
+     }
+-- 
+2.26.2
 
-
-> +    if(flags & S_EXITCODE)
-
-Missing whitespace after if.
-
-
-> +/**
-> + * Will run a script and return the exit code if it
-> + */
-
-"If it" what?
-
-Assuming committer will fix those nit-picks (especially last one),
-
-Acked-by: Lev Stipakov <lstipakov@...277...>
 
