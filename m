@@ -1,13 +1,12 @@
-References: <20200930131317.1299-1-arne@...1227...>
- <20200930131317.1299-12-arne@...1227...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <e94aa323-bfe7-85f2-c224-778148dcbf43@...2080...>
-Date: Thu, 21 Jan 2021 18:29:54 +0100
+References: <20210121172536.32500-1-gert@...1296...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <9da2d2f4-c9a1-a896-e482-cf724378ac8c@...1227...>
+Date: Thu, 21 Jan 2021 20:43:08 +0100
 MIME-Version: 1.0
-In-Reply-To: <20200930131317.1299-12-arne@...1227...>
+In-Reply-To: <20210121172536.32500-1-gert@...1296...>
 Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH 10/11] Implement --client-crresponse
- script options and plugin interface
+Subject: Re: [Openvpn-devel] [PATCH] clean up / rewrite
+ sample-plugins/defer/simple.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,129 +15,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-On 30/09/2020 15:13, Arne Schwabe wrote:
-> This is allows scripts and pluginsto parse/react to a
-> CR_RESPONSE message
+Am 21.01.21 um 18:25 schrieb Gert Doering:
+> If we ship something that we consider a form of documentation
+> "this is how to write an OpenVPN plugin" it should meet our standards
+> for secure and modern code.  This plugin did neither.
 > 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->   Changes.rst                         |  7 ++++
->   doc/man-sections/script-options.rst | 28 ++++++++++++-
->   include/openvpn-plugin.h.in         |  7 +++-
->   src/openvpn/init.c                  |  1 +
->   src/openvpn/options.c               | 15 +++++++
->   src/openvpn/options.h               |  1 +
->   src/openvpn/push.c                  |  4 ++
->   src/openvpn/ssl_common.h            |  1 +
->   src/openvpn/ssl_verify.c            | 63 +++++++++++++++++++++++++++++
->   src/openvpn/ssl_verify.h            | 23 +++++++++++
->   10 files changed, 147 insertions(+), 3 deletions(-)
+>   - get rid of system() calls, especially those that enabled a
+>     remote-root exploit if this code was used "as is"
 > 
+>   - change logging from printf() to OpenVPN's plugin_log()
+> 
+>   - this requires changing to openvpn_plugin_open_v3() to get
+>     to the function pointers
+> 
+>   - change wacky "background and sleep in the shell call" to the
+>     double-fork/waitpid model we use in plugins/auth-pam
+>     (copy-paste code reuse)
+> 
+>   - OpenVPN 2.5 and later react badly to OPENVPN_PLUGIN_FUNC_ERROR
+>     returns to OPENVPN_PLUGIN_ENABLE_PF calls (SIGSEGV crash), so
+>     always return SUCCESS.  Only hook ENABLE_PF if that functionality
+>     is actually requested ("setenv test_packet_filter NN").
+> 
+>   - change deeply-nested functions auth_user_pass_verify() and
+>     tls_final() to use early-return style
+> 
+>   - actually make defered PF setup *work* with recent OpenVPNs
+>     (pre-creating temp files broke this, so unlink() the pre-created
+>     file in the ENABLE_PF hook, and re-create asyncronously later)
+> 
+>   - add lots of comments explaining why we do things this way
+>
 
-Only glared at the code here too.
+> +    while( r>0 );
 
-[...snip...]
+style ....
 
-> diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-options.rst
-> index e0cc10c2..66bf3662 100644
-> --- a/doc/man-sections/script-options.rst
-> +++ b/doc/man-sections/script-options.rst
-[...snip...]
-@@ -123,6 +128,25 @@ SCRIPT HOOKS
-    For a sample script that performs PAM authentication, see
-    :code:`sample-scripts/auth-pam.pl` in the OpenVPN source distribution.
+But overall it improves the sample plugin so massive that I think we
+should merge it because it fixes several big issues.
 
-+--client-crresponse
-+    Executed when the client sends a text based challenge response.
-+
-+    Valid syntax:
-+    ::
-+
-+        client-crresponse cmd method
-+
-
-[...snip...]
-
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index 3df803db..703927da 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-[...snip...]
-> @@ -7070,6 +7075,16 @@ add_option(struct options *options,
->           set_user_script(options, &options->client_connect_script,
->                           p[1], "client-connect", true);
->       }
-> +    else if (streq(p[0], "client-crresponse") && p[1])
-> +    {
-> +        VERIFY_PERMISSION(OPT_P_SCRIPT);
-> +        if (!no_more_than_n_args(msglevel, p, 2, NM_QUOTE_HINT))
-> +        {
-> +            goto err;
-> +        }
-> +        set_user_script(options, &options->client_crresponse_script,
-> +                        p[1], "client-crresponse", true);
-> +    }
-
-Either the doc is wrong, or the option parser is lacking parsing of 
-"method".
-
-[...snip...]
-
-> diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-> index 877e9396..a63a1967 100644
-> --- a/src/openvpn/options.h
-> +++ b/src/openvpn/options.h
-> @@ -440,6 +440,7 @@ struct options
->       const char *client_connect_script;
->       const char *client_disconnect_script;
->       const char *learn_address_script;
-> +    const char *client_crresponse_script;
-
-Indentation.
-
-[...snip...]
-> diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-> index 58e20baa..e5c92e17 100644
-> --- a/src/openvpn/push.c
-> +++ b/src/openvpn/push.c
-> @@ -227,6 +227,10 @@ receive_cr_response(struct context *c, const struct buffer *buffer)
->   
->   
->       management_notify_client_cr_response(key_id, mda, es, m);
-> +#endif
-> +#if ENABLE_PLUGIN
-> +    verify_crresponse_plugin(c->c2.tls_multi, m);
-> +    verify_crresponse_script(c->c2.tls_multi, m);
-
-Any reason the script feature is insdie the ENABLE_PLUGIN fence?
-
-[...snip...]
-> diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-> index 98afc88c..87877c88 100644
-> --- a/src/openvpn/ssl_common.h
-> +++ b/src/openvpn/ssl_common.h
-> @@ -314,6 +314,7 @@ struct tls_options
->   
->       /* used for username/password authentication */
->       const char *auth_user_pass_verify_script;
-> +    const char *client_crresponse_script;
-
-Indentation.
-
-I've not looked that carefully at the rest of the code, as I would like 
-to test those code paths when completing the review.  It looks 
-reasonable though at a first glance, but might be I stumble across 
-something during testing.
-
-
--- 
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
+Acked-By: Arne Schwabe <arne@...1227...>
 
 
