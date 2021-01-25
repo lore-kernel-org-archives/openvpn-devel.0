@@ -1,10 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 25 Jan 2021 13:56:23 +0100
-Message-Id: <20210125125628.30364-7-arne@...1227...>
+Date: Mon, 25 Jan 2021 13:56:26 +0100
+Message-Id: <20210125125628.30364-10-arne@...1227...>
 In-Reply-To: <20210125125628.30364-1-arne@...1227...>
 References: <20210125125628.30364-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v2 06/11] Add S_EXITCODE flag for
- openvpn_run_script to report exit code
+Subject: [Openvpn-devel] [PATCH v2 09/11] Implement deferred auth for scripts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,164 +16,260 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This allows to use script that have more than just fail/sucess but
-also deferred as status
+This patch also refactors the if condition that checks the result of
+the authentication since that has become quite unreadable. It renames
+s1/s2 and extracts some parts of the condition into individual variables
+to make the condition better understandle
 
-Patch v2: minor style fixes, improve doxygen comments
+Patch V2: add refactoring of the if condition
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/platform.c    | 34 ++++++++++++++++++++++++++++++++++
- src/openvpn/platform.h    |  5 ++++-
- src/openvpn/run_command.c | 25 ++++++++++++++++---------
- src/openvpn/run_command.h | 15 +++++++++++----
- 4 files changed, 65 insertions(+), 14 deletions(-)
+ Changes.rst                         | 12 ++++
+ doc/man-sections/script-options.rst | 14 ++++-
+ src/openvpn/ssl.c                   |  2 -
+ src/openvpn/ssl_verify.c            | 86 +++++++++++++++++++++--------
+ 4 files changed, 89 insertions(+), 25 deletions(-)
 
-diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
-index 53d07f9c..ef688c23 100644
---- a/src/openvpn/platform.c
-+++ b/src/openvpn/platform.c
-@@ -240,6 +240,40 @@ platform_system_ok(int stat)
- #endif
- }
+diff --git a/Changes.rst b/Changes.rst
+index 2a2829e7..188bd8ab 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -9,6 +9,18 @@ Keying Material Exporters (RFC 5705) based key generation
+     the RFC5705 based key material generation to the current custom
+     OpenVPN PRF. This feature requires OpenSSL or mbed TLS 2.18+.
  
-+#ifdef _WIN32
-+int
-+platform_ret_code(int stat)
-+{
-+    if (stat >= 0 && stat < 255)
-+    {
-+        return stat;
-+    }
-+    else
-+    {
-+        return -1;
-+    }
-+}
-+#else
-+int
-+platform_ret_code(int stat)
-+{
-+    if (!WIFEXITED(stat) || stat == -1)
-+    {
-+        return -1;
-+    }
++Deferred auth support for scripts
++    The ``--auth-user-pass-verify`` script supports now deferred authentication.
 +
-+    int status = WEXITSTATUS(stat);
-+    if (status >= 0 && status < 255)
-+    {
-+        return status;
-+    }
-+    else
-+    {
-+        return -1;
-+    }
-+}
-+#endif
++Pending auth support for plugins and scripts
++    Both auth plugin and script can now signal pending authentication to
++    the client when using deferred authentication. The new ``client-crresponse``
++    script option and ``OPENVPN_PLUGIN_CLIENT_CRRESPONSE`` plugin function can
++    be used to parse a client response to a ``CR_TEXT`` two factor challenge.
 +
- int
- platform_access(const char *path, int mode)
- {
-diff --git a/src/openvpn/platform.h b/src/openvpn/platform.h
-index 091fc9c4..01f3200c 100644
---- a/src/openvpn/platform.h
-+++ b/src/openvpn/platform.h
-@@ -119,9 +119,12 @@ void platform_mlockall(bool print_msg);  /* Disable paging */
- 
- int platform_chdir(const char *dir);
- 
--/* interpret the status code returned by execve() */
-+/** interpret the status code returned by execve() */
- bool platform_system_ok(int stat);
- 
-+/** Return an exit code if valid and between 0 and 255, -1 otherwise */
-+int platform_ret_code(int stat);
++    See ``sample/sample-scripts/totpauth.py`` for an example.
 +
- int platform_access(const char *path, int mode);
++
+ Overview of changes in 2.5
+ ==========================
  
- void platform_sleep_milliseconds(unsigned int n);
-diff --git a/src/openvpn/run_command.c b/src/openvpn/run_command.c
-index 4c4adf97..8f99ec88 100644
---- a/src/openvpn/run_command.c
-+++ b/src/openvpn/run_command.c
-@@ -191,27 +191,34 @@ openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned in
+diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-options.rst
+index 03b3dd77..50edd986 100644
+--- a/doc/man-sections/script-options.rst
++++ b/doc/man-sections/script-options.rst
+@@ -90,7 +90,19 @@ SCRIPT HOOKS
+ 
+   The script should examine the username and password, returning a success
+   exit code (:code:`0`) if the client's authentication request is to be
+-  accepted, or a failure code (:code:`1`) to reject the client.
++  accepted, a failure code (:code:`1`) to reject the client, or a that
++  the authentication is deferred (:code:`2`). If the authentication is
++  deferred, the script must fork/start a background or another non-blocking
++  operation to continue the authentication in the background. When finshing
++  the authentication, a :code:`1` or :code:`0` must be written to the
++  file specified by the :code:`auth_control_file`.
++
++  When deferred authentication is in use, the script can also request
++  pending authentication by writing to the file specified by the
++  :code:`auth_pending_file`. The first line must be the timeout in
++  seconds and the second line the EXTRA as documented in the
++  ``client-pending-auth`` section of `doc/management.txt`.
++
+ 
+   This directive is designed to enable a plugin-style interface for
+   extending OpenVPN's authentication capabilities.
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index b8e77f0e..699b7347 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -992,9 +992,7 @@ key_state_free(struct key_state *ks, bool clear)
+ 
+     packet_id_free(&ks->crypto_options.packet_id);
+ 
+-#ifdef PLUGIN_DEF_AUTH
+     key_state_rm_auth_control_files(ks);
+-#endif
+ 
+     if (clear)
+     {
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index b9647c1a..fc9f1d2e 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -1188,14 +1188,14 @@ tls_authenticate_key(struct tls_multi *multi, const unsigned int mda_key_id, con
  /*
-  * Wrapper around openvpn_execve
+  * Verify the user name and password using a script
   */
--bool
-+int
- openvpn_execve_check(const struct argv *a, const struct env_set *es, const unsigned int flags, const char *error_message)
+-static bool
++static int
+ verify_user_pass_script(struct tls_session *session, struct tls_multi *multi,
+                         const struct user_pass *up)
  {
      struct gc_arena gc = gc_new();
-     const int stat = openvpn_execve(a, es, flags);
-     int ret = false;
+     struct argv argv = argv_new();
+     const char *tmp_file = "";
+-    bool ret = false;
++    int retval = OPENVPN_PLUGIN_FUNC_ERROR;
  
--    if (platform_system_ok(stat))
-+    if (flags & S_EXITCODE)
-+    {
-+        ret = platform_ret_code(stat);
-+        if (ret != -1) {
-+            goto done;
-+        }
-+    }
-+    else if (platform_system_ok(stat))
-     {
-         ret = true;
-+        goto done;
-     }
--    else
-+    if (error_message)
-     {
--        if (error_message)
+     /* Set environmental variables prior to calling script */
+     setenv_str(session->opt->es, "script_type", "user-pass-verify");
+@@ -1223,25 +1223,61 @@ verify_user_pass_script(struct tls_session *session, struct tls_multi *multi,
+             /* pass temp file name to script */
+             argv_printf_cat(&argv, "%s", tmp_file);
+         }
+-        else
 -        {
--            msg(((flags & S_FATAL) ? M_FATAL : M_WARN), "%s: %s",
--                error_message,
--                system_error_message(stat, &gc));
+-            msg(D_TLS_ERRORS, "TLS Auth Error: could not create write "
+-                "username/password to temp file");
 -        }
-+        msg(((flags & S_FATAL) ? M_FATAL : M_WARN), "%s: %s",
-+            error_message,
-+            system_error_message(stat, &gc));
      }
-+done:
-     gc_free(&gc);
+     else
+     {
++        setenv_str(session->opt->es, "username", up->username);
+         setenv_str(session->opt->es, "password", up->password);
+     }
+ 
++    /* generate filename for deferred auth control file */
++    if (!key_state_gen_auth_control_files(&session->key[KS_PRIMARY],
++                                         session->opt))
++    {
++        msg(D_TLS_ERRORS, "TLS Auth Error (%s): "
++                          "could not create deferred auth control file", __func__);
++        return OPENVPN_PLUGIN_FUNC_ERROR;
++    }
 +
-     return ret;
+     /* call command */
+-    ret = openvpn_run_script(&argv, session->opt->es, 0,
+-                             "--auth-user-pass-verify");
++    int script_ret = openvpn_run_script(&argv, session->opt->es, S_EXITCODE,
++                                        "--auth-user-pass-verify");
++    switch (script_ret)
++    {
++       case 0:
++           retval = OPENVPN_PLUGIN_FUNC_SUCCESS;
++           break;
++       case 2:
++           retval = OPENVPN_PLUGIN_FUNC_DEFERRED;
++           break;
++       default:
++           retval = OPENVPN_PLUGIN_FUNC_ERROR;
++           break;
++    }
++#ifdef ENABLE_DEF_AUTH
++    if (retval == OPENVPN_PLUGIN_FUNC_DEFERRED)
++    {
++        /* Check if we the plugin has written the pending auth control
++         * file and send the pending auth to the client */
++        if(!key_state_check_auth_pending_file(&session->key[KS_PRIMARY],
++                                              multi))
++        {
++            retval = OPENVPN_PLUGIN_FUNC_ERROR;
++            key_state_rm_auth_control_files(&session->key[KS_PRIMARY]);
++        }
+ 
++    }
++    else
++    {
++        /* purge auth control filename (and file itself) for non-deferred returns */
++        key_state_rm_auth_control_files(&session->key[KS_PRIMARY]);
++    }
++#endif
+     if (!session->opt->auth_user_pass_verify_script_via_file)
+     {
+         setenv_del(session->opt->es, "password");
+     }
++
+ done:
+     if (tmp_file && strlen(tmp_file) > 0)
+     {
+@@ -1250,7 +1286,7 @@ done:
+ 
+     argv_free(&argv);
+     gc_free(&gc);
+-    return ret;
++    return retval;
  }
  
-diff --git a/src/openvpn/run_command.h b/src/openvpn/run_command.h
-index 7ccb13c6..da33d92b 100644
---- a/src/openvpn/run_command.h
-+++ b/src/openvpn/run_command.h
-@@ -42,18 +42,25 @@ int script_security(void);
- void script_security_set(int level);
- 
- /* openvpn_execve flags */
--#define S_SCRIPT (1<<0)
--#define S_FATAL  (1<<1)
-+#define S_SCRIPT    (1<<0)
-+#define S_FATAL     (1<<1)
-+/** Instead of returning 1/0 for success/fail,
-+ * return exit code when between 0 and 255 and -1 otherwise */
-+#define S_EXITCODE  (1<<2)
- 
- /* wrapper around the execve() call */
- int openvpn_popen(const struct argv *a,  const struct env_set *es);
- 
- bool openvpn_execve_allowed(const unsigned int flags);
- 
--bool openvpn_execve_check(const struct argv *a, const struct env_set *es,
-+int openvpn_execve_check(const struct argv *a, const struct env_set *es,
-                           const unsigned int flags, const char *error_message);
- 
--static inline bool
-+/**
-+ * Will run a script and return the exit code of the script if between
-+ * 0 and 255, -1 otherwise
-+ */
-+static inline int
- openvpn_run_script(const struct argv *a, const struct env_set *es,
-                    const unsigned int flags, const char *hook)
+ /*
+@@ -1371,8 +1407,6 @@ void
+ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+                  struct tls_session *session)
  {
+-    int s1 = OPENVPN_PLUGIN_FUNC_SUCCESS;
+-    bool s2 = true;
+     struct key_state *ks = &session->key[KS_PRIMARY];      /* primary key */
+ 
+ #ifdef ENABLE_MANAGEMENT
+@@ -1432,30 +1466,32 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+         }
+     }
+ 
++    int plugin_status = OPENVPN_PLUGIN_FUNC_SUCCESS;
++    int script_status = OPENVPN_PLUGIN_FUNC_SUCCESS;
+     /* Set the environment variables used by all auth variants */
+     if (!set_verify_user_pass_env(up, multi, session))
+     {
+         skip_auth = true;
+-        s1 = OPENVPN_PLUGIN_FUNC_ERROR;
++        plugin_status = OPENVPN_PLUGIN_FUNC_ERROR;
+     }
+ 
+     /* call plugin(s) and/or script */
+     if (!skip_auth)
+     {
+ #ifdef ENABLE_MANAGEMENT
+-        if (man_def_auth==KMDA_DEF)
++        if (man_def_auth == KMDA_DEF)
+         {
+             man_def_auth = verify_user_pass_management(session, multi, up);
+         }
+ #endif
+         if (plugin_defined(session->opt->plugins, OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY))
+         {
+-            s1 = verify_user_pass_plugin(session, multi, up);
++            plugin_status = verify_user_pass_plugin(session, multi, up);
+         }
+ 
+         if (session->opt->auth_user_pass_verify_script)
+         {
+-            s2 = verify_user_pass_script(session, multi, up);
++            script_status = verify_user_pass_script(session, multi, up);
+         }
+     }
+ 
+@@ -1466,19 +1502,25 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+         msg(D_TLS_ERRORS,
+             "TLS Auth Error: --username-as-common name specified and username is longer than the maximum permitted Common Name length of %d characters",
+             TLS_USERNAME_LEN);
+-        s1 = OPENVPN_PLUGIN_FUNC_ERROR;
++        plugin_status = OPENVPN_PLUGIN_FUNC_ERROR;
++        script_status = OPENVPN_PLUGIN_FUNC_ERROR;
+     }
+     /* auth succeeded? */
+-    if ((s1 == OPENVPN_PLUGIN_FUNC_SUCCESS
+-         || s1 == OPENVPN_PLUGIN_FUNC_DEFERRED
+-         ) && s2
++    bool plugin_ok = plugin_status == OPENVPN_PLUGIN_FUNC_SUCCESS
++        || plugin_status == OPENVPN_PLUGIN_FUNC_DEFERRED;
++
++    bool script_ok =  script_status == OPENVPN_PLUGIN_FUNC_SUCCESS
++        || script_status ==  OPENVPN_PLUGIN_FUNC_DEFERRED;
++
++    if (script_ok && plugin_ok && tls_lock_username(multi, up->username)
+ #ifdef ENABLE_MANAGEMENT
+         && man_def_auth != KMDA_ERROR
+ #endif
+-        && tls_lock_username(multi, up->username))
++        )
+     {
+         ks->authenticated = KS_AUTH_TRUE;
+-        if (s1 == OPENVPN_PLUGIN_FUNC_DEFERRED)
++        if (plugin_status == OPENVPN_PLUGIN_FUNC_DEFERRED
++            || script_status == OPENVPN_PLUGIN_FUNC_DEFERRED)
+         {
+             ks->authenticated = KS_AUTH_DEFERRED;
+         }
 -- 
 2.30.0
 
