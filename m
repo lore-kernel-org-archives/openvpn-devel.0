@@ -1,14 +1,14 @@
 References: <20200930131317.1299-1-arne@...1227...>
- <20200930131317.1299-4-arne@...1227...>
- <CAGyAFMVCy=09wVifPBY0hXKQ9oMKbc8wzcEVG__acYbG6qH9Bg@...278...>
+ <20200930131317.1299-11-arne@...1227...>
+ <43dc2d46-04a7-0d23-e3bc-587992d5020d@...2080...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <5a90382c-5b8a-4829-0160-a0664f0b899d@...1227...>
-Date: Mon, 25 Jan 2021 11:51:59 +0100
+Message-ID: <78b2c2dd-0d40-dbce-c6ce-e243b1a36938@...1227...>
+Date: Mon, 25 Jan 2021 12:52:14 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAGyAFMVCy=09wVifPBY0hXKQ9oMKbc8wzcEVG__acYbG6qH9Bg@...278...>
+In-Reply-To: <43dc2d46-04a7-0d23-e3bc-587992d5020d@...2080...>
 Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH 02/11] Implement client side handling of
- AUTH_PENDING message
+Subject: Re: [Openvpn-devel] [PATCH 09/11] Implement deferred auth for
+ scripts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,36 +17,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: David Sommerseth <openvpn@...2080...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Am 15.01.21 um 14:13 schrieb Lev Stipakov:
-> Hi,
-> 
-> Please not that I got errors applying this patch, so I reviewed
-> corresponding commit
-> from github (https://github.com/schwabe/openvpn/commit/3901e46127a2db3e6dfb20c44e8d8e30adea58c7).
-> 
->> +Receiving a AUTH_PENDING message will make the client change its timeout the
->> +timeout proposed by the server, even if the timeout is shorter.
-> 
-> Typo.
-> 
-> 
->>  /*
->>   * min/max functions
->>   */
->> +static inline unsigned int
->> +max_uint(unsigned int x, unsigned int y)
-> 
-> It is 2021 and we have to write our own min/max :(
 
-Yes. We had a discussion on #openvpn-devel and there seem to be no
-(non-float) min/max version in the standard library. The linux kernel
-also has a macro for this. This would be min_t(unsigned int, x, y) iirc
-in the kernel, so similar to what we do here
+>> +        int script_ret = openvpn_run_script(&argv, session->opt->es,
+>> S_EXITCODE,
+>> +                                            "--auth-user-pass-verify");
+> 
+> Perhaps move the retval declaration down here, as we're touching it
+> anyhow?  This switch() is the first place we use it, unless I'm
+> overlooking something.
+
+You are overlooking the 'goto done' code path for error handling.
+
+
+> 
+>> @@ -1499,7 +1534,11 @@ verify_user_pass(struct user_pass *up, struct
+>> tls_multi *multi,
+>>   #ifdef PLUGIN_DEF_AUTH
+>>            || s1 == OPENVPN_PLUGIN_FUNC_DEFERRED
+>>   #endif
+>> -         ) && s2
+>> +         ) &&
+>> +        ((s2 == OPENVPN_PLUGIN_FUNC_SUCCESS)
+>> +#ifdef ENABLE_DEF_AUTH
+>> +         || s2 ==  OPENVPN_PLUGIN_FUNC_DEFERRED)
+>> +#endif
+>>   #ifdef MANAGEMENT_DEF_AUTH
+>>           && man_def_auth != KMDA_ERROR
+>>   #endif
+> 
+> Yikes!  This if() statement is unreadable.  Since you are doing changes
+> here, could we improve this whole logic.  Perhaps using a helper macro
+> like this (incorrect code-style, for e-mail readability)
+>
+
+This is already the improved version after the connect patches cleaned
+it up a bit :P
+
+I really don't like hiding condition behind macros just make them
+shorter, I will propose a variant that extracts parts of the condition
+into individual booleans.
 
 Arne
 
