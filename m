@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 25 Jan 2021 13:56:28 +0100
-Message-Id: <20210125125628.30364-12-arne@...1227...>
+Date: Mon, 25 Jan 2021 13:56:22 +0100
+Message-Id: <20210125125628.30364-6-arne@...1227...>
 In-Reply-To: <20210125125628.30364-1-arne@...1227...>
 References: <20210125125628.30364-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v2 11/11] Add example script demonstrating
- TOTP via auth-pending
+Subject: [Openvpn-devel] [PATCH v2 05/11] Change parameter of
+ send_auth_pending_messages from context to tls_multi
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,161 +17,155 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+This prepares send_auth_pending_messages to be used a in context that
+does not have context c available but also does not need to schedule
+an immediate sending of the message (auth plugin/script)
+
+Patch V2: Adjust the comment of reschedule_multi_process to actually fit a
+          function.
+
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- Changes.rst                         |   9 +++
- doc/man-sections/script-options.rst |   3 +
- sample/sample-scripts/totpauth.py   | 107 ++++++++++++++++++++++++++++
- 3 files changed, 119 insertions(+)
- create mode 100755 sample/sample-scripts/totpauth.py
+ src/openvpn/forward.c | 17 +++++++++--------
+ src/openvpn/forward.h |  9 +++++++++
+ src/openvpn/multi.c   |  4 +++-
+ src/openvpn/push.c    |  9 ++++-----
+ src/openvpn/push.h    |  4 +++-
+ 5 files changed, 28 insertions(+), 15 deletions(-)
 
-diff --git a/Changes.rst b/Changes.rst
-index 188bd8ab..d64c6d83 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -19,6 +19,15 @@ Pending auth support for plugins and scripts
-     be used to parse a client response to a ``CR_TEXT`` two factor challenge.
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 2e1e1490..fc28caf0 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -342,6 +342,14 @@ send_control_channel_string_dowork(struct tls_multi *multi,
+     return stat;
+ }
  
-     See ``sample/sample-scripts/totpauth.py`` for an example.
-+<<<<<<< HEAD
-+=======
++void reschedule_multi_process(struct context *c)
++{
 +
-+Deprecated features
-+-------------------
-+``inetd`` has been removed
-+    This was a very limited and not-well-tested way to run OpenVPN, on TCP
-+    and TAP mode only.
-+>>>>>>> 239e8cfd (Add example script demonstrating TOTP via auth-pending)
++    interval_action(&c->c2.tmp_int);
++    context_immediate_reschedule(c); /* ZERO-TIMEOUT */
++}
++
++
+ bool
+ send_control_channel_string(struct context *c, const char *str, int msglevel)
+ {
+@@ -349,15 +357,8 @@ send_control_channel_string(struct context *c, const char *str, int msglevel)
+     {
+         bool ret = send_control_channel_string_dowork(c->c2.tls_multi,
+                                                       str, msglevel);
+-        /*
+-         * Reschedule tls_multi_process.
+-         * NOTE: in multi-client mode, usually the below two statements are
+-         * insufficient to reschedule the client instance object unless
+-         * multi_schedule_context_wakeup(m, mi) is also called.
+-         */
++        reschedule_multi_process(c);
+ 
+-        interval_action(&c->c2.tmp_int);
+-        context_immediate_reschedule(c); /* ZERO-TIMEOUT */
+         return ret;
+     }
+     return true;
+diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
+index a8b19f69..9ce3bc1c 100644
+--- a/src/openvpn/forward.h
++++ b/src/openvpn/forward.h
+@@ -317,6 +317,15 @@ bool
+ send_control_channel_string_dowork(struct tls_multi *multi,
+                                    const char *str, int msglevel);
+ 
++
++/**
++ * Reschedule tls_multi_process.
++ * NOTE: in multi-client mode, usually calling the function is
++ * insufficient to reschedule the client instance object unless
++ * multi_schedule_context_wakeup(m, mi) is also called.
++ */
++void reschedule_multi_process(struct context *c);
++
+ #define PIPV4_PASSTOS                   (1<<0)
+ #define PIP_MSSFIX                      (1<<1)         /* v4 and v6 */
+ #define PIP_OUTGOING                    (1<<2)
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index ac5d3f5b..d10f188c 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -3904,7 +3904,9 @@ management_client_pending_auth(void *arg,
+     if (mi)
+     {
+         /* sends INFO_PRE and AUTH_PENDING messages to client */
+-        bool ret = send_auth_pending_messages(&mi->context, extra, timeout);
++        bool ret = send_auth_pending_messages(mi->context.c2.tls_multi, extra,
++                                              timeout);
++        reschedule_multi_process(&mi->context);
+         multi_schedule_context_wakeup(m, mi);
+         return ret;
+     }
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 7d3cf806..320ad737 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -363,14 +363,13 @@ send_auth_failed(struct context *c, const char *client_reason)
  
  
- Overview of changes in 2.5
-diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-options.rst
-index 1d7118ae..05815020 100644
---- a/doc/man-sections/script-options.rst
-+++ b/doc/man-sections/script-options.rst
-@@ -147,6 +147,9 @@ SCRIPT HOOKS
-   :code:`auth_control_file or further defer it. See ``--auth-user-pass-verify``
-   for details.
+ bool
+-send_auth_pending_messages(struct context *c, const char *extra,
++send_auth_pending_messages(struct tls_multi *tls_multi, const char *extra,
+                            unsigned int timeout)
+ {
+     struct key_state *ks = &tls_multi->session[TM_ACTIVE].key[KS_PRIMARY];
  
-+  For a sample script that implement TOTP (RFC 6238) based two-factor
-+  authentication, see :code:`sample-scripts/totp.py`.
-+
- --client-connect cmd
-   Run command ``cmd`` on client connection.
+     static const char info_pre[] = "INFO_PRE,";
  
-diff --git a/sample/sample-scripts/totpauth.py b/sample/sample-scripts/totpauth.py
-new file mode 100755
-index 00000000..95ac3529
---- /dev/null
-+++ b/sample/sample-scripts/totpauth.py
-@@ -0,0 +1,107 @@
-+#! /usr/bin/python3
-+# Copyright (c) 2020 OpenVPN Inc <sales@...515...>
-+#
-+# Permission is hereby granted, free of charge, to any person obtaining a copy
-+# of this software and associated documentation files (the "Software"), to deal
-+# in the Software without restriction, including without limitation the rights
-+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-+# copies of the Software, and to permit persons to whom the Software is
-+# furnished to do so, subject to the following conditions:
-+#
-+# The above copyright notice and this permission notice shall be included in all
-+# copies or substantial portions of the Software.
-+#
-+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-+# SOFTWARE.
-+
-+import sys
-+import os
-+from base64 import standard_b64decode
-+
-+import pyotp
-+
-+import pprint
-+
-+# Example script demonstrating how to use the auth-pending API in
-+# OpenVPN. This script is provided under MIT license to allow easy
-+# modification for other purposes.
-+#
-+# To use this script add the following lines in the openvpn config
-+
-+# client-crresponse /path/to/totpauth.py 
-+# auth-user-pass-verify /path/to/totpauth.py via-file
-+# auth-user-pass-optional
-+# auth-gen-token
-+
-+# Note that this script does NOT verify username/password
-+# It is only meant for querying additional 2FA when certificates are
-+# used to authenticate
-+
-+secrets = {"styx": "OS6JDNRK2BNUPQVX",
-+           "apate": "IXWEMP7SK2QWSHTG"}
-+
-+
-+def main():
-+    # Get common name and script type from environment
-+    script_type = os.environ['script_type']
-+    cn = os.environ['common_name']
-+
-+    if script_type == 'user-pass-verify':
-+        # signal text based challenge response
-+
-+        if cn in secrets:
-+            extra = "CR_TEXT:E,R:Please enter your TOTP code!"
-+            write_auth_pending(300, 'crtext', extra)
-+
-+            # Signal authentication being deferred
-+            sys.exit(2)
-+        else:
-+            # For unkown CN we report failure. Change to 0
-+            # to allow CNs without secret to auth without 2FA
-+            sys.exit(1)
-+
-+    elif script_type == 'client-crresponse':
-+        response = None
-+
-+        # Read the crresponse from the argument file
-+        # and convert it into text. A failure because of bad user
-+        # input (e.g. invalid base64) will make the script throw
-+        # an error and make OpenVPN return AUTH_FAILED
-+        with open(sys.argv[1], 'r') as crinput:
-+            response = crinput.read()
-+            response = standard_b64decode(response)
-+            response = response.decode().strip()
-+
-+        if cn not in secrets:
-+            write_auth_control(1)
-+            return
-+
-+        totp = pyotp.TOTP(secrets[cn])
-+
-+        # Check if the code is valid (and also allow code +/-1)
-+        if totp.verify(response, valid_window=1):
-+            write_auth_control(1)
-+        else:
-+            write_auth_control(0)
-+    else:
-+        print(f"Unknown script type {script_type}")
-+        sys.exit(1)
-+
-+
-+def write_auth_control(status):
-+    with open(os.environ['auth_control_file'], 'w') as auth_control:
-+        auth_control.write("%d" % status)
-+
-+
-+def write_auth_pending(timeout, method, extra):
-+    with open(os.environ['auth_pending_file'], 'w') as auth_pending:
-+        auth_pending.write("%d\n%s\n%s" % (timeout, method, extra))
-+
-+
-+if __name__ == '__main__':
-+    main()
+-    struct tls_multi *tls_multi = c->c2.tls_multi;
+     const char *const peer_info = tls_multi->peer_info;
+     unsigned int proto = extract_iv_proto(peer_info);
+ 
+@@ -384,7 +383,7 @@ send_auth_pending_messages(struct context *c, const char *extra,
+     struct gc_arena gc = gc_new();
+     if ((proto & IV_PROTO_AUTH_PENDING_KW) == 0)
+     {
+-        send_control_channel_string(c, "AUTH_PENDING", D_PUSH);
++        send_control_channel_string_dowork(tls_multi, "AUTH_PENDING", D_PUSH);
+     }
+     else
+     {
+@@ -395,7 +394,7 @@ send_auth_pending_messages(struct context *c, const char *extra,
+         struct buffer buf = alloc_buf_gc(len, &gc);
+         buf_printf(&buf, auth_pre);
+         buf_printf(&buf, "%u", timeout);
+-        send_control_channel_string(c, BSTR(&buf), D_PUSH);
++        send_control_channel_string_dowork(tls_multi, BSTR(&buf), D_PUSH);
+     }
+ 
+     size_t len = strlen(extra) + 1 + sizeof(info_pre);
+@@ -408,7 +407,7 @@ send_auth_pending_messages(struct context *c, const char *extra,
+     struct buffer buf = alloc_buf_gc(len, &gc);
+     buf_printf(&buf, info_pre);
+     buf_printf(&buf, "%s", extra);
+-    send_control_channel_string(c, BSTR(&buf), D_PUSH);
++    send_control_channel_string_dowork(tls_multi, BSTR(&buf), D_PUSH);
+ 
+     ks->auth_deferred_expire = now + timeout;
+ 
+diff --git a/src/openvpn/push.h b/src/openvpn/push.h
+index a2192114..377f94a6 100644
+--- a/src/openvpn/push.h
++++ b/src/openvpn/push.h
+@@ -77,7 +77,9 @@ void send_auth_failed(struct context *c, const char *client_reason);
+  * doc/management-notes.txt under client-pending-auth for
+  * more details on message format
+  */
+-bool send_auth_pending_messages(struct context *c, const char *extra);
++bool
++send_auth_pending_messages(struct tls_multi *tls_multi, const char *extra,
++                           unsigned int timeout);
+ 
+ void send_restart(struct context *c, const char *kill_msg);
+ 
 -- 
 2.30.0
 
