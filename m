@@ -1,14 +1,10 @@
-References: <20200930131317.1299-1-arne@...1227...>
- <20200930131317.1299-11-arne@...1227...>
- <43dc2d46-04a7-0d23-e3bc-587992d5020d@...2080...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <78b2c2dd-0d40-dbce-c6ce-e243b1a36938@...1227...>
-Date: Mon, 25 Jan 2021 12:52:14 +0100
-MIME-Version: 1.0
-In-Reply-To: <43dc2d46-04a7-0d23-e3bc-587992d5020d@...2080...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH 09/11] Implement deferred auth for
- scripts
+Date: Mon, 25 Jan 2021 13:43:30 +0100
+Message-Id: <20210125124330.30046-1-arne@...1227...>
+In-Reply-To: <ca157141-dc88-8017-0e6e-3ace055bc36e@...2181...>
+References: <ca157141-dc88-8017-0e6e-3ace055bc36e@...2181...>
+Subject: [Openvpn-devel] [PATCH v2] Allow running a default configuration
+ with TLS libraries without BF-CBC
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,47 +15,142 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: David Sommerseth <openvpn@...2080...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
+Modern TLS libraries might drop Blowfish by default or distributions
+might disable Blowfish in OpenSSL/mbed TLS. We still signal OCC
+options with BF-CBC compatible strings. To avoid requiring BF-CBC
+for this, special this one usage of BF-CBC enough to avoid a hard
+requirement on Blowfish in the default configuration.
 
->> +        int script_ret = openvpn_run_script(&argv, session->opt->es,
->> S_EXITCODE,
->> +                                            "--auth-user-pass-verify");
-> 
-> Perhaps move the retval declaration down here, as we're touching it
-> anyhow?  This switch() is the first place we use it, unless I'm
-> overlooking something.
+Signed-off-by: Arne Schwabe <arne@...1227...>
 
-You are overlooking the 'goto done' code path for error handling.
+Patch v2: add more clarifying comment, do not warn about OCC only insecure
+          ciphers, code improvements
 
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/init.c    | 32 ++++++++++++++++++++++--------
+ src/openvpn/options.c | 46 +++++++++++++++++++++++++++++++++++++------
+ 2 files changed, 64 insertions(+), 14 deletions(-)
 
-> 
->> @@ -1499,7 +1534,11 @@ verify_user_pass(struct user_pass *up, struct
->> tls_multi *multi,
->>   #ifdef PLUGIN_DEF_AUTH
->>            || s1 == OPENVPN_PLUGIN_FUNC_DEFERRED
->>   #endif
->> -         ) && s2
->> +         ) &&
->> +        ((s2 == OPENVPN_PLUGIN_FUNC_SUCCESS)
->> +#ifdef ENABLE_DEF_AUTH
->> +         || s2 ==  OPENVPN_PLUGIN_FUNC_DEFERRED)
->> +#endif
->>   #ifdef MANAGEMENT_DEF_AUTH
->>           && man_def_auth != KMDA_ERROR
->>   #endif
-> 
-> Yikes!  This if() statement is unreadable.  Since you are doing changes
-> here, could we improve this whole logic.  Perhaps using a helper macro
-> like this (incorrect code-style, for e-mail readability)
->
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index c3493c42..df0c7ebc 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2770,14 +2770,30 @@ do_init_crypto_tls_c1(struct context *c)
+ #endif /* if P2MP */
+         }
+ 
+-        /* Do not warn if we only have BF-CBC in options->ciphername
+-         * because it is still the default cipher */
+-        bool warn = !streq(options->ciphername, "BF-CBC")
+-             || options->enable_ncp_fallback;
+-        /* Get cipher & hash algorithms */
+-        init_key_type(&c->c1.ks.key_type, options->ciphername, options->authname,
+-                      options->keysize, true, warn);
+-
++       /*
++        * BF-CBC is allowed to be used only when explicitly configured
++        * as NCP-fallback or when NCP has been disabled.
++        * In all other cases don't attempt to initialize BF-CBC as it
++        * may not even be supported by the underlying SSL library.
++        *
++        * Therefore, the key structure has to be initialized when:
++        * - any non-BF-CBC cipher was selected; or
++        * - BF-CBC is selected and NCP is disabled (explicit request to
++        *   use the BF-CBC cipher); or
++        * - BF-CBC is selected, NCP is enabled and fallback is enabled
++        *   (BF-CBC will be the fallback).
++        *
++        * Note that BF-CBC will still be part of the OCC string to retain
++        * backwards compatibility with older clients.
++        */
++        if (!streq(options->ciphername, "BF-CBC") || !options->ncp_enabled
++            || options->enable_ncp_fallback)
++        {
++            /* Do not warn if the if the cipher is used only in OCC */
++            bool warn = !options->ncp_enabled || options->enable_ncp_fallback;
++            init_key_type(&c->c1.ks.key_type, options->ciphername, options->authname,
++                          options->keysize, true, warn);
++        }
+         /* Initialize PRNG with config-specified digest */
+         prng_init(options->prng_hash, options->prng_nonce_secret_len);
+ 
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index b81137cf..d52057cc 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3664,9 +3664,29 @@ calc_options_string_link_mtu(const struct options *o, const struct frame *frame)
+     {
+         struct frame fake_frame = *frame;
+         struct key_type fake_kt;
+-        init_key_type(&fake_kt, o->ciphername, o->authname, o->keysize, true,
+-                      false);
++
+         frame_remove_from_extra_frame(&fake_frame, crypto_max_overhead());
++
++
++        /* o->ciphername might be BF-CBC even though the underlying SSL library
++         * does not support it. For this reason we workaround this corner case
++         * by pretending to have no encryption enabled and by manually adding
++         * the required packet overhead to the MTU computation.
++         */
++        const char* ciphername = o->ciphername;
++
++        if (strcmp(o->ciphername, "BF-CBC") == 0)
++        {
++            /* none has no overhead, so use this to later add only --auth
++             * overhead */
++
++            /* overhead of BF-CBC: 64 bit block size, 64 bit IV size */
++            frame_add_to_extra_frame(&fake_frame, 64/8 + 64/8);
++        }
++
++        init_key_type(&fake_kt, ciphername, o->authname, o->keysize, true,
++                      false);
++
+         crypto_adjust_frame_parameters(&fake_frame, &fake_kt, o->replay,
+                                        cipher_kt_mode_ofb_cfb(fake_kt.cipher));
+         frame_finalize(&fake_frame, o->ce.link_mtu_defined, o->ce.link_mtu,
+@@ -3836,18 +3856,32 @@ options_string(const struct options *o,
+                + (TLS_SERVER == true)
+                <= 1);
+ 
+-        init_key_type(&kt, o->ciphername, o->authname, o->keysize, true,
+-                      false);
++        /* Skip resolving BF-CBC to allow SSL libraries without BF-CBC
++         * to work here in the default configuration */
++        const char *ciphername = o->ciphername;
++        int keysize;
++
++        if (strcmp(o->ciphername, "BF-CBC") == 0) {
++            init_key_type(&kt, "none", o->authname, o->keysize, true,
++                          false);
++            ciphername = cipher_kt_name(kt.cipher);
++            keysize = 128;
++        }
++        else
++        {
++            init_key_type(&kt, o->ciphername, o->authname, o->keysize, true,
++                          false);
++            keysize = kt.cipher_length * 8;
++        }
+         /* Only announce the cipher to our peer if we are willing to
+          * support it */
+-        const char *ciphername = cipher_kt_name(kt.cipher);
+         if (p2p_nopull || !o->ncp_enabled
+             || tls_item_in_cipher_list(ciphername, o->ncp_ciphers))
+         {
+             buf_printf(&out, ",cipher %s", ciphername);
+         }
+         buf_printf(&out, ",auth %s", md_kt_name(kt.digest));
+-        buf_printf(&out, ",keysize %d", kt.cipher_length * 8);
++        buf_printf(&out, ",keysize %d", keysize);
+         if (o->shared_secret_file)
+         {
+             buf_printf(&out, ",secret");
+-- 
+2.30.0
 
-This is already the improved version after the connect patches cleaned
-it up a bit :P
-
-I really don't like hiding condition behind macros just make them
-shorter, I will propose a variant that extracts parts of the condition
-into individual booleans.
-
-Arne
 
