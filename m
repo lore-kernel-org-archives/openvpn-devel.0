@@ -1,7 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 25 Jan 2021 13:56:17 +0100
-Message-Id: <20210125125628.30364-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v2 00/11] Pending authentication improvements
+Date: Mon, 25 Jan 2021 13:56:28 +0100
+Message-Id: <20210125125628.30364-12-arne@...1227...>
+In-Reply-To: <20210125125628.30364-1-arne@...1227...>
+References: <20210125125628.30364-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v2 11/11] Add example script demonstrating
+ TOTP via auth-pending
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,79 +17,161 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This patchset brings a number of improvements:
-
- - Allow a tiemout that is different from the default 60s for
-   pending authentication. 60s is a bit tight, especially when
-   being redirected to a complicated web login process.
- - Make the server side auth-pending support no longer
-   dependent on management interface but also allow scripts
-   and plugins to utilise it.
- - Introduce deffered authentication support for scripts.
-   Deferred authentication is a necessary requirement for
-   pending authentication.
-
-The branch is also available here: https://github.com/schwabe/openvpn/tree/schwabe/auth_pending
-
-The v2 patches ae modified from the v1 if they contain a Patch v2 note in the commit message, otherwise
-they are just rebased and resent with the patchset.
-
-Arne Schwabe (11):
-  Change pull request timeout use a timeout rather than a number
-  Implement client side handling of AUTH_PENDING message
-  Implement server side of AUTH_PENDING with extending timeout
-  Introduce management client state for AUTH_PENDING notifications
-  Change parameter of send_auth_pending_messages from context to
-    tls_multi
-  Add S_EXITCODE flag for openvpn_run_script to report exit code
-  Refactor extract_var_peer_info into standalone function and add
-    ssl_util.c
-  Allow pending auth to be send from a auth plugin
-  Implement deferred auth for scripts
-  Implement --client-crresponse script options and plugin interface
-  Add example script demonstrating TOTP via auth-pending
-
- Changes.rst                          |  21 ++
- doc/man-sections/generic-options.rst |   3 +-
- doc/man-sections/script-options.rst  |  45 +++-
- doc/man-sections/server-options.rst  |   4 +
- doc/man-sections/tls-options.rst     |   3 +
- doc/management-notes.txt             |  39 +++-
- include/openvpn-plugin.h.in          |  15 +-
- sample/sample-scripts/totpauth.py    | 107 +++++++++
- src/openvpn/Makefile.am              |   1 +
- src/openvpn/forward.c                |  27 ++-
- src/openvpn/forward.h                |   9 +
- src/openvpn/init.c                   |   1 +
- src/openvpn/integer.h                |  25 +++
- src/openvpn/manage.c                 |  26 ++-
- src/openvpn/manage.h                 |   5 +-
- src/openvpn/multi.c                  |  29 +--
- src/openvpn/openvpn.h                |   2 +-
- src/openvpn/openvpn.vcxproj          |   2 +
- src/openvpn/openvpn.vcxproj.filters  |   6 +
- src/openvpn/options.c                |  15 ++
- src/openvpn/options.h                |   1 +
- src/openvpn/platform.c               |  34 +++
- src/openvpn/platform.h               |   5 +-
- src/openvpn/push.c                   | 153 ++++++++++++-
- src/openvpn/push.h                   |  23 +-
- src/openvpn/run_command.c            |  25 ++-
- src/openvpn/run_command.h            |  15 +-
- src/openvpn/ssl.c                    |  10 +-
- src/openvpn/ssl.h                    |   3 +
- src/openvpn/ssl_common.h             |   4 +
- src/openvpn/ssl_ncp.c                |  20 +-
- src/openvpn/ssl_util.c               |  59 +++++
- src/openvpn/ssl_util.h               |  49 +++++
- src/openvpn/ssl_verify.c             | 311 ++++++++++++++++++++++++---
- src/openvpn/ssl_verify.h             |  25 ++-
- tests/unit_tests/openvpn/Makefile.am |   3 +-
- 36 files changed, 988 insertions(+), 137 deletions(-)
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ Changes.rst                         |   9 +++
+ doc/man-sections/script-options.rst |   3 +
+ sample/sample-scripts/totpauth.py   | 107 ++++++++++++++++++++++++++++
+ 3 files changed, 119 insertions(+)
  create mode 100755 sample/sample-scripts/totpauth.py
- create mode 100644 src/openvpn/ssl_util.c
- create mode 100644 src/openvpn/ssl_util.h
 
+diff --git a/Changes.rst b/Changes.rst
+index 188bd8ab..d64c6d83 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -19,6 +19,15 @@ Pending auth support for plugins and scripts
+     be used to parse a client response to a ``CR_TEXT`` two factor challenge.
+ 
+     See ``sample/sample-scripts/totpauth.py`` for an example.
++<<<<<<< HEAD
++=======
++
++Deprecated features
++-------------------
++``inetd`` has been removed
++    This was a very limited and not-well-tested way to run OpenVPN, on TCP
++    and TAP mode only.
++>>>>>>> 239e8cfd (Add example script demonstrating TOTP via auth-pending)
+ 
+ 
+ Overview of changes in 2.5
+diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-options.rst
+index 1d7118ae..05815020 100644
+--- a/doc/man-sections/script-options.rst
++++ b/doc/man-sections/script-options.rst
+@@ -147,6 +147,9 @@ SCRIPT HOOKS
+   :code:`auth_control_file or further defer it. See ``--auth-user-pass-verify``
+   for details.
+ 
++  For a sample script that implement TOTP (RFC 6238) based two-factor
++  authentication, see :code:`sample-scripts/totp.py`.
++
+ --client-connect cmd
+   Run command ``cmd`` on client connection.
+ 
+diff --git a/sample/sample-scripts/totpauth.py b/sample/sample-scripts/totpauth.py
+new file mode 100755
+index 00000000..95ac3529
+--- /dev/null
++++ b/sample/sample-scripts/totpauth.py
+@@ -0,0 +1,107 @@
++#! /usr/bin/python3
++# Copyright (c) 2020 OpenVPN Inc <sales@...515...>
++#
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++#
++# The above copyright notice and this permission notice shall be included in all
++# copies or substantial portions of the Software.
++#
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++# SOFTWARE.
++
++import sys
++import os
++from base64 import standard_b64decode
++
++import pyotp
++
++import pprint
++
++# Example script demonstrating how to use the auth-pending API in
++# OpenVPN. This script is provided under MIT license to allow easy
++# modification for other purposes.
++#
++# To use this script add the following lines in the openvpn config
++
++# client-crresponse /path/to/totpauth.py 
++# auth-user-pass-verify /path/to/totpauth.py via-file
++# auth-user-pass-optional
++# auth-gen-token
++
++# Note that this script does NOT verify username/password
++# It is only meant for querying additional 2FA when certificates are
++# used to authenticate
++
++secrets = {"styx": "OS6JDNRK2BNUPQVX",
++           "apate": "IXWEMP7SK2QWSHTG"}
++
++
++def main():
++    # Get common name and script type from environment
++    script_type = os.environ['script_type']
++    cn = os.environ['common_name']
++
++    if script_type == 'user-pass-verify':
++        # signal text based challenge response
++
++        if cn in secrets:
++            extra = "CR_TEXT:E,R:Please enter your TOTP code!"
++            write_auth_pending(300, 'crtext', extra)
++
++            # Signal authentication being deferred
++            sys.exit(2)
++        else:
++            # For unkown CN we report failure. Change to 0
++            # to allow CNs without secret to auth without 2FA
++            sys.exit(1)
++
++    elif script_type == 'client-crresponse':
++        response = None
++
++        # Read the crresponse from the argument file
++        # and convert it into text. A failure because of bad user
++        # input (e.g. invalid base64) will make the script throw
++        # an error and make OpenVPN return AUTH_FAILED
++        with open(sys.argv[1], 'r') as crinput:
++            response = crinput.read()
++            response = standard_b64decode(response)
++            response = response.decode().strip()
++
++        if cn not in secrets:
++            write_auth_control(1)
++            return
++
++        totp = pyotp.TOTP(secrets[cn])
++
++        # Check if the code is valid (and also allow code +/-1)
++        if totp.verify(response, valid_window=1):
++            write_auth_control(1)
++        else:
++            write_auth_control(0)
++    else:
++        print(f"Unknown script type {script_type}")
++        sys.exit(1)
++
++
++def write_auth_control(status):
++    with open(os.environ['auth_control_file'], 'w') as auth_control:
++        auth_control.write("%d" % status)
++
++
++def write_auth_pending(timeout, method, extra):
++    with open(os.environ['auth_pending_file'], 'w') as auth_pending:
++        auth_pending.write("%d\n%s\n%s" % (timeout, method, extra))
++
++
++if __name__ == '__main__':
++    main()
 -- 
 2.30.0
 
