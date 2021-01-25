@@ -1,7 +1,9 @@
-From: Greg Cox <gcox@...1057...>
-Date: Mon, 25 Jan 2021 07:15:57 +0000
-Message-Id: <1611558957-2958-1-git-send-email-gcox@...1057...>
-Subject: [Openvpn-devel] [PATCH] Fix naming error in
+Date: Mon, 25 Jan 2021 08:22:58 +0100 (CET)
+Message-Id: <202101250722.10P7MwOI084368@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1611558957-2958-1-git-send-email-gcox@...1057...>
+References: <1611558957-2958-1-git-send-email-gcox@...1057...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix naming error in
  sample-plugins/defer/simple.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -13,26 +15,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Greg Cox <gcox@...1057...>
+Cc: openvpn-devel@lists.sourceforge.net
 
----
- sample/sample-plugins/defer/simple.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Acked-by: Gert Doering <gert@...1296...>
 
-diff --git a/sample/sample-plugins/defer/simple.c b/sample/sample-plugins/defer/simple.c
-index b3c2fee48f8d2c10b10a09e8aadc1995e9cf067d..22bc22765d6773d3ea2344a328faf5008b0c5d89 100644
---- a/sample/sample-plugins/defer/simple.c
-+++ b/sample/sample-plugins/defer/simple.c
-@@ -148,7 +148,7 @@ openvpn_plugin_open_v3(const int v3structver,
-     /* Check API compatibility -- struct version 5 or higher needed */
-     if (v3structver < 5)
-     {
--        fprintf(stderr, "sample-client-connect: this plugin is incompatible with the running version of OpenVPN\n");
-+        fprintf(stderr, "%s: this plugin is incompatible with the running version of OpenVPN\n", MODULE);
-         return OPENVPN_PLUGIN_FUNC_ERROR;
-     }
- 
--- 
-2.7.6
+"That's what I get for copy-paste code reuse" :-)
+
+Your patch has been applied to the master, release/2.5 and release/2.4 branch.
+
+commit 2d7e1954cae51ff317de886cc6b6c2daab7b59ea (master)
+commit fe8739da3135e3d21b657c23f3bddcb7e5b3f9f3 (release/2.5)
+commit 75a7d795acba972cd8b96dc44a5ba1970373226f (release/2.4)
+Author: Greg Cox
+Date:   Mon Jan 25 07:15:57 2021 +0000
+
+     Fix naming error in sample-plugins/defer/simple.c
+
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1611558957-2958-1-git-send-email-gcox@...1057...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21482.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
