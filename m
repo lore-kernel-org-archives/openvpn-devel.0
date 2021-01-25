@@ -1,9 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 25 Jan 2021 13:56:26 +0100
-Message-Id: <20210125125628.30364-10-arne@...1227...>
+Date: Mon, 25 Jan 2021 13:56:27 +0100
+Message-Id: <20210125125628.30364-11-arne@...1227...>
 In-Reply-To: <20210125125628.30364-1-arne@...1227...>
 References: <20210125125628.30364-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v2 09/11] Implement deferred auth for scripts
+Subject: [Openvpn-devel] [PATCH v2 10/11] Implement --client-crresponse
+ script options and plugin interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,260 +17,317 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This patch also refactors the if condition that checks the result of
-the authentication since that has become quite unreadable. It renames
-s1/s2 and extracts some parts of the condition into individual variables
-to make the condition better understandle
+This is allows scripts and pluginsto parse/react to a
+CR_RESPONSE message
 
-Patch V2: add refactoring of the if condition
+Patch V2: doc fixes, do not put script under ENABLE_PLUGIN
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- Changes.rst                         | 12 ++++
- doc/man-sections/script-options.rst | 14 ++++-
- src/openvpn/ssl.c                   |  2 -
- src/openvpn/ssl_verify.c            | 86 +++++++++++++++++++++--------
- 4 files changed, 89 insertions(+), 25 deletions(-)
+ doc/man-sections/script-options.rst | 28 ++++++++++++-
+ include/openvpn-plugin.h.in         |  7 +++-
+ src/openvpn/init.c                  |  1 +
+ src/openvpn/options.c               | 15 +++++++
+ src/openvpn/options.h               |  1 +
+ src/openvpn/push.c                  |  4 ++
+ src/openvpn/ssl_common.h            |  1 +
+ src/openvpn/ssl_verify.c            | 65 ++++++++++++++++++++++++++++-
+ src/openvpn/ssl_verify.h            | 23 ++++++++++
+ 9 files changed, 141 insertions(+), 4 deletions(-)
 
-diff --git a/Changes.rst b/Changes.rst
-index 2a2829e7..188bd8ab 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -9,6 +9,18 @@ Keying Material Exporters (RFC 5705) based key generation
-     the RFC5705 based key material generation to the current custom
-     OpenVPN PRF. This feature requires OpenSSL or mbed TLS 2.18+.
- 
-+Deferred auth support for scripts
-+    The ``--auth-user-pass-verify`` script supports now deferred authentication.
-+
-+Pending auth support for plugins and scripts
-+    Both auth plugin and script can now signal pending authentication to
-+    the client when using deferred authentication. The new ``client-crresponse``
-+    script option and ``OPENVPN_PLUGIN_CLIENT_CRRESPONSE`` plugin function can
-+    be used to parse a client response to a ``CR_TEXT`` two factor challenge.
-+
-+    See ``sample/sample-scripts/totpauth.py`` for an example.
-+
-+
- Overview of changes in 2.5
- ==========================
- 
 diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-options.rst
-index 03b3dd77..50edd986 100644
+index 50edd986..1d7118ae 100644
 --- a/doc/man-sections/script-options.rst
 +++ b/doc/man-sections/script-options.rst
-@@ -90,7 +90,19 @@ SCRIPT HOOKS
+@@ -52,6 +52,11 @@ Script Order of Execution
+    Executed in ``--mode server`` mode on new client connections, when the
+    client is still untrusted.
  
-   The script should examine the username and password, returning a success
-   exit code (:code:`0`) if the client's authentication request is to be
--  accepted, or a failure code (:code:`1`) to reject the client.
-+  accepted, a failure code (:code:`1`) to reject the client, or a that
-+  the authentication is deferred (:code:`2`). If the authentication is
-+  deferred, the script must fork/start a background or another non-blocking
-+  operation to continue the authentication in the background. When finshing
-+  the authentication, a :code:`1` or :code:`0` must be written to the
-+  file specified by the :code:`auth_control_file`.
++#. ``--client-crresponse``
 +
-+  When deferred authentication is in use, the script can also request
-+  pending authentication by writing to the file specified by the
-+  :code:`auth_pending_file`. The first line must be the timeout in
-+  seconds and the second line the EXTRA as documented in the
-+  ``client-pending-auth`` section of `doc/management.txt`.
++    Execute in ``--mode server`` whenever a client sends a
++    :code:`CR_RESPONSE` message
 +
+ SCRIPT HOOKS
+ ------------
  
-   This directive is designed to enable a plugin-style interface for
-   extending OpenVPN's authentication capabilities.
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index b8e77f0e..699b7347 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -992,9 +992,7 @@ key_state_free(struct key_state *ks, bool clear)
+@@ -72,7 +77,7 @@ SCRIPT HOOKS
+   double-quoted and/or escaped using a backslash, and should be separated
+   by one or more spaces.
  
-     packet_id_free(&ks->crypto_options.packet_id);
+-  If ``method`` is set to :code:`via-env`, OpenVPN will call ``script``
++  If ``method`` is set to :code:`via-env`, OpenVPN will call ``cmd``
+   with the environmental variables :code:`username` and :code:`password`
+   set to the username/password strings provided by the client. *Beware*
+   that this method is insecure on some platforms which make the environment
+@@ -80,7 +85,7 @@ SCRIPT HOOKS
  
--#ifdef PLUGIN_DEF_AUTH
-     key_state_rm_auth_control_files(ks);
--#endif
+   If ``method`` is set to :code:`via-file`, OpenVPN will write the username
+   and password to the first two lines of a temporary file. The filename
+-  will be passed as an argument to ``script``, and the file will be
++  will be passed as an argument to ``cmd``, and the file will be
+   automatically deleted by OpenVPN after the script returns. The location
+   of the temporary file is controlled by the ``--tmp-dir`` option, and
+   will default to the current directory if unspecified. For security,
+@@ -123,6 +128,25 @@ SCRIPT HOOKS
+   For a sample script that performs PAM authentication, see
+   :code:`sample-scripts/auth-pam.pl` in the OpenVPN source distribution.
  
-     if (clear)
++--client-crresponse
++    Executed when the client sends a text based challenge response.
++
++    Valid syntax:
++    ::
++
++        client-crresponse cmd
++
++  OpenVPN will write the response of the client into a temporary file.
++  The filename will be passed as an argument to ``cmd``, and the file will be
++  automatically deleted by OpenVPN after the script returns.
++
++  The response is passed as is from the client. The script needs to check
++  itself if the input is valid, e.g. if the input is valid base64 encoding.
++
++  The script can either directly write the result of the verification to
++  :code:`auth_control_file or further defer it. See ``--auth-user-pass-verify``
++  for details.
++
+ --client-connect cmd
+   Run command ``cmd`` on client connection.
+ 
+diff --git a/include/openvpn-plugin.h.in b/include/openvpn-plugin.h.in
+index bb561643..62e3c3b7 100644
+--- a/include/openvpn-plugin.h.in
++++ b/include/openvpn-plugin.h.in
+@@ -84,6 +84,10 @@ extern "C" {
+  * FUNC: openvpn_plugin_func_v1 OPENVPN_PLUGIN_CLIENT_CONNECT_V2
+  * FUNC: openvpn_plugin_func_v1 OPENVPN_PLUGIN_LEARN_ADDRESS
+  *
++ * The OPENVPN_PLUGIN_CLIENT_CRRESPONSE function is called when the client sends
++ * the CR_RESPONSE message, this is *typically* after OPENVPN_PLUGIN_TLS_FINAL
++ * but may also occur much later.
++ *
+  * [Client session ensues]
+  *
+  * For each "TLS soft reset", according to reneg-sec option (or similar):
+@@ -131,7 +135,8 @@ extern "C" {
+ #define OPENVPN_PLUGIN_ROUTE_PREDOWN            12
+ #define OPENVPN_PLUGIN_CLIENT_CONNECT_DEFER     13
+ #define OPENVPN_PLUGIN_CLIENT_CONNECT_DEFER_V2  14
+-#define OPENVPN_PLUGIN_N                        15
++#define OPENVPN_PLUGIN_CLIENT_CRRESPONSE        15
++#define OPENVPN_PLUGIN_N                        16
+ 
+ /*
+  * Build a mask out of a set of plug-in types.
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index c3493c42..4e753657 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2948,6 +2948,7 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
+ 
+     to.auth_user_pass_verify_script = options->auth_user_pass_verify_script;
+     to.auth_user_pass_verify_script_via_file = options->auth_user_pass_verify_script_via_file;
++    to.client_crresponse_script = options->client_crresponse_script;
+     to.tmp_dir = options->tmp_dir;
+     if (options->ccd_exclusive)
      {
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index b81137cf..2290bc12 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1284,6 +1284,7 @@ show_p2mp_parms(const struct options *o)
+     SHOW_STR(client_connect_script);
+     SHOW_STR(learn_address_script);
+     SHOW_STR(client_disconnect_script);
++    SHOW_STR(client_crresponse_script);
+     SHOW_STR(client_config_dir);
+     SHOW_BOOL(ccd_exclusive);
+     SHOW_STR(tmp_dir);
+@@ -2465,6 +2466,10 @@ options_postprocess_verify_ce(const struct options *options,
+         {
+             msg(M_USAGE, "--client-connect requires --mode server");
+         }
++        if (options->client_crresponse_script)
++        {
++            msg(M_USAGE, "--client-crresponse requires --mode server");
++        }
+         if (options->client_disconnect_script)
+         {
+             msg(M_USAGE, "--client-disconnect requires --mode server");
+@@ -7094,6 +7099,16 @@ add_option(struct options *options,
+         set_user_script(options, &options->client_connect_script,
+                         p[1], "client-connect", true);
+     }
++    else if (streq(p[0], "client-crresponse") && p[1])
++    {
++        VERIFY_PERMISSION(OPT_P_SCRIPT);
++        if (!no_more_than_n_args(msglevel, p, 2, NM_QUOTE_HINT))
++        {
++            goto err;
++        }
++        set_user_script(options, &options->client_crresponse_script,
++                        p[1], "client-crresponse", true);
++    }
+     else if (streq(p[0], "client-disconnect") && p[1])
+     {
+         VERIFY_PERMISSION(OPT_P_SCRIPT);
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 5b6d9441..e79efe32 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -440,6 +440,7 @@ struct options
+     const char *client_connect_script;
+     const char *client_disconnect_script;
+     const char *learn_address_script;
++    const char *client_crresponse_script;
+     const char *client_config_dir;
+     bool ccd_exclusive;
+     bool disable;
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 320ad737..94a85ce3 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -228,6 +228,10 @@ receive_cr_response(struct context *c, const struct buffer *buffer)
+ 
+     management_notify_client_cr_response(key_id, mda, es, m);
+ #endif
++#if ENABLE_PLUGIN
++    verify_crresponse_plugin(c->c2.tls_multi, m);
++#endif
++    verify_crresponse_script(c->c2.tls_multi, m);
+     msg(D_PUSH, "CR response was sent by client ('%s')", m);
+ }
+ 
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index b493cbb7..1e43ed10 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -316,6 +316,7 @@ struct tls_options
+ 
+     /* used for username/password authentication */
+     const char *auth_user_pass_verify_script;
++    const char *client_crresponse_script;
+     bool auth_user_pass_verify_script_via_file;
+     const char *tmp_dir;
+     const char *auth_user_pass_file;
 diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index b9647c1a..fc9f1d2e 100644
+index fc9f1d2e..ac4492ef 100644
 --- a/src/openvpn/ssl_verify.c
 +++ b/src/openvpn/ssl_verify.c
-@@ -1188,14 +1188,14 @@ tls_authenticate_key(struct tls_multi *multi, const unsigned int mda_key_id, con
- /*
-  * Verify the user name and password using a script
-  */
--static bool
-+static int
- verify_user_pass_script(struct tls_session *session, struct tls_multi *multi,
-                         const struct user_pass *up)
- {
-     struct gc_arena gc = gc_new();
-     struct argv argv = argv_new();
-     const char *tmp_file = "";
--    bool ret = false;
-+    int retval = OPENVPN_PLUGIN_FUNC_ERROR;
+@@ -1232,7 +1232,7 @@ verify_user_pass_script(struct tls_session *session, struct tls_multi *multi,
  
-     /* Set environmental variables prior to calling script */
-     setenv_str(session->opt->es, "script_type", "user-pass-verify");
-@@ -1223,25 +1223,61 @@ verify_user_pass_script(struct tls_session *session, struct tls_multi *multi,
-             /* pass temp file name to script */
-             argv_printf_cat(&argv, "%s", tmp_file);
-         }
--        else
--        {
--            msg(D_TLS_ERRORS, "TLS Auth Error: could not create write "
--                "username/password to temp file");
--        }
-     }
-     else
+     /* generate filename for deferred auth control file */
+     if (!key_state_gen_auth_control_files(&session->key[KS_PRIMARY],
+-                                         session->opt))
++                                          session->opt))
      {
-+        setenv_str(session->opt->es, "username", up->username);
-         setenv_str(session->opt->es, "password", up->password);
-     }
+         msg(D_TLS_ERRORS, "TLS Auth Error (%s): "
+                           "could not create deferred auth control file", __func__);
+@@ -1289,6 +1289,69 @@ done:
+     return retval;
+ }
  
-+    /* generate filename for deferred auth control file */
-+    if (!key_state_gen_auth_control_files(&session->key[KS_PRIMARY],
-+                                         session->opt))
-+    {
-+        msg(D_TLS_ERRORS, "TLS Auth Error (%s): "
-+                          "could not create deferred auth control file", __func__);
-+        return OPENVPN_PLUGIN_FUNC_ERROR;
-+    }
++void
++verify_crresponse_plugin(struct tls_multi *multi, const char *cr_response)
++{
++    struct tls_session *session = &multi->session[TM_ACTIVE];
++    setenv_str(session->opt->es, "crresponse", cr_response);
 +
-     /* call command */
--    ret = openvpn_run_script(&argv, session->opt->es, 0,
--                             "--auth-user-pass-verify");
-+    int script_ret = openvpn_run_script(&argv, session->opt->es, S_EXITCODE,
-+                                        "--auth-user-pass-verify");
-+    switch (script_ret)
++    plugin_call(session->opt->plugins, OPENVPN_PLUGIN_CLIENT_CRRESPONSE, NULL,
++                NULL, session->opt->es);
++
++    setenv_del(session->opt->es, "crresponse");
++
++}
++void
++verify_crresponse_script(struct tls_multi *multi, const char *cr_response)
++{
++
++    struct tls_session *session = &multi->session[TM_ACTIVE];
++
++    if (!session->opt->client_crresponse_script)
 +    {
-+       case 0:
-+           retval = OPENVPN_PLUGIN_FUNC_SUCCESS;
-+           break;
-+       case 2:
-+           retval = OPENVPN_PLUGIN_FUNC_DEFERRED;
-+           break;
-+       default:
-+           retval = OPENVPN_PLUGIN_FUNC_ERROR;
-+           break;
++        return;
 +    }
-+#ifdef ENABLE_DEF_AUTH
-+    if (retval == OPENVPN_PLUGIN_FUNC_DEFERRED)
++    struct argv argv = argv_new();
++    struct gc_arena gc = gc_new();
++
++    setenv_str(session->opt->es, "script_type", "client-crresponse");
++
++    /* Since cr response might be sensitive, like a stupid way to query
++     * a password via 2FA, we pass it via file instead environment */
++    const char *tmp_file = platform_create_temp_file(session->opt->tmp_dir, "cr", &gc);
++    if (tmp_file)
 +    {
-+        /* Check if we the plugin has written the pending auth control
-+         * file and send the pending auth to the client */
-+        if(!key_state_check_auth_pending_file(&session->key[KS_PRIMARY],
-+                                              multi))
++        struct status_output *so = status_open(tmp_file, 0, -1, NULL,
++                                               STATUS_OUTPUT_WRITE);
++        status_printf(so, "%s", cr_response);
++        if (!status_close(so))
 +        {
-+            retval = OPENVPN_PLUGIN_FUNC_ERROR;
-+            key_state_rm_auth_control_files(&session->key[KS_PRIMARY]);
++            msg(D_TLS_ERRORS, "TLS CR Response Error: could not write cr"
++                              "responsed to file: %s",
++                tmp_file);
++            tls_deauthenticate(multi);
++            goto done;
 +        }
- 
 +    }
 +    else
 +    {
-+        /* purge auth control filename (and file itself) for non-deferred returns */
-+        key_state_rm_auth_control_files(&session->key[KS_PRIMARY]);
++        msg(D_TLS_ERRORS, "TLS Auth Error: could not create write "
++                          "username/password to temp file");
 +    }
-+#endif
-     if (!session->opt->auth_user_pass_verify_script_via_file)
-     {
-         setenv_del(session->opt->es, "password");
-     }
 +
- done:
-     if (tmp_file && strlen(tmp_file) > 0)
-     {
-@@ -1250,7 +1286,7 @@ done:
- 
-     argv_free(&argv);
-     gc_free(&gc);
--    return ret;
-+    return retval;
- }
- 
++    argv_parse_cmd(&argv, session->opt->client_crresponse_script);
++    argv_printf_cat(&argv, "%s", tmp_file);
++
++
++    if (!openvpn_run_script(&argv, session->opt->es, 0, "--client-crresponse"))
++    {
++        tls_deauthenticate(multi);
++    }
++done:
++    argv_free(&argv);
++    gc_free(&gc);
++}
++
  /*
-@@ -1371,8 +1407,6 @@ void
- verify_user_pass(struct user_pass *up, struct tls_multi *multi,
-                  struct tls_session *session)
- {
--    int s1 = OPENVPN_PLUGIN_FUNC_SUCCESS;
--    bool s2 = true;
-     struct key_state *ks = &session->key[KS_PRIMARY];      /* primary key */
+  * Verify the username and password using a plugin
+  */
+diff --git a/src/openvpn/ssl_verify.h b/src/openvpn/ssl_verify.h
+index 0221e81f..30ab8a1d 100644
+--- a/src/openvpn/ssl_verify.h
++++ b/src/openvpn/ssl_verify.h
+@@ -209,6 +209,29 @@ tls_common_name_hash(const struct tls_multi *multi, const char **cn, uint32_t *c
+ void verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+                       struct tls_session *session);
  
- #ifdef ENABLE_MANAGEMENT
-@@ -1432,30 +1466,32 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
-         }
-     }
- 
-+    int plugin_status = OPENVPN_PLUGIN_FUNC_SUCCESS;
-+    int script_status = OPENVPN_PLUGIN_FUNC_SUCCESS;
-     /* Set the environment variables used by all auth variants */
-     if (!set_verify_user_pass_env(up, multi, session))
-     {
-         skip_auth = true;
--        s1 = OPENVPN_PLUGIN_FUNC_ERROR;
-+        plugin_status = OPENVPN_PLUGIN_FUNC_ERROR;
-     }
- 
-     /* call plugin(s) and/or script */
-     if (!skip_auth)
-     {
- #ifdef ENABLE_MANAGEMENT
--        if (man_def_auth==KMDA_DEF)
-+        if (man_def_auth == KMDA_DEF)
-         {
-             man_def_auth = verify_user_pass_management(session, multi, up);
-         }
- #endif
-         if (plugin_defined(session->opt->plugins, OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY))
-         {
--            s1 = verify_user_pass_plugin(session, multi, up);
-+            plugin_status = verify_user_pass_plugin(session, multi, up);
-         }
- 
-         if (session->opt->auth_user_pass_verify_script)
-         {
--            s2 = verify_user_pass_script(session, multi, up);
-+            script_status = verify_user_pass_script(session, multi, up);
-         }
-     }
- 
-@@ -1466,19 +1502,25 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
-         msg(D_TLS_ERRORS,
-             "TLS Auth Error: --username-as-common name specified and username is longer than the maximum permitted Common Name length of %d characters",
-             TLS_USERNAME_LEN);
--        s1 = OPENVPN_PLUGIN_FUNC_ERROR;
-+        plugin_status = OPENVPN_PLUGIN_FUNC_ERROR;
-+        script_status = OPENVPN_PLUGIN_FUNC_ERROR;
-     }
-     /* auth succeeded? */
--    if ((s1 == OPENVPN_PLUGIN_FUNC_SUCCESS
--         || s1 == OPENVPN_PLUGIN_FUNC_DEFERRED
--         ) && s2
-+    bool plugin_ok = plugin_status == OPENVPN_PLUGIN_FUNC_SUCCESS
-+        || plugin_status == OPENVPN_PLUGIN_FUNC_DEFERRED;
 +
-+    bool script_ok =  script_status == OPENVPN_PLUGIN_FUNC_SUCCESS
-+        || script_status ==  OPENVPN_PLUGIN_FUNC_DEFERRED;
 +
-+    if (script_ok && plugin_ok && tls_lock_username(multi, up->username)
- #ifdef ENABLE_MANAGEMENT
-         && man_def_auth != KMDA_ERROR
- #endif
--        && tls_lock_username(multi, up->username))
-+        )
-     {
-         ks->authenticated = KS_AUTH_TRUE;
--        if (s1 == OPENVPN_PLUGIN_FUNC_DEFERRED)
-+        if (plugin_status == OPENVPN_PLUGIN_FUNC_DEFERRED
-+            || script_status == OPENVPN_PLUGIN_FUNC_DEFERRED)
-         {
-             ks->authenticated = KS_AUTH_DEFERRED;
-         }
++/**
++ * Runs the --client-crresponse script if one is defined.
++ *
++ * As with the management interface the script is stateless in the sense that
++ * it does not directly participate in the authentication but rather should set
++ * the files for the deferred auth like the management commands.
++ *
++ */
++void
++verify_crresponse_script(struct tls_multi *multi, const char *cr_response);
++
++/**
++ * Call the plugin OPENVPN_PLUGIN_CLIENT_CRRESPONSE.
++ *
++ * As with the management interface calling the plugin is stateless in the sense
++ * that it does not directly participate in the authentication but rather
++ * should set the files for the deferred auth like the management commands.
++ */
++void
++verify_crresponse_plugin(struct tls_multi *multi, const char *cr_response);
++
+ /**
+  * Perform final authentication checks, including locking of the cn, the allowed
+  * certificate hashes, and whether a client config entry exists in the
 -- 
 2.30.0
 
