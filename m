@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 25 Jan 2021 13:43:30 +0100
-Message-Id: <20210125124330.30046-1-arne@...1227...>
-In-Reply-To: <ca157141-dc88-8017-0e6e-3ace055bc36e@...2181...>
-References: <ca157141-dc88-8017-0e6e-3ace055bc36e@...2181...>
-Subject: [Openvpn-devel] [PATCH v2] Allow running a default configuration
- with TLS libraries without BF-CBC
+Date: Mon, 25 Jan 2021 13:56:25 +0100
+Message-Id: <20210125125628.30364-9-arne@...1227...>
+In-Reply-To: <20210125125628.30364-1-arne@...1227...>
+References: <20210125125628.30364-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v2 08/11] Allow pending auth to be send from
+ a auth plugin
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,139 +17,308 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Modern TLS libraries might drop Blowfish by default or distributions
-might disable Blowfish in OpenSSL/mbed TLS. We still signal OCC
-options with BF-CBC compatible strings. To avoid requiring BF-CBC
-for this, special this one usage of BF-CBC enough to avoid a hard
-requirement on Blowfish in the default configuration.
-
-Signed-off-by: Arne Schwabe <arne@...1227...>
-
-Patch v2: add more clarifying comment, do not warn about OCC only insecure
-          ciphers, code improvements
+Patch v2: removed change that slipped into this patch and belongs
+          into the next
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/init.c    | 32 ++++++++++++++++++++++--------
- src/openvpn/options.c | 46 +++++++++++++++++++++++++++++++++++++------
- 2 files changed, 64 insertions(+), 14 deletions(-)
+ doc/man-sections/generic-options.rst |   3 +-
+ include/openvpn-plugin.h.in          |   8 ++
+ src/openvpn/ssl.c                    |   2 +-
+ src/openvpn/ssl_common.h             |   1 +
+ src/openvpn/ssl_verify.c             | 161 +++++++++++++++++++++++++--
+ src/openvpn/ssl_verify.h             |   2 +-
+ 6 files changed, 162 insertions(+), 15 deletions(-)
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index c3493c42..df0c7ebc 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2770,14 +2770,30 @@ do_init_crypto_tls_c1(struct context *c)
- #endif /* if P2MP */
-         }
+diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generic-options.rst
+index d5f08839..32eeda68 100644
+--- a/doc/man-sections/generic-options.rst
++++ b/doc/man-sections/generic-options.rst
+@@ -409,7 +409,8 @@ which mode OpenVPN is configured as.
  
--        /* Do not warn if we only have BF-CBC in options->ciphername
--         * because it is still the default cipher */
--        bool warn = !streq(options->ciphername, "BF-CBC")
--             || options->enable_ncp_fallback;
--        /* Get cipher & hash algorithms */
--        init_key_type(&c->c1.ks.key_type, options->ciphername, options->authname,
--                      options->keysize, true, warn);
--
-+       /*
-+        * BF-CBC is allowed to be used only when explicitly configured
-+        * as NCP-fallback or when NCP has been disabled.
-+        * In all other cases don't attempt to initialize BF-CBC as it
-+        * may not even be supported by the underlying SSL library.
-+        *
-+        * Therefore, the key structure has to be initialized when:
-+        * - any non-BF-CBC cipher was selected; or
-+        * - BF-CBC is selected and NCP is disabled (explicit request to
-+        *   use the BF-CBC cipher); or
-+        * - BF-CBC is selected, NCP is enabled and fallback is enabled
-+        *   (BF-CBC will be the fallback).
-+        *
-+        * Note that BF-CBC will still be part of the OCC string to retain
-+        * backwards compatibility with older clients.
-+        */
-+        if (!streq(options->ciphername, "BF-CBC") || !options->ncp_enabled
-+            || options->enable_ncp_fallback)
+   * :code:`OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY` plug-in hooks returns
+     success/failure via :code:`auth_control_file` when using deferred auth
+-    method
++    method and pending authentification via :code:`pending_auth_file`.
++
+ 
+   * :code:`OPENVPN_PLUGIN_ENABLE_PF` plugin hook to pass filtering rules
+     via ``pf_file``
+diff --git a/include/openvpn-plugin.h.in b/include/openvpn-plugin.h.in
+index 64b20886..bb561643 100644
+--- a/include/openvpn-plugin.h.in
++++ b/include/openvpn-plugin.h.in
+@@ -567,6 +567,14 @@ OPENVPN_PLUGIN_DEF openvpn_plugin_handle_t OPENVPN_PLUGIN_FUNC(openvpn_plugin_op
+  * auth_control_file/client_connect_deferred_file
+  * in the environmental variable list (envp).
+  *
++ * Additionally the auth_pending_file can be written, which causes the openvpn
++ * server to send a pending auth request to the client. See doc/management.txt
++ * for more details on this authentication mechanism. The format of the
++ * auth_pending_file is
++ * line 1: timeout in seconds
++ * line 2: Pending auth method the client needs to support (e.g. openurl)
++ * line 3: EXTRA (e.g. OPEN_URL:http://www.example.com)
++ *
+  * In addition the OPENVPN_PLUGIN_CLIENT_CONNECT_DEFER and
+  * OPENVPN_PLUGIN_CLIENT_CONNECT_DEFER_V2 are called when OpenVPN tries to
+  * get the deferred result. For a V2 call implementing this function is
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index f59b409f..b8e77f0e 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -993,7 +993,7 @@ key_state_free(struct key_state *ks, bool clear)
+     packet_id_free(&ks->crypto_options.packet_id);
+ 
+ #ifdef PLUGIN_DEF_AUTH
+-    key_state_rm_auth_control_file(ks);
++    key_state_rm_auth_control_files(ks);
+ #endif
+ 
+     if (clear)
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index bf7f9ba3..b493cbb7 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -215,6 +215,7 @@ struct key_state
+     unsigned int auth_control_status;
+     time_t acf_last_mod;
+     char *auth_control_file;
++    char *auth_pending_file;
+ };
+ 
+ /** Control channel wrapping (--tls-auth/--tls-crypt) context */
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index e0ef399f..b9647c1a 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -865,13 +865,129 @@ man_def_auth_test(const struct key_state *ks)
+ }
+ #endif /* ifdef ENABLE_MANAGEMENT */
+ 
++/**
++ *  Removes auth_pending file from the file system
++ *  and key_state structure
++ */
++static void
++key_state_rm_auth_pending_file(struct key_state *ks)
++{
++    if (ks && ks->auth_pending_file)
++    {
++        platform_unlink(ks->auth_pending_file);
++        free(ks->auth_pending_file);
++        ks->auth_pending_file = NULL;
++    }
++}
+ 
+-/*
+- * auth_control_file functions
++/**
++ * Check peer_info if the client supports the requested pending auth method
++ */
++static bool
++check_auth_pending_method(const char *peer_info, const char *method)
++{
++    struct gc_arena gc = gc_new();
++
++    char *iv_sso = extract_var_peer_info(peer_info, "IV_SSO=", &gc);
++    if (!iv_sso)
++    {
++        gc_free(&gc);
++        return false;
++    }
++
++    const char *client_method = strtok(iv_sso, ",");
++    bool supported = false;
++
++    while (client_method)
++    {
++        if (0 == strcmp(client_method, method))
 +        {
-+            /* Do not warn if the if the cipher is used only in OCC */
-+            bool warn = !options->ncp_enabled || options->enable_ncp_fallback;
-+            init_key_type(&c->c1.ks.key_type, options->ciphername, options->authname,
-+                          options->keysize, true, warn);
++            supported = true;
++            break;
 +        }
-         /* Initialize PRNG with config-specified digest */
-         prng_init(options->prng_hash, options->prng_nonce_secret_len);
++        client_method = strtok(NULL, ":");
++    }
++
++    gc_free(&gc);
++    return supported;
++}
++
++/**
++ *  Checks if the deferred state should also send auth pending
++ *  request to the client. Also removes the auth_pending control file
++ *
++ *  @returns true   if file was either processed sucessfully or did not
++ *                  exist at all
++ *  @returns false  The file had an invlaid format or another error occured
+  */
++static bool
++key_state_check_auth_pending_file(struct key_state *ks,
++                                  struct tls_multi *multi)
++{
++    bool ret = true;
++    if (ks && ks->auth_pending_file)
++    {
++        struct buffer_list *lines = buffer_list_file(ks->auth_pending_file,
++                                                     1024);
++        if (lines && lines->head)
++        {
++            /* Must have at least three lines. further lines are ignored for
++             * forward compatibility */
++            if (!lines->head || !lines->head->next || !lines->head->next->next)
++            {
++                msg(M_WARN, "auth pending control file is not at least "
++                            "three lines long.");
++                buffer_list_free(lines);
++                return false;
++            }
++            struct buffer *timeout_buf = &lines->head->buf;
++            struct buffer *iv_buf = &lines->head->next->buf;
++            struct buffer *extra_buf = &lines->head->next->next->buf;
++
++            /* Remove newline chars at the end of the lines */
++            buf_chomp(timeout_buf);
++            buf_chomp(iv_buf);
++            buf_chomp(extra_buf);
++
++            long timeout = strtol(BSTR(timeout_buf), NULL, 10);
++            if (timeout == 0)
++            {
++                msg(M_WARN, "could not parse auth pending file timeout");
++                buffer_list_free(lines);
++                return false;
++            }
++
++            const char* pending_method = BSTR(iv_buf);
++            if (!check_auth_pending_method(multi->peer_info, pending_method))
++            {
++                char buf[128];
++                openvpn_snprintf(buf, sizeof(buf),
++                                 "Authentication failed, required pending auth "
++                                 "method '%s' not supported", pending_method);
++                auth_set_client_reason(multi, buf);
++                msg(M_INFO, "Client does not supported auth pending method "
++                            "'%s'", pending_method);
++                ret = false;
++            }
++            else
++            {
++                send_auth_pending_messages(multi, BSTR(extra_buf), timeout);
++            }
++        }
++
++        buffer_list_free(lines);
++    }
++    key_state_rm_auth_pending_file(ks);
++    return ret;
++}
  
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index b81137cf..d52057cc 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3664,9 +3664,29 @@ calc_options_string_link_mtu(const struct options *o, const struct frame *frame)
++
++/**
++ *  Removes auth_pending and auth_control files from file system
++ *  and key_state structure
++ */
+ void
+-key_state_rm_auth_control_file(struct key_state *ks)
++key_state_rm_auth_control_files(struct key_state *ks)
+ {
+     if (ks && ks->auth_control_file)
      {
-         struct frame fake_frame = *frame;
-         struct key_type fake_kt;
--        init_key_type(&fake_kt, o->ciphername, o->authname, o->keysize, true,
--                      false);
-+
-         frame_remove_from_extra_frame(&fake_frame, crypto_max_overhead());
-+
-+
-+        /* o->ciphername might be BF-CBC even though the underlying SSL library
-+         * does not support it. For this reason we workaround this corner case
-+         * by pretending to have no encryption enabled and by manually adding
-+         * the required packet overhead to the MTU computation.
-+         */
-+        const char* ciphername = o->ciphername;
-+
-+        if (strcmp(o->ciphername, "BF-CBC") == 0)
-+        {
-+            /* none has no overhead, so use this to later add only --auth
-+             * overhead */
-+
-+            /* overhead of BF-CBC: 64 bit block size, 64 bit IV size */
-+            frame_add_to_extra_frame(&fake_frame, 64/8 + 64/8);
-+        }
-+
-+        init_key_type(&fake_kt, ciphername, o->authname, o->keysize, true,
-+                      false);
-+
-         crypto_adjust_frame_parameters(&fake_frame, &fake_kt, o->replay,
-                                        cipher_kt_mode_ofb_cfb(fake_kt.cipher));
-         frame_finalize(&fake_frame, o->ce.link_mtu_defined, o->ce.link_mtu,
-@@ -3836,18 +3856,32 @@ options_string(const struct options *o,
-                + (TLS_SERVER == true)
-                <= 1);
+@@ -879,23 +995,34 @@ key_state_rm_auth_control_file(struct key_state *ks)
+         free(ks->auth_control_file);
+         ks->auth_control_file = NULL;
+     }
++    key_state_rm_auth_pending_file(ks);
+ }
  
--        init_key_type(&kt, o->ciphername, o->authname, o->keysize, true,
--                      false);
-+        /* Skip resolving BF-CBC to allow SSL libraries without BF-CBC
-+         * to work here in the default configuration */
-+        const char *ciphername = o->ciphername;
-+        int keysize;
++/**
++ * Generates and creates the control files used for deferred authentification
++ * in the temporary directory.
++ *
++ * @return  true if file creation was successful
++ */
+ static bool
+-key_state_gen_auth_control_file(struct key_state *ks, const struct tls_options *opt)
++key_state_gen_auth_control_files(struct key_state *ks, const struct tls_options *opt)
+ {
+     struct gc_arena gc = gc_new();
+ 
+-    key_state_rm_auth_control_file(ks);
++    key_state_rm_auth_control_files(ks);
+     const char *acf = platform_create_temp_file(opt->tmp_dir, "acf", &gc);
+-    if (acf)
++    const char *apf = platform_create_temp_file(opt->tmp_dir, "apf", &gc);
 +
-+        if (strcmp(o->ciphername, "BF-CBC") == 0) {
-+            init_key_type(&kt, "none", o->authname, o->keysize, true,
-+                          false);
-+            ciphername = cipher_kt_name(kt.cipher);
-+            keysize = 128;
-+        }
-+        else
++    if (acf && apf)
+     {
+         ks->auth_control_file = string_alloc(acf, NULL);
++        ks->auth_pending_file = string_alloc(apf, NULL);
+         setenv_str(opt->es, "auth_control_file", ks->auth_control_file);
++        setenv_str(opt->es, "auth_pending_file", ks->auth_pending_file);
+     }
+ 
+     gc_free(&gc);
+-    return acf;
++    return (acf && apf);
+ }
+ 
+ static unsigned int
+@@ -1140,7 +1267,7 @@ verify_user_pass_plugin(struct tls_session *session, struct tls_multi *multi,
+     setenv_str(session->opt->es, "password", up->password);
+ 
+     /* generate filename for deferred auth control file */
+-    if (!key_state_gen_auth_control_file(ks, session->opt))
++    if (!key_state_gen_auth_control_files(ks, session->opt))
+     {
+         msg(D_TLS_ERRORS, "TLS Auth Error (%s): "
+             "could not create deferred auth control file", __func__);
+@@ -1150,10 +1277,20 @@ verify_user_pass_plugin(struct tls_session *session, struct tls_multi *multi,
+     /* call command */
+     retval = plugin_call(session->opt->plugins, OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY, NULL, NULL, session->opt->es);
+ 
+-    /* purge auth control filename (and file itself) for non-deferred returns */
+-    if (retval != OPENVPN_PLUGIN_FUNC_DEFERRED)
++    if (retval == OPENVPN_PLUGIN_FUNC_DEFERRED)
++    {
++        /* Check if we the plugin has written the pending auth control
++         * file and send the pending auth to the client */
++        if(!key_state_check_auth_pending_file(ks, multi))
 +        {
-+            init_key_type(&kt, o->ciphername, o->authname, o->keysize, true,
-+                          false);
-+            keysize = kt.cipher_length * 8;
++            retval = OPENVPN_PLUGIN_FUNC_ERROR;
++            key_state_rm_auth_control_files(ks);
 +        }
-         /* Only announce the cipher to our peer if we are willing to
-          * support it */
--        const char *ciphername = cipher_kt_name(kt.cipher);
-         if (p2p_nopull || !o->ncp_enabled
-             || tls_item_in_cipher_list(ciphername, o->ncp_ciphers))
-         {
-             buf_printf(&out, ",cipher %s", ciphername);
-         }
-         buf_printf(&out, ",auth %s", md_kt_name(kt.digest));
--        buf_printf(&out, ",keysize %d", kt.cipher_length * 8);
-+        buf_printf(&out, ",keysize %d", keysize);
-         if (o->shared_secret_file)
-         {
-             buf_printf(&out, ",secret");
++    }
++    else
+     {
+-        key_state_rm_auth_control_file(ks);
++        /* purge auth control filename (and file itself) for non-deferred returns */
++        key_state_rm_auth_control_files(ks);
+     }
+ 
+     setenv_del(session->opt->es, "password");
+@@ -1224,7 +1361,7 @@ set_verify_user_pass_env(struct user_pass *up, struct tls_multi *multi,
+     }
+ }
+ 
+-/*
++/**
+  * Main username/password verification entry point
+  *
+  * Will set session->ks[KS_PRIMARY].authenticated according to
+diff --git a/src/openvpn/ssl_verify.h b/src/openvpn/ssl_verify.h
+index 7e8b9710..0221e81f 100644
+--- a/src/openvpn/ssl_verify.h
++++ b/src/openvpn/ssl_verify.h
+@@ -117,7 +117,7 @@ tls_authentication_status(struct tls_multi *multi, const int latency);
+  *
+  * @param ks    The key state the remove the file for
+  */
+-void key_state_rm_auth_control_file(struct key_state *ks);
++void key_state_rm_auth_control_files(struct key_state *ks);
+ 
+ /**
+  * Frees the given set of certificate hashes.
 -- 
 2.30.0
 
