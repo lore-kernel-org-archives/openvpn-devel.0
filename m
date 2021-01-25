@@ -1,10 +1,14 @@
-Date: Mon, 25 Jan 2021 08:22:58 +0100 (CET)
-Message-Id: <202101250722.10P7MwOI084368@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1611558957-2958-1-git-send-email-gcox@...1057...>
-References: <1611558957-2958-1-git-send-email-gcox@...1057...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix naming error in
- sample-plugins/defer/simple.c
+References: <20200930131317.1299-1-arne@...1227...>
+ <20200930131317.1299-4-arne@...1227...>
+ <CAGyAFMVCy=09wVifPBY0hXKQ9oMKbc8wzcEVG__acYbG6qH9Bg@...278...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <5a90382c-5b8a-4829-0160-a0664f0b899d@...1227...>
+Date: Mon, 25 Jan 2021 11:51:59 +0100
+MIME-Version: 1.0
+In-Reply-To: <CAGyAFMVCy=09wVifPBY0hXKQ9oMKbc8wzcEVG__acYbG6qH9Bg@...278...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH 02/11] Implement client side handling of
+ AUTH_PENDING message
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +17,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Greg Cox <gcox@...1057...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Acked-by: Gert Doering <gert@...1296...>
+Am 15.01.21 um 14:13 schrieb Lev Stipakov:
+> Hi,
+> 
+> Please not that I got errors applying this patch, so I reviewed
+> corresponding commit
+> from github (https://github.com/schwabe/openvpn/commit/3901e46127a2db3e6dfb20c44e8d8e30adea58c7).
+> 
+>> +Receiving a AUTH_PENDING message will make the client change its timeout the
+>> +timeout proposed by the server, even if the timeout is shorter.
+> 
+> Typo.
+> 
+> 
+>>  /*
+>>   * min/max functions
+>>   */
+>> +static inline unsigned int
+>> +max_uint(unsigned int x, unsigned int y)
+> 
+> It is 2021 and we have to write our own min/max :(
 
-"That's what I get for copy-paste code reuse" :-)
+Yes. We had a discussion on #openvpn-devel and there seem to be no
+(non-float) min/max version in the standard library. The linux kernel
+also has a macro for this. This would be min_t(unsigned int, x, y) iirc
+in the kernel, so similar to what we do here
 
-Your patch has been applied to the master, release/2.5 and release/2.4 branch.
-
-commit 2d7e1954cae51ff317de886cc6b6c2daab7b59ea (master)
-commit fe8739da3135e3d21b657c23f3bddcb7e5b3f9f3 (release/2.5)
-commit 75a7d795acba972cd8b96dc44a5ba1970373226f (release/2.4)
-Author: Greg Cox
-Date:   Mon Jan 25 07:15:57 2021 +0000
-
-     Fix naming error in sample-plugins/defer/simple.c
-
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1611558957-2958-1-git-send-email-gcox@...1057...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21482.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+Arne
 
