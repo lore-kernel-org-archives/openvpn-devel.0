@@ -1,9 +1,8 @@
-From: tincanteksup <tincanteksup@...277...>
-Message-ID: <51572c65-0ee7-3c65-9aad-9f6915ebe997@...277...>
-Date: Wed, 27 Jan 2021 16:34:33 +0000
+From: Juliusz Sosinowicz <juliusz@...2525...>
+Date: Wed, 27 Jan 2021 18:21:19 +0100
+Message-Id: <20210127172119.53791-1-juliusz@...2525...>
 MIME-Version: 1.0
-Content-Language: en-GB
-Subject: [Openvpn-devel] [openvpn-devel] Wiki Howto URL
+Subject: [Openvpn-devel] [PATCH] Support for wolfSSL in OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,33 +11,188 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+This patch adds support for wolfSSL in OpenVPN. Support is added by using wolfSSL's OpenSSL compatibility layer. Function calls are left unchanged and instead the OpenSSL includes point to wolfSSL headers and OpenVPN is linked against the wolfSSL library. The wolfSSL installation directory is detected using pkg-config.
 
-in the Howto there was this URL:
-https://community.openvpn.net/openvpn/wiki/HOWTO#ExpandingthescopeoftheVPNtoincludeadditionalmachinesoneithertheclientorserversubnet.
+As requested by OpenVPN maintainers, this patch does not include wolfssl/options.h on its own. By defining the macro EXTERNAL_OPTS_OPENVPN in the configure script wolfSSL will include wolfssl/options.h on its own (change added in https://github.com/wolfSSL/wolfssl/pull/2825). The patch adds an option `--disable-wolfssl-options-h` in case the user would like to supply their own settings file for wolfSSL.
 
-Note: There is a fullstop on the end.
+wolfSSL:
+Support added in: https://github.com/wolfSSL/wolfssl/pull/2503
+```
+git clone https://github.com/wolfSSL/wolfssl.git
+cd wolfssl
+./autogen.sh
+./configure --enable-openvpn
+make
+sudo make install
+```
 
-I changed this URL to:
-https://community.openvpn.net/openvpn/wiki/HOWTO#ExpandingthescopeoftheVPNtoincludeadditionalmachinesoneithertheclientorserversubnet
+OpenVPN:
+```
+autoreconf -i -v -f
+./configure --with-crypto-library=wolfssl
+make
+make check
+sudo make install
+```
 
-Note: There is no fullstop on the end.
+Signed-off-by: Juliusz Sosinowicz <juliusz@...2525...>
+---
+ configure.ac          | 107 +++++++++++++++++++++++++++++++++++++++++-
+ src/openvpn/syshead.h |   3 +-
+ 2 files changed, 107 insertions(+), 3 deletions(-)
 
-There are no other URLs in that document which end with a fullstop.
-
-The reason that URL ended with a fullstop is because of 
-wiki:[[TOC(inline, depth=1)]]
-This picked up the heading: "Expanding the scope of the VPN to include 
-additional machines on either the client or server subnet."
-
-I changed the heading to: "Expanding the scope of the VPN to include 
-additional machines on either the client or server subnet"
-
-I felt it was prudent to let you know of this change.
-
+diff --git a/configure.ac b/configure.ac
+index 1ab8fe59d..96321a1e4 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -264,16 +264,23 @@ AC_ARG_WITH(
+ 
+ AC_ARG_WITH(
+ 	[crypto-library],
+-	[AS_HELP_STRING([--with-crypto-library=library], [build with the given crypto library, TYPE=openssl|mbedtls @<:@default=openssl@:>@])],
++	[AS_HELP_STRING([--with-crypto-library=library], [build with the given crypto library, TYPE=openssl|mbedtls|wolfssl @<:@default=openssl@:>@])],
+ 	[
+ 		case "${withval}" in
+-			openssl|mbedtls) ;;
++			openssl|mbedtls|wolfssl) ;;
+ 			*) AC_MSG_ERROR([bad value ${withval} for --with-crypto-library]) ;;
+ 		esac
+ 	],
+ 	[with_crypto_library="openssl"]
+ )
+ 
++AC_ARG_ENABLE(
++	[wolfssl-options-h],
++	[AS_HELP_STRING([--disable-wolfssl-options-h], [Disable including options.h in wolfSSL @<:@default=yes@:>@])],
++	,
++	[enable_wolfssl_options_h="yes"]
++)
++
+ AC_ARG_VAR([PLUGINDIR], [Path of plug-in directory @<:@default=LIBDIR/openvpn/plugins@:>@])
+ if test -n "${PLUGINDIR}"; then
+ 	plugindir="${PLUGINDIR}"
+@@ -1019,6 +1026,102 @@ elif test "${with_crypto_library}" = "mbedtls"; then
+ 	AC_DEFINE([ENABLE_CRYPTO_MBEDTLS], [1], [Use mbed TLS library])
+ 	CRYPTO_CFLAGS="${MBEDTLS_CFLAGS}"
+ 	CRYPTO_LIBS="${MBEDTLS_LIBS}"
++
++elif test "${with_crypto_library}" = "wolfssl"; then
++	AC_ARG_VAR([WOLFSSL_CFLAGS], [C compiler flags for wolfssl. The include directory should
++								  contain the regular wolfSSL header files but also the 
++								  wolfSSL OpenSSL header files. Ex: -I/usr/local/include 
++								  -I/usr/local/include/wolfssl])
++	AC_ARG_VAR([WOLFSSL_LIBS], [linker flags for wolfssl])
++
++	saved_CFLAGS="${CFLAGS}"
++	saved_LIBS="${LIBS}"
++
++	if test -z "${WOLFSSL_CFLAGS}" -a -z "${WOLFSSL_LIBS}"; then
++		# if the user did not explicitly specify flags, try to autodetect
++		PKG_CHECK_MODULES(
++			[WOLFSSL],
++			[wolfssl],
++			[],
++			[AC_MSG_ERROR([Could not find wolfSSL.])]
++		)
++		PKG_CHECK_VAR(
++			[WOLFSSL_INCLUDEDIR], 
++			[wolfssl], 
++			[includedir], 
++			[],
++			[AC_MSG_ERROR([Could not find wolfSSL includedir variable.])]
++		)
++		WOLFSSL_CFLAGS="${WOLFSSL_CFLAGS} -I${WOLFSSL_INCLUDEDIR}/wolfssl"
++	fi
++	saved_CFLAGS="${CFLAGS}"
++	saved_LIBS="${LIBS}"
++	CFLAGS="${CFLAGS} ${WOLFSSL_CFLAGS}"
++	LIBS="${LIBS} ${WOLFSSL_LIBS}"
++
++	AC_CHECK_LIB(
++		[wolfssl],
++		[wolfSSL_Init],
++		[],
++		[AC_MSG_ERROR([Could not link wolfSSL library.])]
++	)
++	AC_CHECK_HEADER([wolfssl/options.h],,[AC_MSG_ERROR([wolfSSL header wolfssl/options.h not found!])])
++
++	AC_DEFINE([HAVE_HMAC_CTX_NEW], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_HMAC_CTX_FREE], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_HMAC_CTX_RESET], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_EVP_MD_CTX_NEW], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_EVP_MD_CTX_FREE], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_EVP_MD_CTX_RESET], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_EVP_CIPHER_CTX_RESET], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_OPENSSL_VERSION], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_SSL_CTX_GET_DEFAULT_PASSWD_CB], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_SSL_CTX_GET_DEFAULT_PASSWD_CB_USERDATA], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_SSL_CTX_SET_SECURITY_LEVEL], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_X509_GET0_NOTBEFORE], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_X509_GET0_NOTAFTER], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_X509_GET0_PUBKEY], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_X509_STORE_GET0_OBJECTS], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_X509_OBJECT_FREE], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_X509_OBJECT_GET_TYPE], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_EVP_PKEY_ID], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_EVP_PKEY_GET0_RSA], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_EVP_PKEY_GET0_DSA], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_EVP_PKEY_GET0_EC_KEY], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_SET_FLAGS], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_BITS], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_GET0_KEY], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_SET0_KEY], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_DSA_GET0_PQG], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_DSA_BITS], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_METH_NEW], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_METH_FREE], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_METH_SET_PUB_ENC], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_METH_SET_PUB_DEC], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_METH_SET_PRIV_ENC], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_METH_SET_PRIV_DEC], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_METH_SET_INIT], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_METH_SET_SIGN], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_METH_SET_FINISH], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_METH_SET0_APP_DATA], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_RSA_METH_GET0_APP_DATA], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++	AC_DEFINE([HAVE_EC_GROUP_ORDER_BITS], [1], [Emulate AC_CHECK_FUNCS since these are defined as macros])
++
++	if test "${enable_wolfssl_options_h}" = "yes"; then
++		AC_DEFINE([EXTERNAL_OPTS_OPENVPN], [1], [Include options.h from wolfSSL library])
++	else
++		AC_DEFINE([WOLFSSL_USER_SETTINGS], [1], [Use custom user_settings.h file for wolfSSL library])
++	fi
++	
++	have_export_keying_material="yes"
++	
++	CFLAGS="${saved_CFLAGS}"
++	LIBS="${saved_LIBS}"
++	
++	AC_DEFINE([ENABLE_CRYPTO_WOLFSSL], [1], [Use wolfSSL crypto library])
++	AC_DEFINE([ENABLE_CRYPTO_OPENSSL], [1], [Use wolfSSL openssl compatibility layer])
++	CRYPTO_CFLAGS="${WOLFSSL_CFLAGS}"
++	CRYPTO_LIBS="${WOLFSSL_LIBS}"
+ else
+ 	AC_MSG_ERROR([Invalid crypto library: ${with_crypto_library}])
+ fi
+diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
+index 2ad5afc20..a20de1f65 100644
+--- a/src/openvpn/syshead.h
++++ b/src/openvpn/syshead.h
+@@ -569,7 +569,8 @@ socket_defined(const socket_descriptor_t sd)
+ /*
+  * Do we have CryptoAPI capability?
+  */
+-#if defined(_WIN32) && defined(ENABLE_CRYPTO_OPENSSL)
++#if defined(_WIN32) && defined(ENABLE_CRYPTO_OPENSSL) && \
++        !defined(ENABLE_CRYPTO_WOLFSSL)
+ #define ENABLE_CRYPTOAPI
+ #endif
+ 
 -- 
+2.25.1
+
 
