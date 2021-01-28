@@ -1,23 +1,13 @@
-References: <20200616180046.8069-1-juliusz@...2525...>
- <c926d584-471b-c66e-21f8-4c31410b5e4f@...2525...>
- <4f5787ef-fa03-f7d1-db9a-52fe61caf281@...1227...>
- <4cb6ea57-4dd1-8230-cec4-d4e8f434944b@...2525...>
- <5b5bd12b-d2a0-8901-1a0e-4ba7b3e5f7d0@...1227...>
- <9630aa71-2ba0-879a-3345-85a9551cd169@...2525...>
- <1e682031-8b10-7beb-1379-b32535f40de8@...1227...>
- <1998772f-b476-1862-9102-b95fd1a33be7@...2525...>
- <8e766bf2-a64e-63de-c69d-e899d2a11165@...1227...>
- <50c23608-1b71-1651-fa4e-af0d39aba7b3@...2525...>
- <0f47e3c7-f9d2-1649-0fb7-b0b58fa4b84a@...1227...>
- <33d99bf3-96ae-4728-87b2-cc442aa611a4@...2525...>
- <2e1ae5d6-d7bf-9784-689a-b92f51204bda@...1227...>
-From: Juliusz Sosinowicz <juliusz@...2525...>
-Message-ID: <9ffb07ff-067d-d1d3-a39c-357abb70f21a@...2525...>
-Date: Thu, 28 Jan 2021 10:59:52 +0100
+References: <CAKuzo_jUJ58K5VirzjgvP=dJZ_qy+H0gGzNJ4hkiAyjSKQdMUQ@...278...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <705d349f-2f0c-016c-914a-6d52e512fc20@...2080...>
+Date: Thu, 28 Jan 2021 11:43:49 +0100
 MIME-Version: 1.0
-In-Reply-To: <2e1ae5d6-d7bf-9784-689a-b92f51204bda@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Support for wolfSSL in OpenVPN
+In-Reply-To: <CAKuzo_jUJ58K5VirzjgvP=dJZ_qy+H0gGzNJ4hkiAyjSKQdMUQ@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="jFpSCK4mmYFmyUXEf5j3yyl2zhRDZVrh4"
+Subject: Re: [Openvpn-devel] rfc: mingw and the interactive service code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -26,76 +16,92 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Selva Nair <selva.nair@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi Arne,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--jFpSCK4mmYFmyUXEf5j3yyl2zhRDZVrh4
+Content-Type: multipart/mixed; boundary="Tm8KUjJ0hNft8hrComw0ajvumUHHGXCBU";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: Selva Nair <selva.nair@...277...>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Message-ID: <705d349f-2f0c-016c-914a-6d52e512fc20@...2080...>
+Subject: Re: [Openvpn-devel] rfc: mingw and the interactive service code
+References: <CAKuzo_jUJ58K5VirzjgvP=dJZ_qy+H0gGzNJ4hkiAyjSKQdMUQ@...278...>
+In-Reply-To: <CAKuzo_jUJ58K5VirzjgvP=dJZ_qy+H0gGzNJ4hkiAyjSKQdMUQ@...278...>
 
-our CI tests caught that as well. I was able to fix it quickly but it 
-looks like you were even quicker :D The latest version of the PR should 
-be free from the implicit conversion errors.
+--Tm8KUjJ0hNft8hrComw0ajvumUHHGXCBU
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: quoted-printable
 
-Sincerely
-Juliusz
+On 28/01/2021 04:04, Selva Nair wrote:
+> Hi,
+>=20
+> Starting version 8, mingw has started automatically setting=20
+> __USE_MINGW_ANSI_STDIO =3D 1 under some feature-set conditions: for=20
+> example, when _GNU_SOURCE is defined or -std=3DC99, both of which are tru=
+e=20
+> in our case.
+>=20
+> See: release notes at http://mingw-w64.org/doku.php=20
+> <http://mingw-w64.org/doku.php>
+>=20
+> This causes several stdio functions to use internal ISO-C compliant=20
+> implementations (instead of those in msvcrt), and to break some of our=20
+> swprintf family calls.
+>=20
+> I see two options:
+> (i) force __USE_MINGW_ANSI_STDIO =3D 0 in configure.
+> (ii) Change all stdio function calls to be compatible building with and=20
+> without this macro defined. AFICT, the only change required would be to=20
+> replace %s and %S by %ls and %hs in some places -- mostly in interactive=
+=20
+> service, one instance=C2=A0in tun.c
+>=20
+> Any thoughts? I'm leaning towards option (ii).
 
-On 27/01/2021 20:07, Arne Schwabe wrote:
-> Am 27.01.21 um 18:25 schrieb Juliusz Sosinowicz:
->> Hi Arne,
->>
->> I believe I fixed the issues that you mentioned in your review of the
->> patch for wolfSSL. I have sent a new patch tested on the latest master
->> branch on OpenVPN along with the version of wolfSSL found in this pull
->> request: https://github.com/wolfSSL/wolfssl/pull/3697 .
->>
-> Unfortunatel,y I am still not able to compile that branch on
-> macOS/clang. It seem wolfssl uses -Werror and this breaks it. On a quick
-> check I also don't see an option to disable this behaviour in configure.
->
-> The master branch compiles but that doesn't work for OpenVPN.
->
-> src/tls13.c:806:50: error: implicit conversion loses integer precision:
-> 'size_t' (aka 'unsigned long') to 'word32' (aka 'unsigned int')
-> [-Werror,-Wshorten-64-to-32]
->              protocol, protocolLen, (byte*)label, labelLen,
->                                                   ^~~~~~~~
-> src/tls13.c:812:38: error: implicit conversion loses integer precision:
-> 'size_t' (aka 'unsigned long') to 'word32' (aka 'unsigned int')
-> [-Werror,-Wshorten-64-to-32]
->      ret = wc_Hash(hashType, context, contextLen, hashOut,
-> WC_MAX_DIGEST_SIZE);
->            ~~~~~~~                    ^~~~~~~~~~
-> src/tls13.c:816:34: error: implicit conversion loses integer precision:
-> 'size_t' (aka 'unsigned long') to 'word32' (aka 'unsigned int')
-> [-Werror,-Wshorten-64-to-32]
->      ret = HKDF_Expand_Label(out, outLen, firstExpand, hashLen,
->            ~~~~~~~~~~~~~~~~~      ^~~~~~
->    CC       examples/server/testsuite_testsuite_test-server.o
->    CC       testsuite/testsuite_test-testsuite.o
->    CC       tests/unit_test-unit.o
-> 3 errors generated.
-> make[2]: *** [src/libwolfssl_la-tls13.lo] Error 1
-> make[2]: *** Waiting for unfinished jobs....
-> src/ssl.c:11527:61: error: implicit conversion loses integer precision:
-> 'unsigned long' to 'word32' (aka 'unsigned int')
-> [-Werror,-Wshorten-64-to-32]
->      word32 seedLen = !use_context ? SEED_LEN : SEED_LEN + 2 + contextLen;
->             ~~~~~~~                             ~~~~~~~~~~~~~^~~~~~~~~~~~
-> src/ssl.c:11591:25: error: implicit conversion loses integer precision:
-> 'size_t' (aka 'unsigned long') to 'word32' (aka 'unsigned int')
-> [-Werror,-Wshorten-64-to-32]
->      if (wc_PRF_TLS(out, outLen, ssl->arrays->masterSecret, SECRET_LEN,
->          ~~~~~~~~~~      ^~~~~~
-> src/ssl.c:11592:27: error: implicit conversion loses integer precision:
-> 'size_t' (aka 'unsigned long') to 'word32' (aka 'unsigned int')
-> [-Werror,-Wshorten-64-to-32]
->              (byte*)label, labelLen, seed, seedLen, IsAtLeastTLSv1_2(ssl),
->                            ^~~~~~~~
-> 3 errors generated.
-> make[2]: *** [src/libwolfssl_la-ssl.lo] Error 1
-> make[1]: *** [all-recursive] Error 1
-> make: *** [all] Error 2
-> Time: 0h:00m:27s
->
->
+Agreed!  Option (ii) sounds most reasonable to me too.
+
+IIRC, we've had some special wrappers with additional %-operators for=20
+string processing in the past we've kicked out as well (the struct argv=20
+patches comes to mind), and I believe there's been several other=20
+challenges with cross-platform support where we've tried to standardize=20
+to be as close to the native and most common ground available.
+
+That mingw is moving towards similar goals replacing msvcrt with ISO-C=20
+standards is just great for us in the long run.
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
+
+
+
+--Tm8KUjJ0hNft8hrComw0ajvumUHHGXCBU--
+
+--jFpSCK4mmYFmyUXEf5j3yyl2zhRDZVrh4
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEgDq5E1p1aZrNLFFkhs+UTJZx/fIFAmASlWUACgkQhs+UTJZx
+/fK12hAAh3VymegZh3WlKL+CK77AVPv8NnkYF6rcZqt49evMJu6qfgfy2JCsrNV3
+vkqhofY6EpvfY0C8qxs6gX6Lb1U5K410dX7T4/ctZ4k0WMdoxEV5n9fGeAdeD/nJ
+RC9Ej05PJMlra20Cs+p1FESWBY6aOCkHucXmA7UpqBwwb8C9Tpzg1fYvkrqaWXmc
+SK88qg/95pjn5sQr9LIwMM/iUd/CMJMGtwaYU5nRWjAupWUXFaZR3rfiqJ7cuuGy
+GPbDy78Eilr6sks1LUOjzI8mSAiZS8fxvH+f2cHErdUolYbHqZbV33juJyScoQ21
+jXaDYCxIUXe8x3rqbC8OFFlkCk5rv+MKcoQQIDh6tfOxOlHx1gGFHol+VorbvwFe
+8d6ohZyl4W+KooEkcEEv85Q5mKPCvkuVyQEbdGAqefc11PMCsEbuWYzrv1Nitk7Y
+ls63StUp4bUzjbATJ0VBSjIu9w7StmqYf3MXeVzGo8Hup5asm6pQ7ODtDnWWNRUh
+Bl7yLwGIkjuCAWH9q2HZ4xlDrdMy8ra6E96NFOFcPNG6bLMKGJoF0cCW2JpBYsIc
+R+UsNjXrM8LkqTwB9SKYv9l/WQkmdsPagoxxLwjwyfL5PJWuzbNRY77IMdfP4n1i
+7qeMrSxx7BymT7XvU/UutwWqfcuFKY2rwSLGAbzfriE1YL5T5OU=
+=8YN2
+-----END PGP SIGNATURE-----
+
+--jFpSCK4mmYFmyUXEf5j3yyl2zhRDZVrh4--
 
