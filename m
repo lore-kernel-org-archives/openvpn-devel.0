@@ -1,10 +1,9 @@
-From: Greg Cox <gcox@...1057...>
-Date: Wed, 27 Jan 2021 20:21:49 +0000
-Message-Id: <1611778909-20630-2-git-send-email-gcox@...1057...>
-In-Reply-To: <1611778909-20630-1-git-send-email-gcox@...1057...>
-References: <1611778909-20630-1-git-send-email-gcox@...1057...>
-Subject: [Openvpn-devel] [PATCH 2/2] More explicit versioning compatibility
- in sample-plugins/defer/simple.c
+MIME-Version: 1.0
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 27 Jan 2021 22:04:49 -0500
+Message-ID: <CAKuzo_jUJ58K5VirzjgvP=dJZ_qy+H0gGzNJ4hkiAyjSKQdMUQ@...278...>
+Content-Type: multipart/alternative; boundary="000000000000876f0705b9ed2770"
+Subject: [Openvpn-devel] rfc: mingw and the interactive service code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,72 +12,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-While not required, adding openvpn_plugin_min_version_required_v1 helps
-by making an example for others to copy, and helps to explicitly call
-attention to the difference between the API version number and the
-struct version number in v3 calls.
----
- sample/sample-plugins/defer/simple.c | 21 ++++++++++++++++++---
- 1 file changed, 18 insertions(+), 3 deletions(-)
+--000000000000876f0705b9ed2770
+Content-Type: text/plain; charset="UTF-8"
 
-diff --git a/sample/sample-plugins/defer/simple.c b/sample/sample-plugins/defer/simple.c
-index a2e47cfc3953ae188a5a2588a3d21e12404c75f1..05bfc4efa6d85bb1696b6811428260f4cc5e9914 100644
---- a/sample/sample-plugins/defer/simple.c
-+++ b/sample/sample-plugins/defer/simple.c
-@@ -66,7 +66,15 @@
- static plugin_log_t plugin_log = NULL;
- 
- /*
-- * Our context, where we keep our state.
-+ * Constants indicating minimum API and struct versions by the functions
-+ * in this plugin.  Consult openvpn-plugin.h, look for:
-+ * OPENVPN_PLUGIN_VERSION and OPENVPN_PLUGINv3_STRUCTVER
-+ */
-+#define OPENVPN_PLUGIN_VERSION_MIN 3
-+#define OPENVPN_PLUGIN_STRUCTVER_MIN 5
-+
-+/*
-+* Our context, where we keep our state.
-  */
- 
- struct plugin_context {
-@@ -136,6 +144,13 @@ atoi_null0(const char *str)
-     }
- }
- 
-+/* Require a minimum OpenVPN Plugin API */
-+OPENVPN_EXPORT int
-+openvpn_plugin_min_version_required_v1()
-+{
-+    return OPENVPN_PLUGIN_VERSION_MIN;
-+}
-+
- /* use v3 functions so we can use openvpn's logging and base64 etc. */
- OPENVPN_EXPORT int
- openvpn_plugin_open_v3(const int v3structver,
-@@ -146,7 +161,7 @@ openvpn_plugin_open_v3(const int v3structver,
-     struct plugin_context *context;
- 
-     /* Check API compatibility -- struct version 5 or higher needed */
--    if (v3structver < 5)
-+    if (v3structver < OPENVPN_PLUGIN_STRUCTVER_MIN)
-     {
-         fprintf(stderr, "%s: this plugin is incompatible with the running version of OpenVPN\n", MODULE);
-         return OPENVPN_PLUGIN_FUNC_ERROR;
-@@ -428,7 +443,7 @@ openvpn_plugin_func_v3(const int v3structver,
-                        struct openvpn_plugin_args_func_return *ret)
- {
-     /* Check API compatibility -- struct version 5 or higher needed */
--    if (v3structver < 5)
-+    if (v3structver < OPENVPN_PLUGIN_STRUCTVER_MIN)
-     {
-         fprintf(stderr, "%s: this plugin is incompatible with the running version of OpenVPN\n", MODULE);
-         return OPENVPN_PLUGIN_FUNC_ERROR;
--- 
-2.7.6
+Hi,
 
+Starting version 8, mingw has started automatically setting
+__USE_MINGW_ANSI_STDIO
+= 1 under some feature-set conditions: for example, when _GNU_SOURCE is
+defined or -std=C99, both of which are true in our case.
+
+See: release notes at http://mingw-w64.org/doku.php
+
+This causes several stdio functions to use internal ISO-C compliant
+implementations (instead of those in msvcrt), and to break some of our s
+wprintf family calls.
+
+I see two options:
+(i) force __USE_MINGW_ANSI_STDIO = 0 in configure.
+(ii) Change all stdio function calls to be compatible building with and
+without this macro defined. AFICT, the only change required would be to
+replace %s and %S by %ls and %hs in some places -- mostly in interactive
+service, one instance in tun.c
+
+Any thoughts? I'm leaning towards option (ii).
+
+Selva
+
+--000000000000876f0705b9ed2770
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi,<br><br>Starting version 8, <span id=3D"m_4406462382137=
+926001m_-1752376786893765744:3gz.1">mingw</span> has started automatically =
+setting __USE_<span id=3D"m_4406462382137926001m_-1752376786893765744:3gz.2=
+">MINGW</span>_ANSI_STDIO =3D 1 under some feature-set conditions: for exam=
+ple, when _GNU_SOURCE is defined or -std=3DC99, both of which are true in o=
+ur case. <br><br><div>See: release notes at <a href=3D"http://mingw-w64.org=
+/doku.php" target=3D"_blank">http://<span id=3D"m_4406462382137926001m_-175=
+2376786893765744:3gz.3">mingw</span>-w64.org/<span id=3D"m_4406462382137926=
+001m_-1752376786893765744:3gz.4">doku</span>.<span id=3D"m_4406462382137926=
+001m_-1752376786893765744:3gz.5">php</span></a><br><br>This causes several =
+stdio functions to use internal ISO-C compliant implementations (instead of=
+ those in <span id=3D"m_4406462382137926001m_-1752376786893765744:3gz.6">ms=
+vcrt</span>), and to break some of our s<span id=3D"m_4406462382137926001m_=
+-1752376786893765744:3gz.7">wprintf</span> family calls.<br><br>I see two o=
+ptions:<br>(i) force __USE_<span id=3D"m_4406462382137926001m_-175237678689=
+3765744:3gz.8">MINGW</span>_ANSI_STDIO =3D 0 in configure.<br>(ii) Change a=
+ll stdio function calls to be compatible building with and without this mac=
+ro defined. <span id=3D"m_4406462382137926001m_-1752376786893765744:3gz.9">=
+AFICT</span>, the only change required would be to replace %s and %S by %ls=
+ and %<span id=3D"m_4406462382137926001m_-1752376786893765744:3gz.10">hs</s=
+pan> in some places -- mostly in interactive service, one instance=C2=A0in =
+tun.c</div><div><br></div><div>Any thoughts? I&#39;m leaning towards option=
+ (ii).</div><div><br><span id=3D"m_4406462382137926001m_-175237678689376574=
+4:3gz.11">Selva</span></div></div>
+
+--000000000000876f0705b9ed2770--
 
