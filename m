@@ -1,12 +1,13 @@
+References: <ca157141-dc88-8017-0e6e-3ace055bc36e@...2181...>
+ <20210125124330.30046-1-arne@...1227...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <0b03aed9-b6f6-ddc6-f145-a4118dbe7e18@...2181...>
+Date: Fri, 29 Jan 2021 09:51:51 +0100
 MIME-Version: 1.0
-References: <20210125125628.30364-1-arne@...1227...>
- <20210125125628.30364-7-arne@...1227...>
-In-Reply-To: <20210125125628.30364-7-arne@...1227...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Fri, 29 Jan 2021 10:47:26 +0200
-Message-ID: <CAGyAFMVkqaU51jS0g4_UmSXwQi3O6uedao0HSVLH-9SbLc=biQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v2 06/11] Add S_EXITCODE flag for
- openvpn_run_script to report exit code
+In-Reply-To: <20210125124330.30046-1-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v2] Allow running a default
+ configuration with TLS libraries without BF-CBC
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,16 +16,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-V1 has been acked and this has minor style/comment fixes. No other
-changes compared to V1.
-Compiled with MSVC.
+On 25/01/2021 13:43, Arne Schwabe wrote:
+> Modern TLS libraries might drop Blowfish by default or distributions
+> might disable Blowfish in OpenSSL/mbed TLS. We still signal OCC
+> options with BF-CBC compatible strings. To avoid requiring BF-CBC
+> for this, special this one usage of BF-CBC enough to avoid a hard
+> requirement on Blowfish in the default configuration.
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> 
+> Patch v2: add more clarifying comment, do not warn about OCC only insecure
+>           ciphers, code improvements
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 
-Acked-by: Lev Stipakov <lstipakov@...277...>
+Acked-by: Antonio Quartulli <antonio@...515...>
+
+-- 
+Antonio Quartulli
 
