@@ -1,15 +1,15 @@
 References: <20210125125628.30364-1-arne@...1227...>
- <20210125125628.30364-9-arne@...1227...>
+ <20210125125628.30364-12-arne@...1227...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <40f64e23-b2e2-89bd-6b08-e37ae74f4445@...2080...>
-Date: Sat, 30 Jan 2021 00:16:49 +0100
+Message-ID: <d5a5d7b8-662f-ef51-4081-027fcb8cefd8@...2080...>
+Date: Sat, 30 Jan 2021 00:16:58 +0100
 MIME-Version: 1.0
-In-Reply-To: <20210125125628.30364-9-arne@...1227...>
+In-Reply-To: <20210125125628.30364-12-arne@...1227...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="9OhmjJgLA2zwr7Icz11OaAUzOThqGzlk8"
-Subject: Re: [Openvpn-devel] [PATCH v2 08/11] Allow pending auth to be send
- from a auth plugin
+ boundary="RL0eDJCarDcSF1TtePrryN5zbswJeUnUY"
+Subject: Re: [Openvpn-devel] [PATCH v2 11/11] Add example script
+ demonstrating TOTP via auth-pending
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,46 +21,129 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---9OhmjJgLA2zwr7Icz11OaAUzOThqGzlk8
-Content-Type: multipart/mixed; boundary="zCsg8dd8TLxqlXNBBzlRQpp6J0CCBaetZ";
+--RL0eDJCarDcSF1TtePrryN5zbswJeUnUY
+Content-Type: multipart/mixed; boundary="CkbUwCqqlH2hrvzeL867ASRTXUivXYc7B";
  protected-headers="v1"
 From: David Sommerseth <openvpn@...2080...>
 To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <40f64e23-b2e2-89bd-6b08-e37ae74f4445@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH v2 08/11] Allow pending auth to be send
- from a auth plugin
+Message-ID: <d5a5d7b8-662f-ef51-4081-027fcb8cefd8@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH v2 11/11] Add example script demonstrating
+ TOTP via auth-pending
 References: <20210125125628.30364-1-arne@...1227...>
- <20210125125628.30364-9-arne@...1227...>
-In-Reply-To: <20210125125628.30364-9-arne@...1227...>
+ <20210125125628.30364-12-arne@...1227...>
+In-Reply-To: <20210125125628.30364-12-arne@...1227...>
 
---zCsg8dd8TLxqlXNBBzlRQpp6J0CCBaetZ
+--CkbUwCqqlH2hrvzeL867ASRTXUivXYc7B
 Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: quoted-printable
 
 On 25/01/2021 13:56, Arne Schwabe wrote:
-> Patch v2: removed change that slipped into this patch and belongs
->            into the next
->=20
 > Signed-off-by: Arne Schwabe <arne@...1227...>
 > ---
->   doc/man-sections/generic-options.rst |   3 +-
->   include/openvpn-plugin.h.in          |   8 ++
->   src/openvpn/ssl.c                    |   2 +-
->   src/openvpn/ssl_common.h             |   1 +
->   src/openvpn/ssl_verify.c             | 161 +++++++++++++++++++++++++--
->   src/openvpn/ssl_verify.h             |   2 +-
->   6 files changed, 162 insertions(+), 15 deletions(-)
+>   Changes.rst                         |   9 +++
+>   doc/man-sections/script-options.rst |   3 +
+>   sample/sample-scripts/totpauth.py   | 107 ++++++++++++++++++++++++++++
+>   3 files changed, 119 insertions(+)
+>   create mode 100755 sample/sample-scripts/totpauth.py
 >=20
+> diff --git a/Changes.rst b/Changes.rst
+> index 188bd8ab..d64c6d83 100644
+> --- a/Changes.rst
+> +++ b/Changes.rst
+> @@ -19,6 +19,15 @@ Pending auth support for plugins and scripts
+>       be used to parse a client response to a ``CR_TEXT`` two factor chal=
+lenge.
+>=20=20=20
+>       See ``sample/sample-scripts/totpauth.py`` for an example.
+> +<<<<<<< HEAD
+> +=3D=3D=3D=3D=3D=3D=3D
+> +
+> +Deprecated features
+> +-------------------
+> +``inetd`` has been removed
+> +    This was a very limited and not-well-tested way to run OpenVPN, on T=
+CP
+> +    and TAP mode only.
+> +>>>>>>> 239e8cfd (Add example script demonstrating TOTP via auth-pending)
 
-Glared at the code, run some simple tests and it looks good.  I ended up=20
-patching sample/sample-plugins/defer/simple.c to do an openurl call.=20
-This worked fine.
+Ehm .... ;-)
 
-I'll send a patch updating the sample-plugin after this patchset has=20
-been reviewed.
 
-Acked-By: David Sommerseth <davids@...515...>
+[...snip....]
+> diff --git a/sample/sample-scripts/totpauth.py b/sample/sample-scripts/to=
+tpauth.py
+> new file mode 100755
+> index 00000000..95ac3529
+> --- /dev/null
+> +++ b/sample/sample-scripts/totpauth.py
+> @@ -0,0 +1,107 @@
+[...snip...]
+> +
+> +import pprint
+
+This shouldn't be needed.
+
+> +
+> +# Example script demonstrating how to use the auth-pending API in
+> +# OpenVPN. This script is provided under MIT license to allow easy
+> +# modification for other purposes.
+> +#
+> +# To use this script add the following lines in the openvpn config
+> +
+> +# client-crresponse /path/to/totpauth.py
+> +# auth-user-pass-verify /path/to/totpauth.py via-file
+> +# auth-user-pass-optional
+> +# auth-gen-token
+> +
+> +# Note that this script does NOT verify username/password
+> +# It is only meant for querying additional 2FA when certificates are
+> +# used to authenticate
+> +
+> +secrets =3D {"styx": "OS6JDNRK2BNUPQVX",
+> +           "apate": "IXWEMP7SK2QWSHTG"}
+
+Perhaps replace one of these user names with 'Test-Client', which is=20
+what our client.crt contains.
+
+
+This does actually work reasonably well, BUT ... there are some things=20
+which could be improved in the documentation here.
+
+Currently, both OpenVPN 2 and OpenVPN 3 Linux (which I tested) does not=20
+support crtext based auth out-of-the-box.  But it's possible to=20
+workaround that with OpenVPN 2.x. (I've tested v2.5.0 and git master).=20
+I used this config:
+
+   client
+   remote 127.0.0.1
+   dev tun
+   ca sample/sample-keys/ca.crt
+   key sample/sample-keys/client.key
+   cert sample/sample-keys/client.crt
+   nobind
+   explicit-exit-notify 3
+   management ./mngmt.sock unix
+   management-hold
+   management-query-passwords
+   setenv IV_SSO crtext
+
+Then I used 'nc -U mngmt.sock' to connect to the management interface=20
+and issued the 'hold release' command and the 'cr-response' command with=20
+a base64 encoded TOTP value.  I did update the toptpauth.py script to=20
+use 'Test-Client' instead of one of the predefined user names.
+
+So while this does work fine, it's not a straight forward way to test it=20
+out.  And it requires client hackery (even though I bet this is not an=20
+issue using your Android app ;-)).
+
+I don't think we need to update with more scripts or stuff like that,=20
+just mentioning more clearly that the client must support 'crtext' and=20
+it is possible with OpenVPN 2.x enabling the management interface and=20
+setting the IV_SSO env variable properly.
+
+Otherwise, this generally looks good - but we should improve docs a bit=20
+more and fix those minor issues while at it.
 
 
 --=20
@@ -71,29 +154,29 @@ OpenVPN Inc
 
 
 
---zCsg8dd8TLxqlXNBBzlRQpp6J0CCBaetZ--
+--CkbUwCqqlH2hrvzeL867ASRTXUivXYc7B--
 
---9OhmjJgLA2zwr7Icz11OaAUzOThqGzlk8
+--RL0eDJCarDcSF1TtePrryN5zbswJeUnUY
 Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="OpenPGP_signature"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEEgDq5E1p1aZrNLFFkhs+UTJZx/fIFAmAUl2EACgkQhs+UTJZx
-/fK9TRAAl3zEupXIpQXcDfn3t+Q9uW8wzjx+FePfmTNQ/oIuTw9S/Gjlq7A/F48C
-r6I9hPel1w9RLbgP0ChB5prSVHaz+rT19v4RUUou7aZO8PGPneXqI3thf3u4Yf8k
-dtwKjJN6PlSPGBSpcngvdhktUekXBhTS8gs0zpIUiH6m7zofvmpRiD9hQgAzGT1y
-EeVo2GFHySn7fqbwUHEl4ZaQbE+lECwq7J1BtOE6dqnwgquXsrCYFVao+VbNiY1/
-XRl9zuz9Sh1RKrfDSkNbI12gvTUVcaUSG34K7Pq8HHAONyel8xshGxGe7cNT2sUZ
-debpNwOZmIPuNz3pDX2fuvU1lAQjssSR9SDngG1Kx6XO5Us6FRMWPWgCyOTzUi77
-vI6BMrE8uveoElvD4my1YcN4gsRAUI9iiNrscWdlkcGpAt/0APvico05pW+m7HcK
-18xWqh2vTbt3GuzI0MBUZy4L/z+V1lkyAxIq9JPYP9h/tlShOddek7a+1MEqIbJ6
-4xejaQF86v+6h5VATOsDMkimI531ydOwTwqLoNxetq5/cZRpoA0fv9RLAuDkl2Yd
-s/IadNSFrmLFlEFRi6yNaS6cFo7wjkhd5g7YgNCe+0KKQOEnE2qQG5QaI+10nJ5P
-RglxZZ2lMuPuSmAlleArTr8muCXVAc1mcv2gDDGa9i5mR9bg/Bg=
-=XqxH
+iQIzBAEBCAAdFiEEgDq5E1p1aZrNLFFkhs+UTJZx/fIFAmAUl2sACgkQhs+UTJZx
+/fKFPg//VHN0MBn84q05kg9L1t4YWK+HJl9bz1JRrLMFN5Q4ltrJH/W31JSMx+27
+Ey5sfNXKRDKYkyjvWpm+lk+LrbuviAKsCiZiBYPiCw+2UsWf/Tiu91BPs8t8/h+U
+wljKndww2614ggFI4ExwoLzB/AEEuQuxAKFV4RG2AbVAlUfnHY61JcAzLtfrD0Ey
+PU9N6uDcTHPjYiScK/t/74nnBk6Zfe37o8/DOefTsEeJJaJl1XazRoHuIOGY+yMe
+ngT+vkXtd6l68NICPWNyKzibcAnAf2GK124WNG1cXaHp7r0/KF+shAmo3kJzJcfQ
+4x9SZ5COn0Pgwjqme3X6MHS9arjIeweRl7Z14mMlP9+qefW5yUZ+fmd7+JdALi7k
+9OFDKXnjrW5OkStAtViD9HllyhXx4nZwrqsTh8AAyqZVjAuvpdAuOORVUGXLPA8S
+ohmKK5NCthF5VKN7wgmF5AXeBwZPURPy6R6hlU/RJzhhRIaLWSXVU4VsIyt/YEbx
+thfBV9zTo3sgXWmlZ9by8OUCYUJsOi6GXUdBkxRRx3Biz++bLlp14bKduRrt8LCb
+dR8q8Esb1m26qtae83NNmO+mBAT2zNaspDFF2GRfw8xcBBZmDFIYRTBNu0dGp12L
+rtjLzb0gbfK3rKgZ4/Uyfsl7sWPgubs9pPRhXX32a+x2H56VW48=
+=fRZP
 -----END PGP SIGNATURE-----
 
---9OhmjJgLA2zwr7Icz11OaAUzOThqGzlk8--
+--RL0eDJCarDcSF1TtePrryN5zbswJeUnUY--
 
