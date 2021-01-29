@@ -1,12 +1,12 @@
 MIME-Version: 1.0
 References: <20210125125628.30364-1-arne@...1227...>
- <20210125125628.30364-2-arne@...1227...>
-In-Reply-To: <20210125125628.30364-2-arne@...1227...>
+ <20210125125628.30364-5-arne@...1227...>
+In-Reply-To: <20210125125628.30364-5-arne@...1227...>
 From: Lev Stipakov <lstipakov@...277...>
-Date: Fri, 29 Jan 2021 09:56:11 +0200
-Message-ID: <CAGyAFMUJjGC3=tKFCYqyEdfJJbTKi1M7kQZ0vVU3_Jdzm7OoUQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v2 01/11] Change pull request timeout
- use a timeout rather than a number
+Date: Fri, 29 Jan 2021 10:32:06 +0200
+Message-ID: <CAGyAFMXh0W+aR_dfj5fw2o22y60QbWe-1K82KRbHkKm9uR1xWA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v2 04/11] Introduce management client
+ state for AUTH_PENDING notifications
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,7 +20,10 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Compared with V1 and spelling is now fixed. Compiled with MSVC, code looks fine.
+Since I already acked v1, I checked that v2 is no different to v1.
+
+I got a compilation error because 03/11 is broken, but it is unrelated
+to this patch.
 
 Acked-by: Lev Stipakov <lstipakov@...277...>
 
