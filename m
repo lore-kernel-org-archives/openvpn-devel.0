@@ -1,10 +1,10 @@
-Date: Sat, 30 Jan 2021 10:44:44 +0100 (CET)
-Message-Id: <202101300944.10U9iitr087641@...2054...>
+Date: Sat, 30 Jan 2021 10:53:07 +0100 (CET)
+Message-Id: <202101300953.10U9r770087808@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1611778909-20630-1-git-send-email-gcox@...1057...>
-References: <1611778909-20630-1-git-send-email-gcox@...1057...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Update openvpn_plugin_func_v2
- to _v3 in sample-plugins/defer/simple.c
+In-Reply-To: <1611778909-20630-2-git-send-email-gcox@...1057...>
+References: <1611778909-20630-2-git-send-email-gcox@...1057...>
+Subject: [Openvpn-devel] [PATCH applied] Re: More explicit versioning
+ compatibility in sample-plugins/defer/simple.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,20 +20,30 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master, release/2.5 and release/2.4 branch.
 
-I have not tested anything beyond "it still compiles", but this looks reasonable 
-and has David's ACK.
+Again, I have not tested beyond a test compile (but it looks good).
 
-commit 7d1361c18f38d6301b4d558578c73e74f6597927 (master)
-commit 11aa1288ffc95877cd5686e19137b9abd6c374bb (release/2.5)
-commit 5e7e41dc56d71cb7e414d53059149d9490f14a67 (release/2.4)
+As a side note: my change to change the required v3structver to "5"
+was too restrictive - there was a bit of confusion what got added when, and I 
+thought this was necessary for logging.  But it isn't, "5" is "with base64", 
+and "4" is "with secure_memzero()" - which we wanted for plugin-auth-pam,
+and my code was copy-pasted from there...  according to openvpn-plugin.h,
+logging has been there from "v3 api structver v1".
+
+I do not think it's needed to fix that as 2.4, 2.5 and master all have "v5" 
+and people really should not code new plugins on 2.3 or older openvpn 
+deployments...
+
+commit a385a3e8a28f2ce96c7ee0be8940b257765add5a (master)
+commit ae5ca3ebf1cccae2f2d11a2ed6219c40be9cc4ea (release/2.5)
+commit 86c674230d6334c1aa18f74acc7a9741a6c9683a (release/2.4)
 Author: Greg Cox
-Date:   Wed Jan 27 20:21:48 2021 +0000
+Date:   Wed Jan 27 20:21:49 2021 +0000
 
-     Update openvpn_plugin_func_v2 to _v3 in sample-plugins/defer/simple.c
+     More explicit versioning compatibility in sample-plugins/defer/simple.c
 
      Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <1611778909-20630-1-git-send-email-gcox@...1057...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21507.html
+     Message-Id: <1611778909-20630-2-git-send-email-gcox@...1057...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21508.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
