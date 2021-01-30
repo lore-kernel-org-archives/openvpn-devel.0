@@ -1,10 +1,10 @@
-Date: Sat, 30 Jan 2021 12:07:45 +0100 (CET)
-Message-Id: <202101301107.10UB7jjF099430@...2054...>
+Date: Sat, 30 Jan 2021 19:54:47 +0100 (CET)
+Message-Id: <202101301854.10UIslPu006064@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20201214172407.30451-1-arne@...1227...>
-References: <20201214172407.30451-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove inetd support from
- OpenVPN
+In-Reply-To: <20210125125628.30364-2-arne@...1227...>
+References: <20210125125628.30364-2-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Change pull request timeout use
+ a timeout rather than a number
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,28 +18,24 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
-
-stared-at-code (which is quite a lot of changes, some of which want "-w"), 
-ran on the client and server test rigs (breaks --inetd mode, whoa, but 
-everything else works :-) ).  Looks good!
-
-Removal of --inetd has been pending for multiple months now (since before
-the release of 2.5.0) and nobody has ever asked for it to stay - so, gone
-it is, now.
-
 Your patch has been applied to the master branch.
 
-commit ce652e7d3865dcdebfdc9233d9f46dfbcc2a6e2b
-Author: Arne Schwabe
-Date:   Mon Dec 14 18:24:07 2020 +0100
+Only very lightly tested.
 
-     Remove inetd support from OpenVPN
+Observation: it introduces "*session" and "*ks" to send_push_request() 
+which might be needed by later patches on, but are not used by code 
+in this patch yet.
+
+commit 413580b6a41d7eefb35438701fc79a63e0344ced
+Author: Arne Schwabe
+Date:   Mon Jan 25 13:56:18 2021 +0100
+
+     Change pull request timeout use a timeout rather than a number
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20201214172407.30451-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21360.html
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <20210125125628.30364-2-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21490.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
