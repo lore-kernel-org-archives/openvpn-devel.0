@@ -1,14 +1,15 @@
 References: <1611778909-20630-1-git-send-email-gcox@...1057...>
+ <1611778909-20630-2-git-send-email-gcox@...1057...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <3830b5b0-b070-7f5d-2ba9-dc36ccbb5713@...2080...>
-Date: Sat, 30 Jan 2021 01:02:16 +0100
+Message-ID: <9694242d-a723-f9a8-1b93-e7061553a733@...2080...>
+Date: Sat, 30 Jan 2021 01:05:45 +0100
 MIME-Version: 1.0
-In-Reply-To: <1611778909-20630-1-git-send-email-gcox@...1057...>
+In-Reply-To: <1611778909-20630-2-git-send-email-gcox@...1057...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="qJgj4MITOOcZKWmuOzM4lzs0WrNjQQtfu"
-Subject: Re: [Openvpn-devel] [PATCH 1/2] Update openvpn_plugin_func_v2 to
- _v3 in sample-plugins/defer/simple.c
+ boundary="fuoHojh8jTEVYXP64hAajpsov7Q37IuW4"
+Subject: Re: [Openvpn-devel] [PATCH 2/2] More explicit versioning
+ compatibility in sample-plugins/defer/simple.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,33 +21,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Greg Cox <gcox@...1057...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---qJgj4MITOOcZKWmuOzM4lzs0WrNjQQtfu
-Content-Type: multipart/mixed; boundary="vrzCypC2jv29vU726UvTbu3K8ZeRGdXqp";
+--fuoHojh8jTEVYXP64hAajpsov7Q37IuW4
+Content-Type: multipart/mixed; boundary="Ggq1hO8lpJMifOYF7M1LVxfU7kcBxUKSU";
  protected-headers="v1"
 From: David Sommerseth <openvpn@...2080...>
 To: Greg Cox <gcox@...1057...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <3830b5b0-b070-7f5d-2ba9-dc36ccbb5713@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH 1/2] Update openvpn_plugin_func_v2 to _v3
- in sample-plugins/defer/simple.c
+Message-ID: <9694242d-a723-f9a8-1b93-e7061553a733@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH 2/2] More explicit versioning
+ compatibility in sample-plugins/defer/simple.c
 References: <1611778909-20630-1-git-send-email-gcox@...1057...>
-In-Reply-To: <1611778909-20630-1-git-send-email-gcox@...1057...>
+ <1611778909-20630-2-git-send-email-gcox@...1057...>
+In-Reply-To: <1611778909-20630-2-git-send-email-gcox@...1057...>
 
---vrzCypC2jv29vU726UvTbu3K8ZeRGdXqp
+--Ggq1hO8lpJMifOYF7M1LVxfU7kcBxUKSU
 Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: quoted-printable
 
 On 27/01/2021 21:21, Greg Cox wrote:
-> This isn't strictly required, but it modernizes the functions used.
-> This change makes _open the same parameter form as _func (for better
-> parallelism in function writing) and includes a check for the correct
-> struct version, as recommended by openvpn-plugin.h
+> While not required, adding openvpn_plugin_min_version_required_v1 helps
+> by making an example for others to copy, and helps to explicitly call
+> attention to the difference between the API version number and the
+> struct version number in v3 calls.
 > ---
->   sample/sample-plugins/defer/simple.c | 23 ++++++++++++++---------
->   1 file changed, 14 insertions(+), 9 deletions(-)
+>   sample/sample-plugins/defer/simple.c | 21 ++++++++++++++++++---
+>   1 file changed, 18 insertions(+), 3 deletions(-)
 >=20
 
-Thanks a lot!  This makes a lot of sense and works as expected.
+Yes, this is also reasonable and aligns well with the intension of these=20
+version checks.  Thanks a lot!
 
 Acked-By: David Sommerseth <davids@...515...>
 
@@ -59,29 +62,29 @@ OpenVPN Inc
 
 
 
---vrzCypC2jv29vU726UvTbu3K8ZeRGdXqp--
+--Ggq1hO8lpJMifOYF7M1LVxfU7kcBxUKSU--
 
---qJgj4MITOOcZKWmuOzM4lzs0WrNjQQtfu
+--fuoHojh8jTEVYXP64hAajpsov7Q37IuW4
 Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="OpenPGP_signature"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEEgDq5E1p1aZrNLFFkhs+UTJZx/fIFAmAUogkACgkQhs+UTJZx
-/fJBfRAAqdb3NAf9E3lIuwciha2oT61caQZ56a7gpXPpf+vY/jUOVDYyRutd+vrj
-AsEevduj282L948myliT0r7Jc3iIsN7zaa1Xc2jpHJmawSdLSlaggVhYQN2C69MU
-Aq1+LWVduw2iodWln/YqJO9d2z0e+ZmJsr7LV4ot+R5XmDSLJiIObWBCZKphQW34
-KZHTTX/a1DDkPL6oarwDrVkZoekowqHAeZc06NNpnI6PUWN8+fwaIWv79u8VmRqo
-Hl9gQ5BblqQGchzMchugk+R4c66VROKz2oOVDVkNw5+M3pdOyRUIwZnNK2COFSR6
-9cmRCrkfevvMDbWDifozZv+rTbaXXeTGt9CpFnheSA3JXbDw8Y8vli+zK+Tu4dw1
-TbXqhN+LWvhXm0AG5QrWrCcOhou9sp9CT2aWRosxBW/Quziu8hCmXtMUd45ICwn4
-PFSui+swoDRwiUa7DUtAAl0ggeWd8zam9Zds+ORd728xpMpEXTZ2iVmcvPUv5Kqv
-Ma3qzIL/kthyO6rwRTZcHtU9XglWzlkHI8zbTYq4caVATxCO1EQXeJlyxOqvClpS
-6by5tNfMNfmlXM47+qPhM2xDx2gHOfTBXUS6JziJrnJBjD6Yh38bCAu4CA8XdW1X
-DKlgeipN8jPQlM9qB1ReycZLhm94GM69IE2QyIa4c6jHcndUFBc=
-=dZZ9
+iQIzBAEBCAAdFiEEgDq5E1p1aZrNLFFkhs+UTJZx/fIFAmAUotoACgkQhs+UTJZx
+/fIX+xAAguDuYk+K1OjzflQJ0pbmlu7ZFjwF/0aewZYZ/rLUP4leJnpdpGEGc4xz
+4JWHsGNsfQlvKCUivUpSn5l/4GrOkF2bhluLXnq1mCa6k/aRdjT19wf6pNX83YdF
+162ZiGjx1M2v9/BJptoguItT5ozf1RgB4tL98kwX9E0IVjVD0Teol7Rx+WEcekjM
+LhQtecyJAoG4jnsk7Omb9xwrl+SZjSjvv8O1HZhrNXs4kQUT2cRCVfsB/XK2tt3D
+3O+beEZpTJ/ak5/5aV1MQAF6grjm52O6THbi21cfqLBsHG8sIa3nbiRQyBvi+ZDv
+U8ZxTSxwKZOOVnr487w4tYGDaQ2ndQlyVRxiBmqRg60Bd3BCtTudzrVjAUFiAJwD
+ci//xmuaUPVb5OxuVJZjW/kqGp03GCkz7h0baDWiVVecBYcp93Tq+Ew1MEzCjDmt
+fNGBehtyOJWhPopDxfZbOcCbz6j8GpdUTeOmhFL/LJP8Btr0Lp8iukDD21+zLu8Q
+F50uA8KSfCTzlD3ZwEhChcHmdvAhEYXZ0QJEx6GNqo0FVg2+R2gO3gJIUe/yzwOU
+Ekn0cnXbPeB/g7/eF7KeuO3An7sAM4svBgexw+2OmAMKkaK2WQQ4Br4BT/Ll7Blv
+3KtTO8lyX/bYjS4fz4sxHptlMrIZ1PwoJXExjaTqi9+xchdpzMw=
+=E70I
 -----END PGP SIGNATURE-----
 
---qJgj4MITOOcZKWmuOzM4lzs0WrNjQQtfu--
+--fuoHojh8jTEVYXP64hAajpsov7Q37IuW4--
 
