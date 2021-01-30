@@ -1,10 +1,10 @@
-Date: Sat, 30 Jan 2021 10:53:07 +0100 (CET)
-Message-Id: <202101300953.10U9r770087808@...2054...>
+Date: Sat, 30 Jan 2021 12:07:45 +0100 (CET)
+Message-Id: <202101301107.10UB7jjF099430@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1611778909-20630-2-git-send-email-gcox@...1057...>
-References: <1611778909-20630-2-git-send-email-gcox@...1057...>
-Subject: [Openvpn-devel] [PATCH applied] Re: More explicit versioning
- compatibility in sample-plugins/defer/simple.c
+In-Reply-To: <20201214172407.30451-1-arne@...1227...>
+References: <20201214172407.30451-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove inetd support from
+ OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,35 +15,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Greg Cox <gcox@...1057...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master, release/2.5 and release/2.4 branch.
+Acked-by: Gert Doering <gert@...1296...>
 
-Again, I have not tested beyond a test compile (but it looks good).
+stared-at-code (which is quite a lot of changes, some of which want "-w"), 
+ran on the client and server test rigs (breaks --inetd mode, whoa, but 
+everything else works :-) ).  Looks good!
 
-As a side note: my change to change the required v3structver to "5"
-was too restrictive - there was a bit of confusion what got added when, and I 
-thought this was necessary for logging.  But it isn't, "5" is "with base64", 
-and "4" is "with secure_memzero()" - which we wanted for plugin-auth-pam,
-and my code was copy-pasted from there...  according to openvpn-plugin.h,
-logging has been there from "v3 api structver v1".
+Removal of --inetd has been pending for multiple months now (since before
+the release of 2.5.0) and nobody has ever asked for it to stay - so, gone
+it is, now.
 
-I do not think it's needed to fix that as 2.4, 2.5 and master all have "v5" 
-and people really should not code new plugins on 2.3 or older openvpn 
-deployments...
+Your patch has been applied to the master branch.
 
-commit a385a3e8a28f2ce96c7ee0be8940b257765add5a (master)
-commit ae5ca3ebf1cccae2f2d11a2ed6219c40be9cc4ea (release/2.5)
-commit 86c674230d6334c1aa18f74acc7a9741a6c9683a (release/2.4)
-Author: Greg Cox
-Date:   Wed Jan 27 20:21:49 2021 +0000
+commit ce652e7d3865dcdebfdc9233d9f46dfbcc2a6e2b
+Author: Arne Schwabe
+Date:   Mon Dec 14 18:24:07 2020 +0100
 
-     More explicit versioning compatibility in sample-plugins/defer/simple.c
+     Remove inetd support from OpenVPN
 
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <1611778909-20630-2-git-send-email-gcox@...1057...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21508.html
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20201214172407.30451-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21360.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
