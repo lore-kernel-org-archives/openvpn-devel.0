@@ -1,15 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-References: <20200825073643.15920-2-arne@...1227...>
- <20200907162221.20928-1-arne@...1227...>
- <20200907162221.20928-3-arne@...1227...>
- <1664a738-bde5-2a83-2171-8acfffaa9f6d@...2181...>
-Message-ID: <4e2b0aef-dea5-9d75-b541-f33cf323dffc@...1227...>
-Date: Mon, 1 Feb 2021 15:44:45 +0100
-MIME-Version: 1.0
-In-Reply-To: <1664a738-bde5-2a83-2171-8acfffaa9f6d@...2181...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH 5/5] Prefer TLS libraries TLS PRF
- function, fix OpenVPN in FIPS mode
+Date: Mon,  1 Feb 2021 16:02:35 +0100
+Message-Id: <20210201150235.19226-1-arne@...1227...>
+In-Reply-To: <CAGyAFMWGUfXeiw6sp5LE1SsH88-TF_K20y6z62MYrOJ_PcMLGg@...278...>
+References: <CAGyAFMWGUfXeiw6sp5LE1SsH88-TF_K20y6z62MYrOJ_PcMLGg@...278...>
+Subject: [Openvpn-devel] [PATCH v3] Implement server side of AUTH_PENDING
+ with extending timeout
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,84 +13,309 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Am 29.01.21 um 15:09 schrieb Antonio Quartulli:
-> Hi,
-> 
-> witht his review I want to open a broader discussion about the use of
-> ASSERT in the OpenVPN code.
-> 
-> My comments below will get to the point.
-> 
-> On 07/09/2020 18:22, Arne Schwabe wrote:
->> This moves from using our own copy of the TLS1 PRF function to using
->> TLS library provided function where possible. This includes currently
->> OpenSSL 1.1.0+ and mbed TLS 2.18+.
->>
->> For the libraries where it is not possible to use the library's own
->> function, we still use our own implementation. mbed TLS will continue
->> to use our own old PRF function while for OpenSSL we will use a
->> adapted version from OpenSSL 1.0.2t code. The version allows to be
->> used in a FIPS enabled environment.
->>
-> 
-> Does this mean that a system that is FIPS enabled running mbedTLS <2.18
-> will still not work? Or the old mbedTLS implementeation had no issue?
+Patch V2: eliminate parse_kid function, fix style
+Patch V3: adding missing parameter in function, this was added
+          by a later patch in the original series
 
-There is no special FIPS mode in mbed TLS. It just means that for
-OpenSSL 1.1.0+ and mbed TLS 2.18+, we rely on a library provided
-function instead of implementing the TLS1 PRF ourselves. When we drop
-OpenSSL 1.0.2 and mbed TLS <2.18 support our own version can be removed.
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/manage.c     | 23 +++++++++--------
+ src/openvpn/manage.h     |  3 ++-
+ src/openvpn/multi.c      | 27 +++-----------------
+ src/openvpn/push.c       | 55 +++++++++++++++++++++++++++++++++++++---
+ src/openvpn/push.h       | 14 +++++++++-
+ src/openvpn/ssl.c        |  1 +
+ src/openvpn/ssl_common.h |  1 +
+ 7 files changed, 84 insertions(+), 40 deletions(-)
 
-For OpenSSL the library function has the additional advantage that it is
-considered to be allowed in FIPS mode without special flags etc.
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index ed9dde1e..98a9a4cc 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -972,15 +972,15 @@ parse_cid(const char *str, unsigned long *cid)
+ }
+ 
+ static bool
+-parse_kid(const char *str, unsigned int *kid)
++parse_uint(const char *str, const char* what, unsigned int *uint)
+ {
+-    if (sscanf(str, "%u", kid) == 1)
++    if (sscanf(str, "%u", uint) == 1)
+     {
+         return true;
+     }
+     else
+     {
+-        msg(M_CLIENT, "ERROR: cannot parse KID");
++        msg(M_CLIENT, "ERROR: cannot parse %s", what);
+         return false;
+     }
+ }
+@@ -995,15 +995,18 @@ parse_kid(const char *str, unsigned int *kid)
+  *                      the information of the additional steps
+  */
+ static void
+-man_client_pending_auth(struct management *man, const char *cid_str, const char *extra)
++man_client_pending_auth(struct management *man, const char *cid_str,
++                        const char *extra, const char *timeout_str)
+ {
+     unsigned long cid = 0;
+-    if (parse_cid(cid_str, &cid))
++    unsigned int timeout = 0;
++    if (parse_cid(cid_str, &cid)
++        && parse_uint(timeout_str, "TIMEOUT", &timeout))
+     {
+         if (man->persist.callback.client_pending_auth)
+         {
+             bool ret = (*man->persist.callback.client_pending_auth)
+-                           (man->persist.callback.arg, cid, extra);
++                           (man->persist.callback.arg, cid, extra, timeout);
+ 
+             if (ret)
+             {
+@@ -1029,7 +1032,7 @@ man_client_auth(struct management *man, const char *cid_str, const char *kid_str
+     mc->in_extra_cid = 0;
+     mc->in_extra_kid = 0;
+     if (parse_cid(cid_str, &mc->in_extra_cid)
+-        && parse_kid(kid_str, &mc->in_extra_kid))
++        && parse_uint(kid_str, "KID", &mc->in_extra_kid))
+     {
+         mc->in_extra_cmd = IEC_CLIENT_AUTH;
+         in_extra_reset(mc, IER_NEW);
+@@ -1045,7 +1048,7 @@ man_client_deny(struct management *man, const char *cid_str, const char *kid_str
+ {
+     unsigned long cid = 0;
+     unsigned int kid = 0;
+-    if (parse_cid(cid_str, &cid) && parse_kid(kid_str, &kid))
++    if (parse_cid(cid_str, &cid) && parse_uint(kid_str, "KID", &kid))
+     {
+         if (man->persist.callback.client_auth)
+         {
+@@ -1560,9 +1563,9 @@ man_dispatch_command(struct management *man, struct status_output *so, const cha
+     }
+     else if (streq(p[0], "client-pending-auth"))
+     {
+-        if (man_need(man, p, 2, 0))
++        if (man_need(man, p, 3, 0))
+         {
+-            man_client_pending_auth(man, p[1], p[2]);
++            man_client_pending_auth(man, p[1], p[2], p[3]);
+         }
+     }
+ #ifdef MANAGEMENT_PF
+diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
+index a3364644..aaa3b848 100644
+--- a/src/openvpn/manage.h
++++ b/src/openvpn/manage.h
+@@ -173,7 +173,8 @@ struct management_callback
+                          struct buffer_list *cc_config); /* ownership transferred */
+     bool (*client_pending_auth) (void *arg,
+                                  const unsigned long cid,
+-                                 const char *url);
++                                 const char *extra,
++                                 unsigned int timeout);
+     char *(*get_peer_info) (void *arg, const unsigned long cid);
+ #ifdef MANAGEMENT_PF
+     bool (*client_pf)(void *arg,
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index dd713049..ac5d3f5b 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -1768,28 +1768,6 @@ multi_client_connect_setenv(struct multi_context *m,
+     gc_free(&gc);
+ }
+ 
+-/**
+- * Extracts the IV_PROTO variable and returns its value or 0
+- * if it cannot be extracted.
+- *
+- */
+-static unsigned int
+-extract_iv_proto(const char *peer_info)
+-{
+-
+-    const char *optstr = peer_info ? strstr(peer_info, "IV_PROTO=") : NULL;
+-    if (optstr)
+-    {
+-        int proto = 0;
+-        int r = sscanf(optstr, "IV_PROTO=%d", &proto);
+-        if (r == 1 && proto > 0)
+-        {
+-            return proto;
+-        }
+-    }
+-    return 0;
+-}
+-
+ /**
+  * Calculates the options that depend on the client capabilities
+  * based on local options and available peer info
+@@ -3918,14 +3896,15 @@ management_kill_by_cid(void *arg, const unsigned long cid, const char *kill_msg)
+ static bool
+ management_client_pending_auth(void *arg,
+                                const unsigned long cid,
+-                               const char *extra)
++                               const char *extra,
++                               unsigned int timeout)
+ {
+     struct multi_context *m = (struct multi_context *) arg;
+     struct multi_instance *mi = lookup_by_cid(m, cid);
+     if (mi)
+     {
+         /* sends INFO_PRE and AUTH_PENDING messages to client */
+-        bool ret = send_auth_pending_messages(&mi->context, extra);
++        bool ret = send_auth_pending_messages(&mi->context, extra, timeout);
+         multi_schedule_context_wakeup(m, mi);
+         return ret;
+     }
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 2ceee2c4..dfc80c24 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -343,26 +343,57 @@ send_auth_failed(struct context *c, const char *client_reason)
+     gc_free(&gc);
+ }
+ 
++
+ bool
+-send_auth_pending_messages(struct context *c, const char *extra)
++send_auth_pending_messages(struct context *c, const char *extra,
++                           unsigned int timeout)
+ {
+-    send_control_channel_string(c, "AUTH_PENDING", D_PUSH);
++    struct tls_multi *tls_multi = c->c2.tls_multi;
++    struct key_state *ks = &tls_multi->session[TM_ACTIVE].key[KS_PRIMARY];
+ 
+     static const char info_pre[] = "INFO_PRE,";
+ 
++    const char *const peer_info = tls_multi->peer_info;
++    unsigned int proto = extract_iv_proto(peer_info);
++
+ 
+-    size_t len = strlen(extra)+1 + sizeof(info_pre);
++    /* Calculate the maximum timeout and subtract the time we already waited */
++    unsigned int max_timeout = max_uint(tls_multi->opt.renegotiate_seconds/2,
++                                        tls_multi->opt.handshake_window);
++    max_timeout = max_timeout - (now - ks->initial);
++    timeout = min_uint(max_timeout, timeout);
++
++    struct gc_arena gc = gc_new();
++    if ((proto & IV_PROTO_AUTH_PENDING_KW) == 0)
++    {
++        send_control_channel_string(c, "AUTH_PENDING", D_PUSH);
++    }
++    else
++    {
++        static const char auth_pre[] = "AUTH_PENDING,timeout ";
++        // Assume a worst case of 8 byte uint64 in decimal which
++        // needs 20 bytes
++        size_t len = 20 + 1 + sizeof(auth_pre);
++        struct buffer buf = alloc_buf_gc(len, &gc);
++        buf_printf(&buf, auth_pre);
++        buf_printf(&buf, "%u", timeout);
++        send_control_channel_string(c, BSTR(&buf), D_PUSH);
++    }
++
++    size_t len = strlen(extra) + 1 + sizeof(info_pre);
+     if (len > PUSH_BUNDLE_SIZE)
+     {
++        gc_free(&gc);
+         return false;
+     }
+-    struct gc_arena gc = gc_new();
+ 
+     struct buffer buf = alloc_buf_gc(len, &gc);
+     buf_printf(&buf, info_pre);
+     buf_printf(&buf, "%s", extra);
+     send_control_channel_string(c, BSTR(&buf), D_PUSH);
+ 
++    ks->auth_deferred_expire = now + timeout;
++
+     gc_free(&gc);
+     return true;
+ }
+@@ -1010,4 +1041,20 @@ remove_iroutes_from_push_route_list(struct options *o)
+     }
+ }
+ 
++unsigned int
++extract_iv_proto(const char *peer_info)
++{
++    const char *optstr = peer_info ? strstr(peer_info, "IV_PROTO=") : NULL;
++    if (optstr)
++    {
++        int proto = 0;
++        int r = sscanf(optstr, "IV_PROTO=%d", &proto);
++        if (r == 1 && proto > 0)
++        {
++            return proto;
++        }
++    }
++    return 0;
++}
++
+ #endif /* if P2MP */
+diff --git a/src/openvpn/push.h b/src/openvpn/push.h
+index 01847671..377f94a6 100644
+--- a/src/openvpn/push.h
++++ b/src/openvpn/push.h
+@@ -77,7 +77,9 @@ void send_auth_failed(struct context *c, const char *client_reason);
+  * doc/management-notes.txt under client-pending-auth for
+  * more details on message format
+  */
+-bool send_auth_pending_messages(struct context *c, const char *extra);
++bool
++send_auth_pending_messages(struct tls_multi *tls_multi, const char *extra,
++                           unsigned int timeout);
+ 
+ void send_restart(struct context *c, const char *kill_msg);
+ 
+@@ -89,6 +91,16 @@ void send_restart(struct context *c, const char *kill_msg);
+  */
+ void send_push_reply_auth_token(struct tls_multi *multi);
+ 
++
++/**
++ * Extracts the IV_PROTO variable and returns its value or 0
++ * if it cannot be extracted.
++ *
++ * @param peer_info     peer info string to search for IV_PROTO
++ */
++unsigned int
++extract_iv_proto(const char *peer_info);
++
+ /**
+  * Parses an AUTH_PENDING message and if in pull mode extends the timeout
+  *
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 5a231387..14c8116f 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2771,6 +2771,7 @@ tls_process(struct tls_multi *multi,
+             buf = reliable_get_buf_output_sequenced(ks->send_reliable);
+             if (buf)
+             {
++                ks->initial = now;
+                 ks->must_negotiate = now + session->opt->handshake_window;
+                 ks->auth_deferred_expire = now + auth_deferred_expire_window(session->opt);
+ 
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index bbb8135d..bf7f9ba3 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -175,6 +175,7 @@ struct key_state
+ 
+     struct key_state_ssl ks_ssl; /* contains SSL object and BIOs for the control channel */
+ 
++    time_t initial;             /* when we created this session */
+     time_t established;         /* when our state went S_ACTIVE */
+     time_t must_negotiate;      /* key negotiation times out if not finished before this time */
+     time_t must_die;            /* this object is destroyed at this time */
+-- 
+2.30.0
 
-> 
->> The old OpenSSL and mbed TLS implementation could have shared some
->> more code but as we will eventually drop support for older TLS
->> libraries, the separation makes it easier it remove that code
->> invdidually.
->>
->> No FIPS conformitiy testing etc has been done, this is only about
->> allowing OpenVPN on a system where FIPS mode has been enabled system
->> wide (e.g. on RHEL derivates).
-> 
-> Could you add some description of why we need to change the PRF
-> implementation for FISP-enabled systems?
-
-
-V2 will include this paragraph:
-
-In FIPS mode MD5 is normally forbidden, the TLS1 PRF1 function we
-use, makes uses of MD5, which in the past has caused OpenVPN to segfault.
-The new implementation for OpenSSL version of our custom implementation
-has added the special flags that tell OpenSSL that this specific use
-of MD5 is allowed in FIPS mode.
-
-
->> +{
->> +    struct gc_arena gc = gc_new();
->> +    uint8_t A1[MAX_HMAC_KEY_LENGTH];
->> +
->> +#ifdef ENABLE_DEBUG
->> +    const int olen_orig = olen;
->> +    const uint8_t *out_orig = out;
->> +#endif
-> 
-> I think this block above is not needed anymore.
-
-The last line in the function uses it, I just inherited this code:
-
-    dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash out: %s", format_hex(out_orig,
-olen_orig, 0, &gc));
-
-
-
-For the ASSERTs, I will send a follow up patch, which changes this code
-path into something that can catch the failure.
-
-Arne
 
