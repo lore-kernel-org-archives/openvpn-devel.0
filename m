@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon,  1 Feb 2021 16:02:35 +0100
-Message-Id: <20210201150235.19226-1-arne@...1227...>
-In-Reply-To: <CAGyAFMWGUfXeiw6sp5LE1SsH88-TF_K20y6z62MYrOJ_PcMLGg@...278...>
-References: <CAGyAFMWGUfXeiw6sp5LE1SsH88-TF_K20y6z62MYrOJ_PcMLGg@...278...>
-Subject: [Openvpn-devel] [PATCH v3] Implement server side of AUTH_PENDING
- with extending timeout
+Date: Mon,  1 Feb 2021 16:03:40 +0100
+Message-Id: <20210201150340.19305-1-arne@...1227...>
+In-Reply-To: <CAGyAFMXE66-Tg1f2OMrjTbKYZdkufrAoJJYd_y1CRme-tBQvMw@...278...>
+References: <CAGyAFMXE66-Tg1f2OMrjTbKYZdkufrAoJJYd_y1CRme-tBQvMw@...278...>
+Subject: [Openvpn-devel] [PATCH v3] Change parameter of
+ send_auth_pending_messages from context to tls_multi
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,304 +17,136 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Patch V2: eliminate parse_kid function, fix style
-Patch V3: adding missing parameter in function, this was added
-          by a later patch in the original series
+This prepares send_auth_pending_messages to be used a in context that
+does not have context c available but also does not need to schedule
+an immediate sending of the message (auth plugin/script)
+
+Patch V2: Adjust the comment of reschedule_multi_process to actually fit a
+          function.
+Patch V3: Rebase needed because v3 of 3/11
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/manage.c     | 23 +++++++++--------
- src/openvpn/manage.h     |  3 ++-
- src/openvpn/multi.c      | 27 +++-----------------
- src/openvpn/push.c       | 55 +++++++++++++++++++++++++++++++++++++---
- src/openvpn/push.h       | 14 +++++++++-
- src/openvpn/ssl.c        |  1 +
- src/openvpn/ssl_common.h |  1 +
- 7 files changed, 84 insertions(+), 40 deletions(-)
+ src/openvpn/forward.c | 17 +++++++++--------
+ src/openvpn/forward.h |  9 +++++++++
+ src/openvpn/multi.c   |  4 +++-
+ src/openvpn/push.c    |  9 ++++-----
+ 4 files changed, 25 insertions(+), 14 deletions(-)
 
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index ed9dde1e..98a9a4cc 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -972,15 +972,15 @@ parse_cid(const char *str, unsigned long *cid)
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 8296900e..828abb25 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -342,6 +342,14 @@ send_control_channel_string_dowork(struct tls_multi *multi,
+     return stat;
  }
  
- static bool
--parse_kid(const char *str, unsigned int *kid)
-+parse_uint(const char *str, const char* what, unsigned int *uint)
++void reschedule_multi_process(struct context *c)
++{
++
++    interval_action(&c->c2.tmp_int);
++    context_immediate_reschedule(c); /* ZERO-TIMEOUT */
++}
++
++
+ bool
+ send_control_channel_string(struct context *c, const char *str, int msglevel)
  {
--    if (sscanf(str, "%u", kid) == 1)
-+    if (sscanf(str, "%u", uint) == 1)
+@@ -349,15 +357,8 @@ send_control_channel_string(struct context *c, const char *str, int msglevel)
      {
-         return true;
-     }
-     else
-     {
--        msg(M_CLIENT, "ERROR: cannot parse KID");
-+        msg(M_CLIENT, "ERROR: cannot parse %s", what);
-         return false;
-     }
- }
-@@ -995,15 +995,18 @@ parse_kid(const char *str, unsigned int *kid)
-  *                      the information of the additional steps
-  */
- static void
--man_client_pending_auth(struct management *man, const char *cid_str, const char *extra)
-+man_client_pending_auth(struct management *man, const char *cid_str,
-+                        const char *extra, const char *timeout_str)
- {
-     unsigned long cid = 0;
--    if (parse_cid(cid_str, &cid))
-+    unsigned int timeout = 0;
-+    if (parse_cid(cid_str, &cid)
-+        && parse_uint(timeout_str, "TIMEOUT", &timeout))
-     {
-         if (man->persist.callback.client_pending_auth)
-         {
-             bool ret = (*man->persist.callback.client_pending_auth)
--                           (man->persist.callback.arg, cid, extra);
-+                           (man->persist.callback.arg, cid, extra, timeout);
+         bool ret = send_control_channel_string_dowork(c->c2.tls_multi,
+                                                       str, msglevel);
+-        /*
+-         * Reschedule tls_multi_process.
+-         * NOTE: in multi-client mode, usually the below two statements are
+-         * insufficient to reschedule the client instance object unless
+-         * multi_schedule_context_wakeup(m, mi) is also called.
+-         */
++        reschedule_multi_process(c);
  
-             if (ret)
-             {
-@@ -1029,7 +1032,7 @@ man_client_auth(struct management *man, const char *cid_str, const char *kid_str
-     mc->in_extra_cid = 0;
-     mc->in_extra_kid = 0;
-     if (parse_cid(cid_str, &mc->in_extra_cid)
--        && parse_kid(kid_str, &mc->in_extra_kid))
-+        && parse_uint(kid_str, "KID", &mc->in_extra_kid))
-     {
-         mc->in_extra_cmd = IEC_CLIENT_AUTH;
-         in_extra_reset(mc, IER_NEW);
-@@ -1045,7 +1048,7 @@ man_client_deny(struct management *man, const char *cid_str, const char *kid_str
- {
-     unsigned long cid = 0;
-     unsigned int kid = 0;
--    if (parse_cid(cid_str, &cid) && parse_kid(kid_str, &kid))
-+    if (parse_cid(cid_str, &cid) && parse_uint(kid_str, "KID", &kid))
-     {
-         if (man->persist.callback.client_auth)
-         {
-@@ -1560,9 +1563,9 @@ man_dispatch_command(struct management *man, struct status_output *so, const cha
+-        interval_action(&c->c2.tmp_int);
+-        context_immediate_reschedule(c); /* ZERO-TIMEOUT */
+         return ret;
      }
-     else if (streq(p[0], "client-pending-auth"))
-     {
--        if (man_need(man, p, 2, 0))
-+        if (man_need(man, p, 3, 0))
-         {
--            man_client_pending_auth(man, p[1], p[2]);
-+            man_client_pending_auth(man, p[1], p[2], p[3]);
-         }
-     }
- #ifdef MANAGEMENT_PF
-diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index a3364644..aaa3b848 100644
---- a/src/openvpn/manage.h
-+++ b/src/openvpn/manage.h
-@@ -173,7 +173,8 @@ struct management_callback
-                          struct buffer_list *cc_config); /* ownership transferred */
-     bool (*client_pending_auth) (void *arg,
-                                  const unsigned long cid,
--                                 const char *url);
-+                                 const char *extra,
-+                                 unsigned int timeout);
-     char *(*get_peer_info) (void *arg, const unsigned long cid);
- #ifdef MANAGEMENT_PF
-     bool (*client_pf)(void *arg,
+     return true;
+diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
+index a8b19f69..9ce3bc1c 100644
+--- a/src/openvpn/forward.h
++++ b/src/openvpn/forward.h
+@@ -317,6 +317,15 @@ bool
+ send_control_channel_string_dowork(struct tls_multi *multi,
+                                    const char *str, int msglevel);
+ 
++
++/**
++ * Reschedule tls_multi_process.
++ * NOTE: in multi-client mode, usually calling the function is
++ * insufficient to reschedule the client instance object unless
++ * multi_schedule_context_wakeup(m, mi) is also called.
++ */
++void reschedule_multi_process(struct context *c);
++
+ #define PIPV4_PASSTOS                   (1<<0)
+ #define PIP_MSSFIX                      (1<<1)         /* v4 and v6 */
+ #define PIP_OUTGOING                    (1<<2)
 diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index dd713049..ac5d3f5b 100644
+index ac5d3f5b..d10f188c 100644
 --- a/src/openvpn/multi.c
 +++ b/src/openvpn/multi.c
-@@ -1768,28 +1768,6 @@ multi_client_connect_setenv(struct multi_context *m,
-     gc_free(&gc);
- }
- 
--/**
-- * Extracts the IV_PROTO variable and returns its value or 0
-- * if it cannot be extracted.
-- *
-- */
--static unsigned int
--extract_iv_proto(const char *peer_info)
--{
--
--    const char *optstr = peer_info ? strstr(peer_info, "IV_PROTO=") : NULL;
--    if (optstr)
--    {
--        int proto = 0;
--        int r = sscanf(optstr, "IV_PROTO=%d", &proto);
--        if (r == 1 && proto > 0)
--        {
--            return proto;
--        }
--    }
--    return 0;
--}
--
- /**
-  * Calculates the options that depend on the client capabilities
-  * based on local options and available peer info
-@@ -3918,14 +3896,15 @@ management_kill_by_cid(void *arg, const unsigned long cid, const char *kill_msg)
- static bool
- management_client_pending_auth(void *arg,
-                                const unsigned long cid,
--                               const char *extra)
-+                               const char *extra,
-+                               unsigned int timeout)
- {
-     struct multi_context *m = (struct multi_context *) arg;
-     struct multi_instance *mi = lookup_by_cid(m, cid);
+@@ -3904,7 +3904,9 @@ management_client_pending_auth(void *arg,
      if (mi)
      {
          /* sends INFO_PRE and AUTH_PENDING messages to client */
--        bool ret = send_auth_pending_messages(&mi->context, extra);
-+        bool ret = send_auth_pending_messages(&mi->context, extra, timeout);
+-        bool ret = send_auth_pending_messages(&mi->context, extra, timeout);
++        bool ret = send_auth_pending_messages(mi->context.c2.tls_multi, extra,
++                                              timeout);
++        reschedule_multi_process(&mi->context);
          multi_schedule_context_wakeup(m, mi);
          return ret;
      }
 diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 2ceee2c4..dfc80c24 100644
+index 46267835..320ad737 100644
 --- a/src/openvpn/push.c
 +++ b/src/openvpn/push.c
-@@ -343,26 +343,57 @@ send_auth_failed(struct context *c, const char *client_reason)
-     gc_free(&gc);
- }
+@@ -363,10 +363,9 @@ send_auth_failed(struct context *c, const char *client_reason)
  
-+
+ 
  bool
--send_auth_pending_messages(struct context *c, const char *extra)
-+send_auth_pending_messages(struct context *c, const char *extra,
-+                           unsigned int timeout)
+-send_auth_pending_messages(struct context *c, const char *extra,
++send_auth_pending_messages(struct tls_multi *tls_multi, const char *extra,
+                            unsigned int timeout)
  {
--    send_control_channel_string(c, "AUTH_PENDING", D_PUSH);
-+    struct tls_multi *tls_multi = c->c2.tls_multi;
-+    struct key_state *ks = &tls_multi->session[TM_ACTIVE].key[KS_PRIMARY];
+-    struct tls_multi *tls_multi = c->c2.tls_multi;
+     struct key_state *ks = &tls_multi->session[TM_ACTIVE].key[KS_PRIMARY];
  
      static const char info_pre[] = "INFO_PRE,";
- 
-+    const char *const peer_info = tls_multi->peer_info;
-+    unsigned int proto = extract_iv_proto(peer_info);
-+
- 
--    size_t len = strlen(extra)+1 + sizeof(info_pre);
-+    /* Calculate the maximum timeout and subtract the time we already waited */
-+    unsigned int max_timeout = max_uint(tls_multi->opt.renegotiate_seconds/2,
-+                                        tls_multi->opt.handshake_window);
-+    max_timeout = max_timeout - (now - ks->initial);
-+    timeout = min_uint(max_timeout, timeout);
-+
-+    struct gc_arena gc = gc_new();
-+    if ((proto & IV_PROTO_AUTH_PENDING_KW) == 0)
-+    {
-+        send_control_channel_string(c, "AUTH_PENDING", D_PUSH);
-+    }
-+    else
-+    {
-+        static const char auth_pre[] = "AUTH_PENDING,timeout ";
-+        // Assume a worst case of 8 byte uint64 in decimal which
-+        // needs 20 bytes
-+        size_t len = 20 + 1 + sizeof(auth_pre);
-+        struct buffer buf = alloc_buf_gc(len, &gc);
-+        buf_printf(&buf, auth_pre);
-+        buf_printf(&buf, "%u", timeout);
-+        send_control_channel_string(c, BSTR(&buf), D_PUSH);
-+    }
-+
-+    size_t len = strlen(extra) + 1 + sizeof(info_pre);
-     if (len > PUSH_BUNDLE_SIZE)
+@@ -384,7 +383,7 @@ send_auth_pending_messages(struct context *c, const char *extra,
+     struct gc_arena gc = gc_new();
+     if ((proto & IV_PROTO_AUTH_PENDING_KW) == 0)
      {
-+        gc_free(&gc);
-         return false;
+-        send_control_channel_string(c, "AUTH_PENDING", D_PUSH);
++        send_control_channel_string_dowork(tls_multi, "AUTH_PENDING", D_PUSH);
      }
--    struct gc_arena gc = gc_new();
+     else
+     {
+@@ -395,7 +394,7 @@ send_auth_pending_messages(struct context *c, const char *extra,
+         struct buffer buf = alloc_buf_gc(len, &gc);
+         buf_printf(&buf, auth_pre);
+         buf_printf(&buf, "%u", timeout);
+-        send_control_channel_string(c, BSTR(&buf), D_PUSH);
++        send_control_channel_string_dowork(tls_multi, BSTR(&buf), D_PUSH);
+     }
  
+     size_t len = strlen(extra) + 1 + sizeof(info_pre);
+@@ -408,7 +407,7 @@ send_auth_pending_messages(struct context *c, const char *extra,
      struct buffer buf = alloc_buf_gc(len, &gc);
      buf_printf(&buf, info_pre);
      buf_printf(&buf, "%s", extra);
-     send_control_channel_string(c, BSTR(&buf), D_PUSH);
+-    send_control_channel_string(c, BSTR(&buf), D_PUSH);
++    send_control_channel_string_dowork(tls_multi, BSTR(&buf), D_PUSH);
  
-+    ks->auth_deferred_expire = now + timeout;
-+
-     gc_free(&gc);
-     return true;
- }
-@@ -1010,4 +1041,20 @@ remove_iroutes_from_push_route_list(struct options *o)
-     }
- }
+     ks->auth_deferred_expire = now + timeout;
  
-+unsigned int
-+extract_iv_proto(const char *peer_info)
-+{
-+    const char *optstr = peer_info ? strstr(peer_info, "IV_PROTO=") : NULL;
-+    if (optstr)
-+    {
-+        int proto = 0;
-+        int r = sscanf(optstr, "IV_PROTO=%d", &proto);
-+        if (r == 1 && proto > 0)
-+        {
-+            return proto;
-+        }
-+    }
-+    return 0;
-+}
-+
- #endif /* if P2MP */
-diff --git a/src/openvpn/push.h b/src/openvpn/push.h
-index 01847671..377f94a6 100644
---- a/src/openvpn/push.h
-+++ b/src/openvpn/push.h
-@@ -77,7 +77,9 @@ void send_auth_failed(struct context *c, const char *client_reason);
-  * doc/management-notes.txt under client-pending-auth for
-  * more details on message format
-  */
--bool send_auth_pending_messages(struct context *c, const char *extra);
-+bool
-+send_auth_pending_messages(struct tls_multi *tls_multi, const char *extra,
-+                           unsigned int timeout);
- 
- void send_restart(struct context *c, const char *kill_msg);
- 
-@@ -89,6 +91,16 @@ void send_restart(struct context *c, const char *kill_msg);
-  */
- void send_push_reply_auth_token(struct tls_multi *multi);
- 
-+
-+/**
-+ * Extracts the IV_PROTO variable and returns its value or 0
-+ * if it cannot be extracted.
-+ *
-+ * @param peer_info     peer info string to search for IV_PROTO
-+ */
-+unsigned int
-+extract_iv_proto(const char *peer_info);
-+
- /**
-  * Parses an AUTH_PENDING message and if in pull mode extends the timeout
-  *
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 5a231387..14c8116f 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2771,6 +2771,7 @@ tls_process(struct tls_multi *multi,
-             buf = reliable_get_buf_output_sequenced(ks->send_reliable);
-             if (buf)
-             {
-+                ks->initial = now;
-                 ks->must_negotiate = now + session->opt->handshake_window;
-                 ks->auth_deferred_expire = now + auth_deferred_expire_window(session->opt);
- 
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index bbb8135d..bf7f9ba3 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -175,6 +175,7 @@ struct key_state
- 
-     struct key_state_ssl ks_ssl; /* contains SSL object and BIOs for the control channel */
- 
-+    time_t initial;             /* when we created this session */
-     time_t established;         /* when our state went S_ACTIVE */
-     time_t must_negotiate;      /* key negotiation times out if not finished before this time */
-     time_t must_die;            /* this object is destroyed at this time */
 -- 
 2.30.0
 
