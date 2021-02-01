@@ -1,8 +1,15 @@
-From: Greg Cox <gcox@...1057...>
-Date: Mon,  1 Feb 2021 07:09:49 +0000
-Message-Id: <1612163389-16421-1-git-send-email-gcox@...1057...>
-Subject: [Openvpn-devel] [PATCH] Explain structvar usage in sample defer
- plugin.
+From: Arne Schwabe <arne@...1227...>
+References: <20200825073643.15920-2-arne@...1227...>
+ <20200907162221.20928-1-arne@...1227...>
+ <20200907162221.20928-3-arne@...1227...>
+ <1664a738-bde5-2a83-2171-8acfffaa9f6d@...2181...>
+Message-ID: <4e2b0aef-dea5-9d75-b541-f33cf323dffc@...1227...>
+Date: Mon, 1 Feb 2021 15:44:45 +0100
+MIME-Version: 1.0
+In-Reply-To: <1664a738-bde5-2a83-2171-8acfffaa9f6d@...2181...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH 5/5] Prefer TLS libraries TLS PRF
+ function, fix OpenVPN in FIPS mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,58 +18,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 
-sample-plugins/defer/simple.c uses OPENVPN_PLUGINv3_STRUCTVER settings
-that may not be obvious to a new author.  Add a comment to reduce
-possible confusion.
----
- sample/sample-plugins/defer/simple.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+Am 29.01.21 um 15:09 schrieb Antonio Quartulli:
+> Hi,
+> 
+> witht his review I want to open a broader discussion about the use of
+> ASSERT in the OpenVPN code.
+> 
+> My comments below will get to the point.
+> 
+> On 07/09/2020 18:22, Arne Schwabe wrote:
+>> This moves from using our own copy of the TLS1 PRF function to using
+>> TLS library provided function where possible. This includes currently
+>> OpenSSL 1.1.0+ and mbed TLS 2.18+.
+>>
+>> For the libraries where it is not possible to use the library's own
+>> function, we still use our own implementation. mbed TLS will continue
+>> to use our own old PRF function while for OpenSSL we will use a
+>> adapted version from OpenSSL 1.0.2t code. The version allows to be
+>> used in a FIPS enabled environment.
+>>
+> 
+> Does this mean that a system that is FIPS enabled running mbedTLS <2.18
+> will still not work? Or the old mbedTLS implementeation had no issue?
 
-diff --git a/sample/sample-plugins/defer/simple.c b/sample/sample-plugins/defer/simple.c
-index 05bfc4efa6d85bb1696b6811428260f4cc5e9914..6f08bedd6319827c05786303f8a4007791042208 100644
---- a/sample/sample-plugins/defer/simple.c
-+++ b/sample/sample-plugins/defer/simple.c
-@@ -69,12 +69,18 @@ static plugin_log_t plugin_log = NULL;
-  * Constants indicating minimum API and struct versions by the functions
-  * in this plugin.  Consult openvpn-plugin.h, look for:
-  * OPENVPN_PLUGIN_VERSION and OPENVPN_PLUGINv3_STRUCTVER
-+ *
-+ * Strictly speaking, this sample code only requires plugin_log, a feature
-+ * of structver version 1.  However, '1' lines up with ancient versions
-+ * of openvpn that are past end-of-support.  As such, we are requiring
-+ * structver '5' here to indicate a desire for modern openvpn, rather
-+ * than a need for any particular feature found in structver beyond '1'.
-  */
- #define OPENVPN_PLUGIN_VERSION_MIN 3
- #define OPENVPN_PLUGIN_STRUCTVER_MIN 5
- 
- /*
--* Our context, where we keep our state.
-+ * Our context, where we keep our state.
-  */
- 
- struct plugin_context {
-@@ -160,7 +166,6 @@ openvpn_plugin_open_v3(const int v3structver,
-     const char **envp = args->envp;       /* environment variables */
-     struct plugin_context *context;
- 
--    /* Check API compatibility -- struct version 5 or higher needed */
-     if (v3structver < OPENVPN_PLUGIN_STRUCTVER_MIN)
-     {
-         fprintf(stderr, "%s: this plugin is incompatible with the running version of OpenVPN\n", MODULE);
-@@ -442,7 +447,6 @@ openvpn_plugin_func_v3(const int v3structver,
-                        struct openvpn_plugin_args_func_in const *args,
-                        struct openvpn_plugin_args_func_return *ret)
- {
--    /* Check API compatibility -- struct version 5 or higher needed */
-     if (v3structver < OPENVPN_PLUGIN_STRUCTVER_MIN)
-     {
-         fprintf(stderr, "%s: this plugin is incompatible with the running version of OpenVPN\n", MODULE);
--- 
-2.7.6
+There is no special FIPS mode in mbed TLS. It just means that for
+OpenSSL 1.1.0+ and mbed TLS 2.18+, we rely on a library provided
+function instead of implementing the TLS1 PRF ourselves. When we drop
+OpenSSL 1.0.2 and mbed TLS <2.18 support our own version can be removed.
 
+For OpenSSL the library function has the additional advantage that it is
+considered to be allowed in FIPS mode without special flags etc.
+
+> 
+>> The old OpenSSL and mbed TLS implementation could have shared some
+>> more code but as we will eventually drop support for older TLS
+>> libraries, the separation makes it easier it remove that code
+>> invdidually.
+>>
+>> No FIPS conformitiy testing etc has been done, this is only about
+>> allowing OpenVPN on a system where FIPS mode has been enabled system
+>> wide (e.g. on RHEL derivates).
+> 
+> Could you add some description of why we need to change the PRF
+> implementation for FISP-enabled systems?
+
+
+V2 will include this paragraph:
+
+In FIPS mode MD5 is normally forbidden, the TLS1 PRF1 function we
+use, makes uses of MD5, which in the past has caused OpenVPN to segfault.
+The new implementation for OpenSSL version of our custom implementation
+has added the special flags that tell OpenSSL that this specific use
+of MD5 is allowed in FIPS mode.
+
+
+>> +{
+>> +    struct gc_arena gc = gc_new();
+>> +    uint8_t A1[MAX_HMAC_KEY_LENGTH];
+>> +
+>> +#ifdef ENABLE_DEBUG
+>> +    const int olen_orig = olen;
+>> +    const uint8_t *out_orig = out;
+>> +#endif
+> 
+> I think this block above is not needed anymore.
+
+The last line in the function uses it, I just inherited this code:
+
+    dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash out: %s", format_hex(out_orig,
+olen_orig, 0, &gc));
+
+
+
+For the ASSERTs, I will send a follow up patch, which changes this code
+path into something that can catch the failure.
+
+Arne
 
