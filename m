@@ -1,12 +1,9 @@
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <316dbdbb-5a21-1a08-9369-26010b106b18@...515...>
+Date: Wed, 3 Feb 2021 09:49:11 +0200
 MIME-Version: 1.0
-References: <CAGyAFMWGUfXeiw6sp5LE1SsH88-TF_K20y6z62MYrOJ_PcMLGg@...278...>
- <20210201150235.19226-1-arne@...1227...>
-In-Reply-To: <20210201150235.19226-1-arne@...1227...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Tue, 2 Feb 2021 09:50:08 +0200
-Message-ID: <CAGyAFMV1-o=v1SCf7Q1WcSuQ0DfMMqEhpkKpZub8kVjryVU9Ag@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v3] Implement server side of
- AUTH_PENDING with extending timeout
+Content-Language: en-US
+Subject: [Openvpn-devel] Community meetings in February 2021
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,21 +12,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Almost there.
+Hi,
 
-Here we still need context, not tls_multi.
+Next community meetings have been scheduled to
 
-> -bool send_auth_pending_messages(struct context *c, const char *extra);
-> +bool
-> +send_auth_pending_messages(struct tls_multi *tls_multi, const char *extra,
-> +                           unsigned int timeout);
+- Wed 3rd February 2021 at 11:30 CET
+- Wed 10th February 2021 at 11:30 CET
+- Wed 17th February 2021 at 11:30 CET
+- Wed 24th February 2021 at 11:30 CET
 
+The place is #openvpn-meeting IRC channel at Freenode. Meeting agendas
+and summaries are in here:
 
->C:\Users\lev\Projects\openvpn\src\openvpn\multi.c(3907,59): error C2220: the following warning is treated as an error
->C:\Users\lev\Projects\openvpn\src\openvpn\multi.c(3907,59): warning C4133: 'function': incompatible types - from 'context *' to 'tls_multi *'
+<https://community.openvpn.net/openvpn/wiki/IrcMeetings>
+
+Samuli
+
+NOTE: we decided not to have the European late-evening meetings on
+Thursdays. They did not seem to serve their original purpose, which was
+getting more people from the Americas to participate.
 
