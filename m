@@ -1,13 +1,10 @@
-References: <20210201174310.22153-1-arne@...1227...>
- <20210201174310.22153-2-arne@...1227...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <957b05b8-c499-4df5-e27a-d40239f50dd9@...2181...>
-Date: Fri, 5 Feb 2021 14:12:51 +0100
 MIME-Version: 1.0
-In-Reply-To: <20210201174310.22153-2-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v3 1/3] Check return values in
- md_ctx_init and hmac_ctx_init
+From: Viktor Oreshkin <me@...2594...>
+Date: Fri, 5 Feb 2021 17:34:14 +0300
+Message-ID: <CAGtGfm=9TEUDohP4LUDY+NDLAmad60sb=VRXC9AvHthK=UMDTQ@...278...>
+Content-Type: multipart/alternative; boundary="0000000000008f234b05ba97b72d"
+Subject: [Openvpn-devel] [PATCH 1/1] openvpn3: tunprop.hpp: handle
+ dhcp-option DOMAIN-SEARCH
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,80 +13,85 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+--0000000000008f234b05ba97b72d
+Content-Type: text/plain; charset="UTF-8"
 
-On 01/02/2021 18:43, Arne Schwabe wrote:
-> Without this OpenVPN will later segfault on a FIPS enabled system due
-> to the algorithm available but not allowed.
-> 
-> Patch V2: Use (!func) instead (func != 1)
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  src/openvpn/crypto_openssl.c | 15 ++++++++++++---
->  1 file changed, 12 insertions(+), 3 deletions(-)
-> 
-> diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-> index c60d4a54..e124a7b6 100644
-> --- a/src/openvpn/crypto_openssl.c
-> +++ b/src/openvpn/crypto_openssl.c
-> @@ -954,7 +954,10 @@ md_ctx_init(EVP_MD_CTX *ctx, const EVP_MD *kt)
->      ASSERT(NULL != ctx && NULL != kt);
->  
->      EVP_MD_CTX_init(ctx);
-> -    EVP_DigestInit(ctx, kt);
-> +    if (!EVP_DigestInit(ctx, kt))
-> +    {
-> +        crypto_msg(M_FATAL, "EVP_DigestInit failed");
-> +    }
->  }
->  
->  void
-> @@ -1011,7 +1014,10 @@ hmac_ctx_init(HMAC_CTX *ctx, const uint8_t *key, int key_len,
->      ASSERT(NULL != kt && NULL != ctx);
->  
->      HMAC_CTX_reset(ctx);
-> -    HMAC_Init_ex(ctx, key, key_len, kt, NULL);
-> +    if  (!HMAC_Init_ex(ctx, key, key_len, kt, NULL))
+Adds support for dhcp-option DOMAIN-SEARCH, which was added to OpenVPN 2
+in release 2.5
 
-too many spaces after "if"
+fixes https://github.com/OpenVPN/openvpn3/issues/145
 
-> +    {
-> +        crypto_msg(M_FATAL, "HMAC_Init_ex failed");
-> +    }
->  
->      /* make sure we used a big enough key */
->      ASSERT(HMAC_size(ctx) <= key_len);
-> @@ -1032,7 +1038,10 @@ hmac_ctx_size(const HMAC_CTX *ctx)
->  void
->  hmac_ctx_reset(HMAC_CTX *ctx)
->  {
-> -    HMAC_Init_ex(ctx, NULL, 0, NULL, NULL);
-> +    if(!HMAC_Init_ex(ctx, NULL, 0, NULL, NULL))
+URL: https://github.com/OpenVPN/openvpn3/pull/146
+Signed-off-by: Viktor Oreshkin <imselfish@...2594...>
+---
+ openvpn/tun/client/tunprop.hpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-missing space after "if" (it probably went in the above block :D)
-
-> +    {
-> +        crypto_msg(M_FATAL, "HMAC_Init_ex failed");
-> +    }
->  }
->  
->  void
-> 
-
-Rest looks good!
-
-Acked-by: Antonio Quartulli <antonio@...515...>
-
-Maybe the spaces can be fixed on the fly while merging.
-
-Regards,
-
-
+diff --git a/openvpn/tun/client/tunprop.hpp b/openvpn/tun/client/tunprop.hpp
+index d9f20f85445b..3e7ab8eab54b 100644
+--- a/openvpn/tun/client/tunprop.hpp
++++ b/openvpn/tun/client/tunprop.hpp
+@@ -523,7 +523,7 @@ namespace openvpn {
+        throw tun_prop_dhcp_option_error("tun_builder_add_dns_server
+failed");
+      flags |= F_ADD_DNS;
+    }
+- else if (type == "DOMAIN")
++ else if (type == "DOMAIN" || type == "DOMAIN-SEARCH")
+    {
+      o.min_args(3);
+      for (size_t j = 2; j < o.size(); ++j)
 -- 
-Antonio Quartulli
+2.29.2
+
+--0000000000008f234b05ba97b72d
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div dir=3D"ltr"><span style=3D"font-family:monospace">Add=
+s support for dhcp-option DOMAIN-SEARCH, which was added to OpenVPN 2</span=
+><br><div class=3D"gmail-" style=3D"font-family:Roboto,RobotoDraft,Helvetic=
+a,Arial,sans-serif"><div id=3D"gmail-:tn" class=3D"gmail-ii gmail-gt" style=
+=3D"margin:8px 0px 0px;padding:0px"><div id=3D"gmail-:to" class=3D"gmail-a3=
+s gmail-aiL"><div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr"><div><font =
+face=3D"monospace">in release 2.5</font></div><div><font face=3D"monospace"=
+><br></font></div><div><font face=3D"monospace">fixes=C2=A0<a href=3D"https=
+://github.com/OpenVPN/openvpn3/issues/145" target=3D"_blank">https://github=
+.com/OpenVPN/openvpn3/issues/145</a></font></div><div><font face=3D"monospa=
+ce"><br></font></div><div><font face=3D"monospace">URL:=C2=A0<a href=3D"htt=
+ps://github.com/OpenVPN/openvpn3/pull/146" target=3D"_blank">https://github=
+.com/OpenVPN/openvpn3/pull/146</a></font></div><div><font face=3D"monospace=
+">Signed-off-by: Viktor Oreshkin &lt;imselfish@...2594...&gt;</font></div><=
+div><font face=3D"monospace">---</font></div><div><font face=3D"monospace">=
+=C2=A0openvpn/tun/client/tunprop.hpp | 2 +-</font></div><div><font face=3D"=
+monospace">=C2=A01 file changed, 1 insertion(+), 1 deletion(-)</font></div>=
+<div><font face=3D"monospace"><br></font></div><div><font face=3D"monospace=
+">diff --git a/openvpn/tun/client/tunprop.hpp b/openvpn/tun/client/tunprop.=
+hpp</font></div><div><font face=3D"monospace">index d9f20f85445b..3e7ab8eab=
+54b 100644</font></div><div><font face=3D"monospace">--- a/openvpn/tun/clie=
+nt/tunprop.hpp</font></div><div><font face=3D"monospace">+++ b/openvpn/tun/=
+client/tunprop.hpp</font></div><div><font face=3D"monospace">@@ -523,7 +523=
+,7 @@ namespace openvpn {</font></div><div><font face=3D"monospace">=C2=A0<=
+span style=3D"white-space:pre-wrap">		</span>=C2=A0=C2=A0 =C2=A0 =C2=A0thro=
+w tun_prop_dhcp_option_error(&quot;tun_builder_add_dns_server failed&quot;)=
+;</font></div><div><font face=3D"monospace">=C2=A0<span style=3D"white-spac=
+e:pre-wrap">		</span>=C2=A0=C2=A0 =C2=A0flags |=3D F_ADD_DNS;</font></div><=
+div><font face=3D"monospace">=C2=A0<span style=3D"white-space:pre-wrap">		<=
+/span>=C2=A0=C2=A0}</font></div><div><font face=3D"monospace">-<span style=
+=3D"white-space:pre-wrap">		</span>else if (type =3D=3D &quot;DOMAIN&quot;)=
+</font></div><div><font face=3D"monospace">+<span style=3D"white-space:pre-=
+wrap">		</span>else if (type =3D=3D &quot;DOMAIN&quot; || type =3D=3D &quot=
+;DOMAIN-SEARCH&quot;)</font></div><div><font face=3D"monospace">=C2=A0<span=
+ style=3D"white-space:pre-wrap">		</span>=C2=A0=C2=A0{</font></div><div><fo=
+nt face=3D"monospace">=C2=A0<span style=3D"white-space:pre-wrap">		</span>=
+=C2=A0=C2=A0 =C2=A0o.min_args(3);</font></div><div><font face=3D"monospace"=
+>=C2=A0<span style=3D"white-space:pre-wrap">		</span>=C2=A0=C2=A0 =C2=A0for=
+ (size_t j =3D 2; j &lt; o.size(); ++j)</font></div><font color=3D"#888888"=
+><div><font face=3D"monospace">--=C2=A0</font></div><div><font face=3D"mono=
+space">2.29.2</font></div></font></div></div></div></div></div></div></div>=
+</div>
+
+--0000000000008f234b05ba97b72d--
 
