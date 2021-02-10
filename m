@@ -1,13 +1,13 @@
-References: <20210201174310.22153-1-arne@...1227...>
- <20210201174310.22153-3-arne@...1227...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <38fb2928-d5ee-e940-32e7-15b2534565c2@...2181...>
-Date: Mon, 8 Feb 2021 14:32:21 +0100
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+References: <316dbdbb-5a21-1a08-9369-26010b106b18@...515...>
+Message-ID: <5e9809cf-7df3-a520-1f9b-844954d5c211@...515...>
+Date: Wed, 10 Feb 2021 13:44:15 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210201174310.22153-3-arne@...1227...>
+In-Reply-To: <316dbdbb-5a21-1a08-9369-26010b106b18@...515...>
+Content-Type: multipart/mixed; boundary="------------4D1366FA3ECCE61148BFF257"
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v3 2/3] Prefer TLS libraries TLS PRF
- function, fix OpenVPN in FIPS mode
+Subject: [Openvpn-devel] Summary of the community meeting (10th February
+ 2021)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,649 +16,178 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+This is a multi-part message in MIME format.
+--------------4D1366FA3ECCE61148BFF257
+Content-Type: text/plain; charset=iso-8859-15
 Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-there are some indendation issues still open in this patch. Please see below
+Here's the summary of the IRC meeting.
 
-On 01/02/2021 18:43, Arne Schwabe wrote:
-> This moves from using our own copy of the TLS1 PRF function to using
-> TLS library provided function where possible. This includes currently
-> OpenSSL 1.1.0+ and mbed TLS 2.18+.
-> 
-> For the libraries where it is not possible to use the library's own
-> function, we still use our own implementation. mbed TLS will continue
-> to use our own old PRF function while for OpenSSL we will use a
-> adapted version from OpenSSL 1.0.2t code. The version allows to be
-> used in a FIPS enabled environment.
-> 
-> The old OpenSSL and mbed TLS implementation could have shared some
-> more code but as we will eventually drop support for older TLS
-> libraries, the separation makes it easier it remove that code
-> invdidually.
-> 
-> In FIPS mode MD5 is normally forbidden, the TLS1 PRF1 function we
-> use, makes uses of MD5, which in the past has caused OpenVPN to segfault.
-> The new implementation for OpenSSL version of our custom implementation
-> has added the special flags that tell OpenSSL that this specific use
-> of MD5 is allowed in FIPS mode.
-> 
-> No FIPS conformitiy testing etc has been done, this is only about
-> allowing OpenVPN on a system where FIPS mode has been enabled system
-> wide (e.g. on RHEL derivates).
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  Changes.rst                            |  10 +-
->  src/openvpn/crypto_backend.h           |  14 +++
->  src/openvpn/crypto_mbedtls.c           | 134 ++++++++++++++++++++
->  src/openvpn/crypto_openssl.c           | 165 +++++++++++++++++++++++++
->  src/openvpn/ssl.c                      | 130 +------------------
->  tests/unit_tests/openvpn/test_crypto.c |  32 +++++
->  6 files changed, 351 insertions(+), 134 deletions(-)
-> 
-> diff --git a/Changes.rst b/Changes.rst
-> index 2a847564..0c66fe2a 100644
-> --- a/Changes.rst
-> +++ b/Changes.rst
-> @@ -9,11 +9,11 @@ Keying Material Exporters (RFC 5705) based key generation
->      the RFC5705 based key material generation to the current custom
->      OpenVPN PRF. This feature requires OpenSSL or mbed TLS 2.18+.
->  
-> -Deprecated features
-> --------------------
-> -``inetd`` has been removed
-> -    This was a very limited and not-well-tested way to run OpenVPN, on TCP
-> -    and TAP mode only.
-> +Compatibility with OpenSSL in FIPS mode
-> +    OpenVPN will now work with OpenSSL in FIPS mode. Note, no effort
-> +    has been made to check or implement all the
-> +    requirements/recommendation of FIPS 140-2. This just allows OpenVPN
-> +    to be run on a system that be configured OpenSSL in FIPS mode.
->  
->  
->  Overview of changes in 2.5
-> diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
-> index 85cb084a..d86d9a34 100644
-> --- a/src/openvpn/crypto_backend.h
-> +++ b/src/openvpn/crypto_backend.h
-> @@ -699,4 +699,18 @@ const char *translate_cipher_name_from_openvpn(const char *cipher_name);
->   */
->  const char *translate_cipher_name_to_openvpn(const char *cipher_name);
->  
-> +
-> +/**
-> + * Calculates the TLS 1.0-1.1 PRF function. For the exact specification of the
-> + * function definition see the TLS RFCs like RFC 4346.
-> + *
-> + * @param seed          seed to use
-> + * @param seed_len      length of the seed
-> + * @param secret        secret to use
-> + * @param secret_len    length of the secret
-> + * @param output        output destination
-> + * @param output_len    length of output/number of bytes to generate
-> + */
-> +void ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret,
-> +                  int secret_len, uint8_t *output, int output_len);
->  #endif /* CRYPTO_BACKEND_H_ */
-> diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-> index fbb1f120..5ed88d6d 100644
-> --- a/src/openvpn/crypto_mbedtls.c
-> +++ b/src/openvpn/crypto_mbedtls.c
-> @@ -54,6 +54,7 @@
->  #include <mbedtls/pem.h>
->  
->  #include <mbedtls/entropy.h>
-> +#include <mbedtls/ssl.h>
->  
->  
->  /*
-> @@ -984,4 +985,137 @@ memcmp_constant_time(const void *a, const void *b, size_t size)
->  
->      return diff;
->  }
-> +/* mbedtls-2.18.0 or newer */
-> +#ifdef HAVE_MBEDTLS_SSL_TLS_PRF
-> +void ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret,
-> +                  int secret_len, uint8_t *output, int output_len)
-> +{
-> +    mbedtls_ssl_tls_prf(MBEDTLS_SSL_TLS_PRF_TLS1, secret, secret_len, "", seed,
-> +                        seed_len, output, output_len);
-> +}
-> +#else
-> +/*
-> + * Generate the hash required by for the \c tls1_PRF function.
-> + *
-> + * @param md_kt         Message digest to use
-> + * @param sec           Secret to base the hash on
-> + * @param sec_len       Length of the secret
-> + * @param seed          Seed to hash
-> + * @param seed_len      Length of the seed
-> + * @param out           Output buffer
-> + * @param olen          Length of the output buffer
-> + */
-> +static void
-> +tls1_P_hash(const md_kt_t *md_kt,
-> +            const uint8_t *sec,
-> +            int sec_len,
-> +            const uint8_t *seed,
-> +            int seed_len,
-> +            uint8_t *out,
-> +            int olen)
+---
 
-This should be reindented
+COMMUNITY MEETING
 
-> +{
-> +    struct gc_arena gc = gc_new();
-> +    uint8_t A1[MAX_HMAC_KEY_LENGTH];
-> +
-> +#ifdef ENABLE_DEBUG
-> +    const int olen_orig = olen;
-> +    const uint8_t *out_orig = out;
-> +#endif
-> +
-> +    hmac_ctx_t *ctx = hmac_ctx_new();
-> +    hmac_ctx_t *ctx_tmp = hmac_ctx_new();
-> +
-> +    dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash sec: %s", format_hex(sec, sec_len, 0, &gc));
-> +    dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash seed: %s", format_hex(seed, seed_len, 0, &gc));
-> +
-> +    int chunk = md_kt_size(md_kt);
-> +    unsigned int A1_len = md_kt_size(md_kt);
-> +
-> +    hmac_ctx_init(ctx, sec, sec_len, md_kt);
-> +    hmac_ctx_init(ctx_tmp, sec, sec_len, md_kt);
-> +
-> +    hmac_ctx_update(ctx,seed,seed_len);
-> +    hmac_ctx_final(ctx, A1);
-> +
-> +    for (;;)
-> +    {
-> +        hmac_ctx_reset(ctx);
-> +        hmac_ctx_reset(ctx_tmp);
-> +        hmac_ctx_update(ctx, A1, A1_len);
-> +        hmac_ctx_update(ctx_tmp, A1, A1_len);
-> +        hmac_ctx_update(ctx, seed, seed_len);
-> +
-> +        if (olen > chunk)
-> +        {
-> +            hmac_ctx_final(ctx, out);
-> +            out += chunk;
-> +            olen -= chunk;
-> +            hmac_ctx_final(ctx_tmp, A1); /* calc the next A1 value */
-> +        }
-> +        else    /* last one */
-> +        {
-> +            hmac_ctx_final(ctx, A1);
-> +            memcpy(out, A1, olen);
-> +            break;
-> +        }
-> +    }
-> +    hmac_ctx_cleanup(ctx);
-> +    hmac_ctx_free(ctx);
-> +    hmac_ctx_cleanup(ctx_tmp);
-> +    hmac_ctx_free(ctx_tmp);
-> +    secure_memzero(A1, sizeof(A1));
-> +
-> +    dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash out: %s", format_hex(out_orig, olen_orig, 0, &gc));
-> +    gc_free(&gc);
-> +}
-> +
-> +/*
-> + * Use the TLS PRF function for generating data channel keys.
-> + * This code is based on the OpenSSL library.
-> + *
-> + * TLS generates keys as such:
-> + *
-> + * master_secret[48] = PRF(pre_master_secret[48], "master secret",
-> + *                         ClientHello.random[32] + ServerHello.random[32])
-> + *
-> + * key_block[] = PRF(SecurityParameters.master_secret[48],
-> + *                 "key expansion",
-> + *                 SecurityParameters.server_random[32] +
-> + *                 SecurityParameters.client_random[32]);
-> + *
-> + * Notes:
-> + *
-> + * (1) key_block contains a full set of 4 keys.
-> + * (2) The pre-master secret is generated by the client.
-> + */
-> +void
-> +ssl_tls1_PRF(const uint8_t *label, int label_len, const uint8_t *sec, int slen,
-> +         uint8_t *out1, int olen)
+Place: #openvpn-meeting on irc.freenode.net
+Date: Wed 10th February 2021
+Time: 11:30 CET (10:30 UTC)
 
-indentation seems off (?)
+Planned meeting topics for this meeting were here:
 
-> +{
-> +    struct gc_arena gc = gc_new();
-> +    const md_kt_t *md5 = md_kt_get("MD5");
-> +    const md_kt_t *sha1 = md_kt_get("SHA1");
-> +
-> +    uint8_t *out2 = (uint8_t *) gc_malloc(olen, false, &gc);
+<https://community.openvpn.net/openvpn/wiki/Topics-2021-02-10>
 
-remove space after cast
+Your local meeting time is easy to check from services such as
 
-> +
-> +    int len = slen/2;
-> +    const uint8_t *S1 = sec;
-> +    const uint8_t *S2 = &(sec[len]);
-> +    len += (slen&1); /* add for odd, make longer */
-> +
-> +    tls1_P_hash(md5,S1,len,label,label_len,out1,olen);
-> +    tls1_P_hash(sha1,S2,len,label,label_len,out2,olen);
-> +
-> +    for (int i = 0; i<olen; i++)
-> +    {
-> +        out1[i] ^= out2[i];
-> +    }
-> +
-> +    secure_memzero(out2, olen);
-> +
-> +    dmsg(D_SHOW_KEY_SOURCE, "tls1_PRF out[%d]: %s", olen, format_hex(out1, olen, 0, &gc));
-> +
-> +    gc_free(&gc);
-> +}
-> +#endif
->  #endif /* ENABLE_CRYPTO_MBEDTLS */
-> diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-> index e124a7b6..b42dc044 100644
-> --- a/src/openvpn/crypto_openssl.c
-> +++ b/src/openvpn/crypto_openssl.c
-> @@ -50,6 +50,9 @@
->  #include <openssl/objects.h>
->  #include <openssl/rand.h>
->  #include <openssl/ssl.h>
-> +#if OPENSSL_VERSION_NUMBER >= 0x10100000L
-> +#include <openssl/kdf.h>
-> +#endif
->  
->  /*
->   * Check for key size creepage.
-> @@ -1124,4 +1127,166 @@ engine_load_key(const char *file, SSL_CTX *ctx)
->  #endif /* if HAVE_OPENSSL_ENGINE */
->  }
->  
-> +#if OPENSSL_VERSION_NUMBER >= 0x10100000L
-> +void ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret,
-> +                  int secret_len, uint8_t *output, int output_len)
-> +{
-> +    EVP_PKEY_CTX *pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_TLS1_PRF, NULL);
-> +    ASSERT(EVP_PKEY_derive_init(pctx) == 1);
-> +
-> +    ASSERT(EVP_PKEY_CTX_set_tls1_prf_md(pctx, EVP_md5_sha1()) == 1);
-> +
-> +    ASSERT(EVP_PKEY_CTX_set1_tls1_prf_secret(pctx, secret, secret_len) == 1);
-> +
-> +    ASSERT(EVP_PKEY_CTX_add1_tls1_prf_seed(pctx, seed, seed_len) == 1);
-> +
-> +    size_t out_len = output_len;
-> +    ASSERT (EVP_PKEY_derive(pctx, output, &out_len) == 1);
-> +    ASSERT (out_len == output_len);
-> +}
-> +#else
-> +/*
-> + * Generate the hash required by for the \c tls1_PRF function.
-> + *
-> + * We cannot use our normal hmac_* function as they do not work
-> + * in a FIPS environment (no MD5 allowed, which we need). Instead
-> + * we need to directly use the EVP_MD_* API with the special
-> + * EVP_MD_CTX_FLAG_NON_FIPS_ALLOW flag.
-> + *
-> + *
-> + * The function below is adapted from OpenSSL 1.0.2t
-> + *
-> + * @param md_kt         Message digest to use
-> + * @param sec           Secret to base the hash on
-> + * @param sec_len       Length of the secret
-> + * @param seed          Seed to hash
-> + * @param seed_len      Length of the seed
-> + * @param out           Output buffer
-> + * @param olen          Length of the output buffer
-> + */
-> +static
-> +int tls1_P_hash(const EVP_MD *md, const unsigned char *sec,
-> +                int sec_len,
-> +                const void *seed, int seed_len,
-> +                unsigned char *out, int olen)
+<http://www.timeanddate.com/worldclock>
 
-This should be reindented
+SUMMARY
 
-> +{
-> +    int chunk;
-> +    size_t j;
-> +    EVP_MD_CTX ctx, ctx_tmp, ctx_init;
-> +    EVP_PKEY *mac_key;
-> +    unsigned char A1[EVP_MAX_MD_SIZE];
-> +    size_t A1_len;
-> +    int ret = 0;
-> +
-> +    chunk = EVP_MD_size(md);
-> +    OPENSSL_assert(chunk >= 0);
-> +
-> +    EVP_MD_CTX_init(&ctx);
-> +    EVP_MD_CTX_init(&ctx_tmp);
-> +    EVP_MD_CTX_init(&ctx_init);
-> +    EVP_MD_CTX_set_flags(&ctx_init, EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);
-> +    mac_key = EVP_PKEY_new_mac_key(EVP_PKEY_HMAC, NULL, sec, sec_len);
-> +    if (!mac_key)
-> +        goto err;
-> +    if (!EVP_DigestSignInit(&ctx_init, NULL, md, NULL, mac_key))
-> +        goto err;
-> +    if (!EVP_MD_CTX_copy_ex(&ctx, &ctx_init))
-> +        goto err;
-> +    if (!EVP_DigestSignUpdate(&ctx, seed, seed_len))
-> +        goto err;
-> +    if (!EVP_DigestSignFinal(&ctx, A1, &A1_len))
-> +        goto err;
-> +
-> +    for (;;) {
-> +        /* Reinit mac contexts */
-> +        if (!EVP_MD_CTX_copy_ex(&ctx, &ctx_init))
-> +            goto err;
-> +        if (!EVP_DigestSignUpdate(&ctx, A1, A1_len))
-> +            goto err;
-> +        if (olen > chunk && !EVP_MD_CTX_copy_ex(&ctx_tmp, &ctx))
-> +            goto err;
-> +        if (!EVP_DigestSignUpdate(&ctx, seed, seed_len))
-> +            goto err;
-> +
-> +        if (olen > chunk)
-> +        {
-> +            if (!EVP_DigestSignFinal(&ctx, out, &j))
-> +                goto err;
-> +            out += j;
-> +            olen -= j;
-> +            /* calc the next A1 value */
-> +            if (!EVP_DigestSignFinal(&ctx_tmp, A1, &A1_len))
-> +                goto err;
-> +        }
-> +        else
-> +        {
-> +            /* last one */
-> +
-> +            if (!EVP_DigestSignFinal(&ctx, A1, &A1_len))
-> +                goto err;
-> +            memcpy(out, A1, olen);
-> +            break;
-> +        }
-> +    }
-> +    ret = 1;
-> +err:
-> +    EVP_PKEY_free(mac_key);
-> +    EVP_MD_CTX_cleanup(&ctx);
-> +    EVP_MD_CTX_cleanup(&ctx_tmp);
-> +    EVP_MD_CTX_cleanup(&ctx_init);
-> +    OPENSSL_cleanse(A1, sizeof(A1));
-> +    return ret;
-> +}
-> +
-> +
-> +/*
-> + * Use the TLS PRF function for generating data channel keys.
-> + * This code is based on the OpenSSL library.
-> + *
-> + * TLS generates keys as such:
-> + *
-> + * master_secret[48] = PRF(pre_master_secret[48], "master secret",
-> + *                         ClientHello.random[32] + ServerHello.random[32])
-> + *
-> + * key_block[] = PRF(SecurityParameters.master_secret[48],
-> + *                 "key expansion",
-> + *                 SecurityParameters.server_random[32] +
-> + *                 SecurityParameters.client_random[32]);
-> + *
-> + * Notes:
-> + *
-> + * (1) key_block contains a full set of 4 keys.
-> + * (2) The pre-master secret is generated by the client.
-> + */
-> +void ssl_tls1_PRF(const uint8_t *label, int label_len, const uint8_t *sec,
-> +                  int slen, uint8_t *out1, int olen)
-> +{
-> +    struct gc_arena gc = gc_new();
-> +    /* For some reason our md_kt_get("MD5") fails otherwise in the unit test */
-> +    const md_kt_t *md5 = EVP_md5();
-> +    const md_kt_t *sha1 = EVP_sha1();
-> +
-> +    uint8_t *out2 = (uint8_t *) gc_malloc(olen, false, &gc);
-> +
-> +    int len = slen/2;
-> +    const uint8_t *S1 = sec;
-> +    const uint8_t *S2 = &(sec[len]);
-> +    len += (slen&1); /* add for odd, make longer */
-> +
-> +    if(!tls1_P_hash(md5,S1,len,label,label_len,out1,olen))
-> +
-> +    ASSERT(tls1_P_hash(sha1,S2,len,label,label_len,out2,olen));
-> +
-> +    for (int i = 0; i<olen; i++)
-> +    {
-> +        out1[i] ^= out2[i];
-> +    }
-> +
-> +    secure_memzero(out2, olen);
-> +
-> +    dmsg(D_SHOW_KEY_SOURCE, "tls1_PRF out[%d]: %s", olen, format_hex(out1, olen, 0, &gc));
-> +
-> +    gc_free(&gc);
-> +}
-> +#endif
->  #endif /* ENABLE_CRYPTO_OPENSSL */
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index efbf688f..c0de76b5 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -1580,134 +1580,6 @@ key_source2_print(const struct key_source2 *k)
->      key_source_print(&k->server, "Server");
->  }
->  
-> -/*
-> - * Generate the hash required by for the \c tls1_PRF function.
-> - *
-> - * @param md_kt         Message digest to use
-> - * @param sec           Secret to base the hash on
-> - * @param sec_len       Length of the secret
-> - * @param seed          Seed to hash
-> - * @param seed_len      Length of the seed
-> - * @param out           Output buffer
-> - * @param olen          Length of the output buffer
-> - */
-> -static void
-> -tls1_P_hash(const md_kt_t *md_kt,
-> -            const uint8_t *sec,
-> -            int sec_len,
-> -            const uint8_t *seed,
-> -            int seed_len,
-> -            uint8_t *out,
-> -            int olen)
-> -{
-> -    struct gc_arena gc = gc_new();
-> -    uint8_t A1[MAX_HMAC_KEY_LENGTH];
-> -
-> -#ifdef ENABLE_DEBUG
-> -    const int olen_orig = olen;
-> -    const uint8_t *out_orig = out;
-> -#endif
-> -
-> -    hmac_ctx_t *ctx = hmac_ctx_new();
-> -    hmac_ctx_t *ctx_tmp = hmac_ctx_new();
-> -
-> -    dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash sec: %s", format_hex(sec, sec_len, 0, &gc));
-> -    dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash seed: %s", format_hex(seed, seed_len, 0, &gc));
-> -
-> -    int chunk = md_kt_size(md_kt);
-> -    unsigned int A1_len = md_kt_size(md_kt);
-> -
-> -    hmac_ctx_init(ctx, sec, sec_len, md_kt);
-> -    hmac_ctx_init(ctx_tmp, sec, sec_len, md_kt);
-> -
-> -    hmac_ctx_update(ctx,seed,seed_len);
-> -    hmac_ctx_final(ctx, A1);
-> -
-> -    for (;; )
-> -    {
-> -        hmac_ctx_reset(ctx);
-> -        hmac_ctx_reset(ctx_tmp);
-> -        hmac_ctx_update(ctx,A1,A1_len);
-> -        hmac_ctx_update(ctx_tmp,A1,A1_len);
-> -        hmac_ctx_update(ctx,seed,seed_len);
-> -
-> -        if (olen > chunk)
-> -        {
-> -            hmac_ctx_final(ctx, out);
-> -            out += chunk;
-> -            olen -= chunk;
-> -            hmac_ctx_final(ctx_tmp, A1); /* calc the next A1 value */
-> -        }
-> -        else    /* last one */
-> -        {
-> -            hmac_ctx_final(ctx, A1);
-> -            memcpy(out,A1,olen);
-> -            break;
-> -        }
-> -    }
-> -    hmac_ctx_cleanup(ctx);
-> -    hmac_ctx_free(ctx);
-> -    hmac_ctx_cleanup(ctx_tmp);
-> -    hmac_ctx_free(ctx_tmp);
-> -    secure_memzero(A1, sizeof(A1));
-> -
-> -    dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash out: %s", format_hex(out_orig, olen_orig, 0, &gc));
-> -    gc_free(&gc);
-> -}
-> -
-> -/*
-> - * Use the TLS PRF function for generating data channel keys.
-> - * This code is based on the OpenSSL library.
-> - *
-> - * TLS generates keys as such:
-> - *
-> - * master_secret[48] = PRF(pre_master_secret[48], "master secret",
-> - *                         ClientHello.random[32] + ServerHello.random[32])
-> - *
-> - * key_block[] = PRF(SecurityParameters.master_secret[48],
-> - *                 "key expansion",
-> - *                 SecurityParameters.server_random[32] +
-> - *                 SecurityParameters.client_random[32]);
-> - *
-> - * Notes:
-> - *
-> - * (1) key_block contains a full set of 4 keys.
-> - * (2) The pre-master secret is generated by the client.
-> - */
-> -static void
-> -tls1_PRF(const uint8_t *label,
-> -         int label_len,
-> -         const uint8_t *sec,
-> -         int slen,
-> -         uint8_t *out1,
-> -         int olen)
-> -{
-> -    struct gc_arena gc = gc_new();
-> -    const md_kt_t *md5 = md_kt_get("MD5");
-> -    const md_kt_t *sha1 = md_kt_get("SHA1");
-> -
-> -    uint8_t *out2 = (uint8_t *) gc_malloc(olen, false, &gc);
-> -
-> -    int len = slen/2;
-> -    const uint8_t *S1 = sec;
-> -    const uint8_t *S2 = &(sec[len]);
-> -    len += (slen&1); /* add for odd, make longer */
-> -
-> -    tls1_P_hash(md5,S1,len,label,label_len,out1,olen);
-> -    tls1_P_hash(sha1,S2,len,label,label_len,out2,olen);
-> -
-> -    for (int i = 0; i<olen; i++)
-> -    {
-> -        out1[i] ^= out2[i];
-> -    }
-> -
-> -    secure_memzero(out2, olen);
-> -
-> -    dmsg(D_SHOW_KEY_SOURCE, "tls1_PRF out[%d]: %s", olen, format_hex(out1, olen, 0, &gc));
-> -
-> -    gc_free(&gc);
-> -}
-> -
->  static void
->  openvpn_PRF(const uint8_t *secret,
->              int secret_len,
-> @@ -1742,7 +1614,7 @@ openvpn_PRF(const uint8_t *secret,
->      }
->  
->      /* compute PRF */
-> -    tls1_PRF(BPTR(&seed), BLEN(&seed), secret, secret_len, output, output_len);
-> +    ssl_tls1_PRF(BPTR(&seed), BLEN(&seed), secret, secret_len, output, output_len);
->  
->      buf_clear(&seed);
->      free_buf(&seed);
-> diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
-> index ea9b99b2..6c68099e 100644
-> --- a/tests/unit_tests/openvpn/test_crypto.c
-> +++ b/tests/unit_tests/openvpn/test_crypto.c
-> @@ -38,6 +38,7 @@
->  #include <cmocka.h>
->  
->  #include "crypto.h"
-> +#include "ssl_backend.h"
->  
->  #include "mock_msg.h"
->  
-> @@ -136,12 +137,43 @@ crypto_translate_cipher_names(void **state)
->      test_cipher_names("id-aes256-GCM", "AES-256-GCM");
->  }
->  
-> +
-> +static uint8_t good_prf[32] = {0xd9, 0x8c, 0x85, 0x18, 0xc8, 0x5e, 0x94, 0x69,
-> +                               0x27, 0x91, 0x6a, 0xcf, 0xc2, 0xd5, 0x92, 0xfb,
-> +                               0xb1, 0x56, 0x7e, 0x4b, 0x4b, 0x14, 0x59, 0xe6,
-> +                               0xa9, 0x04, 0xac, 0x2d, 0xda, 0xb7, 0x2d, 0x67};
-> +static void
-> +crypto_test_tls_prf(void **state)
-> +{
-> +    const char *seedstr = "Quis aute iure reprehenderit in voluptate "
-> +                          "velit esse cillum dolore";
-> +    const unsigned char *seed = (const unsigned char *) seedstr;
+dazo, d12fk, gcox, lev, mattock, ordex and plaisthos participated in
+this meeting.
 
-no space after cast
+---
 
-> +    const size_t seed_len = strlen(seedstr);
-> +
-> +
-> +
-> +
-> +    const char* ipsumlorem = "Lorem ipsum dolor sit amet, consectetur "
-> +                             "adipisici elit, sed eiusmod tempor incidunt ut "
-> +                             "labore et dolore magna aliqua.";
-> +
-> +    const unsigned char *secret = (const unsigned char *) ipsumlorem;
-> +    size_t secret_len = strlen((const char *)secret);
-> +
-> +
-> +    uint8_t out[32];
-> +    ssl_tls1_PRF(seed, seed_len, secret, secret_len, out, sizeof(out));
-> +
-> +    assert_memory_equal(good_prf, out, sizeof(out));
-> +}
-> +
->  int
->  main(void)
->  {
->      const struct CMUnitTest tests[] = {
->          cmocka_unit_test(crypto_pem_encode_decode_loopback),
->          cmocka_unit_test(crypto_translate_cipher_names),
-> +        cmocka_unit_test(crypto_test_tls_prf)
->      };
->  
->  #if defined(ENABLE_CRYPTO_OPENSSL)
-> 
+Noted that plaisthos' "Pending authentication improvements" patchset:
 
+<https://patchwork.openvpn.net/project/openvpn2/list/?series=1019>
 
-Cheers,
+Noted that some of them still need some (easy) fixes.
 
--- 
-Antonio Quartulli
+---
+
+Talked about "Remove --no-replay" patch:
+
+<https://patchwork.openvpn.net/patch/1297/>
+
+It had managed to slip through the cracks because we have not decided
+whether to support "--cipher none" or not - a thing that affects the
+implementation of the above patch.
+
+---
+
+Talked about "--cipher none" and whether we should remove it. When
+plaisthos accidentally broke it lots of users complained. That's why we
+can't remove it right now, but removing it is our long-term goal. For
+example ovpn-dco will not support "--cipher none".
+
+---
+
+Noted that wiscii's buildslaves have issues connecting to the
+buildmaster. Mattock will investigate.
+
+---
+
+Full chatlog attached
+
+--------------4D1366FA3ECCE61148BFF257
+Content-Type: text/plain; charset=UTF-8;
+ name="openvpn_irc_meeting_chatlog_2021-02-10.txt"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="openvpn_irc_meeting_chatlog_2021-02-10.txt"
+
+(12:29:53) lev__: guten tag
+(12:30:30) plaisthos: moin
+(12:31:16) d12fk: huhu
+(12:31:41) ordex: oi oi
+(12:31:59) mattock: hi!
+(12:35:45) mattock: mkay let's start shall we?
+(12:36:07) dazo: Hey!
+(12:36:16) mattock: hi!
+(12:36:23) mattock: https://community.openvpn.net/openvpn/wiki/Topics-2021-02-10
+(12:36:34) mattock: it looks like our topic list is fairly short
+(12:36:44) mattock: but I'm sure there's some syncing up to do :)
+(12:37:26) mattock: cron2 mentioned that he's bound in a meeting
+(12:37:30) mattock: not sure if he'll make it
+(12:37:56) dazo: "Checking your browser before accessing openvpn.net." ... 40+ sec now
+(12:38:04) mattock: try reload
+(12:38:13) d12fk: they know who to check thoroughly
+(12:38:15) mattock: or maybe you're just too suspicious to let you in
+(12:38:15) dazo: yeah
+(12:38:48) dazo: $rant_about_cloudflare
+(12:39:38) dazo: so, lets catch up on the patches from plaisthos .... what is missing there?
+(12:40:35) lev__: from 1-7 I've reviewed, 3 and 5
+(12:40:47) lev__: (but it should be easy to fix)
+(12:40:58) plaisthos: Yeah I need to resend some patches
+(12:41:00) dazo: I did 8-11, was a few simple fixes there as well
+(12:41:03) lev__: talking about "Pending authentication improvements" series
+(12:42:52) dazo: plaisthos: btw, the if() statement I complained about, proposing a macro where you swapped to 2 bool vars .... that was a very nice change; I liked that .... much more readable
+(12:43:40) plaisthos: yeah I didn't like the idea of a macro
+(12:44:29) dazo: yeah, and it's a fair point on it hiding things .... it's just the old openvpn habbit stuck in me :-P
+(12:48:06) dazo: anything else than this patch-set and the one ordex is looking at in the patch queue needing attention?
+(12:49:54) ordex: plaisthos: did you resend 3/3 as one patch already?
+(12:50:00) ordex: I haven't dug in the mailbox yet
+(12:53:04) gcox: Maybe not "needs" attention, but https://patchwork.openvpn.net/patch/1297/ is a 6month old ack'ed patch that seems like it's held up pending a discussion + decision that hasn't happened.  Not saying y'all need to do it right now, but it looks like low-hanging fruit.
+(12:53:05) vpnHelper: Title: [Openvpn-devel] Remove --no-replay - Patchwork (at patchwork.openvpn.net)
+(12:56:53) dazo: gcox: oh, good catch ... that might have fallen through our cracks
+(12:58:03) plaisthos: ordex: no, not yet
+(12:58:36) ordex: okyz
+(12:58:47) plaisthos: for none cipher no-replay is still useful
+(12:59:10) plaisthos: but maybe we don't enough about none cipher and can still commit it
+(12:59:13) dazo: so the question is then ... are we ready to decide whether to remove --cipher none support?
+(12:59:44) plaisthos: we not ready to remove none
+(12:59:52) plaisthos: I accidently did that
+(13:00:11) dazo: I can pull up that patch again (probably needs a rebase anyhow) ... but would like to know if we should make the --cipher none exception or not
+(13:00:32) dazo: what happened when you removed --cipher none, plaisthos?
+(13:00:44) plaisthos: a lot of users complained about it not working anymore
+(13:00:53) dazo: hmmmm
+(13:01:04) dazo: which users?  why can't they use GRE tunnels instead?
+(13:01:16) ordex: because they may still like other openvpn features
+(13:01:25) plaisthos: exactly that
+(13:01:25) ordex: like the authentication method
+(13:01:32) ordex: or other stuff
+(13:01:36) plaisthos: unencrypted tunnel but from a dynamic IP
+(13:01:39) plaisthos: like to your streambox
+(13:01:42) plaisthos: or something like that
+(13:02:25) ordex: I also believe that using openvpn with no encryption is kinda...weird, but apparently all the knobs we have managed to create meaningful usecases
+(13:02:39) dazo: but .... then it's just a VN not a VPN .... and we're OpenVPN not OpenVN ... and should we really care about users complaining that we increase the security aspect?
+(13:04:51) plaisthos: VPN does not include encryption
+(13:04:52) dazo: Don't get me wrong, I can see that for some users encryption isn't needed for their use case and they have a working setup (ab)using OpenVPN for a non-secure connection.  I can see the value of it.  But as a project, delivering a security project, are these users the ones needing our attention?
+(13:04:56) plaisthos: it is jst a private network
+(13:05:05) plaisthos: ;P
+(13:05:46) dazo: plaisthos: heh, fair point!  You can twist it like that, indeed .... but it's like having a loud private conversation on the market square
+(13:06:10) plaisthos: dazo: mpls vpn is an industry standard that does not include encryption
+(13:06:49) dazo: sure, fair point that too
+(13:08:05) dazo: but ... in today's world, where unencrypted traffic is being avoided everywhere ... is unencrypted VPNs a focus area we should put efforts into supporting?
+(13:08:31) plaisthos: lets just keep none for now
+(13:09:04) dazo: I don't have a good answer yet ... just wondering if it's worth the effort in the longer run
+(13:09:21) plaisthos: ovpn-dco will also not support none
+(13:09:29) dazo: exactly
+(13:09:36) plaisthos: it is also a step to dorpping it
+(13:09:54) plaisthos: but ovpn-dco does also not support other snowflake stuff like old ciphers etc
+(13:10:10) dazo: which is also a good step forward too
+(13:11:05) mattock: so --none shall stay
+(13:11:55) dazo: at its core, this discussion is essentially a "seat belt discussion" ... many drivers hated it in the early days, now the vast majority use it without thinking about it
+(13:12:26) dazo: mattock: for now --cipher none will stay, but we are moving towards dropping it in the longer run (ovpn-dco will not support it)
+(13:12:43) mattock: sounds reasonbale
+(13:12:55) mattock: we have given users rope with which they can hang themselves
+(13:13:05) mattock: now we need to take that rope away and they don't like it :D
+(13:13:20) dazo: yeah, that's the crux of it
+(13:14:25) mattock: anything else for today?
+(13:14:55) dazo: oh, did you see my side-channel remark to you mattock regarding inaccessible buildbot master?
+(13:15:08) mattock: inaccessible how?
+(13:15:30) dazo:  2021-02-09 17:54:05+0000 [-] Connection to build.openvpn.org:9989 failed: [Failure instance: Traceback (failure with no frames): <class 'twisted.internet.error.UserError'>: User aborted connection.
+(13:15:40) dazo: well, that's wrong line
+(13:15:44) mattock: .org will not work
+(13:16:12) dazo: ahh ... that might be it .... ping works, but not buildbot connection
+(13:16:22) mattock: build.openvpn.in
+(13:16:29) mattock: or I can give you the actual IP
+(13:16:31) dazo: mattock: can you follow-up wiscii on the details?
+(13:16:56) mattock: where did this discussion happen?
+(13:17:14) dazo: it was a PM
+(13:17:18) mattock: ah
+(13:17:41) mattock: so wiscii buildslaves are unable to connect I suppose
+(13:17:52) dazo: correct
+(13:17:58) mattock: ok, I'll that out
+(13:18:14) mattock: check that out
+(13:18:14) dazo: thx!
+(13:19:23) mattock: that's all folks?
+(13:19:58) dazo: lev__: did you have anything?
+(13:20:10) lev__: next week I think
+(13:20:14) dazo: cool!
+
+--------------4D1366FA3ECCE61148BFF257--
 
