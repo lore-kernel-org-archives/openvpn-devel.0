@@ -1,10 +1,10 @@
-MIME-Version: 1.0
-From: romain loutrel <un.romain.loutrel@...277...>
-Date: Sat, 13 Feb 2021 21:25:43 +0100
-Message-ID: <CABJvA8nQoZbdjYrfMvR+bt5xPXOT4a-O3gkE99t0JWC2OjEyNQ@...278...>
-Content-Type: multipart/mixed; boundary="000000000000430e2005bb3d8f6f"
-Subject: [Openvpn-devel] [Patch] Add argument from openvpn2 to be ignored in
- openvpn3 client
+Date: Sun, 14 Feb 2021 15:18:56 +0100 (CET)
+Message-Id: <202102141418.11EEIuUu010567@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20210201174310.22153-2-arne@...1227...>
+References: <20210201174310.22153-2-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Check return values in
+ md_ctx_init and hmac_ctx_init
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,67 +13,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---000000000000430e2005bb3d8f6f
-Content-Type: text/plain; charset="UTF-8"
+Your patch has been applied to the master branch.
 
-Hi I created today the bug ticket:
-https://github.com/OpenVPN/openvpn3-linux/issues/36
+Whitespace has been adjusted in a totally space-neutral way.  As
+instructed by the master of whitespace distribution.
 
-I have a patch to fix the problem (accept but ignore old parameters
-from openvpn2 in openvpn3)
+(On the patch itself: only compile-tested, but it seems to be "obviously
+correct", according to the man pages)
 
-I hope I made everything correctly.
+commit 0714ed804e40f80b48a7571193d7e4d81d2bcd4b
+Author: Arne Schwabe
+Date:   Mon Feb 1 18:43:08 2021 +0100
 
-Thanks for your consideration
+     Check return values in md_ctx_init and hmac_ctx_init
 
---000000000000430e2005bb3d8f6f
-Content-Type: text/x-patch; charset="US-ASCII"; 
-	name="python__Add_more_OpenVPN_2_options_to_the_ignore_list_(mute,_route-delay_and_route-method).patch"
-Content-Disposition: attachment; 
-	filename="python__Add_more_OpenVPN_2_options_to_the_ignore_list_(mute,_route-delay_and_route-method).patch"
-Content-Transfer-Encoding: base64
-Content-ID: <f_kl4650a80>
-X-Attachment-Id: f_kl4650a80
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20210201174310.22153-2-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21546.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-SW5kZXg6IHNyYy9weXRob24vb3BlbnZwbjMvQ29uZmlnUGFyc2VyLnB5CklERUEgYWRkaXRpb25h
-bCBpbmZvOgpTdWJzeXN0ZW06IGNvbS5pbnRlbGxpai5vcGVuYXBpLmRpZmYuaW1wbC5wYXRjaC5D
-aGFyc2V0RVAKPCs+VVRGLTgKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpkaWZmIC0tZ2l0IGEvc3JjL3B5dGhvbi9vcGVu
-dnBuMy9Db25maWdQYXJzZXIucHkgYi9zcmMvcHl0aG9uL29wZW52cG4zL0NvbmZpZ1BhcnNlci5w
-eQotLS0gYS9zcmMvcHl0aG9uL29wZW52cG4zL0NvbmZpZ1BhcnNlci5weQkocmV2aXNpb24gMjAz
-MTk3NTI2MTg1ODc1MDBkN2Q1YmM0OTY5NjVkNzQyY2UxNjFkYykKKysrIGIvc3JjL3B5dGhvbi9v
-cGVudnBuMy9Db25maWdQYXJzZXIucHkJKHJldmlzaW9uIDljYjMwMGQwMDc3NzVmZDY4OTY0ZTEw
-N2Y4NWNjMzgwOGQ2ZTU4M2MpCkBAIC03MTgsNiArNzE4LDEzIEBACiAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICsgJ05vdCBuZWVkZWQgd2l0aCBPcGVuVlBOIDMgd2hpY2ggdXNlcyBhICcK
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKyAnZGlmZmVyZW50IHByaXZpbGVnZSBzZXBh
-cmF0aW9uIGFwcHJvYWNoJykKIAorICAgICAgICBpZ25vcmVkLmFkZF9hcmd1bWVudCgnLS1tdXRl
-JywKKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbWV0YXZhcj0nU0VDUycsCisgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIGFjdGlvbj1Db25maWdQYXJzZXIuSWdub3JlQXJnLAorICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICBuYXJncz0xLAorICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICBoZWxwPSdTaWxlbmNlIHJlcGVhdGluZyBtZXNzYWdlcyBkdXJpbmcgbiAnCisgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICsgJ3NlY29uZHMuIE5vdCBzdXBwb3J0ZWQgaW4gT3Bl
-blZQTjMnKQorCiAgICAgICAgIGlnbm9yZWQuYWRkX2FyZ3VtZW50KCctLW5pY2UnLAogICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICBtZXRhdmFyPSdMRVZFTCcsCiAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgIGFjdGlvbj1Db25maWdQYXJzZXIuSWdub3JlQXJnLApAQCAtNzYzLDYgKzc3
-MCwxOSBAQAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICArICdyZXRyeSByZXNvbHZlIGZv
-ciBuIHNlY29uZHMgYmVmb3JlIGZhaWxpbmcuICcKICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgKyAnTm90IHN1cHBvcnRlZCBieSBPcGVuVlBOIDMnKQogCisgICAgICAgIGlnbm9yZWQuYWRk
-X2FyZ3VtZW50KCctLXJvdXRlLWRlbGF5JywKKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-YWN0aW9uPUNvbmZpZ1BhcnNlci5JZ25vcmVBcmcsCisgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgIG5hcmdzPScqJywKKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaGVscD0nRGVsYXkg
-biBzZWNvbmRzIChkZWZhdWx0IDApIGFmdGVyICcKKyAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgKyAnY29ubmVjdGlvbiBlc3RhYmxpc2htZW50LCBiZWZvcmUgYWRkaW5nICcKKyAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgKyAnIHJvdXRlcy4gTm90IHN1cHBvcnRlZCBieSBPcGVuVlBO
-IDMuJykKKworICAgICAgICBpZ25vcmVkLmFkZF9hcmd1bWVudCgnLS1yb3V0ZS1tZXRob2QnLAor
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBhY3Rpb249Q29uZmlnUGFyc2VyLklnbm9yZUFy
-ZywKKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbmFyZ3M9MSwKKyAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgaGVscD0nV2hpY2ggbWV0aG9kIG0gdG8gdXNlIGZvciBhZGRpbmcgcm91
-dGVzIG9uICcKKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKyAnV2luZG93cy4gTm90IHN1
-cHBvcnRlZCBieSBPcGVuVlBOIDMuJykKKwogICAgICAgICBpZ25vcmVkLmFkZF9hcmd1bWVudCgn
-LS1zY3JpcHQtc2VjdXJpdHknLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICBtZXRhdmFy
-PSdMRVZFTCcsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGFjdGlvbj1Db25maWdQYXJz
-ZXIuSWdub3JlQXJnLAo=
---000000000000430e2005bb3d8f6f--
+
+--
+kind regards,
+
+Gert Doering
+
 
