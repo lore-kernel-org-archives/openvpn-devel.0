@@ -1,10 +1,15 @@
-Date: Sun, 14 Feb 2021 15:18:56 +0100 (CET)
-Message-Id: <202102141418.11EEIuUu010567@...2054...>
+Date: Sun, 14 Feb 2021 15:50:23 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210201174310.22153-2-arne@...1227...>
-References: <20210201174310.22153-2-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Check return values in
- md_ctx_init and hmac_ctx_init
+Message-ID: <20210214145023.GU976@...1296...>
+References: <ca157141-dc88-8017-0e6e-3ace055bc36e@...2181...>
+ <20210125124330.30046-1-arne@...1227...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="sy0qu8fn1MHxO37T"
+Content-Disposition: inline
+In-Reply-To: <20210125124330.30046-1-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Allow running a default
+ configuration with TLS libraries without BF-CBC
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,35 +18,106 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+--sy0qu8fn1MHxO37T
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Whitespace has been adjusted in a totally space-neutral way.  As
-instructed by the master of whitespace distribution.
+Hi,
 
-(On the patch itself: only compile-tested, but it seems to be "obviously
-correct", according to the man pages)
+On Mon, Jan 25, 2021 at 01:43:30PM +0100, Arne Schwabe wrote:
+> Modern TLS libraries might drop Blowfish by default or distributions
+> might disable Blowfish in OpenSSL/mbed TLS. We still signal OCC
+> options with BF-CBC compatible strings. To avoid requiring BF-CBC
+> for this, special this one usage of BF-CBC enough to avoid a hard
+> requirement on Blowfish in the default configuration.
 
-commit 0714ed804e40f80b48a7571193d7e4d81d2bcd4b
-Author: Arne Schwabe
-Date:   Mon Feb 1 18:43:08 2021 +0100
+I was about to merge this, based on Antonio's ACK, but this part of
+the code confuses me:
 
-     Check return values in md_ctx_init and hmac_ctx_init
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index b81137cf..d52057cc 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -3836,18 +3856,32 @@ options_string(const struct options *o,
+>                 + (TLS_SERVER =3D=3D true)
+>                 <=3D 1);
+>=20=20
+> -        init_key_type(&kt, o->ciphername, o->authname, o->keysize, true,
+> -                      false);
+> +        /* Skip resolving BF-CBC to allow SSL libraries without BF-CBC
+> +         * to work here in the default configuration */
+> +        const char *ciphername =3D o->ciphername;
+> +        int keysize;
+> +
+> +        if (strcmp(o->ciphername, "BF-CBC") =3D=3D 0) {
+> +            init_key_type(&kt, "none", o->authname, o->keysize, true,
+> +                          false);
+> +            ciphername =3D cipher_kt_name(kt.cipher);
+> +            keysize =3D 128;
+> +        }
+> +        else
+> +        {
+> +            init_key_type(&kt, o->ciphername, o->authname, o->keysize, t=
+rue,
+> +                          false);
+> +            keysize =3D kt.cipher_length * 8;
+> +        }
+>          /* Only announce the cipher to our peer if we are willing to
+>           * support it */
+> -        const char *ciphername =3D cipher_kt_name(kt.cipher);
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20210201174310.22153-2-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21546.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+So the old code always sends "cipher_kt_name(kt.cipher)".
+
+The new code adds a special case handling for "BF-CBC", calling
+init_key_type(none), but then does the "cipher_kt_name()" only for
+the "BF-CBC/none" case, no more for the "all other ciphers".
+
+This looks like the wrong way around - shouldn't it do the
+
+> +            ciphername =3D cipher_kt_name(kt.cipher);
+
+for the "not BF-CBC" case, and "ciphername =3D o->cipher" for "only BF-CBC"?
 
 
---
-kind regards,
+Call me confused...
 
-Gert Doering
+As a side note, it seems to fail two of my t_client test cases,=20
+namely "talking to a 2.3 server with --cipher BF-CBC" and "talking to=20
+a 2.4 server with --ncp-disable", so maybe that code needs some more=20
+discussion.  I have not investigated more into these failures, first=20
+want to understand what the code tries to do.
 
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--sy0qu8fn1MHxO37T
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJgKTitAAoJEB2Cnv7KVigSKDAL/13xmo8bP4zzfKvvK5iz27LQ
+JfYZ98/tqEJcsJ7v/exlB7+Ru/cvnxD5StDMU8aAaZIOpmrYTkWIjKEWrQrEEjeb
+e2zAGIMPM4DQtdVBL9MPKf3TNM0APiLNhUiHGLbL0ia4KIOHsHHtb4sRCsXUQEVp
+Tc5e+xXIkHPyRkHmB7WpJcA9E+j4NoxPNOBk0OFMGOvHAPDEz40aXoyIbenkvrqX
+Qu8pz6qbywSRkkh3Gkx7VFVlqPZpoR5/fvihe/NdJ3sa4yJQ/dC8jsezKP59j1oF
+aCJFMb+S8TbPtDMk3i2A5Jp24hcH3tGjS0cMbCY8CJWP296yiBhPlr8BGktSW7Up
+JQl7Iy1cvveZSv2KKu+RmiySx55dwfaeUZx/ajnXG9NoIPAPkxPv1IczvUWm/QZz
+v0lKFl4+ak/bO+gmnrQK/Q0gfkuaFelGDVT8ME+YBz0HGdCAJ2FyNeaAGMyYh53S
+NzdSxEJuV7nkyN0gbkXuA6CzKppKc2Knfaeg7tcLFg==
+=LOKW
+-----END PGP SIGNATURE-----
+
+--sy0qu8fn1MHxO37T--
 
