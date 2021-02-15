@@ -1,7 +1,7 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 15 Feb 2021 15:10:01 +0100
-Message-Id: <20210215141001.7213-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v4] Prefer TLS libraries TLS PRF function,
+Date: Mon, 15 Feb 2021 15:11:33 +0100
+Message-Id: <20210215141133.7505-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v5] Prefer TLS libraries TLS PRF function,
  fix OpenVPN in FIPS mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -42,16 +42,17 @@ wide (e.g. on RHEL derivates).
 
 Patch v4: Handle the unlikely case that PRF generation fails. More formatting
           fixes.
+Patch v5: v4 with the formatting fixes actually commited. sigh.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
  Changes.rst                            |  10 +-
  src/openvpn/crypto_backend.h           |  16 ++
- src/openvpn/crypto_mbedtls.c           | 135 ++++++++++++++++
- src/openvpn/crypto_openssl.c           | 195 +++++++++++++++++++++++
+ src/openvpn/crypto_mbedtls.c           | 130 ++++++++++++++++
+ src/openvpn/crypto_openssl.c           | 194 +++++++++++++++++++++++
  src/openvpn/ssl.c                      | 206 ++++++-------------------
  tests/unit_tests/openvpn/test_crypto.c |  32 ++++
- 6 files changed, 430 insertions(+), 164 deletions(-)
+ 6 files changed, 424 insertions(+), 164 deletions(-)
 
 diff --git a/Changes.rst b/Changes.rst
 index 2a847564..0c66fe2a 100644
@@ -100,7 +101,7 @@ index 85cb084a..384ffc80 100644
 +                  int secret_len, uint8_t *output, int output_len);
  #endif /* CRYPTO_BACKEND_H_ */
 diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index fbb1f120..3b28ba26 100644
+index fbb1f120..7c864404 100644
 --- a/src/openvpn/crypto_mbedtls.c
 +++ b/src/openvpn/crypto_mbedtls.c
 @@ -54,6 +54,7 @@
@@ -111,7 +112,7 @@ index fbb1f120..3b28ba26 100644
  
  
  /*
-@@ -984,4 +985,138 @@ memcmp_constant_time(const void *a, const void *b, size_t size)
+@@ -984,4 +985,133 @@ memcmp_constant_time(const void *a, const void *b, size_t size)
  
      return diff;
  }
@@ -137,13 +138,8 @@ index fbb1f120..3b28ba26 100644
 + * @param olen          Length of the output buffer
 + */
 +static void
-+tls1_P_hash(const md_kt_t *md_kt,
-+            const uint8_t *sec,
-+            int sec_len,
-+            const uint8_t *seed,
-+            int seed_len,
-+            uint8_t *out,
-+            int olen)
++tls1_P_hash(const md_kt_t *md_kt, const uint8_t *sec, int sec_len,
++            const uint8_t *seed, int seed_len, uint8_t *out, int olen)
 +{
 +    struct gc_arena gc = gc_new();
 +    uint8_t A1[MAX_HMAC_KEY_LENGTH];
@@ -226,7 +222,7 @@ index fbb1f120..3b28ba26 100644
 +    const md_kt_t *md5 = md_kt_get("MD5");
 +    const md_kt_t *sha1 = md_kt_get("SHA1");
 +
-+    uint8_t *out2 = (uint8_t *) gc_malloc(olen, false, &gc);
++    uint8_t *out2 = (uint8_t *)gc_malloc(olen, false, &gc);
 +
 +    int len = slen/2;
 +    const uint8_t *S1 = sec;
@@ -251,7 +247,7 @@ index fbb1f120..3b28ba26 100644
 +#endif
  #endif /* ENABLE_CRYPTO_MBEDTLS */
 diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 4ea78c01..0f0024b8 100644
+index 4ea78c01..86c16577 100644
 --- a/src/openvpn/crypto_openssl.c
 +++ b/src/openvpn/crypto_openssl.c
 @@ -50,6 +50,9 @@
@@ -264,7 +260,7 @@ index 4ea78c01..0f0024b8 100644
  
  /*
   * Check for key size creepage.
-@@ -1124,4 +1127,196 @@ engine_load_key(const char *file, SSL_CTX *ctx)
+@@ -1124,4 +1127,195 @@ engine_load_key(const char *file, SSL_CTX *ctx)
  #endif /* if HAVE_OPENSSL_ENGINE */
  }
  
@@ -327,8 +323,7 @@ index 4ea78c01..0f0024b8 100644
 + */
 +static
 +int tls1_P_hash(const EVP_MD *md, const unsigned char *sec,
-+                int sec_len,
-+                const void *seed, int seed_len,
++                int sec_len, const void *seed, int seed_len,
 +                unsigned char *out, int olen)
 +{
 +    int chunk;
@@ -428,20 +423,20 @@ index 4ea78c01..0f0024b8 100644
 +    const md_kt_t *md5 = EVP_md5();
 +    const md_kt_t *sha1 = EVP_sha1();
 +
-+    uint8_t *out2 = (uint8_t *) gc_malloc(olen, false, &gc);
++    uint8_t *out2 = (uint8_t *)gc_malloc(olen, false, &gc);
 +
 +    int len = slen/2;
 +    const uint8_t *S1 = sec;
 +    const uint8_t *S2 = &(sec[len]);
 +    len += (slen&1); /* add for odd, make longer */
 +
-+    if(!tls1_P_hash(md5,S1,len,label,label_len,out1,olen))
++    if(!tls1_P_hash(md5, S1, len, label, label_len, out1, olen))
 +    {
 +        ret = false;
 +        goto done;
 +    }
 +
-+    if(!tls1_P_hash(sha1,S2,len,label,label_len,out2,olen))
++    if(!tls1_P_hash(sha1, S2, len, label, label_len, out2, olen))
 +    {
 +        ret = false;
 +        goto done;
@@ -732,7 +727,7 @@ index 5a231387..56cd4c60 100644
  
      key2_print(&key2, &session->opt->key_type,
 diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
-index ea9b99b2..6c68099e 100644
+index ea9b99b2..af83da68 100644
 --- a/tests/unit_tests/openvpn/test_crypto.c
 +++ b/tests/unit_tests/openvpn/test_crypto.c
 @@ -38,6 +38,7 @@
@@ -757,7 +752,7 @@ index ea9b99b2..6c68099e 100644
 +{
 +    const char *seedstr = "Quis aute iure reprehenderit in voluptate "
 +                          "velit esse cillum dolore";
-+    const unsigned char *seed = (const unsigned char *) seedstr;
++    const unsigned char *seed = (const unsigned char *)seedstr;
 +    const size_t seed_len = strlen(seedstr);
 +
 +
