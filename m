@@ -1,8 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 15 Feb 2021 15:11:33 +0100
-Message-Id: <20210215141133.7505-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v5] Prefer TLS libraries TLS PRF function,
- fix OpenVPN in FIPS mode
+Date: Mon, 15 Feb 2021 15:31:46 +0100
+Message-Id: <20210215143146.9770-1-arne@...1227...>
+In-Reply-To: <20210214145023.GU976@...1296...>
+References: <20210214145023.GU976@...1296...>
+Subject: [Openvpn-devel] [PATCH v3] Allow running a default configuration
+ with TLS libraries without BF-CBC
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,773 +17,155 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This moves from using our own copy of the TLS1 PRF function to using
-TLS library provided function where possible. This includes currently
-OpenSSL 1.1.0+ and mbed TLS 2.18+.
-
-For the libraries where it is not possible to use the library's own
-function, we still use our own implementation. mbed TLS will continue
-to use our own old PRF function while for OpenSSL we will use a
-adapted version from OpenSSL 1.0.2t code. The version allows to be
-used in a FIPS enabled environment.
-
-The old OpenSSL and mbed TLS implementation could have shared some
-more code but as we will eventually drop support for older TLS
-libraries, the separation makes it easier it remove that code
-invdidually.
-
-In FIPS mode MD5 is normally forbidden, the TLS1 PRF1 function we
-use, makes uses of MD5, which in the past has caused OpenVPN to segfault.
-The new implementation for OpenSSL version of our custom implementation
-has added the special flags that tell OpenSSL that this specific use
-of MD5 is allowed in FIPS mode.
-
-No FIPS conformitiy testing etc has been done, this is only about
-allowing OpenVPN on a system where FIPS mode has been enabled system
-wide (e.g. on RHEL derivates).
-
-Patch v4: Handle the unlikely case that PRF generation fails. More formatting
-          fixes.
-Patch v5: v4 with the formatting fixes actually commited. sigh.
+Modern TLS libraries might drop Blowfish by default or distributions
+might disable Blowfish in OpenSSL/mbed TLS. We still signal OCC
+options with BF-CBC compatible strings. To avoid requiring BF-CBC
+for this, special this one usage of BF-CBC enough to avoid a hard
+requirement on Blowfish in the default configuration.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
----
- Changes.rst                            |  10 +-
- src/openvpn/crypto_backend.h           |  16 ++
- src/openvpn/crypto_mbedtls.c           | 130 ++++++++++++++++
- src/openvpn/crypto_openssl.c           | 194 +++++++++++++++++++++++
- src/openvpn/ssl.c                      | 206 ++++++-------------------
- tests/unit_tests/openvpn/test_crypto.c |  32 ++++
- 6 files changed, 424 insertions(+), 164 deletions(-)
 
-diff --git a/Changes.rst b/Changes.rst
-index 2a847564..0c66fe2a 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -9,11 +9,11 @@ Keying Material Exporters (RFC 5705) based key generation
-     the RFC5705 based key material generation to the current custom
-     OpenVPN PRF. This feature requires OpenSSL or mbed TLS 2.18+.
- 
--Deprecated features
---------------------
--``inetd`` has been removed
--    This was a very limited and not-well-tested way to run OpenVPN, on TCP
--    and TAP mode only.
-+Compatibility with OpenSSL in FIPS mode
-+    OpenVPN will now work with OpenSSL in FIPS mode. Note, no effort
-+    has been made to check or implement all the
-+    requirements/recommendation of FIPS 140-2. This just allows OpenVPN
-+    to be run on a system that be configured OpenSSL in FIPS mode.
- 
- 
- Overview of changes in 2.5
+Patch v2: add more clarifying comment, do not warn about OCC only insecure
+          ciphers, code improvements
+
+Patch V3: Put ciphername resolution via ciper_kt_name in the right branch
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/crypto_backend.h |  2 ++
+ src/openvpn/init.c           | 32 ++++++++++++++++++------
+ src/openvpn/options.c        | 47 +++++++++++++++++++++++++++++++-----
+ 3 files changed, 67 insertions(+), 14 deletions(-)
+
 diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
-index 85cb084a..384ffc80 100644
+index 384ffc80..93f7e475 100644
 --- a/src/openvpn/crypto_backend.h
 +++ b/src/openvpn/crypto_backend.h
-@@ -699,4 +699,20 @@ const char *translate_cipher_name_from_openvpn(const char *cipher_name);
-  */
- const char *translate_cipher_name_to_openvpn(const char *cipher_name);
- 
-+
-+/**
-+ * Calculates the TLS 1.0-1.1 PRF function. For the exact specification of the
-+ * function definition see the TLS RFCs like RFC 4346.
+@@ -241,6 +241,8 @@ const cipher_kt_t *cipher_kt_get(const char *ciphername);
+  * The returned name is normalised to the OpenVPN config name in case the
+  * name differs from the name used by the crypto library.
+  *
++ * Returns [null-cipher] in case the cipher_kt is NULL.
 + *
-+ * @param seed          seed to use
-+ * @param seed_len      length of the seed
-+ * @param secret        secret to use
-+ * @param secret_len    length of the secret
-+ * @param output        output destination
-+ * @param output_len    length of output/number of bytes to generate
-+ *
-+ * @return              true if successful, false on any error
-+ */
-+bool ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret,
-+                  int secret_len, uint8_t *output, int output_len);
- #endif /* CRYPTO_BACKEND_H_ */
-diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index fbb1f120..7c864404 100644
---- a/src/openvpn/crypto_mbedtls.c
-+++ b/src/openvpn/crypto_mbedtls.c
-@@ -54,6 +54,7 @@
- #include <mbedtls/pem.h>
+  * @param cipher_kt     Static cipher parameters
+  *
+  * @return a statically allocated string describing the cipher.
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 46c933b1..5cf257eb 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2769,14 +2769,30 @@ do_init_crypto_tls_c1(struct context *c)
+ #endif /* if P2MP */
+         }
  
- #include <mbedtls/entropy.h>
-+#include <mbedtls/ssl.h>
- 
- 
- /*
-@@ -984,4 +985,133 @@ memcmp_constant_time(const void *a, const void *b, size_t size)
- 
-     return diff;
- }
-+/* mbedtls-2.18.0 or newer */
-+#ifdef HAVE_MBEDTLS_SSL_TLS_PRF
-+bool ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret,
-+                  int secret_len, uint8_t *output, int output_len)
-+{
-+    return mbed_ok(mbedtls_ssl_tls_prf(MBEDTLS_SSL_TLS_PRF_TLS1, secret,
-+                                       secret_len, "", seed, seed_len, output,
-+                                       output_len));
-+}
-+#else
-+/*
-+ * Generate the hash required by for the \c tls1_PRF function.
-+ *
-+ * @param md_kt         Message digest to use
-+ * @param sec           Secret to base the hash on
-+ * @param sec_len       Length of the secret
-+ * @param seed          Seed to hash
-+ * @param seed_len      Length of the seed
-+ * @param out           Output buffer
-+ * @param olen          Length of the output buffer
-+ */
-+static void
-+tls1_P_hash(const md_kt_t *md_kt, const uint8_t *sec, int sec_len,
-+            const uint8_t *seed, int seed_len, uint8_t *out, int olen)
-+{
-+    struct gc_arena gc = gc_new();
-+    uint8_t A1[MAX_HMAC_KEY_LENGTH];
-+
-+#ifdef ENABLE_DEBUG
-+    const int olen_orig = olen;
-+    const uint8_t *out_orig = out;
-+#endif
-+
-+    hmac_ctx_t *ctx = hmac_ctx_new();
-+    hmac_ctx_t *ctx_tmp = hmac_ctx_new();
-+
-+    dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash sec: %s", format_hex(sec, sec_len, 0, &gc));
-+    dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash seed: %s", format_hex(seed, seed_len, 0, &gc));
-+
-+    int chunk = md_kt_size(md_kt);
-+    unsigned int A1_len = md_kt_size(md_kt);
-+
-+    hmac_ctx_init(ctx, sec, sec_len, md_kt);
-+    hmac_ctx_init(ctx_tmp, sec, sec_len, md_kt);
-+
-+    hmac_ctx_update(ctx,seed,seed_len);
-+    hmac_ctx_final(ctx, A1);
-+
-+    for (;;)
-+    {
-+        hmac_ctx_reset(ctx);
-+        hmac_ctx_reset(ctx_tmp);
-+        hmac_ctx_update(ctx, A1, A1_len);
-+        hmac_ctx_update(ctx_tmp, A1, A1_len);
-+        hmac_ctx_update(ctx, seed, seed_len);
-+
-+        if (olen > chunk)
+-        /* Do not warn if we only have BF-CBC in options->ciphername
+-         * because it is still the default cipher */
+-        bool warn = !streq(options->ciphername, "BF-CBC")
+-             || options->enable_ncp_fallback;
+-        /* Get cipher & hash algorithms */
+-        init_key_type(&c->c1.ks.key_type, options->ciphername, options->authname,
+-                      options->keysize, true, warn);
+-
++       /*
++        * BF-CBC is allowed to be used only when explicitly configured
++        * as NCP-fallback or when NCP has been disabled.
++        * In all other cases don't attempt to initialize BF-CBC as it
++        * may not even be supported by the underlying SSL library.
++        *
++        * Therefore, the key structure has to be initialized when:
++        * - any non-BF-CBC cipher was selected; or
++        * - BF-CBC is selected and NCP is disabled (explicit request to
++        *   use the BF-CBC cipher); or
++        * - BF-CBC is selected, NCP is enabled and fallback is enabled
++        *   (BF-CBC will be the fallback).
++        *
++        * Note that BF-CBC will still be part of the OCC string to retain
++        * backwards compatibility with older clients.
++        */
++        if (!streq(options->ciphername, "BF-CBC") || !options->ncp_enabled
++            || options->enable_ncp_fallback)
 +        {
-+            hmac_ctx_final(ctx, out);
-+            out += chunk;
-+            olen -= chunk;
-+            hmac_ctx_final(ctx_tmp, A1); /* calc the next A1 value */
++            /* Do not warn if the if the cipher is used only in OCC */
++            bool warn = !options->ncp_enabled || options->enable_ncp_fallback;
++            init_key_type(&c->c1.ks.key_type, options->ciphername, options->authname,
++                          options->keysize, true, warn);
 +        }
-+        else    /* last one */
+         /* Initialize PRNG with config-specified digest */
+         prng_init(options->prng_hash, options->prng_nonce_secret_len);
+ 
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 059386b3..c02ad051 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3609,9 +3609,29 @@ calc_options_string_link_mtu(const struct options *o, const struct frame *frame)
+     {
+         struct frame fake_frame = *frame;
+         struct key_type fake_kt;
+-        init_key_type(&fake_kt, o->ciphername, o->authname, o->keysize, true,
+-                      false);
++
+         frame_remove_from_extra_frame(&fake_frame, crypto_max_overhead());
++
++
++        /* o->ciphername might be BF-CBC even though the underlying SSL library
++         * does not support it. For this reason we workaround this corner case
++         * by pretending to have no encryption enabled and by manually adding
++         * the required packet overhead to the MTU computation.
++         */
++        const char* ciphername = o->ciphername;
++
++        if (strcmp(o->ciphername, "BF-CBC") == 0)
 +        {
-+            hmac_ctx_final(ctx, A1);
-+            memcpy(out, A1, olen);
-+            break;
++            /* none has no overhead, so use this to later add only --auth
++             * overhead */
++
++            /* overhead of BF-CBC: 64 bit block size, 64 bit IV size */
++            frame_add_to_extra_frame(&fake_frame, 64/8 + 64/8);
 +        }
-+    }
-+    hmac_ctx_cleanup(ctx);
-+    hmac_ctx_free(ctx);
-+    hmac_ctx_cleanup(ctx_tmp);
-+    hmac_ctx_free(ctx_tmp);
-+    secure_memzero(A1, sizeof(A1));
 +
-+    dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash out: %s", format_hex(out_orig, olen_orig, 0, &gc));
-+    gc_free(&gc);
-+}
++        init_key_type(&fake_kt, ciphername, o->authname, o->keysize, true,
++                      false);
 +
-+/*
-+ * Use the TLS PRF function for generating data channel keys.
-+ * This code is based on the OpenSSL library.
-+ *
-+ * TLS generates keys as such:
-+ *
-+ * master_secret[48] = PRF(pre_master_secret[48], "master secret",
-+ *                         ClientHello.random[32] + ServerHello.random[32])
-+ *
-+ * key_block[] = PRF(SecurityParameters.master_secret[48],
-+ *                 "key expansion",
-+ *                 SecurityParameters.server_random[32] +
-+ *                 SecurityParameters.client_random[32]);
-+ *
-+ * Notes:
-+ *
-+ * (1) key_block contains a full set of 4 keys.
-+ * (2) The pre-master secret is generated by the client.
-+ */
-+bool ssl_tls1_PRF(const uint8_t *label, int label_len, const uint8_t *sec,
-+                  int slen, uint8_t *out1, int olen)
-+{
-+    struct gc_arena gc = gc_new();
-+    const md_kt_t *md5 = md_kt_get("MD5");
-+    const md_kt_t *sha1 = md_kt_get("SHA1");
-+
-+    uint8_t *out2 = (uint8_t *)gc_malloc(olen, false, &gc);
-+
-+    int len = slen/2;
-+    const uint8_t *S1 = sec;
-+    const uint8_t *S2 = &(sec[len]);
-+    len += (slen&1); /* add for odd, make longer */
-+
-+    tls1_P_hash(md5, S1, len, label, label_len, out1, olen);
-+    tls1_P_hash(sha1, S2, len, label, label_len, out2, olen);
-+
-+    for (int i = 0; i<olen; i++)
-+    {
-+        out1[i] ^= out2[i];
-+    }
-+
-+    secure_memzero(out2, olen);
-+
-+    dmsg(D_SHOW_KEY_SOURCE, "tls1_PRF out[%d]: %s", olen, format_hex(out1, olen, 0, &gc));
-+
-+    gc_free(&gc);
-+    return true;
-+}
-+#endif
- #endif /* ENABLE_CRYPTO_MBEDTLS */
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 4ea78c01..86c16577 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -50,6 +50,9 @@
- #include <openssl/objects.h>
- #include <openssl/rand.h>
- #include <openssl/ssl.h>
-+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
-+#include <openssl/kdf.h>
-+#endif
+         crypto_adjust_frame_parameters(&fake_frame, &fake_kt, o->replay,
+                                        cipher_kt_mode_ofb_cfb(fake_kt.cipher));
+         frame_finalize(&fake_frame, o->ce.link_mtu_defined, o->ce.link_mtu,
+@@ -3781,18 +3801,33 @@ options_string(const struct options *o,
+                + (TLS_SERVER == true)
+                <= 1);
  
- /*
-  * Check for key size creepage.
-@@ -1124,4 +1127,195 @@ engine_load_key(const char *file, SSL_CTX *ctx)
- #endif /* if HAVE_OPENSSL_ENGINE */
- }
- 
-+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
-+bool ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret,
-+                  int secret_len, uint8_t *output, int output_len)
-+{
-+    EVP_PKEY_CTX *pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_TLS1_PRF, NULL);
-+    if(!EVP_PKEY_derive_init(pctx))
-+    {
-+        return false;
-+    }
+-        init_key_type(&kt, o->ciphername, o->authname, o->keysize, true,
+-                      false);
++        /* Skip resolving BF-CBC to allow SSL libraries without BF-CBC
++         * to work here in the default configuration */
++        const char *ciphername = o->ciphername;
++        int keysize;
 +
-+
-+    if(!EVP_PKEY_CTX_set_tls1_prf_md(pctx, EVP_md5_sha1()))
-+    {
-+        return false;
-+    }
-+
-+    if(!EVP_PKEY_CTX_set1_tls1_prf_secret(pctx, secret, secret_len))
-+    {
-+        return false;
-+    }
-+
-+    if(!EVP_PKEY_CTX_add1_tls1_prf_seed(pctx, seed, seed_len))
-+    {
-+        return false;
-+    }
-+
-+    size_t out_len = output_len;
-+    if(!EVP_PKEY_derive(pctx, output, &out_len))
-+    {
-+        return false;
-+    }
-+    if (out_len != output_len)
-+    {
-+        return false;
-+    }
-+    return true;
-+}
-+#else
-+/*
-+ * Generate the hash required by for the \c tls1_PRF function.
-+ *
-+ * We cannot use our normal hmac_* function as they do not work
-+ * in a FIPS environment (no MD5 allowed, which we need). Instead
-+ * we need to directly use the EVP_MD_* API with the special
-+ * EVP_MD_CTX_FLAG_NON_FIPS_ALLOW flag.
-+ *
-+ *
-+ * The function below is adapted from OpenSSL 1.0.2t
-+ *
-+ * @param md_kt         Message digest to use
-+ * @param sec           Secret to base the hash on
-+ * @param sec_len       Length of the secret
-+ * @param seed          Seed to hash
-+ * @param seed_len      Length of the seed
-+ * @param out           Output buffer
-+ * @param olen          Length of the output buffer
-+ */
-+static
-+int tls1_P_hash(const EVP_MD *md, const unsigned char *sec,
-+                int sec_len, const void *seed, int seed_len,
-+                unsigned char *out, int olen)
-+{
-+    int chunk;
-+    size_t j;
-+    EVP_MD_CTX ctx, ctx_tmp, ctx_init;
-+    EVP_PKEY *mac_key;
-+    unsigned char A1[EVP_MAX_MD_SIZE];
-+    size_t A1_len;
-+    int ret = 0;
-+
-+    chunk = EVP_MD_size(md);
-+    OPENSSL_assert(chunk >= 0);
-+
-+    EVP_MD_CTX_init(&ctx);
-+    EVP_MD_CTX_init(&ctx_tmp);
-+    EVP_MD_CTX_init(&ctx_init);
-+    EVP_MD_CTX_set_flags(&ctx_init, EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);
-+    mac_key = EVP_PKEY_new_mac_key(EVP_PKEY_HMAC, NULL, sec, sec_len);
-+    if (!mac_key)
-+        goto err;
-+    if (!EVP_DigestSignInit(&ctx_init, NULL, md, NULL, mac_key))
-+        goto err;
-+    if (!EVP_MD_CTX_copy_ex(&ctx, &ctx_init))
-+        goto err;
-+    if (!EVP_DigestSignUpdate(&ctx, seed, seed_len))
-+        goto err;
-+    if (!EVP_DigestSignFinal(&ctx, A1, &A1_len))
-+        goto err;
-+
-+    for (;;) {
-+        /* Reinit mac contexts */
-+        if (!EVP_MD_CTX_copy_ex(&ctx, &ctx_init))
-+            goto err;
-+        if (!EVP_DigestSignUpdate(&ctx, A1, A1_len))
-+            goto err;
-+        if (olen > chunk && !EVP_MD_CTX_copy_ex(&ctx_tmp, &ctx))
-+            goto err;
-+        if (!EVP_DigestSignUpdate(&ctx, seed, seed_len))
-+            goto err;
-+
-+        if (olen > chunk)
++        if (strcmp(o->ciphername, "BF-CBC") == 0)
 +        {
-+            if (!EVP_DigestSignFinal(&ctx, out, &j))
-+                goto err;
-+            out += j;
-+            olen -= j;
-+            /* calc the next A1 value */
-+            if (!EVP_DigestSignFinal(&ctx_tmp, A1, &A1_len))
-+                goto err;
++            init_key_type(&kt, "none", o->authname, o->keysize, true,
++                          false);
++            keysize = 128;
 +        }
 +        else
 +        {
-+            /* last one */
-+
-+            if (!EVP_DigestSignFinal(&ctx, A1, &A1_len))
-+                goto err;
-+            memcpy(out, A1, olen);
-+            break;
++            init_key_type(&kt, o->ciphername, o->authname, o->keysize, true,
++                          false);
++            ciphername = cipher_kt_name(kt.cipher);
++            keysize = kt.cipher_length * 8;
 +        }
-+    }
-+    ret = 1;
-+err:
-+    EVP_PKEY_free(mac_key);
-+    EVP_MD_CTX_cleanup(&ctx);
-+    EVP_MD_CTX_cleanup(&ctx_tmp);
-+    EVP_MD_CTX_cleanup(&ctx_init);
-+    OPENSSL_cleanse(A1, sizeof(A1));
-+    return ret;
-+}
-+
-+
-+/*
-+ * Use the TLS PRF function for generating data channel keys.
-+ * This code is based on the OpenSSL library.
-+ *
-+ * TLS generates keys as such:
-+ *
-+ * master_secret[48] = PRF(pre_master_secret[48], "master secret",
-+ *                         ClientHello.random[32] + ServerHello.random[32])
-+ *
-+ * key_block[] = PRF(SecurityParameters.master_secret[48],
-+ *                 "key expansion",
-+ *                 SecurityParameters.server_random[32] +
-+ *                 SecurityParameters.client_random[32]);
-+ *
-+ * Notes:
-+ *
-+ * (1) key_block contains a full set of 4 keys.
-+ * (2) The pre-master secret is generated by the client.
-+ */
-+bool ssl_tls1_PRF(const uint8_t *label, int label_len, const uint8_t *sec,
-+                  int slen, uint8_t *out1, int olen)
-+{
-+    bool ret = true;
-+    struct gc_arena gc = gc_new();
-+    /* For some reason our md_kt_get("MD5") fails otherwise in the unit test */
-+    const md_kt_t *md5 = EVP_md5();
-+    const md_kt_t *sha1 = EVP_sha1();
-+
-+    uint8_t *out2 = (uint8_t *)gc_malloc(olen, false, &gc);
-+
-+    int len = slen/2;
-+    const uint8_t *S1 = sec;
-+    const uint8_t *S2 = &(sec[len]);
-+    len += (slen&1); /* add for odd, make longer */
-+
-+    if(!tls1_P_hash(md5, S1, len, label, label_len, out1, olen))
-+    {
-+        ret = false;
-+        goto done;
-+    }
-+
-+    if(!tls1_P_hash(sha1, S2, len, label, label_len, out2, olen))
-+    {
-+        ret = false;
-+        goto done;
-+    }
-+
-+    for (int i = 0; i<olen; i++)
-+    {
-+        out1[i] ^= out2[i];
-+    }
-+
-+    secure_memzero(out2, olen);
-+
-+    dmsg(D_SHOW_KEY_SOURCE, "tls1_PRF out[%d]: %s", olen, format_hex(out1, olen, 0, &gc));
-+done:
-+    gc_free(&gc);
-+    return ret;
-+}
-+#endif
- #endif /* ENABLE_CRYPTO_OPENSSL */
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 5a231387..56cd4c60 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1580,135 +1580,7 @@ key_source2_print(const struct key_source2 *k)
-     key_source_print(&k->server, "Server");
- }
- 
--/*
-- * Generate the hash required by for the \c tls1_PRF function.
-- *
-- * @param md_kt         Message digest to use
-- * @param sec           Secret to base the hash on
-- * @param sec_len       Length of the secret
-- * @param seed          Seed to hash
-- * @param seed_len      Length of the seed
-- * @param out           Output buffer
-- * @param olen          Length of the output buffer
-- */
--static void
--tls1_P_hash(const md_kt_t *md_kt,
--            const uint8_t *sec,
--            int sec_len,
--            const uint8_t *seed,
--            int seed_len,
--            uint8_t *out,
--            int olen)
--{
--    struct gc_arena gc = gc_new();
--    uint8_t A1[MAX_HMAC_KEY_LENGTH];
--
--#ifdef ENABLE_DEBUG
--    const int olen_orig = olen;
--    const uint8_t *out_orig = out;
--#endif
--
--    hmac_ctx_t *ctx = hmac_ctx_new();
--    hmac_ctx_t *ctx_tmp = hmac_ctx_new();
--
--    dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash sec: %s", format_hex(sec, sec_len, 0, &gc));
--    dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash seed: %s", format_hex(seed, seed_len, 0, &gc));
--
--    int chunk = md_kt_size(md_kt);
--    unsigned int A1_len = md_kt_size(md_kt);
--
--    hmac_ctx_init(ctx, sec, sec_len, md_kt);
--    hmac_ctx_init(ctx_tmp, sec, sec_len, md_kt);
--
--    hmac_ctx_update(ctx,seed,seed_len);
--    hmac_ctx_final(ctx, A1);
--
--    for (;; )
--    {
--        hmac_ctx_reset(ctx);
--        hmac_ctx_reset(ctx_tmp);
--        hmac_ctx_update(ctx,A1,A1_len);
--        hmac_ctx_update(ctx_tmp,A1,A1_len);
--        hmac_ctx_update(ctx,seed,seed_len);
--
--        if (olen > chunk)
--        {
--            hmac_ctx_final(ctx, out);
--            out += chunk;
--            olen -= chunk;
--            hmac_ctx_final(ctx_tmp, A1); /* calc the next A1 value */
--        }
--        else    /* last one */
--        {
--            hmac_ctx_final(ctx, A1);
--            memcpy(out,A1,olen);
--            break;
--        }
--    }
--    hmac_ctx_cleanup(ctx);
--    hmac_ctx_free(ctx);
--    hmac_ctx_cleanup(ctx_tmp);
--    hmac_ctx_free(ctx_tmp);
--    secure_memzero(A1, sizeof(A1));
--
--    dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash out: %s", format_hex(out_orig, olen_orig, 0, &gc));
--    gc_free(&gc);
--}
--
--/*
-- * Use the TLS PRF function for generating data channel keys.
-- * This code is based on the OpenSSL library.
-- *
-- * TLS generates keys as such:
-- *
-- * master_secret[48] = PRF(pre_master_secret[48], "master secret",
-- *                         ClientHello.random[32] + ServerHello.random[32])
-- *
-- * key_block[] = PRF(SecurityParameters.master_secret[48],
-- *                 "key expansion",
-- *                 SecurityParameters.server_random[32] +
-- *                 SecurityParameters.client_random[32]);
-- *
-- * Notes:
-- *
-- * (1) key_block contains a full set of 4 keys.
-- * (2) The pre-master secret is generated by the client.
-- */
--static void
--tls1_PRF(const uint8_t *label,
--         int label_len,
--         const uint8_t *sec,
--         int slen,
--         uint8_t *out1,
--         int olen)
--{
--    struct gc_arena gc = gc_new();
--    const md_kt_t *md5 = md_kt_get("MD5");
--    const md_kt_t *sha1 = md_kt_get("SHA1");
--
--    uint8_t *out2 = (uint8_t *) gc_malloc(olen, false, &gc);
--
--    int len = slen/2;
--    const uint8_t *S1 = sec;
--    const uint8_t *S2 = &(sec[len]);
--    len += (slen&1); /* add for odd, make longer */
--
--    tls1_P_hash(md5,S1,len,label,label_len,out1,olen);
--    tls1_P_hash(sha1,S2,len,label,label_len,out2,olen);
--
--    for (int i = 0; i<olen; i++)
--    {
--        out1[i] ^= out2[i];
--    }
--
--    secure_memzero(out2, olen);
--
--    dmsg(D_SHOW_KEY_SOURCE, "tls1_PRF out[%d]: %s", olen, format_hex(out1, olen, 0, &gc));
--
--    gc_free(&gc);
--}
--
--static void
-+static bool
- openvpn_PRF(const uint8_t *secret,
-             int secret_len,
-             const char *label,
-@@ -1721,6 +1593,7 @@ openvpn_PRF(const uint8_t *secret,
-             uint8_t *output,
-             int output_len)
- {
-+    bool ret = true;
-     /* concatenate seed components */
- 
-     struct buffer seed = alloc_buf(strlen(label)
-@@ -1742,12 +1615,16 @@ openvpn_PRF(const uint8_t *secret,
-     }
- 
-     /* compute PRF */
--    tls1_PRF(BPTR(&seed), BLEN(&seed), secret, secret_len, output, output_len);
-+    if (!ssl_tls1_PRF(BPTR(&seed), BLEN(&seed), secret, secret_len, output, output_len))
-+    {
-+        ret = false;
-+    }
- 
-     buf_clear(&seed);
-     free_buf(&seed);
- 
-     VALGRIND_MAKE_READABLE((void *)output, output_len);
-+    return ret;
- }
- 
- static void
-@@ -1782,8 +1659,8 @@ generate_key_expansion_tls_export(struct tls_session *session, struct key2 *key2
-     return true;
- }
- 
--static struct key2
--generate_key_expansion_openvpn_prf(const struct tls_session *session)
-+static bool
-+generate_key_expansion_openvpn_prf(const struct tls_session *session, struct key2 *key2)
- {
-     uint8_t master[48] = { 0 };
- 
-@@ -1799,33 +1676,40 @@ generate_key_expansion_openvpn_prf(const struct tls_session *session)
-     key_source2_print(key_src);
- 
-     /* compute master secret */
--    openvpn_PRF(key_src->client.pre_master,
--                sizeof(key_src->client.pre_master),
--                KEY_EXPANSION_ID " master secret",
--                key_src->client.random1,
--                sizeof(key_src->client.random1),
--                key_src->server.random1,
--                sizeof(key_src->server.random1),
--                NULL,
--                NULL,
--                master,
--                sizeof(master));
-+    if(!openvpn_PRF(key_src->client.pre_master,
-+                    sizeof(key_src->client.pre_master),
-+                    KEY_EXPANSION_ID " master secret",
-+                    key_src->client.random1,
-+                    sizeof(key_src->client.random1),
-+                    key_src->server.random1,
-+                    sizeof(key_src->server.random1),
-+                    NULL,
-+                    NULL,
-+                    master,
-+                    sizeof(master)))
-+    {
-+        return false;
-+    }
- 
--    struct key2 key2;
-     /* compute key expansion */
--    openvpn_PRF(master,
--                sizeof(master),
--                KEY_EXPANSION_ID " key expansion",
--                key_src->client.random2,
--                sizeof(key_src->client.random2),
--                key_src->server.random2,
--                sizeof(key_src->server.random2),
--                client_sid,
--                server_sid,
--                (uint8_t *)key2.keys,
--                sizeof(key2.keys));
-+    if (!openvpn_PRF(master,
-+                    sizeof(master),
-+                    KEY_EXPANSION_ID " key expansion",
-+                    key_src->client.random2,
-+                    sizeof(key_src->client.random2),
-+                    key_src->server.random2,
-+                    sizeof(key_src->server.random2),
-+                    client_sid,
-+                    server_sid,
-+                    (uint8_t *)key2->keys,
-+                    sizeof(key2->keys)))
-+    {
-+        return false;
-+    }
-     secure_memzero(&master, sizeof(master));
- 
-+
-+
-     /*
-      * fixup_key only correctly sets DES parity bits if the cipher is a
-      * DES variant.
-@@ -1840,11 +1724,11 @@ generate_key_expansion_openvpn_prf(const struct tls_session *session)
-      */
-     for (int i = 0; i < 2; ++i)
-     {
--        fixup_key(&key2.keys[i], &session->opt->key_type);
-+        fixup_key(&key2->keys[i], &session->opt->key_type);
-     }
--    key2.n = 2;
-+    key2->n = 2;
- 
--    return key2;
-+    return true;
- }
- 
- /*
-@@ -1876,7 +1760,11 @@ generate_key_expansion(struct key_ctx_bi *key,
-     }
-     else
-     {
--        key2 = generate_key_expansion_openvpn_prf(session);
-+        if (!generate_key_expansion_openvpn_prf(session, &key2))
-+        {
-+            msg(D_TLS_ERRORS, "TLS Error: PRF calcuation failed");
-+            goto exit;
-+        }
-     }
- 
-     key2_print(&key2, &session->opt->key_type,
-diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
-index ea9b99b2..af83da68 100644
---- a/tests/unit_tests/openvpn/test_crypto.c
-+++ b/tests/unit_tests/openvpn/test_crypto.c
-@@ -38,6 +38,7 @@
- #include <cmocka.h>
- 
- #include "crypto.h"
-+#include "ssl_backend.h"
- 
- #include "mock_msg.h"
- 
-@@ -136,12 +137,43 @@ crypto_translate_cipher_names(void **state)
-     test_cipher_names("id-aes256-GCM", "AES-256-GCM");
- }
- 
-+
-+static uint8_t good_prf[32] = {0xd9, 0x8c, 0x85, 0x18, 0xc8, 0x5e, 0x94, 0x69,
-+                               0x27, 0x91, 0x6a, 0xcf, 0xc2, 0xd5, 0x92, 0xfb,
-+                               0xb1, 0x56, 0x7e, 0x4b, 0x4b, 0x14, 0x59, 0xe6,
-+                               0xa9, 0x04, 0xac, 0x2d, 0xda, 0xb7, 0x2d, 0x67};
-+static void
-+crypto_test_tls_prf(void **state)
-+{
-+    const char *seedstr = "Quis aute iure reprehenderit in voluptate "
-+                          "velit esse cillum dolore";
-+    const unsigned char *seed = (const unsigned char *)seedstr;
-+    const size_t seed_len = strlen(seedstr);
-+
-+
-+
-+
-+    const char* ipsumlorem = "Lorem ipsum dolor sit amet, consectetur "
-+                             "adipisici elit, sed eiusmod tempor incidunt ut "
-+                             "labore et dolore magna aliqua.";
-+
-+    const unsigned char *secret = (const unsigned char *) ipsumlorem;
-+    size_t secret_len = strlen((const char *)secret);
-+
-+
-+    uint8_t out[32];
-+    ssl_tls1_PRF(seed, seed_len, secret, secret_len, out, sizeof(out));
-+
-+    assert_memory_equal(good_prf, out, sizeof(out));
-+}
-+
- int
- main(void)
- {
-     const struct CMUnitTest tests[] = {
-         cmocka_unit_test(crypto_pem_encode_decode_loopback),
-         cmocka_unit_test(crypto_translate_cipher_names),
-+        cmocka_unit_test(crypto_test_tls_prf)
-     };
- 
- #if defined(ENABLE_CRYPTO_OPENSSL)
+         /* Only announce the cipher to our peer if we are willing to
+          * support it */
+-        const char *ciphername = cipher_kt_name(kt.cipher);
+         if (p2p_nopull || !o->ncp_enabled
+             || tls_item_in_cipher_list(ciphername, o->ncp_ciphers))
+         {
+             buf_printf(&out, ",cipher %s", ciphername);
+         }
+         buf_printf(&out, ",auth %s", md_kt_name(kt.digest));
+-        buf_printf(&out, ",keysize %d", kt.cipher_length * 8);
++        buf_printf(&out, ",keysize %d", keysize);
+         if (o->shared_secret_file)
+         {
+             buf_printf(&out, ",secret");
 -- 
 2.30.0
 
