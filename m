@@ -1,10 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri, 26 Feb 2021 12:10:12 +0100
-Message-Id: <20210226111012.21269-1-arne@...1227...>
-In-Reply-To: <20210214201012.GZ976@...1296...>
-References: <20210214201012.GZ976@...1296...>
-Subject: [Openvpn-devel] [PATCH v3] Refactor extract_var_peer_info into
- standalone function and add ssl_util.c
+Date: Fri, 26 Feb 2021 14:48:29 +0100
+Message-Id: <20210226134829.3589-1-arne@...1227...>
+In-Reply-To: <a4ad13e6-dfbe-2b1f-c818-10f2c87218a6@...2080...>
+References: <a4ad13e6-dfbe-2b1f-c818-10f2c87218a6@...2080...>
+Subject: [Openvpn-devel] [PATCH v3] Implement deferred auth for scripts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,281 +16,265 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Our "natural" place for this function would be ssl.c but ssl.c has a lot of
-dependencies on all kinds of other compilation units so including ssl.c into
-unit tests is near impossible currently. Instead create a new file ssl_util.c
-that holds small utility functions like this one.
+This patch also refactors the if condition that checks the result of
+the authentication since that has become quite unreadable. It renames
+s1/s2 and extracts some parts of the condition into individual variables
+to make the condition better understandle
 
-Patch v2: add newline add the end of sll_util.h and ssl_util.c
-
-Patch v3: Refactor/clean up the function even more as suggested by Gert.
+Patch V2: add refactoring of the if condition
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/Makefile.am              |  1 +
- src/openvpn/openvpn.vcxproj          |  2 +
- src/openvpn/openvpn.vcxproj.filters  |  6 +++
- src/openvpn/ssl.c                    |  2 +-
- src/openvpn/ssl_ncp.c                | 20 ++-------
- src/openvpn/ssl_util.c               | 61 ++++++++++++++++++++++++++++
- src/openvpn/ssl_util.h               | 49 ++++++++++++++++++++++
- src/openvpn/ssl_verify.c             |  1 +
- tests/unit_tests/openvpn/Makefile.am |  3 +-
- 9 files changed, 127 insertions(+), 18 deletions(-)
- create mode 100644 src/openvpn/ssl_util.c
- create mode 100644 src/openvpn/ssl_util.h
+ Changes.rst                         | 12 +++++
+ doc/man-sections/script-options.rst | 14 ++++-
+ src/openvpn/ssl.c                   |  2 -
+ src/openvpn/ssl_verify.c            | 84 +++++++++++++++++++++--------
+ 4 files changed, 87 insertions(+), 25 deletions(-)
 
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index 37b002c6..ec84929b 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -119,6 +119,7 @@ openvpn_SOURCES = \
- 	ssl_openssl.c ssl_openssl.h \
- 	ssl_mbedtls.c ssl_mbedtls.h \
- 	ssl_ncp.c ssl_ncp.h \
-+	ssl_util.c ssl_util.h \
- 	ssl_common.h \
- 	ssl_verify.c ssl_verify.h ssl_verify_backend.h \
- 	ssl_verify_openssl.c ssl_verify_openssl.h \
-diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
-index 3863854b..cf31940c 100644
---- a/src/openvpn/openvpn.vcxproj
-+++ b/src/openvpn/openvpn.vcxproj
-@@ -212,6 +212,7 @@
-     <ClCompile Include="ssl.c" />
-     <ClCompile Include="ssl_openssl.c" />
-     <ClCompile Include="ssl_ncp.c" />
-+    <ClCompile Include="ssl_util.c" />
-     <ClCompile Include="ssl_verify.c" />
-     <ClCompile Include="ssl_verify_openssl.c" />
-     <ClCompile Include="status.c" />
-@@ -300,6 +301,7 @@
-     <ClInclude Include="ssl_common.h" />
-     <ClInclude Include="ssl_ncp.h" />
-     <ClInclude Include="ssl_openssl.h" />
-+    <ClInclude Include="ssl_util.h" />
-     <ClInclude Include="ssl_verify.h" />
-     <ClInclude Include="ssl_verify_backend.h" />
-     <ClInclude Include="ssl_verify_openssl.h" />
-diff --git a/src/openvpn/openvpn.vcxproj.filters b/src/openvpn/openvpn.vcxproj.filters
-index cf5748c7..e8aed2c5 100644
---- a/src/openvpn/openvpn.vcxproj.filters
-+++ b/src/openvpn/openvpn.vcxproj.filters
-@@ -243,6 +243,9 @@
-     <ClCompile Include="ssl_ncp.c">
-       <Filter>Source Files</Filter>
-     </ClCompile>
-+    <ClCompile Include="ssl_util.c">
-+      <Filter>Source Files</Filter>
-+    </ClCompile>
-   </ItemGroup>
-   <ItemGroup>
-     <ClInclude Include="base64.h">
-@@ -509,6 +512,9 @@
-     <ClInclude Include="ssl_ncp.h">
-       <Filter>Header Files</Filter>
-     </ClInclude>
-+    <ClInclude Include="ssl_util.h">
-+      <Filter>Header Files</Filter>
-+    </ClInclude>
-   </ItemGroup>
-   <ItemGroup>
-     <ResourceCompile Include="openvpn_win32_resources.rc">
+diff --git a/Changes.rst b/Changes.rst
+index 62008e8d..74728d2a 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -15,6 +15,17 @@ Compatibility with OpenSSL in FIPS mode
+     requirements/recommendation of FIPS 140-2. This just allows OpenVPN
+     to be run on a system that be configured OpenSSL in FIPS mode.
+ 
++Deferred auth support for scripts
++    The ``--auth-user-pass-verify`` script supports now deferred authentication.
++
++Pending auth support for plugins and scripts
++    Both auth plugin and script can now signal pending authentication to
++    the client when using deferred authentication. The new ``client-crresponse``
++    script option and ``OPENVPN_PLUGIN_CLIENT_CRRESPONSE`` plugin function can
++    be used to parse a client response to a ``CR_TEXT`` two factor challenge.
++
++    See ``sample/sample-scripts/totpauth.py`` for an example.
++
+ Deprecated features
+ -------------------
+ ``inetd`` has been removed
+@@ -22,6 +33,7 @@ Deprecated features
+     and TAP mode only.
+ 
+ 
++
+ Overview of changes in 2.5
+ ==========================
+ 
+diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-options.rst
+index 03b3dd77..50edd986 100644
+--- a/doc/man-sections/script-options.rst
++++ b/doc/man-sections/script-options.rst
+@@ -90,7 +90,19 @@ SCRIPT HOOKS
+ 
+   The script should examine the username and password, returning a success
+   exit code (:code:`0`) if the client's authentication request is to be
+-  accepted, or a failure code (:code:`1`) to reject the client.
++  accepted, a failure code (:code:`1`) to reject the client, or a that
++  the authentication is deferred (:code:`2`). If the authentication is
++  deferred, the script must fork/start a background or another non-blocking
++  operation to continue the authentication in the background. When finshing
++  the authentication, a :code:`1` or :code:`0` must be written to the
++  file specified by the :code:`auth_control_file`.
++
++  When deferred authentication is in use, the script can also request
++  pending authentication by writing to the file specified by the
++  :code:`auth_pending_file`. The first line must be the timeout in
++  seconds and the second line the EXTRA as documented in the
++  ``client-pending-auth`` section of `doc/management.txt`.
++
+ 
+   This directive is designed to enable a plugin-style interface for
+   extending OpenVPN's authentication capabilities.
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 1389322e..228a851c 100644
+index f958a605..51164a66 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -4089,4 +4089,4 @@ void
- ssl_clean_user_pass(void)
- {
-     purge_user_pass(&auth_user_pass, false);
--}
-+}
-\ No newline at end of file
-diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-index 45bddbe0..f02a3103 100644
---- a/src/openvpn/ssl_ncp.c
-+++ b/src/openvpn/ssl_ncp.c
-@@ -48,6 +48,7 @@
- #include "common.h"
+@@ -992,9 +992,7 @@ key_state_free(struct key_state *ks, bool clear)
  
- #include "ssl_ncp.h"
-+#include "ssl_util.h"
- #include "openvpn.h"
+     packet_id_free(&ks->crypto_options.packet_id);
  
- /**
-@@ -195,23 +196,10 @@ const char *
- tls_peer_ncp_list(const char *peer_info, struct gc_arena *gc)
- {
-     /* Check if the peer sends the IV_CIPHERS list */
--    const char *ncp_ciphers_start;
--    if (peer_info && (ncp_ciphers_start = strstr(peer_info, "IV_CIPHERS=")))
-+    const char *iv_ciphers = extract_var_peer_info(peer_info,"IV_CIPHERS=", gc);
-+    if (iv_ciphers)
+-#ifdef PLUGIN_DEF_AUTH
+     key_state_rm_auth_control_files(ks);
+-#endif
+ 
+     if (clear)
      {
--        ncp_ciphers_start += strlen("IV_CIPHERS=");
--        const char *ncp_ciphers_end = strstr(ncp_ciphers_start, "\n");
--        if (!ncp_ciphers_end)
--        {
--            /* IV_CIPHERS is at end of the peer_info list and no '\n'
--             * follows */
--            ncp_ciphers_end = ncp_ciphers_start + strlen(ncp_ciphers_start);
--        }
--
--        char *ncp_ciphers_peer = string_alloc(ncp_ciphers_start, gc);
--        /* NULL terminate the copy at the right position */
--        ncp_ciphers_peer[ncp_ciphers_end - ncp_ciphers_start] = '\0';
--        return ncp_ciphers_peer;
--
-+        return iv_ciphers;
-     }
-     else if (tls_peer_info_ncp_ver(peer_info)>=2)
-     {
-diff --git a/src/openvpn/ssl_util.c b/src/openvpn/ssl_util.c
-new file mode 100644
-index 00000000..a74e3b72
---- /dev/null
-+++ b/src/openvpn/ssl_util.c
-@@ -0,0 +1,61 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2002-2020 OpenVPN Inc <sales@...515...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+ */
-+#ifdef HAVE_CONFIG_H
-+#include "config.h"
-+#elif defined(_MSC_VER)
-+#include "config-msvc.h"
-+#endif
-+
-+#include "syshead.h"
-+
-+#include "ssl_util.h"
-+
-+char *
-+extract_var_peer_info(const char *peer_info, const char *var,
-+                      struct gc_arena *gc)
-+{
-+    if (!peer_info)
-+    {
-+        return NULL;
-+    }
-+
-+    const char *var_start = strstr(peer_info, var);
-+    if (!var_start)
-+    {
-+        /* variable not found in peer info */
-+        return NULL;
-+    }
-+
-+    var_start += strlen(var);
-+    const char *var_end = strstr(var_start, "\n");
-+    if (!var_end)
-+    {
-+        /* var is at end of the peer_info list and no '\n' follows */
-+        var_end = var_start + strlen(var_start);
-+    }
-+
-+    char *var_value = string_alloc(var_start, gc);
-+    /* NULL terminate the copy at the right position */
-+    var_value[var_end - var_start] = '\0';
-+    return var_value;
-+}
-diff --git a/src/openvpn/ssl_util.h b/src/openvpn/ssl_util.h
-new file mode 100644
-index 00000000..bc2ae30d
---- /dev/null
-+++ b/src/openvpn/ssl_util.h
-@@ -0,0 +1,49 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2002-2020 OpenVPN Inc <sales@...515...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+ */
-+
-+/**
-+ * @file SSL utility function. This file (and its .c file) is designed to
-+ *       to be included in units/etc without pulling in a lot of dependencies
-+ */
-+
-+#ifndef SSL_UTIL_H_
-+#define SSL_UTIL_H_
-+
-+#include "buffer.h"
-+
-+/**
-+ * Extracts a variable from peer info, the returned string will be allocated
-+ * using the supplied gc_arena
-+ *
-+ * @param peer_info     The peer's peer_info
-+ * @param var           The variable *including* =, e.g. IV_CIPHERS=
-+ *
-+ * @return  The content of the variable as NULL terminated string or NULL if the
-+ *          variable cannot be found.
-+ */
-+char *
-+extract_var_peer_info(const char *peer_info,
-+                      const char *var,
-+                      struct gc_arena *gc);
-+
-+#endif
 diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index e04c5c35..e0ef399f 100644
+index b9647c1a..b59a0230 100644
 --- a/src/openvpn/ssl_verify.c
 +++ b/src/openvpn/ssl_verify.c
-@@ -46,6 +46,7 @@
- #endif
- #include "auth_token.h"
- #include "push.h"
-+#include "ssl_util.h"
+@@ -1188,14 +1188,14 @@ tls_authenticate_key(struct tls_multi *multi, const unsigned int mda_key_id, con
+ /*
+  * Verify the user name and password using a script
+  */
+-static bool
++static int
+ verify_user_pass_script(struct tls_session *session, struct tls_multi *multi,
+                         const struct user_pass *up)
+ {
+     struct gc_arena gc = gc_new();
+     struct argv argv = argv_new();
+     const char *tmp_file = "";
+-    bool ret = false;
++    int retval = OPENVPN_PLUGIN_FUNC_ERROR;
  
- /** Maximum length of common name */
- #define TLS_USERNAME_LEN 64
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index f0880a6b..50f3a02e 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -125,4 +125,5 @@ ncp_testdriver_SOURCES = test_ncp.c mock_msg.c \
- 	$(openvpn_srcdir)/crypto_openssl.c \
- 	$(openvpn_srcdir)/otime.c \
- 	$(openvpn_srcdir)/packet_id.c \
--	$(openvpn_srcdir)/platform.c
-+	$(openvpn_srcdir)/platform.c \
-+	$(openvpn_srcdir)/ssl_util.c
+     /* Set environmental variables prior to calling script */
+     setenv_str(session->opt->es, "script_type", "user-pass-verify");
+@@ -1223,25 +1223,59 @@ verify_user_pass_script(struct tls_session *session, struct tls_multi *multi,
+             /* pass temp file name to script */
+             argv_printf_cat(&argv, "%s", tmp_file);
+         }
+-        else
+-        {
+-            msg(D_TLS_ERRORS, "TLS Auth Error: could not create write "
+-                "username/password to temp file");
+-        }
+     }
+     else
+     {
++        setenv_str(session->opt->es, "username", up->username);
+         setenv_str(session->opt->es, "password", up->password);
+     }
+ 
++    /* generate filename for deferred auth control file */
++    if (!key_state_gen_auth_control_files(&session->key[KS_PRIMARY],
++                                         session->opt))
++    {
++        msg(D_TLS_ERRORS, "TLS Auth Error (%s): "
++                          "could not create deferred auth control file", __func__);
++        return OPENVPN_PLUGIN_FUNC_ERROR;
++    }
++
+     /* call command */
+-    ret = openvpn_run_script(&argv, session->opt->es, 0,
+-                             "--auth-user-pass-verify");
++    int script_ret = openvpn_run_script(&argv, session->opt->es, S_EXITCODE,
++                                        "--auth-user-pass-verify");
++    switch (script_ret)
++    {
++       case 0:
++           retval = OPENVPN_PLUGIN_FUNC_SUCCESS;
++           break;
++       case 2:
++           retval = OPENVPN_PLUGIN_FUNC_DEFERRED;
++           break;
++       default:
++           retval = OPENVPN_PLUGIN_FUNC_ERROR;
++           break;
++    }
++    if (retval == OPENVPN_PLUGIN_FUNC_DEFERRED)
++    {
++        /* Check if we the plugin has written the pending auth control
++         * file and send the pending auth to the client */
++        if(!key_state_check_auth_pending_file(&session->key[KS_PRIMARY],
++                                              multi))
++        {
++            retval = OPENVPN_PLUGIN_FUNC_ERROR;
++            key_state_rm_auth_control_files(&session->key[KS_PRIMARY]);
++        }
+ 
++    }
++    else
++    {
++        /* purge auth control filename (and file itself) for non-deferred returns */
++        key_state_rm_auth_control_files(&session->key[KS_PRIMARY]);
++    }
+     if (!session->opt->auth_user_pass_verify_script_via_file)
+     {
+         setenv_del(session->opt->es, "password");
+     }
++
+ done:
+     if (tmp_file && strlen(tmp_file) > 0)
+     {
+@@ -1250,7 +1284,7 @@ done:
+ 
+     argv_free(&argv);
+     gc_free(&gc);
+-    return ret;
++    return retval;
+ }
+ 
+ /*
+@@ -1371,8 +1405,6 @@ void
+ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+                  struct tls_session *session)
+ {
+-    int s1 = OPENVPN_PLUGIN_FUNC_SUCCESS;
+-    bool s2 = true;
+     struct key_state *ks = &session->key[KS_PRIMARY];      /* primary key */
+ 
+ #ifdef ENABLE_MANAGEMENT
+@@ -1432,30 +1464,32 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+         }
+     }
+ 
++    int plugin_status = OPENVPN_PLUGIN_FUNC_SUCCESS;
++    int script_status = OPENVPN_PLUGIN_FUNC_SUCCESS;
+     /* Set the environment variables used by all auth variants */
+     if (!set_verify_user_pass_env(up, multi, session))
+     {
+         skip_auth = true;
+-        s1 = OPENVPN_PLUGIN_FUNC_ERROR;
++        plugin_status = OPENVPN_PLUGIN_FUNC_ERROR;
+     }
+ 
+     /* call plugin(s) and/or script */
+     if (!skip_auth)
+     {
+ #ifdef ENABLE_MANAGEMENT
+-        if (man_def_auth==KMDA_DEF)
++        if (man_def_auth == KMDA_DEF)
+         {
+             man_def_auth = verify_user_pass_management(session, multi, up);
+         }
+ #endif
+         if (plugin_defined(session->opt->plugins, OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY))
+         {
+-            s1 = verify_user_pass_plugin(session, multi, up);
++            plugin_status = verify_user_pass_plugin(session, multi, up);
+         }
+ 
+         if (session->opt->auth_user_pass_verify_script)
+         {
+-            s2 = verify_user_pass_script(session, multi, up);
++            script_status = verify_user_pass_script(session, multi, up);
+         }
+     }
+ 
+@@ -1466,19 +1500,25 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+         msg(D_TLS_ERRORS,
+             "TLS Auth Error: --username-as-common name specified and username is longer than the maximum permitted Common Name length of %d characters",
+             TLS_USERNAME_LEN);
+-        s1 = OPENVPN_PLUGIN_FUNC_ERROR;
++        plugin_status = OPENVPN_PLUGIN_FUNC_ERROR;
++        script_status = OPENVPN_PLUGIN_FUNC_ERROR;
+     }
+     /* auth succeeded? */
+-    if ((s1 == OPENVPN_PLUGIN_FUNC_SUCCESS
+-         || s1 == OPENVPN_PLUGIN_FUNC_DEFERRED
+-         ) && s2
++    bool plugin_ok = plugin_status == OPENVPN_PLUGIN_FUNC_SUCCESS
++        || plugin_status == OPENVPN_PLUGIN_FUNC_DEFERRED;
++
++    bool script_ok =  script_status == OPENVPN_PLUGIN_FUNC_SUCCESS
++        || script_status ==  OPENVPN_PLUGIN_FUNC_DEFERRED;
++
++    if (script_ok && plugin_ok && tls_lock_username(multi, up->username)
+ #ifdef ENABLE_MANAGEMENT
+         && man_def_auth != KMDA_ERROR
+ #endif
+-        && tls_lock_username(multi, up->username))
++        )
+     {
+         ks->authenticated = KS_AUTH_TRUE;
+-        if (s1 == OPENVPN_PLUGIN_FUNC_DEFERRED)
++        if (plugin_status == OPENVPN_PLUGIN_FUNC_DEFERRED
++            || script_status == OPENVPN_PLUGIN_FUNC_DEFERRED)
+         {
+             ks->authenticated = KS_AUTH_DEFERRED;
+         }
 -- 
 2.30.1
 
