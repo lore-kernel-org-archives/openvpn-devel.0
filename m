@@ -1,9 +1,13 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Fri, 26 Feb 2021 14:48:29 +0100
-Message-Id: <20210226134829.3589-1-arne@...1227...>
-In-Reply-To: <a4ad13e6-dfbe-2b1f-c818-10f2c87218a6@...2080...>
-References: <a4ad13e6-dfbe-2b1f-c818-10f2c87218a6@...2080...>
-Subject: [Openvpn-devel] [PATCH v3] Implement deferred auth for scripts
+References: <20210216193215.GQ976@...1296...>
+ <20210219165252.4562-1-arne@...1227...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <39a27e33-359f-d6a9-be0f-8828bf7ea0c1@...2181...>
+Date: Tue, 2 Mar 2021 10:30:45 +0100
+MIME-Version: 1.0
+In-Reply-To: <20210219165252.4562-1-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v5] Allow running a default
+ configuration with TLS libraries without BF-CBC
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,270 +16,183 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-This patch also refactors the if condition that checks the result of
-the authentication since that has become quite unreadable. It renames
-s1/s2 and extracts some parts of the condition into individual variables
-to make the condition better understandle
+Hi,
 
-Patch V2: add refactoring of the if condition
+On 19/02/2021 17:52, Arne Schwabe wrote:
+> Modern TLS libraries might drop Blowfish by default or distributions
+> might disable Blowfish in OpenSSL/mbed TLS. We still signal OCC
+> options with BF-CBC compatible strings. To avoid requiring BF-CBC
+> for this, special this one usage of BF-CBC enough to avoid a hard
+> requirement on Blowfish in the default configuration.
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> 
+> Patch v2: add more clarifying comment, do not warn about OCC only insecure
+>           ciphers, code improvements
+> 
+> Patch V3: Put ciphername resolution via ciper_kt_name in the right branch
+> 
+> Patch V4: Fix cornercase of BF-CBC in data-ciphers not itialising cipher.
+> 
+> Patch v5: I accidently resend v3 as v4. So v5 is just a resend of the real v4
+> ---
+>  src/openvpn/crypto_backend.h |  2 ++
+>  src/openvpn/init.c           | 37 ++++++++++++++++++++++------
+>  src/openvpn/options.c        | 47 +++++++++++++++++++++++++++++++-----
+>  3 files changed, 72 insertions(+), 14 deletions(-)
+> 
+> diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
+> index 384ffc80..93f7e475 100644
+> --- a/src/openvpn/crypto_backend.h
+> +++ b/src/openvpn/crypto_backend.h
+> @@ -241,6 +241,8 @@ const cipher_kt_t *cipher_kt_get(const char *ciphername);
+>   * The returned name is normalised to the OpenVPN config name in case the
+>   * name differs from the name used by the crypto library.
+>   *
+> + * Returns [null-cipher] in case the cipher_kt is NULL.
+> + *
+>   * @param cipher_kt     Static cipher parameters
+>   *
+>   * @return a statically allocated string describing the cipher.
+> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+> index 46c933b1..cfd71482 100644
+> --- a/src/openvpn/init.c
+> +++ b/src/openvpn/init.c
+> @@ -2769,14 +2769,35 @@ do_init_crypto_tls_c1(struct context *c)
+>  #endif /* if P2MP */
+>          }
+>  
+> -        /* Do not warn if we only have BF-CBC in options->ciphername
+> -         * because it is still the default cipher */
+> -        bool warn = !streq(options->ciphername, "BF-CBC")
+> -             || options->enable_ncp_fallback;
+> -        /* Get cipher & hash algorithms */
+> -        init_key_type(&c->c1.ks.key_type, options->ciphername, options->authname,
+> -                      options->keysize, true, warn);
+> -
+> +       /*
+> +        * BF-CBC is allowed to be used only when explicitly configured
+> +        * as NCP-fallback or when NCP has been disabled or explicitly
+> +        * allowed in the in ncp_ciphers list.
+> +        * In all other cases do not attempt to initialize BF-CBC as it
+> +        * may not even be supported by the underlying SSL library.
+> +        *
+> +        * Therefore, the key structure has to be initialized when:
+> +        * - any non-BF-CBC cipher was selected; or
+> +        * - BF-CBC is selected and NCP is disabled (explicit request to
+> +        *   use the BF-CBC cipher); or
+> +        * - BF-CBC is selected, NCP is enabled and fallback is enabled
+> +        *   (BF-CBC will be the fallback).
+> +        * - BF-CBC is in data-ciphers and we negotiate to use BF-CBC:
+> +        *   If the negotiated cipher and options->ciphername are the
+> +        *   same we do not reinit the cipher
+> +        *
+> +        * Note that BF-CBC will still be part of the OCC string to retain
+> +        * backwards compatibility with older clients.
+> +        */
+> +        if (!streq(options->ciphername, "BF-CBC") || !options->ncp_enabled
+> +            || (options->ncp_enabled && tls_item_in_cipher_list("BF-CBC", options->ncp_ciphers))
+> +            || options->enable_ncp_fallback)
+> +        {
+> +            /* Do not warn if the if the cipher is used only in OCC */
+> +            bool warn = !options->ncp_enabled || options->enable_ncp_fallback;
+> +            init_key_type(&c->c1.ks.key_type, options->ciphername, options->authname,
+> +                          options->keysize, true, warn);
+> +        }
+>          /* Initialize PRNG with config-specified digest */
+>          prng_init(options->prng_hash, options->prng_nonce_secret_len);
+>  
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index 059386b3..c02ad051 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -3609,9 +3609,29 @@ calc_options_string_link_mtu(const struct options *o, const struct frame *frame)
+>      {
+>          struct frame fake_frame = *frame;
+>          struct key_type fake_kt;
+> -        init_key_type(&fake_kt, o->ciphername, o->authname, o->keysize, true,
+> -                      false);
+> +
+>          frame_remove_from_extra_frame(&fake_frame, crypto_max_overhead());
+> +
+> +
+> +        /* o->ciphername might be BF-CBC even though the underlying SSL library
+> +         * does not support it. For this reason we workaround this corner case
+> +         * by pretending to have no encryption enabled and by manually adding
+> +         * the required packet overhead to the MTU computation.
+> +         */
+> +        const char* ciphername = o->ciphername;
+> +
+> +        if (strcmp(o->ciphername, "BF-CBC") == 0)
+> +        {
+> +            /* none has no overhead, so use this to later add only --auth
+> +             * overhead */
+> +
+> +            /* overhead of BF-CBC: 64 bit block size, 64 bit IV size */
+> +            frame_add_to_extra_frame(&fake_frame, 64/8 + 64/8);
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- Changes.rst                         | 12 +++++
- doc/man-sections/script-options.rst | 14 ++++-
- src/openvpn/ssl.c                   |  2 -
- src/openvpn/ssl_verify.c            | 84 +++++++++++++++++++++--------
- 4 files changed, 87 insertions(+), 25 deletions(-)
+Please add space around the / operators.
 
-diff --git a/Changes.rst b/Changes.rst
-index 62008e8d..74728d2a 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -15,6 +15,17 @@ Compatibility with OpenSSL in FIPS mode
-     requirements/recommendation of FIPS 140-2. This just allows OpenVPN
-     to be run on a system that be configured OpenSSL in FIPS mode.
- 
-+Deferred auth support for scripts
-+    The ``--auth-user-pass-verify`` script supports now deferred authentication.
-+
-+Pending auth support for plugins and scripts
-+    Both auth plugin and script can now signal pending authentication to
-+    the client when using deferred authentication. The new ``client-crresponse``
-+    script option and ``OPENVPN_PLUGIN_CLIENT_CRRESPONSE`` plugin function can
-+    be used to parse a client response to a ``CR_TEXT`` two factor challenge.
-+
-+    See ``sample/sample-scripts/totpauth.py`` for an example.
-+
- Deprecated features
- -------------------
- ``inetd`` has been removed
-@@ -22,6 +33,7 @@ Deprecated features
-     and TAP mode only.
- 
- 
-+
- Overview of changes in 2.5
- ==========================
- 
-diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-options.rst
-index 03b3dd77..50edd986 100644
---- a/doc/man-sections/script-options.rst
-+++ b/doc/man-sections/script-options.rst
-@@ -90,7 +90,19 @@ SCRIPT HOOKS
- 
-   The script should examine the username and password, returning a success
-   exit code (:code:`0`) if the client's authentication request is to be
--  accepted, or a failure code (:code:`1`) to reject the client.
-+  accepted, a failure code (:code:`1`) to reject the client, or a that
-+  the authentication is deferred (:code:`2`). If the authentication is
-+  deferred, the script must fork/start a background or another non-blocking
-+  operation to continue the authentication in the background. When finshing
-+  the authentication, a :code:`1` or :code:`0` must be written to the
-+  file specified by the :code:`auth_control_file`.
-+
-+  When deferred authentication is in use, the script can also request
-+  pending authentication by writing to the file specified by the
-+  :code:`auth_pending_file`. The first line must be the timeout in
-+  seconds and the second line the EXTRA as documented in the
-+  ``client-pending-auth`` section of `doc/management.txt`.
-+
- 
-   This directive is designed to enable a plugin-style interface for
-   extending OpenVPN's authentication capabilities.
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index f958a605..51164a66 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -992,9 +992,7 @@ key_state_free(struct key_state *ks, bool clear)
- 
-     packet_id_free(&ks->crypto_options.packet_id);
- 
--#ifdef PLUGIN_DEF_AUTH
-     key_state_rm_auth_control_files(ks);
--#endif
- 
-     if (clear)
-     {
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index b9647c1a..b59a0230 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -1188,14 +1188,14 @@ tls_authenticate_key(struct tls_multi *multi, const unsigned int mda_key_id, con
- /*
-  * Verify the user name and password using a script
-  */
--static bool
-+static int
- verify_user_pass_script(struct tls_session *session, struct tls_multi *multi,
-                         const struct user_pass *up)
- {
-     struct gc_arena gc = gc_new();
-     struct argv argv = argv_new();
-     const char *tmp_file = "";
--    bool ret = false;
-+    int retval = OPENVPN_PLUGIN_FUNC_ERROR;
- 
-     /* Set environmental variables prior to calling script */
-     setenv_str(session->opt->es, "script_type", "user-pass-verify");
-@@ -1223,25 +1223,59 @@ verify_user_pass_script(struct tls_session *session, struct tls_multi *multi,
-             /* pass temp file name to script */
-             argv_printf_cat(&argv, "%s", tmp_file);
-         }
--        else
--        {
--            msg(D_TLS_ERRORS, "TLS Auth Error: could not create write "
--                "username/password to temp file");
--        }
-     }
-     else
-     {
-+        setenv_str(session->opt->es, "username", up->username);
-         setenv_str(session->opt->es, "password", up->password);
-     }
- 
-+    /* generate filename for deferred auth control file */
-+    if (!key_state_gen_auth_control_files(&session->key[KS_PRIMARY],
-+                                         session->opt))
-+    {
-+        msg(D_TLS_ERRORS, "TLS Auth Error (%s): "
-+                          "could not create deferred auth control file", __func__);
-+        return OPENVPN_PLUGIN_FUNC_ERROR;
-+    }
-+
-     /* call command */
--    ret = openvpn_run_script(&argv, session->opt->es, 0,
--                             "--auth-user-pass-verify");
-+    int script_ret = openvpn_run_script(&argv, session->opt->es, S_EXITCODE,
-+                                        "--auth-user-pass-verify");
-+    switch (script_ret)
-+    {
-+       case 0:
-+           retval = OPENVPN_PLUGIN_FUNC_SUCCESS;
-+           break;
-+       case 2:
-+           retval = OPENVPN_PLUGIN_FUNC_DEFERRED;
-+           break;
-+       default:
-+           retval = OPENVPN_PLUGIN_FUNC_ERROR;
-+           break;
-+    }
-+    if (retval == OPENVPN_PLUGIN_FUNC_DEFERRED)
-+    {
-+        /* Check if we the plugin has written the pending auth control
-+         * file and send the pending auth to the client */
-+        if(!key_state_check_auth_pending_file(&session->key[KS_PRIMARY],
-+                                              multi))
-+        {
-+            retval = OPENVPN_PLUGIN_FUNC_ERROR;
-+            key_state_rm_auth_control_files(&session->key[KS_PRIMARY]);
-+        }
- 
-+    }
-+    else
-+    {
-+        /* purge auth control filename (and file itself) for non-deferred returns */
-+        key_state_rm_auth_control_files(&session->key[KS_PRIMARY]);
-+    }
-     if (!session->opt->auth_user_pass_verify_script_via_file)
-     {
-         setenv_del(session->opt->es, "password");
-     }
-+
- done:
-     if (tmp_file && strlen(tmp_file) > 0)
-     {
-@@ -1250,7 +1284,7 @@ done:
- 
-     argv_free(&argv);
-     gc_free(&gc);
--    return ret;
-+    return retval;
- }
- 
- /*
-@@ -1371,8 +1405,6 @@ void
- verify_user_pass(struct user_pass *up, struct tls_multi *multi,
-                  struct tls_session *session)
- {
--    int s1 = OPENVPN_PLUGIN_FUNC_SUCCESS;
--    bool s2 = true;
-     struct key_state *ks = &session->key[KS_PRIMARY];      /* primary key */
- 
- #ifdef ENABLE_MANAGEMENT
-@@ -1432,30 +1464,32 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
-         }
-     }
- 
-+    int plugin_status = OPENVPN_PLUGIN_FUNC_SUCCESS;
-+    int script_status = OPENVPN_PLUGIN_FUNC_SUCCESS;
-     /* Set the environment variables used by all auth variants */
-     if (!set_verify_user_pass_env(up, multi, session))
-     {
-         skip_auth = true;
--        s1 = OPENVPN_PLUGIN_FUNC_ERROR;
-+        plugin_status = OPENVPN_PLUGIN_FUNC_ERROR;
-     }
- 
-     /* call plugin(s) and/or script */
-     if (!skip_auth)
-     {
- #ifdef ENABLE_MANAGEMENT
--        if (man_def_auth==KMDA_DEF)
-+        if (man_def_auth == KMDA_DEF)
-         {
-             man_def_auth = verify_user_pass_management(session, multi, up);
-         }
- #endif
-         if (plugin_defined(session->opt->plugins, OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY))
-         {
--            s1 = verify_user_pass_plugin(session, multi, up);
-+            plugin_status = verify_user_pass_plugin(session, multi, up);
-         }
- 
-         if (session->opt->auth_user_pass_verify_script)
-         {
--            s2 = verify_user_pass_script(session, multi, up);
-+            script_status = verify_user_pass_script(session, multi, up);
-         }
-     }
- 
-@@ -1466,19 +1500,25 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
-         msg(D_TLS_ERRORS,
-             "TLS Auth Error: --username-as-common name specified and username is longer than the maximum permitted Common Name length of %d characters",
-             TLS_USERNAME_LEN);
--        s1 = OPENVPN_PLUGIN_FUNC_ERROR;
-+        plugin_status = OPENVPN_PLUGIN_FUNC_ERROR;
-+        script_status = OPENVPN_PLUGIN_FUNC_ERROR;
-     }
-     /* auth succeeded? */
--    if ((s1 == OPENVPN_PLUGIN_FUNC_SUCCESS
--         || s1 == OPENVPN_PLUGIN_FUNC_DEFERRED
--         ) && s2
-+    bool plugin_ok = plugin_status == OPENVPN_PLUGIN_FUNC_SUCCESS
-+        || plugin_status == OPENVPN_PLUGIN_FUNC_DEFERRED;
-+
-+    bool script_ok =  script_status == OPENVPN_PLUGIN_FUNC_SUCCESS
-+        || script_status ==  OPENVPN_PLUGIN_FUNC_DEFERRED;
-+
-+    if (script_ok && plugin_ok && tls_lock_username(multi, up->username)
- #ifdef ENABLE_MANAGEMENT
-         && man_def_auth != KMDA_ERROR
- #endif
--        && tls_lock_username(multi, up->username))
-+        )
-     {
-         ks->authenticated = KS_AUTH_TRUE;
--        if (s1 == OPENVPN_PLUGIN_FUNC_DEFERRED)
-+        if (plugin_status == OPENVPN_PLUGIN_FUNC_DEFERRED
-+            || script_status == OPENVPN_PLUGIN_FUNC_DEFERRED)
-         {
-             ks->authenticated = KS_AUTH_DEFERRED;
-         }
+> +        }
+> +
+> +        init_key_type(&fake_kt, ciphername, o->authname, o->keysize, true,
+> +                      false);
+> +
+>          crypto_adjust_frame_parameters(&fake_frame, &fake_kt, o->replay,
+>                                         cipher_kt_mode_ofb_cfb(fake_kt.cipher));
+>          frame_finalize(&fake_frame, o->ce.link_mtu_defined, o->ce.link_mtu,
+> @@ -3781,18 +3801,33 @@ options_string(const struct options *o,
+>                 + (TLS_SERVER == true)
+>                 <= 1);
+>  
+> -        init_key_type(&kt, o->ciphername, o->authname, o->keysize, true,
+> -                      false);
+> +        /* Skip resolving BF-CBC to allow SSL libraries without BF-CBC
+> +         * to work here in the default configuration */
+> +        const char *ciphername = o->ciphername;
+> +        int keysize;
+> +
+> +        if (strcmp(o->ciphername, "BF-CBC") == 0)
+> +        {
+> +            init_key_type(&kt, "none", o->authname, o->keysize, true,
+> +                          false);
+> +            keysize = 128;
+> +        }
+> +        else
+> +        {
+> +            init_key_type(&kt, o->ciphername, o->authname, o->keysize, true,
+> +                          false);
+> +            ciphername = cipher_kt_name(kt.cipher);
+> +            keysize = kt.cipher_length * 8;
+> +        }
+>          /* Only announce the cipher to our peer if we are willing to
+>           * support it */
+> -        const char *ciphername = cipher_kt_name(kt.cipher);
+>          if (p2p_nopull || !o->ncp_enabled
+>              || tls_item_in_cipher_list(ciphername, o->ncp_ciphers))
+>          {
+>              buf_printf(&out, ",cipher %s", ciphername);
+>          }
+>          buf_printf(&out, ",auth %s", md_kt_name(kt.digest));
+> -        buf_printf(&out, ",keysize %d", kt.cipher_length * 8);
+> +        buf_printf(&out, ",keysize %d", keysize);
+>          if (o->shared_secret_file)
+>          {
+>              buf_printf(&out, ",secret");
+> 
+
+Other than the whitepsace complaint, this patch makes sense to me (as it
+did the previous version, but thanks Gert for spotting the BF-CBC problem).
+
+It's ACK for me, but Gert's test rig will give its final verdict.
+
+Acked-by: Antonio Quartulli <antonio@...515...>
+
+
 -- 
-2.30.1
-
+Antonio Quartulli
 
