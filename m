@@ -1,10 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu,  4 Mar 2021 12:40:18 +0100
-Message-Id: <20210304114018.8442-1-arne@...1227...>
-In-Reply-To: <20210125125628.30364-12-arne@...1227...>
-References: <20210125125628.30364-12-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v3] Add example script demonstrating TOTP
- via auth-pending
+Date: Thu,  4 Mar 2021 12:40:52 +0100
+Message-Id: <20210304114052.8577-1-arne@...1227...>
+In-Reply-To: <20210226134829.3589-1-arne@...1227...>
+References: <20210226134829.3589-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v4] Implement deferred auth for scripts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,148 +16,266 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
+This patch also refactors the if condition that checks the result of
+the authentication since that has become quite unreadable. It renames
+s1/s2 and extracts some parts of the condition into individual variables
+to make the condition better understandle
 
-Patch v3: Some minor cleanups in the script (rename CNs, add more comments)
+Patch v2: add refactoring of the if condition
+Patch v4: fix documentation not mentioning method as 2nd line
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- doc/man-sections/script-options.rst |   3 +
- sample/sample-scripts/totpauth.py   | 111 ++++++++++++++++++++++++++++
- 2 files changed, 114 insertions(+)
- create mode 100755 sample/sample-scripts/totpauth.py
+ Changes.rst                         | 12 +++++
+ doc/man-sections/script-options.rst | 14 ++++-
+ src/openvpn/ssl.c                   |  2 -
+ src/openvpn/ssl_verify.c            | 84 +++++++++++++++++++++--------
+ 4 files changed, 87 insertions(+), 25 deletions(-)
 
+diff --git a/Changes.rst b/Changes.rst
+index 62008e8d..74728d2a 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -15,6 +15,17 @@ Compatibility with OpenSSL in FIPS mode
+     requirements/recommendation of FIPS 140-2. This just allows OpenVPN
+     to be run on a system that be configured OpenSSL in FIPS mode.
+ 
++Deferred auth support for scripts
++    The ``--auth-user-pass-verify`` script supports now deferred authentication.
++
++Pending auth support for plugins and scripts
++    Both auth plugin and script can now signal pending authentication to
++    the client when using deferred authentication. The new ``client-crresponse``
++    script option and ``OPENVPN_PLUGIN_CLIENT_CRRESPONSE`` plugin function can
++    be used to parse a client response to a ``CR_TEXT`` two factor challenge.
++
++    See ``sample/sample-scripts/totpauth.py`` for an example.
++
+ Deprecated features
+ -------------------
+ ``inetd`` has been removed
+@@ -22,6 +33,7 @@ Deprecated features
+     and TAP mode only.
+ 
+ 
++
+ Overview of changes in 2.5
+ ==========================
+ 
 diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-options.rst
-index f48e5818..6517f847 100644
+index 03b3dd77..22990f4f 100644
 --- a/doc/man-sections/script-options.rst
 +++ b/doc/man-sections/script-options.rst
-@@ -147,6 +147,9 @@ SCRIPT HOOKS
-   :code:`auth_control_file or further defer it. See ``--auth-user-pass-verify``
-   for details.
+@@ -90,7 +90,19 @@ SCRIPT HOOKS
  
-+  For a sample script that implement TOTP (RFC 6238) based two-factor
-+  authentication, see :code:`sample-scripts/totp.py`.
+   The script should examine the username and password, returning a success
+   exit code (:code:`0`) if the client's authentication request is to be
+-  accepted, or a failure code (:code:`1`) to reject the client.
++  accepted, a failure code (:code:`1`) to reject the client, or a that
++  the authentication is deferred (:code:`2`). If the authentication is
++  deferred, the script must fork/start a background or another non-blocking
++  operation to continue the authentication in the background. When finshing
++  the authentication, a :code:`1` or :code:`0` must be written to the
++  file specified by the :code:`auth_control_file`.
 +
- --client-connect cmd
-   Run command ``cmd`` on client connection.
++  When deferred authentication is in use, the script can also request
++  pending authentication by writing to the file specified by the
++  :code:`auth_pending_file`. The first line must be the timeout in
++  seconds, the required method on the second line (e.g. crtext) and
++  third line must be the EXTRA as documented in the
++  ``client-pending-auth`` section of `doc/management.txt`.
  
-diff --git a/sample/sample-scripts/totpauth.py b/sample/sample-scripts/totpauth.py
-new file mode 100755
-index 00000000..2991d659
---- /dev/null
-+++ b/sample/sample-scripts/totpauth.py
-@@ -0,0 +1,111 @@
-+#! /usr/bin/python3
-+# Copyright (c) 2021 OpenVPN Inc <sales@...515...>
-+# Copyright (c) 2021 Arne Schwabe <arne@...1227...>
-+#
-+# Permission is hereby granted, free of charge, to any person obtaining a copy
-+# of this software and associated documentation files (the "Software"), to deal
-+# in the Software without restriction, including without limitation the rights
-+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-+# copies of the Software, and to permit persons to whom the Software is
-+# furnished to do so, subject to the following conditions:
-+#
-+# The above copyright notice and this permission notice shall be included in all
-+# copies or substantial portions of the Software.
-+#
-+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-+# SOFTWARE.
+   This directive is designed to enable a plugin-style interface for
+   extending OpenVPN's authentication capabilities.
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index f958a605..51164a66 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -992,9 +992,7 @@ key_state_free(struct key_state *ks, bool clear)
+ 
+     packet_id_free(&ks->crypto_options.packet_id);
+ 
+-#ifdef PLUGIN_DEF_AUTH
+     key_state_rm_auth_control_files(ks);
+-#endif
+ 
+     if (clear)
+     {
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index b9647c1a..b59a0230 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -1188,14 +1188,14 @@ tls_authenticate_key(struct tls_multi *multi, const unsigned int mda_key_id, con
+ /*
+  * Verify the user name and password using a script
+  */
+-static bool
++static int
+ verify_user_pass_script(struct tls_session *session, struct tls_multi *multi,
+                         const struct user_pass *up)
+ {
+     struct gc_arena gc = gc_new();
+     struct argv argv = argv_new();
+     const char *tmp_file = "";
+-    bool ret = false;
++    int retval = OPENVPN_PLUGIN_FUNC_ERROR;
+ 
+     /* Set environmental variables prior to calling script */
+     setenv_str(session->opt->es, "script_type", "user-pass-verify");
+@@ -1223,25 +1223,59 @@ verify_user_pass_script(struct tls_session *session, struct tls_multi *multi,
+             /* pass temp file name to script */
+             argv_printf_cat(&argv, "%s", tmp_file);
+         }
+-        else
+-        {
+-            msg(D_TLS_ERRORS, "TLS Auth Error: could not create write "
+-                "username/password to temp file");
+-        }
+     }
+     else
+     {
++        setenv_str(session->opt->es, "username", up->username);
+         setenv_str(session->opt->es, "password", up->password);
+     }
+ 
++    /* generate filename for deferred auth control file */
++    if (!key_state_gen_auth_control_files(&session->key[KS_PRIMARY],
++                                         session->opt))
++    {
++        msg(D_TLS_ERRORS, "TLS Auth Error (%s): "
++                          "could not create deferred auth control file", __func__);
++        return OPENVPN_PLUGIN_FUNC_ERROR;
++    }
 +
-+import sys
-+import os
-+from base64 import standard_b64decode
+     /* call command */
+-    ret = openvpn_run_script(&argv, session->opt->es, 0,
+-                             "--auth-user-pass-verify");
++    int script_ret = openvpn_run_script(&argv, session->opt->es, S_EXITCODE,
++                                        "--auth-user-pass-verify");
++    switch (script_ret)
++    {
++       case 0:
++           retval = OPENVPN_PLUGIN_FUNC_SUCCESS;
++           break;
++       case 2:
++           retval = OPENVPN_PLUGIN_FUNC_DEFERRED;
++           break;
++       default:
++           retval = OPENVPN_PLUGIN_FUNC_ERROR;
++           break;
++    }
++    if (retval == OPENVPN_PLUGIN_FUNC_DEFERRED)
++    {
++        /* Check if we the plugin has written the pending auth control
++         * file and send the pending auth to the client */
++        if(!key_state_check_auth_pending_file(&session->key[KS_PRIMARY],
++                                              multi))
++        {
++            retval = OPENVPN_PLUGIN_FUNC_ERROR;
++            key_state_rm_auth_control_files(&session->key[KS_PRIMARY]);
++        }
+ 
++    }
++    else
++    {
++        /* purge auth control filename (and file itself) for non-deferred returns */
++        key_state_rm_auth_control_files(&session->key[KS_PRIMARY]);
++    }
+     if (!session->opt->auth_user_pass_verify_script_via_file)
+     {
+         setenv_del(session->opt->es, "password");
+     }
 +
-+import pyotp
+ done:
+     if (tmp_file && strlen(tmp_file) > 0)
+     {
+@@ -1250,7 +1284,7 @@ done:
+ 
+     argv_free(&argv);
+     gc_free(&gc);
+-    return ret;
++    return retval;
+ }
+ 
+ /*
+@@ -1371,8 +1405,6 @@ void
+ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+                  struct tls_session *session)
+ {
+-    int s1 = OPENVPN_PLUGIN_FUNC_SUCCESS;
+-    bool s2 = true;
+     struct key_state *ks = &session->key[KS_PRIMARY];      /* primary key */
+ 
+ #ifdef ENABLE_MANAGEMENT
+@@ -1432,30 +1464,32 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+         }
+     }
+ 
++    int plugin_status = OPENVPN_PLUGIN_FUNC_SUCCESS;
++    int script_status = OPENVPN_PLUGIN_FUNC_SUCCESS;
+     /* Set the environment variables used by all auth variants */
+     if (!set_verify_user_pass_env(up, multi, session))
+     {
+         skip_auth = true;
+-        s1 = OPENVPN_PLUGIN_FUNC_ERROR;
++        plugin_status = OPENVPN_PLUGIN_FUNC_ERROR;
+     }
+ 
+     /* call plugin(s) and/or script */
+     if (!skip_auth)
+     {
+ #ifdef ENABLE_MANAGEMENT
+-        if (man_def_auth==KMDA_DEF)
++        if (man_def_auth == KMDA_DEF)
+         {
+             man_def_auth = verify_user_pass_management(session, multi, up);
+         }
+ #endif
+         if (plugin_defined(session->opt->plugins, OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY))
+         {
+-            s1 = verify_user_pass_plugin(session, multi, up);
++            plugin_status = verify_user_pass_plugin(session, multi, up);
+         }
+ 
+         if (session->opt->auth_user_pass_verify_script)
+         {
+-            s2 = verify_user_pass_script(session, multi, up);
++            script_status = verify_user_pass_script(session, multi, up);
+         }
+     }
+ 
+@@ -1466,19 +1500,25 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+         msg(D_TLS_ERRORS,
+             "TLS Auth Error: --username-as-common name specified and username is longer than the maximum permitted Common Name length of %d characters",
+             TLS_USERNAME_LEN);
+-        s1 = OPENVPN_PLUGIN_FUNC_ERROR;
++        plugin_status = OPENVPN_PLUGIN_FUNC_ERROR;
++        script_status = OPENVPN_PLUGIN_FUNC_ERROR;
+     }
+     /* auth succeeded? */
+-    if ((s1 == OPENVPN_PLUGIN_FUNC_SUCCESS
+-         || s1 == OPENVPN_PLUGIN_FUNC_DEFERRED
+-         ) && s2
++    bool plugin_ok = plugin_status == OPENVPN_PLUGIN_FUNC_SUCCESS
++        || plugin_status == OPENVPN_PLUGIN_FUNC_DEFERRED;
 +
-+# Example script demonstrating how to use the auth-pending API in
-+# OpenVPN. This script is provided under MIT license to allow easy
-+# modification for other purposes.
-+#
-+# This needs support of crtext support on the client (e.g. OpenVPN for Android)
-+# See also the management-notes.txt file for more information about the auth pending
-+# protocol
-+#
-+# To use this script add the following lines in the openvpn config
++    bool script_ok =  script_status == OPENVPN_PLUGIN_FUNC_SUCCESS
++        || script_status ==  OPENVPN_PLUGIN_FUNC_DEFERRED;
 +
-+# client-crresponse /path/to/totpauth.py 
-+# auth-user-pass-verify /path/to/totpauth.py via-file
-+# auth-user-pass-optional
-+# auth-gen-token
-+
-+# Note that this script does NOT verify username/password
-+# It is only meant for querying additional 2FA when certificates are
-+# used to authenticate
-+
-+
-+# For this demo script we hardcode the TOTP secrets in a simple dictionary.
-+secrets = {"Test-Client": "OS6JDNRK2BNUPQVX",
-+           "Client-2": "IXWEMP7SK2QWSHTG"}
-+
-+
-+def main():
-+    # Get common name and script type from environment
-+    script_type = os.environ['script_type']
-+    cn = os.environ['common_name']
-+
-+    if script_type == 'user-pass-verify':
-+        # signal text based challenge response
-+        if cn in secrets:
-+            extra = "CR_TEXT:E,R:Please enter your TOTP code!"
-+            write_auth_pending(300, 'crtext', extra)
-+
-+            # Signal authentication being deferred
-+            sys.exit(2)
-+        else:
-+            # For unknown CN we report failure. Change to 0
-+            # to allow CNs without secret to auth without 2FA
-+            sys.exit(1)
-+
-+    elif script_type == 'client-crresponse':
-+        response = None
-+
-+        # Read the crresponse from the argument file
-+        # and convert it into text. A failure because of bad user
-+        # input (e.g. invalid base64) will make the script throw
-+        # an error and make OpenVPN return AUTH_FAILED
-+        with open(sys.argv[1], 'r') as crinput:
-+            response = crinput.read()
-+            response = standard_b64decode(response)
-+            response = response.decode().strip()
-+
-+        if cn not in secrets:
-+            write_auth_control(1)
-+            return
-+
-+        totp = pyotp.TOTP(secrets[cn])
-+
-+        # Check if the code is valid (and also allow code +/-1)
-+        if totp.verify(response, valid_window=1):
-+            write_auth_control(1)
-+        else:
-+            write_auth_control(0)
-+    else:
-+        print(f"Unknown script type {script_type}")
-+        sys.exit(1)
-+
-+
-+def write_auth_control(status):
-+    with open(os.environ['auth_control_file'], 'w') as auth_control:
-+        auth_control.write("%d" % status)
-+
-+
-+def write_auth_pending(timeout, method, extra):
-+    with open(os.environ['auth_pending_file'], 'w') as auth_pending:
-+        auth_pending.write("%d\n%s\n%s" % (timeout, method, extra))
-+
-+
-+if __name__ == '__main__':
-+    main()
++    if (script_ok && plugin_ok && tls_lock_username(multi, up->username)
+ #ifdef ENABLE_MANAGEMENT
+         && man_def_auth != KMDA_ERROR
+ #endif
+-        && tls_lock_username(multi, up->username))
++        )
+     {
+         ks->authenticated = KS_AUTH_TRUE;
+-        if (s1 == OPENVPN_PLUGIN_FUNC_DEFERRED)
++        if (plugin_status == OPENVPN_PLUGIN_FUNC_DEFERRED
++            || script_status == OPENVPN_PLUGIN_FUNC_DEFERRED)
+         {
+             ks->authenticated = KS_AUTH_DEFERRED;
+         }
 -- 
 2.30.1
 
