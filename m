@@ -1,14 +1,10 @@
-References: <20200907161849.20508-1-arne@...1227...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <0a95b96c-1849-4b8a-fba8-a398d452e8c3@...2080...>
-Date: Thu, 4 Mar 2021 22:55:21 +0100
-MIME-Version: 1.0
-In-Reply-To: <20200907161849.20508-1-arne@...1227...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="fL9l5QLSlJn5VLSh7Xr453wxUJiSgTqtd"
-Subject: Re: [Openvpn-devel] [PATCH] Ignore --cipher for cipher negotiation
- in server client mode
+From: Arne Schwabe <arne@...1227...>
+Date: Fri,  5 Mar 2021 00:06:22 +0100
+Message-Id: <20210304230622.4823-1-arne@...1227...>
+In-Reply-To: <20200907160224.18670-1-arne@...1227...>
+References: <20200907160224.18670-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v2] Cleanup print_details and add
+ signature/ED certificate print
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,102 +13,182 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---fL9l5QLSlJn5VLSh7Xr453wxUJiSgTqtd
-Content-Type: multipart/mixed; boundary="dEuA6erwEBW7MWvChXOebnnQfCLdXxbLH";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <0a95b96c-1849-4b8a-fba8-a398d452e8c3@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Ignore --cipher for cipher negotiation in
- server client mode
-References: <20200907161849.20508-1-arne@...1227...>
-In-Reply-To: <20200907161849.20508-1-arne@...1227...>
+This commit cleans up the logic in the function a bit. It also makes it
+more clear the the details printed in the second part of the message are
+details about the peer certificate and not the TLS connection as such.
+Also print the signature algorithm as this might help to identify
+peer certificate that still use SHA1.
 
---dEuA6erwEBW7MWvChXOebnnQfCLdXxbLH
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: quoted-printable
+The new format with for TLS 1.3 and an EC certificate.
 
-On 07/09/2020 18:18, Arne Schwabe wrote:
-> OpenVPN will ignore --cipher in lieu of the replacement data-ciphers
-> for cipher negioation.
->=20
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->   doc/man-sections/protocol-options.rst |  6 ++++--
->   src/openvpn/options.c                 | 26 ++++----------------------
->   2 files changed, 8 insertions(+), 24 deletions(-)
+Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 384 bit EC, curve secp384r1, signature: ecdsa-with-SHA256
 
-I'm not at all convinced about this one.  Because this essentially=20
-touches the same arguments we had a discussion about on --udp-mtu.=20
-Removing an outdated alias was too much hassle for no gain, despite=20
-being an alias not been seen in use for ages (it was deprecated before=20
-the v1.5 release, and no configs or bug reports turns up in various=20
-google/bing/yahoo/ddg searches using --udp-mtu).  Dropping this outdated=20
-option would with high probability *not* break any configuration in the=20
-wild.
+Using the more generic OpenSSL functions also allows use to correctly
+print details about ED certificates:
 
-However, one of the argument raised for keeping it as is was that it=20
-*could* break a configuration in the wild.  The behaviour between
---udp-mtu and --link-mtu are identical.
+Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 253 bit ED25519, signature: ED25519
 
+Patch v2: Cleanup multiple calls to EVP_PKEY_id, minor code restructuring
 
-This change on --ciphers adds this warning if --cipher is used in 2.6+:
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/ssl_openssl.c | 121 +++++++++++++++++++++++++-------------
+ 1 file changed, 81 insertions(+), 40 deletions(-)
 
-> +=C2=B7=C2=B7=C2=B7=C2=B7=C2=B7=C2=B7=C2=B7=C2=B7msg(M_WARN,=C2=B7"Note:=
-=C2=B7--cipher=C2=B7set=C2=B7to=C2=B7'%s'=C2=B7but=C2=B7missing=C2=B7in"
-> +=C2=B7=C2=B7=C2=B7=C2=B7=C2=B7=C2=B7=C2=B7=C2=B7=C2=B7=C2=B7=C2=B7=C2=B7=
-"=C2=B7--data-ciphers=C2=B7(%s).=C2=B7OpenVPN=C2=B72.6+=C2=B7ignores=C2=B7-=
--cipher=C2=B7for=C2=B7"
-> +=C2=B7=C2=B7=C2=B7=C2=B7=C2=B7=C2=B7=C2=B7=C2=B7=C2=B7=C2=B7=C2=B7=C2=B7=
-"cipher=C2=B7negiotiation.",
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index d161f48b..a9b18447 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -2001,6 +2001,83 @@ key_state_read_plaintext(struct key_state_ssl *ks_ssl, struct buffer *buf,
+     return ret;
+ }
+ 
++/**
++ * Print human readable information about the certifcate into buf
++ * @param cert      the certificate being used
++ * @param buf       output buffer
++ * @param buflen    output buffer length
++ */
++static void
++print_cert_details(X509 *cert, char *buf, size_t buflen)
++{
++    const char *curve = "";
++    const char *type = "(error getting type)";
++    EVP_PKEY *pkey = X509_get_pubkey(cert);
++
++    if (pkey == NULL)
++    {
++        buf[0] = 0;
++        return;
++    }
++
++    int typeid = EVP_PKEY_id(pkey);
++
++#ifndef OPENSSL_NO_EC
++    if (typeid == EVP_PKEY_EC && EVP_PKEY_get0_EC_KEY(pkey) != NULL)
++    {
++        EC_KEY *ec = EVP_PKEY_get0_EC_KEY(pkey);
++        const EC_GROUP *group = EC_KEY_get0_group(ec);
++
++        int nid = EC_GROUP_get_curve_name(group);
++        if (nid == 0 || (curve = OBJ_nid2sn(nid)) == NULL)
++        {
++            curve = "(error getting curve name)";
++        }
++    }
++#endif
++    if (typeid != 0)
++    {
++        /* OpenSSL reports rsaEncryption, dsaEncryption and
++        * id-ecPublicKey, override the names with more readable ones */
++        if (typeid == EVP_PKEY_RSA)
++        {
++            type = "RSA";
++        }
++        else if (typeid == EVP_PKEY_DSA)
++        {
++            type = "DSA";
++        }
++        else if (typeid == EVP_PKEY_EC)
++        {
++            /* EC gets the curve appended after the type */
++            type = "EC, curve ";
++        }
++        else
++        {
++            /* Normal case, the name given by OpenSSL is used */
++            type = OBJ_nid2sn(typeid);
++
++            if (type == NULL)
++            {
++                type = "unknown type";
++            }
++        }
++   }
++
++    char sig[128];
++    int signature_nid = X509_get_signature_nid(cert);
++    if (signature_nid != 0)
++    {
++        openvpn_snprintf(sig, sizeof(sig), ", signature: %s",
++                         OBJ_nid2sn(signature_nid));
++    }
++
++    openvpn_snprintf(buf, buflen, ", peer certificate: %d bit %s%s%s",
++                     EVP_PKEY_bits(pkey), type, curve, sig);
++
++    EVP_PKEY_free(pkey);
++}
++
+ /* **************************************
+  *
+  * Information functions
+@@ -2012,7 +2089,6 @@ void
+ print_details(struct key_state_ssl *ks_ssl, const char *prefix)
+ {
+     const SSL_CIPHER *ciph;
+-    X509 *cert;
+     char s1[256];
+     char s2[256];
+ 
+@@ -2023,48 +2099,13 @@ print_details(struct key_state_ssl *ks_ssl, const char *prefix)
+                      SSL_get_version(ks_ssl->ssl),
+                      SSL_CIPHER_get_version(ciph),
+                      SSL_CIPHER_get_name(ciph));
+-    cert = SSL_get_peer_certificate(ks_ssl->ssl);
+-    if (cert != NULL)
+-    {
+-        EVP_PKEY *pkey = X509_get_pubkey(cert);
+-        if (pkey != NULL)
+-        {
+-            if ((EVP_PKEY_id(pkey) == EVP_PKEY_RSA) && (EVP_PKEY_get0_RSA(pkey) != NULL))
+-            {
+-                RSA *rsa = EVP_PKEY_get0_RSA(pkey);
+-                openvpn_snprintf(s2, sizeof(s2), ", %d bit RSA",
+-                                 RSA_bits(rsa));
+-            }
+-            else if ((EVP_PKEY_id(pkey) == EVP_PKEY_DSA) && (EVP_PKEY_get0_DSA(pkey) != NULL))
+-            {
+-                DSA *dsa = EVP_PKEY_get0_DSA(pkey);
+-                openvpn_snprintf(s2, sizeof(s2), ", %d bit DSA",
+-                                 DSA_bits(dsa));
+-            }
+-#ifndef OPENSSL_NO_EC
+-            else if ((EVP_PKEY_id(pkey) == EVP_PKEY_EC) && (EVP_PKEY_get0_EC_KEY(pkey) != NULL))
+-            {
+-                EC_KEY *ec = EVP_PKEY_get0_EC_KEY(pkey);
+-                const EC_GROUP *group = EC_KEY_get0_group(ec);
+-                const char *curve;
++    X509 *cert = SSL_get_peer_certificate(ks_ssl->ssl);
+ 
+-                int nid = EC_GROUP_get_curve_name(group);
+-                if (nid == 0 || (curve = OBJ_nid2sn(nid)) == NULL)
+-                {
+-                    curve = "Error getting curve name";
+-                }
+-
+-                openvpn_snprintf(s2, sizeof(s2), ", %d bit EC, curve: %s",
+-                                 EC_GROUP_order_bits(group), curve);
+-
+-            }
+-#endif
+-            EVP_PKEY_free(pkey);
+-        }
++    if (cert)
++    {
++        print_cert_details(cert, s2, sizeof(s2));
+         X509_free(cert);
+     }
+-    /* The SSL API does not allow us to look at temporary RSA/DH keys,
+-     * otherwise we should print their lengths too */
+     msg(D_HANDSHAKE, "%s%s", s1, s2);
+ }
+ 
+-- 
+2.30.1
 
-Ignoring --cipher in a future release will have quite a higher=20
-probability of breaking existing configurations.  Now, this is set in=20
-context of --data-ciphers, which is very different code wise.  But the=20
-code for --ciphers is essentially the same as --data-ciphers-fallback.=20
-I am therefore of the opinion, based on the prior --udp-mtu discussion,=20
-that --ciphers should be an alias to --data-ciphers-fallback.
-
-In addition, since adding a warning about using the deprecated --udp-mtu=20
-option and put up a plan for removing it was also considered too much, I=20
-don't see why that argument would be much different with --ciphers.
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
-
-
-
---dEuA6erwEBW7MWvChXOebnnQfCLdXxbLH--
-
---fL9l5QLSlJn5VLSh7Xr453wxUJiSgTqtd
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEgDq5E1p1aZrNLFFkhs+UTJZx/fIFAmBBV0kACgkQhs+UTJZx
-/fIetxAAtaazxpNBotKLAGSHWH7hu0db6/OVLlHycR0LBKRTg+S7XA43Rz2clpLB
-xbo8bn5HERB2qffz2ugaEY0Rq9+0PEaiJzR8FyIzI4GtgBPPovZv67NRhrPDKKfb
-XFsdvh3UNJe0LxCkbpis22FQvDoZWEUKwWEgOx62g80O0BBzh9/PrVxbiPRO4brc
-EMSZE3V3mLt/0DaK68SStp0QCO9uZ0wG9VTNO4RxhRRUh2CFoqu8ebwelN1gWe8V
-jBxsrI8ugaweXLf/B8idfS8hvOYEQJgC1IzvaK4ge0Y8vWRQ4ZGwpablkivrBEHw
-B9ZnPDePuO8YdWITXwoEa3JRJ01OVnBVcJwqTw98bWLZMK11JiJy9PJkwmKcOfza
-d/NqUo0EiLIYX5r8i3TnlUuVIIr3TAAfhwqdCmtb4giWL7GvR/Xr0ua4hykI9y1d
-Bukt4YoImU6cpT+UF7sX2Aq09gLGiYH/IZixjs+8wtCnzHM0jhHMxfZ+ATkCq0Uo
-QgrcXNVjqEEbZVO3ZH1/TGLxES9kc5uIbHMtFgY/oggS/pJnrbGdL0iVK1j2ysC+
-Ml6uqRMYXBjUjtvr47mw7998MwCUJwb/a+YbWJctVxGrYBftF2fEvX5DC1J+Hvt1
-becGJjgCf6RvMHciXmOKD5BD/lLUQDZU34pWeTiD626Dn/3jdms=
-=epXT
------END PGP SIGNATURE-----
-
---fL9l5QLSlJn5VLSh7Xr453wxUJiSgTqtd--
 
