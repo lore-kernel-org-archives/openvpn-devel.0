@@ -1,18 +1,10 @@
-Date: Thu, 4 Mar 2021 11:11:12 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20210304101112.GP976@...1296...>
-References: <CAAUX2SWYWhU-S97Ak-6XdAVQ+hty_Y8RHu_KSM8hZPiKaP7a1w@...278...>
- <e9f619bb-bd36-c77a-5f66-e7c33f6be579@...1227...>
- <CAAUX2SVde3STTxGmthXod2-pDzLPYkm+yRYvG1T4yyJGoLMKLw@...278...>
- <63cfcb94-6060-9d45-66f8-6dbfd69d7dd9@...2181...>
- <CAAUX2SWL_mw0YgkoCA6dd2vXT7YtkgZbib+GTQkDVrNvWMU72Q@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="xJoJ+2AiUVV9OskE"
-Content-Disposition: inline
-In-Reply-To: <CAAUX2SWL_mw0YgkoCA6dd2vXT7YtkgZbib+GTQkDVrNvWMU72Q@...278...>
-Subject: Re: [Openvpn-devel] Segmentation fault in OpenVPN 2.6_git
- [git:dco/fcc852a9b2ea832c]
+From: Arne Schwabe <arne@...1227...>
+Date: Thu,  4 Mar 2021 12:40:18 +0100
+Message-Id: <20210304114018.8442-1-arne@...1227...>
+In-Reply-To: <20210125125628.30364-12-arne@...1227...>
+References: <20210125125628.30364-12-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v3] Add example script demonstrating TOTP
+ via auth-pending
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,59 +13,153 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Tony He <huangya90@...277...>
-Cc: Antonio Quartulli <a@...2181...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---xJoJ+2AiUVV9OskE
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Signed-off-by: Arne Schwabe <arne@...1227...>
 
-Hi,
+Patch v3: Some minor cleanups in the script (rename CNs, add more comments)
 
-On Thu, Mar 04, 2021 at 05:10:19PM +0800, Tony He wrote:
-> I used static key and saw same error.
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ doc/man-sections/script-options.rst |   3 +
+ sample/sample-scripts/totpauth.py   | 111 ++++++++++++++++++++++++++++
+ 2 files changed, 114 insertions(+)
+ create mode 100755 sample/sample-scripts/totpauth.py
 
-Seems static key is broken in this test branch.
+diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-options.rst
+index f48e5818..6517f847 100644
+--- a/doc/man-sections/script-options.rst
++++ b/doc/man-sections/script-options.rst
+@@ -147,6 +147,9 @@ SCRIPT HOOKS
+   :code:`auth_control_file or further defer it. See ``--auth-user-pass-verify``
+   for details.
+ 
++  For a sample script that implement TOTP (RFC 6238) based two-factor
++  authentication, see :code:`sample-scripts/totp.py`.
++
+ --client-connect cmd
+   Run command ``cmd`` on client connection.
+ 
+diff --git a/sample/sample-scripts/totpauth.py b/sample/sample-scripts/totpauth.py
+new file mode 100755
+index 00000000..2991d659
+--- /dev/null
++++ b/sample/sample-scripts/totpauth.py
+@@ -0,0 +1,111 @@
++#! /usr/bin/python3
++# Copyright (c) 2021 OpenVPN Inc <sales@...515...>
++# Copyright (c) 2021 Arne Schwabe <arne@...1227...>
++#
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++#
++# The above copyright notice and this permission notice shall be included in all
++# copies or substantial portions of the Software.
++#
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++# SOFTWARE.
++
++import sys
++import os
++from base64 import standard_b64decode
++
++import pyotp
++
++# Example script demonstrating how to use the auth-pending API in
++# OpenVPN. This script is provided under MIT license to allow easy
++# modification for other purposes.
++#
++# This needs support of crtext support on the client (e.g. OpenVPN for Android)
++# See also the management-notes.txt file for more information about the auth pending
++# protocol
++#
++# To use this script add the following lines in the openvpn config
++
++# client-crresponse /path/to/totpauth.py 
++# auth-user-pass-verify /path/to/totpauth.py via-file
++# auth-user-pass-optional
++# auth-gen-token
++
++# Note that this script does NOT verify username/password
++# It is only meant for querying additional 2FA when certificates are
++# used to authenticate
++
++
++# For this demo script we hardcode the TOTP secrets in a simple dictionary.
++secrets = {"Test-Client": "OS6JDNRK2BNUPQVX",
++           "Client-2": "IXWEMP7SK2QWSHTG"}
++
++
++def main():
++    # Get common name and script type from environment
++    script_type = os.environ['script_type']
++    cn = os.environ['common_name']
++
++    if script_type == 'user-pass-verify':
++        # signal text based challenge response
++        if cn in secrets:
++            extra = "CR_TEXT:E,R:Please enter your TOTP code!"
++            write_auth_pending(300, 'crtext', extra)
++
++            # Signal authentication being deferred
++            sys.exit(2)
++        else:
++            # For unknown CN we report failure. Change to 0
++            # to allow CNs without secret to auth without 2FA
++            sys.exit(1)
++
++    elif script_type == 'client-crresponse':
++        response = None
++
++        # Read the crresponse from the argument file
++        # and convert it into text. A failure because of bad user
++        # input (e.g. invalid base64) will make the script throw
++        # an error and make OpenVPN return AUTH_FAILED
++        with open(sys.argv[1], 'r') as crinput:
++            response = crinput.read()
++            response = standard_b64decode(response)
++            response = response.decode().strip()
++
++        if cn not in secrets:
++            write_auth_control(1)
++            return
++
++        totp = pyotp.TOTP(secrets[cn])
++
++        # Check if the code is valid (and also allow code +/-1)
++        if totp.verify(response, valid_window=1):
++            write_auth_control(1)
++        else:
++            write_auth_control(0)
++    else:
++        print(f"Unknown script type {script_type}")
++        sys.exit(1)
++
++
++def write_auth_control(status):
++    with open(os.environ['auth_control_file'], 'w') as auth_control:
++        auth_control.write("%d" % status)
++
++
++def write_auth_pending(timeout, method, extra):
++    with open(os.environ['auth_pending_file'], 'w') as auth_pending:
++        auth_pending.write("%d\n%s\n%s" % (timeout, method, extra))
++
++
++if __name__ == '__main__':
++    main()
+-- 
+2.30.1
 
-This is not a recommended way to run OpenVPN, so it's not always fully
-tested in development branches (we *do* have tests for it in the official
-trees).
-
-This is what Arne tried to tell you: using TLS based setups is what
-the developers use, and what is known to work.
-
-> Note: NOT using '--topology subnet' disables data channel offload.
-
-I think this is documented in the release announcement.
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---xJoJ+2AiUVV9OskE
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJgQLI/AAoJEB2Cnv7KVigS3/sMAJNEgERla/GQaXPQLL4k4UA9
-jf+26xU5s0rRMSiPrAQHJoGysX2ma71QNCGYnsjDO82DPNyc4zwMM6y3A0CAn6do
-VXQxOytCH1nhlMsPKxMB/leWI0ysj4DIuSBmZAJC0rElKgRoXy5vwjQLZkCqo12U
-FnAtZPUhAO3nRc4fQQDaZPzwmEXxgbDDY2kiKtxJkcKplFCXSNbpILp5uTTuTu+Q
-hg2xj3Q+8oXB8/4HtEMCOdOa9fL2zH73RyUx8hUS1tz2uks8CpbDLBufymwFCcbo
-al5aXBkFVRQdPtlzBg4aWrhWO4R93JHt5j6A3i7thhgfQQfWTrdIPY8GaMcI25Yf
-/1nXns+u94aB2n9j/Q7lHbB1b1o0sDhOJdx/xspI2SmjpCC7+V9rDNwadtZHJ4nD
-FHJ8VuqerL2VhOGyAegOusSahSEZZgyTyrrYLw0eIYblp+mDqkfHRFZNh4YK5IQW
-/E0bfB7sXLlWF2Iey6W5prYuGAh55NiYiFm30/5iuw==
-=+Dtc
------END PGP SIGNATURE-----
-
---xJoJ+2AiUVV9OskE--
 
