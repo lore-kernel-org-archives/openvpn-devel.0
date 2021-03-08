@@ -1,10 +1,15 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon,  8 Mar 2021 08:10:23 +0100
-Message-Id: <20210308071023.18269-1-gert@...1296...>
-In-Reply-To: <20210307161547.25130-1-gert@...1296...>
 References: <20210307161547.25130-1-gert@...1296...>
+ <CAKuzo_iG4RfV+u1e5_qtgeet0p8Ne5UvCZNL4afnuPpavdLtGQ@...278...>
+ <20210307181002.GQ976@...1296...>
+ <CAKuzo_gecRK0fkWToNRuc7oGK==cZQnLFn08_6_C5MERMBKTJQ@...278...>
+ <20210307184402.GS976@...1296...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <fd76a92c-aad1-53e1-f3fd-fe887be64a24@...1227...>
+Date: Mon, 8 Mar 2021 09:06:10 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Require at least 100MB of mlock()-able
+In-Reply-To: <20210307184402.GS976@...1296...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH] Require at least 20MB of mlock()-able
  memory if --mlock is used.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -14,127 +19,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-If --mlock is used, the amount of memory OpenVPN can use is guarded
-by the RLIMIT_MEMLOCK value (see mlockall(2)).  The OS default for this
-is usually 64 Kbyte, which is enough for OpenVPN to initialize, but
-as soon as the first TLS handshake comes it, OpenVPN will crash due
-to "ouf of memory", and might even end up in a crash loop.
+Am 07.03.21 um 19:44 schrieb Gert Doering:
+> Hi,
+> 
+> On Sun, Mar 07, 2021 at 01:36:03PM -0500, Selva Nair wrote:
+>>> "I'm not sure", TBH.  rlimit handling in unix is a bit of an unknown
+>>> territory for me.
+>>>
+>>> What I understand is that root can *increment* the rlimit at will, but
+>>> I'd assume that the rlimit value "in existance right now" (specifically,
+>>> the soft limit) applies to root processes as well.  Sort of a voluntary
+>>> protection against processes running away.
+>>
+>> On modern linux kernels (since some 2.6.x..) RLIMIT_MEMLOCK applies only to
+>> unprivileged processes -- privileged processes allowed to lock "unlimited"
+>> amount of memory as documented in man mlock. We updated the man page based
+>> on that sometime ago.
+> 
+> Indeed, "man mlock" says something about "privileged processes" on Linux
+> (it doesn't say that on FreeBSD).
+> 
+>> We could also consider using setrlimit to increase the limit before
+>> dropping privileges.
+> 
+> That's another possible angle... just up soft+hard to "something"
+> (how much would that be? :-) ) and log the fact.
+> 
+> David, Arne, any opinion on this?  Where do we want to go?
 
-Steady-state OpenVPN requires between 8 MB and 30-50 MB (servers with
-many concurrent clients) of memory.  TLS renegotiation with EC keys
-requires up to 90 MB of transient memory.
+Looking at this feature  from today's perspective, it feels like one of
+OpenVPN's boutique features. Was probably useful at some point but
+doesn't really make much sense today anymore. Esepcially with what is
+written in the manpage. Today you rather would use full disk encryption
+or disable swapping rather than to rely on OpenVPN's --mlock.
 
-So: with this patch, we check if getrlimit() is available, and if yes,
-log the amount of mlock'able memory.  If the amount is below 100 MB,
-which is an arbitrary value "large enough for most smaller deployments",
-we try to increase the limits to 100 MB, and abort if this fails.
+That being said I am against your patch, I am just wondering if that is
+a feature we need to keep at all.
 
-v2:
-  change arbitrary number to 100 MB, introduce #define for it
-  not only check but also increase with setrlimit()
-  uncrustify fixes
-
-Trac: #1390
-
-Signed-off-by: Gert Doering <gert@...1296...>
----
- configure.ac                         |  2 +-
- doc/man-sections/generic-options.rst |  7 +++++++
- src/openvpn/platform.c               | 29 ++++++++++++++++++++++++++++
- src/openvpn/platform.h               |  4 ++++
- 4 files changed, 41 insertions(+), 1 deletion(-)
-
-diff --git a/configure.ac b/configure.ac
-index 1ab8fe59..c65df3e2 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -645,7 +645,7 @@ AC_FUNC_FORK
- 
- AC_CHECK_FUNCS([ \
- 	daemon chroot getpwnam setuid nice system getpid dup dup2 \
--	getpass syslog openlog mlockall getgrnam setgid \
-+	getpass syslog openlog mlockall getrlimit getgrnam setgid \
- 	setgroups stat flock readv writev time gettimeofday \
- 	ctime memset vsnprintf strdup \
- 	setsid chdir putenv getpeername unlink \
-diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generic-options.rst
-index d5f08839..c026529e 100644
---- a/doc/man-sections/generic-options.rst
-+++ b/doc/man-sections/generic-options.rst
-@@ -237,6 +237,13 @@ which mode OpenVPN is configured as.
-   likely fail. The limit can be increased using ulimit or systemd
-   directives depending on how OpenVPN is started.
- 
-+  If the platform has the getrlimit(2) system call, OpenVPN will check
-+  for the amount of mlock-able memory before calling mlockall(2), and
-+  tries to increase the limit to 100 MB if less than this is configured.
-+  100 Mb is somewhat arbitrary - it is enough for a moderately-sized
-+  OpenVPN deployment, but the memory usage might go beyond that if the
-+  number of concurrent clients is high.
-+
- --nice n
-   Change process priority after initialization (``n`` greater than 0 is
-   lower priority, ``n`` less than zero is higher priority).
-diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
-index ef688c23..dfbf50c0 100644
---- a/src/openvpn/platform.c
-+++ b/src/openvpn/platform.c
-@@ -193,6 +193,35 @@ void
- platform_mlockall(bool print_msg)
- {
- #ifdef HAVE_MLOCKALL
-+
-+#ifdef HAVE_GETRLIMIT
-+#define MIN_LOCKED_MEM_MB 100
-+    struct rlimit rl;
-+    if (getrlimit(RLIMIT_MEMLOCK, &rl) < 0)
-+    {
-+        msg(M_WARN | M_ERRNO, "WARNING: getrlimit(RLIMIT_MEMLOCK) failed");
-+    }
-+    else
-+    {
-+        msg(M_INFO, "mlock: MEMLOCK limit: soft=%ld KB, hard=%ld KB",
-+            ((long int) rl.rlim_cur) / 1024, ((long int) rl.rlim_max) / 1024);
-+        if (rl.rlim_cur < MIN_LOCKED_MEM_MB*1024*1024)
-+        {
-+            msg(M_INFO, "mlock: RLIMIT_MEMLOCK < %d MB, increase limit",
-+                MIN_LOCKED_MEM_MB);
-+            rl.rlim_cur = MIN_LOCKED_MEM_MB*1024*1024;
-+            if (rl.rlim_max < rl.rlim_cur)
-+            {
-+                rl.rlim_max = rl.rlim_cur;
-+            }
-+            if (setrlimit(RLIMIT_MEMLOCK, &rl) < 0)
-+            {
-+                msg(M_FATAL | M_ERRNO, "ERROR: setrlimit() failed");
-+            }
-+        }
-+    }
-+#endif
-+
-     if (mlockall(MCL_CURRENT | MCL_FUTURE))
-     {
-         msg(M_WARN | M_ERRNO, "WARNING: mlockall call failed");
-diff --git a/src/openvpn/platform.h b/src/openvpn/platform.h
-index 01f3200c..02c23e38 100644
---- a/src/openvpn/platform.h
-+++ b/src/openvpn/platform.h
-@@ -48,6 +48,10 @@
- #include <stdio.h>
- #endif
- 
-+#ifdef HAVE_GETRLIMIT
-+#include <sys/resource.h>
-+#endif
-+
- #include "basic.h"
- #include "buffer.h"
- 
--- 
-2.26.2
-
+Arne
 
