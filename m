@@ -1,8 +1,20 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Mon,  8 Mar 2021 15:21:13 +0100
-Message-Id: <20210308142113.24208-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Avoid a crash in mbed TLS 2.25 with --verb
- < 8
+References: <20210307161547.25130-1-gert@...1296...>
+ <CAKuzo_iG4RfV+u1e5_qtgeet0p8Ne5UvCZNL4afnuPpavdLtGQ@...278...>
+ <20210307181002.GQ976@...1296...>
+ <CAKuzo_gecRK0fkWToNRuc7oGK==cZQnLFn08_6_C5MERMBKTJQ@...278...>
+ <20210307184402.GS976@...1296...>
+ <CAKuzo_huZkMc1LhG7abCBKn0TK17JR_TLb3DyMeV1VYb5mNesQ@...278...>
+ <20210307212830.GT976@...1296...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <7af7e1bd-d49f-35c3-3044-44852f4be4c5@...2080...>
+Date: Mon, 8 Mar 2021 20:47:22 +0100
+MIME-Version: 1.0
+In-Reply-To: <20210307212830.GT976@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="L9Ca6h6Uu21aM0XbhzwAuu5O3yMZnvoYT"
+Subject: Re: [Openvpn-devel] [PATCH] Require at least 20MB of mlock()-able
+ memory if --mlock is used.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,85 +23,130 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-mbed TLS 2.25 has a nasty bug that the print function for Montgomery style
-EC curves (Curve25519 and Curve448) does segfault. See also the issue
-reported here: https://github.com/ARMmbed/mbedtls/issues/4208
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--L9Ca6h6Uu21aM0XbhzwAuu5O3yMZnvoYT
+Content-Type: multipart/mixed; boundary="n4MVRT4sfDW32eZPE9ltgBqw3hEQGUUrC";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: Gert Doering <gert@...1296...>, Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Message-ID: <7af7e1bd-d49f-35c3-3044-44852f4be4c5@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] Require at least 20MB of mlock()-able
+ memory if --mlock is used.
+References: <20210307161547.25130-1-gert@...1296...>
+ <CAKuzo_iG4RfV+u1e5_qtgeet0p8Ne5UvCZNL4afnuPpavdLtGQ@...278...>
+ <20210307181002.GQ976@...1296...>
+ <CAKuzo_gecRK0fkWToNRuc7oGK==cZQnLFn08_6_C5MERMBKTJQ@...278...>
+ <20210307184402.GS976@...1296...>
+ <CAKuzo_huZkMc1LhG7abCBKn0TK17JR_TLb3DyMeV1VYb5mNesQ@...278...>
+ <20210307212830.GT976@...1296...>
+In-Reply-To: <20210307212830.GT976@...1296...>
 
-We request always debug level 3 from mbed TLS but filter out any debug
-output of level 3 unless verb 8 or higher is set. This commeit sets
-the debug level to 2 to avoid this problem by makeing mbed TLS not
-generatin the problematic debug output.
+--n4MVRT4sfDW32eZPE9ltgBqw3hEQGUUrC
+Content-Language: en-GB
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: quoted-printable
 
-For the affected version to still use --verb 8 with mbed TLS 2.25 is to
-restrict the EC groups to ones that do not crash the print function
-like with '--tls-groups secp521r1:secp384r1:secp256r1'.
+On 07/03/2021 22:28, Gert Doering wrote:
+> Hi,
+>=20
+> On Sun, Mar 07, 2021 at 02:20:32PM -0500, Selva Nair wrote:
+>>> That's another possible angle... just up soft+hard to "something"
+>>> (how much would that be? :-) ) and log the fact.
+>>
+>> Rereading my comment on Trac #1059 I recall testing this and concluding
+>> 100MB enough for clients. On modern machines that's a low amount of memo=
+ry
+>> --- not allowing swapout of 100MB should be acceptable.  For servers, I
+>> think there is no reliable limit that we could come up with.
+>=20
+> This is interesting.  My machines, including servers, have a way lower
+> memory usage - but I'm not using EC.
+>=20
+> Here's a linux server with 3 peers and a client (arm32):
+>=20
+> USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+> root     14569  0.0  0.5   5704  2980 ?        Ss    2020  12:31 openvpn
+> root     21020  0.1  0.5   5568  3040 ?        Ss    2020 454:45 openvpn
+>=20
+> Here's a FreeBSD server that serves 5 clients right now, but has peaks
+> up to 150 concurrent clients (amd64)
+>=20
+> USER      PID   %CPU %MEM    VSZ    RSS TT  STAT STARTED          TIME CO=
+MMAND
+> root     5023    0.3  0.1  30924  23172  -  Ss   20Dec20    1945:07.12 /u=
+sr/local/sbin/openvpn --cd /usr/local/etc/openvpn --daemon
+>=20
+> ... and another two Linux server instances...
+>=20
+> USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+> root      1138  2.1  1.3  26732 10628 ?        Ss    2019 21678:18 /usr/s=
+bin/openvpn
+> root      2897  0.8  0.9  29548  7080 ?        Ss    2019 8596:15 /usr/sb=
+in/openvpn
+>=20
+>=20
+> the last 3 see a high number of clients during work time, and quite
+> some churn (especially due to iOS/android connecting and disconnecting
+> frequently), but long-term memory usage is not high.
+>=20
+> So there must be some massive transient usage due to EC at reconnection
+> time...
+>=20
 
-This patch has no patch on user-visible behaviour on unaffected mbed TLS
-versions.
+FWIW .... A couple of my CentOS 8.3 servers with 2 client connections
+running 24/7.
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/options.c     |  6 ++++++
- src/openvpn/ssl_common.h  |  1 +
- src/openvpn/ssl_mbedtls.c | 11 ++++++++++-
- 3 files changed, 17 insertions(+), 1 deletion(-)
+* Server 1
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+openvpn  3437979  0.0  0.1  76360  2924 ?        Ss   Feb25   2:19 /usr/sbi=
+n/openvpn
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 0eb049d8..6d908e15 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -5883,6 +5883,12 @@ add_option(struct options *options,
-     {
-         VERIFY_PERMISSION(OPT_P_MESSAGES);
-         options->verbosity = positive_atoi(p[1]);
-+        if (options->verbosity > 7)
-+        {
-+            /* We pass this flag to the SSL library to avoid a bug
-+             * in mbed TLS 2.5.0 with high log level */
-+            options->ssl_flags |= SSLF_TLS_DEBUG_ENABLED;
-+        }
- #if !defined(ENABLE_DEBUG) && !defined(ENABLE_SMALL)
-         /* Warn when a debug verbosity is supplied when built without debug support */
-         if (options->verbosity >= 7)
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index bbb8135d..f821c654 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -350,6 +350,7 @@ struct tls_options
- #define SSLF_TLS_VERSION_MIN_MASK     0xF  /* (uses bit positions 6 to 9) */
- #define SSLF_TLS_VERSION_MAX_SHIFT    10
- #define SSLF_TLS_VERSION_MAX_MASK     0xF  /* (uses bit positions 10 to 13) */
-+#define SSLF_TLS_DEBUG_ENABLED        (1<<14)
-     unsigned int ssl_flags;
- 
- #ifdef ENABLE_MANAGEMENT
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index b30b6b9d..a7b6c2c6 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -1058,7 +1058,16 @@ key_state_ssl_init(struct key_state_ssl *ks_ssl,
-     mbedtls_ssl_config_defaults(ks_ssl->ssl_config, ssl_ctx->endpoint,
-                                 MBEDTLS_SSL_TRANSPORT_STREAM, MBEDTLS_SSL_PRESET_DEFAULT);
- #ifdef MBEDTLS_DEBUG_C
--    mbedtls_debug_set_threshold(3);
-+    /* This works around a crash in mbed TLS 2.25 if Curve25591 is selected
-+     * for DH (https://github.com/ARMmbed/mbedtls/issues/4208)*/
-+    if (session->opt->ssl_flags & SSLF_TLS_DEBUG_ENABLED)
-+    {
-+        mbedtls_debug_set_threshold(3);
-+    }
-+    else
-+    {
-+        mbedtls_debug_set_threshold(2);
-+    }
- #endif
-     mbedtls_ssl_conf_dbg(ks_ssl->ssl_config, my_debug, NULL);
-     mbedtls_ssl_conf_rng(ks_ssl->ssl_config, mbedtls_ctr_drbg_random,
--- 
-2.30.1
 
+* Server 2
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+openvpn  2805670  0.0  0.8  76624  6896 ?        Ss   Feb25   7:08 /usr/sbi=
+n/openvpn
+
+
+The start date is from when openvpn-2.5.1 got released and updated.
+OpenSSL 1.1.1g-12 is used on both hosts.
+
+
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
+
+
+
+--n4MVRT4sfDW32eZPE9ltgBqw3hEQGUUrC--
+
+--L9Ca6h6Uu21aM0XbhzwAuu5O3yMZnvoYT
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEgDq5E1p1aZrNLFFkhs+UTJZx/fIFAmBGf0sACgkQhs+UTJZx
+/fLE3A/9GV/ATvzhEfk/cWUcg851Mu1ZwFSSOve+7VPFNnYdjj8X9bbBSrDiiOB9
+la7iGATyHnQXb4kCfvo/vzTCHffUQzag9Sxrt2JJGLNtTnnjYsMiF/k1MjuaM57z
+uT+rp9s6CvZyhiYd1QxGrmF+psXYc7Zkv/GfOwUob5/dVRLLGT950NRHr53A6ZSw
+GM8UXo9rkZt/zPmO/vpboUE6cIbTPsfQQToVUT0Q3wNStkxs/wZ/VlKpdMIkAfEW
+F8RbZvXM8l5t50lHwfNMrqoVZnTm0Z2t7XWU+pM4eXYeZ4ZpCCE1vIYvuR+5LQ1r
+FtXqLF7lUd0WzPvzDgvsnJRasJjlMoCXMxYHamu3tyTYzN+xCXxNwh1SNH8U+aKL
+88eydu6l7HfGxBcmdjJXpwgCRfXnsC56YdfF2j+ymzQ24/m6fMWArDWZcR7qGJBJ
+BRnGNElydlCe5nm7SKrRWKbB7lmHZBOgWNSeMBI34yZhz327a6qqFlJvPt90zg47
+0a44E2DJ+CHksiPMgG7Dn+aZ7JlfgBloOiTWZDLj34yMhyG4ZNeqLFuG1iN5qEWx
+hsqhoLVpb1JVSmANX4KApecEWVCnCp/NLR8JnZR9MWLg2yTEmftZgHpZx2NOkXYs
+RwykN8nTqItsCdx/lS+zhCapVtGUWADiOLTqLe48NiMd8VCDRBM=
+=+fjO
+-----END PGP SIGNATURE-----
+
+--L9Ca6h6Uu21aM0XbhzwAuu5O3yMZnvoYT--
 
