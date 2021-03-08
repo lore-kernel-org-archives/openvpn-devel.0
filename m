@@ -1,18 +1,10 @@
-Date: Sun, 7 Mar 2021 22:28:30 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20210307212830.GT976@...1296...>
+Date: Mon,  8 Mar 2021 08:10:23 +0100
+Message-Id: <20210308071023.18269-1-gert@...1296...>
+In-Reply-To: <20210307161547.25130-1-gert@...1296...>
 References: <20210307161547.25130-1-gert@...1296...>
- <CAKuzo_iG4RfV+u1e5_qtgeet0p8Ne5UvCZNL4afnuPpavdLtGQ@...278...>
- <20210307181002.GQ976@...1296...>
- <CAKuzo_gecRK0fkWToNRuc7oGK==cZQnLFn08_6_C5MERMBKTJQ@...278...>
- <20210307184402.GS976@...1296...>
- <CAKuzo_huZkMc1LhG7abCBKn0TK17JR_TLb3DyMeV1VYb5mNesQ@...278...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="jaaGlYnsuL6Jp0Qt"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_huZkMc1LhG7abCBKn0TK17JR_TLb3DyMeV1VYb5mNesQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Require at least 20MB of mlock()-able
+Subject: [Openvpn-devel] [PATCH v2] Require at least 100MB of mlock()-able
  memory if --mlock is used.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -22,93 +14,127 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---jaaGlYnsuL6Jp0Qt
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+If --mlock is used, the amount of memory OpenVPN can use is guarded
+by the RLIMIT_MEMLOCK value (see mlockall(2)).  The OS default for this
+is usually 64 Kbyte, which is enough for OpenVPN to initialize, but
+as soon as the first TLS handshake comes it, OpenVPN will crash due
+to "ouf of memory", and might even end up in a crash loop.
 
-Hi,
+Steady-state OpenVPN requires between 8 MB and 30-50 MB (servers with
+many concurrent clients) of memory.  TLS renegotiation with EC keys
+requires up to 90 MB of transient memory.
 
-On Sun, Mar 07, 2021 at 02:20:32PM -0500, Selva Nair wrote:
-> > That's another possible angle... just up soft+hard to "something"
-> > (how much would that be? :-) ) and log the fact.
->=20
-> Rereading my comment on Trac #1059 I recall testing this and concluding
-> 100MB enough for clients. On modern machines that's a low amount of memory
-> --- not allowing swapout of 100MB should be acceptable.  For servers, I
-> think there is no reliable limit that we could come up with.
+So: with this patch, we check if getrlimit() is available, and if yes,
+log the amount of mlock'able memory.  If the amount is below 100 MB,
+which is an arbitrary value "large enough for most smaller deployments",
+we try to increase the limits to 100 MB, and abort if this fails.
 
-This is interesting.  My machines, including servers, have a way lower
-memory usage - but I'm not using EC.
+v2:
+  change arbitrary number to 100 MB, introduce #define for it
+  not only check but also increase with setrlimit()
+  uncrustify fixes
 
-Here's a linux server with 3 peers and a client (arm32):
+Trac: #1390
 
-USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-root     14569  0.0  0.5   5704  2980 ?        Ss    2020  12:31 openvpn
-root     21020  0.1  0.5   5568  3040 ?        Ss    2020 454:45 openvpn
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ configure.ac                         |  2 +-
+ doc/man-sections/generic-options.rst |  7 +++++++
+ src/openvpn/platform.c               | 29 ++++++++++++++++++++++++++++
+ src/openvpn/platform.h               |  4 ++++
+ 4 files changed, 41 insertions(+), 1 deletion(-)
 
-Here's a FreeBSD server that serves 5 clients right now, but has peaks
-up to 150 concurrent clients (amd64)
+diff --git a/configure.ac b/configure.ac
+index 1ab8fe59..c65df3e2 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -645,7 +645,7 @@ AC_FUNC_FORK
+ 
+ AC_CHECK_FUNCS([ \
+ 	daemon chroot getpwnam setuid nice system getpid dup dup2 \
+-	getpass syslog openlog mlockall getgrnam setgid \
++	getpass syslog openlog mlockall getrlimit getgrnam setgid \
+ 	setgroups stat flock readv writev time gettimeofday \
+ 	ctime memset vsnprintf strdup \
+ 	setsid chdir putenv getpeername unlink \
+diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generic-options.rst
+index d5f08839..c026529e 100644
+--- a/doc/man-sections/generic-options.rst
++++ b/doc/man-sections/generic-options.rst
+@@ -237,6 +237,13 @@ which mode OpenVPN is configured as.
+   likely fail. The limit can be increased using ulimit or systemd
+   directives depending on how OpenVPN is started.
+ 
++  If the platform has the getrlimit(2) system call, OpenVPN will check
++  for the amount of mlock-able memory before calling mlockall(2), and
++  tries to increase the limit to 100 MB if less than this is configured.
++  100 Mb is somewhat arbitrary - it is enough for a moderately-sized
++  OpenVPN deployment, but the memory usage might go beyond that if the
++  number of concurrent clients is high.
++
+ --nice n
+   Change process priority after initialization (``n`` greater than 0 is
+   lower priority, ``n`` less than zero is higher priority).
+diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
+index ef688c23..dfbf50c0 100644
+--- a/src/openvpn/platform.c
++++ b/src/openvpn/platform.c
+@@ -193,6 +193,35 @@ void
+ platform_mlockall(bool print_msg)
+ {
+ #ifdef HAVE_MLOCKALL
++
++#ifdef HAVE_GETRLIMIT
++#define MIN_LOCKED_MEM_MB 100
++    struct rlimit rl;
++    if (getrlimit(RLIMIT_MEMLOCK, &rl) < 0)
++    {
++        msg(M_WARN | M_ERRNO, "WARNING: getrlimit(RLIMIT_MEMLOCK) failed");
++    }
++    else
++    {
++        msg(M_INFO, "mlock: MEMLOCK limit: soft=%ld KB, hard=%ld KB",
++            ((long int) rl.rlim_cur) / 1024, ((long int) rl.rlim_max) / 1024);
++        if (rl.rlim_cur < MIN_LOCKED_MEM_MB*1024*1024)
++        {
++            msg(M_INFO, "mlock: RLIMIT_MEMLOCK < %d MB, increase limit",
++                MIN_LOCKED_MEM_MB);
++            rl.rlim_cur = MIN_LOCKED_MEM_MB*1024*1024;
++            if (rl.rlim_max < rl.rlim_cur)
++            {
++                rl.rlim_max = rl.rlim_cur;
++            }
++            if (setrlimit(RLIMIT_MEMLOCK, &rl) < 0)
++            {
++                msg(M_FATAL | M_ERRNO, "ERROR: setrlimit() failed");
++            }
++        }
++    }
++#endif
++
+     if (mlockall(MCL_CURRENT | MCL_FUTURE))
+     {
+         msg(M_WARN | M_ERRNO, "WARNING: mlockall call failed");
+diff --git a/src/openvpn/platform.h b/src/openvpn/platform.h
+index 01f3200c..02c23e38 100644
+--- a/src/openvpn/platform.h
++++ b/src/openvpn/platform.h
+@@ -48,6 +48,10 @@
+ #include <stdio.h>
+ #endif
+ 
++#ifdef HAVE_GETRLIMIT
++#include <sys/resource.h>
++#endif
++
+ #include "basic.h"
+ #include "buffer.h"
+ 
+-- 
+2.26.2
 
-USER      PID   %CPU %MEM    VSZ    RSS TT  STAT STARTED          TIME COMM=
-AND
-root     5023    0.3  0.1  30924  23172  -  Ss   20Dec20    1945:07.12 /usr=
-/local/sbin/openvpn --cd /usr/local/etc/openvpn --daemon
-
-... and another two Linux server instances...
-
-USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-root      1138  2.1  1.3  26732 10628 ?        Ss    2019 21678:18 /usr/sbi=
-n/openvpn
-root      2897  0.8  0.9  29548  7080 ?        Ss    2019 8596:15 /usr/sbin=
-/openvpn
-
-
-the last 3 see a high number of clients during work time, and quite
-some churn (especially due to iOS/android connecting and disconnecting
-frequently), but long-term memory usage is not high.
-
-So there must be some massive transient usage due to EC at reconnection
-time...
-
-
-But anyway.  100M seems to be a good value, then.
-
-I'll send a v2 of that patch, with setrlimit().
-
-thanks,
-
-gert
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---jaaGlYnsuL6Jp0Qt
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJgRUV9AAoJEB2Cnv7KVigSytcMAJlzWMTu9csx4nHxBpjSdSH9
-1ZNen5FgY58i+ki+LJsT6CozxaacaCVb/WhlwrdGywJzEFa3GJu62WDAbLPQE/aA
-nqNsBljRyDs5jqQAtGNvG4FaghafSw4giheIHtRnJ6200BLwvEp7O70pRsSny/lX
-7r4Oag1SnrJNdc3oP8T9GLXis0WvZ42JC5FNXoZxjWijocmU8K/t1jnuCzIhZBiT
-txdQX8n/TQFdmC60i0FYt8rcx8Gu2jBtjxxWltAxeZQ0vZg+ZVOrplHMPkZTE+Om
-cJHjJ2fgCQfROWFyQ+l3K4hU1d/19yG5FmHgr40ebK/Dc97ynRUsez9jVJ4BcOXK
-dK1iKWXoEAXxreZFVoHlDVjrHnd0ATgB/gAUMSkkGNEiPiODAW+HFsccdO8q9ouY
-KwV4AZlAbXVMSMMMV47zzt7tCsxQ1Dcelh6hAINYr5sz/eOWbQXIvQ8ak62LHddY
-icOQedSr1suK1SCMq7KvI6GB8MQv4neSZx3gnw7y7Q==
-=dy7X
------END PGP SIGNATURE-----
-
---jaaGlYnsuL6Jp0Qt--
 
