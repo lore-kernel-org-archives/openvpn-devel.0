@@ -3,14 +3,18 @@ References: <20210307161547.25130-1-gert@...1296...>
  <20210307181002.GQ976@...1296...>
  <CAKuzo_gecRK0fkWToNRuc7oGK==cZQnLFn08_6_C5MERMBKTJQ@...278...>
  <20210307184402.GS976@...1296...>
+ <fd76a92c-aad1-53e1-f3fd-fe887be64a24@...1227...>
+ <1a5d4ecf-ab54-3f1d-5867-1638a9a5a2f6@...277...>
+ <5351a640-22bd-5a9f-b0a0-f80b3109ddb3@...2080...>
+ <9ff688b9-9925-962d-1e75-11098907c71d@...277...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <b84e125e-c57f-9b1f-df85-225af72a0a54@...2080...>
-Date: Tue, 9 Mar 2021 21:27:19 +0100
+Message-ID: <3f3d8111-2292-82a6-6499-386834c61613@...2080...>
+Date: Tue, 9 Mar 2021 21:53:12 +0100
 MIME-Version: 1.0
-In-Reply-To: <20210307184402.GS976@...1296...>
+In-Reply-To: <9ff688b9-9925-962d-1e75-11098907c71d@...277...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="8C2wFrBG20Y3IaC7WKw3AHrpzk77yMKcr"
+ boundary="apYlSgtslvYQovz2sJy1yUIdIA0zVfxnY"
 Subject: Re: [Openvpn-devel] [PATCH] Require at least 20MB of mlock()-able
  memory if --mlock is used.
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,17 +25,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: tincanteksup <tincanteksup@...277...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---8C2wFrBG20Y3IaC7WKw3AHrpzk77yMKcr
-Content-Type: multipart/mixed; boundary="i83ocU27eUXrDcYbRvaUjjLaplKKuZdhi";
+--apYlSgtslvYQovz2sJy1yUIdIA0zVfxnY
+Content-Type: multipart/mixed; boundary="QUVd5d5xvaQUi1xYYgEaZgTlsIyIIJED5";
  protected-headers="v1"
 From: David Sommerseth <openvpn@...2080...>
-To: Gert Doering <gert@...1296...>, Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Message-ID: <b84e125e-c57f-9b1f-df85-225af72a0a54@...2080...>
+To: tincanteksup <tincanteksup@...277...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <3f3d8111-2292-82a6-6499-386834c61613@...2080...>
 Subject: Re: [Openvpn-devel] [PATCH] Require at least 20MB of mlock()-able
  memory if --mlock is used.
 References: <20210307161547.25130-1-gert@...1296...>
@@ -39,76 +41,64 @@ References: <20210307161547.25130-1-gert@...1296...>
  <20210307181002.GQ976@...1296...>
  <CAKuzo_gecRK0fkWToNRuc7oGK==cZQnLFn08_6_C5MERMBKTJQ@...278...>
  <20210307184402.GS976@...1296...>
-In-Reply-To: <20210307184402.GS976@...1296...>
+ <fd76a92c-aad1-53e1-f3fd-fe887be64a24@...1227...>
+ <1a5d4ecf-ab54-3f1d-5867-1638a9a5a2f6@...277...>
+ <5351a640-22bd-5a9f-b0a0-f80b3109ddb3@...2080...>
+ <9ff688b9-9925-962d-1e75-11098907c71d@...277...>
+In-Reply-To: <9ff688b9-9925-962d-1e75-11098907c71d@...277...>
 
---i83ocU27eUXrDcYbRvaUjjLaplKKuZdhi
+--QUVd5d5xvaQUi1xYYgEaZgTlsIyIIJED5
 Content-Language: en-GB
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: quoted-printable
 
-On 07/03/2021 19:44, Gert Doering wrote:
-> Hi,
+On 09/03/2021 21:04, tincanteksup wrote:
+ >
+> I have swapping issues all the time and I can't add more RAM.
+> I don't want system wide disk encryption.
+> And I don't want an SSD either.
 >=20
-> On Sun, Mar 07, 2021 at 01:36:03PM -0500, Selva Nair wrote:
->>> "I'm not sure", TBH.  rlimit handling in unix is a bit of an unknown
->>> territory for me.
->>>
->>> What I understand is that root can *increment* the rlimit at will, but
->>> I'd assume that the rlimit value "in existance right now" (specifically,
->>> the soft limit) applies to root processes as well.  Sort of a voluntary
->>> protection against processes running away.
->>
->> On modern linux kernels (since some 2.6.x..) RLIMIT_MEMLOCK applies only=
- to
->> unprivileged processes -- privileged processes allowed to lock "unlimite=
-d"
->> amount of memory as documented in man mlock. We updated the man page bas=
-ed
->> on that sometime ago.
+> I do not have the money to keep up with modern hardware.
 >=20
-> Indeed, "man mlock" says something about "privileged processes" on Linux
-> (it doesn't say that on FreeBSD).
+> Having openvpn --mlock is exactly the right choice for my home
+> system.
 >=20
->> We could also consider using setrlimit to increase the limit before
->> dropping privileges.
+> Please, do not remove --mlock from openvpn.
 >=20
-> That's another possible angle... just up soft+hard to "something"
-> (how much would that be? :-) ) and log the fact.
->=20
-> David, Arne, any opinion on this?  Where do we want to go?
 
-I do think mlock serves a purpose in ensuring where memory pages are=20
-kept, from a general perspective.  But does it really make sense in=20
-today's virtualized world?  Where we're mostly having several GiBs of=20
-RAM available.  I'm not sure it matters that much either way.  But for=20
-those who care about memory security, it is a useful feature.
+How much memory does your OpenVPN process consume?  And if the process=20
+(or task in kernel lingo) is active (not idling), it generally will not=20
+be swapped out.  If it does, you are already running way to much on your=20
+host.  So you need to prioritize what that host should really run.
 
-Since the code to enable this shouldn't be enormous (since we use=20
-mlockall()), I don't see much winning in code complexity by tearing it=20
-out when it may provide some security related features.
+OpenVPN's --mlock does not save you.
 
+And in fact, the kernel may as well swap out the memory pages containing=20
+the program itself and just keep the data pages allocated by the program=20
+in memory.  Which will result in a sluggish OpenVPN performance regardless.
 
-The unprivileged vs privileged process on Linux kernels change happened=20
-in 2.6.9, according to "Linux Programming Interface" (LPI) [Michael=20
-Kerrisk, chapter 50)].  I do not consider that an issue at all; I can't=20
-think of any still fully supported Linux distributions with such an=20
-ancient Linux kernel.  It should really not run security related tasks=20
-(from a general perspective).
+This gives a brief overview which might help you see what happens:
+<https://scoutapm.com/blog/understanding-page-faults-and-memory-swap-in-out=
+s-when-should-you-worry>
 
-If I've understood the LPI book correctly, the default (RLIMIT_MEMLOCK)=20
-is set to 32KiB for both hard and soft limits.  Clearly not enough for=20
-our use case.
+And even though you don't want SSD.  At least consider if you can get=20
+hold of a reasonably performing SSD with not too many GB and activate=20
+that device as a swap device on your host.  It will not be optimal, but=20
+at least the general swapping can go faster if you have a decent=20
+SATA/SAS controller.
 
-setrlimit() by itself isn't really that magical.  Basically you populate=20
-struct rlimit with the limits you want and call=20
-setrlimit(RLIMIT_MEMLOCK, &new_limits);   Plus error checking and all that.
+ > Please try to put yourselves in the place of the average user,
+ > for once.
 
-But we should look into if we should acquire CAP_IPC_LOCK capability as=20
-well, otherwise we need to completely ensure that mlockall() is really=20
-called before privileges have been dropped.  I know I had to kick out=20
---mlock on a few configs a long while ago, related to lack of privileges=20
-- but that could have been SELinux restrictions as well.  Need to=20
-revisit this.
+The average users I know does not push their hardware beyond its limits=20
+so much it hurts the overall performance.  Those I know would start=20
+planning for an upgrade.  Or get an RPi4 and run OpenVPN on it, as it=20
+got a reasonable network performance:=20
+<https://notenoughtech.com/raspberry-pi/2019-raspberry-pi-network-speed-tes=
+t/>
+
+But openvpn --mlock is never the solution to performance and swapping.=20
+Never ever.
 
 
 --=20
@@ -119,29 +109,29 @@ OpenVPN Inc
 
 
 
---i83ocU27eUXrDcYbRvaUjjLaplKKuZdhi--
+--QUVd5d5xvaQUi1xYYgEaZgTlsIyIIJED5--
 
---8C2wFrBG20Y3IaC7WKw3AHrpzk77yMKcr
+--apYlSgtslvYQovz2sJy1yUIdIA0zVfxnY
 Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="OpenPGP_signature"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEEgDq5E1p1aZrNLFFkhs+UTJZx/fIFAmBH2icACgkQhs+UTJZx
-/fLpYA/+OJDZ2GPNdY1cfLuJs75DNJlWcN285JfJcn++SHpL55g7iKUdd4r/3DB7
-pXEIDlsZzTHEJfgxPIlKjVNBJRYF4mG0hGU4ClgVUba0WW/lIguvbiDWxLEeVJrB
-8sn9cPcUWVxC3oxVBHATVL86yxvH8uf/j3yGBUXMe/ncB6uFdIjG48LWKbxA9ah/
-TfJsm2T3Qrlzx42vSymteknMy7TJZZSINLmFwFDMx3SAiCwDuCRDdre8JQjxPuAO
-gqbyZxMmj46z9cbxMNJnvDrAEGYRDt7UELpRPd+R/jGcCqhSgySRQThGhwH2UOaZ
-WU1t+ryH6K9xw7cXUriw1WOkNz2DIjtxH+PBgRZGG5U3/EK80eko0OTp0qAZ27Yp
-46fDj6Ij+JhRIfgeq6FRIqQZXEgEbzPiUK5eJjMLO7Pk43fPClUIOORFi1bAmP7D
-Nt/tHpl939avhH3tZMPxh1jqDEVEaX9FryJ2XT6574rnFpPCz+tbP+/2VxUxSIeJ
-n/oduKF/YTFYfTmeud2Q7WXzHjXM1KdSw0jgvqVusiCLgPU38SPy/BWsTjIKYhIn
-TTx4JyXoN8K8+gZeFeALWmdIgYLx1ya0SixQ/9l12maDRMroL9xvlsPeZHRiBC7m
-8yoxvT3unCLVxFTeZlE4G7r9Fv5iKNnl91JLK/sKi4+AgVT1Lfg=
-=QMeT
+iQIzBAEBCAAdFiEEgDq5E1p1aZrNLFFkhs+UTJZx/fIFAmBH4DgACgkQhs+UTJZx
+/fJRVhAAm/FhVIXptHI/D7nY1tkCym7FrNsEREBW1NBNo3uYDvmZHMjqjInBEyAa
+VtzyPjlHBBlA31P9YWh+e4NQrIl1YYt6fuuxcGFXTNBB4m6V4P4oG1XCInZoqaVk
+fUKrmKal07ZqfmfI4JaB/+QSS7B4U/D2OwN+s5MqSN1jaaKSu+luJa9nsNu7IH8s
+jadHV8ynsThyk0BNaJtenhyGmSzTM18+ZCa72kUzKIKu3RCCS68X0Wnit2sAC6Ph
+FBOde/hd9zC8gwUhoMnOzZ/KSAbd0DLKFuodAdKVvIt89SbGHEJsPY08drBdeVYM
+SUFnI7xndA655XyL2damWCn2cld39hJ+I8/292bUkfkKxDo21wWlNUhIAXY7HICA
+CHf87SnwpqdwnYZCVkbN6v3XEHNH0eW+oJXr1jRIbmXSeQV/6Xl4QsKQVlXGuoF/
+8R9SjKk4sPfwLIRh3Eqk8WbsmjuXC5Lq63Q9EvRy//k8XRSvobIHShcsKzVq3puJ
+VedFtxbJChfnGRCyZs7iVcyQxjlfiBJTzz+o/P4tFYguWZVJiBMm5EgA11jad3kV
+Hd5FPOmzdnVyyibTa4VI4CPFsrvH3fdgo2as3mKc4ft94HjwvCv7sbAyAMenBO2T
+Yo6iv/el3ETdihyXz/LJqew9GNGHxLGUX5pKAW82LeBg+Al1GFo=
+=A7xx
 -----END PGP SIGNATURE-----
 
---8C2wFrBG20Y3IaC7WKw3AHrpzk77yMKcr--
+--apYlSgtslvYQovz2sJy1yUIdIA0zVfxnY--
 
