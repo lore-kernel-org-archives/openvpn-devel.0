@@ -1,16 +1,9 @@
-Date: Thu, 11 Mar 2021 19:42:37 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20210311184237.GQ976@...1296...>
-References: <20210310124808.14741-1-gert@...1296...>
- <202103111723.12BHNAYE012156@...2054...>
- <CAKuzo_g4xteFB=tAbTaZ94F3mRieJmmzvDRV7bhxzNC99q-LUw@...278...>
+From: Juliusz Sosinowicz <juliusz@...2525...>
+Date: Fri, 12 Mar 2021 16:06:29 +0100
+Message-Id: <20210312150629.57302-1-juliusz@...2525...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="l+gHxWmLq9QeSbuB"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_g4xteFB=tAbTaZ94F3mRieJmmzvDRV7bhxzNC99q-LUw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Require at least 100MB of
- mlock()-able memory if --mlock is used.
+Subject: [Openvpn-devel] [PATCH] EVP_DigestSignFinal siglen parameter
+ correction
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,60 +12,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---l+gHxWmLq9QeSbuB
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+In the EVP_DigestSignFinal API, "before the call the siglen parameter should contain the length of the sig buffer".
 
-HI,
+Signed-off-by: Juliusz Sosinowicz <juliusz@...2525...>
+---
+ src/openvpn/crypto_openssl.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-On Thu, Mar 11, 2021 at 01:12:04PM -0500, Selva Nair wrote:
-> prlimit on Linux is handy as it can change the limits of a running process
-> as well.
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 49698e4b3..4486d246d 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -1195,7 +1195,7 @@ tls1_P_hash(const EVP_MD *md, const unsigned char *sec,
+     EVP_MD_CTX ctx, ctx_tmp, ctx_init;
+     EVP_PKEY *mac_key;
+     unsigned char A1[EVP_MAX_MD_SIZE];
+-    size_t A1_len;
++    size_t A1_len = EVP_MAX_MD_SIZE;
+     int ret = false;
+ 
+     chunk = EVP_MD_size(md);
+@@ -1249,6 +1249,7 @@ tls1_P_hash(const EVP_MD *md, const unsigned char *sec,
+ 
+         if (olen > chunk)
+         {
++            j = olen;
+             if (!EVP_DigestSignFinal(&ctx, out, &j))
+             {
+                 goto err;
+@@ -1263,6 +1264,7 @@ tls1_P_hash(const EVP_MD *md, const unsigned char *sec,
+         }
+         else
+         {
++            A1_len = EVP_MAX_MD_SIZE;
+             /* last one */
+             if (!EVP_DigestSignFinal(&ctx, A1, &A1_len))
+             {
+-- 
+2.25.1
 
-Yes :-) - my week is full of exciting discoveries.
-
-> On FreeBSD probably "limits -P pid ... " can do the same?
-
-Indeed!  Thanks, didn't follow the right references, it seems...
-
-gert@...2054...:/tmp$ limits -P 13222
-Resource limits (current):
-[..]
-  memorylocked           102400 kB
-
-... so, the claim of OpenVPN pid 13222 "I have set this to 100M" is true :-)
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---l+gHxWmLq9QeSbuB
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJgSmScAAoJEB2Cnv7KVigSh6IL/2WWw0buEFkrnLE1dM6+9LpS
-QGjSudWG+brhDKTGCu78jJPMWlvZhRLaubuC3rlK1Tg0Uo6eqaaP9+zX2xxWh0qG
-/kaQ9v8JBHA0L+z59LFC46rbKfVW15h+EeQrBDzRxTATLqp4k5cf5tSyflYAeAzz
-CrZIo8oCjqFmVje7vDk7aikPngWhyPzWjUFwW1sbAr7/SfHyAPSYyJYMoUY0leJo
-stw2BthRl11TXIySBPPEvSUSP5WpPavDLJ1e72BdQyk0HCQY3aNbsgwo+s38PO5V
-p05LMBYW1CuR6EdoeO3fL8jb7Bv6ZW7/4ldNxqKTzT1KTpXd9FbyJfzDdVQnb9le
-7JYeUkBXo7nGsx7PAri4mWL60gosLFHOEauaXaj+UPuqs7Ds9/0D9gnsNCkzT3Ne
-eoGXq01onaNiIAK/jZYNyxHsa7XWzz5/yQdh220AbJoEyQOWD/HW9JbZISk3dwQC
-3LP19tNKR+bVHvuUdgD8+weL6OvFHlFqXbqrIwKdwg==
-=sE69
------END PGP SIGNATURE-----
-
---l+gHxWmLq9QeSbuB--
 
