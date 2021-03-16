@@ -1,10 +1,9 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Tue, 16 Mar 2021 13:44:21 +0100
-Message-Id: <20210316124421.1635-1-arne@...1227...>
-In-Reply-To: <20210308142113.24208-1-arne@...1227...>
-References: <20210308142113.24208-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v2] Avoid generating unecessary mbed debug
- messages
+From: tincanteksup <tincanteksup@...277...>
+Message-ID: <b6276be3-faa4-ab16-2793-9c9a4757d582@...277...>
+Date: Tue, 16 Mar 2021 23:26:18 +0000
+MIME-Version: 1.0
+Content-Language: en-GB
+Subject: [Openvpn-devel]  Indicate correct PUSH status in log
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,93 +12,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-The main motivation to make this change is to avoid a crash in mbed TLS
-2.25 with --verb < 8.
+Hi,
 
-mbed TLS 2.25 has a nasty bug that the print function for Montgomery style
-EC curves (Curve25519 and Curve448) does segfault. See also the issue
-reported here: https://github.com/ARMmbed/mbedtls/issues/4208
+This:
 
-We request always debug level 3 from mbed TLS but filter out any debug
-output of level 3 unless verb 8 or higher is set. This commeit sets
-the debug level to 2 to avoid this problem by makeing mbed TLS not
-generatin the problematic debug output.
+2021-03-16 23:11:15 us=420944 w-c01/10.10.201.226:53237 SENT CONTROL 
+[w-c01]: 'P
+USH_REPLY,comp-lzo no,explicit-exit-notify 2,route 10.33.70.1,topology 
+net30,pin
+g 10,ping-restart 60,ifconfig 10.33.70.6 10.33.70.5,peer-id 0,cipher 
+AES-256-GCM
+' (status=1)
+2021-03-16 23:11:15 us=453465 w-c01/10.10.201.226:53237 PUSH: Received 
+control m
+essage: 'PUSH_REQUEST'
 
-For the affected version to still use --verb 8 with mbed TLS 2.25 is to
-restrict the EC groups to ones that do not crash the print function
-like with '--tls-groups secp521r1:secp384r1:secp256r1'.
+is likely to cause some confusion..
 
-This patch has no patch on user-visible behaviour on unaffected mbed TLS
-versions.
+It may be worth having the client confirm receiving the PUSH,
+in the server log.
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
+Or the server indicate an initial unrequested PUSH, technically
+this is not a PUSH_REPLY.
 
-Patch V2: Replace magic constant with proper define. Highlight more this
-          avoding generating unessary debug output than crash workaround.
----
- src/openvpn/options.c     |  6 ++++++
- src/openvpn/ssl_common.h  |  1 +
- src/openvpn/ssl_mbedtls.c | 13 ++++++++++++-
- 3 files changed, 19 insertions(+), 1 deletion(-)
+So that the log looks relatively logical.
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 0eb049d8..c4646d48 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -5883,6 +5883,12 @@ add_option(struct options *options,
-     {
-         VERIFY_PERMISSION(OPT_P_MESSAGES);
-         options->verbosity = positive_atoi(p[1]);
-+        if (options->verbosity >= (D_TLS_DEBUG_MED & M_DEBUG_LEVEL))
-+        {
-+            /* We pass this flag to the SSL library to avoid a
-+             * mbed TLS always generating debug level logging */
-+            options->ssl_flags |= SSLF_TLS_DEBUG_ENABLED;
-+        }
- #if !defined(ENABLE_DEBUG) && !defined(ENABLE_SMALL)
-         /* Warn when a debug verbosity is supplied when built without debug support */
-         if (options->verbosity >= 7)
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index b493cbb7..2e3c98db 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -352,6 +352,7 @@ struct tls_options
- #define SSLF_TLS_VERSION_MIN_MASK     0xF  /* (uses bit positions 6 to 9) */
- #define SSLF_TLS_VERSION_MAX_SHIFT    10
- #define SSLF_TLS_VERSION_MAX_MASK     0xF  /* (uses bit positions 10 to 13) */
-+#define SSLF_TLS_DEBUG_ENABLED        (1<<14)
-     unsigned int ssl_flags;
- 
- #ifdef ENABLE_MANAGEMENT
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index b30b6b9d..4626e983 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -1058,7 +1058,18 @@ key_state_ssl_init(struct key_state_ssl *ks_ssl,
-     mbedtls_ssl_config_defaults(ks_ssl->ssl_config, ssl_ctx->endpoint,
-                                 MBEDTLS_SSL_TRANSPORT_STREAM, MBEDTLS_SSL_PRESET_DEFAULT);
- #ifdef MBEDTLS_DEBUG_C
--    mbedtls_debug_set_threshold(3);
-+    /* We only want to have mbed TLS generate debug level logging when we would
-+     * also display it.
-+     * In fact mbed TLS 2.25.0 crashes generating debug log if Curve25591 is
-+     * selected for DH (https://github.com/ARMmbed/mbedtls/issues/4208) */
-+    if (session->opt->ssl_flags & SSLF_TLS_DEBUG_ENABLED)
-+    {
-+        mbedtls_debug_set_threshold(3);
-+    }
-+    else
-+    {
-+        mbedtls_debug_set_threshold(2);
-+    }
- #endif
-     mbedtls_ssl_conf_dbg(ks_ssl->ssl_config, my_debug, NULL);
-     mbedtls_ssl_conf_rng(ks_ssl->ssl_config, mbedtls_ctr_drbg_random,
--- 
-2.30.1
+Food for thought..
+R
 
 
