@@ -1,11 +1,12 @@
-References: <20210317160443.26313-1-arne@...1227...>
+References: <20210317160038.25828-1-arne@...1227...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <ac3a0fc1-01f0-004c-5dfb-dd4858673028@...2181...>
-Date: Wed, 17 Mar 2021 17:09:52 +0100
+Message-ID: <37db2341-3bd5-191e-103e-48895f016c51@...2181...>
+Date: Wed, 17 Mar 2021 17:30:58 +0100
 MIME-Version: 1.0
-In-Reply-To: <20210317160443.26313-1-arne@...1227...>
+In-Reply-To: <20210317160038.25828-1-arne@...1227...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v2] Implement auth-token-user
+Subject: Re: [Openvpn-devel] [PATCH v2 1/3] Move restoring pre pull options
+ to initialising of c2 context
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,31 +21,23 @@ To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
 Hi all,
 
-On 17/03/2021 17:04, Arne Schwabe wrote:
-> When not using username and password (i.e. auth-user-pass) it can still make
-> to provide the client with an auth-token, e.g. for allowing a session to
-> continue after a reconnect without requiring 2FA again.
+On 17/03/2021 17:00, Arne Schwabe wrote:
+> We currently delay restoring these options until we actually must
+> restore them. Since there is no reason to do so apart from the very
+> minor saving to not have to execute that code when a connection fails,
+> move them it into the general context_2 initialisation.
 > 
-> However, without --auth-user-pass openvpn does not have a username and will
-> ignore any pushed auth-token command.
-> 
-> This patch adds support for auth-token-user to set the username that should
-> be used for auth-token
-> 
-> The spec of using auth-token-user base64-encoded-user are the ones that
-> OpenVPN3 already implements.
-> 
-> Patch V2: Improve style, fix comments and commit message
+> Patch V2: rebase on master.
 > 
 > Signed-off-by: Arne Schwabe <arne@...1227...>
 
-This feature is not necessarily "good looking", but I understand it may
-be useful in some particular (and fairly advanced) setups.
+This patch is simply about moving when the pre-pull settings have to be
+restored. Aims at simplifying the code and make it easier to follow
+(thanks to the patches that will come later).
 
 This patch was reviewed with the Arne's guidance.
 
 Acked-by: Antonio Quartulli <antonio@...515...>
-
 
 
 -- 
