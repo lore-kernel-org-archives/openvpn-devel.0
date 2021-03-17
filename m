@@ -1,10 +1,10 @@
-From: =?iso-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-Date: Wed, 17 Mar 2021 12:00:06 +0000
-Message-ID: <1615982408638.53181@...515...>
-Content-Language: it-IT
-Content-Type: multipart/mixed; boundary="_002_161598240863853181openvpnnet_"
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Summary of the community meeting (17th March 2021)
+From: Arne Schwabe <arne@...1227...>
+Date: Wed, 17 Mar 2021 14:03:12 +0100
+Message-Id: <20210317130312.8585-2-arne@...1227...>
+In-Reply-To: <20210317130312.8585-1-arne@...1227...>
+References: <20210310154754.GH976@...1296...>
+ <20210317130312.8585-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v5 2/2] Implement deferred auth for scripts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,429 +13,324 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---_002_161598240863853181openvpnnet_
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+This patch also refactors the if condition that checks the result of
+the authentication since that has become quite unreadable. It renames
+s1/s2 and extracts some parts of the condition into individual variables
+to make the condition better understandle
 
-Hi,
+Patch v2: add refactoring of the if condition
+Patch v4: fix documentation not mentioning method as 2nd line
+Patch v5: fix deferred auth used by both plugin and script not working
 
-Here's the summary of the IRC meeting.
-
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
+ Changes.rst                         |  11 +++
+ doc/man-sections/script-options.rst |  14 +++-
+ src/openvpn/ssl.c                   |   1 +
+ src/openvpn/ssl_common.h            |   1 +
+ src/openvpn/ssl_verify.c            | 105 ++++++++++++++++++++--------
+ 5 files changed, 101 insertions(+), 31 deletions(-)
 
-COMMUNITY MEETING
+diff --git a/Changes.rst b/Changes.rst
+index d6be1050..ddfacdbe 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -19,6 +19,16 @@ Compatibility with OpenSSL in FIPS mode
+     and if less than 100MB RAM are available, use setrlimit() to upgrade
+     the limit.  See Trac #1390.  Not available on OpenSolaris.
+ 
++Deferred auth support for scripts
++    The ``--auth-user-pass-verify`` script supports now deferred authentication.
++
++Pending auth support for plugins and scripts
++    Both auth plugin and script can now signal pending authentication to
++    the client when using deferred authentication. The new ``client-crresponse``
++    script option and ``OPENVPN_PLUGIN_CLIENT_CRRESPONSE`` plugin function can
++    be used to parse a client response to a ``CR_TEXT`` two factor challenge.
++
++    See ``sample/sample-scripts/totpauth.py`` for an example.
+ 
+ Deprecated features
+ -------------------
+@@ -27,6 +37,7 @@ Deprecated features
+     and TAP mode only.
+ 
+ 
++
+ Overview of changes in 2.5
+ ==========================
+ 
+diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-options.rst
+index 03b3dd77..22990f4f 100644
+--- a/doc/man-sections/script-options.rst
++++ b/doc/man-sections/script-options.rst
+@@ -90,7 +90,19 @@ SCRIPT HOOKS
+ 
+   The script should examine the username and password, returning a success
+   exit code (:code:`0`) if the client's authentication request is to be
+-  accepted, or a failure code (:code:`1`) to reject the client.
++  accepted, a failure code (:code:`1`) to reject the client, or a that
++  the authentication is deferred (:code:`2`). If the authentication is
++  deferred, the script must fork/start a background or another non-blocking
++  operation to continue the authentication in the background. When finshing
++  the authentication, a :code:`1` or :code:`0` must be written to the
++  file specified by the :code:`auth_control_file`.
++
++  When deferred authentication is in use, the script can also request
++  pending authentication by writing to the file specified by the
++  :code:`auth_pending_file`. The first line must be the timeout in
++  seconds, the required method on the second line (e.g. crtext) and
++  third line must be the EXTRA as documented in the
++  ``client-pending-auth`` section of `doc/management.txt`.
+ 
+   This directive is designed to enable a plugin-style interface for
+   extending OpenVPN's authentication capabilities.
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index b6c553be..08b95bc3 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -993,6 +993,7 @@ key_state_free(struct key_state *ks, bool clear)
+     packet_id_free(&ks->crypto_options.packet_id);
+ 
+     key_state_rm_auth_control_files(&ks->plugin_auth);
++    key_state_rm_auth_control_files(&ks->script_auth);
+ 
+     if (clear)
+     {
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 0773376e..6c6e5073 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -222,6 +222,7 @@ struct key_state
+     time_t acf_last_mod;
+ 
+     struct auth_deferred_status plugin_auth;
++    struct auth_deferred_status script_auth;
+ };
+ 
+ /** Control channel wrapping (--tls-auth/--tls-crypt) context */
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index c9983d66..c32bc927 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -1087,20 +1087,25 @@ tls_authentication_status(struct tls_multi *multi, const int latency)
+             }
+             else
+             {
+-                unsigned int s1 = ACF_DISABLED;
+-                unsigned int s2 = ACF_DISABLED;
+-                s1 = key_state_test_auth_control_file(&ks->plugin_auth);
++                unsigned int auth_plugin = ACF_DISABLED;
++                unsigned int auth_script = ACF_DISABLED;
++                unsigned int auth_man = ACF_DISABLED;
++                auth_plugin = key_state_test_auth_control_file(&ks->plugin_auth);
++                auth_script = key_state_test_auth_control_file(&ks->script_auth);
+ #ifdef ENABLE_MANAGEMENT
+-                s2 = man_def_auth_test(ks);
++                auth_man = man_def_auth_test(ks);
+ #endif
+-                ASSERT(s1 < 4 && s2 < 4);
++                ASSERT(auth_plugin < 4 && auth_script < 4 && auth_man < 4);
+ 
+-                if (s1 == ACF_FAILED || s2 == ACF_FAILED)
++                if (auth_plugin == ACF_FAILED || auth_script == ACF_FAILED
++                   || auth_man == ACF_FAILED)
+                 {
+                     ks->authenticated = KS_AUTH_FALSE;
+                     failed_auth = true;
+                 }
+-                else if (s1 == ACF_UNDEFINED || s2 == ACF_UNDEFINED)
++                else if (auth_plugin == ACF_UNDEFINED
++                         || auth_script == ACF_UNDEFINED
++                         || auth_man == ACF_UNDEFINED)
+                 {
+                     if (now < ks->auth_deferred_expire)
+                     {
+@@ -1109,7 +1114,7 @@ tls_authentication_status(struct tls_multi *multi, const int latency)
+                 }
+                 else
+                 {
+-                    /* s1 and s2 are either ACF_DISABLED or ACF_SUCCEDED */
++                    /* auth_plugin and auth_man are either ACF_DISABLED or ACF_SUCCEDED */
+                     success = true;
+                     ks->authenticated = KS_AUTH_TRUE;
+                 }
+@@ -1189,14 +1194,15 @@ tls_authenticate_key(struct tls_multi *multi, const unsigned int mda_key_id, con
+ /*
+  * Verify the user name and password using a script
+  */
+-static bool
++static int
+ verify_user_pass_script(struct tls_session *session, struct tls_multi *multi,
+                         const struct user_pass *up)
+ {
+     struct gc_arena gc = gc_new();
+     struct argv argv = argv_new();
+     const char *tmp_file = "";
+-    bool ret = false;
++    int retval = OPENVPN_PLUGIN_FUNC_ERROR;
++    struct key_state *ks = &session->key[KS_PRIMARY];      /* primary key */
+ 
+     /* Set environmental variables prior to calling script */
+     setenv_str(session->opt->es, "script_type", "user-pass-verify");
+@@ -1224,25 +1230,58 @@ verify_user_pass_script(struct tls_session *session, struct tls_multi *multi,
+             /* pass temp file name to script */
+             argv_printf_cat(&argv, "%s", tmp_file);
+         }
+-        else
+-        {
+-            msg(D_TLS_ERRORS, "TLS Auth Error: could not create write "
+-                "username/password to temp file");
+-        }
+     }
+     else
+     {
++        setenv_str(session->opt->es, "username", up->username);
+         setenv_str(session->opt->es, "password", up->password);
+     }
+ 
++    /* generate filename for deferred auth control file */
++    if (!key_state_gen_auth_control_files(&ks->script_auth, session->opt))
++    {
++        msg(D_TLS_ERRORS, "TLS Auth Error (%s): "
++                          "could not create deferred auth control file", __func__);
++        return OPENVPN_PLUGIN_FUNC_ERROR;
++    }
++
+     /* call command */
+-    ret = openvpn_run_script(&argv, session->opt->es, 0,
+-                             "--auth-user-pass-verify");
++    int script_ret = openvpn_run_script(&argv, session->opt->es, S_EXITCODE,
++                                        "--auth-user-pass-verify");
++    switch (script_ret)
++    {
++       case 0:
++           retval = OPENVPN_PLUGIN_FUNC_SUCCESS;
++           break;
++       case 2:
++           retval = OPENVPN_PLUGIN_FUNC_DEFERRED;
++           break;
++       default:
++           retval = OPENVPN_PLUGIN_FUNC_ERROR;
++           break;
++    }
++    if (retval == OPENVPN_PLUGIN_FUNC_DEFERRED)
++    {
++        /* Check if we the plugin has written the pending auth control
++         * file and send the pending auth to the client */
++        if(!key_state_check_auth_pending_file(&ks->script_auth,
++                                              multi))
++        {
++            retval = OPENVPN_PLUGIN_FUNC_ERROR;
++            key_state_rm_auth_control_files(&ks->script_auth);
++        }
+ 
++    }
++    else
++    {
++        /* purge auth control filename (and file itself) for non-deferred returns */
++        key_state_rm_auth_control_files(&ks->script_auth);
++    }
+     if (!session->opt->auth_user_pass_verify_script_via_file)
+     {
+         setenv_del(session->opt->es, "password");
+     }
++
+ done:
+     if (tmp_file && strlen(tmp_file) > 0)
+     {
+@@ -1251,7 +1290,7 @@ done:
+ 
+     argv_free(&argv);
+     gc_free(&gc);
+-    return ret;
++    return retval;
+ }
+ 
+ /*
+@@ -1372,8 +1411,6 @@ void
+ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+                  struct tls_session *session)
+ {
+-    int s1 = OPENVPN_PLUGIN_FUNC_SUCCESS;
+-    bool s2 = true;
+     struct key_state *ks = &session->key[KS_PRIMARY];      /* primary key */
+ 
+ #ifdef ENABLE_MANAGEMENT
+@@ -1433,30 +1470,32 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+         }
+     }
+ 
++    int plugin_status = OPENVPN_PLUGIN_FUNC_SUCCESS;
++    int script_status = OPENVPN_PLUGIN_FUNC_SUCCESS;
+     /* Set the environment variables used by all auth variants */
+     if (!set_verify_user_pass_env(up, multi, session))
+     {
+         skip_auth = true;
+-        s1 = OPENVPN_PLUGIN_FUNC_ERROR;
++        plugin_status = OPENVPN_PLUGIN_FUNC_ERROR;
+     }
+ 
+     /* call plugin(s) and/or script */
+     if (!skip_auth)
+     {
+ #ifdef ENABLE_MANAGEMENT
+-        if (man_def_auth==KMDA_DEF)
++        if (man_def_auth == KMDA_DEF)
+         {
+             man_def_auth = verify_user_pass_management(session, multi, up);
+         }
+ #endif
+         if (plugin_defined(session->opt->plugins, OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY))
+         {
+-            s1 = verify_user_pass_plugin(session, multi, up);
++            plugin_status = verify_user_pass_plugin(session, multi, up);
+         }
+ 
+         if (session->opt->auth_user_pass_verify_script)
+         {
+-            s2 = verify_user_pass_script(session, multi, up);
++            script_status = verify_user_pass_script(session, multi, up);
+         }
+     }
+ 
+@@ -1467,19 +1506,25 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+         msg(D_TLS_ERRORS,
+             "TLS Auth Error: --username-as-common name specified and username is longer than the maximum permitted Common Name length of %d characters",
+             TLS_USERNAME_LEN);
+-        s1 = OPENVPN_PLUGIN_FUNC_ERROR;
++        plugin_status = OPENVPN_PLUGIN_FUNC_ERROR;
++        script_status = OPENVPN_PLUGIN_FUNC_ERROR;
+     }
+     /* auth succeeded? */
+-    if ((s1 == OPENVPN_PLUGIN_FUNC_SUCCESS
+-         || s1 == OPENVPN_PLUGIN_FUNC_DEFERRED
+-         ) && s2
++    bool plugin_ok = plugin_status == OPENVPN_PLUGIN_FUNC_SUCCESS
++        || plugin_status == OPENVPN_PLUGIN_FUNC_DEFERRED;
++
++    bool script_ok =  script_status == OPENVPN_PLUGIN_FUNC_SUCCESS
++        || script_status ==  OPENVPN_PLUGIN_FUNC_DEFERRED;
++
++    if (script_ok && plugin_ok && tls_lock_username(multi, up->username)
+ #ifdef ENABLE_MANAGEMENT
+         && man_def_auth != KMDA_ERROR
+ #endif
+-        && tls_lock_username(multi, up->username))
++        )
+     {
+         ks->authenticated = KS_AUTH_TRUE;
+-        if (s1 == OPENVPN_PLUGIN_FUNC_DEFERRED)
++        if (plugin_status == OPENVPN_PLUGIN_FUNC_DEFERRED
++            || script_status == OPENVPN_PLUGIN_FUNC_DEFERRED)
+         {
+             ks->authenticated = KS_AUTH_DEFERRED;
+         }
+-- 
+2.30.1
 
-Place: #openvpn-meeting on irc.freenode.net
-Date: Wed 17th March 2021
-Time: 11:30 CET (10:30 UTC)
-
-Planned meeting topics for this meeting were here:
-
-
-https://community.openvpn.net/openvpn/wiki/Topics-2021-03-17
-
-
-Your local meeting time is easy to check from services such as
-
-<http://www.timeanddate.com/worldclock>
-
-SUMMARY
-
-cron2, d12fk, dazo, lev, mattock, ordex and plaisthos participated in this =
-meeting.
-
----
-
-Noted that OpenVPN 2.5.2 release has been postponed to next week.
-
----
-
-Patch v2 to fix the "mbedTLS 2.25.0 crash bug / patch " is on the list, but=
- review is still lacking.
-
----
-
-Mattock mentioned that there is no progress on the buildslave refactoring d=
-ue to lack of focus and time.
-
----
-
-Agreed that we should try to let OpenVPN Inc. QA replicate the "Bridged Win=
-dows 10 Causes Sporadic Crashes" issue:
-
-<https://community.openvpn.net/openvpn/ticket/1385>
-
-Mattock will contact the person who reported this and QA will replicate the=
- environment. Then the problem can be reproduced and fixed eventually.
-
----
-
-Talked about the review culture. Everyone agreed that whitespace and format=
-ting issues are important, but those should preferably detected automatical=
-ly before any human even looks at the patch. It is possible that we could d=
-o this with Patchwork and uncrustify, but that would require some effort.=20
-
-Agreed that as a first step we should move the code formatting instructions=
- in the CONTRIBUTING file up.
-
----
-
-Talked about the technical details regarding kicking out the embedded lz4 l=
-ibrary. Did not find a perfect solution yet.=20
-
----
-
-Full chatlog attached=
-
---_002_161598240863853181openvpnnet_
-Content-Type: text/plain; name="openvpn_irc_meeting_chatlog_2021-03-17.txt"
-Content-Description: openvpn_irc_meeting_chatlog_2021-03-17.txt
-Content-Disposition: attachment;
-	filename="openvpn_irc_meeting_chatlog_2021-03-17.txt"; size=19252;
-	creation-date="Wed, 17 Mar 2021 11:56:31 GMT";
-	modification-date="Wed, 17 Mar 2021 11:56:31 GMT"
-Content-Transfer-Encoding: base64
-
-CigxMjoyODozMykgbWF0dG9jazogYWxtb3N0IHRpbWUKKDEyOjMwOjI5KSBjcm9uMjogSSdsbCBi
-ZSBhIGZldyBtaW51dGVzIGxhdGUgZm9yIHRoZSBtZWV0aW5nIChzdGlsbCBpbiBhIGNhbGwpCigx
-MjozMTo0MSkgbWF0dG9jazogb2sKKDEyOjMxOjQ0KSBtYXR0b2NrOiB3aG8gZWxzZSBkbyB3ZSBo
-YXZlIGhlcmU/CigxMjozMjoyMikgKioqZDQ1N2sgPC0KKDEyOjMyOjQ0KSBkNDU3azogd2VpcmQg
-bmljawooMTI6MzM6MjIpIG1hdHRvY2s6IGluZGVlZCA6KQooMTI6MzQ6MjUpIGQ0NTdrIMOoIG9y
-YSBjb25vc2NpdXRvIGNvbWUgZDEyZmsKKDEyOjM0OjU0KSBtb2RhbGl0w6AgKCtvIGQxMmZrKSBk
-YSBDaGFuU2VydgooMTI6MzU6MTMpIG1hdHRvY2s6IEkgcGluZ2VkIHRoZSBndXlzIG9uIGludGVy
-bmFsIGNoYXQKKDEyOjM2OjMyKSAqKipkYXpvIGlzIGhlcmUKKDEyOjM2OjQwKSBsZXZfXzogaGVs
-bG8KKDEyOjM2OjQ2KSBtYXR0b2NrOiBoaSEKKDEyOjM3OjUzKSAqKipwbGFpc3Rob3MgaXMgaGVy
-ZQooMTI6Mzg6NTIpIGRhem8gaGEgc2NlbHRvIGNvbWUgYXJnb21lbnRvOiBBZ2VuZGEgaHR0cHM6
-Ly9jb21tdW5pdHkub3BlbnZwbi5uZXQvb3BlbnZwbi93aWtpL1RvcGljcy0yMDIxLTAzLTE3Cigx
-MjozOToyNykgbGV2X186IFBhZ2UgVG9waWNzLTIwMjEtMDMtMTcgbm90IGZvdW5kCigxMjozOTo1
-OCkgKioqZGF6byBpcyBzb29vbyB0ZW1wdGVkIHRvIHVwZGF0ZSB0aGUgdG9waWMgdXJsICBvbmNl
-IG1vcmUsIHRvIGluY2x1ZGUgdGhlID9fX2NmX2NobF9qc2NobF90a19fPXtibG9ifSBwYXJ0IC4u
-Li4uCigxMjo0MDoyOCkgZGF6bzogaHR0cHM6Ly9jb21tdW5pdHkub3BlbnZwbi5uZXQvb3BlbnZw
-bi93aWtpL1RvcGljcy0yMDIxLTAzLTEwIC4uLiBzbyBwcm9iYWJseSBjYXRjaC11cCBmcm9tIGhl
-cmUgdGhlbgooMTI6NDE6NDApIHBsYWlzdGhvczogZm9yIDIgdGhhdCBpcyBwb3N0cG9uZWQKKDEy
-OjQxOjQ2KSBtYXR0b2NrOiBsZXQncyBzZWUKKDEyOjQyOjA1KSBkYXpvOiB5ZWFoLCAyIGlzIHBv
-c3Rwb25lZCBvbmUgbW9yZSB3ZWVrCigxMjo0Mjo1NCkgcGxhaXN0aG9zOiBidHcuIG91ciBtYWls
-IHNlcnZlciBpcyBkb3duCigxMjo0Mjo1NykgcGxhaXN0aG9zOiA6LwooMTI6NDM6MTcpIGxldl9f
-OiBVc2UgT3V0bG9vayB3ZWIgYWNjZXNzIDopCigxMjo0MzozNCkgZGF6bzogVGhlbiBsaXZpbmcg
-d2l0aG91dCBlLW1haWwgaXMgYmV0dGVyCigxMjo0Mzo1MCkgZGF6bzogT1dBIGlzIHdlYm1haWwg
-ZG9uZSBpbiB0aGUgOTBzCigxMjo0NDo1NykgZDEyZms6IGFyZSB3ZSB3YWl0aW5nIGZvciBjcm9u
-Mj8KKDEyOjQ1OjAyKSBtYXR0b2NrOiB5ZXMgSSB0aGluayBzbwooMTI6NDU6MTcpIG1hdHRvY2s6
-IHdlbGwsIGFueSBuZXdzIG9uICJtYmVkVExTIDIuMjUuMCBjcmFzaCBidWcgLyBwYXRjaCAiPwoo
-MTI6NDU6NDIpIHBsYWlzdGhvczogdjIgaXMgb24gdGhlIGxpc3QKKDEyOjQ1OjQ3KSBwbGFpc3Ro
-b3M6IG5vIHJldmlldyB5ZXQKKDEyOjQ2OjM4KSBtYXR0b2NrOiBvawooMTI6NDY6NTUpIG1hdHRv
-Y2s6IHNvIHRoZSBxdWVzdGlvbiBvbiAiaG93IHRvIGRlYWwgd2l0aCBpdCIgaGFzIHByb2JhYmx5
-IGJlZW4gcmVzb2x2ZWQKKDEyOjQ3OjE2KSBwbGFpc3Rob3M6IGludGVyZXN0aW5nbHkgTWFpbC5h
-cHAgc3RpbGwgd29ya3MKKDEyOjQ3OjE3KSBtYXR0b2NrOiByZWdhcmRpbmcgYnVpbGRzbGF2ZXMg
-LSBubyBwcm9ncmVzcywgbm8gcG9pbnQgaW4gbWUgdHJ5aW5nIHRvIDMwIG1pbnV0ZXMgaGVyZSBh
-bmQgMzAgbWludXRlcyB0aGVyZSwgbmVlZHMgZm9jdXMKKDEyOjQ3OjIyKSBwbGFpc3Rob3M6IHBy
-b2JhYmx5IHVzZXMgdGhlIGV4Y2hhbmdlIGludGVyZmFjZQooMTI6NDc6NDkpIHBsYWlzdGhvczog
-YnV0IEkgYW0gbm90IGxvb2tpbmcgaW50byBNYWlsLmFwcCtncGcKKDEyOjQ4OjQyKSBkYXpvOiA6
-LUQKKDEyOjUwOjMxKSBtYXR0b2NrOiBJIGhhdmUgc29tZSB1cGRhdGVzIG9uICJCcmlkZ2VkIFdp
-bmRvd3MgMTAgQ2F1c2VzIFNwb3JhZGljIENyYXNoZXMiIChodHRwczovL2NvbW11bml0eS5vcGVu
-dnBuLm5ldC9vcGVudnBuL3RpY2tldC8xMzg1KQooMTI6NTA6NDkpIG1hdHRvY2s6IHNvLCB0aGUg
-cGVyc29uIHdhcyB3aWxsaW5nIHRvIGdyYW50IGFjY2VzcyB0byBhIFdpbmRvd3MgaW5zdGFuY2Ug
-d2l0aCB0aGlzIHByb2JsZW0KKDEyOjUxOjE2KSBtYXR0b2NrOiBJIHJlY2FsbCBsZXYgYWxtb3N0
-IHZvbHVudGVlcmVkIHRvIGhhdmUgYSBsb29rIGF0IHRoaXMKKDEyOjUyOjA0KSBjcm9uMjogb2ss
-IG5vdyBJJ20gZnVsbHkgaGVyZQooMTI6NTI6MjUpIG1hdHRvY2s6IHdlbGNvbWUhCigxMjo1Mjo0
-NikgbGV2X186IEkgYXNrZWQgZm9yIGEgc3RhY2sgdHJhY2UgZnJvbSB0aGUgZHJpdmVyCigxMjo1
-Mzo1MikgbGV2X186IGJ1dCBJJ3ZlIG5ldmVyIGRvbmUgYnJpZGdpbmcgb24gd2luZG93cwooMTI6
-NTQ6MjIpIG1hdHRvY2s6IGxldjogd2hhdCBpZiBJIGNvbm5lY3QgeW91IHdpdGggdGhlIGd1eSBk
-aXJlY3RseT8KKDEyOjU0OjQ1KSBtYXR0b2NrOiBoZSBzZWVtZWQgcmVsdWN0YW50IHRvIHN0YXJ0
-IG1lZGRsaW5nIHdpdGggc3RhY2sgdHJhY2VzLCBidXQgbWF5YmUgY3JlYXRpbmcgdGhhdCB3b3Vs
-ZCBiZSBxdWl0ZSBlYXN5CigxMjo1NDo0OSkgY3JvbjI6IGl0IHNlZW1zIHRvIGJlICJhIHN1cHBv
-cnRlZCBmZWF0dXJlIiwgYnV0IGEpIGZvciBzb21lIHBlb3BsZSBpdCBibHVlc2NyZWVucywgYW5k
-IGIpIGZvciBvdGhlciBwZW9wbGUgaXQgc3RvcHBlZCB3b3JraW5nIHdpdGggdGhlIGxhc3QgV2lu
-MTAgdXBkYXRlCigxMjo1NDo0OSkgbWF0dG9jazogeW91IGNvdWxkIGluc3RydWN0IGhpbQooMTI6
-NTc6MjQpIG1hdHRvY2s6IGxldjogSSB0YWtlIHNpbGVuY2UgYXMgYSAieWVzIiA6RAooMTI6NTc6
-MzIpIGxldl9fOiB3ZWxsIHdhaXQKKDEyOjU3OjU0KSBsZXZfXzogaG93IG11Y2ggdGhpcyBjYXNl
-IGlzIGltcG9ydGFudCBjb21wYXJpc29uIHRvIGRjby13aW4gSSBhbSB3b3JraW5nIG9uCigxMjo1
-ODoxMykgbWF0dG9jazogcHJvYmFibHkgcXVpdGUgdW5pbXBvcnRhbnQKKDEyOjU4OjQ0KSBtYXR0
-b2NrOiBhdCBsZWFzdCBmb3IgbW9zdCBwZW9wbGUsIGJ1dCBtaWdodCBiZSByZWFsbHkgaW1wb3J0
-YW50IGZvciBhIHNtYWxsIHN1YnNldCBvZiB1c2VycwooMTI6NTk6MDEpIGNyb24yOiBsZXZfXzog
-d2F5IGxlc3MgaW1wb3J0YW50CigxMjo1OToxOCkgbGV2X186IG1heWJlIHdlIHNob3VsZCBhc2sg
-b3VyIFFBIHRvIHRlc3QgYnJpbmdpbmcgZmlyc3QKKDEyOjU5OjI2KSBkYXpvOiBBbnkgYjBya2Vu
-IGZlYXR1cmUgaXMgaW1wb3J0YW50IHRvIHRob3NlIHVzZXJzIHVzaW5nIGl0IC4uLi4gYnV0IHRo
-YXQgZG9lc24ndCBtZWFuIGl0J3MgaW1wb3J0YW50IGZvciB0aGUgcHJvamVjdCBhcyBhIHdob2xl
-CigxMjo1OTo0NSkgbWF0dG9jazogbGV2OiB3aGF0IGFib3V0IGFza2luZyB0aGUgZ3V5IGhvdyB0
-byByZXByb2R1Y2UgX2hpc18gc2V0dXA/CigxMjo1OTo0OSkgbWF0dG9jazogdGhlbiBRQSBjb3Vs
-ZCByZXBsaWNhdGUgdGhhdAooMTI6NTk6NTQpIG1hdHRvY2s6IG5vIHdvcmsgb24geW91ciBwYXJ0
-CigxMzowMDozMCkgY3JvbjI6IG1pZ2h0IHdvcmsgOikKKDEzOjAwOjM2KSBsZXZfXzogeWVhaAoo
-MTM6MDE6MDQpIG1hdHRvY2s6IHRoYXQncyBhIGRlYWwgdGhlbgooMTM6MDE6MTMpICoqKm9yZGV4
-IGlzIGhlcmUgdG9vCigxMzowMToxNCkgbWF0dG9jazogSSdsbCBhc2sgaGltIHRoZSB0ZWNobmlj
-YWwgZGV0YWlscwooMTM6MDE6MzIpIG1hdHRvY2s6IGxldjogd2hhdCBKSVJBIHByb2plY3Qgc2hv
-dWxkIEkgcGxhY2UgdGhlIHRpY2tldCBhYm91dCB0aGlzPwooMTM6MDE6MzYpIG1hdHRvY2s6IGhp
-IG9yZGV4IQooMTM6MDE6NDIpIGxldl9fOiBPU1MgPwooMTM6MDI6MTEpIGxldl9fOiB3aGljaCBv
-YnZpb3VzbHkgc3RhdGVzIGZvciAiT2ZmaWNlIG9mIHN0cmF0ZWdpYyBzZXJ2aWNlcyIKKDEzOjAz
-OjE2KSBtYXR0b2NrOiBpZiBRQSBoYXMgYWNjZXNzIHRvIHRoYXQgc3RyYXRlZ2ljIHNlcnZpY2Us
-IHRoZW4geWVzCigxMzowNToxMikgY3JvbjI6IG9rLiAgQ2FuIHdlIHNwZW5kIDIgbWludXRlcyBv
-biAicmV2aWV3IGN1bHR1cmUiPyAgSSBuZWVkIHRvIG1ha2UgY29tcGxhaW50cyA6KQooMTM6MDU6
-MzEpIGRhem86IHllcywgcGxlYXNlCigxMzowNTo1NSkgY3JvbjI6IHdlIGFsbCBrbm93IHRoYXQg
-b3VyIHJldmlld3MgdGFrZSB3YXkgdG9vIGxvbmcsIGFuZCB0aGlzIGlzIG5vdCBlYXNpbHkgZml4
-ZWQKKDEzOjA2OjAxKSBtYXR0b2NrOiArMQooMTM6MDY6MDUpIGRhem86ICsxCigxMzowNjoxMikg
-Y3JvbjI6IGJ1dCBJJ3ZlIHNlZW4gYSBmZXcgY2FzZXMgd2hlcmUgYWZ0ZXIgcXVpdGUgYSBsb25n
-IHdhaXQgdGltZSwgYWxsIHRoZSByZXZpZXcgc2FpZCB3YXMKKDEzOjA2OjE2KSBjcm9uMjogInlv
-dXIgd2hpdGVzcGFjZSBzdGlua3MhIgooMTM6MDY6MzIpIGNyb24yOiBhbmQgSSB0aGluayB0aGlz
-IGlzIHZlcnkgZnJ1c3RyYXRpbmcgZm9yIHRob3NlIHdobyB3cml0ZSBjb2RlCigxMzowNzoxNCkg
-Y3JvbjI6IHNvIG15IHJlcXVlc3QgaXM6IHBsZWFzZSBkbyB0aGUgcmV2aWV3cyBiYXNlZCBvbiBj
-b2RlIHF1YWxpdHkgYW5kIGZ1bmN0aW9uYWxpdHksICphbmQqIHBvaW50IG91dCAidGhlcmUgaXMg
-YSB3aGl0ZXNwYWNlIGlzc3VlIHRoYXQgTVVTVCBiZSBmaXhlZCEiLiAgQnV0IGRvIG5vdCBmb2N1
-cyBvbiAiSSB3b24ndCBsb29rIGF0IHRoaXMgYmVmb3JlIGFsbCB0aGUgYmxhbmtzIGFuZCBicmFj
-a2V0cyBhcmUgcGFpbnRlZCBwaW5rISIKKDEzOjA3OjI4KSBjcm9uMjogbWlub3Igd2hpdGVzcGFj
-ZSBjYW4gYmUgaGFuZGxlZCBhdCBtZXJnZSB0aW1lCigxMzowNzoyOCkgZGF6bzogKzEKKDEzOjA4
-OjE0KSBjcm9uMjogKm1ham9yKiB3aGl0ZXNwYWNlIGhhdm9jIChsaWtlICJhIHdob2xlIGZ1bmN0
-aW9uIGlzIGZvcm1hdHRlZCB0b3RhbGx5IHdlaXJkIikgbWlnaHQgbmVlZCBhIHYyIG9mIHRoZSBw
-YXRjaCwgYnV0ICJ0aGUgZnVuY3Rpb25hbGl0eSBpcyBnb29kLCBhbmQgd2UgZ2VuZXJhbGx5IGFn
-cmVlIHdpdGggdGhlIHByaW5jaXBsZSwgYnV0IHRoZSBjb2RlIHN1Y2tzIiBpcyBhIHZlcnkgZGlm
-ZmVyZW50IG1lc3NhZ2UgdGhhbiAieW91ciB3aGl0ZXNwYWNlIHN0aW5rcyIKKDEzOjA4OjM0KSBj
-cm9uMjogdGhhbmtzIGZvciBsaXN0ZW5pbmcgOi0pCigxMzowODo0MikgZGF6bzogQW5kIGlmIHRo
-ZSB3aGl0ZS1zcGFjaW5nIGlzIHRvbyBtdWNoICJvZmYiIC4uLi4gZm9yIHJldmlld2luZywgcHVs
-bCBpdCBkb3duLCB1bmNydXN0aWZ5IGl0LCByZXZpZXcgY29kZS4KKDEzOjA5OjQwKSBvcmRleDog
-YWdyZWVkCigxMzoxMDowMykgZGF6bzogTWF5YmUgd2Ugc2hvdWxkIGFsc28gcmVjb25zaWRlciBo
-b3cgd2UgYXBwbHkgcGF0Y2hlcyB0b28gLi4uIHRoYXQgdW5jcnVzdGlmeWluZyB3aWxsIGJlIHBh
-cnQgb2YgdGhlIGNvbW1pdCBwcm9jZXNzLiAgSWYgdGhlIGNvbmZpZyBpcyBub3Qgd2VsbCBkZWZp
-bmVkIGluIGNlcnRhaW4gYXJlYXMsIGl0J3MgdXAgdG8gdGhlIGNvbW1pdHRlciB0byBrZWVwIHNv
-bWUgY29uc2lzdGVuY2UKKDEzOjEwOjI4KSBkYXpvOiB0aG91Z2h0cyBhYm91dCB0aGF0LCBjcm9u
-Mj8KKDEzOjEwOjMzKSBjcm9uMjogSSBoYXZlIHRyaWVkIHRvIGZpbmQgYSByZWFzb25hYmxlIGJh
-bGFuY2Ugb24gdGhhdAooMTM6MTA6NTIpIGRhem86IEkgaGF2ZSBubyBjb21wbGFpbnRzIHRvIHRo
-YXQgYmFsYW5jZSA7LSkKKDEzOjEwOjU0KSBjcm9uMjogbGlrZTogSSByZW1vdmUgZXh0cmEgYmxh
-bmsgbGluZXMsIGFuZCBmaXggImlmICggICBhPDApIiBtaXNoYXBzCigxMzoxMToxMikgY3JvbjI6
-IGJ1dCBJIGRvIG5vdCBub3JtYWxseSBkbyBhIGZ1bGwgdW5jcnVzdGlmeSBydW4KKDEzOjExOjI5
-KSBjcm9uMjogYmVjYXVzZSB0aGF0IG1ha2VzIHRyYWNrYWJpbGl0eSAiaXMgdGhpcyByZWFsbHkg
-dGhlIGNvZGUgdGhhdCB3YXMgc3VibWl0dGVkPyIgbW9yZSBjb21wbGljYXRlZAooMTM6MTE6MzQp
-IGNyb24yOiBsaWtlCigxMzoxMjoxNSkgZGF6bzogZmFpciBwb2ludCAuLi4uIHdlIHByb2JhYmx5
-IG5lZWQgYW5vdGhlciByb3VuZCBvZiAiZ3JlYXQgcmVmb3JtYXR0aW5nIiBhZ2Fpbjsgd2UgYnJp
-ZWZseSB0YWxrZWQgYWJvdXQgZG9pbmcgaXQgcmlnaHQgYmVmb3JlIDIuNS4wLCBidXQgcHJvYmFi
-bHkgZmVsbCB0aHJvdWdoIHRoZSBjcmFja3MKKDEzOjEyOjQ0KSBkYXpvOiB3b3VsZCBwcm9iYWJs
-eSBoZWxwIGRvaW5nIHRoZSBjb21taXQtdGltZSB1bmNydXN0aWZ5IGVhc2llcgooMTM6MTQ6MzYp
-IGNyb24yOiBpZiAoYTwwKSAgZm9vKCk7CigxMzoxNDozNikgY3JvbjI6IHR1cm5pbmcgaW50bwoo
-MTM6MTQ6MzYpIGNyb24yOiBpZiAoYSA8IDApCigxMzoxNDozNikgY3JvbjI6IHsKKDEzOjE0OjM2
-KSBjcm9uMjogICAgIGZvbygpOwooMTM6MTQ6MzYpIGNyb24yOiB9CigxMzoxNDozNykgb3JkZXg6
-IG90b2gsIHdlIGhhdmUgbGl0dGxlIHRpbWUgdG8gc3BlbmQgb24gcmV2aWV3aW5nIGFuZCBtZXJn
-aW5nLiB3aHkgc2hvdWxkIHRoaXMgbGl0dGxlIHRpbWUgZ28gb24gbm90aW5nL2ZpeGluZyBjb2Rl
-IHN0eWxlIGlzc3Vlcz8KKDEzOjE0OjM3KSBvcmRleDogaW1obyBpdCBzaG91bGQgYmUgcmVzcG9u
-c2liaWxpdHkgb2YgdGhlIHNkdWJtaXR0ZXIgdG8gbWFrZSBzdXJlIGNvZGUgZm9sbG93cyBhdCBs
-ZWFzdCBvdXIgdW5jcnVzdGlmeSBjb25maWd1cmF0aW9uCigxMzoxNDozOCkgcGxhaXN0aG9zOiB5
-ZWFoCigxMzoxNDozOCkgcGxhaXN0aG9zOiBidXQgdGhlIHByb2JsZW0gaXMgdGhhdCBpZiB3ZSBk
-b24ndCBydW4gdW5jcnVzdGlmeSBvbiBldmVyeSBjb21taXQgeW91IGVuZCB1cCB3aXRoIGhhdmlu
-ZyB0byBkZWFsIHdpdGggYSBsb3Qgb2YgY2hhbmdlcyBmcm9tIHVuY3J1c3RpZnkgbm90IHJlbGF0
-ZWQgdG8geW91ciBvd24gY29kZQooMTM6MTQ6MzgpIGNyb24yOiBvcmRleDogeWVzLCBidXQgdGhl
-biB0ZWxsIHRoZW0gcmlnaHQgYWZ0ZXIgdGhlIHBhdGNoIGlzIHNlbnQuICBJZiB3ZSBsZWF2ZSBp
-dCBsaW5nZXIgZm9yIHR3byBtb250aHMsIGFuZCB0aGVuIHNlbmQgImFoLCB5b3VyIHdoaXRlc3Bh
-Y2Ugc3Vja3MiLCB0aGlzIGlzIHZlcnkgZnJ1c3RyYXRpbmcsIGFuZCB3aWxsIGRyaXZlIGNvbnRy
-aWJ1dG9ycyBhd2F5CigxMzoxNDozOCkgcGxhaXN0aG9zOiBjcm9uMjogSSBob3BlIEkgbmV2ZXIg
-ZGlkIHRoYXQKKDEzOjE0OjM4KSBvcmRleDogd2VsbCwgaWYgb3VyIHN1Ym1pc3Npb24gZ3VpZGVs
-aW5lcyBzYXlzICJtYWtlIHN1cmUgdW5jcnVzdGlmeSBpcyBoYXBweSIgd2UgY2FuJ3QgcmVhbGx5
-IGJlIHJlc3BvbnNpYmxlIGZvciB0aGF0IGtpbmQgb2YgcmVwbHksIG5vPwooMTM6MTQ6NTQpIG9y
-ZGV4OiB3ZSBhbGwgaGF2ZSBsaXR0bGUgdGltZSBhZnRlciBhbGwsIGR1ZSBkaWxpZ2VuY2UgaXMg
-ZXhwZWN0ZWQgb24gZWFjaCBzaWRlCigxMzoxNTowNSkgY3JvbjI6IG9yZGV4OiB5b3UgcmVhbGx5
-IGxpa2UgZG9pbmcgdGhlc2Ugd2hpdGVzcGFjZS1vbmx5IHJldmlld3MsIGFuZCBJIHRoaW5rIHRo
-aXMgaXMgbm90IGhlbHBmdWwKKDEzOjE1OjQ0KSBvcmRleDogeWVhaCB5ZWFoLCBJIGtub3cgaXQg
-aXMgbW9zdGx5IG1lLiBJIGdvdCB0aGlzIGVkdWNhdGlvbiBvbiB0aGUga2VybmVsIG1haWxpbmcg
-bGlzdCAtPiBjaGVja3BhdGNoIHNheXMgdGhlcmUgYXJlIGlzc3VlIC0+IHlvdSBtb3JvbiBnbyBh
-d2F5LCB3ZSBkb24ndCBldmVuIHJldmlldyB5b3VyIHBhdGNoCigxMzoxNTo0OSkgY3JvbjI6IEkn
-bSBhbGwgZmluZSB3aXRoIHJlamVjdGluZyBhIHBhdGNoIG9uIGdyb3VuZHMgb2YgZm9ybWF0dGlu
-ZyAqYnV0KiBwbGVhc2UgZG8gaW5jbHVkZSBhIHJldmlldyBvbiBmdW5jdGlvbmFsaXR5IGFuZCBj
-b2RlIHNhZmV0eQooMTM6MTY6MTYpIG1hdHRvY2s6ICsxLCBvdGhlcndpc2UgbWFueSByb3VuZHMg
-b2YgcmV2aWV3IHdpbGwgZW5zdWUKKDEzOjE2OjQzKSBvcmRleDogaXQncyBhbHNvIGFib3V0IGVk
-dWNhdGlvbi4uaWYgd2UgYWNjZXB0IGZpeGluZyBzdHlsZSBvbiBvdXIgc2lkZSwgc3VibWl0dGVy
-cyB3aWxsIG5ldmVyIHNwZW5kIHRpbWUgYWRqdXN0aW5nIGl0CigxMzoxNjo0NSkgZGF6bzogSSBk
-byBzZWUgYm90aCBzaWRlcyBvZiB0aGUgdGFibGUgaGVyZSAuLi4uIGZyb20gb3JkZXggcG9pbnQg
-b2YgdmlldywgaXQgZW5zdXJlcyB0aGUgY29kZSBpcyBhbHdheXMgaW4gc2hhcGUuICBCdXQgdGhl
-IHJlYWxpdHkgaXMgdGhhdCBzb21lIGNydWZ0IHNsaXBzIHRocm91Z2ggZXZlcnkgbm93IGFuZCB0
-aGVuIHVubm90aWNlZCAuLi4uIGFuZCB0aGVuIGVuZm9yY2luZyB1bmNydXN0aWZ5IGdldHMgcmVh
-bGx5IG1lc3N5IGFmdGVyIGEgd2lsZQooMTM6MTY6NDkpIGRhem86ICp3aGlsZQooMTM6MTc6MDAp
-IGNyb24yOiBkb24ndCBtaXN1bmRlcnN0YW5kIG1lCigxMzoxNzowOCkgY3JvbjI6IEkgKndhbnQq
-IHdlbGwtZm9ybWF0dGVkIGNvZGUgOi0pCigxMzoxNzoxMikgb3JkZXg6IGhlaGUgSSBrbm93Cigx
-MzoxNzoyMSkgb3JkZXg6IGFuZCBJIGdldCB5b3VyIHBvaW50IC0gd2hpY2ggSSB0ZW5kIHRvIGFn
-cmVlIHdpdGgKKDEzOjE3OjM2KSBjcm9uMjogYnV0IHRoZSBtZXNzYWdlIG5lZWRzIHRvIGJlIGEg
-ZGlmZmVyZW50IG9uZSAtICpvciogd2UgZmluZCBhIHdheSB0byBhdXRvLXJldmlldyBhbmQgYXV0
-by1yZWplY3QgcGF0Y2hlcyBiYXNlZCBvbiB1bmNydXN0aWZ5CigxMzoxNzo0NikgY3JvbjI6IHdo
-aWNoIG1pZ2h0IGJlIGEgbmljZSBhZGRpdGlvbiB0byBwYXRjaHdvcmsuLi4gOi0pCigxMzoxNzo1
-MCkgb3JkZXg6IHllYWgKKDEzOjE4OjAzKSBvcmRleDogdGhlIHByb2JsZW0gSSBndWVzcyBpcyB0
-aGF0IHdlIGRvbid0IGhhdmUgYSBkZXRlcm1pbmlzdGljIHVuY3J1c3RpZnkgY29uZmlnCigxMzox
-ODowOCkgb3JkZXg6IChhdCB0aGUgbW9tZW50KQooMTM6MTg6NDMpIG9yZGV4OiBidXQgaWYgd2Ug
-aW1wcm92ZSB0aGF0LCBtYXliZSBJIENhbiBhbHNvIGp1c3QgcXVpY2tseSBydW4gdW5jcnVzdGlm
-eSBvbiBhIHBhdGNoLCBpbnN0ZWFkIG9mIGdvaWcgdGhyb3VnaCBpdCA6RCB0aGF0J2QgYmUgZmFz
-dGVyIHRvbyAob3IgbGV0IHB3IGRvIGl0IGZvciB1cykKKDEzOjE5OjAzKSBkYXpvOiBTbyAuLi4u
-IGlzIHRoYXQgYmVjYXVzZSBvdXIgY29uZmlnIGlzIG5vdCBvcHRpbWFsPyBkdWUgdG8gdmFyaW91
-cyBiZWhhdmlvdXJzIGluIHVuY3J1c3RpZnkgdmVyc2lvbnM/ICBPciB0aGF0IHVuY3J1c3RpZnkg
-aXRzZWxmIGlzIHJlYWxseSBub3QgdXAtdG8tdGhlLXRhc2sgd2UgZXhwZWN0PwooMTM6MTk6MzQp
-IG9yZGV4OiBJIGFtIG5vdCBzdXJlLiBJIGtub3cgSSBoYXZlIHNlZW4gdGhpbmdzIGFjY2VwdGVk
-IGJ5IHVuY3J1c3RpZnksIHdoaWNoIHdlcmUgbm90IHRoZSB3YXkgd2Ugd2FudGVkIHRoZW0KKDEz
-OjE5OjQyKSBjcm9uMjogdW5jcnVzdGlmeSBhbmQgb3JkZXggc29tZXRpbWVzIGRpc2FncmVlIG9u
-IGRldGFpbHMKKDEzOjE5OjQ1KSBvcmRleDogOkQKKDEzOjE5OjQ2KSBkMTJmazogdG8gZ2V0IHRv
-IHRoZSB1bmNydXN0aWZ5IHJ1bGVzIGl0IHRha2VzIHR3byBob3BzIGZyb20gQ09OVFJJQlVUSU5H
-Li4gYW5kIGEgdGV4dCBkZXNlcnQKKDEzOjIwOjA4KSBkMTJmazogaWYgaXQgaXMgc28gaW1wb3J0
-YW50IHdlIHNob3VsZCBwbGFjZSBpdCBtb3JlIGltcG9ydGFudGx5CigxMzoyMDoxNSkgZGF6bzog
-Z29vZCBwb2ludCEKKDEzOjIwOjM4KSBvcmRleDogaGVoZSwgc28gd2hhdCBjb21lcyBsYXRlciBp
-biB0aGUgbGlzdCAuLiAiZG9lcyBub3QgbmVlZCB0byBiZSByZXNwZWN0ZWQiPyA6RAooMTM6MjA6
-NDApIGNyb24yOiArMQooMTM6MjE6MTEpIG9yZGV4OiBhbnl3YXksIEkgYW0gZmluZSB3aXRoIGFu
-eXRoaW5nIHRoYXQgY2FuIGltcHJvdmUgdGhlIHByb2Nlc3MgKG9idmlvdXNseSkKKDEzOjIxOjE5
-KSBkMTJmazogZGV2cyB0ZW5kIHRvIGhhY2sgaW5zdGVhZCBvZiBydGZtLCBlc3BlY2lhbGx5IGlm
-IHRoZSBNIGlzIGxlbmd0aHkKKDEzOjIxOjMwKSBvcmRleDogbW92aW5nIGl0IHVwIHRoZSBsaXN0
-IGFuZCBpbXByb3Zpbmcgb3VyIGNvbmZpZyBhIGJpdCBtaWdodCBiZSBnb29kCigxMzoyMTozOCkg
-ZGF6bzogKzEgLi4uIEknbSBndWlsdHkgb2YgdGhhdCBhcyB3ZWxsLCBkMTJmawooMTM6MjI6MDAp
-IG9yZGV4OiBhbnl3YXkgLSAkcGFydG5lciBjYWxscyBmb3IgbHVuY2gKKDEzOjIyOjA2KSBtYXR0
-b2NrOiA4IG1pbnV0ZXMgbGVmdAooMTM6MjI6MjQpIGQxMmZrOiBhcmUgdGhlICRydWxlcyBpbiBn
-aXQgc29tZXdoZXJlPwooMTM6MjI6MjcpIG9yZGV4OiBvbiBteSBzaWRlIEkgY2FuIGxvb2sgYXQg
-dW5jcnVzdGlmeSB0byBtYWtlIHN1cmUgaSBhZ3JlZSB3aXRoIGl0IG1vcmUKKDEzOjIyOjI4KSBv
-cmRleDogOnAKKDEzOjIyOjM0KSBjcm9uMjogZDEyZms6IHllcywgaW4tdHJlZQooMTM6MjI6NDIp
-IGRhem86IG9yZGV4OiB0aGF0IHdvdWxkIGJlIGdyZWF0IQooMTM6MjI6NTIpIGNyb24yOiAuL2Rl
-di10b29scy91bmNydXN0aWZ5LmNvbmYKKDEzOjIyOjU5KSBkMTJmazogc2ltcGxlIHRvIHBvaW50
-IHRoZXJlIGltbWVkaWF0bHkgdGhlbgooMTM6MjM6MDIpIG1hdHRvY2s6IGFoIGluZGVlZCwgb3Vy
-IEV4Y2hhbmdlIGlzIG9mZmxpbmUsIHByb2JhYmx5IGR1ZSB0byB0aGUgaG9ycmlibGUgZXhjaGFu
-Z2UgaGFjawooMTM6MjM6MjEpIHBsYWlzdGhvczogbWF0dG9jazogbWFpbC5hcHAgd29ya3MKKDEz
-OjIzOjI2KSBwbGFpc3Rob3M6IG9ubHkgaW1hcCBhY2Nlc3MgaXMgZG93biBpdCBzZWVtcwooMTM6
-MjM6MzYpIG1hdHRvY2s6IHllcAooMTM6MjM6NDcpIG1hdHRvY2s6IEkgZ3Vlc3MgSSBoYXZlIHRv
-IGdvIGJhY2sgdG8gMTk5MCdzIHRvIHdyaXRlIHN1bW1hcnkKKDEzOjIzOjQ5KSBtYXR0b2NrOiA6
-KQooMTM6MjQ6MDIpIGQxMmZrOiBsejQtcmViYXNlciBzb3VuZCBkYW5nZXJvdXMgPSkKKDEzOjI0
-OjQyKSBkYXpvOiBkMTJmazogaGVoZSAuLi4gYnV0IGl0IGFjdHVhbGx5IGRvZXMgYSBkZWNlbnQg
-am9iIC4uLi4gYnV0IHdlIGhhdmUgYmVlbiBkaXNjdXNzaW5nIGtpY2tpbmcgb3V0IHRoZSBlbWJl
-ZGRlZCBsejQgc3VwcG9ydCwgdGhvdWdoIC4uLiBqdXN0IG5ldmVyIGNvbmNsdWRlZAooMTM6MjU6
-MjIpIHBsYWlzdGhvczogZGF6bzogeW91IHNhaWQgeW91IHdpbGwgcHJlcGFyZSBhIHBhdGNoIDpQ
-CigxMzoyNTozMSkgY3JvbjI6IHdlIGNvdWxkIGRvIHRoYXQgZm9yIDIuNiAtIHdlIGRvIG5vdCB2
-ZXJ5IG11Y2ggbGlrZSBjb21wcmVzc2lvbiBhbnl3YXkgYW55bW9yZSAqYW5kKiBwbGF0Zm9ybXMg
-dGVuZCB0byBoYXZlIGx6NCB0aGVzZSBkYXlzCigxMzoyNTozMykgZGF6bzogZGlkIEk/IC4uLi4g
-d2hvb29wcwooMTM6MjU6NDEpIHBsYWlzdGhvczogeWVhaAooMTM6MjU6NDQpIHBsYWlzdGhvczog
-d2UgZGlzY3Vzc2VkIHRoYXQKKDEzOjI1OjQ0KSBkYXpvOiBJJ2xsIGRvIHRoYXQgbm93CigxMzoy
-NTo1NikgcGxhaXN0aG9zOiB1cGRhdGUgZm9yIDIuNSByZWxlYXNlIGFuZCByZW1vdmUgZnJvbSBt
-YXN0ZXIKKDEzOjI1OjU4KSBjcm9uMjogaXQncyBxdWl0ZSBhIGJpdCBvZiBjb25maWd1cmUuYWMu
-Li4KKDEzOjI2OjA1KSAqKipkYXpvIHByb2JhYmx5IGRvZXMgYSBiaXQgdG9vIG11Y2ggaW4gcGFy
-YWxsZWwKKDEzOjI2OjQ4KSBjcm9uMjogSSBnZXQgaW50ZXJydXB0cyBldmVyeSA1IG1pbnV0ZXMg
-ImNhbiB5b3UgbG9vayBhdCBteSBIb21ld29yaz8iIDotKQooMTM6MjY6NTUpIGRhem86IGFoaCAu
-Li4gSSB2YWd1ZWx5IHJlY2FsbCBzb21lIGNvbmZpZ3VyZS5hYyByZWxhdGVkIGRpc2N1c3Npb25z
-IC4uLi4gd2FzIGl0IHNvbWUgdHJpY2t5IGRldGFpbHMgdGhlcmUgYWJvdXQgcGtnLWNvbmZpZyBh
-bmQgc3VjaD8KKDEzOjI3OjI4KSBjcm9uMjogeWVwIDotKSAidHJ5IHRvIGZpbmQgaXQgb24gdGhl
-IHN5c3RlbSwgYW5kIGlmIG5vdCwgZmFsbCBiYWNrIHRvIGJ1aWxkIG91ciBvd24iCigxMzoyODox
-NikgZGF6bzogY3JvbjI6IGNhbiB3ZSBleHBlY3QgcGtnLWNvbmZpZyB0byBiZSBhdmFpbGFibGUg
-b24gYWxsIHBsYXRmb3JtcyAobWludXMgbm9uLW1pbmd3IFdpbmRvd3MpPwooMTM6Mjg6MjQpIGNy
-b24yOiBubwooMTM6Mjg6NDIpIHBsYWlzdGhvczoganVzdCBrZWVwIHRoZSBjb2RlIGFzaXMgOlAK
-KDEzOjI4OjQ3KSBwbGFpc3Rob3M6IGp1c3QgcmVtb3ZlIHRoZSBmYWxsYmFjayB0byBpbnRlcm5h
-bAooMTM6Mjk6MTUpIGNyb24yOiBpdCdzIGFuIG9wdGlvbmFsIGV4dHJhIG9uIGF0IGxlYXN0IHNv
-bWUgb2YgdGhlIEJTRHMsIGJ1dCBJIGNhbid0IGdpdmUgeW91IGEgZGVmaW5pdGUgbGlzdC4uLiAg
-KGFuZCB0aGUgc3lzdGVtIGx6NCBwb3J0IHdvdWxkIG5lZWQgdG8gaW5zdGFsbCBhIGx6NC5wYy4u
-LikKKDEzOjI5OjI3KSBjcm9uMjogdGhpcyBpcyBhbGwgbm90IHZlcnkgbmFzdHkgYWNyb3NzIHBs
-YXRmb3JtcwooMTM6Mjk6MzUpIGRhem86IGNyb24yOiBva2F5IC4uLi4gY2FuIHdlIHRoZW4gaGF2
-ZSBpdCBzbyBpZiBwa2ctY29uZmlnIGlzIG5vdCBwcmVzZW50LCB5b3UgbmVlZCB0byBwYXNzIC4v
-Y29uZmlndXJlIGFyZ3MgcG9pbnRpbmcgYXQgdGhlIExaNCBsaWJzL2hlYWRlcnMgdG8gZW5hYmxl
-IGl0PyAgTm8gImF1dG8tZGV0ZWN0IiAuLi4gSXMgdGhhdCBhY2NlcHRhYmxlPwooMTM6Mjk6NTAp
-IGNyb24yOiAid2hhdCBwbGFpc3Rob3Mgc2F5cyIgOikKKDEzOjMxOjI1KSBjcm9uMjogSSBhZG1p
-dCBJIGhhdmUgbm8gaWRlYSB3aGF0IGlzIHRoZXJlIHRvZGF5Li4uCigxMzozMTo0MCkgZGF6bzog
-TXkgcG9pbnQgaXMgLi4uIGlpcmMgdG9kYXkncyBmdW5jdGlvbmFsaXR5IC4uLi4gaWYgcGtnLWNv
-bmZpZyBpcyBub3QgZm91bmQsIGl0IGZhbGxzYmFjayB0byBvdXIgY29tcGF0LWx6NC4gIEJ1dCB3
-aGF0IHNob3VsZCBiZSB0aGUgYmVoYXZpb3VyIGlmIG5vdCBmb3VuZD8gIERvIHdlIHdhbnQgdG8g
-ZW5mb3JjZSAtLWRpc2FibGUtbHo0IChvciAtLWVuYWJsZS1sejQpIGFuZCBmYWlsIC4uLi4gb3Ig
-c2hvdWxkIGl0IGJlIGVuYWJsZWQvZGlzYWJsZWQgYmFzZWQgb24gd2hhdCBpdCBmaW5kcwooMTM6
-MzI6MjgpIGRhem86IGFuZCB0aGVuIGNvbWVzIHRoZSBmaW5lciB2YXJpYW50cyAuLi4uIGlmICJl
-bmFibGUvZGlzYWJsZSBvbiB3aGF0IGl0IGZpbmRzIiAuLi4gd2hhdCBpZiBMWjRfTElCUyBpcyBk
-ZWZpbmVkIGFuZCBub3QgZm91bmQsIHNob3VsZCBpdCBiYWlsIG91dCB3aXRoIGVycm9yIG9yIGRp
-c2FibGU/CigxMzozMjo0NCkgZGF6bzogSSB3YW50IHRoaXMgdG8gYmUgc2ltcGxlIGFuZCBzYW5l
-CigxMzozNDowNCkgZGF6bzogU28gZXNzZW50aWFsbHkgLi4uLiBzaG91bGQgdGhpcyBsaW5lIHJl
-c3VsdCBpbiBhbiBlcnJvciBvciBkaXNhYmxlIExaND8KKDEzOjM0OjA1KSBkYXpvOiAJQUNfTVNH
-X1JFU1VMVChbCQl1c2FibGUgTFo0IGxpYnJhcnkgb3IgaGVhZGVyIG5vdCBmb3VuZCwgdXNpbmcg
-dmVyc2lvbiBpbiBzcmMvY29tcGF0L2NvbXBhdC1sejQuKl0pCigxMzozNDoyOSkgY3JvbjI6IGRh
-em86IEknZCBzYXkgaW5zdGVhZCBvZiBmYWxsYmFja2luZywgZXJyb3Igb3V0CigxMzozNDo1MCkg
-Y3JvbjI6IGlmIHNvbWVvbmUgZG9lcyBub3Qgd2FudCBMWjQsIC0tZGlzYWJsZS1sejQsIG9yIHBh
-c3MgaW4gTFo0X0xJQlMKKDEzOjM0OjU2KSBjcm9uMjogd2VsbAooMTM6MzQ6NTcpIGRhem86IEFu
-ZCB0aGF0IHdpbGwgZW5mb3JjZSB1c2VycyBub3QgaGF2aW5nIGx6NC1kZXZlbCBpbnN0YWxsZWQg
-dG8gYWRkIC0tZGlzYWJsZS1sejQgdG8gLi9jb25maWd1cmUKKDEzOjM1OjA0KSBjcm9uMjogeWVz
-CigxMzozNToxNSkgZGF6bzogb2theSwgSSBjYW4gcHJlcGFyZSBhIHBhdGNoIGZvciB0aGF0IGJl
-aGF2aW91cgooMTM6MzU6NDEpIGNyb24yOiB0aGlzIHNob3VsZCBiZSBhIGNvbnNjaW91cyB0aGlu
-ZyB0byBlbmFibGUgb3IgZGlzYWJsZSBsejQsIGJ1dCBub3QgIml0IHdpbGwgYmUgZW5hYmxlZCBv
-ciBkaXNhYmxlZCBkZXBlbmRpbmcgb24gb3RoZXIgYml0cyBvZiB0aGUgc3lzdGVtIgooMTM6MzY6
-MTMpIGRhem86IHllYWggLi4uIGJ1dCB0aGF0J3Mga2luZGEgd2hhdCB3ZSBoYWQgLi4uIGp1c3Qg
-aW4gdGhlIGNvbnRleHQgInlvdSBhbHdheXMgZ2V0IGx6NCAtIHN5c3RlbSBvciBvdXJzIgooMTM6
-MzY6NDkpIGNyb24yOiB3ZWxsLCB3ZSBkaWRuJ3QgaGF2ZSAiLS1lbmFibGUtbHo0IGxlYWRzIHRv
-IG5vdCBoYXZpbmcgTFo0IiA6LSkgLSB0aGlzIHNob3VsZCBiZSBleHBsaWNpdAooMTM6Mzg6NTUp
-IGRhem86IFllYWgsIHRydWUgLi4uLiBTbyB3ZSBhbHJlYWR5IGhhdmUgLS1kaXNhYmxlLWx6byBh
-bmQgLS1kaXNhYmxlLWx6NCAtIHNvIHRoYXQgaXMgY29uc2lzdGVudC4gIEFuZCB3ZSBzaG91bGQg
-cHJvYmFibHkgY29uc2lkZXIgc3dpdGNoaW5nIHRoYXQgdG8gLS1lbmFibGUtKiBhdCBzb21lIHBv
-aW50IHRvbywgYW5kIGlmIG5vdCBwcmVzZW50IGVuc3VyZSB0aGUgU1RVQiBjb21wcmVzc2lvbiBp
-cyBhdmFpbGFibGUgYnkgZGVmYXVsdCAuLi4uIGFuZCBieSBzYXlpbmcgdGhhdCwgSSBiZWxpZXZl
-IEkgc3RhcnQgdG8gcmVjYWxsIG1vcmUgb2YgdGhlIGRpc2N1c3Npb25zIC4uLi4gdGhhdCBpdCBw
-ZXJoYXBzIHNob3VsZCBiZSBhYmxlIHRvICphY2NlcHQgY29tcHJlc3NlZCogaW5jb21pbmcgdHJh
-ZmZpYywgYnV0ICpuZXZlciBzZW5kKiBjb21wcmVzc2VkIGRhdGEgLi4uLgooMTM6Mzk6NDEpIGRh
-em86IGxldHMgc29sdmUgdGhlIFNUVUIgc2NlbmFyaW8gYW5vdGhlciBkYXksIHRvZ2V0aGVyIHdp
-dGggc3dpdGNoaW5nIGZyb20gLS1kaXNhYmxlLSogdG8gLS1lbmFibGUtKgooMTM6Mzk6NDYpIGNy
-b24yOiB5ZXAKKDEzOjM5OjU5KSBwbGFpc3Rob3M6IGRhem86IHdlIGFscmVhZHkgaGF2ZSB0aGF0
-IGluCigxMzo0MDowNCkgY3JvbjI6IHNvbWVvbmUgYnJhdmUgY2FuIGZpeCBxdWl0ZSBhIGZldyBt
-b3JlIHRoaW5ncyBpbiBvdXIgY29uZmlndXJlLmFjIDopCigxMzo0MDoyMykgZGF6bzogY3JvbjI6
-IHNob290ISAgSSBjYW4gcHV0IHRoYXQgb24gbXkgcGxhdGUKKDEzOjQwOjQ0KSBwbGFpc3Rob3M6
-IGRhem86IC0tYWxsb3ctY29tcHJlc3Npb24geWVzLCBhc3ltLCBubwooMTM6NDE6MDApIGNyb24y
-OiBvbmUgdGhpbmcgdGhhdCBpcmtlZCBtZSBzaW5jZSBldmVyIGlzICJvbiBhIEZyZWVCU0Qgc3lz
-dGVtLCBjb25maWd1cmUgd2lsbCBub3QgZmluZCBsem8yIGluIHRoZSBub3JtYWwgcGxhY2UsIHVu
-bGVzcyB0b2xkIHdpdGggTFpPX0xJQj0uLi4iCigxMzo0MToxOSkgcGxhaXN0aG9zOiBzYW1lIG9u
-IG1hYyBvcwooMTM6NDE6MzUpIGNyb24yOiBiZWNhdXNlIGl0J3MgaW4gL3Vzci9sb2NhbC97aW5j
-bHVkZSxsaWJ9LyB3aGljaCBpcyAidGhlIG5vcm1hbCBwbGFjZSBvbiBGcmVlQlNEIGZvciBub24t
-c3lzdGVtIHRoaW5ncyIsIGJ1dCBjb25maWd1cmUgZG9lcyBub3Qgd2FudCB0byBsb29rIHRoZXJl
-LCAiYmVjYXVzZSB0aGF0IHdvdWxkIG5vdCBiZSBUaGUgUmlnaHQgVGhpbmcgVG8gRG8iCigxMzo0
-MTo0OSkgcGxhaXN0aG9zOiBJIHVzdWFsbHkgZW5kIHVwIHdpdGggdGhpbmdzIGxpa2UKKDEzOjQx
-OjQ5KSBwbGFpc3Rob3M6IC4uL29wZW52cG4tZ2l0L2NvbmZpZ3VyZSAtLXdpdGgtY3J5cHRvLWxp
-YnJhcnk9bWJlZHRscyBNQkVEVExTX0NGTEFHUz0iLUkkSE9NRS9vc3MvbWJlZHRscy9pbmNsdWRl
-IC1JJEhPTUUvb3NzL21iZWR0bHMvY3J5cHRvL2luY2x1ZGUiIE1CRURUTFNfTElCUz0iLUwkSE9N
-RS9vc3MvbWJlZHRscy9saWJyYXJ5IC1sbWJlZHRscyAtbG1iZWR4NTA5IC1sbWJlZGNyeXB0byIK
-KDEzOjQxOjU2KSBkYXpvOiBva2F5IC4uLi4KKDEzOjQyOjIxKSBwbGFpc3Rob3M6IGJ1dCBkZWZh
-dWx0aW5nIHRvIHBrZy1jb25maWcgd291bGQgcHJvYmFibHkgYmUgbmljZSB0byBmaW5kIHRoaW5n
-cyAlKQooMTM6NDI6MzEpIGNyb24yOiBhaCwgeWVzLCBzYW1lIHRoaW5nIGZvciBtYmVkdGxzIGJ1
-aWxkcyAtIHRoZXkgYXJlIGFsc28gaW4gL3Vzci9sb2NhbC8qLyBvbiBGcmVlQlNELCBzbyBtYXli
-ZSB0aGVyZSBpcyBhIC5wYyBub3csIGV0Yy4KKDEzOjQyOjMyKSBkYXpvOiBjcm9uMjogZG9lcyBs
-em8gaGF2ZSBhIHBrZy1jb25maWcgcHJlc2VudCBvbiBGcmVlQlNEPyAgQW5kIGlzIHBrZy1jb25m
-aWcgZ2VuZXJhbGx5IHdvcmtpbmcgZmluZSBvbiBGcmVlQlNEPwooMTM6NDI6NTEpIGRhem86IGJl
-Y2F1c2Ugb3VyIGx6byBzZWN0aW9uIGluIGNvbmZpZ3VyZS5hYyBkb2VzIG5vdCBsb29rIGZvciBp
-dAooMTM6NDI6NTMpIGNyb24yOiBpdCBjYW4gbm90IGJlIHJlbGllZC11cG9uIGJlY2F1c2UgaXQn
-cyBvcHRpb25hbCwgYW5kIG5vdCBhbGwgcGFja2FnZXMgcHJvdmlkZSBhIC5wYwooMTM6NDM6MjAp
-IGNyb24yOiBsem8yIGRvZXMKKDEzOjQzOjIxKSBjcm9uMjogICAgICAgICAgL3Vzci9sb2NhbC9s
-aWJkYXRhL3BrZ2NvbmZpZy9sem8yLnBjCigxMzo0MzozMCkgZGF6bzogd2VsbCwgdGhhdCdzIG5v
-dCBzbyBkaWZmZXJlbnQgZnJvbSBMaW51eCAuLi4uIGJ1dCB0aGUgIm9wdGlvbmFsIiBtb3JlIGNv
-bW1vbmx5IGluc3RhbGxlZCBieSBkZWZhdWx0IGFueWhvdwooMTM6NDM6NTApIGRhem86IHNvLCBs
-ZXRzIHRyeSB0byBhZGQgdGhlIHBrZy1jb25maWcgc3VwcG9ydCBhbmQgc2VlIGlmIHRoYXQgY2Fu
-IHJlc29sdmUgaXQgbmljZWx5CigxMzo0Mzo1MykgcGxhaXN0aG9zOiBjcm9uMjogZG9lcyBwa2ct
-Y29uZmlnIGx6bzIgLS1jZmxhZ3Mgd29yayBmb3IgeW91PwooMTM6NDQ6MDYpIGNyb24yOiAtSS91
-c3IvbG9jYWwvaW5jbHVkZS9sem8KKDEzOjQ0OjA3KSBjcm9uMjogeWVzCigxMzo0NDowNykgKioq
-ZDEyZmsgaXMgb3V0IG9mIGhlcmUgYWdhaW4sIGxhdGVyCigxMzo0NDoxNykgY3JvbjI6IHdlbGwK
-KDEzOjQ0OjE4KSBjcm9uMjogbm8KKDEzOjQ0OjIyKSBjcm9uMjogKnNpZ2gqCigxMzo0NDo0OSkg
-Y3JvbjI6IChiZWNhdXNlIHdlIGluY2x1ZGUgPGx6by9sem8xeC5oPiBhbmQgbm90IDxsem8xeC5o
-Pi4uLikKKDEzOjQ0OjUzKSBjcm9uMjogaG93IGFubm95aW5nIGlzIHRoYXQKKDEzOjQ1OjA2KSBk
-YXpvOiBodWghPwooMTM6NDU6MTgpIHBsYWlzdGhvczogd2VsbCBraW5kYQooMTM6NDU6MTgpIHBs
-YWlzdGhvczogI2lmIGRlZmluZWQoSEFWRV9MWk9fTFpPMVhfSCkKKDEzOjQ1OjE4KSBwbGFpc3Ro
-b3M6ICNpbmNsdWRlIDxsem8vbHpvMXguaD4KKDEzOjQ1OjE4KSBwbGFpc3Rob3M6ICNlbGlmIGRl
-ZmluZWQoSEFWRV9MWk8xWF9IKQooMTM6NDU6MTgpIHBsYWlzdGhvczogI2luY2x1ZGUgPGx6bzF4
-Lmg+CigxMzo0NToyMSkgcGxhaXN0aG9zOiAjZW5kaWYKKDEzOjQ1OjI3KSBjcm9uMjogb2gsIGlu
-dGVyZXN0aW5nCigxMzo0NTozMykgZGF6bzogOC1vCigxMzo0NjowNykgY3JvbjI6IHNvIGl0IHdv
-dWxkIHdvcmsuLi4gLS1saWJzIHByb3ZpZGVzCigxMzo0NjoxMCkgY3JvbjI6IC1ML3Vzci9sb2Nh
-bC9saWIgLWxsem8yCigxMzo0NjoxMykgY3JvbjI6IHdoaWNoIGlzIGNvcnJlY3QKKDEzOjQ2OjQ3
-KSBwbGFpc3Rob3M6IEFsb24gY29tbWl0ZWQgdGhhdCB3aXRoCigxMzo0Njo0OCkgcGxhaXN0aG9z
-OiBidWlsZDogcHJvcGVyIGx6byBkZXRlY3Rpb24gYW5kIHVzYWdlCigxMzo0NzozOSkgcGxhaXN0
-aG9zOiBidXQgdGhlIGx6by8gd2l0aC93aXRob3V0IHRoaW5nIGlzIG9sZGVyIHRoYW4gaGlzIGNv
-bW1pdAooMTM6NDc6NDUpIGRhem86IG9rYXksIHNvIC4uLiBJJ2xsIGZpeCB0aG9zZSB0byBpc3N1
-ZXMgLi4uLiB0aGVyZSBhcmUgYSBmZXcgdGlja2luZyBhdXRvdG9vbHMgYm9tYnMgbGluZ2VyaW5n
-IHRvbyAuLi4gTFRfSU5JVCAod2hpY2ggd2UgZ2V0IGNvbXBsYWludHMgYWJvdXQgb24gbmV3ZXIg
-cGxhdGZvcm1zKSAuLi4gYW5kIHRoZSBzdWJkaXItb2JqZWN0cyAod2hpY2ggaXMgYSBiaXQgYW5u
-b3lpbmcsIGJ1dCB3aWxsIHByb2JhYmx5IGVuZCB1cCBhcyB0aGUgZGVmYXVsdCBiZWhhdmlvdXIg
-c29tZSB0aW1lIGluIGEgZnV0dXJlIGF1dG90b29scyB1cGRhdGUpCigxMzo0ODoxMSkgcGxhaXN0
-aG9zOiAgcGtnLWNvbmZpZyBsem8yIC0tY2ZsYWdzCigxMzo0ODoxMikgcGxhaXN0aG9zOiAtSS91
-c3IvbG9jYWwvQ2VsbGFyL2x6by8yLjEwL2luY2x1ZGUvbHpvCigxMzo0ODoyMykgY3JvbjI6IHRo
-YXQgc291bmRzIHdvcmthYmxlCigxMzo0ODoyNSkgcGxhaXN0aG9zOiBJIGFsc28gZ2V0IGEgcGF0
-aCB0byBhIGRpcmVjdG9yeSB0aGF0IGNvbnRhaW5zIHRoZSBsem8gaGVhZGVycyBkaXJlY3RvcnkK
-KDEzOjQ4OjUyKSBjcm9uMjogbWJlZHRscyBkb2VzIG5vdCBoYXZlIGEgLnBjIG9uIEZyZWVCU0Qg
-Oi0oCigxMzo0OTowOSkgcGxhaXN0aG9zOiB3b2xmc3NsIGhhcyBvbmUgOykKKDEzOjQ5OjIzKSBj
-cm9uMjogbGV0J3MgZHJvcCBtYmVkdGxzIGFuZCBlbWJyYWNlIHdvbGZzc2wgaW5zdGVhZCEKKDEz
-OjQ5OjUwKSBwbGFpc3Rob3M6IGJ1dCBuZWl0aGVyIGhhcyBvcGVuc3NsCigxMzo1MjoyMikgZGF6
-bzogaXMgaXQgbGlic3NsLnBjIGFuZCBsaWJjcnlwdG8ucGMgcGVyaGFwcz8KKDEzOjUyOjQ0KSBw
-bGFpc3Rob3M6IGRhem86IGhhdmUgeW91IHNlZW4gT3BlblNTTCdzIGJ1aWxkIHN5c3RlbT8gOlAK
-KDEzOjUzOjAwKSBkMTJmazogInN5c3RlbSIKKDEzOjUzOjA0KSBkYXpvOiBObywgSSBoYXZlIG1v
-cmUgdGhhbiBlbm91Z2ggdG8gZ3JvayB0aGVpciBDIEFQSXMgOi1QCigxMzo1MzoyNCkgcGxhaXN0
-aG9zOiB0aGUgQyBBUElzIGFyZSBva2F5IGluIDEuMS4xCigxMzo1MzozOCkgZDEyZms6IHBsYWlz
-dGhvcyBoYXMgc3RvY2tob2xtIHN5bmRyb21lCigxMzo1MzozOCkgcGxhaXN0aG9zOiBkYXpvOiBw
-a2ctY29uZmlnIC0tbGlzdC1hbGwgIGRvZXMgbm90IGhhdmUgYW55dGhpbmcgb3BlbnNzbCByZWxh
-dGVkIGZvciBtZQooMTM6NTQ6MzApIHBsYWlzdGhvczogZDEyZms6IG5vIGhvbmVzdGVseSB0aGV5
-IGFyZSBva2F5IGluIDEuMS4xIGNvbXBhcmVkIHRvIDEuMC4yCigxMzo1NDozNCkgbWF0dG9jazog
-bW1tCigxMzo1NDozOSkgbWF0dG9jazogSSB3aWxsIHNlbmQgb3V0IHRoZSBzdW1tYXJ5LCB5b3Ug
-Z28gb24gOikKKDEzOjU0OjUxKSBkYXpvOiBhbHJpZ2h0IC4uLiBzbyAuLi4gcGtnLWNvbmZpZyBv
-biAqQlNEIGlzIGtpbmRhIGEgaGFsZi1oZWFydGVkIGVmZm9ydAooMTM6NTQ6NTcpIGQxMmZrOiBw
-bGFpc3Rob3M6IGp1c3Qga2lkZGluZywgaGF2ZSBub3Qgc2VlbiB0aGVtCg==
-
---_002_161598240863853181openvpnnet_--
 
