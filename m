@@ -1,9 +1,13 @@
-Date: Thu, 18 Mar 2021 08:44:36 +0100 (CET)
-Message-Id: <202103180744.12I7iaE2073329@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210317220642.38741-1-openvpn@...2080...>
-References: <20210317220642.38741-1-openvpn@...2080...>
-Subject: [Openvpn-devel] [PATCH applied] Re: build: Remove compat-lz4
+References: <20210308142113.24208-1-arne@...1227...>
+ <20210316124421.1635-1-arne@...1227...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <65202730-ac30-6139-a24c-3ad7154c3e06@...1856...>
+Date: Thu, 18 Mar 2021 10:03:35 +0100
+MIME-Version: 1.0
+In-Reply-To: <20210316124421.1635-1-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v2] Avoid generating unecessary mbed
+ debug messages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,38 +16,104 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Hi,
 
-I have tested compilation "with default options" on FreeBSD with lz4
-(works), Gentoo without lz4 (errors out), Gentoo with lz4 (works), and
-with --disable-lz4 on Gentoo without lz4 (works).
+On 16-03-2021 13:44, Arne Schwabe wrote:
+> The main motivation to make this change is to avoid a crash in mbed TLS
+> 2.25 with --verb < 8.
+> 
+> mbed TLS 2.25 has a nasty bug that the print function for Montgomery style
+> EC curves (Curve25519 and Curve448) does segfault. See also the issue
+> reported here: https://github.com/ARMmbed/mbedtls/issues/4208
+> 
+> We request always debug level 3 from mbed TLS but filter out any debug
+> output of level 3 unless verb 8 or higher is set. This commeit sets
+> the debug level to 2 to avoid this problem by makeing mbed TLS not
+> generatin the problematic debug output.
+> 
+> For the affected version to still use --verb 8 with mbed TLS 2.25 is to
+> restrict the EC groups to ones that do not crash the print function
+> like with '--tls-groups secp521r1:secp384r1:secp256r1'.
+> 
+> This patch has no patch on user-visible behaviour on unaffected mbed TLS
+> versions.
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> 
+> Patch V2: Replace magic constant with proper define. Highlight more this
+>           avoding generating unessary debug output than crash workaround.
+> ---
+>  src/openvpn/options.c     |  6 ++++++
+>  src/openvpn/ssl_common.h  |  1 +
+>  src/openvpn/ssl_mbedtls.c | 13 ++++++++++++-
+>  3 files changed, 19 insertions(+), 1 deletion(-)
+> 
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index 0eb049d8..c4646d48 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -5883,6 +5883,12 @@ add_option(struct options *options,
+>      {
+>          VERIFY_PERMISSION(OPT_P_MESSAGES);
+>          options->verbosity = positive_atoi(p[1]);
+> +        if (options->verbosity >= (D_TLS_DEBUG_MED & M_DEBUG_LEVEL))
+> +        {
+> +            /* We pass this flag to the SSL library to avoid a
+> +             * mbed TLS always generating debug level logging */
 
-I assume some of the buildbots will need a bit of tending now (because
-"no lz4 installed, since we bundle it anyway").  They will tell me...
+Typo: "a mbed TLS" -> "mbed TLS".
 
-Your patch has been applied to the master branch.
+> +            options->ssl_flags |= SSLF_TLS_DEBUG_ENABLED;
+> +        }
+>  #if !defined(ENABLE_DEBUG) && !defined(ENABLE_SMALL)
+>          /* Warn when a debug verbosity is supplied when built without debug support */
+>          if (options->verbosity >= 7)
+> diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+> index b493cbb7..2e3c98db 100644
+> --- a/src/openvpn/ssl_common.h
+> +++ b/src/openvpn/ssl_common.h
+> @@ -352,6 +352,7 @@ struct tls_options
+>  #define SSLF_TLS_VERSION_MIN_MASK     0xF  /* (uses bit positions 6 to 9) */
+>  #define SSLF_TLS_VERSION_MAX_SHIFT    10
+>  #define SSLF_TLS_VERSION_MAX_MASK     0xF  /* (uses bit positions 10 to 13) */
+> +#define SSLF_TLS_DEBUG_ENABLED        (1<<14)
+>      unsigned int ssl_flags;
+>  
+>  #ifdef ENABLE_MANAGEMENT
+> diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+> index b30b6b9d..4626e983 100644
+> --- a/src/openvpn/ssl_mbedtls.c
+> +++ b/src/openvpn/ssl_mbedtls.c
+> @@ -1058,7 +1058,18 @@ key_state_ssl_init(struct key_state_ssl *ks_ssl,
+>      mbedtls_ssl_config_defaults(ks_ssl->ssl_config, ssl_ctx->endpoint,
+>                                  MBEDTLS_SSL_TRANSPORT_STREAM, MBEDTLS_SSL_PRESET_DEFAULT);
+>  #ifdef MBEDTLS_DEBUG_C
+> -    mbedtls_debug_set_threshold(3);
+> +    /* We only want to have mbed TLS generate debug level logging when we would
+> +     * also display it.
+> +     * In fact mbed TLS 2.25.0 crashes generating debug log if Curve25591 is
+> +     * selected for DH (https://github.com/ARMmbed/mbedtls/issues/4208) */
+> +    if (session->opt->ssl_flags & SSLF_TLS_DEBUG_ENABLED)
+> +    {
+> +        mbedtls_debug_set_threshold(3);
+> +    }
+> +    else
+> +    {
+> +        mbedtls_debug_set_threshold(2);
+> +    }
+>  #endif
+>      mbedtls_ssl_conf_dbg(ks_ssl->ssl_config, my_debug, NULL);
+>      mbedtls_ssl_conf_rng(ks_ssl->ssl_config, mbedtls_ctr_drbg_random,
+> 
 
-commit 24596b258aa3a9c0bd79e7e7bd4753c48a435408
-Author: David Sommerseth
-Date:   Wed Mar 17 23:06:42 2021 +0100
+Otherwise, this now looks good me.
 
-     build: Remove compat-lz4
+Acked-by: Steffan Karger <steffan@...1856...>
 
-     Signed-off-by: David Sommerseth <davids@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210317220642.38741-1-openvpn@...2080...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20210317220642.38741-1-openvpn@...2080...
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+Thanks,
+-Steffan
 
