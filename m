@@ -1,13 +1,10 @@
-References: <20210308142113.24208-1-arne@...1227...>
- <20210316124421.1635-1-arne@...1227...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <65202730-ac30-6139-a24c-3ad7154c3e06@...1856...>
-Date: Thu, 18 Mar 2021 10:03:35 +0100
-MIME-Version: 1.0
+Date: Thu, 18 Mar 2021 10:34:14 +0100 (CET)
+Message-Id: <202103180934.12I9YEw4086581@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20210316124421.1635-1-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v2] Avoid generating unecessary mbed
- debug messages
+References: <20210316124421.1635-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Avoid generating unecessary
+ mbed debug messages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,104 +13,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Acked-by: Gert Doering <gert@...1296...>
 
-On 16-03-2021 13:44, Arne Schwabe wrote:
-> The main motivation to make this change is to avoid a crash in mbed TLS
-> 2.25 with --verb < 8.
-> 
-> mbed TLS 2.25 has a nasty bug that the print function for Montgomery style
-> EC curves (Curve25519 and Curve448) does segfault. See also the issue
-> reported here: https://github.com/ARMmbed/mbedtls/issues/4208
-> 
-> We request always debug level 3 from mbed TLS but filter out any debug
-> output of level 3 unless verb 8 or higher is set. This commeit sets
-> the debug level to 2 to avoid this problem by makeing mbed TLS not
-> generatin the problematic debug output.
-> 
-> For the affected version to still use --verb 8 with mbed TLS 2.25 is to
-> restrict the EC groups to ones that do not crash the print function
-> like with '--tls-groups secp521r1:secp384r1:secp256r1'.
-> 
-> This patch has no patch on user-visible behaviour on unaffected mbed TLS
-> versions.
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> 
-> Patch V2: Replace magic constant with proper define. Highlight more this
->           avoding generating unessary debug output than crash workaround.
-> ---
->  src/openvpn/options.c     |  6 ++++++
->  src/openvpn/ssl_common.h  |  1 +
->  src/openvpn/ssl_mbedtls.c | 13 ++++++++++++-
->  3 files changed, 19 insertions(+), 1 deletion(-)
-> 
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index 0eb049d8..c4646d48 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -5883,6 +5883,12 @@ add_option(struct options *options,
->      {
->          VERIFY_PERMISSION(OPT_P_MESSAGES);
->          options->verbosity = positive_atoi(p[1]);
-> +        if (options->verbosity >= (D_TLS_DEBUG_MED & M_DEBUG_LEVEL))
-> +        {
-> +            /* We pass this flag to the SSL library to avoid a
-> +             * mbed TLS always generating debug level logging */
+Tested with exactly that testbed that initially discovered the SIGSEGV,
+and as expected, it no longer crashes.  Verified that it still crashes
+with "--verb 8" (it does).
 
-Typo: "a mbed TLS" -> "mbed TLS".
+Code also looks secure and does what it says on the lid.
 
-> +            options->ssl_flags |= SSLF_TLS_DEBUG_ENABLED;
-> +        }
->  #if !defined(ENABLE_DEBUG) && !defined(ENABLE_SMALL)
->          /* Warn when a debug verbosity is supplied when built without debug support */
->          if (options->verbosity >= 7)
-> diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-> index b493cbb7..2e3c98db 100644
-> --- a/src/openvpn/ssl_common.h
-> +++ b/src/openvpn/ssl_common.h
-> @@ -352,6 +352,7 @@ struct tls_options
->  #define SSLF_TLS_VERSION_MIN_MASK     0xF  /* (uses bit positions 6 to 9) */
->  #define SSLF_TLS_VERSION_MAX_SHIFT    10
->  #define SSLF_TLS_VERSION_MAX_MASK     0xF  /* (uses bit positions 10 to 13) */
-> +#define SSLF_TLS_DEBUG_ENABLED        (1<<14)
->      unsigned int ssl_flags;
->  
->  #ifdef ENABLE_MANAGEMENT
-> diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-> index b30b6b9d..4626e983 100644
-> --- a/src/openvpn/ssl_mbedtls.c
-> +++ b/src/openvpn/ssl_mbedtls.c
-> @@ -1058,7 +1058,18 @@ key_state_ssl_init(struct key_state_ssl *ks_ssl,
->      mbedtls_ssl_config_defaults(ks_ssl->ssl_config, ssl_ctx->endpoint,
->                                  MBEDTLS_SSL_TRANSPORT_STREAM, MBEDTLS_SSL_PRESET_DEFAULT);
->  #ifdef MBEDTLS_DEBUG_C
-> -    mbedtls_debug_set_threshold(3);
-> +    /* We only want to have mbed TLS generate debug level logging when we would
-> +     * also display it.
-> +     * In fact mbed TLS 2.25.0 crashes generating debug log if Curve25591 is
-> +     * selected for DH (https://github.com/ARMmbed/mbedtls/issues/4208) */
-> +    if (session->opt->ssl_flags & SSLF_TLS_DEBUG_ENABLED)
-> +    {
-> +        mbedtls_debug_set_threshold(3);
-> +    }
-> +    else
-> +    {
-> +        mbedtls_debug_set_threshold(2);
-> +    }
->  #endif
->      mbedtls_ssl_conf_dbg(ks_ssl->ssl_config, my_debug, NULL);
->      mbedtls_ssl_conf_rng(ks_ssl->ssl_config, mbedtls_ctr_drbg_random,
-> 
+That said, ACKed and merged, I'm still not totally happy with the
+approach chosen - this is quite some new lines of code to change one 
+"3" into a "2", depending on the value of one other variable...  but we
+discussed this before, and Arne did not want to have the mbedTLS code
+"peek" into get_debug_level() to get at the --verb setting.  Since
+Steffan is fine with this approach, I'm clearly the minority here...
 
-Otherwise, this now looks good me.
 
-Acked-by: Steffan Karger <steffan@...1856...>
+.. while writing this, the ACK from Steffan came in... so, recording
+that as well... MULTI-ACK! :-) - and fixing the comment as requested.
 
-Thanks,
--Steffan
+
+Your patch has been applied to the master and release/2.5 branch
+(stability / long-term compat thing).
+
+commit 4524feb2bbbb6d1bd463a0c5c2d53aae5bdf360a (master)
+commit 475d17a53eba85591f270008f8b583383a5b9afa (release/2.5)
+Author: Arne Schwabe
+Date:   Tue Mar 16 13:44:21 2021 +0100
+
+     Avoid generating unecessary mbed debug messages
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20210316124421.1635-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21667.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
