@@ -1,10 +1,9 @@
-Date: Thu, 18 Mar 2021 08:12:53 +0100 (CET)
-Message-Id: <202103180712.12I7CrKG064224@...2054...>
+Date: Thu, 18 Mar 2021 08:44:36 +0100 (CET)
+Message-Id: <202103180744.12I7iaE2073329@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210317223448.1278818-1-tincanteksup@...277...>
-References: <20210317223448.1278818-1-tincanteksup@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Do not print Diffy Hellman
- parameters file to log file
+In-Reply-To: <20210317220642.38741-1-openvpn@...2080...>
+References: <20210317220642.38741-1-openvpn@...2080...>
+Subject: [Openvpn-devel] [PATCH applied] Re: build: Remove compat-lz4
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +14,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Richard Bonhomme <tincanteksup@...277...>
+To: David Sommerseth <davids@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.5 branch.
+Acked-by: Gert Doering <gert@...1296...>
 
-I've corrected the spelling of "Diffy" to "Diffie", according to
+I have tested compilation "with default options" on FreeBSD with lz4
+(works), Gentoo without lz4 (errors out), Gentoo with lz4 (works), and
+with --disable-lz4 on Gentoo without lz4 (works).
 
-  https://en.wikipedia.org/wiki/Diffie-Hellman_key_exchange
+I assume some of the buildbots will need a bit of tending now (because
+"no lz4 installed, since we bundle it anyway").  They will tell me...
 
-I have not tested this further than "it compiles".
+Your patch has been applied to the master branch.
 
-commit 4170da0778b926cea748c319163fdcfc7c6bc445 (master)
-commit c8a72bbfbf16fa87c18c2e92c467587833b611e9 (release/2.5)
-Author: Richard Bonhomme
-Date:   Wed Mar 17 22:34:48 2021 +0000
+commit 24596b258aa3a9c0bd79e7e7bd4753c48a435408
+Author: David Sommerseth
+Date:   Wed Mar 17 23:06:42 2021 +0100
 
-     Do not print Diffy Hellman parameters file to log file
+     build: Remove compat-lz4
 
-     Signed-off-by: Richard Bonhomme <tincanteksup@...277...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20210317223448.1278818-1-tincanteksup@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21688.html
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20210317220642.38741-1-openvpn@...2080...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20210317220642.38741-1-openvpn@...2080...
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
