@@ -1,13 +1,9 @@
-References: <20210317223448.1278818-1-tincanteksup@...277...>
- <202103180712.12I7CrKG064224@...2054...>
-From: tincanteksup <tincanteksup@...277...>
-Message-ID: <87870ee1-0da0-1234-3320-7d3616ccc752@...277...>
-Date: Thu, 18 Mar 2021 15:12:15 +0000
+From: Juliusz Sosinowicz <juliusz@...2525...>
+Date: Thu, 18 Mar 2021 17:16:09 +0100
+Message-Id: <20210318161609.76073-1-juliusz@...2525...>
 MIME-Version: 1.0
-In-Reply-To: <202103180712.12I7CrKG064224@...2054...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Do not print Diffy Hellman
- parameters file to log file
+Subject: [Openvpn-devel] [PATCH] Add PKG_CHECK_VAR compatibility definition
+ for old autoconf versions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,39 +12,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-How embarrassing ..
+Signed-off-by: Juliusz Sosinowicz <juliusz@...2525...>
+---
+ compat.m4 | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-On 18/03/2021 07:12, Gert Doering wrote:
-> Your patch has been applied to the master and release/2.5 branch.
-> 
-> I've corrected the spelling of "Diffy" to "Diffie", according to
-> 
->    https://en.wikipedia.org/wiki/Diffie-Hellman_key_exchange
-> 
-> I have not tested this further than "it compiles".
-> 
-> commit 4170da0778b926cea748c319163fdcfc7c6bc445 (master)
-> commit c8a72bbfbf16fa87c18c2e92c467587833b611e9 (release/2.5)
-> Author: Richard Bonhomme
-> Date:   Wed Mar 17 22:34:48 2021 +0000
-> 
->       Do not print Diffy Hellman parameters file to log file
-> 
->       Signed-off-by: Richard Bonhomme <tincanteksup@...277...>
->       Acked-by: Antonio Quartulli <antonio@...515...>
->       Message-Id: <20210317223448.1278818-1-tincanteksup@...277...>
->       URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21688.html
->       Signed-off-by: Gert Doering <gert@...1296...>
-> 
-> 
-> --
-> kind regards,
-> 
-> Gert Doering
-> 
+diff --git a/compat.m4 b/compat.m4
+index e54a7203..47650f6d 100644
+--- a/compat.m4
++++ b/compat.m4
+@@ -64,6 +64,22 @@ ifdef(
+ 		AC_DEFUN([AC_TYPE_UINT64_T], [])
+ 	]
+ )
++ifdef(
++	[PKG_CHECK_VAR],
++	,
++	[
++		AC_DEFUN([PKG_CHECK_VAR],
++		[AC_REQUIRE([PKG_PROG_PKG_CONFIG])
++		AC_ARG_VAR([$1], [value of $3 for $2, overriding pkg-config])
++
++		_PKG_CONFIG([$1], [variable="][$3]["], [$2])
++		AS_VAR_COPY([$1], [pkg_cv_][$1])
++
++		AS_VAR_IF([$1], [""], [$5], [$4])
++		])
++	]
++)
++
+ if test -z "${docdir}"; then
+ 	docdir="\$(datadir)/doc/\$(PACKAGE_NAME)"
+ 	AC_SUBST([docdir])
+-- 
+2.25.1
+
 
