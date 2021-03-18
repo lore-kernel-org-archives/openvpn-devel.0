@@ -1,13 +1,15 @@
-References: <20210317220642.38741-1-openvpn@...2080...>
- <202103180744.12I7iaE2073329@...2054...>
- <CAFHpkQF9Ga24wHjGOPAf+v+fZ7qCpmGOW-Ms9fTBiFuYHcrgTg@...278...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <05ed2a99-1de5-854d-9809-4c5145e7c67d@...2080...>
-Date: Thu, 18 Mar 2021 18:35:58 +0100
+Date: Thu, 18 Mar 2021 18:56:11 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20210318175611.GG976@...1296...>
+References: <20210318161609.76073-1-juliusz@...2525...>
+ <749924e0-5927-ba54-9e09-e722d53ae8ef@...2080...>
 MIME-Version: 1.0
-In-Reply-To: <CAFHpkQF9Ga24wHjGOPAf+v+fZ7qCpmGOW-Ms9fTBiFuYHcrgTg@...278...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: build: Remove compat-lz4
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="XcxcNAOnIVVGcxzV"
+Content-Disposition: inline
+In-Reply-To: <749924e0-5927-ba54-9e09-e722d53ae8ef@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] Add PKG_CHECK_VAR compatibility
+ definition for old autoconf versions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,87 +18,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, Gert Doering <gert@...1296...>, samuli.seppanen@...277...
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: David Sommerseth <openvpn@...2080...>
+Cc: Juliusz Sosinowicz <juliusz@...2525...>, openvpn-devel@lists.sourceforge.net
 
-On 18/03/2021 12:14, Илья Шипицин wrote:
-> this probably will break windows cross compile (it uses lz4 bundle).
-> 
-> Samuli, can you please keep any eye on it  (new test installer maybe) ?
+--XcxcNAOnIVVGcxzV
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Is it too early to consider --disable-lz4 all together?  Maybe try that 
-initially for the 2.6 and see how well it is received by beta/rc 
-testers.  And further, for 2.7 we can consider having --enable-comp-stub 
-by default.
+Hi,
 
-I can do a similar move with the Fedora Copr openvpn-git development builds.
+On Thu, Mar 18, 2021 at 06:25:13PM +0100, David Sommerseth wrote:
+> I'm not seeing the rationale to why we need this; can you explain that?
 
+See my other mail: because the previous configure.ac patch (for WolfSSL
+support) breaks some platforms.  Seems "some m4 bits" are not universally
+there.
 
--- 
-kind regards,
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-David Sommerseth
-OpenVPN Inc
+Gert Doering - Munich, Germany                             gert@...1296...
 
+--XcxcNAOnIVVGcxzV
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
-> чт, 18 мар. 2021 г. в 12:45, Gert Doering <gert@...1296... 
-> <mailto:gert@...1296...>>:
-> 
->     Acked-by: Gert Doering <gert@...1296...
->     <mailto:gert@...1296...>>
-> 
->     I have tested compilation "with default options" on FreeBSD with lz4
->     (works), Gentoo without lz4 (errors out), Gentoo with lz4 (works), and
->     with --disable-lz4 on Gentoo without lz4 (works).
-> 
->     I assume some of the buildbots will need a bit of tending now (because
->     "no lz4 installed, since we bundle it anyway").  They will tell me...
-> 
->     Your patch has been applied to the master branch.
-> 
->     commit 24596b258aa3a9c0bd79e7e7bd4753c48a435408
->     Author: David Sommerseth
->     Date:   Wed Mar 17 23:06:42 2021 +0100
-> 
->           build: Remove compat-lz4
-> 
->           Signed-off-by: David Sommerseth <davids@...515...
->     <mailto:davids@...515...>>
->           Acked-by: Gert Doering <gert@...1296...
->     <mailto:gert@...1296...>>
->           Message-Id:
->     <20210317220642.38741-1-openvpn@...2080...
->     <mailto:20210317220642.38741-1-openvpn@...2080...>>
->           URL:
->     https://www.mail-archive.com/search?l=mid&q=20210317220642.38741-1-openvpn@...2080...
->     <https://www.mail-archive.com/search?l=mid&q=20210317220642.38741-1-openvpn@...2080...>
->           Signed-off-by: Gert Doering <gert@...1296...
->     <mailto:gert@...1296...>>
-> 
-> 
->     --
->     kind regards,
-> 
->     Gert Doering
-> 
-> 
-> 
->     _______________________________________________
->     Openvpn-devel mailing list
->     Openvpn-devel@lists.sourceforge.net
->     <mailto:Openvpn-devel@lists.sourceforge.net>
->     https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->     <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>
-> 
+iQGcBAEBAgAGBQJgU5Q7AAoJEB2Cnv7KVigSsEwL/2yYXzCHARdZcUGDohe9LIQM
+CiD/5pDuJgdZAda2nqhD5C4zHm5sJjqOgcIvRA20Dcy7aruEImeZ6EEkurZ8kFXf
+hltEH0JEMPpRl0KtRBQD+d01Mx/HHBEqLnRGOFsAqdUWKANsoNFvKcTZ+rmrsxW8
+/EfeGegZJcQ2kwAsxY0EiMxWZZ3rAiA23sHyEpTwKQT3IIdxK0i/fCS9r+Jt728k
++cIavdtM5J93KPw77YBWAYORdBvZFCnmA4S0qhcdqwyHg/yPYZWAn8/cZ5njqBHX
+59XogPffyBGCVb8uPArnkzQkQeww9Ive/w9Pkq5Mwdv/NE0KEGkMZ3Wq8gin6KEo
+gEt9X3BTObHKTNZjNDOx7KhQXVbq2EwCvkwe2O8gd7r9ODv2SngwOSj3NOFnB5Kg
+qTw9ERcRA71bUjmStf1FrXAfaP+nCCIBySBAlbxkzeAvlLfuJUHPaP9VwUU3tx8C
+FwtgyQBnN6nKV3HpmsA827v0fUiNxoBt348619xtow==
+=hSA3
+-----END PGP SIGNATURE-----
 
-
--- 
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
-
+--XcxcNAOnIVVGcxzV--
 
