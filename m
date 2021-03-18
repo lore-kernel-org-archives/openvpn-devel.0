@@ -1,12 +1,10 @@
-References: <20210317223448.1278818-1-tincanteksup@...277...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <4bd166a9-9433-5959-53d0-1f4ab4da28ae@...2181...>
-Date: Wed, 17 Mar 2021 23:57:32 +0100
-MIME-Version: 1.0
+Date: Thu, 18 Mar 2021 08:12:53 +0100 (CET)
+Message-Id: <202103180712.12I7CrKG064224@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20210317223448.1278818-1-tincanteksup@...277...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Do not print Diffy Hellman parameters
- file to log file
+References: <20210317223448.1278818-1-tincanteksup@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Do not print Diffy Hellman
+ parameters file to log file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,30 +13,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Richard Bonhomme <tincanteksup@...277...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Richard Bonhomme <tincanteksup@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Your patch has been applied to the master and release/2.5 branch.
 
-On 17/03/2021 23:34, Richard Bonhomme wrote:
-> Suppress printing the complete Diffy Hellman parameters file
-> to the log file when it has been configured as an inline file.
-> 
-> Signed-off-by: Richard Bonhomme <tincanteksup@...277...>
+I've corrected the spelling of "Diffy" to "Diffie", according to
 
-This is indeed something that I forgot to change when implementing
-19fab1f6cf71715f84d09d6a8b49698b0ae42cd1
+  https://en.wikipedia.org/wiki/Diffie-Hellman_key_exchange
 
-Like all other params that have an xx_inline bool companion, also
-dh_file should be printed using the SHOW_STR_INLINE() macro.
+I have not tested this further than "it compiles".
 
-Thanks for noticing and fixing this!
+commit 4170da0778b926cea748c319163fdcfc7c6bc445 (master)
+commit c8a72bbfbf16fa87c18c2e92c467587833b611e9 (release/2.5)
+Author: Richard Bonhomme
+Date:   Wed Mar 17 22:34:48 2021 +0000
 
-Acked-by: Antonio Quartulli <antonio@...515...>
+     Do not print Diffy Hellman parameters file to log file
+
+     Signed-off-by: Richard Bonhomme <tincanteksup@...277...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20210317223448.1278818-1-tincanteksup@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21688.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
+--
+kind regards,
 
--- 
-Antonio Quartulli
+Gert Doering
+
 
