@@ -1,8 +1,10 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Fri, 19 Mar 2021 04:33:17 +0200
-Message-Id: <20210319023317.15050-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH] Remove compat-lz4 references from VS
- project files
+Date: Fri, 19 Mar 2021 15:18:35 +0100 (CET)
+Message-Id: <202103191418.12JEIZx2033491@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20210319023317.15050-1-lstipakov@...277...>
+References: <20210319023317.15050-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove compat-lz4 references
+ from VS project files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,53 +15,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Lev Stipakov <lev@...515...>
+Acked-by: Gert Doering <gert@...1296...>
 
-Commit 24596b25 ("build: Remove compat-lz4") removed lz4 compat layer,
-but didn't remove references from VS project files.
+Yeah, thanks for cleaning up behind us, when needed...
 
-Signed-off-by: Lev Stipakov <lev@...515...>
----
- src/compat/compat.vcxproj         | 3 +--
- src/compat/compat.vcxproj.filters | 2 +-
- 2 files changed, 2 insertions(+), 3 deletions(-)
+Your patch has been applied to the master branch.
 
-diff --git a/src/compat/compat.vcxproj b/src/compat/compat.vcxproj
-index 0c4c7b0f..23e9b9c0 100644
---- a/src/compat/compat.vcxproj
-+++ b/src/compat/compat.vcxproj
-@@ -101,7 +101,6 @@
-     <ClCompile Include="compat-inet_ntop.c" />
-     <ClCompile Include="compat-inet_pton.c" />
-     <ClCompile Include="compat-daemon.c" />
--    <ClCompile Include="compat-lz4.c" />
-     <ClCompile Include="compat-strsep.c" />
-   </ItemGroup>
-   <ItemGroup>
-@@ -116,4 +115,4 @@
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-   <ImportGroup Label="ExtensionTargets">
-   </ImportGroup>
--</Project>
-+</Project>
-\ No newline at end of file
-diff --git a/src/compat/compat.vcxproj.filters b/src/compat/compat.vcxproj.filters
-index 0f78e86e..404863ca 100644
---- a/src/compat/compat.vcxproj.filters
-+++ b/src/compat/compat.vcxproj.filters
-@@ -33,7 +33,7 @@
-     <ClCompile Include="compat-daemon.c">
-       <Filter>Source Files</Filter>
-     </ClCompile>
--    <ClCompile Include="compat-lz4.c">
-+    <ClCompile Include="compat-strsep.c">
-       <Filter>Source Files</Filter>
-     </ClCompile>
-   </ItemGroup>
--- 
-2.17.1
+commit 9b2e80340d247bc7c73752d542be4d15511eb04e
+Author: Lev Stipakov
+Date:   Fri Mar 19 04:33:17 2021 +0200
+
+     Remove compat-lz4 references from VS project files
+
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20210319023317.15050-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21723.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
