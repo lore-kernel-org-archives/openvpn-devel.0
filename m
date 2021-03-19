@@ -1,10 +1,8 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri, 19 Mar 2021 15:20:00 +0100
-Message-Id: <20210319142001.2201-3-arne@...1227...>
-In-Reply-To: <20210319142001.2201-1-arne@...1227...>
-References: <20210319142001.2201-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v2 3/5] Support fingerprint authentication
- without CA certificate
+Date: Fri, 19 Mar 2021 15:19:58 +0100
+Message-Id: <20210319142001.2201-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v2 1/5] Extend verify-hash to allow multiple
+ hashes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,232 +15,292 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: "Jason A. Donenfeld" <Jason@...2390...>
+This patch introduces support for verify-hash inlining.
+When inlined, this options now allows to specify multiple fingerprints,
+one per line.
 
-OpenVPN traditionally works around CAs. However many TLS-based protocols also
-allow an alternative simpler mode in which rather than verify certificates
-against CAs, the certificate itself is hashed and compared against a
-pre-known set of acceptable hashes. This is usually referred to as
-"fingerprint verification". It's popular across SMTP servers, IRC servers,
-XMPP servers, and even in the context of HTTP with pinning.
+Since this is a new syntax, there is no backwards compatibility to take
+care of, therefore we can drop support for SHA1. Inlined fingerprints
+are assumed be to SHA-256 only.
 
-   * Allow not specifying the --ca parameter, to specify that
-     certificates should not be checked against a CA.
+Also print a warning about SHA1 hash being deprecated to verify
+certificates as it is not "industry standard" anymore.
 
-I've included some instructions on how to use all of this.
-
-Server side:
-============
-
-Make self-signed cert:
-$ openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -keyout serverkey.pem -out servercert.pem -nodes -sha256 -days 3650 -subj '/CN=server'
-
-Record our fingerprint in an environment variable for the client to use later:
-$ server_fingerprint="$(openssl x509 -in servercert.pem -noout -sha256 -fingerprint | sed 's/.*=//;s/\(.*\)/\1/')"
-
-Client side:
-============
-Make self-signed cert:
-$ openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -keyout clientkey.pem -out clientcert.pem -nodes -sha256 -days 3650 -subj '/CN=client'
-
-Record our fingerprint in an environment variable for the server to use later:
-$ client_fingerprint="$(openssl x509 -in clientcert.pem -noout -sha256 -fingerprint | sed 's/.*=//;s/\(.*\)/\1/')"
-
-Start server/client
-===================
-
-Start openvpn with peer fingerprint verification:
-
-$ sudo openvpn --server 10.66.0.0 255.255.255.0 --dev tun --dh none --cert servercert.pem --key serverkey.pem --peer-fingerprint "$client_fingerprint"
-
-$ sudo openvpn --client --remote 127.0.0.1 --dev tun --cert clientcert.pem --key clientkey.pem --peer-fingerprint "$server_fingerprint" --nobind
-
-Signed-off-by: Jason A. Donenfeld <Jason@...2390...>
-
-Patch V2: Changes in V2 (by Arne Schwabe):
-          - Only check peer certificates, not all cert levels, if you need
-            multiple levels of certificate you should use a real CA
-          - Use peer-fingerprint instead tls-verify on server side in example.
-          - rename variable ca_file_none to verify_hash_no_ca
-          - do no require --ca none but allow --ca simply
-            to be absent when --peer-fingprint is present
-          - adjust warnings/errors messages to also point to
-            peer-fingerprint as valid verification method.
-          - Fix mbed TLS version of not requiring CA
-            not working
+Patch v2: fix/clarify various comments, fix a few minor problems, allow
+          the option to be specified multiple times and have that
+          added to the list.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/init.c               |  2 ++
- src/openvpn/options.c            | 30 +++++++++++++++++++++++-------
- src/openvpn/options.h            |  1 +
- src/openvpn/ssl.c                |  2 +-
- src/openvpn/ssl_common.h         |  1 +
- src/openvpn/ssl_verify_mbedtls.c | 17 +++++++++++++++++
- src/openvpn/ssl_verify_openssl.c |  2 +-
- 7 files changed, 46 insertions(+), 9 deletions(-)
+ doc/man-sections/inline-files.rst |   4 +-
+ doc/man-sections/tls-options.rst  |  10 +++
+ src/openvpn/options.c             | 107 +++++++++++++++++++++++++++---
+ src/openvpn/options.h             |  10 ++-
+ src/openvpn/ssl_common.h          |   2 +-
+ src/openvpn/ssl_verify.c          |  17 ++++-
+ 6 files changed, 133 insertions(+), 17 deletions(-)
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 731b0cf2..835621cb 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2928,6 +2928,8 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
-     to.verify_hash = options->verify_hash;
-     to.verify_hash_algo = options->verify_hash_algo;
-     to.verify_hash_depth = options->verify_hash_depth;
-+    to.verify_hash_no_ca = options->verify_hash_no_ca;
+diff --git a/doc/man-sections/inline-files.rst b/doc/man-sections/inline-files.rst
+index 819bd3c8..303bb3c8 100644
+--- a/doc/man-sections/inline-files.rst
++++ b/doc/man-sections/inline-files.rst
+@@ -4,8 +4,8 @@ INLINE FILE SUPPORT
+ OpenVPN allows including files in the main configuration for the ``--ca``,
+ ``--cert``, ``--dh``, ``--extra-certs``, ``--key``, ``--pkcs12``,
+ ``--secret``, ``--crl-verify``, ``--http-proxy-user-pass``, ``--tls-auth``,
+-``--auth-gen-token-secret``, ``--tls-crypt`` and ``--tls-crypt-v2``
+-options.
++``--auth-gen-token-secret``, ``--tls-crypt``, ``--tls-crypt-v2`` and
++``--verify-hash`` options.
+ 
+ Each inline file started by the line ``<option>`` and ended by the line
+ ``</option>``
+diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
+index e13fb3c8..d8f9800e 100644
+--- a/doc/man-sections/tls-options.rst
++++ b/doc/man-sections/tls-options.rst
+@@ -582,6 +582,16 @@ certificates and keys: https://github.com/OpenVPN/easy-rsa
+   The ``algo`` flag can be either :code:`SHA1` or :code:`SHA256`. If not
+   provided, it defaults to :code:`SHA1`.
+ 
++  This option can also be inlined
++  ::
 +
- #ifdef ENABLE_X509ALTUSERNAME
-     memcpy(to.x509_username_field, options->x509_username_field, sizeof(to.x509_username_field));
- #else
++    <verify-hash>
++    00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff:00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff
++    11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff:00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff:00
++    </verify-hash>
++
++If the option is inlined, ``algo`` is always :code:`SHA256`.
++
+ --verify-x509-name args
+   Accept connections only if a host's X.509 name is equal to **name.** The
+   remote host must also pass all other tests of verification.
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 6b4a2c11..27ed813d 100644
+index 86e78b05..e119e14c 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -2712,18 +2712,23 @@ options_postprocess_verify_ce(const struct options *options,
+@@ -1078,12 +1078,24 @@ string_substitute(const char *src, int from, int to, struct gc_arena *gc)
+     return ret;
+ }
+ 
+-static uint8_t *
++/**
++ * Parses a hexstring and checks if the string has the correct length. Return
++ * a verify_hash_list containing the parsed hash string.
++ *
++ * @param   str         String to check/parse
++ * @param   nbytes      Number of bytes expected in the hexstr (e.g. 20 for SHA1)
++ * @param   msglevel    message level to use when printing warnings/errors
++ * @param   gc          The returned object will be allocated in this gc
++ */
++static struct verify_hash_list *
+ parse_hash_fingerprint(const char *str, int nbytes, int msglevel, struct gc_arena *gc)
+ {
+     int i;
+     const char *cp = str;
+-    uint8_t *ret = (uint8_t *) gc_malloc(nbytes, true, gc);
++
++    struct verify_hash_list *ret;
++    ALLOC_OBJ_CLEAR_GC(ret, struct verify_hash_list, gc);
++
+     char term = 1;
+     int byte;
+     char bs[3];
+@@ -1102,7 +1114,7 @@ parse_hash_fingerprint(const char *str, int nbytes, int msglevel, struct gc_aren
+         {
+             msg(msglevel, "format error in hash fingerprint hex byte: %s", str);
+         }
+-        ret[i] = (uint8_t)byte;
++        ret->hash[i] = (uint8_t)byte;
+         term = *cp++;
+         if (term != ':' && term != 0)
+         {
+@@ -1116,10 +1128,55 @@ parse_hash_fingerprint(const char *str, int nbytes, int msglevel, struct gc_aren
+     if (term != 0 || i != nbytes-1)
+     {
+         msg(msglevel, "hash fingerprint is different length than expected (%d bytes): %s", nbytes, str);
++        return NULL;
+     }
+     return ret;
+ }
+ 
++/**
++ * Parses a string consisting of multiple lines of hexstrings and checks if each
++ * string has the correct length. Empty lines are ignored. Returns
++ * a linked list of (possibly) multiple verify_hash_list objects.
++ *
++ * @param   str         String to check/parse
++ * @param   nbytes      Number of bytes expected in the hexstring (e.g. 20 for SHA1)
++ * @param   msglevel    message level to use when printing warnings/errors
++ * @param   gc          The returned list items will be allocated in this gc
++ */
++static struct verify_hash_list *
++parse_hash_fingerprint_multiline(const char *str, int nbytes, int msglevel,
++                                 struct gc_arena *gc)
++{
++    struct gc_arena gc_temp = gc_new();
++    char *lines = string_alloc(str, &gc_temp);
++
++    struct verify_hash_list *ret = NULL;
++
++    const char *line;
++    while ((line = strsep(&lines, "\n")))
++    {
++        /* skip empty lines */
++        if (strlen(line) == 0)
++        {
++            continue;
++        }
++
++        struct verify_hash_list *hash = parse_hash_fingerprint(line, nbytes,
++                                                               msglevel, gc);
++
++        if (!hash)
++        {
++            gc_free(&gc_temp);
++            return NULL;
++        }
++
++        hash->next = ret;
++        ret = hash;
++    }
++    gc_free(&gc_temp);
++
++    return ret;
++}
+ #ifdef _WIN32
+ 
+ #ifndef ENABLE_SMALL
+@@ -8063,22 +8120,50 @@ add_option(struct options *options,
+     }
+     else if (streq(p[0], "verify-hash") && p[1] && !p[3])
+     {
+-        VERIFY_PERMISSION(OPT_P_GENERAL);
++        VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_INLINE);
++        options->verify_hash_algo = MD_SHA256;
++
++        int digest_len = SHA256_DIGEST_LENGTH;
+ 
+-        if (!p[2] || (p[2] && streq(p[2], "SHA1")))
++        if ((!p[2] && !is_inline) || (p[2] && streq(p[2], "SHA1")))
+         {
+-            options->verify_hash = parse_hash_fingerprint(p[1], SHA_DIGEST_LENGTH, msglevel, &options->gc);
+             options->verify_hash_algo = MD_SHA1;
++            msg(M_WARN, "DEPRECATED FEATURE: Usage of SHA1 fingerprints for "
++                "verify-hash is deprecated. You should switch to SHA256.");
++            options->verify_hash_algo = MD_SHA1;
++            digest_len = SHA_DIGEST_LENGTH;
++        }
++        else if (p[2] && !streq(p[2], "SHA256"))
++        {
++            msg(msglevel, "invalid or unsupported hashing algorithm: %s  (only SHA1 and SHA256 are valid)", p[2]);
++            goto err;
++        }
++
++        struct verify_hash_list *newlist;
++        if (is_inline)
++        {
++            newlist  = parse_hash_fingerprint_multiline(p[1], digest_len, msglevel,
++                                                                    &options->gc);
+         }
+-        else if (p[2] && streq(p[2], "SHA256"))
++        else
+         {
+-            options->verify_hash = parse_hash_fingerprint(p[1], SHA256_DIGEST_LENGTH, msglevel, &options->gc);
+-            options->verify_hash_algo = MD_SHA256;
++            newlist = parse_hash_fingerprint(p[1], digest_len, msglevel,
++                                                          &options->gc);
++        }
++
++        /* Append the new list to the end of our current list */
++        if (!options->verify_hash)
++        {
++            options->verify_hash = newlist;
+         }
          else
          {
- #ifdef ENABLE_CRYPTO_MBEDTLS
--            if (!(options->ca_file))
-+            if (!(options->ca_file || options->verify_hash_no_ca))
-             {
--                msg(M_USAGE, "You must define CA file (--ca)");
-+                msg(M_USAGE, "You must define CA file (--ca) and/or "
-+                    "peer fingeprint verification "
-+                    "(--peer-fingerprint)");
-             }
-             if (options->ca_path)
-             {
-                 msg(M_USAGE, "Parameter --capath cannot be used with the mbed TLS version version of OpenVPN.");
-             }
- #else  /* ifdef ENABLE_CRYPTO_MBEDTLS */
--            if ((!(options->ca_file)) && (!(options->ca_path)))
-+            if ((!(options->ca_file)) && (!(options->ca_path))
-+                && (!(options->verify_hash_no_ca)))
-             {
--                msg(M_USAGE, "You must define CA file (--ca) or CA path (--capath)");
-+                msg(M_USAGE, "You must define CA file (--ca) or CA path "
-+                    "(--capath) and/or peer fingeprint verification "
-+                    "(--peer-fingerprint)");
-             }
- #endif
-             if (pull)
-@@ -2742,7 +2747,8 @@ options_postprocess_verify_ce(const struct options *options,
- #if P2MP
-                     if (!options->auth_user_pass_file)
- #endif
--                    msg(M_USAGE, "No client-side authentication method is specified.  You must use either --cert/--key, --pkcs12, or --auth-user-pass");
-+                    msg(M_USAGE, "No client-side authentication method is specified.  You must use either --cert/--key,"
-+                        " --pkcs12, or --auth-user-pass");
-                 }
-                 else if (sum == 2)
-                 {
-@@ -3206,6 +3212,13 @@ options_postprocess_mutate(struct options *o)
-         options_postprocess_http_proxy_override(o);
+-            msg(msglevel, "invalid or unsupported hashing algorithm: %s  (only SHA1 and SHA256 are valid)", p[2]);
+-            goto err;
++            struct verify_hash_list *listend = options->verify_hash;
++            while (listend->next)
++            {
++                listend = listend->next;
++            }
++            listend->next = newlist;
+         }
      }
- #endif
-+    if (!o->ca_file && !o->ca_path && o->verify_hash
-+        && o->verify_hash_depth == 0)
-+    {
-+        msg(M_INFO, "Using certificate fingerprint to verify peer (no CA "
-+            "option set). ");
-+        o->verify_hash_no_ca = true;
-+    }
- 
- #if P2MP
-     /*
-@@ -3441,8 +3454,11 @@ options_postprocess_filechecks(struct options *options)
-     errs |= check_file_access_inline(options->dh_file_inline, CHKACC_FILE,
-                                      options->dh_file, R_OK, "--dh");
- 
--    errs |= check_file_access_inline(options->ca_file_inline, CHKACC_FILE,
--                                     options->ca_file, R_OK, "--ca");
-+    if (!options->verify_hash_no_ca)
-+    {
-+        errs |= check_file_access_inline(options->ca_file_inline, CHKACC_FILE,
-+                                         options->ca_file, R_OK, "--ca");
-+    }
- 
-     errs |= check_file_access_chroot(options->chroot_dir, CHKACC_FILE,
-                                      options->ca_path, R_OK, "--capath");
+ #ifdef ENABLE_CRYPTOAPI
 diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 30ec53d6..c68e89d2 100644
+index 56228668..a7b3174f 100644
 --- a/src/openvpn/options.h
 +++ b/src/openvpn/options.h
-@@ -561,6 +561,7 @@ struct options
-     struct verify_hash_list *verify_hash;
+@@ -191,6 +191,14 @@ enum genkey_type {
+     GENKEY_AUTH_TOKEN
+ };
+ 
++struct verify_hash_list
++{
++    /* We support SHA256 and SHA1 fingerpint. In the case of using the
++     * deprecated SHA1, only the first 20 bytes of each list item are used */
++    uint8_t hash[SHA256_DIGEST_LENGTH];
++    struct verify_hash_list *next;
++};
++
+ /* Command line options */
+ struct options
+ {
+@@ -550,7 +558,7 @@ struct options
+     int ns_cert_type; /* set to 0, NS_CERT_CHECK_SERVER, or NS_CERT_CHECK_CLIENT */
+     unsigned remote_cert_ku[MAX_PARMS];
+     const char *remote_cert_eku;
+-    uint8_t *verify_hash;
++    struct verify_hash_list *verify_hash;
      hash_algo_type verify_hash_algo;
-     int verify_hash_depth;
-+    bool verify_hash_no_ca;
      unsigned int ssl_flags; /* set to SSLF_x flags from ssl.h */
  
- #ifdef ENABLE_PKCS11
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 893e5753..b6bbcc09 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -682,7 +682,7 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx)
-     }
- #endif
- 
--    if (options->ca_file || options->ca_path)
-+    if ((!options->verify_hash_no_ca && options->ca_file) || options->ca_path)
-     {
-         tls_ctx_load_ca(new_ctx, options->ca_file, options->ca_file_inline,
-                         options->ca_path, options->tls_server);
 diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 2b1b87fb..4e1ff6c8 100644
+index 2e3c98db..f6aaae98 100644
 --- a/src/openvpn/ssl_common.h
 +++ b/src/openvpn/ssl_common.h
-@@ -285,6 +285,7 @@ struct tls_options
+@@ -283,7 +283,7 @@ struct tls_options
+     int ns_cert_type;
+     unsigned remote_cert_ku[MAX_PARMS];
      const char *remote_cert_eku;
-     struct verify_hash_list *verify_hash;
-     int verify_hash_depth;
-+    bool verify_hash_no_ca;
+-    uint8_t *verify_hash;
++    struct verify_hash_list *verify_hash;
      hash_algo_type verify_hash_algo;
  #ifdef ENABLE_X509ALTUSERNAME
      char *x509_username_field[MAX_PARMS];
-diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c
-index 93891038..1ed1e0e2 100644
---- a/src/openvpn/ssl_verify_mbedtls.c
-+++ b/src/openvpn/ssl_verify_mbedtls.c
-@@ -62,6 +62,23 @@ verify_callback(void *session_obj, mbedtls_x509_crt *cert, int cert_depth,
-     struct buffer cert_fingerprint = x509_get_sha256_fingerprint(cert, &gc);
-     cert_hash_remember(session, cert_depth, &cert_fingerprint);
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 4b120f7b..001ca82b 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -748,9 +748,22 @@ verify_cert(struct tls_session *session, openvpn_x509_cert_t *cert, int cert_dep
+                 goto cleanup;
+         }
  
+-        if (memcmp(BPTR(&ca_hash), opt->verify_hash, BLEN(&ca_hash)))
++        struct verify_hash_list *current_hash = opt->verify_hash;
 +
-+    if (session->opt->verify_hash_no_ca)
-+    {
-+        /*
-+         * If we decide to verify the peer certificate based on the fingerprint
-+         * we ignore wrong dates and the certificate not being trusted.
-+         * Any other problem with the certificate (wrong key, bad cert,...)
-+         * will still trigger an error.
-+         * Clearing these flags relies on verify_cert will later rejecting a
-+         * certificate that has no matching fingerprint.
-+         */
-+        uint32_t flags_ignore = MBEDTLS_X509_BADCERT_NOT_TRUSTED
-+                                | MBEDTLS_X509_BADCERT_EXPIRED
-+                                | MBEDTLS_X509_BADCERT_FUTURE;
-+        *flags = *flags & ~flags_ignore;
-+    }
++        while (current_hash)
++        {
++            if (memcmp_constant_time(BPTR(&ca_hash), current_hash->hash,
++                                     BLEN(&ca_hash)) == 0)
++            {
++                hash_matched = true;
++                break;
++            }
++            current_hash = current_hash->next;
++        }
 +
-     /* did peer present cert which was signed by our root cert? */
-     if (*flags != 0)
-     {
-diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
-index d063aeda..8b1f1969 100644
---- a/src/openvpn/ssl_verify_openssl.c
-+++ b/src/openvpn/ssl_verify_openssl.c
-@@ -67,7 +67,7 @@ verify_callback(int preverify_ok, X509_STORE_CTX *ctx)
-     cert_hash_remember(session, X509_STORE_CTX_get_error_depth(ctx), &cert_hash);
- 
-     /* did peer present cert which was signed by our root cert? */
--    if (!preverify_ok)
-+    if (!preverify_ok && !session->opt->verify_hash_no_ca)
-     {
-         /* get the X509 name */
-         char *subject = x509_get_subject(current_cert, &gc);
++        if (!current_hash)
+         {
+-            msg(D_TLS_ERRORS, "TLS Error: level-1 certificate hash verification failed");
++            msg(D_TLS_ERRORS, "TLS Error: --tls-verify certificate hash verification failed");
+             goto cleanup;
+         }
+     }
 -- 
 2.30.1
 
