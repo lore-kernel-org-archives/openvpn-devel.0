@@ -1,16 +1,8 @@
-Date: Fri, 19 Mar 2021 13:38:57 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20210319123857.GQ976@...1296...>
-References: <20200417074345.5694-1-arne@...1227...>
- <202103181322.12IDMvI3012442@...2054...>
- <eface64b-c9a3-5f7a-3405-ab4725f80a2f@...2525...>
+From: Juliusz Sosinowicz <juliusz@...2525...>
+Date: Fri, 19 Mar 2021 14:43:22 +0100
+Message-Id: <20210319134322.131905-1-juliusz@...2525...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="LryxlKhqs688OhYk"
-Content-Disposition: inline
-In-Reply-To: <eface64b-c9a3-5f7a-3405-ab4725f80a2f@...2525...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Add README.wolfssl
- documentating the state of WolfSSL in OpenVPN
+Subject: [Openvpn-devel] [PATCH] README.wolfssl Update
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,53 +11,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Juliusz Sosinowicz <juliusz@...2525...>
-Cc: Gert Doering <gert@...1296...>, Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---LryxlKhqs688OhYk
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Updates for the wolfSSL README file:
+- fix typos
+- correct wolfSSL company spelling
+- add a point of contact for users having problems using OpenVPN + wolfSSL
 
-Hi,
+Signed-off-by: Juliusz Sosinowicz <juliusz@...2525...>
+---
+ README.wolfssl | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-On Fri, Mar 19, 2021 at 01:36:13PM +0100, Juliusz Sosinowicz wrote:
-> Could we get something like
-> "For issues with using OpenVPN with wolfSSL, please contact=20
-> support@...2603..."
-> in the README.wolfssl? This would help streamline comms for users and=20
-> improve user experience. I can prepare a patch with this change. Thanks.
+diff --git a/README.wolfssl b/README.wolfssl
+index d417807b..a5dfe31f 100644
+--- a/README.wolfssl
++++ b/README.wolfssl
+@@ -1,10 +1,11 @@
+-Support for WolfSSL is implemented and maintained by WolfSSL Inc. The support is
+-implemented using WolfSSL's compatiblity layer. The WolfSSL support in OpenVPN
++Support for wolfSSL is implemented and maintained by wolfSSL Inc. The support is
++implemented using wolfSSL's compatibility layer. The wolfSSL support in OpenVPN
+ receives very limited testing/support from the OpenVPN community itself.
+ 
+-If bugs in OpenVPN when using WolfSSL are encountered, the user should try to
+-also compile OpenVPN with OpenSSL to determinate if these are bugs in the
+-WolfSSL TLS implemenation or OpenVPN itself.
++If bugs in OpenVPN when using wolfSSL are encountered, the user should try to
++also compile OpenVPN with OpenSSL to determine if these are bugs in the
++wolfSSL TLS implementation or OpenVPN itself. If bugs are caused by compiling
++with wolfSSL, please contact support@...2525... directly.
+ 
+ To Build and Install,
+ 
+@@ -21,7 +22,7 @@ make
+ make install
+ 
+ *************************************************************************
+-Due to limitations in the wolfSSL TLS library or its compability layer, the
++Due to limitations in the wolfSSL TLS library or its compatibility layer, the
+ following features are missing
+ 
+  * blowfish support (BF-CBC), you must use something like
+-- 
+2.25.1
 
-Sure.  Change the wording any way that makes more sense for you - this
-is/was just a first draft.
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---LryxlKhqs688OhYk
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGbBAEBAgAGBQJgVJtgAAoJEB2Cnv7KVigSHQQL9ihueN9J6kTF2YGqWMgp6DgX
-QiFuxb277kti3mrNtJ1SIcIjBSqNInnvanGB55/u2wP8k9eCIs7rBaZ44SYKS+50
-+vNrTK6Md0VcvvfJRjapA11+LXAml1WqSt1i9U9CUIlQNyMOjrtccaV8x58Jtx5A
-6cVm14ryAt8vX9eN6yH54E/aFagqAB6GnTXC7Mf4E5vQB2imxa/EH+8U3g/uPf2Q
-2WHwXid9pfsEafE86c+hv/SMKe7vMG9DnPo/E514HL3Q/gYlzAVauP6X3RWrbDQ3
-m3/5eushssu2Ux5oqh1Xktu9+5cWanAhok1oSCi91yMuN3HxvwjS9xYDEfljczrC
-ZaisfXaHO/jTXSoMPc8uEF67js70YfHNP3xZsvlwPBinYbm1FhJMzuJPMMTadWzA
-DfaQGVyhJecoQUkJ+GrkVfhnZW8SQO+aiLiJ6QtwM74xOvz4oG8v3rjlDuFVJtPx
-+KOJ7IgCpsNrfkMjKY/9gR7OEioFv15f56O6q+N6
-=GRxf
------END PGP SIGNATURE-----
-
---LryxlKhqs688OhYk--
 
