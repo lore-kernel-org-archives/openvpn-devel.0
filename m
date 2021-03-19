@@ -1,8 +1,8 @@
-From: Juliusz Sosinowicz <juliusz@...2525...>
-Date: Fri, 19 Mar 2021 14:43:22 +0100
-Message-Id: <20210319134322.131905-1-juliusz@...2525...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] README.wolfssl Update
+From: Lev Stipakov <lstipakov@...277...>
+Date: Fri, 19 Mar 2021 04:33:17 +0200
+Message-Id: <20210319023317.15050-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] Remove compat-lz4 references from VS
+ project files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,48 +14,52 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Updates for the wolfSSL README file:
-- fix typos
-- correct wolfSSL company spelling
-- add a point of contact for users having problems using OpenVPN + wolfSSL
+From: Lev Stipakov <lev@...515...>
 
-Signed-off-by: Juliusz Sosinowicz <juliusz@...2525...>
+Commit 24596b25 ("build: Remove compat-lz4") removed lz4 compat layer,
+but didn't remove references from VS project files.
+
+Signed-off-by: Lev Stipakov <lev@...515...>
 ---
- README.wolfssl | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ src/compat/compat.vcxproj         | 3 +--
+ src/compat/compat.vcxproj.filters | 2 +-
+ 2 files changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/README.wolfssl b/README.wolfssl
-index d417807b..a5dfe31f 100644
---- a/README.wolfssl
-+++ b/README.wolfssl
-@@ -1,10 +1,11 @@
--Support for WolfSSL is implemented and maintained by WolfSSL Inc. The support is
--implemented using WolfSSL's compatiblity layer. The WolfSSL support in OpenVPN
-+Support for wolfSSL is implemented and maintained by wolfSSL Inc. The support is
-+implemented using wolfSSL's compatibility layer. The wolfSSL support in OpenVPN
- receives very limited testing/support from the OpenVPN community itself.
- 
--If bugs in OpenVPN when using WolfSSL are encountered, the user should try to
--also compile OpenVPN with OpenSSL to determinate if these are bugs in the
--WolfSSL TLS implemenation or OpenVPN itself.
-+If bugs in OpenVPN when using wolfSSL are encountered, the user should try to
-+also compile OpenVPN with OpenSSL to determine if these are bugs in the
-+wolfSSL TLS implementation or OpenVPN itself. If bugs are caused by compiling
-+with wolfSSL, please contact support@...2525... directly.
- 
- To Build and Install,
- 
-@@ -21,7 +22,7 @@ make
- make install
- 
- *************************************************************************
--Due to limitations in the wolfSSL TLS library or its compability layer, the
-+Due to limitations in the wolfSSL TLS library or its compatibility layer, the
- following features are missing
- 
-  * blowfish support (BF-CBC), you must use something like
+diff --git a/src/compat/compat.vcxproj b/src/compat/compat.vcxproj
+index 0c4c7b0f..23e9b9c0 100644
+--- a/src/compat/compat.vcxproj
++++ b/src/compat/compat.vcxproj
+@@ -101,7 +101,6 @@
+     <ClCompile Include="compat-inet_ntop.c" />
+     <ClCompile Include="compat-inet_pton.c" />
+     <ClCompile Include="compat-daemon.c" />
+-    <ClCompile Include="compat-lz4.c" />
+     <ClCompile Include="compat-strsep.c" />
+   </ItemGroup>
+   <ItemGroup>
+@@ -116,4 +115,4 @@
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+   <ImportGroup Label="ExtensionTargets">
+   </ImportGroup>
+-</Project>
++</Project>
+\ No newline at end of file
+diff --git a/src/compat/compat.vcxproj.filters b/src/compat/compat.vcxproj.filters
+index 0f78e86e..404863ca 100644
+--- a/src/compat/compat.vcxproj.filters
++++ b/src/compat/compat.vcxproj.filters
+@@ -33,7 +33,7 @@
+     <ClCompile Include="compat-daemon.c">
+       <Filter>Source Files</Filter>
+     </ClCompile>
+-    <ClCompile Include="compat-lz4.c">
++    <ClCompile Include="compat-strsep.c">
+       <Filter>Source Files</Filter>
+     </ClCompile>
+   </ItemGroup>
 -- 
-2.25.1
+2.17.1
 
 
