@@ -1,11 +1,14 @@
+Date: Fri, 19 Mar 2021 13:38:57 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20210319123857.GQ976@...1296...>
 References: <20200417074345.5694-1-arne@...1227...>
  <202103181322.12IDMvI3012442@...2054...>
-From: Juliusz Sosinowicz <juliusz@...2525...>
-Message-ID: <eface64b-c9a3-5f7a-3405-ab4725f80a2f@...2525...>
-Date: Fri, 19 Mar 2021 13:36:13 +0100
+ <eface64b-c9a3-5f7a-3405-ab4725f80a2f@...2525...>
 MIME-Version: 1.0
-In-Reply-To: <202103181322.12IDMvI3012442@...2054...>
-Content-Language: en-US
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="LryxlKhqs688OhYk"
+Content-Disposition: inline
+In-Reply-To: <eface64b-c9a3-5f7a-3405-ab4725f80a2f@...2525...>
 Subject: Re: [Openvpn-devel] [PATCH applied] Re: Add README.wolfssl
  documentating the state of WolfSSL in OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,49 +19,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>, Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Juliusz Sosinowicz <juliusz@...2525...>
+Cc: Gert Doering <gert@...1296...>, Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-Could we get something like
-"For issues with using OpenVPN with wolfSSL, please contact 
-support@...2603..."
-in the README.wolfssl? This would help streamline comms for users and 
-improve user experience. I can prepare a patch with this change. Thanks.
+--LryxlKhqs688OhYk
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Sincerely
-Juliusz
+Hi,
 
-On 18/03/2021 14:22, Gert Doering wrote:
-> Acked-by: Gert Doering <gert@...1296...>
->
-> Your patch has been applied to the master branch.
->
-> (This is a fairly old patch which has been sitting in my queue, waiting
-> for the WolfSSL patch to be merged)
->
-> commit f38819b7e42ea99f6ae218be6e6345c397c1af4c
-> Author: Arne Schwabe
-> Date:   Fri Apr 17 09:43:45 2020 +0200
->
->       Add README.wolfssl documentating the state of WolfSSL in OpenVPN
->
->       Acked-by: Gert Doering <gert@...1296...>
->       Message-Id: <20200417074345.5694-1-arne@...1227...>
->       URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19758.html
->       Signed-off-by: Gert Doering <gert@...1296...>
->
->
-> --
-> kind regards,
->
-> Gert Doering
->
->
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+On Fri, Mar 19, 2021 at 01:36:13PM +0100, Juliusz Sosinowicz wrote:
+> Could we get something like
+> "For issues with using OpenVPN with wolfSSL, please contact=20
+> support@...2603..."
+> in the README.wolfssl? This would help streamline comms for users and=20
+> improve user experience. I can prepare a patch with this change. Thanks.
+
+Sure.  Change the wording any way that makes more sense for you - this
+is/was just a first draft.
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--LryxlKhqs688OhYk
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGbBAEBAgAGBQJgVJtgAAoJEB2Cnv7KVigSHQQL9ihueN9J6kTF2YGqWMgp6DgX
+QiFuxb277kti3mrNtJ1SIcIjBSqNInnvanGB55/u2wP8k9eCIs7rBaZ44SYKS+50
++vNrTK6Md0VcvvfJRjapA11+LXAml1WqSt1i9U9CUIlQNyMOjrtccaV8x58Jtx5A
+6cVm14ryAt8vX9eN6yH54E/aFagqAB6GnTXC7Mf4E5vQB2imxa/EH+8U3g/uPf2Q
+2WHwXid9pfsEafE86c+hv/SMKe7vMG9DnPo/E514HL3Q/gYlzAVauP6X3RWrbDQ3
+m3/5eushssu2Ux5oqh1Xktu9+5cWanAhok1oSCi91yMuN3HxvwjS9xYDEfljczrC
+ZaisfXaHO/jTXSoMPc8uEF67js70YfHNP3xZsvlwPBinYbm1FhJMzuJPMMTadWzA
+DfaQGVyhJecoQUkJ+GrkVfhnZW8SQO+aiLiJ6QtwM74xOvz4oG8v3rjlDuFVJtPx
++KOJ7IgCpsNrfkMjKY/9gR7OEioFv15f56O6q+N6
+=GRxf
+-----END PGP SIGNATURE-----
+
+--LryxlKhqs688OhYk--
 
