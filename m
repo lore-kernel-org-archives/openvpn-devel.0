@@ -1,12 +1,8 @@
-From: Maximilian Fillinger <maximilian.fillinger@...1435...>
-Date: Fri, 19 Mar 2021 17:57:47 +0000
-Message-ID: <AM0PR04MB5331CE6158E96B9859C5B478B1689@...2601...>
-References: <AM0PR04MB53311DBD4346F75A380F7198B1689@...2601...>
- <20210319173004.GU976@...1296...>
-In-Reply-To: <20210319173004.GU976@...1296...>
-Content-Language: en-US
+From: Max Fillinger <max@...2606...>
+Date: Fri, 19 Mar 2021 22:54:48 +0100
+Message-Id: <20210319215448.38350-1-max@...2606...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [Patch] Wipe Socks5 credentials after use
+Subject: [Openvpn-devel] [PATCH] Wipe Socks5 credentials after use
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,47 +11,105 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Sorry about that! I'll send it again from my personal account later.
+Plaintext authentication is not exactly high security, but we might as
+well memzero the credentials before leaving the function.
+---
+ src/openvpn/socks.c | 23 ++++++++++++++---------
+ 1 file changed, 14 insertions(+), 9 deletions(-)
 
------Original Message-----
-From: Gert Doering [mailto:gert@...1296...]=20
-Sent: vrijdag 19 maart 2021 18:30
-To: Maximilian Fillinger <maximilian.fillinger@...1435...>
-Cc: openvpn-devel@lists.sourceforge.net
-Subject: Re: [Openvpn-devel] [Patch] Wipe Socks5 credentials after use
+diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c
+index 36df7470..add7a6d4 100644
+--- a/src/openvpn/socks.c
++++ b/src/openvpn/socks.c
+@@ -104,12 +104,13 @@ socks_username_password_auth(struct socks_proxy_info *p,
+     const int timeout_sec = 5;
+     struct user_pass creds;
+     ssize_t size;
++    bool ret = false;
+ 
+     creds.defined = 0;
+     if (!get_user_pass(&creds, p->authfile, UP_TYPE_SOCKS, GET_USER_PASS_MANAGEMENT))
+     {
+         msg(M_NONFATAL, "SOCKS failed to get username/password.");
+-        return false;
++        goto cleanup;
+     }
+ 
+     if ( (strlen(creds.username) > 255) || (strlen(creds.password) > 255) )
+@@ -117,7 +118,7 @@ socks_username_password_auth(struct socks_proxy_info *p,
+         msg(M_NONFATAL,
+             "SOCKS username and/or password exceeds 255 characters.  "
+             "Authentication not possible.");
+-        return false;
++        goto cleanup;
+     }
+     openvpn_snprintf(to_send, sizeof(to_send), "\x01%c%s%c%s", (int) strlen(creds.username),
+                      creds.username, (int) strlen(creds.password), creds.password);
+@@ -126,7 +127,7 @@ socks_username_password_auth(struct socks_proxy_info *p,
+     if (size != strlen(to_send))
+     {
+         msg(D_LINK_ERRORS | M_ERRNO, "socks_username_password_auth: TCP port write failed on send()");
+-        return false;
++        goto cleanup;
+     }
+ 
+     while (len < 2)
+@@ -147,21 +148,21 @@ socks_username_password_auth(struct socks_proxy_info *p,
+         get_signal(signal_received);
+         if (*signal_received)
+         {
+-            return false;
++            goto cleanup;
+         }
+ 
+         /* timeout? */
+         if (status == 0)
+         {
+             msg(D_LINK_ERRORS | M_ERRNO, "socks_username_password_auth: TCP port read timeout expired");
+-            return false;
++            goto cleanup;
+         }
+ 
+         /* error */
+         if (status < 0)
+         {
+             msg(D_LINK_ERRORS | M_ERRNO, "socks_username_password_auth: TCP port read failed on select()");
+-            return false;
++            goto cleanup;
+         }
+ 
+         /* read single char */
+@@ -171,7 +172,7 @@ socks_username_password_auth(struct socks_proxy_info *p,
+         if (size != 1)
+         {
+             msg(D_LINK_ERRORS | M_ERRNO, "socks_username_password_auth: TCP port read failed on recv()");
+-            return false;
++            goto cleanup;
+         }
+ 
+         /* store char in buffer */
+@@ -182,10 +183,14 @@ socks_username_password_auth(struct socks_proxy_info *p,
+     if (buf[0] != 5 && buf[1] != 0)
+     {
+         msg(D_LINK_ERRORS, "socks_username_password_auth: server refused the authentication");
+-        return false;
++        goto cleanup;
+     }
+ 
+-    return true;
++    ret = true;
++cleanup:
++    secure_memzero(&creds, sizeof(creds));
++    secure_memzero(to_send, sizeof(to_send));
++    return ret;
+ }
+ 
+ static bool
+-- 
+2.29.2
 
-Hi,
-
-On Fri, Mar 19, 2021 at 04:45:18PM +0000, Maximilian Fillinger via Openvpn-=
-devel wrote:
-[..]
-
-The patch itself is OK (I think), but actually applying it will mess up the
-Author: information in git, because you are sending from a domain that has =
-DMARC p=3Dreject.  So mailman is massacring your From: line into this
-
-From: Maximilian Fillinger via Openvpn-devel <openvpn-devel@...1768...=
-ge.net>=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
-=20=20=20=20=20=20=20=20=20=20=20=20=20
-
-... and this is what will be the Author of the commit.
-
-Can you send this from an account that is not set up to intentionally harm =
-mailing lists?
-
-gert
-
---
-"If was one thing all people took for granted, was conviction that if you  =
-feed honest figures into a computer, honest figures come out. Never doubted=
-  it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
 
