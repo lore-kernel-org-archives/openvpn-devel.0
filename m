@@ -1,13 +1,8 @@
-References: <20200908154157.13809-1-arne@...1227...>
- <20200908154157.13809-3-arne@...1227...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <2ae19d61-f85c-05c3-eddb-5f06ea754c58@...2181...>
-Date: Fri, 19 Mar 2021 12:02:37 +0100
-MIME-Version: 1.0
-In-Reply-To: <20200908154157.13809-3-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH 2/4] Implement peer-fingerprint to check
- fingerprint of peer certificate
+From: Arne Schwabe <arne@...1227...>
+Date: Fri, 19 Mar 2021 12:46:31 +0100
+Message-Id: <20210319114631.20459-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Fix multiple problems when compiling with
+ LLVM/Windows (clang-cl)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,293 +11,279 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+When using the LLVM clang compiler instead the MSVC cl.exe but with
+the same build environment as MSVC, clang encounters a few errors:
 
-This patch currently only applies with "git am -3"
+src\openvpn\socket.c(3550,23): warning: assigning to 'CHAR *' (aka 'char *') from 'uint8_t *' (aka 'unsigned char *') converts between pointers to integer types with different sign [-Wpointer-sign]
+        wsabuf[0].buf = BPTR(&sock->reads.buf);
+                      ^ ~~~~~~~~~~~~~~~~~~~~~~
+src\openvpn\socket.c(3670,23): warning: assigning to 'CHAR *' (aka 'char *') from 'uint8_t *' (aka 'unsigned char *') converts between pointers to integer types with different sign [-Wpointer-sign]
+        wsabuf[0].buf = BPTR(&sock->writes.buf);
+                      ^ ~~~~~~~~~~~~~~~~~~~~~~~
 
-We currently have "verify-hash" that accepts fingerprints as argument.
-For consistency I would suggest to either:
-1) rename this option to peer-hash; or
-2) add an alias for "verify-hash" named "verify-fingerprint", so that we
-can then get rid of the former at some point.
+Use BSTR instead of BPTR, which casts to the correct type that is
+expected.
 
-I am more incline to option 2.
+src\compat\compat-gettimeofday.c(105,18): error: assignment to cast is illegal, lvalue casts are not supported
+    tv->tv_sec = (long)last_sec = (long)sec;
 
-On 08/09/2020 17:41, Arne Schwabe wrote:
-> This options allows to pin a certificate or a number of certificate.
+Split into two assignments to avoid the illegal cast
 
-How about:
+include\stdint.h(18,28): error: typedef redefinition with different types ('signed char' vs 'char')
+typedef signed char        int8_t;
+                           ^
+openvpn\config-msvc.h(162,16): note: previous definition is here
+typedef __int8 int8_t;
 
-"This option allows to pin one more more peer certificates"
+Removes our custom int type typdefs from config-msvc.h and replace it
+with an include of inttypes.h.
 
-> It also prepares for doing TLS authentication without a CA and just
-> self-signed certificates.
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  Changes.rst                       |  7 ++++++
->  doc/man-sections/inline-files.rst |  4 ++--
->  doc/man-sections/tls-options.rst  | 22 ++++++++++++++++-
->  src/openvpn/init.c                |  1 +
->  src/openvpn/options.c             | 40 ++++++++++++++++++++++---------
->  src/openvpn/options.h             |  1 +
->  src/openvpn/ssl_common.h          |  1 +
->  src/openvpn/ssl_verify.c          | 19 ++++++++-------
->  8 files changed, 73 insertions(+), 22 deletions(-)
-> 
-> diff --git a/Changes.rst b/Changes.rst
-> index f67e1d76..6007412c 100644
-> --- a/Changes.rst
-> +++ b/Changes.rst
-> @@ -1,5 +1,12 @@
->  Overview of changes in 2.5
->  ==========================
-> +New features in 2.5.1
-> +---------------------
-> +Certificate pinning/verify peer fingerprint
-> +    The ``--peer-fingerprint`` option has been introduced to give users a
-> +    easy to use alternative to the ``tls-verify`` for matching the
-> +    fingerprint of the peer. The option has use a number of
-> +    SHA256 fingerprints.
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\shared\tcpmib.h(56,3): error: typedef redefinition with different types ('enum MIB_TCP_STATE' vs 'int')
+} MIB_TCP_STATE;
+  ^
+C:\Users\User\source\repos\openvpn\src\openvpn/syshead.h(369,13): note: previous definition is here
+typedef int MIB_TCP_STATE;
+            ^
+1 error generated.
 
-"has use" ? maybe "can list" ?
+This seems to be for mingw32 only, so guard this with a mingw32
+compiler guard.
 
->  
->  New features
->  ------------
-> diff --git a/doc/man-sections/inline-files.rst b/doc/man-sections/inline-files.rst
-> index 303bb3c8..01e4a840 100644
-> --- a/doc/man-sections/inline-files.rst
-> +++ b/doc/man-sections/inline-files.rst
-> @@ -4,8 +4,8 @@ INLINE FILE SUPPORT
->  OpenVPN allows including files in the main configuration for the ``--ca``,
->  ``--cert``, ``--dh``, ``--extra-certs``, ``--key``, ``--pkcs12``,
->  ``--secret``, ``--crl-verify``, ``--http-proxy-user-pass``, ``--tls-auth``,
-> -``--auth-gen-token-secret``, ``--tls-crypt``, ``--tls-crypt-v2`` and
-> -``--verify-hash`` options.
-> +``--auth-gen-token-secret``, ``--peer-fingerprint``, ``--tls-crypt``,
-> +``--tls-crypt-v2`` and ``--verify-hash`` options.
->  
->  Each inline file started by the line ``<option>`` and ended by the line
->  ``</option>``
-> diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
-> index 52d4137e..658300b8 100644
-> --- a/doc/man-sections/tls-options.rst
-> +++ b/doc/man-sections/tls-options.rst
-> @@ -268,7 +268,8 @@ certificates and keys: https://github.com/OpenVPN/easy-rsa
->    man-in-the-middle attack where an authorized client attempts to connect
->    to another client by impersonating the server. The attack is easily
->    prevented by having clients verify the server certificate using any one
-> -  of ``--remote-cert-tls``, ``--verify-x509-name``, or ``--tls-verify``.
-> +  of ``--remote-cert-tls``, ``--verify-x509-name``, ``--peer-fingerprint``
-> +  or ``--tls-verify``.
->  
->  --tls-auth args
->    Add an additional layer of HMAC authentication on top of the TLS control
-> @@ -589,6 +590,25 @@ certificates and keys: https://github.com/OpenVPN/easy-rsa
->  
->  If the option is inlined, ``algo`` is always :code:`SHA256`.
->  
-> +--peer-fingerprint args
-> +   Specify a SHA256 fingerprint or list of SHA256 fingerprints to verify
-> +   the peer certificate against. The peer certificate must match one of the
-> +   fingerprint or certificate verification will fail. The option can also
-> +   be inlined
-> +
-> +  Valid syntax:
-> +  ::
-> +
-> +    peer-fingerprint AD:B0:95:D8:09:...
-> +
-> +  or inline:
-> +  ::
-> +
-> +    <peer-fingerprint>
-> +    00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff:00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff
-> +    11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff:00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff:00
-> +    </peer-fingerprint>
-> +
->  --verify-x509-name args
->    Accept connections only if a host's X.509 name is equal to **name.** The
->    remote host must also pass all other tests of verification.
-> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index a785934a..0c2b823e 100644
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -2909,6 +2909,7 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
->      to.remote_cert_eku = options->remote_cert_eku;
->      to.verify_hash = options->verify_hash;
->      to.verify_hash_algo = options->verify_hash_algo;
-> +    to.verify_hash_depth = options->verify_hash_depth;
->  #ifdef ENABLE_X509ALTUSERNAME
->      to.x509_username_field = (char *) options->x509_username_field;
->  #else
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index 068f3e75..df9eef07 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -8192,26 +8192,44 @@ add_option(struct options *options,
->          options->extra_certs_file = p[1];
->          options->extra_certs_file_inline = is_inline;
->      }
-> -    else if (streq(p[0], "verify-hash") && p[1] && !p[3])
-> +    else if ((streq(p[0], "verify-hash") && p[1] && !p[3])
-> +             || (streq(p[0], "peer-fingerprint") && p[1] && !p[2]))
->      {
->          VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_INLINE);
-> +
-> +        options->verify_hash_depth = 0;
->          options->verify_hash_algo = MD_SHA256;
->  
->          int digest_len = SHA256_DIGEST_LENGTH;
->  
-> -        if (!p[2] || (p[2] && streq(p[2], "SHA1")))
-> +        if (options->verify_hash)
->          {
-> -            options->verify_hash_algo = MD_SHA1;
-> -            msg(M_WARN, "DEPRECATED FEATURE: Usage of SHA1 fingerprints for "
-> -                "verify-hash is deprecated. You should switch to the "
-> -                "SHA256.");
-> -            options->verify_hash_algo = MD_SHA1;
-> -            digest_len = SHA_DIGEST_LENGTH;
-> +            msg(msglevel, "ERROR: Setting %s not allowed. Option to verify "
-> +                "fingerprint of certificate of peer certificate "
-> +                "(--verify-hash or --peer-fingerprint) already set.",
-> +                p[0]);
-> +            goto err;
+\src\openvpn\tun.c(3727,34): warning: passing 'char [256]' to parameter of type 'LPBYTE' (aka 'unsigned char *') converts between pointers to integer types with different sign [-Wpointer-sign]
+                                 net_cfg_instance_id,
+                                 ^~~~~~~~~~~~~~~~~~~
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\winreg.h(955,88): note: passing argument to parameter 'lpData' here
 
-This will error out also when listing peer-fingerprint (or verify-hash)
-twice.
-It would be the first option in openvpn to behave this way. Do we really
-want that?
-It may be better to have some flag and complain when the two options are
-used together.
+This is windows specific code, use the Windows LPBTYE in the
+definitions. (long pointer to BYTE (long pointer as far/near pointer
+relict from windows 16 bit times, in moddern words (unsigned char *))
 
+Fix also a few other char vs uint8/unisgned char/BYTE issues in tun.c
 
-In any case, why not allowing to use these two options together?
-If the peer cert is not self-signed, we could still be willing to check
-the CA *and* also filter which peer-certificate we accept.
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ config-msvc.h                    |  9 +--------
+ src/compat/compat-gettimeofday.c |  3 ++-
+ src/openvpn/socket.c             |  4 ++--
+ src/openvpn/syshead.h            |  4 ++--
+ src/openvpn/tun.c                | 28 ++++++++++++++--------------
+ src/openvpn/tun.h                |  2 +-
+ 6 files changed, 22 insertions(+), 28 deletions(-)
 
-
->          }
-> -        else if (p[2] && !streq(p[2], "SHA256"))
-> +
-> +        if (streq(p[0], "verify-hash"))
->          {
-> -            msg(msglevel, "invalid or unsupported hashing algorithm: %s  (only SHA1 and SHA256 are valid)", p[2]);
-> -            goto err;
-> +            /* verify level 1 cert, i.e. the CA that signed the leaf cert */
-> +            options->verify_hash_depth = 1;
-> +
-> +            if (!p[2] || (p[2] && streq(p[2], "SHA1")))
-
-(this may need rebasing on top of a - possibly - modified patch 1.)
-
-> +            {
-> +                options->verify_hash_algo = MD_SHA1;
-> +                msg(M_WARN, "DEPRECATED FEATURE: Usage of SHA1 fingerprints for "
-> +                    "verify-hash is deprecated. You should switch to the "
-> +                    "SHA256.");
-> +                options->verify_hash_algo = SHA_DIGEST_LENGTH;
-> +                digest_len = SHA_DIGEST_LENGTH;
-> +            }
-> +            else if (p[2] && !streq(p[2], "SHA256"))
-> +            {
-> +                msg(msglevel, "invalid or unsupported hashing algorithm: %s  (only SHA1 and SHA256 are valid)", p[2]);
-> +                goto err;
-> +            }
->          }
->  
->          if (is_inline)
-> diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-> index c0dbbd8a..eee6bd21 100644
-> --- a/src/openvpn/options.h
-> +++ b/src/openvpn/options.h
-> @@ -564,6 +564,7 @@ struct options
->      const char *remote_cert_eku;
->      struct verify_hash_list *verify_hash;
->      hash_algo_type verify_hash_algo;
-> +    int verify_hash_depth;
->      unsigned int ssl_flags; /* set to SSLF_x flags from ssl.h */
->  
->  #ifdef ENABLE_PKCS11
-> diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-> index 7ccfc0f8..3a07c3d3 100644
-> --- a/src/openvpn/ssl_common.h
-> +++ b/src/openvpn/ssl_common.h
-> @@ -283,6 +283,7 @@ struct tls_options
->      unsigned remote_cert_ku[MAX_PARMS];
->      const char *remote_cert_eku;
->      struct verify_hash_list *verify_hash;
-> +    int verify_hash_depth;
->      hash_algo_type verify_hash_algo;
->      char *x509_username_field;
->  
-> diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-> index 73d14e01..ac5e6271 100644
-> --- a/src/openvpn/ssl_verify.c
-> +++ b/src/openvpn/ssl_verify.c
-> @@ -693,19 +693,18 @@ verify_cert(struct tls_session *session, openvpn_x509_cert_t *cert, int cert_dep
->          goto cleanup;                   /* Reject connection */
->      }
->  
-> -    /* verify level 1 cert, i.e. the CA that signed our leaf cert */
-> -    if (cert_depth == 1 && opt->verify_hash)
-> +    if (cert_depth == opt->verify_hash_depth && opt->verify_hash)
->      {
-> -        struct buffer ca_hash = {0};
-> +        struct buffer cert_fp = {0};
->  
->          switch (opt->verify_hash_algo)
->          {
->              case MD_SHA1:
-> -                ca_hash = x509_get_sha1_fingerprint(cert, &gc);
-> +                cert_fp = x509_get_sha1_fingerprint(cert, &gc);
->                  break;
->  
->              case MD_SHA256:
-> -                ca_hash = x509_get_sha256_fingerprint(cert, &gc);
-> +                cert_fp = x509_get_sha256_fingerprint(cert, &gc);
->                  break;
->  
->              default:
-> @@ -725,8 +724,8 @@ verify_cert(struct tls_session *session, openvpn_x509_cert_t *cert, int cert_dep
->  
->          while (current_hash)
->          {
-> -            if (memcmp_constant_time(BPTR(&ca_hash), current_hash->hash,
-> -                                     BLEN(&ca_hash)) == 0)
-> +            if (memcmp_constant_time(BPTR(&cert_fp), current_hash->hash,
-> +                                     BLEN(&cert_fp)) == 0)
->              {
->                  hash_matched = true;
->              }
-> @@ -735,7 +734,11 @@ verify_cert(struct tls_session *session, openvpn_x509_cert_t *cert, int cert_dep
->  
->          if (!hash_matched)
->          {
-> -            msg(D_TLS_ERRORS, "TLS Error: --tls-verify certificate hash verification failed");
-> +            const char *hex_fp = format_hex_ex(BPTR(&cert_fp), BLEN(&cert_fp),
-> +                                               0, 1, ":", &gc);
-> +            msg(D_TLS_ERRORS, "TLS Error: --tls-verify/--peer-fingerprint"
-> +                "certificate hash verification failed. (got "
-> +                "fingerprint: %s", hex_fp);
->              goto cleanup;
->          }
->      }
-> 
-
-
-The rest look good. This change smartly relies on the generalization of
-the verify-hash code (patch 1).
-
-
-Cheers,
-
+diff --git a/config-msvc.h b/config-msvc.h
+index 40ad7889..e430ca96 100644
+--- a/config-msvc.h
++++ b/config-msvc.h
+@@ -152,14 +152,7 @@
+ #define SIGUSR2   12
+ #define SIGTERM   15
+ 
+-typedef unsigned __int64 uint64_t;
+-typedef unsigned __int32 uint32_t;
+-typedef unsigned __int16 uint16_t;
+-typedef unsigned __int8 uint8_t;
+-typedef __int64 int64_t;
+-typedef __int32 int32_t;
+-typedef __int16 int16_t;
+-typedef __int8 int8_t;
++#include <inttypes.h>
+ typedef uint16_t in_port_t;
+ 
+ #ifdef HAVE_CONFIG_MSVC_LOCAL_H
+diff --git a/src/compat/compat-gettimeofday.c b/src/compat/compat-gettimeofday.c
+index 7cae641d..117aee7d 100644
+--- a/src/compat/compat-gettimeofday.c
++++ b/src/compat/compat-gettimeofday.c
+@@ -102,7 +102,8 @@ gettimeofday(struct timeval *tv, void *tz)
+         bt = 1;
+     }
+ 
+-    tv->tv_sec = (long)last_sec = (long)sec;
++    last_sec = sec;
++    tv->tv_sec = (long)sec;
+     tv->tv_usec = (last_msec = msec) * 1000;
+ 
+     if (bt && !bt_last)
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 891f63b0..ebe8c85c 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -3547,7 +3547,7 @@ socket_recv_queue(struct link_socket *sock, int maxsize)
+         }
+ 
+         /* Win32 docs say it's okay to allocate the wsabuf on the stack */
+-        wsabuf[0].buf = BPTR(&sock->reads.buf);
++        wsabuf[0].buf = BSTR(&sock->reads.buf);
+         wsabuf[0].len = maxsize ? maxsize : BLEN(&sock->reads.buf);
+ 
+         /* check for buffer overflow */
+@@ -3648,7 +3648,7 @@ socket_send_queue(struct link_socket *sock, struct buffer *buf, const struct lin
+         ASSERT(buf_copy(&sock->writes.buf, buf));
+ 
+         /* Win32 docs say it's okay to allocate the wsabuf on the stack */
+-        wsabuf[0].buf = BPTR(&sock->writes.buf);
++        wsabuf[0].buf = BSTR(&sock->writes.buf);
+         wsabuf[0].len = BLEN(&sock->writes.buf);
+ 
+         /* the overlapped write will signal this event on I/O completion */
+diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
+index a20de1f6..5ee9bf1e 100644
+--- a/src/openvpn/syshead.h
++++ b/src/openvpn/syshead.h
+@@ -365,9 +365,9 @@
+ 
+ #ifdef _WIN32
+ /* Missing declarations for MinGW 32. */
+-/* #if !defined(__MINGW64_VERSION_MAJOR) || __MINGW64_VERSION_MAJOR < 2 */
++#if defined(__MINGW32__)
+ typedef int MIB_TCP_STATE;
+-/* #endif */
++#endif
+ #include <naptypes.h>
+ #include <ntddndis.h>
+ #include <iphlpapi.h>
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 1a523c7b..6c51a52d 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -3659,7 +3659,7 @@ get_device_instance_id_interface(struct gc_arena *gc)
+         BOOL res;
+         HKEY dev_key;
+         char net_cfg_instance_id_string[] = "NetCfgInstanceId";
+-        char net_cfg_instance_id[256];
++        BYTE net_cfg_instance_id[256];
+         char device_instance_id[256];
+         DWORD len;
+         DWORD data_type;
+@@ -3721,7 +3721,7 @@ get_device_instance_id_interface(struct gc_arena *gc)
+ 
+         dev_interface_list = alloc_buf_gc(dev_interface_list_size, gc);
+         cr = CM_Get_Device_Interface_List((LPGUID)&GUID_DEVINTERFACE_NET, device_instance_id,
+-                                          BPTR(&dev_interface_list),
++                                          BSTR(&dev_interface_list),
+                                           dev_interface_list_size,
+                                           CM_GET_DEVICE_INTERFACE_LIST_PRESENT);
+         if (cr != CR_SUCCESS)
+@@ -3731,7 +3731,7 @@ get_device_instance_id_interface(struct gc_arena *gc)
+ 
+         struct device_instance_id_interface *dev_if;
+         ALLOC_OBJ_CLEAR_GC(dev_if, struct device_instance_id_interface, gc);
+-        dev_if->net_cfg_instance_id = string_alloc(net_cfg_instance_id, gc);
++        dev_if->net_cfg_instance_id = (unsigned char *)string_alloc((char *)net_cfg_instance_id, gc);
+         dev_if->device_interface_list = string_alloc(BSTR(&dev_interface_list), gc);
+ 
+         /* link into return list */
+@@ -3784,7 +3784,7 @@ get_tap_reg(struct gc_arena *gc)
+         char component_id_string[] = "ComponentId";
+         char component_id[256];
+         char net_cfg_instance_id_string[] = "NetCfgInstanceId";
+-        char net_cfg_instance_id[256];
++        BYTE net_cfg_instance_id[256];
+         DWORD data_type;
+ 
+         len = sizeof(enum_name);
+@@ -3829,7 +3829,7 @@ get_tap_reg(struct gc_arena *gc)
+                 component_id_string,
+                 NULL,
+                 &data_type,
+-                component_id,
++                (LPBYTE)component_id,
+                 &len);
+ 
+             if (status != ERROR_SUCCESS || data_type != REG_SZ)
+@@ -3866,7 +3866,7 @@ get_tap_reg(struct gc_arena *gc)
+                     {
+                         struct tap_reg *reg;
+                         ALLOC_OBJ_CLEAR_GC(reg, struct tap_reg, gc);
+-                        reg->guid = string_alloc(net_cfg_instance_id, gc);
++                        reg->guid = string_alloc((char *)net_cfg_instance_id, gc);
+                         reg->windows_driver = windows_driver;
+ 
+                         /* link into return list */
+@@ -4225,7 +4225,7 @@ at_least_one_tap_win(const struct tap_reg *tap_reg)
+  */
+ static const char *
+ get_unspecified_device_guid(const int device_number,
+-                            char *actual_name,
++                            uint8_t *actual_name,
+                             int actual_name_size,
+                             const struct tap_reg *tap_reg_src,
+                             const struct panel_reg *panel_reg_src,
+@@ -4292,7 +4292,7 @@ get_unspecified_device_guid(const int device_number,
+  */
+ static const char *
+ get_device_guid(const char *name,
+-                char *actual_name,
++                uint8_t *actual_name,
+                 int actual_name_size,
+                 enum windows_driver_type *windows_driver,
+                 const struct tap_reg *tap_reg,
+@@ -5023,7 +5023,7 @@ tap_allow_nonadmin_access(const char *dev_node)
+     const struct panel_reg *panel_reg = get_panel_reg(&gc);
+     const char *device_guid = NULL;
+     HANDLE hand;
+-    char actual_buffer[256];
++    uint8_t actual_buffer[256];
+     char device_path[256];
+ 
+     at_least_one_tap_win(tap_reg);
+@@ -5673,9 +5673,9 @@ netsh_get_id(const char *dev_node, struct gc_arena *gc)
+     {
+         return "NULL";     /* not found */
+     }
+-    else if (strcmp(BPTR(&actual), "NULL"))
++    else if (strcmp(BSTR(&actual), "NULL"))
+     {
+-        return BPTR(&actual); /* control panel name */
++        return BSTR(&actual); /* control panel name */
+     }
+     else
+     {
+@@ -6462,7 +6462,7 @@ tun_try_open_device(struct tuntap *tt, const char *device_guid, const struct dev
+         /* Open Wintun adapter */
+         for (dev_if = device_instance_id_interface; dev_if != NULL; dev_if = dev_if->next)
+         {
+-            if (strcmp(dev_if->net_cfg_instance_id, device_guid) == 0)
++            if (strcmp((const char *)dev_if->net_cfg_instance_id, device_guid) == 0)
+             {
+                 path = dev_if->device_interface_list;
+                 break;
+@@ -6517,7 +6517,7 @@ tun_open_device(struct tuntap *tt, const char *dev_node, const char **device_gui
+     const struct tap_reg *tap_reg = get_tap_reg(gc);
+     const struct panel_reg *panel_reg = get_panel_reg(gc);
+     const struct device_instance_id_interface *device_instance_id_interface = get_device_instance_id_interface(gc);
+-    char actual_buffer[256];
++    uint8_t actual_buffer[256];
+ 
+     at_least_one_tap_win(tap_reg);
+ 
+@@ -6585,7 +6585,7 @@ next:
+ 
+     /* translate high-level device name into a device instance
+      * GUID using the registry */
+-    tt->actual_name = string_alloc(actual_buffer, NULL);
++    tt->actual_name = string_alloc((const char*)actual_buffer, NULL);
+ 
+     msg(M_INFO, "%s device [%s] opened", print_windows_driver(tt->windows_driver), tt->actual_name);
+     tt->adapter_index = get_adapter_index(*device_guid);
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index 99826cf7..9d995dd4 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -390,7 +390,7 @@ struct panel_reg
+ 
+ struct device_instance_id_interface
+ {
+-    const char *net_cfg_instance_id;
++    LPBYTE net_cfg_instance_id;
+     const char *device_interface_list;
+     struct device_instance_id_interface *next;
+ };
 -- 
-Antonio Quartulli
+2.30.1
+
 
