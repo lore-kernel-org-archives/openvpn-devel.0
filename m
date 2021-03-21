@@ -1,10 +1,13 @@
-Date: Sun, 21 Mar 2021 18:20:14 +0100 (CET)
-Message-Id: <202103211720.12LHKEom075859@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210321144627.1621-5-simon@...2293...>
-References: <20210321144627.1621-5-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH applied] Re: iservice: Resolve MSVC C4996
- warnings
+References: <20210319142001.2201-1-arne@...1227...>
+ <20210319142001.2201-4-arne@...1227...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <9937ce82-dd48-8494-5413-a3259128d5dd@...2181...>
+Date: Sun, 21 Mar 2021 18:22:18 +0100
+MIME-Version: 1.0
+In-Reply-To: <20210319142001.2201-4-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v2 5/5] Deprecate the --verify-hash
+ option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,39 +16,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Simon Rozman <simon@...2293...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-Tested on Ubuntu 18 / MinGW, compiles.
+Hi,
 
-Checked with the MSVC documentation, seems to make sense :-) - I do notice
-that we use wcscat_s() in one of these hunks, and _tcscat_s() in another,
-which seems to be the same thing if _UNICODE is defined (which, I think
-we do).  Maybe an opportunity for another round of cleanup - unify the
-windows string functions used to "just one variant".
+On 19/03/2021 15:20, Arne Schwabe wrote:
+> Despite trying to figure out with multiple people what the use case for
+> this option is, we could not come up with a good one. Checking that only
+> a specific CA is used can be also done by only using that CA in the --ca
+> directive.
+> 
+> Although it feels a bit strange to deprecate the option after improving
+> it with peer-fingerprint patches, all the improvements are needed for
+> --peer-fingerprint and making them specify to --peer-fingerprint would
+> have added more (unecessary) changes.
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 
-From: line fixed, so Author: is right for this commit.
+This patch looks good to me, but it does not apply on top of the
+previous 4. Maybe it was committed without considering the old 4/4?
 
-Your patch has been applied to the master branch.
-
-commit df471f4de8af0cbcf23a4e36910554bea7bd9058
-Author: Simon Rozman
-Date:   Sun Mar 21 15:46:27 2021 +0100
-
-     iservice: Resolve MSVC C4996 warnings
-
-     Signed-off-by: Simon Rozman <simon@...2293...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20210321144627.1621-5-simon@...2293...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20210321144627.1621-5-simon@...2293...
-     Signed-off-by: Gert Doering <gert@...1296...>
+Regards,
 
 
---
-kind regards,
-
-Gert Doering
-
+-- 
+Antonio Quartulli
 
