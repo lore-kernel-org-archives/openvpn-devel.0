@@ -1,9 +1,10 @@
-Date: Sun, 21 Mar 2021 17:58:43 +0100 (CET)
-Message-Id: <202103211658.12LGwhua075398@...2054...>
+Date: Sun, 21 Mar 2021 18:05:19 +0100 (CET)
+Message-Id: <202103211705.12LH5Jab075585@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210321144627.1621-2-simon@...2293...>
-References: <20210321144627.1621-2-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH applied] Re: tun.c: Remove dead code
+In-Reply-To: <20210321144627.1621-3-simon@...2293...>
+References: <20210321144627.1621-3-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: interactive.c: Resolve MSVC
+ C4996 warning
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,21 +18,26 @@ Content-Transfer-Encoding: 8bit
 To: Simon Rozman via Openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Cc: openvpn-devel@lists.sourceforge.net
 
+I seem to remember we had that discussion in the context of openpvpn-gui
+already - Problems with the "POSIX compatible" function names, which end
+up acting on narrow or wide strings depending on compiler settings, compiler
+version, phase of the moon...  can't find that commit, but if MS docs says
+"this is how windows code should look like", so be it...
+
+I have test compiled stuff on Ubuntu 18 / MinGW, and it compiles.  Not tested.
+
 Your patch has been applied to the master branch.
 
-"Trivially correct" :-) - but since Windows keeps biting me these
-days, test built with Ubuntu/MinGW.  Just to be sure.
-
-commit 26540310efa8c8955f38974969b317460c075dd4
+commit 709c3810a1d67e2c4049e852529a0a0d1338c797
 Author: Simon Rozman via Openvpn-devel
-Date:   Sun Mar 21 15:46:24 2021 +0100
+Date:   Sun Mar 21 15:46:25 2021 +0100
 
-     tun.c: Remove dead code
+     interactive.c: Resolve MSVC C4996 warning
 
      Signed-off-by: Simon Rozman <simon@...2293...>
      Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20210321144627.1621-2-simon@...2293...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20210321144627.1621-2-simon@...2293...
+     Message-Id: <20210321144627.1621-3-simon@...2293...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20210321144627.1621-3-simon@...2293...
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
