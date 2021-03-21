@@ -1,13 +1,10 @@
-References: <20210319142001.2201-1-arne@...1227...>
- <20210319142001.2201-3-arne@...1227...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <bf2ee35c-9071-260b-ea1d-f1483aeeb65c@...2181...>
-Date: Sun, 21 Mar 2021 18:17:32 +0100
-MIME-Version: 1.0
-In-Reply-To: <20210319142001.2201-3-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v2 3/5] Support fingerprint
- authentication without CA certificate
+Date: Sun, 21 Mar 2021 18:20:14 +0100 (CET)
+Message-Id: <202103211720.12LHKEom075859@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20210321144627.1621-5-simon@...2293...>
+References: <20210321144627.1621-5-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: iservice: Resolve MSVC C4996
+ warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,263 +13,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: Simon Rozman <simon@...2293...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Tested on Ubuntu 18 / MinGW, compiles.
 
-On 19/03/2021 15:20, Arne Schwabe wrote:
-> From: "Jason A. Donenfeld" <Jason@...2390...>
-> 
-> OpenVPN traditionally works around CAs. However many TLS-based protocols also
-> allow an alternative simpler mode in which rather than verify certificates
-> against CAs, the certificate itself is hashed and compared against a
-> pre-known set of acceptable hashes. This is usually referred to as
-> "fingerprint verification". It's popular across SMTP servers, IRC servers,
-> XMPP servers, and even in the context of HTTP with pinning.
-> 
->    * Allow not specifying the --ca parameter, to specify that
->      certificates should not be checked against a CA.
-> 
-> I've included some instructions on how to use all of this.
-> 
-> Server side:
-> ============
-> 
-> Make self-signed cert:
-> $ openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -keyout serverkey.pem -out servercert.pem -nodes -sha256 -days 3650 -subj '/CN=server'
-> 
-> Record our fingerprint in an environment variable for the client to use later:
-> $ server_fingerprint="$(openssl x509 -in servercert.pem -noout -sha256 -fingerprint | sed 's/.*=//;s/\(.*\)/\1/')"
-> 
-> Client side:
-> ============
-> Make self-signed cert:
-> $ openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -keyout clientkey.pem -out clientcert.pem -nodes -sha256 -days 3650 -subj '/CN=client'
-> 
-> Record our fingerprint in an environment variable for the server to use later:
-> $ client_fingerprint="$(openssl x509 -in clientcert.pem -noout -sha256 -fingerprint | sed 's/.*=//;s/\(.*\)/\1/')"
-> 
-> Start server/client
-> ===================
-> 
-> Start openvpn with peer fingerprint verification:
-> 
-> $ sudo openvpn --server 10.66.0.0 255.255.255.0 --dev tun --dh none --cert servercert.pem --key serverkey.pem --peer-fingerprint "$client_fingerprint"
-> 
-> $ sudo openvpn --client --remote 127.0.0.1 --dev tun --cert clientcert.pem --key clientkey.pem --peer-fingerprint "$server_fingerprint" --nobind
-> 
-> Signed-off-by: Jason A. Donenfeld <Jason@...2390...>
-> 
-> Patch V2: Changes in V2 (by Arne Schwabe):
->           - Only check peer certificates, not all cert levels, if you need
->             multiple levels of certificate you should use a real CA
->           - Use peer-fingerprint instead tls-verify on server side in example.
->           - rename variable ca_file_none to verify_hash_no_ca
->           - do no require --ca none but allow --ca simply
->             to be absent when --peer-fingprint is present
->           - adjust warnings/errors messages to also point to
->             peer-fingerprint as valid verification method.
->           - Fix mbed TLS version of not requiring CA
->             not working
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  src/openvpn/init.c               |  2 ++
->  src/openvpn/options.c            | 30 +++++++++++++++++++++++-------
->  src/openvpn/options.h            |  1 +
->  src/openvpn/ssl.c                |  2 +-
->  src/openvpn/ssl_common.h         |  1 +
->  src/openvpn/ssl_verify_mbedtls.c | 17 +++++++++++++++++
->  src/openvpn/ssl_verify_openssl.c |  2 +-
->  7 files changed, 46 insertions(+), 9 deletions(-)
-> 
-> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index 731b0cf2..835621cb 100644
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -2928,6 +2928,8 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
->      to.verify_hash = options->verify_hash;
->      to.verify_hash_algo = options->verify_hash_algo;
->      to.verify_hash_depth = options->verify_hash_depth;
-> +    to.verify_hash_no_ca = options->verify_hash_no_ca;
-> +
->  #ifdef ENABLE_X509ALTUSERNAME
->      memcpy(to.x509_username_field, options->x509_username_field, sizeof(to.x509_username_field));
->  #else
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index 6b4a2c11..27ed813d 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -2712,18 +2712,23 @@ options_postprocess_verify_ce(const struct options *options,
->          else
->          {
->  #ifdef ENABLE_CRYPTO_MBEDTLS
-> -            if (!(options->ca_file))
-> +            if (!(options->ca_file || options->verify_hash_no_ca))
->              {
-> -                msg(M_USAGE, "You must define CA file (--ca)");
-> +                msg(M_USAGE, "You must define CA file (--ca) and/or "
-> +                    "peer fingeprint verification "
-> +                    "(--peer-fingerprint)");
->              }
->              if (options->ca_path)
->              {
->                  msg(M_USAGE, "Parameter --capath cannot be used with the mbed TLS version version of OpenVPN.");
->              }
->  #else  /* ifdef ENABLE_CRYPTO_MBEDTLS */
-> -            if ((!(options->ca_file)) && (!(options->ca_path)))
-> +            if ((!(options->ca_file)) && (!(options->ca_path))
-> +                && (!(options->verify_hash_no_ca)))
->              {
-> -                msg(M_USAGE, "You must define CA file (--ca) or CA path (--capath)");
-> +                msg(M_USAGE, "You must define CA file (--ca) or CA path "
-> +                    "(--capath) and/or peer fingeprint verification "
-> +                    "(--peer-fingerprint)");
->              }
->  #endif
->              if (pull)
-> @@ -2742,7 +2747,8 @@ options_postprocess_verify_ce(const struct options *options,
->  #if P2MP
->                      if (!options->auth_user_pass_file)
->  #endif
-> -                    msg(M_USAGE, "No client-side authentication method is specified.  You must use either --cert/--key, --pkcs12, or --auth-user-pass");
-> +                    msg(M_USAGE, "No client-side authentication method is specified.  You must use either --cert/--key,"
-> +                        " --pkcs12, or --auth-user-pass");
+Checked with the MSVC documentation, seems to make sense :-) - I do notice
+that we use wcscat_s() in one of these hunks, and _tcscat_s() in another,
+which seems to be the same thing if _UNICODE is defined (which, I think
+we do).  Maybe an opportunity for another round of cleanup - unify the
+windows string functions used to "just one variant".
 
-This seems an unrelated change?
+From: line fixed, so Author: is right for this commit.
+
+Your patch has been applied to the master branch.
+
+commit df471f4de8af0cbcf23a4e36910554bea7bd9058
+Author: Simon Rozman
+Date:   Sun Mar 21 15:46:27 2021 +0100
+
+     iservice: Resolve MSVC C4996 warnings
+
+     Signed-off-by: Simon Rozman <simon@...2293...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20210321144627.1621-5-simon@...2293...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20210321144627.1621-5-simon@...2293...
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
->                  }
->                  else if (sum == 2)
->                  {
-> @@ -3206,6 +3212,13 @@ options_postprocess_mutate(struct options *o)
->          options_postprocess_http_proxy_override(o);
->      }
->  #endif
-> +    if (!o->ca_file && !o->ca_path && o->verify_hash
-> +        && o->verify_hash_depth == 0)
-> +    {
-> +        msg(M_INFO, "Using certificate fingerprint to verify peer (no CA "
-> +            "option set). ");
-> +        o->verify_hash_no_ca = true;
-> +    }
->  
->  #if P2MP
->      /*
-> @@ -3441,8 +3454,11 @@ options_postprocess_filechecks(struct options *options)
->      errs |= check_file_access_inline(options->dh_file_inline, CHKACC_FILE,
->                                       options->dh_file, R_OK, "--dh");
->  
-> -    errs |= check_file_access_inline(options->ca_file_inline, CHKACC_FILE,
-> -                                     options->ca_file, R_OK, "--ca");
-> +    if (!options->verify_hash_no_ca)
-> +    {
-> +        errs |= check_file_access_inline(options->ca_file_inline, CHKACC_FILE,
-> +                                         options->ca_file, R_OK, "--ca");
-> +    }
->  
->      errs |= check_file_access_chroot(options->chroot_dir, CHKACC_FILE,
->                                       options->ca_path, R_OK, "--capath");
-> diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-> index 30ec53d6..c68e89d2 100644
-> --- a/src/openvpn/options.h
-> +++ b/src/openvpn/options.h
-> @@ -561,6 +561,7 @@ struct options
->      struct verify_hash_list *verify_hash;
->      hash_algo_type verify_hash_algo;
->      int verify_hash_depth;
-> +    bool verify_hash_no_ca;
->      unsigned int ssl_flags; /* set to SSLF_x flags from ssl.h */
->  
->  #ifdef ENABLE_PKCS11
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 893e5753..b6bbcc09 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -682,7 +682,7 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx)
->      }
->  #endif
->  
-> -    if (options->ca_file || options->ca_path)
-> +    if ((!options->verify_hash_no_ca && options->ca_file) || options->ca_path)
+--
+kind regards,
 
-I don't think it is possible to have the following holding true at the
-same time:
-1) ca_file != NULL
-2) options->verify_hash_no_ca == true
+Gert Doering
 
-If 2 is true, then 1 must be false.
-For this reason I believe this if condition does not need to be modified.
-
-Or am I missing some corner case?
-
->      {
->          tls_ctx_load_ca(new_ctx, options->ca_file, options->ca_file_inline,
->                          options->ca_path, options->tls_server);
-> diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-> index 2b1b87fb..4e1ff6c8 100644
-> --- a/src/openvpn/ssl_common.h
-> +++ b/src/openvpn/ssl_common.h
-> @@ -285,6 +285,7 @@ struct tls_options
->      const char *remote_cert_eku;
->      struct verify_hash_list *verify_hash;
->      int verify_hash_depth;
-> +    bool verify_hash_no_ca;
->      hash_algo_type verify_hash_algo;
->  #ifdef ENABLE_X509ALTUSERNAME
->      char *x509_username_field[MAX_PARMS];
-> diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c
-> index 93891038..1ed1e0e2 100644
-> --- a/src/openvpn/ssl_verify_mbedtls.c
-> +++ b/src/openvpn/ssl_verify_mbedtls.c
-> @@ -62,6 +62,23 @@ verify_callback(void *session_obj, mbedtls_x509_crt *cert, int cert_depth,
->      struct buffer cert_fingerprint = x509_get_sha256_fingerprint(cert, &gc);
->      cert_hash_remember(session, cert_depth, &cert_fingerprint);
->  
-> +
-> +    if (session->opt->verify_hash_no_ca)
-> +    {
-> +        /*
-> +         * If we decide to verify the peer certificate based on the fingerprint
-> +         * we ignore wrong dates and the certificate not being trusted.
-> +         * Any other problem with the certificate (wrong key, bad cert,...)
-> +         * will still trigger an error.
-> +         * Clearing these flags relies on verify_cert will later rejecting a
-> +         * certificate that has no matching fingerprint.
-> +         */
-> +        uint32_t flags_ignore = MBEDTLS_X509_BADCERT_NOT_TRUSTED
-> +                                | MBEDTLS_X509_BADCERT_EXPIRED
-> +                                | MBEDTLS_X509_BADCERT_FUTURE;
-> +        *flags = *flags & ~flags_ignore;
-> +    }
-> +
->      /* did peer present cert which was signed by our root cert? */
->      if (*flags != 0)
->      {
-> diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
-> index d063aeda..8b1f1969 100644
-> --- a/src/openvpn/ssl_verify_openssl.c
-> +++ b/src/openvpn/ssl_verify_openssl.c
-> @@ -67,7 +67,7 @@ verify_callback(int preverify_ok, X509_STORE_CTX *ctx)
->      cert_hash_remember(session, X509_STORE_CTX_get_error_depth(ctx), &cert_hash);
->  
->      /* did peer present cert which was signed by our root cert? */
-> -    if (!preverify_ok)
-> +    if (!preverify_ok && !session->opt->verify_hash_no_ca)
->      {
->          /* get the X509 name */
->          char *subject = x509_get_subject(current_cert, &gc);
-> 
-
-The rest looks good.
-
-It's very nice to be able to start openvpn without CA, especially in
-very small setups where a couple of certs can just be enough :)
-
-Cheers,
-
--- 
-Antonio Quartulli
 
