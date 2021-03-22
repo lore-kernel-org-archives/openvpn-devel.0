@@ -1,9 +1,15 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Mon, 22 Mar 2021 10:16:21 +0100
-Message-Id: <20210322091621.7864-1-arne@...1227...>
-In-Reply-To: <20210319142001.2201-4-arne@...1227...>
-References: <20210319142001.2201-4-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v3 5/5] Deprecate the --verify-hash option
+Date: Mon, 22 Mar 2021 10:17:17 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20210322091717.GJ976@...1296...>
+References: <20210322074359.527-1-simon@...2293...>
+ <202103220910.12M9Ag1E095423@...2054...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="kJ2umm5eMwqzSFbR"
+Content-Disposition: inline
+In-Reply-To: <202103220910.12M9Ag1E095423@...2054...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: tapctl: Resolve MSVC C4996
+ warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,80 +18,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Simon Rozman via Openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Despite trying to figure out with multiple people what the use case for
-this option is, we could not come up with a good one. Checking that only
-a specific CA is used can be also done by only using that CA in the --ca
-directive.
+--kJ2umm5eMwqzSFbR
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Although it feels a bit strange to deprecate the option after improving
-it with peer-fingerprint patches, all the improvements are needed for
---peer-fingerprint and making them specify to --peer-fingerprint would
-have added more (unecessary) changes.
+Hi,
 
-Patch v3: rebased on v3 version of other patches.
+On Mon, Mar 22, 2021 at 10:10:42AM +0100, Gert Doering wrote:
+> Acked-by: Gert Doering <gert@...1296...>
+>=20
+> It's the same code change as in v1, just the comment rewritten as Arne=20
+> asked for (I found the other one okay-ish, but this is more in line with=
+=20
+> our other code, and indeed "less thinking required on read") and a new
+> helper variable for the total length.
+>=20
+> Code looks good, test build on Ubuntu 18/MingW also had no complaints.
+>=20
+> Your patch has been applied to the master branch.
+>=20
+> commit ef5b922aedead7159718ddbf40fc9f5be1b2b203
+> Author: Simon Rozman via Openvpn-devel
+> Date:   Mon Mar 22 08:43:59 2021 +0100
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- Changes.rst                      | 3 +++
- doc/man-sections/tls-options.rst | 2 +-
- src/openvpn/options.c            | 5 +++--
- 3 files changed, 7 insertions(+), 3 deletions(-)
+My local tree was in a slightly funny state (the tip commit had a new
+ID due to an accidential "git commit --amend" on the wrong head), so
+I had to rebase and this commit got a new ID
 
-diff --git a/Changes.rst b/Changes.rst
-index c0e0d5d9..01018b62 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -32,6 +32,9 @@ Deprecated features
-     This was a very limited and not-well-tested way to run OpenVPN, on TCP
-     and TAP mode only.
- 
-+``verify-hash`` has been deprecated
-+    This option has very limited usefulness and should be replaced by either
-+    a better ``--ca`` configuration or with a ``--tls-verify`` script.
- 
- Overview of changes in 2.5
- ==========================
-diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
-index cfe1ec98..1b10f1e8 100644
---- a/doc/man-sections/tls-options.rst
-+++ b/doc/man-sections/tls-options.rst
-@@ -564,7 +564,7 @@ certificates and keys: https://github.com/OpenVPN/easy-rsa
-   :code:`1.2`.
- 
- --verify-hash args
--  Specify SHA1 or SHA256 fingerprint for level-1 cert.
-+  **DEPRECATED** Specify SHA1 or SHA256 fingerprint for level-1 cert.
- 
-   Valid syntax:
-   ::
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 4eee3a8a..1f6c05aa 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -8140,6 +8140,9 @@ add_option(struct options *options,
-         int verify_hash_depth = 0;
-         if (streq(p[0], "verify-hash"))
-         {
-+            msg(M_WARN, "DEPRECATED OPTION: The option --verify-hash is deprecated. "
-+            "You should switch to the either use the level 1 certificate as "
-+            "--ca option, use --tls-verify or use --peer-fingerprint");
-             /* verify level 1 cert, i.e. the CA that signed the leaf cert */
-             verify_hash_depth = 1;
-         }
-@@ -8160,8 +8163,6 @@ add_option(struct options *options,
-             if ((!p[2] && !is_inline) || (p[2] && streq(p[2], "SHA1")))
-             {
-                 options->verify_hash_algo = MD_SHA1;
--                msg(M_WARN, "DEPRECATED FEATURE: Usage of SHA1 fingerprints for "
--                    "verify-hash is deprecated. You should switch to SHA256.");
-                 options->verify_hash_algo = SHA_DIGEST_LENGTH;
-                 digest_len = SHA_DIGEST_LENGTH;
-             }
--- 
-2.30.1
+commit e5e9a07e8baee4065b7dfd65736bfa77b8329cfc (HEAD -> master, stable/mas=
+ter, mattock/master, gitlab/master, github/master)
+Author: Simon Rozman via Openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Date:   Mon Mar 22 08:43:59 2021 +0100
 
+    tapctl: Resolve MSVC C4996 warnings
+
+
+(and I forgot to change the From: line again, sorry, again)
+
+
+Must be Monday :-(
+
+gert
+
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--kJ2umm5eMwqzSFbR
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJgWGCZAAoJEB2Cnv7KVigS6CgL/R00PbK9M4XlRqLYr3rcVZty
+pwTaaQfgzYR8DbmchVqeyuSMRyHTSp2UbnuK+MMw4kckNGl0LH5Y00p1S4EHlmG6
+6a64GAeRtM3hVN2pzCQ+0X4KvQhFDM+sb/AVUAt+UWgdUVM+f3Z+cpkx0qT7Ilo7
+OWUrtvt47lzMTr0YNREIBrUs5Ebv2pMoGpze+zIDCjKXsTIQ1kNxb0NAshMSTsVT
+Wiimjbj/CgwHDcxpQJ6TbpJXIoi/CbNI3BDAijxD3K/CxTyTTM+Tqtv5qsuzhTfX
+2zxuP9suHj5B48bK9rLk20dfdvM+CFFMk+Q2fzDJc9idujbIr4ST0yEK67FzeT/Y
+NmfXfuFfOKRE4Zae4xmuh2AJhYr20p7Xe1Oa+9itMQLI0DNV1Vp99WuSjCWIFMQc
+P5PpuETI8/wdR7PBx7X/BeyvyxeerV6qBHkQFUXU33hTjyWGNdp/BYmiksFSlYx2
+mZLM1T1HGBE/pyv+kA0YOAFoiyJij2UGcOkv4N3CpA==
+=bEh7
+-----END PGP SIGNATURE-----
+
+--kJ2umm5eMwqzSFbR--
 
