@@ -1,16 +1,10 @@
-References: <20210321144627.1621-1-simon@...2293...>
- <20210321165045.GY976@...1296...>
- <487884f67f874d438ca181de91399c52@...2293...>
- <20210322085411.GG976@...1296...>
- <CAGyAFMWGbuN-0x=V9DpGzL4w+fWhz6d=4ce0x5+cg3DN8HOzKw@...278...>
- <20210322095538.GK976@...1296...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <fd3da023-c4b3-0773-e3b6-581b24ff4a01@...1227...>
-Date: Mon, 22 Mar 2021 13:34:10 +0100
-MIME-Version: 1.0
-In-Reply-To: <20210322095538.GK976@...1296...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] Visual Studio building for master/2.6 and LZ4
+Date: Mon, 22 Mar 2021 22:14:21 +0100 (CET)
+Message-Id: <202103222114.12MLEKmC025259@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20210322103957.1234-1-simon@...2293...>
+References: <20210322103957.1234-1-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: openvpnserv: Cache last error
+ before it is overridden
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,32 +13,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>, Lev Stipakov <lstipakov@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Simon Rozman <simon@...2293...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 22.03.21 um 10:55 schrieb Gert Doering:
-> Hi,
-> 
-> (I have changed the Subject: line to make clear that this is a bigger
-> topic now)
-> 
-> On Mon, Mar 22, 2021 at 11:51:46AM +0200, Lev Stipakov wrote:
->> For 2.6, I think we should drop openvpn-build for Windows (VS)
->> building and switch to vcpkg for dependencies (openssl, lz4 etc) and
->> cmake as a project file (also supported by VS).
-> 
-> I have no opinion there whatsoever...  please send patches & trac 
-> documentation :-)
+Acked-by: Gert Doering <gert@...1296...>
 
-I have a very hacky CMakeLists.txt that works well enough to compile
-with with Clion and MSVC. But the biggest hurdle is that I would need to
-add pkcs11 to vckpg (and also clean up the cmakelists.txt) file. Also
-that brings then two ways of building openvpn under Linux/mac/other
-Unices, one with cmake and one with autoconf/automake and whole
-discussion about build systems.
+Explanation and code make sense.  Test compiled on Ubuntu18/MinGW.
 
-Arne
+Your patch has been applied to the master and release/2.5 branch (bugfix).
+
+And I managed to unmess the From: line before pushing :-) (and I *do*
+have a pre-push-hook in place now that wakes me up next monday morning)
+
+commit 1e938c50930f29124909e120a29fb116d4c46576 (master)
+commit 24c1fc2a0ab5fa113d6769ab090de12e3719ab6b (release/2.5)
+Author: Simon Rozman
+Date:   Mon Mar 22 11:39:57 2021 +0100
+
+     openvpnserv: Cache last error before it is overridden
+
+     Signed-off-by: Simon Rozman <simon@...2293...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20210322103957.1234-1-simon@...2293...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21789.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
