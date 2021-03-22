@@ -1,13 +1,13 @@
-References: <20210319142001.2201-4-arne@...1227...>
- <20210322091621.7864-1-arne@...1227...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <b0aa434a-cb11-a410-e5a2-8f3c145ea190@...2181...>
-Date: Mon, 22 Mar 2021 10:43:22 +0100
 MIME-Version: 1.0
-In-Reply-To: <20210322091621.7864-1-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v3 5/5] Deprecate the --verify-hash
- option
+References: <20210321144627.1621-1-simon@...2293...>
+ <20210321165045.GY976@...1296...>
+ <487884f67f874d438ca181de91399c52@...2293...>
+ <20210322085411.GG976@...1296...>
+In-Reply-To: <20210322085411.GG976@...1296...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Mon, 22 Mar 2021 11:51:46 +0200
+Message-ID: <CAGyAFMWGbuN-0x=V9DpGzL4w+fWhz6d=4ce0x5+cg3DN8HOzKw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 1/5] MSVC: Disable LZ4
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,29 +16,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: Simon Rozman <simon@...2293...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
-
-On 22/03/2021 10:16, Arne Schwabe wrote:
-> Despite trying to figure out with multiple people what the use case for
-> this option is, we could not come up with a good one. Checking that only
-> a specific CA is used can be also done by only using that CA in the --ca
-> directive.
-> 
-> Although it feels a bit strange to deprecate the option after improving
-> it with peer-fingerprint patches, all the improvements are needed for
-> --peer-fingerprint and making them specify to --peer-fingerprint would
-> have added more (unecessary) changes.
-> 
-> Patch v3: rebased on v3 version of other patches.
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-
-Acked-by: Antonio Quartulli <antonio@...515...>
+For 2.6, I think we should drop openvpn-build for Windows (VS)
+building and switch to vcpkg for dependencies (openssl, lz4 etc) and
+cmake as a project file (also supported by VS).
 
 -- 
-Antonio Quartulli
+-Lev
 
