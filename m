@@ -1,9 +1,9 @@
-From: Simon Rozman <simon@...2293...>
-Date: Mon, 22 Mar 2021 11:39:57 +0100
-Message-Id: <20210322103957.1234-1-simon@...2293...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] openvpnserv: Cache last error before it is
- overridden
+Date: Mon, 22 Mar 2021 11:51:11 +0100 (CET)
+Message-Id: <202103221051.12MApB50017438@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20210322102119.14322-1-arne@...1227...>
+References: <20210322102119.14322-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove empty dummy functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,48 +14,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-FormatMessage() sets the last error according to its own success. This
-looses the original error code leading to mismatched error message and
-error number when sprintfted together resulting in confusing event log
-message.
+Acked-by: Gert Doering <gert@...1296...>
 
-Signed-off-by: Simon Rozman <simon@...2293...>
----
- src/openvpnserv/common.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+"I have always wondered why we need these..." - and if Windows isn't
+it (anymore), out that stuff goes.  It might break old Solaris compilers,
+but gcc exists... and I tested on our OpenIndiana buildslave, and that one
+is happy with the change.
 
-diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
-index 48769be4..ebd08677 100644
---- a/src/openvpnserv/common.c
-+++ b/src/openvpnserv/common.c
-@@ -228,12 +228,14 @@ out:
- LPCTSTR
- GetLastErrorText()
- {
-+    DWORD error;
-     static TCHAR buf[256];
-     DWORD len;
-     LPTSTR tmp = NULL;
- 
-+    error = GetLastError();
-     len = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY,
--                        NULL, GetLastError(), LANG_NEUTRAL, (LPTSTR)&tmp, 0, NULL);
-+                        NULL, error, LANG_NEUTRAL, (LPTSTR)&tmp, 0, NULL);
- 
-     if (len == 0 || (long) _countof(buf) < (long) len + 14)
-     {
-@@ -242,7 +244,7 @@ GetLastErrorText()
-     else
-     {
-         tmp[_tcslen(tmp) - 2] = TEXT('\0'); /* remove CR/LF characters */
--        openvpn_sntprintf(buf, _countof(buf), TEXT("%s (0x%x)"), tmp, GetLastError());
-+        openvpn_sntprintf(buf, _countof(buf), TEXT("%s (0x%x)"), tmp, error);
-     }
- 
-     if (tmp)
--- 
-2.30.0.windows.2
+Your patch has been applied to the master branch.
+
+commit 1b71f8597f9de843b14c500d03bb7c9f99859667
+Author: Arne Schwabe
+Date:   Mon Mar 22 11:21:19 2021 +0100
+
+     Remove empty dummy functions
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20210322102119.14322-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21787.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
