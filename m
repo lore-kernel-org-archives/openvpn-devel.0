@@ -1,15 +1,13 @@
-Date: Mon, 22 Mar 2021 10:17:17 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20210322091717.GJ976@...1296...>
-References: <20210322074359.527-1-simon@...2293...>
- <202103220910.12M9Ag1E095423@...2054...>
+References: <20210319142001.2201-3-arne@...1227...>
+ <20210322091414.7533-1-arne@...1227...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <90feb1ab-ddd0-1875-4371-d0033cb4b2d8@...2181...>
+Date: Mon, 22 Mar 2021 10:40:42 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="kJ2umm5eMwqzSFbR"
-Content-Disposition: inline
-In-Reply-To: <202103220910.12M9Ag1E095423@...2054...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: tapctl: Resolve MSVC C4996
- warnings
+In-Reply-To: <20210322091414.7533-1-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v3 3/5] Support fingerprint
+ authentication without CA certificate
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,77 +16,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Simon Rozman via Openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---kJ2umm5eMwqzSFbR
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Mon, Mar 22, 2021 at 10:10:42AM +0100, Gert Doering wrote:
-> Acked-by: Gert Doering <gert@...1296...>
->=20
-> It's the same code change as in v1, just the comment rewritten as Arne=20
-> asked for (I found the other one okay-ish, but this is more in line with=
-=20
-> our other code, and indeed "less thinking required on read") and a new
-> helper variable for the total length.
->=20
-> Code looks good, test build on Ubuntu 18/MingW also had no complaints.
->=20
-> Your patch has been applied to the master branch.
->=20
-> commit ef5b922aedead7159718ddbf40fc9f5be1b2b203
-> Author: Simon Rozman via Openvpn-devel
-> Date:   Mon Mar 22 08:43:59 2021 +0100
+On 22/03/2021 10:14, Arne Schwabe wrote:
+> From: "Jason A. Donenfeld" <Jason@...2390...>
+> 
+> OpenVPN traditionally works around CAs. However many TLS-based protocols also
+> allow an alternative simpler mode in which rather than verify certificates
+> against CAs, the certificate itself is hashed and compared against a
+> pre-known set of acceptable hashes. This is usually referred to as
+> "fingerprint verification". It's popular across SMTP servers, IRC servers,
+> XMPP servers, and even in the context of HTTP with pinning.
+> 
+>    * Allow not specifying the --ca parameter, to specify that
+>      certificates should not be checked against a CA.
+> 
+> I've included some instructions on how to use all of this.
+> 
+> Server side:
+> ============
+> 
+> Make self-signed cert:
+> $ openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -keyout serverkey.pem -out servercert.pem -nodes -sha256 -days 3650 -subj '/CN=server'
+> 
+> Record our fingerprint in an environment variable for the client to use later:
+> $ server_fingerprint="$(openssl x509 -in servercert.pem -noout -sha256 -fingerprint | sed 's/.*=//;s/\(.*\)/\1/')"
+> 
+> Client side:
+> ============
+> Make self-signed cert:
+> $ openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -keyout clientkey.pem -out clientcert.pem -nodes -sha256 -days 3650 -subj '/CN=client'
+> 
+> Record our fingerprint in an environment variable for the server to use later:
+> $ client_fingerprint="$(openssl x509 -in clientcert.pem -noout -sha256 -fingerprint | sed 's/.*=//;s/\(.*\)/\1/')"
+> 
+> Start server/client
+> ===================
+> 
+> Start openvpn with peer fingerprint verification:
+> 
+> $ sudo openvpn --server 10.66.0.0 255.255.255.0 --dev tun --dh none --cert servercert.pem --key serverkey.pem --peer-fingerprint "$client_fingerprint"
+> 
+> $ sudo openvpn --client --remote 127.0.0.1 --dev tun --cert clientcert.pem --key clientkey.pem --peer-fingerprint "$server_fingerprint" --nobind
+> 
+> Signed-off-by: Jason A. Donenfeld <Jason@...2390...>
+> 
+> Patch V2: Changes in V2 (by Arne Schwabe):
+>           - Only check peer certificates, not all cert levels, if you need
+>             multiple levels of certificate you should use a real CA
+>           - Use peer-fingerprint instead tls-verify on server side in example.
+>           - rename variable ca_file_none to verify_hash_no_ca
+>           - do no require --ca none but allow --ca simply
+>             to be absent when --peer-fingprint is present
+>           - adjust warnings/errors messages to also point to
+>             peer-fingerprint as valid verification method.
+>           - Fix mbed TLS version of not requiring CA
+>             not working
+> 
+> Patch v3: Fix minor style. Remove unessary check of verify_hash_no_ca in ssl.c.
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 
-My local tree was in a slightly funny state (the tip commit had a new
-ID due to an accidential "git commit --amend" on the wrong head), so
-I had to rebase and this commit got a new ID
+Acked-by: Antonio Quartulli <antonio@...515...>
 
-commit e5e9a07e8baee4065b7dfd65736bfa77b8329cfc (HEAD -> master, stable/mas=
-ter, mattock/master, gitlab/master, github/master)
-Author: Simon Rozman via Openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Date:   Mon Mar 22 08:43:59 2021 +0100
+It looks good and works as expected!
 
-    tapctl: Resolve MSVC C4996 warnings
-
-
-(and I forgot to change the From: line again, sorry, again)
-
-
-Must be Monday :-(
-
-gert
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---kJ2umm5eMwqzSFbR
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJgWGCZAAoJEB2Cnv7KVigS6CgL/R00PbK9M4XlRqLYr3rcVZty
-pwTaaQfgzYR8DbmchVqeyuSMRyHTSp2UbnuK+MMw4kckNGl0LH5Y00p1S4EHlmG6
-6a64GAeRtM3hVN2pzCQ+0X4KvQhFDM+sb/AVUAt+UWgdUVM+f3Z+cpkx0qT7Ilo7
-OWUrtvt47lzMTr0YNREIBrUs5Ebv2pMoGpze+zIDCjKXsTIQ1kNxb0NAshMSTsVT
-Wiimjbj/CgwHDcxpQJ6TbpJXIoi/CbNI3BDAijxD3K/CxTyTTM+Tqtv5qsuzhTfX
-2zxuP9suHj5B48bK9rLk20dfdvM+CFFMk+Q2fzDJc9idujbIr4ST0yEK67FzeT/Y
-NmfXfuFfOKRE4Zae4xmuh2AJhYr20p7Xe1Oa+9itMQLI0DNV1Vp99WuSjCWIFMQc
-P5PpuETI8/wdR7PBx7X/BeyvyxeerV6qBHkQFUXU33hTjyWGNdp/BYmiksFSlYx2
-mZLM1T1HGBE/pyv+kA0YOAFoiyJij2UGcOkv4N3CpA==
-=bEh7
------END PGP SIGNATURE-----
-
---kJ2umm5eMwqzSFbR--
+-- 
+Antonio Quartulli
 
