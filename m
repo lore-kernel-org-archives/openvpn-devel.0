@@ -1,10 +1,10 @@
-Date: Mon, 22 Mar 2021 22:14:21 +0100 (CET)
-Message-Id: <202103222114.12MLEKmC025259@...2054...>
+Date: Tue, 23 Mar 2021 10:31:45 +0100 (CET)
+Message-Id: <202103230931.12N9VjZ6037655@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210322103957.1234-1-simon@...2293...>
-References: <20210322103957.1234-1-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH applied] Re: openvpnserv: Cache last error
- before it is overridden
+In-Reply-To: <20210317160038.25828-1-arne@...1227...>
+References: <20210317160038.25828-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Move restoring pre pull options
+ to initialising of c2 context
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,29 +15,43 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Simon Rozman <simon@...2293...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Your patch has been applied to the master branch.
 
-Explanation and code make sense.  Test compiled on Ubuntu18/MinGW.
+I do not really have a test rig to test this, currently.  I think it would
+need a long-running client instance that connects to a server, receives
+a set of options, disconnects (server kicking it out?), reconnects, and
+receives *different* options.  Or possibly "not receives options that
+were set before", so verify "fall back to default/config file settings".
 
-Your patch has been applied to the master and release/2.5 branch (bugfix).
+OTOH staring at the code looks reasonable - we only restore if something
+was saved before (o->pre_pull initialized) and if we succeed connecting, 
+it's the same amount of energy spent.
 
-And I managed to unmess the From: line before pushing :-) (and I *do*
-have a pre-push-hook in place now that wakes me up next monday morning)
+I have run this through the enhanced client side tests (including the
+"must fail!") tests, but since these all only do single-shot connections,
+this is not really excercising the code change.
 
-commit 1e938c50930f29124909e120a29fb116d4c46576 (master)
-commit 24c1fc2a0ab5fa113d6769ab090de12e3719ab6b (release/2.5)
-Author: Simon Rozman
-Date:   Mon Mar 22 11:39:57 2021 +0100
 
-     openvpnserv: Cache last error before it is overridden
+I do wonder if connection *failures* would cause an increased memory
+consumption now... is "&c->c2.gc" cleared eventually?  (Because we 
+allocate new copies of route-lists in that GC)... *looking*... ah, yes,
+c2.gc lives only for "one instance" (init_instance() to close_instance()),
+and since that one talks about "advance connection entry", it looks
+like "this dance is done per connection attempt"...
 
-     Signed-off-by: Simon Rozman <simon@...2293...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210322103957.1234-1-simon@...2293...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21789.html
+commit 528a78fb144ff6a3d5865c871a402ba98fdfe21e
+Author: Arne Schwabe
+Date:   Wed Mar 17 17:00:36 2021 +0100
+
+     Move restoring pre pull options to initialising of c2 context
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20210317160038.25828-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21676.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
