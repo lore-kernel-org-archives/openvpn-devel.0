@@ -1,10 +1,10 @@
-Date: Tue, 23 Mar 2021 10:31:45 +0100 (CET)
-Message-Id: <202103230931.12N9VjZ6037655@...2054...>
+Date: Tue, 23 Mar 2021 13:59:52 +0100 (CET)
+Message-Id: <202103231259.12NCxqPj049609@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210317160038.25828-1-arne@...1227...>
-References: <20210317160038.25828-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Move restoring pre pull options
- to initialising of c2 context
+In-Reply-To: <20210317160038.25828-2-arne@...1227...>
+References: <20210317160038.25828-2-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Move NCP saving and restore to
+ the prepush restore code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,38 +20,44 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master branch.
 
-I do not really have a test rig to test this, currently.  I think it would
-need a long-running client instance that connects to a server, receives
-a set of options, disconnects (server kicking it out?), reconnects, and
-receives *different* options.  Or possibly "not receives options that
-were set before", so verify "fall back to default/config file settings".
+As discussed with Antonion on IRC, we have no real testbed to test this
+code change ("connect to server A that pushes options, disconnect, then
+connect to server B that *does not* push anything").  I did some manual
+tests with
 
-OTOH staring at the code looks reasonable - we only restore if something
-was saved before (o->pre_pull initialized) and if we succeed connecting, 
-it's the same amount of energy spent.
+ - a client config that has multiple <connection> entries, to servers
+   that push different cipher settings or have OCC or nothing.
+ - using the client management interface and SIGHUP/SIGUSR1, remote SKIP,
+   remote ACCEPT to "walk to the next server"
 
-I have run this through the enhanced client side tests (including the
-"must fail!") tests, but since these all only do single-shot connections,
-this is not really excercising the code change.
+    - talk to a NCP enabled server, which pushes "cipher AES-256-GCM"
+    - then talk to a 2.3 server with --enable-small, which does not
+      understand NCP or OCC -> client falls back to o->ciphername
+      (by means of data-cipher-fallback), using "cipher BF-CBC",
+      *if properly restored*
 
+ - using SIGUSR1, things actually break (server A pushes "compress lz4",
+   server B does not do that, but the client still is in "LZ4 mode",
+   logs "Bad LZ4 decompression header byte: 250").  But this is an older
+   issue (my test candidate is f6dca235ae560597, which is before this
+   patch set) - and Arne already found that this is is because we neglect
+   to *save* compression settings in options_pre_pull...
 
-I do wonder if connection *failures* would cause an increased memory
-consumption now... is "&c->c2.gc" cleared eventually?  (Because we 
-allocate new copies of route-lists in that GC)... *looking*... ah, yes,
-c2.gc lives only for "one instance" (init_instance() to close_instance()),
-and since that one talks about "advance connection entry", it looks
-like "this dance is done per connection attempt"...
+ - using SIGHUP, things work
 
-commit 528a78fb144ff6a3d5865c871a402ba98fdfe21e
+In addition to this, the patch survived a very close stare-at-code and 
+extensive t_client runs :-)
+
+commit 7064ccb9fd3578c0b25713b1c8e620ad9449f7f4
 Author: Arne Schwabe
-Date:   Wed Mar 17 17:00:36 2021 +0100
+Date:   Wed Mar 17 17:00:37 2021 +0100
 
-     Move restoring pre pull options to initialising of c2 context
+     Move NCP saving and restore to the prepush restore code
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20210317160038.25828-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21676.html
+     Message-Id: <20210317160038.25828-2-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21674.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
