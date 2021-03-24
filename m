@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Wed, 24 Mar 2021 23:23:28 +0100
-Message-Id: <20210324222330.455-2-arne@...1227...>
+Date: Wed, 24 Mar 2021 23:23:30 +0100
+Message-Id: <20210324222330.455-4-arne@...1227...>
 In-Reply-To: <20210324222330.455-1-arne@...1227...>
 References: <20210324222330.455-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 2/4] Fix unchecked signess conversions
- reported by MSVC
+Subject: [Openvpn-devel] [PATCH 4/4] Use correct types for OpenSSL and
+ Windows APIs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,84 +17,91 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Whenever possible the types have been aligned in the various parts of
-OpenVPN. If that was not possible, an explicit cast to a narrower type
-has been added.
+The error code of OpenSSL is a long. On most Unics systems
+(mac, Linux...) this happens to be the same as size_t. But on Windows
+as LP64, long is a 32 bit type and size_t is a 64 bit type. So use the
+same type as OpenSSL.
+
+When calling the Windows API use DWORD for the functions that want a
+DWORD.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/console_builtin.c | 2 +-
- src/openvpn/dhcp.c            | 2 +-
- src/openvpn/multi.h           | 2 +-
- src/openvpn/options.h         | 2 +-
- src/openvpn/packet_id.h       | 2 +-
- 5 files changed, 5 insertions(+), 5 deletions(-)
+ src/openvpn/crypto_openssl.c | 2 +-
+ src/openvpn/cryptoapi.c      | 2 +-
+ src/openvpn/route.c          | 9 +++------
+ 3 files changed, 5 insertions(+), 8 deletions(-)
 
-diff --git a/src/openvpn/console_builtin.c b/src/openvpn/console_builtin.c
-index 445928bf..74a0e2b6 100644
---- a/src/openvpn/console_builtin.c
-+++ b/src/openvpn/console_builtin.c
-@@ -74,7 +74,7 @@ get_console_input_win32(const char *prompt, const bool echo, char *input, const
-     if (in != INVALID_HANDLE_VALUE
-         && err != INVALID_HANDLE_VALUE
-         && !win32_service_interrupt(&win32_signal)
--        && WriteFile(err, prompt, strlen(prompt), &len, NULL))
-+        && WriteFile(err, prompt, (DWORD)strlen(prompt), &len, NULL))
-     {
-         bool is_console = (GetFileType(in) == FILE_TYPE_CHAR);
-         DWORD flags_save = 0;
-diff --git a/src/openvpn/dhcp.c b/src/openvpn/dhcp.c
-index c19370eb..1e79ccc4 100644
---- a/src/openvpn/dhcp.c
-+++ b/src/openvpn/dhcp.c
-@@ -113,7 +113,7 @@ do_extract(struct dhcp *dhcp, int optlen)
-                         const int owlen = len + 2;        /* len of data to overwrite */
-                         uint8_t *src = dest + owlen;
-                         uint8_t *end = p + optlen;
--                        const int movlen = end - src;
-+                        const size_t movlen = end - src;
-                         if (movlen > 0)
-                         {
-                             memmove(dest, src, movlen);   /* overwrite router option */
-diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-index 7669508c..65f64659 100644
---- a/src/openvpn/multi.h
-+++ b/src/openvpn/multi.h
-@@ -181,7 +181,7 @@ struct multi_context {
-     struct mroute_addr local;
-     bool enable_c2c;
-     int max_clients;
--    int tcp_queue_limit;
-+    unsigned int tcp_queue_limit;
-     int status_file_version;
-     int n_clients; /* current number of authenticated clients */
- 
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index f3208c71..d8e91fbc 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -457,7 +457,7 @@ struct options
-     bool ccd_exclusive;
-     bool disable;
-     int n_bcast_buf;
--    int tcp_queue_limit;
-+    unsigned int tcp_queue_limit;
-     struct iroute *iroutes;
-     struct iroute_ipv6 *iroutes_ipv6;                   /* IPv6 */
-     bool push_ifconfig_defined;
-diff --git a/src/openvpn/packet_id.h b/src/openvpn/packet_id.h
-index 3b58da22..0d2e094d 100644
---- a/src/openvpn/packet_id.h
-+++ b/src/openvpn/packet_id.h
-@@ -316,7 +316,7 @@ packet_id_close_to_wrapping(const struct packet_id_send *p)
- static inline bool
- check_timestamp_delta(time_t remote, unsigned int max_delta)
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 4486d246..573beaed 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -199,7 +199,7 @@ crypto_clear_error(void)
+ void
+ crypto_print_openssl_errors(const unsigned int flags)
  {
--    unsigned int abs;
-+    time_t abs;
-     const time_t local_now = now;
+-    size_t err = 0;
++    unsigned long err = 0;
  
-     if (local_now >= remote)
+     while ((err = ERR_get_error()))
+     {
+diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
+index a992441b..ded8c914 100644
+--- a/src/openvpn/cryptoapi.c
++++ b/src/openvpn/cryptoapi.c
+@@ -997,7 +997,7 @@ pkey_rsa_sign(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen,
+     }
+ 
+     msg(D_LOW, "cryptoapicert: calling priv_enc_CNG with alg = %ls", alg);
+-    *siglen = priv_enc_CNG(cd, alg, tbs, (int)tbslen, sig, *siglen,
++    *siglen = priv_enc_CNG(cd, alg, tbs, (int)tbslen, sig, (int)*siglen,
+                            cng_padding_type(padding), (DWORD)saltlen);
+ 
+     return (*siglen == 0) ? 0 : 1;
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 5e1dca67..c6b3dc58 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -2701,12 +2701,11 @@ get_default_gateway_row(const MIB_IPFORWARDTABLE *routes)
+     struct gc_arena gc = gc_new();
+     DWORD lowest_metric = MAXDWORD;
+     const MIB_IPFORWARDROW *ret = NULL;
+-    int i;
+     int best = -1;
+ 
+     if (routes)
+     {
+-        for (i = 0; i < routes->dwNumEntries; ++i)
++        for (DWORD i = 0; i < routes->dwNumEntries; ++i)
+         {
+             const MIB_IPFORWARDROW *row = &routes->table[i];
+             const in_addr_t net = ntohl(row->dwForwardDest);
+@@ -3167,14 +3166,13 @@ void
+ show_routes(int msglev)
+ {
+     struct gc_arena gc = gc_new();
+-    int i;
+ 
+     const MIB_IPFORWARDTABLE *rt = get_windows_routing_table(&gc);
+ 
+     msg(msglev, "SYSTEM ROUTING TABLE");
+     if (rt)
+     {
+-        for (i = 0; i < rt->dwNumEntries; ++i)
++        for (DWORD i = 0; i < rt->dwNumEntries; ++i)
+         {
+             msg(msglev, "%s", format_route_entry(&rt->table[i], &gc));
+         }
+@@ -4023,8 +4021,7 @@ test_local_addr(const in_addr_t addr, const struct route_gateway_info *rgi)
+     const MIB_IPFORWARDTABLE *rt = get_windows_routing_table(&gc);
+     if (rt)
+     {
+-        int i;
+-        for (i = 0; i < rt->dwNumEntries; ++i)
++        for (DWORD i = 0; i < rt->dwNumEntries; ++i)
+         {
+             const MIB_IPFORWARDROW *row = &rt->table[i];
+             const in_addr_t net = ntohl(row->dwForwardDest);
 -- 
 2.30.1
 
