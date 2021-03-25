@@ -1,13 +1,11 @@
-References: <20210310154754.GH976@...1296...>
- <20210317130312.8585-1-arne@...1227...>
+References: <20210325000121.10331-1-arne@...1227...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <ca6c5842-df1c-86fa-0d82-f30912b0dc40@...2181...>
-Date: Thu, 25 Mar 2021 23:57:12 +0100
+Message-ID: <76658ce4-47af-2154-7f95-12e6a6e6dbc7@...2181...>
+Date: Fri, 26 Mar 2021 00:07:32 +0100
 MIME-Version: 1.0
-In-Reply-To: <20210317130312.8585-1-arne@...1227...>
+In-Reply-To: <20210325000121.10331-1-arne@...1227...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v5 1/2] Move auth deferred related
- members into its own struct
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Deprecate non TLS mode in OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,21 +20,82 @@ To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On 17/03/2021 14:03, Arne Schwabe wrote:
-> This structures the code a bit nicer and also prepares for deferred
-> scripts that needs their own set of files.
+On 25/03/2021 01:01, Arne Schwabe wrote:
+> The non-TLS mode is a relict from OpenVPN 1.x or 2.0. When tls mode was
+> introduce the advantages of TLS over non-tls were small but tls mode
+> evolved to include a lot more features. (NCP, multipeer, AEAD ciphers to name
+> a few).
+> 
+> Today VPN that use --secret are mainly used because of its relative easy to
+> setup and requiring to setup a PKI. This shortcoming of TLS mode should be
+> addressed now with the peer-fingerprint option.
 > 
 > Signed-off-by: Arne Schwabe <arne@...1227...>
 
-For me this is an ACK, but unfortunately I have no test rig for deferred
-auth and therefore I cannot really test these code paths.
+As per the discussion that sparked in this thread, I would suggest
+articulating the commit message a bit more to highlight the security
+concerns about using --secret and why it's a good idea to get rid of it.
 
-This said, after staring at the code, I can confirm this is just a
-restyling of some struct members and nothing else.
+The rest looks good to me.
 
-A basic client-server test passes as expected.
+Cheers,
 
-Regards,
+> ---
+>  doc/man-sections/protocol-options.rst |  2 +-
+>  src/openvpn/options.c                 | 12 +++++++++++-
+>  2 files changed, 12 insertions(+), 2 deletions(-)
+> 
+> diff --git a/doc/man-sections/protocol-options.rst b/doc/man-sections/protocol-options.rst
+> index 01789e58..4b6928c6 100644
+> --- a/doc/man-sections/protocol-options.rst
+> +++ b/doc/man-sections/protocol-options.rst
+> @@ -235,7 +235,7 @@ configured in a compatible way between both the local and remote side.
+>    disables cipher negotiation.
+>  
+>  --secret args
+> -  Enable Static Key encryption mode (non-TLS). Use pre-shared secret
+> +  **DEPRECATED** Enable Static Key encryption mode (non-TLS). Use pre-shared secret
+>    ``file`` which was generated with ``--genkey``.
+>  
+>    Valid syntaxes:
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index e52679f0..5b559edf 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -514,7 +514,7 @@ static const char usage_message[] =
+>      "\n"
+>      "Data Channel Encryption Options (must be compatible between peers):\n"
+>      "(These options are meaningful for both Static Key & TLS-mode)\n"
+> -    "--secret f [d]  : Enable Static Key encryption mode (non-TLS).\n"
+> +    "--secret f [d]  : (DEPRECATED) Enable Static Key encryption mode (non-TLS).\n"
+>      "                  Use shared secret file f, generate with --genkey.\n"
+>      "                  The optional d parameter controls key directionality.\n"
+>      "                  If d is specified, use separate keys for each\n"
+> @@ -2564,6 +2564,15 @@ options_postprocess_verify_ce(const struct options *options,
+>          msg(M_USAGE, "specify only one of --tls-server, --tls-client, or --secret");
+>      }
+>  
+> +    if (!options->tls_server || !options->tls_client)
+> +    {
+> +        msg(M_INFO, "DEPRECATION: No tls-client or tls-server option in "
+> +                    "configuration detected. OpenVPN 2.7 will remove the "
+> +                    "functionality to run a VPN without TLS. "
+> +                    "See the examples section in the manual page for "
+> +                    "examples of a similar quick setup with peer-fingerprint.");
+> +    }
+> +
+>      if (options->ssl_flags & (SSLF_CLIENT_CERT_NOT_REQUIRED|SSLF_CLIENT_CERT_OPTIONAL))
+>      {
+>          msg(M_WARN, "WARNING: POTENTIALLY DANGEROUS OPTION "
+> @@ -7868,6 +7877,7 @@ add_option(struct options *options,
+>      }
+>      else if (streq(p[0], "secret") && p[1] && !p[3])
+>      {
+> +        msg(M_WARN, "DEPRECATED OPTION: The option --secret is deprecated. ");
+>          VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_INLINE);
+>          options->shared_secret_file = p[1];
+>          options->shared_secret_file_inline = is_inline;
+> 
 
 -- 
 Antonio Quartulli
