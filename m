@@ -1,15 +1,7 @@
-References: <20210325000121.10331-1-arne@...1227...>
- <2d571572-e3c0-9d9b-81a7-ccb5f8bd0736@...277...>
- <016c3086-965b-2c78-9769-59f60551cf36@...2181...>
- <b8e67a75-2459-bc49-8950-391913809b7a@...2181...>
- <1c7912e4-3437-c918-2181-ee752cece126@...277...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <3dc8bb5d-48c7-049f-6415-aaa8df4500e5@...2181...>
-Date: Thu, 25 Mar 2021 16:52:52 +0100
-MIME-Version: 1.0
-In-Reply-To: <1c7912e4-3437-c918-2181-ee752cece126@...277...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH 1/2] Deprecate non TLS mode in OpenVPN
+From: Arne Schwabe <arne@...1227...>
+Date: Thu, 25 Mar 2021 18:44:49 +0100
+Message-Id: <20210325174449.26948-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Always disable SSL renegotiations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,60 +10,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: tincanteksup <tincanteksup@...277...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+These have been troublesome in the past and also today's CVE-2021-3449
+DOS is only exploitable if renegotiation is enabled.
 
-On 25/03/2021 16:46, tincanteksup wrote:
-> Hi,
-> 
-> On 25/03/2021 07:59, Antonio Quartulli wrote:
->> Hi,
->>
->> On 25/03/2021 08:49, Antonio Quartulli wrote:
->>> That change (that was *Actually* made in 2.4) was exactly to remove this
->>> ambiguity.
->>
->> Forgive my hasty reply. This combination of option is actually
->> not-supported since 2.5 (in 2.4 we probably only introduced the
->> deprecation warning).
-> 
-> I think I know what you mean.
-> 
-> Deprecating `--secret` to be `--genkey secret` is on the wiki.
-> But the change *has* been made in 2.5 not pending for 2.7
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/ssl_mbedtls.c | 3 +++
+ src/openvpn/ssl_openssl.c | 3 +++
+ 2 files changed, 6 insertions(+)
 
-correct.
-
-> 
-> Deprecating non-TLS mode VPNs is not on the wiki.
-> 
-> Deprecate non-TLS mode in 2.5
-
-this depends on where the patch will be merged. I guess we have to wait
-for that.
-
-> To be removed in 2.7
-
-correct
-
-> Replaced by peer-fingerprint option.
-
-not replaced as drop-in, but users of --secret should look at
---peer-fingerprint, yes.
-
-> 
-> If that is correct then I can add "non-TLS mode" to the wiki.
-> Clear up the mess^D^D^D^D ambiguity ..
-
-I would suggest to wait for the patch to be merged first.
-But the summary sounds right.
-
-
-Cheers,
-
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index 4626e9838..1628a02e3 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -1086,6 +1086,9 @@ key_state_ssl_init(struct key_state_ssl *ks_ssl,
+     {
+         mbedtls_ssl_conf_curves(ks_ssl->ssl_config, ssl_ctx->groups);
+     }
++    /* Disable renegotiations. OpenVPN has its own mechanism to create whole
++     * new SSL session. And these have been problematic in the past */
++    mbedtls_ssl_conf_renegotiation(ks_ssl->ssl_config, MBEDTLS_SSL_RENEGOTIATION_DISABLED);
+ 
+     /* Disable record splitting (for now).  OpenVPN assumes records are sent
+      * unfragmented, and changing that will require thorough review and
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index d161f48b8..a11ca5b97 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -320,6 +320,9 @@ tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags)
+     sslopt |= SSL_OP_CIPHER_SERVER_PREFERENCE;
+ #endif
+     sslopt |= SSL_OP_NO_COMPRESSION;
++    /* Disable renegotiations. OpenVPN has its own mechanism to create whole
++     * new SSL session. And these have been probelmatic in the past */
++    sslopt |= SSL_OP_NO_RENEGOTIATION;
+ 
+     SSL_CTX_set_options(ctx->ctx, sslopt);
+ 
 -- 
-Antonio Quartulli
+2.30.1
+
 
