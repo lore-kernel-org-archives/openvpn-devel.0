@@ -1,7 +1,11 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Thu, 25 Mar 2021 18:44:49 +0100
-Message-Id: <20210325174449.26948-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Always disable SSL renegotiations
+References: <20210325000121.10331-1-arne@...1227...>
+From: Matthias Andree <matthias.andree@...68...>
+Message-ID: <214c73d3-e650-8766-b97d-fb14c5367673@...68...>
+Date: Thu, 25 Mar 2021 20:29:20 +0100
+MIME-Version: 1.0
+In-Reply-To: <20210325000121.10331-1-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Deprecate non TLS mode in OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,47 +15,40 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-These have been troublesome in the past and also today's CVE-2021-3449
-DOS is only exploitable if renegotiation is enabled.
+Am 25.03.21 um 01:01 schrieb Arne Schwabe:
+> The non-TLS mode is a relict from OpenVPN 1.x or 2.0. When tls mode was
+> introduce the advantages of TLS over non-tls were small but tls mode
+> evolved to include a lot more features. (NCP, multipeer, AEAD ciphers to =
+name
+> a few).
+>
+> Today VPN that use --secret are mainly used because of its relative easy =
+to
+> setup and requiring to setup a PKI. This shortcoming of TLS mode should be
+> addressed now with the peer-fingerprint option.
+>
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/ssl_mbedtls.c | 3 +++
- src/openvpn/ssl_openssl.c | 3 +++
- 2 files changed, 6 insertions(+)
+NAK.
 
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index 4626e9838..1628a02e3 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -1086,6 +1086,9 @@ key_state_ssl_init(struct key_state_ssl *ks_ssl,
-     {
-         mbedtls_ssl_conf_curves(ks_ssl->ssl_config, ssl_ctx->groups);
-     }
-+    /* Disable renegotiations. OpenVPN has its own mechanism to create whole
-+     * new SSL session. And these have been problematic in the past */
-+    mbedtls_ssl_conf_renegotiation(ks_ssl->ssl_config, MBEDTLS_SSL_RENEGOTIATION_DISABLED);
- 
-     /* Disable record splitting (for now).  OpenVPN assumes records are sent
-      * unfragmented, and changing that will require thorough review and
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index d161f48b8..a11ca5b97 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -320,6 +320,9 @@ tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags)
-     sslopt |= SSL_OP_CIPHER_SERVER_PREFERENCE;
- #endif
-     sslopt |= SSL_OP_NO_COMPRESSION;
-+    /* Disable renegotiations. OpenVPN has its own mechanism to create whole
-+     * new SSL session. And these have been probelmatic in the past */
-+    sslopt |= SSL_OP_NO_RENEGOTIATION;
- 
-     SSL_CTX_set_options(ctx->ctx, sslopt);
- 
--- 
-2.30.1
+Arne,
+
+I find the reasons you present to withdraw the symmetric non-TLS mode
+too weak to justify its deprecation or removal. Yes, TLS-based
+configurations may be more feature-rich, but those are not mandatory and
+we should not paternalize the users here. Is there a considerable
+technical debt to keeping the --secret option?=C2=A0 WireGuard seems to be
+becoming quite popular and it provides low-ceremony setups - just as
+openvpn --secret does.=C2=A0
+
+And to make a blunt point, it's not useless just because it's old, else
+we should nuke DNS and SMTP.
+
+Regards,
+Matthias
+
 
 
