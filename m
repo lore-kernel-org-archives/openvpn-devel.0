@@ -1,12 +1,13 @@
 References: <20201215164221.5995-1-arne@...1227...>
+ <20201215164221.5995-2-arne@...1227...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <e4f72923-f6d6-2420-d952-054953ba49cb@...2181...>
-Date: Thu, 25 Mar 2021 23:14:28 +0100
+Message-ID: <d9fa3e30-32a3-5b81-baeb-716e60fda38c@...2181...>
+Date: Thu, 25 Mar 2021 23:37:36 +0100
 MIME-Version: 1.0
-In-Reply-To: <20201215164221.5995-1-arne@...1227...>
+In-Reply-To: <20201215164221.5995-2-arne@...1227...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH 1/2] Move context_auth from context_2 to
- tls_multi
+Subject: Re: [Openvpn-devel] [PATCH 2/2] Fix condition to generate session
+ keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,23 +18,22 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
 On 15/12/2020 17:42, Arne Schwabe wrote:
-> Some code currently is doing weird workarounds to figure out that side
-> as side effect from other variables in tls_multi.
-> 
+> For --nobind clients OpenVPN reuses the context and tls_multi structs
+> of the previous clients and does not rerun the connect scripts on
+> connect. But since it is a new client connection, the key_id is 0 and
+> we postpone the key generation but it will never happen.
 
-Arne can you rephrase what this patch is trying to address?
-I think I understand the implementation, but I fail to see what this
-patch is improving.
+Can you explain how the --nobind on the client is related to the server
+behaviour?
 
-Is this related to the tls_multi vs c2 lifecycle? or?
+Are you saying that a client connecting from the same IP of another
+client will share its session and tls_multi object?
 
-Cheers,
 
 
 -- 
