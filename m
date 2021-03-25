@@ -1,10 +1,14 @@
-Date: Thu, 25 Mar 2021 12:43:05 +0100 (CET)
-Message-Id: <202103251143.12PBh5Jk008789@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210324222330.455-4-arne@...1227...>
-References: <20210324222330.455-4-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Use correct types for OpenSSL
- and Windows APIs
+References: <20210325000121.10331-1-arne@...1227...>
+ <2d571572-e3c0-9d9b-81a7-ccb5f8bd0736@...277...>
+ <016c3086-965b-2c78-9769-59f60551cf36@...2181...>
+ <b8e67a75-2459-bc49-8950-391913809b7a@...2181...>
+From: tincanteksup <tincanteksup@...277...>
+Message-ID: <1c7912e4-3437-c918-2181-ee752cece126@...277...>
+Date: Thu, 25 Mar 2021 15:46:30 +0000
+MIME-Version: 1.0
+In-Reply-To: <b8e67a75-2459-bc49-8950-391913809b7a@...2181...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Deprecate non TLS mode in OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,39 +17,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Hi,
 
-"Because it makes sense".  The DWORD changes for the loop variables
-confused me a bit, because these are not "passed to a windows API" - but 
-they are *compared* to "i < rt->dwNumEntries", and since *that* is a
-DWORD, I can see why it might warn.
+On 25/03/2021 07:59, Antonio Quartulli wrote:
+> Hi,
+> 
+> On 25/03/2021 08:49, Antonio Quartulli wrote:
+>> That change (that was *Actually* made in 2.4) was exactly to remove this
+>> ambiguity.
+> 
+> Forgive my hasty reply. This combination of option is actually
+> not-supported since 2.5 (in 2.4 we probably only introduced the
+> deprecation warning).
 
-Again, compile tested on MinGW, lightly client side tested on Linux
-and FreeBSD.
+I think I know what you mean.
 
-Your patch has been applied to the master branch.
+Deprecating `--secret` to be `--genkey secret` is on the wiki.
+But the change *has* been made in 2.5 not pending for 2.7
 
-commit 467b16dc65df711c0f1b3a8640b1fadc09c56803
-Author: Arne Schwabe
-Date:   Wed Mar 24 23:23:30 2021 +0100
+Deprecating non-TLS mode VPNs is not on the wiki.
 
-     Use correct types for OpenSSL and Windows APIs
+Deprecate non-TLS mode in 2.5
+To be removed in 2.7
+Replaced by peer-fingerprint option.
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210324222330.455-4-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21803.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+If that is correct then I can add "non-TLS mode" to the wiki.
+Clear up the mess^D^D^D^D ambiguity ..
 
-
---
-kind regards,
-
-Gert Doering
-
+How does that sound ?
+R
 
