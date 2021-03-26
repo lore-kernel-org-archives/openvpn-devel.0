@@ -1,10 +1,12 @@
+Date: Fri, 26 Mar 2021 17:56:38 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20210326165638.GY976@...1296...>
 References: <20210326160545.26836-1-arne@...1227...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <43c265c8-d504-e8ce-e337-3d23cbf26212@...2181...>
-Date: Fri, 26 Mar 2021 17:37:30 +0100
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="UJCP3JuDDRMx4b/m"
+Content-Disposition: inline
 In-Reply-To: <20210326160545.26836-1-arne@...1227...>
-Content-Language: en-US
 Subject: Re: [Openvpn-devel] [PATCH v2] Always disable TLS renegotiations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -14,50 +16,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--UJCP3JuDDRMx4b/m
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On 26/03/2021 17:05, Arne Schwabe wrote:
-> Renegotiations have been troublesome in the past and also the recent OpenSSL
-> security problem (CVE-2021-3449) is only exploitable if TLS renegotiation
-> is enabled.
-> 
-> mbed TLS disables it by default and says in the documentation:
-> 
-> Warning: It is recommended to always disable renegotation unless you know you
-> need it and you know what you're doing. In the past, there have been
-> several issues associated with renegotiation or a poor understanding of
-> its properties.
-> 
-> TLS renegotiation can be used to restart a session with diffferent
+On Fri, Mar 26, 2021 at 05:05:45PM +0100, Arne Schwabe wrote:
+> +    /* Disable TLS renegotiations. OpenVPN's renegotiation creates new S=
+SL
+> +     * session and does not depend on this feature. And TLS renegotiatio=
+ns have
+> +     * been problematic in the past */
+> +    sslopt |=3D SSL_OP_NO_RENEGOTIATION;
 
-too many f
+Unfortunately this seems to be not available in OpenSSL 1.0.2, which
+is what the OS ships on FreeBSD 11.4 (which is still supported).
 
-> parameters (e.g. now with client certs). This somethign that OpenVPN does
+../../../openvpn/src/openvpn/ssl_openssl.c:326:15: error: use of undeclared=
+ identifier
+      'SSL_OP_NO_RENEGOTIATION'
+    sslopt |=3D SSL_OP_NO_RENEGOTIATION;
 
-somethign -> something
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-> not use.
-> 
-> Furthermore because of all these problems, also TLS 1.3 completely
-> drops support for renegotiations.
-> 
-> Patch V2: Improve commments and commit message
+Gert Doering - Munich, Germany                             gert@...1296...
 
-too many m :D
+--UJCP3JuDDRMx4b/m
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
+-----BEGIN PGP SIGNATURE-----
 
-Acked-by: Antonio Quartulli <antonio@...515...>
+iQGcBAEBAgAGBQJgXhJFAAoJEB2Cnv7KVigSlekL/AhHM6/WvYI0P+lzeupR1J5F
+OZd50EyLLFDoJjInmGC0vlupAvRbo4/8cnxntg2jCEf/Hfk7L2MmxCqsc4BHEj6V
+yVqMuTUFECgCStTE6BQrcPnLhfm0rR+6yAPaU4UxTcaj9jK6opdmtZ40a+5F5vmn
+ZUbtxsgp3SpQdIhB7OXEjazGSt7L0bubIQWCIarpSBg2Z5nGMwJ2/uUoFo9DoVVv
+kSGDEyFlA5/RqnU6Z5sOm1Nn0l/7gEF3zhllE4KDC9kkz7aIhKIE6kSWlVtTv30v
+CgDQ+uRFcFbJzoBb6ZGTpQdK6QNZBWJZBaMe58JyphqASntnY98wMS4GtAQAHWDi
+hK4EkMl2m6gg6ZmxUXMvvUnZt/GRZ/m0x0t0dgrAk/lwm0R2+pL8wW1ScR1GDWTh
+OwLE3mTM8TYTv62a+dtLTD19XK1fBwf71sCqMQ61cbgzXnXwhso+2WzCJYC/HAFE
+Sg42q3cqXBxdKys2Wfcj7hEkfX9ZoIJ2vZDBLgYBNQ==
+=dFIK
+-----END PGP SIGNATURE-----
 
-
-Basic connection tests passed, with OpenVPN renegotiations performed
-with no issue.
-
--- 
-Antonio Quartulli
+--UJCP3JuDDRMx4b/m--
 
