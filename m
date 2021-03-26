@@ -1,15 +1,13 @@
-Date: Fri, 26 Mar 2021 08:12:22 +0100
+Date: Fri, 26 Mar 2021 08:19:05 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20210326071222.GR976@...1296...>
-References: <1538820128-27086-1-git-send-email-lstipakov@...277...>
- <1540904039-2129-1-git-send-email-lstipakov@...277...>
+Message-ID: <20210326071905.GS976@...1296...>
+References: <20210325000121.10331-1-arne@...1227...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="g94CgySkBfNYCEaQ"
+ protocol="application/pgp-signature"; boundary="75URpteHaMYyx69+"
 Content-Disposition: inline
-In-Reply-To: <1540904039-2129-1-git-send-email-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH v4] Improve "recursive routing" warning
- message
+In-Reply-To: <20210325000121.10331-1-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Deprecate non TLS mode in OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,58 +16,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---g94CgySkBfNYCEaQ
+--75URpteHaMYyx69+
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Tue, Oct 30, 2018 at 02:53:59PM +0200, Lev Stipakov wrote:
-> From: Lev Stipakov <lev@...515...>
->=20
-> This patch provides additional information, such as
-> source address/port and destination address/port, to a
-> "recursive routing" warning message. It also mentiones
-> possible workaround.
+On Thu, Mar 25, 2021 at 01:01:20AM +0100, Arne Schwabe wrote:
+> The non-TLS mode is a relict from OpenVPN 1.x or 2.0. When tls mode was
+> introduce the advantages of TLS over non-tls were small but tls mode
+> evolved to include a lot more features. (NCP, multipeer, AEAD ciphers to =
+name
+> a few).
 
-I still do not like this patch.  It is quite a bit of extra code, and
-I'm not convinced of the benefit.
+I think the most prominent benefit is "use of a session key which is
+independent of the shared secret", so perfect forward secrecy even if
+the secret is lost.  The "features" are a nice benefit, but PFS is=20
+the truly important part, no?
 
-Adding documentation is most welcome, though.
+> Today VPN that use --secret are mainly used because of its relative easy =
+to
+> setup and requiring to setup a PKI. This shortcoming of TLS mode should be
+> addressed now with the peer-fingerprint option.
 
->  .B \-\-allow\-recursive\-routing
->  When this option is set, OpenVPN will not drop incoming tun packets
-> -with same destination as host.
-> +with same destination as host. Could be useful when packets sent by open=
-vpn
-> +itself are not subject to the routing tables that would move packets
-> +into the tunnel.
-
-So, this is good.  Maybe even extend this a bit more.
-
-
-On the patch itself, it assumes "no IP options" for IPv4, and "no=20
-intermediate headers" for IPv6, and "all payload is UDP or TCP".=20=20
-
-Which is usually true for any packets that OpenVPN itself originates but=20
-if you want to log "this is packet from someone else, and we shouldn't
-have dropped it because it's not one of ours" it could be anything.
-
-
-Now...  if we consider a scenario where OpenVPN packets are not subject
-to be routed into the tunnel (Linux VRF, policy routing, ...) - which
-is actually something I want to see happen :-) - twisting this feature=20
-into some other direction might make the coding effort useful: what=20
-about "we only block packets that match destination IP *and port and
-protocol* with what OpenVPN is using"?=20
-
-So, if we talk to 1.2.3.4/udp/1194, only packets inside the tunnel
-destined to 1.2.3.4/udp/1994 would be dropped, and everything else can
-be sent freely - because those are never "recursive openvpn packets".
+This is fine, I'd say.
 
 gert
 --=20
@@ -82,22 +56,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---g94CgySkBfNYCEaQ
+--75URpteHaMYyx69+
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJgXYlVAAoJEB2Cnv7KVigS6PQL/25mYBxBCisko+C3UzVlLZee
-sKhUJwU2j0/L96HP//NgYyeMJ0YlcPixpw384fYxLwAB7P5J62PYoScFmppVTish
-apOwZ3vhNDP0SMWvFoif0OZQWijFW4UjfpXCCPB1VX6PhjWbvDOORttX5QbkPA4B
-YAxpAq4Qxm3RG1U/XU8kycZlsmqzxVQbBjcMFnJbaobDYZt59k4BiJrxUHkDk/Ob
-biPnWNVyFbo6anB3h5NaF1HdmV9vtWw3JH8fcR45lMVXDjWyEuXW1nVmtBJSc/tk
-2F9zsncRAmuAeP3QuLFDAYkFq64vVQepqaikWIWItYCybLzYViNu2hSfzYRW8/h5
-FtkLfkqFPrcJfPvnCWWPz1emdy62ClAagXjC+WV6AmI0YY+ULL8j+yx3bORv2aaM
-FOBMFojzvToiEw27uIoAsm2MK4cOl32nvnRj3Qv4s3mWg7U90TeZZBIeLrf2GOWT
-HMqPU2GmPM+TbTEFJT0ybTWj9d4e4qLMecqcKmOwBw==
-=nnXL
+iQGcBAEBAgAGBQJgXYrpAAoJEB2Cnv7KVigSBJEL/jr3CWEhN4u9wYIU6Uo8OgQK
+Ff2D0BSRUX5Fyh7/ZNYR25lOC7ajqzcImdvB6joNi1xp8AljmrmnLsEYy1ShGMKq
+nTbFHL7W4ipWyDq/jZUki+ESa0AHpkqfslYBZxDdviRuFyV2wIQDsEMwGDe5oTka
+awgueyPtV3RLGJIMnrwlpqNMabBNwCUlnfKRQBBovjJZZI+nGaHWHFqeD3HFwrLL
+HrTmAb/eSJD0it3bmvLiPLaq8oF+mxX9CE6lPHcCjIlkO0cx8kiE/0LSPSvBUvjC
+sUFHVeZ99He9iSJ4pDWHP7Q9s99jSgDbf0hFjpNhwQCaVnJm9QK/WafWtF/LiucK
+Bfr5cCO3bN9nvcqxXvdE+YKZSMth9heoLpNW7mRIkJ7F/zL6pFOYiMMxCk8vFU0t
+H9oQ7jxh5x2EOh6+PQVBF1UyQdz4zuvw8nOEKe/RPZ0Sujt8qOH4atUHiShTtNrj
+rSgDKHEl2ucowGxlQPSM814rc1ZFaLASd5eyLsyKwQ==
+=Rpa5
 -----END PGP SIGNATURE-----
 
---g94CgySkBfNYCEaQ--
+--75URpteHaMYyx69+--
 
