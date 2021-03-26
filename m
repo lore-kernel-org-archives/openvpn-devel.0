@@ -1,14 +1,12 @@
-References: <65530ded0938659345877e870f49d2ad4b9768ae.camel@...2524...>
- <3852ddc0-a136-3e28-9925-2c597a1cfaca@...2080...>
- <65ed488ce109006ff9527e4836f295907bfe24ea.camel@...2524...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <26399fec-937a-8ccb-1682-105cbd1e968f@...2181...>
-Date: Fri, 26 Mar 2021 00:40:34 +0100
+References: <20210325174449.26948-1-arne@...1227...>
+ <fa1a440d-c9a1-0269-d644-11c630ae4061@...2181...>
+From: tincanteksup <tincanteksup@...277...>
+Message-ID: <0ccb85d6-0670-3799-1512-cf52e019231f@...277...>
+Date: Fri, 26 Mar 2021 00:20:26 +0000
 MIME-Version: 1.0
-In-Reply-To: <65ed488ce109006ff9527e4836f295907bfe24ea.camel@...2524...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] ***UNCHECKED*** Patch: Export NotBefore and
- NotAfter items to the environment in client-connect
+In-Reply-To: <fa1a440d-c9a1-0269-d644-11c630ae4061@...2181...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH] Always disable SSL renegotiations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,94 +15,72 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Rolf Fokkens <rolf.fokkens@...2524...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn@...2080..." <openvpn@...2080...>
-Cc: Jasper Siero <jasper.siero@...2524...>, Valentin Bajrami <valentin.bajrami@...2524...>
+To: openvpn-devel@lists.sourceforge.net
 
-Hi Rolf,
+Hi,
 
-I know this is old....but...
-
-Is this something you'd consider resending based on current master?
-Would you also have any chance of testing it again after rebase?
-
-Cheers,
-
-On 17/08/2019 14:12, Rolf Fokkens via Openvpn-devel wrote:
-> On Fri, 2019-08-16 at 13:45 +0200, David Sommerseth wrote:
->> This gets a Feature-ACK from me.  This is useful information, and
->> something
->> other users in the community have asked for earlier too.  But there
->> are a few
->> things here before starting to dive into the details.
+On 25/03/2021 23:15, Antonio Quartulli wrote:
+> Hi,
+> 
+> On 25/03/2021 18:44, Arne Schwabe wrote:
+>> These have been troublesome in the past and also today's CVE-2021-3449
+>> DOS is only exploitable if renegotiation is enabled.
 >>
->> First of all, we want to have patches first into git master, and then
->> we need
->> to discuss in the community if this feature is something we want to
->> backport
->> to the 2.4 release.  After a new release has stabilized (which 2.4
->> has), we
->> are quite reluctant to add new features to those releases.
+>> Signed-off-by: Arne Schwabe <arne@...1227...>
 > 
-> I started off by creating a pull request: 
-> https://github.com/OpenVPN/openvpn/pull/129
+> What is the practical effect of this change?
+> With the current code (before this patch) when would OpenSSL/mbedTLS
+> start a renegotiation on its own?
 > 
-> During creation of the pull request I was pointed to the openvpn-devel
-> list, so I attached the patch there too. That one was based on 2.4,
-> because that's what we're using and how we're testing (and using) the
-> patch.
+> May it have had any impact on the OpenVPN protocol until now?
 > 
->> Another thing is that I think it would be valuable to also print this
->> information into the logs as well.  The X509_get_notBefore() value is
->> probably
->> not so important unless that has a value which is in the future.  The
->> X509_get_notAfter() is fine to always log, but would be nice if it
->> would come
->> a M_WARN log entry if it has expired.
+> 
+> Cheers,
+> 
+> 
+>> ---
+>>   src/openvpn/ssl_mbedtls.c | 3 +++
+>>   src/openvpn/ssl_openssl.c | 3 +++
+>>   2 files changed, 6 insertions(+)
 >>
->> To achieve this logging feature, setenv_ASN1_TIME() would need to be
->> refactored a bit - possibly by returning a string as well as "is
->> now() after
->> the time stamp?" bool flag.  The "printing" could happen to a
->> gc_arena
->> allocated buffer (which is available in verify_cert_set_env()).  The
->> logging
->> should probably already happen in verify_cert(), which also has its
->> own
->> gc_arena.  There are various alternatives to avoid doing the
->> ASN1_TIME_print()
->> preparations and processing multiple times (for logging and setenv),
->> but I
->> don't have a clear idea right now what could be a reasonable
->> approach.
->>
->> And lastly, this code will break compilation if using
->> ./configure --with-crypto-library=mbedtls ... This should also be
->> improved.
->>
-> 
-> I updated my pull request based on your feedback. I'm not sure if I
-> correcty understood the structure of the software, but I think it's a
-> decent attempt.
-> 
-> - The notAfter information is in the logs now (appended to the "VERIFY
-> OK" lines)
-> - Warnings are issued if the now is before notBefore of after notAfter
-> - openssl specifics are moved to ssl_verify_openssl.c.
-> ssl_verify_mbedtls.c has a dummy equivalent which should make openvpn
-> both compile and run.
-> 
-> Attached you'll find the updated patch too.
-> 
-> 
-> 
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> 
+>> diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+>> index 4626e9838..1628a02e3 100644
+>> --- a/src/openvpn/ssl_mbedtls.c
+>> +++ b/src/openvpn/ssl_mbedtls.c
+>> @@ -1086,6 +1086,9 @@ key_state_ssl_init(struct key_state_ssl *ks_ssl,
+>>       {
+>>           mbedtls_ssl_conf_curves(ks_ssl->ssl_config, ssl_ctx->groups);
+>>       }
+>> +    /* Disable renegotiations. OpenVPN has its own mechanism to create whole
+>> +     * new SSL session. And these have been problematic in the past */
 
--- 
-Antonio Quartulli
+This comment reads like so:
+
+Disable "unspecified" renegotiations.
+OpenVPN has "specific" renegotiation mechanism(s), which have been 
+problematic in the past.
+
+
+>> +    mbedtls_ssl_conf_renegotiation(ks_ssl->ssl_config, MBEDTLS_SSL_RENEGOTIATION_DISABLED);
+>>   
+>>       /* Disable record splitting (for now).  OpenVPN assumes records are sent
+>>        * unfragmented, and changing that will require thorough review and
+>> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+>> index d161f48b8..a11ca5b97 100644
+>> --- a/src/openvpn/ssl_openssl.c
+>> +++ b/src/openvpn/ssl_openssl.c
+>> @@ -320,6 +320,9 @@ tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags)
+>>       sslopt |= SSL_OP_CIPHER_SERVER_PREFERENCE;
+>>   #endif
+>>       sslopt |= SSL_OP_NO_COMPRESSION;
+>> +    /* Disable renegotiations. OpenVPN has its own mechanism to create whole
+>> +     * new SSL session. And these have been probelmatic in the past */
+>> +    sslopt |= SSL_OP_NO_RENEGOTIATION;
+>>   
+>>       SSL_CTX_set_options(ctx->ctx, sslopt);
+>>   
+>>
+> 
 
