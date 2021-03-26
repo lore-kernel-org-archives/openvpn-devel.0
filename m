@@ -1,15 +1,15 @@
-From: tincanteksup <tincanteksup@...277...>
-References: <1538820128-27086-1-git-send-email-lstipakov@...277...>
- <1540904039-2129-1-git-send-email-lstipakov@...277...>
- <4864a5a9-7816-6347-9a82-1e2432321562@...2181...>
- <650e29b8-e009-ba88-8d2b-1117fceeba65@...277...>
-Message-ID: <5e3933a9-a3d0-01b2-b2b8-21573b7036a8@...277...>
-Date: Fri, 26 Mar 2021 02:25:13 +0000
+Date: Fri, 26 Mar 2021 07:58:51 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20210326065851.GP976@...1296...>
+References: <20210325000121.10331-1-arne@...1227...>
+ <20210325000121.10331-2-arne@...1227...>
+ <b418f610-6e7e-ba3c-8c30-6e0ef0c50fa5@...2181...>
 MIME-Version: 1.0
-In-Reply-To: <650e29b8-e009-ba88-8d2b-1117fceeba65@...277...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH v4] Improve "recursive routing" warning
- message
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="0u2WXWk63XiemHti"
+Content-Disposition: inline
+In-Reply-To: <b418f610-6e7e-ba3c-8c30-6e0ef0c50fa5@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH 2/2] Remove deprecated option '--keysize'
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,46 +18,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
+--0u2WXWk63XiemHti
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
+Hi,
 
-On 26/03/2021 01:09, tincanteksup wrote:
-> Hi,
-> 
-> On 25/03/2021 23:26, Antonio Quartulli wrote:
->> Hi,
->>
->> On 30/10/2018 13:53, Lev Stipakov wrote:
->>> From: Lev Stipakov <lev@...515...>
->>>
->>> +
->>> +        msg(D_LOW, "Recursive routing detected, drop packet %s. Fix 
->>> your routing or consider using --allow-recursive-routing option.", 
->>> BSTR(&addrs_buf));
->>
->> I would add "if you know what you are doing", otherwisethe average Joe
->> will think that he can just add "--allow-recursive-routing" to his
->> config and the problem is fixed.
->>
-> 
-> "If you know what you are doing" is no help
-> because they all "_know what they are doing_" ...
-> 
-> My understanding is as follows:
-> 
-> Recursive-routing means that I send encrypted packets, which are
-> destined for the public IP of the peer address, over the tunnel.
-> Instead of over the internet (or other common network).
-> 
-> Considering the loops which the receiver will have to jump
-> though to accept these packets, I question the validity of
-> documenting this "feature" --allow-recursive-routing, at all.
-> 
+On Fri, Mar 26, 2021 at 12:12:40AM +0100, Antonio Quartulli wrote:
+> > -#ifdef HAVE_EVP_CIPHER_CTX_SET_KEY_LENGTH
+> > +    /* This serves as a check that the keylen is the correct as this f=
+ails
+> > +     * when key_len and the fixed size of cipher disagree */
+> >      if (!EVP_CIPHER_CTX_set_key_length(ctx, key_len))
+>=20
+> Are you sure we need to keep this check?
 
-Perhaps this would be better suited as:
-./configure --enable-recursive-routing
-make
+Indeed, that also got me wondering (and is the reason why I didn't
+just ack-and-merge it right away :-) - but I was waiting for someone
+else to understand and ACK this)
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--0u2WXWk63XiemHti
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJgXYYqAAoJEB2Cnv7KVigSkKYL/jHcIjj2xeGgCn0WQIN88rHf
+o/0p12lcHPgZQunEJjm+G5E8VbXIAYIap3+Gr8Yqu5WLPpksTqpqlibx5EeDZreH
+VPT2gUyzv1EnB+ZXX2HsRRgFlEqeHKKxnhdv/ys2jQSGtqoi/3BO8o4guI/KEgvY
+CUZ+wCPkofxsmFokjMEma+zlCPrOACqudtuiULnxL1Bpv6dhPw8Yu8Lq66+KrO1g
+p4cwmXoThI6y92+4eGGbZXhXEkzq4aAPqEh1hjEwhr/agt/Jd0ioFKV0ymtny4TZ
+hW7oTXVY5WMiudCU23T6aefPVTATtKGwzfMTmhG1vvl7zVykLNTYEzEO2ndOPNt8
+A4vYEjkG7nbvFGM2xj7mQwFKZU/jY2A6RuoEimUeYpcNsCxfi7PvcytE2T/Hdz/e
+nu+TU4mNJ6nzOpusOSdKbLxW7hPulg6UNSukgfG+aVQkZnmBsFv0wDAHhY5mbIrV
+Nhgn8duK3JHZ3lxHhdiT5ResnrRFnRAJfoChhGVK1g==
+=+PI+
+-----END PGP SIGNATURE-----
+
+--0u2WXWk63XiemHti--
 
