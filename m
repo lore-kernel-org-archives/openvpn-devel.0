@@ -1,12 +1,14 @@
-References: <20210325174449.26948-1-arne@...1227...>
- <fa1a440d-c9a1-0269-d644-11c630ae4061@...2181...>
+References: <1538820128-27086-1-git-send-email-lstipakov@...277...>
+ <1540904039-2129-1-git-send-email-lstipakov@...277...>
+ <4864a5a9-7816-6347-9a82-1e2432321562@...2181...>
 From: tincanteksup <tincanteksup@...277...>
-Message-ID: <0ccb85d6-0670-3799-1512-cf52e019231f@...277...>
-Date: Fri, 26 Mar 2021 00:20:26 +0000
+Message-ID: <650e29b8-e009-ba88-8d2b-1117fceeba65@...277...>
+Date: Fri, 26 Mar 2021 01:09:51 +0000
 MIME-Version: 1.0
-In-Reply-To: <fa1a440d-c9a1-0269-d644-11c630ae4061@...2181...>
+In-Reply-To: <4864a5a9-7816-6347-9a82-1e2432321562@...2181...>
 Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH] Always disable SSL renegotiations
+Subject: Re: [Openvpn-devel] [PATCH v4] Improve "recursive routing" warning
+ message
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,66 +23,31 @@ To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On 25/03/2021 23:15, Antonio Quartulli wrote:
+On 25/03/2021 23:26, Antonio Quartulli wrote:
 > Hi,
 > 
-> On 25/03/2021 18:44, Arne Schwabe wrote:
->> These have been troublesome in the past and also today's CVE-2021-3449
->> DOS is only exploitable if renegotiation is enabled.
+> On 30/10/2018 13:53, Lev Stipakov wrote:
+>> From: Lev Stipakov <lev@...515...>
 >>
->> Signed-off-by: Arne Schwabe <arne@...1227...>
+>> +
+>> +        msg(D_LOW, "Recursive routing detected, drop packet %s. Fix your routing or consider using --allow-recursive-routing option.", BSTR(&addrs_buf));
 > 
-> What is the practical effect of this change?
-> With the current code (before this patch) when would OpenSSL/mbedTLS
-> start a renegotiation on its own?
+> I would add "if you know what you are doing", otherwisethe average Joe
+> will think that he can just add "--allow-recursive-routing" to his
+> config and the problem is fixed.
 > 
-> May it have had any impact on the OpenVPN protocol until now?
-> 
-> 
-> Cheers,
-> 
-> 
->> ---
->>   src/openvpn/ssl_mbedtls.c | 3 +++
->>   src/openvpn/ssl_openssl.c | 3 +++
->>   2 files changed, 6 insertions(+)
->>
->> diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
->> index 4626e9838..1628a02e3 100644
->> --- a/src/openvpn/ssl_mbedtls.c
->> +++ b/src/openvpn/ssl_mbedtls.c
->> @@ -1086,6 +1086,9 @@ key_state_ssl_init(struct key_state_ssl *ks_ssl,
->>       {
->>           mbedtls_ssl_conf_curves(ks_ssl->ssl_config, ssl_ctx->groups);
->>       }
->> +    /* Disable renegotiations. OpenVPN has its own mechanism to create whole
->> +     * new SSL session. And these have been problematic in the past */
 
-This comment reads like so:
+"If you know what you are doing" is no help
+because they all "_know what they are doing_" ...
 
-Disable "unspecified" renegotiations.
-OpenVPN has "specific" renegotiation mechanism(s), which have been 
-problematic in the past.
+My understanding is as follows:
 
+Recursive-routing means that I send encrypted packets, which are
+destined for the public IP of the peer address, over the tunnel.
+Instead of over the internet (or other common network).
 
->> +    mbedtls_ssl_conf_renegotiation(ks_ssl->ssl_config, MBEDTLS_SSL_RENEGOTIATION_DISABLED);
->>   
->>       /* Disable record splitting (for now).  OpenVPN assumes records are sent
->>        * unfragmented, and changing that will require thorough review and
->> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
->> index d161f48b8..a11ca5b97 100644
->> --- a/src/openvpn/ssl_openssl.c
->> +++ b/src/openvpn/ssl_openssl.c
->> @@ -320,6 +320,9 @@ tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags)
->>       sslopt |= SSL_OP_CIPHER_SERVER_PREFERENCE;
->>   #endif
->>       sslopt |= SSL_OP_NO_COMPRESSION;
->> +    /* Disable renegotiations. OpenVPN has its own mechanism to create whole
->> +     * new SSL session. And these have been probelmatic in the past */
->> +    sslopt |= SSL_OP_NO_RENEGOTIATION;
->>   
->>       SSL_CTX_set_options(ctx->ctx, sslopt);
->>   
->>
-> 
+Considering the loops which the receiver will have to jump
+though to accept these packets, I question the validity of
+documenting this "feature" --allow-recursive-routing, at all.
+
 
