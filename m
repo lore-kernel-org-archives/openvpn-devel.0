@@ -1,10 +1,10 @@
-Date: Sun, 28 Mar 2021 16:37:59 +0200 (CEST)
-Message-Id: <202103281437.12SEbx99099944@...2054...>
+Date: Sun, 28 Mar 2021 16:38:19 +0200 (CEST)
+Message-Id: <202103281438.12SEcJ17000855@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210328142038.8826-1-arne@...1227...>
-References: <20210328142038.8826-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove flexible array member
- autoconf check
+In-Reply-To: <20210328142038.8826-2-arne@...1227...>
+References: <20210328142038.8826-2-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove support for non ISO C99
+ vararg support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -26,17 +26,17 @@ I'm reasonably sure nothing bad will happen on v2 either :-)
 
 Your patch has been applied to the master branch.
 
-commit 7975e33bd9122045d26d1a47294f2c47854a5f0e
+commit f91e21163708b5dc01115806cb71643144d6c3d1
 Author: Arne Schwabe
-Date:   Sun Mar 28 16:20:37 2021 +0200
+Date:   Sun Mar 28 16:20:38 2021 +0200
 
-     Remove flexible array member autoconf check
+     Remove support for non ISO C99 vararg support
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Steffan Karger <steffan.karger@...2507...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210328142038.8826-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21882.html
+     Message-Id: <20210328142038.8826-2-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21883.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
