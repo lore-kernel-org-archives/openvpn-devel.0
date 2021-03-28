@@ -1,8 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Sun, 28 Mar 2021 16:36:33 +0200
-Message-Id: <20210328143633.10300-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Fix #elif TARGET_LINUX missing defined()
- call
+Date: Sun, 28 Mar 2021 16:37:59 +0200 (CEST)
+Message-Id: <202103281437.12SEbx99099944@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20210328142038.8826-1-arne@...1227...>
+References: <20210328142038.8826-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove flexible array member
+ autoconf check
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,29 +15,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-I found this when playing with building OpenVPN with cmake.
+Acked-by: Gert Doering <gert@...1296...>
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/tun.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Taking Steffan's ACK on the v1, and mine on the single-line change in
+v2 (which gets rid of these warnings).  Buildbot army tested v1, so
+I'm reasonably sure nothing bad will happen on v2 either :-)
 
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index 9d995dd46..902665cc6 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -130,7 +130,7 @@ struct tuntap_options {
-     int dns6_len;
- };
- 
--#elif TARGET_LINUX
-+#elif defined(TARGET_LINUX)
- 
- struct tuntap_options {
-     int txqueuelen;
--- 
-2.30.1
+Your patch has been applied to the master branch.
+
+commit 7975e33bd9122045d26d1a47294f2c47854a5f0e
+Author: Arne Schwabe
+Date:   Sun Mar 28 16:20:37 2021 +0200
+
+     Remove flexible array member autoconf check
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Steffan Karger <steffan.karger@...2507...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20210328142038.8826-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21882.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
