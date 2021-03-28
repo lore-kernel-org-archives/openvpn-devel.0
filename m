@@ -1,10 +1,10 @@
-Date: Sun, 28 Mar 2021 16:38:19 +0200 (CEST)
-Message-Id: <202103281438.12SEcJ17000855@...2054...>
+Date: Sun, 28 Mar 2021 16:48:13 +0200 (CEST)
+Message-Id: <202103281448.12SEmDPC001125@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210328142038.8826-2-arne@...1227...>
-References: <20210328142038.8826-2-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove support for non ISO C99
- vararg support
+In-Reply-To: <20210328143633.10300-1-arne@...1227...>
+References: <20210328143633.10300-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix #elif TARGET_LINUX missing
+ defined() call
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,23 +20,22 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Taking Steffan's ACK on the v1, and mine on the single-line change in
-v2 (which gets rid of these warnings).  Buildbot army tested v1, so
-I'm reasonably sure nothing bad will happen on v2 either :-)
+Not sure why it is not erroring-out there, but "symbol not defined"
+seems to be good enough as "0".  OTOH, all the other code uses "#ifdef"
+or "defined(TARGET_FOO)", so bringing this in line is good.
 
 Your patch has been applied to the master branch.
 
-commit f91e21163708b5dc01115806cb71643144d6c3d1
+commit d11c273b07c422dde358e1b1caafd12bf8682e70
 Author: Arne Schwabe
-Date:   Sun Mar 28 16:20:38 2021 +0200
+Date:   Sun Mar 28 16:36:33 2021 +0200
 
-     Remove support for non ISO C99 vararg support
+     Fix #elif TARGET_LINUX missing defined() call
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Steffan Karger <steffan.karger@...2507...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210328142038.8826-2-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21883.html
+     Message-Id: <20210328143633.10300-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21884.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
