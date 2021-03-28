@@ -1,16 +1,14 @@
-References: <20201215164221.5995-1-arne@...1227...>
- <20201215164221.5995-2-arne@...1227...>
- <d9fa3e30-32a3-5b81-baeb-716e60fda38c@...2181...>
- <0bfb39c7-8d28-24b9-c830-32424787d489@...1227...>
- <20bfb379-1265-21dc-e027-7836004cfcb0@...2181...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <2f93233c-1368-3ad5-2e4a-10c8617a4c3f@...1227...>
-Date: Sun, 28 Mar 2021 08:56:51 +0200
+Date: Sun, 28 Mar 2021 10:52:48 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20210328085248.GB976@...1296...>
+References: <CAALvpZTo6VYxcLXtXXyMsUU-n3JRSOJ-62fny7Zfi28WSDYXmA@...278...>
+ <b63128cc-14cf-b1a4-684d-4c3fcb291f04@...2181...>
 MIME-Version: 1.0
-In-Reply-To: <20bfb379-1265-21dc-e027-7836004cfcb0@...2181...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH 2/2] Fix condition to generate session
- keys
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="aufv34C1tHTDo7r3"
+Content-Disposition: inline
+In-Reply-To: <b63128cc-14cf-b1a4-684d-4c3fcb291f04@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH] Stop using deprecated getpass()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,27 +17,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: =?iso-8859-1?Q?T=F5ivo_Leedj=E4rv?= <toivol@...277...>, openvpn-devel@lists.sourceforge.net
 
+--aufv34C1tHTDo7r3
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-> 
-> Basically context_auth is set CAS_SUCCEEDED upon first connection cycle,
-> therefore a new connection that re-uses the existing instance will
-> already have context_auth set to CAS_SUCCEEDED and a new session key
-> will be generated.
-> 
-> I wonder if the connection can really be fully working if the server
-> believes that the client was already setup and does not performs the
-> usual connection steps. But this is another story, unrelated to this
-> patch...
+Hi,
 
-It works. From the server perspective this new connection is almost the
-same as a renegotiation. On a PUSH_REQUEST the server will just send the
-same configuration as before. Basically if the new client (which is more
-than often the same client) can do everything the previous client did,
-everything is well.
+On Sun, Mar 28, 2021 at 01:52:51AM +0100, Antonio Quartulli wrote:
+> I believe termios.h should normally be available on any *nix system,
+> therefore it should be ok to switch to it.
 
-Arne
+Well, on everything that is recent enough to have tun/tap and sockets,
+termios.h will exist.
+
+On the necessity for the patch, I have mixed feelings - I do not see
+any OS remove getpass() any time soon, as it would break applications...
+
+But I need to have a close look at the patch again - give that we already
+do the /dev/tty handling etc., it might effectively make the code easier.
+
+[..]
+> > +    {
+> > +        (void) tcsetattr(fileno(fp), TCSAFLUSH, &tty_save);
+>=20
+> We should not need to cast to void - I don't think we have warnings set
+> for non-checked return values.
+
+Actually we should catch errors here and log them.  If tcsetattr() fails,=20
+the tty will be in a messed-up state - so we want to know that it happened,
+and possibly also the "why".
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--aufv34C1tHTDo7r3
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJgYEPfAAoJEB2Cnv7KVigSfl0MAJvNzQmnVO3Vs6wr6Ryi4Yyq
+gWN6s//C/MYAF/oevIsLJlsxqNhgSSRGSl15c5M7duUebUQ/vWHIqKb1Kexv4GV6
+moEQ1tPesCySm3KoEODrUFdMZhstw9r8R+aVZmwZ4iShSWMoDTj79/lnLTLcbXzq
+iABeSWAncoPe9YGR+sIY9iMKZ2OOCL3LsoDij9wc29cIV0PVc/oHZ6ZpCHj4mS73
+IBQgNKqBycKlKA1SM0TCLKRK4vrQIYbeitjTeidMdSggWAUGvVfCyG810NhTRnRy
+saRgBn4ZdDMHf4n0NT5gWhjE/V4fqdhe6srXeodnJE3otnKg854Ja6IVF1XMRdci
+tQTymdLDpGCx6fpIJCJygaseqIrB3JKIpMKXIpZa4MdO9PTrTDDm0L860tC6Y4zG
+2MMrEoSI5Rg1G5rIAj2npMpZMrsGiHDKk1efcoLFZPfBoCeW1l+VqfN52/FIx9DV
+xuamBVdYTgLdx6vCIV/uZqZZJJrO1z8ug459TFhH9Q==
+=2e1I
+-----END PGP SIGNATURE-----
+
+--aufv34C1tHTDo7r3--
 
