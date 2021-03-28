@@ -1,8 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Sun, 28 Mar 2021 16:20:37 +0200
-Message-Id: <20210328142038.8826-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v2 1/2] Remove flexible array member
- autoconf check
+Date: Sun, 28 Mar 2021 16:20:38 +0200
+Message-Id: <20210328142038.8826-2-arne@...1227...>
+In-Reply-To: <20210328142038.8826-1-arne@...1227...>
+References: <20210328142038.8826-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v2 2/2] Remove support for non ISO C99
+ vararg support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,120 +17,217 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is configure macro that tries out how to declare a variable array
-at the end of struct. This has been standardised in C99, so there is
-no more need for non C99 magic. See also this stackoverflow discussion:
+We require ISO C99 as minimum support for our source code and all compilers
+should support the ISO C99 macros. Especially gcc does not need
+the gcc extensions anymore. Also MSVC has support for it (as defined
+in the config-msvc.h but also double checked)
 
-https://stackoverflow.com/questions/14643406/whats-the-need-of-array-with-zero-elements
+LCLINT seems to be a C analyzer that history has forgotten about. I could
+only find https://splint.org/release1.3.html and an similarly old research
+paper.
 
-Patch V2: Also remove AX_EMPTY_ARRAY from configure.ac
+Patch V2: Also remove AX_ macros from configure.ac
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- config-msvc.h           |  1 -
- configure.ac            |  1 -
- m4/ax_emptyarray.m4     | 40 ----------------------------------------
- src/openvpn/circ_list.h |  2 +-
- src/openvpn/syshead.h   |  2 --
- 5 files changed, 1 insertion(+), 45 deletions(-)
- delete mode 100644 m4/ax_emptyarray.m4
+ config-msvc.h       |  1 -
+ configure.ac        |  2 --
+ m4/ax_varargs.m4    | 77 ---------------------------------------------
+ src/openvpn/error.c |  4 ---
+ src/openvpn/error.h | 21 -------------
+ src/tapctl/error.h  |  1 -
+ 6 files changed, 106 deletions(-)
+ delete mode 100644 m4/ax_varargs.m4
 
 diff --git a/config-msvc.h b/config-msvc.h
-index e430ca96f..0260927ce 100644
+index 0260927ce..4db9efae2 100644
 --- a/config-msvc.h
 +++ b/config-msvc.h
-@@ -119,7 +119,6 @@
- #define inline __inline
- #endif
- 
--#define EMPTY_ARRAY_SIZE 0
- #define TARGET_WIN32 1
- #define TARGET_ALIAS "Windows-MSVC"
- 
+@@ -47,7 +47,6 @@
+ #define HAVE_ACCESS 1
+ #define HAVE_CHDIR 1
+ #define HAVE_CHSIZE 1
+-#define HAVE_CPP_VARARG_MACRO_ISO 1
+ #define HAVE_CTIME 1
+ #define HAVE_EVP_CIPHER_CTX_SET_KEY_LENGTH 1
+ #define HAVE_IN_PKTINFO 1
 diff --git a/configure.ac b/configure.ac
-index 428bebeda..c17266a0a 100644
+index c17266a0a..8e31dcb29 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -421,7 +421,6 @@ AC_TYPE_SIGNAL
- AX_CPP_VARARG_MACRO_ISO
- AX_CPP_VARARG_MACRO_GCC
+@@ -418,8 +418,6 @@ AC_TYPE_UINT16_T
+ AC_TYPE_UINT32_T
+ AC_TYPE_UINT64_T
+ AC_TYPE_SIGNAL
+-AX_CPP_VARARG_MACRO_ISO
+-AX_CPP_VARARG_MACRO_GCC
  AX_TYPE_SOCKLEN_T
--AX_EMPTY_ARRAY
  AC_CHECK_SIZEOF([unsigned int])
  AC_CHECK_SIZEOF([unsigned long])
- AC_CHECK_HEADERS([ \
-diff --git a/m4/ax_emptyarray.m4 b/m4/ax_emptyarray.m4
+diff --git a/m4/ax_varargs.m4 b/m4/ax_varargs.m4
 deleted file mode 100644
-index c6781c179..000000000
---- a/m4/ax_emptyarray.m4
+index c295d21f4..000000000
+--- a/m4/ax_varargs.m4
 +++ /dev/null
-@@ -1,40 +0,0 @@
--dnl @synopsis AX_EMPTY_ARRAY
+@@ -1,77 +0,0 @@
+-dnl @synopsis AX_CPP_VARARG_MACRO_GCC
 -dnl
--dnl Define EMPTY_ARRAY_SIZE to be either "0"
--dnl or "" depending on which syntax the compiler
--dnl prefers for empty arrays in structs.
+-dnl Test if the preprocessor understands GNU GCC-style vararg macros.
+-dnl If it does, defines HAVE_CPP_VARARG_MACRO_GCC to 1.
 -dnl
 -dnl @version
--dnl @author James Yonan <jim@...41...>
--AC_DEFUN([AX_EMPTY_ARRAY], [
--	AS_VAR_PUSHDEF([VAR],[ax_cv_c_empty_array])dnl
+-dnl @author James Yonan <jim@...41...>, Matthias Andree <matthias.andree@...83...>
+-AC_DEFUN([AX_CPP_VARARG_MACRO_GCC], [dnl
+-	AS_VAR_PUSHDEF([VAR], [ax_cv_cpp_vararg_macro_gcc])dnl
 -	AC_CACHE_CHECK(
--		[for C compiler empty array size],
+-		[for GNU GCC vararg macro support],
 -		[VAR],
 -		[AC_COMPILE_IFELSE(
 -			[AC_LANG_PROGRAM(
--				,
 -				[[
--struct { int foo; int bar[0]; } mystruct;
+-#define macro(a, b...) func(a, b)
+-int func(int a, int b, int c);
+-				]],
+-				[[
+-int i = macro(1, 2, 3);
 -				]]
 -			)],
--			[VAR=0],
--			[AC_COMPILE_IFELSE(
--				[AC_LANG_PROGRAM(
--					,
--					[[
--struct { int foo; int bar[]; } mystruct;
--					]]
--				)],
--				[VAR=],
--				[AC_MSG_ERROR([C compiler is unable to creaty empty arrays])]
--			)]
+-			[VAR=yes],
+-			[VAR=no]
 -		)]
 -	)dnl
--	AC_DEFINE_UNQUOTED(
--		[EMPTY_ARRAY_SIZE],
--		[$VAR],
--		[Dimension to use for empty array declaration]
+-
+-	AS_VAR_IF(
+-		[VAR],
+-		[yes],
+-		[AC_DEFINE(
+-			[HAVE_CPP_VARARG_MACRO_GCC],
+-			[1], 
+-			[Define to 1 if your compiler supports GNU GCC-style variadic macros]
+-		)]
 -	)dnl
 -	AS_VAR_POPDEF([VAR])dnl
 -])
-diff --git a/src/openvpn/circ_list.h b/src/openvpn/circ_list.h
-index 23b42d2ab..ba9115eab 100644
---- a/src/openvpn/circ_list.h
-+++ b/src/openvpn/circ_list.h
-@@ -34,7 +34,7 @@
-         int x_size; \
-         int x_cap; \
-         int x_sizeof; \
--        type x_list[EMPTY_ARRAY_SIZE]; \
-+        type x_list[]; \
-     }
+-
+-dnl @synopsis AX_CPP_VARARG_MACRO_ISO
+-dnl
+-dnl Test if the preprocessor understands ISO C 1999 vararg macros.
+-dnl If it does, defines HAVE_CPP_VARARG_MACRO_ISO to 1.
+-dnl
+-dnl @version
+-dnl @author James Yonan <jim@...41...>, Matthias Andree <matthias.andree@...83...>
+-AC_DEFUN([AX_CPP_VARARG_MACRO_ISO], [dnl
+-	AS_VAR_PUSHDEF([VAR],[ax_cv_cpp_vararg_macro_iso])dnl
+-	AC_CACHE_CHECK(
+-		[for ISO C 1999 vararg macro support],
+-		[VAR],
+-		[AC_COMPILE_IFELSE(
+-			[AC_LANG_PROGRAM(
+-				[[
+-#define macro(a, ...) func(a, __VA_ARGS__)
+-int func(int a, int b, int c);
+-				]],
+-				[[
+-int i = macro(1, 2, 3);
+-				]]
+-			)],
+-			[VAR=yes],
+-			[VAR=no]
+-		)]
+-	)dnl
+-
+-	AS_VAR_IF(
+-		[VAR],
+-		[yes],
+-		[AC_DEFINE(
+-			[HAVE_CPP_VARARG_MACRO_ISO],
+-			[1], 
+-			[Define to 1 if your compiler supports ISO C99 variadic macros]
+-		)]
+-	)dnl
+-	AS_VAR_POPDEF([VAR])dnl
+-])
+diff --git a/src/openvpn/error.c b/src/openvpn/error.c
+index 0ecbfc330..e6f7ff0ff 100644
+--- a/src/openvpn/error.c
++++ b/src/openvpn/error.c
+@@ -236,26 +236,22 @@ x_msg_va(const unsigned int flags, const char *format, va_list arglist)
  
- #define CIRC_LIST_PUSH(obj, item) \
-diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index 5ee9bf1e8..cf9714593 100644
---- a/src/openvpn/syshead.h
-+++ b/src/openvpn/syshead.h
-@@ -392,8 +392,6 @@ typedef int MIB_TCP_STATE;
- #ifdef PEDANTIC
- #undef HAVE_CPP_VARARG_MACRO_GCC
- #undef HAVE_CPP_VARARG_MACRO_ISO
--#undef EMPTY_ARRAY_SIZE
--#define EMPTY_ARRAY_SIZE 1
- #undef inline
- #define inline
+     void usage_small(void);
+ 
+-#ifndef HAVE_VARARG_MACROS
+     /* the macro has checked this otherwise */
+     if (!msg_test(flags))
+     {
+         return;
+     }
+-#endif
+ 
+     e = openvpn_errno();
+ 
+     /*
+      * Apply muting filter.
+      */
+-#ifndef HAVE_VARARG_MACROS
+     /* the macro has checked this otherwise */
+     if (!dont_mute(flags))
+     {
+         return;
+     }
+-#endif
+ 
+     gc_init(&gc);
+ 
+diff --git a/src/openvpn/error.h b/src/openvpn/error.h
+index eaedf172c..1a5521654 100644
+--- a/src/openvpn/error.h
++++ b/src/openvpn/error.h
+@@ -146,33 +146,12 @@ bool dont_mute(unsigned int flags);
+ /* Macro to ensure (and teach static analysis tools) we exit on fatal errors */
+ #define EXIT_FATAL(flags) do { if ((flags) & M_FATAL) {_exit(1);}} while (false)
+ 
+-#if defined(HAVE_CPP_VARARG_MACRO_ISO) && !defined(__LCLINT__)
+-#define HAVE_VARARG_MACROS
+ #define msg(flags, ...) do { if (msg_test(flags)) {x_msg((flags), __VA_ARGS__);} EXIT_FATAL(flags); } while (false)
+ #ifdef ENABLE_DEBUG
+ #define dmsg(flags, ...) do { if (msg_test(flags)) {x_msg((flags), __VA_ARGS__);} EXIT_FATAL(flags); } while (false)
+ #else
+ #define dmsg(flags, ...)
  #endif
+-#elif defined(HAVE_CPP_VARARG_MACRO_GCC) && !defined(__LCLINT__)
+-#define HAVE_VARARG_MACROS
+-#define msg(flags, args ...) do { if (msg_test(flags)) {x_msg((flags), args);} EXIT_FATAL(flags); } while (false)
+-#ifdef ENABLE_DEBUG
+-#define dmsg(flags, args ...) do { if (msg_test(flags)) {x_msg((flags), args);} EXIT_FATAL(flags); } while (false)
+-#else
+-#define dmsg(flags, args ...)
+-#endif
+-#else  /* if defined(HAVE_CPP_VARARG_MACRO_ISO) && !defined(__LCLINT__) */
+-#if !PEDANTIC
+-#ifdef _MSC_VER
+-#pragma message("this compiler appears to lack vararg macros which will cause a significant degradation in efficiency")
+-#else
+-#warning this compiler appears to lack vararg macros which will cause a significant degradation in efficiency (you can ignore this warning if you are using LCLINT)
+-#endif
+-#endif
+-#define msg x_msg
+-#define dmsg x_msg
+-#endif /* if defined(HAVE_CPP_VARARG_MACRO_ISO) && !defined(__LCLINT__) */
+ 
+ void x_msg(const unsigned int flags, const char *format, ...)
+ #ifdef __GNUC__
+diff --git a/src/tapctl/error.h b/src/tapctl/error.h
+index 924cbbe89..cea50ba52 100644
+--- a/src/tapctl/error.h
++++ b/src/tapctl/error.h
+@@ -67,7 +67,6 @@ bool dont_mute(unsigned int flags);
+ #endif
+ #define EXIT_FATAL(flags) do { if ((flags) & M_FATAL) {_exit(1);}} while (false)
+ 
+-#define HAVE_VARARG_MACROS
+ #define msg(flags, ...) do { if (msg_test(flags)) {x_msg((flags), __VA_ARGS__);} EXIT_FATAL(flags); } while (false)
+ #ifdef ENABLE_DEBUG
+ #define dmsg(flags, ...) do { if (msg_test(flags)) {x_msg((flags), __VA_ARGS__);} EXIT_FATAL(flags); } while (false)
 -- 
 2.30.1
 
